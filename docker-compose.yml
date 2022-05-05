@@ -1,0 +1,13 @@
+services:
+  meelo:
+    ports:
+      - "${BACK_PORT}:3000"
+    depends_on:
+      - "meelo_db"
+  meelo_db:
+    image: postgres:alpine3.14
+    environment:
+    - POSTGRES_USER=${POSTGRES_USER}
+    - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+    - POSTGRES_DB=${POSTGRES_NAME}
+    - POSTGRES_HOST=${POSTGRES_HOST}
