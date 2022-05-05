@@ -1,8 +1,8 @@
 {
   "name": "meelo",
   "version": "0.0.1",
-  "description": "",
-  "author": "",
+  "description": "Personnal Music Server, for music collectors and records maniacs",
+  "author": "Arthi-chaud",
   "private": true,
   "license": "UNLICENSED",
   "scripts": {
@@ -24,6 +24,8 @@
     "@nestjs/common": "^8.0.0",
     "@nestjs/core": "^8.0.0",
     "@nestjs/platform-express": "^8.0.0",
+    "@types/sequelize": "^4.28.12",
+    "mysql2": "^2.3.3",
     "reflect-metadata": "^0.1.13",
     "rimraf": "^3.0.2",
     "rxjs": "^7.2.0",
