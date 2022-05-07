@@ -1,0 +1,26 @@
+import { AutoIncrement, BeforeCreate, BeforeUpdate, BelongsTo, Column, Default, ForeignKey, HasMany, HasOne, Is, Model, Table, Unique } from 'sequelize-typescript';
+import { Artist } from 'src/artist/models/artist.model';
+
+@Table({ tableName: 'albums' })
+export class Album extends Model {
+	@Column({ allowNull: false })
+	name: string;
+
+	@Column({ allowNull: false })
+	slug: string;
+	
+	@HasOne(() => Artist)
+	artist: Artist;
+	
+	@Column
+	releaseDate: Date;
+	
+	@HasMany(() => Release)
+	releases: Release[];
+	
+	@BeforeCreate
+	@BeforeUpdate
+	static setSlug(instance: Album) {
+		instance.slug = buildSlug(instance.name);
+	}
+}

@@ -5,6 +5,7 @@ import { SequelizeModule } from '@nestjs/sequelize';
 import { ConfigModule } from '@nestjs/config';
 import { FileModule } from './file/file.module';
 import { ArtistModule } from './artist/artist.module';
+import { AlbumModule } from './album/album.module';
 
 @Module({
   imports: [
@@ -22,6 +23,7 @@ import { ArtistModule } from './artist/artist.module';
     }),
     FileModule,
     ArtistModule,
+    AlbumModule,
   ],
   controllers: [AppController],
   providers: [AppService],
