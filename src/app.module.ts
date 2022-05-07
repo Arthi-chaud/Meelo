@@ -4,6 +4,7 @@ import { AppService } from './app.service';
 import { SequelizeModule } from '@nestjs/sequelize';
 import { ConfigModule } from '@nestjs/config';
 import { FileModule } from './file/file.module';
+import { ArtistModule } from './artist/artist.module';
 
 @Module({
   imports: [
@@ -20,6 +21,7 @@ import { FileModule } from './file/file.module';
       synchronize: true,
     }),
     FileModule,
+    ArtistModule,
   ],
   controllers: [AppController],
   providers: [AppService],

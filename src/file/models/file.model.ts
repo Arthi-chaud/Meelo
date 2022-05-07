@@ -1,6 +1,6 @@
-import { AutoIncrement, BelongsTo, Column, ForeignKey, HasMany, Is, Model, Table, Unique } from 'sequelize-typescript';
+import { Column, Is, Model, Table, Unique } from 'sequelize-typescript';
 
-@Table({ tableName: 'file' })
+@Table({ tableName: 'files' })
 export class File extends Model {
 	@Unique
 	@Column({ allowNull: false })
