@@ -7,6 +7,7 @@ import { FileModule } from './file/file.module';
 import { ArtistModule } from './artist/artist.module';
 import { AlbumModule } from './album/album.module';
 import { ReleaseModule } from './release/release.module';
+import { TrackModule } from './track/track.module';
 
 @Module({
   imports: [
@@ -26,6 +27,7 @@ import { ReleaseModule } from './release/release.module';
     ArtistModule,
     AlbumModule,
     ReleaseModule,
+    TrackModule,
   ],
   controllers: [AppController],
   providers: [AppService],
