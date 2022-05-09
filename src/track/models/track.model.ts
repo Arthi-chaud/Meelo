@@ -1,5 +1,6 @@
 import { AutoIncrement, BeforeCreate, BeforeUpdate, BelongsTo, Column, Default, ForeignKey, HasMany, HasOne, Is, Model, Table, Unique } from 'sequelize-typescript';
 import { Release } from 'src/release/models/release.model';
+import { Song } from 'src/song/models/song.model';
 
 @Table({ tableName: 'tracks' })
 export class Track extends Model {
