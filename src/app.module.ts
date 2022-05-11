@@ -9,6 +9,8 @@ import { AlbumModule } from './album/album.module';
 import { ReleaseModule } from './release/release.module';
 import { TrackModule } from './track/track.module';
 import { SongModule } from './song/song.module';
+import { SettingsModule } from './settings/settings.module';
+import { Settings } from './settings/settings.service';
 
 @Module({
   imports: [
@@ -30,8 +32,9 @@ import { SongModule } from './song/song.module';
     ReleaseModule,
     TrackModule,
     SongModule,
+    SettingsModule,
   ],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [AppService, Settings],
 })
 export class AppModule {}

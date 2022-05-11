@@ -4,6 +4,9 @@ services:
       - "${BACK_PORT}:3000"
     depends_on:
       - "meelo_db"
+    volumes:
+      - .:/meelo
+      - .:/data
   meelo_db:
     image: postgres:alpine3.14
     environment:
