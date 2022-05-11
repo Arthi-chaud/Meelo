@@ -11,6 +11,7 @@ import { TrackModule } from './track/track.module';
 import { SongModule } from './song/song.module';
 import { SettingsModule } from './settings/settings.module';
 import { Settings } from './settings/settings.service';
+import { LibraryModule } from './library/library.module';
 
 @Module({
   imports: [
@@ -33,6 +34,7 @@ import { Settings } from './settings/settings.service';
     TrackModule,
     SongModule,
     SettingsModule,
+    LibraryModule,
   ],
   controllers: [AppController],
   providers: [AppService, Settings],

@@ -21,4 +21,7 @@ export class Track extends Model {
 
 	@Column
 	trackIndex: number | null;
+
+	@Column({ allowNull: false })
+	type: TrackType
 }
