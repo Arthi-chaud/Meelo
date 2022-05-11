@@ -12,6 +12,4 @@ export class Library extends Model {
 
 	@HasMany(() => Track)
 	tracks: Track[];
-
-
 }

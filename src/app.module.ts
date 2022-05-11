@@ -12,6 +12,7 @@ import { SongModule } from './song/song.module';
 import { SettingsModule } from './settings/settings.module';
 import { Settings } from './settings/settings.service';
 import { LibraryModule } from './library/library.module';
+import { IllustrationModule } from './illustration/illustration.module';
 
 @Module({
   imports: [
@@ -35,6 +36,7 @@ import { LibraryModule } from './library/library.module';
     SongModule,
     SettingsModule,
     LibraryModule,
+    IllustrationModule,
   ],
   controllers: [AppController],
   providers: [AppService, Settings],

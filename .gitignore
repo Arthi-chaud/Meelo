@@ -35,3 +35,4 @@ lerna-debug.log*
 !.vscode/extensions.json
 # Envrionment/Secret files
 .env
+illustrations/
