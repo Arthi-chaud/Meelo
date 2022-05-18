@@ -9,4 +9,7 @@ export class File extends Model {
 	@Column({ allowNull: false })
 	@Is('MD5 Checksum', (value) => RegExp('^[a-f0-9]{32}$').test(value))
 	md5Checksum: string;
+
+	@Column({ allowNull: false })
+	registerDate: Date;
 }
