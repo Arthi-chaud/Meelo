@@ -1,16 +1,15 @@
 services:
-  meelo:
+  server:
     build:
       context: ./
       dockerfile: Dockerfile.dev
     ports:
       - ${BACK_PORT}:3000
     depends_on:
-      - "meelo_db"
+      - "db"
     volumes:
       - .:/meelo
-      - .:/data
-  meelo_db:
+  db:
     image: postgres:alpine3.14
     environment:
     - POSTGRES_USER=${POSTGRES_USER}

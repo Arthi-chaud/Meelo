@@ -1,6 +1,7 @@
-FROM node:17 AS builder
+FROM node:17
 WORKDIR /app
-COPY ./package.json ./
+COPY *.json .
 RUN yarn install
 COPY . .
-CMD [ "yarn" , "run", "start:dev"]
+RUN yarn run build
+CMD ["yarn" , "run", "start:dev"]

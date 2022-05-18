@@ -1,5 +1,5 @@
 {
-	"dataFolder": "/meelo",
+	"dataFolder": "/data",
 	"trackRegex": [
 		"^(?<Artist>.+)[\\/\\\\]+(?<Album>.+)[\\/\\\\]+((?<Disc>[0-9]+)-)?(?<Index>[0-9]+)\\s+(?<Track>.*)\\..*$"
 	]

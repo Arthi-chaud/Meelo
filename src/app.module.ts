@@ -10,9 +10,9 @@ import { ReleaseModule } from './release/release.module';
 import { TrackModule } from './track/track.module';
 import { SongModule } from './song/song.module';
 import { SettingsModule } from './settings/settings.module';
-import { Settings } from './settings/settings.service';
 import { LibraryModule } from './library/library.module';
 import { IllustrationModule } from './illustration/illustration.module';
+import { SettingsService } from './settings/settings.service';
 
 @Module({
   imports: [
@@ -39,6 +39,6 @@ import { IllustrationModule } from './illustration/illustration.module';
     IllustrationModule,
   ],
   controllers: [AppController],
-  providers: [AppService, Settings],
+  providers: [AppService, SettingsService],
 })
 export class AppModule {}
