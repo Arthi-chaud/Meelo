@@ -4,8 +4,8 @@ import { Track } from 'src/track/models/track.model';
 
 @Table({ tableName: 'libraries' })
 export class Library extends Model {
-	@Column({ allowNull: false })
 	@Unique
+	@Column({ allowNull: false })
 	name: string;
 
 	@Column

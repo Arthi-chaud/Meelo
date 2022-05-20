@@ -1,4 +1,5 @@
-import { Column, Is, Model, Table, Unique } from 'sequelize-typescript';
+import { Column, ForeignKey, Is, Model, Table, Unique } from 'sequelize-typescript';
+import { Library } from 'src/library/models/library.model';
 
 @Table({ tableName: 'files' })
 export class File extends Model {
@@ -6,10 +7,13 @@ export class File extends Model {
 	@Column({ allowNull: false })
 	path: string;
 
-	@Column({ allowNull: false })
 	@Is('MD5 Checksum', (value) => RegExp('^[a-f0-9]{32}$').test(value))
+	@Column({ allowNull: false })
 	md5Checksum: string;
 
 	@Column({ allowNull: false })
 	registerDate: Date;
+
+	@ForeignKey(() => Library)
+	library: Library;
 }

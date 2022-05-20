@@ -4,10 +4,10 @@ import { Song } from 'src/song/models/song.model';
 
 @Table({ tableName: 'tracks' })
 export class Track extends Model {
-	@HasOne(() => Release)
+	@ForeignKey(() => Release)
 	release: Release;
 
-	@HasOne(() => Song)
+	@ForeignKey(() => Song)
 	song: Song;
 
 	@Column

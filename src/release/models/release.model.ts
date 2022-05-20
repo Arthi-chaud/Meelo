@@ -4,7 +4,7 @@ import { Track } from 'src/track/models/track.model';
 
 @Table({ tableName: 'releases' })
 export class Release extends Model {
-	@HasOne(() => Album)
+	@ForeignKey(() => Album)
 	album: Album;
 
 	@Column

@@ -10,7 +10,7 @@ export class Album extends Model {
 	@Column({ allowNull: false })
 	slug: string;
 	
-	@HasOne(() => Artist)
+	@ForeignKey(() => Artist)
 	artist: Artist;
 	
 	@Column

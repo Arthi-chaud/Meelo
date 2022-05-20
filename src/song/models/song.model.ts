@@ -4,7 +4,7 @@ import { Track } from 'src/track/models/track.model';
 
 @Table({ tableName: 'songs' })
 export class Song extends Model {
-	@HasOne(() => Artist)
+	@ForeignKey(() => Artist)
 	artist: Artist;
 
 	@HasMany(() => Track)
