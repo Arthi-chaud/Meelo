@@ -13,6 +13,7 @@ import { SettingsModule } from './settings/settings.module';
 import { LibraryModule } from './library/library.module';
 import { IllustrationModule } from './illustration/illustration.module';
 import { SettingsService } from './settings/settings.service';
+import { FileManagerModule } from './file-manager/file-manager.module';
 
 @Module({
   imports: [
@@ -37,6 +38,7 @@ import { SettingsService } from './settings/settings.service';
     SettingsModule,
     LibraryModule,
     IllustrationModule,
+    FileManagerModule,
   ],
   controllers: [AppController],
   providers: [AppService, SettingsService],
