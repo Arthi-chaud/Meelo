@@ -9,7 +9,7 @@ export class LibraryService {
 	constructor(
 		@InjectModel(Library)
 		private libraryModel: typeof Library,
-	  ) {}
+	) {}
 	async createLibrary(createLibraryDto: LibraryDto) {
 		let newLibrary: Library = new Library();
 		newLibrary.path = createLibraryDto.path;
