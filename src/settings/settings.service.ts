@@ -19,4 +19,18 @@ export class SettingsService {
 		this.dataFolder = settings.dataFolder;
 		this.trackRegexes = settings.trackRegex;
 	}
+
+	/**
+	 * Retrieve protected dataFolder value
+	 */
+	getDataFolder(): string {
+		return this.dataFolder;
+	}
+
+	/**
+	 * Retrieve protected RegExpr values
+	 */
+	getTrackRegexes(): string[] {
+		return this.trackRegexes;
+	}
 }
