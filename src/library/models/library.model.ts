@@ -4,13 +4,23 @@ import { Track } from 'src/track/models/track.model';
 
 @Table({ tableName: 'libraries' })
 export class Library extends Model {
+	// @BeforeUpdate
+	// @BeforeCreate
+	// static setSlug(instance: Library) {
+	// 	instance.slug = buildSlug(instance.name);
+	// }
+
 	@Unique
 	@Column({ allowNull: false })
 	name: string;
 
-	@Column
+	@Column({ allowNull: false })
 	path: string;
 
 	@HasMany(() => File)
 	files: File[];
+
+	// @Unique
+	// @Column({ allowNull: false })
+	// slug: string;
 }

@@ -16,11 +16,13 @@ export class LibraryService {
 		private fileManagerService: FileManagerService,
 		private fileService: FileService
 	) {}
-	async createLibrary(createLibraryDto: LibraryDto) {
+	
+	async createLibrary(createLibraryDto: LibraryDto): Promise<Library> {
 		let newLibrary: Library = new Library();
 		newLibrary.path = createLibraryDto.path;
 		newLibrary.name = createLibraryDto.name;
-		newLibrary.save();
+		await newLibrary.save();
+		return newLibrary;
 	}
 
 	async getAllLibraries(withFiles = false) {
@@ -29,11 +31,11 @@ export class LibraryService {
 		});
 	}
 
-	async getLibrary(name: string, withFiles = false) {
+	async getLibrary(slug: string, withFiles = false) {
 		return this.libraryModel.findOne({
 			include: (withFiles ? [File] : []),
 			where: {
-				name: name,
+				slug: slug,
 			}
 		});
 	}

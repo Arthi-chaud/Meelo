@@ -27,6 +27,8 @@
     "@nestjs/platform-express": "^8.0.0",
     "@nestjs/sequelize": "^8.0.0",
     "@types/sequelize": "^4.28.12",
+    "class-transformer": "^0.5.1",
+    "class-validator": "^0.13.2",
     "fs": "^0.0.1-security",
     "md5-file": "^5.0.0",
     "mysql2": "^2.3.3",

@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, Param, Post } from '@nestjs/common';
+import { Body, Controller, Delete, Get, HttpException, HttpStatus, Param, Post } from '@nestjs/common';
 import { LibraryService } from './library.service';
 import { LibraryDto } from './models/library.dto';
 
@@ -8,9 +8,17 @@ export class LibraryController {
 	
 	@Post('new')
 	async createLibrary(@Body() createLibraryDto: LibraryDto) {
-		this.libraryService.createLibrary(createLibraryDto);
+		let newLibrary = await this.libraryService.createLibrary(createLibraryDto).catch(
+			(reason) => {
+				throw new HttpException({
+					message: "An error occured, the library might already exist"
+				}, HttpStatus.CONFLICT);
+			}
+		);
+		return newLibrary;
 	}
 
+	@Get()
 	async getAllLibraries() {
 		return this.libraryService.getAllLibraries();
 	}
