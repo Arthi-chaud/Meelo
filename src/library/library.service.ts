@@ -18,11 +18,7 @@ export class LibraryService {
 	) {}
 	
 	async createLibrary(createLibraryDto: LibraryDto): Promise<Library> {
-		let newLibrary: Library = new Library();
-		newLibrary.path = createLibraryDto.path;
-		newLibrary.name = createLibraryDto.name;
-		await newLibrary.save();
-		return newLibrary;
+		return await this.libraryModel.create({...createLibraryDto});
 	}
 
 	async getAllLibraries(withFiles = false) {
