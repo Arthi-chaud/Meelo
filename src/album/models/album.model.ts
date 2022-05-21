@@ -18,6 +18,9 @@ export class Album extends Model {
 	
 	@HasMany(() => Release)
 	releases: Release[];
+
+	@Column
+	type: AlbumType;
 	
 	@BeforeCreate
 	@BeforeUpdate
