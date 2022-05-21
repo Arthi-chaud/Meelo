@@ -1,5 +1,5 @@
 
-function buildSlug(...args: string[]): string {
+export default function buildSlug(...args: string[]): string {
 	switch (args.length) {
 		case 0:
 			throw new Error('buildSlug requires at least one argument');
