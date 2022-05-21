@@ -13,8 +13,6 @@ export class LibraryService {
 	constructor(
 		@InjectModel(Library)
 		private libraryModel: typeof Library,
-		@InjectModel(File)
-		private fileModel: typeof File,
 		private fileManagerService: FileManagerService,
 		private fileService: FileService
 	) {}
@@ -42,11 +40,8 @@ export class LibraryService {
 
 	async registerNewFiles(parentLibrary: Library) {
 		let unfilteredCandidates = this.fileManagerService.getCandidateFilesInLibraryFolder(parentLibrary.path);
-		let alreadyRegistrered = await this.fileModel.findAll({
-			where: Sequelize.or(
-				{ path: unfilteredCandidates },
-			)
-		});
+		let alreadyRegistrered = await this.fileService.findFilesFromPath(unfilteredCandidates);
+
 		let candidates = unfilteredCandidates.filter(
 			(candidatePath) => {
 				alreadyRegistrered.findIndex((registered) => registered.path == candidatePath) == -1;

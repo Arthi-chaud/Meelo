@@ -6,6 +6,7 @@ import { constants } from 'buffer';
 import { SettingsService } from 'src/settings/settings.service';
 import { FileManagerService } from 'src/file-manager/file-manager.service';
 import { Library } from 'src/library/models/library.model';
+import { Sequelize } from 'sequelize-typescript';
 
 @Injectable()
 export class FileService {
@@ -35,5 +36,18 @@ export class FileService {
 		newFile.md5Checksum = this.fileManagerService.getMd5Checksum(fullFilePath);
 		newFile.library = parentLibrary;
 		newFile.save();
+	}
+
+	/**
+	 * Find File entites whose path is contained in the filePaths parameters
+	 * @param filePaths an array of file paths, without base folder or parent library's base folder
+	 * @returns 
+	 */
+	async findFilesFromPath(filePaths: string[]) {
+		return this.fileModel.findAll({
+			where: Sequelize.or(
+				{ path: filePaths },
+			)
+		});
 	}
 }
