@@ -11,7 +11,7 @@ export class LibraryController {
 		let newLibrary = await this.libraryService.createLibrary(createLibraryDto).catch(
 			(reason) => {
 				throw new HttpException({
-					message: "An error occured, the library might already exist"
+					message: reason.message
 				}, HttpStatus.CONFLICT);
 			}
 		);
@@ -23,20 +23,20 @@ export class LibraryController {
 		return this.libraryService.getAllLibraries();
 	}
 
-	@Get(':name')
-	async getLibrary(@Param('name') name: string) {
-		return this.libraryService.getLibrary(name);
+	@Get(':slug')
+	async getLibrary(@Param('slug') slug: string) {
+		return this.libraryService.getLibrary(slug);
 	}
 
-	@Get('scan/:name')
-	async scanLibraryFiles(@Param('name') name: string) {
+	@Get('scan/:slug')
+	async scanLibraryFiles(@Param('slug') slug: string) {
 		this.libraryService.registerNewFiles(
-			await this.getLibrary(name)
+			await this.getLibrary(slug)
 		);
 	}
 
 	@Get('scan')
-	async scanLibrariesFiles(@Param('name') name: string) {
+	async scanLibrariesFiles() {
 		(await this.libraryService.getAllLibraries()).forEach(
 			(library) => this.libraryService.registerNewFiles(library)
 		);
