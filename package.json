@@ -28,6 +28,7 @@
     "@nestjs/sequelize": "^8.0.0",
     "@types/sequelize": "^4.28.12",
     "fs": "^0.0.1-security",
+    "md5-file": "^5.0.0",
     "mysql2": "^2.3.3",
     "pg": "^8.7.3",
     "reflect-metadata": "^0.1.13",

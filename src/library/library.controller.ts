@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, Post } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Post } from '@nestjs/common';
 import { LibraryService } from './library.service';
 import { LibraryDto } from './models/library.dto';
 
@@ -11,13 +11,27 @@ export class LibraryController {
 		this.libraryService.createLibrary(createLibraryDto);
 	}
 
-	@Get('all')
 	async getAllLibraries() {
 		return this.libraryService.getAllLibraries();
 	}
 
 	@Get(':name')
-	async getLibrary(name : string) {
+	async getLibrary(@Param('name') name: string) {
 		return this.libraryService.getLibrary(name);
 	}
+
+	@Get('scan/:name')
+	async scanLibraryFiles(@Param('name') name: string) {
+		this.libraryService.registerNewFiles(
+			await this.getLibrary(name)
+		);
+	}
+
+	@Get('scan')
+	async scanLibrariesFiles(@Param('name') name: string) {
+		(await this.libraryService.getAllLibraries()).forEach(
+			(library) => this.libraryService.registerNewFiles(library)
+		);
+	}
+
 }
