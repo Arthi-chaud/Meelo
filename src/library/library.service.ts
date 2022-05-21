@@ -25,12 +25,15 @@ export class LibraryService {
 		newLibrary.save();
 	}
 
-	async getAllLibraries() {
-		return this.libraryModel.findAll();
+	async getAllLibraries(withFiles = false) {
+		return this.libraryModel.findAll({
+			include: (withFiles ? [File] : []),
+		});
 	}
 
-	async getLibrary(name: string) {
+	async getLibrary(name: string, withFiles = false) {
 		return this.libraryModel.findOne({
+			include: (withFiles ? [File] : []),
 			where: {
 				name: name,
 			}
