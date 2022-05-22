@@ -7,6 +7,24 @@ import * as fs from 'fs';
 export class FileManagerService {
 	constructor(private settingsService: SettingsService) {}
 
+	fileExists(filePath: string): boolean {
+		try {
+			fs.accessSync(filePath, fs.constants.F_OK);
+			return true;
+		} catch {
+			return false;
+		}
+	}
+
+	fileIsReadable(filePath: string): boolean {
+		try {
+			fs.accessSync(filePath, fs.constants.R_OK);
+			return true;
+		} catch {
+			return false;
+		}
+	}
+
 	/**
 	 * Compute the MD5 checksum of a file
 	 * @param filePath The Path to a file, whose MD5 checksum will be computed

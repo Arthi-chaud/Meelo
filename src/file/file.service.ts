@@ -26,10 +26,9 @@ export class FileService {
 		const baseDatafolder = this.settingsService.getDataFolder();
 		const libraryPath = `${baseDatafolder}/${parentLibrary.path}`;
 		const fullFilePath = `${libraryPath}/${filePath}`;
-		fs.access(fullFilePath, fs.constants.R_OK, (isNotReadable) => {
-			if (isNotReadable)
-				throw new NotFoundException(`${fullFilePath}: File not accessible`)
-		});
+		if (this.fileManagerService.fileIsReadable(fullFilePath) == false) {
+			throw new NotFoundException(`${fullFilePath}: File not accessible`)
+		}
 
 		return await this.fileModel.create({
 			path: filePath,
@@ -45,9 +44,24 @@ export class FileService {
 	 * @returns 
 	 */
 	async findFilesFromPath(filePaths: string[]) {
-		return this.fileModel.findAll({
+		return await this.fileModel.findAll({
 			where: Sequelize.or(
 				{ path: filePaths },
+			)
+		});
+	}
+
+	/**
+	 * Remove files entries
+	 * @param files the File s to delete
+	 * @returns 
+	 */
+	async removeFileEntries(...files: File[]) {
+		return await this.fileModel.destroy({
+			where: Sequelize.or(
+				{ path: files.map(
+					(file) => file.path
+				)},
 			)
 		});
 	}

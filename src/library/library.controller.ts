@@ -55,4 +55,16 @@ export class LibraryController {
 		res.status(HttpStatus.OK).send();
 	}
 
+	@Get('clean/:slug')
+	async cleanLibrary(@Param('slug') slug: string, @Res() res) {
+		await this.libraryService.unregisterUnavailableFiles(
+			await this.libraryService.getLibrary(slug, true)
+		).catch(
+			(reason) => {
+				res.status(HttpStatus.INTERNAL_SERVER_ERROR).send();
+			}
+		);
+		res.status(HttpStatus.OK).send();
+	}
+
 }

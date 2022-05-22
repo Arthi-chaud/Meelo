@@ -3,6 +3,7 @@ import { InjectModel } from '@nestjs/sequelize';
 import { FileManagerService } from 'src/file-manager/file-manager.service';
 import { FileService } from 'src/file/file.service';
 import { File } from 'src/file/models/file.model';
+import { SettingsService } from 'src/settings/settings.service';
 import { LibraryDto } from './models/library.dto';
 import { Library } from './models/library.model';
 
@@ -12,7 +13,8 @@ export class LibraryService {
 		@InjectModel(Library)
 		private libraryModel: typeof Library,
 		private fileManagerService: FileManagerService,
-		private fileService: FileService
+		private fileService: FileService,
+		private settingService: SettingsService
 	) {}
 	
 	async createLibrary(createLibraryDto: LibraryDto): Promise<Library> {
@@ -25,6 +27,12 @@ export class LibraryService {
 		});
 	}
 
+	/**
+	 * Retrieves Library entry using slug
+	 * @param slug the slug of the library to fetch
+	 * @param withFiles bool, true if related files relations should be resolved
+	 * @returns The fetched Library
+	 */
 	async getLibrary(slug: string, withFiles = false): Promise<Library> {
 		return await this.libraryModel.findOne({
 			include: (withFiles ? [File] : []),
@@ -60,5 +68,22 @@ export class LibraryService {
 		);
 		Logger.log(`${parentLibrary.slug} library: ${candidates.length} new files registered`);
 		return newlyRegistered;
+	}
+
+	/**
+	 * Unregisters files from parentLibrary that are not existing
+	 * @param parentLibrary the library to clean, with resolved files relations
+	 * @returns The array of deleted file entry
+	 */
+	async unregisterUnavailableFiles(parentLibrary: Library): Promise<File[]> {
+		Logger.log(`Cleaning '${parentLibrary.slug}' library`);
+		const libraryPath = `${this.settingService.getDataFolder()}/${parentLibrary.path}`;
+		let registeredFiles: File[] = parentLibrary.files;
+		let unavailableFiles: File[] = registeredFiles.filter(
+			(file) => this.fileManagerService.fileExists(`${libraryPath}/${file.path}`) == false
+		);
+		Logger.log(`'${parentLibrary.slug}' library: Removing ${unavailableFiles.length} entries`);
+		this.fileService.removeFileEntries(...unavailableFiles);
+		return unavailableFiles;
 	}
 }
