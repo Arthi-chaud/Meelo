@@ -22,20 +22,21 @@ export class FileService {
 	 * @param filePath The path to the file to register, excluding base dataFolder & parent library path
 	 * @param parentLibrary The parent Library the new file will be registered under
 	 */
-	registerFile(filePath: string, parentLibrary: Library) {
+	async registerFile(filePath: string, parentLibrary: Library): Promise<File> {
 		const baseDatafolder = this.settingsService.getDataFolder();
 		const libraryPath = `${baseDatafolder}/${parentLibrary.path}`;
 		const fullFilePath = `${libraryPath}/${filePath}`;
-		fs.access(fullFilePath, fs.constants.R_OK, () => {
-			throw new NotFoundException(`${fullFilePath}: File not accessible`)
+		fs.access(fullFilePath, fs.constants.R_OK, (isNotReadable) => {
+			if (isNotReadable)
+				throw new NotFoundException(`${fullFilePath}: File not accessible`)
 		});
-		
-		let newFile: File = new File();
-		newFile.path = filePath;
-		newFile.registerDate = new Date();
-		newFile.md5Checksum = this.fileManagerService.getMd5Checksum(fullFilePath);
-		newFile.library = parentLibrary;
-		newFile.save();
+
+		return await this.fileModel.create({
+			path: filePath,
+			registerDate: new Date(),
+			md5Checksum: this.fileManagerService.getMd5Checksum(fullFilePath),
+			library: parentLibrary.id
+		});
 	}
 
 	/**
