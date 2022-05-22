@@ -1,6 +1,7 @@
-import { Body, Controller, Delete, Get, HttpException, HttpStatus, Param, Post } from '@nestjs/common';
+import { Body, Controller, Delete, Get, HttpException, HttpStatus, NotFoundException, Param, Post, Res } from '@nestjs/common';
 import { LibraryService } from './library.service';
 import { LibraryDto } from './models/library.dto';
+import { Library } from './models/library.model';
 
 @Controller('libraries')
 export class LibraryController {
@@ -24,22 +25,34 @@ export class LibraryController {
 	}
 
 	@Get(':slug')
-	async getLibrary(@Param('slug') slug: string) {
-		return this.libraryService.getLibrary(slug);
+	async getLibrary(@Param('slug') slug: string): Promise<Library> {
+		return await this.libraryService.getLibrary(slug).catch(
+			() => {
+				throw new NotFoundException({
+					error: "Library not found"
+				});
+			}
+		);
 	}
 
 	@Get('scan/:slug')
-	async scanLibraryFiles(@Param('slug') slug: string) {
-		this.libraryService.registerNewFiles(
+	async scanLibraryFiles(@Param('slug') slug: string, @Res() res) {
+		await this.libraryService.registerNewFiles(
 			await this.getLibrary(slug)
+		).catch(
+			(reason) => {
+				res.status(HttpStatus.INTERNAL_SERVER_ERROR).send();
+			}
 		);
+		res.status(HttpStatus.OK).send();
 	}
 
 	@Get('scan')
-	async scanLibrariesFiles() {
+	async scanLibrariesFiles(@Res() res) {
 		(await this.libraryService.getAllLibraries()).forEach(
 			(library) => this.libraryService.registerNewFiles(library)
 		);
+		res.status(HttpStatus.OK).send();
 	}
 
 }

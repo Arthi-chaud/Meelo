@@ -10,6 +10,7 @@ services:
     volumes:
       - .:/meelo
       - .:/app
+      - ./data:/data
   db:
     image: postgres:alpine3.14
     environment:

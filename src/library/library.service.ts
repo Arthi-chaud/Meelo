@@ -1,7 +1,5 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { InjectModel } from '@nestjs/sequelize';
-import { Sequelize } from 'sequelize-typescript';
-import { where } from 'sequelize/types';
 import { FileManagerService } from 'src/file-manager/file-manager.service';
 import { FileService } from 'src/file/file.service';
 import { File } from 'src/file/models/file.model';
@@ -27,26 +25,40 @@ export class LibraryService {
 		});
 	}
 
-	async getLibrary(slug: string, withFiles = false) {
-		return this.libraryModel.findOne({
+	async getLibrary(slug: string, withFiles = false): Promise<Library> {
+		return await this.libraryModel.findOne({
 			include: (withFiles ? [File] : []),
+			rejectOnEmpty: true,
 			where: {
 				slug: slug,
 			}
 		});
 	}
 
-	async registerNewFiles(parentLibrary: Library) {
+	/**
+	 * Registers new files a Library
+	 * @param parentLibrary The Library the files will be registered under
+	 * @returns The array of newly registered Files
+	 */
+	async registerNewFiles(parentLibrary: Library): Promise<File[]> {
+		Logger.log(`Registration of new files from '${parentLibrary.slug}' library`);
 		let unfilteredCandidates = this.fileManagerService.getCandidateFilesInLibraryFolder(parentLibrary.path);
 		let alreadyRegistrered = await this.fileService.findFilesFromPath(unfilteredCandidates);
 
 		let candidates = unfilteredCandidates.filter(
 			(candidatePath) => {
-				alreadyRegistrered.findIndex((registered) => registered.path == candidatePath) == -1;
+				return alreadyRegistrered.findIndex((registered) => registered.path == candidatePath) == -1;
 			}
 		);
+		let newlyRegistered: File[] = [];
+
 		candidates.forEach(
-			(candidate) => this.fileService.registerFile(candidate, parentLibrary)
+			async (candidate) => {
+				Logger.log(`${parentLibrary.slug} library: Registration of ${candidate}`);
+				newlyRegistered.push(await this.fileService.registerFile(candidate, parentLibrary));
+			}
 		);
+		Logger.log(`${parentLibrary.slug} library: ${candidates.length} new files registered`);
+		return newlyRegistered;
 	}
 }

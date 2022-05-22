@@ -36,3 +36,5 @@ lerna-debug.log*
 # Envrionment/Secret files
 .env
 illustrations/
+data/
+meelo/
