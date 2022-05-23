@@ -14,6 +14,7 @@ import { LibraryModule } from './library/library.module';
 import { IllustrationModule } from './illustration/illustration.module';
 import { SettingsService } from './settings/settings.service';
 import { FileManagerModule } from './file-manager/file-manager.module';
+import { MetadataParserModule } from './metadata-parser/metadata-parser.module';
 
 @Module({
   imports: [
@@ -39,6 +40,7 @@ import { FileManagerModule } from './file-manager/file-manager.module';
     LibraryModule,
     IllustrationModule,
     FileManagerModule,
+    MetadataParserModule,
   ],
   controllers: [AppController],
   providers: [AppService, SettingsService],

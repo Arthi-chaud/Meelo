@@ -12,7 +12,4 @@ export class Song extends Model {
 
 	@Column({ allowNull: false })
 	name: string;
-
-	@Column
-	releaseDate: Date | null;
 }

@@ -26,11 +26,11 @@ export class Track extends Model {
 	type: TrackType
 
 	@Column({ allowNull: false })
-	lossless: boolean;
-
-	@Column({ allowNull: false })
 	bitrate: number;
 
 	@Column
 	ripSource: RipSource | null;
+
+	@Column({ allowNull: false })
+	duration: number;
 }
