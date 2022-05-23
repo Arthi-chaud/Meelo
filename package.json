@@ -31,6 +31,7 @@
     "class-validator": "^0.13.2",
     "fs": "^0.0.1-security",
     "md5-file": "^5.0.0",
+    "music-metadata": "^7.12.3",
     "mysql2": "^2.3.3",
     "pg": "^8.7.3",
     "reflect-metadata": "^0.1.13",

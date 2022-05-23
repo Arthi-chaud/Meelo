@@ -49,7 +49,7 @@ export class LibraryService {
 	 * @returns The array of newly registered Files
 	 */
 	async registerNewFiles(parentLibrary: Library): Promise<File[]> {
-		Logger.log(`Registration of new files from '${parentLibrary.slug}' library`);
+		Logger.log(`'${parentLibrary.slug}' library: Registration of new files`);
 		let unfilteredCandidates = this.fileManagerService.getCandidateFilesInLibraryFolder(parentLibrary.path);
 		let alreadyRegistrered = await this.fileService.findFilesFromPath(unfilteredCandidates);
 
@@ -76,7 +76,7 @@ export class LibraryService {
 	 * @returns The array of deleted file entry
 	 */
 	async unregisterUnavailableFiles(parentLibrary: Library): Promise<File[]> {
-		Logger.log(`Cleaning '${parentLibrary.slug}' library`);
+		Logger.log(`'${parentLibrary.slug}' library: Cleaning`);
 		const libraryPath = `${this.settingService.getDataFolder()}/${parentLibrary.path}`;
 		let registeredFiles: File[] = parentLibrary.files;
 		let unavailableFiles: File[] = registeredFiles.filter(
