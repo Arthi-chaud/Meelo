@@ -1,6 +1,6 @@
 import { AutoIncrement, BeforeCreate, BeforeUpdate, BelongsTo, Column, Default, ForeignKey, HasMany, Is, Model, Table, Unique } from 'sequelize-typescript';
 import { Album } from 'src/album/models/album.model';
-import buildSlug from 'src/utils/build_slug';
+import buildSlug from 'src/utils/build-slug';
 
 @Table({ tableName: 'artists' })
 export class Artist extends Model {
