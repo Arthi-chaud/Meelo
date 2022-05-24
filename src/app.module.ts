@@ -14,7 +14,7 @@ import { LibraryModule } from './library/library.module';
 import { IllustrationModule } from './illustration/illustration.module';
 import { SettingsService } from './settings/settings.service';
 import { FileManagerModule } from './file-manager/file-manager.module';
-import { MetadataParserModule } from './metadata-parser/metadata-parser.module';
+import { MetadataModule } from './metadata/metadata.module';
 
 @Module({
   imports: [
@@ -30,17 +30,17 @@ import { MetadataParserModule } from './metadata-parser/metadata-parser.module';
       sync: { force: true, },
       synchronize: true,
     }),
+    SettingsModule,
+    FileManagerModule,
     FileModule,
     ArtistModule,
     AlbumModule,
     ReleaseModule,
     TrackModule,
     SongModule,
-    SettingsModule,
     LibraryModule,
     IllustrationModule,
-    FileManagerModule,
-    MetadataParserModule,
+    MetadataModule,
   ],
   controllers: [AppController],
   providers: [AppService, SettingsService],
