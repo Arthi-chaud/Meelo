@@ -1,19 +1,25 @@
-import { Injectable, Logger } from '@nestjs/common';
+import { forwardRef, Inject, Injectable, Logger } from '@nestjs/common';
 import { SettingsService } from 'src/settings/settings.service';
 import md5File from 'md5-file';
 import * as fs from 'fs';
 
 @Injectable()
 export class FileManagerService {
-	constructor(private settingsService: SettingsService) {}
+	public readonly configFolderPath = '/meelo';
+	constructor(
+		@Inject(forwardRef(() => SettingsService))
+		private settingsService: SettingsService) {}
 
-	fileExists(filePath: string): boolean {
+	folderExists(folderPath: string): boolean {
 		try {
-			fs.accessSync(filePath, fs.constants.F_OK);
-			return true;
+			return fs.lstatSync(folderPath).isDirectory();
 		} catch {
 			return false;
 		}
+	}
+
+	fileExists(filePath: string): boolean {
+		return fs.existsSync(filePath);
 	}
 
 	fileIsReadable(filePath: string): boolean {
@@ -25,13 +31,21 @@ export class FileManagerService {
 		}
 	}
 
+	getFileContent(filePath: string): string {
+		return fs.readFileSync(filePath, 'utf8');
+	}
+
 	/**
 	 * Compute the MD5 checksum of a file
-	 * @param filePath The Path to a file, whose MD5 checksum will be computed
+	 * @param filePath The Full Path to a file, whose MD5 checksum will be computed
 	 * @returns the MD5 Checksum as a string
 	 */
 	getMd5Checksum(filePath: string) {
 		return md5File.sync(filePath);
+	}
+
+	getIllustrationFullPath(artistSlug: string, albumSlug: string | null, releaseId: number | null) {
+
 	}
 
 	/**

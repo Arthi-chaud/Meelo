@@ -1,21 +1,24 @@
-import { Injectable } from '@nestjs/common';
+import { forwardRef, Inject, Injectable } from '@nestjs/common';
 import * as fs from 'fs';
+import { FileManagerService } from 'src/file-manager/file-manager.service';
 
 @Injectable()
 export class SettingsService {
 	protected dataFolder: string;
 	protected trackRegexes: string[];
-	/// TODO shoud be set from constructor's parameter
-	private readonly configPath: string = '/meelo/settings.json';
+	private readonly configPath: string;
 
-	constructor() {
+	constructor(
+		@Inject(forwardRef(() => FileManagerService))
+		private fileManagerService: FileManagerService) {
+		this.configPath = `${this.fileManagerService.configFolderPath}/settings.json`;
 		this.loadFromFile();
 	}
 	/**
 	 * Loading Settings configuration from a JSON file
 	 */
-	loadFromFile() {
-		let settings = JSON.parse(fs.readFileSync(this.configPath,'utf8'));
+	loadFromFile(): void {
+		let settings = JSON.parse(this.fileManagerService.getFileContent(this.configPath).toString());
 		this.dataFolder = settings.dataFolder;
 		this.trackRegexes = settings.trackRegex;
 	}
