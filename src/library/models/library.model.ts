@@ -1,6 +1,6 @@
 import { AutoIncrement, BeforeCreate, BeforeUpdate, BelongsTo, Column, Default, ForeignKey, HasMany, HasOne, Is, Model, Table, Unique } from 'sequelize-typescript';
 import { File } from 'src/file/models/file.model';
-import buildSlug from 'src/utils/build_slug';
+import buildSlug from 'src/utils/build-slug';
 
 @Table({ tableName: 'libraries' })
 export class Library extends Model {
