@@ -1,6 +1,7 @@
 import { Controller, Get, Param, ParseIntPipe, Res, StreamableFile, Response, HttpException, HttpStatus } from '@nestjs/common';
 import * as fs from 'fs';
 import { ParseSlugPipe } from 'src/slug/pipe';
+import { Slug } from 'src/slug/slug';
 import { IllustrationService } from './illustration.service';
 
 @Controller('illustrations')
@@ -10,7 +11,7 @@ export class IllustrationController {
 
 	@Get('/:artist')
 	async getArtistIllustration(
-		@Param('artist', ParseSlugPipe) artistSlug: string,
+		@Param('artist', ParseSlugPipe) artistSlug: Slug,
 		@Response({ passthrough: true }) res: Response) {
 			try {
 				const illustration = fs.createReadStream(this.illustrationService.getArtistIllustrationPath(artistSlug));

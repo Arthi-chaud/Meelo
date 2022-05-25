@@ -1,4 +1,5 @@
 import slug from 'slug';
+import { InvalidRequestException } from 'src/exceptions/meelo-exception';
 
 /**
  * A Slug is a character string which identifies a resource

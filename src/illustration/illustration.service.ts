@@ -1,6 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import { FileManagerService } from 'src/file-manager/file-manager.service';
 import { MetadataService } from 'src/metadata/metadata.service';
+import { Slug } from 'src/slug/slug';
+import { NoIllustrationException, NoIllustrationFolderException } from './illustration.exceptions';
 
 @Injectable()
 export class IllustrationService {
@@ -16,14 +18,14 @@ export class IllustrationService {
 	 * Throws an exception if the artist does not have a metadata folder, or an illustration
 	 * @param artistSlug The slug of an artist
 	 */
-	getArtistIllustrationPath(artistSlug: string): string {
+	getArtistIllustrationPath(artistSlug: Slug): string {
 		const artistMetadataFolder: string = `${this.illustrationFolderPath}/${artistSlug}`;
 		if (!this.fileManagerService.folderExists(artistMetadataFolder)) {
-			throw new Error(`Artist '${artistSlug}' does not have a metadata folder`);
+			throw new NoIllustrationFolderException(artistSlug);
 		}
 		const artistIllustrationPath = `${artistMetadataFolder}/cover.jpg`;
 		if (!this.fileManagerService.fileIsReadable(artistIllustrationPath))
-			throw new Error(`Artist '${artistSlug}' does not have a illustration`);
+			throw new NoIllustrationException(artistSlug);
 		return artistIllustrationPath;
 	}
 }

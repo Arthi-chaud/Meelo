@@ -1,6 +1,7 @@
 import { forwardRef, Inject, Injectable } from '@nestjs/common';
 import * as fs from 'fs';
 import { FileManagerService } from 'src/file-manager/file-manager.service';
+import { InvalidSettingsFileException, SettingsFileNotFoundException } from './settings.exception';
 
 @Injectable()
 export class SettingsService {
@@ -18,9 +19,16 @@ export class SettingsService {
 	 * Loading Settings configuration from a JSON file
 	 */
 	loadFromFile(): void {
-		let settings = JSON.parse(this.fileManagerService.getFileContent(this.configPath).toString());
-		this.dataFolder = settings.dataFolder;
-		this.trackRegexes = settings.trackRegex;
+		try {
+			let settings = JSON.parse(this.fileManagerService.getFileContent(this.configPath).toString());
+			this.dataFolder = settings.dataFolder;
+			this.trackRegexes = settings.trackRegex;
+		} catch (e) {
+			if (e instanceof SyntaxError) {
+				throw new InvalidSettingsFileException();
+			}
+			throw new SettingsFileNotFoundException();
+		}
 	}
 
 	/**

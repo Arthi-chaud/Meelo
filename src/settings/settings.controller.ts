@@ -12,14 +12,8 @@ export class SettingsController {
 
 	@Get('reload')
 	@Redirect('/settings', HttpStatus.FOUND)
-	reload(@Res() res: Response) {
-		try {
-			this.settingsService.loadFromFile();
-		} catch (exception) {
-			throw new HttpException({
-				error: exception.message
-			}, HttpStatus.INTERNAL_SERVER_ERROR);
-		}
+	reload() {
+		this.settingsService.loadFromFile();
 	}
 	
 }

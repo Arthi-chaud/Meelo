@@ -5,6 +5,7 @@ import { FileService } from 'src/file/file.service';
 import { File } from 'src/file/models/file.model';
 import { SettingsService } from 'src/settings/settings.service';
 import { Slug } from 'src/slug/slug';
+import { LibraryAlreadyExistsException, LibraryNotFound } from './library.exceptions';
 import { LibraryDto } from './models/library.dto';
 import { Library } from './models/library.model';
 
@@ -21,7 +22,9 @@ export class LibraryService {
 	async createLibrary(createLibraryDto: LibraryDto): Promise<Library> {
 		let newLibrary = Library.build({...createLibraryDto});
 		newLibrary.buildSlugIfNull();
-		return await newLibrary.save();
+		return await newLibrary.save().catch(() => {
+			throw new LibraryAlreadyExistsException(new Slug(newLibrary.slug));
+		});
 	}
 
 	async getAllLibraries(withFiles = false) {
@@ -43,6 +46,8 @@ export class LibraryService {
 			where: {
 				slug: slug.toString(),
 			}
+		}).catch(() => {
+			throw new LibraryNotFound(slug);
 		});
 	}
 

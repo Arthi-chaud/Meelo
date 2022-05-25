@@ -11,41 +11,22 @@ export class LibraryController {
 
 	@Post('new')
 	async createLibrary(@Body() createLibraryDto: LibraryDto) {
-		let newLibrary = await this.libraryService.createLibrary(createLibraryDto).catch(
-			() => {
-				throw new ConflictException({
-					error: "Library already exists"
-				});
-			}
-		);
-		return newLibrary;
+		return await this.libraryService.createLibrary(createLibraryDto)
 	}
 
 	@Get()
 	async getAllLibraries() {
-		return this.libraryService.getAllLibraries();
+		return await this.libraryService.getAllLibraries();
 	}
 
 	@Get(':slug')
 	async getLibrary(@Param('slug', ParseSlugPipe) slug: Slug): Promise<Library> {
-		return await this.libraryService.getLibrary(slug).catch(
-			() => {
-				throw new NotFoundException({
-					error: "Library not found"
-				});
-			}
-		);
+		return await this.libraryService.getLibrary(slug);
 	}
 
 	@Get('scan/:slug')
-	async scanLibraryFiles(@Param('slug', ParseSlugPipe) slug: Slug, @Res() res: Response) {
-		await this.libraryService.registerNewFiles(
-			await this.getLibrary(slug)
-		).catch(
-			(reason) => {
-				throw new HttpException(reason.message, HttpStatus.INTERNAL_SERVER_ERROR);
-			}
-		);
+	async scanLibraryFiles(@Param('slug', ParseSlugPipe) slug: Slug) {
+		await this.libraryService.registerNewFiles(await this.getLibrary(slug));
 	}
 
 	@Get('scan')
@@ -56,13 +37,9 @@ export class LibraryController {
 	}
 
 	@Get('clean/:slug')
-	async cleanLibrary(@Param('slug', ParseSlugPipe) slug: Slug, @Res() res: Response) {
+	async cleanLibrary(@Param('slug', ParseSlugPipe) slug: Slug) {
 		await this.libraryService.unregisterUnavailableFiles(
 			await this.libraryService.getLibrary(slug, true)
-		).catch(
-			(reason) => {
-				throw new HttpException(reason.message, HttpStatus.INTERNAL_SERVER_ERROR);
-			}
 		);
 	}
 

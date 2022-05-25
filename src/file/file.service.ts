@@ -7,6 +7,7 @@ import { SettingsService } from 'src/settings/settings.service';
 import { FileManagerService } from 'src/file-manager/file-manager.service';
 import { Library } from 'src/library/models/library.model';
 import { Sequelize } from 'sequelize-typescript';
+import { FileNotReadableException } from './file.exceptions';
 
 @Injectable()
 export class FileService {
@@ -27,7 +28,7 @@ export class FileService {
 		const libraryPath = `${baseDatafolder}/${parentLibrary.path}`;
 		const fullFilePath = `${libraryPath}/${filePath}`;
 		if (this.fileManagerService.fileIsReadable(fullFilePath) == false) {
-			throw new NotFoundException(`${fullFilePath}: File not accessible`)
+			throw new FileNotReadableException(filePath);
 		}
 
 		return await this.fileModel.create({
