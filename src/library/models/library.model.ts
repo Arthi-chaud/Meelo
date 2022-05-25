@@ -1,14 +1,10 @@
-import { AutoIncrement, BeforeCreate, BeforeUpdate, BelongsTo, Column, Default, ForeignKey, HasMany, HasOne, Is, Model, Table, Unique } from 'sequelize-typescript';
+import { AutoIncrement, BeforeCreate, BeforeUpdate, BelongsTo, Column, DataType, Default, ForeignKey, HasMany, HasOne, Is, Model, Table, Unique } from 'sequelize-typescript';
 import { File } from 'src/file/models/file.model';
-import buildSlug from 'src/utils/build-slug';
+import { Slug } from 'src/slug/slug';
+import { SluggedModel } from 'src/slug/slugged-model';
 
 @Table({ tableName: 'libraries' })
-export class Library extends Model {
-	@BeforeUpdate
-	@BeforeCreate
-	static setSlug(instance: Library) {
-		instance.slug = buildSlug(instance.name);
-	}
+export class Library extends SluggedModel {
 
 	@Unique
 	@Column({ allowNull: false })
@@ -20,7 +16,7 @@ export class Library extends Model {
 	@HasMany(() => File)
 	files: File[];
 
-	@Unique
-	@Column
-	slug: string;
+	get slugSource(): string {
+		return this.name;
+	}
 }

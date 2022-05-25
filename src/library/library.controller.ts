@@ -1,4 +1,6 @@
 import { Body, Controller, Delete, Get, HttpException, HttpStatus, NotFoundException, Param, Post, Res } from '@nestjs/common';
+import { ParseSlugPipe } from 'src/slug/pipe';
+import { Slug } from 'src/slug/slug';
 import { LibraryService } from './library.service';
 import { LibraryDto } from './models/library.dto';
 import { Library } from './models/library.model';
@@ -9,13 +11,7 @@ export class LibraryController {
 	
 	@Post('new')
 	async createLibrary(@Body() createLibraryDto: LibraryDto) {
-		let newLibrary = await this.libraryService.createLibrary(createLibraryDto).catch(
-			(reason) => {
-				throw new HttpException({
-					message: reason.message
-				}, HttpStatus.CONFLICT);
-			}
-		);
+		let newLibrary = await this.libraryService.createLibrary(createLibraryDto);
 		return newLibrary;
 	}
 
@@ -25,7 +21,7 @@ export class LibraryController {
 	}
 
 	@Get(':slug')
-	async getLibrary(@Param('slug') slug: string): Promise<Library> {
+	async getLibrary(@Param('slug', ParseSlugPipe) slug: Slug): Promise<Library> {
 		return await this.libraryService.getLibrary(slug).catch(
 			() => {
 				throw new NotFoundException({
@@ -36,7 +32,7 @@ export class LibraryController {
 	}
 
 	@Get('scan/:slug')
-	async scanLibraryFiles(@Param('slug') slug: string, @Res() res) {
+	async scanLibraryFiles(@Param('slug', ParseSlugPipe) slug: Slug, @Res() res) {
 		await this.libraryService.registerNewFiles(
 			await this.getLibrary(slug)
 		).catch(
@@ -56,7 +52,7 @@ export class LibraryController {
 	}
 
 	@Get('clean/:slug')
-	async cleanLibrary(@Param('slug') slug: string, @Res() res) {
+	async cleanLibrary(@Param('slug', ParseSlugPipe) slug: Slug, @Res() res) {
 		await this.libraryService.unregisterUnavailableFiles(
 			await this.libraryService.getLibrary(slug, true)
 		).catch(

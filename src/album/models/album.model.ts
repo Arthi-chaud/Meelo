@@ -1,15 +1,13 @@
-import { AutoIncrement, BeforeCreate, BeforeUpdate, BelongsTo, Column, Default, ForeignKey, HasMany, HasOne, Is, Model, Table, Unique } from 'sequelize-typescript';
+import { AfterDefine, AutoIncrement, BeforeCreate, BeforeUpdate, BelongsTo, Column, DataType, Default, ForeignKey, HasMany, HasOne, Is, Model, Table, Unique } from 'sequelize-typescript';
 import { Artist } from 'src/artist/models/artist.model';
 import { Release } from 'src/release/models/release.model';
-import buildSlug from 'src/utils/build-slug';
+import { Slug } from 'src/slug/slug';
+import { SluggedModel } from 'src/slug/slugged-model';
 
 @Table({ tableName: 'albums' })
-export class Album extends Model {
+export class Album extends SluggedModel {
 	@Column({ allowNull: false })
 	name: string;
-
-	@Column
-	slug: string;
 	
 	@ForeignKey(() => Artist)
 	artist: Artist;
@@ -22,10 +20,8 @@ export class Album extends Model {
 
 	@Column
 	type: AlbumType;
-	
-	@BeforeCreate
-	@BeforeUpdate
-	static setSlug(instance: Album) {
-		instance.slug = buildSlug(instance.name);
+
+	get slugSource(): string {
+		return this.name;
 	}
 }

@@ -1,6 +1,6 @@
 import { Controller, Get, Param, ParseIntPipe, Res, StreamableFile, Response, HttpException, HttpStatus } from '@nestjs/common';
 import * as fs from 'fs';
-import { ParseSlugPipe } from 'src/utils/pipes';
+import { ParseSlugPipe } from 'src/slug/pipe';
 import { IllustrationService } from './illustration.service';
 
 @Controller('illustrations')

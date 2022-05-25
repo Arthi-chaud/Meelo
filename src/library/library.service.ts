@@ -4,6 +4,7 @@ import { FileManagerService } from 'src/file-manager/file-manager.service';
 import { FileService } from 'src/file/file.service';
 import { File } from 'src/file/models/file.model';
 import { SettingsService } from 'src/settings/settings.service';
+import { Slug } from 'src/slug/slug';
 import { LibraryDto } from './models/library.dto';
 import { Library } from './models/library.model';
 
@@ -18,7 +19,9 @@ export class LibraryService {
 	) {}
 	
 	async createLibrary(createLibraryDto: LibraryDto): Promise<Library> {
-		return await this.libraryModel.create({...createLibraryDto});
+		let newLibrary = Library.build({...createLibraryDto});
+		newLibrary.buildSlugIfNull();
+		return await newLibrary.save();
 	}
 
 	async getAllLibraries(withFiles = false) {
@@ -33,12 +36,12 @@ export class LibraryService {
 	 * @param withFiles bool, true if related files relations should be resolved
 	 * @returns The fetched Library
 	 */
-	async getLibrary(slug: string, withFiles = false): Promise<Library> {
+	async getLibrary(slug: Slug, withFiles = false): Promise<Library> {
 		return await this.libraryModel.findOne({
 			include: (withFiles ? [File] : []),
 			rejectOnEmpty: true,
 			where: {
-				slug: slug,
+				slug: slug.toString(),
 			}
 		});
 	}
