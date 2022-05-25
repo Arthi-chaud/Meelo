@@ -37,7 +37,7 @@ export class IllustrationController {
 
 	}
 
-	private setAttachmentFileName(res, output: string) {
+	private setAttachmentFileName(res: any, output: string) {
 		res.set({
 			'Content-Disposition': `attachment; filename="${output}"`,
 		});

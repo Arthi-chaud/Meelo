@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, HttpException, HttpStatus, NotFoundException, Param, Post, Res } from '@nestjs/common';
+import { Body, ConflictException, Controller, Delete, Get, HttpException, HttpStatus, NotFoundException, Param, Post, Res, Response } from '@nestjs/common';
 import { ParseSlugPipe } from 'src/slug/pipe';
 import { Slug } from 'src/slug/slug';
 import { LibraryService } from './library.service';
@@ -7,11 +7,17 @@ import { Library } from './models/library.model';
 
 @Controller('libraries')
 export class LibraryController {
-	constructor(private libraryService: LibraryService) {}
-	
+	constructor(private libraryService: LibraryService) { }
+
 	@Post('new')
 	async createLibrary(@Body() createLibraryDto: LibraryDto) {
-		let newLibrary = await this.libraryService.createLibrary(createLibraryDto);
+		let newLibrary = await this.libraryService.createLibrary(createLibraryDto).catch(
+			() => {
+				throw new ConflictException({
+					error: "Library already exists"
+				});
+			}
+		);
 		return newLibrary;
 	}
 
@@ -32,35 +38,32 @@ export class LibraryController {
 	}
 
 	@Get('scan/:slug')
-	async scanLibraryFiles(@Param('slug', ParseSlugPipe) slug: Slug, @Res() res) {
+	async scanLibraryFiles(@Param('slug', ParseSlugPipe) slug: Slug, @Res() res: Response) {
 		await this.libraryService.registerNewFiles(
 			await this.getLibrary(slug)
 		).catch(
 			(reason) => {
-				res.status(HttpStatus.INTERNAL_SERVER_ERROR).send();
+				throw new HttpException(reason.message, HttpStatus.INTERNAL_SERVER_ERROR);
 			}
 		);
-		res.status(HttpStatus.OK).send();
 	}
 
 	@Get('scan')
-	async scanLibrariesFiles(@Res() res) {
+	async scanLibrariesFiles(@Res() res: Response) {
 		(await this.libraryService.getAllLibraries()).forEach(
 			(library) => this.libraryService.registerNewFiles(library)
 		);
-		res.status(HttpStatus.OK).send();
 	}
 
 	@Get('clean/:slug')
-	async cleanLibrary(@Param('slug', ParseSlugPipe) slug: Slug, @Res() res) {
+	async cleanLibrary(@Param('slug', ParseSlugPipe) slug: Slug, @Res() res: Response) {
 		await this.libraryService.unregisterUnavailableFiles(
 			await this.libraryService.getLibrary(slug, true)
 		).catch(
 			(reason) => {
-				res.status(HttpStatus.INTERNAL_SERVER_ERROR).send();
+				throw new HttpException(reason.message, HttpStatus.INTERNAL_SERVER_ERROR);
 			}
 		);
-		res.status(HttpStatus.OK).send();
 	}
 
 }

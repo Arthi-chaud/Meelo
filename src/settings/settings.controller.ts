@@ -1,4 +1,4 @@
-import { Controller, Get, HttpException, HttpStatus, Redirect, Req, Res } from '@nestjs/common';
+import { Controller, Get, HttpException, HttpStatus, Redirect, Req, Res, Response } from '@nestjs/common';
 import { SettingsService } from './settings.service';
 
 @Controller('settings')
@@ -12,7 +12,7 @@ export class SettingsController {
 
 	@Get('reload')
 	@Redirect('/settings', HttpStatus.FOUND)
-	reload(@Res() res) {
+	reload(@Res() res: Response) {
 		try {
 			this.settingsService.loadFromFile();
 		} catch (exception) {
