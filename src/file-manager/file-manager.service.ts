@@ -2,6 +2,7 @@ import { forwardRef, Inject, Injectable, Logger } from '@nestjs/common';
 import { SettingsService } from 'src/settings/settings.service';
 import md5File from 'md5-file';
 import * as fs from 'fs';
+import { Library } from 'src/library/models/library.model';
 
 @Injectable()
 export class FileManagerService {
@@ -44,8 +45,11 @@ export class FileManagerService {
 		return md5File.sync(filePath);
 	}
 
-	getIllustrationFullPath(artistSlug: string, albumSlug: string | null, releaseId: number | null) {
-
+	/**
+	 * @returns Library's full path
+	 */
+	getLibraryFullPath(library: Library):string {
+		return `${this.settingsService.baseDataFolder}/${library.path}`;
 	}
 
 	/**
@@ -54,7 +58,7 @@ export class FileManagerService {
 	 * @returns A List of strings representing the path of candidate file, without dataFolder and libraryBaseDirectory
 	 */
 	getCandidateFilesInLibraryFolder(libraryBaseDirectory: string): string[] {
-		const baseFolder = this.settingsService.getDataFolder();
+		const baseFolder = this.settingsService.baseDataFolder;
 		const libraryPath = `${baseFolder}/${libraryBaseDirectory}`;
 		return this.getCandidateInFolder(libraryPath).map(
 			(candidateFullPath) => candidateFullPath.substring(libraryPath.length + 1)
@@ -89,7 +93,7 @@ export class FileManagerService {
 	 * @returns true if any of the RegExp matches
 	 */
 	private fileIsCandidate(filepath: string): boolean {
-		let matchingRegexes = this.settingsService.getTrackRegexes().filter(
+		let matchingRegexes = this.settingsService.trackRegexes.filter(
 			(regex) => filepath.match(regex) != null
 		);
 		return matchingRegexes.length > 0;
