@@ -6,7 +6,9 @@ import { InvalidSettingsFileException, SettingsFileNotFoundException } from './s
 @Injectable()
 export class SettingsService {
 	protected dataFolder: string;
-	protected trackRegexes: string[];
+	protected trackRegex: string[];
+	protected mergeMetadataWithPathRegexGroup: boolean;
+	protected releaseNameFromPath: boolean;
 	private readonly configPath: string;
 
 	constructor(
@@ -22,7 +24,9 @@ export class SettingsService {
 		try {
 			let settings = JSON.parse(this.fileManagerService.getFileContent(this.configPath).toString());
 			this.dataFolder = settings.dataFolder;
-			this.trackRegexes = settings.trackRegex;
+			this.trackRegex = settings.trackRegex;
+			this.releaseNameFromPath = settings.releaseNameFromPath;
+			this.mergeMetadataWithPathRegexGroup = settings.mergeMetadataWithPathRegexGroup;
 		} catch (e) {
 			if (e instanceof SyntaxError) {
 				throw new InvalidSettingsFileException();
@@ -34,14 +38,22 @@ export class SettingsService {
 	/**
 	 * Retrieve protected dataFolder value
 	 */
-	getDataFolder(): string {
+	get baseDataFolder(): string {
 		return this.dataFolder;
 	}
 
 	/**
 	 * Retrieve protected RegExpr values
 	 */
-	getTrackRegexes(): string[] {
-		return this.trackRegexes;
+	get trackRegexes(): string[] {
+		return this.trackRegex;
+	}
+
+	get usePathToGetReleaseName(): boolean {
+		return this.releaseNameFromPath;
+	}
+
+	get usePathAsMetadataSource(): boolean {
+		return this.mergeMetadataWithPathRegexGroup;
 	}
 }
