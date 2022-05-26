@@ -14,9 +14,14 @@ export class Metadata {
 	albumArtist: string;
 
 	/**
-	 * Name of the release of the track
+	 * Name of the album of the track
 	 */
 	album: string;
+
+	/**
+	 * Name of the release of the track
+	 */
+	release: string;
 
 	/**
 	 * Name of the track 

@@ -16,11 +16,30 @@ export class MetadataService {
 	}
 
 	/**
-	 * Parses a file's metadata
+	 * Parses a file's metadata from its embedded data and its path
 	 * @param filePath the full path to a file to parse
 	 * @returns a Metadata object
 	 */
-	async parseMetadataFromFile(filePath: string): Promise<Metadata> {
+	async parseMetadata(filePath: string): Promise<Metadata> {
+		let fileMetadata: Metadata = await this.parseMetadataFromFile(filePath);
+		
+		if (this.settingsService.usePathAsMetadataSource) {
+			const metadataFromPath: Metadata = this.parseMetadataFromPath(filePath);
+			fileMetadata.discIndex = metadataFromPath.discIndex ?? fileMetadata.discIndex;
+			fileMetadata.index = metadataFromPath.index ?? fileMetadata.index;
+			fileMetadata.release = metadataFromPath.release ?? fileMetadata.release;
+			fileMetadata.releaseDate = metadataFromPath.releaseDate ?? fileMetadata.releaseDate;
+			fileMetadata.albumArtist = metadataFromPath.albumArtist ?? fileMetadata.albumArtist;
+		}
+		return fileMetadata;
+	}
+
+	/**
+	 * Parses a file's metadata from its embedded data
+	 * @param filePath the full path to a file to parse
+	 * @returns a Metadata object
+	 */
+	private async parseMetadataFromFile(filePath: string): Promise<Metadata> {
 		if (!this.fileManagerService.fileExists(filePath)) {
 			throw new FileNotFoundException(filePath);
 		}
@@ -44,14 +63,16 @@ export class MetadataService {
 	 * @param filePath a path (full or not) to a file
 	 * @returns returns Metadata object with values from the capture groups of the regex in settings file
 	 */
-	parseMetadataFromPath(filePath: string): Metadata {
+	private parseMetadataFromPath(filePath: string): Metadata {
 		try {
-			let matchingRegex: RegExpMatchArray = this.settingsService.getTrackRegexes()
+			let matchingRegex: RegExpMatchArray = this.settingsService.trackRegexes
 				.map((regex) => filePath.match(regex))
 				.find((regexMatch) => regexMatch != null);
 			let metadata: Metadata;
 			metadata.albumArtist = matchingRegex.groups['Artist'];
-			metadata.album = matchingRegex.groups['Album'];
+			metadata.release = matchingRegex.groups['Album'];
+			if (matchingRegex.groups['Year'] != undefined)
+				metadata.releaseDate = new Date(matchingRegex.groups['Year']);
 			if (matchingRegex.groups['Disc'] != undefined)
 				metadata.discIndex = parseInt(matchingRegex.groups['Disc']);
 			metadata.index = parseInt(matchingRegex.groups['Index']);
@@ -67,6 +88,7 @@ export class MetadataService {
 		metadata.artist = rawMetadata.common.artist;
 		metadata.albumArtist = rawMetadata.common.albumartist;
 		metadata.album = rawMetadata.common.album;
+		metadata.release = rawMetadata.common.album;
 		metadata.name = rawMetadata.common.title;
 		metadata.releaseDate = new Date(rawMetadata.common.date);
 		metadata.index = rawMetadata.common.track.no;
