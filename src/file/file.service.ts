@@ -24,8 +24,7 @@ export class FileService {
 	 * @param parentLibrary The parent Library the new file will be registered under
 	 */
 	async registerFile(filePath: string, parentLibrary: Library): Promise<File> {
-		const baseDatafolder = this.settingsService.getDataFolder();
-		const libraryPath = `${baseDatafolder}/${parentLibrary.path}`;
+		const libraryPath = this.fileManagerService.getLibraryFullPath(parentLibrary);
 		const fullFilePath = `${libraryPath}/${filePath}`;
 		if (this.fileManagerService.fileIsReadable(fullFilePath) == false) {
 			throw new FileNotReadableException(filePath);
