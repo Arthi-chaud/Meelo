@@ -13,34 +13,45 @@ export class IllustrationController {
 	async getArtistIllustration(
 		@Param('artist', ParseSlugPipe) artistSlug: Slug,
 		@Response({ passthrough: true }) res: Response) {
-			try {
-				const illustration = fs.createReadStream(this.illustrationService.getArtistIllustrationPath(artistSlug));
-				this.setAttachmentFileName(res, `${artistSlug}.jpg`)
-				return new StreamableFile(illustration);
-			} catch (e) {
-				throw new HttpException(e.message, HttpStatus.NOT_FOUND);
-			}
+		return this.streamFile(
+			this.illustrationService.getArtistIllustrationPath(artistSlug),
+			`${artistSlug}.jpg`,
+			res
+		);
 	}
 
 
 	@Get('/:artist/:album')
 	async getMasterIllustration(
-		@Param('artist', ParseSlugPipe) artistSlug: string,
-		@Param('album', ParseSlugPipe) albumSlug: string) {
-
+		@Param('artist', ParseSlugPipe) artistSlug: Slug,
+		@Param('album', ParseSlugPipe) albumSlug: Slug,
+		@Response({ passthrough: true }) res: Response) {
+		return this.streamFile(
+			await this.illustrationService.getMasterReleaseIllustrationPath(artistSlug, albumSlug),
+			`${albumSlug}.jpg`,
+			res
+		);
 	}
 
 	@Get('/:artist/:album/:release')
 	async getReleaseIllustration(
-		@Param('artist', ParseSlugPipe) artistSlug: string,
-		@Param('album', ParseSlugPipe) albumSlug: string,
-		@Param('release', ParseIntPipe) releaseId: number) {
+		@Param('artist', ParseSlugPipe) artistSlug: Slug,
+		@Param('album', ParseSlugPipe) albumSlug: Slug,
+		@Param('release', ParseIntPipe) releaseId: number,
+		@Response({ passthrough: true }) res: Response) {
+		return this.streamFile(
+			this.illustrationService.getReleaseIllustrationPath(artistSlug, albumSlug, releaseId),
+			`${releaseId}.jpg`,
+			res
+		);
 
 	}
 
-	private setAttachmentFileName(res: any, output: string) {
+	private streamFile(sourceFilePath: string, as: string, res: any): StreamableFile {
+		const illustration = fs.createReadStream(sourceFilePath);
 		res.set({
-			'Content-Disposition': `attachment; filename="${output}"`,
+			'Content-Disposition': `attachment; filename="${as}"`,
 		});
+		return new StreamableFile(illustration);
 	}
 }
