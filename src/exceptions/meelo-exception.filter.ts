@@ -4,15 +4,15 @@ import { MeeloException } from './meelo-exception';
 
 @Catch(MeeloException)
 export class MeeloExceptionFilter implements ExceptionFilter {
-  catch(exception: MeeloException, host: ArgumentsHost) {
-    const ctx = host.switchToHttp();
-    const response = ctx.getResponse<Response>();
-    const status = exception.getErrorStatus();
+	catch(exception: MeeloException, host: ArgumentsHost) {
+		const ctx = host.switchToHttp();
+		const response = ctx.getResponse<Response>();
+		const status = exception.getErrorStatus();
 
-    response
-      .status(status)
-      .json({
-		    error: exception.message
-      });
-  }
+		response
+			.status(status)
+			.json({
+				error: exception.message
+			});
+	}
 }

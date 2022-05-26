@@ -9,6 +9,7 @@ import { ReleaseService } from './release.service';
 			Release,
 		])
 	],
-	providers: [ReleaseService]
+	providers: [ReleaseService],
+	exports: [ReleaseService]
 })
 export class ReleaseModule {}
