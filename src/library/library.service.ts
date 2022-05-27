@@ -3,7 +3,7 @@ import { InjectModel } from '@nestjs/sequelize';
 import { FileManagerService } from 'src/file-manager/file-manager.service';
 import { FileService } from 'src/file/file.service';
 import { File } from 'src/file/models/file.model';
-import { SettingsService } from 'src/settings/settings.service';
+import { MetadataService } from 'src/metadata/metadata.service';
 import { Slug } from 'src/slug/slug';
 import { LibraryAlreadyExistsException, LibraryNotFound } from './library.exceptions';
 import { LibraryDto } from './models/library.dto';
@@ -16,7 +16,7 @@ export class LibraryService {
 		private libraryModel: typeof Library,
 		private fileManagerService: FileManagerService,
 		private fileService: FileService,
-		private settingService: SettingsService
+		private metadataService: MetadataService
 	) {}
 	
 	async createLibrary(createLibraryDto: LibraryDto): Promise<Library> {
@@ -70,12 +70,31 @@ export class LibraryService {
 
 		candidates.forEach(
 			async (candidate) => {
-				Logger.log(`${parentLibrary.slug} library: Registration of ${candidate}`);
-				newlyRegistered.push(await this.fileService.registerFile(candidate, parentLibrary));
+				newlyRegistered.push(await this.registerFile(candidate, parentLibrary));
 			}
 		);
 		Logger.log(`${parentLibrary.slug} library: ${candidates.length} new files registered`);
 		return newlyRegistered;
+	}
+
+	/**
+	 * Registers a File in the database, parses and push its metadata 
+	 * @param filePath the short path of the file to register (without base folder and library folder)
+	 * @param parentLibrary the parent library to register the file under
+	 * @returns a registered File entity
+	 */
+	async registerFile(filePath: string, parentLibrary: Library): Promise<File> {
+		Logger.log(`${parentLibrary.slug} library: Registration of ${filePath}`);
+		const fullFilePath = `${this.fileManagerService.getLibraryFullPath(parentLibrary)}/${filePath}`;
+		const fileMetadata = await this.metadataService.parseMetadata(fullFilePath);
+		let registeredFile = await this.fileService.registerFile(filePath, parentLibrary);
+		try {
+			await this.metadataService.registerMetadata(fileMetadata, registeredFile);
+		} catch {
+			await registeredFile.destroy();
+			Logger.log(`${parentLibrary.slug} library: Registration of ${filePath} failed because of bad metadata.`);
+		}
+		return registeredFile
 	}
 
 	/**
@@ -84,8 +103,8 @@ export class LibraryService {
 	 * @returns The array of deleted file entry
 	 */
 	async unregisterUnavailableFiles(parentLibrary: Library): Promise<File[]> {
-		Logger.log(`'${parentLibrary.slug}' library: Cleaning`);
-		const libraryPath = `${this.settingService.getDataFolder()}/${parentLibrary.path}`;
+		Logger.log(`'Cleaning ${parentLibrary.slug}' library`);
+		const libraryPath = `${this.fileManagerService.getLibraryFullPath(parentLibrary)}`;
 		let registeredFiles: File[] = parentLibrary.files;
 		let unavailableFiles: File[] = registeredFiles.filter(
 			(file) => this.fileManagerService.fileExists(`${libraryPath}/${file.path}`) == false

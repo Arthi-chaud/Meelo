@@ -6,7 +6,6 @@ import { Library } from 'src/library/models/library.model';
 
 @Injectable()
 export class FileManagerService {
-	public readonly configFolderPath = '/meelo';
 	constructor(
 		@Inject(forwardRef(() => SettingsService))
 		private settingsService: SettingsService) {}
@@ -17,6 +16,10 @@ export class FileManagerService {
 		} catch {
 			return false;
 		}
+	}
+
+	get configFolderPath() {
+		return '/meelo';
 	}
 
 	fileExists(filePath: string): boolean {

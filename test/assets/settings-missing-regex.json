@@ -1,0 +1,5 @@
+{
+	"dataFolder": "/var/lib/meelo",
+	"mergeMetadataWithPathRegexGroup": true,
+	"releaseNameFromPath": false
+}

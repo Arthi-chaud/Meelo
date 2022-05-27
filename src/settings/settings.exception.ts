@@ -8,6 +8,6 @@ export class SettingsFileNotFoundException extends NotFoundException {
 
 export class InvalidSettingsFileException extends InvalidRequestException {
 	constructor() {
-		super("No settings.json file found");
+		super(`Invalid Settings File`);
 	}
 }

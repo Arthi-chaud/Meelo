@@ -6,6 +6,7 @@ import { LibraryService } from './library.service';
 import { FileManagerModule } from 'src/file-manager/file-manager.module';
 import { FileModule } from 'src/file/file.module';
 import { SettingsModule } from 'src/settings/settings.module';
+import { MetadataModule } from 'src/metadata/metadata.module';
 
 @Module({
 	imports: [
@@ -14,7 +15,7 @@ import { SettingsModule } from 'src/settings/settings.module';
 		]),
 		FileManagerModule,
 		FileModule,
-		SettingsModule
+		MetadataModule
 	],
 	controllers: [LibraryController],
 	providers: [LibraryService]

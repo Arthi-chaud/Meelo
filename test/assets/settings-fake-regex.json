@@ -1,0 +1,9 @@
+{
+	"dataFolder": "/var/lib/meelo",
+	"trackRegex": [
+		"regex1",
+		"regex2"
+	],
+	"mergeMetadataWithPathRegexGroup": true,
+	"releaseNameFromPath": false
+}
