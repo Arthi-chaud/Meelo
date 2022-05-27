@@ -12,7 +12,8 @@
     "baseUrl": "./",
     "incremental": true,
     "skipLibCheck": true,
-    "strictNullChecks": false,
+    "strictNullChecks": true,
+    "exactOptionalPropertyTypes": true,
     "noImplicitAny": true,
     "strictBindCallApply": false,
     "forceConsistentCasingInFileNames": true,
@@ -20,7 +21,7 @@
     "resolveJsonModule": true,
     "esModuleInterop": true,
     "alwaysStrict": true,
-    "noImplicitReturns": true,
+    "noImplicitReturns": true
     //"noUnusedParameters": true
   }
 }
