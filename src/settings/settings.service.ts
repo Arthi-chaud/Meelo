@@ -28,16 +28,18 @@ export class SettingsService {
 			throw new SettingsFileNotFoundException();
 		}
 		this.settings = this.buildSettings(object);
+		if (this.settings.trackRegex.length < 1)
+			throw new InvalidSettingsFileException();
 	}
 
 	/**
 	 * Takes a JSON object as input, parses it and build a Settings interface instance
 	 */
 	private buildSettings(object: any): Settings {
-		if (object.dataFolder === undefined ||
-			object.trackRegex === undefined ||
-			object.releaseNameFromPath === undefined ||
-			object.mergeMetadataWithPathRegexGroup === undefined)
+		if (typeof object.dataFolder !== "string" ||
+			!Array.isArray(object.trackRegex) ||
+			typeof object.releaseNameFromPath !== "boolean" ||
+			typeof object.mergeMetadataWithPathRegexGroup !== "boolean")
 			throw new InvalidSettingsFileException();
 		return {
 			dataFolder: object.dataFolder,

@@ -1,0 +1,8 @@
+{
+	"dataFolder": "/data",
+	"trackRegex": [
+		"regex1"
+	],
+	"mergeMetadataWithPathRegexGroup": 12,
+	"releaseNameFromPath": true
+}

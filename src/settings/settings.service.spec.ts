@@ -9,6 +9,22 @@ describe('Settings Service', () => {
 	let settingsService: SettingsService;
 	let fileManagerService: FakeFileManagerService;
 
+	/**
+	 * Runs a tests where settings are loaded from an invalid file, and an error is expected
+	 * The test will fail if no error were thrown
+	 * @param settingFileName the name of the setting file (not the full path, from test/assets)
+	 * @param errorType the type of expected error
+	 */
+	function expectExceptionWhenParsing(settingFileName: string, errorType: any) {
+		const testBody = () => {
+			jest.spyOn(fileManagerService, 'getFileContent').mockImplementation(
+				() => fs.readFileSync(`test/assets/${settingFileName}`).toString()
+			);
+			settingsService.loadFromFile();
+		}
+		expect(testBody).toThrow(errorType);
+	}
+
 	beforeEach(async () => {
 		const moduleRef = await Test.createTestingModule({
 			providers: [SettingsService, {
@@ -34,43 +50,31 @@ describe('Settings Service', () => {
 		});
 
 		it('should throw because the file is not a valid JSON', async () => {
-			const testBody = () => {
-				jest.spyOn(fileManagerService, 'getFileContent').mockImplementation(
-					() => fs.readFileSync('test/assets/settings-invalid.json').toString()
-				);
-				settingsService.loadFromFile();
-			}
-			expect(testBody).toThrow(InvalidSettingsFileException);
+			expectExceptionWhenParsing('settings-invalid.json', InvalidSettingsFileException);
 		});
 
 		it('should throw because the file can not be found', async () => {
-			const testBody = () => {
-				jest.spyOn(fileManagerService, 'getFileContent').mockImplementation(
-					() => fs.readFileSync('test/assets/settings-non-existant.json').toString()
-				);
-				settingsService.loadFromFile();
-			}
-			expect(testBody).toThrow(SettingsFileNotFoundException);
+			expectExceptionWhenParsing('settings-non-existant.json.json', SettingsFileNotFoundException);
+		});
+
+		it('should throw because the file is empty', async () => {
+			expectExceptionWhenParsing('settings-empty-file.json', InvalidSettingsFileException);
 		});
 
 		it('should throw because the file is missing the regex field', async () => {
-			const testBody = () => {
-				jest.spyOn(fileManagerService, 'getFileContent').mockImplementation(
-					() => fs.readFileSync('test/assets/settings-missing-regex.json').toString()
-				);
-				settingsService.loadFromFile();
-			}
-			expect(testBody).toThrow(InvalidSettingsFileException);
+			expectExceptionWhenParsing('settings-missing-regex.json', InvalidSettingsFileException);
 		});
 
 		it('should throw because the file is missing the base data folder field', async () => {
-			const testBody = () => {
-				jest.spyOn(fileManagerService, 'getFileContent').mockImplementation(
-					() => fs.readFileSync('test/assets/settings-missing-data-folder.json').toString()
-				);
-				settingsService.loadFromFile();
-			}
-			expect(testBody).toThrow(InvalidSettingsFileException);
+			expectExceptionWhenParsing('settings-missing-data-folder.json', InvalidSettingsFileException);
+		});
+
+		it('should throw because the RegExp array is empty', async () => {
+			expectExceptionWhenParsing('settings-empty-regex.json', InvalidSettingsFileException);
+		});
+
+		it('should throw because a field data type is incorrect', async () => {
+			expectExceptionWhenParsing('settings-wrong-type.json', InvalidSettingsFileException);
 		});
 	});
 })
