@@ -2,54 +2,53 @@
 /**
  * Extracted metadata from a track file
  */
-export class Metadata {
+export interface Metadata {
 	/**
 	 * Name of the artist of the track
 	 */
-	artist: string;
+	artist: string | null;
 
 	/**
 	 * Name of the artist of the parent album
 	 */
-	albumArtist: string;
+	albumArtist: string | null;
 
 	/**
 	 * Name of the album of the track
 	 */
-	album: string;
+	album: string | null;
 
 	/**
 	 * Name of the release of the track
 	 */
-	release: string;
+	release: string | null;
 
 	/**
 	 * Name of the track 
 	 */
-	name: string;
+	name: string | null;
 
 	/**
 	 * Release date of the track
 	 */
-	releaseDate: Date;
-
+	releaseDate: Date | null;
 	/**
 	 * Index of the track on the disc
 	 */
-	index: number;
+	index: number | null;
 
 	/**
 	 * Index of the disc the track is on
 	 */
-	discIndex: number;
+	discIndex: number | null;
 
 	/**
 	 * Bitrate of the file
 	 */
-	bitrate: number;
+	bitrate: number | null;
 
 	/**
 	 * Duration in seconds of the track
 	 */
-	duration: number;
+	duration: number | null;
 }

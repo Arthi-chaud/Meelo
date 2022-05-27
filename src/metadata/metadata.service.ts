@@ -67,35 +67,38 @@ export class MetadataService {
 		try {
 			let matchingRegex: RegExpMatchArray = this.settingsService.trackRegexes
 				.map((regex) => filePath.match(regex))
-				.find((regexMatch) => regexMatch != null);
-			let metadata: Metadata;
-			metadata.albumArtist = matchingRegex.groups['Artist'];
-			metadata.release = matchingRegex.groups['Album'];
-			if (matchingRegex.groups['Year'] != undefined)
-				metadata.releaseDate = new Date(matchingRegex.groups['Year']);
-			if (matchingRegex.groups['Disc'] != undefined)
-				metadata.discIndex = parseInt(matchingRegex.groups['Disc']);
-			metadata.index = parseInt(matchingRegex.groups['Index']);
-			metadata.name = matchingRegex.groups['Track'];
-			return metadata;
+				.find((regexMatch) => regexMatch != null)!;
+			let groups = matchingRegex.groups!;
+			return {
+				albumArtist: groups['Artist'] ?? null,
+				release: groups['Album'] ?? null,
+				releaseDate: groups['Year'] ? new Date(groups['Year']) : null,
+				discIndex: groups['Disc'] ? parseInt(groups['Disc']) : null,
+				index: groups['Index'] ? parseInt(groups['Index']) : null,
+				name: groups['Track'],
+				artist: null,
+				bitrate: null,
+				album: null,
+				duration: null
+			}
 		} catch {
 			throw new PathParsingException(filePath);
 		}
 	}
 
 	private buildMetadataFromRaw(rawMetadata: IAudioMetadata): Metadata {
-		let metadata: Metadata;
-		metadata.artist = rawMetadata.common.artist;
-		metadata.albumArtist = rawMetadata.common.albumartist;
-		metadata.album = rawMetadata.common.album;
-		metadata.release = rawMetadata.common.album;
-		metadata.name = rawMetadata.common.title;
-		metadata.releaseDate = new Date(rawMetadata.common.date);
-		metadata.index = rawMetadata.common.track.no;
-		metadata.discIndex = rawMetadata.common.disk.no;
-		metadata.bitrate = rawMetadata.format.bitrate;
-		metadata.duration = rawMetadata.format.duration;
-		return metadata;
+		return {
+			artist: rawMetadata.common.artist ?? null,
+			albumArtist: rawMetadata.common.albumartist ?? null,
+			album: rawMetadata.common.album ?? null,
+			release: rawMetadata.common.album ?? null,
+			name: rawMetadata.common.title ?? null,
+			index: rawMetadata.common.track.no,
+			discIndex: rawMetadata.common.disk.no,
+			bitrate: rawMetadata.format.bitrate ?? null,
+			duration: rawMetadata.format.duration ?? null,
+			releaseDate: rawMetadata.common.date ? new Date(rawMetadata.common.date) : null
+		};
 	}
 
 }
