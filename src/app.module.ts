@@ -22,11 +22,11 @@ import { APP_FILTER } from '@nestjs/core';
     ConfigModule.forRoot({}),
     SequelizeModule.forRoot({
       dialect: 'postgres',
-      host: process.env.POSTGRES_HOST,
+      host: process.env.POSTGRES_HOST!,
       port: 5432, // Default postgres post
-      username: process.env.POSTGRES_USER,
-      password: process.env.POSTGRES_PASSWORD,
-      database: process.env.POSTGRES_DB,
+      username: process.env.POSTGRES_USER!,
+      password: process.env.POSTGRES_PASSWORD!,
+      database: process.env.POSTGRES_DB!,
       autoLoadModels: true,
       sync: { force: true, },
       synchronize: true,
