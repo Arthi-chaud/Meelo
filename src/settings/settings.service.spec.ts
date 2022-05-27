@@ -1,7 +1,7 @@
 import { Test } from '@nestjs/testing';
 import { SettingsService } from './settings.service';
 import * as fs from 'fs';
-import { FakeFileManagerService } from 'test/FakeFileManagerModule';
+import { FakeFileManagerModule, FakeFileManagerService } from 'test/FakeFileManagerModule';
 import { FileManagerService } from 'src/file-manager/file-manager.service';
 import { InvalidSettingsFileException, SettingsFileNotFoundException } from './settings.exception';
 
@@ -27,10 +27,7 @@ describe('Settings Service', () => {
 
 	beforeEach(async () => {
 		const moduleRef = await Test.createTestingModule({
-			providers: [SettingsService, {
-				provide: FileManagerService,
-				useClass: FakeFileManagerService
-			}],
+			providers: [SettingsService, FakeFileManagerModule],
 		}).compile();
 		fileManagerService = moduleRef.get<FileManagerService>(FileManagerService);
 		jest.spyOn(fileManagerService, 'configFolderPath', 'get').mockReturnValue('test');

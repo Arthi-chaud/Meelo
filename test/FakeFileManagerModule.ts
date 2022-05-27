@@ -10,15 +10,7 @@ export class FakeFileManagerService extends FileManagerService {
 	}
 }
 
-@Module({
-	imports: [forwardRef(() => SettingsModule)],
-	providers: [{
-		provide: FileManagerService,
-		useClass: FakeFileManagerService
-	}],
-	exports: [{
-		provide: FileManagerService,
-		useClass: FakeFileManagerService
-	}]
-})
-export class FakeFileManagerModule {}
+export let FakeFileManagerModule = {
+	provide: FileManagerService,
+	useClass: FakeFileManagerService
+};
