@@ -5,8 +5,8 @@ import { FileManagerModule } from 'src/file-manager/file-manager.module';
 
 @Module({
 	imports: [forwardRef(() => FileManagerModule)],
-	providers: [SettingsService],
-	exports: [SettingsService],
+	providers: [SettingsService, SettingsController],
+	exports: [SettingsService, SettingsController],
 	controllers: [SettingsController],
 })
 export class SettingsModule {}

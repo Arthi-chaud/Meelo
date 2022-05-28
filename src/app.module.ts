@@ -14,8 +14,6 @@ import { IllustrationModule } from './illustration/illustration.module';
 import { SettingsService } from './settings/settings.service';
 import { FileManagerModule } from './file-manager/file-manager.module';
 import { MetadataModule } from './metadata/metadata.module';
-import { MeeloExceptionFilter } from './exceptions/meelo-exception.filter';
-import { APP_FILTER } from '@nestjs/core';
 
 @Module({
   imports: [

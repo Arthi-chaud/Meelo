@@ -49,6 +49,10 @@ export class SettingsService {
 		};
 	}
 
+	get settingsContent(): Settings {
+		return this.settings;
+	}
+
 	/**
 	 * Retrieve protected dataFolder value
 	 */

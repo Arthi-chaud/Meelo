@@ -30,7 +30,6 @@ describe('Settings Service', () => {
 			providers: [SettingsService, FakeFileManagerModule],
 		}).compile();
 		fileManagerService = moduleRef.get<FileManagerService>(FileManagerService);
-		jest.spyOn(fileManagerService, 'configFolderPath', 'get').mockReturnValue('test');
 		settingsService = moduleRef.get<SettingsService>(SettingsService);
 	});
 
