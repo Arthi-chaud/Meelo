@@ -25,7 +25,7 @@ describe('Settings Service', () => {
 		expect(testBody).toThrow(errorType);
 	}
 
-	beforeEach(async () => {
+	beforeAll(async () => {
 		const moduleRef = await Test.createTestingModule({
 			providers: [SettingsService, FakeFileManagerModule],
 		}).compile();

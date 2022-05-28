@@ -12,7 +12,7 @@ describe('Settings Controller', () => {
 	let controller: SettingsController;
 	let fileService: FakeFileManagerService;
 
-	beforeEach(async () => {
+	beforeAll(async () => {
 		const module: TestingModule = await Test.createTestingModule({
 			imports: [SettingsModule, FileManagerModule],
 			providers: [SettingsController],
