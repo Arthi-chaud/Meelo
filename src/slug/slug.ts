@@ -24,13 +24,17 @@ export class Slug {
 	 * @returns a slug string
 	 */
 	private buildSlug(...args: string[]): string {
+		args.forEach((arg, index) => {
+			if (arg.length < 1)
+				throw new Error(`Argument ${index}: building a slug requires at non-empty argument`);
+		});
 		switch (args.length) {
 			case 0:
 				throw new Error('Building a slug requires at least one argument');
 			case 1:
 				return slug(args[0]);
 			default:
-				return this.buildSlug(this.buildSlug(args[0]), this.buildSlug(...args.slice(1)));
+				return slug(args.map((arg) => slug(arg)).join('-'));
 		}
 	}
 
