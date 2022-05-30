@@ -20,6 +20,12 @@ export class Song extends Model {
 	instances: Track[];
 
 	/**
+	 * The number of times, the song was played
+	 */
+	@Column({ allowNull: false })
+	playCount: number
+
+	/**
 	 * The name of the track
 	 */
 	@Column({ allowNull: false })
