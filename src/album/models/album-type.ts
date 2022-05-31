@@ -11,7 +11,7 @@ enum AlbumType {
 	 */
 	LiveRecording,
 	/**
-	 * Describes a collection of recordings that do not come from a common studio album 
+	 * Describes a collection of recordings that do not come from a common studio album or artist
 	 */
 	Compilation,
 	/**
