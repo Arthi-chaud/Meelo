@@ -6,49 +6,53 @@ export interface Metadata {
 	/**
 	 * Name of the artist of the track
 	 */
-	artist: string | null;
+	artist?: string;
 
 	/**
 	 * Name of the artist of the parent album
 	 */
-	albumArtist: string | null;
+	albumArtist?: string;
 
 	/**
 	 * Name of the album of the track
 	 */
-	album: string | null;
+	album?: string;
 
 	/**
 	 * Name of the release of the track
 	 */
-	release: string | null;
+	release?: string;
 
 	/**
 	 * Name of the track 
 	 */
-	name: string | null;
+	name?: string;
 
 	/**
 	 * Release date of the track
 	 */
-	releaseDate: Date | null;
+	releaseDate?: Date;
 	/**
 	 * Index of the track on the disc
 	 */
-	index: number | null;
+	index?: number;
 
 	/**
 	 * Index of the disc the track is on
 	 */
-	discIndex: number | null;
+	discIndex?: number;
 
 	/**
 	 * Bitrate of the file
 	 */
-	bitrate: number | null;
+	bitrate?: number;
 
 	/**
 	 * Duration in seconds of the track
 	 */
-	duration: number | null;
+	duration?: number;
+	/**
+	 * Type of the track
+	 */
+	type?: TrackType;
 }
