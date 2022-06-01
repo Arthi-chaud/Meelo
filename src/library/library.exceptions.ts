@@ -1,4 +1,4 @@
-import { AlreadyExistsException } from "src/exceptions/meelo-exception";
+import { AlreadyExistsException, NotFoundException } from "src/exceptions/meelo-exception";
 import { Slug } from "src/slug/slug";
 
 export class LibraryAlreadyExistsException extends AlreadyExistsException {
@@ -7,7 +7,7 @@ export class LibraryAlreadyExistsException extends AlreadyExistsException {
 	}
 }
 
-export class LibraryNotFound extends AlreadyExistsException {
+export class LibraryNotFoundException extends NotFoundException {
 	constructor(librarySlug: Slug) {
 		super(`'${librarySlug}': No such library`);
 	}
