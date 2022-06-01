@@ -18,13 +18,13 @@ export class Release extends Model {
 	 * If none, the album's title will be used
 	 */
 	@Column
-	title: string | null;
+	title?: string;
 
 	/**
 	 * The date of the release
 	 */
 	@Column
-	releaseDate: Date | null;
+	releaseDate?: Date;
 
 	/**
 	 * Is this release the 'main' / 'most used' version of the Album
