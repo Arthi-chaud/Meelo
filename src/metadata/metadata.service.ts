@@ -5,14 +5,60 @@ import mm, { IAudioMetadata } from 'music-metadata';
 import { FileNotFoundException, FileNotReadableException } from 'src/file/file.exceptions';
 import { FileParsingException, PathParsingException } from './metadata.exceptions';
 import { SettingsService } from 'src/settings/settings.service';
+import { File } from 'src/file/models/file.model';
+import { ArtistService } from 'src/artist/artist.service';
+import { Artist } from 'src/artist/models/artist.model';
+import { Slug } from 'src/slug/slug';
+import { Track } from 'src/track/models/track.model';
+import { TrackService } from 'src/track/track.service';
+import { SongService } from 'src/song/song.service';
+import { Song } from 'src/song/models/song.model';
+import { Release } from 'src/release/models/release.model';
+import { ReleaseService } from 'src/release/release.service';
+import { AlbumService } from 'src/album/album.service';
 
 @Injectable()
 export class MetadataService {
 	public readonly metadataFolderPath;
 	constructor(
+		private trackService: TrackService,
+		private songService: SongService,
+		private albumService: AlbumService,
+		private releaseService: ReleaseService,
 		private settingsService: SettingsService,
 		private fileManagerService: FileManagerService) {
 		this.metadataFolderPath = `${this.fileManagerService.configFolderPath}/metadata`;
+	}
+
+	/**
+	 * Pushed the metadata to the database, calling services
+	 * @param metadata the metadata instance to push
+	 * @param file the file to register the metadata under, it must be already registered
+	 */
+	async registerMetadata(metadata : Metadata, file: File): Promise<Track> {
+		let song: Song = await this.songService.findOrCreateSong(metadata.artist ?? metadata.albumArtist!, metadata.name!);
+		let release: Release = await this.releaseService.findOrCreateRelease(metadata.name!, metadata.album!, metadata.albumArtist ?? metadata.artist ?? undefined);
+		let track: Track = Track.build({
+			release: release,
+			song: song,
+			displayName: metadata.name!,
+			master: song.instances.length == 0,
+			discIndex: metadata.discIndex,
+			trackIndex: metadata.index,
+			type: metadata.type!,
+			bitrate: metadata.bitrate ?? 0,
+			ripSource: undefined,
+			duration: metadata.duration ?? 0,
+		});
+		release.releaseDate = metadata.releaseDate;
+		if ((release.releaseDate !== undefined &&
+			release.album.releaseDate !== undefined &&
+			release.album.releaseDate > release.releaseDate) || 
+			release.releaseDate !== undefined)
+			release.album.releaseDate = release.releaseDate;
+		track.release.album = await this.albumService.saveAlbum(release.album);
+		track.release = await this.releaseService.saveRelease(release);
+		return await this.trackService.saveTrack(track);
 	}
 
 	/**
@@ -70,16 +116,17 @@ export class MetadataService {
 				.find((regexMatch) => regexMatch != null)!;
 			let groups = matchingRegex.groups!;
 			return {
-				albumArtist: groups['Artist'] ?? null,
-				release: groups['Album'] ?? null,
-				releaseDate: groups['Year'] ? new Date(groups['Year']) : null,
-				discIndex: groups['Disc'] ? parseInt(groups['Disc']) : null,
-				index: groups['Index'] ? parseInt(groups['Index']) : null,
+				albumArtist: groups['Artist'] ?? undefined,
+				release: groups['Album'] ?? undefined,
+				releaseDate: groups['Year'] ? new Date(groups['Year']) : undefined,
+				discIndex: groups['Disc'] ? parseInt(groups['Disc']) : undefined,
+				index: groups['Index'] ? parseInt(groups['Index']) : undefined,
 				name: groups['Track'],
-				artist: null,
-				bitrate: null,
-				album: null,
-				duration: null
+				artist: undefined,
+				bitrate: undefined,
+				album: undefined,
+				type: undefined,
+				duration: undefined
 			}
 		} catch {
 			throw new PathParsingException(filePath);
@@ -87,17 +134,19 @@ export class MetadataService {
 	}
 
 	private buildMetadataFromRaw(rawMetadata: IAudioMetadata): Metadata {
+		let isVideo: boolean = rawMetadata.format.trackInfo.findIndex((track) => track.video != null) != null;
 		return {
-			artist: rawMetadata.common.artist ?? null,
-			albumArtist: rawMetadata.common.albumartist ?? null,
-			album: rawMetadata.common.album ?? null,
-			release: rawMetadata.common.album ?? null,
-			name: rawMetadata.common.title ?? null,
-			index: rawMetadata.common.track.no,
-			discIndex: rawMetadata.common.disk.no,
-			bitrate: rawMetadata.format.bitrate ?? null,
-			duration: rawMetadata.format.duration ?? null,
-			releaseDate: rawMetadata.common.date ? new Date(rawMetadata.common.date) : null
+			artist: rawMetadata.common.artist,
+			albumArtist: rawMetadata.common.albumartist,
+			album: rawMetadata.common.album,
+			release: rawMetadata.common.album,
+			name: rawMetadata.common.title,
+			index: rawMetadata.common.track.no ?? undefined,
+			discIndex: rawMetadata.common.disk.no ?? undefined,
+			bitrate: rawMetadata.format.bitrate ,
+			duration: rawMetadata.format.duration,
+			releaseDate: rawMetadata.common.date ? new Date(rawMetadata.common.date) : undefined,
+			type: isVideo ? TrackType.Video : TrackType.Audio
 		};
 	}
 
