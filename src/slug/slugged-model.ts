@@ -11,7 +11,7 @@ export abstract class SluggedModel extends Model {
 	abstract get slugSource(): string;
 
 	@Column({ allowNull: false })
-	slug: string | null;
+	slug: string;
 
 	buildSlugIfNull(): string {
 		if (this.slug == null) {
