@@ -11,6 +11,7 @@ import { SongService } from './song.service';
 		]),
 		ArtistModule
 	],
+	exports: [SongService],
 	providers: [SongService]
 })
 export class SongModule {}
