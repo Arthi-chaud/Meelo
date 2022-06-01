@@ -5,7 +5,7 @@ import { FileService } from 'src/file/file.service';
 import { File } from 'src/file/models/file.model';
 import { MetadataService } from 'src/metadata/metadata.service';
 import { Slug } from 'src/slug/slug';
-import { LibraryAlreadyExistsException, LibraryNotFound } from './library.exceptions';
+import { LibraryAlreadyExistsException, LibraryNotFoundException } from './library.exceptions';
 import { LibraryDto } from './models/library.dto';
 import { Library } from './models/library.model';
 
@@ -23,7 +23,7 @@ export class LibraryService {
 		let newLibrary = Library.build({...createLibraryDto});
 		newLibrary.buildSlugIfNull();
 		return await newLibrary.save().catch(() => {
-			throw new LibraryAlreadyExistsException(new Slug(newLibrary.slug));
+			throw new LibraryAlreadyExistsException(new Slug(newLibrary.slug!));
 		});
 	}
 
@@ -47,7 +47,7 @@ export class LibraryService {
 				slug: slug.toString(),
 			}
 		}).catch(() => {
-			throw new LibraryNotFound(slug);
+			throw new LibraryNotFoundException(slug);
 		});
 	}
 
