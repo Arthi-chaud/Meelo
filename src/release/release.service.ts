@@ -1,17 +1,20 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/sequelize';
 import { AlbumNotFoundException } from 'src/album/album.exceptions';
+import { AlbumService } from 'src/album/album.service';
 import { Album } from 'src/album/models/album.model';
 import { Artist } from 'src/artist/models/artist.model';
 import { Slug } from 'src/slug/slug';
+import { Track } from 'src/track/models/track.model';
 import { Release } from './models/release.model';
-import { MasterReleaseNotFoundException } from './release.exceptions';
+import { MasterReleaseNotFoundException, ReleaseAlreadyExists, ReleaseNotFoundException } from './release.exceptions';
 
 @Injectable()
 export class ReleaseService {
 	constructor(
 		@InjectModel(Release)
-		private releaseModel: typeof Release 
+		private releaseModel: typeof Release,
+		private albumService: AlbumService,
 	) {}
 
 	async getMasterReleaseOf(albumSlug: Slug, artistSlug: Slug): Promise<Release> {
@@ -35,5 +38,56 @@ export class ReleaseService {
 		}).catch(() => {
 			throw new MasterReleaseNotFoundException(albumSlug, artistSlug);
 		});
+	}
+	
+	async saveRelease(release: Release): Promise<Release> {
+		return await release.save();
+	}
+
+	async findOrCreateRelease(releaseTitle: string, albumName: string, artistName?: string): Promise<Release> {
+		try {
+			return await this.findRelease(releaseTitle, new Slug(albumName), artistName ? new Slug(artistName) : undefined);
+		} catch {
+			let album: Album = await this.albumService.findOrCreate(albumName, artistName);
+			return await this.createRelease(releaseTitle, album, []);
+		}
+	}
+
+
+	async createRelease(releaseTitle: string, album: Album, tracks: Track[]): Promise<Release> {
+		try {
+			return await this.releaseModel.create({
+				album: album,
+				title: releaseTitle,
+				releaseTitle
+			});
+		} catch {
+			throw new ReleaseAlreadyExists(releaseTitle, album.artist ? new Slug(album.artist!.slug!) : undefined);
+		}
+	}
+	
+	async findRelease(releaseTitle: string, albumSlug: Slug, artistSlug?: Slug): Promise<Release> {
+		try {
+			return await this.releaseModel.findOne({
+				rejectOnEmpty: true,
+				where: {
+					title: releaseTitle,
+					'$Album.Artist.slug$': artistSlug?.toString(),
+					'$Album.slug$': albumSlug.toString()
+				},
+				include: [
+					{
+						model: Artist,
+						as: 'Artist',
+					},
+					{
+						model: Album,
+						as: 'Artist',
+					},
+				]
+			});
+		} catch {
+			throw new ReleaseNotFoundException(releaseTitle, albumSlug, artistSlug);
+		}
 	}
 }
