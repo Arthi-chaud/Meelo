@@ -24,4 +24,21 @@ export class ArtistService {
 			throw new ArtistNotFoundException(artistSlug);
 		});
 	}
+
+	/**
+	 * Find an artist by its name, or creates one if not found
+	 * @param artistName the slug of the artist to find
+	 */
+	 async getOrCreateArtist(artistName: string): Promise<Artist> {
+		let artistSlug: Slug = new Slug(artistName);
+		try {
+			return await this.getArtist(artistSlug);
+		} catch {
+			return await this.artistModel.create({
+				albums: [],
+				name: artistName,
+				slug: artistSlug,
+			});
+		}
+	}
 }

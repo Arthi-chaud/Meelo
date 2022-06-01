@@ -7,6 +7,7 @@ import { ArtistService } from './artist.service';
 	imports: [
 		SequelizeModule.forFeature([Artist]),
 	],
+	exports: [ArtistService],
 	providers: [ArtistService]
 })
 export class ArtistModule {}
