@@ -1,4 +1,4 @@
-import { AutoIncrement, BeforeCreate, BeforeUpdate, BelongsTo, Column, Default, ForeignKey, HasMany, HasOne, Is, Model, Table, Unique } from 'sequelize-typescript';
+import { AutoIncrement, BeforeCreate, BeforeUpdate, BelongsTo, Column, DataType, Default, ForeignKey, HasMany, HasOne, Is, Model, Table, Unique } from 'sequelize-typescript';
 import { Release } from 'src/release/models/release.model';
 import { Song } from 'src/song/models/song.model';
 
@@ -24,7 +24,7 @@ export class Track extends Model {
 	 * If null, the parent song's title will be used
 	 */
 	@Column
-	displayName: string | null;
+	displayName?: string;
 
 	/**
 	 * Is this track the 'main' one
@@ -36,13 +36,13 @@ export class Track extends Model {
 	 * The index of the disc the track is on
 	 */
 	@Column
-	discIndex: number | null;
+	discIndex?: number;
 
 	/**
 	 * The index of the track on the disc
 	 */
 	@Column
-	trackIndex: number | null;
+	trackIndex?: number;
 
 	/**
 	 * Type of track (Audio or Video)
@@ -60,7 +60,7 @@ export class Track extends Model {
 	 * The type of source the track is ripped from
 	 */
 	@Column
-	ripSource: RipSource | null;
+	ripSource?: RipSource;
 
 	/**
 	 * The duration in seconds of the track
