@@ -27,7 +27,7 @@ export class Album extends SluggedModel {
 	 * The date of the first release of the album
 	 */
 	@Column
-	releaseDate: Date;
+	releaseDate?: Date;
 	
 	/**
 	 * Collections of related releases
