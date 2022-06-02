@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { FileManagerService } from 'src/file-manager/file-manager.service';
 import { Metadata } from './models/metadata';
 import mm, { IAudioMetadata } from 'music-metadata';
@@ -16,6 +16,8 @@ import { Song } from 'src/song/models/song.model';
 import { Release } from 'src/release/models/release.model';
 import { ReleaseService } from 'src/release/release.service';
 import { AlbumService } from 'src/album/album.service';
+import { TrackType } from 'src/track/models/track-type';
+import { AlbumType } from 'src/album/models/album-type';
 
 @Injectable()
 export class MetadataService {
@@ -37,7 +39,9 @@ export class MetadataService {
 	 */
 	async registerMetadata(metadata : Metadata, file: File): Promise<Track> {
 		let song: Song = await this.songService.findOrCreateSong(metadata.artist ?? metadata.albumArtist!, metadata.name!);
-		let release: Release = await this.releaseService.findOrCreateRelease(metadata.name!, metadata.album!, metadata.albumArtist ?? metadata.artist ?? undefined);
+		Logger.debug(song.toJSON());
+		let release: Release = await this.releaseService.findOrCreateRelease(metadata.album!, metadata.album!, metadata.albumArtist ?? metadata.artist ?? undefined);
+		Logger.debug(release.toJSON());
 		let track: Track = Track.build({
 			release: release,
 			song: song,
@@ -56,6 +60,7 @@ export class MetadataService {
 			release.album.releaseDate > release.releaseDate) || 
 			release.releaseDate !== undefined)
 			release.album.releaseDate = release.releaseDate;
+		release.album.type = metadata.compilation ? AlbumType.Compilation : release.album.type;
 		track.release.album = await this.albumService.saveAlbum(release.album);
 		track.release = await this.releaseService.saveRelease(release);
 		return await this.trackService.saveTrack(track);
@@ -99,7 +104,8 @@ export class MetadataService {
 				includeChapters: false,
 			});
 			return this.buildMetadataFromRaw(rawMetadata);
-		} catch {
+		} catch (e) {
+			Logger.log(e.message);
 			throw new FileParsingException(filePath);
 		}
 	}
@@ -121,12 +127,7 @@ export class MetadataService {
 				releaseDate: groups['Year'] ? new Date(groups['Year']) : undefined,
 				discIndex: groups['Disc'] ? parseInt(groups['Disc']) : undefined,
 				index: groups['Index'] ? parseInt(groups['Index']) : undefined,
-				name: groups['Track'],
-				artist: undefined,
-				bitrate: undefined,
-				album: undefined,
-				type: undefined,
-				duration: undefined
+				name: groups['Track']
 			}
 		} catch {
 			throw new PathParsingException(filePath);
@@ -134,8 +135,9 @@ export class MetadataService {
 	}
 
 	private buildMetadataFromRaw(rawMetadata: IAudioMetadata): Metadata {
-		let isVideo: boolean = rawMetadata.format.trackInfo.findIndex((track) => track.video != null) != null;
+		let isVideo: boolean = rawMetadata.format.trackInfo.findIndex((track) => track.video != null) != -1;
 		return {
+			compilation: rawMetadata.common.compilation,
 			artist: rawMetadata.common.artist,
 			albumArtist: rawMetadata.common.albumartist,
 			album: rawMetadata.common.album,

@@ -17,7 +17,7 @@ export class Song extends SluggedModel {
 	/**
 	 * The related tracks
 	 */
-	@HasMany(() => Track)
+	@HasMany(() => Track, 'song')
 	instances: Track[];
 
 	/**

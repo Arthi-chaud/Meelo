@@ -1,6 +1,7 @@
 import { AutoIncrement, BeforeCreate, BeforeUpdate, BelongsTo, Column, DataType, Default, ForeignKey, HasMany, HasOne, Is, Model, Table, Unique } from 'sequelize-typescript';
 import { Release } from 'src/release/models/release.model';
 import { Song } from 'src/song/models/song.model';
+import { TrackType } from 'music-metadata/lib/type';
 
 /**
  * An track is an 'instance' of a song

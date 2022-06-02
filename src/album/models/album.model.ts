@@ -1,8 +1,9 @@
-import { AfterDefine, AutoIncrement, BeforeCreate, BeforeUpdate, BelongsTo, Column, DataType, Default, ForeignKey, HasMany, HasOne, Is, Model, Table, Unique } from 'sequelize-typescript';
+import { AfterDefine, AutoIncrement, BeforeCreate, BeforeUpdate, BelongsTo, Column, DataType, Default, DefaultScope, ForeignKey, HasMany, HasOne, Is, Model, Scopes, Table, Unique } from 'sequelize-typescript';
 import { Artist } from 'src/artist/models/artist.model';
 import { Release } from 'src/release/models/release.model';
 import { Slug } from 'src/slug/slug';
 import { SluggedModel } from 'src/slug/slugged-model';
+import { AlbumType } from './album-type';
 
 /**
  * An album is a record of releases.
@@ -20,8 +21,12 @@ export class Album extends SluggedModel {
 	 * The artist of the album
 	 * This filed is nullable, as albums may not have an entitled artist, like compilations
 	 */
-	@ForeignKey(() => Artist)
+	@BelongsTo(() => Artist)
 	artist?: Artist;
+
+	@ForeignKey(() => Artist)
+	@Column
+	artistId?: number;
 	
 	/**
 	 * The date of the first release of the album

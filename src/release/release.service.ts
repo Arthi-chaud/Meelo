@@ -1,6 +1,5 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { InjectModel } from '@nestjs/sequelize';
-import { AlbumNotFoundException } from 'src/album/album.exceptions';
 import { AlbumService } from 'src/album/album.service';
 import { Album } from 'src/album/models/album.model';
 import { Artist } from 'src/artist/models/artist.model';
@@ -48,8 +47,15 @@ export class ReleaseService {
 		try {
 			return await this.findRelease(releaseTitle, new Slug(albumName), artistName ? new Slug(artistName) : undefined);
 		} catch {
-			let album: Album = await this.albumService.findOrCreate(albumName, artistName);
-			return await this.createRelease(releaseTitle, album, []);
+			try {
+				let album: Album = await this.albumService.findOrCreate(albumName, artistName);
+				Logger.error(album.toJSON());
+				Logger.error(album.releases);
+				return await this.createRelease(releaseTitle, album, []);
+			} catch (e) {
+				Logger.warn(e);
+				throw e;
+			}
 		}
 	}
 
@@ -58,8 +64,9 @@ export class ReleaseService {
 		try {
 			return await this.releaseModel.create({
 				album: album,
+				master: album.releases.filter((release) => release.master).length == 0,
 				title: releaseTitle,
-				releaseTitle
+				tracks: tracks
 			});
 		} catch {
 			throw new ReleaseAlreadyExists(releaseTitle, album.artist ? new Slug(album.artist!.slug!) : undefined);

@@ -25,20 +25,24 @@ export class ArtistService {
 		});
 	}
 
+	async createArtist(artistName: string): Promise<Artist> {
+		let artistSlug: Slug = new Slug(artistName);
+		return await this.artistModel.create({
+			albums: [],
+			name: artistName,
+			slug: artistSlug.toString(),
+		});
+	}
+
 	/**
 	 * Find an artist by its name, or creates one if not found
 	 * @param artistName the slug of the artist to find
 	 */
 	 async getOrCreateArtist(artistName: string): Promise<Artist> {
-		let artistSlug: Slug = new Slug(artistName);
 		try {
-			return await this.getArtist(artistSlug);
+			return await this.getArtist(new Slug(artistName));
 		} catch {
-			return await this.artistModel.create({
-				albums: [],
-				name: artistName,
-				slug: artistSlug,
-			});
+			return await this.createArtist(artistName);
 		}
 	}
 }

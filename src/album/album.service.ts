@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { InjectModel } from '@nestjs/sequelize';
 import { ArtistService } from 'src/artist/artist.service';
 import { Artist } from 'src/artist/models/artist.model';
@@ -29,11 +29,12 @@ export class AlbumService {
 			},
 			rejectOnEmpty: true,
 			include: [
+				Release,
+				Artist,
 				{
 					model: Artist,
 					as: 'Artist',
 				},
-				Release
 			]
 		}).catch(() => {
 			throw new AlbumNotFoundException(albumSlug, artistSlug);
@@ -66,15 +67,16 @@ export class AlbumService {
 		try {
 			let album: Album = Album.build({
 				name: albumName,
-				slug: albumSlug,
-				artist: artistName ? await this.artistServce.getOrCreateArtist(artistName) : null,
+				slug: albumSlug.toString(),
+				artist: artistName ? (await this.artistServce.getOrCreateArtist(artistName!)).id! : null,
 				releaseDate: releaseDate,
 				releases: [],
 				type: AlbumService.getAlbumTypeFromName(albumName)
 			});
 			return await album.save();
-		} catch {
-			throw new AlbumAlreadyExistsException(albumSlug, new Slug(artistName ?? 'Unkown'));
+		} catch (e) {
+			Logger.error("Shite");
+			throw new AlbumAlreadyExistsException(albumSlug, artistName ? new Slug(artistName) : undefined);
 		}
 
 	}

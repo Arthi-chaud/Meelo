@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { InjectModel } from '@nestjs/sequelize';
 import { ArtistService } from 'src/artist/artist.service';
 import { Artist } from 'src/artist/models/artist.model';
@@ -24,18 +24,16 @@ export class SongService {
 		try {
 			return await this.songModel.findOne({
 				where: {
-					slug: titleSlug,
+					slug: titleSlug.toString(),
 					'$Artist.slug$': artistSlug.toString()
 				},
 				rejectOnEmpty: true,
 				include: [
+					Track,
 					{
 						model: Artist,
 						as: 'Artist'
 					},
-					{
-						model: Track,
-					}
 				]
 			});
 		} catch {

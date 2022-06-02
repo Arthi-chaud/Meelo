@@ -1,8 +1,13 @@
+import { TrackType } from "src/track/models/track-type";
 
 /**
  * Extracted metadata from a track file
  */
 export interface Metadata {
+	/**
+	 * If the track is from a compilation album
+	 */
+	compilation?: boolean;
 	/**
 	 * Name of the artist of the track
 	 */

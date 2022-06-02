@@ -1,7 +1,7 @@
 /**
  * Enumeration of forms a Track can be
  */
-enum TrackType {
+export enum TrackType {
 	/**
 	 * Audio, sound but no video
 	 */

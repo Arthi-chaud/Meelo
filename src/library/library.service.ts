@@ -90,7 +90,8 @@ export class LibraryService {
 		let registeredFile = await this.fileService.registerFile(filePath, parentLibrary);
 		try {
 			await this.metadataService.registerMetadata(fileMetadata, registeredFile);
-		} catch {
+		} catch (e) {
+			Logger.warn(e);
 			await registeredFile.destroy();
 			Logger.log(`${parentLibrary.slug} library: Registration of ${filePath} failed because of bad metadata.`);
 		}

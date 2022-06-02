@@ -11,6 +11,10 @@ export class Release extends Model {
 	 * The related album
 	 */
 	@ForeignKey(() => Album)
+	@Column
+	albumId: number;
+
+	@BelongsTo(() => Album)
 	album: Album;
 
 	/**
