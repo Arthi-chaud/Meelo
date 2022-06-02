@@ -1,5 +1,5 @@
 import { Logger } from "@nestjs/common";
-import { BeforeCreate, BeforeUpdate, Column, DataType, Default, Model, Unique } from "sequelize-typescript";
+import { BeforeCreate, BeforeUpdate, Column, DataType, Default, Length, Model, Unique } from "sequelize-typescript";
 import { AssociationCreateOptions } from "sequelize-typescript/dist/model/model/association/association-create-options";
 import { Slug } from "./slug";
 
@@ -10,6 +10,7 @@ import { Slug } from "./slug";
 export abstract class SluggedModel extends Model {
 	abstract get slugSource(): string;
 
+	@Length({ min: 1 })
 	@Column({ allowNull: false })
 	slug: string;
 
