@@ -6,6 +6,7 @@ import { Release } from 'src/release/models/release.model';
 import { Slug } from 'src/slug/slug';
 import { AlbumAlreadyExistsException, AlbumNotFoundException } from './album.exceptions';
 import { Album } from './models/album.model';
+import { AlbumType } from "./models/album-type";
 
 @Injectable()
 export class AlbumService {
@@ -43,16 +44,18 @@ export class AlbumService {
 		return await album.save();
 	}
 
-	getAlbumTypeFromName(albumName: string): AlbumType {
+	static getAlbumTypeFromName(albumName: string): AlbumType {
 		albumName = albumName.toLowerCase();
-		if (albumName.search(/.+(live).*/g) ||
+		if (albumName.search(/.+(live).*/g) != -1 ||
 			albumName.includes(' tour')) {
 			return AlbumType.LiveRecording
 		}
-		if (albumName.endsWith('- single')) {
+		if (albumName.endsWith('- single') ||
+			albumName.endsWith('(remixes)')) {
 			return AlbumType.Single
 		}
-		if (albumName.includes('best of')) {
+		if (albumName.includes('best of') ||
+			albumName.includes('best mixes')) {
 			return AlbumType.Compilation
 		}
 		return AlbumType.StudioRecording;
@@ -67,7 +70,7 @@ export class AlbumService {
 				artist: artistName ? await this.artistServce.getOrCreateArtist(artistName) : null,
 				releaseDate: releaseDate,
 				releases: [],
-				type: this.getAlbumTypeFromName(albumName)
+				type: AlbumService.getAlbumTypeFromName(albumName)
 			});
 			return await album.save();
 		} catch {

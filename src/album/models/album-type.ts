@@ -1,7 +1,7 @@
 /**
  * Enumeration of Album types
  */
-enum AlbumType {
+export enum AlbumType {
 	/**
 	 * Describes is an original collection of studio recordings
 	 */
