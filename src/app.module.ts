@@ -1,5 +1,4 @@
 import { Module } from '@nestjs/common';
-import { AppService } from './app.service';
 import { SequelizeModule } from '@nestjs/sequelize';
 import { ConfigModule } from '@nestjs/config';
 import { FileModule } from './file/file.module';
@@ -41,6 +40,6 @@ import { MetadataModule } from './metadata/metadata.module';
     IllustrationModule,
     MetadataModule,
   ],
-  providers: [AppService, SettingsService],
+  providers: [SettingsService],
 })
 export class AppModule {}
