@@ -38,8 +38,6 @@ export class LibraryController {
 
 	@Get('clean/:slug')
 	async cleanLibrary(@Param('slug', ParseSlugPipe) slug: Slug) {
-		await this.libraryService.unregisterUnavailableFiles(
-			await this.libraryService.getLibrary(slug, true)
-		);
+		await this.libraryService.unregisterUnavailableFiles(slug);
 	}
 }

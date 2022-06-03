@@ -5,7 +5,7 @@ import { MetadataService } from 'src/metadata/metadata.service';
 import { Slug } from 'src/slug/slug';
 import { LibraryAlreadyExistsException, LibraryNotFoundException } from './library.exceptions';
 import { LibraryDto } from './models/library.dto';
-import { Library, File } from '@prisma/client';
+import { Library, File, Prisma } from '@prisma/client';
 import { PrismaService } from 'src/prisma/prisma.service';
 
 @Injectable()
@@ -31,11 +31,9 @@ export class LibraryService {
 		}
 	}
 
-	async getAllLibraries(withFiles = false): Promise<Library[]> {
+	async getAllLibraries(include?: Prisma.LibraryInclude) {
 		return this.prismaService.library.findMany({
-			include: {
-				files: withFiles
-			},
+			include: include
 		});
 	}
 
@@ -45,18 +43,16 @@ export class LibraryService {
 	 * @param withFiles bool, true if related files relations should be resolved
 	 * @returns The fetched Library
 	 */
-	async getLibrary(slug: Slug, withFiles = false) {
+	async getLibrary(slug: Slug, include?: Prisma.LibraryInclude): Promise<Library & any> {
 		try {
 			return await this.prismaService.library.findFirst({
-				include: {
-					files: withFiles
-				},
 				rejectOnNotFound: true,
 				where: {
 					slug: {
 						equals: slug.toString()
 					}
-				}
+				},
+				include,
 			});
 		} catch {
 			throw new LibraryNotFoundException(slug);
@@ -112,10 +108,11 @@ export class LibraryService {
 
 	/**
 	 * Unregisters files from parentLibrary that are not existing
-	 * @param parentLibrary the library to clean, with resolved files relations
+	 * @param parentLibrarySlug the sluf of the library to clean
 	 * @returns The array of deleted file entry
 	 */
-	async unregisterUnavailableFiles(parentLibrary: Library & {files: File[]}): Promise<File[]> {
+	async unregisterUnavailableFiles(parentLibrarySlug: Slug): Promise<File[]> {
+		let parentLibrary = await this.getLibrary(parentLibrarySlug, { files: true });
 		Logger.log(`'Cleaning ${parentLibrary.slug}' library`);
 		const libraryPath = `${this.fileManagerService.getLibraryFullPath(parentLibrary)}`;
 		let registeredFiles: File[] = parentLibrary.files;
