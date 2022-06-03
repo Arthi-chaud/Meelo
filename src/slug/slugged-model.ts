@@ -1,7 +1,7 @@
 import { Logger } from "@nestjs/common";
-import { BeforeCreate, BeforeUpdate, Column, DataType, Default, Length, Model, Unique } from "sequelize-typescript";
-import { AssociationCreateOptions } from "sequelize-typescript/dist/model/model/association/association-create-options";
+import { BeforeCreate, BeforeUpdate, Column, DataType, Default, Length, Unique } from "sequelize-typescript";
 import { Slug } from "./slug";
+import { Model } from "src/model";
 
 /**
  * Sequelize Model with a slug
