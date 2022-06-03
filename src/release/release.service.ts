@@ -1,7 +1,7 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { AlbumService } from 'src/album/album.service';
 import { Slug } from 'src/slug/slug';
-import { Release, Track, Artist, Album } from '@prisma/client';
+import { Release, Artist, Album, Prisma } from '@prisma/client';
 import { MasterReleaseNotFoundException, ReleaseAlreadyExists, ReleaseNotFoundException } from './release.exceptions';
 import { PrismaService } from 'src/prisma/prisma.service';
 
@@ -12,7 +12,7 @@ export class ReleaseService {
 		private albumService: AlbumService,
 	) {}
 
-	async getMasterReleaseOf(albumSlug: Slug, artistSlug?: Slug): Promise<Release> {
+	async getMasterReleaseOf(albumSlug: Slug, artistSlug?: Slug, include?: Prisma.ReleaseInclude): Promise<Release> {
 		try {
 			return await this.prismaService.release.findFirst({
 				rejectOnNotFound: true,
@@ -29,10 +29,7 @@ export class ReleaseService {
 						}
 					}
 				},
-				include: {
-					album: true, 
-					tracks: true
-				}
+				include: include
 			});
 		} catch {
 			throw new MasterReleaseNotFoundException(albumSlug, artistSlug);
@@ -47,11 +44,11 @@ export class ReleaseService {
 
 	async findOrCreateRelease(releaseTitle: string, albumName: string, artistName?: string): Promise<Release> {
 		try {
-			return await this.findRelease(releaseTitle, new Slug(albumName), artistName ? new Slug(artistName) : undefined);
+			return await this.getRelease(releaseTitle, new Slug(albumName), artistName ? new Slug(artistName) : undefined);
 		} catch {
 			try {
 				let album: Album = await this.albumService.findOrCreate(albumName, artistName);
-				Logger.error(album.toJSON());
+				Logger.error(JSON.stringify(album));
 				Logger.error(album.releases);
 				return await this.createRelease(releaseTitle, album);
 			} catch (e) {
@@ -76,7 +73,7 @@ export class ReleaseService {
 		}
 	}
 	
-	async findRelease(releaseTitle: string, albumSlug: Slug, artistSlug?: Slug): Promise<Release> {
+	async getRelease(releaseTitle: string, albumSlug: Slug, artistSlug?: Slug, include?: Prisma.ReleaseInclude): Promise<Release> {
 		try {
 			return await this.prismaService.release.findFirst({
 				rejectOnNotFound: true,
@@ -93,9 +90,7 @@ export class ReleaseService {
 						}
 					}
 				},
-				include: {
-					album: true
-				},
+				include: include
 			});
 		} catch {
 			throw new ReleaseNotFoundException(releaseTitle, albumSlug, artistSlug);
