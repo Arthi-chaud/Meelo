@@ -21,32 +21,61 @@ enum AlbumType {
 }
 /// An album is a record of releases.
 model Album {
-	id 				Int		@id @default(autoincrement())
+	id				Int		@id @default(autoincrement())
 	/// The title of the album
 	/// It should not include descriptive suffixes like 'Deluxe Edition' of 'Explicit Version' 
 	name			String
 	/// The slug of the album, based on its name
 	slug			String
 	/// The date of the first release of the album
-	releaseDate 	DateTime?
+	releaseDate	DateTime?
 	/// Collections of related releases
 	releases		Release[]
 	/// Describes the type of the album
 	type			AlbumType	@default(StudioRecording)
 	/// The artist of the album
 	///This filed is nullable, as albums may not have an entitled artist, like compilations
-	artist			Artist		@relation(fields: [artistId], references: [id])
+	artist			Artist?		@relation(fields: [artistId], references: [id])
 	artistId		Int?
 	@@unique([slug, artist.slug])
 }
 
 /// An artist is a person who has albums
 model Artist {
-	id 				Int		@id @default(autoincrement())
+	id				Int		@id @default(autoincrement())
 	/// The name of the artist
 	name			String
 	/// The slug of the artist, based on their name
 	slug			String	@unique
 	/// The collection of related albums
 	albums			Album[]
+}
+
+/// A file represent the source file from which a track is imported
+model File {
+	id				Int		@id @default(autoincrement())
+	/// The path of the file, relate to the parent library
+	path			String	@unique
+	/// @Is('MD5 Checksum', (value) => RegExp('^[a-f0-9]{32}$').test(value))
+	/// MD5 checksum of the file
+	md5Checksum		String
+	/// Date of the file's registration
+	registerDate	DateTime
+
+	/// Library the file is registered under
+	library			Library	@relation(fields: [libraryId], references: [id])
+	libraryId		Int?
+}
+
+/// A Library groups files under a given path
+model Library {
+	id				Int		@id @default(autoincrement())
+	/// The name of the library, whose slug will be built from
+	name			String	@unique
+	/// Slug of the library, based on its name
+	slug			String	@unique
+	/// Path of the library, relative to 'dataFolder' from settings.json
+	path			String	@unique
+	/// Files from the library
+	files			File[]
 }
