@@ -1,5 +1,4 @@
 import { Module } from '@nestjs/common';
-import { SequelizeModule } from '@nestjs/sequelize';
 import { ConfigModule } from '@nestjs/config';
 import { FileModule } from './file/file.module';
 import { ArtistModule } from './artist/artist.module';
@@ -13,21 +12,22 @@ import { IllustrationModule } from './illustration/illustration.module';
 import { SettingsService } from './settings/settings.service';
 import { FileManagerModule } from './file-manager/file-manager.module';
 import { MetadataModule } from './metadata/metadata.module';
+import { PrismaModule } from './prisma/prisma.module';
 
 @Module({
   imports: [
     ConfigModule.forRoot({}),
-    SequelizeModule.forRoot({
-      dialect: 'postgres',
-      host: process.env.POSTGRES_HOST!,
-      port: 5432, // Default postgres post
-      username: process.env.POSTGRES_USER!,
-      password: process.env.POSTGRES_PASSWORD!,
-      database: process.env.POSTGRES_DB!,
-      autoLoadModels: true,
-      sync: { force: true, },
-      synchronize: true,
-    }),
+    // SequelizeModule.forRoot({
+    //   dialect: 'postgres',
+    //   host: process.env.POSTGRES_HOST!,
+    //   port: 5432, // Default postgres post
+    //   username: process.env.POSTGRES_USER!,
+    //   password: process.env.POSTGRES_PASSWORD!,
+    //   database: process.env.POSTGRES_DB!,
+    //   autoLoadModels: true,
+    //   sync: { force: true, },
+    //   synchronize: true,
+    // }),
     SettingsModule,
     FileManagerModule,
     FileModule,
@@ -39,6 +39,7 @@ import { MetadataModule } from './metadata/metadata.module';
     LibraryModule,
     IllustrationModule,
     MetadataModule,
+    PrismaModule,
   ],
   providers: [SettingsService],
 })

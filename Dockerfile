@@ -8,5 +8,6 @@ RUN yarn run build
 FROM node:17-alpine
 WORKDIR /app
 COPY --from=builder /app ./
+RUN yarn run prisma generate
 CMD ["yarn", "run", "start:prod"]
 

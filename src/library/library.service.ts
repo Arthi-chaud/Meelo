@@ -33,7 +33,9 @@ export class LibraryService {
 
 	async getAllLibraries(include?: Prisma.LibraryInclude) {
 		return this.prismaService.library.findMany({
-			include: include
+			include: {
+				files: include?.files
+			}
 		});
 	}
 
@@ -43,7 +45,7 @@ export class LibraryService {
 	 * @param withFiles bool, true if related files relations should be resolved
 	 * @returns The fetched Library
 	 */
-	async getLibrary(slug: Slug, include?: Prisma.LibraryInclude): Promise<Library & any> {
+	async getLibrary(slug: Slug, include?: Prisma.LibraryInclude) {
 		try {
 			return await this.prismaService.library.findFirst({
 				rejectOnNotFound: true,
@@ -52,7 +54,9 @@ export class LibraryService {
 						equals: slug.toString()
 					}
 				},
-				include,
+				include: {
+					files: include?.files
+				}
 			});
 		} catch {
 			throw new LibraryNotFoundException(slug);

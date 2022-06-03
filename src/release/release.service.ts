@@ -12,7 +12,7 @@ export class ReleaseService {
 		private albumService: AlbumService,
 	) {}
 
-	async getMasterReleaseOf(albumSlug: Slug, artistSlug?: Slug, include?: Prisma.ReleaseInclude): Promise<Release> {
+	async getMasterReleaseOf(albumSlug: Slug, artistSlug?: Slug, include?: Prisma.ReleaseInclude) {
 		try {
 			return await this.prismaService.release.findFirst({
 				rejectOnNotFound: true,
@@ -29,28 +29,34 @@ export class ReleaseService {
 						}
 					}
 				},
-				include: include
+				include: {
+					album: include?.album,
+					tracks: include?.tracks
+				}
 			});
 		} catch {
 			throw new MasterReleaseNotFoundException(albumSlug, artistSlug);
 		}
 	}
 	
-	async saveRelease(release: Release): Promise<Release> {
-		return await this.prismaService.release.create({
-			data: {...release}
+	async updateRelease(release: Release) {
+		return await this.prismaService.release.update({
+			data: {...release},
+			where: {
+				id: release.id
+			}
 		});
 	}
 
-	async findOrCreateRelease(releaseTitle: string, albumName: string, artistName?: string): Promise<Release> {
+	async findOrCreateRelease(releaseTitle: string, albumName: string, artistName?: string, include?: Prisma.ReleaseInclude) {
 		try {
 			return await this.getRelease(releaseTitle, new Slug(albumName), artistName ? new Slug(artistName) : undefined);
 		} catch {
 			try {
-				let album: Album = await this.albumService.findOrCreate(albumName, artistName);
+				let album = await this.albumService.findOrCreate(albumName, artistName, { releases: true, artist: true });
 				Logger.error(JSON.stringify(album));
 				Logger.error(album.releases);
-				return await this.createRelease(releaseTitle, album);
+				return await this.createRelease(releaseTitle, album, include);
 			} catch (e) {
 				Logger.warn(e);
 				throw e;
@@ -59,13 +65,17 @@ export class ReleaseService {
 	}
 
 
-	async createRelease(releaseTitle: string, album: Album & {releases: Release[], artist: Artist}): Promise<Release> {
+	async createRelease(releaseTitle: string, album: Album & {releases: Release[], artist: Artist | null}, include?: Prisma.ReleaseInclude) {
 		try {
 			return await this.prismaService.release.create({
 				data: {
 					albumId: album.id,
 					master: album.releases.filter((release) => release.master).length == 0,
 					title: releaseTitle,
+				},
+				include: {
+					album: include?.album,
+					tracks: include?.tracks
 				}
 			});
 		} catch {
@@ -73,7 +83,7 @@ export class ReleaseService {
 		}
 	}
 	
-	async getRelease(releaseTitle: string, albumSlug: Slug, artistSlug?: Slug, include?: Prisma.ReleaseInclude): Promise<Release> {
+	async getRelease(releaseTitle: string, albumSlug: Slug, artistSlug?: Slug, include?: Prisma.ReleaseInclude) {
 		try {
 			return await this.prismaService.release.findFirst({
 				rejectOnNotFound: true,
@@ -90,7 +100,10 @@ export class ReleaseService {
 						}
 					}
 				},
-				include: include
+				include: {
+					album: include?.album,
+					tracks: include?.tracks
+				}
 			});
 		} catch {
 			throw new ReleaseNotFoundException(releaseTitle, albumSlug, artistSlug);

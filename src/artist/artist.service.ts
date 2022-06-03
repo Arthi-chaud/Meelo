@@ -22,20 +22,27 @@ export class ArtistService {
 						equals: artistSlug.toString()
 					}
 				},
-				include: include
+				include: {
+					albums: include?.albums,
+					songs: include?.songs
+				}
 			});
 		} catch {
 			throw new ArtistNotFoundException(artistSlug);
 		};
 	}
 
-	async createArtist(artistName: string): Promise<Artist> {
+	async createArtist(artistName: string, include?: Prisma.ArtistInclude): Promise<Artist> {
 		let artistSlug: Slug = new Slug(artistName);
 		try {
 			return await this.prismaService.artist.create({
 				data: {
 					name: artistName,
 					slug: artistSlug.toString(),
+				},
+				include: {
+					albums: include?.albums,
+					songs: include?.songs
 				}
 			});
 		} catch {
@@ -47,11 +54,11 @@ export class ArtistService {
 	 * Find an artist by its name, or creates one if not found
 	 * @param artistName the slug of the artist to find
 	 */
-	 async getOrCreateArtist(artistName: string): Promise<Artist> {
+	 async getOrCreateArtist(artistName: string, include?: Prisma.ArtistInclude): Promise<Artist> {
 		try {
-			return await this.getArtist(new Slug(artistName));
+			return await this.getArtist(new Slug(artistName), include);
 		} catch {
-			return await this.createArtist(artistName);
+			return await this.createArtist(artistName, include);
 		}
 	}
 }

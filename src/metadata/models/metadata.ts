@@ -1,4 +1,4 @@
-import { TrackType } from "src/track/models/track-type";
+import { TrackType } from "@prisma/client";
 
 /**
  * Extracted metadata from a track file

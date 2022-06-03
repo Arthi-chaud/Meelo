@@ -1,7 +1,7 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { ArtistService } from 'src/artist/artist.service';
 import { Slug } from 'src/slug/slug';
-import { Song, Artist } from '@prisma/client';
+import { type Song, type Artist, Prisma } from '@prisma/client';
 import { SongAlreadyExistsException, SongNotFoundException } from './song.exceptions';
 import { PrismaService } from 'src/prisma/prisma.service';
 
@@ -17,7 +17,7 @@ export class SongService {
 	 * @param artistSlug slug of the artist of the song
 	 * @param titleSlug the slug of the title of the song
 	 */
-	async findSong(artistSlug: Slug, titleSlug: Slug): Promise<Song> {
+	async getSong(artistSlug: Slug, titleSlug: Slug, include?: Prisma.SongInclude) {
 		try {
 			return await this.prismaService.song.findFirst({
 				rejectOnNotFound: true,
@@ -32,8 +32,8 @@ export class SongService {
 					}
 				},
 				include: {
-					artist: true,
-					instances: true
+					artist: include?.artist,
+					instances: include?.instances
 				}
 			});
 		} catch {
@@ -41,7 +41,7 @@ export class SongService {
 		}
 	}
 	
-	async createSong(artistName: string, title: string): Promise<Song> {
+	async createSong(artistName: string, title: string, include?: Prisma.SongInclude) {
 		try {
 			let artist: Artist = await this.artistService.getOrCreateArtist(artistName);
 			return await this.prismaService.song.create({
@@ -50,6 +50,10 @@ export class SongService {
 					playCount: 0,
 					name: title,
 					slug: new Slug(title).toString()
+				},
+				include: {
+					instances: include?.instances,
+					artist: include?.artist
 				}
 			});
 		} catch {
@@ -57,11 +61,11 @@ export class SongService {
 		}
 	}
 	
-	async findOrCreateSong(artistName: string, title: string): Promise<Song> {
+	async findOrCreateSong(artistName: string, title: string, include?: Prisma.SongInclude) {
 		try {
-			return await this.findSong(new Slug(artistName), new Slug(title));
+			return await this.getSong(new Slug(artistName), new Slug(title), include);
 		} catch {
-			return await this.createSong(artistName, title);
+			return await this.createSong(artistName, title, include);
 		}
 	}
 }

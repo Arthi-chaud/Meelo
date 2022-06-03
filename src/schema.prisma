@@ -63,8 +63,10 @@ model File {
 	md5Checksum		String
 	/// Date of the file's registration
 	registerDate	DateTime
+	/// Track on the file
+	track			Track?
 	/// Library the file is registered under
-	library			Library	@relation(fields: [libraryId], references: [id])
+	library			Library	@relation(fields: [libraryId], references: id)
 	libraryId		Int
 }
 
@@ -162,5 +164,7 @@ model Track {
 	ripSource		RipSource?
 	/// The duration in seconds of the track
 	duration		Int
-
+	/// The track from the file
+	sourceFile			File	@relation(fields: [sourceFileId], references: [id])
+	sourceFileId		Int
 }

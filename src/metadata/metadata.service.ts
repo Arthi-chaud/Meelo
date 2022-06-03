@@ -1,23 +1,15 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { FileManagerService } from 'src/file-manager/file-manager.service';
 import { Metadata } from './models/metadata';
-import mm, { IAudioMetadata } from 'music-metadata';
+import mm, { type IAudioMetadata } from 'music-metadata';
 import { FileNotFoundException, FileNotReadableException } from 'src/file/file.exceptions';
 import { FileParsingException, PathParsingException } from './metadata.exceptions';
 import { SettingsService } from 'src/settings/settings.service';
-import { File } from 'src/file/models/file.model';
-import { ArtistService } from 'src/artist/artist.service';
-import { Artist } from 'src/artist/models/artist.model';
-import { Slug } from 'src/slug/slug';
-import { Track } from 'src/track/models/track.model';
 import { TrackService } from 'src/track/track.service';
 import { SongService } from 'src/song/song.service';
-import { Song } from 'src/song/models/song.model';
-import { Release } from 'src/release/models/release.model';
+import { Release, Song, TrackType, AlbumType, File, Artist, Track, Prisma} from '@prisma/client';
 import { ReleaseService } from 'src/release/release.service';
 import { AlbumService } from 'src/album/album.service';
-import { TrackType } from 'src/track/models/track-type';
-import { AlbumType } from 'src/album/models/album-type';
 
 @Injectable()
 export class MetadataService {
@@ -38,32 +30,48 @@ export class MetadataService {
 	 * @param file the file to register the metadata under, it must be already registered
 	 */
 	async registerMetadata(metadata : Metadata, file: File): Promise<Track> {
-		let song: Song = await this.songService.findOrCreateSong(metadata.artist ?? metadata.albumArtist!, metadata.name!);
-		Logger.debug(song.toJSON());
-		let release: Release = await this.releaseService.findOrCreateRelease(metadata.album!, metadata.album!, metadata.albumArtist ?? metadata.artist ?? undefined);
-		Logger.debug(release.toJSON());
-		let track: Track = Track.build({
-			release: release,
-			song: song,
+		let song = await this.songService.findOrCreateSong(metadata.artist ?? metadata.albumArtist!, metadata.name!, { instances: true });
+		Logger.debug(JSON.stringify(song));
+		let release = await this.releaseService.findOrCreateRelease(
+			metadata.album!, metadata.album!, metadata.albumArtist ?? metadata.artist ?? undefined,
+			{ album: true }
+		);
+		Logger.debug(JSON.stringify(release));
+		let track: Prisma.TrackCreateInput = {
+			release: {
+				connect: {
+					id: release.id
+				}
+			},
+			song: {
+				connect: {
+					id: song.id
+				}
+			},
+			sourceFile: {
+				connect: {
+					id: file.id
+				}
+			},
 			displayName: metadata.name!,
 			master: song.instances.length == 0,
-			discIndex: metadata.discIndex,
-			trackIndex: metadata.index,
+			discIndex: metadata.discIndex ?? null,
+			trackIndex: metadata.index ?? null,
 			type: metadata.type!,
 			bitrate: metadata.bitrate ?? 0,
-			ripSource: undefined,
+			ripSource: null,
 			duration: metadata.duration ?? 0,
-		});
-		release.releaseDate = metadata.releaseDate;
-		if ((release.releaseDate !== undefined &&
-			release.album.releaseDate !== undefined &&
+		};
+		if ((release.releaseDate !== null &&
+			release.album.releaseDate !== null &&
 			release.album.releaseDate > release.releaseDate) || 
 			release.releaseDate !== undefined)
 			release.album.releaseDate = release.releaseDate;
-		release.album.type = metadata.compilation ? AlbumType.Compilation : release.album.type;
-		track.release.album = await this.albumService.saveAlbum(release.album);
-		track.release = await this.releaseService.saveRelease(release);
-		return await this.trackService.saveTrack(track);
+			release.album.type = metadata.compilation ? AlbumType.Compilation : release.album.type;
+		await this.albumService.updateAlbum(release.album);
+		release.releaseDate = metadata.releaseDate ?? null;
+		await this.releaseService.updateRelease(release);
+		return await this.trackService.createTrack(track);
 	}
 
 	/**

@@ -3,5 +3,6 @@ WORKDIR /app
 COPY *.json .
 RUN yarn install
 COPY . .
+RUN yarn run prisma generate
 RUN yarn run build
 CMD ["yarn" , "run", "start:dev"]

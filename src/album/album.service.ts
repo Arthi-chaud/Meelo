@@ -17,7 +17,7 @@ export class AlbumService {
 	 * @param albumSlug the slug of the album to find
 	 * @param artistSlug the slug of the artist of the album
 	 */
-	async getAlbumBySlug(albumSlug: Slug, artistSlug?: Slug, include?: Prisma.AlbumInclude): Promise<Album> {
+	async getAlbum(albumSlug: Slug, artistSlug?: Slug, include?: Prisma.AlbumInclude) {
 		try {
 			return await this.prismaService.album.findFirst({
 				rejectOnNotFound: true,
@@ -31,18 +31,21 @@ export class AlbumService {
 						}
 					}
 				},
-				include: include
+				include: {
+					releases: include?.releases,
+					artist: include?.artist
+				}
 			})
 		} catch {
 			throw new AlbumNotFoundException(albumSlug, artistSlug);
 		}
 	}
 
-	async saveAlbum(album: Album): Promise<Album> {
-		return await this.prismaService.album.create({
-			data: {
-				...album,
-				slug: new Slug(album.name).toString()
+	async updateAlbum(album: Album): Promise<Album> {
+		return await this.prismaService.album.update({
+			data: {...album},
+			where: {
+				id: album.id
 			}
 		});
 	}
@@ -64,7 +67,7 @@ export class AlbumService {
 		return AlbumType.StudioRecording;
 	}
 
-	async createAlbum(albumName: string, artistName?: string, releaseDate?: Date): Promise<Album> {
+	async createAlbum(albumName: string, artistName?: string, releaseDate?: Date, include?: Prisma.AlbumInclude) {
 		let albumSlug: Slug = new Slug(albumName);
 		try {
 			return await this.prismaService.album.create({
@@ -74,6 +77,10 @@ export class AlbumService {
 					artistId: artistName ? (await this.artistServce.getOrCreateArtist(artistName!)).id! : null,
 					releaseDate: releaseDate,
 					type: AlbumService.getAlbumTypeFromName(albumName)
+				},
+				include: {
+					releases: include?.releases,
+					artist: include?.artist
 				}
 			});
 		} catch (e) {
@@ -83,11 +90,11 @@ export class AlbumService {
 
 	}
 
-	async findOrCreate(albumName: string, artistName?: string): Promise<Album> {
+	async findOrCreate(albumName: string, artistName?: string, include?: Prisma.AlbumInclude) {
 		try {
-			return await this.getAlbumBySlug(new Slug(albumName), artistName ? new Slug(artistName) : undefined);
+			return await this.getAlbum(new Slug(albumName), artistName ? new Slug(artistName) : undefined, include);
 		} catch {
-			return await this.createAlbum(albumName, artistName);
+			return await this.createAlbum(albumName, artistName, undefined, include);
 		}
 	}
 }
