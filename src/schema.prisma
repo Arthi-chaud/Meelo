@@ -39,3 +39,14 @@ model Album {
 	artistId		Int?
 	@@unique([slug, artist.slug])
 }
+
+/// An artist is a person who has albums
+model Artist {
+	id 				Int		@id @default(autoincrement())
+	/// The name of the artist
+	name			String
+	/// The slug of the artist, based on their name
+	slug			String	@unique
+	/// The collection of related albums
+	albums			Album[]
+}
