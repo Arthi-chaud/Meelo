@@ -1,19 +1,14 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
-import { InjectModel } from '@nestjs/sequelize';
-import { File } from './models/file.model';
-import * as fs from 'fs';
-import { constants } from 'buffer';
+import { Injectable } from '@nestjs/common';
 import { SettingsService } from 'src/settings/settings.service';
 import { FileManagerService } from 'src/file-manager/file-manager.service';
-import { Library } from 'src/library/models/library.model';
-import { Sequelize } from 'sequelize-typescript';
 import { FileNotReadableException } from './file.exceptions';
+import { PrismaService } from 'src/prisma/prisma.service';
+import { Library, File } from '@prisma/client';
 
 @Injectable()
 export class FileService {
 	constructor(
-		@InjectModel(File)
-		private fileModel: typeof File,
+		private prisma: PrismaService,
 		private settingsService: SettingsService,
 		private fileManagerService: FileManagerService
 	) {}
@@ -30,11 +25,13 @@ export class FileService {
 			throw new FileNotReadableException(filePath);
 		}
 
-		return await this.fileModel.create({
-			path: filePath,
-			registerDate: new Date(),
-			md5Checksum: this.fileManagerService.getMd5Checksum(fullFilePath),
-			library: parentLibrary.id
+		return await this.prisma.file.create({
+			data: {
+				path: filePath,
+				md5Checksum: this.fileManagerService.getMd5Checksum(fullFilePath),
+				registerDate: new Date(),
+				libraryId: parentLibrary.id
+			}
 		});
 	}
 
@@ -44,25 +41,28 @@ export class FileService {
 	 * @returns 
 	 */
 	async findFilesFromPath(filePaths: string[]) {
-		return await this.fileModel.findAll({
-			where: Sequelize.or(
-				{ path: filePaths },
-			)
+		return await this.prisma.file.findMany({
+			where: {
+				path: {
+					in: filePaths
+				},
+			}
 		});
 	}
 
 	/**
 	 * Remove files entries
-	 * @param files the File s to delete
+	 * @param files the Files to delete
 	 * @returns 
 	 */
 	async removeFileEntries(...files: File[]) {
-		return await this.fileModel.destroy({
-			where: Sequelize.or(
-				{ path: files.map(
-					(file) => file.path
-				)},
-			)
+		let idsToDelete = files.map((file) => file.id);
+		return await this.prisma.file.deleteMany({
+			where: {
+				id: {
+					in: idsToDelete
+				}
+			}
 		});
 	}
 }
