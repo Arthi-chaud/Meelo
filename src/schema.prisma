@@ -92,3 +92,17 @@ model Release {
 	/// The tracks on the release
 	tracks			Track[]
 }
+/// A song is described by a title, an artist, and 'instanciated' by Tracks
+model Song {
+	id				Int		@id @default(autoincrement())
+	/// The name of the track
+	name			String
+	slug			String
+	/// The artist of the song
+	artist			Artist?	@relation(fields: [artistId], references: [id])
+	artistId		Int?
+	/// The number of times, the song was played
+	playCount		Int		@default(0)
+	instances		Track[]
+	@@unique([slug, artist.slug])
+}
