@@ -1,35 +1,41 @@
 import { Injectable, Logger } from '@nestjs/common';
-import { InjectModel } from '@nestjs/sequelize';
 import { FileManagerService } from 'src/file-manager/file-manager.service';
 import { FileService } from 'src/file/file.service';
-import { File } from 'src/file/models/file.model';
 import { MetadataService } from 'src/metadata/metadata.service';
 import { Slug } from 'src/slug/slug';
 import { LibraryAlreadyExistsException, LibraryNotFoundException } from './library.exceptions';
 import { LibraryDto } from './models/library.dto';
-import { Library } from './models/library.model';
+import { Library, File } from '@prisma/client';
+import { PrismaService } from 'src/prisma/prisma.service';
 
 @Injectable()
 export class LibraryService {
 	constructor(
-		@InjectModel(Library)
-		private libraryModel: typeof Library,
+		private prismaService: PrismaService,
 		private fileManagerService: FileManagerService,
 		private fileService: FileService,
 		private metadataService: MetadataService
 	) {}
 	
 	async createLibrary(createLibraryDto: LibraryDto): Promise<Library> {
-		let newLibrary = Library.build({...createLibraryDto});
-		newLibrary.buildSlugIfNull();
-		return await newLibrary.save().catch(() => {
-			throw new LibraryAlreadyExistsException(new Slug(newLibrary.slug!));
-		});
+		let librarySlug: Slug = new Slug(createLibraryDto.name);
+		try {
+			return await this.prismaService.library.create({
+				data: {
+					...createLibraryDto,
+					slug: librarySlug.toString()
+				}
+			});
+		} catch {
+			throw new LibraryAlreadyExistsException(librarySlug);
+		}
 	}
 
-	async getAllLibraries(withFiles = false) {
-		return this.libraryModel.findAll({
-			include: (withFiles ? [File] : []),
+	async getAllLibraries(withFiles = false): Promise<Library[]> {
+		return this.prismaService.library.findMany({
+			include: {
+				files: withFiles
+			},
 		});
 	}
 
@@ -39,16 +45,22 @@ export class LibraryService {
 	 * @param withFiles bool, true if related files relations should be resolved
 	 * @returns The fetched Library
 	 */
-	async getLibrary(slug: Slug, withFiles = false): Promise<Library> {
-		return await this.libraryModel.findOne({
-			include: (withFiles ? [File] : []),
-			rejectOnEmpty: true,
-			where: {
-				slug: slug.toString(),
-			}
-		}).catch(() => {
+	async getLibrary(slug: Slug, withFiles = false) {
+		try {
+			return await this.prismaService.library.findFirst({
+				include: {
+					files: withFiles
+				},
+				rejectOnNotFound: true,
+				where: {
+					slug: {
+						equals: slug.toString()
+					}
+				}
+			});
+		} catch {
 			throw new LibraryNotFoundException(slug);
-		});
+		}
 	}
 
 	/**
@@ -92,7 +104,7 @@ export class LibraryService {
 			await this.metadataService.registerMetadata(fileMetadata, registeredFile);
 		} catch (e) {
 			Logger.warn(e);
-			await registeredFile.destroy();
+			await this.fileService.removeFileEntries(registeredFile);
 			Logger.log(`${parentLibrary.slug} library: Registration of ${filePath} failed because of bad metadata.`);
 		}
 		return registeredFile
@@ -103,7 +115,7 @@ export class LibraryService {
 	 * @param parentLibrary the library to clean, with resolved files relations
 	 * @returns The array of deleted file entry
 	 */
-	async unregisterUnavailableFiles(parentLibrary: Library): Promise<File[]> {
+	async unregisterUnavailableFiles(parentLibrary: Library & {files: File[]}): Promise<File[]> {
 		Logger.log(`'Cleaning ${parentLibrary.slug}' library`);
 		const libraryPath = `${this.fileManagerService.getLibraryFullPath(parentLibrary)}`;
 		let registeredFiles: File[] = parentLibrary.files;
