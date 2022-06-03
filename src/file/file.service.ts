@@ -1,5 +1,4 @@
 import { Injectable } from '@nestjs/common';
-import { SettingsService } from 'src/settings/settings.service';
 import { FileManagerService } from 'src/file-manager/file-manager.service';
 import { FileNotReadableException } from './file.exceptions';
 import { PrismaService } from 'src/prisma/prisma.service';
@@ -8,8 +7,7 @@ import { Library, File } from '@prisma/client';
 @Injectable()
 export class FileService {
 	constructor(
-		private prisma: PrismaService,
-		private settingsService: SettingsService,
+		private prismaService: PrismaService,
 		private fileManagerService: FileManagerService
 	) {}
 
@@ -25,7 +23,7 @@ export class FileService {
 			throw new FileNotReadableException(filePath);
 		}
 
-		return await this.prisma.file.create({
+		return await this.prismaService.file.create({
 			data: {
 				path: filePath,
 				md5Checksum: this.fileManagerService.getMd5Checksum(fullFilePath),
@@ -41,7 +39,7 @@ export class FileService {
 	 * @returns 
 	 */
 	async findFilesFromPath(filePaths: string[]) {
-		return await this.prisma.file.findMany({
+		return await this.prismaService.file.findMany({
 			where: {
 				path: {
 					in: filePaths
@@ -57,7 +55,7 @@ export class FileService {
 	 */
 	async removeFileEntries(...files: File[]) {
 		let idsToDelete = files.map((file) => file.id);
-		return await this.prisma.file.deleteMany({
+		return await this.prismaService.file.deleteMany({
 			where: {
 				id: {
 					in: idsToDelete
