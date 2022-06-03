@@ -106,3 +106,57 @@ model Song {
 	instances		Track[]
 	@@unique([slug, artist.slug])
 }
+
+/// Enumeration of the different sources of a track rip
+enum RipSource {
+	/// Extracted from an Audio CD
+	CD
+	/// Extracted from a DVD
+	DVD
+	/// Extracted from a Blu-Ray disc
+	BluRay
+	/// Ripped from an Audio Tape
+	Cassette
+	/// Ripped from an Vinyl Record
+	Vinyl
+	/// Digital source
+	Digital
+	/// Other rip source
+	Other
+}
+
+/// Enumeration of forms a Track can be
+enum TrackType {
+	/// Audio, sound but no video
+	Audio
+	/// Video, for example: Music Video
+	Video
+}
+
+/// An track is an 'instance' of a song
+model Track {
+	id				Int		@id @default(autoincrement())
+	/// The reference song
+	song 			Release	@relation(fields: [songId], references: [id])
+	songId			Int
+	/// The parent release the track can be found on
+	release 		Release	@relation(fields: [releaseId], references: [id])
+	releaseId		Int
+	/// The display name of the track, if it differs from the Song's
+	displayName		String?
+	/// Is this track the 'main' one
+	master			Boolean	@default(false)
+	/// The index of the disc the track is on
+	discIndex		Int?
+	/// The index of the track on the disc
+	trackIndex		Int?
+	/// Type of track (Audio or Video)
+	type			TrackType
+	/// Bitrate, i kbps
+	bitrate			Int
+	/// The type of source the track is ripped from
+	ripSource		RipSource?
+	/// The duration in seconds of the track
+	duration		Int
+
+}
