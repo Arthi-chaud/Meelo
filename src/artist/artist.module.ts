@@ -1,11 +1,10 @@
 import { Module } from '@nestjs/common';
-import { SequelizeModule } from '@nestjs/sequelize';
-import { Artist } from './models/artist.model';
 import { ArtistService } from './artist.service';
+import { PrismaModule } from 'src/prisma/prisma.module';
 
 @Module({
 	imports: [
-		SequelizeModule.forFeature([Artist]),
+		PrismaModule,
 	],
 	exports: [ArtistService],
 	providers: [ArtistService]

@@ -1,37 +1,46 @@
 import { Injectable } from '@nestjs/common';
-import { InjectModel } from '@nestjs/sequelize';
 import { Slug } from 'src/slug/slug';
-import { ArtistNotFoundException } from './artist.exceptions';
-import { Artist } from './models/artist.model';
+import { ArtistalreadyExistsException, ArtistNotFoundException } from './artist.exceptions';
+import { Artist, Prisma } from '@prisma/client';
+import { PrismaService } from 'src/prisma/prisma.service';
 
 @Injectable()
 export class ArtistService {
 	constructor(
-		@InjectModel(Artist)
-		private artistModel: typeof Artist
+		private prismaService: PrismaService
 	) {}
 	/**
 	 * Find an artist by its slug
 	 * @param artistSlug the slug of the artist to find
 	 */
-	async getArtist(artistSlug: Slug): Promise<Artist> {
-		return await this.artistModel.findOne({
-			rejectOnEmpty: true,
-			where: {
-				slug: artistSlug.toString()
-			}
-		}).catch(() => {
+	async getArtist(artistSlug: Slug, include?: Prisma.ArtistInclude): Promise<Artist> {
+		try {
+			return await this.prismaService.artist.findFirst({
+				rejectOnNotFound: true,
+				where: {
+					slug: {
+						equals: artistSlug.toString()
+					}
+				},
+				include: include
+			});
+		} catch {
 			throw new ArtistNotFoundException(artistSlug);
-		});
+		};
 	}
 
 	async createArtist(artistName: string): Promise<Artist> {
 		let artistSlug: Slug = new Slug(artistName);
-		return await this.artistModel.create({
-			albums: [],
-			name: artistName,
-			slug: artistSlug.toString(),
-		});
+		try {
+			return await this.prismaService.artist.create({
+				data: {
+					name: artistName,
+					slug: artistSlug.toString(),
+				}
+			});
+		} catch {
+			throw new ArtistalreadyExistsException(artistSlug);
+		}
 	}
 
 	/**
