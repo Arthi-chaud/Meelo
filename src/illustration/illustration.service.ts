@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { FileManagerService } from 'src/file-manager/file-manager.service';
 import { MetadataService } from 'src/metadata/metadata.service';
-import { Release } from 'src/release/models/release.model';
+import { Release } from '@prisma/client';
 import { ReleaseService } from 'src/release/release.service';
 import { Slug } from 'src/slug/slug';
 import { NoAlbumFolderIllustrationException, NoArtistFolderIllustrationException, NoArtistIllustrationException, NoReleaseFolderIllustrationException, NoReleaseIllustrationException } from './illustration.exceptions';
