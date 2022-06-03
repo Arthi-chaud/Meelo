@@ -1,13 +1,10 @@
 import { Module } from '@nestjs/common';
-import { SequelizeModule } from '@nestjs/sequelize';
-import { Track } from './models/track.model';
+import { PrismaModule } from 'src/prisma/prisma.module';
 import { TrackService } from './track.service';
 
 @Module({
 	imports: [
-		SequelizeModule.forFeature([
-			Track
-		])
+		PrismaModule
 	],
 	exports: [TrackService],
 	providers: [TrackService]

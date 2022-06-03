@@ -1,12 +1,11 @@
 import { Injectable } from '@nestjs/common';
-import { InjectModel } from '@nestjs/sequelize';
-import { Track } from './models/track.model';
+import { PrismaService } from 'src/prisma/prisma.service';
+import { Track } from '@prisma/client';
 
 @Injectable()
 export class TrackService {
 	constructor(
-		@InjectModel(Track)
-		private trackModel: typeof Track,
+		private prismaService: PrismaService
 	) {}
 
 	/**
@@ -15,6 +14,8 @@ export class TrackService {
 	 * @returns the track once saved
 	 */
 	async saveTrack(track: Track): Promise<Track> {
-		return await track.save();
+		return await this.prismaService.track.create({
+			data: {...track}
+		});
 	}
 }
