@@ -1,17 +1,14 @@
 import { Injectable, Logger } from '@nestjs/common';
-import { InjectModel } from '@nestjs/sequelize';
 import { ArtistService } from 'src/artist/artist.service';
-import { Artist } from 'src/artist/models/artist.model';
 import { Slug } from 'src/slug/slug';
-import { Track } from 'src/track/models/track.model';
-import { Song } from './models/song.model';
+import { Song, Artist } from '@prisma/client';
 import { SongAlreadyExistsException, SongNotFoundException } from './song.exceptions';
+import { PrismaService } from 'src/prisma/prisma.service';
 
 @Injectable()
 export class SongService {
 	constructor(
-		@InjectModel(Song)
-		private songModel: typeof Song,
+		private prismaService: PrismaService,
 		private artistService: ArtistService,
 	) {}
 
@@ -22,19 +19,22 @@ export class SongService {
 	 */
 	async findSong(artistSlug: Slug, titleSlug: Slug): Promise<Song> {
 		try {
-			return await this.songModel.findOne({
+			return await this.prismaService.song.findFirst({
+				rejectOnNotFound: true,
 				where: {
-					slug: titleSlug.toString(),
-					'$Artist.slug$': artistSlug.toString()
-				},
-				rejectOnEmpty: true,
-				include: [
-					Track,
-					{
-						model: Artist,
-						as: 'Artist'
+					slug: {
+						equals: titleSlug.toString()
 					},
-				]
+					artist: {
+						slug: {
+							equals: artistSlug.toString()
+						}
+					}
+				},
+				include: {
+					artist: true,
+					instances: true
+				}
 			});
 		} catch {
 			throw new SongNotFoundException(titleSlug, artistSlug);
@@ -44,12 +44,13 @@ export class SongService {
 	async createSong(artistName: string, title: string): Promise<Song> {
 		try {
 			let artist: Artist = await this.artistService.getOrCreateArtist(artistName);
-			return await this.songModel.create({
-				artist: artist,
-				instances: [],
-				playCount: 0,
-				name: title,
-				slug: new Slug(title).toString()
+			return await this.prismaService.song.create({
+				data: {
+					artistId: artist.id,
+					playCount: 0,
+					name: title,
+					slug: new Slug(title).toString()
+				}
 			});
 		} catch {
 			throw new SongAlreadyExistsException(new Slug(artistName), new Slug(title));
@@ -62,6 +63,5 @@ export class SongService {
 		} catch {
 			return await this.createSong(artistName, title);
 		}
-
 	}
 }
