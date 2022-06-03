@@ -79,3 +79,16 @@ model Library {
 	/// Files from the library
 	files			File[]
 }
+
+/// A release is 'an instance' of an Album
+model Release {
+	id				Int		@id @default(autoincrement())
+	/// The name of the release, if it differs from the parent Album's
+	title			String?
+	/// The date of the release
+	releaseDate		DateTime?
+	/// Is this release the 'main' / 'most used' version of the Album
+	master			Boolean	@default(false)
+	/// The tracks on the release
+	tracks			Track[]
+}
