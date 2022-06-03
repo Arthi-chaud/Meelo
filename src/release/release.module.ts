@@ -1,15 +1,11 @@
 import { Module } from '@nestjs/common';
-import { SequelizeModule } from '@nestjs/sequelize';
 import { AlbumModule } from 'src/album/album.module';
-import { AlbumService } from 'src/album/album.service';
-import { Release } from './models/release.model';
+import { PrismaModule } from 'src/prisma/prisma.module';
 import { ReleaseService } from './release.service';
 
 @Module({
 	imports: [
-		SequelizeModule.forFeature([
-			Release,
-		]),
+		PrismaModule,
 		AlbumModule
 	],
 	providers: [ReleaseService],
