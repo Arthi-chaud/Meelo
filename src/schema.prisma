@@ -2,3 +2,40 @@ datasource db {
 	provider	= "postgresql"
 	url			= env("DATABASE_URL")
 }
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+/////// Models
+
+enum AlbumType {
+	/// Describes is an original collection of studio recordings
+	StudioRecording
+	/// Describes a collection of live recordings
+	LiveRecording
+	/// Describes a collection of recordings that do not come from a common studio album or artist
+	Compilation
+	/// Describes a collection of track, usually below 10, that are related to a single song, of songs from a common era
+	Single
+}
+/// An album is a record of releases.
+model Album {
+	id 				Int		@id @default(autoincrement())
+	/// The title of the album
+	/// It should not include descriptive suffixes like 'Deluxe Edition' of 'Explicit Version' 
+	name			String
+	/// The slug of the album, based on its name
+	slug			String
+	/// The date of the first release of the album
+	releaseDate 	DateTime?
+	/// Collections of related releases
+	releases		Release[]
+	/// Describes the type of the album
+	type			AlbumType	@default(StudioRecording)
+	/// The artist of the album
+	///This filed is nullable, as albums may not have an entitled artist, like compilations
+	artist			Artist		@relation(fields: [artistId], references: [id])
+	artistId		Int?
+	@@unique([slug, artist.slug])
+}
