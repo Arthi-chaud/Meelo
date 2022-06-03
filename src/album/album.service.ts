@@ -1,18 +1,14 @@
 import { Injectable, Logger } from '@nestjs/common';
-import { InjectModel } from '@nestjs/sequelize';
 import { ArtistService } from 'src/artist/artist.service';
-import { Artist } from 'src/artist/models/artist.model';
-import { Release } from 'src/release/models/release.model';
 import { Slug } from 'src/slug/slug';
 import { AlbumAlreadyExistsException, AlbumNotFoundException } from './album.exceptions';
-import { Album } from './models/album.model';
-import { AlbumType } from "./models/album-type";
+import { Album, AlbumType } from '@prisma/client';
+import { PrismaService } from 'src/prisma/prisma.service';
 
 @Injectable()
 export class AlbumService {
 	constructor(
-		@InjectModel(Album)
-		private albumModel: typeof Album,
+		private prismaService: PrismaService,
 		private artistServce: ArtistService
 	) {}
 
@@ -21,28 +17,35 @@ export class AlbumService {
 	 * @param albumSlug the slug of the album to find
 	 * @param artistSlug the slug of the artist of the album
 	 */
-	async getAlbumBySlug(albumSlug: Slug, artistSlug?: Slug): Promise<Album> {
-		return await this.albumModel.findOne({
+	async getAlbumBySlug(albumSlug: Slug, artistSlug?: Slug, withArtist?: boolean, withReleases?: boolean): Promise<Album> {
+		return await this.prismaService.album.findFirst({
+			rejectOnNotFound: true,
 			where: {
-				slug: albumSlug.toString(),
-				'$Artist.slug$': artistSlug?.toString()
-			},
-			rejectOnEmpty: true,
-			include: [
-				Release,
-				Artist,
-				{
-					model: Artist,
-					as: 'Artist',
+				slug: {
+					equals: albumSlug.toString()
 				},
-			]
+				artist: {
+					slug: {
+						equals: artistSlug?.toString()
+					}
+				}
+			},
+			include:{
+				artist: withArtist,
+				releases: withReleases
+			}
 		}).catch(() => {
 			throw new AlbumNotFoundException(albumSlug, artistSlug);
 		});
 	}
 
 	async saveAlbum(album: Album): Promise<Album> {
-		return await album.save();
+		return await this.prismaService.album.create({
+			data: {
+				...album,
+				slug: new Slug(album.name).toString()
+			}
+		});
 	}
 
 	static getAlbumTypeFromName(albumName: string): AlbumType {
@@ -65,15 +68,15 @@ export class AlbumService {
 	async createAlbum(albumName: string, artistName?: string, releaseDate?: Date): Promise<Album> {
 		let albumSlug: Slug = new Slug(albumName);
 		try {
-			let album: Album = Album.build({
-				name: albumName,
-				slug: albumSlug.toString(),
-				artist: artistName ? (await this.artistServce.getOrCreateArtist(artistName!)).id! : null,
-				releaseDate: releaseDate,
-				releases: [],
-				type: AlbumService.getAlbumTypeFromName(albumName)
+			return await this.prismaService.album.create({
+				data: {
+					name: albumName,
+					slug: albumSlug.toString(),
+					artist: artistName ? (await this.artistServce.getOrCreateArtist(artistName!)).id! : null,
+					releaseDate: releaseDate,
+					type: AlbumService.getAlbumTypeFromName(albumName)
+				}
 			});
-			return await album.save();
 		} catch (e) {
 			Logger.error("Shite");
 			throw new AlbumAlreadyExistsException(albumSlug, artistName ? new Slug(artistName) : undefined);

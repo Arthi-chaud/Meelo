@@ -1,5 +1,5 @@
 import { AlbumService } from "./album.service";
-import { AlbumType } from "./models/album-type";
+import { AlbumType } from "@prisma/client";
 
 describe('Album Service', () => {
 
