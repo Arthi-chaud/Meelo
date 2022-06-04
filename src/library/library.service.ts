@@ -26,7 +26,8 @@ export class LibraryService {
 					slug: librarySlug.toString()
 				}
 			});
-		} catch {
+		} catch (e) {
+			Logger.error(e);
 			throw new LibraryAlreadyExistsException(librarySlug);
 		}
 	}

@@ -9,9 +9,10 @@ services:
       - "db"
     volumes:
       - ./meelo:/meelo
-      - .:/app
+      - ./src:/app/src
+      - ./prisma:/app/prisma
       - ./data:/data
   db:
     image: postgres:alpine3.14
-    environment:
-    - DATABASE_URL=postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@${POSTGRES_HOST}:5432/${POSTGRES_DB}
+    env_file:
+      - .env
