@@ -58,9 +58,9 @@ export class MetadataService {
 			discIndex: metadata.discIndex ?? null,
 			trackIndex: metadata.index ?? null,
 			type: metadata.type!,
-			bitrate: metadata.bitrate ?? 0,
+			bitrate: Math.floor(metadata.bitrate ?? 0),
 			ripSource: null,
-			duration: metadata.duration ?? 0,
+			duration: Math.floor(metadata.duration ?? 0),
 		};
 		if ((release.releaseDate !== null &&
 			release.album.releaseDate !== null &&
