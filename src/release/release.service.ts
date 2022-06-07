@@ -41,7 +41,7 @@ export class ReleaseService {
 	
 	async updateRelease(release: Release) {
 		return await this.prismaService.release.update({
-			data: {...release},
+			data: {...release, album: undefined, tracks: undefined},
 			where: {
 				id: release.id
 			}
