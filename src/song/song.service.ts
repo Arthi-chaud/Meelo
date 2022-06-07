@@ -57,7 +57,7 @@ export class SongService {
 				}
 			});
 		} catch {
-			throw new SongAlreadyExistsException(new Slug(artistName), new Slug(title));
+			throw new SongAlreadyExistsException(new Slug(title), new Slug(artistName));
 		}
 	}
 	
