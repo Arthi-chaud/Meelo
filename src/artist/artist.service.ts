@@ -13,14 +13,12 @@ export class ArtistService {
 	 * Find an artist by its slug
 	 * @param artistSlug the slug of the artist to find
 	 */
-	async getArtist(artistSlug: Slug, include?: Prisma.ArtistInclude): Promise<Artist> {
+	async getArtist(artistSlug: Slug, include?: Prisma.ArtistInclude) {
 		try {
-			return await this.prismaService.artist.findFirst({
+			return await this.prismaService.artist.findUnique({
 				rejectOnNotFound: true,
 				where: {
-					slug: {
-						equals: artistSlug.toString()
-					}
+					slug: artistSlug.toString()
 				},
 				include: {
 					albums: include?.albums,
@@ -32,7 +30,16 @@ export class ArtistService {
 		};
 	}
 
-	async createArtist(artistName: string, include?: Prisma.ArtistInclude): Promise<Artist> {
+	async getAllArtists(include?: Prisma.ArtistInclude) {
+		return await this.prismaService.artist.findMany({
+			include: {
+				albums: include?.albums,
+				songs: include?.songs
+			}
+		});
+	}
+
+	async createArtist(artistName: string, include?: Prisma.ArtistInclude) {
 		let artistSlug: Slug = new Slug(artistName);
 		try {
 			return await this.prismaService.artist.create({
@@ -54,7 +61,7 @@ export class ArtistService {
 	 * Find an artist by its name, or creates one if not found
 	 * @param artistName the slug of the artist to find
 	 */
-	 async getOrCreateArtist(artistName: string, include?: Prisma.ArtistInclude): Promise<Artist> {
+	 async getOrCreateArtist(artistName: string, include?: Prisma.ArtistInclude) {
 		try {
 			return await this.getArtist(new Slug(artistName), include);
 		} catch {
