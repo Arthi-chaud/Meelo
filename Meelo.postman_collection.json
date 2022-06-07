@@ -1,0 +1,75 @@
+{
+	"info": {
+		"_postman_id": "483d55ce-9c8d-4806-ac31-0304c3726941",
+		"name": "Meelo",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Create Library",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"name\": \"My First Library\",\n    \"path\": \"Music\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "localhost:8080/libraries/new",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"libraries",
+						"new"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Scan Library",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "localhost:8080/libraries/scan/my-first-library",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"libraries",
+						"scan",
+						"my-first-library"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get Libraries",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "localhost:8080/libraries",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"libraries"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
