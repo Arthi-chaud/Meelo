@@ -32,8 +32,8 @@ export class SongService {
 					}
 				},
 				include: {
-					artist: include?.artist,
-					instances: include?.instances
+					artist: include?.artist ?? false,
+					instances: include?.instances ?? false
 				}
 			});
 		} catch {
@@ -52,8 +52,8 @@ export class SongService {
 					slug: new Slug(title).toString()
 				},
 				include: {
-					instances: include?.instances,
-					artist: include?.artist
+					instances: include?.instances ?? false,
+					artist: include?.artist ?? false
 				}
 			});
 		} catch {

@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { Slug } from 'src/slug/slug';
 import { ArtistalreadyExistsException, ArtistNotFoundException } from './artist.exceptions';
 import { Artist, Prisma } from '@prisma/client';
@@ -21,8 +21,8 @@ export class ArtistService {
 					slug: artistSlug.toString()
 				},
 				include: {
-					albums: include?.albums,
-					songs: include?.songs
+					albums: include?.albums ?? false,
+					songs: include?.songs ?? false
 				}
 			});
 		} catch {
@@ -33,8 +33,8 @@ export class ArtistService {
 	async getAllArtists(include?: Prisma.ArtistInclude) {
 		return await this.prismaService.artist.findMany({
 			include: {
-				albums: include?.albums,
-				songs: include?.songs
+				albums: include?.albums ?? false,
+				songs: include?.songs ?? false
 			}
 		});
 	}
@@ -48,8 +48,8 @@ export class ArtistService {
 					slug: artistSlug.toString(),
 				},
 				include: {
-					albums: include?.albums,
-					songs: include?.songs
+					albums: include?.albums ?? false,
+					songs: include?.songs ?? false
 				}
 			});
 		} catch {

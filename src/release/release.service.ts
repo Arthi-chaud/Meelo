@@ -30,8 +30,8 @@ export class ReleaseService {
 					}
 				},
 				include: {
-					album: include?.album,
-					tracks: include?.tracks
+					album: include?.album ?? false,
+					tracks: include?.tracks ?? false
 				}
 			});
 		} catch {
@@ -67,8 +67,8 @@ export class ReleaseService {
 					title: releaseTitle,
 				},
 				include: {
-					album: include?.album,
-					tracks: include?.tracks
+					album: include?.album ?? false,
+					tracks: include?.tracks ?? false
 				}
 			});
 		} catch {
@@ -94,8 +94,8 @@ export class ReleaseService {
 					}
 				},
 				include: {
-					album: include?.album,
-					tracks: include?.tracks
+					album: include?.album ?? false,
+					tracks: include?.tracks ?? false
 				}
 			});
 		} catch {

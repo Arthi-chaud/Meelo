@@ -32,8 +32,8 @@ export class AlbumService {
 					}
 				},
 				include: {
-					releases: include?.releases,
-					artist: include?.artist
+					releases: include?.releases ?? false,
+					artist: include?.artist ?? false
 				}
 			})
 		} catch {
@@ -79,8 +79,8 @@ export class AlbumService {
 					type: AlbumService.getAlbumTypeFromName(albumName)
 				},
 				include: {
-					releases: include?.releases,
-					artist: include?.artist
+					releases: include?.releases ?? false,
+					artist: include?.artist ?? false
 				}
 			});
 		} catch {

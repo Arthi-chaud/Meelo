@@ -35,7 +35,7 @@ export class LibraryService {
 	async getAllLibraries(include?: Prisma.LibraryInclude) {
 		return this.prismaService.library.findMany({
 			include: {
-				files: include?.files
+				files: include?.files ?? false
 			}
 		});
 	}
@@ -48,15 +48,13 @@ export class LibraryService {
 	 */
 	async getLibrary(slug: Slug, include?: Prisma.LibraryInclude) {
 		try {
-			return await this.prismaService.library.findFirst({
+			return await this.prismaService.library.findUnique({
 				rejectOnNotFound: true,
 				where: {
-					slug: {
-						equals: slug.toString()
-					}
+					slug: slug.toString()
 				},
 				include: {
-					files: include?.files
+					files: include?.files ?? false
 				}
 			});
 		} catch {
