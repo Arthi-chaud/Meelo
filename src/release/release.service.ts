@@ -52,15 +52,8 @@ export class ReleaseService {
 		try {
 			return await this.getRelease(releaseTitle, new Slug(albumName), artistName ? new Slug(artistName) : undefined);
 		} catch {
-			try {
-				let album = await this.albumService.findOrCreate(albumName, artistName, { releases: true, artist: true });
-				Logger.error(JSON.stringify(album));
-				Logger.error(album.releases);
-				return await this.createRelease(releaseTitle, album, include);
-			} catch (e) {
-				Logger.warn(e);
-				throw e;
-			}
+			let album = await this.albumService.findOrCreate(albumName, artistName, { releases: true, artist: true });
+			return await this.createRelease(releaseTitle, album, include);
 		}
 	}
 

@@ -81,11 +81,9 @@ export class LibraryService {
 		);
 		let newlyRegistered: File[] = [];
 
-		candidates.forEach(
-			async (candidate) => {
-				newlyRegistered.push(await this.registerFile(candidate, parentLibrary));
-			}
-		);
+		for (const candidate of candidates) {
+			newlyRegistered.push(await this.registerFile(candidate, parentLibrary));
+		}
 		Logger.log(`${parentLibrary.slug} library: ${candidates.length} new files registered`);
 		return newlyRegistered;
 	}
@@ -103,8 +101,7 @@ export class LibraryService {
 		let registeredFile = await this.fileService.registerFile(filePath, parentLibrary);
 		try {
 			await this.metadataService.registerMetadata(fileMetadata, registeredFile);
-		} catch (e) {
-			Logger.warn(e);
+		} catch {
 			await this.fileService.removeFileEntries(registeredFile);
 			Logger.log(`${parentLibrary.slug} library: Registration of ${filePath} failed because of bad metadata.`);
 		}

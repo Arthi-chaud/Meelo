@@ -39,10 +39,12 @@ describe('Settings Service', () => {
 				() => fs.readFileSync('test/assets/settings-fake-regex.json').toString()
 			);
 			settingsService.loadFromFile();
-			expect(settingsService.trackRegexes).toStrictEqual(['regex1', 'regex2']);
-			expect(settingsService.usePathAsMetadataSource).toBe(true);
-			expect(settingsService.usePathToGetReleaseName).toBe(false);
-			expect(settingsService.baseDataFolder).toBe('/var/lib/meelo');
+			expect(settingsService.settingsContent).toStrictEqual({
+				dataFolder: '/var/lib/meelo',
+				trackRegex: ['regex1', 'regex2'],
+				mergeMetadataWithPathRegexGroup: true,
+				releaseNameFromPath: false,
+			})
 		});
 
 		it('should throw because the file is not a valid JSON', async () => {

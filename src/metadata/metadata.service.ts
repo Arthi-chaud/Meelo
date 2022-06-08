@@ -31,12 +31,10 @@ export class MetadataService {
 	 */
 	async registerMetadata(metadata : Metadata, file: File): Promise<Track> {
 		let song = await this.songService.findOrCreateSong(metadata.artist ?? metadata.albumArtist!, metadata.name!, { instances: true });
-		Logger.debug(JSON.stringify(song));
 		let release = await this.releaseService.findOrCreateRelease(
 			metadata.album!, metadata.album!, metadata.albumArtist ?? metadata.artist ?? undefined,
 			{ album: true }
 		);
-		Logger.debug(JSON.stringify(release));
 		let track: Prisma.TrackCreateInput = {
 			release: {
 				connect: {
@@ -112,8 +110,7 @@ export class MetadataService {
 				includeChapters: false,
 			});
 			return this.buildMetadataFromRaw(rawMetadata);
-		} catch (e) {
-			Logger.log(e.message);
+		} catch {
 			throw new FileParsingException(filePath);
 		}
 	}

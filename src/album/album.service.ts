@@ -83,8 +83,7 @@ export class AlbumService {
 					artist: include?.artist
 				}
 			});
-		} catch (e) {
-			Logger.error("Shite");
+		} catch {
 			throw new AlbumAlreadyExistsException(albumSlug, artistName ? new Slug(artistName) : undefined);
 		}
 
