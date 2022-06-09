@@ -11,7 +11,7 @@ jobs:
     runs-on: ubuntu-latest
     container: node:17
     services:
-      db:
+      postgres:
         image: postgres:alpine3.16
         env:
           POSTGRES_USER: test
@@ -28,11 +28,9 @@ jobs:
       - uses: actions/checkout@v2
       - name: "Create .env file"
         run: |
-          echo 'DATABASE_URL="postgresql://test:test@db:5432/test?schema=public"' > .env
+          echo 'DATABASE_URL="postgresql://test:test@postgres:5432/test?schema=public"' > .env
       - name: Install test dependencies
         run: yarn install
-      - name: Wait for DB to be ready
-        run: sleep 10
       - name: Migrate DB Schema
         run: yarn test:db:migrate
       - name: Run unit tests
