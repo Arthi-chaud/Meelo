@@ -23,12 +23,7 @@ jobs:
       - uses: actions/checkout@v2
       - name: "Create .env file"
         run: |
-          echo "POSTGRES_USER=test" >> .env
-          echo "POSTGRES_PASSWORD=test" >> .env
-          echo "POSTGRES_DB=test" >> .env
-          echo "POSTGRES_HOST=postgres" >> .env
-          echo "BACK_PORT=8080" >> .env
-          echo 'DATABASE_URL="postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@${POSTGRES_HOST}:5432/${POSTGRES_DB}?schema=public"' >> .env
+          echo 'DATABASE_URL="postgresql://test:test@postgres:5432/test?schema=public"' > .env
       - name: Install test dependencies
         run: yarn install
       - name: Migrate DB Schema
