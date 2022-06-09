@@ -11,9 +11,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-      - uses: KengoTODA/actions-setup-docker-compose@main
-        with:
-          version: '1.29.2'
-      - uses: borales/actions-yarn@v3.0.0
-        with:
-          cmd: test
+      - run: docker version
+      #- uses: borales/actions-yarn@v3.0.0
+      #  with:
+      #    cmd: test
