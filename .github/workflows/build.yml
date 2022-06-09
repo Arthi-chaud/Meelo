@@ -3,8 +3,7 @@ name: Build
 on:
   push:
     branches:
-      - dev
-      - master
+      - '*'
   workflow_dispatch:
 
 jobs:
