@@ -9,6 +9,16 @@ on:
 jobs:
   run_unit_tests:
     runs-on: ubuntu-latest
+    container: node:17
+    services:
+      db:
+        image: postgres:alpine:3.16
+        env:
+          POSTGRES_USER: test
+          POSTGRES_PASSWORD: test
+          POSTGRES_DB: test
+        ports:
+          - 5432:5432
     steps:
       - uses: actions/checkout@v2
       - name: "Create .env file"
@@ -19,9 +29,6 @@ jobs:
           echo "POSTGRES_HOST=db" >> .env
           echo "BACK_PORT=8080" >> .env
           echo 'DATABASE_URL="postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@${POSTGRES_HOST}:5432/${POSTGRES_DB}?schema=public"' > .env1
-      - name: Build container
-        run: docker-compose -f docker-compose.dev.yml build
-      - name: Run container
-        run: docker-compose -f docker-compose.dev.yml up -d
+
       - name: Run unit tests
         run: yarn test
