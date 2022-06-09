@@ -13,6 +13,6 @@ services:
       - ./prisma:/app/prisma
       - ./data:/data
   db:
-    image: postgres:alpine3.14
+    image: postgres:alpine3.16
     env_file:
       - .env

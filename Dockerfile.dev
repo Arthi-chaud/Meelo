@@ -1,6 +1,7 @@
 FROM node:17
 WORKDIR /app
-COPY *.json .
+COPY *.json ./
+COPY *.lock ./
 RUN yarn install
 COPY . .
 RUN yarn run prisma generate

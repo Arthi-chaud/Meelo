@@ -1,0 +1,38 @@
+name: Unit tests
+
+on:
+  push:
+    branches:
+      - dev
+      - master
+  workflow_dispatch:
+
+jobs:
+  run_unit_tests:
+    runs-on: ubuntu-latest
+    container: node:17
+    services:
+      postgres:
+        image: postgres:alpine3.16
+        env:
+          POSTGRES_USER: test
+          POSTGRES_PASSWORD: test
+          POSTGRES_DB: test
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+    steps:
+      - uses: actions/checkout@v2
+      - name: "Create .env file"
+        run: |
+          echo 'DATABASE_URL="postgresql://test:test@postgres:5432/test?schema=public"' > .env
+      - name: Install test dependencies
+        run: yarn install
+      - name: Migrate DB Schema
+        run: yarn test:db:migrate
+      - name: Run unit tests
+        run: yarn test

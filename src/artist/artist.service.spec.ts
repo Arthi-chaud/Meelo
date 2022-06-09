@@ -1,6 +1,7 @@
 import { Test, TestingModule } from "@nestjs/testing";
 import { FileManagerService } from "src/file-manager/file-manager.service";
 import { PrismaModule } from "src/prisma/prisma.module";
+import { PrismaService } from "src/prisma/prisma.service";
 import { SettingsModule } from "src/settings/settings.module";
 import { FakeFileManagerService } from "test/FakeFileManagerModule";
 import { ArtistModule } from "./artist.module";
@@ -14,7 +15,7 @@ describe('Artist Service', () => {
 			imports: [ArtistModule, PrismaModule],
 			providers: [ArtistService],
 		}).overrideProvider(FileManagerService).useClass(FakeFileManagerService).compile();
-
+		await module.get<PrismaService>(PrismaService).onModuleInit();
 		artistService = module.get<ArtistService>(ArtistService);
 	});
 
