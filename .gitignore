@@ -35,6 +35,8 @@ lerna-debug.log*
 !.vscode/extensions.json
 # Envrionment/Secret files
 .env
+.env.test
 illustrations/
 data/
 meelo/
+
