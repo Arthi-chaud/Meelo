@@ -26,8 +26,7 @@ export class LibraryService {
 					slug: librarySlug.toString()
 				}
 			});
-		} catch (e) {
-			Logger.error(e);
+		} catch {
 			throw new LibraryAlreadyExistsException(librarySlug);
 		}
 	}
@@ -61,6 +60,22 @@ export class LibraryService {
 			throw new LibraryNotFoundException(slug);
 		}
 	}
+
+	/**
+	 * Delete a Library entry using slug
+	 * @param slug the slug of the library to delete
+	 */
+		 async deleteLibrary(slug: Slug): Promise<void> {
+			try {
+				await this.prismaService.library.delete({
+					where: {
+						slug: slug.toString()
+					}
+				});
+			} catch {
+				throw new LibraryNotFoundException(slug);
+			}
+		}
 
 	/**
 	 * Registers new files a Library

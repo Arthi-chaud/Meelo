@@ -3,6 +3,7 @@ import { SettingsService } from 'src/settings/settings.service';
 import md5File from 'md5-file';
 import * as fs from 'fs';
 import { Library } from '@prisma/client';
+import { FolderDoesNotExists } from './file-manager.exceptions';
 
 @Injectable()
 export class FileManagerService {
@@ -73,21 +74,25 @@ export class FileManagerService {
 	 * @param folderPath The path of a folder to go through
 	 */
 	private getCandidateInFolder(folderPath: string): string[] {
-		let directoryContent = fs.readdirSync(folderPath, { withFileTypes: true });
-		let candidates: string[] = [];
-
-		directoryContent.forEach(
-			(dirEntry) => {
-				const entryFullPath = `${folderPath}/${dirEntry.name}`;
-				if (dirEntry.isDirectory())
-				candidates = candidates.concat(this.getCandidateInFolder(entryFullPath));
-				else if (dirEntry.isFile()) {
-					if (this.fileIsCandidate(entryFullPath))
-						candidates.push(entryFullPath);
+		try {
+			let directoryContent = fs.readdirSync(folderPath, { withFileTypes: true });
+			let candidates: string[] = [];
+	
+			directoryContent.forEach(
+				(dirEntry) => {
+					const entryFullPath = `${folderPath}/${dirEntry.name}`;
+					if (dirEntry.isDirectory())
+					candidates = candidates.concat(this.getCandidateInFolder(entryFullPath));
+					else if (dirEntry.isFile()) {
+						if (this.fileIsCandidate(entryFullPath))
+							candidates.push(entryFullPath);
+					}
 				}
-			}
-		);
-		return candidates;
+			);
+			return candidates;
+		} catch {
+			throw new FolderDoesNotExists(folderPath);
+		}
 	}
 
 	/**

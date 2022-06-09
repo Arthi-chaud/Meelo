@@ -35,7 +35,7 @@ describe('Artist Service', () => {
 			expect(artist.id).toBeDefined();
 		})
 	
-		it(('should throw as alrtist already exists'), () => {
+		it(('should throw as artist already exists'), () => {
 			const test = async () => {
 				await artistService.createArtist(artistName);
 			};
