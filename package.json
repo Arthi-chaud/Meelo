@@ -18,8 +18,8 @@
     "test:db:down": "docker container stop test-db",
     "test:db:migrate": "export POSTGRES_HOST=localhost; yarn run prisma migrate dev",
     "test": "export POSTGRES_HOST=localhost;  NODE_ENV=dev jest -i",
-    "test:watch": "export POSTGRES_HOST=localhost; jest --watch",
-    "test:cov": "export POSTGRES_HOST=localhost; jest --coverage",
+    "test:watch": "export POSTGRES_HOST=localhost; NODE_ENV=dev jest --watch",
+    "test:cov": "export POSTGRES_HOST=localhost; NODE_ENV=dev jest --coverage",
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
     "test:e2e": "jest --config ./test/jest-e2e.json"
   },
