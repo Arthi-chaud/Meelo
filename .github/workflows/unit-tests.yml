@@ -11,11 +11,17 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-      - run: |
-          echo "POSTGRES_USER=Meelo" >> .env
-          echo "POSTGRES_PASSWORD=M3EL0diI" >> .env
-          echo "POSTGRES_DB=meelo" >> .env
+      - name: "Create .env file"
+        run: |
+          echo "POSTGRES_USER=test" >> .env
+          echo "POSTGRES_PASSWORD=test" >> .env
+          echo "POSTGRES_DB=test" >> .env
           echo "POSTGRES_HOST=db" >> .env
           echo "BACK_PORT=8080" >> .env
           echo 'DATABASE_URL="postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@${POSTGRES_HOST}:5432/${POSTGRES_DB}?schema=public"' > .env1
-      - run: docker-compose -f docker-compose.dev.yml build
+      - name: Build container
+        run: docker-compose -f docker-compose.dev.yml build
+      - name: Run container
+        run: docker-compose -f docker-compose.dev.yml up -d
+      - name: Run unit tests
+        run: yarn test
