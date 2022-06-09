@@ -11,7 +11,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-      - run: docker-compose -f docker.compose.dev.yml build
+      - run: docker-compose -f docker-compose.dev.yml build
       #- uses: borales/actions-yarn@v3.0.0
       #  with:
       #    cmd: test
