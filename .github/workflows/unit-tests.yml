@@ -31,5 +31,7 @@ jobs:
           echo 'DATABASE_URL="postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@${POSTGRES_HOST}:5432/${POSTGRES_DB}?schema=public"' > .env1
       - name: Install test dependencies
         run: yarn install
+      - name: Migrate DB Schema
+        run: yarn test:db:migrate
       - name: Run unit tests
         run: yarn test
