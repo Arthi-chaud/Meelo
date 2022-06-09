@@ -12,7 +12,7 @@ jobs:
     container: node:17
     services:
       db:
-        image: postgres:alpine3.16
+        image: postgres
         env:
           POSTGRES_USER: test
           POSTGRES_PASSWORD: test
