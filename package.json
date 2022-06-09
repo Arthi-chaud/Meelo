@@ -17,7 +17,7 @@
     "docker:test:up": "docker compose -f docker-compose.dev.yml up -d",
     "docker:test:down": "docker compose -f docker-compose.dev.yml down",
     "docker:test:stop": "docker compose -f docker-compose.dev.yml stop",
-    "test": "yarn run docker:test:up && docker exec -e NODE_ENV=dev meelo-server-1 yarn jest ; yarn docker:test:stop",
+    "test": "yarn run docker:test:up && docker exec -t -e NODE_ENV=dev meelo-server-1 yarn jest && yarn docker:test:stop",
     "test:cov": "yarn run docker:test:up && docker exec meelo-server-1 yarn jest --coverage; yarn docker:test:stop",
     "test:debug": "yarn run docker:test:up && docker exec meelo-server-1 yarn node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
     "test:e2e": "docker exec meelo-server-1 yarn jest --config ./test/jest-e2e.json"
