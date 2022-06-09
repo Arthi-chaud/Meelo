@@ -16,10 +16,10 @@ jobs:
           echo "BACK_PORT=8080" > .env
           echo 'DATABASE_URL="postgresql://test:test@postgres:5432/test?schema=public"' >> .env
       - name: Build Containers
-        run: docker-compose -f docker.compose.dev.yml build
+        run: docker-compose -f docker-compose.dev.yml build
       - name: Start Meelo
-        run: docker-compose -f docker.compose.dev.yml up -d
+        run: docker-compose -f docker-compose.dev.yml up -d
       - name: Wait for Meelo to start
         run: sleep 20; curl -s http://localhost:8080/
       - name: Stop Meelo
-        run: docker-compose -f docker.compose.dev.yml stop
+        run: docker-compose -f docker-compose.dev.yml stop
