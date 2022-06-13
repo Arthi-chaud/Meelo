@@ -120,7 +120,7 @@ export class MetadataService {
 	 * @param filePath a path (full or not) to a file
 	 * @returns returns Metadata object with values from the capture groups of the regex in settings file
 	 */
-	private parseMetadataFromPath(filePath: string): Metadata {
+	public parseMetadataFromPath(filePath: string): Metadata {
 		try {
 			let matchingRegex: RegExpMatchArray = this.settingsService.trackRegexes
 				.map((regex) => filePath.match(regex))
