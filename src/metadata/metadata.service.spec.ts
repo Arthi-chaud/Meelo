@@ -1,4 +1,5 @@
 import { Test } from "@nestjs/testing";
+import { TrackType } from "@prisma/client";
 import { AlbumModule } from "src/album/album.module";
 import { FileManagerModule } from "src/file-manager/file-manager.module";
 import { FileManagerService } from "src/file-manager/file-manager.service";
@@ -37,7 +38,7 @@ describe('Metadata Service', () => {
 			expect(test).toThrow(PathParsingException);
 		});
 
-		it("should extract the metadata values from the path", () => {
+		it("should extract the metadata values from the path (all fields)", () => {
 			let parsedValues: Metadata = metadataService.parseMetadataFromPath(
 				'/data/My Artist/My Album (2006)/1-02 My Track.m4a'
 			);
@@ -49,6 +50,42 @@ describe('Metadata Service', () => {
 				discIndex: 1,
 				index: 2,
 				name: 'My Track'
+			});
+		});
+
+		it("should extract the metadata values from the path (missing fields)", () => {
+			let parsedValues: Metadata = metadataService.parseMetadataFromPath(
+				'/data/My Artist/My Album/02 My Track.m4a'
+			);
+			
+			expect(parsedValues).toStrictEqual(<Metadata>{
+				albumArtist: 'My Artist',
+				release: 'My Album',
+				releaseDate: undefined,
+				discIndex: undefined,
+				index: 2,
+				name: 'My Track'
+			});
+		});
+
+		it("should extract the metadata values from the file's tags", async () => {
+			let parsedValues: Metadata = await metadataService.parseMetadata(
+				'test/assets/dreams.m4a'
+			);
+			
+			expect(parsedValues).toStrictEqual(<Metadata>{
+				compilation: false,
+				artist: 'My Artist',
+				albumArtist: 'My Album Artist',
+				album: 'My Album',
+				release: 'My Album',
+				name: 'Dreams',
+				releaseDate: new Date('2007'),
+				index: 3,
+				discIndex: 2,
+				bitrate: 133,
+				duration: 210,
+				type: TrackType.Audio,
 			});
 		});
 	});

@@ -142,7 +142,7 @@ export class MetadataService {
 	private buildMetadataFromRaw(rawMetadata: IAudioMetadata): Metadata {
 		let isVideo: boolean = rawMetadata.format.trackInfo.findIndex((track) => track.video != null) != -1;
 		return {
-			compilation: rawMetadata.common.compilation,
+			compilation: rawMetadata.common.compilation ?? false,
 			artist: rawMetadata.common.artist,
 			albumArtist: rawMetadata.common.albumartist,
 			album: rawMetadata.common.album,
@@ -150,8 +150,8 @@ export class MetadataService {
 			name: rawMetadata.common.title,
 			index: rawMetadata.common.track.no ?? undefined,
 			discIndex: rawMetadata.common.disk.no ?? undefined,
-			bitrate: rawMetadata.format.bitrate ,
-			duration: rawMetadata.format.duration,
+			bitrate: rawMetadata.format.bitrate ? Math.floor(rawMetadata.format.bitrate / 1000) : undefined,
+			duration: rawMetadata.format.duration ? Math.floor(rawMetadata.format.duration) : undefined,
 			releaseDate: rawMetadata.common.date ? new Date(rawMetadata.common.date) : undefined,
 			type: isVideo ? TrackType.Video : TrackType.Audio
 		};
