@@ -124,4 +124,15 @@ describe('Album Service', () => {
 			expect(album.type).toBe(AlbumType.LiveRecording);
 		})
 	});
+
+	describe('Update an album', () => { 
+		it('should change the information of the album in the database', async () => {
+			let album = await albumService.getAlbum(new Slug('My album'));
+			album.name = "My new album";
+			expect((await albumService.updateAlbum(album)).slug.toString()).toBe('my-new-album');
+			let updatedAlbum = await albumService.getAlbum(new Slug('My new album'));
+			
+			expect(updatedAlbum.id).toBe(album.id);
+		});
+	 })
 });
