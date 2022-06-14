@@ -9,6 +9,7 @@ import { FileManagerService } from "src/file-manager/file-manager.service";
 import { FakeFileManagerService } from "test/FakeFileManagerModule";
 import { PrismaService } from "src/prisma/prisma.service";
 import { AlbumAlreadyExistsException } from "./album.exceptions";
+import { Slug } from "src/slug/slug";
 
 describe('Album Service', () => {
 	let albumService: AlbumService;
@@ -96,5 +97,31 @@ describe('Album Service', () => {
 				expect(test()).rejects.toThrow(AlbumAlreadyExistsException);
 			});
 		});
+	});
+
+	describe('Get an album', () => {
+		it("should find the album (w/o artist, but included)", async () => {
+			let album = await albumService.getAlbum(new Slug('My album'), undefined, {
+				artist: true
+			});
+			expect(album.id).toBeDefined();
+			expect(album.artist).toBeNull();
+			expect(album.artistId).toBeNull();
+			expect(album.releaseDate).toBeNull();
+			expect(album.slug.toString()).toBe('my-album');
+			expect(album.type).toBe(AlbumType.StudioRecording);
+		});
+
+		it("should find the album (w/ artist)", async () => {
+			let album = await albumService.getAlbum(new Slug('My album (Live)'),  new Slug('My Artist'), {
+				artist: true
+			});
+			expect(album.id).toBeDefined();
+			expect(album.artist!.name).toBe('My Artist');
+			expect(album.releaseDate).toStrictEqual(new Date('2006'));
+			expect(album.name).toBe('My album (Live)');
+			expect(album.slug.toString()).toBe('my-album-live');
+			expect(album.type).toBe(AlbumType.LiveRecording);
+		})
 	});
 });
