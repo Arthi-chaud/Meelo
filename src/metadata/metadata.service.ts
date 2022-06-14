@@ -32,7 +32,10 @@ export class MetadataService {
 	async registerMetadata(metadata : Metadata, file: File): Promise<Track> {
 		let song = await this.songService.findOrCreateSong(metadata.artist ?? metadata.albumArtist!, metadata.name!, { instances: true });
 		let release = await this.releaseService.findOrCreateRelease(
-			metadata.album!, metadata.album!, metadata.albumArtist ?? metadata.artist ?? undefined,
+			metadata.album!,
+			metadata.album!,
+			metadata.albumArtist ?? metadata.artist ?? undefined,
+			metadata.releaseDate,
 			{ album: true }
 		);
 		let track: Prisma.TrackCreateInput = {
