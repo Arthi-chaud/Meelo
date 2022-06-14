@@ -25,11 +25,11 @@ export class AlbumService {
 					slug: {
 						equals: albumSlug.toString()
 					},
-					artist: {
+					artist: artistSlug !== undefined ? {
 						slug: {
-							equals: artistSlug?.toString()
+							equals: artistSlug!.toString()
 						}
-					}
+					} : undefined
 				},
 				include: {
 					releases: include?.releases ?? false,
@@ -69,12 +69,22 @@ export class AlbumService {
 
 	async createAlbum(albumName: string, artistName?: string, releaseDate?: Date, include?: Prisma.AlbumInclude) {
 		let albumSlug: Slug = new Slug(albumName);
+
+		if (artistName === undefined) {
+			let albumExists: boolean = false;
+			try {
+				await this.getAlbum(albumSlug);
+				albumExists = true;
+			} catch {}
+			if (albumExists)
+				throw new AlbumAlreadyExistsException(albumSlug);
+		}
 		try {
 			return await this.prismaService.album.create({
 				data: {
 					name: albumName,
 					slug: albumSlug.toString(),
-					artistId: artistName ? (await this.artistServce.getOrCreateArtist(artistName!)).id! : null,
+					artistId: artistName ? (await this.artistServce.getOrCreateArtist(artistName!)).id : null,
 					releaseDate: releaseDate,
 					type: AlbumService.getAlbumTypeFromName(albumName)
 				},

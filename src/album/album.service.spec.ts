@@ -1,8 +1,32 @@
 import { AlbumService } from "./album.service";
-import { AlbumType } from "@prisma/client";
+import { Album, AlbumType } from "@prisma/client";
+import { ArtistService } from "src/artist/artist.service";
+import { Test, TestingModule } from "@nestjs/testing";
+import { ArtistModule } from "src/artist/artist.module";
+import { PrismaModule } from "src/prisma/prisma.module";
+import { AlbumModule } from "./album.module";
+import { FileManagerService } from "src/file-manager/file-manager.service";
+import { FakeFileManagerService } from "test/FakeFileManagerModule";
+import { PrismaService } from "src/prisma/prisma.service";
+import { AlbumAlreadyExistsException } from "./album.exceptions";
 
 describe('Album Service', () => {
+	let albumService: AlbumService;
+	let artistService: ArtistService;
+	beforeAll(async () => {
+		const module: TestingModule = await Test.createTestingModule({
+			imports: [AlbumModule, ArtistModule, PrismaModule],
+			providers: [ArtistService],
+		}).overrideProvider(FileManagerService).useClass(FakeFileManagerService).compile();
+		await module.get<PrismaService>(PrismaService).onModuleInit();
+		artistService = module.get<ArtistService>(ArtistService);
+		albumService = module.get<AlbumService>(AlbumService);
+	})
 
+	it('should be defined', () => {
+		expect(artistService).toBeDefined();
+		expect(albumService).toBeDefined();
+	});
 
 	describe('Detect Album Type', () => {
 
@@ -27,6 +51,50 @@ describe('Album Service', () => {
 		it('should says its a single', () => {
 			expect(AlbumService.getAlbumTypeFromName('Twist - Single')).toBe(AlbumType.Single);
 			expect(AlbumService.getAlbumTypeFromName('Falling (Remixes)')).toBe(AlbumType.Single);
+		});
+	});
+
+	describe('Create an album', () => {
+		describe('No artist', () => {
+			it('should create an album (no artist)', async () => {
+				let album: Album = await albumService.createAlbum('My album');
+
+				expect(album.id).toBeDefined();
+				expect(album.artistId).toBeNull();
+				expect(album.releaseDate).toBeNull();
+				expect(album.slug.toString()).toBe('my-album');
+				expect(album.type).toBe(AlbumType.StudioRecording);
+			});
+
+			it('should throw, as an album with the same name exists (no artist)', () => {
+				const test = async () => {
+					return await albumService.createAlbum('My album');
+				}
+				expect(test()).rejects.toThrow(AlbumAlreadyExistsException);
+			});
+		});
+
+		describe('With artist', () => {
+			it('should create a live album', async () => {
+				let album = await albumService.createAlbum('My album (Live)', 'My Artist', new Date('2006'), {
+					artist: true
+				});
+
+				expect(album.id).toBeDefined();
+				expect(album.artist!.name).toBe('My Artist');
+				expect(album.releaseDate).toStrictEqual(new Date('2006'));
+				expect(album.name).toBe('My album (Live)');
+				expect(album.slug.toString()).toBe('my-album-live');
+				expect(album.type).toBe(AlbumType.LiveRecording);
+			});
+
+			it('should throw, as an album with the same name exists', () => {
+
+				const test = async () => {
+					return await albumService.createAlbum('My album (Live)', 'My Artist');
+				}
+				expect(test()).rejects.toThrow(AlbumAlreadyExistsException);
+			});
 		});
 	});
 });

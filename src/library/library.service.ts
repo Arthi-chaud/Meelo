@@ -42,7 +42,6 @@ export class LibraryService {
 	/**
 	 * Retrieves Library entry using slug
 	 * @param slug the slug of the library to fetch
-	 * @param withFiles bool, true if related files relations should be resolved
 	 * @returns The fetched Library
 	 */
 	async getLibrary(slug: Slug, include?: Prisma.LibraryInclude) {
@@ -65,17 +64,17 @@ export class LibraryService {
 	 * Delete a Library entry using slug
 	 * @param slug the slug of the library to delete
 	 */
-		 async deleteLibrary(slug: Slug): Promise<void> {
-			try {
-				await this.prismaService.library.delete({
-					where: {
-						slug: slug.toString()
-					}
-				});
-			} catch {
-				throw new LibraryNotFoundException(slug);
-			}
+	async deleteLibrary(slug: Slug): Promise<void> {
+		try {
+			await this.prismaService.library.delete({
+				where: {
+					slug: slug.toString()
+				}
+			});
+		} catch {
+			throw new LibraryNotFoundException(slug);
 		}
+	}
 
 	/**
 	 * Registers new files a Library

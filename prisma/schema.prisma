@@ -28,13 +28,13 @@ model Album {
 	/// The slug of the album, based on its name
 	slug			String
 	/// The date of the first release of the album
-	releaseDate	DateTime?
+	releaseDate		DateTime?
 	/// Collections of related releases
 	releases		Release[]
 	/// Describes the type of the album
 	type			AlbumType	@default(StudioRecording)
 	/// The artist of the album
-	/// This filed is nullable, as albums may not have an entitled artist, like compilations
+	/// This field is nullable, as albums may not have an entitled artist, like compilations
 	artist			Artist?		@relation(fields: [artistId], references: [id])
 	artistId		Int?
 	@@unique([slug, artistId])
