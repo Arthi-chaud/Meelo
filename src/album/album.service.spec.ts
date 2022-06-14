@@ -1,5 +1,5 @@
 import { AlbumService } from "./album.service";
-import { Album, AlbumType } from "@prisma/client";
+import { Album, AlbumType, Artist, Release } from "@prisma/client";
 import { ArtistService } from "src/artist/artist.service";
 import { Test, TestingModule } from "@nestjs/testing";
 import { ArtistModule } from "src/artist/artist.module";
@@ -8,7 +8,7 @@ import { AlbumModule } from "./album.module";
 import { FileManagerService } from "src/file-manager/file-manager.service";
 import { FakeFileManagerService } from "test/FakeFileManagerModule";
 import { PrismaService } from "src/prisma/prisma.service";
-import { AlbumAlreadyExistsException } from "./album.exceptions";
+import { AlbumAlreadyExistsException, AlbumNotFoundException } from "./album.exceptions";
 import { Slug } from "src/slug/slug";
 
 describe('Album Service', () => {
@@ -124,6 +124,33 @@ describe('Album Service', () => {
 			expect(album.type).toBe(AlbumType.LiveRecording);
 			expect(album.releases).toStrictEqual([]);
 		})
+	});
+
+	describe('Find an album from the release name', () => {
+		let artist: Artist;
+		it("should throw, as the artist has no album", async () => {
+			artist = await artistService.createArtist('My second artist');
+			const test = async () => {
+				return await albumService.getCandidateAlbumFromReleaseName("My Release name", new Slug(artist.slug));
+			};
+
+			expect(test()).rejects.toThrow(AlbumNotFoundException);
+		});
+
+		it("should throw, as the artist does not have an album close enough", async () => {
+			await albumService.createAlbum('Trolololol', artist.name);
+			const test = async () => {
+				return await albumService.getCandidateAlbumFromReleaseName("My Release name", new Slug(artist.slug));
+			};
+
+			expect(test()).rejects.toThrow(AlbumNotFoundException);
+		});
+
+		it("should find the closes candidate", async () => {
+			let album = await albumService.createAlbum('Aphrodite (Deluxe)', artist.name);
+			let match = await albumService.getCandidateAlbumFromReleaseName("Aphrodite", new Slug(artist.slug));
+			expect(match).toStrictEqual(album);
+		});
 	});
 
 	describe('Update an album', () => { 
