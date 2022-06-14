@@ -48,21 +48,22 @@ export class ReleaseService {
 		});
 	}
 
-	async findOrCreateRelease(releaseTitle: string, albumName: string, artistName?: string, include?: Prisma.ReleaseInclude) {
+	async findOrCreateRelease(releaseTitle: string, albumName: string, artistName?: string, releaseDate?: Date, include?: Prisma.ReleaseInclude) {
 		try {
 			return await this.getRelease(releaseTitle, new Slug(albumName), artistName ? new Slug(artistName) : undefined);
 		} catch {
 			let album = await this.albumService.findOrCreate(albumName, artistName, { releases: true, artist: true });
-			return await this.createRelease(releaseTitle, album, include);
+			return await this.createRelease(releaseTitle, album, releaseDate, include);
 		}
 	}
 
 
-	async createRelease(releaseTitle: string, album: Album & {releases: Release[], artist: Artist | null}, include?: Prisma.ReleaseInclude) {
+	async createRelease(releaseTitle: string, album: Album & { releases: Release[], artist: Artist | null}, releaseDate?: Date, include?: Prisma.ReleaseInclude) {
 		try {
 			return await this.prismaService.release.create({
 				data: {
 					albumId: album.id,
+					releaseDate: releaseDate,
 					master: album.releases.filter((release) => release.master).length == 0,
 					title: releaseTitle,
 				},
