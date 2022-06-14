@@ -97,7 +97,7 @@ export class AlbumService {
 				}
 			});
 		} catch {
-			throw new AlbumAlreadyExistsException(albumSlug, artistName ? new Slug(artistName) : undefined);
+			throw new AlbumAlreadyExistsException(albumSlug, new Slug(artistName!));
 		}
 
 	}

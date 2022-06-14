@@ -78,7 +78,7 @@ describe('Album Service', () => {
 		describe('With artist', () => {
 			it('should create a live album', async () => {
 				let album = await albumService.createAlbum('My album (Live)', 'My Artist', new Date('2006'), {
-					artist: true
+					artist: true, releases: true
 				});
 
 				expect(album.id).toBeDefined();
@@ -87,6 +87,7 @@ describe('Album Service', () => {
 				expect(album.name).toBe('My album (Live)');
 				expect(album.slug.toString()).toBe('my-album-live');
 				expect(album.type).toBe(AlbumType.LiveRecording);
+				expect(album.releases).toStrictEqual([]);
 			});
 
 			it('should throw, as an album with the same name exists', () => {
@@ -113,7 +114,7 @@ describe('Album Service', () => {
 
 		it("should find the album (w/ artist)", async () => {
 			let album = await albumService.getAlbum(new Slug('My album (Live)'),  new Slug('My Artist'), {
-				artist: true
+				artist: true, releases: true
 			});
 			expect(album.id).toBeDefined();
 			expect(album.artist!.name).toBe('My Artist');
@@ -121,6 +122,7 @@ describe('Album Service', () => {
 			expect(album.name).toBe('My album (Live)');
 			expect(album.slug.toString()).toBe('my-album-live');
 			expect(album.type).toBe(AlbumType.LiveRecording);
+			expect(album.releases).toStrictEqual([]);
 		})
 	});
 
