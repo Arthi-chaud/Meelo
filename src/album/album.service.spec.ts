@@ -90,7 +90,6 @@ describe('Album Service', () => {
 			});
 
 			it('should throw, as an album with the same name exists', () => {
-
 				const test = async () => {
 					return await albumService.createAlbum('My album (Live)', 'My Artist');
 				}
@@ -134,5 +133,35 @@ describe('Album Service', () => {
 			
 			expect(updatedAlbum.id).toBe(album.id);
 		});
-	 })
+	});
+
+	describe('Find or create', () => {
+		it("should find the existing album (no artist)", async () => {
+			let album = await albumService.getAlbum(new Slug('My new album'));
+			let fetchedAlbum = await albumService.findOrCreate('My new album');
+
+			expect(fetchedAlbum.id).toBe(album.id);
+			expect(fetchedAlbum.name).toBe(album.name);
+			expect(fetchedAlbum.slug).toBe(album.slug);
+		});
+
+		it("should find the existing album (w/ artist)", async () => {
+			let album = await albumService.getAlbum(new Slug('My album (Live)'), new Slug('My Artist'));
+			let fetchedAlbum = await albumService.findOrCreate('My album (Live)', 'My Artist');
+
+			expect(fetchedAlbum.id).toBe(album.id);
+			expect(fetchedAlbum.name).toBe(album.name);
+			expect(fetchedAlbum.slug).toBe(album.slug);
+		});
+
+		it("should create a new album", async () => {
+			let albumNoArtist = await albumService.getAlbum(new Slug('My new album'));
+			let albumWithArtist = await albumService.getAlbum(new Slug('My album (Live)'), new Slug('My Artist'));
+			let newAlbum = await albumService.findOrCreate('My brand new album', 'My Artist');
+			
+			expect(newAlbum.id).toBeGreaterThan(albumNoArtist.id);
+			expect(newAlbum.id).toBeGreaterThan(albumWithArtist.id);
+			expect(newAlbum.artistId).toBe(albumWithArtist.artistId);
+		});
+	});
 });
