@@ -45,7 +45,8 @@ describe('Metadata Service', () => {
 			
 			expect(parsedValues).toStrictEqual(<Metadata>{
 				albumArtist: 'My Artist',
-				release: 'My Album',
+				album: 'My Album',
+				release: undefined,
 				releaseDate: new Date('2006'),
 				discIndex: 1,
 				index: 2,
@@ -60,7 +61,8 @@ describe('Metadata Service', () => {
 			
 			expect(parsedValues).toStrictEqual(<Metadata>{
 				albumArtist: 'My Artist',
-				release: 'My Album',
+				album: 'My Album',
+				release: undefined,
 				releaseDate: undefined,
 				discIndex: undefined,
 				index: 2,
