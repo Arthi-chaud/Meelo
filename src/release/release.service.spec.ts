@@ -6,12 +6,15 @@ import { ArtistModule } from "src/artist/artist.module";
 import { FileManagerService } from "src/file-manager/file-manager.service";
 import { PrismaModule } from "src/prisma/prisma.module";
 import { PrismaService } from "src/prisma/prisma.service";
+import { Slug } from "src/slug/slug";
 import { FakeFileManagerService } from "test/FakeFileManagerModule";
 import { ReleaseService } from "./release.service";
 
 describe('Release Service', () => {
 	let releaseService: ReleaseService;
+	let albumService: AlbumService;
 	let album: Album & { releases: Release[], artist: Artist | null };
+	
 	beforeAll(async () => {
 		const module: TestingModule = await Test.createTestingModule({
 			imports: [PrismaModule, AlbumModule, AlbumModule, ArtistModule],
@@ -19,7 +22,8 @@ describe('Release Service', () => {
 		}).overrideProvider(FileManagerService).useClass(FakeFileManagerService).compile();
 		await module.get<PrismaService>(PrismaService).onModuleInit();
 		releaseService = module.get<ReleaseService>(ReleaseService);
-		album = await module.get<AlbumService>(AlbumService).createAlbum('My Album', 'My Artist', undefined, {
+		albumService = module.get<AlbumService>(AlbumService);
+		album = await albumService.createAlbum('My Album', 'My Artist', undefined, {
 			artist: true, releases: true
 		});
 	})
@@ -41,21 +45,24 @@ describe('Release Service', () => {
 		});
 
 		it("should set the release date to the album", async () => {
-			expect(release.album.releaseDate).toBe(new Date('2006'));
+			album = await albumService.getAlbum(new Slug(album.slug), new Slug(album.artist!.slug), {
+				releases: true
+			});
+			expect(release.album.releaseDate).toStrictEqual(new Date('2006'));
 		});
 
 		it("should create the album's second release", async () => {
-			release = await releaseService.createRelease('My Album 2', album, new Date('2002'), {
+			release = await releaseService.createRelease('My Album 2', album, new Date('2007'), {
 				album: true
 			});
 			expect(release.albumId).toBe(album.id);
-			expect(release.master).toBeTruthy();
+			expect(release.master).toBeFalsy();
 			expect(release.releaseDate).toStrictEqual(new Date('2007'));
 			expect(release.title).toBe('My Album 2');
 		});
 
 		it("should not have set the release date of the album", async () => {
-			expect(release.album.releaseDate).toBe(new Date('2006'));
+			expect(release.album.releaseDate).toStrictEqual(new Date('2006'));
 		});
 	});
 })

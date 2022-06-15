@@ -9,12 +9,12 @@ export class ReleaseNotFoundException extends NotFoundException {
 
 export class ReleaseAlreadyExists extends AlreadyExistsException {
 	constructor(releaseTitle: string, artistSlug?: Slug) {
-		super(`Release ${releaseTitle}${artistSlug ? `by ${artistSlug.toString()}`: ''} already exists`);
+		super(`Release '${releaseTitle}' ${artistSlug ? `by ${artistSlug.toString()}`: ''} already exists`);
 	}
 }
 
 export class MasterReleaseNotFoundException extends NotFoundException {
 	constructor(albumSlug: Slug, artistSlug?: Slug) {
-		super(`Master Release of ${albumSlug.toString()}${artistSlug ? `by ${artistSlug.toString()}`: ''} not found`);
+		super(`Master Release of ${albumSlug.toString()} ${artistSlug ? `by ${artistSlug.toString()}`: ''} not found`);
 	}
 }

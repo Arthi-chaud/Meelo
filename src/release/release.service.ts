@@ -49,10 +49,18 @@ export class ReleaseService {
 	}
 
 	async findOrCreateRelease(releaseTitle: string, albumName: string, artistName?: string, releaseDate?: Date, include?: Prisma.ReleaseInclude) {
+		let artistSlug: Slug | undefined = artistName ? new Slug(artistName) : undefined
 		try {
-			return await this.getRelease(releaseTitle, new Slug(albumName), artistName ? new Slug(artistName) : undefined);
+			return await this.getRelease(releaseTitle, new Slug(albumName), artistSlug);
 		} catch {
-			let album = await this.albumService.findOrCreate(albumName, artistName, { releases: true, artist: true });
+			let album: Album & { releases: Release[]; artist: Artist | null };
+			try {
+				album = await this.albumService.getCandidateAlbumFromReleaseName(releaseTitle, artistSlug, {
+					releases: true, artist: true
+				});
+			} catch {
+				album = await this.albumService.findOrCreate(albumName, artistName, { releases: true, artist: true });
+			}
 			return await this.createRelease(releaseTitle, album, releaseDate, include);
 		}
 	}
@@ -60,6 +68,10 @@ export class ReleaseService {
 
 	async createRelease(releaseTitle: string, album: Album & { releases: Release[], artist: Artist | null}, releaseDate?: Date, include?: Prisma.ReleaseInclude) {
 		try {
+			if (album.releaseDate == undefined || (releaseDate && album.releaseDate! > releaseDate)) {
+				album.releaseDate = releaseDate!;
+				await this.albumService.updateAlbum(album);
+			}
 			return await this.prismaService.release.create({
 				data: {
 					albumId: album.id,

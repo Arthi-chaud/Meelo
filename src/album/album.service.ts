@@ -74,7 +74,10 @@ export class AlbumService {
 	async updateAlbum(album: Album): Promise<Album> {
 		return await this.prismaService.album.update({
 			data: {
-				...album,
+				name: album.name,
+				releaseDate: album.releaseDate,
+				type: album.type,
+				artistId: album.artistId,
 				slug: new Slug(album.name).toString()
 			},
 			where: {

@@ -32,9 +32,9 @@ export class MetadataService {
 	async registerMetadata(metadata : Metadata, file: File): Promise<Track> {
 		let song = await this.songService.findOrCreateSong(metadata.artist ?? metadata.albumArtist!, metadata.name!, { instances: true });
 		let release = await this.releaseService.findOrCreateRelease(
+			metadata.release ?? metadata.album!,
 			metadata.album!,
-			metadata.album!,
-			metadata.albumArtist ?? metadata.artist ?? undefined,
+			metadata.albumArtist,
 			metadata.releaseDate,
 			{ album: true }
 		);
@@ -131,7 +131,8 @@ export class MetadataService {
 			let groups = matchingRegex.groups!;
 			return {
 				albumArtist: groups['Artist'] ?? undefined,
-				release: groups['Album'] ?? undefined,
+				release: groups['Release'] ?? undefined,
+				album: groups['Album'] ?? undefined,
 				releaseDate: groups['Year'] ? new Date(groups['Year']) : undefined,
 				discIndex: groups['Disc'] ? parseInt(groups['Disc']) : undefined,
 				index: groups['Index'] ? parseInt(groups['Index']) : undefined,
