@@ -20,10 +20,10 @@ export class ArtistService {
 				where: {
 					slug: artistSlug.toString()
 				},
-				include: include !== undefined ? {
-					albums: include.albums ?? false,
-					songs: include.songs ?? false
-				} : undefined
+				include: {
+					albums: include?.albums ?? false,
+					songs: include?.songs ?? false
+				}
 			});
 		} catch {
 			throw new ArtistNotFoundException(artistSlug);
