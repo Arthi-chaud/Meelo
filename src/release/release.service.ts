@@ -68,11 +68,7 @@ export class ReleaseService {
 
 	async createRelease(releaseTitle: string, album: Album & { releases: Release[], artist: Artist | null}, releaseDate?: Date, include?: Prisma.ReleaseInclude) {
 		try {
-			if (album.releaseDate == undefined || (releaseDate && album.releaseDate! > releaseDate)) {
-				album.releaseDate = releaseDate!;
-				await this.albumService.updateAlbum(album);
-			}
-			return await this.prismaService.release.create({
+			let release = await this.prismaService.release.create({
 				data: {
 					albumId: album.id,
 					releaseDate: releaseDate,
@@ -84,6 +80,20 @@ export class ReleaseService {
 					tracks: include?.tracks ?? false
 				}
 			});
+			let updateAlbum = false;
+			if (album.releaseDate === null ||
+				(releaseDate !== undefined && album.releaseDate! > releaseDate)) {
+				album.releaseDate = releaseDate ?? null;
+				updateAlbum = true;
+			}
+			if (releaseTitle.length < album.name.length) {
+				album.name = releaseTitle;
+				updateAlbum = true;
+			}
+			if (updateAlbum) {
+				release.album = await this.albumService.updateAlbum(album);
+			}
+			return release;
 		} catch {
 			throw new ReleaseAlreadyExists(releaseTitle, album.artist ? new Slug(album.artist!.slug!) : undefined);
 		}

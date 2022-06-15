@@ -3,7 +3,7 @@ import { Slug } from "src/slug/slug";
 
 export class AlbumNotFoundException extends NotFoundException {
 	constructor(albumSlug: Slug, artistSlug?: Slug) {
-		super(`${albumSlug.toString()}${artistSlug ? `by ${artistSlug.toString()}`: ''}: No such album`);
+		super(`${albumSlug.toString()} ${artistSlug ? `by ${artistSlug.toString()}`: ''}: No such album`);
 	}
 }
 
