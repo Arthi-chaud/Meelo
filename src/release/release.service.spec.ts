@@ -1,5 +1,5 @@
 import { Test, TestingModule } from "@nestjs/testing";
-import { Album, Artist, Release } from "@prisma/client";
+import { Album, AlbumType, Artist, Release } from "@prisma/client";
 import { AlbumNotFoundException } from "src/album/album.exceptions";
 import { AlbumModule } from "src/album/album.module";
 import { AlbumService } from "src/album/album.service";
@@ -144,6 +144,21 @@ describe('Release Service', () => {
 			expect(createdRelease.master).toBe(false);
 			expect(createdRelease.releaseDate).toStrictEqual(new Date('2007'));
 			expect(createdRelease.title).toBe("My Album");
+		});
+
+		it("should create a new release for a new album", async () => {
+			let createdRelease = await releaseService.findOrCreateRelease('My New Album (Live)', 'My New Album (Live)', 'My New Artist', new Date('2007'), {
+				album: true
+			});
+
+			expect(createdRelease.releaseDate).toStrictEqual(new Date('2007'));
+			expect(createdRelease.master).toBe(true);
+			expect(createdRelease.title).toBe('My New Album (Live)');
+			expect(createdRelease.album.id).toBe(createdRelease.albumId);
+			expect(createdRelease.album.name).toBe("My New Album (Live)");
+			expect(createdRelease.album.releaseDate).toStrictEqual(new Date('2007'));
+			expect(createdRelease.album.type).toBe(AlbumType.LiveRecording);
+			expect(createdRelease.album.slug).toBe('my-new-album-live');
 		});
 	});
 })

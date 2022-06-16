@@ -57,6 +57,15 @@ export class ReleaseService {
 		return updatedRelease;
 	}
 
+	/**
+	 * Finds a release, or creates one if it does not exist already
+	 * @param releaseTitle the title of the release
+	 * @param albumName  the name of the parent album
+	 * @param artistName the name of the album artist, if it has one
+	 * @param releaseDate the release date of the release, only used for creation
+	 * @param include the relation fields to include on returned value
+	 * @returns 
+	 */
 	async findOrCreateRelease(releaseTitle: string, albumName: string, artistName?: string, releaseDate?: Date, include?: Prisma.ReleaseInclude) {
 		let artistSlug: Slug | undefined = artistName ? new Slug(artistName) : undefined
 		try {
@@ -155,6 +164,14 @@ export class ReleaseService {
 		}
 	}
 	
+	/**
+	 * Retrives a release
+	 * @param releaseTitle 
+	 * @param albumSlug 
+	 * @param artistSlug 
+	 * @param include 
+	 * @returns 
+	 */
 	async getRelease(releaseTitle: string, albumSlug: Slug, artistSlug?: Slug, include?: Prisma.ReleaseInclude) {
 		try {
 			return await this.prismaService.release.findFirst({
