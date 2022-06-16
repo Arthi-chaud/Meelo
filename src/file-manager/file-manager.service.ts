@@ -53,7 +53,7 @@ export class FileManagerService {
 	 * @returns Library's full path
 	 */
 	getLibraryFullPath(library: Library):string {
-		return `${this.settingsService.baseDataFolder}/${library.path}`;
+		return `${this.settingsService.settingsValues.dataFolder}/${library.path}`;
 	}
 
 	/**
@@ -62,7 +62,7 @@ export class FileManagerService {
 	 * @returns A List of strings representing the path of candidate file, without dataFolder and libraryBaseDirectory
 	 */
 	getCandidateFilesInLibraryFolder(libraryBaseDirectory: string): string[] {
-		const baseFolder = this.settingsService.baseDataFolder;
+		const baseFolder = this.settingsService.settingsValues.dataFolder;
 		const libraryPath = `${baseFolder}/${libraryBaseDirectory}`;
 		return this.getCandidateInFolder(libraryPath).map(
 			(candidateFullPath) => candidateFullPath.substring(libraryPath.length + 1)
@@ -101,7 +101,7 @@ export class FileManagerService {
 	 * @returns true if any of the RegExp matches
 	 */
 	private fileIsCandidate(filepath: string): boolean {
-		let matchingRegexes = this.settingsService.trackRegexes.filter(
+		let matchingRegexes = this.settingsService.settingsValues.trackRegex.filter(
 			(regex) => filepath.match(regex) != null
 		);
 		return matchingRegexes.length > 0;

@@ -3,6 +3,5 @@
 		"^([\\/\\\\]+.*)*[\\/\\\\]*(?<Artist>.+)[\\/\\\\]+(?<Album>.+)[\\/\\\\]+((?<Disc>[0-9]+)-)?(?<Index>[0-9]+)\\s+(?<Track>.*)\\..*$",
 		"^([\\/\\\\]+.*)*[\\/\\\\]*(?<Artist>.+)[\\/\\\\]+(?<Album>.+)(\\s*\\((?<Year>\\d{4})\\))[\\/\\\\]+((?<Disc>[0-9]+)-)?(?<Index>[0-9]+)\\s+(?<Track>.*)\\..*$"
 	],
-	"mergeMetadataWithPathRegexGroup": true,
-	"releaseNameFromPath": true
+	"mergeMetadataWithPathRegexGroup": true
 }

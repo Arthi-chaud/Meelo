@@ -14,8 +14,4 @@ export type Settings = {
 	 * Use the regexes to match files as a metadata source
 	 */
 	mergeMetadataWithPathRegexGroup: boolean;
-	/**
-	 * Use the name of the album in path as the release name (overriding the file's embedded metadat)
-	 */
-	releaseNameFromPath: boolean
 }

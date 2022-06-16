@@ -4,6 +4,5 @@
 		"regex1",
 		"regex2"
 	],
-	"mergeMetadataWithPathRegexGroup": true,
-	"releaseNameFromPath": false
+	"mergeMetadataWithPathRegexGroup": true
 }

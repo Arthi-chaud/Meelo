@@ -39,11 +39,10 @@ describe('Settings Service', () => {
 				() => fs.readFileSync('test/assets/settings-fake-regex.json').toString()
 			);
 			settingsService.loadFromFile();
-			expect(settingsService.settingsContent).toStrictEqual({
+			expect(settingsService.settingsValues).toStrictEqual({
 				dataFolder: '/var/lib/meelo',
 				trackRegex: ['regex1', 'regex2'],
-				mergeMetadataWithPathRegexGroup: true,
-				releaseNameFromPath: false,
+				mergeMetadataWithPathRegexGroup: true
 			})
 		});
 

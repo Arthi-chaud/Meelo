@@ -38,40 +38,16 @@ export class SettingsService {
 	private buildSettings(object: any): Settings {
 		if (typeof object.dataFolder !== "string" ||
 			!Array.isArray(object.trackRegex) ||
-			typeof object.releaseNameFromPath !== "boolean" ||
 			typeof object.mergeMetadataWithPathRegexGroup !== "boolean")
 			throw new InvalidSettingsFileException();
 		return {
 			dataFolder: object.dataFolder,
 			trackRegex: object.trackRegex,
-			releaseNameFromPath: object.releaseNameFromPath,
 			mergeMetadataWithPathRegexGroup: object.mergeMetadataWithPathRegexGroup
 		};
 	}
 
-	get settingsContent(): Settings {
+	get settingsValues(): Settings {
 		return this.settings;
-	}
-
-	/**
-	 * Retrieve protected dataFolder value
-	 */
-	get baseDataFolder(): string {
-		return this.settings.dataFolder;
-	}
-
-	/**
-	 * Retrieve protected RegExpr values
-	 */
-	get trackRegexes(): string[] {
-		return this.settings.trackRegex;
-	}
-
-	get usePathToGetReleaseName(): boolean {
-		return this.settings.releaseNameFromPath;
-	}
-
-	get usePathAsMetadataSource(): boolean {
-		return this.settings.mergeMetadataWithPathRegexGroup;
 	}
 }

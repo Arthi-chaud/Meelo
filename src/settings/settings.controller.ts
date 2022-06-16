@@ -8,7 +8,7 @@ export class SettingsController {
 	
 	@Get()
 	getSettings(): Settings {
-		return this.settingsService.settingsContent;
+		return this.settingsService.settingsValues;
 	}
 
 	@Get('reload')

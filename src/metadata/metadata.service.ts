@@ -83,7 +83,7 @@ export class MetadataService {
 	async parseMetadata(filePath: string): Promise<Metadata> {
 		let fileMetadata: Metadata = await this.parseMetadataFromFile(filePath);
 		
-		if (this.settingsService.usePathAsMetadataSource) {
+		if (this.settingsService.settingsValues.mergeMetadataWithPathRegexGroup) {
 			const metadataFromPath: Metadata = this.parseMetadataFromPath(filePath);
 			fileMetadata.discIndex = metadataFromPath.discIndex ?? fileMetadata.discIndex;
 			fileMetadata.index = metadataFromPath.index ?? fileMetadata.index;
@@ -125,7 +125,7 @@ export class MetadataService {
 	 */
 	public parseMetadataFromPath(filePath: string): Metadata {
 		try {
-			let matchingRegex: RegExpMatchArray = this.settingsService.trackRegexes
+			let matchingRegex: RegExpMatchArray = this.settingsService.settingsValues.trackRegex
 				.map((regex) => filePath.match(regex))
 				.find((regexMatch) => regexMatch != null)!;
 			let groups = matchingRegex.groups!;
