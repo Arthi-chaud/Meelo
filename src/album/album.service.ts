@@ -1,8 +1,8 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { ArtistService } from 'src/artist/artist.service';
 import { Slug } from 'src/slug/slug';
-import { AlbumAlreadyExistsException, AlbumNotFoundException } from './album.exceptions';
-import { AlbumType, Album, Prisma } from '@prisma/client';
+import { AlbumAlreadyExistsException, AlbumNotFoundException, AlbumNotFoundFromIDException } from './album.exceptions';
+import { AlbumType, Album, Prisma, Release } from '@prisma/client';
 import { PrismaService } from 'src/prisma/prisma.service';
 
 @Injectable()
@@ -11,6 +11,23 @@ export class AlbumService {
 		private prismaService: PrismaService,
 		private artistServce: ArtistService
 	) {}
+
+	async getAlbumFromID(id: number, include?: Prisma.AlbumInclude) {
+		try {
+			return await this.prismaService.album.findUnique({
+				rejectOnNotFound: true,
+				where: {
+					id: id
+				},
+				include: {
+					releases: include?.releases ?? false,
+					artist: include?.artist ?? false
+				}
+			});
+		} catch {
+			throw new AlbumNotFoundFromIDException(id);
+		}
+	}
 
 	/**
 	 * Find an album from its slug and its artist's slug
@@ -40,6 +57,26 @@ export class AlbumService {
 			throw new AlbumNotFoundException(albumSlug, artistSlug);
 		}
 	}
+
+	/**
+	 * Retrieves the release related to an album
+	 * @param albumId the id of the parent album
+	 * @param include the relation to include in the retrived objects
+	 * @returns a promise of an array of releases
+	 */
+	async getAlbumReleases(albumId: number, include?: Prisma.ReleaseInclude): Promise<Release[]> {
+		return await this.prismaService.release.findMany({
+			where: {
+				albumId: {
+					equals: albumId
+				}
+			},
+			include: {
+				album: false,
+				tracks: include?.tracks ?? false
+			}
+		});
+	} 
 	/**
 	 * Find an existing album from a potential release name
 	 * @param releaseName the name of the potential release
@@ -84,6 +121,35 @@ export class AlbumService {
 				id: album.id
 			}
 		});
+	}
+
+	/**
+	 * Updates an album name, using the shortest name from its releases
+	 * @param album 
+	 */
+	async updateAlbumName(album: Album): Promise<Album> {
+		let releases: Release[] = await this.getAlbumReleases(album.id);
+		for (const release of releases) {
+			if (release.title.length < album.name.length) {
+				album.name = release.title;
+			}
+		}
+		return await this.updateAlbum(album);
+	}
+
+	/**
+	 * Updates an album date, using the earliest date from its releases
+	 * @param album 
+	 */
+	 async updateAlbumDate(album: Album): Promise<Album> {
+		let releases: Release[] = await this.getAlbumReleases(album.id);
+		for (const release of releases) {
+			if (album.releaseDate == null ||
+				(release.releaseDate && release.releaseDate < album.releaseDate)) {
+				album.releaseDate = release.releaseDate;
+			}
+		}
+		return await this.updateAlbum(album);
 	}
 
 	static getAlbumTypeFromName(albumName: string): AlbumType {

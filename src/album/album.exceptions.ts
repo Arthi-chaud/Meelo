@@ -7,6 +7,12 @@ export class AlbumNotFoundException extends NotFoundException {
 	}
 }
 
+export class AlbumNotFoundFromIDException extends NotFoundException {
+	constructor(id: number) {
+		super(`No album with id ${id} exists`);
+	}
+}
+
 export class AlbumAlreadyExistsException extends AlreadyExistsException {
 	constructor(albumSlug: Slug, artistSlug?: Slug) {
 		super(`${albumSlug.toString()} ${artistSlug ? `by ${artistSlug.toString()}`: ''} already exists`);

@@ -40,12 +40,21 @@ export class ReleaseService {
 	}
 	
 	async updateRelease(release: Release) {
-		return await this.prismaService.release.update({
+		let updatedRelease = await this.prismaService.release.update({
 			data: {...release, album: undefined, tracks: undefined},
 			where: {
 				id: release.id
 			}
 		});
+		let parentAlbum = await this.albumService.getAlbumFromID(release.albumId);
+		if (release.master) {
+		 	await this.setReleaseAsMaster(updatedRelease);
+		} else {
+		 	await this.unsetReleaseAsMaster(updatedRelease);
+		}
+		await this.albumService.updateAlbumName(parentAlbum);
+		await this.albumService.updateAlbumDate(parentAlbum);
+		return updatedRelease;
 	}
 
 	async findOrCreateRelease(releaseTitle: string, albumName: string, artistName?: string, releaseDate?: Date, include?: Prisma.ReleaseInclude) {
@@ -65,6 +74,64 @@ export class ReleaseService {
 		}
 	}
 
+	/**
+	 * Sets provided release as the album's master release, unsetting other master from the same album
+	 * @param release 
+	 */
+	async setReleaseAsMaster(release: Release): Promise<Release> {
+		let otherAlbumReleases: Release[] = (await this.albumService.getAlbumReleases(release.albumId))
+			.filter((albumRelease) => albumRelease.id != release.id);
+		
+		await this.prismaService.release.updateMany({
+			data: {
+				master: false
+			},
+			where: {
+				id: {
+					in: otherAlbumReleases.map((albumRelease) => albumRelease.id)
+				}
+			}
+		});
+		return await this.prismaService.release.update({
+			data: {
+				master: false
+			},
+			where: {
+				id: release.id
+			}
+		});
+	}
+
+	/**
+	 * Unsets provided release as the album's master release, setting next release as the master
+	 * If the release is the only one from the album, it will not bet unset
+	 * @param release 
+	 */
+	 async unsetReleaseAsMaster(release: Release): Promise<Release> {
+		let otherAlbumReleases: Release[] = (await this.albumService.getAlbumReleases(release.albumId))
+			.filter((albumRelease) => albumRelease.id != release.id);
+		if (otherAlbumReleases.find((albumRelease) => albumRelease.master))
+			return release;
+		if (otherAlbumReleases.length == 0)
+			return release;
+		await this.prismaService.release.update({
+			data: {
+				master: true
+			},
+			where: {
+				id: otherAlbumReleases.at(0)!.id
+			}
+		});
+		return await this.prismaService.release.update({
+			data: {
+				master: false
+			},
+			where: {
+				id: release.id
+			}
+		});
+	}
+
 
 	async createRelease(releaseTitle: string, album: Album & { releases: Release[], artist: Artist | null}, releaseDate?: Date, include?: Prisma.ReleaseInclude) {
 		try {
@@ -80,19 +147,8 @@ export class ReleaseService {
 					tracks: include?.tracks ?? false
 				}
 			});
-			let updateAlbum = false;
-			if (album.releaseDate === null ||
-				(releaseDate !== undefined && album.releaseDate! > releaseDate)) {
-				album.releaseDate = releaseDate ?? null;
-				updateAlbum = true;
-			}
-			if (releaseTitle.length < album.name.length) {
-				album.name = releaseTitle;
-				updateAlbum = true;
-			}
-			if (updateAlbum) {
-				release.album = await this.albumService.updateAlbum(album);
-			}
+			await this.albumService.updateAlbumDate(album);
+			release.album = await this.albumService.updateAlbumName(album);
 			return release;
 		} catch {
 			throw new ReleaseAlreadyExists(releaseTitle, album.artist ? new Slug(album.artist!.slug!) : undefined);
@@ -112,7 +168,7 @@ export class ReleaseService {
 							}
 						},
 						slug: {
-							equals: artistSlug?.toString()
+							equals: albumSlug?.toString()
 						}
 					}
 				},
