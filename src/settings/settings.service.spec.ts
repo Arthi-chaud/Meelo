@@ -4,6 +4,7 @@ import * as fs from 'fs';
 import { FakeFileManagerModule, FakeFileManagerService } from 'test/FakeFileManagerModule';
 import { FileManagerService } from 'src/file-manager/file-manager.service';
 import { InvalidSettingsFileException, SettingsFileNotFoundException } from './settings.exception';
+import { Settings } from './models/settings';
 
 describe('Settings Service', () => {
 	let settingsService: SettingsService;
@@ -39,10 +40,11 @@ describe('Settings Service', () => {
 				() => fs.readFileSync('test/assets/settings-fake-regex.json').toString()
 			);
 			settingsService.loadFromFile();
-			expect(settingsService.settingsValues).toStrictEqual({
+			expect(settingsService.settingsValues).toStrictEqual(<Settings>{
 				dataFolder: '/var/lib/meelo',
 				trackRegex: ['regex1', 'regex2'],
-				mergeMetadataWithPathRegexGroup: true
+				mergeMetadataWithPathRegexGroup: true,
+				publicURL: "https://meelo.com"
 			})
 		});
 

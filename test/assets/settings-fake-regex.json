@@ -4,5 +4,6 @@
 		"regex1",
 		"regex2"
 	],
-	"mergeMetadataWithPathRegexGroup": true
+	"mergeMetadataWithPathRegexGroup": true,
+	"publicURL": "https://meelo.com"
 }

@@ -1,4 +1,5 @@
 {
 	"dataFolder": "/var/lib/meelo",
-	"mergeMetadataWithPathRegexGroup": true
+	"mergeMetadataWithPathRegexGroup": true,
+	"publicURL": "https://meelo.com"
 }

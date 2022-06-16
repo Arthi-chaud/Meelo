@@ -38,12 +38,14 @@ export class SettingsService {
 	private buildSettings(object: any): Settings {
 		if (typeof object.dataFolder !== "string" ||
 			!Array.isArray(object.trackRegex) ||
-			typeof object.mergeMetadataWithPathRegexGroup !== "boolean")
+			typeof object.mergeMetadataWithPathRegexGroup !== "boolean" ||
+			typeof object.publicURL !== "string")
 			throw new InvalidSettingsFileException();
 		return {
 			dataFolder: object.dataFolder,
 			trackRegex: object.trackRegex,
-			mergeMetadataWithPathRegexGroup: object.mergeMetadataWithPathRegexGroup
+			mergeMetadataWithPathRegexGroup: object.mergeMetadataWithPathRegexGroup,
+			publicURL: object.publicURL,
 		};
 	}
 

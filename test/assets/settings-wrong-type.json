@@ -3,5 +3,6 @@
 	"trackRegex": [
 		"regex1"
 	],
-	"mergeMetadataWithPathRegexGroup": 12
+	"mergeMetadataWithPathRegexGroup": 12,
+	"publicURL": "https://meelo.com"
 }
