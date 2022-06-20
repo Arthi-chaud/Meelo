@@ -3,7 +3,7 @@ import { SettingsService } from './settings.service';
 import * as fs from 'fs';
 import { FakeFileManagerModule, FakeFileManagerService } from 'test/FakeFileManagerModule';
 import { FileManagerService } from 'src/file-manager/file-manager.service';
-import { InvalidSettingsFileException, SettingsFileNotFoundException } from './settings.exception';
+import { InvalidSettingsFileException, InvalidSettingsTypeException, MissingSettingsException, SettingsFileNotFoundException } from './settings.exception';
 import { Settings } from './models/settings';
 
 describe('Settings Service', () => {
@@ -61,11 +61,11 @@ describe('Settings Service', () => {
 		});
 
 		it('should throw because the file is missing the regex field', async () => {
-			expectExceptionWhenParsing('settings-missing-regex.json', InvalidSettingsFileException);
+			expectExceptionWhenParsing('settings-missing-regex.json', MissingSettingsException);
 		});
 
 		it('should throw because the file is missing the base data folder field', async () => {
-			expectExceptionWhenParsing('settings-missing-data-folder.json', InvalidSettingsFileException);
+			expectExceptionWhenParsing('settings-missing-data-folder.json', MissingSettingsException);
 		});
 
 		it('should throw because the RegExp array is empty', async () => {
@@ -73,7 +73,7 @@ describe('Settings Service', () => {
 		});
 
 		it('should throw because a field data type is incorrect', async () => {
-			expectExceptionWhenParsing('settings-wrong-type.json', InvalidSettingsFileException);
+			expectExceptionWhenParsing('settings-wrong-type.json', InvalidSettingsTypeException);
 		});
 	});
 })

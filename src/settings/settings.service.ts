@@ -1,7 +1,7 @@
 import { forwardRef, Inject, Injectable } from '@nestjs/common';
 import { FileManagerService } from 'src/file-manager/file-manager.service';
 import { Settings } from './models/settings';
-import { InvalidSettingsFileException, SettingsFileNotFoundException } from './settings.exception';
+import { InvalidSettingsFileException, InvalidSettingsTypeException, MissingSettingsException, SettingsFileNotFoundException } from './settings.exception';
 
 @Injectable()
 export class SettingsService {
@@ -36,11 +36,21 @@ export class SettingsService {
 	 * Takes a JSON object as input, parses it and build a Settings interface instance
 	 */
 	private buildSettings(object: any): Settings {
-		if (typeof object.dataFolder !== "string" ||
-			!Array.isArray(object.trackRegex) ||
-			typeof object.mergeMetadataWithPathRegexGroup !== "boolean" ||
-			typeof object.publicURL !== "string")
-			throw new InvalidSettingsFileException();
+		const settingsFields = {
+			'dataFolder': (i: any) => typeof i === 'string',
+			'mergeMetadataWithPathRegexGroup': (i: any) => typeof i ===  'boolean',
+			'publicURL': (i: any) => typeof i ===  'string',
+			'trackRegex': (i: any) => Array.isArray(i)
+		}
+		let settingField: keyof typeof settingsFields;
+		for (settingField in settingsFields) {
+			const settingValue = object[settingField];
+			if (settingValue === undefined) {
+				throw new MissingSettingsException(settingField);
+			} else if (settingsFields[settingField](settingValue) != true) {
+				throw new InvalidSettingsTypeException(settingField, typeof settingValue)
+			}
+		}
 		return {
 			dataFolder: object.dataFolder,
 			trackRegex: object.trackRegex,
