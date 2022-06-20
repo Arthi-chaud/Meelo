@@ -77,36 +77,6 @@ export class AlbumService {
 			}
 		});
 	} 
-	/**
-	 * Find an existing album from a potential release name
-	 * @param releaseName the name of the potential release
-	 * @param artistSlug the slug of the artist, if applicable
-	 * @param include 
-	 */
-	async getCandidateAlbumFromReleaseName(releaseName: string, artistSlug?: Slug, include?: Prisma.AlbumInclude) {
-		let releaseSlug: Slug = new Slug(releaseName);
-		let albums =  await this.prismaService.album.findMany({
-			where: {
-				artist: artistSlug !== undefined ? {
-					slug: {
-						equals: artistSlug!.toString()
-					}
-				} : undefined
-			},
-			include: {
-				releases: include?.releases ?? false,
-				artist: include?.artist ?? false
-			}
-		});
-		for (const album of albums) {
-			if (album.slug == releaseName.toString() ||
-				album.slug.includes(releaseSlug.toString()) ||
-				releaseSlug.toString().includes(album.slug)
-			)
-			return album;
-		}
-		throw new AlbumNotFoundException(releaseSlug, artistSlug);
-	}
 
 	async updateAlbum(album: Album): Promise<Album> {
 		return await this.prismaService.album.update({
@@ -121,20 +91,6 @@ export class AlbumService {
 				id: album.id
 			}
 		});
-	}
-
-	/**
-	 * Updates an album name, using the shortest name from its releases
-	 * @param album 
-	 */
-	async updateAlbumName(album: Album): Promise<Album> {
-		let releases: Release[] = await this.getAlbumReleases(album.id);
-		for (const release of releases) {
-			if (release.title.length < album.name.length) {
-				album.name = release.title;
-			}
-		}
-		return await this.updateAlbum(album);
 	}
 
 	/**

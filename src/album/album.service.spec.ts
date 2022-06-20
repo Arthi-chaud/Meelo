@@ -126,33 +126,6 @@ describe('Album Service', () => {
 		})
 	});
 
-	describe('Find an album from the release name', () => {
-		let artist: Artist;
-		it("should throw, as the artist has no album", async () => {
-			artist = await artistService.createArtist('My second artist');
-			const test = async () => {
-				return await albumService.getCandidateAlbumFromReleaseName("My Release name", new Slug(artist.slug));
-			};
-
-			expect(test()).rejects.toThrow(AlbumNotFoundException);
-		});
-
-		it("should throw, as the artist does not have an album close enough", async () => {
-			await albumService.createAlbum('Trolololol', artist.name);
-			const test = async () => {
-				return await albumService.getCandidateAlbumFromReleaseName("My Release name", new Slug(artist.slug));
-			};
-
-			expect(test()).rejects.toThrow(AlbumNotFoundException);
-		});
-
-		it("should find the closes candidate", async () => {
-			let album = await albumService.createAlbum('Aphrodite (Deluxe)', artist.name);
-			let match = await albumService.getCandidateAlbumFromReleaseName("Aphrodite", new Slug(artist.slug));
-			expect(match).toStrictEqual(album);
-		});
-	});
-
 	describe('Update an album', () => { 
 		it('should change the information of the album in the database', async () => {
 			let album = await albumService.getAlbum(new Slug('My album'));

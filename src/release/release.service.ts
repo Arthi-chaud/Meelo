@@ -51,8 +51,7 @@ export class ReleaseService {
 		 	await this.setReleaseAsMaster(updatedRelease);
 		} else {
 		 	await this.unsetReleaseAsMaster(updatedRelease);
-		}
-		await this.albumService.updateAlbumName(parentAlbum);
+		};
 		await this.albumService.updateAlbumDate(parentAlbum);
 		return updatedRelease;
 	}
@@ -60,25 +59,19 @@ export class ReleaseService {
 	/**
 	 * Finds a release, or creates one if it does not exist already
 	 * @param releaseTitle the title of the release
-	 * @param albumName  the name of the parent album
+	 * @param albumName  the name of the parent album, if null, will take the release name without its extension
 	 * @param artistName the name of the album artist, if it has one
 	 * @param releaseDate the release date of the release, only used for creation
 	 * @param include the relation fields to include on returned value
 	 * @returns 
 	 */
-	async findOrCreateRelease(releaseTitle: string, albumName: string, artistName?: string, releaseDate?: Date, include?: Prisma.ReleaseInclude) {
-		let artistSlug: Slug | undefined = artistName ? new Slug(artistName) : undefined
+	async findOrCreateRelease(releaseTitle: string, albumName?: string, artistName?: string, releaseDate?: Date, include?: Prisma.ReleaseInclude) {
+		let artistSlug: Slug | undefined = artistName ? new Slug(artistName) : undefined;
+		albumName = albumName ?? this.removeReleaseExtension(releaseTitle);
 		try {
 			return await this.getRelease(releaseTitle, new Slug(albumName), artistSlug);
 		} catch {
-			let album: Album & { releases: Release[]; artist: Artist | null };
-			try {
-				album = await this.albumService.getCandidateAlbumFromReleaseName(releaseTitle, artistSlug, {
-					releases: true, artist: true
-				});
-			} catch {
-				album = await this.albumService.findOrCreate(albumName, artistName, { releases: true, artist: true });
-			}
+			let album = await this.albumService.findOrCreate(albumName, artistName, { releases: true, artist: true });
 			return await this.createRelease(releaseTitle, album, releaseDate, include);
 		}
 	}
@@ -156,10 +149,11 @@ export class ReleaseService {
 					tracks: include?.tracks ?? false
 				}
 			});
-			await this.albumService.updateAlbumDate(album);
-			release.album = await this.albumService.updateAlbumName(album);
+			let updatedAlbum = await this.albumService.updateAlbumDate(album);
+			if (include?.album ?? false)
+				release.album = updatedAlbum;
 			return release;
-		} catch {
+		} catch{;
 			throw new ReleaseAlreadyExists(releaseTitle, album.artist ? new Slug(album.artist!.slug!) : undefined);
 		}
 	}
@@ -197,5 +191,49 @@ export class ReleaseService {
 		} catch {
 			throw new ReleaseNotFoundException(releaseTitle, albumSlug, artistSlug);
 		}
+	}
+
+	/**
+	 * Extract an extension from a release name
+	 * For example, if the release Name is 'My Album (Deluxe Edition)', it would return
+	 * '(Deluxe Edition)'
+	 * @param releaseName 
+	 */
+	extractReleaseExtension(releaseName: string): string | null {
+		const delimiters = [
+			['(', ')'],
+			['{', '}'],
+			['[', ']']
+		];
+		const extensionKeywords = [
+			'Edition',
+			'Version',
+			'Reissue',
+			'Deluxe',
+			'Standard',
+			'Edited',
+			'Explicit'
+		];
+		const extensionsGroup = extensionKeywords.map((ext) => `(${ext})`).join('|');
+		for (const delimiter of delimiters) {
+			const regExp = "\\s+(?<extension>\\" + delimiter[0] + ".*(" + extensionsGroup + ").*\\" + delimiter[1] + ")";
+			let match = releaseName.match(regExp);
+			if (match)
+				return match[1];
+		}
+		return null;
+	}
+
+	/**
+	 * Removes an extension from a release's name
+	 * For example, if the release Name is 'My Album (Deluxe Edition)', the parent
+	 * album name would be 'My Album'
+	 */
+	removeReleaseExtension(releaseName: string): string {
+		const extension: string | null = this.extractReleaseExtension(releaseName);
+		if (extension !== null) {
+			return releaseName.replace(extension, "").trim();
+		}
+		return releaseName;
 	}
 }
