@@ -97,6 +97,7 @@ model Release {
 	/// The reference Album
 	album			Album		@relation(fields: [albumId], references: [id])
 	albumId			Int
+	@@unique([albumId, title])
 }
 /// A song is described by a title, an artist, and 'instanciated' by Tracks
 model Song {
