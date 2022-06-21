@@ -88,6 +88,8 @@ model Release {
 	id				Int		@id @default(autoincrement())
 	/// The name of the release
 	title			String
+	/// The sluf of the release
+	slug			String
 	/// The date of the release
 	releaseDate		DateTime?
 	/// Is this release the 'main' / 'most used' version of the Album
@@ -97,7 +99,7 @@ model Release {
 	/// The reference Album
 	album			Album		@relation(fields: [albumId], references: [id])
 	albumId			Int
-	@@unique([albumId, title])
+	@@unique([albumId, slug])
 }
 /// A song is described by a title, an artist, and 'instanciated' by Tracks
 model Song {

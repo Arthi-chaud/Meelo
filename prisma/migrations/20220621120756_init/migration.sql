@@ -52,7 +52,8 @@ CREATE TABLE "Library" (
 -- CreateTable
 CREATE TABLE "Release" (
     "id" SERIAL NOT NULL,
-    "title" TEXT,
+    "title" TEXT NOT NULL,
+    "slug" TEXT NOT NULL,
     "releaseDate" TIMESTAMP(3),
     "master" BOOLEAN NOT NULL DEFAULT false,
     "albumId" INTEGER NOT NULL,
@@ -106,6 +107,9 @@ CREATE UNIQUE INDEX "Library_slug_key" ON "Library"("slug");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "Library_path_key" ON "Library"("path");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "Release_albumId_slug_key" ON "Release"("albumId", "slug");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "Song_slug_artistId_key" ON "Song"("slug", "artistId");

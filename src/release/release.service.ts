@@ -41,7 +41,12 @@ export class ReleaseService {
 	
 	async updateRelease(release: Release) {
 		let updatedRelease = await this.prismaService.release.update({
-			data: {...release, album: undefined, tracks: undefined},
+			data: {
+				...release,
+				slug: new Slug(release.title).toString(),
+				album: undefined,
+				tracks: undefined
+		},
 			where: {
 				id: release.id
 			}
@@ -69,7 +74,7 @@ export class ReleaseService {
 		let artistSlug: Slug | undefined = artistName ? new Slug(artistName) : undefined;
 		albumName = albumName ?? this.removeReleaseExtension(releaseTitle);
 		try {
-			return await this.getRelease(releaseTitle, new Slug(albumName), artistSlug);
+			return await this.getRelease(new Slug(releaseTitle), new Slug(albumName), artistSlug);
 		} catch {
 			let album = await this.albumService.findOrCreate(albumName, artistName, { releases: true, artist: true });
 			return await this.createRelease(releaseTitle, album, releaseDate, include);
@@ -136,6 +141,7 @@ export class ReleaseService {
 
 
 	async createRelease(releaseTitle: string, album: Album & { releases: Release[], artist: Artist | null}, releaseDate?: Date, include?: Prisma.ReleaseInclude) {
+		const releaseSlug = new Slug(releaseTitle);
 		try {
 			let release = await this.prismaService.release.create({
 				data: {
@@ -143,6 +149,7 @@ export class ReleaseService {
 					releaseDate: releaseDate,
 					master: album.releases.filter((release) => release.master).length == 0,
 					title: releaseTitle,
+					slug: releaseSlug.toString()
 				},
 				include: {
 					album: include?.album ?? false,
@@ -153,8 +160,8 @@ export class ReleaseService {
 			if (include?.album ?? false)
 				release.album = updatedAlbum;
 			return release;
-		} catch{;
-			throw new ReleaseAlreadyExists(releaseTitle, album.artist ? new Slug(album.artist!.slug!) : undefined);
+		} catch{
+			throw new ReleaseAlreadyExists(releaseSlug, album.artist ? new Slug(album.artist!.slug!) : undefined);
 		}
 	}
 	
@@ -166,12 +173,14 @@ export class ReleaseService {
 	 * @param include 
 	 * @returns 
 	 */
-	async getRelease(releaseTitle: string, albumSlug: Slug, artistSlug?: Slug, include?: Prisma.ReleaseInclude) {
+	async getRelease(releaseSlug: Slug, albumSlug: Slug, artistSlug?: Slug, include?: Prisma.ReleaseInclude) {
 		try {
 			return await this.prismaService.release.findFirst({
 				rejectOnNotFound: true,
 				where: {
-					title: releaseTitle,
+					slug: {
+						equals: releaseSlug.toString()
+					},
 					album: {
 						artist: {
 							slug: {
@@ -189,7 +198,7 @@ export class ReleaseService {
 				}
 			});
 		} catch {
-			throw new ReleaseNotFoundException(releaseTitle, albumSlug, artistSlug);
+			throw new ReleaseNotFoundException(releaseSlug, albumSlug, artistSlug);
 		}
 	}
 

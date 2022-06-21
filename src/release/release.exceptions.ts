@@ -2,14 +2,14 @@ import { AlreadyExistsException, NotFoundException } from "src/exceptions/meelo-
 import { Slug } from "src/slug/slug";
 
 export class ReleaseNotFoundException extends NotFoundException {
-	constructor(releaseName: string, albumSlug: Slug, artistSlug?: Slug) {
-		super(`Release '${releaseName}' of ${albumSlug.toString()} ${artistSlug ? `by ${artistSlug.toString()}`: ''} not found`);
+	constructor(releaseSlug: Slug, albumSlug: Slug, artistSlug?: Slug) {
+		super(`Release '${releaseSlug.toString()}' of ${albumSlug.toString()} ${artistSlug ? `by ${artistSlug.toString()}`: ''} not found`);
 	}
 }
 
 export class ReleaseAlreadyExists extends AlreadyExistsException {
-	constructor(releaseTitle: string, artistSlug?: Slug) {
-		super(`Release '${releaseTitle}' ${artistSlug ? `by ${artistSlug.toString()}`: ''} already exists`);
+	constructor(releaseSlug: Slug, artistSlug?: Slug) {
+		super(`Release '${releaseSlug.toString()}' ${artistSlug ? `by ${artistSlug.toString()}`: ''} already exists`);
 	}
 }
 

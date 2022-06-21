@@ -75,6 +75,7 @@ describe('Release Service', () => {
 			expect(release.master).toBeTruthy();
 			expect(release.releaseDate).toStrictEqual(new Date('2006'));
 			expect(release.title).toBe('My Album (Deluxe Edition)');
+			expect(release.slug).toBe('my-album-deluxe-edition');
 		});
 
 		it("should update the parent album year", async () => {
@@ -93,6 +94,7 @@ describe('Release Service', () => {
 			expect(release.master).toBeFalsy();
 			expect(release.releaseDate).toStrictEqual(new Date('2007'));
 			expect(release.title).toBe('My Album');
+			expect(release.slug).toBe('my-album');
 		});
 
 		it("should not have updated the parent album metadata", async () => {
@@ -122,6 +124,7 @@ describe('Release Service', () => {
 			expect(updatedRelease.id).toStrictEqual(release.id);
 			expect(updatedRelease.albumId).toStrictEqual(release.albumId);
 			expect(updatedRelease.title).toStrictEqual(release.title);
+			expect(updatedRelease.slug).toBe('my-album-special-edition');
 		});
 
 		it("Should Update the album's date", async () => {
@@ -153,6 +156,7 @@ describe('Release Service', () => {
 			expect(fetchedRelease.releaseDate).toStrictEqual(new Date('2005'));
 			expect(fetchedRelease.title).toBe("My Album (Special Edition)");
 			expect(fetchedRelease.albumId).toBe(album.id);
+			expect(fetchedRelease.slug).toBe('my-album-special-edition');
 		});
 
 		it("should create a new release", async () => {
@@ -161,6 +165,7 @@ describe('Release Service', () => {
 			expect(createdRelease.master).toBe(false);
 			expect(createdRelease.releaseDate).toStrictEqual(new Date('2007'));
 			expect(createdRelease.title).toBe("My Album (Edited Version)");
+			expect(createdRelease.slug).toBe('my-album-edited-version');
 		});
 
 		it("should create a new release for a new album (No album name provided)", async () => {
@@ -171,6 +176,7 @@ describe('Release Service', () => {
 			expect(createdRelease.releaseDate).toStrictEqual(new Date('2007'));
 			expect(createdRelease.master).toBe(true);
 			expect(createdRelease.title).toBe('My New Album (Live) [Deluxe]');
+			expect(createdRelease.slug).toBe('my-new-album-live-deluxe');
 			expect(createdRelease.album.id).toBe(createdRelease.albumId);
 			expect(createdRelease.album.name).toBe("My New Album (Live)");
 			expect(createdRelease.album.releaseDate).toStrictEqual(new Date('2007'));
