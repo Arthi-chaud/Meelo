@@ -101,7 +101,7 @@ export class IllustrationService {
 			releaseSlug,
 			artistSlug
 		);
-		return `${releaseIllustrationFolder}/${discIndex ?? '.'}/track${trackIndex ?? 0 }.jpg` 
+		return `${releaseIllustrationFolder}/${discIndex ? `disc-${discIndex}-` : ''}track-${trackIndex ?? 0 }/cover.jpg` 
 	}
 
 	/**
