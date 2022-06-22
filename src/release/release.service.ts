@@ -23,9 +23,9 @@ export class ReleaseService {
 							equals: albumSlug.toString()
 						},
 						artist: {
-							slug: {
+							slug: artistSlug ? {
 								equals: artistSlug?.toString()
-							},
+							} : undefined
 						}
 					}
 				},
@@ -74,7 +74,7 @@ export class ReleaseService {
 		let artistSlug: Slug | undefined = artistName ? new Slug(artistName) : undefined;
 		albumName = albumName ?? this.removeReleaseExtension(releaseTitle);
 		try {
-			return await this.getRelease(new Slug(releaseTitle), new Slug(albumName), artistSlug);
+			return await this.getRelease(new Slug(releaseTitle), new Slug(albumName), artistSlug, include);
 		} catch {
 			let album = await this.albumService.findOrCreate(albumName, artistName, { releases: true, artist: true });
 			return await this.createRelease(releaseTitle, album, releaseDate, include);
@@ -188,7 +188,7 @@ export class ReleaseService {
 	
 	/**
 	 * Retrives a release
-	 * @param releaseTitle 
+	 * @param releaseSlug 
 	 * @param albumSlug 
 	 * @param artistSlug 
 	 * @param include 
@@ -204,12 +204,12 @@ export class ReleaseService {
 					},
 					album: {
 						artist: {
-							slug: {
+							slug: artistSlug ? {
 								equals: artistSlug?.toString()
-							}
+							} : undefined
 						},
 						slug: {
-							equals: albumSlug?.toString()
+							equals: albumSlug.toString()
 						}
 					}
 				},
