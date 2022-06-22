@@ -2,7 +2,7 @@ import { Injectable, Logger } from '@nestjs/common';
 import { AlbumService } from 'src/album/album.service';
 import { Slug } from 'src/slug/slug';
 import { Release, Artist, Album, Prisma } from '@prisma/client';
-import { MasterReleaseNotFoundException, ReleaseAlreadyExists, ReleaseNotFoundException } from './release.exceptions';
+import { MasterReleaseNotFoundException, ReleaseAlreadyExists, ReleaseNotFoundException, ReleaseNotFoundFromIDException } from './release.exceptions';
 import { PrismaService } from 'src/prisma/prisma.service';
 
 @Injectable()
@@ -162,6 +162,27 @@ export class ReleaseService {
 			return release;
 		} catch{
 			throw new ReleaseAlreadyExists(releaseSlug, album.artist ? new Slug(album.artist!.slug!) : undefined);
+		}
+	}
+
+	/**
+	 * Retrives a release from a track's id
+	 * The returned release is the parent release of the track
+	 */
+	async getReleaseFromID(releaseID: number, include?: Prisma.ReleaseInclude) {
+		try {
+			return await this.prismaService.release.findUnique({
+				rejectOnNotFound: true,
+				where: {
+					id: releaseID,
+				},
+				include: {
+					album: include?.album ?? false,
+					tracks: include?.tracks ?? false
+				}
+			});
+		} catch {
+			throw new ReleaseNotFoundFromIDException(releaseID);
 		}
 	}
 	

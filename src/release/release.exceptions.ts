@@ -7,6 +7,12 @@ export class ReleaseNotFoundException extends NotFoundException {
 	}
 }
 
+export class ReleaseNotFoundFromIDException extends NotFoundException {
+	constructor(releaseId: number) {
+		super(`Release number '${releaseId}' not found`);
+	}
+}
+
 export class ReleaseAlreadyExists extends AlreadyExistsException {
 	constructor(releaseSlug: Slug, artistSlug?: Slug) {
 		super(`Release '${releaseSlug.toString()}' ${artistSlug ? `by ${artistSlug.toString()}`: ''} already exists`);
