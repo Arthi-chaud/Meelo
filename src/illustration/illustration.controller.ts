@@ -2,6 +2,7 @@ import { Controller, Get, Param, ParseIntPipe, Res, StreamableFile, Response, Ht
 import * as fs from 'fs';
 import { ParseSlugPipe } from 'src/slug/pipe';
 import { Slug } from 'src/slug/slug';
+import { NoIllustrationException } from './illustration.exceptions';
 import { IllustrationService } from './illustration.service';
 
 @Controller('illustrations')
@@ -14,7 +15,7 @@ export class IllustrationController {
 		@Param('artist', ParseSlugPipe) artistSlug: Slug,
 		@Response({ passthrough: true }) res: Response) {
 		return this.streamFile(
-			this.illustrationService.getArtistIllustrationPath(artistSlug),
+			this.illustrationService.buildArtistIllustrationPath(artistSlug),
 			`${artistSlug}.jpg`,
 			res
 		);
@@ -27,7 +28,7 @@ export class IllustrationController {
 		@Param('album', ParseSlugPipe) albumSlug: Slug,
 		@Response({ passthrough: true }) res: Response) {
 		return this.streamFile(
-			await this.illustrationService.getMasterReleaseIllustrationPath(artistSlug, albumSlug),
+			await this.illustrationService.buildMasterReleaseIllustrationPath(artistSlug, albumSlug),
 			`${albumSlug}.jpg`,
 			res
 		);
@@ -37,21 +38,25 @@ export class IllustrationController {
 	async getReleaseIllustration(
 		@Param('artist', ParseSlugPipe) artistSlug: Slug,
 		@Param('album', ParseSlugPipe) albumSlug: Slug,
-		@Param('release', ParseIntPipe) releaseId: number,
+		@Param('release', ParseSlugPipe) releaseSlug: Slug,
 		@Response({ passthrough: true }) res: Response) {
 		return this.streamFile(
-			this.illustrationService.getReleaseIllustrationPath(artistSlug, albumSlug, releaseId),
-			`${releaseId}.jpg`,
+			this.illustrationService.buildReleaseIllustrationPath(artistSlug, albumSlug, releaseSlug),
+			`${releaseSlug}.jpg`,
 			res
 		);
 
 	}
 
 	private streamFile(sourceFilePath: string, as: string, res: any): StreamableFile {
-		const illustration = fs.createReadStream(sourceFilePath);
-		res.set({
-			'Content-Disposition': `attachment; filename="${as}"`,
-		});
-		return new StreamableFile(illustration);
+		try {
+			const illustration = fs.createReadStream(sourceFilePath);
+			res.set({
+				'Content-Disposition': `attachment; filename="${as}"`,
+			});
+			return new StreamableFile(illustration);
+		} catch {
+			throw new NoIllustrationException("No illustration file found");
+		}
 	}
 }

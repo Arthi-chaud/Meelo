@@ -7,6 +7,8 @@ import { LibraryAlreadyExistsException, LibraryNotFoundException } from './libra
 import { LibraryDto } from './models/library.dto';
 import { Library, File, Prisma } from '@prisma/client';
 import { PrismaService } from 'src/prisma/prisma.service';
+import { IllustrationService } from 'src/illustration/illustration.service';
+import { IllustrationPath } from 'src/illustration/models/illustration-path.model';
 
 @Injectable()
 export class LibraryService {
@@ -14,7 +16,8 @@ export class LibraryService {
 		private prismaService: PrismaService,
 		private fileManagerService: FileManagerService,
 		private fileService: FileService,
-		private metadataService: MetadataService
+		private metadataService: MetadataService,
+		private illustrationService: IllustrationService
 	) {}
 	
 	async createLibrary(createLibraryDto: LibraryDto): Promise<Library> {
@@ -112,8 +115,9 @@ export class LibraryService {
 		const fileMetadata = await this.metadataService.parseMetadata(fullFilePath);
 		let registeredFile = await this.fileService.registerFile(filePath, parentLibrary);
 		try {
-			await this.metadataService.registerMetadata(fileMetadata, registeredFile);
-		} catch {
+			let track = await this.metadataService.registerMetadata(fileMetadata, registeredFile);
+			await this.illustrationService.extractTrackIllustration(track, fullFilePath);
+		} catch (e) {
 			await this.fileService.removeFileEntries(registeredFile);
 			Logger.log(`${parentLibrary.slug} library: Registration of ${filePath} failed because of bad metadata.`);
 		}
