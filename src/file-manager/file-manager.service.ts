@@ -1,6 +1,6 @@
 import { forwardRef, Inject, Injectable, Logger } from '@nestjs/common';
 import { SettingsService } from 'src/settings/settings.service';
-import md5File from 'md5-file';
+import { Md5 } from 'ts-md5/dist/md5';
 import * as fs from 'fs';
 import { Library } from '@prisma/client';
 import { FolderDoesNotExists } from './file-manager.exceptions';
@@ -46,7 +46,10 @@ export class FileManagerService {
 	 * @returns the MD5 Checksum as a string
 	 */
 	getMd5Checksum(filePath: string) {
-		return md5File.sync(filePath);
+		return new Md5()
+			.start()
+			.appendByteArray(fs.readFileSync(filePath))
+			.end();
 	}
 
 	/**
