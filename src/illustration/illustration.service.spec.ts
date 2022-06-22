@@ -107,17 +107,17 @@ describe('Library Service', () => {
 				)).toBe(`${baseMetadataFolder}/compilations/my-album/my-album-deluxe-edition/cover.jpg`);
 			});
 			it('should build the track illustration path', async () => {
-				expect(await illustrationService.buildTrackIllustrationPath(
+				expect(illustrationService.buildTrackIllustrationPath(
 					new Slug('My Album'), new Slug('My Album (Deluxe Edition)'), new Slug('My Artist'), 1, 2
 				)).toBe(`${baseMetadataFolder}/my-artist/my-album/my-album-deluxe-edition/disc-1-track-2/cover.jpg`);
 			});
 			it('should build the track illustration path (no disc provided)', async () => {
-				expect(await illustrationService.buildTrackIllustrationPath(
+				expect(illustrationService.buildTrackIllustrationPath(
 					new Slug('My Album'), new Slug('My Album (Deluxe Edition)'), new Slug('My Artist'), undefined, 2
 				)).toBe(`${baseMetadataFolder}/my-artist/my-album/my-album-deluxe-edition/track-2/cover.jpg`);
 			});
 			it('should build the track illustration path (compilation)', async () => {
-				expect(await illustrationService.buildTrackIllustrationPath(
+				expect(illustrationService.buildTrackIllustrationPath(
 					new Slug('My Album'), new Slug('My Album (Deluxe Edition)'), undefined, 1, 2
 				)).toBe(`${baseMetadataFolder}/compilations/my-album/my-album-deluxe-edition/disc-1-track-2/cover.jpg`);
 			});

@@ -95,7 +95,7 @@ export class IllustrationService {
 	/**
 	 * Builds the illustration path of the track
 	 */
-	async buildTrackIllustrationPath(albumSlug: Slug, releaseSlug: Slug, artistSlug?: Slug, discIndex?: number, trackIndex?: number): Promise<IllustrationPath> {
+	buildTrackIllustrationPath(albumSlug: Slug, releaseSlug: Slug, artistSlug?: Slug, discIndex?: number, trackIndex?: number): IllustrationPath {
 		const releaseIllustrationFolder = this.buildReleaseIllustrationFolderPath(
 			albumSlug,
 			releaseSlug,
@@ -128,10 +128,12 @@ export class IllustrationService {
 			albumSlug,
 			artistSlug
 		);
-		const trackIllustrationPath = await this.buildTrackIllustrationPath(
+		const trackIllustrationPath = this.buildTrackIllustrationPath(
 			releaseSlug,
 			albumSlug,
-			artistSlug
+			artistSlug,
+			track.discIndex ?? undefined,
+			track.trackIndex ?? undefined
 		);
 		const illustration = await this.extractIllustrationFromFile(fullTrackPath);
 		const illustrationChecksum = illustration ? new Md5().appendByteArray(illustration!.data).end() : null;
