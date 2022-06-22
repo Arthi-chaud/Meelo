@@ -6,4 +6,4 @@ RUN yarn install
 COPY . .
 RUN yarn run prisma generate
 RUN yarn run build
-CMD yarn run prisma migrate dev && yarn run start:dev
+CMD yarn run prisma migrate dev ; yarn run start:dev

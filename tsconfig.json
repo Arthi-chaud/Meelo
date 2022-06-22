@@ -22,5 +22,8 @@
     "alwaysStrict": true,
     "noImplicitReturns": true
     //"noUnusedParameters": true
-  }
+  },
+  "lib": [  
+    "dom",  
+  ]
 }

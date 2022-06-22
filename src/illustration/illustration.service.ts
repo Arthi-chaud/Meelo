@@ -10,10 +10,10 @@ import { FileNotFoundException } from 'src/file/file.exceptions';
 import mm, { IPicture, type IAudioMetadata } from 'music-metadata';
 import * as fs from 'fs';
 import { FileParsingException } from 'src/metadata/metadata.exceptions';
-import {compress, compressAccurately, EImageType} from 'image-conversion';
 import * as dir from 'path';
 import { IllustrationPath } from './models/illustration-path.model';
 import { Md5 } from 'ts-md5';
+import jimp from 'jimp';
 
 @Injectable()
 export class IllustrationService {
@@ -115,7 +115,7 @@ export class IllustrationService {
 	async extractTrackIllustration(track: Track, fullTrackPath: string): Promise<IllustrationPath | null> {
 		let release: Release & any = await this.releaseService.getReleaseFromID(track.releaseId, {
 			album: {
-				select: {
+				include: {
 					artist: true
 				}
 			}
@@ -197,10 +197,8 @@ export class IllustrationService {
 	 * @param outPath path and name of the file to save the fileContent as
 	 */
 	private async saveIllustration(fileContent: Buffer, outPath: IllustrationPath) {
-		let illustration = await compress(new Blob([fileContent]), {
-			type: EImageType.JPEG
-		});
+		let image = await jimp.read(fileContent);
 		fs.mkdir(dir.dirname(outPath), { recursive: true }, function (err) {});
-		fs.createWriteStream(outPath, { encoding: 'binary' }).write(illustration);
+		image.write(outPath);
 	}
 }
