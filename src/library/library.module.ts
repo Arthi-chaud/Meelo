@@ -6,13 +6,15 @@ import { FileModule } from 'src/file/file.module';
 import { SettingsModule } from 'src/settings/settings.module';
 import { MetadataModule } from 'src/metadata/metadata.module';
 import { PrismaModule } from 'src/prisma/prisma.module';
+import { IllustrationModule } from 'src/illustration/illustration.module';
 
 @Module({
 	imports: [
 		PrismaModule,
 		FileManagerModule,
 		FileModule,
-		MetadataModule
+		MetadataModule,
+		IllustrationModule
 	],
 	controllers: [LibraryController],
 	providers: [LibraryService]

@@ -13,6 +13,7 @@ import request from 'supertest';
 import { LibraryDto } from "./models/library.dto";
 import { Library } from "@prisma/client";
 import { LibraryService } from "./library.service";
+import { IllustrationModule } from "src/illustration/illustration.module";
 
 describe('Library Controller', () => {
 	let controller: LibraryController;
@@ -20,7 +21,7 @@ describe('Library Controller', () => {
 
 	beforeAll(async () => {
 		const module: TestingModule = await Test.createTestingModule({
-			imports: [LibraryModule, PrismaModule, FileModule, MetadataModule, FileManagerModule],
+			imports: [LibraryModule, PrismaModule, FileModule, MetadataModule, FileManagerModule, IllustrationModule],
 			providers: [LibraryController, LibraryService, PrismaService],
 		}).overrideProvider(FileManagerService).useClass(FakeFileManagerService).compile();
 		await module.get<PrismaService>(PrismaService).onModuleInit();

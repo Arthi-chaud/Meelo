@@ -3,6 +3,7 @@ import { AppModule } from "src/app.module";
 import { FileManagerModule } from "src/file-manager/file-manager.module";
 import { FileManagerService } from "src/file-manager/file-manager.service";
 import { FileModule } from "src/file/file.module";
+import { IllustrationModule } from "src/illustration/illustration.module";
 import { MetadataModule } from "src/metadata/metadata.module";
 import { PrismaModule } from "src/prisma/prisma.module";
 import { PrismaService } from "src/prisma/prisma.service";
@@ -17,7 +18,7 @@ describe('Library Service', () => {
 
 	beforeAll(async () => {
 		const module: TestingModule = await Test.createTestingModule({
-			imports: [LibraryModule, PrismaModule, FileModule, MetadataModule, FileManagerModule],
+			imports: [LibraryModule, PrismaModule, FileModule, MetadataModule, FileManagerModule, IllustrationModule],
 			providers: [LibraryService],
 		}).overrideProvider(FileManagerService).useClass(FakeFileManagerService).compile();
 		await module.get<PrismaService>(PrismaService).onModuleInit();
