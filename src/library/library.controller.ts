@@ -25,15 +25,19 @@ export class LibraryController {
 	}
 
 	@Get('scan/:slug')
-	async scanLibraryFiles(@Param('slug', ParseSlugPipe) slug: Slug) {
-		await this.libraryService.registerNewFiles(await this.getLibrary(slug));
+	scanLibraryFiles(@Param('slug', ParseSlugPipe) slug: Slug) {
+		this.getLibrary(slug).then((library) => {
+			this.libraryService.registerNewFiles(library);
+		});
 	}
 
 	@Get('scan')
-	async scanLibrariesFiles(@Res() res: Response) {
-		(await this.libraryService.getAllLibraries()).forEach(
-			(library) => this.libraryService.registerNewFiles(library)
-		);
+	scanLibrariesFiles(@Res() res: Response) {
+		this.libraryService.getAllLibraries().then((libraries) => {
+			libraries.forEach(
+				(library) => this.libraryService.registerNewFiles(library)
+			);
+		});
 	}
 
 	@Get('clean/:slug')

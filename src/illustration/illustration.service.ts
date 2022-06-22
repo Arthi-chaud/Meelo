@@ -136,12 +136,12 @@ export class IllustrationService {
 			track.trackIndex ?? undefined
 		);
 		const illustration = await this.extractIllustrationFromFile(fullTrackPath);
-		const illustrationChecksum = illustration ? new Md5().appendByteArray(illustration!.data).end() : null;
+		const illustrationBytes = illustration ? (await (await jimp.read(illustration!.data)).getBufferAsync(jimp.MIME_JPEG)) : undefined;
 		const saveAndGetIllustrationPath = async (illustrationPath: IllustrationPath) => {
 			if (this.fileManagerService.fileExists(illustrationPath)) {
 				if (illustration == undefined)
 					return illustrationPath;
-				if (this.fileManagerService.getMd5Checksum(illustrationPath) == illustrationChecksum)
+				if (this.fileManagerService.getFileContent(illustrationPath) == illustrationBytes!.toString())
 					return illustrationPath;
 			} else if (illustration != undefined) {
 				await this.saveIllustration(illustration.data, illustrationPath);
