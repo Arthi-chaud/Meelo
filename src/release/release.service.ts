@@ -246,7 +246,7 @@ export class ReleaseService {
 		];
 		const extensionsGroup = extensionKeywords.map((ext) => `(${ext})`).join('|');
 		for (const delimiter of delimiters) {
-			const regExp = "\\s+(?<extension>\\" + delimiter[0] + ".*(" + extensionsGroup + ").*\\" + delimiter[1] + ")";
+			const regExp = `\\s+(?<extension>\\${delimiter[0]}.*(${extensionsGroup}).*\\${delimiter[1]})`;
 			let match = releaseName.match(regExp);
 			if (match)
 				return match[1];
