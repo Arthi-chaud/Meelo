@@ -151,8 +151,8 @@ model Track {
 	/// The parent release the track can be found on
 	release 		Release	@relation(fields: [releaseId], references: [id])
 	releaseId		Int
-	/// The display name of the track, if it differs from the Song's
-	displayName		String?
+	/// The display name of the track
+	displayName		String
 	/// Is this track the 'main' one
 	master			Boolean	@default(false)
 	/// The index of the disc the track is on

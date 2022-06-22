@@ -77,7 +77,7 @@ CREATE TABLE "Track" (
     "id" SERIAL NOT NULL,
     "songId" INTEGER NOT NULL,
     "releaseId" INTEGER NOT NULL,
-    "displayName" TEXT,
+    "displayName" TEXT NOT NULL,
     "master" BOOLEAN NOT NULL DEFAULT false,
     "discIndex" INTEGER,
     "trackIndex" INTEGER,
