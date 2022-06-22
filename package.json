@@ -31,11 +31,12 @@
     "@prisma/client": "^3.14.0",
     "@types/sequelize": "^4.28.12",
     "@types/slug": "^5.0.3",
+    "axios": "^0.27.2",
     "class-transformer": "^0.5.1",
     "class-validator": "^0.13.2",
     "eslint": "^8.17.0",
     "fs": "^0.0.1-security",
-    "md5-file": "^5.0.0",
+    "image-conversion": "^2.1.1",
     "music-metadata": "^7.12.3",
     "mysql2": "^2.3.3",
     "pg": "^8.7.3",
@@ -43,9 +44,11 @@
     "reflect-metadata": "^0.1.13",
     "rimraf": "^3.0.2",
     "rxjs": "^7.2.0",
-    "slug": "^5.3.0"
+    "slug": "^5.3.0",
+    "ts-md5": "^1.2.11"
   },
   "devDependencies": {
+    "@nestjs/axios": "^0.0.8",
     "@nestjs/cli": "^8.2.6",
     "@nestjs/schematics": "^8.0.0",
     "@nestjs/testing": "^8.4.5",

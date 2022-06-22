@@ -26,7 +26,7 @@ export class FileService {
 		return await this.prismaService.file.create({
 			data: {
 				path: filePath,
-				md5Checksum: this.fileManagerService.getMd5Checksum(fullFilePath),
+				md5Checksum: this.fileManagerService.getMd5Checksum(fullFilePath).toString(),
 				registerDate: new Date(),
 				libraryId: parentLibrary.id
 			}
