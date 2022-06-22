@@ -9,6 +9,7 @@ import { PrismaModule } from "src/prisma/prisma.module";
 import { PrismaService } from "src/prisma/prisma.service";
 import { Slug } from "src/slug/slug";
 import { FakeFileManagerService } from "test/FakeFileManagerModule";
+import { ReleaseNotFoundException, ReleaseNotFoundFromIDException } from "./release.exceptions";
 import { ReleaseService } from "./release.service";
 
 describe('Release Service', () => {
@@ -138,8 +139,32 @@ describe('Release Service', () => {
 			expect(fetchedRelease.releaseDate).toStrictEqual(compilationRelease.releaseDate);
 			expect(fetchedRelease.slug).toBe(compilationRelease.slug);
 			expect(fetchedRelease.master).toBe(compilationRelease.master);
-		})
-	 })
+		});
+
+		it("should throw, as the release does not exists", async () => {
+			const test = async () => {
+				return await releaseService.getRelease(new Slug('I Do not exists'), new Slug('I dont either'));
+			}
+			expect(test()).rejects.toThrow(ReleaseNotFoundException);
+		});
+
+		it("should get the release from it id", async () => {
+			let fetchedRelease = await releaseService.getReleaseFromID(release.id);
+			expect(fetchedRelease.id).toBe(release.id);
+			expect(fetchedRelease.albumId).toBe(release.albumId);
+			expect(fetchedRelease.title).toBe(release.title);
+			expect(fetchedRelease.releaseDate).toStrictEqual(release.releaseDate);
+			expect(fetchedRelease.slug).toBe(release.slug);
+			expect(fetchedRelease.master).toBe(release.master);
+		});
+
+		it("should throw, as no release has the id", async () => {
+			const test = async () => {
+				return await releaseService.getReleaseFromID(-1);
+			}
+			expect(test()).rejects.toThrow(ReleaseNotFoundFromIDException);
+		});
+	});
 
 	describe('Get Master Release', () => {
 		it("Should retrieve the master release", async () => {
