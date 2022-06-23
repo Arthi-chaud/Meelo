@@ -7,6 +7,12 @@ export class ArtistNotFoundException extends NotFoundException {
 	}
 }
 
+export class ArtistNotFoundByIDException extends NotFoundException {
+	constructor(artistId: number) {
+		super(`Artist with id '${artistId}' not found`);
+	}
+}
+
 export class ArtistalreadyExistsException extends AlreadyExistsException {
 	constructor(artistSlug: Slug) {
 		super(`Artist '${artistSlug.toString()}' already exists`);
