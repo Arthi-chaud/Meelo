@@ -8,6 +8,13 @@ export class SongNotFoundException extends NotFoundException {
 	}
 }
 
+
+export class SongNotFoundByIdException extends NotFoundException {
+	constructor(songId: number) {
+		super(`No song with id '${songId}' found`);
+	}
+}
+
 export class SongAlreadyExistsException extends AlreadyExistsException {
 	constructor(songSlug: Slug, artistSlug: Slug) {
 		super(`'${songSlug.toString()}' from '${artistSlug.toString()}': Song already exists`);
