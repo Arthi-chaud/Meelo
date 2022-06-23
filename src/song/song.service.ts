@@ -2,7 +2,7 @@ import { Injectable, Logger } from '@nestjs/common';
 import { ArtistService } from 'src/artist/artist.service';
 import { Slug } from 'src/slug/slug';
 import { type Song, type Artist, Prisma } from '@prisma/client';
-import { SongAlreadyExistsException, SongNotFoundException } from './song.exceptions';
+import { SongAlreadyExistsException, SongNotFoundByIdException, SongNotFoundException } from './song.exceptions';
 import { PrismaService } from 'src/prisma/prisma.service';
 
 @Injectable()
@@ -40,6 +40,29 @@ export class SongService {
 			throw new SongNotFoundException(titleSlug, artistSlug);
 		}
 	}
+
+	/**
+	 * Retrives a song from the database using its id
+	 * @param songId 
+	 * @param include 
+	 * @returns the fetched song
+	 */
+	async getSongById(songId: number, include?: Prisma.SongInclude) {
+		try {
+			return await this.prismaService.song.findUnique({
+				rejectOnNotFound: true,
+				where: {
+					id: songId
+				},
+				include: {
+					artist: include?.artist ?? false,
+					instances: include?.instances ?? false
+				}
+			});
+		} catch {
+			throw new SongNotFoundByIdException(songId);
+		}
+	}
 	
 	async createSong(artistName: string, title: string, include?: Prisma.SongInclude) {
 		try {
@@ -67,5 +90,38 @@ export class SongService {
 		} catch {
 			return await this.createSong(artistName, title, include);
 		}
+	}
+
+	/**
+	 * Deletes a song using its ID
+	 * Also delete related tracks.
+	 * @param songId 
+	 */
+	async deleteSong(songId: number): Promise<void> {
+		try {
+			let deletedSong = await this.prismaService.song.delete({
+				where: {
+					id: songId
+				}
+			});
+			if (deletedSong.artistId !== null)
+				this.artistService.deleteArtistIfEmpty(deletedSong.artistId);
+		} catch {
+			throw new SongNotFoundByIdException(songId);
+		}
+	}
+
+	/**
+	 * Deletes a song if it does not have related tracks
+	 * @param songId 
+	 */
+	async deleteSongIfEmpty(songId: number): Promise<void> {
+		const trackCount = await this.prismaService.track.count({
+			where: {
+				songId: songId
+			}
+		});
+		if (trackCount == 0)
+			await this.deleteSong(songId);
 	}
 }

@@ -169,12 +169,12 @@ export class ReleaseService {
 	 * Retrives a release from a track's id
 	 * The returned release is the parent release of the track
 	 */
-	async getReleaseFromID(releaseID: number, include?: Prisma.ReleaseInclude) {
+	async getReleaseFromID(releaseId: number, include?: Prisma.ReleaseInclude) {
 		try {
 			return await this.prismaService.release.findUnique({
 				rejectOnNotFound: true,
 				where: {
-					id: releaseID,
+					id: releaseId,
 				},
 				include: {
 					album: include?.album ?? false,
@@ -182,7 +182,7 @@ export class ReleaseService {
 				}
 			});
 		} catch {
-			throw new ReleaseNotFoundFromIDException(releaseID);
+			throw new ReleaseNotFoundFromIDException(releaseId);
 		}
 	}
 	
@@ -265,5 +265,37 @@ export class ReleaseService {
 			return releaseName.replace(extension, "").trim();
 		}
 		return releaseName;
+	}
+
+	/**
+	 * Deletes a release using its ID
+	 * Also delete related tracks.
+	 * @param releaseId 
+	 */
+	async deleteRelease(releaseId: number): Promise<void> {
+		try {
+			let deletedRelease = await this.prismaService.release.delete({
+				where: {
+					id: releaseId
+				}
+			});
+			this.albumService.deleteAlbumIfEmpty(deletedRelease.albumId);
+		} catch {
+			throw new ReleaseNotFoundFromIDException(releaseId);
+		}
+	}
+
+	/**
+	 * Deletes a release if it does not have related tracks
+	 * @param songId 
+	 */
+	async deleteReleaseIfEmpty(songId: number): Promise<void> {
+		const trackCount = await this.prismaService.track.count({
+			where: {
+				songId: songId
+			}
+		});
+		if (trackCount == 0)
+			await this.deleteRelease(songId);
 	}
 }

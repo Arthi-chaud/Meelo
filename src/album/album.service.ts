@@ -164,4 +164,46 @@ export class AlbumService {
 			return await this.createAlbum(albumName, artistName, undefined, include);
 		}
 	}
+
+	/**
+	 * Deletes an album, and its related releases
+	 * @param albumId 
+	 */
+	async deleteAlbum(albumId: number): Promise<void> {
+		await this.prismaService.release.deleteMany({
+			where: {
+				albumId: albumId
+			}
+		});
+		try {
+			let deletedAlbum = await this.prismaService.album.delete({
+				where: {
+					id: albumId
+				}
+			});
+			if (deletedAlbum.artistId !== null)
+				this.artistServce.deleteArtistIfEmpty(deletedAlbum.artistId);
+		} catch {
+			throw new AlbumNotFoundFromIDException(albumId);
+		}
+	}
+
+	/**
+	 * Delete an artist if it does not have related song or album
+	 * @param artistId 
+	 */
+	async deleteAlbumIfEmpty(artistId: number): Promise<void> {
+		const songCount = await this.prismaService.song.count({
+			where: {
+				artistId: artistId
+			}
+		});
+		const albumCount = await this.prismaService.album.count({
+			where: {
+				artistId: artistId
+			}
+		});
+		if (songCount == 0 && albumCount == 0)
+			await this.deleteAlbum(artistId);
+	}
 }

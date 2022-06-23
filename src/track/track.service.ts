@@ -1,10 +1,15 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { Prisma, Track } from '@prisma/client';
+import { SongService } from 'src/song/song.service';
+import { TrackNotFoundByIdException } from './track.exceptions';
+import { ReleaseService } from 'src/release/release.service';
 
 @Injectable()
 export class TrackService {
 	constructor(
+		private songService: SongService,
+		private releaseService: ReleaseService,
 		private prismaService: PrismaService
 	) {}
 
@@ -31,5 +36,24 @@ export class TrackService {
 				id: track.id
 			}
 		});
+	}
+
+	/**
+	 * Deletes a track
+	 * If the parent song is empty (ie. has no other songs), it will be deleted too
+	 * @param trackId 
+	 */
+	async deleteTrack(trackId: number): Promise<void> {
+		try {
+			let deletedTrack = await this.prismaService.track.delete({
+				where: {
+					id: trackId
+				}
+			});
+			this.songService.deleteSongIfEmpty(deletedTrack.songId);
+			this.releaseService.deleteReleaseIfEmpty(deletedTrack.songId);
+		} catch {
+			throw new TrackNotFoundByIdException(trackId);
+		}
 	}
 }
