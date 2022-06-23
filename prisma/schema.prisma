@@ -35,7 +35,7 @@ model Album {
 	type			AlbumType	@default(StudioRecording)
 	/// The artist of the album
 	/// This field is nullable, as albums may not have an entitled artist, like compilations
-	artist			Artist?		@relation(fields: [artistId], references: [id])
+	artist			Artist?		@relation(fields: [artistId], references: [id], onDelete: Cascade)
 	artistId		Int?
 	@@unique([slug, artistId])
 }
@@ -66,7 +66,7 @@ model File {
 	/// Track on the file
 	track			Track?
 	/// Library the file is registered under
-	library			Library	@relation(fields: [libraryId], references: id)
+	library			Library	@relation(fields: [libraryId], references: id, onDelete: Cascade)
 	libraryId		Int
 }
 
@@ -97,7 +97,7 @@ model Release {
 	/// The tracks on the release
 	tracks			Track[]
 	/// The reference Album
-	album			Album		@relation(fields: [albumId], references: [id])
+	album			Album		@relation(fields: [albumId], references: [id], onDelete: Cascade)
 	albumId			Int
 	@@unique([albumId, slug])
 }
@@ -108,7 +108,7 @@ model Song {
 	name			String
 	slug			String
 	/// The artist of the song
-	artist			Artist?	@relation(fields: [artistId], references: [id])
+	artist			Artist?	@relation(fields: [artistId], references: [id], onDelete: Cascade)
 	artistId		Int?
 	/// The number of times, the song was played
 	playCount		Int		@default(0)
@@ -146,10 +146,10 @@ enum TrackType {
 model Track {
 	id				Int		@id @default(autoincrement())
 	/// The reference song
-	song 			Song	@relation(fields: [songId], references: [id])
+	song 			Song	@relation(fields: [songId], references: [id], onDelete: Cascade)
 	songId			Int
 	/// The parent release the track can be found on
-	release 		Release	@relation(fields: [releaseId], references: [id])
+	release 		Release	@relation(fields: [releaseId], references: [id], onDelete: Cascade)
 	releaseId		Int
 	/// The display name of the track
 	displayName		String
@@ -168,6 +168,6 @@ model Track {
 	/// The duration in seconds of the track
 	duration		Int
 	/// The track from the file
-	sourceFile			File	@relation(fields: [sourceFileId], references: [id])
+	sourceFile			File	@relation(fields: [sourceFileId], references: [id], onDelete: Cascade)
 	sourceFileId		Int
 }
