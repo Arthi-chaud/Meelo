@@ -35,7 +35,7 @@ export class LibraryService {
 	}
 
 	async getAllLibraries(include?: Prisma.LibraryInclude) {
-		return this.prismaService.library.findMany({
+		return await this.prismaService.library.findMany({
 			include: {
 				files: include?.files ?? false
 			}

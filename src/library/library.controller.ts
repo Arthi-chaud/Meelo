@@ -32,7 +32,7 @@ export class LibraryController {
 	}
 
 	@Get('scan')
-	scanLibrariesFiles(@Res() res: Response) {
+	scanLibrariesFiles() {
 		this.libraryService.getAllLibraries().then((libraries) => {
 			libraries.forEach(
 				(library) => this.libraryService.registerNewFiles(library)
@@ -43,5 +43,14 @@ export class LibraryController {
 	@Get('clean/:slug')
 	async cleanLibrary(@Param('slug', ParseSlugPipe) slug: Slug) {
 		await this.libraryService.unregisterUnavailableFiles(slug);
+	}
+
+	@Get('clean')
+	async cleanLibraries() {
+		this.libraryService.getAllLibraries().then((libraries) => {
+			libraries.forEach(
+				(library) => this.libraryService.unregisterUnavailableFiles(new Slug(library.slug))
+			);
+		});
 	}
 }
