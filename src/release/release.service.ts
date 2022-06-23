@@ -46,7 +46,7 @@ export class ReleaseService {
 				slug: new Slug(release.title).toString(),
 				album: undefined,
 				tracks: undefined
-		},
+			},
 			where: {
 				id: release.id
 			}
