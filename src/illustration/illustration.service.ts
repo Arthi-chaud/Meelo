@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { HttpService } from '@nestjs/axios';
 import { FileManagerService } from 'src/file-manager/file-manager.service';
 import { MetadataService } from 'src/metadata/metadata.service';
@@ -106,13 +106,15 @@ export class IllustrationService {
 
 	/**
 	 * Extracts the embedded illustration in a track file
-	 * If the illustration is already saved, it'll return the path of the prevously saved image
-	 * If not and if the file does not have an illustration it'll return null
-	 * If the embedded image differs from the previously saved image, it'll be saved under a track-specific path
-	 * and this path will be returned 
+	 * If no illustration is embedded, returns null
+	 * If the embedded illustration is the same as the release's, nothing is done and return null
+	 * If there is no release illustration, extracts the track's illustration and return its path
+	 * Otherwise, if there is a release illustration, but the track's differs from it
+	 * extracts the track's illustration as a track-specific illustration, and return its path
 	 * @param track the track to extract the illustration from
 	 */
 	async extractTrackIllustration(track: Track, fullTrackPath: string): Promise<IllustrationPath | null> {
+		Logger.log(`Extracting illustration from track '${track.displayName}'`);
 		let release: Release & any = await this.releaseService.getReleaseFromID(track.releaseId, {
 			album: {
 				include: {
@@ -136,11 +138,13 @@ export class IllustrationService {
 			track.trackIndex ?? undefined
 		);
 		const illustration = await this.extractIllustrationFromFile(fullTrackPath);
+		if (illustration == null) {
+			Logger.log("No illustration to extract");
+			return null;
+		}
 		const illustrationBytes = illustration ? (await (await jimp.read(illustration!.data)).getBufferAsync(jimp.MIME_JPEG)) : undefined;
 		const saveAndGetIllustrationPath = async (illustrationPath: IllustrationPath) => {
 			if (this.fileManagerService.fileExists(illustrationPath)) {
-				if (illustration == undefined)
-					return illustrationPath;
 				if (this.fileManagerService.getFileContent(illustrationPath) == illustrationBytes!.toString())
 					return illustrationPath;
 			} else if (illustration != undefined) {
@@ -151,8 +155,11 @@ export class IllustrationService {
 		};
 		const extractedIllustrationPath = await saveAndGetIllustrationPath(releaseIllustrationPath)
 			?? await saveAndGetIllustrationPath(trackIllustrationPath);
-		if (extractedIllustrationPath == null)
+		if (extractedIllustrationPath == null) {
+			Logger.warn("Illustration extraction failed");
 			throw new IllustrationNotExtracted(track.displayName);
+		}
+		Logger.log("Illustration successfully extracted");
 		return extractedIllustrationPath;
 	}
 
