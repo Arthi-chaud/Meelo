@@ -114,13 +114,12 @@ export class ReleaseService {
 				id: release.id
 			}
 		});
-		let parentAlbum = await this.albumService.getAlbum({ byId: { id: release.albumId }});
 		if (release.master) {
 		 	await this.setReleaseAsMaster(updatedRelease);
 		} else {
 		 	await this.unsetReleaseAsMaster(updatedRelease);
 		};
-		await this.albumService.updateAlbumDate(parentAlbum);
+		await this.albumService.updateAlbumDate({ byId: { id: release.albumId }});
 		return updatedRelease;
 	}
 
@@ -222,7 +221,7 @@ export class ReleaseService {
 					tracks: include?.tracks ?? false
 				}
 			});
-			let updatedAlbum = await this.albumService.updateAlbumDate(album);
+			let updatedAlbum = await this.albumService.updateAlbumDate({ byId: { id: release.albumId } });
 			if (include?.album ?? false)
 				release.album = updatedAlbum;
 			return release;

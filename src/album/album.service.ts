@@ -91,14 +91,11 @@ export class AlbumService {
 
 	/**
 	 * Updates an album date, using the earliest date from its releases
-	 * @param album 
+	 * @param where the query parameter to get the album to update
 	 */
-	 async updateAlbumDate(album: Album): Promise<Album> {
-		let releases: Release[] = (await this.getAlbum(
-			{ byId: { id: album.id }},
-			{ releases: true}
-		)).releases;
-		for (const release of releases) {
+	 async updateAlbumDate(where: AlbumWhereInput): Promise<Album> {
+		let album = (await this.getAlbum(where, { releases: true }));
+		for (const release of album.releases) {
 			if (album.releaseDate == null ||
 				(release.releaseDate && release.releaseDate < album.releaseDate)) {
 				album.releaseDate = release.releaseDate;
