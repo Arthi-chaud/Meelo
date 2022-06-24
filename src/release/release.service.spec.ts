@@ -123,7 +123,13 @@ describe('Release Service', () => {
 
 	describe('Get Release', () => { 
 		it("should get the release", async () => {
-			let fetchedRelease = await releaseService.getRelease(new Slug(release.slug), new Slug(release.album.slug), new Slug(album.artist!.slug));
+			let fetchedRelease = await releaseService.getRelease({
+				bySlug: {
+					slug: new Slug(release.slug),
+					albumSlug: new Slug(release.album.slug),
+					artistSlug: new Slug(album.artist!.slug)
+				}
+			});
 			expect(fetchedRelease.id).toBe(release.id);
 			expect(fetchedRelease.albumId).toBe(release.albumId);
 			expect(fetchedRelease.title).toBe(release.title);
@@ -133,7 +139,12 @@ describe('Release Service', () => {
 		});
 
 		it("should get the release (compilation)", async () => {
-			let fetchedRelease = await releaseService.getRelease(new Slug('My Compilation (Expanded Edition)'), new Slug('My Compilation'));
+			let fetchedRelease = await releaseService.getRelease({
+				bySlug: {
+					slug: new Slug('My Compilation (Expanded Edition)'),
+					albumSlug: new Slug('My Compilation')
+				}
+			});
 			expect(fetchedRelease.id).toBe(compilationRelease.id);
 			expect(fetchedRelease.albumId).toBe(compilationRelease.albumId);
 			expect(fetchedRelease.title).toBe(compilationRelease.title);
@@ -144,13 +155,18 @@ describe('Release Service', () => {
 
 		it("should throw, as the release does not exists", async () => {
 			const test = async () => {
-				return await releaseService.getRelease(new Slug('I Do not exists'), new Slug('I dont either'));
+				return await releaseService.getRelease({
+					bySlug: {
+						slug: new Slug('I Do not exists'),
+						albumSlug: new Slug('I dont either')
+					}
+				});
 			}
 			expect(test()).rejects.toThrow(ReleaseNotFoundException);
 		});
 
-		it("should get the release from it id", async () => {
-			let fetchedRelease = await releaseService.getReleaseFromID(release.id);
+		it("should get the release from its id", async () => {
+			let fetchedRelease = await releaseService.getRelease({ byId: { id: release.id } });
 			expect(fetchedRelease.id).toBe(release.id);
 			expect(fetchedRelease.albumId).toBe(release.albumId);
 			expect(fetchedRelease.title).toBe(release.title);
@@ -161,7 +177,7 @@ describe('Release Service', () => {
 
 		it("should throw, as no release has the id", async () => {
 			const test = async () => {
-				return await releaseService.getReleaseFromID(-1);
+				return await releaseService.getRelease({ byId: { id: -1 } });
 			}
 			expect(test()).rejects.toThrow(ReleaseNotFoundFromIDException);
 		});
@@ -169,9 +185,13 @@ describe('Release Service', () => {
 
 	describe('Get Master Release', () => {
 		it("Should retrieve the master release", async () => {
-			release = await releaseService.getMasterReleaseOf(new Slug(album.slug), new Slug(album.artist!.slug), {
-				album: true, 
-			});
+			release = await releaseService.getRelease(
+				{ byMasterOfNamedAlbum: {
+					albumSlug: new Slug(album.slug),
+					artistSlug: new Slug(album.artist!.slug)
+				}},
+				{ album: true }
+			);
 
 			expect(release.albumId).toBe(album.id);
 			expect(release.master).toBe(true);
@@ -180,9 +200,10 @@ describe('Release Service', () => {
 		});
 
 		it("Should retrieve the master release (compilation)", async () => {
-			let compilationMaster = await releaseService.getMasterReleaseOf(new Slug(compilationAlbum.slug), undefined, {
-				album: true, 
-			});
+			let compilationMaster = await releaseService.getRelease(
+				{ byMasterOfNamedAlbum: { albumSlug: new Slug(compilationAlbum.slug) } },
+				{ album: true }
+			);
 
 			expect(compilationMaster.albumId).toBe(compilationAlbum.id);
 			expect(compilationMaster.master).toBe(true);

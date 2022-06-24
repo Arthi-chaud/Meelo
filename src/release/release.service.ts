@@ -2,8 +2,9 @@ import { Injectable, Logger } from '@nestjs/common';
 import { AlbumService } from 'src/album/album.service';
 import { Slug } from 'src/slug/slug';
 import { Release, Artist, Album, Prisma } from '@prisma/client';
-import { MasterReleaseNotFoundException, ReleaseAlreadyExists, ReleaseNotFoundException, ReleaseNotFoundFromIDException } from './release.exceptions';
+import { MasterReleaseNotFoundException, MasterReleaseNotFoundFromIDException, ReleaseAlreadyExists, ReleaseNotFoundException, ReleaseNotFoundFromIDException } from './release.exceptions';
 import { PrismaService } from 'src/prisma/prisma.service';
+import { ReleaseRelationInclude, ReleaseWhereInput } from './models/release.query-parameters';
 
 @Injectable()
 export class ReleaseService {
@@ -12,22 +13,24 @@ export class ReleaseService {
 		private albumService: AlbumService,
 	) {}
 
-	async getMasterReleaseOf(albumSlug: Slug, artistSlug?: Slug, include?: Prisma.ReleaseInclude) {
+	async getRelease(where: ReleaseWhereInput, include?: ReleaseRelationInclude) {
+		const artistSlug = where.byMasterOfNamedAlbum?.artistSlug ?? where.bySlug?.artistSlug
+		const albumSlug = where.byMasterOfNamedAlbum?.albumSlug ?? where.bySlug?.albumSlug
+		const findMaster = where.byMasterOf || where.byMasterOfNamedAlbum
 		try {
 			return await this.prismaService.release.findFirst({
 				rejectOnNotFound: true,
 				where: {
-					master: true,
-					album: {
-						slug: {
-							equals: albumSlug.toString()
-						},
-						artist: {
-							slug: artistSlug ? {
-								equals: artistSlug?.toString()
-							} : undefined
-						}
-					}
+					id: where.byId?.id,
+					master: findMaster ? true : undefined,
+					slug: where.bySlug?.slug.toString(),
+					album: where.byId == undefined ? {
+						id: where.byMasterOf?.albumId,
+						slug: albumSlug?.toString(),
+						artist: artistSlug ? {
+							slug: artistSlug.toString()
+						} : null
+					} : undefined
 				},
 				include: {
 					album: include?.album ?? false,
@@ -35,9 +38,23 @@ export class ReleaseService {
 				}
 			});
 		} catch {
-			throw new MasterReleaseNotFoundException(albumSlug, artistSlug);
+			if (where.byId) {
+				throw new ReleaseNotFoundFromIDException(where.byId.id);
+			} else if (where.bySlug) {
+				throw new ReleaseNotFoundException(
+					where.bySlug.slug,
+					where.bySlug.albumSlug,
+					where.bySlug.artistSlug
+				);
+			} else if (where.byMasterOfNamedAlbum) {
+				throw new MasterReleaseNotFoundException(
+					where.byMasterOfNamedAlbum.albumSlug,
+					where.byMasterOfNamedAlbum.artistSlug
+				);
+			}
+			throw new MasterReleaseNotFoundFromIDException(where.byMasterOf.albumId);
 		}
-	}
+	};
 	
 	async updateRelease(release: Release) {
 		let updatedRelease = await this.prismaService.release.update({
@@ -70,11 +87,14 @@ export class ReleaseService {
 	 * @param include the relation fields to include on returned value
 	 * @returns 
 	 */
-	async findOrCreateRelease(releaseTitle: string, albumName?: string, artistName?: string, releaseDate?: Date, include?: Prisma.ReleaseInclude) {
+	async findOrCreateRelease(releaseTitle: string, albumName?: string, artistName?: string, releaseDate?: Date, include?: ReleaseRelationInclude) {
 		let artistSlug: Slug | undefined = artistName ? new Slug(artistName) : undefined;
 		albumName = albumName ?? this.removeReleaseExtension(releaseTitle);
 		try {
-			return await this.getRelease(new Slug(releaseTitle), new Slug(albumName), artistSlug, include);
+			return await this.getRelease(
+				{ bySlug: { slug: new Slug(releaseTitle), albumSlug: new Slug(albumName), artistSlug: artistSlug } },
+				include
+			);
 		} catch {
 			let album = await this.albumService.findOrCreate(albumName, artistName, { releases: true, artist: true });
 			return await this.createRelease(releaseTitle, album, releaseDate, include);
@@ -165,64 +185,7 @@ export class ReleaseService {
 		}
 	}
 
-	/**
-	 * Retrives a release from a track's id
-	 * The returned release is the parent release of the track
-	 */
-	async getReleaseFromID(releaseId: number, include?: Prisma.ReleaseInclude) {
-		try {
-			return await this.prismaService.release.findUnique({
-				rejectOnNotFound: true,
-				where: {
-					id: releaseId,
-				},
-				include: {
-					album: include?.album ?? false,
-					tracks: include?.tracks ?? false
-				}
-			});
-		} catch {
-			throw new ReleaseNotFoundFromIDException(releaseId);
-		}
-	}
 	
-	/**
-	 * Retrives a release
-	 * @param releaseSlug 
-	 * @param albumSlug 
-	 * @param artistSlug 
-	 * @param include 
-	 * @returns 
-	 */
-	async getRelease(releaseSlug: Slug, albumSlug: Slug, artistSlug?: Slug, include?: Prisma.ReleaseInclude) {
-		try {
-			return await this.prismaService.release.findFirst({
-				rejectOnNotFound: true,
-				where: {
-					slug: {
-						equals: releaseSlug.toString()
-					},
-					album: {
-						artist: {
-							slug: artistSlug ? {
-								equals: artistSlug?.toString()
-							} : undefined
-						},
-						slug: {
-							equals: albumSlug.toString()
-						}
-					}
-				},
-				include: {
-					album: include?.album ?? false,
-					tracks: include?.tracks ?? false
-				}
-			});
-		} catch {
-			throw new ReleaseNotFoundException(releaseSlug, albumSlug, artistSlug);
-		}
-	}
-
 	/**
 	 * Extract an extension from a release name
 	 * For example, if the release Name is 'My Album (Deluxe Edition)', it would return
