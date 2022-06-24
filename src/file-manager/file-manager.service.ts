@@ -3,7 +3,7 @@ import { SettingsService } from 'src/settings/settings.service';
 import { Md5 } from 'ts-md5';
 import * as fs from 'fs';
 import { Library } from '@prisma/client';
-import { FolderDoesNotExists } from './file-manager.exceptions';
+import { FolderDoesNotExistException } from './file-manager.exceptions';
 
 @Injectable()
 export class FileManagerService {
@@ -94,7 +94,7 @@ export class FileManagerService {
 			);
 			return candidates;
 		} catch {
-			throw new FolderDoesNotExists(folderPath);
+			throw new FolderDoesNotExistException(folderPath);
 		}
 	}
 
