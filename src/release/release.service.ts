@@ -51,7 +51,7 @@ export class ReleaseService {
 				id: release.id
 			}
 		});
-		let parentAlbum = await this.albumService.getAlbumFromID(release.albumId);
+		let parentAlbum = await this.albumService.getAlbum({ byId: { id: release.albumId }});
 		if (release.master) {
 		 	await this.setReleaseAsMaster(updatedRelease);
 		} else {
@@ -160,7 +160,7 @@ export class ReleaseService {
 			if (include?.album ?? false)
 				release.album = updatedAlbum;
 			return release;
-		} catch{
+		} catch {
 			throw new ReleaseAlreadyExists(releaseSlug, album.artist ? new Slug(album.artist!.slug!) : undefined);
 		}
 	}

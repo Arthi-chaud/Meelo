@@ -101,9 +101,10 @@ describe('Release Service', () => {
 		});
 		
 		it("should create the album's second release", async () => {
-			album = await albumService.getAlbumFromID(album.id, {
-				releases: true, artist: true
-			});
+			album = await albumService.getAlbum(
+				{ byId: { id: album.id } },
+				{ releases: true, artist: true }
+			);
 			release = await releaseService.createRelease('My Album', album, new Date('2007'), {
 				album: true
 			});
@@ -205,9 +206,10 @@ describe('Release Service', () => {
 			release.releaseDate = new Date('2005');
 
 			await releaseService.updateRelease(release);
-			album = await albumService.getAlbum(new Slug('My Album'), new Slug ("My Artist"), {
-				releases: true
-			});
+			album = await albumService.getAlbum(
+				{ bySlug: { slug: new Slug('My Album'), artistSlug: new Slug ("My Artist") } },
+				{ releases: true }
+			);
 			expect(album.releaseDate).toStrictEqual(new Date('2005'));
 		});
 
@@ -215,9 +217,10 @@ describe('Release Service', () => {
 			release.master = false;
 
 			await releaseService.updateRelease(release);
-			album = await albumService.getAlbum(new Slug('My Album'), new Slug ("My Artist"), {
-				releases: true
-			});
+			album = await albumService.getAlbum(
+				{ bySlug: { slug: new Slug('My Album'), artistSlug: new Slug ("My Artist") } },
+				{ releases: true }
+			);
 			expect(album.releases.find((release) => release.master == true)!.title).toBe('My Album');
 		});
 	});

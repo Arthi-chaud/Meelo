@@ -3,7 +3,7 @@ import { ParseSlugPipe } from 'src/slug/pipe';
 import { Slug } from 'src/slug/slug';
 import { LibraryService } from './library.service';
 import { LibraryDto } from './models/library.dto';
-import { Library } from '@prisma/client';
+import { Artist, Library } from '@prisma/client';
 
 @Controller('libraries')
 export class LibraryController {
