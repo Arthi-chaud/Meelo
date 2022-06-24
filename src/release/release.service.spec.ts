@@ -22,7 +22,7 @@ describe('Release Service', () => {
 	
 	beforeAll(async () => {
 		const module: TestingModule = await Test.createTestingModule({
-			imports: [PrismaModule, AlbumModule, AlbumModule, ArtistModule],
+			imports: [PrismaModule, AlbumModule, ArtistModule],
 			providers: [ReleaseService, AlbumService],
 		}).overrideProvider(FileManagerService).useClass(FakeFileManagerService).compile();
 		await module.get<PrismaService>(PrismaService).onModuleInit();

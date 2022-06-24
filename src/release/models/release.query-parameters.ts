@@ -16,6 +16,8 @@ export type ReleaseWhereInput = RequireOnlyOne<{
  * Query parameters to find multiple Releases
  */
 export type ReleasesWhereInput = RequireOnlyOne<{
+	byAlbumId: { albumId: number },
+	byAlbumSlug: { albumSlug: Slug, artistSlug?: Slug },
 }>
 
 /**

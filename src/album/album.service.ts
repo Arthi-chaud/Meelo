@@ -75,26 +75,6 @@ export class AlbumService {
 		});
 	}
 
-	/**
-	 * Retrieves the release related to an album
-	 * @param albumId the id of the parent album
-	 * @param include the relation to include in the retrived objects
-	 * @returns a promise of an array of releases
-	 */
-	async getAlbumReleases(albumId: number, include?: Prisma.ReleaseInclude): Promise<Release[]> {
-		return await this.prismaService.release.findMany({
-			where: {
-				albumId: {
-					equals: albumId
-				}
-			},
-			include: {
-				album: false,
-				tracks: include?.tracks ?? false
-			}
-		});
-	} 
-
 	async updateAlbum(album: Album): Promise<Album> {
 		return await this.prismaService.album.update({
 			data: {
@@ -114,7 +94,10 @@ export class AlbumService {
 	 * @param album 
 	 */
 	 async updateAlbumDate(album: Album): Promise<Album> {
-		let releases: Release[] = await this.getAlbumReleases(album.id);
+		let releases: Release[] = (await this.getAlbum(
+			{ byId: { id: album.id }},
+			{ releases: true}
+		)).releases;
 		for (const release of releases) {
 			if (album.releaseDate == null ||
 				(release.releaseDate && release.releaseDate < album.releaseDate)) {

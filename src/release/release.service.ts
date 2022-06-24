@@ -4,7 +4,8 @@ import { Slug } from 'src/slug/slug';
 import { Release, Artist, Album, Prisma } from '@prisma/client';
 import { MasterReleaseNotFoundException, MasterReleaseNotFoundFromIDException, ReleaseAlreadyExists, ReleaseNotFoundException, ReleaseNotFoundFromIDException } from './release.exceptions';
 import { PrismaService } from 'src/prisma/prisma.service';
-import { ReleaseRelationInclude, ReleaseWhereInput } from './models/release.query-parameters';
+import { ReleaseRelationInclude, ReleasesWhereInput, ReleaseWhereInput } from './models/release.query-parameters';
+import { AlbumWhereInput } from 'src/album/models/album.query-parameters';
 
 @Injectable()
 export class ReleaseService {
@@ -13,6 +14,12 @@ export class ReleaseService {
 		private albumService: AlbumService,
 	) {}
 
+	/**
+	 * Find a release
+	 * @param where the query parameters to find the release
+	 * @param include the relation fields to include
+	 * @returns a release. Throws if not found
+	 */
 	async getRelease(where: ReleaseWhereInput, include?: ReleaseRelationInclude) {
 		const artistSlug = where.byMasterOfNamedAlbum?.artistSlug ?? where.bySlug?.artistSlug
 		const albumSlug = where.byMasterOfNamedAlbum?.albumSlug ?? where.bySlug?.albumSlug
@@ -55,6 +62,45 @@ export class ReleaseService {
 			throw new MasterReleaseNotFoundFromIDException(where.byMasterOf.albumId);
 		}
 	};
+
+	/**
+	 * Find releases
+	 * @param where the query parameters to find the releases
+	 * @param include the relation fields to includes
+	 * @returns an array of releases
+	 */
+	async getReleases(where: ReleasesWhereInput, include?: ReleaseRelationInclude) {
+		return await this.prismaService.release.findMany({
+			where: {
+				album: {
+					id: where.byAlbumId?.albumId,
+					slug: where.byAlbumSlug?.albumSlug.toString(),
+					artist: where.byAlbumSlug ?
+						where.byAlbumSlug.artistSlug ? {
+							slug: where.byAlbumSlug?.artistSlug.toString()
+						} : null
+					: undefined
+				}
+			},
+			include: {
+				album: include?.album ?? false,
+				tracks: include?.tracks ?? false
+			}
+		});
+	}
+
+	async getAlbumReleases(where: AlbumWhereInput, include?: ReleaseRelationInclude) {
+		return await this.getReleases(where.byId
+			? { byAlbumId: { albumId: where.byId.id } }
+			: { byAlbumSlug: { albumSlug: where.bySlug.slug, artistSlug: where.bySlug.artistSlug } },
+			include
+		);
+	}
+
+	/**
+	 * Updates the release in the database
+	 * @param release the release to update
+	 */
 	
 	async updateRelease(release: Release) {
 		let updatedRelease = await this.prismaService.release.update({
@@ -106,7 +152,7 @@ export class ReleaseService {
 	 * @param release 
 	 */
 	async setReleaseAsMaster(release: Release): Promise<Release> {
-		let otherAlbumReleases: Release[] = (await this.albumService.getAlbumReleases(release.albumId))
+		let otherAlbumReleases: Release[] = (await this.getAlbumReleases({ byId: { id: release.albumId }}))
 			.filter((albumRelease) => albumRelease.id != release.id);
 		
 		await this.prismaService.release.updateMany({
@@ -135,7 +181,7 @@ export class ReleaseService {
 	 * @param release 
 	 */
 	 async unsetReleaseAsMaster(release: Release): Promise<Release> {
-		let otherAlbumReleases: Release[] = (await this.albumService.getAlbumReleases(release.albumId))
+		let otherAlbumReleases: Release[] = (await this.getAlbumReleases({ byId: { id: release.albumId }}))
 			.filter((albumRelease) => albumRelease.id != release.id);
 		if (otherAlbumReleases.find((albumRelease) => albumRelease.master))
 			return release;
