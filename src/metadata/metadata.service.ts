@@ -2,7 +2,7 @@ import { Injectable, Logger } from '@nestjs/common';
 import { FileManagerService } from 'src/file-manager/file-manager.service';
 import { Metadata } from './models/metadata';
 import mm, { type IAudioMetadata } from 'music-metadata';
-import { FileNotFoundException, FileNotReadableException } from 'src/file/file.exceptions';
+import { FileDoesNotExistException, FileNotReadableException } from 'src/file-manager/file-manager.exceptions';
 import { FileParsingException, PathParsingException } from './metadata.exceptions';
 import { SettingsService } from 'src/settings/settings.service';
 import { TrackService } from 'src/track/track.service';
@@ -38,22 +38,10 @@ export class MetadataService {
 			metadata.releaseDate,
 			{ album: true }
 		);
-		let track: Prisma.TrackCreateInput = {
-			release: {
-				connect: {
-					id: release.id
-				}
-			},
-			song: {
-				connect: {
-					id: song.id
-				}
-			},
-			sourceFile: {
-				connect: {
-					id: file.id
-				}
-			},
+		let track: Omit<Track, 'id'> = {
+			songId: song.id,
+			sourceFileId: file.id,
+			releaseId: release.id,
 			displayName: metadata.name!,
 			master: song.instances.length == 0,
 			discIndex: metadata.discIndex ?? null,
@@ -72,7 +60,7 @@ export class MetadataService {
 		await this.albumService.updateAlbum(release.album);
 		release.releaseDate = metadata.releaseDate ?? null;
 		await this.releaseService.updateRelease(release);
-		return await this.trackService.createTrack(track);
+		return await this.trackService.saveTrack(track);
 	}
 
 	/**
@@ -101,7 +89,7 @@ export class MetadataService {
 	 */
 	private async parseMetadataFromFile(filePath: string): Promise<Metadata> {
 		if (!this.fileManagerService.fileExists(filePath)) {
-			throw new FileNotFoundException(filePath);
+			throw new FileDoesNotExistException(filePath);
 		}
 		if (!this.fileManagerService.fileIsReadable(filePath)) {
 			throw new FileNotReadableException(filePath);

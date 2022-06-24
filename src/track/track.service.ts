@@ -18,7 +18,7 @@ export class TrackService {
 	 * @param track the track instance to save
 	 * @returns the track once saved
 	 */
-	async createTrack(track: Prisma.TrackCreateInput): Promise<Track> {
+	async saveTrack(track: Omit<Track, 'id'>): Promise<Track> {
 		return await this.prismaService.track.create({
 			data: {...track}
 		});
