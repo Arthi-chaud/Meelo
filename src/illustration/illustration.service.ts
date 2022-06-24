@@ -14,6 +14,7 @@ import * as dir from 'path';
 import { IllustrationPath } from './models/illustration-path.model';
 import { Md5 } from 'ts-md5';
 import jimp from 'jimp';
+import { AlbumService } from 'src/album/album.service';
 
 @Injectable()
 export class IllustrationService {
@@ -21,6 +22,7 @@ export class IllustrationService {
 	constructor(
 		private metadataService: MetadataService,
 		private releaseService: ReleaseService,
+		private albumService: AlbumService,
 		private readonly httpService: HttpService,
 		private fileManagerService: FileManagerService) {
 		this.illustrationFolderPath = this.metadataService.metadataFolderPath;
@@ -77,7 +79,9 @@ export class IllustrationService {
 	 * @param albumSlug The slug of an album
 	 */
 	async buildMasterReleaseIllustrationPath(albumSlug: Slug, artistSlug?: Slug): Promise<IllustrationPath> {
-		const masterRelease: Release = await this.releaseService.getMasterReleaseOf(albumSlug, artistSlug);
+		const masterRelease: Release = await this.releaseService.getRelease({
+			byMasterOfNamedAlbum: { albumSlug, artistSlug }
+		});
 		return this.buildReleaseIllustrationPath(albumSlug, new Slug(masterRelease.slug), artistSlug);
 	}
 	/**
@@ -115,16 +119,17 @@ export class IllustrationService {
 	 */
 	async extractTrackIllustration(track: Track, fullTrackPath: string): Promise<IllustrationPath | null> {
 		Logger.log(`Extracting illustration from track '${track.displayName}'`);
-		let release: Release & any = await this.releaseService.getReleaseFromID(track.releaseId, {
-			album: {
-				include: {
-					artist: true
-				}
-			}
-		});
+		let release: Release = await this.releaseService.getRelease(
+			{ byId: { id: track.releaseId } },
+			{ album: true }
+		);
+		let album  = await this.albumService.getAlbum(
+			{ byId: { id: release.albumId }},
+			{ artist: true }
+		)
 		const releaseSlug = new Slug(release.slug);
-		const artistSlug =  release.album.artist ? new Slug(release.album.artist.slug) : undefined;
-		const albumSlug = new Slug(release.album.slug);
+		const artistSlug =  album.artist ? new Slug(album.artist.slug) : undefined;
+		const albumSlug = new Slug(album.slug);
 		const releaseIllustrationPath = this.buildReleaseIllustrationPath(
 			releaseSlug,
 			albumSlug,
