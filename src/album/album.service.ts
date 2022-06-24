@@ -192,11 +192,6 @@ export class AlbumService {
 	 * @param albumId 
 	 */
 	async deleteAlbum(albumId: number): Promise<void> {
-		await this.prismaService.release.deleteMany({
-			where: {
-				albumId: albumId
-			}
-		});
 		try {
 			let deletedAlbum = await this.prismaService.album.delete({
 				where: {
