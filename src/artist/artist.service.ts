@@ -45,8 +45,8 @@ export class ArtistService {
 		return await this.prismaService.artist.findMany({
 			where: {
 				slug: {
-					startsWith: where.bySlug?.startsWith,
-					contains: where.bySlug?.contains,
+					startsWith: where.bySlug?.startsWith?.toString(),
+					contains: where.bySlug?.contains?.toString(),
 				},
 				albums: where.byLibrarySource ? {
 					some: {

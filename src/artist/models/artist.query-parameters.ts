@@ -14,7 +14,7 @@ export type ArtistWhereInput = RequireOnlyOne<{
  */
 export type ArtistsWhereInput = RequireOnlyOne<{
 	byLibrarySource: { libraryId: number },
-	bySlug: RequireOnlyOne<{ startsWith: string, contains: string }>
+	bySlug: RequireOnlyOne<{ startsWith: Slug, contains: Slug }>
 }>
 
 /**
