@@ -22,13 +22,14 @@ export class AlbumService {
 		try {
 			return await this.prismaService.album.findFirst({
 				rejectOnNotFound: true,
-				where: where.byId ? 
-					{ id: where.byId.id }
-				: {
-					slug: where.bySlug.slug.toString(),
-					artist: where.bySlug.artistSlug ? {
-						slug: where.bySlug.artistSlug.toString()
-					} : null
+				where:{
+					id: where.byId?.id ?? undefined,
+					slug: where.bySlug?.slug.toString(),
+					artist: where.bySlug ?
+						where.bySlug.artistSlug ? {
+							slug: where.bySlug?.artistSlug.toString()
+						} : null
+					: undefined
 				},
 				include: {
 					releases: include?.releases ?? false,
