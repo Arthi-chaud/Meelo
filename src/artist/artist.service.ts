@@ -108,16 +108,6 @@ export class ArtistService {
 	 * @param artistId 
 	 */
 	async deleteArtist(artistId: number): Promise<void> {
-		await this.prismaService.album.deleteMany({
-			where: {
-				artistId: artistId
-			}
-		});
-		await this.prismaService.song.deleteMany({
-			where: {
-				artistId: artistId
-			}
-		});
 		try {
 			await this.prismaService.artist.delete({
 				where: {
