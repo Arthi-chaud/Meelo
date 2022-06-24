@@ -16,3 +16,11 @@ export type AlbumsWhereInput = RequireOnlyOne<{
 	byArtist: { artistSlug?: Slug },
 	byLibrarySource: { libraryId: number },
 }>
+
+/**
+ * Defines what relations to include in query
+ */
+export type AlbumRelationInclude = {
+	releases?: boolean,
+	artist?: boolean
+}

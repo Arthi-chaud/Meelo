@@ -1,10 +1,10 @@
-import { GoneException, Injectable, Logger } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { ArtistService } from 'src/artist/artist.service';
 import { Slug } from 'src/slug/slug';
 import { AlbumAlreadyExistsException, AlbumNotFoundException, AlbumNotFoundFromIDException } from './album.exceptions';
 import { AlbumType, Album, Prisma, Release } from '@prisma/client';
 import { PrismaService } from 'src/prisma/prisma.service';
-import { AlbumWhereInput } from './models/album.query-parameters';
+import { AlbumWhereInput, AlbumRelationInclude, AlbumsWhereInput } from './models/album.query-parameters';
 
 @Injectable()
 export class AlbumService {
@@ -14,11 +14,11 @@ export class AlbumService {
 	) {}
 
 	/**
-	 * Find an album from its slug and its artist's slug
+	 * Find an album
 	 * @param where the parameters to find the album
 	 * @param include the relations to include
 	 */
-	async getAlbum(where: AlbumWhereInput, include?: Prisma.AlbumInclude) {
+	async getAlbum(where: AlbumWhereInput, include?: AlbumRelationInclude) {
 		try {
 			return await this.prismaService.album.findFirst({
 				rejectOnNotFound: true,
@@ -41,6 +41,38 @@ export class AlbumService {
 				throw new AlbumNotFoundFromIDException(where.byId.id);
 			throw new AlbumNotFoundException(where.bySlug.slug, where.bySlug.artistSlug);
 		}
+	}
+
+	/**
+	 * Find multiple albums
+	 * @param where the parameters to find the album
+	 * @param include the relations to include
+	 */
+	 async getAlbums(where: AlbumsWhereInput, include?: AlbumRelationInclude) {
+		return await this.prismaService.album.findMany({
+			where:{
+				artist: where.byArtist ?
+					where.byArtist.artistSlug ? {
+						slug: where.byArtist?.artistSlug.toString()
+					} : null
+				: undefined,
+				releases: where.byLibrarySource ? {
+					some: {
+						tracks: {
+							some: {
+								sourceFile: {
+									libraryId: where.byLibrarySource.libraryId
+								}
+							}
+						}
+					}
+				} : undefined
+			},
+			include: {
+				releases: include?.releases ?? false,
+				artist: include?.artist ?? false
+			}
+		});
 	}
 
 	/**
@@ -141,7 +173,7 @@ export class AlbumService {
 
 	}
 
-	async findOrCreate(albumName: string, artistName?: string, include?: Prisma.AlbumInclude) {
+	async findOrCreate(albumName: string, artistName?: string, include?: AlbumRelationInclude) {
 		try {
 			return await this.getAlbum(
 				{ bySlug: { slug: new Slug(albumName), artistSlug: artistName ? new Slug(artistName) : undefined} },
