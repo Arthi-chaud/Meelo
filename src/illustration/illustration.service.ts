@@ -5,8 +5,7 @@ import { MetadataService } from 'src/metadata/metadata.service';
 import { Album, Artist, Release, Track } from '@prisma/client';
 import { ReleaseService } from 'src/release/release.service';
 import { Slug } from 'src/slug/slug';
-import { CantDownloadIllustrationException, IllustrationNotExtracted, NoArtistIllustrationException } from './illustration.exceptions';
-import { FileNotFoundException } from 'src/file/file.exceptions';
+import { CantDownloadIllustrationException, IllustrationNotExtracted } from './illustration.exceptions';
 import mm, { IPicture, type IAudioMetadata } from 'music-metadata';
 import * as fs from 'fs';
 import { FileParsingException } from 'src/metadata/metadata.exceptions';
@@ -15,6 +14,7 @@ import { IllustrationPath } from './models/illustration-path.model';
 import { Md5 } from 'ts-md5';
 import jimp from 'jimp';
 import { AlbumService } from 'src/album/album.service';
+import { FileDoesNotExistException } from 'src/file-manager/file-manager.exceptions';
 
 @Injectable()
 export class IllustrationService {
@@ -176,7 +176,7 @@ export class IllustrationService {
 	private async extractIllustrationFromFile(filePath: string): Promise<IPicture | null> {
 		let rawMetadata: IAudioMetadata;
 		if (!this.fileManagerService.fileExists(filePath)) {
-			throw new FileNotFoundException(filePath);
+			throw new FileDoesNotExistException(filePath);
 		}
 		try {
 			rawMetadata = await mm.parseFile(filePath, {
