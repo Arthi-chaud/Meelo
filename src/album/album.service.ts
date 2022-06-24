@@ -56,6 +56,10 @@ export class AlbumService {
 						slug: where.byArtist?.artistSlug.toString()
 					} : null
 				: undefined,
+				slug: {
+					startsWith: where.byName?.startsWith?.toString(),
+					contains: where.byName?.contains?.toString()
+				},
 				releases: where.byLibrarySource ? {
 					some: {
 						tracks: {

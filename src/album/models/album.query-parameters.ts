@@ -14,6 +14,7 @@ export type AlbumWhereInput = RequireOnlyOne<{
  */
 export type AlbumsWhereInput = RequireOnlyOne<{
 	byArtist: { artistSlug?: Slug },
+	byName: { startsWith: Slug, contains: Slug }
 	byLibrarySource: { libraryId: number },
 }>
 
