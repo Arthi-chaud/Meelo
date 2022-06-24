@@ -87,7 +87,7 @@ export class LibraryService {
 	async registerNewFiles(parentLibrary: Library): Promise<File[]> {
 		Logger.log(`'${parentLibrary.slug}' library: Registration of new files`);
 		let unfilteredCandidates = this.fileManagerService.getCandidateFilesInLibraryFolder(parentLibrary.path);
-		let alreadyRegistrered = await this.fileService.findFilesFromPath(unfilteredCandidates);
+		let alreadyRegistrered = await this.fileService.getFiles({ byPaths: { paths: unfilteredCandidates }});
 
 		let candidates = unfilteredCandidates.filter(
 			(candidatePath) => {
