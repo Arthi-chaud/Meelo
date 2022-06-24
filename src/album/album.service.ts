@@ -1,9 +1,10 @@
-import { Injectable, Logger } from '@nestjs/common';
+import { GoneException, Injectable, Logger } from '@nestjs/common';
 import { ArtistService } from 'src/artist/artist.service';
 import { Slug } from 'src/slug/slug';
 import { AlbumAlreadyExistsException, AlbumNotFoundException, AlbumNotFoundFromIDException } from './album.exceptions';
 import { AlbumType, Album, Prisma, Release } from '@prisma/client';
 import { PrismaService } from 'src/prisma/prisma.service';
+import { AlbumWhereInput } from './models/album.query-parameters';
 
 @Injectable()
 export class AlbumService {
@@ -12,12 +13,22 @@ export class AlbumService {
 		private artistServce: ArtistService
 	) {}
 
-	async getAlbumFromID(id: number, include?: Prisma.AlbumInclude) {
+	/**
+	 * Find an album from its slug and its artist's slug
+	 * @param where the parameters to find the album
+	 * @param include the relations to include
+	 */
+	async getAlbum(where: AlbumWhereInput, include?: Prisma.AlbumInclude) {
 		try {
-			return await this.prismaService.album.findUnique({
+			return await this.prismaService.album.findFirst({
 				rejectOnNotFound: true,
-				where: {
-					id: id
+				where: where.byId ? 
+					{ id: where.byId.id }
+				: {
+					slug: where.bySlug.slug.toString(),
+					artist: where.bySlug.artistSlug ? {
+						slug: where.bySlug.artistSlug.toString()
+					} : null
 				},
 				include: {
 					releases: include?.releases ?? false,
@@ -25,36 +36,9 @@ export class AlbumService {
 				}
 			});
 		} catch {
-			throw new AlbumNotFoundFromIDException(id);
-		}
-	}
-
-	/**
-	 * Find an album from its slug and its artist's slug
-	 * @param albumSlug the slug of the album to find
-	 * @param artistSlug the slug of the artist of the album
-	 */
-	async getAlbum(albumSlug: Slug, artistSlug?: Slug, include?: Prisma.AlbumInclude) {
-		try {
-			return await this.prismaService.album.findFirst({
-				rejectOnNotFound: true,
-				where: {
-					slug: {
-						equals: albumSlug.toString()
-					},
-					artist: artistSlug !== undefined ? {
-						slug: {
-							equals: artistSlug!.toString()
-						}
-					} : undefined
-				},
-				include: {
-					releases: include?.releases ?? false,
-					artist: include?.artist ?? false
-				}
-			})
-		} catch {
-			throw new AlbumNotFoundException(albumSlug, artistSlug);
+			if (where.byId)
+				throw new AlbumNotFoundFromIDException(where.byId.id);
+			throw new AlbumNotFoundException(where.bySlug.slug, where.bySlug.artistSlug);
 		}
 	}
 
@@ -82,7 +66,9 @@ export class AlbumService {
 		return await this.prismaService.album.update({
 			data: {
 				...album,
-				slug: new Slug(album.name).toString()
+				slug: new Slug(album.name).toString(),
+				artist: undefined,
+				releases: undefined
 			},
 			where: {
 				id: album.id
@@ -128,7 +114,7 @@ export class AlbumService {
 		if (artistName === undefined) {
 			let albumExists: boolean = false;
 			try {
-				await this.getAlbum(albumSlug);
+				await this.getAlbum({ bySlug: { slug: albumSlug } });
 				albumExists = true;
 			} catch {}
 			if (albumExists)
@@ -156,7 +142,10 @@ export class AlbumService {
 
 	async findOrCreate(albumName: string, artistName?: string, include?: Prisma.AlbumInclude) {
 		try {
-			return await this.getAlbum(new Slug(albumName), artistName ? new Slug(artistName) : undefined, include);
+			return await this.getAlbum(
+				{ bySlug: { slug: new Slug(albumName), artistSlug: artistName ? new Slug(artistName) : undefined} },
+				include
+			);
 		} catch {
 			return await this.createAlbum(albumName, artistName, undefined, include);
 		}
