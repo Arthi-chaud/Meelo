@@ -24,3 +24,9 @@ export class MasterReleaseNotFoundException extends NotFoundException {
 		super(`Master Release of ${albumSlug.toString()} ${artistSlug ? `by ${artistSlug.toString()}`: ''} not found`);
 	}
 }
+
+export class MasterReleaseNotFoundFromIDException extends NotFoundException {
+	constructor(albumId: number) {
+		super(`Master Release of album with id '${albumId}' not found`);
+	}
+}
