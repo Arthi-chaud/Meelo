@@ -10,12 +10,7 @@ export class ArtistController {
 	@Get('/:artist')
 	async getArtist(@Param('artist', ParseSlugPipe) artistSlug: Slug) {
 		return await this.artistService.getArtist(
-			artistSlug,
+			{ bySlug: { slug: artistSlug } },
 		);
-	}
-
-	@Get()
-	async getArtists() {
-		return await this.artistService.getAllArtists({});
 	}
 }

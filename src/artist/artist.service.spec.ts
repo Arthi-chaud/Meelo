@@ -45,7 +45,7 @@ describe('Artist Service', () => {
 
 	describe('Get Artist', () => {
 		it(('should return an existing artist, without relations'), async () => {
-			let artist = await artistService.getArtist(new Slug(artistName));
+			let artist = await artistService.getArtist({ bySlug: { slug: new Slug(artistName) }});
 			expect(artist.songs).toBeUndefined();
 			expect(artist.albums).toBeUndefined();
 			expect(artist.name).toBe(artistName);
@@ -54,7 +54,7 @@ describe('Artist Service', () => {
 		})
 	
 		it(('should return an existing artist, with relations'), async () => {
-			let artist = await artistService.getArtist(new Slug(artistName), {
+			let artist = await artistService.getArtist({ bySlug: { slug: new Slug(artistName) }}, {
 				albums: true,
 				songs: true
 			});
@@ -68,7 +68,7 @@ describe('Artist Service', () => {
 
 	describe('Get or Create Artist', () => {
 		it(('should get the existing artist'), async () => {
-			let artist = await artistService.getArtist(new Slug(artistName));
+			let artist = await artistService.getArtist({ bySlug: { slug: new Slug(artistName) }});
 			let artistGet = await artistService.getOrCreateArtist(artistName);
 			expect(artistGet.songs).toBeUndefined();
 			expect(artistGet.albums).toBeUndefined();

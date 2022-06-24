@@ -3,22 +3,26 @@ import { Slug } from 'src/slug/slug';
 import { ArtistalreadyExistsException, ArtistNotFoundByIDException, ArtistNotFoundException } from './artist.exceptions';
 import { Artist, Prisma } from '@prisma/client';
 import { PrismaService } from 'src/prisma/prisma.service';
+import { ArtistRelationInclude, ArtistsWhereInput, ArtistWhereInput } from './models/artist.query-parameters';
 
 @Injectable()
 export class ArtistService {
 	constructor(
 		private prismaService: PrismaService
 	) {}
+	
 	/**
-	 * Find an artist by its slug
-	 * @param artistSlug the slug of the artist to find
+	 * Find an artist
+	 * @param where the query parameters to find the artist
+	 * @param include the relations to include in the returned artist
 	 */
-	async getArtist(artistSlug: Slug, include?: Prisma.ArtistInclude) {
+	async getArtist(where: ArtistWhereInput, include?: ArtistRelationInclude) {
 		try {
 			return await this.prismaService.artist.findUnique({
 				rejectOnNotFound: true,
 				where: {
-					slug: artistSlug.toString()
+					id: where.byId?.id,
+					slug: where.bySlug?.slug.toString()
 				},
 				include: {
 					albums: include?.albums ?? false,
@@ -26,33 +30,38 @@ export class ArtistService {
 				}
 			});
 		} catch {
-			throw new ArtistNotFoundException(artistSlug);
+			if (where.byId)
+				throw new ArtistNotFoundByIDException(where.byId.id);
+			throw new ArtistNotFoundException(where.bySlug.slug);
 		};
 	}
 
 	/**
-	 * Find an artist by its id
-	 * @param artistId the id of the artist to find
+	 * Find multiple artist
+	 * @param where the query parameters to find the artists
+	 * @param include the relations to include in the returned artists
 	 */
-	 async getArtistById(artistId: number, include?: Prisma.ArtistInclude) {
-		try {
-			return await this.prismaService.artist.findUnique({
-				rejectOnNotFound: true,
-				where: {
-					id: artistId
-				},
-				include: {
-					albums: include?.albums ?? false,
-					songs: include?.songs ?? false
-				}
-			});
-		} catch {
-			throw new ArtistNotFoundByIDException(artistId);
-		};
-	}
-
-	async getAllArtists(include?: Prisma.ArtistInclude) {
+	 async getArtists(where: ArtistsWhereInput, include?: ArtistRelationInclude) {
 		return await this.prismaService.artist.findMany({
+			where: {
+				slug: {
+					startsWith: where.bySlug?.startsWith,
+					contains: where.bySlug?.contains,
+				},
+				albums: where.byLibrarySource ? {
+					some: {
+						releases: {
+							some: {
+								tracks: {
+									some: {
+										sourceFile: { libraryId: where.byLibrarySource.libraryId }
+									}
+								}
+							}
+						}
+					}
+				} : undefined
+			},
 			include: {
 				albums: include?.albums ?? false,
 				songs: include?.songs ?? false
@@ -82,9 +91,12 @@ export class ArtistService {
 	 * Find an artist by its name, or creates one if not found
 	 * @param artistName the slug of the artist to find
 	 */
-	async getOrCreateArtist(artistName: string, include?: Prisma.ArtistInclude) {
+	async getOrCreateArtist(artistName: string, include?: ArtistRelationInclude) {
 		try {
-			return await this.getArtist(new Slug(artistName), include);
+			return await this.getArtist(
+				{ bySlug: { slug: new Slug(artistName) }},
+				include
+			);
 		} catch {
 			return await this.createArtist(artistName, include);
 		}
