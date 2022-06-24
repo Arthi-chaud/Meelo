@@ -71,17 +71,7 @@ export class ReleaseService {
 	 */
 	async getReleases(where: ReleasesWhereInput, include?: ReleaseRelationInclude) {
 		return await this.prismaService.release.findMany({
-			where: {
-				album: {
-					id: where.byAlbumId?.albumId,
-					slug: where.byAlbumSlug?.albumSlug.toString(),
-					artist: where.byAlbumSlug ?
-						where.byAlbumSlug.artistSlug ? {
-							slug: where.byAlbumSlug?.artistSlug.toString()
-						} : null
-					: undefined
-				}
-			},
+			where: this.buildQueryParametersForMany(where),
 			include: {
 				album: include?.album ?? false,
 				tracks: include?.tracks ?? false
@@ -95,6 +85,30 @@ export class ReleaseService {
 			: { byAlbumSlug: { albumSlug: where.bySlug.slug, artistSlug: where.bySlug.artistSlug } },
 			include
 		);
+	}
+
+	private buildQueryParametersForMany(where: ReleasesWhereInput) {
+		return {
+			album: {
+				id: where.byAlbumId?.albumId,
+				slug: where.byAlbumSlug?.albumSlug.toString(),
+				artist: where.byAlbumSlug ?
+					where.byAlbumSlug.artistSlug ? {
+						slug: where.byAlbumSlug?.artistSlug.toString()
+					} : null
+				: undefined
+			}
+		};
+	}
+
+	/**
+	 * Count the artists that match the query parameters
+	 * @param where the query parameters
+	 */
+	async countReleases(where: ReleasesWhereInput): Promise<number> {
+		return (await this.prismaService.release.count({
+			where: this.buildQueryParametersForMany(where)
+		}));
 	}
 
 	/**

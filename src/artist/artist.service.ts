@@ -43,30 +43,49 @@ export class ArtistService {
 	 */
 	 async getArtists(where: ArtistsWhereInput, include?: ArtistRelationInclude) {
 		return await this.prismaService.artist.findMany({
-			where: {
-				slug: {
-					startsWith: where.bySlug?.startsWith?.toString(),
-					contains: where.bySlug?.contains?.toString(),
-				},
-				albums: where.byLibrarySource ? {
-					some: {
-						releases: {
-							some: {
-								tracks: {
-									some: {
-										sourceFile: { libraryId: where.byLibrarySource.libraryId }
-									}
-								}
-							}
-						}
-					}
-				} : undefined
-			},
+			where: this.buildQueryParametersForMany(where),
 			include: {
 				albums: include?.albums ?? false,
 				songs: include?.songs ?? false
 			}
 		});
+	}
+
+	/**
+	 * Build the query parameters for ORM, to select multiple rows
+	 * @param where the query parameter to transform for ORM
+	 * @returns the ORM-ready query parameters
+	 */
+	private buildQueryParametersForMany(where: ArtistsWhereInput) {
+		return {
+			slug: {
+				startsWith: where.bySlug?.startsWith?.toString(),
+				contains: where.bySlug?.contains?.toString(),
+			},
+			albums: where.byLibrarySource ? {
+				some: {
+					releases: {
+						some: {
+							tracks: {
+								some: {
+									sourceFile: { libraryId: where.byLibrarySource.libraryId }
+								}
+							}
+						}
+					}
+				}
+			} : undefined
+		};
+	}
+
+	/**
+	 * Count the artists that match the query parameters
+	 * @param where the query parameters
+	 */
+	async countArtists(where: ArtistsWhereInput): Promise<number> {
+		return (await this.prismaService.artist.count({
+			where: this.buildQueryParametersForMany(where)
+		}));
 	}
 
 	async createArtist(artistName: string, include?: Prisma.ArtistInclude) {

@@ -48,35 +48,54 @@ export class AlbumService {
 	 * @param where the parameters to find the album
 	 * @param include the relations to include
 	 */
-	 async getAlbums(where: AlbumsWhereInput, include?: AlbumRelationInclude) {
+	async getAlbums(where: AlbumsWhereInput, include?: AlbumRelationInclude) {
 		return await this.prismaService.album.findMany({
-			where:{
-				artist: where.byArtist ?
-					where.byArtist.artistSlug ? {
-						slug: where.byArtist?.artistSlug.toString()
-					} : null
-				: undefined,
-				slug: {
-					startsWith: where.byName?.startsWith?.toString(),
-					contains: where.byName?.contains?.toString()
-				},
-				releases: where.byLibrarySource ? {
-					some: {
-						tracks: {
-							some: {
-								sourceFile: {
-									libraryId: where.byLibrarySource.libraryId
-								}
-							}
-						}
-					}
-				} : undefined
-			},
+			where: this.buildQueryParametersForMany(where),
 			include: {
 				releases: include?.releases ?? false,
 				artist: include?.artist ?? false
 			}
 		});
+	}
+
+	/**
+	 * Count the albums that match the query parameters
+	 * @param where the query parameters
+	 */
+	async countAlbums(where: AlbumsWhereInput): Promise<number> {
+		return await this.prismaService.album.count({
+			where: this.buildQueryParametersForMany(where)
+		});
+	}
+
+	/**
+	 * Build the query parameters for ORM, to select multiple rows
+	 * @param where the query parameter to transform for ORM
+	 * @returns the ORM-ready query parameters
+	 */
+	private buildQueryParametersForMany(where: AlbumsWhereInput) {
+		return {
+			artist: where.byArtist ?
+				where.byArtist.artistSlug ? {
+					slug: where.byArtist?.artistSlug.toString()
+				} : null
+			: undefined,
+			slug: {
+				startsWith: where.byName?.startsWith?.toString(),
+				contains: where.byName?.contains?.toString()
+			},
+			releases: where.byLibrarySource ? {
+				some: {
+					tracks: {
+						some: {
+							sourceFile: {
+								libraryId: where.byLibrarySource.libraryId
+							}
+						}
+					}
+				}
+			} : undefined
+		};
 	}
 
 	async updateAlbum(album: Album): Promise<Album> {
