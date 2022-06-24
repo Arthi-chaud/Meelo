@@ -1,5 +1,6 @@
 import { AlbumRelationInclude } from "src/album/models/album.query-parameters"
 import { Slug } from "src/slug/slug"
+import { RequireAtLeastOne } from "src/utils/require-at-least-one"
 import { RequireOnlyOne } from "src/utils/require-only-one"
 
 /**
@@ -10,20 +11,20 @@ export type ReleaseWhereInput = RequireOnlyOne<{
 	byMasterOf: { albumId: number },
 	byMasterOfNamedAlbum: { albumSlug: Slug, artistSlug?: Slug }
 	bySlug: { slug: Slug, albumSlug: Slug, artistSlug?: Slug },
-}>
+}>;
 
 /**
  * Query parameters to find multiple Releases
  */
-export type ReleasesWhereInput = RequireOnlyOne<{
+export type ReleasesWhereInput = RequireAtLeastOne<{
 	byAlbumId: { albumId: number },
 	byAlbumSlug: { albumSlug: Slug, artistSlug?: Slug },
-}>
+}>;
 
 /**
  * Defines what relations to include in query
  */
-export type ReleaseRelationInclude = {
-	album?: boolean,
-	tracks?: boolean
-}
+export type ReleaseRelationInclude = Partial<{
+	album: boolean,
+	tracks: boolean
+}>;

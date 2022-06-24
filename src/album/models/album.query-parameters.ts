@@ -1,4 +1,5 @@
 import { Slug } from "src/slug/slug"
+import { RequireAtLeastOne } from "src/utils/require-at-least-one";
 import { RequireOnlyOne } from "src/utils/require-only-one"
 
 /**
@@ -7,21 +8,21 @@ import { RequireOnlyOne } from "src/utils/require-only-one"
 export type AlbumWhereInput = RequireOnlyOne<{
 	byId: { id: number },
 	bySlug: { slug: Slug, artistSlug?: Slug }
-}>
+}>;
 
 /**
  * Query parameters to find multiple albums
  */
-export type AlbumsWhereInput = RequireOnlyOne<{
+export type AlbumsWhereInput = RequireAtLeastOne<{
 	byArtist: { artistSlug?: Slug },
 	byName: { startsWith: Slug, contains: Slug }
 	byLibrarySource: { libraryId: number },
-}>
+}>;
 
 /**
  * Defines what relations to include in query
  */
-export type AlbumRelationInclude = {
-	releases?: boolean,
-	artist?: boolean
-}
+export type AlbumRelationInclude = Partial<{
+	releases: boolean,
+	artist: boolean
+}>;
