@@ -4,6 +4,7 @@ import { Slug } from 'src/slug/slug';
 import { type Song, type Artist, Prisma } from '@prisma/client';
 import { SongAlreadyExistsException, SongNotFoundByIdException, SongNotFoundException } from './song.exceptions';
 import { PrismaService } from 'src/prisma/prisma.service';
+import { SongRelationInclude, SongsWhereInput, SongWhereInput } from './models/song.query-params';
 
 @Injectable()
 export class SongService {
@@ -13,23 +14,20 @@ export class SongService {
 	) {}
 
 	/**
-	 * Finds a song in the database from its name slug and artist's slug
-	 * @param artistSlug slug of the artist of the song
-	 * @param titleSlug the slug of the title of the song
+	 * Finds a song in the database
+	 * @param where the query parameters to find the song
+	 * @param include the relations to include in the returned value
 	 */
-	async getSong(artistSlug: Slug, titleSlug: Slug, include?: Prisma.SongInclude) {
+	async getSong(where: SongWhereInput, include?: SongRelationInclude) {
 		try {
 			return await this.prismaService.song.findFirst({
 				rejectOnNotFound: true,
 				where: {
-					slug: {
-						equals: titleSlug.toString()
-					},
-					artist: {
-						slug: {
-							equals: artistSlug.toString()
-						}
-					}
+					id: where.byId?.id,
+					slug: where.bySlug?.slug.toString(),
+					artist: where.bySlug ? {
+						slug: where.bySlug.artistSlug.toString()
+					} : undefined
 				},
 				include: {
 					artist: include?.artist ?? false,
@@ -37,31 +35,50 @@ export class SongService {
 				}
 			});
 		} catch {
-			throw new SongNotFoundException(titleSlug, artistSlug);
+			if (where.byId)
+				throw new SongNotFoundByIdException(where.byId.id);
+			throw new SongNotFoundException(where.bySlug.slug, where.bySlug.artistSlug);
 		}
+	}
+	
+	async getSongs(where: SongsWhereInput, include?: SongRelationInclude) {
+		return await this.prismaService.song.findMany({
+			where: this.buildQueryParametersForMany(where),
+			include: {
+				artist: include?.artist ?? false,
+				instances: include?.instances ?? false
+			}
+		});
+	}
+
+	private buildQueryParametersForMany(where: SongsWhereInput) {
+		return {
+			artistId: where.byArtist?.artistId,
+			artist: where.byArtist?.artistSlug ? {
+				slug: where.byArtist.artistSlug.toString()
+			} : undefined,
+			slug: {
+				startsWith: where.byName?.startsWith?.toString(),
+				contains: where.byName?.contains?.toString(),
+				equals: where.byName?.exact?.toString(),
+			},
+			playCount: {
+				equals: where.byPlayCount?.exact,
+				gt: where.byPlayCount?.moreThan,
+				lt: where.byPlayCount?.below
+			}
+		};
 	}
 
 	/**
-	 * Retrives a song from the database using its id
-	 * @param songId 
-	 * @param include 
-	 * @returns the fetched song
+	 * Count the songs that match the query parametets
+	 * @param where the query parameters
+	 * @returns the number of match
 	 */
-	async getSongById(songId: number, include?: Prisma.SongInclude) {
-		try {
-			return await this.prismaService.song.findUnique({
-				rejectOnNotFound: true,
-				where: {
-					id: songId
-				},
-				include: {
-					artist: include?.artist ?? false,
-					instances: include?.instances ?? false
-				}
-			});
-		} catch {
-			throw new SongNotFoundByIdException(songId);
-		}
+	async countSongs(where: SongsWhereInput): Promise<number> {
+		return await this.prismaService.song.count({
+			where: this.buildQueryParametersForMany(where)
+		});
 	}
 	
 	async createSong(artistName: string, title: string, include?: Prisma.SongInclude) {
@@ -84,9 +101,12 @@ export class SongService {
 		}
 	}
 	
-	async findOrCreateSong(artistName: string, title: string, include?: Prisma.SongInclude) {
+	async findOrCreateSong(artistName: string, title: string, include?: SongRelationInclude) {
 		try {
-			return await this.getSong(new Slug(artistName), new Slug(title), include);
+			return await this.getSong(
+				{ bySlug: {slug: new Slug(artistName), artistSlug: new Slug(title)}},
+				include
+			);
 		} catch {
 			return await this.createSong(artistName, title, include);
 		}
