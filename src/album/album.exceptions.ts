@@ -18,3 +18,9 @@ export class AlbumAlreadyExistsException extends AlreadyExistsException {
 		super(`${albumSlug.toString()} ${artistSlug ? `by ${artistSlug.toString()}`: ''} already exists`);
 	}
 }
+
+export class AlbumAlreadyExistsExceptionWithArtistID extends AlreadyExistsException {
+	constructor(albumSlug: Slug, artistId: number) {
+		super(`${albumSlug.toString()} by artist '${artistId}' already exists`);
+	}
+}

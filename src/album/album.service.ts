@@ -1,10 +1,10 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { ArtistService } from 'src/artist/artist.service';
 import { Slug } from 'src/slug/slug';
-import { AlbumAlreadyExistsException, AlbumNotFoundException, AlbumNotFoundFromIDException } from './album.exceptions';
+import { AlbumAlreadyExistsException, AlbumAlreadyExistsExceptionWithArtistID as AlbumAlreadyExistsWithArtistIDException, AlbumNotFoundException, AlbumNotFoundFromIDException } from './album.exceptions';
 import { AlbumType, Album, Prisma, Release } from '@prisma/client';
 import { PrismaService } from 'src/prisma/prisma.service';
-import { AlbumWhereInput, AlbumRelationInclude, AlbumsWhereInput } from './models/album.query-parameters';
+import { AlbumQueryParameters } from './models/album.query-parameters'; './models/album.query-parameters';
 
 @Injectable()
 export class AlbumService {
@@ -13,28 +13,48 @@ export class AlbumService {
 		private artistServce: ArtistService
 	) {}
 
+
+	/**
+	 * Create an Album, and saves it in the database
+	 * @param album the album object to save
+	 * @param include the relation to include in the returned value
+	 * @returns the saved Album
+	 */
+	async createAlbum(album: AlbumQueryParameters.CreateInput, include?: AlbumQueryParameters.RelationInclude) {
+		const albumSlug = new Slug(album.name);
+		try {
+			return await this.prismaService.album.create({
+				data: {
+					name: album.name,
+					artist: album.artist ? {
+						connect: {
+							id: album.artist.id,
+							slug: album.artist.slug?.toString()
+						}
+					} : undefined,
+					slug: albumSlug.toString(),
+					type: AlbumService.getAlbumTypeFromName(album.name)
+				},
+				include: AlbumQueryParameters.buildIncludeParameters(include)
+			});
+		} catch {
+			if (album.artist?.id)
+				throw new AlbumAlreadyExistsWithArtistIDException(albumSlug, album.artist.id);
+			throw new AlbumAlreadyExistsException(albumSlug, album.artist?.slug);
+		}
+	}
+
 	/**
 	 * Find an album
 	 * @param where the parameters to find the album
 	 * @param include the relations to include
 	 */
-	async getAlbum(where: AlbumWhereInput, include?: AlbumRelationInclude) {
+	async getAlbum(where: AlbumQueryParameters.WhereInput, include?: AlbumQueryParameters.RelationInclude) {
 		try {
 			return await this.prismaService.album.findFirst({
 				rejectOnNotFound: true,
-				where:{
-					id: where.byId?.id ?? undefined,
-					slug: where.bySlug?.slug.toString(),
-					artist: where.bySlug ?
-						where.bySlug.artistSlug ? {
-							slug: where.bySlug?.artistSlug.toString()
-						} : null
-					: undefined
-				},
-				include: {
-					releases: include?.releases ?? false,
-					artist: include?.artist ?? false
-				}
+				where: AlbumQueryParameters.buildQueryParameterForOne(where),
+				include: AlbumQueryParameters.buildIncludeParameters(include),
 			});
 		} catch {
 			if (where.byId)
@@ -48,13 +68,10 @@ export class AlbumService {
 	 * @param where the parameters to find the album
 	 * @param include the relations to include
 	 */
-	async getAlbums(where: AlbumsWhereInput, include?: AlbumRelationInclude) {
+	async getAlbums(where: AlbumQueryParameters.ManyWhereInput, include?: AlbumQueryParameters.RelationInclude) {
 		return await this.prismaService.album.findMany({
-			where: this.buildQueryParametersForMany(where),
-			include: {
-				releases: include?.releases ?? false,
-				artist: include?.artist ?? false
-			}
+			where: AlbumQueryParameters.buildQueryParametersForMany(where),
+			include: AlbumQueryParameters.buildIncludeParameters(include)
 		});
 	}
 
@@ -62,53 +79,19 @@ export class AlbumService {
 	 * Count the albums that match the query parameters
 	 * @param where the query parameters
 	 */
-	async countAlbums(where: AlbumsWhereInput): Promise<number> {
+	async countAlbums(where: AlbumQueryParameters.ManyWhereInput): Promise<number> {
 		return await this.prismaService.album.count({
-			where: this.buildQueryParametersForMany(where)
+			where: AlbumQueryParameters.buildQueryParametersForMany(where)
 		});
 	}
 
-	/**
-	 * Build the query parameters for ORM, to select multiple rows
-	 * @param where the query parameter to transform for ORM
-	 * @returns the ORM-ready query parameters
-	 */
-	private buildQueryParametersForMany(where: AlbumsWhereInput) {
-		return {
-			artist: where.byArtist ?
-				where.byArtist.artistSlug ? {
-					slug: where.byArtist?.artistSlug.toString()
-				} : null
-			: undefined,
-			slug: {
-				startsWith: where.byName?.startsWith?.toString(),
-				contains: where.byName?.contains?.toString()
-			},
-			releases: where.byLibrarySource ? {
-				some: {
-					tracks: {
-						some: {
-							sourceFile: {
-								libraryId: where.byLibrarySource.libraryId
-							}
-						}
-					}
-				}
-			} : undefined
-		};
-	}
-
-	async updateAlbum(album: Album): Promise<Album> {
+	async updateAlbum(what: AlbumQueryParameters.UpdateInput,where: AlbumQueryParameters.WhereInput): Promise<Album> {
 		return await this.prismaService.album.update({
 			data: {
-				...album,
-				slug: new Slug(album.name).toString(),
-				artist: undefined,
-				releases: undefined
+				...what,
+				slug: what.name ? new Slug(what.name).toString() : undefined,
 			},
-			where: {
-				id: album.id
-			}
+			where: AlbumQueryParameters.buildQueryParameterForOne(where)
 		});
 	}
 
@@ -116,7 +99,7 @@ export class AlbumService {
 	 * Updates an album date, using the earliest date from its releases
 	 * @param where the query parameter to get the album to update
 	 */
-	 async updateAlbumDate(where: AlbumWhereInput): Promise<Album> {
+	 async updateAlbumDate(where: AlbumQueryParameters.WhereInput): Promise<Album> {
 		let album = (await this.getAlbum(where, { releases: true }));
 		for (const release of album.releases) {
 			if (album.releaseDate == null ||
@@ -124,7 +107,55 @@ export class AlbumService {
 				album.releaseDate = release.releaseDate;
 			}
 		}
-		return await this.updateAlbum(album);
+		return await this.updateAlbum({ releaseDate: album.releaseDate }, { byId: { id: album.id }});
+	}
+
+	/**
+	 * Deletes an album, and its related releases
+	 * @param where the query parameter 
+	 */
+	async deleteAlbum(where: AlbumQueryParameters.WhereInput): Promise<void> {
+		try {
+			let deletedAlbum = await this.prismaService.album.delete({
+				where: AlbumQueryParameters.buildQueryParameterForOne(where)
+			});
+			if (deletedAlbum.artistId !== null)
+				this.artistServce.deleteArtistIfEmpty(deletedAlbum.artistId);
+		} catch {
+			if (where.byId)
+				throw new AlbumNotFoundFromIDException(where.byId.id);
+			throw new AlbumNotFoundException(where.bySlug.slug, where.bySlug.artistSlug);
+		}
+	}
+
+	/**
+	 * Delete an album if it does not have related releases
+	 * @param albumId 
+	 */
+	async deleteAlbumIfEmpty(albumId: number): Promise<void> {
+		const albumCount = await this.prismaService.release.count({
+			where: { albumId: albumId }
+		});
+		if (albumCount == 0)
+			await this.deleteAlbum({ byId: { id: albumId } });
+	}
+
+	async findOrCreate(where: AlbumQueryParameters.FindOrCreateInput,include?: AlbumQueryParameters.RelationInclude) {
+		const artistSlug = where.artistName ? new Slug(where.artistName) : undefined
+		try {
+			return await this.getAlbum(
+				{
+					bySlug: { slug: new Slug(where.name), artistSlug: artistSlug },
+				},
+				include
+			);
+		} catch {
+			return await this.createAlbum({
+				name: where.name,
+				releaseDate: where.releaseDate,
+				artist: { slug: artistSlug },
+			}, include);
+		}
 	}
 
 	static getAlbumTypeFromName(albumName: string): AlbumType {
@@ -142,85 +173,5 @@ export class AlbumService {
 			return AlbumType.Compilation
 		}
 		return AlbumType.StudioRecording;
-	}
-
-	async createAlbum(albumName: string, artistName?: string, releaseDate?: Date, include?: Prisma.AlbumInclude) {
-		let albumSlug: Slug = new Slug(albumName);
-
-		if (artistName === undefined) {
-			let albumExists: boolean = false;
-			try {
-				await this.getAlbum({ bySlug: { slug: albumSlug } });
-				albumExists = true;
-			} catch {}
-			if (albumExists)
-				throw new AlbumAlreadyExistsException(albumSlug);
-		}
-		try {
-			return await this.prismaService.album.create({
-				data: {
-					name: albumName,
-					slug: albumSlug.toString(),
-					artistId: artistName ? (await this.artistServce.getOrCreateArtist(artistName!)).id : null,
-					releaseDate: releaseDate,
-					type: AlbumService.getAlbumTypeFromName(albumName)
-				},
-				include: {
-					releases: include?.releases ?? false,
-					artist: include?.artist ?? false
-				}
-			});
-		} catch {
-			throw new AlbumAlreadyExistsException(albumSlug, new Slug(artistName!));
-		}
-
-	}
-
-	async findOrCreate(albumName: string, artistName?: string, include?: AlbumRelationInclude) {
-		try {
-			return await this.getAlbum(
-				{ bySlug: { slug: new Slug(albumName), artistSlug: artistName ? new Slug(artistName) : undefined} },
-				include
-			);
-		} catch {
-			return await this.createAlbum(albumName, artistName, undefined, include);
-		}
-	}
-
-	/**
-	 * Deletes an album, and its related releases
-	 * @param albumId 
-	 */
-	async deleteAlbum(albumId: number): Promise<void> {
-		try {
-			let deletedAlbum = await this.prismaService.album.delete({
-				where: {
-					id: albumId
-				}
-			});
-			if (deletedAlbum.artistId !== null)
-				this.artistServce.deleteArtistIfEmpty(deletedAlbum.artistId);
-		} catch {
-			throw new AlbumNotFoundFromIDException(albumId);
-		}
-	}
-
-	/**
-	 * Delete an artist if it does not have related song or album
-	 * @param artistId 
-	 */
-	async deleteAlbumIfEmpty(artistId: number): Promise<void> {
-		const songCount = await this.prismaService.song.count({
-			where: {
-				artistId: artistId
-			}
-		});
-		const albumCount = await this.prismaService.album.count({
-			where: {
-				artistId: artistId
-			}
-		});
-		if (songCount == 0 && albumCount == 0)
-			await this.deleteAlbum(artistId);
 	}
 }
