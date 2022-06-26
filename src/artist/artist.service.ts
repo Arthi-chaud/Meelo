@@ -1,9 +1,9 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { Slug } from 'src/slug/slug';
-import { ArtistalreadyExistsException, ArtistNotFoundByIDException, ArtistNotFoundException } from './artist.exceptions';
+import { ArtistalreadyExistsException as ArtistAlreadyExistsException, ArtistNotFoundByIDException, ArtistNotFoundException } from './artist.exceptions';
 import { Artist, Prisma } from '@prisma/client';
 import { PrismaService } from 'src/prisma/prisma.service';
-import { ArtistRelationInclude, ArtistsWhereInput, ArtistWhereInput } from './models/artist.query-parameters';
+import { ArtistQueryParameters } from './models/artist.query-parameters';
 
 @Injectable()
 export class ArtistService {
@@ -12,27 +12,42 @@ export class ArtistService {
 	) {}
 	
 	/**
+	 * Creates an Artist
+	 * @param artist the parameters needed to create an artist
+	 * @param include the relation to include in the returned Artist
+	 * @returns 
+	 */
+	async createArtist(artist: ArtistQueryParameters.CreateInput, include?: ArtistQueryParameters.RelationInclude) {
+		const artistSlug = new Slug(artist.name);
+		try {
+			return await this.prismaService.artist.create({
+				data: {
+					name: artist.name,
+					slug: artistSlug.toString()
+				},
+				include: ArtistQueryParameters.buildIncludeParameters(include)
+			});
+		} catch {
+			throw new ArtistAlreadyExistsException(artistSlug);
+		}
+	}
+
+	/**
 	 * Find an artist
 	 * @param where the query parameters to find the artist
 	 * @param include the relations to include in the returned artist
 	 */
-	async getArtist(where: ArtistWhereInput, include?: ArtistRelationInclude) {
+	async getArtist(where: ArtistQueryParameters.WhereInput, include?: ArtistQueryParameters.RelationInclude) {
 		try {
 			return await this.prismaService.artist.findUnique({
 				rejectOnNotFound: true,
-				where: {
-					id: where.byId?.id,
-					slug: where.bySlug?.slug.toString()
-				},
-				include: {
-					albums: include?.albums ?? false,
-					songs: include?.songs ?? false
-				}
+				where: ArtistQueryParameters.buildQueryParameters(where),
+				include: ArtistQueryParameters.buildIncludeParameters(include),
 			});
 		} catch {
-			if (where.byId)
-				throw new ArtistNotFoundByIDException(where.byId.id);
-			throw new ArtistNotFoundException(where.bySlug.slug);
+			if (where.id !== undefined)
+				throw new ArtistNotFoundByIDException(where.id);
+			throw new ArtistNotFoundException(where.slug);
 		};
 	}
 
@@ -41,119 +56,90 @@ export class ArtistService {
 	 * @param where the query parameters to find the artists
 	 * @param include the relations to include in the returned artists
 	 */
-	 async getArtists(where: ArtistsWhereInput, include?: ArtistRelationInclude) {
+	 async getArtists(where: ArtistQueryParameters.ManyWhereInput, include?: ArtistQueryParameters.RelationInclude) {
 		return await this.prismaService.artist.findMany({
-			where: this.buildQueryParametersForMany(where),
-			include: {
-				albums: include?.albums ?? false,
-				songs: include?.songs ?? false
-			}
+			where: ArtistQueryParameters.buildQueryParametersForMany(where),
+			include: ArtistQueryParameters.buildIncludeParameters(include)
 		});
-	}
-
-	/**
-	 * Build the query parameters for ORM, to select multiple rows
-	 * @param where the query parameter to transform for ORM
-	 * @returns the ORM-ready query parameters
-	 */
-	private buildQueryParametersForMany(where: ArtistsWhereInput) {
-		return {
-			slug: {
-				startsWith: where.bySlug?.startsWith?.toString(),
-				contains: where.bySlug?.contains?.toString(),
-			},
-			albums: where.byLibrarySource ? {
-				some: {
-					releases: {
-						some: {
-							tracks: {
-								some: {
-									sourceFile: { libraryId: where.byLibrarySource.libraryId }
-								}
-							}
-						}
-					}
-				}
-			} : undefined
-		};
 	}
 
 	/**
 	 * Count the artists that match the query parameters
 	 * @param where the query parameters
 	 */
-	async countArtists(where: ArtistsWhereInput): Promise<number> {
+	async countArtists(where: ArtistQueryParameters.ManyWhereInput): Promise<number> {
 		return (await this.prismaService.artist.count({
-			where: this.buildQueryParametersForMany(where)
+			where: ArtistQueryParameters.buildQueryParametersForMany(where)
 		}));
 	}
 
-	async createArtist(artistName: string, include?: Prisma.ArtistInclude) {
-		let artistSlug: Slug = new Slug(artistName);
+	/**
+	 * Updates an Artist
+	 * @param what the fields to update
+	 * @param where the query parameter to find the artist to update
+	 * @returns the updated artist
+	 */
+	async updateArtist(what: ArtistQueryParameters.UpdateInput, where: ArtistQueryParameters.WhereInput): Promise<Artist> {
 		try {
-			return await this.prismaService.artist.create({
+			return await this.prismaService.artist.update({
 				data: {
-					name: artistName,
-					slug: artistSlug.toString(),
+					name: what.name,
+					slug: what.name ? new Slug(what.name).toString() : undefined
 				},
-				include: {
-					albums: include?.albums ?? false,
-					songs: include?.songs ?? false
-				}
+				where: ArtistQueryParameters.buildQueryParameters(where),
 			});
 		} catch {
-			throw new ArtistalreadyExistsException(artistSlug);
-		}
-	}
-
-	/**
-	 * Find an artist by its name, or creates one if not found
-	 * @param artistName the slug of the artist to find
-	 */
-	async getOrCreateArtist(artistName: string, include?: ArtistRelationInclude) {
-		try {
-			return await this.getArtist(
-				{ bySlug: { slug: new Slug(artistName) }},
-				include
-			);
-		} catch {
-			return await this.createArtist(artistName, include);
+			if (where.id !== undefined)
+				throw new ArtistNotFoundByIDException(where.id);
+			throw new ArtistNotFoundException(where.slug);
 		}
 	}
 
 	/**
 	 * Deletes an artist
 	 * Also deletes related albums and songs
-	 * @param artistId 
+	 * @param where the query parameters to find the album to delete
 	 */
-	async deleteArtist(artistId: number): Promise<void> {
+	async deleteArtist(where: ArtistQueryParameters.WhereInput): Promise<void> {
 		try {
 			await this.prismaService.artist.delete({
-				where: {
-					id: artistId
-				}
+				where: ArtistQueryParameters.buildQueryParameters(where)
 			});
 		} catch {
-			throw new ArtistNotFoundByIDException(artistId);
+			if (where.id !== undefined)
+				throw new ArtistNotFoundByIDException(where.id);
+			throw new ArtistNotFoundException(where.slug);
 		}
 	}
 
 	/**
 	 * Deletes an artist if it does not have any album or song
-	 * @param artistId the id of the artist to delete, if empty
+	 * @param where the query parameters to find the artist to delete
 	 */
-	async deleteArtistIfEmpty(artistId: number): Promise<void> {
+	async deleteArtistIfEmpty(where: ArtistQueryParameters.WhereInput): Promise<void> {
 		const albumCount = await this.prismaService.album.count({
 			where: {
-				artistId: artistId
+				artist: ArtistQueryParameters.buildQueryParameters(where)
 			}
 		});
 		const songCount = await this.prismaService.song.count({
 			where: {
-				artistId: artistId
+				artist: ArtistQueryParameters.buildQueryParameters(where)
 			}
 		});
 		if (songCount == 0 && albumCount == 0)
-			await this.deleteArtist(artistId);
+			await this.deleteArtist(where);
+	}
+
+	/**
+	 * Find an artist by its name, or creates one if not found
+	 * @param where the query parameters to find / create the artist
+	 */
+	 async getOrCreateArtist(where: ArtistQueryParameters.GetOrCreateInput, include?: ArtistQueryParameters.RelationInclude) {
+		try {
+			return await this.getArtist({ slug: new Slug(where.name) }, include);
+		} catch {
+			return await this.createArtist(where, include);
+		}
 	}
 }

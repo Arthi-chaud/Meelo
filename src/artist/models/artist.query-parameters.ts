@@ -1,27 +1,88 @@
+import { Artist } from "@prisma/client";
 import { Slug } from "src/slug/slug"
+import { OmitId } from "src/utils/omit-id";
+import { OmitSlug } from "src/utils/omit-slug";
 import { RequireAtLeastOne } from "src/utils/require-at-least-one";
 import { RequireOnlyOne } from "src/utils/require-only-one"
 
-/**
- * Query parameters to find one artist
- */
-export type ArtistWhereInput = RequireOnlyOne<{
-	byId: { id: number },
-	bySlug: { slug: Slug }
-}>;
+export namespace ArtistQueryParameters {
 
-/**
- * Query parameters to find multiple artists
- */
-export type ArtistsWhereInput = RequireAtLeastOne<{
-	byLibrarySource: { libraryId: number },
-	bySlug: RequireOnlyOne<{ startsWith: Slug, contains: Slug }>
-}>;
+	/**
+	 * Parameters to create an Artist
+	 */
+	export type CreateInput = OmitSlug<OmitId<Artist>>;
+	/**
+	 * Query parameters to find one artist
+	 */
+	export type WhereInput = RequireOnlyOne<{
+		id: number,
+		slug: Slug
+	}>;
 
-/**
- * Defines what relations to include in query
- */
-export type ArtistRelationInclude = Partial<{
-	albums: boolean,
-	songs: boolean
-}>;
+	export function buildQueryParameters(where: WhereInput) {
+		return {
+			id: where.id,
+			slug: where.slug?.toString()
+		};
+	}
+	
+	/**
+	 * Query parameters to find multiple artists
+	 */
+	export type ManyWhereInput = RequireAtLeastOne<{
+		byLibrarySource: { libraryId: number },
+		byName: RequireOnlyOne<{ startsWith: string, contains: string }>
+	}>;
+
+	/**
+	 * Build the query parameters for ORM, to select multiple rows
+	 * @param where the query parameter to transform for ORM
+	 * @returns the ORM-ready query parameters
+	 */
+	export function buildQueryParametersForMany(where: ManyWhereInput) {
+		return {
+			slug: {
+				startsWith: where.byName?.startsWith,
+				contains: where.byName?.contains,
+			},
+			albums: where.byLibrarySource ? {
+				some: {
+					releases: {
+						some: {
+							tracks: {
+								some: {
+									sourceFile: { libraryId: where.byLibrarySource.libraryId }
+								}
+							}
+						}
+					}
+				}
+			} : undefined
+		};
+	}
+
+	/**
+	 * Parameters to update an Artist
+	 */
+	 export type UpdateInput = Partial<CreateInput>;
+	
+	/**
+	 * Parameters to find or create an Artist
+	 */
+	  export type GetOrCreateInput = CreateInput;
+	
+	/**
+	 * Defines what relations to include in query
+	 */
+	export type RelationInclude = Partial<{
+		albums: boolean,
+		songs: boolean
+	}>;
+
+	export function buildIncludeParameters(include?: RelationInclude) {
+		return {
+			albums: include?.albums ?? false,
+			songs: include?.songs ?? false
+		};
+	}
+}
