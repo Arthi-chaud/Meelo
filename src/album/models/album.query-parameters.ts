@@ -15,8 +15,9 @@ export namespace AlbumQueryParameters {
 	/**
 	 * The input required to save an album in the database
 	 */
-	export type CreateInput = OmitId<OmitSlug<OmitArtistId<OmitType<Album>>>> &
-		{ artist?: ArtistWhereInput};
+	export type CreateInput = Omit<OmitId<OmitSlug<OmitArtistId<OmitType<Album>>>>, 'releaseDate'>
+		& { releaseDate?: Date }
+		& { artist?: ArtistWhereInput };
 	
 	/**
 	 * The input required to update an album in the database
