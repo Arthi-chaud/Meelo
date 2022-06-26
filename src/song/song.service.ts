@@ -83,7 +83,7 @@ export class SongService {
 	
 	async createSong(artistName: string, title: string, include?: Prisma.SongInclude) {
 		try {
-			let artist: Artist = await this.artistService.getOrCreateArtist(artistName);
+			let artist: Artist = await this.artistService.getOrCreateArtist({ name: artistName });
 			return await this.prismaService.song.create({
 				data: {
 					artistId: artist.id,
@@ -125,7 +125,7 @@ export class SongService {
 				}
 			});
 			if (deletedSong.artistId !== null)
-				this.artistService.deleteArtistIfEmpty(deletedSong.artistId);
+				this.artistService.deleteArtistIfEmpty({ id: deletedSong.artistId });
 		} catch {
 			throw new SongNotFoundByIdException(songId);
 		}
