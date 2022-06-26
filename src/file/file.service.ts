@@ -39,11 +39,11 @@ export class FileService {
 				include: FileQueryParameters.buildIncludeParameters(include)
 			});
 		} catch {
-			if (where.byId)
-				throw new FileNotFoundFromIDException(where.byId.id);
-			else if (where.byTrack)
-				throw new FileNotFoundFromTrackIDException(where.byTrack.trackId);
-			throw new FileNotFoundFromPathException(where.byPath.path);
+			if (where.id !== undefined)
+				throw new FileNotFoundFromIDException(where.id);
+			else if (where.trackId != undefined)
+				throw new FileNotFoundFromTrackIDException(where.trackId);
+			throw new FileNotFoundFromPathException(where.path);
 		}
 	}
 

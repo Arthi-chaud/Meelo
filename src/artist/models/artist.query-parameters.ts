@@ -1,4 +1,5 @@
 import { Artist } from "@prisma/client";
+import { LibraryQueryParameters } from "src/library/models/library.query-parameters";
 import { Slug } from "src/slug/slug"
 import { OmitId } from "src/utils/omit-id";
 import { OmitSlug } from "src/utils/omit-slug";
@@ -31,7 +32,7 @@ export namespace ArtistQueryParameters {
 	 * Query parameters to find multiple artists
 	 */
 	export type ManyWhereInput = RequireAtLeastOne<{
-		byLibrarySource: { libraryId: number },
+		byLibrarySource: LibraryQueryParameters.WhereInput,
 		byName: SearchStringInput,
 	}>;
 
@@ -52,7 +53,9 @@ export namespace ArtistQueryParameters {
 						some: {
 							tracks: {
 								some: {
-									sourceFile: { libraryId: where.byLibrarySource.libraryId }
+									sourceFile: {
+										library: LibraryQueryParameters.buildQueryParameters(where.byLibrarySource)
+									}
 								}
 							}
 						}

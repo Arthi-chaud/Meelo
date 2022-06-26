@@ -1,7 +1,9 @@
 import { File } from "@prisma/client";
+import { LibraryQueryParameters } from "src/library/models/library.query-parameters";
 import { OmitId } from "src/utils/omit-id";
 import { RequireAtLeastOne } from "src/utils/require-at-least-one";
 import { RequireOnlyOne } from "src/utils/require-only-one";
+import { buildDateSearchParameters, SearchDateInput } from "src/utils/search-date-input";
 
 export namespace FileQueryParameters {
 	/**
@@ -12,18 +14,18 @@ export namespace FileQueryParameters {
 	 * Query parameters to find one file
 	 */
 	export type WhereInput = RequireOnlyOne<{
-		byTrack: { trackId: number }
-		byId: { id: number },
-		byPath: { path: string }
+		trackId: number,
+		id: number,
+		path: string
 	}>;
 
 	export function buildQueryParameters(where: WhereInput) {
 		return {
-			id: where.byId?.id,
-			track: where.byTrack ? {
-				id: where.byTrack.trackId
+			id: where.id,
+			track: where.trackId ? {
+				id: where.trackId
 			} : undefined,
-			path: where.byPath?.path,
+			path: where.path,
 		};
 	}
 	
@@ -31,31 +33,27 @@ export namespace FileQueryParameters {
 	 * Query parameters to find multiple files
 	 */
 	export type ManyWhereInput = RequireAtLeastOne<{
-		byLibrary: { libraryId: number },
-		byIds: { ids: number[] },
-		byPaths: { paths: string[] },
-		byRegistrationDate: RequireOnlyOne<{ before: Date, after: Date, on: Date }>
+		library: LibraryQueryParameters.WhereInput,
+		ids: number[],
+		paths: string[],
+		byRegistrationDate: SearchDateInput
 	}>;
 
 
 	export function buildQueryParametersForMany(where: ManyWhereInput) {
 		return {
-			id: where.byIds ? {
-				in: where.byIds.ids
+			id: where.ids !== undefined ? {
+				in: where.ids
 			} : undefined,
-			libraryId: where.byLibrary?.libraryId,
-			path: where.byPaths ? {
-				in: where.byPaths.paths
+			library: where.library
+				? LibraryQueryParameters.buildQueryParameters(where.library)
+				: undefined,
+			path: where.paths !== undefined ? {
+				in: where.paths
 			} : undefined,
-			registerDate: where.byRegistrationDate ? 
-				where.byRegistrationDate.on ? {
-					gte: new Date (where.byRegistrationDate.on.setHours(0, 0, 0, 0)),
-					lt: new Date (where.byRegistrationDate.on.setHours(0, 0, 0, 0) + 3600 * 24)
-				} : {
-					lt: where.byRegistrationDate.before,
-					gt: where.byRegistrationDate.after,
-				}
-			: undefined
+			registerDate: where.byRegistrationDate
+				? buildDateSearchParameters(where.byRegistrationDate)
+				: undefined
 		}
 	}
 

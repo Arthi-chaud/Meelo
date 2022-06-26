@@ -87,7 +87,7 @@ export class LibraryService {
 	async registerNewFiles(parentLibrary: Library): Promise<File[]> {
 		Logger.log(`'${parentLibrary.slug}' library: Registration of new files`);
 		let unfilteredCandidates = this.fileManagerService.getCandidateFilesInLibraryFolder(parentLibrary.path);
-		let alreadyRegistrered = await this.fileService.getFiles({ byPaths: { paths: unfilteredCandidates }});
+		let alreadyRegistrered = await this.fileService.getFiles({ paths: unfilteredCandidates });
 
 		let candidates = unfilteredCandidates.filter(
 			(candidatePath) => {
@@ -118,7 +118,7 @@ export class LibraryService {
 			let track = await this.metadataService.registerMetadata(fileMetadata, registeredFile);
 			await this.illustrationService.extractTrackIllustration(track, fullFilePath);
 		} catch {
-			await this.fileService.deleteFile({ byId: { id: registeredFile.id }});
+			await this.fileService.deleteFile({ id: registeredFile.id });
 			Logger.log(`${parentLibrary.slug} library: Registration of ${filePath} failed because of bad metadata.`);
 		}
 		return registeredFile
@@ -138,7 +138,7 @@ export class LibraryService {
 			(file) => this.fileManagerService.fileExists(`${libraryPath}/${file.path}`) == false
 		);
 		Logger.log(`'${parentLibrary.slug}' library: Removing ${unavailableFiles.length} entries`);
-		this.fileService.deleteFiles({ byIds: { ids: unavailableFiles.map((f) => f.id) } });
+		this.fileService.deleteFiles({ ids: unavailableFiles.map((f) => f.id) });
 		return unavailableFiles;
 	}
 }
