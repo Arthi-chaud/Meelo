@@ -23,7 +23,7 @@ describe('Artist Service', () => {
 	it('should be defined', () => {
 		expect(artistService).toBeDefined();
 	});
-	let artistName = 'My name';
+	const artistName = 'My name';
 
 	describe('Create Artist', () => {
 		it(('should create a new artist'), async () => {

@@ -5,6 +5,7 @@ import { type Song, type Artist, Prisma } from '@prisma/client';
 import { SongAlreadyExistsException, SongNotFoundByIdException, SongNotFoundException } from './song.exceptions';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { SongRelationInclude, SongsWhereInput, SongWhereInput } from './models/song.query-params';
+import { buildStringSearchParameters } from 'src/utils/search-string-input';
 
 @Injectable()
 export class SongService {
@@ -57,11 +58,7 @@ export class SongService {
 			artist: where.byArtist?.artistSlug ? {
 				slug: where.byArtist.artistSlug.toString()
 			} : undefined,
-			slug: {
-				startsWith: where.byName?.startsWith?.toString(),
-				contains: where.byName?.contains?.toString(),
-				equals: where.byName?.exact?.toString(),
-			},
+			name: buildStringSearchParameters(where.byName),
 			playCount: {
 				equals: where.byPlayCount?.exact,
 				gt: where.byPlayCount?.moreThan,

@@ -82,9 +82,7 @@ export class ReleaseService {
 
 	async getAlbumReleases(where: AlbumQueryParameters.WhereInput, include?: ReleaseRelationInclude) {
 		return await this.getReleases({
-			album: where.byId
-				? { byId: { id: where.byId.id } }
-				: { bySlug: { slug: where.bySlug.slug, artist: where.bySlug.artist } }
+				album: where
 			},
 			include
 		);
@@ -95,7 +93,7 @@ export class ReleaseService {
 			album: {
 				id: where.album.byId?.id,
 				slug: where.album.bySlug?.slug.toString(),
-				artist: where.album ?
+				artist: where.album.bySlug ?
 					where.album.bySlug?.artist
 						? ArtistQueryParameters.buildQueryParameters(where.album.bySlug.artist)
 						: null

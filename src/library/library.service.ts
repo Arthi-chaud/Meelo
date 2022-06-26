@@ -117,8 +117,7 @@ export class LibraryService {
 		try {
 			let track = await this.metadataService.registerMetadata(fileMetadata, registeredFile);
 			await this.illustrationService.extractTrackIllustration(track, fullFilePath);
-		} catch (e) {
-			console.log(e);
+		} catch {
 			await this.fileService.removeFileEntries(registeredFile);
 			Logger.log(`${parentLibrary.slug} library: Registration of ${filePath} failed because of bad metadata.`);
 		}

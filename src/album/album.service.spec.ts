@@ -8,8 +8,9 @@ import { AlbumModule } from "./album.module";
 import { FileManagerService } from "src/file-manager/file-manager.service";
 import { FakeFileManagerService } from "test/FakeFileManagerModule";
 import { PrismaService } from "src/prisma/prisma.service";
-import { AlbumAlreadyExistsException, AlbumNotFoundException } from "./album.exceptions";
+import { AlbumAlreadyExistsException } from "./album.exceptions";
 import { Slug } from "src/slug/slug";
+import { ArtistNotFoundException } from "src/artist/artist.exceptions";
 
 describe('Album Service', () => {
 	let albumService: AlbumService;
@@ -22,6 +23,7 @@ describe('Album Service', () => {
 		await module.get<PrismaService>(PrismaService).onModuleInit();
 		artistService = module.get<ArtistService>(ArtistService);
 		albumService = module.get<AlbumService>(AlbumService);
+		await artistService.createArtist({ name: 'My Artist' });
 	})
 
 	it('should be defined', () => {
@@ -99,6 +101,16 @@ describe('Album Service', () => {
 					});
 				}
 				expect(test()).rejects.toThrow(AlbumAlreadyExistsException);
+			});
+
+			it('should throw, as the related artist does not exists', () => {
+				const test = async () => {
+					return await albumService.createAlbum({
+						name: 'My album (Live)',
+						artist: { slug: new Slug('I do not exists') }
+					});
+				}
+				expect(test()).rejects.toThrow(ArtistNotFoundException);
 			});
 		});
 	});

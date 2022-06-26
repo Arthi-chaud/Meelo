@@ -3,7 +3,9 @@ import { Album, AlbumType, Artist, Release } from "@prisma/client";
 import { AlbumNotFoundException } from "src/album/album.exceptions";
 import { AlbumModule } from "src/album/album.module";
 import { AlbumService } from "src/album/album.service";
+import { ArtistNotFoundException } from "src/artist/artist.exceptions";
 import { ArtistModule } from "src/artist/artist.module";
+import { ArtistService } from "src/artist/artist.service";
 import { FileManagerService } from "src/file-manager/file-manager.service";
 import { PrismaModule } from "src/prisma/prisma.module";
 import { PrismaService } from "src/prisma/prisma.service";
@@ -23,17 +25,20 @@ describe('Release Service', () => {
 	beforeAll(async () => {
 		const module: TestingModule = await Test.createTestingModule({
 			imports: [PrismaModule, AlbumModule, ArtistModule],
-			providers: [ReleaseService, AlbumService],
+			providers: [ReleaseService, AlbumService, ArtistService],
 		}).overrideProvider(FileManagerService).useClass(FakeFileManagerService).compile();
 		await module.get<PrismaService>(PrismaService).onModuleInit();
 		releaseService = module.get<ReleaseService>(ReleaseService);
 		albumService = module.get<AlbumService>(AlbumService);
-		album = await albumService.createAlbum('My Album', 'My Artist', undefined, {
-			artist: true, releases: true
-		});
-		compilationAlbum = await albumService.createAlbum('My Compilation', undefined, undefined, {
-			artist: true, releases: true
-		});
+		let artist = await module.get<ArtistService>(ArtistService).createArtist({ name: 'My Artist' });
+		album = await albumService.createAlbum(
+			{ name: 'My Album', artist: { id: artist.id } },
+			{ artist: true, releases: true }
+		);
+		compilationAlbum = await albumService.createAlbum(
+			{ name: 'My Compilation' },
+			{ artist: true, releases: true }
+		);
 	})
 
 	it('should be defined', () => {
@@ -228,7 +233,7 @@ describe('Release Service', () => {
 
 			await releaseService.updateRelease(release);
 			album = await albumService.getAlbum(
-				{ bySlug: { slug: new Slug('My Album'), artistSlug: new Slug ("My Artist") } },
+				{ bySlug: { slug: new Slug('My Album'), artist: { slug: new Slug ("My Artist") } } },
 				{ releases: true }
 			);
 			expect(album.releaseDate).toStrictEqual(new Date('2005'));
@@ -239,7 +244,7 @@ describe('Release Service', () => {
 
 			await releaseService.updateRelease(release);
 			album = await albumService.getAlbum(
-				{ bySlug: { slug: new Slug('My Album'), artistSlug: new Slug ("My Artist") } },
+				{ bySlug: { slug: new Slug('My Album'), artist: { slug: new Slug ("My Artist") } } },
 				{ releases: true }
 			);
 			expect(album.releases.find((release) => release.master == true)!.title).toBe('My Album');
@@ -266,20 +271,13 @@ describe('Release Service', () => {
 			expect(createdRelease.slug).toBe('my-album-edited-version');
 		});
 
-		it("should create a new release for a new album (No album name provided)", async () => {
-			let createdRelease = await releaseService.findOrCreateRelease('My New Album (Live) [Deluxe]', undefined, 'My New Artist', new Date('2007'), {
-				album: true
-			});
-
-			expect(createdRelease.releaseDate).toStrictEqual(new Date('2007'));
-			expect(createdRelease.master).toBe(true);
-			expect(createdRelease.title).toBe('My New Album (Live) [Deluxe]');
-			expect(createdRelease.slug).toBe('my-new-album-live-deluxe');
-			expect(createdRelease.album.id).toBe(createdRelease.albumId);
-			expect(createdRelease.album.name).toBe("My New Album (Live)");
-			expect(createdRelease.album.releaseDate).toStrictEqual(new Date('2007'));
-			expect(createdRelease.album.type).toBe(AlbumType.LiveRecording);
-			expect(createdRelease.album.slug).toBe('my-new-album-live');
+		it("should throw, as the parent artist does not exist", async () => {
+			const test = async () => {
+				await releaseService.findOrCreateRelease('My New Album (Live) [Deluxe]', undefined, 'My New Artist', new Date('2007'), {
+					album: true
+				});
+			}
+			expect(test()).rejects.toThrow(ArtistNotFoundException);
 		});
 	});
 })

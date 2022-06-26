@@ -1,6 +1,7 @@
 import { Slug } from "src/slug/slug"
 import { RequireAtLeastOne } from "src/utils/require-at-least-one";
 import { RequireOnlyOne } from "src/utils/require-only-one"
+import { SearchStringInput } from "src/utils/search-string-input";
 
 /**
  * Query paraeters to find a song
@@ -14,7 +15,7 @@ export type SongWhereInput = RequireOnlyOne<{
  * Query params to find multiple songs
  */
 export type SongsWhereInput = RequireAtLeastOne<{
-	byName: RequireOnlyOne<{ exact: Slug, contains: Slug, startsWith: Slug }>
+	byName: SearchStringInput,
 	byArtist: RequireOnlyOne<{ artistSlug?: Slug, artistId: number }>,
 	byPlayCount: RequireOnlyOne<{ below: number, exact: number, moreThan: number }>,
 }>;

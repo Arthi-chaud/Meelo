@@ -4,6 +4,7 @@ import { OmitId } from "src/utils/omit-id";
 import { OmitSlug } from "src/utils/omit-slug";
 import { RequireAtLeastOne } from "src/utils/require-at-least-one";
 import { RequireOnlyOne } from "src/utils/require-only-one"
+import { SearchStringInput } from "src/utils/search-string-input";
 
 export namespace ArtistQueryParameters {
 
@@ -31,7 +32,7 @@ export namespace ArtistQueryParameters {
 	 */
 	export type ManyWhereInput = RequireAtLeastOne<{
 		byLibrarySource: { libraryId: number },
-		byName: RequireOnlyOne<{ startsWith: string, contains: string }>
+		byName: SearchStringInput,
 	}>;
 
 	/**

@@ -4,7 +4,9 @@ import { Slug } from 'src/slug/slug';
 import { AlbumAlreadyExistsException, AlbumAlreadyExistsExceptionWithArtistID as AlbumAlreadyExistsWithArtistIDException, AlbumNotFoundException, AlbumNotFoundFromIDException } from './album.exceptions';
 import { AlbumType, Album, Prisma, Release } from '@prisma/client';
 import { PrismaService } from 'src/prisma/prisma.service';
-import { AlbumQueryParameters } from './models/album.query-parameters'; './models/album.query-parameters';
+import { AlbumQueryParameters } from './models/album.query-parameters';import { ArtistQueryParameters } from 'src/artist/models/artist.query-parameters';
+import { ArtistNotFoundException } from 'src/artist/artist.exceptions';
+ './models/album.query-parameters';
 
 @Injectable()
 export class AlbumService {
@@ -22,15 +24,16 @@ export class AlbumService {
 	 */
 	async createAlbum(album: AlbumQueryParameters.CreateInput, include?: AlbumQueryParameters.RelationInclude) {
 		const albumSlug = new Slug(album.name);
+		if (album.artist === undefined) {
+			if (await this.countAlbums({ byName: { is: album.name }}) != 0)
+				throw new AlbumAlreadyExistsException(albumSlug);
+		}
 		try {
 			return await this.prismaService.album.create({
 				data: {
 					name: album.name,
 					artist: album.artist ? {
-						connect: {
-							id: album.artist.id,
-							slug: album.artist.slug?.toString()
-						}
+						connect: ArtistQueryParameters.buildQueryParameters(album.artist)
 					} : undefined,
 					slug: albumSlug.toString(),
 					releaseDate: album.releaseDate,
@@ -39,6 +42,8 @@ export class AlbumService {
 				include: AlbumQueryParameters.buildIncludeParameters(include)
 			});
 		} catch {
+			if (album.artist)
+				await this.artistServce.getArtist(album.artist);
 			if (album.artist?.id)
 				throw new AlbumAlreadyExistsWithArtistIDException(albumSlug, album.artist.id);
 			throw new AlbumAlreadyExistsException(albumSlug, album.artist?.slug);
@@ -153,11 +158,7 @@ export class AlbumService {
 				bySlug: { slug: new Slug(where.name), artist: where.artist },
 			}, include);
 		} catch {
-			return await this.createAlbum({
-				name: where.name,
-				releaseDate: where.releaseDate,
-				artist: where.artist,
-			}, include);
+			return await this.createAlbum({...where}, include);
 		}
 	}
 

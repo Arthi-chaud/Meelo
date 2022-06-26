@@ -56,8 +56,8 @@ export class MetadataService {
 			release.album.releaseDate > release.releaseDate) || 
 			release.releaseDate !== undefined)
 			release.album.releaseDate = release.releaseDate;
-			release.album.type = metadata.compilation ? AlbumType.Compilation : release.album.type;
-		await this.albumService.updateAlbum(release.album);
+		release.album.type = metadata.compilation ? AlbumType.Compilation : release.album.type;
+		await this.albumService.updateAlbum({ ...release.album}, { byId: { id: release.albumId }});
 		release.releaseDate = metadata.releaseDate ?? null;
 		await this.releaseService.updateRelease(release);
 		return await this.trackService.saveTrack(track);

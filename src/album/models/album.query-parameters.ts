@@ -1,4 +1,4 @@
-import { Album } from "@prisma/client";
+import { Album, Prisma } from "@prisma/client";
 import { Exclude } from "class-transformer";
 import { ArtistQueryParameters } from "src/artist/models/artist.query-parameters";
 import { Slug } from "src/slug/slug"
@@ -6,6 +6,7 @@ import { OmitId } from "src/utils/omit-id";
 import { OmitSlug } from "src/utils/omit-slug";
 import { RequireAtLeastOne } from "src/utils/require-at-least-one";
 import { RequireOnlyOne } from "src/utils/require-only-one"
+import { buildStringSearchParameters, SearchStringInput } from "src/utils/search-string-input";
 
 export namespace AlbumQueryParameters {
 
@@ -62,7 +63,7 @@ export namespace AlbumQueryParameters {
 	 */
 	export type ManyWhereInput = RequireAtLeastOne<{
 		byArtist: { artistSlug?: Slug },
-		byName: { startsWith: string, contains: string }
+		byName: SearchStringInput,
 		byLibrarySource: { libraryId: number },
 	}>;
 
@@ -78,10 +79,7 @@ export namespace AlbumQueryParameters {
 					slug: where.byArtist?.artistSlug.toString()
 				} : null
 				: undefined,
-			slug: {
-				startsWith: where.byName?.startsWith,
-				contains: where.byName?.contains,
-			},
+			name: buildStringSearchParameters(where.byName),
 			releases: where.byLibrarySource ? {
 				some: {
 					tracks: {
