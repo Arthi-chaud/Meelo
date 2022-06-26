@@ -58,7 +58,7 @@ describe('Album Service', () => {
 	describe('Create an album', () => {
 		describe('No artist', () => {
 			it('should create an album (no artist)', async () => {
-				let album: Album = await albumService.createAlbum('My album');
+				let album: Album = await albumService.createAlbum({ name: 'My album', releaseDate: null });
 
 				expect(album.id).toBeDefined();
 				expect(album.artistId).toBeNull();
@@ -69,7 +69,7 @@ describe('Album Service', () => {
 
 			it('should throw, as an album with the same name exists (no artist)', () => {
 				const test = async () => {
-					return await albumService.createAlbum('My album');
+					return await albumService.createAlbum({ name: 'My Album', releaseDate: null });
 				}
 				expect(test()).rejects.toThrow(AlbumAlreadyExistsException);
 			});
@@ -77,10 +77,11 @@ describe('Album Service', () => {
 
 		describe('With artist', () => {
 			it('should create a live album', async () => {
-				let album = await albumService.createAlbum('My album (Live)', 'My Artist', new Date('2006'), {
-					artist: true, releases: true
-				});
-
+				let album = await albumService.createAlbum({
+					name: 'My album (Live)',
+					artist: { slug: new Slug("My Artist") },
+					releaseDate: new Date('2006')
+				}, { releases: true, artist: true });
 				expect(album.id).toBeDefined();
 				expect(album.artist!.name).toBe('My Artist');
 				expect(album.releaseDate).toStrictEqual(new Date('2006'));
@@ -92,7 +93,11 @@ describe('Album Service', () => {
 
 			it('should throw, as an album with the same name exists', () => {
 				const test = async () => {
-					return await albumService.createAlbum('My album (Live)', 'My Artist');
+					return await albumService.createAlbum({
+						name: 'My album (Live)',
+						releaseDate: null,
+						artist: { slug: new Slug('My Artist') }
+					});
 				}
 				expect(test()).rejects.toThrow(AlbumAlreadyExistsException);
 			});
@@ -102,7 +107,7 @@ describe('Album Service', () => {
 	describe('Get an album', () => {
 		it("should find the album (w/o artist, but included)", async () => {
 			let album = await albumService.getAlbum(
-				{ bySlug: { slug: new Slug('My album'), artistSlug: undefined } }, 
+				{ bySlug: { slug: new Slug('My album'), artist: undefined } }, 
 				{ artist: true }
 			);
 			expect(album.id).toBeDefined();
@@ -115,7 +120,7 @@ describe('Album Service', () => {
 
 		it("should find the album (w/ artist)", async () => {
 			let album = await albumService.getAlbum(
-				{ bySlug: { slug: new Slug('My album (Live)'), artistSlug: new Slug('My Artist') } }, 
+				{ bySlug: { slug: new Slug('My album (Live)'), artist: { slug: new Slug('My Artist') }} }, 
 				{ artist: true, releases: true }
 			);
 			expect(album.id).toBeDefined();
@@ -134,7 +139,7 @@ describe('Album Service', () => {
 				bySlug: { slug: new Slug('My album') }
 			});
 			album.name = "My new album";
-			expect((await albumService.updateAlbum(album)).slug.toString()).toBe('my-new-album');
+			expect((await albumService.updateAlbum(album, { byId: { id: album.id } })).slug.toString()).toBe('my-new-album');
 			let updatedAlbum = await albumService.getAlbum({
 				bySlug: { slug: new Slug('My new album') }
 			});
@@ -148,7 +153,10 @@ describe('Album Service', () => {
 			let album = await albumService.getAlbum({
 				bySlug: { slug: new Slug('My new album') }
 			});
-			let fetchedAlbum = await albumService.findOrCreate('My new album');
+			let fetchedAlbum = await albumService.findOrCreate({
+				name: 'My new album',
+				releaseDate: null
+			});
 
 			expect(fetchedAlbum.id).toBe(album.id);
 			expect(fetchedAlbum.name).toBe(album.name);
@@ -157,9 +165,13 @@ describe('Album Service', () => {
 
 		it("should find the existing album (w/ artist)", async () => {
 			let album = await albumService.getAlbum({
-				bySlug: { slug: new Slug('My album (Live)'), artistSlug: new Slug('My Artist') }
+				bySlug: { slug: new Slug('My album (Live)'), artist: { slug: new Slug('My Artist') } }
 			});
-			let fetchedAlbum = await albumService.findOrCreate('My album (Live)', 'My Artist');
+			let fetchedAlbum = await albumService.findOrCreate({
+				name: 'My album (Live)',
+				releaseDate: null,
+				artist: { slug: new Slug('My Artist') },
+			});
 
 			expect(fetchedAlbum.id).toBe(album.id);
 			expect(fetchedAlbum.name).toBe(album.name);
@@ -171,9 +183,13 @@ describe('Album Service', () => {
 				bySlug: { slug: new Slug('My new album') }
 			});
 			let albumWithArtist = await albumService.getAlbum({
-				bySlug: { slug: new Slug('My album (Live)'), artistSlug: new Slug('My Artist') }
+				bySlug: { slug: new Slug('My album (Live)'), artist: { slug: new Slug('My Artist') } }
 			});
-			let newAlbum = await albumService.findOrCreate('My brand new album', 'My Artist');
+			let newAlbum = await albumService.findOrCreate({
+				name: 'My brand new album',
+				releaseDate: null,
+				artist: { slug: new Slug('My Artist') },
+			});
 			
 			expect(newAlbum.id).toBeGreaterThan(albumNoArtist.id);
 			expect(newAlbum.id).toBeGreaterThan(albumWithArtist.id);

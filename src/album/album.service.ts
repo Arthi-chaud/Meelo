@@ -33,6 +33,7 @@ export class AlbumService {
 						}
 					} : undefined,
 					slug: albumSlug.toString(),
+					releaseDate: album.releaseDate,
 					type: AlbumService.getAlbumTypeFromName(album.name)
 				},
 				include: AlbumQueryParameters.buildIncludeParameters(include)
@@ -59,7 +60,7 @@ export class AlbumService {
 		} catch {
 			if (where.byId)
 				throw new AlbumNotFoundFromIDException(where.byId.id);
-			throw new AlbumNotFoundException(where.bySlug.slug, where.bySlug.artistSlug);
+			throw new AlbumNotFoundException(where.bySlug.slug, where.bySlug.artist?.slug);
 		}
 	}
 
@@ -124,7 +125,7 @@ export class AlbumService {
 		} catch {
 			if (where.byId)
 				throw new AlbumNotFoundFromIDException(where.byId.id);
-			throw new AlbumNotFoundException(where.bySlug.slug, where.bySlug.artistSlug);
+			throw new AlbumNotFoundException(where.bySlug.slug,  where.bySlug.artist?.slug);
 		}
 	}
 
@@ -141,19 +142,15 @@ export class AlbumService {
 	}
 
 	async findOrCreate(where: AlbumQueryParameters.FindOrCreateInput,include?: AlbumQueryParameters.RelationInclude) {
-		const artistSlug = where.artistName ? new Slug(where.artistName) : undefined
 		try {
-			return await this.getAlbum(
-				{
-					bySlug: { slug: new Slug(where.name), artistSlug: artistSlug },
-				},
-				include
-			);
+			return await this.getAlbum({
+				bySlug: { slug: new Slug(where.name), artist: where.artist },
+			}, include);
 		} catch {
 			return await this.createAlbum({
 				name: where.name,
 				releaseDate: where.releaseDate,
-				artist: { slug: artistSlug },
+				artist: where.artist,
 			}, include);
 		}
 	}

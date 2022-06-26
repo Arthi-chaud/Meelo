@@ -1,5 +1,6 @@
 import { Album } from "@prisma/client";
 import { Exclude } from "class-transformer";
+import { ArtistWhereInput } from "src/artist/models/artist.query-parameters";
 import { Slug } from "src/slug/slug"
 import { OmitId } from "src/utils/omit-id";
 import { OmitSlug } from "src/utils/omit-slug";
@@ -15,10 +16,7 @@ export namespace AlbumQueryParameters {
 	 * The input required to save an album in the database
 	 */
 	export type CreateInput = OmitId<OmitSlug<OmitArtistId<OmitType<Album>>>> &
-		{ artist: Partial<RequireOnlyOne<{
-			id: number,
-			slug: Slug
-		}>> }
+		{ artist?: ArtistWhereInput};
 	
 	/**
 	 * The input required to update an album in the database
@@ -28,13 +26,13 @@ export namespace AlbumQueryParameters {
 	/**
 	 * The input to find or create an album
 	 */
-	export type FindOrCreateInput = Omit<CreateInput, 'artist'> & { artistName?: string };
+	export type FindOrCreateInput = CreateInput;
 	/**
 	 * Query parameters to find one album
 	 */
 	export type WhereInput = RequireOnlyOne<{
 		byId: { id: number },
-		bySlug: { slug: Slug, artistSlug?: Slug }
+		bySlug: { slug: Slug, artist?: ArtistWhereInput }
 	}>;
 
 	/**
@@ -46,11 +44,14 @@ export namespace AlbumQueryParameters {
 		return {
 			id: where.byId?.id ?? undefined,
 			slug: where.bySlug?.slug.toString(),
+			artistId: where.bySlug ?
+				where.bySlug.artist ? where.bySlug.artist.id : null
+			: undefined,
 			artist: where.bySlug ?
-				where.bySlug.artistSlug ? {
-					slug: where.bySlug?.artistSlug.toString()
+				where.bySlug.artist ? {
+					slug: where.bySlug?.artist.slug?.toString()
 				} : null
-				: undefined
+			: undefined
 		}
 	}
 
@@ -59,7 +60,7 @@ export namespace AlbumQueryParameters {
 	 */
 	export type ManyWhereInput = RequireAtLeastOne<{
 		byArtist: { artistSlug?: Slug },
-		byName: { startsWith: Slug, contains: Slug }
+		byName: { startsWith: string, contains: string }
 		byLibrarySource: { libraryId: number },
 	}>;
 
