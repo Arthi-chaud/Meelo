@@ -1,0 +1,1 @@
+export type OmitSlug<T> = Omit<T, 'slug'>;
