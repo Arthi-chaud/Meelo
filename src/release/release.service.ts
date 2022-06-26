@@ -5,7 +5,8 @@ import { Release, Artist, Album, Prisma } from '@prisma/client';
 import { MasterReleaseNotFoundException, MasterReleaseNotFoundFromIDException, ReleaseAlreadyExists, ReleaseNotFoundException, ReleaseNotFoundFromIDException } from './release.exceptions';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { ReleaseRelationInclude, ReleasesWhereInput, ReleaseWhereInput } from './models/release.query-parameters';
-import { AlbumWhereInput } from 'src/album/models/album.query-parameters';
+import { AlbumQueryParameters } from 'src/album/models/album.query-parameters';
+import { ArtistQueryParameters } from 'src/artist/models/artist.query-parameters';
 
 @Injectable()
 export class ReleaseService {
@@ -79,10 +80,12 @@ export class ReleaseService {
 		});
 	}
 
-	async getAlbumReleases(where: AlbumWhereInput, include?: ReleaseRelationInclude) {
-		return await this.getReleases(where.byId
-			? { byAlbumId: { albumId: where.byId.id } }
-			: { byAlbumSlug: { albumSlug: where.bySlug.slug, artistSlug: where.bySlug.artistSlug } },
+	async getAlbumReleases(where: AlbumQueryParameters.WhereInput, include?: ReleaseRelationInclude) {
+		return await this.getReleases({
+			album: where.byId
+				? { byId: { id: where.byId.id } }
+				: { bySlug: { slug: where.bySlug.slug, artist: where.bySlug.artist } }
+			},
 			include
 		);
 	}
@@ -90,12 +93,12 @@ export class ReleaseService {
 	private buildQueryParametersForMany(where: ReleasesWhereInput) {
 		return {
 			album: {
-				id: where.byAlbumId?.albumId,
-				slug: where.byAlbumSlug?.albumSlug.toString(),
-				artist: where.byAlbumSlug ?
-					where.byAlbumSlug.artistSlug ? {
-						slug: where.byAlbumSlug?.artistSlug.toString()
-					} : null
+				id: where.album.byId?.id,
+				slug: where.album.bySlug?.slug.toString(),
+				artist: where.album ?
+					where.album.bySlug?.artist
+						? ArtistQueryParameters.buildQueryParameters(where.album.bySlug.artist)
+						: null
 				: undefined
 			}
 		};
@@ -155,7 +158,10 @@ export class ReleaseService {
 				include
 			);
 		} catch {
-			let album = await this.albumService.findOrCreate(albumName, artistName, { releases: true, artist: true });
+			let album = await this.albumService.getOrCreate({
+				name: albumName,
+				artist: artistSlug ? { slug: artistSlug } : undefined,
+			}, { releases: true, artist: true });
 			return await this.createRelease(releaseTitle, album, releaseDate, include);
 		}
 	}

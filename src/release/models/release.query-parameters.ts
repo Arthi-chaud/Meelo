@@ -1,4 +1,4 @@
-import { AlbumRelationInclude } from "src/album/models/album.query-parameters"
+import { AlbumQueryParameters } from "src/album/models/album.query-parameters";
 import { Slug } from "src/slug/slug"
 import { RequireAtLeastOne } from "src/utils/require-at-least-one"
 import { RequireOnlyOne } from "src/utils/require-only-one"
@@ -16,10 +16,7 @@ export type ReleaseWhereInput = RequireOnlyOne<{
 /**
  * Query parameters to find multiple Releases
  */
-export type ReleasesWhereInput = RequireAtLeastOne<{
-	byAlbumId: { albumId: number },
-	byAlbumSlug: { albumSlug: Slug, artistSlug?: Slug },
-}>;
+export type ReleasesWhereInput = { album: AlbumQueryParameters.WhereInput };
 
 /**
  * Defines what relations to include in query
