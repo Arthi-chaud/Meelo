@@ -118,7 +118,7 @@ export class LibraryService {
 			let track = await this.metadataService.registerMetadata(fileMetadata, registeredFile);
 			await this.illustrationService.extractTrackIllustration(track, fullFilePath);
 		} catch {
-			await this.fileService.removeFileEntries(registeredFile);
+			await this.fileService.deleteFile({ byId: { id: registeredFile.id }});
 			Logger.log(`${parentLibrary.slug} library: Registration of ${filePath} failed because of bad metadata.`);
 		}
 		return registeredFile
@@ -138,7 +138,7 @@ export class LibraryService {
 			(file) => this.fileManagerService.fileExists(`${libraryPath}/${file.path}`) == false
 		);
 		Logger.log(`'${parentLibrary.slug}' library: Removing ${unavailableFiles.length} entries`);
-		this.fileService.removeFileEntries(...unavailableFiles);
+		this.fileService.deleteFiles({ byIds: { ids: unavailableFiles.map((f) => f.id) } });
 		return unavailableFiles;
 	}
 }
