@@ -121,7 +121,7 @@ export class AlbumService {
 				where: AlbumQueryParameters.buildQueryParameterForOne(where)
 			});
 			if (deletedAlbum.artistId !== null)
-				this.artistServce.deleteArtistIfEmpty(deletedAlbum.artistId);
+				this.artistServce.deleteArtistIfEmpty({ id: deletedAlbum.artistId });
 		} catch {
 			if (where.byId)
 				throw new AlbumNotFoundFromIDException(where.byId.id);
@@ -141,7 +141,13 @@ export class AlbumService {
 			await this.deleteAlbum({ byId: { id: albumId } });
 	}
 
-	async findOrCreate(where: AlbumQueryParameters.FindOrCreateInput,include?: AlbumQueryParameters.RelationInclude) {
+	/**
+	 * Get an album, or create it if it does not exist
+	 * @param where the query parameters to find / create he album
+	 * @param include the relation fields to include in the returned album
+	 * @returns 
+	 */
+	async getOrCreate(where: AlbumQueryParameters.GetOrCreateInput, include?: AlbumQueryParameters.RelationInclude) {
 		try {
 			return await this.getAlbum({
 				bySlug: { slug: new Slug(where.name), artist: where.artist },
