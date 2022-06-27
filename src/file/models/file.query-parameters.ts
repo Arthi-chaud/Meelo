@@ -32,12 +32,12 @@ export namespace FileQueryParameters {
 	/**
 	 * Query parameters to find multiple files
 	 */
-	export type ManyWhereInput = RequireAtLeastOne<{
+	export type ManyWhereInput = Partial<RequireAtLeastOne<{
 		library: LibraryQueryParameters.WhereInput,
 		ids: number[],
 		paths: string[],
 		byRegistrationDate: SearchDateInput
-	}>;
+	}>>;
 
 
 	export function buildQueryParametersForMany(where: ManyWhereInput) {

@@ -99,7 +99,7 @@ describe('Library Service', () => {
 
 	describe('Get All Libraries', () => { 
 		it('should get every libraries (without files)', async () => {
-			let libraries = await libraryService.getLibraries();
+			let libraries = await libraryService.getLibraries({});
 
 			expect(libraries.length).toBe(1);
 			let library = libraries[0];

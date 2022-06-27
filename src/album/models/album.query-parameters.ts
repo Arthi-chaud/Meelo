@@ -63,12 +63,12 @@ export namespace AlbumQueryParameters {
 	/**
 	 * Query parameters to find multiple albums
 	 */
-	export type ManyWhereInput = RequireAtLeastOne<{
+	export type ManyWhereInput = Partial<RequireAtLeastOne<{
 		byArtist: { artistSlug?: Slug },
 		byName: SearchStringInput,
 		byLibrarySource: LibraryQueryParameters.WhereInput,
 		byReleaseDate: SearchDateInput
-	}>;
+	}>>;
 
 	/**
 	 * Build the query parameters for ORM, to select multiple rows

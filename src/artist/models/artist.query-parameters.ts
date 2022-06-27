@@ -31,10 +31,10 @@ export namespace ArtistQueryParameters {
 	/**
 	 * Query parameters to find multiple artists
 	 */
-	export type ManyWhereInput = RequireAtLeastOne<{
+	export type ManyWhereInput = Partial<RequireAtLeastOne<{
 		byLibrarySource: LibraryQueryParameters.WhereInput,
 		byName: SearchStringInput,
-	}>;
+	}>>;
 
 	/**
 	 * Build the query parameters for ORM, to select multiple rows

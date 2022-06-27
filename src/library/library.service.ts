@@ -70,9 +70,9 @@ export class LibraryService {
 	 * @param include the relation fields to include in the returned objects
 	 * @returns 
 	 */
-	async getLibraries(where?: LibraryQueryParameters.ManyWhereInput, include?: LibraryQueryParameters.RelationInclude) {
+	async getLibraries(where: LibraryQueryParameters.ManyWhereInput, include?: LibraryQueryParameters.RelationInclude) {
 		return await this.prismaService.library.findMany({
-			where: where ? LibraryQueryParameters.buildQueryParametersForMany(where) : undefined,
+			where: LibraryQueryParameters.buildQueryParametersForMany(where),
 			include: LibraryQueryParameters.buildIncludeParameters(include),
 		});
 	}
