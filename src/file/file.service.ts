@@ -5,6 +5,7 @@ import { PrismaService } from 'src/prisma/prisma.service';
 import { Library, File } from '@prisma/client';
 import { FileQueryParameters } from './models/file.query-parameters';
 import { FileNotReadableException } from 'src/file-manager/file-manager.exceptions';
+import { buildPaginationParamters as buildPaginationParameters, PaginationParameters } from 'src/utils/pagination';
 
 @Injectable()
 export class FileService {
@@ -50,13 +51,15 @@ export class FileService {
 	/**
 	 * Retrives multiple files using query parameters
 	 * @param where where the query parameters to find the file
+	 * @param pagination the pagination paramters to filter entries
 	 * @param include include the relation to include in the returned objects
 	 * @returns an array of File
 	 */
-	async getFiles(where: FileQueryParameters.ManyWhereInput, include?: FileQueryParameters.RelationInclude) {
+	async getFiles(where: FileQueryParameters.ManyWhereInput, pagination?: PaginationParameters, include?: FileQueryParameters.RelationInclude) {
 		return await this.prismaService.file.findMany({
 			where: FileQueryParameters.buildQueryParametersForMany(where),
-			include: FileQueryParameters.buildIncludeParameters(include)
+			include: FileQueryParameters.buildIncludeParameters(include),
+			...buildPaginationParameters(pagination)
 		});
 	}
 

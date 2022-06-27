@@ -111,7 +111,7 @@ describe('Library Service', () => {
 		});
 
 		it('should get every libraries (with files)', async () => {
-			let libraries = await libraryService.getLibraries({}, {
+			let libraries = await libraryService.getLibraries({}, {}, {
 				files: true
 			});
 

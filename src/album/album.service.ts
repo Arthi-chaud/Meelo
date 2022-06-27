@@ -6,6 +6,7 @@ import { AlbumType, Album, Prisma, Release } from '@prisma/client';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { AlbumQueryParameters } from './models/album.query-parameters';import { ArtistQueryParameters } from 'src/artist/models/artist.query-parameters';
 import { ArtistNotFoundException } from 'src/artist/artist.exceptions';
+import { buildPaginationParamters, PaginationParameters } from 'src/utils/pagination';
  './models/album.query-parameters';
 
 @Injectable()
@@ -72,12 +73,14 @@ export class AlbumService {
 	/**
 	 * Find multiple albums
 	 * @param where the parameters to find the album
+	 * @param pagination the pagination paramters to filter entries
 	 * @param include the relations to include
 	 */
-	async getAlbums(where: AlbumQueryParameters.ManyWhereInput, include?: AlbumQueryParameters.RelationInclude) {
+	async getAlbums(where: AlbumQueryParameters.ManyWhereInput, pagination?: PaginationParameters, include?: AlbumQueryParameters.RelationInclude) {
 		return await this.prismaService.album.findMany({
 			where: AlbumQueryParameters.buildQueryParametersForMany(where),
-			include: AlbumQueryParameters.buildIncludeParameters(include)
+			include: AlbumQueryParameters.buildIncludeParameters(include),
+			...buildPaginationParamters(pagination)
 		});
 	}
 

@@ -9,6 +9,7 @@ import { Library, File } from '@prisma/client';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { IllustrationService } from 'src/illustration/illustration.service';
 import { LibraryQueryParameters } from './models/library.query-parameters';
+import { buildPaginationParamters, PaginationParameters } from 'src/utils/pagination';
 
 @Injectable()
 export class LibraryService {
@@ -67,13 +68,15 @@ export class LibraryService {
 	/**
 	 * Get multiple Libraries
 	 * @param where the query parameters to find the libraries
+	 * @param pagination the pagination paramters to filter entries
 	 * @param include the relation fields to include in the returned objects
 	 * @returns 
 	 */
-	async getLibraries(where: LibraryQueryParameters.ManyWhereInput, include?: LibraryQueryParameters.RelationInclude) {
+	async getLibraries(where: LibraryQueryParameters.ManyWhereInput, pagination?: PaginationParameters, include?: LibraryQueryParameters.RelationInclude) {
 		return await this.prismaService.library.findMany({
 			where: LibraryQueryParameters.buildQueryParametersForMany(where),
 			include: LibraryQueryParameters.buildIncludeParameters(include),
+			...buildPaginationParamters(pagination)
 		});
 	}
 

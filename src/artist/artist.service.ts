@@ -4,6 +4,7 @@ import { ArtistalreadyExistsException as ArtistAlreadyExistsException, ArtistNot
 import { Artist, Prisma } from '@prisma/client';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { ArtistQueryParameters } from './models/artist.query-parameters';
+import { buildPaginationParamters, PaginationParameters } from 'src/utils/pagination';
 
 @Injectable()
 export class ArtistService {
@@ -54,12 +55,14 @@ export class ArtistService {
 	/**
 	 * Find multiple artist
 	 * @param where the query parameters to find the artists
+	 * @param pagination the pagination paramters to filter entries
 	 * @param include the relations to include in the returned artists
 	 */
-	 async getArtists(where: ArtistQueryParameters.ManyWhereInput, include?: ArtistQueryParameters.RelationInclude) {
+	 async getArtists(where: ArtistQueryParameters.ManyWhereInput, pagination?: PaginationParameters, include?: ArtistQueryParameters.RelationInclude) {
 		return await this.prismaService.artist.findMany({
 			where: ArtistQueryParameters.buildQueryParametersForMany(where),
-			include: ArtistQueryParameters.buildIncludeParameters(include)
+			include: ArtistQueryParameters.buildIncludeParameters(include),
+			...buildPaginationParamters(pagination)
 		});
 	}
 
