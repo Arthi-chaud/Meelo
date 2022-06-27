@@ -68,7 +68,7 @@ describe('Library Service', () => {
 
 	describe('Get Library', () => { 
 		it('should get the library (without files)', async () => {
-			let library = await libraryService.getLibrary(librarySlug);
+			let library = await libraryService.getLibrary({ slug: librarySlug });
 
 			expect(library.id).toBeDefined();
 			expect(library.name).toBe(libraryName);
@@ -78,7 +78,7 @@ describe('Library Service', () => {
 		});
 
 		it('should get the library (with files)', async () => {
-			let library = await libraryService.getLibrary(librarySlug, {
+			let library = await libraryService.getLibrary({ slug: librarySlug }, {
 				files: true
 			});
 
@@ -91,7 +91,7 @@ describe('Library Service', () => {
 
 		it('should throw, as the library does not exists', async () => {
 			const test = async () => {
-				await libraryService.getLibrary(new Slug('trolololol'));
+				await libraryService.getLibrary({ slug: new Slug('trolololol') });
 			};
 			expect(test()).rejects.toThrow(LibraryNotFoundException);
 		});
@@ -99,7 +99,7 @@ describe('Library Service', () => {
 
 	describe('Get All Libraries', () => { 
 		it('should get every libraries (without files)', async () => {
-			let libraries = await libraryService.getAllLibraries();
+			let libraries = await libraryService.getLibraries();
 
 			expect(libraries.length).toBe(1);
 			let library = libraries[0];
@@ -111,7 +111,7 @@ describe('Library Service', () => {
 		});
 
 		it('should get every libraries (with files)', async () => {
-			let libraries = await libraryService.getAllLibraries({
+			let libraries = await libraryService.getLibraries({}, {
 				files: true
 			});
 
@@ -128,14 +128,14 @@ describe('Library Service', () => {
 	describe('Delete Library', () => {
 		it('should throw, as the library does not exists', async () => {
 			expect(
-				async () => await libraryService.deleteLibrary(new Slug('trolololol'))
+				async () => await libraryService.deleteLibrary({ slug: new Slug('trolololol') })
 			).rejects.toThrow(LibraryNotFoundException);
 		});
 		it('should delete the library', async () => {
-			await libraryService.deleteLibrary(librarySlug);
+			await libraryService.deleteLibrary({ slug: librarySlug });
 
 			expect(
-				async () => await libraryService.getLibrary(librarySlug)
+				async () => await libraryService.getLibrary({ slug: librarySlug })
 			).rejects.toThrow(LibraryNotFoundException);
 		});
 	});

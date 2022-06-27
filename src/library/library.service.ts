@@ -3,12 +3,12 @@ import { FileManagerService } from 'src/file-manager/file-manager.service';
 import { FileService } from 'src/file/file.service';
 import { MetadataService } from 'src/metadata/metadata.service';
 import { Slug } from 'src/slug/slug';
-import { LibraryAlreadyExistsException, LibraryNotFoundException } from './library.exceptions';
+import { LibraryAlreadyExistsException, LibraryNotFoundException, LibraryNotFoundFromIDException } from './library.exceptions';
 import { LibraryDto } from './models/library.dto';
-import { Library, File, Prisma } from '@prisma/client';
+import { Library, File } from '@prisma/client';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { IllustrationService } from 'src/illustration/illustration.service';
-import { IllustrationPath } from 'src/illustration/models/illustration-path.model';
+import { LibraryQueryParameters } from './models/library.query-parameters';
 
 @Injectable()
 export class LibraryService {
@@ -20,12 +20,18 @@ export class LibraryService {
 		private illustrationService: IllustrationService
 	) {}
 	
-	async createLibrary(createLibraryDto: LibraryDto): Promise<Library> {
-		let librarySlug: Slug = new Slug(createLibraryDto.name);
+	/**
+	 * Creates a Library
+	 * @param library the parameters needed to create a Library
+	 * @param include the relation fields to include in the returned object
+	 * @returns 
+	 */
+	async createLibrary(library: LibraryQueryParameters.CreateInput, include?: LibraryQueryParameters.RelationInclude ): Promise<Library> {
+		let librarySlug: Slug = new Slug(library.name);
 		try {
 			return await this.prismaService.library.create({
 				data: {
-					...createLibraryDto,
+					...library,
 					slug: librarySlug.toString()
 				}
 			});
@@ -34,48 +40,70 @@ export class LibraryService {
 		}
 	}
 
-	async getAllLibraries(include?: Prisma.LibraryInclude) {
-		return await this.prismaService.library.findMany({
-			include: {
-				files: include?.files ?? false
-			}
-		});
-	}
 
 	/**
-	 * Retrieves Library entry using slug
-	 * @param slug the slug of the library to fetch
+	 * Retrieves Library entry
+	 * @param where the query parameters to find the library
+	 * @param include the relation fields to include in the returned object 
 	 * @returns The fetched Library
 	 */
-	async getLibrary(slug: Slug, include?: Prisma.LibraryInclude) {
+	 async getLibrary(where: LibraryQueryParameters.WhereInput, include?: LibraryQueryParameters.RelationInclude) {
 		try {
 			return await this.prismaService.library.findUnique({
 				rejectOnNotFound: true,
 				where: {
-					slug: slug.toString()
+					id: where.id,
+					slug: where.slug?.toString()
 				},
-				include: {
-					files: include?.files ?? false
-				}
+				include: LibraryQueryParameters.buildIncludeParameters(include),
 			});
 		} catch {
-			throw new LibraryNotFoundException(slug);
+			if (where.id !== undefined)
+				throw new LibraryNotFoundFromIDException(where.id);
+			throw new LibraryNotFoundException(where.slug);
 		}
 	}
 
 	/**
-	 * Delete a Library entry using slug
-	 * @param slug the slug of the library to delete
+	 * Get multiple Libraries
+	 * @param where the query parameters to find the libraries
+	 * @param include the relation fields to include in the returned objects
+	 * @returns 
 	 */
-	async deleteLibrary(slug: Slug): Promise<void> {
+	async getLibraries(where?: LibraryQueryParameters.ManyWhereInput, include?: LibraryQueryParameters.RelationInclude) {
+		return await this.prismaService.library.findMany({
+			where: where ? LibraryQueryParameters.buildQueryParametersForMany(where) : undefined,
+			include: LibraryQueryParameters.buildIncludeParameters(include),
+		});
+	}
+
+	async updateLibrary(what: LibraryQueryParameters.UpdateInput, where: LibraryQueryParameters.WhereInput): Promise<Library> {
 		try {
-			await this.prismaService.library.delete({
-				where: {
-					slug: slug.toString()
-				}
+			return await this.prismaService.library.update({
+				data: what,
+				where: LibraryQueryParameters.buildQueryParameters(where)
 			});
 		} catch {
-			throw new LibraryNotFoundException(slug);
+			if (where.id !== undefined)
+				throw new LibraryNotFoundFromIDException(where.id);
+			throw new LibraryNotFoundException(where.slug);
+		}
+	}
+
+	/**
+	 * Deletes a Library from the database
+	 * @param where the query parameters to find the library to delete
+	 * @returns the deleted library
+	 */
+	async deleteLibrary(where: LibraryQueryParameters.WhereInput): Promise<Library> {
+		try {
+			return await this.prismaService.library.delete({
+				where: LibraryQueryParameters.buildQueryParameters(where)
+			});
+		} catch {
+			if (where.id !== undefined)
+				throw new LibraryNotFoundFromIDException(where.id);
+			throw new LibraryNotFoundException(where.slug);
 		}
 	}
 
@@ -130,7 +158,7 @@ export class LibraryService {
 	 * @returns The array of deleted file entry
 	 */
 	async unregisterUnavailableFiles(parentLibrarySlug: Slug): Promise<File[]> {
-		let parentLibrary = await this.getLibrary(parentLibrarySlug, { files: true });
+		let parentLibrary = await this.getLibrary({ slug: parentLibrarySlug }, { files: true });
 		Logger.log(`'Cleaning ${parentLibrary.slug}' library`);
 		const libraryPath = `${this.fileManagerService.getLibraryFullPath(parentLibrary)}`;
 		let registeredFiles: File[] = parentLibrary.files;

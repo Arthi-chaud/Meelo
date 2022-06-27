@@ -12,3 +12,9 @@ export class LibraryNotFoundException extends NotFoundException {
 		super(`'${librarySlug}': No such library`);
 	}
 }
+
+export class LibraryNotFoundFromIDException extends NotFoundException {
+	constructor(libraryId: number) {
+		super(`No library found with id '${libraryId}'`);
+	}
+}
