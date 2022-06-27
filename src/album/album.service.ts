@@ -6,7 +6,7 @@ import { AlbumType, Album, Prisma, Release } from '@prisma/client';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { AlbumQueryParameters } from './models/album.query-parameters';import { ArtistQueryParameters } from 'src/artist/models/artist.query-parameters';
 import { ArtistNotFoundException } from 'src/artist/artist.exceptions';
-import { buildPaginationParamters, PaginationParameters } from 'src/utils/pagination';
+import { buildPaginationParameters, PaginationParameters } from 'src/utils/pagination';
  './models/album.query-parameters';
 
 @Injectable()
@@ -80,7 +80,7 @@ export class AlbumService {
 		return await this.prismaService.album.findMany({
 			where: AlbumQueryParameters.buildQueryParametersForMany(where),
 			include: AlbumQueryParameters.buildIncludeParameters(include),
-			...buildPaginationParamters(pagination)
+			...buildPaginationParameters(pagination)
 		});
 	}
 
@@ -108,7 +108,7 @@ export class AlbumService {
 	 * Updates an album date, using the earliest date from its releases
 	 * @param where the query parameter to get the album to update
 	 */
-	 async updateAlbumDate(where: AlbumQueryParameters.WhereInput): Promise<Album> {
+	 async updateAlbumDate(where: AlbumQueryParameters.WhereInput) {
 		let album = (await this.getAlbum(where, { releases: true }));
 		for (const release of album.releases) {
 			if (album.releaseDate == null ||
@@ -155,7 +155,7 @@ export class AlbumService {
 	 * @param include the relation fields to include in the returned album
 	 * @returns 
 	 */
-	async getOrCreate(where: AlbumQueryParameters.GetOrCreateInput, include?: AlbumQueryParameters.RelationInclude) {
+	async getOrCreateAlbum(where: AlbumQueryParameters.GetOrCreateInput, include?: AlbumQueryParameters.RelationInclude) {
 		try {
 			return await this.getAlbum({
 				bySlug: { slug: new Slug(where.name), artist: where.artist },

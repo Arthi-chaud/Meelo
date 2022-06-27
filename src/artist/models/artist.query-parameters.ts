@@ -73,7 +73,7 @@ export namespace ArtistQueryParameters {
 	/**
 	 * Parameters to find or create an Artist
 	 */
-	  export type GetOrCreateInput = CreateInput;
+	export type GetOrCreateInput = CreateInput;
 	
 	/**
 	 * Defines what relations to include in query

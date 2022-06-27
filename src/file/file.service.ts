@@ -5,7 +5,7 @@ import { PrismaService } from 'src/prisma/prisma.service';
 import { Library, File } from '@prisma/client';
 import { FileQueryParameters } from './models/file.query-parameters';
 import { FileNotReadableException } from 'src/file-manager/file-manager.exceptions';
-import { buildPaginationParamters as buildPaginationParameters, PaginationParameters } from 'src/utils/pagination';
+import { buildPaginationParameters as buildPaginationParameters, PaginationParameters } from 'src/utils/pagination';
 
 @Injectable()
 export class FileService {

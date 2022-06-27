@@ -3,6 +3,6 @@ export type PaginationParameters = Partial<{
 	take: number
 }>;
 
-export function buildPaginationParamters(parameters?: PaginationParameters) {
+export function buildPaginationParameters(parameters?: PaginationParameters) {
 	return parameters ?? {}
 };
