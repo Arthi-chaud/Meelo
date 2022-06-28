@@ -1,6 +1,7 @@
 import { Test } from "@nestjs/testing";
 import { TrackType } from "@prisma/client";
 import { AlbumModule } from "src/album/album.module";
+import { ArtistModule } from "src/artist/artist.module";
 import { FileManagerModule } from "src/file-manager/file-manager.module";
 import { FileManagerService } from "src/file-manager/file-manager.service";
 import { ReleaseModule } from "src/release/release.module";
@@ -20,7 +21,7 @@ describe('Metadata Service', () => {
 
 	beforeAll(async () => {
 		const moduleRef = await Test.createTestingModule({
-			imports: [MetadataModule, TrackModule, SongModule, AlbumModule, ReleaseModule, SettingsModule, FileManagerModule],
+			imports: [MetadataModule, TrackModule, SongModule, AlbumModule, ReleaseModule, SettingsModule, FileManagerModule, ArtistModule],
 			providers: [MetadataService],
 		}).overrideProvider(FileManagerService).useClass(FakeFileManagerService).compile();
 		metadataService = moduleRef.get<MetadataService>(MetadataService);

@@ -1,6 +1,7 @@
 import { HttpModule } from "@nestjs/axios";
 import { Test, TestingModule } from "@nestjs/testing";
 import { AlbumModule } from "src/album/album.module";
+import { AlbumService } from "src/album/album.service";
 import { ArtistModule } from "src/artist/artist.module";
 import { ArtistService } from "src/artist/artist.service";
 import { FileManagerModule } from "src/file-manager/file-manager.module";
@@ -18,6 +19,7 @@ import { IllustrationService } from "./illustration.service";
 describe('Library Service', () => {
 	let illustrationService: IllustrationService;
 	let releaseService: ReleaseService;
+	let albumService: AlbumService;
 	const baseMetadataFolder = 'test/assets/metadata';
 
 	beforeAll(async () => {
@@ -28,10 +30,12 @@ describe('Library Service', () => {
 		await module.get<PrismaService>(PrismaService).onModuleInit();
 		illustrationService = module.get<IllustrationService>(IllustrationService);
 		releaseService = module.get<ReleaseService>(ReleaseService);
-		module.get<ArtistService>(ArtistService).createArtist({ name: 'My Artist' });
+		albumService = module.get<AlbumService>(AlbumService);
+		await module.get<ArtistService>(ArtistService).createArtist({ name: 'My Artist' });
 	});
 
 	it('should be defined', () => {
+		expect(albumService).toBeDefined();
 		expect(illustrationService).toBeDefined();
 		expect(releaseService).toBeDefined();
 	});
@@ -83,18 +87,19 @@ describe('Library Service', () => {
 					.toBe(`${baseMetadataFolder}/my-other-artist/cover.jpg`);
 			});
 			it('should build the album illustration path', async () => {
-				
-				await releaseService.findOrCreateRelease(
-					'My Album (Deluxe Edition)', 'My Album', 'My Artist'
-				);
+				const album = await albumService.createAlbum({ name: 'My Album', artist: { slug: new Slug('My Artist') } });
+				await releaseService.getOrCreateRelease({
+					title: 'My Album (Deluxe Edition)', albumId: album.id, master: true, releaseDate: null
+				});
 				expect(await illustrationService.buildMasterReleaseIllustrationPath(
 					new Slug('My Album'), new Slug('My Artist')
 				)).toBe(`${baseMetadataFolder}/my-artist/my-album/my-album-deluxe-edition/cover.jpg`);
 			});
 			it('should build the album illustration path (compilation)', async() => {
-				await releaseService.findOrCreateRelease(
-					'My Other Album (Deluxe Edition)', 'My Other Album'
-				);
+				const album = await albumService.createAlbum({ name: 'My Other Album' })
+				await releaseService.getOrCreateRelease({
+					title: 'My Other Album (Deluxe Edition)', albumId: album.id, master: true, releaseDate: null
+				});
 				expect(await illustrationService.buildMasterReleaseIllustrationPath(
 					new Slug('My Other Album')
 				)).toBe(`${baseMetadataFolder}/compilations/my-other-album/my-other-album-deluxe-edition/cover.jpg`);

@@ -10,6 +10,7 @@ import { SongService } from 'src/song/song.service';
 import { Release, Song, TrackType, AlbumType, File, Artist, Track, Prisma} from '@prisma/client';
 import { ReleaseService } from 'src/release/release.service';
 import { AlbumService } from 'src/album/album.service';
+import { ArtistService } from 'src/artist/artist.service';
 
 @Injectable()
 export class MetadataService {
@@ -18,6 +19,7 @@ export class MetadataService {
 		private trackService: TrackService,
 		private songService: SongService,
 		private albumService: AlbumService,
+		private artistService: ArtistService,
 		private releaseService: ReleaseService,
 		private settingsService: SettingsService,
 		private fileManagerService: FileManagerService) {
@@ -31,13 +33,17 @@ export class MetadataService {
 	 */
 	async registerMetadata(metadata : Metadata, file: File): Promise<Track> {
 		let song = await this.songService.findOrCreateSong(metadata.artist ?? metadata.albumArtist!, metadata.name!, { instances: true });
-		let release = await this.releaseService.findOrCreateRelease(
-			metadata.release ?? metadata.album!,
-			metadata.album!,
-			metadata.albumArtist,
-			metadata.releaseDate,
-			{ album: true }
-		);
+		let artist = metadata.albumArtist ? await this.artistService.getOrCreateArtist({ name: metadata.albumArtist }) : undefined
+		let album = await this.albumService.getOrCreateAlbum({
+			name: metadata.album ?? metadata.release!,
+			artist: artist ? { id: artist?.id} : undefined
+		}, { releases: true });
+		let release = await this.releaseService.getOrCreateRelease({
+			title: metadata.release ?? metadata.album!,
+			master: album.releases.length == 0,
+			releaseDate: metadata.releaseDate ?? null,
+			albumId: album.id
+		}, { album: true });
 		let track: Omit<Track, 'id'> = {
 			songId: song.id,
 			sourceFileId: file.id,
@@ -59,7 +65,7 @@ export class MetadataService {
 		release.album.type = metadata.compilation ? AlbumType.Compilation : release.album.type;
 		await this.albumService.updateAlbum({ ...release.album}, { byId: { id: release.albumId }});
 		release.releaseDate = metadata.releaseDate ?? null;
-		await this.releaseService.updateRelease(release);
+		await this.releaseService.updateRelease(release, { byId: { id: release.id } });
 		return await this.trackService.saveTrack(track);
 	}
 

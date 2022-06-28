@@ -44,7 +44,7 @@ export namespace LibraryQueryParameters {
 	/**
 	 * The Query parameters to update a library
 	 */
-	export type UpdateInput = CreateInput;
+	export type UpdateInput = Partial<CreateInput>;
 
 	/**
 	 * The relation field to include in a returned library

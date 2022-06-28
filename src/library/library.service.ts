@@ -9,7 +9,7 @@ import { Library, File } from '@prisma/client';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { IllustrationService } from 'src/illustration/illustration.service';
 import { LibraryQueryParameters } from './models/library.query-parameters';
-import { buildPaginationParamters, PaginationParameters } from 'src/utils/pagination';
+import { buildPaginationParameters, PaginationParameters } from 'src/utils/pagination';
 
 @Injectable()
 export class LibraryService {
@@ -34,7 +34,8 @@ export class LibraryService {
 				data: {
 					...library,
 					slug: librarySlug.toString()
-				}
+				},
+				include: LibraryQueryParameters.buildIncludeParameters(include)
 			});
 		} catch {
 			throw new LibraryAlreadyExistsException(librarySlug);
@@ -76,7 +77,7 @@ export class LibraryService {
 		return await this.prismaService.library.findMany({
 			where: LibraryQueryParameters.buildQueryParametersForMany(where),
 			include: LibraryQueryParameters.buildIncludeParameters(include),
-			...buildPaginationParamters(pagination)
+			...buildPaginationParameters(pagination)
 		});
 	}
 

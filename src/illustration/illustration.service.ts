@@ -80,7 +80,7 @@ export class IllustrationService {
 	 */
 	async buildMasterReleaseIllustrationPath(albumSlug: Slug, artistSlug?: Slug): Promise<IllustrationPath> {
 		const masterRelease: Release = await this.releaseService.getRelease({
-			byMasterOfNamedAlbum: { albumSlug, artistSlug }
+			byMasterOf: { bySlug: { slug: albumSlug, artist: artistSlug ? { slug: artistSlug } : undefined } }
 		});
 		return this.buildReleaseIllustrationPath(albumSlug, new Slug(masterRelease.slug), artistSlug);
 	}
