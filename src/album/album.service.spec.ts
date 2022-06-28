@@ -164,7 +164,7 @@ describe('Album Service', () => {
 			let album = await albumService.getAlbum({
 				bySlug: { slug: new Slug('My new album') }
 			});
-			let fetchedAlbum = await albumService.getOrCreate({
+			let fetchedAlbum = await albumService.getOrCreateAlbum({
 				name: 'My new album'
 			});
 
@@ -177,7 +177,7 @@ describe('Album Service', () => {
 			let album = await albumService.getAlbum({
 				bySlug: { slug: new Slug('My album (Live)'), artist: { slug: new Slug('My Artist') } }
 			});
-			let fetchedAlbum = await albumService.getOrCreate({
+			let fetchedAlbum = await albumService.getOrCreateAlbum({
 				name: 'My album (Live)',
 				artist: { slug: new Slug('My Artist') },
 			});
@@ -194,7 +194,7 @@ describe('Album Service', () => {
 			let albumWithArtist = await albumService.getAlbum({
 				bySlug: { slug: new Slug('My album (Live)'), artist: { slug: new Slug('My Artist') } }
 			});
-			let newAlbum = await albumService.getOrCreate({
+			let newAlbum = await albumService.getOrCreateAlbum({
 				name: 'My brand new album',
 				artist: { slug: new Slug('My Artist') },
 			});
