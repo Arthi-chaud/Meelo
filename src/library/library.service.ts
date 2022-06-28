@@ -85,7 +85,7 @@ export class LibraryService {
 		try {
 			return await this.prismaService.library.update({
 				data: what,
-				where: LibraryQueryParameters.buildQueryParameters(where)
+				where: LibraryQueryParameters.buildQueryParametersForOne(where)
 			});
 		} catch {
 			if (where.id !== undefined)
@@ -102,7 +102,7 @@ export class LibraryService {
 	async deleteLibrary(where: LibraryQueryParameters.WhereInput): Promise<Library> {
 		try {
 			return await this.prismaService.library.delete({
-				where: LibraryQueryParameters.buildQueryParameters(where)
+				where: LibraryQueryParameters.buildQueryParametersForOne(where)
 			});
 		} catch {
 			if (where.id !== undefined)

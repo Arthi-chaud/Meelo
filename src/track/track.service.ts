@@ -50,7 +50,7 @@ export class TrackService {
 					id: trackId
 				}
 			});
-			this.songService.deleteSongIfEmpty(deletedTrack.songId);
+			this.songService.deleteSongIfEmpty({ byId: { id: deletedTrack.songId }});
 			this.releaseService.deleteReleaseIfEmpty({ byId: { id: deletedTrack.songId }});
 		} catch {
 			throw new TrackNotFoundByIdException(trackId);

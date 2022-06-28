@@ -34,7 +34,7 @@ export class AlbumService {
 				data: {
 					name: album.name,
 					artist: album.artist ? {
-						connect: ArtistQueryParameters.buildQueryParameters(album.artist)
+						connect: ArtistQueryParameters.buildQueryParametersForOne(album.artist)
 					} : undefined,
 					slug: albumSlug.toString(),
 					releaseDate: album.releaseDate,
@@ -60,7 +60,7 @@ export class AlbumService {
 		try {
 			return await this.prismaService.album.findFirst({
 				rejectOnNotFound: true,
-				where: AlbumQueryParameters.buildQueryParameterForOne(where),
+				where: AlbumQueryParameters.buildQueryParametersForOne(where),
 				include: AlbumQueryParameters.buildIncludeParameters(include),
 			});
 		} catch {
@@ -94,13 +94,19 @@ export class AlbumService {
 		});
 	}
 
+	/**
+	 * Updates an album in the database
+	 * @param what the fields to update
+	 * @param where the query parameters to find the album to update
+	 * @returns the updated album
+	 */
 	async updateAlbum(what: AlbumQueryParameters.UpdateInput,where: AlbumQueryParameters.WhereInput): Promise<Album> {
 		return await this.prismaService.album.update({
 			data: {
 				...what,
 				slug: what.name ? new Slug(what.name).toString() : undefined,
 			},
-			where: AlbumQueryParameters.buildQueryParameterForOne(where)
+			where: AlbumQueryParameters.buildQueryParametersForOne(where)
 		});
 	}
 
@@ -126,7 +132,7 @@ export class AlbumService {
 	async deleteAlbum(where: AlbumQueryParameters.WhereInput): Promise<void> {
 		try {
 			let deletedAlbum = await this.prismaService.album.delete({
-				where: AlbumQueryParameters.buildQueryParameterForOne(where)
+				where: AlbumQueryParameters.buildQueryParametersForOne(where)
 			});
 			if (deletedAlbum.artistId !== null)
 				this.artistServce.deleteArtistIfEmpty({ id: deletedAlbum.artistId });

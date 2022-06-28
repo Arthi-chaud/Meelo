@@ -45,7 +45,7 @@ export namespace AlbumQueryParameters {
 	 * @param where the query parameter to transform for ORM
 	 * @returns the ORM-ready query parameters
 	 */
-	export function buildQueryParameterForOne(where: WhereInput) {
+	export function buildQueryParametersForOne(where: WhereInput) {
 		return {
 			id: where.byId?.id ?? undefined,
 			slug: where.bySlug?.slug.toString(),
@@ -88,7 +88,7 @@ export namespace AlbumQueryParameters {
 					tracks: {
 						some: {
 							sourceFile: {
-								library: LibraryQueryParameters.buildQueryParameters(where.byLibrarySource)
+								library: LibraryQueryParameters.buildQueryParametersForOne(where.byLibrarySource)
 							}
 						}
 					}

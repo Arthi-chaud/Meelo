@@ -24,7 +24,7 @@ export namespace FileQueryParameters {
 	 * @param where the query parameter to transform for ORM
 	 * @returns the ORM-ready query parameters
 	 */
-	export function buildQueryParameters(where: WhereInput) {
+	export function buildQueryParametersForOne(where: WhereInput) {
 		return {
 			id: where.id,
 			track: where.trackId ? {
@@ -55,7 +55,7 @@ export namespace FileQueryParameters {
 				in: where.ids
 			} : undefined,
 			library: where.library
-				? LibraryQueryParameters.buildQueryParameters(where.library)
+				? LibraryQueryParameters.buildQueryParametersForOne(where.library)
 				: undefined,
 			path: where.paths !== undefined ? {
 				in: where.paths

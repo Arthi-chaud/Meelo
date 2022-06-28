@@ -25,7 +25,7 @@ export namespace LibraryQueryParameters {
 	 * @param where the query parameter to transform for ORM
 	 * @returns the ORM-ready query parameters
 	 */
-	export function buildQueryParameters(where: WhereInput): Prisma.LibraryWhereUniqueInput {
+	export function buildQueryParametersForOne(where: WhereInput): Prisma.LibraryWhereUniqueInput {
 		return {
 			id: where.id,
 			slug: where.slug?.toString()

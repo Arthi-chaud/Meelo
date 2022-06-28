@@ -36,7 +36,7 @@ export class FileService {
 	async getFile(where: FileQueryParameters.WhereInput, include?: FileQueryParameters.RelationInclude) {
 		try {
 			return await this.prismaService.file.findFirst({
-				where: FileQueryParameters.buildQueryParameters(where),
+				where: FileQueryParameters.buildQueryParametersForOne(where),
 				include: FileQueryParameters.buildIncludeParameters(include)
 			});
 		} catch {
@@ -83,7 +83,7 @@ export class FileService {
 	async updateFile(what: FileQueryParameters.UpdateInput, where: FileQueryParameters.WhereInput): Promise<File> {
 		return this.prismaService.file.update({
 			data: {...what},
-			where: FileQueryParameters.buildQueryParameters(where)
+			where: FileQueryParameters.buildQueryParametersForOne(where)
 		});
 	}
 
@@ -94,7 +94,7 @@ export class FileService {
 	 */
 	async deleteFile(where: FileQueryParameters.WhereInput): Promise<File> {
 		return this.prismaService.file.delete({
-			where: FileQueryParameters.buildQueryParameters(where)
+			where: FileQueryParameters.buildQueryParametersForOne(where)
 		});
 	}
 

@@ -11,6 +11,7 @@ import { Release, Song, TrackType, AlbumType, File, Artist, Track, Prisma} from 
 import { ReleaseService } from 'src/release/release.service';
 import { AlbumService } from 'src/album/album.service';
 import { ArtistService } from 'src/artist/artist.service';
+import { Slug } from 'src/slug/slug';
 
 @Injectable()
 export class MetadataService {
@@ -32,7 +33,9 @@ export class MetadataService {
 	 * @param file the file to register the metadata under, it must be already registered
 	 */
 	async registerMetadata(metadata : Metadata, file: File): Promise<Track> {
-		let song = await this.songService.findOrCreateSong(metadata.artist ?? metadata.albumArtist!, metadata.name!, { instances: true });
+		let song = await this.songService.getOrCreateSong(
+			{ name: metadata.name!, artist: { slug: new Slug(metadata.artist ?? metadata.albumArtist!) }},
+			{ instances: true });
 		let artist = metadata.albumArtist ? await this.artistService.getOrCreateArtist({ name: metadata.albumArtist }) : undefined
 		let album = await this.albumService.getOrCreateAlbum({
 			name: metadata.album ?? metadata.release!,

@@ -32,15 +32,15 @@ export namespace ReleaseQueryParameters {
 	 * @param where the query parameter to transform for ORM
 	 * @returns the ORM-ready query parameters
 	 */
-	export function buildQueryParameterForOne(where: WhereInput) {
+	export function buildQueryParametersForOne(where: WhereInput) {
 		return {
 			id: where.byId?.id,
 			master: where.byMasterOf ? true : undefined,
 			slug: where.bySlug?.slug.toString(),
 			album: where.byMasterOf
-				? AlbumQueryParameters.buildQueryParameterForOne(where.byMasterOf)
+				? AlbumQueryParameters.buildQueryParametersForOne(where.byMasterOf)
 			: where.bySlug
-				?  AlbumQueryParameters.buildQueryParameterForOne(where.bySlug.album)
+				?  AlbumQueryParameters.buildQueryParametersForOne(where.bySlug.album)
 			: undefined
 		};
 	}
@@ -64,7 +64,7 @@ export namespace ReleaseQueryParameters {
 				slug: where.album.bySlug?.slug.toString(),
 				artist: where.album.bySlug ?
 					where.album.bySlug?.artist
-						? ArtistQueryParameters.buildQueryParameters(where.album.bySlug.artist)
+						? ArtistQueryParameters.buildQueryParametersForOne(where.album.bySlug.artist)
 						: null
 				: undefined
 			}

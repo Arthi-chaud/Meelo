@@ -42,7 +42,7 @@ export class ArtistService {
 		try {
 			return await this.prismaService.artist.findUnique({
 				rejectOnNotFound: true,
-				where: ArtistQueryParameters.buildQueryParameters(where),
+				where: ArtistQueryParameters.buildQueryParametersForOne(where),
 				include: ArtistQueryParameters.buildIncludeParameters(include),
 			});
 		} catch {
@@ -89,7 +89,7 @@ export class ArtistService {
 					name: what.name,
 					slug: what.name ? new Slug(what.name).toString() : undefined
 				},
-				where: ArtistQueryParameters.buildQueryParameters(where),
+				where: ArtistQueryParameters.buildQueryParametersForOne(where),
 			});
 		} catch {
 			if (where.id !== undefined)
@@ -106,7 +106,7 @@ export class ArtistService {
 	async deleteArtist(where: ArtistQueryParameters.WhereInput): Promise<void> {
 		try {
 			await this.prismaService.artist.delete({
-				where: ArtistQueryParameters.buildQueryParameters(where)
+				where: ArtistQueryParameters.buildQueryParametersForOne(where)
 			});
 		} catch {
 			if (where.id !== undefined)
@@ -122,12 +122,12 @@ export class ArtistService {
 	async deleteArtistIfEmpty(where: ArtistQueryParameters.WhereInput): Promise<void> {
 		const albumCount = await this.prismaService.album.count({
 			where: {
-				artist: ArtistQueryParameters.buildQueryParameters(where)
+				artist: ArtistQueryParameters.buildQueryParametersForOne(where)
 			}
 		});
 		const songCount = await this.prismaService.song.count({
 			where: {
-				artist: ArtistQueryParameters.buildQueryParameters(where)
+				artist: ArtistQueryParameters.buildQueryParametersForOne(where)
 			}
 		});
 		if (songCount == 0 && albumCount == 0)

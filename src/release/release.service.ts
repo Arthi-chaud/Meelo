@@ -32,7 +32,7 @@ export class ReleaseService {
 					releaseDate: release.releaseDate,
 					master: release.master,
 					album: {
-						connect: AlbumQueryParameters.buildQueryParameterForOne(release.album),
+						connect: AlbumQueryParameters.buildQueryParametersForOne(release.album),
 					},
 					slug: releaseSlug.toString()
 				},
@@ -58,7 +58,7 @@ export class ReleaseService {
 		try {
 			return await this.prismaService.release.findFirst({
 				rejectOnNotFound: true,
-				where: ReleaseQueryParameters.buildQueryParameterForOne(where),
+				where: ReleaseQueryParameters.buildQueryParametersForOne(where),
 				include: ReleaseQueryParameters.buildIncludeParameters(include)
 			});
 		} catch {
@@ -131,11 +131,11 @@ export class ReleaseService {
 				releaseDate: what.releaseDate,
 				master: what.master,
 				album: what.album ? {
-					connect: AlbumQueryParameters.buildQueryParameterForOne(what.album),
+					connect: AlbumQueryParameters.buildQueryParametersForOne(what.album),
 				} : undefined,
 				slug: what.title ? new Slug(what.title).toString() : undefined,
 			},
-			where: ReleaseQueryParameters.buildQueryParameterForOne(where),
+			where: ReleaseQueryParameters.buildQueryParametersForOne(where),
 		});
 		if (what.master) {
 		 	await this.setReleaseAsMaster(updatedRelease);
@@ -148,14 +148,14 @@ export class ReleaseService {
 
 
 	/**
-	 * Deletes a release using its ID
+	 * Deletes a release
 	 * Also delete related tracks.
-	 * @param where Query parameters to find the release to update 
+	 * @param where Query parameters to find the release to delete 
 	 */
 	 async deleteRelease(where: ReleaseQueryParameters.WhereInput): Promise<void> {
 		try {
 			let deletedRelease = await this.prismaService.release.delete({
-				where: ReleaseQueryParameters.buildQueryParameterForOne(where),
+				where: ReleaseQueryParameters.buildQueryParametersForOne(where),
 			});
 			if (deletedRelease.master)
 				this.unsetReleaseAsMaster(deletedRelease);
@@ -172,7 +172,7 @@ export class ReleaseService {
 	async deleteReleaseIfEmpty(where: ReleaseQueryParameters.WhereInput): Promise<void> {
 		const trackCount = await this.prismaService.track.count({
 			where: {
-				release: ReleaseQueryParameters.buildQueryParameterForOne(where)
+				release: ReleaseQueryParameters.buildQueryParametersForOne(where)
 			}
 		});
 		if (trackCount == 0)
@@ -231,7 +231,7 @@ export class ReleaseService {
 			}),
 			this.prismaService.release.update({
 				data: { master: true },
-				where: ReleaseQueryParameters.buildQueryParameterForOne({ byId: { id: where.albumId }})
+				where: ReleaseQueryParameters.buildQueryParametersForOne({ byId: { id: where.albumId }})
 			})
 		]);
 	}
@@ -250,11 +250,11 @@ export class ReleaseService {
 		await Promise.allSettled([
 			this.prismaService.release.update({
 				data: { master: true },
-				where: ReleaseQueryParameters.buildQueryParameterForOne({ byId: { id: otherAlbumReleases.at(0)!.id }})
+				where: ReleaseQueryParameters.buildQueryParametersForOne({ byId: { id: otherAlbumReleases.at(0)!.id }})
 			}),
 			this.prismaService.release.update({
 				data: { master: false },
-				where: ReleaseQueryParameters.buildQueryParameterForOne({ byId: { id: where.id }})
+				where: ReleaseQueryParameters.buildQueryParametersForOne({ byId: { id: where.id }})
 			}),
 		]);
 	}
