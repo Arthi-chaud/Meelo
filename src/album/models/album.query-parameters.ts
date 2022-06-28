@@ -4,6 +4,7 @@ import { ArtistQueryParameters } from "src/artist/models/artist.query-parameters
 import { LibraryQueryParameters } from "src/library/models/library.query-parameters";
 import { Slug } from "src/slug/slug"
 import { OmitId } from "src/utils/omit-id";
+import { OmitReleaseDate } from "src/utils/omit-release-date";
 import { OmitSlug } from "src/utils/omit-slug";
 import { RequireAtLeastOne } from "src/utils/require-at-least-one";
 import { RequireOnlyOne } from "src/utils/require-only-one"
@@ -14,7 +15,6 @@ export namespace AlbumQueryParameters {
 
 	type OmitType<T> = Omit<T, 'type'>;
 	type OmitArtistId<T> = Omit<T, 'artistId'>;
-	type OmitReleaseDate<T> = Omit<T, 'releaseDate'>;
 
 	/**
 	 * The input required to save an album in the database

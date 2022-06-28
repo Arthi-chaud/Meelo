@@ -1,0 +1,1 @@
+export type OmitReleaseDate<T> = Omit<T, 'releaseDate'>;
