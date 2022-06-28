@@ -75,7 +75,7 @@ export namespace AlbumQueryParameters {
 	 * @param where the query parameter to transform for ORM
 	 * @returns the ORM-ready query parameters
 	 */
-	export function buildQueryParametersForMany(where: ManyWhereInput) {
+	export function buildQueryParametersForMany(where: ManyWhereInput): Prisma.AlbumWhereInput {
 		return {
 			artist: where.byArtist ?
 				where.byArtist.artistSlug ? {
@@ -105,6 +105,10 @@ export namespace AlbumQueryParameters {
 		artist: boolean
 	}>;
 
+	/**
+	 * Build the query parameters for ORM to include relations
+	 * @returns the ORM-ready query parameters
+	 */
 	export function buildIncludeParameters(include?: RelationInclude) {
 		return {
 			releases: include?.releases ?? false,

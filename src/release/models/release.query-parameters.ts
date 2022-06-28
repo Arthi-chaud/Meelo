@@ -1,4 +1,4 @@
-import { Release } from "@prisma/client";
+import { Prisma, Release } from "@prisma/client";
 import { AlbumQueryParameters } from "src/album/models/album.query-parameters";
 import { ArtistQueryParameters } from "src/artist/models/artist.query-parameters";
 import { Slug } from "src/slug/slug"
@@ -27,6 +27,11 @@ export namespace ReleaseQueryParameters {
 		byMasterOf: AlbumQueryParameters.WhereInput,
 	}>;
 
+	/**
+	 * Build the query parameters for ORM, to select one release
+	 * @param where the query parameter to transform for ORM
+	 * @returns the ORM-ready query parameters
+	 */
 	export function buildQueryParameterForOne(where: WhereInput) {
 		return {
 			id: where.byId?.id,
@@ -48,9 +53,11 @@ export namespace ReleaseQueryParameters {
 	};
 
 	/**
-	 * Builds query parameters for ORM to fetch multiple releases
+	 * Build the query parameters for ORM, to select multiple releases
+	 * @param where the query parameter to transform for ORM
+	 * @returns the ORM-ready query parameters
 	 */
-	export function buildQueryParametersForMany(where: ManyWhereInput) {
+	export function buildQueryParametersForMany(where: ManyWhereInput): Prisma.ReleaseWhereInput {
 		return {
 			album: {
 				id: where.album.byId?.id,
@@ -86,7 +93,10 @@ export namespace ReleaseQueryParameters {
 		album: boolean,
 		tracks: boolean
 	}>;
-
+	/**
+	 * Build the query parameters for ORM to include relations
+	 * @returns the ORM-ready query parameters
+	 */
 	export function buildIncludeParameters(include?: RelationInclude) {
 		return {
 			album: include?.album ?? false,

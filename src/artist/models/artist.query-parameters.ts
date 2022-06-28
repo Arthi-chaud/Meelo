@@ -1,4 +1,4 @@
-import { Artist } from "@prisma/client";
+import { Artist, Prisma } from "@prisma/client";
 import { LibraryQueryParameters } from "src/library/models/library.query-parameters";
 import { Slug } from "src/slug/slug"
 import { OmitId } from "src/utils/omit-id";
@@ -20,7 +20,11 @@ export namespace ArtistQueryParameters {
 		id: number,
 		slug: Slug
 	}>;
-
+	/**
+	 * Build the query parameters for ORM, to select one artist
+	 * @param where the query parameter to transform for ORM
+	 * @returns the ORM-ready query parameters
+	 */
 	export function buildQueryParameters(where: WhereInput) {
 		return {
 			id: where.id,
@@ -37,11 +41,11 @@ export namespace ArtistQueryParameters {
 	}>>;
 
 	/**
-	 * Build the query parameters for ORM, to select multiple rows
+	 * Build the query parameters for ORM, to select multiple artists
 	 * @param where the query parameter to transform for ORM
 	 * @returns the ORM-ready query parameters
 	 */
-	export function buildQueryParametersForMany(where: ManyWhereInput) {
+	export function buildQueryParametersForMany(where: ManyWhereInput): Prisma.ArtistWhereInput {
 		return {
 			slug: {
 				startsWith: where.byName?.startsWith,
@@ -83,6 +87,10 @@ export namespace ArtistQueryParameters {
 		songs: boolean
 	}>;
 
+	/**
+	 * Build the query parameters for ORM to include relations
+	 * @returns the ORM-ready query parameters
+	 */
 	export function buildIncludeParameters(include?: RelationInclude) {
 		return {
 			albums: include?.albums ?? false,

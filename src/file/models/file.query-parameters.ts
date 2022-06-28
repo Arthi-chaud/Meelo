@@ -1,4 +1,4 @@
-import { File } from "@prisma/client";
+import { File, Prisma } from "@prisma/client";
 import { LibraryQueryParameters } from "src/library/models/library.query-parameters";
 import { OmitId } from "src/utils/omit-id";
 import { RequireAtLeastOne } from "src/utils/require-at-least-one";
@@ -19,6 +19,11 @@ export namespace FileQueryParameters {
 		path: string
 	}>;
 
+	/**
+	 * Build the query parameters for ORM, to select one file
+	 * @param where the query parameter to transform for ORM
+	 * @returns the ORM-ready query parameters
+	 */
 	export function buildQueryParameters(where: WhereInput) {
 		return {
 			id: where.id,
@@ -39,8 +44,12 @@ export namespace FileQueryParameters {
 		byRegistrationDate: SearchDateInput
 	}>>;
 
-
-	export function buildQueryParametersForMany(where: ManyWhereInput) {
+	/**
+	 * Build the query parameters for ORM, to select multiple files
+	 * @param where the query parameter to transform for ORM
+	 * @returns the ORM-ready query parameters
+	 */
+	export function buildQueryParametersForMany(where: ManyWhereInput): Prisma.FileWhereInput {
 		return {
 			id: where.ids !== undefined ? {
 				in: where.ids
@@ -69,7 +78,10 @@ export namespace FileQueryParameters {
 		track: boolean,
 		library: boolean
 	}>;
-
+	/**
+	 * Build the query parameters for ORM to include relations
+	 * @returns the ORM-ready query parameters
+	 */
 	export function buildIncludeParameters(include?: RelationInclude) {
 		return {
 			track: include?.track,

@@ -1,4 +1,4 @@
-import { Library } from "@prisma/client";
+import { Library, Prisma } from "@prisma/client";
 import { Slug } from "src/slug/slug";
 import { OmitId } from "src/utils/omit-id";
 import { OmitSlug } from "src/utils/omit-slug";
@@ -20,8 +20,12 @@ export namespace LibraryQueryParameters {
 		id: number,
 		slug: Slug
 	}>;
-
-	export function buildQueryParameters(where: WhereInput) {
+	/**
+	 * Build the query parameters for ORM, to select one library
+	 * @param where the query parameter to transform for ORM
+	 * @returns the ORM-ready query parameters
+	 */
+	export function buildQueryParameters(where: WhereInput): Prisma.LibraryWhereUniqueInput {
 		return {
 			id: where.id,
 			slug: where.slug?.toString()
@@ -34,8 +38,12 @@ export namespace LibraryQueryParameters {
 	export type ManyWhereInput = Partial<RequireOnlyOne<{
 		byName: SearchStringInput
 	}>>;
-
-	export function buildQueryParametersForMany(where: ManyWhereInput) {
+	/**
+	 * Build the query parameters for ORM, to select multiple libraries
+	 * @param where the query parameter to transform for ORM
+	 * @returns the ORM-ready query parameters
+	 */
+	export function buildQueryParametersForMany(where: ManyWhereInput): Prisma.LibraryWhereInput {
 		return {
 			name: buildStringSearchParameters(where.byName)
 		};
@@ -52,7 +60,10 @@ export namespace LibraryQueryParameters {
 	export type RelationInclude = {
 		files: boolean
 	};
-
+	/**
+	 * Build the query parameters for ORM to include relations
+	 * @returns the ORM-ready query parameters
+	 */
 	export function buildIncludeParameters(include?: RelationInclude) {
 		return {
 			files: include?.files ?? false
