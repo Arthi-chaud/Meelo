@@ -15,6 +15,7 @@ import { Md5 } from 'ts-md5';
 import jimp from 'jimp';
 import { AlbumService } from 'src/album/album.service';
 import { FileDoesNotExistException } from 'src/file-manager/file-manager.exceptions';
+import { AlbumQueryParameters } from 'src/album/models/album.query-parameters';
 
 @Injectable()
 export class IllustrationService {

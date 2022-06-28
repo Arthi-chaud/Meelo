@@ -96,6 +96,19 @@ export class ReleaseService {
 	}
 
 	/**
+	 * Fetch the master release of an album
+	 * @param where the parameters to find the parent album
+	 * @param include the relation to include in the returned filed
+	 * @returns 
+	 */
+	 async getMasterRelease(where: AlbumQueryParameters.WhereInput, include?: ReleaseQueryParameters.RelationInclude) {
+		return await this.getRelease(
+			{ byMasterOf: where },
+			include
+		);
+	}
+
+	/**
 	 * Count the artists that match the query parameters
 	 * @param where the query parameters
 	 */
