@@ -31,7 +31,9 @@ export class ReleaseService {
 					title: release.title,
 					releaseDate: release.releaseDate,
 					master: release.master,
-					albumId: release.albumId,
+					album: {
+						connect: AlbumQueryParameters.buildQueryParameterForOne(release.album),
+					},
 					slug: releaseSlug.toString()
 				},
 				include: ReleaseQueryParameters.buildIncludeParameters(include)
@@ -41,7 +43,7 @@ export class ReleaseService {
 				createdRelease.album = updatedAlbum;
 			return createdRelease;
 		} catch {
-			const parentAlbum = await this.albumService.getAlbum({ byId: { id: release.albumId }});
+			const parentAlbum = await this.albumService.getAlbum(release.album);
 			throw new ReleaseAlreadyExists(releaseSlug, parentAlbum.artist ? new Slug(parentAlbum.artist!.slug!) : undefined);
 		}
 	}
@@ -115,7 +117,9 @@ export class ReleaseService {
 				title: what.title,
 				releaseDate: what.releaseDate,
 				master: what.master,
-				albumId: what.albumId,
+				album: what.album ? {
+					connect: AlbumQueryParameters.buildQueryParameterForOne(what.album),
+				} : undefined,
 				slug: what.title ? new Slug(what.title).toString() : undefined,
 			},
 			where: ReleaseQueryParameters.buildQueryParameterForOne(where),
@@ -170,7 +174,7 @@ export class ReleaseService {
 	async getOrCreateRelease(where: ReleaseQueryParameters.GetOrCreateInput, include?: ReleaseQueryParameters.RelationInclude) {
 		try {
 			return await this.getRelease(
-				{ bySlug: { slug: new Slug(where.title), album: { byId: { id: where.albumId } }}},
+				{ bySlug: { slug: new Slug(where.title), album: where.album}},
 				include
 			);
 		} catch {

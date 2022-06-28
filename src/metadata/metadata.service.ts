@@ -41,8 +41,8 @@ export class MetadataService {
 		let release = await this.releaseService.getOrCreateRelease({
 			title: metadata.release ?? metadata.album!,
 			master: album.releases.length == 0,
-			releaseDate: metadata.releaseDate ?? null,
-			albumId: album.id
+			releaseDate: metadata.releaseDate,
+			album: { byId: { id: album.id } }
 		}, { album: true });
 		let track: Omit<Track, 'id'> = {
 			songId: song.id,
@@ -65,7 +65,7 @@ export class MetadataService {
 		release.album.type = metadata.compilation ? AlbumType.Compilation : release.album.type;
 		await this.albumService.updateAlbum({ ...release.album}, { byId: { id: release.albumId }});
 		release.releaseDate = metadata.releaseDate ?? null;
-		await this.releaseService.updateRelease(release, { byId: { id: release.id } });
+		await this.releaseService.updateRelease({ releaseDate: release.releaseDate ?? undefined }, { byId: { id: release.id } });
 		return await this.trackService.saveTrack(track);
 	}
 

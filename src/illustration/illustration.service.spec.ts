@@ -89,7 +89,7 @@ describe('Library Service', () => {
 			it('should build the album illustration path', async () => {
 				const album = await albumService.createAlbum({ name: 'My Album', artist: { slug: new Slug('My Artist') } });
 				await releaseService.getOrCreateRelease({
-					title: 'My Album (Deluxe Edition)', albumId: album.id, master: true, releaseDate: null
+					title: 'My Album (Deluxe Edition)', album: { byId: { id: album.id } }, master: true
 				});
 				expect(await illustrationService.buildMasterReleaseIllustrationPath(
 					new Slug('My Album'), new Slug('My Artist')
@@ -98,7 +98,7 @@ describe('Library Service', () => {
 			it('should build the album illustration path (compilation)', async() => {
 				const album = await albumService.createAlbum({ name: 'My Other Album' })
 				await releaseService.getOrCreateRelease({
-					title: 'My Other Album (Deluxe Edition)', albumId: album.id, master: true, releaseDate: null
+					title: 'My Other Album (Deluxe Edition)', album: { byId: { id: album.id } }, master: true
 				});
 				expect(await illustrationService.buildMasterReleaseIllustrationPath(
 					new Slug('My Other Album')

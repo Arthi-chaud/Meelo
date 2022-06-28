@@ -3,16 +3,20 @@ import { AlbumQueryParameters } from "src/album/models/album.query-parameters";
 import { ArtistQueryParameters } from "src/artist/models/artist.query-parameters";
 import { Slug } from "src/slug/slug"
 import { OmitId } from "src/utils/omit-id";
+import { OmitReleaseDate } from "src/utils/omit-release-date";
 import { OmitSlug } from "src/utils/omit-slug";
 import { RequireAtLeastOne } from "src/utils/require-at-least-one"
 import { RequireOnlyOne } from "src/utils/require-only-one"
 
 export namespace ReleaseQueryParameters {
 
+	type OmitAlbumId<T> = Omit<T, 'albumId'>;
 	/**
 	 * Parameters to create a release
 	 */
-	export type CreateInput = OmitId<OmitSlug<Release>>;
+	export type CreateInput = OmitReleaseDate<OmitAlbumId<OmitId<OmitSlug<Release>>>>
+		& { releaseDate?: Date }
+		& { album: AlbumQueryParameters.WhereInput };
 
 	/**
 	 * Query parameters to find one release
