@@ -80,6 +80,14 @@ export namespace TrackQueryParameters {
 	export type GetOrCreateInput = CreateInput;
 
 	/**
+	 * Parameters to update the master track of a song
+	 */
+	export type UpdateSongMaster = {
+		trackId: number, 
+		song: SongQueryParameters.WhereInput,
+	};
+
+	/**
 	 * Defines what relations to include in query
 	 */
 	export type RelationInclude = Partial<{

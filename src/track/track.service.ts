@@ -149,10 +149,14 @@ export class TrackService {
 				},
 				where: TrackQueryParameters.buildQueryParametersForOne(where),
 			});
+			const masterChangeInput: TrackQueryParameters.UpdateSongMaster = {
+				trackId: updatedTrack.id,
+				song: { byId: { id: updatedTrack.songId } }
+			};
 			if (what.master) {
-				await this.setTrackAsMaster(updatedTrack);
-			} else  if (what.master === false) {
-				await this.unsetTrackAsMaster(updatedTrack);
+				await this.setTrackAsMaster(masterChangeInput);
+			} else if (what.master === false) {
+				await this.unsetTrackAsMaster(masterChangeInput);
 			};
 			return updatedTrack;
 		} catch {
@@ -170,7 +174,10 @@ export class TrackService {
 				where: TrackQueryParameters.buildQueryParametersForOne(where),
 			});
 			if (deletedTrack.master)
-				this.unsetTrackAsMaster(deletedTrack);
+				this.unsetTrackAsMaster({
+					trackId: deletedTrack.id,
+					song: { byId: { id: deletedTrack.songId } }
+				});
 			this.songService.deleteSongIfEmpty({ byId: { id: deletedTrack.songId } });
 			this.releaseService.deleteReleaseIfEmpty({ byId: { id: deletedTrack.releaseId } });
 		} catch {
@@ -195,5 +202,52 @@ export class TrackService {
 		if (where.sourceFile.id !== undefined)
 			throw new FileNotFoundFromIDException(where.sourceFile.id);
 		throw new FileNotFoundFromPathException(where.sourceFile.path!);
+	}
+
+	/**
+	 * Sets provided track as the song's master track, unsetting other master from the same song
+	 * @param where the query parameters to find the track to set as master
+	 */
+	async setTrackAsMaster(where: TrackQueryParameters.UpdateSongMaster): Promise<void> {
+		let otherTracks: Track[] = (await this.getSongTracks(where.song))
+			.filter((track) => track.id != where.trackId);
+		
+		await Promise.allSettled([
+			this.prismaService.track.updateMany({
+				data: { master: false },
+				where: {
+					id: {
+						in: otherTracks.map((track) => track.id)
+					}
+				}
+			}),
+			this.updateTrack(
+				{ master: true },
+				{ id: where.trackId }
+			)
+		]);
+	}
+
+	/**
+	 * Unsets provided track as the song's master track, setting another track as master of the song
+	 * @param where the query parameters to find the track to unset as master
+	 */
+	async unsetTrackAsMaster(where: TrackQueryParameters.UpdateSongMaster): Promise<void> {
+		let otherTracks: Track[] = (await this.getSongTracks(where.song))
+			.filter((track) => track.id != where.trackId);
+		if (otherTracks.find((track) => track.master))
+			return;
+		if (otherTracks.length == 0)
+			return;
+		await Promise.allSettled([
+			this.updateTrack(
+				{ master: true },
+				{ id: otherTracks.at(0)!.id }
+			),
+			this.updateTrack(
+				{ master: false },
+				{ id: where.trackId }
+			)
+		]);
 	}
 }
