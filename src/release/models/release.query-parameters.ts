@@ -79,7 +79,10 @@ export namespace ReleaseQueryParameters {
 	/**
 	 * Parameters to update the master release of an album
 	 */
-	 export type UpdateAlbumMaster = Pick<Release, "id" | "albumId">;
+	export type UpdateAlbumMaster = {
+		releaseId: number, 
+		album: AlbumQueryParameters.WhereInput,
+	};
 
 	/**
 	 * Parameters to find or create an Release

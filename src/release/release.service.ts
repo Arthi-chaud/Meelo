@@ -135,10 +135,14 @@ export class ReleaseService {
 			},
 			where: ReleaseQueryParameters.buildQueryParametersForOne(where),
 		});
+		const masterChangeInput: ReleaseQueryParameters.UpdateAlbumMaster = {
+			releaseId: updatedRelease.id,
+			album: { byId: { id: updatedRelease.albumId } }
+		};
 		if (unmodifiedRelease.master == false && what.master) {
-		 	await this.setReleaseAsMaster(updatedRelease);
+		 	await this.setReleaseAsMaster(masterChangeInput);
 		} else if (unmodifiedRelease.master && what.master == false) {
-		 	await this.unsetReleaseAsMaster(updatedRelease);
+		 	await this.unsetReleaseAsMaster(masterChangeInput);
 		};
 		await this.albumService.updateAlbumDate({ byId: { id: updatedRelease.albumId }});
 		return updatedRelease;
@@ -156,7 +160,10 @@ export class ReleaseService {
 				where: ReleaseQueryParameters.buildQueryParametersForOne(where),
 			});
 			if (deletedRelease.master)
-				this.unsetReleaseAsMaster(deletedRelease);
+				this.unsetReleaseAsMaster({
+					releaseId: deletedRelease.id,
+					album: { byId: { id: deletedRelease.albumId } }
+				});
 			this.albumService.deleteAlbumIfEmpty(deletedRelease.albumId);
 		} catch {
 			throw await this.getReleaseNotFoundError(where);
@@ -215,8 +222,8 @@ export class ReleaseService {
 	 * @param where release the query parameters to find the release to set as master
 	 */
 	async setReleaseAsMaster(where: ReleaseQueryParameters.UpdateAlbumMaster): Promise<void> {
-		let otherAlbumReleases: Release[] = (await this.getAlbumReleases({ byId: { id: where.albumId }}))
-			.filter((albumRelease) => albumRelease.id != where.id);
+		let otherAlbumReleases: Release[] = (await this.getAlbumReleases(where.album))
+			.filter((albumRelease) => albumRelease.id != where.releaseId);
 		
 		await Promise.allSettled([
 			this.prismaService.release.updateMany({
@@ -229,7 +236,7 @@ export class ReleaseService {
 			}),
 			this.updateRelease(
 				{ master: true },
-				{ byId: { id: where.id }}
+				{ byId: { id: where.releaseId }}
 			)
 		]);
 	}
@@ -239,8 +246,8 @@ export class ReleaseService {
 	 * @param where the query parameters to find the release to et as master
 	 */
 	 async unsetReleaseAsMaster(where: ReleaseQueryParameters.UpdateAlbumMaster): Promise<void> {
-		let otherAlbumReleases: Release[] = (await this.getAlbumReleases({ byId: { id: where.albumId }}))
-			.filter((albumRelease) => albumRelease.id != where.id);
+		let otherAlbumReleases: Release[] = (await this.getAlbumReleases(where.album))
+			.filter((albumRelease) => albumRelease.id != where.releaseId);
 		if (otherAlbumReleases.find((albumRelease) => albumRelease.master))
 			return;
 		if (otherAlbumReleases.length == 0)
@@ -252,7 +259,7 @@ export class ReleaseService {
 			),
 			this.updateRelease(
 				{ master: false },
-				{ byId: { id: where.id }}
+				{ byId: { id: where.releaseId }}
 			)
 		]);
 	}

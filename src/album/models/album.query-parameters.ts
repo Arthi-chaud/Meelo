@@ -22,16 +22,7 @@ export namespace AlbumQueryParameters {
 	export type CreateInput = OmitReleaseDate<OmitId<OmitSlug<OmitArtistId<OmitType<Album>>>>>
 		& { releaseDate?: Date }
 		& { artist?: ArtistQueryParameters.WhereInput };
-	
-	/**
-	 * The input required to update an album in the database
-	 */
-	export type UpdateInput = Partial<OmitId<OmitSlug<Album>>>;
 
-	/**
-	 * The input to find or create an album
-	 */
-	export type GetOrCreateInput = CreateInput;
 	/**
 	 * Query parameters to find one album
 	 */
@@ -96,6 +87,16 @@ export namespace AlbumQueryParameters {
 			} : undefined
 		};
 	}
+
+	/**
+ 	 * The input required to update an album in the database
+ 	 */
+	export type UpdateInput = Partial<OmitId<OmitSlug<Album>>>;
+
+	/**
+	 * The input to find or create an album
+	 */
+	export type GetOrCreateInput = CreateInput;
 
 	/**
 	 * Defines what relations to include in query

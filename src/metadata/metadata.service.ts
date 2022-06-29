@@ -66,10 +66,15 @@ export class MetadataService {
 			release.releaseDate !== undefined)
 			release.album.releaseDate = release.releaseDate;
 		release.album.type = metadata.compilation ? AlbumType.Compilation : release.album.type;
-		await this.albumService.updateAlbum({ ...release.album}, { byId: { id: release.albumId }});
+		await this.albumService.updateAlbum({ ...release.album }, { byId: { id: release.albumId }});
 		release.releaseDate = metadata.releaseDate ?? null;
 		await this.releaseService.updateRelease({ releaseDate: release.releaseDate ?? undefined }, { byId: { id: release.id } });
-		return await this.trackService.saveTrack(track);
+		return await this.trackService.createTrack({
+			...track,
+			sourceFile: { id: file.id },
+			release: { byId: { id: release.id } },
+			song: { byId: { id: song.id } }
+		});
 	}
 
 	/**
