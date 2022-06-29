@@ -131,7 +131,7 @@ export class LibraryService {
 		for (const candidate of candidates) {
 			newlyRegistered.push(await this.registerFile(candidate, parentLibrary));
 		}
-		Logger.log(`${parentLibrary.slug} library: ${candidates.length} new files registered`);
+		Logger.log(`${parentLibrary.slug} library: ${newlyRegistered.length} new files registered`);
 		return newlyRegistered;
 	}
 
@@ -151,7 +151,7 @@ export class LibraryService {
 			await this.illustrationService.extractTrackIllustration(track, fullFilePath);
 		} catch {
 			await this.fileService.deleteFile({ id: registeredFile.id });
-			Logger.log(`${parentLibrary.slug} library: Registration of ${filePath} failed because of bad metadata.`);
+			Logger.warn(`${parentLibrary.slug} library: Registration of ${filePath} failed because of bad metadata.`);
 		}
 		return registeredFile
 	}
