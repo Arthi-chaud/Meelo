@@ -108,8 +108,8 @@ model Song {
 	name			String
 	slug			String
 	/// The artist of the song
-	artist			Artist?	@relation(fields: [artistId], references: [id], onDelete: Cascade)
-	artistId		Int?
+	artist			Artist	@relation(fields: [artistId], references: [id], onDelete: Cascade)
+	artistId		Int
 	/// The number of times, the song was played
 	playCount		Int		@default(0)
 	instances		Track[]
