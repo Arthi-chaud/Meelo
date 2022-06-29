@@ -84,7 +84,7 @@ export class ReleaseService {
 	 * Fetch the releases from an album
 	 * @param where the parameters to find the parent album
 	 * @param pagination the pagniation parameters
-	 * @param include the relation to include in the returned filed
+	 * @param include the relation to include in the returned objects
 	 * @returns 
 	 */
 	async getAlbumReleases(where: AlbumQueryParameters.WhereInput, pagination?: PaginationParameters, include?: ReleaseQueryParameters.RelationInclude) {
@@ -98,7 +98,7 @@ export class ReleaseService {
 	/**
 	 * Fetch the master release of an album
 	 * @param where the parameters to find the parent album
-	 * @param include the relation to include in the returned filed
+	 * @param include the relation to include in the returned objects
 	 * @returns 
 	 */
 	 async getMasterRelease(where: AlbumQueryParameters.WhereInput, include?: ReleaseQueryParameters.RelationInclude) {
@@ -123,13 +123,11 @@ export class ReleaseService {
 	 * @param what the fields to update in the release
 	 * @param where the query parameters to fin the release to update
 	 */
-	
 	 async updateRelease(what: ReleaseQueryParameters.UpdateInput, where: ReleaseQueryParameters.WhereInput) {
+		let unmodifiedRelease = await this.getRelease(where);
 		let updatedRelease = await this.prismaService.release.update({
 			data: {
-				title: what.title,
-				releaseDate: what.releaseDate,
-				master: what.master,
+				...what,
 				album: what.album ? {
 					connect: AlbumQueryParameters.buildQueryParametersForOne(what.album),
 				} : undefined,
@@ -137,9 +135,9 @@ export class ReleaseService {
 			},
 			where: ReleaseQueryParameters.buildQueryParametersForOne(where),
 		});
-		if (what.master) {
+		if (unmodifiedRelease.master == false && what.master) {
 		 	await this.setReleaseAsMaster(updatedRelease);
-		} else  if (what.master === false) {
+		} else if (unmodifiedRelease.master && what.master == false) {
 		 	await this.unsetReleaseAsMaster(updatedRelease);
 		};
 		await this.albumService.updateAlbumDate({ byId: { id: updatedRelease.albumId }});
@@ -214,7 +212,7 @@ export class ReleaseService {
 
 	/**
 	 * Sets provided release as the album's master release, unsetting other master from the same album
-	 * @param where release the query parameters to find the release to et as master
+	 * @param where release the query parameters to find the release to set as master
 	 */
 	async setReleaseAsMaster(where: ReleaseQueryParameters.UpdateAlbumMaster): Promise<void> {
 		let otherAlbumReleases: Release[] = (await this.getAlbumReleases({ byId: { id: where.albumId }}))
@@ -229,10 +227,10 @@ export class ReleaseService {
 					}
 				}
 			}),
-			this.prismaService.release.update({
-				data: { master: true },
-				where: ReleaseQueryParameters.buildQueryParametersForOne({ byId: { id: where.albumId }})
-			})
+			this.updateRelease(
+				{ master: true },
+				{ byId: { id: where.id }}
+			)
 		]);
 	}
 
@@ -248,14 +246,14 @@ export class ReleaseService {
 		if (otherAlbumReleases.length == 0)
 			return;
 		await Promise.allSettled([
-			this.prismaService.release.update({
-				data: { master: true },
-				where: ReleaseQueryParameters.buildQueryParametersForOne({ byId: { id: otherAlbumReleases.at(0)!.id }})
-			}),
-			this.prismaService.release.update({
-				data: { master: false },
-				where: ReleaseQueryParameters.buildQueryParametersForOne({ byId: { id: where.id }})
-			}),
+			this.updateRelease(
+				{ master: true },
+				{ byId: { id: otherAlbumReleases.at(0)!.id }}
+			),
+			this.updateRelease(
+				{ master: false },
+				{ byId: { id: where.id }}
+			)
 		]);
 	}
 

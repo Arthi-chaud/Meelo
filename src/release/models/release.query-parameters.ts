@@ -48,9 +48,9 @@ export namespace ReleaseQueryParameters {
 	/**
 	 * Query parameters to find multiple Releases
 	 */
-	export type ManyWhereInput = {
+	export type ManyWhereInput = Partial<{
 		album: AlbumQueryParameters.WhereInput,
-	};
+	}>;
 
 	/**
 	 * Build the query parameters for ORM, to select multiple releases
@@ -59,7 +59,7 @@ export namespace ReleaseQueryParameters {
 	 */
 	export function buildQueryParametersForMany(where: ManyWhereInput): Prisma.ReleaseWhereInput {
 		return {
-			album: {
+			album: where.album ? {
 				id: where.album.byId?.id,
 				slug: where.album.bySlug?.slug.toString(),
 				artist: where.album.bySlug ?
@@ -67,7 +67,7 @@ export namespace ReleaseQueryParameters {
 						? ArtistQueryParameters.buildQueryParametersForOne(where.album.bySlug.artist)
 						: null
 				: undefined
-			}
+			} : undefined
 		};
 	}
 
