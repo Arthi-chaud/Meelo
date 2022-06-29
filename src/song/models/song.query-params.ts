@@ -25,6 +25,14 @@ export namespace SongQueryParameters {
 		byId: { id: number },
 		bySlug: { slug: Slug, artist: ArtistQueryParameters.WhereInput }
 	}>;
+
+	/**
+	 * Query paraeters to find a song to update
+	 */
+	 export type UpdateWhereInput = RequireOnlyOne<{
+		byId: { id: number },
+		bySlug: { slug: Slug, artistId: number }
+	}>;
 	/**
 	 * Build the query parameters for ORM, to select one song
 	 * @param where the query parameter to transform for ORM

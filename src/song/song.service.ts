@@ -91,16 +91,29 @@ export class SongService {
 	 * @param where the query parameters to find the album to update
 	 * @returns the updated album
 	 */
-	async updateSong(what: SongQueryParameters.UpdateInput, where: SongQueryParameters.WhereInput): Promise<Song> {
-		return await this.prismaService.song.update({
-			data: {
-				...what,
-				artist: what.artist ? {
-					connect: ArtistQueryParameters.buildQueryParametersForOne(what.artist),
-				} : undefined,
-			},
-			where: SongQueryParameters.buildQueryParametersForOne(where)
-		});
+	async updateSong(what: SongQueryParameters.UpdateInput, where: SongQueryParameters.UpdateWhereInput): Promise<Song> {
+		try {
+			return await this.prismaService.song.update({
+				data: {
+					...what,
+					artist: what.artist ? {
+						connect: ArtistQueryParameters.buildQueryParametersForOne(what.artist),
+					} : undefined,
+				},
+				where: {
+					id: where.byId?.id,
+					slug_artistId: where.bySlug ? {
+						slug: where.bySlug.slug.toString(),
+						artistId: where.bySlug.artistId,
+					} : undefined
+				}
+			});
+		} catch {
+			if (where.byId !== undefined)
+				throw new SongNotFoundByIdException(where.byId.id);
+			let artist = await this.artistService.getArtist({ id: where.bySlug.artistId });
+			throw new SongNotFoundException(where.bySlug.slug, new Slug(artist.name));
+		}
 	}
 	
 	/**
@@ -112,8 +125,7 @@ export class SongService {
 			let deletedSong = await this.prismaService.song.delete({
 				where: SongQueryParameters.buildQueryParametersForOne(where)
 			});
-			if (deletedSong.artistId !== null)
-				this.artistService.deleteArtistIfEmpty({ id: deletedSong.artistId });
+			await this.artistService.deleteArtistIfEmpty({ id: deletedSong.artistId });
 		} catch {
 			if (where.byId)
 				throw new SongNotFoundByIdException(where.byId.id);
