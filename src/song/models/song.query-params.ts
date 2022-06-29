@@ -18,15 +18,6 @@ export namespace SongQueryParameters {
 	export type CreateInput = OmitSlug<OmitPlayCount<OmitReleaseDate<OmitId<OmitArtistId<Song>>>>>
 		& { releaseDate?: Date }
 		& { artist: ArtistQueryParameters.WhereInput };
-	/**
-	 * The input required to update a song in the database
-	 */
-	export type UpdateInput = Partial<OmitId<OmitArtistId<Song>>>
-		& { artist?: ArtistQueryParameters.WhereInput };
-	/**
-	 * The input to find or create a song
-	 */
-	 export type GetOrCreateInput = CreateInput;
 	
 	/**
 	 * Query paraeters to find a song
@@ -53,11 +44,11 @@ export namespace SongQueryParameters {
 	/**
 	 * Query params to find multiple songs
 	 */
-	export type ManyWhereInput = RequireAtLeastOne<{
+	export type ManyWhereInput = Partial<RequireAtLeastOne<{
 		name: SearchStringInput,
 		artist?: ArtistQueryParameters.WhereInput,
 		playCount: RequireOnlyOne<{ below: number, exact: number, moreThan: number }>,
-	}>;
+	}>>;
 	/**
 	 * Build the query parameters for ORM, to select multiple rows
 	 * @param where the query parameter to transform for ORM
@@ -77,6 +68,16 @@ export namespace SongQueryParameters {
 			}
 		};
 	}
+
+	/**
+	 * The input required to update a song in the database
+	 */
+	export type UpdateInput = Partial<OmitId<OmitArtistId<Song>>>
+		& { artist?: ArtistQueryParameters.WhereInput };
+	/**
+	 * The input to find or create a song
+	 */
+	export type GetOrCreateInput = CreateInput;
 	/**
 	 * Defines what relations to include in query
 	 */
