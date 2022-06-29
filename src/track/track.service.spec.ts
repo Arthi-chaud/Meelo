@@ -217,7 +217,7 @@ describe('Track Service', () => {
 		});
 
 		it("should throw, as the track does not exist (by id)", async () => {
-			const test = async () => await trackService.getTrack({id: song.id});
+			const test = async () => await trackService.getTrack({id: -1});
 
 			expect(test()).rejects.toThrow(TrackNotFoundByIdException);
 		});
