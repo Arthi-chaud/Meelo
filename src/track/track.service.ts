@@ -2,58 +2,198 @@ import { Injectable } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { Prisma, Track } from '@prisma/client';
 import { SongService } from 'src/song/song.service';
-import { TrackNotFoundByIdException } from './track.exceptions';
+import { MasterTrackNotFoundException, TrackAlreadyExistsException, TrackNotFoundByIdException, TrackNotFoundException } from './track.exceptions';
 import { ReleaseService } from 'src/release/release.service';
+import { TrackQueryParameters } from './models/track.query-parameters';
+import { FileQueryParameters } from 'src/file/models/file.query-parameters';
+import { ReleaseQueryParameters } from 'src/release/models/release.query-parameters';
+import { SongQueryParameters } from 'src/song/models/song.query-params';
+import { FileService } from 'src/file/file.service';
+import { Slug } from 'src/slug/slug';
+import { FileNotFoundFromIDException, FileNotFoundFromPathException, FileNotFoundFromTrackIDException } from 'src/file/file.exceptions';
+import { buildPaginationParameters, PaginationParameters } from 'src/utils/pagination';
+import { MeeloException } from 'src/exceptions/meelo-exception';
 
 @Injectable()
 export class TrackService {
 	constructor(
 		private songService: SongService,
 		private releaseService: ReleaseService,
-		private prismaService: PrismaService
-	) {}
+		private fileService: FileService,
+		private prismaService: PrismaService,
+	) { }
+	/**
+	 * Create a Track, and saves it in the database
+	 * @param track the parameters to build the track
+	 * @param include the relation fields to include in the returned object
+	 * @returns the created song
+	 */
+	async createTrack(track: TrackQueryParameters.CreateInput, include?: TrackQueryParameters.RelationInclude) {
+		try {
+			return await this.prismaService.track.create({
+				data: {
+					...track,
+					song: {
+						connect: SongQueryParameters.buildQueryParametersForOne(track.song)
+					},
+					release: {
+						connect: ReleaseQueryParameters.buildQueryParametersForOne(track.release)
+					},
+					sourceFile: {
+						connect: FileQueryParameters.buildQueryParametersForOne(track.sourceFile)
+					}
+				},
+				include
+			});
+		} catch {
+			const parentSong = await this.songService.getSong(track.song, { artist: true });
+			const parentRelease = await this.releaseService.getRelease(track.release);
+			await this.fileService.getFile(track.sourceFile);
+			throw new TrackAlreadyExistsException(
+				track.displayName,
+				new Slug(parentRelease.slug),
+				parentSong.artist ? new Slug(parentSong.artist.slug) : undefined
+			);
+		}
+	}
+	/**
+	 * Finds a track in the database
+	 * @param where the query parameters to find the track
+	 * @param include the relations to include in the returned value
+	 */
+	async getTrack(where: TrackQueryParameters.WhereInput, include?: TrackQueryParameters.RelationInclude) {
+		try {
+			return await this.prismaService.track.findFirst({
+				rejectOnNotFound: true,
+				where: TrackQueryParameters.buildQueryParametersForOne(where),
+				include: TrackQueryParameters.buildIncludeParameters(include)
+			});
+		} catch {
+			throw await this.getTrackNotFoundError(where);
+		}
+	}
 
 	/**
-	 * Saves a Track in the database
-	 * @param track the track instance to save
-	 * @returns the track once saved
+	 * Find tracks
+	 * @param where the query parameters to find the tracks
+	 * @param include the relation fields to includes
+	 * @returns an array of tracks
 	 */
-	async saveTrack(track: Omit<Track, 'id'>): Promise<Track> {
-		return await this.prismaService.track.create({
-			data: {...track}
+	async getTracks(where: TrackQueryParameters.ManyWhereInput, pagination?: PaginationParameters, include?: TrackQueryParameters.RelationInclude) {
+		return await this.prismaService.track.findMany({
+			where: TrackQueryParameters.buildQueryParametersForMany(where),
+			include: TrackQueryParameters.buildIncludeParameters(include),
+			...buildPaginationParameters(pagination)
 		});
 	}
 
 	/**
-	 * Updates a Track in the database
-	 * @param track the track instance to update
-	 * @returns the track once updated
+	 * Fetch the tracks from a song
+	 * @param where the parameters to find the parent song
+	 * @param pagination the pagniation parameters
+	 * @param include the relation to include in the returned objects
+	 * @returns the list of tracks related to the song
 	 */
-	 async updateTrack(track: Track): Promise<Track> {
-		return await this.prismaService.track.update({
-			data: {...track},
-			where: {
-				id: track.id
-			}
-		});
+	async getSongTracks(where: SongQueryParameters.WhereInput, pagination?: PaginationParameters, include?: TrackQueryParameters.RelationInclude) {
+		return await this.getTracks(
+			{ bySong: where },
+			pagination,
+			include
+		);
+	}
+
+
+	/**
+	 * Fetch the master tracks of a song
+	 * @param where the parameters to find the parent song
+	 * @param include the relation to include in the returned object
+	 * @returns the master track of the song
+	 */
+	async getMasterTrack(where: SongQueryParameters.WhereInput, include?: TrackQueryParameters.RelationInclude) {
+		return await this.getTrack(
+			{ masterOfSong: where },
+			include
+		);
+	}
+
+	/**
+	 * Count the tracks that match the query parameters
+	 * @param where the query parameters
+	 */
+	async countTracks(where: TrackQueryParameters.ManyWhereInput): Promise<number> {
+		return (await this.prismaService.track.count({
+			where: TrackQueryParameters.buildQueryParametersForMany(where)
+		}));
+	}
+
+	/**
+	 * Updates the track in the database
+	 * @param what the fields to update in the track
+	 * @param where the query parameters to find the track to update
+	 */
+	
+	async updateTrack(what: TrackQueryParameters.UpdateInput, where: TrackQueryParameters.WhereInput) {
+		try {
+			let updatedTrack = await this.prismaService.track.update({
+				data: {
+					...what,
+					song: what.song ? {
+						connect: SongQueryParameters.buildQueryParametersForOne(what.song)
+					} : undefined,
+					release: what.release ? {
+						connect: ReleaseQueryParameters.buildQueryParametersForOne(what.release)
+					} : undefined,
+					sourceFile: what.sourceFile ? {
+						connect: FileQueryParameters.buildQueryParametersForOne(what.sourceFile)
+					} : undefined
+				},
+				where: TrackQueryParameters.buildQueryParametersForOne(where),
+			});
+			if (what.master) {
+				await this.setTrackAsMaster(updatedTrack);
+			} else  if (what.master === false) {
+				await this.unsetTrackAsMaster(updatedTrack);
+			};
+			return updatedTrack;
+		} catch {
+			throw await this.getTrackNotFoundError(where);
+		}
 	}
 
 	/**
 	 * Deletes a track
-	 * If the parent song is empty (ie. has no other songs), it will be deleted too
-	 * @param trackId 
+	 * @param where Query parameters to find the track to delete 
 	 */
-	async deleteTrack(trackId: number): Promise<void> {
+	 async deleteTrack(where: TrackQueryParameters.WhereInput): Promise<void> {
 		try {
 			let deletedTrack = await this.prismaService.track.delete({
-				where: {
-					id: trackId
-				}
+				where: TrackQueryParameters.buildQueryParametersForOne(where),
 			});
-			this.songService.deleteSongIfEmpty({ byId: { id: deletedTrack.songId }});
-			this.releaseService.deleteReleaseIfEmpty({ byId: { id: deletedTrack.songId }});
+			if (deletedTrack.master)
+				this.unsetTrackAsMaster(deletedTrack);
+			this.songService.deleteSongIfEmpty({ byId: { id: deletedTrack.songId } });
+			this.releaseService.deleteReleaseIfEmpty({ byId: { id: deletedTrack.releaseId } });
 		} catch {
-			throw new TrackNotFoundByIdException(trackId);
+			throw await this.getTrackNotFoundError(where);
 		}
+	}
+
+	/**
+	 * Callback on track not found
+	 * @param where the query parameters that failed to get the release
+	 */
+	private async getTrackNotFoundError(where: TrackQueryParameters.WhereInput): Promise<MeeloException> {
+		if (where.id !== undefined)
+			throw new TrackNotFoundByIdException(where.id);
+		if (where.masterOfSong) {
+			const parentSong = await this.songService.getSong(where.masterOfSong, { artist: true });
+			throw new MasterTrackNotFoundException(
+				new Slug(parentSong.slug),
+				new Slug(parentSong.artist!.slug)
+			);
+		} 
+		if (where.sourceFile.id !== undefined)
+			throw new FileNotFoundFromIDException(where.sourceFile.id);
+		throw new FileNotFoundFromPathException(where.sourceFile.path!);
 	}
 }
