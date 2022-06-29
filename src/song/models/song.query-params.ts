@@ -15,8 +15,7 @@ export namespace SongQueryParameters {
 	/**
 	 * The input required to save a song in the database
 	 */
-	export type CreateInput = OmitSlug<OmitPlayCount<OmitReleaseDate<OmitId<OmitArtistId<Song>>>>>
-		& { releaseDate?: Date }
+	export type CreateInput = OmitSlug<OmitPlayCount<OmitId<OmitArtistId<Song>>>>
 		& { artist: ArtistQueryParameters.WhereInput };
 	
 	/**
