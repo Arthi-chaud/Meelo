@@ -169,5 +169,5 @@ model Track {
 	duration		Int
 	/// The track from the file
 	sourceFile			File	@relation(fields: [sourceFileId], references: [id], onDelete: Cascade)
-	sourceFileId		Int
+	sourceFileId		Int		@unique
 }

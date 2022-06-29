@@ -37,7 +37,7 @@ export namespace TrackQueryParameters {
 	export function buildQueryParametersForOne(where: WhereInput) {
 		return {
 			id: where.id,
-			master: where.masterOfSong !== undefined,
+			master: where.masterOfSong ? true : undefined,
 			song: where.masterOfSong ?
 				SongQueryParameters.buildQueryParametersForOne(where.masterOfSong)
 			: undefined,

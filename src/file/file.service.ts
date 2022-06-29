@@ -36,13 +36,14 @@ export class FileService {
 	async getFile(where: FileQueryParameters.WhereInput, include?: FileQueryParameters.RelationInclude) {
 		try {
 			return await this.prismaService.file.findFirst({
+				rejectOnNotFound: true,
 				where: FileQueryParameters.buildQueryParametersForOne(where),
 				include: FileQueryParameters.buildIncludeParameters(include)
 			});
 		} catch {
 			if (where.id !== undefined)
 				throw new FileNotFoundFromIDException(where.id);
-			else if (where.trackId != undefined)
+			else if (where.trackId !== undefined)
 				throw new FileNotFoundFromTrackIDException(where.trackId);
 			throw new FileNotFoundFromPathException(where.path);
 		}

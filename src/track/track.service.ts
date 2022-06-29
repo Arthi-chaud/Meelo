@@ -52,7 +52,7 @@ export class TrackService {
 			throw new TrackAlreadyExistsException(
 				track.displayName,
 				new Slug(parentRelease.slug),
-				parentSong.artist ? new Slug(parentSong.artist.slug) : undefined
+				new Slug(parentSong.artist.slug)
 			);
 		}
 	}
@@ -89,6 +89,7 @@ export class TrackService {
 
 	/**
 	 * Fetch the tracks from a song
+	 * Returns an empty array if the song does not exist
 	 * @param where the parameters to find the parent song
 	 * @param pagination the pagniation parameters
 	 * @param include the relation to include in the returned objects
@@ -134,6 +135,7 @@ export class TrackService {
 	
 	async updateTrack(what: TrackQueryParameters.UpdateInput, where: TrackQueryParameters.WhereInput) {
 		try {
+			const unmodifiedTrack = await this.getTrack(where);
 			let updatedTrack = await this.prismaService.track.update({
 				data: {
 					...what,
@@ -153,9 +155,9 @@ export class TrackService {
 				trackId: updatedTrack.id,
 				song: { byId: { id: updatedTrack.songId } }
 			};
-			if (what.master) {
+			if (unmodifiedTrack.master == false && what.master) {
 				await this.setTrackAsMaster(masterChangeInput);
-			} else if (what.master === false) {
+			} else if (unmodifiedTrack.master && what.master === false) {
 				await this.unsetTrackAsMaster(masterChangeInput);
 			};
 			return updatedTrack;
@@ -170,16 +172,19 @@ export class TrackService {
 	 */
 	 async deleteTrack(where: TrackQueryParameters.WhereInput): Promise<void> {
 		try {
+			const trackToDelete = await this.getTrack(where);
+			if (trackToDelete.master)
+				await this.unsetTrackAsMaster({
+					trackId: trackToDelete.id,
+					song: { byId: { id: trackToDelete.songId } }
+				});
 			let deletedTrack = await this.prismaService.track.delete({
 				where: TrackQueryParameters.buildQueryParametersForOne(where),
 			});
-			if (deletedTrack.master)
-				this.unsetTrackAsMaster({
-					trackId: deletedTrack.id,
-					song: { byId: { id: deletedTrack.songId } }
-				});
-			this.songService.deleteSongIfEmpty({ byId: { id: deletedTrack.songId } });
-			this.releaseService.deleteReleaseIfEmpty({ byId: { id: deletedTrack.releaseId } });
+			await Promise.allSettled([
+				this.songService.deleteSongIfEmpty({ byId: { id: deletedTrack.songId } }),
+				this.releaseService.deleteReleaseIfEmpty({ byId: { id: deletedTrack.releaseId } })
+			]);
 		} catch {
 			throw await this.getTrackNotFoundError(where);
 		}

@@ -17,6 +17,7 @@ import { IllustrationModule } from 'src/illustration/illustration.module';
 		IllustrationModule
 	],
 	controllers: [LibraryController],
-	providers: [LibraryService]
+	providers: [LibraryService],
+	exports: [LibraryService]
 })
 export class LibraryModule {}
