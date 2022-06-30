@@ -1,5 +1,5 @@
 import { Controller, Get, Param } from '@nestjs/common';
-import { ParseSlugPipe } from 'src/slug/pipe';
+import { ParseArtistSlugPipe, ParseSlugPipe } from 'src/slug/pipe';
 import { Slug } from 'src/slug/slug';
 import { AlbumService } from './album.service';
 
@@ -25,36 +25,30 @@ export class AlbumController {
 
 	@Get('/compilations/:album')
 	async getCompilationAlbum(
-		@Param('album', ParseSlugPipe) albumSlug: Slug,) {
+		@Param('album', ParseSlugPipe) albumSlug: Slug) {
 		let album = await this.albumService.getAlbum({
 			bySlug: { slug: albumSlug }
 		});
 		return album;
 	}
-
-	@Get('/compilations')
-	async getCompilationAlbums() {
-		let album = await this.albumService.getAlbums({
-			byArtist: null
-		});
-		return album;
-	}
-
 	@Get('/:artist')
 	async getAlbumsByArtist(
-		@Param('artist', ParseSlugPipe) artistSlug: Slug) {
+		@Param('artist', ParseArtistSlugPipe) artistSlug: Slug | undefined) {
 		let albums = await this.albumService.getAlbums({
-			byArtist: { slug: artistSlug }
+			byArtist: artistSlug ? { slug: artistSlug } : undefined
 		});
 		return albums;
 	}
 
 	@Get('/:artist/:album')
 	async getAlbum(
-		@Param('artist', ParseSlugPipe) artistSlug: Slug,
+		@Param('artist', ParseArtistSlugPipe) artistSlug: Slug | undefined,
 		@Param('album', ParseSlugPipe) albumSlug: Slug) {
 		let album = await this.albumService.getAlbum({
-			bySlug: { slug: albumSlug, artist: { slug: artistSlug } }
+			bySlug: {
+				slug: albumSlug,
+				artist: artistSlug ? { slug: artistSlug } : undefined
+			}
 		});
 		return album;
 	}

@@ -1,6 +1,7 @@
 import { HttpStatus } from "@nestjs/common"
 import { InvalidRequestException, MeeloException } from "src/exceptions/meelo-exception"
 import { Slug } from "src/slug/slug"
+import { compilationAlbumArtistKeyword } from "src/utils/compilation";
 
 class NoIllustrationFolderException extends MeeloException {
 	constructor(message: string) {
@@ -33,8 +34,8 @@ export class NoIllustrationException extends MeeloException {
 }
 
 export class NoArtistIllustrationException extends NoIllustrationException {
-	constructor(artistSlug: Slug) {
-		super(`No illustration found for artist '${artistSlug.toString()}'`)
+	constructor(artistSlug?: Slug) {
+		super(`No illustration found for artist '${artistSlug?.toString() ?? compilationAlbumArtistKeyword}'`)
 	}
 }
 

@@ -17,6 +17,7 @@ import { AlbumService } from 'src/album/album.service';
 import { FileDoesNotExistException } from 'src/file-manager/file-manager.exceptions';
 import { AlbumQueryParameters } from 'src/album/models/album.query-parameters';
 import { ModuleRef } from '@nestjs/core';
+import { compilationAlbumArtistKeyword } from 'src/utils/compilation';
 
 @Injectable()
 export class IllustrationService implements OnModuleInit {
@@ -37,7 +38,7 @@ export class IllustrationService implements OnModuleInit {
 	}
 
 	buildCompilationIllustrationFolderPath(): string {
-		return `${this.illustrationFolderPath}/compilations`;
+		return `${this.illustrationFolderPath}/${compilationAlbumArtistKeyword}`;
 	}
 	/**
 	 * From an artist's slug, build its illustrations folder path which holds sub-directories for related albums

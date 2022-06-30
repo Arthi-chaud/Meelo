@@ -1,7 +1,7 @@
 import { Controller, Get, Param, ParseIntPipe, Res, StreamableFile, Response, HttpException, HttpStatus } from '@nestjs/common';
 import * as fs from 'fs';
 import { FileManagerService } from 'src/file-manager/file-manager.service';
-import { ParseSlugPipe } from 'src/slug/pipe';
+import { ParseArtistSlugPipe, ParseSlugPipe } from 'src/slug/pipe';
 import { Slug } from 'src/slug/slug';
 import { NoAlbumIllustrationException, NoArtistIllustrationException, NoIllustrationException, NoReleaseIllustrationException } from './illustration.exceptions';
 import { IllustrationService } from './illustration.service';
@@ -16,7 +16,7 @@ export class IllustrationController {
 
 	@Get('/:artist')
 	async getArtistIllustration(
-		@Param('artist', ParseSlugPipe) artistSlug: Slug,
+		@Param('artist', ParseArtistSlugPipe) artistSlug: Slug | undefined,
 		@Response({ passthrough: true }) res: Response) {
 		try {
 			return this.streamFile(
@@ -32,7 +32,7 @@ export class IllustrationController {
 
 	@Get('/:artist/:album')
 	async getMasterIllustration(
-		@Param('artist', ParseSlugPipe) artistSlug: Slug,
+		@Param('artist', ParseArtistSlugPipe) artistSlug: Slug | undefined,
 		@Param('album', ParseSlugPipe) albumSlug: Slug,
 		@Response({ passthrough: true }) res: Response) {
 		try {
@@ -48,7 +48,7 @@ export class IllustrationController {
 
 	@Get('/:artist/:album/:release')
 	async getReleaseIllustration(
-		@Param('artist', ParseSlugPipe) artistSlug: Slug,
+		@Param('artist', ParseArtistSlugPipe) artistSlug: Slug | undefined,
 		@Param('album', ParseSlugPipe) albumSlug: Slug,
 		@Param('release', ParseSlugPipe) releaseSlug: Slug,
 		@Response({ passthrough: true }) res: Response) {

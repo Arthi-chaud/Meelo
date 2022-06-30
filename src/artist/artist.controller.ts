@@ -1,6 +1,7 @@
 import { Controller, forwardRef, Get, Inject, Param } from '@nestjs/common';
+import { MeeloException } from 'src/exceptions/meelo-exception';
 import { IllustrationService } from 'src/illustration/illustration.service';
-import { ParseSlugPipe } from 'src/slug/pipe';
+import { ParseArtistSlugPipe, ParseSlugPipe } from 'src/slug/pipe';
 import { Slug } from 'src/slug/slug';
 import { ArtistService } from './artist.service';
 
@@ -22,7 +23,11 @@ export class ArtistController {
 	}
 
 	@Get('/:artist')
-	async getArtist(@Param('artist', ParseSlugPipe) artistSlug: Slug) {
+	async getArtist(@Param('artist', ParseArtistSlugPipe) artistSlug: Slug | undefined) {
+		if (artistSlug == undefined)
+			return {
+				illustration: this.illustrationService.buildArtistIllustrationPath()
+			};
 		let artist = await this.artistService.getArtist({ slug: artistSlug })
 		return {
 			...artist,
