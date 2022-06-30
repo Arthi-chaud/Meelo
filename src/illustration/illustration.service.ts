@@ -1,4 +1,4 @@
-import { Injectable, Logger } from '@nestjs/common';
+import { Injectable, Logger, OnModuleInit } from '@nestjs/common';
 import { HttpService } from '@nestjs/axios';
 import { FileManagerService } from 'src/file-manager/file-manager.service';
 import { MetadataService } from 'src/metadata/metadata.service';
@@ -16,16 +16,22 @@ import jimp from 'jimp';
 import { AlbumService } from 'src/album/album.service';
 import { FileDoesNotExistException } from 'src/file-manager/file-manager.exceptions';
 import { AlbumQueryParameters } from 'src/album/models/album.query-parameters';
+import { ModuleRef } from '@nestjs/core';
 
 @Injectable()
-export class IllustrationService {
-	public readonly illustrationFolderPath: string;
+export class IllustrationService implements OnModuleInit {
+	public illustrationFolderPath: string;
+	private metadataService: MetadataService;
 	constructor(
-		private metadataService: MetadataService,
 		private releaseService: ReleaseService,
 		private albumService: AlbumService,
 		private readonly httpService: HttpService,
-		private fileManagerService: FileManagerService) {
+		private fileManagerService: FileManagerService,
+		private moduleRef: ModuleRef
+	) {	}
+
+	onModuleInit() {
+		this.metadataService = this.moduleRef.get(MetadataService,  { strict: false });
 		this.illustrationFolderPath = this.metadataService.metadataFolderPath;
 	}
 
