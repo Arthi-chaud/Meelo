@@ -139,13 +139,13 @@ export class IllustrationService implements OnModuleInit {
 		const artistSlug =  album.artist ? new Slug(album.artist.slug) : undefined;
 		const albumSlug = new Slug(album.slug);
 		const releaseIllustrationPath = this.buildReleaseIllustrationPath(
-			releaseSlug,
 			albumSlug,
+			releaseSlug,
 			artistSlug
 		);
 		const trackIllustrationPath = this.buildTrackIllustrationPath(
-			releaseSlug,
 			albumSlug,
+			releaseSlug,
 			artistSlug,
 			track.discIndex ?? undefined,
 			track.trackIndex ?? undefined

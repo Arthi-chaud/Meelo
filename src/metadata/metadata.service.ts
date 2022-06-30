@@ -39,7 +39,7 @@ export class MetadataService {
 			{ name: metadata.name!, artist: { slug: new Slug(metadata.artist ?? metadata.albumArtist!) }},
 			{ instances: true });
 		let album = await this.albumService.getOrCreateAlbum({
-			name: metadata.album ?? metadata.release!,
+			name: this.removeReleaseExtension(metadata.album ?? metadata.release!),
 			artist: artist ? { id: artist?.id} : undefined
 		}, { releases: true });
 		let release = await this.releaseService.getOrCreateRelease({
