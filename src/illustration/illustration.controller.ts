@@ -54,7 +54,7 @@ export class IllustrationController {
 		@Response({ passthrough: true }) res: Response) {
 		try {
 			return this.streamFile(
-				this.illustrationService.buildReleaseIllustrationPath(artistSlug, albumSlug, releaseSlug),
+				this.illustrationService.buildReleaseIllustrationPath(albumSlug, releaseSlug, artistSlug),
 				`${releaseSlug}.jpg`,
 				res
 			);
