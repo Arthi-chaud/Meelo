@@ -11,6 +11,15 @@ export class ArtistController {
 		private illustrationService: IllustrationService,
 	) {}
 
+	@Get()
+	async getArtists() {
+		let artists = await this.artistService.getArtists({ });
+		return artists.map((artist) => ({
+			...artist,
+			illustration: this.illustrationService.buildArtistIllustrationPath(new Slug(artist.slug))
+		}));
+	}
+
 	@Get('/:artist')
 	async getArtist(@Param('artist', ParseSlugPipe) artistSlug: Slug) {
 		let artist = await this.artistService.getArtist({ slug: artistSlug })
