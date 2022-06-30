@@ -44,38 +44,6 @@ describe('Release Service', () => {
 	it('should be defined', () => {
 		expect(releaseService).toBeDefined();
 	});
-
-	describe('Build Album Name from release\'s', () => {
-		it("should build the album name from a basic release name", () => {
-			expect(releaseService.removeReleaseExtension('My Album')).toBe('My Album');
-			expect(releaseService.removeReleaseExtension("My New Album")).toBe('My New Album');
-		});
-
-		it("should build the album name from a release name with a basic extension", () => {
-			expect(releaseService.removeReleaseExtension('My Album (Deluxe Edition)')).toBe('My Album');
-			expect(releaseService.removeReleaseExtension("My New Album (Edited Special Edition)")).toBe('My New Album');
-		});
-
-		it("should build the album name from a release name with a medium extension", () => {
-			expect(releaseService.removeReleaseExtension('Garbage (20th Anniversary Deluxe Edition)')).toBe('Garbage');
-		});
-
-		it("should build the album name from a release name with a suffix ", () => {
-			expect(releaseService.removeReleaseExtension('My Album (Right Now)')).toBe('My Album (Right Now)');
-		});
-
-		it("should build the album name from a release name with a prefix ", () => {
-			expect(releaseService.removeReleaseExtension('(Right Now) My Album')).toBe('(Right Now) My Album');
-		});
-
-		it("should build the album name from a release name with a basic extension and a suffix ", () => {
-			expect(releaseService.removeReleaseExtension('My Album (Right Now) [Deluxe Edition]')).toBe('My Album (Right Now)');
-		});
-
-		it("should build the album name from a release name with a basic extension and a prefix ", () => {
-			expect(releaseService.removeReleaseExtension('(Right Now) My Album [Deluxe Edition]')).toBe('(Right Now) My Album');
-		});
-	});
 	
 	describe('Create a release', () => {
 		it("should create the album's first release", async () => {

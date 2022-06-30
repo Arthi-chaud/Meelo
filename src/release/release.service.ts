@@ -261,49 +261,4 @@ export class ReleaseService {
 			)
 		]);
 	}
-
-	
-	/**
-	 * Extract an extension from a release name
-	 * For example, if the release Name is 'My Album (Deluxe Edition)', it would return
-	 * '(Deluxe Edition)'
-	 * @param releaseName 
-	 */
-	extractReleaseExtension(releaseName: string): string | null {
-		const delimiters = [
-			['(', ')'],
-			['{', '}'],
-			['[', ']']
-		];
-		const extensionKeywords = [
-			'Edition',
-			'Version',
-			'Reissue',
-			'Deluxe',
-			'Standard',
-			'Edited',
-			'Explicit'
-		];
-		const extensionsGroup = extensionKeywords.map((ext) => `(${ext})`).join('|');
-		for (const delimiter of delimiters) {
-			const regExp = `\\s+(?<extension>\\${delimiter[0]}.*(${extensionsGroup}).*\\${delimiter[1]})`;
-			let match = releaseName.match(regExp);
-			if (match)
-				return match[1];
-		}
-		return null;
-	}
-
-	/**
-	 * Removes an extension from a release's name
-	 * For example, if the release Name is 'My Album (Deluxe Edition)', the parent
-	 * album name would be 'My Album'
-	 */
-	removeReleaseExtension(releaseName: string): string {
-		const extension: string | null = this.extractReleaseExtension(releaseName);
-		if (extension !== null) {
-			return releaseName.replace(extension, "").trim();
-		}
-		return releaseName;
-	}
 }

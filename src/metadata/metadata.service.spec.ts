@@ -92,4 +92,36 @@ describe('Metadata Service', () => {
 			});
 		});
 	});
+
+	describe('Extract Release name\'s extension', () => {
+		it("should build the album name from a basic release name", () => {
+			expect(metadataService.removeReleaseExtension('My Album')).toBe('My Album');
+			expect(metadataService.removeReleaseExtension("My New Album")).toBe('My New Album');
+		});
+
+		it("should build the album name from a release name with a basic extension", () => {
+			expect(metadataService.removeReleaseExtension('My Album (Deluxe Edition)')).toBe('My Album');
+			expect(metadataService.removeReleaseExtension("My New Album (Edited Special Edition)")).toBe('My New Album');
+		});
+
+		it("should build the album name from a release name with a medium extension", () => {
+			expect(metadataService.removeReleaseExtension('Garbage (20th Anniversary Deluxe Edition)')).toBe('Garbage');
+		});
+
+		it("should build the album name from a release name with a suffix ", () => {
+			expect(metadataService.removeReleaseExtension('My Album (Right Now)')).toBe('My Album (Right Now)');
+		});
+
+		it("should build the album name from a release name with a prefix ", () => {
+			expect(metadataService.removeReleaseExtension('(Right Now) My Album')).toBe('(Right Now) My Album');
+		});
+
+		it("should build the album name from a release name with a basic extension and a suffix ", () => {
+			expect(metadataService.removeReleaseExtension('My Album (Right Now) [Deluxe Edition]')).toBe('My Album (Right Now)');
+		});
+
+		it("should build the album name from a release name with a basic extension and a prefix ", () => {
+			expect(metadataService.removeReleaseExtension('(Right Now) My Album [Deluxe Edition]')).toBe('(Right Now) My Album');
+		});
+	});
 })
