@@ -45,7 +45,7 @@ export namespace LibraryQueryParameters {
 	 */
 	export function buildQueryParametersForMany(where: ManyWhereInput): Prisma.LibraryWhereInput {
 		return {
-			name: buildStringSearchParameters(where.byName)
+			name: where.byName ? buildStringSearchParameters(where.byName) : undefined
 		};
 	}
 

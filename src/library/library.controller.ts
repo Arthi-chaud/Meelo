@@ -15,8 +15,22 @@ export class LibraryController {
 	}
 
 	@Get()
-	async getLibraries({}) {
+	async getLibraries() {
 		return await this.libraryService.getLibraries({});
+	}
+	
+	@Get('scan')
+	async scanLibrariesFiles() {
+		const libraries = await this.libraryService.getLibraries({});
+		libraries.forEach((library) => this.libraryService.registerNewFiles(library));
+		return `Scanning ${libraries.length} libraries`
+	}
+
+	@Get('clean')
+	async cleanLibraries() {
+		const libraries = await this.libraryService.getLibraries({});
+		libraries.forEach((library) => this.libraryService.unregisterUnavailableFiles(new Slug(library.slug)));
+		return `Cleanning ${libraries.length} libraries`;
 	}
 
 	@Get(':slug')
@@ -25,32 +39,13 @@ export class LibraryController {
 	}
 
 	@Get('scan/:slug')
-	scanLibraryFiles(@Param('slug', ParseSlugPipe) slug: Slug) {
-		this.getLibrary(slug).then((library) => {
-			this.libraryService.registerNewFiles(library);
-		});
-	}
-
-	@Get('scan')
-	scanLibrariesFiles() {
-		this.libraryService.getLibraries({}).then((libraries) => {
-			libraries.forEach(
-				(library) => this.libraryService.registerNewFiles(library)
-			);
-		});
+	async scanLibraryFiles(@Param('slug', ParseSlugPipe) slug: Slug) {
+		let library = await this.getLibrary(slug);
+		this.libraryService.registerNewFiles(library);
 	}
 
 	@Get('clean/:slug')
 	async cleanLibrary(@Param('slug', ParseSlugPipe) slug: Slug) {
 		await this.libraryService.unregisterUnavailableFiles(slug);
-	}
-
-	@Get('clean')
-	async cleanLibraries() {
-		this.libraryService.getLibraries({}).then((libraries) => {
-			libraries.forEach(
-				(library) => this.libraryService.unregisterUnavailableFiles(new Slug(library.slug))
-			);
-		});
 	}
 }
