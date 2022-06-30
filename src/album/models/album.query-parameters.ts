@@ -38,15 +38,12 @@ export namespace AlbumQueryParameters {
 	 */
 	export function buildQueryParametersForOne(where: WhereInput) {
 		return {
-			id: where.byId?.id ?? undefined,
+			id: where.byId?.id,
 			slug: where.bySlug?.slug.toString(),
-			artistId: where.bySlug ?
-				where.bySlug.artist ? where.bySlug.artist.id : null
-			: undefined,
 			artist: where.bySlug ?
-				where.bySlug.artist ? {
-					slug: where.bySlug?.artist.slug?.toString()
-				} : null
+				where.bySlug.artist
+					? ArtistQueryParameters.buildQueryParametersForOne(where.bySlug.artist)
+					: null
 			: undefined
 		}
 	}
@@ -55,7 +52,7 @@ export namespace AlbumQueryParameters {
 	 * Query parameters to find multiple albums
 	 */
 	export type ManyWhereInput = Partial<RequireAtLeastOne<{
-		byArtist: { artistSlug?: Slug },
+		byArtist: ArtistQueryParameters.WhereInput | null,
 		byName: SearchStringInput,
 		byLibrarySource: LibraryQueryParameters.WhereInput,
 		byReleaseDate: SearchDateInput
@@ -69,10 +66,8 @@ export namespace AlbumQueryParameters {
 	export function buildQueryParametersForMany(where: ManyWhereInput): Prisma.AlbumWhereInput {
 		return {
 			artist: where.byArtist ?
-				where.byArtist.artistSlug ? {
-					slug: where.byArtist?.artistSlug.toString()
-				} : null
-				: undefined,
+					ArtistQueryParameters.buildQueryParametersForOne(where.byArtist)	
+			: where.byArtist,
 			name: buildStringSearchParameters(where.byName),
 			releases: where.byLibrarySource ? {
 				some: {
