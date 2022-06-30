@@ -86,8 +86,8 @@ export class IllustrationService implements OnModuleInit {
 	 * @param albumSlug The slug of an album
 	 */
 	async buildMasterReleaseIllustrationPath(albumSlug: Slug, artistSlug?: Slug): Promise<IllustrationPath> {
-		const masterRelease: Release = await this.releaseService.getRelease({
-			byMasterOf: { bySlug: { slug: albumSlug, artist: artistSlug ? { slug: artistSlug } : undefined } }
+		const masterRelease: Release = await this.releaseService.getMasterRelease({
+			bySlug: { slug: albumSlug, artist: artistSlug ? { slug: artistSlug } : undefined }
 		});
 		return this.buildReleaseIllustrationPath(albumSlug, new Slug(masterRelease.slug), artistSlug);
 	}
