@@ -1,4 +1,4 @@
-import { Injectable, Logger } from '@nestjs/common';
+import { forwardRef, Inject, Injectable, Logger } from '@nestjs/common';
 import { AlbumService } from 'src/album/album.service';
 import { Slug } from 'src/slug/slug';
 import { Release, Artist, Album } from '@prisma/client';
@@ -14,6 +14,7 @@ import { MeeloException } from 'src/exceptions/meelo-exception';
 export class ReleaseService {
 	constructor(
 		private prismaService: PrismaService,
+		@Inject(forwardRef(() => AlbumService))
 		private albumService: AlbumService,
 	) {}
 

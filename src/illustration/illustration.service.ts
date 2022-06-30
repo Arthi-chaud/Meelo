@@ -1,4 +1,4 @@
-import { Injectable, Logger, OnModuleInit } from '@nestjs/common';
+import { forwardRef, Inject, Injectable, Logger, OnModuleInit } from '@nestjs/common';
 import { HttpService } from '@nestjs/axios';
 import { FileManagerService } from 'src/file-manager/file-manager.service';
 import { MetadataService } from 'src/metadata/metadata.service';
@@ -24,6 +24,7 @@ export class IllustrationService implements OnModuleInit {
 	private metadataService: MetadataService;
 	constructor(
 		private releaseService: ReleaseService,
+		@Inject(forwardRef(() => AlbumService))
 		private albumService: AlbumService,
 		private readonly httpService: HttpService,
 		private fileManagerService: FileManagerService,

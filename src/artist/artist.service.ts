@@ -1,4 +1,4 @@
-import { Injectable, Logger } from '@nestjs/common';
+import { Inject, Injectable, Logger } from '@nestjs/common';
 import { Slug } from 'src/slug/slug';
 import { ArtistalreadyExistsException as ArtistAlreadyExistsException, ArtistNotFoundByIDException, ArtistNotFoundException } from './artist.exceptions';
 import { Artist, Prisma } from '@prisma/client';

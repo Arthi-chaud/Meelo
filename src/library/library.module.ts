@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { Module, forwardRef } from '@nestjs/common';
 import { LibraryController } from './library.controller';
 import { LibraryService } from './library.service';
 import { FileManagerModule } from 'src/file-manager/file-manager.module';
@@ -14,7 +14,7 @@ import { IllustrationModule } from 'src/illustration/illustration.module';
 		FileManagerModule,
 		FileModule,
 		MetadataModule,
-		IllustrationModule
+		forwardRef(() => IllustrationModule)
 	],
 	controllers: [LibraryController],
 	providers: [LibraryService],

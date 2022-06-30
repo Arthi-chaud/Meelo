@@ -1,4 +1,4 @@
-import { HttpModule } from "@nestjs/axios";
+import { HttpModule, HttpService } from "@nestjs/axios";
 import { Test, TestingModule } from "@nestjs/testing";
 import { AlbumModule } from "src/album/album.module";
 import { AlbumService } from "src/album/album.service";
@@ -7,16 +7,20 @@ import { ArtistService } from "src/artist/artist.service";
 import { FileManagerModule } from "src/file-manager/file-manager.module";
 import { FileManagerService } from "src/file-manager/file-manager.service";
 import { MetadataModule } from "src/metadata/metadata.module";
+import { MetadataService } from "src/metadata/metadata.service";
 import { PrismaModule } from "src/prisma/prisma.module";
 import { PrismaService } from "src/prisma/prisma.service";
 import { ReleaseModule } from "src/release/release.module";
 import { ReleaseService } from "src/release/release.service";
+import { SettingsModule } from "src/settings/settings.module";
+import { SettingsService } from "src/settings/settings.service";
 import { Slug } from "src/slug/slug";
-import { FakeFileManagerService } from "test/FakeFileManagerModule";
+import { FakeFileManagerModule, FakeFileManagerService } from "test/FakeFileManagerModule";
 import { IllustrationModule } from "./illustration.module";
 import { IllustrationService } from "./illustration.service";
+import { forwardRef } from "@nestjs/common";
 
-describe('Library Service', () => {
+describe('Illustration Service', () => {
 	let illustrationService: IllustrationService;
 	let releaseService: ReleaseService;
 	let albumService: AlbumService;
@@ -24,11 +28,11 @@ describe('Library Service', () => {
 
 	beforeAll(async () => {
 		const module: TestingModule = await Test.createTestingModule({
-			imports: [IllustrationModule, PrismaModule, AlbumModule, ArtistModule, FileManagerModule, MetadataModule, ReleaseModule, HttpModule],
-			providers: [IllustrationService, ReleaseService, PrismaService, ArtistService],
+			imports: [HttpModule, FileManagerModule, PrismaModule, ArtistModule, MetadataModule, SettingsModule],
 		}).overrideProvider(FileManagerService).useClass(FakeFileManagerService).compile();
 		await module.get<PrismaService>(PrismaService).onModuleInit();
 		illustrationService = module.get<IllustrationService>(IllustrationService);
+		illustrationService.onModuleInit();
 		releaseService = module.get<ReleaseService>(ReleaseService);
 		albumService = module.get<AlbumService>(AlbumService);
 		await module.get<ArtistService>(ArtistService).createArtist({ name: 'My Artist' });

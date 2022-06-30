@@ -1,4 +1,4 @@
-import { Injectable, Logger } from '@nestjs/common';
+import { forwardRef, Inject, Injectable, Logger } from '@nestjs/common';
 import { FileManagerService } from 'src/file-manager/file-manager.service';
 import { FileService } from 'src/file/file.service';
 import { MetadataService } from 'src/metadata/metadata.service';
@@ -18,6 +18,7 @@ export class LibraryService {
 		private fileManagerService: FileManagerService,
 		private fileService: FileService,
 		private metadataService: MetadataService,
+		@Inject(forwardRef(() => IllustrationService))
 		private illustrationService: IllustrationService
 	) {}
 	
