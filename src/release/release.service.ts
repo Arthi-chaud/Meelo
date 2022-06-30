@@ -102,10 +102,7 @@ export class ReleaseService {
 	 * @returns 
 	 */
 	 async getMasterRelease(where: AlbumQueryParameters.WhereInput, include?: ReleaseQueryParameters.RelationInclude) {
-		return await this.getRelease(
-			{ byMasterOf: where },
-			include
-		);
+		return await this.getRelease({ byMasterOf: where }, include);
 	}
 
 	/**
