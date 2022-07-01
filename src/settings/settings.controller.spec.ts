@@ -37,8 +37,8 @@ describe('Settings Controller', () => {
 	it(`/GET /settings`, () => {
 		return request(app.getHttpServer())
 			.get('/settings')
-      		.expect(200)
-      		.expect(JSON.parse(
+			.expect(200)
+			.expect(JSON.parse(
 				fs.readFileSync('test/assets/settings.json').toString()
 			));
 	});

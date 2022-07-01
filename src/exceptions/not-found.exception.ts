@@ -2,14 +2,14 @@ import { ArgumentsHost, Catch, ExceptionFilter, HttpStatus, NotFoundException } 
 
 @Catch(NotFoundException)
 export default class NotFoundExceptionFilter implements ExceptionFilter {
-    catch(_exception: NotFoundException, host: ArgumentsHost) {
-        const ctx = host.switchToHttp();
-        const response = ctx.getResponse();
+	catch(_exception: NotFoundException, host: ArgumentsHost) {
+		const ctx = host.switchToHttp();
+		const response = ctx.getResponse();
 
 		response
 			.status(HttpStatus.NOT_FOUND)
 			.json({
 				error: "Route not found."
 			});
-    }
+	}
 }

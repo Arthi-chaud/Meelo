@@ -110,7 +110,7 @@ describe('Release Service', () => {
 					album: {
 						bySlug: {
 							slug: new Slug(release.album.slug),
-							artist: { slug:  new Slug(album.artist!.slug) }
+							artist: { slug: new Slug(album.artist!.slug) }
 						}
 					},	
 				}

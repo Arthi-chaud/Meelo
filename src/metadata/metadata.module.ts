@@ -9,8 +9,8 @@ import TrackModule from 'src/track/track.module';
 import MetadataService from './metadata.service';
 
 @Module({
-  imports: [SettingsModule, FileManagerModule, TrackModule, SongModule, ReleaseModule, AlbumModule, ArtistModule],
-  providers: [MetadataService],
-  exports: [MetadataService]
+	imports: [SettingsModule, FileManagerModule, TrackModule, SongModule, ReleaseModule, AlbumModule, ArtistModule],
+	providers: [MetadataService],
+	exports: [MetadataService]
 })
-export default class MetadataModule {}
+export default class MetadataModule { }

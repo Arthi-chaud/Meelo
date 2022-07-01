@@ -268,7 +268,7 @@ describe('Song Service', () => {
 
 	describe("Get or Create Song", () => {
 		it("should get the song", async () => {
-			let fetchedSong = await songService.getOrCreateSong({...song,  artist: { id: artist.id } });
+			let fetchedSong = await songService.getOrCreateSong({...song, artist: { id: artist.id } });
 			expect(fetchedSong.id).toStrictEqual(song.id);
 			expect(fetchedSong.slug).toStrictEqual(song.slug);
 			expect(fetchedSong.name).toStrictEqual(song.name);

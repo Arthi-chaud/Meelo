@@ -140,7 +140,7 @@ export default class AlbumService {
 		} catch {
 			if (where.byId)
 				throw new AlbumNotFoundFromIDException(where.byId.id);
-			throw new AlbumNotFoundException(where.bySlug.slug,  where.bySlug.artist?.slug);
+			throw new AlbumNotFoundException(where.bySlug.slug, where.bySlug.artist?.slug);
 		}
 	}
 

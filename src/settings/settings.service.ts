@@ -38,8 +38,8 @@ export default class SettingsService {
 	private buildSettings(object: any): Settings {
 		const settingsFields = {
 			'dataFolder': (i: any) => typeof i === 'string',
-			'mergeMetadataWithPathRegexGroup': (i: any) => typeof i ===  'boolean',
-			'publicURL': (i: any) => typeof i ===  'string',
+			'mergeMetadataWithPathRegexGroup': (i: any) => typeof i === 'boolean',
+			'publicURL': (i: any) => typeof i === 'string',
 			'trackRegex': (i: any) => Array.isArray(i)
 		}
 		let settingField: keyof typeof settingsFields;

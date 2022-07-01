@@ -15,21 +15,21 @@ import MetadataModule from './metadata/metadata.module';
 import PrismaModule from './prisma/prisma.module';
 
 @Module({
-  imports: [
-    ConfigModule.forRoot(),
-    SettingsModule,
-    FileManagerModule,
-    FileModule,
-    ArtistModule,
-    AlbumModule,
-    ReleaseModule,
-    TrackModule,
-    SongModule,
-    LibraryModule,
-    IllustrationModule,
-    MetadataModule,
-    PrismaModule,
-  ],
-  providers: [SettingsService],
+	imports: [
+		ConfigModule.forRoot(),
+		SettingsModule,
+		FileManagerModule,
+		FileModule,
+		ArtistModule,
+		AlbumModule,
+		ReleaseModule,
+		TrackModule,
+		SongModule,
+		LibraryModule,
+		IllustrationModule,
+		MetadataModule,
+		PrismaModule,
+	],
+	providers: [SettingsService],
 })
-export default class AppModule {}
+export default class AppModule { }

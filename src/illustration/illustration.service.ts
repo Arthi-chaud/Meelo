@@ -29,7 +29,7 @@ export default class IllustrationService implements OnModuleInit {
 	) {	}
 
 	onModuleInit() {
-		this.metadataService = this.moduleRef.get(MetadataService,  { strict: false });
+		this.metadataService = this.moduleRef.get(MetadataService, { strict: false });
 		this.illustrationFolderPath = this.metadataService.metadataFolderPath;
 	}
 
@@ -128,12 +128,12 @@ export default class IllustrationService implements OnModuleInit {
 			{ byId: { id: track.releaseId } },
 			{ album: true }
 		);
-		let album  = await this.albumService.getAlbum(
+		let album = await this.albumService.getAlbum(
 			{ byId: { id: release.albumId }},
 			{ artist: true }
 		)
 		const releaseSlug = new Slug(release.slug);
-		const artistSlug =  album.artist ? new Slug(album.artist.slug) : undefined;
+		const artistSlug = album.artist ? new Slug(album.artist.slug) : undefined;
 		const albumSlug = new Slug(album.slug);
 		const releaseIllustrationPath = this.buildReleaseIllustrationPath(
 			albumSlug,

@@ -4,9 +4,9 @@ import Slug from './slug';
 
 @Injectable()
 export class ParseSlugPipe implements PipeTransform {
-  transform(value: any, _metadata: ArgumentMetadata): Slug {
-    return new Slug(value);
-  }
+	transform(value: any, _metadata: ArgumentMetadata): Slug {
+		return new Slug(value);
+	}
 }
 
 /**
@@ -16,10 +16,10 @@ export class ParseSlugPipe implements PipeTransform {
  */
 @Injectable()
 export class ParseArtistSlugPipe implements PipeTransform {
-  transform(value: any, _metadata: ArgumentMetadata): Slug | undefined {
-    let slug = new Slug(value);
-    if (slug.toString() === compilationAlbumArtistKeyword)
-      return undefined
-    return slug;
-  }
+	transform(value: any, _metadata: ArgumentMetadata): Slug | undefined {
+		let slug = new Slug(value);
+		if (slug.toString() === compilationAlbumArtistKeyword)
+			return undefined
+		return slug;
+	}
 }

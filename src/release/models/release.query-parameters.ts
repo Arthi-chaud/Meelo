@@ -39,7 +39,7 @@ namespace ReleaseQueryParameters {
 			album: where.byMasterOf
 				? AlbumQueryParameters.buildQueryParametersForOne(where.byMasterOf)
 			: where.bySlug
-				?  AlbumQueryParameters.buildQueryParametersForOne(where.bySlug.album)
+				? AlbumQueryParameters.buildQueryParametersForOne(where.bySlug.album)
 			: undefined
 		};
 	}

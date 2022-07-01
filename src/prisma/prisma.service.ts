@@ -9,7 +9,7 @@ export default class PrismaService extends PrismaClient implements OnModuleInit 
 			await this.flushDatabase();
 		}
 	}
-	
+
 	async enableShutdownHooks(app: INestApplication) {
 		this.$on('beforeExit', async () => {
 			await app.close();
@@ -20,13 +20,13 @@ export default class PrismaService extends PrismaClient implements OnModuleInit 
 		Logger.warn("Flushing database");
 		const tablenames = await this.$queryRaw<Array<{ tablename: string }>>`SELECT tablename FROM pg_tables WHERE schemaname='public'`
 		for (const { tablename } of tablenames) {
-		  if (tablename !== '_prisma_migrations') {
-			try {
-			  await this.$executeRawUnsafe(`TRUNCATE TABLE "public"."${tablename}" CASCADE;`)
-			} catch (error) {
-			  Logger.error(`Flushing table '${tablename}' failed`)
+			if (tablename !== '_prisma_migrations') {
+				try {
+					await this.$executeRawUnsafe(`TRUNCATE TABLE "public"."${tablename}" CASCADE;`)
+				} catch (error) {
+					Logger.error(`Flushing table '${tablename}' failed`)
+				}
 			}
-		  }
 		}
 	}
 }
