@@ -1,16 +1,16 @@
 import type { INestApplication } from "@nestjs/common";
 import { Test, TestingModule } from "@nestjs/testing";
-import { FileManagerModule } from "src/file-manager/file-manager.module";
+import FileManagerModule from "src/file-manager/file-manager.module";
 import { FileManagerService } from "src/file-manager/file-manager.service";
-import { FileModule } from "src/file/file.module";
-import { MetadataModule } from "src/metadata/metadata.module";
-import { PrismaModule } from "src/prisma/prisma.module";
+import FileModule from "src/file/file.module";
+import MetadataModule from "src/metadata/metadata.module";
+import PrismaModule from "src/prisma/prisma.module";
 import { PrismaService } from "src/prisma/prisma.service";
 import { FakeFileManagerService } from "test/FakeFileManagerModule";
 import { LibraryController } from "./library.controller";
-import { LibraryModule } from "./library.module";
+import LibraryModule from "./library.module";
 import { LibraryService } from "./library.service";
-import { IllustrationModule } from "src/illustration/illustration.module";
+import IllustrationModule from "src/illustration/illustration.module";
 
 describe('Library Controller', () => {
 	let controller: LibraryController;

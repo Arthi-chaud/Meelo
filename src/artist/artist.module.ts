@@ -1,8 +1,8 @@
 import { Module, forwardRef } from '@nestjs/common';
 import { ArtistService } from './artist.service';
-import { PrismaModule } from 'src/prisma/prisma.module';
+import PrismaModule from 'src/prisma/prisma.module';
 import { ArtistController } from './artist.controller';
-import { IllustrationModule } from 'src/illustration/illustration.module';
+import IllustrationModule from 'src/illustration/illustration.module';
 
 @Module({
 	imports: [
@@ -13,4 +13,4 @@ import { IllustrationModule } from 'src/illustration/illustration.module';
 	providers: [ArtistService],
 	controllers: [ArtistController]
 })
-export class ArtistModule {}
+export default class ArtistModule {}

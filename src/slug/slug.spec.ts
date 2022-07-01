@@ -1,6 +1,3 @@
-import { Test } from '@nestjs/testing';
-import { FakeFileManagerModule, FakeFileManagerService } from 'test/FakeFileManagerModule';
-import { FileManagerService } from 'src/file-manager/file-manager.service';
 import Slug from './slug';
 
 describe('Settings Service', () => {

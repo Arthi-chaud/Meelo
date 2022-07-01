@@ -1,14 +1,12 @@
 import { Test, TestingModule } from "@nestjs/testing";
-import { ReleaseService } from "src/release/release.service";
-import { TrackService } from "src/track/track.service";
 import { SongService } from "src/song/song.service";
 import { ArtistService } from "src/artist/artist.service";
-import { ArtistModule } from "src/artist/artist.module";
-import { PrismaModule } from "src/prisma/prisma.module";
+import ArtistModule from "src/artist/artist.module";
+import PrismaModule from "src/prisma/prisma.module";
 import { FileManagerService } from "src/file-manager/file-manager.service";
 import { FakeFileManagerService } from "test/FakeFileManagerModule";
 import { PrismaService } from "src/prisma/prisma.service";
-import { Artist, Song } from "@prisma/client";
+import type { Artist, Song } from "@prisma/client";
 import Slug from "src/slug/slug";
 import { SongAlreadyExistsException, SongNotFoundByIdException, SongNotFoundException } from "./song.exceptions";
 import { ArtistNotFoundByIDException, ArtistNotFoundException } from "src/artist/artist.exceptions";

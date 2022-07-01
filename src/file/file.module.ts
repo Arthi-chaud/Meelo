@@ -1,7 +1,7 @@
 import { Module } from '@nestjs/common';
 import { FileService } from './file.service';
-import { FileManagerModule } from 'src/file-manager/file-manager.module';
-import { PrismaModule } from 'src/prisma/prisma.module';
+import FileManagerModule from 'src/file-manager/file-manager.module';
+import PrismaModule from 'src/prisma/prisma.module';
 
 @Module({
 	imports: [
@@ -11,4 +11,4 @@ import { PrismaModule } from 'src/prisma/prisma.module';
 	providers: [FileService],
 	exports: [FileService]
 })
-export class FileModule {}
+export default class FileModule {}

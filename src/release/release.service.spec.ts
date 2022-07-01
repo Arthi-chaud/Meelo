@@ -1,13 +1,12 @@
 import { Test, TestingModule } from "@nestjs/testing";
-import { Album, AlbumType, Artist, Release } from "@prisma/client";
-import type AlbumNotFoundException from "src/album/album.exceptions";
-import { AlbumModule } from "src/album/album.module";
+import type { Album, Artist, Release } from "@prisma/client";
+import { AlbumNotFoundException } from "src/album/album.exceptions";
+import AlbumModule from "src/album/album.module";
 import { AlbumService } from "src/album/album.service";
-import type ArtistNotFoundException from "src/artist/artist.exceptions";
-import { ArtistModule } from "src/artist/artist.module";
+import ArtistModule from "src/artist/artist.module";
 import { ArtistService } from "src/artist/artist.service";
 import { FileManagerService } from "src/file-manager/file-manager.service";
-import { PrismaModule } from "src/prisma/prisma.module";
+import PrismaModule from "src/prisma/prisma.module";
 import { PrismaService } from "src/prisma/prisma.service";
 import Slug from "src/slug/slug";
 import { FakeFileManagerService } from "test/FakeFileManagerModule";

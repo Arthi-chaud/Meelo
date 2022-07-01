@@ -1,5 +1,5 @@
 import { forwardRef, Module } from '@nestjs/common';
-import { SettingsModule } from 'src/settings/settings.module';
+import SettingsModule from 'src/settings/settings.module';
 import { FileManagerService } from './file-manager.service';
 
 @Module({
@@ -7,4 +7,4 @@ import { FileManagerService } from './file-manager.service';
   providers: [FileManagerService],
   exports: [FileManagerService]
 })
-export class FileManagerModule {}
+export default class FileManagerModule {}
