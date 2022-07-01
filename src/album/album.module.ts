@@ -3,11 +3,13 @@ import AlbumService from './album.service';
 import ArtistModule from 'src/artist/artist.module';
 import PrismaModule from 'src/prisma/prisma.module';
 import AlbumController from './album.controller';
+import IllustrationModule from 'src/illustration/illustration.module';
 
 @Module({
 	imports: [
 		PrismaModule,
-		forwardRef(() => ArtistModule)
+		forwardRef(() => ArtistModule),
+		forwardRef(() => IllustrationModule)
 	],
 	exports: [AlbumService],
 	providers: [AlbumService],

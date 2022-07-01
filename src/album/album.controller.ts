@@ -1,4 +1,5 @@
-import { Controller, Get, Param } from '@nestjs/common';
+import { Controller, forwardRef, Get, Inject, Param } from '@nestjs/common';
+import IllustrationService from 'src/illustration/illustration.service';
 import { ParseArtistSlugPipe, ParseSlugPipe } from 'src/slug/pipe';
 import Slug from 'src/slug/slug';
 import AlbumService from './album.service';
@@ -7,6 +8,8 @@ import AlbumService from './album.service';
 export default class AlbumController {
 	constructor(
 		private albumService: AlbumService,
+		@Inject(forwardRef(() => IllustrationService))
+		private illustrationService: IllustrationService
 	) {}
 
 	@Get()
@@ -15,29 +18,29 @@ export default class AlbumController {
 		return albums.map(
 			(album) => ({
 				...album,
-				// illustration: this.illustrationService.buildAlbumIllustrationFolderPath(
-				// 	new Slug(album.slug),
-				// 	album.artist ? new Slug(album.artist.slug) : undefined
-				// )
+				illustration: this.illustrationService.buildAlbumIllustrationFolderPath(
+					new Slug(album.slug),
+					album.artist ? new Slug(album.artist.slug) : undefined
+				)
 			})
 		);
 	}
 
-	@Get('/compilations/:album')
-	async getCompilationAlbum(
-		@Param('album', ParseSlugPipe) albumSlug: Slug) {
-		let album = await this.albumService.getAlbum({
-			bySlug: { slug: albumSlug }
-		});
-		return album;
-	}
 	@Get('/:artist')
 	async getAlbumsByArtist(
 		@Param('artist', ParseArtistSlugPipe) artistSlug: Slug | undefined) {
 		let albums = await this.albumService.getAlbums({
 			byArtist: artistSlug ? { slug: artistSlug } : undefined
 		});
-		return albums;
+		return albums.map(
+			(album) => ({
+				...album,
+				illustration: this.illustrationService.buildAlbumIllustrationFolderPath(
+					new Slug(album.slug),
+					album.artist ? new Slug(album.artist.slug) : undefined
+				)
+			})
+		);
 	}
 
 	@Get('/:artist/:album')
@@ -50,6 +53,12 @@ export default class AlbumController {
 				artist: artistSlug ? { slug: artistSlug } : undefined
 			}
 		});
-		return album;
+		return {
+			...album,
+			illustration: this.illustrationService.buildAlbumIllustrationFolderPath(
+				new Slug(album.slug),
+				album.artist ? new Slug(album.artist.slug) : undefined
+			)
+		};
 	}
 }
