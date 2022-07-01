@@ -2,16 +2,16 @@ import { Test, TestingModule } from "@nestjs/testing";
 import type { Album, Artist, Release } from "@prisma/client";
 import { AlbumNotFoundException } from "src/album/album.exceptions";
 import AlbumModule from "src/album/album.module";
-import { AlbumService } from "src/album/album.service";
+import AlbumService from "src/album/album.service";
 import ArtistModule from "src/artist/artist.module";
-import { ArtistService } from "src/artist/artist.service";
-import { FileManagerService } from "src/file-manager/file-manager.service";
+import ArtistService from "src/artist/artist.service";
+import FileManagerService from "src/file-manager/file-manager.service";
 import PrismaModule from "src/prisma/prisma.module";
-import { PrismaService } from "src/prisma/prisma.service";
+import PrismaService from "src/prisma/prisma.service";
 import Slug from "src/slug/slug";
 import { FakeFileManagerService } from "test/FakeFileManagerModule";
 import { ReleaseNotFoundException, ReleaseNotFoundFromIDException } from "./release.exceptions";
-import { ReleaseService } from "./release.service";
+import ReleaseService from "./release.service";
 
 describe('Release Service', () => {
 	let releaseService: ReleaseService;

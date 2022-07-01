@@ -1,6 +1,6 @@
 import { Module, forwardRef } from '@nestjs/common';
-import { LibraryController } from './library.controller';
-import { LibraryService } from './library.service';
+import LibraryController from './library.controller';
+import LibraryService from './library.service';
 import FileManagerModule from 'src/file-manager/file-manager.module';
 import FileModule from 'src/file/file.module';
 import MetadataModule from 'src/metadata/metadata.module';

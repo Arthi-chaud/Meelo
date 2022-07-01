@@ -1,16 +1,16 @@
 import { Test, TestingModule } from "@nestjs/testing";
 import FileManagerModule from "src/file-manager/file-manager.module";
-import { FileManagerService } from "src/file-manager/file-manager.service";
+import FileManagerService from "src/file-manager/file-manager.service";
 import FileModule from "src/file/file.module";
 import IllustrationModule from "src/illustration/illustration.module";
 import MetadataModule from "src/metadata/metadata.module";
 import PrismaModule from "src/prisma/prisma.module";
-import { PrismaService } from "src/prisma/prisma.service";
+import PrismaService from "src/prisma/prisma.service";
 import Slug from "src/slug/slug";
 import { FakeFileManagerService } from "test/FakeFileManagerModule";
 import { LibraryAlreadyExistsException, LibraryNotFoundException } from "./library.exceptions";
 import LibraryModule from "./library.module";
-import { LibraryService } from "./library.service";
+import LibraryService from "./library.service";
 
 describe('Library Service', () => {
 	let libraryService: LibraryService;

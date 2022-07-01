@@ -1,18 +1,18 @@
 import { HttpModule } from "@nestjs/axios";
 import { Test, TestingModule } from "@nestjs/testing";
-import { AlbumService } from "src/album/album.service";
+import AlbumService from "src/album/album.service";
 import ArtistModule from "src/artist/artist.module";
-import { ArtistService } from "src/artist/artist.service";
+import ArtistService from "src/artist/artist.service";
 import FileManagerModule from "src/file-manager/file-manager.module";
-import { FileManagerService } from "src/file-manager/file-manager.service";
+import FileManagerService from "src/file-manager/file-manager.service";
 import MetadataModule from "src/metadata/metadata.module";
 import PrismaModule from "src/prisma/prisma.module";
-import { PrismaService } from "src/prisma/prisma.service";
-import { ReleaseService } from "src/release/release.service";
+import PrismaService from "src/prisma/prisma.service";
+import ReleaseService from "src/release/release.service";
 import SettingsModule from "src/settings/settings.module";
 import Slug from "src/slug/slug";
 import { FakeFileManagerService } from "test/FakeFileManagerModule";
-import { IllustrationService } from "./illustration.service";
+import IllustrationService from "./illustration.service";
 
 describe('Illustration Service', () => {
 	let illustrationService: IllustrationService;

@@ -1,9 +1,9 @@
 import { Controller, Get, HttpStatus, Redirect } from '@nestjs/common';
 import type Settings from './models/settings';
-import { SettingsService } from './settings.service';
+import SettingsService from './settings.service';
 
 @Controller('settings')
-export class SettingsController {
+export default class SettingsController {
 	constructor(private settingsService: SettingsService) {}
 	
 	@Get()

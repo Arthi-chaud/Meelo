@@ -1,8 +1,8 @@
 import { Test } from '@nestjs/testing';
-import { SettingsService } from './settings.service';
+import SettingsService from './settings.service';
 import * as fs from 'fs';
 import { FakeFileManagerModule, FakeFileManagerService } from 'test/FakeFileManagerModule';
-import { FileManagerService } from 'src/file-manager/file-manager.service';
+import FileManagerService from 'src/file-manager/file-manager.service';
 import { InvalidSettingsFileException, InvalidSettingsTypeException, MissingSettingsException, SettingsFileNotFoundException } from './settings.exception';
 import type Settings from './models/settings';
 

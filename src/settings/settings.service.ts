@@ -1,10 +1,10 @@
 import { forwardRef, Inject, Injectable } from '@nestjs/common';
-import { FileManagerService } from 'src/file-manager/file-manager.service';
+import FileManagerService from 'src/file-manager/file-manager.service';
 import type Settings from './models/settings';
 import { InvalidSettingsFileException, InvalidSettingsTypeException, MissingSettingsException, SettingsFileNotFoundException } from './settings.exception';
 
 @Injectable()
-export class SettingsService {
+export default class SettingsService {
 	protected settings: Settings; 
 	private readonly configPath: string;
 

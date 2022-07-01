@@ -1,17 +1,17 @@
 import { forwardRef, Inject, Injectable, Logger } from '@nestjs/common';
-import { FileManagerService } from 'src/file-manager/file-manager.service';
-import { FileService } from 'src/file/file.service';
-import { MetadataService } from 'src/metadata/metadata.service';
+import FileManagerService from 'src/file-manager/file-manager.service';
+import FileService from 'src/file/file.service';
+import MetadataService from 'src/metadata/metadata.service';
 import Slug from 'src/slug/slug';
 import { LibraryAlreadyExistsException, LibraryNotFoundException, LibraryNotFoundFromIDException } from './library.exceptions';
 import type { Library, File } from '@prisma/client';
-import { PrismaService } from 'src/prisma/prisma.service';
-import { IllustrationService } from 'src/illustration/illustration.service';
+import PrismaService from 'src/prisma/prisma.service';
+import IllustrationService from 'src/illustration/illustration.service';
 import LibraryQueryParameters from './models/library.query-parameters';
 import { buildPaginationParameters, PaginationParameters } from 'src/utils/pagination';
 
 @Injectable()
-export class LibraryService {
+export default class LibraryService {
 	constructor(
 		private prismaService: PrismaService,
 		private fileManagerService: FileManagerService,

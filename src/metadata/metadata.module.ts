@@ -6,7 +6,7 @@ import ReleaseModule from 'src/release/release.module';
 import SettingsModule from 'src/settings/settings.module';
 import SongModule from 'src/song/song.module';
 import TrackModule from 'src/track/track.module';
-import { MetadataService } from './metadata.service';
+import MetadataService from './metadata.service';
 
 @Module({
   imports: [SettingsModule, FileManagerModule, TrackModule, SongModule, ReleaseModule, AlbumModule, ArtistModule],

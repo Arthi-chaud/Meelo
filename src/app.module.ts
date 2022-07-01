@@ -9,7 +9,7 @@ import SongModule from './song/song.module';
 import SettingsModule from './settings/settings.module';
 import LibraryModule from './library/library.module';
 import IllustrationModule from './illustration/illustration.module';
-import { SettingsService } from './settings/settings.service';
+import SettingsService from './settings/settings.service';
 import FileManagerModule from './file-manager/file-manager.module';
 import MetadataModule from './metadata/metadata.module';
 import PrismaModule from './prisma/prisma.module';

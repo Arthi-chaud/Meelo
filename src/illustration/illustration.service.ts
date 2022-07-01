@@ -1,9 +1,9 @@
 import { forwardRef, Inject, Injectable, Logger, OnModuleInit } from '@nestjs/common';
 import { HttpService } from '@nestjs/axios';
-import { FileManagerService } from 'src/file-manager/file-manager.service';
-import { MetadataService } from 'src/metadata/metadata.service';
+import FileManagerService from 'src/file-manager/file-manager.service';
+import MetadataService from 'src/metadata/metadata.service';
 import type { Release, Track } from '@prisma/client';
-import { ReleaseService } from 'src/release/release.service';
+import ReleaseService from 'src/release/release.service';
 import Slug from 'src/slug/slug';
 import { CantDownloadIllustrationException, IllustrationNotExtracted } from './illustration.exceptions';
 import mm, { IPicture, type IAudioMetadata } from 'music-metadata';
@@ -12,13 +12,13 @@ import { FileParsingException } from 'src/metadata/metadata.exceptions';
 import * as dir from 'path';
 import type { IllustrationPath } from './models/illustration-path.model';
 import jimp from 'jimp';
-import { AlbumService } from 'src/album/album.service';
+import AlbumService from 'src/album/album.service';
 import { FileDoesNotExistException } from 'src/file-manager/file-manager.exceptions';
 import { ModuleRef } from '@nestjs/core';
 import compilationAlbumArtistKeyword from 'src/utils/compilation';
 
 @Injectable()
-export class IllustrationService implements OnModuleInit {
+export default class IllustrationService implements OnModuleInit {
 	public illustrationFolderPath: string;
 	private metadataService: MetadataService;
 	constructor(

@@ -2,12 +2,12 @@ import { Injectable } from '@nestjs/common';
 import Slug from 'src/slug/slug';
 import { ArtistAlreadyExistsException as ArtistAlreadyExistsException, ArtistNotFoundByIDException, ArtistNotFoundException } from './artist.exceptions';
 import type { Artist } from '@prisma/client';
-import { PrismaService } from 'src/prisma/prisma.service';
+import PrismaService from 'src/prisma/prisma.service';
 import ArtistQueryParameters from './models/artist.query-parameters';
 import { buildPaginationParameters, PaginationParameters } from 'src/utils/pagination';
 
 @Injectable()
-export class ArtistService {
+export default class ArtistService {
 	constructor(
 		private prismaService: PrismaService
 	) {}

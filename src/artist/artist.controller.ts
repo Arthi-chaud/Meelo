@@ -1,11 +1,11 @@
 import { Controller, forwardRef, Get, Inject, Param } from '@nestjs/common';
-import { IllustrationService } from 'src/illustration/illustration.service';
+import IllustrationService from 'src/illustration/illustration.service';
 import { ParseArtistSlugPipe } from 'src/slug/pipe';
 import Slug from 'src/slug/slug';
-import { ArtistService } from './artist.service';
+import ArtistService from './artist.service';
 
 @Controller('artists')
-export class ArtistController {
+export default class ArtistController {
 	constructor(
 		private artistService: ArtistService,
 		@Inject(forwardRef(() => IllustrationService))

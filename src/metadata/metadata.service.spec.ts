@@ -3,7 +3,7 @@ import { TrackType } from "@prisma/client";
 import AlbumModule from "src/album/album.module";
 import ArtistModule from "src/artist/artist.module";
 import FileManagerModule from "src/file-manager/file-manager.module";
-import { FileManagerService } from "src/file-manager/file-manager.service";
+import FileManagerService from "src/file-manager/file-manager.service";
 import ReleaseModule from "src/release/release.module";
 import SettingsModule from "src/settings/settings.module";
 import SongModule from "src/song/song.module";
@@ -11,7 +11,7 @@ import TrackModule from "src/track/track.module";
 import { FakeFileManagerService } from "test/FakeFileManagerModule";
 import { PathParsingException } from "./metadata.exceptions";
 import MetadataModule from "./metadata.module";
-import { MetadataService } from "./metadata.service";
+import MetadataService from "./metadata.service";
 import type Metadata from "./models/metadata";
 
 describe('Metadata Service', () => {

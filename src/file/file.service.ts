@@ -1,14 +1,14 @@
 import { Injectable } from '@nestjs/common';
-import { FileManagerService } from 'src/file-manager/file-manager.service';
+import FileManagerService from 'src/file-manager/file-manager.service';
 import { FileNotFoundFromIDException, FileNotFoundFromPathException, FileNotFoundFromTrackIDException } from './file.exceptions';
-import { PrismaService } from 'src/prisma/prisma.service';
+import PrismaService from 'src/prisma/prisma.service';
 import type { Library, File } from '@prisma/client';
 import FileQueryParameters from './models/file.query-parameters';
 import { buildPaginationParameters as buildPaginationParameters, PaginationParameters } from 'src/utils/pagination';
 import { FileNotReadableException } from 'src/file-manager/file-manager.exceptions';
 
 @Injectable()
-export class FileService {
+export default class FileService {
 	constructor(
 		private prismaService: PrismaService,
 		private fileManagerService: FileManagerService

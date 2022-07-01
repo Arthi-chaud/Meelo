@@ -1,13 +1,13 @@
 import { Controller, Get, Param, StreamableFile, Response } from '@nestjs/common';
 import * as fs from 'fs';
-import { FileManagerService } from 'src/file-manager/file-manager.service';
+import FileManagerService from 'src/file-manager/file-manager.service';
 import { ParseArtistSlugPipe, ParseSlugPipe } from 'src/slug/pipe';
 import Slug from 'src/slug/slug';
 import { NoAlbumIllustrationException, NoArtistIllustrationException, NoIllustrationException, NoReleaseIllustrationException } from './illustration.exceptions';
-import { IllustrationService } from './illustration.service';
+import IllustrationService from './illustration.service';
 
 @Controller('illustrations')
-export class IllustrationController {
+export default class IllustrationController {
 
 	constructor(
 		private illustrationService: IllustrationService,

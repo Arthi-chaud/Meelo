@@ -1,16 +1,16 @@
 import { forwardRef, Inject, Injectable } from '@nestjs/common';
-import { ArtistService } from 'src/artist/artist.service';
+import ArtistService from 'src/artist/artist.service';
 import Slug from 'src/slug/slug';
 import { AlbumAlreadyExistsException, AlbumAlreadyExistsExceptionWithArtistID as AlbumAlreadyExistsWithArtistIDException, AlbumNotFoundException, AlbumNotFoundFromIDException } from './album.exceptions';
 import { AlbumType, Album } from '@prisma/client';
-import { PrismaService } from 'src/prisma/prisma.service';
+import PrismaService from 'src/prisma/prisma.service';
 import AlbumQueryParameters from './models/album.query-parameters';
 import ArtistQueryParameters from 'src/artist/models/artist.query-parameters';
 import { buildPaginationParameters, PaginationParameters } from 'src/utils/pagination';
  './models/album.query-parameters';
 
 @Injectable()
-export class AlbumService {
+export default class AlbumService {
 	constructor(
 		private prismaService: PrismaService,
 		@Inject(forwardRef(() => ArtistService))

@@ -1,12 +1,12 @@
 import { Body, Controller, Get, Param, Post } from '@nestjs/common';
 import { ParseSlugPipe } from 'src/slug/pipe';
 import Slug from 'src/slug/slug';
-import { LibraryService } from './library.service';
+import LibraryService from './library.service';
 import { LibraryDto } from './models/library.dto';
 import type { Library } from '@prisma/client';
 
 @Controller('libraries')
-export class LibraryController {
+export default class LibraryController {
 	constructor(private libraryService: LibraryService) { }
 
 	@Post('new')

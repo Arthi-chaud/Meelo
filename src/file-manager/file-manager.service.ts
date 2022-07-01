@@ -1,12 +1,12 @@
 import { forwardRef, Inject, Injectable } from '@nestjs/common';
-import { SettingsService } from 'src/settings/settings.service';
+import SettingsService from 'src/settings/settings.service';
 import { Md5 } from 'ts-md5';
 import * as fs from 'fs';
 import type { Library } from '@prisma/client';
 import { FolderDoesNotExistException } from './file-manager.exceptions';
 
 @Injectable()
-export class FileManagerService {
+export default class FileManagerService {
 	constructor(
 		@Inject(forwardRef(() => SettingsService))
 		private settingsService: SettingsService) {}

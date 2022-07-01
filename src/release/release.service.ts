@@ -1,16 +1,16 @@
 import { forwardRef, Inject, Injectable } from '@nestjs/common';
-import { AlbumService } from 'src/album/album.service';
+import AlbumService from 'src/album/album.service';
 import Slug from 'src/slug/slug';
 import type { Release } from '@prisma/client';
 import { MasterReleaseNotFoundFromIDException, ReleaseAlreadyExists, ReleaseNotFoundException, ReleaseNotFoundFromIDException } from './release.exceptions';
-import { PrismaService } from 'src/prisma/prisma.service';
+import PrismaService from 'src/prisma/prisma.service';
 import ReleaseQueryParameters from './models/release.query-parameters';
 import AlbumQueryParameters from 'src/album/models/album.query-parameters';
 import { buildPaginationParameters, PaginationParameters } from 'src/utils/pagination';
 import type { MeeloException } from 'src/exceptions/meelo-exception';
 
 @Injectable()
-export class ReleaseService {
+export default class ReleaseService {
 	constructor(
 		private prismaService: PrismaService,
 		@Inject(forwardRef(() => AlbumService))
