@@ -155,10 +155,10 @@ export class SongService {
 		try {
 			return await this.getSong(
 				{ bySlug: { slug: new Slug(where.name), artist: where.artist}},
-				include
+				{ ...include }
 			);
 		} catch {
-			return await this.createSong(where, include);
+			return await this.createSong(where, { ...include });
 		}
 	}
 }

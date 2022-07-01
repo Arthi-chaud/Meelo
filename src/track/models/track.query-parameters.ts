@@ -3,6 +3,7 @@ import { FileQueryParameters } from "src/file/models/file.query-parameters";
 import { LibraryQueryParameters } from "src/library/models/library.query-parameters";
 import { ReleaseQueryParameters } from "src/release/models/release.query-parameters";
 import { SongQueryParameters } from "src/song/models/song.query-params";
+import { buildIncludeParameter, IncludeParameter } from "src/utils/include-parameter";
 import { OmitId } from "src/utils/omit-id";
 import { RequireAtLeastOne } from "src/utils/require-at-least-one";
 import { RequireOnlyOne } from "src/utils/require-only-one";
@@ -91,18 +92,24 @@ export namespace TrackQueryParameters {
 	 * Defines what relations to include in query
 	 */
 	export type RelationInclude = Partial<{
-		song: boolean,
-		release: boolean
+		song: IncludeParameter<SongQueryParameters.RelationInclude>,
+		release: IncludeParameter<ReleaseQueryParameters.RelationInclude>,
 	}>;
 
 	/**
 	 * Build the query parameters for ORM to include relations
 	 * @returns the ORM-ready query parameters
 	 */
-	export function buildIncludeParameters(include?: RelationInclude) {
+	export function buildIncludeParameters(include?: RelationInclude): any {
 		return {
-			release: include?.release ?? false,
-			song: include?.song ?? false
+			release: buildIncludeParameter(
+				ReleaseQueryParameters.buildIncludeParameters,
+				include?.release
+			),
+			song: buildIncludeParameter(
+				SongQueryParameters.buildIncludeParameters,
+				include?.song
+			),
 		};
 	}
 }

@@ -1,5 +1,7 @@
 import { Library, Prisma } from "@prisma/client";
+import { FileQueryParameters } from "src/file/models/file.query-parameters";
 import { Slug } from "src/slug/slug";
+import { buildIncludeParameter, IncludeParameter } from "src/utils/include-parameter";
 import { OmitId } from "src/utils/omit-id";
 import { OmitSlug } from "src/utils/omit-slug";
 import { RequireOnlyOne } from "src/utils/require-only-one";
@@ -58,15 +60,18 @@ export namespace LibraryQueryParameters {
 	 * The relation field to include in a returned library
 	 */
 	export type RelationInclude = {
-		files: boolean
+		files: IncludeParameter<FileQueryParameters.RelationInclude>
 	};
 	/**
 	 * Build the query parameters for ORM to include relations
 	 * @returns the ORM-ready query parameters
 	 */
-	export function buildIncludeParameters(include?: RelationInclude) {
+	export function buildIncludeParameters(include?: RelationInclude): any {
 		return {
-			files: include?.files ?? false
+			files: buildIncludeParameter(
+				FileQueryParameters.buildIncludeParameters,
+				include?.files
+			)
 		};
 	}
 }

@@ -2,7 +2,9 @@ import { Album, Prisma } from "@prisma/client";
 import { Exclude } from "class-transformer";
 import { ArtistQueryParameters } from "src/artist/models/artist.query-parameters";
 import { LibraryQueryParameters } from "src/library/models/library.query-parameters";
+import { ReleaseQueryParameters } from "src/release/models/release.query-parameters";
 import { Slug } from "src/slug/slug"
+import { buildIncludeParameter, IncludeParameter } from "src/utils/include-parameter";
 import { OmitId } from "src/utils/omit-id";
 import { OmitReleaseDate } from "src/utils/omit-release-date";
 import { OmitSlug } from "src/utils/omit-slug";
@@ -97,8 +99,8 @@ export namespace AlbumQueryParameters {
 	 * Defines what relations to include in query
 	 */
 	export type RelationInclude = Partial<{
-		releases: boolean,
-		artist: boolean
+		releases: IncludeParameter<ReleaseQueryParameters.RelationInclude>,
+		artist: IncludeParameter<ArtistQueryParameters.RelationInclude>
 	}>;
 
 	/**
@@ -107,8 +109,14 @@ export namespace AlbumQueryParameters {
 	 */
 	export function buildIncludeParameters(include?: RelationInclude) {
 		return {
-			releases: include?.releases ?? false,
-			artist: include?.artist ?? false
+			releases: buildIncludeParameter(
+				ReleaseQueryParameters.buildIncludeParameters,
+				include?.releases
+			),
+			artist: buildIncludeParameter(
+				ArtistQueryParameters.buildIncludeParameters,
+				include?.artist
+			),
 		};
 	}
 }

@@ -1,5 +1,7 @@
 import { File, Prisma } from "@prisma/client";
 import { LibraryQueryParameters } from "src/library/models/library.query-parameters";
+import { TrackQueryParameters } from "src/track/models/track.query-parameters";
+import { buildIncludeParameter, IncludeParameter } from "src/utils/include-parameter";
 import { OmitId } from "src/utils/omit-id";
 import { RequireAtLeastOne } from "src/utils/require-at-least-one";
 import { RequireOnlyOne } from "src/utils/require-only-one";
@@ -75,8 +77,8 @@ export namespace FileQueryParameters {
 	 * Relations to include in returned File object
 	 */
 	export type RelationInclude = Partial<{
-		track: boolean,
-		library: boolean
+		track: IncludeParameter<TrackQueryParameters.RelationInclude>,
+		library: IncludeParameter<LibraryQueryParameters.RelationInclude>
 	}>;
 	/**
 	 * Build the query parameters for ORM to include relations
@@ -84,8 +86,14 @@ export namespace FileQueryParameters {
 	 */
 	export function buildIncludeParameters(include?: RelationInclude) {
 		return {
-			track: include?.track,
-			library: include?.library,
+			track: buildIncludeParameter(
+				TrackQueryParameters.buildIncludeParameters,
+				include?.track
+			),
+			library: buildIncludeParameter(
+				LibraryQueryParameters.buildIncludeParameters,
+				include?.library
+			),
 		};
 	}
 }

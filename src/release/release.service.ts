@@ -1,7 +1,7 @@
 import { forwardRef, Inject, Injectable, Logger } from '@nestjs/common';
 import { AlbumService } from 'src/album/album.service';
 import { Slug } from 'src/slug/slug';
-import { Release, Artist, Album } from '@prisma/client';
+import { Release, Artist, Album, Prisma } from '@prisma/client';
 import { MasterReleaseNotFoundException, MasterReleaseNotFoundFromIDException, ReleaseAlreadyExists, ReleaseNotFoundException, ReleaseNotFoundFromIDException } from './release.exceptions';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { ReleaseQueryParameters } from './models/release.query-parameters';
@@ -37,7 +37,7 @@ export class ReleaseService {
 					},
 					slug: releaseSlug.toString()
 				},
-				include: ReleaseQueryParameters.buildIncludeParameters(include)
+				include: ReleaseQueryParameters.buildIncludeParameters(include) as Prisma.ReleaseInclude
 			});
 			let updatedAlbum = await this.albumService.updateAlbumDate({ byId: { id: createdRelease.albumId } });
 			if (include?.album ?? false)
@@ -191,10 +191,10 @@ export class ReleaseService {
 		try {
 			return await this.getRelease(
 				{ bySlug: { slug: new Slug(where.title), album: where.album}},
-				include
+				{ ...include }
 			);
 		} catch {
-			return await this.createRelease(where, include);
+			return await this.createRelease(where, { ...include });
 		}
 	}
 

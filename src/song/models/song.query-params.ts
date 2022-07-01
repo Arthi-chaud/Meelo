@@ -1,6 +1,8 @@
-import { Song } from "@prisma/client";
+import { Prisma, Song } from "@prisma/client";
 import { ArtistQueryParameters } from "src/artist/models/artist.query-parameters";
 import { Slug } from "src/slug/slug"
+import { TrackQueryParameters } from "src/track/models/track.query-parameters";
+import { buildIncludeParameter, IncludeParameter } from "src/utils/include-parameter";
 import { OmitId } from "src/utils/omit-id";
 import { OmitReleaseDate } from "src/utils/omit-release-date";
 import { OmitSlug } from "src/utils/omit-slug";
@@ -89,18 +91,24 @@ export namespace SongQueryParameters {
 	 * Defines what relations to include in query
 	 */
 	export type RelationInclude = Partial<{
-		instances: boolean,
-		artist: boolean
+		instances: IncludeParameter<TrackQueryParameters.RelationInclude>,
+		artist: IncludeParameter<ArtistQueryParameters.RelationInclude>
 	}>;
 
 	/**
 	 * Build the query parameters for ORM to include relations
 	 * @returns the ORM-ready query parameters
 	 */
-	 export function buildIncludeParameters(include?: RelationInclude) {
+	 export function buildIncludeParameters(include?: RelationInclude): any {
 		return {
-			instances: include?.instances ?? false,
-			artist: include?.artist ?? false
+			instances: buildIncludeParameter(
+				TrackQueryParameters.buildIncludeParameters,
+				include?.instances
+			),
+			artist: buildIncludeParameter(
+				ArtistQueryParameters.buildIncludeParameters,
+				include?.artist
+			),
 		};
 	}
 }

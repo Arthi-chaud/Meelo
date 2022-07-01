@@ -7,6 +7,8 @@ import { PrismaService } from 'src/prisma/prisma.service';
 import { AlbumQueryParameters } from './models/album.query-parameters';import { ArtistQueryParameters } from 'src/artist/models/artist.query-parameters';
 import { ArtistNotFoundException } from 'src/artist/artist.exceptions';
 import { buildPaginationParameters, PaginationParameters } from 'src/utils/pagination';
+import { ReleaseQueryParameters } from 'src/release/models/release.query-parameters';
+import { buildIncludeParameter } from 'src/utils/include-parameter';
  './models/album.query-parameters';
 
 @Injectable()
