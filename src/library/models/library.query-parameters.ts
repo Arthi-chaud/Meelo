@@ -1,14 +1,13 @@
-import { Library, Prisma } from "@prisma/client";
-import { FileQueryParameters } from "src/file/models/file.query-parameters";
-import { Slug } from "src/slug/slug";
+import type { Library, Prisma } from "@prisma/client";
+import FileQueryParameters from "src/file/models/file.query-parameters";
+import type Slug from "src/slug/slug";
 import { buildIncludeParameter, IncludeParameter } from "src/utils/include-parameter";
-import { OmitId } from "src/utils/omit-id";
-import { OmitSlug } from "src/utils/omit-slug";
-import { RequireOnlyOne } from "src/utils/require-only-one";
-import { buildDateSearchParameters } from "src/utils/search-date-input";
+import type OmitId from "src/utils/omit-id";
+import type OmitSlug from "src/utils/omit-slug";
+import type RequireOnlyOne from "src/utils/require-only-one";
 import { buildStringSearchParameters, SearchStringInput } from "src/utils/search-string-input";
 
-export namespace LibraryQueryParameters {
+namespace LibraryQueryParameters {
 
 	/**
 	 * Parameters required to create a Library
@@ -75,3 +74,5 @@ export namespace LibraryQueryParameters {
 		};
 	}
 }
+
+export default LibraryQueryParameters;

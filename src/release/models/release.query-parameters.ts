@@ -1,16 +1,15 @@
-import { Prisma, Release } from "@prisma/client";
-import { AlbumQueryParameters } from "src/album/models/album.query-parameters";
-import { ArtistQueryParameters } from "src/artist/models/artist.query-parameters";
-import { Slug } from "src/slug/slug"
-import { TrackQueryParameters } from "src/track/models/track.query-parameters";
-import { buildIncludeParameter, IncludeParameter } from "src/utils/include-parameter";
-import { OmitId } from "src/utils/omit-id";
-import { OmitReleaseDate } from "src/utils/omit-release-date";
-import { OmitSlug } from "src/utils/omit-slug";
-import { RequireAtLeastOne } from "src/utils/require-at-least-one"
-import { RequireOnlyOne } from "src/utils/require-only-one"
+import type { Prisma, Release } from "@prisma/client";
+import AlbumQueryParameters from "src/album/models/album.query-parameters";
+import ArtistQueryParameters from "src/artist/models/artist.query-parameters";
+import type Slug from "src/slug/slug"
+import TrackQueryParameters from "src/track/models/track.query-parameters";
+import { type IncludeParameter, buildIncludeParameter } from "src/utils/include-parameter";
+import type OmitId from "src/utils/omit-id";
+import type OmitReleaseDate from "src/utils/omit-release-date";
+import type OmitSlug from "src/utils/omit-slug";
+import type RequireOnlyOne from "src/utils/require-only-one"
 
-export namespace ReleaseQueryParameters {
+namespace ReleaseQueryParameters {
 
 	type OmitAlbumId<T> = Omit<T, 'albumId'>;
 	/**
@@ -115,3 +114,5 @@ export namespace ReleaseQueryParameters {
 		};
 	}
 }
+
+export default ReleaseQueryParameters;

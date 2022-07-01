@@ -1,5 +1,4 @@
-import { Prisma } from "@prisma/client";
-import { RequireOnlyOne } from "./require-only-one";
+import type RequireOnlyOne from "./require-only-one";
 
 export type SearchDateInput = RequireOnlyOne<{ before: Date, onDay: Date, inYear: Date, after: Date }>;
 

@@ -1,17 +1,16 @@
-import { Prisma, Song } from "@prisma/client";
-import { ArtistQueryParameters } from "src/artist/models/artist.query-parameters";
-import { Slug } from "src/slug/slug"
-import { TrackQueryParameters } from "src/track/models/track.query-parameters";
+import type { Song } from "@prisma/client";
+import ArtistQueryParameters from "src/artist/models/artist.query-parameters";
+import type Slug from "src/slug/slug"
+import TrackQueryParameters from "src/track/models/track.query-parameters";
 import { buildIncludeParameter, IncludeParameter } from "src/utils/include-parameter";
-import { OmitId } from "src/utils/omit-id";
-import { OmitReleaseDate } from "src/utils/omit-release-date";
-import { OmitSlug } from "src/utils/omit-slug";
-import { RequireAtLeastOne } from "src/utils/require-at-least-one";
-import { RequireOnlyOne } from "src/utils/require-only-one"
+import type OmitId from "src/utils/omit-id";
+import type OmitSlug from "src/utils/omit-slug";
+import type RequireAtLeastOne from "src/utils/require-at-least-one";
+import type RequireOnlyOne from "src/utils/require-only-one"
 import { buildStringSearchParameters, SearchStringInput } from "src/utils/search-string-input";
 
 
-export namespace SongQueryParameters {
+namespace SongQueryParameters {
 	type OmitArtistId<T> = Omit<T, 'artistId'>;
 	type OmitPlayCount<T> = Omit<T, 'playCount'>;
 	/**
@@ -112,3 +111,5 @@ export namespace SongQueryParameters {
 		};
 	}
 }
+
+export default SongQueryParameters;

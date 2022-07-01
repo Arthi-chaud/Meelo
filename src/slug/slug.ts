@@ -1,11 +1,10 @@
 import slug from 'slug';
-import { InvalidRequestException } from 'src/exceptions/meelo-exception';
 
 /**
  * A Slug is a character string which identifies a resource
  * This allows resource identification
  */
-export class Slug {
+export default class Slug {
 	private readonly content: string;
 	/**
 	 * @return true is the string is already a slug

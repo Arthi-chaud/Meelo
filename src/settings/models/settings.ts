@@ -1,7 +1,7 @@
 /**
  * Global settings of the Meelo server
  */
-export type Settings = {
+export default interface Settings {
 	/**
 	 * The base folder where every libraries must be located
 	 */

@@ -1,5 +1,5 @@
 import { Prisma } from "@prisma/client";
-import { RequireOnlyOne } from "./require-only-one";
+import type RequireOnlyOne from "./require-only-one";
 
 export type SearchStringInput = RequireOnlyOne<{ startsWith: string, endsWith: string, contains: string, is: string }>;
 

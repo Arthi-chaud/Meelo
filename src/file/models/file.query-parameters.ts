@@ -1,13 +1,13 @@
-import { File, Prisma } from "@prisma/client";
-import { LibraryQueryParameters } from "src/library/models/library.query-parameters";
-import { TrackQueryParameters } from "src/track/models/track.query-parameters";
-import { buildIncludeParameter, IncludeParameter } from "src/utils/include-parameter";
-import { OmitId } from "src/utils/omit-id";
-import { RequireAtLeastOne } from "src/utils/require-at-least-one";
-import { RequireOnlyOne } from "src/utils/require-only-one";
+import type { File, Prisma } from "@prisma/client";
+import LibraryQueryParameters from "src/library/models/library.query-parameters";
+import TrackQueryParameters from "src/track/models/track.query-parameters";
+import { type IncludeParameter, buildIncludeParameter } from "src/utils/include-parameter";
+import type OmitId from "src/utils/omit-id";
+import type RequireAtLeastOne from "src/utils/require-at-least-one";
+import type RequireOnlyOne from "src/utils/require-only-one";
 import { buildDateSearchParameters, SearchDateInput } from "src/utils/search-date-input";
 
-export namespace FileQueryParameters {
+namespace FileQueryParameters {
 	/**
 	 * Parameters to create a File
 	 */
@@ -97,3 +97,5 @@ export namespace FileQueryParameters {
 		};
 	}
 }
+
+export default FileQueryParameters;

@@ -1,7 +1,7 @@
-import { forwardRef, Module } from '@nestjs/common';
-import { AlbumModule } from 'src/album/album.module';
-import { PrismaModule } from 'src/prisma/prisma.module';
-import { ReleaseService } from './release.service';
+import { forwardRef, Module }  from '@nestjs/common';
+import AlbumModule from 'src/album/album.module';
+import PrismaModule from 'src/prisma/prisma.module';
+import ReleaseService from './release.service';
 
 @Module({
 	imports: [
@@ -11,4 +11,4 @@ import { ReleaseService } from './release.service';
 	providers: [ReleaseService],
 	exports: [ReleaseService]
 })
-export class ReleaseModule {}
+export default class ReleaseModule {}

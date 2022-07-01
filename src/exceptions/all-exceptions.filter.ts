@@ -1,10 +1,10 @@
 import { Catch, ArgumentsHost, HttpStatus } from '@nestjs/common';
 import { BaseExceptionFilter } from '@nestjs/core';
-import { Request, Response } from 'express';
+import type { Response } from 'express';
 
 @Catch()
-export class AllExceptionsFilter extends BaseExceptionFilter {
-	catch(exception: Error, host: ArgumentsHost) {
+export default class AllExceptionsFilter extends BaseExceptionFilter {
+	catch(_exception: Error, host: ArgumentsHost) {
 		const ctx = host.switchToHttp();
 		const response = ctx.getResponse<Response>();
 

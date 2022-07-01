@@ -1,1 +1,3 @@
-export type OmitSlug<T> = Omit<T, 'slug'>;
+type OmitSlug<T> = Omit<T, 'slug'>;
+
+export default OmitSlug;

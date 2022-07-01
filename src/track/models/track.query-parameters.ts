@@ -1,14 +1,14 @@
-import { Prisma, Track } from "@prisma/client";
-import { FileQueryParameters } from "src/file/models/file.query-parameters";
-import { LibraryQueryParameters } from "src/library/models/library.query-parameters";
-import { ReleaseQueryParameters } from "src/release/models/release.query-parameters";
-import { SongQueryParameters } from "src/song/models/song.query-params";
-import { buildIncludeParameter, IncludeParameter } from "src/utils/include-parameter";
-import { OmitId } from "src/utils/omit-id";
-import { RequireAtLeastOne } from "src/utils/require-at-least-one";
-import { RequireOnlyOne } from "src/utils/require-only-one";
+import type { Prisma, Track } from "@prisma/client";
+import FileQueryParameters from "src/file/models/file.query-parameters";
+import LibraryQueryParameters from "src/library/models/library.query-parameters";
+import ReleaseQueryParameters from "src/release/models/release.query-parameters";
+import SongQueryParameters from "src/song/models/song.query-params";
+import { type IncludeParameter, buildIncludeParameter } from "src/utils/include-parameter";
+import type OmitId from "src/utils/omit-id";
+import type RequireAtLeastOne from "src/utils/require-at-least-one";
+import type RequireOnlyOne from "src/utils/require-only-one";
 
-export namespace TrackQueryParameters {
+namespace TrackQueryParameters {
 	type OmitSong<T> = Omit<T, 'songId'>;
 	type OmitSourceFile<T> = Omit<T, 'sourceFileId'>;
 	type OmitRelease<T> = Omit<T, 'releaseId'>;
@@ -113,3 +113,5 @@ export namespace TrackQueryParameters {
 		};
 	}
 }
+
+export default TrackQueryParameters;
