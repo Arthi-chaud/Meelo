@@ -1,10 +1,11 @@
-import { Controller, Get, Param, StreamableFile, Response } from '@nestjs/common';
+import { Controller, Get, Param, StreamableFile, Response, Body, Post } from '@nestjs/common';
 import * as fs from 'fs';
 import FileManagerService from 'src/file-manager/file-manager.service';
 import { ParseArtistSlugPipe, ParseSlugPipe } from 'src/slug/pipe';
 import Slug from 'src/slug/slug';
 import { NoAlbumIllustrationException, NoArtistIllustrationException, NoIllustrationException, NoReleaseIllustrationException } from './illustration.exceptions';
 import IllustrationService from './illustration.service';
+import type { IllustrationDownloadDto } from './models/illustration-dl.dto';
 
 @Controller('illustrations')
 export default class IllustrationController {
@@ -27,6 +28,17 @@ export default class IllustrationController {
 		} catch {
 			throw new NoArtistIllustrationException(artistSlug);
 		}
+	}
+
+	@Post('/:artist')
+	async updateArtistIllustration(
+		@Param('artist', ParseArtistSlugPipe) artistSlug: Slug | undefined,
+		@Body() illustrationDto: IllustrationDownloadDto) {
+		const artistIllustrationPath = this.illustrationService.buildArtistIllustrationPath(artistSlug);
+		return await this.illustrationService.downloadIllustration(
+			illustrationDto.url,
+			artistIllustrationPath
+		);
 	}
 
 
@@ -61,7 +73,24 @@ export default class IllustrationController {
 		} catch {
 			throw new NoReleaseIllustrationException(albumSlug, releaseSlug);
 		}
+	}
 
+
+	@Post('/:artist/:album/:release')
+	async updateReleaseIllustration(
+		@Param('artist', ParseArtistSlugPipe) artistSlug: Slug | undefined,
+		@Param('album', ParseSlugPipe) albumSlug: Slug,
+		@Param('release', ParseSlugPipe) releaseSlug: Slug,
+		@Body() illustrationDto: IllustrationDownloadDto) {
+		const releasellustrationPath = this.illustrationService.buildReleaseIllustrationPath(
+			albumSlug,
+			releaseSlug,
+			artistSlug
+		);
+		return await this.illustrationService.downloadIllustration(
+			illustrationDto.url,
+			releasellustrationPath
+		);
 	}
 
 	private streamFile(sourceFilePath: string, as: string, res: any): StreamableFile {

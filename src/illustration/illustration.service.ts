@@ -1,5 +1,4 @@
 import { forwardRef, Inject, Injectable, Logger, OnModuleInit } from '@nestjs/common';
-import { HttpService } from '@nestjs/axios';
 import FileManagerService from 'src/file-manager/file-manager.service';
 import MetadataService from 'src/metadata/metadata.service';
 import type { Release, Track } from '@prisma/client';
@@ -11,7 +10,7 @@ import * as fs from 'fs';
 import { FileParsingException } from 'src/metadata/metadata.exceptions';
 import * as dir from 'path';
 import type { IllustrationPath } from './models/illustration-path.model';
-import jimp from 'jimp';
+import Jimp from 'jimp';
 import AlbumService from 'src/album/album.service';
 import { FileDoesNotExistException } from 'src/file-manager/file-manager.exceptions';
 import { ModuleRef } from '@nestjs/core';
@@ -25,7 +24,6 @@ export default class IllustrationService implements OnModuleInit {
 		private releaseService: ReleaseService,
 		@Inject(forwardRef(() => AlbumService))
 		private albumService: AlbumService,
-		private readonly httpService: HttpService,
 		private fileManagerService: FileManagerService,
 		private moduleRef: ModuleRef
 	) {	}
@@ -154,7 +152,7 @@ export default class IllustrationService implements OnModuleInit {
 			Logger.log("No illustration to extract");
 			return null;
 		}
-		const illustrationBytes = illustration ? (await (await jimp.read(illustration!.data)).getBufferAsync(jimp.MIME_JPEG)) : undefined;
+		const illustrationBytes = illustration ? (await (await Jimp.read(illustration!.data)).getBufferAsync(Jimp.MIME_JPEG)) : undefined;
 		const saveAndGetIllustrationPath = async (illustrationPath: IllustrationPath) => {
 			if (this.fileManagerService.fileExists(illustrationPath)) {
 				if (this.fileManagerService.getFileContent(illustrationPath) == illustrationBytes!.toString())
@@ -203,9 +201,11 @@ export default class IllustrationService implements OnModuleInit {
 	 */
 	async downloadIllustration(illustrationURL: string, outPath: IllustrationPath) {
 		try {
-			let buffer = (await this.httpService.axiosRef.get(illustrationURL)).data;
-			return await this.saveIllustration(buffer, outPath);
-		} catch {
+			let image = await Jimp.read(illustrationURL);
+			fs.mkdir(dir.dirname(outPath), { recursive: true }, function (_err) {});
+			image.write(outPath);
+		} catch (e) {
+			console.log(e);
 			throw new CantDownloadIllustrationException(illustrationURL);
 		}
 	}
@@ -216,7 +216,8 @@ export default class IllustrationService implements OnModuleInit {
 	 * @param outPath path and name of the file to save the fileContent as
 	 */
 	private async saveIllustration(fileContent: Buffer, outPath: IllustrationPath) {
-		let image = await jimp.read(fileContent);
+		console.log(fileContent);
+		let image = await Jimp.read(fileContent);
 		fs.mkdir(dir.dirname(outPath), { recursive: true }, function (_err) {});
 		image.write(outPath);
 	}
