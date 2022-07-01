@@ -1,18 +1,18 @@
-import { Injectable, Logger } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { FileManagerService } from 'src/file-manager/file-manager.service';
-import { Metadata } from './models/metadata';
+import type Metadata from './models/metadata';
 import mm, { type IAudioMetadata } from 'music-metadata';
 import { FileDoesNotExistException, FileNotReadableException } from 'src/file-manager/file-manager.exceptions';
 import { FileParsingException, PathParsingException } from './metadata.exceptions';
 import { SettingsService } from 'src/settings/settings.service';
 import { TrackService } from 'src/track/track.service';
 import { SongService } from 'src/song/song.service';
-import { Release, Song, TrackType, AlbumType, File, Artist, Track, Prisma} from '@prisma/client';
+import { TrackType, AlbumType, File, Track} from '@prisma/client';
 import { ReleaseService } from 'src/release/release.service';
 import { AlbumService } from 'src/album/album.service';
 import { ArtistService } from 'src/artist/artist.service';
-import { Slug } from 'src/slug/slug';
-import { TrackQueryParameters } from 'src/track/models/track.query-parameters';
+import Slug from 'src/slug/slug';
+import type TrackQueryParameters from 'src/track/models/track.query-parameters';
 
 @Injectable()
 export class MetadataService {

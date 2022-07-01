@@ -1,8 +1,8 @@
-import { forwardRef, Inject, Injectable, Logger } from '@nestjs/common';
+import { forwardRef, Inject, Injectable } from '@nestjs/common';
 import { SettingsService } from 'src/settings/settings.service';
 import { Md5 } from 'ts-md5';
 import * as fs from 'fs';
-import { Library } from '@prisma/client';
+import type { Library } from '@prisma/client';
 import { FolderDoesNotExistException } from './file-manager.exceptions';
 
 @Injectable()

@@ -1,5 +1,5 @@
-import { Controller, Get, HttpException, HttpStatus, Redirect, Req, Res, Response } from '@nestjs/common';
-import { Settings } from './models/settings';
+import { Controller, Get, HttpStatus, Redirect } from '@nestjs/common';
+import type Settings from './models/settings';
 import { SettingsService } from './settings.service';
 
 @Controller('settings')

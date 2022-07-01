@@ -1,9 +1,9 @@
-import { Body, ConflictException, Controller, Delete, Get, HttpException, HttpStatus, NotFoundException, Param, Post, Res, Response } from '@nestjs/common';
+import { Body, Controller, Get, Param, Post } from '@nestjs/common';
 import { ParseSlugPipe } from 'src/slug/pipe';
-import { Slug } from 'src/slug/slug';
+import Slug from 'src/slug/slug';
 import { LibraryService } from './library.service';
 import { LibraryDto } from './models/library.dto';
-import { Artist, Library } from '@prisma/client';
+import type { Library } from '@prisma/client';
 
 @Controller('libraries')
 export class LibraryController {

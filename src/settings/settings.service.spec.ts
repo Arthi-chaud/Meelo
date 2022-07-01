@@ -4,7 +4,7 @@ import * as fs from 'fs';
 import { FakeFileManagerModule, FakeFileManagerService } from 'test/FakeFileManagerModule';
 import { FileManagerService } from 'src/file-manager/file-manager.service';
 import { InvalidSettingsFileException, InvalidSettingsTypeException, MissingSettingsException, SettingsFileNotFoundException } from './settings.exception';
-import { Settings } from './models/settings';
+import type Settings from './models/settings';
 
 describe('Settings Service', () => {
 	let settingsService: SettingsService;

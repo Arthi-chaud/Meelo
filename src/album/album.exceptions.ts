@@ -1,5 +1,5 @@
 import { AlreadyExistsException, NotFoundException } from "src/exceptions/meelo-exception";
-import { Slug } from "src/slug/slug";
+import type Slug from "src/slug/slug";
 
 export class AlbumNotFoundException extends NotFoundException {
 	constructor(albumSlug: Slug, artistSlug?: Slug) {

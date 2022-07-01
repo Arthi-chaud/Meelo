@@ -1,17 +1,16 @@
-import { Album, Prisma } from "@prisma/client";
-import { Exclude } from "class-transformer";
-import { ArtistQueryParameters } from "src/artist/models/artist.query-parameters";
-import { LibraryQueryParameters } from "src/library/models/library.query-parameters";
-import { Slug } from "src/slug/slug"
-import { OmitId } from "src/utils/omit-id";
-import { OmitReleaseDate } from "src/utils/omit-release-date";
-import { OmitSlug } from "src/utils/omit-slug";
-import { RequireAtLeastOne } from "src/utils/require-at-least-one";
-import { RequireOnlyOne } from "src/utils/require-only-one"
-import { SearchDateInput } from "src/utils/search-date-input";
+import type { Album, Prisma } from "@prisma/client";
+import ArtistQueryParameters from "src/artist/models/artist.query-parameters";
+import LibraryQueryParameters from "src/library/models/library.query-parameters";
+import type Slug from "src/slug/slug"
+import type OmitId from "src/utils/omit-id";
+import type OmitReleaseDate from "src/utils/omit-release-date";
+import type OmitSlug from "src/utils/omit-slug";
+import type RequireAtLeastOne from "src/utils/require-at-least-one";
+import type RequireOnlyOne from "src/utils/require-only-one"
+import type { SearchDateInput } from "src/utils/search-date-input";
 import { buildStringSearchParameters, SearchStringInput } from "src/utils/search-string-input";
 
-export namespace AlbumQueryParameters {
+namespace AlbumQueryParameters {
 
 	type OmitType<T> = Omit<T, 'type'>;
 	type OmitArtistId<T> = Omit<T, 'artistId'>;
@@ -112,3 +111,5 @@ export namespace AlbumQueryParameters {
 		};
 	}
 }
+
+export default AlbumQueryParameters;

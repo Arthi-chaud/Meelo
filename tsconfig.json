@@ -20,8 +20,11 @@
     "resolveJsonModule": true,
     "esModuleInterop": true,
     "alwaysStrict": true,
-    "noImplicitReturns": true
-    //"noUnusedParameters": true
+    "noImplicitReturns": true,
+    "noUnusedParameters": true,
+    "noUnusedLocals": true,
+    "noImplicitThis": true,
+    "importsNotUsedAsValues": "error"
   },
   "lib": [  
     "dom",  

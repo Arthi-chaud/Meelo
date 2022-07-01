@@ -5,16 +5,14 @@ import { ArtistModule } from "src/artist/artist.module";
 import { FileManagerModule } from "src/file-manager/file-manager.module";
 import { FileManagerService } from "src/file-manager/file-manager.service";
 import { ReleaseModule } from "src/release/release.module";
-import { SettingsController } from "src/settings/settings.controller";
 import { SettingsModule } from "src/settings/settings.module";
-import { SettingsService } from "src/settings/settings.service";
 import { SongModule } from "src/song/song.module";
 import { TrackModule } from "src/track/track.module";
 import { FakeFileManagerService } from "test/FakeFileManagerModule";
 import { PathParsingException } from "./metadata.exceptions";
 import { MetadataModule } from "./metadata.module";
 import { MetadataService } from "./metadata.service";
-import { Metadata } from "./models/metadata";
+import type Metadata from "./models/metadata";
 
 describe('Metadata Service', () => {
 	let metadataService: MetadataService

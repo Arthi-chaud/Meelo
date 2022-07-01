@@ -1,13 +1,13 @@
-import { Artist, Prisma } from "@prisma/client";
-import { LibraryQueryParameters } from "src/library/models/library.query-parameters";
-import { Slug } from "src/slug/slug"
-import { OmitId } from "src/utils/omit-id";
-import { OmitSlug } from "src/utils/omit-slug";
-import { RequireAtLeastOne } from "src/utils/require-at-least-one";
-import { RequireOnlyOne } from "src/utils/require-only-one"
-import { SearchStringInput } from "src/utils/search-string-input";
+import type { Artist, Prisma } from "@prisma/client";
+import LibraryQueryParameters from "src/library/models/library.query-parameters";
+import type Slug from "src/slug/slug"
+import type OmitId from "src/utils/omit-id";
+import type OmitSlug from "src/utils/omit-slug";
+import type RequireAtLeastOne from "src/utils/require-at-least-one";
+import type RequireOnlyOne from "src/utils/require-only-one"
+import type { SearchStringInput } from "src/utils/search-string-input";
 
-export namespace ArtistQueryParameters {
+namespace ArtistQueryParameters {
 
 	/**
 	 * Parameters to create an Artist
@@ -98,3 +98,5 @@ export namespace ArtistQueryParameters {
 		};
 	}
 }
+
+export default ArtistQueryParameters;

@@ -1,18 +1,18 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
-import { Prisma, Track } from '@prisma/client';
+import type { Track } from '@prisma/client';
 import { SongService } from 'src/song/song.service';
-import { MasterTrackNotFoundException, TrackAlreadyExistsException, TrackNotFoundByIdException, TrackNotFoundException } from './track.exceptions';
+import { MasterTrackNotFoundException, TrackAlreadyExistsException, TrackNotFoundByIdException } from './track.exceptions';
 import { ReleaseService } from 'src/release/release.service';
-import { TrackQueryParameters } from './models/track.query-parameters';
-import { FileQueryParameters } from 'src/file/models/file.query-parameters';
-import { ReleaseQueryParameters } from 'src/release/models/release.query-parameters';
-import { SongQueryParameters } from 'src/song/models/song.query-params';
+import TrackQueryParameters from './models/track.query-parameters';
+import FileQueryParameters from 'src/file/models/file.query-parameters';
+import ReleaseQueryParameters from 'src/release/models/release.query-parameters';
+import SongQueryParameters from 'src/song/models/song.query-params';
 import { FileService } from 'src/file/file.service';
-import { Slug } from 'src/slug/slug';
-import { FileNotFoundFromIDException, FileNotFoundFromPathException, FileNotFoundFromTrackIDException } from 'src/file/file.exceptions';
+import Slug from 'src/slug/slug';
+import { FileNotFoundFromIDException, FileNotFoundFromPathException } from 'src/file/file.exceptions';
 import { buildPaginationParameters, PaginationParameters } from 'src/utils/pagination';
-import { MeeloException } from 'src/exceptions/meelo-exception';
+import type { MeeloException } from 'src/exceptions/meelo-exception';
 
 @Injectable()
 export class TrackService {

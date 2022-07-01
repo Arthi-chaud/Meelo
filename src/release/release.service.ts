@@ -1,14 +1,13 @@
-import { forwardRef, Inject, Injectable, Logger } from '@nestjs/common';
+import { forwardRef, Inject, Injectable } from '@nestjs/common';
 import { AlbumService } from 'src/album/album.service';
-import { Slug } from 'src/slug/slug';
-import { Release, Artist, Album } from '@prisma/client';
-import { MasterReleaseNotFoundException, MasterReleaseNotFoundFromIDException, ReleaseAlreadyExists, ReleaseNotFoundException, ReleaseNotFoundFromIDException } from './release.exceptions';
+import Slug from 'src/slug/slug';
+import type { Release } from '@prisma/client';
+import { MasterReleaseNotFoundFromIDException, ReleaseAlreadyExists, ReleaseNotFoundException, ReleaseNotFoundFromIDException } from './release.exceptions';
 import { PrismaService } from 'src/prisma/prisma.service';
-import { ReleaseQueryParameters } from './models/release.query-parameters';
-import { AlbumQueryParameters } from 'src/album/models/album.query-parameters';
-import { ArtistQueryParameters } from 'src/artist/models/artist.query-parameters';
+import ReleaseQueryParameters from './models/release.query-parameters';
+import AlbumQueryParameters from 'src/album/models/album.query-parameters';
 import { buildPaginationParameters, PaginationParameters } from 'src/utils/pagination';
-import { MeeloException } from 'src/exceptions/meelo-exception';
+import type { MeeloException } from 'src/exceptions/meelo-exception';
 
 @Injectable()
 export class ReleaseService {

@@ -4,7 +4,7 @@ import { SettingsController } from './settings.controller';
 import { SettingsModule } from './settings.module';
 import * as fs from 'fs';
 import { FileManagerService } from 'src/file-manager/file-manager.service';
-import { INestApplication } from '@nestjs/common';
+import type { INestApplication } from '@nestjs/common';
 import { FileManagerModule } from 'src/file-manager/file-manager.module';
 import request from 'supertest';
 

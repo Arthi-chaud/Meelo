@@ -1,6 +1,6 @@
 import { Controller, Get, Param } from '@nestjs/common';
 import { ParseArtistSlugPipe, ParseSlugPipe } from 'src/slug/pipe';
-import { Slug } from 'src/slug/slug';
+import Slug from 'src/slug/slug';
 import { AlbumService } from './album.service';
 
 @Controller('albums')

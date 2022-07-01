@@ -14,7 +14,7 @@ import { ReleaseModule } from "src/release/release.module";
 import { ReleaseService } from "src/release/release.service";
 import { SettingsModule } from "src/settings/settings.module";
 import { SettingsService } from "src/settings/settings.service";
-import { Slug } from "src/slug/slug";
+import Slug from "src/slug/slug";
 import { FakeFileManagerModule, FakeFileManagerService } from "test/FakeFileManagerModule";
 import { IllustrationModule } from "./illustration.module";
 import { IllustrationService } from "./illustration.service";

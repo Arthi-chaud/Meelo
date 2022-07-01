@@ -7,7 +7,7 @@ import { IllustrationModule } from "src/illustration/illustration.module";
 import { MetadataModule } from "src/metadata/metadata.module";
 import { PrismaModule } from "src/prisma/prisma.module";
 import { PrismaService } from "src/prisma/prisma.service";
-import { Slug } from "src/slug/slug";
+import Slug from "src/slug/slug";
 import { FakeFileManagerService } from "test/FakeFileManagerModule";
 import { LibraryAlreadyExistsException, LibraryNotFoundException } from "./library.exceptions";
 import { LibraryModule } from "./library.module";

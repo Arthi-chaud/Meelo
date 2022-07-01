@@ -2,9 +2,9 @@ import { Test, TestingModule } from "@nestjs/testing";
 import { FileManagerService } from "src/file-manager/file-manager.service";
 import { PrismaModule } from "src/prisma/prisma.module";
 import { PrismaService } from "src/prisma/prisma.service";
-import { Slug } from "src/slug/slug";
+import Slug from "src/slug/slug";
 import { FakeFileManagerService } from "test/FakeFileManagerModule";
-import { ArtistalreadyExistsException } from "./artist.exceptions";
+import { ArtistAlreadyExistsException } from "./artist.exceptions";
 import { ArtistModule } from "./artist.module";
 import { ArtistService } from "./artist.service"
 
@@ -39,7 +39,7 @@ describe('Artist Service', () => {
 			const test = async () => {
 				await artistService.createArtist({ name: artistName });
 			};
-			expect(test()).rejects.toThrow(ArtistalreadyExistsException);
+			expect(test()).rejects.toThrow(ArtistAlreadyExistsException);
 		})
 	})
 

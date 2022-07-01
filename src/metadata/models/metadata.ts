@@ -1,9 +1,9 @@
-import { TrackType } from "@prisma/client";
+import type { TrackType } from "@prisma/client";
 
 /**
  * Extracted metadata from a track file
  */
-export interface Metadata {
+export default interface Metadata {
 	/**
 	 * If the track is from a compilation album
 	 */

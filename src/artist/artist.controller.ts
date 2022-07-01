@@ -1,8 +1,7 @@
 import { Controller, forwardRef, Get, Inject, Param } from '@nestjs/common';
-import { MeeloException } from 'src/exceptions/meelo-exception';
 import { IllustrationService } from 'src/illustration/illustration.service';
-import { ParseArtistSlugPipe, ParseSlugPipe } from 'src/slug/pipe';
-import { Slug } from 'src/slug/slug';
+import { ParseArtistSlugPipe } from 'src/slug/pipe';
+import Slug from 'src/slug/slug';
 import { ArtistService } from './artist.service';
 
 @Controller('artists')

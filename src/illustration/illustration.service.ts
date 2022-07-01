@@ -2,22 +2,20 @@ import { forwardRef, Inject, Injectable, Logger, OnModuleInit } from '@nestjs/co
 import { HttpService } from '@nestjs/axios';
 import { FileManagerService } from 'src/file-manager/file-manager.service';
 import { MetadataService } from 'src/metadata/metadata.service';
-import { Album, Artist, Release, Track } from '@prisma/client';
+import type { Release, Track } from '@prisma/client';
 import { ReleaseService } from 'src/release/release.service';
-import { Slug } from 'src/slug/slug';
+import Slug from 'src/slug/slug';
 import { CantDownloadIllustrationException, IllustrationNotExtracted } from './illustration.exceptions';
 import mm, { IPicture, type IAudioMetadata } from 'music-metadata';
 import * as fs from 'fs';
 import { FileParsingException } from 'src/metadata/metadata.exceptions';
 import * as dir from 'path';
-import { IllustrationPath } from './models/illustration-path.model';
-import { Md5 } from 'ts-md5';
+import type { IllustrationPath } from './models/illustration-path.model';
 import jimp from 'jimp';
 import { AlbumService } from 'src/album/album.service';
 import { FileDoesNotExistException } from 'src/file-manager/file-manager.exceptions';
-import { AlbumQueryParameters } from 'src/album/models/album.query-parameters';
 import { ModuleRef } from '@nestjs/core';
-import { compilationAlbumArtistKeyword } from 'src/utils/compilation';
+import compilationAlbumArtistKeyword from 'src/utils/compilation';
 
 @Injectable()
 export class IllustrationService implements OnModuleInit {
@@ -219,7 +217,7 @@ export class IllustrationService implements OnModuleInit {
 	 */
 	private async saveIllustration(fileContent: Buffer, outPath: IllustrationPath) {
 		let image = await jimp.read(fileContent);
-		fs.mkdir(dir.dirname(outPath), { recursive: true }, function (err) {});
+		fs.mkdir(dir.dirname(outPath), { recursive: true }, function (_err) {});
 		image.write(outPath);
 	}
 }

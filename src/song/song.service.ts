@@ -1,12 +1,11 @@
-import { Injectable, Logger } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { ArtistService } from 'src/artist/artist.service';
-import { Slug } from 'src/slug/slug';
-import { type Song, type Artist, Prisma } from '@prisma/client';
+import Slug from 'src/slug/slug';
+import type { Song } from '@prisma/client';
 import { SongAlreadyExistsException, SongNotFoundByIdException, SongNotFoundException } from './song.exceptions';
 import { PrismaService } from 'src/prisma/prisma.service';
-import { SongQueryParameters } from './models/song.query-params';
-import { buildStringSearchParameters } from 'src/utils/search-string-input';
-import { ArtistQueryParameters } from 'src/artist/models/artist.query-parameters';
+import SongQueryParameters from './models/song.query-params';
+import ArtistQueryParameters from 'src/artist/models/artist.query-parameters';
 import { buildPaginationParameters, PaginationParameters } from 'src/utils/pagination';
 
 @Injectable()

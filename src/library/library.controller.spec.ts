@@ -1,4 +1,4 @@
-import { INestApplication } from "@nestjs/common";
+import type { INestApplication } from "@nestjs/common";
 import { Test, TestingModule } from "@nestjs/testing";
 import { FileManagerModule } from "src/file-manager/file-manager.module";
 import { FileManagerService } from "src/file-manager/file-manager.service";
@@ -9,9 +9,6 @@ import { PrismaService } from "src/prisma/prisma.service";
 import { FakeFileManagerService } from "test/FakeFileManagerModule";
 import { LibraryController } from "./library.controller";
 import { LibraryModule } from "./library.module";
-import request from 'supertest';
-import { LibraryDto } from "./models/library.dto";
-import { Library } from "@prisma/client";
 import { LibraryService } from "./library.service";
 import { IllustrationModule } from "src/illustration/illustration.module";
 

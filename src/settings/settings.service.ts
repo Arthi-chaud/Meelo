@@ -1,6 +1,6 @@
 import { forwardRef, Inject, Injectable } from '@nestjs/common';
 import { FileManagerService } from 'src/file-manager/file-manager.service';
-import { Settings } from './models/settings';
+import type Settings from './models/settings';
 import { InvalidSettingsFileException, InvalidSettingsTypeException, MissingSettingsException, SettingsFileNotFoundException } from './settings.exception';
 
 @Injectable()
