@@ -11,9 +11,12 @@ import LibraryController from "./library.controller";
 import LibraryModule from "./library.module";
 import LibraryService from "./library.service";
 import IllustrationModule from "src/illustration/illustration.module";
+import request from 'supertest';
+import type { Library } from "@prisma/client";
 
 describe('Library Controller', () => {
-	let controller: LibraryController;
+	let libraryController: LibraryController;
+	let libraryService: LibraryService;
 	let app: INestApplication;
 
 	beforeAll(async () => {
@@ -22,31 +25,45 @@ describe('Library Controller', () => {
 			providers: [LibraryController, LibraryService, PrismaService],
 		}).overrideProvider(FileManagerService).useClass(FakeFileManagerService).compile();
 		await module.get<PrismaService>(PrismaService).onModuleInit();
-		controller = module.get<LibraryController>(LibraryController);
+		libraryController = module.get<LibraryController>(LibraryController);
+		libraryService = module.get<LibraryService>(LibraryService);
 		app = module.createNestApplication();
 		await app.init();
 
 	});
 
 	it('should be defined', () => {
-		expect(controller).toBeDefined();
+		expect(libraryController).toBeDefined();
+		expect(libraryService).toBeDefined();
 	});
 
-	// describe('Create Library', () => { 
-	// 	it("should create a library (GET /libraries/new)", () => {
-	// 		return request(app.getHttpServer())
-	// 			.post('/libraries/new')
-	// 			.set(<LibraryDto>({
-	// 				path: '/Music',
-	// 				name: 'My Library 1'
-	// 			}))
-	//   			.expect(201)
-	//   			.expect(<Library>{
-	// 				path: '/Music',
-	// 				name: 'My Library 1',
-	// 				slug: 'my-library-1',
-	// 			});
-	// 	});
-	//  })
+	describe('Create Library (POST /libraries/new)', () => {
+		it("should create a library", async () => {
+			return request(app.getHttpServer())
+				.post('/libraries/new')
+				.send({
+					path: '/Music',
+					name: 'My Library 1'
+				})
+				.expect(201)
+				.expect((res) => {
+					const library: Library = res.body
+					expect(library.id).toBeDefined();
+					expect(library.slug).toBe('my-library-1');
+					expect(library.name).toBe('My Library 1');
+					expect(library.path).toBe('/Music');
+				});
+		});
+
+		it("should fail, as it already exists", async () => {
+			return request(app.getHttpServer())
+				.post('/libraries/new')
+				.send({
+					path: '/Path',
+					name: 'My Library 1'
+				})
+				.expect(409);
+		});
+	})
 
 });

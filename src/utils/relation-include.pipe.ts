@@ -8,17 +8,19 @@
 // }
 
 // @Injectable()
-// export class ParseRelationIncludePipe<T, U extends keyof T> implements PipeTransform {
-//   transform(value: any, _metadata: ArgumentMetadata): Record<keyof T, boolean> {
-// 	const separator = ',';
-// 	if (`/[a-zA-Z]+(${separator}[a-zA-Z]+)*/mg`.match(value) == null)
-// 		throw new InvalidRelationIncludeParameter();
-// 	let includes: Record<U, boolean>;
-// 	(Object.keys(<U>{}) as Array<U>).forEach((key: U) => includes[key] = false);
-// 	for (const include in value.toString().split(separator)) {
-// 		if ((Object.keys(<U>{})).includes(include))
+// export class ParseRelationIncludePipe<T, K = keyof T extends readonly string[]> implements PipeTransform {
+// 	transform(value: any, _metadata: ArgumentMetadata) {
+// 		const separator = ',';
 
+// 		if (value.match(`[a-zA-Z]+(${separator}[a-zA-Z]+)*`) == null)
+// 			throw new InvalidRelationIncludeParameter();
+// 		let includes: Record<K, boolean>;
+// 		const requestedIncludes = (value as string)
+// 			.split(separator)
+// 			.map((req) => req.toLocaleLowerCase());
+// 		for (const requestedInclude of requestedIncludes) {
+// 			if ()
+// 		}
+		
 // 	}
-// 	return includes as U;
-//   }
 // }

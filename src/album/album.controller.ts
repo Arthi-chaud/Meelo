@@ -1,4 +1,5 @@
 import { Controller, forwardRef, Get, Inject, Param } from '@nestjs/common';
+import type { Album, Artist } from '@prisma/client';
 import IllustrationService from 'src/illustration/illustration.service';
 import { ParseArtistSlugPipe, ParseSlugPipe } from 'src/slug/pipe';
 import Slug from 'src/slug/slug';
@@ -16,13 +17,7 @@ export default class AlbumController {
 	async getAlbums() {
 		let albums = await this.albumService.getAlbums({}, {}, { artist: true })
 		return albums.map(
-			(album) => ({
-				...album,
-				illustration: this.illustrationService.buildAlbumIllustrationFolderPath(
-					new Slug(album.slug),
-					album.artist ? new Slug(album.artist.slug) : undefined
-				)
-			})
+			(album) => this.buildAlbumResponse(album)
 		);
 	}
 
@@ -33,13 +28,7 @@ export default class AlbumController {
 			byArtist: artistSlug ? { slug: artistSlug } : undefined
 		});
 		return albums.map(
-			(album) => ({
-				...album,
-				illustration: this.illustrationService.buildAlbumIllustrationFolderPath(
-					new Slug(album.slug),
-					album.artist ? new Slug(album.artist.slug) : undefined
-				)
-			})
+			(album) => this.buildAlbumResponse(album)
 		);
 	}
 
@@ -53,12 +42,17 @@ export default class AlbumController {
 				artist: artistSlug ? { slug: artistSlug } : undefined
 			}
 		});
+		return this.buildAlbumResponse(album);
+	}
+
+	private buildAlbumResponse(album: Album & { artist: Artist | null }) {
+		const illustration = this.illustrationService.buildAlbumIllustrationFolderPath(
+			new Slug(album.slug),
+			album.artist ? new Slug(album.artist.slug) : undefined
+		);
 		return {
 			...album,
-			illustration: this.illustrationService.buildAlbumIllustrationFolderPath(
-				new Slug(album.slug),
-				album.artist ? new Slug(album.artist.slug) : undefined
-			)
-		};
+			illustration
+		}
 	}
 }

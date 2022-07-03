@@ -11,7 +11,7 @@ export default class LibraryController {
 
 	@Post('new')
 	async createLibrary(@Body() createLibraryDto: LibraryDto) {
-		return await this.libraryService.createLibrary(createLibraryDto)
+		return await this.libraryService.createLibrary(createLibraryDto);
 	}
 
 	@Get()
