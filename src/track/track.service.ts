@@ -11,7 +11,7 @@ import SongQueryParameters from 'src/song/models/song.query-params';
 import FileService from 'src/file/file.service';
 import Slug from 'src/slug/slug';
 import { FileNotFoundFromIDException, FileNotFoundFromPathException } from 'src/file/file.exceptions';
-import { buildPaginationParameters, PaginationParameters } from 'src/utils/pagination';
+import { buildPaginationParameters, PaginationParameters } from 'src/pagination/parameters';
 import type { MeeloException } from 'src/exceptions/meelo-exception';
 
 @Injectable()
