@@ -8,7 +8,7 @@ import type { Library, File } from '@prisma/client';
 import PrismaService from 'src/prisma/prisma.service';
 import IllustrationService from 'src/illustration/illustration.service';
 import LibraryQueryParameters from './models/library.query-parameters';
-import { buildPaginationParameters, PaginationParameters } from 'src/utils/pagination';
+import { buildPaginationParameters, PaginationParameters } from 'src/pagination/parameters';
 
 @Injectable()
 export default class LibraryService {

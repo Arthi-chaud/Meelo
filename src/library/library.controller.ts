@@ -1,9 +1,11 @@
-import { Body, Controller, Get, Param, Post } from '@nestjs/common';
+import { Body, Controller, Get, Param, Post, Query } from '@nestjs/common';
 import { ParseSlugPipe } from 'src/slug/pipe';
 import Slug from 'src/slug/slug';
 import LibraryService from './library.service';
 import { LibraryDto } from './models/library.dto';
 import type { Library } from '@prisma/client';
+import ParsePaginationParameterPipe from 'src/pagination/pipe';
+import type { PaginationParameters } from 'src/pagination/parameters';
 
 @Controller('libraries')
 export default class LibraryController {
@@ -13,10 +15,9 @@ export default class LibraryController {
 	async createLibrary(@Body() createLibraryDto: LibraryDto) {
 		return await this.libraryService.createLibrary(createLibraryDto);
 	}
-
 	@Get()
-	async getLibraries() {
-		return await this.libraryService.getLibraries({});
+	async getLibraries(@Query(ParsePaginationParameterPipe) paginationParameters: PaginationParameters) {
+		return await this.libraryService.getLibraries({}, paginationParameters);
 	}
 	
 	@Get('scan')
