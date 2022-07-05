@@ -6,3 +6,8 @@ export type PaginationParameters = Partial<{
 export function buildPaginationParameters(parameters?: PaginationParameters) {
 	return parameters ?? {}
 };
+
+/**
+ * Default number of elements to take
+ */
+export const defaultPageSize = 50;
