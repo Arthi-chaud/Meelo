@@ -1,5 +1,9 @@
-import { Controller, forwardRef, Get, Inject, Param } from '@nestjs/common';
+import { Controller, forwardRef, Get, Inject, Param, Query } from '@nestjs/common';
+import type { Artist } from '@prisma/client';
 import IllustrationService from 'src/illustration/illustration.service';
+import type { IllustrationPath } from 'src/illustration/models/illustration-path.model';
+import type { PaginationParameters } from 'src/pagination/parameters';
+import ParsePaginationParameterPipe from 'src/pagination/pipe';
 import { ParseArtistSlugPipe } from 'src/slug/pipe';
 import Slug from 'src/slug/slug';
 import ArtistService from './artist.service';
@@ -13,24 +17,30 @@ export default class ArtistController {
 	) {}
 
 	@Get()
-	async getArtists() {
-		let artists = await this.artistService.getArtists({ });
-		return artists.map((artist) => ({
-			...artist,
-			illustration: this.illustrationService.buildArtistIllustrationPath(new Slug(artist.slug))
-		}));
+	async getArtists(
+		@Query(ParsePaginationParameterPipe) paginationParameters: PaginationParameters
+	) {
+		let artists = await this.artistService.getArtists({}, paginationParameters);
+		return artists.map((artist) => this.buildArtistResponse(artist));
 	}
 
 	@Get('/:artist')
 	async getArtist(@Param('artist', ParseArtistSlugPipe) artistSlug: Slug | undefined) {
-		if (artistSlug == undefined)
-			return {
-				illustration: this.illustrationService.buildArtistIllustrationPath()
-			};
-		let artist = await this.artistService.getArtist({ slug: artistSlug })
+		let artist;
+		if (artistSlug !== undefined)
+		 	artist = await this.artistService.getArtist({ slug: artistSlug });
+		return this.buildArtistResponse(artist);
+	}
+
+	private buildArtistResponse(artist?: Artist) {
+		let illustrationPath: IllustrationPath | null = this.illustrationService.buildArtistIllustrationFolderPath(
+			artist ? new Slug(artist.slug) : undefined
+		);
+		if (this.illustrationService.illustrationExists(illustrationPath) == false)
+			illustrationPath = null;
 		return {
 			...artist,
-			illustration: this.illustrationService.buildArtistIllustrationPath(new Slug(artist.slug))
-		};
+			illustration: illustrationPath
+		}
 	}
 }
