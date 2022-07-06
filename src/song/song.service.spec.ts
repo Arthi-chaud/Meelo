@@ -1,4 +1,5 @@
-import { Test, TestingModule } from "@nestjs/testing";
+import { createTestingModule } from "test/TestModule";
+import type { TestingModule } from "@nestjs/testing";
 import SongService from "src/song/song.service";
 import ArtistService from "src/artist/artist.service";
 import ArtistModule from "src/artist/artist.module";
@@ -20,7 +21,7 @@ describe('Song Service', () => {
 	let song2: Song;
 	
 	beforeAll(async () => {
-		const module: TestingModule = await Test.createTestingModule({
+		const module: TestingModule = await createTestingModule({
 			imports: [PrismaModule, ArtistModule],
 			providers: [SongService, ArtistService, PrismaService],
 		}).overrideProvider(FileManagerService).useClass(FakeFileManagerService).compile();

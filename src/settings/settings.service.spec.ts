@@ -1,10 +1,10 @@
-import { Test } from '@nestjs/testing';
 import SettingsService from './settings.service';
 import * as fs from 'fs';
 import { FakeFileManagerModule, FakeFileManagerService } from 'test/FakeFileManagerModule';
 import FileManagerService from 'src/file-manager/file-manager.service';
 import { InvalidSettingsFileException, InvalidSettingsTypeException, MissingSettingsException, SettingsFileNotFoundException } from './settings.exception';
 import type Settings from './models/settings';
+import { createTestingModule } from 'test/TestModule';
 
 describe('Settings Service', () => {
 	let settingsService: SettingsService;
@@ -27,7 +27,7 @@ describe('Settings Service', () => {
 	}
 
 	beforeAll(async () => {
-		const moduleRef = await Test.createTestingModule({
+		const moduleRef = await createTestingModule({
 			providers: [SettingsService, FakeFileManagerModule],
 		}).compile();
 		fileManagerService = moduleRef.get<FileManagerService>(FileManagerService);
@@ -43,8 +43,7 @@ describe('Settings Service', () => {
 			expect(settingsService.settingsValues).toStrictEqual(<Settings>{
 				dataFolder: '/var/lib/meelo',
 				trackRegex: ['regex1', 'regex2'],
-				mergeMetadataWithPathRegexGroup: true,
-				publicURL: "https://meelo.com"
+				mergeMetadataWithPathRegexGroup: true
 			})
 		});
 

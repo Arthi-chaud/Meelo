@@ -1,4 +1,4 @@
-// import { ArgumentMetadata, Injectable, PipeTransform } from "@nestjs/common";
+// import { ArgumentMetadata, BadRequestException, Injectable, PipeTransform } from "@nestjs/common";
 // import { InvalidRequestException } from "src/exceptions/meelo-exception";
 
 // export class InvalidRelationIncludeParameter extends InvalidRequestException {
@@ -8,19 +8,52 @@
 // }
 
 // @Injectable()
-// export class ParseRelationIncludePipe<T, K = keyof T extends readonly string[]> implements PipeTransform {
-// 	transform(value: any, _metadata: ArgumentMetadata) {
+// export class ParseRelationIncludePipe<Keys extends string[], T = Partial<Map<Keys[number], boolean>>> implements PipeTransform {
+// 	constructor(private keys: Keys) {}
+// 	transform(value: string, _metadata: ArgumentMetadata): T  {
 // 		const separator = ',';
 
 // 		if (value.match(`[a-zA-Z]+(${separator}[a-zA-Z]+)*`) == null)
 // 			throw new InvalidRelationIncludeParameter();
-// 		let includes: Record<K, boolean>;
-// 		const requestedIncludes = (value as string)
-// 			.split(separator)
-// 			.map((req) => req.toLocaleLowerCase());
-// 		for (const requestedInclude of requestedIncludes) {
-// 			if ()
-// 		}
+
+// 		let includes: T;
 		
+// 		value.split(separator)
+// 			.forEach((requestedInclude: string) => {
+// 				if (this.keys.includes(requestedInclude) == false)
+// 					throw new BadRequestException(`The key '${requestedInclude}' does not exist. Available keys are: ${this.keys}`);
+// 				includes[requestedInclude] = false;
+// 			});
+// 		return includes;
+// 	}
+// }
+
+// type Constructor<T> = { new (...args: any): T }import { ArgumentMetadata, BadRequestException, Injectable, PipeTransform } from "@nestjs/common";
+// import { InvalidRequestException } from "src/exceptions/meelo-exception";
+
+// export class InvalidRelationIncludeParameter extends InvalidRequestException {
+// 	constructor() {
+// 		super("The requested include is not valid. Expected format: 'field1,field2,field3'.")
+// 	}
+// }
+
+// @Injectable()
+// export class ParseRelationIncludePipe<Keys extends string[], T = Partial<Map<Keys[number], boolean>>> implements PipeTransform {
+// 	constructor(private keys: Keys) {}
+// 	transform(value: string, _metadata: ArgumentMetadata): T  {
+// 		const separator = ',';
+
+// 		if (value.match(`[a-zA-Z]+(${separator}[a-zA-Z]+)*`) == null)
+// 			throw new InvalidRelationIncludeParameter();
+
+// 		let includes: T;
+		
+// 		value.split(separator)
+// 			.forEach((requestedInclude: string) => {
+// 				if (this.keys.includes(requestedInclude) == false)
+// 					throw new BadRequestException(`The key '${requestedInclude}' does not exist. Available keys are: ${this.keys}`);
+// 				includes[requestedInclude] = false;
+// 			});
+// 		return includes;
 // 	}
 // }

@@ -1,6 +1,5 @@
 {
 	"dataFolder": "/data",
 	"trackRegex": [],
-	"mergeMetadataWithPathRegexGroup": true,
-	"publicURL": "https://meelo.com"
+	"mergeMetadataWithPathRegexGroup": true
 }

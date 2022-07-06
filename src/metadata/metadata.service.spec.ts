@@ -1,4 +1,3 @@
-import { Test } from "@nestjs/testing";
 import { TrackType } from "@prisma/client";
 import AlbumModule from "src/album/album.module";
 import ArtistModule from "src/artist/artist.module";
@@ -9,6 +8,7 @@ import SettingsModule from "src/settings/settings.module";
 import SongModule from "src/song/song.module";
 import TrackModule from "src/track/track.module";
 import { FakeFileManagerService } from "test/FakeFileManagerModule";
+import { createTestingModule } from "test/TestModule";
 import { PathParsingException } from "./metadata.exceptions";
 import MetadataModule from "./metadata.module";
 import MetadataService from "./metadata.service";
@@ -18,7 +18,7 @@ describe('Metadata Service', () => {
 	let metadataService: MetadataService
 
 	beforeAll(async () => {
-		const moduleRef = await Test.createTestingModule({
+		const moduleRef = await createTestingModule({
 			imports: [MetadataModule, TrackModule, SongModule, AlbumModule, ReleaseModule, SettingsModule, FileManagerModule, ArtistModule],
 			providers: [MetadataService],
 		}).overrideProvider(FileManagerService).useClass(FakeFileManagerService).compile();

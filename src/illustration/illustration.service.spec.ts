@@ -1,5 +1,6 @@
 import { HttpModule } from "@nestjs/axios";
-import { Test, TestingModule } from "@nestjs/testing";
+import { createTestingModule } from "test/TestModule";
+import type { TestingModule } from "@nestjs/testing";
 import AlbumService from "src/album/album.service";
 import ArtistModule from "src/artist/artist.module";
 import ArtistService from "src/artist/artist.service";
@@ -13,6 +14,7 @@ import SettingsModule from "src/settings/settings.module";
 import Slug from "src/slug/slug";
 import { FakeFileManagerService } from "test/FakeFileManagerModule";
 import IllustrationService from "./illustration.service";
+import IllustrationModule from "./illustration.module";
 
 describe('Illustration Service', () => {
 	let illustrationService: IllustrationService;
@@ -21,8 +23,8 @@ describe('Illustration Service', () => {
 	const baseMetadataFolder = 'test/assets/metadata';
 
 	beforeAll(async () => {
-		const module: TestingModule = await Test.createTestingModule({
-			imports: [HttpModule, FileManagerModule, PrismaModule, ArtistModule, MetadataModule, SettingsModule],
+		const module: TestingModule = await createTestingModule({
+			imports: [HttpModule, FileManagerModule, IllustrationModule, PrismaModule, ArtistModule, MetadataModule, SettingsModule],
 		}).overrideProvider(FileManagerService).useClass(FakeFileManagerService).compile();
 		await module.get<PrismaService>(PrismaService).onModuleInit();
 		illustrationService = module.get<IllustrationService>(IllustrationService);

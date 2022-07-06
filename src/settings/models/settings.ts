@@ -14,8 +14,4 @@ export default interface Settings {
 	 * Use the regexes to match files as a metadata source
 	 */
 	mergeMetadataWithPathRegexGroup: boolean;
-	/**
-	 * The URL from which Meelo can be reached from
-	 */
-	publicURL: string;
 }

@@ -1,4 +1,5 @@
-import { Test, TestingModule } from "@nestjs/testing";
+import { createTestingModule } from "test/TestModule";
+import type { TestingModule } from "@nestjs/testing";
 import FileManagerModule from "src/file-manager/file-manager.module";
 import FileManagerService from "src/file-manager/file-manager.service";
 import FileModule from "src/file/file.module";
@@ -16,7 +17,7 @@ describe('Library Service', () => {
 	let libraryService: LibraryService;
 
 	beforeAll(async () => {
-		const module: TestingModule = await Test.createTestingModule({
+		const module: TestingModule = await createTestingModule({
 			imports: [LibraryModule, PrismaModule, FileModule, MetadataModule, FileManagerModule, IllustrationModule],
 			providers: [LibraryService],
 		}).overrideProvider(FileManagerService).useClass(FakeFileManagerService).compile();

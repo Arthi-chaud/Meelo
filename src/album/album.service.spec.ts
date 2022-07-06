@@ -1,7 +1,8 @@
 import AlbumService from "./album.service";
 import { Album, AlbumType } from "@prisma/client";
 import ArtistService from "src/artist/artist.service";
-import { Test, TestingModule } from "@nestjs/testing";
+import { createTestingModule } from "test/TestModule";
+import type { TestingModule } from "@nestjs/testing";
 import ArtistModule from "src/artist/artist.module";
 import PrismaModule from "src/prisma/prisma.module";
 import AlbumModule from "./album.module";
@@ -16,7 +17,7 @@ describe('Album Service', () => {
 	let albumService: AlbumService;
 	let artistService: ArtistService;
 	beforeAll(async () => {
-		const module: TestingModule = await Test.createTestingModule({
+		const module: TestingModule = await createTestingModule({
 			imports: [AlbumModule, ArtistModule, PrismaModule],
 			providers: [ArtistService],
 		}).overrideProvider(FileManagerService).useClass(FakeFileManagerService).compile();

@@ -1,4 +1,5 @@
-import { Test, TestingModule } from '@nestjs/testing';
+import { createTestingModule } from "test/TestModule";
+import type { TestingModule } from "@nestjs/testing";
 import { FakeFileManagerService } from 'test/FakeFileManagerModule';
 import SettingsController from './settings.controller';
 import SettingsModule from './settings.module';
@@ -14,7 +15,7 @@ describe('Settings Controller', () => {
 	let app: INestApplication;
 
 	beforeAll(async () => {
-		const module: TestingModule = await Test.createTestingModule({
+		const module: TestingModule = await createTestingModule({
 			imports: [SettingsModule, FileManagerModule],
 			providers: [SettingsController],
 		}).overrideProvider(FileManagerService).useClass(FakeFileManagerService).compile();

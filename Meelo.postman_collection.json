@@ -1,6 +1,6 @@
 {
 	"info": {
-		"_postman_id": "483d55ce-9c8d-4806-ac31-0304c3726941",
+		"_postman_id": "9809e7eb-22d2-4112-b0ab-bc2656a9858b",
 		"name": "Meelo",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
 	},
@@ -54,6 +54,25 @@
 			"response": []
 		},
 		{
+			"name": "Scan Libraries",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "localhost:8080/libraries/scan",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"libraries",
+						"scan"
+					]
+				}
+			},
+			"response": []
+		},
+		{
 			"name": "Get Libraries",
 			"request": {
 				"method": "GET",
@@ -66,6 +85,187 @@
 					"port": "8080",
 					"path": [
 						"libraries"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get Library",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "localhost:8080/libraries",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"libraries"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get All Artists",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8080/artists/",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"artists",
+						""
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get Artist",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8080/artists/madonna",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"artists",
+						"madonna"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get Albums",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8080/albums",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"albums"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get Compilation Albums",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8080/albums/compilations",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"albums",
+						"compilations"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get Albums by Artist",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8080/albums/madonna",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"albums",
+						"madonna"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get Album",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8080/albums/madonna/american-life",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"albums",
+						"madonna",
+						"american-life"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get Release Illustration",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8080/illustrations/avril-lavigne/goodbye-lullaby/goodbye-lullaby-deluxe-edition",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"illustrations",
+						"avril-lavigne",
+						"goodbye-lullaby",
+						"goodbye-lullaby-deluxe-edition"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get Album Illustration",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8080/illustrations/avril-lavigne/goodbye-lullaby",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"illustrations",
+						"avril-lavigne",
+						"goodbye-lullaby"
 					]
 				}
 			},

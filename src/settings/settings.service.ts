@@ -39,7 +39,6 @@ export default class SettingsService {
 		const settingsFields = {
 			'dataFolder': (i: any) => typeof i === 'string',
 			'mergeMetadataWithPathRegexGroup': (i: any) => typeof i === 'boolean',
-			'publicURL': (i: any) => typeof i === 'string',
 			'trackRegex': (i: any) => Array.isArray(i)
 		}
 		let settingField: keyof typeof settingsFields;
@@ -54,8 +53,7 @@ export default class SettingsService {
 		return {
 			dataFolder: object.dataFolder,
 			trackRegex: object.trackRegex,
-			mergeMetadataWithPathRegexGroup: object.mergeMetadataWithPathRegexGroup,
-			publicURL: object.publicURL,
+			mergeMetadataWithPathRegexGroup: object.mergeMetadataWithPathRegexGroup
 		};
 	}
 

@@ -1,4 +1,5 @@
-import { Test, TestingModule } from "@nestjs/testing";
+import { createTestingModule } from "test/TestModule";
+import type { TestingModule } from "@nestjs/testing";
 import type { Album, Artist, Release } from "@prisma/client";
 import { AlbumNotFoundException } from "src/album/album.exceptions";
 import AlbumModule from "src/album/album.module";
@@ -22,7 +23,7 @@ describe('Release Service', () => {
 	let compilationRelease: Release;
 	
 	beforeAll(async () => {
-		const module: TestingModule = await Test.createTestingModule({
+		const module: TestingModule = await createTestingModule({
 			imports: [PrismaModule, AlbumModule, ArtistModule],
 			providers: [ReleaseService, AlbumService, ArtistService],
 		}).overrideProvider(FileManagerService).useClass(FakeFileManagerService).compile();

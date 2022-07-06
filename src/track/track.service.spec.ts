@@ -1,4 +1,5 @@
-import { Test, TestingModule } from "@nestjs/testing";
+import { createTestingModule } from "test/TestModule";
+import type { TestingModule } from "@nestjs/testing";
 import { Album, Artist, File, Library, Release, RipSource, Song, Track, TrackType } from "@prisma/client";
 import AlbumModule from "src/album/album.module";
 import AlbumService from "src/album/album.service";
@@ -48,7 +49,7 @@ describe('Track Service', () => {
 	let track2: Track;
 	
 	beforeAll(async () => {
-		const module: TestingModule = await Test.createTestingModule({
+		const module: TestingModule = await createTestingModule({
 			imports: [PrismaModule, LibraryModule, MetadataModule, IllustrationModule,TrackModule, ArtistModule, SongModule, AlbumModule, ReleaseModule, FileModule, FileManagerModule, SettingsModule],
 			providers: [PrismaService, LibraryService,TrackService, ArtistService, SongService, AlbumService, ReleaseService, FileService, FileManagerService, SettingsService],
 		}).overrideProvider(FileManagerService).useClass(FakeFileManagerService).compile();

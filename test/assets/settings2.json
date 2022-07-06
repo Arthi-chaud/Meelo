@@ -3,6 +3,5 @@
 	"trackRegex": [
 		"^([\\/\\\\]+.*)*[\\/\\\\]*(?<Artist>.+)[\\/\\\\]+(?<Album>.+)(\\s*\\((?<Year>\\d{4})\\))[\\/\\\\]+((?<Disc>[0-9]+)-)?(?<Index>[0-9]+)\\s+(?<Track>.*)\\..*$"
 	],
-	"mergeMetadataWithPathRegexGroup": true,
-	"publicURL": "https://meelo.com"
+	"mergeMetadataWithPathRegexGroup": true
 }
