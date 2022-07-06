@@ -21,12 +21,7 @@ export default class LibraryController {
 	) {
 		return await this.libraryService.getLibraries({}, paginationParameters);
 	}
-
-	@Get(':slug')
-	async getLibrary(@Param('slug', ParseSlugPipe) slug: Slug): Promise<Library> {
-		return await this.libraryService.getLibrary({ slug: slug });
-	}
-	
+		
 	@Get('scan')
 	async scanLibrariesFiles() {
 		const libraries = await this.libraryService.getLibraries({});
@@ -35,6 +30,11 @@ export default class LibraryController {
 			.catch((error) => Logger.error(error))
 		);
 		return `Scanning ${libraries.length} libraries`
+	}
+
+	@Get(':slug')
+	async getLibrary(@Param('slug', ParseSlugPipe) slug: Slug): Promise<Library> {
+		return await this.libraryService.getLibrary({ slug: slug });
 	}
 
 	@Get('clean')
