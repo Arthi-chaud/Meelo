@@ -9,14 +9,19 @@ import SongModule from './song/song.module';
 import SettingsModule from './settings/settings.module';
 import LibraryModule from './library/library.module';
 import IllustrationModule from './illustration/illustration.module';
-import SettingsService from './settings/settings.service';
 import FileManagerModule from './file-manager/file-manager.module';
 import MetadataModule from './metadata/metadata.module';
 import PrismaModule from './prisma/prisma.module';
+import { UrlGeneratorModule, UrlGeneratorModuleOptions } from 'nestjs-url-generator';
 
 @Module({
 	imports: [
 		ConfigModule.forRoot(),
+		UrlGeneratorModule.forRootAsync({
+			useFactory: () => (<UrlGeneratorModuleOptions>{
+				appUrl: process.env.APP_URL!,
+			}),
+		}),
 		SettingsModule,
 		FileManagerModule,
 		FileModule,
@@ -28,8 +33,8 @@ import PrismaModule from './prisma/prisma.module';
 		LibraryModule,
 		IllustrationModule,
 		MetadataModule,
-		PrismaModule,
+		PrismaModule
 	],
-	providers: [SettingsService],
+	providers: [],
 })
-export default class AppModule { }
+export default class AppModule {}

@@ -4245,6 +4245,13 @@ neo-async@^2.6.2:
   resolved "https://registry.npmjs.org/neo-async/-/neo-async-2.6.2.tgz"
   integrity sha512-Yd3UES5mWCSqR+qNT93S3UoYUkqAZ9lLg8a7g9rimsWmYGK8cVToA4/sF3RrshdyV3sAGMXVUmpMYOw+dLpOuw==
 
+nestjs-url-generator@^1.0.1:
+  version "1.0.1"
+  resolved "https://registry.yarnpkg.com/nestjs-url-generator/-/nestjs-url-generator-1.0.1.tgz#fdb6b6cc1f6305ba1f8315ce0f9a8044424cd7af"
+  integrity sha512-i3kF5gPSvtHOLZnE9xAzeE00Bsk7SrpimPJF73LOW3Nx0TY2Szg64Hobn6QtaLe+RgJ7BvuFK+Ldxa/mSGSJ/Q==
+  dependencies:
+    qs "^6.10.1"
+
 node-emoji@1.11.0:
   version "1.11.0"
   resolved "https://registry.npmjs.org/node-emoji/-/node-emoji-1.11.0.tgz"
@@ -4730,6 +4737,13 @@ qs@6.9.7:
   version "6.9.7"
   resolved "https://registry.npmjs.org/qs/-/qs-6.9.7.tgz"
   integrity sha512-IhMFgUmuNpyRfxA90umL7ByLlgRXu6tIfKPpF5TmcfRLlLCckfP/g3IQmju6jjpu+Hh8rA+2p6A27ZSPOOHdKw==
+
+qs@^6.10.1:
+  version "6.11.0"
+  resolved "https://registry.yarnpkg.com/qs/-/qs-6.11.0.tgz#fd0d963446f7a65e1367e01abd85429453f0c37a"
+  integrity sha512-MvjoMCJwEarSbUYk5O+nmoSzSutSsTwF85zcHPQ9OrlFoZOYIjaqBAJIqIXjptyD5vThxGq52Xu/MaJzRkIk4Q==
+  dependencies:
+    side-channel "^1.0.4"
 
 queue-microtask@^1.2.2:
   version "1.2.3"
