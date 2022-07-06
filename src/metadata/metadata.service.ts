@@ -12,6 +12,7 @@ import ReleaseService from 'src/release/release.service';
 import AlbumService from 'src/album/album.service';
 import ArtistService from 'src/artist/artist.service';
 import type TrackQueryParameters from 'src/track/models/track.query-parameters';
+import compilationAlbumArtistKeyword from 'src/utils/compilation';
 
 @Injectable()
 export default class MetadataService {
@@ -80,16 +81,17 @@ export default class MetadataService {
 	 */
 	async parseMetadata(filePath: string): Promise<Metadata> {
 		let fileMetadata: Metadata = await this.parseMetadataFromFile(filePath);
-		
-		if (this.settingsService.settingsValues.mergeMetadataWithPathRegexGroup) {
-			const metadataFromPath: Metadata = this.parseMetadataFromPath(filePath);
-			fileMetadata.discIndex = metadataFromPath.discIndex ?? fileMetadata.discIndex;
-			fileMetadata.index = metadataFromPath.index ?? fileMetadata.index;
-			fileMetadata.release = metadataFromPath.release ?? fileMetadata.release;
-			fileMetadata.releaseDate = metadataFromPath.releaseDate ?? fileMetadata.releaseDate;
-			fileMetadata.albumArtist = metadataFromPath.albumArtist ?? fileMetadata.albumArtist;
+		let pathMetadata: Metadata = this.parseMetadataFromPath(filePath);
+		const settings = this.settingsService.settingsValues;
+
+		if (settings.metadata.order == "only") {
+			if (settings.metadata.source == "path")
+				return pathMetadata;
+			return fileMetadata;
 		}
-		return fileMetadata;
+		if (settings.metadata.source == "path")
+			return this.mergeMetadata(pathMetadata, fileMetadata);
+		return this.mergeMetadata(fileMetadata, pathMetadata);
 	}
 
 	/**
@@ -97,7 +99,7 @@ export default class MetadataService {
 	 * @param filePath the full path to a file to parse
 	 * @returns a Metadata object
 	 */
-	private async parseMetadataFromFile(filePath: string): Promise<Metadata> {
+	async parseMetadataFromFile(filePath: string): Promise<Metadata> {
 		if (!this.fileManagerService.fileExists(filePath)) {
 			throw new FileDoesNotExistException(filePath);
 		}
@@ -128,7 +130,9 @@ export default class MetadataService {
 				.find((regexMatch) => regexMatch != null)!;
 			let groups = matchingRegex.groups!;
 			return {
-				albumArtist: groups['Artist'] ?? undefined,
+				compilation: groups['AlbumArtist'] === compilationAlbumArtistKeyword,
+				albumArtist: groups['AlbumArtist'] ?? undefined,
+				artist: groups['Artist'] ?? undefined,
 				release: groups['Release'] ?? undefined,
 				album: groups['Album'] ?? undefined,
 				releaseDate: groups['Year'] ? new Date(groups['Year']) : undefined,
@@ -156,6 +160,29 @@ export default class MetadataService {
 			duration: rawMetadata.format.duration ? Math.floor(rawMetadata.format.duration) : undefined,
 			releaseDate: rawMetadata.common.date ? new Date(rawMetadata.common.date) : undefined,
 			type: isVideo ? TrackType.Video : TrackType.Audio
+		};
+	}
+
+	/**
+	 * Merge two metadata objects
+	 * @param metadata1 the 'base' metadata. Undefined fields will be overriden by `metadata2`'s
+	 * @param metadata2 the second metadata object
+	 * @returns the merged metadata
+	 */
+	private mergeMetadata(metadata1: Metadata, metadata2: Metadata): Metadata {
+		return <Metadata>{
+			compilation: metadata1.compilation ?? metadata2.compilation,
+			artist: metadata1.artist ?? metadata2.artist,
+			albumArtist: metadata1.albumArtist ?? metadata2.albumArtist,
+			album: metadata1.album ?? metadata2.album,
+			release: metadata1.release ?? metadata2.release,
+			name: metadata1.name ?? metadata2.name,
+			releaseDate: metadata1.releaseDate ?? metadata2.releaseDate,
+			index: metadata1.index ?? metadata2.index,
+			discIndex: metadata1.discIndex ?? metadata2.discIndex,
+			bitrate: metadata1.bitrate ?? metadata2.bitrate,
+			duration: metadata1.duration ?? metadata2.duration,
+			type: metadata1.type ?? metadata2.type,
 		};
 	}
 
