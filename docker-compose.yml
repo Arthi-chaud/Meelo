@@ -1,0 +1,25 @@
+services:
+  meelo:
+    build:
+      context: ./
+    ports:
+      - "${BACK_PORT}:3000"
+    depends_on:
+      - "meelo_db"
+    volumes:
+      - config:/meelo
+      - data:/data
+    env_file:
+      - .env
+    environment:
+      - DATABASE_URL=postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@${POSTGRES_HOST}:5432/${POSTGRES_DB}
+  meelo_db:
+    image: postgres:alpine3.14
+    env_file:
+      - .env
+    volumes:
+      - db:/var/lib/postgresql/data
+  volumes:
+    db:
+    config:
+    data:

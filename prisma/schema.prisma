@@ -1,0 +1,173 @@
+datasource db {
+	provider	= "postgresql"
+	url			= env("DATABASE_URL")
+}
+
+generator client {
+  	provider 	= "prisma-client-js"
+}
+
+/////// Models
+
+enum AlbumType {
+	/// Describes is an original collection of studio recordings
+	StudioRecording
+	/// Describes a collection of live recordings
+	LiveRecording
+	/// Describes a collection of recordings that do not come from a common studio album or artist
+	Compilation
+	/// Describes a collection of track, usually below 10, that are related to a single song, of songs from a common era
+	Single
+}
+/// An album is a record of releases.
+model Album {
+	id				Int		@id @default(autoincrement())
+	/// The title of the album
+	/// It should not include descriptive suffixes like 'Deluxe Edition' of 'Explicit Version' 
+	name			String
+	/// The slug of the album, based on its name
+	slug			String
+	/// The date of the first release of the album
+	releaseDate		DateTime?
+	/// Collections of related releases
+	releases		Release[]
+	/// Describes the type of the album
+	type			AlbumType	@default(StudioRecording)
+	/// The artist of the album
+	/// This field is nullable, as albums may not have an entitled artist, like compilations
+	artist			Artist?		@relation(fields: [artistId], references: [id], onDelete: Cascade)
+	artistId		Int?
+	@@unique([slug, artistId])
+}
+
+/// An artist is a person who has albums
+model Artist {
+	id				Int		@id @default(autoincrement())
+	/// The name of the artist
+	name			String
+	/// The slug of the artist, based on their name
+	slug			String	@unique
+	/// The collection of related albums
+	albums			Album[]
+	/// The collection of relates songs
+	songs			Song[]
+}
+
+/// A file represent the source file from which a track is imported
+model File {
+	id				Int		@id @default(autoincrement())
+	/// The path of the file, relate to the parent library
+	path			String	@unique
+	/// @Is('MD5 Checksum', (value) => RegExp('^[a-f0-9]{32}$').test(value))
+	/// MD5 checksum of the file
+	md5Checksum		String
+	/// Date of the file's registration
+	registerDate	DateTime
+	/// Track on the file
+	track			Track?
+	/// Library the file is registered under
+	library			Library	@relation(fields: [libraryId], references: id, onDelete: Cascade)
+	libraryId		Int
+}
+
+/// A Library groups files under a given path
+model Library {
+	id				Int		@id @default(autoincrement())
+	/// The name of the library, whose slug will be built from
+	name			String	@unique
+	/// Slug of the library, based on its name
+	slug			String	@unique
+	/// Path of the library, relative to 'dataFolder' from settings.json
+	path			String	@unique
+	/// Files from the library
+	files			File[]
+}
+
+/// A release is 'an instance' of an Album
+model Release {
+	id				Int		@id @default(autoincrement())
+	/// The name of the release
+	title			String
+	/// The sluf of the release
+	slug			String
+	/// The date of the release
+	releaseDate		DateTime?
+	/// Is this release the 'main' / 'most used' version of the Album
+	master			Boolean	@default(false)
+	/// The tracks on the release
+	tracks			Track[]
+	/// The reference Album
+	album			Album		@relation(fields: [albumId], references: [id], onDelete: Cascade)
+	albumId			Int
+	@@unique([albumId, slug])
+}
+/// A song is described by a title, an artist, and 'instanciated' by Tracks
+model Song {
+	id				Int		@id @default(autoincrement())
+	/// The name of the track
+	name			String
+	slug			String
+	/// The artist of the song
+	artist			Artist	@relation(fields: [artistId], references: [id], onDelete: Cascade)
+	artistId		Int
+	/// The number of times, the song was played
+	playCount		Int		@default(0)
+	instances		Track[]
+	@@unique([slug, artistId])
+}
+
+/// Enumeration of the different sources of a track rip
+enum RipSource {
+	/// Extracted from an Audio CD
+	CD
+	/// Extracted from a DVD
+	DVD
+	/// Extracted from a Blu-Ray disc
+	BluRay
+	/// Ripped from an Audio Tape
+	Cassette
+	/// Ripped from an Vinyl Record
+	Vinyl
+	/// Digital source
+	Digital
+	/// Other rip source
+	Other
+}
+
+/// Enumeration of forms a Track can be
+enum TrackType {
+	/// Audio, sound but no video
+	Audio
+	/// Video, for example: Music Video
+	Video
+}
+
+/// An track is an 'instance' of a song
+model Track {
+	id				Int		@id @default(autoincrement())
+	/// The reference song
+	song 			Song	@relation(fields: [songId], references: [id], onDelete: Cascade)
+	songId			Int
+	/// The parent release the track can be found on
+	release 		Release	@relation(fields: [releaseId], references: [id], onDelete: Cascade)
+	releaseId		Int
+	/// The display name of the track
+	displayName		String
+	/// Is this track the 'main' one
+	master			Boolean	@default(false)
+	/// The index of the disc the track is on
+	discIndex		Int?
+	/// The index of the track on the disc
+	trackIndex		Int?
+	/// Type of track (Audio or Video)
+	type			TrackType
+	/// Bitrate, i kbps
+	bitrate			Int
+	/// The type of source the track is ripped from
+	ripSource		RipSource?
+	/// The duration in seconds of the track
+	duration		Int
+	/// The track from the file
+	sourceFile			File	@relation(fields: [sourceFileId], references: [id], onDelete: Cascade)
+	sourceFileId		Int		@unique
+}

@@ -1,6 +1,9 @@
-FROM node:17 AS builder
+FROM node:17
 WORKDIR /app
-COPY ./package.json ./
+COPY *.json ./
+COPY *.lock ./
 RUN yarn install
 COPY . .
-CMD [ "yarn" , "run", "start:dev"]
+RUN yarn run prisma generate
+RUN yarn run build
+CMD yarn run prisma migrate dev ; yarn run start:dev

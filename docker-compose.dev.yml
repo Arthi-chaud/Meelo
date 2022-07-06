@@ -1,0 +1,18 @@
+services:
+  server:
+    build:
+      context: ./
+      dockerfile: Dockerfile.dev
+    ports:
+      - ${BACK_PORT}:3000
+    depends_on:
+      - "db"
+    volumes:
+      - ./meelo:/meelo
+      - ./src:/app/src
+      - ./prisma:/app/prisma
+      - ./data:/data
+  db:
+    image: postgres:alpine3.16
+    env_file:
+      - .env

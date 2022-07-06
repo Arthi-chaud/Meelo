@@ -1,0 +1,23 @@
+name: Build
+
+on:
+  push:
+    branches:
+      - '*'
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: "Create .env file"
+        run: |
+          echo "BACK_PORT=8080" > .env
+          echo 'DATABASE_URL="postgresql://test:test@postgres:5432/test?schema=public"' >> .env
+      - name: Build Containers
+        run: docker-compose -f docker-compose.dev.yml build
+      - name: Start Meelo
+        run: docker-compose -f docker-compose.dev.yml up -d
+      - name: Stop Meelo
+        run: docker-compose -f docker-compose.dev.yml stop
