@@ -4,5 +4,8 @@
 		"regex1",
 		"regex2"
 	],
-	"mergeMetadataWithPathRegexGroup": true
+	"metadata": {
+		"source": "embedded",
+		"order": "only"
+	}
 }

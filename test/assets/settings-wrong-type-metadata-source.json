@@ -1,8 +1,10 @@
 {
 	"dataFolder": "/data",
-	"trackRegex": [],
+	"trackRegex": [
+		"regex1"
+	],
 	"metadata": {
-		"source": "embedded",
+		"source": "lastfm",
 		"order": "only"
 	}
 }

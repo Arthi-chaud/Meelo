@@ -1,3 +1,6 @@
+
+export const metadataSourceValue = ["path", "embedded"] as const;
+export const metadataOrderValue = ["only", "preferred"] as const;
 /**
  * Global settings of the Meelo server
  */
@@ -11,7 +14,10 @@ export default interface Settings {
 	 */
 	trackRegex: string[];
 	/**
-	 * Use the regexes to match files as a metadata source
+	 * Defines the metadata parsing policy
 	 */
-	mergeMetadataWithPathRegexGroup: boolean;
+	metadata: {
+		source: typeof metadataSourceValue[number],
+		order: typeof metadataOrderValue[number],
+	};
 }

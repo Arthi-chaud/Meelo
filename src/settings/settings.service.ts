@@ -1,6 +1,7 @@
 import { forwardRef, Inject, Injectable } from '@nestjs/common';
 import FileManagerService from 'src/file-manager/file-manager.service';
 import type Settings from './models/settings';
+import { metadataOrderValue, metadataSourceValue } from './models/settings';
 import { InvalidSettingsFileException, InvalidSettingsTypeException, MissingSettingsException, SettingsFileNotFoundException } from './settings.exception';
 
 @Injectable()
@@ -38,8 +39,17 @@ export default class SettingsService {
 	private buildSettings(object: any): Settings {
 		const settingsFields = {
 			'dataFolder': (i: any) => typeof i === 'string',
-			'mergeMetadataWithPathRegexGroup': (i: any) => typeof i === 'boolean',
-			'trackRegex': (i: any) => Array.isArray(i)
+			'trackRegex': (i: any) => Array.isArray(i),
+			'metadata': (i: any) => {
+				if (typeof i !== 'object')
+					return false
+				if (i.source === undefined)
+					throw new MissingSettingsException('source');
+				else if (i.order === undefined)
+					throw new MissingSettingsException('order');
+				return metadataSourceValue.includes(i.source) == true &&
+					metadataOrderValue.includes(i.order) == true
+			}
 		}
 		let settingField: keyof typeof settingsFields;
 		for (settingField in settingsFields) {
@@ -53,7 +63,7 @@ export default class SettingsService {
 		return {
 			dataFolder: object.dataFolder,
 			trackRegex: object.trackRegex,
-			mergeMetadataWithPathRegexGroup: object.mergeMetadataWithPathRegexGroup
+			metadata: object.metadata
 		};
 	}
 
