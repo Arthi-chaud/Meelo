@@ -11,7 +11,6 @@ import { TrackType, AlbumType, File, Track} from '@prisma/client';
 import ReleaseService from 'src/release/release.service';
 import AlbumService from 'src/album/album.service';
 import ArtistService from 'src/artist/artist.service';
-import Slug from 'src/slug/slug';
 import type TrackQueryParameters from 'src/track/models/track.query-parameters';
 
 @Injectable()
@@ -34,13 +33,14 @@ export default class MetadataService {
 	 * @param file the file to register the metadata under, it must be already registered
 	 */
 	async registerMetadata(metadata : Metadata, file: File): Promise<Track> {
-		let artist = metadata.albumArtist ? await this.artistService.getOrCreateArtist({ name: metadata.albumArtist }) : undefined
+		let albumArtist = metadata.albumArtist ? await this.artistService.getOrCreateArtist({ name: metadata.albumArtist }) : undefined;
+		let songArtist = await this.artistService.getOrCreateArtist({ name: metadata.artist ?? metadata.albumArtist! });
 		let song = await this.songService.getOrCreateSong(
-			{ name: metadata.name!, artist: { slug: new Slug(metadata.artist ?? metadata.albumArtist!) }},
+			{ name: metadata.name!, artist: { id: songArtist.id }},
 			{ instances: true });
 		let album = await this.albumService.getOrCreateAlbum({
 			name: this.removeReleaseExtension(metadata.album ?? metadata.release!),
-			artist: artist ? { id: artist?.id} : undefined
+			artist: albumArtist ? { id: albumArtist?.id} : undefined
 		}, { releases: true });
 		let release = await this.releaseService.getOrCreateRelease({
 			title: metadata.release ?? metadata.album!,
