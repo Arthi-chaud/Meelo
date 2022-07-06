@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Param, Post, Query } from '@nestjs/common';
+import { Body, Controller, Get, Logger, Param, Post, Query } from '@nestjs/common';
 import { ParseSlugPipe } from 'src/slug/pipe';
 import Slug from 'src/slug/slug';
 import LibraryService from './library.service';
@@ -16,37 +16,49 @@ export default class LibraryController {
 		return await this.libraryService.createLibrary(createLibraryDto);
 	}
 	@Get()
-	async getLibraries(@Query(ParsePaginationParameterPipe) paginationParameters: PaginationParameters) {
+	async getLibraries(
+		@Query(ParsePaginationParameterPipe) paginationParameters: PaginationParameters
+	) {
 		return await this.libraryService.getLibraries({}, paginationParameters);
-	}
-	
-	@Get('scan')
-	async scanLibrariesFiles() {
-		const libraries = await this.libraryService.getLibraries({});
-		libraries.forEach((library) => this.libraryService.registerNewFiles(library));
-		return `Scanning ${libraries.length} libraries`
-	}
-
-	@Get('clean')
-	async cleanLibraries() {
-		const libraries = await this.libraryService.getLibraries({});
-		libraries.forEach((library) => this.libraryService.unregisterUnavailableFiles(new Slug(library.slug)));
-		return `Cleanning ${libraries.length} libraries`;
 	}
 
 	@Get(':slug')
 	async getLibrary(@Param('slug', ParseSlugPipe) slug: Slug): Promise<Library> {
 		return await this.libraryService.getLibrary({ slug: slug });
 	}
+	
+	@Get('scan')
+	async scanLibrariesFiles() {
+		const libraries = await this.libraryService.getLibraries({});
+		libraries.forEach((library) => this.libraryService
+			.registerNewFiles(library)
+			.catch((error) => Logger.error(error))
+		);
+		return `Scanning ${libraries.length} libraries`
+	}
+
+	@Get('clean')
+	async cleanLibraries() {
+		const libraries = await this.libraryService.getLibraries({});
+		libraries.forEach((library) => this.libraryService
+			.unregisterUnavailableFiles(new Slug(library.slug))
+			.catch((error) => Logger.error(error))
+		);
+		return `Cleanning ${libraries.length} libraries`;
+	}
 
 	@Get('scan/:slug')
 	async scanLibraryFiles(@Param('slug', ParseSlugPipe) slug: Slug) {
-		let library = await this.getLibrary(slug);
-		this.libraryService.registerNewFiles(library);
+		let library = await this.libraryService.getLibrary({ slug: slug });
+		this.libraryService
+			.registerNewFiles(library)
+			.catch((error) => Logger.error(error));
 	}
 
 	@Get('clean/:slug')
 	async cleanLibrary(@Param('slug', ParseSlugPipe) slug: Slug) {
-		await this.libraryService.unregisterUnavailableFiles(slug);
+		this.libraryService
+			.unregisterUnavailableFiles(slug)
+			.catch((error) => Logger.error(error));
 	}
 }
