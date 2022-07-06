@@ -114,6 +114,14 @@ export default class IllustrationService implements OnModuleInit {
 	}
 
 	/**
+	 * @param illustrationPath full path to an illustration 
+	 * @returns true if the illustration file exists, false otherwire
+	 */
+	illustrationExists(illustrationPath: IllustrationPath) {
+		return this.fileManagerService.fileExists(illustrationPath);
+	}
+
+	/**
 	 * Extracts the embedded illustration in a track file
 	 * If no illustration is embedded, returns null
 	 * If the embedded illustration is the same as the release's, nothing is done and return null
@@ -216,7 +224,6 @@ export default class IllustrationService implements OnModuleInit {
 	 * @param outPath path and name of the file to save the fileContent as
 	 */
 	private async saveIllustration(fileContent: Buffer, outPath: IllustrationPath) {
-		console.log(fileContent);
 		let image = await Jimp.read(fileContent);
 		fs.mkdir(dir.dirname(outPath), { recursive: true }, function (_err) {});
 		image.write(outPath);
