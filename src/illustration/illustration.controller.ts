@@ -15,7 +15,7 @@ export default class IllustrationController {
 		private fileManagerService: FileManagerService
 	) {}
 
-	@Get('/:artist')
+	@Get(':artist')
 	async getArtistIllustration(
 		@Param('artist', ParseArtistSlugPipe) artistSlug: Slug | undefined,
 		@Response({ passthrough: true }) res: Response) {
@@ -30,7 +30,7 @@ export default class IllustrationController {
 		}
 	}
 
-	@Post('/:artist')
+	@Post(':artist')
 	async updateArtistIllustration(
 		@Param('artist', ParseArtistSlugPipe) artistSlug: Slug | undefined,
 		@Body() illustrationDto: IllustrationDownloadDto) {
@@ -42,7 +42,7 @@ export default class IllustrationController {
 	}
 
 
-	@Get('/:artist/:album')
+	@Get(':artist/:album')
 	async getMasterIllustration(
 		@Param('artist', ParseArtistSlugPipe) artistSlug: Slug | undefined,
 		@Param('album', ParseSlugPipe) albumSlug: Slug,
@@ -58,7 +58,7 @@ export default class IllustrationController {
 		}
 	}
 
-	@Get('/:artist/:album/:release')
+	@Get(':artist/:album/:release')
 	async getReleaseIllustration(
 		@Param('artist', ParseArtistSlugPipe) artistSlug: Slug | undefined,
 		@Param('album', ParseSlugPipe) albumSlug: Slug,
@@ -76,7 +76,7 @@ export default class IllustrationController {
 	}
 
 
-	@Post('/:artist/:album/:release')
+	@Post(':artist/:album/:release')
 	async updateReleaseIllustration(
 		@Param('artist', ParseArtistSlugPipe) artistSlug: Slug | undefined,
 		@Param('album', ParseSlugPipe) albumSlug: Slug,

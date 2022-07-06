@@ -1,4 +1,4 @@
-import { forwardRef, Module } from '@nestjs/common';
+import { Module } from '@nestjs/common';
 import { HttpModule } from '@nestjs/axios';
 import IllustrationService from './illustration.service';
 import IllustrationController from './illustration.controller';
@@ -11,7 +11,7 @@ import AlbumModule from 'src/album/album.module';
 		FileManagerModule,
 		ReleaseModule,
 		HttpModule,
-		forwardRef(() => AlbumModule)
+		AlbumModule
 	],
 	providers: [IllustrationService],
 	exports: [IllustrationService],
