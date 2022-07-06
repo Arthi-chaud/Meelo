@@ -1,19 +1,19 @@
-import { Controller, forwardRef, Get, Inject, Param, Query } from '@nestjs/common';
+import { Controller, Get, Param, Query } from '@nestjs/common';
 import type { Album, Artist } from '@prisma/client';
-import IllustrationService from 'src/illustration/illustration.service';
-import type { IllustrationPath } from 'src/illustration/models/illustration-path.model';
+import { UrlGeneratorService } from 'nestjs-url-generator';
+import IllustrationController from 'src/illustration/illustration.controller';
 import type { PaginationParameters } from 'src/pagination/parameters';
 import ParsePaginationParameterPipe from 'src/pagination/pipe';
 import { ParseArtistSlugPipe, ParseSlugPipe } from 'src/slug/pipe';
 import Slug from 'src/slug/slug';
+import compilationAlbumArtistKeyword from 'src/utils/compilation';
 import AlbumService from './album.service';
 
 @Controller('albums')
 export default class AlbumController {
 	constructor(
 		private albumService: AlbumService,
-		@Inject(forwardRef(() => IllustrationService))
-		private illustrationService: IllustrationService
+		private readonly urlGeneratorService: UrlGeneratorService
 	) {}
 
 	@Get()
@@ -32,7 +32,7 @@ export default class AlbumController {
 		@Param('artist', ParseArtistSlugPipe) artistSlug: Slug | undefined
 	) {
 		let albums = await this.albumService.getAlbums({
-			byArtist: artistSlug ? { slug: artistSlug } : undefined
+			byArtist: artistSlug ? { slug: artistSlug } : null
 		}, paginationParameters);
 		return albums.map(
 			(album) => this.buildAlbumResponse(album)
@@ -54,15 +54,18 @@ export default class AlbumController {
 	}
 
 	private buildAlbumResponse(album: Album & { artist: Artist | null }) {
-		let illustrationPath: IllustrationPath | null = this.illustrationService.buildAlbumIllustrationFolderPath(
-			new Slug(album.slug),
-			album.artist ? new Slug(album.artist.slug) : undefined
-		);
-		if (this.illustrationService.illustrationExists(illustrationPath) == false)
-			illustrationPath = null;
 		return {
 			...album,
-			illustration: illustrationPath
-		}
+			illustration: this.urlGeneratorService.generateUrlFromController({
+				controller: IllustrationController,
+				controllerMethod: IllustrationController.prototype.getMasterIllustration,
+				params: {
+					artist: album.artist
+						? album.artist.slug
+						: compilationAlbumArtistKeyword,
+					album: album.slug
+				}
+			})
+		};
 	}
 }
