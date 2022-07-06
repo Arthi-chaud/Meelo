@@ -1,4 +1,7 @@
 {
 	"dataFolder": "/var/lib/meelo",
-	"mergeMetadataWithPathRegexGroup": true
+	"metadata": {
+		"source": "embedded",
+		"order": "only"
+	}
 }

@@ -43,7 +43,10 @@ describe('Settings Service', () => {
 			expect(settingsService.settingsValues).toStrictEqual(<Settings>{
 				dataFolder: '/var/lib/meelo',
 				trackRegex: ['regex1', 'regex2'],
-				mergeMetadataWithPathRegexGroup: true
+				metadata: {
+					source: "embedded",
+					order: "only"
+				}
 			})
 		});
 
@@ -67,12 +70,25 @@ describe('Settings Service', () => {
 			expectExceptionWhenParsing('settings-missing-data-folder.json', MissingSettingsException);
 		});
 
+		it('should throw because the file is missing the metadata', async () => {
+			expectExceptionWhenParsing('settings-missing-metadata.json', MissingSettingsException);
+		});
+
+		it('should throw because the file is missing the metadata order', async () => {
+			expectExceptionWhenParsing('settings-missing-metadata-order.json', MissingSettingsException);
+		});
+
+		it('should throw because the file is missing the metadata source', async () => {
+			expectExceptionWhenParsing('settings-missing-metadata-source.json', MissingSettingsException);
+		});
+
 		it('should throw because the RegExp array is empty', async () => {
 			expectExceptionWhenParsing('settings-empty-regex.json', InvalidSettingsFileException);
 		});
 
 		it('should throw because a field data type is incorrect', async () => {
 			expectExceptionWhenParsing('settings-wrong-type.json', InvalidSettingsTypeException);
+			expectExceptionWhenParsing('settings-wrong-type-metadata-source.json', InvalidSettingsTypeException);
 		});
 	});
 })
