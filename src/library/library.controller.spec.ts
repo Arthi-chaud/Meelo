@@ -102,10 +102,11 @@ describe('Library Controller', () => {
 				.get('/libraries/my-library-1')
 				.expect(200)
 				.expect((res) => {
-					const library: Library = res.body;
+					const library = res.body;
 					expect(library.slug).toBe('my-library-1');
 					expect(library.name).toBe('My Library 1');
 					expect(library.path).toBe('/Music');
+					expect(library.files).toBeUndefined();
 				});
 		});
 
@@ -113,6 +114,40 @@ describe('Library Controller', () => {
 			return request(app.getHttpServer())
 				.get('/libraries/my-library-3')
 				.expect(404);
+		});
+	});
+
+	describe('Get a Library (GET /libraries/:library) w/ relation include query params', () => {
+		it("should get the library, with its files", async () => {
+			return request(app.getHttpServer())
+				.get('/libraries/my-library-1?with=files')
+				.expect(200)
+				.expect((res) => {
+					const library: Library & { files: File[] } = res.body;
+					expect(library.slug).toBe('my-library-1');
+					expect(library.name).toBe('My Library 1');
+					expect(library.path).toBe('/Music');
+					expect(library.files).toStrictEqual([]);
+				});
+		});
+
+		it("should get the library, w/ empty query parameter", async () => {
+			return request(app.getHttpServer())
+				.get('/libraries/my-library-1?with=')
+				.expect(200)
+				.expect((res) => {
+					const library: Library & { files: File[] } = res.body;
+					expect(library.slug).toBe('my-library-1');
+					expect(library.name).toBe('My Library 1');
+					expect(library.path).toBe('/Music');
+					expect(library.files).toBeUndefined();
+				});
+		});
+
+		it("should throw, as the requested relation does not exist", async () => {
+			return request(app.getHttpServer())
+				.get('/libraries/my-library-1?with=file')
+				.expect(400);
 		});
 	});
 

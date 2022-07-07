@@ -4,6 +4,7 @@ import type OmitId from "src/utils/omit-id";
 import type OmitSlug from "src/utils/omit-slug";
 import type RequireOnlyOne from "src/utils/require-only-one";
 import { buildStringSearchParameters, SearchStringInput } from "src/utils/search-string-input";
+import type { RelationInclude as BaseRelationInclude } from "src/relation-include/models/relation-include" ;
 
 namespace LibraryQueryParameters {
 
@@ -56,8 +57,8 @@ namespace LibraryQueryParameters {
 	/**
 	 * The relation field to include in a returned library
 	 */
-	export type AvailableIncludes = ['files'];
-	export type RelationInclude = Partial<Record<AvailableIncludes[number], boolean>>;
+	export const AvailableIncludes = ['files'] as const;
+	export type RelationInclude = BaseRelationInclude<typeof AvailableIncludes>;
 	/**
 	 * Build the query parameters for ORM to include relations
 	 * @returns the ORM-ready query parameters

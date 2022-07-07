@@ -6,6 +6,8 @@ import { LibraryDto } from './models/library.dto';
 import type { Library } from '@prisma/client';
 import ParsePaginationParameterPipe from 'src/pagination/pipe';
 import type { PaginationParameters } from 'src/pagination/parameters';
+import LibraryQueryParameters from './models/library.query-parameters';
+import ParseRelationIncludePipe from 'src/relation-include/relation-include.pipe';
 
 @Controller('libraries')
 export default class LibraryController {
@@ -33,8 +35,11 @@ export default class LibraryController {
 	}
 
 	@Get(':slug')
-	async getLibrary(@Param('slug', ParseSlugPipe) slug: Slug): Promise<Library> {
-		return await this.libraryService.getLibrary({ slug: slug });
+	async getLibrary(
+		@Param('slug', ParseSlugPipe) slug: Slug,
+		@Query('with', new ParseRelationIncludePipe(LibraryQueryParameters.AvailableIncludes)) relationInclude: LibraryQueryParameters.RelationInclude
+	): Promise<Library> {
+		return await this.libraryService.getLibrary({ slug: slug }, relationInclude);
 	}
 
 	@Get('clean')

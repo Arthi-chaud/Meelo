@@ -9,6 +9,7 @@ import type RequireAtLeastOne from "src/utils/require-at-least-one";
 import type RequireOnlyOne from "src/utils/require-only-one"
 import type { SearchDateInput } from "src/utils/search-date-input";
 import { buildStringSearchParameters, SearchStringInput } from "src/utils/search-string-input";
+import type { RelationInclude as BaseRelationInclude } from "src/relation-include/models/relation-include" ;
 
 namespace AlbumQueryParameters {
 
@@ -95,10 +96,8 @@ namespace AlbumQueryParameters {
 	/**
 	 * Defines what relations to include in query
 	 */
-	export type RelationInclude = Partial<{
-		releases: boolean,
-		artist: boolean
-	}>;
+	export const AvailableIncludes = ['releases', 'artist'] as const;
+	export type RelationInclude = BaseRelationInclude<typeof AvailableIncludes>;
 
 	/**
 	 * Build the query parameters for ORM to include relations

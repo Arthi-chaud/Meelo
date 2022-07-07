@@ -6,6 +6,7 @@ import type OmitId from "src/utils/omit-id";
 import type OmitReleaseDate from "src/utils/omit-release-date";
 import type OmitSlug from "src/utils/omit-slug";
 import type RequireOnlyOne from "src/utils/require-only-one"
+import type { RelationInclude as BaseRelationInclude } from "src/relation-include/models/relation-include" ;
 
 namespace ReleaseQueryParameters {
 
@@ -91,10 +92,8 @@ namespace ReleaseQueryParameters {
 	/**
 	 * Defines what relations to include in query
 	 */
-	export type RelationInclude = Partial<{
-		album: boolean,
-		tracks: boolean
-	}>;
+	export const AvailableIncludes = ['album', 'tracks'] as const;
+	export type RelationInclude = BaseRelationInclude<typeof AvailableIncludes>;
 	/**
 	 * Build the query parameters for ORM to include relations
 	 * @returns the ORM-ready query parameters
