@@ -37,14 +37,14 @@ describe('Metadata Service', () => {
 			expect(test).toThrow(PathParsingException);
 		});
 
-		it("should extract the metadata values from the path (all fields)", () => {
+		it("should extract the metadata values from the path", () => {
 			let parsedValues: Metadata = metadataService.parseMetadataFromPath(
-				'/data/My Artist/My Album (2006)/1-02 My Track.m4a'
+				'/data/My Album Artist/My Album (2006)/1-02 My Track (My Artist).m4a'
 			);
 			
 			expect(parsedValues).toStrictEqual(<Metadata>{
+				albumArtist: 'My Album Artist',
 				artist: 'My Artist',
-				albumArtist: undefined,
 				compilation: false,
 				album: 'My Album',
 				release: undefined,
@@ -55,27 +55,26 @@ describe('Metadata Service', () => {
 			});
 		});
 
-		it("should extract the metadata values from the file's tags", async () => {
-			let parsedValues: Metadata = await metadataService.parseMetadataFromFile(
-				'test/assets/dreams.m4a'
+		it("should extract the metadata values from the path (compilation)", () => {
+			let parsedValues: Metadata = metadataService.parseMetadataFromPath(
+				'/data/Compilations/My Album (2006)/1-02 My Track.m4a'
 			);
 			
 			expect(parsedValues).toStrictEqual(<Metadata>{
-				compilation: false,
-				artist: 'My Artist',
-				albumArtist: 'My Album Artist',
+				artist: undefined,
+				albumArtist: undefined,
+				compilation: true,
 				album: 'My Album',
-				release: 'My Album',
-				name: 'Dreams',
-				releaseDate: new Date('2007'),
-				index: 3,
-				discIndex: 2,
-				bitrate: 133,
-				duration: 210,
-				type: TrackType.Audio,
+				release: undefined,
+				releaseDate: new Date('2006'),
+				discIndex: 1,
+				index: 2,
+				name: 'My Track'
 			});
 		});
+	});
 
+	describe('Parse Metadata from embedded metadata', () => {
 		it("should extract the metadata values from the file's tags", async () => {
 			let parsedValues: Metadata = await metadataService.parseMetadataFromFile(
 				'test/assets/dreams.m4a'

@@ -129,9 +129,11 @@ export default class MetadataService {
 				.map((regex) => filePath.match(regex))
 				.find((regexMatch) => regexMatch != null)!;
 			let groups = matchingRegex.groups!;
+			const isCompilation = groups['AlbumArtist']?.toLocaleLowerCase() === compilationAlbumArtistKeyword ||
+			groups['Artist']?.toLocaleLowerCase() === compilationAlbumArtistKeyword;
 			return {
-				compilation: groups['AlbumArtist'] === compilationAlbumArtistKeyword,
-				albumArtist: groups['AlbumArtist'] ?? undefined,
+				compilation: isCompilation,
+				albumArtist: isCompilation ? undefined : (groups['AlbumArtist'] ?? undefined),
 				artist: groups['Artist'] ?? undefined,
 				release: groups['Release'] ?? undefined,
 				album: groups['Album'] ?? undefined,
@@ -150,7 +152,7 @@ export default class MetadataService {
 		return {
 			compilation: rawMetadata.common.compilation ?? false,
 			artist: rawMetadata.common.artist,
-			albumArtist: rawMetadata.common.albumartist,
+			albumArtist: rawMetadata.common.compilation ? undefined : rawMetadata.common.albumartist,
 			album: rawMetadata.common.album,
 			release: rawMetadata.common.album,
 			name: rawMetadata.common.title,
