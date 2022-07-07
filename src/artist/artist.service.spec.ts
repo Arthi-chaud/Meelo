@@ -107,5 +107,5 @@ describe('Artist Service', () => {
 			const test = async () => artistService.getArtist(albumQueryParameters);
 			expect(test()).rejects.toThrow(ArtistNotFoundException); 
 		});
-	})
+	});
 })

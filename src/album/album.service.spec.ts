@@ -225,5 +225,5 @@ describe('Album Service', () => {
 			const test = async () => albumService.getAlbum(albumQueryParameters);
 			expect(test()).rejects.toThrow(AlbumNotFoundException); 
 		});
-	})
+	});
 });
