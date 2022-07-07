@@ -94,6 +94,11 @@ namespace AlbumQueryParameters {
 	export type GetOrCreateInput = CreateInput;
 
 	/**
+	 * Query parameters to delete one album
+	 */
+	 export type DeleteInput = Required<Pick<WhereInput, 'byId'>>;
+
+	/**
 	 * Defines what relations to include in query
 	 */
 	export const AvailableIncludes = ['releases', 'artist'] as const;

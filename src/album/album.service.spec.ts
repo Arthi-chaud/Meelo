@@ -9,13 +9,14 @@ import AlbumModule from "./album.module";
 import FileManagerService from "src/file-manager/file-manager.service";
 import { FakeFileManagerService } from "test/FakeFileManagerModule";
 import PrismaService from "src/prisma/prisma.service";
-import { AlbumAlreadyExistsException, AlbumNotFoundException, AlbumNotFoundFromIDException } from "./album.exceptions";
+import { AlbumAlreadyExistsException, AlbumNotFoundFromIDException } from "./album.exceptions";
 import Slug from "src/slug/slug";
 import { ArtistNotFoundException } from "src/artist/artist.exceptions";
 
 describe('Album Service', () => {
 	let albumService: AlbumService;
 	let artistService: ArtistService;
+	let album: Album;
 	beforeAll(async () => {
 		const module: TestingModule = await createTestingModule({
 			imports: [AlbumModule, ArtistModule, PrismaModule],
@@ -61,7 +62,7 @@ describe('Album Service', () => {
 	describe('Create an album', () => {
 		describe('No artist', () => {
 			it('should create an album (no artist)', async () => {
-				let album: Album = await albumService.createAlbum({ name: 'My album' });
+				album = await albumService.createAlbum({ name: 'My album' });
 
 				expect(album.id).toBeDefined();
 				expect(album.artistId).toBeNull();
@@ -212,18 +213,11 @@ describe('Album Service', () => {
 			expect(test()).rejects.toThrow(AlbumNotFoundFromIDException); 
 		});
 
-		it("should throw, as the album does not exist (by slug)", () => {
-			const test = async () => albumService.deleteAlbum({ bySlug: { slug: new Slug("Trololol") } });
-			expect(test()).rejects.toThrow(AlbumNotFoundException); 
-		});
-
 		it("should delete the album", async () => {
-			const albumQueryParameters = {
-				bySlug: { slug: new Slug('My new album') }
-			}
+			const albumQueryParameters = { byId: { id: album.id } };
 			await albumService.deleteAlbum(albumQueryParameters);
 			const test = async () => albumService.getAlbum(albumQueryParameters);
-			expect(test()).rejects.toThrow(AlbumNotFoundException); 
+			expect(test()).rejects.toThrow(AlbumNotFoundFromIDException); 
 		});
 	});
 });
