@@ -1,7 +1,7 @@
 import { createTestingModule } from "test/TestModule";
 import type { TestingModule } from "@nestjs/testing";
 import type { Album, Artist, Release } from "@prisma/client";
-import { AlbumNotFoundException } from "src/album/album.exceptions";
+import { AlbumNotFoundException, AlbumNotFoundFromIDException } from "src/album/album.exceptions";
 import AlbumModule from "src/album/album.module";
 import AlbumService from "src/album/album.service";
 import ArtistModule from "src/artist/artist.module";
@@ -249,13 +249,23 @@ describe('Release Service', () => {
 			expect(album.releaseDate).toStrictEqual(new Date('2005'));
 		});
 
-		it("Should Update the master release", async () => {
+		it("Should Update the master release (unset)", async () => {
 			await releaseService.updateRelease({ master: false }, { byId: { id: release.id } });
 			album = await albumService.getAlbum(
 				{ bySlug: { slug: new Slug('My Album'), artist: { slug: new Slug ("My Artist") } } },
 				{ releases: true }
 			);
 			expect(album.releases.find((release) => release.master == true)!.title).toBe('My Album');
+		});
+
+		it("Should Update the master release (set)", async () => {
+			await releaseService.updateRelease({ master: true }, { byId: { id: release.id } });
+			let newMaster = await releaseService.getMasterRelease({ byId: { id: album.id } });
+			expect(newMaster.title).toBe('My Album (Special Edition)');
+			release = newMaster;
+			let albumReleases = await releaseService.getAlbumReleases({ byId: { id: album.id } });
+			expect(albumReleases.find((release) => release.master == false)!.title).toBe('My Album');
+
 		});
 	});
 
@@ -265,7 +275,7 @@ describe('Release Service', () => {
 				title: 'My Album (Special Edition)', album: { byId: { id: album.id } }, releaseDate: new Date('2008'), master: false
 			});
 			expect(fetchedRelease.id).toBe(release.id);
-			expect(fetchedRelease.master).toBe(false);
+			expect(fetchedRelease.master).toBe(true);
 			expect(fetchedRelease.releaseDate).toStrictEqual(new Date('2005'));
 			expect(fetchedRelease.title).toBe("My Album (Special Edition)");
 			expect(fetchedRelease.albumId).toBe(album.id);
@@ -281,6 +291,39 @@ describe('Release Service', () => {
 			expect(createdRelease.releaseDate).toStrictEqual(new Date('2007'));
 			expect(createdRelease.title).toBe("My Album (Edited Version)");
 			expect(createdRelease.slug).toBe('my-album-edited-version');
+		});
+	});
+
+	describe('Delete Release', () => {
+		it("should delete only release, and parent album", async () => {
+			await releaseService.deleteRelease({ byId: { id: compilationRelease.id } });
+			const testRelease = async () => await releaseService.getRelease({ byId: { id: compilationRelease.id } });
+			const testAlbum = async () => await albumService.getAlbum({ byId: { id: compilationAlbum.id } });
+			expect(testRelease()).rejects.toThrow(ReleaseNotFoundFromIDException);
+			expect(testAlbum()).rejects.toThrow(AlbumNotFoundFromIDException);
+		});
+
+		it("should delete a release (not master)", async () => {
+			const queryParam = {
+				bySlug: {
+					slug: new Slug('My Album (Edited Version)'),
+					album: { byId: { id: album.id } }
+				}
+			};
+			await releaseService.deleteRelease(queryParam);
+			const testRelease = async () => await releaseService.getRelease(queryParam);
+			expect(testRelease()).rejects.toThrow(ReleaseNotFoundException);
+			/// To check album still exists
+			let master = await releaseService.getMasterRelease({ byId: { id: album.id } });
+			expect(master.id).toBe(release.id);
+		});
+
+		it("should delete master release, and update master status", async () => {
+			await releaseService.deleteRelease({ byId: { id: release.id } });
+			const testRelease = async () => await releaseService.getRelease({ byId: { id: album.id } });
+			expect(testRelease()).rejects.toThrow(ReleaseNotFoundFromIDException);
+			let updatedSecondRelease =  await releaseService.getMasterRelease({ byId: { id: album.id } });
+			expect(updatedSecondRelease.title).toBe('My Album');
 		});
 	});
 })

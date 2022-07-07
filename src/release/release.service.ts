@@ -151,17 +151,21 @@ export default class ReleaseService {
 	 * @param where Query parameters to find the release to delete 
 	 */
 	 async deleteRelease(where: ReleaseQueryParameters.WhereInput): Promise<void> {
+		let release = await this.getRelease(where);
 		try {
 			let deletedRelease = await this.prismaService.release.delete({
-				where: ReleaseQueryParameters.buildQueryParametersForOne(where),
+				where: ReleaseQueryParameters.buildQueryParametersForOne({
+					byId: { id: release.id }
+				}),
 			});
 			if (deletedRelease.master)
-				this.unsetReleaseAsMaster({
+				await this.unsetReleaseAsMaster({
 					releaseId: deletedRelease.id,
 					album: { byId: { id: deletedRelease.albumId } }
 				});
-			this.albumService.deleteAlbumIfEmpty(deletedRelease.albumId);
-		} catch {
+			await this.albumService.deleteAlbumIfEmpty(deletedRelease.albumId);
+		} catch (e) {
+			console.log(e);
 			throw await this.getReleaseNotFoundError(where);
 		}
 	}
