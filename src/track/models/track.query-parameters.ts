@@ -6,6 +6,7 @@ import SongQueryParameters from "src/song/models/song.query-params";
 import type OmitId from "src/utils/omit-id";
 import type RequireAtLeastOne from "src/utils/require-at-least-one";
 import type RequireOnlyOne from "src/utils/require-only-one";
+import type { RelationInclude as BaseRelationInclude } from "src/relation-include/models/relation-include";
 
 namespace TrackQueryParameters {
 	type OmitSong<T> = Omit<T, 'songId'>;
@@ -90,10 +91,8 @@ namespace TrackQueryParameters {
 	/**
 	 * Defines what relations to include in query
 	 */
-	export type RelationInclude = Partial<{
-		song: boolean,
-		release: boolean
-	}>;
+	 export const AvailableIncludes = ['song', 'release'] as const;
+	 export type RelationInclude = BaseRelationInclude<typeof AvailableIncludes>;
 
 	/**
 	 * Build the query parameters for ORM to include relations

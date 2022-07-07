@@ -24,10 +24,7 @@ export default class ParseRelationIncludePipe<Keys extends readonly string[], T 
 			.forEach((requestedInclude: string) => {
 				if (this.keys.includes(requestedInclude) == false)
 					throw new InvalidRelationIncludeParameter(requestedInclude, this.keys);
-				includes = {
-					...includes,
-					[requestedInclude]: true
-				}
+				includes = { ...includes, [requestedInclude]: true }
 			});
 		return includes;
 	}

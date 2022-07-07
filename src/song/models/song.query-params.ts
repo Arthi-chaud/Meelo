@@ -6,7 +6,7 @@ import type OmitSlug from "src/utils/omit-slug";
 import type RequireAtLeastOne from "src/utils/require-at-least-one";
 import type RequireOnlyOne from "src/utils/require-only-one"
 import { buildStringSearchParameters, SearchStringInput } from "src/utils/search-string-input";
-
+import type { RelationInclude as BaseRelationInclude } from "src/relation-include/models/relation-include";
 
 namespace SongQueryParameters {
 	type OmitArtistId<T> = Omit<T, 'artistId'>;
@@ -87,10 +87,8 @@ namespace SongQueryParameters {
 	/**
 	 * Defines what relations to include in query
 	 */
-	export type RelationInclude = Partial<{
-		instances: boolean,
-		artist: boolean
-	}>;
+	export const AvailableIncludes = ['instances', 'artist'] as const;
+	export type RelationInclude = BaseRelationInclude<typeof AvailableIncludes>;
 
 	/**
 	 * Build the query parameters for ORM to include relations

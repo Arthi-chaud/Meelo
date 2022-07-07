@@ -4,6 +4,7 @@ import type OmitId from "src/utils/omit-id";
 import type RequireAtLeastOne from "src/utils/require-at-least-one";
 import type RequireOnlyOne from "src/utils/require-only-one";
 import { buildDateSearchParameters, SearchDateInput } from "src/utils/search-date-input";
+import type { RelationInclude as BaseRelationInclude } from "src/relation-include/models/relation-include" ;
 
 namespace FileQueryParameters {
 	/**
@@ -74,10 +75,8 @@ namespace FileQueryParameters {
 	/**
 	 * Relations to include in returned File object
 	 */
-	export type RelationInclude = Partial<{
-		track: boolean,
-		library: boolean
-	}>;
+	export const AvailableIncludes = ['track', 'library'] as const;
+	export type RelationInclude = BaseRelationInclude<typeof AvailableIncludes>
 	/**
 	 * Build the query parameters for ORM to include relations
 	 * @returns the ORM-ready query parameters
