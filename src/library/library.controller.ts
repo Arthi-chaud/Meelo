@@ -39,8 +39,6 @@ export default class LibraryController {
 		@Param('slug', ParseSlugPipe) slug: Slug,
 		@Query('with', new ParseRelationIncludePipe(LibraryQueryParameters.AvailableIncludes)) relationInclude: LibraryQueryParameters.RelationInclude
 	): Promise<Library> {
-		console.log(relationInclude);
-		console.log(typeof relationInclude);
 		return await this.libraryService.getLibrary({ slug: slug }, relationInclude);
 	}
 

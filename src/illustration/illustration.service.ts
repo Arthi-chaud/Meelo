@@ -211,8 +211,7 @@ export default class IllustrationService implements OnModuleInit {
 			let image = await Jimp.read(illustrationURL);
 			fs.mkdir(dir.dirname(outPath), { recursive: true }, function (_err) {});
 			image.write(outPath);
-		} catch (e) {
-			console.log(e);
+		} catch {
 			throw new CantDownloadIllustrationException(illustrationURL);
 		}
 	}
