@@ -120,9 +120,10 @@ export default class SongService {
 	 * @param where Query parameters to find the song to delete 
 	 */
 	async deleteSong(where: SongQueryParameters.WhereInput): Promise<void> {
+		let song = await this.getSong(where);
 		try {
 			let deletedSong = await this.prismaService.song.delete({
-				where: SongQueryParameters.buildQueryParametersForOne(where)
+				where: SongQueryParameters.buildQueryParametersForOne({ byId: { id: song.id } })
 			});
 			await this.artistService.deleteArtistIfEmpty({ id: deletedSong.artistId });
 		} catch {
