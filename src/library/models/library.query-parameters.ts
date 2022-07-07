@@ -56,8 +56,8 @@ namespace LibraryQueryParameters {
 	/**
 	 * The relation field to include in a returned library
 	 */
-	export type AvailableIncludes = ['files'];
-	export type RelationInclude = Partial<Record<AvailableIncludes[number], boolean>>;
+	export const AvailableIncludes = ['files'] as const;
+	export type RelationInclude = Record<typeof AvailableIncludes[number], boolean>;
 	/**
 	 * Build the query parameters for ORM to include relations
 	 * @returns the ORM-ready query parameters
