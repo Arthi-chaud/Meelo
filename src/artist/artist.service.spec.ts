@@ -88,7 +88,7 @@ describe('Artist Service', () => {
 		})
 	});
 
-	describe('Delete Album', () => {
+	describe('Delete Artist', () => {
 		it("should throw, as the album does not exist (by id)", () => {
 			const test = async () => artistService.deleteArtist({ id: -1 });
 			expect(test()).rejects.toThrow(ArtistNotFoundByIDException); 
