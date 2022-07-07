@@ -39,6 +39,7 @@ namespace ArtistQueryParameters {
 	export type ManyWhereInput = Partial<RequireAtLeastOne<{
 		byLibrarySource: LibraryQueryParameters.WhereInput,
 		byName: SearchStringInput,
+		byIds: { in: number[] }
 	}>>;
 
 	/**
@@ -48,6 +49,9 @@ namespace ArtistQueryParameters {
 	 */
 	export function buildQueryParametersForMany(where: ManyWhereInput): Prisma.ArtistWhereInput {
 		return {
+			id: where.byIds ? {
+				in: where.byIds.in
+			} : undefined,
 			slug: {
 				startsWith: where.byName?.startsWith,
 				contains: where.byName?.contains,

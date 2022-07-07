@@ -96,13 +96,20 @@
 				"method": "GET",
 				"header": [],
 				"url": {
-					"raw": "localhost:8080/libraries",
+					"raw": "localhost:8080/libraries/my-first-library?with=files",
 					"host": [
 						"localhost"
 					],
 					"port": "8080",
 					"path": [
-						"libraries"
+						"libraries",
+						"my-first-library"
+					],
+					"query": [
+						{
+							"key": "with",
+							"value": "files"
+						}
 					]
 				}
 			},
@@ -188,6 +195,27 @@
 			"response": []
 		},
 		{
+			"name": "Get Compilation Album",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8080/albums/compilations/nova-tunes-01",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"albums",
+						"compilations",
+						"nova-tunes-01"
+					]
+				}
+			},
+			"response": []
+		},
+		{
 			"name": "Get Albums by Artist",
 			"request": {
 				"method": "GET",
@@ -266,6 +294,27 @@
 						"illustrations",
 						"avril-lavigne",
 						"goodbye-lullaby"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get Compilation Album Illustration",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8080/illustrations/compilations/nova-tunes-01",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"illustrations",
+						"compilations",
+						"nova-tunes-01"
 					]
 				}
 			},
