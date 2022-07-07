@@ -90,6 +90,11 @@ namespace ReleaseQueryParameters {
 	export type GetOrCreateInput = CreateInput;
 
 	/**
+	 * Query parameters to delete one release
+	 */
+	 export type DeleteInput = Required<Pick<WhereInput, 'byId'>>;
+
+	/**
 	 * Defines what relations to include in query
 	 */
 	export const AvailableIncludes = ['album', 'tracks'] as const;

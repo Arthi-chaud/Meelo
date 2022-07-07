@@ -19,7 +19,9 @@ describe('Release Service', () => {
 	let albumService: AlbumService;
 	let album: Album & { releases: Release[], artist: Artist | null };
 	let compilationAlbum: Album & { releases: Release[], artist: Artist | null };
-	let release: Release & { album: Album };
+	let standardRelease: Release & { album: Album };
+	let deluxeRelease: Release & { album: Album };
+	let editedRelease: Release & { album: Album };
 	let compilationRelease: Release;
 	
 	beforeAll(async () => {
@@ -47,17 +49,17 @@ describe('Release Service', () => {
 	
 	describe('Create a release', () => {
 		it("should create the album's first release", async () => {
-			release = await releaseService.createRelease({
+			deluxeRelease = await releaseService.createRelease({
 				title: 'My Album (Deluxe Edition)',
 				album: { byId: { id: album.id } },
 				releaseDate: new Date('2006'),
 				master: true
 			}, { album: true });
-			expect(release.albumId).toBe(album.id);
-			expect(release.master).toBeTruthy();
-			expect(release.releaseDate).toStrictEqual(new Date('2006'));
-			expect(release.title).toBe('My Album (Deluxe Edition)');
-			expect(release.slug).toBe('my-album-deluxe-edition');
+			expect(deluxeRelease.albumId).toBe(album.id);
+			expect(deluxeRelease.master).toBeTruthy();
+			expect(deluxeRelease.releaseDate).toStrictEqual(new Date('2006'));
+			expect(deluxeRelease.title).toBe('My Album (Deluxe Edition)');
+			expect(deluxeRelease.slug).toBe('my-album-deluxe-edition');
 		});
 
 		it("should create the album's first release (compilation)", async () => {
@@ -75,8 +77,8 @@ describe('Release Service', () => {
 		});
 
 		it("should update the parent album year", async () => {
-			expect(release.album.name).toStrictEqual('My Album');
-			expect(release.album.releaseDate).toStrictEqual(new Date('2006'));
+			expect(deluxeRelease.album.name).toStrictEqual('My Album');
+			expect(deluxeRelease.album.releaseDate).toStrictEqual(new Date('2006'));
 		});
 		
 		it("should create the album's second release", async () => {
@@ -84,22 +86,22 @@ describe('Release Service', () => {
 				{ byId: { id: album.id } },
 				{ releases: true, artist: true }
 			);
-			release = await releaseService.createRelease({
+			standardRelease = await releaseService.createRelease({
 				title: 'My Album',
 				album: { byId: { id: album.id } },
 				releaseDate: new Date('2007'),
 				master: false
 			}, { album: true });
-			expect(release.albumId).toBe(album.id);
-			expect(release.master).toBeFalsy();
-			expect(release.releaseDate).toStrictEqual(new Date('2007'));
-			expect(release.title).toBe('My Album');
-			expect(release.slug).toBe('my-album');
+			expect(standardRelease.albumId).toBe(album.id);
+			expect(standardRelease.master).toBeFalsy();
+			expect(standardRelease.releaseDate).toStrictEqual(new Date('2007'));
+			expect(standardRelease.title).toBe('My Album');
+			expect(standardRelease.slug).toBe('my-album');
 		});
 
 		it("should not have updated the parent album metadata", async () => {
-			expect(release.album.releaseDate).toStrictEqual(new Date('2006'));
-			expect(release.album.name).toStrictEqual('My Album');
+			expect(standardRelease.album.releaseDate).toStrictEqual(new Date('2006'));
+			expect(standardRelease.album.name).toStrictEqual('My Album');
 		});
 	});
 
@@ -107,21 +109,21 @@ describe('Release Service', () => {
 		it("should get the release", async () => {
 			let fetchedRelease = await releaseService.getRelease({
 				bySlug: {
-					slug: new Slug(release.slug),
+					slug: new Slug(deluxeRelease.slug),
 					album: {
 						bySlug: {
-							slug: new Slug(release.album.slug),
+							slug: new Slug(deluxeRelease.album.slug),
 							artist: { slug: new Slug(album.artist!.slug) }
 						}
 					},	
 				}
 			});
-			expect(fetchedRelease.id).toBe(release.id);
-			expect(fetchedRelease.albumId).toBe(release.albumId);
-			expect(fetchedRelease.title).toBe(release.title);
-			expect(fetchedRelease.releaseDate).toStrictEqual(release.releaseDate);
-			expect(fetchedRelease.slug).toBe(release.slug);
-			expect(fetchedRelease.master).toBe(release.master);
+			expect(fetchedRelease.id).toBe(deluxeRelease.id);
+			expect(fetchedRelease.albumId).toBe(deluxeRelease.albumId);
+			expect(fetchedRelease.title).toBe(deluxeRelease.title);
+			expect(fetchedRelease.releaseDate).toStrictEqual(deluxeRelease.releaseDate);
+			expect(fetchedRelease.slug).toBe(deluxeRelease.slug);
+			expect(fetchedRelease.master).toBe(deluxeRelease.master);
 		});
 
 		it("should get the release (compilation)", async () => {
@@ -177,13 +179,13 @@ describe('Release Service', () => {
 		});
 
 		it("should get the release from its id", async () => {
-			let fetchedRelease = await releaseService.getRelease({ byId: { id: release.id } });
-			expect(fetchedRelease.id).toBe(release.id);
-			expect(fetchedRelease.albumId).toBe(release.albumId);
-			expect(fetchedRelease.title).toBe(release.title);
-			expect(fetchedRelease.releaseDate).toStrictEqual(release.releaseDate);
-			expect(fetchedRelease.slug).toBe(release.slug);
-			expect(fetchedRelease.master).toBe(release.master);
+			let fetchedRelease = await releaseService.getRelease({ byId: { id: deluxeRelease.id } });
+			expect(fetchedRelease.id).toBe(deluxeRelease.id);
+			expect(fetchedRelease.albumId).toBe(deluxeRelease.albumId);
+			expect(fetchedRelease.title).toBe(deluxeRelease.title);
+			expect(fetchedRelease.releaseDate).toStrictEqual(deluxeRelease.releaseDate);
+			expect(fetchedRelease.slug).toBe(deluxeRelease.slug);
+			expect(fetchedRelease.master).toBe(deluxeRelease.master);
 		});
 
 		it("should throw, as no release has the id", async () => {
@@ -196,7 +198,7 @@ describe('Release Service', () => {
 
 	describe('Get Master Release', () => {
 		it("Should retrieve the master release", async () => {
-			release = await releaseService.getRelease(
+			deluxeRelease = await releaseService.getRelease(
 				{ byMasterOf: {
 					bySlug: {
 						slug: new Slug(album.slug),
@@ -206,10 +208,10 @@ describe('Release Service', () => {
 				{ album: true }
 			);
 
-			expect(release.albumId).toBe(album.id);
-			expect(release.master).toBe(true);
-			expect(release.title).toBe("My Album (Deluxe Edition)");
-			expect(release.releaseDate).toStrictEqual(new Date('2006'));
+			expect(deluxeRelease.albumId).toBe(album.id);
+			expect(deluxeRelease.master).toBe(true);
+			expect(deluxeRelease.title).toBe("My Album (Deluxe Edition)");
+			expect(deluxeRelease.releaseDate).toStrictEqual(new Date('2006'));
 		});
 
 		it("Should retrieve the master release (compilation)", async () => {
@@ -229,10 +231,10 @@ describe('Release Service', () => {
 		it("Should Update the release", async () => {
 			let updatedRelease = await releaseService.updateRelease(
 				{ title: 'My Album (Special Edition)' },
-				{ byId: { id: release.id } }
+				{ byId: { id: deluxeRelease.id } }
 			);
-			expect(updatedRelease.id).toStrictEqual(release.id);
-			expect(updatedRelease.albumId).toStrictEqual(release.albumId);
+			expect(updatedRelease.id).toStrictEqual(deluxeRelease.id);
+			expect(updatedRelease.albumId).toStrictEqual(deluxeRelease.albumId);
 			expect(updatedRelease.title).toStrictEqual('My Album (Special Edition)');
 			expect(updatedRelease.slug).toBe('my-album-special-edition');
 		});
@@ -240,7 +242,7 @@ describe('Release Service', () => {
 		it("Should Update the album's date", async () => {
 			await releaseService.updateRelease(
 				{ releaseDate: new Date('2005') },
-				{ byId: { id: release.id } }
+				{ byId: { id: deluxeRelease.id } }
 			);
 			album = await albumService.getAlbum(
 				{ bySlug: { slug: new Slug('My Album'), artist: { slug: new Slug ("My Artist") } } },
@@ -250,19 +252,19 @@ describe('Release Service', () => {
 		});
 
 		it("Should Update the master release (unset)", async () => {
-			await releaseService.updateRelease({ master: false }, { byId: { id: release.id } });
+			await releaseService.updateRelease({ master: false }, { byId: { id: deluxeRelease.id } });
 			album = await albumService.getAlbum(
 				{ bySlug: { slug: new Slug('My Album'), artist: { slug: new Slug ("My Artist") } } },
 				{ releases: true }
 			);
-			expect(album.releases.find((release) => release.master == true)!.title).toBe('My Album');
+			expect(album.releases.find((release) => release.master == true)!.id).toBe(standardRelease.id);
 		});
 
 		it("Should Update the master release (set)", async () => {
-			await releaseService.updateRelease({ master: true }, { byId: { id: release.id } });
+			await releaseService.updateRelease({ master: true }, { byId: { id: deluxeRelease.id } });
 			let newMaster = await releaseService.getMasterRelease({ byId: { id: album.id } });
 			expect(newMaster.title).toBe('My Album (Special Edition)');
-			release = newMaster;
+			deluxeRelease = newMaster;
 			let albumReleases = await releaseService.getAlbumReleases({ byId: { id: album.id } });
 			expect(albumReleases.find((release) => release.master == false)!.title).toBe('My Album');
 
@@ -274,7 +276,7 @@ describe('Release Service', () => {
 			let fetchedRelease: Release = await releaseService.getOrCreateRelease({
 				title: 'My Album (Special Edition)', album: { byId: { id: album.id } }, releaseDate: new Date('2008'), master: false
 			});
-			expect(fetchedRelease.id).toBe(release.id);
+			expect(fetchedRelease.id).toBe(deluxeRelease.id);
 			expect(fetchedRelease.master).toBe(true);
 			expect(fetchedRelease.releaseDate).toStrictEqual(new Date('2005'));
 			expect(fetchedRelease.title).toBe("My Album (Special Edition)");
@@ -283,14 +285,14 @@ describe('Release Service', () => {
 		});
 
 		it("should create a new release", async () => {
-			let createdRelease: Release = await releaseService.getOrCreateRelease({
+			editedRelease = await releaseService.getOrCreateRelease({
 				title: 'My Album (Edited Version)', album: { byId: { id: album.id } }, releaseDate: new Date('2007'), master: false
 			});
-			expect(createdRelease.albumId).toBe(album.id);
-			expect(createdRelease.master).toBe(false);
-			expect(createdRelease.releaseDate).toStrictEqual(new Date('2007'));
-			expect(createdRelease.title).toBe("My Album (Edited Version)");
-			expect(createdRelease.slug).toBe('my-album-edited-version');
+			expect(editedRelease.albumId).toBe(album.id);
+			expect(editedRelease.master).toBe(false);
+			expect(editedRelease.releaseDate).toStrictEqual(new Date('2007'));
+			expect(editedRelease.title).toBe("My Album (Edited Version)");
+			expect(editedRelease.slug).toBe('my-album-edited-version');
 		});
 	});
 
@@ -304,26 +306,21 @@ describe('Release Service', () => {
 		});
 
 		it("should delete a release (not master)", async () => {
-			const queryParam = {
-				bySlug: {
-					slug: new Slug('My Album (Edited Version)'),
-					album: { byId: { id: album.id } }
-				}
-			};
+			const queryParam = { byId: { id: editedRelease.id } };
 			await releaseService.deleteRelease(queryParam);
 			const testRelease = async () => await releaseService.getRelease(queryParam);
-			expect(testRelease()).rejects.toThrow(ReleaseNotFoundException);
+			expect(testRelease()).rejects.toThrow(ReleaseNotFoundFromIDException);
 			/// To check album still exists
 			let master = await releaseService.getMasterRelease({ byId: { id: album.id } });
-			expect(master.id).toBe(release.id);
+			expect(master.id).toBe(deluxeRelease.id);
 		});
 
 		it("should delete master release, and update master status", async () => {
-			await releaseService.deleteRelease({ byId: { id: release.id } });
+			await releaseService.deleteRelease({ byId: { id: deluxeRelease.id } });
 			const testRelease = async () => await releaseService.getRelease({ byId: { id: album.id } });
 			expect(testRelease()).rejects.toThrow(ReleaseNotFoundFromIDException);
 			let updatedSecondRelease =  await releaseService.getMasterRelease({ byId: { id: album.id } });
-			expect(updatedSecondRelease.title).toBe('My Album');
+			expect(updatedSecondRelease.id).toBe(standardRelease.id);
 		});
 	});
 })

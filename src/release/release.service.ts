@@ -150,13 +150,10 @@ export default class ReleaseService {
 	 * Also delete related tracks.
 	 * @param where Query parameters to find the release to delete 
 	 */
-	 async deleteRelease(where: ReleaseQueryParameters.WhereInput): Promise<void> {
-		let release = await this.getRelease(where);
+	 async deleteRelease(where: ReleaseQueryParameters.DeleteInput): Promise<void> {
 		try {
 			let deletedRelease = await this.prismaService.release.delete({
-				where: ReleaseQueryParameters.buildQueryParametersForOne({
-					byId: { id: release.id }
-				}),
+				where: ReleaseQueryParameters.buildQueryParametersForOne(where),
 			});
 			if (deletedRelease.master)
 				await this.unsetReleaseAsMaster({
@@ -174,7 +171,7 @@ export default class ReleaseService {
 	 * Deletes a release if it does not have related tracks
 	 * @param where the query parameters to find the track to delete 
 	 */
-	async deleteReleaseIfEmpty(where: ReleaseQueryParameters.WhereInput): Promise<void> {
+	async deleteReleaseIfEmpty(where: ReleaseQueryParameters.DeleteInput): Promise<void> {
 		const trackCount = await this.prismaService.track.count({
 			where: {
 				release: ReleaseQueryParameters.buildQueryParametersForOne(where)
