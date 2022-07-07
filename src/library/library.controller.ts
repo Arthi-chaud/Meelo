@@ -7,7 +7,7 @@ import type { Library } from '@prisma/client';
 import ParsePaginationParameterPipe from 'src/pagination/pipe';
 import type { PaginationParameters } from 'src/pagination/parameters';
 import LibraryQueryParameters from './models/library.query-parameters';
-import { ParseRelationIncludePipe } from 'src/utils/relation-include.pipe';
+import ParseRelationIncludePipe from 'src/relation-include/relation-include.pipe';
 
 @Controller('libraries')
 export default class LibraryController {

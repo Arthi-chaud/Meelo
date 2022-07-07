@@ -1,19 +1,12 @@
 import type { ArgumentMetadata, PipeTransform } from "@nestjs/common";
-import { InvalidRequestException } from "src/exceptions/meelo-exception";
+import { InvalidRelationIncludeParameter, InvalidRelationIncludeParameterFormat } from "./relation-include.exceptions";
 
-export class InvalidRelationIncludeParameterFormat extends InvalidRequestException {
-	constructor() {
-		super("Parsing requested includes failed: The requested include is not valid. Expected format: 'field1,field2,field3'.")
-	}
-}
-
-export class InvalidRelationIncludeParameter extends InvalidRequestException {
-	constructor(requestedInclude: string, availableIncludes: readonly string[]) {
-		super(`Parsing requested includes failed: The field '${requestedInclude}' does not exist. Available fields are: [${availableIncludes}]`);
-	}
-}
-
-export class ParseRelationIncludePipe<Keys extends readonly string[], T = Record<Keys[number], number>> implements PipeTransform {
+/**
+ * Pipe to parse relation clude request from query parameter
+ * The expected format is `field1,field2,field3,...`
+ * Constructor parameter is the array of valid, available keys
+ */
+export default class ParseRelationIncludePipe<Keys extends readonly string[], T = Record<Keys[number], number>> implements PipeTransform {
 	constructor(private readonly keys: Keys) { }
 	transform(value: any, _metadata: ArgumentMetadata): T {
 		const separator = ',';
