@@ -170,17 +170,16 @@ export default class TrackService {
 	 * Deletes a track
 	 * @param where Query parameters to find the track to delete 
 	 */
-	 async deleteTrack(where: TrackQueryParameters.WhereInput): Promise<void> {
+	 async deleteTrack(where: TrackQueryParameters.DeleteInput): Promise<void> {
 		try {
-			const trackToDelete = await this.getTrack(where);
-			if (trackToDelete.master)
-				await this.unsetTrackAsMaster({
-					trackId: trackToDelete.id,
-					song: { byId: { id: trackToDelete.songId } }
-				});
 			let deletedTrack = await this.prismaService.track.delete({
 				where: TrackQueryParameters.buildQueryParametersForOne(where),
 			});
+			if (deletedTrack.master)
+				await this.unsetTrackAsMaster({
+					trackId: deletedTrack.id,
+					song: { byId: { id: deletedTrack.songId } }
+				});
 			await Promise.allSettled([
 				this.songService.deleteSongIfEmpty({ byId: { id: deletedTrack.songId } }),
 				this.releaseService.deleteReleaseIfEmpty({ byId: { id: deletedTrack.releaseId } })
