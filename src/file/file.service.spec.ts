@@ -10,7 +10,7 @@ import PrismaModule from "src/prisma/prisma.module";
 import PrismaService from "src/prisma/prisma.service";
 import { FakeFileManagerService } from "test/FakeFileManagerModule";
 import { createTestingModule } from "test/TestModule";
-import { FileAlreadyExistsException, FileNotFoundFromIDException, FileNotFoundFromPathException } from "./file.exceptions";
+import { FileAlreadyExistsException, FileNotFoundFromIDException } from "./file.exceptions";
 import FileModule from "./file.module";
 import FileService from "./file.service";
 
