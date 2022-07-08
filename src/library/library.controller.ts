@@ -9,6 +9,8 @@ import type { PaginationParameters } from 'src/pagination/parameters';
 import LibraryQueryParameters from './models/library.query-parameters';
 import ParseRelationIncludePipe from 'src/relation-include/relation-include.pipe';
 
+const ParseLibraryRelationIncludePipe = new ParseRelationIncludePipe(LibraryQueryParameters.AvailableIncludes);
+
 @Controller('libraries')
 export default class LibraryController {
 	constructor(private libraryService: LibraryService) { }
@@ -19,9 +21,10 @@ export default class LibraryController {
 	}
 	@Get()
 	async getLibraries(
-		@Query(ParsePaginationParameterPipe) paginationParameters: PaginationParameters
+		@Query(ParsePaginationParameterPipe) paginationParameters: PaginationParameters,
+		@Query('with', ParseLibraryRelationIncludePipe) include: LibraryQueryParameters.RelationInclude
 	) {
-		return await this.libraryService.getLibraries({}, paginationParameters);
+		return await this.libraryService.getLibraries({}, paginationParameters, include);
 	}
 		
 	@Get('scan')
@@ -37,9 +40,9 @@ export default class LibraryController {
 	@Get(':slug')
 	async getLibrary(
 		@Param('slug', ParseSlugPipe) slug: Slug,
-		@Query('with', new ParseRelationIncludePipe(LibraryQueryParameters.AvailableIncludes)) relationInclude: LibraryQueryParameters.RelationInclude
+		@Query('with', ParseLibraryRelationIncludePipe) include: LibraryQueryParameters.RelationInclude
 	): Promise<Library> {
-		return await this.libraryService.getLibrary({ slug: slug }, relationInclude);
+		return await this.libraryService.getLibrary({ slug: slug }, include);
 	}
 
 	@Get('clean')
