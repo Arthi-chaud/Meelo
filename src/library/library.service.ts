@@ -9,6 +9,7 @@ import PrismaService from 'src/prisma/prisma.service';
 import IllustrationService from 'src/illustration/illustration.service';
 import LibraryQueryParameters from './models/library.query-parameters';
 import { type PaginationParameters, buildPaginationParameters } from 'src/pagination/models/pagination-parameters';
+import normalize from 'normalize-path';
 
 @Injectable()
 export default class LibraryService {
@@ -32,12 +33,13 @@ export default class LibraryService {
 			return await this.prismaService.library.create({
 				data: {
 					...library,
-					slug: librarySlug.toString()
+					path: normalize(library.path, true),
+					slug: librarySlug.toString(),
 				},
 				include: LibraryQueryParameters.buildIncludeParameters(include)
 			});
 		} catch {
-			throw new LibraryAlreadyExistsException(librarySlug);
+			throw new LibraryAlreadyExistsException(librarySlug, library.path);
 		}
 	}
 
@@ -83,7 +85,11 @@ export default class LibraryService {
 	async updateLibrary(what: LibraryQueryParameters.UpdateInput, where: LibraryQueryParameters.WhereInput): Promise<Library> {
 		try {
 			return await this.prismaService.library.update({
-				data: what,
+				data: {
+					...what,
+					path: what.path ? normalize(what.path, true) : undefined,
+					slug: what.name ? new Slug(what.name).toString() : undefined
+				},
 				where: LibraryQueryParameters.buildQueryParametersForOne(where)
 			});
 		} catch {

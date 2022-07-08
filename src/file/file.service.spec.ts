@@ -10,7 +10,7 @@ import PrismaModule from "src/prisma/prisma.module";
 import PrismaService from "src/prisma/prisma.service";
 import { FakeFileManagerService } from "test/FakeFileManagerModule";
 import { createTestingModule } from "test/TestModule";
-import { FileAlreadyExistsException, FileNotFoundFromIDException, FileNotFoundFromPathException } from "./file.exceptions";
+import { FileAlreadyExistsException, FileNotFoundFromIDException } from "./file.exceptions";
 import FileModule from "./file.module";
 import FileService from "./file.service";
 
@@ -89,9 +89,9 @@ describe('File Service', () => {
 
 	describe('Delete File', () => {
 		it('should create a file (from path)', async () => {
-			await fileService.deleteFile({ path: "Me" });
-			const test = async () => fileService.getFile({ path: 'Me' });
-			expect(test()).rejects.toThrow(FileNotFoundFromPathException);
+			await fileService.deleteFile({ id: file1.id });
+			const test = async () => fileService.getFile({ id: file1.id });
+			expect(test()).rejects.toThrow(FileNotFoundFromIDException);
 		});
 
 		it('should create a file (from id)', async () => {
@@ -104,10 +104,5 @@ describe('File Service', () => {
 			const test = async () => fileService.deleteFile({ id: -1 });
 			expect(test()).rejects.toThrow(FileNotFoundFromIDException);
 		});
-
-		it('should throw, as the file does not exist (from path)', () => {
-			const test = async () => fileService.deleteFile({ path: '' });
-			expect(test()).rejects.toThrow(FileNotFoundFromPathException);
-		})
 	});
 });

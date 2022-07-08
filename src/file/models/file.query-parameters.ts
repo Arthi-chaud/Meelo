@@ -17,7 +17,7 @@ namespace FileQueryParameters {
 	export type WhereInput = RequireOnlyOne<{
 		trackId: number,
 		id: number,
-		path: string
+		byPath: { path: string, library: LibraryQueryParameters.WhereInput }
 	}>;
 
 	/**
@@ -31,7 +31,10 @@ namespace FileQueryParameters {
 			track: where.trackId ? {
 				id: where.trackId
 			} : undefined,
-			path: where.path,
+			path: where.byPath?.path,
+			library: where.byPath
+				? LibraryQueryParameters.buildQueryParametersForOne(where.byPath.library)
+				: undefined
 		};
 	}
 	
@@ -71,6 +74,11 @@ namespace FileQueryParameters {
 	 * The parameters needed to update a File
 	 */
 	export type UpdateInput = CreateInput;
+
+	/**
+	 * Query parameters to delete one file
+	 */
+	 export type DeleteInput = Required<Pick<WhereInput, 'id'>>;
 	
 	/**
 	 * Relations to include in returned File object
