@@ -239,9 +239,40 @@ describe('Song Service', () => {
 		});
 	});
 
+	describe("Get or Create Song", () => {
+		it("should get the song", async () => {
+			let fetchedSong = await songService.getOrCreateSong({...song, artist: { id: artist.id } });
+			expect(fetchedSong.id).toStrictEqual(song.id);
+			expect(fetchedSong.slug).toStrictEqual(song.slug);
+			expect(fetchedSong.name).toStrictEqual(song.name);
+		});
+
+		it("should create the song", async () => {
+			let createdSong = await songService.getOrCreateSong({
+				name: "My Song 2", artist: { slug: new Slug("My Artist") }
+			});
+			expect(createdSong.name).toBe("My Song 2")
+			expect(createdSong.artistId).toBe(artist.id);
+		});
+
+		it("should thorw as the parent artist does not exist ", async () => {
+			const test = async () => await songService.getOrCreateSong({
+				name: "My Song 3", artist: { slug: new Slug("My Slug") }
+			});
+			expect(test()).rejects.toThrow(ArtistNotFoundException);
+		});
+	});
+
 	describe("Delete Song", () => {
-		it("should delete the song", async () => {
+		it("should delete the song (by id)", async () => {
 			await songService.deleteSong({ byId: { id :song2.id }});
+
+			const test = async () => await songService.getSong({ byId: { id: song2.id } });
+			expect(test()).rejects.toThrow(SongNotFoundByIdException);
+		});
+
+		it("should delete the song (by slug)", async () => {
+			await songService.deleteSong({ bySlug: { slug: new Slug(song.slug), artist: { id: artist.id } }});
 
 			const test = async () => await songService.getSong({ byId: { id: song2.id } });
 			expect(test()).rejects.toThrow(SongNotFoundByIdException);
@@ -264,30 +295,6 @@ describe('Song Service', () => {
 				bySlug: { slug: new Slug('My Song'), artist: { slug: new Slug("My Artist") } }
 			});
 			expect(test()).rejects.toThrow(SongNotFoundException);
-		});
-	});
-
-	describe("Get or Create Song", () => {
-		it("should get the song", async () => {
-			let fetchedSong = await songService.getOrCreateSong({...song, artist: { id: artist.id } });
-			expect(fetchedSong.id).toStrictEqual(song.id);
-			expect(fetchedSong.slug).toStrictEqual(song.slug);
-			expect(fetchedSong.name).toStrictEqual(song.name);
-		});
-
-		it("should create the song", async () => {
-			let createdSong = await songService.getOrCreateSong({
-				name: "My Song 2", artist: { slug: new Slug("My Artist") }
-			});
-			expect(createdSong.name).toBe("My Song 2")
-			expect(createdSong.artistId).toBe(artist.id);
-		});
-
-		it("should thorw as the parent artist does not exist ", async () => {
-			const test = async () => await songService.getOrCreateSong({
-				name: "My Song 3", artist: { slug: new Slug("My Slug") }
-			});
-			expect(test()).rejects.toThrow(ArtistNotFoundException);
 		});
 	});
 });

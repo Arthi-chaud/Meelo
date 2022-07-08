@@ -89,6 +89,11 @@ namespace TrackQueryParameters {
 	};
 
 	/**
+	 * Query parameters to delete one track
+	 */
+	 export type DeleteInput = RequireOnlyOne<Pick<WhereInput, 'id' | 'sourceFile'>>;
+
+	/**
 	 * Defines what relations to include in query
 	 */
 	 export const AvailableIncludes = ['song', 'release'] as const;

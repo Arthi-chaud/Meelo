@@ -387,5 +387,10 @@ describe('Track Service', () => {
 			const test = async () => await songService.getSong({ byId: { id: song.id }});
 			expect(test()).rejects.toThrow(SongNotFoundByIdException);
 		});
+
+		it("should throw, as the track does not exists", async () => {
+			const test = async () => await trackService.getTrack({ id: -1 });
+			expect(test()).rejects.toThrow(TrackNotFoundByIdException);
+		});
 	});
 });

@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import FileManagerService from 'src/file-manager/file-manager.service';
-import { FileNotFoundFromIDException, FileNotFoundFromPathException, FileNotFoundFromTrackIDException } from './file.exceptions';
+import { FileAlreadyExistsException, FileNotFoundFromIDException, FileNotFoundFromPathException, FileNotFoundFromTrackIDException } from './file.exceptions';
 import PrismaService from 'src/prisma/prisma.service';
 import type { Library, File } from '@prisma/client';
 import FileQueryParameters from './models/file.query-parameters';
@@ -21,10 +21,14 @@ export default class FileService {
 	 * @returns the saved file
 	 */
 	async createFile(file: FileQueryParameters.CreateInput, include?: FileQueryParameters.RelationInclude): Promise<File> {
-		return await this.prismaService.file.create({
-			data: file,
-			include: FileQueryParameters.buildIncludeParameters(include)
-		});
+		try {
+			return await this.prismaService.file.create({
+				data: file,
+				include: FileQueryParameters.buildIncludeParameters(include)
+			});
+		} catch {
+			throw new FileAlreadyExistsException(file.path, file.libraryId)
+		}
 	}
 
 	/**
@@ -91,12 +95,21 @@ export default class FileService {
 	/**
 	 * Delete a File in the database
 	 * @param where the parameters to get the file to delete
-	 * @returns the deleted file
+	 * @returns an empty promise
 	 */
-	async deleteFile(where: FileQueryParameters.WhereInput): Promise<File> {
-		return this.prismaService.file.delete({
-			where: FileQueryParameters.buildQueryParametersForOne(where)
-		});
+	async deleteFile(where: FileQueryParameters.WhereInput): Promise<void> {
+		try {
+			await this.prismaService.file.delete({
+				where: FileQueryParameters.buildQueryParametersForOne(where)
+			});
+		} catch {
+			if (where.id !== undefined)
+				throw new FileNotFoundFromIDException(where.id);
+			else if (where.trackId !== undefined)
+				throw new FileNotFoundFromTrackIDException(where.trackId);
+			throw new FileNotFoundFromPathException(where.path);
+		}
+		
 	}
 
 	/**

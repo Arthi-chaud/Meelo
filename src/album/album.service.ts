@@ -128,7 +128,7 @@ export default class AlbumService {
 	 * Deletes an album, and its related releases
 	 * @param where the query parameter 
 	 */
-	async deleteAlbum(where: AlbumQueryParameters.WhereInput): Promise<void> {
+	async deleteAlbum(where: AlbumQueryParameters.DeleteInput): Promise<void> {
 		try {
 			let deletedAlbum = await this.prismaService.album.delete({
 				where: AlbumQueryParameters.buildQueryParametersForOne(where)
@@ -136,9 +136,7 @@ export default class AlbumService {
 			if (deletedAlbum.artistId !== null)
 				this.artistServce.deleteArtistIfEmpty({ id: deletedAlbum.artistId });
 		} catch {
-			if (where.byId)
-				throw new AlbumNotFoundFromIDException(where.byId.id);
-			throw new AlbumNotFoundException(where.bySlug.slug, where.bySlug.artist?.slug);
+			throw new AlbumNotFoundFromIDException(where.byId.id);
 		}
 	}
 

@@ -5,7 +5,7 @@ import PrismaModule from "src/prisma/prisma.module";
 import PrismaService from "src/prisma/prisma.service";
 import Slug from "src/slug/slug";
 import { FakeFileManagerService } from "test/FakeFileManagerModule";
-import { ArtistAlreadyExistsException } from "./artist.exceptions";
+import { ArtistAlreadyExistsException, ArtistNotFoundByIDException, ArtistNotFoundException } from "./artist.exceptions";
 import ArtistModule from "./artist.module";
 import ArtistService from "./artist.service"
 
@@ -86,5 +86,26 @@ describe('Artist Service', () => {
 			expect(artist.slug).toBe('my-artist2');
 			expect(artist.id).toBe(artist.id);
 		})
-	})
+	});
+
+	describe('Delete Artist', () => {
+		it("should throw, as the album does not exist (by id)", () => {
+			const test = async () => artistService.deleteArtist({ id: -1 });
+			expect(test()).rejects.toThrow(ArtistNotFoundByIDException); 
+		});
+
+		it("should throw, as the album does not exist (by slug)", () => {
+			const test = async () => artistService.deleteArtist({ slug: new Slug("Trololol") });
+			expect(test()).rejects.toThrow(ArtistNotFoundException); 
+		});
+
+		it("should delete the album", async () => {
+			const albumQueryParameters = {
+				slug: new Slug("My Name")
+			}
+			await artistService.deleteArtist(albumQueryParameters);
+			const test = async () => artistService.getArtist(albumQueryParameters);
+			expect(test()).rejects.toThrow(ArtistNotFoundException); 
+		});
+	});
 })
