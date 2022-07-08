@@ -57,7 +57,7 @@ model Artist {
 model File {
 	id				Int		@id @default(autoincrement())
 	/// The path of the file, relate to the parent library
-	path			String	@unique
+	path			String
 	/// @Is('MD5 Checksum', (value) => RegExp('^[a-f0-9]{32}$').test(value))
 	/// MD5 checksum of the file
 	md5Checksum		String
@@ -68,6 +68,7 @@ model File {
 	/// Library the file is registered under
 	library			Library	@relation(fields: [libraryId], references: id, onDelete: Cascade)
 	libraryId		Int
+	@@unique([path, libraryId])
 }
 
 /// A Library groups files under a given path
