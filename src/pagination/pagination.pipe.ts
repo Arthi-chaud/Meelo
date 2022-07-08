@@ -1,21 +1,17 @@
-import { ArgumentMetadata, ParseIntPipe, PipeTransform } from "@nestjs/common";
+import type { ArgumentMetadata, PipeTransform } from "@nestjs/common";
 import { defaultPageSize, PaginationParameters } from "./models/pagination-parameters";
 import InvalidPaginationParameterValue from "./pagination.exceptions";
 
 class ParsePaginationParameterPipe implements PipeTransform {
 	async transform(value: Record<keyof PaginationParameters, any>, _metadata: ArgumentMetadata): Promise<PaginationParameters> {
-		let parseInt = new ParseIntPipe();
-		const skip = value.skip !== undefined ? await parseInt.transform(value.skip, _metadata) : 0;
-		const take = value.take !== undefined ? await parseInt.transform(value.take, _metadata) : defaultPageSize;
+		const skip = value.skip !== undefined ? parseInt(value.skip, 10) : 0;
+		const take = value.take !== undefined ? parseInt(value.take, 10) : defaultPageSize;
 
-		if (skip < 0)
+		if (isNaN(skip) || skip < 0)
 			throw new InvalidPaginationParameterValue('skip');
-		if (take < 0)
+		if (isNaN(take) || take < 0)
 			throw new InvalidPaginationParameterValue('take');
-		return {
-			skip,
-			take 
-		}
+		return { skip, take };
 	}
 }
 
