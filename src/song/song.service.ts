@@ -6,7 +6,7 @@ import { SongAlreadyExistsException, SongNotFoundByIdException, SongNotFoundExce
 import PrismaService from 'src/prisma/prisma.service';
 import SongQueryParameters from './models/song.query-params';
 import ArtistQueryParameters from 'src/artist/models/artist.query-parameters';
-import { buildPaginationParameters, PaginationParameters } from 'src/pagination/parameters';
+import { type PaginationParameters, buildPaginationParameters } from 'src/pagination/models/pagination-parameters';
 
 @Injectable()
 export default class SongService {
