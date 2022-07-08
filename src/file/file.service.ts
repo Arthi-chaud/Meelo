@@ -49,7 +49,7 @@ export default class FileService {
 				throw new FileNotFoundFromIDException(where.id);
 			else if (where.trackId !== undefined)
 				throw new FileNotFoundFromTrackIDException(where.trackId);
-			throw new FileNotFoundFromPathException(where.path);
+			throw new FileNotFoundFromPathException(where.byPath.path);
 		}
 	}
 
@@ -97,17 +97,13 @@ export default class FileService {
 	 * @param where the parameters to get the file to delete
 	 * @returns an empty promise
 	 */
-	async deleteFile(where: FileQueryParameters.WhereInput): Promise<void> {
+	async deleteFile(where: FileQueryParameters.DeleteInput): Promise<void> {
 		try {
 			await this.prismaService.file.delete({
 				where: FileQueryParameters.buildQueryParametersForOne(where)
 			});
 		} catch {
-			if (where.id !== undefined)
-				throw new FileNotFoundFromIDException(where.id);
-			else if (where.trackId !== undefined)
-				throw new FileNotFoundFromTrackIDException(where.trackId);
-			throw new FileNotFoundFromPathException(where.path);
+			throw new FileNotFoundFromIDException(where.id);
 		}
 		
 	}

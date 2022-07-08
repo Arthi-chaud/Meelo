@@ -205,7 +205,7 @@ export default class TrackService {
 		} 
 		if (where.sourceFile.id !== undefined)
 			throw new FileNotFoundFromIDException(where.sourceFile.id);
-		throw new FileNotFoundFromPathException(where.sourceFile.path!);
+		throw new FileNotFoundFromPathException(where.sourceFile.byPath!.path);
 	}
 
 	/**
