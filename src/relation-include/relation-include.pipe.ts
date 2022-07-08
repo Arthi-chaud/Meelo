@@ -1,4 +1,5 @@
 import type { ArgumentMetadata, PipeTransform } from "@nestjs/common";
+import type { RelationInclude } from "./models/relation-include";
 import { InvalidRelationIncludeParameter, InvalidRelationIncludeParameterFormat } from "./relation-include.exceptions";
 
 /**
@@ -6,7 +7,7 @@ import { InvalidRelationIncludeParameter, InvalidRelationIncludeParameterFormat 
  * The expected format is `field1,field2,field3,...`
  * Constructor parameter is the array of valid, available keys
  */
-export default class ParseRelationIncludePipe<Keys extends readonly string[], T = Record<Keys[number], number>> implements PipeTransform {
+export default class ParseRelationIncludePipe<Keys extends readonly string[], T = RelationInclude<Keys>> implements PipeTransform {
 	constructor(private readonly keys: Keys) { }
 	transform(value: any, _metadata: ArgumentMetadata): T {
 		const separator = ',';
