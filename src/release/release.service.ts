@@ -6,7 +6,7 @@ import { MasterReleaseNotFoundFromIDException, ReleaseAlreadyExists, ReleaseNotF
 import PrismaService from 'src/prisma/prisma.service';
 import ReleaseQueryParameters from './models/release.query-parameters';
 import AlbumQueryParameters from 'src/album/models/album.query-parameters';
-import { buildPaginationParameters, PaginationParameters } from 'src/pagination/parameters';
+import { type PaginationParameters, buildPaginationParameters } from 'src/pagination/models/pagination-parameters';
 import type { MeeloException } from 'src/exceptions/meelo-exception';
 
 @Injectable()

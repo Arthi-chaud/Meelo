@@ -4,8 +4,8 @@ import Slug from 'src/slug/slug';
 import LibraryService from './library.service';
 import { LibraryDto } from './models/library.dto';
 import type { Library } from '@prisma/client';
-import ParsePaginationParameterPipe from 'src/pagination/pipe';
-import type { PaginationParameters } from 'src/pagination/parameters';
+import ParsePaginationParameterPipe from 'src/pagination/pagination.pipe';
+import type { PaginationParameters } from 'src/pagination/models/pagination-parameters';
 import LibraryQueryParameters from './models/library.query-parameters';
 import ParseRelationIncludePipe from 'src/relation-include/relation-include.pipe';
 

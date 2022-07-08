@@ -6,7 +6,7 @@ import { AlbumType, Album } from '@prisma/client';
 import PrismaService from 'src/prisma/prisma.service';
 import AlbumQueryParameters from './models/album.query-parameters';
 import ArtistQueryParameters from 'src/artist/models/artist.query-parameters';
-import { buildPaginationParameters, PaginationParameters } from 'src/pagination/parameters';
+import { type PaginationParameters, buildPaginationParameters } from 'src/pagination/models/pagination-parameters';
 
 @Injectable()
 export default class AlbumService {

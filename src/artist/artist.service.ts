@@ -4,7 +4,7 @@ import { ArtistAlreadyExistsException as ArtistAlreadyExistsException, ArtistNot
 import type { Artist } from '@prisma/client';
 import PrismaService from 'src/prisma/prisma.service';
 import ArtistQueryParameters from './models/artist.query-parameters';
-import { buildPaginationParameters, PaginationParameters } from 'src/pagination/parameters';
+import { type PaginationParameters, buildPaginationParameters } from 'src/pagination/models/pagination-parameters';
 
 @Injectable()
 export default class ArtistService {
