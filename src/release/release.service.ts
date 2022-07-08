@@ -161,8 +161,7 @@ export default class ReleaseService {
 					album: { byId: { id: deletedRelease.albumId } }
 				});
 			await this.albumService.deleteAlbumIfEmpty(deletedRelease.albumId);
-		} catch (e) {
-			console.log(e);
+		} catch {
 			throw await this.getReleaseNotFoundError(where);
 		}
 	}
