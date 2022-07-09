@@ -5,14 +5,12 @@ import ArtistService from 'src/artist/artist.service';
 import IllustrationController from 'src/illustration/illustration.controller';
 import type { PaginationParameters } from 'src/pagination/models/pagination-parameters';
 import ParsePaginationParameterPipe from 'src/pagination/pagination.pipe';
-import ParseRelationIncludePipe from 'src/relation-include/relation-include.pipe';
 import { ParseArtistSlugPipe, ParseSlugPipe } from 'src/slug/pipe';
 import Slug from 'src/slug/slug';
 import compilationAlbumArtistKeyword from 'src/utils/compilation';
 import AlbumService from './album.service';
 import AlbumQueryParameters from './models/album.query-parameters';
 
-const ParseAlbumRelationIncludePipe = new ParseRelationIncludePipe(AlbumQueryParameters.AvailableIncludes);
 
 @Controller('albums')
 export default class AlbumController {
@@ -24,8 +22,10 @@ export default class AlbumController {
 
 	@Get()
 	async getAlbums(
-		@Query(ParsePaginationParameterPipe) paginationParameters: PaginationParameters,
-		@Query('with', ParseAlbumRelationIncludePipe) include: AlbumQueryParameters.RelationInclude
+		@Query(ParsePaginationParameterPipe)
+		paginationParameters: PaginationParameters,
+		@Query('with', AlbumQueryParameters.ParseRelationIncludePipe)
+		include: AlbumQueryParameters.RelationInclude
 	) {
 		let albums = await this.albumService.getAlbums({}, paginationParameters, include);
 		let artists = await this.artistService.getArtists({
@@ -41,9 +41,12 @@ export default class AlbumController {
 
 	@Get('/:artist')
 	async getAlbumsByArtist(
-		@Query(ParsePaginationParameterPipe) paginationParameters: PaginationParameters,
-		@Query('with', ParseAlbumRelationIncludePipe) include: AlbumQueryParameters.RelationInclude,
-		@Param('artist', ParseArtistSlugPipe) artistSlug: Slug | undefined
+		@Query(ParsePaginationParameterPipe)
+		paginationParameters: PaginationParameters,
+		@Query('with', AlbumQueryParameters.ParseRelationIncludePipe)
+		include: AlbumQueryParameters.RelationInclude,
+		@Param('artist', ParseArtistSlugPipe)
+		artistSlug: Slug | undefined
 	) {
 		let artist = artistSlug ? await this.artistService.getArtist({ slug: artistSlug }) : undefined
 		let albums = await this.albumService.getAlbums({
@@ -56,9 +59,12 @@ export default class AlbumController {
 
 	@Get('/:artist/:album')
 	async getAlbum(
-		@Param('artist', ParseArtistSlugPipe) artistSlug: Slug | undefined,
-		@Query('with', ParseAlbumRelationIncludePipe) include: AlbumQueryParameters.RelationInclude,
-		@Param('album', ParseSlugPipe) albumSlug: Slug
+		@Param('artist', ParseArtistSlugPipe)
+		artistSlug: Slug | undefined,
+		@Query('with', AlbumQueryParameters.ParseRelationIncludePipe)
+		include: AlbumQueryParameters.RelationInclude,
+		@Param('album', ParseSlugPipe)
+		albumSlug: Slug
 	) {
 		let album = await this.albumService.getAlbum({
 			bySlug: {
