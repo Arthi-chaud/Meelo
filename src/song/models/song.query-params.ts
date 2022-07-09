@@ -7,6 +7,8 @@ import type RequireAtLeastOne from "src/utils/require-at-least-one";
 import type RequireOnlyOne from "src/utils/require-only-one"
 import { buildStringSearchParameters, SearchStringInput } from "src/utils/search-string-input";
 import type { RelationInclude as BaseRelationInclude } from "src/relation-include/models/relation-include";
+import type LibraryQueryParameters from "src/library/models/library.query-parameters";
+import TrackQueryParameters from "src/track/models/track.query-parameters";
 
 namespace SongQueryParameters {
 	type OmitArtistId<T> = Omit<T, 'artistId'>;
@@ -53,6 +55,7 @@ namespace SongQueryParameters {
 	export type ManyWhereInput = Partial<RequireAtLeastOne<{
 		name: SearchStringInput,
 		artist?: ArtistQueryParameters.WhereInput,
+		library: LibraryQueryParameters.WhereInput,
 		playCount: RequireOnlyOne<{ below: number, exact: number, moreThan: number }>,
 	}>>;
 	/**
@@ -71,7 +74,10 @@ namespace SongQueryParameters {
 				equals: where.playCount?.exact,
 				gt: where.playCount?.moreThan,
 				lt: where.playCount?.below
-			}
+			},
+			tracks: where.library
+				? TrackQueryParameters.buildQueryParametersForMany({ byLibrarySource: where.library })
+				: undefined
 		};
 	}
 

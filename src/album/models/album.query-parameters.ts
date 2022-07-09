@@ -1,6 +1,6 @@
 import type { Album, Prisma } from "@prisma/client";
 import ArtistQueryParameters from "src/artist/models/artist.query-parameters";
-import LibraryQueryParameters from "src/library/models/library.query-parameters";
+import type LibraryQueryParameters from "src/library/models/library.query-parameters";
 import type Slug from "src/slug/slug"
 import type OmitId from "src/utils/omit-id";
 import type OmitReleaseDate from "src/utils/omit-release-date";
@@ -10,6 +10,7 @@ import type RequireOnlyOne from "src/utils/require-only-one"
 import type { SearchDateInput } from "src/utils/search-date-input";
 import { buildStringSearchParameters, SearchStringInput } from "src/utils/search-string-input";
 import type { RelationInclude as BaseRelationInclude } from "src/relation-include/models/relation-include" ;
+import ReleaseQueryParameters from "src/release/models/release.query-parameters";
 
 namespace AlbumQueryParameters {
 
@@ -70,15 +71,7 @@ namespace AlbumQueryParameters {
 			: where.byArtist,
 			name: buildStringSearchParameters(where.byName),
 			releases: where.byLibrarySource ? {
-				some: {
-					tracks: {
-						some: {
-							sourceFile: {
-								library: LibraryQueryParameters.buildQueryParametersForOne(where.byLibrarySource)
-							}
-						}
-					}
-				}
+				some: ReleaseQueryParameters.buildQueryParametersForMany({ library: where.byLibrarySource })
 			} : undefined
 		};
 	}

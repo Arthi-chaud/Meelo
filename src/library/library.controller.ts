@@ -13,7 +13,9 @@ const ParseLibraryRelationIncludePipe = new ParseRelationIncludePipe(LibraryQuer
 
 @Controller('libraries')
 export default class LibraryController {
-	constructor(private libraryService: LibraryService) { }
+	constructor(
+		private libraryService: LibraryService
+	) { }
 
 	@Post('new')
 	async createLibrary(@Body() createLibraryDto: LibraryDto) {

@@ -7,6 +7,8 @@ import type OmitReleaseDate from "src/utils/omit-release-date";
 import type OmitSlug from "src/utils/omit-slug";
 import type RequireOnlyOne from "src/utils/require-only-one"
 import type { RelationInclude as BaseRelationInclude } from "src/relation-include/models/relation-include" ;
+import type LibraryQueryParameters from "src/library/models/library.query-parameters";
+import TrackQueryParameters from "src/track/models/track.query-parameters";
 
 namespace ReleaseQueryParameters {
 
@@ -50,6 +52,7 @@ namespace ReleaseQueryParameters {
 	 */
 	export type ManyWhereInput = Partial<{
 		album: AlbumQueryParameters.WhereInput,
+		library: LibraryQueryParameters.WhereInput
 	}>;
 
 	/**
@@ -67,6 +70,9 @@ namespace ReleaseQueryParameters {
 						? ArtistQueryParameters.buildQueryParametersForOne(where.album.bySlug.artist)
 						: null
 				: undefined
+			} : undefined,
+			tracks: where.library ? {
+				some: TrackQueryParameters.buildQueryParametersForMany({ byLibrarySource: where.library })
 			} : undefined
 		};
 	}

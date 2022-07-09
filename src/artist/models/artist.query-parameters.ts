@@ -1,5 +1,5 @@
 import type { Artist, Prisma } from "@prisma/client";
-import LibraryQueryParameters from "src/library/models/library.query-parameters";
+import type LibraryQueryParameters from "src/library/models/library.query-parameters";
 import type Slug from "src/slug/slug"
 import type OmitId from "src/utils/omit-id";
 import type OmitSlug from "src/utils/omit-slug";
@@ -7,6 +7,7 @@ import type RequireAtLeastOne from "src/utils/require-at-least-one";
 import type RequireOnlyOne from "src/utils/require-only-one"
 import type { SearchStringInput } from "src/utils/search-string-input";
 import type { RelationInclude as BaseRelationInclude } from "src/relation-include/models/relation-include" ;
+import ReleaseQueryParameters from "src/release/models/release.query-parameters";
 
 namespace ArtistQueryParameters {
 
@@ -57,19 +58,7 @@ namespace ArtistQueryParameters {
 				contains: where.byName?.contains,
 			},
 			albums: where.byLibrarySource ? {
-				some: {
-					releases: {
-						some: {
-							tracks: {
-								some: {
-									sourceFile: {
-										library: LibraryQueryParameters.buildQueryParametersForOne(where.byLibrarySource)
-									}
-								}
-							}
-						}
-					}
-				}
+				some: ReleaseQueryParameters.buildQueryParametersForMany({ library: where.byLibrarySource })
 			} : undefined
 		};
 	}
