@@ -43,9 +43,7 @@ export default class ReleaseController {
 				album: {
 					bySlug: {
 						slug: albumSlug,
-						artist: artistSlug ? {
-							slug: artistSlug
-						} : undefined
+						artist: artistSlug ? {	slug: artistSlug } : undefined
 					}
 				}
 			}
