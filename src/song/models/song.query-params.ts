@@ -52,7 +52,7 @@ namespace SongQueryParameters {
 	 */
 	export type ManyWhereInput = Partial<RequireAtLeastOne<{
 		name: SearchStringInput,
-		artist?: ArtistQueryParameters.WhereInput,
+		artist: ArtistQueryParameters.WhereInput,
 		playCount: RequireOnlyOne<{ below: number, exact: number, moreThan: number }>,
 	}>>;
 	/**
