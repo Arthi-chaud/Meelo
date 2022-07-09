@@ -8,6 +8,7 @@ import type RequireOnlyOne from "src/utils/require-only-one"
 import type { SearchStringInput } from "src/utils/search-string-input";
 import type { RelationInclude as BaseRelationInclude } from "src/relation-include/models/relation-include" ;
 import ReleaseQueryParameters from "src/release/models/release.query-parameters";
+import ParseBaseRelationIncludePipe from "src/relation-include/relation-include.pipe";
 
 namespace ArtistQueryParameters {
 
@@ -82,6 +83,7 @@ namespace ArtistQueryParameters {
 	 */
 	export const AvailableIncludes = ['albums', 'songs'] as const;
 	export type RelationInclude = BaseRelationInclude<typeof AvailableIncludes>;
+	export const ParseRelationIncludePipe = new ParseBaseRelationIncludePipe(AvailableIncludes);
 
 	/**
 	 * Build the query parameters for ORM to include relations
