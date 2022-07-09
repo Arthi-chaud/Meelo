@@ -84,7 +84,7 @@ namespace FileQueryParameters {
 	 * Relations to include in returned File object
 	 */
 	export const AvailableIncludes = ['track', 'library'] as const;
-	export type RelationInclude = BaseRelationInclude<typeof AvailableIncludes>
+	export type RelationInclude = BaseRelationInclude<typeof AvailableIncludes>;
 	/**
 	 * Build the query parameters for ORM to include relations
 	 * @returns the ORM-ready query parameters
