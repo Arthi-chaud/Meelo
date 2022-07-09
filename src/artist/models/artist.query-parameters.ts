@@ -58,7 +58,11 @@ namespace ArtistQueryParameters {
 				contains: where.byName?.contains,
 			},
 			albums: where.byLibrarySource ? {
-				some: ReleaseQueryParameters.buildQueryParametersForMany({ library: where.byLibrarySource })
+				some: {
+					releases: {
+						some: ReleaseQueryParameters.buildQueryParametersForMany({ library: where.byLibrarySource })
+					}
+				}
 			} : undefined
 		};
 	}

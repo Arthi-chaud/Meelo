@@ -75,9 +75,9 @@ namespace SongQueryParameters {
 				gt: where.playCount?.moreThan,
 				lt: where.playCount?.below
 			},
-			tracks: where.library
-				? TrackQueryParameters.buildQueryParametersForMany({ byLibrarySource: where.library })
-				: undefined
+			instances: where.library ? {
+				some: TrackQueryParameters.buildQueryParametersForMany({ byLibrarySource: where.library })
+			} : undefined
 		};
 	}
 
