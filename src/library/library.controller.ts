@@ -19,8 +19,6 @@ import TrackService from 'src/track/track.service';
 import ReleaseService from 'src/release/release.service';
 import SongService from 'src/song/song.service';
 
-const ParseLibraryRelationIncludePipe = new ParseRelationIncludePipe(LibraryQueryParameters.AvailableIncludes);
-
 @Controller('libraries')
 export default class LibraryController {
 	constructor(
@@ -38,8 +36,10 @@ export default class LibraryController {
 	}
 	@Get()
 	async getLibraries(
-		@Query(ParsePaginationParameterPipe) paginationParameters: PaginationParameters,
-		@Query('with', ParseLibraryRelationIncludePipe) include: LibraryQueryParameters.RelationInclude
+		@Query(ParsePaginationParameterPipe)
+		paginationParameters: PaginationParameters,
+		@Query('with', LibraryQueryParameters.ParseRelationIncludePipe)
+		include: LibraryQueryParameters.RelationInclude
 	) {
 		return await this.libraryService.getLibraries({}, paginationParameters, include);
 	}
@@ -57,7 +57,8 @@ export default class LibraryController {
 	@Get(':slug')
 	async getLibrary(
 		@Param('slug', ParseSlugPipe) slug: Slug,
-		@Query('with', ParseLibraryRelationIncludePipe) include: LibraryQueryParameters.RelationInclude
+		@Query('with', LibraryQueryParameters.ParseRelationIncludePipe)
+		include: LibraryQueryParameters.RelationInclude
 	): Promise<Library> {
 		return await this.libraryService.getLibrary({ slug: slug }, include);
 	}
@@ -89,9 +90,12 @@ export default class LibraryController {
 
 	@Get('/:slug/artists')
 	async getArtistsByLibrary(
-		@Param('slug', ParseSlugPipe) slug: Slug,
-		@Query(ParsePaginationParameterPipe) paginationParameters: PaginationParameters,
-		@Query('with', new ParseRelationIncludePipe(ArtistQueryParameters.AvailableIncludes)) include: ArtistQueryParameters.RelationInclude
+		@Param('slug', ParseSlugPipe)
+		slug: Slug,
+		@Query(ParsePaginationParameterPipe)
+		paginationParameters: PaginationParameters,
+		@Query('with', new ParseRelationIncludePipe(ArtistQueryParameters.AvailableIncludes))
+		include: ArtistQueryParameters.RelationInclude
 	): Promise<Artist[]> {
 		return await this.artistService.getArtists({ byLibrarySource: {
 			slug: slug
@@ -100,9 +104,12 @@ export default class LibraryController {
 
 	@Get('/:slug/albums')
 	async getAlbumsByLibrary(
-		@Param('slug', ParseSlugPipe) slug: Slug,
-		@Query(ParsePaginationParameterPipe) paginationParameters: PaginationParameters,
-		@Query('with', new ParseRelationIncludePipe(AlbumQueryParameters.AvailableIncludes)) include: AlbumQueryParameters.RelationInclude
+		@Param('slug', ParseSlugPipe)
+		slug: Slug,
+		@Query(ParsePaginationParameterPipe)
+		paginationParameters: PaginationParameters,
+		@Query('with', new ParseRelationIncludePipe(AlbumQueryParameters.AvailableIncludes))
+		include: AlbumQueryParameters.RelationInclude
 	): Promise<Artist[]> {
 		return await this.albumService.getAlbums({ byLibrarySource: {
 			slug: slug
@@ -111,9 +118,12 @@ export default class LibraryController {
 
 	@Get('/:slug/releases')
 	async getReleasesByLibrary(
-		@Param('slug', ParseSlugPipe) slug: Slug,
-		@Query(ParsePaginationParameterPipe) paginationParameters: PaginationParameters,
-		@Query('with', new ParseRelationIncludePipe(ReleaseQueryParameters.AvailableIncludes)) include: ReleaseQueryParameters.RelationInclude
+		@Param('slug', ParseSlugPipe)
+		slug: Slug,
+		@Query(ParsePaginationParameterPipe)
+		paginationParameters: PaginationParameters,
+		@Query('with', new ParseRelationIncludePipe(ReleaseQueryParameters.AvailableIncludes))
+		include: ReleaseQueryParameters.RelationInclude
 	): Promise<Release[]> {
 		return await this.releaseService.getReleases({ library: {
 			slug: slug
@@ -122,9 +132,12 @@ export default class LibraryController {
 
 	@Get('/:slug/songs')
 	async getSongsByLibrary(
-		@Param('slug', ParseSlugPipe) slug: Slug,
-		@Query(ParsePaginationParameterPipe) paginationParameters: PaginationParameters,
-		@Query('with', new ParseRelationIncludePipe(SongQueryParameters.AvailableIncludes)) include: SongQueryParameters.RelationInclude
+		@Param('slug', ParseSlugPipe)
+		slug: Slug,
+		@Query(ParsePaginationParameterPipe)
+		paginationParameters: PaginationParameters,
+		@Query('with', new ParseRelationIncludePipe(SongQueryParameters.AvailableIncludes))
+		include: SongQueryParameters.RelationInclude
 	): Promise<Song[]> {
 		return await this.songService.getSongs({ library: {
 			slug: slug
@@ -133,9 +146,12 @@ export default class LibraryController {
 
 	@Get('/:slug/tracks')
 	async getTracksByLibrary(
-		@Param('slug', ParseSlugPipe) slug: Slug,
-		@Query(ParsePaginationParameterPipe) paginationParameters: PaginationParameters,
-		@Query('with', new ParseRelationIncludePipe(TrackQueryParameters.AvailableIncludes)) include: TrackQueryParameters.RelationInclude
+		@Param('slug', ParseSlugPipe)
+		slug: Slug,
+		@Query(ParsePaginationParameterPipe)
+		paginationParameters: PaginationParameters,
+		@Query('with', new ParseRelationIncludePipe(TrackQueryParameters.AvailableIncludes))
+		include: TrackQueryParameters.RelationInclude
 	): Promise<Track[]> {
 		return await this.trackService.getTracks({ byLibrarySource: {
 			slug: slug

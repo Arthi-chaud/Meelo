@@ -16,6 +16,11 @@ import request from 'supertest';
 import type { Library } from "@prisma/client";
 import NotFoundExceptionFilter from "src/exceptions/not-found.exception";
 import MeeloExceptionFilter from "src/exceptions/meelo-exception.filter";
+import AlbumModule from "src/album/album.module";
+import ArtistModule from "src/artist/artist.module";
+import ReleaseModule from "src/release/release.module";
+import SongModule from "src/song/song.module";
+import TrackModule from "src/track/track.module";
 describe('Library Controller', () => {
 	let libraryController: LibraryController;
 	let libraryService: LibraryService;
@@ -23,7 +28,7 @@ describe('Library Controller', () => {
 
 	beforeAll(async () => {
 		const module: TestingModule = await createTestingModule({
-			imports: [LibraryModule, PrismaModule, FileModule, MetadataModule, FileManagerModule, IllustrationModule],
+			imports: [LibraryModule, PrismaModule, FileModule, MetadataModule, FileManagerModule, IllustrationModule, IllustrationModule, ArtistModule, AlbumModule, SongModule, ReleaseModule, TrackModule],
 			providers: [LibraryController, LibraryService, PrismaService],
 		}).overrideProvider(FileManagerService).useClass(FakeFileManagerService).compile();
 		await module.get<PrismaService>(PrismaService).onModuleInit();

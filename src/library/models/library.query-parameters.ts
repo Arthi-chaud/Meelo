@@ -5,6 +5,7 @@ import type OmitSlug from "src/utils/omit-slug";
 import type RequireOnlyOne from "src/utils/require-only-one";
 import { buildStringSearchParameters, SearchStringInput } from "src/utils/search-string-input";
 import type { RelationInclude as BaseRelationInclude } from "src/relation-include/models/relation-include" ;
+import ParseBaseRelationIncludePipe from "src/relation-include/relation-include.pipe";
 
 namespace LibraryQueryParameters {
 
@@ -59,6 +60,7 @@ namespace LibraryQueryParameters {
 	 */
 	export const AvailableIncludes = ['files'] as const;
 	export type RelationInclude = BaseRelationInclude<typeof AvailableIncludes>;
+	export const ParseRelationIncludePipe = new ParseBaseRelationIncludePipe(AvailableIncludes);
 	/**
 	 * Build the query parameters for ORM to include relations
 	 * @returns the ORM-ready query parameters
