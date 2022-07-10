@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { Module, forwardRef } from '@nestjs/common';
 import { TrackController } from './track.controller';
 import FileModule from 'src/file/file.module';
 import PrismaModule from 'src/prisma/prisma.module';
@@ -9,7 +9,7 @@ import TrackService from './track.service';
 @Module({
 	imports: [
 		PrismaModule,
-		SongModule,
+		forwardRef(() => SongModule),
 		ReleaseModule,
 		FileModule
 	],
