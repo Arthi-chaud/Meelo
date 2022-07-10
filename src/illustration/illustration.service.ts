@@ -1,4 +1,4 @@
-import { Injectable, Logger, OnModuleInit, StreamableFile } from '@nestjs/common';
+import { forwardRef, Inject, Injectable, Logger, OnModuleInit, StreamableFile } from '@nestjs/common';
 import FileManagerService from 'src/file-manager/file-manager.service';
 import MetadataService from 'src/metadata/metadata.service';
 import type { Release, Track } from '@prisma/client';
@@ -22,6 +22,7 @@ export default class IllustrationService implements OnModuleInit {
 	private metadataService: MetadataService;
 	constructor(
 		private releaseService: ReleaseService,
+		@Inject(forwardRef(() => AlbumService))
 		private albumService: AlbumService,
 		private fileManagerService: FileManagerService,
 		private moduleRef: ModuleRef

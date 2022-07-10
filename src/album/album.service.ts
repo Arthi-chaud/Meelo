@@ -7,12 +7,15 @@ import PrismaService from 'src/prisma/prisma.service';
 import AlbumQueryParameters from './models/album.query-parameters';
 import ArtistQueryParameters from 'src/artist/models/artist.query-parameters';
 import { type PaginationParameters, buildPaginationParameters } from 'src/pagination/models/pagination-parameters';
+import { UrlGeneratorService } from 'nestjs-url-generator';
+import AlbumController from './album.controller';
 
 @Injectable()
 export default class AlbumService {
 	constructor(
 		private prismaService: PrismaService,
-		private artistServce: ArtistService
+		private artistServce: ArtistService,
+		private readonly urlGeneratorService: UrlGeneratorService
 	) {}
 
 
@@ -165,6 +168,23 @@ export default class AlbumService {
 			}, include);
 		} catch {
 			return await this.createAlbum({...where}, include);
+		}
+	}
+
+	/**
+	 * Build an object for the API 
+	 * @param album the album to create the object from
+	 */
+	buildAlbumResponse(album: Album) {
+		return {
+			...album,
+			illustration: this.urlGeneratorService.generateUrlFromController({
+				controller: AlbumController,
+				controllerMethod: AlbumController.prototype.getAlbumIllustration,
+				params: {
+					id: album.id.toString()
+				}
+			})
 		}
 	}
 

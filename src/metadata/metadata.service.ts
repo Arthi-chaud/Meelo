@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { forwardRef, Inject, Injectable } from '@nestjs/common';
 import FileManagerService from 'src/file-manager/file-manager.service';
 import type Metadata from './models/metadata';
 import mm, { type IAudioMetadata } from 'music-metadata';
@@ -20,6 +20,7 @@ export default class MetadataService {
 	constructor(
 		private trackService: TrackService,
 		private songService: SongService,
+		@Inject(forwardRef(() => AlbumService))
 		private albumService: AlbumService,
 		private artistService: ArtistService,
 		private releaseService: ReleaseService,
