@@ -41,7 +41,8 @@ namespace ArtistQueryParameters {
 	export type ManyWhereInput = Partial<RequireAtLeastOne<{
 		byLibrarySource: LibraryQueryParameters.WhereInput,
 		byName: SearchStringInput,
-		byIds: { in: number[] }
+		byIds: { in: number[] },
+		
 	}>>;
 
 	/**

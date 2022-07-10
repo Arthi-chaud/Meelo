@@ -1,11 +1,9 @@
-import { Controller, Get, Param, Query } from '@nestjs/common';
+import { Controller, Get, Param, ParseIntPipe, Query } from '@nestjs/common';
 import type { Artist } from '@prisma/client';
 import { UrlGeneratorService } from 'nestjs-url-generator';
 import IllustrationController from 'src/illustration/illustration.controller';
 import type { PaginationParameters } from 'src/pagination/models/pagination-parameters';
 import ParsePaginationParameterPipe from 'src/pagination/pagination.pipe';
-import { ParseArtistSlugPipe } from 'src/slug/pipe';
-import type Slug from 'src/slug/slug';
 import compilationAlbumArtistKeyword from 'src/utils/compilation';
 import ArtistService from './artist.service';
 import ArtistQueryParameters from './models/artist.query-parameters';
@@ -28,16 +26,25 @@ export default class ArtistController {
 		return artists.map((artist) => this.buildArtistResponse(artist));
 	}
 
-	@Get('/:artist')
-	async getArtist(
-		@Param('artist', ParseArtistSlugPipe)
-		artistSlug: Slug | undefined,
+	@Get()
+	async getAlbumArtists(
+		@Query(ParsePaginationParameterPipe)
+		paginationParameters: PaginationParameters,
 		@Query('with', ArtistQueryParameters.ParseRelationIncludePipe)
 		include: ArtistQueryParameters.RelationInclude
 	) {
-		let artist;
-		if (artistSlug !== undefined)
-		 	artist = await this.artistService.getArtist({ slug: artistSlug }, include);
+		let artists = await this.artistService.getArtists({}, paginationParameters, include);
+		return artists.map((artist) => this.buildArtistResponse(artist));
+	}
+
+	@Get('/:id')
+	async getArtist(
+		@Param('id', ParseIntPipe)
+		artistId: number,
+		@Query('with', ArtistQueryParameters.ParseRelationIncludePipe)
+		include: ArtistQueryParameters.RelationInclude
+	) {
+		let artist = await this.artistService.getArtist({ id: artistId }, include);
 		return this.buildArtistResponse(artist);
 	}
 

@@ -1,6 +1,5 @@
 import { Body, Controller, Get, Logger, Param, ParseIntPipe, Post, Query } from '@nestjs/common';
-import { ParseSlugPipe } from 'src/slug/pipe';
-import Slug from 'src/slug/slug';
+
 import LibraryService from './library.service';
 import { LibraryDto } from './models/library.dto';
 import type { Artist, Library, Release, Song, Track } from '@prisma/client';
@@ -90,71 +89,71 @@ export default class LibraryController {
 	
 	@Get('/:id/artists')
 	async getArtistsByLibrary(
-		@Param('slug', ParseSlugPipe)
-		slug: Slug,
+		@Param('id', ParseIntPipe)
+		libraryId: number,
 		@Query(ParsePaginationParameterPipe)
 		paginationParameters: PaginationParameters,
 		@Query('with', new ParseRelationIncludePipe(ArtistQueryParameters.AvailableIncludes))
 		include: ArtistQueryParameters.RelationInclude
 	): Promise<Artist[]> {
 		return await this.artistService.getArtists({ byLibrarySource: {
-			slug: slug
+			id: libraryId
 		} }, paginationParameters, include);
 	}
 
 	@Get('/:id/albums')
 	async getAlbumsByLibrary(
-		@Param('slug', ParseSlugPipe)
-		slug: Slug,
+		@Param('id', ParseIntPipe)
+		libraryId: number,
 		@Query(ParsePaginationParameterPipe)
 		paginationParameters: PaginationParameters,
 		@Query('with', new ParseRelationIncludePipe(AlbumQueryParameters.AvailableIncludes))
 		include: AlbumQueryParameters.RelationInclude
 	): Promise<Artist[]> {
 		return await this.albumService.getAlbums({ byLibrarySource: {
-			slug: slug
+			id: libraryId
 		} }, paginationParameters, include);
 	}
 
 	@Get('/:id/releases')
 	async getReleasesByLibrary(
-		@Param('slug', ParseSlugPipe)
-		slug: Slug,
+		@Param('id', ParseIntPipe)
+		libraryId: number,
 		@Query(ParsePaginationParameterPipe)
 		paginationParameters: PaginationParameters,
 		@Query('with', new ParseRelationIncludePipe(ReleaseQueryParameters.AvailableIncludes))
 		include: ReleaseQueryParameters.RelationInclude
 	): Promise<Release[]> {
 		return await this.releaseService.getReleases({ library: {
-			slug: slug
+			id: libraryId
 		} }, paginationParameters, include);
 	}
 
 	@Get('/:id/songs')
 	async getSongsByLibrary(
-		@Param('slug', ParseSlugPipe)
-		slug: Slug,
+		@Param('id', ParseIntPipe)
+		libraryId: number,
 		@Query(ParsePaginationParameterPipe)
 		paginationParameters: PaginationParameters,
 		@Query('with', new ParseRelationIncludePipe(SongQueryParameters.AvailableIncludes))
 		include: SongQueryParameters.RelationInclude
 	): Promise<Song[]> {
 		return await this.songService.getSongs({ library: {
-			slug: slug
+			id: libraryId
 		} }, paginationParameters, include);
 	}
 
 	@Get('/:id/tracks')
 	async getTracksByLibrary(
-		@Param('slug', ParseSlugPipe)
-		slug: Slug,
+		@Param('id', ParseIntPipe)
+		libraryId: number,
 		@Query(ParsePaginationParameterPipe)
 		paginationParameters: PaginationParameters,
 		@Query('with', new ParseRelationIncludePipe(TrackQueryParameters.AvailableIncludes))
 		include: TrackQueryParameters.RelationInclude
 	): Promise<Track[]> {
 		return await this.trackService.getTracks({ byLibrarySource: {
-			slug: slug
+			id: libraryId
 		} }, paginationParameters, include);
 	}
 }
