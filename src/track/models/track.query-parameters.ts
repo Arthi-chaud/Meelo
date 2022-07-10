@@ -1,7 +1,7 @@
 import type { Prisma, Track } from "@prisma/client";
 import FileQueryParameters from "src/file/models/file.query-parameters";
 import LibraryQueryParameters from "src/library/models/library.query-parameters";
-import type ReleaseQueryParameters from "src/release/models/release.query-parameters";
+import ReleaseQueryParameters from "src/release/models/release.query-parameters";
 import SongQueryParameters from "src/song/models/song.query-params";
 import type OmitId from "src/utils/omit-id";
 import type RequireAtLeastOne from "src/utils/require-at-least-one";
@@ -54,6 +54,7 @@ namespace TrackQueryParameters {
 	 */
 	export type ManyWhereInput = Partial<RequireAtLeastOne<{
 		bySong: SongQueryParameters.WhereInput,
+		byRelease: ReleaseQueryParameters.WhereInput,
 		byLibrarySource: LibraryQueryParameters.WhereInput,
 	}>>;
 
@@ -64,6 +65,7 @@ namespace TrackQueryParameters {
 	 */
 	export function buildQueryParametersForMany(where: ManyWhereInput): Prisma.TrackWhereInput {
 		return {
+			release: where.byRelease ? ReleaseQueryParameters.buildQueryParametersForOne(where.byRelease) : undefined,
 			song: where.bySong ? SongQueryParameters.buildQueryParametersForOne(where.bySong) : undefined,
 			sourceFile: where.byLibrarySource ? {
 				library: LibraryQueryParameters.buildQueryParametersForOne(where.byLibrarySource)

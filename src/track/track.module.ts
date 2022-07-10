@@ -10,7 +10,7 @@ import TrackService from './track.service';
 	imports: [
 		PrismaModule,
 		forwardRef(() => SongModule),
-		ReleaseModule,
+		forwardRef(() => ReleaseModule),
 		FileModule
 	],
 	exports: [TrackService],
