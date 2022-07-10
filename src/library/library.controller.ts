@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Logger, Param, Post, Query } from '@nestjs/common';
+import { Body, Controller, Get, Logger, Param, ParseIntPipe, Post, Query } from '@nestjs/common';
 import { ParseSlugPipe } from 'src/slug/pipe';
 import Slug from 'src/slug/slug';
 import LibraryService from './library.service';
@@ -54,41 +54,41 @@ export default class LibraryController {
 		return `Scanning ${libraries.length} libraries`
 	}
 
-	@Get(':slug')
-	async getLibrary(
-		@Param('slug', ParseSlugPipe) slug: Slug,
-		@Query('with', LibraryQueryParameters.ParseRelationIncludePipe)
-		include: LibraryQueryParameters.RelationInclude
-	): Promise<Library> {
-		return await this.libraryService.getLibrary({ slug: slug }, include);
-	}
-
 	@Get('clean')
 	async cleanLibraries() {
 		const libraries = await this.libraryService.getLibraries({});
 		libraries.forEach((library) => this.libraryService
-			.unregisterUnavailableFiles(new Slug(library.slug))
+			.unregisterUnavailableFiles(library.id)
 			.catch((error) => Logger.error(error))
 		);
 		return `Cleanning ${libraries.length} libraries`;
 	}
 
-	@Get('scan/:slug')
-	async scanLibraryFiles(@Param('slug', ParseSlugPipe) slug: Slug) {
-		let library = await this.libraryService.getLibrary({ slug: slug });
+	@Get('scan/:id')
+	async scanLibraryFiles(@Param('id', ParseIntPipe) libraryId: number) {
+		let library = await this.libraryService.getLibrary({ id: libraryId });
 		this.libraryService
 			.registerNewFiles(library)
 			.catch((error) => Logger.error(error));
 	}
 
-	@Get('clean/:slug')
-	async cleanLibrary(@Param('slug', ParseSlugPipe) slug: Slug) {
+	@Get('clean/:id')
+	async cleanLibrary(@Param('id', ParseIntPipe) libraryId: number) {
 		this.libraryService
-			.unregisterUnavailableFiles(slug)
+			.unregisterUnavailableFiles(libraryId)
 			.catch((error) => Logger.error(error));
 	}
 
-	@Get('/:slug/artists')
+	@Get(':id')
+	async getLibrary(
+		@Param('id', ParseIntPipe) libraryId: number,
+		@Query('with', LibraryQueryParameters.ParseRelationIncludePipe)
+		include: LibraryQueryParameters.RelationInclude
+	): Promise<Library> {
+		return await this.libraryService.getLibrary({ id: libraryId }, include);
+	}
+	
+	@Get('/:id/artists')
 	async getArtistsByLibrary(
 		@Param('slug', ParseSlugPipe)
 		slug: Slug,
@@ -102,7 +102,7 @@ export default class LibraryController {
 		} }, paginationParameters, include);
 	}
 
-	@Get('/:slug/albums')
+	@Get('/:id/albums')
 	async getAlbumsByLibrary(
 		@Param('slug', ParseSlugPipe)
 		slug: Slug,
@@ -116,7 +116,7 @@ export default class LibraryController {
 		} }, paginationParameters, include);
 	}
 
-	@Get('/:slug/releases')
+	@Get('/:id/releases')
 	async getReleasesByLibrary(
 		@Param('slug', ParseSlugPipe)
 		slug: Slug,
@@ -130,7 +130,7 @@ export default class LibraryController {
 		} }, paginationParameters, include);
 	}
 
-	@Get('/:slug/songs')
+	@Get('/:id/songs')
 	async getSongsByLibrary(
 		@Param('slug', ParseSlugPipe)
 		slug: Slug,
@@ -144,7 +144,7 @@ export default class LibraryController {
 		} }, paginationParameters, include);
 	}
 
-	@Get('/:slug/tracks')
+	@Get('/:id/tracks')
 	async getTracksByLibrary(
 		@Param('slug', ParseSlugPipe)
 		slug: Slug,
