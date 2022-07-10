@@ -1,4 +1,5 @@
-import { Body, Controller, Get, Param, ParseIntPipe, Post, Query, Response } from '@nestjs/common';
+import { Body, Controller, Get, Param, ParseBoolPipe, ParseIntPipe, Post, Query, Response } from '@nestjs/common';
+import type { Artist } from '@prisma/client';
 import AlbumService from 'src/album/album.service';
 import AlbumQueryParameters from 'src/album/models/album.query-parameters';
 import IllustrationService from 'src/illustration/illustration.service';
@@ -25,9 +26,20 @@ export default class ArtistController {
 		@Query(ParsePaginationParameterPipe)
 		paginationParameters: PaginationParameters,
 		@Query('with', ArtistQueryParameters.ParseRelationIncludePipe)
-		include: ArtistQueryParameters.RelationInclude
+		include: ArtistQueryParameters.RelationInclude,
+		@Query('albumArtistOnly', ParseBoolPipe)
+		albumArtistsOnly: boolean
 	) {
 		let artists = await this.artistService.getArtists({}, paginationParameters, include);
+		if (albumArtistsOnly) {
+			let albumArtists: Artist[] = [];
+			for (const artist of artists) {
+				const albumCount = await this.albumService.countAlbums({ byArtist: { id: artist.id } });
+				if (albumCount !== 0)
+					albumArtists.push(artist);
+				return albumArtists;
+			}
+		}
 		return artists;
 	}
 
