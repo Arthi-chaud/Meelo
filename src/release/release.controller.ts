@@ -74,7 +74,7 @@ export default class ReleaseController {
 	}
 
 	@Post('/:id/illustration')
-	async updateArtistIllustration(
+	async updateReleaseIllustration(
 		@Param('id', ParseIntPipe)
 		releaseId: number,
 		@Body()
