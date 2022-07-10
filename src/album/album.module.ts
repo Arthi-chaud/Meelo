@@ -7,7 +7,7 @@ import ReleaseModule from 'src/release/release.module';
 @Module({
 	imports: [
 		PrismaModule,
-		ArtistModule,
+		forwardRef(() => ArtistModule),
 		forwardRef(() => ReleaseModule)
 	],
 	exports: [AlbumService],
