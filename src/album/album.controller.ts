@@ -1,8 +1,10 @@
-import { Controller, forwardRef, Get, Inject, Param, ParseIntPipe, Query } from '@nestjs/common';
+import { Controller, forwardRef, Get, Inject, Param, ParseIntPipe, Query, Response } from '@nestjs/common';
+import IllustrationService from 'src/illustration/illustration.service';
 import type { PaginationParameters } from 'src/pagination/models/pagination-parameters';
 import ParsePaginationParameterPipe from 'src/pagination/pagination.pipe';
 import ReleaseQueryParameters from 'src/release/models/release.query-parameters';
 import ReleaseService from 'src/release/release.service';
+import Slug from 'src/slug/slug';
 import compilationAlbumArtistKeyword from 'src/utils/compilation';
 import AlbumService from './album.service';
 import AlbumQueryParameters from './models/album.query-parameters';
@@ -12,6 +14,7 @@ import AlbumQueryParameters from './models/album.query-parameters';
 export default class AlbumController {
 	constructor(
 		private albumService: AlbumService,
+		private illustrationService: IllustrationService,
 		@Inject(forwardRef(() => ReleaseService))
 		private releaseService: ReleaseService
 
@@ -78,6 +81,22 @@ export default class AlbumController {
 			byId: { id: albumId }
 		}, paginationParameters, include);
 		return releases;
+	}
+
+	@Get('/:id/illustration')
+	async getAlbumIllustration(
+		@Param('id', ParseIntPipe)
+		albumId: number,
+		@Response({ passthrough: true })
+		res: Response
+	) {
+		let album = await this.albumService.getAlbum({ byId: { id: albumId } }, { artist: true });
+		return this.illustrationService.streamIllustration(
+			await this.illustrationService.buildMasterReleaseIllustrationPath(
+				new Slug(album.slug), album.artist ? new Slug(album.artist.slug) : undefined
+			),
+			album.slug, res
+		);
 	}
 
 }
