@@ -1,8 +1,11 @@
-import { Controller, Get, Param, ParseIntPipe, Query } from '@nestjs/common';
+import { Body, Controller, Get, Param, ParseIntPipe, Post, Query, Response } from '@nestjs/common';
 import AlbumService from 'src/album/album.service';
 import AlbumQueryParameters from 'src/album/models/album.query-parameters';
+import IllustrationService from 'src/illustration/illustration.service';
+import type { IllustrationDownloadDto } from 'src/illustration/models/illustration-dl.dto';
 import type { PaginationParameters } from 'src/pagination/models/pagination-parameters';
 import ParsePaginationParameterPipe from 'src/pagination/pagination.pipe';
+import Slug from 'src/slug/slug';
 import SongQueryParameters from 'src/song/models/song.query-params';
 import SongService from 'src/song/song.service';
 import ArtistService from './artist.service';
@@ -13,7 +16,8 @@ export default class ArtistController {
 	constructor(
 		private artistService: ArtistService,
 		private albumService: AlbumService,
-		private songService: SongService
+		private songService: SongService,
+		private illustrationService: IllustrationService
 	) {}
 
 	@Get()
@@ -47,6 +51,35 @@ export default class ArtistController {
 	) {
 		let artist = await this.artistService.getArtist({ id: artistId }, include);
 		return artist;
+	}
+
+	@Get('/:id/illustration')
+	async getArtistIllustration(
+		@Param('id', ParseIntPipe)
+		artistId: number,
+		@Response({ passthrough: true })
+		res: Response
+	) {
+		let artist = await this.artistService.getArtist({ id: artistId });
+		return this.illustrationService.streamIllustration(
+			this.illustrationService.buildArtistIllustrationPath(new Slug(artist.slug)),
+			artist.slug, res
+		);
+	}
+
+	@Post('/:id/illustration')
+	async updateArtistIllustration(
+		@Param('id', ParseIntPipe)
+		artistId: number,
+		@Body()
+		illustrationDto: IllustrationDownloadDto
+	) {
+		let artist = await this.artistService.getArtist({ id: artistId });
+		const artistIllustrationPath = this.illustrationService.buildArtistIllustrationPath(new Slug(artist.slug));
+		return await this.illustrationService.downloadIllustration(
+			illustrationDto.url,
+			artistIllustrationPath
+		);
 	}
 
 	@Get('/:id/albums')

@@ -1,9 +1,7 @@
-import { Controller, Get, Param, StreamableFile, Response, Body, Post } from '@nestjs/common';
-import * as fs from 'fs';
-import FileManagerService from 'src/file-manager/file-manager.service';
+import { Controller, Get, Param, Response, Body, Post } from '@nestjs/common';
 import { ParseArtistSlugPipe, ParseSlugPipe } from 'src/slug/pipe';
 import Slug from 'src/slug/slug';
-import { NoAlbumIllustrationException, NoArtistIllustrationException, NoIllustrationException, NoReleaseIllustrationException } from './illustration.exceptions';
+import { NoAlbumIllustrationException, NoReleaseIllustrationException } from './illustration.exceptions';
 import IllustrationService from './illustration.service';
 import type { IllustrationDownloadDto } from './models/illustration-dl.dto';
 
@@ -12,23 +10,7 @@ export default class IllustrationController {
 
 	constructor(
 		private illustrationService: IllustrationService,
-		private fileManagerService: FileManagerService
 	) {}
-
-	@Get(':artist')
-	async getArtistIllustration(
-		@Param('artist', ParseArtistSlugPipe) artistSlug: Slug | undefined,
-		@Response({ passthrough: true }) res: Response) {
-		try {
-			return this.streamFile(
-				this.illustrationService.buildArtistIllustrationPath(artistSlug),
-				`${artistSlug}.jpg`,
-				res
-			);
-		} catch {
-			throw new NoArtistIllustrationException(artistSlug);
-		}
-	}
 
 	@Post(':artist')
 	async updateArtistIllustration(
@@ -93,13 +75,5 @@ export default class IllustrationController {
 		);
 	}
 
-	private streamFile(sourceFilePath: string, as: string, res: any): StreamableFile {
-		if (this.fileManagerService.fileExists(sourceFilePath) == false)
-			throw new NoIllustrationException("Illustration file not found");
-		const illustration = fs.createReadStream(sourceFilePath);
-		res.set({
-			'Content-Disposition': `attachment; filename="${as}"`,
-		});
-		return new StreamableFile(illustration);
-	}
+	
 }
