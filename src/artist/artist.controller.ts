@@ -1,5 +1,4 @@
 import { Body, Controller, DefaultValuePipe, forwardRef, Get, Inject, Param, ParseBoolPipe, ParseIntPipe, Post, Query, Response } from '@nestjs/common';
-import type { Artist } from '@prisma/client';
 import AlbumService from 'src/album/album.service';
 import AlbumQueryParameters from 'src/album/models/album.query-parameters';
 import IllustrationService from 'src/illustration/illustration.service';
@@ -34,26 +33,15 @@ export default class ArtistController {
 	) {
 		let artists = await this.artistService.getArtists({}, paginationParameters, include);
 		if (albumArtistsOnly) {
-			let albumArtists: Artist[] = [];
-			for (const artist of artists) {
-				const albumCount = await this.albumService.countAlbums({ byArtist: { id: artist.id } });
-				if (albumCount !== 0)
-					albumArtists.push(artist);
+			for (const currentArtist of artists) {
+				const albumCount = await this.albumService.countAlbums({
+					byArtist: { id: currentArtist.id }
+				});
+				if (albumCount == 0)
+					artists = artists.filter((artist) => artist.id != currentArtist.id);
 			}
-			return albumArtists;
 		}
-		return artists;
-	}
-
-	@Get()
-	async getAlbumArtists(
-		@Query(ParsePaginationParameterPipe)
-		paginationParameters: PaginationParameters,
-		@Query('with', ArtistQueryParameters.ParseRelationIncludePipe)
-		include: ArtistQueryParameters.RelationInclude
-	) {
-		let artists = await this.artistService.getArtists({}, paginationParameters, include);
-		return artists;
+		return artists.map((artist) => this.artistService.buildArtistResponse(artist));
 	}
 
 	@Get(':id')
@@ -64,7 +52,7 @@ export default class ArtistController {
 		include: ArtistQueryParameters.RelationInclude
 	) {
 		let artist = await this.artistService.getArtist({ id: artistId }, include);
-		return artist;
+		return this.artistService.buildArtistResponse(artist);
 	}
 
 	@Get(':id/illustration')
@@ -108,7 +96,7 @@ export default class ArtistController {
 		let albums = await this.albumService.getAlbums({
 			byArtist: { id: artistId }
 		}, paginationParameters, include);
-		return albums;
+		return albums.map((album) => this.albumService.buildAlbumResponse(album));
 	}
 
 	@Get(':id/songs')
@@ -123,7 +111,7 @@ export default class ArtistController {
 		let songs = await this.songService.getSongs({
 			artist: { id: artistId }
 		}, paginationParameters, include);
-		return songs;
+		return songs.map((song) => this.songService.buildSongResponse(song));
 	}
 
 }

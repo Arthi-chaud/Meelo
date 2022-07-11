@@ -156,6 +156,11 @@ export default class ArtistService {
 		}
 	}
 	
+	/**
+	 * Build API reponse for Artist Request
+	 * @param artist the Artist to build the response from
+	 * @returns the response Object
+	 */
 	buildArtistResponse(artist: Artist & Partial<{ songs: Song[], albums: Album[] }>): Object {
 		let response: Object = {
 			...artist,

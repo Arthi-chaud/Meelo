@@ -8,13 +8,15 @@ import { FakeFileManagerService } from "test/FakeFileManagerModule";
 import { ArtistAlreadyExistsException, ArtistNotFoundByIDException, ArtistNotFoundException } from "./artist.exceptions";
 import ArtistModule from "./artist.module";
 import ArtistService from "./artist.service"
+import SongModule from "src/song/song.module";
+import AlbumModule from "src/album/album.module";
 
 describe('Artist Service', () => {
 	let artistService: ArtistService;
 
 	beforeAll(async () => {
 		const module: TestingModule = await createTestingModule({
-			imports: [ArtistModule, PrismaModule],
+			imports: [ArtistModule, PrismaModule, SongModule, AlbumModule],
 			providers: [ArtistService],
 		}).overrideProvider(FileManagerService).useClass(FakeFileManagerService).compile();
 		await module.get<PrismaService>(PrismaService).onModuleInit();
@@ -88,23 +90,40 @@ describe('Artist Service', () => {
 		})
 	});
 
+	describe("Count Artist", () => {
+		it("should count the artist count", async () => {
+			let artistCount = await artistService.countArtists({});
+			expect(artistCount).toBe(2);
+		})
+
+		it("should count the artists by name (starts with)", async () => {
+			let artistCount = await artistService.countArtists({ byName: { startsWith: artistName } });
+			expect(artistCount).toBe(1);
+		});
+
+		it("should count the artists by name (is)", async () => {
+			let artistCount = await artistService.countArtists({ byName: { is: artistName } });
+			expect(artistCount).toBe(1);
+		});
+	})
+
 	describe('Delete Artist', () => {
-		it("should throw, as the album does not exist (by id)", () => {
+		it("should throw, as the artist does not exist (by id)", () => {
 			const test = async () => artistService.deleteArtist({ id: -1 });
 			expect(test()).rejects.toThrow(ArtistNotFoundByIDException); 
 		});
 
-		it("should throw, as the album does not exist (by slug)", () => {
+		it("should throw, as the artist does not exist (by slug)", () => {
 			const test = async () => artistService.deleteArtist({ slug: new Slug("Trololol") });
 			expect(test()).rejects.toThrow(ArtistNotFoundException); 
 		});
 
-		it("should delete the album", async () => {
-			const albumQueryParameters = {
+		it("should delete the artist", async () => {
+			const artistQueryParameters = {
 				slug: new Slug("My Name")
 			}
-			await artistService.deleteArtist(albumQueryParameters);
-			const test = async () => artistService.getArtist(albumQueryParameters);
+			await artistService.deleteArtist(artistQueryParameters);
+			const test = async () => artistService.getArtist(artistQueryParameters);
 			expect(test()).rejects.toThrow(ArtistNotFoundException); 
 		});
 	});

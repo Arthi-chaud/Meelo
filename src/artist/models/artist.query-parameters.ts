@@ -5,7 +5,7 @@ import type OmitId from "src/utils/omit-id";
 import type OmitSlug from "src/utils/omit-slug";
 import type RequireAtLeastOne from "src/utils/require-at-least-one";
 import type RequireOnlyOne from "src/utils/require-only-one"
-import type { SearchStringInput } from "src/utils/search-string-input";
+import { buildStringSearchParameters, SearchStringInput } from "src/utils/search-string-input";
 import type { RelationInclude as BaseRelationInclude } from "src/relation-include/models/relation-include" ;
 import ReleaseQueryParameters from "src/release/models/release.query-parameters";
 import ParseBaseRelationIncludePipe from "src/relation-include/relation-include.pipe";
@@ -55,10 +55,7 @@ namespace ArtistQueryParameters {
 			id: where.byIds ? {
 				in: where.byIds.in
 			} : undefined,
-			slug: {
-				startsWith: where.byName?.startsWith,
-				contains: where.byName?.contains,
-			},
+			name: buildStringSearchParameters(where.byName),
 			albums: where.byLibrarySource ? {
 				some: {
 					releases: {
