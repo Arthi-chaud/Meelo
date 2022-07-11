@@ -119,7 +119,7 @@ describe('Album Controller', () => {
 		});
 	});
 
-	describe("Get Compilations Albums", () => {
+	describe("Get Compilations Albums (GET /albums/compilations)", () => {
 		it("Should return all albums", () => {
 			return request(app.getHttpServer())
 				.get(`/albums/compilations`)
@@ -135,7 +135,7 @@ describe('Album Controller', () => {
 		});
 	});
 
-	describe("Get Album", () => {
+	describe("Get Album (GET /albums/:id)", () => {
 		it("Should return album", () => {
 			return request(app.getHttpServer())
 				.get(`/albums/${album1.id}`)
@@ -192,7 +192,7 @@ describe('Album Controller', () => {
 		});
 	});
 
-	describe("Get Album's Master", () => {
+	describe("Get Album's Master (GET /albums/:id/master)", () => {
 		it("Should return album's master", () => {
 			return request(app.getHttpServer())
 				.get(`/albums/${album1.id}/master`)
@@ -223,7 +223,7 @@ describe('Album Controller', () => {
 		});
 	});
 
-	describe("Get Album's Releases", () => {
+	describe("Get Album's Releases (GET /albums/:id/releases)", () => {
 		it("Should return all album's releases", () => {
 			return request(app.getHttpServer())
 				.get(`/albums/${album1.id}/releases`)
