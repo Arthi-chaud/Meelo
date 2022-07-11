@@ -1,13 +1,17 @@
 import { forwardRef, Inject, Injectable } from '@nestjs/common';
 import AlbumService from 'src/album/album.service';
 import Slug from 'src/slug/slug';
-import type { Release } from '@prisma/client';
+import type { Album, Release, Track } from '@prisma/client';
 import { MasterReleaseNotFoundFromIDException, ReleaseAlreadyExists, ReleaseNotFoundException, ReleaseNotFoundFromIDException } from './release.exceptions';
 import PrismaService from 'src/prisma/prisma.service';
 import ReleaseQueryParameters from './models/release.query-parameters';
 import AlbumQueryParameters from 'src/album/models/album.query-parameters';
 import { type PaginationParameters, buildPaginationParameters } from 'src/pagination/models/pagination-parameters';
 import type { MeeloException } from 'src/exceptions/meelo-exception';
+import ReleaseController from './release.controller';
+import { UrlGeneratorService } from 'nestjs-url-generator';
+import TrackService from 'src/track/track.service';
+import { AlbumNotFoundException, AlbumNotFoundFromIDException } from 'src/album/album.exceptions';
 
 @Injectable()
 export default class ReleaseService {
@@ -15,6 +19,9 @@ export default class ReleaseService {
 		private prismaService: PrismaService,
 		@Inject(forwardRef(() => AlbumService))
 		private albumService: AlbumService,
+		@Inject(forwardRef(() => TrackService))
+		private trackService: TrackService,
+		private readonly urlGeneratorService: UrlGeneratorService
 	) {}
 
 	/**
@@ -88,6 +95,13 @@ export default class ReleaseService {
 	 * @returns 
 	 */
 	async getAlbumReleases(where: AlbumQueryParameters.WhereInput, pagination?: PaginationParameters, include?: ReleaseQueryParameters.RelationInclude) {
+		try {
+			await this.albumService.getAlbum(where);
+		} catch {
+			if (where.byId)
+				throw new AlbumNotFoundFromIDException(where.byId.id);
+			throw new AlbumNotFoundException(where.bySlug.slug, where.bySlug.artist?.slug);
+		}
 		return await this.getReleases(
 			{ album: where },
 			pagination,
@@ -201,7 +215,7 @@ export default class ReleaseService {
 	 * Callback on release not found
 	 * @param where the query parameters that failed to get the release
 	 */
-	 private async getReleaseNotFoundError(where: ReleaseQueryParameters.WhereInput): Promise<MeeloException> {
+	private async getReleaseNotFoundError(where: ReleaseQueryParameters.WhereInput): Promise<MeeloException> {
 		if (where.byId) {
 			return new ReleaseNotFoundFromIDException(where.byId.id);
 		} else if (where.byMasterOf?.byId) {
@@ -242,7 +256,7 @@ export default class ReleaseService {
 	 * Unsets provided release as the album's master release, setting another release a master of the album
 	 * @param where the query parameters to find the release to et as master
 	 */
-	 async unsetReleaseAsMaster(where: ReleaseQueryParameters.UpdateAlbumMaster): Promise<void> {
+	async unsetReleaseAsMaster(where: ReleaseQueryParameters.UpdateAlbumMaster): Promise<void> {
 		let otherAlbumReleases: Release[] = (await this.getAlbumReleases(where.album))
 			.filter((albumRelease) => albumRelease.id != where.releaseId);
 		if (otherAlbumReleases.find((albumRelease) => albumRelease.master))
@@ -259,5 +273,31 @@ export default class ReleaseService {
 				{ byId: { id: where.releaseId }}
 			)
 		]);
+	}
+
+	buildReleaseResponse(release: Release & Partial<{ tracks: Track[], album: Album }>): Object {
+		let response: Object = {
+			...release,
+			illustration: this.urlGeneratorService.generateUrlFromController({
+				controller: ReleaseController,
+				controllerMethod: ReleaseController.prototype.getReleaseIllustration,
+				params: {
+					id: release.id.toString()
+				}
+			})
+		};
+		if (release.album !== undefined)
+			response = {
+				...response,
+				album: this.albumService.buildAlbumResponse(release.album)
+			}
+		if (release.tracks !== undefined)
+			response = {
+				...response,
+				tracks: release.tracks.map(
+					(track) => this.trackService.buildTrackResponse(track)
+				)
+			}
+		return response;
 	}
 }

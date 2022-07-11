@@ -12,6 +12,7 @@ import PrismaService from "src/prisma/prisma.service";
 import { AlbumAlreadyExistsException, AlbumNotFoundFromIDException } from "./album.exceptions";
 import Slug from "src/slug/slug";
 import { ArtistNotFoundException } from "src/artist/artist.exceptions";
+import SongModule from "src/song/song.module";
 
 describe('Album Service', () => {
 	let albumService: AlbumService;
@@ -19,7 +20,7 @@ describe('Album Service', () => {
 	let album: Album;
 	beforeAll(async () => {
 		const module: TestingModule = await createTestingModule({
-			imports: [AlbumModule, ArtistModule, PrismaModule],
+			imports: [AlbumModule, ArtistModule, PrismaModule, SongModule],
 			providers: [ArtistService],
 		}).overrideProvider(FileManagerService).useClass(FakeFileManagerService).compile();
 		await module.get<PrismaService>(PrismaService).onModuleInit();

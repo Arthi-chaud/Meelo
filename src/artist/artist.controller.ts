@@ -1,4 +1,4 @@
-import { Body, Controller, DefaultValuePipe, Get, Param, ParseBoolPipe, ParseIntPipe, Post, Query, Response } from '@nestjs/common';
+import { Body, Controller, DefaultValuePipe, forwardRef, Get, Inject, Param, ParseBoolPipe, ParseIntPipe, Post, Query, Response } from '@nestjs/common';
 import type { Artist } from '@prisma/client';
 import AlbumService from 'src/album/album.service';
 import AlbumQueryParameters from 'src/album/models/album.query-parameters';
@@ -15,7 +15,9 @@ import ArtistQueryParameters from './models/artist.query-parameters';
 @Controller('artists')
 export default class ArtistController {
 	constructor(
+		@Inject(forwardRef(() => ArtistService))
 		private artistService: ArtistService,
+		@Inject(forwardRef(() => AlbumService))
 		private albumService: AlbumService,
 		private songService: SongService,
 		private illustrationService: IllustrationService
@@ -54,7 +56,7 @@ export default class ArtistController {
 		return artists;
 	}
 
-	@Get('/:id')
+	@Get(':id')
 	async getArtist(
 		@Param('id', ParseIntPipe)
 		artistId: number,
@@ -65,7 +67,7 @@ export default class ArtistController {
 		return artist;
 	}
 
-	@Get('/:id/illustration')
+	@Get(':id/illustration')
 	async getArtistIllustration(
 		@Param('id', ParseIntPipe)
 		artistId: number,
@@ -94,7 +96,7 @@ export default class ArtistController {
 		);
 	}
 
-	@Get('/:id/albums')
+	@Get(':id/albums')
 	async getArtistAlbums(
 		@Query(ParsePaginationParameterPipe)
 		paginationParameters: PaginationParameters,
@@ -109,7 +111,7 @@ export default class ArtistController {
 		return albums;
 	}
 
-	@Get('/:id/songs')
+	@Get(':id/songs')
 	async getArtistSongs(
 		@Query(ParsePaginationParameterPipe)
 		paginationParameters: PaginationParameters,

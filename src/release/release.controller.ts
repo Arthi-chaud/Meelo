@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Param, ParseIntPipe, Post, Query, Response } from '@nestjs/common';
+import { Body, Controller, forwardRef, Get, Inject, Param, ParseIntPipe, Post, Query, Response } from '@nestjs/common';
 import ParsePaginationParameterPipe from 'src/pagination/pagination.pipe';
 import type { PaginationParameters } from 'src/pagination/models/pagination-parameters';
 import ReleaseQueryParameters from './models/release.query-parameters';
@@ -14,9 +14,13 @@ import type { IllustrationDownloadDto } from 'src/illustration/models/illustrati
 @Controller('releases')
 export default class ReleaseController {
 	constructor(
+		@Inject(forwardRef(() => ReleaseService))
 		private releaseService: ReleaseService,
+		@Inject(forwardRef(() => TrackService))
 		private trackService: TrackService,
+		@Inject(forwardRef(() => AlbumService))
 		private albumService: AlbumService,
+		@Inject(forwardRef(() => IllustrationService))
 		private illustrationService: IllustrationService
 	) { }
 	
@@ -30,7 +34,7 @@ export default class ReleaseController {
 		return await this.releaseService.getReleases({}, paginationParameters, include);
 	}
 
-	@Get('/:id')
+	@Get(':id')
 	async getRelease(
 		@Query('with', ReleaseQueryParameters.ParseRelationIncludePipe)
 		include: ReleaseQueryParameters.RelationInclude,
@@ -40,7 +44,7 @@ export default class ReleaseController {
 		return await this.releaseService.getRelease({ byId: { id: releaseId } }, include);
 	}
 
-	@Get('/:id/tracks')
+	@Get(':id/tracks')
 	async getReleaseTracks(
 		@Query(ParsePaginationParameterPipe)
 		paginationParameters: PaginationParameters,
@@ -54,7 +58,7 @@ export default class ReleaseController {
 		}, paginationParameters, include);
 	}
 
-	@Get('/:id/illustration')
+	@Get(':id/illustration')
 	async getReleaseIllustration(
 		@Param('id', ParseIntPipe)
 		releaseId: number,

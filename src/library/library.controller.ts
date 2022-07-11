@@ -87,7 +87,7 @@ export default class LibraryController {
 		return await this.libraryService.getLibrary({ id: libraryId }, include);
 	}
 	
-	@Get('/:id/artists')
+	@Get(':id/artists')
 	async getArtistsByLibrary(
 		@Param('id', ParseIntPipe)
 		libraryId: number,
@@ -101,7 +101,7 @@ export default class LibraryController {
 		} }, paginationParameters, include);
 	}
 
-	@Get('/:id/albums')
+	@Get(':id/albums')
 	async getAlbumsByLibrary(
 		@Param('id', ParseIntPipe)
 		libraryId: number,
@@ -115,7 +115,7 @@ export default class LibraryController {
 		} }, paginationParameters, include);
 	}
 
-	@Get('/:id/releases')
+	@Get(':id/releases')
 	async getReleasesByLibrary(
 		@Param('id', ParseIntPipe)
 		libraryId: number,
@@ -129,7 +129,7 @@ export default class LibraryController {
 		} }, paginationParameters, include);
 	}
 
-	@Get('/:id/songs')
+	@Get(':id/songs')
 	async getSongsByLibrary(
 		@Param('id', ParseIntPipe)
 		libraryId: number,
@@ -143,7 +143,7 @@ export default class LibraryController {
 		} }, paginationParameters, include);
 	}
 
-	@Get('/:id/tracks')
+	@Get(':id/tracks')
 	async getTracksByLibrary(
 		@Param('id', ParseIntPipe)
 		libraryId: number,

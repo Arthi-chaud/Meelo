@@ -1,4 +1,4 @@
-import { Controller, Get, Query, Param, ParseIntPipe, Response, Post, Body } from '@nestjs/common';
+import { Controller, Get, Query, Param, ParseIntPipe, Response, Post, Body, Inject, forwardRef } from '@nestjs/common';
 import AlbumService from 'src/album/album.service';
 import IllustrationService from 'src/illustration/illustration.service';
 import type { IllustrationDownloadDto } from 'src/illustration/models/illustration-dl.dto';
@@ -11,8 +11,11 @@ import TrackService from './track.service';
 @Controller('tracks')
 export class TrackController {
 	constructor(
+		@Inject(forwardRef(() => TrackService))
 		private trackService: TrackService,
+		@Inject(forwardRef(() => AlbumService))
 		private albumService: AlbumService,
+		@Inject(forwardRef(() => IllustrationService))
 		private illustrationService: IllustrationService
 	) { }
 	
@@ -26,7 +29,7 @@ export class TrackController {
 		return await this.trackService.getTracks({}, paginationParameters, include);
 	}
 
-	@Get('/:id')
+	@Get(':id')
 	async getTrack(
 		@Query('with', TrackQueryParameters.ParseRelationIncludePipe)
 		include: TrackQueryParameters.RelationInclude,
@@ -36,7 +39,7 @@ export class TrackController {
 		return await this.trackService.getTrack({ id: trackId }, include);
 	}
 
-	@Get('/:id/illustration')
+	@Get(':id/illustration')
 	async getTrackIllustration(
 		@Param('id', ParseIntPipe)
 		trackId: number,

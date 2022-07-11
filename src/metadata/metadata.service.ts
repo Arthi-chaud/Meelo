@@ -22,6 +22,7 @@ export default class MetadataService {
 		private songService: SongService,
 		@Inject(forwardRef(() => AlbumService))
 		private albumService: AlbumService,
+		@Inject(forwardRef(() => ArtistService))
 		private artistService: ArtistService,
 		private releaseService: ReleaseService,
 		private settingsService: SettingsService,

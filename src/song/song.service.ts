@@ -1,18 +1,25 @@
-import { Injectable } from '@nestjs/common';
+import { forwardRef, Inject, Injectable } from '@nestjs/common';
 import ArtistService from 'src/artist/artist.service';
 import Slug from 'src/slug/slug';
-import type { Song } from '@prisma/client';
+import type { Artist, Song, Track } from '@prisma/client';
 import { SongAlreadyExistsException, SongNotFoundByIdException, SongNotFoundException } from './song.exceptions';
 import PrismaService from 'src/prisma/prisma.service';
 import SongQueryParameters from './models/song.query-params';
 import ArtistQueryParameters from 'src/artist/models/artist.query-parameters';
 import { type PaginationParameters, buildPaginationParameters } from 'src/pagination/models/pagination-parameters';
+import { SongController } from './song.controller';
+import { UrlGeneratorService } from 'nestjs-url-generator';
+import TrackService from 'src/track/track.service';
 
 @Injectable()
 export default class SongService {
 	constructor(
 		private prismaService: PrismaService,
+		@Inject(forwardRef(() => ArtistService))
 		private artistService: ArtistService,
+		@Inject(forwardRef(() => TrackService))
+		private trackService: TrackService,
+		private readonly urlGeneratorService: UrlGeneratorService
 	) {}
 
 	/**
@@ -160,5 +167,31 @@ export default class SongService {
 		} catch {
 			return await this.createSong(where, include);
 		}
+	}
+
+	buildSongResponse(song: Song & Partial<{ instances: Track[], artist: Artist }>): Object {
+		let response: Object = {
+			...song,
+			illustration: this.urlGeneratorService.generateUrlFromController({
+				controller: SongController,
+				controllerMethod: SongController.prototype.getSongIllustration,
+				params: {
+					id: song.id.toString()
+				}
+			})
+		};
+		if (song.instances !== undefined)
+			response = {
+				...response,
+				instances: song.instances.map(
+					(track) => this.trackService.buildTrackResponse(track)
+				)
+			}
+		if (song.artist !== undefined)
+			response = {
+				...response,
+				artist: this.artistService.buildArtistResponse(song.artist)
+			}
+		return response;
 	}
 }
