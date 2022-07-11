@@ -57,7 +57,7 @@ describe('Album Controller', () => {
 		});
 	});
 
-	describe("Get Albums", () => {
+	describe("Get Albums (GET /albums)", () => {
 		it("Should return all albums", () => {
 			return request(app.getHttpServer())
 				.get(`/albums`)
@@ -120,7 +120,19 @@ describe('Album Controller', () => {
 	});
 
 	describe("Get Compilations Albums", () => {
-		it("Should return all albums", () => {});
+		it("Should return all albums", () => {
+			return request(app.getHttpServer())
+				.get(`/albums/compilations`)
+				.expect(200)
+				.expect((res) => {
+					let albums: Album[] = res.body;
+					expect(albums.length).toBe(1);
+					expect(albums[0]).toStrictEqual({
+						...compilationAlbum,
+						illustration: `http://meelo.com/albums/${compilationAlbum.id}/illustration`,
+					});
+				});
+		});
 	});
 
 	describe("Get Album", () => {
