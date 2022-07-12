@@ -18,6 +18,7 @@ export default class ArtistController {
 		private artistService: ArtistService,
 		@Inject(forwardRef(() => AlbumService))
 		private albumService: AlbumService,
+		@Inject(forwardRef(() => SongService))
 		private songService: SongService,
 		private illustrationService: IllustrationService
 	) {}
