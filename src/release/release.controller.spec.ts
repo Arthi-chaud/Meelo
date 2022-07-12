@@ -128,7 +128,7 @@ describe('Release Controller', () => {
 		});
 	});
 
-	describe("Get Release By Id (GET /release/:id)", () => {
+	describe("Get Release (GET /release/:id)", () => {
 		it("should return the release", () => {
 			return request(app.getHttpServer())
 				.get(`/releases/${compilationRelease.id}`)
@@ -158,94 +158,35 @@ describe('Release Controller', () => {
 		});
 	});
 
-	describe("Get Release By Slugs (GET /release/:artist/:album/:release)", () => {
-		it("should return the release", () => {
-			return request(app.getHttpServer())
-				.get(`/releases/my-artist/my-album/my-album-deluxe-edition`)
-				.expect(200)
-				.expect((res) => {
-					let release: Release = res.body
-					expect(release).toStrictEqual(deluxeRelease);
-				});
+	describe("Get Related Tracks", () => {
+		it("should get all the tracks", () => {
+			expect(true).toBe(false);
 		});
-		it("should return the release", () => {
-			return request(app.getHttpServer())
-				.get(`/releases/compilations/my-compilation/my-compilation-album`)
-				.expect(200)
-				.expect((res) => {
-					let release: Release = res.body
-					expect(release).toStrictEqual(compilationRelease);
-				});
+		it("should get some tracks (w/ pagination)", () => {
+			expect(true).toBe(false);
 		});
-
+		it("should get tracks w/ related song", () => {
+			expect(true).toBe(false);
+		});
 		it("should throw, as the release does not exist", () => {
-			return request(app.getHttpServer())
-				.get(`/releases/bla/bla/bla`)
-				.expect(404);
-		});
-
-		it("should return the release, with album", () => {
-			return request(app.getHttpServer())
-				.get(`/releases/my-artist/my-album/my-album-edited-edition?with=album`)
-				.expect(200)
-				.expect((res) => {
-					let release: Release & { album: Album }= res.body
-					expect(release.id).toStrictEqual(editedRelease.id);
-					expect(release.album).toStrictEqual(album);
-				});
+			expect(true).toBe(false);
 		});
 	});
 
-	describe("Get Album's Releases (GET /release/:artist/:album)", () => {
-		it("should return the album releases", () => {
-			return request(app.getHttpServer())
-				.get(`/releases/my-artist/my-album`)
-				.expect(200)
-				.expect((res) => {
-					let releases: Release[] = res.body
-					expect(releases.length).toBe(3);
-					expect(releases[0]).toStrictEqual(standardRelease);
-					expect(releases[1]).toStrictEqual(deluxeRelease);
-					expect(releases[2]).toStrictEqual(editedRelease);
-				});
+	describe("Get Related Album", () => {
+		it("should get the  album", () => {
+			expect(true).toBe(false);
 		});
-
-		it("should return the compilation album releases", () => {
-			return request(app.getHttpServer())
-				.get(`/releases/compilations/my-compilation`)
-				.expect(200)
-				.expect((res) => {
-					let releases: Release[] = res.body
-					expect(releases.length).toBe(1);
-					expect(releases[0]).toStrictEqual(compilationRelease);
-				});
+		it("should get album w/ related releases", () => {
+			expect(true).toBe(false);
 		});
-
-		it("should return some album releases (w/ pagination)", () => {
-			return request(app.getHttpServer())
-				.get(`/releases/my-artist/my-album?take=1&skip=1`)
-				.expect(200)
-				.expect((res) => {
-					let releases: Release[] = res.body
-					expect(releases.length).toBe(1);
-					expect(releases[0]).toStrictEqual(deluxeRelease);
-				});
+		it("should get album w/ parent artist", () => {
+			expect(true).toBe(false);
 		});
-
-		it("should return the album releases, with their tracks", () => {
-			return request(app.getHttpServer())
-				.get(`/releases/my-artist/my-album?with=tracks`)
-				.expect(200)
-				.expect((res) => {
-					let releases: (Release & { tracks: Track[] }) [] = res.body
-					expect(releases.length).toBe(3);
-					expect(releases[0].id).toStrictEqual(standardRelease.id);
-					expect(releases[0].tracks).toStrictEqual([]);
-					expect(releases[1].id).toStrictEqual(deluxeRelease.id);
-					expect(releases[1].tracks).toStrictEqual([]);
-					expect(releases[2].id).toStrictEqual(editedRelease.id);
-					expect(releases[2].tracks).toStrictEqual([]);
-				});
+		it("should throw, as the release does not exist", () => {
+			expect(true).toBe(false);
 		});
 	});
+
+	
 });

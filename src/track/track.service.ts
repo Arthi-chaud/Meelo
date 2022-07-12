@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { forwardRef, Inject, Injectable } from '@nestjs/common';
 import PrismaService from 'src/prisma/prisma.service';
 import type { Release, Song, Track } from '@prisma/client';
 import SongService from 'src/song/song.service';
@@ -19,6 +19,7 @@ import { TrackController } from './track.controller';
 @Injectable()
 export default class TrackService {
 	constructor(
+		@Inject(forwardRef(() => SongService))
 		private songService: SongService,
 		private releaseService: ReleaseService,
 		private fileService: FileService,
