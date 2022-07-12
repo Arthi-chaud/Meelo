@@ -16,6 +16,10 @@ import { INestApplication, ValidationPipe } from "@nestjs/common";
 import NotFoundExceptionFilter from "src/exceptions/not-found.exception";
 import MeeloExceptionFilter from "src/exceptions/meelo-exception.filter";
 import ReleaseModule from "./release.module";
+import TrackModule from "src/track/track.module";
+import IllustrationModule from "src/illustration/illustration.module";
+import SongModule from "src/song/song.module";
+import MetadataModule from "src/metadata/metadata.module";
 
 describe('Release Controller', () => {
 	let releaseService: ReleaseService;
@@ -31,7 +35,7 @@ describe('Release Controller', () => {
 	
 	beforeAll(async () => {
 		const module: TestingModule = await createTestingModule({
-			imports: [PrismaModule, AlbumModule, ArtistModule, ReleaseModule],
+			imports: [PrismaModule, AlbumModule, ArtistModule, ReleaseModule, TrackModule, IllustrationModule, SongModule, MetadataModule],
 			providers: [ReleaseService, AlbumService, ArtistService, ReleaseController],
 		}).overrideProvider(FileManagerService).useClass(FakeFileManagerService).compile();
 		app = module.createNestApplication();
