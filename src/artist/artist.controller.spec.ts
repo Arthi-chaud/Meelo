@@ -205,8 +205,38 @@ describe('Artist Controller', () => {
 					});
 				});
 		});
-		it("should get some songs (w/ pagination)", () => {});
-		it("should get all songs, w/ tracks", () => {});
+		it("should get some songs (w/ pagination)", () => {
+			return request(app.getHttpServer())
+				.get(`/artists/${artist1.id}/songs?skip=1`)
+				.expect(200)
+				.expect((res) => {
+					let songs: Song[] = res.body;
+					expect(songs.length).toBe(1);
+					expect(songs[0]).toStrictEqual({
+						...song2,
+						illustration: `http://meelo.com/songs/${song2.id}/illustration`,
+					});
+				});
+		});
+		it("should get all songs, w/ tracks", () => {
+			return request(app.getHttpServer())
+				.get(`/artists/${artist1.id}/songs?with=instances`)
+				.expect(200)
+				.expect((res) => {
+					let songs: Song[] = res.body;
+					expect(songs.length).toBe(2);
+					expect(songs[0]).toStrictEqual({
+						...song1,
+						illustration: `http://meelo.com/songs/${song1.id}/illustration`,
+						instances: []
+					});
+					expect(songs[1]).toStrictEqual({
+						...song2,
+						illustration: `http://meelo.com/songs/${song2.id}/illustration`,
+						instances: []
+					});
+				});
+		});
 	});
 
 	describe('Get Artist\'s Albums (GET /artists/:id/albums)', () => {
