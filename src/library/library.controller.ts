@@ -5,7 +5,6 @@ import { LibraryDto } from './models/library.dto';
 import type { Artist, Library, Release, Song, Track } from '@prisma/client';
 import ParsePaginationParameterPipe from 'src/pagination/pagination.pipe';
 import type { PaginationParameters } from 'src/pagination/models/pagination-parameters';
-import LibraryQueryParameters from './models/library.query-parameters';
 import ParseRelationIncludePipe from 'src/relation-include/relation-include.pipe';
 import ArtistService from 'src/artist/artist.service';
 import ArtistQueryParameters from 'src/artist/models/artist.query-parameters';
@@ -37,10 +36,8 @@ export default class LibraryController {
 	async getLibraries(
 		@Query(ParsePaginationParameterPipe)
 		paginationParameters: PaginationParameters,
-		@Query('with', LibraryQueryParameters.ParseRelationIncludePipe)
-		include: LibraryQueryParameters.RelationInclude
 	) {
-		return await this.libraryService.getLibraries({}, paginationParameters, include);
+		return await this.libraryService.getLibraries({}, paginationParameters);
 	}
 		
 	@Get('scan')
@@ -81,10 +78,8 @@ export default class LibraryController {
 	@Get(':id')
 	async getLibrary(
 		@Param('id', ParseIntPipe) libraryId: number,
-		@Query('with', LibraryQueryParameters.ParseRelationIncludePipe)
-		include: LibraryQueryParameters.RelationInclude
 	): Promise<Library> {
-		return await this.libraryService.getLibrary({ id: libraryId }, include);
+		return await this.libraryService.getLibrary({ id: libraryId });
 	}
 	
 	@Get(':id/artists')

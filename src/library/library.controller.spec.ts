@@ -26,6 +26,9 @@ describe('Library Controller', () => {
 	let libraryService: LibraryService;
 	let app: INestApplication;
 
+	let library1: Library;
+	let library2: Library;
+
 	beforeAll(async () => {
 		const module: TestingModule = await createTestingModule({
 			imports: [LibraryModule, PrismaModule, FileModule, MetadataModule, FileManagerModule, IllustrationModule, IllustrationModule, ArtistModule, AlbumModule, SongModule, ReleaseModule, TrackModule],
@@ -59,11 +62,11 @@ describe('Library Controller', () => {
 				})
 				.expect(201)
 				.expect((res) => {
-					const library: Library = res.body;
-					expect(library.id).toBeDefined();
-					expect(library.slug).toBe('my-library-1');
-					expect(library.name).toBe('My Library 1');
-					expect(library.path).toBe('/Music');
+					library1 = res.body;
+					expect(library1.id).toBeDefined();
+					expect(library1.slug).toBe('my-library-1');
+					expect(library1.name).toBe('My Library 1');
+					expect(library1.path).toBe('/Music');
 				});
 		});
 		it("should fail, as the body is incomplete", async () => {
@@ -92,67 +95,30 @@ describe('Library Controller', () => {
 				})
 				.expect(201)
 				.expect((res) => {
-					const library: Library = res.body;
-					expect(library.id).toBeDefined();
-					expect(library.slug).toBe('my-library-2');
-					expect(library.name).toBe('My Library 2');
-					expect(library.path).toBe('/Music2');
+					library2 = res.body;
+					expect(library2.id).toBeDefined();
+					expect(library2.slug).toBe('my-library-2');
+					expect(library2.name).toBe('My Library 2');
+					expect(library2.path).toBe('/Music2');
 				});
 		});
 	});
 
-	describe('Get a Library (GET /libraries/:library)', () => {
+	describe('Get a Library (GET /libraries/:id)', () => {
 		it("should get the library", async () => {
 			return request(app.getHttpServer())
-				.get('/libraries/my-library-1')
+				.get(`/libraries/${library1.id}`)
 				.expect(200)
 				.expect((res) => {
 					const library = res.body;
-					expect(library.slug).toBe('my-library-1');
-					expect(library.name).toBe('My Library 1');
-					expect(library.path).toBe('/Music');
-					expect(library.files).toBeUndefined();
+					expect(library).toStrictEqual(library1)
 				});
 		});
 
 		it("should throw, as the library does not exist", async () => {
 			return request(app.getHttpServer())
-				.get('/libraries/my-library-3')
+				.get('/libraries/-1')
 				.expect(404);
-		});
-	});
-
-	describe('Get a Library (GET /libraries/:library) w/ relation include query params', () => {
-		it("should get the library, with its files", async () => {
-			return request(app.getHttpServer())
-				.get('/libraries/my-library-1?with=files')
-				.expect(200)
-				.expect((res) => {
-					const library: Library & { files: File[] } = res.body;
-					expect(library.slug).toBe('my-library-1');
-					expect(library.name).toBe('My Library 1');
-					expect(library.path).toBe('/Music');
-					expect(library.files).toStrictEqual([]);
-				});
-		});
-
-		it("should get the library, w/ empty query parameter", async () => {
-			return request(app.getHttpServer())
-				.get('/libraries/my-library-1?with=')
-				.expect(200)
-				.expect((res) => {
-					const library: Library & { files: File[] } = res.body;
-					expect(library.slug).toBe('my-library-1');
-					expect(library.name).toBe('My Library 1');
-					expect(library.path).toBe('/Music');
-					expect(library.files).toBeUndefined();
-				});
-		});
-
-		it("should throw, as the requested relation does not exist", async () => {
-			return request(app.getHttpServer())
-				.get('/libraries/my-library-1?with=file')
-				.expect(400);
 		});
 	});
 
@@ -164,8 +130,8 @@ describe('Library Controller', () => {
 				.expect((res) => {
 					const libraries: Library[] = res.body;
 					expect(libraries.length).toBe(2);
-					expect(libraries.at(0)!.slug).toBe('my-library-1');
-					expect(libraries.at(1)!.slug).toBe('my-library-2');
+					expect(libraries.at(0)).toStrictEqual(library1);
+					expect(libraries.at(1)).toStrictEqual(library2);
 				});
 		});
 
@@ -176,7 +142,7 @@ describe('Library Controller', () => {
 				.expect((res) => {
 					const libraries: Library[] = res.body;
 					expect(libraries.length).toBe(1);
-					expect(libraries.at(0)!.slug).toBe('my-library-2');
+					expect(libraries.at(0)).toStrictEqual(library2);
 				});
 		});
 
@@ -187,7 +153,7 @@ describe('Library Controller', () => {
 				.expect((res) => {
 					const libraries: Library[] = res.body;
 					expect(libraries.length).toBe(1);
-					expect(libraries.at(0)!.slug).toBe('my-library-1');
+					expect(libraries.at(0)).toStrictEqual(library1);
 				});
 		});
 
