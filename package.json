@@ -93,7 +93,7 @@
     "collectCoverageFrom": [
       "<rootDir>/src/**/*.(t|j)s"
     ],
-    "coverageDirectory": "../coverage",
+    "coverageDirectory": "coverage",
     "testEnvironment": "node"
   },
   "prisma": {
