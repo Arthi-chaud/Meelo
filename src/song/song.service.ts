@@ -169,7 +169,7 @@ export default class SongService {
 		}
 	}
 
-	buildSongResponse(song: Song & Partial<{ instances: Track[], artist: Artist }>): Object {
+	buildSongResponse(song: Song & Partial<{ tracks: Track[], artist: Artist }>): Object {
 		let response: Object = {
 			...song,
 			illustration: this.urlGeneratorService.generateUrlFromController({
@@ -180,10 +180,10 @@ export default class SongService {
 				}
 			})
 		};
-		if (song.instances !== undefined)
-			response = {
+		if (song.tracks !== undefined)
+			response = <Object>{
 				...response,
-				instances: song.instances.map(
+				tracks: song.tracks.map(
 					(track) => this.trackService.buildTrackResponse(track)
 				)
 			}

@@ -437,7 +437,7 @@ describe('Library Controller', () => {
 	describe('Get all Related Songs (GET /libraries/:id/songs)', () => {
 		it("should return every songs, w/ tracks & parent artist", () => {
 			return request(app.getHttpServer())
-				.get(`/libraries/${library1.id}/songs?with=instances,artist`)
+				.get(`/libraries/${library1.id}/songs?with=tracks,artist`)
 				.expect(200)
 				.expect((res) => {
 					const songs: Song[] = res.body;
@@ -449,7 +449,7 @@ describe('Library Controller', () => {
 							...artist1,
 							illustration: `http://meelo.com/artists/${artist1.id}/illustration`,
 						},
-						instances: [{
+						tracks: [{
 							...track1,
 							illustration: `http://meelo.com/tracks/${track1.id}/illustration`,
 						}],
@@ -461,7 +461,7 @@ describe('Library Controller', () => {
 							...artist1,
 							illustration: `http://meelo.com/artists/${artist1.id}/illustration`,
 						},
-						instances: [{
+						tracks: [{
 							...track2,
 							illustration: `http://meelo.com/tracks/${track2.id}/illustration`,
 						}],

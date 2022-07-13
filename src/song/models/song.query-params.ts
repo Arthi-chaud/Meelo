@@ -76,7 +76,7 @@ namespace SongQueryParameters {
 				gt: where.playCount?.moreThan,
 				lt: where.playCount?.below
 			},
-			instances: where.library ? {
+			tracks: where.library ? {
 				some: TrackQueryParameters.buildQueryParametersForMany({ byLibrarySource: where.library })
 			} : undefined
 		};
@@ -94,7 +94,7 @@ namespace SongQueryParameters {
 	/**
 	 * Defines what relations to include in query
 	 */
-	export const AvailableIncludes = ['instances', 'artist'] as const;
+	export const AvailableIncludes = ['tracks', 'artist'] as const;
 	export type RelationInclude = BaseRelationInclude<typeof AvailableIncludes>;
 	export const ParseRelationIncludePipe = new ParseBaseRelationIncludePipe(AvailableIncludes);
 
@@ -104,7 +104,7 @@ namespace SongQueryParameters {
 	 */
 	 export function buildIncludeParameters(include?: RelationInclude) {
 		return {
-			instances: include?.instances ?? false,
+			tracks: include?.tracks ?? false,
 			artist: include?.artist ?? false
 		};
 	}

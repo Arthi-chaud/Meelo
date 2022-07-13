@@ -1,5 +1,7 @@
 import { Controller, forwardRef, Get, Inject, Param, ParseIntPipe, Query, Redirect } from '@nestjs/common';
 import { UrlGeneratorService } from 'nestjs-url-generator';
+import ArtistService from 'src/artist/artist.service';
+import ArtistQueryParameters from 'src/artist/models/artist.query-parameters';
 import type { PaginationParameters } from 'src/pagination/models/pagination-parameters';
 import ParsePaginationParameterPipe from 'src/pagination/pagination.pipe';
 import TrackQueryParameters from 'src/track/models/track.query-parameters';
@@ -17,6 +19,8 @@ export class SongController {
 		private songService: SongService,
 		@Inject(forwardRef(() => TrackService))
 		private trackService: TrackService,
+		@Inject(forwardRef(() => ArtistService))
+		private artistService: ArtistService,
 		private readonly urlGeneratorService: UrlGeneratorService
 	) {}
 
@@ -28,7 +32,7 @@ export class SongController {
 		include: SongQueryParameters.RelationInclude
 	) {
 		let songs = await this.songService.getSongs({}, paginationParameters, include);
-		return songs;
+		return songs.map((song) => this.songService.buildSongResponse(song));
 	}
 
 	@Get(':id')
@@ -39,7 +43,21 @@ export class SongController {
 		songId: number
 	) {
 		let song = await this.songService.getSong({ byId: {  id: songId } }, include);
-		return song;
+		return this.songService.buildSongResponse(song);
+	}
+
+	@Get(':id/artist')
+	async getSongArtist(
+		@Query('with', ArtistQueryParameters.ParseRelationIncludePipe)
+		include: ArtistQueryParameters.RelationInclude,
+		@Param('id', ParseIntPipe)
+		songId: number
+	) {
+		let song = await this.songService.getSong({ byId: {  id: songId } });
+		let artist = await this.artistService.getArtist({
+			id: song.artistId
+		}, include);
+		return this.artistService.buildArtistResponse(artist);
 	}
 
 	@Get(':id/master')
@@ -52,7 +70,7 @@ export class SongController {
 		let master = await this.trackService.getMasterTrack({
 			byId: {  id: songId }
 		}, include);
-		return master;
+		return this.trackService.buildTrackResponse(master);
 	}
 
 	@Get(':id/tracks')
@@ -67,7 +85,9 @@ export class SongController {
 		let tracks = await this.trackService.getSongTracks({
 			byId: {  id: songId }
 		}, paginationParameters, include);
-		return tracks;
+		if (tracks.length == 0)
+			await this.songService.getSong({ byId: { id: songId }});
+		return tracks.map((track) => this.trackService.buildTrackResponse(track));
 	}
 
 	@Get(':id/illustration')

@@ -40,7 +40,7 @@ export default class MetadataService {
 		let songArtist = await this.artistService.getOrCreateArtist({ name: metadata.artist ?? metadata.albumArtist! });
 		let song = await this.songService.getOrCreateSong(
 			{ name: metadata.name!, artist: { id: songArtist.id }},
-			{ instances: true });
+			{ tracks: true });
 		let album = await this.albumService.getOrCreateAlbum({
 			name: this.removeReleaseExtension(metadata.album ?? metadata.release!),
 			artist: albumArtist ? { id: albumArtist?.id} : undefined
@@ -53,7 +53,7 @@ export default class MetadataService {
 		}, { album: true });
 		let track: TrackQueryParameters.CreateInput = {
 			displayName: metadata.name!,
-			master: song.instances.length == 0,
+			master: song.tracks.length == 0,
 			discIndex: metadata.discIndex ?? null,
 			trackIndex: metadata.index ?? null,
 			type: metadata.type!,

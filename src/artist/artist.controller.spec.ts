@@ -220,7 +220,7 @@ describe('Artist Controller', () => {
 		});
 		it("should get all songs, w/ tracks", () => {
 			return request(app.getHttpServer())
-				.get(`/artists/${artist1.id}/songs?with=instances`)
+				.get(`/artists/${artist1.id}/songs?with=tracks`)
 				.expect(200)
 				.expect((res) => {
 					let songs: Song[] = res.body;
@@ -228,12 +228,12 @@ describe('Artist Controller', () => {
 					expect(songs[0]).toStrictEqual({
 						...song1,
 						illustration: `http://meelo.com/songs/${song1.id}/illustration`,
-						instances: []
+						tracks: []
 					});
 					expect(songs[1]).toStrictEqual({
 						...song2,
 						illustration: `http://meelo.com/songs/${song2.id}/illustration`,
-						instances: []
+						tracks: []
 					});
 				});
 		});
