@@ -94,6 +94,7 @@
       "<rootDir>/src/**/*.(t|j)s"
     ],
     "coverageDirectory": "coverage",
+    "coverageReporters": ["lcov"],
     "testEnvironment": "node"
   },
   "prisma": {
