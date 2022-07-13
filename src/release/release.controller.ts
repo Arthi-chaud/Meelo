@@ -9,6 +9,7 @@ import IllustrationService from 'src/illustration/illustration.service';
 import AlbumService from 'src/album/album.service';
 import Slug from 'src/slug/slug';
 import type { IllustrationDownloadDto } from 'src/illustration/models/illustration-dl.dto';
+import AlbumQueryParameters from 'src/album/models/album.query-parameters';
 
 
 @Controller('releases')
@@ -31,7 +32,10 @@ export default class ReleaseController {
 		@Query('with', ReleaseQueryParameters.ParseRelationIncludePipe)
 		include: ReleaseQueryParameters.RelationInclude
 	) {
-		return await this.releaseService.getReleases({}, paginationParameters, include);
+		const releases = await this.releaseService.getReleases({}, paginationParameters, include);
+		return releases.map(
+			(release) => this.releaseService.buildReleaseResponse(release)
+		);
 	}
 
 	@Get(':id')
@@ -41,7 +45,8 @@ export default class ReleaseController {
 		@Param('id', ParseIntPipe)
 		releaseId: number
 	) {
-		return await this.releaseService.getRelease({ byId: { id: releaseId } }, include);
+		const release = await this.releaseService.getRelease({ byId: { id: releaseId } }, include);
+		return this.releaseService.buildReleaseResponse(release);
 	}
 
 	@Get(':id/tracks')
@@ -53,9 +58,29 @@ export default class ReleaseController {
 		@Param('id', ParseIntPipe)
 		releaseId: number
 	) {
-		return await this.trackService.getTracks({
+		const tracks = await this.trackService.getTracks({
 			byRelease: { byId: { id: releaseId } }
 		}, paginationParameters, include);
+		if (tracks.length == 0)
+			await this.releaseService.getRelease({ byId: { id: releaseId } });
+		return tracks.map(
+			(track) => this.trackService.buildTrackResponse(track)
+		);
+	}
+
+	@Get(':id/album')
+	async getReleaseAlbum(
+		@Query('with', AlbumQueryParameters.ParseRelationIncludePipe)
+		include: AlbumQueryParameters.RelationInclude,
+		@Param('id', ParseIntPipe)
+		releaseId: number
+	) {
+		const release = this.releaseService.getRelease({ byId: { id: releaseId } });
+		const album = await this.albumService.getAlbum({
+			byId: { id: (await release).albumId }
+		}, include);
+		return this.albumService.buildAlbumResponse(album);
+
 	}
 
 	@Get(':id/illustration')

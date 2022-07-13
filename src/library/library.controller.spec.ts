@@ -60,7 +60,7 @@ describe('Library Controller', () => {
 
 	beforeAll(async () => {
 		const module: TestingModule = await createTestingModule({
-			imports: [LibraryModule, PrismaModule, FileModule, MetadataModule, FileManagerModule, IllustrationModule, IllustrationModule, ArtistModule, AlbumModule, SongModule, ReleaseModule, TrackModule],
+			imports: [LibraryModule, PrismaModule, FileModule, MetadataModule, FileManagerModule, IllustrationModule, ArtistModule, AlbumModule, SongModule, ReleaseModule, TrackModule],
 			providers: [LibraryController, LibraryService, PrismaService],
 		}).overrideProvider(FileManagerService).useClass(FakeFileManagerService).compile();
 		await module.get<PrismaService>(PrismaService).onModuleInit();
@@ -296,12 +296,12 @@ describe('Library Controller', () => {
 						illustration: `http://meelo.com/artists/${artist1.id}/illustration`,
 						albums: [
 							{
-								...album2,
-								illustration: `http://meelo.com/albums/${album2.id}/illustration`
-							},
-							{
 								...album1,
 								illustration: `http://meelo.com/albums/${album1.id}/illustration`
+							},
+							{
+								...album2,
+								illustration: `http://meelo.com/albums/${album2.id}/illustration`
 							},
 						]
 					});
