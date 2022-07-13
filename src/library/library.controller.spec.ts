@@ -289,21 +289,16 @@ describe('Library Controller', () => {
 				.get(`/libraries/${library1.id}/artists?with=albums`)
 				.expect(200)
 				.expect((res) => {
-					const artists: Artist[] = res.body;
+					const artists: (Artist & { albums: Album[]}) [] = res.body;
 					expect(artists.length).toBe(1);
-					expect(artists[0]).toStrictEqual({
-						...artist1,
-						illustration: `http://meelo.com/artists/${artist1.id}/illustration`,
-						albums: [
-							{
-								...album1,
-								illustration: `http://meelo.com/albums/${album1.id}/illustration`
-							},
-							{
-								...album2,
-								illustration: `http://meelo.com/albums/${album2.id}/illustration`
-							},
-						]
+					expect(artists[0].id).toBe(artist1.id);
+					expect(artists[0].albums).toContainEqual({
+						...album1,
+						illustration: `http://meelo.com/albums/${album1.id}/illustration`
+					});
+					expect(artists[0].albums).toContainEqual({
+						...album2,
+						illustration: `http://meelo.com/albums/${album2.id}/illustration`
 					});
 				});
 		});
