@@ -36,7 +36,10 @@ jobs:
       - name: Run unit tests with coverage
         run: yarn test --coverage
       - name: SonarCloud Scan
+<<<<<<< HEAD
         continue-on-error: true
+=======
+>>>>>>> c08615c12cce76e29aafcb1ba180fb260af7290f
         uses: SonarSource/sonarcloud-github-action@master
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
