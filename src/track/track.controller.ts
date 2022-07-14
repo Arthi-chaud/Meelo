@@ -26,7 +26,8 @@ export class TrackController {
 		@Query('with', TrackQueryParameters.ParseRelationIncludePipe)
 		include: TrackQueryParameters.RelationInclude
 	) {
-		return await this.trackService.getTracks({}, paginationParameters, include);
+		const tracks = await this.trackService.getTracks({}, paginationParameters, include);
+		return tracks.map((track) => this.trackService.buildTrackResponse(track));
 	}
 
 	@Get(':id')
@@ -36,7 +37,8 @@ export class TrackController {
 		@Param('id', ParseIntPipe)
 		trackId: number
 	) {
-		return await this.trackService.getTrack({ id: trackId }, include);
+		const track = await this.trackService.getTrack({ id: trackId }, include);
+		return this.trackService.buildTrackResponse(track);
 	}
 
 	@Get(':id/illustration')
