@@ -9,6 +9,7 @@ import { buildStringSearchParameters, SearchStringInput } from "src/utils/search
 import type { RelationInclude as BaseRelationInclude } from "src/relation-include/models/relation-include" ;
 import ReleaseQueryParameters from "src/release/models/release.query-parameters";
 import ParseBaseRelationIncludePipe from "src/relation-include/relation-include.pipe";
+import TrackQueryParameters from "src/track/models/track.query-parameters";
 
 namespace ArtistQueryParameters {
 
@@ -60,6 +61,13 @@ namespace ArtistQueryParameters {
 				some: {
 					releases: {
 						some: ReleaseQueryParameters.buildQueryParametersForMany({ library: where.byLibrarySource })
+					}
+				}
+			} : undefined,
+			songs: where.byLibrarySource ? {
+				some: {
+					tracks: {
+						some: TrackQueryParameters.buildQueryParametersForMany({ byLibrarySource: where.byLibrarySource })
 					}
 				}
 			} : undefined

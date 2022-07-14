@@ -84,7 +84,7 @@ export default class TrackService {
 	 * @returns an array of tracks
 	 */
 	async getTracks(where: TrackQueryParameters.ManyWhereInput, pagination?: PaginationParameters, include?: TrackQueryParameters.RelationInclude) {
-		return await this.prismaService.track.findMany({
+		return this.prismaService.track.findMany({
 			where: TrackQueryParameters.buildQueryParametersForMany(where),
 			include: TrackQueryParameters.buildIncludeParameters(include),
 			...buildPaginationParameters(pagination)
@@ -100,7 +100,7 @@ export default class TrackService {
 	 * @returns the list of tracks related to the song
 	 */
 	async getSongTracks(where: SongQueryParameters.WhereInput, pagination?: PaginationParameters, include?: TrackQueryParameters.RelationInclude) {
-		return await this.getTracks(
+		return this.getTracks(
 			{ bySong: where },
 			pagination,
 			include
@@ -115,7 +115,7 @@ export default class TrackService {
 	 * @returns the master track of the song
 	 */
 	async getMasterTrack(where: SongQueryParameters.WhereInput, include?: TrackQueryParameters.RelationInclude) {
-		return await this.getTrack(
+		return this.getTrack(
 			{ masterOfSong: where },
 			include
 		);
@@ -126,9 +126,9 @@ export default class TrackService {
 	 * @param where the query parameters
 	 */
 	async countTracks(where: TrackQueryParameters.ManyWhereInput): Promise<number> {
-		return (await this.prismaService.track.count({
+		return this.prismaService.track.count({
 			where: TrackQueryParameters.buildQueryParametersForMany(where)
-		}));
+		});
 	}
 
 	/**
@@ -159,11 +159,11 @@ export default class TrackService {
 				trackId: updatedTrack.id,
 				song: { byId: { id: updatedTrack.songId } }
 			};
-			if (unmodifiedTrack.master == false && what.master) {
+			if (!unmodifiedTrack.master && what.master) {
 				await this.setTrackAsMaster(masterChangeInput);
 			} else if (unmodifiedTrack.master && what.master === false) {
 				await this.unsetTrackAsMaster(masterChangeInput);
-			};
+			}
 			return updatedTrack;
 		} catch {
 			throw await this.getTrackNotFoundError(where);

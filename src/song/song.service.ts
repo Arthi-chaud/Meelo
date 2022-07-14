@@ -73,7 +73,7 @@ export default class SongService {
 	 * @param include the relations to include
 	 */
 	async getSongs(where: SongQueryParameters.ManyWhereInput, pagination?: PaginationParameters, include?: SongQueryParameters.RelationInclude) {
-		return await this.prismaService.song.findMany({
+		return this.prismaService.song.findMany({
 			where: SongQueryParameters.buildQueryParametersForMany(where),
 			include: SongQueryParameters.buildIncludeParameters(include),
 			...buildPaginationParameters(pagination) 
@@ -86,7 +86,7 @@ export default class SongService {
 	 * @returns the number of match
 	 */
 	async countSongs(where: SongQueryParameters.ManyWhereInput): Promise<number> {
-		return await this.prismaService.song.count({
+		return this.prismaService.song.count({
 			where: SongQueryParameters.buildQueryParametersForMany(where)
 		});
 	}
@@ -165,7 +165,7 @@ export default class SongService {
 				include
 			);
 		} catch {
-			return await this.createSong(where, include);
+			return this.createSong(where, include);
 		}
 	}
 

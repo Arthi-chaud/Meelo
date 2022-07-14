@@ -11,7 +11,6 @@ import type { MeeloException } from 'src/exceptions/meelo-exception';
 import ReleaseController from './release.controller';
 import { UrlGeneratorService } from 'nestjs-url-generator';
 import TrackService from 'src/track/track.service';
-import { AlbumNotFoundException, AlbumNotFoundFromIDException } from 'src/album/album.exceptions';
 
 @Injectable()
 export default class ReleaseService {
@@ -51,7 +50,7 @@ export default class ReleaseService {
 			return createdRelease;
 		} catch {
 			const parentAlbum = await this.albumService.getAlbum(release.album);
-			throw new ReleaseAlreadyExists(releaseSlug, parentAlbum.artist ? new Slug(parentAlbum.artist!.slug!) : undefined);
+			throw new ReleaseAlreadyExists(releaseSlug, parentAlbum.artist ? new Slug(parentAlbum.artist!.slug) : undefined);
 		}
 	}
 
@@ -71,7 +70,7 @@ export default class ReleaseService {
 		} catch {
 			throw await this.getReleaseNotFoundError(where);
 		}
-	};
+	}
 
 	/**
 	 * Find releases
@@ -80,7 +79,7 @@ export default class ReleaseService {
 	 * @returns an array of releases
 	 */
 	async getReleases(where: ReleaseQueryParameters.ManyWhereInput, pagination?: PaginationParameters, include?: ReleaseQueryParameters.RelationInclude) {
-		return await this.prismaService.release.findMany({
+		return this.prismaService.release.findMany({
 			where: ReleaseQueryParameters.buildQueryParametersForMany(where),
 			include: ReleaseQueryParameters.buildIncludeParameters(include),
 			...buildPaginationParameters(pagination)
@@ -95,18 +94,15 @@ export default class ReleaseService {
 	 * @returns 
 	 */
 	async getAlbumReleases(where: AlbumQueryParameters.WhereInput, pagination?: PaginationParameters, include?: ReleaseQueryParameters.RelationInclude) {
-		try {
-			await this.albumService.getAlbum(where);
-		} catch {
-			if (where.byId)
-				throw new AlbumNotFoundFromIDException(where.byId.id);
-			throw new AlbumNotFoundException(where.bySlug.slug, where.bySlug.artist?.slug);
-		}
-		return await this.getReleases(
+		const releases = await this.getReleases(
 			{ album: where },
 			pagination,
 			include
 		);
+		if (releases.length == 0) {
+			await this.albumService.getAlbum(where);
+		}
+		return releases;
 	}
 
 	/**
@@ -116,7 +112,7 @@ export default class ReleaseService {
 	 * @returns 
 	 */
 	 async getMasterRelease(where: AlbumQueryParameters.WhereInput, include?: ReleaseQueryParameters.RelationInclude) {
-		return await this.getRelease({ byMasterOf: where }, include);
+		return this.getRelease({ byMasterOf: where }, include);
 	}
 
 	/**
@@ -124,9 +120,9 @@ export default class ReleaseService {
 	 * @param where the query parameters
 	 */
 	async countReleases(where: ReleaseQueryParameters.ManyWhereInput): Promise<number> {
-		return (await this.prismaService.release.count({
+		return this.prismaService.release.count({
 			where: ReleaseQueryParameters.buildQueryParametersForMany(where)
-		}));
+		});
 	}
 
 	/**
@@ -150,11 +146,11 @@ export default class ReleaseService {
 			releaseId: updatedRelease.id,
 			album: { byId: { id: updatedRelease.albumId } }
 		};
-		if (unmodifiedRelease.master == false && what.master) {
+		if (!unmodifiedRelease.master && what.master) {
 		 	await this.setReleaseAsMaster(masterChangeInput);
-		} else if (unmodifiedRelease.master && what.master == false) {
+		} else if (unmodifiedRelease.master && !what.master) {
 		 	await this.unsetReleaseAsMaster(masterChangeInput);
-		};
+		}
 		await this.albumService.updateAlbumDate({ byId: { id: updatedRelease.albumId }});
 		return updatedRelease;
 	}
@@ -207,7 +203,7 @@ export default class ReleaseService {
 				include
 			);
 		} catch {
-			return await this.createRelease(where, include);
+			return this.createRelease(where, include);
 		}
 	}
 

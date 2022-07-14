@@ -75,7 +75,7 @@ export default class LibraryService {
 	 * @returns 
 	 */
 	async getLibraries(where: LibraryQueryParameters.ManyWhereInput, pagination?: PaginationParameters, include?: LibraryQueryParameters.RelationInclude) {
-		return await this.prismaService.library.findMany({
+		return this.prismaService.library.findMany({
 			where: LibraryQueryParameters.buildQueryParametersForMany(where),
 			include: LibraryQueryParameters.buildIncludeParameters(include),
 			...buildPaginationParameters(pagination)
@@ -172,7 +172,7 @@ export default class LibraryService {
 		const libraryPath = `${this.fileManagerService.getLibraryFullPath(parentLibrary)}`;
 		let registeredFiles: File[] = parentLibrary.files;
 		let unavailableFiles: File[] = registeredFiles.filter(
-			(file) => this.fileManagerService.fileExists(`${libraryPath}/${file.path}`) == false
+			(file) => !this.fileManagerService.fileExists(`${libraryPath}/${file.path}`)
 		);
 		Logger.log(`'${parentLibrary.slug}' library: Removing ${unavailableFiles.length} entries`);
 		this.fileService.deleteFiles({ ids: unavailableFiles.map((f) => f.id) });

@@ -73,7 +73,7 @@ export default class MetadataService {
 		await this.albumService.updateAlbum({ ...release.album }, { byId: { id: release.albumId }});
 		release.releaseDate = metadata.releaseDate ?? null;
 		await this.releaseService.updateRelease({ releaseDate: release.releaseDate ?? undefined }, { byId: { id: release.id } });
-		return await this.trackService.createTrack(track);
+		return this.trackService.createTrack(track);
 	}
 
 	/**

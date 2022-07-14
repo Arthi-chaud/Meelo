@@ -80,7 +80,7 @@ export default class ArtistController {
 	) {
 		let artist = await this.artistService.getArtist({ id: artistId });
 		const artistIllustrationPath = this.illustrationService.buildArtistIllustrationPath(new Slug(artist.slug));
-		return await this.illustrationService.downloadIllustration(
+		return this.illustrationService.downloadIllustration(
 			illustrationDto.url,
 			artistIllustrationPath
 		);

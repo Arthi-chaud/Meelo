@@ -127,14 +127,14 @@ describe('Library Service', () => {
 	describe('Delete Library', () => {
 		it('should throw, as the library does not exists', async () => {
 			expect(
-				async () => await libraryService.deleteLibrary({ slug: new Slug('trolololol') })
+				async () => libraryService.deleteLibrary({ slug: new Slug('trolololol') })
 			).rejects.toThrow(LibraryNotFoundException);
 		});
 		it('should delete the library', async () => {
 			await libraryService.deleteLibrary({ slug: librarySlug });
 
 			expect(
-				async () => await libraryService.getLibrary({ slug: librarySlug })
+				async () => libraryService.getLibrary({ slug: librarySlug })
 			).rejects.toThrow(LibraryNotFoundException);
 		});
 	});

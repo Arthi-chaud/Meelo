@@ -59,7 +59,7 @@ export default class ArtistService {
 			if (where.id !== undefined)
 				throw new ArtistNotFoundByIDException(where.id);
 			throw new ArtistNotFoundException(where.slug);
-		};
+		}
 	}
 
 	/**
@@ -69,7 +69,7 @@ export default class ArtistService {
 	 * @param include the relations to include in the returned artists
 	 */
 	 async getArtists(where: ArtistQueryParameters.ManyWhereInput, pagination?: PaginationParameters, include?: ArtistQueryParameters.RelationInclude) {
-		return await this.prismaService.artist.findMany({
+		return this.prismaService.artist.findMany({
 			where: ArtistQueryParameters.buildQueryParametersForMany(where),
 			include: ArtistQueryParameters.buildIncludeParameters(include),
 			...buildPaginationParameters(pagination)
@@ -81,9 +81,9 @@ export default class ArtistService {
 	 * @param where the query parameters
 	 */
 	async countArtists(where: ArtistQueryParameters.ManyWhereInput): Promise<number> {
-		return (await this.prismaService.artist.count({
+		return this.prismaService.artist.count({
 			where: ArtistQueryParameters.buildQueryParametersForMany(where)
-		}));
+		});
 	}
 
 	/**
@@ -152,7 +152,7 @@ export default class ArtistService {
 		try {
 			return await this.getArtist({ slug: new Slug(where.name) }, include);
 		} catch {
-			return await this.createArtist(where, include);
+			return this.createArtist(where, include);
 		}
 	}
 	
