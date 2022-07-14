@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Logger, Param, ParseIntPipe, Post, Query } from '@nestjs/common';
+import { Body, Controller, Get, Logger, Param, Post, Query } from '@nestjs/common';
 
 import LibraryService from './library.service';
 import { LibraryDto } from './models/library.dto';
@@ -16,6 +16,7 @@ import TrackQueryParameters from 'src/track/models/track.query-parameters';
 import TrackService from 'src/track/track.service';
 import ReleaseService from 'src/release/release.service';
 import SongService from 'src/song/song.service';
+import { ParseIdPipe } from 'src/id/id.pipe';
 
 @Controller('libraries')
 export default class LibraryController {
@@ -61,7 +62,7 @@ export default class LibraryController {
 	}
 
 	@Get('scan/:id')
-	async scanLibraryFiles(@Param('id', ParseIntPipe) libraryId: number) {
+	async scanLibraryFiles(@Param('id', ParseIdPipe) libraryId: number) {
 		let library = await this.libraryService.getLibrary({ id: libraryId });
 		this.libraryService
 			.registerNewFiles(library)
@@ -69,7 +70,7 @@ export default class LibraryController {
 	}
 
 	@Get('clean/:id')
-	async cleanLibrary(@Param('id', ParseIntPipe) libraryId: number) {
+	async cleanLibrary(@Param('id', ParseIdPipe) libraryId: number) {
 		this.libraryService
 			.unregisterUnavailableFiles(libraryId)
 			.catch((error) => Logger.error(error));
@@ -77,14 +78,14 @@ export default class LibraryController {
 
 	@Get(':id')
 	async getLibrary(
-		@Param('id', ParseIntPipe) libraryId: number,
+		@Param('id', ParseIdPipe) libraryId: number,
 	): Promise<Library> {
 		return await this.libraryService.getLibrary({ id: libraryId });
 	}
 	
 	@Get(':id/artists')
 	async getArtistsByLibrary(
-		@Param('id', ParseIntPipe)
+		@Param('id', ParseIdPipe)
 		libraryId: number,
 		@Query(ParsePaginationParameterPipe)
 		paginationParameters: PaginationParameters,
@@ -101,7 +102,7 @@ export default class LibraryController {
 
 	@Get(':id/albums')
 	async getAlbumsByLibrary(
-		@Param('id', ParseIntPipe)
+		@Param('id', ParseIdPipe)
 		libraryId: number,
 		@Query(ParsePaginationParameterPipe)
 		paginationParameters: PaginationParameters,
@@ -118,7 +119,7 @@ export default class LibraryController {
 
 	@Get(':id/releases')
 	async getReleasesByLibrary(
-		@Param('id', ParseIntPipe)
+		@Param('id', ParseIdPipe)
 		libraryId: number,
 		@Query(ParsePaginationParameterPipe)
 		paginationParameters: PaginationParameters,
@@ -135,7 +136,7 @@ export default class LibraryController {
 
 	@Get(':id/songs')
 	async getSongsByLibrary(
-		@Param('id', ParseIntPipe)
+		@Param('id', ParseIdPipe)
 		libraryId: number,
 		@Query(ParsePaginationParameterPipe)
 		paginationParameters: PaginationParameters,
@@ -152,7 +153,7 @@ export default class LibraryController {
 
 	@Get(':id/tracks')
 	async getTracksByLibrary(
-		@Param('id', ParseIntPipe)
+		@Param('id', ParseIdPipe)
 		libraryId: number,
 		@Query(ParsePaginationParameterPipe)
 		paginationParameters: PaginationParameters,

@@ -1,5 +1,6 @@
-import { Controller, Get, Query, Param, ParseIntPipe, Response, Post, Body, Inject, forwardRef } from '@nestjs/common';
+import { Controller, Get, Query, Param, Response, Post, Body, Inject, forwardRef } from '@nestjs/common';
 import AlbumService from 'src/album/album.service';
+import { ParseIdPipe } from 'src/id/id.pipe';
 import IllustrationService from 'src/illustration/illustration.service';
 import type { IllustrationDownloadDto } from 'src/illustration/models/illustration-dl.dto';
 import type { PaginationParameters } from 'src/pagination/models/pagination-parameters';
@@ -34,7 +35,7 @@ export class TrackController {
 	async getTrack(
 		@Query('with', TrackQueryParameters.ParseRelationIncludePipe)
 		include: TrackQueryParameters.RelationInclude,
-		@Param('id', ParseIntPipe)
+		@Param('id', ParseIdPipe)
 		trackId: number
 	) {
 		const track = await this.trackService.getTrack({ id: trackId }, include);
@@ -43,7 +44,7 @@ export class TrackController {
 
 	@Get(':id/illustration')
 	async getTrackIllustration(
-		@Param('id', ParseIntPipe)
+		@Param('id', ParseIdPipe)
 		trackId: number,
 		@Response({ passthrough: true })
 		res: Response
@@ -77,7 +78,7 @@ export class TrackController {
 
 	@Post('/:id/illustration')
 	async updateTrackIllustration(
-		@Param('id', ParseIntPipe)
+		@Param('id', ParseIdPipe)
 		trackId: number,
 		@Body()
 		illustrationDto: IllustrationDownloadDto

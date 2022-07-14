@@ -1,4 +1,4 @@
-import { Body, Controller, forwardRef, Get, Inject, Param, ParseIntPipe, Post, Query, Response } from '@nestjs/common';
+import { Body, Controller, forwardRef, Get, Inject, Param, Post, Query, Response } from '@nestjs/common';
 import ParsePaginationParameterPipe from 'src/pagination/pagination.pipe';
 import type { PaginationParameters } from 'src/pagination/models/pagination-parameters';
 import ReleaseQueryParameters from './models/release.query-parameters';
@@ -10,6 +10,7 @@ import AlbumService from 'src/album/album.service';
 import Slug from 'src/slug/slug';
 import type { IllustrationDownloadDto } from 'src/illustration/models/illustration-dl.dto';
 import AlbumQueryParameters from 'src/album/models/album.query-parameters';
+import { ParseIdPipe } from 'src/id/id.pipe';
 
 
 @Controller('releases')
@@ -42,7 +43,7 @@ export default class ReleaseController {
 	async getRelease(
 		@Query('with', ReleaseQueryParameters.ParseRelationIncludePipe)
 		include: ReleaseQueryParameters.RelationInclude,
-		@Param('id', ParseIntPipe)
+		@Param('id', ParseIdPipe)
 		releaseId: number
 	) {
 		const release = await this.releaseService.getRelease({ byId: { id: releaseId } }, include);
@@ -55,7 +56,7 @@ export default class ReleaseController {
 		paginationParameters: PaginationParameters,
 		@Query('with', TrackQueryParameters.ParseRelationIncludePipe)
 		include: TrackQueryParameters.RelationInclude,
-		@Param('id', ParseIntPipe)
+		@Param('id', ParseIdPipe)
 		releaseId: number
 	) {
 		const tracks = await this.trackService.getTracks({
@@ -72,7 +73,7 @@ export default class ReleaseController {
 	async getReleaseAlbum(
 		@Query('with', AlbumQueryParameters.ParseRelationIncludePipe)
 		include: AlbumQueryParameters.RelationInclude,
-		@Param('id', ParseIntPipe)
+		@Param('id', ParseIdPipe)
 		releaseId: number
 	) {
 		const release = this.releaseService.getRelease({ byId: { id: releaseId } });
@@ -85,7 +86,7 @@ export default class ReleaseController {
 
 	@Get(':id/illustration')
 	async getReleaseIllustration(
-		@Param('id', ParseIntPipe)
+		@Param('id', ParseIdPipe)
 		releaseId: number,
 		@Response({ passthrough: true })
 		res: Response
@@ -104,7 +105,7 @@ export default class ReleaseController {
 
 	@Post('/:id/illustration')
 	async updateReleaseIllustration(
-		@Param('id', ParseIntPipe)
+		@Param('id', ParseIdPipe)
 		releaseId: number,
 		@Body()
 		illustrationDto: IllustrationDownloadDto

@@ -1,7 +1,8 @@
-import { Controller, forwardRef, Get, Inject, Param, ParseIntPipe, Query, Redirect } from '@nestjs/common';
+import { Controller, forwardRef, Get, Inject, Param, Query, Redirect } from '@nestjs/common';
 import { UrlGeneratorService } from 'nestjs-url-generator';
 import ArtistService from 'src/artist/artist.service';
 import ArtistQueryParameters from 'src/artist/models/artist.query-parameters';
+import { ParseIdPipe } from 'src/id/id.pipe';
 import type { PaginationParameters } from 'src/pagination/models/pagination-parameters';
 import ParsePaginationParameterPipe from 'src/pagination/pagination.pipe';
 import TrackQueryParameters from 'src/track/models/track.query-parameters';
@@ -39,7 +40,7 @@ export class SongController {
 	async getSong(
 		@Query('with', SongQueryParameters.ParseRelationIncludePipe)
 		include: SongQueryParameters.RelationInclude,
-		@Param('id', ParseIntPipe)
+		@Param('id', ParseIdPipe)
 		songId: number
 	) {
 		let song = await this.songService.getSong({ byId: {  id: songId } }, include);
@@ -50,7 +51,7 @@ export class SongController {
 	async getSongArtist(
 		@Query('with', ArtistQueryParameters.ParseRelationIncludePipe)
 		include: ArtistQueryParameters.RelationInclude,
-		@Param('id', ParseIntPipe)
+		@Param('id', ParseIdPipe)
 		songId: number
 	) {
 		let song = await this.songService.getSong({ byId: {  id: songId } });
@@ -64,7 +65,7 @@ export class SongController {
 	async getSongMaster(
 		@Query('with', TrackQueryParameters.ParseRelationIncludePipe)
 		include: TrackQueryParameters.RelationInclude,
-		@Param('id', ParseIntPipe)
+		@Param('id', ParseIdPipe)
 		songId: number
 	) {
 		let master = await this.trackService.getMasterTrack({
@@ -79,7 +80,7 @@ export class SongController {
 		paginationParameters: PaginationParameters,
 		@Query('with', TrackQueryParameters.ParseRelationIncludePipe)
 		include: TrackQueryParameters.RelationInclude,
-		@Param('id', ParseIntPipe)
+		@Param('id', ParseIdPipe)
 		songId: number
 	) {
 		let tracks = await this.trackService.getSongTracks({
@@ -93,7 +94,7 @@ export class SongController {
 	@Get(':id/illustration')
 	@Redirect()
 	async getSongIllustration(
-		@Param('id', ParseIntPipe)
+		@Param('id', ParseIdPipe)
 		songId: number
 	) {
 		let master = await this.trackService.getMasterTrack({
