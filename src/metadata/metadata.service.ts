@@ -150,7 +150,7 @@ export default class MetadataService {
 	}
 
 	private buildMetadataFromRaw(rawMetadata: IAudioMetadata): Metadata {
-		let isVideo: boolean = rawMetadata.format.trackInfo.findIndex((track) => track.video != null) != -1;
+		let isVideo: boolean = rawMetadata.format.trackInfo.length != 1;
 		return {
 			compilation: rawMetadata.common.compilation ?? false,
 			artist: rawMetadata.common.artist,
