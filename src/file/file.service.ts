@@ -61,7 +61,7 @@ export default class FileService {
 	 * @returns an array of File
 	 */
 	async getFiles(where: FileQueryParameters.ManyWhereInput, pagination?: PaginationParameters, include?: FileQueryParameters.RelationInclude) {
-		return await this.prismaService.file.findMany({
+		return this.prismaService.file.findMany({
 			where: FileQueryParameters.buildQueryParametersForMany(where),
 			include: FileQueryParameters.buildIncludeParameters(include),
 			...buildPaginationParameters(pagination)
@@ -127,11 +127,11 @@ export default class FileService {
 	async registerFile(filePath: string, parentLibrary: Library): Promise<File> {
 		const libraryPath = this.fileManagerService.getLibraryFullPath(parentLibrary);
 		const fullFilePath = `${libraryPath}/${filePath}`;
-		if (this.fileManagerService.fileIsReadable(fullFilePath) == false) {
+		if (!this.fileManagerService.fileIsReadable(fullFilePath)) {
 			throw new FileNotReadableException(filePath);
 		}
 
-		return await this.createFile({
+		return this.createFile({
 			path: filePath,
 			md5Checksum: this.fileManagerService.getMd5Checksum(fullFilePath).toString(),
 			registerDate: new Date(),
