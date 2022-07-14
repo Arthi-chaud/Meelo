@@ -1,6 +1,7 @@
-import { Body, Controller, DefaultValuePipe, forwardRef, Get, Inject, Param, ParseBoolPipe, ParseIntPipe, Post, Query, Response } from '@nestjs/common';
+import { Body, Controller, DefaultValuePipe, forwardRef, Get, Inject, Param, ParseBoolPipe, Post, Query, Response } from '@nestjs/common';
 import AlbumService from 'src/album/album.service';
 import AlbumQueryParameters from 'src/album/models/album.query-parameters';
+import { ParseIdPipe } from 'src/id/id.pipe';
 import IllustrationService from 'src/illustration/illustration.service';
 import type { IllustrationDownloadDto } from 'src/illustration/models/illustration-dl.dto';
 import type { PaginationParameters } from 'src/pagination/models/pagination-parameters';
@@ -47,7 +48,7 @@ export default class ArtistController {
 
 	@Get(':id')
 	async getArtist(
-		@Param('id', ParseIntPipe)
+		@Param('id', ParseIdPipe)
 		artistId: number,
 		@Query('with', ArtistQueryParameters.ParseRelationIncludePipe)
 		include: ArtistQueryParameters.RelationInclude
@@ -58,7 +59,7 @@ export default class ArtistController {
 
 	@Get(':id/illustration')
 	async getArtistIllustration(
-		@Param('id', ParseIntPipe)
+		@Param('id', ParseIdPipe)
 		artistId: number,
 		@Response({ passthrough: true })
 		res: Response
@@ -72,7 +73,7 @@ export default class ArtistController {
 
 	@Post('/:id/illustration')
 	async updateArtistIllustration(
-		@Param('id', ParseIntPipe)
+		@Param('id', ParseIdPipe)
 		artistId: number,
 		@Body()
 		illustrationDto: IllustrationDownloadDto
@@ -89,7 +90,7 @@ export default class ArtistController {
 	async getArtistAlbums(
 		@Query(ParsePaginationParameterPipe)
 		paginationParameters: PaginationParameters,
-		@Param('id', ParseIntPipe)
+		@Param('id', ParseIdPipe)
 		artistId: number,
 		@Query('with', AlbumQueryParameters.ParseRelationIncludePipe)
 		include: AlbumQueryParameters.RelationInclude
@@ -104,7 +105,7 @@ export default class ArtistController {
 	async getArtistSongs(
 		@Query(ParsePaginationParameterPipe)
 		paginationParameters: PaginationParameters,
-		@Param('id', ParseIntPipe)
+		@Param('id', ParseIdPipe)
 		artistId: number,
 		@Query('with', SongQueryParameters.ParseRelationIncludePipe)
 		include: SongQueryParameters.RelationInclude
