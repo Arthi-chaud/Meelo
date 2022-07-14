@@ -1,5 +1,7 @@
 import type { TestingModule } from "@nestjs/testing";
 import type { Library, File } from "@prisma/client";
+import AlbumModule from "src/album/album.module";
+import ArtistModule from "src/artist/artist.module";
 import FileManagerModule from "src/file-manager/file-manager.module";
 import FileManagerService from "src/file-manager/file-manager.service";
 import IllustrationModule from "src/illustration/illustration.module";
@@ -8,6 +10,9 @@ import LibraryService from "src/library/library.service";
 import MetadataModule from "src/metadata/metadata.module";
 import PrismaModule from "src/prisma/prisma.module";
 import PrismaService from "src/prisma/prisma.service";
+import ReleaseModule from "src/release/release.module";
+import SongModule from "src/song/song.module";
+import TrackModule from "src/track/track.module";
 import { FakeFileManagerService } from "test/FakeFileManagerModule";
 import { createTestingModule } from "test/TestModule";
 import { FileAlreadyExistsException, FileNotFoundFromIDException } from "./file.exceptions";
@@ -23,7 +28,7 @@ describe('File Service', () => {
 	let file2: File;
 	beforeAll(async () => {
 		const module: TestingModule = await createTestingModule({
-			imports: [LibraryModule, PrismaModule, FileModule, MetadataModule, FileManagerModule, IllustrationModule],
+			imports: [LibraryModule, PrismaModule, FileModule, MetadataModule, FileManagerModule, IllustrationModule, ArtistModule, AlbumModule, SongModule, ReleaseModule, TrackModule],
 			providers: [FileService, LibraryService],
 		}).overrideProvider(FileManagerService).useClass(FakeFileManagerService).compile();
 		await module.get<PrismaService>(PrismaService).onModuleInit();

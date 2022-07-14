@@ -1,6 +1,6 @@
-import { Injectable } from '@nestjs/common';
+import { forwardRef, Inject, Injectable } from '@nestjs/common';
 import PrismaService from 'src/prisma/prisma.service';
-import type { Track } from '@prisma/client';
+import type { Release, Song, Track } from '@prisma/client';
 import SongService from 'src/song/song.service';
 import { MasterTrackNotFoundException, TrackAlreadyExistsException, TrackNotFoundByIdException } from './track.exceptions';
 import ReleaseService from 'src/release/release.service';
@@ -13,14 +13,18 @@ import Slug from 'src/slug/slug';
 import { FileNotFoundFromIDException, FileNotFoundFromPathException } from 'src/file/file.exceptions';
 import { type PaginationParameters, buildPaginationParameters } from 'src/pagination/models/pagination-parameters';
 import type { MeeloException } from 'src/exceptions/meelo-exception';
+import { UrlGeneratorService } from 'nestjs-url-generator';
+import { TrackController } from './track.controller';
 
 @Injectable()
 export default class TrackService {
 	constructor(
+		@Inject(forwardRef(() => SongService))
 		private songService: SongService,
 		private releaseService: ReleaseService,
 		private fileService: FileService,
 		private prismaService: PrismaService,
+		private readonly urlGeneratorService: UrlGeneratorService
 	) { }
 	/**
 	 * Create a Track, and saves it in the database
@@ -253,5 +257,29 @@ export default class TrackService {
 				{ id: where.trackId }
 			)
 		]);
+	}
+
+	buildTrackResponse(track: Track & Partial<{ release: Release, song: Song }>): Object {
+		let response: Object = {
+			...track,
+			illustration: this.urlGeneratorService.generateUrlFromController({
+				controller: TrackController,
+				controllerMethod: TrackController.prototype.getTrackIllustration,
+				params: {
+					id: track.id.toString()
+				}
+			})
+		};
+		if (track.release !== undefined)
+			response = {
+				...response,
+				release: this.releaseService.buildReleaseResponse(track.release)
+			}
+		if (track.song != undefined)
+			response = {
+				...response,
+				song: this.songService.buildSongResponse(track.song)
+			}
+		return response;
 	}
 }

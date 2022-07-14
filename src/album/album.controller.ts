@@ -1,87 +1,103 @@
-import { Controller, Get, Param, Query } from '@nestjs/common';
-import type { Album, Artist } from '@prisma/client';
-import { UrlGeneratorService } from 'nestjs-url-generator';
-import ArtistService from 'src/artist/artist.service';
-import IllustrationController from 'src/illustration/illustration.controller';
+import { Controller, forwardRef, Get, Inject, Param, ParseIntPipe, Query, Response } from '@nestjs/common';
+import IllustrationService from 'src/illustration/illustration.service';
 import type { PaginationParameters } from 'src/pagination/models/pagination-parameters';
 import ParsePaginationParameterPipe from 'src/pagination/pagination.pipe';
-import ParseRelationIncludePipe from 'src/relation-include/relation-include.pipe';
-import { ParseArtistSlugPipe, ParseSlugPipe } from 'src/slug/pipe';
+import ReleaseQueryParameters from 'src/release/models/release.query-parameters';
+import ReleaseService from 'src/release/release.service';
 import Slug from 'src/slug/slug';
 import compilationAlbumArtistKeyword from 'src/utils/compilation';
 import AlbumService from './album.service';
 import AlbumQueryParameters from './models/album.query-parameters';
 
-const ParseAlbumRelationIncludePipe = new ParseRelationIncludePipe(AlbumQueryParameters.AvailableIncludes);
 
 @Controller('albums')
 export default class AlbumController {
 	constructor(
+		private illustrationService: IllustrationService,
+		@Inject(forwardRef(() => ReleaseService))
+		private releaseService: ReleaseService,
+		@Inject(forwardRef(() => AlbumService))
 		private albumService: AlbumService,
-		private artistService: ArtistService,
-		private readonly urlGeneratorService: UrlGeneratorService
+
 	) {}
 
 	@Get()
 	async getAlbums(
-		@Query(ParsePaginationParameterPipe) paginationParameters: PaginationParameters,
-		@Query('with', ParseAlbumRelationIncludePipe) include: AlbumQueryParameters.RelationInclude
+		@Query(ParsePaginationParameterPipe)
+		paginationParameters: PaginationParameters,
+		@Query('with', AlbumQueryParameters.ParseRelationIncludePipe)
+		include: AlbumQueryParameters.RelationInclude
 	) {
-		let albums = await this.albumService.getAlbums({}, paginationParameters, include);
-		let artists = await this.artistService.getArtists({
-			byIds: { in: albums
-				.filter((album) => album.artistId != null)
-				.map((album) => album.artistId!)
-			}
-		});
-		return albums.map(
-			(album) => this.buildAlbumResponse(album, artists.find((artist) => artist.id == album.artistId))
-		);
+		const albums = await this.albumService.getAlbums({}, paginationParameters, include);
+		return albums.map((album) => this.albumService.buildAlbumResponse(album));
 	}
 
-	@Get('/:artist')
-	async getAlbumsByArtist(
-		@Query(ParsePaginationParameterPipe) paginationParameters: PaginationParameters,
-		@Query('with', ParseAlbumRelationIncludePipe) include: AlbumQueryParameters.RelationInclude,
-		@Param('artist', ParseArtistSlugPipe) artistSlug: Slug | undefined
+	@Get(`${compilationAlbumArtistKeyword}`)
+	async getCompilationsAlbums(
+		@Query(ParsePaginationParameterPipe)
+		paginationParameters: PaginationParameters,
+		@Query('with', AlbumQueryParameters.ParseRelationIncludePipe)
+		include: AlbumQueryParameters.RelationInclude
 	) {
-		let artist = artistSlug ? await this.artistService.getArtist({ slug: artistSlug }) : undefined
-		let albums = await this.albumService.getAlbums({
-			byArtist: artistSlug ? { slug: artistSlug } : null
-		}, paginationParameters, include);
-		return albums.map(
-			(album) => this.buildAlbumResponse(album, artist)
-		);
+		const albums = await this.albumService.getAlbums({ byArtist: null }, paginationParameters, include);
+		return albums.map((album) => this.albumService.buildAlbumResponse(album));
 	}
 
-	@Get('/:artist/:album')
+	@Get(':id')
 	async getAlbum(
-		@Param('artist', ParseArtistSlugPipe) artistSlug: Slug | undefined,
-		@Query('with', ParseAlbumRelationIncludePipe) include: AlbumQueryParameters.RelationInclude,
-		@Param('album', ParseSlugPipe) albumSlug: Slug
+		@Query('with', AlbumQueryParameters.ParseRelationIncludePipe)
+		include: AlbumQueryParameters.RelationInclude,
+		@Param('id', ParseIntPipe)
+		albumId: number
 	) {
-		let album = await this.albumService.getAlbum({
-			bySlug: {
-				slug: albumSlug,
-				artist: artistSlug ? { slug: artistSlug } : undefined
-			}
+		const album = await this.albumService.getAlbum({
+			byId: { id: albumId }
 		}, include);
-		return this.buildAlbumResponse(album);
+		return this.albumService.buildAlbumResponse(album);
 	}
 
-	private buildAlbumResponse(album: Album, artist?: Artist) {
-		return {
-			...album,
-			illustration: this.urlGeneratorService.generateUrlFromController({
-				controller: IllustrationController,
-				controllerMethod: IllustrationController.prototype.getMasterIllustration,
-				params: {
-					artist: artist
-						? artist.slug
-						: compilationAlbumArtistKeyword,
-					album: album.slug
-				}
-			})
-		};
+	@Get(':id/master')
+	async getAlbumMaster(
+		@Query('with', ReleaseQueryParameters.ParseRelationIncludePipe)
+		include: ReleaseQueryParameters.RelationInclude,
+		@Param('id', ParseIntPipe)
+		albumId: number
+	) {
+		let masterRelease = await this.releaseService.getMasterRelease({
+			byId: { id: albumId }
+		}, include);
+		return this.releaseService.buildReleaseResponse(masterRelease);
 	}
+
+	@Get(':id/releases')
+	async getAlbumReleases(
+		@Query(ParsePaginationParameterPipe)
+		paginationParameters: PaginationParameters,
+		@Query('with', ReleaseQueryParameters.ParseRelationIncludePipe)
+		include: ReleaseQueryParameters.RelationInclude,
+		@Param('id', ParseIntPipe)
+		albumId: number
+	) {
+		let releases = await this.releaseService.getAlbumReleases({
+			byId: { id: albumId }
+		}, paginationParameters, include);
+		return releases.map((release) => this.releaseService.buildReleaseResponse(release));
+	}
+
+	@Get(':id/illustration')
+	async getAlbumIllustration(
+		@Param('id', ParseIntPipe)
+		albumId: number,
+		@Response({ passthrough: true })
+		res: Response
+	) {
+		const album = await this.albumService.getAlbum({ byId: { id: albumId } }, { artist: true });
+		return this.illustrationService.streamIllustration(
+			await this.illustrationService.buildMasterReleaseIllustrationPath(
+				new Slug(album.slug), album.artist ? new Slug(album.artist.slug) : undefined
+			),
+			album.slug, res
+		);
+	}
+
 }

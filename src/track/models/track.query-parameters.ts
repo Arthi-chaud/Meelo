@@ -1,12 +1,13 @@
 import type { Prisma, Track } from "@prisma/client";
 import FileQueryParameters from "src/file/models/file.query-parameters";
 import LibraryQueryParameters from "src/library/models/library.query-parameters";
-import type ReleaseQueryParameters from "src/release/models/release.query-parameters";
+import ReleaseQueryParameters from "src/release/models/release.query-parameters";
 import SongQueryParameters from "src/song/models/song.query-params";
 import type OmitId from "src/utils/omit-id";
 import type RequireAtLeastOne from "src/utils/require-at-least-one";
 import type RequireOnlyOne from "src/utils/require-only-one";
 import type { RelationInclude as BaseRelationInclude } from "src/relation-include/models/relation-include";
+import ParseBaseRelationIncludePipe from "src/relation-include/relation-include.pipe";
 
 namespace TrackQueryParameters {
 	type OmitSong<T> = Omit<T, 'songId'>;
@@ -53,6 +54,7 @@ namespace TrackQueryParameters {
 	 */
 	export type ManyWhereInput = Partial<RequireAtLeastOne<{
 		bySong: SongQueryParameters.WhereInput,
+		byRelease: ReleaseQueryParameters.WhereInput,
 		byLibrarySource: LibraryQueryParameters.WhereInput,
 	}>>;
 
@@ -63,6 +65,7 @@ namespace TrackQueryParameters {
 	 */
 	export function buildQueryParametersForMany(where: ManyWhereInput): Prisma.TrackWhereInput {
 		return {
+			release: where.byRelease ? ReleaseQueryParameters.buildQueryParametersForOne(where.byRelease) : undefined,
 			song: where.bySong ? SongQueryParameters.buildQueryParametersForOne(where.bySong) : undefined,
 			sourceFile: where.byLibrarySource ? {
 				library: LibraryQueryParameters.buildQueryParametersForOne(where.byLibrarySource)
@@ -91,13 +94,14 @@ namespace TrackQueryParameters {
 	/**
 	 * Query parameters to delete one track
 	 */
-	 export type DeleteInput = RequireOnlyOne<Pick<WhereInput, 'id' | 'sourceFile'>>;
+	export type DeleteInput = RequireOnlyOne<Pick<WhereInput, 'id' | 'sourceFile'>>;
 
 	/**
 	 * Defines what relations to include in query
 	 */
-	 export const AvailableIncludes = ['song', 'release'] as const;
-	 export type RelationInclude = BaseRelationInclude<typeof AvailableIncludes>;
+	export const AvailableIncludes = ['song', 'release'] as const;
+	export type RelationInclude = BaseRelationInclude<typeof AvailableIncludes>;
+	export const ParseRelationIncludePipe = new ParseBaseRelationIncludePipe(AvailableIncludes);
 
 	/**
 	 * Build the query parameters for ORM to include relations

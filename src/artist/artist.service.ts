@@ -1,15 +1,25 @@
-import { Injectable } from '@nestjs/common';
+import { forwardRef, Inject, Injectable } from '@nestjs/common';
 import Slug from 'src/slug/slug';
 import { ArtistAlreadyExistsException as ArtistAlreadyExistsException, ArtistNotFoundByIDException, ArtistNotFoundException } from './artist.exceptions';
-import type { Artist } from '@prisma/client';
+import type { Album, Artist, Song } from '@prisma/client';
 import PrismaService from 'src/prisma/prisma.service';
 import ArtistQueryParameters from './models/artist.query-parameters';
 import { type PaginationParameters, buildPaginationParameters } from 'src/pagination/models/pagination-parameters';
+import ArtistController from './artist.controller';
+import { UrlGeneratorService } from 'nestjs-url-generator';
+import SongService from 'src/song/song.service';
+import AlbumService from 'src/album/album.service';
 
 @Injectable()
 export default class ArtistService {
 	constructor(
-		private prismaService: PrismaService
+		private prismaService: PrismaService,
+		@Inject(forwardRef(() => SongService))
+		private songService: SongService,
+		@Inject(forwardRef(() => AlbumService))
+		private albumService: AlbumService,
+		@Inject(forwardRef(() => UrlGeneratorService))
+		private readonly urlGeneratorService: UrlGeneratorService
 	) {}
 	
 	/**
@@ -138,11 +148,44 @@ export default class ArtistService {
 	 * Find an artist by its name, or creates one if not found
 	 * @param where the query parameters to find / create the artist
 	 */
-	 async getOrCreateArtist(where: ArtistQueryParameters.GetOrCreateInput, include?: ArtistQueryParameters.RelationInclude) {
+	async getOrCreateArtist(where: ArtistQueryParameters.GetOrCreateInput, include?: ArtistQueryParameters.RelationInclude) {
 		try {
 			return await this.getArtist({ slug: new Slug(where.name) }, include);
 		} catch {
 			return await this.createArtist(where, include);
 		}
+	}
+	
+	/**
+	 * Build API reponse for Artist Request
+	 * @param artist the Artist to build the response from
+	 * @returns the response Object
+	 */
+	buildArtistResponse(artist: Artist & Partial<{ songs: Song[], albums: Album[] }>): Object {
+		let response: Object = {
+			...artist,
+			illustration: this.urlGeneratorService.generateUrlFromController({
+				controller: ArtistController,
+				controllerMethod: ArtistController.prototype.getArtistIllustration,
+				params: {
+					id: artist.id.toString()
+				}
+			})
+		};
+		if (artist.songs != undefined)
+			response = {
+				...response,
+				songs: artist.songs.map(
+					(song) => this.songService.buildSongResponse(song)
+				)
+			}
+		if (artist.albums != undefined)
+			response = {
+				...response,
+				albums: artist.albums.map(
+					(album) => this.albumService.buildAlbumResponse(album)
+				)
+			}
+		return response;
 	}
 }

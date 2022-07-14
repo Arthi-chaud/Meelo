@@ -1,18 +1,25 @@
-import { Injectable } from '@nestjs/common';
+import { forwardRef, Inject, Injectable } from '@nestjs/common';
 import ArtistService from 'src/artist/artist.service';
 import Slug from 'src/slug/slug';
 import { AlbumAlreadyExistsException, AlbumAlreadyExistsExceptionWithArtistID as AlbumAlreadyExistsWithArtistIDException, AlbumNotFoundException, AlbumNotFoundFromIDException } from './album.exceptions';
-import { AlbumType, Album } from '@prisma/client';
+import { AlbumType, Album, Release, Artist } from '@prisma/client';
 import PrismaService from 'src/prisma/prisma.service';
 import AlbumQueryParameters from './models/album.query-parameters';
 import ArtistQueryParameters from 'src/artist/models/artist.query-parameters';
 import { type PaginationParameters, buildPaginationParameters } from 'src/pagination/models/pagination-parameters';
+import { UrlGeneratorService } from 'nestjs-url-generator';
+import AlbumController from './album.controller';
+import ReleaseService from 'src/release/release.service';
 
 @Injectable()
 export default class AlbumService {
 	constructor(
 		private prismaService: PrismaService,
-		private artistServce: ArtistService
+		@Inject(forwardRef(() => ArtistService))
+		private artistServce: ArtistService,
+		@Inject(forwardRef(() => ReleaseService))
+		private releaseService: ReleaseService,
+		private readonly urlGeneratorService: UrlGeneratorService
 	) {}
 
 
@@ -166,6 +173,36 @@ export default class AlbumService {
 		} catch {
 			return await this.createAlbum({...where}, include);
 		}
+	}
+
+	/**
+	 * Build an object for the API 
+	 * @param album the album to create the object from
+	 */
+	buildAlbumResponse(album: Album & Partial<{ releases?: Release[], artist?: Artist | null }>): Object {
+		let response: Object = {
+			...album,
+			illustration: this.urlGeneratorService.generateUrlFromController({
+				controller: AlbumController,
+				controllerMethod: AlbumController.prototype.getAlbumIllustration,
+				params: {
+					id: album.id.toString()
+				}
+			})
+		};
+		if (album.releases)
+			response = {
+				...response,
+				releases: album.releases.map(
+					(release) => this.releaseService.buildReleaseResponse(release)
+				)
+			};
+		if (album.artist != undefined)
+			response = {
+				...response,
+				artist: this.artistServce.buildArtistResponse(album.artist)
+			};
+		return response;
 	}
 
 	static getAlbumTypeFromName(albumName: string): AlbumType {

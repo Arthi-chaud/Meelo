@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { forwardRef, Inject, Injectable } from '@nestjs/common';
 import FileManagerService from 'src/file-manager/file-manager.service';
 import type Metadata from './models/metadata';
 import mm, { type IAudioMetadata } from 'music-metadata';
@@ -20,7 +20,9 @@ export default class MetadataService {
 	constructor(
 		private trackService: TrackService,
 		private songService: SongService,
+		@Inject(forwardRef(() => AlbumService))
 		private albumService: AlbumService,
+		@Inject(forwardRef(() => ArtistService))
 		private artistService: ArtistService,
 		private releaseService: ReleaseService,
 		private settingsService: SettingsService,
@@ -38,7 +40,7 @@ export default class MetadataService {
 		let songArtist = await this.artistService.getOrCreateArtist({ name: metadata.artist ?? metadata.albumArtist! });
 		let song = await this.songService.getOrCreateSong(
 			{ name: metadata.name!, artist: { id: songArtist.id }},
-			{ instances: true });
+			{ tracks: true });
 		let album = await this.albumService.getOrCreateAlbum({
 			name: this.removeReleaseExtension(metadata.album ?? metadata.release!),
 			artist: albumArtist ? { id: albumArtist?.id} : undefined
@@ -51,7 +53,7 @@ export default class MetadataService {
 		}, { album: true });
 		let track: TrackQueryParameters.CreateInput = {
 			displayName: metadata.name!,
-			master: song.instances.length == 0,
+			master: song.tracks.length == 0,
 			discIndex: metadata.discIndex ?? null,
 			trackIndex: metadata.index ?? null,
 			type: metadata.type!,

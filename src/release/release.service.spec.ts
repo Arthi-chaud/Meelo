@@ -13,6 +13,10 @@ import Slug from "src/slug/slug";
 import { FakeFileManagerService } from "test/FakeFileManagerModule";
 import { ReleaseNotFoundException, ReleaseNotFoundFromIDException } from "./release.exceptions";
 import ReleaseService from "./release.service";
+import IllustrationModule from "src/illustration/illustration.module";
+import MetadataModule from "src/metadata/metadata.module";
+import SongModule from "src/song/song.module";
+import TrackModule from "src/track/track.module";
 
 describe('Release Service', () => {
 	let releaseService: ReleaseService;
@@ -26,7 +30,7 @@ describe('Release Service', () => {
 	
 	beforeAll(async () => {
 		const module: TestingModule = await createTestingModule({
-			imports: [PrismaModule, AlbumModule, ArtistModule],
+			imports: [PrismaModule, AlbumModule, ArtistModule, TrackModule, IllustrationModule, SongModule, MetadataModule],
 			providers: [ReleaseService, AlbumService, ArtistService],
 		}).overrideProvider(FileManagerService).useClass(FakeFileManagerService).compile();
 		await module.get<PrismaService>(PrismaService).onModuleInit();

@@ -1,10 +1,10 @@
-import { Injectable, Logger, OnModuleInit } from '@nestjs/common';
+import { forwardRef, Inject, Injectable, Logger, OnModuleInit, StreamableFile } from '@nestjs/common';
 import FileManagerService from 'src/file-manager/file-manager.service';
 import MetadataService from 'src/metadata/metadata.service';
 import type { Release, Track } from '@prisma/client';
 import ReleaseService from 'src/release/release.service';
 import Slug from 'src/slug/slug';
-import { CantDownloadIllustrationException, IllustrationNotExtracted } from './illustration.exceptions';
+import { CantDownloadIllustrationException, IllustrationNotExtracted, NoIllustrationException } from './illustration.exceptions';
 import mm, { IPicture, type IAudioMetadata } from 'music-metadata';
 import * as fs from 'fs';
 import { FileParsingException } from 'src/metadata/metadata.exceptions';
@@ -22,6 +22,7 @@ export default class IllustrationService implements OnModuleInit {
 	private metadataService: MetadataService;
 	constructor(
 		private releaseService: ReleaseService,
+		@Inject(forwardRef(() => AlbumService))
 		private albumService: AlbumService,
 		private fileManagerService: FileManagerService,
 		private moduleRef: ModuleRef
@@ -225,5 +226,22 @@ export default class IllustrationService implements OnModuleInit {
 		let image = await Jimp.read(fileContent);
 		fs.mkdir(dir.dirname(outPath), { recursive: true }, function (_err) {});
 		image.write(outPath);
+	}
+
+	/**
+	 * 
+	 * @param sourceFilePath the file path to the illustration to stream
+	 * @param as the name of the send tile, without extension
+	 * @param res the Response Object of the request
+	 * @returns a StreamableFile of the illustration
+	 */
+	streamIllustration(sourceFilePath: string, as: string, res: any): StreamableFile {
+		if (this.fileManagerService.fileExists(sourceFilePath) == false)
+			throw new NoIllustrationException("Illustration file not found");
+		const illustration = fs.createReadStream(sourceFilePath);
+		res.set({
+			'Content-Disposition': `attachment; filename="${as}.jpg"`,
+		});
+		return new StreamableFile(illustration);
 	}
 }

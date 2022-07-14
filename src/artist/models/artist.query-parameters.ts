@@ -1,12 +1,14 @@
 import type { Artist, Prisma } from "@prisma/client";
-import LibraryQueryParameters from "src/library/models/library.query-parameters";
+import type LibraryQueryParameters from "src/library/models/library.query-parameters";
 import type Slug from "src/slug/slug"
 import type OmitId from "src/utils/omit-id";
 import type OmitSlug from "src/utils/omit-slug";
 import type RequireAtLeastOne from "src/utils/require-at-least-one";
 import type RequireOnlyOne from "src/utils/require-only-one"
-import type { SearchStringInput } from "src/utils/search-string-input";
+import { buildStringSearchParameters, SearchStringInput } from "src/utils/search-string-input";
 import type { RelationInclude as BaseRelationInclude } from "src/relation-include/models/relation-include" ;
+import ReleaseQueryParameters from "src/release/models/release.query-parameters";
+import ParseBaseRelationIncludePipe from "src/relation-include/relation-include.pipe";
 
 namespace ArtistQueryParameters {
 
@@ -39,7 +41,8 @@ namespace ArtistQueryParameters {
 	export type ManyWhereInput = Partial<RequireAtLeastOne<{
 		byLibrarySource: LibraryQueryParameters.WhereInput,
 		byName: SearchStringInput,
-		byIds: { in: number[] }
+		byIds: { in: number[] },
+		
 	}>>;
 
 	/**
@@ -52,22 +55,11 @@ namespace ArtistQueryParameters {
 			id: where.byIds ? {
 				in: where.byIds.in
 			} : undefined,
-			slug: {
-				startsWith: where.byName?.startsWith,
-				contains: where.byName?.contains,
-			},
+			name: buildStringSearchParameters(where.byName),
 			albums: where.byLibrarySource ? {
 				some: {
 					releases: {
-						some: {
-							tracks: {
-								some: {
-									sourceFile: {
-										library: LibraryQueryParameters.buildQueryParametersForOne(where.byLibrarySource)
-									}
-								}
-							}
-						}
+						some: ReleaseQueryParameters.buildQueryParametersForMany({ library: where.byLibrarySource })
 					}
 				}
 			} : undefined
@@ -89,6 +81,7 @@ namespace ArtistQueryParameters {
 	 */
 	export const AvailableIncludes = ['albums', 'songs'] as const;
 	export type RelationInclude = BaseRelationInclude<typeof AvailableIncludes>;
+	export const ParseRelationIncludePipe = new ParseBaseRelationIncludePipe(AvailableIncludes);
 
 	/**
 	 * Build the query parameters for ORM to include relations

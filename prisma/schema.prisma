@@ -113,7 +113,7 @@ model Song {
 	artistId		Int
 	/// The number of times, the song was played
 	playCount		Int		@default(0)
-	instances		Track[]
+	tracks			Track[]
 	@@unique([slug, artistId])
 }
 
