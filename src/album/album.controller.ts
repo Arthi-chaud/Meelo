@@ -1,4 +1,5 @@
-import { Controller, forwardRef, Get, Inject, Param, ParseIntPipe, Query, Response } from '@nestjs/common';
+import { Controller, forwardRef, Get, Inject, Param, Query, Response } from '@nestjs/common';
+import { ParseIdPipe } from 'src/id/id.pipe';
 import IllustrationService from 'src/illustration/illustration.service';
 import type { PaginationParameters } from 'src/pagination/models/pagination-parameters';
 import ParsePaginationParameterPipe from 'src/pagination/pagination.pipe';
@@ -47,7 +48,7 @@ export default class AlbumController {
 	async getAlbum(
 		@Query('with', AlbumQueryParameters.ParseRelationIncludePipe)
 		include: AlbumQueryParameters.RelationInclude,
-		@Param('id', ParseIntPipe)
+		@Param('id', ParseIdPipe)
 		albumId: number
 	) {
 		const album = await this.albumService.getAlbum({
@@ -60,7 +61,7 @@ export default class AlbumController {
 	async getAlbumMaster(
 		@Query('with', ReleaseQueryParameters.ParseRelationIncludePipe)
 		include: ReleaseQueryParameters.RelationInclude,
-		@Param('id', ParseIntPipe)
+		@Param('id', ParseIdPipe)
 		albumId: number
 	) {
 		let masterRelease = await this.releaseService.getMasterRelease({
@@ -75,7 +76,7 @@ export default class AlbumController {
 		paginationParameters: PaginationParameters,
 		@Query('with', ReleaseQueryParameters.ParseRelationIncludePipe)
 		include: ReleaseQueryParameters.RelationInclude,
-		@Param('id', ParseIntPipe)
+		@Param('id', ParseIdPipe)
 		albumId: number
 	) {
 		let releases = await this.releaseService.getAlbumReleases({
@@ -86,7 +87,7 @@ export default class AlbumController {
 
 	@Get(':id/illustration')
 	async getAlbumIllustration(
-		@Param('id', ParseIntPipe)
+		@Param('id', ParseIdPipe)
 		albumId: number,
 		@Response({ passthrough: true })
 		res: Response

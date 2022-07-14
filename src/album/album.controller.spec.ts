@@ -209,6 +209,11 @@ describe('Album Controller', () => {
 				.get(`/albums/-1/master`)
 				.expect(404);
 		});
+		it("Should return an error, as the id is not valid", () => {
+			return request(app.getHttpServer())
+				.get(`/albums/plop/releases`)
+				.expect(400);
+		});
 		it("Should include related tracks", () => {
 			return request(app.getHttpServer())
 				.get(`/albums/${album1.id}/master?with=tracks`)
