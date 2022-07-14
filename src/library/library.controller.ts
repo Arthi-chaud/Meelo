@@ -31,14 +31,14 @@ export default class LibraryController {
 
 	@Post('new')
 	async createLibrary(@Body() createLibraryDto: LibraryDto) {
-		return await this.libraryService.createLibrary(createLibraryDto);
+		return this.libraryService.createLibrary(createLibraryDto);
 	}
 	@Get()
 	async getLibraries(
 		@Query(ParsePaginationParameterPipe)
 		paginationParameters: PaginationParameters,
 	) {
-		return await this.libraryService.getLibraries({}, paginationParameters);
+		return this.libraryService.getLibraries({}, paginationParameters);
 	}
 		
 	@Get('scan')
@@ -80,7 +80,7 @@ export default class LibraryController {
 	async getLibrary(
 		@Param('id', ParseIdPipe) libraryId: number,
 	): Promise<Library> {
-		return await this.libraryService.getLibrary({ id: libraryId });
+		return this.libraryService.getLibrary({ id: libraryId });
 	}
 	
 	@Get(':id/artists')
