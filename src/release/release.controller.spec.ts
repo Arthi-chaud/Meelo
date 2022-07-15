@@ -232,10 +232,42 @@ describe('Release Controller', () => {
 				});
 		});
 
+		it("should return the compilation release from slug", () => {
+			return request(app.getHttpServer())
+				.get(`/releases/compilations+${compilationAlbum.slug}+${compilationRelease.slug}`)
+				.expect(200)
+				.expect((res) => {
+					let release: Release = res.body
+					expect(release).toStrictEqual({
+						...compilationRelease,
+						illustration: `http://meelo.com/releases/${compilationRelease.id}/illustration`
+					});
+				});
+		});
+
+		it("should return the release from slug", () => {
+			return request(app.getHttpServer())
+				.get(`/releases/${artist.slug}+${album.slug}+${deluxeRelease.slug}`)
+				.expect(200)
+				.expect((res) => {
+					let release: Release = res.body
+					expect(release).toStrictEqual({
+						...deluxeRelease,
+						illustration: `http://meelo.com/releases/${deluxeRelease.id}/illustration`
+					});
+				});
+		});
+
 		it("should throw, as the release does not exist", () => {
 			return request(app.getHttpServer())
 				.get(`/releases/-1`)
 				.expect(404);
+		});
+
+		it("should return an error, as the string is badly formed", () => {
+			return request(app.getHttpServer())
+				.get(`/releases/${artist.slug}`)
+				.expect(400);
 		});
 
 		it("should return the release, w/ tracks and parent album", () => {
