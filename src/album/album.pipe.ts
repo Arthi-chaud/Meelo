@@ -1,8 +1,9 @@
 import type { ArgumentMetadata, PipeTransform } from "@nestjs/common";
 import { InvalidRequestException } from "src/exceptions/meelo-exception";
 import { ParseIdPipe } from "src/identifier/id.pipe";
+import ParseMultipleSlugPipe from "src/identifier/identifier.parse-slugs";
 import { SlugSeparator } from "src/identifier/identifier.slug-separator";
-import Slug from "src/slug/slug";
+import compilationAlbumArtistKeyword from "src/utils/compilation";
 import type AlbumQueryParameters from "./models/album.query-parameters";
 
 export default class ParseAlbumIdentifierPipe implements PipeTransform {
@@ -10,15 +11,15 @@ export default class ParseAlbumIdentifierPipe implements PipeTransform {
 		try {
 			return { byId: { id: new ParseIdPipe().transform(value.idOrSlug, _metadata) }};
 		} catch {
-			const slugs = value.idOrSlug.split(SlugSeparator);
+			const slugs = new ParseMultipleSlugPipe().transform(value.idOrSlug, _metadata);
 			if (slugs.length != 2)
 				throw new InvalidRequestException(`Expected the following string format: 'artist-slug${SlugSeparator}album-slug'`);
 			return {
 				bySlug: {
-					slug: new Slug(slugs[1]),
-					artist: {
-						slug: new Slug(slugs[0]),
-					}
+					slug: slugs[1],
+					artist: slugs[0].toString() == compilationAlbumArtistKeyword
+						? undefined
+						: {	slug: slugs[0] }
 				}
 			}
 		}

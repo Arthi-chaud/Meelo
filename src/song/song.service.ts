@@ -176,7 +176,7 @@ export default class SongService {
 				controller: SongController,
 				controllerMethod: SongController.prototype.getSongIllustration,
 				params: {
-					id: song.id.toString()
+					idOrSlug: song.id.toString()
 				}
 			})
 		};
