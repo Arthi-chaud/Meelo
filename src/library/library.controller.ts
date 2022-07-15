@@ -61,7 +61,7 @@ export default class LibraryController {
 		return `Cleanning ${libraries.length} libraries`;
 	}
 
-	@Get('scan/:id')
+	@Get('scan/:idOrSlug')
 	async scanLibraryFiles(
 		@Param(ParseLibraryIdentifierPipe) where: LibraryQueryParameters.WhereInput
 	) {
@@ -71,7 +71,7 @@ export default class LibraryController {
 			.catch((error) => Logger.error(error));
 	}
 
-	@Get('clean/:id')
+	@Get('clean/:idOrSlug')
 	async cleanLibrary(
 		@Param(ParseLibraryIdentifierPipe) where: LibraryQueryParameters.WhereInput
 	) {
@@ -80,14 +80,14 @@ export default class LibraryController {
 			.catch((error) => Logger.error(error));
 	}
 
-	@Get(':id')
+	@Get(':idOrSlug')
 	async getLibrary(
 		@Param(ParseLibraryIdentifierPipe) where: LibraryQueryParameters.WhereInput,
 	): Promise<Library> {
 		return this.libraryService.getLibrary(where);
 	}
 	
-	@Get(':id/artists')
+	@Get(':idOrSlug/artists')
 	async getArtistsByLibrary(
 		@Param(ParseLibraryIdentifierPipe)
 		where: LibraryQueryParameters.WhereInput,
@@ -104,7 +104,7 @@ export default class LibraryController {
 		return artists.map((artist) => this.artistService.buildArtistResponse(artist));
 	}
 
-	@Get(':id/albums')
+	@Get(':idOrSlug/albums')
 	async getAlbumsByLibrary(
 		@Param(ParseLibraryIdentifierPipe)
 		where: LibraryQueryParameters.WhereInput,
@@ -121,7 +121,7 @@ export default class LibraryController {
 		return albums.map((album) => this.albumService.buildAlbumResponse(album));
 	}
 
-	@Get(':id/releases')
+	@Get(':idOrSlug/releases')
 	async getReleasesByLibrary(
 		@Param(ParseLibraryIdentifierPipe)
 		where: LibraryQueryParameters.WhereInput,
@@ -136,7 +136,7 @@ export default class LibraryController {
 		return releases.map((release) => this.releaseService.buildReleaseResponse(release));
 	}
 
-	@Get(':id/songs')
+	@Get(':idOrSlug/songs')
 	async getSongsByLibrary(
 		@Param(ParseLibraryIdentifierPipe)
 		where: LibraryQueryParameters.WhereInput,
@@ -153,7 +153,7 @@ export default class LibraryController {
 		return songs.map((song) => this.songService.buildSongResponse(song));
 	}
 
-	@Get(':id/tracks')
+	@Get(':idOrSlug/tracks')
 	async getTracksByLibrary(
 		@Param(ParseLibraryIdentifierPipe)
 		where: LibraryQueryParameters.WhereInput,

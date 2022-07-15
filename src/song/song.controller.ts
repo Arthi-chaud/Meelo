@@ -2,7 +2,7 @@ import { Controller, forwardRef, Get, Inject, Param, Query, Redirect } from '@ne
 import { UrlGeneratorService } from 'nestjs-url-generator';
 import ArtistService from 'src/artist/artist.service';
 import ArtistQueryParameters from 'src/artist/models/artist.query-parameters';
-import { ParseIdPipe } from 'src/id/id.pipe';
+import { ParseIdPipe } from 'src/identifier/id.pipe';
 import type { PaginationParameters } from 'src/pagination/models/pagination-parameters';
 import ParsePaginationParameterPipe from 'src/pagination/pagination.pipe';
 import TrackQueryParameters from 'src/track/models/track.query-parameters';

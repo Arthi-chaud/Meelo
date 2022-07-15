@@ -1,6 +1,6 @@
 import { Controller, Get, Query, Param, Response, Post, Body, Inject, forwardRef } from '@nestjs/common';
 import AlbumService from 'src/album/album.service';
-import { ParseIdPipe } from 'src/id/id.pipe';
+import { ParseIdPipe } from 'src/identifier/id.pipe';
 import IllustrationService from 'src/illustration/illustration.service';
 import type { IllustrationDownloadDto } from 'src/illustration/models/illustration-dl.dto';
 import type { PaginationParameters } from 'src/pagination/models/pagination-parameters';

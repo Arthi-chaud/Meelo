@@ -1,5 +1,5 @@
 import { Controller, forwardRef, Get, Inject, Param, Query, Response } from '@nestjs/common';
-import { ParseIdPipe } from 'src/id/id.pipe';
+import { ParseIdPipe } from 'src/identifier/id.pipe';
 import IllustrationService from 'src/illustration/illustration.service';
 import type { PaginationParameters } from 'src/pagination/models/pagination-parameters';
 import ParsePaginationParameterPipe from 'src/pagination/pagination.pipe';
