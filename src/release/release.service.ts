@@ -278,7 +278,7 @@ export default class ReleaseService {
 				controller: ReleaseController,
 				controllerMethod: ReleaseController.prototype.getReleaseIllustration,
 				params: {
-					id: release.id.toString()
+					idOrSlug: release.id.toString()
 				}
 			})
 		};

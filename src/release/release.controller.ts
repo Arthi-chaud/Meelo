@@ -10,7 +10,7 @@ import AlbumService from 'src/album/album.service';
 import Slug from 'src/slug/slug';
 import type { IllustrationDownloadDto } from 'src/illustration/models/illustration-dl.dto';
 import AlbumQueryParameters from 'src/album/models/album.query-parameters';
-import { ParseIdPipe } from 'src/identifier/id.pipe';
+import ParseReleaseIdentifierPipe from './release.pipe';
 
 
 @Controller('releases')
@@ -39,44 +39,44 @@ export default class ReleaseController {
 		);
 	}
 
-	@Get(':id')
+	@Get(':idOrSlug')
 	async getRelease(
 		@Query('with', ReleaseQueryParameters.ParseRelationIncludePipe)
 		include: ReleaseQueryParameters.RelationInclude,
-		@Param('id', ParseIdPipe)
-		releaseId: number
+		@Param(ParseReleaseIdentifierPipe)
+		where: ReleaseQueryParameters.WhereInput
 	) {
-		const release = await this.releaseService.getRelease({ byId: { id: releaseId } }, include);
+		const release = await this.releaseService.getRelease(where, include);
 		return this.releaseService.buildReleaseResponse(release);
 	}
 
-	@Get(':id/tracks')
+	@Get(':idOrSlug/tracks')
 	async getReleaseTracks(
 		@Query(ParsePaginationParameterPipe)
 		paginationParameters: PaginationParameters,
 		@Query('with', TrackQueryParameters.ParseRelationIncludePipe)
 		include: TrackQueryParameters.RelationInclude,
-		@Param('id', ParseIdPipe)
-		releaseId: number
+		@Param(ParseReleaseIdentifierPipe)
+		where: ReleaseQueryParameters.WhereInput
 	) {
 		const tracks = await this.trackService.getTracks({
-			byRelease: { byId: { id: releaseId } }
+			byRelease: where
 		}, paginationParameters, include);
 		if (tracks.length == 0)
-			await this.releaseService.getRelease({ byId: { id: releaseId } });
+			await this.releaseService.getRelease(where);
 		return tracks.map(
 			(track) => this.trackService.buildTrackResponse(track)
 		);
 	}
 
-	@Get(':id/album')
+	@Get(':idOrSlug/album')
 	async getReleaseAlbum(
 		@Query('with', AlbumQueryParameters.ParseRelationIncludePipe)
 		include: AlbumQueryParameters.RelationInclude,
-		@Param('id', ParseIdPipe)
-		releaseId: number
+		@Param(ParseReleaseIdentifierPipe)
+		where: ReleaseQueryParameters.WhereInput
 	) {
-		const release = this.releaseService.getRelease({ byId: { id: releaseId } });
+		const release = this.releaseService.getRelease(where);
 		const album = await this.albumService.getAlbum({
 			byId: { id: (await release).albumId }
 		}, include);
@@ -84,14 +84,14 @@ export default class ReleaseController {
 
 	}
 
-	@Get(':id/illustration')
+	@Get(':idOrSlug/illustration')
 	async getReleaseIllustration(
-		@Param('id', ParseIdPipe)
-		releaseId: number,
+		@Param(ParseReleaseIdentifierPipe)
+		where: ReleaseQueryParameters.WhereInput,
 		@Response({ passthrough: true })
 		res: Response
 	) {
-		let release = await this.releaseService.getRelease({ byId: { id: releaseId } });
+		let release = await this.releaseService.getRelease(where);
 		let album = await this.albumService.getAlbum({ byId: { id: release.albumId } }, { artist: true })
 		return this.illustrationService.streamIllustration(
 			this.illustrationService.buildReleaseIllustrationPath(
@@ -103,14 +103,14 @@ export default class ReleaseController {
 		);
 	}
 
-	@Post('/:id/illustration')
+	@Post('/:idOrSlug/illustration')
 	async updateReleaseIllustration(
-		@Param('id', ParseIdPipe)
-		releaseId: number,
+		@Param(ParseReleaseIdentifierPipe)
+		where: ReleaseQueryParameters.WhereInput,
 		@Body()
 		illustrationDto: IllustrationDownloadDto
 	) {
-		let release = await this.releaseService.getRelease({ byId: { id: releaseId } });
+		let release = await this.releaseService.getRelease(where);
 		let album = await this.albumService.getAlbum({ byId: { id: release.albumId } }, { artist: true })
 		const releaseIllustrationPath = this.illustrationService.buildReleaseIllustrationPath(
 			new Slug(album.slug),
