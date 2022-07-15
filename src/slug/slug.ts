@@ -31,10 +31,19 @@ export default class Slug {
 			case 0:
 				throw new Error('Building a slug requires at least one argument');
 			case 1:
-				return slug(args[0]);
+				return this.buildSingleSlug(args[0]);
 			default:
-				return slug(args.map((arg) => slug(arg)).join('-'));
+				return this.buildSingleSlug(args.map(
+					(arg) => this.buildSingleSlug(arg)).join('-')
+				);
 		}
+	}
+
+	private buildSingleSlug(arg: string): string {
+		let formatted = slug(arg);
+		if (isNaN(Number(formatted)) == false)
+			formatted += '!';
+		return formatted;
 	}
 
 	/**
