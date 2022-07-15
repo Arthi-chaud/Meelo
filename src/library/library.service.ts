@@ -166,8 +166,8 @@ export default class LibraryService {
 	 * @param parentLibraryId the id of the library to clean
 	 * @returns The array of deleted file entry
 	 */
-	async unregisterUnavailableFiles(parentLibraryId: number): Promise<File[]> {
-		let parentLibrary = await this.getLibrary({ id: parentLibraryId }, { files: true });
+	async unregisterUnavailableFiles(where: LibraryQueryParameters.WhereInput): Promise<File[]> {
+		let parentLibrary = await this.getLibrary(where, { files: true });
 		Logger.log(`'Cleaning ${parentLibrary.slug}' library`);
 		const libraryPath = `${this.fileManagerService.getLibraryFullPath(parentLibrary)}`;
 		let registeredFiles: File[] = parentLibrary.files;
