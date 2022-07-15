@@ -16,7 +16,8 @@ import TrackQueryParameters from 'src/track/models/track.query-parameters';
 import TrackService from 'src/track/track.service';
 import ReleaseService from 'src/release/release.service';
 import SongService from 'src/song/song.service';
-import { ParseIdPipe } from 'src/id/id.pipe';
+import ParseLibraryIdentifierPipe from './library.pipe';
+import type LibraryQueryParameters from './models/library.query-parameters';
 
 @Controller('libraries')
 export default class LibraryController {
@@ -55,116 +56,118 @@ export default class LibraryController {
 	async cleanLibraries() {
 		const libraries = await this.libraryService.getLibraries({});
 		libraries.forEach((library) => this.libraryService
-			.unregisterUnavailableFiles(library.id)
+			.unregisterUnavailableFiles({ id: library.id })
 			.catch((error) => Logger.error(error))
 		);
 		return `Cleanning ${libraries.length} libraries`;
 	}
 
 	@Get('scan/:id')
-	async scanLibraryFiles(@Param('id', ParseIdPipe) libraryId: number) {
-		let library = await this.libraryService.getLibrary({ id: libraryId });
+	async scanLibraryFiles(
+		@Param(ParseLibraryIdentifierPipe) where: LibraryQueryParameters.WhereInput
+	) {
+		let library = await this.libraryService.getLibrary(where);
 		this.libraryService
 			.registerNewFiles(library)
 			.catch((error) => Logger.error(error));
 	}
 
 	@Get('clean/:id')
-	async cleanLibrary(@Param('id', ParseIdPipe) libraryId: number) {
+	async cleanLibrary(
+		@Param(ParseLibraryIdentifierPipe) where: LibraryQueryParameters.WhereInput
+	) {
 		this.libraryService
-			.unregisterUnavailableFiles(libraryId)
+			.unregisterUnavailableFiles(where)
 			.catch((error) => Logger.error(error));
 	}
 
 	@Get(':id')
 	async getLibrary(
-		@Param('id', ParseIdPipe) libraryId: number,
+		@Param(ParseLibraryIdentifierPipe) where: LibraryQueryParameters.WhereInput,
 	): Promise<Library> {
-		return this.libraryService.getLibrary({ id: libraryId });
+		return this.libraryService.getLibrary(where);
 	}
 	
 	@Get(':id/artists')
 	async getArtistsByLibrary(
-		@Param('id', ParseIdPipe)
-		libraryId: number,
+		@Param(ParseLibraryIdentifierPipe)
+		where: LibraryQueryParameters.WhereInput,
 		@Query(ParsePaginationParameterPipe)
 		paginationParameters: PaginationParameters,
 		@Query('with', new ParseRelationIncludePipe(ArtistQueryParameters.AvailableIncludes))
 		include: ArtistQueryParameters.RelationInclude
 	): Promise<Object[]> {
-		const artists = await this.artistService.getArtists({ byLibrarySource: {
-			id: libraryId
-		} }, paginationParameters, include);
+		const artists = await this.artistService.getArtists(
+			{ byLibrarySource: where }, paginationParameters, include
+		);
 		if (artists.length == 0)
-			await this.libraryService.getLibrary({ id: libraryId });
+			await this.libraryService.getLibrary(where);
 		return artists.map((artist) => this.artistService.buildArtistResponse(artist));
 	}
 
 	@Get(':id/albums')
 	async getAlbumsByLibrary(
-		@Param('id', ParseIdPipe)
-		libraryId: number,
+		@Param(ParseLibraryIdentifierPipe)
+		where: LibraryQueryParameters.WhereInput,
 		@Query(ParsePaginationParameterPipe)
 		paginationParameters: PaginationParameters,
 		@Query('with', new ParseRelationIncludePipe(AlbumQueryParameters.AvailableIncludes))
 		include: AlbumQueryParameters.RelationInclude
 	): Promise<Object[]> {
-		const albums = await this.albumService.getAlbums({ byLibrarySource: {
-			id: libraryId
-		} }, paginationParameters, include);
+		const albums = await this.albumService.getAlbums(
+			{ byLibrarySource: where }, paginationParameters, include
+		);
 		if (albums.length == 0)
-			await this.libraryService.getLibrary({ id: libraryId });
+			await this.libraryService.getLibrary(where);
 		return albums.map((album) => this.albumService.buildAlbumResponse(album));
 	}
 
 	@Get(':id/releases')
 	async getReleasesByLibrary(
-		@Param('id', ParseIdPipe)
-		libraryId: number,
+		@Param(ParseLibraryIdentifierPipe)
+		where: LibraryQueryParameters.WhereInput,
 		@Query(ParsePaginationParameterPipe)
 		paginationParameters: PaginationParameters,
 		@Query('with', new ParseRelationIncludePipe(ReleaseQueryParameters.AvailableIncludes))
 		include: ReleaseQueryParameters.RelationInclude
 	): Promise<Object[]> {
-		const releases = await this.releaseService.getReleases({ library: {
-			id: libraryId
-		} }, paginationParameters, include);
+		const releases = await this.releaseService.getReleases({ library: where }, paginationParameters, include);
 		if (releases.length == 0)
-			await this.libraryService.getLibrary({ id: libraryId });
+			await this.libraryService.getLibrary(where);
 		return releases.map((release) => this.releaseService.buildReleaseResponse(release));
 	}
 
 	@Get(':id/songs')
 	async getSongsByLibrary(
-		@Param('id', ParseIdPipe)
-		libraryId: number,
+		@Param(ParseLibraryIdentifierPipe)
+		where: LibraryQueryParameters.WhereInput,
 		@Query(ParsePaginationParameterPipe)
 		paginationParameters: PaginationParameters,
 		@Query('with', new ParseRelationIncludePipe(SongQueryParameters.AvailableIncludes))
 		include: SongQueryParameters.RelationInclude
 	): Promise<Object[]> {
-		const songs =  await this.songService.getSongs({ library: {
-			id: libraryId
-		} }, paginationParameters, include);
+		const songs =  await this.songService.getSongs(
+			{ library: where }, paginationParameters, include
+		);
 		if (songs.length == 0)
-			await this.libraryService.getLibrary({ id: libraryId });
+			await this.libraryService.getLibrary(where);
 		return songs.map((song) => this.songService.buildSongResponse(song));
 	}
 
 	@Get(':id/tracks')
 	async getTracksByLibrary(
-		@Param('id', ParseIdPipe)
-		libraryId: number,
+		@Param(ParseLibraryIdentifierPipe)
+		where: LibraryQueryParameters.WhereInput,
 		@Query(ParsePaginationParameterPipe)
 		paginationParameters: PaginationParameters,
 		@Query('with', new ParseRelationIncludePipe(TrackQueryParameters.AvailableIncludes))
 		include: TrackQueryParameters.RelationInclude
 	): Promise<Object[]> {
-		const tracks = await this.trackService.getTracks({ byLibrarySource: {
-			id: libraryId
-		} }, paginationParameters, include);
+		const tracks = await this.trackService.getTracks(
+			{ byLibrarySource: where }, paginationParameters, include
+		);
 		if (tracks.length == 0)
-			await this.libraryService.getLibrary({ id: libraryId });
+			await this.libraryService.getLibrary(where);
 		return tracks.map((track) => this.trackService.buildTrackResponse(track));
 	}
 }

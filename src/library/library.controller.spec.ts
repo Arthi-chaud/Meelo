@@ -191,6 +191,16 @@ describe('Library Controller', () => {
 				});
 		});
 
+		it("should get the library (w/ slug)", async () => {
+			return request(app.getHttpServer())
+				.get(`/libraries/${library1.slug}`)
+				.expect(200)
+				.expect((res) => {
+					const library = res.body;
+					expect(library).toStrictEqual(library1)
+				});
+		});
+
 		it("should throw, as the library does not exist", async () => {
 			return request(app.getHttpServer())
 				.get('/libraries/-1')
@@ -249,6 +259,20 @@ describe('Library Controller', () => {
 		it("should return every artists", () => {
 			return request(app.getHttpServer())
 				.get(`/libraries/${library1.id}/artists`)
+				.expect(200)
+				.expect((res) => {
+					const artists: Artist[] = res.body;
+					expect(artists.length).toBe(1);
+					expect(artists[0]).toStrictEqual({
+						...artist1,
+						illustration: `http://meelo.com/artists/${artist1.id}/illustration`
+					});
+				});
+		});
+
+		it("should return every artists (from librariy's slug)", () => {
+			return request(app.getHttpServer())
+				.get(`/libraries/${library1.slug}/artists`)
 				.expect(200)
 				.expect((res) => {
 					const artists: Artist[] = res.body;
@@ -333,6 +357,20 @@ describe('Library Controller', () => {
 							...artist1,
 							illustration: `http://meelo.com/artists/${artist1.id}/illustration`,
 						}
+					});
+				});
+		});
+
+		it("should return every albums (from library's slug))", () => {
+			return request(app.getHttpServer())
+				.get(`/libraries/${library1.slug}/albums`)
+				.expect(200)
+				.expect((res) => {
+					const albums: Album[] = res.body;
+					expect(albums.length).toBe(1);
+					expect(albums[0]).toStrictEqual({
+						...album1,
+						illustration: `http://meelo.com/albums/${album1.id}/illustration`,
 					});
 				});
 		});
