@@ -1,5 +1,4 @@
 import { Body, Controller, Get, Logger, Param, Post, Query } from '@nestjs/common';
-
 import LibraryService from './library.service';
 import { LibraryDto } from './models/library.dto';
 import type { Library } from '@prisma/client';
@@ -16,8 +15,8 @@ import TrackQueryParameters from 'src/track/models/track.query-parameters';
 import TrackService from 'src/track/track.service';
 import ReleaseService from 'src/release/release.service';
 import SongService from 'src/song/song.service';
-import ParseLibraryIdentifierPipe from './library.pipe';
 import type LibraryQueryParameters from './models/library.query-parameters';
+import ParseLibraryIdentifierPipe from './library.pipe';
 
 @Controller('libraries')
 export default class LibraryController {
