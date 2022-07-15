@@ -147,6 +147,18 @@ describe('Album Controller', () => {
 					})
 				});
 		});
+
+		it("Should return album (w/ slug)", () => {
+			return request(app.getHttpServer())
+				.get(`/albums/${artist.slug}+${album1.slug}`)
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).toStrictEqual({
+						...album1,
+						illustration: `http://meelo.com/albums/${album1.id}/illustration`
+					})
+				});
+		});
 		it("Should return compilation album", () => {
 			return request(app.getHttpServer())
 				.get(`/albums/${compilationAlbum.id}`)
@@ -232,6 +244,23 @@ describe('Album Controller', () => {
 		it("Should return all album's releases", () => {
 			return request(app.getHttpServer())
 				.get(`/albums/${album1.id}/releases`)
+				.expect(200)
+				.expect((res) => {
+					let releases: Release[] = res.body;
+					expect(releases.length).toBe(2);
+					expect(releases[0]).toStrictEqual({
+						...release1,
+						illustration: `http://meelo.com/releases/${release1.id}/illustration`
+					});
+					expect(releases[1]).toStrictEqual({
+						...release2,
+						illustration: `http://meelo.com/releases/${release2.id}/illustration`
+					})
+				});
+		});
+		it("Should return all album's releases (by slug)", () => {
+			return request(app.getHttpServer())
+				.get(`/albums/${artist.slug}+${album1.slug}/releases`)
 				.expect(200)
 				.expect((res) => {
 					let releases: Release[] = res.body;
