@@ -1,9 +1,15 @@
-import { AlreadyExistsException, NotFoundException } from "src/exceptions/meelo-exception";
+import { AlreadyExistsException, InvalidRequestException, NotFoundException } from "src/exceptions/meelo-exception";
 import type Slug from "src/slug/slug";
 
 export class ArtistNotFoundException extends NotFoundException {
 	constructor(artistSlug: Slug) {
 		super(`Artist '${artistSlug.toString()}' not found`);
+	}
+}
+
+export class CompilationArtistException extends InvalidRequestException {
+	constructor(resourceName: string) {
+		super(`The '${resourceName}' resource can not be accessed for the 'Compilation' artist`);
 	}
 }
 
