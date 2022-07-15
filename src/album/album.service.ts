@@ -186,7 +186,7 @@ export default class AlbumService {
 				controller: AlbumController,
 				controllerMethod: AlbumController.prototype.getAlbumIllustration,
 				params: {
-					id: album.id.toString()
+					idOrSlug: album.id.toString()
 				}
 			})
 		};

@@ -174,7 +174,7 @@ export default class ArtistService {
 				controller: ArtistController,
 				controllerMethod: ArtistController.prototype.getArtistIllustration,
 				params: {
-					id: artist.id.toString()
+					idOrSlug: artist.id.toString()
 				}
 			})
 		};

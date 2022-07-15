@@ -46,7 +46,7 @@ export default class ArtistController {
 		return artists.map((artist) => this.artistService.buildArtistResponse(artist));
 	}
 
-	@Get(':id')
+	@Get(':idOrSlug')
 	async getArtist(
 		@Param(ParseArtistIdentifierPipe)
 		where: ArtistQueryParameters.WhereInput,
@@ -57,7 +57,7 @@ export default class ArtistController {
 		return this.artistService.buildArtistResponse(artist);
 	}
 
-	@Get(':id/illustration')
+	@Get(':idOrSlug/illustration')
 	async getArtistIllustration(
 		@Param(ParseArtistIdentifierPipe)
 		where: ArtistQueryParameters.WhereInput,
@@ -71,7 +71,7 @@ export default class ArtistController {
 		);
 	}
 
-	@Post('/:id/illustration')
+	@Post(':idOrSlug/illustration')
 	async updateArtistIllustration(
 		@Param(ParseArtistIdentifierPipe)
 		where: ArtistQueryParameters.WhereInput,
@@ -86,7 +86,7 @@ export default class ArtistController {
 		);
 	}
 
-	@Get(':id/albums')
+	@Get(':idOrSlug/albums')
 	async getArtistAlbums(
 		@Query(ParsePaginationParameterPipe)
 		paginationParameters: PaginationParameters,
@@ -101,7 +101,7 @@ export default class ArtistController {
 		return albums.map((album) => this.albumService.buildAlbumResponse(album));
 	}
 
-	@Get(':id/songs')
+	@Get(':idOrSlug/songs')
 	async getArtistSongs(
 		@Query(ParsePaginationParameterPipe)
 		paginationParameters: PaginationParameters,

@@ -10,7 +10,7 @@ import AlbumService from 'src/album/album.service';
 import Slug from 'src/slug/slug';
 import type { IllustrationDownloadDto } from 'src/illustration/models/illustration-dl.dto';
 import AlbumQueryParameters from 'src/album/models/album.query-parameters';
-import { ParseIdPipe } from 'src/id/id.pipe';
+import { ParseIdPipe } from 'src/identifier/id.pipe';
 
 
 @Controller('releases')
