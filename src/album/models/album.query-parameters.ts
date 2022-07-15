@@ -67,8 +67,10 @@ namespace AlbumQueryParameters {
 	 */
 	export function buildQueryParametersForMany(where: ManyWhereInput): Prisma.AlbumWhereInput {
 		return {
-			artist: where.byArtist ?
-					ArtistQueryParameters.buildQueryParametersForOne(where.byArtist)	
+			artist: where.byArtist
+				? where.byArtist.compilationArtist
+					? null
+					: ArtistQueryParameters.buildQueryParametersForOne(where.byArtist)	
 			: where.byArtist,
 			name: buildStringSearchParameters(where.byName),
 			releases: where.byLibrarySource ? {
