@@ -216,6 +216,18 @@ describe('Song Controller', () => {
 					});
 				});
 		});
+		it("should return song (w/ slug)", () => {
+			return request(app.getHttpServer())
+				.get(`/songs/${artist.slug}+${song1.slug}`)
+				.expect(200)
+				.expect((res) => {
+					let song: Song = res.body
+					expect(song).toStrictEqual({
+						...song1,
+						illustration: `http://meelo.com/songs/${song1.id}/illustration`,
+					});
+				});
+		});
 		it("should return song w/ artist", () => {
 			return request(app.getHttpServer())
 				.get(`/songs/${song1.id}?with=artist`)
@@ -350,6 +362,18 @@ describe('Song Controller', () => {
 		it("should return artist", () => {
 			return request(app.getHttpServer())
 				.get(`/songs/${song2.id}/artist`)
+				.expect(200)
+				.expect((res) => {
+					let fetchedArtist : Artist = res.body
+					expect(fetchedArtist).toStrictEqual({
+						...artist,
+						illustration: `http://meelo.com/artists/${artist.id}/illustration` 
+					});
+				});
+		});
+		it("should return artist", () => {
+			return request(app.getHttpServer())
+				.get(`/songs/${artist.slug}+${song2.slug}/artist`)
 				.expect(200)
 				.expect((res) => {
 					let fetchedArtist : Artist = res.body
