@@ -1,6 +1,6 @@
 import { forwardRef, Inject, Injectable } from '@nestjs/common';
 import Slug from 'src/slug/slug';
-import { ArtistAlreadyExistsException as ArtistAlreadyExistsException, ArtistNotFoundByIDException, ArtistNotFoundException } from './artist.exceptions';
+import { ArtistAlreadyExistsException as ArtistAlreadyExistsException, ArtistNotFoundByIDException, ArtistNotFoundException, CompilationArtistException } from './artist.exceptions';
 import type { Album, Artist, Song } from '@prisma/client';
 import PrismaService from 'src/prisma/prisma.service';
 import ArtistQueryParameters from './models/artist.query-parameters';
@@ -49,6 +49,8 @@ export default class ArtistService {
 	 * @param include the relations to include in the returned artist
 	 */
 	async getArtist(where: ArtistQueryParameters.WhereInput, include?: ArtistQueryParameters.RelationInclude) {
+		if (where.compilationArtist)
+			throw new CompilationArtistException('Artist');
 		try {
 			return await this.prismaService.artist.findUnique({
 				rejectOnNotFound: true,
@@ -93,6 +95,8 @@ export default class ArtistService {
 	 * @returns the updated artist
 	 */
 	async updateArtist(what: ArtistQueryParameters.UpdateInput, where: ArtistQueryParameters.WhereInput): Promise<Artist> {
+		if (where.compilationArtist)
+		throw new CompilationArtistException('Artist');
 		try {
 			return await this.prismaService.artist.update({
 				data: {
@@ -114,6 +118,8 @@ export default class ArtistService {
 	 * @param where the query parameters to find the album to delete
 	 */
 	async deleteArtist(where: ArtistQueryParameters.WhereInput): Promise<void> {
+		if (where.compilationArtist)
+		throw new CompilationArtistException('Artist');
 		try {
 			await this.prismaService.artist.delete({
 				where: ArtistQueryParameters.buildQueryParametersForOne(where)

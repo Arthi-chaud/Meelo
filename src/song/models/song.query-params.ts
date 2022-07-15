@@ -10,6 +10,7 @@ import type { RelationInclude as BaseRelationInclude } from "src/relation-includ
 import type LibraryQueryParameters from "src/library/models/library.query-parameters";
 import TrackQueryParameters from "src/track/models/track.query-parameters";
 import ParseBaseRelationIncludePipe from 'src/relation-include/relation-include.pipe';
+import { CompilationArtistException } from "src/artist/artist.exceptions";
 
 namespace SongQueryParameters {
 	type OmitArtistId<T> = Omit<T, 'artistId'>;
@@ -65,6 +66,8 @@ namespace SongQueryParameters {
 	 * @returns the ORM-ready query parameters
 	 */
 	export function buildQueryParametersForMany(where: ManyWhereInput) {
+		if (where.artist?.compilationArtist)
+			throw new CompilationArtistException('Song');
 		return {
 			artistId: where.artist?.id,
 			artist: where.artist?.slug ? {

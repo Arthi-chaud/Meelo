@@ -18,6 +18,7 @@ import TrackModule from "src/track/track.module";
 import ReleaseModule from "src/release/release.module";
 import MetadataModule from "src/metadata/metadata.module";
 import ReleaseService from "src/release/release.service";
+import compilationAlbumArtistKeyword from "src/utils/compilation";
 
 describe('Artist Controller', () => {
 	let artistService: ArtistService;
@@ -161,6 +162,19 @@ describe('Artist Controller', () => {
 					});
 			});
 		});
+
+		it("should get the artist (w/ slug)", () => {
+			return request(app.getHttpServer())
+				.get(`/artists/${artist1.slug}`)
+				.expect(200)
+				.expect((res) => {
+					let artist: Artist = res.body;
+					expect(artist).toStrictEqual({
+						...artist1,
+						illustration: `http://meelo.com/artists/${artist1.id}/illustration`
+					});
+			});
+		});
 		it("should get the artist w/ songs", () => {
 			return request(app.getHttpServer())
 				.get(`/artists/${artist1.id}?with=songs`)
@@ -184,6 +198,12 @@ describe('Artist Controller', () => {
 			return request(app.getHttpServer())
 				.get(`/artists/${-1}`)
 				.expect(404);
+		});
+
+		it("should return an error, as the compilation artist 'does not exist'", () => {
+			return request(app.getHttpServer())
+				.get(`/artists/${compilationAlbumArtistKeyword}`)
+				.expect(400);
 		});
 	});
 

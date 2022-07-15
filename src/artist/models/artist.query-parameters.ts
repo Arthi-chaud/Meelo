@@ -22,7 +22,8 @@ namespace ArtistQueryParameters {
 	 */
 	export type WhereInput = RequireOnlyOne<{
 		id: number,
-		slug: Slug
+		slug: Slug,
+		compilationArtist: true
 	}>;
 	/**
 	 * Build the query parameters for ORM, to select one artist

@@ -1,7 +1,6 @@
 import { Body, Controller, DefaultValuePipe, forwardRef, Get, Inject, Param, ParseBoolPipe, Post, Query, Response } from '@nestjs/common';
 import AlbumService from 'src/album/album.service';
 import AlbumQueryParameters from 'src/album/models/album.query-parameters';
-import { ParseIdPipe } from 'src/id/id.pipe';
 import IllustrationService from 'src/illustration/illustration.service';
 import type { IllustrationDownloadDto } from 'src/illustration/models/illustration-dl.dto';
 import type { PaginationParameters } from 'src/pagination/models/pagination-parameters';
@@ -9,6 +8,7 @@ import ParsePaginationParameterPipe from 'src/pagination/pagination.pipe';
 import Slug from 'src/slug/slug';
 import SongQueryParameters from 'src/song/models/song.query-params';
 import SongService from 'src/song/song.service';
+import ParseArtistIdentifierPipe from './artist.pipe';
 import ArtistService from './artist.service';
 import ArtistQueryParameters from './models/artist.query-parameters';
 
@@ -48,23 +48,23 @@ export default class ArtistController {
 
 	@Get(':id')
 	async getArtist(
-		@Param('id', ParseIdPipe)
-		artistId: number,
+		@Param(ParseArtistIdentifierPipe)
+		where: ArtistQueryParameters.WhereInput,
 		@Query('with', ArtistQueryParameters.ParseRelationIncludePipe)
 		include: ArtistQueryParameters.RelationInclude
 	) {
-		let artist = await this.artistService.getArtist({ id: artistId }, include);
+		let artist = await this.artistService.getArtist(where, include);
 		return this.artistService.buildArtistResponse(artist);
 	}
 
 	@Get(':id/illustration')
 	async getArtistIllustration(
-		@Param('id', ParseIdPipe)
-		artistId: number,
+		@Param(ParseArtistIdentifierPipe)
+		where: ArtistQueryParameters.WhereInput,
 		@Response({ passthrough: true })
 		res: Response
 	) {
-		let artist = await this.artistService.getArtist({ id: artistId });
+		let artist = await this.artistService.getArtist(where);
 		return this.illustrationService.streamIllustration(
 			this.illustrationService.buildArtistIllustrationPath(new Slug(artist.slug)),
 			artist.slug, res
@@ -73,12 +73,12 @@ export default class ArtistController {
 
 	@Post('/:id/illustration')
 	async updateArtistIllustration(
-		@Param('id', ParseIdPipe)
-		artistId: number,
+		@Param(ParseArtistIdentifierPipe)
+		where: ArtistQueryParameters.WhereInput,
 		@Body()
 		illustrationDto: IllustrationDownloadDto
 	) {
-		let artist = await this.artistService.getArtist({ id: artistId });
+		let artist = await this.artistService.getArtist(where);
 		const artistIllustrationPath = this.illustrationService.buildArtistIllustrationPath(new Slug(artist.slug));
 		return this.illustrationService.downloadIllustration(
 			illustrationDto.url,
@@ -90,13 +90,13 @@ export default class ArtistController {
 	async getArtistAlbums(
 		@Query(ParsePaginationParameterPipe)
 		paginationParameters: PaginationParameters,
-		@Param('id', ParseIdPipe)
-		artistId: number,
+		@Param(ParseArtistIdentifierPipe)
+		where: ArtistQueryParameters.WhereInput,
 		@Query('with', AlbumQueryParameters.ParseRelationIncludePipe)
 		include: AlbumQueryParameters.RelationInclude
 	) {
 		let albums = await this.albumService.getAlbums({
-			byArtist: { id: artistId }
+			byArtist: where
 		}, paginationParameters, include);
 		return albums.map((album) => this.albumService.buildAlbumResponse(album));
 	}
@@ -105,13 +105,13 @@ export default class ArtistController {
 	async getArtistSongs(
 		@Query(ParsePaginationParameterPipe)
 		paginationParameters: PaginationParameters,
-		@Param('id', ParseIdPipe)
-		artistId: number,
+		@Param(ParseArtistIdentifierPipe)
+		where: ArtistQueryParameters.WhereInput,
 		@Query('with', SongQueryParameters.ParseRelationIncludePipe)
 		include: SongQueryParameters.RelationInclude
 	) {
 		let songs = await this.songService.getSongs({
-			artist: { id: artistId }
+			artist: where
 		}, paginationParameters, include);
 		return songs.map((song) => this.songService.buildSongResponse(song));
 	}
