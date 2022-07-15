@@ -202,12 +202,28 @@ describe('Album Controller', () => {
 					})
 				});
 		});
+		it("Should return an error as the string is badly fored", () => {
+			return request(app.getHttpServer())
+				.get(`/albums/${artist.slug}`)
+				.expect(400);
+		});
 	});
 
 	describe("Get Album's Master (GET /albums/:id/master)", () => {
 		it("Should return album's master", () => {
 			return request(app.getHttpServer())
 				.get(`/albums/${album1.id}/master`)
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).toStrictEqual({
+						...release1,
+						illustration: `http://meelo.com/releases/${release1.id}/illustration`
+					})
+				});
+		});
+		it("Should return album's master (by slug)", () => {
+			return request(app.getHttpServer())
+				.get(`/albums/${artist.slug}+${album1.slug}/master`)
 				.expect(200)
 				.expect((res) => {
 					expect(res.body).toStrictEqual({
