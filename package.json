@@ -28,6 +28,7 @@
     "@nestjs/config": "^2.0.0",
     "@nestjs/core": "^8.0.0",
     "@nestjs/platform-express": "^8.0.0",
+    "@nestjs/swagger": "^6.0.4",
     "@prisma/client": "^3.14.0",
     "@types/normalize-path": "^3.0.0",
     "@types/sequelize": "^4.28.12",
@@ -94,7 +95,9 @@
       "<rootDir>/src/**/*.(t|j)s"
     ],
     "coverageDirectory": "coverage",
-    "coverageReporters": ["lcov"],
+    "coverageReporters": [
+      "lcov"
+    ],
     "testEnvironment": "node"
   },
   "prisma": {
