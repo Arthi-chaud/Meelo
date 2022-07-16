@@ -1,4 +1,4 @@
-import { forwardRef, Inject, Injectable } from '@nestjs/common';
+import { forwardRef, Inject, Injectable, Logger } from '@nestjs/common';
 import AlbumService from 'src/album/album.service';
 import Slug from 'src/slug/slug';
 import type { Album, Release, Track } from '@prisma/client';
@@ -166,6 +166,7 @@ export default class ReleaseService {
 			let deletedRelease = await this.prismaService.release.delete({
 				where: ReleaseQueryParameters.buildQueryParametersForOne(where),
 			});
+			Logger.warn(`Release '${deletedRelease.slug}' deleted`);
 			if (deletedRelease.master)
 				await this.unsetReleaseAsMaster({
 					releaseId: deletedRelease.id,
