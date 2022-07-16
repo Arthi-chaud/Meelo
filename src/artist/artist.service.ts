@@ -119,7 +119,7 @@ export default class ArtistService {
 	 */
 	async deleteArtist(where: ArtistQueryParameters.WhereInput): Promise<void> {
 		if (where.compilationArtist)
-		throw new CompilationArtistException('Artist');
+			throw new CompilationArtistException('Artist');
 		try {
 			await this.prismaService.artist.delete({
 				where: ArtistQueryParameters.buildQueryParametersForOne(where)
@@ -136,16 +136,8 @@ export default class ArtistService {
 	 * @param where the query parameters to find the artist to delete
 	 */
 	async deleteArtistIfEmpty(where: ArtistQueryParameters.WhereInput): Promise<void> {
-		const albumCount = await this.prismaService.album.count({
-			where: {
-				artist: ArtistQueryParameters.buildQueryParametersForOne(where)
-			}
-		});
-		const songCount = await this.prismaService.song.count({
-			where: {
-				artist: ArtistQueryParameters.buildQueryParametersForOne(where)
-			}
-		});
+		const albumCount = await this.albumService.countAlbums({ byArtist: where });
+		const songCount = await this.songService.countSongs({ artist: where });
 		if (songCount == 0 && albumCount == 0)
 			await this.deleteArtist(where);
 	}
