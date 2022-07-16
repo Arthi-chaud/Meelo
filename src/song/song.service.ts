@@ -145,11 +145,7 @@ export default class SongService {
 	 * Deletes a song if it does not have related tracks
 	 */
 	async deleteSongIfEmpty(where: SongQueryParameters.WhereInput): Promise<void> {
-		const trackCount = await this.prismaService.track.count({
-			where: {
-				song: SongQueryParameters.buildQueryParametersForOne(where)
-			}
-		});
+		const trackCount = await this.trackService.countTracks({ bySong: where });
 		if (trackCount == 0)
 			await this.deleteSong(where);
 	}
