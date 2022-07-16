@@ -122,6 +122,21 @@ export default class IllustrationService implements OnModuleInit {
 	}
 
 	/**
+	 * @param illustrationPath full path to an illustration
+	 */
+	deleteIllustration(illustrationPath: IllustrationPath) {
+		return this.fileManagerService.deleteFile(illustrationPath);
+	}
+
+	/**
+	 * @param illustrationFolderPath full path to an illustration folder
+	 */
+	 deleteIllustrationFolder(illustrationFolderPath: IllustrationPath) {
+		return this.fileManagerService.deleteFolder(illustrationFolderPath);
+	}
+
+
+	/**
 	 * Extracts the embedded illustration in a track file
 	 * If no illustration is embedded, returns null
 	 * If the embedded illustration is the same as the release's, nothing is done and return null
