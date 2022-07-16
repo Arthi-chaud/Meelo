@@ -1,4 +1,4 @@
-import { forwardRef, Inject, Injectable } from '@nestjs/common';
+import { forwardRef, Inject, Injectable, Logger } from '@nestjs/common';
 import PrismaService from 'src/prisma/prisma.service';
 import type { Release, Song, Track } from '@prisma/client';
 import SongService from 'src/song/song.service';
@@ -177,8 +177,9 @@ export default class TrackService {
 	 async deleteTrack(where: TrackQueryParameters.DeleteInput): Promise<void> {
 		try {
 			let deletedTrack = await this.prismaService.track.delete({
-				where: TrackQueryParameters.buildQueryParametersForOne(where),
+				where: where,
 			});
+			Logger.warn(`Track '${deletedTrack.displayName}' deleted`);
 			if (deletedTrack.master)
 				await this.unsetTrackAsMaster({
 					trackId: deletedTrack.id,
@@ -187,7 +188,9 @@ export default class TrackService {
 			await this.songService.deleteSongIfEmpty({ byId: { id: deletedTrack.songId } });
 			await this.releaseService.deleteReleaseIfEmpty({ byId: { id: deletedTrack.releaseId } });
 		} catch {
-			throw await this.getTrackNotFoundError(where);
+			if (where.id !== undefined)
+				throw new TrackNotFoundByIdException(where.id);
+			throw new FileNotFoundFromIDException(where.sourceFileId);
 		}
 	}
 
