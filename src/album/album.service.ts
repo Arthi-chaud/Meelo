@@ -141,7 +141,7 @@ export default class AlbumService {
 				where: AlbumQueryParameters.buildQueryParametersForOne(where)
 			});
 			if (deletedAlbum.artistId !== null)
-				this.artistServce.deleteArtistIfEmpty({ id: deletedAlbum.artistId });
+				await this.artistServce.deleteArtistIfEmpty({ id: deletedAlbum.artistId });
 		} catch {
 			throw new AlbumNotFoundFromIDException(where.byId.id);
 		}
@@ -152,8 +152,8 @@ export default class AlbumService {
 	 * @param albumId 
 	 */
 	async deleteAlbumIfEmpty(albumId: number): Promise<void> {
-		const albumCount = await this.prismaService.release.count({
-			where: { albumId: albumId }
+		const albumCount = await this.releaseService.countReleases({
+			album: { byId: { id: albumId } }
 		});
 		if (albumCount == 0)
 			await this.deleteAlbum({ byId: { id: albumId } });

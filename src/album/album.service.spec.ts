@@ -1,5 +1,5 @@
 import AlbumService from "./album.service";
-import { Album, AlbumType } from "@prisma/client";
+import { Album, AlbumType, Artist, Release } from "@prisma/client";
 import ArtistService from "src/artist/artist.service";
 import { createTestingModule } from "test/TestModule";
 import type { TestingModule } from "@nestjs/testing";
@@ -11,13 +11,14 @@ import { FakeFileManagerService } from "test/FakeFileManagerModule";
 import PrismaService from "src/prisma/prisma.service";
 import { AlbumAlreadyExistsException, AlbumNotFoundFromIDException } from "./album.exceptions";
 import Slug from "src/slug/slug";
-import { ArtistNotFoundException } from "src/artist/artist.exceptions";
+import { ArtistNotFoundByIDException, ArtistNotFoundException } from "src/artist/artist.exceptions";
 import SongModule from "src/song/song.module";
 
 describe('Album Service', () => {
 	let albumService: AlbumService;
 	let artistService: ArtistService;
-	let album: Album;
+	let album: Album & { releases: Release[], artist: Artist | null };
+	let secondAlbum: Album;
 	beforeAll(async () => {
 		const module: TestingModule = await createTestingModule({
 			imports: [AlbumModule, ArtistModule, PrismaModule, SongModule],
@@ -63,7 +64,7 @@ describe('Album Service', () => {
 	describe('Create an album', () => {
 		describe('No artist', () => {
 			it('should create an album (no artist)', async () => {
-				album = await albumService.createAlbum({ name: 'My album' });
+				let album = await albumService.createAlbum({ name: 'My album' });
 
 				expect(album.id).toBeDefined();
 				expect(album.artistId).toBeNull();
@@ -82,7 +83,7 @@ describe('Album Service', () => {
 
 		describe('With artist', () => {
 			it('should create a live album', async () => {
-				let album = await albumService.createAlbum({
+				album = await albumService.createAlbum({
 					name: 'My album (Live)',
 					artist: { slug: new Slug("My Artist") },
 					releaseDate: new Date('2006')
@@ -197,14 +198,14 @@ describe('Album Service', () => {
 			let albumWithArtist = await albumService.getAlbum({
 				bySlug: { slug: new Slug('My album (Live)'), artist: { slug: new Slug('My Artist') } }
 			});
-			let newAlbum = await albumService.getOrCreateAlbum({
+			secondAlbum = await albumService.getOrCreateAlbum({
 				name: 'My brand new album',
 				artist: { slug: new Slug('My Artist') },
 			});
 			
-			expect(newAlbum.id).toBeGreaterThan(albumNoArtist.id);
-			expect(newAlbum.id).toBeGreaterThan(albumWithArtist.id);
-			expect(newAlbum.artistId).toBe(albumWithArtist.artistId);
+			expect(secondAlbum.id).toBeGreaterThan(albumNoArtist.id);
+			expect(secondAlbum.id).toBeGreaterThan(albumWithArtist.id);
+			expect(secondAlbum.artistId).toBe(albumWithArtist.artistId);
 		});
 	});
 
@@ -219,6 +220,15 @@ describe('Album Service', () => {
 			await albumService.deleteAlbum(albumQueryParameters);
 			const test = async () => albumService.getAlbum(albumQueryParameters);
 			expect(test()).rejects.toThrow(AlbumNotFoundFromIDException); 
+		});
+
+		it("should delete the album and the parent artist", async () => {
+			const albumQueryParameters = { byId: { id: secondAlbum.id } };
+			await albumService.deleteAlbum(albumQueryParameters);
+			const test = async () => albumService.getAlbum(albumQueryParameters);
+			const testArtist = async () => artistService.getArtist({ id: secondAlbum.artistId! });
+			expect(test()).rejects.toThrow(AlbumNotFoundFromIDException);
+			expect(testArtist()).rejects.toThrow(ArtistNotFoundByIDException); 
 		});
 	});
 });
