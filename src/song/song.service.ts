@@ -1,4 +1,4 @@
-import { forwardRef, Inject, Injectable } from '@nestjs/common';
+import { forwardRef, Inject, Injectable, Logger } from '@nestjs/common';
 import ArtistService from 'src/artist/artist.service';
 import Slug from 'src/slug/slug';
 import type { Artist, Song, Track } from '@prisma/client';
@@ -132,6 +132,7 @@ export default class SongService {
 			let deletedSong = await this.prismaService.song.delete({
 				where: SongQueryParameters.buildQueryParametersForOne({ byId: { id: song.id } })
 			});
+			Logger.warn(`Song '${deletedSong.slug}' deleted`);
 			await this.artistService.deleteArtistIfEmpty({ id: deletedSong.artistId });
 		} catch {
 			if (where.byId)
