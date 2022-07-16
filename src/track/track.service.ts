@@ -184,10 +184,8 @@ export default class TrackService {
 					trackId: deletedTrack.id,
 					song: { byId: { id: deletedTrack.songId } }
 				});
-			await Promise.allSettled([
-				this.songService.deleteSongIfEmpty({ byId: { id: deletedTrack.songId } }),
-				this.releaseService.deleteReleaseIfEmpty({ byId: { id: deletedTrack.releaseId } })
-			]);
+			await this.songService.deleteSongIfEmpty({ byId: { id: deletedTrack.songId } });
+			await this.releaseService.deleteReleaseIfEmpty({ byId: { id: deletedTrack.releaseId } });
 		} catch {
 			throw await this.getTrackNotFoundError(where);
 		}
