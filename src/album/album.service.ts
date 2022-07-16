@@ -10,6 +10,7 @@ import { type PaginationParameters, buildPaginationParameters } from 'src/pagina
 import { UrlGeneratorService } from 'nestjs-url-generator';
 import AlbumController from './album.controller';
 import ReleaseService from 'src/release/release.service';
+import IllustrationService from 'src/illustration/illustration.service';
 
 @Injectable()
 export default class AlbumService {
@@ -19,6 +20,8 @@ export default class AlbumService {
 		private artistServce: ArtistService,
 		@Inject(forwardRef(() => ReleaseService))
 		private releaseService: ReleaseService,
+		@Inject(forwardRef(() => IllustrationService))
+		private illustrationService: IllustrationService,
 		private readonly urlGeneratorService: UrlGeneratorService
 	) {}
 
@@ -132,20 +135,28 @@ export default class AlbumService {
 	}
 
 	/**
-	 * Deletes an album, and its related releases
+	 * Deletes an album
 	 * @param where the query parameter 
 	 */
 	async deleteAlbum(where: AlbumQueryParameters.DeleteInput): Promise<void> {
+		let deletedAlbum: Album & { artist: Artist | null };
 		try {
-			let deletedAlbum = await this.prismaService.album.delete({
-				where: AlbumQueryParameters.buildQueryParametersForOne(where)
+			deletedAlbum = await this.prismaService.album.delete({
+				where: AlbumQueryParameters.buildQueryParametersForOne(where),
+				include: { artist: true }
 			});
-			Logger.warn(`Album '${deletedAlbum.slug}' deleted`);
-			if (deletedAlbum.artistId !== null)
-				await this.artistServce.deleteArtistIfEmpty({ id: deletedAlbum.artistId });
 		} catch {
 			throw new AlbumNotFoundFromIDException(where.byId.id);
 		}
+		Logger.warn(`Album '${deletedAlbum.slug}' deleted`);
+		try {
+			const albumIllustrationFolder = this.illustrationService.buildAlbumIllustrationFolderPath(
+				new Slug(deletedAlbum.slug), deletedAlbum.artist ? new Slug(deletedAlbum.artist.slug) : undefined
+			);
+			this.illustrationService.deleteIllustrationFolder(albumIllustrationFolder);
+		} catch {}
+		if (deletedAlbum.artistId !== null)
+			await this.artistServce.deleteArtistIfEmpty({ id: deletedAlbum.artistId });
 	}
 
 	/**
