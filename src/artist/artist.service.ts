@@ -1,4 +1,4 @@
-import { forwardRef, Inject, Injectable } from '@nestjs/common';
+import { forwardRef, Inject, Injectable, Logger } from '@nestjs/common';
 import Slug from 'src/slug/slug';
 import { ArtistAlreadyExistsException as ArtistAlreadyExistsException, ArtistNotFoundByIDException, ArtistNotFoundException, CompilationArtistException } from './artist.exceptions';
 import type { Album, Artist, Song } from '@prisma/client';
@@ -9,6 +9,7 @@ import ArtistController from './artist.controller';
 import { UrlGeneratorService } from 'nestjs-url-generator';
 import SongService from 'src/song/song.service';
 import AlbumService from 'src/album/album.service';
+import IllustrationService from 'src/illustration/illustration.service';
 
 @Injectable()
 export default class ArtistService {
@@ -19,7 +20,8 @@ export default class ArtistService {
 		@Inject(forwardRef(() => AlbumService))
 		private albumService: AlbumService,
 		@Inject(forwardRef(() => UrlGeneratorService))
-		private readonly urlGeneratorService: UrlGeneratorService
+		private readonly urlGeneratorService: UrlGeneratorService,
+		private illustrationService: IllustrationService
 	) {}
 	
 	/**
@@ -121,9 +123,14 @@ export default class ArtistService {
 		if (where.compilationArtist)
 			throw new CompilationArtistException('Artist');
 		try {
-			await this.prismaService.artist.delete({
+			const deletedArtist = await this.prismaService.artist.delete({
 				where: ArtistQueryParameters.buildQueryParametersForOne(where)
 			});
+			Logger.warn(`Artist '${deletedArtist.slug}' deleted`);
+			const artistIllustrationFolder = this.illustrationService.buildArtistIllustrationFolderPath(
+				new Slug(deletedArtist.slug)
+			);
+			this.illustrationService.deleteIllustrationFolder(artistIllustrationFolder);
 		} catch {
 			if (where.id !== undefined)
 				throw new ArtistNotFoundByIDException(where.id);
