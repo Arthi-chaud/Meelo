@@ -28,6 +28,7 @@ import { FakeFileManagerService } from "test/FakeFileManagerModule";
 import { TrackAlreadyExistsException, TrackNotFoundByIdException } from "./track.exceptions";
 import TrackModule from "./track.module";
 import TrackService from "./track.service";
+import { ArtistNotFoundByIDException } from "src/artist/artist.exceptions";
 
 describe('Track Service', () => {
 	let artistService: ArtistService;
@@ -387,6 +388,12 @@ describe('Track Service', () => {
 			const test = async () => await songService.getSong({ byId: { id: song.id }});
 			expect(test()).rejects.toThrow(SongNotFoundByIdException);
 		});
+
+		it("should have delete the parent artist", async () => {
+			const test = async () => await artistService.getArtist({ id: artist.id  });
+			expect(test()).rejects.toThrow(ArtistNotFoundByIDException);
+		});
+
 
 		it("should throw, as the track does not exists", async () => {
 			const test = async () => await trackService.getTrack({ id: -1 });
