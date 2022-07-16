@@ -182,11 +182,7 @@ export default class ReleaseService {
 	 * @param where the query parameters to find the track to delete 
 	 */
 	async deleteReleaseIfEmpty(where: ReleaseQueryParameters.DeleteInput): Promise<void> {
-		const trackCount = await this.prismaService.track.count({
-			where: {
-				release: ReleaseQueryParameters.buildQueryParametersForOne(where)
-			}
-		});
+		const trackCount = await this.trackService.countTracks({ byRelease: where });
 		if (trackCount == 0)
 			await this.deleteRelease(where);
 	}
