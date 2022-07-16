@@ -12,12 +12,13 @@ import FileManagerModule from "src/file-manager/file-manager.module";
 import FileModule from "src/file/file.module";
 import MetadataModule from "src/metadata/metadata.module";
 import IllustrationModule from "src/illustration/illustration.module";
+import TrackModule from "src/track/track.module";
 describe('Library Service', () => {
 	let libraryService: LibraryService;
 
 	beforeAll(async () => {
 		const module: TestingModule = await createTestingModule({
-			imports: [LibraryModule, PrismaModule, FileModule, MetadataModule, FileManagerModule, IllustrationModule],
+			imports: [LibraryModule, PrismaModule, FileModule, MetadataModule, FileManagerModule, IllustrationModule, TrackModule],
 			providers: [LibraryService],
 		}).overrideProvider(FileManagerService).useClass(FakeFileManagerService).compile();
 		await module.get<PrismaService>(PrismaService).onModuleInit();

@@ -66,7 +66,7 @@ CREATE TABLE "Song" (
     "id" SERIAL NOT NULL,
     "name" TEXT NOT NULL,
     "slug" TEXT NOT NULL,
-    "artistId" INTEGER,
+    "artistId" INTEGER NOT NULL,
     "playCount" INTEGER NOT NULL DEFAULT 0,
 
     CONSTRAINT "Song_pkey" PRIMARY KEY ("id")
@@ -97,7 +97,7 @@ CREATE UNIQUE INDEX "Album_slug_artistId_key" ON "Album"("slug", "artistId");
 CREATE UNIQUE INDEX "Artist_slug_key" ON "Artist"("slug");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "File_path_key" ON "File"("path");
+CREATE UNIQUE INDEX "File_path_libraryId_key" ON "File"("path", "libraryId");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "Library_name_key" ON "Library"("name");
@@ -127,7 +127,7 @@ ALTER TABLE "File" ADD CONSTRAINT "File_libraryId_fkey" FOREIGN KEY ("libraryId"
 ALTER TABLE "Release" ADD CONSTRAINT "Release_albumId_fkey" FOREIGN KEY ("albumId") REFERENCES "Album"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "Song" ADD CONSTRAINT "Song_artistId_fkey" FOREIGN KEY ("artistId") REFERENCES "Artist"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+ALTER TABLE "Song" ADD CONSTRAINT "Song_artistId_fkey" FOREIGN KEY ("artistId") REFERENCES "Artist"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "Track" ADD CONSTRAINT "Track_sourceFileId_fkey" FOREIGN KEY ("sourceFileId") REFERENCES "File"("id") ON DELETE RESTRICT ON UPDATE CASCADE;

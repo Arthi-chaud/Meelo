@@ -8,13 +8,13 @@ export class FileNotFoundFromPathException extends NotFoundException {
 
 export class FileNotFoundFromIDException extends NotFoundException {
 	constructor(fileId: number) {
-		super(`File with id '${fileId} not found'`);
+		super(`File with id '${fileId}' not found`);
 	}
 }
 
 export class FileNotFoundFromTrackIDException extends NotFoundException {
 	constructor(trackId: number) {
-		super(`File from track with id '${trackId} not found'`);
+		super(`File from track with id '${trackId}' not found`);
 	}
 }
 

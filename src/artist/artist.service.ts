@@ -1,4 +1,4 @@
-import { forwardRef, Inject, Injectable } from '@nestjs/common';
+import { forwardRef, Inject, Injectable, Logger } from '@nestjs/common';
 import Slug from 'src/slug/slug';
 import { ArtistAlreadyExistsException as ArtistAlreadyExistsException, ArtistNotFoundByIDException, ArtistNotFoundException, CompilationArtistException } from './artist.exceptions';
 import type { Album, Artist, Song } from '@prisma/client';
@@ -9,6 +9,7 @@ import ArtistController from './artist.controller';
 import { UrlGeneratorService } from 'nestjs-url-generator';
 import SongService from 'src/song/song.service';
 import AlbumService from 'src/album/album.service';
+import IllustrationService from 'src/illustration/illustration.service';
 
 @Injectable()
 export default class ArtistService {
@@ -19,7 +20,8 @@ export default class ArtistService {
 		@Inject(forwardRef(() => AlbumService))
 		private albumService: AlbumService,
 		@Inject(forwardRef(() => UrlGeneratorService))
-		private readonly urlGeneratorService: UrlGeneratorService
+		private readonly urlGeneratorService: UrlGeneratorService,
+		private illustrationService: IllustrationService
 	) {}
 	
 	/**
@@ -114,21 +116,28 @@ export default class ArtistService {
 
 	/**
 	 * Deletes an artist
-	 * Also deletes related albums and songs
 	 * @param where the query parameters to find the album to delete
 	 */
 	async deleteArtist(where: ArtistQueryParameters.WhereInput): Promise<void> {
+		let deletedArtist: Artist;
 		if (where.compilationArtist)
-		throw new CompilationArtistException('Artist');
+			throw new CompilationArtistException('Artist');
 		try {
-			await this.prismaService.artist.delete({
+			deletedArtist = await this.prismaService.artist.delete({
 				where: ArtistQueryParameters.buildQueryParametersForOne(where)
 			});
 		} catch {
 			if (where.id !== undefined)
-				throw new ArtistNotFoundByIDException(where.id);
+			throw new ArtistNotFoundByIDException(where.id);
 			throw new ArtistNotFoundException(where.slug);
 		}
+		Logger.warn(`Artist '${deletedArtist.slug}' deleted`);
+		try {
+			const artistIllustrationFolder = this.illustrationService.buildArtistIllustrationFolderPath(
+				new Slug(deletedArtist.slug)
+			);
+			this.illustrationService.deleteIllustrationFolder(artistIllustrationFolder);
+		} catch {}
 	}
 
 	/**
@@ -136,16 +145,8 @@ export default class ArtistService {
 	 * @param where the query parameters to find the artist to delete
 	 */
 	async deleteArtistIfEmpty(where: ArtistQueryParameters.WhereInput): Promise<void> {
-		const albumCount = await this.prismaService.album.count({
-			where: {
-				artist: ArtistQueryParameters.buildQueryParametersForOne(where)
-			}
-		});
-		const songCount = await this.prismaService.song.count({
-			where: {
-				artist: ArtistQueryParameters.buildQueryParametersForOne(where)
-			}
-		});
+		const albumCount = await this.albumService.countAlbums({ byArtist: where });
+		const songCount = await this.songService.countSongs({ artist: where });
 		if (songCount == 0 && albumCount == 0)
 			await this.deleteArtist(where);
 	}

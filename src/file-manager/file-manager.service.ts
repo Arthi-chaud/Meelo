@@ -3,7 +3,7 @@ import SettingsService from 'src/settings/settings.service';
 import { Md5 } from 'ts-md5';
 import * as fs from 'fs';
 import type { Library } from '@prisma/client';
-import { FolderDoesNotExistException } from './file-manager.exceptions';
+import { FileDoesNotExistException, FolderDoesNotExistException } from './file-manager.exceptions';
 
 @Injectable()
 export default class FileManagerService {
@@ -50,6 +50,30 @@ export default class FileManagerService {
 			.start()
 			.appendByteArray(fs.readFileSync(filePath))
 			.end();
+	}
+
+	/**
+	 * Delete a file
+	 */
+	deleteFile(filePath: string) {
+		if (this.fileExists(filePath)) {
+			fs.unlinkSync(filePath);
+		} else {
+			throw new FileDoesNotExistException(filePath);
+		}
+		
+	}
+
+	/**
+	 * Delete a directory
+	 */
+	deleteFolder(directoryPath: string) {
+		if (this.folderExists(directoryPath)) {
+			fs.rm(directoryPath, { recursive: true }, () => {});
+		} else {
+			throw new FolderDoesNotExistException(directoryPath);
+		}
+		
 	}
 
 	/**

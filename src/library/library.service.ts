@@ -1,4 +1,4 @@
-import { Injectable, Logger } from '@nestjs/common';
+import { forwardRef, Inject, Injectable, Logger } from '@nestjs/common';
 import FileManagerService from 'src/file-manager/file-manager.service';
 import FileService from 'src/file/file.service';
 import MetadataService from 'src/metadata/metadata.service';
@@ -10,6 +10,8 @@ import IllustrationService from 'src/illustration/illustration.service';
 import LibraryQueryParameters from './models/library.query-parameters';
 import { type PaginationParameters, buildPaginationParameters } from 'src/pagination/models/pagination-parameters';
 import normalize from 'normalize-path';
+import type FileQueryParameters from 'src/file/models/file.query-parameters';
+import TrackService from 'src/track/track.service';
 
 @Injectable()
 export default class LibraryService {
@@ -17,6 +19,8 @@ export default class LibraryService {
 		private prismaService: PrismaService,
 		private fileManagerService: FileManagerService,
 		private fileService: FileService,
+		@Inject(forwardRef(() => TrackService))
+		private trackService: TrackService,
 		private metadataService: MetadataService,
 		private illustrationService: IllustrationService
 	) {}
@@ -163,7 +167,7 @@ export default class LibraryService {
 
 	/**
 	 * Unregisters files from parentLibrary that are not existing
-	 * @param parentLibraryId the id of the library to clean
+	 * @param where the query parameters to find the parent library to clean
 	 * @returns The array of deleted file entry
 	 */
 	async unregisterUnavailableFiles(where: LibraryQueryParameters.WhereInput): Promise<File[]> {
@@ -174,8 +178,20 @@ export default class LibraryService {
 		let unavailableFiles: File[] = registeredFiles.filter(
 			(file) => !this.fileManagerService.fileExists(`${libraryPath}/${file.path}`)
 		);
-		Logger.log(`'${parentLibrary.slug}' library: Removing ${unavailableFiles.length} entries`);
-		this.fileService.deleteFiles({ ids: unavailableFiles.map((f) => f.id) });
+		Logger.warn(`'${parentLibrary.slug}' library: Removing ${unavailableFiles.length} entries`);
+		try {
+			for (const unavailableFile of unavailableFiles)
+				await this.unregisterFile({ id: unavailableFile.id });
+			Logger.warn(`'${parentLibrary.slug}' library: Removed ${unavailableFiles.length} entries`);
+		} catch (error) {
+			Logger.error(`'${parentLibrary.slug}' library: Cleaning failed:`);
+			Logger.error(error);
+		}
 		return unavailableFiles;
+	}
+
+	async unregisterFile(where: FileQueryParameters.DeleteInput) {
+		await this.trackService.deleteTrack({ sourceFileId: where.id });
+		await this.fileService.deleteFile(where);
 	}
 }

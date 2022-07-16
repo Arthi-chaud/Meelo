@@ -19,6 +19,7 @@ import ReleaseModule from "src/release/release.module";
 import MetadataModule from "src/metadata/metadata.module";
 import ReleaseService from "src/release/release.service";
 import compilationAlbumArtistKeyword from "src/utils/compilation";
+import IllustrationModule from "src/illustration/illustration.module";
 
 describe('Artist Controller', () => {
 	let artistService: ArtistService;
@@ -40,7 +41,7 @@ describe('Artist Controller', () => {
 
 	beforeAll(async () => {
 		const module: TestingModule = await createTestingModule({
-			imports: [ReleaseModule, PrismaModule, ArtistModule, SongModule, AlbumModule, TrackModule, MetadataModule],
+			imports: [ReleaseModule, PrismaModule, ArtistModule, SongModule, AlbumModule, TrackModule, MetadataModule, IllustrationModule],
 			providers: [ArtistService, SongService, AlbumService, ReleaseService],
 		}).overrideProvider(FileManagerService).useClass(FakeFileManagerService).compile();
 		app = await SetupApp(module);

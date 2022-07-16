@@ -94,7 +94,7 @@ namespace TrackQueryParameters {
 	/**
 	 * Query parameters to delete one track
 	 */
-	export type DeleteInput = RequireOnlyOne<Pick<WhereInput, 'id' | 'sourceFile'>>;
+	export type DeleteInput = RequireOnlyOne<Pick<WhereInput, 'id'> & { sourceFileId: number }>;
 
 	/**
 	 * Defines what relations to include in query

@@ -1,4 +1,4 @@
-import { forwardRef, Inject, Injectable } from '@nestjs/common';
+import { forwardRef, Inject, Injectable, Logger } from '@nestjs/common';
 import AlbumService from 'src/album/album.service';
 import Slug from 'src/slug/slug';
 import type { Album, Release, Track } from '@prisma/client';
@@ -166,6 +166,7 @@ export default class ReleaseService {
 			let deletedRelease = await this.prismaService.release.delete({
 				where: ReleaseQueryParameters.buildQueryParametersForOne(where),
 			});
+			Logger.warn(`Release '${deletedRelease.slug}' deleted`);
 			if (deletedRelease.master)
 				await this.unsetReleaseAsMaster({
 					releaseId: deletedRelease.id,
@@ -182,11 +183,7 @@ export default class ReleaseService {
 	 * @param where the query parameters to find the track to delete 
 	 */
 	async deleteReleaseIfEmpty(where: ReleaseQueryParameters.DeleteInput): Promise<void> {
-		const trackCount = await this.prismaService.track.count({
-			where: {
-				release: ReleaseQueryParameters.buildQueryParametersForOne(where)
-			}
-		});
+		const trackCount = await this.trackService.countTracks({ byRelease: where });
 		if (trackCount == 0)
 			await this.deleteRelease(where);
 	}
