@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { forwardRef, Module } from '@nestjs/common';
 import LibraryController from './library.controller';
 import LibraryService from './library.service';
 import FileManagerModule from 'src/file-manager/file-manager.module';
@@ -23,7 +23,7 @@ import TrackModule from 'src/track/track.module';
 		AlbumModule,
 		SongModule,
 		ReleaseModule,
-		TrackModule
+		forwardRef(() => TrackModule)
 	],
 	controllers: [LibraryController],
 	providers: [LibraryService],
