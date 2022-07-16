@@ -1,4 +1,4 @@
-import { forwardRef, Inject, Injectable } from '@nestjs/common';
+import { forwardRef, Inject, Injectable, Logger } from '@nestjs/common';
 import ArtistService from 'src/artist/artist.service';
 import Slug from 'src/slug/slug';
 import { AlbumAlreadyExistsException, AlbumAlreadyExistsExceptionWithArtistID as AlbumAlreadyExistsWithArtistIDException, AlbumNotFoundException, AlbumNotFoundFromIDException } from './album.exceptions';
@@ -140,6 +140,7 @@ export default class AlbumService {
 			let deletedAlbum = await this.prismaService.album.delete({
 				where: AlbumQueryParameters.buildQueryParametersForOne(where)
 			});
+			Logger.warn(`Album '${deletedAlbum.slug}' deleted`);
 			if (deletedAlbum.artistId !== null)
 				await this.artistServce.deleteArtistIfEmpty({ id: deletedAlbum.artistId });
 		} catch {
