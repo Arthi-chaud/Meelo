@@ -178,14 +178,20 @@ export default class LibraryService {
 		let unavailableFiles: File[] = registeredFiles.filter(
 			(file) => !this.fileManagerService.fileExists(`${libraryPath}/${file.path}`)
 		);
-		Logger.log(`'${parentLibrary.slug}' library: Removing ${unavailableFiles.length} entries`);
-		for (const unavailableFile of unavailableFiles)
-			await this.unregisterFile({ id: unavailableFile.id });
+		Logger.warn(`'${parentLibrary.slug}' library: Removing ${unavailableFiles.length} entries`);
+		try {
+			for (const unavailableFile of unavailableFiles)
+				await this.unregisterFile({ id: unavailableFile.id });
+			Logger.warn(`'${parentLibrary.slug}' library: Removed ${unavailableFiles.length} entries`);
+		} catch (error) {
+			Logger.error(`'${parentLibrary.slug}' library: Cleaning failed:`);
+			Logger.error(error);
+		}
 		return unavailableFiles;
 	}
 
 	async unregisterFile(where: FileQueryParameters.DeleteInput) {
-		await this.trackService.deleteTrack({ sourceFile: where });
+		await this.trackService.deleteTrack({ sourceFileId: where.id });
 		await this.fileService.deleteFile(where);
 	}
 }
