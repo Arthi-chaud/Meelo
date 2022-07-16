@@ -10,13 +10,14 @@ import ArtistModule from "./artist.module";
 import ArtistService from "./artist.service"
 import SongModule from "src/song/song.module";
 import AlbumModule from "src/album/album.module";
+import IllustrationModule from "src/illustration/illustration.module";
 
 describe('Artist Service', () => {
 	let artistService: ArtistService;
 
 	beforeAll(async () => {
 		const module: TestingModule = await createTestingModule({
-			imports: [ArtistModule, PrismaModule, SongModule, AlbumModule],
+			imports: [ArtistModule, PrismaModule, SongModule, AlbumModule, IllustrationModule],
 			providers: [ArtistService],
 		}).overrideProvider(FileManagerService).useClass(FakeFileManagerService).compile();
 		await module.get<PrismaService>(PrismaService).onModuleInit();
