@@ -10,4 +10,4 @@ export function buildPaginationParameters(parameters?: PaginationParameters) {
 /**
  * Default number of elements to take
  */
-export const defaultPageSize = 50;
+export const defaultPageSize = 20;
