@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Logger, Param, Post, Query } from '@nestjs/common';
+import { Body, Controller, Get, Logger, Param, Post, Query, Req } from '@nestjs/common';
 import LibraryService from './library.service';
 import { LibraryDto } from './models/library.dto';
 import type { Library } from '@prisma/client';
@@ -17,6 +17,8 @@ import ReleaseService from 'src/release/release.service';
 import SongService from 'src/song/song.service';
 import type LibraryQueryParameters from './models/library.query-parameters';
 import ParseLibraryIdentifierPipe from './library.pipe';
+import type { Request } from 'express';
+import PaginatedResponse from 'src/pagination/models/paginated-response';
 
 @Controller('libraries')
 export default class LibraryController {
@@ -37,8 +39,12 @@ export default class LibraryController {
 	async getLibraries(
 		@Query(ParsePaginationParameterPipe)
 		paginationParameters: PaginationParameters,
-	) {
-		return this.libraryService.getLibraries({}, paginationParameters);
+		@Req() request: Request
+	): Promise<PaginatedResponse<Object>> {
+		return new PaginatedResponse(
+			await this.libraryService.getLibraries({}, paginationParameters),
+			request
+		);
 	}
 		
 	@Get('scan')
@@ -94,14 +100,18 @@ export default class LibraryController {
 		@Query(ParsePaginationParameterPipe)
 		paginationParameters: PaginationParameters,
 		@Query('with', new ParseRelationIncludePipe(ArtistQueryParameters.AvailableIncludes))
-		include: ArtistQueryParameters.RelationInclude
-	): Promise<Object[]> {
+		include: ArtistQueryParameters.RelationInclude,
+		@Req() request: Request
+	): Promise<PaginatedResponse<Object>> {
 		const artists = await this.artistService.getArtists(
 			{ byLibrarySource: where }, paginationParameters, include
 		);
 		if (artists.length == 0)
 			await this.libraryService.getLibrary(where);
-		return artists.map((artist) => this.artistService.buildArtistResponse(artist));
+		return new PaginatedResponse(
+			artists.map((artist) => this.artistService.buildArtistResponse(artist)),
+			request
+		);
 	}
 
 	@Get(':idOrSlug/albums')
@@ -111,14 +121,18 @@ export default class LibraryController {
 		@Query(ParsePaginationParameterPipe)
 		paginationParameters: PaginationParameters,
 		@Query('with', new ParseRelationIncludePipe(AlbumQueryParameters.AvailableIncludes))
-		include: AlbumQueryParameters.RelationInclude
-	): Promise<Object[]> {
+		include: AlbumQueryParameters.RelationInclude,
+		@Req() request: Request
+	): Promise<PaginatedResponse<Object>> {
 		const albums = await this.albumService.getAlbums(
 			{ byLibrarySource: where }, paginationParameters, include
 		);
 		if (albums.length == 0)
 			await this.libraryService.getLibrary(where);
-		return albums.map((album) => this.albumService.buildAlbumResponse(album));
+		return new PaginatedResponse(
+			albums.map((album) => this.albumService.buildAlbumResponse(album)),
+			request
+		);
 	}
 
 	@Get(':idOrSlug/releases')
@@ -128,12 +142,16 @@ export default class LibraryController {
 		@Query(ParsePaginationParameterPipe)
 		paginationParameters: PaginationParameters,
 		@Query('with', new ParseRelationIncludePipe(ReleaseQueryParameters.AvailableIncludes))
-		include: ReleaseQueryParameters.RelationInclude
-	): Promise<Object[]> {
+		include: ReleaseQueryParameters.RelationInclude,
+		@Req() request: Request
+	): Promise<PaginatedResponse<Object>> {
 		const releases = await this.releaseService.getReleases({ library: where }, paginationParameters, include);
 		if (releases.length == 0)
 			await this.libraryService.getLibrary(where);
-		return releases.map((release) => this.releaseService.buildReleaseResponse(release));
+		return new PaginatedResponse(
+			releases.map((release) => this.releaseService.buildReleaseResponse(release)),
+			request
+		);
 	}
 
 	@Get(':idOrSlug/songs')
@@ -143,14 +161,18 @@ export default class LibraryController {
 		@Query(ParsePaginationParameterPipe)
 		paginationParameters: PaginationParameters,
 		@Query('with', new ParseRelationIncludePipe(SongQueryParameters.AvailableIncludes))
-		include: SongQueryParameters.RelationInclude
-	): Promise<Object[]> {
+		include: SongQueryParameters.RelationInclude,
+		@Req() request: Request
+	): Promise<PaginatedResponse<Object>> {
 		const songs =  await this.songService.getSongs(
 			{ library: where }, paginationParameters, include
 		);
 		if (songs.length == 0)
 			await this.libraryService.getLibrary(where);
-		return songs.map((song) => this.songService.buildSongResponse(song));
+		return new PaginatedResponse(
+			songs.map((song) => this.songService.buildSongResponse(song)),
+			request
+		);
 	}
 
 	@Get(':idOrSlug/tracks')
@@ -160,13 +182,17 @@ export default class LibraryController {
 		@Query(ParsePaginationParameterPipe)
 		paginationParameters: PaginationParameters,
 		@Query('with', new ParseRelationIncludePipe(TrackQueryParameters.AvailableIncludes))
-		include: TrackQueryParameters.RelationInclude
-	): Promise<Object[]> {
+		include: TrackQueryParameters.RelationInclude,
+		@Req() request: Request
+	): Promise<PaginatedResponse<Object>> {
 		const tracks = await this.trackService.getTracks(
 			{ byLibrarySource: where }, paginationParameters, include
 		);
 		if (tracks.length == 0)
 			await this.libraryService.getLibrary(where);
-		return tracks.map((track) => this.trackService.buildTrackResponse(track));
+		return new PaginatedResponse(
+			tracks.map((track) => this.trackService.buildTrackResponse(track)),
+			request
+		);
 	}
 }

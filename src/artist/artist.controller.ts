@@ -1,8 +1,9 @@
-import { Body, Controller, DefaultValuePipe, forwardRef, Get, Inject, Param, ParseBoolPipe, Post, Query, Response } from '@nestjs/common';
+import { Body, Controller, DefaultValuePipe, forwardRef, Get, Inject, Param, ParseBoolPipe, Post, Query, Req, Response } from '@nestjs/common';
 import AlbumService from 'src/album/album.service';
 import AlbumQueryParameters from 'src/album/models/album.query-parameters';
 import IllustrationService from 'src/illustration/illustration.service';
 import type { IllustrationDownloadDto } from 'src/illustration/models/illustration-dl.dto';
+import PaginatedResponse from 'src/pagination/models/paginated-response';
 import type { PaginationParameters } from 'src/pagination/models/pagination-parameters';
 import ParsePaginationParameterPipe from 'src/pagination/pagination.pipe';
 import Slug from 'src/slug/slug';
@@ -11,6 +12,7 @@ import SongService from 'src/song/song.service';
 import ParseArtistIdentifierPipe from './artist.pipe';
 import ArtistService from './artist.service';
 import ArtistQueryParameters from './models/artist.query-parameters';
+import type { Request } from 'express';
 
 @Controller('artists')
 export default class ArtistController {
@@ -31,7 +33,8 @@ export default class ArtistController {
 		@Query('with', ArtistQueryParameters.ParseRelationIncludePipe)
 		include: ArtistQueryParameters.RelationInclude,
 		@Query('albumArtistOnly', new DefaultValuePipe(false), ParseBoolPipe)
-		albumArtistsOnly: boolean = false
+		albumArtistsOnly: boolean = false,
+		@Req() request: Request
 	) {
 		let artists = await this.artistService.getArtists({}, paginationParameters, include);
 		if (albumArtistsOnly) {
@@ -43,7 +46,10 @@ export default class ArtistController {
 					artists = artists.filter((artist) => artist.id != currentArtist.id);
 			}
 		}
-		return artists.map((artist) => this.artistService.buildArtistResponse(artist));
+		return new PaginatedResponse(
+			artists.map((artist) => this.artistService.buildArtistResponse(artist)),
+			request
+		);
 	}
 
 	@Get(':idOrSlug')
@@ -93,12 +99,16 @@ export default class ArtistController {
 		@Param(ParseArtistIdentifierPipe)
 		where: ArtistQueryParameters.WhereInput,
 		@Query('with', AlbumQueryParameters.ParseRelationIncludePipe)
-		include: AlbumQueryParameters.RelationInclude
+		include: AlbumQueryParameters.RelationInclude,
+		@Req() request: Request
 	) {
 		let albums = await this.albumService.getAlbums({
 			byArtist: where
 		}, paginationParameters, include);
-		return albums.map((album) => this.albumService.buildAlbumResponse(album));
+		return new PaginatedResponse(
+			albums.map((album) => this.albumService.buildAlbumResponse(album)),
+			request
+		);
 	}
 
 	@Get(':idOrSlug/songs')
@@ -108,12 +118,16 @@ export default class ArtistController {
 		@Param(ParseArtistIdentifierPipe)
 		where: ArtistQueryParameters.WhereInput,
 		@Query('with', SongQueryParameters.ParseRelationIncludePipe)
-		include: SongQueryParameters.RelationInclude
+		include: SongQueryParameters.RelationInclude,
+		@Req() request: Request
 	) {
 		let songs = await this.songService.getSongs({
 			artist: where
 		}, paginationParameters, include);
-		return songs.map((song) => this.songService.buildSongResponse(song));
+		return new PaginatedResponse(
+			songs.map((song) => this.songService.buildSongResponse(song)),
+			request
+		);
 	}
 
 }

@@ -214,7 +214,7 @@ describe('Library Controller', () => {
 				.get('/libraries')
 				.expect(200)
 				.expect((res) => {
-					const libraries: Library[] = res.body;
+					const libraries: Library[] = res.body.items;
 					expect(libraries.length).toBe(3);
 					expect(libraries.at(0)).toStrictEqual(library1);
 					expect(libraries.at(1)).toStrictEqual(library2);
@@ -227,7 +227,7 @@ describe('Library Controller', () => {
 				.get('/libraries?skip=1&take=1')
 				.expect(200)
 				.expect((res) => {
-					const libraries: Library[] = res.body;
+					const libraries: Library[] = res.body.items;
 					expect(libraries.length).toBe(1);
 					expect(libraries.at(0)).toStrictEqual(library2);
 				});
@@ -238,7 +238,7 @@ describe('Library Controller', () => {
 				.get('/libraries?take=1')
 				.expect(200)
 				.expect((res) => {
-					const libraries: Library[] = res.body;
+					const libraries: Library[] = res.body.items;
 					expect(libraries.length).toBe(1);
 					expect(libraries.at(0)).toStrictEqual(library1);
 				});
@@ -249,7 +249,7 @@ describe('Library Controller', () => {
 				.get('/libraries?take=1&skip=3')
 				.expect(200)
 				.expect((res) => {
-					const libraries: Library[] = res.body;
+					const libraries: Library[] = res.body.items;
 					expect(libraries.length).toBe(0);
 				});
 		});
@@ -261,7 +261,7 @@ describe('Library Controller', () => {
 				.get(`/libraries/${library1.id}/artists`)
 				.expect(200)
 				.expect((res) => {
-					const artists: Artist[] = res.body;
+					const artists: Artist[] = res.body.items;
 					expect(artists.length).toBe(1);
 					expect(artists[0]).toStrictEqual({
 						...artist1,
@@ -275,7 +275,7 @@ describe('Library Controller', () => {
 				.get(`/libraries/${library1.slug}/artists`)
 				.expect(200)
 				.expect((res) => {
-					const artists: Artist[] = res.body;
+					const artists: Artist[] = res.body.items;
 					expect(artists.length).toBe(1);
 					expect(artists[0]).toStrictEqual({
 						...artist1,
@@ -289,7 +289,7 @@ describe('Library Controller', () => {
 				.get(`/libraries/${library1.id}/artists?with=songs`)
 				.expect(200)
 				.expect((res) => {
-					const artists: Artist[] = res.body;
+					const artists: Artist[] = res.body.items;
 					expect(artists.length).toBe(1);
 					expect(artists[0]).toStrictEqual({
 						...artist1,
@@ -313,7 +313,7 @@ describe('Library Controller', () => {
 				.get(`/libraries/${library1.id}/artists?with=albums`)
 				.expect(200)
 				.expect((res) => {
-					const artists: (Artist & { albums: Album[]}) [] = res.body;
+					const artists: (Artist & { albums: Album[]}) [] = res.body.items;
 					expect(artists.length).toBe(1);
 					expect(artists[0].id).toBe(artist1.id);
 					expect(artists[0].albums).toContainEqual({
@@ -341,7 +341,7 @@ describe('Library Controller', () => {
 				.get(`/libraries/${library1.id}/albums?with=releases,artist`)
 				.expect(200)
 				.expect((res) => {
-					const albums: Album[] = res.body;
+					const albums: Album[] = res.body.items;
 					expect(albums.length).toBe(1);
 					expect(albums[0]).toStrictEqual({
 						...album1,
@@ -366,7 +366,7 @@ describe('Library Controller', () => {
 				.get(`/libraries/${library1.slug}/albums`)
 				.expect(200)
 				.expect((res) => {
-					const albums: Album[] = res.body;
+					const albums: Album[] = res.body.items;
 					expect(albums.length).toBe(1);
 					expect(albums[0]).toStrictEqual({
 						...album1,
@@ -387,7 +387,7 @@ describe('Library Controller', () => {
 				.get(`/libraries/${library1.id}/releases?with=tracks,album`)
 				.expect(200)
 				.expect((res) => {
-					const releases: Release[] = res.body;
+					const releases: Release[] = res.body.items;
 					expect(releases.length).toBe(2);
 					expect(releases[0]).toStrictEqual({
 						...release1,
@@ -432,7 +432,7 @@ describe('Library Controller', () => {
 				.get(`/libraries/${library1.id}/tracks?with=song,release`)
 				.expect(200)
 				.expect((res) => {
-					const tracks: Track[] = res.body;
+					const tracks: Track[] = res.body.items;
 					expect(tracks.length).toBe(2);
 					expect(tracks[0]).toStrictEqual({
 						...track1,
@@ -473,7 +473,7 @@ describe('Library Controller', () => {
 				.get(`/libraries/${library1.id}/songs?with=tracks,artist`)
 				.expect(200)
 				.expect((res) => {
-					const songs: Song[] = res.body;
+					const songs: Song[] = res.body.items;
 					expect(songs.length).toBe(2);
 					expect(songs[0]).toStrictEqual({
 						...song1,

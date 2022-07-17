@@ -64,7 +64,7 @@ describe('Album Controller', () => {
 				.get(`/albums`)
 				.expect(200)
 				.expect((res) => {
-					let albums: Album[] = res.body;
+					let albums: Album[] = res.body.items;
 					expect(albums.length).toBe(4);
 					expect(albums[0]).toStrictEqual({
 						...album1,
@@ -89,7 +89,7 @@ describe('Album Controller', () => {
 				.get(`/albums?skip=1&take=2`)
 				.expect(200)
 				.expect((res) => {
-					let albums: Album[] = res.body;
+					let albums: Album[] = res.body.items;
 					expect(albums.length).toBe(2);
 					expect(albums[0]).toStrictEqual({
 						...album2,
@@ -106,7 +106,7 @@ describe('Album Controller', () => {
 				.get(`/albums?with=artist&take=1`)
 				.expect(200)
 				.expect((res) => {
-					let albums: Album[] = res.body;
+					let albums: Album[] = res.body.items;
 					expect(albums.length).toBe(1);
 					expect(albums[0]).toStrictEqual({
 						...album1,
@@ -126,7 +126,7 @@ describe('Album Controller', () => {
 				.get(`/albums/compilations`)
 				.expect(200)
 				.expect((res) => {
-					let albums: Album[] = res.body;
+					let albums: Album[] = res.body.items;
 					expect(albums.length).toBe(1);
 					expect(albums[0]).toStrictEqual({
 						...compilationAlbum,
@@ -263,7 +263,7 @@ describe('Album Controller', () => {
 				.get(`/albums/${album1.id}/releases`)
 				.expect(200)
 				.expect((res) => {
-					let releases: Release[] = res.body;
+					let releases: Release[] = res.body.items;
 					expect(releases.length).toBe(2);
 					expect(releases[0]).toStrictEqual({
 						...release1,
@@ -280,7 +280,7 @@ describe('Album Controller', () => {
 				.get(`/albums/${artist.slug}+${album1.slug}/releases`)
 				.expect(200)
 				.expect((res) => {
-					let releases: Release[] = res.body;
+					let releases: Release[] = res.body.items;
 					expect(releases.length).toBe(2);
 					expect(releases[0]).toStrictEqual({
 						...release1,
@@ -297,7 +297,7 @@ describe('Album Controller', () => {
 				.get(`/albums/${album1.id}/releases?take=1`)
 				.expect(200)
 				.expect((res) => {
-					let releases: Release[] = res.body;
+					let releases: Release[] = res.body.items;
 					expect(releases.length).toBe(1);
 					expect(releases[0]).toStrictEqual({
 						...release1,
@@ -315,7 +315,7 @@ describe('Album Controller', () => {
 				.get(`/albums/${album1.id}/releases?skip=1&with=tracks,album`)
 				.expect(200)
 				.expect((res) => {
-					let releases: Release[] = res.body;
+					let releases: Release[] = res.body.items;
 					expect(releases.length).toBe(1);
 					expect(releases[0]).toStrictEqual({
 						...release2,

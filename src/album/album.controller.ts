@@ -1,4 +1,4 @@
-import { Controller, forwardRef, Get, Inject, Param, Query, Response } from '@nestjs/common';
+import { Controller, forwardRef, Get, Inject, Param, Query, Req, Response } from '@nestjs/common';
 import IllustrationService from 'src/illustration/illustration.service';
 import type { PaginationParameters } from 'src/pagination/models/pagination-parameters';
 import ParsePaginationParameterPipe from 'src/pagination/pagination.pipe';
@@ -9,7 +9,8 @@ import compilationAlbumArtistKeyword from 'src/utils/compilation';
 import ParseAlbumIdentifierPipe from './album.pipe';
 import AlbumService from './album.service';
 import AlbumQueryParameters from './models/album.query-parameters';
-
+import type { Request } from 'express';
+import PaginatedResponse from 'src/pagination/models/paginated-response';
 
 @Controller('albums')
 export default class AlbumController {
@@ -27,10 +28,14 @@ export default class AlbumController {
 		@Query(ParsePaginationParameterPipe)
 		paginationParameters: PaginationParameters,
 		@Query('with', AlbumQueryParameters.ParseRelationIncludePipe)
-		include: AlbumQueryParameters.RelationInclude
+		include: AlbumQueryParameters.RelationInclude,
+		@Req() request: Request
 	) {
 		const albums = await this.albumService.getAlbums({}, paginationParameters, include);
-		return albums.map((album) => this.albumService.buildAlbumResponse(album));
+		return new PaginatedResponse(
+			albums.map((album) => this.albumService.buildAlbumResponse(album)),
+			request
+		);
 	}
 
 	@Get(`${compilationAlbumArtistKeyword}`)
@@ -38,10 +43,14 @@ export default class AlbumController {
 		@Query(ParsePaginationParameterPipe)
 		paginationParameters: PaginationParameters,
 		@Query('with', AlbumQueryParameters.ParseRelationIncludePipe)
-		include: AlbumQueryParameters.RelationInclude
+		include: AlbumQueryParameters.RelationInclude,
+		@Req() request: Request
 	) {
 		const albums = await this.albumService.getAlbums({ byArtist: null }, paginationParameters, include);
-		return albums.map((album) => this.albumService.buildAlbumResponse(album));
+		return new PaginatedResponse(
+			albums.map((album) => this.albumService.buildAlbumResponse(album)),
+			request
+		);
 	}
 
 	@Get(':idOrSlug')
@@ -73,10 +82,14 @@ export default class AlbumController {
 		@Query('with', ReleaseQueryParameters.ParseRelationIncludePipe)
 		include: ReleaseQueryParameters.RelationInclude,
 		@Param(ParseAlbumIdentifierPipe)
-		where: AlbumQueryParameters.WhereInput
+		where: AlbumQueryParameters.WhereInput,
+		@Req() request: Request
 	) {
 		let releases = await this.releaseService.getAlbumReleases(where, paginationParameters, include);
-		return releases.map((release) => this.releaseService.buildReleaseResponse(release));
+		return new PaginatedResponse(
+			releases.map((release) => this.releaseService.buildReleaseResponse(release)),
+			request
+		);
 	}
 
 	@Get(':idOrSlug/illustration')

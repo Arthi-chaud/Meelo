@@ -1,4 +1,4 @@
-import { Body, Controller, forwardRef, Get, Inject, Param, Post, Query, Response } from '@nestjs/common';
+import { Body, Controller, forwardRef, Get, Inject, Param, Post, Query, Req, Response } from '@nestjs/common';
 import ParsePaginationParameterPipe from 'src/pagination/pagination.pipe';
 import type { PaginationParameters } from 'src/pagination/models/pagination-parameters';
 import ReleaseQueryParameters from './models/release.query-parameters';
@@ -11,6 +11,8 @@ import Slug from 'src/slug/slug';
 import type { IllustrationDownloadDto } from 'src/illustration/models/illustration-dl.dto';
 import AlbumQueryParameters from 'src/album/models/album.query-parameters';
 import ParseReleaseIdentifierPipe from './release.pipe';
+import type { Request } from 'express';
+import PaginatedResponse from 'src/pagination/models/paginated-response';
 
 
 @Controller('releases')
@@ -31,11 +33,15 @@ export default class ReleaseController {
 		@Query(ParsePaginationParameterPipe)
 		paginationParameters: PaginationParameters,
 		@Query('with', ReleaseQueryParameters.ParseRelationIncludePipe)
-		include: ReleaseQueryParameters.RelationInclude
+		include: ReleaseQueryParameters.RelationInclude,
+		@Req() request: Request
 	) {
 		const releases = await this.releaseService.getReleases({}, paginationParameters, include);
-		return releases.map(
-			(release) => this.releaseService.buildReleaseResponse(release)
+		return new PaginatedResponse(
+			releases.map(
+				(release) => this.releaseService.buildReleaseResponse(release)
+			),
+			request
 		);
 	}
 
@@ -57,15 +63,19 @@ export default class ReleaseController {
 		@Query('with', TrackQueryParameters.ParseRelationIncludePipe)
 		include: TrackQueryParameters.RelationInclude,
 		@Param(ParseReleaseIdentifierPipe)
-		where: ReleaseQueryParameters.WhereInput
+		where: ReleaseQueryParameters.WhereInput,
+		@Req() request: Request
 	) {
 		const tracks = await this.trackService.getTracks({
 			byRelease: where
 		}, paginationParameters, include);
 		if (tracks.length == 0)
 			await this.releaseService.getRelease(where);
-		return tracks.map(
-			(track) => this.trackService.buildTrackResponse(track)
+		return new PaginatedResponse(
+			tracks.map(
+				(track) => this.trackService.buildTrackResponse(track)
+			),
+			request
 		);
 	}
 

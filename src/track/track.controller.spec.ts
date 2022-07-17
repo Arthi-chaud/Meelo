@@ -134,7 +134,7 @@ describe('Song Controller', () => {
 				.get(`/tracks`)
 				.expect(200)
 				.expect((res) => {
-					let tracks: Track[] = res.body;
+					let tracks: Track[] = res.body.items;
 					expect(tracks.length).toBe(2);
 					expect(tracks[0]).toStrictEqual({
 						...track1,
@@ -151,7 +151,7 @@ describe('Song Controller', () => {
 				.get(`/tracks?skip=1`)
 				.expect(200)
 				.expect((res) => {
-					let tracks: Track[] = res.body;
+					let tracks: Track[] = res.body.items;
 					expect(tracks.length).toBe(1);
 					expect(tracks[0]).toStrictEqual({
 						...track2,
@@ -164,7 +164,7 @@ describe('Song Controller', () => {
 				.get(`/tracks?take=1&with=song`)
 				.expect(200)
 				.expect((res) => {
-					let tracks: Track[] = res.body;
+					let tracks: Track[] = res.body.items;
 					expect(tracks.length).toBe(1);
 					expect(tracks[0]).toStrictEqual({
 						...track1,

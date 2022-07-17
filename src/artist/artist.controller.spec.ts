@@ -73,7 +73,7 @@ describe('Artist Controller', () => {
 				.get(`/artists`)
 				.expect(200)
 				.expect((res) => {
-					let artists: Artist[] = res.body;
+					let artists: Artist[] = res.body.items;
 					expect(artists.length).toBe(3);
 					expect(artists[0]).toStrictEqual({
 						...artist1,
@@ -94,7 +94,7 @@ describe('Artist Controller', () => {
 				.get(`/artists?albumArtistOnly=true`)
 				.expect(200)
 				.expect((res) => {
-					let artists: Artist[] = res.body;
+					let artists: Artist[] = res.body.items;
 					expect(artists.length).toBe(1);
 					expect(artists[0]).toStrictEqual({
 						...artist1,
@@ -107,7 +107,7 @@ describe('Artist Controller', () => {
 				.get(`/artists?skip=1&take=1`)
 				.expect(200)
 				.expect((res) => {
-					let artists: Artist[] = res.body;
+					let artists: Artist[] = res.body.items;
 					expect(artists.length).toBe(1);
 					expect(artists[0]).toStrictEqual({
 						...artist2,
@@ -120,7 +120,7 @@ describe('Artist Controller', () => {
 				.get(`/artists?with=albums`)
 				.expect(200)
 				.expect((res) => {
-					let artists: Artist[] = res.body;
+					let artists: Artist[] = res.body.items;
 					expect(artists.length).toBe(3);
 					expect(artists[0]).toStrictEqual({
 						...artist1,
@@ -214,7 +214,7 @@ describe('Artist Controller', () => {
 				.get(`/artists/${artist1.id}/songs`)
 				.expect(200)
 				.expect((res) => {
-					let songs: Song[] = res.body;
+					let songs: Song[] = res.body.items;
 					expect(songs.length).toBe(2);
 					expect(songs[0]).toStrictEqual({
 						...song1,
@@ -231,7 +231,7 @@ describe('Artist Controller', () => {
 				.get(`/artists/${artist1.id}/songs?skip=1`)
 				.expect(200)
 				.expect((res) => {
-					let songs: Song[] = res.body;
+					let songs: Song[] = res.body.items;
 					expect(songs.length).toBe(1);
 					expect(songs[0]).toStrictEqual({
 						...song2,
@@ -244,7 +244,7 @@ describe('Artist Controller', () => {
 				.get(`/artists/${artist1.id}/songs?with=tracks`)
 				.expect(200)
 				.expect((res) => {
-					let songs: Song[] = res.body;
+					let songs: Song[] = res.body.items;
 					expect(songs.length).toBe(2);
 					expect(songs[0]).toStrictEqual({
 						...song1,
@@ -266,7 +266,7 @@ describe('Artist Controller', () => {
 				.get(`/artists/${artist1.id}/albums`)
 				.expect(200)
 				.expect((res) => {
-					let albums: Album[] = res.body;
+					let albums: Album[] = res.body.items;
 					expect(albums.length).toBe(2);
 					expect(albums[0]).toStrictEqual({
 						...album1,
@@ -283,7 +283,7 @@ describe('Artist Controller', () => {
 				.get(`/artists/${artist1.id}/albums?take=1`)
 				.expect(200)
 				.expect((res) => {
-					let albums: Album[] = res.body;
+					let albums: Album[] = res.body.items;
 					expect(albums.length).toBe(1);
 					expect(albums[0]).toStrictEqual({
 						...album1,
@@ -296,7 +296,7 @@ describe('Artist Controller', () => {
 				.get(`/artists/${artist1.id}/albums?with=releases`)
 				.expect(200)
 				.expect((res) => {
-					let albums: Album[] = res.body;
+					let albums: Album[] = res.body.items;
 					expect(albums.length).toBe(2);
 					expect(albums[0]).toStrictEqual({
 						...album1,
