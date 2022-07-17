@@ -1,7 +1,9 @@
-import { Controller, forwardRef, Get, Inject, Param, Query, Redirect } from '@nestjs/common';
+import { Controller, forwardRef, Get, Inject, Param, Query, Redirect, Req } from '@nestjs/common';
+import type { Request } from 'express';
 import { UrlGeneratorService } from 'nestjs-url-generator';
 import ArtistService from 'src/artist/artist.service';
 import ArtistQueryParameters from 'src/artist/models/artist.query-parameters';
+import PaginatedResponse from 'src/pagination/models/paginated-response';
 import type { PaginationParameters } from 'src/pagination/models/pagination-parameters';
 import ParsePaginationParameterPipe from 'src/pagination/pagination.pipe';
 import TrackQueryParameters from 'src/track/models/track.query-parameters';
@@ -30,10 +32,14 @@ export class SongController {
 		@Query(ParsePaginationParameterPipe)
 		paginationParameters: PaginationParameters,
 		@Query('with', SongQueryParameters.ParseRelationIncludePipe)
-		include: SongQueryParameters.RelationInclude
+		include: SongQueryParameters.RelationInclude,
+		@Req() request: Request
 	) {
 		let songs = await this.songService.getSongs({}, paginationParameters, include);
-		return songs.map((song) => this.songService.buildSongResponse(song));
+		return new PaginatedResponse(
+			songs.map((song) => this.songService.buildSongResponse(song)),
+			request
+		);
 	}
 
 	@Get(':idOrSlug')
@@ -79,12 +85,16 @@ export class SongController {
 		@Query('with', TrackQueryParameters.ParseRelationIncludePipe)
 		include: TrackQueryParameters.RelationInclude,
 		@Param(ParseSongIdentifierPipe)
-		where: SongQueryParameters.WhereInput
+		where: SongQueryParameters.WhereInput,
+		@Req() request: Request
 	) {
 		let tracks = await this.trackService.getSongTracks(where, paginationParameters, include);
 		if (tracks.length == 0)
 			await this.songService.getSong(where);
-		return tracks.map((track) => this.trackService.buildTrackResponse(track));
+		return new PaginatedResponse(
+			tracks.map((track) => this.trackService.buildTrackResponse(track)),
+			request
+		);
 	}
 
 	@Get(':idOrSlug/illustration')

@@ -134,7 +134,7 @@ describe('Song Controller', () => {
 				.get(`/songs`)
 				.expect(200)
 				.expect((res) => {
-					let songs: Song[] = res.body
+					let songs: Song[] = res.body.items
 					expect(songs.length).toBe(2);
 					expect(songs[0]).toStrictEqual({
 						...song1,
@@ -151,7 +151,7 @@ describe('Song Controller', () => {
 				.get(`/songs?skip=1`)
 				.expect(200)
 				.expect((res) => {
-					let songs: Song[] = res.body
+					let songs: Song[] = res.body.items
 					expect(songs.length).toBe(1);
 					expect(songs[0]).toStrictEqual({
 						...song2,
@@ -164,7 +164,7 @@ describe('Song Controller', () => {
 				.get(`/songs?with=tracks`)
 				.expect(200)
 				.expect((res) => {
-					let songs: Song[] = res.body
+					let songs: Song[] = res.body.items
 					expect(songs.length).toBe(2);
 					expect(songs[0]).toStrictEqual({
 						...song1,
@@ -189,7 +189,7 @@ describe('Song Controller', () => {
 				.get(`/songs?skip=1&with=artist`)
 				.expect(200)
 				.expect((res) => {
-					let songs: Song[] = res.body
+					let songs: Song[] = res.body.items
 					expect(songs.length).toBe(1);
 					expect(songs[0]).toStrictEqual({
 						...song2,
@@ -313,7 +313,7 @@ describe('Song Controller', () => {
 				.get(`/songs/${song2.id}/tracks`)
 				.expect(200)
 				.expect((res) => {
-					let tracks: Track[] = res.body;
+					let tracks: Track[] = res.body.items;
 					expect(tracks.length).toBe(1);
 					expect(tracks[0]).toStrictEqual({
 						...track2,
@@ -326,7 +326,7 @@ describe('Song Controller', () => {
 				.get(`/songs/${song1.id}/tracks?take=1`)
 				.expect(200)
 				.expect((res) => {
-					let tracks: Track[] = res.body;
+					let tracks: Track[] = res.body.items;
 					expect(tracks.length).toBe(1);
 					expect(tracks[0]).toStrictEqual({
 						...track1,
@@ -339,7 +339,7 @@ describe('Song Controller', () => {
 				.get(`/songs/${song2.id}/tracks?with=song`)
 				.expect(200)
 				.expect((res) => {
-					let tracks: Track[] = res.body;
+					let tracks: Track[] = res.body.items;
 					expect(tracks.length).toBe(1);
 					expect(tracks[0]).toStrictEqual({
 						...track2,
