@@ -1,4 +1,5 @@
 import { Controller, forwardRef, Get, Inject, Param, Query, Response } from '@nestjs/common';
+import { ApiBody, ApiTags } from '@nestjs/swagger';
 import IllustrationService from 'src/illustration/illustration.service';
 import type { PaginationParameters } from 'src/pagination/models/pagination-parameters';
 import ParsePaginationParameterPipe from 'src/pagination/pagination.pipe';
@@ -10,7 +11,7 @@ import ParseAlbumIdentifierPipe from './album.pipe';
 import AlbumService from './album.service';
 import AlbumQueryParameters from './models/album.query-parameters';
 
-
+@ApiTags('Albums')
 @Controller('albums')
 export default class AlbumController {
 	constructor(
@@ -22,6 +23,9 @@ export default class AlbumController {
 
 	) {}
 
+	@ApiBody({
+		description: 'Get all albums (compilations included)',
+	})
 	@Get()
 	async getAlbums(
 		@Query(ParsePaginationParameterPipe)
@@ -33,6 +37,9 @@ export default class AlbumController {
 		return albums.map((album) => this.albumService.buildAlbumResponse(album));
 	}
 
+	@ApiBody({
+		description: 'Get all compilation albums',
+	})
 	@Get(`${compilationAlbumArtistKeyword}`)
 	async getCompilationsAlbums(
 		@Query(ParsePaginationParameterPipe)
@@ -44,6 +51,9 @@ export default class AlbumController {
 		return albums.map((album) => this.albumService.buildAlbumResponse(album));
 	}
 
+	@ApiBody({
+		description: 'Get a single album',
+	})
 	@Get(':idOrSlug')
 	async getAlbum(
 		@Query('with', AlbumQueryParameters.ParseRelationIncludePipe)
@@ -55,6 +65,9 @@ export default class AlbumController {
 		return this.albumService.buildAlbumResponse(album);
 	}
 
+	@ApiBody({
+		description: 'Get an album\'s master release',
+	})
 	@Get(':idOrSlug/master')
 	async getAlbumMaster(
 		@Query('with', ReleaseQueryParameters.ParseRelationIncludePipe)
@@ -66,6 +79,9 @@ export default class AlbumController {
 		return this.releaseService.buildReleaseResponse(masterRelease);
 	}
 
+	@ApiBody({
+		description: 'Get all releases from an album',
+	})
 	@Get(':idOrSlug/releases')
 	async getAlbumReleases(
 		@Query(ParsePaginationParameterPipe)
@@ -79,6 +95,9 @@ export default class AlbumController {
 		return releases.map((release) => this.releaseService.buildReleaseResponse(release));
 	}
 
+	@ApiBody({
+		description: 'Get an album\'s illustration',
+	})
 	@Get(':idOrSlug/illustration')
 	async getAlbumIllustration(
 		@Param(ParseAlbumIdentifierPipe)
