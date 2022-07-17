@@ -1,13 +1,15 @@
-import { Controller, Get, Query, Param, Response, Post, Body, Inject, forwardRef } from '@nestjs/common';
+import { Controller, Get, Query, Param, Response, Post, Body, Inject, forwardRef, Req } from '@nestjs/common';
 import AlbumService from 'src/album/album.service';
 import { ParseIdPipe } from 'src/identifier/id.pipe';
 import IllustrationService from 'src/illustration/illustration.service';
 import type { IllustrationDownloadDto } from 'src/illustration/models/illustration-dl.dto';
+import PaginatedResponse from 'src/pagination/models/paginated-response';
 import type { PaginationParameters } from 'src/pagination/models/pagination-parameters';
 import ParsePaginationParameterPipe from 'src/pagination/pagination.pipe';
 import Slug from 'src/slug/slug';
 import TrackQueryParameters from './models/track.query-parameters';
 import TrackService from './track.service';
+import type { Request } from 'express';
 
 @Controller('tracks')
 export class TrackController {
@@ -25,10 +27,14 @@ export class TrackController {
 		@Query(ParsePaginationParameterPipe)
 		paginationParameters: PaginationParameters,
 		@Query('with', TrackQueryParameters.ParseRelationIncludePipe)
-		include: TrackQueryParameters.RelationInclude
+		include: TrackQueryParameters.RelationInclude,
+		@Req() request: Request
 	) {
 		const tracks = await this.trackService.getTracks({}, paginationParameters, include);
-		return tracks.map((track) => this.trackService.buildTrackResponse(track));
+		return new PaginatedResponse(
+			tracks.map((track) => this.trackService.buildTrackResponse(track)),
+			request
+		);
 	}
 
 	@Get(':id')
