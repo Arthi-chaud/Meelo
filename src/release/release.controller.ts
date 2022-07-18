@@ -34,9 +34,13 @@ export default class ReleaseController {
 		paginationParameters: PaginationParameters,
 		@Query('with', ReleaseQueryParameters.ParseRelationIncludePipe)
 		include: ReleaseQueryParameters.RelationInclude,
+		@Query(ReleaseQueryParameters.ParseSortingParameterPipe)
+		sortingParameter: ReleaseQueryParameters.SortingParameter,
 		@Req() request: Request
 	) {
-		const releases = await this.releaseService.getReleases({}, paginationParameters, include);
+		const releases = await this.releaseService.getReleases(
+			{}, paginationParameters, include, sortingParameter
+		);
 		return new PaginatedResponse(
 			releases.map(
 				(release) => this.releaseService.buildReleaseResponse(release)
@@ -64,11 +68,13 @@ export default class ReleaseController {
 		include: TrackQueryParameters.RelationInclude,
 		@Param(ParseReleaseIdentifierPipe)
 		where: ReleaseQueryParameters.WhereInput,
+		@Query(TrackQueryParameters.ParseSortingParameterPipe)
+		sortingParameter: TrackQueryParameters.SortingParameter,
 		@Req() request: Request
 	) {
-		const tracks = await this.trackService.getTracks({
-			byRelease: where
-		}, paginationParameters, include);
+		const tracks = await this.trackService.getTracks(
+			{ byRelease: where }, paginationParameters, include, sortingParameter
+		);
 		if (tracks.length == 0)
 			await this.releaseService.getRelease(where);
 		return new PaginatedResponse(

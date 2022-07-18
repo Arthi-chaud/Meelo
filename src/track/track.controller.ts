@@ -28,9 +28,13 @@ export class TrackController {
 		paginationParameters: PaginationParameters,
 		@Query('with', TrackQueryParameters.ParseRelationIncludePipe)
 		include: TrackQueryParameters.RelationInclude,
+		@Query(TrackQueryParameters.ParseSortingParameterPipe)
+		sortingParameter: TrackQueryParameters.SortingParameter,
 		@Req() request: Request
 	) {
-		const tracks = await this.trackService.getTracks({}, paginationParameters, include);
+		const tracks = await this.trackService.getTracks(
+			{}, paginationParameters, include, sortingParameter
+		);
 		return new PaginatedResponse(
 			tracks.map((track) => this.trackService.buildTrackResponse(track)),
 			request

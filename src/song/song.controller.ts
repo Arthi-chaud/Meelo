@@ -33,9 +33,13 @@ export class SongController {
 		paginationParameters: PaginationParameters,
 		@Query('with', SongQueryParameters.ParseRelationIncludePipe)
 		include: SongQueryParameters.RelationInclude,
+		@Query(SongQueryParameters.ParseSortingParameterPipe)
+		sortingParameter: SongQueryParameters.SortingParameter,
 		@Req() request: Request
 	) {
-		let songs = await this.songService.getSongs({}, paginationParameters, include);
+		let songs = await this.songService.getSongs(
+			{}, paginationParameters, include, sortingParameter
+		);
 		return new PaginatedResponse(
 			songs.map((song) => this.songService.buildSongResponse(song)),
 			request
@@ -86,9 +90,13 @@ export class SongController {
 		include: TrackQueryParameters.RelationInclude,
 		@Param(ParseSongIdentifierPipe)
 		where: SongQueryParameters.WhereInput,
+		@Query(TrackQueryParameters.ParseSortingParameterPipe)
+		sortingParameter: TrackQueryParameters.SortingParameter,
 		@Req() request: Request
 	) {
-		let tracks = await this.trackService.getSongTracks(where, paginationParameters, include);
+		let tracks = await this.trackService.getSongTracks(
+			where, paginationParameters, include, sortingParameter
+		);
 		if (tracks.length == 0)
 			await this.songService.getSong(where);
 		return new PaginatedResponse(

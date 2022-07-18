@@ -1,4 +1,4 @@
-import type { Album, Prisma } from "@prisma/client";
+import { Album, Prisma } from "@prisma/client";
 import ArtistQueryParameters from "src/artist/models/artist.query-parameters";
 import type LibraryQueryParameters from "src/library/models/library.query-parameters";
 import type Slug from "src/slug/slug"
@@ -12,6 +12,8 @@ import { buildStringSearchParameters, SearchStringInput } from "src/utils/search
 import type { RelationInclude as BaseRelationInclude } from "src/relation-include/models/relation-include" ;
 import ReleaseQueryParameters from "src/release/models/release.query-parameters";
 import ParseBaseRelationIncludePipe from 'src/relation-include/relation-include.pipe';
+import type BaseSortingParameter from 'src/sort/models/sorting-parameter';
+import ParseBaseSortingParameterPipe from 'src/sort/sort.pipe';
 
 namespace AlbumQueryParameters {
 
@@ -100,6 +102,13 @@ namespace AlbumQueryParameters {
 	export const AvailableIncludes = ['releases', 'artist'] as const;
 	export type RelationInclude = BaseRelationInclude<typeof AvailableIncludes>;
 	export const ParseRelationIncludePipe = new ParseBaseRelationIncludePipe(AvailableIncludes);
+
+	/**
+	 * Defines how to sort fetched entries
+	 */
+	export const AvailableFields = Object.values(Prisma.AlbumScalarFieldEnum);
+	export type SortingParameter = BaseSortingParameter<Prisma.AlbumScalarFieldEnum>;
+	export const ParseSortingParameterPipe = new ParseBaseSortingParameterPipe(AvailableFields);
 
 	/**
 	 * Build the query parameters for ORM to include relations

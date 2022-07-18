@@ -78,16 +78,16 @@ describe('Library Controller', () => {
 		);
 		app.useGlobalPipes(new ValidationPipe());
 		await app.init();
+		library2 = await libraryService.createLibrary({
+			name: 'My Library 2',
+			path: "a"
+		});
 
 		library1 = await libraryService.createLibrary({
 			name: 'My Library 1',
 			path: ""
 		});
 
-		library2 = await libraryService.createLibrary({
-			name: 'My Library 2',
-			path: "a"
-		});
 
 		artist1 = await artistService.createArtist({ name: 'My Artist 1' });
 
@@ -97,8 +97,8 @@ describe('Library Controller', () => {
 		song1 = await songService.createSong({ name: 'My Song 1', artist: { id: artist1.id } });
 		song2 = await songService.createSong({ name: 'My Song 2', artist: { id: artist1.id } });
 
-		release1 = await releaseService.createRelease({ title: 'My Release 1', master: true, album: { byId: { id: album1.id } } });
 		release2 = await releaseService.createRelease({ title: 'My Release 2', master: false, album: { byId: { id: album1.id } } });
+		release1 = await releaseService.createRelease({ title: 'My Release 1', master: true, album: { byId: { id: album1.id } } });
 		
 		file1 = await fileService.createFile({
 			path: "a",
@@ -216,6 +216,19 @@ describe('Library Controller', () => {
 				.expect((res) => {
 					const libraries: Library[] = res.body.items;
 					expect(libraries.length).toBe(3);
+					expect(libraries.at(1)).toStrictEqual(library1);
+					expect(libraries.at(0)).toStrictEqual(library2);
+					expect(libraries.at(2)?.slug).toBe('my-library-3');
+				});
+		});
+
+		it("should get all the libraries, sorted by name", async () => {
+			return request(app.getHttpServer())
+				.get('/libraries?sortBy=name')
+				.expect(200)
+				.expect((res) => {
+					const libraries: Library[] = res.body.items;
+					expect(libraries.length).toBe(3);
 					expect(libraries.at(0)).toStrictEqual(library1);
 					expect(libraries.at(1)).toStrictEqual(library2);
 					expect(libraries.at(2)?.slug).toBe('my-library-3');
@@ -229,7 +242,7 @@ describe('Library Controller', () => {
 				.expect((res) => {
 					const libraries: Library[] = res.body.items;
 					expect(libraries.length).toBe(1);
-					expect(libraries.at(0)).toStrictEqual(library2);
+					expect(libraries.at(0)).toStrictEqual(library1);
 				});
 		});
 
@@ -240,7 +253,7 @@ describe('Library Controller', () => {
 				.expect((res) => {
 					const libraries: Library[] = res.body.items;
 					expect(libraries.length).toBe(1);
-					expect(libraries.at(0)).toStrictEqual(library1);
+					expect(libraries.at(0)).toStrictEqual(library2);
 				});
 		});
 
@@ -336,9 +349,9 @@ describe('Library Controller', () => {
 	});
 
 	describe('Get all Related Albums (GET /libraries/:id/albums)', () => {
-		it("should return every albums w/ releases & artist", () => {
+		it("should return every albums w/ artist", () => {
 			return request(app.getHttpServer())
-				.get(`/libraries/${library1.id}/albums?with=releases,artist`)
+				.get(`/libraries/${library1.id}/albums?with=artist`)
 				.expect(200)
 				.expect((res) => {
 					const albums: Album[] = res.body.items;
@@ -346,13 +359,6 @@ describe('Library Controller', () => {
 					expect(albums[0]).toStrictEqual({
 						...album1,
 						illustration: `http://meelo.com/albums/${album1.id}/illustration`,
-						releases: [{
-							...release1,
-							illustration: `http://meelo.com/releases/${release1.id}/illustration`
-						}, {
-							...release2,
-							illustration: `http://meelo.com/releases/${release2.id}/illustration`
-						}],
 						artist: {
 							...artist1,
 							illustration: `http://meelo.com/artists/${artist1.id}/illustration`,
@@ -390,6 +396,20 @@ describe('Library Controller', () => {
 					const releases: Release[] = res.body.items;
 					expect(releases.length).toBe(2);
 					expect(releases[0]).toStrictEqual({
+						...release2,
+						illustration: `http://meelo.com/releases/${release2.id}/illustration`,
+						album: {
+							...album1,
+							illustration: `http://meelo.com/albums/${album1.id}/illustration`,
+						},
+						tracks: [
+							{
+								...track2,
+								illustration: `http://meelo.com/tracks/${track2.id}/illustration`
+							},
+						]
+					});
+					expect(releases[1]).toStrictEqual({
 						...release1,
 						illustration: `http://meelo.com/releases/${release1.id}/illustration`,
 						album: {
@@ -403,19 +423,22 @@ describe('Library Controller', () => {
 							},
 						]
 					});
+				});
+		});
+		it("should return every releases, sorted by name", () => {
+			return request(app.getHttpServer())
+				.get(`/libraries/${library1.id}/releases?sortBy=title`)
+				.expect(200)
+				.expect((res) => {
+					const releases: Release[] = res.body.items;
+					expect(releases.length).toBe(2);
+					expect(releases[0]).toStrictEqual({
+						...release1,
+						illustration: `http://meelo.com/releases/${release1.id}/illustration`,
+					});
 					expect(releases[1]).toStrictEqual({
 						...release2,
 						illustration: `http://meelo.com/releases/${release2.id}/illustration`,
-						album: {
-							...album1,
-							illustration: `http://meelo.com/albums/${album1.id}/illustration`,
-						},
-						tracks: [
-							{
-								...track2,
-								illustration: `http://meelo.com/tracks/${track2.id}/illustration`
-							},
-						]
 					});
 				});
 		});

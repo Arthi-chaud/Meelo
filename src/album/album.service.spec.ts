@@ -120,6 +120,28 @@ describe('Album Service', () => {
 		});
 	});
 
+	describe('Get albums', () => {
+		it("should find all the albums", async () => {
+			let albums = await albumService.getAlbums({});
+			expect(albums.length).toBe(2);
+			expect(albums[0].slug).toBe('my-album');
+			expect(albums[1].slug).toBe('my-album-live');
+		});
+
+		it("should find some albums w/ pagination", async () => {
+			let albums = await albumService.getAlbums({}, { take: 1 });
+			expect(albums.length).toBe(1);
+			expect(albums[0].slug).toBe('my-album');
+		});
+
+		it("should sort the albums", async () => {
+			let albums = await albumService.getAlbums({}, {}, {}, { name: 'desc' });
+			expect(albums.length).toBe(2);
+			expect(albums[1].slug).toBe('my-album');
+			expect(albums[0].slug).toBe('my-album-live');
+		});
+	});
+
 	describe('Get an album', () => {
 		it("should find the album (w/o artist, but included)", async () => {
 			let album = await albumService.getAlbum(

@@ -32,11 +32,15 @@ export default class ArtistController {
 		paginationParameters: PaginationParameters,
 		@Query('with', ArtistQueryParameters.ParseRelationIncludePipe)
 		include: ArtistQueryParameters.RelationInclude,
+		@Query(ArtistQueryParameters.ParseSortingParameterPipe)
+		sortingParameter: ArtistQueryParameters.SortingParameter,
 		@Query('albumArtistOnly', new DefaultValuePipe(false), ParseBoolPipe)
 		albumArtistsOnly: boolean = false,
 		@Req() request: Request
 	) {
-		let artists = await this.artistService.getArtists({}, paginationParameters, include);
+		let artists = await this.artistService.getArtists(
+			{}, paginationParameters, include, sortingParameter
+		);
 		if (albumArtistsOnly) {
 			for (const currentArtist of artists) {
 				const albumCount = await this.albumService.countAlbums({
@@ -98,13 +102,15 @@ export default class ArtistController {
 		paginationParameters: PaginationParameters,
 		@Param(ParseArtistIdentifierPipe)
 		where: ArtistQueryParameters.WhereInput,
+		@Query(AlbumQueryParameters.ParseSortingParameterPipe)
+		sortingParameter: AlbumQueryParameters.SortingParameter,
 		@Query('with', AlbumQueryParameters.ParseRelationIncludePipe)
 		include: AlbumQueryParameters.RelationInclude,
 		@Req() request: Request
 	) {
-		let albums = await this.albumService.getAlbums({
-			byArtist: where
-		}, paginationParameters, include);
+		let albums = await this.albumService.getAlbums(
+			{ byArtist: where }, paginationParameters, include, sortingParameter
+		);
 		return new PaginatedResponse(
 			albums.map((album) => this.albumService.buildAlbumResponse(album)),
 			request
@@ -117,13 +123,15 @@ export default class ArtistController {
 		paginationParameters: PaginationParameters,
 		@Param(ParseArtistIdentifierPipe)
 		where: ArtistQueryParameters.WhereInput,
+		@Query(SongQueryParameters.ParseSortingParameterPipe)
+		sortingParameter: SongQueryParameters.SortingParameter,
 		@Query('with', SongQueryParameters.ParseRelationIncludePipe)
 		include: SongQueryParameters.RelationInclude,
 		@Req() request: Request
 	) {
-		let songs = await this.songService.getSongs({
-			artist: where
-		}, paginationParameters, include);
+		let songs = await this.songService.getSongs(
+			{ artist: where }, paginationParameters, include, sortingParameter
+		);
 		return new PaginatedResponse(
 			songs.map((song) => this.songService.buildSongResponse(song)),
 			request

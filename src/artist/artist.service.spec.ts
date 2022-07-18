@@ -37,6 +37,14 @@ describe('Artist Service', () => {
 			expect(artist.name).toBe(artistName);
 			expect(artist.slug).toBe('my-name');
 			expect(artist.id).toBeDefined();
+		});
+
+		it(('should create a second artist'), async () => {
+			let artist = await artistService.createArtist({ name: 'My Artist 2' });
+			expect(artist.songs).toBeUndefined();
+			expect(artist.albums).toBeUndefined();
+			expect(artist.slug).toBe('my-artist-2');
+			expect(artist.id).toBeDefined();
 		})
 	
 		it(('should throw as artist already exists'), () => {
@@ -70,6 +78,22 @@ describe('Artist Service', () => {
 		})
 	});
 
+	describe('Get Artists', () => {
+		it(('should return all artists'), async () => {
+			let artists = await artistService.getArtists({ });
+			expect(artists.length).toBe(2);
+			expect(artists[0].slug).toBe('my-name');
+			expect(artists[1].slug).toBe('my-artist-2');
+		});
+
+		it(('should return all artists, sorted by name'), async () => {
+			let artists = await artistService.getArtists({}, {}, {}, { name: 'asc' });
+			expect(artists.length).toBe(2);
+			expect(artists[0].slug).toBe('my-artist-2');
+			expect(artists[1].slug).toBe('my-name');
+		})
+	});
+
 	describe('Get or Create Artist', () => {
 		it(('should get the existing artist'), async () => {
 			let artist = await artistService.getArtist({ slug: new Slug(artistName) });
@@ -94,7 +118,7 @@ describe('Artist Service', () => {
 	describe("Count Artist", () => {
 		it("should count the artist count", async () => {
 			let artistCount = await artistService.countArtists({});
-			expect(artistCount).toBe(2);
+			expect(artistCount).toBe(3);
 		})
 
 		it("should count the artists by name (starts with)", async () => {

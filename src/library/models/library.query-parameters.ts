@@ -1,4 +1,4 @@
-import type { Library, Prisma } from "@prisma/client";
+import { Library, Prisma } from "@prisma/client";
 import type Slug from "src/slug/slug";
 import type OmitId from "src/utils/omit-id";
 import type OmitSlug from "src/utils/omit-slug";
@@ -6,6 +6,8 @@ import type RequireOnlyOne from "src/utils/require-only-one";
 import { buildStringSearchParameters, SearchStringInput } from "src/utils/search-string-input";
 import type { RelationInclude as BaseRelationInclude } from "src/relation-include/models/relation-include" ;
 import ParseBaseRelationIncludePipe from "src/relation-include/relation-include.pipe";
+import type BaseSortingParameter from 'src/sort/models/sorting-parameter';
+import ParseBaseSortingParameterPipe from 'src/sort/sort.pipe';
 
 namespace LibraryQueryParameters {
 
@@ -61,6 +63,14 @@ namespace LibraryQueryParameters {
 	export const AvailableIncludes = ['files'] as const;
 	export type RelationInclude = BaseRelationInclude<typeof AvailableIncludes>;
 	export const ParseRelationIncludePipe = new ParseBaseRelationIncludePipe(AvailableIncludes);
+
+	/**
+	 * Defines how to sort fetched entries
+	 */
+	export const AvailableFields = Object.values(Prisma.LibraryScalarFieldEnum);
+	export type SortingParameter = BaseSortingParameter<Prisma.LibraryScalarFieldEnum>;
+	export const ParseSortingParameterPipe = new ParseBaseSortingParameterPipe(AvailableFields);
+
 	/**
 	 * Build the query parameters for ORM to include relations
 	 * @returns the ORM-ready query parameters

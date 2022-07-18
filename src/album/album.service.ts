@@ -32,7 +32,10 @@ export default class AlbumService {
 	 * @param include the relation to include in the returned value
 	 * @returns the saved Album
 	 */
-	async createAlbum(album: AlbumQueryParameters.CreateInput, include?: AlbumQueryParameters.RelationInclude) {
+	async createAlbum(
+		album: AlbumQueryParameters.CreateInput,
+		include?: AlbumQueryParameters.RelationInclude
+	) {
 		const albumSlug = new Slug(album.name);
 		if (album.artist === undefined) {
 			if (await this.countAlbums({ byName: { is: album.name }}) != 0)
@@ -65,7 +68,10 @@ export default class AlbumService {
 	 * @param where the parameters to find the album
 	 * @param include the relations to include
 	 */
-	async getAlbum(where: AlbumQueryParameters.WhereInput, include?: AlbumQueryParameters.RelationInclude) {
+	async getAlbum(
+		where: AlbumQueryParameters.WhereInput,
+		include?: AlbumQueryParameters.RelationInclude
+	) {
 		try {
 			return await this.prismaService.album.findFirst({
 				rejectOnNotFound: true,
@@ -85,10 +91,16 @@ export default class AlbumService {
 	 * @param pagination the pagination paramters to filter entries
 	 * @param include the relations to include
 	 */
-	async getAlbums(where: AlbumQueryParameters.ManyWhereInput, pagination?: PaginationParameters, include?: AlbumQueryParameters.RelationInclude) {
+	async getAlbums(
+		where: AlbumQueryParameters.ManyWhereInput,
+		pagination?: PaginationParameters,
+		include?: AlbumQueryParameters.RelationInclude,
+		sort?: AlbumQueryParameters.SortingParameter
+	) {
 		return await this.prismaService.album.findMany({
 			where: AlbumQueryParameters.buildQueryParametersForMany(where),
 			include: AlbumQueryParameters.buildIncludeParameters(include),
+			orderBy: sort,
 			...buildPaginationParameters(pagination)
 		});
 	}
@@ -109,7 +121,10 @@ export default class AlbumService {
 	 * @param where the query parameters to find the album to update
 	 * @returns the updated album
 	 */
-	async updateAlbum(what: AlbumQueryParameters.UpdateInput,where: AlbumQueryParameters.WhereInput): Promise<Album> {
+	async updateAlbum(
+		what: AlbumQueryParameters.UpdateInput,
+		where: AlbumQueryParameters.WhereInput
+	): Promise<Album> {
 		return await this.prismaService.album.update({
 			data: {
 				...what,
