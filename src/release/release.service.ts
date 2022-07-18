@@ -29,7 +29,10 @@ export default class ReleaseService {
 	 * @param include the relation fields to inclide in the returned object
 	 * @returns the created release
 	 */
-	async createRelease(release: ReleaseQueryParameters.CreateInput, include?: ReleaseQueryParameters.RelationInclude) {
+	async createRelease(
+		release: ReleaseQueryParameters.CreateInput,
+		include?: ReleaseQueryParameters.RelationInclude
+	) {
 		const releaseSlug = new Slug(release.title);
 		try {
 			let createdRelease = await this.prismaService.release.create({
@@ -60,7 +63,10 @@ export default class ReleaseService {
 	 * @param include the relation fields to include
 	 * @returns a release. Throws if not found
 	 */
-	async getRelease(where: ReleaseQueryParameters.WhereInput, include?: ReleaseQueryParameters.RelationInclude) {
+	async getRelease(
+		where: ReleaseQueryParameters.WhereInput,
+		include?: ReleaseQueryParameters.RelationInclude
+	) {
 		try {
 			return await this.prismaService.release.findFirst({
 				rejectOnNotFound: true,
@@ -78,10 +84,16 @@ export default class ReleaseService {
 	 * @param include the relation fields to includes
 	 * @returns an array of releases
 	 */
-	async getReleases(where: ReleaseQueryParameters.ManyWhereInput, pagination?: PaginationParameters, include?: ReleaseQueryParameters.RelationInclude) {
+	async getReleases(
+		where: ReleaseQueryParameters.ManyWhereInput,
+		pagination?: PaginationParameters,
+		include?: ReleaseQueryParameters.RelationInclude,
+		sort?: ReleaseQueryParameters.SortingParameter
+	) {
 		return this.prismaService.release.findMany({
 			where: ReleaseQueryParameters.buildQueryParametersForMany(where),
 			include: ReleaseQueryParameters.buildIncludeParameters(include),
+			orderBy: sort,
 			...buildPaginationParameters(pagination)
 		});
 	}
@@ -93,11 +105,17 @@ export default class ReleaseService {
 	 * @param include the relation to include in the returned objects
 	 * @returns 
 	 */
-	async getAlbumReleases(where: AlbumQueryParameters.WhereInput, pagination?: PaginationParameters, include?: ReleaseQueryParameters.RelationInclude) {
+	async getAlbumReleases(
+		where: AlbumQueryParameters.WhereInput,
+		pagination?: PaginationParameters,
+		include?: ReleaseQueryParameters.RelationInclude,
+		sort?: ReleaseQueryParameters.SortingParameter
+	) {
 		const releases = await this.getReleases(
 			{ album: where },
 			pagination,
-			include
+			include,
+			sort
 		);
 		if (releases.length == 0) {
 			await this.albumService.getAlbum(where);
@@ -111,7 +129,10 @@ export default class ReleaseService {
 	 * @param include the relation to include in the returned objects
 	 * @returns 
 	 */
-	 async getMasterRelease(where: AlbumQueryParameters.WhereInput, include?: ReleaseQueryParameters.RelationInclude) {
+	async getMasterRelease(
+		where: AlbumQueryParameters.WhereInput,
+		include?: ReleaseQueryParameters.RelationInclude
+	) {
 		return this.getRelease({ byMasterOf: where }, include);
 	}
 
@@ -130,7 +151,10 @@ export default class ReleaseService {
 	 * @param what the fields to update in the release
 	 * @param where the query parameters to fin the release to update
 	 */
-	 async updateRelease(what: ReleaseQueryParameters.UpdateInput, where: ReleaseQueryParameters.WhereInput) {
+	 async updateRelease(
+		what: ReleaseQueryParameters.UpdateInput,
+		where: ReleaseQueryParameters.WhereInput
+	) {
 		let unmodifiedRelease = await this.getRelease(where);
 		let updatedRelease = await this.prismaService.release.update({
 			data: {
@@ -161,7 +185,7 @@ export default class ReleaseService {
 	 * Also delete related tracks.
 	 * @param where Query parameters to find the release to delete 
 	 */
-	 async deleteRelease(where: ReleaseQueryParameters.DeleteInput): Promise<void> {
+	async deleteRelease(where: ReleaseQueryParameters.DeleteInput): Promise<void> {
 		try {
 			let deletedRelease = await this.prismaService.release.delete({
 				where: ReleaseQueryParameters.buildQueryParametersForOne(where),
@@ -193,7 +217,10 @@ export default class ReleaseService {
 	 * @param where where the query parameters to fond or create the release
 	 * @returns the fetched or createdrelease
 	 */
-	async getOrCreateRelease(where: ReleaseQueryParameters.GetOrCreateInput, include?: ReleaseQueryParameters.RelationInclude) {
+	async getOrCreateRelease(
+		where: ReleaseQueryParameters.GetOrCreateInput,
+		include?: ReleaseQueryParameters.RelationInclude
+	) {
 		try {
 			return await this.getRelease(
 				{ bySlug: { slug: new Slug(where.title), album: where.album}},
