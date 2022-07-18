@@ -1,4 +1,4 @@
-import type { Prisma, Track } from "@prisma/client";
+import { Prisma, Track } from "@prisma/client";
 import FileQueryParameters from "src/file/models/file.query-parameters";
 import LibraryQueryParameters from "src/library/models/library.query-parameters";
 import ReleaseQueryParameters from "src/release/models/release.query-parameters";
@@ -8,6 +8,8 @@ import type RequireAtLeastOne from "src/utils/require-at-least-one";
 import type RequireOnlyOne from "src/utils/require-only-one";
 import type { RelationInclude as BaseRelationInclude } from "src/relation-include/models/relation-include";
 import ParseBaseRelationIncludePipe from "src/relation-include/relation-include.pipe";
+import type BaseSortingParameter from 'src/sort/models/sorting-parameter';
+import ParseBaseSortingParameterPipe from 'src/sort/sort.pipe';
 
 namespace TrackQueryParameters {
 	type OmitSong<T> = Omit<T, 'songId'>;
@@ -102,6 +104,13 @@ namespace TrackQueryParameters {
 	export const AvailableIncludes = ['song', 'release'] as const;
 	export type RelationInclude = BaseRelationInclude<typeof AvailableIncludes>;
 	export const ParseRelationIncludePipe = new ParseBaseRelationIncludePipe(AvailableIncludes);
+
+	/**
+	 * Defines how to sort fetched entries
+	 */
+	export const AvailableFields = Object.values(Prisma.TrackScalarFieldEnum);
+	export type SortingParameter = BaseSortingParameter<Prisma.TrackScalarFieldEnum>;
+	export const ParseSortingParameterPipe = new ParseBaseSortingParameterPipe(AvailableFields);
 
 	/**
 	 * Build the query parameters for ORM to include relations
