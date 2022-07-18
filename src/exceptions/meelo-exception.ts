@@ -29,7 +29,7 @@ export class NotFoundException extends MeeloException {
  */
 export class NotAccessibleException extends MeeloException {
 	constructor(message: string) {
-		super(HttpStatus.NOT_FOUND, message);
+		super(HttpStatus.INTERNAL_SERVER_ERROR, message);
 	}
 }
 

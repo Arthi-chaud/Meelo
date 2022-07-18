@@ -15,6 +15,7 @@ import { type PaginationParameters, buildPaginationParameters } from 'src/pagina
 import type { MeeloException } from 'src/exceptions/meelo-exception';
 import { UrlGeneratorService } from 'nestjs-url-generator';
 import { TrackController } from './track.controller';
+import FileController from 'src/file/file.controller';
 import type Tracklist from './models/tracklist.model';
 import { UnknownDiscIndexKey } from './models/tracklist.model';
 
@@ -318,6 +319,13 @@ export default class TrackService {
 				controllerMethod: TrackController.prototype.getTrackIllustration,
 				params: {
 					id: track.id.toString()
+				}
+			}),
+			stream: this.urlGeneratorService.generateUrlFromController({
+				controller: FileController,
+				controllerMethod: FileController.prototype.streamFile,
+				params: {
+					id: track.sourceFileId.toString()
 				}
 			})
 		};
