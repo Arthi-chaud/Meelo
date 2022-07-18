@@ -171,7 +171,8 @@ describe('Song Controller', () => {
 						illustration: `http://meelo.com/songs/${song1.id}/illustration`,
 						tracks: [{
 							...track1,
-							illustration: `http://meelo.com/tracks/${track1.id}/illustration`
+							illustration: `http://meelo.com/tracks/${track1.id}/illustration`,
+							stream: `http://meelo.com/files/${track1.sourceFileId}/stream`
 						}]
 					});
 					expect(songs[1]).toStrictEqual({
@@ -179,7 +180,8 @@ describe('Song Controller', () => {
 						illustration: `http://meelo.com/songs/${song2.id}/illustration`,
 						tracks: [{
 							...track2,
-							illustration: `http://meelo.com/tracks/${track2.id}/illustration`
+							illustration: `http://meelo.com/tracks/${track2.id}/illustration`,
+							stream: `http://meelo.com/files/${track2.sourceFileId}/stream`
 						}]
 					});
 				});
@@ -255,7 +257,8 @@ describe('Song Controller', () => {
 						illustration: `http://meelo.com/songs/${song1.id}/illustration`,
 						tracks: [{
 							...track1,
-							illustration: `http://meelo.com/tracks/${track1.id}/illustration` 
+							illustration: `http://meelo.com/tracks/${track1.id}/illustration`,
+							stream: `http://meelo.com/files/${track1.sourceFileId}/stream`
 						}]
 					});
 				});
@@ -276,7 +279,8 @@ describe('Song Controller', () => {
 					let track: Track = res.body
 					expect(track).toStrictEqual({
 						...track1,
-						illustration: `http://meelo.com/tracks/${track1.id}/illustration`
+						illustration: `http://meelo.com/tracks/${track1.id}/illustration`,
+						stream: `http://meelo.com/files/${track1.sourceFileId}/stream`
 					});
 				});
 		});
@@ -289,6 +293,7 @@ describe('Song Controller', () => {
 					expect(track).toStrictEqual({
 						...track2,
 						illustration: `http://meelo.com/tracks/${track2.id}/illustration`,
+						stream: `http://meelo.com/files/${track2.sourceFileId}/stream`,
 						song: {
 							...song2,
 							illustration: `http://meelo.com/songs/${song2.id}/illustration`,
@@ -317,7 +322,8 @@ describe('Song Controller', () => {
 					expect(tracks.length).toBe(1);
 					expect(tracks[0]).toStrictEqual({
 						...track2,
-						illustration: `http://meelo.com/tracks/${track2.id}/illustration`
+						illustration: `http://meelo.com/tracks/${track2.id}/illustration`,
+						stream: `http://meelo.com/files/${track2.sourceFileId}/stream`
 					});
 				});
 		});
@@ -330,7 +336,8 @@ describe('Song Controller', () => {
 					expect(tracks.length).toBe(1);
 					expect(tracks[0]).toStrictEqual({
 						...track1,
-						illustration: `http://meelo.com/tracks/${track1.id}/illustration`
+						illustration: `http://meelo.com/tracks/${track1.id}/illustration`,
+						stream: `http://meelo.com/files/${track1.sourceFileId}/stream`
 					});
 				});
 		});
@@ -344,6 +351,7 @@ describe('Song Controller', () => {
 					expect(tracks[0]).toStrictEqual({
 						...track2,
 						illustration: `http://meelo.com/tracks/${track2.id}/illustration`,
+						stream: `http://meelo.com/files/${track2.sourceFileId}/stream`,
 						song: {
 							...song2,
 							illustration: `http://meelo.com/songs/${song2.id}/illustration`,

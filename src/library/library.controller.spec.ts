@@ -399,7 +399,8 @@ describe('Library Controller', () => {
 						tracks: [
 							{
 								...track1,
-								illustration: `http://meelo.com/tracks/${track1.id}/illustration`
+								illustration: `http://meelo.com/tracks/${track1.id}/illustration`,
+								stream: `http://meelo.com/files/${track1.sourceFileId}/stream`
 							},
 						]
 					});
@@ -413,7 +414,8 @@ describe('Library Controller', () => {
 						tracks: [
 							{
 								...track2,
-								illustration: `http://meelo.com/tracks/${track2.id}/illustration`
+								illustration: `http://meelo.com/tracks/${track2.id}/illustration`,
+								stream: `http://meelo.com/files/${track2.sourceFileId}/stream`
 							},
 						]
 					});
@@ -437,6 +439,7 @@ describe('Library Controller', () => {
 					expect(tracks[0]).toStrictEqual({
 						...track1,
 						illustration: `http://meelo.com/tracks/${track1.id}/illustration`,
+						stream: `http://meelo.com/files/${track1.sourceFileId}/stream`,
 						release: {
 							...release1,
 							illustration: `http://meelo.com/releases/${release1.id}/illustration`,
@@ -449,6 +452,7 @@ describe('Library Controller', () => {
 					expect(tracks[1]).toStrictEqual({
 						...track2,
 						illustration: `http://meelo.com/tracks/${track2.id}/illustration`,
+						stream: `http://meelo.com/files/${track2.sourceFileId}/stream`,
 						release: {
 							...release2,
 							illustration: `http://meelo.com/releases/${release2.id}/illustration`,
@@ -485,6 +489,7 @@ describe('Library Controller', () => {
 						tracks: [{
 							...track1,
 							illustration: `http://meelo.com/tracks/${track1.id}/illustration`,
+							stream: `http://meelo.com/files/${track1.sourceFileId}/stream`
 						}],
 					});
 					expect(songs[1]).toStrictEqual({
@@ -497,6 +502,7 @@ describe('Library Controller', () => {
 						tracks: [{
 							...track2,
 							illustration: `http://meelo.com/tracks/${track2.id}/illustration`,
+							stream: `http://meelo.com/files/${track2.sourceFileId}/stream`
 						}],
 					});
 				});
