@@ -1,17 +1,20 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, StreamableFile } from '@nestjs/common';
 import FileManagerService from 'src/file-manager/file-manager.service';
 import { FileAlreadyExistsException, FileNotFoundFromIDException, FileNotFoundFromPathException, FileNotFoundFromTrackIDException } from './file.exceptions';
 import PrismaService from 'src/prisma/prisma.service';
 import type { Library, File } from '@prisma/client';
 import FileQueryParameters from './models/file.query-parameters';
 import { type PaginationParameters, buildPaginationParameters } from 'src/pagination/models/pagination-parameters';
-import { FileNotReadableException } from 'src/file-manager/file-manager.exceptions';
-
+import { FileDoesNotExistException, FileNotReadableException } from 'src/file-manager/file-manager.exceptions';
+import * as fs from 'fs';
+import path from 'path';
+import SettingsService from 'src/settings/settings.service';
 @Injectable()
 export default class FileService {
 	constructor(
 		private prismaService: PrismaService,
-		private fileManagerService: FileManagerService
+		private fileManagerService: FileManagerService,
+		private settingsService: SettingsService
 	) {}
 
 	/**
@@ -137,5 +140,22 @@ export default class FileService {
 			registerDate: new Date(),
 			libraryId: parentLibrary.id
 		});
+	}
+
+	/**
+	 * 
+	 * @param file the file object of the file to stream
+	 * @param parentlibrary parent library of the file to stream
+	 * @param res the Response Object of the request
+	 * @returns a StreamableFile of the file
+	 */
+	streamFile(file: File, parentLibrary: Library, res: any): StreamableFile {
+		const fullFilePath = `${this.settingsService.settingsValues.dataFolder}/${parentLibrary.path}/${file.path}`.normalize();
+		if (this.fileManagerService.fileExists(fullFilePath) == false)
+			throw new FileDoesNotExistException(file.path);
+		res.set({
+			'Content-Disposition': `attachment; filename="${path.parse(file.path).base}"`,
+		});
+		return new StreamableFile(fs.createReadStream(fullFilePath));
 	}
 }
