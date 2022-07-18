@@ -5,12 +5,14 @@ import PrismaModule from 'src/prisma/prisma.module';
 import AlbumController from './album.controller';
 import ReleaseModule from 'src/release/release.module';
 import IllustrationModule from 'src/illustration/illustration.module';
+import TrackModule from 'src/track/track.module';
 @Module({
 	imports: [
 		PrismaModule,
 		forwardRef(() => IllustrationModule),
 		forwardRef(() => ArtistModule),
-		forwardRef(() => ReleaseModule)
+		forwardRef(() => ReleaseModule),
+		forwardRef(() => TrackModule)
 	],
 	exports: [AlbumService],
 	providers: [AlbumService],

@@ -85,6 +85,17 @@ export default class ReleaseController {
 		);
 	}
 
+	@Get(':idOrSlug/tracklist')
+	async getReleaseTracklist(
+		@Param(ParseReleaseIdentifierPipe)
+		where: ReleaseQueryParameters.WhereInput,
+		@Query('with', TrackQueryParameters.ParseRelationIncludePipe)
+		include?: TrackQueryParameters.RelationInclude
+	) {
+		const tracklist = await this.trackService.getTracklist(where, include)
+		return this.trackService.buildTracklistResponse(tracklist);
+	}
+
 	@Get(':idOrSlug/album')
 	async getReleaseAlbum(
 		@Query('with', AlbumQueryParameters.ParseRelationIncludePipe)

@@ -25,6 +25,7 @@ import FileService from "src/file/file.service";
 import LibraryService from "src/library/library.service";
 import LibraryModule from "src/library/library.module";
 import SongService from "src/song/song.service";
+import type Tracklist from "src/track/models/tracklist.model";
 
 describe('Release Controller', () => {
 	let releaseService: ReleaseService;
@@ -129,7 +130,7 @@ describe('Release Controller', () => {
 			type: "Audio",
 			master: true,
 			displayName: "My Track 2",
-			discIndex: 1,
+			discIndex: 2,
 			trackIndex: 1,
 			bitrate: 0,
 			ripSource: null,
@@ -386,6 +387,52 @@ describe('Release Controller', () => {
 		it("should throw, as the release does not exist", () => {
 			return request(app.getHttpServer())
 				.get(`/releases/${-1}/tracks`)
+				.expect(404);
+		});
+	});
+
+	describe("Get Tracklist", () => {
+		it("should get the tracklist", () => {
+			return request(app.getHttpServer())
+				.get(`/releases/${deluxeRelease.id}/tracklist`)
+				.expect(200)
+				.expect((res) => {
+					let tracklist: Tracklist = res.body;
+					expect(tracklist).toStrictEqual({
+						'1': [{
+							...track1,
+							illustration: `http://meelo.com/tracks/${track1.id}/illustration`,
+						}],
+						'2': [{
+							...track2,
+							illustration: `http://meelo.com/tracks/${track2.id}/illustration`,
+						}],
+					});
+				});
+		});
+
+		it("should get the tracklist, w/ related song", () => {
+			return request(app.getHttpServer())
+				.get(`/releases/${deluxeRelease.id}/tracklist`)
+				.expect(200)
+				.expect((res) => {
+					let tracklist: Tracklist = res.body;
+					expect(tracklist).toStrictEqual({
+						'1': [{
+							...track1,
+							illustration: `http://meelo.com/tracks/${track1.id}/illustration`,
+						}],
+						'2': [{
+							...track2,
+							illustration: `http://meelo.com/tracks/${track2.id}/illustration`,
+						}],
+					});
+				});
+		});
+
+		it("should return an error, as the release does not exist", () => {
+			return request(app.getHttpServer())
+				.get(`/releases/${-1}/tracklist`)
 				.expect(404);
 		});
 	});

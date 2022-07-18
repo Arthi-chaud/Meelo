@@ -11,6 +11,8 @@ import AlbumService from './album.service';
 import AlbumQueryParameters from './models/album.query-parameters';
 import type { Request } from 'express';
 import PaginatedResponse from 'src/pagination/models/paginated-response';
+import TrackService from 'src/track/track.service';
+import TrackQueryParameters from 'src/track/models/track.query-parameters';
 
 @Controller('albums')
 export default class AlbumController {
@@ -20,6 +22,8 @@ export default class AlbumController {
 		private releaseService: ReleaseService,
 		@Inject(forwardRef(() => AlbumService))
 		private albumService: AlbumService,
+		@Inject(forwardRef(() => TrackService))
+		private trackService: TrackService,
 
 	) {}
 
@@ -81,6 +85,20 @@ export default class AlbumController {
 	) {
 		let masterRelease = await this.releaseService.getMasterRelease(where, include);
 		return this.releaseService.buildReleaseResponse(masterRelease);
+	}
+
+	@Get(':idOrSlug/master/tracklist')
+	async getAlbumTracklist(
+		@Param(ParseAlbumIdentifierPipe)
+		where: AlbumQueryParameters.WhereInput,
+		@Query('with', TrackQueryParameters.ParseRelationIncludePipe)
+		include: TrackQueryParameters.RelationInclude,
+	) {
+		const masterRelease = await this.releaseService.getMasterRelease(where);
+		const tracklist = await this.trackService.getTracklist(
+			{ byId: { id: masterRelease.id } }, include
+		);
+		return this.trackService.buildTracklistResponse(tracklist);
 	}
 
 	@Get(':idOrSlug/releases')
