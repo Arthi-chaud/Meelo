@@ -15,6 +15,8 @@ import { type PaginationParameters, buildPaginationParameters } from 'src/pagina
 import type { MeeloException } from 'src/exceptions/meelo-exception';
 import { UrlGeneratorService } from 'nestjs-url-generator';
 import { TrackController } from './track.controller';
+import type Tracklist from './models/tracklist.model';
+import { UnknownDiscIndexKey } from './models/tracklist.model';
 
 @Injectable()
 export default class TrackService {
@@ -144,6 +146,25 @@ export default class TrackService {
 			{ masterOfSong: where },
 			include
 		);
+	}
+
+	/**
+	 * Get Tracklist of release
+	 * @param where 
+	 * @returns 
+	 */
+	async getTracklist(
+		where: ReleaseQueryParameters.WhereInput
+	): Promise<Tracklist> {
+		let tracklist: Tracklist = new Map();
+		const tracks = await this.getTracks({ byRelease: where }, {}, {}, { trackIndex: 'asc' });
+		if (tracks.length == 0)
+			await this.releaseService.getRelease(where);
+		tracks.forEach((track) => {
+			const indexToString = track.discIndex?.toString() ?? UnknownDiscIndexKey;
+			tracklist = tracklist.set(indexToString, [ ...tracklist.get(indexToString) ?? [], track]);
+		});
+		return tracklist;
 	}
 
 	/**
@@ -311,4 +332,15 @@ export default class TrackService {
 			}
 		return response;
 	}
+
+	buildTracklistResponse(tracklist: Tracklist) {
+		let response = {};
+		tracklist.forEach((tracks, discIndex) => {
+			response = {
+				...response,
+				[discIndex]: tracks.map((track) => this.buildTrackResponse(track))
+			}
+		});
+		return response;
+	} 
 }
