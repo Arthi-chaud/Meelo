@@ -10,7 +10,6 @@ import PrismaService from "src/prisma/prisma.service";
 import ReleaseModule from "src/release/release.module";
 import ReleaseService from "src/release/release.service";
 import { FakeFileManagerService } from "test/FakeFileManagerModule";
-
 import { createTestingModule } from "test/TestModule";
 import AlbumModule from "./album.module";
 import AlbumService from "./album.service";
@@ -357,6 +356,15 @@ describe('Album Controller', () => {
 						}
 					});
 				});
+		});
+	});
+
+	describe("Get Tracklist Album", () => {
+
+		it("should return an error, as the release does not exist", () => {
+			return request(app.getHttpServer())
+				.get(`/albums/${-1}/master/tracklist`)
+				.expect(404);
 		});
 	});
 });
