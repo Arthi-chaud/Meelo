@@ -84,6 +84,19 @@ describe('Album Controller', () => {
 					})
 				});
 		});
+		it("Should sort all albums", () => {
+			return request(app.getHttpServer())
+				.get(`/albums?sortBy=name&order=desc`)
+				.expect(200)
+				.expect((res) => {
+					let albums: Album[] = res.body.items;
+					expect(albums.length).toBe(4);
+					expect(albums[0].id).toBe(compilationAlbum.id);
+					expect(albums[1].id).toBe(album3.id);
+					expect(albums[2].id).toBe(album2.id);
+					expect(albums[3].id).toBe(album1.id);
+				});
+		});
 		it("Should return some albums (w/ pagination)", () => {
 			return request(app.getHttpServer())
 				.get(`/albums?skip=1&take=2`)
@@ -270,6 +283,23 @@ describe('Album Controller', () => {
 						illustration: `http://meelo.com/releases/${release1.id}/illustration`
 					});
 					expect(releases[1]).toStrictEqual({
+						...release2,
+						illustration: `http://meelo.com/releases/${release2.id}/illustration`
+					})
+				});
+		});
+		it("Should return all album's releases, sorted by id, desc", () => {
+			return request(app.getHttpServer())
+				.get(`/albums/${album1.id}/releases?sortBy=id&order=desc`)
+				.expect(200)
+				.expect((res) => {
+					let releases: Release[] = res.body.items;
+					expect(releases.length).toBe(2);
+					expect(releases[1]).toStrictEqual({
+						...release1,
+						illustration: `http://meelo.com/releases/${release1.id}/illustration`
+					});
+					expect(releases[0]).toStrictEqual({
 						...release2,
 						illustration: `http://meelo.com/releases/${release2.id}/illustration`
 					})

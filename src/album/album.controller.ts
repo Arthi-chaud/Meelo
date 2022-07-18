@@ -27,11 +27,15 @@ export default class AlbumController {
 	async getAlbums(
 		@Query(ParsePaginationParameterPipe)
 		paginationParameters: PaginationParameters,
+		@Query(AlbumQueryParameters.ParseSortingParameterPipe)
+		sortingParameter: AlbumQueryParameters.SortingParameter,
 		@Query('with', AlbumQueryParameters.ParseRelationIncludePipe)
 		include: AlbumQueryParameters.RelationInclude,
 		@Req() request: Request
 	) {
-		const albums = await this.albumService.getAlbums({}, paginationParameters, include);
+		const albums = await this.albumService.getAlbums(
+			{}, paginationParameters, include, sortingParameter
+		);
 		return new PaginatedResponse(
 			albums.map((album) => this.albumService.buildAlbumResponse(album)),
 			request
@@ -42,11 +46,15 @@ export default class AlbumController {
 	async getCompilationsAlbums(
 		@Query(ParsePaginationParameterPipe)
 		paginationParameters: PaginationParameters,
+		@Query(AlbumQueryParameters.ParseSortingParameterPipe)
+		sortingParameter: AlbumQueryParameters.SortingParameter,
 		@Query('with', AlbumQueryParameters.ParseRelationIncludePipe)
 		include: AlbumQueryParameters.RelationInclude,
 		@Req() request: Request
 	) {
-		const albums = await this.albumService.getAlbums({ byArtist: null }, paginationParameters, include);
+		const albums = await this.albumService.getAlbums(
+			{ byArtist: null }, paginationParameters, include, sortingParameter
+		);
 		return new PaginatedResponse(
 			albums.map((album) => this.albumService.buildAlbumResponse(album)),
 			request
@@ -81,11 +89,15 @@ export default class AlbumController {
 		paginationParameters: PaginationParameters,
 		@Query('with', ReleaseQueryParameters.ParseRelationIncludePipe)
 		include: ReleaseQueryParameters.RelationInclude,
+		@Query(ReleaseQueryParameters.ParseSortingParameterPipe)
+		sortingParameter: ReleaseQueryParameters.SortingParameter,
 		@Param(ParseAlbumIdentifierPipe)
 		where: AlbumQueryParameters.WhereInput,
 		@Req() request: Request
 	) {
-		let releases = await this.releaseService.getAlbumReleases(where, paginationParameters, include);
+		let releases = await this.releaseService.getAlbumReleases(
+			where, paginationParameters, include, sortingParameter
+		);
 		return new PaginatedResponse(
 			releases.map((release) => this.releaseService.buildReleaseResponse(release)),
 			request
