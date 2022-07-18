@@ -154,10 +154,11 @@ export default class TrackService {
 	 * @returns 
 	 */
 	async getTracklist(
-		where: ReleaseQueryParameters.WhereInput
+		where: ReleaseQueryParameters.WhereInput,
+		include?: TrackQueryParameters.RelationInclude
 	): Promise<Tracklist> {
 		let tracklist: Tracklist = new Map();
-		const tracks = await this.getTracks({ byRelease: where }, {}, {}, { trackIndex: 'asc' });
+		const tracks = await this.getTracks({ byRelease: where }, {}, include, { trackIndex: 'asc' });
 		if (tracks.length == 0)
 			await this.releaseService.getRelease(where);
 		tracks.forEach((track) => {
