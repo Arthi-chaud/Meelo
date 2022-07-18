@@ -4,7 +4,6 @@ import { LibraryDto } from './models/library.dto';
 import type { Library } from '@prisma/client';
 import ParsePaginationParameterPipe from 'src/pagination/pagination.pipe';
 import type { PaginationParameters } from 'src/pagination/models/pagination-parameters';
-import ParseRelationIncludePipe from 'src/relation-include/relation-include.pipe';
 import ArtistService from 'src/artist/artist.service';
 import ArtistQueryParameters from 'src/artist/models/artist.query-parameters';
 import AlbumService from 'src/album/album.service';
@@ -15,7 +14,7 @@ import TrackQueryParameters from 'src/track/models/track.query-parameters';
 import TrackService from 'src/track/track.service';
 import ReleaseService from 'src/release/release.service';
 import SongService from 'src/song/song.service';
-import type LibraryQueryParameters from './models/library.query-parameters';
+import LibraryQueryParameters from './models/library.query-parameters';
 import ParseLibraryIdentifierPipe from './library.pipe';
 import type { Request } from 'express';
 import PaginatedResponse from 'src/pagination/models/paginated-response';
@@ -39,10 +38,12 @@ export default class LibraryController {
 	async getLibraries(
 		@Query(ParsePaginationParameterPipe)
 		paginationParameters: PaginationParameters,
+		@Query(LibraryQueryParameters.ParseSortingParameterPipe)
+		sortingParameter: LibraryQueryParameters.SortingParameter,
 		@Req() request: Request
 	): Promise<PaginatedResponse<Object>> {
 		return new PaginatedResponse(
-			await this.libraryService.getLibraries({}, paginationParameters),
+			await this.libraryService.getLibraries({}, paginationParameters, {}, sortingParameter),
 			request
 		);
 	}
@@ -99,12 +100,14 @@ export default class LibraryController {
 		where: LibraryQueryParameters.WhereInput,
 		@Query(ParsePaginationParameterPipe)
 		paginationParameters: PaginationParameters,
-		@Query('with', new ParseRelationIncludePipe(ArtistQueryParameters.AvailableIncludes))
+		@Query('with', ArtistQueryParameters.ParseRelationIncludePipe)
 		include: ArtistQueryParameters.RelationInclude,
+		@Query(ArtistQueryParameters.ParseSortingParameterPipe)
+		sortingParameter: ArtistQueryParameters.SortingParameter,
 		@Req() request: Request
 	): Promise<PaginatedResponse<Object>> {
 		const artists = await this.artistService.getArtists(
-			{ byLibrarySource: where }, paginationParameters, include
+			{ byLibrarySource: where }, paginationParameters, include, sortingParameter
 		);
 		if (artists.length == 0)
 			await this.libraryService.getLibrary(where);
@@ -120,12 +123,14 @@ export default class LibraryController {
 		where: LibraryQueryParameters.WhereInput,
 		@Query(ParsePaginationParameterPipe)
 		paginationParameters: PaginationParameters,
-		@Query('with', new ParseRelationIncludePipe(AlbumQueryParameters.AvailableIncludes))
+		@Query('with', AlbumQueryParameters.ParseRelationIncludePipe)
 		include: AlbumQueryParameters.RelationInclude,
+		@Query(AlbumQueryParameters.ParseSortingParameterPipe)
+		sortingParameter: AlbumQueryParameters.SortingParameter,
 		@Req() request: Request
 	): Promise<PaginatedResponse<Object>> {
 		const albums = await this.albumService.getAlbums(
-			{ byLibrarySource: where }, paginationParameters, include
+			{ byLibrarySource: where }, paginationParameters, include, sortingParameter
 		);
 		if (albums.length == 0)
 			await this.libraryService.getLibrary(where);
@@ -141,11 +146,15 @@ export default class LibraryController {
 		where: LibraryQueryParameters.WhereInput,
 		@Query(ParsePaginationParameterPipe)
 		paginationParameters: PaginationParameters,
-		@Query('with', new ParseRelationIncludePipe(ReleaseQueryParameters.AvailableIncludes))
+		@Query('with', ReleaseQueryParameters.ParseRelationIncludePipe)
 		include: ReleaseQueryParameters.RelationInclude,
+		@Query(ReleaseQueryParameters.ParseSortingParameterPipe)
+		sortingParameter: ReleaseQueryParameters.SortingParameter,
 		@Req() request: Request
 	): Promise<PaginatedResponse<Object>> {
-		const releases = await this.releaseService.getReleases({ library: where }, paginationParameters, include);
+		const releases = await this.releaseService.getReleases(
+			{ library: where }, paginationParameters, include, sortingParameter
+		);
 		if (releases.length == 0)
 			await this.libraryService.getLibrary(where);
 		return new PaginatedResponse(
@@ -160,12 +169,14 @@ export default class LibraryController {
 		where: LibraryQueryParameters.WhereInput,
 		@Query(ParsePaginationParameterPipe)
 		paginationParameters: PaginationParameters,
-		@Query('with', new ParseRelationIncludePipe(SongQueryParameters.AvailableIncludes))
+		@Query('with', SongQueryParameters.ParseRelationIncludePipe)
 		include: SongQueryParameters.RelationInclude,
+		@Query(SongQueryParameters.ParseSortingParameterPipe)
+		sortingParameter: SongQueryParameters.SortingParameter,
 		@Req() request: Request
 	): Promise<PaginatedResponse<Object>> {
 		const songs =  await this.songService.getSongs(
-			{ library: where }, paginationParameters, include
+			{ library: where }, paginationParameters, include, sortingParameter
 		);
 		if (songs.length == 0)
 			await this.libraryService.getLibrary(where);
@@ -181,12 +192,14 @@ export default class LibraryController {
 		where: LibraryQueryParameters.WhereInput,
 		@Query(ParsePaginationParameterPipe)
 		paginationParameters: PaginationParameters,
-		@Query('with', new ParseRelationIncludePipe(TrackQueryParameters.AvailableIncludes))
+		@Query('with',TrackQueryParameters.ParseRelationIncludePipe)
 		include: TrackQueryParameters.RelationInclude,
+		@Query(TrackQueryParameters.ParseSortingParameterPipe)
+		sortingParameter: TrackQueryParameters.SortingParameter,
 		@Req() request: Request
 	): Promise<PaginatedResponse<Object>> {
 		const tracks = await this.trackService.getTracks(
-			{ byLibrarySource: where }, paginationParameters, include
+			{ byLibrarySource: where }, paginationParameters, include, sortingParameter
 		);
 		if (tracks.length == 0)
 			await this.libraryService.getLibrary(where);
