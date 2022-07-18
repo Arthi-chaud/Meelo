@@ -54,11 +54,11 @@ describe('Artist Controller', () => {
 		artist2 = await artistService.createArtist({ name: 'My Artist 2' });
 		artist3 = await artistService.createArtist({ name: 'My Artist 3' });
 
-		song1 = await songService.createSong({ name: 'My Song 1', artist: { id: artist1.id } });
 		song2 = await songService.createSong({ name: 'My Song 2', artist: { id: artist1.id } });
+		song1 = await songService.createSong({ name: 'My Song 1', artist: { id: artist1.id } });
 		
-		album1 = await albumService.createAlbum({ name: 'My Album 1', artist: { id: artist1.id } });
 		album2 = await albumService.createAlbum({ name: 'My Album 2', artist: { id: artist1.id } });
+		album1 = await albumService.createAlbum({ name: 'My Album 1', artist: { id: artist1.id } });
 
 		release1 = await releaseService.createRelease({
 			title: 'My Album 1 Release',
@@ -86,6 +86,28 @@ describe('Artist Controller', () => {
 					expect(artists[2]).toStrictEqual({
 						...artist3,
 						illustration: `http://meelo.com/artists/${artist3.id}/illustration`
+					});
+				});
+		});
+
+		it("should get all the artists, sorted by name, desc", () => {
+			return request(app.getHttpServer())
+				.get(`/artists?sortBy=name&order=desc`)
+				.expect(200)
+				.expect((res) => {
+					let artists: Artist[] = res.body.items;
+					expect(artists.length).toBe(3);
+					expect(artists[0]).toStrictEqual({
+						...artist3,
+						illustration: `http://meelo.com/artists/${artist3.id}/illustration`
+					});
+					expect(artists[1]).toStrictEqual({
+						...artist2,
+						illustration: `http://meelo.com/artists/${artist2.id}/illustration`
+					});
+					expect(artists[2]).toStrictEqual({
+						...artist1,
+						illustration: `http://meelo.com/artists/${artist1.id}/illustration`
 					});
 				});
 		});
@@ -217,6 +239,23 @@ describe('Artist Controller', () => {
 					let songs: Song[] = res.body.items;
 					expect(songs.length).toBe(2);
 					expect(songs[0]).toStrictEqual({
+						...song2,
+						illustration: `http://meelo.com/songs/${song2.id}/illustration`,
+					});
+					expect(songs[1]).toStrictEqual({
+						...song1,
+						illustration: `http://meelo.com/songs/${song1.id}/illustration`,
+					});
+				});
+		});
+		it("should get all the artist's songs, sorted by name", () => {
+			return request(app.getHttpServer())
+				.get(`/artists/${artist1.id}/songs?sortBy=name`)
+				.expect(200)
+				.expect((res) => {
+					let songs: Song[] = res.body.items;
+					expect(songs.length).toBe(2);
+					expect(songs[0]).toStrictEqual({
 						...song1,
 						illustration: `http://meelo.com/songs/${song1.id}/illustration`,
 					});
@@ -225,7 +264,7 @@ describe('Artist Controller', () => {
 						illustration: `http://meelo.com/songs/${song2.id}/illustration`,
 					});
 				});
-		});
+		});	
 		it("should get some songs (w/ pagination)", () => {
 			return request(app.getHttpServer())
 				.get(`/artists/${artist1.id}/songs?skip=1`)
@@ -234,8 +273,8 @@ describe('Artist Controller', () => {
 					let songs: Song[] = res.body.items;
 					expect(songs.length).toBe(1);
 					expect(songs[0]).toStrictEqual({
-						...song2,
-						illustration: `http://meelo.com/songs/${song2.id}/illustration`,
+						...song1,
+						illustration: `http://meelo.com/songs/${song1.id}/illustration`,
 					});
 				});
 		});
@@ -247,13 +286,13 @@ describe('Artist Controller', () => {
 					let songs: Song[] = res.body.items;
 					expect(songs.length).toBe(2);
 					expect(songs[0]).toStrictEqual({
-						...song1,
-						illustration: `http://meelo.com/songs/${song1.id}/illustration`,
+						...song2,
+						illustration: `http://meelo.com/songs/${song2.id}/illustration`,
 						tracks: []
 					});
 					expect(songs[1]).toStrictEqual({
-						...song2,
-						illustration: `http://meelo.com/songs/${song2.id}/illustration`,
+						...song1,
+						illustration: `http://meelo.com/songs/${song1.id}/illustration`,
 						tracks: []
 					});
 				});
@@ -264,6 +303,23 @@ describe('Artist Controller', () => {
 		it("should get all the artist's albums", () => {
 			return request(app.getHttpServer())
 				.get(`/artists/${artist1.id}/albums`)
+				.expect(200)
+				.expect((res) => {
+					let albums: Album[] = res.body.items;
+					expect(albums.length).toBe(2);
+					expect(albums[0]).toStrictEqual({
+						...album2,
+						illustration: `http://meelo.com/albums/${album2.id}/illustration`,
+					});
+					expect(albums[1]).toStrictEqual({
+						...album1,
+						illustration: `http://meelo.com/albums/${album1.id}/illustration`,
+					});
+				});
+		});
+		it("should get all the artist's albums, sorted by name", () => {
+			return request(app.getHttpServer())
+				.get(`/artists/${artist1.id}/albums?sortBy=name`)
 				.expect(200)
 				.expect((res) => {
 					let albums: Album[] = res.body.items;
@@ -286,8 +342,8 @@ describe('Artist Controller', () => {
 					let albums: Album[] = res.body.items;
 					expect(albums.length).toBe(1);
 					expect(albums[0]).toStrictEqual({
-						...album1,
-						illustration: `http://meelo.com/albums/${album1.id}/illustration`,
+						...album2,
+						illustration: `http://meelo.com/albums/${album2.id}/illustration`,
 					});
 				});
 		});
@@ -299,17 +355,17 @@ describe('Artist Controller', () => {
 					let albums: Album[] = res.body.items;
 					expect(albums.length).toBe(2);
 					expect(albums[0]).toStrictEqual({
+						...album2,
+						illustration: `http://meelo.com/albums/${album2.id}/illustration`,
+						releases: []
+					});
+					expect(albums[1]).toStrictEqual({
 						...album1,
 						illustration: `http://meelo.com/albums/${album1.id}/illustration`,
 						releases: [{
 							...release1,
 							illustration: `http://meelo.com/releases/${release1.id}/illustration`,
 						}]
-					});
-					expect(albums[1]).toStrictEqual({
-						...album2,
-						illustration: `http://meelo.com/albums/${album2.id}/illustration`,
-						releases: []
 					});
 				});
 		});
