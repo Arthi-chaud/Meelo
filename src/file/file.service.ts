@@ -1,11 +1,11 @@
 import { Injectable, StreamableFile } from '@nestjs/common';
 import FileManagerService from 'src/file-manager/file-manager.service';
-import { FileAlreadyExistsException, FileNotFoundFromIDException, FileNotFoundFromPathException, FileNotFoundFromTrackIDException } from './file.exceptions';
+import { FileAlreadyExistsException, FileNotFoundFromIDException, FileNotFoundFromPathException, FileNotFoundFromTrackIDException, SourceFileNotFoundExceptions } from './file.exceptions';
 import PrismaService from 'src/prisma/prisma.service';
 import type { Library, File } from '@prisma/client';
 import FileQueryParameters from './models/file.query-parameters';
 import { type PaginationParameters, buildPaginationParameters } from 'src/pagination/models/pagination-parameters';
-import { FileDoesNotExistException, FileNotReadableException } from 'src/file-manager/file-manager.exceptions';
+import { FileNotReadableException } from 'src/file-manager/file-manager.exceptions';
 import * as fs from 'fs';
 import path from 'path';
 import SettingsService from 'src/settings/settings.service';
@@ -145,14 +145,14 @@ export default class FileService {
 	/**
 	 * 
 	 * @param file the file object of the file to stream
-	 * @param parentlibrary parent library of the file to stream
+	 * @param parentLibrary parent library of the file to stream
 	 * @param res the Response Object of the request
 	 * @returns a StreamableFile of the file
 	 */
 	streamFile(file: File, parentLibrary: Library, res: any): StreamableFile {
 		const fullFilePath = `${this.settingsService.settingsValues.dataFolder}/${parentLibrary.path}/${file.path}`.normalize();
 		if (this.fileManagerService.fileExists(fullFilePath) == false)
-			throw new FileDoesNotExistException(file.path);
+			throw new SourceFileNotFoundExceptions(file.path);
 		res.set({
 			'Content-Disposition': `attachment; filename="${path.parse(file.path).base}"`,
 		});

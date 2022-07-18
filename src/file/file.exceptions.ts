@@ -6,6 +6,12 @@ export class FileNotFoundFromPathException extends NotFoundException {
 	}
 }
 
+export class SourceFileNotFoundExceptions extends NotFoundException {
+	constructor(filePath: string) {
+		super(`File '${filePath}' not found`);
+	}
+}
+
 export class FileNotFoundFromIDException extends NotFoundException {
 	constructor(fileId: number) {
 		super(`File with id '${fileId}' not found`);
