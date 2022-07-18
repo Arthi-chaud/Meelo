@@ -88,9 +88,11 @@ export default class ReleaseController {
 	@Get(':idOrSlug/tracklist')
 	async getReleaseTracklist(
 		@Param(ParseReleaseIdentifierPipe)
-		where: ReleaseQueryParameters.WhereInput
+		where: ReleaseQueryParameters.WhereInput,
+		@Query('with', TrackQueryParameters.ParseRelationIncludePipe)
+		include?: TrackQueryParameters.RelationInclude
 	) {
-		const tracklist = await this.trackService.getTracklist(where)
+		const tracklist = await this.trackService.getTracklist(where, include)
 		return this.trackService.buildTracklistResponse(tracklist);
 	}
 
