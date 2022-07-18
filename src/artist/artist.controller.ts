@@ -13,7 +13,9 @@ import ParseArtistIdentifierPipe from './artist.pipe';
 import ArtistService from './artist.service';
 import ArtistQueryParameters from './models/artist.query-parameters';
 import type { Request } from 'express';
+import { ApiTags } from '@nestjs/swagger';
 
+@ApiTags("Artists")
 @Controller('artists')
 export default class ArtistController {
 	constructor(

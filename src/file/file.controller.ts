@@ -3,7 +3,9 @@ import type { File } from "@prisma/client";
 import { ParseIdPipe } from "src/identifier/id.pipe";
 import FileService from "./file.service";
 import FileQueryParameters from "./models/file.query-parameters";
+import { ApiTags } from '@nestjs/swagger';
 
+@ApiTags("Files")
 @Controller('files')
 export default class FileController {
 	constructor(

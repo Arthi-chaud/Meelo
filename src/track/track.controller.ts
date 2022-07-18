@@ -10,7 +10,9 @@ import Slug from 'src/slug/slug';
 import TrackQueryParameters from './models/track.query-parameters';
 import TrackService from './track.service';
 import type { Request } from 'express';
+import { ApiTags } from '@nestjs/swagger';
 
+@ApiTags("Tracks")
 @Controller('tracks')
 export class TrackController {
 	constructor(

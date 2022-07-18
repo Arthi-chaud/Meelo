@@ -12,9 +12,9 @@ import TrackService from 'src/track/track.service';
 import SongQueryParameters from './models/song.query-params';
 import ParseSongIdentifierPipe from './song.pipe';
 import SongService from './song.service';
+import { ApiTags } from '@nestjs/swagger';
 
-
-
+@ApiTags("Songs")
 @Controller('songs')
 export class SongController {
 	constructor(

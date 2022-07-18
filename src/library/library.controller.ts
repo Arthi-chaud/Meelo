@@ -18,7 +18,9 @@ import LibraryQueryParameters from './models/library.query-parameters';
 import ParseLibraryIdentifierPipe from './library.pipe';
 import type { Request } from 'express';
 import PaginatedResponse from 'src/pagination/models/paginated-response';
+import { ApiTags } from '@nestjs/swagger';
 
+@ApiTags("Libraries")
 @Controller('libraries')
 export default class LibraryController {
 	constructor(

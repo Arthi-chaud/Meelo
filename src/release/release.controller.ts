@@ -13,8 +13,9 @@ import AlbumQueryParameters from 'src/album/models/album.query-parameters';
 import ParseReleaseIdentifierPipe from './release.pipe';
 import type { Request } from 'express';
 import PaginatedResponse from 'src/pagination/models/paginated-response';
+import { ApiTags } from '@nestjs/swagger';
 
-
+@ApiTags("Releases")
 @Controller('releases')
 export default class ReleaseController {
 	constructor(

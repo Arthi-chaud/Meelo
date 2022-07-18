@@ -13,7 +13,9 @@ import type { Request } from 'express';
 import PaginatedResponse from 'src/pagination/models/paginated-response';
 import TrackService from 'src/track/track.service';
 import TrackQueryParameters from 'src/track/models/track.query-parameters';
+import { ApiTags } from '@nestjs/swagger';
 
+@ApiTags("Albums")
 @Controller('albums')
 export default class AlbumController {
 	constructor(
