@@ -25,6 +25,7 @@ import FileService from "src/file/file.service";
 import LibraryService from "src/library/library.service";
 import LibraryModule from "src/library/library.module";
 import SongService from "src/song/song.service";
+import type Tracklist from "src/track/models/tracklist.model";
 
 describe('Release Controller', () => {
 	let releaseService: ReleaseService;
@@ -124,6 +125,20 @@ describe('Release Controller', () => {
 			name: "My Song 2",
 			artist: { id: artist.id }
 		});
+		
+		track2 = await trackService.createTrack({
+			type: "Audio",
+			master: true,
+			displayName: "My Track 2",
+			discIndex: 2,
+			trackIndex: 1,
+			bitrate: 0,
+			ripSource: null,
+			duration: 0,
+			sourceFile: { id: file2.id },
+			release: { byId: { id: deluxeRelease.id } },
+			song: { byId: { id: song2.id } },
+		});
 
 		track1 = await trackService.createTrack({
 			type: "Audio",
@@ -137,20 +152,6 @@ describe('Release Controller', () => {
 			sourceFile: { id: file1.id },
 			release: { byId: { id: deluxeRelease.id } },
 			song: { byId: { id: song1.id } },
-		});
-
-		track2 = await trackService.createTrack({
-			type: "Audio",
-			master: true,
-			displayName: "My Track 2",
-			discIndex: 1,
-			trackIndex: 1,
-			bitrate: 0,
-			ripSource: null,
-			duration: 0,
-			sourceFile: { id: file2.id },
-			release: { byId: { id: deluxeRelease.id } },
-			song: { byId: { id: song2.id } },
 		});
 	});
 
@@ -182,6 +183,32 @@ describe('Release Controller', () => {
 					expect(releases[3]).toStrictEqual({
 						...editedRelease,
 						illustration: `http://meelo.com/releases/${editedRelease.id}/illustration`
+					});
+				});
+		});
+
+		it("should return every releases, sorted by name", () => {
+			return request(app.getHttpServer())
+				.get('/releases?sortBy=title')
+				.expect(200)
+				.expect((res) => {
+					let releases: Release[] = res.body.items;
+					expect(releases.length).toBe(4);
+					expect(releases[0]).toStrictEqual({
+						...standardRelease,
+						illustration: `http://meelo.com/releases/${standardRelease.id}/illustration`
+					});
+					expect(releases[1]).toStrictEqual({
+						...deluxeRelease,
+						illustration: `http://meelo.com/releases/${deluxeRelease.id}/illustration`
+					});
+					expect(releases[2]).toStrictEqual({
+						...editedRelease,
+						illustration: `http://meelo.com/releases/${editedRelease.id}/illustration`
+					});
+					expect(releases[3]).toStrictEqual({
+						...compilationRelease,
+						illustration: `http://meelo.com/releases/${compilationRelease.id}/illustration`
 					});
 				});
 		});
@@ -278,13 +305,13 @@ describe('Release Controller', () => {
 					let release: Release & { album: Album, tracks: Track[] } = res.body
 					expect(release.id).toBe(deluxeRelease.id);
 					expect(release.tracks).toStrictEqual([{
-						...track1,
-						illustration: `http://meelo.com/tracks/${track1.id}/illustration`,
-						stream: `http://meelo.com/files/${track1.sourceFileId}/stream`
-					}, {
 						...track2,
 						illustration: `http://meelo.com/tracks/${track2.id}/illustration`,
 						stream: `http://meelo.com/files/${track2.sourceFileId}/stream`
+					}, {
+						...track1,
+						illustration: `http://meelo.com/tracks/${track1.id}/illustration`,
+						stream: `http://meelo.com/files/${track1.sourceFileId}/stream`
 					}]);
 					expect(release.album).toStrictEqual({
 						...album,
@@ -300,7 +327,26 @@ describe('Release Controller', () => {
 				.get(`/releases/${deluxeRelease.id}/tracks`)
 				.expect(200)
 				.expect((res) => {
-					let tracks: Track[] = res.body.items;;
+					let tracks: Track[] = res.body.items;
+					expect(tracks.length).toBe(2);
+					expect(tracks[0]).toStrictEqual({
+						...track2,
+						illustration: `http://meelo.com/tracks/${track2.id}/illustration`,
+						stream: `http://meelo.com/files/${track2.sourceFileId}/stream`
+					});
+					expect(tracks[1]).toStrictEqual({
+						...track1,
+						illustration: `http://meelo.com/tracks/${track1.id}/illustration`,
+						stream: `http://meelo.com/files/${track1.sourceFileId}/stream`
+					});
+				});
+		});
+		it("should get all the tracks, sorted by name", () => {
+			return request(app.getHttpServer())
+				.get(`/releases/${deluxeRelease.id}/tracks?sortBy=displayName`)
+				.expect(200)
+				.expect((res) => {
+					let tracks: Track[] = res.body.items;
 					expect(tracks.length).toBe(2);
 					expect(tracks[0]).toStrictEqual({
 						...track1,
@@ -322,9 +368,9 @@ describe('Release Controller', () => {
 					let tracks: Track[] = res.body.items;;
 					expect(tracks.length).toBe(1);
 					expect(tracks[0]).toStrictEqual({
-						...track2,
-						illustration: `http://meelo.com/tracks/${track2.id}/illustration`,
-						stream: `http://meelo.com/files/${track2.sourceFileId}/stream`
+						...track1,
+						illustration: `http://meelo.com/tracks/${track1.id}/illustration`,
+						stream: `http://meelo.com/files/${track1.sourceFileId}/stream`
 					});
 				});
 		});
@@ -336,12 +382,12 @@ describe('Release Controller', () => {
 					let tracks: Track[] = res.body.items;;
 					expect(tracks.length).toBe(1);
 					expect(tracks[0]).toStrictEqual({
-						...track1,
-						illustration: `http://meelo.com/tracks/${track1.id}/illustration`,
-						stream: `http://meelo.com/files/${track1.sourceFileId}/stream`,
+						...track2,
+						illustration: `http://meelo.com/tracks/${track2.id}/illustration`,
+						stream: `http://meelo.com/files/${track2.sourceFileId}/stream`,
 						song: {
-							...song1,
-							illustration: `http://meelo.com/songs/${song1.id}/illustration`
+							...song2,
+							illustration: `http://meelo.com/songs/${song2.id}/illustration`
 						}
 					});
 				});
@@ -349,6 +395,56 @@ describe('Release Controller', () => {
 		it("should throw, as the release does not exist", () => {
 			return request(app.getHttpServer())
 				.get(`/releases/${-1}/tracks`)
+				.expect(404);
+		});
+	});
+
+	describe("Get Tracklist", () => {
+		it("should get the tracklist", () => {
+			return request(app.getHttpServer())
+				.get(`/releases/${deluxeRelease.id}/tracklist`)
+				.expect(200)
+				.expect((res) => {
+					let tracklist: Tracklist = res.body;
+					expect(tracklist).toStrictEqual({
+						'1': [{
+							...track1,
+							illustration: `http://meelo.com/tracks/${track1.id}/illustration`,
+							stream: `http://meelo.com/files/${track1.sourceFileId}/stream`
+						}],
+						'2': [{
+							...track2,
+							illustration: `http://meelo.com/tracks/${track2.id}/illustration`,
+							stream: `http://meelo.com/files/${track2.sourceFileId}/stream`
+						}],
+					});
+				});
+		});
+
+		it("should get the tracklist, w/ related song", () => {
+			return request(app.getHttpServer())
+				.get(`/releases/${deluxeRelease.id}/tracklist`)
+				.expect(200)
+				.expect((res) => {
+					let tracklist: Tracklist = res.body;
+					expect(tracklist).toStrictEqual({
+						'1': [{
+							...track1,
+							illustration: `http://meelo.com/tracks/${track1.id}/illustration`,
+							stream: `http://meelo.com/files/${track1.sourceFileId}/stream`
+						}],
+						'2': [{
+							...track2,
+							illustration: `http://meelo.com/tracks/${track2.id}/illustration`,
+							stream: `http://meelo.com/files/${track2.sourceFileId}/stream`
+						}],
+					});
+				});
+		});
+
+		it("should return an error, as the release does not exist", () => {
+			return request(app.getHttpServer())
+				.get(`/releases/${-1}/tracklist`)
 				.expect(404);
 		});
 	});

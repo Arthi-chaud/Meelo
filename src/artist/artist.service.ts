@@ -30,7 +30,10 @@ export default class ArtistService {
 	 * @param include the relation to include in the returned Artist
 	 * @returns 
 	 */
-	async createArtist(artist: ArtistQueryParameters.CreateInput, include?: ArtistQueryParameters.RelationInclude) {
+	async createArtist(
+		artist: ArtistQueryParameters.CreateInput,
+		include?: ArtistQueryParameters.RelationInclude
+	) {
 		const artistSlug = new Slug(artist.name);
 		try {
 			return await this.prismaService.artist.create({
@@ -50,7 +53,10 @@ export default class ArtistService {
 	 * @param where the query parameters to find the artist
 	 * @param include the relations to include in the returned artist
 	 */
-	async getArtist(where: ArtistQueryParameters.WhereInput, include?: ArtistQueryParameters.RelationInclude) {
+	async getArtist(
+		where: ArtistQueryParameters.WhereInput,
+		include?: ArtistQueryParameters.RelationInclude
+	) {
 		if (where.compilationArtist)
 			throw new CompilationArtistException('Artist');
 		try {
@@ -72,10 +78,16 @@ export default class ArtistService {
 	 * @param pagination the pagination paramters to filter entries
 	 * @param include the relations to include in the returned artists
 	 */
-	 async getArtists(where: ArtistQueryParameters.ManyWhereInput, pagination?: PaginationParameters, include?: ArtistQueryParameters.RelationInclude) {
+	 async getArtists(
+		where: ArtistQueryParameters.ManyWhereInput,
+		pagination?: PaginationParameters,
+		include?: ArtistQueryParameters.RelationInclude,
+		sort?: ArtistQueryParameters.SortingParameter
+	) {
 		return this.prismaService.artist.findMany({
 			where: ArtistQueryParameters.buildQueryParametersForMany(where),
 			include: ArtistQueryParameters.buildIncludeParameters(include),
+			orderBy: sort,
 			...buildPaginationParameters(pagination)
 		});
 	}
@@ -96,7 +108,10 @@ export default class ArtistService {
 	 * @param where the query parameter to find the artist to update
 	 * @returns the updated artist
 	 */
-	async updateArtist(what: ArtistQueryParameters.UpdateInput, where: ArtistQueryParameters.WhereInput): Promise<Artist> {
+	async updateArtist(
+		what: ArtistQueryParameters.UpdateInput,
+		where: ArtistQueryParameters.WhereInput
+	): Promise<Artist> {
 		if (where.compilationArtist)
 		throw new CompilationArtistException('Artist');
 		try {
@@ -155,7 +170,10 @@ export default class ArtistService {
 	 * Find an artist by its name, or creates one if not found
 	 * @param where the query parameters to find / create the artist
 	 */
-	async getOrCreateArtist(where: ArtistQueryParameters.GetOrCreateInput, include?: ArtistQueryParameters.RelationInclude) {
+	async getOrCreateArtist(
+		where: ArtistQueryParameters.GetOrCreateInput,
+		include?: ArtistQueryParameters.RelationInclude
+	) {
 		try {
 			return await this.getArtist({ slug: new Slug(where.name) }, include);
 		} catch {

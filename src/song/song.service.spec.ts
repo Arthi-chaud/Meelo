@@ -150,6 +150,16 @@ describe('Song Service', () => {
 			expect(songs[1]).toStrictEqual(song2);
 		});
 
+		it('should get the two songs, sorted by name (desc)', async () => {
+			let songs = await songService.getSongs({ 
+				artist: { id: artist.id }
+			}, {}, {}, { name: 'desc' });
+
+			expect(songs.length).toBe(2);
+			expect(songs[0]).toStrictEqual(song2);
+			expect(songs[1]).toStrictEqual(song);
+		});
+
 		it('should get none, as the artist does not exist', async () => {
 			let songs = await songService.getSongs({ 
 				artist: { id: -1 }
@@ -252,9 +262,9 @@ describe('Song Service', () => {
 
 		it("should create the song", async () => {
 			let createdSong = await songService.getOrCreateSong({
-				name: "My Song 2", artist: { slug: new Slug("My Artist") }
+				name: "My Song 3", artist: { slug: new Slug("My Artist") }
 			});
-			expect(createdSong.name).toBe("My Song 2")
+			expect(createdSong.name).toBe("My Song 3")
 			expect(createdSong.artistId).toBe(artist.id);
 		});
 

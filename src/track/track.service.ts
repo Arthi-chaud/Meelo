@@ -16,6 +16,8 @@ import type { MeeloException } from 'src/exceptions/meelo-exception';
 import { UrlGeneratorService } from 'nestjs-url-generator';
 import { TrackController } from './track.controller';
 import FileController from 'src/file/file.controller';
+import type Tracklist from './models/tracklist.model';
+import { UnknownDiscIndexKey } from './models/tracklist.model';
 
 @Injectable()
 export default class TrackService {
@@ -33,7 +35,10 @@ export default class TrackService {
 	 * @param include the relation fields to include in the returned object
 	 * @returns the created song
 	 */
-	async createTrack(track: TrackQueryParameters.CreateInput, include?: TrackQueryParameters.RelationInclude) {
+	async createTrack(
+		track: TrackQueryParameters.CreateInput,
+		include?: TrackQueryParameters.RelationInclude
+	) {
 		try {
 			return await this.prismaService.track.create({
 				data: {
@@ -66,7 +71,10 @@ export default class TrackService {
 	 * @param where the query parameters to find the track
 	 * @param include the relations to include in the returned value
 	 */
-	async getTrack(where: TrackQueryParameters.WhereInput, include?: TrackQueryParameters.RelationInclude) {
+	async getTrack(
+		where: TrackQueryParameters.WhereInput,
+		include?: TrackQueryParameters.RelationInclude
+	) {
 		try {
 			return await this.prismaService.track.findFirst({
 				rejectOnNotFound: true,
@@ -84,10 +92,16 @@ export default class TrackService {
 	 * @param include the relation fields to includes
 	 * @returns an array of tracks
 	 */
-	async getTracks(where: TrackQueryParameters.ManyWhereInput, pagination?: PaginationParameters, include?: TrackQueryParameters.RelationInclude) {
+	async getTracks(
+		where: TrackQueryParameters.ManyWhereInput,
+		pagination?: PaginationParameters,
+		include?: TrackQueryParameters.RelationInclude,
+		sort?: TrackQueryParameters.SortingParameter
+	) {
 		return this.prismaService.track.findMany({
 			where: TrackQueryParameters.buildQueryParametersForMany(where),
 			include: TrackQueryParameters.buildIncludeParameters(include),
+			orderBy: sort,
 			...buildPaginationParameters(pagination)
 		});
 	}
@@ -100,12 +114,22 @@ export default class TrackService {
 	 * @param include the relation to include in the returned objects
 	 * @returns the list of tracks related to the song
 	 */
-	async getSongTracks(where: SongQueryParameters.WhereInput, pagination?: PaginationParameters, include?: TrackQueryParameters.RelationInclude) {
-		return this.getTracks(
+	async getSongTracks(
+		where: SongQueryParameters.WhereInput,
+		pagination?: PaginationParameters,
+		include?: TrackQueryParameters.RelationInclude,
+		sort?: TrackQueryParameters.SortingParameter
+	) {
+
+		const tracks = await this.getTracks(
 			{ bySong: where },
 			pagination,
-			include
+			include,
+			sort
 		);
+		if (tracks.length == 0)
+			await this.songService.getSong(where);
+		return tracks;
 	}
 
 
@@ -115,11 +139,34 @@ export default class TrackService {
 	 * @param include the relation to include in the returned object
 	 * @returns the master track of the song
 	 */
-	async getMasterTrack(where: SongQueryParameters.WhereInput, include?: TrackQueryParameters.RelationInclude) {
+	async getMasterTrack(
+		where: SongQueryParameters.WhereInput,
+		include?: TrackQueryParameters.RelationInclude
+	) {
 		return this.getTrack(
 			{ masterOfSong: where },
 			include
 		);
+	}
+
+	/**
+	 * Get Tracklist of release
+	 * @param where 
+	 * @returns 
+	 */
+	async getTracklist(
+		where: ReleaseQueryParameters.WhereInput,
+		include?: TrackQueryParameters.RelationInclude
+	): Promise<Tracklist> {
+		let tracklist: Tracklist = new Map();
+		const tracks = await this.getTracks({ byRelease: where }, {}, include, { trackIndex: 'asc' });
+		if (tracks.length == 0)
+			await this.releaseService.getRelease(where);
+		tracks.forEach((track) => {
+			const indexToString = track.discIndex?.toString() ?? UnknownDiscIndexKey;
+			tracklist = tracklist.set(indexToString, [ ...tracklist.get(indexToString) ?? [], track]);
+		});
+		return tracklist;
 	}
 
 	/**
@@ -138,7 +185,10 @@ export default class TrackService {
 	 * @param where the query parameters to find the track to update
 	 */
 	
-	async updateTrack(what: TrackQueryParameters.UpdateInput, where: TrackQueryParameters.WhereInput) {
+	async updateTrack(
+		what: TrackQueryParameters.UpdateInput,
+		where: TrackQueryParameters.WhereInput
+	) {
 		try {
 			const unmodifiedTrack = await this.getTrack(where);
 			let updatedTrack = await this.prismaService.track.update({
@@ -175,7 +225,7 @@ export default class TrackService {
 	 * Deletes a track
 	 * @param where Query parameters to find the track to delete 
 	 */
-	 async deleteTrack(where: TrackQueryParameters.DeleteInput): Promise<void> {
+	async deleteTrack(where: TrackQueryParameters.DeleteInput): Promise<void> {
 		try {
 			let deletedTrack = await this.prismaService.track.delete({
 				where: where,
@@ -291,4 +341,15 @@ export default class TrackService {
 			}
 		return response;
 	}
+
+	buildTracklistResponse(tracklist: Tracklist) {
+		let response = {};
+		tracklist.forEach((tracks, discIndex) => {
+			response = {
+				...response,
+				[discIndex]: tracks.map((track) => this.buildTrackResponse(track))
+			}
+		});
+		return response;
+	} 
 }

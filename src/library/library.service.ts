@@ -31,7 +31,10 @@ export default class LibraryService {
 	 * @param include the relation fields to include in the returned object
 	 * @returns 
 	 */
-	async createLibrary(library: LibraryQueryParameters.CreateInput, include?: LibraryQueryParameters.RelationInclude ): Promise<Library> {
+	async createLibrary(
+		library: LibraryQueryParameters.CreateInput,
+		include?: LibraryQueryParameters.RelationInclude
+	): Promise<Library> {
 		let librarySlug: Slug = new Slug(library.name);
 		try {
 			return await this.prismaService.library.create({
@@ -54,7 +57,10 @@ export default class LibraryService {
 	 * @param include the relation fields to include in the returned object 
 	 * @returns The fetched Library
 	 */
-	 async getLibrary(where: LibraryQueryParameters.WhereInput, include?: LibraryQueryParameters.RelationInclude) {
+	async getLibrary(
+		where: LibraryQueryParameters.WhereInput,
+		include?: LibraryQueryParameters.RelationInclude
+	) {
 		try {
 			return await this.prismaService.library.findUnique({
 				rejectOnNotFound: true,
@@ -78,15 +84,24 @@ export default class LibraryService {
 	 * @param include the relation fields to include in the returned objects
 	 * @returns 
 	 */
-	async getLibraries(where: LibraryQueryParameters.ManyWhereInput, pagination?: PaginationParameters, include?: LibraryQueryParameters.RelationInclude) {
+	async getLibraries(
+		where: LibraryQueryParameters.ManyWhereInput,
+		pagination?: PaginationParameters,
+		include?: LibraryQueryParameters.RelationInclude,
+		sort?: LibraryQueryParameters.SortingParameter
+	) {
 		return this.prismaService.library.findMany({
 			where: LibraryQueryParameters.buildQueryParametersForMany(where),
 			include: LibraryQueryParameters.buildIncludeParameters(include),
+			orderBy: sort,
 			...buildPaginationParameters(pagination)
 		});
 	}
 
-	async updateLibrary(what: LibraryQueryParameters.UpdateInput, where: LibraryQueryParameters.WhereInput): Promise<Library> {
+	async updateLibrary(
+		what: LibraryQueryParameters.UpdateInput,
+		where: LibraryQueryParameters.WhereInput
+	): Promise<Library> {
 		try {
 			return await this.prismaService.library.update({
 				data: {

@@ -76,7 +76,7 @@ describe('Release Service', () => {
 				album: { byId: { id: compilationAlbum.id } },
 				releaseDate: new Date('2005'),
 				master: true
-			});
+			}, { album: true });
 			expect(compilationRelease.albumId).toBe(compilationAlbum.id);
 			expect(compilationRelease.master).toBeTruthy();
 			expect(compilationRelease.releaseDate).toStrictEqual(new Date('2005'));
@@ -110,6 +110,26 @@ describe('Release Service', () => {
 		it("should not have updated the parent album metadata", async () => {
 			expect(standardRelease.album.releaseDate).toStrictEqual(new Date('2006'));
 			expect(standardRelease.album.name).toStrictEqual('My Album');
+		});
+	});
+
+	describe('Get Releases', () => { 
+		it("should get the releases", async () => {
+			let releases = await releaseService.getReleases({}, {}, { album: true });
+			expect(releases.length).toBe(3);
+			expect(releases).toContainEqual(deluxeRelease);
+			expect(releases).toContainEqual(standardRelease);
+			expect(releases).toContainEqual(compilationRelease);
+		});
+	});
+
+	describe('Get Releases', () => { 
+		it("should get the releases, sorted by name", async () => {
+			let releases = await releaseService.getReleases({}, {}, { album: true }, { title: 'desc' });
+			expect(releases.length).toBe(3);
+			expect(releases[1]).toStrictEqual(deluxeRelease);
+			expect(releases[2]).toStrictEqual(standardRelease);
+			expect(releases[0]).toStrictEqual(compilationRelease);
 		});
 	});
 

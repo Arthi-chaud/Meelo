@@ -72,10 +72,16 @@ export default class SongService {
 	 * @param pagination the pagination paramters to filter entries
 	 * @param include the relations to include
 	 */
-	async getSongs(where: SongQueryParameters.ManyWhereInput, pagination?: PaginationParameters, include?: SongQueryParameters.RelationInclude) {
+	async getSongs(
+		where: SongQueryParameters.ManyWhereInput,
+		pagination?: PaginationParameters,
+		include?: SongQueryParameters.RelationInclude,
+		sort?: SongQueryParameters.SortingParameter,
+	) {
 		return this.prismaService.song.findMany({
 			where: SongQueryParameters.buildQueryParametersForMany(where),
 			include: SongQueryParameters.buildIncludeParameters(include),
+			orderBy: sort,
 			...buildPaginationParameters(pagination) 
 		});
 	}

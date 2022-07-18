@@ -11,6 +11,8 @@ import AlbumService from './album.service';
 import AlbumQueryParameters from './models/album.query-parameters';
 import type { Request } from 'express';
 import PaginatedResponse from 'src/pagination/models/paginated-response';
+import TrackService from 'src/track/track.service';
+import TrackQueryParameters from 'src/track/models/track.query-parameters';
 
 @Controller('albums')
 export default class AlbumController {
@@ -20,6 +22,8 @@ export default class AlbumController {
 		private releaseService: ReleaseService,
 		@Inject(forwardRef(() => AlbumService))
 		private albumService: AlbumService,
+		@Inject(forwardRef(() => TrackService))
+		private trackService: TrackService,
 
 	) {}
 
@@ -27,11 +31,15 @@ export default class AlbumController {
 	async getAlbums(
 		@Query(ParsePaginationParameterPipe)
 		paginationParameters: PaginationParameters,
+		@Query(AlbumQueryParameters.ParseSortingParameterPipe)
+		sortingParameter: AlbumQueryParameters.SortingParameter,
 		@Query('with', AlbumQueryParameters.ParseRelationIncludePipe)
 		include: AlbumQueryParameters.RelationInclude,
 		@Req() request: Request
 	) {
-		const albums = await this.albumService.getAlbums({}, paginationParameters, include);
+		const albums = await this.albumService.getAlbums(
+			{}, paginationParameters, include, sortingParameter
+		);
 		return new PaginatedResponse(
 			albums.map((album) => this.albumService.buildAlbumResponse(album)),
 			request
@@ -42,11 +50,15 @@ export default class AlbumController {
 	async getCompilationsAlbums(
 		@Query(ParsePaginationParameterPipe)
 		paginationParameters: PaginationParameters,
+		@Query(AlbumQueryParameters.ParseSortingParameterPipe)
+		sortingParameter: AlbumQueryParameters.SortingParameter,
 		@Query('with', AlbumQueryParameters.ParseRelationIncludePipe)
 		include: AlbumQueryParameters.RelationInclude,
 		@Req() request: Request
 	) {
-		const albums = await this.albumService.getAlbums({ byArtist: null }, paginationParameters, include);
+		const albums = await this.albumService.getAlbums(
+			{ byArtist: null }, paginationParameters, include, sortingParameter
+		);
 		return new PaginatedResponse(
 			albums.map((album) => this.albumService.buildAlbumResponse(album)),
 			request
@@ -75,17 +87,35 @@ export default class AlbumController {
 		return this.releaseService.buildReleaseResponse(masterRelease);
 	}
 
+	@Get(':idOrSlug/master/tracklist')
+	async getAlbumTracklist(
+		@Param(ParseAlbumIdentifierPipe)
+		where: AlbumQueryParameters.WhereInput,
+		@Query('with', TrackQueryParameters.ParseRelationIncludePipe)
+		include: TrackQueryParameters.RelationInclude,
+	) {
+		const masterRelease = await this.releaseService.getMasterRelease(where);
+		const tracklist = await this.trackService.getTracklist(
+			{ byId: { id: masterRelease.id } }, include
+		);
+		return this.trackService.buildTracklistResponse(tracklist);
+	}
+
 	@Get(':idOrSlug/releases')
 	async getAlbumReleases(
 		@Query(ParsePaginationParameterPipe)
 		paginationParameters: PaginationParameters,
 		@Query('with', ReleaseQueryParameters.ParseRelationIncludePipe)
 		include: ReleaseQueryParameters.RelationInclude,
+		@Query(ReleaseQueryParameters.ParseSortingParameterPipe)
+		sortingParameter: ReleaseQueryParameters.SortingParameter,
 		@Param(ParseAlbumIdentifierPipe)
 		where: AlbumQueryParameters.WhereInput,
 		@Req() request: Request
 	) {
-		let releases = await this.releaseService.getAlbumReleases(where, paginationParameters, include);
+		let releases = await this.releaseService.getAlbumReleases(
+			where, paginationParameters, include, sortingParameter
+		);
 		return new PaginatedResponse(
 			releases.map((release) => this.releaseService.buildReleaseResponse(release)),
 			request

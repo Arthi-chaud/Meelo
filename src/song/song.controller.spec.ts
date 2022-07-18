@@ -146,6 +146,23 @@ describe('Song Controller', () => {
 					});
 				});
 		});
+		it("should return all songs, sorted by name, desc", () => {
+			return request(app.getHttpServer())
+				.get(`/songs?sortBy=name&order=desc`)
+				.expect(200)
+				.expect((res) => {
+					let songs: Song[] = res.body.items
+					expect(songs.length).toBe(2);
+					expect(songs[1]).toStrictEqual({
+						...song1,
+						illustration: `http://meelo.com/songs/${song1.id}/illustration`
+					});
+					expect(songs[0]).toStrictEqual({
+						...song2,
+						illustration: `http://meelo.com/songs/${song2.id}/illustration`
+					});
+				});
+		});
 		it("should return some songs (w/ pagination)", () => {
 			return request(app.getHttpServer())
 				.get(`/songs?skip=1`)
@@ -270,7 +287,7 @@ describe('Song Controller', () => {
 		});
 	});
 
-	describe("Get Song Tracks (GET /songs/:id/master)", () => {
+	describe("Get Song Master (GET /songs/:id/master)", () => {
 		it("should return master tracks", () => {
 			return request(app.getHttpServer())
 				.get(`/songs/${song1.id}/master`)
@@ -307,7 +324,7 @@ describe('Song Controller', () => {
 		});
 		it("should return an error, as the song does not exist", () => {
 			return request(app.getHttpServer())
-				.get(`/songs/${-1}/tracks`)
+				.get(`/songs/${-1}/master`)
 				.expect(404);
 		});
 	});

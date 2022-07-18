@@ -10,7 +10,6 @@ import PrismaService from "src/prisma/prisma.service";
 import ReleaseModule from "src/release/release.module";
 import ReleaseService from "src/release/release.service";
 import { FakeFileManagerService } from "test/FakeFileManagerModule";
-
 import { createTestingModule } from "test/TestModule";
 import AlbumModule from "./album.module";
 import AlbumService from "./album.service";
@@ -82,6 +81,19 @@ describe('Album Controller', () => {
 						...compilationAlbum,
 						illustration: `http://meelo.com/albums/${compilationAlbum.id}/illustration`
 					})
+				});
+		});
+		it("Should sort all albums", () => {
+			return request(app.getHttpServer())
+				.get(`/albums?sortBy=name&order=desc`)
+				.expect(200)
+				.expect((res) => {
+					let albums: Album[] = res.body.items;
+					expect(albums.length).toBe(4);
+					expect(albums[0].id).toBe(compilationAlbum.id);
+					expect(albums[1].id).toBe(album3.id);
+					expect(albums[2].id).toBe(album2.id);
+					expect(albums[3].id).toBe(album1.id);
 				});
 		});
 		it("Should return some albums (w/ pagination)", () => {
@@ -275,6 +287,23 @@ describe('Album Controller', () => {
 					})
 				});
 		});
+		it("Should return all album's releases, sorted by id, desc", () => {
+			return request(app.getHttpServer())
+				.get(`/albums/${album1.id}/releases?sortBy=id&order=desc`)
+				.expect(200)
+				.expect((res) => {
+					let releases: Release[] = res.body.items;
+					expect(releases.length).toBe(2);
+					expect(releases[1]).toStrictEqual({
+						...release1,
+						illustration: `http://meelo.com/releases/${release1.id}/illustration`
+					});
+					expect(releases[0]).toStrictEqual({
+						...release2,
+						illustration: `http://meelo.com/releases/${release2.id}/illustration`
+					})
+				});
+		});
 		it("Should return all album's releases (by slug)", () => {
 			return request(app.getHttpServer())
 				.get(`/albums/${artist.slug}+${album1.slug}/releases`)
@@ -327,6 +356,15 @@ describe('Album Controller', () => {
 						}
 					});
 				});
+		});
+	});
+
+	describe("Get Tracklist Album", () => {
+
+		it("should return an error, as the release does not exist", () => {
+			return request(app.getHttpServer())
+				.get(`/albums/${-1}/master/tracklist`)
+				.expect(404);
 		});
 	});
 });

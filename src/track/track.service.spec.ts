@@ -241,13 +241,20 @@ describe('Track Service', () => {
 		});
 	});
 
-	describe("Get a Track", () => {
+	describe("Get Tracks", () => {
 		it('should retrieve all tracks', async () => {
 			let tracks = await trackService.getTracks({});
 
 			expect(tracks).toContainEqual(track2);
 			expect(tracks).toContainEqual(track);
 			expect(tracks.length).toBe(2);
+		});
+		it('should retrieve all tracks, sorted by name', async () => {
+			let tracks = await trackService.getTracks({}, {}, {}, { displayName: 'asc' });
+
+			expect(tracks.length).toBe(2);
+			expect(tracks[0]).toStrictEqual(track2);
+			expect(tracks[1]).toStrictEqual(track);
 		});
 		it('should retrieve the tracks by libraries', async () => {
 			let tracks = await trackService.getTracks({ byLibrarySource: { id: library.id } });
@@ -287,8 +294,8 @@ describe('Track Service', () => {
 		});
 
 		it('should return an empty list, as the parent song does not exist', async () => {
-			let tracks = await trackService.getSongTracks({ byId: { id: -1 } });
-			expect(tracks).toStrictEqual([]);
+			const test = async () => await trackService.getSongTracks({ byId: { id: -1 } });
+			expect(test()).rejects.toThrow(SongNotFoundByIdException);
 		});
 	});
 
