@@ -349,9 +349,9 @@ describe('Library Controller', () => {
 	});
 
 	describe('Get all Related Albums (GET /libraries/:id/albums)', () => {
-		it("should return every albums w/ releases & artist", () => {
+		it("should return every albums w/ artist", () => {
 			return request(app.getHttpServer())
-				.get(`/libraries/${library1.id}/albums?with=releases,artist`)
+				.get(`/libraries/${library1.id}/albums?with=artist`)
 				.expect(200)
 				.expect((res) => {
 					const albums: Album[] = res.body.items;
@@ -359,13 +359,6 @@ describe('Library Controller', () => {
 					expect(albums[0]).toStrictEqual({
 						...album1,
 						illustration: `http://meelo.com/albums/${album1.id}/illustration`,
-						releases: [{
-							...release1,
-							illustration: `http://meelo.com/releases/${release1.id}/illustration`
-						}, {
-							...release2,
-							illustration: `http://meelo.com/releases/${release2.id}/illustration`
-						}],
 						artist: {
 							...artist1,
 							illustration: `http://meelo.com/artists/${artist1.id}/illustration`,

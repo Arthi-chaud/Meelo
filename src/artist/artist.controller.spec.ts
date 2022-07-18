@@ -198,22 +198,15 @@ describe('Artist Controller', () => {
 					});
 			});
 		});
-		it("should get the artist w/ songs", () => {
+		it("should get the artist", () => {
 			return request(app.getHttpServer())
-				.get(`/artists/${artist1.id}?with=songs`)
+				.get(`/artists/${artist1.id}`)
 				.expect(200)
 				.expect((res) => {
 					let artist: Artist = res.body;
 					expect(artist).toStrictEqual({
 						...artist1,
 						illustration: `http://meelo.com/artists/${artist1.id}/illustration`,
-						songs: [{
-							...song1,
-							illustration: `http://meelo.com/songs/${song1.id}/illustration`,
-						}, {
-							...song2,
-							illustration: `http://meelo.com/songs/${song2.id}/illustration`,
-						}]
 					});
 			});
 		});
