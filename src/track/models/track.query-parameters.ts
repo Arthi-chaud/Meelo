@@ -109,7 +109,7 @@ namespace TrackQueryParameters {
 	 * Defines how to sort fetched entries
 	 */
 	export const AvailableFields = Object.values(Prisma.TrackScalarFieldEnum);
-	export class SortingParameter extends BaseSortingParameter<typeof AvailableFields>{};"é&"
+	export class SortingParameter extends BaseSortingParameter<typeof AvailableFields>{};
 	export const ParseSortingParameterPipe = new ParseBaseSortingParameterPipe(AvailableFields);
 
 	/**
