@@ -13,7 +13,7 @@ import AlbumQueryParameters from 'src/album/models/album.query-parameters';
 import ParseReleaseIdentifierPipe from './release.pipe';
 import type { Request } from 'express';
 import PaginatedResponse from 'src/pagination/models/paginated-response';
-import { ApiTags } from '@nestjs/swagger';
+import { ApiOperation, ApiTags } from '@nestjs/swagger';
 
 @ApiTags("Releases")
 @Controller('releases')
@@ -29,6 +29,9 @@ export default class ReleaseController {
 		private illustrationService: IllustrationService
 	) { }
 	
+	@ApiOperation({
+		summary: 'Get all releases'
+	})
 	@Get()
 	async getReleases(
 		@Query(ParsePaginationParameterPipe)
@@ -50,6 +53,9 @@ export default class ReleaseController {
 		);
 	}
 
+	@ApiOperation({
+		summary: 'Get a release'
+	})
 	@Get(':idOrSlug')
 	async getRelease(
 		@Query('with', ReleaseQueryParameters.ParseRelationIncludePipe)
@@ -61,6 +67,9 @@ export default class ReleaseController {
 		return this.releaseService.buildReleaseResponse(release);
 	}
 
+	@ApiOperation({
+		summary: 'Get all tracks from a release'
+	})
 	@Get(':idOrSlug/tracks')
 	async getReleaseTracks(
 		@Query(ParsePaginationParameterPipe)
@@ -86,6 +95,9 @@ export default class ReleaseController {
 		);
 	}
 
+	@ApiOperation({
+		summary: 'Get the tracklist of a release'
+	})
 	@Get(':idOrSlug/tracklist')
 	async getReleaseTracklist(
 		@Param(ParseReleaseIdentifierPipe)
@@ -97,6 +109,9 @@ export default class ReleaseController {
 		return this.trackService.buildTracklistResponse(tracklist);
 	}
 
+	@ApiOperation({
+		summary: 'Get the parent album of a release'
+	})
 	@Get(':idOrSlug/album')
 	async getReleaseAlbum(
 		@Query('with', AlbumQueryParameters.ParseRelationIncludePipe)
@@ -112,6 +127,9 @@ export default class ReleaseController {
 
 	}
 
+	@ApiOperation({
+		summary: 'Get a release\'s illustration'
+	})
 	@Get(':idOrSlug/illustration')
 	async getReleaseIllustration(
 		@Param(ParseReleaseIdentifierPipe)
@@ -131,6 +149,9 @@ export default class ReleaseController {
 		);
 	}
 
+	@ApiOperation({
+		summary: 'Change a release\'s illustration'
+	})
 	@Post('/:idOrSlug/illustration')
 	async updateReleaseIllustration(
 		@Param(ParseReleaseIdentifierPipe)

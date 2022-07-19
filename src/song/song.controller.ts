@@ -12,7 +12,7 @@ import TrackService from 'src/track/track.service';
 import SongQueryParameters from './models/song.query-params';
 import ParseSongIdentifierPipe from './song.pipe';
 import SongService from './song.service';
-import { ApiTags } from '@nestjs/swagger';
+import { ApiOperation, ApiTags } from '@nestjs/swagger';
 
 @ApiTags("Songs")
 @Controller('songs')
@@ -27,6 +27,9 @@ export class SongController {
 		private readonly urlGeneratorService: UrlGeneratorService
 	) {}
 
+	@ApiOperation({
+		summary: 'Get all songs'
+	})
 	@Get()
 	async getSongs(
 		@Query(ParsePaginationParameterPipe)
@@ -46,6 +49,9 @@ export class SongController {
 		);
 	}
 
+	@ApiOperation({
+		summary: 'Get a song'
+	})
 	@Get(':idOrSlug')
 	async getSong(
 		@Query('with', SongQueryParameters.ParseRelationIncludePipe)
@@ -57,6 +63,9 @@ export class SongController {
 		return this.songService.buildSongResponse(song);
 	}
 
+	@ApiOperation({
+		summary: 'Get a song\'s artist'
+	})
 	@Get(':idOrSlug/artist')
 	async getSongArtist(
 		@Query('with', ArtistQueryParameters.ParseRelationIncludePipe)
@@ -71,6 +80,9 @@ export class SongController {
 		return this.artistService.buildArtistResponse(artist);
 	}
 
+	@ApiOperation({
+		summary: 'Get a song\'s master track'
+	})
 	@Get(':idOrSlug/master')
 	async getSongMaster(
 		@Query('with', TrackQueryParameters.ParseRelationIncludePipe)
@@ -82,6 +94,9 @@ export class SongController {
 		return this.trackService.buildTrackResponse(master);
 	}
 
+	@ApiOperation({
+		summary: 'Get all the song\'s tracks'
+	})
 	@Get(':idOrSlug/tracks')
 	async getSongTracks(
 		@Query(ParsePaginationParameterPipe)
@@ -105,6 +120,9 @@ export class SongController {
 		);
 	}
 
+	@ApiOperation({
+		summary: 'Get a song\'s illustration'
+	})
 	@Get(':idOrSlug/illustration')
 	@Redirect()
 	async getSongIllustration(

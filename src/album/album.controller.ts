@@ -13,7 +13,7 @@ import type { Request } from 'express';
 import PaginatedResponse from 'src/pagination/models/paginated-response';
 import TrackService from 'src/track/track.service';
 import TrackQueryParameters from 'src/track/models/track.query-parameters';
-import { ApiTags } from '@nestjs/swagger';
+import { ApiOperation, ApiTags } from '@nestjs/swagger';
 
 @ApiTags("Albums")
 @Controller('albums')
@@ -29,6 +29,9 @@ export default class AlbumController {
 
 	) {}
 
+	@ApiOperation({
+		summary: 'Get all albums'
+	})
 	@Get()
 	async getAlbums(
 		@Query(ParsePaginationParameterPipe)
@@ -48,6 +51,9 @@ export default class AlbumController {
 		);
 	}
 
+	@ApiOperation({
+		summary: 'Get all compilations albums'
+	})
 	@Get(`${compilationAlbumArtistKeyword}`)
 	async getCompilationsAlbums(
 		@Query(ParsePaginationParameterPipe)
@@ -67,6 +73,9 @@ export default class AlbumController {
 		);
 	}
 
+	@ApiOperation({
+		summary: 'Get one album'
+	})
 	@Get(':idOrSlug')
 	async getAlbum(
 		@Query('with', AlbumQueryParameters.ParseRelationIncludePipe)
@@ -78,6 +87,9 @@ export default class AlbumController {
 		return this.albumService.buildAlbumResponse(album);
 	}
 
+	@ApiOperation({
+		summary: 'Get the master release of an album'
+	})
 	@Get(':idOrSlug/master')
 	async getAlbumMaster(
 		@Query('with', ReleaseQueryParameters.ParseRelationIncludePipe)
@@ -89,6 +101,9 @@ export default class AlbumController {
 		return this.releaseService.buildReleaseResponse(masterRelease);
 	}
 
+	@ApiOperation({
+		summary: 'Get the tracklist of master release of an album'
+	})
 	@Get(':idOrSlug/master/tracklist')
 	async getAlbumTracklist(
 		@Param(ParseAlbumIdentifierPipe)
@@ -103,6 +118,9 @@ export default class AlbumController {
 		return this.trackService.buildTracklistResponse(tracklist);
 	}
 
+	@ApiOperation({
+		summary: 'Get all the releases of an album'
+	})
 	@Get(':idOrSlug/releases')
 	async getAlbumReleases(
 		@Query(ParsePaginationParameterPipe)
@@ -124,6 +142,9 @@ export default class AlbumController {
 		);
 	}
 
+	@ApiOperation({
+		summary: 'Get the album\'s illustration'
+	})
 	@Get(':idOrSlug/illustration')
 	async getAlbumIllustration(
 		@Param(ParseAlbumIdentifierPipe)

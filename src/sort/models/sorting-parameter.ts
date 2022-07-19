@@ -1,11 +1,16 @@
-import { ApiProperty, ApiPropertyOptional } from "@nestjs/swagger";
+import { ApiPropertyOptional } from "@nestjs/swagger";
 import type SortingOrder from "./sorting-order";
+import { availableSortingOrders } from "./sorting-order";
 
 
 class SortingParameter<Keys extends string[]> {
-	@ApiProperty()
+	@ApiPropertyOptional({
+		type: 'string'
+	})
 	sortBy: Keys[number];
-	@ApiPropertyOptional()
+	@ApiPropertyOptional({
+		enum: availableSortingOrders
+	})
 	order?: SortingOrder
 }
 export default SortingParameter;

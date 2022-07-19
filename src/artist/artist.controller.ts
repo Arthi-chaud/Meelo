@@ -4,7 +4,7 @@ import AlbumQueryParameters from 'src/album/models/album.query-parameters';
 import IllustrationService from 'src/illustration/illustration.service';
 import type { IllustrationDownloadDto } from 'src/illustration/models/illustration-dl.dto';
 import PaginatedResponse from 'src/pagination/models/paginated-response';
-import type { PaginationParameters } from 'src/pagination/models/pagination-parameters';
+import { PaginationParameters } from 'src/pagination/models/pagination-parameters';
 import ParsePaginationParameterPipe from 'src/pagination/pagination.pipe';
 import Slug from 'src/slug/slug';
 import SongQueryParameters from 'src/song/models/song.query-params';
@@ -13,7 +13,7 @@ import ParseArtistIdentifierPipe from './artist.pipe';
 import ArtistService from './artist.service';
 import ArtistQueryParameters from './models/artist.query-parameters';
 import type { Request } from 'express';
-import { ApiTags } from '@nestjs/swagger';
+import { ApiOperation, ApiQuery, ApiTags } from '@nestjs/swagger';
 
 @ApiTags("Artists")
 @Controller('artists')
@@ -28,6 +28,13 @@ export default class ArtistController {
 		private illustrationService: IllustrationService
 	) {}
 
+	@ApiOperation({
+		summary: 'Get all artists'
+	})
+	@ApiQuery({
+		name: 'albumArtistOnly',
+		required: false
+	})
 	@Get()
 	async getArtists(
 		@Query(ParsePaginationParameterPipe)
@@ -58,6 +65,9 @@ export default class ArtistController {
 		);
 	}
 
+	@ApiOperation({
+		summary: 'Get one artist'
+	})
 	@Get(':idOrSlug')
 	async getArtist(
 		@Param(ParseArtistIdentifierPipe)
@@ -69,6 +79,9 @@ export default class ArtistController {
 		return this.artistService.buildArtistResponse(artist);
 	}
 
+	@ApiOperation({
+		summary: 'Get an artist\'s illustration'
+	})
 	@Get(':idOrSlug/illustration')
 	async getArtistIllustration(
 		@Param(ParseArtistIdentifierPipe)
@@ -83,6 +96,9 @@ export default class ArtistController {
 		);
 	}
 
+	@ApiOperation({
+		summary: 'Change an artist\'s illustration'
+	})
 	@Post(':idOrSlug/illustration')
 	async updateArtistIllustration(
 		@Param(ParseArtistIdentifierPipe)
@@ -98,6 +114,9 @@ export default class ArtistController {
 		);
 	}
 
+	@ApiOperation({
+		summary: 'Get all albums from an artist'
+	})
 	@Get(':idOrSlug/albums')
 	async getArtistAlbums(
 		@Query(ParsePaginationParameterPipe)
@@ -119,6 +138,9 @@ export default class ArtistController {
 		);
 	}
 
+	@ApiOperation({
+		summary: 'Get all songs from an artist',
+	})
 	@Get(':idOrSlug/songs')
 	async getArtistSongs(
 		@Query(ParsePaginationParameterPipe)
