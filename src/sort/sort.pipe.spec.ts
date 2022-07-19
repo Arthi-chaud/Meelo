@@ -9,14 +9,14 @@ describe("Parse Sorting Parameter Pipe", () => {
 	it("should parse the sorting parameter", () => {
 		const request = { sortBy: 'name', order: 'desc' };
 		expect(pipe.transform(request, metadata)).toStrictEqual({
-			'name': 'desc'
+			sortBy: 'name', order: 'desc'
 		});
 	});
 
 	it("should parse the sorting parameter (implicit order)", () => {
 		const request = { sortBy: 'id' };
 		expect(pipe.transform(request, metadata)).toStrictEqual({
-			'id': 'asc'
+			sortBy: 'id', order: 'asc'
 		});
 	});
 
@@ -31,7 +31,7 @@ describe("Parse Sorting Parameter Pipe", () => {
 	});
 
 	it("should return an error, as the value of 'sortBy' is not correct", () => {
-		const request = { sortBy: 'desc' };
+		const request = { sortBy: 'sortBy', order: 'desc' };
 		expect(() => pipe.transform(request, metadata)).toThrow(InvalidSortingFieldException);
 	});
 

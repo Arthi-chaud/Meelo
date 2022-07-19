@@ -10,7 +10,7 @@ import type { RelationInclude as BaseRelationInclude } from "src/relation-includ
 import type LibraryQueryParameters from "src/library/models/library.query-parameters";
 import TrackQueryParameters from "src/track/models/track.query-parameters";
 import ParseBaseRelationIncludePipe from "src/relation-include/relation-include.pipe";
-import type BaseSortingParameter from 'src/sort/models/sorting-parameter';
+import BaseSortingParameter from 'src/sort/models/sorting-parameter';
 import ParseBaseSortingParameterPipe from 'src/sort/sort.pipe';
 
 namespace ReleaseQueryParameters {
@@ -114,7 +114,7 @@ namespace ReleaseQueryParameters {
 	 * Defines how to sort fetched entries
 	 */
 	export const AvailableFields = Object.values(Prisma.ReleaseScalarFieldEnum);
-	export type SortingParameter = BaseSortingParameter<Prisma.ReleaseScalarFieldEnum>;
+	export class SortingParameter extends BaseSortingParameter<typeof AvailableFields>{};
 	export const ParseSortingParameterPipe = new ParseBaseSortingParameterPipe(AvailableFields);
 
 	/**

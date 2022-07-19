@@ -135,7 +135,7 @@ describe('Album Service', () => {
 		});
 
 		it("should sort the albums", async () => {
-			let albums = await albumService.getAlbums({}, {}, {}, { name: 'desc' });
+			let albums = await albumService.getAlbums({}, {}, {}, { sortBy: 'name', order: 'desc' });
 			expect(albums.length).toBe(2);
 			expect(albums[1].slug).toBe('my-album');
 			expect(albums[0].slug).toBe('my-album-live');

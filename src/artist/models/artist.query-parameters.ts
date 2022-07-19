@@ -10,7 +10,7 @@ import type { RelationInclude as BaseRelationInclude } from "src/relation-includ
 import ReleaseQueryParameters from "src/release/models/release.query-parameters";
 import ParseBaseRelationIncludePipe from "src/relation-include/relation-include.pipe";
 import TrackQueryParameters from "src/track/models/track.query-parameters";
-import type BaseSortingParameter from 'src/sort/models/sorting-parameter';
+import BaseSortingParameter from 'src/sort/models/sorting-parameter';
 import ParseBaseSortingParameterPipe from 'src/sort/sort.pipe';
 
 namespace ArtistQueryParameters {
@@ -98,7 +98,7 @@ namespace ArtistQueryParameters {
 	 * Defines how to sort fetched entries
 	 */
 	export const AvailableFields = Object.values(Prisma.ArtistScalarFieldEnum);
-	export type SortingParameter = BaseSortingParameter<Prisma.ArtistScalarFieldEnum>;
+	export class SortingParameter extends BaseSortingParameter<typeof AvailableFields>{};
 	export const ParseSortingParameterPipe = new ParseBaseSortingParameterPipe(AvailableFields);
 
 	/**

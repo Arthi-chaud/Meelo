@@ -4,7 +4,7 @@ import { availableSortingOrders } from "./models/sorting-order";
 import type SortingParameter from "./models/sorting-parameter";
 import { InvalidSortingFieldException, InvalidSortingOrderException, MissingSortingFieldException } from "./sort.exceptions";
 
-export default class ParseSortParameterPipe<Keys extends readonly string[], T = SortingParameter<Keys[number]>> implements PipeTransform {
+export default class ParseSortParameterPipe<Keys extends string[], T extends SortingParameter<Keys>> implements PipeTransform {
 	constructor(private readonly keys: Keys) { }
 	transform(value: any, _metadata: ArgumentMetadata): T {
 		let sortingParameters: T = <T>{};
@@ -18,10 +18,8 @@ export default class ParseSortParameterPipe<Keys extends readonly string[], T = 
 			throw new InvalidSortingOrderException(availableSortingOrders);
 		if (!this.keys.includes(requestSortField))
 			throw new InvalidSortingFieldException(this.keys);
-		sortingParameters = {
-			...sortingParameters,
-			[requestSortField]: requestedOrder
-		}
-		return sortingParameters
+		sortingParameters.sortBy = requestSortField;
+		sortingParameters.order = requestedOrder;
+		return sortingParameters;
 	}
 }

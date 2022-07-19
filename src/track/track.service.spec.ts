@@ -250,7 +250,7 @@ describe('Track Service', () => {
 			expect(tracks.length).toBe(2);
 		});
 		it('should retrieve all tracks, sorted by name', async () => {
-			let tracks = await trackService.getTracks({}, {}, {}, { displayName: 'asc' });
+			let tracks = await trackService.getTracks({}, {}, {}, { sortBy: 'displayName', order: 'asc' });
 
 			expect(tracks.length).toBe(2);
 			expect(tracks[0]).toStrictEqual(track2);

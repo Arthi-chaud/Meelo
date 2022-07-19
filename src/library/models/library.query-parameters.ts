@@ -6,7 +6,7 @@ import type RequireOnlyOne from "src/utils/require-only-one";
 import { buildStringSearchParameters, SearchStringInput } from "src/utils/search-string-input";
 import type { RelationInclude as BaseRelationInclude } from "src/relation-include/models/relation-include" ;
 import ParseBaseRelationIncludePipe from "src/relation-include/relation-include.pipe";
-import type BaseSortingParameter from 'src/sort/models/sorting-parameter';
+import BaseSortingParameter from 'src/sort/models/sorting-parameter';
 import ParseBaseSortingParameterPipe from 'src/sort/sort.pipe';
 
 namespace LibraryQueryParameters {
@@ -68,7 +68,7 @@ namespace LibraryQueryParameters {
 	 * Defines how to sort fetched entries
 	 */
 	export const AvailableFields = Object.values(Prisma.LibraryScalarFieldEnum);
-	export type SortingParameter = BaseSortingParameter<Prisma.LibraryScalarFieldEnum>;
+	export class SortingParameter extends BaseSortingParameter<typeof AvailableFields>{};
 	export const ParseSortingParameterPipe = new ParseBaseSortingParameterPipe(AvailableFields);
 
 	/**
