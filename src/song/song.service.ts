@@ -10,6 +10,7 @@ import { type PaginationParameters, buildPaginationParameters } from 'src/pagina
 import { SongController } from './song.controller';
 import { UrlGeneratorService } from 'nestjs-url-generator';
 import TrackService from 'src/track/track.service';
+import { buildSortingParameter } from 'src/sort/models/sorting-parameter';
 
 @Injectable()
 export default class SongService {
@@ -81,7 +82,7 @@ export default class SongService {
 		return this.prismaService.song.findMany({
 			where: SongQueryParameters.buildQueryParametersForMany(where),
 			include: SongQueryParameters.buildIncludeParameters(include),
-			orderBy: sort,
+			orderBy: buildSortingParameter(sort),
 			...buildPaginationParameters(pagination) 
 		});
 	}

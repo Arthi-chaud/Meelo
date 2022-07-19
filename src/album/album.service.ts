@@ -11,6 +11,7 @@ import { UrlGeneratorService } from 'nestjs-url-generator';
 import AlbumController from './album.controller';
 import ReleaseService from 'src/release/release.service';
 import IllustrationService from 'src/illustration/illustration.service';
+import { buildSortingParameter } from 'src/sort/models/sorting-parameter';
 
 @Injectable()
 export default class AlbumService {
@@ -100,7 +101,7 @@ export default class AlbumService {
 		return await this.prismaService.album.findMany({
 			where: AlbumQueryParameters.buildQueryParametersForMany(where),
 			include: AlbumQueryParameters.buildIncludeParameters(include),
-			orderBy: sort,
+			orderBy: buildSortingParameter(sort),
 			...buildPaginationParameters(pagination)
 		});
 	}

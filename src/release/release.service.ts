@@ -11,6 +11,7 @@ import type { MeeloException } from 'src/exceptions/meelo-exception';
 import ReleaseController from './release.controller';
 import { UrlGeneratorService } from 'nestjs-url-generator';
 import TrackService from 'src/track/track.service';
+import { buildSortingParameter } from 'src/sort/models/sorting-parameter';
 
 @Injectable()
 export default class ReleaseService {
@@ -93,7 +94,7 @@ export default class ReleaseService {
 		return this.prismaService.release.findMany({
 			where: ReleaseQueryParameters.buildQueryParametersForMany(where),
 			include: ReleaseQueryParameters.buildIncludeParameters(include),
-			orderBy: sort,
+			orderBy: buildSortingParameter(sort),
 			...buildPaginationParameters(pagination)
 		});
 	}
