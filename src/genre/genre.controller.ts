@@ -68,18 +68,26 @@ export class GenreController {
 	})
 	@Get(':idOrSlug/songs')
 	async getGenreSongs(
+		@Query(ParsePaginationParameterPipe)
+		paginationParameters: PaginationParameters,
 		@Query('with', SongQueryParameters.ParseRelationIncludePipe)
 		include: SongQueryParameters.RelationInclude,
 		@Param(ParseBaseIdentifierPipe)
-		where: GenreQueryParameters.WhereInput
+		where: GenreQueryParameters.WhereInput,
+		@Query(SongQueryParameters.ParseSortingParameterPipe)
+		sortingParameter: SongQueryParameters.SortingParameter,
+		@Req() request: Request
 	) {
 		const songs = await this.songService.getSongs(
-			{ genre: where }, {}, include
+			{ genre: where }, paginationParameters, include, sortingParameter
 		);
 		if (songs.length == 0)
 			await this.genreService.getGenre(where);
-		return songs.map(
-			(song) => this.songService.buildSongResponse(song)
+		return new PaginatedResponse(
+			songs.map(
+				(song) => this.songService.buildSongResponse(song)
+			),
+			request
 		);
 	}
 
@@ -88,19 +96,27 @@ export class GenreController {
 	})
 	@Get(':idOrSlug/albums')
 	async getGenreAlbums(
+		@Query(ParsePaginationParameterPipe)
+		paginationParameters: PaginationParameters,
 		@Query('with', AlbumQueryParameters.ParseRelationIncludePipe)
 		include: AlbumQueryParameters.RelationInclude,
 		@Param(ParseBaseIdentifierPipe)
-		where: GenreQueryParameters.WhereInput
+		where: GenreQueryParameters.WhereInput,
+		@Query(AlbumQueryParameters.ParseSortingParameterPipe)
+		sortingParameter: AlbumQueryParameters.SortingParameter,
+		@Req() request: Request
 	) {
 		const albums = await this.albumService.getAlbums(
-			{ byGenre: where }, {}, include
+			{ byGenre: where }, paginationParameters, include, sortingParameter
 		);
 		if (albums.length == 0)
 			await this.genreService.getGenre(where);
-		return albums.map(
-			(album) => this.albumService.buildAlbumResponse(album)
-		);
+		return new PaginatedResponse(
+			albums.map(
+				(album) => this.albumService.buildAlbumResponse(album)
+			),
+			request
+		)
 	}
 
 	@ApiOperation({
@@ -108,18 +124,26 @@ export class GenreController {
 	})
 	@Get(':idOrSlug/artists')
 	async getGenreArtists(
+		@Query(ParsePaginationParameterPipe)
+		paginationParameters: PaginationParameters,
 		@Query('with', ArtistQueryParameters.ParseRelationIncludePipe)
 		include: ArtistQueryParameters.RelationInclude,
 		@Param(ParseBaseIdentifierPipe)
-		where: GenreQueryParameters.WhereInput
+		where: GenreQueryParameters.WhereInput,
+		@Query(ArtistQueryParameters.ParseSortingParameterPipe)
+		sortingParameter: ArtistQueryParameters.SortingParameter,
+		@Req() request: Request
 	) {
 		const artists = await this.artistService.getArtists(
-			{ byGenre: { genre:  where } }, {}, include
+			{ byGenre: where }, paginationParameters , include, sortingParameter
 		);
 		if (artists.length == 0)
 			await this.genreService.getGenre(where);
-		return artists.map(
-			(artist) => this.artistService.buildArtistResponse(artist)
+		return new PaginatedResponse(
+			artists.map(
+				(artist) => this.artistService.buildArtistResponse(artist)
+			),
+			request
 		);
 	}
 }

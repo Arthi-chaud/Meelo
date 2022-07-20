@@ -47,7 +47,7 @@ namespace ArtistQueryParameters {
 		byLibrarySource: LibraryQueryParameters.WhereInput,
 		byName: SearchStringInput,
 		byIds: { in: number[] },
-		byGenre: { genre: GenreQueryParameters.WhereInput }
+		byGenre: GenreQueryParameters.WhereInput
 		
 	}>>;
 
@@ -72,11 +72,11 @@ namespace ArtistQueryParameters {
 			songs: where.byLibrarySource || where.byGenre ? {
 				some: {
 					genres: where.byGenre ? {
-						some: GenreQueryParameters.buildQueryParametersForOne(where.byGenre.genre)
+						some: GenreQueryParameters.buildQueryParametersForOne(where.byGenre)
 					} : undefined,
-					tracks: {
+					tracks: where.byLibrarySource ? {
 						some: TrackQueryParameters.buildQueryParametersForMany({ byLibrarySource: where.byLibrarySource })
-					}
+					} : undefined
 				}
 			} : undefined
 		};
