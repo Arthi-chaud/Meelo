@@ -20,6 +20,7 @@ import MetadataModule from "src/metadata/metadata.module";
 import ReleaseService from "src/release/release.service";
 import compilationAlbumArtistKeyword from "src/utils/compilation";
 import IllustrationModule from "src/illustration/illustration.module";
+import GenreModule from "src/genre/genre.module";
 
 describe('Artist Controller', () => {
 	let artistService: ArtistService;
@@ -41,7 +42,7 @@ describe('Artist Controller', () => {
 
 	beforeAll(async () => {
 		const module: TestingModule = await createTestingModule({
-			imports: [ReleaseModule, PrismaModule, ArtistModule, SongModule, AlbumModule, TrackModule, MetadataModule, IllustrationModule],
+			imports: [ReleaseModule, PrismaModule, ArtistModule, SongModule, AlbumModule, TrackModule, MetadataModule, IllustrationModule, GenreModule],
 			providers: [ArtistService, SongService, AlbumService, ReleaseService],
 		}).overrideProvider(FileManagerService).useClass(FakeFileManagerService).compile();
 		app = await SetupApp(module);
@@ -54,8 +55,8 @@ describe('Artist Controller', () => {
 		artist2 = await artistService.createArtist({ name: 'My Artist 2' });
 		artist3 = await artistService.createArtist({ name: 'My Artist 3' });
 
-		song2 = await songService.createSong({ name: 'My Song 2', artist: { id: artist1.id } });
-		song1 = await songService.createSong({ name: 'My Song 1', artist: { id: artist1.id } });
+		song2 = await songService.createSong({ name: 'My Song 2', artist: { id: artist1.id }, genres: [] });
+		song1 = await songService.createSong({ name: 'My Song 1', artist: { id: artist1.id }, genres: [] });
 		
 		album2 = await albumService.createAlbum({ name: 'My Album 2', artist: { id: artist1.id } });
 		album1 = await albumService.createAlbum({ name: 'My Album 1', artist: { id: artist1.id } });
