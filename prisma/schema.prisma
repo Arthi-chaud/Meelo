@@ -9,6 +9,16 @@ generator client {
 
 /////// Models
 
+model Genre {
+	id				Int		@id @default(autoincrement())
+	/// The name of the genre
+	name			String
+	/// The slug of the album, based on its name
+	slug			String
+	/// The songs from this genre
+	songs			Song[]
+}
+
 enum AlbumType {
 	/// Describes is an original collection of studio recordings
 	StudioRecording
@@ -114,6 +124,8 @@ model Song {
 	/// The number of times, the song was played
 	playCount		Int		@default(0)
 	tracks			Track[]
+	/// The genres of the song
+	genres Genre[]
 	@@unique([slug, artistId])
 }
 
