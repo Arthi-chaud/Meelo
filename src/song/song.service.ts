@@ -11,6 +11,8 @@ import { SongController } from './song.controller';
 import { UrlGeneratorService } from 'nestjs-url-generator';
 import TrackService from 'src/track/track.service';
 import { buildSortingParameter } from 'src/sort/models/sorting-parameter';
+import GenreService from 'src/genre/genre.service';
+import GenreQueryParameters from 'src/genre/models/genre.query-parameters';
 
 @Injectable()
 export default class SongService {
@@ -20,6 +22,8 @@ export default class SongService {
 		private artistService: ArtistService,
 		@Inject(forwardRef(() => TrackService))
 		private trackService: TrackService,
+		@Inject(forwardRef(() => GenreService))
+		private genreService: GenreService,
 		private readonly urlGeneratorService: UrlGeneratorService
 	) {}
 
@@ -30,9 +34,17 @@ export default class SongService {
 	 * @returns the created song
 	 */
 	async createSong(song: SongQueryParameters.CreateInput, include?: SongQueryParameters.RelationInclude) {
+		const genres = await Promise.all(
+			song.genres.map(async (where) => await this.genreService.getGenre(where))
+		);
 		try {
 			return await this.prismaService.song.create({
 				data: {
+					genres: {
+						connect: genres.map(
+							(genre) => GenreQueryParameters.buildQueryParametersForOne({ id: genre.id })
+						)
+					},
 					artist: {
 						connect: ArtistQueryParameters.buildQueryParametersForOne(song.artist)
 					},
@@ -104,11 +116,22 @@ export default class SongService {
 	 * @param where the query parameters to find the album to update
 	 * @returns the updated album
 	 */
-	async updateSong(what: SongQueryParameters.UpdateInput, where: SongQueryParameters.UpdateWhereInput): Promise<Song> {
+	async updateSong(
+		what: SongQueryParameters.UpdateInput,
+		where: SongQueryParameters.UpdateWhereInput
+	): Promise<Song> {
+		const genres = what.genres ? await Promise.all(
+			what.genres.map(async (where) => await this.genreService.getGenre(where))
+		) : [];
 		try {
 			return await this.prismaService.song.update({
 				data: {
 					...what,
+					genres: what.genres ? {
+						connect: genres.map(
+							(genre) => GenreQueryParameters.buildQueryParametersForOne({ id: genre.id })
+						)
+					} : undefined,
 					artist: what.artist ? {
 						connect: ArtistQueryParameters.buildQueryParametersForOne(what.artist),
 					} : undefined,

@@ -14,6 +14,7 @@ import { ArtistNotFoundByIDException, ArtistNotFoundException } from "src/artist
 import TrackModule from "src/track/track.module";
 import AlbumModule from "src/album/album.module";
 import IllustrationModule from "src/illustration/illustration.module";
+import GenreModule from "src/genre/genre.module";
 
 describe('Song Service', () => {
 	let artistService: ArtistService;
@@ -25,7 +26,7 @@ describe('Song Service', () => {
 	
 	beforeAll(async () => {
 		const module: TestingModule = await createTestingModule({
-			imports: [PrismaModule, ArtistModule, TrackModule, AlbumModule, IllustrationModule],
+			imports: [PrismaModule, ArtistModule, TrackModule, AlbumModule, IllustrationModule, GenreModule],
 			providers: [SongService, ArtistService, PrismaService],
 		}).overrideProvider(FileManagerService).useClass(FakeFileManagerService).compile();
 		await module.get<PrismaService>(PrismaService).onModuleInit();
@@ -44,7 +45,8 @@ describe('Song Service', () => {
 		it("should create a new song", async () => {
 			song = await songService.createSong({
 				name: 'My Song',
-				artist: { slug: new Slug(artist.name) }
+				artist: { slug: new Slug(artist.name) },
+				genres: []
 			});
 
 			expect(song.id).toBeDefined();
@@ -58,6 +60,7 @@ describe('Song Service', () => {
 			const test = async () => await songService.createSong({
 				name: 'My Song',
 				artist: { slug: new Slug(artist.name) },
+				genres: []
 			});
 
 			expect(test()).rejects.toThrow(SongAlreadyExistsException);
@@ -67,6 +70,7 @@ describe('Song Service', () => {
 			const test = async () => await songService.createSong({
 				name: 'My Song',
 				artist: { id: -1 },
+				genres: []
 			});
 
 			expect(test()).rejects.toThrow(ArtistNotFoundByIDException);
@@ -76,6 +80,7 @@ describe('Song Service', () => {
 			const test = async () => await songService.createSong({
 				name: 'My Song',
 				artist: { slug: new Slug("trololol") },
+				genres: []
 			});
 
 			expect(test()).rejects.toThrow(ArtistNotFoundException);
@@ -139,7 +144,8 @@ describe('Song Service', () => {
 		it('should get the two song from the artist', async () => {
 			song2 = await songService.createSong({
 				name: 'My Song 2',
-				artist: { id: artist.id }
+				artist: { id: artist.id },
+				genres: []
 			});
 			let songs = await songService.getSongs({ 
 				artist: { id: artist.id }
@@ -254,7 +260,11 @@ describe('Song Service', () => {
 
 	describe("Get or Create Song", () => {
 		it("should get the song", async () => {
-			let fetchedSong = await songService.getOrCreateSong({...song, artist: { id: artist.id } });
+			let fetchedSong = await songService.getOrCreateSong({
+				...song,
+				artist: { id: artist.id },
+				genres: []
+			});
 			expect(fetchedSong.id).toStrictEqual(song.id);
 			expect(fetchedSong.slug).toStrictEqual(song.slug);
 			expect(fetchedSong.name).toStrictEqual(song.name);
@@ -262,7 +272,8 @@ describe('Song Service', () => {
 
 		it("should create the song", async () => {
 			let createdSong = await songService.getOrCreateSong({
-				name: "My Song 3", artist: { slug: new Slug("My Artist") }
+				name: "My Song 3", artist: { slug: new Slug("My Artist") },
+				genres: []
 			});
 			expect(createdSong.name).toBe("My Song 3")
 			expect(createdSong.artistId).toBe(artist.id);
@@ -270,7 +281,8 @@ describe('Song Service', () => {
 
 		it("should thorw as the parent artist does not exist ", async () => {
 			const test = async () => await songService.getOrCreateSong({
-				name: "My Song 3", artist: { slug: new Slug("My Slug") }
+				name: "My Song 3", artist: { slug: new Slug("My Slug") },
+				genres: []
 			});
 			expect(test()).rejects.toThrow(ArtistNotFoundException);
 		});
