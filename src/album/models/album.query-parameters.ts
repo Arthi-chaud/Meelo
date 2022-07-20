@@ -14,6 +14,8 @@ import ReleaseQueryParameters from "src/release/models/release.query-parameters"
 import ParseBaseRelationIncludePipe from 'src/relation-include/relation-include.pipe';
 import BaseSortingParameter from 'src/sort/models/sorting-parameter';
 import ParseBaseSortingParameterPipe from 'src/sort/sort.pipe';
+import type GenreQueryParameters from "src/genre/models/genre.query-parameters";
+import SongQueryParameters from "src/song/models/song.query-params";
 
 namespace AlbumQueryParameters {
 
@@ -59,7 +61,8 @@ namespace AlbumQueryParameters {
 		byArtist: ArtistQueryParameters.WhereInput | null,
 		byName: SearchStringInput,
 		byLibrarySource: LibraryQueryParameters.WhereInput,
-		byReleaseDate: SearchDateInput
+		byReleaseDate: SearchDateInput,
+		byGenre: GenreQueryParameters.WhereInput
 	}>>;
 
 	/**
@@ -75,8 +78,18 @@ namespace AlbumQueryParameters {
 					: ArtistQueryParameters.buildQueryParametersForOne(where.byArtist)	
 			: where.byArtist,
 			name: buildStringSearchParameters(where.byName),
-			releases: where.byLibrarySource ? {
-				some: ReleaseQueryParameters.buildQueryParametersForMany({ library: where.byLibrarySource })
+			releases: where.byLibrarySource || where.byGenre ? {
+				some: where.byLibrarySource
+					? ReleaseQueryParameters.buildQueryParametersForMany({ library: where.byLibrarySource })
+					: where.byGenre
+						? {
+							tracks: {
+								some: {
+									song: SongQueryParameters.buildQueryParametersForMany({ genre: where.byGenre })
+								}
+							}
+						}
+						: undefined
 			} : undefined
 		};
 	}
