@@ -254,7 +254,7 @@ export default class MetadataService {
 	 * song name would be 'My Song'
 	 */
 	removeTrackVideoExtension(trackName: string): string {
-		return trackName.replace(/\s*\(.*(Video|video).*\)/gm, "").trim();
+		return trackName.replace(/\s*\(.*(Video|video).*\)/, "").trim();
 	}
 
 }
