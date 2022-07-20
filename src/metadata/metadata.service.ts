@@ -161,7 +161,6 @@ export default class MetadataService {
 
 	private buildMetadataFromRaw(rawMetadata: IAudioMetadata): Metadata {
 		let isVideo: boolean = rawMetadata.format.trackInfo.length != 1;
-		rawMetadata.common.genre
 		return {
 			genres: rawMetadata.common.genre,
 			compilation: rawMetadata.common.compilation ?? false,
@@ -187,6 +186,7 @@ export default class MetadataService {
 	 */
 	private mergeMetadata(metadata1: Metadata, metadata2: Metadata): Metadata {
 		return <Metadata>{
+			genres: metadata1.genres ?? metadata2.compilation,
 			compilation: metadata1.compilation ?? metadata2.compilation,
 			artist: metadata1.artist ?? metadata2.artist,
 			albumArtist: metadata1.albumArtist ?? metadata2.albumArtist,
