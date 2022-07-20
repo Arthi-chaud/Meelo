@@ -12,6 +12,7 @@ import { type PaginationParameters, buildPaginationParameters } from 'src/pagina
 import normalize from 'normalize-path';
 import type FileQueryParameters from 'src/file/models/file.query-parameters';
 import TrackService from 'src/track/track.service';
+import { buildSortingParameter } from 'src/sort/models/sorting-parameter';
 
 @Injectable()
 export default class LibraryService {
@@ -93,7 +94,7 @@ export default class LibraryService {
 		return this.prismaService.library.findMany({
 			where: LibraryQueryParameters.buildQueryParametersForMany(where),
 			include: LibraryQueryParameters.buildIncludeParameters(include),
-			orderBy: sort,
+			orderBy: buildSortingParameter(sort),
 			...buildPaginationParameters(pagination)
 		});
 	}

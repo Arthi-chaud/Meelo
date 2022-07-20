@@ -11,7 +11,7 @@ import type LibraryQueryParameters from "src/library/models/library.query-parame
 import TrackQueryParameters from "src/track/models/track.query-parameters";
 import ParseBaseRelationIncludePipe from 'src/relation-include/relation-include.pipe';
 import { CompilationArtistException } from "src/artist/artist.exceptions";
-import type BaseSortingParameter from 'src/sort/models/sorting-parameter';
+import BaseSortingParameter from 'src/sort/models/sorting-parameter';
 import ParseBaseSortingParameterPipe from 'src/sort/sort.pipe';
 
 namespace SongQueryParameters {
@@ -107,7 +107,7 @@ namespace SongQueryParameters {
 	 * Defines how to sort fetched entries
 	 */
 	export const AvailableFields = Object.values(Prisma.SongScalarFieldEnum);
-	export type SortingParameter = BaseSortingParameter<Prisma.SongScalarFieldEnum>;
+	export class SortingParameter extends BaseSortingParameter<typeof AvailableFields>{};
 	export const ParseSortingParameterPipe = new ParseBaseSortingParameterPipe(AvailableFields);
 
 	/**

@@ -1,6 +1,6 @@
 import { Body, Controller, Get, Logger, Param, Post, Query, Req } from '@nestjs/common';
 import LibraryService from './library.service';
-import { LibraryDto } from './models/library.dto';
+import LibraryDto from './models/create-library.dto';
 import type { Library } from '@prisma/client';
 import ParsePaginationParameterPipe from 'src/pagination/pagination.pipe';
 import type { PaginationParameters } from 'src/pagination/models/pagination-parameters';
@@ -18,7 +18,9 @@ import LibraryQueryParameters from './models/library.query-parameters';
 import ParseLibraryIdentifierPipe from './library.pipe';
 import type { Request } from 'express';
 import PaginatedResponse from 'src/pagination/models/paginated-response';
+import { ApiOperation, ApiTags } from '@nestjs/swagger';
 
+@ApiTags("Libraries")
 @Controller('libraries')
 export default class LibraryController {
 	constructor(
@@ -30,10 +32,17 @@ export default class LibraryController {
 		private releaseService: ReleaseService,
 	) { }
 
+	@ApiOperation({
+		summary: 'Create a new library'
+	})
 	@Post('new')
 	async createLibrary(@Body() createLibraryDto: LibraryDto) {
 		return this.libraryService.createLibrary(createLibraryDto);
 	}
+
+	@ApiOperation({
+		summary: 'Get all libraries'
+	})
 	@Get()
 	async getLibraries(
 		@Query(ParsePaginationParameterPipe)
@@ -47,7 +56,10 @@ export default class LibraryController {
 			request
 		);
 	}
-		
+	
+	@ApiOperation({
+		summary: 'Scan all libraries'
+	})
 	@Get('scan')
 	async scanLibrariesFiles() {
 		const libraries = await this.libraryService.getLibraries({});
@@ -58,6 +70,9 @@ export default class LibraryController {
 		return `Scanning ${libraries.length} libraries`
 	}
 
+	@ApiOperation({
+		summary: 'Clean all libraries'
+	})
 	@Get('clean')
 	async cleanLibraries() {
 		const libraries = await this.libraryService.getLibraries({});
@@ -68,9 +83,13 @@ export default class LibraryController {
 		return `Cleanning ${libraries.length} libraries`;
 	}
 
+	@ApiOperation({
+		summary: 'Scan a library'
+	})
 	@Get('scan/:idOrSlug')
 	async scanLibraryFiles(
-		@Param(ParseLibraryIdentifierPipe) where: LibraryQueryParameters.WhereInput
+		@Param(ParseLibraryIdentifierPipe)
+		where: LibraryQueryParameters.WhereInput
 	) {
 		let library = await this.libraryService.getLibrary(where);
 		this.libraryService
@@ -78,22 +97,32 @@ export default class LibraryController {
 			.catch((error) => Logger.error(error));
 	}
 
+	@ApiOperation({
+		summary: 'Clean a library'
+	})
 	@Get('clean/:idOrSlug')
 	async cleanLibrary(
-		@Param(ParseLibraryIdentifierPipe) where: LibraryQueryParameters.WhereInput
+		@Param(ParseLibraryIdentifierPipe)
+		where: LibraryQueryParameters.WhereInput
 	) {
 		this.libraryService
 			.unregisterUnavailableFiles(where)
 			.catch((error) => Logger.error(error));
 	}
 
+	@ApiOperation({
+		summary: 'Get a library'
+	})
 	@Get(':idOrSlug')
 	async getLibrary(
 		@Param(ParseLibraryIdentifierPipe) where: LibraryQueryParameters.WhereInput,
 	): Promise<Library> {
 		return this.libraryService.getLibrary(where);
 	}
-	
+
+	@ApiOperation({
+		summary: 'Get all artists from a library'
+	})
 	@Get(':idOrSlug/artists')
 	async getArtistsByLibrary(
 		@Param(ParseLibraryIdentifierPipe)
@@ -117,6 +146,9 @@ export default class LibraryController {
 		);
 	}
 
+	@ApiOperation({
+		summary: 'Get all albums from a library'
+	})
 	@Get(':idOrSlug/albums')
 	async getAlbumsByLibrary(
 		@Param(ParseLibraryIdentifierPipe)
@@ -140,6 +172,9 @@ export default class LibraryController {
 		);
 	}
 
+	@ApiOperation({
+		summary: 'Get all releases from a library'
+	})
 	@Get(':idOrSlug/releases')
 	async getReleasesByLibrary(
 		@Param(ParseLibraryIdentifierPipe)
@@ -163,6 +198,9 @@ export default class LibraryController {
 		);
 	}
 
+	@ApiOperation({
+		summary: 'Get all songs from a library'
+	})
 	@Get(':idOrSlug/songs')
 	async getSongsByLibrary(
 		@Param(ParseLibraryIdentifierPipe)
@@ -186,6 +224,9 @@ export default class LibraryController {
 		);
 	}
 
+	@ApiOperation({
+		summary: 'Get all tracks from a library'
+	})
 	@Get(':idOrSlug/tracks')
 	async getTracksByLibrary(
 		@Param(ParseLibraryIdentifierPipe)

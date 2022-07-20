@@ -153,7 +153,7 @@ describe('Song Service', () => {
 		it('should get the two songs, sorted by name (desc)', async () => {
 			let songs = await songService.getSongs({ 
 				artist: { id: artist.id }
-			}, {}, {}, { name: 'desc' });
+			}, {}, {}, { sortBy: 'name', order: 'desc' });
 
 			expect(songs.length).toBe(2);
 			expect(songs[0]).toStrictEqual(song2);

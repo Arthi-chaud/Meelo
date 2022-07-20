@@ -87,7 +87,7 @@ describe('Artist Service', () => {
 		});
 
 		it(('should return all artists, sorted by name'), async () => {
-			let artists = await artistService.getArtists({}, {}, {}, { name: 'asc' });
+			let artists = await artistService.getArtists({}, {}, {}, { sortBy: 'name', order: 'asc' });
 			expect(artists.length).toBe(2);
 			expect(artists[0].slug).toBe('my-artist-2');
 			expect(artists[1].slug).toBe('my-name');

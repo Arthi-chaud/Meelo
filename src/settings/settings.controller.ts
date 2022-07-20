@@ -1,7 +1,9 @@
 import { Controller, Get, HttpStatus, Redirect } from '@nestjs/common';
 import type Settings from './models/settings';
 import SettingsService from './settings.service';
+import { ApiTags } from '@nestjs/swagger';
 
+@ApiTags("Settings")
 @Controller('settings')
 export default class SettingsController {
 	constructor(private settingsService: SettingsService) {}

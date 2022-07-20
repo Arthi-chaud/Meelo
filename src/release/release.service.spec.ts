@@ -125,7 +125,7 @@ describe('Release Service', () => {
 
 	describe('Get Releases', () => { 
 		it("should get the releases, sorted by name", async () => {
-			let releases = await releaseService.getReleases({}, {}, { album: true }, { title: 'desc' });
+			let releases = await releaseService.getReleases({}, {}, { album: true }, { sortBy: 'title', order: 'desc' });
 			expect(releases.length).toBe(3);
 			expect(releases[1]).toStrictEqual(deluxeRelease);
 			expect(releases[2]).toStrictEqual(standardRelease);

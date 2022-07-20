@@ -18,6 +18,7 @@ import { TrackController } from './track.controller';
 import FileController from 'src/file/file.controller';
 import type Tracklist from './models/tracklist.model';
 import { UnknownDiscIndexKey } from './models/tracklist.model';
+import { buildSortingParameter } from 'src/sort/models/sorting-parameter';
 
 @Injectable()
 export default class TrackService {
@@ -101,7 +102,7 @@ export default class TrackService {
 		return this.prismaService.track.findMany({
 			where: TrackQueryParameters.buildQueryParametersForMany(where),
 			include: TrackQueryParameters.buildIncludeParameters(include),
-			orderBy: sort,
+			orderBy: buildSortingParameter(sort),
 			...buildPaginationParameters(pagination)
 		});
 	}
@@ -159,7 +160,7 @@ export default class TrackService {
 		include?: TrackQueryParameters.RelationInclude
 	): Promise<Tracklist> {
 		let tracklist: Tracklist = new Map();
-		const tracks = await this.getTracks({ byRelease: where }, {}, include, { trackIndex: 'asc' });
+		const tracks = await this.getTracks({ byRelease: where }, {}, include, { sortBy: 'trackIndex', order: 'asc' });
 		if (tracks.length == 0)
 			await this.releaseService.getRelease(where);
 		tracks.forEach((track) => {

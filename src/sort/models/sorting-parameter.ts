@@ -1,5 +1,24 @@
-import type RequireOnlyOne from "src/utils/require-only-one";
+import { ApiPropertyOptional } from "@nestjs/swagger";
 import type SortingOrder from "./sorting-order";
+import { availableSortingOrders } from "./sorting-order";
 
-type SortingParameter<Keys extends string> = RequireOnlyOne<Record<Keys, SortingOrder>>;
+
+class SortingParameter<Keys extends string[]> {
+	@ApiPropertyOptional({
+		type: 'string'
+	})
+	sortBy: Keys[number];
+	@ApiPropertyOptional({
+		enum: availableSortingOrders
+	})
+	order?: SortingOrder
+}
 export default SortingParameter;
+
+export function buildSortingParameter<Keys extends string[]>(sortingParameters?: SortingParameter<Keys>) {
+	if (sortingParameters == undefined)
+		return {};
+	return {
+		[sortingParameters.sortBy]: sortingParameters.order
+	}
+}

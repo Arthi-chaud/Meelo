@@ -3,13 +3,18 @@ import type { File } from "@prisma/client";
 import { ParseIdPipe } from "src/identifier/id.pipe";
 import FileService from "./file.service";
 import FileQueryParameters from "./models/file.query-parameters";
+import { ApiOperation, ApiTags } from '@nestjs/swagger';
 
+@ApiTags("Files")
 @Controller('files')
 export default class FileController {
 	constructor(
 		private fileService: FileService
 	) {}
 	
+	@ApiOperation({
+		summary: 'Get one \'File\''
+	})
 	@Get(':id')
 	getFile(
 		@Param('id', ParseIdPipe)
@@ -20,6 +25,9 @@ export default class FileController {
 		return this.fileService.getFile({ id: fileId }, include);
 	}
 
+	@ApiOperation({
+		summary: 'Get one \'File\'\'s content'
+	})
 	@Get(':id/stream')
 	async streamFile(
 		@Param('id', ParseIdPipe)

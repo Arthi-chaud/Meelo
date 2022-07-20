@@ -13,6 +13,7 @@ import FileManagerModule from './file-manager/file-manager.module';
 import MetadataModule from './metadata/metadata.module';
 import PrismaModule from './prisma/prisma.module';
 import { UrlGeneratorModule, UrlGeneratorModuleOptions } from 'nestjs-url-generator';
+import AppController from './app.controller';
 
 @Module({
 	imports: [
@@ -22,19 +23,20 @@ import { UrlGeneratorModule, UrlGeneratorModuleOptions } from 'nestjs-url-genera
 				appUrl: process.env.APP_URL!,
 			}),
 		}),
-		SettingsModule,
-		FileManagerModule,
-		FileModule,
 		ArtistModule,
 		AlbumModule,
-		ReleaseModule,
-		TrackModule,
 		SongModule,
 		LibraryModule,
+		TrackModule,
+		ReleaseModule,
 		IllustrationModule,
 		MetadataModule,
-		PrismaModule
+		PrismaModule,
+		FileModule,
+		SettingsModule,
+		FileManagerModule,
 	],
+	controllers: [AppController],
 	providers: [],
 })
 export default class AppModule {}

@@ -10,7 +10,9 @@ import Slug from 'src/slug/slug';
 import TrackQueryParameters from './models/track.query-parameters';
 import TrackService from './track.service';
 import type { Request } from 'express';
+import { ApiOperation, ApiTags } from '@nestjs/swagger';
 
+@ApiTags("Tracks")
 @Controller('tracks')
 export class TrackController {
 	constructor(
@@ -22,6 +24,9 @@ export class TrackController {
 		private illustrationService: IllustrationService
 	) { }
 	
+	@ApiOperation({
+		summary: 'Get all tracks'
+	})
 	@Get()
 	async getTracks(
 		@Query(ParsePaginationParameterPipe)
@@ -41,6 +46,9 @@ export class TrackController {
 		);
 	}
 
+	@ApiOperation({
+		summary: 'Get a track'
+	})
 	@Get(':id')
 	async getTrack(
 		@Query('with', TrackQueryParameters.ParseRelationIncludePipe)
@@ -52,6 +60,9 @@ export class TrackController {
 		return this.trackService.buildTrackResponse(track);
 	}
 
+	@ApiOperation({
+		summary: 'Get a track\'s illustration'
+	})
 	@Get(':id/illustration')
 	async getTrackIllustration(
 		@Param('id', ParseIdPipe)
@@ -86,6 +97,9 @@ export class TrackController {
 		}
 	}
 
+	@ApiOperation({
+		summary: 'Change a track\'s illustration'
+	})
 	@Post('/:id/illustration')
 	async updateTrackIllustration(
 		@Param('id', ParseIdPipe)

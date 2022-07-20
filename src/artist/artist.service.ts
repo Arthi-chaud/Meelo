@@ -10,6 +10,7 @@ import { UrlGeneratorService } from 'nestjs-url-generator';
 import SongService from 'src/song/song.service';
 import AlbumService from 'src/album/album.service';
 import IllustrationService from 'src/illustration/illustration.service';
+import { buildSortingParameter } from 'src/sort/models/sorting-parameter';
 
 @Injectable()
 export default class ArtistService {
@@ -87,7 +88,7 @@ export default class ArtistService {
 		return this.prismaService.artist.findMany({
 			where: ArtistQueryParameters.buildQueryParametersForMany(where),
 			include: ArtistQueryParameters.buildIncludeParameters(include),
-			orderBy: sort,
+			orderBy: buildSortingParameter(sort),
 			...buildPaginationParameters(pagination)
 		});
 	}

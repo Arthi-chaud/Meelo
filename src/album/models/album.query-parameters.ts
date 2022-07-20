@@ -12,7 +12,7 @@ import { buildStringSearchParameters, SearchStringInput } from "src/utils/search
 import type { RelationInclude as BaseRelationInclude } from "src/relation-include/models/relation-include" ;
 import ReleaseQueryParameters from "src/release/models/release.query-parameters";
 import ParseBaseRelationIncludePipe from 'src/relation-include/relation-include.pipe';
-import type BaseSortingParameter from 'src/sort/models/sorting-parameter';
+import BaseSortingParameter from 'src/sort/models/sorting-parameter';
 import ParseBaseSortingParameterPipe from 'src/sort/sort.pipe';
 
 namespace AlbumQueryParameters {
@@ -107,7 +107,7 @@ namespace AlbumQueryParameters {
 	 * Defines how to sort fetched entries
 	 */
 	export const AvailableFields = Object.values(Prisma.AlbumScalarFieldEnum);
-	export type SortingParameter = BaseSortingParameter<Prisma.AlbumScalarFieldEnum>;
+	export class SortingParameter extends BaseSortingParameter<typeof AvailableFields>{};
 	export const ParseSortingParameterPipe = new ParseBaseSortingParameterPipe(AvailableFields);
 
 	/**
