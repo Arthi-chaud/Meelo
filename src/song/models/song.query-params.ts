@@ -13,7 +13,7 @@ import ParseBaseRelationIncludePipe from 'src/relation-include/relation-include.
 import { CompilationArtistException } from "src/artist/artist.exceptions";
 import BaseSortingParameter from 'src/sort/models/sorting-parameter';
 import ParseBaseSortingParameterPipe from 'src/sort/sort.pipe';
-import type GenreQueryParameters from "src/genre/models/genre.query-parameters";
+import GenreQueryParameters from "src/genre/models/genre.query-parameters";
 
 namespace SongQueryParameters {
 	type OmitArtistId<T> = Omit<T, 'artistId'>;
@@ -76,6 +76,9 @@ namespace SongQueryParameters {
 		if (where.artist?.compilationArtist)
 			throw new CompilationArtistException('Song');
 		return {
+			genres: where.genre ? {
+				some: GenreQueryParameters.buildQueryParametersForOne(where.genre)
+			} : undefined,
 			artistId: where.artist?.id,
 			artist: where.artist?.slug ? {
 				slug: where.artist.slug.toString()
