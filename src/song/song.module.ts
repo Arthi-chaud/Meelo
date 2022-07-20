@@ -4,12 +4,14 @@ import ArtistModule from 'src/artist/artist.module';
 import PrismaModule from 'src/prisma/prisma.module';
 import SongService from './song.service';
 import TrackModule from 'src/track/track.module';
+import GenreModule from 'src/genre/genre.module';
 
 @Module({
 	imports: [
 		PrismaModule,
 		forwardRef(() => ArtistModule),
-		forwardRef(() => TrackModule)
+		forwardRef(() => TrackModule),
+		forwardRef(() => GenreModule)
 	],
 	exports: [SongService],
 	providers: [SongService],

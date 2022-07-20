@@ -4,6 +4,7 @@ import AlbumModule from "src/album/album.module";
 import ArtistModule from "src/artist/artist.module";
 import FileManagerModule from "src/file-manager/file-manager.module";
 import FileManagerService from "src/file-manager/file-manager.service";
+import GenreModule from "src/genre/genre.module";
 import IllustrationModule from "src/illustration/illustration.module";
 import LibraryModule from "src/library/library.module";
 import LibraryService from "src/library/library.service";
@@ -29,7 +30,7 @@ describe('File Service', () => {
 	let file2: File;
 	beforeAll(async () => {
 		const module: TestingModule = await createTestingModule({
-			imports: [LibraryModule, PrismaModule, FileModule, MetadataModule, FileManagerModule, IllustrationModule, ArtistModule, AlbumModule, SongModule, ReleaseModule, TrackModule, SettingsModule],
+			imports: [LibraryModule, PrismaModule, FileModule, MetadataModule, FileManagerModule, IllustrationModule, ArtistModule, AlbumModule, SongModule, ReleaseModule, TrackModule, SettingsModule, GenreModule],
 			providers: [FileService, LibraryService],
 		}).overrideProvider(FileManagerService).useClass(FakeFileManagerService).compile();
 		await module.get<PrismaService>(PrismaService).onModuleInit();

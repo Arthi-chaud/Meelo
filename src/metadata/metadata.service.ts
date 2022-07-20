@@ -13,6 +13,7 @@ import AlbumService from 'src/album/album.service';
 import ArtistService from 'src/artist/artist.service';
 import type TrackQueryParameters from 'src/track/models/track.query-parameters';
 import compilationAlbumArtistKeyword from 'src/utils/compilation';
+import GenreService from 'src/genre/genre.service';
 
 @Injectable()
 export default class MetadataService {
@@ -26,6 +27,7 @@ export default class MetadataService {
 		private artistService: ArtistService,
 		private releaseService: ReleaseService,
 		private settingsService: SettingsService,
+		private genreService: GenreService,
 		private fileManagerService: FileManagerService) {
 		this.metadataFolderPath = `${this.fileManagerService.configFolderPath}/metadata`;
 	}
@@ -36,11 +38,18 @@ export default class MetadataService {
 	 * @param file the file to register the metadata under, it must be already registered
 	 */
 	async registerMetadata(metadata : Metadata, file: File): Promise<Track> {
+		let genres = metadata.genres ? await Promise.all(
+			metadata.genres.map(async (genre) => await this.genreService.getOrCreateGenre({ name: genre }))
+		) : [];
 		let albumArtist = metadata.albumArtist ? await this.artistService.getOrCreateArtist({ name: metadata.albumArtist }) : undefined;
 		let songArtist = await this.artistService.getOrCreateArtist({ name: metadata.artist ?? metadata.albumArtist! });
 		let song = await this.songService.getOrCreateSong(
-			{ name: this.removeTrackVideoExtension(metadata.name!), artist: { id: songArtist.id }},
-			{ tracks: true });
+			{ name: this.removeTrackVideoExtension(metadata.name!), artist: { id: songArtist.id }, genres: genres.map((genre) => ({ id: genre.id }))},
+			{ tracks: true, genres: true });
+		await this.songService.updateSong(
+			{ genres: song.genres.concat(genres).map((genre) => ({ id: genre.id }))},
+			{ byId: { id: song.id } }
+		);
 		let album = await this.albumService.getOrCreateAlbum({
 			name: this.removeReleaseExtension(metadata.album ?? metadata.release!),
 			artist: albumArtist ? { id: albumArtist?.id} : undefined
@@ -62,7 +71,7 @@ export default class MetadataService {
 			duration: Math.floor(metadata.duration ?? 0),
 			sourceFile: { id: file.id },
 			release: { byId: { id: release.id } },
-			song: { byId: { id: song.id } }
+			song: { byId: { id: song.id } },
 		};
 		if ((release.releaseDate !== null &&
 			release.album.releaseDate !== null &&
@@ -142,7 +151,8 @@ export default class MetadataService {
 				releaseDate: groups['Year'] ? new Date(groups['Year']) : undefined,
 				discIndex: groups['Disc'] ? parseInt(groups['Disc']) : undefined,
 				index: groups['Index'] ? parseInt(groups['Index']) : undefined,
-				name: groups['Track']
+				name: groups['Track'],
+				genres: groups['Genre'] ? [groups['Genre']] : undefined
 			}
 		} catch {
 			throw new PathParsingException(filePath);
@@ -152,6 +162,7 @@ export default class MetadataService {
 	private buildMetadataFromRaw(rawMetadata: IAudioMetadata): Metadata {
 		let isVideo: boolean = rawMetadata.format.trackInfo.length != 1;
 		return {
+			genres: rawMetadata.common.genre,
 			compilation: rawMetadata.common.compilation ?? false,
 			artist: rawMetadata.common.artist,
 			albumArtist: rawMetadata.common.compilation ? undefined : rawMetadata.common.albumartist,
@@ -175,6 +186,7 @@ export default class MetadataService {
 	 */
 	private mergeMetadata(metadata1: Metadata, metadata2: Metadata): Metadata {
 		return <Metadata>{
+			genres: metadata1.genres ?? metadata2.compilation,
 			compilation: metadata1.compilation ?? metadata2.compilation,
 			artist: metadata1.artist ?? metadata2.artist,
 			albumArtist: metadata1.albumArtist ?? metadata2.albumArtist,
