@@ -7,7 +7,7 @@ import PrismaModule from "src/prisma/prisma.module";
 import FileManagerService from "src/file-manager/file-manager.service";
 import { FakeFileManagerService } from "test/FakeFileManagerModule";
 import PrismaService from "src/prisma/prisma.service";
-import type { Artist, Song } from "@prisma/client";
+import type { Artist, Genre, Song } from "@prisma/client";
 import Slug from "src/slug/slug";
 import { SongAlreadyExistsException, SongNotFoundByIdException, SongNotFoundException } from "./song.exceptions";
 import { ArtistNotFoundByIDException, ArtistNotFoundException } from "src/artist/artist.exceptions";
@@ -15,14 +15,19 @@ import TrackModule from "src/track/track.module";
 import AlbumModule from "src/album/album.module";
 import IllustrationModule from "src/illustration/illustration.module";
 import GenreModule from "src/genre/genre.module";
+import { GenreNotFoundByIdException } from "src/genre/genre.exceptions";
+import GenreService from "src/genre/genre.service";
 
 describe('Song Service', () => {
 	let artistService: ArtistService;
 	let songService: SongService;
+	let genreService: GenreService;
 	let artist: Artist;
 	let artist2: Artist;
-	let song: Song;
-	let song2: Song;
+	let song: Song & { genres: Genre[] };
+	let song2: Song & { genres: Genre[] };
+	let genre: Genre;
+	let genre2: Genre;
 	
 	beforeAll(async () => {
 		const module: TestingModule = await createTestingModule({
@@ -32,8 +37,11 @@ describe('Song Service', () => {
 		await module.get<PrismaService>(PrismaService).onModuleInit();
 		songService = module.get<SongService>(SongService);
 		artistService = module.get<ArtistService>(ArtistService);
+		genreService = module.get<GenreService>(GenreService);
 		artist = await artistService.createArtist({ name: 'My Artist' });
 		artist2 = await artistService.createArtist({ name: 'My Artist 2' });
+		genre = await genreService.createGenre({ name: 'My Genre' });
+		genre2 = await genreService.createGenre({ name: 'My Genre 2' });
 	});
 
 	it('should be defined', () => {
@@ -46,7 +54,7 @@ describe('Song Service', () => {
 			song = await songService.createSong({
 				name: 'My Song',
 				artist: { slug: new Slug(artist.name) },
-				genres: []
+				genres: [ { id: genre.id }]
 			});
 
 			expect(song.id).toBeDefined();
@@ -74,6 +82,16 @@ describe('Song Service', () => {
 			});
 
 			expect(test()).rejects.toThrow(ArtistNotFoundByIDException);
+		});
+
+		it("should throw, as the genre does not exist a new song", async () => {
+			const test = async () => await songService.createSong({
+				name: 'My Other Song',
+				artist: { id: 0 },
+				genres: [{ id: -1 }]
+			});
+
+			expect(test()).rejects.toThrow(GenreNotFoundByIdException);
 		});
 
 		it("should throw, as the parent artist does not exist (by slug)", async () => {
@@ -109,10 +127,11 @@ describe('Song Service', () => {
 
 		it("should retrieve the song (w/ include)", async () => {
 			let retrievedSong = await songService.getSong(
-				{ byId: { id: song.id } }, { artist: true }
+				{ byId: { id: song.id } }, { artist: true, genres: true }
 			);
 
 			expect(retrievedSong.artist).toStrictEqual(artist);
+			expect(retrievedSong.genres).toStrictEqual([genre]);
 		});
 
 		it("should throw, as the song does not exist (by Id)", async () => {
@@ -233,6 +252,17 @@ describe('Song Service', () => {
 			expect(updatedSong.artistId).toBe(artist2.id)
 		});
 
+		it("should change the genres of the song", async () => {
+			let updatedSong = await songService.updateSong(
+				{ genres: [ { id: genre.id }, { id: genre2.id } ] },
+				{ byId: { id: song2.id } }
+			);
+
+			expect(updatedSong.id).toBe(song2.id);
+			const refreshedSong = await songService.getSong({ byId: { id: song2.id } }, { genres: true });
+			expect(refreshedSong.genres).toStrictEqual([ genre, genre2 ])
+		});
+
 		it("should throw as the song does not exist (by Id)", async () => {
 			const test = async () => await songService.updateSong(
 				{ name: "Tralala" },
@@ -255,6 +285,14 @@ describe('Song Service', () => {
 				{ bySlug: { slug: new Slug("My Song"), artistId: artist2.id }}
 			);
 			expect(test()).rejects.toThrow(SongNotFoundException);
+		});
+
+		it("should throw as the goenre does not exist", async () => {
+			const test = async () => await songService.updateSong(
+				{ genres: [ { id: -1 } ] },
+				{ bySlug: { slug: new Slug("My Song"), artistId: artist2.id }}
+			);
+			expect(test()).rejects.toThrow(GenreNotFoundByIdException);
 		});
 	});
 

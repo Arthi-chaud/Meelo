@@ -1,6 +1,6 @@
 import { createTestingModule } from "test/TestModule";
 import type { TestingModule } from "@nestjs/testing";
-import type { Album, Artist, File, Release, Song, Track } from "@prisma/client";
+import type { Album, Artist, File, Genre, Release, Song, Track } from "@prisma/client";
 import AlbumModule from "src/album/album.module";
 import AlbumService from "src/album/album.service";
 import ArtistModule from "src/artist/artist.module";
@@ -25,6 +25,7 @@ import SongService from "src/song/song.service";
 import ReleaseService from "src/release/release.service";
 import ReleaseModule from "src/release/release.module";
 import GenreModule from "src/genre/genre.module";
+import GenreService from "src/genre/genre.service";
 
 describe('Song Controller', () => {
 	let releaseService: ReleaseService;
@@ -42,6 +43,9 @@ describe('Song Controller', () => {
 	
 	let file1: File;
 	let file2: File;
+
+	let genre1: Genre;
+	let genre2: Genre;
 	
 	beforeAll(async () => {
 		const module: TestingModule = await createTestingModule({
@@ -61,6 +65,9 @@ describe('Song Controller', () => {
 		let fileService = module.get<FileService>(FileService);
 		let libraryService = module.get<LibraryService>(LibraryService);
 		let songService = module.get<SongService>(SongService);
+		let genreService = module.get<GenreService>(GenreService);
+		genre1 = await genreService.createGenre({ name: 'My Genre 1' });
+		genre2 = await genreService.createGenre({ name: 'My Genre 2' });
 		artist = await module.get<ArtistService>(ArtistService).createArtist({ name: 'My Artist' });
 		album = await albumService.createAlbum(
 			{ name: 'My Album', artist: { id: artist.id } }
@@ -93,13 +100,13 @@ describe('Song Controller', () => {
 		song1 = await songService.createSong({
 			name: "My Song 1",
 			artist: { id: artist.id },
-			genres: []
+			genres: [{ id: genre1.id }]
 		});
 
 		song2 = await songService.createSong({
 			name: "My Song 2",
 			artist: { id: artist.id },
-			genres: []
+			genres: [{ id: genre1.id }, { id: genre2.id }]
 		});
 
 		track1 = await trackService.createTrack({
@@ -263,6 +270,19 @@ describe('Song Controller', () => {
 							...artist,
 							illustration: `http://meelo.com/artists/${artist.id}/illustration` 
 						}
+					});
+				});
+		});
+		it("should return song w/ genres", () => {
+			return request(app.getHttpServer())
+				.get(`/songs/${song2.id}?with=genres`)
+				.expect(200)
+				.expect((res) => {
+					let song: Song = res.body
+					expect(song).toStrictEqual({
+						...song2,
+						genres: [ genre1, genre2 ],
+						illustration: `http://meelo.com/songs/${song2.id}/illustration`,
 					});
 				});
 		});
