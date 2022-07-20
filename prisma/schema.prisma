@@ -14,7 +14,7 @@ model Genre {
 	/// The name of the genre
 	name			String
 	/// The slug of the album, based on its name
-	slug			String
+	slug			String	@unique
 	/// The songs from this genre
 	songs			Song[]
 }
