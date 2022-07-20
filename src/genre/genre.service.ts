@@ -76,7 +76,7 @@ export default class GenreService {
 		include?: GenreQueryParameters.RelationInclude,
 		sort?: GenreQueryParameters.SortingParameter
 	) {
-		return await this.prismaService.genre.findMany({
+		return this.prismaService.genre.findMany({
 			where: GenreQueryParameters.buildQueryParametersForMany(where),
 			include: GenreQueryParameters.buildIncludeParameters(include),
 			orderBy: buildSortingParameter(sort),
@@ -89,7 +89,7 @@ export default class GenreService {
 	 * @param where the query parameters
 	 */
 	async countGenres(where: GenreQueryParameters.ManyWhereInput): Promise<number> {
-		return await this.prismaService.genre.count({
+		return this.prismaService.genre.count({
 			where: GenreQueryParameters.buildQueryParametersForMany(where)
 		});
 	}
@@ -100,17 +100,23 @@ export default class GenreService {
 	 * @param where the query parameters to find the genre to update
 	 * @returns the updated genre
 	 */
-	async updateAlbum(
+	async updateGenre(
 		what: GenreQueryParameters.UpdateInput,
 		where: GenreQueryParameters.WhereInput
 	): Promise<Genre> {
-		return await this.prismaService.genre.update({
-			data: {
-				...what,
-				slug: new Slug(what.name).toString(),
-			},
-			where: GenreQueryParameters.buildQueryParametersForOne(where)
-		});
+		try {
+			return await this.prismaService.genre.update({
+				data: {
+					...what,
+					slug: new Slug(what.name).toString(),
+				},
+				where: GenreQueryParameters.buildQueryParametersForOne(where)
+			});
+		} catch {
+			if (where.id !== undefined)
+				throw new GenreNotFoundByIdException(where.id);
+			throw new GenreNotFoundException(where.slug);
+		}
 	}
 
 	/**
@@ -119,7 +125,7 @@ export default class GenreService {
 	 */
 	async deleteGenre(where: GenreQueryParameters.DeleteInput): Promise<void> {
 		try {
-			let genre = await this.prismaService.genre.delete({
+			const genre = await this.prismaService.genre.delete({
 				where: GenreQueryParameters.buildQueryParametersForOne(where),
 			});
 			Logger.warn(`Genre '${genre.slug}' deleted`);
@@ -146,7 +152,7 @@ export default class GenreService {
 	 * Find a genre by its name, or creates one if not found
 	 * @param where the query parameters to find / create the genre
 	 */
-	 async getOrCreateGenre(
+	async getOrCreateGenre(
 		where: GenreQueryParameters.GetOrCreateInput,
 		include?: GenreQueryParameters.RelationInclude
 	) {
