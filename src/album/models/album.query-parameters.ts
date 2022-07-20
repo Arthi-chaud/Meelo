@@ -94,7 +94,7 @@ namespace AlbumQueryParameters {
 	/**
 	 * Query parameters to delete one album
 	 */
-	 export type DeleteInput = Required<Pick<WhereInput, 'byId'>>;
+	export type DeleteInput = Required<Pick<WhereInput, 'byId'>>;
 
 	/**
 	 * Defines what relations to include in query
