@@ -2,6 +2,7 @@ import { Module, forwardRef } from '@nestjs/common';
 import AlbumModule from 'src/album/album.module';
 import ArtistModule from 'src/artist/artist.module';
 import FileManagerModule from 'src/file-manager/file-manager.module';
+import GenresModule from 'src/genre/genre.module';
 import ReleaseModule from 'src/release/release.module';
 import SettingsModule from 'src/settings/settings.module';
 import SongModule from 'src/song/song.module';
@@ -15,6 +16,7 @@ import MetadataService from './metadata.service';
 		TrackModule,
 		SongModule,
 		ReleaseModule,
+		GenresModule,
 		forwardRef(() => AlbumModule),
 		ArtistModule],
 	providers: [MetadataService],
