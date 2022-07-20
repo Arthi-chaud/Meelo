@@ -60,4 +60,8 @@ export default interface Metadata {
 	 * Type of the track
 	 */
 	type?: TrackType;
+	/**
+	 * Genres of the track
+	 */
+	genres?: string[]
 }
