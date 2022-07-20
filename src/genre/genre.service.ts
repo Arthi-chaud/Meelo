@@ -5,7 +5,7 @@ import { GenreAlreadyExistsException, GenreNotFoundByIdException, GenreNotFoundE
 import GenreQueryParameters from './models/genre.query-parameters';
 import { buildSortingParameter } from 'src/sort/models/sorting-parameter';
 import { type PaginationParameters, buildPaginationParameters } from 'src/pagination/models/pagination-parameters';
-import type { Genre } from '@prisma/client';
+import type { Genre, Song } from '@prisma/client';
 import SongService from 'src/song/song.service';
 @Injectable()
 export default class GenreService {
@@ -161,5 +161,17 @@ export default class GenreService {
 		} catch {
 			return this.createGenre(where, include);
 		}
+	}
+
+	buildGenreResponse(genre: Genre & { songs?: Song[] }) {
+		let response: Object = genre;
+		if (genre.songs !== undefined)
+			response = {
+				...response,
+				songs: genre.songs.map(
+					(song) => this.songService.buildSongResponse(song)
+				)
+			}
+		return response;
 	}
 }
