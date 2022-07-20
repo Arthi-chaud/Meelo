@@ -39,7 +39,7 @@ export default class MetadataService {
 		let albumArtist = metadata.albumArtist ? await this.artistService.getOrCreateArtist({ name: metadata.albumArtist }) : undefined;
 		let songArtist = await this.artistService.getOrCreateArtist({ name: metadata.artist ?? metadata.albumArtist! });
 		let song = await this.songService.getOrCreateSong(
-			{ name: metadata.name!, artist: { id: songArtist.id }},
+			{ name: this.removeTrackVideoExtension(metadata.name!), artist: { id: songArtist.id }},
 			{ tracks: true });
 		let album = await this.albumService.getOrCreateAlbum({
 			name: this.removeReleaseExtension(metadata.album ?? metadata.release!),
@@ -234,6 +234,15 @@ export default class MetadataService {
 			return releaseName.replace(extension, "").trim();
 		}
 		return releaseName;
+	}
+
+	/**
+	 * Removes an extension from a track's name
+	 * For example, if the release Name is 'My Song (Music Video)', the parent
+	 * song name would be 'My Song'
+	 */
+	removeTrackVideoExtension(trackName: string): string {
+		return trackName.replace(/\s*\(.*(Video|video).*\)/gm, "").trim();
 	}
 
 }

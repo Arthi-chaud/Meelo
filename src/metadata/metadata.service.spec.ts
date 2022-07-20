@@ -128,4 +128,18 @@ describe('Metadata Service', () => {
 			expect(metadataService.removeReleaseExtension('(Right Now) My Album [Deluxe Edition]')).toBe('(Right Now) My Album');
 		});
 	});
+
+	describe('Extract Track name\'s video extension', () => {
+		it("should build the song name from a track name with a basic extension", () => {
+			expect(metadataService.removeTrackVideoExtension('My Song (Music Video)')).toBe('My Song');
+		});
+
+		it("should build the song name from a track name with an even more basic extension", () => {
+			expect(metadataService.removeTrackVideoExtension('My Song (Video)')).toBe('My Song');
+		});
+
+		it("should build the song name from a track name with a normal extension", () => {
+			expect(metadataService.removeTrackVideoExtension('My Song (Official Music Video)')).toBe('My Song');
+		})
+	})
 })
