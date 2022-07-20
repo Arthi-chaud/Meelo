@@ -29,6 +29,7 @@ import { TrackAlreadyExistsException, TrackNotFoundByIdException } from "./track
 import TrackModule from "./track.module";
 import TrackService from "./track.service";
 import { ArtistNotFoundByIDException } from "src/artist/artist.exceptions";
+import GenreModule from "src/genre/genre.module";
 
 describe('Track Service', () => {
 	let artistService: ArtistService;
@@ -51,7 +52,7 @@ describe('Track Service', () => {
 	
 	beforeAll(async () => {
 		const module: TestingModule = await createTestingModule({
-			imports: [PrismaModule, LibraryModule, MetadataModule, IllustrationModule,TrackModule, ArtistModule, SongModule, AlbumModule, ReleaseModule, FileModule, FileManagerModule, SettingsModule],
+			imports: [PrismaModule, LibraryModule, MetadataModule, IllustrationModule,TrackModule, ArtistModule, SongModule, AlbumModule, ReleaseModule, FileModule, FileManagerModule, SettingsModule, GenreModule],
 			providers: [PrismaService, LibraryService,TrackService, ArtistService, SongService, AlbumService, ReleaseService, FileService, FileManagerService, SettingsService],
 		}).overrideProvider(FileManagerService).useClass(FakeFileManagerService).compile();
 		await module.get<PrismaService>(PrismaService).onModuleInit();
@@ -78,7 +79,7 @@ describe('Track Service', () => {
 			md5Checksum: ''
 		});
 		album = await albumService.createAlbum({ name: "My Album", artist: { id: artist.id } });
-		song = await songService.createSong({ name: "My Song", artist: { id: artist.id } });
+		song = await songService.createSong({ name: "My Song", artist: { id: artist.id }, genres: [] });
 		release = await releaseService.createRelease({
 			title: "My Album (Deluxe Edition)",
 			master: true,

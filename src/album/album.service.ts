@@ -139,7 +139,7 @@ export default class AlbumService {
 	 * Updates an album date, using the earliest date from its releases
 	 * @param where the query parameter to get the album to update
 	 */
-	 async updateAlbumDate(where: AlbumQueryParameters.WhereInput) {
+	async updateAlbumDate(where: AlbumQueryParameters.WhereInput) {
 		let album = (await this.getAlbum(where, { releases: true }));
 		for (const release of album.releases) {
 			if (album.releaseDate == null ||

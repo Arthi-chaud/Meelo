@@ -13,6 +13,7 @@ import ParseBaseRelationIncludePipe from 'src/relation-include/relation-include.
 import { CompilationArtistException } from "src/artist/artist.exceptions";
 import BaseSortingParameter from 'src/sort/models/sorting-parameter';
 import ParseBaseSortingParameterPipe from 'src/sort/sort.pipe';
+import GenreQueryParameters from "src/genre/models/genre.query-parameters";
 
 namespace SongQueryParameters {
 	type OmitArtistId<T> = Omit<T, 'artistId'>;
@@ -21,7 +22,10 @@ namespace SongQueryParameters {
 	 * The input required to save a song in the database
 	 */
 	export type CreateInput = OmitSlug<OmitPlayCount<OmitId<OmitArtistId<Song>>>>
-		& { artist: ArtistQueryParameters.WhereInput };
+		& {
+			artist: ArtistQueryParameters.WhereInput,
+			genres: GenreQueryParameters.WhereInput[]
+		};
 	
 	/**
 	 * Query paraeters to find a song
@@ -60,6 +64,7 @@ namespace SongQueryParameters {
 		name: SearchStringInput,
 		artist?: ArtistQueryParameters.WhereInput,
 		library: LibraryQueryParameters.WhereInput,
+		genre: GenreQueryParameters.WhereInput,
 		playCount: RequireOnlyOne<{ below: number, exact: number, moreThan: number }>,
 	}>>;
 	/**
@@ -71,6 +76,9 @@ namespace SongQueryParameters {
 		if (where.artist?.compilationArtist)
 			throw new CompilationArtistException('Song');
 		return {
+			genres: where.genre ? {
+				some: GenreQueryParameters.buildQueryParametersForOne(where.genre)
+			} : undefined,
 			artistId: where.artist?.id,
 			artist: where.artist?.slug ? {
 				slug: where.artist.slug.toString()
@@ -91,7 +99,10 @@ namespace SongQueryParameters {
 	 * The input required to update a song in the database
 	 */
 	export type UpdateInput = Partial<OmitId<OmitArtistId<Song>>>
-		& { artist?: ArtistQueryParameters.WhereInput };
+		& Partial<{
+			artist: ArtistQueryParameters.WhereInput,
+			genres: GenreQueryParameters.WhereInput[]
+		}>;
 	/**
 	 * The input to find or create a song
 	 */
@@ -99,7 +110,7 @@ namespace SongQueryParameters {
 	/**
 	 * Defines what relations to include in query
 	 */
-	export const AvailableIncludes = ['tracks', 'artist'] as const;
+	export const AvailableIncludes = ['tracks', 'artist', 'genres'] as const;
 	export type RelationInclude = BaseRelationInclude<typeof AvailableIncludes>;
 	export const ParseRelationIncludePipe = new ParseBaseRelationIncludePipe(AvailableIncludes);
 
@@ -116,6 +127,7 @@ namespace SongQueryParameters {
 	 */
 	 export function buildIncludeParameters(include?: RelationInclude) {
 		return {
+			genres: include?.genres ?? false,
 			tracks: include?.tracks ?? false,
 			artist: include?.artist ?? false
 		};

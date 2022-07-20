@@ -12,6 +12,7 @@ import ParseBaseRelationIncludePipe from "src/relation-include/relation-include.
 import TrackQueryParameters from "src/track/models/track.query-parameters";
 import BaseSortingParameter from 'src/sort/models/sorting-parameter';
 import ParseBaseSortingParameterPipe from 'src/sort/sort.pipe';
+import GenreQueryParameters from "src/genre/models/genre.query-parameters";
 
 namespace ArtistQueryParameters {
 
@@ -46,6 +47,7 @@ namespace ArtistQueryParameters {
 		byLibrarySource: LibraryQueryParameters.WhereInput,
 		byName: SearchStringInput,
 		byIds: { in: number[] },
+		byGenre: GenreQueryParameters.WhereInput
 		
 	}>>;
 
@@ -67,11 +69,14 @@ namespace ArtistQueryParameters {
 					}
 				}
 			} : undefined,
-			songs: where.byLibrarySource ? {
+			songs: where.byLibrarySource || where.byGenre ? {
 				some: {
-					tracks: {
+					genres: where.byGenre ? {
+						some: GenreQueryParameters.buildQueryParametersForOne(where.byGenre)
+					} : undefined,
+					tracks: where.byLibrarySource ? {
 						some: TrackQueryParameters.buildQueryParametersForMany({ byLibrarySource: where.byLibrarySource })
-					}
+					} : undefined
 				}
 			} : undefined
 		};
@@ -80,7 +85,7 @@ namespace ArtistQueryParameters {
 	/**
 	 * Parameters to update an Artist
 	 */
-	 export type UpdateInput = Partial<CreateInput>;
+	export type UpdateInput = Partial<CreateInput>;
 	
 	/**
 	 * Parameters to find or create an Artist

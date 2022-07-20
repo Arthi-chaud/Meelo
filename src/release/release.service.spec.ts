@@ -18,6 +18,7 @@ import MetadataModule from "src/metadata/metadata.module";
 import SongModule from "src/song/song.module";
 import TrackModule from "src/track/track.module";
 import { ArtistNotFoundByIDException } from "src/artist/artist.exceptions";
+import GenreModule from "src/genre/genre.module";
 
 describe('Release Service', () => {
 	let releaseService: ReleaseService;
@@ -33,7 +34,7 @@ describe('Release Service', () => {
 	
 	beforeAll(async () => {
 		const module: TestingModule = await createTestingModule({
-			imports: [PrismaModule, AlbumModule, ArtistModule, TrackModule, IllustrationModule, SongModule, MetadataModule],
+			imports: [PrismaModule, AlbumModule, ArtistModule, TrackModule, IllustrationModule, SongModule, MetadataModule, GenreModule],
 			providers: [ReleaseService, AlbumService, ArtistService],
 		}).overrideProvider(FileManagerService).useClass(FakeFileManagerService).compile();
 		await module.get<PrismaService>(PrismaService).onModuleInit();

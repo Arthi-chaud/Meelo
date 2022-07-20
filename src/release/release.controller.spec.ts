@@ -26,6 +26,7 @@ import LibraryService from "src/library/library.service";
 import LibraryModule from "src/library/library.module";
 import SongService from "src/song/song.service";
 import type Tracklist from "src/track/models/tracklist.model";
+import GenreModule from "src/genre/genre.module";
 
 describe('Release Controller', () => {
 	let releaseService: ReleaseService;
@@ -51,7 +52,7 @@ describe('Release Controller', () => {
 	
 	beforeAll(async () => {
 		const module: TestingModule = await createTestingModule({
-			imports: [PrismaModule, AlbumModule, ArtistModule, ReleaseModule, LibraryModule, TrackModule, IllustrationModule, SongModule, MetadataModule],
+			imports: [PrismaModule, AlbumModule, ArtistModule, ReleaseModule, LibraryModule, TrackModule, IllustrationModule, SongModule, MetadataModule, GenreModule],
 			providers: [ReleaseService, AlbumService, ArtistService, ReleaseController],
 		}).overrideProvider(FileManagerService).useClass(FakeFileManagerService).compile();
 		app = module.createNestApplication();
@@ -118,12 +119,14 @@ describe('Release Controller', () => {
 
 		song1 = await songService.createSong({
 			name: "My Song 1",
-			artist: { id: artist.id }
+			artist: { id: artist.id },
+			genres: []
 		});
 
 		song2 = await songService.createSong({
 			name: "My Song 2",
-			artist: { id: artist.id }
+			artist: { id: artist.id },
+			genres: []
 		});
 		
 		track2 = await trackService.createTrack({
