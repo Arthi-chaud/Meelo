@@ -5,12 +5,14 @@ import ArtistController from './artist.controller';
 import AlbumModule from 'src/album/album.module';
 import SongModule from 'src/song/song.module';
 import IllustrationModule from 'src/illustration/illustration.module';
+import TrackModule from 'src/track/track.module';
 
 @Module({
 	imports: [
 		PrismaModule,
 		forwardRef(() => SongModule),
 		forwardRef(() => AlbumModule),
+		forwardRef(() => TrackModule),
 		IllustrationModule
 	],
 	exports: [ArtistService],

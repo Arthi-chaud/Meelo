@@ -11,6 +11,7 @@ import ParseBaseRelationIncludePipe from "src/relation-include/relation-include.
 import BaseSortingParameter from 'src/sort/models/sorting-parameter';
 import ParseBaseSortingParameterPipe from 'src/sort/sort.pipe';
 import AlbumQueryParameters from "src/album/models/album.query-parameters";
+import type ArtistQueryParameters from "src/artist/models/artist.query-parameters";
 
 namespace TrackQueryParameters {
 	type OmitSong<T> = Omit<T, 'songId'>;
@@ -60,6 +61,7 @@ namespace TrackQueryParameters {
 		bySong: SongQueryParameters.WhereInput,
 		byLibrarySource: LibraryQueryParameters.WhereInput,
 	} & RequireOnlyOne<{
+		byArtist: ArtistQueryParameters.WhereInput,
 		byAlbum: AlbumQueryParameters.WhereInput,
 		byRelease: ReleaseQueryParameters.WhereInput,
 	}>>>;
@@ -70,20 +72,36 @@ namespace TrackQueryParameters {
 	 * @returns the ORM-ready query parameters
 	 */
 	export function buildQueryParametersForMany(where: ManyWhereInput): Prisma.TrackWhereInput {
-		return {
+		let queryParameters: Prisma.TrackWhereInput = {
 			type: where.type,
-			release: where.byRelease || where.byAlbum
-				? where.byRelease
-					? ReleaseQueryParameters.buildQueryParametersForOne(where.byRelease)
-					: {
-						album: AlbumQueryParameters.buildQueryParametersForOne(where.byAlbum!)	
-					}
-				: undefined,
 			song: where.bySong ? SongQueryParameters.buildQueryParametersForOne(where.bySong) : undefined,
 			sourceFile: where.byLibrarySource ? {
 				library: LibraryQueryParameters.buildQueryParametersForOne(where.byLibrarySource)
 			} : undefined,
 		};
+		if (where.byRelease) {
+			queryParameters = {
+				...queryParameters,
+				release: ReleaseQueryParameters.buildQueryParametersForOne(where.byRelease)
+			}
+		}
+		if (where.byAlbum) {
+			queryParameters = {
+				...queryParameters,
+				release: {
+					album: AlbumQueryParameters.buildQueryParametersForOne(where.byAlbum!)	
+				}
+			}
+		}
+		if (where.byArtist) {
+			queryParameters = {
+				...queryParameters,
+				release: {
+					album: AlbumQueryParameters.buildQueryParametersForMany({ byArtist: where.byArtist })
+				}
+			}
+		}
+		return queryParameters;
 	}
 
 	/**

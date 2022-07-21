@@ -6,9 +6,7 @@ const baseRequest = {
 	headers: {
 		host: 'http://localhost'
 	},
-	route: {
-		path: '/route'
-	}
+	path: '/route'
 }
 describe("Paginated Response", () => {
 	it("default page size, first page", () => {
