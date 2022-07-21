@@ -1,4 +1,4 @@
-import { Prisma, Track } from "@prisma/client";
+import { Prisma, Track, TrackType } from "@prisma/client";
 import FileQueryParameters from "src/file/models/file.query-parameters";
 import LibraryQueryParameters from "src/library/models/library.query-parameters";
 import ReleaseQueryParameters from "src/release/models/release.query-parameters";
@@ -10,6 +10,7 @@ import type { RelationInclude as BaseRelationInclude } from "src/relation-includ
 import ParseBaseRelationIncludePipe from "src/relation-include/relation-include.pipe";
 import BaseSortingParameter from 'src/sort/models/sorting-parameter';
 import ParseBaseSortingParameterPipe from 'src/sort/sort.pipe';
+import AlbumQueryParameters from "src/album/models/album.query-parameters";
 
 namespace TrackQueryParameters {
 	type OmitSong<T> = Omit<T, 'songId'>;
@@ -55,10 +56,13 @@ namespace TrackQueryParameters {
 	 * Query parameters to find multiple tracks
 	 */
 	export type ManyWhereInput = Partial<RequireAtLeastOne<{
+		type: TrackType,
 		bySong: SongQueryParameters.WhereInput,
-		byRelease: ReleaseQueryParameters.WhereInput,
 		byLibrarySource: LibraryQueryParameters.WhereInput,
-	}>>;
+	} & RequireOnlyOne<{
+		byAlbum: AlbumQueryParameters.WhereInput,
+		byRelease: ReleaseQueryParameters.WhereInput,
+	}>>>;
 
 	/**
 	 * Build the query parameters for ORM, to select multiple rows
@@ -67,7 +71,14 @@ namespace TrackQueryParameters {
 	 */
 	export function buildQueryParametersForMany(where: ManyWhereInput): Prisma.TrackWhereInput {
 		return {
-			release: where.byRelease ? ReleaseQueryParameters.buildQueryParametersForOne(where.byRelease) : undefined,
+			type: where.type,
+			release: where.byRelease || where.byAlbum
+				? where.byRelease
+					? ReleaseQueryParameters.buildQueryParametersForOne(where.byRelease)
+					: {
+						album: AlbumQueryParameters.buildQueryParametersForOne(where.byAlbum!)	
+					}
+				: undefined,
 			song: where.bySong ? SongQueryParameters.buildQueryParametersForOne(where.bySong) : undefined,
 			sourceFile: where.byLibrarySource ? {
 				library: LibraryQueryParameters.buildQueryParametersForOne(where.byLibrarySource)
