@@ -120,11 +120,14 @@ export default class LibraryService {
 	}
 
 	/**
-	 * Deletes a Library from the database
+	 * Deletes a Library from the database, its files and related tracks
 	 * @param where the query parameters to find the library to delete
 	 * @returns the deleted library
 	 */
 	async deleteLibrary(where: LibraryQueryParameters.WhereInput): Promise<Library> {
+		let relatedFiles = await this.fileService.getFiles({ library: where });
+		for (const file of relatedFiles)
+			await this.unregisterFile({ id: file.id });
 		try {
 			return await this.prismaService.library.delete({
 				where: LibraryQueryParameters.buildQueryParametersForOne(where)
