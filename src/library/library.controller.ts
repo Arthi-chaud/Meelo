@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Logger, Param, Post, Query, Req } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Logger, Param, Post, Query, Req } from '@nestjs/common';
 import LibraryService from './library.service';
 import LibraryDto from './models/create-library.dto';
 import type { Library } from '@prisma/client';
@@ -115,9 +115,21 @@ export default class LibraryController {
 	})
 	@Get(':idOrSlug')
 	async getLibrary(
-		@Param(ParseLibraryIdentifierPipe) where: LibraryQueryParameters.WhereInput,
+		@Param(ParseLibraryIdentifierPipe)
+		where: LibraryQueryParameters.WhereInput,
 	): Promise<Library> {
 		return this.libraryService.getLibrary(where);
+	}
+
+	@ApiOperation({
+		summary: 'Delete a library'
+	})
+	@Delete(':idOrSlug')
+	async deleteLibrary(
+		@Param(ParseLibraryIdentifierPipe)
+		where: LibraryQueryParameters.WhereInput,
+	): Promise<void> {
+		this.libraryService.deleteLibrary(where);
 	}
 
 	@ApiOperation({
