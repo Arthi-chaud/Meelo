@@ -133,6 +133,7 @@ describe('Track Service', () => {
 		it("should create a second track", async () => {
 			track2 = await trackService.createTrack({
 				...trackData,
+				type: TrackType.Video,
 				master: false,
 				displayName: "My Song (Album Edit)",
 				song: { byId: { id: song.id } },
@@ -141,7 +142,7 @@ describe('Track Service', () => {
 			});
 
 			expect(track2.id).toBeDefined();
-			expect(track2.type).toBe(TrackType.Audio);
+			expect(track2.type).toBe(TrackType.Video);
 			expect(track2.master).toBe(false);
 			expect(track2.displayName).toBe("My Song (Album Edit)");
 			expect(track2.discIndex).toBe(1);
@@ -249,6 +250,12 @@ describe('Track Service', () => {
 			expect(tracks).toContainEqual(track2);
 			expect(tracks).toContainEqual(track);
 			expect(tracks.length).toBe(2);
+		});
+		it('should retrieve all tracks, by type', async () => {
+			let tracks = await trackService.getTracks({ type: TrackType.Video }, {}, {});
+
+			expect(tracks.length).toBe(1);
+			expect(tracks[0]).toStrictEqual(track2);
 		});
 		it('should retrieve all tracks, sorted by name', async () => {
 			let tracks = await trackService.getTracks({}, {}, {}, { sortBy: 'displayName', order: 'asc' });

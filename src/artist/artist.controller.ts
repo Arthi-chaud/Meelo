@@ -14,6 +14,9 @@ import ArtistService from './artist.service';
 import ArtistQueryParameters from './models/artist.query-parameters';
 import type { Request } from 'express';
 import { ApiOperation, ApiQuery, ApiTags } from '@nestjs/swagger';
+import TrackQueryParameters from 'src/track/models/track.query-parameters';
+import TrackService from 'src/track/track.service';
+import { TrackType } from '@prisma/client';
 
 @ApiTags("Artists")
 @Controller('artists')
@@ -25,6 +28,8 @@ export default class ArtistController {
 		private albumService: AlbumService,
 		@Inject(forwardRef(() => SongService))
 		private songService: SongService,
+		@Inject(forwardRef(() => TrackService))
+		private trackService: TrackService,
 		private illustrationService: IllustrationService
 	) {}
 
@@ -77,6 +82,32 @@ export default class ArtistController {
 	) {
 		let artist = await this.artistService.getArtist(where, include);
 		return this.artistService.buildArtistResponse(artist);
+	}
+
+	@ApiOperation({
+		summary: 'Get all the video tracks from an artist'
+	})
+	@Get(':idOrSlug/videos')
+	async getArtistVideos(
+		@Query(ParsePaginationParameterPipe)
+		paginationParameters: PaginationParameters,
+		@Query('with', TrackQueryParameters.ParseRelationIncludePipe)
+		include: TrackQueryParameters.RelationInclude,
+		@Query(TrackQueryParameters.ParseSortingParameterPipe)
+		sortingParameter: TrackQueryParameters.SortingParameter,
+		@Param(ParseArtistIdentifierPipe)
+		where: ArtistQueryParameters.WhereInput,
+		@Req() request: Request
+	) {
+		const videoTracks = await this.trackService.getTracks(
+			{ byArtist: where, type: TrackType.Video }, paginationParameters, include, sortingParameter, 
+		);
+		if (videoTracks.length == 0)
+			await this.artistService.getArtist(where);
+		return new PaginatedResponse(
+			videoTracks.map((videoTrack) => this.trackService.buildTrackResponse(videoTrack)),
+			request
+		);
 	}
 
 	@ApiOperation({
