@@ -11,6 +11,7 @@ import TrackQueryParameters from './models/track.query-parameters';
 import TrackService from './track.service';
 import type { Request } from 'express';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
+import { TrackType } from '@prisma/client';
 
 @ApiTags("Tracks")
 @Controller('tracks')
@@ -42,6 +43,28 @@ export class TrackController {
 		);
 		return new PaginatedResponse(
 			tracks.map((track) => this.trackService.buildTrackResponse(track)),
+			request
+		);
+	}
+
+	@ApiOperation({
+		summary: 'Get all the video tracks'
+	})
+	@Get('videos')
+	async getVideoTracks(
+		@Query(ParsePaginationParameterPipe)
+		paginationParameters: PaginationParameters,
+		@Query('with', TrackQueryParameters.ParseRelationIncludePipe)
+		include: TrackQueryParameters.RelationInclude,
+		@Query(TrackQueryParameters.ParseSortingParameterPipe)
+		sortingParameter: TrackQueryParameters.SortingParameter,
+		@Req() request: Request
+	) {
+		const videoTracks = await this.trackService.getTracks(
+			{ type: TrackType.Video }, paginationParameters, include, sortingParameter, 
+		);
+		return new PaginatedResponse(
+			videoTracks.map((videoTrack) => this.trackService.buildTrackResponse(videoTrack)),
 			request
 		);
 	}
