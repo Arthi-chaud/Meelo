@@ -132,6 +132,8 @@ export default class ArtistController {
 		let albums = await this.albumService.getAlbums(
 			{ byArtist: where }, paginationParameters, include, sortingParameter
 		);
+		if (albums.length == 0)
+			await this.artistService.getArtist(where);
 		return new PaginatedResponse(
 			albums.map((album) => this.albumService.buildAlbumResponse(album)),
 			request
@@ -156,6 +158,8 @@ export default class ArtistController {
 		let songs = await this.songService.getSongs(
 			{ artist: where }, paginationParameters, include, sortingParameter
 		);
+		if (songs.length == 0)
+			await this.artistService.getArtist(where);
 		return new PaginatedResponse(
 			songs.map((song) => this.songService.buildSongResponse(song)),
 			request
