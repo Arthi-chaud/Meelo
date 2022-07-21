@@ -39,7 +39,7 @@ export default class AlbumService {
 	) {
 		const albumSlug = new Slug(album.name);
 		if (album.artist === undefined) {
-			if (await this.countAlbums({ byName: { is: album.name }}) != 0)
+			if (await this.countAlbums({ byName: { is: album.name }, byArtist: { compilationArtist: true } }) != 0)
 				throw new AlbumAlreadyExistsException(albumSlug);
 		}
 		try {
