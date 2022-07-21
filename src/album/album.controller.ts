@@ -14,6 +14,7 @@ import PaginatedResponse from 'src/pagination/models/paginated-response';
 import TrackService from 'src/track/track.service';
 import TrackQueryParameters from 'src/track/models/track.query-parameters';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
+import { TrackType } from '@prisma/client';
 
 @ApiTags("Albums")
 @Controller('albums')
@@ -138,6 +139,32 @@ export default class AlbumController {
 		);
 		return new PaginatedResponse(
 			releases.map((release) => this.releaseService.buildReleaseResponse(release)),
+			request
+		);
+	}
+
+	@ApiOperation({
+		summary: 'Get all the video tracks from an album'
+	})
+	@Get(':idOrSlug/videos')
+	async getAlbumVideos(
+		@Query(ParsePaginationParameterPipe)
+		paginationParameters: PaginationParameters,
+		@Query('with', TrackQueryParameters.ParseRelationIncludePipe)
+		include: TrackQueryParameters.RelationInclude,
+		@Query(TrackQueryParameters.ParseSortingParameterPipe)
+		sortingParameter: TrackQueryParameters.SortingParameter,
+		@Param(ParseAlbumIdentifierPipe)
+		where: AlbumQueryParameters.WhereInput,
+		@Req() request: Request
+	) {
+		const videoTracks = await this.trackService.getTracks(
+			{ byAlbum: where, type: TrackType.Video }, paginationParameters, include, sortingParameter, 
+		);
+		if (videoTracks.length == 0)
+			await this.albumService.getAlbum(where);
+		return new PaginatedResponse(
+			videoTracks.map((videoTrack) => this.trackService.buildTrackResponse(videoTrack)),
 			request
 		);
 	}
