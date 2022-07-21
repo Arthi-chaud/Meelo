@@ -124,7 +124,7 @@ describe('Song Controller', () => {
 		});
 
 		track2 = await trackService.createTrack({
-			type: "Audio",
+			type: "Video",
 			master: true,
 			displayName: "My Track 2",
 			discIndex: 1,
@@ -404,6 +404,34 @@ describe('Song Controller', () => {
 				.get(`/songs/${-1}/tracks`)
 				.expect(404);
 		});
+	});
+
+	describe("Get Song Video Tracks (GET /songs/:id/videos)", () => {
+		it("should return all video tracks (1 expected)", () => {
+			return request(app.getHttpServer())
+				.get(`/songs/${song2.id}/videos`)
+				.expect(200)
+				.expect((res) => {
+					let tracks: Track[] = res.body.items;
+					expect(tracks.length).toBe(1);
+					expect(tracks[0]).toStrictEqual({
+						...track2,
+						illustration: `http://meelo.com/tracks/${track2.id}/illustration`,
+						stream: `http://meelo.com/files/${track2.sourceFileId}/stream`
+					});
+				});
+		});
+
+		it("should return all video tracks (0 expected)", () => {
+			return request(app.getHttpServer())
+				.get(`/songs/${song1.id}/videos`)
+				.expect(200)
+				.expect((res) => {
+					let tracks: Track[] = res.body.items;
+					expect(tracks.length).toBe(0);
+				});
+		});
+
 	});
 
 	describe("Get Song Artist (GET /songs/:id/artist)", () => {

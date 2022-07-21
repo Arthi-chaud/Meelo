@@ -13,6 +13,7 @@ import SongQueryParameters from './models/song.query-params';
 import ParseSongIdentifierPipe from './song.pipe';
 import SongService from './song.service';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
+import { TrackType } from '@prisma/client';
 
 @ApiTags("Songs")
 @Controller('songs')
@@ -116,6 +117,32 @@ export class SongController {
 			await this.songService.getSong(where);
 		return new PaginatedResponse(
 			tracks.map((track) => this.trackService.buildTrackResponse(track)),
+			request
+		);
+	}
+
+	@ApiOperation({
+		summary: 'Get all the song\'s video tracks'
+	})
+	@Get(':idOrSlug/videos')
+	async getSongVideos(
+		@Query(ParsePaginationParameterPipe)
+		paginationParameters: PaginationParameters,
+		@Query('with', TrackQueryParameters.ParseRelationIncludePipe)
+		include: TrackQueryParameters.RelationInclude,
+		@Query(TrackQueryParameters.ParseSortingParameterPipe)
+		sortingParameter: TrackQueryParameters.SortingParameter,
+		@Param(ParseSongIdentifierPipe)
+		where: SongQueryParameters.WhereInput,
+		@Req() request: Request
+	) {
+		const videoTracks = await this.trackService.getTracks(
+			{ bySong: where, type: TrackType.Video }, paginationParameters, include, sortingParameter, 
+		);
+		if (videoTracks.length == 0)
+			await this.songService.getSong(where);
+		return new PaginatedResponse(
+			videoTracks.map((videoTrack) => this.trackService.buildTrackResponse(videoTrack)),
 			request
 		);
 	}
