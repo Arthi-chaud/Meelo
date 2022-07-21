@@ -12,7 +12,7 @@ export default class PaginatedResponse<T> {
 	constructor(items: T[], request: Request | any) {
 		this.items = items;
 		const host: string = request.headers['host']!;
-		const route: string = request.route.path;
+		const route: string = request.path;
 		const itemsCount = items.length;
 		const take = Number(request.query['take'] ?? defaultPageSize).valueOf();
 		if (take == 0)
