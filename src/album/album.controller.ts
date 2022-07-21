@@ -65,7 +65,7 @@ export default class AlbumController {
 		@Req() request: Request
 	) {
 		const albums = await this.albumService.getAlbums(
-			{ byArtist: null }, paginationParameters, include, sortingParameter
+			{ byArtist: { compilationArtist: true } }, paginationParameters, include, sortingParameter
 		);
 		return new PaginatedResponse(
 			albums.map((album) => this.albumService.buildAlbumResponse(album)),

@@ -58,7 +58,7 @@ namespace AlbumQueryParameters {
 	 * Query parameters to find multiple albums
 	 */
 	export type ManyWhereInput = Partial<RequireAtLeastOne<{
-		byArtist: ArtistQueryParameters.WhereInput | null,
+		byArtist: ArtistQueryParameters.WhereInput,
 		byName: SearchStringInput,
 		byLibrarySource: LibraryQueryParameters.WhereInput,
 		byReleaseDate: SearchDateInput,
