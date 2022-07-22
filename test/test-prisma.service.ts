@@ -1,0 +1,106 @@
+import { Injectable } from "@nestjs/common";
+import { Album, Artist, File, Genre, Library, Release, Song, Track, TrackType } from "@prisma/client";
+import PrismaService from "src/prisma/prisma.service";
+
+
+
+@Injectable()
+export default class TestPrismaService extends PrismaService {
+
+	public library1: Library;
+
+	public genreA: Genre;
+	public genreB: Genre;
+	public genreC: Genre;
+
+	public artistA: Artist;
+	public songA1: Song;
+	public songA2: Song;
+	public albumA1: Album;
+	public releaseA1_1: Release;
+	public releaseA1_2: Release;
+	public trackA1_1: Track;
+	public trackA1_2Video: Track;
+	public trackA2_1: Track;
+	public fileA1_1: File;
+	public fileA1_2Video: File;
+	public fileA2_1: File;
+
+	private baseTrack = {
+		bitrate: 0,
+		ripSource: null,
+		duration: 0,
+	}
+	
+	/**
+	 * Creates dummy data and pushes it to the database using the repository service.
+	 * It will also clear previous data
+	 */
+	override async onModuleInit() {
+		await this.$connect();
+		await this.flushDatabase();
+		this.library1 = await this.library.create({
+			data: { name: "Library", path: "Music/", slug: 'library'}
+		});
+
+		this.genreA = await this.genre.create({
+			data: { name: 'My Genre A', slug: 'my-genre-a' }
+		});
+
+		this.genreB = await this.genre.create({
+			data: { name: 'My Genre B', slug: 'my-genre-b' }
+		});
+
+		this.genreC = await this.genre.create({
+			data: { name: 'My Genre C', slug: 'my-genre-c' }
+		});
+
+		this.artistA = await this.artist.create({
+			data: { name: "My Artist", slug: "my-artist"}
+		});
+		this.albumA1 = await this.album.create({
+			data: { name: "My Album", slug: 'my-album', artistId: this.artistA.id }
+		});
+		this.releaseA1_1 = await this.release.create({
+			data: { title: "My Album 1", slug: 'my-album-1', albumId: this.albumA1.id, master: true }
+		});
+		this.releaseA1_2 = await this.release.create({
+			data: { title: "My Album 2", slug: 'my-album-2', albumId: this.albumA1.id, master: false }
+		});
+		this.songA1 = await this.song.create({
+			data: { name: "My Song", slug: 'my-song', artistId: this.artistA.id, genres:
+				{ connect: { id: this.genreA.id } }
+			}
+		});
+		this.fileA1_1 = await this.file.create({
+			data: { path: 'a', md5Checksum: '', registerDate: new Date(), libraryId: this.library1.id }
+		});
+		this.trackA1_1 = await this.track.create({
+			data: { displayName: "My Song 1", ...this.baseTrack, songId: this.songA1.id,
+				releaseId: this.releaseA1_1.id, master: true, type: TrackType.Audio, sourceFileId: this.fileA1_1.id
+			}
+		});
+		this.fileA1_2Video = await this.file.create({
+			data: { path: 'b', md5Checksum: '', registerDate: new Date(), libraryId: this.library1.id }
+		});
+		this.trackA1_2Video = await this.track.create({
+			data: { ...this.baseTrack, displayName: "My Song 2 (Video)", songId: this.songA1.id,
+			releaseId: this.releaseA1_2.id, master: false, type: TrackType.Video, sourceFileId: this.fileA1_2Video.id
+		}
+		});
+		this.songA2 = await this.song.create({
+			data: { name: "My Other Song", slug: 'my-other-song', artistId: this.artistA.id, genres:
+				{ connect: { id: this.genreA.id } }
+			}
+		});
+		this.fileA2_1 = await this.file.create({
+			data: { path: 'c', md5Checksum: '', registerDate: new Date(), libraryId: this.library1.id }
+		});
+		this.trackA2_1 = await this.track.create({
+			data: { ...this.baseTrack, displayName: "My Other Song 1", songId: this.songA2.id,
+				releaseId: this.releaseA1_2.id, master: true, type: TrackType.Audio, sourceFileId: this.fileA2_1.id
+			}
+		});
+	}
+
+}
