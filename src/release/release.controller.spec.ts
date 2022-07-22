@@ -1,4 +1,4 @@
-import { createTestingModule } from "test/TestModule";
+import { createTestingModule } from "test/test-module";
 import type { TestingModule } from "@nestjs/testing";
 import type { Album, Artist, File, Release, Song, Track } from "@prisma/client";
 import AlbumModule from "src/album/album.module";
@@ -8,7 +8,7 @@ import ArtistService from "src/artist/artist.service";
 import FileManagerService from "src/file-manager/file-manager.service";
 import PrismaModule from "src/prisma/prisma.module";
 import PrismaService from "src/prisma/prisma.service";
-import { FakeFileManagerService } from "test/FakeFileManagerModule";
+import { FakeFileManagerService } from "test/fake-file-manager.module";
 import ReleaseService from "./release.service";
 import ReleaseController from "./release.controller";
 import request from "supertest";

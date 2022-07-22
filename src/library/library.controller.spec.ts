@@ -1,5 +1,5 @@
 import { INestApplication, ValidationPipe } from "@nestjs/common";
-import { createTestingModule } from "test/TestModule";
+import { createTestingModule } from "test/test-module";
 import type { TestingModule } from "@nestjs/testing";
 import FileManagerModule from "src/file-manager/file-manager.module";
 import FileManagerService from "src/file-manager/file-manager.service";
@@ -7,7 +7,7 @@ import FileModule from "src/file/file.module";
 import MetadataModule from "src/metadata/metadata.module";
 import PrismaModule from "src/prisma/prisma.module";
 import PrismaService from "src/prisma/prisma.service";
-import { FakeFileManagerService } from "test/FakeFileManagerModule";
+import { FakeFileManagerService } from "test/fake-file-manager.module";
 import LibraryController from "./library.controller";
 import LibraryModule from "./library.module";
 import LibraryService from "./library.service";

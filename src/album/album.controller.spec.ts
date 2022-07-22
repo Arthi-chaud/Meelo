@@ -9,14 +9,14 @@ import PrismaModule from "src/prisma/prisma.module";
 import PrismaService from "src/prisma/prisma.service";
 import ReleaseModule from "src/release/release.module";
 import ReleaseService from "src/release/release.service";
-import { FakeFileManagerService } from "test/FakeFileManagerModule";
-import { createTestingModule } from "test/TestModule";
+import { FakeFileManagerService } from "test/fake-file-manager.module";
+import { createTestingModule } from "test/test-module";
 import AlbumModule from "./album.module";
 import AlbumService from "./album.service";
 import MetadataModule from "src/metadata/metadata.module";
 import SongModule from "src/song/song.module";
 import TrackModule from "src/track/track.module";
-import SetupApp from "test/SetupApp";
+import SetupApp from "test/setup-app";
 import IllustrationModule from "src/illustration/illustration.module";
 import GenreModule from "src/genre/genre.module";
 

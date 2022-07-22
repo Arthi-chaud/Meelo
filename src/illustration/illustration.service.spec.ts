@@ -1,5 +1,5 @@
 import { HttpModule } from "@nestjs/axios";
-import { createTestingModule } from "test/TestModule";
+import { createTestingModule } from "test/test-module";
 import type { TestingModule } from "@nestjs/testing";
 import AlbumService from "src/album/album.service";
 import ArtistModule from "src/artist/artist.module";
@@ -12,7 +12,7 @@ import PrismaService from "src/prisma/prisma.service";
 import ReleaseService from "src/release/release.service";
 import SettingsModule from "src/settings/settings.module";
 import Slug from "src/slug/slug";
-import { FakeFileManagerService } from "test/FakeFileManagerModule";
+import { FakeFileManagerService } from "test/fake-file-manager.module";
 import IllustrationService from "./illustration.service";
 import IllustrationModule from "./illustration.module";
 

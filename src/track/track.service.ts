@@ -1,6 +1,6 @@
 import { forwardRef, Inject, Injectable, Logger } from '@nestjs/common';
 import PrismaService from 'src/prisma/prisma.service';
-import type { Release, Song, Track } from '@prisma/client';
+import { Release, Song, Track, TrackType } from '@prisma/client';
 import SongService from 'src/song/song.service';
 import { MasterTrackNotFoundException, TrackAlreadyExistsException, TrackNotFoundByIdException } from './track.exceptions';
 import ReleaseService from 'src/release/release.service';
@@ -226,7 +226,7 @@ export default class TrackService {
 	 * Deletes a track
 	 * @param where Query parameters to find the track to delete 
 	 */
-	async deleteTrack(where: TrackQueryParameters.DeleteInput): Promise<void> {
+	async deleteTrack(where: TrackQueryParameters.DeleteInput, deleteParentIfEmpty: boolean = true): Promise<void> {
 		try {
 			let deletedTrack = await this.prismaService.track.delete({
 				where: where,
@@ -237,8 +237,10 @@ export default class TrackService {
 					trackId: deletedTrack.id,
 					song: { byId: { id: deletedTrack.songId } }
 				});
-			await this.songService.deleteSongIfEmpty({ byId: { id: deletedTrack.songId } });
-			await this.releaseService.deleteReleaseIfEmpty({ byId: { id: deletedTrack.releaseId } });
+			if (deleteParentIfEmpty) {
+				await this.songService.deleteSongIfEmpty({ byId: { id: deletedTrack.songId } });
+				await this.releaseService.deleteReleaseIfEmpty({ byId: { id: deletedTrack.releaseId } });
+			}
 		} catch {
 			if (where.id !== undefined)
 				throw new TrackNotFoundByIdException(where.id);
@@ -294,16 +296,20 @@ export default class TrackService {
 	 * @param where the query parameters to find the track to unset as master
 	 */
 	async unsetTrackAsMaster(where: TrackQueryParameters.UpdateSongMaster): Promise<void> {
-		let otherTracks: Track[] = (await this.getSongTracks(where.song))
+		let otherTracks: Track[] = (await this.getSongTracks(where.song, {}, {}, { sortBy: 'id', order: 'asc' }))
 			.filter((track) => track.id != where.trackId);
 		if (otherTracks.find((track) => track.master))
 			return;
 		if (otherTracks.length == 0)
 			return;
+		let newMaster = otherTracks[0];
+		const audioTracks = otherTracks.filter((track) => track.type == TrackType.Audio);
+		if (audioTracks.length != 0)
+			newMaster = audioTracks[0];
 		await Promise.allSettled([
 			this.updateTrack(
 				{ master: true },
-				{ id: otherTracks.at(0)!.id }
+				{ id: newMaster.id }
 			),
 			this.updateTrack(
 				{ master: false },

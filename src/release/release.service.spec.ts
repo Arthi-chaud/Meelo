@@ -1,4 +1,4 @@
-import { createTestingModule } from "test/TestModule";
+import { createTestingModule } from "test/test-module";
 import type { TestingModule } from "@nestjs/testing";
 import type { Album, Artist, Release } from "@prisma/client";
 import { AlbumNotFoundException, AlbumNotFoundFromIDException } from "src/album/album.exceptions";
@@ -10,7 +10,7 @@ import FileManagerService from "src/file-manager/file-manager.service";
 import PrismaModule from "src/prisma/prisma.module";
 import PrismaService from "src/prisma/prisma.service";
 import Slug from "src/slug/slug";
-import { FakeFileManagerService } from "test/FakeFileManagerModule";
+import { FakeFileManagerService } from "test/fake-file-manager.module";
 import { ReleaseNotFoundException, ReleaseNotFoundFromIDException } from "./release.exceptions";
 import ReleaseService from "./release.service";
 import IllustrationModule from "src/illustration/illustration.module";
