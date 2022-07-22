@@ -1,10 +1,10 @@
-import { createTestingModule } from "test/TestModule";
+import { createTestingModule } from "test/test-module";
 import type { TestingModule } from "@nestjs/testing";
 import FileManagerService from "src/file-manager/file-manager.service";
 import PrismaModule from "src/prisma/prisma.module";
 import PrismaService from "src/prisma/prisma.service";
 import Slug from "src/slug/slug";
-import { FakeFileManagerService } from "test/FakeFileManagerModule";
+import { FakeFileManagerService } from "test/fake-file-manager.module";
 import { ArtistAlreadyExistsException, ArtistNotFoundByIDException, ArtistNotFoundException } from "./artist.exceptions";
 import ArtistModule from "./artist.module";
 import ArtistService from "./artist.service"

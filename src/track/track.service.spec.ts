@@ -1,4 +1,4 @@
-import { createTestingModule } from "test/TestModule";
+import { createTestingModule } from "test/test-module";
 import type { TestingModule } from "@nestjs/testing";
 import { Album, Artist, File, Library, Release, RipSource, Song, Track, TrackType } from "@prisma/client";
 import AlbumModule from "src/album/album.module";
@@ -24,7 +24,7 @@ import SettingsService from "src/settings/settings.service";
 import { SongNotFoundByIdException } from "src/song/song.exceptions";
 import SongModule from "src/song/song.module";
 import SongService from "src/song/song.service";
-import { FakeFileManagerService } from "test/FakeFileManagerModule";
+import { FakeFileManagerService } from "test/fake-file-manager.module";
 import { TrackAlreadyExistsException, TrackNotFoundByIdException } from "./track.exceptions";
 import TrackModule from "./track.module";
 import TrackService from "./track.service";

@@ -1,13 +1,13 @@
 import AlbumService from "./album.service";
 import { Album, AlbumType, Artist, Release } from "@prisma/client";
 import ArtistService from "src/artist/artist.service";
-import { createTestingModule } from "test/TestModule";
+import { createTestingModule } from "test/test-module";
 import type { TestingModule } from "@nestjs/testing";
 import ArtistModule from "src/artist/artist.module";
 import PrismaModule from "src/prisma/prisma.module";
 import AlbumModule from "./album.module";
 import FileManagerService from "src/file-manager/file-manager.service";
-import { FakeFileManagerService } from "test/FakeFileManagerModule";
+import { FakeFileManagerService } from "test/fake-file-manager.module";
 import PrismaService from "src/prisma/prisma.service";
 import { AlbumAlreadyExistsException, AlbumNotFoundFromIDException } from "./album.exceptions";
 import Slug from "src/slug/slug";

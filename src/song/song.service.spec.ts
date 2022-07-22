@@ -1,11 +1,11 @@
-import { createTestingModule } from "test/TestModule";
+import { createTestingModule } from "test/test-module";
 import type { TestingModule } from "@nestjs/testing";
 import SongService from "src/song/song.service";
 import ArtistService from "src/artist/artist.service";
 import ArtistModule from "src/artist/artist.module";
 import PrismaModule from "src/prisma/prisma.module";
 import FileManagerService from "src/file-manager/file-manager.service";
-import { FakeFileManagerService } from "test/FakeFileManagerModule";
+import { FakeFileManagerService } from "test/fake-file-manager.module";
 import PrismaService from "src/prisma/prisma.service";
 import type { Artist, Genre, Song } from "@prisma/client";
 import Slug from "src/slug/slug";

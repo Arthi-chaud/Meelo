@@ -1,6 +1,6 @@
-import { createTestingModule } from "test/TestModule";
+import { createTestingModule } from "test/test-module";
 import type { TestingModule } from "@nestjs/testing";
-import { FakeFileManagerService } from 'test/FakeFileManagerModule';
+import { FakeFileManagerService } from 'test/fake-file-manager.module';
 import SettingsController from './settings.controller';
 import SettingsModule from './settings.module';
 import * as fs from 'fs';
