@@ -58,10 +58,11 @@ describe('Song Controller', () => {
 				.expect(200)
 				.expect((res) => {
 					let songs: Song[] = res.body.items
-					expect(songs.length).toBe(3);
+					expect(songs.length).toBe(4);
 					expect(songs[0]).toStrictEqual(expectedSongResponse(dummyRepository.songA1));
 					expect(songs[1]).toStrictEqual(expectedSongResponse(dummyRepository.songA2));
 					expect(songs[2]).toStrictEqual(expectedSongResponse(dummyRepository.songB1));
+					expect(songs[3]).toStrictEqual(expectedSongResponse(dummyRepository.songC1));
 				});
 		});
 		it("should return all songs, sorted by name, desc", () => {
@@ -70,15 +71,16 @@ describe('Song Controller', () => {
 				.expect(200)
 				.expect((res) => {
 					let songs: Song[] = res.body.items
-					expect(songs.length).toBe(3);
+					expect(songs.length).toBe(4);
 					expect(songs[0]).toStrictEqual(expectedSongResponse(dummyRepository.songA1));
 					expect(songs[1]).toStrictEqual(expectedSongResponse(dummyRepository.songB1));
 					expect(songs[2]).toStrictEqual(expectedSongResponse(dummyRepository.songA2));
+					expect(songs[3]).toStrictEqual(expectedSongResponse(dummyRepository.songC1));
 				});
 		});
 		it("should return some songs (w/ pagination)", () => {
 			return request(app.getHttpServer())
-				.get(`/songs?skip=1`)
+				.get(`/songs?skip=1&take=2`)
 				.expect(200)
 				.expect((res) => {
 					let songs: Song[] = res.body.items

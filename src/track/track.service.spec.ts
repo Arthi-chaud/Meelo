@@ -238,7 +238,8 @@ describe('Track Service', () => {
 			expect(tracks).toContainEqual(dummyRepository.trackA2_1);
 			expect(tracks).toContainEqual(dummyRepository.trackA1_2Video);
 			expect(tracks).toContainEqual(dummyRepository.trackB1_1);
-			expect(tracks.length).toBe(6);
+			expect(tracks).toContainEqual(dummyRepository.trackC1_1);
+			expect(tracks.length).toBe(7);
 		});
 		it('should retrieve all video tracks', async () => {
 			let tracks = await trackService.getTracks({ type: TrackType.Video }, {}, {});
@@ -250,15 +251,16 @@ describe('Track Service', () => {
 		it('should retrieve all tracks, sorted by name', async () => {
 			let tracks = await trackService.getTracks({}, {}, {}, { sortBy: 'displayName', order: 'asc' });
 
-			expect(tracks.length).toBe(6);
-			expect(tracks[0]).toStrictEqual(dummyRepository.trackA2_1);
-			expect(tracks[1]).toStrictEqual(dummyRepository.trackB1_1);
-			expect(tracks[2]).toStrictEqual(dummyRepository.trackA1_1);
-			expect(tracks[3]).toStrictEqual(dummyRepository.trackA1_2Video);
-			expect(tracks[4]).toStrictEqual(newTrack);
-			expect(tracks[5]).toStrictEqual(newTrack2);
+			expect(tracks.length).toBe(7);
+			expect(tracks[0]).toStrictEqual(dummyRepository.trackC1_1);
+			expect(tracks[1]).toStrictEqual(dummyRepository.trackA2_1);
+			expect(tracks[2]).toStrictEqual(dummyRepository.trackB1_1);
+			expect(tracks[3]).toStrictEqual(dummyRepository.trackA1_1);
+			expect(tracks[4]).toStrictEqual(dummyRepository.trackA1_2Video);
+			expect(tracks[5]).toStrictEqual(newTrack);
+			expect(tracks[6]).toStrictEqual(newTrack2);
 		});
-		it('should retrieve the tracks by libraries (4 expected)', async () => {
+		it('should retrieve the tracks by libraries (5 expected)', async () => {
 			let tracks = await trackService.getTracks({ byLibrarySource: { id: dummyRepository.library1.id } });
 
 
@@ -266,7 +268,8 @@ describe('Track Service', () => {
 			expect(tracks).toContainEqual(dummyRepository.trackA1_1);
 			expect(tracks).toContainEqual(dummyRepository.trackA2_1);
 			expect(tracks).toContainEqual(dummyRepository.trackA1_2Video);
-			expect(tracks.length).toBe(4);
+			expect(tracks).toContainEqual(dummyRepository.trackC1_1);
+			expect(tracks.length).toBe(5);
 		});
 
 		it('should retrieve the tracks by libraries (1 expected)', async () => {
@@ -345,7 +348,7 @@ describe('Track Service', () => {
 
 		it("should count all the tracks", async () => {
 			let trackCount = await trackService.countTracks({ });
-			expect(trackCount).toBe(6);
+			expect(trackCount).toBe(7);
 		});
 	});
 

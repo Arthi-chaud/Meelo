@@ -161,10 +161,11 @@ describe('Song Service', () => {
 		it('should get all the songs', async () => {
 			let songs = await songService.getSongs({ });
 
-			expect(songs.length).toBe(4);
+			expect(songs.length).toBe(5);
 			expect(songs).toContainEqual(dummyRepository.songA1);
 			expect(songs).toContainEqual(dummyRepository.songA2);
 			expect(songs).toContainEqual(dummyRepository.songB1);
+			expect(songs).toContainEqual(dummyRepository.songC1);
 			expect(songs).toContainEqual(newSong);
 		});
 		
