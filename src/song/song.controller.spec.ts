@@ -321,20 +321,19 @@ describe('Song Controller', () => {
 		});
 		it("should return artist w/ songs & albums", () => {
 			return request(app.getHttpServer())
-				.get(`/songs/${dummyRepository.songA1.id}/artist?with=songs,albums`)
+				.get(`/songs/${dummyRepository.songB1.id}/artist?with=songs,albums`)
 				.expect(200)
 				.expect((res) => {
 					let fetchedArtist : Artist = res.body
 					expect(fetchedArtist).toStrictEqual({
-						...dummyRepository.artistA,
-						illustration: `http://meelo.com/artists/${dummyRepository.artistA.id}/illustration`,
+						...dummyRepository.artistB,
+						illustration: `http://meelo.com/artists/${dummyRepository.artistB.id}/illustration`,
 						albums: [{
-							...dummyRepository.albumA1,
-							illustration: `http://meelo.com/albums/${dummyRepository.albumA1.id}/illustration`
+							...dummyRepository.albumB1,
+							illustration: `http://meelo.com/albums/${dummyRepository.albumB1.id}/illustration`
 						}],
 						songs: [
-							expectedSongResponse(dummyRepository.songA2),
-							expectedSongResponse(dummyRepository.songA1),
+							expectedSongResponse(dummyRepository.songB1)
 						] 
 					});
 				});
