@@ -8,23 +8,30 @@ import PrismaService from "src/prisma/prisma.service";
 export default class TestPrismaService extends PrismaService {
 
 	public library1: Library;
+	public library2: Library;
 
 	public genreA: Genre;
 	public genreB: Genre;
 	public genreC: Genre;
 
 	public artistA: Artist;
+	public artistB: Artist;
 	public songA1: Song;
 	public songA2: Song;
+	public songB1: Song;
 	public albumA1: Album;
+	public albumB1: Album;
 	public releaseA1_1: Release;
 	public releaseA1_2: Release;
+	public releaseB1_1: Release;
 	public trackA1_1: Track;
 	public trackA1_2Video: Track;
 	public trackA2_1: Track;
+	public trackB1_1: Track;
 	public fileA1_1: File;
 	public fileA1_2Video: File;
 	public fileA2_1: File;
+	public fileB1_1: File;
 
 	private baseTrack = {
 		bitrate: 0,
@@ -41,6 +48,9 @@ export default class TestPrismaService extends PrismaService {
 		await this.flushDatabase();
 		this.library1 = await this.library.create({
 			data: { name: "Library", path: "Music/", slug: 'library'}
+		});
+		this.library2 = await this.library.create({
+			data: { name: "Library 2", path: "Music 2/", slug: 'library-2'}
 		});
 
 		this.genreA = await this.genre.create({
@@ -90,7 +100,7 @@ export default class TestPrismaService extends PrismaService {
 		});
 		this.songA2 = await this.song.create({
 			data: { name: "My Other Song", slug: 'my-other-song', artistId: this.artistA.id, genres:
-				{ connect: { id: this.genreA.id } }
+				{ connect: { id: this.genreB.id } }
 			}
 		});
 		this.fileA2_1 = await this.file.create({
@@ -101,6 +111,30 @@ export default class TestPrismaService extends PrismaService {
 				releaseId: this.releaseA1_2.id, master: true, type: TrackType.Audio, sourceFileId: this.fileA2_1.id
 			}
 		});
+
+		this.artistB = await this.artist.create({
+			data: { name: "My Second Artist", slug: "my-second-artist"}
+		});
+		this.albumB1 = await this.album.create({
+			data: { name: "My Second Album", slug: 'my-second-album', artistId: this.artistB.id }
+		});
+		this.releaseB1_1 = await this.release.create({
+			data: { title: "My Second Album 1", slug: 'my-second-album-1', albumId: this.albumB1.id, master: true }
+		});
+		this.songB1 = await this.song.create({
+			data: { name: "My Second Song", slug: 'my-second-song', artistId: this.artistB.id, genres:
+				{ connect: { id: this.genreB.id } }
+			}
+		});
+		this.fileB1_1 = await this.file.create({
+			data: { path: 'a', md5Checksum: '', registerDate: new Date(), libraryId: this.library2.id }
+		});
+		this.trackB1_1 = await this.track.create({
+			data: { ...this.baseTrack, displayName: "My Second Song 1", songId: this.songB1.id,
+				releaseId: this.releaseB1_1.id, master: true, type: TrackType.Audio, sourceFileId: this.fileB1_1.id
+			}
+		});
+
 	}
 
 }

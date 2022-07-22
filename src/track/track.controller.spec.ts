@@ -54,10 +54,11 @@ describe('Track Controller', () => {
 				.expect(200)
 				.expect((res) => {
 					let tracks: Track[] = res.body.items;
-					expect(tracks.length).toBe(3);
+					expect(tracks.length).toBe(4);
 					expect(tracks).toContainEqual(expectedTrackResponse(dummyRepository.trackA1_1));
 					expect(tracks).toContainEqual(expectedTrackResponse(dummyRepository.trackA1_2Video));
 					expect(tracks).toContainEqual(expectedTrackResponse(dummyRepository.trackA2_1));
+					expect(tracks).toContainEqual(expectedTrackResponse(dummyRepository.trackB1_1));
 				});
 		});
 		it("should return all the tracks, sorted by name", () => {
@@ -66,21 +67,22 @@ describe('Track Controller', () => {
 				.expect(200)
 				.expect((res) => {
 					let tracks: Track[] = res.body.items;
-					expect(tracks.length).toBe(3);
+					expect(tracks.length).toBe(4);
 					expect(tracks[0]).toStrictEqual(expectedTrackResponse(dummyRepository.trackA2_1));
-					expect(tracks[1]).toStrictEqual(expectedTrackResponse(dummyRepository.trackA1_1));
-					expect(tracks[2]).toStrictEqual(expectedTrackResponse(dummyRepository.trackA1_2Video));
+					expect(tracks[1]).toStrictEqual(expectedTrackResponse(dummyRepository.trackB1_1));
+					expect(tracks[2]).toStrictEqual(expectedTrackResponse(dummyRepository.trackA1_1));
+					expect(tracks[3]).toStrictEqual(expectedTrackResponse(dummyRepository.trackA1_2Video));
 				});
 		});
 		it("should return some tracks (w/ pagination)", () => {
 			return request(app.getHttpServer())
-				.get(`/tracks?skip=1&sortBy=displayName`)
+				.get(`/tracks?skip=1&take=2&sortBy=displayName`)
 				.expect(200)
 				.expect((res) => {
 					let tracks: Track[] = res.body.items;
 					expect(tracks.length).toBe(2);
-					expect(tracks[0]).toStrictEqual(expectedTrackResponse(dummyRepository.trackA1_1));
-					expect(tracks[1]).toStrictEqual(expectedTrackResponse(dummyRepository.trackA1_2Video));
+					expect(tracks[0]).toStrictEqual(expectedTrackResponse(dummyRepository.trackB1_1));
+					expect(tracks[1]).toStrictEqual(expectedTrackResponse(dummyRepository.trackA1_1));
 				});
 		});
 		it("should return tracks w/ related song", () => {
