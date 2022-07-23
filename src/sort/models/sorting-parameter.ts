@@ -16,9 +16,9 @@ class SortingParameter<Keys extends string[]> {
 export default SortingParameter;
 
 export function buildSortingParameter<Keys extends string[]>(sortingParameters?: SortingParameter<Keys>) {
-	if (sortingParameters == undefined)
+	if (sortingParameters?.sortBy === undefined)
 		return {};
 	return {
-		[sortingParameters.sortBy]: sortingParameters.order
+		[sortingParameters.sortBy]: sortingParameters.order ?? 'asc'
 	}
 }

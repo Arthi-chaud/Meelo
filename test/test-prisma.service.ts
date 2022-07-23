@@ -101,7 +101,7 @@ export default class TestPrismaService extends PrismaService {
 			data: { path: 'b', md5Checksum: '', registerDate: new Date(), libraryId: this.library1.id }
 		});
 		this.trackA1_2Video = await this.track.create({
-			data: { ...this.baseTrack, displayName: "My Song 2 (Video)", songId: this.songA1.id,
+			data: { ...this.baseTrack, displayName: "My Song 2 (Video)", songId: this.songA1.id, discIndex: 2,
 			releaseId: this.releaseA1_2.id, master: false, type: TrackType.Video, sourceFileId: this.fileA1_2Video.id
 		}
 		});
@@ -114,7 +114,7 @@ export default class TestPrismaService extends PrismaService {
 			data: { path: 'c', md5Checksum: '', registerDate: new Date(), libraryId: this.library1.id }
 		});
 		this.trackA2_1 = await this.track.create({
-			data: { ...this.baseTrack, displayName: "My Other Song 1", songId: this.songA2.id,
+			data: { ...this.baseTrack, displayName: "My Other Song 1", songId: this.songA2.id, discIndex: 1,
 				releaseId: this.releaseA1_2.id, master: true, type: TrackType.Audio, sourceFileId: this.fileA2_1.id
 			}
 		});
