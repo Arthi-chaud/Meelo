@@ -41,7 +41,7 @@ describe('Release Controller', () => {
 	const expectedTrackResponse = (track: Track) => ({
 		...track,
 		illustration: `http://meelo.com/tracks/${track.id}/illustration`,
-		stream: `http://meelo.com/files/${track.id}/stream`
+		stream: `http://meelo.com/files/${track.sourceFileId}/stream`
 	});
 	const expectedSongResponse = (song: Song) => ({
 		...song,
