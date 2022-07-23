@@ -157,7 +157,7 @@ export default class SongService {
 	 * @param where Query parameters to find the song to delete 
 	 */
 	async deleteSong(where: SongQueryParameters.WhereInput): Promise<void> {
-		let song = await this.getSong(where, { tracks: true });
+		let song = await this.getSong(where, { tracks: true, genres: true });
 		await Promise.all(
 			song.tracks.map(async (track) => await this.trackService.deleteTrack({ id: track.id }, false))
 		);
@@ -167,6 +167,9 @@ export default class SongService {
 			});
 			Logger.warn(`Song '${deletedSong.slug}' deleted`);
 			await this.artistService.deleteArtistIfEmpty({ id: deletedSong.artistId });
+			await Promise.all(
+				song.genres.map((genre) => this.genreService.deleteGenreIfEmpty({ id: genre.id }))
+			);
 		} catch {
 			if (where.byId)
 				throw new SongNotFoundByIdException(where.byId.id);
