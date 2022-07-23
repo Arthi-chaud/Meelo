@@ -19,6 +19,6 @@ export function buildSortingParameter<Keys extends string[]>(sortingParameters?:
 	if (sortingParameters?.sortBy === undefined)
 		return {};
 	return {
-		[sortingParameters.sortBy]: sortingParameters.order ?? 'asc'
+		[sortingParameters.sortBy]: sortingParameters.order ?? 'asc',
 	}
 }

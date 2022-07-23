@@ -54,7 +54,7 @@ export default class TestPrismaService extends PrismaService {
 		await this.$connect();
 		await this.flushDatabase();
 		this.library1 = await this.library.create({
-			data: { name: "Library", path: "Music/", slug: 'library'}
+			data: { name: "Library", path: "Music", slug: 'library'}
 		});
 		this.library2 = await this.library.create({
 			data: { name: "Library 2", path: "Music 2/", slug: 'library-2'}
