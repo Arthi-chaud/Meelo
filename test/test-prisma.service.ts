@@ -76,7 +76,7 @@ export default class TestPrismaService extends PrismaService {
 			data: { name: "My Artist", slug: "my-artist"}
 		});
 		this.albumA1 = await this.album.create({
-			data: { name: "My Album", slug: 'my-album', artistId: this.artistA.id }
+			data: { name: "My Album", slug: 'my-album', artistId: this.artistA.id, releaseDate: new Date('2022') }
 		});
 		this.releaseA1_1 = await this.release.create({
 			data: { title: "My Album 1", slug: 'my-album-1', albumId: this.albumA1.id, master: true }
@@ -146,7 +146,7 @@ export default class TestPrismaService extends PrismaService {
 			data: { name: "My Third Artist", slug: "my-third-artist"}
 		});
 		this.compilationAlbumA = await this.album.create({
-			data: { name: "My Compilation Album", slug: 'my-compilation-album', artistId: this.artistC.id }
+			data: { name: "My Compilation Album", slug: 'my-compilation-album', releaseDate: new Date('2000') }
 		});
 		this.compilationReleaseA1 = await this.release.create({
 			data: { title: "My Compilation Album 1", slug: 'my-compilation-album-1', albumId: this.compilationAlbumA.id, master: true }
