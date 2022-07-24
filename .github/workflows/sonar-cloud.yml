@@ -13,17 +13,11 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-      - name: Wait for unit test workflow to finish
-        uses: lewagon/wait-on-check-action@v1.0.0
-        with:
-          ref: ${{ github.ref }}
-          check-name: 'run_unit_tests'
-          repo-token: ${{ secrets.GITHUB_TOKEN }}
       - name: Downlad Coverage artifact
         uses: actions/download-artifact@v3
         with:
           name: coverage-report
-          path: .
+          path: coverage
       - run: ls -lR
       - name: Run SonarCloud Scan
         uses: SonarSource/sonarcloud-github-action@master
