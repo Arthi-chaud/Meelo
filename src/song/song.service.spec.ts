@@ -17,11 +17,13 @@ import IllustrationModule from "src/illustration/illustration.module";
 import GenreModule from "src/genre/genre.module";
 import { GenreNotFoundByIdException } from "src/genre/genre.exceptions";
 import TestPrismaService from "test/test-prisma.service";
+import AlbumService from "src/album/album.service";
 
 describe('Song Service', () => {
 	let songService: SongService;
 	let dummyRepository: TestPrismaService;
 	let artistService: ArtistService;
+	let albumService: AlbumService;
 
 	let newSong: Song;
 	
@@ -34,6 +36,7 @@ describe('Song Service', () => {
 		dummyRepository = module.get(PrismaService);
 		songService = module.get(SongService);
 		artistService = module.get(ArtistService);
+		albumService = module.get(AlbumService)
 		await dummyRepository.onModuleInit();
 	});
 
@@ -374,6 +377,7 @@ describe('Song Service', () => {
 		});
 
 		it("should have deleted the parent artist", async () => {
+			await albumService.deleteAlbum({ byId: { id: dummyRepository.albumA1.id } });
 			await songService.deleteSong({ byId: { id: newSong.id } });
 			const test = async () => await artistService.deleteArtist({ id :dummyRepository.artistA.id });
 			expect(test()).rejects.toThrow(ArtistNotFoundByIDException);
