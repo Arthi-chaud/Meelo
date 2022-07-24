@@ -1,0 +1,26 @@
+name: Sonar Cloud Analysis
+
+on:
+  workflow_run:
+    workflows: ['Unit tests']
+    types:
+      - completed
+    branches:
+      - '*'
+
+jobs:
+  run:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Downlad Coverage artifact
+        uses: actions/download-artifact@v3
+        with:
+          name: coverage-report
+          path: coverage
+      - run: ls -lR
+      - name: Run SonarCloud Scan
+        uses: SonarSource/sonarcloud-github-action@master
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          SONAR_TOKEN: ${{ secrets. SONAR_TOKEN }}
