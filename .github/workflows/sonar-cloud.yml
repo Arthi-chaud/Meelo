@@ -18,7 +18,7 @@ jobs:
         with:
           workflow: unit-tests.yml
           name: coverage-report
-        path: coverage
+          path: coverage
       - run: ls -lR
       - name: Run SonarCloud Scan
         uses: SonarSource/sonarcloud-github-action@master
