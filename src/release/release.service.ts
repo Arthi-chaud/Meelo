@@ -186,7 +186,7 @@ export default class ReleaseService {
 	 * Also delete related tracks.
 	 * @param where Query parameters to find the release to delete 
 	 */
-	async deleteRelease(where: ReleaseQueryParameters.DeleteInput): Promise<void> {
+	async deleteRelease(where: ReleaseQueryParameters.DeleteInput, deleteParent: boolean = true): Promise<void> {
 		let release = await this.getRelease(where, { tracks: true });
 		await Promise.allSettled(
 			release.tracks.map((track) => this.trackService.deleteTrack({ id: track.id }, false))
@@ -204,7 +204,8 @@ export default class ReleaseService {
 				releaseId: release.id,
 				album: { byId: { id: release.albumId } }
 			});
-		await this.albumService.deleteAlbumIfEmpty(release.albumId);
+		if (deleteParent)
+			await this.albumService.deleteAlbumIfEmpty(release.albumId);
 	}
 
 	/**
