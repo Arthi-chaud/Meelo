@@ -15,8 +15,9 @@ jobs:
       - uses: actions/checkout@v2
       - name: Downlad Coverage artifact
         uses: dawidd6/action-download-artifact@v2
-        workflow: unit-tests.yml
-        name: coverage-report
+        with:
+          workflow: unit-tests.yml
+          name: coverage-report
         path: coverage
       - run: ls -lR
       - name: Run SonarCloud Scan
