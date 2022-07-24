@@ -37,6 +37,7 @@ jobs:
         run: yarn test --coverage
       - name: Upload Unit Tests artifact
         continue-on-error: true
+        uses: actions/upload-artifact@v3
         with:
           name: coverage-report
           path: coverage
