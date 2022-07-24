@@ -158,24 +158,21 @@ export default class SongService {
 	 */
 	async deleteSong(where: SongQueryParameters.WhereInput): Promise<void> {
 		let song = await this.getSong(where, { tracks: true, genres: true });
-		await Promise.all(
-			song.tracks.map(async (track) => await this.trackService.deleteTrack({ id: track.id }, false))
+		await Promise.allSettled(
+			song.tracks.map((track) => this.trackService.deleteTrack({ id: track.id }))
 		);
 		try {
-			let deletedSong = await this.prismaService.song.delete({
+			await this.prismaService.song.delete({
 				where: SongQueryParameters.buildQueryParametersForOne({ byId: { id: song.id } })
 			});
-			Logger.warn(`Song '${deletedSong.slug}' deleted`);
-			await this.artistService.deleteArtistIfEmpty({ id: deletedSong.artistId });
-			await Promise.all(
-				song.genres.map((genre) => this.genreService.deleteGenreIfEmpty({ id: genre.id }))
-			);
 		} catch {
-			if (where.byId)
-				throw new SongNotFoundByIdException(where.byId.id);
-			const artist = await this.artistService.getArtist(where.bySlug.artist)
-			throw new SongNotFoundException(where.bySlug.slug, new Slug(artist.slug));
+			return;
 		}
+		Logger.warn(`Song '${song.slug}' deleted`);
+		await this.artistService.deleteArtistIfEmpty({ id: song.artistId });
+		await Promise.all(
+			song.genres.map((genre) => this.genreService.deleteGenreIfEmpty({ id: genre.id }))
+		);
 	}
 	
 	/**

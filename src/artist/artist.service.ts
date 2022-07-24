@@ -135,22 +135,28 @@ export default class ArtistService {
 	 * @param where the query parameters to find the album to delete
 	 */
 	async deleteArtist(where: ArtistQueryParameters.WhereInput): Promise<void> {
-		let deletedArtist: Artist;
 		if (where.compilationArtist)
 			throw new CompilationArtistException('Artist');
+		let artist = await this.getArtist(where, { albums: true, songs: true });
+		await Promise.allSettled([
+			...artist.albums.map(
+				(album) => this.albumService.deleteAlbum({ byId: { id: album.id } })
+			),
+			...artist.songs.map(
+				(song) => this.songService.deleteSong({ byId: { id: song.id } })
+			)
+		]);
 		try {
-			deletedArtist = await this.prismaService.artist.delete({
+			await this.prismaService.artist.delete({
 				where: ArtistQueryParameters.buildQueryParametersForOne(where)
 			});
 		} catch {
-			if (where.id !== undefined)
-			throw new ArtistNotFoundByIDException(where.id);
-			throw new ArtistNotFoundException(where.slug);
+			return
 		}
-		Logger.warn(`Artist '${deletedArtist.slug}' deleted`);
+		Logger.warn(`Artist '${artist.slug}' deleted`);
 		try {
 			const artistIllustrationFolder = this.illustrationService.buildArtistIllustrationFolderPath(
-				new Slug(deletedArtist.slug)
+				new Slug(artist.slug)
 			);
 			this.illustrationService.deleteIllustrationFolder(artistIllustrationFolder);
 		} catch {}

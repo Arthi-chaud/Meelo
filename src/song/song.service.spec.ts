@@ -340,11 +340,11 @@ describe('Song Service', () => {
 
 		it("should create the song", async () => {
 			let createdSong = await songService.getOrCreateSong({
-				name: "My Song 3", artist: { id: dummyRepository.artistA.id },
+				name: "My Song 4", artist: { id: dummyRepository.artistB.id },
 				genres: []
 			});
-			expect(createdSong.name).toBe("My Song 3")
-			expect(createdSong.artistId).toBe(dummyRepository.artistA.id);
+			expect(createdSong.name).toBe("My Song 4")
+			expect(createdSong.artistId).toBe(dummyRepository.artistB.id);
 		});
 
 		it("should throw as the parent artist does not exist ", async () => {
@@ -374,6 +374,7 @@ describe('Song Service', () => {
 		});
 
 		it("should have deleted the parent artist", async () => {
+			await songService.deleteSong({ byId: { id: newSong.id } });
 			const test = async () => await artistService.deleteArtist({ id :dummyRepository.artistA.id });
 			expect(test()).rejects.toThrow(ArtistNotFoundByIDException);
 		});
@@ -387,7 +388,7 @@ describe('Song Service', () => {
 
 		it("should throw, as the song song does not exist", async () => {
 			const test = async () => await songService.deleteSong({
-				bySlug: { slug: new Slug('My Song'), artist: { slug: new Slug("My Artist") } }
+				bySlug: { slug: new Slug('My Song'), artist: { slug: new Slug(dummyRepository.artistB.slug) } }
 			});
 			expect(test()).rejects.toThrow(SongNotFoundException);
 		});
