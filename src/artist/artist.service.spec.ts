@@ -75,15 +75,15 @@ describe('Artist Service', () => {
 		it(('should return all artists'), async () => {
 			let artists = await artistService.getArtists({ });
 			expect(artists.length).toBe(4);
-			expect(artists).toContain(dummyRepository.artistA);
-			expect(artists).toContain(dummyRepository.artistB);
-			expect(artists).toContain(dummyRepository.artistC);
-			expect(artists).toContain(newArtist);
+			expect(artists).toContainEqual(dummyRepository.artistA);
+			expect(artists).toContainEqual(dummyRepository.artistB);
+			expect(artists).toContainEqual(dummyRepository.artistC);
+			expect(artists).toContainEqual(newArtist);
 		});
 
 		it(('should return all artists, sorted by name'), async () => {
 			let artists = await artistService.getArtists({}, {}, {}, { sortBy: 'name', order: 'asc' });
-			expect(artists.length).toBe(2);
+			expect(artists.length).toBe(4);
 			expect(artists[0]).toStrictEqual(dummyRepository.artistA);
 			expect(artists[1]).toStrictEqual(newArtist);
 			expect(artists[2]).toStrictEqual(dummyRepository.artistB);
@@ -101,8 +101,8 @@ describe('Artist Service', () => {
 			let artist = await artistService.getOrCreateArtist({ name: 'My Artist 2'});
 			expect(artist.songs).toBeUndefined();
 			expect(artist.albums).toBeUndefined();
-			expect(artist.name).toBe('My Artist2');
-			expect(artist.slug).toBe('my-artist2');
+			expect(artist.name).toBe('My Artist 2');
+			expect(artist.slug).toBe('my-artist-2');
 			expect(artist.id).not.toBe(dummyRepository.artistA.id);
 			expect(artist.id).not.toBe(newArtist.id);
 			expect(artist.id).not.toBe(dummyRepository.artistB.id);
