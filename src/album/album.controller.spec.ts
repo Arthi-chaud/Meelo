@@ -1,6 +1,6 @@
 import type { INestApplication } from "@nestjs/common";
 import type { TestingModule } from "@nestjs/testing";
-import type { Album, Artist, Release } from "@prisma/client";
+import type { Album, Artist, Release, Track } from "@prisma/client";
 import request from "supertest";
 import ArtistModule from "src/artist/artist.module";
 import ArtistService from "src/artist/artist.service";
@@ -9,53 +9,52 @@ import PrismaModule from "src/prisma/prisma.module";
 import PrismaService from "src/prisma/prisma.service";
 import ReleaseModule from "src/release/release.module";
 import ReleaseService from "src/release/release.service";
-import { FakeFileManagerService } from "test/FakeFileManagerModule";
-import { createTestingModule } from "test/TestModule";
+import { FakeFileManagerService } from "test/fake-file-manager.module";
+import { createTestingModule } from "test/test-module";
 import AlbumModule from "./album.module";
-import AlbumService from "./album.service";
 import MetadataModule from "src/metadata/metadata.module";
 import SongModule from "src/song/song.module";
 import TrackModule from "src/track/track.module";
-import SetupApp from "test/SetupApp";
+import SetupApp from "test/setup-app";
 import IllustrationModule from "src/illustration/illustration.module";
 import GenreModule from "src/genre/genre.module";
+import TestPrismaService from "test/test-prisma.service";
 
 describe('Album Controller', () => {
-	let albumService: AlbumService;
-	let artistService: ArtistService;
-	let releaseService: ReleaseService;
+	let dummyRepository: TestPrismaService;
 	let app: INestApplication;
 
-	let artist: Artist;
-	let album1: Album;
-	let album2: Album;
-	let album3: Album;
-	let compilationAlbum: Album;
-	let release1: Release;
-	let release2: Release;
+	const expectedArtistResponse = (artist: Artist) => ({
+		...artist,
+		illustration: `http://meelo.com/artists/${artist.id}/illustration`
+	});
+
+	const expectedAlbumResponse = (album: Album) => ({
+		...album,
+		releaseDate: album.releaseDate?.toISOString() ?? null,
+		illustration: `http://meelo.com/albums/${album.id}/illustration`
+	});
+
+	const expectedReleaseResponse = (release: Release) => ({
+		...release,
+		illustration: `http://meelo.com/releases/${release.id}/illustration`
+	});
+
+	const expectedTrackResponse = (track: Track) => ({
+		...track,
+		illustration: `http://meelo.com/tracks/${track.id}/illustration`,
+		stream: `http://meelo.com/files/${track.sourceFileId}/stream`
+	});
+
 	beforeAll(async () => {
 		const module: TestingModule = await createTestingModule({
 			imports: [ArtistModule, AlbumModule, PrismaModule, ReleaseModule, MetadataModule, SongModule, TrackModule, IllustrationModule, GenreModule],
 			providers: [ArtistService, ReleaseService],
-		}).overrideProvider(FileManagerService).useClass(FakeFileManagerService).compile();
+		}).overrideProvider(FileManagerService).useClass(FakeFileManagerService)
+		.overrideProvider(PrismaService).useClass(TestPrismaService).compile();
 		app = await SetupApp(module);
-		await module.get<PrismaService>(PrismaService).onModuleInit();
-		artistService = module.get<ArtistService>(ArtistService);
-		albumService = module.get<AlbumService>(AlbumService);
-		releaseService = module.get<ReleaseService>(ReleaseService);
-		artist = await artistService.createArtist({ name: 'My Artist 1' });
-		album1 = await albumService.createAlbum({ artist: { id: artist.id }, name: 'My Album 1' });
-		album2 = await albumService.createAlbum({ artist: { id: artist.id }, name: 'My Album 2' });
-		album3 = await albumService.createAlbum({ artist: { id: artist.id }, name: 'My Album 3' });
-		compilationAlbum = await albumService.createAlbum({ name: 'My Compilation Album' });
-		release1 = await releaseService.createRelease({
-			title: "My Release 1", album: { byId: { id: album1.id } },
-			master: true
-		});
-		release2 = await releaseService.createRelease({
-			title: "My Release 2", album: { byId: { id: album1.id } },
-			master: false
-		});
+		dummyRepository = module.get(PrismaService);
+		await dummyRepository.onModuleInit();
 	});
 
 	describe("Get Albums (GET /albums)", () => {
@@ -65,23 +64,10 @@ describe('Album Controller', () => {
 				.expect(200)
 				.expect((res) => {
 					let albums: Album[] = res.body.items;
-					expect(albums.length).toBe(4);
-					expect(albums[0]).toStrictEqual({
-						...album1,
-						illustration: `http://meelo.com/albums/${album1.id}/illustration`
-					});
-					expect(albums[1]).toStrictEqual({
-						...album2,
-						illustration: `http://meelo.com/albums/${album2.id}/illustration`
-					})
-					expect(albums[2]).toStrictEqual({
-						...album3,
-						illustration: `http://meelo.com/albums/${album3.id}/illustration`
-					});
-					expect(albums[3]).toStrictEqual({
-						...compilationAlbum,
-						illustration: `http://meelo.com/albums/${compilationAlbum.id}/illustration`
-					})
+					expect(albums.length).toBe(3);
+					expect(albums[0]).toStrictEqual(expectedAlbumResponse(dummyRepository.albumA1));
+					expect(albums[1]).toStrictEqual(expectedAlbumResponse(dummyRepository.albumB1));
+					expect(albums[2]).toStrictEqual(expectedAlbumResponse(dummyRepository.compilationAlbumA));
 				});
 		});
 		it("Should sort all albums", () => {
@@ -90,28 +76,20 @@ describe('Album Controller', () => {
 				.expect(200)
 				.expect((res) => {
 					let albums: Album[] = res.body.items;
-					expect(albums.length).toBe(4);
-					expect(albums[0].id).toBe(compilationAlbum.id);
-					expect(albums[1].id).toBe(album3.id);
-					expect(albums[2].id).toBe(album2.id);
-					expect(albums[3].id).toBe(album1.id);
+					expect(albums.length).toBe(3);
+					expect(albums[0]).toStrictEqual(expectedAlbumResponse(dummyRepository.albumB1));
+					expect(albums[1]).toStrictEqual(expectedAlbumResponse(dummyRepository.compilationAlbumA));
+					expect(albums[2]).toStrictEqual(expectedAlbumResponse(dummyRepository.albumA1));
 				});
 		});
 		it("Should return some albums (w/ pagination)", () => {
 			return request(app.getHttpServer())
-				.get(`/albums?skip=1&take=2`)
+				.get(`/albums?skip=1&take=1`)
 				.expect(200)
 				.expect((res) => {
 					let albums: Album[] = res.body.items;
-					expect(albums.length).toBe(2);
-					expect(albums[0]).toStrictEqual({
-						...album2,
-						illustration: `http://meelo.com/albums/${album2.id}/illustration`
-					})
-					expect(albums[1]).toStrictEqual({
-						...album3,
-						illustration: `http://meelo.com/albums/${album3.id}/illustration`
-					});
+					expect(albums.length).toBe(1);
+					expect(albums[0]).toStrictEqual(expectedAlbumResponse(dummyRepository.albumB1));
 				});
 		});
 		it("Should include related artist", () => {
@@ -122,12 +100,8 @@ describe('Album Controller', () => {
 					let albums: Album[] = res.body.items;
 					expect(albums.length).toBe(1);
 					expect(albums[0]).toStrictEqual({
-						...album1,
-						illustration: `http://meelo.com/albums/${album1.id}/illustration`,
-						artist: {
-							...artist,
-							illustration: `http://meelo.com/artists/${artist.id}/illustration`,
-						}
+						...expectedAlbumResponse(dummyRepository.albumA1),
+						artist: expectedArtistResponse(dummyRepository.artistA)
 					});
 				});
 		});
@@ -141,10 +115,7 @@ describe('Album Controller', () => {
 				.expect((res) => {
 					let albums: Album[] = res.body.items;
 					expect(albums.length).toBe(1);
-					expect(albums[0]).toStrictEqual({
-						...compilationAlbum,
-						illustration: `http://meelo.com/albums/${compilationAlbum.id}/illustration`,
-					});
+					expect(albums[0]).toStrictEqual(expectedAlbumResponse(dummyRepository.compilationAlbumA));
 				});
 		});
 	});
@@ -152,36 +123,27 @@ describe('Album Controller', () => {
 	describe("Get Album (GET /albums/:id)", () => {
 		it("Should return album", () => {
 			return request(app.getHttpServer())
-				.get(`/albums/${album1.id}`)
+				.get(`/albums/${dummyRepository.albumB1.id}`)
 				.expect(200)
 				.expect((res) => {
-					expect(res.body).toStrictEqual({
-						...album1,
-						illustration: `http://meelo.com/albums/${album1.id}/illustration`
-					})
+					expect(res.body).toStrictEqual(expectedAlbumResponse(dummyRepository.albumB1))
 				});
 		});
 
 		it("Should return album (w/ slug)", () => {
 			return request(app.getHttpServer())
-				.get(`/albums/${artist.slug}+${album1.slug}`)
+				.get(`/albums/${dummyRepository.artistA.slug}+${dummyRepository.albumA1.slug}`)
 				.expect(200)
 				.expect((res) => {
-					expect(res.body).toStrictEqual({
-						...album1,
-						illustration: `http://meelo.com/albums/${album1.id}/illustration`
-					})
+					expect(res.body).toStrictEqual(expectedAlbumResponse(dummyRepository.albumA1))
 				});
 		});
 		it("Should return compilation album", () => {
 			return request(app.getHttpServer())
-				.get(`/albums/${compilationAlbum.id}`)
+				.get(`/albums/${dummyRepository.compilationAlbumA.id}`)
 				.expect(200)
 				.expect((res) => {
-					expect(res.body).toStrictEqual({
-						...compilationAlbum,
-						illustration: `http://meelo.com/albums/${compilationAlbum.id}/illustration`
-					})
+					expect(res.body).toStrictEqual(expectedAlbumResponse(dummyRepository.compilationAlbumA))
 				});
 		});
 		it("Should return an error, as the album does not exist", () => {
@@ -191,34 +153,29 @@ describe('Album Controller', () => {
 		});
 		it("Should include related artist", () => {
 			return request(app.getHttpServer())
-				.get(`/albums/${album2.id}?with=artist`)
+				.get(`/albums/${dummyRepository.albumB1.id}?with=artist`)
 				.expect(200)
 				.expect((res) => {
 					expect(res.body).toStrictEqual({
-						...album2,
-						illustration: `http://meelo.com/albums/${album2.id}/illustration`,
-						artist: {
-							...artist,
-							illustration: `http://meelo.com/artists/${artist.id}/illustration`
-						}
+						...expectedAlbumResponse(dummyRepository.albumB1),
+						artist: expectedArtistResponse(dummyRepository.artistB)
 					})
 				});
 		});
 		it("Should include related artist (null)", () => {
 			return request(app.getHttpServer())
-				.get(`/albums/${compilationAlbum.id}?with=artist`)
+				.get(`/albums/${dummyRepository.compilationAlbumA.id}?with=artist`)
 				.expect(200)
 				.expect((res) => {
 					expect(res.body).toStrictEqual({
-						...compilationAlbum,
-						illustration: `http://meelo.com/albums/${compilationAlbum.id}/illustration`,
+						...expectedAlbumResponse(dummyRepository.compilationAlbumA),
 						artist: null
 					})
 				});
-		});
+			});
 		it("Should return an error as the string is badly fored", () => {
 			return request(app.getHttpServer())
-				.get(`/albums/${artist.slug}`)
+				.get(`/albums/${dummyRepository.artistA.slug}`)
 				.expect(400);
 		});
 	});
@@ -226,24 +183,18 @@ describe('Album Controller', () => {
 	describe("Get Album's Master (GET /albums/:id/master)", () => {
 		it("Should return album's master", () => {
 			return request(app.getHttpServer())
-				.get(`/albums/${album1.id}/master`)
+				.get(`/albums/${dummyRepository.albumA1.id}/master`)
 				.expect(200)
 				.expect((res) => {
-					expect(res.body).toStrictEqual({
-						...release1,
-						illustration: `http://meelo.com/releases/${release1.id}/illustration`
-					})
+					expect(res.body).toStrictEqual(expectedReleaseResponse(dummyRepository.releaseA1_1))
 				});
 		});
 		it("Should return album's master (by slug)", () => {
 			return request(app.getHttpServer())
-				.get(`/albums/${artist.slug}+${album1.slug}/master`)
+				.get(`/albums/${dummyRepository.artistA.slug}+${dummyRepository.albumA1.slug}/master`)
 				.expect(200)
 				.expect((res) => {
-					expect(res.body).toStrictEqual({
-						...release1,
-						illustration: `http://meelo.com/releases/${release1.id}/illustration`
-					})
+					expect(res.body).toStrictEqual(expectedReleaseResponse(dummyRepository.releaseA1_1))
 				});
 		});
 		it("Should return an error, as the album does not exist", () => {
@@ -258,13 +209,14 @@ describe('Album Controller', () => {
 		});
 		it("Should include related tracks", () => {
 			return request(app.getHttpServer())
-				.get(`/albums/${album1.id}/master?with=tracks`)
+				.get(`/albums/${dummyRepository.albumB1.id}/master?with=tracks`)
 				.expect(200)
 				.expect((res) => {
 					expect(res.body).toStrictEqual({
-						...release1,
-						tracks: [],
-						illustration: `http://meelo.com/releases/${release1.id}/illustration`
+						...expectedReleaseResponse(dummyRepository.releaseB1_1),
+						tracks: [
+							expectedTrackResponse(dummyRepository.trackB1_1)
+						],
 					})
 				});
 		});
@@ -273,66 +225,44 @@ describe('Album Controller', () => {
 	describe("Get Album's Releases (GET /albums/:id/releases)", () => {
 		it("Should return all album's releases", () => {
 			return request(app.getHttpServer())
-				.get(`/albums/${album1.id}/releases`)
+				.get(`/albums/${dummyRepository.albumA1.id}/releases`)
 				.expect(200)
 				.expect((res) => {
 					let releases: Release[] = res.body.items;
 					expect(releases.length).toBe(2);
-					expect(releases[0]).toStrictEqual({
-						...release1,
-						illustration: `http://meelo.com/releases/${release1.id}/illustration`
-					});
-					expect(releases[1]).toStrictEqual({
-						...release2,
-						illustration: `http://meelo.com/releases/${release2.id}/illustration`
-					})
+					expect(releases[0]).toStrictEqual(expectedReleaseResponse(dummyRepository.releaseA1_1));
+					expect(releases[1]).toStrictEqual(expectedReleaseResponse(dummyRepository.releaseA1_2));
 				});
 		});
 		it("Should return all album's releases, sorted by id, desc", () => {
 			return request(app.getHttpServer())
-				.get(`/albums/${album1.id}/releases?sortBy=id&order=desc`)
+				.get(`/albums/${dummyRepository.albumA1.id}/releases?sortBy=id&order=desc`)
 				.expect(200)
 				.expect((res) => {
 					let releases: Release[] = res.body.items;
 					expect(releases.length).toBe(2);
-					expect(releases[1]).toStrictEqual({
-						...release1,
-						illustration: `http://meelo.com/releases/${release1.id}/illustration`
-					});
-					expect(releases[0]).toStrictEqual({
-						...release2,
-						illustration: `http://meelo.com/releases/${release2.id}/illustration`
-					})
+					expect(releases[0]).toStrictEqual(expectedReleaseResponse(dummyRepository.releaseA1_2));
+					expect(releases[1]).toStrictEqual(expectedReleaseResponse(dummyRepository.releaseA1_1));
 				});
 		});
 		it("Should return all album's releases (by slug)", () => {
 			return request(app.getHttpServer())
-				.get(`/albums/${artist.slug}+${album1.slug}/releases`)
-				.expect(200)
-				.expect((res) => {
-					let releases: Release[] = res.body.items;
-					expect(releases.length).toBe(2);
-					expect(releases[0]).toStrictEqual({
-						...release1,
-						illustration: `http://meelo.com/releases/${release1.id}/illustration`
-					});
-					expect(releases[1]).toStrictEqual({
-						...release2,
-						illustration: `http://meelo.com/releases/${release2.id}/illustration`
-					})
-				});
-		});
-		it("Should return some album's releases (w/ pagination)", () => {
-			return request(app.getHttpServer())
-				.get(`/albums/${album1.id}/releases?take=1`)
+				.get(`/albums/${dummyRepository.artistB.slug}+${dummyRepository.albumB1.slug}/releases`)
 				.expect(200)
 				.expect((res) => {
 					let releases: Release[] = res.body.items;
 					expect(releases.length).toBe(1);
-					expect(releases[0]).toStrictEqual({
-						...release1,
-						illustration: `http://meelo.com/releases/${release1.id}/illustration`
-					});
+					expect(releases[0]).toStrictEqual(expectedReleaseResponse(dummyRepository.releaseB1_1));
+				});
+		});
+		it("Should return some album's releases (w/ pagination)", () => {
+			return request(app.getHttpServer())
+				.get(`/albums/${dummyRepository.albumA1.id}/releases?take=1`)
+				.expect(200)
+				.expect((res) => {
+					let releases: Release[] = res.body.items;
+					expect(releases.length).toBe(1);
+					expect(releases[0]).toStrictEqual(expectedReleaseResponse(dummyRepository.releaseA1_1));
 				});
 		});
 		it("Should return an error, as the album does not exist", () => {
@@ -342,19 +272,17 @@ describe('Album Controller', () => {
 		});
 		it("Should include related tracks & parent album", () => {
 			return request(app.getHttpServer())
-				.get(`/albums/${album1.id}/releases?skip=1&with=tracks,album`)
+				.get(`/albums/${dummyRepository.compilationAlbumA.id}/releases?with=tracks,album`)
 				.expect(200)
 				.expect((res) => {
 					let releases: Release[] = res.body.items;
 					expect(releases.length).toBe(1);
 					expect(releases[0]).toStrictEqual({
-						...release2,
-						illustration: `http://meelo.com/releases/${release2.id}/illustration`,
-						tracks: [],
-						album: {
-							...album1,
-							illustration: `http://meelo.com/albums/${album1.id}/illustration`,
-						}
+						...expectedReleaseResponse(dummyRepository.compilationReleaseA1),
+						tracks: [
+							expectedTrackResponse(dummyRepository.trackC1_1),
+						],
+						album: expectedAlbumResponse(dummyRepository.compilationAlbumA)
 					});
 				});
 		});

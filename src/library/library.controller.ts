@@ -133,7 +133,7 @@ export default class LibraryController {
 	}
 
 	@ApiOperation({
-		summary: 'Get all artists from a library'
+		summary: 'Get all album artists from a library'
 	})
 	@Get(':idOrSlug/artists')
 	async getArtistsByLibrary(

@@ -1,10 +1,10 @@
 import SettingsService from './settings.service';
 import * as fs from 'fs';
-import { FakeFileManagerModule, FakeFileManagerService } from 'test/FakeFileManagerModule';
+import { FakeFileManagerModule, FakeFileManagerService } from 'test/fake-file-manager.module';
 import FileManagerService from 'src/file-manager/file-manager.service';
 import { InvalidSettingsFileException, InvalidSettingsTypeException, MissingSettingsException, SettingsFileNotFoundException } from './settings.exception';
 import type Settings from './models/settings';
-import { createTestingModule } from 'test/TestModule';
+import { createTestingModule } from 'test/test-module';
 
 describe('Settings Service', () => {
 	let settingsService: SettingsService;

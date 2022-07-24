@@ -1,5 +1,5 @@
 import type { TestingModule } from "@nestjs/testing";
-import type { Artist, Genre, Song } from "@prisma/client";
+import type { Genre } from "@prisma/client";
 import AlbumModule from "src/album/album.module";
 import ArtistModule from "src/artist/artist.module";
 import ArtistService from "src/artist/artist.service";
@@ -10,82 +10,58 @@ import PrismaService from "src/prisma/prisma.service";
 import Slug from "src/slug/slug";
 import SongService from "src/song/song.service";
 import TrackModule from "src/track/track.module";
-import { FakeFileManagerService } from "test/FakeFileManagerModule";
-import { createTestingModule } from "test/TestModule";
+import { FakeFileManagerService } from "test/fake-file-manager.module";
+import { createTestingModule } from "test/test-module";
+import TestPrismaService from "test/test-prisma.service";
 import { GenreAlreadyExistsException, GenreNotFoundByIdException, GenreNotFoundException } from "./genre.exceptions";
 import GenreModule from "./genre.module";
 import GenreService from "./genre.service";
 
 describe("Genre Service", () => {
-	let artist: Artist;
-	let artist2: Artist;
 	let genreService: GenreService;
 	let songService: SongService;
-	
-	let song: Song;
-	let song2: Song;
+	let dummyRepository: TestPrismaService;
 
-	let genre: Genre;
-	let genre2: Genre;
-	let genre3: Genre;
+	let newGenre: Genre;
 
 	beforeAll(async () => {
 		const module: TestingModule = await createTestingModule({
 			imports: [PrismaModule, ArtistModule, TrackModule, AlbumModule, IllustrationModule, GenreModule],
 			providers: [SongService, ArtistService, PrismaService],
-		}).overrideProvider(FileManagerService).useClass(FakeFileManagerService).compile();
-		await module.get<PrismaService>(PrismaService).onModuleInit();
+		}).overrideProvider(FileManagerService).useClass(FakeFileManagerService)
+		.overrideProvider(PrismaService).useClass(TestPrismaService).compile();
 		songService = module.get<SongService>(SongService);
-		let artistService = module.get<ArtistService>(ArtistService);
+		dummyRepository = module.get(PrismaService);
 		genreService = module.get<GenreService>(GenreService);
-		artist = await artistService.createArtist({ name: 'My Artist' });
-		artist2 = await artistService.createArtist({ name: 'My Artist 2' });
-		song = await songService.createSong({
-			name: 'My Artist',
-			artist: { id: artist.id },
-			genres: []
-		});
-		song2 = await songService.createSong({
-			name: 'My Artist 2',
-			artist: { id: artist2.id },
-			genres: []
-		});
+		await dummyRepository.onModuleInit();
 	});
 
 	describe("Create Genre", () => {
 		it("should create a new genre", async () => {
-			genre = await genreService.createGenre({ name: 'My Genre 1' });
+			newGenre = await genreService.createGenre({ name: 'My New Genre' });
 
-			expect(genre.id).toBeDefined();
-			expect(genre.name).toBe("My Genre 1");
-			expect(genre.slug).toBe("my-genre-1");
+			expect(newGenre.id).toBeDefined();
+			expect(newGenre.name).toBe("My New Genre");
+			expect(newGenre.slug).toBe("my-new-genre");
 		});
 
 		it("should throw, as the genre already exists", async () => {
-			const test = async () => await genreService.createGenre({ name: 'My Genre 1' });
+			const test = async () => await genreService.createGenre({ name: dummyRepository.genreA.name });
 			expect(test()).rejects.toThrow(GenreAlreadyExistsException);
-		});
-
-		it("should create a new genre", async () => {
-			genre2 = await genreService.createGenre({ name: 'My Genre 2' });
-
-			expect(genre2.id).toBeDefined();
-			expect(genre2.name).toBe("My Genre 2");
-			expect(genre2.slug).toBe("my-genre-2");
 		});
 	});
 
 	describe("Get Genre", () => {
 		it("should get the genre by its slug", async () => {
-			const fetchedGenre = await genreService.getGenre({ slug: new Slug(genre.slug) });
+			const fetchedGenre = await genreService.getGenre({ slug: new Slug(dummyRepository.genreB.slug) });
 
-			expect(fetchedGenre).toStrictEqual(genre);
+			expect(fetchedGenre).toStrictEqual(dummyRepository.genreB);
 		});
 
 		it("should get the genre by its id", async () => {
-			const fetchedGenre = await genreService.getGenre({  id: genre2.id });
+			const fetchedGenre = await genreService.getGenre({  id: dummyRepository.genreC.id });
 
-			expect(fetchedGenre).toStrictEqual(genre2);
+			expect(fetchedGenre).toStrictEqual(dummyRepository.genreC);
 		});
 
 		it("should throw, as the genre does not exist (by slug)", async () => {
@@ -103,61 +79,69 @@ describe("Genre Service", () => {
 		it("should get all the the genres", async () => {
 			const fetchedGenres = await genreService.getGenres({ });
 
-			expect(fetchedGenres.length).toBe(2);
-			expect(fetchedGenres).toContainEqual(genre);
-			expect(fetchedGenres).toContainEqual(genre2);
+			expect(fetchedGenres.length).toBe(4);
+			expect(fetchedGenres).toContainEqual(dummyRepository.genreA);
+			expect(fetchedGenres).toContainEqual(dummyRepository.genreB);
+			expect(fetchedGenres).toContainEqual(dummyRepository.genreC);
+			expect(fetchedGenres).toContainEqual(newGenre);
 		});
 
 		it("should get all the the genres, sorted by name, desc", async () => {
 			const fetchedGenres = await genreService.getGenres({}, {}, {}, { sortBy: 'name', order: 'desc' });
 
-			expect(fetchedGenres.length).toBe(2);
-			expect(fetchedGenres[0]).toStrictEqual(genre2);
-			expect(fetchedGenres[1]).toStrictEqual(genre);
+			expect(fetchedGenres.length).toBe(4);
+			expect(fetchedGenres[0]).toStrictEqual(newGenre);
+			expect(fetchedGenres[1]).toStrictEqual(dummyRepository.genreC);
+			expect(fetchedGenres[2]).toStrictEqual(dummyRepository.genreB);
+			expect(fetchedGenres[3]).toStrictEqual(dummyRepository.genreA);
 		});
 		it("should get the genres by their names (starts with)", async () => {
 			const fetchedGenres = await genreService.getGenres({
 				byName: { startsWith: 'My Genre' }
 			});
 
-			expect(fetchedGenres.length).toBe(2);
-			expect(fetchedGenres).toContainEqual(genre);
-			expect(fetchedGenres).toContainEqual(genre2);
+			expect(fetchedGenres.length).toBe(3);
+			expect(fetchedGenres).toContainEqual(dummyRepository.genreA);
+			expect(fetchedGenres).toContainEqual(dummyRepository.genreB);
+			expect(fetchedGenres).toContainEqual(dummyRepository.genreC);
 		});
 
 		it("should get the genres by their names (ends with)", async () => {
 			const fetchedGenres = await genreService.getGenres({
-				byName: { endsWith: 'Genre 1' }
+				byName: { endsWith: 'Genre' }
 			});
 
-			expect(fetchedGenres).toStrictEqual([ genre ]);
-		});
-
-		it("should get the genres by the song (one expected)", async () => {
-			song = await songService.updateSong({ genres: [{ id: genre.id }] }, { byId: { id: song.id } });
-			song2 = await songService.updateSong({ genres: [{ id: genre.id }, { id: genre2.id }] }, { byId: { id: song2.id } });
-			const fetchedGenres = await genreService.getGenres({
-				bySong: { byId: { id: song.id } }
-			});
-
-			expect(fetchedGenres).toStrictEqual([ genre ]);
+			expect(fetchedGenres).toStrictEqual([ newGenre ]);
 		});
 
 		it("should get the genres by the song (two expected)", async () => {
+			await songService.updateSong({
+				genres: [ { id: newGenre.id }, { id: dummyRepository.genreA.id } ] },
+				{ byId: { id: dummyRepository.songA1.id } }
+			);
 			const fetchedGenres = await genreService.getGenres({
-				bySong: { byId: { id: song2.id } }
+				bySong: { byId: { id: dummyRepository.songA1.id } }
 			});
 
 			expect(fetchedGenres.length).toBe(2);
-			expect(fetchedGenres).toContainEqual(genre);
-			expect(fetchedGenres).toContainEqual(genre2);
+			expect(fetchedGenres).toContainEqual(newGenre);
+			expect(fetchedGenres).toContainEqual(dummyRepository.genreA);
+		});
+		
+		it("should get the genres by the song (one expected)", async () => {
+			const fetchedGenres = await genreService.getGenres({
+				bySong: { byId: { id: dummyRepository.songA2.id } }
+			});
+
+			expect(fetchedGenres.length).toBe(1);
+			expect(fetchedGenres).toContainEqual(dummyRepository.genreB);
 		});
 	});
 
 	describe("Count Genres", () => {
 		it("should get the genres by the song (two expected)", async () => {
 			const genresCounts = await genreService.countGenres({
-				bySong: { byId: { id: song2.id } }
+				bySong: { byId: { id: dummyRepository.songA1.id } }
 			});
 
 			expect(genresCounts).toBe(2);
@@ -165,7 +149,7 @@ describe("Genre Service", () => {
 
 		it("should get the genres by their names", async () => {
 			const genresCounts = await genreService.countGenres({
-				byName: { endsWith: '2' }
+				byName: { endsWith: 'B' }
 			});
 
 			expect(genresCounts).toBe(1);
@@ -174,27 +158,28 @@ describe("Genre Service", () => {
 
 	describe("Get or Create Genre", () => {
 		it("should get the genre", async () => {
-			const fetchedGenre = await genreService.getOrCreateGenre({ name: genre.name });
+			const fetchedGenre = await genreService.getOrCreateGenre({ name: newGenre.name });
 
-			expect(fetchedGenre).toStrictEqual(genre);
+			expect(fetchedGenre).toStrictEqual(newGenre);
 		});
 
 		it("should create the genre", async () => {
-			genre3 = await genreService.getOrCreateGenre({ name: 'My Genre 3' });
+			let otherGenre = await genreService.getOrCreateGenre({ name: 'My New Genre 2' });
 
-			expect(genre3).not.toStrictEqual(genre);
-			expect(genre3).not.toStrictEqual(genre2);
-			expect(genre3.id).toBe(genre2.id + 1);
+			expect(otherGenre.id).not.toBe(newGenre);
+			expect(otherGenre.id).not.toBe(dummyRepository.genreA);
+			expect(otherGenre.id).not.toBe(dummyRepository.genreB);
+			expect(otherGenre.id).not.toBe(dummyRepository.genreC);
 		});
 	});
 
 	describe("Update Genre", () => {
 		it("should update the genre", async () => {
-			const updatedGenre = await genreService.updateGenre({ name: 'My Genre' }, { id: genre.id });
+			const updatedGenre = await genreService.updateGenre({ name: 'My New Genre 1' }, { id: newGenre.id });
 
-			expect(updatedGenre.id).toStrictEqual(genre.id);
-			expect(updatedGenre.slug).toStrictEqual('my-genre');
-			expect(updatedGenre.name).toStrictEqual('My Genre');
+			expect(updatedGenre.id).toStrictEqual(newGenre.id);
+			expect(updatedGenre.slug).toStrictEqual('my-new-genre-1');
+			expect(updatedGenre.name).toStrictEqual('My New Genre 1');
 		});
 
 		it("should throw, as the genre does not exist", async () => {
@@ -206,15 +191,14 @@ describe("Genre Service", () => {
 
 	describe("Delete Genre", () => {
 		it("should delete the genre", async () => {
-			await genreService.deleteGenre({ id: genre.id });
+			await genreService.deleteGenre({ id: dummyRepository.genreA.id });
 		
-			const fetchedGenres = await genreService.getGenres({});
-			expect(fetchedGenres.length).toBe(2);
-			expect(fetchedGenres).not.toContainEqual(genre);
+			const test = async () => await genreService.getGenre({ id: dummyRepository.genreA.id });
+			expect(test()).rejects.toThrow(GenreNotFoundByIdException);
 		});
 
 		it('should have removed it from the song', async () => {
-			const genres = await genreService.countGenres({ bySong: { byId: { id: song2.id } } });
+			const genres = await genreService.countGenres({ bySong: { byId: { id: dummyRepository.songA1.id } } });
 
 			expect(genres).toBe(1);
 		});
@@ -227,19 +211,19 @@ describe("Genre Service", () => {
 	});
 
 	describe("Delete Genre if empty", () => {
-		it("should delete the genre, because it is empty", async () => {
-			await genreService.deleteGenreIfEmpty({ id: genre3.id });
 		
-			const fetchedGenres = await genreService.getGenres({});
-			expect(fetchedGenres.length).toBe(1);
-			expect(fetchedGenres).not.toContainEqual(genre3);
-		});
+		it("should have deletes the genre, because it is not empty", async () => {
+			await songService.deleteSong({ byId: { id: dummyRepository.songC1.id } });
+		
+			const test = async () => await genreService.deleteGenre({ id: dummyRepository.genreC.id });
 
+			expect(test()).rejects.toThrow(GenreNotFoundByIdException);
+		});
 		it("should not delete the genre, because it is not empty", async () => {
-			await genreService.deleteGenreIfEmpty({ id: genre2.id });
+			await genreService.deleteGenreIfEmpty({ id: dummyRepository.genreB.id });
 		
-			const fetchedGenre = await genreService.getGenre({ id: genre2.id });
-			expect(fetchedGenre).toStrictEqual(genre2);
+			const fetchedGenre = await genreService.getGenre({ id: dummyRepository.genreB.id });
+			expect(fetchedGenre).toStrictEqual(dummyRepository.genreB);
 		});
 
 		it("should throw, as the genre does not exist", async () => {

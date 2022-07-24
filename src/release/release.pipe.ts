@@ -13,7 +13,7 @@ export default class ParseReleaseIdentifierPipe implements PipeTransform {
 		} catch {
 			const slugs = new ParseMultipleSlugPipe().transform(value.idOrSlug, _metadata);
 			if (slugs.length != 3)
-				throw new InvalidRequestException(`Expected the following string format: 'artist-slug${SlugSeparator}album-slug${SlugSeparator}song-slug'`);
+				throw new InvalidRequestException(`Expected the following string format: 'artist-slug${SlugSeparator}album-slug${SlugSeparator}release-slug'`);
 			return {
 				bySlug: {
 					slug: slugs[2],

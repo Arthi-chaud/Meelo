@@ -155,24 +155,28 @@ export default class AlbumService {
 	 * @param where the query parameter 
 	 */
 	async deleteAlbum(where: AlbumQueryParameters.DeleteInput): Promise<void> {
-		let deletedAlbum: Album & { artist: Artist | null };
+		let album = await this.getAlbum(where, { releases: true, artist: true });
+		await Promise.all(
+			album.releases.map(
+				(release) => this.releaseService.deleteRelease({ byId: { id: release.id }}, false)
+			)
+		);
 		try {
-			deletedAlbum = await this.prismaService.album.delete({
+			await this.prismaService.album.delete({
 				where: AlbumQueryParameters.buildQueryParametersForOne(where),
-				include: { artist: true }
 			});
 		} catch {
-			throw new AlbumNotFoundFromIDException(where.byId.id);
+			return;
 		}
-		Logger.warn(`Album '${deletedAlbum.slug}' deleted`);
+		Logger.warn(`Album '${album.slug}' deleted`);
+		if (album.artistId !== null)
+			await this.artistServce.deleteArtistIfEmpty({ id: album.artistId });
 		try {
 			const albumIllustrationFolder = this.illustrationService.buildAlbumIllustrationFolderPath(
-				new Slug(deletedAlbum.slug), deletedAlbum.artist ? new Slug(deletedAlbum.artist.slug) : undefined
+				new Slug(album.slug), album.artist ? new Slug(album.artist.slug) : undefined
 			);
 			this.illustrationService.deleteIllustrationFolder(albumIllustrationFolder);
 		} catch {}
-		if (deletedAlbum.artistId !== null)
-			await this.artistServce.deleteArtistIfEmpty({ id: deletedAlbum.artistId });
 	}
 
 	/**

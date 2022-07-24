@@ -1,5 +1,5 @@
 import { INestApplication, ValidationPipe } from "@nestjs/common";
-import { createTestingModule } from "test/TestModule";
+import { createTestingModule } from "test/test-module";
 import type { TestingModule } from "@nestjs/testing";
 import FileManagerModule from "src/file-manager/file-manager.module";
 import FileManagerService from "src/file-manager/file-manager.service";
@@ -7,13 +7,13 @@ import FileModule from "src/file/file.module";
 import MetadataModule from "src/metadata/metadata.module";
 import PrismaModule from "src/prisma/prisma.module";
 import PrismaService from "src/prisma/prisma.service";
-import { FakeFileManagerService } from "test/FakeFileManagerModule";
+import { FakeFileManagerService } from "test/fake-file-manager.module";
 import LibraryController from "./library.controller";
 import LibraryModule from "./library.module";
 import LibraryService from "./library.service";
 import IllustrationModule from "src/illustration/illustration.module";
 import request from 'supertest';
-import type { Album, Artist, Library, Release, Song, Track, File } from "@prisma/client";
+import type { Album, Artist, Library, Release, Song, Track } from "@prisma/client";
 import NotFoundExceptionFilter from "src/exceptions/not-found.exception";
 import MeeloExceptionFilter from "src/exceptions/meelo-exception.filter";
 import AlbumModule from "src/album/album.module";
@@ -21,145 +21,75 @@ import ArtistModule from "src/artist/artist.module";
 import ReleaseModule from "src/release/release.module";
 import SongModule from "src/song/song.module";
 import TrackModule from "src/track/track.module";
-import ArtistService from "src/artist/artist.service";
-import ReleaseService from "src/release/release.service";
-import TrackService from "src/track/track.service";
-import AlbumService from "src/album/album.service";
-import SongService from "src/song/song.service";
-import FileService from "src/file/file.service";
 import GenreModule from "src/genre/genre.module";
+import TestPrismaService from "test/test-prisma.service";
 describe('Library Controller', () => {
-	let artistService: ArtistService;
-	let albumService: AlbumService;
-	let songService: SongService;
-	let trackService: TrackService;
-	let releaseService: ReleaseService;
-	let libraryService: LibraryService;
-	let fileService: FileService;
 	let app: INestApplication;
+	let dummyRepository: TestPrismaService;
+	let newLibrary: Library;
 
-	let library1: Library;
-	let library2: Library;
+	const expectedArtistResponse = (artist: Artist) => ({
+		...artist,
+		illustration: `http://meelo.com/artists/${artist.id}/illustration`
+	});
 
-	let artist1: Artist;
+	const expectedAlbumResponse = (album: Album) => ({
+		...album,
+		releaseDate: album.releaseDate?.toISOString() ?? null,
+		illustration: `http://meelo.com/albums/${album.id}/illustration`
+	});
 
-	let album1: Album;
-	let album2: Album;
+	const expectedSongResponse = (song: Song) => ({
+		...song,
+		illustration: `http://meelo.com/songs/${song.id}/illustration`
+	});
 
-	let release1: Release;
-	let release2: Release;
+	const expectedReleaseResponse = (release: Release) => ({
+		...release,
+		illustration: `http://meelo.com/releases/${release.id}/illustration`
+	});
 
-	let song1: Song;
-	let song2: Song;
-	
-	let track1: Track;
-	let track2: Track;
-	
-	let file1: File;
-	let file2: File;
-
+	const expectedTrackResponse = (track: Track) => ({
+		...track,
+		illustration: `http://meelo.com/tracks/${track.id}/illustration`,
+		stream: `http://meelo.com/files/${track.sourceFileId}/stream`
+	});
 
 	beforeAll(async () => {
 		const module: TestingModule = await createTestingModule({
 			imports: [LibraryModule, PrismaModule, FileModule, MetadataModule, FileManagerModule, IllustrationModule, ArtistModule, AlbumModule, SongModule, ReleaseModule, TrackModule, GenreModule],
 			providers: [LibraryController, LibraryService, PrismaService],
-		}).overrideProvider(FileManagerService).useClass(FakeFileManagerService).compile();
-		await module.get<PrismaService>(PrismaService).onModuleInit();
-		artistService = module.get<ArtistService>(ArtistService);
-		albumService = module.get<AlbumService>(AlbumService);
-		songService = module.get<SongService>(SongService);
-		trackService = module.get<TrackService>(TrackService);
-		releaseService = module.get<ReleaseService>(ReleaseService);
-		libraryService = module.get<LibraryService>(LibraryService);
-		fileService = module.get<FileService>(FileService);
+		}).overrideProvider(FileManagerService).useClass(FakeFileManagerService)
+		.overrideProvider(PrismaService).useClass(TestPrismaService).compile();
 		app = module.createNestApplication();
 		app.useGlobalFilters(
 			new NotFoundExceptionFilter(),
 			new MeeloExceptionFilter()
-		);
-		app.useGlobalPipes(new ValidationPipe());
-		await app.init();
-		library2 = await libraryService.createLibrary({
-			name: 'My Library 2',
-			path: "a"
-		});
-
-		library1 = await libraryService.createLibrary({
-			name: 'My Library 1',
-			path: ""
-		});
-
-
-		artist1 = await artistService.createArtist({ name: 'My Artist 1' });
-
-		album1 = await albumService.createAlbum({ name: 'My Album 1', artist: { id: artist1.id } });
-		album2 = await albumService.createAlbum({ name: 'My Album 2', artist: { id: artist1.id } });
-
-		song1 = await songService.createSong({ name: 'My Song 1', artist: { id: artist1.id }, genres: [] });
-		song2 = await songService.createSong({ name: 'My Song 2', artist: { id: artist1.id }, genres: [] });
-
-		release2 = await releaseService.createRelease({ title: 'My Release 2', master: false, album: { byId: { id: album1.id } } });
-		release1 = await releaseService.createRelease({ title: 'My Release 1', master: true, album: { byId: { id: album1.id } } });
+			);
+			app.useGlobalPipes(new ValidationPipe());
+			await app.init();
+		dummyRepository = module.get(PrismaService);
+		await dummyRepository.onModuleInit();
 		
-		file1 = await fileService.createFile({
-			path: "a",
-			md5Checksum: "a",
-			registerDate: new Date(),
-			libraryId: library1.id
-		});
-
-		file2 = await fileService.createFile({
-			path: "b",
-			md5Checksum: "b",
-			registerDate: new Date(),
-			libraryId: library1.id
-		});
-
-		track1 = await trackService.createTrack({
-			type: "Audio",
-			master: true,
-			displayName: "My Track 1",
-			discIndex: 1,
-			trackIndex: 1,
-			bitrate: 0,
-			ripSource: null,
-			duration: 0,
-			sourceFile: { id: file1.id },
-			release: { byId: { id: release1.id } },
-			song: { byId: { id: song1.id } },
-		});
-
-		track2 = await trackService.createTrack({
-			type: "Audio",
-			master: true,
-			displayName: "My Track 2",
-			discIndex: 1,
-			trackIndex: 1,
-			bitrate: 0,
-			ripSource: null,
-			duration: 0,
-			sourceFile: { id: file2.id },
-			release: { byId: { id: release2.id } },
-			song: { byId: { id: song2.id } },
-		});
 	});
 
 
 	describe('Create Library (POST /libraries/new)', () => {
-		it("should create a first library", async () => {
+		it("should create a library", async () => {
 			return request(app.getHttpServer())
 				.post('/libraries/new')
 				.send({
-					path: '/Music',
-					name: 'My Library 3'
+					path: 'Music 3/',
+					name: 'My New Library'
 				})
 				.expect(201)
 				.expect((res) => {
 					const library = res.body;
 					expect(library.id).toBeDefined();
-					expect(library.slug).toBe('my-library-3');
-					expect(library.name).toBe('My Library 3');
-					expect(library.path).toBe('/Music');
+					expect(library.slug).toBe('my-new-library');
+					expect(library.name).toBe('My New Library');
+					expect(library.path).toBe('Music 3');
+					newLibrary = library;
 				});
 		});
 		it("should fail, as the body is incomplete", async () => {
@@ -175,7 +105,7 @@ describe('Library Controller', () => {
 				.post('/libraries/new')
 				.send({
 					path: '/Path',
-					name: 'My Library 1'
+					name: 'Library'
 				})
 				.expect(409);
 		});
@@ -184,21 +114,21 @@ describe('Library Controller', () => {
 	describe('Get a Library (GET /libraries/:id)', () => {
 		it("should get the library", async () => {
 			return request(app.getHttpServer())
-				.get(`/libraries/${library1.id}`)
+				.get(`/libraries/${dummyRepository.library1.id}`)
 				.expect(200)
 				.expect((res) => {
 					const library = res.body;
-					expect(library).toStrictEqual(library1)
+					expect(library).toStrictEqual(dummyRepository.library1)
 				});
 		});
 
 		it("should get the library (w/ slug)", async () => {
 			return request(app.getHttpServer())
-				.get(`/libraries/${library1.slug}`)
+				.get(`/libraries/${dummyRepository.library2.slug}`)
 				.expect(200)
 				.expect((res) => {
 					const library = res.body;
-					expect(library).toStrictEqual(library1)
+					expect(library).toStrictEqual(dummyRepository.library2)
 				});
 		});
 
@@ -217,22 +147,22 @@ describe('Library Controller', () => {
 				.expect((res) => {
 					const libraries: Library[] = res.body.items;
 					expect(libraries.length).toBe(3);
-					expect(libraries.at(1)).toStrictEqual(library1);
-					expect(libraries.at(0)).toStrictEqual(library2);
-					expect(libraries.at(2)?.slug).toBe('my-library-3');
+					expect(libraries).toContainEqual(dummyRepository.library1);
+					expect(libraries).toContainEqual(dummyRepository.library2);
+					expect(libraries).toContainEqual(newLibrary);
 				});
 		});
 
 		it("should get all the libraries, sorted by name", async () => {
 			return request(app.getHttpServer())
-				.get('/libraries?sortBy=name')
+				.get('/libraries?sortBy=name&order=desc')
 				.expect(200)
 				.expect((res) => {
 					const libraries: Library[] = res.body.items;
 					expect(libraries.length).toBe(3);
-					expect(libraries.at(0)).toStrictEqual(library1);
-					expect(libraries.at(1)).toStrictEqual(library2);
-					expect(libraries.at(2)?.slug).toBe('my-library-3');
+					expect(libraries[0]).toStrictEqual(newLibrary);
+					expect(libraries[1]).toStrictEqual(dummyRepository.library2);
+					expect(libraries[2]).toStrictEqual(dummyRepository.library1);
 				});
 		});
 
@@ -243,7 +173,7 @@ describe('Library Controller', () => {
 				.expect((res) => {
 					const libraries: Library[] = res.body.items;
 					expect(libraries.length).toBe(1);
-					expect(libraries.at(0)).toStrictEqual(library1);
+					expect(libraries).toContainEqual(dummyRepository.library2);
 				});
 		});
 
@@ -254,7 +184,7 @@ describe('Library Controller', () => {
 				.expect((res) => {
 					const libraries: Library[] = res.body.items;
 					expect(libraries.length).toBe(1);
-					expect(libraries.at(0)).toStrictEqual(library2);
+					expect(libraries).toContainEqual(dummyRepository.library1);
 				});
 		});
 
@@ -269,74 +199,71 @@ describe('Library Controller', () => {
 		});
 	});
 
-	describe('Get all Related Artists (GET /libraries/:id/artists)', () => {
-		it("should return every artists", () => {
+	describe('Get all Related album Artists (GET /libraries/:id/artists)', () => {
+		it("should return every artists (2 expected)", () => {
 			return request(app.getHttpServer())
-				.get(`/libraries/${library1.id}/artists`)
+				.get(`/libraries/${dummyRepository.library1.id}/artists`)
 				.expect(200)
 				.expect((res) => {
 					const artists: Artist[] = res.body.items;
 					expect(artists.length).toBe(1);
 					expect(artists[0]).toStrictEqual({
-						...artist1,
-						illustration: `http://meelo.com/artists/${artist1.id}/illustration`
+						...dummyRepository.artistA,
+						illustration: `http://meelo.com/artists/${dummyRepository.artistA.id}/illustration`
 					});
 				});
 		});
 
-		it("should return every artists (from librariy's slug)", () => {
+		it("should return every artists (1 expected)", () => {
 			return request(app.getHttpServer())
-				.get(`/libraries/${library1.slug}/artists`)
+				.get(`/libraries/${dummyRepository.library2.id}/artists`)
 				.expect(200)
 				.expect((res) => {
 					const artists: Artist[] = res.body.items;
 					expect(artists.length).toBe(1);
 					expect(artists[0]).toStrictEqual({
-						...artist1,
-						illustration: `http://meelo.com/artists/${artist1.id}/illustration`
+						...dummyRepository.artistB,
+						illustration: `http://meelo.com/artists/${dummyRepository.artistB.id}/illustration`
 					});
+				});
+		});
+
+		it("should return every artists (from library's slug)", () => {
+			return request(app.getHttpServer())
+				.get(`/libraries/${dummyRepository.library1.slug}/artists`)
+				.expect(200)
+				.expect((res) => {
+					const artists: Artist[] = res.body.items;
+					expect(artists.length).toBe(1);
+					expect(artists[0]).toStrictEqual(expectedArtistResponse(dummyRepository.artistA));
 				});
 		});
 
 		it("should return artists (w/ songs)", () => {
 			return request(app.getHttpServer())
-				.get(`/libraries/${library1.id}/artists?with=songs`)
+				.get(`/libraries/${dummyRepository.library1.id}/artists?with=songs`)
 				.expect(200)
 				.expect((res) => {
-					const artists: Artist[] = res.body.items;
+					const artists: (Artist & { songs: Song[] })[] = res.body.items;
 					expect(artists.length).toBe(1);
-					expect(artists[0]).toStrictEqual({
-						...artist1,
-						illustration: `http://meelo.com/artists/${artist1.id}/illustration`,
-						songs: [
-							{
-								...song1,
-								illustration: `http://meelo.com/songs/${song1.id}/illustration`
-							},
-							{
-								...song2,
-								illustration: `http://meelo.com/songs/${song2.id}/illustration`
-							}
-						]
-					});
+					expect(artists[0].songs).toContainEqual(expectedSongResponse(dummyRepository.songA1));
+					expect(artists[0].songs).toContainEqual(expectedSongResponse(dummyRepository.songA2));
+					expect(artists[0].id).toStrictEqual(dummyRepository.artistA.id);
 				});
 		});
 
 		it("should return artists (w/ albums)", () => {
 			return request(app.getHttpServer())
-				.get(`/libraries/${library1.id}/artists?with=albums`)
+				.get(`/libraries/${dummyRepository.library2.id}/artists?with=albums`)
 				.expect(200)
 				.expect((res) => {
 					const artists: (Artist & { albums: Album[]}) [] = res.body.items;
 					expect(artists.length).toBe(1);
-					expect(artists[0].id).toBe(artist1.id);
-					expect(artists[0].albums).toContainEqual({
-						...album1,
-						illustration: `http://meelo.com/albums/${album1.id}/illustration`
-					});
-					expect(artists[0].albums).toContainEqual({
-						...album2,
-						illustration: `http://meelo.com/albums/${album2.id}/illustration`
+					expect(artists[0]).toStrictEqual({
+						...expectedArtistResponse(dummyRepository.artistB),
+						albums: [
+							expectedAlbumResponse(dummyRepository.albumB1)
+						]
 					});
 				});
 		});
@@ -352,33 +279,31 @@ describe('Library Controller', () => {
 	describe('Get all Related Albums (GET /libraries/:id/albums)', () => {
 		it("should return every albums w/ artist", () => {
 			return request(app.getHttpServer())
-				.get(`/libraries/${library1.id}/albums?with=artist`)
+				.get(`/libraries/${dummyRepository.library1.id}/albums?with=artist`)
 				.expect(200)
 				.expect((res) => {
 					const albums: Album[] = res.body.items;
-					expect(albums.length).toBe(1);
+					expect(albums.length).toBe(2);
 					expect(albums[0]).toStrictEqual({
-						...album1,
-						illustration: `http://meelo.com/albums/${album1.id}/illustration`,
-						artist: {
-							...artist1,
-							illustration: `http://meelo.com/artists/${artist1.id}/illustration`,
-						}
+						...expectedAlbumResponse(dummyRepository.albumA1),
+						artist: expectedArtistResponse(dummyRepository.artistA)
+					});
+					expect(albums[1]).toStrictEqual({
+						...expectedAlbumResponse(dummyRepository.compilationAlbumA),
+						artist: null
 					});
 				});
 		});
 
 		it("should return every albums (from library's slug))", () => {
 			return request(app.getHttpServer())
-				.get(`/libraries/${library1.slug}/albums`)
+				.get(`/libraries/${dummyRepository.library1.slug}/albums`)
 				.expect(200)
 				.expect((res) => {
 					const albums: Album[] = res.body.items;
-					expect(albums.length).toBe(1);
-					expect(albums[0]).toStrictEqual({
-						...album1,
-						illustration: `http://meelo.com/albums/${album1.id}/illustration`,
-					});
+					expect(albums.length).toBe(2);
+					expect(albums[0]).toStrictEqual(expectedAlbumResponse(dummyRepository.albumA1));
+					expect(albums[1]).toStrictEqual(expectedAlbumResponse(dummyRepository.compilationAlbumA));
 				});
 		});
 		it("should return an error, as the library does not exist", () => {
@@ -391,57 +316,59 @@ describe('Library Controller', () => {
 	describe('Get all Related Releases (GET /libraries/:id/releases)', () => {
 		it("should return every releases, w/ tracks & parent album", () => {
 			return request(app.getHttpServer())
-				.get(`/libraries/${library1.id}/releases?with=tracks,album`)
+				.get(`/libraries/${dummyRepository.library1.id}/releases?with=tracks,album`)
 				.expect(200)
 				.expect((res) => {
 					const releases: Release[] = res.body.items;
-					expect(releases.length).toBe(2);
-					expect(releases[0]).toStrictEqual({
-						...release2,
-						illustration: `http://meelo.com/releases/${release2.id}/illustration`,
-						album: {
-							...album1,
-							illustration: `http://meelo.com/albums/${album1.id}/illustration`,
-						},
+					expect(releases.length).toBe(3);
+					expect(releases).toContainEqual({
+						...expectedReleaseResponse(dummyRepository.releaseA1_1),
+						album: expectedAlbumResponse(dummyRepository.albumA1),
+						tracks: [ expectedTrackResponse(dummyRepository.trackA1_1) ]
+					});
+					expect(releases).toContainEqual({
+						...expectedReleaseResponse(dummyRepository.releaseA1_2),
+						album: expectedAlbumResponse(dummyRepository.albumA1),
 						tracks: [
-							{
-								...track2,
-								illustration: `http://meelo.com/tracks/${track2.id}/illustration`,
-								stream: `http://meelo.com/files/${track2.sourceFileId}/stream`
-							},
+							expectedTrackResponse(dummyRepository.trackA1_2Video),
+							expectedTrackResponse(dummyRepository.trackA2_1)
 						]
 					});
-					expect(releases[1]).toStrictEqual({
-						...release1,
-						illustration: `http://meelo.com/releases/${release1.id}/illustration`,
-						album: {
-							...album1,
-							illustration: `http://meelo.com/albums/${album1.id}/illustration`,
-						},
+					expect(releases).toContainEqual({
+						...expectedReleaseResponse(dummyRepository.compilationReleaseA1),
+						album: expectedAlbumResponse(dummyRepository.compilationAlbumA),
 						tracks: [
-							{
-								...track1,
-								illustration: `http://meelo.com/tracks/${track1.id}/illustration`,
-								stream: `http://meelo.com/files/${track1.sourceFileId}/stream`
-							},
+							expectedTrackResponse(dummyRepository.trackC1_1)
 						]
 					});
 				});
 		});
 		it("should return every releases, sorted by name", () => {
 			return request(app.getHttpServer())
-				.get(`/libraries/${library1.id}/releases?sortBy=title`)
+				.get(`/libraries/${dummyRepository.library1.id}/releases?sortBy=title&order=desc&with=album,tracks`)
 				.expect(200)
 				.expect((res) => {
 					const releases: Release[] = res.body.items;
-					expect(releases.length).toBe(2);
+					expect(releases.length).toBe(3);
 					expect(releases[0]).toStrictEqual({
-						...release1,
-						illustration: `http://meelo.com/releases/${release1.id}/illustration`,
+						...expectedReleaseResponse(dummyRepository.compilationReleaseA1),
+						album: expectedAlbumResponse(dummyRepository.compilationAlbumA),
+						tracks: [
+							expectedTrackResponse(dummyRepository.trackC1_1)
+						]
 					});
 					expect(releases[1]).toStrictEqual({
-						...release2,
-						illustration: `http://meelo.com/releases/${release2.id}/illustration`,
+						...expectedReleaseResponse(dummyRepository.releaseA1_2),
+						album: expectedAlbumResponse(dummyRepository.albumA1),
+						tracks: [
+							expectedTrackResponse(dummyRepository.trackA1_2Video),
+							expectedTrackResponse(dummyRepository.trackA2_1)
+						]
+					});
+					expect(releases[2]).toStrictEqual({
+						...expectedReleaseResponse(dummyRepository.releaseA1_1),
+						album: expectedAlbumResponse(dummyRepository.albumA1),
+						tracks: [ expectedTrackResponse(dummyRepository.trackA1_1) ]
 					});
 				});
 		});
@@ -455,36 +382,30 @@ describe('Library Controller', () => {
 	describe('Get all Related Tracks (GET /libraries/:id/tracks)', () => {
 		it("should return every tracks, w/ song & parent release", () => {
 			return request(app.getHttpServer())
-				.get(`/libraries/${library1.id}/tracks?with=song,release`)
+				.get(`/libraries/${dummyRepository.library1.id}/tracks?with=song,release`)
 				.expect(200)
 				.expect((res) => {
 					const tracks: Track[] = res.body.items;
-					expect(tracks.length).toBe(2);
-					expect(tracks[0]).toStrictEqual({
-						...track1,
-						illustration: `http://meelo.com/tracks/${track1.id}/illustration`,
-						stream: `http://meelo.com/files/${track1.sourceFileId}/stream`,
-						release: {
-							...release1,
-							illustration: `http://meelo.com/releases/${release1.id}/illustration`,
-						},
-						song: {
-							...song1,
-							illustration: `http://meelo.com/songs/${song1.id}/illustration`,
-						},
+					expect(tracks.length).toBe(4);
+					expect(tracks).toContainEqual({
+						...expectedTrackResponse(dummyRepository.trackA1_1),
+						release: expectedReleaseResponse(dummyRepository.releaseA1_1),
+						song: expectedSongResponse(dummyRepository.songA1)
 					});
-					expect(tracks[1]).toStrictEqual({
-						...track2,
-						illustration: `http://meelo.com/tracks/${track2.id}/illustration`,
-						stream: `http://meelo.com/files/${track2.sourceFileId}/stream`,
-						release: {
-							...release2,
-							illustration: `http://meelo.com/releases/${release2.id}/illustration`,
-						},
-						song: {
-							...song2,
-							illustration: `http://meelo.com/songs/${song2.id}/illustration`,
-						},
+					expect(tracks).toContainEqual({
+						...expectedTrackResponse(dummyRepository.trackA1_2Video),
+						release: expectedReleaseResponse(dummyRepository.releaseA1_2),
+						song: expectedSongResponse(dummyRepository.songA1)
+					});
+					expect(tracks).toContainEqual({
+						...expectedTrackResponse(dummyRepository.trackA2_1),
+						release: expectedReleaseResponse(dummyRepository.releaseA1_2),
+						song: expectedSongResponse(dummyRepository.songA2)
+					});
+					expect(tracks).toContainEqual({
+						...expectedTrackResponse(dummyRepository.trackC1_1),
+						release: expectedReleaseResponse(dummyRepository.compilationReleaseA1),
+						song: expectedSongResponse(dummyRepository.songC1)
 					});
 				});
 		});
@@ -498,36 +419,32 @@ describe('Library Controller', () => {
 	describe('Get all Related Songs (GET /libraries/:id/songs)', () => {
 		it("should return every songs, w/ tracks & parent artist", () => {
 			return request(app.getHttpServer())
-				.get(`/libraries/${library1.id}/songs?with=tracks,artist`)
+				.get(`/libraries/${dummyRepository.library1.id}/songs?with=tracks,artist`)
 				.expect(200)
 				.expect((res) => {
 					const songs: Song[] = res.body.items;
-					expect(songs.length).toBe(2);
-					expect(songs[0]).toStrictEqual({
-						...song1,
-						illustration: `http://meelo.com/songs/${song1.id}/illustration`,
-						artist: {
-							...artist1,
-							illustration: `http://meelo.com/artists/${artist1.id}/illustration`,
-						},
-						tracks: [{
-							...track1,
-							illustration: `http://meelo.com/tracks/${track1.id}/illustration`,
-							stream: `http://meelo.com/files/${track1.sourceFileId}/stream`
-						}],
+					expect(songs.length).toBe(3);
+					expect(songs).toContainEqual({
+						...expectedSongResponse(dummyRepository.songA1),
+						artist: expectedArtistResponse(dummyRepository.artistA),
+						tracks: [
+							expectedTrackResponse(dummyRepository.trackA1_1),
+							expectedTrackResponse(dummyRepository.trackA1_2Video),
+						],
 					});
-					expect(songs[1]).toStrictEqual({
-						...song2,
-						illustration: `http://meelo.com/songs/${song2.id}/illustration`,
-						artist: {
-							...artist1,
-							illustration: `http://meelo.com/artists/${artist1.id}/illustration`,
-						},
-						tracks: [{
-							...track2,
-							illustration: `http://meelo.com/tracks/${track2.id}/illustration`,
-							stream: `http://meelo.com/files/${track2.sourceFileId}/stream`
-						}],
+					expect(songs).toContainEqual({
+						...expectedSongResponse(dummyRepository.songA2),
+						artist: expectedArtistResponse(dummyRepository.artistA),
+						tracks: [
+							expectedTrackResponse(dummyRepository.trackA2_1)
+						],
+					});
+					expect(songs).toContainEqual({
+						...expectedSongResponse(dummyRepository.songC1),
+						artist: expectedArtistResponse(dummyRepository.artistC),
+						tracks: [
+							expectedTrackResponse(dummyRepository.trackC1_1)
+						],
 					});
 				});
 		});
