@@ -3,6 +3,10 @@ name: Sonar Cloud Analysis
 on:
   workflow_run:
     workflows: ['Unit tests']
+    types:
+      - completed
+    branches:
+      - '*'
 
 jobs:
   run:
