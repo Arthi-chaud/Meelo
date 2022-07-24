@@ -14,10 +14,10 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - name: Downlad Coverage artifact
-        uses: actions/download-artifact@v3
-        with:
-          name: coverage-report
-          path: coverage
+        uses: dawidd6/action-download-artifact@v2
+        workflow: unit-tests.yml
+        name: coverage-report
+        path: coverage
       - run: ls -lR
       - name: Run SonarCloud Scan
         uses: SonarSource/sonarcloud-github-action@master
