@@ -36,7 +36,7 @@ jobs:
       - name: Run unit tests with coverage
         run: yarn test --coverage
       - name: Upload Unit Tests artifact
-        continue-on-error: true
+        if: ${{ always() }}
         uses: actions/upload-artifact@v3
         with:
           name: coverage-report

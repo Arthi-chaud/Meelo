@@ -17,13 +17,11 @@ import IllustrationModule from "src/illustration/illustration.module";
 import GenreModule from "src/genre/genre.module";
 import { GenreNotFoundByIdException } from "src/genre/genre.exceptions";
 import TestPrismaService from "test/test-prisma.service";
-import AlbumService from "src/album/album.service";
 
 describe('Song Service', () => {
 	let songService: SongService;
 	let dummyRepository: TestPrismaService;
 	let artistService: ArtistService;
-	let albumService: AlbumService;
 
 	let newSong: Song;
 	
@@ -36,7 +34,6 @@ describe('Song Service', () => {
 		dummyRepository = module.get(PrismaService);
 		songService = module.get(SongService);
 		artistService = module.get(ArtistService);
-		albumService = module.get(AlbumService)
 		await dummyRepository.onModuleInit();
 	});
 
@@ -369,17 +366,15 @@ describe('Song Service', () => {
 
 		it("should delete the song (by slug)", async () => {
 			await songService.deleteSong({
-				bySlug: { slug: new Slug(dummyRepository.songA2.slug), artist: { id: dummyRepository.artistA.id } }
+				bySlug: { slug: new Slug(dummyRepository.songC1.slug), artist: { id: dummyRepository.artistC.id } }
 			});
 
-			const test = async () => await songService.getSong({ byId: { id: dummyRepository.songA2.id } });
+			const test = async () => await songService.getSong({ byId: { id: dummyRepository.songC1.id } });
 			expect(test()).rejects.toThrow(SongNotFoundByIdException);
 		});
 
 		it("should have deleted the parent artist", async () => {
-			await albumService.deleteAlbum({ byId: { id: dummyRepository.albumA1.id } });
-			await songService.deleteSong({ byId: { id: newSong.id } });
-			const test = async () => await artistService.deleteArtist({ id :dummyRepository.artistA.id });
+			const test = async () => await artistService.deleteArtist({ id :dummyRepository.artistC.id });
 			expect(test()).rejects.toThrow(ArtistNotFoundByIDException);
 		});
 

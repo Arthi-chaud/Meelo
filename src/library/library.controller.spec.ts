@@ -200,7 +200,7 @@ describe('Library Controller', () => {
 	});
 
 	describe('Get all Related album Artists (GET /libraries/:id/artists)', () => {
-		it("should return every artists (2 expected)", () => {
+		it("should return every artists (1 expected)", () => {
 			return request(app.getHttpServer())
 				.get(`/libraries/${dummyRepository.library1.id}/artists`)
 				.expect(200)

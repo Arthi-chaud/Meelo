@@ -74,7 +74,7 @@ export default class ArtistService {
 	}
 
 	/**
-	 * Find multiple artist
+	 * Find multiple artists
 	 * @param where the query parameters to find the artists
 	 * @param pagination the pagination paramters to filter entries
 	 * @param include the relations to include in the returned artists
@@ -87,6 +87,29 @@ export default class ArtistService {
 	) {
 		return this.prismaService.artist.findMany({
 			where: ArtistQueryParameters.buildQueryParametersForMany(where),
+			include: ArtistQueryParameters.buildIncludeParameters(include),
+			orderBy: buildSortingParameter(sort),
+			...buildPaginationParameters(pagination)
+		});
+	}
+
+	/**
+	 * Find multiple artists that have at least one album
+	 * @param where the query parameters to find the artists
+	 * @param pagination the pagination paramters to filter entries
+	 * @param include the relations to include in the returned artists
+	 */
+	async getAlbumsArtists(
+		where: ArtistQueryParameters.ManyWhereInput,
+		pagination?: PaginationParameters,
+		include?: ArtistQueryParameters.RelationInclude,
+		sort?: ArtistQueryParameters.SortingParameter
+	) {
+		return this.prismaService.artist.findMany({
+			where: {
+				...ArtistQueryParameters.buildQueryParametersForMany(where),
+				NOT: { albums: { none: {} } }
+			},
 			include: ArtistQueryParameters.buildIncludeParameters(include),
 			orderBy: buildSortingParameter(sort),
 			...buildPaginationParameters(pagination)

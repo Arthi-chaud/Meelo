@@ -91,6 +91,22 @@ describe('Artist Service', () => {
 		})
 	});
 
+	describe('Get Album Artists', () => {
+		it(('should return all album artists'), async () => {
+			let artists = await artistService.getAlbumsArtists({ });
+			expect(artists.length).toBe(2);
+			expect(artists).toContainEqual(dummyRepository.artistA);
+			expect(artists).toContainEqual(dummyRepository.artistB);
+		});
+
+		it(('should return all album artists, sorted by name'), async () => {
+			let artists = await artistService.getAlbumsArtists({}, {}, {}, { sortBy: 'name', order: 'desc' });
+			expect(artists.length).toBe(2);
+			expect(artists[0]).toStrictEqual(dummyRepository.artistB);
+			expect(artists[1]).toStrictEqual(dummyRepository.artistA);
+		})
+	});
+
 	describe('Get or Create Artist', () => {
 		it(('should get the existing artist'), async () => {
 			let artistGet = await artistService.getOrCreateArtist({ name: dummyRepository.artistA.name });
