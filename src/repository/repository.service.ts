@@ -1,26 +1,29 @@
-// import type { MeeloException } from "src/exceptions/meelo-exception";
-// import type PrismaService from "src/prisma/prisma.service";
+import type { MeeloException } from "src/exceptions/meelo-exception";
+import type { PaginationParameters } from "src/pagination/models/pagination-parameters";
 
-// abstract class RepositoryService<
-// 	EntityType extends { id: number },
-// 	CreateInput extends RepositoryInput,
-// 	WhereInput extends RepositoryInput,
-// 	ManyWhereInput extends RepositoryInput,
-// 	UpdateInput extends RepositoryInput,
-// 	DeleteInput extends RepositoryInput,
-// 	ResponseType extends EntityType
-// > {
-// 	constructor(protected prismaService: PrismaService) {}
+/**
+ * Base Repository Service Definition 
+ */
+abstract class RepositoryService<
+	EntityType extends { id: number },
+	CreateInput,
+	WhereInput,
+	ManyWhereInput,
+	UpdateInput,
+	DeleteInput,
+	RelationInput,
+	SortInput,
+	ResponseType extends EntityType,
+> {
+	abstract create(input: CreateInput, include?: RelationInput): Promise<EntityType>;
+	abstract get(where: WhereInput, include?: RelationInput): Promise<EntityType>;
+	abstract getMany(where: ManyWhereInput, pagination?: PaginationParameters, include?: RelationInput, sort?: SortInput): Promise<EntityType[]>;
+	abstract count(where: ManyWhereInput): Promise<number>;
+	abstract update(what: UpdateInput, where: WhereInput): Promise<EntityType>;
+	abstract delete(where: DeleteInput): Promise<EntityType>;
+	abstract getOrCreate(input: CreateInput, include?: RelationInput): Promise<EntityType>;
+	abstract buildResponse(input: EntityType): ResponseType;
+	abstract onNotFound(where: WhereInput): MeeloException;
+}
 
-// 	abstract create(input: CreateInput): Promise<EntityType>;
-// 	abstract get(where: WhereInput): Promise<EntityType>;
-// 	abstract getMany(where: ManyWhereInput): Promise<EntityType[]>;
-// 	abstract count(where: ManyWhereInput): Promise<number>;
-// 	abstract update(what: UpdateInput, where: WhereInput): Promise<EntityType>;
-// 	abstract delete(where: DeleteInput): Promise<EntityType>;
-// 	abstract getOrCreate(input: CreateInput): Promise<EntityType>;
-// 	abstract buildResponse(input: EntityType): ResponseType;
-// 	abstract onNotFound(where: WhereInput): MeeloException;
-// }
-
-// export default RepositoryService;
+export default RepositoryService;

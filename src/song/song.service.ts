@@ -35,7 +35,7 @@ export default class SongService {
 	 */
 	async createSong(song: SongQueryParameters.CreateInput, include?: SongQueryParameters.RelationInclude) {
 		const genres = await Promise.all(
-			song.genres.map(async (where) => await this.genreService.getGenre(where))
+			song.genres.map(async (where) => await this.genreService.get(where))
 		);
 		try {
 			return await this.prismaService.song.create({
@@ -121,7 +121,7 @@ export default class SongService {
 		where: SongQueryParameters.UpdateWhereInput
 	): Promise<Song> {
 		const genres = what.genres ? await Promise.all(
-			what.genres.map(async (where) => await this.genreService.getGenre(where))
+			what.genres.map(async (where) => await this.genreService.get(where))
 		) : [];
 		try {
 			return await this.prismaService.song.update({
@@ -171,7 +171,7 @@ export default class SongService {
 		Logger.warn(`Song '${song.slug}' deleted`);
 		await this.artistService.deleteArtistIfEmpty({ id: song.artistId });
 		await Promise.all(
-			song.genres.map((genre) => this.genreService.deleteGenreIfEmpty({ id: genre.id }))
+			song.genres.map((genre) => this.genreService.deleteIfEmpty({ id: genre.id }))
 		);
 	}
 	

@@ -31,7 +31,7 @@ export class GenreController {
 		summary: 'Get all genres'
 	})
 	@Get()
-	async getGenres(
+	async getMany(
 		@Query(ParsePaginationParameterPipe)
 		paginationParameters: PaginationParameters,
 		@Query('with', GenreQueryParameters.ParseRelationIncludePipe)
@@ -40,11 +40,11 @@ export class GenreController {
 		sortingParameter: GenreQueryParameters.SortingParameter,
 		@Req() request: Request
 	) {
-		const genres = await this.genreService.getGenres(
+		const genres = await this.genreService.getMany(
 			{}, paginationParameters, include, sortingParameter
 		);
 		return new PaginatedResponse(
-			genres.map((genre) => this.genreService.buildGenreResponse(genre)),
+			genres.map((genre) => this.genreService.buildResponse(genre)),
 			request
 		);
 	}
@@ -53,14 +53,14 @@ export class GenreController {
 		summary: 'Get a genre'
 	})
 	@Get(':idOrSlug')
-	async getGenre(
+	async get(
 		@Query('with', GenreQueryParameters.ParseRelationIncludePipe)
 		include: GenreQueryParameters.RelationInclude,
 		@Param(ParseBaseIdentifierPipe)
 		where: GenreQueryParameters.WhereInput
 	) {
-		const genre = await this.genreService.getGenre(where, include);
-		return this.genreService.buildGenreResponse(genre);
+		const genre = await this.genreService.get(where, include);
+		return this.genreService.buildResponse(genre);
 	}
 
 	@ApiOperation({
@@ -82,7 +82,7 @@ export class GenreController {
 			{ genre: where }, paginationParameters, include, sortingParameter
 		);
 		if (songs.length == 0)
-			await this.genreService.getGenre(where);
+			await this.genreService.get(where);
 		return new PaginatedResponse(
 			songs.map(
 				(song) => this.songService.buildSongResponse(song)
@@ -110,7 +110,7 @@ export class GenreController {
 			{ byGenre: where }, paginationParameters, include, sortingParameter
 		);
 		if (albums.length == 0)
-			await this.genreService.getGenre(where);
+			await this.genreService.get(where);
 		return new PaginatedResponse(
 			albums.map(
 				(album) => this.albumService.buildAlbumResponse(album)
@@ -138,7 +138,7 @@ export class GenreController {
 			{ byGenre: where }, paginationParameters , include, sortingParameter
 		);
 		if (artists.length == 0)
-			await this.genreService.getGenre(where);
+			await this.genreService.get(where);
 		return new PaginatedResponse(
 			artists.map(
 				(artist) => this.artistService.buildArtistResponse(artist)

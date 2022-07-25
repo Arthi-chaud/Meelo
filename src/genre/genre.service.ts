@@ -7,13 +7,27 @@ import { buildSortingParameter } from 'src/sort/models/sorting-parameter';
 import { type PaginationParameters, buildPaginationParameters } from 'src/pagination/models/pagination-parameters';
 import type { Genre, Song } from '@prisma/client';
 import SongService from 'src/song/song.service';
+import RepositoryService from 'src/repository/repository.service';
+import type { MeeloException } from 'src/exceptions/meelo-exception';
 @Injectable()
-export default class GenreService {
+export default class GenreService extends RepositoryService<
+	Genre,
+	GenreQueryParameters.CreateInput,
+	GenreQueryParameters.WhereInput,
+	GenreQueryParameters.ManyWhereInput,
+	GenreQueryParameters.UpdateInput,
+	GenreQueryParameters.DeleteInput,
+	GenreQueryParameters.RelationInclude,
+	GenreQueryParameters.SortingParameter,
+	Genre
+> {
 	constructor(
 		private prismaService: PrismaService,
 		@Inject(forwardRef(() => SongService))
 		private songService: SongService,
-	) {}
+	) {
+		super ();
+	}
 
 	/**
 	 * Create a genre, and saves it in th"e database
@@ -21,7 +35,7 @@ export default class GenreService {
 	 * @param include the relation to include in the returned value
 	 * @returns the saved genre
 	 */
-	async createGenre(
+	async create(
 		genre: GenreQueryParameters.CreateInput,
 		include?: GenreQueryParameters.RelationInclude
 	) {
@@ -44,7 +58,7 @@ export default class GenreService {
 	 * @param where the parameters to find the genre
 	 * @param include the relations to include
 	 */
-	 async getGenre(
+	 async get(
 		where: GenreQueryParameters.WhereInput,
 		include?: GenreQueryParameters.RelationInclude
 	) {
@@ -58,9 +72,7 @@ export default class GenreService {
 				include: GenreQueryParameters.buildIncludeParameters(include)
 			});
 		} catch {
-			if (where.id !== undefined)
-				throw new GenreNotFoundByIdException(where.id);
-			throw new GenreNotFoundException(where.slug);
+			throw this.onNotFound(where);
 		}
 	}
 
@@ -70,7 +82,7 @@ export default class GenreService {
 	 * @param pagination the pagination paramters to filter entries
 	 * @param include the relations to include
 	 */
-	async getGenres(
+	async getMany(
 		where: GenreQueryParameters.ManyWhereInput,
 		pagination?: PaginationParameters,
 		include?: GenreQueryParameters.RelationInclude,
@@ -88,7 +100,7 @@ export default class GenreService {
 	 * Count the genres that match the query parameters
 	 * @param where the query parameters
 	 */
-	async countGenres(where: GenreQueryParameters.ManyWhereInput): Promise<number> {
+	async count(where: GenreQueryParameters.ManyWhereInput): Promise<number> {
 		return this.prismaService.genre.count({
 			where: GenreQueryParameters.buildQueryParametersForMany(where)
 		});
@@ -100,7 +112,7 @@ export default class GenreService {
 	 * @param where the query parameters to find the genre to update
 	 * @returns the updated genre
 	 */
-	async updateGenre(
+	async update(
 		what: GenreQueryParameters.UpdateInput,
 		where: GenreQueryParameters.WhereInput
 	): Promise<Genre> {
@@ -113,9 +125,7 @@ export default class GenreService {
 				where: GenreQueryParameters.buildQueryParametersForOne(where)
 			});
 		} catch {
-			if (where.id !== undefined)
-				throw new GenreNotFoundByIdException(where.id);
-			throw new GenreNotFoundException(where.slug);
+			throw this.onNotFound(where);
 		}
 	}
 
@@ -123,16 +133,15 @@ export default class GenreService {
 	 * Deletes a genre
 	 * @param where the query parameter to find the genre to delete
 	 */
-	async deleteGenre(where: GenreQueryParameters.DeleteInput): Promise<void> {
+	async delete(where: GenreQueryParameters.DeleteInput): Promise<Genre> {
 		try {
 			const genre = await this.prismaService.genre.delete({
 				where: GenreQueryParameters.buildQueryParametersForOne(where),
 			});
 			Logger.warn(`Genre '${genre.slug}' deleted`);
+			return genre;
 		} catch {
-			if (where.id !== undefined)
-				throw new GenreNotFoundByIdException(where.id);
-			throw new GenreNotFoundException(where.slug);
+			throw this.onNotFound(where);
 		}
 	}
 
@@ -140,31 +149,31 @@ export default class GenreService {
 	 * Deletes a genre
 	 * @param where the query parameter to find the genre to delete
 	 */
-	 async deleteGenreIfEmpty(where: GenreQueryParameters.DeleteInput): Promise<void> {
+	 async deleteIfEmpty(where: GenreQueryParameters.DeleteInput): Promise<void> {
 		const songCount = await this.songService.countSongs({
 			genre: where
 		});
 		if (songCount == 0)
-			await this.deleteGenre(where);
+			await this.delete(where);
 	}
 
 	/**
 	 * Find a genre by its name, or creates one if not found
 	 * @param where the query parameters to find / create the genre
 	 */
-	async getOrCreateGenre(
+	async getOrCreate(
 		where: GenreQueryParameters.GetOrCreateInput,
 		include?: GenreQueryParameters.RelationInclude
 	) {
 		try {
-			return await this.getGenre({ slug: new Slug(where.name) }, include);
+			return await this.get({ slug: new Slug(where.name) }, include);
 		} catch {
-			return this.createGenre(where, include);
+			return this.create(where, include);
 		}
 	}
 
-	buildGenreResponse(genre: Genre & { songs?: Song[] }) {
-		let response: Object = genre;
+	buildResponse<ResponseType extends Genre>(genre: Genre & { songs?: Song[] }): ResponseType {
+		let response = <ResponseType>genre;
 		if (genre.songs !== undefined)
 			response = {
 				...response,
@@ -173,5 +182,11 @@ export default class GenreService {
 				)
 			}
 		return response;
+	}
+
+	onNotFound(where: GenreQueryParameters.WhereInput): MeeloException {
+		if (where.id !== undefined)
+			return new GenreNotFoundByIdException(where.id);
+		return new GenreNotFoundException(where.slug);
 	}
 }

@@ -39,7 +39,7 @@ export default class MetadataService {
 	 */
 	async registerMetadata(metadata : Metadata, file: File): Promise<Track> {
 		let genres = metadata.genres ? await Promise.all(
-			metadata.genres.map(async (genre) => await this.genreService.getOrCreateGenre({ name: genre }))
+			metadata.genres.map(async (genre) => await this.genreService.getOrCreate({ name: genre }))
 		) : [];
 		let albumArtist = metadata.albumArtist ? await this.artistService.getOrCreateArtist({ name: metadata.albumArtist }) : undefined;
 		let songArtist = await this.artistService.getOrCreateArtist({ name: metadata.artist ?? metadata.albumArtist! });
