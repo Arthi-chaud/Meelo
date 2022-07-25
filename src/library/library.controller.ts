@@ -147,7 +147,7 @@ export default class LibraryController {
 		sortingParameter: ArtistQueryParameters.SortingParameter,
 		@Req() request: Request
 	): Promise<PaginatedResponse<Object>> {
-		const artists = await this.artistService.getArtists(
+		const artists = await this.artistService.getAlbumsArtists(
 			{ byLibrarySource: where }, paginationParameters, include, sortingParameter
 		);
 		if (artists.length == 0)

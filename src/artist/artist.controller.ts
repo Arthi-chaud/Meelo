@@ -16,7 +16,7 @@ import type { Request } from 'express';
 import { ApiOperation, ApiQuery, ApiTags } from '@nestjs/swagger';
 import TrackQueryParameters from 'src/track/models/track.query-parameters';
 import TrackService from 'src/track/track.service';
-import { TrackType } from '@prisma/client';
+import { Artist, TrackType } from '@prisma/client';
 
 @ApiTags("Artists")
 @Controller('artists')
@@ -52,17 +52,15 @@ export default class ArtistController {
 		albumArtistsOnly: boolean = false,
 		@Req() request: Request
 	) {
-		let artists = await this.artistService.getArtists(
-			{}, paginationParameters, include, sortingParameter
-		);
+		let artists: Artist[];
 		if (albumArtistsOnly) {
-			for (const currentArtist of artists) {
-				const albumCount = await this.albumService.countAlbums({
-					byArtist: { id: currentArtist.id }
-				});
-				if (albumCount == 0)
-					artists = artists.filter((artist) => artist.id != currentArtist.id);
-			}
+			artists = await this.artistService.getAlbumsArtists(
+				{}, paginationParameters, include, sortingParameter
+			);
+		} else {
+			artists = await this.artistService.getArtists(
+				{}, paginationParameters, include, sortingParameter
+			);
 		}
 		return new PaginatedResponse(
 			artists.map((artist) => this.artistService.buildArtistResponse(artist)),
