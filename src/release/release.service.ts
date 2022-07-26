@@ -202,7 +202,7 @@ export default class ReleaseService extends RepositoryService<
 	async delete(where: ReleaseQueryParameters.DeleteInput, deleteParent: boolean = true): Promise<Release> {
 		let release = await this.get(where, { tracks: true });
 		await Promise.allSettled(
-			release.tracks.map((track) => this.trackService.deleteTrack({ id: track.id }, false))
+			release.tracks.map((track) => this.trackService.delete({ id: track.id }, false))
 		);
 		try {
 			await this.prismaService.release.delete({
@@ -227,7 +227,7 @@ export default class ReleaseService extends RepositoryService<
 	 * @param where the query parameters to find the track to delete 
 	 */
 	async deleteIfEmpty(where: ReleaseQueryParameters.DeleteInput): Promise<void> {
-		const trackCount = await this.trackService.countTracks({ byRelease: where });
+		const trackCount = await this.trackService.count({ byRelease: where });
 		if (trackCount == 0)
 			await this.delete(where);
 	}
@@ -337,7 +337,7 @@ export default class ReleaseService extends RepositoryService<
 			response = {
 				...response,
 				tracks: release.tracks.map(
-					(track) => this.trackService.buildTrackResponse(track)
+					(track) => this.trackService.buildResponse(track)
 				)
 			}
 		return response;

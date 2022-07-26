@@ -12,16 +12,27 @@ import FileService from 'src/file/file.service';
 import Slug from 'src/slug/slug';
 import { FileNotFoundFromIDException, FileNotFoundFromPathException } from 'src/file/file.exceptions';
 import { type PaginationParameters, buildPaginationParameters } from 'src/pagination/models/pagination-parameters';
-import type { MeeloException } from 'src/exceptions/meelo-exception';
+import { InvalidRequestException, MeeloException } from 'src/exceptions/meelo-exception';
 import { UrlGeneratorService } from 'nestjs-url-generator';
 import { TrackController } from './track.controller';
 import FileController from 'src/file/file.controller';
 import type Tracklist from './models/tracklist.model';
 import { UnknownDiscIndexKey } from './models/tracklist.model';
 import { buildSortingParameter } from 'src/sort/models/sorting-parameter';
+import RepositoryService from 'src/repository/repository.service';
 
 @Injectable()
-export default class TrackService {
+export default class TrackService extends RepositoryService<
+	Track,
+	TrackQueryParameters.CreateInput,
+	TrackQueryParameters.WhereInput,
+	TrackQueryParameters.ManyWhereInput,
+	TrackQueryParameters.UpdateInput,
+	TrackQueryParameters.DeleteInput,
+	TrackQueryParameters.RelationInclude,
+	TrackQueryParameters.SortingParameter,
+	Track & { illustration: string, stream: string }
+>{
 	constructor(
 		@Inject(forwardRef(() => SongService))
 		private songService: SongService,
@@ -29,14 +40,16 @@ export default class TrackService {
 		private fileService: FileService,
 		private prismaService: PrismaService,
 		private readonly urlGeneratorService: UrlGeneratorService
-	) { }
+	) {
+		super();
+	}
 	/**
 	 * Create a Track, and saves it in the database
 	 * @param track the parameters to build the track
 	 * @param include the relation fields to include in the returned object
 	 * @returns the created song
 	 */
-	async createTrack(
+	async create(
 		track: TrackQueryParameters.CreateInput,
 		include?: TrackQueryParameters.RelationInclude
 	) {
@@ -72,7 +85,7 @@ export default class TrackService {
 	 * @param where the query parameters to find the track
 	 * @param include the relations to include in the returned value
 	 */
-	async getTrack(
+	async get(
 		where: TrackQueryParameters.WhereInput,
 		include?: TrackQueryParameters.RelationInclude
 	) {
@@ -83,7 +96,7 @@ export default class TrackService {
 				include: TrackQueryParameters.buildIncludeParameters(include)
 			});
 		} catch {
-			throw await this.getTrackNotFoundError(where);
+			throw await this.onNotFound(where);
 		}
 	}
 
@@ -93,7 +106,7 @@ export default class TrackService {
 	 * @param include the relation fields to includes
 	 * @returns an array of tracks
 	 */
-	async getTracks(
+	async getMany(
 		where: TrackQueryParameters.ManyWhereInput,
 		pagination?: PaginationParameters,
 		include?: TrackQueryParameters.RelationInclude,
@@ -122,7 +135,7 @@ export default class TrackService {
 		sort?: TrackQueryParameters.SortingParameter
 	) {
 
-		const tracks = await this.getTracks(
+		const tracks = await this.getMany(
 			{ bySong: where },
 			pagination,
 			include,
@@ -144,7 +157,7 @@ export default class TrackService {
 		where: SongQueryParameters.WhereInput,
 		include?: TrackQueryParameters.RelationInclude
 	) {
-		return this.getTrack(
+		return this.get(
 			{ masterOfSong: where },
 			include
 		);
@@ -160,7 +173,7 @@ export default class TrackService {
 		include?: TrackQueryParameters.RelationInclude
 	): Promise<Tracklist> {
 		let tracklist: Tracklist = new Map();
-		const tracks = await this.getTracks({ byRelease: where }, {}, include, { sortBy: 'trackIndex', order: 'asc' });
+		const tracks = await this.getMany({ byRelease: where }, {}, include, { sortBy: 'trackIndex', order: 'asc' });
 		if (tracks.length == 0)
 			await this.releaseService.get(where);
 		tracks.forEach((track) => {
@@ -174,7 +187,7 @@ export default class TrackService {
 	 * Count the tracks that match the query parameters
 	 * @param where the query parameters
 	 */
-	async countTracks(where: TrackQueryParameters.ManyWhereInput): Promise<number> {
+	async count(where: TrackQueryParameters.ManyWhereInput): Promise<number> {
 		return this.prismaService.track.count({
 			where: TrackQueryParameters.buildQueryParametersForMany(where)
 		});
@@ -186,12 +199,12 @@ export default class TrackService {
 	 * @param where the query parameters to find the track to update
 	 */
 	
-	async updateTrack(
+	async update(
 		what: TrackQueryParameters.UpdateInput,
 		where: TrackQueryParameters.WhereInput
 	) {
 		try {
-			const unmodifiedTrack = await this.getTrack(where);
+			const unmodifiedTrack = await this.get(where);
 			let updatedTrack = await this.prismaService.track.update({
 				data: {
 					...what,
@@ -218,7 +231,7 @@ export default class TrackService {
 			}
 			return updatedTrack;
 		} catch {
-			throw await this.getTrackNotFoundError(where);
+			throw await this.onNotFound(where);
 		}
 	}
 
@@ -226,7 +239,7 @@ export default class TrackService {
 	 * Deletes a track
 	 * @param where Query parameters to find the track to delete 
 	 */
-	async deleteTrack(where: TrackQueryParameters.DeleteInput, deleteParentIfEmpty: boolean = true): Promise<void> {
+	async delete(where: TrackQueryParameters.DeleteInput, deleteParent: boolean = true): Promise<Track> {
 		try {
 			let deletedTrack = await this.prismaService.track.delete({
 				where: where,
@@ -237,10 +250,11 @@ export default class TrackService {
 					trackId: deletedTrack.id,
 					song: { byId: { id: deletedTrack.songId } }
 				});
-			if (deleteParentIfEmpty) {
+			if (deleteParent) {
 				await this.songService.deleteIfEmpty({ byId: { id: deletedTrack.songId } });
 				await this.releaseService.deleteIfEmpty({ byId: { id: deletedTrack.releaseId } });
 			}
+			return deletedTrack;
 		} catch {
 			if (where.id !== undefined)
 				throw new TrackNotFoundByIdException(where.id);
@@ -249,10 +263,22 @@ export default class TrackService {
 	}
 
 	/**
+	 * Finds a track, or creates one if it does not exist already
+	 * @param where where the query parameters to fond or create the track
+	 * @returns the fetched or created track
+	 */
+	getOrCreate(
+		_where: TrackQueryParameters.CreateInput,
+		_include?: TrackQueryParameters.RelationInclude
+	): Promise<Track> {
+		throw new InvalidRequestException("Method not implemented");
+	}
+
+	/**
 	 * Callback on track not found
 	 * @param where the query parameters that failed to get the release
 	 */
-	private async getTrackNotFoundError(where: TrackQueryParameters.WhereInput): Promise<MeeloException> {
+	protected async onNotFound(where: TrackQueryParameters.WhereInput): Promise<MeeloException> {
 		if (where.id !== undefined)
 			throw new TrackNotFoundByIdException(where.id);
 		if (where.masterOfSong) {
@@ -284,7 +310,7 @@ export default class TrackService {
 					}
 				}
 			}),
-			this.updateTrack(
+			this.update(
 				{ master: true },
 				{ id: where.trackId }
 			)
@@ -307,19 +333,21 @@ export default class TrackService {
 		if (audioTracks.length != 0)
 			newMaster = audioTracks[0];
 		await Promise.allSettled([
-			this.updateTrack(
+			this.update(
 				{ master: true },
 				{ id: newMaster.id }
 			),
-			this.updateTrack(
+			this.update(
 				{ master: false },
 				{ id: where.trackId }
 			)
 		]);
 	}
 
-	buildTrackResponse(track: Track & Partial<{ release: Release, song: Song }>): Object {
-		let response: Object = {
+	buildResponse<ResponseType extends Track & { illustration: string, stream: string }>(
+		track: Track & Partial<{ release: Release, song: Song }>
+	): ResponseType {
+		let response = <ResponseType>{
 			...track,
 			illustration: this.urlGeneratorService.generateUrlFromController({
 				controller: TrackController,
@@ -354,7 +382,7 @@ export default class TrackService {
 		tracklist.forEach((tracks, discIndex) => {
 			response = {
 				...response,
-				[discIndex]: tracks.map((track) => this.buildTrackResponse(track))
+				[discIndex]: tracks.map((track) => this.buildResponse(track))
 			}
 		});
 		return response;

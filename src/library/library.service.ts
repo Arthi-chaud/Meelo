@@ -240,7 +240,7 @@ export default class LibraryService extends RepositoryService<
 	}
 
 	async unregisterFile(where: FileQueryParameters.DeleteInput) {
-		await this.trackService.deleteTrack({ sourceFileId: where.id });
+		await this.trackService.delete({ sourceFileId: where.id });
 		await this.fileService.delete(where);
 	}
 

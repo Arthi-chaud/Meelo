@@ -97,13 +97,13 @@ export default class ArtistController {
 		where: ArtistQueryParameters.WhereInput,
 		@Req() request: Request
 	) {
-		const videoTracks = await this.trackService.getTracks(
+		const videoTracks = await this.trackService.getMany(
 			{ byArtist: where, type: TrackType.Video }, paginationParameters, include, sortingParameter, 
 		);
 		if (videoTracks.length == 0)
 			await this.artistService.get(where);
 		return new PaginatedResponse(
-			videoTracks.map((videoTrack) => this.trackService.buildTrackResponse(videoTrack)),
+			videoTracks.map((videoTrack) => this.trackService.buildResponse(videoTrack)),
 			request
 		);
 	}

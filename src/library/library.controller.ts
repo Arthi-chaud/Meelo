@@ -251,13 +251,13 @@ export default class LibraryController {
 		sortingParameter: TrackQueryParameters.SortingParameter,
 		@Req() request: Request
 	): Promise<PaginatedResponse<Object>> {
-		const tracks = await this.trackService.getTracks(
+		const tracks = await this.trackService.getMany(
 			{ byLibrarySource: where }, paginationParameters, include, sortingParameter
 		);
 		if (tracks.length == 0)
 			await this.libraryService.get(where);
 		return new PaginatedResponse(
-			tracks.map((track) => this.trackService.buildTrackResponse(track)),
+			tracks.map((track) => this.trackService.buildResponse(track)),
 			request
 		);
 	}

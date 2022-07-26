@@ -170,7 +170,7 @@ export default class SongService extends RepositoryService<
 	async delete(where: SongQueryParameters.WhereInput): Promise<Song> {
 		let song = await this.get(where, { tracks: true, genres: true });
 		await Promise.allSettled(
-			song.tracks.map((track) => this.trackService.deleteTrack({ id: track.id }))
+			song.tracks.map((track) => this.trackService.delete({ id: track.id }))
 		);
 		try {
 			await this.prismaService.song.delete({
@@ -191,7 +191,7 @@ export default class SongService extends RepositoryService<
 	 * Deletes a song if it does not have related tracks
 	 */
 	async deleteIfEmpty(where: SongQueryParameters.WhereInput): Promise<void> {
-		const trackCount = await this.trackService.countTracks({ bySong: where });
+		const trackCount = await this.trackService.count({ bySong: where });
 		if (trackCount == 0)
 			await this.delete(where);
 	}
@@ -228,7 +228,7 @@ export default class SongService extends RepositoryService<
 			response = {
 				...response,
 				tracks: song.tracks.map(
-					(track) => this.trackService.buildTrackResponse(track)
+					(track) => this.trackService.buildResponse(track)
 				)
 			}
 		if (song.artist !== undefined)

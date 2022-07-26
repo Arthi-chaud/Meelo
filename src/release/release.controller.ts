@@ -82,14 +82,14 @@ export default class ReleaseController {
 		sortingParameter: TrackQueryParameters.SortingParameter,
 		@Req() request: Request
 	) {
-		const tracks = await this.trackService.getTracks(
+		const tracks = await this.trackService.getMany(
 			{ byRelease: where }, paginationParameters, include, sortingParameter
 		);
 		if (tracks.length == 0)
 			await this.releaseService.get(where);
 		return new PaginatedResponse(
 			tracks.map(
-				(track) => this.trackService.buildTrackResponse(track)
+				(track) => this.trackService.buildResponse(track)
 			),
 			request
 		);
