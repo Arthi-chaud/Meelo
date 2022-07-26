@@ -82,7 +82,7 @@ export default class FileService extends RepositoryService<
 	}
 
 	/**
-	 * Coun the Files that matches the query parameters
+	 * Count the Files that matches the query parameters
 	 * @param where the parameters to compare the Files with
 	 * @returns the number of match
 	 */

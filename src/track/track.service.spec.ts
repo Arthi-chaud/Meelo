@@ -58,7 +58,7 @@ describe('Track Service', () => {
 		songService = module.get<SongService>(SongService);
 		let fileService = module.get<FileService>(FileService);
 		let libraryService = module.get<LibraryService>(LibraryService);
-		secondLibrary = await libraryService.createLibrary({
+		secondLibrary = await libraryService.create({
 			name: "b",
 			path: "b"
 		});

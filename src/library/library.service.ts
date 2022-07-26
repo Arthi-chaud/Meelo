@@ -13,9 +13,21 @@ import normalize from 'normalize-path';
 import type FileQueryParameters from 'src/file/models/file.query-parameters';
 import TrackService from 'src/track/track.service';
 import { buildSortingParameter } from 'src/sort/models/sorting-parameter';
+import RepositoryService from 'src/repository/repository.service';
+import type { MeeloException } from 'src/exceptions/meelo-exception';
 
 @Injectable()
-export default class LibraryService {
+export default class LibraryService extends RepositoryService<
+	Library,
+	LibraryQueryParameters.CreateInput,
+	LibraryQueryParameters.WhereInput,
+	LibraryQueryParameters.ManyWhereInput,
+	LibraryQueryParameters.UpdateInput,
+	LibraryQueryParameters.WhereInput,
+	LibraryQueryParameters.RelationInclude,
+	{},
+	Library
+> {
 	constructor(
 		private prismaService: PrismaService,
 		private fileManagerService: FileManagerService,
@@ -24,7 +36,9 @@ export default class LibraryService {
 		private trackService: TrackService,
 		private metadataService: MetadataService,
 		private illustrationService: IllustrationService
-	) {}
+	) {
+		super();
+	}
 	
 	/**
 	 * Creates a Library
@@ -32,7 +46,7 @@ export default class LibraryService {
 	 * @param include the relation fields to include in the returned object
 	 * @returns 
 	 */
-	async createLibrary(
+	async create(
 		library: LibraryQueryParameters.CreateInput,
 		include?: LibraryQueryParameters.RelationInclude
 	): Promise<Library> {
@@ -58,7 +72,7 @@ export default class LibraryService {
 	 * @param include the relation fields to include in the returned object 
 	 * @returns The fetched Library
 	 */
-	async getLibrary(
+	async get(
 		where: LibraryQueryParameters.WhereInput,
 		include?: LibraryQueryParameters.RelationInclude
 	) {
@@ -72,9 +86,7 @@ export default class LibraryService {
 				include: LibraryQueryParameters.buildIncludeParameters(include),
 			});
 		} catch {
-			if (where.id !== undefined)
-				throw new LibraryNotFoundFromIDException(where.id);
-			throw new LibraryNotFoundException(where.slug);
+			throw this.onNotFound(where);
 		}
 	}
 
@@ -85,7 +97,7 @@ export default class LibraryService {
 	 * @param include the relation fields to include in the returned objects
 	 * @returns 
 	 */
-	async getLibraries(
+	async getMany(
 		where: LibraryQueryParameters.ManyWhereInput,
 		pagination?: PaginationParameters,
 		include?: LibraryQueryParameters.RelationInclude,
@@ -99,7 +111,18 @@ export default class LibraryService {
 		});
 	}
 
-	async updateLibrary(
+	/**
+	 * Count the Libraries that matches the query parameters
+	 * @param where the parameters to compare the Files with
+	 * @returns the number of match
+	 */
+	 async count(where: LibraryQueryParameters.ManyWhereInput): Promise<number> {
+		return this.prismaService.library.count({
+			where: LibraryQueryParameters.buildQueryParametersForMany(where)
+		});
+	}
+
+	async update(
 		what: LibraryQueryParameters.UpdateInput,
 		where: LibraryQueryParameters.WhereInput
 	): Promise<Library> {
@@ -113,9 +136,7 @@ export default class LibraryService {
 				where: LibraryQueryParameters.buildQueryParametersForOne(where)
 			});
 		} catch {
-			if (where.id !== undefined)
-				throw new LibraryNotFoundFromIDException(where.id);
-			throw new LibraryNotFoundException(where.slug);
+			throw this.onNotFound(where);
 		}
 	}
 
@@ -124,7 +145,7 @@ export default class LibraryService {
 	 * @param where the query parameters to find the library to delete
 	 * @returns the deleted library
 	 */
-	async deleteLibrary(where: LibraryQueryParameters.WhereInput): Promise<Library> {
+	async delete(where: LibraryQueryParameters.WhereInput): Promise<Library> {
 		let relatedFiles = await this.fileService.getMany({ library: where });
 		for (const file of relatedFiles)
 			await this.unregisterFile({ id: file.id });
@@ -133,9 +154,18 @@ export default class LibraryService {
 				where: LibraryQueryParameters.buildQueryParametersForOne(where)
 			});
 		} catch {
-			if (where.id !== undefined)
-				throw new LibraryNotFoundFromIDException(where.id);
-			throw new LibraryNotFoundException(where.slug);
+			throw this.onNotFound(where);
+		}
+	}
+
+	async getOrCreate(
+		input: LibraryQueryParameters.CreateInput,
+		include?: LibraryQueryParameters.RelationInclude
+	): Promise<Library> {
+		try {
+			return await this.get({ slug: new Slug(input.name) }, include);
+		} catch {
+			return this.create(input, include);
 		}
 	}
 
@@ -190,7 +220,7 @@ export default class LibraryService {
 	 * @returns The array of deleted file entry
 	 */
 	async unregisterUnavailableFiles(where: LibraryQueryParameters.WhereInput): Promise<File[]> {
-		let parentLibrary = await this.getLibrary(where, { files: true });
+		let parentLibrary = await this.get(where, { files: true });
 		Logger.log(`'Cleaning ${parentLibrary.slug}' library`);
 		const libraryPath = `${this.fileManagerService.getLibraryFullPath(parentLibrary)}`;
 		let registeredFiles: File[] = parentLibrary.files;
@@ -212,5 +242,15 @@ export default class LibraryService {
 	async unregisterFile(where: FileQueryParameters.DeleteInput) {
 		await this.trackService.deleteTrack({ sourceFileId: where.id });
 		await this.fileService.delete(where);
+	}
+
+	buildResponse(input: Library): Library {
+		return input;
+	}
+
+	onNotFound(where: LibraryQueryParameters.WhereInput): MeeloException {
+		if (where.id !== undefined)
+			return new LibraryNotFoundFromIDException(where.id);
+		return new LibraryNotFoundException(where.slug);
 	}
 }

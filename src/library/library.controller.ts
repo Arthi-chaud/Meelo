@@ -37,7 +37,7 @@ export default class LibraryController {
 	})
 	@Post('new')
 	async createLibrary(@Body() createLibraryDto: LibraryDto) {
-		return this.libraryService.createLibrary(createLibraryDto);
+		return this.libraryService.create(createLibraryDto);
 	}
 
 	@ApiOperation({
@@ -52,7 +52,7 @@ export default class LibraryController {
 		@Req() request: Request
 	): Promise<PaginatedResponse<Object>> {
 		return new PaginatedResponse(
-			await this.libraryService.getLibraries({}, paginationParameters, {}, sortingParameter),
+			await this.libraryService.getMany({}, paginationParameters, {}, sortingParameter),
 			request
 		);
 	}
@@ -62,7 +62,7 @@ export default class LibraryController {
 	})
 	@Get('scan')
 	async scanLibrariesFiles() {
-		const libraries = await this.libraryService.getLibraries({});
+		const libraries = await this.libraryService.getMany({});
 		libraries.forEach((library) => this.libraryService
 			.registerNewFiles(library)
 			.catch((error) => Logger.error(error))
@@ -75,7 +75,7 @@ export default class LibraryController {
 	})
 	@Get('clean')
 	async cleanLibraries() {
-		const libraries = await this.libraryService.getLibraries({});
+		const libraries = await this.libraryService.getMany({});
 		libraries.forEach((library) => this.libraryService
 			.unregisterUnavailableFiles({ id: library.id })
 			.catch((error) => Logger.error(error))
@@ -91,7 +91,7 @@ export default class LibraryController {
 		@Param(ParseLibraryIdentifierPipe)
 		where: LibraryQueryParameters.WhereInput
 	) {
-		let library = await this.libraryService.getLibrary(where);
+		let library = await this.libraryService.get(where);
 		this.libraryService
 			.registerNewFiles(library)
 			.catch((error) => Logger.error(error));
@@ -118,7 +118,7 @@ export default class LibraryController {
 		@Param(ParseLibraryIdentifierPipe)
 		where: LibraryQueryParameters.WhereInput,
 	): Promise<Library> {
-		return this.libraryService.getLibrary(where);
+		return this.libraryService.get(where);
 	}
 
 	@ApiOperation({
@@ -129,7 +129,7 @@ export default class LibraryController {
 		@Param(ParseLibraryIdentifierPipe)
 		where: LibraryQueryParameters.WhereInput,
 	): Promise<void> {
-		this.libraryService.deleteLibrary(where);
+		this.libraryService.delete(where);
 	}
 
 	@ApiOperation({
@@ -151,7 +151,7 @@ export default class LibraryController {
 			{ byLibrarySource: where }, paginationParameters, include, sortingParameter
 		);
 		if (artists.length == 0)
-			await this.libraryService.getLibrary(where);
+			await this.libraryService.get(where);
 		return new PaginatedResponse(
 			artists.map((artist) => this.artistService.buildResponse(artist)),
 			request
@@ -177,7 +177,7 @@ export default class LibraryController {
 			{ byLibrarySource: where }, paginationParameters, include, sortingParameter
 		);
 		if (albums.length == 0)
-			await this.libraryService.getLibrary(where);
+			await this.libraryService.get(where);
 		return new PaginatedResponse(
 			albums.map((album) => this.albumService.buildResponse(album)),
 			request
@@ -203,7 +203,7 @@ export default class LibraryController {
 			{ library: where }, paginationParameters, include, sortingParameter
 		);
 		if (releases.length == 0)
-			await this.libraryService.getLibrary(where);
+			await this.libraryService.get(where);
 		return new PaginatedResponse(
 			releases.map((release) => this.releaseService.buildReleaseResponse(release)),
 			request
@@ -229,7 +229,7 @@ export default class LibraryController {
 			{ library: where }, paginationParameters, include, sortingParameter
 		);
 		if (songs.length == 0)
-			await this.libraryService.getLibrary(where);
+			await this.libraryService.get(where);
 		return new PaginatedResponse(
 			songs.map((song) => this.songService.buildSongResponse(song)),
 			request
@@ -255,7 +255,7 @@ export default class LibraryController {
 			{ byLibrarySource: where }, paginationParameters, include, sortingParameter
 		);
 		if (tracks.length == 0)
-			await this.libraryService.getLibrary(where);
+			await this.libraryService.get(where);
 		return new PaginatedResponse(
 			tracks.map((track) => this.trackService.buildTrackResponse(track)),
 			request
