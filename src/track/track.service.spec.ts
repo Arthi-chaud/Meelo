@@ -62,13 +62,13 @@ describe('Track Service', () => {
 			name: "b",
 			path: "b"
 		});
-		file = await fileService.createFile({
+		file = await fileService.create({
 			path: "My Artist/My Album/1-02 My dummyRepository.songA1.m4a",
 			libraryId: dummyRepository.library1.id,
 			registerDate: new Date(),
 			md5Checksum: ''
 		});
-		file2 = await fileService.createFile({
+		file2 = await fileService.create({
 			path: "My Artist/My Album (Special Edition)/1-02 My dummyRepository.songA1.m4a",
 			libraryId: secondLibrary.id,
 			registerDate: new Date(),

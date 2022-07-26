@@ -9,13 +9,27 @@ import { FileNotReadableException } from 'src/file-manager/file-manager.exceptio
 import * as fs from 'fs';
 import path from 'path';
 import SettingsService from 'src/settings/settings.service';
+import RepositoryService from 'src/repository/repository.service';
+import type { MeeloException } from 'src/exceptions/meelo-exception';
 @Injectable()
-export default class FileService {
+export default class FileService extends RepositoryService<
+	File,
+	FileQueryParameters.CreateInput,
+	FileQueryParameters.WhereInput,
+	FileQueryParameters.ManyWhereInput,
+	FileQueryParameters.UpdateInput,
+	FileQueryParameters.DeleteInput,
+	FileQueryParameters.RelationInclude,
+	{},
+	File
+> {
 	constructor(
 		private prismaService: PrismaService,
 		private fileManagerService: FileManagerService,
 		private settingsService: SettingsService
-	) {}
+	) {
+		super();
+	}
 
 	/**
 	 * saves a File in the database
@@ -23,7 +37,7 @@ export default class FileService {
 	 * @param include the relation to include in the returned File
 	 * @returns the saved file
 	 */
-	async createFile(file: FileQueryParameters.CreateInput, include?: FileQueryParameters.RelationInclude): Promise<File> {
+	async create(file: FileQueryParameters.CreateInput, include?: FileQueryParameters.RelationInclude): Promise<File> {
 		try {
 			return await this.prismaService.file.create({
 				data: file,
@@ -40,7 +54,7 @@ export default class FileService {
 	 * @param include the relation to include in the returned object
 	 * @returns a File entry
 	 */
-	async getFile(where: FileQueryParameters.WhereInput, include?: FileQueryParameters.RelationInclude) {
+	async get(where: FileQueryParameters.WhereInput, include?: FileQueryParameters.RelationInclude) {
 		try {
 			return await this.prismaService.file.findFirst({
 				rejectOnNotFound: true,
@@ -48,11 +62,7 @@ export default class FileService {
 				include: FileQueryParameters.buildIncludeParameters(include)
 			});
 		} catch {
-			if (where.id !== undefined)
-				throw new FileNotFoundFromIDException(where.id);
-			else if (where.trackId !== undefined)
-				throw new FileNotFoundFromTrackIDException(where.trackId);
-			throw new FileNotFoundFromPathException(where.byPath.path);
+			throw this.onNotFound(where)
 		}
 	}
 
@@ -63,7 +73,7 @@ export default class FileService {
 	 * @param include include the relation to include in the returned objects
 	 * @returns an array of File
 	 */
-	async getFiles(where: FileQueryParameters.ManyWhereInput, pagination?: PaginationParameters, include?: FileQueryParameters.RelationInclude) {
+	async getMany(where: FileQueryParameters.ManyWhereInput, pagination?: PaginationParameters, include?: FileQueryParameters.RelationInclude) {
 		return this.prismaService.file.findMany({
 			where: FileQueryParameters.buildQueryParametersForMany(where),
 			include: FileQueryParameters.buildIncludeParameters(include),
@@ -76,7 +86,7 @@ export default class FileService {
 	 * @param where the parameters to compare the Files with
 	 * @returns the number of match
 	 */
-	async countFiles(where: FileQueryParameters.ManyWhereInput): Promise<number> {
+	async count(where: FileQueryParameters.ManyWhereInput): Promise<number> {
 		return this.prismaService.file.count({
 			where: FileQueryParameters.buildQueryParametersForMany(where)
 		});
@@ -88,11 +98,15 @@ export default class FileService {
 	 * @param where the parameters to get the Files to update
 	 * @returns the updated files
 	 */
-	async updateFile(what: FileQueryParameters.UpdateInput, where: FileQueryParameters.WhereInput): Promise<File> {
-		return this.prismaService.file.update({
-			data: {...what},
-			where: FileQueryParameters.buildQueryParametersForOne(where)
-		});
+	async update(what: FileQueryParameters.UpdateInput, where: FileQueryParameters.WhereInput): Promise<File> {
+		try {
+			return await this.prismaService.file.update({
+				data: {...what},
+				where: FileQueryParameters.buildQueryParametersForOne(where)
+			});
+		} catch {
+			throw this.onNotFound(where);
+		}
 	}
 
 	/**
@@ -100,13 +114,13 @@ export default class FileService {
 	 * @param where the parameters to get the file to delete
 	 * @returns an empty promise
 	 */
-	async deleteFile(where: FileQueryParameters.DeleteInput): Promise<void> {
+	async delete(where: FileQueryParameters.DeleteInput): Promise<File> {
 		try {
-			await this.prismaService.file.delete({
+			return await this.prismaService.file.delete({
 				where: FileQueryParameters.buildQueryParametersForOne(where)
 			});
 		} catch {
-			throw new FileNotFoundFromIDException(where.id);
+			throw this.onNotFound(where);
 		}
 		
 	}
@@ -116,10 +130,32 @@ export default class FileService {
 	 * @param where the parameters to get the file to delete
 	 * @returns the number of deleted file
 	 */
-	 async deleteFiles(where: FileQueryParameters.ManyWhereInput): Promise<number> {
+	async deleteMany(where: FileQueryParameters.ManyWhereInput): Promise<number> {
 		return (await this.prismaService.file.deleteMany({
 			where: FileQueryParameters.buildQueryParametersForMany(where)
 		})).count;
+	}
+
+	async getOrCreate(
+		input: FileQueryParameters.CreateInput,
+		include?: FileQueryParameters.RelationInclude
+	): Promise<File> {
+		try {
+			return await this.get({ byPath: { path: input.path, library: { id: input.libraryId } } }, include);
+		} catch {
+			return this.create(input, include)
+		}
+	}
+	buildResponse(input: File): File {
+		return input;
+	}
+
+	onNotFound(where: FileQueryParameters.WhereInput): MeeloException {
+		if (where.id !== undefined)
+			return new FileNotFoundFromIDException(where.id);
+		else if (where.trackId !== undefined)
+			return new FileNotFoundFromTrackIDException(where.trackId);
+		return new FileNotFoundFromPathException(where.byPath.path);
 	}
 
 	/**
@@ -134,7 +170,7 @@ export default class FileService {
 			throw new FileNotReadableException(filePath);
 		}
 
-		return this.createFile({
+		return this.create({
 			path: filePath,
 			md5Checksum: this.fileManagerService.getMd5Checksum(fullFilePath).toString(),
 			registerDate: new Date(),

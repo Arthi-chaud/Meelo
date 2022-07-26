@@ -59,7 +59,7 @@ export default class TrackService {
 		} catch {
 			const parentSong = await this.songService.getSong(track.song, { artist: true });
 			const parentRelease = await this.releaseService.getRelease(track.release);
-			await this.fileService.getFile(track.sourceFile);
+			await this.fileService.get(track.sourceFile);
 			throw new TrackAlreadyExistsException(
 				track.displayName,
 				new Slug(parentRelease.slug),

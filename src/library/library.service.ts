@@ -125,7 +125,7 @@ export default class LibraryService {
 	 * @returns the deleted library
 	 */
 	async deleteLibrary(where: LibraryQueryParameters.WhereInput): Promise<Library> {
-		let relatedFiles = await this.fileService.getFiles({ library: where });
+		let relatedFiles = await this.fileService.getMany({ library: where });
 		for (const file of relatedFiles)
 			await this.unregisterFile({ id: file.id });
 		try {
@@ -147,7 +147,7 @@ export default class LibraryService {
 	async registerNewFiles(parentLibrary: Library): Promise<File[]> {
 		Logger.log(`'${parentLibrary.slug}' library: Registration of new files`);
 		let unfilteredCandidates = this.fileManagerService.getCandidateFilesInLibraryFolder(parentLibrary.path);
-		let alreadyRegistrered = await this.fileService.getFiles({ paths: unfilteredCandidates });
+		let alreadyRegistrered = await this.fileService.getMany({ paths: unfilteredCandidates });
 
 		let candidates = unfilteredCandidates.filter(
 			(candidatePath) => {
@@ -178,7 +178,7 @@ export default class LibraryService {
 			let track = await this.metadataService.registerMetadata(fileMetadata, registeredFile);
 			await this.illustrationService.extractTrackIllustration(track, fullFilePath);
 		} catch {
-			await this.fileService.deleteFile({ id: registeredFile.id });
+			await this.fileService.delete({ id: registeredFile.id });
 			Logger.warn(`${parentLibrary.slug} library: Registration of ${filePath} failed because of bad metadata.`);
 		}
 		return registeredFile
@@ -211,6 +211,6 @@ export default class LibraryService {
 
 	async unregisterFile(where: FileQueryParameters.DeleteInput) {
 		await this.trackService.deleteTrack({ sourceFileId: where.id });
-		await this.fileService.deleteFile(where);
+		await this.fileService.delete(where);
 	}
 }

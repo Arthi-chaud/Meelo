@@ -175,7 +175,7 @@ describe('Library Service', () => {
 			).rejects.toThrow(LibraryNotFoundFromIDException);
 		});
 		it('should have deletes the related files', async () => {
-			let filesCount = await fileService.countFiles({ library: { id: dummyRepository.library2.id } });
+			let filesCount = await fileService.count({ library: { id: dummyRepository.library2.id } });
 			expect(filesCount).toBe(0);
 		});
 		it('should have deletes the related tracks', async () => {
