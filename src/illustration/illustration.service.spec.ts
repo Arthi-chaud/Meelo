@@ -31,7 +31,7 @@ describe('Illustration Service', () => {
 		illustrationService.onModuleInit();
 		releaseService = module.get<ReleaseService>(ReleaseService);
 		albumService = module.get<AlbumService>(AlbumService);
-		await module.get<ArtistService>(ArtistService).createArtist({ name: 'My Artist' });
+		await module.get<ArtistService>(ArtistService).create({ name: 'My Artist' });
 	});
 
 	it('should be defined', () => {
@@ -87,8 +87,8 @@ describe('Illustration Service', () => {
 					.toBe(`${baseMetadataFolder}/my-other-artist/cover.jpg`);
 			});
 			it('should build the album illustration path', async () => {
-				const album = await albumService.createAlbum({ name: 'My Album', artist: { slug: new Slug('My Artist') } });
-				await releaseService.getOrCreateRelease({
+				const album = await albumService.create({ name: 'My Album', artist: { slug: new Slug('My Artist') } });
+				await releaseService.getOrCreate({
 					title: 'My Album (Deluxe Edition)', album: { byId: { id: album.id } }, master: true
 				});
 				expect(await illustrationService.buildMasterReleaseIllustrationPath(
@@ -96,8 +96,8 @@ describe('Illustration Service', () => {
 				)).toBe(`${baseMetadataFolder}/my-artist/my-album/my-album-deluxe-edition/cover.jpg`);
 			});
 			it('should build the album illustration path (compilation)', async() => {
-				const album = await albumService.createAlbum({ name: 'My Other Album' })
-				await releaseService.getOrCreateRelease({
+				const album = await albumService.create({ name: 'My Other Album' })
+				await releaseService.getOrCreate({
 					title: 'My Other Album (Deluxe Edition)', album: { byId: { id: album.id } }, master: true
 				});
 				expect(await illustrationService.buildMasterReleaseIllustrationPath(

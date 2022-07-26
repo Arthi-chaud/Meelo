@@ -39,22 +39,22 @@ export default class MetadataService {
 	 */
 	async registerMetadata(metadata : Metadata, file: File): Promise<Track> {
 		let genres = metadata.genres ? await Promise.all(
-			metadata.genres.map(async (genre) => await this.genreService.getOrCreateGenre({ name: genre }))
+			metadata.genres.map(async (genre) => await this.genreService.getOrCreate({ name: genre }))
 		) : [];
-		let albumArtist = metadata.albumArtist ? await this.artistService.getOrCreateArtist({ name: metadata.albumArtist }) : undefined;
-		let songArtist = await this.artistService.getOrCreateArtist({ name: metadata.artist ?? metadata.albumArtist! });
-		let song = await this.songService.getOrCreateSong(
+		let albumArtist = metadata.albumArtist ? await this.artistService.getOrCreate({ name: metadata.albumArtist }) : undefined;
+		let songArtist = await this.artistService.getOrCreate({ name: metadata.artist ?? metadata.albumArtist! });
+		let song = await this.songService.getOrCreate(
 			{ name: this.removeTrackVideoExtension(metadata.name!), artist: { id: songArtist.id }, genres: genres.map((genre) => ({ id: genre.id }))},
 			{ tracks: true, genres: true });
-		await this.songService.updateSong(
+		await this.songService.update(
 			{ genres: song.genres.concat(genres).map((genre) => ({ id: genre.id }))},
 			{ byId: { id: song.id } }
 		);
-		let album = await this.albumService.getOrCreateAlbum({
+		let album = await this.albumService.getOrCreate({
 			name: this.removeReleaseExtension(metadata.album ?? metadata.release!),
 			artist: albumArtist ? { id: albumArtist?.id} : undefined
 		}, { releases: true });
-		let release = await this.releaseService.getOrCreateRelease({
+		let release = await this.releaseService.getOrCreate({
 			title: metadata.release ?? metadata.album!,
 			master: album.releases.length == 0,
 			releaseDate: metadata.releaseDate,
@@ -79,10 +79,10 @@ export default class MetadataService {
 			release.releaseDate !== undefined)
 			release.album.releaseDate = release.releaseDate;
 		release.album.type = metadata.compilation ? AlbumType.Compilation : release.album.type;
-		await this.albumService.updateAlbum({ ...release.album }, { byId: { id: release.albumId }});
+		await this.albumService.update({ ...release.album }, { byId: { id: release.albumId }});
 		release.releaseDate = metadata.releaseDate ?? null;
-		await this.releaseService.updateRelease({ releaseDate: release.releaseDate ?? undefined }, { byId: { id: release.id } });
-		return this.trackService.createTrack(track);
+		await this.releaseService.update({ releaseDate: release.releaseDate ?? undefined }, { byId: { id: release.id } });
+		return this.trackService.create(track);
 	}
 
 	/**

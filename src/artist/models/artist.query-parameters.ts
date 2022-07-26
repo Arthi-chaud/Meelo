@@ -86,6 +86,11 @@ namespace ArtistQueryParameters {
 	 * Parameters to update an Artist
 	 */
 	export type UpdateInput = Partial<CreateInput>;
+
+	/**
+	 * Parameters to delete an Artist
+	 */
+	export type DeleteInput = RequireOnlyOne<Omit<WhereInput, 'compilationArtist'>>;
 	
 	/**
 	 * Parameters to find or create an Artist

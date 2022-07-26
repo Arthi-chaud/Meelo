@@ -41,11 +41,11 @@ export class SongController {
 		sortingParameter: SongQueryParameters.SortingParameter,
 		@Req() request: Request
 	) {
-		let songs = await this.songService.getSongs(
+		let songs = await this.songService.getMany(
 			{}, paginationParameters, include, sortingParameter
 		);
 		return new PaginatedResponse(
-			songs.map((song) => this.songService.buildSongResponse(song)),
+			songs.map((song) => this.songService.buildResponse(song)),
 			request
 		);
 	}
@@ -60,8 +60,8 @@ export class SongController {
 		@Param(ParseSongIdentifierPipe)
 		where: SongQueryParameters.WhereInput
 	) {
-		let song = await this.songService.getSong(where, include);
-		return this.songService.buildSongResponse(song);
+		let song = await this.songService.get(where, include);
+		return this.songService.buildResponse(song);
 	}
 
 	@ApiOperation({
@@ -74,11 +74,11 @@ export class SongController {
 		@Param(ParseSongIdentifierPipe)
 		where: SongQueryParameters.WhereInput
 	) {
-		let song = await this.songService.getSong(where);
-		let artist = await this.artistService.getArtist({
+		let song = await this.songService.get(where);
+		let artist = await this.artistService.get({
 			id: song.artistId
 		}, include);
-		return this.artistService.buildArtistResponse(artist);
+		return this.artistService.buildResponse(artist);
 	}
 
 	@ApiOperation({
@@ -92,7 +92,7 @@ export class SongController {
 		where: SongQueryParameters.WhereInput
 	) {
 		let master = await this.trackService.getMasterTrack(where, include);
-		return this.trackService.buildTrackResponse(master);
+		return this.trackService.buildResponse(master);
 	}
 
 	@ApiOperation({
@@ -114,9 +114,9 @@ export class SongController {
 			where, paginationParameters, include, sortingParameter
 		);
 		if (tracks.length == 0)
-			await this.songService.getSong(where);
+			await this.songService.get(where);
 		return new PaginatedResponse(
-			tracks.map((track) => this.trackService.buildTrackResponse(track)),
+			tracks.map((track) => this.trackService.buildResponse(track)),
 			request
 		);
 	}
@@ -136,13 +136,13 @@ export class SongController {
 		where: SongQueryParameters.WhereInput,
 		@Req() request: Request
 	) {
-		const videoTracks = await this.trackService.getTracks(
+		const videoTracks = await this.trackService.getMany(
 			{ bySong: where, type: TrackType.Video }, paginationParameters, include, sortingParameter, 
 		);
 		if (videoTracks.length == 0)
-			await this.songService.getSong(where);
+			await this.songService.get(where);
 		return new PaginatedResponse(
-			videoTracks.map((videoTrack) => this.trackService.buildTrackResponse(videoTrack)),
+			videoTracks.map((videoTrack) => this.trackService.buildResponse(videoTrack)),
 			request
 		);
 	}

@@ -29,7 +29,7 @@ export class TrackController {
 		summary: 'Get all tracks'
 	})
 	@Get()
-	async getTracks(
+	async getMany(
 		@Query(ParsePaginationParameterPipe)
 		paginationParameters: PaginationParameters,
 		@Query('with', TrackQueryParameters.ParseRelationIncludePipe)
@@ -38,11 +38,11 @@ export class TrackController {
 		sortingParameter: TrackQueryParameters.SortingParameter,
 		@Req() request: Request
 	) {
-		const tracks = await this.trackService.getTracks(
+		const tracks = await this.trackService.getMany(
 			{}, paginationParameters, include, sortingParameter
 		);
 		return new PaginatedResponse(
-			tracks.map((track) => this.trackService.buildTrackResponse(track)),
+			tracks.map((track) => this.trackService.buildResponse(track)),
 			request
 		);
 	}
@@ -60,11 +60,11 @@ export class TrackController {
 		sortingParameter: TrackQueryParameters.SortingParameter,
 		@Req() request: Request
 	) {
-		const videoTracks = await this.trackService.getTracks(
+		const videoTracks = await this.trackService.getMany(
 			{ type: TrackType.Video }, paginationParameters, include, sortingParameter, 
 		);
 		return new PaginatedResponse(
-			videoTracks.map((videoTrack) => this.trackService.buildTrackResponse(videoTrack)),
+			videoTracks.map((videoTrack) => this.trackService.buildResponse(videoTrack)),
 			request
 		);
 	}
@@ -73,14 +73,14 @@ export class TrackController {
 		summary: 'Get a track'
 	})
 	@Get(':id')
-	async getTrack(
+	async get(
 		@Query('with', TrackQueryParameters.ParseRelationIncludePipe)
 		include: TrackQueryParameters.RelationInclude,
 		@Param('id', ParseIdPipe)
 		trackId: number
 	) {
-		const track = await this.trackService.getTrack({ id: trackId }, include);
-		return this.trackService.buildTrackResponse(track);
+		const track = await this.trackService.get({ id: trackId }, include);
+		return this.trackService.buildResponse(track);
 	}
 
 	@ApiOperation({
@@ -93,8 +93,8 @@ export class TrackController {
 		@Response({ passthrough: true })
 		res: Response
 	) {
-		let track = await this.trackService.getTrack({ id: trackId }, { release: true });
-		let album = await this.albumService.getAlbum({ byId: { id: track.release.albumId } }, { artist: true })
+		let track = await this.trackService.get({ id: trackId }, { release: true });
+		let album = await this.albumService.get({ byId: { id: track.release.albumId } }, { artist: true })
 		const trackIllustrationPath = this.illustrationService.buildTrackIllustrationPath(
 			new Slug(album.slug),
 			new Slug(track.release.slug),
@@ -130,8 +130,8 @@ export class TrackController {
 		@Body()
 		illustrationDto: IllustrationDownloadDto
 	) {
-		let track = await this.trackService.getTrack({ id: trackId }, { release: true });
-		let album = await this.albumService.getAlbum({ byId: { id: track.release.albumId } }, { artist: true })
+		let track = await this.trackService.get({ id: trackId }, { release: true });
+		let album = await this.albumService.get({ byId: { id: track.release.albumId } }, { artist: true })
 		const trackIllustrationPath = this.illustrationService.buildTrackIllustrationPath(
 			new Slug(album.slug),
 			new Slug(track.release.slug),

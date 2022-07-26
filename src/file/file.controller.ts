@@ -16,13 +16,13 @@ export default class FileController {
 		summary: 'Get one \'File\''
 	})
 	@Get(':id')
-	getFile(
+	get(
 		@Param('id', ParseIdPipe)
 		fileId: number,
 		@Query('with', FileQueryParameters.ParseRelationIncludePipe)
 		include: FileQueryParameters.RelationInclude,
 	): Promise<File> {
-		return this.fileService.getFile({ id: fileId }, include);
+		return this.fileService.get({ id: fileId }, include);
 	}
 
 	@ApiOperation({
@@ -35,7 +35,7 @@ export default class FileController {
 		@Response({ passthrough: true })
 		res: Response
 	) {
-		const file = await this.fileService.getFile({ id: fileId }, { library: true });
+		const file = await this.fileService.get({ id: fileId }, { library: true });
 		return this.fileService.streamFile(file, file.library, res);
 	}
 }

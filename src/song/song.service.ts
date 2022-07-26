@@ -13,9 +13,21 @@ import TrackService from 'src/track/track.service';
 import { buildSortingParameter } from 'src/sort/models/sorting-parameter';
 import GenreService from 'src/genre/genre.service';
 import GenreQueryParameters from 'src/genre/models/genre.query-parameters';
+import RepositoryService from 'src/repository/repository.service';
+import type { MeeloException } from 'src/exceptions/meelo-exception';
 
 @Injectable()
-export default class SongService {
+export default class SongService extends RepositoryService<
+	Song,
+	SongQueryParameters.CreateInput,
+	SongQueryParameters.WhereInput,
+	SongQueryParameters.ManyWhereInput,
+	SongQueryParameters.UpdateInput,
+	SongQueryParameters.WhereInput,
+	SongQueryParameters.RelationInclude,
+	SongQueryParameters.SortingParameter,
+	Song & { illustration: string }
+> {
 	constructor(
 		private prismaService: PrismaService,
 		@Inject(forwardRef(() => ArtistService))
@@ -25,7 +37,9 @@ export default class SongService {
 		@Inject(forwardRef(() => GenreService))
 		private genreService: GenreService,
 		private readonly urlGeneratorService: UrlGeneratorService
-	) {}
+	) {
+		super();
+	}
 
 	/**
 	 * Create a Song, and saves it in the database
@@ -33,9 +47,9 @@ export default class SongService {
 	 * @param include the relation fields to include in the returned object
 	 * @returns the created song
 	 */
-	async createSong(song: SongQueryParameters.CreateInput, include?: SongQueryParameters.RelationInclude) {
+	async create(song: SongQueryParameters.CreateInput, include?: SongQueryParameters.RelationInclude) {
 		const genres = await Promise.all(
-			song.genres.map(async (where) => await this.genreService.getGenre(where))
+			song.genres.map(async (where) => await this.genreService.get(where))
 		);
 		try {
 			return await this.prismaService.song.create({
@@ -55,7 +69,7 @@ export default class SongService {
 				include: SongQueryParameters.buildIncludeParameters(include)
 			});
 		} catch {
-			let artist = await this.artistService.getArtist(song.artist);
+			let artist = await this.artistService.get(song.artist);
 			throw new SongAlreadyExistsException(new Slug(song.name), new Slug(artist.name));
 		}
 	}
@@ -65,7 +79,7 @@ export default class SongService {
 	 * @param where the query parameters to find the song
 	 * @param include the relations to include in the returned value
 	 */
-	async getSong(where: SongQueryParameters.WhereInput, include?: SongQueryParameters.RelationInclude) {
+	async get(where: SongQueryParameters.WhereInput, include?: SongQueryParameters.RelationInclude) {
 		try {
 			return await this.prismaService.song.findFirst({
 				rejectOnNotFound: true,
@@ -73,10 +87,7 @@ export default class SongService {
 				include: SongQueryParameters.buildIncludeParameters(include)
 			});
 		} catch {
-			if (where.byId)
-				throw new SongNotFoundByIdException(where.byId.id);
-			const artist = await this.artistService.getArtist(where.bySlug.artist)
-			throw new SongNotFoundException(where.bySlug.slug, new Slug(artist.slug));
+			throw await this.onNotFound(where)
 		}
 	}
 	/**
@@ -85,7 +96,7 @@ export default class SongService {
 	 * @param pagination the pagination paramters to filter entries
 	 * @param include the relations to include
 	 */
-	async getSongs(
+	async getMany(
 		where: SongQueryParameters.ManyWhereInput,
 		pagination?: PaginationParameters,
 		include?: SongQueryParameters.RelationInclude,
@@ -104,7 +115,7 @@ export default class SongService {
 	 * @param where the query parameters
 	 * @returns the number of match
 	 */
-	async countSongs(where: SongQueryParameters.ManyWhereInput): Promise<number> {
+	async count(where: SongQueryParameters.ManyWhereInput): Promise<number> {
 		return this.prismaService.song.count({
 			where: SongQueryParameters.buildQueryParametersForMany(where)
 		});
@@ -116,13 +127,16 @@ export default class SongService {
 	 * @param where the query parameters to find the album to update
 	 * @returns the updated album
 	 */
-	async updateSong(
+	async update(
 		what: SongQueryParameters.UpdateInput,
-		where: SongQueryParameters.UpdateWhereInput
+		where: SongQueryParameters.WhereInput
 	): Promise<Song> {
 		const genres = what.genres ? await Promise.all(
-			what.genres.map(async (where) => await this.genreService.getGenre(where))
+			what.genres.map(async (where) => await this.genreService.get(where))
 		) : [];
+		const artist = where.bySlug
+			? await this.artistService.get(where.bySlug.artist)
+			: undefined
 		try {
 			return await this.prismaService.song.update({
 				data: {
@@ -140,15 +154,12 @@ export default class SongService {
 					id: where.byId?.id,
 					slug_artistId: where.bySlug ? {
 						slug: where.bySlug.slug.toString(),
-						artistId: where.bySlug.artistId,
+						artistId: artist!.id,
 					} : undefined
 				}
 			});
 		} catch {
-			if (where.byId !== undefined)
-				throw new SongNotFoundByIdException(where.byId.id);
-			let artist = await this.artistService.getArtist({ id: where.bySlug.artistId });
-			throw new SongNotFoundException(where.bySlug.slug, new Slug(artist.name));
+			throw await this.onNotFound(where);
 		}
 	}
 	
@@ -156,51 +167,54 @@ export default class SongService {
 	 * Deletes a song
 	 * @param where Query parameters to find the song to delete 
 	 */
-	async deleteSong(where: SongQueryParameters.WhereInput): Promise<void> {
-		let song = await this.getSong(where, { tracks: true, genres: true });
+	async delete(where: SongQueryParameters.WhereInput): Promise<Song> {
+		let song = await this.get(where, { tracks: true, genres: true });
 		await Promise.allSettled(
-			song.tracks.map((track) => this.trackService.deleteTrack({ id: track.id }))
+			song.tracks.map((track) => this.trackService.delete({ id: track.id }))
 		);
 		try {
 			await this.prismaService.song.delete({
 				where: SongQueryParameters.buildQueryParametersForOne({ byId: { id: song.id } })
 			});
 		} catch {
-			return;
+			return song;
 		}
 		Logger.warn(`Song '${song.slug}' deleted`);
 		await this.artistService.deleteArtistIfEmpty({ id: song.artistId });
 		await Promise.all(
-			song.genres.map((genre) => this.genreService.deleteGenreIfEmpty({ id: genre.id }))
+			song.genres.map((genre) => this.genreService.deleteIfEmpty({ id: genre.id }))
 		);
+		return song;
 	}
 	
 	/**
 	 * Deletes a song if it does not have related tracks
 	 */
-	async deleteSongIfEmpty(where: SongQueryParameters.WhereInput): Promise<void> {
-		const trackCount = await this.trackService.countTracks({ bySong: where });
+	async deleteIfEmpty(where: SongQueryParameters.WhereInput): Promise<void> {
+		const trackCount = await this.trackService.count({ bySong: where });
 		if (trackCount == 0)
-			await this.deleteSong(where);
+			await this.delete(where);
 	}
 	/**
 	 * Finds a song, or creates one if it does not exist already
 	 * @param where where the query parameters to fond or create the release
 	 * @returns the fetched or createdrelease
 	 */
-	async getOrCreateSong(where: SongQueryParameters.GetOrCreateInput, include?: SongQueryParameters.RelationInclude) {
+	async getOrCreate(where: SongQueryParameters.GetOrCreateInput, include?: SongQueryParameters.RelationInclude) {
 		try {
-			return await this.getSong(
+			return await this.get(
 				{ bySlug: { slug: new Slug(where.name), artist: where.artist}},
 				include
 			);
 		} catch {
-			return this.createSong(where, include);
+			return this.create(where, include);
 		}
 	}
 
-	buildSongResponse(song: Song & Partial<{ tracks: Track[], artist: Artist }>): Object {
-		let response: Object = {
+	buildResponse<T extends Song & { illustration: string }> (
+		song: Song & Partial<{ tracks: Track[], artist: Artist }>
+	): T {
+		let response: T = <T>{
 			...song,
 			illustration: this.urlGeneratorService.generateUrlFromController({
 				controller: SongController,
@@ -211,17 +225,24 @@ export default class SongService {
 			})
 		};
 		if (song.tracks !== undefined)
-			response = <Object>{
+			response = {
 				...response,
 				tracks: song.tracks.map(
-					(track) => this.trackService.buildTrackResponse(track)
+					(track) => this.trackService.buildResponse(track)
 				)
 			}
 		if (song.artist !== undefined)
 			response = {
 				...response,
-				artist: this.artistService.buildArtistResponse(song.artist)
+				artist: this.artistService.buildResponse(song.artist)
 			}
 		return response;
+	}
+
+	protected async onNotFound(where: SongQueryParameters.WhereInput): Promise<MeeloException> {
+		if (where.byId)
+			throw new SongNotFoundByIdException(where.byId.id);
+		const artist = await this.artistService.get(where.bySlug.artist)
+		throw new SongNotFoundException(where.bySlug.slug, new Slug(artist.slug));
 	}
 }

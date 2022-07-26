@@ -11,9 +11,21 @@ import SongService from 'src/song/song.service';
 import AlbumService from 'src/album/album.service';
 import IllustrationService from 'src/illustration/illustration.service';
 import { buildSortingParameter } from 'src/sort/models/sorting-parameter';
+import RepositoryService from 'src/repository/repository.service';
+import type { MeeloException } from 'src/exceptions/meelo-exception';
 
 @Injectable()
-export default class ArtistService {
+export default class ArtistService extends RepositoryService<
+	Artist,
+	ArtistQueryParameters.CreateInput,
+	ArtistQueryParameters.WhereInput,
+	ArtistQueryParameters.ManyWhereInput,
+	ArtistQueryParameters.UpdateInput,
+	ArtistQueryParameters.DeleteInput,
+	ArtistQueryParameters.RelationInclude,
+	ArtistQueryParameters.SortingParameter,
+	Artist & { illustration: string }
+> {
 	constructor(
 		private prismaService: PrismaService,
 		@Inject(forwardRef(() => SongService))
@@ -23,7 +35,9 @@ export default class ArtistService {
 		@Inject(forwardRef(() => UrlGeneratorService))
 		private readonly urlGeneratorService: UrlGeneratorService,
 		private illustrationService: IllustrationService
-	) {}
+	) {
+		super();
+	}
 	
 	/**
 	 * Creates an Artist
@@ -31,7 +45,7 @@ export default class ArtistService {
 	 * @param include the relation to include in the returned Artist
 	 * @returns 
 	 */
-	async createArtist(
+	async create(
 		artist: ArtistQueryParameters.CreateInput,
 		include?: ArtistQueryParameters.RelationInclude
 	) {
@@ -54,7 +68,7 @@ export default class ArtistService {
 	 * @param where the query parameters to find the artist
 	 * @param include the relations to include in the returned artist
 	 */
-	async getArtist(
+	async get(
 		where: ArtistQueryParameters.WhereInput,
 		include?: ArtistQueryParameters.RelationInclude
 	) {
@@ -67,9 +81,7 @@ export default class ArtistService {
 				include: ArtistQueryParameters.buildIncludeParameters(include),
 			});
 		} catch {
-			if (where.id !== undefined)
-				throw new ArtistNotFoundByIDException(where.id);
-			throw new ArtistNotFoundException(where.slug);
+			throw this.onNotFound(where)
 		}
 	}
 
@@ -79,7 +91,7 @@ export default class ArtistService {
 	 * @param pagination the pagination paramters to filter entries
 	 * @param include the relations to include in the returned artists
 	 */
-	 async getArtists(
+	 async getMany(
 		where: ArtistQueryParameters.ManyWhereInput,
 		pagination?: PaginationParameters,
 		include?: ArtistQueryParameters.RelationInclude,
@@ -120,7 +132,7 @@ export default class ArtistService {
 	 * Count the artists that match the query parameters
 	 * @param where the query parameters
 	 */
-	async countArtists(where: ArtistQueryParameters.ManyWhereInput): Promise<number> {
+	async count(where: ArtistQueryParameters.ManyWhereInput): Promise<number> {
 		return this.prismaService.artist.count({
 			where: ArtistQueryParameters.buildQueryParametersForMany(where)
 		});
@@ -132,7 +144,7 @@ export default class ArtistService {
 	 * @param where the query parameter to find the artist to update
 	 * @returns the updated artist
 	 */
-	async updateArtist(
+	async update(
 		what: ArtistQueryParameters.UpdateInput,
 		where: ArtistQueryParameters.WhereInput
 	): Promise<Artist> {
@@ -147,9 +159,7 @@ export default class ArtistService {
 				where: ArtistQueryParameters.buildQueryParametersForOne(where),
 			});
 		} catch {
-			if (where.id !== undefined)
-				throw new ArtistNotFoundByIDException(where.id);
-			throw new ArtistNotFoundException(where.slug);
+			throw this.onNotFound(where)
 		}
 	}
 
@@ -157,16 +167,14 @@ export default class ArtistService {
 	 * Deletes an artist
 	 * @param where the query parameters to find the album to delete
 	 */
-	async deleteArtist(where: ArtistQueryParameters.WhereInput): Promise<void> {
-		if (where.compilationArtist)
-			throw new CompilationArtistException('Artist');
-		let artist = await this.getArtist(where, { albums: true, songs: true });
+	async delete(where: ArtistQueryParameters.DeleteInput): Promise<Artist> {
+		let artist = await this.get(where, { albums: true, songs: true });
 		await Promise.allSettled([
 			...artist.albums.map(
-				(album) => this.albumService.deleteAlbum({ byId: { id: album.id } })
+				(album) => this.albumService.delete({ byId: { id: album.id } })
 			),
 			...artist.songs.map(
-				(song) => this.songService.deleteSong({ byId: { id: song.id } })
+				(song) => this.songService.delete({ byId: { id: song.id } })
 			)
 		]);
 		try {
@@ -174,7 +182,7 @@ export default class ArtistService {
 				where: ArtistQueryParameters.buildQueryParametersForOne(where)
 			});
 		} catch {
-			return
+			return artist;
 		}
 		Logger.warn(`Artist '${artist.slug}' deleted`);
 		try {
@@ -183,32 +191,39 @@ export default class ArtistService {
 			);
 			this.illustrationService.deleteIllustrationFolder(artistIllustrationFolder);
 		} catch {}
+		return artist;
 	}
 
 	/**
 	 * Deletes an artist if it does not have any album or song
 	 * @param where the query parameters to find the artist to delete
 	 */
-	async deleteArtistIfEmpty(where: ArtistQueryParameters.WhereInput): Promise<void> {
-		const albumCount = await this.albumService.countAlbums({ byArtist: where });
-		const songCount = await this.songService.countSongs({ artist: where });
+	async deleteArtistIfEmpty(where: ArtistQueryParameters.DeleteInput): Promise<void> {
+		const albumCount = await this.albumService.count({ byArtist: where });
+		const songCount = await this.songService.count({ artist: where });
 		if (songCount == 0 && albumCount == 0)
-			await this.deleteArtist(where);
+			await this.delete(where);
 	}
 
 	/**
 	 * Find an artist by its name, or creates one if not found
 	 * @param where the query parameters to find / create the artist
 	 */
-	async getOrCreateArtist(
+	async getOrCreate(
 		where: ArtistQueryParameters.GetOrCreateInput,
 		include?: ArtistQueryParameters.RelationInclude
 	) {
 		try {
-			return await this.getArtist({ slug: new Slug(where.name) }, include);
+			return await this.get({ slug: new Slug(where.name) }, include);
 		} catch {
-			return this.createArtist(where, include);
+			return this.create(where, include);
 		}
+	}
+
+	onNotFound(where: ArtistQueryParameters.WhereInput): MeeloException {
+		if (where.id !== undefined)
+			return new ArtistNotFoundByIDException(where.id);
+		return new ArtistNotFoundException(where.slug!);
 	}
 	
 	/**
@@ -216,8 +231,10 @@ export default class ArtistService {
 	 * @param artist the Artist to build the response from
 	 * @returns the response Object
 	 */
-	buildArtistResponse(artist: Artist & Partial<{ songs: Song[], albums: Album[] }>): Object {
-		let response: Object = {
+	buildResponse<ResponseType extends Artist & { illustration: string }> (
+		artist: Artist & Partial<{ songs: Song[], albums: Album[] }>
+	): ResponseType {
+		let response = <ResponseType>{
 			...artist,
 			illustration: this.urlGeneratorService.generateUrlFromController({
 				controller: ArtistController,
@@ -231,14 +248,14 @@ export default class ArtistService {
 			response = {
 				...response,
 				songs: artist.songs.map(
-					(song) => this.songService.buildSongResponse(song)
+					(song) => this.songService.buildResponse(song)
 				)
 			}
 		if (artist.albums != undefined)
 			response = {
 				...response,
 				albums: artist.albums.map(
-					(album) => this.albumService.buildAlbumResponse(album)
+					(album) => this.albumService.buildResponse(album)
 				)
 			}
 		return response;

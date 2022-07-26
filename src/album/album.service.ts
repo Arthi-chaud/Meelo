@@ -12,9 +12,21 @@ import AlbumController from './album.controller';
 import ReleaseService from 'src/release/release.service';
 import IllustrationService from 'src/illustration/illustration.service';
 import { buildSortingParameter } from 'src/sort/models/sorting-parameter';
+import RepositoryService from 'src/repository/repository.service';
+import type { MeeloException } from 'src/exceptions/meelo-exception';
 
 @Injectable()
-export default class AlbumService {
+export default class AlbumService extends RepositoryService<
+	Album,
+	AlbumQueryParameters.CreateInput,
+	AlbumQueryParameters.WhereInput,
+	AlbumQueryParameters.ManyWhereInput,
+	AlbumQueryParameters.UpdateInput,
+	AlbumQueryParameters.DeleteInput,
+	AlbumQueryParameters.RelationInclude,
+	AlbumQueryParameters.SortingParameter,
+	Album & { illustration: string }
+> {
 	constructor(
 		private prismaService: PrismaService,
 		@Inject(forwardRef(() => ArtistService))
@@ -24,7 +36,9 @@ export default class AlbumService {
 		@Inject(forwardRef(() => IllustrationService))
 		private illustrationService: IllustrationService,
 		private readonly urlGeneratorService: UrlGeneratorService
-	) {}
+	) {
+		super();
+	}
 
 
 	/**
@@ -33,13 +47,13 @@ export default class AlbumService {
 	 * @param include the relation to include in the returned value
 	 * @returns the saved Album
 	 */
-	async createAlbum(
+	async create(
 		album: AlbumQueryParameters.CreateInput,
 		include?: AlbumQueryParameters.RelationInclude
 	) {
 		const albumSlug = new Slug(album.name);
 		if (album.artist === undefined) {
-			if (await this.countAlbums({ byName: { is: album.name }, byArtist: { compilationArtist: true } }) != 0)
+			if (await this.count({ byName: { is: album.name }, byArtist: { compilationArtist: true } }) != 0)
 				throw new AlbumAlreadyExistsException(albumSlug);
 		}
 		try {
@@ -57,7 +71,7 @@ export default class AlbumService {
 			});
 		} catch {
 			if (album.artist)
-				await this.artistServce.getArtist(album.artist);
+				await this.artistServce.get(album.artist);
 			if (album.artist?.id)
 				throw new AlbumAlreadyExistsWithArtistIDException(albumSlug, album.artist.id);
 			throw new AlbumAlreadyExistsException(albumSlug, album.artist?.slug);
@@ -69,7 +83,7 @@ export default class AlbumService {
 	 * @param where the parameters to find the album
 	 * @param include the relations to include
 	 */
-	async getAlbum(
+	async get(
 		where: AlbumQueryParameters.WhereInput,
 		include?: AlbumQueryParameters.RelationInclude
 	) {
@@ -80,9 +94,7 @@ export default class AlbumService {
 				include: AlbumQueryParameters.buildIncludeParameters(include),
 			});
 		} catch {
-			if (where.byId)
-				throw new AlbumNotFoundFromIDException(where.byId.id);
-			throw new AlbumNotFoundException(where.bySlug.slug, where.bySlug.artist?.slug);
+			throw this.onNotFound(where);
 		}
 	}
 
@@ -92,7 +104,7 @@ export default class AlbumService {
 	 * @param pagination the pagination paramters to filter entries
 	 * @param include the relations to include
 	 */
-	async getAlbums(
+	async getMany(
 		where: AlbumQueryParameters.ManyWhereInput,
 		pagination?: PaginationParameters,
 		include?: AlbumQueryParameters.RelationInclude,
@@ -110,7 +122,7 @@ export default class AlbumService {
 	 * Count the albums that match the query parameters
 	 * @param where the query parameters
 	 */
-	async countAlbums(where: AlbumQueryParameters.ManyWhereInput): Promise<number> {
+	async count(where: AlbumQueryParameters.ManyWhereInput): Promise<number> {
 		return await this.prismaService.album.count({
 			where: AlbumQueryParameters.buildQueryParametersForMany(where)
 		});
@@ -122,17 +134,21 @@ export default class AlbumService {
 	 * @param where the query parameters to find the album to update
 	 * @returns the updated album
 	 */
-	async updateAlbum(
+	async update(
 		what: AlbumQueryParameters.UpdateInput,
 		where: AlbumQueryParameters.WhereInput
 	): Promise<Album> {
-		return await this.prismaService.album.update({
-			data: {
-				...what,
-				slug: what.name ? new Slug(what.name).toString() : undefined,
-			},
-			where: AlbumQueryParameters.buildQueryParametersForOne(where)
-		});
+		try {
+			return await this.prismaService.album.update({
+				data: {
+					...what,
+					slug: what.name ? new Slug(what.name).toString() : undefined,
+				},
+				where: AlbumQueryParameters.buildQueryParametersForOne(where)
+			});
+		} catch {
+			throw this.onNotFound(where);
+		}
 	}
 
 	/**
@@ -140,25 +156,25 @@ export default class AlbumService {
 	 * @param where the query parameter to get the album to update
 	 */
 	async updateAlbumDate(where: AlbumQueryParameters.WhereInput) {
-		let album = (await this.getAlbum(where, { releases: true }));
+		let album = await this.get(where, { releases: true });
 		for (const release of album.releases) {
 			if (album.releaseDate == null ||
 				(release.releaseDate && release.releaseDate < album.releaseDate)) {
 				album.releaseDate = release.releaseDate;
 			}
 		}
-		return await this.updateAlbum({ releaseDate: album.releaseDate }, { byId: { id: album.id }});
+		return await this.update({ releaseDate: album.releaseDate }, { byId: { id: album.id }});
 	}
 
 	/**
 	 * Deletes an album
 	 * @param where the query parameter 
 	 */
-	async deleteAlbum(where: AlbumQueryParameters.DeleteInput): Promise<void> {
-		let album = await this.getAlbum(where, { releases: true, artist: true });
+	async delete(where: AlbumQueryParameters.DeleteInput): Promise<Album> {
+		let album = await this.get(where, { releases: true, artist: true });
 		await Promise.all(
 			album.releases.map(
-				(release) => this.releaseService.deleteRelease({ byId: { id: release.id }}, false)
+				(release) => this.releaseService.delete({ byId: { id: release.id }}, false)
 			)
 		);
 		try {
@@ -166,7 +182,7 @@ export default class AlbumService {
 				where: AlbumQueryParameters.buildQueryParametersForOne(where),
 			});
 		} catch {
-			return;
+			return album;
 		}
 		Logger.warn(`Album '${album.slug}' deleted`);
 		if (album.artistId !== null)
@@ -177,18 +193,19 @@ export default class AlbumService {
 			);
 			this.illustrationService.deleteIllustrationFolder(albumIllustrationFolder);
 		} catch {}
+		return album;
 	}
 
 	/**
 	 * Delete an album if it does not have related releases
 	 * @param albumId 
 	 */
-	async deleteAlbumIfEmpty(albumId: number): Promise<void> {
-		const albumCount = await this.releaseService.countReleases({
+	async deleteIfEmpty(albumId: number): Promise<void> {
+		const albumCount = await this.releaseService.count({
 			album: { byId: { id: albumId } }
 		});
 		if (albumCount == 0)
-			await this.deleteAlbum({ byId: { id: albumId } });
+			await this.delete({ byId: { id: albumId } });
 	}
 
 	/**
@@ -197,13 +214,13 @@ export default class AlbumService {
 	 * @param include the relation fields to include in the returned album
 	 * @returns 
 	 */
-	async getOrCreateAlbum(where: AlbumQueryParameters.GetOrCreateInput, include?: AlbumQueryParameters.RelationInclude) {
+	async getOrCreate(where: AlbumQueryParameters.GetOrCreateInput, include?: AlbumQueryParameters.RelationInclude) {
 		try {
-			return await this.getAlbum({
+			return await this.get({
 				bySlug: { slug: new Slug(where.name), artist: where.artist },
 			}, include);
 		} catch {
-			return await this.createAlbum({...where}, include);
+			return await this.create({...where}, include);
 		}
 	}
 
@@ -211,8 +228,10 @@ export default class AlbumService {
 	 * Build an object for the API 
 	 * @param album the album to create the object from
 	 */
-	buildAlbumResponse(album: Album & Partial<{ releases?: Release[], artist?: Artist | null }>): Object {
-		let response: Object = {
+	buildResponse<ResponseType extends Album & { illustration: string }>(
+		album: Album & Partial<{ releases: Release[], artist: Artist | null }>
+	): ResponseType {
+		let response = <ResponseType>{
 			...album,
 			illustration: this.urlGeneratorService.generateUrlFromController({
 				controller: AlbumController,
@@ -226,15 +245,21 @@ export default class AlbumService {
 			response = {
 				...response,
 				releases: album.releases.map(
-					(release) => this.releaseService.buildReleaseResponse(release)
+					(release) => this.releaseService.buildResponse(release)
 				)
 			};
 		if (album.artist != undefined)
 			response = {
 				...response,
-				artist: this.artistServce.buildArtistResponse(album.artist)
+				artist: this.artistServce.buildResponse(album.artist)
 			};
 		return response;
+	}
+
+	onNotFound(where: AlbumQueryParameters.WhereInput): MeeloException {
+		if (where.byId)
+			return new AlbumNotFoundFromIDException(where.byId.id);
+		return new AlbumNotFoundException(where.bySlug.slug, where.bySlug.artist?.slug);
 	}
 
 	static getAlbumTypeFromName(albumName: string): AlbumType {

@@ -49,7 +49,7 @@ describe('File Service', () => {
 	const now = new Date();
 	describe('Create File', () => {
 		it('should create a file', async () => {
-			newFile = await fileService.createFile({
+			newFile = await fileService.create({
 				path: 'Me',
 				libraryId: dummyRepository.library1.id,
 				md5Checksum: "Sum",
@@ -64,7 +64,7 @@ describe('File Service', () => {
 
 		it('should throw, as the file in the library already exists', async () => {
 			const now = new Date();
-			const test = async () => await fileService.createFile({
+			const test = async () => await fileService.create({
 				path: 'Me',
 				libraryId: dummyRepository.library1.id,
 				md5Checksum: "Sum",
@@ -76,13 +76,13 @@ describe('File Service', () => {
 
 	describe('Delete File', () => {
 		it('should delete a file (from id)', async () => {
-			await fileService.deleteFile({ id: newFile.id });
-			const test = async () => fileService.getFile({ id: newFile.id });
+			await fileService.delete({ id: newFile.id });
+			const test = async () => fileService.get({ id: newFile.id });
 			expect(test()).rejects.toThrow(FileNotFoundFromIDException);
 		});
 
 		it('should throw, as the file does not exist (from id)', () => {
-			const test = async () => fileService.deleteFile({ id: -1 });
+			const test = async () => fileService.delete({ id: -1 });
 			expect(test()).rejects.toThrow(FileNotFoundFromIDException);
 		});
 	});

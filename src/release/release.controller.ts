@@ -42,12 +42,12 @@ export default class ReleaseController {
 		sortingParameter: ReleaseQueryParameters.SortingParameter,
 		@Req() request: Request
 	) {
-		const releases = await this.releaseService.getReleases(
+		const releases = await this.releaseService.getMany(
 			{}, paginationParameters, include, sortingParameter
 		);
 		return new PaginatedResponse(
 			releases.map(
-				(release) => this.releaseService.buildReleaseResponse(release)
+				(release) => this.releaseService.buildResponse(release)
 			),
 			request
 		);
@@ -63,8 +63,8 @@ export default class ReleaseController {
 		@Param(ParseReleaseIdentifierPipe)
 		where: ReleaseQueryParameters.WhereInput
 	) {
-		const release = await this.releaseService.getRelease(where, include);
-		return this.releaseService.buildReleaseResponse(release);
+		const release = await this.releaseService.get(where, include);
+		return this.releaseService.buildResponse(release);
 	}
 
 	@ApiOperation({
@@ -82,14 +82,14 @@ export default class ReleaseController {
 		sortingParameter: TrackQueryParameters.SortingParameter,
 		@Req() request: Request
 	) {
-		const tracks = await this.trackService.getTracks(
+		const tracks = await this.trackService.getMany(
 			{ byRelease: where }, paginationParameters, include, sortingParameter
 		);
 		if (tracks.length == 0)
-			await this.releaseService.getRelease(where);
+			await this.releaseService.get(where);
 		return new PaginatedResponse(
 			tracks.map(
-				(track) => this.trackService.buildTrackResponse(track)
+				(track) => this.trackService.buildResponse(track)
 			),
 			request
 		);
@@ -119,11 +119,11 @@ export default class ReleaseController {
 		@Param(ParseReleaseIdentifierPipe)
 		where: ReleaseQueryParameters.WhereInput
 	) {
-		const release = this.releaseService.getRelease(where);
-		const album = await this.albumService.getAlbum({
+		const release = this.releaseService.get(where);
+		const album = await this.albumService.get({
 			byId: { id: (await release).albumId }
 		}, include);
-		return this.albumService.buildAlbumResponse(album);
+		return this.albumService.buildResponse(album);
 
 	}
 
@@ -137,8 +137,8 @@ export default class ReleaseController {
 		@Response({ passthrough: true })
 		res: Response
 	) {
-		let release = await this.releaseService.getRelease(where);
-		let album = await this.albumService.getAlbum({ byId: { id: release.albumId } }, { artist: true })
+		let release = await this.releaseService.get(where);
+		let album = await this.albumService.get({ byId: { id: release.albumId } }, { artist: true })
 		return this.illustrationService.streamIllustration(
 			this.illustrationService.buildReleaseIllustrationPath(
 				new Slug(album.slug),
@@ -159,8 +159,8 @@ export default class ReleaseController {
 		@Body()
 		illustrationDto: IllustrationDownloadDto
 	) {
-		let release = await this.releaseService.getRelease(where);
-		let album = await this.albumService.getAlbum({ byId: { id: release.albumId } }, { artist: true })
+		let release = await this.releaseService.get(where);
+		let album = await this.albumService.get({ byId: { id: release.albumId } }, { artist: true })
 		const releaseIllustrationPath = this.illustrationService.buildReleaseIllustrationPath(
 			new Slug(album.slug),
 			new Slug(release.slug),
