@@ -151,7 +151,7 @@ export default class IllustrationService implements OnModuleInit {
 			{ byId: { id: track.releaseId } },
 			{ album: true }
 		);
-		let album = await this.albumService.getAlbum(
+		let album = await this.albumService.get(
 			{ byId: { id: release.albumId }},
 			{ artist: true }
 		)

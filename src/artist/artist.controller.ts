@@ -158,13 +158,13 @@ export default class ArtistController {
 		include: AlbumQueryParameters.RelationInclude,
 		@Req() request: Request
 	) {
-		let albums = await this.albumService.getAlbums(
+		let albums = await this.albumService.getMany(
 			{ byArtist: where }, paginationParameters, include, sortingParameter
 		);
 		if (albums.length == 0)
 			await this.artistService.getArtist(where);
 		return new PaginatedResponse(
-			albums.map((album) => this.albumService.buildAlbumResponse(album)),
+			albums.map((album) => this.albumService.buildResponse(album)),
 			request
 		);
 	}

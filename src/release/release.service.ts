@@ -53,7 +53,7 @@ export default class ReleaseService {
 				createdRelease.album = updatedAlbum;
 			return createdRelease;
 		} catch {
-			const parentAlbum = await this.albumService.getAlbum(release.album);
+			const parentAlbum = await this.albumService.get(release.album);
 			throw new ReleaseAlreadyExists(releaseSlug, parentAlbum.artist ? new Slug(parentAlbum.artist!.slug) : undefined);
 		}
 	}
@@ -119,7 +119,7 @@ export default class ReleaseService {
 			sort
 		);
 		if (releases.length == 0) {
-			await this.albumService.getAlbum(where);
+			await this.albumService.get(where);
 		}
 		return releases;
 	}
@@ -205,7 +205,7 @@ export default class ReleaseService {
 				album: { byId: { id: release.albumId } }
 			});
 		if (deleteParent)
-			await this.albumService.deleteAlbumIfEmpty(release.albumId);
+			await this.albumService.deleteIfEmpty(release.albumId);
 	}
 
 	/**
@@ -247,7 +247,7 @@ export default class ReleaseService {
 		} else if (where.byMasterOf?.byId) {
 			return new MasterReleaseNotFoundFromIDException(where.byMasterOf.byId?.id);
 		} else {
-			const parentAlbum = await this.albumService.getAlbum(where.byMasterOf ?? where.bySlug.album, { artist: true });
+			const parentAlbum = await this.albumService.get(where.byMasterOf ?? where.bySlug.album, { artist: true });
 			const releaseSlug: Slug = where.bySlug!.slug;
 			const parentArtistSlug = parentAlbum.artist?.slug ? new Slug(parentAlbum.artist?.slug) : undefined
 			return new ReleaseNotFoundException(releaseSlug, new Slug(parentAlbum.slug), parentArtistSlug);
@@ -301,8 +301,10 @@ export default class ReleaseService {
 		]);
 	}
 
-	buildReleaseResponse(release: Release & Partial<{ tracks: Track[], album: Album }>): Object {
-		let response: Object = {
+	buildReleaseResponse<ResponseType extends Release & { illustration: string }>(
+		release: Release & Partial<{ tracks: Track[], album: Album }>
+	): ResponseType {
+		let response = <ResponseType>{
 			...release,
 			illustration: this.urlGeneratorService.generateUrlFromController({
 				controller: ReleaseController,
@@ -315,7 +317,7 @@ export default class ReleaseService {
 		if (release.album !== undefined)
 			response = {
 				...response,
-				album: this.albumService.buildAlbumResponse(release.album)
+				album: this.albumService.buildResponse(release.album)
 			}
 		if (release.tracks !== undefined)
 			response = {

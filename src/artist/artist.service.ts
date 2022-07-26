@@ -163,7 +163,7 @@ export default class ArtistService {
 		let artist = await this.getArtist(where, { albums: true, songs: true });
 		await Promise.allSettled([
 			...artist.albums.map(
-				(album) => this.albumService.deleteAlbum({ byId: { id: album.id } })
+				(album) => this.albumService.delete({ byId: { id: album.id } })
 			),
 			...artist.songs.map(
 				(song) => this.songService.deleteSong({ byId: { id: song.id } })
@@ -190,7 +190,7 @@ export default class ArtistService {
 	 * @param where the query parameters to find the artist to delete
 	 */
 	async deleteArtistIfEmpty(where: ArtistQueryParameters.WhereInput): Promise<void> {
-		const albumCount = await this.albumService.countAlbums({ byArtist: where });
+		const albumCount = await this.albumService.count({ byArtist: where });
 		const songCount = await this.songService.countSongs({ artist: where });
 		if (songCount == 0 && albumCount == 0)
 			await this.deleteArtist(where);
@@ -216,8 +216,10 @@ export default class ArtistService {
 	 * @param artist the Artist to build the response from
 	 * @returns the response Object
 	 */
-	buildArtistResponse(artist: Artist & Partial<{ songs: Song[], albums: Album[] }>): Object {
-		let response: Object = {
+	buildArtistResponse<ResponseType extends Artist & { illustration: string }>(
+		artist: Artist & Partial<{ songs: Song[], albums: Album[] }>
+	): ResponseType {
+		let response = <ResponseType>{
 			...artist,
 			illustration: this.urlGeneratorService.generateUrlFromController({
 				controller: ArtistController,
@@ -238,7 +240,7 @@ export default class ArtistService {
 			response = {
 				...response,
 				albums: artist.albums.map(
-					(album) => this.albumService.buildAlbumResponse(album)
+					(album) => this.albumService.buildResponse(album)
 				)
 			}
 		return response;

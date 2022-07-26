@@ -87,7 +87,7 @@ describe('Illustration Service', () => {
 					.toBe(`${baseMetadataFolder}/my-other-artist/cover.jpg`);
 			});
 			it('should build the album illustration path', async () => {
-				const album = await albumService.createAlbum({ name: 'My Album', artist: { slug: new Slug('My Artist') } });
+				const album = await albumService.create({ name: 'My Album', artist: { slug: new Slug('My Artist') } });
 				await releaseService.getOrCreateRelease({
 					title: 'My Album (Deluxe Edition)', album: { byId: { id: album.id } }, master: true
 				});
@@ -96,7 +96,7 @@ describe('Illustration Service', () => {
 				)).toBe(`${baseMetadataFolder}/my-artist/my-album/my-album-deluxe-edition/cover.jpg`);
 			});
 			it('should build the album illustration path (compilation)', async() => {
-				const album = await albumService.createAlbum({ name: 'My Other Album' })
+				const album = await albumService.create({ name: 'My Other Album' })
 				await releaseService.getOrCreateRelease({
 					title: 'My Other Album (Deluxe Edition)', album: { byId: { id: album.id } }, master: true
 				});

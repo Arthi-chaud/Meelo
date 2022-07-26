@@ -50,7 +50,7 @@ export default class MetadataService {
 			{ genres: song.genres.concat(genres).map((genre) => ({ id: genre.id }))},
 			{ byId: { id: song.id } }
 		);
-		let album = await this.albumService.getOrCreateAlbum({
+		let album = await this.albumService.getOrCreate({
 			name: this.removeReleaseExtension(metadata.album ?? metadata.release!),
 			artist: albumArtist ? { id: albumArtist?.id} : undefined
 		}, { releases: true });
@@ -79,7 +79,7 @@ export default class MetadataService {
 			release.releaseDate !== undefined)
 			release.album.releaseDate = release.releaseDate;
 		release.album.type = metadata.compilation ? AlbumType.Compilation : release.album.type;
-		await this.albumService.updateAlbum({ ...release.album }, { byId: { id: release.albumId }});
+		await this.albumService.update({ ...release.album }, { byId: { id: release.albumId }});
 		release.releaseDate = metadata.releaseDate ?? null;
 		await this.releaseService.updateRelease({ releaseDate: release.releaseDate ?? undefined }, { byId: { id: release.id } });
 		return this.trackService.createTrack(track);

@@ -81,13 +81,13 @@ describe('Release Service', () => {
 		});
 
 		it("should update the parent album year", async () => {
-			const album = await albumService.getAlbum({ byId: { id: newRelease.albumId } });
+			const album = await albumService.get({ byId: { id: newRelease.albumId } });
 			expect(album.id).toStrictEqual(dummyRepository.albumA1.id);
 			expect(album.releaseDate).toStrictEqual(new Date('2006'));
 		});
 
 		it("should not have updated the parent album metadata", async () => {
-			const album = await albumService.getAlbum({ byId: { id: newCompilationRelease.albumId } });
+			const album = await albumService.get({ byId: { id: newCompilationRelease.albumId } });
 			expect(album.releaseDate?.getFullYear()).toStrictEqual(dummyRepository.compilationAlbumA.releaseDate!.getFullYear());
 			expect(album.name).toStrictEqual('My Compilation Album');
 		});
@@ -237,7 +237,7 @@ describe('Release Service', () => {
 				{ releaseDate: new Date('2005') },
 				{ byId: { id: newRelease.id } }
 			);
-			let updatedAlbum = await albumService.getAlbum(
+			let updatedAlbum = await albumService.get(
 				{ bySlug: { slug: new Slug(dummyRepository.albumA1.slug), artist: { slug: new Slug (dummyRepository.artistA.slug) } } },
 				{ releases: true }
 			);
@@ -284,7 +284,7 @@ describe('Release Service', () => {
 		it("should delete only release, and parent album", async () => {
 			await releaseService.deleteRelease({ byId: { id: dummyRepository.releaseB1_1.id } });
 			const testRelease = async () => await releaseService.getRelease({ byId: { id: dummyRepository.releaseB1_1.id } });
-			const testAlbum = async () => await albumService.getAlbum({ byId: { id: dummyRepository.albumB1.id } });
+			const testAlbum = async () => await albumService.get({ byId: { id: dummyRepository.albumB1.id } });
 			expect(testRelease()).rejects.toThrow(ReleaseNotFoundFromIDException);
 			expect(testAlbum()).rejects.toThrow(AlbumNotFoundFromIDException);
 		});
@@ -314,7 +314,7 @@ describe('Release Service', () => {
 			await songService.deleteSong({ byId: { id: dummyRepository.songA1.id } });
 			await songService.deleteSong({ byId: { id: dummyRepository.songA2.id } });
 			///
-			const testAlbum = async () => await albumService.getAlbum({ byId: { id: dummyRepository.albumA1.id } });
+			const testAlbum = async () => await albumService.get({ byId: { id: dummyRepository.albumA1.id } });
 			expect(testAlbum()).rejects.toThrow(AlbumNotFoundFromIDException);
 			const testArtist = async () => await artistService.getArtist({ id: dummyRepository.artistA.id  });
 			expect(testArtist()).rejects.toThrow(ArtistNotFoundByIDException);

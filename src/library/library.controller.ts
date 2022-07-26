@@ -173,13 +173,13 @@ export default class LibraryController {
 		sortingParameter: AlbumQueryParameters.SortingParameter,
 		@Req() request: Request
 	): Promise<PaginatedResponse<Object>> {
-		const albums = await this.albumService.getAlbums(
+		const albums = await this.albumService.getMany(
 			{ byLibrarySource: where }, paginationParameters, include, sortingParameter
 		);
 		if (albums.length == 0)
 			await this.libraryService.getLibrary(where);
 		return new PaginatedResponse(
-			albums.map((album) => this.albumService.buildAlbumResponse(album)),
+			albums.map((album) => this.albumService.buildResponse(album)),
 			request
 		);
 	}

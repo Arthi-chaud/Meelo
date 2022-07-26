@@ -106,14 +106,14 @@ export class GenreController {
 		sortingParameter: AlbumQueryParameters.SortingParameter,
 		@Req() request: Request
 	) {
-		const albums = await this.albumService.getAlbums(
+		const albums = await this.albumService.getMany(
 			{ byGenre: where }, paginationParameters, include, sortingParameter
 		);
 		if (albums.length == 0)
 			await this.genreService.get(where);
 		return new PaginatedResponse(
 			albums.map(
-				(album) => this.albumService.buildAlbumResponse(album)
+				(album) => this.albumService.buildResponse(album)
 			),
 			request
 		)

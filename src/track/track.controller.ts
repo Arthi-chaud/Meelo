@@ -94,7 +94,7 @@ export class TrackController {
 		res: Response
 	) {
 		let track = await this.trackService.getTrack({ id: trackId }, { release: true });
-		let album = await this.albumService.getAlbum({ byId: { id: track.release.albumId } }, { artist: true })
+		let album = await this.albumService.get({ byId: { id: track.release.albumId } }, { artist: true })
 		const trackIllustrationPath = this.illustrationService.buildTrackIllustrationPath(
 			new Slug(album.slug),
 			new Slug(track.release.slug),
@@ -131,7 +131,7 @@ export class TrackController {
 		illustrationDto: IllustrationDownloadDto
 	) {
 		let track = await this.trackService.getTrack({ id: trackId }, { release: true });
-		let album = await this.albumService.getAlbum({ byId: { id: track.release.albumId } }, { artist: true })
+		let album = await this.albumService.get({ byId: { id: track.release.albumId } }, { artist: true })
 		const trackIllustrationPath = this.illustrationService.buildTrackIllustrationPath(
 			new Slug(album.slug),
 			new Slug(track.release.slug),

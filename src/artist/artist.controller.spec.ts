@@ -66,7 +66,7 @@ describe('Artist Controller', () => {
 		dummyRepository = module.get(PrismaService);
 		await dummyRepository.onModuleInit();
 		let albumService = module.get(AlbumService);
-		albumA2 = await albumService.createAlbum({
+		albumA2 = await albumService.create({
 			name: "My Album 2", artist: { id: dummyRepository.artistA.id }
 		});
 

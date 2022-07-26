@@ -34,7 +34,7 @@ export default class AlbumController {
 		summary: 'Get all albums'
 	})
 	@Get()
-	async getAlbums(
+	async getMany(
 		@Query(ParsePaginationParameterPipe)
 		paginationParameters: PaginationParameters,
 		@Query(AlbumQueryParameters.ParseSortingParameterPipe)
@@ -43,11 +43,11 @@ export default class AlbumController {
 		include: AlbumQueryParameters.RelationInclude,
 		@Req() request: Request
 	) {
-		const albums = await this.albumService.getAlbums(
+		const albums = await this.albumService.getMany(
 			{}, paginationParameters, include, sortingParameter
 		);
 		return new PaginatedResponse(
-			albums.map((album) => this.albumService.buildAlbumResponse(album)),
+			albums.map((album) => this.albumService.buildResponse(album)),
 			request
 		);
 	}
@@ -65,11 +65,11 @@ export default class AlbumController {
 		include: AlbumQueryParameters.RelationInclude,
 		@Req() request: Request
 	) {
-		const albums = await this.albumService.getAlbums(
+		const albums = await this.albumService.getMany(
 			{ byArtist: { compilationArtist: true } }, paginationParameters, include, sortingParameter
 		);
 		return new PaginatedResponse(
-			albums.map((album) => this.albumService.buildAlbumResponse(album)),
+			albums.map((album) => this.albumService.buildResponse(album)),
 			request
 		);
 	}
@@ -78,14 +78,14 @@ export default class AlbumController {
 		summary: 'Get one album'
 	})
 	@Get(':idOrSlug')
-	async getAlbum(
+	async get(
 		@Query('with', AlbumQueryParameters.ParseRelationIncludePipe)
 		include: AlbumQueryParameters.RelationInclude,
 		@Param(ParseAlbumIdentifierPipe)
 		where: AlbumQueryParameters.WhereInput
 	) {
-		const album = await this.albumService.getAlbum(where, include);
-		return this.albumService.buildAlbumResponse(album);
+		const album = await this.albumService.get(where, include);
+		return this.albumService.buildResponse(album);
 	}
 
 	@ApiOperation({
@@ -162,7 +162,7 @@ export default class AlbumController {
 			{ byAlbum: where, type: TrackType.Video }, paginationParameters, include, sortingParameter, 
 		);
 		if (videoTracks.length == 0)
-			await this.albumService.getAlbum(where);
+			await this.albumService.get(where);
 		return new PaginatedResponse(
 			videoTracks.map((videoTrack) => this.trackService.buildTrackResponse(videoTrack)),
 			request
@@ -179,7 +179,7 @@ export default class AlbumController {
 		@Response({ passthrough: true })
 		res: Response
 	) {
-		const album = await this.albumService.getAlbum(where, { artist: true });
+		const album = await this.albumService.get(where, { artist: true });
 		return this.illustrationService.streamIllustration(
 			await this.illustrationService.buildMasterReleaseIllustrationPath(
 				new Slug(album.slug), album.artist ? new Slug(album.artist.slug) : undefined
