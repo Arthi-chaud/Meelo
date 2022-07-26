@@ -57,7 +57,7 @@ export default class TrackService {
 				include
 			});
 		} catch {
-			const parentSong = await this.songService.getSong(track.song, { artist: true });
+			const parentSong = await this.songService.get(track.song, { artist: true });
 			const parentRelease = await this.releaseService.get(track.release);
 			await this.fileService.get(track.sourceFile);
 			throw new TrackAlreadyExistsException(
@@ -129,7 +129,7 @@ export default class TrackService {
 			sort
 		);
 		if (tracks.length == 0)
-			await this.songService.getSong(where);
+			await this.songService.get(where);
 		return tracks;
 	}
 
@@ -238,7 +238,7 @@ export default class TrackService {
 					song: { byId: { id: deletedTrack.songId } }
 				});
 			if (deleteParentIfEmpty) {
-				await this.songService.deleteSongIfEmpty({ byId: { id: deletedTrack.songId } });
+				await this.songService.deleteIfEmpty({ byId: { id: deletedTrack.songId } });
 				await this.releaseService.deleteIfEmpty({ byId: { id: deletedTrack.releaseId } });
 			}
 		} catch {
@@ -256,7 +256,7 @@ export default class TrackService {
 		if (where.id !== undefined)
 			throw new TrackNotFoundByIdException(where.id);
 		if (where.masterOfSong) {
-			const parentSong = await this.songService.getSong(where.masterOfSong, { artist: true });
+			const parentSong = await this.songService.get(where.masterOfSong, { artist: true });
 			throw new MasterTrackNotFoundException(
 				new Slug(parentSong.slug),
 				new Slug(parentSong.artist!.slug)
@@ -344,7 +344,7 @@ export default class TrackService {
 		if (track.song != undefined)
 			response = {
 				...response,
-				song: this.songService.buildSongResponse(track.song)
+				song: this.songService.buildResponse(track.song)
 			}
 		return response;
 	}

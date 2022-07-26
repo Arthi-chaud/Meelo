@@ -78,14 +78,14 @@ export class GenreController {
 		sortingParameter: SongQueryParameters.SortingParameter,
 		@Req() request: Request
 	) {
-		const songs = await this.songService.getSongs(
+		const songs = await this.songService.getMany(
 			{ genre: where }, paginationParameters, include, sortingParameter
 		);
 		if (songs.length == 0)
 			await this.genreService.get(where);
 		return new PaginatedResponse(
 			songs.map(
-				(song) => this.songService.buildSongResponse(song)
+				(song) => this.songService.buildResponse(song)
 			),
 			request
 		);

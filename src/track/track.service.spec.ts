@@ -442,7 +442,7 @@ describe('Track Service', () => {
 		});
 
 		it("should have delete the parent song", async () => {
-			const test = async () => await songService.getSong({ byId: { id: dummyRepository.songA2.id }});
+			const test = async () => await songService.get({ byId: { id: dummyRepository.songA2.id }});
 			expect(test()).rejects.toThrow(SongNotFoundByIdException);
 		});
 

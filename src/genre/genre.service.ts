@@ -150,7 +150,7 @@ export default class GenreService extends RepositoryService<
 	 * @param where the query parameter to find the genre to delete
 	 */
 	 async deleteIfEmpty(where: GenreQueryParameters.DeleteInput): Promise<void> {
-		const songCount = await this.songService.countSongs({
+		const songCount = await this.songService.count({
 			genre: where
 		});
 		if (songCount == 0)
@@ -178,7 +178,7 @@ export default class GenreService extends RepositoryService<
 			response = {
 				...response,
 				songs: genre.songs.map(
-					(song) => this.songService.buildSongResponse(song)
+					(song) => this.songService.buildResponse(song)
 				)
 			}
 		return response;

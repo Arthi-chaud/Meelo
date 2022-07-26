@@ -174,7 +174,7 @@ export default class ArtistService extends RepositoryService<
 				(album) => this.albumService.delete({ byId: { id: album.id } })
 			),
 			...artist.songs.map(
-				(song) => this.songService.deleteSong({ byId: { id: song.id } })
+				(song) => this.songService.delete({ byId: { id: song.id } })
 			)
 		]);
 		try {
@@ -200,7 +200,7 @@ export default class ArtistService extends RepositoryService<
 	 */
 	async deleteArtistIfEmpty(where: ArtistQueryParameters.DeleteInput): Promise<void> {
 		const albumCount = await this.albumService.count({ byArtist: where });
-		const songCount = await this.songService.countSongs({ artist: where });
+		const songCount = await this.songService.count({ artist: where });
 		if (songCount == 0 && albumCount == 0)
 			await this.delete(where);
 	}
@@ -248,7 +248,7 @@ export default class ArtistService extends RepositoryService<
 			response = {
 				...response,
 				songs: artist.songs.map(
-					(song) => this.songService.buildSongResponse(song)
+					(song) => this.songService.buildResponse(song)
 				)
 			}
 		if (artist.albums != undefined)

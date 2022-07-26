@@ -184,13 +184,13 @@ export default class ArtistController {
 		include: SongQueryParameters.RelationInclude,
 		@Req() request: Request
 	) {
-		let songs = await this.songService.getSongs(
+		let songs = await this.songService.getMany(
 			{ artist: where }, paginationParameters, include, sortingParameter
 		);
 		if (songs.length == 0)
 			await this.artistService.get(where);
 		return new PaginatedResponse(
-			songs.map((song) => this.songService.buildSongResponse(song)),
+			songs.map((song) => this.songService.buildResponse(song)),
 			request
 		);
 	}

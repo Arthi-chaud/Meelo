@@ -225,13 +225,13 @@ export default class LibraryController {
 		sortingParameter: SongQueryParameters.SortingParameter,
 		@Req() request: Request
 	): Promise<PaginatedResponse<Object>> {
-		const songs =  await this.songService.getSongs(
+		const songs =  await this.songService.getMany(
 			{ library: where }, paginationParameters, include, sortingParameter
 		);
 		if (songs.length == 0)
 			await this.libraryService.get(where);
 		return new PaginatedResponse(
-			songs.map((song) => this.songService.buildSongResponse(song)),
+			songs.map((song) => this.songService.buildResponse(song)),
 			request
 		);
 	}

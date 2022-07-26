@@ -43,10 +43,10 @@ export default class MetadataService {
 		) : [];
 		let albumArtist = metadata.albumArtist ? await this.artistService.getOrCreate({ name: metadata.albumArtist }) : undefined;
 		let songArtist = await this.artistService.getOrCreate({ name: metadata.artist ?? metadata.albumArtist! });
-		let song = await this.songService.getOrCreateSong(
+		let song = await this.songService.getOrCreate(
 			{ name: this.removeTrackVideoExtension(metadata.name!), artist: { id: songArtist.id }, genres: genres.map((genre) => ({ id: genre.id }))},
 			{ tracks: true, genres: true });
-		await this.songService.updateSong(
+		await this.songService.update(
 			{ genres: song.genres.concat(genres).map((genre) => ({ id: genre.id }))},
 			{ byId: { id: song.id } }
 		);

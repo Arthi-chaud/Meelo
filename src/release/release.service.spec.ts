@@ -311,8 +311,8 @@ describe('Release Service', () => {
 			await releaseService.delete({ byId: { id: dummyRepository.releaseA1_2.id } });
 			await releaseService.delete({ byId: { id: newRelease2.id } });
 			/// Also have to delete related song 
-			await songService.deleteSong({ byId: { id: dummyRepository.songA1.id } });
-			await songService.deleteSong({ byId: { id: dummyRepository.songA2.id } });
+			await songService.delete({ byId: { id: dummyRepository.songA1.id } });
+			await songService.delete({ byId: { id: dummyRepository.songA2.id } });
 			///
 			const testAlbum = async () => await albumService.get({ byId: { id: dummyRepository.albumA1.id } });
 			expect(testAlbum()).rejects.toThrow(AlbumNotFoundFromIDException);

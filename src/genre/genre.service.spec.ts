@@ -115,7 +115,7 @@ describe("Genre Service", () => {
 		});
 
 		it("should get the genres by the song (two expected)", async () => {
-			await songService.updateSong({
+			await songService.update({
 				genres: [ { id: newGenre.id }, { id: dummyRepository.genreA.id } ] },
 				{ byId: { id: dummyRepository.songA1.id } }
 			);
@@ -213,7 +213,7 @@ describe("Genre Service", () => {
 	describe("Delete Genre if empty", () => {
 		
 		it("should have deletes the genre, because it is not empty", async () => {
-			await songService.deleteSong({ byId: { id: dummyRepository.songC1.id } });
+			await songService.delete({ byId: { id: dummyRepository.songC1.id } });
 		
 			const test = async () => await genreService.delete({ id: dummyRepository.genreC.id });
 

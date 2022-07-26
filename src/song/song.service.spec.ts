@@ -44,7 +44,7 @@ describe('Song Service', () => {
 
 	describe("Create a song", () => {
 		it("should create a new song", async () => {
-			newSong = await songService.createSong({
+			newSong = await songService.create({
 				name: 'My Song 3',
 				artist: { slug: new Slug(dummyRepository.artistA.name) },
 				genres: [ { id: dummyRepository.genreA.id }, { id: dummyRepository.genreC.id } ]
@@ -58,7 +58,7 @@ describe('Song Service', () => {
 		});
 
 		it("should throw, as a song with the name name from the same artist exists", async () => {
-			const test = async () => await songService.createSong({
+			const test = async () => await songService.create({
 				name: 'My Song',
 				artist: { slug: new Slug(dummyRepository.artistA.name) },
 				genres: []
@@ -68,7 +68,7 @@ describe('Song Service', () => {
 		});
 
 		it("should throw, as the parent artist does not exist (by Id)", async () => {
-			const test = async () => await songService.createSong({
+			const test = async () => await songService.create({
 				name: 'My Song',
 				artist: { id: -1 },
 				genres: []
@@ -78,7 +78,7 @@ describe('Song Service', () => {
 		});
 
 		it("should throw, as the genre does not exist a new song", async () => {
-			const test = async () => await songService.createSong({
+			const test = async () => await songService.create({
 				name: 'My Other Song',
 				artist: { id: 0 },
 				genres: [{ id: -1 }]
@@ -88,7 +88,7 @@ describe('Song Service', () => {
 		});
 
 		it("should throw, as the parent artist does not exist (by slug)", async () => {
-			const test = async () => await songService.createSong({
+			const test = async () => await songService.create({
 				name: 'My Song',
 				artist: { slug: new Slug("trololol") },
 				genres: []
@@ -100,7 +100,7 @@ describe('Song Service', () => {
 
 	describe("Get Song", () => {
 		it("should retrieve the song (by Slug)", async () => {
-			let retrievedSong = await songService.getSong({
+			let retrievedSong = await songService.get({
 				bySlug: {
 					slug: new Slug('My Song'),
 					artist: { slug: new Slug(dummyRepository.artistA.name) }
@@ -111,7 +111,7 @@ describe('Song Service', () => {
 		});
 
 		it("should retrieve the song (by Id)", async () => {
-			let retrievedSong = await songService.getSong({
+			let retrievedSong = await songService.get({
 				byId: { id: dummyRepository.songA2.id },
 			});
 
@@ -119,7 +119,7 @@ describe('Song Service', () => {
 		});
 
 		it("should retrieve the song (w/ include)", async () => {
-			let retrievedSong = await songService.getSong(
+			let retrievedSong = await songService.get(
 				{ byId: { id: newSong.id } }, { artist: true, genres: true }
 			);
 
@@ -133,7 +133,7 @@ describe('Song Service', () => {
 		});
 
 		it("should throw, as the song does not exist (by Id)", async () => {
-			const test = async () => await songService.getSong({
+			const test = async () => await songService.get({
 				byId: { id: -1 }
 			});
 
@@ -141,7 +141,7 @@ describe('Song Service', () => {
 		});
 
 		it("should throw, as the song does not exist (by Slug)", async () => {
-			const test = async () => await songService.getSong({
+			const test = async () => await songService.get({
 				bySlug: { slug: new Slug('I dont exist'), artist: { id: dummyRepository.artistA.id }},
 			});
 
@@ -149,7 +149,7 @@ describe('Song Service', () => {
 		});
 
 		it("should throw, as the parent artist does not exist", async () => {
-			const test = async () => await songService.getSong({
+			const test = async () => await songService.get({
 				bySlug: { slug: new Slug('My Slug'), artist: { id: -1 }},
 			});
 
@@ -159,7 +159,7 @@ describe('Song Service', () => {
 
 	describe('Get Multiple Songs', () => {
 		it('should get all the songs', async () => {
-			let songs = await songService.getSongs({ });
+			let songs = await songService.getMany({ });
 
 			expect(songs.length).toBe(5);
 			expect(songs).toContainEqual(dummyRepository.songA1);
@@ -170,7 +170,7 @@ describe('Song Service', () => {
 		});
 		
 		it('should get the songs from the artist (1 expected)', async () => {
-			let songs = await songService.getSongs({ 
+			let songs = await songService.getMany({ 
 				artist: { id: dummyRepository.artistB.id }
 			});
 
@@ -179,7 +179,7 @@ describe('Song Service', () => {
 		});
 
 		it('should get the songs from the artist (2 expected)', async () => {
-			let songs = await songService.getSongs({ 
+			let songs = await songService.getMany({ 
 				artist: { id: dummyRepository.artistA.id }
 			});
 
@@ -190,7 +190,7 @@ describe('Song Service', () => {
 		});
 
 		it('should get the two songs, sorted by name (desc)', async () => {
-			let songs = await songService.getSongs({ 
+			let songs = await songService.getMany({ 
 				artist: { id: dummyRepository.artistA.id }
 			}, {}, {}, { sortBy: 'name', order: 'desc' });
 
@@ -201,7 +201,7 @@ describe('Song Service', () => {
 		});
 
 		it('should get none, as the artist does not exist', async () => {
-			let songs = await songService.getSongs({ 
+			let songs = await songService.getMany({ 
 				artist: { id: -1 }
 			});
 
@@ -209,7 +209,7 @@ describe('Song Service', () => {
 		});
 
 		it('should get the song by name (starts with)', async () => {
-			let songs = await songService.getSongs({ 
+			let songs = await songService.getMany({ 
 				name: { startsWith: "My S" }
 			});
 
@@ -220,7 +220,7 @@ describe('Song Service', () => {
 		});
 
 		it('should get the song by name (ends with)', async () => {
-			let songs = await songService.getSongs({ 
+			let songs = await songService.getMany({ 
 				name: { endsWith: " 3" }
 			});
 
@@ -231,7 +231,7 @@ describe('Song Service', () => {
 
 	describe("Count Songs", () => {
 		it("should get the number of song by the artist (3 expected)", async () => {
-			let songCount = await songService.countSongs({
+			let songCount = await songService.count({
 				artist: { id: dummyRepository.artistA.id }
 			});
 
@@ -239,7 +239,7 @@ describe('Song Service', () => {
 		});
 
 		it("should get the number of song by the artist (& expected)", async () => {
-			let songCount = await songService.countSongs({
+			let songCount = await songService.count({
 				artist: { id: dummyRepository.artistB.id }
 			});
 
@@ -247,7 +247,7 @@ describe('Song Service', () => {
 		});
 
 		it("should get the number of song with name equal", async () => {
-			let songCount = await songService.countSongs({
+			let songCount = await songService.count({
 				name: { is: "My Other Song" },
 			});
 
@@ -257,7 +257,7 @@ describe('Song Service', () => {
 
 	describe("Update Song", () => {
 		it("should update the play count of the song", async () => {
-			let updatedSong = await songService.updateSong(
+			let updatedSong = await songService.update(
 				{ playCount: 3 }, { byId: { id: dummyRepository.songA1.id } }
 			);
 
@@ -267,14 +267,14 @@ describe('Song Service', () => {
 		});
 
 		it("should change the artist of the song", async () => {
-			let updatedSong = await songService.updateSong(
+			let updatedSong = await songService.update(
 				{ artist: { slug: new Slug(dummyRepository.artistB.slug) } },
-				{ bySlug: { slug: new Slug(dummyRepository.songA1.slug), artistId: dummyRepository.artistA.id } }
+				{ bySlug: { slug: new Slug(dummyRepository.songA1.slug), artist: { id: dummyRepository.artistA.id }} }
 			);
 
 			expect(updatedSong.id).toBe(dummyRepository.songA1.id);
 			expect(updatedSong.artistId).toBe(dummyRepository.artistB.id);
-			updatedSong = await songService.updateSong(
+			updatedSong = await songService.update(
 				{ artist: { id: dummyRepository.artistA.id } },
 				{ byId: { id: dummyRepository.songA1.id } }
 			);
@@ -283,18 +283,18 @@ describe('Song Service', () => {
 		});
 
 		it("should change the genres of the song", async () => {
-			let updatedSong = await songService.updateSong(
+			let updatedSong = await songService.update(
 				{ genres: [ { id: dummyRepository.genreA.id }, { id: dummyRepository.genreB.id } ] },
 				{ byId: { id: dummyRepository.songA2.id } }
 			);
 
 			expect(updatedSong.id).toBe(dummyRepository.songA2.id);
-			const refreshedSong = await songService.getSong({ byId: { id:  dummyRepository.songA2.id } }, { genres: true });
+			const refreshedSong = await songService.get({ byId: { id:  dummyRepository.songA2.id } }, { genres: true });
 			expect(refreshedSong.genres).toStrictEqual([  dummyRepository.genreA,  dummyRepository.genreB ])
 		});
 
 		it("should throw as the song does not exist (by Id)", async () => {
-			const test = async () => await songService.updateSong(
+			const test = async () => await songService.update(
 				{ name: "Tralala" },
 				{ byId: { id: -1 }}
 			);
@@ -302,25 +302,25 @@ describe('Song Service', () => {
 		});
 
 		it("should throw as the song does not exist (unknown artist)", async () => {
-			const test = async () => await songService.updateSong(
+			const test = async () => await songService.update(
 				{ name: "Tralala" },
-				{ bySlug: { slug: new Slug("My Song"), artistId: -1 }}
+				{ bySlug: { slug: new Slug("My Song"), artist: { id: -1 } }}
 			);
 			expect(test()).rejects.toThrow(ArtistNotFoundByIDException);
 		});
 
 		it("should throw as the song does not exist", async () => {
-			const test = async () => await songService.updateSong(
+			const test = async () => await songService.update(
 				{ name: "Tralala" },
-				{ bySlug: { slug: new Slug("My Song"), artistId:  dummyRepository.artistB.id }}
+				{ bySlug: { slug: new Slug("My Song"), artist: { id: dummyRepository.artistB.id } }}
 			);
 			expect(test()).rejects.toThrow(SongNotFoundException);
 		});
 
 		it("should throw as the genre does not exist", async () => {
-			const test = async () => await songService.updateSong(
+			const test = async () => await songService.update(
 				{ genres: [ { id: -1 } ] },
-				{ bySlug: { slug: new Slug("My Song"), artistId:  dummyRepository.artistA.id }}
+				{ bySlug: { slug: new Slug("My Song"), artist: { id: dummyRepository.artistA.id } }}
 			);
 			expect(test()).rejects.toThrow(GenreNotFoundByIdException);
 		});
@@ -328,7 +328,7 @@ describe('Song Service', () => {
 
 	describe("Get or Create Song", () => {
 		it("should get the song", async () => {
-			let fetchedSong = await songService.getOrCreateSong({
+			let fetchedSong = await songService.getOrCreate({
 				...dummyRepository.songA1,
 				artist: { id: dummyRepository.artistA.id },
 				genres: []
@@ -339,7 +339,7 @@ describe('Song Service', () => {
 		});
 
 		it("should create the song", async () => {
-			let createdSong = await songService.getOrCreateSong({
+			let createdSong = await songService.getOrCreate({
 				name: "My Song 4", artist: { id: dummyRepository.artistB.id },
 				genres: []
 			});
@@ -348,7 +348,7 @@ describe('Song Service', () => {
 		});
 
 		it("should throw as the parent artist does not exist ", async () => {
-			const test = async () => await songService.getOrCreateSong({
+			const test = async () => await songService.getOrCreate({
 				name: "My Song 3", artist: { slug: new Slug("My Slug") },
 				genres: []
 			});
@@ -358,18 +358,18 @@ describe('Song Service', () => {
 
 	describe("Delete Song", () => {
 		it("should delete the song (by id)", async () => {
-			await songService.deleteSong({ byId: { id: dummyRepository.songA1.id }});
+			await songService.delete({ byId: { id: dummyRepository.songA1.id }});
 
-			const test = async () => await songService.getSong({ byId: { id: dummyRepository.songA1.id } });
+			const test = async () => await songService.get({ byId: { id: dummyRepository.songA1.id } });
 			expect(test()).rejects.toThrow(SongNotFoundByIdException);
 		});
 
 		it("should delete the song (by slug)", async () => {
-			await songService.deleteSong({
+			await songService.delete({
 				bySlug: { slug: new Slug(dummyRepository.songC1.slug), artist: { id: dummyRepository.artistC.id } }
 			});
 
-			const test = async () => await songService.getSong({ byId: { id: dummyRepository.songC1.id } });
+			const test = async () => await songService.get({ byId: { id: dummyRepository.songC1.id } });
 			expect(test()).rejects.toThrow(SongNotFoundByIdException);
 		});
 
@@ -379,14 +379,14 @@ describe('Song Service', () => {
 		});
 
 		it("should throw, as the song song does not exist (unknown Artist)", async () => {
-			const test = async () => await songService.deleteSong({
+			const test = async () => await songService.delete({
 				bySlug: { slug: new Slug('My Song'), artist: { slug: new Slug("Tralala") } }
 			});
 			expect(test()).rejects.toThrow(ArtistNotFoundException);
 		});
 
 		it("should throw, as the song song does not exist", async () => {
-			const test = async () => await songService.deleteSong({
+			const test = async () => await songService.delete({
 				bySlug: { slug: new Slug('My Song'), artist: { slug: new Slug(dummyRepository.artistB.slug) } }
 			});
 			expect(test()).rejects.toThrow(SongNotFoundException);
