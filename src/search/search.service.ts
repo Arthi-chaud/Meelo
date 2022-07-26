@@ -13,7 +13,7 @@ import type SongQueryParameters from 'src/song/models/song.query-params';
 import SongService from 'src/song/song.service';
 
 @Injectable()
-export class SearchService {
+export default class SearchService {
 	constructor(
 		private artistService: ArtistService,
 		private albumService: AlbumService,
@@ -29,7 +29,7 @@ export class SearchService {
 	 * @param include the relation to include with the returned row
 	 * @returns An array of artists, matching the string query
 	 */
-	async searchArtists(
+	searchArtists(
 		query: string,
 		paginationParameters?: PaginationParameters,
 		include?: ArtistQueryParameters.RelationInclude
@@ -48,7 +48,7 @@ export class SearchService {
 	 * @param include the relation to include with the returned row
 	 * @returns An array of albums, matching the string query
 	 */
-	async searchAlbums(
+	searchAlbums(
 		query: string,
 		paginationParameters?: PaginationParameters,
 		include?: AlbumQueryParameters.RelationInclude
@@ -67,7 +67,7 @@ export class SearchService {
 	 * @param include the relation to include with the returned row
 	 * @returns An array of songs, matching the string query
 	 */
-	async searchSongs(
+	searchSongs(
 		query: string,
 		paginationParameters?: PaginationParameters,
 		include?: SongQueryParameters.RelationInclude
@@ -87,7 +87,7 @@ export class SearchService {
 	 * @param include the relation to include with the returned row
 	 * @returns An array of releases, matching the string query
 	 */
-	async searchReleases(
+	searchReleases(
 		query: string,
 		paginationParameters?: PaginationParameters,
 		include?: ReleaseQueryParameters.RelationInclude
@@ -106,7 +106,7 @@ export class SearchService {
 	 * @param include the relation to include with the returned row
 	 * @returns An array of genres, matching the string query
 	 */
-	async searchGenre(
+	searchGenres(
 		query: string,
 		paginationParameters?: PaginationParameters,
 		include?: GenreQueryParameters.RelationInclude
@@ -115,6 +115,6 @@ export class SearchService {
 			{ byName: { contains: query } },
 			paginationParameters,
 			include
-		)
+		);
 	}
 }
