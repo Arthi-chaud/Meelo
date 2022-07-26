@@ -1,10 +1,7 @@
 name: Sonar Cloud Analysis
 
 on:
-  workflow_run:
-    workflows: ['Unit tests']
-    types:
-      - completed
+  push:
     branches:
       - '*'
 
@@ -12,6 +9,13 @@ jobs:
   run:
     runs-on: ubuntu-latest
     steps:
+      - name: Wait for build to succeed
+        uses: fountainhead/action-wait-for-check@v1.0.0
+        id: wait-for-build
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          checkName: run_unit_tests
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
       - uses: actions/checkout@v2
       - name: Downlad Coverage artifact
         uses: dawidd6/action-download-artifact@v2
