@@ -12,6 +12,7 @@ import TrackQueryParameters from "src/track/models/track.query-parameters";
 import ParseBaseRelationIncludePipe from "src/relation-include/relation-include.pipe";
 import BaseSortingParameter from 'src/sort/models/sorting-parameter';
 import ParseBaseSortingParameterPipe from 'src/sort/sort.pipe';
+import { buildStringSearchParameters, SearchStringInput } from "src/utils/search-string-input";
 
 namespace ReleaseQueryParameters {
 
@@ -54,6 +55,7 @@ namespace ReleaseQueryParameters {
 	 * Query parameters to find multiple Releases
 	 */
 	export type ManyWhereInput = Partial<{
+		name: SearchStringInput,
 		album: AlbumQueryParameters.WhereInput,
 		library: LibraryQueryParameters.WhereInput
 	}>;
@@ -65,6 +67,7 @@ namespace ReleaseQueryParameters {
 	 */
 	export function buildQueryParametersForMany(where: ManyWhereInput): Prisma.ReleaseWhereInput {
 		return {
+			title: buildStringSearchParameters(where.name),
 			album: where.album ? {
 				id: where.album.byId?.id,
 				slug: where.album.bySlug?.slug.toString(),
