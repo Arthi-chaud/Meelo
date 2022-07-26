@@ -75,10 +75,10 @@ export class SongController {
 		where: SongQueryParameters.WhereInput
 	) {
 		let song = await this.songService.getSong(where);
-		let artist = await this.artistService.getArtist({
+		let artist = await this.artistService.get({
 			id: song.artistId
 		}, include);
-		return this.artistService.buildArtistResponse(artist);
+		return this.artistService.buildResponse(artist);
 	}
 
 	@ApiOperation({

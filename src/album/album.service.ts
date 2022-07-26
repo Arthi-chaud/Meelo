@@ -71,7 +71,7 @@ export default class AlbumService extends RepositoryService<
 			});
 		} catch {
 			if (album.artist)
-				await this.artistServce.getArtist(album.artist);
+				await this.artistServce.get(album.artist);
 			if (album.artist?.id)
 				throw new AlbumAlreadyExistsWithArtistIDException(albumSlug, album.artist.id);
 			throw new AlbumAlreadyExistsException(albumSlug, album.artist?.slug);
@@ -138,13 +138,17 @@ export default class AlbumService extends RepositoryService<
 		what: AlbumQueryParameters.UpdateInput,
 		where: AlbumQueryParameters.WhereInput
 	): Promise<Album> {
-		return await this.prismaService.album.update({
-			data: {
-				...what,
-				slug: what.name ? new Slug(what.name).toString() : undefined,
-			},
-			where: AlbumQueryParameters.buildQueryParametersForOne(where)
-		});
+		try {
+			return await this.prismaService.album.update({
+				data: {
+					...what,
+					slug: what.name ? new Slug(what.name).toString() : undefined,
+				},
+				where: AlbumQueryParameters.buildQueryParametersForOne(where)
+			});
+		} catch {
+			throw this.onNotFound(where);
+		}
 	}
 
 	/**
@@ -152,7 +156,7 @@ export default class AlbumService extends RepositoryService<
 	 * @param where the query parameter to get the album to update
 	 */
 	async updateAlbumDate(where: AlbumQueryParameters.WhereInput) {
-		let album = (await this.get(where, { releases: true }));
+		let album = await this.get(where, { releases: true });
 		for (const release of album.releases) {
 			if (album.releaseDate == null ||
 				(release.releaseDate && release.releaseDate < album.releaseDate)) {
@@ -247,7 +251,7 @@ export default class AlbumService extends RepositoryService<
 		if (album.artist != undefined)
 			response = {
 				...response,
-				artist: this.artistServce.buildArtistResponse(album.artist)
+				artist: this.artistServce.buildResponse(album.artist)
 			};
 		return response;
 	}

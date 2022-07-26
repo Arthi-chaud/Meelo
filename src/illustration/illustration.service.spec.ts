@@ -31,7 +31,7 @@ describe('Illustration Service', () => {
 		illustrationService.onModuleInit();
 		releaseService = module.get<ReleaseService>(ReleaseService);
 		albumService = module.get<AlbumService>(AlbumService);
-		await module.get<ArtistService>(ArtistService).createArtist({ name: 'My Artist' });
+		await module.get<ArtistService>(ArtistService).create({ name: 'My Artist' });
 	});
 
 	it('should be defined', () => {

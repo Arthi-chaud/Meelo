@@ -55,7 +55,7 @@ export default class SongService {
 				include: SongQueryParameters.buildIncludeParameters(include)
 			});
 		} catch {
-			let artist = await this.artistService.getArtist(song.artist);
+			let artist = await this.artistService.get(song.artist);
 			throw new SongAlreadyExistsException(new Slug(song.name), new Slug(artist.name));
 		}
 	}
@@ -75,7 +75,7 @@ export default class SongService {
 		} catch {
 			if (where.byId)
 				throw new SongNotFoundByIdException(where.byId.id);
-			const artist = await this.artistService.getArtist(where.bySlug.artist)
+			const artist = await this.artistService.get(where.bySlug.artist)
 			throw new SongNotFoundException(where.bySlug.slug, new Slug(artist.slug));
 		}
 	}
@@ -147,7 +147,7 @@ export default class SongService {
 		} catch {
 			if (where.byId !== undefined)
 				throw new SongNotFoundByIdException(where.byId.id);
-			let artist = await this.artistService.getArtist({ id: where.bySlug.artistId });
+			let artist = await this.artistService.get({ id: where.bySlug.artistId });
 			throw new SongNotFoundException(where.bySlug.slug, new Slug(artist.name));
 		}
 	}
@@ -220,7 +220,7 @@ export default class SongService {
 		if (song.artist !== undefined)
 			response = {
 				...response,
-				artist: this.artistService.buildArtistResponse(song.artist)
+				artist: this.artistService.buildResponse(song.artist)
 			}
 		return response;
 	}

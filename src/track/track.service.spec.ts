@@ -447,7 +447,7 @@ describe('Track Service', () => {
 		});
 
 		it("should have delete the parent artist", async () => {
-			const test = async () => await artistService.getArtist({ id: dummyRepository.artistA.id  });
+			const test = async () => await artistService.get({ id: dummyRepository.artistA.id  });
 			expect(test()).rejects.toThrow(ArtistNotFoundByIDException);
 		});
 

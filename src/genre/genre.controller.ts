@@ -134,14 +134,14 @@ export class GenreController {
 		sortingParameter: ArtistQueryParameters.SortingParameter,
 		@Req() request: Request
 	) {
-		const artists = await this.artistService.getArtists(
+		const artists = await this.artistService.getMany(
 			{ byGenre: where }, paginationParameters , include, sortingParameter
 		);
 		if (artists.length == 0)
 			await this.genreService.get(where);
 		return new PaginatedResponse(
 			artists.map(
-				(artist) => this.artistService.buildArtistResponse(artist)
+				(artist) => this.artistService.buildResponse(artist)
 			),
 			request
 		);

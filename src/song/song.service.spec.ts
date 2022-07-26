@@ -374,7 +374,7 @@ describe('Song Service', () => {
 		});
 
 		it("should have deleted the parent artist", async () => {
-			const test = async () => await artistService.deleteArtist({ id :dummyRepository.artistC.id });
+			const test = async () => await artistService.delete({ id :dummyRepository.artistC.id });
 			expect(test()).rejects.toThrow(ArtistNotFoundByIDException);
 		});
 

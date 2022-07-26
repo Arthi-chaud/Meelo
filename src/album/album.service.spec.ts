@@ -249,7 +249,7 @@ describe('Album Service', () => {
 			await albumService.delete(albumQueryParameters);
 			await songService.deleteSong({ byId: { id: dummyRepository.songB1.id } });
 			const test = async () => albumService.get(albumQueryParameters);
-			const testArtist = () => artistService.getArtist({ id: dummyRepository.artistB.id });
+			const testArtist = () => artistService.get({ id: dummyRepository.artistB.id });
 			expect(test()).rejects.toThrow(AlbumNotFoundFromIDException);
 			expect(testArtist()).rejects.toThrow(ArtistNotFoundByIDException); 
 		});

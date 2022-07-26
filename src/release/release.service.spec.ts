@@ -316,7 +316,7 @@ describe('Release Service', () => {
 			///
 			const testAlbum = async () => await albumService.get({ byId: { id: dummyRepository.albumA1.id } });
 			expect(testAlbum()).rejects.toThrow(AlbumNotFoundFromIDException);
-			const testArtist = async () => await artistService.getArtist({ id: dummyRepository.artistA.id  });
+			const testArtist = async () => await artistService.get({ id: dummyRepository.artistA.id  });
 			expect(testArtist()).rejects.toThrow(ArtistNotFoundByIDException);
 		});
 	});

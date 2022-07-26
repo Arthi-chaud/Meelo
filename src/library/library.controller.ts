@@ -153,7 +153,7 @@ export default class LibraryController {
 		if (artists.length == 0)
 			await this.libraryService.getLibrary(where);
 		return new PaginatedResponse(
-			artists.map((artist) => this.artistService.buildArtistResponse(artist)),
+			artists.map((artist) => this.artistService.buildResponse(artist)),
 			request
 		);
 	}
