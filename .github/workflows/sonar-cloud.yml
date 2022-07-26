@@ -6,7 +6,7 @@ on:
       - '*'
 
 jobs:
-  run:
+  run_analysis:
     runs-on: ubuntu-latest
     steps:
       - name: Wait for build to succeed
@@ -16,6 +16,7 @@ jobs:
           token: ${{ secrets.GITHUB_TOKEN }}
           checkName: run_unit_tests
           ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          intervalSeconds: 30
       - uses: actions/checkout@v2
       - name: Downlad Coverage artifact
         uses: dawidd6/action-download-artifact@v2
@@ -23,7 +24,6 @@ jobs:
           workflow: unit-tests.yml
           name: coverage-report
           path: coverage
-      - run: ls -lR
       - name: Run SonarCloud Scan
         uses: SonarSource/sonarcloud-github-action@master
         env:
