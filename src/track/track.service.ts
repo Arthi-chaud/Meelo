@@ -58,7 +58,7 @@ export default class TrackService {
 			});
 		} catch {
 			const parentSong = await this.songService.getSong(track.song, { artist: true });
-			const parentRelease = await this.releaseService.getRelease(track.release);
+			const parentRelease = await this.releaseService.get(track.release);
 			await this.fileService.get(track.sourceFile);
 			throw new TrackAlreadyExistsException(
 				track.displayName,
@@ -162,7 +162,7 @@ export default class TrackService {
 		let tracklist: Tracklist = new Map();
 		const tracks = await this.getTracks({ byRelease: where }, {}, include, { sortBy: 'trackIndex', order: 'asc' });
 		if (tracks.length == 0)
-			await this.releaseService.getRelease(where);
+			await this.releaseService.get(where);
 		tracks.forEach((track) => {
 			const indexToString = track.discIndex?.toString() ?? UnknownDiscIndexKey;
 			tracklist = tracklist.set(indexToString, [ ...tracklist.get(indexToString) ?? [], track]);
@@ -239,7 +239,7 @@ export default class TrackService {
 				});
 			if (deleteParentIfEmpty) {
 				await this.songService.deleteSongIfEmpty({ byId: { id: deletedTrack.songId } });
-				await this.releaseService.deleteReleaseIfEmpty({ byId: { id: deletedTrack.releaseId } });
+				await this.releaseService.deleteIfEmpty({ byId: { id: deletedTrack.releaseId } });
 			}
 		} catch {
 			if (where.id !== undefined)
@@ -339,7 +339,7 @@ export default class TrackService {
 		if (track.release !== undefined)
 			response = {
 				...response,
-				release: this.releaseService.buildReleaseResponse(track.release)
+				release: this.releaseService.buildResponse(track.release)
 			}
 		if (track.song != undefined)
 			response = {

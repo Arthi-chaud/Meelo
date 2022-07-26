@@ -12,9 +12,20 @@ import ReleaseController from './release.controller';
 import { UrlGeneratorService } from 'nestjs-url-generator';
 import TrackService from 'src/track/track.service';
 import { buildSortingParameter } from 'src/sort/models/sorting-parameter';
+import RepositoryService from 'src/repository/repository.service';
 
 @Injectable()
-export default class ReleaseService {
+export default class ReleaseService extends RepositoryService<
+	Release,
+	ReleaseQueryParameters.CreateInput,
+	ReleaseQueryParameters.WhereInput,
+	ReleaseQueryParameters.ManyWhereInput,
+	ReleaseQueryParameters.UpdateInput,
+	ReleaseQueryParameters.DeleteInput,
+	ReleaseQueryParameters.RelationInclude,
+	ReleaseQueryParameters.SortingParameter,
+	Release & { illustration: string }
+> {
 	constructor(
 		private prismaService: PrismaService,
 		@Inject(forwardRef(() => AlbumService))
@@ -22,7 +33,9 @@ export default class ReleaseService {
 		@Inject(forwardRef(() => TrackService))
 		private trackService: TrackService,
 		private readonly urlGeneratorService: UrlGeneratorService
-	) {}
+	) {
+		super();
+	}
 
 	/**
 	 * Create a Release in the database
@@ -30,7 +43,7 @@ export default class ReleaseService {
 	 * @param include the relation fields to inclide in the returned object
 	 * @returns the created release
 	 */
-	async createRelease(
+	async create(
 		release: ReleaseQueryParameters.CreateInput,
 		include?: ReleaseQueryParameters.RelationInclude
 	) {
@@ -64,7 +77,7 @@ export default class ReleaseService {
 	 * @param include the relation fields to include
 	 * @returns a release. Throws if not found
 	 */
-	async getRelease(
+	async get(
 		where: ReleaseQueryParameters.WhereInput,
 		include?: ReleaseQueryParameters.RelationInclude
 	) {
@@ -75,7 +88,7 @@ export default class ReleaseService {
 				include: ReleaseQueryParameters.buildIncludeParameters(include)
 			});
 		} catch {
-			throw await this.getReleaseNotFoundError(where);
+			throw await this.onNotFound(where);
 		}
 	}
 
@@ -85,7 +98,7 @@ export default class ReleaseService {
 	 * @param include the relation fields to includes
 	 * @returns an array of releases
 	 */
-	async getReleases(
+	async getMany(
 		where: ReleaseQueryParameters.ManyWhereInput,
 		pagination?: PaginationParameters,
 		include?: ReleaseQueryParameters.RelationInclude,
@@ -112,7 +125,7 @@ export default class ReleaseService {
 		include?: ReleaseQueryParameters.RelationInclude,
 		sort?: ReleaseQueryParameters.SortingParameter
 	) {
-		const releases = await this.getReleases(
+		const releases = await this.getMany(
 			{ album: where },
 			pagination,
 			include,
@@ -134,14 +147,14 @@ export default class ReleaseService {
 		where: AlbumQueryParameters.WhereInput,
 		include?: ReleaseQueryParameters.RelationInclude
 	) {
-		return this.getRelease({ byMasterOf: where }, include);
+		return this.get({ byMasterOf: where }, include);
 	}
 
 	/**
 	 * Count the artists that match the query parameters
 	 * @param where the query parameters
 	 */
-	async countReleases(where: ReleaseQueryParameters.ManyWhereInput): Promise<number> {
+	async count(where: ReleaseQueryParameters.ManyWhereInput): Promise<number> {
 		return this.prismaService.release.count({
 			where: ReleaseQueryParameters.buildQueryParametersForMany(where)
 		});
@@ -152,11 +165,11 @@ export default class ReleaseService {
 	 * @param what the fields to update in the release
 	 * @param where the query parameters to fin the release to update
 	 */
-	 async updateRelease(
+	 async update(
 		what: ReleaseQueryParameters.UpdateInput,
 		where: ReleaseQueryParameters.WhereInput
 	) {
-		let unmodifiedRelease = await this.getRelease(where);
+		let unmodifiedRelease = await this.get(where);
 		let updatedRelease = await this.prismaService.release.update({
 			data: {
 				...what,
@@ -186,8 +199,8 @@ export default class ReleaseService {
 	 * Also delete related tracks.
 	 * @param where Query parameters to find the release to delete 
 	 */
-	async deleteRelease(where: ReleaseQueryParameters.DeleteInput, deleteParent: boolean = true): Promise<void> {
-		let release = await this.getRelease(where, { tracks: true });
+	async delete(where: ReleaseQueryParameters.DeleteInput, deleteParent: boolean = true): Promise<Release> {
+		let release = await this.get(where, { tracks: true });
 		await Promise.allSettled(
 			release.tracks.map((track) => this.trackService.deleteTrack({ id: track.id }, false))
 		);
@@ -196,7 +209,7 @@ export default class ReleaseService {
 				where: ReleaseQueryParameters.buildQueryParametersForOne(where),
 			});
 		} catch {
-			return;
+			return release;
 		}
 		Logger.warn(`Release '${release.slug}' deleted`);
 		if (release.master)
@@ -206,16 +219,17 @@ export default class ReleaseService {
 			});
 		if (deleteParent)
 			await this.albumService.deleteIfEmpty(release.albumId);
+		return release;
 	}
 
 	/**
 	 * Deletes a release if it does not have related tracks
 	 * @param where the query parameters to find the track to delete 
 	 */
-	async deleteReleaseIfEmpty(where: ReleaseQueryParameters.DeleteInput): Promise<void> {
+	async deleteIfEmpty(where: ReleaseQueryParameters.DeleteInput): Promise<void> {
 		const trackCount = await this.trackService.countTracks({ byRelease: where });
 		if (trackCount == 0)
-			await this.deleteRelease(where);
+			await this.delete(where);
 	}
 
 	/**
@@ -223,17 +237,17 @@ export default class ReleaseService {
 	 * @param where where the query parameters to fond or create the release
 	 * @returns the fetched or createdrelease
 	 */
-	async getOrCreateRelease(
+	async getOrCreate(
 		where: ReleaseQueryParameters.GetOrCreateInput,
 		include?: ReleaseQueryParameters.RelationInclude
 	) {
 		try {
-			return await this.getRelease(
+			return await this.get(
 				{ bySlug: { slug: new Slug(where.title), album: where.album}},
 				include
 			);
 		} catch {
-			return this.createRelease(where, include);
+			return this.create(where, include);
 		}
 	}
 
@@ -241,7 +255,7 @@ export default class ReleaseService {
 	 * Callback on release not found
 	 * @param where the query parameters that failed to get the release
 	 */
-	private async getReleaseNotFoundError(where: ReleaseQueryParameters.WhereInput): Promise<MeeloException> {
+	async onNotFound(where: ReleaseQueryParameters.WhereInput): Promise<MeeloException> {
 		if (where.byId) {
 			return new ReleaseNotFoundFromIDException(where.byId.id);
 		} else if (where.byMasterOf?.byId) {
@@ -249,7 +263,7 @@ export default class ReleaseService {
 		} else {
 			const parentAlbum = await this.albumService.get(where.byMasterOf ?? where.bySlug.album, { artist: true });
 			const releaseSlug: Slug = where.bySlug!.slug;
-			const parentArtistSlug = parentAlbum.artist?.slug ? new Slug(parentAlbum.artist?.slug) : undefined
+			const parentArtistSlug = parentAlbum.artist?.slug ? new Slug(parentAlbum.artist.slug) : undefined
 			return new ReleaseNotFoundException(releaseSlug, new Slug(parentAlbum.slug), parentArtistSlug);
 		}
 	}
@@ -271,7 +285,7 @@ export default class ReleaseService {
 					}
 				}
 			}),
-			this.updateRelease(
+			this.update(
 				{ master: true },
 				{ byId: { id: where.releaseId }}
 			)
@@ -290,18 +304,18 @@ export default class ReleaseService {
 		if (otherAlbumReleases.length == 0)
 			return;
 		await Promise.allSettled([
-			this.updateRelease(
+			this.update(
 				{ master: true },
 				{ byId: { id: otherAlbumReleases.at(0)!.id }}
 			),
-			this.updateRelease(
+			this.update(
 				{ master: false },
 				{ byId: { id: where.releaseId }}
 			)
 		]);
 	}
 
-	buildReleaseResponse<ResponseType extends Release & { illustration: string }>(
+	buildResponse<ResponseType extends Release & { illustration: string }>(
 		release: Release & Partial<{ tracks: Track[], album: Album }>
 	): ResponseType {
 		let response = <ResponseType>{

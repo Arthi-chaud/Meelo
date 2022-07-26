@@ -199,13 +199,13 @@ export default class LibraryController {
 		sortingParameter: ReleaseQueryParameters.SortingParameter,
 		@Req() request: Request
 	): Promise<PaginatedResponse<Object>> {
-		const releases = await this.releaseService.getReleases(
+		const releases = await this.releaseService.getMany(
 			{ library: where }, paginationParameters, include, sortingParameter
 		);
 		if (releases.length == 0)
 			await this.libraryService.get(where);
 		return new PaginatedResponse(
-			releases.map((release) => this.releaseService.buildReleaseResponse(release)),
+			releases.map((release) => this.releaseService.buildResponse(release)),
 			request
 		);
 	}

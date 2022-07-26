@@ -99,7 +99,7 @@ export default class AlbumController {
 		where: AlbumQueryParameters.WhereInput
 	) {
 		let masterRelease = await this.releaseService.getMasterRelease(where, include);
-		return this.releaseService.buildReleaseResponse(masterRelease);
+		return this.releaseService.buildResponse(masterRelease);
 	}
 
 	@ApiOperation({
@@ -138,7 +138,7 @@ export default class AlbumController {
 			where, paginationParameters, include, sortingParameter
 		);
 		return new PaginatedResponse(
-			releases.map((release) => this.releaseService.buildReleaseResponse(release)),
+			releases.map((release) => this.releaseService.buildResponse(release)),
 			request
 		);
 	}

@@ -147,7 +147,7 @@ export default class IllustrationService implements OnModuleInit {
 	 */
 	async extractTrackIllustration(track: Track, fullTrackPath: string): Promise<IllustrationPath | null> {
 		Logger.log(`Extracting illustration from track '${track.displayName}'`);
-		let release: Release = await this.releaseService.getRelease(
+		let release: Release = await this.releaseService.get(
 			{ byId: { id: track.releaseId } },
 			{ album: true }
 		);

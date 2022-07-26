@@ -174,7 +174,7 @@ export default class AlbumService extends RepositoryService<
 		let album = await this.get(where, { releases: true, artist: true });
 		await Promise.all(
 			album.releases.map(
-				(release) => this.releaseService.deleteRelease({ byId: { id: release.id }}, false)
+				(release) => this.releaseService.delete({ byId: { id: release.id }}, false)
 			)
 		);
 		try {
@@ -201,7 +201,7 @@ export default class AlbumService extends RepositoryService<
 	 * @param albumId 
 	 */
 	async deleteIfEmpty(albumId: number): Promise<void> {
-		const albumCount = await this.releaseService.countReleases({
+		const albumCount = await this.releaseService.count({
 			album: { byId: { id: albumId } }
 		});
 		if (albumCount == 0)
@@ -245,7 +245,7 @@ export default class AlbumService extends RepositoryService<
 			response = {
 				...response,
 				releases: album.releases.map(
-					(release) => this.releaseService.buildReleaseResponse(release)
+					(release) => this.releaseService.buildResponse(release)
 				)
 			};
 		if (album.artist != undefined)

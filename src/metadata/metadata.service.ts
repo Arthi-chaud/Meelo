@@ -54,7 +54,7 @@ export default class MetadataService {
 			name: this.removeReleaseExtension(metadata.album ?? metadata.release!),
 			artist: albumArtist ? { id: albumArtist?.id} : undefined
 		}, { releases: true });
-		let release = await this.releaseService.getOrCreateRelease({
+		let release = await this.releaseService.getOrCreate({
 			title: metadata.release ?? metadata.album!,
 			master: album.releases.length == 0,
 			releaseDate: metadata.releaseDate,
@@ -81,7 +81,7 @@ export default class MetadataService {
 		release.album.type = metadata.compilation ? AlbumType.Compilation : release.album.type;
 		await this.albumService.update({ ...release.album }, { byId: { id: release.albumId }});
 		release.releaseDate = metadata.releaseDate ?? null;
-		await this.releaseService.updateRelease({ releaseDate: release.releaseDate ?? undefined }, { byId: { id: release.id } });
+		await this.releaseService.update({ releaseDate: release.releaseDate ?? undefined }, { byId: { id: release.id } });
 		return this.trackService.createTrack(track);
 	}
 
