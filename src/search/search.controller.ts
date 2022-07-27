@@ -36,11 +36,16 @@ export default class SearchController {
 		query: string,
 	) {
 		return {
-			artists: await this.searchService.searchArtists(query),
-			albums: await this.searchService.searchAlbums(query),
-			songs: await this.searchService.searchSongs(query),
-			releases: await this.searchService.searchReleases(query),
-			genres: await this.searchService.searchGenres(query),
+			artists: (await this.searchService.searchArtists(query))
+				.map((artist) => this.artistService.buildResponse(artist)),
+			albums: (await this.searchService.searchAlbums(query))
+				.map((album) => this.albumService.buildResponse(album)),
+			songs: (await this.searchService.searchSongs(query))
+				.map((song) => this.songService.buildResponse(song)),
+			releases: (await this.searchService.searchReleases(query))
+				.map((release) => this.releaseService.buildResponse(release)),
+			genres: (await this.searchService.searchGenres(query))
+				.map((genre) => this.genreService.buildResponse(genre)),
 		};
 	}
 

@@ -18,7 +18,7 @@ import TestPrismaService from "test/test-prisma.service";
 import SearchModule from "./search.module";
 import SearchService from "./search.service";
 
-describe('Song Service', () => {
+describe('Search Service', () => {
 	let searchService: SearchService;
 	let dummyRepository: TestPrismaService;
 
