@@ -195,9 +195,7 @@ export default class IllustrationService implements OnModuleInit {
 	}
 
 	private async saveIllustrationWithStatus(rawIllustration: IPicture, illustrationBuffer: Buffer, outputPath: string): Promise<IllustrationExtractStatus> {
-		Logger.error(outputPath);
 		if (this.fileManagerService.fileExists(outputPath)) {
-			Logger.warn("File exists");
 			if (this.fileManagerService.getFileContent(outputPath) == illustrationBuffer.toString())
 				return 'already-extracted';
 			return 'differerent-illustration';
