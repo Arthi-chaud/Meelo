@@ -16,6 +16,8 @@ import { FileDoesNotExistException } from 'src/file-manager/file-manager.excepti
 import { ModuleRef } from '@nestjs/core';
 import compilationAlbumArtistKeyword from 'src/utils/compilation';
 
+type IllustrationExtractStatus = 'extracted' | 'error' | 'already-extracted' | 'differerent-illustration';
+
 @Injectable()
 export default class IllustrationService implements OnModuleInit {
 	public illustrationFolderPath: string;
@@ -135,7 +137,6 @@ export default class IllustrationService implements OnModuleInit {
 		return this.fileManagerService.deleteFolder(illustrationFolderPath);
 	}
 
-
 	/**
 	 * Extracts the embedded illustration in a track file
 	 * If no illustration is embedded, returns null
@@ -147,10 +148,7 @@ export default class IllustrationService implements OnModuleInit {
 	 */
 	async extractTrackIllustration(track: Track, fullTrackPath: string): Promise<IllustrationPath | null> {
 		Logger.log(`Extracting illustration from track '${track.displayName}'`);
-		let release: Release = await this.releaseService.get(
-			{ byId: { id: track.releaseId } },
-			{ album: true }
-		);
+		let release: Release = await this.releaseService.get({ byId: { id: track.releaseId } });
 		let album = await this.albumService.get(
 			{ byId: { id: release.albumId }},
 			{ artist: true }
@@ -172,30 +170,45 @@ export default class IllustrationService implements OnModuleInit {
 		);
 		const illustration = await this.extractIllustrationFromFile(fullTrackPath);
 		if (illustration == null) {
-			Logger.log("No illustration to extract");
+			Logger.warn("No illustration to extract");
 			return null;
 		}
-		const illustrationBytes = illustration ? (await (await Jimp.read(illustration!.data)).getBufferAsync(Jimp.MIME_JPEG)) : undefined;
-		const saveAndGetIllustrationPath = async (illustrationPath: IllustrationPath) => {
-			if (this.fileManagerService.fileExists(illustrationPath)) {
-				if (this.fileManagerService.getFileContent(illustrationPath) == illustrationBytes!.toString())
-					return illustrationPath;
-			} else if (illustration != undefined) {
-				await this.saveIllustration(illustration.data, illustrationPath);
-				return illustrationPath;
+		const illustrationBytes = (await (await Jimp.read(illustration.data)).getBufferAsync(Jimp.MIME_JPEG));
+		for (const path of [releaseIllustrationPath, trackIllustrationPath]) {
+			const illustrationExtractionStatus = await this.saveIllustrationWithStatus(illustration, illustrationBytes, path);
+			if (illustrationExtractionStatus === 'error')
+				throw new IllustrationNotExtracted('Illustration extraction failed');
+			if (illustrationExtractionStatus === 'already-extracted') {
+				Logger.log("Illustration was previously extracted");
+				return path;
 			}
-			return null;
-		};
-		const extractedIllustrationPath = await saveAndGetIllustrationPath(releaseIllustrationPath)
-			?? await saveAndGetIllustrationPath(trackIllustrationPath);
-		if (extractedIllustrationPath == null) {
-			Logger.warn("Illustration extraction failed");
-			throw new IllustrationNotExtracted(track.displayName);
+			if (illustrationExtractionStatus === 'extracted') {
+				Logger.log("Illustration extracted successfully");
+				return path;
+			}
+			if (illustrationExtractionStatus === 'differerent-illustration') {
+				continue;
+			}
 		}
-		Logger.log("Illustration successfully extracted");
-		return extractedIllustrationPath;
+		Logger.warn("No illustration extracted");
+		return null;
 	}
 
+	private async saveIllustrationWithStatus(rawIllustration: IPicture, illustrationBuffer: Buffer, outputPath: string): Promise<IllustrationExtractStatus> {
+		Logger.error(outputPath);
+		if (this.fileManagerService.fileExists(outputPath)) {
+			Logger.warn("File exists");
+			if (this.fileManagerService.getFileContent(outputPath) == illustrationBuffer.toString())
+				return 'already-extracted';
+			return 'differerent-illustration';
+		}
+		try {
+			await this.saveIllustration(rawIllustration.data, outputPath);
+			return 'extracted';
+		} catch {
+			return 'error';
+		}
+	}
 
 	/**
 	 * Extracts the embedded illustration of a file
