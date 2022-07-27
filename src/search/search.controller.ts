@@ -10,11 +10,21 @@ import ReleaseQueryParameters from 'src/release/models/release.query-parameters'
 import SongQueryParameters from 'src/song/models/song.query-params';
 import SearchService from './search.service';
 import type { Request } from 'express';
+import ArtistService from 'src/artist/artist.service';
+import AlbumService from 'src/album/album.service';
+import GenreService from 'src/genre/genre.service';
+import ReleaseService from 'src/release/release.service';
+import SongService from 'src/song/song.service';
 
 @Controller('search')
 export default class SearchController {
 	constructor(
-		private searchService: SearchService
+		private searchService: SearchService,
+		private artistService: ArtistService,
+		private albumService: AlbumService,
+		private songService: SongService,
+		private releaseService: ReleaseService,
+		private genreService: GenreService
 	) {}
 	
 	@ApiOperation({
@@ -47,8 +57,9 @@ export default class SearchController {
 		include: ArtistQueryParameters.RelationInclude,
 		@Req() request: Request
 	) {
+		const artists = await this.searchService.searchArtists(query, paginationParameters, include);
 		return new PaginatedResponse(
-			await this.searchService.searchArtists(query, paginationParameters, include),
+			artists.map((artist) => this.artistService.buildResponse(artist)),
 			request
 		)
 	}
@@ -66,8 +77,9 @@ export default class SearchController {
 		include: AlbumQueryParameters.RelationInclude,
 		@Req() request: Request
 	) {
+		const albums = await this.searchService.searchAlbums(query, paginationParameters, include)
 		return new PaginatedResponse(
-			await this.searchService.searchAlbums(query, paginationParameters, include),
+			albums.map((album) => this.albumService.buildResponse(album)),
 			request
 		)
 	}
@@ -85,8 +97,9 @@ export default class SearchController {
 		include: SongQueryParameters.RelationInclude,
 		@Req() request: Request
 	) {
+		const songs = await this.searchService.searchSongs(query, paginationParameters, include);
 		return new PaginatedResponse(
-			await this.searchService.searchSongs(query, paginationParameters, include),
+			songs.map((song) => this.songService.buildResponse(song)),
 			request
 		)
 	}
@@ -104,8 +117,9 @@ export default class SearchController {
 		include: ReleaseQueryParameters.RelationInclude,
 		@Req() request: Request
 	) {
+		const releases = await this.searchService.searchReleases(query, paginationParameters, include)
 		return new PaginatedResponse(
-			await this.searchService.searchReleases(query, paginationParameters, include),
+			releases.map((release) => this.releaseService.buildResponse(release)),
 			request
 		)
 	}
@@ -123,8 +137,9 @@ export default class SearchController {
 		include: GenreQueryParameters.RelationInclude,
 		@Req() request: Request
 	) {
+		const genres = await this.searchService.searchGenres(query, paginationParameters, include);
 		return new PaginatedResponse(
-			await this.searchService.searchGenres(query, paginationParameters, include),
+			genres.map((genre) => this.genreService.buildResponse(genre)),
 			request
 		)
 	}
