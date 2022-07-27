@@ -184,9 +184,9 @@ export default class ReleaseService extends RepositoryService<
 			releaseId: updatedRelease.id,
 			album: { byId: { id: updatedRelease.albumId } }
 		};
-		if (!unmodifiedRelease.master && what.master) {
+		if (!unmodifiedRelease.master && what.master === true) {
 		 	await this.setReleaseAsMaster(masterChangeInput);
-		} else if (unmodifiedRelease.master && !what.master) {
+		} else if (unmodifiedRelease.master && what.master === false) {
 		 	await this.unsetReleaseAsMaster(masterChangeInput);
 		}
 		await this.albumService.updateAlbumDate({ byId: { id: updatedRelease.albumId }});
