@@ -3,15 +3,7 @@ updates:
   - package-ecosystem: "github-actions"
     directory: "/"
     schedule:
-      interval: "weekly"
+      interval: "monthly"
     labels:
       - 'CI/CD'
-      - "Security"
-  - package-ecosystem: yarn
-    directory: "/"
-    schedule:
-      interval: "weekly"
-    open-pull-requests-limit: 10
-    versioning-strategy: increase-if-necessary
-    labels:
       - "Security"
