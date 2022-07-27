@@ -149,7 +149,7 @@ export default class ArtistService extends RepositoryService<
 		where: ArtistQueryParameters.WhereInput
 	): Promise<Artist> {
 		if (where.compilationArtist)
-		throw new CompilationArtistException('Artist');
+			throw new CompilationArtistException('Artist');
 		try {
 			return await this.prismaService.artist.update({
 				data: {
