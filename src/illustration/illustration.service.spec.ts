@@ -3,7 +3,6 @@ import { createTestingModule } from "test/test-module";
 import type { TestingModule } from "@nestjs/testing";
 import AlbumService from "src/album/album.service";
 import ArtistModule from "src/artist/artist.module";
-import ArtistService from "src/artist/artist.service";
 import FileManagerModule from "src/file-manager/file-manager.module";
 import FileManagerService from "src/file-manager/file-manager.service";
 import MetadataModule from "src/metadata/metadata.module";
@@ -16,23 +15,26 @@ import { FakeFileManagerService } from "test/fake-file-manager.module";
 import IllustrationService from "./illustration.service";
 import IllustrationModule from "./illustration.module";
 import * as fs from 'fs';
+import TestPrismaService from "test/test-prisma.service";
 
 describe('Illustration Service', () => {
 	let illustrationService: IllustrationService;
 	let releaseService: ReleaseService;
 	let albumService: AlbumService;
 	const baseMetadataFolder = 'test/assets/metadata';
+	let dummyRepository: TestPrismaService;
 
 	beforeAll(async () => {
 		const module: TestingModule = await createTestingModule({
 			imports: [HttpModule, FileManagerModule, IllustrationModule, PrismaModule, ArtistModule, MetadataModule, SettingsModule],
-		}).overrideProvider(FileManagerService).useClass(FakeFileManagerService).compile();
-		await module.get<PrismaService>(PrismaService).onModuleInit();
+		}).overrideProvider(FileManagerService).useClass(FakeFileManagerService)
+		.overrideProvider(PrismaService).useClass(TestPrismaService).compile();
 		illustrationService = module.get<IllustrationService>(IllustrationService);
 		illustrationService.onModuleInit();
 		releaseService = module.get<ReleaseService>(ReleaseService);
 		albumService = module.get<AlbumService>(AlbumService);
-		await module.get<ArtistService>(ArtistService).create({ name: 'My Artist' });
+		dummyRepository = module.get(PrismaService);
+		await dummyRepository.onModuleInit();
 	});
 
 	it('should be defined', () => {
@@ -88,22 +90,14 @@ describe('Illustration Service', () => {
 					.toBe(`${baseMetadataFolder}/my-other-artist/cover.jpg`);
 			});
 			it('should build the album illustration path', async () => {
-				const album = await albumService.create({ name: 'My Album', artist: { slug: new Slug('My Artist') } });
-				await releaseService.getOrCreate({
-					title: 'My Album (Deluxe Edition)', album: { byId: { id: album.id } }, master: true
-				});
 				expect(await illustrationService.buildMasterReleaseIllustrationPath(
-					new Slug('My Album'), new Slug('My Artist')
-				)).toBe(`${baseMetadataFolder}/my-artist/my-album/my-album-deluxe-edition/cover.jpg`);
+					new Slug(dummyRepository.albumA1.slug), new Slug(dummyRepository.artistA.slug)
+				)).toBe(`${baseMetadataFolder}/my-artist/my-album/my-album-1/cover.jpg`);
 			});
 			it('should build the album illustration path (compilation)', async() => {
-				const album = await albumService.create({ name: 'My Other Album' })
-				await releaseService.getOrCreate({
-					title: 'My Other Album (Deluxe Edition)', album: { byId: { id: album.id } }, master: true
-				});
 				expect(await illustrationService.buildMasterReleaseIllustrationPath(
-					new Slug('My Other Album')
-				)).toBe(`${baseMetadataFolder}/compilations/my-other-album/my-other-album-deluxe-edition/cover.jpg`);
+					new Slug(dummyRepository.compilationAlbumA.slug)
+				)).toBe(`${baseMetadataFolder}/compilations/my-compilation-album/my-compilation-album-1/cover.jpg`);
 			});
 			it('should build the release illustration path', () => {
 				expect(illustrationService.buildReleaseIllustrationPath(
@@ -132,12 +126,12 @@ describe('Illustration Service', () => {
 			});
 		});
 
-		describe('should extract illustration', () => {
+		describe('Illustration extraction', () => {
 			const outPath = `${baseMetadataFolder}/illustration.jpg`;
 			it("should write data to file", async () => {
 				fs.rmSync(outPath);
 				illustrationService['saveIllustration'](Buffer.from('ABC'), outPath);
-				expect(fs.existsSync(outPath)).toBe(true);
+				expect(illustrationService.illustrationExists(outPath)).toBe(true);
 				expect(fs.readFileSync(outPath)).toStrictEqual(Buffer.from('ABC'));
 			});
 			it("should re-write data to file", async () => {
@@ -147,7 +141,7 @@ describe('Illustration Service', () => {
 			});
 
 			it("should extract the illustration to the file, with success status", async () => {
-				fs.rmSync(outPath);
+				illustrationService.deleteIllustration(outPath);
 				const status = await illustrationService['saveIllustrationWithStatus'](Buffer.from('ABC'), outPath);
 				expect(fs.existsSync(outPath)).toBe(true);
 				expect(fs.readFileSync(outPath)).toStrictEqual(Buffer.from('ABC'));
@@ -166,6 +160,18 @@ describe('Illustration Service', () => {
 				expect(fs.existsSync(outPath)).toBe(true);
 				expect(fs.readFileSync(outPath)).toStrictEqual(Buffer.from('ABC'));
 				expect(status).toBe('different-illustration');
+			});
+
+			it("should not extract the illustration to the file, with 'different-illustration' status", async () => {
+				const status = await illustrationService['saveIllustrationWithStatus'](Buffer.from('ABCD'), outPath);
+				expect(fs.existsSync(outPath)).toBe(true);
+				expect(fs.readFileSync(outPath)).toStrictEqual(Buffer.from('ABC'));
+				expect(status).toBe('different-illustration');
+			});
+
+			it("should extract illustration to matching folder", async () => {
+				jest.spyOn(illustrationService, 'extractIllustrationFromFile').mockImplementationOnce(() => 'ABCDE');
+				await illustrationService.extractTrackIllustration(dummyRepository.trackA1_1, '')
 			});
 		});
 	});
