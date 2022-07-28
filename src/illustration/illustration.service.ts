@@ -16,7 +16,7 @@ import { FileDoesNotExistException } from 'src/file-manager/file-manager.excepti
 import { ModuleRef } from '@nestjs/core';
 import compilationAlbumArtistKeyword from 'src/utils/compilation';
 
-type IllustrationExtractStatus = 'extracted' | 'error' | 'already-extracted' | 'differerent-illustration';
+type IllustrationExtractStatus = 'extracted' | 'error' | 'already-extracted' | 'different-illustration';
 
 @Injectable()
 export default class IllustrationService implements OnModuleInit {
@@ -186,7 +186,7 @@ export default class IllustrationService implements OnModuleInit {
 				Logger.log("Illustration extracted successfully");
 				return path;
 			}
-			if (illustrationExtractionStatus === 'differerent-illustration') {
+			if (illustrationExtractionStatus === 'different-illustration') {
 				continue;
 			}
 		}
@@ -198,7 +198,7 @@ export default class IllustrationService implements OnModuleInit {
 		if (this.fileManagerService.fileExists(outputPath)) {
 			if (this.fileManagerService.getFileContent(outputPath) == illustrationBuffer.toString())
 				return 'already-extracted';
-			return 'differerent-illustration';
+			return 'different-illustration';
 		}
 		try {
 			this.saveIllustration(illustrationBuffer, outputPath);

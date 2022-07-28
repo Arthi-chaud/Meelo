@@ -15,6 +15,7 @@ import Slug from "src/slug/slug";
 import { FakeFileManagerService } from "test/fake-file-manager.module";
 import IllustrationService from "./illustration.service";
 import IllustrationModule from "./illustration.module";
+import * as fs from 'fs';
 
 describe('Illustration Service', () => {
 	let illustrationService: IllustrationService;
@@ -128,6 +129,43 @@ describe('Illustration Service', () => {
 				expect(illustrationService.buildTrackIllustrationPath(
 					new Slug('My Album'), new Slug('My Album (Deluxe Edition)'), undefined, 1, 2
 				)).toBe(`${baseMetadataFolder}/compilations/my-album/my-album-deluxe-edition/disc-1-track-2/cover.jpg`);
+			});
+		});
+
+		describe('should extract illustration', () => {
+			const outPath = `${baseMetadataFolder}/illustration.jpg`;
+			it("should write data to file", async () => {
+				fs.rmSync(outPath);
+				illustrationService['saveIllustration'](Buffer.from('ABC'), outPath);
+				expect(fs.existsSync(outPath)).toBe(true);
+				expect(fs.readFileSync(outPath)).toStrictEqual(Buffer.from('ABC'));
+			});
+			it("should re-write data to file", async () => {
+				illustrationService['saveIllustration'](Buffer.from('ABCDE'), outPath);
+				expect(fs.existsSync(outPath)).toBe(true);
+				expect(fs.readFileSync(outPath)).toStrictEqual(Buffer.from('ABCDE'));
+			});
+
+			it("should extract the illustration to the file, with success status", async () => {
+				fs.rmSync(outPath);
+				const status = await illustrationService['saveIllustrationWithStatus'](Buffer.from('ABC'), outPath);
+				expect(fs.existsSync(outPath)).toBe(true);
+				expect(fs.readFileSync(outPath)).toStrictEqual(Buffer.from('ABC'));
+				expect(status).toBe('extracted');
+			});
+
+			it("should not extract the illustration to the file, with 'already-extracted' status", async () => {
+				const status = await illustrationService['saveIllustrationWithStatus'](Buffer.from('ABC'), outPath);
+				expect(fs.existsSync(outPath)).toBe(true);
+				expect(fs.readFileSync(outPath)).toStrictEqual(Buffer.from('ABC'));
+				expect(status).toBe('already-extracted');
+			});
+
+			it("should not extract the illustration to the file, with 'different-illustration' status", async () => {
+				const status = await illustrationService['saveIllustrationWithStatus'](Buffer.from('ABCD'), outPath);
+				expect(fs.existsSync(outPath)).toBe(true);
+				expect(fs.readFileSync(outPath)).toStrictEqual(Buffer.from('ABC'));
+				expect(status).toBe('different-illustration');
 			});
 		});
 	});
