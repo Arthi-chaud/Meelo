@@ -175,7 +175,7 @@ export default class IllustrationService implements OnModuleInit {
 		}
 		const illustrationBytes = (await (await Jimp.read(illustration.data)).getBufferAsync(Jimp.MIME_JPEG));
 		for (const path of [releaseIllustrationPath, trackIllustrationPath]) {
-			const illustrationExtractionStatus = await this.saveIllustrationWithStatus(illustration, illustrationBytes, path);
+			const illustrationExtractionStatus = await this.saveIllustrationWithStatus(illustrationBytes, path);
 			if (illustrationExtractionStatus === 'error')
 				throw new IllustrationNotExtracted('Illustration extraction failed');
 			if (illustrationExtractionStatus === 'already-extracted') {
@@ -194,14 +194,14 @@ export default class IllustrationService implements OnModuleInit {
 		return null;
 	}
 
-	private async saveIllustrationWithStatus(rawIllustration: IPicture, illustrationBuffer: Buffer, outputPath: string): Promise<IllustrationExtractStatus> {
+	private async saveIllustrationWithStatus(illustrationBuffer: Buffer, outputPath: string): Promise<IllustrationExtractStatus> {
 		if (this.fileManagerService.fileExists(outputPath)) {
 			if (this.fileManagerService.getFileContent(outputPath) == illustrationBuffer.toString())
 				return 'already-extracted';
 			return 'differerent-illustration';
 		}
 		try {
-			await this.saveIllustration(rawIllustration.data, outputPath);
+			this.saveIllustration(illustrationBuffer, outputPath);
 			return 'extracted';
 		} catch {
 			return 'error';
@@ -245,13 +245,12 @@ export default class IllustrationService implements OnModuleInit {
 
 	/**
 	 * Saves an illustration in the illustration file system
-	 * @param fileContent raw binanry content of the file to save
+	 * @param fileContent raw binary content of the file to save
 	 * @param outPath path and name of the file to save the fileContent as
 	 */
-	private async saveIllustration(fileContent: Buffer, outPath: IllustrationPath) {
-		let image = await Jimp.read(fileContent);
-		fs.mkdir(dir.dirname(outPath), { recursive: true }, function (_err) {});
-		image.write(outPath);
+	private saveIllustration(fileContent: Buffer, outPath: IllustrationPath) {
+		fs.mkdirSync(dir.dirname(outPath), { recursive: true });
+		fs.writeFileSync(outPath, fileContent);
 	}
 
 	/**
