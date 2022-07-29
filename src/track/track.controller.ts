@@ -12,6 +12,7 @@ import TrackService from './track.service';
 import type { Request } from 'express';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import { TrackType } from '@prisma/client';
+import type ReassignTrackDTO from './models/reassign-track.dto';
 
 @ApiTags("Tracks")
 @Controller('tracks')
@@ -143,5 +144,19 @@ export class TrackController {
 			illustrationDto.url,
 			trackIllustrationPath
 		);
+	}
+
+	@ApiOperation({
+		summary: 'Change the track\'s parent song'
+	})
+	@Post('reassign')
+	async reassignTrack(
+		@Body() reassignmentDTO: ReassignTrackDTO
+	) {
+		return this.trackService.buildResponse(
+			await this.trackService.reassign(
+			{ id: reassignmentDTO.trackId },
+			{ byId: { id: reassignmentDTO.songId } }
+		));
 	}
 }

@@ -352,18 +352,19 @@ export default class TrackService extends RepositoryService<
 	 */
 	async reassign(
 		trackWhere: TrackQueryParameters.WhereInput, newParentWhere: SongQueryParameters.WhereInput
-	): Promise<void> {
+	): Promise<Track> {
 		const track = await this.get(trackWhere);
 		const newParent = await this.songService.get(newParentWhere, { tracks: true });
 		await this.unsetTrackAsMaster({
 			trackId: track.id,
 			song: { byId: { id: track.songId } }
 		});
-		await this.update({
+		const updatedTrack = await this.update({
 			song: { byId: { id: newParent.id } },
 			master: newParent.tracks.length == 0
 		}, trackWhere);
 		await this.songService.deleteIfEmpty({ byId: { id: track.songId } });
+		return updatedTrack;
 	}
 
 	buildResponse<ResponseType extends Track & { illustration: string, stream: string }>(
