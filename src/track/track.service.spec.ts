@@ -408,6 +408,42 @@ describe('Track Service', () => {
 		});
 	});
 
+	describe("Reassign track", () => {
+		it("should reassign the track's parent song", async () => {
+			await trackService.reassign(
+				{ id: dummyRepository.trackC1_1.id },
+				{ byId: { id: dummyRepository.songB1.id } }
+			);
+			const updatedTrack = await trackService.get({ id: dummyRepository.trackC1_1.id });
+			expect(updatedTrack.songId).toBe(dummyRepository.songB1.id);
+		});
+
+		it("should have set the track as non-master", async () => {
+			const updatedTrack = await trackService.get({ id: dummyRepository.trackC1_1.id });
+			expect(updatedTrack.master).toBe(false);
+		});
+
+		it("should have deleted previous, now empty, parent song", () => {
+			const test = async () => await songService.get({ byId: { id: dummyRepository.songC1.id  }});
+			expect(test()).rejects.toThrow(SongNotFoundByIdException);
+		});
+
+		it("should reassign the master track", async () => {
+			await trackService.reassign(
+				{ id: dummyRepository.trackB1_1.id },
+				{ byId: { id: dummyRepository.songA2.id } }
+			);
+			const updatedTrack = await trackService.get({ id: dummyRepository.trackB1_1.id });
+			expect(updatedTrack.songId).toBe(dummyRepository.songA2.id);
+			expect(updatedTrack.master).toBe(false);
+			const otherTrack =  await trackService.get({ id: dummyRepository.trackC1_1.id });
+			expect(otherTrack.master).toBe(true);
+
+			/// teardown
+			trackService.delete({ id: dummyRepository.trackB1_1.id })
+		});
+	});
+
 	describe("Delete Track", () => {
 		it("should delete the master track", async () => {
 			await trackService.delete({ id:  dummyRepository.trackA1_1.id });

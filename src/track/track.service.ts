@@ -343,6 +343,28 @@ export default class TrackService extends RepositoryService<
 			)
 		]);
 	}
+	
+	/**
+	 * Change the track's parent song
+	 * If the previous parent is empty, it will be deleted
+	 * @param trackWhere the query parameters to find the track to reassign
+	 * @param newParentWhere the query parameters to find the song to reassign the track to
+	 */
+	async reassign(
+		trackWhere: TrackQueryParameters.WhereInput, newParentWhere: SongQueryParameters.WhereInput
+	): Promise<void> {
+		const track = await this.get(trackWhere);
+		const newParent = await this.songService.get(newParentWhere, { tracks: true });
+		await this.unsetTrackAsMaster({
+			trackId: track.id,
+			song: { byId: { id: track.songId } }
+		});
+		await this.update({
+			song: { byId: { id: newParent.id } },
+			master: newParent.tracks.length == 0
+		}, trackWhere);
+		await this.songService.deleteIfEmpty({ byId: { id: track.songId } });
+	}
 
 	buildResponse<ResponseType extends Track & { illustration: string, stream: string }>(
 		track: Track & Partial<{ release: Release, song: Song }>
