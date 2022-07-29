@@ -1,4 +1,4 @@
-import { Controller, forwardRef, Get, Inject, Param, Query, Req, Response } from '@nestjs/common';
+import { Body, Controller, forwardRef, Get, Inject, Param, Post, Query, Req, Response } from '@nestjs/common';
 import IllustrationService from 'src/illustration/illustration.service';
 import type { PaginationParameters } from 'src/pagination/models/pagination-parameters';
 import ParsePaginationParameterPipe from 'src/pagination/pagination.pipe';
@@ -15,6 +15,7 @@ import TrackService from 'src/track/track.service';
 import TrackQueryParameters from 'src/track/models/track.query-parameters';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import { TrackType } from '@prisma/client';
+import type ReassignAlbumDTO from './models/reassign-album.dto';
 
 @ApiTags("Albums")
 @Controller('albums')
@@ -187,5 +188,22 @@ export default class AlbumController {
 			album.slug, res
 		);
 	}
+
+	@ApiOperation({
+		summary: 'Change the album\'s parent artist'
+	})
+	@Post('reassign')
+	async reassignTrack(
+		@Body() reassignmentDTO: ReassignAlbumDTO
+	) {
+		return this.albumService.buildResponse(
+			await this.albumService.reassign(
+			{ byId: { id: reassignmentDTO.albumId } },
+			reassignmentDTO.artistId == null
+				? { compilationArtist: true }
+				: { id: reassignmentDTO.artistId }
+		));
+	}
+
 
 }

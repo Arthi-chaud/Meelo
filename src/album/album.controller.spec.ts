@@ -19,6 +19,7 @@ import SetupApp from "test/setup-app";
 import IllustrationModule from "src/illustration/illustration.module";
 import GenreModule from "src/genre/genre.module";
 import TestPrismaService from "test/test-prisma.service";
+import type ReassignAlbumDTO from "./models/reassign-album.dto";
 
 describe('Album Controller', () => {
 	let dummyRepository: TestPrismaService;
@@ -294,6 +295,43 @@ describe('Album Controller', () => {
 			return request(app.getHttpServer())
 				.get(`/albums/${-1}/master/tracklist`)
 				.expect(404);
+		});
+	});
+
+
+	describe("Reassign the album (POST /albums/reassign)", () => {
+		it("should reassign the compilation album to an artist", () => {
+			return request(app.getHttpServer())
+				.post(`/albums/reassign`)
+				.send(<ReassignAlbumDTO>{
+					albumId: dummyRepository.compilationAlbumA.id,
+					artistId: dummyRepository.artistB.id
+				})
+				.expect(201)
+				.expect((res) => {
+					let artist: Album = res.body;
+					expect(artist).toStrictEqual({
+						...expectedAlbumResponse(dummyRepository.compilationAlbumA),
+						artistId: dummyRepository.artistB.id
+					});
+				});
+		});
+
+		it("should reassign the album as a compilation", () => {
+			return request(app.getHttpServer())
+				.post(`/albums/reassign`)
+				.send(<ReassignAlbumDTO>{
+					albumId: dummyRepository.compilationAlbumA.id,
+					artistId: null
+				})
+				.expect(201)
+				.expect((res) => {
+					let artist: Album = res.body;
+					expect(artist).toStrictEqual({
+						...expectedAlbumResponse(dummyRepository.compilationAlbumA),
+						artistId: null
+					});
+				});
 		});
 	});
 });

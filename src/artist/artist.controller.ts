@@ -194,5 +194,4 @@ export default class ArtistController {
 			request
 		);
 	}
-
 }
