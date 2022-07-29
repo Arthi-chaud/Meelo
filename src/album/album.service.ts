@@ -225,6 +225,34 @@ export default class AlbumService extends RepositoryService<
 	}
 
 	/**
+	 * Change an album's artist
+	 * @param albumWhere the query parameters to find the album to reassign
+	 * @param artistWhere the query parameters to find the artist to reassign the album to
+	 */
+	async reassign(
+		albumWhere: AlbumQueryParameters.WhereInput, artistWhere: ArtistQueryParameters.WhereInput
+	): Promise<Album> {
+		const album = await this.get(albumWhere, { artist: true });
+		const previousArtistSlug = album.artist ? new Slug(album.artist.slug) : undefined;
+		const albumSlug = new Slug(album.slug);
+		const newArtist = artistWhere.compilationArtist
+			? null
+			: await this.artistServce.get(artistWhere, { albums: true });
+		const newArtistSlug = newArtist ? new Slug(newArtist.slug) : undefined;
+		const artistAlbums = newArtist
+			? newArtist.albums
+			: await this.getMany({ byArtist: { compilationArtist: true } });
+		
+		if (artistAlbums.find((artistAlbum) => album.slug == artistAlbum.slug))
+			throw new AlbumAlreadyExistsException(albumSlug, newArtistSlug)
+		const updatedAlbum = await this.update({ artistId: newArtist?.id ?? null }, albumWhere);
+		this.illustrationService.reassignAlbumIllustrationFolder(albumSlug, previousArtistSlug, newArtistSlug);
+		if (album.artistId)
+			await this.artistServce.deleteArtistIfEmpty({ id: album.artistId });
+		return updatedAlbum;
+	}
+
+	/**
 	 * Build an object for the API 
 	 * @param album the album to create the object from
 	 */

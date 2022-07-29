@@ -231,6 +231,39 @@ describe('Album Service', () => {
 		});
 	});
 
+	describe('Reassign Album', () => {
+		it("should assign a compilation album to an artist", async () => {
+			const updatedAlbum = await albumService.reassign(
+				{ byId: { id: dummyRepository.compilationAlbumA.id }},
+				{ id: dummyRepository.artistA.id }
+			);
+			expect(updatedAlbum).toStrictEqual({
+				...updatedAlbum,
+				artistId: dummyRepository.artistA.id
+			});
+		});
+		it("should assign a album as a compilation", async () => {
+			const updatedAlbum = await albumService.reassign(
+				{ byId: { id: dummyRepository.compilationAlbumA.id }},
+				{ compilationArtist: true }
+			);
+			expect(updatedAlbum).toStrictEqual({
+				...updatedAlbum,
+				artistId: null
+			});
+		});
+
+		it("should throw as the album does not exist", async () => {
+			const test = () => albumService.reassign({ byId: { id: -1  } }, { id: dummyRepository.artistA.id  });
+			expect(test()).rejects.toThrow(AlbumNotFoundFromIDException);
+		});
+
+		it("should throw as the new artist does not exist", async () => {
+			const test = () => albumService.reassign({ byId: { id: dummyRepository.albumA1.id } }, { id: -1 });
+			expect(test()).rejects.toThrow(ArtistNotFoundByIDException);
+		});
+	});
+
 	describe('Delete Album', () => {
 		it("should throw, as the album does not exist (by id)", () => {
 			const test = async () => albumService.delete({ byId: { id: -1 } });
