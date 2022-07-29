@@ -133,8 +133,15 @@ export default class IllustrationService implements OnModuleInit {
 	/**
 	 * @param illustrationFolderPath full path to an illustration folder
 	 */
-	 deleteIllustrationFolder(illustrationFolderPath: IllustrationPath) {
+	deleteIllustrationFolder(illustrationFolderPath: IllustrationPath) {
 		return this.fileManagerService.deleteFolder(illustrationFolderPath);
+	}
+
+	reassignAlbumIllustrationFolder(albumSlug: Slug, oldArtistSlug?: Slug, newArtistSlug?: Slug) {
+		const previousPath = this.buildAlbumIllustrationFolderPath(albumSlug, oldArtistSlug);
+		const newPath = this.buildAlbumIllustrationFolderPath(albumSlug, newArtistSlug);
+		if (this.fileManagerService.folderExists(previousPath))
+			fs.renameSync(previousPath, newPath);
 	}
 
 	/**
