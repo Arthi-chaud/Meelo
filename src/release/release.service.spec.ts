@@ -257,10 +257,26 @@ describe('Release Service', () => {
 				{ byId: { id: dummyRepository.releaseB1_1.id } },
 				{ byId: { id: dummyRepository.albumB1.id } }
 			);
+		});
+
+		it("should assign a release to a compilation album", async () => {
+			const updatedRelease = await releaseService.reassign(
+				{ byId: { id: dummyRepository.releaseA1_1.id } },
+				{ byId: { id: dummyRepository.compilationAlbumA.id } }
+			);
+			expect(updatedRelease).toStrictEqual({
+				...dummyRepository.releaseA1_1,
+				master: false,
+				albumId: dummyRepository.compilationAlbumA.id
+			});
 			await releaseService.reassign(
 				{ byId: { id: dummyRepository.releaseA1_1.id } },
 				{ byId: { id: dummyRepository.albumA1.id } }
 			);
+			await releaseService.setReleaseAsMaster({
+				album: { byId: { id: dummyRepository.albumA1.id }},
+				releaseId: dummyRepository.releaseA1_1.id
+			});
 		});
 
 	});
