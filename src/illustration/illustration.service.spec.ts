@@ -198,6 +198,7 @@ describe('Illustration Service', () => {
 				releaseIllustrationPath = (await illustrationService.extractTrackIllustration(dummyRepository.trackA1_1, 'test/assets/dreams.m4a'))!;
 				expect(releaseIllustrationPath).toBe('test/assets/metadata/my-artist/my-album/my-album-1/cover.jpg');
 				expect(fs.existsSync(releaseIllustrationPath)).toBe(true);
+				expect(fs.readFileSync(releaseIllustrationPath)).toStrictEqual(Buffer.from('ABCDE'));
 			});
 			let trackIllustrationPath: string;
 			it("should extract illustration to track folder, mocking the illustration bytes", async () => {
@@ -206,7 +207,9 @@ describe('Illustration Service', () => {
 				trackIllustrationPath = (await illustrationService.extractTrackIllustration(dummyRepository.trackA1_1, 'test/assets/dreams.m4a'))!;
 				expect(trackIllustrationPath).toBe('test/assets/metadata/my-artist/my-album/my-album-1/disc-1-track-2/cover.jpg');
 				expect(fs.existsSync(trackIllustrationPath)).toBe(true);
+				expect(fs.readFileSync(trackIllustrationPath)).toStrictEqual(Buffer.from('ABCDEF'));
 				expect(fs.existsSync(releaseIllustrationPath)).toBe(true);
+				expect(fs.readFileSync(releaseIllustrationPath)).toStrictEqual(Buffer.from('ABCDE'));
 			});
 
 		});
