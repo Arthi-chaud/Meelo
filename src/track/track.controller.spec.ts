@@ -19,6 +19,7 @@ import LibraryModule from "src/library/library.module";
 import ReleaseModule from "src/release/release.module";
 import GenreModule from "src/genre/genre.module";
 import TestPrismaService from "test/test-prisma.service";
+import type ReassignTrackDTO from "./models/reassign-track.dto";
 
 describe('Track Controller', () => {
 	let app: INestApplication;
@@ -161,6 +162,26 @@ describe('Track Controller', () => {
 			return request(app.getHttpServer())
 				.get(`/tracks/-1`)
 				.expect(404);
+		});
+	});
+
+	describe("Reassign the track (POST /tracks/reassign)", () => {
+		it("should reassign the track", () => {
+			return request(app.getHttpServer())
+				.post(`/tracks/reassign`)
+				.send(<ReassignTrackDTO>{
+					trackId: dummyRepository.trackC1_1.id,
+					songId: dummyRepository.songB1.id
+				})
+				.expect(201)
+				.expect((res) => {
+					let track: Track = res.body;
+					expect(track).toStrictEqual({
+						...expectedTrackResponse(dummyRepository.trackC1_1),
+						master: false,
+						songId: dummyRepository.songB1.id
+					});
+				});
 		});
 	});
 });
