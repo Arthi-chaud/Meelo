@@ -144,6 +144,15 @@ export default class IllustrationService implements OnModuleInit {
 			fs.renameSync(previousPath, newPath);
 	}
 
+	reassignReleaseIllustrationFolder(
+		releaseSlug: Slug, oldAlbumSlug: Slug, newAlbumSlug: Slug, oldArtistSlug?: Slug, newArtistSlug?: Slug
+	) {
+		const previousPath = this.buildReleaseIllustrationFolderPath(oldAlbumSlug, releaseSlug, oldArtistSlug);
+		const newPath = this.buildReleaseIllustrationFolderPath(newAlbumSlug, releaseSlug, newArtistSlug);
+		if (this.fileManagerService.folderExists(previousPath))
+			fs.renameSync(previousPath, newPath);
+	}
+
 	/**
 	 * Extracts the embedded illustration in a track file
 	 * If no illustration is embedded, returns null

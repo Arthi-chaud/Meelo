@@ -13,6 +13,7 @@ import { UrlGeneratorService } from 'nestjs-url-generator';
 import TrackService from 'src/track/track.service';
 import { buildSortingParameter } from 'src/sort/models/sorting-parameter';
 import RepositoryService from 'src/repository/repository.service';
+import IllustrationService from 'src/illustration/illustration.service';
 
 @Injectable()
 export default class ReleaseService extends RepositoryService<
@@ -32,6 +33,8 @@ export default class ReleaseService extends RepositoryService<
 		private albumService: AlbumService,
 		@Inject(forwardRef(() => TrackService))
 		private trackService: TrackService,
+		@Inject(forwardRef(() => IllustrationService))
+		private illustrationService: IllustrationService,
 		private readonly urlGeneratorService: UrlGeneratorService
 	) {
 		super();
@@ -324,11 +327,19 @@ export default class ReleaseService extends RepositoryService<
 		releaseWhere: ReleaseQueryParameters.WhereInput, albumWhere: AlbumQueryParameters.WhereInput
 	): Promise<Release> {
 		const release = await this.get(releaseWhere);
+		const oldAlbum = await this.albumService.get({ byId: { id: release.albumId } }, { artist: true });
 		const newParent = await this.albumService.get(albumWhere, { releases: true, artist: true });
 		if (newParent.releases.find((newParentRelease) => newParentRelease.slug == release.slug))
 			throw new ReleaseAlreadyExists(new Slug(release.slug), newParent.artist ? new Slug(newParent.artist.slug) : undefined);
 		await this.unsetReleaseAsMaster({ releaseId: release.id, album: { byId: { id: release.albumId }} });
 		const updatedRelease = await this.update({ album: albumWhere, master: newParent.releases.length == 0 }, releaseWhere);
+		this.illustrationService.reassignReleaseIllustrationFolder(
+			new Slug(release.slug),
+			new Slug(oldAlbum.slug),
+			new Slug(newParent.slug),
+			oldAlbum.artist ? new Slug(oldAlbum.artist.slug) : undefined,
+			newParent.artist ? new Slug(newParent.artist.slug) : undefined,
+		);
 		await this.albumService.deleteIfEmpty(release.albumId);
 		return updatedRelease;
 	} 
