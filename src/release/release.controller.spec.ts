@@ -24,6 +24,7 @@ import LibraryModule from "src/library/library.module";
 import type Tracklist from "src/track/models/tracklist.model";
 import GenreModule from "src/genre/genre.module";
 import TestPrismaService from "test/test-prisma.service";
+import type ReassignReleaseDTO from "./models/reassign-release.dto";
 
 describe('Release Controller', () => {
 	let dummyRepository: TestPrismaService;
@@ -346,6 +347,26 @@ describe('Release Controller', () => {
 			return request(app.getHttpServer())
 				.get(`/releases/-1/album`)
 				.expect(404);
+		});
+	});
+
+	describe("Reassign the release (POST /release/reassign)", () => {
+		it("should reassign the release", () => {
+			return request(app.getHttpServer())
+				.post(`/releases/reassign`)
+				.send(<ReassignReleaseDTO>{
+					releaseId: dummyRepository.releaseB1_1.id,
+					albumId: dummyRepository.albumA1.id
+				})
+				.expect(201)
+				.expect((res) => {
+					let release: Release = res.body;
+					expect(release).toStrictEqual({
+						...expectedReleaseResponse(dummyRepository.releaseB1_1),
+						master: false,
+						albumId: dummyRepository.albumA1.id
+					});
+				});
 		});
 	});
 
