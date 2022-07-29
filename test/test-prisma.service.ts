@@ -94,7 +94,8 @@ export default class TestPrismaService extends PrismaService {
 		});
 		this.trackA1_1 = await this.track.create({
 			data: { displayName: "My Song 1", ...this.baseTrack, songId: this.songA1.id,
-				releaseId: this.releaseA1_1.id, master: true, type: TrackType.Audio, sourceFileId: this.fileA1_1.id
+				releaseId: this.releaseA1_1.id, master: true, type: TrackType.Audio, sourceFileId: this.fileA1_1.id,
+				trackIndex: 2, discIndex: 1
 			}
 		});
 		this.fileA1_2Video = await this.file.create({
