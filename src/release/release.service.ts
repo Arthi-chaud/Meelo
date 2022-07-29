@@ -315,6 +315,24 @@ export default class ReleaseService extends RepositoryService<
 		]);
 	}
 
+	/**
+	 * Reassign a release to an album
+	 * @param releaseWhere the query parameters to find the release to reassign
+	 * @param albumWhere the query parameters to find the album to reassign the release to
+	 */
+	async reassign(
+		releaseWhere: ReleaseQueryParameters.WhereInput, albumWhere: AlbumQueryParameters.WhereInput
+	): Promise<Release> {
+		const release = await this.get(releaseWhere);
+		const newParent = await this.albumService.get(albumWhere, { releases: true, artist: true });
+		if (newParent.releases.find((newParentRelease) => newParentRelease.slug == release.slug))
+			throw new ReleaseAlreadyExists(new Slug(release.slug), newParent.artist ? new Slug(newParent.artist.slug) : undefined);
+		await this.unsetReleaseAsMaster({ releaseId: release.id, album: { byId: { id: release.albumId }} });
+		const updatedRelease = await this.update({ album: albumWhere, master: newParent.releases.length == 0 }, releaseWhere);
+		await this.albumService.deleteIfEmpty(release.albumId);
+		return updatedRelease;
+	} 
+
 	buildResponse<ResponseType extends Release & { illustration: string }>(
 		release: Release & Partial<{ tracks: Track[], album: Album }>
 	): ResponseType {

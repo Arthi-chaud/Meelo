@@ -219,6 +219,52 @@ describe('Release Service', () => {
 		});
 	});
 
+
+	describe('Reassign Release', () => {
+		it('should reassign a release to an album', async () => {
+			const updatedRelease = await releaseService.reassign(
+				{ byId: { id: dummyRepository.releaseB1_1.id } },
+				{ byId: { id: dummyRepository.albumA1.id } }
+			);
+			expect(updatedRelease).toStrictEqual({
+				...dummyRepository.releaseB1_1,
+				master: false,
+				albumId: dummyRepository.albumA1.id
+			});
+		});
+
+		it("should have deleted the empty parent", async () => {
+			const test = () => albumService.get({ byId: { id: dummyRepository.albumB1.id } });
+			expect(test()).rejects.toThrow(AlbumNotFoundFromIDException);
+		});
+
+		it("should have set the other release as master", async () => {
+			dummyRepository.albumB1 = await albumService.create({
+				name: dummyRepository.albumB1.name, artist: { id: dummyRepository.artistB.id }
+			});
+			await releaseService.reassign(
+				{ byId: { id: dummyRepository.releaseA1_1.id } },
+				{ byId: { id: dummyRepository.albumB1.id } }
+			);
+			const otherRelease = await releaseService.get(
+				{ byId: { id: dummyRepository.releaseA1_2.id } }
+			);
+			expect(otherRelease).toStrictEqual({
+				...dummyRepository.releaseA1_2,
+				master: true,
+			});
+			await releaseService.reassign(
+				{ byId: { id: dummyRepository.releaseB1_1.id } },
+				{ byId: { id: dummyRepository.albumB1.id } }
+			);
+			await releaseService.reassign(
+				{ byId: { id: dummyRepository.releaseA1_1.id } },
+				{ byId: { id: dummyRepository.albumA1.id } }
+			);
+		});
+
+	});
+
 	describe('Update Release', () => {
 		it("Should Update the release", async () => {
 			let updatedRelease = await releaseService.update(
