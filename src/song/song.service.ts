@@ -125,7 +125,7 @@ export default class SongService extends RepositoryService<
 	 * Updates a song in the database
 	 * @param what the fields to update
 	 * @param where the query parameters to find the album to update
-	 * @returns the updated album
+	 * @returns the updated song
 	 */
 	async update(
 		what: SongQueryParameters.UpdateInput,
@@ -161,6 +161,21 @@ export default class SongService extends RepositoryService<
 		} catch {
 			throw await this.onNotFound(where);
 		}
+	}
+
+	/**
+	 * Increment a song's play count
+	 * @param where the query parameter to find the song to update
+	 * @returns the updated song
+	 */
+	 async incrementPlayCount(
+		where: SongQueryParameters.WhereInput
+	): Promise<void> {
+		const song = await this.get(where);
+		await this.update(
+			{ playCount: song.playCount + 1 },
+			{ byId: { id: song.id } },
+		);
 	}
 	
 	/**
