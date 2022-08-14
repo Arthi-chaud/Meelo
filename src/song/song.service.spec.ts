@@ -17,6 +17,7 @@ import IllustrationModule from "src/illustration/illustration.module";
 import GenreModule from "src/genre/genre.module";
 import { GenreNotFoundByIdException } from "src/genre/genre.exceptions";
 import TestPrismaService from "test/test-prisma.service";
+import type SongQueryParameters from "./models/song.query-params";
 
 describe('Song Service', () => {
 	let songService: SongService;
@@ -323,6 +324,39 @@ describe('Song Service', () => {
 				{ bySlug: { slug: new Slug("My Song"), artist: { id: dummyRepository.artistA.id } }}
 			);
 			expect(test()).rejects.toThrow(GenreNotFoundByIdException);
+		});
+	});
+
+	describe("Increment a song's play count", () => {
+		it("should throw, as the song does not exist", () => {
+			const test = async () => await songService.incrementPlayCount(
+				{ byId: { id: -1 } }
+			);
+			expect(test()).rejects.toThrow(SongNotFoundByIdException);
+		});
+		it("should increment the song's play count (by id)", async () => {
+			const queryParemeters = { byId: { id: dummyRepository.songA2.id } };
+			await songService.incrementPlayCount(queryParemeters);
+			const updatedSong = await songService.get(queryParemeters);
+			expect(updatedSong).toStrictEqual({
+				...dummyRepository.songA2,
+				playCount: dummyRepository.songA2.playCount + 1
+			});
+		});
+
+		it("should increment the song's play count (by slug)", async () => {
+			const queryParemeters: SongQueryParameters.WhereInput = {
+				bySlug:{
+					slug: new Slug(dummyRepository.songB1.slug),
+					artist: { id: dummyRepository.artistB.id }
+				}
+			};
+			await songService.incrementPlayCount(queryParemeters);
+			const updatedSong = await songService.get(queryParemeters);
+			expect(updatedSong).toStrictEqual({
+				...dummyRepository.songB1,
+				playCount: dummyRepository.songB1.playCount + 1
+			});
 		});
 	});
 
