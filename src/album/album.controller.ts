@@ -1,4 +1,4 @@
-import { Body, Controller, forwardRef, Get, Inject, Param, Post, Query, Req, Response } from '@nestjs/common';
+import { Body, Controller, DefaultValuePipe, forwardRef, Get, Inject, Param, ParseBoolPipe, Post, Query, Req, Response } from '@nestjs/common';
 import IllustrationService from 'src/illustration/illustration.service';
 import type { PaginationParameters } from 'src/pagination/models/pagination-parameters';
 import ParsePaginationParameterPipe from 'src/pagination/pagination.pipe';
@@ -118,6 +118,25 @@ export default class AlbumController {
 			{ byId: { id: masterRelease.id } }, include
 		);
 		return this.trackService.buildTracklistResponse(tracklist);
+	}
+
+	@ApiOperation({
+		summary: 'Get the playlist of master release of an album'
+	})
+	@Get(':idOrSlug/master/playlist')
+	async getAlbumPlaylist(
+		@Param(ParseAlbumIdentifierPipe)
+		where: AlbumQueryParameters.WhereInput,
+		@Query('with', TrackQueryParameters.ParseRelationIncludePipe)
+		include: TrackQueryParameters.RelationInclude,
+		@Query('random', new DefaultValuePipe(false), ParseBoolPipe)
+		random: boolean = false,
+	) {
+		const masterRelease = await this.releaseService.getMasterRelease(where);
+		const tracklist = await this.trackService.getPlaylist(
+			{ byId: { id: masterRelease.id } }, include, random
+		);
+		return tracklist.map((track) => this.trackService.buildResponse(track));
 	}
 
 	@ApiOperation({
