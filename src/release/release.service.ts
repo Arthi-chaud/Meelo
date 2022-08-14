@@ -14,6 +14,7 @@ import TrackService from 'src/track/track.service';
 import { buildSortingParameter } from 'src/sort/models/sorting-parameter';
 import RepositoryService from 'src/repository/repository.service';
 import IllustrationService from 'src/illustration/illustration.service';
+import type TrackQueryParameters from 'src/track/models/track.query-parameters';
 
 @Injectable()
 export default class ReleaseService extends RepositoryService<
@@ -168,7 +169,7 @@ export default class ReleaseService extends RepositoryService<
 	 * @param what the fields to update in the release
 	 * @param where the query parameters to fin the release to update
 	 */
-	 async update(
+	async update(
 		what: ReleaseQueryParameters.UpdateInput,
 		where: ReleaseQueryParameters.WhereInput
 	) {
@@ -342,7 +343,7 @@ export default class ReleaseService extends RepositoryService<
 		);
 		await this.albumService.deleteIfEmpty(release.albumId);
 		return updatedRelease;
-	} 
+	}	
 
 	buildResponse<ResponseType extends Release & { illustration: string }>(
 		release: Release & Partial<{ tracks: Track[], album: Album }>
