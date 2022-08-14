@@ -20,7 +20,7 @@ import type Tracklist from './models/tracklist.model';
 import { UnknownDiscIndexKey } from './models/tracklist.model';
 import { buildSortingParameter } from 'src/sort/models/sorting-parameter';
 import RepositoryService from 'src/repository/repository.service';
-import arrayShuffle from 'array-shuffle';
+import { shuffle } from '@taumechanica/stout';
 
 @Injectable()
 export default class TrackService extends RepositoryService<
@@ -198,7 +198,7 @@ export default class TrackService extends RepositoryService<
 		let playlist: Track[] = [];
 		tracklist.forEach((disc) => playlist = playlist.concat(disc));
 		if (random)
-			playlist = arrayShuffle(playlist);
+			shuffle(playlist);
 		return playlist;
 	}
 

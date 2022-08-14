@@ -1095,6 +1095,11 @@
   dependencies:
     "@sinonjs/commons" "^1.7.0"
 
+"@taumechanica/stout@^2.2.0":
+  version "2.2.0"
+  resolved "https://registry.yarnpkg.com/@taumechanica/stout/-/stout-2.2.0.tgz#e7cef223a41baa2ce031a1a091bee808990e91e7"
+  integrity sha512-Khje8q9UYWmdVmN7j599dI0KnhZIah4spFJukyGwUBBwXvbV2O1q/Ib1oTb5+HX/QxWDD3iJ1PJTzeDbdELHKg==
+
 "@tokenizer/token@^0.3.0":
   version "0.3.0"
   resolved "https://registry.yarnpkg.com/@tokenizer/token/-/token-0.3.0.tgz#fe98a93fe789247e998c75e74e9c7c63217aa276"
@@ -1770,11 +1775,6 @@ array-flatten@1.1.1:
   version "1.1.1"
   resolved "https://registry.yarnpkg.com/array-flatten/-/array-flatten-1.1.1.tgz#9a5f699051b1e7073328f2a008968b64ea2955d2"
   integrity sha512-PCVAQswWemu6UdxsDFFX/+gVeYqKAod3D3UVm91jHwynguOwAvYPhx8nNlM++NqRcK6CxxpUafjmhIdKiHibqg==
-
-array-shuffle@^3.0.0:
-  version "3.0.0"
-  resolved "https://registry.yarnpkg.com/array-shuffle/-/array-shuffle-3.0.0.tgz#9a927cc2ca4c8ef4d71cddef7c9ee7b3b733d54b"
-  integrity sha512-rogEGxHOQPhslOhpg12LJkB+bbAl484/s2AJq0BxtzQDQfKl76fS2u9zWgg3p3b9ENcuvE7K8A7l5ddiPjCRnw==
 
 array-union@^2.1.0:
   version "2.1.0"
@@ -3832,7 +3832,7 @@ jimp@^0.16.1:
     "@jimp/types" "^0.16.1"
     regenerator-runtime "^0.13.3"
 
-jpeg-js@0.4.4, jpeg-js@^0.4.4:
+jpeg-js@0.4.2, jpeg-js@^0.4.4:
   version "0.4.4"
   resolved "https://registry.yarnpkg.com/jpeg-js/-/jpeg-js-0.4.4.tgz#a9f1c6f1f9f0fa80cdb3484ed9635054d28936aa"
   integrity sha512-WZzeDOEtTOBK4Mdsar0IqEU5sMr3vSV2RqkAIzUEV2BHnUfKGyswWFPFwK5EeDo93K3FohSHbLAjj0s1Wzd+dg==
