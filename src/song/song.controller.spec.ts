@@ -19,10 +19,13 @@ import LibraryModule from "src/library/library.module";
 import ReleaseModule from "src/release/release.module";
 import GenreModule from "src/genre/genre.module";
 import TestPrismaService from "test/test-prisma.service";
+import SongService from "./song.service";
+import Slug from "src/slug/slug";
 
 describe('Song Controller', () => {
 	let dummyRepository: TestPrismaService;
 	let app: INestApplication;
+	let songService: SongService;
 
 	const expectedSongResponse = (song: Song) => ({
 		...song,
@@ -48,6 +51,7 @@ describe('Song Controller', () => {
 		app.useGlobalPipes(new ValidationPipe());
 		await app.init();
 		dummyRepository = module.get(PrismaService);
+		songService = module.get(SongService);
 		await dummyRepository.onModuleInit();
 	});
 
@@ -269,6 +273,47 @@ describe('Song Controller', () => {
 			return request(app.getHttpServer())
 				.get(`/songs/${-1}/tracks`)
 				.expect(404);
+		});
+	});
+
+	describe("Increment Song's Play count (PATCH /songs/:id/played)", () => {
+		it("should return an error, as the track does not exist", () => {
+			return request(app.getHttpServer())
+				.get(`/songs/${-1}/played`)
+				.expect(404)
+		});
+
+		it("should increment a song's play count (by id)", () => {
+			const queryParameters = { byId: { id: dummyRepository.songC1.id } };
+			return request(app.getHttpServer())
+				.patch(`/songs/${dummyRepository.songC1.id}/played`)
+				.expect(200)
+				.expect(async () => {
+					const updatedSong = await songService.get(queryParameters);
+					expect(updatedSong).toStrictEqual({
+						...dummyRepository.songC1,
+						playCount: dummyRepository.songC1.playCount + 1
+					});
+				});
+		});
+
+		it("should increment a song's play count (by slug)", () => {
+			const queryParameters = {
+				bySlug: {
+					slug: new Slug(dummyRepository.songC1.slug),
+					artist: { id: dummyRepository.artistC.id }
+				}
+			};
+			return request(app.getHttpServer())
+				.patch(`/songs/${dummyRepository.artistC.slug}+${dummyRepository.songC1.slug}/played`)
+				.expect(200)
+				.expect(async () => {
+					const updatedSong = await songService.get(queryParameters);
+					expect(updatedSong).toStrictEqual({
+						...dummyRepository.songC1,
+						playCount: dummyRepository.songC1.playCount + 2
+					});
+				});
 		});
 	});
 
