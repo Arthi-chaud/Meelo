@@ -20,6 +20,7 @@ import type Tracklist from './models/tracklist.model';
 import { UnknownDiscIndexKey } from './models/tracklist.model';
 import { buildSortingParameter } from 'src/sort/models/sorting-parameter';
 import RepositoryService from 'src/repository/repository.service';
+import { shuffle } from '@taumechanica/stout';
 
 @Injectable()
 export default class TrackService extends RepositoryService<
@@ -166,11 +167,11 @@ export default class TrackService extends RepositoryService<
 	/**
 	 * Get Tracklist of release
 	 * @param where 
-	 * @returns 
+	 * @returns the tracklist of the release
 	 */
 	async getTracklist(
 		where: ReleaseQueryParameters.WhereInput,
-		include?: TrackQueryParameters.RelationInclude
+		include?: TrackQueryParameters.RelationInclude,
 	): Promise<Tracklist> {
 		let tracklist: Tracklist = new Map();
 		const tracks = await this.getMany({ byRelease: where }, {}, include, { sortBy: 'trackIndex', order: 'asc' });
@@ -180,7 +181,25 @@ export default class TrackService extends RepositoryService<
 			const indexToString = track.discIndex?.toString() ?? UnknownDiscIndexKey;
 			tracklist = tracklist.set(indexToString, [ ...tracklist.get(indexToString) ?? [], track]);
 		});
-		return tracklist;
+		return new Map([...tracklist].sort());
+	}
+
+	/**
+	 * Get Playlist of release
+	 * @param where query paremeters to find the release
+	 * @returns all the tracks, ordered, from a release
+	 */
+	async getPlaylist(
+		where: ReleaseQueryParameters.WhereInput,
+		include?: TrackQueryParameters.RelationInclude,
+		random: boolean = false
+	): Promise<Track[]> {
+		const tracklist = await this.getTracklist(where, include);
+		let playlist: Track[] = [];
+		tracklist.forEach((disc) => playlist = playlist.concat(disc));
+		if (random)
+			shuffle(playlist);
+		return playlist;
 	}
 
 	/**

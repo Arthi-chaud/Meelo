@@ -294,6 +294,46 @@ describe('Release Controller', () => {
 		});
 	});
 
+	describe("Get Playlist", () => {
+		it("should get the Playlist", () => {
+			return request(app.getHttpServer())
+				.get(`/releases/${dummyRepository.releaseA1_2.id}/playlist`)
+				.expect(200)
+				.expect((res) => {
+					let tracklist: Track[] = res.body;
+					expect(tracklist).toStrictEqual([
+						expectedTrackResponse(dummyRepository.trackA2_1),
+						expectedTrackResponse(dummyRepository.trackA1_2Video),
+					]);
+				});
+		});
+
+		it("should get the playlist, w/ related song", () => {
+			return request(app.getHttpServer())
+				.get(`/releases/${dummyRepository.releaseA1_2.id}/playlist?with=song`)
+				.expect(200)
+				.expect((res) => {
+					let tracklist: Track[] = res.body;
+					expect(tracklist).toStrictEqual([
+						{
+							...expectedTrackResponse(dummyRepository.trackA2_1),
+							song: expectedSongResponse(dummyRepository.songA2)
+						},
+						{
+							...expectedTrackResponse(dummyRepository.trackA1_2Video),
+							song: expectedSongResponse(dummyRepository.songA1)
+						},
+					]);
+				});
+		});
+
+		it("should return an error, as the release does not exist", () => {
+			return request(app.getHttpServer())
+				.get(`/releases/${-1}/playlist`)
+				.expect(404);
+		});
+	});
+
 	describe("Get Related Album", () => {
 		it("should get the album", () => {
 			return request(app.getHttpServer())

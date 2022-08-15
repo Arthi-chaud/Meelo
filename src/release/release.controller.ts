@@ -1,4 +1,4 @@
-import { Body, Controller, forwardRef, Get, Inject, Param, Post, Query, Req, Response } from '@nestjs/common';
+import { Body, Controller, DefaultValuePipe, forwardRef, Get, Inject, Param, ParseBoolPipe, Post, Query, Req, Response } from '@nestjs/common';
 import ParsePaginationParameterPipe from 'src/pagination/pagination.pipe';
 import type { PaginationParameters } from 'src/pagination/models/pagination-parameters';
 import ReleaseQueryParameters from './models/release.query-parameters';
@@ -106,8 +106,24 @@ export default class ReleaseController {
 		@Query('with', TrackQueryParameters.ParseRelationIncludePipe)
 		include?: TrackQueryParameters.RelationInclude
 	) {
-		const tracklist = await this.trackService.getTracklist(where, include)
+		const tracklist = await this.trackService.getTracklist(where, include);
 		return this.trackService.buildTracklistResponse(tracklist);
+	}
+
+	@ApiOperation({
+		summary: 'Get the playlist of a release'
+	})
+	@Get(':idOrSlug/playlist')
+	async getReleasePlaylist(
+		@Param(ParseReleaseIdentifierPipe)
+		where: ReleaseQueryParameters.WhereInput,
+		@Query('random', new DefaultValuePipe(false), ParseBoolPipe)
+		random: boolean,
+		@Query('with', TrackQueryParameters.ParseRelationIncludePipe)
+		include?: TrackQueryParameters.RelationInclude
+	) {
+		const tracklist = await this.trackService.getPlaylist(where, include, random);
+		return tracklist.map((track) => this.trackService.buildResponse(track));
 	}
 
 	@ApiOperation({
