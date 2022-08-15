@@ -21,6 +21,7 @@ import GenreModule from "src/genre/genre.module";
 import TestPrismaService from "test/test-prisma.service";
 import SongService from "./song.service";
 import Slug from "src/slug/slug";
+import { LyricsModule } from "src/lyrics/lyrics.module";
 
 describe('Song Controller', () => {
 	let dummyRepository: TestPrismaService;
@@ -40,7 +41,7 @@ describe('Song Controller', () => {
 	
 	beforeAll(async () => {
 		const module: TestingModule = await createTestingModule({
-			imports: [PrismaModule, AlbumModule, ArtistModule, ReleaseModule, LibraryModule, TrackModule, IllustrationModule, SongModule, MetadataModule, GenreModule],
+			imports: [PrismaModule, AlbumModule, ArtistModule, ReleaseModule, LibraryModule, TrackModule, IllustrationModule, SongModule, MetadataModule, GenreModule, LyricsModule],
 		}).overrideProvider(FileManagerService).useClass(FakeFileManagerService)
 		.overrideProvider(PrismaService).useClass(TestPrismaService).compile();
 		app = module.createNestApplication();
