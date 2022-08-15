@@ -1,4 +1,4 @@
-import { Injectable, Logger } from '@nestjs/common';
+import { forwardRef, Inject, Injectable, Logger } from '@nestjs/common';
 import type { Lyrics, Song } from '@prisma/client';
 const { getLyrics } = require('genius-lyrics-api');
 import { InvalidRequestException, MeeloException } from 'src/exceptions/meelo-exception';
@@ -26,6 +26,7 @@ export class LyricsService extends RepositoryService<
 	private readonly geniusApiKey: string | null;
 	constructor(
 		private prismaService: PrismaService,
+		@Inject(forwardRef(() => SongService))
 		private songService: SongService,
 	) {
 		super();
