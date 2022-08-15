@@ -187,7 +187,7 @@ export class LyricsService extends RepositoryService<
 	async registerLyrics(songWhere: SongQueryParameters.WhereInput, options: { force: boolean }): Promise<void> {
 		const song = await this.songService.get(songWhere, { artist: true, lyrics: true });
 
-		if (options.force == false && song.lyrics == null) {
+		if (options.force == false && song.lyrics !== null) {
 			return;
 		}
 		try {

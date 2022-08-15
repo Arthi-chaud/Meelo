@@ -12,7 +12,7 @@ export class LyricsAlreadyExistsExceptions extends AlreadyExistsException {
 }
 
 /**
- * Exception not lyrics exists in the database
+ * Exception when no lyrics exist in the database
  */
 export class LyricsNotFoundBySongException extends NotFoundException {
 	constructor(songId: Slug | number) {
