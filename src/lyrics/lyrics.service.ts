@@ -6,7 +6,7 @@ import type { PaginationParameters } from 'src/pagination/models/pagination-para
 import PrismaService from 'src/prisma/prisma.service';
 import RepositoryService from 'src/repository/repository.service';
 import Slug from 'src/slug/slug';
-import SongQueryParameters from 'src/song/models/song.query-params';
+import type SongQueryParameters from 'src/song/models/song.query-params';
 import SongService from 'src/song/song.service';
 import { LyricsAlreadyExistsExceptions, LyricsNotFoundByIDException, LyricsNotFoundBySongException, MissingGeniusAPIKeyException, NoLyricsFoundException } from './lyrics.exceptions';
 import LyricsQueryParameters from './models/lyrics.query-parameters';
@@ -47,14 +47,11 @@ export class LyricsService extends RepositoryService<
 			return await this.prismaService.lyrics.create({
 				data: {
 					...lyrics,
-					song: {
-						connect: SongQueryParameters.buildQueryParametersForOne(lyrics.song)
-					}
 				},
 				include: LyricsQueryParameters.buildIncludeParameters(include)
 			});
 		} catch {
-			const parentSong = await this.songService.get(lyrics.song);
+			const parentSong = await this.songService.get({ byId: { id: lyrics.songId }});
 			throw new LyricsAlreadyExistsExceptions(new Slug(parentSong.slug));
 		}
 	}
@@ -127,7 +124,7 @@ export class LyricsService extends RepositoryService<
 		include?: LyricsQueryParameters.RelationInclude
 	): Promise<Lyrics> {
 		try {
-			return await this.get(input, include);
+			return await this.get({ song: { byId: { id: input.songId } } }, include);
 		} catch {
 			return this.create(input, include);
 		}
@@ -199,7 +196,7 @@ export class LyricsService extends RepositoryService<
 			if (song.lyrics)
 				await this.update({ content: lyrics }, { song: songWhere });
 			else
-				await this.create({ content: lyrics, song: songWhere });
+				await this.create({ content: lyrics, songId: song.id });
 		} catch {
 			Logger.warn(`No lyrics found for song '${song.name}' by '${song.artist.name}'`)
 			throw new NoLyricsFoundException(song.artist.name, song.name);

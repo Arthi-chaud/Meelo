@@ -9,9 +9,7 @@ namespace LyricsQueryParameters {
 	/**
 	 * Parameters required to create a Lyric entry
 	 */
-	export type CreateInput = OmitId<Omit<Lyrics, 'songId'>> & {
-		song: SongQueryParameters.WhereInput
-	};
+	export type CreateInput = OmitId<Lyrics>
 	/**
 	 * Query parameters to find one lyric entry
 	 */
