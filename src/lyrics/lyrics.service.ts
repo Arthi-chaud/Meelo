@@ -1,5 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { getLyrics } from 'genius-lyrics-api';
+import RepositoryService from 'src/repository/repository.service';
 import { MissingGeniusAPIKeyException, NoLyricsFoundException } from './lyrics.exceptions';
 
 @Injectable()

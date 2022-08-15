@@ -39,7 +39,6 @@
     "class-validator": "^0.13.2",
     "eslint": "^8.17.0",
     "fs": "^0.0.1-security",
-    "genius-lyrics-api": "^3.2.0",
     "jimp": "^0.16.1",
     "music-metadata": "^7.12.3",
     "mysql2": "^2.3.3",
@@ -51,7 +50,8 @@
     "rimraf": "^3.0.2",
     "rxjs": "^7.2.0",
     "slug": "^5.3.0",
-    "ts-md5": "^1.2.11"
+    "ts-md5": "^1.2.11",
+    "ultra-lyrics": "^1.1.1"
   },
   "resolutions": {
     "jpeg-js": "^0.4.4"
