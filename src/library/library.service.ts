@@ -15,6 +15,7 @@ import TrackService from 'src/track/track.service';
 import { buildSortingParameter } from 'src/sort/models/sorting-parameter';
 import RepositoryService from 'src/repository/repository.service';
 import type { MeeloException } from 'src/exceptions/meelo-exception';
+import { LyricsService } from 'src/lyrics/lyrics.service';
 
 @Injectable()
 export default class LibraryService extends RepositoryService<
@@ -35,6 +36,7 @@ export default class LibraryService extends RepositoryService<
 		@Inject(forwardRef(() => TrackService))
 		private trackService: TrackService,
 		private metadataService: MetadataService,
+		private lyricsService: LyricsService,
 		private illustrationService: IllustrationService
 	) {
 		super();
@@ -207,6 +209,7 @@ export default class LibraryService extends RepositoryService<
 		try {
 			let track = await this.metadataService.registerMetadata(fileMetadata, registeredFile);
 			await this.illustrationService.extractTrackIllustration(track, fullFilePath);
+			await this.lyricsService.registerLyrics({ byId: { id: track.songId } }, { force: true }).catch(() => {});
 		} catch {
 			await this.fileService.delete({ id: registeredFile.id });
 			Logger.warn(`${parentLibrary.slug} library: Registration of ${filePath} failed because of bad metadata.`);

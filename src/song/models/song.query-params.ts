@@ -110,7 +110,7 @@ namespace SongQueryParameters {
 	/**
 	 * Defines what relations to include in query
 	 */
-	export const AvailableIncludes = ['tracks', 'artist', 'genres'] as const;
+	export const AvailableIncludes = ['tracks', 'artist', 'genres', 'lyrics'] as const;
 	export type RelationInclude = BaseRelationInclude<typeof AvailableIncludes>;
 	export const ParseRelationIncludePipe = new ParseBaseRelationIncludePipe(AvailableIncludes);
 
@@ -129,7 +129,8 @@ namespace SongQueryParameters {
 		return {
 			genres: include?.genres ?? false,
 			tracks: include?.tracks ?? false,
-			artist: include?.artist ?? false
+			artist: include?.artist ?? false,
+			lyrics: include?.lyrics ?? false
 		};
 	}
 }

@@ -39,6 +39,7 @@
     "class-validator": "^0.13.2",
     "eslint": "^8.17.0",
     "fs": "^0.0.1-security",
+    "genius-lyrics-api": "^3.2.0",
     "jimp": "^0.16.1",
     "music-metadata": "^7.12.3",
     "mysql2": "^2.3.3",

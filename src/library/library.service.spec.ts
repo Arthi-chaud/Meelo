@@ -17,6 +17,7 @@ import TestPrismaService from "test/test-prisma.service";
 import type { Library } from "@prisma/client";
 import FileService from "src/file/file.service";
 import TrackService from "src/track/track.service";
+import { LyricsModule } from "src/lyrics/lyrics.module";
 describe('Library Service', () => {
 	let libraryService: LibraryService;
 	let fileService: FileService;
@@ -26,7 +27,7 @@ describe('Library Service', () => {
 
 	beforeAll(async () => {
 		const module: TestingModule = await createTestingModule({
-			imports: [LibraryModule, PrismaModule, FileModule, MetadataModule, FileManagerModule, IllustrationModule, TrackModule],
+			imports: [LibraryModule, PrismaModule, FileModule, MetadataModule, FileManagerModule, IllustrationModule, TrackModule, LyricsModule],
 			providers: [LibraryService],
 		}).overrideProvider(FileManagerService).useClass(FakeFileManagerService)
 		.overrideProvider(PrismaService).useClass(TestPrismaService).compile();

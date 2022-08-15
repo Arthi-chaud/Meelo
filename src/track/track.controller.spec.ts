@@ -20,6 +20,7 @@ import ReleaseModule from "src/release/release.module";
 import GenreModule from "src/genre/genre.module";
 import TestPrismaService from "test/test-prisma.service";
 import type ReassignTrackDTO from "./models/reassign-track.dto";
+import { LyricsModule } from "src/lyrics/lyrics.module";
 
 describe('Track Controller', () => {
 	let app: INestApplication;
@@ -33,7 +34,7 @@ describe('Track Controller', () => {
 	
 	beforeAll(async () => {
 		const module: TestingModule = await createTestingModule({
-			imports: [PrismaModule, AlbumModule, ArtistModule, ReleaseModule, LibraryModule, TrackModule, IllustrationModule, SongModule, MetadataModule, GenreModule],
+			imports: [PrismaModule, AlbumModule, ArtistModule, ReleaseModule, LibraryModule, TrackModule, IllustrationModule, SongModule, MetadataModule, GenreModule, LyricsModule],
 		}).overrideProvider(FileManagerService).useClass(FakeFileManagerService)
 		.overrideProvider(PrismaService).useClass(TestPrismaService).compile();
 		app = module.createNestApplication();

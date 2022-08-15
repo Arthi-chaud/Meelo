@@ -11,6 +11,7 @@ import AlbumModule from 'src/album/album.module';
 import SongModule from 'src/song/song.module';
 import ReleaseModule from 'src/release/release.module';
 import TrackModule from 'src/track/track.module';
+import { LyricsModule } from 'src/lyrics/lyrics.module';
 
 @Module({
 	imports: [
@@ -21,6 +22,7 @@ import TrackModule from 'src/track/track.module';
 		IllustrationModule,
 		ArtistModule,
 		AlbumModule,
+		LyricsModule,
 		SongModule,
 		ReleaseModule,
 		forwardRef(() => TrackModule)

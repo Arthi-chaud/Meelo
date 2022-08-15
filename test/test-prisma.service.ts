@@ -1,5 +1,5 @@
 import { Injectable } from "@nestjs/common";
-import { Album, Artist, File, Genre, Library, Release, Song, Track, TrackType } from "@prisma/client";
+import { Album, Artist, File, Genre, Library, Lyrics, Release, Song, Track, TrackType } from "@prisma/client";
 import PrismaService from "src/prisma/prisma.service";
 
 
@@ -36,6 +36,7 @@ export default class TestPrismaService extends PrismaService {
 	public fileA2_1: File;
 	public fileB1_1: File;
 	public fileC1_1: File;
+	public lyricsA1: Lyrics;
 
 	public compilationAlbumA: Album;
 	public compilationReleaseA1: Release;
@@ -87,6 +88,11 @@ export default class TestPrismaService extends PrismaService {
 		this.songA1 = await this.song.create({
 			data: { name: "My Song", slug: 'my-song', artistId: this.artistA.id, genres:
 				{ connect: { id: this.genreA.id } }
+			}
+		});
+		this.lyricsA1 = await this.lyrics.create({
+			data: {
+				songId: this.songA1.id, content: '1234'
 			}
 		});
 		this.fileA1_1 = await this.file.create({

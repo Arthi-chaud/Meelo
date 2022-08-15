@@ -13,6 +13,7 @@ import FileManagerModule from './file-manager/file-manager.module';
 import MetadataModule from './metadata/metadata.module';
 import PrismaModule from './prisma/prisma.module';
 import { UrlGeneratorModule, UrlGeneratorModuleOptions } from 'nestjs-url-generator';
+import { LyricsModule } from './lyrics/lyrics.module';
 import SearchModule from './search/search.module';
 import GenreModule from './genre/genre.module';
 import AppController from './app.controller';
@@ -39,6 +40,7 @@ import AppController from './app.controller';
 		FileManagerModule,
 		GenreModule,
 		SearchModule,
+		LyricsModule,
 	],
 	controllers: [AppController],
 	providers: [],

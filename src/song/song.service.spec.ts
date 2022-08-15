@@ -18,6 +18,7 @@ import GenreModule from "src/genre/genre.module";
 import { GenreNotFoundByIdException } from "src/genre/genre.exceptions";
 import TestPrismaService from "test/test-prisma.service";
 import type SongQueryParameters from "./models/song.query-params";
+import { LyricsModule } from "src/lyrics/lyrics.module";
 
 describe('Song Service', () => {
 	let songService: SongService;
@@ -28,7 +29,7 @@ describe('Song Service', () => {
 	
 	beforeAll(async () => {
 		const module: TestingModule = await createTestingModule({
-			imports: [PrismaModule, ArtistModule, TrackModule, AlbumModule, IllustrationModule, GenreModule],
+			imports: [PrismaModule, ArtistModule, TrackModule, AlbumModule, IllustrationModule, GenreModule, LyricsModule],
 			providers: [SongService, ArtistService, PrismaService],
 		}).overrideProvider(FileManagerService).useClass(FakeFileManagerService)
 		.overrideProvider(PrismaService).useClass(TestPrismaService).compile();

@@ -24,7 +24,8 @@
     "noUnusedParameters": true,
     "noUnusedLocals": true,
     "noImplicitThis": true,
-    "importsNotUsedAsValues": "error"
+    "importsNotUsedAsValues": "error",
+    "allowJs": true
   },
   "lib": [  
     "dom",  

@@ -15,6 +15,7 @@ import GenreService from 'src/genre/genre.service';
 import GenreQueryParameters from 'src/genre/models/genre.query-parameters';
 import RepositoryService from 'src/repository/repository.service';
 import type { MeeloException } from 'src/exceptions/meelo-exception';
+import { LyricsService } from 'src/lyrics/lyrics.service';
 
 @Injectable()
 export default class SongService extends RepositoryService<
@@ -36,6 +37,8 @@ export default class SongService extends RepositoryService<
 		private trackService: TrackService,
 		@Inject(forwardRef(() => GenreService))
 		private genreService: GenreService,
+		@Inject(forwardRef(() => LyricsService))
+		private lyricsService: LyricsService,
 		private readonly urlGeneratorService: UrlGeneratorService
 	) {
 		super();
@@ -188,6 +191,7 @@ export default class SongService extends RepositoryService<
 			song.tracks.map((track) => this.trackService.delete({ id: track.id }))
 		);
 		try {
+			await this.lyricsService.delete({ songId: song.id }).catch(() => {});
 			await this.prismaService.song.delete({
 				where: SongQueryParameters.buildQueryParametersForOne({ byId: { id: song.id } })
 			});
