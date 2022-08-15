@@ -181,7 +181,7 @@ export default class TrackService extends RepositoryService<
 			const indexToString = track.discIndex?.toString() ?? UnknownDiscIndexKey;
 			tracklist = tracklist.set(indexToString, [ ...tracklist.get(indexToString) ?? [], track]);
 		});
-		return tracklist;
+		return new Map([...tracklist].sort());
 	}
 
 	/**
