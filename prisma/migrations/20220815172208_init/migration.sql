@@ -8,6 +8,15 @@ CREATE TYPE "RipSource" AS ENUM ('CD', 'DVD', 'BluRay', 'Cassette', 'Vinyl', 'Di
 CREATE TYPE "TrackType" AS ENUM ('Audio', 'Video');
 
 -- CreateTable
+CREATE TABLE "Genre" (
+    "id" SERIAL NOT NULL,
+    "name" TEXT NOT NULL,
+    "slug" TEXT NOT NULL,
+
+    CONSTRAINT "Genre_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
 CREATE TABLE "Album" (
     "id" SERIAL NOT NULL,
     "name" TEXT NOT NULL,
@@ -73,6 +82,15 @@ CREATE TABLE "Song" (
 );
 
 -- CreateTable
+CREATE TABLE "Lyrics" (
+    "id" SERIAL NOT NULL,
+    "content" TEXT NOT NULL,
+    "songId" INTEGER NOT NULL,
+
+    CONSTRAINT "Lyrics_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
 CREATE TABLE "Track" (
     "id" SERIAL NOT NULL,
     "songId" INTEGER NOT NULL,
@@ -89,6 +107,15 @@ CREATE TABLE "Track" (
 
     CONSTRAINT "Track_pkey" PRIMARY KEY ("id")
 );
+
+-- CreateTable
+CREATE TABLE "_GenreToSong" (
+    "A" INTEGER NOT NULL,
+    "B" INTEGER NOT NULL
+);
+
+-- CreateIndex
+CREATE UNIQUE INDEX "Genre_slug_key" ON "Genre"("slug");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "Album_slug_artistId_key" ON "Album"("slug", "artistId");
@@ -115,7 +142,16 @@ CREATE UNIQUE INDEX "Release_albumId_slug_key" ON "Release"("albumId", "slug");
 CREATE UNIQUE INDEX "Song_slug_artistId_key" ON "Song"("slug", "artistId");
 
 -- CreateIndex
+CREATE UNIQUE INDEX "Lyrics_songId_key" ON "Lyrics"("songId");
+
+-- CreateIndex
 CREATE UNIQUE INDEX "Track_sourceFileId_key" ON "Track"("sourceFileId");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "_GenreToSong_AB_unique" ON "_GenreToSong"("A", "B");
+
+-- CreateIndex
+CREATE INDEX "_GenreToSong_B_index" ON "_GenreToSong"("B");
 
 -- AddForeignKey
 ALTER TABLE "Album" ADD CONSTRAINT "Album_artistId_fkey" FOREIGN KEY ("artistId") REFERENCES "Artist"("id") ON DELETE SET NULL ON UPDATE CASCADE;
@@ -130,6 +166,9 @@ ALTER TABLE "Release" ADD CONSTRAINT "Release_albumId_fkey" FOREIGN KEY ("albumI
 ALTER TABLE "Song" ADD CONSTRAINT "Song_artistId_fkey" FOREIGN KEY ("artistId") REFERENCES "Artist"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
+ALTER TABLE "Lyrics" ADD CONSTRAINT "Lyrics_songId_fkey" FOREIGN KEY ("songId") REFERENCES "Song"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
 ALTER TABLE "Track" ADD CONSTRAINT "Track_sourceFileId_fkey" FOREIGN KEY ("sourceFileId") REFERENCES "File"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
@@ -137,3 +176,9 @@ ALTER TABLE "Track" ADD CONSTRAINT "Track_releaseId_fkey" FOREIGN KEY ("releaseI
 
 -- AddForeignKey
 ALTER TABLE "Track" ADD CONSTRAINT "Track_songId_fkey" FOREIGN KEY ("songId") REFERENCES "Song"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "_GenreToSong" ADD CONSTRAINT "_GenreToSong_A_fkey" FOREIGN KEY ("A") REFERENCES "Genre"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "_GenreToSong" ADD CONSTRAINT "_GenreToSong_B_fkey" FOREIGN KEY ("B") REFERENCES "Song"("id") ON DELETE CASCADE ON UPDATE CASCADE;
