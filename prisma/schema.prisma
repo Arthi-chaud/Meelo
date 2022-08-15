@@ -125,7 +125,7 @@ model Song {
 	playCount		Int		@default(0)
 	tracks			Track[]
 	/// The lyrics of the song
-	lyrics			String?
+	lyrics			Lyrics?
 	/// The genres of the song
 	genres Genre[]
 	@@unique([slug, artistId])
@@ -149,6 +149,15 @@ enum RipSource {
 	Other
 }
 
+/// The lyrics of a song
+model Lyrics {
+	id				Int		@id @default(autoincrement())
+	/// The lyrics of the song
+	content			String
+	/// The parent song
+	song			Song @relation(fields: [songId], references: [id])
+	songId			Int @unique
+}
 
 /// Enumeration of forms a Track can be
 enum TrackType {
