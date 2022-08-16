@@ -191,6 +191,10 @@ describe('Album Service', () => {
 			let album = await albumService.select({ byId: { id: dummyRepository.albumA1.id }}, { slug: true, id: true });
 			expect(album).toStrictEqual({ id: dummyRepository.albumA1.id, slug: dummyRepository.albumA1.slug});
 		});
+		it(('should throw, as the album does not exist '), async () => {
+			const test = () => albumService.select({ byId: { id: -1 }}, { slug: true, id: true });
+			expect(test()).rejects.toThrow(AlbumNotFoundFromIDException);
+		});
 	});
 
 	describe('Update an album', () => { 

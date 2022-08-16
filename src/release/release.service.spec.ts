@@ -151,6 +151,11 @@ describe('Release Service', () => {
 			expect(release).toStrictEqual({ id: dummyRepository.releaseB1_1.id, slug: dummyRepository.releaseB1_1.slug});
 		});
 
+		it(('should throw, as the release does not exist'), async () => {
+			const test = () => releaseService.select({ byId: { id: -1 }}, { slug: true, id: true });
+			expect(test()).rejects.toThrow(ReleaseNotFoundFromIDException);
+		});
+
 		it("should throw, as the release does not exists", async () => {
 			const test = async () => {
 				return await releaseService.get({

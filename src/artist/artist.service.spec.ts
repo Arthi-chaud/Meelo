@@ -63,6 +63,11 @@ describe('Artist Service', () => {
 			let artist = await artistService.select({ slug: new Slug(dummyRepository.artistC.slug) }, { slug: true, id: true });
 			expect(artist).toStrictEqual({ id: dummyRepository.artistC.id, slug: dummyRepository.artistC.slug});
 		});
+
+		it(('should throw, as the artist does not exist'), async () => {
+			const test = () =>  artistService.select({ slug: new Slug("z") }, { slug: true, id: true });
+			expect(test()).rejects.toThrow(ArtistNotFoundException);
+		});
 	
 		it(('should return an existing artist, with relations'), async () => {
 			let artist = await artistService.get({ slug: new Slug(dummyRepository.artistB.slug) }, {
