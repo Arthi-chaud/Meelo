@@ -49,7 +49,7 @@ export default class FileManagerService {
 		return new Md5()
 			.start()
 			.appendByteArray(fs.readFileSync(filePath))
-			.end();
+			.end()!.toString();
 	}
 
 	/**

@@ -236,6 +236,12 @@ describe("Genre Controller", () => {
 					});
 				});
 		});
+
+		it("Should return an error, as the genre does not exist", () => {
+			return request(app.getHttpServer())
+				.get(`/genres/${-1}/artists`)
+				.expect(404);
+		});
 	});
 
 	describe("Get Genre's albums", () => {
@@ -297,6 +303,11 @@ describe("Genre Controller", () => {
 						artist: expectedArtistResponse(dummyRepository.artistA)
 					});
 				});
+		});
+		it("Should return an error, as the genre does not exist", () => {
+			return request(app.getHttpServer())
+				.get(`/genres/${-1}/albums`)
+				.expect(404);
 		});
 	});
 

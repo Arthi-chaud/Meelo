@@ -237,6 +237,13 @@ describe('Artist Controller', () => {
 					});
 				});
 		});
+
+		it("should return an error, as the artist does not exist", () => {
+			return request(app.getHttpServer())
+				.get(`/artists/${-1}/songs`)
+				.expect(404);
+		});
+		
 	});
 
 	describe('Get Artist\'s Albums (GET /artists/:id/albums)', () => {
@@ -286,6 +293,12 @@ describe('Artist Controller', () => {
 						]
 					});
 				});
+		});
+
+		it("should return an error, as the artist does not exist", () => {
+			return request(app.getHttpServer())
+				.get(`/artists/${-1}/albums`)
+				.expect(404);
 		});
 	});
 })

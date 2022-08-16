@@ -90,6 +90,15 @@ describe('Lyrics Service', () => {
 			const test = () => lyricsService.get({ song: { byId: { id: dummyRepository.songC1.id }}});
 			expect(test()).rejects.toThrow(LyricsNotFoundBySongException);
 		});
+
+		it(('should return an existing lyric, without only its id'), async () => {
+			let lyrics = await lyricsService.select({ id: dummyRepository.lyricsA1.id }, { id: true });
+			expect(lyrics).toStrictEqual({ id: dummyRepository.lyricsA1.id});
+		});
+		it(('should throw, as the album does not exist '), async () => {
+			const test = () => lyricsService.select({ id: -1 }, { id: true });
+			expect(test()).rejects.toThrow(LyricsNotFoundByIDException);
+		});
 	});
 
 	describe('Get many lyrics', () => {

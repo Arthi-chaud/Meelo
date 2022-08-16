@@ -69,6 +69,29 @@ export class LyricsService extends RepositoryService<
 			throw await this.onNotFound(where);
 		}
 	}
+
+	/**
+	 * Find lyrics and only return specified fields
+	 * @param where the parameters to find the lyrics 
+	 * @param select the fields to return
+	 * @returns the select fields of an object
+	 */
+	async select(
+		where: LyricsQueryParameters.WhereInput,
+		select: Partial<Record<keyof Lyrics, boolean>>
+	): Promise<Partial<Lyrics>> {
+		try {
+			return await this.prismaService.lyrics.findFirst({
+				rejectOnNotFound: true,
+				where: LyricsQueryParameters.buildQueryParametersForOne(where),
+				select: select
+			});
+		} catch {
+			throw await this.onNotFound(where);
+		}
+	}
+
+
 	async getMany(
 		_where: {},
 		_pagination?: PaginationParameters,
@@ -95,7 +118,7 @@ export class LyricsService extends RepositoryService<
 				}
 			});
 		} catch {
-			throw this.onNotFound(where);
+			throw await this.onNotFound(where);
 		}
 	}
 	/**
@@ -145,7 +168,7 @@ export class LyricsService extends RepositoryService<
 		where: LyricsQueryParameters.WhereInput
 	): Promise<MeeloException> {
 		if (where.song) {
-			await this.songService.get(where.song);
+			await this.songService.throwIfNotExist(where.song);
 			throw new LyricsNotFoundBySongException(where.song.byId?.id ?? where.song.bySlug!.slug);
 		}
 		throw new LyricsNotFoundByIDException(where.id);
