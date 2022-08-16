@@ -102,6 +102,27 @@ export default class TrackService extends RepositoryService<
 	}
 
 	/**
+	 * Find track and only return specified fields
+	 * @param where the parameters to find the track 
+	 * @param select the fields to return
+	 * @returns the select fields of an object
+	 */
+	async select(
+		where: TrackQueryParameters.WhereInput,
+		select: Partial<Record<keyof Track, boolean>>
+	) {
+		try {
+			return await this.prismaService.track.findFirst({
+				rejectOnNotFound: true,
+				where: TrackQueryParameters.buildQueryParametersForOne(where),
+				select: select
+			});
+		} catch {
+			throw this.onNotFound(where);
+		}
+	}
+
+	/**
 	 * Find tracks
 	 * @param where the query parameters to find the tracks
 	 * @param include the relation fields to includes

@@ -86,6 +86,27 @@ export default class ArtistService extends RepositoryService<
 	}
 
 	/**
+	 * Find an artist and only return specified fields
+	 * @param where the parameters to find the artist 
+	 * @param select the fields to return
+	 * @returns the select fields of an object
+	 */
+	async select(
+		where: ArtistQueryParameters.WhereInput,
+		select: Partial<Record<keyof Artist, boolean>>
+	) {
+		try {
+			return await this.prismaService.artist.findFirst({
+				rejectOnNotFound: true,
+				where: ArtistQueryParameters.buildQueryParametersForOne(where),
+				select: select
+			});
+		} catch {
+			throw this.onNotFound(where);
+		}
+	}
+
+	/**
 	 * Find multiple artists
 	 * @param where the query parameters to find the artists
 	 * @param pagination the pagination paramters to filter entries

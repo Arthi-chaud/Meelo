@@ -67,6 +67,27 @@ export default class FileService extends RepositoryService<
 	}
 
 	/**
+	 * Find a file and only return specified fields
+	 * @param where the parameters to find the file 
+	 * @param select the fields to return
+	 * @returns the select fields of an object
+	 */
+	async select(
+		where: FileQueryParameters.WhereInput,
+		select: Partial<Record<keyof File, boolean>>
+	) {
+		try {
+			return await this.prismaService.file.findFirst({
+				rejectOnNotFound: true,
+				where: FileQueryParameters.buildQueryParametersForOne(where),
+				select: select
+			});
+		} catch {
+			throw this.onNotFound(where);
+		}
+	}
+
+	/**
 	 * Retrives multiple files using query parameters
 	 * @param where where the query parameters to find the file
 	 * @param pagination the pagination paramters to filter entries

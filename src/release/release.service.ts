@@ -96,6 +96,27 @@ export default class ReleaseService extends RepositoryService<
 	}
 
 	/**
+	 * Find release and only return specified fields
+	 * @param where the parameters to find the release 
+	 * @param select the fields to return
+	 * @returns the select fields of an object
+	 */
+	async select(
+		where: ReleaseQueryParameters.WhereInput,
+		select: Partial<Record<keyof Release, boolean>>
+	) {
+		try {
+			return await this.prismaService.release.findFirst({
+				rejectOnNotFound: true,
+				where: ReleaseQueryParameters.buildQueryParametersForOne(where),
+				select: select
+			});
+		} catch {
+			throw this.onNotFound(where);
+		}
+	}
+
+	/**
 	 * Find releases
 	 * @param where the query parameters to find the releases
 	 * @param include the relation fields to includes

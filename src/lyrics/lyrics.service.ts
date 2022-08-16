@@ -69,6 +69,29 @@ export class LyricsService extends RepositoryService<
 			throw await this.onNotFound(where);
 		}
 	}
+
+	/**
+	 * Find lyrics and only return specified fields
+	 * @param where the parameters to find the lyrics 
+	 * @param select the fields to return
+	 * @returns the select fields of an object
+	 */
+	async select(
+		where: LyricsQueryParameters.WhereInput,
+		select: Partial<Record<keyof Lyrics, boolean>>
+	) {
+		try {
+			return await this.prismaService.lyrics.findFirst({
+				rejectOnNotFound: true,
+				where: LyricsQueryParameters.buildQueryParametersForOne(where),
+				select: select
+			});
+		} catch {
+			throw this.onNotFound(where);
+		}
+	}
+
+
 	async getMany(
 		_where: {},
 		_pagination?: PaginationParameters,
