@@ -21,7 +21,7 @@ export class LyricsService extends RepositoryService<
 	LyricsQueryParameters.DeleteInput,
 	LyricsQueryParameters.RelationInclude,
 	{},
-	Lyrics & { song?: Song}
+	{ lyrics: string, song?: Song}
 > {
 	private readonly geniusApiKey: string | null;
 	constructor(
@@ -130,13 +130,10 @@ export class LyricsService extends RepositoryService<
 		}
 	}
 
-	buildResponse(input: Lyrics & { song?: Song }): Lyrics & { song?: Song } {
-		let response = input;
+	buildResponse(input: Lyrics & { song?: Song }): { lyrics: string, song?: Song} {
+		let response: any = { lyrics: input.content };
 		if (input.song)
-			response = {
-				...response,
-				song: this.songService.buildResponse(input.song)
-			}
+			response.song = this.songService.buildResponse(input.song)
 		return response;
 	}
 

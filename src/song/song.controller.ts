@@ -1,4 +1,4 @@
-import { Controller, forwardRef, Get, Inject, Param, Patch, Query, Redirect, Req } from '@nestjs/common';
+import { Body, Controller, Delete, forwardRef, Get, Inject, Param, Post, Put, Query, Redirect, Req } from '@nestjs/common';
 import type { Request } from 'express';
 import { UrlGeneratorService } from 'nestjs-url-generator';
 import ArtistService from 'src/artist/artist.service';
@@ -14,6 +14,8 @@ import ParseSongIdentifierPipe from './song.pipe';
 import SongService from './song.service';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import { TrackType } from '@prisma/client';
+import { LyricsService } from 'src/lyrics/lyrics.service';
+import type LyricsDto from 'src/lyrics/models/update-lyrics.dto';
 
 @ApiTags("Songs")
 @Controller('songs')
@@ -25,6 +27,8 @@ export class SongController {
 		private trackService: TrackService,
 		@Inject(forwardRef(() => ArtistService))
 		private artistService: ArtistService,
+		@Inject(forwardRef(() => LyricsService))
+		private lyricsService: LyricsService,
 		private readonly urlGeneratorService: UrlGeneratorService
 	) {}
 
@@ -67,7 +71,7 @@ export class SongController {
 	@ApiOperation({
 		summary: "Increment a song's play count"
 	})
-	@Patch(':idOrSlug/played')
+	@Put(':idOrSlug/played')
 	async incrementSongPlayCount(
 		@Param(ParseSongIdentifierPipe)
 		where: SongQueryParameters.WhereInput
@@ -177,5 +181,51 @@ export class SongController {
 			
 		})
 		return { url: illustrationRedirectUrl };
+	}
+
+	@ApiOperation({
+		summary: "Get a song's lyrics"
+	})
+	@Get(':idOrSlug/lyrics')
+	async getSongLyrics(
+		@Param(ParseSongIdentifierPipe)
+		where: SongQueryParameters.WhereInput
+	) {
+		const lyrics = await this.lyricsService.get({ song: where });
+		return this.lyricsService.buildResponse(lyrics);
+	}
+
+	@ApiOperation({
+		summary: "Update a song's lyrics"
+	})
+	@Post(':idOrSlug/lyrics')
+	async updateSongLyrics(
+		@Param(ParseSongIdentifierPipe)
+		where: SongQueryParameters.WhereInput,
+		@Body() updateLyricsDto: LyricsDto
+	) {
+		const song = await this.songService.get(where);
+		try {
+			return await this.lyricsService.update(
+				{ content: updateLyricsDto.lyrics },
+				{ song: where }
+			);
+		} catch {
+			return await this.lyricsService.create({
+				songId: song.id, content: updateLyricsDto.lyrics
+			});
+		}
+	}
+
+	@ApiOperation({
+		summary: "Delete a song's lyrics"
+	})
+	@Delete(':idOrSlug/lyrics')
+	async deleteSongLyrics(
+		@Param(ParseSongIdentifierPipe)
+		where: SongQueryParameters.WhereInput
+	) {
+		const song = await this.songService.get(where);
+		await this.lyricsService.delete({ songId: song.id });
 	}
 }

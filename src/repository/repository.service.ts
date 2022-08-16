@@ -13,7 +13,7 @@ abstract class RepositoryService<
 	DeleteInput,
 	RelationInput,
 	SortInput,
-	ResponseType extends EntityType,
+	ResponseType,
 > {
 	abstract create(input: CreateInput, include?: RelationInput): Promise<EntityType>;
 	abstract get(where: WhereInput, include?: RelationInput): Promise<EntityType>;

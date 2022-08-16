@@ -1,5 +1,5 @@
 import { Controller, Get, Param, Query, Req } from '@nestjs/common';
-import { ApiOperation } from '@nestjs/swagger';
+import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import AlbumQueryParameters from 'src/album/models/album.query-parameters';
 import ArtistQueryParameters from 'src/artist/models/artist.query-parameters';
 import GenreQueryParameters from 'src/genre/models/genre.query-parameters';
@@ -16,6 +16,7 @@ import GenreService from 'src/genre/genre.service';
 import ReleaseService from 'src/release/release.service';
 import SongService from 'src/song/song.service';
 
+@ApiTags("Search")
 @Controller('search')
 export default class SearchController {
 	constructor(
