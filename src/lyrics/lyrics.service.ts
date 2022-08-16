@@ -131,12 +131,9 @@ export class LyricsService extends RepositoryService<
 	}
 
 	buildResponse(input: Lyrics & { song?: Song }): Lyrics & { song?: Song } {
-		let response = input;
+		let response: any = { lyrics: input.content };
 		if (input.song)
-			response = {
-				...response,
-				song: this.songService.buildResponse(input.song)
-			}
+			response.song = this.songService.buildResponse(input.song)
 		return response;
 	}
 
