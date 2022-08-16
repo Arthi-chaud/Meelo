@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, forwardRef, Get, Inject, Param, Patch, Post, Query, Redirect, Req } from '@nestjs/common';
+import { Body, Controller, Delete, forwardRef, Get, Inject, Param, Post, Put, Query, Redirect, Req } from '@nestjs/common';
 import type { Request } from 'express';
 import { UrlGeneratorService } from 'nestjs-url-generator';
 import ArtistService from 'src/artist/artist.service';
@@ -71,7 +71,7 @@ export class SongController {
 	@ApiOperation({
 		summary: "Increment a song's play count"
 	})
-	@Patch(':idOrSlug/played')
+	@Put(':idOrSlug/played')
 	async incrementSongPlayCount(
 		@Param(ParseSongIdentifierPipe)
 		where: SongQueryParameters.WhereInput

@@ -1,6 +1,6 @@
 import { createTestingModule } from "test/test-module";
 import type { TestingModule } from "@nestjs/testing";
-import type { Artist, Song, Track } from "@prisma/client";
+import type { Artist, Lyrics, Song, Track } from "@prisma/client";
 import AlbumModule from "src/album/album.module";
 import ArtistModule from "src/artist/artist.module";
 import FileManagerService from "src/file-manager/file-manager.service";
@@ -277,17 +277,17 @@ describe('Song Controller', () => {
 		});
 	});
 
-	describe("Increment Song's Play count (PATCH /songs/:id/played)", () => {
+	describe("Increment Song's Play count (PUT /songs/:id/played)", () => {
 		it("should return an error, as the track does not exist", () => {
 			return request(app.getHttpServer())
-				.get(`/songs/${-1}/played`)
+				.put(`/songs/${-1}/played`)
 				.expect(404)
 		});
 
 		it("should increment a song's play count (by id)", () => {
 			const queryParameters = { byId: { id: dummyRepository.songC1.id } };
 			return request(app.getHttpServer())
-				.patch(`/songs/${dummyRepository.songC1.id}/played`)
+				.put(`/songs/${dummyRepository.songC1.id}/played`)
 				.expect(200)
 				.expect(async () => {
 					const updatedSong = await songService.get(queryParameters);
@@ -306,7 +306,7 @@ describe('Song Controller', () => {
 				}
 			};
 			return request(app.getHttpServer())
-				.patch(`/songs/${dummyRepository.artistC.slug}+${dummyRepository.songC1.slug}/played`)
+				.put(`/songs/${dummyRepository.artistC.slug}+${dummyRepository.songC1.slug}/played`)
 				.expect(200)
 				.expect(async () => {
 					const updatedSong = await songService.get(queryParameters);
@@ -316,6 +316,88 @@ describe('Song Controller', () => {
 					});
 				});
 		});
+	});
+
+	describe("Get Song's Lyrics (GET /songs/:id/lyrics)", () => {
+		it("should return the song's lyrics", () => {
+			return request(app.getHttpServer())
+				.get(`/songs/${dummyRepository.artistA.slug}+${dummyRepository.songA1.slug}/lyrics`)
+				.expect(200)
+				.expect((res) => {
+					let lyrics: Lyrics = res.body;
+					expect(lyrics).toStrictEqual({
+						lyrics: dummyRepository.lyricsA1.content
+					});
+				});
+		});
+
+		it("should return an error, as the song does not exist", () => {
+			return request(app.getHttpServer())
+				.get(`/songs/${-1}/lyrics`)
+				.expect(404);
+		});
+
+		it("should return an error, as the lyrics do not exist", () => {
+			return request(app.getHttpServer())
+				.get(`/songs/${dummyRepository.songC1.id}/lyrics`)
+				.expect(404);
+		})
+	});
+
+	describe("Update Song's Lyrics (POST /songs/:id/lyrics)", () => {
+		it("should create the song's lyrics", () => {
+			return request(app.getHttpServer())
+				.post(`/songs/${dummyRepository.songA2.id}/lyrics`)
+				.send({
+					lyrics: '123456',
+				})
+				.expect(async () => {
+					const song = await songService.get({ byId: { id: dummyRepository.songA2.id } }, { lyrics: true });
+					expect(song.lyrics!.content).toBe('123456');
+				});
+		});
+		
+		it("should update the song's lyrics", () => {
+			return request(app.getHttpServer())
+				.post(`/songs/${dummyRepository.songA1.id}/lyrics`)
+				.send({
+					lyrics: 'BLABLABLA',
+				})
+				.expect(async () => {
+					const song = await songService.get({ byId: { id: dummyRepository.songA1.id } }, { lyrics: true });
+					expect(song.lyrics!.content).toBe('BLABLABLA');
+				});
+		});
+
+		it("should return an error, as the song does not exist", () => {
+			return request(app.getHttpServer())
+				.post(`/songs/${-1}/lyrics`)
+				.expect(404);
+		});
+	});
+
+	describe("Delete Song's Lyrics (DELETE /songs/:id/lyrics)", () => {
+		it("should return the song's lyrics", () => {
+			return request(app.getHttpServer())
+				.delete(`/songs/${dummyRepository.artistA.slug}+${dummyRepository.songA1.slug}/lyrics`)
+				.expect(200)
+				.expect(async () => {
+					const song = await songService.get({ byId: { id: dummyRepository.songA1.id } }, { lyrics: true });
+					expect(song.lyrics).toBeNull();
+				});
+		});
+
+		it("should return an error, as the song does not exist", () => {
+			return request(app.getHttpServer())
+				.delete(`/songs/${-1}/lyrics`)
+				.expect(404);
+		});
+
+		it("should return an error, as the lyrics do not exist", () => {
+			return request(app.getHttpServer())
+				.delete(`/songs/${dummyRepository.songC1.id}/lyrics`)
+				.expect(404);
+		})
 	});
 
 	describe("Get Song Video Tracks (GET /songs/:id/videos)", () => {
