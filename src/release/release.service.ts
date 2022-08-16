@@ -1,7 +1,7 @@
 import { forwardRef, Inject, Injectable, Logger } from '@nestjs/common';
 import AlbumService from 'src/album/album.service';
 import Slug from 'src/slug/slug';
-import type { Album, Release, Track } from '@prisma/client';
+import type { Album, Prisma, Release, Track } from '@prisma/client';
 import { MasterReleaseNotFoundFromIDException, ReleaseAlreadyExists, ReleaseNotFoundException, ReleaseNotFoundFromIDException } from './release.exceptions';
 import PrismaService from 'src/prisma/prisma.service';
 import ReleaseQueryParameters from './models/release.query-parameters';
@@ -104,12 +104,12 @@ export default class ReleaseService extends RepositoryService<
 	async select(
 		where: ReleaseQueryParameters.WhereInput,
 		select: Partial<Record<keyof Release, boolean>>
-	) {
+	): Promise<Partial<Release>> {
 		try {
 			return await this.prismaService.release.findFirst({
 				rejectOnNotFound: true,
 				where: ReleaseQueryParameters.buildQueryParametersForOne(where),
-				select: select
+				select: <Prisma.ReleaseSelect>{...select}
 			});
 		} catch {
 			throw await this.onNotFound(where);

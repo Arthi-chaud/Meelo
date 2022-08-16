@@ -103,7 +103,7 @@ export default class SongService extends RepositoryService<
 	 async select(
 		where: SongQueryParameters.WhereInput,
 		select: Partial<Record<keyof Song, boolean>>
-	) {
+	): Promise<Partial<Song>> {
 		try {
 			return await this.prismaService.song.findFirst({
 				rejectOnNotFound: true,

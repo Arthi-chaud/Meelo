@@ -110,7 +110,7 @@ export default class TrackService extends RepositoryService<
 	async select(
 		where: TrackQueryParameters.WhereInput,
 		select: Partial<Record<keyof Track, boolean>>
-	) {
+	): Promise<Partial<Track>> {
 		try {
 			return await this.prismaService.track.findFirst({
 				rejectOnNotFound: true,

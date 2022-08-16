@@ -101,7 +101,7 @@ export default class LibraryService extends RepositoryService<
 	 async select(
 		where: LibraryQueryParameters.WhereInput,
 		select: Partial<Record<keyof Library, boolean>>
-	) {
+	): Promise<Partial<Library>> {
 		try {
 			return await this.prismaService.library.findFirst({
 				rejectOnNotFound: true,

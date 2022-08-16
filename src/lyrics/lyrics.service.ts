@@ -79,7 +79,7 @@ export class LyricsService extends RepositoryService<
 	async select(
 		where: LyricsQueryParameters.WhereInput,
 		select: Partial<Record<keyof Lyrics, boolean>>
-	) {
+	): Promise<Partial<Lyrics>> {
 		try {
 			return await this.prismaService.lyrics.findFirst({
 				rejectOnNotFound: true,

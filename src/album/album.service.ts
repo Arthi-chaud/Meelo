@@ -107,7 +107,7 @@ export default class AlbumService extends RepositoryService<
 	async select(
 		where: AlbumQueryParameters.WhereInput,
 		select: Partial<Record<keyof Album, boolean>>
-	) {
+	): Promise<Partial<Album>> {
 		try {
 			return await this.prismaService.album.findFirst({
 				rejectOnNotFound: true,

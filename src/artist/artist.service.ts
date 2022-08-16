@@ -1,7 +1,7 @@
 import { forwardRef, Inject, Injectable, Logger } from '@nestjs/common';
 import Slug from 'src/slug/slug';
 import { ArtistAlreadyExistsException as ArtistAlreadyExistsException, ArtistNotFoundByIDException, ArtistNotFoundException, CompilationArtistException } from './artist.exceptions';
-import type { Album, Artist, Song } from '@prisma/client';
+import type { Album, Artist, Prisma, Song } from '@prisma/client';
 import PrismaService from 'src/prisma/prisma.service';
 import ArtistQueryParameters from './models/artist.query-parameters';
 import { type PaginationParameters, buildPaginationParameters } from 'src/pagination/models/pagination-parameters';
@@ -94,12 +94,12 @@ export default class ArtistService extends RepositoryService<
 	async select(
 		where: ArtistQueryParameters.WhereInput,
 		select: Partial<Record<keyof Artist, boolean>>
-	) {
+	): Promise<Partial<Artist>> {
 		try {
 			return await this.prismaService.artist.findFirst({
 				rejectOnNotFound: true,
 				where: ArtistQueryParameters.buildQueryParametersForOne(where),
-				select: select
+				select: <Prisma.ArtistSelect>{...select}
 			});
 		} catch {
 			throw this.onNotFound(where);

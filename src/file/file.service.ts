@@ -75,7 +75,7 @@ export default class FileService extends RepositoryService<
 	async select(
 		where: FileQueryParameters.WhereInput,
 		select: Partial<Record<keyof File, boolean>>
-	) {
+	): Promise<Partial<File>> {
 		try {
 			return await this.prismaService.file.findFirst({
 				rejectOnNotFound: true,

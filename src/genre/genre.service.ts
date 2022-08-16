@@ -85,7 +85,7 @@ export default class GenreService extends RepositoryService<
 	async select(
 		where: GenreQueryParameters.WhereInput,
 		select: Partial<Record<keyof Genre, boolean>>
-	) {
+	): Promise<Partial<Genre>> {
 		try {
 			return await this.prismaService.genre.findFirst({
 				rejectOnNotFound: true,
