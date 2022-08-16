@@ -101,7 +101,7 @@ export default class ArtistController {
 			{ byArtist: where, type: TrackType.Video }, paginationParameters, include, sortingParameter, 
 		);
 		if (videoTracks.length == 0)
-			await this.artistService.get(where);
+			await this.artistService.throwIfNotExist(where);
 		return new PaginatedResponse(
 			videoTracks.map((videoTrack) => this.trackService.buildResponse(videoTrack)),
 			request
@@ -162,7 +162,7 @@ export default class ArtistController {
 			{ byArtist: where }, paginationParameters, include, sortingParameter
 		);
 		if (albums.length == 0)
-			await this.artistService.get(where);
+			await this.artistService.throwIfNotExist(where);
 		return new PaginatedResponse(
 			albums.map((album) => this.albumService.buildResponse(album)),
 			request
@@ -188,7 +188,7 @@ export default class ArtistController {
 			{ artist: where }, paginationParameters, include, sortingParameter
 		);
 		if (songs.length == 0)
-			await this.artistService.get(where);
+			await this.artistService.throwIfNotExist(where);
 		return new PaginatedResponse(
 			songs.map((song) => this.songService.buildResponse(song)),
 			request

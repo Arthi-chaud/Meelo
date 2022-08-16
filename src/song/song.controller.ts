@@ -129,7 +129,7 @@ export class SongController {
 			where, paginationParameters, include, sortingParameter
 		);
 		if (tracks.length == 0)
-			await this.songService.get(where);
+			await this.songService.throwIfNotExist(where);
 		return new PaginatedResponse(
 			tracks.map((track) => this.trackService.buildResponse(track)),
 			request
@@ -155,7 +155,7 @@ export class SongController {
 			{ bySong: where, type: TrackType.Video }, paginationParameters, include, sortingParameter, 
 		);
 		if (videoTracks.length == 0)
-			await this.songService.get(where);
+			await this.songService.throwIfNotExist(where);
 		return new PaginatedResponse(
 			videoTracks.map((videoTrack) => this.trackService.buildResponse(videoTrack)),
 			request

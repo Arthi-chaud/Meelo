@@ -73,7 +73,7 @@ export default class TrackService extends RepositoryService<
 		} catch {
 			const parentSong = await this.songService.get(track.song, { artist: true });
 			const parentRelease = await this.releaseService.get(track.release);
-			await this.fileService.get(track.sourceFile);
+			await this.fileService.throwIfNotExist(track.sourceFile);
 			throw new TrackAlreadyExistsException(
 				track.displayName,
 				new Slug(parentRelease.slug),
@@ -118,7 +118,7 @@ export default class TrackService extends RepositoryService<
 				select: select
 			});
 		} catch {
-			throw this.onNotFound(where);
+			throw await this.onNotFound(where);
 		}
 	}
 
@@ -156,7 +156,6 @@ export default class TrackService extends RepositoryService<
 		include?: TrackQueryParameters.RelationInclude,
 		sort?: TrackQueryParameters.SortingParameter
 	) {
-
 		const tracks = await this.getMany(
 			{ bySong: where },
 			pagination,
@@ -164,7 +163,7 @@ export default class TrackService extends RepositoryService<
 			sort
 		);
 		if (tracks.length == 0)
-			await this.songService.get(where);
+			await this.songService.throwIfNotExist(where);
 		return tracks;
 	}
 
@@ -197,7 +196,7 @@ export default class TrackService extends RepositoryService<
 		let tracklist: Tracklist = new Map();
 		const tracks = await this.getMany({ byRelease: where }, {}, include, { sortBy: 'trackIndex', order: 'asc' });
 		if (tracks.length == 0)
-			await this.releaseService.get(where);
+			await this.releaseService.throwIfNotExist(where);
 		tracks.forEach((track) => {
 			const indexToString = track.discIndex?.toString() ?? UnknownDiscIndexKey;
 			tracklist = tracklist.set(indexToString, [ ...tracklist.get(indexToString) ?? [], track]);

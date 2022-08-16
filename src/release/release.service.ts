@@ -112,7 +112,7 @@ export default class ReleaseService extends RepositoryService<
 				select: select
 			});
 		} catch {
-			throw this.onNotFound(where);
+			throw await this.onNotFound(where);
 		}
 	}
 
@@ -156,7 +156,7 @@ export default class ReleaseService extends RepositoryService<
 			sort
 		);
 		if (releases.length == 0) {
-			await this.albumService.get(where);
+			await this.albumService.throwIfNotExist(where);
 		}
 		return releases;
 	}

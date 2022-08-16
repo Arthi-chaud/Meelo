@@ -87,7 +87,7 @@ export class LyricsService extends RepositoryService<
 				select: select
 			});
 		} catch {
-			throw this.onNotFound(where);
+			throw await this.onNotFound(where);
 		}
 	}
 
@@ -118,7 +118,7 @@ export class LyricsService extends RepositoryService<
 				}
 			});
 		} catch {
-			throw this.onNotFound(where);
+			throw await this.onNotFound(where);
 		}
 	}
 	/**
@@ -168,7 +168,7 @@ export class LyricsService extends RepositoryService<
 		where: LyricsQueryParameters.WhereInput
 	): Promise<MeeloException> {
 		if (where.song) {
-			await this.songService.get(where.song);
+			await this.songService.throwIfNotExist(where.song);
 			throw new LyricsNotFoundBySongException(where.song.byId?.id ?? where.song.bySlug!.slug);
 		}
 		throw new LyricsNotFoundByIDException(where.id);

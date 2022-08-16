@@ -17,7 +17,7 @@ abstract class RepositoryService<
 > {
 	abstract create(input: CreateInput, include?: RelationInput): Promise<EntityType>;
 	abstract get(where: WhereInput, include?: RelationInput): Promise<EntityType>;
-	abstract select(where: WhereInput, select: Partial<Record<keyof EntityType, boolean>>): Promise<Partial<EntityType>>;
+	abstract select(where: WhereInput, select: Record<'id' & keyof EntityType, boolean | undefined>): Promise<Partial<EntityType>>;
 	abstract getMany(where: ManyWhereInput, pagination?: PaginationParameters, include?: RelationInput, sort?: SortInput): Promise<EntityType[]>;
 	abstract count(where: ManyWhereInput): Promise<number>;
 	abstract update(what: UpdateInput, where: WhereInput): Promise<EntityType>;
@@ -33,10 +33,10 @@ abstract class RepositoryService<
 	 */
 	async exists(where: WhereInput): Promise<boolean> {
 		try {
-			await this.select(where, {});
+			await this.select(where, { id: true });
 			return true;
 		} catch {
-			return false
+			return false;
 		}
 	}
 	/**
@@ -44,8 +44,7 @@ abstract class RepositoryService<
 	 * @param where the query parameters to find the entity
 	 */
 	async throwIfNotExist(where: WhereInput): Promise<void> {
-		if (!await this.exists(where))
-			throw await this.onNotFound(where);
+		await this.select(where, { id: true });
 	}
 }
 

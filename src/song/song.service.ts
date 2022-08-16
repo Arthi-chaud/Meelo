@@ -111,7 +111,7 @@ export default class SongService extends RepositoryService<
 				select: select
 			});
 		} catch {
-			throw this.onNotFound(where);
+			throw await this.onNotFound(where);
 		}
 	}
 
