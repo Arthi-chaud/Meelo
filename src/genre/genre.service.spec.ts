@@ -65,6 +65,11 @@ describe("Genre Service", () => {
 			expect(fetchedGenre).toStrictEqual(dummyRepository.genreC);
 		});
 
+		it(('should return an existing genre, without only its id and slug'), async () => {
+			let genre = await genreService.select({  id: dummyRepository.genreC.id }, { slug: true, id: true });
+			expect(genre).toStrictEqual({ id: dummyRepository.genreC.id, slug: dummyRepository.genreC.slug});
+		});
+
 		it("should throw, as the genre does not exist (by slug)", async () => {
 			const test = async () => await genreService.get({ slug: new Slug("trololol") });
 			expect(test()).rejects.toThrow(GenreNotFoundException);

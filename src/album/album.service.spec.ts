@@ -185,7 +185,12 @@ describe('Album Service', () => {
 				{ byId: { id: dummyRepository.albumB1.id } }, 
 			);
 			expect(album).toStrictEqual(dummyRepository.albumB1);
-		})
+		});
+
+		it(('should return an existing album, without only its id and slug'), async () => {
+			let album = await albumService.select({ byId: { id: dummyRepository.albumA1.id }}, { slug: true, id: true });
+			expect(album).toStrictEqual({ id: dummyRepository.albumA1.id, slug: dummyRepository.albumA1.slug});
+		});
 	});
 
 	describe('Update an album', () => { 

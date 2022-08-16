@@ -57,7 +57,12 @@ describe('Artist Service', () => {
 		it(('should return an existing artist, without relations'), async () => {
 			let artist = await artistService.get({ slug: new Slug(dummyRepository.artistC.slug) });
 			expect(artist).toStrictEqual(dummyRepository.artistC);
-		})
+		});
+
+		it(('should return an existing artist, without only its id and slug'), async () => {
+			let artist = await artistService.select({ slug: new Slug(dummyRepository.artistC.slug) }, { slug: true, id: true });
+			expect(artist).toStrictEqual({ id: dummyRepository.artistC.id, slug: dummyRepository.artistC.slug});
+		});
 	
 		it(('should return an existing artist, with relations'), async () => {
 			let artist = await artistService.get({ slug: new Slug(dummyRepository.artistB.slug) }, {

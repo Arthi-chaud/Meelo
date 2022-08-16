@@ -104,9 +104,6 @@ describe('Release Service', () => {
 			expect(releases).toContainEqual(dummyRepository.releaseB1_1);
 			expect(releases).toContainEqual(dummyRepository.compilationReleaseA1);
 		});
-	});
-
-	describe('Get Releases', () => { 
 		it("should get the releases, sorted by name", async () => {
 			let releases = await releaseService.getMany({}, {}, {}, { sortBy: 'slug' });
 			expect(releases.length).toBe(6);
@@ -147,6 +144,11 @@ describe('Release Service', () => {
 				}
 			});
 			expect(fetchedRelease).toStrictEqual(newCompilationRelease);
+		});
+
+		it(('should return an existing release, without only its id and slug'), async () => {
+			let release = await releaseService.select({ byId: { id: dummyRepository.releaseB1_1.id }}, { slug: true, id: true });
+			expect(release).toStrictEqual({ id: dummyRepository.releaseB1_1.id, slug: dummyRepository.releaseB1_1.slug});
 		});
 
 		it("should throw, as the release does not exists", async () => {
