@@ -15,6 +15,7 @@ import AlbumService from 'src/album/album.service';
 import { FileDoesNotExistException } from 'src/file-manager/file-manager.exceptions';
 import { ModuleRef } from '@nestjs/core';
 import compilationAlbumArtistKeyword from 'src/utils/compilation';
+import Ffmpeg from 'fluent-ffmpeg';
 
 type IllustrationExtractStatus = 'extracted' | 'error' | 'already-extracted' | 'different-illustration';
 
@@ -241,6 +242,54 @@ export default class IllustrationService implements OnModuleInit {
 			throw new FileParsingException(filePath);
 		}
 		return mm.selectCover(rawMetadata.common.picture);
+	}
+
+	/**
+	 * 
+	 * Apply illustration to file
+	 * @param illustrationPath the full path of the illustration to apply
+	 * @param filePath the full path of the file to apply the illustration to
+	 */
+	applyIllustration(illustrationPath: string, filePath: string) {
+		if (!this.fileManagerService.fileExists(filePath)) {
+			throw new FileDoesNotExistException(filePath);
+		}
+		if (!this.fileManagerService.fileExists(illustrationPath)) {
+			throw new FileDoesNotExistException(illustrationPath);
+		}
+		try {
+			Ffmpeg(filePath)
+				.addInput(illustrationPath)
+				.inputOptions([
+				"-map 0:V",
+				"-map 0:a",
+				"-map 0:s",
+				"-map 1",
+				"-c copy",
+				"-disposition:0 attached_pic"
+			]);
+		} catch {
+			Logger.error(`Applying illustration to '${filePath}' failed`);
+		}
+	}
+
+	/**
+	 * Takes a screenshot of a video file's content
+	 * @param videoPath the full path of a video file
+	 * @param outPath the path to the output illustration
+	 */
+	takeVideoScreenshot(videoPath: string, outPath: string) {
+		if (!this.fileManagerService.fileExists(videoPath)) {
+			throw new FileDoesNotExistException(videoPath);
+		}
+		try {
+			Ffmpeg(videoPath).screenshot({
+				filename: outPath,
+				timestamps: ['50%']
+			});
+		} catch {
+			Logger.error(`Taking a screenshot of '${videoPath}' failed`)
+		}
 	}
 
 	/**
