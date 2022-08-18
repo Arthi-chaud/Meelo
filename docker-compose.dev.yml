@@ -1,5 +1,5 @@
 services:
-  server:
+  back:
     build:
       context: ./
       dockerfile: Dockerfile.dev
@@ -12,6 +12,14 @@ services:
       - ./src:/app/src
       - ./prisma:/app/prisma
       - ./data:/data
+  front:
+    build:
+      context: ./front
+      dockerfile: Dockerfile.dev
+    ports:
+      - 3000:3000
+    volumes:
+      - ./front/src:/app/src
   db:
     image: postgres:alpine3.16
     env_file:

@@ -23,5 +23,11 @@ jobs:
         run: docker-compose -f docker-compose.dev.yml build
       - name: Start Meelo
         run: docker-compose -f docker-compose.dev.yml up -d
+      - name: Wait for Meelo to startup
+        run: sleep 60
+      - name: Check front-end response
+        run: curl localhost:8080 -f > /dev/null
+      - name: Check back-end response
+        run: curl localhost:8080/api -f > /dev/null
       - name: Stop Meelo
         run: docker-compose -f docker-compose.dev.yml stop
