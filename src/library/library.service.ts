@@ -93,6 +93,27 @@ export default class LibraryService extends RepositoryService<
 	}
 
 	/**
+	 * Find a library and only return specified fields
+	 * @param where the parameters to find the library 
+	 * @param select the fields to return
+	 * @returns the select fields of an object
+	 */
+	 async select(
+		where: LibraryQueryParameters.WhereInput,
+		select: Partial<Record<keyof Library, boolean>>
+	): Promise<Partial<Library>> {
+		try {
+			return await this.prismaService.library.findFirst({
+				rejectOnNotFound: true,
+				where: LibraryQueryParameters.buildQueryParametersForOne(where),
+				select: select
+			});
+		} catch {
+			throw this.onNotFound(where);
+		}
+	}
+
+	/**
 	 * Get multiple Libraries
 	 * @param where the query parameters to find the libraries
 	 * @param pagination the pagination paramters to filter entries

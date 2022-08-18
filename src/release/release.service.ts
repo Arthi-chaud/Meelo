@@ -1,7 +1,7 @@
 import { forwardRef, Inject, Injectable, Logger } from '@nestjs/common';
 import AlbumService from 'src/album/album.service';
 import Slug from 'src/slug/slug';
-import type { Album, Release, Track } from '@prisma/client';
+import type { Album, Prisma, Release, Track } from '@prisma/client';
 import { MasterReleaseNotFoundFromIDException, ReleaseAlreadyExists, ReleaseNotFoundException, ReleaseNotFoundFromIDException } from './release.exceptions';
 import PrismaService from 'src/prisma/prisma.service';
 import ReleaseQueryParameters from './models/release.query-parameters';
@@ -96,6 +96,27 @@ export default class ReleaseService extends RepositoryService<
 	}
 
 	/**
+	 * Find release and only return specified fields
+	 * @param where the parameters to find the release 
+	 * @param select the fields to return
+	 * @returns the select fields of an object
+	 */
+	async select(
+		where: ReleaseQueryParameters.WhereInput,
+		select: Partial<Record<keyof Release, boolean>>
+	): Promise<Partial<Release>> {
+		try {
+			return await this.prismaService.release.findFirst({
+				rejectOnNotFound: true,
+				where: ReleaseQueryParameters.buildQueryParametersForOne(where),
+				select: <Prisma.ReleaseSelect>{...select}
+			});
+		} catch {
+			throw await this.onNotFound(where);
+		}
+	}
+
+	/**
 	 * Find releases
 	 * @param where the query parameters to find the releases
 	 * @param include the relation fields to includes
@@ -135,7 +156,7 @@ export default class ReleaseService extends RepositoryService<
 			sort
 		);
 		if (releases.length == 0) {
-			await this.albumService.get(where);
+			await this.albumService.throwIfNotExist(where);
 		}
 		return releases;
 	}

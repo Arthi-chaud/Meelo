@@ -93,6 +93,28 @@ export default class SongService extends RepositoryService<
 			throw await this.onNotFound(where)
 		}
 	}
+
+	/**
+	 * Find song and only return specified fields
+	 * @param where the parameters to find the song 
+	 * @param select the fields to return
+	 * @returns the select fields of an object
+	 */
+	 async select(
+		where: SongQueryParameters.WhereInput,
+		select: Partial<Record<keyof Song, boolean>>
+	): Promise<Partial<Song>> {
+		try {
+			return await this.prismaService.song.findFirst({
+				rejectOnNotFound: true,
+				where: SongQueryParameters.buildQueryParametersForOne(where),
+				select: select
+			});
+		} catch {
+			throw await this.onNotFound(where);
+		}
+	}
+
 	/**
 	 * Find multiple songs
 	 * @param where the parameters to find the songs

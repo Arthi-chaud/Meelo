@@ -99,6 +99,27 @@ export default class AlbumService extends RepositoryService<
 	}
 
 	/**
+	 * Find an album and only return specified fields
+	 * @param where the parameters to find the album 
+	 * @param select the fields to return
+	 * @returns the select fields of an object
+	 */
+	async select(
+		where: AlbumQueryParameters.WhereInput,
+		select: Partial<Record<keyof Album, boolean>>
+	): Promise<Partial<Album>> {
+		try {
+			return await this.prismaService.album.findFirst({
+				rejectOnNotFound: true,
+				where: AlbumQueryParameters.buildQueryParametersForOne(where),
+				select: select
+			});
+		} catch {
+			throw this.onNotFound(where);
+		}
+	}
+
+	/**
 	 * Find multiple albums
 	 * @param where the parameters to find the album
 	 * @param pagination the pagination paramters to filter entries

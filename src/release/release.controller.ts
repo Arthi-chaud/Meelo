@@ -87,7 +87,7 @@ export default class ReleaseController {
 			{ byRelease: where }, paginationParameters, include, sortingParameter
 		);
 		if (tracks.length == 0)
-			await this.releaseService.get(where);
+			await this.releaseService.throwIfNotExist(where);
 		return new PaginatedResponse(
 			tracks.map(
 				(track) => this.trackService.buildResponse(track)

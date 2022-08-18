@@ -134,6 +134,19 @@ describe('Song Service', () => {
 			});
 		});
 
+		it(('should return an existing song, without only its id and slug'), async () => {
+			let song = await songService.select({ byId: { id: dummyRepository.songA1.id }}, { slug: true, id: true });
+			expect(song).toStrictEqual({ id: dummyRepository.songA1.id, slug: dummyRepository.songA1.slug});
+		});
+
+		it("should throw, as the song does not exist (on select)", async () => {
+			const test = async () => await songService.select({
+				byId: { id: -1 }
+			}, { id: true });
+
+			expect(test()).rejects.toThrow(SongNotFoundByIdException);
+		});
+
 		it("should throw, as the song does not exist (by Id)", async () => {
 			const test = async () => await songService.get({
 				byId: { id: -1 }

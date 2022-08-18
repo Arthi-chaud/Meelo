@@ -75,6 +75,27 @@ export default class GenreService extends RepositoryService<
 			throw this.onNotFound(where);
 		}
 	}
+	
+	/**
+	 * Find a genre and only return specified fields
+	 * @param where the parameters to find the genre 
+	 * @param select the fields to return
+	 * @returns the select fields of an object
+	 */
+	async select(
+		where: GenreQueryParameters.WhereInput,
+		select: Partial<Record<keyof Genre, boolean>>
+	): Promise<Partial<Genre>> {
+		try {
+			return await this.prismaService.genre.findFirst({
+				rejectOnNotFound: true,
+				where: GenreQueryParameters.buildQueryParametersForOne(where),
+				select: select
+			});
+		} catch {
+			throw this.onNotFound(where);
+		}
+	}
 
 	/**
 	 * Find multiple genres

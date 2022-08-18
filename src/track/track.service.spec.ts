@@ -206,6 +206,17 @@ describe('Track Service', () => {
 			expect(retrievedTrack).toStrictEqual(dummyRepository.trackA1_1);
 		});
 
+		it(('should return an existing track, without only its id and duration'), async () => {
+			let track = await trackService.select({ id: dummyRepository.trackC1_1.id }, { duration: true, id: true });
+			expect(track).toStrictEqual({ id: dummyRepository.trackC1_1.id, duration: dummyRepository.trackC1_1.duration});
+		});
+
+		it("should throw, as the track does not exist (on select)", async () => {
+			const test = async () => await trackService.select({ id: -1 }, { id: true });
+
+			expect(test()).rejects.toThrow(TrackNotFoundByIdException);
+		});
+
 		it("should throw, as the track does not exist (by id)", async () => {
 			const test = async () => await trackService.get({id: -1});
 
