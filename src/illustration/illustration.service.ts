@@ -311,6 +311,7 @@ export default class IllustrationService implements OnModuleInit {
 		if (!this.fileManagerService.fileExists(videoPath)) {
 			throw new FileDoesNotExistException(videoPath);
 		}
+		fs.mkdir(path.dirname(outPath), { recursive: true }, () => {});
 		Ffmpeg(videoPath).screenshot({
 			count: 1,
 			filename: path.basename(outPath),

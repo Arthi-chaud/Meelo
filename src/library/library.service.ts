@@ -241,8 +241,10 @@ export default class LibraryService extends RepositoryService<
 		let registeredFile = await this.fileService.registerFile(filePath, parentLibrary);
 		try {
 			let track = await this.metadataService.registerMetadata(fileMetadata, registeredFile);
-			await this.illustrationService.extractTrackIllustration(track, fullFilePath);
-			await this.lyricsService.registerLyrics({ byId: { id: track.songId } }, { force: false }).catch(() => {});
+			await Promise.allSettled([
+				this.illustrationService.extractTrackIllustration(track, fullFilePath),
+				this.lyricsService.registerLyrics({ byId: { id: track.songId } }, { force: false }).catch(() => {}),
+			])
 			if (track.type == 'Video') {
 				const illustrationPath = await this.trackService.buildIllustrationPath({ id: track.id });
 				if (this.illustrationService.illustrationExists(illustrationPath) == false)
