@@ -19,6 +19,7 @@ import Ffmpeg from 'fluent-ffmpeg';
 import type FileQueryParameters from 'src/file/models/file.query-parameters';
 import TrackService from 'src/track/track.service';
 import FileService from 'src/file/file.service';
+import path from 'path';
 
 type IllustrationExtractStatus = 'extracted' | 'error' | 'already-extracted' | 'different-illustration';
 
@@ -310,14 +311,13 @@ export default class IllustrationService implements OnModuleInit {
 		if (!this.fileManagerService.fileExists(videoPath)) {
 			throw new FileDoesNotExistException(videoPath);
 		}
-		try {
-			Ffmpeg(videoPath).screenshot({
-				filename: outPath,
-				timestamps: ['50%']
-			});
-		} catch {
-			Logger.error(`Taking a screenshot of '${videoPath}' failed`)
-		}
+		Ffmpeg(videoPath).screenshot({
+			count: 1,
+			filename: path.basename(outPath),
+			folder: path.dirname(outPath)
+		}).on('error', () => {
+			Logger.error(`Taking a screenshot of '${videoPath}' failed`);
+		});
 	}
 
 	/**
