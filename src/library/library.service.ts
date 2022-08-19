@@ -192,6 +192,18 @@ export default class LibraryService extends RepositoryService<
 		}
 	}
 
+	async applyMetadataOnFiles(parentLibrary: Library): Promise<void> {
+		Logger.log(`'${parentLibrary.slug}' library: Applying metadata started`);
+		const files = await this.fileService.getMany({ library: { id: parentLibrary.id } });
+		const updatedFilesCount = (await Promise.allSettled(
+			files.map(async (file) => {
+				await this.metadataService.applyMetadataOnFile({ id: file.id });
+				await this.illustrationService.applyIllustrationOnFile({ id: file.id });
+			})
+		)).length;
+		Logger.log(`${parentLibrary.slug} library: ${updatedFilesCount} files updated`);
+	}
+
 	/**
 	 * Registers new files a Library
 	 * @param parentLibrary The Library the files will be registered under
@@ -229,8 +241,15 @@ export default class LibraryService extends RepositoryService<
 		let registeredFile = await this.fileService.registerFile(filePath, parentLibrary);
 		try {
 			let track = await this.metadataService.registerMetadata(fileMetadata, registeredFile);
-			await this.illustrationService.extractTrackIllustration(track, fullFilePath);
-			await this.lyricsService.registerLyrics({ byId: { id: track.songId } }, { force: true }).catch(() => {});
+			await Promise.allSettled([
+				this.illustrationService.extractTrackIllustration(track, fullFilePath),
+				this.lyricsService.registerLyrics({ byId: { id: track.songId } }, { force: false }).catch(() => {}),
+			])
+			if (track.type == 'Video') {
+				const illustrationPath = await this.trackService.buildIllustrationPath({ id: track.id });
+				if (this.illustrationService.illustrationExists(illustrationPath) == false)
+					this.illustrationService.takeVideoScreenshot(fullFilePath, illustrationPath);
+			}
 		} catch {
 			await this.fileService.delete({ id: registeredFile.id });
 			Logger.warn(`${parentLibrary.slug} library: Registration of ${filePath} failed because of bad metadata.`);

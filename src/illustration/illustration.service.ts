@@ -15,6 +15,11 @@ import AlbumService from 'src/album/album.service';
 import { FileDoesNotExistException } from 'src/file-manager/file-manager.exceptions';
 import { ModuleRef } from '@nestjs/core';
 import compilationAlbumArtistKeyword from 'src/utils/compilation';
+import Ffmpeg from 'fluent-ffmpeg';
+import type FileQueryParameters from 'src/file/models/file.query-parameters';
+import TrackService from 'src/track/track.service';
+import FileService from 'src/file/file.service';
+import path from 'path';
 
 type IllustrationExtractStatus = 'extracted' | 'error' | 'already-extracted' | 'different-illustration';
 
@@ -26,6 +31,9 @@ export default class IllustrationService implements OnModuleInit {
 		private releaseService: ReleaseService,
 		@Inject(forwardRef(() => AlbumService))
 		private albumService: AlbumService,
+		@Inject(forwardRef(() => TrackService))
+		private trackService: TrackService,
+		private fileService: FileService,
 		private fileManagerService: FileManagerService,
 		private moduleRef: ModuleRef
 	) {	}
@@ -241,6 +249,76 @@ export default class IllustrationService implements OnModuleInit {
 			throw new FileParsingException(filePath);
 		}
 		return mm.selectCover(rawMetadata.common.picture);
+	}
+
+	/**
+	 * Apply the illustration of a track on its source track
+	 */
+	async applyIllustrationOnFile(where: FileQueryParameters.WhereInput): Promise<void> {
+		const file = await this.fileService.get(where, { library: true, track: true });
+		const track: Track = file.track!;
+		const libraryPath = this.fileManagerService.getLibraryFullPath(file.library);
+		const fullFilePath = `${libraryPath}/${file.path}`;
+		const trackIllustrationPath = await this.trackService.buildIllustrationPath({ id: track.id });
+		if (this.illustrationExists(trackIllustrationPath)) {
+			this.applyIllustration(trackIllustrationPath, fullFilePath);
+			return;
+		}
+		const releaseIllustrationPath = await this.releaseService.buildIllustrationPath({ byId: { id: track.releaseId } });
+		if (this.illustrationExists(trackIllustrationPath)) {
+			this.applyIllustration(releaseIllustrationPath, fullFilePath);
+		} else {
+			Logger.warn(`No illustration was applied to ${fullFilePath}`)
+		}
+			
+	}
+
+	/**
+	 * 
+	 * Apply illustration to file
+	 * @param illustrationPath the full path of the illustration to apply
+	 * @param filePath the full path of the file to apply the illustration to
+	 */
+	applyIllustration(illustrationPath: string, filePath: string) {
+		if (!this.fileManagerService.fileExists(filePath)) {
+			throw new FileDoesNotExistException(filePath);
+		}
+		if (!this.fileManagerService.fileExists(illustrationPath)) {
+			throw new FileDoesNotExistException(illustrationPath);
+		}
+		try {
+			Ffmpeg(filePath)
+				.addInput(illustrationPath)
+				.inputOptions([
+				"-map 0:V",
+				"-map 0:a",
+				"-map 0:s",
+				"-map 1",
+				"-c copy",
+				"-disposition:0 attached_pic"
+			]);
+		} catch {
+			Logger.error(`Applying illustration to '${filePath}' failed`);
+		}
+	}
+
+	/**
+	 * Takes a screenshot of a video file's content
+	 * @param videoPath the full path of a video file
+	 * @param outPath the path to the output illustration
+	 */
+	takeVideoScreenshot(videoPath: string, outPath: string) {
+		if (!this.fileManagerService.fileExists(videoPath)) {
+			throw new FileDoesNotExistException(videoPath);
+		}
+		fs.mkdir(path.dirname(outPath), { recursive: true }, () => {});
+		Ffmpeg(videoPath).screenshot({
+			count: 1,
+			filename: path.basename(outPath),
+			folder: path.dirname(outPath)
+		}).on('error', () => {
+			Logger.error(`Taking a screenshot of '${videoPath}' failed`);
+		});
 	}
 
 	/**

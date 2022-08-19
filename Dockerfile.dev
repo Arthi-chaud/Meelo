@@ -1,5 +1,6 @@
 FROM node:17
 WORKDIR /app
+RUN apt-get update && apt-get install -y ffmpeg
 COPY *.json ./
 COPY *.lock ./
 RUN yarn install

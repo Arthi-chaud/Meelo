@@ -5,6 +5,7 @@ import FileManagerModule from 'src/file-manager/file-manager.module';
 import ReleaseModule from 'src/release/release.module';
 import AlbumModule from 'src/album/album.module';
 import TrackModule from 'src/track/track.module';
+import FileModule from 'src/file/file.module';
 
 @Module({
 	imports: [
@@ -12,7 +13,8 @@ import TrackModule from 'src/track/track.module';
 		HttpModule,
 		forwardRef(() => AlbumModule),
 		forwardRef(() => ReleaseModule),
-		forwardRef(() => TrackModule)
+		forwardRef(() => TrackModule),
+		FileModule
 	],
 	providers: [IllustrationService],
 	exports: [IllustrationService]
