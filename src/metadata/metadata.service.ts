@@ -16,6 +16,8 @@ import compilationAlbumArtistKeyword from 'src/utils/compilation';
 import GenreService from 'src/genre/genre.service';
 import Ffmpeg from 'fluent-ffmpeg';
 import * as fs from 'fs';
+import type FileQueryParameters from 'src/file/models/file.query-parameters';
+import FileService from 'src/file/file.service';
 @Injectable()
 export default class MetadataService {
 	public readonly metadataFolderPath;
@@ -29,6 +31,7 @@ export default class MetadataService {
 		private releaseService: ReleaseService,
 		private settingsService: SettingsService,
 		private genreService: GenreService,
+		private fileService: FileService,
 		private fileManagerService: FileManagerService) {
 		this.metadataFolderPath = `${this.fileManagerService.configFolderPath}/metadata`;
 	}
@@ -201,6 +204,33 @@ export default class MetadataService {
 			duration: metadata1.duration ?? metadata2.duration,
 			type: metadata1.type ?? metadata2.type,
 		};
+	}
+
+	/**
+	 * Apply metadata on a file found in the database
+	 */
+	async applyMetadataOnFile(where: FileQueryParameters.WhereInput): Promise<void> {
+		const file = await this.fileService.get(where, { library: true });
+		const track = await this.trackService.get({ sourceFile: where });
+		const song = await this.songService.get({ byId: { id: track.songId } }, { genres: true });
+		const release = await this.releaseService.get({ byId: { id: track.releaseId }}, { album: true });
+		const album = await this.albumService.get({ byId: { id: release.albumId } }, { artist: true });
+		const artist = await this.artistService.get({ id: song.artistId });
+		const libraryPath = this.fileManagerService.getLibraryFullPath(file.library);
+		const fullFilePath = `${libraryPath}/${file.path}`;
+		const metadata: Metadata = {
+			compilation: false,
+			artist: artist.name,
+			albumArtist: album.artist?.name,
+			album: album.name,
+			release: release.title,
+			name: song.name,
+			releaseDate: release.releaseDate ?? undefined,
+			index: track.trackIndex ?? undefined,
+			discIndex: track.discIndex ?? undefined,
+			genres: song.genres!.map((genre) => genre.name)
+		}
+		this.applyMetadata(fullFilePath, metadata);
 	}
 
 	/**

@@ -16,6 +16,9 @@ import { FileDoesNotExistException } from 'src/file-manager/file-manager.excepti
 import { ModuleRef } from '@nestjs/core';
 import compilationAlbumArtistKeyword from 'src/utils/compilation';
 import Ffmpeg from 'fluent-ffmpeg';
+import type FileQueryParameters from 'src/file/models/file.query-parameters';
+import TrackService from 'src/track/track.service';
+import FileService from 'src/file/file.service';
 
 type IllustrationExtractStatus = 'extracted' | 'error' | 'already-extracted' | 'different-illustration';
 
@@ -27,6 +30,9 @@ export default class IllustrationService implements OnModuleInit {
 		private releaseService: ReleaseService,
 		@Inject(forwardRef(() => AlbumService))
 		private albumService: AlbumService,
+		@Inject(forwardRef(() => TrackService))
+		private trackService: TrackService,
+		private fileService: FileService,
 		private fileManagerService: FileManagerService,
 		private moduleRef: ModuleRef
 	) {	}
@@ -242,6 +248,28 @@ export default class IllustrationService implements OnModuleInit {
 			throw new FileParsingException(filePath);
 		}
 		return mm.selectCover(rawMetadata.common.picture);
+	}
+
+	/**
+	 * Apply the illustration of a track on its source track
+	 */
+	async applyIllustrationOnFile(where: FileQueryParameters.WhereInput): Promise<void> {
+		const file = await this.fileService.get(where, { library: true, track: true });
+		const track: Track = file.track!;
+		const libraryPath = this.fileManagerService.getLibraryFullPath(file.library);
+		const fullFilePath = `${libraryPath}/${file.path}`;
+		const trackIllustrationPath = await this.trackService.buildIllustrationPath({ id: track.id });
+		if (this.illustrationExists(trackIllustrationPath)) {
+			this.applyIllustration(trackIllustrationPath, fullFilePath);
+			return;
+		}
+		const releaseIllustrationPath = await this.releaseService.buildIllustrationPath({ byId: { id: track.releaseId } });
+		if (this.illustrationExists(trackIllustrationPath)) {
+			this.applyIllustration(releaseIllustrationPath, fullFilePath);
+		} else {
+			Logger.warn(`No illustration was applied to ${fullFilePath}`)
+		}
+			
 	}
 
 	/**

@@ -192,6 +192,18 @@ export default class LibraryService extends RepositoryService<
 		}
 	}
 
+	async applyMetadataOnFiles(parentLibrary: Library): Promise<void> {
+		Logger.log(`'${parentLibrary.slug}' library: Applying metadata started`);
+		const files = await this.fileService.getMany({ library: { id: parentLibrary.id } });
+		const updatedFilesCount = (await Promise.allSettled(
+			files.map(async (file) => {
+				await this.metadataService.applyMetadataOnFile({ id: file.id });
+				await this.illustrationService.applyIllustrationOnFile({ id: file.id });
+			})
+		)).length;
+		Logger.log(`${parentLibrary.slug} library: ${updatedFilesCount} files updated`);
+	}
+
 	/**
 	 * Registers new files a Library
 	 * @param parentLibrary The Library the files will be registered under

@@ -13,6 +13,7 @@ import type { Request } from 'express';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import { TrackType } from '@prisma/client';
 import type ReassignTrackDTO from './models/reassign-track.dto';
+import ReleaseService from 'src/release/release.service';
 
 @ApiTags("Tracks")
 @Controller('tracks')
@@ -23,7 +24,9 @@ export class TrackController {
 		@Inject(forwardRef(() => AlbumService))
 		private albumService: AlbumService,
 		@Inject(forwardRef(() => IllustrationService))
-		private illustrationService: IllustrationService
+		private illustrationService: IllustrationService,
+		@Inject(forwardRef(() => ReleaseService))
+		private releaseService: ReleaseService
 	) { }
 	
 	@ApiOperation({
@@ -94,31 +97,19 @@ export class TrackController {
 		@Response({ passthrough: true })
 		res: Response
 	) {
-		let track = await this.trackService.get({ id: trackId }, { release: true });
-		let album = await this.albumService.get({ byId: { id: track.release.albumId } }, { artist: true })
-		const trackIllustrationPath = this.illustrationService.buildTrackIllustrationPath(
-			new Slug(album.slug),
-			new Slug(track.release.slug),
-			album.artist ? new Slug(album.artist.slug) : undefined,
-			track.discIndex ?? undefined,
-			track.trackIndex ?? undefined
-		);
-		const releaseIllustratioPath = this.illustrationService.buildReleaseIllustrationPath(
-			new Slug(album.slug),
-			new Slug(track.release.slug),
-			album.artist ? new Slug(album.artist.slug) : undefined
-		);
-		try {
+		const track = await this.trackService.select({ id: trackId }, { displayName: true, releaseId: true });
+		const outputName = new Slug(track.displayName!).toString();
+		const trackPath = await this.trackService.buildIllustrationPath({ id: trackId });
+		if (this.illustrationService.illustrationExists(trackPath))
 			return this.illustrationService.streamIllustration(
-				trackIllustrationPath,
-				new Slug(track.displayName).toString(), res
+				trackPath,
+				outputName, res
 			);
-		} catch {
-			return this.illustrationService.streamIllustration(
-				releaseIllustratioPath,
-				new Slug(track.displayName).toString(), res
-			);
-		}
+		const releasePath = await this.releaseService.buildIllustrationPath({ byId: { id: track.releaseId! } });
+		return this.illustrationService.streamIllustration(
+			releasePath,
+			outputName, res
+		);
 	}
 
 	@ApiOperation({

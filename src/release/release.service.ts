@@ -14,6 +14,7 @@ import TrackService from 'src/track/track.service';
 import { buildSortingParameter } from 'src/sort/models/sorting-parameter';
 import RepositoryService from 'src/repository/repository.service';
 import IllustrationService from 'src/illustration/illustration.service';
+import type { IllustrationPath } from 'src/illustration/models/illustration-path.model';
 
 @Injectable()
 export default class ReleaseService extends RepositoryService<
@@ -363,6 +364,32 @@ export default class ReleaseService extends RepositoryService<
 		);
 		await this.albumService.deleteIfEmpty(release.albumId);
 		return updatedRelease;
+	}
+
+	/**
+	 * Builds the path to the release's illustration
+	 * @param where the query parameters to find the release
+	 * @returns 
+	 */
+	async buildIllustrationPath(where: ReleaseQueryParameters.WhereInput): Promise<IllustrationPath> {
+		let release = await this.select(where, { slug: true, albumId: true });
+		let album = await this.albumService.get({ byId: { id: release.albumId! } }, { artist: true });
+		const path = this.illustrationService.buildReleaseIllustrationPath(
+			new Slug(album.slug),
+			new Slug(release.slug!),
+			album.artist ? new Slug(album.artist.slug) : undefined
+		);
+		return path;
+	}
+
+	/**
+	 * checks if the release's illustration exists
+	 * @param where the query parameters to find the release
+	 * @returns true if it exists
+	 */
+	async illustrationExists(where: ReleaseQueryParameters.WhereInput): Promise<boolean> {
+		const path = await this.buildIllustrationPath(where);
+		return this.illustrationService.illustrationExists(path);
 	}
 
 	buildResponse<ResponseType extends Release & { illustration: string }>(

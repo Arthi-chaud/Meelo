@@ -15,6 +15,7 @@ import type { Request } from 'express';
 import PaginatedResponse from 'src/pagination/models/paginated-response';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import type ReassignReleaseDTO from './models/reassign-release.dto';
+import { NoReleaseIllustrationException } from 'src/illustration/illustration.exceptions';
 
 @ApiTags("Releases")
 @Controller('releases')
@@ -154,14 +155,12 @@ export default class ReleaseController {
 		@Response({ passthrough: true })
 		res: Response
 	) {
-		let release = await this.releaseService.get(where);
-		let album = await this.albumService.get({ byId: { id: release.albumId } }, { artist: true })
+		const path = await this.releaseService.buildIllustrationPath(where);
+		let release = await this.releaseService.get(where, { album: true });
+		if (this.illustrationService.illustrationExists(path) == false)
+			throw new NoReleaseIllustrationException(new Slug(release.album.slug), new Slug(release.slug));
 		return this.illustrationService.streamIllustration(
-			this.illustrationService.buildReleaseIllustrationPath(
-				new Slug(album.slug),
-				new Slug(release.slug),
-				album.artist ? new Slug(album.artist.slug) : undefined
-			),
+			path,
 			release.slug, res
 		);
 	}
@@ -176,16 +175,10 @@ export default class ReleaseController {
 		@Body()
 		illustrationDto: IllustrationDownloadDto
 	) {
-		let release = await this.releaseService.get(where);
-		let album = await this.albumService.get({ byId: { id: release.albumId } }, { artist: true })
-		const releaseIllustrationPath = this.illustrationService.buildReleaseIllustrationPath(
-			new Slug(album.slug),
-			new Slug(release.slug),
-			album.artist ? new Slug(album.artist.slug) : undefined
-		);
+		const path = await this.releaseService.buildIllustrationPath(where);
 		return await this.illustrationService.downloadIllustration(
 			illustrationDto.url,
-			releaseIllustrationPath
+			path
 		);
 	}
 

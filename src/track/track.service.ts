@@ -21,6 +21,9 @@ import { UnknownDiscIndexKey } from './models/tracklist.model';
 import { buildSortingParameter } from 'src/sort/models/sorting-parameter';
 import RepositoryService from 'src/repository/repository.service';
 import { shuffle } from '@taumechanica/stout';
+import type { IllustrationPath } from 'src/illustration/models/illustration-path.model';
+import AlbumService from 'src/album/album.service';
+import IllustrationService from 'src/illustration/illustration.service';
 
 @Injectable()
 export default class TrackService extends RepositoryService<
@@ -37,7 +40,11 @@ export default class TrackService extends RepositoryService<
 	constructor(
 		@Inject(forwardRef(() => SongService))
 		private songService: SongService,
+		@Inject(forwardRef(() => AlbumService))
+		private albumService: AlbumService,
 		private releaseService: ReleaseService,
+		@Inject(forwardRef(() => IllustrationService))
+		private illustrationService: IllustrationService,
 		private fileService: FileService,
 		private prismaService: PrismaService,
 		private readonly urlGeneratorService: UrlGeneratorService
@@ -404,6 +411,22 @@ export default class TrackService extends RepositoryService<
 		}, trackWhere);
 		await this.songService.deleteIfEmpty({ byId: { id: track.songId } });
 		return updatedTrack;
+	}
+
+	/**
+	 * builds the path of the illustration of the track.
+	 * @param where the query parameters to find the track
+	 */
+	async buildIllustrationPath(where: TrackQueryParameters.WhereInput): Promise<IllustrationPath> {
+		let track = await this.get(where, { release: true });
+		let album = await this.albumService.get({ byId: { id: track.release.albumId } }, { artist: true })
+		return this.illustrationService.buildTrackIllustrationPath(
+			new Slug(album.slug),
+			new Slug(track.release.slug),
+			album.artist ? new Slug(album.artist.slug) : undefined,
+			track.discIndex ?? undefined,
+			track.trackIndex ?? undefined
+		);
 	}
 
 	buildResponse<ResponseType extends Track & { illustration: string, stream: string }>(
