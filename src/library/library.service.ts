@@ -242,7 +242,12 @@ export default class LibraryService extends RepositoryService<
 		try {
 			let track = await this.metadataService.registerMetadata(fileMetadata, registeredFile);
 			await this.illustrationService.extractTrackIllustration(track, fullFilePath);
-			await this.lyricsService.registerLyrics({ byId: { id: track.songId } }, { force: true }).catch(() => {});
+			await this.lyricsService.registerLyrics({ byId: { id: track.songId } }, { force: false }).catch(() => {});
+			if (track.type == 'Video') {
+				const illustrationPath = await this.trackService.buildIllustrationPath({ id: track.id });
+				if (this.illustrationService.illustrationExists(illustrationPath) == false)
+					this.illustrationService.takeVideoScreenshot(fullFilePath, illustrationPath);
+			}
 		} catch {
 			await this.fileService.delete({ id: registeredFile.id });
 			Logger.warn(`${parentLibrary.slug} library: Registration of ${filePath} failed because of bad metadata.`);
