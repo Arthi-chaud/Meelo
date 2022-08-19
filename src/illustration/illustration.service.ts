@@ -312,12 +312,14 @@ export default class IllustrationService implements OnModuleInit {
 			throw new FileDoesNotExistException(videoPath);
 		}
 		fs.mkdir(path.dirname(outPath), { recursive: true }, () => {});
-		Ffmpeg(videoPath).screenshot({
+		Ffmpeg(videoPath).thumbnail({
 			count: 1,
 			filename: path.basename(outPath),
 			folder: path.dirname(outPath)
 		}).on('error', () => {
-			Logger.error(`Taking a screenshot of '${videoPath}' failed`);
+			Logger.error(`Taking a screenshot of '${path.basename(videoPath)}' failed`);
+		}).on('end', () => {
+			Logger.log(`Taking a screenshot of '${path.basename(videoPath)}' succeded`);
 		});
 	}
 
