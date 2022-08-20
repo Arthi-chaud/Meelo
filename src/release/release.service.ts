@@ -8,8 +8,6 @@ import ReleaseQueryParameters from './models/release.query-parameters';
 import AlbumQueryParameters from 'src/album/models/album.query-parameters';
 import { type PaginationParameters, buildPaginationParameters } from 'src/pagination/models/pagination-parameters';
 import type { MeeloException } from 'src/exceptions/meelo-exception';
-import ReleaseController from './release.controller';
-import { UrlGeneratorService } from 'nestjs-url-generator';
 import TrackService from 'src/track/track.service';
 import { buildSortingParameter } from 'src/sort/models/sorting-parameter';
 import RepositoryService from 'src/repository/repository.service';
@@ -35,8 +33,7 @@ export default class ReleaseService extends RepositoryService<
 		@Inject(forwardRef(() => TrackService))
 		private trackService: TrackService,
 		@Inject(forwardRef(() => IllustrationService))
-		private illustrationService: IllustrationService,
-		private readonly urlGeneratorService: UrlGeneratorService
+		private illustrationService: IllustrationService
 	) {
 		super();
 	}
@@ -397,13 +394,7 @@ export default class ReleaseService extends RepositoryService<
 	): ResponseType {
 		let response = <ResponseType>{
 			...release,
-			illustration: this.urlGeneratorService.generateUrlFromController({
-				controller: ReleaseController,
-				controllerMethod: ReleaseController.prototype.getReleaseIllustration,
-				params: {
-					idOrSlug: release.id.toString()
-				}
-			})
+			illustration: `/releases/${release.id}/illustration`
 		};
 		if (release.album !== undefined)
 			response = {

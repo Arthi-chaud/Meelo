@@ -1016,13 +1016,6 @@
     jsonc-parser "3.0.0"
     pluralize "8.0.0"
 
-"@nestjs/serve-static@^3.0.0":
-  version "3.0.0"
-  resolved "https://registry.yarnpkg.com/@nestjs/serve-static/-/serve-static-3.0.0.tgz#085e7ebbb3c6d6e35b227ea57c8e988c87847309"
-  integrity sha512-TpXjgs4136dQqWUjEcONqppqXDsrJhRkmKWzuBMOUAnP4HjHpNmlycvkHnDnWSoG2YD4a7Enh4ViYGWqCfHStA==
-  dependencies:
-    path-to-regexp "0.2.5"
-
 "@nestjs/swagger@^6.0.4":
   version "6.0.4"
   resolved "https://registry.yarnpkg.com/@nestjs/swagger/-/swagger-6.0.4.tgz#36c472c92f12b0af5094a5b54dbf1ac81e5b3640"
@@ -4608,13 +4601,6 @@ neo-async@^2.6.2:
   resolved "https://registry.yarnpkg.com/neo-async/-/neo-async-2.6.2.tgz#b4aafb93e3aeb2d8174ca53cf163ab7d7308305f"
   integrity sha512-Yd3UES5mWCSqR+qNT93S3UoYUkqAZ9lLg8a7g9rimsWmYGK8cVToA4/sF3RrshdyV3sAGMXVUmpMYOw+dLpOuw==
 
-nestjs-url-generator@^1.0.1:
-  version "1.0.1"
-  resolved "https://registry.yarnpkg.com/nestjs-url-generator/-/nestjs-url-generator-1.0.1.tgz#fdb6b6cc1f6305ba1f8315ce0f9a8044424cd7af"
-  integrity sha512-i3kF5gPSvtHOLZnE9xAzeE00Bsk7SrpimPJF73LOW3Nx0TY2Szg64Hobn6QtaLe+RgJ7BvuFK+Ldxa/mSGSJ/Q==
-  dependencies:
-    qs "^6.10.1"
-
 node-emoji@1.11.0:
   version "1.11.0"
   resolved "https://registry.yarnpkg.com/node-emoji/-/node-emoji-1.11.0.tgz#69a0150e6946e2f115e9d7ea4df7971e2628301c"
@@ -4875,11 +4861,6 @@ path-to-regexp@0.1.7:
   resolved "https://registry.yarnpkg.com/path-to-regexp/-/path-to-regexp-0.1.7.tgz#df604178005f522f15eb4490e7247a1bfaa67f8c"
   integrity sha512-5DFkuoqlv1uYQKxy8omFBeJPQcdoE07Kv2sferDCrAq1ohOU+MSDswDIbnx3YAM60qIOnYa53wBhXW0EbMonrQ==
 
-path-to-regexp@0.2.5:
-  version "0.2.5"
-  resolved "https://registry.yarnpkg.com/path-to-regexp/-/path-to-regexp-0.2.5.tgz#0b426991e387fc4c675de23557f358715eb66fb0"
-  integrity sha512-l6qtdDPIkmAmzEO6egquYDfqQGPMRNGjYtrU13HAXb3YSRrt7HSb1sJY0pKp6o2bAa86tSB6iwaW2JbthPKr7Q==
-
 path-to-regexp@3.2.0:
   version "3.2.0"
   resolved "https://registry.yarnpkg.com/path-to-regexp/-/path-to-regexp-3.2.0.tgz#fa7877ecbc495c601907562222453c43cc204a5f"
@@ -5116,7 +5097,7 @@ qs@6.9.3:
   resolved "https://registry.yarnpkg.com/qs/-/qs-6.9.3.tgz#bfadcd296c2d549f1dffa560619132c977f5008e"
   integrity sha512-EbZYNarm6138UKKq46tdx08Yo/q9ZhFoAXAI1meAFd2GtbRDhbZY2WQSICskT0c5q99aFzLG1D4nvTk9tqfXIw==
 
-qs@^6.10.1, qs@^6.10.3:
+qs@^6.10.3:
   version "6.11.0"
   resolved "https://registry.yarnpkg.com/qs/-/qs-6.11.0.tgz#fd0d963446f7a65e1367e01abd85429453f0c37a"
   integrity sha512-MvjoMCJwEarSbUYk5O+nmoSzSutSsTwF85zcHPQ9OrlFoZOYIjaqBAJIqIXjptyD5vThxGq52Xu/MaJzRkIk4Q==

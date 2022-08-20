@@ -30,13 +30,13 @@ describe('Song Controller', () => {
 
 	const expectedSongResponse = (song: Song) => ({
 		...song,
-		illustration: `http://meelo.com/songs/${song.id}/illustration`
+		illustration: `/songs/${song.id}/illustration`
 	});
 
 	const expectedTrackResponse = (track: Track) => ({
 		...track,
-		illustration: `http://meelo.com/tracks/${track.id}/illustration`,
-		stream: `http://meelo.com/files/${track.sourceFileId}/stream`
+		illustration: `/tracks/${track.id}/illustration`,
+		stream: `/files/${track.sourceFileId}/stream`
 	});
 	
 	beforeAll(async () => {
@@ -127,7 +127,7 @@ describe('Song Controller', () => {
 						...expectedSongResponse(dummyRepository.songA1),
 						artist: {
 							...dummyRepository.artistA,
-							illustration: `http://meelo.com/artists/${dummyRepository.artistA.id}/illustration`
+							illustration: `/artists/${dummyRepository.artistA.id}/illustration`
 						}
 					});
 				});
@@ -163,7 +163,7 @@ describe('Song Controller', () => {
 						...expectedSongResponse(dummyRepository.songA1),
 						artist: {
 							...dummyRepository.artistA,
-							illustration: `http://meelo.com/artists/${dummyRepository.artistA.id}/illustration`
+							illustration: `/artists/${dummyRepository.artistA.id}/illustration`
 						}
 					});
 				});
@@ -223,7 +223,7 @@ describe('Song Controller', () => {
 						song: expectedSongResponse(dummyRepository.songA1),
 						release: {
 							...dummyRepository.releaseA1_1,
-							illustration: `http://meelo.com/releases/${dummyRepository.releaseA1_1.id}/illustration`
+							illustration: `/releases/${dummyRepository.releaseA1_1.id}/illustration`
 						}
 					});
 				});
@@ -433,7 +433,7 @@ describe('Song Controller', () => {
 					let fetchedArtist : Artist = res.body
 					expect(fetchedArtist).toStrictEqual({
 						...dummyRepository.artistB,
-						illustration: `http://meelo.com/artists/${dummyRepository.artistB.id}/illustration` 
+						illustration: `/artists/${dummyRepository.artistB.id}/illustration` 
 					});
 				});
 		});
@@ -445,7 +445,7 @@ describe('Song Controller', () => {
 					let fetchedArtist : Artist = res.body
 					expect(fetchedArtist).toStrictEqual({
 						...dummyRepository.artistA,
-						illustration: `http://meelo.com/artists/${dummyRepository.artistA.id}/illustration` 
+						illustration: `/artists/${dummyRepository.artistA.id}/illustration` 
 					});
 				});
 		});
@@ -457,10 +457,10 @@ describe('Song Controller', () => {
 					let fetchedArtist : Artist = res.body
 					expect(fetchedArtist).toStrictEqual({
 						...dummyRepository.artistB,
-						illustration: `http://meelo.com/artists/${dummyRepository.artistB.id}/illustration`,
+						illustration: `/artists/${dummyRepository.artistB.id}/illustration`,
 						albums: [{
 							...dummyRepository.albumB1,
-							illustration: `http://meelo.com/albums/${dummyRepository.albumB1.id}/illustration`
+							illustration: `/albums/${dummyRepository.albumB1.id}/illustration`
 						}],
 						songs: [
 							expectedSongResponse(dummyRepository.songB1)

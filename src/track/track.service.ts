@@ -13,9 +13,6 @@ import Slug from 'src/slug/slug';
 import { FileNotFoundFromIDException, FileNotFoundFromPathException } from 'src/file/file.exceptions';
 import { type PaginationParameters, buildPaginationParameters } from 'src/pagination/models/pagination-parameters';
 import { InvalidRequestException, MeeloException } from 'src/exceptions/meelo-exception';
-import { UrlGeneratorService } from 'nestjs-url-generator';
-import { TrackController } from './track.controller';
-import FileController from 'src/file/file.controller';
 import type Tracklist from './models/tracklist.model';
 import { UnknownDiscIndexKey } from './models/tracklist.model';
 import { buildSortingParameter } from 'src/sort/models/sorting-parameter';
@@ -42,12 +39,12 @@ export default class TrackService extends RepositoryService<
 		private songService: SongService,
 		@Inject(forwardRef(() => AlbumService))
 		private albumService: AlbumService,
+		@Inject(forwardRef(() => ReleaseService))
 		private releaseService: ReleaseService,
 		@Inject(forwardRef(() => IllustrationService))
 		private illustrationService: IllustrationService,
 		private fileService: FileService,
 		private prismaService: PrismaService,
-		private readonly urlGeneratorService: UrlGeneratorService
 	) {
 		super();
 	}
@@ -434,20 +431,8 @@ export default class TrackService extends RepositoryService<
 	): ResponseType {
 		let response = <ResponseType>{
 			...track,
-			illustration: this.urlGeneratorService.generateUrlFromController({
-				controller: TrackController,
-				controllerMethod: TrackController.prototype.getTrackIllustration,
-				params: {
-					id: track.id.toString()
-				}
-			}),
-			stream: this.urlGeneratorService.generateUrlFromController({
-				controller: FileController,
-				controllerMethod: FileController.prototype.streamFile,
-				params: {
-					id: track.sourceFileId.toString()
-				}
-			})
+			illustration: `/tracks/${track.id}/illustration`,
+			stream: `/files/${track.sourceFileId}/stream`
 		};
 		if (track.release !== undefined)
 			response = {

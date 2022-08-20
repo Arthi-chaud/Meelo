@@ -28,23 +28,23 @@ describe('Search Controller', () => {
 
 	const expectedArtistResponse = (artist: Artist) => ({
 		...artist,
-		illustration: `http://meelo.com/artists/${artist.id}/illustration`
+		illustration: `/artists/${artist.id}/illustration`
 	});
 
 	const expectedAlbumResponse = (album: Album) => ({
 		...album,
 		releaseDate: album.releaseDate?.toISOString() ?? null,
-		illustration: `http://meelo.com/albums/${album.id}/illustration`
+		illustration: `/albums/${album.id}/illustration`
 	});
 
 	const expectedSongResponse = (song: Song) => ({
 		...song,
-		illustration: `http://meelo.com/songs/${song.id}/illustration`
+		illustration: `/songs/${song.id}/illustration`
 	});
 
 	const expectedReleaseResponse = (release: Release) => ({
 		...release,
-		illustration: `http://meelo.com/releases/${release.id}/illustration`
+		illustration: `/releases/${release.id}/illustration`
 	});
 
 	

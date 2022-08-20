@@ -32,21 +32,21 @@ describe('Release Controller', () => {
 
 	const expectedReleaseResponse = (release: Release) => ({
 		...release,
-		illustration: `http://meelo.com/releases/${release.id}/illustration`
+		illustration: `/releases/${release.id}/illustration`
 	});
 	const expectedAlbumResponse = (album: Album) => ({
 		...album,
 		releaseDate: album.releaseDate?.toISOString() ?? null,
-		illustration: `http://meelo.com/albums/${album.id}/illustration`
+		illustration: `/albums/${album.id}/illustration`
 	});
 	const expectedTrackResponse = (track: Track) => ({
 		...track,
-		illustration: `http://meelo.com/tracks/${track.id}/illustration`,
-		stream: `http://meelo.com/files/${track.sourceFileId}/stream`
+		illustration: `/tracks/${track.id}/illustration`,
+		stream: `/files/${track.sourceFileId}/stream`
 	});
 	const expectedSongResponse = (song: Song) => ({
 		...song,
-		illustration: `http://meelo.com/songs/${song.id}/illustration`
+		illustration: `/songs/${song.id}/illustration`
 	}); 
 
 	beforeAll(async () => {
@@ -378,7 +378,7 @@ describe('Release Controller', () => {
 						...expectedAlbumResponse(dummyRepository.albumB1),
 						artist: {
 							...dummyRepository.artistB,
-							illustration: `http://meelo.com/artists/${dummyRepository.artistB.id}/illustration`
+							illustration: `/artists/${dummyRepository.artistB.id}/illustration`
 						}
 					});
 				});

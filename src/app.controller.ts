@@ -7,7 +7,7 @@ export default class AppController {
 	@Get()
 	welcome() {
 		return {
-			"message": "Welcome to Meelo! To know more about the API, visit '/api/docs'"
+			"message": "Welcome to Meelo! To know more about the API, visit '/docs'"
 		}
 	}
 }

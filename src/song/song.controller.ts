@@ -1,13 +1,11 @@
 import { Body, Controller, Delete, forwardRef, Get, Inject, Param, Post, Put, Query, Redirect, Req } from '@nestjs/common';
 import type { Request } from 'express';
-import { UrlGeneratorService } from 'nestjs-url-generator';
 import ArtistService from 'src/artist/artist.service';
 import ArtistQueryParameters from 'src/artist/models/artist.query-parameters';
 import PaginatedResponse from 'src/pagination/models/paginated-response';
 import type { PaginationParameters } from 'src/pagination/models/pagination-parameters';
 import ParsePaginationParameterPipe from 'src/pagination/pagination.pipe';
 import TrackQueryParameters from 'src/track/models/track.query-parameters';
-import { TrackController } from 'src/track/track.controller';
 import TrackService from 'src/track/track.service';
 import SongQueryParameters from './models/song.query-params';
 import ParseSongIdentifierPipe from './song.pipe';
@@ -28,8 +26,7 @@ export class SongController {
 		@Inject(forwardRef(() => ArtistService))
 		private artistService: ArtistService,
 		@Inject(forwardRef(() => LyricsService))
-		private lyricsService: LyricsService,
-		private readonly urlGeneratorService: UrlGeneratorService
+		private lyricsService: LyricsService
 	) {}
 
 	@ApiOperation({
@@ -172,14 +169,7 @@ export class SongController {
 		where: SongQueryParameters.WhereInput
 	) {
 		let master = await this.trackService.getMasterTrack(where);
-		const illustrationRedirectUrl = this.urlGeneratorService.generateUrlFromController({
-			controller: TrackController,
-			controllerMethod: TrackController.prototype.getTrackIllustration,
-			params: {
-				id: master.id.toString()
-			}
-			
-		})
+		const illustrationRedirectUrl = `/tracks/${master.id}/illustration`;
 		return { url: illustrationRedirectUrl };
 	}
 

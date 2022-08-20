@@ -4,7 +4,7 @@ services:
       context: ./
       dockerfile: Dockerfile.dev
     ports:
-      - ${BACK_PORT}:3000
+      - 8080:3000
     depends_on:
       - "db"
     volumes:

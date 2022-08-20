@@ -12,28 +12,14 @@ import IllustrationModule from './illustration/illustration.module';
 import FileManagerModule from './file-manager/file-manager.module';
 import MetadataModule from './metadata/metadata.module';
 import PrismaModule from './prisma/prisma.module';
-import { UrlGeneratorModule, UrlGeneratorModuleOptions } from 'nestjs-url-generator';
 import { LyricsModule } from './lyrics/lyrics.module';
 import SearchModule from './search/search.module';
 import GenreModule from './genre/genre.module';
 import AppController from './app.controller';
-import { ServeStaticModule } from '@nestjs/serve-static';
-import { join } from 'path';
 
 @Module({
 	imports: [
 		ConfigModule.forRoot(),
-		ServeStaticModule.forRoot({
-			rootPath: join(__dirname, '..', '..', 'front', 'build'),
-			serveRoot: '/',
-			renderPath: '/',
-			exclude: ['/api/(.*)']
-		}),
-		UrlGeneratorModule.forRootAsync({
-			useFactory: () => (<UrlGeneratorModuleOptions>{
-				appUrl: process.env.APP_URL!,
-			}),
-		}),
 		ArtistModule,
 		AlbumModule,
 		SongModule,

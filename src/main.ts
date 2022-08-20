@@ -15,7 +15,7 @@ async function bootstrapSwagger(app: INestApplication) {
 	const document = SwaggerModule.createDocument(app, config, {
 
 	});
-	SwaggerModule.setup('/api/docs', app, document);
+	SwaggerModule.setup('/docs', app, document);
 }
 
 async function bootstrap() {
@@ -27,7 +27,6 @@ async function bootstrap() {
 		new MeeloExceptionFilter()
 	);
 	app.useGlobalPipes(new ValidationPipe());
-	app.setGlobalPrefix('api');
 	await bootstrapSwagger(app);
 	await app.listen(3000);
 }

@@ -1,0 +1,6 @@
+FROM node:17
+WORKDIR /app
+COPY *.json ./
+RUN yarn install
+COPY . .
+RUN yarn run dev
