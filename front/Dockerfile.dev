@@ -1,7 +1,0 @@
-FROM node:17
-WORKDIR /app
-COPY *.json ./
-COPY *.lock ./
-RUN yarn install
-COPY . .
-CMD yarn run start
