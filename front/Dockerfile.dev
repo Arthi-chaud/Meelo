@@ -3,4 +3,4 @@ WORKDIR /app
 COPY *.json ./
 RUN yarn install
 COPY . .
-RUN yarn run dev
+CMD yarn run dev
