@@ -3,8 +3,8 @@ services:
     build:
       context: ./
       dockerfile: Dockerfile.dev
-    ports:
-      - 8080:3000
+    expose:
+      - "4000"
     depends_on:
       - "db"
     volumes:
@@ -16,10 +16,20 @@ services:
     build:
       context: ./front
       dockerfile: Dockerfile.dev
-    ports:
-      - 3000:3000
+    expose:
+      - "3000"
     volumes:
       - ./front/src:/app/src
+  nginx:
+    image: nginx:latest
+    restart: unless-stopped
+    ports:
+      - 5000:5000
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf
+    depends_on:
+      - back
+      - front
   db:
     image: postgres:alpine3.16
     env_file:
