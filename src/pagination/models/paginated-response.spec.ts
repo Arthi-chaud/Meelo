@@ -3,9 +3,6 @@ import PaginatedResponse from "./paginated-response"
 
 const fullItemsList = [...Array(99)].map((_,i) => i+1);
 const baseRequest = {
-	headers: {
-		host: 'http://localhost'
-	},
 	path: '/route'
 }
 describe("Paginated Response", () => {
@@ -20,8 +17,8 @@ describe("Paginated Response", () => {
 		expect(response.items).toStrictEqual(fullItemsList);
 		expect(response.metadata).toStrictEqual({
 			page: 1,
-			this: 'http://localhost/route',
-			next: 'http://localhost/route?skip=20',
+			this: '/route',
+			next: '/route?skip=20',
 			previous: null
 		})
 	});
@@ -39,9 +36,9 @@ describe("Paginated Response", () => {
 		expect(response.items.length).toStrictEqual(20);
 		expect(response.metadata).toStrictEqual({
 			page: 2,
-			this: 'http://localhost/route?skip=20',
-			next: 'http://localhost/route?skip=40',
-			previous: 'http://localhost/route'
+			this: '/route?skip=20',
+			next: '/route?skip=40',
+			previous: '/route'
 		})
 	});
 
@@ -58,9 +55,9 @@ describe("Paginated Response", () => {
 		expect(response.items.length).toStrictEqual(20);
 		expect(response.metadata).toStrictEqual({
 			page: 3,
-			this: 'http://localhost/route?skip=40',
-			next: 'http://localhost/route?skip=60',
-			previous: 'http://localhost/route?skip=20'
+			this: '/route?skip=40',
+			next: '/route?skip=60',
+			previous: '/route?skip=20'
 		})
 	});
 
@@ -77,9 +74,9 @@ describe("Paginated Response", () => {
 		expect(response.items.length).toStrictEqual(19);
 		expect(response.metadata).toStrictEqual({
 			page: 5,
-			this: 'http://localhost/route?skip=80',
+			this: '/route?skip=80',
 			next: null,
-			previous: 'http://localhost/route?skip=60'
+			previous: '/route?skip=60'
 		})
 	})
 
@@ -96,9 +93,9 @@ describe("Paginated Response", () => {
 		expect(response.items.length).toStrictEqual(1);
 		expect(response.metadata).toStrictEqual({
 			page: 5,
-			this: 'http://localhost/route?skip=98',
+			this: '/route?skip=98',
 			next: null,
-			previous: 'http://localhost/route?skip=80'
+			previous: '/route?skip=80'
 		})
 	});
 
@@ -114,8 +111,8 @@ describe("Paginated Response", () => {
 		);
 		expect(response.metadata).toStrictEqual({
 			page: 1,
-			this: 'http://localhost/route?take=10',
-			next: 'http://localhost/route?take=10&skip=10',
+			this: '/route?take=10',
+			next: '/route?take=10&skip=10',
 			previous: null
 		})
 	})
@@ -133,9 +130,9 @@ describe("Paginated Response", () => {
 		);
 		expect(response.metadata).toStrictEqual({
 			page: 2,
-			this: 'http://localhost/route?take=10&skip=10',
-			next: 'http://localhost/route?take=10&skip=20',
-			previous: 'http://localhost/route?take=10'
+			this: '/route?take=10&skip=10',
+			next: '/route?take=10&skip=20',
+			previous: '/route?take=10'
 		})
 	})
 
