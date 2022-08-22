@@ -7,8 +7,6 @@ import PrismaService from 'src/prisma/prisma.service';
 import AlbumQueryParameters from './models/album.query-parameters';
 import ArtistQueryParameters from 'src/artist/models/artist.query-parameters';
 import { type PaginationParameters, buildPaginationParameters } from 'src/pagination/models/pagination-parameters';
-import { UrlGeneratorService } from 'nestjs-url-generator';
-import AlbumController from './album.controller';
 import ReleaseService from 'src/release/release.service';
 import IllustrationService from 'src/illustration/illustration.service';
 import { buildSortingParameter } from 'src/sort/models/sorting-parameter';
@@ -34,8 +32,7 @@ export default class AlbumService extends RepositoryService<
 		@Inject(forwardRef(() => ReleaseService))
 		private releaseService: ReleaseService,
 		@Inject(forwardRef(() => IllustrationService))
-		private illustrationService: IllustrationService,
-		private readonly urlGeneratorService: UrlGeneratorService
+		private illustrationService: IllustrationService
 	) {
 		super();
 	}
@@ -282,13 +279,7 @@ export default class AlbumService extends RepositoryService<
 	): ResponseType {
 		let response = <ResponseType>{
 			...album,
-			illustration: this.urlGeneratorService.generateUrlFromController({
-				controller: AlbumController,
-				controllerMethod: AlbumController.prototype.getAlbumIllustration,
-				params: {
-					idOrSlug: album.id.toString()
-				}
-			})
+			illustration: `/albums/${album.id}/illustration`
 		};
 		if (album.releases)
 			response = {

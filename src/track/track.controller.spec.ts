@@ -28,8 +28,8 @@ describe('Track Controller', () => {
 
 	const expectedTrackResponse = (track: Track) => ({
 		...track,
-		illustration: `http://meelo.com/tracks/${track.id}/illustration`,
-		stream: `http://meelo.com/files/${track.sourceFileId}/stream`
+		illustration: `/tracks/${track.id}/illustration`,
+		stream: `/files/${track.sourceFileId}/stream`
 	});
 	
 	beforeAll(async () => {
@@ -100,7 +100,7 @@ describe('Track Controller', () => {
 						...expectedTrackResponse(dummyRepository.trackA2_1),
 						song: {
 							...dummyRepository.songA2,
-							illustration: `http://meelo.com/songs/${dummyRepository.songA2.id}/illustration`,
+							illustration: `/songs/${dummyRepository.songA2.id}/illustration`,
 						},
 					});
 				});
@@ -150,11 +150,11 @@ describe('Track Controller', () => {
 						...expectedTrackResponse(dummyRepository.trackA2_1),
 						song: {
 							...dummyRepository.songA2,
-							illustration: `http://meelo.com/songs/${dummyRepository.songA2.id}/illustration`,
+							illustration: `/songs/${dummyRepository.songA2.id}/illustration`,
 						},
 						release: {
 							...dummyRepository.releaseA1_2,
-							illustration: `http://meelo.com/releases/${dummyRepository.releaseA1_2.id}/illustration`,
+							illustration: `/releases/${dummyRepository.releaseA1_2.id}/illustration`,
 						}
 					})
 				});

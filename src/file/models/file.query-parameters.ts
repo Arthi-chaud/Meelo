@@ -73,7 +73,7 @@ namespace FileQueryParameters {
 	/**
 	 * The parameters needed to update a File
 	 */
-	export type UpdateInput = CreateInput;
+	export type UpdateInput = Partial<CreateInput>;
 
 	/**
 	 * Query parameters to delete one file

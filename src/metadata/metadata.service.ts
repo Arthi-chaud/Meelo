@@ -22,12 +22,15 @@ import FileService from 'src/file/file.service';
 export default class MetadataService {
 	public readonly metadataFolderPath;
 	constructor(
+		@Inject(forwardRef(() => TrackService))
 		private trackService: TrackService,
+		@Inject(forwardRef(() => SongService))
 		private songService: SongService,
 		@Inject(forwardRef(() => AlbumService))
 		private albumService: AlbumService,
 		@Inject(forwardRef(() => ArtistService))
 		private artistService: ArtistService,
+		@Inject(forwardRef(() => SongService))
 		private releaseService: ReleaseService,
 		private settingsService: SettingsService,
 		private genreService: GenreService,

@@ -28,6 +28,7 @@ export default class IllustrationService implements OnModuleInit {
 	public illustrationFolderPath: string;
 	private metadataService: MetadataService;
 	constructor(
+		@Inject(forwardRef(() => ReleaseService))
 		private releaseService: ReleaseService,
 		@Inject(forwardRef(() => AlbumService))
 		private albumService: AlbumService,
