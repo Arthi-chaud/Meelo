@@ -1,4 +1,4 @@
-import { AppBar, Toolbar, Typography, Box, Divider, IconButton, Grid, Drawer, List, ListSubheader, ListItem, Link } from '@mui/material';
+import { AppBar, Toolbar, Typography, Box, Divider, IconButton, Grid, Drawer, List, ListSubheader, ListItem, Link, ListItemButton, ListItemIcon, ListItemText } from '@mui/material';
 import type { NextPage } from 'next';
 import Image from 'next/image';
 import { useRouter } from 'next/router';
@@ -6,8 +6,12 @@ import SearchIcon from '@mui/icons-material/Search';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
 import MenuIcon from '@mui/icons-material/Menu';
 import { useState } from 'react';
-import { it } from 'node:test';
-
+import AccountCircleIcon from '@mui/icons-material/AccountCircle';
+import AlbumIcon from '@mui/icons-material/Album';
+import LibraryMusicIcon from '@mui/icons-material/LibraryMusic';
+import AudiotrackIcon from '@mui/icons-material/Audiotrack';
+import AutoModeIcon from '@mui/icons-material/AutoMode';
+import SettingsIcon from '@mui/icons-material/Settings';
 /**
  * Array of possible item types
  */
@@ -54,7 +58,7 @@ const Home: NextPage = () => {
 											<Typography sx={{ fontWeight: router.asPath.endsWith(`/${type}`) ? 'bold' : 'normal', color: "white" }}>{type.toLocaleUpperCase()}</Typography>
 										</Link>
 									</Grid>
-								)) 
+								))
 							}
 						</Grid>
 					</Box>
@@ -71,31 +75,84 @@ const Home: NextPage = () => {
 				</Toolbar>
 			</AppBar>
 			<Drawer
+				elevation={8}
+				PaperProps={{ sx: { width: '70%' } }}
 				variant="temporary"
 				open={drawerOpen}
 				onClose={() => setDrawerOpen(false)}
 				sx={{ display: { xs: 'block', sm: 'none' } }}
 			>
-				<List
-					subheader={
-						<ListSubheader component="div" id="nested-list-subheader">
-							Libraries
-						</ListSubheader>
-					}
-				>
-					<ListItem>Library 1</ListItem>
-					<ListItem>Library 2</ListItem>
-					<ListItem>Library 3</ListItem>
+				<List>
+					<ListItem>
+						<ListItemIcon>
+							<AccountCircleIcon />
+						</ListItemIcon>
+						<ListItemText>Artist</ListItemText>
+					</ListItem>
+					<ListItem>
+						<ListItemIcon>
+							<AlbumIcon />
+						</ListItemIcon>
+						<ListItemText>Albums</ListItemText>
+					</ListItem>
+					<ListItem>
+						<ListItemIcon>
+							<AudiotrackIcon />
+						</ListItemIcon>
+						<ListItemText>Songs</ListItemText>
+					</ListItem>
 				</List>
-				<Divider/>
-				<List
-				>
-					<ListItem>Artists</ListItem>
-					<ListItem>Albums</ListItem>
-					<ListItem>Songs</ListItem>
+				<Divider />
+				<List>
+					<ListItem>
+						<ListItemIcon>
+							<LibraryMusicIcon />
+						</ListItemIcon>
+						<ListItemText>Libraries</ListItemText>
+					</ListItem>
+					<ListItem>
+						<ListItemButton>
+							<ListItemText inset>Library 1</ListItemText>
+						</ListItemButton>
+					</ListItem>
+					<ListItem>
+						<ListItemButton>
+							<ListItemText inset>Library 2</ListItemText>
+						</ListItemButton>
+					</ListItem>
+					<ListItem>
+						<ListItemButton>
+							<ListItemText inset>Library 3</ListItemText>
+						</ListItemButton>
+					</ListItem>
 				</List>
-				<Divider/>
-
+				<Divider />
+				<List>
+					<ListItem disablePadding>
+						<ListItemButton>
+							<ListItemIcon>
+								<SearchIcon />
+							</ListItemIcon>
+							<ListItemText>Search</ListItemText>
+						</ListItemButton>
+					</ListItem>
+					<ListItem disablePadding>
+						<ListItemButton>
+							<ListItemIcon>
+								<AutoModeIcon />
+							</ListItemIcon>
+							<ListItemText>Refresh Libraries</ListItemText>
+						</ListItemButton>
+					</ListItem>
+					<ListItem disablePadding>
+						<ListItemButton>
+							<ListItemIcon>
+								<SettingsIcon />
+							</ListItemIcon>
+							<ListItemText>Settings</ListItemText>
+						</ListItemButton>
+					</ListItem>
+				</List>
 			</Drawer>
 		</Box>
 	)
