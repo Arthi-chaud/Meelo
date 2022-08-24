@@ -19,7 +19,7 @@ services:
     expose:
       - "3000"
     volumes:
-      - ./front/src:/app/src
+      - ./front:/app
   nginx:
     image: nginx:latest
     restart: unless-stopped
