@@ -1,4 +1,4 @@
-import { AppBar, Toolbar, Typography, Box, Divider, IconButton, Grid, Drawer, List, ListSubheader, ListItem, Link, ListItemButton, ListItemIcon, ListItemText } from '@mui/material';
+import { AppBar, Toolbar, Typography, Box, Divider, IconButton, Grid, Drawer, List, Collapse, ListItem, Link, ListItemButton, ListItemIcon, ListItemText } from '@mui/material';
 import Image from 'next/image';
 import { useRouter } from 'next/router';
 import SearchIcon from '@mui/icons-material/Search';
@@ -15,6 +15,8 @@ import { useQuery } from 'react-query';
 import API from '../api';
 import LoadingComponent from './loading';
 import FadeIn from 'react-fade-in';
+import ExpandLess from '@mui/icons-material/ExpandLess';
+import ExpandMore from '@mui/icons-material/ExpandMore';
 /**
  * Array of possible item types
  */
@@ -29,11 +31,12 @@ const buildLink = (itemType: string, librarySlug?: string): string => {
 
 const MeeloAppBar = () => {
 	const router = useRouter();
-	const [drawerOpen, setDrawerOpen] = useState(false);
-	const { isLoading, isError, data } = useQuery('libraries', () => API.getAllLibraries())
+	const [drawerOpen, setDrawerOpen] = useState(true);
+	const { isLoading, isError, data } = useQuery('libraries', () => API.getAllLibraries());
 	let librarySlug: string | undefined;
 	if (router.asPath.startsWith('/libraries'))
 		librarySlug = router.asPath.split('/')[2];
+	const [selectedLibrarySlug, setSelectedLibrary] = useState<string | null>(librarySlug);
 
 	return (
 		<Box>
@@ -98,27 +101,6 @@ const MeeloAppBar = () => {
 				<List>
 					<ListItem>
 						<ListItemIcon>
-							<AccountCircleIcon />
-						</ListItemIcon>
-						<ListItemText>Artist</ListItemText>
-					</ListItem>
-					<ListItem>
-						<ListItemIcon>
-							<AlbumIcon />
-						</ListItemIcon>
-						<ListItemText>Albums</ListItemText>
-					</ListItem>
-					<ListItem>
-						<ListItemIcon>
-							<AudiotrackIcon />
-						</ListItemIcon>
-						<ListItemText>Songs</ListItemText>
-					</ListItem>
-				</List>
-				<Divider />
-				<List>
-					<ListItem>
-						<ListItemIcon>
 							<LibraryMusicIcon />
 						</ListItemIcon>
 						<ListItemText>Libraries</ListItemText>
@@ -126,13 +108,34 @@ const MeeloAppBar = () => {
 					</ListItem>
 					{
 						isLoading || <FadeIn> {
-								data?.items.map((library) => (
-									<ListItem>
-										<ListItemButton component='a' href={`/${library.slug}`}>
+								data?.items.map((library) => {
+									const open = selectedLibrarySlug === library.slug;
+									return (<><ListItem key={library.slug}>
+										<ListItemButton onClick={() => setSelectedLibrary(open ? null : library.slug)}>
 											<ListItemText inset>{library.title}</ListItemText>
-										</ListItemButton>
+											{open ? <ExpandLess /> : <ExpandMore />}
+									  	</ListItemButton>
 									</ListItem>
-								))
+									<Collapse in={open} unmountOnExit>
+      								  <List>
+										{ itemType.map((item) => (
+											<ListItemButton>
+      								    	  <ListItemIcon>
+      								    	    { item === 'artists' 
+													? <AccountCircleIcon/>
+													: item === 'albums'
+														? <AlbumIcon/>
+														: <AudiotrackIcon/>
+												}
+      								    	  </ListItemIcon>
+      								    	  <ListItemText primary={item.charAt(0).toUpperCase() + item.slice(1)} />
+      								    	</ListItemButton>
+										))}
+      								    
+      								  </List>
+      								</Collapse>
+									</>)
+								})
 							} </FadeIn>
 					}
 				</List>
