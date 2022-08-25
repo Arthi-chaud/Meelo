@@ -1,6 +1,6 @@
-import { response } from "express";
 import Album, { AlbumInclude } from "./models/album";
 import Artist, { ArtistInclude } from "./models/artist";
+import Library from "./models/library";
 import { PaginatedResponse, PaginationParameters } from "./models/pagination";
 import Song, { SongInclude } from "./models/song";
 
@@ -9,7 +9,25 @@ type QueryParameters = {
 	include: string[];
 }
 
+const delay = (seconds: number) => new Promise(resolve => setTimeout(resolve, seconds * 1000));
+
 export default class API {
+	static async getAllLibraries(
+		pagination?: PaginationParameters
+	): Promise<PaginatedResponse<Library>> {
+		return delay(3).then(() => ({
+			items: [1, 2, 3].map((libraryIndex) => <Library>{
+				title: `Library ${libraryIndex}`,
+				id: libraryIndex,
+				slug: `library-${libraryIndex}`,
+			}),
+			metadata: {
+				this: '',
+				next: null,
+				previous: null
+			}
+		}));
+	}
 	static async getAllArtists(
 		pagination?: PaginationParameters, 
 		include: ArtistInclude[] = []

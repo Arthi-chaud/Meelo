@@ -1,5 +1,4 @@
 import { AppBar, Toolbar, Typography, Box, Divider, IconButton, Grid, Drawer, List, ListSubheader, ListItem, Link, ListItemButton, ListItemIcon, ListItemText } from '@mui/material';
-import type { NextPage } from 'next';
 import Image from 'next/image';
 import { useRouter } from 'next/router';
 import SearchIcon from '@mui/icons-material/Search';
@@ -12,6 +11,10 @@ import LibraryMusicIcon from '@mui/icons-material/LibraryMusic';
 import AudiotrackIcon from '@mui/icons-material/Audiotrack';
 import AutoModeIcon from '@mui/icons-material/AutoMode';
 import SettingsIcon from '@mui/icons-material/Settings';
+import { useQuery } from 'react-query';
+import API from '../api';
+import LoadingComponent from './loading';
+import FadeIn from 'react-fade-in';
 /**
  * Array of possible item types
  */
@@ -24,17 +27,18 @@ const buildLink = (itemType: string, librarySlug?: string): string => {
 	return itemRoute;
 }
 
-const Home: NextPage = () => {
+const MeeloAppBar = () => {
 	const router = useRouter();
-	const [drawerOpen, setDrawerOpen] = useState(true);
+	const [drawerOpen, setDrawerOpen] = useState(false);
+	const { isLoading, isError, data } = useQuery('libraries', () => API.getAllLibraries())
 	let librarySlug: string | undefined;
 	if (router.asPath.startsWith('/libraries'))
-		librarySlug = router.asPath.split('/')[1];
+		librarySlug = router.asPath.split('/')[2];
 
 	return (
-		<Box >
+		<Box>
 			<AppBar position="static" style={{ padding: 10 }}>
-				<Toolbar variant="dense">
+				<Toolbar>
 					<IconButton
 						color="inherit"
 						aria-label="open drawer"
@@ -47,31 +51,40 @@ const Home: NextPage = () => {
 					<Box style={{ paddingRight: 30 }}>
 						<Image src="/banner.png" alt="me" width={120} height={50} />
 					</Box>
-					<Box sx={{ display: { xs: 'none', sm: 'flex' }, marginLeft: 1 }} flexDirection='row'>
-						Library
-						<Divider orientation='vertical' flexItem sx={{ paddingLeft: 3 }} />
-						<Grid container spacing={4} sx={{ paddingLeft: 3 }}>
-							{
-								itemType.map((type) => (
-									<Grid item>
-										<Link href={buildLink(type, librarySlug)}>
-											<Typography sx={{ fontWeight: router.asPath.endsWith(`/${type}`) ? 'bold' : 'normal', color: "white" }}>{type.toLocaleUpperCase()}</Typography>
-										</Link>
-									</Grid>
-								))
-							}
-						</Grid>
-					</Box>
-					<Box sx={{ flexGrow: 1 }} />
-					<Box sx={{ display: { xs: 'none', sm: 'flex' } }}>
-						<IconButton>
-							<SearchIcon />
-						</IconButton>
-						<Divider orientation='vertical' flexItem sx={{ marginX: 2 }} />
-						<IconButton>
-							<MoreVertIcon />
-						</IconButton>
-					</Box>
+					{
+						isLoading
+						? <LoadingComponent />
+						: <><FadeIn>
+							<Box sx={{ display: { xs: 'none', sm: 'flex' }, marginLeft: 1, alignItems: 'center' }} flexDirection='row'>
+								{librarySlug ?? "All"}
+								<Divider orientation='vertical' flexItem sx={{ paddingLeft: 3 }} />
+								<Grid container spacing={4} sx={{ paddingLeft: 3 }}>
+									{
+										itemType.map((type) => (
+											<Grid item key={type}>
+												<Link href={buildLink(type, librarySlug)}>
+													<Typography sx={{ fontWeight: router.asPath.endsWith(`/${type}`) ? 'bold' : 'normal', color: "white" }}>{type.toLocaleUpperCase()}</Typography>
+												</Link>
+											</Grid>
+										))
+									}
+								</Grid>
+							</Box>
+						</FadeIn>
+						<Box sx={{ flexGrow: 1 }} />
+						<FadeIn>
+							<Box sx={{ display: { xs: 'none', sm: 'flex' } }}>
+								<IconButton>
+									<SearchIcon />
+								</IconButton>
+								<Divider orientation='vertical' flexItem sx={{ marginX: 2 }} />
+								<IconButton>
+									<MoreVertIcon />
+								</IconButton>
+							</Box>
+						</FadeIn>
+						</>
+					}
 				</Toolbar>
 			</AppBar>
 			<Drawer
@@ -109,22 +122,19 @@ const Home: NextPage = () => {
 							<LibraryMusicIcon />
 						</ListItemIcon>
 						<ListItemText>Libraries</ListItemText>
+						{ isLoading ? <LoadingComponent /> : <></>}
 					</ListItem>
-					<ListItem>
-						<ListItemButton>
-							<ListItemText inset>Library 1</ListItemText>
-						</ListItemButton>
-					</ListItem>
-					<ListItem>
-						<ListItemButton>
-							<ListItemText inset>Library 2</ListItemText>
-						</ListItemButton>
-					</ListItem>
-					<ListItem>
-						<ListItemButton>
-							<ListItemText inset>Library 3</ListItemText>
-						</ListItemButton>
-					</ListItem>
+					{
+						isLoading || <FadeIn> {
+								data?.items.map((library) => (
+									<ListItem>
+										<ListItemButton component='a' href={`/${library.slug}`}>
+											<ListItemText inset>{library.title}</ListItemText>
+										</ListItemButton>
+									</ListItem>
+								))
+							} </FadeIn>
+					}
 				</List>
 				<Divider />
 				<List>
@@ -158,4 +168,4 @@ const Home: NextPage = () => {
 	)
 }
 
-export default Home
+export default MeeloAppBar;
