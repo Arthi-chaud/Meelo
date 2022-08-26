@@ -23,7 +23,6 @@ interface DrawerProps {
 }
 
 const MeeloAppBarDrawer = ({ query, requestedLibrarySlug, isOpen, onClose }: DrawerProps) => {
-	console.log('Drawer: Slug: ', requestedLibrarySlug);
 	const [selectedLibrarySlug, setSelectedLibrary] = useState<string | null>(requestedLibrarySlug);
 	useEffect(() => setSelectedLibrary(requestedLibrarySlug), [requestedLibrarySlug, isOpen]);
 	return (

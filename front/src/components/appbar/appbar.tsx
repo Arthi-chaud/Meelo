@@ -1,4 +1,4 @@
-import { AppBar, Toolbar, Typography, Box, Divider, IconButton, Grid, Menu, Drawer, Button, List, Collapse, FormControl, ListItem, InputLabel, ListItemButton, ListItemIcon, ListItemText, ListSubheader, Select, MenuItem } from '@mui/material';
+import { AppBar, Toolbar, Typography, Box, Divider, IconButton, Grid, TextField, Drawer, Button, List, Collapse, FormControl, ListItem, InputLabel, ListItemButton, ListItemIcon, ListItemText, ListSubheader, Select, MenuItem } from '@mui/material';
 import Image from 'next/image';
 import { useRouter } from 'next/router';
 import SearchIcon from '@mui/icons-material/Search';
@@ -9,10 +9,7 @@ import { useQuery } from 'react-query';
 import API from '../../api';
 import LoadingComponent from '../loading';
 import FadeIn from 'react-fade-in';
-import ExpandLess from '@mui/icons-material/ExpandLess';
-import ExpandMore from '@mui/icons-material/ExpandMore';
-import Library from '../../models/library';
-import { getTypeIcon, formattedItemTypes, itemType } from './item-types';
+import { formattedItemTypes, itemType } from './item-types';
 import globalLibrary from './global-library';
 import MeeloAppBarDrawer from './drawer';
 import buildLink from './build-link';
@@ -21,21 +18,17 @@ const MeeloAppBar = () => {
 	const [requestedLibrary, setRequestedLibrary] = useState(globalLibrary);
 	useEffect(() => {}, [requestedLibrary]);
 	const [drawerOpen, setDrawerOpen] = useState(false);
-	const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
-	const dropdownOpen = Boolean(anchorEl);
-	const handleDropdownClick = (e: React.MouseEvent) => setAnchorEl(e.currentTarget);
 	const query = useQuery('libraries', () => API.getAllLibraries(), {
 		onSuccess: (data) => {
 			let requestedlibrarySlug = globalLibrary.slug;
 			if (router.asPath.startsWith('/libraries'))
 				requestedlibrarySlug = router.asPath.split('/')[2];
-			console.log(requestedlibrarySlug);
 			setRequestedLibrary(data.items.find((library) => library.slug === requestedlibrarySlug) ?? globalLibrary)
 		}
 	});
 	return (
 		<Box>
-			<AppBar position="static" style={{ padding: 10 }}>
+			<AppBar position="static" style={{ padding: 5 }}>
 				<Toolbar>
 					<IconButton
 						color="inherit"
@@ -45,44 +38,37 @@ const MeeloAppBar = () => {
 					>
 						<MenuIcon />
 					</IconButton>
-					<Box style={{ paddingRight: 30 }}>
-						<Image src="/banner.png" alt="me" width={120} height={50} />
+					<Box style={{ paddingRight: 25 }}>
+						<Image src="/banner.png" alt="me" width={120} height={50}/>
 					</Box>
 					{
 						query.isLoading
 							? <LoadingComponent />
 							: <><FadeIn>
-								<Box sx={{ display: { xs: 'none', sm: 'flex' }, marginLeft: 1, alignItems: 'center' }} >
-									<Button
-										variant="text"
-										color='inherit'
-										onClick={handleDropdownClick}
-										sx={{ padding: 1 }}
-										endIcon={ dropdownOpen ? <ExpandLess/> : <ExpandMore/> }
-									>
-										{ requestedLibrary.title }
-									</Button>
-									{/* <Dropdown>
-										{
-											[globalLibrary, ...data!.items].map((library) => (
-												<Dropdown.Submenu
-													// isA={ library.slug === requstedlibrarySlug }
-													// label={ library.title }
-													// parentMenuOpen={dropdownOpen}
-													// sx={{ padding: 1.5 }}
-													// color='inherit'
-												>{
-													itemType.map((type, index) => (<>
-														<Button startIcon={ getTypeIcon(type) } color='inherit' sx={{ padding: 1.5 }}>
-															{ formattedItemTypes.at(index) }
-														</Button>
-													</>))
-												}</Dropdown.Submenu>
-											))
-										}
-									</Dropdown> */}
-									<Divider orientation='vertical' flexItem sx={{ paddingLeft: 3 }} />
-									<Grid container spacing={4} sx={{ paddingLeft: 3 }}>
+								<Box sx={{ display: { xs: 'none', sm: 'flex' }, marginLeft: 1, alignItems: 'center' }} flexDirection='row'>
+									<Select
+										disableUnderline
+										variant='standard'
+        								value={requestedLibrary.title}
+										sx={{ color: "primary.contrastText" }}
+										onChange={(item) => {
+											const targetLibaryName = item.target.value;
+											if (targetLibaryName === globalLibrary.title) {
+												router.push(`/albums`);
+											} else {
+												const targetLibrary = query.data!.items.find((library) => library.title === targetLibaryName)!;
+												router.push(`/libraries/${targetLibrary.slug}/albums`).then(() => router.reload());
+											}
+										}}
+        							>
+        							  {[globalLibrary, ...query.data!.items].map((library) => (
+        							    <MenuItem key={library.id} value={library.title}>
+        							    	{library.title}
+        							    </MenuItem>
+        							  ))}
+        							</Select>
+									<Divider orientation='vertical' flexItem sx={{ paddingLeft: 2 }} />
+									<Grid container spacing={3} sx={{ paddingLeft: 2 }}  flexDirection='row'>
 										{
 											itemType.map((type, index) => (
 												<Grid item key={type}>
@@ -103,7 +89,7 @@ const MeeloAppBar = () => {
 										<IconButton>
 											<SearchIcon />
 										</IconButton>
-										<Divider orientation='vertical' flexItem sx={{ marginX: 2 }} />
+										<Divider orientation='vertical' flexItem sx={{ marginX: 1 }} />
 										<IconButton>
 											<MoreVertIcon />
 										</IconButton>
