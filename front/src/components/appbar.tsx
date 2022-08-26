@@ -1,10 +1,10 @@
-import { AppBar, Toolbar, Typography, Box, Divider, IconButton, Grid, Drawer, List, Collapse, ListItem, Link, ListItemButton, ListItemIcon, ListItemText } from '@mui/material';
+import { AppBar, Toolbar, Typography, Box, Divider, IconButton, Grid, Drawer, List, Collapse, ListItem, Link, ListItemButton, ListItemIcon, ListItemText, ListSubheader } from '@mui/material';
 import Image from 'next/image';
 import { useRouter } from 'next/router';
 import SearchIcon from '@mui/icons-material/Search';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
 import MenuIcon from '@mui/icons-material/Menu';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import AlbumIcon from '@mui/icons-material/Album';
 import LibraryMusicIcon from '@mui/icons-material/LibraryMusic';
@@ -22,7 +22,7 @@ import ExpandMore from '@mui/icons-material/ExpandMore';
  */
 const itemType = ['artists', 'albums', 'songs'];
 
-const buildLink = (itemType: string, librarySlug?: string): string => {
+const buildLink = (itemType: string, librarySlug?: string | null): string => {
 	let itemRoute = `/${itemType}`;
 	if (librarySlug)
 		itemRoute = `/libraries/${librarySlug}${itemRoute}`;
@@ -31,13 +31,15 @@ const buildLink = (itemType: string, librarySlug?: string): string => {
 
 const MeeloAppBar = () => {
 	const router = useRouter();
+	let librarySlug: string | null = null;
+	if (router.asPath.startsWith('/libraries')) {
+		const { id } = router.query;
+		librarySlug = (id as string);
+	}
+	const [selectedLibrarySlug, setSelectedLibrary] = useState(librarySlug);
+	useEffect(() => setSelectedLibrary(librarySlug), [librarySlug]);
 	const [drawerOpen, setDrawerOpen] = useState(true);
 	const { isLoading, isError, data } = useQuery('libraries', () => API.getAllLibraries());
-	let librarySlug: string | undefined;
-	if (router.asPath.startsWith('/libraries'))
-		librarySlug = router.asPath.split('/')[2];
-	const [selectedLibrarySlug, setSelectedLibrary] = useState<string | null>(librarySlug);
-
 	return (
 		<Box>
 			<AppBar position="static" style={{ padding: 10 }}>
@@ -99,25 +101,26 @@ const MeeloAppBar = () => {
 				sx={{ display: { xs: 'block', sm: 'none' } }}
 			>
 				<List>
-					<ListItem>
-						<ListItemIcon>
-							<LibraryMusicIcon />
-						</ListItemIcon>
-						<ListItemText>Libraries</ListItemText>
-						{ isLoading ? <LoadingComponent /> : <></>}
-					</ListItem>
+					<ListSubheader disableSticky={false}>
+						<Grid container columnSpacing={2} sx={{ flexDirection: 'row', alignItems: 'center' }}>
+							<Grid item sx={{ paddingTop: 1.6 }}><LibraryMusicIcon/></Grid>
+							<Grid item>Libraries</Grid>
+							<Grid item sx={{ flexGrow: 1 }}/>
+							{ isLoading ? <Grid item><LoadingComponent /></Grid> : <></>}
+						</Grid>
+					</ListSubheader>
 					{
 						isLoading || <FadeIn> {
 								data?.items.map((library) => {
 									const open = selectedLibrarySlug === library.slug;
 									return (<><ListItem key={library.slug}>
 										<ListItemButton onClick={() => setSelectedLibrary(open ? null : library.slug)}>
-											<ListItemText inset>{library.title}</ListItemText>
+											<ListItemText>{library.title}</ListItemText>
 											{open ? <ExpandLess /> : <ExpandMore />}
 									  	</ListItemButton>
 									</ListItem>
 									<Collapse in={open} unmountOnExit>
-      								  <List>
+      								  <List sx={{ pl: 4 }}>
 										{ itemType.map((item) => (
 											<ListItemButton>
       								    	  <ListItemIcon>
