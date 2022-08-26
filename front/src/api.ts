@@ -15,7 +15,7 @@ export default class API {
 	static async getAllLibraries(
 		pagination?: PaginationParameters
 	): Promise<PaginatedResponse<Library>> {
-		return delay(3).then(() => ({
+		return delay(2).then(() => ({
 			items: [1, 2, 3].map((libraryIndex) => <Library>{
 				title: `Library ${libraryIndex}`,
 				id: libraryIndex,
