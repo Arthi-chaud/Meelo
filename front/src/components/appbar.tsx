@@ -17,6 +17,7 @@ import LoadingComponent from './loading';
 import FadeIn from 'react-fade-in';
 import ExpandLess from '@mui/icons-material/ExpandLess';
 import ExpandMore from '@mui/icons-material/ExpandMore';
+import Library from '../models/library';
 /**
  * Array of possible item types
  */
@@ -39,6 +40,7 @@ const MeeloAppBar = () => {
 	const [selectedLibrarySlug, setSelectedLibrary] = useState(librarySlug);
 	useEffect(() => setSelectedLibrary(librarySlug), [librarySlug]);
 	const [drawerOpen, setDrawerOpen] = useState(true);
+	const globalLibrary: Library = { title: 'All', slug: null as unknown as string, id: -1 };
 	const { isLoading, isError, data } = useQuery('libraries', () => API.getAllLibraries());
 	return (
 		<Box>
@@ -111,7 +113,7 @@ const MeeloAppBar = () => {
 					</ListSubheader>
 					{
 						isLoading || <FadeIn> {
-								data?.items.map((library) => {
+								[globalLibrary, ...data!.items].map((library) => {
 									const open = selectedLibrarySlug === library.slug;
 									return (<><ListItem key={library.slug}>
 										<ListItemButton onClick={() => setSelectedLibrary(open ? null : library.slug)}>
