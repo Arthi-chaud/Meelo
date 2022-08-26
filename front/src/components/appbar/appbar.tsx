@@ -13,7 +13,30 @@ import { formattedItemTypes, itemType } from './item-types';
 import globalLibrary from './global-library';
 import MeeloAppBarDrawer from './drawer';
 import buildLink from './build-link';
+import { makeStyles } from '@mui/styles';
+
+const useStyles = makeStyles({
+    select: {
+        '&:before': {
+            borderColor: 'white',
+        },
+        '&:after': {
+            borderColor: 'white',
+        },
+        '&:not(.Mui-disabled):hover::before': {
+            borderColor: 'white',
+        },
+    },
+    icon: {
+        fill: 'white',
+    },
+    root: {
+        color: 'white',
+    },
+})
+
 const MeeloAppBar = () => {
+	const classes = useStyles();
 	const router = useRouter();
 	const [requestedLibrary, setRequestedLibrary] = useState(globalLibrary);
 	useEffect(() => {}, [requestedLibrary]);
@@ -51,6 +74,12 @@ const MeeloAppBar = () => {
 										variant='standard'
         								value={requestedLibrary.title}
 										sx={{ color: "primary.contrastText" }}
+										inputProps={{
+											classes: {
+												icon: classes.icon,
+												root: classes.root,
+											},
+										}}
 										onChange={(item) => {
 											const targetLibaryName = item.target.value;
 											if (targetLibaryName === globalLibrary.title) {
