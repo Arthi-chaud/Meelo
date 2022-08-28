@@ -51,7 +51,7 @@ const MeeloAppBar = () => {
 	});
 	return (
 		<Box>
-			<AppBar position="static" style={{ padding: 5 }}>
+			<AppBar position="static" style={{ padding: 5 }} elevation={1}>
 				<Toolbar>
 					<IconButton
 						color="inherit"

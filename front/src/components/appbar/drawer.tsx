@@ -47,7 +47,6 @@ const MeeloAppBarDrawer = ({ query, requestedLibrarySlug, isOpen, onClose }: Dra
 					query.isLoading || <FadeIn> {
 						[globalLibrary, ...query.data!.items].map((library) => {
 							const open = selectedLibrarySlug === library.slug;
-							console.log(selectedLibrarySlug, library.slug);
 							return (<><ListItem key={library.slug}>
 								<ListItemButton onClick={() => setSelectedLibrary(open ? null : library.slug)}>
 									<ListItemText>{library.title}</ListItemText>

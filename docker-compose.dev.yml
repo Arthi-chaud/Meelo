@@ -18,6 +18,8 @@ services:
       dockerfile: Dockerfile.dev
     expose:
       - "3000"
+    ports:
+      - "3000:3000"
     volumes:
       - ./front:/app
   nginx:

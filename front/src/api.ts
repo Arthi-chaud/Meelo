@@ -44,6 +44,30 @@ export default class API {
 			.then((response) => response.json());
 	}
 
+	static async getAllArtistsInLibrary(
+		librarySlugOrId: string | number,
+		pagination?: PaginationParameters,
+		include: ArtistInclude[] = [],
+	): Promise<PaginatedResponse<Artist>> {
+		return delay(2).then(() => ({
+			items: Array.from({length: 10}, (_, i) => i + 1)
+				.splice(pagination?.skip ?? 0, pagination?.take ?? 20)
+				.map((number) => <Artist>({
+					id: number,
+					slug: `artist-${number}`,
+					illustration: `/artists/artist-${number}/illustration`,
+					name: `Artist ${number}`
+				})),
+			metadata: {
+				this: '',
+				next: null,
+				previous: null
+			}
+		}));
+		// return fetch(this.buildURL(`/libraries/${librarySlugOrId}/albums`, { pagination, include }))
+			// .then((response) => response.json());
+	}
+
 	static async getAllSongs(
 		pagination?: PaginationParameters,
 		include: SongInclude[] = []
@@ -54,7 +78,16 @@ export default class API {
 
 
 
-	
+	/**
+	 * Builds the URL to get an illustration from an object returned by the API
+	 * @param imageURL 
+	 * @returns the correct, rerouted URL
+	 */
+	static getIllustrationURL(imageURL: string): string {
+		if (Math.random() < 0.5)
+			return `https://upload.wikimedia.org/wikipedia/commons/thumb/a/a7/React-icon.svg/2300px-React-icon.svg.png`;
+		return `/api${imageURL}`;
+	}
 
 	private static buildURL(route: string, parameters: QueryParameters): string {
 		return `${route}${this.formatQueryParameters(parameters)}`;
