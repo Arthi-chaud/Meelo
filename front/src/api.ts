@@ -50,7 +50,7 @@ export default class API {
 		include: ArtistInclude[] = [],
 	): Promise<PaginatedResponse<Artist>> {
 		return delay(2).then(() => ({
-			items: Array.from({length: 10}, (_, i) => i + 1)
+			items: Array.from({length: 100}, (_, i) => i + 1)
 				.splice(pagination?.skip ?? 0, pagination?.take ?? 20)
 				.map((number) => <Artist>({
 					id: number,
@@ -60,8 +60,9 @@ export default class API {
 				})),
 			metadata: {
 				this: '',
-				next: null,
-				previous: null
+				next: (pagination?.skip ?? 0) >= 200 ? null : 'a',
+				previous: null,
+				page: pagination?.skip ?? 0 / (pagination?.take ?? 20)
 			}
 		}));
 		// return fetch(this.buildURL(`/libraries/${librarySlugOrId}/albums`, { pagination, include }))
@@ -84,8 +85,7 @@ export default class API {
 	 * @returns the correct, rerouted URL
 	 */
 	static getIllustrationURL(imageURL: string): string {
-		if (Math.random() < 0.5)
-			return `https://upload.wikimedia.org/wikipedia/commons/thumb/a/a7/React-icon.svg/2300px-React-icon.svg.png`;
+		return `https://upload.wikimedia.org/wikipedia/commons/thumb/a/a7/React-icon.svg/2300px-React-icon.svg.png`;
 		return `/api${imageURL}`;
 	}
 

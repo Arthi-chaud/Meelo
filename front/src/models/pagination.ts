@@ -29,6 +29,10 @@ type PaginatedResponse<T extends Resource> = {
 		 * route to use for the previous items
 		 */
 		previous: string | null;
+		/**
+		 * The current page number
+		 */
+		page: number;
 	}
 }
 
