@@ -3,36 +3,20 @@ import Artist from "../../models/artist";
 import {AccountCircle} from "@mui/icons-material";
 import API from "../../api";
 import {useState} from "react";
+import Tile from "./tile";
 
 const ArtistTile = (props: { artist: Artist }) => {
-	const [imageNotFound, setImageNotFound] = useState(false)
-	return (
-		<Box sx={{ height: '100%' }}>
-		<Card /*style={{ border: "none", boxShadow: "none" }}*/>
-			<CardActionArea href={`/artists/${props.artist.slug}`}>
-				<Box sx={{ padding: 4 }}>
-				{ imageNotFound ?
-					<CardMedia style={{ display: 'flex', justifyContent: 'center' }}> 
-						<IconButton disableFocusRipple disableRipple sx={{ '& svg': {fontSize: 100} }}>
-    						<AccountCircle />
-    					</IconButton>
-					</CardMedia> :
-					<CardMedia
-      				  	component="img"
-      				  	image={API.getIllustrationURL(props.artist.illustration)}
-						onError={() => setImageNotFound(true) }
-      				/>
-				}
-				</Box>
-				<CardContent style={{ display:'flex', justifyContent:'center' }}>
-					<Typography>
-						{props.artist.name}
-					</Typography>
-				</CardContent>
-			</CardActionArea>
-		</Card></Box>
-			
-	)
+	return <Tile
+		title={props.artist.name}
+		subtitle={props.artist.name}
+		targetURL={`/artists/${props.artist.slug}`}
+		illustrationURL={API.getIllustrationURL(props.artist.illustration)}
+		illustrationFallback={() => 
+			<IconButton disableFocusRipple disableRipple sx={{ '& svg': {fontSize: 100} }}>
+				<AccountCircle />
+			</IconButton>
+		}
+	/>
 }
 
 export default ArtistTile;
