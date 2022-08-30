@@ -19,12 +19,7 @@ const LibraryArtistsPage: NextPage = () => {
 			fetch={(lastPage, pageSize) => API.getAllArtistsInLibrary(
 				slug as string,
 				{ skip: pageSize * (lastPage?.index ?? 0), take: pageSize }
-			).then((result) => ({
-				pageSize: pageSize,
-				items: result.items,
-				index: (lastPage?.index ?? 0) + 1,
-				end: result.metadata.next === null
-			}))}
+			)}
 			queryKey={['libraries', slug as string, 'artists']}
 			render={(item: Artist) => <ArtistTile artist={item} />}
 		/>

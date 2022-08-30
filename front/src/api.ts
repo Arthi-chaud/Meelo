@@ -1,4 +1,4 @@
-import Album, { AlbumInclude } from "./models/album";
+import Album, { AlbumInclude, AlbumWithArtist } from "./models/album";
 import Artist, { ArtistInclude } from "./models/artist";
 import Library from "./models/library";
 import { PaginatedResponse, PaginationParameters } from "./models/pagination";
@@ -24,7 +24,8 @@ export default class API {
 			metadata: {
 				this: '',
 				next: null,
-				previous: null
+				previous: null,
+				page: 0
 			}
 		}));
 	}
@@ -55,8 +56,41 @@ export default class API {
 				.map((number) => <Artist>({
 					id: number,
 					slug: `artist-${number}`,
-					illustration: `/artists/artist-${number}/illustration`,
+					illustration: `/artists/${number}/illustration`,
 					name: `Artist ${number}`
+				})),
+			metadata: {
+				this: '',
+				next: (pagination?.skip ?? 0) >= 200 ? null : 'a',
+				previous: null,
+				page: pagination?.skip ?? 0 / (pagination?.take ?? 20)
+			}
+		}));
+		// return fetch(this.buildURL(`/libraries/${librarySlugOrId}/albums`, { pagination, include }))
+			// .then((response) => response.json());
+	}
+
+	static async getAllAlbumsInLibrary(
+		librarySlugOrId: string | number,
+		pagination?: PaginationParameters,
+		include: ArtistInclude[] = [],
+	): Promise<PaginatedResponse<AlbumWithArtist>> {
+		return delay(2).then(() => ({
+			items: Array.from({length: 100}, (_, i) => i + 1)
+				.splice(pagination?.skip ?? 0, pagination?.take ?? 20)
+				.map((number) => <Album>({
+					id: number,
+					slug: `album-${number}`,
+					illustration: `/albums/${number}/illustration`,
+					name: `Album ${number}`,
+					type: 'StudioRecording',
+					artistId: number,
+					artist: <Artist>{
+						id: number,
+						name: `Artist ${number}`,
+						slug: `artist-${number}`,
+						illustration: `/artist/${number}/illustration`,
+					}
 				})),
 			metadata: {
 				this: '',

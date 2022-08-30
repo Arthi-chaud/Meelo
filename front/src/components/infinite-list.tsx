@@ -4,10 +4,11 @@ import LoadingComponent from "./loading";
 import InfiniteScroll from 'react-infinite-scroller';
 import FadeIn from "react-fade-in";
 import Resource from "../models/resource";
+import { PaginatedResponse } from "../models/pagination";
 
 const defaultPageSize = 30;
 
-type InfiniteListProps<T> = {
+type InfiniteListProps<T extends Resource> = {
 	/**
 	 * The method to render all the fetched items
 	 */
@@ -15,7 +16,7 @@ type InfiniteListProps<T> = {
 	/**
 	 * Base fetching method, that return a Page of items
 	 */
-	fetch: (lastPage: Page<T> | undefined, pageSize: number) => Promise<Page<T>>,
+	fetch: (lastPage: Page<T> | undefined, pageSize: number) => Promise<PaginatedResponse<T>>,
 	/**
 	 * Query key of react-query
 	 */
@@ -50,7 +51,7 @@ export type Page<T> = {
  * @param props 
  * @returns a dynamic list component
  */
-const InfiniteList = <T,>(props: InfiniteListProps<T>) => {
+const InfiniteList = <T extends Resource,>(props: InfiniteListProps<T>) => {
 	const pageSize = props.pageSize ?? defaultPageSize;
 	const {
         isFetching,
@@ -60,7 +61,13 @@ const InfiniteList = <T,>(props: InfiniteListProps<T>) => {
 		hasNextPage,
         fetchNextPage,
         isFetchingNextPage
-    } = useInfiniteQuery(props.queryKey, (context) => props.fetch(context.pageParam, pageSize), {
+    } = useInfiniteQuery(props.queryKey, (context) => props.fetch(context.pageParam, pageSize)
+		.then((result) => ({
+			pageSize: pageSize,
+			items: result.items,
+			index: (context.pageParam?.index ?? 0) + 1,
+			end: result.metadata.next === null
+		})), {
         getNextPageParam: (lastPage: Page<T>): Page<T> | undefined  => {
 			if (lastPage.end || lastPage.items.length < pageSize)
 				return undefined;
@@ -99,7 +106,7 @@ const InfiniteList = <T,>(props: InfiniteListProps<T>) => {
  * @param props 
  * @returns 
  */
-const InfiniteGrid = <T extends Resource,>(props: InfiniteListProps<T> & { render: <T>(item: T) => JSX.Element }) => {
+const InfiniteGrid = <T extends Resource,>(props: Exclude<InfiniteListProps<T>, 'render'> & { render: <T>(item: T) => JSX.Element }) => {
 	return <InfiniteList
 		fetch={props.fetch}
 		queryKey={props.queryKey}
