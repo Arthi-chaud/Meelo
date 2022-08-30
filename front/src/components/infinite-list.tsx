@@ -1,8 +1,9 @@
-import { Box } from "@mui/material";
+import { Box, Grid } from "@mui/material";
 import { useInfiniteQuery } from "react-query";
 import LoadingComponent from "./loading";
 import InfiniteScroll from 'react-infinite-scroller';
 import FadeIn from "react-fade-in";
+import Resource from "../models/resource";
 
 const defaultPageSize = 30;
 
@@ -24,6 +25,7 @@ type InfiniteListProps<T> = {
 	 */
 	pageSize?: number
 }
+
 /**
  * Data type for infinite data fetching
  */
@@ -43,7 +45,11 @@ export type Page<T> = {
 	end: boolean
 }
 
-
+/**
+ * Infinite scroll list w/ loading animation
+ * @param props 
+ * @returns a dynamic list component
+ */
 const InfiniteList = <T,>(props: InfiniteListProps<T>) => {
 	const pageSize = props.pageSize ?? defaultPageSize;
 	const {
@@ -88,4 +94,27 @@ const InfiniteList = <T,>(props: InfiniteListProps<T>) => {
 	</>
 }
 
+/**
+ * Similar to InfiniteList, but rendered as a grid
+ * @param props 
+ * @returns 
+ */
+const InfiniteGrid = <T extends Resource,>(props: InfiniteListProps<T> & { render: <T>(item: T) => JSX.Element }) => {
+	return <InfiniteList
+		fetch={props.fetch}
+		queryKey={props.queryKey}
+		pageSize={props.pageSize}
+		render={(items) =>
+			<Grid sx={{ padding: 2 }} container rowSpacing={4} columnSpacing={2}>
+				{items.map((item: T) => 
+					<Grid item xs={6} md={12/5} lg={2} xl={1.5} style={{ height: '100%' }} key={item.id}>
+						<FadeIn>{props.render<T>(item)}</FadeIn>
+					</Grid>
+				)}
+			</Grid>
+		}
+	/>
+}
+
 export default InfiniteList;
+export { InfiniteGrid }

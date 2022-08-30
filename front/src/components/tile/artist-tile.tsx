@@ -1,7 +1,7 @@
 import {Box, Card, CardActionArea, CardContent, CardMedia, IconButton, Typography} from "@mui/material";
-import Artist from "../models/artist";
+import Artist from "../../models/artist";
 import {AccountCircle} from "@mui/icons-material";
-import API from "../api";
+import API from "../../api";
 import {useState} from "react";
 
 const ArtistTile = (props: { artist: Artist }) => {
