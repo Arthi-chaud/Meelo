@@ -18,7 +18,7 @@ const LibraryAlbumsPage: NextPage = () => {
 		<InfiniteGrid
 			fetch={(lastPage, pageSize) => API.getAllAlbumsInLibrary(
 				slug as string,
-				{ skip: pageSize * (lastPage?.index ?? 0), take: pageSize }
+				{ index: lastPage?.index, pageSize: pageSize }
 			)}
 			queryKey={['libraries', slug as string, 'albums']}
 			render={(item: Album) => <AlbumTile album={item} />}

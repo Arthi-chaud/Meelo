@@ -5,8 +5,7 @@ import InfiniteScroll from 'react-infinite-scroller';
 import FadeIn from "react-fade-in";
 import Resource from "../models/resource";
 import { PaginatedResponse } from "../models/pagination";
-
-const defaultPageSize = 30;
+import API from "../api";
 
 type InfiniteListProps<T extends Resource> = {
 	/**
@@ -52,7 +51,7 @@ export type Page<T> = {
  * @returns a dynamic list component
  */
 const InfiniteList = <T extends Resource,>(props: InfiniteListProps<T>) => {
-	const pageSize = props.pageSize ?? defaultPageSize;
+	const pageSize = props.pageSize ?? API.defaultPageSize;
 	const {
         isFetching,
         isError,

@@ -12,6 +12,9 @@ type QueryParameters = {
 const delay = (seconds: number) => new Promise(resolve => setTimeout(resolve, seconds * 1000));
 
 export default class API {
+
+	static defaultPageSize = 30;
+
 	static async getAllLibraries(
 		pagination?: PaginationParameters
 	): Promise<PaginatedResponse<Library>> {
@@ -52,7 +55,7 @@ export default class API {
 	): Promise<PaginatedResponse<Artist>> {
 		return delay(2).then(() => ({
 			items: Array.from({length: 100}, (_, i) => i + 1)
-				.splice(pagination?.skip ?? 0, pagination?.take ?? 20)
+				.splice((pagination?.index ?? 0) * (pagination?.pageSize ?? this.defaultPageSize), pagination?.pageSize ?? this.defaultPageSize)
 				.map((number) => <Artist>({
 					id: number,
 					slug: `artist-${number}`,
@@ -61,9 +64,9 @@ export default class API {
 				})),
 			metadata: {
 				this: '',
-				next: (pagination?.skip ?? 0) >= 200 ? null : 'a',
+				next: (pagination?.index ?? 0) * (pagination?.pageSize ?? this.defaultPageSize)  >= 200 ? null : 'a',
 				previous: null,
-				page: pagination?.skip ?? 0 / (pagination?.take ?? 20)
+				page: pagination?.index ?? 1
 			}
 		}));
 		// return fetch(this.buildURL(`/libraries/${librarySlugOrId}/albums`, { pagination, include }))
@@ -77,7 +80,7 @@ export default class API {
 	): Promise<PaginatedResponse<AlbumWithArtist>> {
 		return delay(2).then(() => ({
 			items: Array.from({length: 100}, (_, i) => i + 1)
-				.splice(pagination?.skip ?? 0, pagination?.take ?? 20)
+				.splice((pagination?.index ?? 0) * (pagination?.pageSize ?? this.defaultPageSize), pagination?.pageSize ?? this.defaultPageSize)
 				.map((number) => <Album>({
 					id: number,
 					slug: `album-${number}`,
@@ -94,9 +97,9 @@ export default class API {
 				})),
 			metadata: {
 				this: '',
-				next: (pagination?.skip ?? 0) >= 200 ? null : 'a',
+				next: (pagination?.index ?? 0) * (pagination?.pageSize ?? this.defaultPageSize) >= 200 ? null : 'a',
 				previous: null,
-				page: pagination?.skip ?? 0 / (pagination?.take ?? 20)
+				page: pagination?.index ?? 1
 			}
 		}));
 		// return fetch(this.buildURL(`/libraries/${librarySlugOrId}/albums`, { pagination, include }))
@@ -143,14 +146,13 @@ export default class API {
 		return `with=${include.join(',')}`;
 	}
 
-	private static formatPagination(pagination: PaginationParameters): string | null {
-		let formattedParameters: string[] = []; 
-		if (pagination.skip !== undefined)
-			formattedParameters.concat(`skip=${pagination.skip}`);
-		if (pagination.take !== undefined)
-			formattedParameters.concat(`take=${pagination.take}`);
-		if (formattedParameters.length == 0)
-			return null;
+	private static formatPagination(pagination: PaginationParameters): string {
+		let formattedParameters: string[] = [];
+		const pageSize = pagination.pageSize ?? this.defaultPageSize;
+		const pageIndex = pagination.index ?? 0;
+		if (pageIndex !== 0)
+			formattedParameters.concat(`skip=${pageSize * pageIndex}`);
+		formattedParameters.concat(`take=${pageSize}`);
 		return formattedParameters.join('&');
 	}
 }

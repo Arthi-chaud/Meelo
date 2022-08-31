@@ -18,7 +18,7 @@ const LibraryArtistsPage: NextPage = () => {
 		<InfiniteGrid
 			fetch={(lastPage, pageSize) => API.getAllArtistsInLibrary(
 				slug as string,
-				{ skip: pageSize * (lastPage?.index ?? 0), take: pageSize }
+				{ index: lastPage?.index, pageSize: pageSize }
 			)}
 			queryKey={['libraries', slug as string, 'artists']}
 			render={(item: Artist) => <ArtistTile artist={item} />}

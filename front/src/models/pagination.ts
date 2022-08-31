@@ -5,13 +5,13 @@ import Resource from "./resource";
  */
 type PaginationParameters = Partial<{
 	/**
-	 * The number of elements to take
+	 * The index of the page to fetch
 	 */
-	take: number;
+	index: number;
 	/**
-	 * The number of elements to skip before taking the elements
+	 * The number of elements in a page
 	 */
-	skip: number;
+	pageSize: number;
 }>
 
 type PaginatedResponse<T extends Resource> = {
