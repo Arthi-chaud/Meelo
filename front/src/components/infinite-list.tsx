@@ -105,7 +105,7 @@ const InfiniteList = <T extends Resource,>(props: InfiniteListProps<T>) => {
  * @param props 
  * @returns 
  */
-const InfiniteGrid = <T extends Resource,>(props: Exclude<InfiniteListProps<T>, 'render'> & { render: <T>(item: T) => JSX.Element }) => {
+const InfiniteGrid = <T extends Resource,>(props: Omit<InfiniteListProps<T>, 'render'> & { render: (item: T) => JSX.Element }) => {
 	return <InfiniteList
 		fetch={props.fetch}
 		queryKey={props.queryKey}
@@ -114,7 +114,7 @@ const InfiniteGrid = <T extends Resource,>(props: Exclude<InfiniteListProps<T>, 
 			<Grid sx={{ padding: 2 }} container rowSpacing={4} columnSpacing={2}>
 				{items.map((item: T) => 
 					<Grid item xs={6} md={12/5} lg={2} xl={1.5} style={{ height: '100%' }} key={item.id}>
-						<FadeIn>{props.render<T>(item)}</FadeIn>
+						<FadeIn>{props.render(item)}</FadeIn>
 					</Grid>
 				)}
 			</Grid>
