@@ -54,5 +54,7 @@ type TrackWithRelease = Track & {
 	release: Release;
 }
 
+type TrackInclude = 'song' | 'release';
+
 export default Track;
-export type { TrackWithSong, TrackWithRelease };
+export type { TrackWithSong, TrackWithRelease, TrackInclude };

@@ -2,7 +2,8 @@ import Album, { AlbumInclude, AlbumWithArtist } from "./models/album";
 import Artist, { ArtistInclude } from "./models/artist";
 import Library from "./models/library";
 import { PaginatedResponse, PaginationParameters } from "./models/pagination";
-import Song, { SongInclude } from "./models/song";
+import Song, { SongInclude, SongWithArtist } from "./models/song";
+import Track, { TrackInclude, TrackWithRelease } from "./models/track";
 
 type QueryParameters = {
 	pagination?: PaginationParameters;
@@ -76,7 +77,7 @@ export default class API {
 	static async getAllAlbumsInLibrary(
 		librarySlugOrId: string | number,
 		pagination?: PaginationParameters,
-		include: ArtistInclude[] = [],
+		include: AlbumInclude[] = [],
 	): Promise<PaginatedResponse<AlbumWithArtist>> {
 		return delay(2).then(() => ({
 			items: Array.from({length: 100}, (_, i) => i + 1)
@@ -106,12 +107,109 @@ export default class API {
 			// .then((response) => response.json());
 	}
 
+	static async getAllSongsInLibrary(
+		librarySlugOrId: string | number,
+		pagination?: PaginationParameters,
+		include: SongInclude[] = [],
+	): Promise<PaginatedResponse<SongWithArtist>> {
+		return delay(2).then(() => ({
+			items: Array.from({length: 100}, (_, i) => i + 1)
+				.splice((pagination?.index ?? 0) * (pagination?.pageSize ?? this.defaultPageSize), pagination?.pageSize ?? this.defaultPageSize)
+				.map((number) => <SongWithArtist>({
+					id: number,
+					slug: `song-${number}`,
+					illustration: `/songs/${number}/illustration`,
+					name: `Song ${number}`,
+					playCount: 0,
+					artistId: number,
+					artist: <Artist>{
+						id: number,
+						name: `Artist ${number}`,
+						slug: `artist-${number}`,
+						illustration: `/artist/${number}/illustration`,
+					}
+				})),
+			metadata: {
+				this: '',
+				next: (pagination?.index ?? 0) * (pagination?.pageSize ?? this.defaultPageSize) >= 200 ? null : 'a',
+				previous: null,
+				page: pagination?.index ?? 1
+			}
+		}));
+		// return fetch(this.buildURL(`/libraries/${librarySlugOrId}/albums`, { pagination, include }))
+			// .then((response) => response.json());
+	}
+
 	static async getAllSongs(
 		pagination?: PaginationParameters,
 		include: SongInclude[] = []
 	): Promise<PaginatedResponse<Song>> {
 		return fetch(this.buildURL('/songs', { pagination, include }))
 			.then((response) => response.json());
+	}
+
+	static async getMasterTrack(
+		songId: number,
+		include: TrackInclude[] = []
+	): Promise<Track> {
+		return delay(2).then(() => ({
+			id: songId,
+			songId: songId,
+			releaseId: songId,
+			displayName: `Master Track of ${songId}`,
+			master: true,
+			discIndex: 1,
+			trackIndex: 1,
+			type: 'Audio',
+			bitrate: 320,
+			duration: 60 + songId,
+			illustration: `/tracks/${songId}/illustration`
+		}));
+		// return fetch(this.buildURL(`/songs/${songId}/master`, { include }))
+			// .then((response) => response.json()); 
+	}
+
+	/**
+	 * Get tracks of a song
+	 * @param songId the id of the parent song
+	 * @param include the relation to inclide
+	 * @returns 
+	 */
+	static async getSongTracks(
+		songId: number,
+		pagination?: PaginationParameters,
+		include: TrackInclude[] = []
+	): Promise<PaginatedResponse<Track>> {
+		return delay(2).then(() => ({
+			items: Array.from({length: 20}, (_, i) => i + 1)
+			.splice((pagination?.index ?? 0) * (pagination?.pageSize ?? this.defaultPageSize), pagination?.pageSize ?? this.defaultPageSize)
+			.map((number) => <TrackWithRelease>({
+					id: number,
+					songId: songId,
+					releaseId: number,
+					displayName: `Track of ${songId}`,
+					master: number == 0,
+					discIndex: 1,
+					trackIndex: number,
+					type: 'Audio',
+					bitrate: 320,
+					duration: 60 + songId,
+					illustration: `/tracks/${number}/illustration`,
+					release: {
+						id: number,
+						title: `Release of track ${number}`,
+						slug: `release-of-track-${number}`,
+						master: true,
+						albumId: 1
+					}
+				})),
+			metadata: {
+				this: '',
+				next: (pagination?.index ?? 0) * (pagination?.pageSize ?? this.defaultPageSize) >= 20 ? null : 'a',
+				previous: null,
+				page: pagination?.index ?? 1
+			}
+		}))
 	}
 
 

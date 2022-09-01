@@ -1,7 +1,4 @@
 import {Box, Card, CardActionArea, CardContent, CardMedia, IconButton, Typography} from "@mui/material";
-import Artist from "../../models/artist";
-import {AccountCircle} from "@mui/icons-material";
-import API from "../../api";
 import {useState} from "react";
 
 type TileProps = {

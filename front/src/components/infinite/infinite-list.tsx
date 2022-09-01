@@ -1,11 +1,11 @@
 import { Box, Grid } from "@mui/material";
 import { useInfiniteQuery } from "react-query";
-import LoadingComponent from "./loading";
+import LoadingComponent from "../loading/loading";
 import InfiniteScroll from 'react-infinite-scroller';
 import FadeIn from "react-fade-in";
-import Resource from "../models/resource";
-import { PaginatedResponse } from "../models/pagination";
-import API from "../api";
+import Resource from "../../models/resource";
+import { PaginatedResponse } from "../../models/pagination";
+import API from "../../api";
 
 type InfiniteListProps<T extends Resource> = {
 	/**
@@ -15,15 +15,23 @@ type InfiniteListProps<T extends Resource> = {
 	/**
 	 * Base fetching method, that return a Page of items
 	 */
-	fetch: (lastPage: Page<T> | undefined, pageSize: number) => Promise<PaginatedResponse<T>>,
+	fetch: (lastPage: Page<T> | undefined, pageSize: number) => Promise<PaginatedResponse<T>>
 	/**
 	 * Query key of react-query
 	 */
-	queryKey: string[],
+	queryKey: string[]
 	/**
 	 * The number to load at each query
 	 */
 	pageSize?: number
+	/**
+	 * Component to display on first load
+	 */
+	firstLoader: () => JSX.Element
+	/**
+	 * Component to display on page fetching (except first)
+	 */
+	loader: () => JSX.Element
 }
 
 /**
@@ -75,11 +83,7 @@ const InfiniteList = <T extends Resource,>(props: InfiniteListProps<T>) => {
 		
     })
 	return <>
-		{ (isFetching && data?.pages.length == 0) &&
-			<Box width='100%' display="flex" justifyContent="center" alignItems="center" minHeight="100vh">
-				<LoadingComponent />
-			</Box>
-		}
+		{ isFetching && !data && props.firstLoader() }
 		<InfiniteScroll
 		    pageStart={0}
 		    loadMore={() => {
@@ -89,38 +93,8 @@ const InfiniteList = <T extends Resource,>(props: InfiniteListProps<T>) => {
 		    hasMore={() => hasNextPage}
 		>
 		{ isSuccess && props.render(data.pages.map((page) => page.items).flat()) }
-		{ isFetchingNextPage && 
-			<FadeIn>
-				<Box width='100%' display="flex" justifyContent="center" paddingY={10}>
-					<LoadingComponent/>
-				</Box>
-			</FadeIn>
-		}
+		{ isFetchingNextPage && props.loader() }
 		</InfiniteScroll>
 	</>
 }
-
-/**
- * Similar to InfiniteList, but rendered as a grid
- * @param props 
- * @returns 
- */
-const InfiniteGrid = <T extends Resource,>(props: Omit<InfiniteListProps<T>, 'render'> & { render: (item: T) => JSX.Element }) => {
-	return <InfiniteList
-		fetch={props.fetch}
-		queryKey={props.queryKey}
-		pageSize={props.pageSize}
-		render={(items) =>
-			<Grid sx={{ padding: 2 }} container rowSpacing={4} columnSpacing={2}>
-				{items.map((item: T) => 
-					<Grid item xs={6} md={12/5} lg={2} xl={1.5} style={{ height: '100%' }} key={item.id}>
-						<FadeIn>{props.render(item)}</FadeIn>
-					</Grid>
-				)}
-			</Grid>
-		}
-	/>
-}
-
 export default InfiniteList;
-export { InfiniteGrid }

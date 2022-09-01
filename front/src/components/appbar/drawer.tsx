@@ -5,7 +5,7 @@ import FadeIn from "react-fade-in";
 import { UseQueryResult } from "react-query";
 import Library from "../../models/library";
 import { PaginatedResponse } from "../../models/pagination";
-import LoadingComponent from "../loading";
+import LoadingComponent from "../loading/loading";
 import { itemType, getTypeIcon, formattedItemTypes } from "./item-types";
 import SearchIcon from '@mui/icons-material/Search';
 import AutoModeIcon from '@mui/icons-material/AutoMode';
