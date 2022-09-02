@@ -51,7 +51,7 @@ export default class MetadataService {
 		let albumArtist = metadata.albumArtist ? await this.artistService.getOrCreate({ name: metadata.albumArtist }) : undefined;
 		let songArtist = await this.artistService.getOrCreate({ name: metadata.artist ?? metadata.albumArtist! });
 		let song = await this.songService.getOrCreate(
-			{ name: this.removeTrackVideoExtension(metadata.name!), artist: { id: songArtist.id }, genres: genres.map((genre) => ({ id: genre.id }))},
+			{ name: this.removeTrackExtension(metadata.name!), artist: { id: songArtist.id }, genres: genres.map((genre) => ({ id: genre.id }))},
 			{ tracks: true, genres: true });
 		await this.songService.update(
 			{ genres: song.genres.concat(genres).map((genre) => ({ id: genre.id }))},
@@ -275,20 +275,12 @@ export default class MetadataService {
 		}
 	}
 
-
-	
 	/**
-	 * Extract an extension from a release name
-	 * For example, if the release Name is 'My Album (Deluxe Edition)', it would return
-	 * '(Deluxe Edition)'
-	 * @param releaseName 
+	 * Removes an extension from a release's name
+	 * For example, if the release Name is 'My Album (Deluxe Edition)', the parent
+	 * album name would be 'My Album'
 	 */
-	extractReleaseExtension(releaseName: string): string | null {
-		const delimiters = [
-			['(', ')'],
-			['{', '}'],
-			['[', ']']
-		];
+	removeReleaseExtension(releaseName: string): string {
 		const extensionKeywords = [
 			'Edition',
 			'Version',
@@ -300,36 +292,58 @@ export default class MetadataService {
 			'Remaster',
 			'Remastered'
 		];
-		const extensionsGroup = extensionKeywords.map((ext) => `(${ext})`).join('|');
-		for (const delimiter of delimiters) {
-			const regExp = new RegExp(`\\s+(?<extension>\\${delimiter[0]}.*(${extensionsGroup}).*\\${delimiter[1]})`, 'i');
-			let match = regExp.exec(releaseName);
-			if (match)
-				return match[1];
-		}
-		return null;
-	}
-
-	/**
-	 * Removes an extension from a release's name
-	 * For example, if the release Name is 'My Album (Deluxe Edition)', the parent
-	 * album name would be 'My Album'
-	 */
-	removeReleaseExtension(releaseName: string): string {
-		const extension: string | null = this.extractReleaseExtension(releaseName);
-		if (extension !== null) {
-			return releaseName.replace(extension, "").trim();
-		}
-		return releaseName;
+		return this.removeExtensions(releaseName, extensionKeywords);
 	}
 
 	/**
 	 * Removes an extension from a track's name
 	 * For example, if the release Name is 'My Song (Music Video)', the parent
 	 * song name would be 'My Song'
+	 * It will remove the video and the remaster extension
 	 */
-	removeTrackVideoExtension(trackName: string): string {
-		return trackName.replace(/\s*\(.*(Video|video).*\)/, "").trim();
+	removeTrackExtension(trackName: string): string {
+		const extensionKeywords = [
+			'Video',
+			'Remaster',
+			'Remastered'
+		];
+		return this.removeExtensions(trackName, extensionKeywords);
+	}
+
+	/**
+	 * Removes the extensions in a string found by 'extractExtensions'
+	 * @param source the string t ofind the extensions in
+	 * @param extensions the extensions to find
+	 * @returns the cleaned source
+	 */
+	private removeExtensions(source: string, extensions: string[]): string {
+		let output = source;
+		this.extractExtensions(source, extensions)
+			.forEach((extension) => output = output.replace(extension, '').trim())
+		return output;
+	}
+
+	/**
+	 * From an array of extension keyword, extract groups from the source
+	 * example: 'My Album (Deluxe) [Remaster]' => ['(Deluxe)', '[Remaster]']
+	 * @param source the string to extract the extensions from
+	 * @param extensions the aray of extensions to find
+	 */
+	private extractExtensions(source: string, extensions: string[]): string[] {
+		let groupsFound: string[] = [];
+		const extensionDelimiters = [
+			['(', ')'],
+			['{', '}'],
+			['[', ']']
+		];
+		const extensionsGroup = extensions.map((ext) => `(${ext})`).join('|');
+		for (const delimiter of extensionDelimiters) {
+			const regExp = new RegExp(`\\s+(?<extension>\\${delimiter[0]}.*(${extensionsGroup}).*\\${delimiter[1]})\\s*`, 'i');
+			let match = regExp.exec(source);
+			if (match)
+				groupsFound = groupsFound.concat(match[1]);
+		}
+		return groupsFound;
 	}
 
 }

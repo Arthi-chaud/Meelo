@@ -132,33 +132,45 @@ describe('Metadata Service', () => {
 		it("should build the album name from a release name with a basic extension and a prefix ", () => {
 			expect(metadataService.removeReleaseExtension('(Right Now) My Album [Deluxe Edition]')).toBe('(Right Now) My Album');
 		});
-		it("should rename the 'Remaster' extension", () => {
+		it("should remove the 'Remaster' extension", () => {
 			expect(metadataService.removeReleaseExtension('My Album [2022 Remaster]')).toBe('My Album');
 		});
-		it("should rename the 'remastered' extension", () => {
+		it("should remove the 'remastered' extension", () => {
 			expect(metadataService.removeReleaseExtension('My Album [2022 Remastered]')).toBe('My Album');
 		});
 
-		it("should rename the 'remastered version' extension", () => {
+		it("should remove the 'remastered version' extension", () => {
 			expect(metadataService.removeReleaseExtension('My Album [2022 Remastered version]')).toBe('My Album');
 		});
 
-		it("should rename the 'remaster' extension, lowercase", () => {
+		it("should remove the 'remaster' extension, lowercase", () => {
 			expect(metadataService.removeReleaseExtension('My Album [2022 Remaster]')).toBe('My Album');
+		});
+
+		it("should remove multiple extensions", () => {
+			expect(metadataService.removeReleaseExtension('My Album  (Deluxe)  [2022 Remaster] ')).toBe('My Album');
 		});
 	});
 
-	describe('Extract Track name\'s video extension', () => {
+	describe('Extract Track name\'s extension', () => {
 		it("should build the song name from a track name with a basic extension", () => {
-			expect(metadataService.removeTrackVideoExtension('My Song (Music Video)')).toBe('My Song');
+			expect(metadataService.removeTrackExtension('My Song (Music Video)')).toBe('My Song');
 		});
 
 		it("should build the song name from a track name with an even more basic extension", () => {
-			expect(metadataService.removeTrackVideoExtension('My Song (Video)')).toBe('My Song');
+			expect(metadataService.removeTrackExtension('My Song (Video)')).toBe('My Song');
 		});
 
 		it("should build the song name from a track name with a normal extension", () => {
-			expect(metadataService.removeTrackVideoExtension('My Song (Official Music Video)')).toBe('My Song');
+			expect(metadataService.removeTrackExtension('My Song (Official Music Video)')).toBe('My Song');
+		})
+
+		it("should remove 'remaster' extension", () => {
+			expect(metadataService.removeTrackExtension('My Song  (remastered)')).toBe('My Song');
+		});
+
+		it("should remove multiple extensions", () => {
+			expect(metadataService.removeTrackExtension('My Song  {Music Video}  (Remaster)')).toBe('My Song');
 		})
 	})
 })
