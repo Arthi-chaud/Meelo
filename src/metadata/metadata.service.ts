@@ -296,12 +296,14 @@ export default class MetadataService {
 			'Deluxe',
 			'Standard',
 			'Edited',
-			'Explicit'
+			'Explicit',
+			'Remaster',
+			'Remastered'
 		];
 		const extensionsGroup = extensionKeywords.map((ext) => `(${ext})`).join('|');
 		for (const delimiter of delimiters) {
-			const regExp = `\\s+(?<extension>\\${delimiter[0]}.*(${extensionsGroup}).*\\${delimiter[1]})`;
-			let match = releaseName.match(regExp);
+			const regExp = new RegExp(`\\s+(?<extension>\\${delimiter[0]}.*(${extensionsGroup}).*\\${delimiter[1]})`, 'i');
+			let match = regExp.exec(releaseName);
 			if (match)
 				return match[1];
 		}
