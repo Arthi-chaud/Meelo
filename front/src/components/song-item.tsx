@@ -1,4 +1,4 @@
-import { ListItem, ListItemIcon, ListItemText, List, Collapse, ListItemButton } from "@mui/material"
+import { ListItem, ListItemIcon, ListItemText, List, Collapse, ListItemButton, IconButton, Link } from "@mui/material"
 import { useState } from "react"
 import FadeIn from "react-fade-in"
 import { useQuery } from "react-query"
@@ -24,14 +24,20 @@ const SongItem = (props: SongItemProps) => {
 	const artist = props.song.artist;
 	const [open, setOpen] = useState(false);
 	return <>
-		<ListItemButton onClick={() => setOpen(!open) }>
+		<ListItem>
 			<ListItemIcon>
 				<img src={API.getIllustrationURL(song.illustration)} style={{ maxHeight: 30  }}/>
 			</ListItemIcon>
 			<ListItemText>{song.name}</ListItemText>
-			<ListItemText>{artist.name}</ListItemText>
-			{open ? <ExpandLess /> : <ExpandMore />}
-		</ListItemButton>
+			<ListItemText>
+				<Link href={`/artists/${artist.slug}`}>
+					{artist.name}
+				</Link>
+			</ListItemText>
+			<IconButton onClick={() => setOpen(!open) }>
+				{open ? <ExpandLess /> : <ExpandMore />}
+			</IconButton>
+		</ListItem>
 		<Collapse in={open} timeout="auto" unmountOnExit>
 			{ open && <InfiniteList
 				firstLoader={() => <WideLoadingComponent/>}
@@ -43,15 +49,21 @@ const SongItem = (props: SongItemProps) => {
 					['release']
 				) as unknown as Promise<PaginatedResponse<TrackWithRelease>>}
 				render={(tracks: TrackWithRelease[]) =>
-    				<List component="div">
+    				<List sx={{ paddingX: 2 }}>
 					{ tracks.map((track) =>
-						<ListItem>
-							<ListItemIcon>
-								<img src={API.getIllustrationURL(track.illustration)} style={{ maxHeight: 30  }}/>
-							</ListItemIcon>
-							<ListItemText>{track.displayName}</ListItemText>
-							<ListItemText>{track.release.title}</ListItemText>
-						</ListItem>
+						<FadeIn>
+							<ListItem>
+								<ListItemIcon>
+									<img src={API.getIllustrationURL(track.illustration)} style={{ maxHeight: 30  }}/>
+								</ListItemIcon>
+								<ListItemText>{track.displayName}</ListItemText>
+								<ListItemText>
+									<Link href={`/releases/${track.release.id}`}>
+										{track.release.title}
+									</Link>
+								</ListItemText>
+							</ListItem>
+						</FadeIn>
 					)}
         			</List>
 				}
