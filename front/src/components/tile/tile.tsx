@@ -1,0 +1,53 @@
+import {Box, Card, CardActionArea, CardContent, CardMedia, IconButton, Typography} from "@mui/material";
+import {useState} from "react";
+
+type TileProps = {
+	title: string,
+	subtitle?: string
+	thirdTitle?: string,
+	illustrationURL: string,
+	/**
+	 * Fallback element on illustration download failure
+	 */
+	 illustrationFallback: () => JSX.Element,
+	/**
+	 * URL to push on tile tap
+	 */
+	targetURL?: string
+}
+
+const Tile = (props: TileProps) => {
+	const [imageNotFound, setImageNotFound] = useState(Math.random() <= 0.5)
+	return (
+		<Box sx={{ height: '100%' }}>
+			<Card /*style={{ border: "none", boxShadow: "none" }}*/>
+				<CardActionArea href={props.targetURL}>
+					<Box sx={{ padding: 4 }}>
+					{ imageNotFound ?
+						<CardMedia style={{ display: 'flex', justifyContent: 'center' }}> 
+							{props.illustrationFallback()}
+						</CardMedia> :
+						<CardMedia
+      					  	component="img"
+      					  	image={props.illustrationURL}
+							onError={() => setImageNotFound(true) }
+      					/>
+					}
+					</Box>
+					<CardContent style={{ display:'flex', justifyContent:'center', alignItems: 'center', flexDirection: 'column' }}>
+						<Typography sx={{ fontWeight: 'bold' }}>
+							{props.title}
+						</Typography>
+						{ props.subtitle &&
+							<Typography sx={{ fontWeight: 'light' }}>
+								{props.subtitle}
+							</Typography>
+						}
+					</CardContent>
+				</CardActionArea>
+			</Card>
+		</Box>	
+	)
+}
+
+export default Tile;

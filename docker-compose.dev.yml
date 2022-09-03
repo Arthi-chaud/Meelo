@@ -18,8 +18,10 @@ services:
       dockerfile: Dockerfile.dev
     expose:
       - "3000"
+    ports:
+      - "3000:3000"
     volumes:
-      - ./front/src:/app/src
+      - ./front:/app
   nginx:
     image: nginx:latest
     restart: unless-stopped
