@@ -1,4 +1,4 @@
-import { AppBar, Toolbar, Typography, Box, Divider, IconButton, Grid, TextField, Drawer, Button, List, Collapse, FormControl, ListItem, InputLabel, ListItemButton, ListItemIcon, ListItemText, ListSubheader, Select, MenuItem } from '@mui/material';
+import { AppBar, Toolbar, Typography, Box, Divider, IconButton, Grid, Link, Button, InputLabel, ListItemButton, ListItemIcon, ListItemText, ListSubheader, Select, MenuItem } from '@mui/material';
 import Image from 'next/image';
 import { useRouter } from 'next/router';
 import SearchIcon from '@mui/icons-material/Search';
@@ -86,7 +86,7 @@ const MeeloAppBar = () => {
 												router.push(`/albums`);
 											} else {
 												const targetLibrary = query.data!.items.find((library) => library.title === targetLibaryName)!;
-												router.push(`/libraries/${targetLibrary.slug}/albums`).then(() => router.reload());
+												router.push(`/libraries/${targetLibrary.slug}/albums`);
 											}
 										}}
         							>

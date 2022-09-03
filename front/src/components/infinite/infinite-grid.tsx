@@ -18,7 +18,7 @@ const InfiniteGrid = <T extends Resource,>(props: Omit<Parameters<typeof Infinit
 		render={(items: T[]) =>
 			<Grid sx={{ padding: 2 }} container rowSpacing={4} columnSpacing={2}>
 				{items.map((item: T) => 
-					<Grid item xs={6} md={12/5} lg={2} xl={1.5} style={{ height: '100%' }} key={item.id}>
+					<Grid item xs={6} sm={3} md={12/5} lg={2} xl={1.5} style={{ height: '100%' }} key={item.id}>
 						<FadeIn>{props.render(item)}</FadeIn>
 					</Grid>
 				)}
