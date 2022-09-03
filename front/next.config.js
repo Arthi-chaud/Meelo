@@ -20,16 +20,8 @@ module.exports = {
   async rewrites() {
     return [
       {
-        source: '/libraries/:slug/artists',
-        destination: '/artists',
-      },
-      {
-        source: '/libraries/:slug/albums',
-        destination: '/albums',
-      },
-      {
-        source: '/libraries/:slug/songs',
-        destination: '/songs',
+        source: '/libraries/:slug/:itemType(albums|artists|songs)',
+        destination: '/:itemType',
       },
     ]
   },

@@ -37,16 +37,14 @@ export default class API {
 		pagination?: PaginationParameters, 
 		include: ArtistInclude[] = []
 	): Promise<PaginatedResponse<Artist>> {
-		return fetch(this.buildURL('/artists', { pagination, include }))
-			.then((response) => response.json());
+		return this.getAllArtists(1, pagination, include);
 	}
 
 	static async getAllAlbums(
 		pagination?: PaginationParameters,
 		include: AlbumInclude[] = []
 	): Promise<PaginatedResponse<Album>> {
-		return fetch(this.buildURL('/albums', { pagination, include }))
-			.then((response) => response.json());
+		return this.getAllAlbumsInLibrary(1, pagination, include);
 	}
 
 	static async getAllArtistsInLibrary(
@@ -144,8 +142,7 @@ export default class API {
 		pagination?: PaginationParameters,
 		include: SongInclude[] = []
 	): Promise<PaginatedResponse<Song>> {
-		return fetch(this.buildURL('/songs', { pagination, include }))
-			.then((response) => response.json());
+		return this.getAllSongsInLibrary(1, pagination, include);
 	}
 
 	static async getMasterTrack(
@@ -220,7 +217,7 @@ export default class API {
 	 * @returns the correct, rerouted URL
 	 */
 	static getIllustrationURL(imageURL: string): string {
-		return `https://upload.wikimedia.org/wikipedia/commons/thumb/a/a7/React-icon.svg/2300px-React-icon.svg.png`;
+		return `https://i.discogs.com/vGyu5KFiROcswoGYyE0rOPDDc3u9tQ0uGWn3wf8xy6I/rs:fit/g:sm/q:90/h:600/w:600/czM6Ly9kaXNjb2dz/LWRhdGFiYXNlLWlt/YWdlcy9SLTEyMDcy/OTMtMTIxNzc0OTUx/OS5qcGVn.jpeg`;
 		return `/api${imageURL}`;
 	}
 
