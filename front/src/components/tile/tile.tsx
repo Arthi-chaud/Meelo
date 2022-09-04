@@ -1,6 +1,7 @@
 import AspectRatio from '@mui/joy/AspectRatio';
 import {Box, Card, CardActionArea, CardContent, CardMedia, IconButton, Typography} from "@mui/material";
 import {useState} from "react";
+import Illustration from '../illustration';
 
 type TileProps = {
 	title: string,
@@ -10,7 +11,7 @@ type TileProps = {
 	/**
 	 * Fallback element on illustration download failure
 	 */
-	 illustrationFallback: () => JSX.Element,
+	illustrationFallback: () => JSX.Element,
 	/**
 	 * URL to push on tile tap
 	 */
@@ -18,7 +19,7 @@ type TileProps = {
 }
 
 const Tile = (props: TileProps) => {
-	const [imageNotFound, setImageNotFound] = useState(Math.random() <= 0.5)
+	const [imageNotFound, setImageNotFound] = useState(false);
 	return (
 		<Box sx={{ height: '100%' }}>
 			<Card style={{ border: "none", boxShadow: "none" }}>
@@ -28,9 +29,8 @@ const Tile = (props: TileProps) => {
 						<CardMedia style={{ display: 'flex', justifyContent: 'center' }}> 
 							{props.illustrationFallback()}
 						</CardMedia> :
-						<CardMedia
-      					  	component="img"
-      					  	image={props.illustrationURL}
+						<Illustration
+      					  	url={props.illustrationURL}
 							onError={() => setImageNotFound(true) }
       					/>
 					}
