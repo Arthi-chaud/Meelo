@@ -72,7 +72,7 @@ const MeeloAppBar = () => {
 									<Select
 										disableUnderline
 										variant='standard'
-        								value={requestedLibrary.title}
+        								value={requestedLibrary.name}
 										sx={{ color: "primary.contrastText" }}
 										inputProps={{
 											classes: {
@@ -82,17 +82,17 @@ const MeeloAppBar = () => {
 										}}
 										onChange={(item) => {
 											const targetLibaryName = item.target.value;
-											if (targetLibaryName === globalLibrary.title) {
+											if (targetLibaryName === globalLibrary.name) {
 												router.push(`/albums`);
 											} else {
-												const targetLibrary = query.data!.items.find((library) => library.title === targetLibaryName)!;
+												const targetLibrary = query.data!.items.find((library) => library.name === targetLibaryName)!;
 												router.push(`/libraries/${targetLibrary.slug}/albums`);
 											}
 										}}
         							>
         							  {[globalLibrary, ...query.data!.items].map((library) => (
-        							    <MenuItem key={library.id} value={library.title}>
-        							    	{library.title}
+        							    <MenuItem key={library.slug} value={library.name}>
+        							    	{library.name}
         							    </MenuItem>
         							  ))}
         							</Select>
