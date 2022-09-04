@@ -2,9 +2,9 @@ import Resource from "./resource";
 
 type Library = Resource & {
 	/**
-	 * Display name of the library
+	 * Title of the library
 	 */
-	title: string;
+	name: string;
 	/**
 	 * Slug of the library
 	 * Unique identifier
