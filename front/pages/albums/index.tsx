@@ -25,11 +25,13 @@ const LibraryAlbumsPage: NextPage = () => {
 				if (librarySlug) {
 					return API.getAllAlbumsInLibrary(
 						slug as string,
-						{ index: lastPage?.index, pageSize: pageSize }
+						{ index: lastPage?.index, pageSize: pageSize },
+						['artist']
 					)
 				} else {
 					return API.getAllAlbums(
-						{ index: lastPage?.index, pageSize: pageSize }
+						{ index: lastPage?.index, pageSize: pageSize }, 
+						['artist']
 					)
 				}
 			}}
