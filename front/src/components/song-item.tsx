@@ -10,6 +10,7 @@ import InfiniteList from "./infinite/infinite-list"
 import { TrackWithRelease } from "../models/track"
 import { PaginatedResponse } from "../models/pagination"
 import { WideLoadingComponent } from "./loading/loading"
+import Illustration from './illustration';
 
 type SongItemProps = {
 	song: SongWithArtist;
@@ -26,7 +27,7 @@ const SongItem = (props: SongItemProps) => {
 	return <>
 		<ListItem>
 			<ListItemIcon>
-				<img src={API.getIllustrationURL(song.illustration)} style={{ maxHeight: 30  }}/>
+				<Illustration url={song.illustration} style={{ maxHeight: 30 }}/>
 			</ListItemIcon>
 			<ListItemText>{song.name}</ListItemText>
 			<ListItemText>
@@ -54,7 +55,7 @@ const SongItem = (props: SongItemProps) => {
 						<FadeIn>
 							<ListItem>
 								<ListItemIcon>
-									<img src={API.getIllustrationURL(track.illustration)} style={{ maxHeight: 30  }}/>
+									<Illustration url={track.illustration} style={{ maxHeight: 30 }}/>
 								</ListItemIcon>
 								<ListItemText>{track.displayName}</ListItemText>
 								<ListItemText>
