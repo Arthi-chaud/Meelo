@@ -30,7 +30,7 @@ export default class MetadataService {
 		private albumService: AlbumService,
 		@Inject(forwardRef(() => ArtistService))
 		private artistService: ArtistService,
-		@Inject(forwardRef(() => SongService))
+		@Inject(forwardRef(() => ReleaseService))
 		private releaseService: ReleaseService,
 		private settingsService: SettingsService,
 		private genreService: GenreService,
@@ -48,7 +48,7 @@ export default class MetadataService {
 		let genres = metadata.genres ? await Promise.all(
 			metadata.genres.map(async (genre) => await this.genreService.getOrCreate({ name: genre }))
 		) : [];
-		let albumArtist = metadata.albumArtist ? await this.artistService.getOrCreate({ name: metadata.albumArtist }) : undefined;
+		let albumArtist = metadata.compilation == false ? await this.artistService.getOrCreate({ name: metadata.albumArtist ?? metadata.artist! }) : undefined;
 		let songArtist = await this.artistService.getOrCreate({ name: metadata.artist ?? metadata.albumArtist! });
 		let song = await this.songService.getOrCreate(
 			{ name: this.removeTrackExtension(metadata.name!), artist: { id: songArtist.id }, genres: genres.map((genre) => ({ id: genre.id }))},
