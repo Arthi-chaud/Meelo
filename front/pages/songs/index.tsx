@@ -38,7 +38,7 @@ const LibrarySongsPage: NextPage = () => {
 			render={(items: SongWithArtist[]) =>
 				<FadeIn>
 					<List sx={{ padding: 3 }}>
-						{ items.map((item) => <SongItem song={item}/>)}
+						{ items.map((item) => <SongItem song={item} key={item.id}/>)}
 					</List>
 				</FadeIn>
 			}
