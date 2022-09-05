@@ -14,8 +14,9 @@ import PaginatedResponse from 'src/pagination/models/paginated-response';
 import TrackService from 'src/track/track.service';
 import TrackQueryParameters from 'src/track/models/track.query-parameters';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
-import { TrackType } from '@prisma/client';
+import {Genre, TrackType} from '@prisma/client';
 import type ReassignAlbumDTO from './models/reassign-album.dto';
+import GenreService from "../genre/genre.service";
 
 @ApiTags("Albums")
 @Controller('albums')
@@ -28,6 +29,7 @@ export default class AlbumController {
 		private albumService: AlbumService,
 		@Inject(forwardRef(() => TrackService))
 		private trackService: TrackService,
+		private genreService: GenreService
 
 	) {}
 
@@ -161,6 +163,18 @@ export default class AlbumController {
 			releases.map((release) => this.releaseService.buildResponse(release)),
 			request
 		);
+	}
+
+	@ApiOperation({
+		summary: 'Get all the genres of an album'
+	})
+	@Get(':idOrSlug/genres')
+	async getAlbumGenres(
+		@Param(ParseAlbumIdentifierPipe)
+		where: AlbumQueryParameters.WhereInput,
+	): Promise<Genre[]> {
+		const genres = await this.albumService.getGenres(where);
+		return genres.map((genre) => this.genreService.buildResponse(genre));
 	}
 
 	@ApiOperation({
