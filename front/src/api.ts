@@ -1,10 +1,12 @@
 import Album, { AlbumInclude, AlbumWithArtist } from "./models/album";
 import Artist, { ArtistInclude } from "./models/artist";
+import Genre from "./models/genre";
 import Library from "./models/library";
 import { PaginatedResponse, PaginationParameters } from "./models/pagination";
 import Release, { ReleaseInclude } from "./models/release";
 import Song, { SongInclude, SongWithArtist } from "./models/song";
 import Track, { TrackInclude, TrackWithRelease } from "./models/track";
+import Tracklist from "./models/tracklist";
 
 type QueryParameters = {
 	pagination?: PaginationParameters;
@@ -125,7 +127,7 @@ export default class API {
 
 	/**
 	 * Get tracks of a song
-	 * @param songId the id of the parent song
+	 * @param songSlugOrId the id of the parent song
 	 * @param include the relation to inclide
 	 * @returns an array of tracks
 	 */
@@ -138,11 +140,43 @@ export default class API {
 			.then((response) => response.json());
 	}
 
+	/**
+	 * Get tracks of a song
+	 * @param songSlugOrId the id of the parent song
+	 * @param include the relation to inclide
+	 * @returns an array of tracks
+	 */
+	 static async getSongGenres(
+		songSlugOrId: string | number,
+		pagination?: PaginationParameters
+	): Promise<PaginatedResponse<Genre>> {
+		return fetch(this.buildURL(`/songs/${songSlugOrId}/genres`, { pagination, include: [] }))
+			.then((response) => response.json());
+	}
+
 	static async getRelease(
 		slugOrId: string | number,
 		include: ReleaseInclude[] = []
 	): Promise<Release> {
 		return fetch(this.buildURL(`/releases/${slugOrId}`, { include }))
+			.then((response) => response.json());
+	}
+
+	static async getReleaseTrackList(
+		slugOrId: string | number,
+		include: TrackInclude[] = []
+	): Promise<Tracklist> {
+		const response = await fetch(this.buildURL(`/releases/${slugOrId.toString()}/tracklist`, { include }));
+		const body = await response.json();
+		return new Map<string | '?', Track[]>(Object.entries(body));
+	}
+
+
+	static async getArtist(
+		slugOrId: string | number,
+		include: ArtistInclude[] = []
+	): Promise<Artist> {
+		return fetch(this.buildURL(`/artists/${slugOrId}`, { include }))
 			.then((response) => response.json());
 	}
 
@@ -154,11 +188,11 @@ export default class API {
 	 * @returns the correct, rerouted URL
 	 */
 	static getIllustrationURL(imageURL: string): string {
-		return `/api${imageURL}`;
+		return `http://localhost:5000/api${imageURL}`;
 	}
 
 	private static buildURL(route: string, parameters: QueryParameters, otherParameters?: any): string {
-		return `/api${route}${this.formatQueryParameters(parameters, otherParameters)}`;
+		return `http://localhost:5000/api${route}${this.formatQueryParameters(parameters, otherParameters)}`;
 	}
 
 	private static formatQueryParameters(parameters: QueryParameters, otherParameters?: any): string {
