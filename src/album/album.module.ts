@@ -6,13 +6,15 @@ import AlbumController from './album.controller';
 import ReleaseModule from 'src/release/release.module';
 import IllustrationModule from 'src/illustration/illustration.module';
 import TrackModule from 'src/track/track.module';
+import GenreModule from "../genre/genre.module";
 @Module({
 	imports: [
 		PrismaModule,
 		forwardRef(() => IllustrationModule),
 		forwardRef(() => ArtistModule),
 		forwardRef(() => ReleaseModule),
-		forwardRef(() => TrackModule)
+		forwardRef(() => TrackModule),
+		GenreModule,
 	],
 	exports: [AlbumService],
 	providers: [AlbumService],
