@@ -22,7 +22,7 @@ const Tile = (props: TileProps) => {
 	const [imageNotFound, setImageNotFound] = useState(false);
 	return (
 		<Box sx={{ height: '100%' }}>
-			<Card style={{ border: "none", boxShadow: "none" }}>
+			<Card style={{ border: "none", boxShadow: "none", borderRadius: '3%' }}>
 				<CardActionArea href={props.targetURL}>
 					<AspectRatio ratio="1">
 					{ imageNotFound ?
