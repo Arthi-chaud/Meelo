@@ -22,13 +22,13 @@ const LibrarySongsPage: NextPage = () => {
 			loader={() => <WideLoadingComponent/>}
 			fetch={(lastPage, pageSize) => {
 				if (librarySlug) {
-					return API.getAllSongsInLibrary(
+					return API.getAllSongsInLibrary<SongWithArtist>(
 						slug as string,
 						{ index: lastPage?.index, pageSize: pageSize }, 
 						['artist']
 					)
 				} else {
-					return API.getAllSongs(
+					return API.getAllSongs<SongWithArtist>(
 						{ index: lastPage?.index, pageSize: pageSize },
 						['artist']
 					)
