@@ -10,7 +10,7 @@ import Tracklist from "./models/tracklist";
 
 type QueryParameters = {
 	pagination?: PaginationParameters;
-	include: string[];
+	include?: string[];
 }
 
 export default class API {
@@ -25,8 +25,7 @@ export default class API {
 	static async getAllLibraries(
 		pagination?: PaginationParameters
 	): Promise<PaginatedResponse<Library>> {
-		return fetch(this.buildURL(`/libraries`, { pagination: pagination, include: [] }))
-			.then((response) => response.json());
+		return API.fetch(`/libraries`, { pagination: pagination, include: [] });
 	}
 	/**
 	 * Fetch all album artists
@@ -36,8 +35,7 @@ export default class API {
 	static async getAllArtists(
 		pagination?: PaginationParameters, 
 	): Promise<PaginatedResponse<Artist>> {
-		return fetch(this.buildURL(`/artists`, { pagination, include: [] }, {'albumArtistOnly': true}))
-			.then((response) => response.json());
+		return API.fetch(`/artists`, { pagination, include: [] }, {'albumArtistOnly': true});
 	}
 
 	/**
@@ -49,8 +47,7 @@ export default class API {
 		pagination?: PaginationParameters,
 		include: AlbumInclude[] = []
 	): Promise<PaginatedResponse<T>> {
-		return fetch(this.buildURL(`/albums`, { pagination, include }))
-			.then((response) => response.json());
+		return API.fetch(`/albums`, { pagination, include });
 	}
 
 	/**
@@ -64,8 +61,7 @@ export default class API {
 		pagination?: PaginationParameters,
 		include: ArtistInclude[] = [],
 	): Promise<PaginatedResponse<T>> {
-		return fetch(this.buildURL(`/libraries/${librarySlugOrId}/artists`, { pagination, include }, {'albumArtistOnly': true}))
-			.then((response) => response.json());
+		return API.fetch(`/libraries/${librarySlugOrId}/artists`, { pagination, include }, {'albumArtistOnly': true});
 	}
 
 	/**
@@ -79,8 +75,7 @@ export default class API {
 		pagination?: PaginationParameters,
 		include: AlbumInclude[] = [],
 	): Promise<PaginatedResponse<T>> {
-		return fetch(this.buildURL(`/libraries/${librarySlugOrId}/albums`, { pagination, include }))
-			.then((response) => response.json());
+		return API.fetch(`/libraries/${librarySlugOrId}/albums`, { pagination, include });
 	}
 
 	/**
@@ -94,8 +89,7 @@ export default class API {
 		pagination?: PaginationParameters,
 		include: SongInclude[] = [],
 	): Promise<PaginatedResponse<T>> {
-		return fetch(this.buildURL(`/libraries/${librarySlugOrId}/songs`, { pagination, include }))
-			.then((response) => response.json());
+		return API.fetch(`/libraries/${librarySlugOrId}/songs`, { pagination, include });
 	}
 
 	/**
@@ -103,12 +97,11 @@ export default class API {
 	 * @param pagination the parameters to choose how many items to load
 	 * @returns An array of songs
 	 */
-	static async getAllSongs<T extends Album = Album>(
+	static async getAllSongs<T extends Song = Song>(
 		pagination?: PaginationParameters,
 		include: SongInclude[] = []
 	): Promise<PaginatedResponse<T>> {
-		return fetch(this.buildURL(`/songs`, { pagination, include }))
-			.then((response) => response.json());
+		return API.fetch(`/songs`, { pagination, include });
 	}
 
 	/**
@@ -121,8 +114,7 @@ export default class API {
 		songSlugOrId: string | number,
 		include: TrackInclude[] = []
 	): Promise<T> {
-		return fetch(this.buildURL(`/songs/${songSlugOrId}/master`, { include }))
-			.then((response) => response.json()); 
+		return API.fetch(`/songs/${songSlugOrId}/master`, { include }); 
 	}
 
 	/**
@@ -136,22 +128,20 @@ export default class API {
 		pagination?: PaginationParameters,
 		include: TrackInclude[] = []
 	): Promise<PaginatedResponse<T>> {
-		return fetch(this.buildURL(`/songs/${songSlugOrId}/tracks`, { pagination, include }))
-			.then((response) => response.json());
+		return API.fetch(`/songs/${songSlugOrId}/tracks`, { pagination, include });
 	}
 
 	/**
 	 * Get genres of a song
 	 * @param songSlugOrId the id of the parent song
 	 * @param pagination
-	 * @returns an array of tracks
+	 * @returns an array of genres
 	 */
 	static async getSongGenres(
 		songSlugOrId: string | number,
 		pagination?: PaginationParameters
 	): Promise<PaginatedResponse<Genre>> {
-		return fetch(this.buildURL(`/songs/${songSlugOrId}/genres`, { pagination, include: [] }))
-			.then((response) => response.json());
+		return API.fetch(`/songs/${songSlugOrId}/genres`, { pagination, include: [] });
 	}
 
 	/**
@@ -162,25 +152,34 @@ export default class API {
 	 static async getAlbumGenres(
 		albumSlugOrId: string | number,
 	): Promise<Genre[]> {
-		return fetch(this.buildURL(`/albums/${albumSlugOrId}/genres`, { include: [] }))
-			.then((response) => response.json());
+		return API.fetch(`/albums/${albumSlugOrId}/genres`, { include: [] });
+	}
+	/**
+	 * Get releases of a album
+	 * @param albumSlugOrId the id of the album
+	 * @returns an array of releases
+	 */
+	 static async getAlbumReleases<T extends Release = Release>(
+		albumSlugOrId: string | number,
+		pagination?: PaginationParameters,
+		include: ReleaseInclude[] = []
+	): Promise<PaginatedResponse<T>> {
+		return API.fetch(`/albums/${albumSlugOrId}/releases`, { include, pagination });
 	}
 
 	static async getRelease<T extends Release = Release>(
 		slugOrId: string | number,
 		include: ReleaseInclude[] = []
 	): Promise<T> {
-		return fetch(this.buildURL(`/releases/${slugOrId}`, { include }))
-			.then((response) => response.json());
+		return API.fetch(`/releases/${slugOrId}`, { include });
 	}
 
 	static async getReleaseTrackList<T extends Track = Track> (
 		slugOrId: string | number,
 		include: TrackInclude[] = []
 	): Promise<Tracklist<T>> {
-		const response = await fetch(this.buildURL(`/releases/${slugOrId.toString()}/tracklist`, { include }));
-		const body = await response.json();
-		return new Map<string | '?', T[]>(Object.entries(body));
+		const response = await this.fetch(`/releases/${slugOrId.toString()}/tracklist`, { include });
+		return new Map<string | '?', T[]>(Object.entries(response));
 	}
 
 
@@ -188,11 +187,13 @@ export default class API {
 		slugOrId: string | number,
 		include: ArtistInclude[] = []
 	): Promise<T> {
-		return fetch(this.buildURL(`/artists/${slugOrId}`, { include }))
-			.then((response) => response.json());
+		return API.fetch(`/artists/${slugOrId}`, { include });
 	}
 
-
+	private static async fetch(route: string, parameters: QueryParameters, otherParameters?: any) {
+		return fetch(this.buildURL(route, parameters, otherParameters))
+			.then((response) => response.json());
+	}
 
 	/**
 	 * Builds the URL to get an illustration from an object returned by the API
@@ -210,8 +211,8 @@ export default class API {
 	private static formatQueryParameters(parameters: QueryParameters, otherParameters?: any): string {
 		let formattedQueryParams: string[] = [];
 		
-		if (parameters.include.length !== 0)
-			formattedQueryParams.push(this.formatInclude(parameters.include)!);
+		if ((parameters.include?.length ?? 0)!== 0)
+			formattedQueryParams.push(this.formatInclude(parameters.include!)!);
 		if (parameters.pagination)
 			formattedQueryParams.push(this.formatPagination(parameters.pagination));
 		for (let otherParams in otherParameters)
