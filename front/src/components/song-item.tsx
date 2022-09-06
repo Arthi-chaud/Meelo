@@ -26,9 +26,6 @@ const SongItem = (props: SongItemProps) => {
 	const [open, setOpen] = useState(false);
 	return <>
 		<ListItem>
-			<ListItemIcon>
-				<Illustration url={song.illustration} style={{ maxHeight: 30 }}/>
-			</ListItemIcon>
 			<ListItemText>{song.name}</ListItemText>
 			<ListItemText>
 				<Link href={`/artists/${artist.slug}`}>
@@ -54,9 +51,6 @@ const SongItem = (props: SongItemProps) => {
 					{ tracks.map((track) =>
 						<FadeIn>
 							<ListItem>
-								<ListItemIcon>
-									<Illustration url={track.illustration} style={{ maxHeight: 30 }}/>
-								</ListItemIcon>
 								<ListItemText>{track.displayName}</ListItemText>
 								<ListItemText>
 									<Link href={`/releases/${track.release.id}`}>
