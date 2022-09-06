@@ -135,9 +135,10 @@ describe("Genre Service", () => {
 				bySong: { byId: { id: dummyRepository.songA1.id } }
 			});
 
-			expect(fetchedGenres.length).toBe(2);
+			expect(fetchedGenres.length).toBe(3);
 			expect(fetchedGenres).toContainEqual(newGenre);
 			expect(fetchedGenres).toContainEqual(dummyRepository.genreA);
+			expect(fetchedGenres).toContainEqual(dummyRepository.genreB);
 		});
 		
 		it("should get the genres by the song (one expected)", async () => {
@@ -156,7 +157,7 @@ describe("Genre Service", () => {
 				bySong: { byId: { id: dummyRepository.songA1.id } }
 			});
 
-			expect(genresCounts).toBe(2);
+			expect(genresCounts).toBe(3);
 		});
 
 		it("should get the genres by their names", async () => {
@@ -223,7 +224,7 @@ describe("Genre Service", () => {
 		it('should have removed it from the song', async () => {
 			const genres = await genreService.count({ bySong: { byId: { id: dummyRepository.songA1.id } } });
 
-			expect(genres).toBe(1);
+			expect(genres).toBe(2);
 		});
 
 		it("should throw, as the genre does not exist", async () => {

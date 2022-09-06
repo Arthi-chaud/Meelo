@@ -249,8 +249,8 @@ describe('Album Service', () => {
 		it("should find and sort the genres", async () => {
 			const genres = await albumService.getGenres({ byId: { id: dummyRepository.albumA1.id } });
 			expect(genres).toStrictEqual([
-				dummyRepository.genreA,
-				dummyRepository.genreB
+				dummyRepository.genreB,
+				dummyRepository.genreA
 			]);
 		});
 	});
