@@ -1,3 +1,4 @@
+import { Box } from "@mui/material";
 import Image from "next/image";
 import { useEffect, useState } from "react";
 import FadeIn from "react-fade-in";
@@ -14,25 +15,28 @@ type IllustrationProps = {
 } & React.ImgHTMLAttributes<HTMLImageElement>
 
 const Illustration = (props: IllustrationProps) => {
-	const [illustrationURLReady, setIllustrationURLReady] = useState(!props.url.startsWith('/songs'))
 	const [illustrationURL, setIllustrationURL] = useState(props.url);
+	const [illustration, setIllustration] = useState<string | null>(null);
 	useEffect(() => {
-		if (!illustrationURLReady)
-			fetch(illustrationURL, { redirect: 'follow' }).then((response) => {
-				setIllustrationURLReady(true);
-				if (response.redirected) {
-					setIllustrationURL(new URL(response.url).pathname);
-				}
-			});
+		fetch(API.getIllustrationURL(illustrationURL), { redirect: 'follow' }).then((response) => {
+			if (response.redirected) {
+				setIllustrationURL(new URL(response.url).pathname);
+			} else {
+				response.blob().then((blob) => setIllustration(URL.createObjectURL(blob)));
+			}
+		});
 	}, [illustrationURL]);
-	const { isLoading, data } = useQuery(
-		illustrationURL,
-		() => fetch(API.getIllustrationURL(illustrationURL)).then((response) => response.blob())
-	);
-	if (illustrationURLReady == false || isLoading)
+
+	if (illustration == null)
 		return <></>;
 	return <FadeIn>
-		<img {...props} src={URL.createObjectURL(data!)}/>
+		<Box
+			{...props}
+        	component="img"
+        	sx={{ borderRadius: '3%' }}
+        	src={illustration}
+      	/>
+		
 	</FadeIn>
 }
 
