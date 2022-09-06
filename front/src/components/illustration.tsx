@@ -15,17 +15,20 @@ type IllustrationProps = {
 
 const Illustration = (props: IllustrationProps) => {
 	const [illustrationURLReady, setIllustrationURLReady] = useState(!props.url.startsWith('/songs'))
-	const [illustrationURL, setIllustrationURL] = useState(API.getIllustrationURL(props.url));
+	const [illustrationURL, setIllustrationURL] = useState(props.url);
 	useEffect(() => {
 		if (!illustrationURLReady)
 			fetch(illustrationURL, { redirect: 'follow' }).then((response) => {
 				setIllustrationURLReady(true);
 				if (response.redirected) {
-					setIllustrationURL(API.getIllustrationURL(new URL(response.url).pathname));
+					setIllustrationURL(new URL(response.url).pathname);
 				}
 			});
-	}, []);
-	const { isLoading, data } = useQuery(illustrationURL, () => fetch(illustrationURL).then((response) => response.blob()));
+	}, [illustrationURL]);
+	const { isLoading, data } = useQuery(
+		illustrationURL,
+		() => fetch(API.getIllustrationURL(illustrationURL)).then((response) => response.blob())
+	);
 	if (illustrationURLReady == false || isLoading)
 		return <></>;
 	return <FadeIn>
