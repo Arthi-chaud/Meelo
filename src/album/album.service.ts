@@ -2,7 +2,7 @@ import { forwardRef, Inject, Injectable, Logger } from '@nestjs/common';
 import ArtistService from 'src/artist/artist.service';
 import Slug from 'src/slug/slug';
 import { AlbumAlreadyExistsException, AlbumAlreadyExistsExceptionWithArtistID as AlbumAlreadyExistsWithArtistIDException, AlbumNotFoundException, AlbumNotFoundFromIDException } from './album.exceptions';
-import { AlbumType, Album, Release, Artist } from '@prisma/client';
+import {AlbumType, Album, Release, Artist, Genre} from '@prisma/client';
 import PrismaService from 'src/prisma/prisma.service';
 import AlbumQueryParameters from './models/album.query-parameters';
 import ArtistQueryParameters from 'src/artist/models/artist.query-parameters';
@@ -12,6 +12,7 @@ import IllustrationService from 'src/illustration/illustration.service';
 import { buildSortingParameter } from 'src/sort/models/sorting-parameter';
 import RepositoryService from 'src/repository/repository.service';
 import type { MeeloException } from 'src/exceptions/meelo-exception';
+import GenreService from "../genre/genre.service";
 
 @Injectable()
 export default class AlbumService extends RepositoryService<
@@ -32,7 +33,8 @@ export default class AlbumService extends RepositoryService<
 		@Inject(forwardRef(() => ReleaseService))
 		private releaseService: ReleaseService,
 		@Inject(forwardRef(() => IllustrationService))
-		private illustrationService: IllustrationService
+		private illustrationService: IllustrationService,
+		private genreService: GenreService
 	) {
 		super();
 	}
@@ -268,6 +270,31 @@ export default class AlbumService extends RepositoryService<
 		if (album.artistId)
 			await this.artistServce.deleteArtistIfEmpty({ id: album.artistId });
 		return updatedAlbum;
+	}
+
+	/**
+	 * Get an album's genres, based on the songs on its releases
+	 * Genres will be ordered by occurences
+	 */
+	async getGenres(
+		where: AlbumQueryParameters.WhereInput
+	) : Promise<Genre[]> {
+		const releases = await this.releaseService.getAlbumReleases(where, {}, { tracks: true });
+		const songsId = Array.from(new Set(releases.map((release) => release.tracks.map((track) => track.songId)).flat()));
+		const genres: Genre[] = (await Promise.all(
+			songsId.map((songId) => this.genreService.getSongGenres({ byId: { id: songId } }))
+		)).flat();
+		let genresOccurrences = new Map<Genre, number>();
+		genres.forEach((genre) => {
+			if (genresOccurrences.has(genre) == false) {
+				genresOccurrences.set(genre, 1)
+			} else {
+				genresOccurrences.set(genre, genresOccurrences.get(genre)! + 1);
+			}
+		});
+		return Array.from(genresOccurrences.entries()).sort(
+			(genreA, genreB) => genreA[1] - genreB[1] || genreA[0].slug.localeCompare(genreB[0].slug)
+		).map((genresOccurrence) => genresOccurrence[0]);
 	}
 
 	/**

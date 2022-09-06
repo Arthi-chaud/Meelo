@@ -9,6 +9,7 @@ import { LyricsModule } from "src/lyrics/lyrics.module";
 import PrismaModule from "src/prisma/prisma.module";
 import PrismaService from "src/prisma/prisma.service";
 import Slug from "src/slug/slug";
+import { SongNotFoundByIdException } from "src/song/song.exceptions";
 import SongService from "src/song/song.service";
 import TrackModule from "src/track/track.module";
 import { FakeFileManagerService } from "test/fake-file-manager.module";
@@ -197,6 +198,17 @@ describe("Genre Service", () => {
 			const test = async () => await genreService.update({ name: 'a' }, { id: -1 });
 
 			expect(test()).rejects.toThrow(GenreNotFoundByIdException);
+		});
+	});
+
+	describe("Get Song's genres", () => {
+		it("should throw, as the genre does not exist", () => {
+			const test = async () => await genreService.getSongGenres({ byId: { id: -1 } });
+			expect(test()).rejects.toThrow(SongNotFoundByIdException);
+		});
+		it("should find the song's genres", async () => {
+			const genres = await genreService.getSongGenres({ byId: { id: dummyRepository.songC1.id } });
+			expect(genres).toStrictEqual([dummyRepository.genreC]);
 		});
 	});
 

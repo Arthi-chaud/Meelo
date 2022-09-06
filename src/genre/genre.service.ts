@@ -9,6 +9,8 @@ import type { Genre, Song } from '@prisma/client';
 import SongService from 'src/song/song.service';
 import RepositoryService from 'src/repository/repository.service';
 import type { MeeloException } from 'src/exceptions/meelo-exception';
+import type SongQueryParameters from "../song/models/song.query-params";
+
 @Injectable()
 export default class GenreService extends RepositoryService<
 	Genre,
@@ -191,6 +193,21 @@ export default class GenreService extends RepositoryService<
 		} catch {
 			return this.create(where, include);
 		}
+	}
+
+	/**
+	 * Find the song's genres
+	 * @param where the query parameters to find the song
+	 */
+	async getSongGenres(
+		where: SongQueryParameters.WhereInput,
+		include?: GenreQueryParameters.RelationInclude,
+		sort?: GenreQueryParameters.SortingParameter
+	) {
+		const genres = await this.getMany({ bySong: where }, {}, include, sort);
+		if (genres.length == 0)
+			await this.songService.throwIfNotExist(where);
+		return genres;
 	}
 
 	buildResponse<ResponseType extends Genre>(genre: Genre & { songs?: Song[] }): ResponseType {

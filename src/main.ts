@@ -27,6 +27,8 @@ async function bootstrap() {
 		new MeeloExceptionFilter()
 	);
 	app.useGlobalPipes(new ValidationPipe());
+	if (process.env.NODE_ENV === 'development')
+		app.enableCors();
 	await bootstrapSwagger(app);
 	await app.listen(4000);
 }

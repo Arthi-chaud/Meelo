@@ -340,8 +340,7 @@ describe('Album Controller', () => {
 		});
 	});
 
-	describe("Get Tracklist Album", () => {
-
+	describe("Get Tracklist Album (GET /albums/:id/master/tracklist)", () => {
 		it("should return an error, as the release does not exist", () => {
 			return request(app.getHttpServer())
 				.get(`/albums/${-1}/master/tracklist`)
@@ -349,6 +348,26 @@ describe('Album Controller', () => {
 		});
 	});
 
+	describe("Get Album's genres (GET /albums/:id/genres", () => {
+		it("should return an error, as the release does not exist", () => {
+			return request(app.getHttpServer())
+				.get(`/albums/${-1}/genres`)
+				.expect(404);
+		});
+
+		it("should return an array of genres", () => {
+			return request(app.getHttpServer())
+				.get(`/albums/${dummyRepository.albumA1.id}/genres`)
+				.expect(200)
+				.expect((res) => {
+					let releases: Release[] = res.body;
+					expect(releases).toStrictEqual([
+						dummyRepository.genreA,
+						dummyRepository.genreB
+					])
+				});
+		});
+	});
 
 	describe("Reassign the album (POST /albums/reassign)", () => {
 		it("should reassign the compilation album to an artist", () => {

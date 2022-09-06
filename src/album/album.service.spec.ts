@@ -240,6 +240,21 @@ describe('Album Service', () => {
 		});
 	});
 
+	describe("Get an album's genres", () => { 
+		it('should throw, as the album does not exist', async () => {
+			const test = async () => albumService.getGenres({ byId: { id: -1 } });
+			expect(test()).rejects.toThrow(AlbumNotFoundFromIDException); 
+		});
+
+		it("should find and sort the genres", async () => {
+			const genres = await albumService.getGenres({ byId: { id: dummyRepository.albumA1.id } });
+			expect(genres).toStrictEqual([
+				dummyRepository.genreA,
+				dummyRepository.genreB
+			]);
+		});
+	});
+
 	describe('Reassign Album', () => {
 		it("should assign a compilation album to an artist", async () => {
 			const updatedAlbum = await albumService.reassign(

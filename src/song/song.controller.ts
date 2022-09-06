@@ -14,6 +14,8 @@ import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import { TrackType } from '@prisma/client';
 import { LyricsService } from 'src/lyrics/lyrics.service';
 import type LyricsDto from 'src/lyrics/models/update-lyrics.dto';
+import GenreService from 'src/genre/genre.service';
+import GenreQueryParameters from 'src/genre/models/genre.query-parameters';
 
 @ApiTags("Songs")
 @Controller('songs')
@@ -26,7 +28,9 @@ export class SongController {
 		@Inject(forwardRef(() => ArtistService))
 		private artistService: ArtistService,
 		@Inject(forwardRef(() => LyricsService))
-		private lyricsService: LyricsService
+		private lyricsService: LyricsService,
+		@Inject(forwardRef(() => GenreService))
+		private genreService: GenreService
 	) {}
 
 	@ApiOperation({
@@ -155,6 +159,26 @@ export class SongController {
 			await this.songService.throwIfNotExist(where);
 		return new PaginatedResponse(
 			videoTracks.map((videoTrack) => this.trackService.buildResponse(videoTrack)),
+			request
+		);
+	}
+
+	@ApiOperation({
+		summary: 'Get all the song\'s genres'
+	})
+	@Get(':idOrSlug/genres')
+	async getSongGenres(
+		@Query('with', GenreQueryParameters.ParseRelationIncludePipe)
+		include: GenreQueryParameters.RelationInclude,
+		@Query(GenreQueryParameters.ParseSortingParameterPipe)
+		sortingParameter: GenreQueryParameters.SortingParameter,
+		@Param(ParseSongIdentifierPipe)
+		where: SongQueryParameters.WhereInput,
+		@Req() request: Request
+	) {
+		const genres = await this.genreService.getSongGenres(where, include, sortingParameter);
+		return new PaginatedResponse(
+			genres.map((genre) => this.genreService.buildResponse(genre)),
 			request
 		);
 	}
