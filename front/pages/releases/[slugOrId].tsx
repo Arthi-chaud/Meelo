@@ -17,6 +17,7 @@ import FadeIn from "react-fade-in";
 import MeeloAppBar from "../../src/components/appbar/appbar";
 import InfiniteList from "../../src/components/infinite/infinite-list";
 import Tile from "../../src/components/tile/tile";
+import MusicVideoIcon from '@mui/icons-material/MusicVideo';
 
 const ReleasePage: NextPage = () => {
 	const theme = useTheme();
@@ -69,7 +70,6 @@ const ReleasePage: NextPage = () => {
 	if (releaseQuery.isLoading || albumArtistQuery.isLoading || slugOrId == undefined)
 		return <WideLoadingComponent/>
 	return <Box>
-		<MeeloAppBar/>
 		<Box sx={{ padding: 5, flex: 1, flexGrow: 1}}>
 			<Grid container spacing={4} sx={{ justifyContent: 'center' }}>
 				<Grid item md={4} xs={12}>
@@ -137,6 +137,9 @@ const ReleasePage: NextPage = () => {
 													otherArtistsQuery.find((artistQuery) => artistQuery.data?.id == track.song.artistId)?.data?.name 
 												}
 											/>
+											{ track.type == 'Video' &&
+												<ListItemIcon><MusicVideoIcon color='disabled' fontSize="small"/></ListItemIcon>
+											}
 											<Typography>{formatDuration(track.duration * 1000)}</Typography>
 										</ListItemButton>
 										<Divider variant="inset"/>
@@ -150,7 +153,7 @@ const ReleasePage: NextPage = () => {
 			{ (relatedReleasesQuery.data?.items.length ?? 0) > 1 &&
 				<FadeIn>
 					<Divider/>
-					<Typography variant='h6' sx={{ paddingTop: 3 }}>{"Other releases of the same albums:"}</Typography>
+					<Typography variant='h6' sx={{ paddingTop: 3 }}>{"Other releases of the same album:"}</Typography>
 					<List>
 					{ relatedReleasesQuery.data!.items.filter((release) => release.id != releaseQuery.data!.id).map((otherRelease) =>
 						<ListItem>
