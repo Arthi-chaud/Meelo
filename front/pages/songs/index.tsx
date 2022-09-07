@@ -16,7 +16,6 @@ const LibrarySongsPage: NextPage = () => {
 	const { slug } = router.query;
 	const librarySlug = slug as string | undefined;
 	return <Box>
-		<MeeloAppBar/>
 		<InfiniteList
 			firstLoader={() => <LoadingPage/>}
 			loader={() => <WideLoadingComponent/>}

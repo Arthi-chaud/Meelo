@@ -15,7 +15,6 @@ const LibraryArtistsPage: NextPage = () => {
 	const { slug } = router.query;
 	const librarySlug = slug as string | undefined;
 	return <>
-		<MeeloAppBar/>
 		<InfiniteGrid
 			firstLoader={() => <LoadingPage/>}
 			loader={() => <WideLoadingComponent/>}
