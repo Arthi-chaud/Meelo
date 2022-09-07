@@ -1,4 +1,4 @@
-import { ListItem, ListItemIcon, ListItemText, List, Collapse, ListItemButton, IconButton, Link } from "@mui/material"
+import { ListItem, Grid, ListItemText, List, Collapse, Button, IconButton, Typography } from "@mui/material"
 import { useState } from "react"
 import FadeIn from "react-fade-in"
 import { useQuery } from "react-query"
@@ -11,6 +11,8 @@ import { TrackWithRelease } from "../models/track"
 import { PaginatedResponse } from "../models/pagination"
 import { WideLoadingComponent } from "./loading/loading"
 import Illustration from './illustration';
+import Link from 'next/link';
+import AspectRatio from '@mui/joy/AspectRatio'
 
 type SongItemProps = {
 	song: SongWithArtist;
@@ -25,22 +27,28 @@ const SongItem = (props: SongItemProps) => {
 	const artist = props.song.artist;
 	const [open, setOpen] = useState(false);
 	return <>
-		<ListItem>
-			<ListItemText>{song.name}</ListItemText>
-			<ListItemText>
+		<Grid container padding={2}>
+			<Grid item xs={5}>
+				<Typography>{song.name}</Typography>
+			</Grid>
+			<Grid item xs={6}>
 				<Link href={`/artists/${artist.slug}`}>
-					{artist.name}
+					<Button variant="text" color='inherit' sx={{ textTransform: 'none' }}>
+						<Typography>{artist.name}</Typography>
+					</Button>
 				</Link>
-			</ListItemText>
-			<IconButton onClick={() => setOpen(!open) }>
-				{open ? <ExpandLess /> : <ExpandMore />}
-			</IconButton>
-		</ListItem>
+			</Grid>
+			<Grid item container  sx={{ justifyContent: 'center' }} xs={1}>
+				<IconButton onClick={() => setOpen(!open) }>
+					{open ? <ExpandLess /> : <ExpandMore />}
+				</IconButton>
+			</Grid>
+		</Grid>
 		<Collapse in={open} timeout="auto" unmountOnExit>
 			{ open && <InfiniteList
 				firstLoader={() => <WideLoadingComponent/>}
 				loader={() => <WideLoadingComponent/>}
-				queryKey={['tracks', 'song', song.id]}
+				queryKey={['tracks', 'song', song.id.toString()]}
 				fetch={(lastPage, pageSize) => API.getSongTracks(
 					song.id,
 					{ index: lastPage?.index, pageSize: pageSize },
@@ -50,14 +58,18 @@ const SongItem = (props: SongItemProps) => {
     				<List sx={{ paddingX: 2 }}>
 					{ tracks.map((track) =>
 						<FadeIn>
-							<ListItem>
-								<ListItemText>{track.displayName}</ListItemText>
-								<ListItemText>
+							<Grid container padding={2}>
+								<Grid item xs={6}>
+									<Typography>{track.displayName}</Typography>
+								</Grid>
+								<Grid item xs={6}>
 									<Link href={`/releases/${track.release.id}`}>
-										{track.release.title}
+										<Button variant="text" color='inherit' sx={{ textTransform: 'none' }}>
+											<Typography>{track.release.title}</Typography>
+										</Button>
 									</Link>
-								</ListItemText>
-							</ListItem>
+								</Grid>
+							</Grid>
 						</FadeIn>
 					)}
         			</List>
