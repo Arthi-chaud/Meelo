@@ -289,7 +289,7 @@ export default class AlbumService extends RepositoryService<
 			new Map<string, number>()
 		);
 		return Array.from(genresOccurrences.entries()).sort(
-			(genreA, genreB) => genreA[1] - genreB[1] || genreA[0].localeCompare(genreB[0])
+			(genreA, genreB) => genreB[1] - genreA[1]
 		).map((genresSlugOccurrence) => genres.find((genre) => genresSlugOccurrence[0] == genre.slug)!);
 	}
 
