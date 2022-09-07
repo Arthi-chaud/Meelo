@@ -60,7 +60,7 @@ const MeeloAppBar = () => {
 						color="inherit"
 						edge="start"
 						onClick={() => setDrawerOpen(true)}
-						sx={{ mr: 2, display: { sm: 'none' } }}
+						sx={{ mr: 2, display: { md: 'none' } }}
 					>
 						<MenuIcon />
 					</IconButton>
@@ -71,7 +71,7 @@ const MeeloAppBar = () => {
 						librariesQuery.isLoading
 							? <LoadingComponent />
 							: <><FadeIn>
-								<Box sx={{ display: { xs: 'none', sm: 'flex' }, marginLeft: 1, alignItems: 'center' }} flexDirection='row'>
+								<Box sx={{ display: { xs: 'none', md: 'flex' }, marginLeft: 1, alignItems: 'center' }} flexDirection='row'>
 									<Select
 										disableUnderline
 										variant='standard'
