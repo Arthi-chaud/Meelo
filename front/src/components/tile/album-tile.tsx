@@ -9,7 +9,7 @@ const AlbumTile = (props: { album: AlbumWithArtist }) => {
 		title={props.album.name}
 		subtitle={props.album.artist?.name}
 		targetURL={`/albums/${props.album.artist?.slug ?? 'compilations'}+${props.album.slug}`}
-		illustrationURL={API.getIllustrationURL(props.album.illustration)}
+		illustrationURL={props.album.illustration}
 		illustrationFallback={() => 
 			<IconButton disableFocusRipple disableRipple sx={{ '& svg': {fontSize: 100} }}>
 				<Album />

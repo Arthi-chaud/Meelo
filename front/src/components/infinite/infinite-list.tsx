@@ -81,7 +81,7 @@ const InfiniteList = <T extends Resource,>(props: InfiniteListProps<T>) => {
 			return lastPage;
         },
 		
-    })
+    });
 	return <>
 		{ isFetching && !data && props.firstLoader() }
 		<InfiniteScroll

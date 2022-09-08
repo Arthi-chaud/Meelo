@@ -10,6 +10,19 @@ module.exports = {
         destination: '/albums',
         permanent: true,
       },
+      {
+        source: '/libraries/:slug',
+        destination: '/libraries/:slug/albums',
+        permanent: true,
+      },
+    ]
+  },
+  async rewrites() {
+    return [
+      {
+        source: '/libraries/:slug/:itemType(albums|artists|songs)',
+        destination: '/:itemType',
+      },
     ]
   },
 }

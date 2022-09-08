@@ -362,8 +362,8 @@ describe('Album Controller', () => {
 				.expect((res) => {
 					let releases: Release[] = res.body;
 					expect(releases).toStrictEqual([
-						dummyRepository.genreA,
-						dummyRepository.genreB
+						dummyRepository.genreB,
+						dummyRepository.genreA
 					])
 				});
 		});

@@ -14,6 +14,7 @@ import LibraryMusicIcon from '@mui/icons-material/LibraryMusic';
 import globalLibrary from './global-library';
 import { useEffect, useState } from "react";
 import buildLink from "./build-link";
+import Link from 'next/link';
 
 interface DrawerProps {
 	query: UseQueryResult<PaginatedResponse<Library>>,
@@ -32,7 +33,7 @@ const MeeloAppBarDrawer = ({ query, requestedLibrarySlug, isOpen, onClose }: Dra
 				variant="temporary"
 				open={isOpen}
 				onClose={onClose}
-				sx={{ display: { xs: 'block', sm: 'none' } }}
+				sx={{ display: { xs: 'block', md: 'none' } }}
 			>
 			<List>
 				<ListSubheader disableSticky={false}>
@@ -47,21 +48,24 @@ const MeeloAppBarDrawer = ({ query, requestedLibrarySlug, isOpen, onClose }: Dra
 					query.isLoading || <FadeIn> {
 						[globalLibrary, ...query.data!.items].map((library) => {
 							const open = selectedLibrarySlug === library.slug;
-							return (<><ListItem key={library.slug}>
+							return (<>
+							<ListItem key={library.slug}>
 								<ListItemButton onClick={() => setSelectedLibrary(open ? null : library.slug)}>
-									<ListItemText>{library.title}</ListItemText>
+									<ListItemText>{library.name}</ListItemText>
 									{open ? <ExpandLess /> : <ExpandMore />}
 								</ListItemButton>
 							</ListItem>
 								<Collapse in={open} unmountOnExit>
 									<List sx={{ pl: 4 }}>
 										{itemType.map((item, index) => (
-											<ListItemButton key={item} href={buildLink(item, library.slug)}>
-												<ListItemIcon>
-													{ getTypeIcon(item) }
-												</ListItemIcon>
-												<ListItemText primary={formattedItemTypes.at(index)} />
-											</ListItemButton>
+											<Link href={buildLink(item, library.slug)}>
+												<ListItemButton key={item} onClick={onClose}>
+													<ListItemIcon>
+														{ getTypeIcon(item) }
+													</ListItemIcon>
+													<ListItemText primary={formattedItemTypes.at(index)} />
+												</ListItemButton>
+											</Link>
 										))}
 									</List>
 								</Collapse>

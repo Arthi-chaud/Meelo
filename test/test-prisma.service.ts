@@ -87,7 +87,7 @@ export default class TestPrismaService extends PrismaService {
 		});
 		this.songA1 = await this.song.create({
 			data: { name: "My Song", slug: 'my-song', artistId: this.artistA.id, genres:
-				{ connect: { id: this.genreA.id } }
+				{ connect: [{ id: this.genreA.id }, { id: this.genreB.id }]}
 			}
 		});
 		this.lyricsA1 = await this.lyrics.create({

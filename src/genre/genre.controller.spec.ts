@@ -91,6 +91,7 @@ describe("Genre Controller", () => {
 					expect(fetchedGenre).toStrictEqual({
 						...dummyRepository.genreB,
 						songs: [
+							expectedSongResponse(dummyRepository.songA1),
 							expectedSongResponse(dummyRepository.songA2),
 							expectedSongResponse(dummyRepository.songB1)
 						]
@@ -160,6 +161,7 @@ describe("Genre Controller", () => {
 					expect(genres).toContainEqual({
 						...dummyRepository.genreB,
 						songs: [
+							expectedSongResponse(dummyRepository.songA1),
 							expectedSongResponse(dummyRepository.songA2),
 							expectedSongResponse(dummyRepository.songB1),
 						]
@@ -318,7 +320,8 @@ describe("Genre Controller", () => {
 				.expect(200)
 				.expect((res) => {
 					let songs: Song[] = res.body.items;
-					expect(songs.length).toBe(2);
+					expect(songs.length).toBe(3);
+					expect(songs).toContainEqual(expectedSongResponse(dummyRepository.songA1));
 					expect(songs).toContainEqual(expectedSongResponse(dummyRepository.songA2));
 					expect(songs).toContainEqual(expectedSongResponse(dummyRepository.songB1));
 				});
@@ -337,24 +340,25 @@ describe("Genre Controller", () => {
 
 		it("Should get some songs (w/ pagination)", () => {
 			return request(app.getHttpServer())
-				.get(`/genres/${dummyRepository.genreB.id}/songs?sortBy=name&skip=1`)
+				.get(`/genres/${dummyRepository.genreB.id}/songs?skip=1&take=1`)
 				.expect(200)
 				.expect((res) => {
 					let songs: Song[] = res.body.items;
 					expect(songs.length).toBe(1);
-					expect(songs[0]).toStrictEqual(expectedSongResponse(dummyRepository.songB1));
+					expect(songs[0]).toStrictEqual(expectedSongResponse(dummyRepository.songA2));
 				});
 		});
 
 		it("Should get all songs, sorted", () => {
 			return request(app.getHttpServer())
-				.get(`/genres/${dummyRepository.genreB.id}/songs?sortBy=name`)
+				.get(`/genres/${dummyRepository.genreB.id}/songs?sortBy=name&order=desc`)
 				.expect(200)
 				.expect((res) => {
 					let songs: Song[] = res.body.items;
-					expect(songs.length).toBe(2);
-					expect(songs[0]).toStrictEqual(expectedSongResponse(dummyRepository.songA2));
+					expect(songs.length).toBe(3);
 					expect(songs[1]).toStrictEqual(expectedSongResponse(dummyRepository.songB1));
+					expect(songs[2]).toStrictEqual(expectedSongResponse(dummyRepository.songA2));
+					expect(songs[0]).toStrictEqual(expectedSongResponse(dummyRepository.songA1));
 				});
 		});
 

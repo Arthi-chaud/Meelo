@@ -39,5 +39,7 @@ type ReleaseWithTracks = Release & {
 	tracks: Track[];
 }
 
+type ReleaseInclude = 'album' | 'tracks';
+
 export default Release;
-export type { ReleaseWithAlbum, ReleaseWithTracks };
+export type { ReleaseWithAlbum, ReleaseWithTracks, ReleaseInclude };

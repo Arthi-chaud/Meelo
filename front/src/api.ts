@@ -1,218 +1,199 @@
 import Album, { AlbumInclude, AlbumWithArtist } from "./models/album";
 import Artist, { ArtistInclude } from "./models/artist";
+import Genre from "./models/genre";
 import Library from "./models/library";
 import { PaginatedResponse, PaginationParameters } from "./models/pagination";
+import Release, { ReleaseInclude } from "./models/release";
 import Song, { SongInclude, SongWithArtist } from "./models/song";
 import Track, { TrackInclude, TrackWithRelease } from "./models/track";
+import Tracklist from "./models/tracklist";
 
 type QueryParameters = {
 	pagination?: PaginationParameters;
-	include: string[];
+	include?: string[];
 }
-
-const delay = (seconds: number) => new Promise(resolve => setTimeout(resolve, seconds * 1000));
 
 export default class API {
 
 	static defaultPageSize = 30;
 
+	/**
+	 * Fetch all libraries
+	 * @param pagination the parameters to choose how many items to load
+	 * @returns An array of libaries
+	 */
 	static async getAllLibraries(
 		pagination?: PaginationParameters
 	): Promise<PaginatedResponse<Library>> {
-		return delay(2).then(() => ({
-			items: [1, 2, 3].map((libraryIndex) => <Library>{
-				title: `Library ${libraryIndex}`,
-				id: libraryIndex,
-				slug: `library-${libraryIndex}`,
-			}),
-			metadata: {
-				this: '',
-				next: null,
-				previous: null,
-				page: 0
-			}
-		}));
+		return API.fetch(`/libraries`, { pagination: pagination, include: [] });
 	}
+	/**
+	 * Fetch all album artists
+	 * @param pagination the parameters to choose how many items to load
+	 * @returns An array of artists
+	 */
 	static async getAllArtists(
 		pagination?: PaginationParameters, 
-		include: ArtistInclude[] = []
 	): Promise<PaginatedResponse<Artist>> {
-		return fetch(this.buildURL('/artists', { pagination, include }))
-			.then((response) => response.json());
+		return API.fetch(`/artists`, { pagination, include: [] }, {'albumArtistOnly': true});
 	}
 
-	static async getAllAlbums(
+	/**
+	 * Fetch all albums
+	 * @param pagination the parameters to choose how many items to load
+	 * @returns An array of albums
+	 */
+	static async getAllAlbums<T extends Album = Album>(
 		pagination?: PaginationParameters,
 		include: AlbumInclude[] = []
-	): Promise<PaginatedResponse<Album>> {
-		return fetch(this.buildURL('/albums', { pagination, include }))
-			.then((response) => response.json());
+	): Promise<PaginatedResponse<T>> {
+		return API.fetch(`/albums`, { pagination, include });
 	}
 
-	static async getAllArtistsInLibrary(
+	/**
+	 * Fetch all album artists in a library
+	 * @param librarySlugOrId the identifier of the library
+	 * @param pagination the parameters to choose how many items to load
+	 * @returns An array of artists
+	 */
+	static async getAllArtistsInLibrary<T extends Artist = Artist>(
 		librarySlugOrId: string | number,
 		pagination?: PaginationParameters,
 		include: ArtistInclude[] = [],
-	): Promise<PaginatedResponse<Artist>> {
-		return delay(2).then(() => ({
-			items: Array.from({length: 100}, (_, i) => i + 1)
-				.splice((pagination?.index ?? 0) * (pagination?.pageSize ?? this.defaultPageSize), pagination?.pageSize ?? this.defaultPageSize)
-				.map((number) => <Artist>({
-					id: number,
-					slug: `artist-${number}`,
-					illustration: `/artists/${number}/illustration`,
-					name: `Artist ${number}`
-				})),
-			metadata: {
-				this: '',
-				next: (pagination?.index ?? 0) * (pagination?.pageSize ?? this.defaultPageSize)  >= 200 ? null : 'a',
-				previous: null,
-				page: pagination?.index ?? 1
-			}
-		}));
-		// return fetch(this.buildURL(`/libraries/${librarySlugOrId}/albums`, { pagination, include }))
-			// .then((response) => response.json());
+	): Promise<PaginatedResponse<T>> {
+		return API.fetch(`/libraries/${librarySlugOrId}/artists`, { pagination, include }, {'albumArtistOnly': true});
 	}
 
-	static async getAllAlbumsInLibrary(
+	/**
+	 * Fetch all album in a library
+	 * @param librarySlugOrId the identifier of the library
+	 * @param pagination the parameters to choose how many items to load
+	 * @returns An array of albums
+	 */
+	static async getAllAlbumsInLibrary<T extends Album = Album>(
 		librarySlugOrId: string | number,
 		pagination?: PaginationParameters,
 		include: AlbumInclude[] = [],
-	): Promise<PaginatedResponse<AlbumWithArtist>> {
-		return delay(2).then(() => ({
-			items: Array.from({length: 100}, (_, i) => i + 1)
-				.splice((pagination?.index ?? 0) * (pagination?.pageSize ?? this.defaultPageSize), pagination?.pageSize ?? this.defaultPageSize)
-				.map((number) => <Album>({
-					id: number,
-					slug: `album-${number}`,
-					illustration: `/albums/${number}/illustration`,
-					name: `Album ${number}`,
-					type: 'StudioRecording',
-					artistId: number,
-					artist: <Artist>{
-						id: number,
-						name: `Artist ${number}`,
-						slug: `artist-${number}`,
-						illustration: `/artist/${number}/illustration`,
-					}
-				})),
-			metadata: {
-				this: '',
-				next: (pagination?.index ?? 0) * (pagination?.pageSize ?? this.defaultPageSize) >= 200 ? null : 'a',
-				previous: null,
-				page: pagination?.index ?? 1
-			}
-		}));
-		// return fetch(this.buildURL(`/libraries/${librarySlugOrId}/albums`, { pagination, include }))
-			// .then((response) => response.json());
+	): Promise<PaginatedResponse<T>> {
+		return API.fetch(`/libraries/${librarySlugOrId}/albums`, { pagination, include });
 	}
 
-	static async getAllSongsInLibrary(
+	/**
+	 * Fetch all songs in a library
+	 * @param librarySlugOrId the identifier of the library
+	 * @param pagination the parameters to choose how many items to load
+	 * @returns An array of songs
+	 */
+	static async getAllSongsInLibrary<T extends Song = Song>(
 		librarySlugOrId: string | number,
 		pagination?: PaginationParameters,
 		include: SongInclude[] = [],
-	): Promise<PaginatedResponse<SongWithArtist>> {
-		return delay(2).then(() => ({
-			items: Array.from({length: 100}, (_, i) => i + 1)
-				.splice((pagination?.index ?? 0) * (pagination?.pageSize ?? this.defaultPageSize), pagination?.pageSize ?? this.defaultPageSize)
-				.map((number) => <SongWithArtist>({
-					id: number,
-					slug: `song-${number}`,
-					illustration: `/songs/${number}/illustration`,
-					name: `Song ${number}`,
-					playCount: 0,
-					artistId: number,
-					artist: <Artist>{
-						id: number,
-						name: `Artist ${number}`,
-						slug: `artist-${number}`,
-						illustration: `/artist/${number}/illustration`,
-					}
-				})),
-			metadata: {
-				this: '',
-				next: (pagination?.index ?? 0) * (pagination?.pageSize ?? this.defaultPageSize) >= 200 ? null : 'a',
-				previous: null,
-				page: pagination?.index ?? 1
-			}
-		}));
-		// return fetch(this.buildURL(`/libraries/${librarySlugOrId}/albums`, { pagination, include }))
-			// .then((response) => response.json());
+	): Promise<PaginatedResponse<T>> {
+		return API.fetch(`/libraries/${librarySlugOrId}/songs`, { pagination, include });
 	}
 
-	static async getAllSongs(
+	/**
+	 * Fetch all songs
+	 * @param pagination the parameters to choose how many items to load
+	 * @returns An array of songs
+	 */
+	static async getAllSongs<T extends Song = Song>(
 		pagination?: PaginationParameters,
 		include: SongInclude[] = []
-	): Promise<PaginatedResponse<Song>> {
-		return fetch(this.buildURL('/songs', { pagination, include }))
-			.then((response) => response.json());
+	): Promise<PaginatedResponse<T>> {
+		return API.fetch(`/songs`, { pagination, include });
 	}
 
-	static async getMasterTrack(
-		songId: number,
+	/**
+	 * Get the master track of a song
+	 * @param songSlugOrId the identifier of a song
+	 * @param include the fields to include in the fetched item
+	 * @returns a Track
+	 */
+	static async getMasterTrack<T extends Track = Track>(
+		songSlugOrId: string | number,
 		include: TrackInclude[] = []
-	): Promise<Track> {
-		return delay(2).then(() => ({
-			id: songId,
-			songId: songId,
-			releaseId: songId,
-			displayName: `Master Track of ${songId}`,
-			master: true,
-			discIndex: 1,
-			trackIndex: 1,
-			type: 'Audio',
-			bitrate: 320,
-			duration: 60 + songId,
-			illustration: `/tracks/${songId}/illustration`
-		}));
-		// return fetch(this.buildURL(`/songs/${songId}/master`, { include }))
-			// .then((response) => response.json()); 
+	): Promise<T> {
+		return API.fetch(`/songs/${songSlugOrId}/master`, { include }); 
 	}
 
 	/**
 	 * Get tracks of a song
-	 * @param songId the id of the parent song
+	 * @param songSlugOrId the id of the parent song
 	 * @param include the relation to inclide
-	 * @returns 
+	 * @returns an array of tracks
 	 */
-	static async getSongTracks(
-		songId: number,
+	static async getSongTracks<T extends Track = Track>(
+		songSlugOrId: string | number,
 		pagination?: PaginationParameters,
 		include: TrackInclude[] = []
-	): Promise<PaginatedResponse<Track>> {
-		return delay(2).then(() => ({
-			items: Array.from({length: 20}, (_, i) => i + 1)
-			.splice((pagination?.index ?? 0) * (pagination?.pageSize ?? this.defaultPageSize), pagination?.pageSize ?? this.defaultPageSize)
-			.map((number) => <TrackWithRelease>({
-					id: number,
-					songId: songId,
-					releaseId: number,
-					displayName: `Track of ${songId}`,
-					master: number == 0,
-					discIndex: 1,
-					trackIndex: number,
-					type: 'Audio',
-					bitrate: 320,
-					duration: 60 + songId,
-					illustration: `/tracks/${number}/illustration`,
-					release: {
-						id: number,
-						title: `Release of track ${number}`,
-						slug: `release-of-track-${number}`,
-						master: true,
-						albumId: 1
-					}
-				})),
-			metadata: {
-				this: '',
-				next: (pagination?.index ?? 0) * (pagination?.pageSize ?? this.defaultPageSize) >= 20 ? null : 'a',
-				previous: null,
-				page: pagination?.index ?? 1
-			}
-		}))
+	): Promise<PaginatedResponse<T>> {
+		return API.fetch(`/songs/${songSlugOrId}/tracks`, { pagination, include });
+	}
+
+	/**
+	 * Get genres of a song
+	 * @param songSlugOrId the id of the parent song
+	 * @param pagination
+	 * @returns an array of genres
+	 */
+	static async getSongGenres(
+		songSlugOrId: string | number,
+		pagination?: PaginationParameters
+	): Promise<PaginatedResponse<Genre>> {
+		return API.fetch(`/songs/${songSlugOrId}/genres`, { pagination, include: [] });
+	}
+
+	/**
+	 * Get genres of a album
+	 * @param albumSlugOrId the id of the album
+	 * @returns an array of genres
+	 */
+	 static async getAlbumGenres(
+		albumSlugOrId: string | number,
+	): Promise<Genre[]> {
+		return API.fetch(`/albums/${albumSlugOrId}/genres`, { include: [] });
+	}
+	/**
+	 * Get releases of a album
+	 * @param albumSlugOrId the id of the album
+	 * @returns an array of releases
+	 */
+	 static async getAlbumReleases<T extends Release = Release>(
+		albumSlugOrId: string | number,
+		pagination?: PaginationParameters,
+		include: ReleaseInclude[] = []
+	): Promise<PaginatedResponse<T>> {
+		return API.fetch(`/albums/${albumSlugOrId}/releases`, { include, pagination });
+	}
+
+	static async getRelease<T extends Release = Release>(
+		slugOrId: string | number,
+		include: ReleaseInclude[] = []
+	): Promise<T> {
+		return API.fetch(`/releases/${slugOrId}`, { include });
+	}
+
+	static async getReleaseTrackList<T extends Track = Track> (
+		slugOrId: string | number,
+		include: TrackInclude[] = []
+	): Promise<Tracklist<T>> {
+		const response = await this.fetch(`/releases/${slugOrId.toString()}/tracklist`, { include });
+		return new Map<string | '?', T[]>(Object.entries(response));
 	}
 
 
+	static async getArtist<T extends Artist = Artist>(
+		slugOrId: string | number,
+		include: ArtistInclude[] = []
+	): Promise<T> {
+		return API.fetch(`/artists/${slugOrId}`, { include });
+	}
+
+	private static async fetch(route: string, parameters: QueryParameters, otherParameters?: any) {
+		return fetch(this.buildURL(route, parameters, otherParameters))
+			.then((response) => response.json());
+	}
 
 	/**
 	 * Builds the URL to get an illustration from an object returned by the API
@@ -220,22 +201,25 @@ export default class API {
 	 * @returns the correct, rerouted URL
 	 */
 	static getIllustrationURL(imageURL: string): string {
-		return `https://upload.wikimedia.org/wikipedia/commons/thumb/a/a7/React-icon.svg/2300px-React-icon.svg.png`;
-		return `/api${imageURL}`;
+		return `http://localhost:5000/api${imageURL}`;
 	}
 
-	private static buildURL(route: string, parameters: QueryParameters): string {
-		return `${route}${this.formatQueryParameters(parameters)}`;
+	private static buildURL(route: string, parameters: QueryParameters, otherParameters?: any): string {
+		return `http://localhost:5000/api${route}${this.formatQueryParameters(parameters, otherParameters)}`;
 	}
 
-	private static formatQueryParameters(parameters: QueryParameters): string {
-		if (parameters.include.length == 0 && parameters.pagination == null)
-			return '';
-		let formatted = '?';
-		formatted.concat(this.formatInclude(parameters.include) ?? '');
+	private static formatQueryParameters(parameters: QueryParameters, otherParameters?: any): string {
+		let formattedQueryParams: string[] = [];
+		
+		if ((parameters.include?.length ?? 0)!== 0)
+			formattedQueryParams.push(this.formatInclude(parameters.include!)!);
 		if (parameters.pagination)
-			formatted.concat(this.formatPagination(parameters.pagination) ?? '');
-		return formatted;
+			formattedQueryParams.push(this.formatPagination(parameters.pagination));
+		for (let otherParams in otherParameters)
+			formattedQueryParams.push(`${encodeURIComponent(otherParams)}=${encodeURIComponent(otherParameters[otherParams])}`);
+		if (formattedQueryParams.length === 0)
+			return '';
+		return `?${formattedQueryParams.join('&')}`;
 	}
 
 	private static formatInclude(include: string[]): string | null {
@@ -249,8 +233,8 @@ export default class API {
 		const pageSize = pagination.pageSize ?? this.defaultPageSize;
 		const pageIndex = pagination.index ?? 0;
 		if (pageIndex !== 0)
-			formattedParameters.concat(`skip=${pageSize * pageIndex}`);
-		formattedParameters.concat(`take=${pageSize}`);
+			formattedParameters.push(`skip=${pageSize * pageIndex}`);
+		formattedParameters.push(`take=${pageSize}`);
 		return formattedParameters.join('&');
 	}
 }

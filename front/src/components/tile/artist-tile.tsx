@@ -10,7 +10,7 @@ const ArtistTile = (props: { artist: Artist }) => {
 		title={props.artist.name}
 		subtitle={props.artist.name}
 		targetURL={`/artists/${props.artist.slug}`}
-		illustrationURL={API.getIllustrationURL(props.artist.illustration)}
+		illustrationURL={props.artist.illustration}
 		illustrationFallback={() => 
 			<IconButton disableFocusRipple disableRipple sx={{ '& svg': {fontSize: 100} }}>
 				<AccountCircle />
