@@ -1,6 +1,6 @@
 import React from 'react';
 import MeeloAppBar from "../../src/components/appbar/appbar";
-import { NextPage } from "next";
+import { GetServerSidePropsContext, NextPage } from "next";
 import { Box, List } from '@mui/material';
 import InfiniteList, { Page } from '../../src/components/infinite/infinite-list';
 import { useRouter } from 'next/router';
@@ -10,11 +10,10 @@ import SongItem from '../../src/components/song-item';
 import LoadingPage from '../../src/components/loading/loading-page';
 import { WideLoadingComponent } from '../../src/components/loading/loading';
 import FadeIn from 'react-fade-in';
-
+import getLibrarySlug from '../../src/utils/getLibrarySlug';
 const LibrarySongsPage: NextPage = () => {
 	const router = useRouter();
-	const { slug } = router.query;
-	const librarySlug = slug as string | undefined;
+	const librarySlug = getLibrarySlug(router.asPath);
 	return <Box>
 		<InfiniteList
 			firstLoader={() => <LoadingPage/>}
@@ -22,7 +21,7 @@ const LibrarySongsPage: NextPage = () => {
 			fetch={(lastPage, pageSize) => {
 				if (librarySlug) {
 					return API.getAllSongsInLibrary<SongWithArtist>(
-						slug as string,
+						librarySlug,
 						{ index: lastPage?.index, pageSize: pageSize }, 
 						['artist']
 					)
@@ -33,7 +32,7 @@ const LibrarySongsPage: NextPage = () => {
 					)
 				}
 			}}
-			queryKey={librarySlug ? ['libraries', slug as string, 'songs'] :  ['songs']}
+			queryKey={librarySlug ? ['libraries', librarySlug, 'songs'] :  ['songs']}
 			render={(items: SongWithArtist[]) =>
 				<FadeIn>
 					<List sx={{ padding: 3 }}>

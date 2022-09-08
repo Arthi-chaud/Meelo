@@ -9,11 +9,11 @@ import { WideLoadingComponent } from '../../src/components/loading/loading';
 import LoadingPage from '../../src/components/loading/loading-page';
 import ArtistTile from '../../src/components/tile/artist-tile';
 import Artist from '../../src/models/artist';
+import getLibrarySlug from '../../src/utils/getLibrarySlug';
 
 const LibraryArtistsPage: NextPage = () => {
 	const router = useRouter();
-	const { slug } = router.query;
-	const librarySlug = slug as string | undefined;
+	const librarySlug = getLibrarySlug(router.asPath);
 	return <>
 		<InfiniteGrid
 			firstLoader={() => <LoadingPage/>}
@@ -21,7 +21,7 @@ const LibraryArtistsPage: NextPage = () => {
 			fetch={(lastPage, pageSize) => {
 				if (librarySlug) {
 					return API.getAllArtistsInLibrary(
-						slug as string,
+						librarySlug,
 						{ index: lastPage?.index, pageSize: pageSize }
 					)
 				} else {
@@ -30,7 +30,7 @@ const LibraryArtistsPage: NextPage = () => {
 					)
 				}
 			}}
-			queryKey={librarySlug ? ['libraries', slug as string, 'artists'] : ['artists']}
+			queryKey={librarySlug ? ['libraries', librarySlug, 'artists'] : ['artists']}
 			render={(item: Artist) => <ArtistTile artist={item} />}
 		/>
 	</>;

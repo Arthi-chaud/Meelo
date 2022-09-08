@@ -11,11 +11,11 @@ import Album from '../../src/models/album';
 import AlbumTile from '../../src/components/tile/album-tile';
 import LoadingPage from '../../src/components/loading/loading-page';
 import LoadingComponent, { WideLoadingComponent } from '../../src/components/loading/loading';
+import getLibrarySlug from '../../src/utils/getLibrarySlug';
 
 const LibraryAlbumsPage: NextPage = () => {
 	const router = useRouter();
-	const { slug } = router.query;
-	const librarySlug = slug as string | undefined;
+	const librarySlug = getLibrarySlug(router.asPath);
 	return <>
 		<InfiniteGrid
 			firstLoader={() => <LoadingPage/>}
@@ -23,7 +23,7 @@ const LibraryAlbumsPage: NextPage = () => {
 			fetch={(lastPage, pageSize) => {
 				if (librarySlug) {
 					return API.getAllAlbumsInLibrary(
-						slug as string,
+						librarySlug,
 						{ index: lastPage?.index, pageSize: pageSize },
 						['artist']
 					)
