@@ -67,7 +67,7 @@ namespace ReleaseQueryParameters {
 	 */
 	export function buildQueryParametersForMany(where: ManyWhereInput): Prisma.ReleaseWhereInput {
 		return {
-			title: buildStringSearchParameters(where.name),
+			name: buildStringSearchParameters(where.name),
 			album: where.album ? {
 				id: where.album.byId?.id,
 				slug: where.album.bySlug?.slug.toString(),

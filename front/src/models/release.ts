@@ -8,9 +8,9 @@ import Track from "./track";
  */
 type Release = Resource & Illustration & {
 	/**
-	 * The display name of the release
+	 * The title of the release
 	 */
-	title: string;
+	name: string;
 	/**
 	 * The unique ID of the release
 	 */

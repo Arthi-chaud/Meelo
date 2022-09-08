@@ -97,8 +97,8 @@ export class TrackController {
 		@Response({ passthrough: true })
 		res: Response
 	) {
-		const track = await this.trackService.select({ id: trackId }, { displayName: true, releaseId: true });
-		const outputName = new Slug(track.displayName!).toString();
+		const track = await this.trackService.select({ id: trackId }, { name: true, releaseId: true });
+		const outputName = new Slug(track.name!).toString();
 		const trackPath = await this.trackService.buildIllustrationPath({ id: trackId });
 		if (this.illustrationService.illustrationExists(trackPath))
 			return this.illustrationService.streamIllustration(

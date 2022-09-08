@@ -97,8 +97,8 @@ model Library {
 /// A release is 'an instance' of an Album
 model Release {
 	id				Int		@id @default(autoincrement())
-	/// The name of the release
-	title			String
+	/// The title of the release
+	name			String
 	/// The sluf of the release
 	slug			String
 	/// The date of the release
@@ -177,7 +177,7 @@ model Track {
 	release 		Release	@relation(fields: [releaseId], references: [id])
 	releaseId		Int
 	/// The display name of the track
-	displayName		String
+	name		String
 	/// Is this track the 'main' one
 	master			Boolean	@default(false)
 	/// The index of the disc the track is on

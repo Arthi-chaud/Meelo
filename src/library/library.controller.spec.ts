@@ -346,7 +346,7 @@ describe('Library Controller', () => {
 		});
 		it("should return every releases, sorted by name", () => {
 			return request(app.getHttpServer())
-				.get(`/libraries/${dummyRepository.library1.id}/releases?sortBy=title&order=desc&with=album,tracks`)
+				.get(`/libraries/${dummyRepository.library1.id}/releases?sortBy=name&order=desc&with=album,tracks`)
 				.expect(200)
 				.expect((res) => {
 					const releases: Release[] = res.body.items;

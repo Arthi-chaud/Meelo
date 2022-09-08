@@ -48,11 +48,11 @@ export default class ReleaseService extends RepositoryService<
 		release: ReleaseQueryParameters.CreateInput,
 		include?: ReleaseQueryParameters.RelationInclude
 	) {
-		const releaseSlug = new Slug(release.title);
+		const releaseSlug = new Slug(release.name);
 		try {
 			let createdRelease = await this.prismaService.release.create({
 				data: {
-					title: release.title,
+					name: release.name,
 					releaseDate: release.releaseDate,
 					master: release.master,
 					album: {
@@ -198,7 +198,7 @@ export default class ReleaseService extends RepositoryService<
 				album: what.album ? {
 					connect: AlbumQueryParameters.buildQueryParametersForOne(what.album),
 				} : undefined,
-				slug: what.title ? new Slug(what.title).toString() : undefined,
+				slug: what.name ? new Slug(what.name).toString() : undefined,
 			},
 			where: ReleaseQueryParameters.buildQueryParametersForOne(where),
 		});
@@ -265,7 +265,7 @@ export default class ReleaseService extends RepositoryService<
 	) {
 		try {
 			return await this.get(
-				{ bySlug: { slug: new Slug(where.title), album: where.album}},
+				{ bySlug: { slug: new Slug(where.name), album: where.album}},
 				include
 			);
 		} catch {

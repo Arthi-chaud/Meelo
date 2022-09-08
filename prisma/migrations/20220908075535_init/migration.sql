@@ -61,7 +61,7 @@ CREATE TABLE "Library" (
 -- CreateTable
 CREATE TABLE "Release" (
     "id" SERIAL NOT NULL,
-    "title" TEXT NOT NULL,
+    "name" TEXT NOT NULL,
     "slug" TEXT NOT NULL,
     "releaseDate" TIMESTAMP(3),
     "master" BOOLEAN NOT NULL DEFAULT false,
@@ -95,7 +95,7 @@ CREATE TABLE "Track" (
     "id" SERIAL NOT NULL,
     "songId" INTEGER NOT NULL,
     "releaseId" INTEGER NOT NULL,
-    "displayName" TEXT NOT NULL,
+    "name" TEXT NOT NULL,
     "master" BOOLEAN NOT NULL DEFAULT false,
     "discIndex" INTEGER,
     "trackIndex" INTEGER,

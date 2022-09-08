@@ -80,10 +80,10 @@ export default class TestPrismaService extends PrismaService {
 			data: { name: "My Album", slug: 'my-album', artistId: this.artistA.id, releaseDate: new Date('2022') }
 		});
 		this.releaseA1_1 = await this.release.create({
-			data: { title: "My Album 1", slug: 'my-album-1', albumId: this.albumA1.id, master: true }
+			data: { name: "My Album 1", slug: 'my-album-1', albumId: this.albumA1.id, master: true }
 		});
 		this.releaseA1_2 = await this.release.create({
-			data: { title: "My Album 2", slug: 'my-album-2', albumId: this.albumA1.id, master: false }
+			data: { name: "My Album 2", slug: 'my-album-2', albumId: this.albumA1.id, master: false }
 		});
 		this.songA1 = await this.song.create({
 			data: { name: "My Song", slug: 'my-song', artistId: this.artistA.id, genres:
@@ -99,7 +99,7 @@ export default class TestPrismaService extends PrismaService {
 			data: { path: 'a', md5Checksum: '', registerDate: new Date(), libraryId: this.library1.id }
 		});
 		this.trackA1_1 = await this.track.create({
-			data: { displayName: "My Song 1", ...this.baseTrack, songId: this.songA1.id,
+			data: { name: "My Song 1", ...this.baseTrack, songId: this.songA1.id,
 				releaseId: this.releaseA1_1.id, master: true, type: TrackType.Audio, sourceFileId: this.fileA1_1.id,
 				trackIndex: 2, discIndex: 1
 			}
@@ -108,7 +108,7 @@ export default class TestPrismaService extends PrismaService {
 			data: { path: 'b', md5Checksum: '', registerDate: new Date(), libraryId: this.library1.id }
 		});
 		this.trackA1_2Video = await this.track.create({
-			data: { ...this.baseTrack, displayName: "My Song 2 (Video)", songId: this.songA1.id, discIndex: 2,
+			data: { ...this.baseTrack, name: "My Song 2 (Video)", songId: this.songA1.id, discIndex: 2,
 			releaseId: this.releaseA1_2.id, master: false, type: TrackType.Video, sourceFileId: this.fileA1_2Video.id
 		}
 		});
@@ -121,7 +121,7 @@ export default class TestPrismaService extends PrismaService {
 			data: { path: 'c', md5Checksum: '', registerDate: new Date(), libraryId: this.library1.id }
 		});
 		this.trackA2_1 = await this.track.create({
-			data: { ...this.baseTrack, displayName: "My Other Song 1", songId: this.songA2.id, discIndex: 1,
+			data: { ...this.baseTrack, name: "My Other Song 1", songId: this.songA2.id, discIndex: 1,
 				releaseId: this.releaseA1_2.id, master: true, type: TrackType.Audio, sourceFileId: this.fileA2_1.id
 			}
 		});
@@ -133,7 +133,7 @@ export default class TestPrismaService extends PrismaService {
 			data: { name: "My Second Album", slug: 'my-second-album', artistId: this.artistB.id }
 		});
 		this.releaseB1_1 = await this.release.create({
-			data: { title: "My Second Album 1", slug: 'my-second-album-1', albumId: this.albumB1.id, master: true }
+			data: { name: "My Second Album 1", slug: 'my-second-album-1', albumId: this.albumB1.id, master: true }
 		});
 		this.songB1 = await this.song.create({
 			data: { name: "My Second Song", slug: 'my-second-song', artistId: this.artistB.id, genres:
@@ -144,7 +144,7 @@ export default class TestPrismaService extends PrismaService {
 			data: { path: 'a', md5Checksum: '', registerDate: new Date(), libraryId: this.library2.id }
 		});
 		this.trackB1_1 = await this.track.create({
-			data: { ...this.baseTrack, displayName: "My Second Song 1", songId: this.songB1.id,
+			data: { ...this.baseTrack, name: "My Second Song 1", songId: this.songB1.id,
 				releaseId: this.releaseB1_1.id, master: true, type: TrackType.Audio, sourceFileId: this.fileB1_1.id
 			}
 		});
@@ -156,7 +156,7 @@ export default class TestPrismaService extends PrismaService {
 			data: { name: "My Compilation Album", slug: 'my-compilation-album', releaseDate: new Date('2000') }
 		});
 		this.compilationReleaseA1 = await this.release.create({
-			data: { title: "My Compilation Album 1", slug: 'my-compilation-album-1', albumId: this.compilationAlbumA.id, master: true }
+			data: { name: "My Compilation Album 1", slug: 'my-compilation-album-1', albumId: this.compilationAlbumA.id, master: true }
 		});
 		this.songC1 = await this.song.create({
 			data: { name: "My C Song", slug: 'my-c-song', artistId: this.artistC.id, genres:
@@ -167,7 +167,7 @@ export default class TestPrismaService extends PrismaService {
 			data: { path: 'e', md5Checksum: '', registerDate: new Date(), libraryId: this.library1.id }
 		});
 		this.trackC1_1 = await this.track.create({
-			data: { ...this.baseTrack, displayName: "My C Song 1", songId: this.songC1.id,
+			data: { ...this.baseTrack, name: "My C Song 1", songId: this.songC1.id,
 				releaseId: this.compilationReleaseA1.id, master: true, type: TrackType.Audio, sourceFileId: this.fileC1_1.id
 			}
 		});

@@ -62,13 +62,13 @@ export default class MetadataService {
 			artist: albumArtist ? { id: albumArtist?.id} : undefined
 		}, { releases: true });
 		let release = await this.releaseService.getOrCreate({
-			title: metadata.release ?? metadata.album!,
+			name: metadata.release ?? metadata.album!,
 			master: album.releases.length == 0,
 			releaseDate: metadata.releaseDate,
 			album: { byId: { id: album.id } }
 		}, { album: true });
 		let track: TrackQueryParameters.CreateInput = {
-			displayName: metadata.name!,
+			name: metadata.name!,
 			master: song.tracks.length == 0,
 			discIndex: metadata.discIndex ?? null,
 			trackIndex: metadata.index ?? null,
@@ -226,7 +226,7 @@ export default class MetadataService {
 			artist: artist.name,
 			albumArtist: album.artist?.name,
 			album: album.name,
-			release: release.title,
+			release: release.name,
 			name: song.name,
 			releaseDate: release.releaseDate ?? undefined,
 			index: track.trackIndex ?? undefined,

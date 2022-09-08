@@ -85,7 +85,7 @@ describe('Track Service', () => {
 	const trackData = {
 		type: TrackType.Audio,
 		master: false,
-		displayName: '',
+		name: '',
 		discIndex: 1,
 		trackIndex: 2,
 		bitrate: 320,
@@ -97,7 +97,7 @@ describe('Track Service', () => {
 		it("should create a track", async () => {
 			newTrack = await trackService.create({
 				...trackData,
-				displayName: 'My Song 3',
+				name: 'My Song 3',
 				song: { byId: { id: dummyRepository.songA1.id } },
 				release: { byId: { id: dummyRepository.releaseA1_2.id } },
 				sourceFile: { id: file.id },
@@ -106,7 +106,7 @@ describe('Track Service', () => {
 			expect(newTrack.id).toBeDefined();
 			expect(newTrack.type).toBe(TrackType.Audio);
 			expect(newTrack.master).toBe(false);
-			expect(newTrack.displayName).toBe("My Song 3");
+			expect(newTrack.name).toBe("My Song 3");
 			expect(newTrack.discIndex).toBe(1);
 			expect(newTrack.trackIndex).toBe(2);
 			expect(newTrack.bitrate).toBe(320);
@@ -121,7 +121,7 @@ describe('Track Service', () => {
 			newTrack2 = await trackService.create({
 				...trackData,
 				type: TrackType.Video,
-				displayName: 'My Song 4',
+				name: 'My Song 4',
 				song: { byId: { id: dummyRepository.songA1.id } },
 				release: { byId: { id: dummyRepository.releaseA1_2.id } },
 				sourceFile: { id: file2.id },
@@ -130,7 +130,7 @@ describe('Track Service', () => {
 			expect(newTrack2.id).toBeDefined();
 			expect(newTrack2.type).toBe(TrackType.Video);
 			expect(newTrack2.master).toBe(false);
-			expect(newTrack2.displayName).toBe("My Song 4");
+			expect(newTrack2.name).toBe("My Song 4");
 			expect(newTrack2.discIndex).toBe(1);
 			expect(newTrack2.trackIndex).toBe(2);
 			expect(newTrack2.bitrate).toBe(320);
@@ -261,7 +261,7 @@ describe('Track Service', () => {
 			expect(tracks).toContainEqual(dummyRepository.trackA1_2Video);
 		});
 		it('should retrieve all tracks, sorted by name', async () => {
-			let tracks = await trackService.getMany({}, {}, {}, { sortBy: 'displayName', order: 'asc' });
+			let tracks = await trackService.getMany({}, {}, {}, { sortBy: 'name', order: 'asc' });
 
 			expect(tracks.length).toBe(7);
 			expect(tracks[0]).toStrictEqual(dummyRepository.trackC1_1);
@@ -294,7 +294,7 @@ describe('Track Service', () => {
 		it('should retrieve the tracks by song (w/ pagination)', async () => {
 			let tracks = await trackService.getMany(
 				{ bySong: { byId: { id: dummyRepository.songA1.id } } },
-				{ take: 1, skip: 1 }, {}, { sortBy: 'displayName', order: 'asc' }
+				{ take: 1, skip: 1 }, {}, { sortBy: 'name', order: 'asc' }
 			);
 
 			expect(tracks.length).toBe(1);
@@ -304,7 +304,7 @@ describe('Track Service', () => {
 		it('should retrieve the tracks by song (w/ pagination, volume 2)', async () => {
 			let tracks = await trackService.getMany(
 				{ bySong: { byId: { id: dummyRepository.songA1.id } } },
-				{ take: 2, skip: 2 }, {}, { sortBy: 'displayName', order: 'asc' }
+				{ take: 2, skip: 2 }, {}, { sortBy: 'name', order: 'asc' }
 			);
 			expect(tracks.length).toBe(2);
 			expect(tracks[0]).toStrictEqual(newTrack);
@@ -365,14 +365,14 @@ describe('Track Service', () => {
 	});
 
 	describe("Update Track", () => {
-		it("should update the track's title", async () => {
+		it("should update the track's name", async () => {
 			const newTitle = "My Song 3 (2008 Version)";
 			let updatedTrack = await trackService.update(
-				{ displayName: newTitle },
+				{ name: newTitle },
 				{ id: newTrack.id }
 			);
 
-			expect(updatedTrack).toStrictEqual({...newTrack, displayName: newTitle });
+			expect(updatedTrack).toStrictEqual({...newTrack, name: newTitle });
 			newTrack = updatedTrack;
 		});
 

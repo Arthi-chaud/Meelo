@@ -18,7 +18,7 @@ type Track = Resource & Illustration & {
 	/**
 	 * Title of the track
 	 */
-	displayName: string;
+	name: string;
 	/**
 	 * True if this is the 'main' version of the song
 	 */

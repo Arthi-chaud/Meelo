@@ -60,12 +60,12 @@ const SongItem = (props: SongItemProps) => {
 						<FadeIn>
 							<Grid container padding={2}>
 								<Grid item xs={6}>
-									<Typography>{track.displayName}</Typography>
+									<Typography>{track.name}</Typography>
 								</Grid>
 								<Grid item xs={6}>
 									<Link href={`/releases/${track.release.id}`}>
 										<Button variant="text" color='inherit' sx={{ textTransform: 'none' }}>
-											<Typography>{track.release.title}</Typography>
+											<Typography>{track.release.name}</Typography>
 										</Button>
 									</Link>
 								</Grid>

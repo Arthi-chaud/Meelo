@@ -55,20 +55,20 @@ const MeeloAppBarDrawer = ({ query, requestedLibrarySlug, isOpen, onClose }: Dra
 									{open ? <ExpandLess /> : <ExpandMore />}
 								</ListItemButton>
 							</ListItem>
-								<Collapse in={open} unmountOnExit>
-									<List sx={{ pl: 4 }}>
-										{itemType.map((item, index) => (
-											<Link href={buildLink(item, library.slug)}>
-												<ListItemButton key={item} onClick={onClose}>
-													<ListItemIcon>
-														{ getTypeIcon(item) }
-													</ListItemIcon>
-													<ListItemText primary={formattedItemTypes.at(index)} />
-												</ListItemButton>
-											</Link>
-										))}
-									</List>
-								</Collapse>
+							<Collapse in={open} unmountOnExit key={library.slug}>
+								<List sx={{ pl: 4 }}>
+									{itemType.map((item, index) => (
+										<Link href={buildLink(item, library.slug)}>
+											<ListItemButton key={item} onClick={onClose}>
+												<ListItemIcon>
+													{ getTypeIcon(item) }
+												</ListItemIcon>
+												<ListItemText primary={formattedItemTypes.at(index)} />
+											</ListItemButton>
+										</Link>
+									))}
+								</List>
+							</Collapse>
 							</>)
 						})
 					} </FadeIn>

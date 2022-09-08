@@ -66,7 +66,7 @@ describe('Track Controller', () => {
 		});
 		it("should return all the tracks, sorted by name", () => {
 			return request(app.getHttpServer())
-				.get(`/tracks?sortBy=displayName`)
+				.get(`/tracks?sortBy=name`)
 				.expect(200)
 				.expect((res) => {
 					let tracks: Track[] = res.body.items;
@@ -80,7 +80,7 @@ describe('Track Controller', () => {
 		});
 		it("should return some tracks (w/ pagination)", () => {
 			return request(app.getHttpServer())
-				.get(`/tracks?skip=1&take=2&sortBy=displayName`)
+				.get(`/tracks?skip=1&take=2&sortBy=name`)
 				.expect(200)
 				.expect((res) => {
 					let tracks: Track[] = res.body.items;
@@ -91,7 +91,7 @@ describe('Track Controller', () => {
 		});
 		it("should return tracks w/ related song", () => {
 			return request(app.getHttpServer())
-				.get(`/tracks?take=1&skip=1&with=song&sortBy=displayName`)
+				.get(`/tracks?take=1&skip=1&with=song&sortBy=name`)
 				.expect(200)
 				.expect((res) => {
 					let tracks: Track[] = res.body.items;
