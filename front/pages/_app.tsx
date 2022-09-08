@@ -1,6 +1,6 @@
 import React from "react";
 import type { AppProps } from "next/app";
-import { QueryClient, QueryClientProvider } from "react-query";
+import { QueryClient, QueryClientProvider, Hydrate } from "react-query";
 import { ReactQueryDevtools } from "react-query/devtools";
 import "../styles/global.css";
 import { Box } from "@mui/material";
@@ -10,10 +10,12 @@ function MyApp({ Component, pageProps }: AppProps) {
 	const [queryClient] = React.useState(() => new QueryClient());
 	return (
 		<QueryClientProvider client={queryClient}>
-			<Box>
-				<MeeloAppBar/>
-				<Component {...pageProps} />
-			</Box>
+			<Hydrate state={pageProps.dehydratedState}>
+				<Box>
+					<MeeloAppBar/>
+					<Component {...pageProps} />
+				</Box>
+			</Hydrate>
 			<ReactQueryDevtools initialIsOpen={false} />
 		</QueryClientProvider>
 	);
