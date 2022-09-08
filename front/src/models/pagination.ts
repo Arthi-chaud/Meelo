@@ -14,7 +14,7 @@ type PaginationParameters = Partial<{
 	pageSize: number;
 }>
 
-type PaginatedResponse<T extends Resource> = {
+type PaginatedResponse<T> = {
 	items: T[];
 	metadata: {
 		/**

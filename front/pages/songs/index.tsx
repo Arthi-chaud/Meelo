@@ -18,16 +18,16 @@ const LibrarySongsPage: NextPage = () => {
 		<InfiniteList
 			firstLoader={() => <LoadingPage/>}
 			loader={() => <WideLoadingComponent/>}
-			fetch={(lastPage, pageSize) => {
+			fetch={(lastPage) => {
 				if (librarySlug) {
 					return API.getAllSongsInLibrary<SongWithArtist>(
 						librarySlug,
-						{ index: lastPage?.index, pageSize: pageSize }, 
+						{ index: lastPage.index, pageSize: lastPage.pageSize },
 						['artist']
 					)
 				} else {
 					return API.getAllSongs<SongWithArtist>(
-						{ index: lastPage?.index, pageSize: pageSize },
+						{ index: lastPage.index, pageSize: lastPage.pageSize },
 						['artist']
 					)
 				}

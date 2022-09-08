@@ -7,6 +7,8 @@ import Resource from "../../models/resource";
 import { PaginatedResponse } from "../../models/pagination";
 import API from "../../api";
 
+export type InfiniteFetchFn<T> = (lastPage: Page<T>) => Promise<PaginatedResponse<T>>;
+
 type InfiniteListProps<T extends Resource> = {
 	/**
 	 * The method to render all the fetched items
@@ -15,11 +17,11 @@ type InfiniteListProps<T extends Resource> = {
 	/**
 	 * Base fetching method, that return a Page of items
 	 */
-	fetch: (lastPage: Page<T> | undefined, pageSize: number) => Promise<PaginatedResponse<T>>
+	fetch: InfiniteFetchFn<T>
 	/**
 	 * Query key of react-query
 	 */
-	queryKey: string[]
+	queryKey: (string | number)[]
 	/**
 	 * The number to load at each query
 	 */
@@ -50,7 +52,11 @@ export type Page<T> = {
 	/**
 	 * True if the fetching should stop there
 	 */
-	end: boolean
+	end: boolean,
+	/**
+	 * Size of the page
+	 */
+	pageSize: number
 }
 
 /**
@@ -68,11 +74,11 @@ const InfiniteList = <T extends Resource,>(props: InfiniteListProps<T>) => {
 		hasNextPage,
         fetchNextPage,
         isFetchingNextPage
-    } = useInfiniteQuery(props.queryKey, (context) => props.fetch(context.pageParam, pageSize)
+    } = useInfiniteQuery(props.queryKey, (context) => props.fetch(context.pageParam ?? { pageSize: pageSize, index: 0 })
 		.then((result) => ({
 			pageSize: pageSize,
 			items: result.items,
-			index: (context.pageParam?.index ?? 0) + 1,
+			index: result.metadata.page,
 			end: result.metadata.next === null
 		})), {
         getNextPageParam: (lastPage: Page<T>): Page<T> | undefined  => {
@@ -92,7 +98,7 @@ const InfiniteList = <T extends Resource,>(props: InfiniteListProps<T>) => {
 			}}
 		    hasMore={() => hasNextPage}
 		>
-		{ isSuccess && props.render(data.pages.map((page) => page.items).flat()) }
+		{ data && props.render(data.pages.map((page) => page.items).flat()) }
 		{ isFetchingNextPage && props.loader() }
 		</InfiniteScroll>
 	</>

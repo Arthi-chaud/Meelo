@@ -1,7 +1,3 @@
-import { useQuery, useQueries } from "react-query";
-import API from "./api";
-import { ReleaseWithAlbum } from "./models/release";
-
 type Key = string | number
 
 type MeeloQueryFn<T = unknown> = <Arg extends Key,>(...args: Arg[]) => ({
@@ -15,12 +11,12 @@ type MeeloQueryFn<T = unknown> = <Arg extends Key,>(...args: Arg[]) => ({
  * @param queryArgs the arguments to pass the the query function. If one of them is undefined, the query will not be enabled
  * @returns 
  */
-const prepareMeeloQuery = <T>(query: MeeloQueryFn<T>, ...queryArgs: (Key | undefined)[]) => {
+const prepareMeeloQuery = <T,>(query: MeeloQueryFn<T>, ...queryArgs: Parameters<typeof query>) => {
 	const queryParams = query(...queryArgs as Key[]);
 	return {
 		queryKey: queryParams.key,
 		queryFn: queryParams.exec,
-		enabled: queryArgs.find((elem) => elem === undefined) === undefined
+		enabled: !queryArgs.find((elem) => elem === undefined)
 	};
 }
 export default prepareMeeloQuery;

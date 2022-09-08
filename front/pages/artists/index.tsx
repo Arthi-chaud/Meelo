@@ -18,15 +18,15 @@ const LibraryArtistsPage: NextPage = () => {
 		<InfiniteGrid
 			firstLoader={() => <LoadingPage/>}
 			loader={() => <WideLoadingComponent/>}
-			fetch={(lastPage, pageSize) => {
+			fetch={(lastPage) => {
 				if (librarySlug) {
 					return API.getAllArtistsInLibrary(
 						librarySlug,
-						{ index: lastPage?.index, pageSize: pageSize }
+						{ index: lastPage.index, pageSize: lastPage.pageSize }
 					)
 				} else {
 					return API.getAllArtists(
-						{ index: lastPage?.index, pageSize: pageSize }
+						{ index: lastPage.index, pageSize: lastPage.pageSize }
 					)
 				}
 			}}
