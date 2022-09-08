@@ -82,7 +82,7 @@ const ReleasePage: NextPage = () => {
 						alignItems: 'left', [theme.breakpoints.down('md')]: { alignItems: 'center' },
 					}}>
 						<Grid item>
-							<Typography variant='h2'>{releaseQuery.data!.title}</Typography>
+							<Typography variant='h2'>{releaseQuery.data!.name}</Typography>
 						</Grid>
 						{albumArtistQuery.data &&
 							<Grid item>
@@ -131,7 +131,7 @@ const ReleasePage: NextPage = () => {
 										<ListItemButton key={track.id}>
 											<ListItemIcon><Typography>{ track.trackIndex }</Typography></ListItemIcon>
 											<ListItemText
-												primary={track.displayName}
+												primary={track.name}
 												secondary={
 													track.song.artistId == albumArtistQuery.data?.id ? undefined : 
 													otherArtistsQuery.find((artistQuery) => artistQuery.data?.id == track.song.artistId)?.data?.name 
@@ -159,7 +159,7 @@ const ReleasePage: NextPage = () => {
 						<ListItem>
 							<Tile
 								targetURL={`/releases/${albumArtistQuery?.data?.slug ?? 'compilations'}+${releaseQuery.data!.album.slug}+${otherRelease.slug}/`}
-								title={otherRelease.title}
+								title={otherRelease.name}
 								subtitle={`${otherRelease.tracks.length} Tracks`}
 								illustrationURL={otherRelease.illustration}
 								illustrationFallback={() => <Illustration url={releaseQuery.data!.illustration}/>}

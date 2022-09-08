@@ -81,7 +81,7 @@ export default class SearchService {
 
 	
 	/**
-	 * Search for releases by their title
+	 * Search for releases by their name
 	 * @param query the string to search by
 	 * @param paginationParameters the pagination of the request
 	 * @param include the relation to include with the returned row

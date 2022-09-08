@@ -84,7 +84,7 @@ describe('Release Controller', () => {
 
 		it("should return every releases, sorted by name", () => {
 			return request(app.getHttpServer())
-				.get('/releases?sortBy=title')
+				.get('/releases?sortBy=name')
 				.expect(200)
 				.expect((res) => {
 					let releases: Release[] = res.body.items;
@@ -215,7 +215,7 @@ describe('Release Controller', () => {
 		});
 		it("should get all the tracks, sorted by name", () => {
 			return request(app.getHttpServer())
-				.get(`/releases/${dummyRepository.releaseA1_2.id}/tracks?sortBy=displayName`)
+				.get(`/releases/${dummyRepository.releaseA1_2.id}/tracks?sortBy=name`)
 				.expect(200)
 				.expect((res) => {
 					let tracks: Track[] = res.body.items;
@@ -226,7 +226,7 @@ describe('Release Controller', () => {
 		});
 		it("should get some tracks (w/ pagination)", () => {
 			return request(app.getHttpServer())
-				.get(`/releases/${dummyRepository.releaseA1_2.id}/tracks?skip=1&sortBy=displayName`)
+				.get(`/releases/${dummyRepository.releaseA1_2.id}/tracks?skip=1&sortBy=name`)
 				.expect(200)
 				.expect((res) => {
 					let tracks: Track[] = res.body.items;

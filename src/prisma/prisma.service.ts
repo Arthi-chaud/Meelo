@@ -5,9 +5,9 @@ import { PrismaClient } from '@prisma/client';
 export default class PrismaService extends PrismaClient implements OnModuleInit {
 	async onModuleInit() {
 		await this.$connect();
-		if (process.env.NODE_ENV === 'development') {
-			await this.flushDatabase();
-		}
+		// if (process.env.NODE_ENV === 'development') {
+		// 	await this.flushDatabase();
+		// }
 	}
 
 	async enableShutdownHooks(app: INestApplication) {

@@ -54,7 +54,7 @@ describe('Release Service', () => {
 	describe('Create a release', () => {
 		it("should create the album's first release", async () => {
 			newRelease = await releaseService.create({
-				title: 'My Album (Deluxe Edition)',
+				name: 'My Album (Deluxe Edition)',
 				album: { byId: { id: dummyRepository.albumA1.id } },
 				releaseDate: new Date('2006'),
 				master: false
@@ -62,13 +62,13 @@ describe('Release Service', () => {
 			expect(newRelease.albumId).toBe(dummyRepository.albumA1.id);
 			expect(newRelease.master).toBe(false);
 			expect(newRelease.releaseDate).toStrictEqual(new Date('2006'));
-			expect(newRelease.title).toBe('My Album (Deluxe Edition)');
+			expect(newRelease.name).toBe('My Album (Deluxe Edition)');
 			expect(newRelease.slug).toBe('my-album-deluxe-edition');
 		});
 
 		it("should create the album's second release (compilation)", async () => {
 			newCompilationRelease = await releaseService.create({
-				title: 'My Compilation (Expanded Edition)',
+				name: 'My Compilation (Expanded Edition)',
 				album: { byId: { id: dummyRepository.compilationAlbumA.id } },
 				releaseDate: new Date('2005'),
 				master: false
@@ -76,7 +76,7 @@ describe('Release Service', () => {
 			expect(newCompilationRelease.albumId).toBe(dummyRepository.compilationAlbumA.id);
 			expect(newCompilationRelease.master).toBe(false);
 			expect(newCompilationRelease.releaseDate).toStrictEqual(new Date('2005'));
-			expect(newCompilationRelease.title).toBe('My Compilation (Expanded Edition)');
+			expect(newCompilationRelease.name).toBe('My Compilation (Expanded Edition)');
 			expect(newCompilationRelease.slug).toBe('my-compilation-expanded-edition');
 		});
 
@@ -291,12 +291,12 @@ describe('Release Service', () => {
 	describe('Update Release', () => {
 		it("Should Update the release", async () => {
 			let updatedRelease = await releaseService.update(
-				{ title: 'My Album (Special Edition)' },
+				{ name: 'My Album (Special Edition)' },
 				{ byId: { id: newRelease.id } },
 			);
 			expect(updatedRelease.id).toStrictEqual(newRelease.id);
 			expect(updatedRelease.albumId).toStrictEqual(newRelease.albumId);
-			expect(updatedRelease.title).toStrictEqual('My Album (Special Edition)');
+			expect(updatedRelease.name).toStrictEqual('My Album (Special Edition)');
 			expect(updatedRelease.slug).toBe('my-album-special-edition');
 			newRelease = updatedRelease;
 		});
@@ -332,19 +332,19 @@ describe('Release Service', () => {
 	describe('Find or create', () => {
 		it("should retrieve the existing release", async () => {
 			let fetchedRelease: Release = await releaseService.getOrCreate({
-				title: newRelease.title, album: { byId: { id: dummyRepository.albumA1.id } }, releaseDate: new Date('2008'), master: false
+				name: newRelease.name, album: { byId: { id: dummyRepository.albumA1.id } }, releaseDate: new Date('2008'), master: false
 			});
 			expect(fetchedRelease).toStrictEqual(newRelease);
 		});
 
 		it("should create a new release", async () => {
 			newRelease2 = await releaseService.getOrCreate({
-				title: 'My Album (Edited Version)', album: { byId: { id: dummyRepository.albumA1.id } }, releaseDate: new Date('2007'), master: false
+				name: 'My Album (Edited Version)', album: { byId: { id: dummyRepository.albumA1.id } }, releaseDate: new Date('2007'), master: false
 			});
 			expect(newRelease2.albumId).toBe(dummyRepository.albumA1.id);
 			expect(newRelease2.master).toBe(false);
 			expect(newRelease2.releaseDate).toStrictEqual(new Date('2007'));
-			expect(newRelease2.title).toBe("My Album (Edited Version)");
+			expect(newRelease2.name).toBe("My Album (Edited Version)");
 			expect(newRelease2.slug).toBe('my-album-edited-version');
 		});
 	});

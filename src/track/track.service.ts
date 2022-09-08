@@ -79,7 +79,7 @@ export default class TrackService extends RepositoryService<
 			const parentRelease = await this.releaseService.get(track.release);
 			await this.fileService.throwIfNotExist(track.sourceFile);
 			throw new TrackAlreadyExistsException(
-				track.displayName,
+				track.name,
 				new Slug(parentRelease.slug),
 				new Slug(parentSong.artist.slug)
 			);
@@ -287,7 +287,7 @@ export default class TrackService extends RepositoryService<
 			let deletedTrack = await this.prismaService.track.delete({
 				where: where,
 			});
-			Logger.warn(`Track '${deletedTrack.displayName}' deleted`);
+			Logger.warn(`Track '${deletedTrack.name}' deleted`);
 			if (deletedTrack.master)
 				await this.unsetTrackAsMaster({
 					trackId: deletedTrack.id,

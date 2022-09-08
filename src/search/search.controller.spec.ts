@@ -73,10 +73,10 @@ describe('Search Controller', () => {
 		dummyRepository.songA2	= await songService.update({ name: 'Intervention' }, { byId: { id: dummyRepository.songA2.id } }),
 		dummyRepository.songB1	= await songService.update({ name: 'Thea' }, { byId: { id: dummyRepository.songB1.id } }),
 		dummyRepository.songC1	= await songService.update({ name: 'Cafe de Flore' }, { byId: { id: dummyRepository.songC1.id } });
-		dummyRepository.releaseA1_1 = await releaseService.update({ title: 'American Life (Edited)' }, { byId: { id: dummyRepository.releaseA1_1.id } });
-		dummyRepository.releaseA1_2 = await releaseService.update({ title: 'American Life (Special Edition)' }, { byId: { id: dummyRepository.releaseA1_2.id } });
-		dummyRepository.releaseB1_1 = await releaseService.update({ title: 'Tales of Us' }, { byId: { id: dummyRepository.releaseB1_1.id } });
-		dummyRepository.compilationReleaseA1 = await releaseService.update({ title: 'Hotel Costes (Deluxe)' }, { byId: { id: dummyRepository.compilationReleaseA1.id } });
+		dummyRepository.releaseA1_1 = await releaseService.update({ name: 'American Life (Edited)' }, { byId: { id: dummyRepository.releaseA1_1.id } });
+		dummyRepository.releaseA1_2 = await releaseService.update({ name: 'American Life (Special Edition)' }, { byId: { id: dummyRepository.releaseA1_2.id } });
+		dummyRepository.releaseB1_1 = await releaseService.update({ name: 'Tales of Us' }, { byId: { id: dummyRepository.releaseB1_1.id } });
+		dummyRepository.compilationReleaseA1 = await releaseService.update({ name: 'Hotel Costes (Deluxe)' }, { byId: { id: dummyRepository.compilationReleaseA1.id } });
 		dummyRepository.genreC = await genreService.update({ name: 'Electronic' }, { id: dummyRepository.genreC.id } );
 	});
 
