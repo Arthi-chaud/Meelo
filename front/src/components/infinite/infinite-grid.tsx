@@ -3,18 +3,17 @@ import FadeIn from "react-fade-in";
 import Resource from "../../models/resource";
 import InfiniteList from "./infinite-list";
 
+type TypedList<T extends Resource> = typeof InfiniteList<T>;
+type InfiniteGridProps<T extends Resource> = Omit<Parameters<TypedList<T>>[0], 'render'> & { render: (item: T) => JSX.Element }
+
 /**
  * Similar to InfiniteList, but rendered as a grid
  * @param props 
  * @returns 
  */
-const InfiniteGrid = <T extends Resource,>(props: Omit<Parameters<typeof InfiniteList>[0], 'render'> & { render: (item: T) => JSX.Element }) => {
+const InfiniteGrid = <T extends Resource,>(props: InfiniteGridProps<T>) => {
 	return <InfiniteList
-		loader={props.loader}
-		firstLoader={props.firstLoader}
-		fetch={props.fetch}
-		queryKey={props.queryKey}
-		pageSize={props.pageSize}
+		{...props}
 		render={(items: T[]) =>
 			<Grid sx={{ padding: 2 }} container rowSpacing={4} columnSpacing={2}>
 				{items.map((item: T) => 

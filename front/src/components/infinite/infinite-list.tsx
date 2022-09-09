@@ -64,7 +64,7 @@ export type Page<T> = {
  * @param props 
  * @returns a dynamic list component
  */
-const InfiniteList = <T extends Resource,>(props: InfiniteListProps<T>) => {
+const InfiniteList = <T extends Resource>(props: InfiniteListProps<T>) => {
 	const pageSize = props.pageSize ?? API.defaultPageSize;
 	const {
         isFetching,
