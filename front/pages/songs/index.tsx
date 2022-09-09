@@ -1,6 +1,6 @@
 import React from 'react';
 import MeeloAppBar from "../../src/components/appbar/appbar";
-import { GetServerSidePropsContext, NextPage } from "next";
+import { GetServerSideProps, GetServerSidePropsContext, InferGetServerSidePropsType, NextPage } from "next";
 import { Box, List } from '@mui/material';
 import InfiniteList, { Page } from '../../src/components/infinite/infinite-list';
 import { useRouter } from 'next/router';
@@ -32,16 +32,16 @@ const LibrarySongsPage: NextPage = () => {
 					)
 				}
 			}}
-			queryKey={librarySlug ? ['libraries', librarySlug, 'songs'] :  ['songs']}
+			queryKey={librarySlug ? ['libraries', librarySlug, 'songs'] : ['songs']}
 			render={(items: SongWithArtist[]) =>
 				<FadeIn>
 					<List sx={{ padding: 3 }}>
-						{ items.map((item) => <SongItem song={item} key={item.id}/>)}
+						{items.map((item) => <SongItem song={item} key={item.id}/>)}
 					</List>
 				</FadeIn>
 			}
 		/>
 	</Box>;
-} 
+}
 
 export default LibrarySongsPage;
