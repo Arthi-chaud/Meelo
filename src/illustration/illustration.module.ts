@@ -6,16 +6,20 @@ import ReleaseModule from 'src/release/release.module';
 import AlbumModule from 'src/album/album.module';
 import TrackModule from 'src/track/track.module';
 import FileModule from 'src/file/file.module';
+import { IllustrationController } from './illustration.controller';
+import ArtistModule from 'src/artist/artist.module';
 
 @Module({
 	imports: [
 		FileManagerModule,
 		HttpModule,
+		forwardRef(() => ArtistModule),
 		forwardRef(() => AlbumModule),
 		forwardRef(() => ReleaseModule),
 		forwardRef(() => TrackModule),
 		FileModule
 	],
+	controllers: [IllustrationController],
 	providers: [IllustrationService],
 	exports: [IllustrationService]
 })

@@ -15,26 +15,12 @@ type IllustrationProps = {
 } & React.ImgHTMLAttributes<HTMLImageElement>
 
 const Illustration = (props: IllustrationProps) => {
-	const [illustrationURL, setIllustrationURL] = useState(props.url);
-	const [illustration, setIllustration] = useState<string | null>(null);
-	useEffect(() => {
-		fetch(API.getIllustrationURL(illustrationURL), { redirect: 'follow' }).then((response) => {
-			if (response.redirected) {
-				setIllustrationURL(new URL(response.url).pathname);
-			} else {
-				response.blob().then((blob) => setIllustration(URL.createObjectURL(blob)));
-			}
-		});
-	}, [illustrationURL]);
-
-	if (illustration == null)
-		return <></>;
 	return <FadeIn>
 		<Box
 			{...props}
         	component="img"
         	sx={{ borderRadius: '3%' }}
-        	src={illustration}
+        	src={API.getIllustrationURL(props.url)}
       	/>
 		
 	</FadeIn>

@@ -254,7 +254,7 @@ export default class SongService extends RepositoryService<
 	): T {
 		let response: T = <T>{
 			...song,
-			illustration: `/songs/${song.id}/illustration`
+			illustration: `/illustrations/songs/${song.id}`
 		};
 		if (song.tracks !== undefined)
 			response = {

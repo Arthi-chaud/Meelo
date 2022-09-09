@@ -1,32 +1,21 @@
-import { Controller, Get, Query, Param, Response, Post, Body, Inject, forwardRef, Req } from '@nestjs/common';
-import AlbumService from 'src/album/album.service';
+import { Controller, Get, Query, Param, Post, Body, Inject, forwardRef, Req } from '@nestjs/common';
 import { ParseIdPipe } from 'src/identifier/id.pipe';
-import IllustrationService from 'src/illustration/illustration.service';
-import type { IllustrationDownloadDto } from 'src/illustration/models/illustration-dl.dto';
 import PaginatedResponse from 'src/pagination/models/paginated-response';
 import type { PaginationParameters } from 'src/pagination/models/pagination-parameters';
 import ParsePaginationParameterPipe from 'src/pagination/pagination.pipe';
-import Slug from 'src/slug/slug';
 import TrackQueryParameters from './models/track.query-parameters';
 import TrackService from './track.service';
 import type { Request } from 'express';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import { TrackType } from '@prisma/client';
 import type ReassignTrackDTO from './models/reassign-track.dto';
-import ReleaseService from 'src/release/release.service';
 
 @ApiTags("Tracks")
 @Controller('tracks')
 export class TrackController {
 	constructor(
 		@Inject(forwardRef(() => TrackService))
-		private trackService: TrackService,
-		@Inject(forwardRef(() => AlbumService))
-		private albumService: AlbumService,
-		@Inject(forwardRef(() => IllustrationService))
-		private illustrationService: IllustrationService,
-		@Inject(forwardRef(() => ReleaseService))
-		private releaseService: ReleaseService
+		private trackService: TrackService
 	) { }
 	
 	@ApiOperation({
@@ -85,56 +74,6 @@ export class TrackController {
 	) {
 		const track = await this.trackService.get({ id: trackId }, include);
 		return this.trackService.buildResponse(track);
-	}
-
-	@ApiOperation({
-		summary: 'Get a track\'s illustration'
-	})
-	@Get(':id/illustration')
-	async getTrackIllustration(
-		@Param('id', ParseIdPipe)
-		trackId: number,
-		@Response({ passthrough: true })
-		res: Response
-	) {
-		const track = await this.trackService.select({ id: trackId }, { name: true, releaseId: true });
-		const outputName = new Slug(track.name!).toString();
-		const trackPath = await this.trackService.buildIllustrationPath({ id: trackId });
-		if (this.illustrationService.illustrationExists(trackPath))
-			return this.illustrationService.streamIllustration(
-				trackPath,
-				outputName, res
-			);
-		const releasePath = await this.releaseService.buildIllustrationPath({ byId: { id: track.releaseId! } });
-		return this.illustrationService.streamIllustration(
-			releasePath,
-			outputName, res
-		);
-	}
-
-	@ApiOperation({
-		summary: 'Change a track\'s illustration'
-	})
-	@Post('/:id/illustration')
-	async updateTrackIllustration(
-		@Param('id', ParseIdPipe)
-		trackId: number,
-		@Body()
-		illustrationDto: IllustrationDownloadDto
-	) {
-		let track = await this.trackService.get({ id: trackId }, { release: true });
-		let album = await this.albumService.get({ byId: { id: track.release.albumId } }, { artist: true })
-		const trackIllustrationPath = this.illustrationService.buildTrackIllustrationPath(
-			new Slug(album.slug),
-			new Slug(track.release.slug),
-			album.artist ? new Slug(album.artist.slug) : undefined,
-			track.discIndex ?? undefined,
-			track.trackIndex ?? undefined
-		);
-		return await this.illustrationService.downloadIllustration(
-			illustrationDto.url,
-			trackIllustrationPath
-		);
 	}
 
 	@ApiOperation({

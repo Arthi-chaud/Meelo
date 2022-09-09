@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, forwardRef, Get, Inject, Param, Post, Put, Query, Redirect, Req } from '@nestjs/common';
+import { Body, Controller, Delete, forwardRef, Get, Inject, Param, Post, Put, Query, Req } from '@nestjs/common';
 import type { Request } from 'express';
 import ArtistService from 'src/artist/artist.service';
 import ArtistQueryParameters from 'src/artist/models/artist.query-parameters';
@@ -181,20 +181,6 @@ export class SongController {
 			genres.map((genre) => this.genreService.buildResponse(genre)),
 			request
 		);
-	}
-
-	@ApiOperation({
-		summary: 'Get a song\'s illustration'
-	})
-	@Get(':idOrSlug/illustration')
-	@Redirect()
-	async getSongIllustration(
-		@Param(ParseSongIdentifierPipe)
-		where: SongQueryParameters.WhereInput
-	) {
-		let master = await this.trackService.getMasterTrack(where);
-		const illustrationRedirectUrl = `/tracks/${master.id}/illustration`;
-		return { url: illustrationRedirectUrl };
 	}
 
 	@ApiOperation({
