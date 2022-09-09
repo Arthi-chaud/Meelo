@@ -35,7 +35,7 @@ const LibrarySongsPage: NextPage = () => {
 			queryKey={librarySlug ? ['libraries', librarySlug, 'songs'] : ['songs']}
 			render={(items: SongWithArtist[]) =>
 				<FadeIn>
-					<List sx={{ padding: 3 }}>
+					<List sx={{ padding: 3}}>
 						{items.map((item) => <>
 							<SongItem song={item} key={item.id}/>
 							<Divider variant='middle'/>

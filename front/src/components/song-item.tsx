@@ -1,4 +1,4 @@
-import { ListItem, Grid, Box, List, Collapse, Button, IconButton, Typography } from "@mui/material"
+import { ListItem, Grid, Box, List, Collapse, Button, IconButton, Typography, useTheme, Divider } from "@mui/material"
 import { useState } from "react"
 import FadeIn from "react-fade-in"
 import { useQuery } from "react-query"
@@ -13,10 +13,41 @@ import { WideLoadingComponent } from "./loading/loading"
 import Illustration from './illustration';
 import Link from 'next/link';
 import AspectRatio from '@mui/joy/AspectRatio'
+import { Star } from "@mui/icons-material"
+
+type RowProps = {
+	left?: JSX.Element,
+	centerLeft: JSX.Element,
+	centerRight: JSX.Element
+	right?: JSX.Element,
+}
+
+const Row = (props: RowProps) => {
+	const theme = useTheme();
+	return (
+		<Grid container padding={1} spacing={2} columns={10} sx={{ alignItems: 'center' }}>
+			<Grid item xs={2} sm={1.5}  md={1} lg={0.5}>
+				{props.left}
+			</Grid>
+			<Grid item container xs={8} sx={{ alignItems: 'center'}}>
+				<Grid item xs={12} sm={9}>
+					{props.centerLeft}
+				</Grid>
+				<Grid item xs={12} sm={3} sx={{ display: 'flex', justifyContent: 'left',   }}>
+					{props.centerRight}
+				</Grid>
+			</Grid>
+			<Grid item container sx={{ justifyContent: 'end' }} xs={1} sm={2} lg={3}>
+				{props.right}
+			</Grid>
+		</Grid>
+	)
+}
 
 type SongItemProps = {
 	song: SongWithArtist;
 }
+
 /**
  * Item for a list of songs
  * @param props 
@@ -27,26 +58,22 @@ const SongItem = (props: SongItemProps) => {
 	const artist = props.song.artist;
 	const [open, setOpen] = useState(false);
 	return <>
-		<Grid container padding={1} spacing={2} columns={15} alignItems="center" justifyItems="center">
-			<Grid item xs={0.5}>
-				<Illustration url={song.illustration}/>
-			</Grid>
-			<Grid item xs={6}>
-				<Typography>{song.name}</Typography>
-			</Grid>
-			<Grid item xs={7}>
+		<Row
+			left={<Illustration url={song.illustration}/>}
+			centerLeft={<Typography>{song.name}</Typography>}
+			centerRight={
 				<Link href={`/artists/${artist.slug}`}>
-					<Button variant="text" color='inherit' sx={{ textTransform: 'none' }}>
+					<Button variant="text" color='inherit' sx={{ textTransform: 'none', justifyContent: 'left' }}>
 						<Typography>{artist.name}</Typography>
 					</Button>
 				</Link>
-			</Grid>
-			<Grid item container sx={{ justifyContent: 'center' }} xs={1}>
+			}
+			right={
 				<IconButton onClick={() => setOpen(!open) }>
 					{open ? <ExpandLess /> : <ExpandMore />}
 				</IconButton>
-			</Grid>
-		</Grid>
+			}
+		/>
 		<Collapse in={open} timeout="auto" unmountOnExit>
 			{ open && <InfiniteList
 				firstLoader={() => <WideLoadingComponent/>}
@@ -57,27 +84,26 @@ const SongItem = (props: SongItemProps) => {
 					{ index: lastPage?.index, pageSize: pageSize },
 					['release']
 				) as unknown as Promise<PaginatedResponse<TrackWithRelease>>}
-				render={(tracks: TrackWithRelease[]) =>
-    				<List sx={{ paddingX: 2 }}>
+				render={(tracks: TrackWithRelease[]) => <>
+					<List sx={{ }}>
 					{ tracks.map((track) =>
 						<FadeIn>
-							<Grid container padding={2} columns={15}>
-								<Grid item xs={0.5}/>
-								<Grid item xs={7}>
-									<Typography>{track.name}</Typography>
-								</Grid>
-								<Grid item xs={7}>
-									<Link href={`/releases/${track.release.id}`}>
-										<Button variant="text" color='inherit' sx={{ textTransform: 'none' }}>
+							<Row
+								left={<Illustration url={track.illustration}/>}
+								centerLeft={<Typography>{track.name}</Typography>}
+								centerRight={
+									<Link href={`/releases/${track.releaseId}`}>
+										<Button variant="text" color='inherit' sx={{ textTransform: 'none', justifyContent: 'left' }}>
 											<Typography>{track.release.name}</Typography>
 										</Button>
 									</Link>
-								</Grid>
-							</Grid>
+								}
+								right={track.master ? <Star color='primary'/> : undefined }
+							/>
 						</FadeIn>
 					)}
         			</List>
-				}
+				</>}
 				/>
 			}
     	</Collapse>
