@@ -1,4 +1,4 @@
-import { MiddlewareConsumer, Module, RequestMethod } from '@nestjs/common';
+import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import FileModule from './file/file.module';
 import ArtistModule from './artist/artist.module';
@@ -16,7 +16,6 @@ import { LyricsModule } from './lyrics/lyrics.module';
 import SearchModule from './search/search.module';
 import GenreModule from './genre/genre.module';
 import AppController from './app.controller';
-import { IllustrationMiddleware } from './illustration/illustration.middleware';
 
 @Module({
 	imports: [
@@ -40,10 +39,4 @@ import { IllustrationMiddleware } from './illustration/illustration.middleware';
 	controllers: [AppController],
 	providers: [],
 })
-export default class AppModule {
-	configure(consumer: MiddlewareConsumer) {
-		consumer
-		  .apply(IllustrationMiddleware)
-		  .forRoutes({ path: '*/illustration', method: RequestMethod.ALL });
-	}
-}
+export default class AppModule {}

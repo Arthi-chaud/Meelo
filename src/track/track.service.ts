@@ -431,7 +431,7 @@ export default class TrackService extends RepositoryService<
 	): ResponseType {
 		let response = <ResponseType>{
 			...track,
-			illustration: `/tracks/${track.id}/illustration`,
+			illustration: `/illustrations/tracks/${track.id}`,
 			stream: `/files/${track.sourceFileId}/stream`
 		};
 		if (track.release !== undefined)

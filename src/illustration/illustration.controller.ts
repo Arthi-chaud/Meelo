@@ -16,7 +16,8 @@ import { NoReleaseIllustrationException } from "./illustration.exceptions";
 import IllustrationService from "./illustration.service";
 import type { IllustrationDownloadDto } from "./models/illustration-dl.dto";
 import ArtistQueryParameters from "src/artist/models/artist.query-parameters";
-@ApiTags("Songs")
+
+@ApiTags("Illustrations")
 @Controller('illustrations')
 export class IllustrationController {
 	constructor(

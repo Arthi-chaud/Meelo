@@ -394,7 +394,7 @@ export default class ReleaseService extends RepositoryService<
 	): ResponseType {
 		let response = <ResponseType>{
 			...release,
-			illustration: `/releases/${release.id}/illustration`
+			illustration: `/illustrations/releases/${release.id}`
 		};
 		if (release.album !== undefined)
 			response = {

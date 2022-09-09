@@ -302,7 +302,7 @@ export default class AlbumService extends RepositoryService<
 	): ResponseType {
 		let response = <ResponseType>{
 			...album,
-			illustration: `/albums/${album.id}/illustration`
+			illustration: `/illustrations/albums/${album.id}`
 		};
 		if (album.releases)
 			response = {

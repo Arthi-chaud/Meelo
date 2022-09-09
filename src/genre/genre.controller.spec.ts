@@ -29,18 +29,18 @@ describe("Genre Controller", () => {
 
 	const expectedSongResponse = (song: Song) => ({
 		...song,
-		illustration: `/songs/${song.id}/illustration`
+		illustration: `/illustrations/songs/${song.id}`
 	});
 
 	const expectedArtistResponse = (artist: Artist) => ({
 		...artist,
-		illustration: `/artists/${artist.id}/illustration`
+		illustration: `/illustrations/artists/${artist.id}`
 	});
 
 	const expectedAlbumResponse = (album: Album) => ({
 		...album,
 		releaseDate: album.releaseDate?.toISOString() ?? null,
-		illustration: `/albums/${album.id}/illustration`
+		illustration: `/illustrations/albums/${album.id}`
 	});
 
 

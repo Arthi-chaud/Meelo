@@ -30,12 +30,12 @@ describe('Song Controller', () => {
 
 	const expectedSongResponse = (song: Song) => ({
 		...song,
-		illustration: `/songs/${song.id}/illustration`
+		illustration: `/illustrations/songs/${song.id}`
 	});
 
 	const expectedTrackResponse = (track: Track) => ({
 		...track,
-		illustration: `/tracks/${track.id}/illustration`,
+		illustration: `/illustrations/tracks/${track.id}`,
 		stream: `/files/${track.sourceFileId}/stream`
 	});
 	
@@ -127,7 +127,7 @@ describe('Song Controller', () => {
 						...expectedSongResponse(dummyRepository.songA1),
 						artist: {
 							...dummyRepository.artistA,
-							illustration: `/artists/${dummyRepository.artistA.id}/illustration`
+							illustration: `/illustrations/artists/${dummyRepository.artistA.id}`
 						}
 					});
 				});
@@ -163,7 +163,7 @@ describe('Song Controller', () => {
 						...expectedSongResponse(dummyRepository.songA1),
 						artist: {
 							...dummyRepository.artistA,
-							illustration: `/artists/${dummyRepository.artistA.id}/illustration`
+							illustration: `/illustrations/artists/${dummyRepository.artistA.id}`
 						}
 					});
 				});
@@ -223,7 +223,7 @@ describe('Song Controller', () => {
 						song: expectedSongResponse(dummyRepository.songA1),
 						release: {
 							...dummyRepository.releaseA1_1,
-							illustration: `/releases/${dummyRepository.releaseA1_1.id}/illustration`
+							illustration: `/illustrations/releases/${dummyRepository.releaseA1_1.id}`
 						}
 					});
 				});
@@ -453,7 +453,7 @@ describe('Song Controller', () => {
 					let fetchedArtist : Artist = res.body
 					expect(fetchedArtist).toStrictEqual({
 						...dummyRepository.artistB,
-						illustration: `/artists/${dummyRepository.artistB.id}/illustration` 
+						illustration: `/illustrations/artists/${dummyRepository.artistB.id}` 
 					});
 				});
 		});
@@ -465,7 +465,7 @@ describe('Song Controller', () => {
 					let fetchedArtist : Artist = res.body
 					expect(fetchedArtist).toStrictEqual({
 						...dummyRepository.artistA,
-						illustration: `/artists/${dummyRepository.artistA.id}/illustration` 
+						illustration: `/illustrations/artists/${dummyRepository.artistA.id}` 
 					});
 				});
 		});
@@ -477,10 +477,10 @@ describe('Song Controller', () => {
 					let fetchedArtist : Artist = res.body
 					expect(fetchedArtist).toStrictEqual({
 						...dummyRepository.artistB,
-						illustration: `/artists/${dummyRepository.artistB.id}/illustration`,
+						illustration: `/illustrations/artists/${dummyRepository.artistB.id}`,
 						albums: [{
 							...dummyRepository.albumB1,
-							illustration: `/albums/${dummyRepository.albumB1.id}/illustration`
+							illustration: `/illustrations/albums/${dummyRepository.albumB1.id}`
 						}],
 						songs: [
 							expectedSongResponse(dummyRepository.songB1)
