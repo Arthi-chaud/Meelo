@@ -5,7 +5,7 @@ import SearchIcon from '@mui/icons-material/Search';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
 import MenuIcon from '@mui/icons-material/Menu';
 import { useEffect, useState } from 'react';
-import { useQuery } from 'react-query';
+import { dehydrate, QueryClient, useQuery } from 'react-query';
 import API from '../../api';
 import LoadingComponent from '../loading/loading';
 import FadeIn from 'react-fade-in';
@@ -15,7 +15,8 @@ import MeeloAppBarDrawer from './drawer';
 import buildLink from './build-link';
 import { makeStyles } from '@mui/styles';
 import Link from 'next/link';
-import { GetServerSideProps } from 'next';
+import { GetServerSidePropsContext, InferGetServerSidePropsType } from 'next';
+import { prepareMeeloQuery } from '../../query';
 
 const useStyles = makeStyles({
     select: {
@@ -37,8 +38,25 @@ const useStyles = makeStyles({
     },
 });
 
+const libraryQuery = () => ({
+	key: ['libraries'],
+	exec: () => API.getAllLibraries()
+});
 
-const MeeloAppBar = () => {
+export const getServerSideProps = async (context: GetServerSidePropsContext) => {
+	const queryClient = new QueryClient();
+
+	await queryClient.prefetchQuery(prepareMeeloQuery(libraryQuery));
+
+	return {
+		props: {
+			dehydratedState: dehydrate(queryClient)
+		}
+	}
+}
+ 
+
+const MeeloAppBar = (props: InferGetServerSidePropsType<typeof getServerSideProps> ) => {
 	const classes = useStyles();
 	const router = useRouter();
 	const [requestedLibrary, setRequestedLibrary] = useState(globalLibrary);
