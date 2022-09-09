@@ -39,7 +39,7 @@ const Tile = (props: TileProps) => {
 							}
 							</AspectRatio>
 							<CardContent style={{ display:'flex', justifyContent:'center', alignItems: 'center', flexDirection: 'column' }}>
-								<Typography sx={{ fontWeight: 'bold' }}>
+								<Typography sx={{ fontWeight: 'bold', textAlign: 'center' }}>
 									{props.title}
 								</Typography>
 								{ props.subtitle &&
