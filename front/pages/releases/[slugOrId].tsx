@@ -15,7 +15,7 @@ import { MoreHoriz, Shuffle } from "@mui/icons-material";
 import FadeIn from "react-fade-in";
 import Tile from "../../src/components/tile/tile";
 import MusicVideoIcon from '@mui/icons-material/MusicVideo';
-import prepareMeeloQuery from "../../src/query";
+import { prepareMeeloQuery } from "../../src/query";
 import { QueryClient, dehydrate, useQuery, useQueries } from "react-query";
 
 const releaseQuery = (slugOrId: string | number) => ({
