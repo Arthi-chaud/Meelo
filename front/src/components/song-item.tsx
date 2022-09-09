@@ -1,4 +1,4 @@
-import { ListItem, Grid, ListItemText, List, Collapse, Button, IconButton, Typography } from "@mui/material"
+import { ListItem, Grid, Box, List, Collapse, Button, IconButton, Typography } from "@mui/material"
 import { useState } from "react"
 import FadeIn from "react-fade-in"
 import { useQuery } from "react-query"
@@ -27,18 +27,21 @@ const SongItem = (props: SongItemProps) => {
 	const artist = props.song.artist;
 	const [open, setOpen] = useState(false);
 	return <>
-		<Grid container padding={2}>
-			<Grid item xs={5}>
-				<Typography>{song.name}</Typography>
+		<Grid container padding={1} spacing={2} columns={15} alignItems="center" justifyItems="center">
+			<Grid item xs={0.5}>
+				<Illustration url={song.illustration}/>
 			</Grid>
 			<Grid item xs={6}>
+				<Typography>{song.name}</Typography>
+			</Grid>
+			<Grid item xs={7}>
 				<Link href={`/artists/${artist.slug}`}>
 					<Button variant="text" color='inherit' sx={{ textTransform: 'none' }}>
 						<Typography>{artist.name}</Typography>
 					</Button>
 				</Link>
 			</Grid>
-			<Grid item container  sx={{ justifyContent: 'center' }} xs={1}>
+			<Grid item container sx={{ justifyContent: 'center' }} xs={1}>
 				<IconButton onClick={() => setOpen(!open) }>
 					{open ? <ExpandLess /> : <ExpandMore />}
 				</IconButton>
@@ -58,11 +61,12 @@ const SongItem = (props: SongItemProps) => {
     				<List sx={{ paddingX: 2 }}>
 					{ tracks.map((track) =>
 						<FadeIn>
-							<Grid container padding={2}>
-								<Grid item xs={6}>
+							<Grid container padding={2} columns={15}>
+								<Grid item xs={0.5}/>
+								<Grid item xs={7}>
 									<Typography>{track.name}</Typography>
 								</Grid>
-								<Grid item xs={6}>
+								<Grid item xs={7}>
 									<Link href={`/releases/${track.release.id}`}>
 										<Button variant="text" color='inherit' sx={{ textTransform: 'none' }}>
 											<Typography>{track.release.name}</Typography>

@@ -24,8 +24,8 @@ const Illustration = (props: IllustrationProps) => {
 		>
 			<img
 				{...props}
-				style={{ borderRadius: '3%', width: 'auto' }}
-        		src={illustration}
+				style={{ ...props.style, borderRadius: '3%', width: 'auto' }}
+        		src={API.getIllustrationURL(props.url)}
       		/>
 		</AspectRatio>
 	</FadeIn>

@@ -1,7 +1,7 @@
 import React from 'react';
 import MeeloAppBar from "../../src/components/appbar/appbar";
 import { GetServerSideProps, GetServerSidePropsContext, InferGetServerSidePropsType, NextPage } from "next";
-import { Box, List } from '@mui/material';
+import { Box, Divider, List } from '@mui/material';
 import InfiniteList, { Page } from '../../src/components/infinite/infinite-list';
 import { useRouter } from 'next/router';
 import { SongWithArtist } from '../../src/models/song';
@@ -36,7 +36,10 @@ const LibrarySongsPage: NextPage = () => {
 			render={(items: SongWithArtist[]) =>
 				<FadeIn>
 					<List sx={{ padding: 3 }}>
-						{items.map((item) => <SongItem song={item} key={item.id}/>)}
+						{items.map((item) => <>
+							<SongItem song={item} key={item.id}/>
+							<Divider variant='middle'/>
+						</>)}
 					</List>
 				</FadeIn>
 			}
