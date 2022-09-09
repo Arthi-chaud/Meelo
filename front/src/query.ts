@@ -11,12 +11,13 @@ type MeeloQueryFn<T = unknown> = <Arg extends Key,>(...args: Arg[]) => ({
  * @param queryArgs the arguments to pass the the query function. If one of them is undefined, the query will not be enabled
  * @returns 
  */
-const prepareMeeloQuery = <T,>(query: MeeloQueryFn<T>, ...queryArgs: Parameters<typeof query>) => {
+const prepareMeeloQuery = <T,>(query: MeeloQueryFn<T>, ...queryArgs: Partial<Parameters<typeof query>>) => {
+	const enabled = queryArgs.findIndex((elem) => elem === undefined) === -1;
 	const queryParams = query(...queryArgs as Key[]);
 	return {
 		queryKey: queryParams.key,
 		queryFn: queryParams.exec,
-		enabled: !queryArgs.find((elem) => elem === undefined)
+		enabled: enabled
 	};
 }
 export default prepareMeeloQuery;
