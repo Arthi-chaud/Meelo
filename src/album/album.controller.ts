@@ -1,10 +1,8 @@
-import { Body, Controller, DefaultValuePipe, forwardRef, Get, Inject, Param, ParseBoolPipe, Post, Query, Req, Response } from '@nestjs/common';
-import IllustrationService from 'src/illustration/illustration.service';
+import { Body, Controller, DefaultValuePipe, forwardRef, Get, Inject, Param, ParseBoolPipe, Post, Query, Req } from '@nestjs/common';
 import type { PaginationParameters } from 'src/pagination/models/pagination-parameters';
 import ParsePaginationParameterPipe from 'src/pagination/pagination.pipe';
 import ReleaseQueryParameters from 'src/release/models/release.query-parameters';
 import ReleaseService from 'src/release/release.service';
-import Slug from 'src/slug/slug';
 import compilationAlbumArtistKeyword from 'src/utils/compilation';
 import ParseAlbumIdentifierPipe from './album.pipe';
 import AlbumService from './album.service';
@@ -22,7 +20,6 @@ import GenreService from "../genre/genre.service";
 @Controller('albums')
 export default class AlbumController {
 	constructor(
-		private illustrationService: IllustrationService,
 		@Inject(forwardRef(() => ReleaseService))
 		private releaseService: ReleaseService,
 		@Inject(forwardRef(() => AlbumService))
@@ -200,25 +197,6 @@ export default class AlbumController {
 		return new PaginatedResponse(
 			videoTracks.map((videoTrack) => this.trackService.buildResponse(videoTrack)),
 			request
-		);
-	}
-
-	@ApiOperation({
-		summary: 'Get the album\'s illustration'
-	})
-	@Get(':idOrSlug/illustration')
-	async getAlbumIllustration(
-		@Param(ParseAlbumIdentifierPipe)
-		where: AlbumQueryParameters.WhereInput,
-		@Response({ passthrough: true })
-		res: Response
-	) {
-		const album = await this.albumService.get(where, { artist: true });
-		return this.illustrationService.streamIllustration(
-			await this.illustrationService.buildMasterReleaseIllustrationPath(
-				new Slug(album.slug), album.artist ? new Slug(album.artist.slug) : undefined
-			),
-			album.slug, res
 		);
 	}
 

@@ -1,12 +1,9 @@
-import { Body, Controller, DefaultValuePipe, forwardRef, Get, Inject, Param, ParseBoolPipe, Post, Query, Req, Response } from '@nestjs/common';
+import { Controller, DefaultValuePipe, forwardRef, Get, Inject, Param, ParseBoolPipe, Query, Req } from '@nestjs/common';
 import AlbumService from 'src/album/album.service';
 import AlbumQueryParameters from 'src/album/models/album.query-parameters';
-import IllustrationService from 'src/illustration/illustration.service';
-import type { IllustrationDownloadDto } from 'src/illustration/models/illustration-dl.dto';
 import PaginatedResponse from 'src/pagination/models/paginated-response';
 import { PaginationParameters } from 'src/pagination/models/pagination-parameters';
 import ParsePaginationParameterPipe from 'src/pagination/pagination.pipe';
-import Slug from 'src/slug/slug';
 import SongQueryParameters from 'src/song/models/song.query-params';
 import SongService from 'src/song/song.service';
 import ParseArtistIdentifierPipe from './artist.pipe';
@@ -29,8 +26,7 @@ export default class ArtistController {
 		@Inject(forwardRef(() => SongService))
 		private songService: SongService,
 		@Inject(forwardRef(() => TrackService))
-		private trackService: TrackService,
-		private illustrationService: IllustrationService
+		private trackService: TrackService
 	) {}
 
 	@ApiOperation({
@@ -105,41 +101,6 @@ export default class ArtistController {
 		return new PaginatedResponse(
 			videoTracks.map((videoTrack) => this.trackService.buildResponse(videoTrack)),
 			request
-		);
-	}
-
-	@ApiOperation({
-		summary: 'Get an artist\'s illustration'
-	})
-	@Get(':idOrSlug/illustration')
-	async getArtistIllustration(
-		@Param(ParseArtistIdentifierPipe)
-		where: ArtistQueryParameters.WhereInput,
-		@Response({ passthrough: true })
-		res: Response
-	) {
-		let artist = await this.artistService.get(where);
-		return this.illustrationService.streamIllustration(
-			this.illustrationService.buildArtistIllustrationPath(new Slug(artist.slug)),
-			artist.slug, res
-		);
-	}
-
-	@ApiOperation({
-		summary: 'Change an artist\'s illustration'
-	})
-	@Post(':idOrSlug/illustration')
-	async updateArtistIllustration(
-		@Param(ParseArtistIdentifierPipe)
-		where: ArtistQueryParameters.WhereInput,
-		@Body()
-		illustrationDto: IllustrationDownloadDto
-	) {
-		let artist = await this.artistService.get(where);
-		const artistIllustrationPath = this.illustrationService.buildArtistIllustrationPath(new Slug(artist.slug));
-		return this.illustrationService.downloadIllustration(
-			illustrationDto.url,
-			artistIllustrationPath
 		);
 	}
 
