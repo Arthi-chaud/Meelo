@@ -28,28 +28,28 @@ describe('Album Controller', () => {
 
 	const expectedArtistResponse = (artist: Artist) => ({
 		...artist,
-		illustration: `/artists/${artist.id}/illustration`
+		illustration: `/illustrations/artists/${artist.id}`
 	});
 
 	const expectedAlbumResponse = (album: Album) => ({
 		...album,
 		releaseDate: album.releaseDate?.toISOString() ?? null,
-		illustration: `/albums/${album.id}/illustration`
+		illustration: `/illustrations/albums/${album.id}`
 	});
 
 	const expectedSongResponse = (song: Song) => ({
 		...song,
-		illustration: `/songs/${song.id}/illustration`
+		illustration: `/illustrations/songs/${song.id}`
 	});
 
 	const expectedReleaseResponse = (release: Release) => ({
 		...release,
-		illustration: `/releases/${release.id}/illustration`
+		illustration: `/illustrations/releases/${release.id}`
 	});
 
 	const expectedTrackResponse = (track: Track) => ({
 		...track,
-		illustration: `/tracks/${track.id}/illustration`,
+		illustration: `/illustrations/tracks/${track.id}`,
 		stream: `/files/${track.sourceFileId}/stream`
 	});
 

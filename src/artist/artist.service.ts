@@ -253,7 +253,7 @@ export default class ArtistService extends RepositoryService<
 	): ResponseType {
 		let response = <ResponseType>{
 			...artist,
-			illustration: `/artists/${artist.id}/illustration`
+			illustration: `/illustrations/artists/${artist.id}`
 		};
 		if (artist.songs != undefined)
 			response = {

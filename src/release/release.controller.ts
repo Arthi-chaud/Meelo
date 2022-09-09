@@ -1,21 +1,17 @@
-import { Body, Controller, DefaultValuePipe, forwardRef, Get, Inject, Param, ParseBoolPipe, Post, Query, Req, Response } from '@nestjs/common';
+import { Body, Controller, DefaultValuePipe, forwardRef, Get, Inject, Param, ParseBoolPipe, Post, Query, Req } from '@nestjs/common';
 import ParsePaginationParameterPipe from 'src/pagination/pagination.pipe';
 import type { PaginationParameters } from 'src/pagination/models/pagination-parameters';
 import ReleaseQueryParameters from './models/release.query-parameters';
 import ReleaseService from './release.service';
 import TrackService from 'src/track/track.service';
 import TrackQueryParameters from 'src/track/models/track.query-parameters';
-import IllustrationService from 'src/illustration/illustration.service';
 import AlbumService from 'src/album/album.service';
-import Slug from 'src/slug/slug';
-import type { IllustrationDownloadDto } from 'src/illustration/models/illustration-dl.dto';
 import AlbumQueryParameters from 'src/album/models/album.query-parameters';
 import ParseReleaseIdentifierPipe from './release.pipe';
 import type { Request } from 'express';
 import PaginatedResponse from 'src/pagination/models/paginated-response';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import type ReassignReleaseDTO from './models/reassign-release.dto';
-import { NoReleaseIllustrationException } from 'src/illustration/illustration.exceptions';
 
 @ApiTags("Releases")
 @Controller('releases')
@@ -26,9 +22,7 @@ export default class ReleaseController {
 		@Inject(forwardRef(() => TrackService))
 		private trackService: TrackService,
 		@Inject(forwardRef(() => AlbumService))
-		private albumService: AlbumService,
-		@Inject(forwardRef(() => IllustrationService))
-		private illustrationService: IllustrationService
+		private albumService: AlbumService
 	) { }
 	
 	@ApiOperation({
@@ -143,43 +137,6 @@ export default class ReleaseController {
 		}, include);
 		return this.albumService.buildResponse(album);
 
-	}
-
-	@ApiOperation({
-		summary: 'Get a release\'s illustration'
-	})
-	@Get(':idOrSlug/illustration')
-	async getReleaseIllustration(
-		@Param(ParseReleaseIdentifierPipe)
-		where: ReleaseQueryParameters.WhereInput,
-		@Response({ passthrough: true })
-		res: Response
-	) {
-		const path = await this.releaseService.buildIllustrationPath(where);
-		let release = await this.releaseService.get(where, { album: true });
-		if (this.illustrationService.illustrationExists(path) == false)
-			throw new NoReleaseIllustrationException(new Slug(release.album.slug), new Slug(release.slug));
-		return this.illustrationService.streamIllustration(
-			path,
-			release.slug, res
-		);
-	}
-
-	@ApiOperation({
-		summary: 'Change a release\'s illustration'
-	})
-	@Post('/:idOrSlug/illustration')
-	async updateReleaseIllustration(
-		@Param(ParseReleaseIdentifierPipe)
-		where: ReleaseQueryParameters.WhereInput,
-		@Body()
-		illustrationDto: IllustrationDownloadDto
-	) {
-		const path = await this.releaseService.buildIllustrationPath(where);
-		return await this.illustrationService.downloadIllustration(
-			illustrationDto.url,
-			path
-		);
 	}
 
 	@ApiOperation({
