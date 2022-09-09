@@ -155,6 +155,17 @@ export default class API {
 		return API.fetch(`/albums/${albumSlugOrId}/genres`, { include: [] });
 	}
 	/**
+	 * Get videos of a album
+	 * @param albumSlugOrId the id of the album
+	 * @returns an array of videos
+	 */
+	 static async getAlbumVideos(
+		albumSlugOrId: string | number,
+		pagination?: PaginationParameters,
+	): Promise<PaginatedResponse<Track>> {
+		return API.fetch(`/albums/${albumSlugOrId}/videos`, { pagination, include: [] });
+	}
+	/**
 	 * Get releases of a album
 	 * @param albumSlugOrId the id of the album
 	 * @returns an array of releases
