@@ -31,17 +31,22 @@ const tracklistQuery = (releaseSlugOrId: string | number) => ({
 const artistQuery = (slugOrId: string | number) => ({
 	key: ['artist', slugOrId],
 	exec: () => API.getArtist(slugOrId!),
-})
+});
 
 const albumGenresQuery = (slugOrId: string | number) => ({
 	key: ['album', slugOrId, 'genres'],
 	exec: () => API.getAlbumGenres(slugOrId),
-})
+});
+
+const albumVideosQuery = (slugOrId: string | number) => ({
+	key: ['album', slugOrId, 'videos'],
+	exec: () => API.getAlbumVideos(slugOrId),
+});
 
 const albumReleasesQuery = (slugOrId: string | number) => ({
 	key: ['album', slugOrId, 'releases'],
 	exec: () => API.getAlbumReleases<ReleaseWithTracks>(slugOrId, {}, ['tracks']),
-})
+});
 
 export const getServerSideProps = async (context: GetServerSidePropsContext) => {
 	const releaseIdentifier = context.params!.slugOrId as string;
@@ -60,6 +65,24 @@ export const getServerSideProps = async (context: GetServerSidePropsContext) => 
 	}
 }
 
+type RelatedContentSectionProps = {
+	display: boolean,
+	title: string,
+	children: JSX.Element;
+}
+
+const RelatedContentSection = (props: RelatedContentSectionProps) => {
+	if (props.display == false)
+		return <></>
+	return (
+		<FadeIn>
+			<Divider/>
+			<Typography variant='h6' sx={{ paddingTop: 3 }}>{props.title}</Typography>
+			{props.children}
+		</FadeIn>
+	)
+}
+
 const ReleasePage = ({ releaseIdentifier }: InferGetServerSidePropsType<typeof getServerSideProps>) => {
 	const theme = useTheme();
 	const [totalDuration, setTotalDuration] = useState<number | null>(null);
@@ -71,6 +94,7 @@ const ReleasePage = ({ releaseIdentifier }: InferGetServerSidePropsType<typeof g
 	const tracklist = useQuery(prepareMeeloQuery(tracklistQuery, releaseIdentifier));
 	const albumArtist = useQuery(prepareMeeloQuery(artistQuery, artistId));
 	const albumGenres = useQuery(prepareMeeloQuery(albumGenresQuery, release.data?.albumId));
+	const albumVideos = useQuery(prepareMeeloQuery(albumVideosQuery, release.data?.albumId));
 
 	const otherArtistsQuery = useQueries((tracks ?? [])
 		.filter((track: TrackWithSong) => track.song.artistId != albumArtist.data?.id)
@@ -167,13 +191,13 @@ const ReleasePage = ({ releaseIdentifier }: InferGetServerSidePropsType<typeof g
 					}
 				</Grid>
 			</Grid>
-			{ (relatedReleases.data?.items.length ?? 0) > 1 &&
-				<FadeIn>
-					<Divider/>
-					<Typography variant='h6' sx={{ paddingTop: 3 }}>{"Other releases of the same album:"}</Typography>
-					<List>
+			<RelatedContentSection
+				display={(relatedReleases.data?.items.length ?? 0) > 1}
+				title={"Other releases of the same album:"}
+			>
+				<List>
 					{ relatedReleases.data!.items.filter((relatedRelease) => relatedRelease.id != release.data!.id).map((otherRelease) =>
-						<ListItem>
+						<ListItem key={otherRelease.id}>
 							<Tile
 								targetURL={`/releases/${albumArtist?.data?.slug ?? 'compilations'}+${release.data!.album.slug}+${otherRelease.slug}/`}
 								title={otherRelease.name}
@@ -184,9 +208,8 @@ const ReleasePage = ({ releaseIdentifier }: InferGetServerSidePropsType<typeof g
 						</ListItem>
 					
 					)}
-					</List>
-				</FadeIn>
-			}
+				</List>
+			</RelatedContentSection>
 		</Box>
 	</Box>
 }
