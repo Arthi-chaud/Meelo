@@ -96,7 +96,7 @@ const InfiniteList = <T extends Resource,>(props: InfiniteListProps<T>) => {
 				if (hasNextPage && !isFetchingNextPage)
 					fetchNextPage()
 			}}
-		    hasMore={() => hasNextPage}
+		    hasMore={hasNextPage}
 		>
 		{ data && props.render(data.pages.map((page) => page.items).flat()) }
 		{ isFetchingNextPage && props.loader() }
