@@ -1,8 +1,7 @@
 import { Grid, IconButton, ListItem, Typography, List, ListSubheader, ListItemText, Divider, ListItemIcon, Fade, useTheme, ListItemButton } from "@mui/material";
 import { Box } from "@mui/system";
-import { NextPage } from "next";
+import { GetServerSidePropsContext, InferGetServerSidePropsType, NextPage } from "next";
 import { useRouter } from "next/router";
-import { useQueries, useQuery } from "react-query";
 import API from "../../src/api";
 import Illustration from "../../src/components/illustration";
 import { WideLoadingComponent } from "../../src/components/loading/loading";
@@ -14,67 +13,109 @@ import AspectRatio from '@mui/joy/AspectRatio';
 import PlayCircleIcon from '@mui/icons-material/PlayCircle';
 import { MoreHoriz, Shuffle } from "@mui/icons-material";
 import FadeIn from "react-fade-in";
-import MeeloAppBar from "../../src/components/appbar/appbar";
-import InfiniteList from "../../src/components/infinite/infinite-list";
 import Tile from "../../src/components/tile/tile";
 import MusicVideoIcon from '@mui/icons-material/MusicVideo';
+import { prepareMeeloQuery } from "../../src/query";
+import { QueryClient, dehydrate, useQuery, useQueries } from "react-query";
 
-const ReleasePage: NextPage = () => {
+const releaseQuery = (slugOrId: string | number) => ({
+	key: ['release', slugOrId],
+	exec: () => API.getRelease<ReleaseWithAlbum>(slugOrId, ['album'])
+});
+
+const tracklistQuery = (releaseSlugOrId: string | number) => ({
+	key: ['release', releaseSlugOrId, 'tracklist'],
+	exec: () => API.getReleaseTrackList<TrackWithSong>(releaseSlugOrId, ['song']),
+});
+
+const artistQuery = (slugOrId: string | number) => ({
+	key: ['artist', slugOrId],
+	exec: () => API.getArtist(slugOrId!),
+});
+
+const albumGenresQuery = (slugOrId: string | number) => ({
+	key: ['album', slugOrId, 'genres'],
+	exec: () => API.getAlbumGenres(slugOrId),
+});
+
+const albumVideosQuery = (slugOrId: string | number) => ({
+	key: ['album', slugOrId, 'videos'],
+	exec: () => API.getAlbumVideos(slugOrId),
+});
+
+const albumReleasesQuery = (slugOrId: string | number) => ({
+	key: ['album', slugOrId, 'releases'],
+	exec: () => API.getAlbumReleases<ReleaseWithTracks>(slugOrId, {}, ['tracks']),
+});
+
+export const getServerSideProps = async (context: GetServerSidePropsContext) => {
+	const releaseIdentifier = context.params!.slugOrId as string;
+	const queryClient = new QueryClient()
+  
+	await Promise.all([
+		queryClient.prefetchQuery(prepareMeeloQuery(releaseQuery, releaseIdentifier)),
+		queryClient.prefetchQuery(prepareMeeloQuery(tracklistQuery, releaseIdentifier))
+	]);
+  
+	return {
+		props: {
+			releaseIdentifier,
+			dehydratedState: dehydrate(queryClient),
+		},
+	}
+}
+
+type RelatedContentSectionProps = {
+	display: boolean,
+	title: string,
+	children: JSX.Element;
+}
+
+const RelatedContentSection = (props: RelatedContentSectionProps) => {
+	if (props.display == false)
+		return <></>
+	return (
+		<FadeIn>
+			<Divider/>
+			<Typography variant='h6' sx={{ paddingTop: 3 }}>{props.title}</Typography>
+			{props.children}
+		</FadeIn>
+	)
+}
+
+const ReleasePage = ({ releaseIdentifier }: InferGetServerSidePropsType<typeof getServerSideProps>) => {
 	const theme = useTheme();
-	const router = useRouter();
-	const { slugOrId } = router.query;
-	const releaseIdentifier = slugOrId as string;
 	const [totalDuration, setTotalDuration] = useState<number | null>(null);
 	const [tracks, setTracks] = useState<TrackWithSong[] | null>(null);
-	const releaseQuery = useQuery(
-		['release', releaseIdentifier],
-		() => API.getRelease<ReleaseWithAlbum>(releaseIdentifier, ['album']),
-		{ enabled: !!slugOrId }
+
+	const release = useQuery(prepareMeeloQuery(releaseQuery, releaseIdentifier));
+	let artistId = release.data?.album?.artistId;
+	
+	const tracklist = useQuery(prepareMeeloQuery(tracklistQuery, releaseIdentifier));
+	const albumArtist = useQuery(prepareMeeloQuery(artistQuery, artistId));
+	const albumGenres = useQuery(prepareMeeloQuery(albumGenresQuery, release.data?.albumId));
+	const albumVideos = useQuery(prepareMeeloQuery(albumVideosQuery, release.data?.albumId));
+
+	const otherArtistsQuery = useQueries((tracks ?? [])
+		.filter((track: TrackWithSong) => track.song.artistId != albumArtist.data?.id)
+		.map((track) => prepareMeeloQuery(artistQuery, track.song.artistId))
 	);
-	let artistId = releaseQuery.data?.album?.artistId;
-	const albumArtistQuery = useQuery(
-		['artist', artistId],
-		() => API.getArtist(artistId!),
-		{ enabled: !!artistId }
-	); 
-	const tracklistQuery = useQuery(
-		['tracklist', releaseIdentifier],
-		() => API.getReleaseTrackList<TrackWithSong>(releaseIdentifier, ['song']),
-		{ enabled: !!slugOrId }
-	);
-	const genresQuery = useQuery(
-		['album', releaseQuery.data?.albumId, 'genres'],
-		() => API.getAlbumGenres(releaseQuery.data!.albumId),
-		{ enabled: !!releaseQuery.data }
-	);
-	const otherArtistsQuery = useQueries(tracks?.filter(
-			(track: TrackWithSong) => track.song.artistId != albumArtistQuery.data?.id
-		).map((track) => ({
-			queryKey: ['artist', track.song.id],
-			queryFn: () => API.getArtist(track.song.artistId),
-			enabled: !!tracklistQuery.data
-		})) ?? []
-	);
-	const relatedReleasesQuery = useQuery(
-		['album', releaseQuery.data?.albumId, 'releases'],
-		() => API.getAlbumReleases<ReleaseWithTracks>(releaseQuery.data!.albumId, {}, ['tracks']),
-		{ enabled: !!releaseQuery.data }
-	)
+	const relatedReleases = useQuery(prepareMeeloQuery(albumReleasesQuery, release.data?.albumId));
 	useEffect(() => {
-		if (tracklistQuery.data) {
-			const flattenedTracks = Array.from(tracklistQuery.data!.values()).flat();
+		if (tracklist.data) {
+			const flattenedTracks = Array.from(tracklist.data!.values()).flat();
 			setTracks(flattenedTracks);
 			setTotalDuration(flattenedTracks.reduce((prevDuration, track) => prevDuration + track.duration, 0));
 		}
-	}, [tracklistQuery.data]);
-	if (releaseQuery.isLoading || albumArtistQuery.isLoading || slugOrId == undefined)
+	}, [tracklist.data]);
+	if (release.isLoading || albumArtist.isLoading)
 		return <WideLoadingComponent/>
 	return <Box>
 		<Box sx={{ padding: 5, flex: 1, flexGrow: 1}}>
 			<Grid container spacing={4} sx={{ justifyContent: 'center' }}>
 				<Grid item md={4} xs={12}>
 					<AspectRatio ratio="1">
-						<Illustration url={releaseQuery.data!.illustration} height={'40%'}/>
+						<Illustration url={release.data!.illustration} height={'40%'}/>
 					</AspectRatio> 
 				</Grid>
 				<Grid item sx={{ display: 'flex' }} lg={5} md={8} xs={12} >
@@ -82,16 +123,16 @@ const ReleasePage: NextPage = () => {
 						alignItems: 'left', [theme.breakpoints.down('md')]: { alignItems: 'center' },
 					}}>
 						<Grid item>
-							<Typography variant='h2'>{releaseQuery.data!.name}</Typography>
+							<Typography variant='h2'>{release.data!.name}</Typography>
 						</Grid>
-						{albumArtistQuery.data &&
+						{albumArtist.data &&
 							<Grid item>
-								<Typography  variant='h3'>{albumArtistQuery.data?.name}</Typography>
+								<Typography  variant='h3'>{albumArtist.data?.name}</Typography>
 							</Grid>
 						}
 						<Grid item>
 							<Typography variant='h6'>
-								{new Date(releaseQuery.data!.album.releaseDate!).getFullYear()}{totalDuration && ` - ${formatDuration(totalDuration * 1000)}`}
+								{new Date(release.data!.album.releaseDate!).getFullYear()}{totalDuration && ` - ${formatDuration(totalDuration * 1000)}`}
 							</Typography>
 						</Grid>
 					</Grid>
@@ -110,10 +151,10 @@ const ReleasePage: NextPage = () => {
 			</Grid>
 			<Grid sx={{ display: 'flex', paddingY: 5 }}>
 				<Grid item sx={{ flex: 3 }}>
-					{ genresQuery.data &&
+					{ albumGenres.data &&
 						<FadeIn>
 							<List subheader={<ListSubheader>Genres</ListSubheader>}>
-							{ genresQuery.data.map((genre) => 
+							{ albumGenres.data.map((genre) => 
 								<ListItemButton key={genre.id}>
 									<ListItemText inset>{ genre.name }</ListItemText>
 								</ListItemButton>
@@ -123,9 +164,9 @@ const ReleasePage: NextPage = () => {
 					}
 				</Grid>
 				<Grid item sx={{ flex: 9 }}>
-					{ tracklistQuery.data &&
+					{ tracklist.data &&
 						<FadeIn>
-							{ Array.from(tracklistQuery.data.entries()).map((disc, _, discs) => 
+							{ Array.from(tracklist.data.entries()).map((disc, _, discs) => 
 								<List key={disc[0]} subheader={ discs.length !== 1 && <ListSubheader>Disc {disc[0]}</ListSubheader> }>
 									{ disc[1].map((track) => <>
 										<ListItemButton key={track.id}>
@@ -133,7 +174,7 @@ const ReleasePage: NextPage = () => {
 											<ListItemText
 												primary={track.name}
 												secondary={
-													track.song.artistId == albumArtistQuery.data?.id ? undefined : 
+													track.song.artistId == albumArtist.data?.id ? undefined : 
 													otherArtistsQuery.find((artistQuery) => artistQuery.data?.id == track.song.artistId)?.data?.name 
 												}
 											/>
@@ -150,26 +191,25 @@ const ReleasePage: NextPage = () => {
 					}
 				</Grid>
 			</Grid>
-			{ (relatedReleasesQuery.data?.items.length ?? 0) > 1 &&
-				<FadeIn>
-					<Divider/>
-					<Typography variant='h6' sx={{ paddingTop: 3 }}>{"Other releases of the same album:"}</Typography>
-					<List>
-					{ relatedReleasesQuery.data!.items.filter((release) => release.id != releaseQuery.data!.id).map((otherRelease) =>
-						<ListItem>
+			<RelatedContentSection
+				display={(relatedReleases.data?.items.length ?? 0) > 1}
+				title={"Other releases of the same album:"}
+			>
+				<List>
+					{ relatedReleases.data!.items.filter((relatedRelease) => relatedRelease.id != release.data!.id).map((otherRelease) =>
+						<ListItem key={otherRelease.id}>
 							<Tile
-								targetURL={`/releases/${albumArtistQuery?.data?.slug ?? 'compilations'}+${releaseQuery.data!.album.slug}+${otherRelease.slug}/`}
+								targetURL={`/releases/${albumArtist?.data?.slug ?? 'compilations'}+${release.data!.album.slug}+${otherRelease.slug}/`}
 								title={otherRelease.name}
 								subtitle={`${otherRelease.tracks.length} Tracks`}
 								illustrationURL={otherRelease.illustration}
-								illustrationFallback={() => <Illustration url={releaseQuery.data!.illustration}/>}
+								illustrationFallback={() => <Illustration url={release.data!.illustration}/>}
 							/>
 						</ListItem>
 					
 					)}
-					</List>
-				</FadeIn>
-			}
+				</List>
+			</RelatedContentSection>
 		</Box>
 	</Box>
 }

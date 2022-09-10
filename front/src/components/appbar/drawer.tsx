@@ -1,6 +1,6 @@
 import ExpandLess from "@mui/icons-material/ExpandLess";
 import ExpandMore from "@mui/icons-material/ExpandMore";
-import { Drawer, List, ListSubheader, ListItem, ListItemButton, ListItemText, Collapse, ListItemIcon, Divider, Grid } from "@mui/material";
+import { Drawer, List, ListSubheader, ListItem, ListItemButton, ListItemText, Collapse, ListItemIcon, Divider, Grid, Container } from "@mui/material";
 import FadeIn from "react-fade-in";
 import { UseQueryResult } from "react-query";
 import Library from "../../models/library";
@@ -28,37 +28,38 @@ const MeeloAppBarDrawer = ({ query, requestedLibrarySlug, isOpen, onClose }: Dra
 	useEffect(() => setSelectedLibrary(requestedLibrarySlug), [requestedLibrarySlug, isOpen]);
 	return (
 		<Drawer
-				elevation={8}
-				PaperProps={{ sx: { width: '70%' } }}
-				variant="temporary"
-				open={isOpen}
-				onClose={onClose}
-				sx={{ display: { xs: 'block', md: 'none' } }}
-			>
-			<List>
+			elevation={8}
+			PaperProps={{ sx: { width: '70%' } }}
+			variant="temporary"
+			open={isOpen}
+			onClose={onClose}
+			sx={{ display: { xs: 'block', md: 'none' } }}
+		>
+			<List subheader={
 				<ListSubheader disableSticky={false}>
 					<Grid container columnSpacing={2} sx={{ flexDirection: 'row', alignItems: 'center' }}>
 						<Grid item sx={{ paddingTop: 1.6 }}><LibraryMusicIcon /></Grid>
 						<Grid item>Libraries</Grid>
 						<Grid item sx={{ flexGrow: 1 }} />
-						{ query.isLoading ? <Grid item><LoadingComponent /></Grid> : <></>}
+						{ query.isLoading && <Grid item><LoadingComponent /></Grid>}
 					</Grid>
 				</ListSubheader>
+			}>
 				{
 					query.isLoading || <FadeIn> {
 						[globalLibrary, ...query.data!.items].map((library) => {
 							const open = selectedLibrarySlug === library.slug;
-							return (<>
-							<ListItem key={library.slug}>
+							return (<Container key={library.slug}>
+							<ListItem>
 								<ListItemButton onClick={() => setSelectedLibrary(open ? null : library.slug)}>
 									<ListItemText>{library.name}</ListItemText>
 									{open ? <ExpandLess /> : <ExpandMore />}
 								</ListItemButton>
 							</ListItem>
-							<Collapse in={open} unmountOnExit key={library.slug}>
+							<Collapse in={open} unmountOnExit>
 								<List sx={{ pl: 4 }}>
 									{itemType.map((item, index) => (
-										<Link href={buildLink(item, library.slug)}>
+										<Link key={item} href={buildLink(item, library.slug)}>
 											<ListItemButton key={item} onClick={onClose}>
 												<ListItemIcon>
 													{ getTypeIcon(item) }
@@ -69,7 +70,7 @@ const MeeloAppBarDrawer = ({ query, requestedLibrarySlug, isOpen, onClose }: Dra
 									))}
 								</List>
 							</Collapse>
-							</>)
+							</Container>)
 						})
 					} </FadeIn>
 				}

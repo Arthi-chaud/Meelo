@@ -1,3 +1,4 @@
+import AspectRatio from "@mui/joy/AspectRatio";
 import { Box } from "@mui/material";
 import Image from "next/image";
 import { useEffect, useState } from "react";
@@ -16,13 +17,17 @@ type IllustrationProps = {
 
 const Illustration = (props: IllustrationProps) => {
 	return <FadeIn>
-		<Box
-			{...props}
-        	component="img"
-        	sx={{ borderRadius: '3%' }}
-        	src={API.getIllustrationURL(props.url)}
-      	/>
-		
+		<AspectRatio
+			ratio="1"
+			objectFit="contain"
+			componentsProps={{ content: { sx: { display: 'flex', justifyContent: 'center' } } }}
+		>
+			<img
+				{...props}
+				style={{ ...props.style, borderRadius: '3%', width: 'auto' }}
+        		src={API.getIllustrationURL(props.url)}
+      		/>
+		</AspectRatio>
 	</FadeIn>
 }
 
