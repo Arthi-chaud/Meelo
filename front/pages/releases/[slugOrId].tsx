@@ -165,7 +165,7 @@ const ReleasePage = ({ releaseIdentifier }: InferGetServerSidePropsType<typeof g
 				</Grid>
 				<Grid item sx={{ flex: 9 }}>
 					{ tracklist.data &&
-						<FadeIn>
+						<>
 							{ Array.from(tracklist.data.entries()).map((disc, _, discs) => 
 								<List key={disc[0]} subheader={ discs.length !== 1 && <ListSubheader>Disc {disc[0]}</ListSubheader> }>
 									{ disc[1].map((track) => <>
@@ -187,7 +187,7 @@ const ReleasePage = ({ releaseIdentifier }: InferGetServerSidePropsType<typeof g
 									</>) }
 								</List>
 							) }
-						</FadeIn>
+						</>
 					}
 				</Grid>
 			</Grid>
@@ -196,7 +196,7 @@ const ReleasePage = ({ releaseIdentifier }: InferGetServerSidePropsType<typeof g
 				title={"Other releases of the same album:"}
 			>
 				<List>
-					{ relatedReleases.data!.items.filter((relatedRelease) => relatedRelease.id != release.data!.id).map((otherRelease) =>
+					{ relatedReleases.data?.items.filter((relatedRelease) => relatedRelease.id != release.data!.id).map((otherRelease) =>
 						<ListItem key={otherRelease.id}>
 							<Tile
 								targetURL={`/releases/${albumArtist?.data?.slug ?? 'compilations'}+${release.data!.album.slug}+${otherRelease.slug}/`}
