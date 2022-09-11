@@ -1,7 +1,6 @@
 import { QueryFunctionContext } from "react-query";
 import API from "./api";
 import { InfiniteFetchFn } from "./components/infinite/infinite-list";
-
 type Key = string | number
 
 type MeeloQueryFn<T = unknown> = <Arg extends Key,>(...args: Arg[]) => ({
@@ -13,6 +12,11 @@ type MeeloInfiniteQueryFn<T = unknown> = <Arg extends Key,>(...args: Arg[]) => (
 	key: Key[],
 	exec: InfiniteFetchFn<T>
 });
+
+const defaultMeeloQueryOptions = {
+	useErrorBoundary: true,
+	retry: 1
+}
 
 /**
  * Wrapper for 'react-query''s useQuery's parameters, to manage dependent queries more easily
@@ -26,7 +30,8 @@ const prepareMeeloQuery = <T,>(query: MeeloQueryFn<T>, ...queryArgs: Partial<Par
 	return {
 		queryKey: queryParams.key,
 		queryFn: queryParams.exec,
-		enabled: enabled
+		enabled: enabled,
+		...defaultMeeloQueryOptions
 	};
 }
 
@@ -42,7 +47,8 @@ const prepareMeeloInfiniteQuery = <T,>(query: MeeloInfiniteQueryFn<T>, ...queryA
 	return {
 		queryKey: queryParams.key,
 		queryFn: (context: QueryFunctionContext) => queryParams.exec(context.pageParam ?? { index: 0, pageSize: API.defaultPageSize }),
-		enabled: enabled
+		enabled: enabled,
+		...defaultMeeloQueryOptions
 	};
 }
 export { prepareMeeloQuery, prepareMeeloInfiniteQuery };
