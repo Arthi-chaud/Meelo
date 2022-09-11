@@ -43,20 +43,7 @@ const libraryQuery = () => ({
 	exec: () => API.getAllLibraries()
 });
 
-export const getServerSideProps = async (context: GetServerSidePropsContext) => {
-	const queryClient = new QueryClient();
-
-	await queryClient.prefetchQuery(prepareMeeloQuery(libraryQuery));
-
-	return {
-		props: {
-			dehydratedState: dehydrate(queryClient)
-		}
-	}
-}
- 
-
-const MeeloAppBar = (props: InferGetServerSidePropsType<typeof getServerSideProps> ) => {
+const MeeloAppBar = () => {
 	const classes = useStyles();
 	const router = useRouter();
 	const [requestedLibrary, setRequestedLibrary] = useState(globalLibrary);

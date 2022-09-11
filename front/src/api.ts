@@ -182,7 +182,7 @@ export default class API {
 		slugOrId: string | number,
 		include: ReleaseInclude[] = []
 	): Promise<T> {
-		return API.fetch(`/releases/${slugOrId}`, { include }).catch("Release not found");
+		return API.fetch(`/releases/${slugOrId}`, { include });
 	}
 
 	static async getReleaseTrackList<T extends Track = Track> (
