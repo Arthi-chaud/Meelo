@@ -7,7 +7,7 @@ import Release, { ReleaseInclude } from "./models/release";
 import Song, { SongInclude, SongWithArtist } from "./models/song";
 import Track, { TrackInclude, TrackWithRelease } from "./models/track";
 import Tracklist from "./models/tracklist";
-
+import axios from 'axios';
 type QueryParameters = {
 	pagination?: PaginationParameters;
 	include?: string[];
@@ -182,7 +182,7 @@ export default class API {
 		slugOrId: string | number,
 		include: ReleaseInclude[] = []
 	): Promise<T> {
-		return API.fetch(`/releases/${slugOrId}`, { include });
+		return API.fetch(`/releases/${slugOrId}`, { include }).catch("Release not found");
 	}
 
 	static async getReleaseTrackList<T extends Track = Track> (
@@ -202,8 +202,11 @@ export default class API {
 	}
 
 	private static async fetch(route: string, parameters: QueryParameters, otherParameters?: any) {
-		return fetch(this.buildURL(route, parameters, otherParameters))
-			.then((response) => response.json());
+		return axios.get(this.buildURL(route, parameters, otherParameters))
+			.then(
+				(response) => response.data,
+				(error) => { throw new Error(error?.response?.data.error ?? error?.response?.statusText ) }
+			);
 	}
 
 	/**
