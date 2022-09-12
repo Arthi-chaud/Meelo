@@ -5,14 +5,14 @@ services:
       dockerfile: Dockerfile.dev
     ports:
       - "5000:5000"
+      - "3000:3000"
     depends_on:
       - "db"
     volumes:
       - ./meelo:/meelo
-      - ./src:/app/back/src
-      - ./prisma:/app/back/prisma
-      - ./data:/data
+      - .:/app/back
       - ./front:/app/front
+      - ./data:/data
     env_file:
       - .env
   db:

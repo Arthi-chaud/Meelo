@@ -1,24 +1,6 @@
-FROM node:17 as back-builder
-WORKDIR /app
-RUN apt-get update && apt-get install -y ffmpeg
-COPY *.json ./
-COPY *.lock ./
-COPY prisma/ prisma/
-RUN yarn install
-RUN yarn run prisma generate
-
-
-FROM node:17 as front-builder
-WORKDIR /app
-COPY ./front/*.json ./
-RUN yarn install
-
 FROM node:17
 WORKDIR /app
 RUN apt-get update && apt-get install -y ffmpeg nginx
-COPY --from=back-builder /app ./back
-COPY --from=front-builder /app ./front
 COPY ./nginx.conf /etc/nginx/nginx.conf
 COPY ./Meelo .
-RUN chmod +x Meelo
 CMD nginx ; ./Meelo dev
