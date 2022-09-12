@@ -1,6 +1,6 @@
 import AspectRatio from "@mui/joy/AspectRatio";
 import { Box } from "@mui/material";
-import Image from "next/image";
+import Image, { ImageProps } from "next/image";
 import { useEffect, useState } from "react";
 import FadeIn from "react-fade-in";
 import { useQuery } from "react-query";
@@ -13,7 +13,7 @@ type IllustrationProps = {
 	 * Must be an URL from an API response
 	 */
 	url: string;
-} & React.ImgHTMLAttributes<HTMLImageElement>
+} & Omit<ImageProps, 'src'>
 
 const Illustration = (props: IllustrationProps) => {
 	return <FadeIn>
@@ -22,7 +22,7 @@ const Illustration = (props: IllustrationProps) => {
 			objectFit="contain"
 			componentsProps={{ content: { sx: { display: 'flex', justifyContent: 'center' } } }}
 		>
-			<img
+			<Image
 				{...props}
 				style={{ ...props.style, borderRadius: '3%', width: 'auto' }}
         		src={API.getIllustrationURL(props.url)}

@@ -79,15 +79,15 @@ const SongItem = (props: SongItemProps) => {
 				firstLoader={() => <WideLoadingComponent/>}
 				loader={() => <WideLoadingComponent/>}
 				queryKey={['tracks', 'song', song.id.toString()]}
-				fetch={(lastPage, pageSize) => API.getSongTracks(
+				fetch={(lastPage) => API.getSongTracks(
 					song.id,
-					{ index: lastPage?.index, pageSize: pageSize },
+					lastPage,
 					['release']
 				) as unknown as Promise<PaginatedResponse<TrackWithRelease>>}
 				render={(tracks: TrackWithRelease[]) => <>
 					<List sx={{ }}>
 					{ tracks.map((track) =>
-						<FadeIn>
+						<FadeIn key={track.id}>
 							<Row
 								left={<Illustration url={track.illustration}/>}
 								centerLeft={<Typography>{track.name}</Typography>}
