@@ -1,4 +1,4 @@
-import React from "react";
+import { useState } from "react";
 import type { AppProps } from "next/app";
 import { QueryClient, QueryClientProvider, Hydrate, QueryCache } from "react-query";
 import { ReactQueryDevtools } from "react-query/devtools";
@@ -9,22 +9,26 @@ import { ErrorBoundary } from 'react-error-boundary'
 import toast, { Toaster } from 'react-hot-toast';
 
 function MyApp({ Component, pageProps }: AppProps) {
-	const [queryClient] = React.useState(() => new QueryClient());
+	const [queryClient] = useState(() => new QueryClient());
+	const [errorDsiplayed, setErrorDisplayed] = useState(false);
 	return (
-		<ErrorBoundary fallbackRender={(error) => {
-			toast.error(error.error.message, { duration: 3600, position: 'bottom-center' });
-			return <Toaster/>
-		}}>
-			<QueryClientProvider client={queryClient}>
-				<Hydrate state={pageProps.dehydratedState}>
-					<Box>
-						<MeeloAppBar/>
-						<Component {...pageProps} />
-					</Box>
-				</Hydrate>
-				<ReactQueryDevtools initialIsOpen={false} />
-			</QueryClientProvider>
-		</ErrorBoundary>
+		<Box>
+			<ErrorBoundary
+				FallbackComponent={() => <Box/>}
+				onError={(error: Error) => toast.error(error.message, { position: 'bottom-center', duration: 3600 })}
+			>
+				<QueryClientProvider client={queryClient}>
+					<Hydrate state={pageProps.dehydratedState}>
+						<Box>
+							<MeeloAppBar/>
+							<Component {...pageProps} />
+						</Box>
+					</Hydrate>
+					<ReactQueryDevtools initialIsOpen={false} />
+				</QueryClientProvider>
+			</ErrorBoundary>
+			<Toaster/>
+		</Box>
 	);
 }
 
