@@ -1,6 +1,0 @@
-FROM node:17
-WORKDIR /app
-COPY *.json ./
-RUN yarn install
-COPY . .
-CMD yarn run dev

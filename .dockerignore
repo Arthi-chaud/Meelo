@@ -2,3 +2,4 @@ node_modules/
 dist
 .env.example
 .git
+settings.json

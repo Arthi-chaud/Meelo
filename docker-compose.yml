@@ -1,22 +1,16 @@
 services:
-  back:
+  meelo:
     build:
       context: ./
     ports:
-      - "${BACK_PORT}:3000"
+      - "5000:5000"
     depends_on:
-      - "meelo_db"
+      - "db"
     volumes:
-      - ./front/build:/app/front/build
-      - config:/meelo
-      - data:/data
+      - ./meelo:/meelo
+      - ./data:/data
     env_file:
       - .env
-  front:
-    build:
-      context: ./front
-    volumes:
-      ./front/build:/app/front/build
   db:
     image: postgres:alpine3.14
     env_file:

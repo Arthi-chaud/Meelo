@@ -1,10 +1,6 @@
 FROM node:17
 WORKDIR /app
-RUN apt-get update && apt-get install -y ffmpeg
-COPY *.json ./
-COPY *.lock ./
-RUN yarn install
-COPY . .
-RUN yarn run prisma generate
-RUN yarn run build
-CMD yarn run prisma migrate dev ; yarn run start:dev
+RUN apt-get update && apt-get install -y ffmpeg nginx
+COPY ./nginx.conf /etc/nginx/nginx.conf
+COPY ./Meelo .
+CMD nginx ; ./Meelo dev
