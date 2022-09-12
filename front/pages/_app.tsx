@@ -15,7 +15,7 @@ function MyApp({ Component, pageProps }: AppProps) {
 		<Box>
 			<ErrorBoundary
 				FallbackComponent={() => <Box/>}
-				onError={(error: Error) => toast.error(error.message, { position: 'bottom-center', duration: 3600 })}
+				onError={(error: Error) => toast.error(error.message)}
 			>
 				<QueryClientProvider client={queryClient}>
 					<Hydrate state={pageProps.dehydratedState}>
@@ -27,7 +27,7 @@ function MyApp({ Component, pageProps }: AppProps) {
 					<ReactQueryDevtools initialIsOpen={false} />
 				</QueryClientProvider>
 			</ErrorBoundary>
-			<Toaster/>
+			<Toaster toastOptions={{ duration: 10000 }} position='bottom-center'/>
 		</Box>
 	);
 }
