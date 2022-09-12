@@ -39,7 +39,7 @@ export const getServerSideProps = async (context: GetServerSidePropsContext) => 
 	return {
 		props: {
 			librarySlug, 
-			dehydratedState: dehydrate(queryClient),
+			dehydratedState: JSON.parse(JSON.stringify(dehydrate(queryClient))),
 		},
 	}
 }
