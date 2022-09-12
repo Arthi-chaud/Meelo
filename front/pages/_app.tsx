@@ -10,24 +10,21 @@ import toast, { Toaster } from 'react-hot-toast';
 
 function MyApp({ Component, pageProps }: AppProps) {
 	const [queryClient] = useState(() => new QueryClient());
-	const [errorDsiplayed, setErrorDisplayed] = useState(false);
 	return (
 		<Box>
-			<ErrorBoundary
-				FallbackComponent={() => <Box/>}
-				onError={(error: Error) => toast.error(error.message)}
-			>
-				<QueryClientProvider client={queryClient}>
-					<Hydrate state={pageProps.dehydratedState}>
-						<Box>
-							<MeeloAppBar/>
+			<QueryClientProvider client={queryClient}>
+				<MeeloAppBar/>
+				<ErrorBoundary
+					FallbackComponent={() => <Box/>}
+					onError={(error: Error) => toast.error(error.message)}
+				>
+						<Hydrate state={pageProps.dehydratedState}>
 							<Component {...pageProps} />
-						</Box>
-					</Hydrate>
-					<ReactQueryDevtools initialIsOpen={false} />
-				</QueryClientProvider>
-			</ErrorBoundary>
-			<Toaster toastOptions={{ duration: 10000 }} position='bottom-center'/>
+						</Hydrate>
+				</ErrorBoundary>
+				<Toaster toastOptions={{ duration: 10000 }} position='bottom-center'/>
+				<ReactQueryDevtools initialIsOpen={false} />
+			</QueryClientProvider>
 		</Box>
 	);
 }
