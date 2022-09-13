@@ -39,7 +39,7 @@ export const getServerSideProps = async (context: GetServerSidePropsContext) => 
 	return {
 		props: {
 			librarySlug, 
-			dehydratedState: dehydrate(queryClient),
+			dehydratedState: JSON.parse(JSON.stringify(dehydrate(queryClient))),
 		},
 	}
 }
@@ -48,10 +48,9 @@ const LibraryAlbumsPage = ({ librarySlug }: InferGetServerSidePropsType<typeof g
 	const query = librarySlug ? libraryAlbumsQuery(librarySlug) : albumsQuery();
 	return <>
 		<InfiniteGrid
+			query={() => query}
 			firstLoader={() => <LoadingPage/>}
 			loader={() => <WideLoadingComponent/>}
-			fetch={(lastPage: Page<Album>) => query.exec(lastPage)}
-			queryKey={query.key}
 			render={(item: Album) => <AlbumTile album={item} />}
 		/>
 	</>;

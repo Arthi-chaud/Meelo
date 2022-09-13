@@ -1,6 +1,5 @@
 import {IconButton} from "@mui/material";
 import {AccountCircle, Album} from "@mui/icons-material";
-import API from "../../api";
 import Tile from "./tile";
 import { AlbumWithArtist } from "../../models/album";
 

@@ -7,10 +7,17 @@ import Release, { ReleaseInclude } from "./models/release";
 import Song, { SongInclude, SongWithArtist } from "./models/song";
 import Track, { TrackInclude, TrackWithRelease } from "./models/track";
 import Tracklist from "./models/tracklist";
-
+import axios from 'axios';
 type QueryParameters = {
 	pagination?: PaginationParameters;
 	include?: string[];
+}
+
+type FetchParameters = {
+	route: string,
+	parameters: QueryParameters,
+	otherParameters?: any,
+	errorMessage?: string
 }
 
 export default class API {
@@ -25,7 +32,11 @@ export default class API {
 	static async getAllLibraries(
 		pagination?: PaginationParameters
 	): Promise<PaginatedResponse<Library>> {
-		return API.fetch(`/libraries`, { pagination: pagination, include: [] });
+		return API.fetch({
+			route: `/libraries`,
+			errorMessage: "Libraries could not be loaded",
+			parameters: { pagination: pagination, include: [] }
+		});
 	}
 	/**
 	 * Fetch all album artists
@@ -35,7 +46,12 @@ export default class API {
 	static async getAllArtists(
 		pagination?: PaginationParameters, 
 	): Promise<PaginatedResponse<Artist>> {
-		return API.fetch(`/artists`, { pagination, include: [] }, {'albumArtistOnly': true});
+		return API.fetch({
+			route: `/artists`,
+			errorMessage: 'Artists could not be loaded',
+			parameters: { pagination, include: [] },
+			otherParameters: {'albumArtistOnly': true}
+		});
 	}
 
 	/**
@@ -47,7 +63,11 @@ export default class API {
 		pagination?: PaginationParameters,
 		include: AlbumInclude[] = []
 	): Promise<PaginatedResponse<T>> {
-		return API.fetch(`/albums`, { pagination, include });
+		return API.fetch({
+			route: `/albums`,
+			errorMessage: 'Albums could not be loaded',
+			parameters: { pagination, include }
+		});
 	}
 
 	/**
@@ -61,7 +81,12 @@ export default class API {
 		pagination?: PaginationParameters,
 		include: ArtistInclude[] = [],
 	): Promise<PaginatedResponse<T>> {
-		return API.fetch(`/libraries/${librarySlugOrId}/artists`, { pagination, include }, {'albumArtistOnly': true});
+		return API.fetch({
+			route: `/libraries/${librarySlugOrId}/artists`,
+			errorMessage: 'Library does not exist',
+			parameters: { pagination, include },
+			otherParameters: {'albumArtistOnly': true}
+		});
 	}
 
 	/**
@@ -75,7 +100,11 @@ export default class API {
 		pagination?: PaginationParameters,
 		include: AlbumInclude[] = [],
 	): Promise<PaginatedResponse<T>> {
-		return API.fetch(`/libraries/${librarySlugOrId}/albums`, { pagination, include });
+		return API.fetch({
+			route: `/libraries/${librarySlugOrId}/albums`,
+			errorMessage: 'Library does not exist',
+			parameters: { pagination, include }
+		});
 	}
 
 	/**
@@ -89,7 +118,11 @@ export default class API {
 		pagination?: PaginationParameters,
 		include: SongInclude[] = [],
 	): Promise<PaginatedResponse<T>> {
-		return API.fetch(`/libraries/${librarySlugOrId}/songs`, { pagination, include });
+		return API.fetch({
+			route: `/libraries/${librarySlugOrId}/songs`,
+			errorMessage: 'Library does not exist',
+			parameters: { pagination, include }
+		});
 	}
 
 	/**
@@ -101,7 +134,11 @@ export default class API {
 		pagination?: PaginationParameters,
 		include: SongInclude[] = []
 	): Promise<PaginatedResponse<T>> {
-		return API.fetch(`/songs`, { pagination, include });
+		return API.fetch({
+			route: `/songs`,
+			errorMessage: 'Songs could not be loaded',
+			parameters: { pagination, include }
+		});
 	}
 
 	/**
@@ -114,7 +151,10 @@ export default class API {
 		songSlugOrId: string | number,
 		include: TrackInclude[] = []
 	): Promise<T> {
-		return API.fetch(`/songs/${songSlugOrId}/master`, { include }); 
+		return API.fetch({
+			route: `/songs/${songSlugOrId}/master`,
+			parameters: { include }
+		}); 
 	}
 
 	/**
@@ -128,7 +168,10 @@ export default class API {
 		pagination?: PaginationParameters,
 		include: TrackInclude[] = []
 	): Promise<PaginatedResponse<T>> {
-		return API.fetch(`/songs/${songSlugOrId}/tracks`, { pagination, include });
+		return API.fetch({
+			route: `/songs/${songSlugOrId}/tracks`,
+			parameters: { pagination, include }
+		});
 	}
 
 	/**
@@ -141,7 +184,10 @@ export default class API {
 		songSlugOrId: string | number,
 		pagination?: PaginationParameters
 	): Promise<PaginatedResponse<Genre>> {
-		return API.fetch(`/songs/${songSlugOrId}/genres`, { pagination, include: [] });
+		return API.fetch({
+			route: `/songs/${songSlugOrId}/genres`,
+			parameters: { pagination, include: [] }
+		});
 	}
 
 	/**
@@ -152,7 +198,10 @@ export default class API {
 	 static async getAlbumGenres(
 		albumSlugOrId: string | number,
 	): Promise<Genre[]> {
-		return API.fetch(`/albums/${albumSlugOrId}/genres`, { include: [] });
+		return API.fetch({
+			route: `/albums/${albumSlugOrId}/genres`,
+			parameters: { include: [] }
+		});
 	}
 	/**
 	 * Get videos of a album
@@ -163,7 +212,10 @@ export default class API {
 		albumSlugOrId: string | number,
 		pagination?: PaginationParameters,
 	): Promise<PaginatedResponse<Track>> {
-		return API.fetch(`/albums/${albumSlugOrId}/videos`, { pagination, include: [] });
+		return API.fetch({
+			route: `/albums/${albumSlugOrId}/videos`,
+			parameters: { pagination, include: [] }
+		});
 	}
 	/**
 	 * Get releases of a album
@@ -175,22 +227,31 @@ export default class API {
 		pagination?: PaginationParameters,
 		include: ReleaseInclude[] = []
 	): Promise<PaginatedResponse<T>> {
-		return API.fetch(`/albums/${albumSlugOrId}/releases`, { include, pagination });
+		return API.fetch({
+			route: `/albums/${albumSlugOrId}/releases`,
+			parameters: { include, pagination }
+		});
 	}
 
 	static async getRelease<T extends Release = Release>(
 		slugOrId: string | number,
 		include: ReleaseInclude[] = []
 	): Promise<T> {
-		return API.fetch(`/releases/${slugOrId}`, { include });
+		return API.fetch({
+			route: `/releases/${slugOrId}`,
+			errorMessage: 'Release not found',
+			parameters: { include }
+		});
 	}
 
 	static async getReleaseTrackList<T extends Track = Track> (
 		slugOrId: string | number,
 		include: TrackInclude[] = []
 	): Promise<Tracklist<T>> {
-		const response = await this.fetch(`/releases/${slugOrId.toString()}/tracklist`, { include });
-		return new Map<string | '?', T[]>(Object.entries(response));
+		return this.fetch({
+			route: `/releases/${slugOrId.toString()}/tracklist`,
+			parameters: { include }
+		});
 	}
 
 
@@ -198,12 +259,19 @@ export default class API {
 		slugOrId: string | number,
 		include: ArtistInclude[] = []
 	): Promise<T> {
-		return API.fetch(`/artists/${slugOrId}`, { include });
+		return API.fetch({
+			route: `/artists/${slugOrId}`,
+			errorMessage: 'Artists could not be loaded',
+			parameters: { include }
+		});
 	}
 
-	private static async fetch(route: string, parameters: QueryParameters, otherParameters?: any) {
-		return fetch(this.buildURL(route, parameters, otherParameters))
-			.then((response) => response.json());
+	private static async fetch({ route, parameters, otherParameters, errorMessage }: FetchParameters) {
+		return axios.get(this.buildURL(route, parameters, otherParameters))
+			.then(
+				(response) => response.data,
+				(error) => { throw new Error(errorMessage ?? error?.response?.data.error ?? error?.response?.statusText ) }
+			);
 	}
 
 	/**

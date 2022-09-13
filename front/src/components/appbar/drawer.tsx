@@ -17,13 +17,13 @@ import buildLink from "./build-link";
 import Link from 'next/link';
 
 interface DrawerProps {
-	query: UseQueryResult<PaginatedResponse<Library>>,
+	availableLibraries: Library[] | null,
 	requestedLibrarySlug: string,
 	isOpen: boolean,
 	onClose: () => void
 }
 
-const MeeloAppBarDrawer = ({ query, requestedLibrarySlug, isOpen, onClose }: DrawerProps) => {
+const MeeloAppBarDrawer = ({ availableLibraries, requestedLibrarySlug, isOpen, onClose }: DrawerProps) => {
 	const [selectedLibrarySlug, setSelectedLibrary] = useState<string | null>(requestedLibrarySlug);
 	useEffect(() => setSelectedLibrary(requestedLibrarySlug), [requestedLibrarySlug, isOpen]);
 	return (
@@ -41,13 +41,13 @@ const MeeloAppBarDrawer = ({ query, requestedLibrarySlug, isOpen, onClose }: Dra
 						<Grid item sx={{ paddingTop: 1.6 }}><LibraryMusicIcon /></Grid>
 						<Grid item>Libraries</Grid>
 						<Grid item sx={{ flexGrow: 1 }} />
-						{ query.isLoading && <Grid item><LoadingComponent /></Grid>}
+						{ availableLibraries == null && <Grid item><LoadingComponent /></Grid>}
 					</Grid>
 				</ListSubheader>
 			}>
 				{
-					query.isLoading || <FadeIn> {
-						[globalLibrary, ...query.data!.items].map((library) => {
+					availableLibraries == null || <FadeIn> {
+						[globalLibrary, ...availableLibraries].map((library) => {
 							const open = selectedLibrarySlug === library.slug;
 							return (<Container key={library.slug}>
 							<ListItem>

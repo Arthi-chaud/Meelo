@@ -36,7 +36,7 @@ export const getServerSideProps = async (context: GetServerSidePropsContext) => 
 	return {
 		props: {
 			librarySlug, 
-			dehydratedState: dehydrate(queryClient),
+			dehydratedState: JSON.parse(JSON.stringify(dehydrate(queryClient))),
 		},
 	}
 }
@@ -47,8 +47,7 @@ const LibraryArtistsPage = ({ librarySlug }: InferGetServerSidePropsType<typeof 
 		<InfiniteGrid
 			firstLoader={() => <LoadingPage/>}
 			loader={() => <WideLoadingComponent/>}
-			fetch={(lastPage) => query.exec(lastPage)}
-			queryKey={query.key}
+			query={() => query}
 			render={(item: Artist) => <ArtistTile artist={item} />}
 		/>
 	</>;
