@@ -47,8 +47,7 @@ const LibraryArtistsPage = ({ librarySlug }: InferGetServerSidePropsType<typeof 
 		<InfiniteGrid
 			firstLoader={() => <LoadingPage/>}
 			loader={() => <WideLoadingComponent/>}
-			fetch={(lastPage) => query.exec(lastPage)}
-			queryKey={query.key}
+			query={() => query}
 			render={(item: Artist) => <ArtistTile artist={item} />}
 		/>
 	</>;

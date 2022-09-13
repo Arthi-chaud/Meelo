@@ -48,10 +48,9 @@ const LibraryAlbumsPage = ({ librarySlug }: InferGetServerSidePropsType<typeof g
 	const query = librarySlug ? libraryAlbumsQuery(librarySlug) : albumsQuery();
 	return <>
 		<InfiniteGrid
+			query={() => query}
 			firstLoader={() => <LoadingPage/>}
 			loader={() => <WideLoadingComponent/>}
-			fetch={(lastPage: Page<Album>) => query.exec(lastPage)}
-			queryKey={query.key}
 			render={(item: Album) => <AlbumTile album={item} />}
 		/>
 	</>;

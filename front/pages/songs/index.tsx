@@ -47,8 +47,7 @@ const LibrarySongsPage = ({ librarySlug }: InferGetServerSidePropsType<typeof ge
 		<InfiniteList
 			firstLoader={() => <LoadingPage/>}
 			loader={() => <WideLoadingComponent/>}
-			fetch={(lastPage) => query.exec(lastPage)}
-			queryKey={query.key}
+			query={() => query}
 			render={(items: SongWithArtist[]) =>
 				<FadeIn>
 					<List sx={{ padding: 3}}>
