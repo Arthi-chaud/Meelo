@@ -78,12 +78,14 @@ const SongItem = (props: SongItemProps) => {
 			{ open && <InfiniteList
 				firstLoader={() => <WideLoadingComponent/>}
 				loader={() => <WideLoadingComponent/>}
-				queryKey={['tracks', 'song', song.id.toString()]}
-				fetch={(lastPage) => API.getSongTracks(
-					song.id,
-					lastPage,
-					['release']
-				) as unknown as Promise<PaginatedResponse<TrackWithRelease>>}
+				query={() => ({
+					key: ['tracks', 'song', song.id.toString()],
+					exec: (lastPage) => API.getSongTracks(
+						song.id,
+						lastPage,
+						['release']
+					)
+				})}
 				render={(tracks: TrackWithRelease[]) => <>
 					<List sx={{ }}>
 					{ tracks.map((track) =>
