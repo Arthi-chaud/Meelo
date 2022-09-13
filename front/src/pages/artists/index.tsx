@@ -2,17 +2,17 @@ import React, { useState } from 'react';
 import { GetServerSidePropsContext, InferGetServerSidePropsType, NextPage } from "next";
 import { useRouter } from 'next/router';
 import { Box } from '@mui/material';
-import API from '../../src/api';
-import MeeloAppBar from '../../src/components/appbar/appbar';
-import InfiniteGrid from '../../src/components/infinite/infinite-grid';
-import { WideLoadingComponent } from '../../src/components/loading/loading';
-import LoadingPage from '../../src/components/loading/loading-page';
-import ArtistTile from '../../src/components/tile/artist-tile';
-import Artist from '../../src/models/artist';
-import getLibrarySlug from '../../src/utils/getLibrarySlug';
+import API from '../../api';
+import MeeloAppBar from '../../components/appbar/appbar';
+import InfiniteGrid from '../../components/infinite/infinite-grid';
+import { WideLoadingComponent } from '../../components/loading/loading';
+import LoadingPage from '../../components/loading/loading-page';
+import ArtistTile from '../../components/tile/artist-tile';
+import Artist from '../../models/artist';
+import getLibrarySlug from '../../utils/getLibrarySlug';
 import { QueryClient, dehydrate } from 'react-query';
-import { Page } from '../../src/components/infinite/infinite-list';
-import { prepareMeeloInfiniteQuery } from '../../src/query';
+import { Page } from '../../components/infinite/infinite-list';
+import { prepareMeeloInfiniteQuery } from '../../query';
 
 const artistsQuery = () => ({
 	key: ["artists"],
