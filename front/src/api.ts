@@ -149,10 +149,43 @@ export default class API {
 	 */
 	static async getMasterTrack<T extends Track = Track>(
 		songSlugOrId: string | number,
-		include: TrackInclude[] = []
+		include: ReleaseInclude[] = []
 	): Promise<T> {
 		return API.fetch({
 			route: `/songs/${songSlugOrId}/master`,
+			parameters: { include }
+		}); 
+	}
+
+	/**
+	 * Get the album
+	 * @param albumSlugOrId the identifier of an album
+	 * @param include the fields to include in the fetched item
+	 * @returns a release
+	 */
+	 static async getAlbum<T extends Album = Album>(
+		albumSlugOrId: string | number,
+		include: AlbumInclude[] = []
+	): Promise<T> {
+		return API.fetch({
+			route: `/albums/${albumSlugOrId}`,
+			errorMessage: "Album not found",
+			parameters: { include }
+		}); 
+	}
+
+	/**
+	 * Get the master release of an album
+	 * @param albumSlugOrId the identifier of an album
+	 * @param include the fields to include in the fetched item
+	 * @returns a release
+	 */
+	 static async getMasterRelease<T extends Release = Release>(
+		albumSlugOrId: string | number,
+		include: TrackInclude[] = []
+	): Promise<T> {
+		return API.fetch({
+			route: `/albums/${albumSlugOrId}/master`,
 			parameters: { include }
 		}); 
 	}
@@ -267,11 +300,14 @@ export default class API {
 	}
 
 	private static async fetch({ route, parameters, otherParameters, errorMessage }: FetchParameters) {
-		return axios.get(this.buildURL(route, parameters, otherParameters))
-			.then(
-				(response) => response.data,
-				(error) => { throw new Error(errorMessage ?? error?.response?.data.error ?? error?.response?.statusText ) }
-			);
+		const response = await fetch(this.buildURL(route, parameters, otherParameters));
+		const jsonResponse = await response.json().catch(() => {
+			throw new Error("Error while parsing Server's response");
+		});
+		if (!response.ok) {
+			throw new Error(errorMessage ?? jsonResponse.error ?? response.statusText)
+		}
+		return jsonResponse;
 	}
 
 	/**

@@ -1,18 +1,18 @@
 import React from 'react';
-import MeeloAppBar from "../../src/components/appbar/appbar";
+import MeeloAppBar from "../../components/appbar/appbar";
 import { GetServerSideProps, GetServerSidePropsContext, InferGetServerSidePropsType, NextPage } from "next";
 import { Box, Divider, List } from '@mui/material';
-import InfiniteList, { Page } from '../../src/components/infinite/infinite-list';
+import InfiniteList, { Page } from '../../components/infinite/infinite-list';
 import { useRouter } from 'next/router';
-import Song, { SongWithArtist } from '../../src/models/song';
-import API from '../../src/api';
-import SongItem from '../../src/components/song-item';
-import LoadingPage from '../../src/components/loading/loading-page';
-import { WideLoadingComponent } from '../../src/components/loading/loading';
+import Song, { SongWithArtist } from '../../models/song';
+import API from '../../api';
+import SongItem from '../../components/song-item';
+import LoadingPage from '../../components/loading/loading-page';
+import { WideLoadingComponent } from '../../components/loading/loading';
 import FadeIn from 'react-fade-in';
-import getLibrarySlug from '../../src/utils/getLibrarySlug';
+import getLibrarySlug from '../../utils/getLibrarySlug';
 import { dehydrate, QueryClient } from 'react-query';
-import { prepareMeeloInfiniteQuery } from '../../src/query';
+import { prepareMeeloInfiniteQuery } from '../../query';
 
 const songsQuery = () => ({
 	key: ["songs"],

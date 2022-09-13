@@ -1,21 +1,21 @@
 import React from 'react';
-import MeeloAppBar from "../../src/components/appbar/appbar";
+import MeeloAppBar from "../../components/appbar/appbar";
 import { GetServerSidePropsContext, InferGetServerSidePropsType, NextPage } from "next";
 import { Box } from '@mui/material';
 import { useRouter } from 'next/router';
-import API from '../../src/api';
-import InfiniteGrid from '../../src/components/infinite/infinite-grid';
-import ArtistTile from '../../src/components/tile/artist-tile';
-import Artist from '../../src/models/artist';
-import Album from '../../src/models/album';
-import AlbumTile from '../../src/components/tile/album-tile';
-import LoadingPage from '../../src/components/loading/loading-page';
-import LoadingComponent, { WideLoadingComponent } from '../../src/components/loading/loading';
-import getLibrarySlug from '../../src/utils/getLibrarySlug';
-import { Page } from '../../src/components/infinite/infinite-list';
+import API from '../../api';
+import InfiniteGrid from '../../components/infinite/infinite-grid';
+import ArtistTile from '../../components/tile/artist-tile';
+import Artist from '../../models/artist';
+import Album from '../../models/album';
+import AlbumTile from '../../components/tile/album-tile';
+import LoadingPage from '../../components/loading/loading-page';
+import LoadingComponent, { WideLoadingComponent } from '../../components/loading/loading';
+import getLibrarySlug from '../../utils/getLibrarySlug';
+import { Page } from '../../components/infinite/infinite-list';
 import { QueryClient, dehydrate } from 'react-query';
-import { prepareMeeloInfiniteQuery, prepareMeeloQuery } from '../../src/query';
-import Resource from '../../src/models/resource';
+import { prepareMeeloInfiniteQuery, prepareMeeloQuery } from '../../query';
+import Resource from '../../models/resource';
 
 const albumsQuery = () => ({
 	key: ["albums"],

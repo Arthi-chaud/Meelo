@@ -2,21 +2,21 @@ import { Grid, IconButton, ListItem, Typography, List, ListSubheader, ListItemTe
 import { Box } from "@mui/system";
 import { GetServerSidePropsContext, InferGetServerSidePropsType, NextPage } from "next";
 import { useRouter } from "next/router";
-import API from "../../src/api";
-import Illustration from "../../src/components/illustration";
-import { WideLoadingComponent } from "../../src/components/loading/loading";
-import { ReleaseWithAlbum, ReleaseWithTracks } from "../../src/models/release";
+import API from "../../api";
+import Illustration from "../../components/illustration";
+import { WideLoadingComponent } from "../../components/loading/loading";
+import { ReleaseWithAlbum, ReleaseWithTracks } from "../../models/release";
 import formatDuration from 'format-duration'
 import { useEffect, useState } from "react";
-import { TrackWithSong } from "../../src/models/track";
-import Tracklist from "../../src/models/tracklist";
+import { TrackWithSong } from "../../models/track";
+import Tracklist from "../../models/tracklist";
 import AspectRatio from '@mui/joy/AspectRatio';
 import PlayCircleIcon from '@mui/icons-material/PlayCircle';
 import { MoreHoriz, Shuffle } from "@mui/icons-material";
 import FadeIn from "react-fade-in";
-import Tile from "../../src/components/tile/tile";
+import Tile from "../../components/tile/tile";
 import MusicVideoIcon from '@mui/icons-material/MusicVideo';
-import { prepareMeeloQuery } from "../../src/query";
+import { prepareMeeloQuery } from "../../query";
 import { QueryClient, dehydrate, useQuery, useQueries } from "react-query";
 
 const releaseQuery = (slugOrId: string | number) => ({
