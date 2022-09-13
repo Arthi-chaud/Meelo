@@ -13,8 +13,8 @@ RUN yarn run build
 ## Frontend
 FROM node:17 AS front-builder
 WORKDIR /app/front
-COPY ./front/*.json .
-COPY ./front/*.lock .
+COPY ./front/*.json ./
+COPY ./front/*.lock ./
 RUN yarn
 COPY ./front .
 RUN yarn build
