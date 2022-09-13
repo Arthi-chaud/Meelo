@@ -190,8 +190,7 @@ export default class API {
 		slugOrId: string | number,
 		include: TrackInclude[] = []
 	): Promise<Tracklist<T>> {
-		const response = await this.fetch(`/releases/${slugOrId.toString()}/tracklist`, { include });
-		return new Map<string | '?', T[]>(Object.entries(response));
+		return this.fetch(`/releases/${slugOrId.toString()}/tracklist`, { include });
 	}
 
 
