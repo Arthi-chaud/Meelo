@@ -8,7 +8,8 @@ import { WideLoadingComponent } from "../../src/components/loading/loading";
 import { ReleaseWithAlbum, ReleaseWithTracks } from "../../src/models/release";
 import formatDuration from 'format-duration'
 import { useEffect, useState } from "react";
-import Track, { TrackWithSong } from "../../src/models/track";
+import { TrackWithSong } from "../../src/models/track";
+import Tracklist from "../../src/models/tracklist";
 import AspectRatio from '@mui/joy/AspectRatio';
 import PlayCircleIcon from '@mui/icons-material/PlayCircle';
 import { MoreHoriz, Shuffle } from "@mui/icons-material";
@@ -87,6 +88,7 @@ const ReleasePage = ({ releaseIdentifier }: InferGetServerSidePropsType<typeof g
 	const theme = useTheme();
 	const [totalDuration, setTotalDuration] = useState<number | null>(null);
 	const [tracks, setTracks] = useState<TrackWithSong[] | null>(null);
+	const [formattedTrackList, setFormattedTracklist] = useState<Tracklist<TrackWithSong>>();
 
 	const release = useQuery(prepareMeeloQuery(releaseQuery, releaseIdentifier));
 	let artistId = release.data?.album?.artistId;
@@ -103,11 +105,15 @@ const ReleasePage = ({ releaseIdentifier }: InferGetServerSidePropsType<typeof g
 	const relatedReleases = useQuery(prepareMeeloQuery(albumReleasesQuery, release.data?.albumId));
 	useEffect(() => {
 		if (tracklist.data) {
-			const flattenedTracks = Array.from(tracklist.data!.values()).flat();
-			setTracks(flattenedTracks);
-			setTotalDuration(flattenedTracks.reduce((prevDuration, track) => prevDuration + track.duration, 0));
+			setFormattedTracklist(new Map(Object.entries(tracklist.data)));
 		}
 	}, [tracklist.data]);
+	useEffect(() => {
+		if (formattedTrackList) {
+			const flattenedTracks = Array.from(formattedTrackList.values()).flat();
+			setTotalDuration(flattenedTracks.reduce((prevDuration, track) => prevDuration + track.duration, 0));
+		}
+	}, [formattedTrackList]);
 	if (release.isLoading || albumArtist.isLoading)
 		return <WideLoadingComponent/>
 	return <Box>
@@ -164,9 +170,9 @@ const ReleasePage = ({ releaseIdentifier }: InferGetServerSidePropsType<typeof g
 					}
 				</Grid>
 				<Grid item sx={{ flex: 9 }}>
-					{ tracklist.data &&
+					{ formattedTrackList &&
 						<>
-							{ Array.from(tracklist.data.entries()).map((disc, _, discs) => 
+							{ Array.from(formattedTrackList.entries()).map((disc, _, discs) => 
 								<List key={disc[0]} subheader={ discs.length !== 1 && <ListSubheader>Disc {disc[0]}</ListSubheader> }>
 									{ disc[1].map((track) => <>
 										<ListItemButton key={track.id}>
