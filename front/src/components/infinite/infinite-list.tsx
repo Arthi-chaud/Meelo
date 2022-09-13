@@ -6,6 +6,7 @@ import FadeIn from "react-fade-in";
 import Resource from "../../models/resource";
 import { PaginatedResponse } from "../../models/pagination";
 import API from "../../api";
+import { MeeloInfiniteQueryFn, prepareMeeloInfiniteQuery } from "../../query";
 
 export type InfiniteFetchFn<T> = (lastPage: Page<T>) => Promise<PaginatedResponse<T>>;
 
@@ -15,13 +16,9 @@ type InfiniteListProps<T extends Resource> = {
 	 */
 	render: (items: T[]) => JSX.Element;
 	/**
-	 * Base fetching method, that return a Page of items
+	 * Query to use
 	 */
-	fetch: InfiniteFetchFn<T>
-	/**
-	 * Query key of react-query
-	 */
-	queryKey: (string | number)[]
+	query: MeeloInfiniteQueryFn<T>
 	/**
 	 * The number to load at each query
 	 */
@@ -68,26 +65,18 @@ const InfiniteList = <T extends Resource>(props: InfiniteListProps<T>) => {
 	const pageSize = props.pageSize ?? API.defaultPageSize;
 	const {
         isFetching,
-        isError,
-		isSuccess,
         data,
 		hasNextPage,
         fetchNextPage,
         isFetchingNextPage
-    } = useInfiniteQuery(props.queryKey, (context) => props.fetch(context.pageParam ?? { pageSize: pageSize, index: 0 })
-		.then((result) => ({
-			pageSize: pageSize,
-			items: result.items,
-			index: result.metadata.page,
-			end: result.metadata.next === null
-		})), {
-        getNextPageParam: (lastPage: Page<T>): Page<T> | undefined  => {
+	} = useInfiniteQuery({
+		...prepareMeeloInfiniteQuery<T>(props.query),
+		getNextPageParam: (lastPage: Page<T>): Page<T> | undefined  => {
 			if (lastPage.end || lastPage.items.length < pageSize)
 				return undefined;
 			return lastPage;
-        },
-		
-    });
+		},
+	})
 	return <>
 		{ isFetching && !data && props.firstLoader() }
 		<InfiniteScroll
