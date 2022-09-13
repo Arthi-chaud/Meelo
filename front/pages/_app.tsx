@@ -18,9 +18,9 @@ function MyApp({ Component, pageProps }: AppProps) {
 					FallbackComponent={() => <Box/>}
 					onError={(error: Error) => toast.error(error.message)}
 				>
-						<Hydrate state={pageProps.dehydratedState}>
-							<Component {...pageProps} />
-						</Hydrate>
+					<Hydrate state={pageProps.dehydratedState}>
+						<Component {...pageProps} />
+					</Hydrate>
 				</ErrorBoundary>
 				<Toaster toastOptions={{ duration: 10000 }} position='bottom-center'/>
 				<ReactQueryDevtools initialIsOpen={false} />

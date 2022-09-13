@@ -17,6 +17,8 @@ import { makeStyles } from '@mui/styles';
 import Link from 'next/link';
 import { GetServerSidePropsContext, InferGetServerSidePropsType } from 'next';
 import { prepareMeeloQuery } from '../../query';
+import Library from '../../models/library';
+import toast from 'react-hot-toast';
 
 const useStyles = makeStyles({
     select: {
@@ -47,15 +49,24 @@ const MeeloAppBar = () => {
 	const classes = useStyles();
 	const router = useRouter();
 	const [requestedLibrary, setRequestedLibrary] = useState(globalLibrary);
-	const librariesQuery = useQuery('libraries', () => API.getAllLibraries());
+	const [availableLibraries, setAvailableLibraries] = useState<Library[] | null>(null);
+	const librariesQuery = useQuery({
+		...prepareMeeloQuery(libraryQuery),
+		useErrorBoundary: false
+	});
 	useEffect(() => {
-		if (librariesQuery.data) {
+		if (librariesQuery.error) {
+			if (availableLibraries == null)
+				toast.error("Libraries could not be loaded");
+			setAvailableLibraries([]);
+		} else if (librariesQuery.data) {
 			let requestedlibrarySlug = globalLibrary.slug;
 			if (router.asPath.startsWith('/libraries'))
 				requestedlibrarySlug = router.asPath.split('/')[2];
-			setRequestedLibrary(librariesQuery.data.items.find((library) => library.slug === requestedlibrarySlug) ?? globalLibrary)
+			setRequestedLibrary(librariesQuery.data.items.find((library) => library.slug === requestedlibrarySlug) ?? globalLibrary);
+			setAvailableLibraries(librariesQuery.data.items);
 		}
-	}, [router.asPath, librariesQuery.data]);
+	}, [router.asPath, librariesQuery.data, librariesQuery.error]);
 	const [drawerOpen, setDrawerOpen] = useState(false);
 	return (
 		<Box>
@@ -73,7 +84,7 @@ const MeeloAppBar = () => {
 						<Image src="/banner.png" alt="me" width={120} height={50}/>
 					</Box>
 					{
-						librariesQuery.isLoading
+						availableLibraries == null
 							? <LoadingComponent />
 							: <><FadeIn>
 								<Box sx={{ display: { xs: 'none', md: 'flex' }, marginLeft: 1, alignItems: 'center' }} flexDirection='row'>
@@ -93,12 +104,12 @@ const MeeloAppBar = () => {
 											if (targetLibaryName === globalLibrary.name) {
 												router.push(`/albums`);
 											} else {
-												const targetLibrary = librariesQuery.data!.items.find((library) => library.name === targetLibaryName)!;
+												const targetLibrary = availableLibraries.find((library) => library.name === targetLibaryName)!;
 												router.push(`/libraries/${targetLibrary.slug}/albums`);
 											}
 										}}
         							>
-        							  {[globalLibrary, ...librariesQuery.data!.items].map((library) => (
+        							  {[globalLibrary, ...availableLibraries].map((library) => (
         							    <MenuItem key={library.slug} value={library.name}>
         							    	{library.name}
         							    </MenuItem>
@@ -138,7 +149,7 @@ const MeeloAppBar = () => {
 				</Toolbar>
 			</AppBar>
 			<MeeloAppBarDrawer
-				query={librariesQuery}
+				availableLibraries={availableLibraries}
 				isOpen={drawerOpen}
 				onClose={() => setDrawerOpen(false)}
 				requestedLibrarySlug={requestedLibrary.slug}
