@@ -10,7 +10,7 @@ import InfiniteGrid from "./infinite-grid";
 import InfiniteList from "./infinite-list";
 
 type InfiniteViewProps<T> = {
-	view: 'list' | 'grid';
+	view: string | 'list' | 'grid';
 	query: MeeloInfiniteQueryFn<T>;
 	renderListItem: (item: T) => JSX.Element;
 	listItemExpanded?: (item: T) => JSX.Element;

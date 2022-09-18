@@ -47,9 +47,10 @@ export const getServerSideProps = async (context: GetServerSidePropsContext) => 
 
 const LibraryAlbumsPage = ({ librarySlug }: InferGetServerSidePropsType<typeof getServerSideProps>) => {
 	const query = librarySlug ? libraryAlbumsQuery(librarySlug) : albumsQuery();
+	const router = useRouter()
 	return (
 		<InfiniteView
-			view='grid'
+			view={(router.query.view as string) ?? 'grid'}
 			query={() => query}
 			renderListItem={(item: AlbumWithArtist) => <AlbumItem album={item} key={item.id} />}
 			renderGridItem={(item: AlbumWithArtist) => <AlbumTile album={item} key={item.id} />}

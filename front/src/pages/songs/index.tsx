@@ -45,6 +45,7 @@ export const getServerSideProps = async (context: GetServerSidePropsContext) => 
 
 const LibrarySongsPage = ({ librarySlug }: InferGetServerSidePropsType<typeof getServerSideProps>) => {
 	const query = librarySlug ? librarySongsQuery(librarySlug) : songsQuery();
+
 	return (
 		<InfiniteView
 			view='list'
