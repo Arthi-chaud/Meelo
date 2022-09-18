@@ -13,6 +13,10 @@ import { prepareMeeloInfiniteQuery, prepareMeeloQuery } from '../../query';
 import InfiniteView from '../../components/infinite/infinite-view';
 import ListItem from '../../components/list-item/item';
 import Illustration from '../../components/illustration';
+import InfiniteList from '../../components/infinite/infinite-list';
+import Release from '../../models/release';
+import Resource from '../../models/resource';
+import AlbumItem from '../../components/list-item/album-item';
 
 const albumsQuery = () => ({
 	key: ["albums"],
@@ -47,13 +51,7 @@ const LibraryAlbumsPage = ({ librarySlug }: InferGetServerSidePropsType<typeof g
 		<InfiniteView
 			view='grid'
 			query={() => query}
-			renderListItem={(item: AlbumWithArtist) => (
-				<ListItem
-					icon={<Illustration url={item.illustration}/>}
-					title={<Typography>{item.name}</Typography>}
-					secondTitle={<Typography>{item.artist?.name}</Typography>}
-				/>
-			)}
+			renderListItem={(item: AlbumWithArtist) => <AlbumItem album={item} />}
 			renderGridItem={(item: AlbumWithArtist) => <AlbumTile album={item} />}
 		/>
 	);

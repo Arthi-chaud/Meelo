@@ -142,6 +142,23 @@ export default class API {
 	}
 
 	/**
+	 * Fetch all albums by an artist
+	 * @param pagination the parameters to choose how many items to load
+	 * @returns An array of songs
+	 */
+	 static async getArtistAlbums<T extends Album = Album>(
+		artistSlugOrId: string | number,
+		pagination?: PaginationParameters,
+		include: AlbumInclude[] = []
+	): Promise<PaginatedResponse<T>> {
+		return API.fetch({
+			route: `/artists/${artistSlugOrId}/albums`,
+			errorMessage: `Artist '${artistSlugOrId}' not found`,
+			parameters: { pagination, include }
+		});
+	}
+
+	/**
 	 * Get the master track of a song
 	 * @param songSlugOrId the identifier of a song
 	 * @param include the fields to include in the fetched item

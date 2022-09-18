@@ -16,8 +16,11 @@ const InfiniteList = <T extends Resource,>(props: InfiniteGridProps<T>) => {
 		{...props}
 		render={(items: T[]) =>
 			<List sx={{ padding: 3}}>
-				{items.map((item: T) => props.render(item))}
-				<Divider variant='middle'/>
+				{items.map((item: T, index, items) => <>
+					{ props.render(item) }
+					{ index == items.length - 1 || <Divider variant='middle'/>}
+				</>)}
+				
 			</List>
 		}
 	/>

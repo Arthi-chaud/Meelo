@@ -1,18 +1,18 @@
 import React, { useState } from 'react';
 import { GetServerSidePropsContext, InferGetServerSidePropsType, NextPage } from "next";
 import { useRouter } from 'next/router';
-import { Box } from '@mui/material';
+import { Box, Typography } from '@mui/material';
 import API from '../../api';
-import MeeloAppBar from '../../components/appbar/appbar';
-import InfiniteGrid from '../../components/infinite/infinite-grid';
-import { WideLoadingComponent } from '../../components/loading/loading';
-import LoadingPage from '../../components/loading/loading-page';
 import ArtistTile from '../../components/tile/artist-tile';
 import Artist from '../../models/artist';
 import getLibrarySlug from '../../utils/getLibrarySlug';
 import { QueryClient, dehydrate } from 'react-query';
 import { Page } from '../../components/infinite/infinite-scroll';
 import { prepareMeeloInfiniteQuery } from '../../query';
+import InfiniteView from '../../components/infinite/infinite-view';
+import Illustration from '../../components/illustration';
+import ListItem from '../../components/list-item/item';
+import ArtistItem from '../../components/list-item/artist-item';
 
 const artistsQuery = () => ({
 	key: ["artists"],
@@ -43,14 +43,14 @@ export const getServerSideProps = async (context: GetServerSidePropsContext) => 
 
 const LibraryArtistsPage = ({ librarySlug }: InferGetServerSidePropsType<typeof getServerSideProps>) => {
 	const query = librarySlug ? libraryArtistsQuery(librarySlug) : artistsQuery();
-	return <>
-		<InfiniteGrid
-			firstLoader={() => <LoadingPage/>}
-			loader={() => <WideLoadingComponent/>}
+	return (
+		<InfiniteView
+			view='grid'
 			query={() => query}
-			render={(item: Artist) => <ArtistTile artist={item} />}
+			renderListItem={(item: Artist) => <ArtistItem artist={item}/>}
+			renderGridItem={(item: Artist) => <ArtistTile artist={item} />}
 		/>
-	</>;
+	);
 }
 
 

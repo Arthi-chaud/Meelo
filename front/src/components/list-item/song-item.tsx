@@ -9,6 +9,7 @@ import Illustration from '../illustration';
 import Link from 'next/link';
 import ListItem from "./item";
 import { Page } from "../infinite/infinite-scroll"
+import ListItemButton from "./item-button"
 
 type SongItemProps = {
 	song: SongWithArtist;
@@ -26,11 +27,7 @@ const SongItem = ({ song }: SongItemProps) => {
 			icon={<Illustration url={song.illustration}/>}
 			title={<Typography>{song.name}</Typography>}
 			secondTitle={
-				<Link href={`/artists/${artist.slug}`}>
-					<Button variant="text" color='inherit' sx={{ textTransform: 'none', justifyContent: 'left' }}>
-						<Typography>{artist.name}</Typography>
-					</Button>
-				</Link>
+				<ListItemButton url={`/artists/${artist.slug}`} label={artist.name} />
 			}
 			expanded={() => (
 				<InfiniteList
@@ -49,11 +46,7 @@ const SongItem = ({ song }: SongItemProps) => {
 							icon={<Illustration url={track.illustration}/>}
 							title={<Typography>{track.name}</Typography>}
 							secondTitle={
-								<Link href={`/releases/${track.releaseId}`}>
-									<Button variant="text" color='inherit' sx={{ textTransform: 'none', justifyContent: 'left' }}>
-										<Typography>{track.release.name}</Typography>
-									</Button>
-								</Link>
+								<ListItemButton url={`/releases/${track.releaseId}`} label={track.release.name} />
 							}
 						/>
 					</>}

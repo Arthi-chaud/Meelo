@@ -7,7 +7,7 @@ import { useState } from 'react';
 type ListItemProps = {
 	icon?: JSX.Element;
 	title: JSX.Element;
-	secondTitle: JSX.Element;
+	secondTitle?: JSX.Element;
 	expanded?: () => JSX.Element;
 }
 
@@ -22,8 +22,8 @@ const ListItem = (props: ListItemProps) => {
 				<Grid item xs={12} sm={9}>
 					{props.title}
 				</Grid>
-				<Grid item xs={12} sm={3} sx={{ display: 'flex', justifyContent: 'left',   }}>
-					{props.secondTitle}
+				<Grid item xs={12} sm={3} sx={{ display: 'flex', justifyContent: 'left' }}>
+					{props.secondTitle ?? ''}
 				</Grid>
 			</Grid>
 			<Grid item container sx={{ justifyContent: 'end' }} xs={1} sm={2} lg={3}>
