@@ -1,95 +1,29 @@
-import { Box, Grid } from "@mui/material";
-import { useInfiniteQuery } from "react-query";
-import LoadingComponent from "../loading/loading";
-import InfiniteScroll from 'react-infinite-scroller';
+import { List, Divider, Grid } from "@mui/material";
 import FadeIn from "react-fade-in";
 import Resource from "../../models/resource";
-import { PaginatedResponse } from "../../models/pagination";
-import API from "../../api";
-import { MeeloInfiniteQueryFn, prepareMeeloInfiniteQuery } from "../../query";
+import InfiniteScroll from "./infinite-scroll";
 
-export type InfiniteFetchFn<T> = (lastPage: Page<T>) => Promise<PaginatedResponse<T>>;
-
-type InfiniteListProps<T extends Resource> = {
-	/**
-	 * The method to render all the fetched items
-	 */
-	render: (items: T[]) => JSX.Element;
-	/**
-	 * Query to use
-	 */
-	query: MeeloInfiniteQueryFn<T>
-	/**
-	 * The number to load at each query
-	 */
-	pageSize?: number
-	/**
-	 * Component to display on first load
-	 */
-	firstLoader: () => JSX.Element
-	/**
-	 * Component to display on page fetching (except first)
-	 */
-	loader: () => JSX.Element
-}
+type TypedList<T extends Resource> = typeof InfiniteScroll<T>;
+type InfiniteGridProps<T extends Resource> = Omit<Parameters<TypedList<T>>[0], 'render'> & { render: (item: T) => JSX.Element }
 
 /**
- * Data type for infinite data fetching
- */
-export type Page<T> = {
-	/**
-	 * List of items that where fetched
-	 * not including previously fetched data
-	 */
-	items: T[],
-	/**
-	 * The index of the page, usually the last page's + 1
-	 */
-	index: number,
-	/**
-	 * True if the fetching should stop there
-	 */
-	end: boolean,
-	/**
-	 * Size of the page
-	 */
-	pageSize: number
-}
-
-/**
- * Infinite scroll list w/ loading animation
+ * Similar to InfiniteGrid, but rendered as a list
  * @param props 
- * @returns a dynamic list component
+ * @returns 
  */
-const InfiniteList = <T extends Resource>(props: InfiniteListProps<T>) => {
-	const pageSize = props.pageSize ?? API.defaultPageSize;
-	const {
-        isFetching,
-        data,
-		hasNextPage,
-        fetchNextPage,
-        isFetchingNextPage
-	} = useInfiniteQuery({
-		...prepareMeeloInfiniteQuery<T>(props.query),
-		getNextPageParam: (lastPage: Page<T>): Page<T> | undefined  => {
-			if (lastPage.end || lastPage.items.length < pageSize)
-				return undefined;
-			return lastPage;
-		},
-	})
-	return <>
-		{ isFetching && !data && props.firstLoader() }
-		<InfiniteScroll
-		    pageStart={0}
-		    loadMore={() => {
-				if (hasNextPage && !isFetchingNextPage)
-					fetchNextPage()
-			}}
-		    hasMore={hasNextPage}
-		>
-		{ data && props.render(data.pages.map((page) => page.items).flat()) }
-		{ isFetchingNextPage && props.loader() }
-		</InfiniteScroll>
-	</>
+const InfiniteList = <T extends Resource,>(props: InfiniteGridProps<T>) => {
+	return <InfiniteScroll
+		{...props}
+		render={(items: T[]) =>
+			<List sx={{ padding: 3}}>
+				{items.map((item: T, index, items) => <>
+					{ props.render(item) }
+					{ index == items.length - 1 || <Divider variant='middle'/>}
+				</>)}
+				
+			</List>
+		}
+	/>
 }
+
 export default InfiniteList;

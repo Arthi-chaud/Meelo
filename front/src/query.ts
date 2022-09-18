@@ -1,6 +1,7 @@
 import { QueryFunctionContext } from "react-query";
 import API from "./api";
-import { InfiniteFetchFn } from "./components/infinite/infinite-list";
+import { InfiniteFetchFn } from "./components/infinite/infinite-scroll";
+
 type Key = string | number
 
 export type MeeloQueryFn<T = unknown> = <Arg extends Key,>(...args: Arg[]) => ({

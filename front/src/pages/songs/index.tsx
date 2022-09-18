@@ -2,17 +2,19 @@ import React from 'react';
 import MeeloAppBar from "../../components/appbar/appbar";
 import { GetServerSideProps, GetServerSidePropsContext, InferGetServerSidePropsType, NextPage } from "next";
 import { Box, Divider, List } from '@mui/material';
-import InfiniteList, { Page } from '../../components/infinite/infinite-list';
+import InfiniteList from '../../components/infinite/infinite-list';
 import { useRouter } from 'next/router';
 import Song, { SongWithArtist } from '../../models/song';
 import API from '../../api';
-import SongItem from '../../components/song-item';
+import SongItem from '../../components/list-item/song-item';
 import LoadingPage from '../../components/loading/loading-page';
 import { WideLoadingComponent } from '../../components/loading/loading';
 import FadeIn from 'react-fade-in';
 import getLibrarySlug from '../../utils/getLibrarySlug';
 import { dehydrate, QueryClient } from 'react-query';
 import { prepareMeeloInfiniteQuery } from '../../query';
+import { Page } from '../../components/infinite/infinite-scroll';
+import InfiniteView from '../../components/infinite/infinite-view';
 
 const songsQuery = () => ({
 	key: ["songs"],
@@ -43,23 +45,15 @@ export const getServerSideProps = async (context: GetServerSidePropsContext) => 
 
 const LibrarySongsPage = ({ librarySlug }: InferGetServerSidePropsType<typeof getServerSideProps>) => {
 	const query = librarySlug ? librarySongsQuery(librarySlug) : songsQuery();
-	return <Box>
-		<InfiniteList
-			firstLoader={() => <LoadingPage/>}
-			loader={() => <WideLoadingComponent/>}
+
+	return (
+		<InfiniteView
+			view='list'
 			query={() => query}
-			render={(items: SongWithArtist[]) =>
-				<FadeIn>
-					<List sx={{ padding: 3}}>
-						{items.map((item) => <>
-							<SongItem song={item} key={item.id}/>
-							<Divider variant='middle'/>
-						</>)}
-					</List>
-				</FadeIn>
-			}
+			renderListItem={(item: SongWithArtist) => <SongItem song={item} key={item.id}/> }
+			renderGridItem={(item: SongWithArtist) => <></> }
 		/>
-	</Box>;
+	);
 }
 
 export default LibrarySongsPage;
