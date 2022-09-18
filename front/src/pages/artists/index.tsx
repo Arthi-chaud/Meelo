@@ -47,8 +47,8 @@ const LibraryArtistsPage = ({ librarySlug }: InferGetServerSidePropsType<typeof 
 		<InfiniteView
 			view='grid'
 			query={() => query}
-			renderListItem={(item: Artist) => <ArtistItem artist={item}/>}
-			renderGridItem={(item: Artist) => <ArtistTile artist={item} />}
+			renderListItem={(item: Artist) => <ArtistItem artist={item} key={item.id}/>}
+			renderGridItem={(item: Artist) => <ArtistTile artist={item} key={item.id}/>}
 		/>
 	);
 }

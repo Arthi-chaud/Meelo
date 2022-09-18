@@ -51,8 +51,8 @@ const LibraryAlbumsPage = ({ librarySlug }: InferGetServerSidePropsType<typeof g
 		<InfiniteView
 			view='grid'
 			query={() => query}
-			renderListItem={(item: AlbumWithArtist) => <AlbumItem album={item} />}
-			renderGridItem={(item: AlbumWithArtist) => <AlbumTile album={item} />}
+			renderListItem={(item: AlbumWithArtist) => <AlbumItem album={item} key={item.id} />}
+			renderGridItem={(item: AlbumWithArtist) => <AlbumTile album={item} key={item.id} />}
 		/>
 	);
 } 
