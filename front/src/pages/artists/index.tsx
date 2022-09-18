@@ -46,6 +46,7 @@ const LibraryArtistsPage = ({ librarySlug }: InferGetServerSidePropsType<typeof 
 	const router = useRouter();
 	return (
 		<InfiniteView
+			enableToggle
 			view={(router.query.view as string) ?? 'grid'}
 			query={() => query}
 			renderListItem={(item: Artist) => <ArtistItem artist={item} key={item.id}/>}
