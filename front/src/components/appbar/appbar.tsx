@@ -69,8 +69,8 @@ const MeeloAppBar = () => {
 	}, [router.asPath, librariesQuery.data, librariesQuery.error]);
 	const [drawerOpen, setDrawerOpen] = useState(false);
 	return (
-		<Box>
-			<AppBar position="static" style={{ padding: 5 }} elevation={1}>
+		<>
+			<AppBar position="sticky" style={{ padding: 5 }} elevation={1}>
 				<Toolbar>
 					<IconButton
 						color="inherit"
@@ -154,7 +154,7 @@ const MeeloAppBar = () => {
 				onClose={() => setDrawerOpen(false)}
 				requestedLibrarySlug={requestedLibrary.slug}
 			/>
-		</Box>
+		</>
 	)
 }
 
