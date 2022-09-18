@@ -1,0 +1,66 @@
+import { Grid, Box, List, Collapse, Button, IconButton, Typography, useTheme, Divider } from "@mui/material"
+import FadeIn from "react-fade-in"
+import API from "../../api"
+import { SongWithArtist } from "../../models/song"
+import InfiniteList from "../infinite/infinite-list"
+import { TrackWithRelease } from "../../models/track"
+import { WideLoadingComponent } from "../loading/loading"
+import Illustration from '../illustration';
+import Link from 'next/link';
+import ListItem from "./item";
+import { Page } from "../infinite/infinite-scroll"
+
+type SongItemProps = {
+	song: SongWithArtist;
+}
+
+/**
+ * Item for a list of songs
+ * @param props 
+ * @returns 
+ */
+const SongItem = ({ song }: SongItemProps) => {
+	const artist = song.artist;
+	return (
+		<ListItem
+			icon={<Illustration url={song.illustration}/>}
+			title={<Typography>{song.name}</Typography>}
+			secondTitle={
+				<Link href={`/artists/${artist.slug}`}>
+					<Button variant="text" color='inherit' sx={{ textTransform: 'none', justifyContent: 'left' }}>
+						<Typography>{artist.name}</Typography>
+					</Button>
+				</Link>
+			}
+			expanded={() => (
+				<InfiniteList
+					firstLoader={() => <WideLoadingComponent/>}
+					loader={() => <WideLoadingComponent/>}
+					query={() => ({
+						key: ['tracks', 'song', song.id.toString()],
+						exec: (lastPage: Page<TrackWithRelease>) => API.getSongTracks<TrackWithRelease>(
+							song.id,
+							lastPage,
+							['release']
+						)
+					})}
+					render={(track: TrackWithRelease) => <>
+						<ListItem
+							icon={<Illustration url={track.illustration}/>}
+							title={<Typography>{track.name}</Typography>}
+							secondTitle={
+								<Link href={`/releases/${track.releaseId}`}>
+									<Button variant="text" color='inherit' sx={{ textTransform: 'none', justifyContent: 'left' }}>
+										<Typography>{track.release.name}</Typography>
+									</Button>
+								</Link>
+							}
+						/>
+					</>}
+				/>
+			)}
+		/>
+	)
+}
+
+export default SongItem;

@@ -6,7 +6,7 @@ import InfiniteList, { Page } from '../../components/infinite/infinite-list';
 import { useRouter } from 'next/router';
 import Song, { SongWithArtist } from '../../models/song';
 import API from '../../api';
-import SongItem from '../../components/song-item';
+import SongItem from '../../components/list-item/song-item';
 import LoadingPage from '../../components/loading/loading-page';
 import { WideLoadingComponent } from '../../components/loading/loading';
 import FadeIn from 'react-fade-in';
