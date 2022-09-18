@@ -2,7 +2,7 @@ import React from 'react';
 import MeeloAppBar from "../../components/appbar/appbar";
 import { GetServerSideProps, GetServerSidePropsContext, InferGetServerSidePropsType, NextPage } from "next";
 import { Box, Divider, List } from '@mui/material';
-import InfiniteList, { Page } from '../../components/infinite/infinite-list';
+import InfiniteList from '../../components/infinite/infinite-list';
 import { useRouter } from 'next/router';
 import Song, { SongWithArtist } from '../../models/song';
 import API from '../../api';
@@ -13,6 +13,7 @@ import FadeIn from 'react-fade-in';
 import getLibrarySlug from '../../utils/getLibrarySlug';
 import { dehydrate, QueryClient } from 'react-query';
 import { prepareMeeloInfiniteQuery } from '../../query';
+import { Page } from '../../components/infinite/infinite-scroll';
 
 const songsQuery = () => ({
 	key: ["songs"],
@@ -48,16 +49,7 @@ const LibrarySongsPage = ({ librarySlug }: InferGetServerSidePropsType<typeof ge
 			firstLoader={() => <LoadingPage/>}
 			loader={() => <WideLoadingComponent/>}
 			query={() => query}
-			render={(items: SongWithArtist[]) =>
-				<FadeIn>
-					<List sx={{ padding: 3}}>
-						{items.map((item) => <>
-							<SongItem song={item} key={item.id}/>
-							<Divider variant='middle'/>
-						</>)}
-					</List>
-				</FadeIn>
-			}
+			render={(item: SongWithArtist) => <SongItem song={item} key={item.id}/> }
 		/>
 	</Box>;
 }

@@ -11,7 +11,6 @@ import InfiniteList from "./infinite-list";
 
 type InfiniteViewProps<T> = {
 	view: 'list' | 'grid';
-	items: T[];
 	query: MeeloInfiniteQueryFn<T>;
 	renderListItem: (item: T) => JSX.Element;
 	listItemExpanded?: (item: T) => JSX.Element;

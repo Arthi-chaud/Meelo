@@ -11,7 +11,7 @@ import ArtistTile from '../../components/tile/artist-tile';
 import Artist from '../../models/artist';
 import getLibrarySlug from '../../utils/getLibrarySlug';
 import { QueryClient, dehydrate } from 'react-query';
-import { Page } from '../../components/infinite/infinite-list';
+import { Page } from '../../components/infinite/infinite-scroll';
 import { prepareMeeloInfiniteQuery } from '../../query';
 
 const artistsQuery = () => ({

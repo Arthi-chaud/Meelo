@@ -1,30 +1,27 @@
 import React from 'react';
 import MeeloAppBar from "../../components/appbar/appbar";
 import { GetServerSidePropsContext, InferGetServerSidePropsType, NextPage } from "next";
-import { Box } from '@mui/material';
+import { Box, Typography } from '@mui/material';
 import { useRouter } from 'next/router';
 import API from '../../api';
-import InfiniteGrid from '../../components/infinite/infinite-grid';
-import ArtistTile from '../../components/tile/artist-tile';
-import Artist from '../../models/artist';
-import Album from '../../models/album';
+import Album, { AlbumWithArtist } from '../../models/album';
 import AlbumTile from '../../components/tile/album-tile';
-import LoadingPage from '../../components/loading/loading-page';
-import LoadingComponent, { WideLoadingComponent } from '../../components/loading/loading';
 import getLibrarySlug from '../../utils/getLibrarySlug';
-import { Page } from '../../components/infinite/infinite-list';
+import { Page } from '../../components/infinite/infinite-scroll';
 import { QueryClient, dehydrate } from 'react-query';
 import { prepareMeeloInfiniteQuery, prepareMeeloQuery } from '../../query';
-import Resource from '../../models/resource';
+import InfiniteView from '../../components/infinite/infinite-view';
+import ListItem from '../../components/list-item/item';
+import Illustration from '../../components/illustration';
 
 const albumsQuery = () => ({
 	key: ["albums"],
-	exec: (lastPage: Page<Album>) => API.getAllAlbums(lastPage, ["artist"])
+	exec: (lastPage: Page<Album>) => API.getAllAlbums<AlbumWithArtist>(lastPage, ["artist"])
 });
 
 const libraryAlbumsQuery = (slugOrId: string | number) => ({
 	key: ["library", slugOrId, "albums"],
-	exec: (lastPage: Page<Album>) => API.getAllAlbumsInLibrary(slugOrId, lastPage, ["artist"])
+	exec: (lastPage: Page<Album>) => API.getAllAlbumsInLibrary<AlbumWithArtist>(slugOrId, lastPage, ["artist"])
 });
 
 export const getServerSideProps = async (context: GetServerSidePropsContext) => {
@@ -46,14 +43,20 @@ export const getServerSideProps = async (context: GetServerSidePropsContext) => 
 
 const LibraryAlbumsPage = ({ librarySlug }: InferGetServerSidePropsType<typeof getServerSideProps>) => {
 	const query = librarySlug ? libraryAlbumsQuery(librarySlug) : albumsQuery();
-	return <>
-		<InfiniteGrid
+	return (
+		<InfiniteView
+			view='grid'
 			query={() => query}
-			firstLoader={() => <LoadingPage/>}
-			loader={() => <WideLoadingComponent/>}
-			render={(item: Album) => <AlbumTile album={item} />}
+			renderListItem={(item: AlbumWithArtist) => (
+				<ListItem
+					icon={<Illustration url={item.illustration}/>}
+					title={<Typography>{item.name}</Typography>}
+					secondTitle={<Typography>{item.artist?.name}</Typography>}
+				/>
+			)}
+			renderGridItem={(item: AlbumWithArtist) => <AlbumTile album={item} />}
 		/>
-	</>;
+	);
 } 
 
 export default LibraryAlbumsPage;
