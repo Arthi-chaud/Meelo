@@ -11,14 +11,14 @@ jobs:
   release:
     runs-on: ubuntu-latest
     steps:
-      #- name: Wait for build to succeed
-      #  uses: fountainhead/action-wait-for-check@v1.0.0
-      #  id: wait-for-build
-      #  with:
-      #    token: ${{ secrets.GITHUB_TOKEN }}
-      #    checkName: build
-      #    ref: ${{ github.event.pull_request.head.sha || github.sha }}
-      #    intervalSeconds: 30
+      - name: Wait for build to succeed
+       uses: fountainhead/action-wait-for-check@v1.0.0
+       id: wait-for-build
+       with:
+         token: ${{ secrets.GITHUB_TOKEN }}
+         checkName: build
+         ref: ${{ github.event.pull_request.head.sha || github.sha }}
+         intervalSeconds: 30
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v2
       - name: Set up Docker Buildx
@@ -34,4 +34,4 @@ jobs:
         with:
           push: true
           tags: arthichaud/meelo:latest
-          #cache-from: type=registry,ref=ghcr.io/meelo/app:latest
+          cache-from: type=registry,ref=arthichaud/meelo:latest
