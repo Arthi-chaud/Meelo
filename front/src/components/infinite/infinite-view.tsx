@@ -54,7 +54,7 @@ const availableDisplayMethods: DisplayMethod[] = [
 const InfiniteView = <T extends Resource,>(props: InfiniteViewProps<T>) => {
 	const [display, setDisplay] = useState(props.view);
 	const [backToTopVisible, setBackToTopVisible] = useState(false);
-	const [sortField, setSortField] = useState(props.initialSortingField ?? props.sortingFields[0]!);
+	const [sortField, setSortField] = useState((props.initialSortingField ?? props.sortingFields[0]!) as keyof ResourceWithoutRelation<T>);
 	const [sortOrder, setSortOrder] = useState(props.sortingOrder ?? 'asc');
 	const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   	const menuOpen = Boolean(anchorEl);

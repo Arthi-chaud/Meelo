@@ -38,6 +38,7 @@ const SongItem = ({ song }: SongItemProps) => {
 						exec: (lastPage: Page<TrackWithRelease>) => API.getSongTracks<TrackWithRelease>(
 							song.id,
 							lastPage,
+							{ sortBy: 'name' },
 							['release']
 						)
 					})}
