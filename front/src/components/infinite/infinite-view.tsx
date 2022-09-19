@@ -1,4 +1,4 @@
-import { Box, Tooltip, Slide, Stack, Chip, Menu, MenuItem, ListItem, Hidden, Fab } from "@mui/material";
+import { Box, Tooltip, Slide, Button, Chip, Menu, MenuItem, ListItem, Hidden, Fab, ButtonGroup, IconButton } from "@mui/material";
 import FadeIn from "react-fade-in";
 import Resource from "../../models/resource";
 import StraightIcon from "@mui/icons-material/Straight"
@@ -51,9 +51,25 @@ const InfiniteView = <T extends Resource,>(props: InfiniteViewProps<T>) => {
 		window.addEventListener('scroll', handleScroll, { passive: true });
 		return () => window.removeEventListener('scroll', handleScroll);
 	}, []);
-	return <Box>
-		{ 
-			<Slide direction="up" in={backToTopVisible} mountOnEnter unmountOnExit>
+	return <>
+		<Box sx={{ display: 'flex', justifyContent: 'center', alignContent: 'center', paddingTop: 2 }}>
+			{ props.enableToggle &&
+				<ButtonGroup variant="contained">
+					{ availableDisplayMethods.filter((method) => method.name.toLowerCase() != display)
+						.map((method) => (
+							<Tooltip title="Change layout">
+								<Button
+									onClick={() => setDisplay(method.name.toLowerCase())}
+								>
+									{ method.icon }
+								</Button>
+							</Tooltip>
+						)
+					)}
+				</ButtonGroup>
+			}
+		</Box>
+		<Slide direction="up" in={backToTopVisible} mountOnEnter unmountOnExit>
 			<Tooltip title="Back to top">
 				<Fab
 					color="primary"
@@ -63,8 +79,7 @@ const InfiniteView = <T extends Resource,>(props: InfiniteViewProps<T>) => {
 					<StraightIcon/>
 				</Fab>
 			</Tooltip>
-			</Slide>
-		}
+		</Slide>
 		{ display.toLowerCase() == 'list'
 			? <InfiniteList
 				firstLoader={() => <LoadingPage/>}
@@ -84,7 +99,7 @@ const InfiniteView = <T extends Resource,>(props: InfiniteViewProps<T>) => {
 			/>
 		}
 
-	</Box>
+	</>
 }
 
 export default InfiniteView;
