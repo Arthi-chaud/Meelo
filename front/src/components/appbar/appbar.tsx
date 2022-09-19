@@ -66,11 +66,11 @@ const MeeloAppBar = () => {
 			setRequestedLibrary(librariesQuery.data.items.find((library) => library.slug === requestedlibrarySlug) ?? globalLibrary);
 			setAvailableLibraries(librariesQuery.data.items);
 		}
-	}, [router.asPath, librariesQuery.data, librariesQuery.error]);
+	}, [router.asPath, librariesQuery.data, librariesQuery.error, availableLibraries]);
 	const [drawerOpen, setDrawerOpen] = useState(false);
 	return (
-		<Box>
-			<AppBar position="static" style={{ padding: 5 }} elevation={1}>
+		<>
+			<AppBar position="sticky" style={{ padding: 5 }} elevation={1}>
 				<Toolbar>
 					<IconButton
 						color="inherit"
@@ -154,7 +154,7 @@ const MeeloAppBar = () => {
 				onClose={() => setDrawerOpen(false)}
 				requestedLibrarySlug={requestedLibrary.slug}
 			/>
-		</Box>
+		</>
 	)
 }
 
