@@ -64,8 +64,8 @@ const LibraryAlbumsPage = ({ librarySlug }: InferGetServerSidePropsType<typeof g
 			query={() => librarySlug ? libraryAlbumsQuery(librarySlug, { sortBy, order }) : albumsQuery({ sortBy, order })}
 			renderListItem={(item: AlbumWithArtist) => <AlbumItem album={item} key={item.id} />}
 			renderGridItem={(item: AlbumWithArtist) => <AlbumTile album={item} key={item.id} />}
-			onSortingFieldSelect={(field) => setSortBy(field)}
-			onSortingOrderSelect={(order) => setOrder(order)}/>
+			onSortingFieldSelect={(newField) => setSortBy(newField)}
+			onSortingOrderSelect={(newOrder) => setOrder(newOrder)}/>
 	);
 } 
 
