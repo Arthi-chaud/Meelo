@@ -66,7 +66,7 @@ const MeeloAppBar = () => {
 			setRequestedLibrary(librariesQuery.data.items.find((library) => library.slug === requestedlibrarySlug) ?? globalLibrary);
 			setAvailableLibraries(librariesQuery.data.items);
 		}
-	}, [router.asPath, librariesQuery.data, librariesQuery.error]);
+	}, [router.asPath, librariesQuery.data, librariesQuery.error, availableLibraries]);
 	const [drawerOpen, setDrawerOpen] = useState(false);
 	return (
 		<>

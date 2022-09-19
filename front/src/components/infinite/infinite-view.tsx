@@ -57,7 +57,7 @@ const InfiniteView = <T extends Resource,>(props: InfiniteViewProps<T>) => {
 				<ButtonGroup variant="contained">
 					{ availableDisplayMethods.filter((method) => method.name.toLowerCase() != display)
 						.map((method) => (
-							<Tooltip title="Change layout">
+							<Tooltip title="Change layout" key={method.name}>
 								<Button
 									onClick={() => setDisplay(method.name.toLowerCase())}
 								>
@@ -86,7 +86,7 @@ const InfiniteView = <T extends Resource,>(props: InfiniteViewProps<T>) => {
 				loader={() => <WideLoadingComponent/>}
 				query={props.query}
 				render={(item: T) =>
-					<FadeIn>
+					<FadeIn key={item.id}>
 						{ props.renderListItem(item) }
 					</FadeIn>
 				}
