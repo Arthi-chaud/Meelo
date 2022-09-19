@@ -2,14 +2,14 @@ import { QueryFunctionContext } from "react-query";
 import API from "./api";
 import { InfiniteFetchFn } from "./components/infinite/infinite-scroll";
 
-type Key = string | number
+type Key = string | number | Object
 
-export type MeeloQueryFn<T = unknown> = <Arg extends Key,>(...args: Arg[]) => ({
+export type MeeloQueryFn<T = unknown> = (...args: any[]) => ({
 	key: Key[],
 	exec: () => Promise<T>
 });
 
-export type MeeloInfiniteQueryFn<T = unknown> = <Arg extends Key,>(...args: Arg[]) => ({
+export type MeeloInfiniteQueryFn<T = unknown> = (...args: any[]) => ({
 	key: Key[],
 	exec: InfiniteFetchFn<T>
 });
@@ -27,7 +27,7 @@ const defaultMeeloQueryOptions = {
  */
 const prepareMeeloQuery = <T,>(query: MeeloQueryFn<T>, ...queryArgs: Partial<Parameters<typeof query>>) => {
 	const enabled = queryArgs.findIndex((elem) => elem === undefined) === -1;
-	const queryParams = query(...queryArgs as Key[]);
+	const queryParams = query(...queryArgs as Parameters<typeof query>);
 	return {
 		queryKey: queryParams.key,
 		queryFn: queryParams.exec,
@@ -44,7 +44,7 @@ const prepareMeeloQuery = <T,>(query: MeeloQueryFn<T>, ...queryArgs: Partial<Par
  */
 const prepareMeeloInfiniteQuery = <T,>(query: MeeloInfiniteQueryFn<T>, ...queryArgs: Partial<Parameters<typeof query>>) => {
 	const enabled = queryArgs.findIndex((elem) => elem === undefined) === -1;
-	const queryParams = query(...queryArgs as Key[]);
+	const queryParams = query(...queryArgs as Parameters<typeof query>);
 	return {
 		queryKey: queryParams.key,
 		queryFn: (context: QueryFunctionContext) => queryParams.exec(context.pageParam ?? { index: 0, pageSize: API.defaultPageSize })
