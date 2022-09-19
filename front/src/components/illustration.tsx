@@ -23,6 +23,7 @@ const Illustration = (props: IllustrationProps) => {
 			componentsProps={{ content: { sx: { display: 'flex', justifyContent: 'center' } } }}
 		>
 			<Image
+				loader={({ src }) => src}
 				layout="fill"
 				{...props}
 				style={{ ...props.style, borderRadius: '3%', width: 'auto' }}
