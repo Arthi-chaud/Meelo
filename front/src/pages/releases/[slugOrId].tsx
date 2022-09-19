@@ -46,7 +46,7 @@ const albumVideosQuery = (slugOrId: string | number) => ({
 
 const albumReleasesQuery = (slugOrId: string | number) => ({
 	key: ['album', slugOrId, 'releases'],
-	exec: () => API.getAlbumReleases<ReleaseWithTracks>(slugOrId, {}, ['tracks']),
+	exec: () => API.getAlbumReleases<ReleaseWithTracks>(slugOrId, {}, undefined, ['tracks']),
 });
 
 export const getServerSideProps = async (context: GetServerSidePropsContext) => {

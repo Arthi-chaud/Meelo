@@ -26,11 +26,16 @@ const AlbumItem = ({ album }: AlbumItemProps) => {
 	return (
 		<ListItem
 			icon={<Illustration url={album.illustration}/>}
-			title={<Typography>{album.name}</Typography>}
+			title={
+				<ListItemButton
+					url={`/albums/${artist?.slug ?? 'compilations'}+${album.slug}`}
+					label={album.name}
+				/>
+			}
 			secondTitle={ artist?.name
 				? <ListItemButton url={`/albums/${artist?.slug ?? "compilations"}+${album.slug}`} label={artist?.name} />
 				: <Typography>Compilations</Typography>
-			}
+			}	
 			expanded={() => (
 				<InfiniteList
 					firstLoader={() => <WideLoadingComponent/>}
