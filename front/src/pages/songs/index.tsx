@@ -54,8 +54,10 @@ const LibrarySongsPage = ({ librarySlug }: InferGetServerSidePropsType<typeof ge
 	const [sortBy, setSortBy] = useState(getSortingFieldParams(router.query.sortBy, SongSortingFields));
 	return (
 		<InfiniteView
+			initialSortingField={sortBy}
 			sortingFields={SongSortingFields}
 			view='list'
+			sortingOrder={order}
 			query={() => librarySlug ? librarySongsQuery(librarySlug, { sortBy, order }) : songsQuery({ sortBy, order })}
 			renderListItem={(item: SongWithArtist) => <SongItem song={item} key={item.id}/> }
 			renderGridItem={(item: SongWithArtist) => <></> }

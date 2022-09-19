@@ -52,6 +52,8 @@ const LibraryArtistsPage = ({ librarySlug }: InferGetServerSidePropsType<typeof 
 	const [sortBy, setSortBy] = useState(getSortingFieldParams(router.query.sortBy, ArtistSortingFields));
 	return (
 		<InfiniteView
+			initialSortingField={sortBy}
+			sortingOrder={order}
 			sortingFields={ArtistSortingFields}
 			enableToggle
 			view={router.query.view == 'list' ? 'list' : 'grid'}
