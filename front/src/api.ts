@@ -8,14 +8,17 @@ import Song, { SongInclude, SongWithArtist } from "./models/song";
 import Track, { TrackInclude, TrackWithRelease } from "./models/track";
 import Tracklist from "./models/tracklist";
 import axios from 'axios';
-type QueryParameters = {
+import Resource from "./models/resource";
+import { SortingParameters } from "./utils/sorting";
+type QueryParameters<T extends Resource = Resource> = {
 	pagination?: PaginationParameters;
 	include?: string[];
+	sort?: SortingParameters<T>
 }
 
-type FetchParameters = {
+type FetchParameters<T extends Resource> = {
 	route: string,
-	parameters: QueryParameters,
+	parameters: QueryParameters<T>,
 	otherParameters?: any,
 	errorMessage?: string
 }
@@ -44,12 +47,13 @@ export default class API {
 	 * @returns An array of artists
 	 */
 	static async getAllArtists(
-		pagination?: PaginationParameters, 
+		pagination?: PaginationParameters,
+		sort?: SortingParameters<Artist>
 	): Promise<PaginatedResponse<Artist>> {
 		return API.fetch({
 			route: `/artists`,
 			errorMessage: 'Artists could not be loaded',
-			parameters: { pagination, include: [] },
+			parameters: { pagination, include: [], sort },
 			otherParameters: {'albumArtistOnly': true}
 		});
 	}
@@ -61,12 +65,13 @@ export default class API {
 	 */
 	static async getAllAlbums<T extends Album = Album>(
 		pagination?: PaginationParameters,
+		sort?: SortingParameters<Album>,
 		include: AlbumInclude[] = []
 	): Promise<PaginatedResponse<T>> {
 		return API.fetch({
 			route: `/albums`,
 			errorMessage: 'Albums could not be loaded',
-			parameters: { pagination, include }
+			parameters: { pagination, include, sort }
 		});
 	}
 
@@ -79,12 +84,13 @@ export default class API {
 	static async getAllArtistsInLibrary<T extends Artist = Artist>(
 		librarySlugOrId: string | number,
 		pagination?: PaginationParameters,
+		sort?: SortingParameters<Artist>,
 		include: ArtistInclude[] = [],
 	): Promise<PaginatedResponse<T>> {
 		return API.fetch({
 			route: `/libraries/${librarySlugOrId}/artists`,
 			errorMessage: 'Library does not exist',
-			parameters: { pagination, include },
+			parameters: { pagination, include, sort },
 			otherParameters: {'albumArtistOnly': true}
 		});
 	}
@@ -98,12 +104,13 @@ export default class API {
 	static async getAllAlbumsInLibrary<T extends Album = Album>(
 		librarySlugOrId: string | number,
 		pagination?: PaginationParameters,
+		sort?: SortingParameters<Album>,
 		include: AlbumInclude[] = [],
 	): Promise<PaginatedResponse<T>> {
 		return API.fetch({
 			route: `/libraries/${librarySlugOrId}/albums`,
 			errorMessage: 'Library does not exist',
-			parameters: { pagination, include }
+			parameters: { pagination, include, sort }
 		});
 	}
 
@@ -116,12 +123,13 @@ export default class API {
 	static async getAllSongsInLibrary<T extends Song = Song>(
 		librarySlugOrId: string | number,
 		pagination?: PaginationParameters,
+		sort?: SortingParameters<Song>,
 		include: SongInclude[] = [],
 	): Promise<PaginatedResponse<T>> {
 		return API.fetch({
 			route: `/libraries/${librarySlugOrId}/songs`,
 			errorMessage: 'Library does not exist',
-			parameters: { pagination, include }
+			parameters: { pagination, include, sort }
 		});
 	}
 
@@ -132,12 +140,13 @@ export default class API {
 	 */
 	static async getAllSongs<T extends Song = Song>(
 		pagination?: PaginationParameters,
+		sort?: SortingParameters<Song>,
 		include: SongInclude[] = []
 	): Promise<PaginatedResponse<T>> {
 		return API.fetch({
 			route: `/songs`,
 			errorMessage: 'Songs could not be loaded',
-			parameters: { pagination, include }
+			parameters: { pagination, include, sort }
 		});
 	}
 
@@ -149,12 +158,13 @@ export default class API {
 	 static async getArtistAlbums<T extends Album = Album>(
 		artistSlugOrId: string | number,
 		pagination?: PaginationParameters,
+		sort?: SortingParameters<Album>,
 		include: AlbumInclude[] = []
 	): Promise<PaginatedResponse<T>> {
 		return API.fetch({
 			route: `/artists/${artistSlugOrId}/albums`,
 			errorMessage: `Artist '${artistSlugOrId}' not found`,
-			parameters: { pagination, include }
+			parameters: { pagination, include, sort }
 		});
 	}
 
@@ -166,11 +176,12 @@ export default class API {
 	 */
 	static async getMasterTrack<T extends Track = Track>(
 		songSlugOrId: string | number,
+		sort?: SortingParameters<Track>,
 		include: ReleaseInclude[] = []
 	): Promise<T> {
 		return API.fetch({
 			route: `/songs/${songSlugOrId}/master`,
-			parameters: { include }
+			parameters: { include, sort }
 		}); 
 	}
 
@@ -216,11 +227,12 @@ export default class API {
 	static async getSongTracks<T extends Track = Track>(
 		songSlugOrId: string | number,
 		pagination?: PaginationParameters,
+		sort?: SortingParameters<Track>,
 		include: TrackInclude[] = []
 	): Promise<PaginatedResponse<T>> {
 		return API.fetch({
 			route: `/songs/${songSlugOrId}/tracks`,
-			parameters: { pagination, include }
+			parameters: { pagination, include, sort }
 		});
 	}
 
@@ -275,11 +287,12 @@ export default class API {
 	 static async getAlbumReleases<T extends Release = Release>(
 		albumSlugOrId: string | number,
 		pagination?: PaginationParameters,
+		sort?: SortingParameters<Release>,
 		include: ReleaseInclude[] = []
 	): Promise<PaginatedResponse<T>> {
 		return API.fetch({
 			route: `/albums/${albumSlugOrId}/releases`,
-			parameters: { include, pagination }
+			parameters: { include, pagination, sort }
 		});
 	}
 
@@ -309,14 +322,14 @@ export default class API {
 		slugOrId: string | number,
 		include: ArtistInclude[] = []
 	): Promise<T> {
-		return API.fetch({
+		return API.fetch<T>({
 			route: `/artists/${slugOrId}`,
 			errorMessage: 'Artists could not be loaded',
 			parameters: { include }
 		});
 	}
 
-	private static async fetch({ route, parameters, otherParameters, errorMessage }: FetchParameters) {
+	private static async fetch<T extends Resource>({ route, parameters, otherParameters, errorMessage }: FetchParameters<T>) {
 		const response = await fetch(this.buildURL(route, parameters, otherParameters));
 		const jsonResponse = await response.json().catch(() => {
 			throw new Error("Error while parsing Server's response");
@@ -336,13 +349,16 @@ export default class API {
 		return `http://localhost:5000/api${imageURL}`;
 	}
 
-	private static buildURL(route: string, parameters: QueryParameters, otherParameters?: any): string {
+	private static buildURL(route: string, parameters: QueryParameters<any>, otherParameters?: any): string {
 		return `http://localhost:5000/api${route}${this.formatQueryParameters(parameters, otherParameters)}`;
 	}
 
 	private static formatQueryParameters(parameters: QueryParameters, otherParameters?: any): string {
 		let formattedQueryParams: string[] = [];
-		
+		if (parameters.sort) {
+			formattedQueryParams.push(`sortBy=${parameters.sort.sortBy}`);
+			formattedQueryParams.push(`order=${parameters.sort.order ?? 'asc'}`);
+		}
 		if ((parameters.include?.length ?? 0)!== 0)
 			formattedQueryParams.push(this.formatInclude(parameters.include!)!);
 		if (parameters.pagination)
