@@ -54,7 +54,7 @@ export default class API {
 			route: `/artists`,
 			errorMessage: 'Artists could not be loaded',
 			parameters: { pagination, include: [], sort },
-			otherParameters: {'albumArtistOnly': true}
+			otherParameters: {'albumArtistOnly': 'true'}
 		});
 	}
 
@@ -350,7 +350,8 @@ export default class API {
 	}
 
 	private static buildURL(route: string, parameters: QueryParameters<any>, otherParameters?: any): string {
-		return `/api${route}${this.formatQueryParameters(parameters, otherParameters)}`;
+		const apiHost = (typeof window === 'undefined') ? process.env.ssrApiRoute : '/api';
+		return `${apiHost}${route}${this.formatQueryParameters(parameters, otherParameters)}`;
 	}
 
 	private static formatQueryParameters(parameters: QueryParameters, otherParameters?: any): string {
