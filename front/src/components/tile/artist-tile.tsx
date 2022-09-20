@@ -4,18 +4,14 @@ import {AccountCircle} from "@mui/icons-material";
 import API from "../../api";
 import {useState} from "react";
 import Tile from "./tile";
+import Illustration from "../illustration";
 
 const ArtistTile = (props: { artist: Artist }) => {
 	return <Tile
 		title={props.artist.name}
 		subtitle={props.artist.name}
 		targetURL={`/artists/${props.artist.slug}`}
-		illustrationURL={props.artist.illustration}
-		illustrationFallback={() => 
-			<IconButton disableFocusRipple disableRipple sx={{ '& svg': {fontSize: 100} }}>
-				<AccountCircle />
-			</IconButton>
-		}
+		illustration={<Illustration url={props.artist.illustration} fallback={<AccountCircle />}/>}
 	/>
 }
 
