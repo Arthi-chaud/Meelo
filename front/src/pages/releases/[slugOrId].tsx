@@ -155,22 +155,30 @@ const ReleasePage = ({ releaseIdentifier }: InferGetServerSidePropsType<typeof g
 					</Grid>
 				</Grid>
 			</Grid>
-			<Grid container spacing={1} sx={{ display: 'flex', paddingY: 5 }}>
+			<Grid container spacing={1} sx={{ display: 'flex', paddingY: 2 }}>
 				{ (albumGenres.data?.length ?? 0) > 0 &&
 					<Grid item md={3} xs={12}>
 					{ albumGenres.data &&
 						<FadeIn>
-							<List subheader={<ListSubheader>Genres:</ListSubheader>}>
-								<Grid container spacing={1}>
-								{ albumGenres.data.concat(albumGenres.data.concat(albumGenres.data)).map((genre) => (
+							<Grid container spacing={1} sx={{ alignItems: 'center' }}>
+								<Grid item>
+									<ListSubheader>Genres:</ListSubheader>
+								</Grid>
+								{ albumGenres.data.map((genre) => (
 									<Grid item xs="auto">
 										<Button key={genre.id} variant="outlined" sx={{ textTransform: 'none', color: 'inherit' }}>
 											{ genre.name }
 										</Button>
 									</Grid>
 								))}
-								</Grid>
-							</List>
+							</Grid>
+							<Divider sx={{
+								paddingY: 1,
+								display: "none",
+								[theme.breakpoints.down('md')]: {
+									display: 'block'
+								}
+							}} />
 						</FadeIn>
 					}
 					</Grid>
