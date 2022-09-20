@@ -26,9 +26,11 @@ const ListItem = (props: ListItemProps) => {
 						<Grid item xs={12} sm={9}>
 							{props.title}
 						</Grid>
-						<Grid item xs={12} sm={3} sx={{ display: 'flex', justifyContent: 'left' }}>
-							{props.secondTitle ?? ''}
-						</Grid>
+						{ props.secondTitle &&
+							<Grid item xs={12} sm={3} sx={{ display: 'flex', justifyContent: 'left' }}>
+								{props.secondTitle}
+							</Grid>
+						}
 					</Grid>
 				</Grid>
 				<Grid item xs='auto'>
