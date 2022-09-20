@@ -156,7 +156,8 @@ const ReleasePage = ({ releaseIdentifier }: InferGetServerSidePropsType<typeof g
 				</Grid>
 			</Grid>
 			<Grid sx={{ display: 'flex', paddingY: 5 }}>
-				<Grid item sx={{ flex: 3 }}>
+				{ (albumGenres.data?.length ?? 0) > 0 &&
+					<Grid item sx={{ flex: 3 }}>
 					{ albumGenres.data &&
 						<FadeIn>
 							<List subheader={<ListSubheader>Genres</ListSubheader>}>
@@ -168,7 +169,8 @@ const ReleasePage = ({ releaseIdentifier }: InferGetServerSidePropsType<typeof g
 							</List>
 						</FadeIn>
 					}
-				</Grid>
+					</Grid>
+				}
 				<Grid item sx={{ flex: 9 }}>
 					{ formattedTrackList &&
 						<>
