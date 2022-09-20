@@ -324,7 +324,7 @@ export default class API {
 	): Promise<T> {
 		return API.fetch<T>({
 			route: `/artists/${slugOrId}`,
-			errorMessage: 'Artists could not be loaded',
+			errorMessage: 'Artist could not be loaded',
 			parameters: { include }
 		});
 	}
