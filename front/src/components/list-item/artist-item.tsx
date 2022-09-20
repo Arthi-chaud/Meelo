@@ -12,6 +12,8 @@ import { Page } from "../infinite/infinite-scroll"
 import ListItemButton from "./item-button"
 import Album, { AlbumWithArtist } from "../../models/album"
 import Release from "../../models/release"
+import AccountCircle from "@mui/icons-material/AccountCircle"
+import AlbumIcon from "@mui/icons-material/Album"
 
 type ArtistItemProps = {
 	artist: Artist;
@@ -25,7 +27,7 @@ type ArtistItemProps = {
 const ArtistItem = ({ artist }: ArtistItemProps) => {
 	return (
 		<ListItem
-			icon={<Illustration url={artist.illustration}/>}
+			icon={<Illustration url={artist.illustration} fallback={<AccountCircle/>}/>}
 			title={<Typography>{artist.name}</Typography>}
 			expanded={() => (
 				<InfiniteList
@@ -35,12 +37,13 @@ const ArtistItem = ({ artist }: ArtistItemProps) => {
 						key: ['artist', artist.id, 'albums'],
 						exec: (lastPage: Page<Album>) => API.getArtistAlbums(
 							artist.id,
-							lastPage
+							lastPage,
+							{  sortBy: 'releaseDate', order: 'asc'}
 						)
 					})}
 					render={(album: Album) => <>
 						<ListItem
-							icon={<Illustration url={album.illustration}/>}
+							icon={<Illustration url={album.illustration} fallback={<AlbumIcon/>}/>}
 							title={
 								<ListItemButton
 									url={`/albums/${artist.slug}+${album.slug}`}
