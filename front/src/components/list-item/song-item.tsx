@@ -11,6 +11,7 @@ import ListItem from "./item";
 import { Page } from "../infinite/infinite-scroll"
 import ListItemButton from "./item-button"
 import { Star } from "@mui/icons-material"
+import AudiotrackIcon from '@mui/icons-material/Audiotrack';
 
 type SongItemProps = {
 	song: SongWithArtist;
@@ -25,7 +26,7 @@ const SongItem = ({ song }: SongItemProps) => {
 	const artist = song.artist;
 	return (
 		<ListItem
-			icon={<Illustration url={song.illustration}/>}
+			icon={<Illustration url={song.illustration} fallback={<AudiotrackIcon/>}/>}
 			title={<ListItemButton onClick={() => {}} label={song.name}/>}
 			secondTitle={
 				<ListItemButton url={`/artists/${artist.slug}`} label={artist.name} />
@@ -45,7 +46,7 @@ const SongItem = ({ song }: SongItemProps) => {
 					})}
 					render={(track: TrackWithRelease) => <>
 						<ListItem
-							icon={<Illustration url={track.illustration}/>}
+							icon={<Illustration url={track.illustration} fallback={<AudiotrackIcon/>}/>}
 							title={<ListItemButton onClick={() => {}} label={track.name}/>}
 							secondTitle={
 								<ListItemButton url={`/releases/${track.releaseId}`} label={track.release.name} />

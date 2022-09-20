@@ -26,7 +26,7 @@ const defaultMeeloQueryOptions = {
  * @returns 
  */
 const prepareMeeloQuery = <T,>(query: MeeloQueryFn<T>, ...queryArgs: Partial<Parameters<typeof query>>) => {
-	const enabled = queryArgs.findIndex((elem) => elem === undefined) === -1;
+	const enabled = isEnabled(queryArgs);
 	const queryParams = query(...queryArgs as Parameters<typeof query>);
 	return {
 		queryKey: queryParams.key,
@@ -37,13 +37,22 @@ const prepareMeeloQuery = <T,>(query: MeeloQueryFn<T>, ...queryArgs: Partial<Par
 }
 
 /**
+ * Using the query parameters, defines if a query should be enabled or not
+ * @param args 
+ * @returns 
+ */
+const isEnabled = (args: any[]) => {
+	return args.findIndex((elem) => (elem === undefined || elem === null)) === -1;
+}
+
+/**
  * Wrapper for 'react-query''s useInfiniteQuery's parameters, to manage dependent queries more easily
  * @param query the function that prepare the query
  * @param queryArgs the arguments to pass the the query function. If one of them is undefined, the query will not be enabled
  * @returns 
  */
 const prepareMeeloInfiniteQuery = <T,>(query: MeeloInfiniteQueryFn<T>, ...queryArgs: Partial<Parameters<typeof query>>) => {
-	const enabled = queryArgs.findIndex((elem) => elem === undefined) === -1;
+	const enabled = isEnabled(queryArgs);
 	const queryParams = query(...queryArgs as Parameters<typeof query>);
 	return {
 		queryKey: queryParams.key,
