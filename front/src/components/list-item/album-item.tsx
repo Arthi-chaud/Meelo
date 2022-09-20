@@ -1,4 +1,4 @@
-import { Grid, Box, List, Collapse, Button, IconButton, Typography, useTheme, Divider } from "@mui/material"
+import { Grid, Box, List, Collapse, Button, IconButton, Typography, useTheme, Divider, Tooltip } from "@mui/material"
 import FadeIn from "react-fade-in"
 import API from "../../api"
 import InfiniteList from "../infinite/infinite-list"
@@ -11,6 +11,7 @@ import { Page } from "../infinite/infinite-scroll"
 import ListItemButton from "./item-button"
 import { AlbumWithArtist } from "../../models/album"
 import Release from "../../models/release"
+import { Star } from "@mui/icons-material"
 import { Album } from "@mui/icons-material"
 
 type AlbumItemProps = {
@@ -33,10 +34,11 @@ const AlbumItem = ({ album }: AlbumItemProps) => {
 					label={album.name}
 				/>
 			}
-			secondTitle={ artist?.name
+			secondTitle={artist?.name
 				? <ListItemButton url={`/albums/${artist?.slug ?? "compilations"}+${album.slug}`} label={artist?.name} />
-				: <Typography>Compilations</Typography>
-			}	
+				: <Typography margin={1}>Compilations</Typography>
+			}
+			trailing={album.releaseDate ? <Typography>{new Date(album.releaseDate).getFullYear()}</Typography> : undefined}
 			expanded={() => (
 				<InfiniteList
 					firstLoader={() => <WideLoadingComponent/>}
@@ -56,6 +58,10 @@ const AlbumItem = ({ album }: AlbumItemProps) => {
 									url={`/releases/${artist?.slug ?? 'compilations'}+${album.slug}+${release.slug}`}
 									label={release.name}
 								/>
+							}
+							trailing={release.master
+								? <Tooltip title="Master release"><Star/></Tooltip>
+								: <></>
 							}
 						/>
 					</>}

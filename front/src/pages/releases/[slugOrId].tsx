@@ -1,4 +1,4 @@
-import { Grid, IconButton, ListItem, Typography, List, ListSubheader, ListItemText, Divider, ListItemIcon, Fade, useTheme, ListItemButton } from "@mui/material";
+import { Grid, IconButton, ListItem, Typography, List, ListSubheader, ListItemText, Divider, ListItemIcon, Fade, useTheme, ListItemButton, Button } from "@mui/material";
 import { Box } from "@mui/system";
 import { GetServerSidePropsContext, InferGetServerSidePropsType, NextPage } from "next";
 import { useRouter } from "next/router";
@@ -119,12 +119,13 @@ const ReleasePage = ({ releaseIdentifier }: InferGetServerSidePropsType<typeof g
 	return <Box>
 		<Box sx={{ padding: 5, flex: 1, flexGrow: 1}}>
 			<Grid container spacing={4} sx={{ justifyContent: 'center' }}>
+
 				<Grid item md={4} xs={12}>
-					<Illustration url={release.data!.illustration} height={'40%'} fallback={<Album/>}/> 
+					<Illustration url={release.data!.illustration} fallback={<Album/>}/> 
 				</Grid>
-				<Grid item sx={{ display: 'flex' }} lg={5} md={8} xs={12} >
+				<Grid item sx={{ display: 'flex' }} lg={5} sm={8} xs={12} >
 					<Grid container sx={{ flexDirection: 'column', justifyContent: 'space-evenly',
-						alignItems: 'left', [theme.breakpoints.down('md')]: { alignItems: 'center' },
+						alignItems: 'left', [theme.breakpoints.down('sm')]: { alignItems: 'center' },
 					}}>
 						<Grid item>
 							<Typography variant='h2'>{release.data!.name}</Typography>
@@ -153,21 +154,35 @@ const ReleasePage = ({ releaseIdentifier }: InferGetServerSidePropsType<typeof g
 					</Grid>
 				</Grid>
 			</Grid>
-			<Grid sx={{ display: 'flex', paddingY: 5 }}>
-				<Grid item sx={{ flex: 3 }}>
+			<Grid container spacing={1} sx={{ display: 'flex', paddingY: 2 }}>
+				{ (albumGenres.data?.length ?? 0) > 0 &&
+					<Grid item md={3} xs={12}>
 					{ albumGenres.data &&
 						<FadeIn>
-							<List subheader={<ListSubheader>Genres</ListSubheader>}>
-							{ albumGenres.data.map((genre) => 
-								<ListItemButton key={genre.id}>
-									<ListItemText inset>{ genre.name }</ListItemText>
-								</ListItemButton>
-							) }
-							</List>
+							<Grid container spacing={1} sx={{ alignItems: 'center' }}>
+								<Grid item>
+									<ListSubheader>Genres:</ListSubheader>
+								</Grid>
+								{ albumGenres.data.map((genre) => (
+									<Grid item xs="auto" key={genre.id}>
+										<Button variant="outlined" sx={{ textTransform: 'none', color: 'inherit' }}>
+											{ genre.name }
+										</Button>
+									</Grid>
+								))}
+							</Grid>
+							<Divider sx={{
+								paddingY: 1,
+								display: "none",
+								[theme.breakpoints.down('md')]: {
+									display: 'block'
+								}
+							}} />
 						</FadeIn>
 					}
-				</Grid>
-				<Grid item sx={{ flex: 9 }}>
+					</Grid>
+				}
+				<Grid item md={9} xs={12}>
 					{ formattedTrackList &&
 						<>
 							{ Array.from(formattedTrackList.entries()).map((disc, _, discs) => 
@@ -196,7 +211,7 @@ const ReleasePage = ({ releaseIdentifier }: InferGetServerSidePropsType<typeof g
 				</Grid>
 			</Grid>
 			<RelatedContentSection
-				display={(relatedReleases.data?.items.length ?? 0) > 1}
+				display={(relatedReleases.data?.items?.length ?? 0) > 1}
 				title={"Other releases of the same album:"}
 			>
 				<List>
