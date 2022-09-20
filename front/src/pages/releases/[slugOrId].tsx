@@ -1,4 +1,4 @@
-import { Grid, IconButton, ListItem, Typography, List, ListSubheader, ListItemText, Divider, ListItemIcon, Fade, useTheme, ListItemButton } from "@mui/material";
+import { Grid, IconButton, ListItem, Typography, List, ListSubheader, ListItemText, Divider, ListItemIcon, Fade, useTheme, ListItemButton, Button } from "@mui/material";
 import { Box } from "@mui/system";
 import { GetServerSidePropsContext, InferGetServerSidePropsType, NextPage } from "next";
 import { useRouter } from "next/router";
@@ -155,23 +155,27 @@ const ReleasePage = ({ releaseIdentifier }: InferGetServerSidePropsType<typeof g
 					</Grid>
 				</Grid>
 			</Grid>
-			<Grid sx={{ display: 'flex', paddingY: 5 }}>
+			<Grid container spacing={1} sx={{ display: 'flex', paddingY: 5 }}>
 				{ (albumGenres.data?.length ?? 0) > 0 &&
-					<Grid item sx={{ flex: 3 }}>
+					<Grid item md={3} xs={12}>
 					{ albumGenres.data &&
 						<FadeIn>
-							<List subheader={<ListSubheader>Genres</ListSubheader>}>
-							{ albumGenres.data.map((genre) => 
-								<ListItemButton key={genre.id}>
-									<ListItemText inset>{ genre.name }</ListItemText>
-								</ListItemButton>
-							) }
+							<List subheader={<ListSubheader>Genres:</ListSubheader>}>
+								<Grid container spacing={1}>
+								{ albumGenres.data.concat(albumGenres.data.concat(albumGenres.data)).map((genre) => (
+									<Grid item xs="auto">
+										<Button key={genre.id} variant="outlined" sx={{ textTransform: 'none', color: 'inherit' }}>
+											{ genre.name }
+										</Button>
+									</Grid>
+								))}
+								</Grid>
 							</List>
 						</FadeIn>
 					}
 					</Grid>
 				}
-				<Grid item sx={{ flex: 9 }}>
+				<Grid item md={9} xs={12}>
 					{ formattedTrackList &&
 						<>
 							{ Array.from(formattedTrackList.entries()).map((disc, _, discs) => 
