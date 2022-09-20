@@ -11,6 +11,7 @@ import { Page } from "../infinite/infinite-scroll"
 import ListItemButton from "./item-button"
 import { AlbumWithArtist } from "../../models/album"
 import Release from "../../models/release"
+import { Album } from "@mui/icons-material"
 
 type AlbumItemProps = {
 	album: AlbumWithArtist;
@@ -25,7 +26,7 @@ const AlbumItem = ({ album }: AlbumItemProps) => {
 	const artist = album.artist;
 	return (
 		<ListItem
-			icon={<Illustration url={album.illustration}/>}
+			icon={<Illustration url={album.illustration} fallback={<Album/>}/>}
 			title={
 				<ListItemButton
 					url={`/albums/${artist?.slug ?? 'compilations'}+${album.slug}`}
@@ -49,7 +50,7 @@ const AlbumItem = ({ album }: AlbumItemProps) => {
 					})}
 					render={(release: Release) => <>
 						<ListItem
-							icon={<Illustration url={release.illustration}/>}
+							icon={<Illustration url={release.illustration} fallback={<Album/>}/>}
 							title={
 								<ListItemButton
 									url={`/releases/${artist?.slug ?? 'compilations'}+${album.slug}+${release.slug}`}

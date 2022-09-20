@@ -12,7 +12,7 @@ import { TrackWithSong } from "../../models/track";
 import Tracklist from "../../models/tracklist";
 import AspectRatio from '@mui/joy/AspectRatio';
 import PlayCircleIcon from '@mui/icons-material/PlayCircle';
-import { MoreHoriz, Shuffle } from "@mui/icons-material";
+import { Album, MoreHoriz, Shuffle } from "@mui/icons-material";
 import FadeIn from "react-fade-in";
 import Tile from "../../components/tile/tile";
 import MusicVideoIcon from '@mui/icons-material/MusicVideo';
@@ -120,9 +120,7 @@ const ReleasePage = ({ releaseIdentifier }: InferGetServerSidePropsType<typeof g
 		<Box sx={{ padding: 5, flex: 1, flexGrow: 1}}>
 			<Grid container spacing={4} sx={{ justifyContent: 'center' }}>
 				<Grid item md={4} xs={12}>
-					<AspectRatio ratio="1">
-						<Illustration url={release.data!.illustration} height={'40%'}/>
-					</AspectRatio> 
+					<Illustration url={release.data!.illustration} height={'40%'} fallback={<Album/>}/> 
 				</Grid>
 				<Grid item sx={{ display: 'flex' }} lg={5} md={8} xs={12} >
 					<Grid container sx={{ flexDirection: 'column', justifyContent: 'space-evenly',
@@ -208,8 +206,7 @@ const ReleasePage = ({ releaseIdentifier }: InferGetServerSidePropsType<typeof g
 								targetURL={`/releases/${albumArtist?.data?.slug ?? 'compilations'}+${release.data!.album.slug}+${otherRelease.slug}/`}
 								title={otherRelease.name}
 								subtitle={`${otherRelease.tracks.length} Tracks`}
-								illustrationURL={otherRelease.illustration}
-								illustrationFallback={() => <Illustration url={release.data!.illustration}/>}
+								illustration={<Illustration url={otherRelease.illustration} fallback={<Album/>}/>}
 							/>
 						</ListItem>
 					
