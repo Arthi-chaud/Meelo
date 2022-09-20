@@ -119,14 +119,14 @@ const ReleasePage = ({ releaseIdentifier }: InferGetServerSidePropsType<typeof g
 	return <Box>
 		<Box sx={{ padding: 5, flex: 1, flexGrow: 1}}>
 			<Grid container spacing={4} sx={{ justifyContent: 'center' }}>
-				<Grid item md={4} xs={12}>
+				<Grid item sm={4} xs={12}>
 					<AspectRatio ratio="1">
-						<Illustration url={release.data!.illustration} height={'40%'}/>
+						<Illustration url={release.data!.illustration}/>
 					</AspectRatio> 
 				</Grid>
-				<Grid item sx={{ display: 'flex' }} lg={5} md={8} xs={12} >
+				<Grid item sx={{ display: 'flex' }} lg={5} sm={8} xs={12} >
 					<Grid container sx={{ flexDirection: 'column', justifyContent: 'space-evenly',
-						alignItems: 'left', [theme.breakpoints.down('md')]: { alignItems: 'center' },
+						alignItems: 'left', [theme.breakpoints.down('sm')]: { alignItems: 'center' },
 					}}>
 						<Grid item>
 							<Typography variant='h2'>{release.data!.name}</Typography>
