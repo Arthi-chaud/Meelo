@@ -33,10 +33,11 @@ const AlbumItem = ({ album }: AlbumItemProps) => {
 					label={album.name}
 				/>
 			}
-			secondTitle={ artist?.name
+			secondTitle={artist?.name
 				? <ListItemButton url={`/albums/${artist?.slug ?? "compilations"}+${album.slug}`} label={artist?.name} />
 				: <Typography margin={1}>Compilations</Typography>
-			}	
+			}
+			trailing={album.releaseDate ? <Typography>{new Date(album.releaseDate).getFullYear()}</Typography> : undefined}
 			expanded={() => (
 				<InfiniteList
 					firstLoader={() => <WideLoadingComponent/>}
