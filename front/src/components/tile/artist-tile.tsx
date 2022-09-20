@@ -8,7 +8,6 @@ import Tile from "./tile";
 const ArtistTile = (props: { artist: Artist }) => {
 	return <Tile
 		title={props.artist.name}
-		subtitle={props.artist.name}
 		targetURL={`/artists/${props.artist.slug}`}
 		illustrationURL={props.artist.illustration}
 		illustrationFallback={() => 
