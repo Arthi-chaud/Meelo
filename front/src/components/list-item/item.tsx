@@ -3,13 +3,16 @@ import ExpandLess from "@mui/icons-material/ExpandLess";
 import ExpandMore from "@mui/icons-material/ExpandMore";
 import { Grid } from '@mui/material';
 import { useState } from 'react';
+import { RequireExactlyOne } from 'type-fest';
 
 type ListItemProps = {
 	icon?: JSX.Element;
 	title: JSX.Element;
 	secondTitle?: JSX.Element;
-	expanded?: () => JSX.Element;
-}
+} & RequireExactlyOne<{
+	expanded: () => JSX.Element;
+	trailing: JSX.Element;
+}>
 
 const ListItem = (props: ListItemProps) => {
 	const [expanded, setExpanded] = useState(false);
@@ -32,6 +35,7 @@ const ListItem = (props: ListItemProps) => {
 						{expanded ? <ExpandLess /> : <ExpandMore />}
 					</IconButton>
 				}
+				{props.trailing}
 			</Grid>
 		</Grid>
 		<Collapse in={expanded} timeout="auto" unmountOnExit>

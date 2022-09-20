@@ -1,4 +1,4 @@
-import { Grid, Box, List, Collapse, Button, IconButton, Typography, useTheme, Divider } from "@mui/material"
+import { Grid, Box, List, Collapse, Button, IconButton, Typography, useTheme, Divider, Tooltip } from "@mui/material"
 import FadeIn from "react-fade-in"
 import API from "../../api"
 import { SongWithArtist } from "../../models/song"
@@ -10,6 +10,7 @@ import Link from 'next/link';
 import ListItem from "./item";
 import { Page } from "../infinite/infinite-scroll"
 import ListItemButton from "./item-button"
+import { Star } from "@mui/icons-material"
 
 type SongItemProps = {
 	song: SongWithArtist;
@@ -25,7 +26,7 @@ const SongItem = ({ song }: SongItemProps) => {
 	return (
 		<ListItem
 			icon={<Illustration url={song.illustration}/>}
-			title={<Typography>{song.name}</Typography>}
+			title={<ListItemButton onClick={() => {}} label={song.name}/>}
 			secondTitle={
 				<ListItemButton url={`/artists/${artist.slug}`} label={artist.name} />
 			}
@@ -45,9 +46,13 @@ const SongItem = ({ song }: SongItemProps) => {
 					render={(track: TrackWithRelease) => <>
 						<ListItem
 							icon={<Illustration url={track.illustration}/>}
-							title={<Typography>{track.name}</Typography>}
+							title={<ListItemButton onClick={() => {}} label={track.name}/>}
 							secondTitle={
 								<ListItemButton url={`/releases/${track.releaseId}`} label={track.release.name} />
+							}
+							trailing={track.master
+								? <Tooltip title="Master track"><Star/></Tooltip>
+								: <></>
 							}
 						/>
 					</>}

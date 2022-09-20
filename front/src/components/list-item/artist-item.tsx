@@ -47,7 +47,7 @@ const ArtistItem = ({ artist }: ArtistItemProps) => {
 									label={album.name}
 								/>
 							}
-							secondTitle={
+							trailing={
 								<Typography>
 									{ album.releaseDate ? new Date(album.releaseDate).getFullYear() : ''}
 								</Typography>

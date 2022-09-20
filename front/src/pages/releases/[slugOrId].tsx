@@ -198,7 +198,7 @@ const ReleasePage = ({ releaseIdentifier }: InferGetServerSidePropsType<typeof g
 				</Grid>
 			</Grid>
 			<RelatedContentSection
-				display={(relatedReleases.data?.items.length ?? 0) > 1}
+				display={(relatedReleases.data?.items?.length ?? 0) > 1}
 				title={"Other releases of the same album:"}
 			>
 				<List>
