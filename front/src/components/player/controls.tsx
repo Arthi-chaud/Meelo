@@ -1,6 +1,7 @@
 import { FastForward, FastRewind, Pause, PlayArrow } from "@mui/icons-material";
 import AspectRatio from "@mui/joy/AspectRatio";
 import { Typography, Grid, Slider, LinearProgress, IconButton } from "@mui/material";
+import formatDuration from "../../utils/formatDuration";
 import Illustration from "../illustration";
 
 type PlayerControlsProps = {
@@ -19,11 +20,23 @@ type PlayerControlsProps = {
 
 const PlayerControls = (props: PlayerControlsProps) => {
 	return <Grid container spacing={1} sx={{ alignItems: 'center', justifyContent: 'space-evenly' }}>
-		<Grid item container sx={{ flexDirection: 'column' }} xs={6} spacing={2}>
+		<Grid item container sx={{ flexDirection: 'column' }} xs={6}>
 			<Grid item xs sx={{ display: 'flex', justifyContent: 'center' }}>
 				<Typography sx={{ textAlign: 'center' }}>
 					{props.title} - {props.artist}
 				</Typography>
+			</Grid>
+			<Grid item xs container sx={{ display: 'flex', justifyContent: 'space-between' }}>
+				<Grid item xs="auto">
+					<Typography>
+						{formatDuration(props.progress)}
+					</Typography>
+				</Grid>
+				<Grid item xs="auto">
+					<Typography>
+						{formatDuration(props.duration)}
+					</Typography>
+				</Grid>
 			</Grid>
 			<Grid item xs>
 				<LinearProgress
