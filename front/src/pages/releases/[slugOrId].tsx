@@ -6,7 +6,7 @@ import API from "../../api";
 import Illustration from "../../components/illustration";
 import { WideLoadingComponent } from "../../components/loading/loading";
 import { ReleaseWithAlbum, ReleaseWithTracks } from "../../models/release";
-import formatDuration from 'format-duration'
+import formatDuration from '../../utils/formatDuration';
 import { useEffect, useState } from "react";
 import { TrackWithSong } from "../../models/track";
 import Tracklist from "../../models/tracklist";
@@ -137,7 +137,7 @@ const ReleasePage = ({ releaseIdentifier }: InferGetServerSidePropsType<typeof g
 						}
 						<Grid item>
 							<Typography variant='h6'>
-								{new Date(release.data!.album.releaseDate!).getFullYear()}{totalDuration && ` - ${formatDuration(totalDuration * 1000)}`}
+								{new Date(release.data!.album.releaseDate!).getFullYear()}{totalDuration && ` - ${formatDuration(totalDuration)}`}
 							</Typography>
 						</Grid>
 					</Grid>
