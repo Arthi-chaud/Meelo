@@ -36,7 +36,7 @@ const MeeloAppBarDrawer = ({ availableLibraries, requestedLibrarySlug, isOpen, o
 			sx={{ display: { xs: 'block', md: 'none' } }}
 		>
 			<List subheader={
-				<ListSubheader disableSticky={false}>
+				<ListSubheader disableSticky={false} sx={{ color: 'inherit' }}>
 					<Grid container columnSpacing={2} sx={{ flexDirection: 'row', alignItems: 'center' }}>
 						<Grid item sx={{ paddingTop: 1.6 }}><LibraryMusicIcon /></Grid>
 						<Grid item>Libraries</Grid>

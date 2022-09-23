@@ -1,14 +1,24 @@
-import { createTheme } from "@mui/material";
+import { createTheme, responsiveFontSizes } from "@mui/material";
 
-export default createTheme({
+export default  responsiveFontSizes(createTheme({
 	palette: {
-		
+		mode: 'dark',
 		primary: {
 			main: "#242120",
-			light: "#393939"
+			light: "#676767",
+			contrastText: "#FFFFFF"
+		},
+		secondary: {
+			main: "#D9D9D9"
 		},
 		background: {
-			default: "#282523",
+			default: "#242120",
+			paper: "#242120"
+		},
+		text: {
+			primary: "#FFFFFF"
 		}
-	}
-});
+	},
+	
+	
+}));

@@ -197,7 +197,7 @@ const ReleasePage = ({ releaseIdentifier }: InferGetServerSidePropsType<typeof g
 								</Grid>
 								{ albumGenres.data.map((genre) => (
 									<Grid item xs="auto" key={genre.id}>
-										<Button variant="outlined" sx={{ textTransform: 'none', color: 'inherit' }}>
+										<Button variant="outlined" sx={{ textTransform: 'none', color: 'primary.contrastText' }}>
 											{ genre.name }
 										</Button>
 									</Grid>
