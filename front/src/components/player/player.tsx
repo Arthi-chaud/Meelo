@@ -2,13 +2,14 @@ import { Box, Button, Link } from "@mui/material"
 import { useEffect, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import API from "../../api";
-import { playNextTrack, playPreviousTrack } from "../../state/playerSlice";
+import { playNextTrack, playPreviousTrack, pushCurrentTrackToHistory, setHistoryToPlaylist } from "../../state/playerSlice";
 import { RootState } from "../../state/store";
 import PlayerControls from "./controls"
 
 const Player = () => {
 	const currentTrack = useSelector((state: RootState) => state.player.currentTrack);
 	const history = useSelector((state: RootState) => state.player.history);
+	const playlist = useSelector((state: RootState) => state.player.playlist);
 	const audio = useRef<HTMLAudioElement>();
 	const interval = useRef<NodeJS.Timer>();
 	const dispatch = useDispatch();
@@ -16,6 +17,7 @@ const Player = () => {
 	const [playing, setPlaying] = useState<boolean>();
 	useEffect(() => {
 		audio.current?.pause();
+		audio.current = undefined;
 		clearInterval(interval.current);
 		setProgress(0);
 		if (currentTrack) {
@@ -35,7 +37,7 @@ const Player = () => {
 		}
 		return () => clearInterval(interval.current);
 	}, [currentTrack]);
-	if (history.length == 0 && audio.current == undefined)
+	if (playlist.length == 0 && history.length == 0 && audio.current == undefined)
 		return <></>
 	return <PlayerControls
 		title={currentTrack?.track.name}
@@ -46,13 +48,26 @@ const Player = () => {
 			audio.current?.pause();
 		}}
 		onPlay={() => {
+			if (currentTrack == undefined)
+				dispatch(playNextTrack());
 			setPlaying(true);
 			audio.current?.play();
 		}}
 		duration={currentTrack?.track.duration}
 		progress={progress}
-		onSkipTrack={() => dispatch(playNextTrack())}
-		onRewind={() =>  dispatch(playPreviousTrack())}
+		onSkipTrack={() => {
+			dispatch(pushCurrentTrackToHistory())
+			if (playlist.length == 0) {
+				setPlaying(false);
+				dispatch(setHistoryToPlaylist());
+			} else
+				dispatch(playNextTrack());
+		}}
+		onRewind={() => {
+			if (history.length == 0)
+				setPlaying(false);
+			dispatch(playPreviousTrack())
+		}}
 		onScroll={(newProgress) => audio.current?.fastSeek(newProgress)}
 	/>
 }

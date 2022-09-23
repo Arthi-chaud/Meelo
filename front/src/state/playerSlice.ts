@@ -50,12 +50,24 @@ export const playerSlice = createSlice({
 				state.history.push(state.currentTrack);
 			state.currentTrack = state.playlist.shift();
 		},
+		pushCurrentTrackToHistory: (state, action: PayloadAction<void>) => {
+			if (state.currentTrack)
+				state.history.push(state.currentTrack);
+			state.currentTrack = undefined;
+		},
 		emptyPlaylist: (state, action: PayloadAction<void>) => {
 			state.playlist = [];
+		},
+		setHistoryToPlaylist: (state, action: PayloadAction<void>) => {
+			state.playlist = state.history;
+			state.history = [];
+		},
+		stopCurrentTrack: (state, action: PayloadAction<void>) => {
+			state.currentTrack = undefined;
 		}
 	},
 })
 
-export const { addTracks, playPreviousTrack, playTrack, playNextTrack, emptyPlaylist } = playerSlice.actions
+export const { addTracks, playPreviousTrack, playTrack, playNextTrack, emptyPlaylist, setHistoryToPlaylist, stopCurrentTrack ,pushCurrentTrackToHistory } = playerSlice.actions
 
 export default playerSlice.reducer
