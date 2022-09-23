@@ -22,6 +22,7 @@ import { useDispatch } from "react-redux";
 import { addTracks, emptyPlaylist, playNextTrack, playTrack } from "../../state/playerSlice";
 import Song from "../../models/song";
 import Artist from "../../models/artist";
+import { shuffle } from 'd3-array';
 
 const releaseQuery = (slugOrId: string | number) => ({
 	key: ['release', slugOrId],
@@ -175,7 +176,22 @@ const ReleasePage = ({ releaseIdentifier }: InferGetServerSidePropsType<typeof g
 						</IconButton>
 					</Grid>
 					<Grid item>
-						<IconButton><Shuffle fontSize="large"/></IconButton>
+						<IconButton onClick={() => {
+							if (tracks && otherArtistsQuery.findIndex((q) => q.data == undefined) == -1) {
+								const otherArtists = otherArtistsQuery.map((q) => q.data!);
+								dispatch(emptyPlaylist());
+								dispatch(addTracks({
+									tracks: shuffle(tracks.map((track) => ({
+										track: track,
+										artist: getSongArtist(track.song, albumArtist.data, otherArtists),
+										release: release.data
+									})))
+								}));
+								dispatch(playNextTrack());
+							}
+						}}>
+							<Shuffle fontSize="large"/>
+						</IconButton>
 					</Grid>
 					<Grid item>
 						<IconButton><MoreHoriz fontSize="large"/></IconButton>
