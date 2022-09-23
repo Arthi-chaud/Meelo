@@ -46,14 +46,16 @@ export const playerSlice = createSlice({
 			state.currentTrack = state.history.pop();
 		},
 		playNextTrack: (state, action: PayloadAction<void>) => {
+			if (state.currentTrack)
+				state.history.push(state.currentTrack);
 			state.currentTrack = state.playlist.shift();
 		},
-		emplyPlaylist: (state, action: PayloadAction<void>) => {
+		emptyPlaylist: (state, action: PayloadAction<void>) => {
 			state.playlist = [];
 		}
 	},
 })
 
-export const { addTracks, playPreviousTrack, playTrack, playNextTrack, emplyPlaylist } = playerSlice.actions
+export const { addTracks, playPreviousTrack, playTrack, playNextTrack, emptyPlaylist } = playerSlice.actions
 
 export default playerSlice.reducer

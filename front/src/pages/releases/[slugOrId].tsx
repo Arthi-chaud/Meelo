@@ -19,7 +19,9 @@ import MusicVideoIcon from '@mui/icons-material/MusicVideo';
 import { prepareMeeloQuery } from "../../query";
 import { QueryClient, dehydrate, useQuery, useQueries } from "react-query";
 import { useDispatch } from "react-redux";
-import { addTracks, playNextTrack } from "../../state/playerSlice";
+import { addTracks, emptyPlaylist, playTrack } from "../../state/playerSlice";
+import Song from "../../models/song";
+import Artist from "../../models/artist";
 
 const releaseQuery = (slugOrId: string | number) => ({
 	key: ['release', slugOrId],
@@ -86,6 +88,12 @@ const RelatedContentSection = (props: RelatedContentSectionProps) => {
 	)
 }
 
+const getSongArtist = (song: Song, albumArtist?: Artist, otherArtist: Artist[] = []): Artist => {
+	if (song.artistId == albumArtist?.id)
+		return albumArtist;
+	return otherArtist.find((otherArtist) => otherArtist.id == song.artistId)!; 
+}
+
 const ReleasePage = ({ releaseIdentifier }: InferGetServerSidePropsType<typeof getServerSideProps>) => {
 	const theme = useTheme();
 	const dispatch = useDispatch();
@@ -117,7 +125,7 @@ const ReleasePage = ({ releaseIdentifier }: InferGetServerSidePropsType<typeof g
 			setTotalDuration(flattenedTracks.reduce((prevDuration, track) => prevDuration + track.duration, 0));
 		}
 	}, [formattedTrackList]);
-	if (release.isLoading || albumArtist.isLoading)
+	if (!release.data || !albumArtist)
 		return <WideLoadingComponent/>
 	return <Box>
 		<Box sx={{ padding: 5, flex: 1, flexGrow: 1}}>
@@ -147,7 +155,30 @@ const ReleasePage = ({ releaseIdentifier }: InferGetServerSidePropsType<typeof g
 				</Grid>
 				<Grid item container lg={3} xs={12} sx={{ spacing: 5, alignItems: 'center', justifyContent: 'space-evenly', display: 'flex'}}>
 					<Grid item>
-						<IconButton><PlayCircleIcon fontSize="large"/></IconButton>
+						<IconButton onClick={() => {
+							if (formattedTrackList) {
+								const otherArtists = otherArtistsQuery.map((q) => q.data!);
+								let tracks = Array.from(formattedTrackList?.values()).flat();
+								const firstTrack = tracks.shift();
+								dispatch(emptyPlaylist());
+								dispatch(addTracks({
+									tracks: tracks.map((track) => ({
+										track: track,
+										artist: getSongArtist(track.song, albumArtist.data, otherArtists),
+										release: release.data
+									}))
+								}));
+								if (firstTrack) {
+									dispatch(playTrack({
+										track: firstTrack,
+										artist: getSongArtist(firstTrack.song, albumArtist.data, otherArtists),
+										release: release.data
+									}));
+								}
+							}
+						}}>
+							<PlayCircleIcon fontSize="large"/>
+						</IconButton>
 					</Grid>
 					<Grid item>
 						<IconButton><Shuffle fontSize="large"/></IconButton>
@@ -191,18 +222,14 @@ const ReleasePage = ({ releaseIdentifier }: InferGetServerSidePropsType<typeof g
 							{ Array.from(formattedTrackList.entries()).map((disc, _, discs) => 
 								<List key={disc[0]} subheader={ discs.length !== 1 && <ListSubheader>Disc {disc[0]}</ListSubheader> }>
 									{ disc[1].map((track, _, tracks) => {
-										const artist = track.song.artistId == albumArtist.data?.id ? albumArtist.data : 
-										otherArtistsQuery.find((artistQuery) => artistQuery.data?.id == track.song.artistId)?.data 
+										const artist = getSongArtist(track.song, albumArtist.data, otherArtistsQuery.map((q) => q.data!))
 										return <>
 											<ListItemButton key={track.id} onClick={() => {
-													dispatch(addTracks({
-														tracks: {
-															track: track,
-															artist: artist!,
-															release: release.data!
-														}
+													dispatch(playTrack({
+														track: track,
+														artist: artist!,
+														release: release.data!
 													}));
-													dispatch(playNextTrack());
 												}}>
 												<ListItemIcon><Typography>{ track.trackIndex }</Typography></ListItemIcon>
 												<ListItemText

@@ -2,7 +2,7 @@ import { Box, Button, Link } from "@mui/material"
 import { useEffect, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import API from "../../api";
-import { playNextTrack } from "../../state/playerSlice";
+import { playNextTrack, playPreviousTrack } from "../../state/playerSlice";
 import { RootState } from "../../state/store";
 import PlayerControls from "./controls"
 
@@ -51,8 +51,8 @@ const Player = () => {
 		}}
 		duration={currentTrack?.track.duration}
 		progress={progress}
-		onSkipTrack={() => {}}
-		onRewind={() => {}}
+		onSkipTrack={() => dispatch(playNextTrack())}
+		onRewind={() =>  dispatch(playPreviousTrack())}
 		onScroll={(newProgress) => audio.current?.fastSeek(newProgress)}
 	/>
 }
