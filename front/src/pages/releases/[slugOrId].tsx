@@ -96,6 +96,7 @@ const ReleasePage = ({ releaseIdentifier }: InferGetServerSidePropsType<typeof g
 	const tracklist = useQuery(prepareMeeloQuery(tracklistQuery, releaseIdentifier));
 	const albumArtist = useQuery(prepareMeeloQuery(artistQuery, artistId));
 	const albumGenres = useQuery(prepareMeeloQuery(albumGenresQuery, release.data?.albumId));
+	const hasGenres = (albumGenres.data?.length ?? 0) > 0;
 	const albumVideos = useQuery(prepareMeeloQuery(albumVideosQuery, release.data?.albumId));
 
 	const otherArtistsQuery = useQueries((tracks ?? [])
@@ -125,7 +126,7 @@ const ReleasePage = ({ releaseIdentifier }: InferGetServerSidePropsType<typeof g
 				</Grid>
 				<Grid item sx={{ display: 'flex' }} lg={5} sm={8} xs={12} >
 					<Grid container sx={{ flexDirection: 'column', justifyContent: 'space-evenly',
-						alignItems: 'left', [theme.breakpoints.down('sm')]: { alignItems: 'center' },
+						alignItems: 'left', [theme.breakpoints.down('md')]: { alignItems: 'center' },
 					}}>
 						<Grid item>
 							<Typography variant='h2'>{release.data!.name}</Typography>
@@ -155,7 +156,7 @@ const ReleasePage = ({ releaseIdentifier }: InferGetServerSidePropsType<typeof g
 				</Grid>
 			</Grid>
 			<Grid container spacing={1} sx={{ display: 'flex', paddingY: 2 }}>
-				{ (albumGenres.data?.length ?? 0) > 0 &&
+				{ hasGenres &&
 					<Grid item md={3} xs={12}>
 					{ albumGenres.data &&
 						<FadeIn>
@@ -182,7 +183,7 @@ const ReleasePage = ({ releaseIdentifier }: InferGetServerSidePropsType<typeof g
 					}
 					</Grid>
 				}
-				<Grid item md={9} xs={12}>
+				<Grid item md={hasGenres ? 9 : true} xs={12}>
 					{ formattedTrackList &&
 						<>
 							{ Array.from(formattedTrackList.entries()).map((disc, _, discs) => 
