@@ -134,11 +134,10 @@ const ReleasePage = ({ releaseIdentifier }: InferGetServerSidePropsType<typeof g
 	return <Box>
 		<Box sx={{ padding: 5, flex: 1, flexGrow: 1}}>
 			<Grid container spacing={4} sx={{ justifyContent: 'center' }}>
-
-				<Grid item md={4} xs={12}>
+				<Grid item md={3} xs={8}>
 					<Illustration url={release.data!.illustration} fallback={<Album/>}/> 
 				</Grid>
-				<Grid item sx={{ display: 'flex' }} lg={5} sm={8} xs={12} >
+				<Grid item sx={{ display: 'flex' }} md={6} sm={9} xs={12} >
 					<Grid container sx={{ flexDirection: 'column', justifyContent: 'space-evenly',
 						alignItems: 'left', [theme.breakpoints.down('md')]: { alignItems: 'center' },
 					}}>
@@ -157,7 +156,7 @@ const ReleasePage = ({ releaseIdentifier }: InferGetServerSidePropsType<typeof g
 						</Grid>
 					</Grid>
 				</Grid>
-				<Grid item container lg={3} xs={12} sx={{ spacing: 5, alignItems: 'center', justifyContent: 'space-evenly', display: 'flex'}}>
+				<Grid item container md={3} xs={12} sx={{ spacing: 5, alignItems: 'center', justifyContent: 'space-evenly', display: 'flex'}}>
 					{[
 						() => <PlayCircleIcon fontSize="large"/>,
 						() => <Shuffle fontSize="large"/>
