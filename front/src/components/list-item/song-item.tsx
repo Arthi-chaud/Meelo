@@ -13,7 +13,7 @@ import ListItemButton from "./item-button"
 import { Star } from "@mui/icons-material"
 import AudiotrackIcon from '@mui/icons-material/Audiotrack';
 import { useDispatch } from "react-redux"
-import { addTracks, playNextTrack, playTrack } from "../../state/playerSlice"
+import { addTracks, emptyPlaylist, playNextTrack, playTrack } from "../../state/playerSlice"
 
 type SongItemProps = {
 	song: SongWithArtist;
@@ -32,6 +32,7 @@ const SongItem = ({ song }: SongItemProps) => {
 			icon={<Illustration url={song.illustration} fallback={<AudiotrackIcon/>}/>}
 			title={<ListItemButton onClick={() => {
 				API.getMasterTrack<TrackWithRelease>(song.id, ['release']).then((track) => {
+					dispatch(emptyPlaylist());
 					dispatch(playTrack({
 						artist,
 						track,
@@ -58,7 +59,14 @@ const SongItem = ({ song }: SongItemProps) => {
 					render={(track: TrackWithRelease) => <>
 						<ListItem
 							icon={<Illustration url={track.illustration} fallback={<AudiotrackIcon/>}/>}
-							title={<ListItemButton onClick={() => {}} label={track.name}/>}
+							title={<ListItemButton onClick={() => {
+								dispatch(emptyPlaylist());
+								dispatch(playTrack({
+									artist,
+									track,
+									release: track.release
+								}));
+							}} label={track.name}/>}
 							secondTitle={
 								<ListItemButton url={`/releases/${track.releaseId}`} label={track.release.name} />
 							}
