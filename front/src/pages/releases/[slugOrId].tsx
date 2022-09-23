@@ -159,7 +159,7 @@ const ReleasePage = ({ releaseIdentifier }: InferGetServerSidePropsType<typeof g
 				<Grid item container lg={3} xs={12} sx={{ spacing: 5, alignItems: 'center', justifyContent: 'space-evenly', display: 'flex'}}>
 					{
 						[<PlayCircleIcon fontSize="large"/>, <Shuffle fontSize="large"/>].map((icon, index) => (
-							<Grid item>
+							<Grid item key={index}>
 								<IconButton onClick={() => {
 									if (tracks && otherArtistsQuery.findIndex((q) => q.data == undefined) == -1) {
 										const otherArtists = otherArtistsQuery.map((q) => q.data!);

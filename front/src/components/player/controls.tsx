@@ -27,8 +27,8 @@ const PlayerControls = (props: PlayerControlsProps) => {
 				</Typography>
 			</Grid>
 			<Grid item xs container sx={{ display: 'flex', justifyContent: 'space-between' }}>
-				{ [props.progress, props.duration].map((time) => (
-					<Grid item xs="auto">
+				{ [props.progress, props.duration].map((time, index) => (
+					<Grid item xs="auto" key={index}>
 						<Typography>
 							{time ? formatDuration(time) : '-:--'}
 						</Typography>
@@ -51,8 +51,8 @@ const PlayerControls = (props: PlayerControlsProps) => {
 				[<FastRewind/>, () => props.onRewind()],
 				[props.playing ? <Pause/> : <PlayArrow/>, () => props.playing ? props.onPause() : props.onPlay()],
 				[<FastForward/>, () => props.onSkipTrack()]
-			].map((button) => (
-				<Grid item xs="auto">
+			].map((button, index) => (
+				<Grid item xs="auto" key={index}>
 					<IconButton onClick={button[1] as () => void} color='inherit'>
 						{button[0] as JSX.Element}
 					</IconButton>
