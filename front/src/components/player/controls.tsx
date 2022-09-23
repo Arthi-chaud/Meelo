@@ -48,13 +48,13 @@ const PlayerControls = (props: PlayerControlsProps) => {
 		</Grid>
 		<Grid item container xs='auto' sx={{ justifyContent: 'center' }}>
 			{[
-				[<FastRewind/>, () => props.onRewind()],
-				[props.playing ? <Pause/> : <PlayArrow/>, () => props.playing ? props.onPause() : props.onPlay()],
-				[<FastForward/>, () => props.onSkipTrack()]
+				[() => <FastRewind/>, () => props.onRewind()],
+				[() => props.playing ? <Pause/> : <PlayArrow/>, () => props.playing ? props.onPause() : props.onPlay()],
+				[() => <FastForward/>, () => props.onSkipTrack()]
 			].map((button, index) => (
 				<Grid item xs="auto" key={index}>
 					<IconButton onClick={button[1] as () => void} color='inherit'>
-						{button[0] as JSX.Element}
+						{button[0]() as () => JSX.Element}
 					</IconButton>
 				</Grid>
 			))}
