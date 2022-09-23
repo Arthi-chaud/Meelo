@@ -47,21 +47,17 @@ const PlayerControls = (props: PlayerControlsProps) => {
 			</Grid>
 		</Grid>
 		<Grid item container xs='auto' sx={{ justifyContent: 'center' }}>
-			<Grid item xs="auto">
-				<IconButton onClick={() => props.onRewind()}>
-					<FastRewind/>
-				</IconButton>
-			</Grid>
-			<Grid item xs="auto">
-				<IconButton onClick={() => props.playing ? props.onPause() : props.onPlay()}>
-					{ props.playing ? <Pause/> : <PlayArrow/> }
-				</IconButton>
-			</Grid>
-			<Grid item xs="auto">
-				<IconButton onClick={() => props.onSkipTrack()}>
-					<FastForward/>
-				</IconButton>
-			</Grid>
+			{[
+				[<FastRewind/>, () => props.onRewind()],
+				[props.playing ? <Pause/> : <PlayArrow/>, () => props.playing ? props.onPause() : props.onPlay()],
+				[<FastForward/>, () => props.onSkipTrack()]
+			].map((button) => (
+				<Grid item xs="auto">
+					<IconButton onClick={button[1] as () => void} color='inherit'>
+						{button[0] as JSX.Element}
+					</IconButton>
+				</Grid>
+			))}
 		</Grid>
 	</Grid>
 }

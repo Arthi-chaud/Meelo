@@ -13,7 +13,7 @@ import ListItemButton from "./item-button"
 import { Star } from "@mui/icons-material"
 import AudiotrackIcon from '@mui/icons-material/Audiotrack';
 import { useDispatch } from "react-redux"
-import { addTracks, emptyPlaylist, playNextTrack, playTrack } from "../../state/playerSlice"
+import { emptyPlaylist, playNextTrack, playTrack } from "../../state/playerSlice"
 
 type SongItemProps = {
 	song: SongWithArtist;

@@ -19,7 +19,7 @@ import MusicVideoIcon from '@mui/icons-material/MusicVideo';
 import { prepareMeeloQuery } from "../../query";
 import { QueryClient, dehydrate, useQuery, useQueries } from "react-query";
 import { useDispatch } from "react-redux";
-import { addTracks, emptyPlaylist, playNextTrack, playTrack } from "../../state/playerSlice";
+import { playNextTrack, playTrack, setTracksInPlaylist } from "../../state/playerSlice";
 import Song from "../../models/song";
 import Artist from "../../models/artist";
 import { shuffle } from 'd3-array';
@@ -163,7 +163,6 @@ const ReleasePage = ({ releaseIdentifier }: InferGetServerSidePropsType<typeof g
 								<IconButton onClick={() => {
 									if (tracks && otherArtistsQuery.findIndex((q) => q.data == undefined) == -1) {
 										const otherArtists = otherArtistsQuery.map((q) => q.data!);
-										dispatch(emptyPlaylist());
 										let playlist = tracks.map((track) => ({
 											track: track,
 											artist: getSongArtist(track.song, albumArtist.data, otherArtists),
@@ -171,7 +170,7 @@ const ReleasePage = ({ releaseIdentifier }: InferGetServerSidePropsType<typeof g
 										}));
 										if (index == 1)
 											playlist = shuffle(playlist);
-										dispatch(addTracks({ tracks: playlist }));
+										dispatch(setTracksInPlaylist(playlist));
 										dispatch(playNextTrack());
 									}
 								}}>
@@ -222,6 +221,17 @@ const ReleasePage = ({ releaseIdentifier }: InferGetServerSidePropsType<typeof g
 										const artist = getSongArtist(track.song, albumArtist.data, otherArtistsQuery.map((q) => q.data!))
 										return <>
 											<ListItemButton key={track.id} onClick={() => {
+													if (tracks && otherArtistsQuery.findIndex((q) => q.data == undefined) == -1) {
+														const otherArtists = otherArtistsQuery.map((q) => q.data!);
+														const trackIndex = tracks.findIndex((t) => t.id == track.id);
+														let playlist = tracks.slice(trackIndex).map((track) => ({
+															track: track,
+															artist: getSongArtist(track.song, albumArtist.data, otherArtists),
+															release: release.data
+														}));
+														dispatch(setTracksInPlaylist(playlist));
+														dispatch(playNextTrack());
+													}
 													dispatch(playTrack({
 														track: track,
 														artist: artist!,
