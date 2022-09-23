@@ -176,12 +176,11 @@ export default class API {
 	 */
 	static async getMasterTrack<T extends Track = Track>(
 		songSlugOrId: string | number,
-		sort?: SortingParameters<Track>,
-		include: ReleaseInclude[] = []
+		include: TrackInclude[] = []
 	): Promise<T> {
 		return API.fetch({
 			route: `/songs/${songSlugOrId}/master`,
-			parameters: { include, sort }
+			parameters: { include }
 		}); 
 	}
 
@@ -191,7 +190,7 @@ export default class API {
 	 * @param include the fields to include in the fetched item
 	 * @returns a release
 	 */
-	 static async getAlbum<T extends Album = Album>(
+	static async getAlbum<T extends Album = Album>(
 		albumSlugOrId: string | number,
 		include: AlbumInclude[] = []
 	): Promise<T> {
@@ -208,9 +207,9 @@ export default class API {
 	 * @param include the fields to include in the fetched item
 	 * @returns a release
 	 */
-	 static async getMasterRelease<T extends Release = Release>(
+	static async getMasterRelease<T extends Release = Release>(
 		albumSlugOrId: string | number,
-		include: TrackInclude[] = []
+		include: ReleaseInclude[] = []
 	): Promise<T> {
 		return API.fetch({
 			route: `/albums/${albumSlugOrId}/master`,

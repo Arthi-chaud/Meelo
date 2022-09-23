@@ -16,13 +16,13 @@ const Player = () => {
 	const [playing, setPlaying] = useState<boolean>();
 	useEffect(() => {
 		audio.current?.pause();
-		clearInterval(interval.current)
+		clearInterval(interval.current);
+		setProgress(0);
 		if (currentTrack) {
 			const newAudio = new Audio(API.getStreamURL(currentTrack.track.stream));
 			if (playing !== false) {
 				newAudio.play().then(() => setPlaying(true));
 			}
-			setProgress(0);
 			audio.current = newAudio;
 			interval.current = setInterval(() => {
 				if (audio.current?.ended) {

@@ -31,6 +31,9 @@ export const playerSlice = createSlice({
 		playlist: []
 	},
 	reducers: {
+		playTrack: (state, action: PayloadAction<TrackState>) => {
+			state.currentTrack = action.payload;
+		},
 		addTracks: (state, action: PayloadAction<{ tracks: TrackState | TrackState[], index?: number }>) => {
 			if (Array.isArray(action.payload.tracks))
 				state.playlist.splice(action.payload.index ?? 0, 0, ...action.payload.tracks);
@@ -51,6 +54,6 @@ export const playerSlice = createSlice({
 	},
 })
 
-export const { addTracks, playPreviousTrack, playNextTrack, emplyPlaylist } = playerSlice.actions
+export const { addTracks, playPreviousTrack, playTrack, playNextTrack, emplyPlaylist } = playerSlice.actions
 
 export default playerSlice.reducer
