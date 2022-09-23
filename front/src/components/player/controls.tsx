@@ -18,6 +18,12 @@ type PlayerControlsProps = {
 	onScroll: (requestedProgress: number) => void;
 }
 
+const DurationComponent = ({time}: { time?: number}) => (
+	<Typography>
+		{time ? formatDuration(time) : '-:--'}
+	</Typography>
+)
+
 const PlayerControls = (props: PlayerControlsProps) => {
 	return <Grid container spacing={1} sx={{ alignItems: 'center', justifyContent: 'space-evenly' }}>
 		<Grid item container sx={{ flexDirection: 'column' }} xs={6}>
@@ -26,24 +32,29 @@ const PlayerControls = (props: PlayerControlsProps) => {
 					{ props.title && props.artist ? `${props.title} - ${props.artist}` : ''}
 				</Typography>
 			</Grid>
-			<Grid item xs container sx={{ display: 'flex', justifyContent: 'space-between' }}>
-				{ [props.progress, props.duration].map((time, index) => (
-					<Grid item xs="auto" key={index}>
-						<Typography>
-							{time ? formatDuration(time) : '-:--'}
-						</Typography>
-					</Grid>
-				))}
-			</Grid>
-			<Grid item xs>
-				<LinearProgress
-					color="inherit"
-					variant="determinate"
-					value={ props.duration && props.progress !== undefined
-						? props.progress * 100 / (props.duration == 0 ? props.progress : props.duration)
-						: 0
-					}
-				/>
+			<Grid item xs container sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }} spacing={2}>
+				<Grid item xs="auto">
+					<DurationComponent time={props.progress}/>
+				</Grid>
+				<Grid item xs>
+					<Slider
+						disabled={!props.duration || !props.title || !props.artist}
+						size="small"
+						color="secondary"
+						valueLabelDisplay="off"
+						onChange={(event) => {
+							if (props.duration !== undefined)
+								props.onScroll((event.target as any).value / 100 * props.duration)
+						}}
+						value={ props.duration && props.progress !== undefined
+							? props.progress * 100 / (props.duration == 0 ? props.progress : props.duration)
+							: 0
+						}
+					/>
+				</Grid>
+				<Grid item xs="auto">
+					<DurationComponent time={props.duration}/>
+				</Grid>
 			</Grid>
 		</Grid>
 		<Grid item container xs='auto' sx={{ justifyContent: 'center' }}>
