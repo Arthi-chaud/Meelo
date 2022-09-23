@@ -349,6 +349,15 @@ export default class API {
 		return `/api${imageURL}`;
 	}
 
+	/**
+	 * Builds the URL to get a track frile from an object returned by the API
+	 * @param streamURL 
+	 * @returns the correct, rerouted URL
+	 */
+	 static getStreamURL(streamURL: string): string {
+		return `/api${streamURL}`;
+	}
+
 	private static buildURL(route: string, parameters: QueryParameters<any>, otherParameters?: any): string {
 		const apiHost = (typeof window === 'undefined') ? process.env.ssrApiRoute : '/api';
 		return `${apiHost}${route}${this.formatQueryParameters(parameters, otherParameters)}`;

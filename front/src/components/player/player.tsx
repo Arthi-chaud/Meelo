@@ -1,24 +1,50 @@
 import { Box, Button, Link } from "@mui/material"
-import { useState } from "react";
-import Illustration from "../illustration"
+import { useEffect, useRef, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import API from "../../api";
+import { playNextTrack } from "../../state/playerSlice";
+import { RootState } from "../../state/store";
 import PlayerControls from "./controls"
 
 const Player = () => {
-	const [playing, setPlaying] = useState(true);
-	const duration=  324;
-	const [progress, setProgress] = useState(100);
+	const currentTrack = useSelector((state: RootState) => state.player.currentTrack);
+	const history = useSelector((state: RootState) => state.player.history);
+	const audio = useRef<HTMLAudioElement>();
+	const interval = useRef<NodeJS.Timer>();
+	const dispatch = useDispatch();
+	const [progress, setProgress] = useState<number | undefined>();
+	useEffect(() => {
+		audio.current?.pause();
+		clearInterval(interval.current)
+		if (currentTrack) {
+			const newAudio = new Audio(API.getStreamURL(currentTrack.track.stream));
+			newAudio.play();
+			setProgress(undefined);
+			audio.current = newAudio;
+			interval.current = setInterval(() => {
+				if (audio.current?.ended) {
+					// mark song as played
+					dispatch(playNextTrack());
+				} else {
+					setProgress(audio.current?.currentTime);
+				}
+			})
+		}
+		return () => clearInterval(interval.current);
+	}, [currentTrack]);
+	if (history.length == 0 && audio.current == undefined)
+		return <></>
 	return <PlayerControls
-		illustration={<Illustration url={'/illustrations/tracks/1'} fallback={<Box/>}/>}
-		title="Rolling in the Deep"
-		artist="Adele"
-		playing={playing}
-		onPause={() => setPlaying(false)}
-		onPlay={() => setPlaying(true)}
-		duration={duration}
+		title={currentTrack?.track.name}
+		artist={currentTrack?.artist.name}
+		playing={audio.current?.paused ?? false}
+		onPause={() => audio.current?.pause()}
+		onPlay={() => audio.current?.play()}
+		duration={currentTrack?.track.duration}
 		progress={progress}
 		onSkipTrack={() => {}}
 		onRewind={() => {}}
-		onScroll={(newProgress) => setProgress(newProgress)}
+		onScroll={(newProgress) => audio.current?.fastSeek(newProgress)}
 	/>
 }
 

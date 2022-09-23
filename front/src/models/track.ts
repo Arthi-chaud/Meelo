@@ -44,6 +44,10 @@ type Track = Resource & Illustration & {
 	 * Duration in seconds of the track
 	 */
 	duration: number;
+	/**
+	 * URL to stream track
+	 */
+	stream: string;
 }
 
 type TrackWithSong = Track & {

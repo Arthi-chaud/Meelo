@@ -15,6 +15,7 @@
     "@mui/joy": "^5.0.0-alpha.43",
     "@mui/material": "^5.10.1",
     "@mui/styles": "^5.10.2",
+    "@reduxjs/toolkit": "^1.8.5",
     "axios": "^0.27.2",
     "change-case": "^4.1.2",
     "format-duration": "^2.0.0",
@@ -28,6 +29,7 @@
     "react-infinite-scroller": "^1.2.6",
     "react-loader-spinner": "^5.2.0",
     "react-query": "^3.39.2",
+    "react-redux": "^8.0.2",
     "type-fest": "^2.19.0"
   },
   "devDependencies": {

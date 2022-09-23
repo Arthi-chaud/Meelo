@@ -18,6 +18,8 @@ import Tile from "../../components/tile/tile";
 import MusicVideoIcon from '@mui/icons-material/MusicVideo';
 import { prepareMeeloQuery } from "../../query";
 import { QueryClient, dehydrate, useQuery, useQueries } from "react-query";
+import { useDispatch } from "react-redux";
+import { addTracks, playNextTrack } from "../../state/playerSlice";
 
 const releaseQuery = (slugOrId: string | number) => ({
 	key: ['release', slugOrId],
@@ -86,6 +88,7 @@ const RelatedContentSection = (props: RelatedContentSectionProps) => {
 
 const ReleasePage = ({ releaseIdentifier }: InferGetServerSidePropsType<typeof getServerSideProps>) => {
 	const theme = useTheme();
+	const dispatch = useDispatch();
 	const [totalDuration, setTotalDuration] = useState<number | null>(null);
 	const [tracks, setTracks] = useState<TrackWithSong[] | null>(null);
 	const [formattedTrackList, setFormattedTracklist] = useState<Tracklist<TrackWithSong>>();
@@ -187,23 +190,35 @@ const ReleasePage = ({ releaseIdentifier }: InferGetServerSidePropsType<typeof g
 						<>
 							{ Array.from(formattedTrackList.entries()).map((disc, _, discs) => 
 								<List key={disc[0]} subheader={ discs.length !== 1 && <ListSubheader>Disc {disc[0]}</ListSubheader> }>
-									{ disc[1].map((track) => <>
-										<ListItemButton key={track.id}>
-											<ListItemIcon><Typography>{ track.trackIndex }</Typography></ListItemIcon>
-											<ListItemText
-												primary={track.name}
-												secondary={
-													track.song.artistId == albumArtist.data?.id ? undefined : 
-													otherArtistsQuery.find((artistQuery) => artistQuery.data?.id == track.song.artistId)?.data?.name 
+									{ disc[1].map((track, _, tracks) => {
+										const artist = track.song.artistId == albumArtist.data?.id ? albumArtist.data : 
+										otherArtistsQuery.find((artistQuery) => artistQuery.data?.id == track.song.artistId)?.data 
+										return <>
+											<ListItemButton key={track.id} onClick={() => {
+													dispatch(addTracks({
+														tracks: {
+															track: track,
+															artist: artist!,
+															release: release.data!
+														}
+													}));
+													dispatch(playNextTrack());
+												}}>
+												<ListItemIcon><Typography>{ track.trackIndex }</Typography></ListItemIcon>
+												<ListItemText
+													primary={track.name}
+													secondary={
+														track.song.artistId == albumArtist.data?.id ? undefined : artist?.name
+													}
+												/>
+												{ track.type == 'Video' &&
+													<ListItemIcon><MusicVideoIcon color='disabled' fontSize="small"/></ListItemIcon>
 												}
-											/>
-											{ track.type == 'Video' &&
-												<ListItemIcon><MusicVideoIcon color='disabled' fontSize="small"/></ListItemIcon>
-											}
-											<Typography>{formatDuration(track.duration * 1000)}</Typography>
-										</ListItemButton>
-										<Divider variant="inset"/>
-									</>) }
+												<Typography>{formatDuration(track.duration)}</Typography>
+											</ListItemButton>
+											<Divider variant="inset"/>
+										</>
+									}) }
 								</List>
 							) }
 						</>
