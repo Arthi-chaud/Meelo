@@ -54,7 +54,7 @@ const PlayerControls = (props: PlayerControlsProps) => {
 			].map((button, index) => (
 				<Grid item xs="auto" key={index}>
 					<IconButton onClick={button[1] as () => void} color='inherit'>
-						{button[0]() as () => JSX.Element}
+						{(button[0] as () => JSX.Element)()}
 					</IconButton>
 				</Grid>
 			))}
