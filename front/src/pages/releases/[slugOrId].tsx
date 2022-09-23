@@ -10,7 +10,7 @@ import formatDuration from '../../utils/formatDuration';
 import { useEffect, useState } from "react";
 import { TrackWithSong } from "../../models/track";
 import Tracklist from "../../models/tracklist";
-import AspectRatio from '@mui/joy/AspectRatio';
+
 import PlayCircleIcon from '@mui/icons-material/PlayCircle';
 import { Album, MoreHoriz, Shuffle } from "@mui/icons-material";
 import FadeIn from "react-fade-in";

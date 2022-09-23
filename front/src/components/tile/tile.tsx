@@ -1,4 +1,3 @@
-import AspectRatio from '@mui/joy/AspectRatio';
 import {Box, Card, CardActionArea, CardContent, CardMedia, IconButton, Typography} from "@mui/material";
 import {useState} from "react";
 import Illustration from '../illustration';

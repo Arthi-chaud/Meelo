@@ -1,4 +1,3 @@
-import AspectRatio from "@mui/joy/AspectRatio";
 import { Box, IconButton } from "@mui/material";
 import Image, { ImageProps } from "next/image";
 import { useEffect, useState } from "react";
@@ -22,23 +21,24 @@ type IllustrationProps = {
 const Illustration = (props: IllustrationProps) => {
 	const [loadingFailed, setLoadingFailed] = useState(false);
 	return <FadeIn>
-		<AspectRatio
-			ratio="1"
-			objectFit="contain"
-			componentsProps={{ content: { sx: { display: 'flex', justifyContent: 'center' } } }}
-		>
+		<Box sx={{ aspectRatio: '1', justifyContent: 'center', alignItems: 'center', display: loadingFailed ? 'flex' : undefined }}>
 			{ loadingFailed
-				? props.fallback
+				? <IconButton disabled sx={{ fontSize: 'large' }}>
+					{props.fallback}
+				</IconButton>
 				: <Image
 					onError={() => setLoadingFailed(true)}
 					loader={({ src }) => src}
-					layout="fill"
+					width={1}
+					height={1}
+					objectFit="contain"
+					layout="responsive"
 					{...props}
 					style={{ ...props.style, borderRadius: '3%', width: 'auto' }}
 					src={API.getIllustrationURL(props.url)}
 				/>
 			}
-		</AspectRatio>
+		</Box>
 	</FadeIn>
 }
 
