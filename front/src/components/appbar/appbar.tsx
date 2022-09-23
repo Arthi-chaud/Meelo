@@ -19,6 +19,7 @@ import { GetServerSidePropsContext, InferGetServerSidePropsType } from 'next';
 import { prepareMeeloQuery } from '../../query';
 import Library from '../../models/library';
 import toast from 'react-hot-toast';
+import Player from '../player/player';
 
 const useStyles = makeStyles({
     select: {
@@ -116,7 +117,7 @@ const MeeloAppBar = () => {
         							  ))}
         							</Select>
 									<Divider orientation='vertical' flexItem sx={{ paddingLeft: 2 }} />
-									<Grid container spacing={3} sx={{ paddingLeft: 2 }}  flexDirection='row'>
+									<Grid container spacing={3} sx={{ paddingLeft: 2, flexWrap: 'nowrap' }}  flexDirection='row'>
 										{
 											itemType.map((type, index) => (
 												<Grid item key={type}>
@@ -133,18 +134,20 @@ const MeeloAppBar = () => {
 									</Grid>
 								</Box>
 							</FadeIn>
-								<Box sx={{ flexGrow: 1 }} />
-								<FadeIn>
-									<Box sx={{ display: { xs: 'none', sm: 'flex' } }}>
-										<IconButton>
-											<SearchIcon />
-										</IconButton>
-										<Divider orientation='vertical' flexItem sx={{ marginX: 1 }} />
-										<IconButton>
-											<MoreVertIcon />
-										</IconButton>
-									</Box>
-								</FadeIn></>
+							<Box sx={{ flexGrow: 1 }}>
+								<Player/>
+							</Box>
+							<FadeIn>
+								<Box sx={{ display: { xs: 'none', sm: 'flex' } }}>
+									<IconButton>
+										<SearchIcon />
+									</IconButton>
+									<Divider orientation='vertical' flexItem sx={{ marginX: 1 }} />
+									<IconButton>
+										<MoreVertIcon />
+									</IconButton>
+								</Box>
+							</FadeIn></>
 					}
 				</Toolbar>
 			</AppBar>

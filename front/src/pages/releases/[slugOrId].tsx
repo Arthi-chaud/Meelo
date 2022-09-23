@@ -6,7 +6,7 @@ import API from "../../api";
 import Illustration from "../../components/illustration";
 import { WideLoadingComponent } from "../../components/loading/loading";
 import { ReleaseWithAlbum, ReleaseWithTracks } from "../../models/release";
-import formatDuration from 'format-duration'
+import formatDuration from '../../utils/formatDuration';
 import { useEffect, useState } from "react";
 import { TrackWithSong } from "../../models/track";
 import Tracklist from "../../models/tracklist";
@@ -18,6 +18,11 @@ import Tile from "../../components/tile/tile";
 import MusicVideoIcon from '@mui/icons-material/MusicVideo';
 import { prepareMeeloQuery } from "../../query";
 import { QueryClient, dehydrate, useQuery, useQueries } from "react-query";
+import { useDispatch } from "react-redux";
+import { playNextTrack, playTrack, setTracksInPlaylist } from "../../state/playerSlice";
+import Song from "../../models/song";
+import Artist from "../../models/artist";
+import { shuffle } from 'd3-array';
 
 const releaseQuery = (slugOrId: string | number) => ({
 	key: ['release', slugOrId],
@@ -84,8 +89,15 @@ const RelatedContentSection = (props: RelatedContentSectionProps) => {
 	)
 }
 
+const getSongArtist = (song: Song, albumArtist?: Artist, otherArtist: Artist[] = []): Artist => {
+	if (song.artistId == albumArtist?.id)
+		return albumArtist;
+	return otherArtist.find((otherArtist) => otherArtist.id == song.artistId)!; 
+}
+
 const ReleasePage = ({ releaseIdentifier }: InferGetServerSidePropsType<typeof getServerSideProps>) => {
 	const theme = useTheme();
+	const dispatch = useDispatch();
 	const [totalDuration, setTotalDuration] = useState<number | null>(null);
 	const [tracks, setTracks] = useState<TrackWithSong[] | null>(null);
 	const [formattedTrackList, setFormattedTracklist] = useState<Tracklist<TrackWithSong>>();
@@ -105,7 +117,9 @@ const ReleasePage = ({ releaseIdentifier }: InferGetServerSidePropsType<typeof g
 	const relatedReleases = useQuery(prepareMeeloQuery(albumReleasesQuery, release.data?.albumId));
 	useEffect(() => {
 		if (tracklist.data) {
-			setFormattedTracklist(new Map(Object.entries(tracklist.data)));
+			const discMap = new Map(Object.entries(tracklist.data));
+			setTracks(Array.from(discMap.values()).flat())
+			setFormattedTracklist(discMap);
 		}
 	}, [tracklist.data]);
 	useEffect(() => {
@@ -114,7 +128,7 @@ const ReleasePage = ({ releaseIdentifier }: InferGetServerSidePropsType<typeof g
 			setTotalDuration(flattenedTracks.reduce((prevDuration, track) => prevDuration + track.duration, 0));
 		}
 	}, [formattedTrackList]);
-	if (release.isLoading || albumArtist.isLoading)
+	if (!release.data || !albumArtist)
 		return <WideLoadingComponent/>
 	return <Box>
 		<Box sx={{ padding: 5, flex: 1, flexGrow: 1}}>
@@ -137,18 +151,36 @@ const ReleasePage = ({ releaseIdentifier }: InferGetServerSidePropsType<typeof g
 						}
 						<Grid item>
 							<Typography variant='h6'>
-								{new Date(release.data!.album.releaseDate!).getFullYear()}{totalDuration && ` - ${formatDuration(totalDuration * 1000)}`}
+								{new Date(release.data!.album.releaseDate!).getFullYear()}{totalDuration && ` - ${formatDuration(totalDuration)}`}
 							</Typography>
 						</Grid>
 					</Grid>
 				</Grid>
 				<Grid item container lg={3} xs={12} sx={{ spacing: 5, alignItems: 'center', justifyContent: 'space-evenly', display: 'flex'}}>
-					<Grid item>
-						<IconButton><PlayCircleIcon fontSize="large"/></IconButton>
-					</Grid>
-					<Grid item>
-						<IconButton><Shuffle fontSize="large"/></IconButton>
-					</Grid>
+					{[
+						() => <PlayCircleIcon fontSize="large"/>,
+						() => <Shuffle fontSize="large"/>
+					].map((icon, index) => (
+							<Grid item key={index}>
+								<IconButton onClick={() => {
+									if (tracks && otherArtistsQuery.findIndex((q) => q.data == undefined) == -1) {
+										const otherArtists = otherArtistsQuery.map((q) => q.data!);
+										let playlist = tracks.map((track) => ({
+											track: track,
+											artist: getSongArtist(track.song, albumArtist.data, otherArtists),
+											release: release.data
+										}));
+										if (index == 1)
+											playlist = shuffle(playlist);
+										dispatch(setTracksInPlaylist(playlist));
+										dispatch(playNextTrack());
+									}
+								}}>
+									{icon()}
+								</IconButton>
+							</Grid>
+						))
+					}
 					<Grid item>
 						<IconButton><MoreHoriz fontSize="large"/></IconButton>
 					</Grid>
@@ -183,27 +215,46 @@ const ReleasePage = ({ releaseIdentifier }: InferGetServerSidePropsType<typeof g
 					</Grid>
 				}
 				<Grid item md={9} xs={12}>
-					{ formattedTrackList &&
+					{ formattedTrackList && otherArtistsQuery.findIndex((q) => q.data == undefined) == -1 &&
 						<>
 							{ Array.from(formattedTrackList.entries()).map((disc, _, discs) => 
 								<List key={disc[0]} subheader={ discs.length !== 1 && <ListSubheader>Disc {disc[0]}</ListSubheader> }>
-									{ disc[1].map((track) => <>
-										<ListItemButton key={track.id}>
-											<ListItemIcon><Typography>{ track.trackIndex }</Typography></ListItemIcon>
-											<ListItemText
-												primary={track.name}
-												secondary={
-													track.song.artistId == albumArtist.data?.id ? undefined : 
-													otherArtistsQuery.find((artistQuery) => artistQuery.data?.id == track.song.artistId)?.data?.name 
+									{ disc[1].map((track, _, tracks) => {
+										const artist = getSongArtist(track.song, albumArtist.data, otherArtistsQuery.map((q) => q.data!))
+										return <>
+											<ListItemButton key={track.id} onClick={() => {
+													if (tracks && otherArtistsQuery.findIndex((q) => q.data == undefined) == -1) {
+														const otherArtists = otherArtistsQuery.map((q) => q.data!);
+														const trackIndex = tracks.findIndex((t) => t.id == track.id);
+														let playlist = tracks.slice(trackIndex).map((track) => ({
+															track: track,
+															artist: getSongArtist(track.song, albumArtist.data, otherArtists),
+															release: release.data
+														}));
+														dispatch(setTracksInPlaylist(playlist));
+														dispatch(playNextTrack());
+													}
+													dispatch(playTrack({
+														track: track,
+														artist: artist!,
+														release: release.data!
+													}));
+												}}>
+												<ListItemIcon><Typography>{ track.trackIndex }</Typography></ListItemIcon>
+												<ListItemText
+													primary={track.name}
+													secondary={
+														track.song.artistId == albumArtist.data?.id ? undefined : artist?.name
+													}
+												/>
+												{ track.type == 'Video' &&
+													<ListItemIcon><MusicVideoIcon color='disabled' fontSize="small"/></ListItemIcon>
 												}
-											/>
-											{ track.type == 'Video' &&
-												<ListItemIcon><MusicVideoIcon color='disabled' fontSize="small"/></ListItemIcon>
-											}
-											<Typography>{formatDuration(track.duration * 1000)}</Typography>
-										</ListItemButton>
-										<Divider variant="inset"/>
-									</>) }
+												<Typography>{formatDuration(track.duration)}</Typography>
+											</ListItemButton>
+											<Divider variant="inset"/>
+										</>
+									}) }
 								</List>
 							) }
 						</>
