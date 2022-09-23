@@ -139,7 +139,7 @@ const ReleasePage = ({ releaseIdentifier }: InferGetServerSidePropsType<typeof g
 				</Grid>
 				<Grid item sx={{ display: 'flex' }} md={6} sm={9} xs={12} >
 					<Grid container sx={{ flexDirection: 'column', justifyContent: 'space-evenly',
-						alignItems: 'left', [theme.breakpoints.down('md')]: { alignItems: 'center' },
+						alignItems: 'left', [theme.breakpoints.down('md')]: { alignItems: 'center', textAlign: 'center' },
 					}}>
 						<Grid item>
 							<Typography variant='h2'>{release.data!.name}</Typography>
@@ -175,7 +175,7 @@ const ReleasePage = ({ releaseIdentifier }: InferGetServerSidePropsType<typeof g
 										dispatch(setTracksInPlaylist(playlist));
 										dispatch(playNextTrack());
 									}
-								}}>
+							}}>
 									{icon()}
 								</IconButton>
 							</Grid>

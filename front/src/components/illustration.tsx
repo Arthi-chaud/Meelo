@@ -28,9 +28,7 @@ const Illustration = (props: IllustrationProps) => {
 			componentsProps={{ content: { sx: { display: 'flex', justifyContent: 'center' } } }}
 		>
 			{ loadingFailed
-				? <IconButton disableFocusRipple disableRipple sx={{ '& svg': {fontSize: 80} }}>
-					{props.fallback}
-				</IconButton>
+				? props.fallback
 				: <Image
 					onError={() => setLoadingFailed(true)}
 					loader={({ src }) => src}
