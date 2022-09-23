@@ -19,7 +19,7 @@ import MusicVideoIcon from '@mui/icons-material/MusicVideo';
 import { prepareMeeloQuery } from "../../query";
 import { QueryClient, dehydrate, useQuery, useQueries } from "react-query";
 import { useDispatch } from "react-redux";
-import { addTracks, emptyPlaylist, playTrack } from "../../state/playerSlice";
+import { addTracks, emptyPlaylist, playNextTrack, playTrack } from "../../state/playerSlice";
 import Song from "../../models/song";
 import Artist from "../../models/artist";
 
@@ -116,7 +116,9 @@ const ReleasePage = ({ releaseIdentifier }: InferGetServerSidePropsType<typeof g
 	const relatedReleases = useQuery(prepareMeeloQuery(albumReleasesQuery, release.data?.albumId));
 	useEffect(() => {
 		if (tracklist.data) {
-			setFormattedTracklist(new Map(Object.entries(tracklist.data)));
+			const discMap = new Map(Object.entries(tracklist.data));
+			setTracks(Array.from(discMap.values()).flat())
+			setFormattedTracklist(discMap);
 		}
 	}, [tracklist.data]);
 	useEffect(() => {
@@ -156,10 +158,8 @@ const ReleasePage = ({ releaseIdentifier }: InferGetServerSidePropsType<typeof g
 				<Grid item container lg={3} xs={12} sx={{ spacing: 5, alignItems: 'center', justifyContent: 'space-evenly', display: 'flex'}}>
 					<Grid item>
 						<IconButton onClick={() => {
-							if (formattedTrackList) {
+							if (tracks && otherArtistsQuery.findIndex((q) => q.data == undefined) == -1) {
 								const otherArtists = otherArtistsQuery.map((q) => q.data!);
-								let tracks = Array.from(formattedTrackList?.values()).flat();
-								const firstTrack = tracks.shift();
 								dispatch(emptyPlaylist());
 								dispatch(addTracks({
 									tracks: tracks.map((track) => ({
@@ -168,13 +168,7 @@ const ReleasePage = ({ releaseIdentifier }: InferGetServerSidePropsType<typeof g
 										release: release.data
 									}))
 								}));
-								if (firstTrack) {
-									dispatch(playTrack({
-										track: firstTrack,
-										artist: getSongArtist(firstTrack.song, albumArtist.data, otherArtists),
-										release: release.data
-									}));
-								}
+								dispatch(playNextTrack());
 							}
 						}}>
 							<PlayCircleIcon fontSize="large"/>
@@ -217,7 +211,7 @@ const ReleasePage = ({ releaseIdentifier }: InferGetServerSidePropsType<typeof g
 					</Grid>
 				}
 				<Grid item md={9} xs={12}>
-					{ formattedTrackList &&
+					{ formattedTrackList && otherArtistsQuery.findIndex((q) => q.data == undefined) == -1 &&
 						<>
 							{ Array.from(formattedTrackList.entries()).map((disc, _, discs) => 
 								<List key={disc[0]} subheader={ discs.length !== 1 && <ListSubheader>Disc {disc[0]}</ListSubheader> }>
