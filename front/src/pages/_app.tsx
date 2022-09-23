@@ -8,10 +8,12 @@ import MeeloAppBar from "../components/appbar/appbar";
 import { ErrorBoundary } from 'react-error-boundary'
 import toast, { Toaster } from 'react-hot-toast';
 import Head from "next/head";
+import store from '../state/store'
+import { Provider } from 'react-redux'
 
 function MyApp({ Component, pageProps }: AppProps) {
 	const [queryClient] = useState(() => new QueryClient());
-	return (
+	return <Provider store={store}>
 		<Box>
 			<Head>
     			<title>Meelo</title>
@@ -31,7 +33,7 @@ function MyApp({ Component, pageProps }: AppProps) {
 				<ReactQueryDevtools initialIsOpen={false} />
 			</QueryClientProvider>
 		</Box>
-	);
+	</Provider>;
 }
 
 export default MyApp;
