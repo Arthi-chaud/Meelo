@@ -157,42 +157,29 @@ const ReleasePage = ({ releaseIdentifier }: InferGetServerSidePropsType<typeof g
 					</Grid>
 				</Grid>
 				<Grid item container lg={3} xs={12} sx={{ spacing: 5, alignItems: 'center', justifyContent: 'space-evenly', display: 'flex'}}>
-					<Grid item>
-						<IconButton onClick={() => {
-							if (tracks && otherArtistsQuery.findIndex((q) => q.data == undefined) == -1) {
-								const otherArtists = otherArtistsQuery.map((q) => q.data!);
-								dispatch(emptyPlaylist());
-								dispatch(addTracks({
-									tracks: tracks.map((track) => ({
-										track: track,
-										artist: getSongArtist(track.song, albumArtist.data, otherArtists),
-										release: release.data
-									}))
-								}));
-								dispatch(playNextTrack());
-							}
-						}}>
-							<PlayCircleIcon fontSize="large"/>
-						</IconButton>
-					</Grid>
-					<Grid item>
-						<IconButton onClick={() => {
-							if (tracks && otherArtistsQuery.findIndex((q) => q.data == undefined) == -1) {
-								const otherArtists = otherArtistsQuery.map((q) => q.data!);
-								dispatch(emptyPlaylist());
-								dispatch(addTracks({
-									tracks: shuffle(tracks.map((track) => ({
-										track: track,
-										artist: getSongArtist(track.song, albumArtist.data, otherArtists),
-										release: release.data
-									})))
-								}));
-								dispatch(playNextTrack());
-							}
-						}}>
-							<Shuffle fontSize="large"/>
-						</IconButton>
-					</Grid>
+					{
+						[<PlayCircleIcon fontSize="large"/>, <Shuffle fontSize="large"/>].map((icon, index) => (
+							<Grid item>
+								<IconButton onClick={() => {
+									if (tracks && otherArtistsQuery.findIndex((q) => q.data == undefined) == -1) {
+										const otherArtists = otherArtistsQuery.map((q) => q.data!);
+										dispatch(emptyPlaylist());
+										let playlist = tracks.map((track) => ({
+											track: track,
+											artist: getSongArtist(track.song, albumArtist.data, otherArtists),
+											release: release.data
+										}));
+										if (index == 1)
+											playlist = shuffle(playlist);
+										dispatch(addTracks({ tracks: playlist }));
+										dispatch(playNextTrack());
+									}
+								}}>
+									{icon}
+								</IconButton>
+							</Grid>
+						))
+					}
 					<Grid item>
 						<IconButton><MoreHoriz fontSize="large"/></IconButton>
 					</Grid>
