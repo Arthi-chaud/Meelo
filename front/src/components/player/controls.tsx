@@ -54,7 +54,7 @@ const PlayerControls = (props: PlayerControlsProps) => {
 			</Grid>
 			<Grid item xs="auto">
 				<IconButton onClick={() => props.playing ? props.onPause() : props.onPlay()}>
-					{ props.playing ? <PlayArrow/> : <Pause/> }
+					{ props.playing ? <Pause/> : <PlayArrow/> }
 				</IconButton>
 			</Grid>
 			<Grid item xs="auto">

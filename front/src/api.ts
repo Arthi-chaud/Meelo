@@ -354,8 +354,18 @@ export default class API {
 	 * @param streamURL 
 	 * @returns the correct, rerouted URL
 	 */
-	 static getStreamURL(streamURL: string): string {
+	static getStreamURL(streamURL: string): string {
 		return `/api${streamURL}`;
+	}
+
+	/**
+	 * Mark a song as played
+	 * To be called when a song ends.
+	 * @param songSlugOrId 
+	 * @returns 
+	 */
+	static async setSongAsPlayed(songSlugOrId: string | number): Promise<void> {
+		return fetch(API.buildURL(`/songs/${songSlugOrId}/played`, {}), { method: 'PUT' }).then(() => {});
 	}
 
 	private static buildURL(route: string, parameters: QueryParameters<any>, otherParameters?: any): string {

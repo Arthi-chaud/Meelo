@@ -13,17 +13,20 @@ const Player = () => {
 	const interval = useRef<NodeJS.Timer>();
 	const dispatch = useDispatch();
 	const [progress, setProgress] = useState<number | undefined>();
+	const [playing, setPlaying] = useState<boolean>();
 	useEffect(() => {
 		audio.current?.pause();
 		clearInterval(interval.current)
 		if (currentTrack) {
 			const newAudio = new Audio(API.getStreamURL(currentTrack.track.stream));
-			newAudio.play();
-			setProgress(undefined);
+			if (playing !== false) {
+				newAudio.play().then(() => setPlaying(true));
+			}
+			setProgress(0);
 			audio.current = newAudio;
 			interval.current = setInterval(() => {
 				if (audio.current?.ended) {
-					// mark song as played
+					API.setSongAsPlayed(currentTrack.track.songId);
 					dispatch(playNextTrack());
 				} else {
 					setProgress(audio.current?.currentTime);
@@ -37,9 +40,15 @@ const Player = () => {
 	return <PlayerControls
 		title={currentTrack?.track.name}
 		artist={currentTrack?.artist.name}
-		playing={audio.current?.paused ?? false}
-		onPause={() => audio.current?.pause()}
-		onPlay={() => audio.current?.play()}
+		playing={playing ?? false}
+		onPause={() => {
+			setPlaying(false);
+			audio.current?.pause();
+		}}
+		onPlay={() => {
+			setPlaying(true);
+			audio.current?.play();
+		}}
 		duration={currentTrack?.track.duration}
 		progress={progress}
 		onSkipTrack={() => {}}
