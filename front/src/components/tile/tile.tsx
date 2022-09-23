@@ -29,7 +29,7 @@ const Tile = (props: TileProps) => {
 									{props.title}
 								</Typography>
 								{ props.subtitle &&
-									<Typography sx={{ fontWeight: 'light' }}>
+									<Typography sx={{ fontWeight: 'light', textAlign: 'center' }}>
 										{props.subtitle}
 									</Typography>
 								}
