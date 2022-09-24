@@ -297,24 +297,24 @@ export default class AlbumService extends RepositoryService<
 	 * Build an object for the API 
 	 * @param album the album to create the object from
 	 */
-	buildResponse<ResponseType extends Album & { illustration: string }>(
+	async buildResponse<ResponseType extends Album & { illustration: string }>(
 		album: Album & Partial<{ releases: Release[], artist: Artist | null }>
-	): ResponseType {
+	): Promise<ResponseType> {
 		let response = <ResponseType>{
 			...album,
-			illustration: `/illustrations/albums/${album.id}`
+			illustration: await this.illustrationService.getAlbumIllustrationLink(album.id)
 		};
 		if (album.releases)
 			response = {
 				...response,
-				releases: album.releases.map(
+				releases: await Promise.all(album.releases.map(
 					(release) => this.releaseService.buildResponse(release)
-				)
+				))
 			};
 		if (album.artist != undefined)
 			response = {
 				...response,
-				artist: this.artistServce.buildResponse(album.artist)
+				artist: await this.artistServce.buildResponse(album.artist)
 			};
 		return response;
 	}

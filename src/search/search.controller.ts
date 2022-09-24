@@ -37,16 +37,16 @@ export default class SearchController {
 		query: string,
 	) {
 		return {
-			artists: (await this.searchService.searchArtists(query))
-				.map((artist) => this.artistService.buildResponse(artist)),
-			albums: (await this.searchService.searchAlbums(query))
-				.map((album) => this.albumService.buildResponse(album)),
-			songs: (await this.searchService.searchSongs(query))
-				.map((song) => this.songService.buildResponse(song)),
-			releases: (await this.searchService.searchReleases(query))
-				.map((release) => this.releaseService.buildResponse(release)),
-			genres: (await this.searchService.searchGenres(query))
-				.map((genre) => this.genreService.buildResponse(genre)),
+			artists: await Promise.all((await this.searchService.searchArtists(query))
+				.map((artist) => this.artistService.buildResponse(artist))),
+			albums: await Promise.all((await this.searchService.searchAlbums(query))
+				.map((album) => this.albumService.buildResponse(album))),
+			songs: await Promise.all((await this.searchService.searchSongs(query))
+				.map((song) => this.songService.buildResponse(song))),
+			releases: await Promise.all((await this.searchService.searchReleases(query))
+				.map((release) => this.releaseService.buildResponse(release))),
+			genres: await Promise.all((await this.searchService.searchGenres(query))
+				.map((genre) => this.genreService.buildResponse(genre))),
 		};
 	}
 
@@ -65,7 +65,7 @@ export default class SearchController {
 	) {
 		const artists = await this.searchService.searchArtists(query, paginationParameters, include);
 		return new PaginatedResponse(
-			artists.map((artist) => this.artistService.buildResponse(artist)),
+			await Promise.all(artists.map((artist) => this.artistService.buildResponse(artist))),
 			request
 		)
 	}
@@ -85,7 +85,7 @@ export default class SearchController {
 	) {
 		const albums = await this.searchService.searchAlbums(query, paginationParameters, include)
 		return new PaginatedResponse(
-			albums.map((album) => this.albumService.buildResponse(album)),
+			await Promise.all(albums.map((album) => this.albumService.buildResponse(album))),
 			request
 		)
 	}
@@ -105,7 +105,7 @@ export default class SearchController {
 	) {
 		const songs = await this.searchService.searchSongs(query, paginationParameters, include);
 		return new PaginatedResponse(
-			songs.map((song) => this.songService.buildResponse(song)),
+			await Promise.all(songs.map((song) => this.songService.buildResponse(song))),
 			request
 		)
 	}
@@ -125,7 +125,7 @@ export default class SearchController {
 	) {
 		const releases = await this.searchService.searchReleases(query, paginationParameters, include)
 		return new PaginatedResponse(
-			releases.map((release) => this.releaseService.buildResponse(release)),
+			await Promise.all(releases.map((release) => this.releaseService.buildResponse(release))),
 			request
 		)
 	}
@@ -145,7 +145,7 @@ export default class SearchController {
 	) {
 		const genres = await this.searchService.searchGenres(query, paginationParameters, include);
 		return new PaginatedResponse(
-			genres.map((genre) => this.genreService.buildResponse(genre)),
+			await Promise.all(genres.map((genre) => this.genreService.buildResponse(genre))),
 			request
 		)
 	}

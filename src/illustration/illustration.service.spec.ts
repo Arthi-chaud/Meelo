@@ -129,6 +129,75 @@ describe('Illustration Service', () => {
 			});
 		});
 
+		describe("Get Illustration Link", () => {
+			describe("Artist", () => {
+				it("should return the illustration link", () => {
+					jest.spyOn(illustrationService, 'illustrationExists').mockReturnValueOnce(true);
+					expect(illustrationService.getArtistIllustrationLink(new Slug('artist'))).toBe("/illustrations/artists/artist");
+				});
+				it("should not return the illustration link", () => {
+					jest.spyOn(illustrationService, 'illustrationExists').mockReturnValueOnce(false);
+					expect(illustrationService.getArtistIllustrationLink(new Slug('artist'))).toBeNull();
+				});
+			});
+			describe("Release", () => {
+				it("should return the illustration link", async () => {
+					jest.spyOn(illustrationService, 'illustrationExists').mockReturnValueOnce(true);
+					expect(await illustrationService.getReleaseIllustrationLink(dummyRepository.releaseA1_1.id)).toBe(`/illustrations/releases/${dummyRepository.releaseA1_1.id}`);
+				});
+				it("should not return the illustration link", async () => {
+					jest.spyOn(illustrationService, 'illustrationExists').mockReturnValueOnce(false);
+					expect(await illustrationService.getReleaseIllustrationLink(dummyRepository.releaseA1_1.id)).toBeNull();
+				});
+			});
+
+			describe("Album", () => {
+				it("should return the master release's illustration link", async () => {
+					jest.spyOn(illustrationService, 'illustrationExists').mockReturnValueOnce(true);
+					expect(await illustrationService.getAlbumIllustrationLink(dummyRepository.albumB1.id))
+						.toBe(`/illustrations/releases/${dummyRepository.releaseB1_1.id}`);
+				});
+				it("should not return the illustration link", async () => {
+					jest.spyOn(illustrationService, 'illustrationExists').mockReturnValueOnce(false);
+					expect(await illustrationService.getAlbumIllustrationLink(dummyRepository.albumA1.id)).toBeNull();
+				});
+			});
+
+			describe("Track", () => {
+				it("should return the track illustration link", async () => {
+					jest.spyOn(illustrationService, 'illustrationExists').mockReturnValueOnce(true);
+					expect(await illustrationService.getTrackIllustrationLink(dummyRepository.trackA1_1.id))
+						.toBe(`/illustrations/tracks/${dummyRepository.trackA1_1.id}`);
+				});
+				it("should return the release's illustration link", async () => {
+					jest.spyOn(illustrationService, 'illustrationExists').mockReturnValueOnce(false).mockReturnValueOnce(true);
+					expect(await illustrationService.getTrackIllustrationLink(dummyRepository.trackA1_1.id))
+						.toBe(`/illustrations/releases/${dummyRepository.releaseA1_1.id}`);
+				});
+				it("should not return the illustration link", async () => {
+					jest.spyOn(illustrationService, 'illustrationExists').mockReturnValueOnce(false);
+					expect(await illustrationService.getTrackIllustrationLink(dummyRepository.trackA1_1.id)).toBeNull();
+				});
+			});
+
+			describe("Song ", () => {
+				it("should return the master track illustration link", async () => {
+					jest.spyOn(illustrationService, 'illustrationExists').mockReturnValueOnce(true);
+					expect(await illustrationService.getSongIllustrationLink(dummyRepository.songA1.id))
+						.toBe(`/illustrations/tracks/${dummyRepository.trackA1_1.id}`);
+				});
+				it("should return the release's illustration link", async () => {
+					jest.spyOn(illustrationService, 'illustrationExists').mockReturnValueOnce(false).mockReturnValueOnce(true);
+					expect(await illustrationService.getSongIllustrationLink(dummyRepository.songA1.id))
+						.toBe(`/illustrations/releases/${dummyRepository.releaseA1_1.id}`);
+				});
+				it("should not return the illustration link", async () => {
+					jest.spyOn(illustrationService, 'illustrationExists').mockReturnValueOnce(false);
+					expect(await illustrationService.getSongIllustrationLink(dummyRepository.songA1.id)).toBeNull();
+				});
+			})
+		})
+
 		describe('Illustration extraction', () => {
 			const outPath = `${baseMetadataFolder}/illustration.jpg`;
 			it("should write data to file", async () => {
@@ -210,6 +279,9 @@ describe('Illustration Service', () => {
 				expect(fs.readFileSync(trackIllustrationPath)).toStrictEqual(Buffer.from('ABCDEF'));
 				expect(fs.existsSync(releaseIllustrationPath)).toBe(true);
 				expect(fs.readFileSync(releaseIllustrationPath)).toStrictEqual(Buffer.from('ABCDE'));
+				fs.rmSync(releaseIllustrationPath);
+				fs.rmSync(trackIllustrationPath);
+				
 			});
 
 		});

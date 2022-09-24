@@ -44,7 +44,7 @@ export class GenreController {
 			{}, paginationParameters, include, sortingParameter
 		);
 		return new PaginatedResponse(
-			genres.map((genre) => this.genreService.buildResponse(genre)),
+			await Promise.all(genres.map((genre) => this.genreService.buildResponse(genre))),
 			request
 		);
 	}
@@ -60,7 +60,7 @@ export class GenreController {
 		where: GenreQueryParameters.WhereInput
 	) {
 		const genre = await this.genreService.get(where, include);
-		return this.genreService.buildResponse(genre);
+		return await this.genreService.buildResponse(genre);
 	}
 
 	@ApiOperation({
@@ -84,9 +84,9 @@ export class GenreController {
 		if (songs.length == 0)
 			await this.genreService.throwIfNotExist(where);
 		return new PaginatedResponse(
-			songs.map(
+			await Promise.all(songs.map(
 				(song) => this.songService.buildResponse(song)
-			),
+			)),
 			request
 		);
 	}
@@ -112,9 +112,9 @@ export class GenreController {
 		if (albums.length == 0)
 			await this.genreService.throwIfNotExist(where);
 		return new PaginatedResponse(
-			albums.map(
+			await Promise.all(albums.map(
 				(album) => this.albumService.buildResponse(album)
-			),
+			)),
 			request
 		)
 	}
@@ -140,9 +140,9 @@ export class GenreController {
 		if (artists.length == 0)
 			await this.genreService.throwIfNotExist(where);
 		return new PaginatedResponse(
-			artists.map(
+			await Promise.all(artists.map(
 				(artist) => this.artistService.buildResponse(artist)
-			),
+			)),
 			request
 		);
 	}

@@ -167,7 +167,7 @@ export default class FileService extends RepositoryService<
 			return this.create(input, include)
 		}
 	}
-	buildResponse(input: File): File {
+	async buildResponse(input: File): Promise<File> {
 		return input;
 	}
 

@@ -32,21 +32,21 @@ describe('Release Controller', () => {
 
 	const expectedReleaseResponse = (release: Release) => ({
 		...release,
-		illustration: `/illustrations/releases/${release.id}`
+		illustration: null
 	});
 	const expectedAlbumResponse = (album: Album) => ({
 		...album,
 		releaseDate: album.releaseDate?.toISOString() ?? null,
-		illustration: `/illustrations/albums/${album.id}`
+		illustration: null
 	});
 	const expectedTrackResponse = (track: Track) => ({
 		...track,
-		illustration: `/illustrations/tracks/${track.id}`,
+		illustration: null,
 		stream: `/files/${track.sourceFileId}/stream`
 	});
 	const expectedSongResponse = (song: Song) => ({
 		...song,
-		illustration: `/illustrations/songs/${song.id}`
+		illustration: null
 	}); 
 
 	beforeAll(async () => {
@@ -378,7 +378,7 @@ describe('Release Controller', () => {
 						...expectedAlbumResponse(dummyRepository.albumB1),
 						artist: {
 							...dummyRepository.artistB,
-							illustration: `/illustrations/artists/${dummyRepository.artistB.id}`
+							illustration: null
 						}
 					});
 				});

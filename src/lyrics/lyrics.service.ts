@@ -153,10 +153,10 @@ export class LyricsService extends RepositoryService<
 		}
 	}
 
-	buildResponse(input: Lyrics & { song?: Song }): { lyrics: string, song?: Song} {
+	async buildResponse(input: Lyrics & { song?: Song }): Promise<{ lyrics: string, song?: Song }> {
 		let response: any = { lyrics: input.content };
 		if (input.song)
-			response.song = this.songService.buildResponse(input.song)
+			response.song = await this.songService.buildResponse(input.song)
 		return response;
 	}
 

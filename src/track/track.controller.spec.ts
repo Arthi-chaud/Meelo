@@ -28,7 +28,7 @@ describe('Track Controller', () => {
 
 	const expectedTrackResponse = (track: Track) => ({
 		...track,
-		illustration: `/illustrations/tracks/${track.id}`,
+		illustration: null,
 		stream: `/files/${track.sourceFileId}/stream`
 	});
 	
@@ -100,7 +100,7 @@ describe('Track Controller', () => {
 						...expectedTrackResponse(dummyRepository.trackA2_1),
 						song: {
 							...dummyRepository.songA2,
-							illustration: `/illustrations/songs/${dummyRepository.songA2.id}`,
+							illustration: null
 						},
 					});
 				});
@@ -150,11 +150,11 @@ describe('Track Controller', () => {
 						...expectedTrackResponse(dummyRepository.trackA2_1),
 						song: {
 							...dummyRepository.songA2,
-							illustration: `/illustrations/songs/${dummyRepository.songA2.id}`,
+							illustration: null
 						},
 						release: {
 							...dummyRepository.releaseA1_2,
-							illustration: `/illustrations/releases/${dummyRepository.releaseA1_2.id}`,
+							illustration: null
 						}
 					})
 				});

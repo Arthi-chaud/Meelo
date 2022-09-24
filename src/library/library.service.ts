@@ -294,7 +294,7 @@ export default class LibraryService extends RepositoryService<
 		await this.fileService.delete(where);
 	}
 
-	buildResponse(input: Library): Library {
+	async buildResponse(input: Library): Promise<Library> {
 		return input;
 	}
 

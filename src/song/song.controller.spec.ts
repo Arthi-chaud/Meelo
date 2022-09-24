@@ -30,12 +30,12 @@ describe('Song Controller', () => {
 
 	const expectedSongResponse = (song: Song) => ({
 		...song,
-		illustration: `/illustrations/songs/${song.id}`
+		illustration: null
 	});
 
 	const expectedTrackResponse = (track: Track) => ({
 		...track,
-		illustration: `/illustrations/tracks/${track.id}`,
+		illustration: null,
 		stream: `/files/${track.sourceFileId}/stream`
 	});
 	
@@ -127,7 +127,7 @@ describe('Song Controller', () => {
 						...expectedSongResponse(dummyRepository.songA1),
 						artist: {
 							...dummyRepository.artistA,
-							illustration: `/illustrations/artists/${dummyRepository.artistA.id}`
+							illustration: null
 						}
 					});
 				});
@@ -163,7 +163,7 @@ describe('Song Controller', () => {
 						...expectedSongResponse(dummyRepository.songA1),
 						artist: {
 							...dummyRepository.artistA,
-							illustration: `/illustrations/artists/${dummyRepository.artistA.id}`
+							illustration: null
 						}
 					});
 				});
@@ -223,7 +223,7 @@ describe('Song Controller', () => {
 						song: expectedSongResponse(dummyRepository.songA1),
 						release: {
 							...dummyRepository.releaseA1_1,
-							illustration: `/illustrations/releases/${dummyRepository.releaseA1_1.id}`
+							illustration: null
 						}
 					});
 				});
@@ -453,7 +453,7 @@ describe('Song Controller', () => {
 					let fetchedArtist : Artist = res.body
 					expect(fetchedArtist).toStrictEqual({
 						...dummyRepository.artistB,
-						illustration: `/illustrations/artists/${dummyRepository.artistB.id}` 
+						illustration: null 
 					});
 				});
 		});
@@ -465,7 +465,7 @@ describe('Song Controller', () => {
 					let fetchedArtist : Artist = res.body
 					expect(fetchedArtist).toStrictEqual({
 						...dummyRepository.artistA,
-						illustration: `/illustrations/artists/${dummyRepository.artistA.id}` 
+						illustration: null 
 					});
 				});
 		});
@@ -477,10 +477,10 @@ describe('Song Controller', () => {
 					let fetchedArtist : Artist = res.body
 					expect(fetchedArtist).toStrictEqual({
 						...dummyRepository.artistB,
-						illustration: `/illustrations/artists/${dummyRepository.artistB.id}`,
+						illustration: null,
 						albums: [{
 							...dummyRepository.albumB1,
-							illustration: `/illustrations/albums/${dummyRepository.albumB1.id}`
+							illustration: null
 						}],
 						songs: [
 							expectedSongResponse(dummyRepository.songB1)

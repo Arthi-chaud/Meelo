@@ -153,7 +153,7 @@ export default class LibraryController {
 		if (artists.length == 0)
 			await this.libraryService.throwIfNotExist(where);
 		return new PaginatedResponse(
-			artists.map((artist) => this.artistService.buildResponse(artist)),
+			await Promise.all(artists.map((artist) => this.artistService.buildResponse(artist))),
 			request
 		);
 	}
@@ -179,7 +179,7 @@ export default class LibraryController {
 		if (albums.length == 0)
 			await this.libraryService.throwIfNotExist(where);
 		return new PaginatedResponse(
-			albums.map((album) => this.albumService.buildResponse(album)),
+			await Promise.all(albums.map((album) => this.albumService.buildResponse(album))),
 			request
 		);
 	}
@@ -205,7 +205,7 @@ export default class LibraryController {
 		if (releases.length == 0)
 			await this.libraryService.throwIfNotExist(where);
 		return new PaginatedResponse(
-			releases.map((release) => this.releaseService.buildResponse(release)),
+			await Promise.all(releases.map((release) => this.releaseService.buildResponse(release))),
 			request
 		);
 	}
@@ -231,7 +231,7 @@ export default class LibraryController {
 		if (songs.length == 0)
 			await this.libraryService.throwIfNotExist(where);
 		return new PaginatedResponse(
-			songs.map((song) => this.songService.buildResponse(song)),
+			await Promise.all(songs.map((song) => this.songService.buildResponse(song))),
 			request
 		);
 	}
@@ -257,7 +257,9 @@ export default class LibraryController {
 		if (tracks.length == 0)
 			await this.libraryService.throwIfNotExist(where);
 		return new PaginatedResponse(
-			tracks.map((track) => this.trackService.buildResponse(track)),
+			await Promise.all(tracks.map(
+				(track) => this.trackService.buildResponse(track)
+			)),
 			request
 		);
 	}

@@ -47,7 +47,7 @@ export default class AlbumController {
 			{}, paginationParameters, include, sortingParameter
 		);
 		return new PaginatedResponse(
-			albums.map((album) => this.albumService.buildResponse(album)),
+			await Promise.all(albums.map((album) => this.albumService.buildResponse(album))),
 			request
 		);
 	}
@@ -69,7 +69,7 @@ export default class AlbumController {
 			{ byArtist: { compilationArtist: true } }, paginationParameters, include, sortingParameter
 		);
 		return new PaginatedResponse(
-			albums.map((album) => this.albumService.buildResponse(album)),
+			await Promise.all(albums.map((album) => this.albumService.buildResponse(album))),
 			request
 		);
 	}
@@ -85,7 +85,7 @@ export default class AlbumController {
 		where: AlbumQueryParameters.WhereInput
 	) {
 		const album = await this.albumService.get(where, include);
-		return this.albumService.buildResponse(album);
+		return await this.albumService.buildResponse(album);
 	}
 
 	@ApiOperation({
@@ -99,7 +99,7 @@ export default class AlbumController {
 		where: AlbumQueryParameters.WhereInput
 	) {
 		let masterRelease = await this.releaseService.getMasterRelease(where, include);
-		return this.releaseService.buildResponse(masterRelease);
+		return await this.releaseService.buildResponse(masterRelease);
 	}
 
 	@ApiOperation({
@@ -116,7 +116,7 @@ export default class AlbumController {
 		const tracklist = await this.trackService.getTracklist(
 			{ byId: { id: masterRelease.id } }, include
 		);
-		return this.trackService.buildTracklistResponse(tracklist);
+		return await this.trackService.buildTracklistResponse(tracklist);
 	}
 
 	@ApiOperation({
@@ -135,7 +135,7 @@ export default class AlbumController {
 		const tracklist = await this.trackService.getPlaylist(
 			{ byId: { id: masterRelease.id } }, include, random
 		);
-		return tracklist.map((track) => this.trackService.buildResponse(track));
+		return await Promise.all(tracklist.map((track) => this.trackService.buildResponse(track)));
 	}
 
 	@ApiOperation({
@@ -157,7 +157,7 @@ export default class AlbumController {
 			where, paginationParameters, include, sortingParameter
 		);
 		return new PaginatedResponse(
-			releases.map((release) => this.releaseService.buildResponse(release)),
+			await Promise.all(releases.map((release) => this.releaseService.buildResponse(release))),
 			request
 		);
 	}
@@ -171,7 +171,7 @@ export default class AlbumController {
 		where: AlbumQueryParameters.WhereInput,
 	): Promise<Genre[]> {
 		const genres = await this.albumService.getGenres(where);
-		return genres.map((genre) => this.genreService.buildResponse(genre));
+		return await Promise.all(genres.map((genre) => this.genreService.buildResponse(genre)));
 	}
 
 	@ApiOperation({
@@ -195,7 +195,9 @@ export default class AlbumController {
 		if (videoTracks.length == 0)
 			await this.albumService.throwIfNotExist(where);
 		return new PaginatedResponse(
-			videoTracks.map((videoTrack) => this.trackService.buildResponse(videoTrack)),
+			await Promise.all(videoTracks.map(
+				(videoTrack) => this.trackService.buildResponse(videoTrack)
+			)),
 			request
 		);
 	}
@@ -207,7 +209,7 @@ export default class AlbumController {
 	async reassignTrack(
 		@Body() reassignmentDTO: ReassignAlbumDTO
 	) {
-		return this.albumService.buildResponse(
+		return await this.albumService.buildResponse(
 			await this.albumService.reassign(
 			{ byId: { id: reassignmentDTO.albumId } },
 			reassignmentDTO.artistId == null

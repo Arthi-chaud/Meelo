@@ -31,28 +31,28 @@ describe('Library Controller', () => {
 
 	const expectedArtistResponse = (artist: Artist) => ({
 		...artist,
-		illustration: `/illustrations/artists/${artist.id}`
+		illustration: null
 	});
 
 	const expectedAlbumResponse = (album: Album) => ({
 		...album,
 		releaseDate: album.releaseDate?.toISOString() ?? null,
-		illustration: `/illustrations/albums/${album.id}`
+		illustration: null
 	});
 
 	const expectedSongResponse = (song: Song) => ({
 		...song,
-		illustration: `/illustrations/songs/${song.id}`
+		illustration: null
 	});
 
 	const expectedReleaseResponse = (release: Release) => ({
 		...release,
-		illustration: `/illustrations/releases/${release.id}`
+		illustration: null
 	});
 
 	const expectedTrackResponse = (track: Track) => ({
 		...track,
-		illustration: `/illustrations/tracks/${track.id}`,
+		illustration: null,
 		stream: `/files/${track.sourceFileId}/stream`
 	});
 
@@ -210,7 +210,7 @@ describe('Library Controller', () => {
 					expect(artists.length).toBe(1);
 					expect(artists[0]).toStrictEqual({
 						...dummyRepository.artistA,
-						illustration: `/illustrations/artists/${dummyRepository.artistA.id}`
+						illustration: null
 					});
 				});
 		});
@@ -224,7 +224,7 @@ describe('Library Controller', () => {
 					expect(artists.length).toBe(1);
 					expect(artists[0]).toStrictEqual({
 						...dummyRepository.artistB,
-						illustration: `/illustrations/artists/${dummyRepository.artistB.id}`
+						illustration: null
 					});
 				});
 		});

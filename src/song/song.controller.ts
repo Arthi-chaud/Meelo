@@ -50,7 +50,7 @@ export class SongController {
 			{}, paginationParameters, include, sortingParameter
 		);
 		return new PaginatedResponse(
-			songs.map((song) => this.songService.buildResponse(song)),
+			await Promise.all(songs.map((song) => this.songService.buildResponse(song))),
 			request
 		);
 	}
@@ -66,7 +66,7 @@ export class SongController {
 		where: SongQueryParameters.WhereInput
 	) {
 		let song = await this.songService.get(where, include);
-		return this.songService.buildResponse(song);
+		return await this.songService.buildResponse(song);
 	}
 
 	@ApiOperation({
@@ -94,7 +94,7 @@ export class SongController {
 		let artist = await this.artistService.get({
 			id: song.artistId
 		}, include);
-		return this.artistService.buildResponse(artist);
+		return await this.artistService.buildResponse(artist);
 	}
 
 	@ApiOperation({
@@ -108,7 +108,7 @@ export class SongController {
 		where: SongQueryParameters.WhereInput
 	) {
 		let master = await this.trackService.getMasterTrack(where, include);
-		return this.trackService.buildResponse(master);
+		return await this.trackService.buildResponse(master);
 	}
 
 	@ApiOperation({
@@ -132,7 +132,7 @@ export class SongController {
 		if (tracks.length == 0)
 			await this.songService.throwIfNotExist(where);
 		return new PaginatedResponse(
-			tracks.map((track) => this.trackService.buildResponse(track)),
+			await Promise.all(tracks.map((track) => this.trackService.buildResponse(track))),
 			request
 		);
 	}
@@ -158,7 +158,7 @@ export class SongController {
 		if (videoTracks.length == 0)
 			await this.songService.throwIfNotExist(where);
 		return new PaginatedResponse(
-			videoTracks.map((videoTrack) => this.trackService.buildResponse(videoTrack)),
+			await Promise.all(videoTracks.map((videoTrack) => this.trackService.buildResponse(videoTrack))),
 			request
 		);
 	}
@@ -178,7 +178,7 @@ export class SongController {
 	) {
 		const genres = await this.genreService.getSongGenres(where, include, sortingParameter);
 		return new PaginatedResponse(
-			genres.map((genre) => this.genreService.buildResponse(genre)),
+			await Promise.all(genres.map((genre) => this.genreService.buildResponse(genre))),
 			request
 		);
 	}
@@ -192,7 +192,7 @@ export class SongController {
 		where: SongQueryParameters.WhereInput
 	) {
 		const lyrics = await this.lyricsService.get({ song: where });
-		return this.lyricsService.buildResponse(lyrics);
+		return await this.lyricsService.buildResponse(lyrics);
 	}
 
 	@ApiOperation({
