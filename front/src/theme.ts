@@ -19,6 +19,7 @@ export default  responsiveFontSizes(createTheme({
 			primary: "#FFFFFF"
 		}
 	},
-	
-	
+	shape: {
+		borderRadius: '3%'
+	}	
 }));

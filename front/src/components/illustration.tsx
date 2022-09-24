@@ -1,4 +1,4 @@
-import { Box, IconButton } from "@mui/material";
+import { Box, IconButton, useTheme } from "@mui/material";
 import Image, { ImageProps } from "next/image";
 import { useEffect, useState } from "react";
 import FadeIn from "react-fade-in";
@@ -19,6 +19,7 @@ type IllustrationProps = {
 } & Omit<ImageProps, 'src'>
 
 const Illustration = (props: IllustrationProps) => {
+	const theme = useTheme();
 	const [loadingFailed, setLoadingFailed] = useState(false);
 	return <FadeIn>
 		<Box sx={{ aspectRatio: '1', justifyContent: 'center', alignItems: 'center', display: loadingFailed ? 'flex' : undefined }}>
@@ -34,7 +35,7 @@ const Illustration = (props: IllustrationProps) => {
 					objectFit="contain"
 					layout="responsive"
 					{...props}
-					style={{ ...props.style, borderRadius: '3%', width: 'auto' }}
+					style={{ ...props.style, borderRadius: theme.shape.borderRadius, width: 'auto' }}
 					src={API.getIllustrationURL(props.url)}
 				/>
 			}

@@ -1,6 +1,5 @@
 import {Box, Card, CardActionArea, CardContent, CardMedia, IconButton, Typography} from "@mui/material";
-import {useState} from "react";
-import Illustration from '../illustration';
+import { useTheme } from "@mui/system";
 import Link from 'next/link';
 
 type TileProps = {
@@ -15,9 +14,10 @@ type TileProps = {
 }
 
 const Tile = (props: TileProps) => {
+	const theme = useTheme();
 	return (
 		<Box sx={{ height: '100%' }}>
-			<Card style={{ border: "none", boxShadow: "none", borderRadius: '3%' }}>
+			<Card style={{ border: "none", boxShadow: "none", borderRadius: theme.shape.borderRadius }}>
 				<CardActionArea>
 					<Link href={props.targetURL}>
 						<Box>
