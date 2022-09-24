@@ -1,5 +1,4 @@
 import { FastForward, FastRewind, Pause, PlayArrow } from "@mui/icons-material";
-
 import { Typography, Grid, Slider, LinearProgress, IconButton } from "@mui/material";
 import formatDuration from "../../utils/formatDuration";
 import Illustration from "../illustration";
