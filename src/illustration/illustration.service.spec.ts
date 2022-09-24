@@ -149,6 +149,18 @@ describe('Illustration Service', () => {
 					jest.spyOn(illustrationService, 'illustrationExists').mockReturnValueOnce(false);
 					expect(await illustrationService.getReleaseIllustrationLink(dummyRepository.releaseA1_1.id)).toBeNull();
 				});
+			});
+
+			describe("Album", () => {
+				it("should return the master release's illustration link", async () => {
+					jest.spyOn(illustrationService, 'illustrationExists').mockReturnValueOnce(true);
+					expect(await illustrationService.getAlbumIllustrationLink(dummyRepository.albumB1.id))
+						.toBe(`/illustrations/releases/${dummyRepository.releaseB1_1.id}`);
+				});
+				it("should not return the illustration link", async () => {
+					jest.spyOn(illustrationService, 'illustrationExists').mockReturnValueOnce(false);
+					expect(await illustrationService.getAlbumIllustrationLink(dummyRepository.albumA1.id)).toBeNull();
+				});
 			})
 		})
 

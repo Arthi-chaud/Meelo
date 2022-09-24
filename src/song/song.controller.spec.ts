@@ -480,7 +480,7 @@ describe('Song Controller', () => {
 						illustration: null,
 						albums: [{
 							...dummyRepository.albumB1,
-							illustration: `/illustrations/albums/${dummyRepository.albumB1.id}`
+							illustration: null
 						}],
 						songs: [
 							expectedSongResponse(dummyRepository.songB1)

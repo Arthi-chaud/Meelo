@@ -388,4 +388,17 @@ export default class IllustrationService implements OnModuleInit {
 		}
 		return null;
 	}
+
+	/**
+	 * Builds the URL to the album's illustration.
+	 * If there is no illustration, it will return null
+	 */
+	 async getAlbumIllustrationLink(albumId: number): Promise<string | null> {
+		try {
+			const masterRelease = await this.releaseService.getMasterRelease({ byId: { id: albumId } });
+			return await this.getReleaseIllustrationLink(masterRelease.id)
+		} catch {
+			return null;
+		}
+	}
 }

@@ -302,7 +302,7 @@ export default class AlbumService extends RepositoryService<
 	): Promise<ResponseType> {
 		let response = <ResponseType>{
 			...album,
-			illustration: `/illustrations/albums/${album.id}`
+			illustration: await this.illustrationService.getAlbumIllustrationLink(album.id)
 		};
 		if (album.releases)
 			response = {

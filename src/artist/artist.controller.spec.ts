@@ -37,7 +37,7 @@ describe('Artist Controller', () => {
 	const expectedAlbumResponse = (album: Album) => ({
 		...album,
 		releaseDate: album.releaseDate?.toISOString() ?? null,
-		illustration: `/illustrations/albums/${album.id}`
+		illustration: null
 	});
 
 	const expectedSongResponse = (song: Song) => ({
