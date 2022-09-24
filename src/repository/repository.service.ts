@@ -23,7 +23,7 @@ abstract class RepositoryService<
 	abstract update(what: UpdateInput, where: WhereInput): Promise<EntityType>;
 	abstract delete(where: DeleteInput): Promise<EntityType>;
 	abstract getOrCreate(input: CreateInput, include?: RelationInput): Promise<EntityType>;
-	abstract buildResponse(input: EntityType): ResponseType;
+	abstract buildResponse(input: EntityType): ResponseType | Promise<ResponseType>;
 	protected abstract onNotFound(where: WhereInput): Promise<MeeloException> | MeeloException;
 	
 	/**

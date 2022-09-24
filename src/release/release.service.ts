@@ -389,12 +389,12 @@ export default class ReleaseService extends RepositoryService<
 		return this.illustrationService.illustrationExists(path);
 	}
 
-	buildResponse<ResponseType extends Release & { illustration: string }>(
+	async buildResponse<ResponseType extends Release & { illustration: string }>(
 		release: Release & Partial<{ tracks: Track[], album: Album }>
-	): ResponseType {
+	): Promise<ResponseType> {
 		let response = <ResponseType>{
 			...release,
-			illustration: `/illustrations/releases/${release.id}`
+			illustration: await this.illustrationService.getReleaseIllustrationLink(release.id)
 		};
 		if (release.album !== undefined)
 			response = {
