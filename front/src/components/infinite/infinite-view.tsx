@@ -70,7 +70,7 @@ const InfiniteView = <T extends Resource,>(props: InfiniteViewProps<T>) => {
 	}, []);
 	return <>
 		<Box sx={{ display: 'flex', justifyContent: 'center', alignContent: 'center', paddingTop: 2 }}>
-			<ButtonGroup>
+			<ButtonGroup color='inherit'>
 				<Button
 					endIcon={sortOrder == 'desc' ? <SouthIcon/> : <NorthIcon/>}
 					onClick={handleMenuOpen}

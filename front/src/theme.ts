@@ -9,17 +9,18 @@ export default  responsiveFontSizes(createTheme({
 			contrastText: "#FFFFFF"
 		},
 		secondary: {
-			main: "#D9D9D9"
+			main: "#ffffff"
 		},
 		background: {
 			default: "#242120",
 			paper: "#242120"
 		},
 		text: {
-			primary: "#FFFFFF"
+			primary: "#FFFFFF",
+			secondary: '#FFFFFF'
 		}
 	},
 	shape: {
 		borderRadius: '3%'
-	}	
+	},
 }));
