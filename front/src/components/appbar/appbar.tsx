@@ -13,33 +13,11 @@ import { formattedItemTypes, itemType } from './item-types';
 import globalLibrary from './global-library';
 import MeeloAppBarDrawer from './drawer';
 import buildLink from './build-link';
-import { makeStyles } from '@mui/styles';
 import Link from 'next/link';
-import { GetServerSidePropsContext, InferGetServerSidePropsType } from 'next';
 import { prepareMeeloQuery } from '../../query';
 import Library from '../../models/library';
 import toast from 'react-hot-toast';
 import Player from '../player/player';
-
-const useStyles = makeStyles({
-    select: {
-        '&:before': {
-            borderColor: 'white',
-        },
-        '&:after': {
-            borderColor: 'white',
-        },
-        '&:not(.Mui-disabled):hover::before': {
-            borderColor: 'white',
-        },
-    },
-    icon: {
-        fill: 'white',
-    },
-    root: {
-        color: 'white',
-    },
-});
 
 const libraryQuery = () => ({
 	key: ['libraries'],
@@ -47,7 +25,6 @@ const libraryQuery = () => ({
 });
 
 const MeeloAppBar = () => {
-	const classes = useStyles();
 	const router = useRouter();
 	const [requestedLibrary, setRequestedLibrary] = useState(globalLibrary);
 	const [availableLibraries, setAvailableLibraries] = useState<Library[] | null>(null);
@@ -93,13 +70,6 @@ const MeeloAppBar = () => {
 										disableUnderline
 										variant='standard'
         								value={requestedLibrary.name}
-										sx={{ color: "primary.contrastText" }}
-										inputProps={{
-											classes: {
-												icon: classes.icon,
-												root: classes.root,
-											},
-										}}
 										onChange={(item) => {
 											const targetLibaryName = item.target.value;
 											if (targetLibaryName === globalLibrary.name) {
@@ -121,7 +91,7 @@ const MeeloAppBar = () => {
 										{
 											itemType.map((type, index) => (
 												<Grid item key={type}>
-													<Button variant="text" sx={{ color: "primary.contrastText" }}>
+													<Button variant="text" color='inherit'>
 														<Link href={buildLink(type, requestedLibrary.slug)}>
 															<Typography sx={{ fontWeight: router.asPath.endsWith(`/${type}`) ? 'bold' : 'normal' }}>
 																{formattedItemTypes.at(index)}

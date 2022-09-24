@@ -10,7 +10,7 @@ import formatDuration from '../../utils/formatDuration';
 import { useEffect, useState } from "react";
 import { TrackWithSong } from "../../models/track";
 import Tracklist from "../../models/tracklist";
-import AspectRatio from '@mui/joy/AspectRatio';
+
 import PlayCircleIcon from '@mui/icons-material/PlayCircle';
 import { Album, MoreHoriz, Shuffle } from "@mui/icons-material";
 import FadeIn from "react-fade-in";
@@ -108,6 +108,7 @@ const ReleasePage = ({ releaseIdentifier }: InferGetServerSidePropsType<typeof g
 	const tracklist = useQuery(prepareMeeloQuery(tracklistQuery, releaseIdentifier));
 	const albumArtist = useQuery(prepareMeeloQuery(artistQuery, artistId));
 	const albumGenres = useQuery(prepareMeeloQuery(albumGenresQuery, release.data?.albumId));
+	const hasGenres = (albumGenres.data?.length ?? 0) > 0;
 	const albumVideos = useQuery(prepareMeeloQuery(albumVideosQuery, release.data?.albumId));
 
 	const otherArtistsQuery = useQueries((tracks ?? [])
@@ -133,13 +134,12 @@ const ReleasePage = ({ releaseIdentifier }: InferGetServerSidePropsType<typeof g
 	return <Box>
 		<Box sx={{ padding: 5, flex: 1, flexGrow: 1}}>
 			<Grid container spacing={4} sx={{ justifyContent: 'center' }}>
-
-				<Grid item md={4} xs={12}>
+				<Grid item md={3} xs={8}>
 					<Illustration url={release.data!.illustration} fallback={<Album/>}/> 
 				</Grid>
-				<Grid item sx={{ display: 'flex' }} lg={5} sm={8} xs={12} >
+				<Grid item sx={{ display: 'flex' }} md={6} sm={9} xs={12} >
 					<Grid container sx={{ flexDirection: 'column', justifyContent: 'space-evenly',
-						alignItems: 'left', [theme.breakpoints.down('sm')]: { alignItems: 'center' },
+						alignItems: 'left', [theme.breakpoints.down('md')]: { alignItems: 'center', textAlign: 'center' },
 					}}>
 						<Grid item>
 							<Typography variant='h2'>{release.data!.name}</Typography>
@@ -156,7 +156,7 @@ const ReleasePage = ({ releaseIdentifier }: InferGetServerSidePropsType<typeof g
 						</Grid>
 					</Grid>
 				</Grid>
-				<Grid item container lg={3} xs={12} sx={{ spacing: 5, alignItems: 'center', justifyContent: 'space-evenly', display: 'flex'}}>
+				<Grid item container md={3} xs={12} sx={{ spacing: 5, alignItems: 'center', justifyContent: 'space-evenly', display: 'flex'}}>
 					{[
 						() => <PlayCircleIcon fontSize="large"/>,
 						() => <Shuffle fontSize="large"/>
@@ -175,7 +175,7 @@ const ReleasePage = ({ releaseIdentifier }: InferGetServerSidePropsType<typeof g
 										dispatch(setTracksInPlaylist(playlist));
 										dispatch(playNextTrack());
 									}
-								}}>
+							}}>
 									{icon()}
 								</IconButton>
 							</Grid>
@@ -187,7 +187,7 @@ const ReleasePage = ({ releaseIdentifier }: InferGetServerSidePropsType<typeof g
 				</Grid>
 			</Grid>
 			<Grid container spacing={1} sx={{ display: 'flex', paddingY: 2 }}>
-				{ (albumGenres.data?.length ?? 0) > 0 &&
+				{ hasGenres &&
 					<Grid item md={3} xs={12}>
 					{ albumGenres.data &&
 						<FadeIn>
@@ -197,7 +197,7 @@ const ReleasePage = ({ releaseIdentifier }: InferGetServerSidePropsType<typeof g
 								</Grid>
 								{ albumGenres.data.map((genre) => (
 									<Grid item xs="auto" key={genre.id}>
-										<Button variant="outlined" sx={{ textTransform: 'none', color: 'inherit' }}>
+										<Button variant="outlined" color='inherit'>
 											{ genre.name }
 										</Button>
 									</Grid>
@@ -214,7 +214,7 @@ const ReleasePage = ({ releaseIdentifier }: InferGetServerSidePropsType<typeof g
 					}
 					</Grid>
 				}
-				<Grid item md={9} xs={12}>
+				<Grid item md={hasGenres ? 9 : true} xs={12}>
 					{ formattedTrackList && otherArtistsQuery.findIndex((q) => q.data == undefined) == -1 &&
 						<>
 							{ Array.from(formattedTrackList.entries()).map((disc, _, discs) => 

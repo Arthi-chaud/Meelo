@@ -70,7 +70,7 @@ const InfiniteView = <T extends Resource,>(props: InfiniteViewProps<T>) => {
 	}, []);
 	return <>
 		<Box sx={{ display: 'flex', justifyContent: 'center', alignContent: 'center', paddingTop: 2 }}>
-			<ButtonGroup>
+			<ButtonGroup color='inherit'>
 				<Button
 					endIcon={sortOrder == 'desc' ? <SouthIcon/> : <NorthIcon/>}
 					onClick={handleMenuOpen}
@@ -118,7 +118,7 @@ const InfiniteView = <T extends Resource,>(props: InfiniteViewProps<T>) => {
 		<Slide direction="up" in={backToTopVisible} mountOnEnter unmountOnExit>
 			<Tooltip title="Back to top">
 				<Fab
-					color="primary"
+					color="secondary"
 					sx={{ position: 'fixed', bottom: 16, right: 16 }}
 					onClick={() => window.scrollTo({ top: 0, left: 0, behavior: "smooth" })}
 				>

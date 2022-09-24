@@ -1,13 +1,14 @@
 import { useEffect, useState } from "react";
 import { Bars } from "react-loader-spinner";
 import FadeIn from 'react-fade-in';
-import { Box } from '@mui/material';
+import { Box, useTheme } from '@mui/material';
 
 /**
  * Base loading component
  * @returns 
  */
 const LoadingComponent = () => {
+	const theme = useTheme();
 	const [displayLoad, setDisplay] = useState(false);
 	useEffect(() => {
 		const timeId = setTimeout(() => setDisplay(true), 2);
@@ -19,6 +20,7 @@ const LoadingComponent = () => {
 		<Bars
 			height="40"
 			width="40"
+			color={theme.palette.primary.contrastText}
 			ariaLabel="bars-loading"
 		/>
 	</FadeIn>
