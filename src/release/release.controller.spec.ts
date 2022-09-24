@@ -41,12 +41,12 @@ describe('Release Controller', () => {
 	});
 	const expectedTrackResponse = (track: Track) => ({
 		...track,
-		illustration: `/illustrations/tracks/${track.id}`,
+		illustration: null,
 		stream: `/files/${track.sourceFileId}/stream`
 	});
 	const expectedSongResponse = (song: Song) => ({
 		...song,
-		illustration: `/illustrations/songs/${song.id}`
+		illustration: null
 	}); 
 
 	beforeAll(async () => {

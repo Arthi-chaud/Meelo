@@ -393,10 +393,35 @@ export default class IllustrationService implements OnModuleInit {
 	 * Builds the URL to the album's illustration.
 	 * If there is no illustration, it will return null
 	 */
-	 async getAlbumIllustrationLink(albumId: number): Promise<string | null> {
+	async getAlbumIllustrationLink(albumId: number): Promise<string | null> {
 		try {
 			const masterRelease = await this.releaseService.getMasterRelease({ byId: { id: albumId } });
 			return await this.getReleaseIllustrationLink(masterRelease.id)
+		} catch {
+			return null;
+		}
+	}
+
+	/**
+	 * Builds the URL to the track's illustration.
+	 * If there is no illustration, it will return null
+	 */
+	 async getTrackIllustrationLink(trackId: number): Promise<string | null> {
+		const path = await this.trackService.buildIllustrationPath({ id: trackId });
+		if (this.illustrationExists(path))
+		 	return `/illustrations/tracks/${trackId}`;
+		const track = await this.trackService.get({ id: trackId });
+		return await this.getReleaseIllustrationLink(track.releaseId);
+	}
+
+	/**
+	 * Builds the URL to the track's illustration.
+	 * If there is no illustration, it will return null
+	 */
+	 async getSongIllustrationLink(songId: number): Promise<string | null> {
+		try {
+			const masterRelease = await this.trackService.getMasterTrack({ byId: { id: songId }});
+			return await this.getTrackIllustrationLink(masterRelease.id)
 		} catch {
 			return null;
 		}

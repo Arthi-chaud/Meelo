@@ -30,12 +30,12 @@ describe('Song Controller', () => {
 
 	const expectedSongResponse = (song: Song) => ({
 		...song,
-		illustration: `/illustrations/songs/${song.id}`
+		illustration: null
 	});
 
 	const expectedTrackResponse = (track: Track) => ({
 		...track,
-		illustration: `/illustrations/tracks/${track.id}`,
+		illustration: null,
 		stream: `/files/${track.sourceFileId}/stream`
 	});
 	

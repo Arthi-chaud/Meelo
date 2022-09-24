@@ -39,7 +39,7 @@ describe('Search Controller', () => {
 
 	const expectedSongResponse = (song: Song) => ({
 		...song,
-		illustration: `/illustrations/songs/${song.id}`
+		illustration: null
 	});
 
 	const expectedReleaseResponse = (release: Release) => ({

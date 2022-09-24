@@ -39,7 +39,7 @@ describe('Album Controller', () => {
 
 	const expectedSongResponse = (song: Song) => ({
 		...song,
-		illustration: `/illustrations/songs/${song.id}`
+		illustration: null
 	});
 
 	const expectedReleaseResponse = (release: Release) => ({
@@ -49,7 +49,7 @@ describe('Album Controller', () => {
 
 	const expectedTrackResponse = (track: Track) => ({
 		...track,
-		illustration: `/illustrations/tracks/${track.id}`,
+		illustration: null,
 		stream: `/files/${track.sourceFileId}/stream`
 	});
 

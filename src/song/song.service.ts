@@ -14,6 +14,7 @@ import GenreQueryParameters from 'src/genre/models/genre.query-parameters';
 import RepositoryService from 'src/repository/repository.service';
 import type { MeeloException } from 'src/exceptions/meelo-exception';
 import { LyricsService } from 'src/lyrics/lyrics.service';
+import IllustrationService from 'src/illustration/illustration.service';
 
 @Injectable()
 export default class SongService extends RepositoryService<
@@ -37,6 +38,8 @@ export default class SongService extends RepositoryService<
 		private genreService: GenreService,
 		@Inject(forwardRef(() => LyricsService))
 		private lyricsService: LyricsService,
+		@Inject(forwardRef(() => IllustrationService))
+		private illustrationService: IllustrationService,
 	) {
 		super();
 	}
@@ -254,7 +257,7 @@ export default class SongService extends RepositoryService<
 	): Promise<T> {
 		let response: T = <T>{
 			...song,
-			illustration: `/illustrations/songs/${song.id}`
+			illustration: await this.illustrationService.getSongIllustrationLink(song.id)
 		};
 		if (song.tracks !== undefined)
 			response = {

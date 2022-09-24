@@ -6,6 +6,7 @@ import SongService from './song.service';
 import TrackModule from 'src/track/track.module';
 import GenreModule from 'src/genre/genre.module';
 import { LyricsModule } from 'src/lyrics/lyrics.module';
+import IllustrationModule from 'src/illustration/illustration.module';
 
 @Module({
 	imports: [
@@ -13,7 +14,8 @@ import { LyricsModule } from 'src/lyrics/lyrics.module';
 		forwardRef(() => LyricsModule),
 		forwardRef(() => ArtistModule),
 		forwardRef(() => TrackModule),
-		forwardRef(() => GenreModule)
+		forwardRef(() => GenreModule),
+		forwardRef(() => IllustrationModule)
 	],
 	exports: [SongService],
 	providers: [SongService],
