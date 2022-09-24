@@ -129,6 +129,19 @@ describe('Illustration Service', () => {
 			});
 		});
 
+		describe("Get Illustration Link", () => {
+			describe("Artist", () => {
+				it("should return the illustration link (artist)", () => {
+					jest.spyOn(IllustrationService.prototype as any, 'illustrationExists').mockReturnValueOnce(true);
+					expect(illustrationService.getArtistIllustrationLink(new Slug('artist'))).toBe("/illustrations/artists/artist");
+				});
+				it("should not return the illustration link (artist)", () => {
+					jest.spyOn(IllustrationService.prototype as any, 'illustrationExists').mockReturnValueOnce(false);
+					expect(illustrationService.getArtistIllustrationLink(new Slug('artist'))).toBeNull();
+				});
+			})
+		})
+
 		describe('Illustration extraction', () => {
 			const outPath = `${baseMetadataFolder}/illustration.jpg`;
 			it("should write data to file", async () => {

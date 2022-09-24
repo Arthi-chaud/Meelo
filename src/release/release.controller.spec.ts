@@ -378,7 +378,7 @@ describe('Release Controller', () => {
 						...expectedAlbumResponse(dummyRepository.albumB1),
 						artist: {
 							...dummyRepository.artistB,
-							illustration: `/illustrations/artists/${dummyRepository.artistB.id}`
+							illustration: null
 						}
 					});
 				});

@@ -366,4 +366,15 @@ export default class IllustrationService implements OnModuleInit {
 		});
 		return new StreamableFile(illustration);
 	}
+
+
+	/**
+	 * Builds the URL to the artist's illustration.
+	 * If there is no illustration, it will return null
+	 */
+	getArtistIllustrationLink(artistSlug: Slug): string | null {
+		if (this.illustrationExists(this.buildArtistIllustrationPath(artistSlug)))
+			return `/illustrations/artists/${artistSlug.toString()}`;
+		return null;
+	}
 }

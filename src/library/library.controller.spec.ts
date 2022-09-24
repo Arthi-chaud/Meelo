@@ -31,7 +31,7 @@ describe('Library Controller', () => {
 
 	const expectedArtistResponse = (artist: Artist) => ({
 		...artist,
-		illustration: `/illustrations/artists/${artist.id}`
+		illustration: null
 	});
 
 	const expectedAlbumResponse = (album: Album) => ({
@@ -210,7 +210,7 @@ describe('Library Controller', () => {
 					expect(artists.length).toBe(1);
 					expect(artists[0]).toStrictEqual({
 						...dummyRepository.artistA,
-						illustration: `/illustrations/artists/${dummyRepository.artistA.id}`
+						illustration: null
 					});
 				});
 		});
@@ -224,7 +224,7 @@ describe('Library Controller', () => {
 					expect(artists.length).toBe(1);
 					expect(artists[0]).toStrictEqual({
 						...dummyRepository.artistB,
-						illustration: `/illustrations/artists/${dummyRepository.artistB.id}`
+						illustration: null
 					});
 				});
 		});

@@ -34,7 +34,7 @@ describe("Genre Controller", () => {
 
 	const expectedArtistResponse = (artist: Artist) => ({
 		...artist,
-		illustration: `/illustrations/artists/${artist.id}`
+		illustration: null
 	});
 
 	const expectedAlbumResponse = (album: Album) => ({
