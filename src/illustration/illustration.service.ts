@@ -383,8 +383,9 @@ export default class IllustrationService implements OnModuleInit {
 	 * If there is no illustration, it will return null
 	 */
 	async getReleaseIllustrationLink(releaseId: number): Promise<string | null> {
-		if (this.illustrationExists(await this.releaseService.buildIllustrationPath({ byId: { id: releaseId } })))
+		if (this.illustrationExists(await this.releaseService.buildIllustrationPath({ byId: { id: releaseId } }))) {
 			return `/illustrations/releases/${releaseId}`;
+		}
 		return null;
 	}
 }

@@ -59,7 +59,7 @@ export default class ArtistController {
 			);
 		}
 		return new PaginatedResponse(
-			artists.map((artist) => this.artistService.buildResponse(artist)),
+			await Promise.all(artists.map((artist) => this.artistService.buildResponse(artist))),
 			request
 		);
 	}
@@ -75,7 +75,7 @@ export default class ArtistController {
 		include: ArtistQueryParameters.RelationInclude
 	) {
 		let artist = await this.artistService.get(where, include);
-		return this.artistService.buildResponse(artist);
+		return await this.artistService.buildResponse(artist);
 	}
 
 	@ApiOperation({
@@ -99,7 +99,9 @@ export default class ArtistController {
 		if (videoTracks.length == 0)
 			await this.artistService.throwIfNotExist(where);
 		return new PaginatedResponse(
-			videoTracks.map((videoTrack) => this.trackService.buildResponse(videoTrack)),
+			await Promise.all(videoTracks.map(
+				(videoTrack) => this.trackService.buildResponse(videoTrack)
+			)),
 			request
 		);
 	}
@@ -125,7 +127,7 @@ export default class ArtistController {
 		if (albums.length == 0)
 			await this.artistService.throwIfNotExist(where);
 		return new PaginatedResponse(
-			albums.map((album) => this.albumService.buildResponse(album)),
+			await Promise.all(albums.map((album) => this.albumService.buildResponse(album))),
 			request
 		);
 	}
@@ -151,7 +153,7 @@ export default class ArtistController {
 		if (songs.length == 0)
 			await this.artistService.throwIfNotExist(where);
 		return new PaginatedResponse(
-			songs.map((song) => this.songService.buildResponse(song)),
+			await Promise.all(songs.map((song) => this.songService.buildResponse(song))),
 			request
 		);
 	}

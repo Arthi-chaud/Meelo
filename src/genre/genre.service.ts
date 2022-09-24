@@ -210,14 +210,14 @@ export default class GenreService extends RepositoryService<
 		return genres;
 	}
 
-	buildResponse<ResponseType extends Genre>(genre: Genre & { songs?: Song[] }): ResponseType {
+	async buildResponse<ResponseType extends Genre>(genre: Genre & { songs?: Song[] }): Promise<ResponseType> {
 		let response = <ResponseType>genre;
 		if (genre.songs !== undefined)
 			response = {
 				...response,
-				songs: genre.songs.map(
+				songs: await Promise.all(genre.songs.map(
 					(song) => this.songService.buildResponse(song)
-				)
+				))
 			}
 		return response;
 	}

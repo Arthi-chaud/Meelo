@@ -47,7 +47,7 @@ describe('Artist Controller', () => {
 
 	const expectedReleaseResponse = (release: Release) => ({
 		...release,
-		illustration: `/illustrations/releases/${release.id}`
+		illustration: null
 	});
 
 	const expectedTrackResponse = (track: Track) => ({

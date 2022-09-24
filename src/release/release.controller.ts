@@ -42,9 +42,9 @@ export default class ReleaseController {
 			{}, paginationParameters, include, sortingParameter
 		);
 		return new PaginatedResponse(
-			releases.map(
+			await Promise.all(releases.map(
 				(release) => this.releaseService.buildResponse(release)
-			),
+			)),
 			request
 		);
 	}
@@ -60,7 +60,7 @@ export default class ReleaseController {
 		where: ReleaseQueryParameters.WhereInput
 	) {
 		const release = await this.releaseService.get(where, include);
-		return this.releaseService.buildResponse(release);
+		return await this.releaseService.buildResponse(release);
 	}
 
 	@ApiOperation({
@@ -84,9 +84,9 @@ export default class ReleaseController {
 		if (tracks.length == 0)
 			await this.releaseService.throwIfNotExist(where);
 		return new PaginatedResponse(
-			tracks.map(
+			await Promise.all(tracks.map(
 				(track) => this.trackService.buildResponse(track)
-			),
+			)),
 			request
 		);
 	}
@@ -102,7 +102,7 @@ export default class ReleaseController {
 		include?: TrackQueryParameters.RelationInclude
 	) {
 		const tracklist = await this.trackService.getTracklist(where, include);
-		return this.trackService.buildTracklistResponse(tracklist);
+		return await this.trackService.buildTracklistResponse(tracklist);
 	}
 
 	@ApiOperation({
@@ -118,7 +118,7 @@ export default class ReleaseController {
 		include?: TrackQueryParameters.RelationInclude
 	) {
 		const tracklist = await this.trackService.getPlaylist(where, include, random);
-		return tracklist.map((track) => this.trackService.buildResponse(track));
+		return await Promise.all(tracklist.map((track) => this.trackService.buildResponse(track)));
 	}
 
 	@ApiOperation({
@@ -135,7 +135,7 @@ export default class ReleaseController {
 		const album = await this.albumService.get({
 			byId: { id: (await release).albumId }
 		}, include);
-		return this.albumService.buildResponse(album);
+		return await this.albumService.buildResponse(album);
 
 	}
 
@@ -146,7 +146,7 @@ export default class ReleaseController {
 	async reassignTrack(
 		@Body() reassignmentDTO: ReassignReleaseDTO
 	) {
-		return this.releaseService.buildResponse(
+		return await this.releaseService.buildResponse(
 			await this.releaseService.reassign(
 			{ byId: { id: reassignmentDTO.releaseId }},
 			{ byId: { id: reassignmentDTO.albumId }}

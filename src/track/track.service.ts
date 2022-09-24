@@ -426,9 +426,9 @@ export default class TrackService extends RepositoryService<
 		);
 	}
 
-	buildResponse<ResponseType extends Track & { illustration: string, stream: string }>(
+	async buildResponse<ResponseType extends Track & { illustration: string, stream: string }>(
 		track: Track & Partial<{ release: Release, song: Song }>
-	): ResponseType {
+	): Promise<ResponseType> {
 		let response = <ResponseType>{
 			...track,
 			illustration: `/illustrations/tracks/${track.id}`,
@@ -437,24 +437,24 @@ export default class TrackService extends RepositoryService<
 		if (track.release !== undefined)
 			response = {
 				...response,
-				release: this.releaseService.buildResponse(track.release)
+				release: await this.releaseService.buildResponse(track.release)
 			}
 		if (track.song != undefined)
 			response = {
 				...response,
-				song: this.songService.buildResponse(track.song)
+				song: await this.songService.buildResponse(track.song)
 			}
 		return response;
 	}
 
-	buildTracklistResponse(tracklist: Tracklist) {
+	async buildTracklistResponse(tracklist: Tracklist) {
 		let response = {};
-		tracklist.forEach((tracks, discIndex) => {
+		for (let [disc, tracks] of tracklist) {
 			response = {
 				...response,
-				[discIndex]: tracks.map((track) => this.buildResponse(track))
+				[disc]: await Promise.all(tracks.map((track) => this.buildResponse(track)))
 			}
-		});
+		}
 		return response;
 	} 
 }

@@ -154,7 +154,7 @@ describe('Track Controller', () => {
 						},
 						release: {
 							...dummyRepository.releaseA1_2,
-							illustration: `/illustrations/releases/${dummyRepository.releaseA1_2.id}`,
+							illustration: null
 						}
 					})
 				});

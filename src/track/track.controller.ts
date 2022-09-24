@@ -35,7 +35,7 @@ export class TrackController {
 			{}, paginationParameters, include, sortingParameter
 		);
 		return new PaginatedResponse(
-			tracks.map((track) => this.trackService.buildResponse(track)),
+			await Promise.all(tracks.map((track) => this.trackService.buildResponse(track))),
 			request
 		);
 	}
@@ -57,7 +57,7 @@ export class TrackController {
 			{ type: TrackType.Video }, paginationParameters, include, sortingParameter, 
 		);
 		return new PaginatedResponse(
-			videoTracks.map((videoTrack) => this.trackService.buildResponse(videoTrack)),
+			await Promise.all(videoTracks.map((videoTrack) => this.trackService.buildResponse(videoTrack))),
 			request
 		);
 	}
@@ -73,7 +73,7 @@ export class TrackController {
 		trackId: number
 	) {
 		const track = await this.trackService.get({ id: trackId }, include);
-		return this.trackService.buildResponse(track);
+		return await this.trackService.buildResponse(track);
 	}
 
 	@ApiOperation({
@@ -83,7 +83,7 @@ export class TrackController {
 	async reassignTrack(
 		@Body() reassignmentDTO: ReassignTrackDTO
 	) {
-		return this.trackService.buildResponse(
+		return await this.trackService.buildResponse(
 			await this.trackService.reassign(
 			{ id: reassignmentDTO.trackId },
 			{ byId: { id: reassignmentDTO.songId } }

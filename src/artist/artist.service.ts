@@ -248,9 +248,9 @@ export default class ArtistService extends RepositoryService<
 	 * @param artist the Artist to build the response from
 	 * @returns the response Object
 	 */
-	buildResponse<ResponseType extends Artist & { illustration: string }> (
+	async buildResponse<ResponseType extends Artist & { illustration: string }> (
 		artist: Artist & Partial<{ songs: Song[], albums: Album[] }>
-	): ResponseType {
+	): Promise<ResponseType> {
 		let response = <ResponseType>{
 			...artist,
 			illustration: this.illustrationService.getArtistIllustrationLink(new Slug(artist.slug))
@@ -258,16 +258,16 @@ export default class ArtistService extends RepositoryService<
 		if (artist.songs != undefined)
 			response = {
 				...response,
-				songs: artist.songs.map(
+				songs: await Promise.all(artist.songs.map(
 					(song) => this.songService.buildResponse(song)
-				)
+				))
 			}
 		if (artist.albums != undefined)
 			response = {
 				...response,
-				albums: artist.albums.map(
+				albums: await Promise.all(artist.albums.map(
 					(album) => this.albumService.buildResponse(album)
-				)
+				))
 			}
 		return response;
 	}

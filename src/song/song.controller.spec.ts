@@ -223,7 +223,7 @@ describe('Song Controller', () => {
 						song: expectedSongResponse(dummyRepository.songA1),
 						release: {
 							...dummyRepository.releaseA1_1,
-							illustration: `/illustrations/releases/${dummyRepository.releaseA1_1.id}`
+							illustration: null
 						}
 					});
 				});

@@ -131,13 +131,23 @@ describe('Illustration Service', () => {
 
 		describe("Get Illustration Link", () => {
 			describe("Artist", () => {
-				it("should return the illustration link (artist)", () => {
-					jest.spyOn(IllustrationService.prototype as any, 'illustrationExists').mockReturnValueOnce(true);
+				it("should return the illustration link", () => {
+					jest.spyOn(illustrationService, 'illustrationExists').mockReturnValueOnce(true);
 					expect(illustrationService.getArtistIllustrationLink(new Slug('artist'))).toBe("/illustrations/artists/artist");
 				});
-				it("should not return the illustration link (artist)", () => {
-					jest.spyOn(IllustrationService.prototype as any, 'illustrationExists').mockReturnValueOnce(false);
+				it("should not return the illustration link", () => {
+					jest.spyOn(illustrationService, 'illustrationExists').mockReturnValueOnce(false);
 					expect(illustrationService.getArtistIllustrationLink(new Slug('artist'))).toBeNull();
+				});
+			});
+			describe("Release", () => {
+				it("should return the illustration link", async () => {
+					jest.spyOn(illustrationService, 'illustrationExists').mockReturnValueOnce(true);
+					expect(await illustrationService.getReleaseIllustrationLink(dummyRepository.releaseA1_1.id)).toBe(`/illustrations/releases/${dummyRepository.releaseA1_1.id}`);
+				});
+				it("should not return the illustration link", async () => {
+					jest.spyOn(illustrationService, 'illustrationExists').mockReturnValueOnce(false);
+					expect(await illustrationService.getReleaseIllustrationLink(dummyRepository.releaseA1_1.id)).toBeNull();
 				});
 			})
 		})
@@ -223,6 +233,9 @@ describe('Illustration Service', () => {
 				expect(fs.readFileSync(trackIllustrationPath)).toStrictEqual(Buffer.from('ABCDEF'));
 				expect(fs.existsSync(releaseIllustrationPath)).toBe(true);
 				expect(fs.readFileSync(releaseIllustrationPath)).toStrictEqual(Buffer.from('ABCDE'));
+				fs.rmSync(releaseIllustrationPath);
+				fs.rmSync(trackIllustrationPath);
+				
 			});
 
 		});

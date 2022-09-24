@@ -249,9 +249,9 @@ export default class SongService extends RepositoryService<
 		}
 	}
 
-	buildResponse<T extends Song & { illustration: string }> (
+	async buildResponse<T extends Song & { illustration: string }> (
 		song: Song & Partial<{ tracks: Track[], artist: Artist }>
-	): T {
+	): Promise<T> {
 		let response: T = <T>{
 			...song,
 			illustration: `/illustrations/songs/${song.id}`
@@ -259,14 +259,14 @@ export default class SongService extends RepositoryService<
 		if (song.tracks !== undefined)
 			response = {
 				...response,
-				tracks: song.tracks.map(
+				tracks: await Promise.all(song.tracks.map(
 					(track) => this.trackService.buildResponse(track)
-				)
+				))
 			}
 		if (song.artist !== undefined)
 			response = {
 				...response,
-				artist: this.artistService.buildResponse(song.artist)
+				artist: await this.artistService.buildResponse(song.artist)
 			}
 		return response;
 	}

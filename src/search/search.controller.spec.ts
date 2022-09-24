@@ -44,7 +44,7 @@ describe('Search Controller', () => {
 
 	const expectedReleaseResponse = (release: Release) => ({
 		...release,
-		illustration: `/illustrations/releases/${release.id}`
+		illustration: null
 	});
 
 	

@@ -32,7 +32,7 @@ describe('Release Controller', () => {
 
 	const expectedReleaseResponse = (release: Release) => ({
 		...release,
-		illustration: `/illustrations/releases/${release.id}`
+		illustration: null
 	});
 	const expectedAlbumResponse = (album: Album) => ({
 		...album,
