@@ -22,9 +22,7 @@ const Player = () => {
 		setProgress(0);
 		if (currentTrack) {
 			const newAudio = new Audio(API.getStreamURL(currentTrack.track.stream));
-			if (playing !== false) {
-				newAudio.play().then(() => setPlaying(true));
-			}
+			newAudio.play().then(() => setPlaying(true));
 			audio.current = newAudio;
 			interval.current = setInterval(() => {
 				if (audio.current?.ended) {
