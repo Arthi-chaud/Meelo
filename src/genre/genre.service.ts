@@ -2,154 +2,99 @@ import { forwardRef, Inject, Injectable, Logger } from '@nestjs/common';
 import PrismaService from 'src/prisma/prisma.service';
 import Slug from 'src/slug/slug';
 import { GenreAlreadyExistsException, GenreNotFoundByIdException, GenreNotFoundException } from './genre.exceptions';
-import GenreQueryParameters from './models/genre.query-parameters';
-import { buildSortingParameter } from 'src/sort/models/sorting-parameter';
-import { type PaginationParameters, buildPaginationParameters } from 'src/pagination/models/pagination-parameters';
-import type { Genre, Song } from '@prisma/client';
+import type GenreQueryParameters from './models/genre.query-parameters';
+import type { Genre, Prisma, Song } from '@prisma/client';
 import SongService from 'src/song/song.service';
 import RepositoryService from 'src/repository/repository.service';
 import type { MeeloException } from 'src/exceptions/meelo-exception';
 import type SongQueryParameters from "../song/models/song.query-params";
+import { buildStringSearchParameters } from 'src/utils/search-string-input';
+import ArtistService from 'src/artist/artist.service';
 
 @Injectable()
 export default class GenreService extends RepositoryService<
 	Genre,
+	{ songs: Song[] },
 	GenreQueryParameters.CreateInput,
 	GenreQueryParameters.WhereInput,
 	GenreQueryParameters.ManyWhereInput,
 	GenreQueryParameters.UpdateInput,
 	GenreQueryParameters.DeleteInput,
-	GenreQueryParameters.RelationInclude,
-	GenreQueryParameters.SortingParameter,
-	Genre
+	Prisma.GenreCreateInput,
+	Prisma.GenreWhereInput,
+	Prisma.GenreWhereInput,
+	Prisma.GenreUpdateInput,
+	Prisma.GenreWhereUniqueInput
 > {
 	constructor(
-		private prismaService: PrismaService,
+		prismaService: PrismaService,
 		@Inject(forwardRef(() => SongService))
 		private songService: SongService,
 	) {
-		super ();
+		super (prismaService.genre);
 	}
-
 	/**
-	 * Create a genre, and saves it in th"e database
-	 * @param genre the album object to save
-	 * @param include the relation to include in the returned value
-	 * @returns the saved genre
+	 * Create
 	 */
-	async create(
-		genre: GenreQueryParameters.CreateInput,
-		include?: GenreQueryParameters.RelationInclude
-	) {
-		const genreSlug = new Slug(genre.name);
-		try {
-			return await this.prismaService.genre.create({
-				data: {
-					...genre,
-					slug: genreSlug.toString()
-				},
-				include: GenreQueryParameters.buildIncludeParameters(include)
-			});
-		} catch {
-			throw new GenreAlreadyExistsException(genreSlug);
+	formatCreateInput(input: GenreQueryParameters.CreateInput): Prisma.GenreCreateInput {
+		return {
+			...input,
+			slug: new Slug(input.name).toString()
 		}
+	}
+	protected formatCreateInputToWhereInput(input: GenreQueryParameters.CreateInput): GenreQueryParameters.WhereInput {
+		return { slug: new Slug(input.name) }
+	}
+	protected onCreationFailure(input: GenreQueryParameters.CreateInput) {
+		return new GenreAlreadyExistsException(new Slug(input.name));
 	}
 
 	/**
 	 * Find a genre
-	 * @param where the parameters to find the genre
-	 * @param include the relations to include
 	 */
-	 async get(
-		where: GenreQueryParameters.WhereInput,
-		include?: GenreQueryParameters.RelationInclude
-	) {
-		try {
-			return await this.prismaService.genre.findFirst({
-				rejectOnNotFound: true,
-				where: {
-					...where,
-					slug: where?.slug?.toString()
-				},
-				include: GenreQueryParameters.buildIncludeParameters(include)
-			});
-		} catch {
-			throw this.onNotFound(where);
+	static formatWhereInput(input: GenreQueryParameters.WhereInput) {
+		return {
+			...input,
+			slug: input?.slug?.toString()
 		}
 	}
-	
+	formatWhereInput = GenreService.formatWhereInput;
+
+	static formatManyWhereInput(where: GenreQueryParameters.ManyWhereInput) {
+		return {
+			name: where.byName
+				? buildStringSearchParameters(where.byName)
+				: undefined,
+			songs: where.bySong || where.byArtist ? {
+				some: where.bySong
+					? SongService.formatWhereInput(where.bySong)
+					: where.byArtist
+						? { artist: ArtistService.formatWhereInput(where.byArtist) }
+						: undefined
+			} : undefined,
+			
+		}
+	}
+	formatManyWhereInput = GenreService.formatManyWhereInput;
+
 	/**
-	 * Find a genre and only return specified fields
-	 * @param where the parameters to find the genre 
-	 * @param select the fields to return
-	 * @returns the select fields of an object
+	 * Update a genre
 	 */
-	async select(
-		where: GenreQueryParameters.WhereInput,
-		select: Partial<Record<keyof Genre, boolean>>
-	): Promise<Partial<Genre>> {
-		try {
-			return await this.prismaService.genre.findFirst({
-				rejectOnNotFound: true,
-				where: GenreQueryParameters.buildQueryParametersForOne(where),
-				select: select
-			});
-		} catch {
-			throw this.onNotFound(where);
+	formatUpdateInput(what: GenreQueryParameters.CreateInput) {
+		return {
+			...what,
+			slug: new Slug(what.name).toString(),
 		}
 	}
 
 	/**
-	 * Find multiple genres
-	 * @param where the parameters to find the genres
-	 * @param pagination the pagination paramters to filter entries
-	 * @param include the relations to include
+	 * Delete a genre
 	 */
-	async getMany(
-		where: GenreQueryParameters.ManyWhereInput,
-		pagination?: PaginationParameters,
-		include?: GenreQueryParameters.RelationInclude,
-		sort?: GenreQueryParameters.SortingParameter
-	) {
-		return this.prismaService.genre.findMany({
-			where: GenreQueryParameters.buildQueryParametersForMany(where),
-			include: GenreQueryParameters.buildIncludeParameters(include),
-			orderBy: buildSortingParameter(sort),
-			...buildPaginationParameters(pagination)
-		});
+	formatDeleteInput(where: GenreQueryParameters.WhereInput) {
+		return this.formatWhereInput(where);
 	}
-
-	/**
-	 * Count the genres that match the query parameters
-	 * @param where the query parameters
-	 */
-	async count(where: GenreQueryParameters.ManyWhereInput): Promise<number> {
-		return this.prismaService.genre.count({
-			where: GenreQueryParameters.buildQueryParametersForMany(where)
-		});
-	}
-
-	/**
-	 * Updates a genre in the database
-	 * @param what the fields to update
-	 * @param where the query parameters to find the genre to update
-	 * @returns the updated genre
-	 */
-	async update(
-		what: GenreQueryParameters.UpdateInput,
-		where: GenreQueryParameters.WhereInput
-	): Promise<Genre> {
-		try {
-			return await this.prismaService.genre.update({
-				data: {
-					...what,
-					slug: new Slug(what.name).toString(),
-				},
-				where: GenreQueryParameters.buildQueryParametersForOne(where)
-			});
-		} catch {
-			throw this.onNotFound(where);
-		}
+	protected formatDeleteInputToWhereInput(input: GenreQueryParameters.WhereInput) {
+		return input;
 	}
 
 	/**
@@ -157,42 +102,20 @@ export default class GenreService extends RepositoryService<
 	 * @param where the query parameter to find the genre to delete
 	 */
 	async delete(where: GenreQueryParameters.DeleteInput): Promise<Genre> {
-		try {
-			const genre = await this.prismaService.genre.delete({
-				where: GenreQueryParameters.buildQueryParametersForOne(where),
-			});
-			Logger.warn(`Genre '${genre.slug}' deleted`);
-			return genre;
-		} catch {
-			throw this.onNotFound(where);
-		}
+		const deleted = await super.delete(where);
+		Logger.warn(`Genre '${deleted.slug}' deleted`);
+		return deleted;
 	}
-
 	/**
-	 * Deletes a genre
+	 * Deletes a genre, if empty
 	 * @param where the query parameter to find the genre to delete
 	 */
-	 async deleteIfEmpty(where: GenreQueryParameters.DeleteInput): Promise<void> {
+	async deleteIfEmpty(where: GenreQueryParameters.DeleteInput): Promise<void> {
 		const songCount = await this.songService.count({
 			genre: where
 		});
 		if (songCount == 0)
 			await this.delete(where);
-	}
-
-	/**
-	 * Find a genre by its name, or creates one if not found
-	 * @param where the query parameters to find / create the genre
-	 */
-	async getOrCreate(
-		where: GenreQueryParameters.GetOrCreateInput,
-		include?: GenreQueryParameters.RelationInclude
-	) {
-		try {
-			return await this.get({ slug: new Slug(where.name) }, include);
-		} catch {
-			return this.create(where, include);
-		}
 	}
 
 	/**
@@ -206,7 +129,7 @@ export default class GenreService extends RepositoryService<
 	) {
 		const genres = await this.getMany({ bySong: where }, {}, include, sort);
 		if (genres.length == 0)
-			await this.songService.throwIfNotExist(where);
+			await this.songService.throwIfNotFound(where);
 		return genres;
 	}
 
