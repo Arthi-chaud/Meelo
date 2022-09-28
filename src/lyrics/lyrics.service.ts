@@ -1,156 +1,94 @@
 import { forwardRef, Inject, Injectable, Logger } from '@nestjs/common';
-import type { Lyrics, Song } from '@prisma/client';
+import type { Lyrics, Prisma, Song } from '@prisma/client';
 const { getLyrics } = require('genius-lyrics-api');
-import { InvalidRequestException, MeeloException } from 'src/exceptions/meelo-exception';
-import type { PaginationParameters } from 'src/pagination/models/pagination-parameters';
+import type { MeeloException } from 'src/exceptions/meelo-exception';
 import PrismaService from 'src/prisma/prisma.service';
 import RepositoryService from 'src/repository/repository.service';
 import Slug from 'src/slug/slug';
 import type SongQueryParameters from 'src/song/models/song.query-params';
 import SongService from 'src/song/song.service';
 import { LyricsAlreadyExistsExceptions, LyricsNotFoundByIDException, LyricsNotFoundBySongException, MissingGeniusAPIKeyException, NoLyricsFoundException } from './lyrics.exceptions';
-import LyricsQueryParameters from './models/lyrics.query-parameters';
+import type LyricsQueryParameters from './models/lyrics.query-parameters';
 
 @Injectable()
 export class LyricsService extends RepositoryService<
 	Lyrics,
+	{ song: Song },
 	LyricsQueryParameters.CreateInput,
 	LyricsQueryParameters.WhereInput,
-	{},
+	LyricsQueryParameters.ManyWhereInput,
 	LyricsQueryParameters.UpdateInput,
 	LyricsQueryParameters.DeleteInput,
-	LyricsQueryParameters.RelationInclude,
-	{},
-	{ lyrics: string, song?: Song}
+	Prisma.LyricsCreateInput,
+	Prisma.LyricsWhereInput,
+	Prisma.LyricsWhereInput,
+	Prisma.LyricsUpdateInput,
+	Prisma.LyricsWhereUniqueInput
 > {
 	private readonly geniusApiKey: string | null;
 	constructor(
-		private prismaService: PrismaService,
+		prismaService: PrismaService,
 		@Inject(forwardRef(() => SongService))
 		private songService: SongService,
 	) {
-		super();
+		super(prismaService.lyrics);
 		this.geniusApiKey = process.env.GENIUS_ACCESS_TOKEN ?? null
 	}
 
 	/**
-	 * Add new lyrics for a song
-	 * @param lyrics the query parameters to create the lyrics
-	 * @param include the relation to include in the returned lyrics
-	 * @returns the newly created lyrics 
+	 * Create
 	 */
-	async create(
-		lyrics: LyricsQueryParameters.CreateInput,
-		include?: Partial<Record<'song', boolean>>
-	): Promise<Lyrics> {
-		try {
-			return await this.prismaService.lyrics.create({
-				data: {
-					...lyrics,
-				},
-				include: LyricsQueryParameters.buildIncludeParameters(include)
-			});
-		} catch {
-			const parentSong = await this.songService.get({ byId: { id: lyrics.songId }});
-			throw new LyricsAlreadyExistsExceptions(new Slug(parentSong.slug));
-		}
+	formatCreateInput(input: LyricsQueryParameters.CreateInput) {
+		return { ...input, song: { connect: { id: input.songId } } };
 	}
-	async get(
-		where: LyricsQueryParameters.WhereInput,
-		include?: LyricsQueryParameters.RelationInclude
-	): Promise<Lyrics> {
-		try {
-			return await this.prismaService.lyrics.findFirst({
-				rejectOnNotFound: true,
-				where: LyricsQueryParameters.buildQueryParametersForOne(where),
-				include: LyricsQueryParameters.buildIncludeParameters(include)
-			})
-		} catch {
-			throw await this.onNotFound(where);
-		}
+	protected formatCreateInputToWhereInput(input: LyricsQueryParameters.CreateInput) {
+		return { song: { byId: { id: input.songId } } };
+	}
+	protected async onCreationFailure(input: LyricsQueryParameters.CreateInput) {
+		const parentSong = await this.songService.get({ byId: { id: input.songId }});
+		return new LyricsAlreadyExistsExceptions(new Slug(parentSong.slug));
 	}
 
 	/**
-	 * Find lyrics and only return specified fields
-	 * @param where the parameters to find the lyrics 
-	 * @param select the fields to return
-	 * @returns the select fields of an object
+	 * Get
 	 */
-	async select(
-		where: LyricsQueryParameters.WhereInput,
-		select: Partial<Record<keyof Lyrics, boolean>>
-	): Promise<Partial<Lyrics>> {
-		try {
-			return await this.prismaService.lyrics.findFirst({
-				rejectOnNotFound: true,
-				where: LyricsQueryParameters.buildQueryParametersForOne(where),
-				select: select
-			});
-		} catch {
-			throw await this.onNotFound(where);
+	static formatWhereInput(input: LyricsQueryParameters.WhereInput) {
+		return {
+			id: input.id,
+			song: input.song ?
+				SongService.formatWhereInput(input.song)
+			: undefined,
 		}
 	}
+	formatWhereInput = LyricsService.formatWhereInput;
 
+	static formatManyWhereInput(input: LyricsQueryParameters.ManyWhereInput) {
+		return {
+			song: SongService.formatManyWhereInput(input.bySongs)
+		}
+	}
+	formatManyWhereInput = LyricsService.formatManyWhereInput;
 
-	async getMany(
-		_where: {},
-		_pagination?: PaginationParameters,
-		_include?: Partial<Record<'song', boolean>>,
-		_sort?: {}
-	): Promise<Lyrics[]> {
-		throw new InvalidRequestException('Method not implemented.');
-	}
-	async count(_where: {}): Promise<number> {
-		throw new InvalidRequestException('Method not implemented.');
-	}
-	async update(
-		what: LyricsQueryParameters.UpdateInput,
-		where: LyricsQueryParameters.WhereInput
-	): Promise<Lyrics> {
-		const lyrics = await this.get(where);
-		try {
-			return await this.prismaService.lyrics.update({
-				where: {
-					id: lyrics.id
-				},
-				data: {
-					content: what.content
-				}
-			});
-		} catch {
-			throw await this.onNotFound(where);
-		}
-	}
 	/**
-	 * Delete a lyric to a song in the database
+	 * Update
 	 */
-	async delete(where: LyricsQueryParameters.DeleteInput): Promise<Lyrics> {
-		try {
-			return await this.prismaService.lyrics.delete({
-				where: where
-			});
-		} catch {
-			if (where.id !== undefined)
-				throw await this.onNotFound({ id: where.id })
-			else {
-				throw await this.onNotFound({
-					song: { byId: { id: where.songId }},
-				});
-			}
+	formatUpdateInput(what: LyricsQueryParameters.UpdateInput) {
+		return  {
+			content: what.content
 		}
 	}
+	
 	/**
-	 * Get a lyric entry, or create one if it does not exists
+	 * Delete
 	 */
-	async getOrCreate(
-		input: LyricsQueryParameters.GetOrCreateInput,
-		include?: LyricsQueryParameters.RelationInclude
-	): Promise<Lyrics> {
-		try {
-			return await this.get({ song: { byId: { id: input.songId } } }, include);
-		} catch {
-			return this.create(input, include);
-		}
+	async onDeletionFailure(where: LyricsQueryParameters.DeleteInput) {
+		if (where.id !== undefined)
+			return await this.onNotFound({ id: where.id })
+		else {
+			return await this.onNotFound({
+				song: { byId: { id: where.songId }},
+			});
+		} 
 	}
 
 	async buildResponse(input: Lyrics & { song?: Song }): Promise<{ lyrics: string, song?: Song }> {
@@ -159,16 +97,31 @@ export class LyricsService extends RepositoryService<
 			response.song = await this.songService.buildResponse(input.song)
 		return response;
 	}
+	formatDeleteInput(where: LyricsQueryParameters.DeleteInput) {
+		return {
+			id: where.id,
+			song: where.songId ? {
+				connect: {
+					id: where.songId
+				}
+			} : undefined
+		};
+	}
+	protected formatDeleteInputToWhereInput(input: LyricsQueryParameters.DeleteInput): LyricsQueryParameters.WhereInput {
+		if (input.id)
+			return { id: input.id }
+		return { song: { byId: { id: input.songId! }} }
+	}
 
 	/**
 	 * Returns an exception for when a lyric is not found in the database
 	 * @param where the queryparameters used to find the lyrics
 	 */
-	protected async onNotFound(
+	async onNotFound(
 		where: LyricsQueryParameters.WhereInput
 	): Promise<MeeloException> {
 		if (where.song) {
-			await this.songService.throwIfNotExist(where.song);
+			await this.songService.throwIfNotFound(where.song);
 			throw new LyricsNotFoundBySongException(where.song.byId?.id ?? where.song.bySlug!.slug);
 		}
 		throw new LyricsNotFoundByIDException(where.id);
