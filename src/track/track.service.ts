@@ -1,38 +1,40 @@
 import { forwardRef, Inject, Injectable, Logger } from '@nestjs/common';
 import PrismaService from 'src/prisma/prisma.service';
-import { Release, Song, Track, TrackType } from '@prisma/client';
+import { Prisma, Release, Song, Track, TrackType } from '@prisma/client';
 import SongService from 'src/song/song.service';
 import { MasterTrackNotFoundException, TrackAlreadyExistsException, TrackNotFoundByIdException } from './track.exceptions';
 import ReleaseService from 'src/release/release.service';
-import TrackQueryParameters from './models/track.query-parameters';
-import FileQueryParameters from 'src/file/models/file.query-parameters';
-import ReleaseQueryParameters from 'src/release/models/release.query-parameters';
-import SongQueryParameters from 'src/song/models/song.query-params';
+import type TrackQueryParameters from './models/track.query-parameters';
+import type ReleaseQueryParameters from 'src/release/models/release.query-parameters';
+import type SongQueryParameters from 'src/song/models/song.query-params';
 import FileService from 'src/file/file.service';
 import Slug from 'src/slug/slug';
 import { FileNotFoundFromIDException, FileNotFoundFromPathException } from 'src/file/file.exceptions';
-import { type PaginationParameters, buildPaginationParameters } from 'src/pagination/models/pagination-parameters';
-import { InvalidRequestException, MeeloException } from 'src/exceptions/meelo-exception';
+import type { PaginationParameters } from 'src/pagination/models/pagination-parameters';
+import type { MeeloException } from 'src/exceptions/meelo-exception';
 import type Tracklist from './models/tracklist.model';
 import { UnknownDiscIndexKey } from './models/tracklist.model';
-import { buildSortingParameter } from 'src/sort/models/sorting-parameter';
 import RepositoryService from 'src/repository/repository.service';
 import { shuffle } from '@taumechanica/stout';
 import type { IllustrationPath } from 'src/illustration/models/illustration-path.model';
 import AlbumService from 'src/album/album.service';
 import IllustrationService from 'src/illustration/illustration.service';
+import LibraryService from 'src/library/library.service';
 
 @Injectable()
 export default class TrackService extends RepositoryService<
 	Track,
+	{ song: Song, release: Release },
 	TrackQueryParameters.CreateInput,
 	TrackQueryParameters.WhereInput,
 	TrackQueryParameters.ManyWhereInput,
 	TrackQueryParameters.UpdateInput,
 	TrackQueryParameters.DeleteInput,
-	TrackQueryParameters.RelationInclude,
-	TrackQueryParameters.SortingParameter,
-	Track & { illustration: string, stream: string }
+	Prisma.TrackCreateInput,
+	Prisma.TrackWhereInput,
+	Prisma.TrackWhereInput,
+	Prisma.TrackUpdateInput,
+	Prisma.TrackWhereUniqueInput
 >{
 	constructor(
 		@Inject(forwardRef(() => SongService))
@@ -46,105 +48,110 @@ export default class TrackService extends RepositoryService<
 		private fileService: FileService,
 		private prismaService: PrismaService,
 	) {
-		super();
+		super(prismaService.track);
 	}
+
 	/**
-	 * Create a Track, and saves it in the database
-	 * @param track the parameters to build the track
-	 * @param include the relation fields to include in the returned object
-	 * @returns the created song
+	 * Create
 	 */
-	async create(
-		track: TrackQueryParameters.CreateInput,
-		include?: TrackQueryParameters.RelationInclude
-	) {
-		try {
-			return await this.prismaService.track.create({
-				data: {
-					...track,
-					song: {
-						connect: SongQueryParameters.buildQueryParametersForOne(track.song)
-					},
-					release: {
-						connect: ReleaseQueryParameters.buildQueryParametersForOne(track.release)
-					},
-					sourceFile: {
-						connect: FileQueryParameters.buildQueryParametersForOne(track.sourceFile)
-					}
-				},
-				include
-			});
-		} catch {
-			const parentSong = await this.songService.get(track.song, { artist: true });
-			const parentRelease = await this.releaseService.get(track.release);
-			await this.fileService.throwIfNotExist(track.sourceFile);
-			throw new TrackAlreadyExistsException(
-				track.name,
-				new Slug(parentRelease.slug),
-				new Slug(parentSong.artist.slug)
+	formatCreateInput(input: TrackQueryParameters.CreateInput) {
+		return {
+			...input,
+			song: {
+				connect: SongService.formatWhereInput(input.song)
+			},
+			release: {
+				connect: ReleaseService.formatWhereInput(input.release)
+			},
+			sourceFile: {
+				connect: FileService.formatWhereInput(input.sourceFile)
+			}
+		}
+	}
+	protected async onCreationFailure(input: TrackQueryParameters.CreateInput) {
+		const parentSong = await this.songService.get(input.song, { artist: true });
+		const parentRelease = await this.releaseService.get(input.release);
+		await this.fileService.throwIfNotFound(input.sourceFile);
+		return new TrackAlreadyExistsException(
+			input.name,
+			new Slug(parentRelease.slug),
+			new Slug(parentSong.artist.slug)
+		);	
+	}
+	protected formatCreateInputToWhereInput(input: TrackQueryParameters.CreateInput): TrackQueryParameters.WhereInput {
+		return input;
+	}
+
+	/**
+	 * Get
+	 */
+	static formatWhereInput(where: TrackQueryParameters.WhereInput) {
+		return {
+			id: where.id,
+			master: where.masterOfSong ? true : undefined,
+			song: where.masterOfSong ?
+				SongService.formatWhereInput(where.masterOfSong)
+			: undefined,
+			sourceFile: where.sourceFile ?
+				FileService.formatWhereInput(where.sourceFile)
+			: undefined
+		}
+	}
+	formatWhereInput = TrackService.formatWhereInput;
+
+	static formatManyWhereInput(where: TrackQueryParameters.ManyWhereInput): Prisma.TrackWhereInput {
+		let queryParameters: Prisma.TrackWhereInput = {
+			type: where.type,
+			song: where.bySong ? SongService.formatWhereInput(where.bySong) : undefined,
+			sourceFile: where.byLibrarySource ? {
+				library: LibraryService.formatWhereInput(where.byLibrarySource)
+			} : undefined,
+		};
+		if (where.byRelease) {
+			queryParameters = {
+				...queryParameters,
+				release: ReleaseService.formatWhereInput(where.byRelease)
+			}
+		}
+		if (where.byAlbum) {
+			queryParameters = {
+				...queryParameters,
+				release: {
+					album: AlbumService.formatWhereInput(where.byAlbum!)	
+				}
+			}
+		}
+		if (where.byArtist) {
+			queryParameters = {
+				...queryParameters,
+				release: {
+					album: AlbumService.formatManyWhereInput({ byArtist: where.byArtist })
+				}
+			}
+		}
+		return queryParameters; 
+	}
+	formatManyWhereInput = TrackService.formatManyWhereInput;
+
+	/**
+	 * Callback on track not found
+	 * @param where the query parameters that failed to get the release
+	 */
+	async onNotFound(where: TrackQueryParameters.WhereInput): Promise<MeeloException> {
+		if (where.id !== undefined)
+			throw new TrackNotFoundByIdException(where.id);
+		if (where.masterOfSong) {
+			const parentSong = await this.songService.get(where.masterOfSong, { artist: true });
+			throw new MasterTrackNotFoundException(
+				new Slug(parentSong.slug),
+				new Slug(parentSong.artist!.slug)
 			);
-		}
-	}
-	/**
-	 * Finds a track in the database
-	 * @param where the query parameters to find the track
-	 * @param include the relations to include in the returned value
-	 */
-	async get(
-		where: TrackQueryParameters.WhereInput,
-		include?: TrackQueryParameters.RelationInclude
-	) {
-		try {
-			return await this.prismaService.track.findFirst({
-				rejectOnNotFound: true,
-				where: TrackQueryParameters.buildQueryParametersForOne(where),
-				include: TrackQueryParameters.buildIncludeParameters(include)
-			});
-		} catch {
-			throw await this.onNotFound(where);
-		}
+		} 
+		if (where.sourceFile.id !== undefined)
+			throw new FileNotFoundFromIDException(where.sourceFile.id);
+		throw new FileNotFoundFromPathException(where.sourceFile.byPath!.path);
 	}
 
-	/**
-	 * Find track and only return specified fields
-	 * @param where the parameters to find the track 
-	 * @param select the fields to return
-	 * @returns the select fields of an object
-	 */
-	async select(
-		where: TrackQueryParameters.WhereInput,
-		select: Partial<Record<keyof Track, boolean>>
-	): Promise<Partial<Track>> {
-		try {
-			return await this.prismaService.track.findFirst({
-				rejectOnNotFound: true,
-				where: TrackQueryParameters.buildQueryParametersForOne(where),
-				select: select
-			});
-		} catch {
-			throw await this.onNotFound(where);
-		}
-	}
-
-	/**
-	 * Find tracks
-	 * @param where the query parameters to find the tracks
-	 * @param include the relation fields to includes
-	 * @returns an array of tracks
-	 */
-	async getMany(
-		where: TrackQueryParameters.ManyWhereInput,
-		pagination?: PaginationParameters,
-		include?: TrackQueryParameters.RelationInclude,
-		sort?: TrackQueryParameters.SortingParameter
-	) {
-		return this.prismaService.track.findMany({
-			where: TrackQueryParameters.buildQueryParametersForMany(where),
-			include: TrackQueryParameters.buildIncludeParameters(include),
-			orderBy: buildSortingParameter(sort),
-			...buildPaginationParameters(pagination)
-		});
-	}
 
 	/**
 	 * Fetch the tracks from a song
@@ -167,7 +174,7 @@ export default class TrackService extends RepositoryService<
 			sort
 		);
 		if (tracks.length == 0)
-			await this.songService.throwIfNotExist(where);
+			await this.songService.throwIfNotFound(where);
 		return tracks;
 	}
 
@@ -200,7 +207,7 @@ export default class TrackService extends RepositoryService<
 		let tracklist: Tracklist = new Map();
 		const tracks = await this.getMany({ byRelease: where }, {}, include, { sortBy: 'trackIndex', order: 'asc' });
 		if (tracks.length == 0)
-			await this.releaseService.throwIfNotExist(where);
+			await this.releaseService.throwIfNotFound(where);
 		tracks.forEach((track) => {
 			const indexToString = track.discIndex?.toString() ?? UnknownDiscIndexKey;
 			tracklist = tracklist.set(indexToString, [ ...tracklist.get(indexToString) ?? [], track]);
@@ -227,13 +234,21 @@ export default class TrackService extends RepositoryService<
 	}
 
 	/**
-	 * Count the tracks that match the query parameters
-	 * @param where the query parameters
+	 * Update
 	 */
-	async count(where: TrackQueryParameters.ManyWhereInput): Promise<number> {
-		return this.prismaService.track.count({
-			where: TrackQueryParameters.buildQueryParametersForMany(where)
-		});
+	formatUpdateInput(what: Partial<TrackQueryParameters.CreateInput>): Prisma.TrackUpdateInput {
+		return {
+			...what,
+			song: what.song ? {
+				connect: SongService.formatWhereInput(what.song)
+			} : undefined,
+			release: what.release ? {
+				connect: ReleaseService.formatWhereInput(what.release)
+			} : undefined,
+			sourceFile: what.sourceFile ? {
+				connect: FileService.formatWhereInput(what.sourceFile)
+			} : undefined
+		}
 	}
 
 	/**
@@ -248,21 +263,7 @@ export default class TrackService extends RepositoryService<
 	) {
 		try {
 			const unmodifiedTrack = await this.get(where);
-			let updatedTrack = await this.prismaService.track.update({
-				data: {
-					...what,
-					song: what.song ? {
-						connect: SongQueryParameters.buildQueryParametersForOne(what.song)
-					} : undefined,
-					release: what.release ? {
-						connect: ReleaseQueryParameters.buildQueryParametersForOne(what.release)
-					} : undefined,
-					sourceFile: what.sourceFile ? {
-						connect: FileQueryParameters.buildQueryParametersForOne(what.sourceFile)
-					} : undefined
-				},
-				where: TrackQueryParameters.buildQueryParametersForOne(where),
-			});
+			let updatedTrack = await super.update(what, where);
 			const masterChangeInput: TrackQueryParameters.UpdateSongMaster = {
 				trackId: updatedTrack.id,
 				song: { byId: { id: updatedTrack.songId } }
@@ -279,14 +280,29 @@ export default class TrackService extends RepositoryService<
 	}
 
 	/**
+	 * Delete
+	 */
+	formatDeleteInput(where: TrackQueryParameters.DeleteInput) {
+		return where;
+	}
+	async onDeletionFailure(where: TrackQueryParameters.DeleteInput) {
+		if (where.id !== undefined)
+			return new TrackNotFoundByIdException(where.id);
+		return new FileNotFoundFromIDException(where.sourceFileId);
+	}
+	protected formatDeleteInputToWhereInput(input: TrackQueryParameters.DeleteInput) {
+		if (input.id)
+			return { id: input.id };
+		return { sourceFile: { id: input.sourceFileId! } }
+	}
+
+	/**
 	 * Deletes a track
 	 * @param where Query parameters to find the track to delete 
 	 */
 	async delete(where: TrackQueryParameters.DeleteInput, deleteParent: boolean = true): Promise<Track> {
 		try {
-			let deletedTrack = await this.prismaService.track.delete({
-				where: where,
-			});
+			let deletedTrack = await super.delete(where);
 			Logger.warn(`Track '${deletedTrack.name}' deleted`);
 			if (deletedTrack.master)
 				await this.unsetTrackAsMaster({
@@ -294,46 +310,13 @@ export default class TrackService extends RepositoryService<
 					song: { byId: { id: deletedTrack.songId } }
 				});
 			if (deleteParent) {
-				await this.songService.deleteIfEmpty({ byId: { id: deletedTrack.songId } });
+				await this.songService.deleteIfEmpty({ id: deletedTrack.songId });
 				await this.releaseService.deleteIfEmpty({ byId: { id: deletedTrack.releaseId } });
 			}
 			return deletedTrack;
 		} catch {
-			if (where.id !== undefined)
-				throw new TrackNotFoundByIdException(where.id);
-			throw new FileNotFoundFromIDException(where.sourceFileId);
+			throw this.onDeletionFailure(where);
 		}
-	}
-
-	/**
-	 * Finds a track, or creates one if it does not exist already
-	 * @param where where the query parameters to fond or create the track
-	 * @returns the fetched or created track
-	 */
-	getOrCreate(
-		_where: TrackQueryParameters.CreateInput,
-		_include?: TrackQueryParameters.RelationInclude
-	): Promise<Track> {
-		throw new InvalidRequestException("Method not implemented");
-	}
-
-	/**
-	 * Callback on track not found
-	 * @param where the query parameters that failed to get the release
-	 */
-	protected async onNotFound(where: TrackQueryParameters.WhereInput): Promise<MeeloException> {
-		if (where.id !== undefined)
-			throw new TrackNotFoundByIdException(where.id);
-		if (where.masterOfSong) {
-			const parentSong = await this.songService.get(where.masterOfSong, { artist: true });
-			throw new MasterTrackNotFoundException(
-				new Slug(parentSong.slug),
-				new Slug(parentSong.artist!.slug)
-			);
-		} 
-		if (where.sourceFile.id !== undefined)
-			throw new FileNotFoundFromIDException(where.sourceFile.id);
-		throw new FileNotFoundFromPathException(where.sourceFile.byPath!.path);
 	}
 
 	/**
@@ -406,7 +389,7 @@ export default class TrackService extends RepositoryService<
 			song: { byId: { id: newParent.id } },
 			master: newParent.tracks.length == 0
 		}, trackWhere);
-		await this.songService.deleteIfEmpty({ byId: { id: track.songId } });
+		await this.songService.deleteIfEmpty({ id: track.songId });
 		return updatedTrack;
 	}
 
