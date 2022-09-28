@@ -2,174 +2,88 @@ import { Injectable, StreamableFile } from '@nestjs/common';
 import FileManagerService from 'src/file-manager/file-manager.service';
 import { FileAlreadyExistsException, FileNotFoundFromIDException, FileNotFoundFromPathException, FileNotFoundFromTrackIDException, SourceFileNotFoundExceptions } from './file.exceptions';
 import PrismaService from 'src/prisma/prisma.service';
-import type { Library, File } from '@prisma/client';
-import FileQueryParameters from './models/file.query-parameters';
-import { type PaginationParameters, buildPaginationParameters } from 'src/pagination/models/pagination-parameters';
+import type { Library, File, Prisma, Track } from '@prisma/client';
+import type FileQueryParameters from './models/file.query-parameters';
 import { FileNotReadableException } from 'src/file-manager/file-manager.exceptions';
 import * as fs from 'fs';
 import path from 'path';
 import SettingsService from 'src/settings/settings.service';
 import RepositoryService from 'src/repository/repository.service';
 import type { MeeloException } from 'src/exceptions/meelo-exception';
+import { buildDateSearchParameters } from 'src/utils/search-date-input';
+import LibraryService from 'src/library/library.service';
+
 @Injectable()
 export default class FileService extends RepositoryService<
 	File,
+	{ track: Track, library: Library },
 	FileQueryParameters.CreateInput,
 	FileQueryParameters.WhereInput,
 	FileQueryParameters.ManyWhereInput,
 	FileQueryParameters.UpdateInput,
 	FileQueryParameters.DeleteInput,
-	FileQueryParameters.RelationInclude,
-	{},
-	File
+	Prisma.FileCreateInput,
+	Prisma.FileWhereInput,
+	Prisma.FileWhereInput,
+	Prisma.FileUpdateInput,
+	Prisma.FileWhereUniqueInput
 > {
 	constructor(
 		private prismaService: PrismaService,
 		private fileManagerService: FileManagerService,
 		private settingsService: SettingsService
 	) {
-		super();
+		super(prismaService.file);
+	}
+	/**
+	 * Create file
+	 */
+	formatCreateInput(input: FileQueryParameters.CreateInput) {
+		return { ...input, library: {
+			connect: { id: input.libraryId }
+		} };
+	}
+	protected formatCreateInputToWhereInput(input: FileQueryParameters.CreateInput): FileQueryParameters.WhereInput {
+		return { byPath: { path: input.path, library: { id: input.libraryId } } }
+	}
+	protected onCreationFailure(input: FileQueryParameters.CreateInput) {
+		return new FileAlreadyExistsException(input.path, input.libraryId)
 	}
 
 	/**
-	 * saves a File in the database
-	 * @param file the parameters needed to build & save the File
-	 * @param include the relation to include in the returned File
-	 * @returns the saved file
+	 * find a file
 	 */
-	async create(file: FileQueryParameters.CreateInput, include?: FileQueryParameters.RelationInclude): Promise<File> {
-		try {
-			return await this.prismaService.file.create({
-				data: file,
-				include: FileQueryParameters.buildIncludeParameters(include)
-			});
-		} catch {
-			throw new FileAlreadyExistsException(file.path, file.libraryId)
+	static formatWhereInput(where: FileQueryParameters.WhereInput) {
+		return {
+			id: where.id,
+			track: where.trackId ? {
+				id: where.trackId
+			} : undefined,
+			path: where.byPath?.path,
+			library: where.byPath
+				? LibraryService.formatWhereInput(where.byPath.library)
+				: undefined
+		};
+	}
+	formatWhereInput = FileService.formatWhereInput;
+
+	static formatManyWhereInput(where: FileQueryParameters.ManyWhereInput) {
+		return {
+			id: where.ids !== undefined ? {
+				in: where.ids
+			} : undefined,
+			library: where.library
+				? LibraryService.formatWhereInput(where.library)
+				: undefined,
+			path: where.paths !== undefined ? {
+				in: where.paths
+			} : undefined,
+			registerDate: where.byRegistrationDate
+				? buildDateSearchParameters(where.byRegistrationDate)
+				: undefined
 		}
 	}
-
-	/**
-	 * Retrives a file using query parameters
-	 * @param where the query parameters to find the file
-	 * @param include the relation to include in the returned object
-	 * @returns a File entry
-	 */
-	async get(where: FileQueryParameters.WhereInput, include?: FileQueryParameters.RelationInclude) {
-		try {
-			return await this.prismaService.file.findFirst({
-				rejectOnNotFound: true,
-				where: FileQueryParameters.buildQueryParametersForOne(where),
-				include: FileQueryParameters.buildIncludeParameters(include)
-			});
-		} catch {
-			throw this.onNotFound(where)
-		}
-	}
-
-	/**
-	 * Find a file and only return specified fields
-	 * @param where the parameters to find the file 
-	 * @param select the fields to return
-	 * @returns the select fields of an object
-	 */
-	async select(
-		where: FileQueryParameters.WhereInput,
-		select: Partial<Record<keyof File, boolean>>
-	): Promise<Partial<File>> {
-		try {
-			return await this.prismaService.file.findFirst({
-				rejectOnNotFound: true,
-				where: FileQueryParameters.buildQueryParametersForOne(where),
-				select: select
-			});
-		} catch {
-			throw this.onNotFound(where);
-		}
-	}
-
-	/**
-	 * Retrives multiple files using query parameters
-	 * @param where where the query parameters to find the file
-	 * @param pagination the pagination paramters to filter entries
-	 * @param include include the relation to include in the returned objects
-	 * @returns an array of File
-	 */
-	async getMany(where: FileQueryParameters.ManyWhereInput, pagination?: PaginationParameters, include?: FileQueryParameters.RelationInclude) {
-		return this.prismaService.file.findMany({
-			where: FileQueryParameters.buildQueryParametersForMany(where),
-			include: FileQueryParameters.buildIncludeParameters(include),
-			...buildPaginationParameters(pagination)
-		});
-	}
-
-	/**
-	 * Count the Files that matches the query parameters
-	 * @param where the parameters to compare the Files with
-	 * @returns the number of match
-	 */
-	async count(where: FileQueryParameters.ManyWhereInput): Promise<number> {
-		return this.prismaService.file.count({
-			where: FileQueryParameters.buildQueryParametersForMany(where)
-		});
-	}
-
-	/**
-	 * Update a File in the database
-	 * @param what the new values
-	 * @param where the parameters to get the Files to update
-	 * @returns the updated files
-	 */
-	async update(what: FileQueryParameters.UpdateInput, where: FileQueryParameters.WhereInput): Promise<File> {
-		try {
-			return await this.prismaService.file.update({
-				data: {...what},
-				where: FileQueryParameters.buildQueryParametersForOne(where)
-			});
-		} catch {
-			throw this.onNotFound(where);
-		}
-	}
-
-	/**
-	 * Delete a File in the database
-	 * @param where the parameters to get the file to delete
-	 * @returns an empty promise
-	 */
-	async delete(where: FileQueryParameters.DeleteInput): Promise<File> {
-		try {
-			return await this.prismaService.file.delete({
-				where: FileQueryParameters.buildQueryParametersForOne(where)
-			});
-		} catch {
-			throw this.onNotFound(where);
-		}
-		
-	}
-
-	/**
-	 * Delete multiple Files in the database
-	 * @param where the parameters to get the file to delete
-	 * @returns the number of deleted file
-	 */
-	async deleteMany(where: FileQueryParameters.ManyWhereInput): Promise<number> {
-		return (await this.prismaService.file.deleteMany({
-			where: FileQueryParameters.buildQueryParametersForMany(where)
-		})).count;
-	}
-
-	async getOrCreate(
-		input: FileQueryParameters.CreateInput,
-		include?: FileQueryParameters.RelationInclude
-	): Promise<File> {
-		try {
-			return await this.get({ byPath: { path: input.path, library: { id: input.libraryId } } }, include);
-		} catch {
-			return this.create(input, include)
-		}
-	}
-	async buildResponse(input: File): Promise<File> {
-		return input;
-	}
+	formatManyWhereInput = FileService.formatManyWhereInput;
 
 	onNotFound(where: FileQueryParameters.WhereInput): MeeloException {
 		if (where.id !== undefined)
@@ -178,6 +92,34 @@ export default class FileService extends RepositoryService<
 			return new FileNotFoundFromTrackIDException(where.trackId);
 		return new FileNotFoundFromPathException(where.byPath.path);
 	}
+
+	/**
+	 * Update a File
+	 */
+	formatUpdateInput(file: FileQueryParameters.UpdateInput) {
+		return file;
+	}
+
+	/**
+	 * Delete a File
+	 */
+	formatDeleteInput(where: FileQueryParameters.DeleteInput) {
+		return where;
+	}
+	protected formatDeleteInputToWhereInput(where: FileQueryParameters.DeleteInput) {
+		return where;
+	}
+
+	async deleteMany(where: FileQueryParameters.ManyWhereInput): Promise<number> {
+		return (await this.prismaService.file.deleteMany({
+			where: FileService.formatManyWhereInput(where)
+		})).count;
+	}
+
+	buildResponse(input: File): File {
+		return input;
+	}
+
 
 	/**
 	 * Register a file in the Database
