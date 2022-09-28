@@ -4,34 +4,37 @@ import FileService from 'src/file/file.service';
 import MetadataService from 'src/metadata/metadata.service';
 import Slug from 'src/slug/slug';
 import { LibraryAlreadyExistsException, LibraryNotFoundException, LibraryNotFoundFromIDException } from './library.exceptions';
-import type { Library, File } from '@prisma/client';
+import type { Library, File, Prisma } from '@prisma/client';
 import PrismaService from 'src/prisma/prisma.service';
 import IllustrationService from 'src/illustration/illustration.service';
-import LibraryQueryParameters from './models/library.query-parameters';
-import { type PaginationParameters, buildPaginationParameters } from 'src/pagination/models/pagination-parameters';
+import type LibraryQueryParameters from './models/library.query-parameters';
 import normalize from 'normalize-path';
 import type FileQueryParameters from 'src/file/models/file.query-parameters';
 import TrackService from 'src/track/track.service';
-import { buildSortingParameter } from 'src/sort/models/sorting-parameter';
 import RepositoryService from 'src/repository/repository.service';
 import type { MeeloException } from 'src/exceptions/meelo-exception';
 import { LyricsService } from 'src/lyrics/lyrics.service';
+import { buildStringSearchParameters } from 'src/utils/search-string-input';
 
 @Injectable()
 export default class LibraryService extends RepositoryService<
 	Library,
+	{ files: File[] },
 	LibraryQueryParameters.CreateInput,
 	LibraryQueryParameters.WhereInput,
 	LibraryQueryParameters.ManyWhereInput,
 	LibraryQueryParameters.UpdateInput,
-	LibraryQueryParameters.WhereInput,
-	LibraryQueryParameters.RelationInclude,
-	{},
-	Library
+	LibraryQueryParameters.DeleteInput,
+	Prisma.LibraryCreateInput,
+	Prisma.LibraryWhereInput,
+	Prisma.LibraryWhereInput,
+	Prisma.LibraryUpdateInput,
+	Prisma.LibraryWhereUniqueInput
 > {
 	constructor(
-		private prismaService: PrismaService,
+		prismaService: PrismaService,
 		private fileManagerService: FileManagerService,
+		@Inject(forwardRef(() => FileService))
 		private fileService: FileService,
 		@Inject(forwardRef(() => TrackService))
 		private trackService: TrackService,
@@ -39,130 +42,71 @@ export default class LibraryService extends RepositoryService<
 		private lyricsService: LyricsService,
 		private illustrationService: IllustrationService
 	) {
-		super();
+		super(prismaService.library);
 	}
+
+	/**
+	 * Create
+	 */
 	
-	/**
-	 * Creates a Library
-	 * @param library the parameters needed to create a Library
-	 * @param include the relation fields to include in the returned object
-	 * @returns 
-	 */
-	async create(
-		library: LibraryQueryParameters.CreateInput,
-		include?: LibraryQueryParameters.RelationInclude
-	): Promise<Library> {
-		let librarySlug: Slug = new Slug(library.name);
-		try {
-			return await this.prismaService.library.create({
-				data: {
-					...library,
-					path: normalize(library.path, true),
-					slug: librarySlug.toString(),
-				},
-				include: LibraryQueryParameters.buildIncludeParameters(include)
-			});
-		} catch {
-			throw new LibraryAlreadyExistsException(librarySlug, library.path);
+	formatCreateInput(input: LibraryQueryParameters.CreateInput) {
+		return {
+			...input,
+			path: normalize(input.path, true),
+			slug: new Slug(input.name).toString(),
 		}
 	}
-
-
-	/**
-	 * Retrieves Library entry
-	 * @param where the query parameters to find the library
-	 * @param include the relation fields to include in the returned object 
-	 * @returns The fetched Library
-	 */
-	async get(
-		where: LibraryQueryParameters.WhereInput,
-		include?: LibraryQueryParameters.RelationInclude
-	) {
-		try {
-			return await this.prismaService.library.findUnique({
-				rejectOnNotFound: true,
-				where: {
-					id: where.id,
-					slug: where.slug?.toString()
-				},
-				include: LibraryQueryParameters.buildIncludeParameters(include),
-			});
-		} catch {
-			throw this.onNotFound(where);
-		}
+	protected formatCreateInputToWhereInput(input: LibraryQueryParameters.CreateInput) {
+			return { slug: new Slug(input.name) }
+	}
+	protected onCreationFailure(input: LibraryQueryParameters.CreateInput) {
+		return new LibraryAlreadyExistsException(new Slug(input.name), input.path);
 	}
 
 	/**
-	 * Find a library and only return specified fields
-	 * @param where the parameters to find the library 
-	 * @param select the fields to return
-	 * @returns the select fields of an object
+	 * Get
 	 */
-	 async select(
-		where: LibraryQueryParameters.WhereInput,
-		select: Partial<Record<keyof Library, boolean>>
-	): Promise<Partial<Library>> {
-		try {
-			return await this.prismaService.library.findFirst({
-				rejectOnNotFound: true,
-				where: LibraryQueryParameters.buildQueryParametersForOne(where),
-				select: select
-			});
-		} catch {
-			throw this.onNotFound(where);
-		}
+	static formatWhereInput(input: LibraryQueryParameters.WhereInput) {
+		return {
+			id: input.id,
+			slug: input.slug?.toString()
+		};
+	}
+	formatWhereInput = LibraryService.formatWhereInput;
+
+	static formatManyWhereInput(input: LibraryQueryParameters.ManyWhereInput) {
+		return {
+			name: input.byName ? buildStringSearchParameters(input.byName) : undefined
+		};
+	}
+	formatManyWhereInput = LibraryService.formatManyWhereInput;
+
+	onNotFound(where: LibraryQueryParameters.WhereInput): MeeloException {
+		if (where.id !== undefined)
+			return new LibraryNotFoundFromIDException(where.id);
+		return new LibraryNotFoundException(where.slug);
 	}
 
 	/**
-	 * Get multiple Libraries
-	 * @param where the query parameters to find the libraries
-	 * @param pagination the pagination paramters to filter entries
-	 * @param include the relation fields to include in the returned objects
-	 * @returns 
+	 * Update
 	 */
-	async getMany(
-		where: LibraryQueryParameters.ManyWhereInput,
-		pagination?: PaginationParameters,
-		include?: LibraryQueryParameters.RelationInclude,
-		sort?: LibraryQueryParameters.SortingParameter
-	) {
-		return this.prismaService.library.findMany({
-			where: LibraryQueryParameters.buildQueryParametersForMany(where),
-			include: LibraryQueryParameters.buildIncludeParameters(include),
-			orderBy: buildSortingParameter(sort),
-			...buildPaginationParameters(pagination)
-		});
+	formatUpdateInput(input: LibraryQueryParameters.UpdateInput) {
+		return {
+			...input,
+			path: input.path ? normalize(input.path, true) : undefined,
+			slug: input.name ? new Slug(input.name).toString() : undefined
+		};
 	}
 
 	/**
-	 * Count the Libraries that matches the query parameters
-	 * @param where the parameters to compare the Files with
-	 * @returns the number of match
+	 * Delete
 	 */
-	 async count(where: LibraryQueryParameters.ManyWhereInput): Promise<number> {
-		return this.prismaService.library.count({
-			where: LibraryQueryParameters.buildQueryParametersForMany(where)
-		});
+	formatDeleteInput(where: LibraryQueryParameters.WhereInput) {
+		return this.formatWhereInput(where);
 	}
-
-	async update(
-		what: LibraryQueryParameters.UpdateInput,
-		where: LibraryQueryParameters.WhereInput
-	): Promise<Library> {
-		try {
-			return await this.prismaService.library.update({
-				data: {
-					...what,
-					path: what.path ? normalize(what.path, true) : undefined,
-					slug: what.name ? new Slug(what.name).toString() : undefined
-				},
-				where: LibraryQueryParameters.buildQueryParametersForOne(where)
-			});
-		} catch {
-			throw this.onNotFound(where);
-		}
+	protected formatDeleteInputToWhereInput(input: LibraryQueryParameters.WhereInput) {
+		return input;
 	}
-
 	/**
 	 * Deletes a Library from the database, its files and related tracks
 	 * @param where the query parameters to find the library to delete
@@ -172,24 +116,7 @@ export default class LibraryService extends RepositoryService<
 		let relatedFiles = await this.fileService.getMany({ library: where });
 		for (const file of relatedFiles)
 			await this.unregisterFile({ id: file.id });
-		try {
-			return await this.prismaService.library.delete({
-				where: LibraryQueryParameters.buildQueryParametersForOne(where)
-			});
-		} catch {
-			throw this.onNotFound(where);
-		}
-	}
-
-	async getOrCreate(
-		input: LibraryQueryParameters.CreateInput,
-		include?: LibraryQueryParameters.RelationInclude
-	): Promise<Library> {
-		try {
-			return await this.get({ slug: new Slug(input.name) }, include);
-		} catch {
-			return this.create(input, include);
-		}
+		return await super.delete(where);
 	}
 
 	async applyMetadataOnFiles(parentLibrary: Library): Promise<void> {
@@ -296,11 +223,5 @@ export default class LibraryService extends RepositoryService<
 
 	async buildResponse(input: Library): Promise<Library> {
 		return input;
-	}
-
-	onNotFound(where: LibraryQueryParameters.WhereInput): MeeloException {
-		if (where.id !== undefined)
-			return new LibraryNotFoundFromIDException(where.id);
-		return new LibraryNotFoundException(where.slug);
 	}
 }
