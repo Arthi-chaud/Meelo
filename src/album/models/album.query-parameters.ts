@@ -1,21 +1,19 @@
 import { Album, Prisma } from "@prisma/client";
-import ArtistQueryParameters from "src/artist/models/artist.query-parameters";
+import type ArtistQueryParameters from "src/artist/models/artist.query-parameters";
 import type LibraryQueryParameters from "src/library/models/library.query-parameters";
 import type Slug from "src/slug/slug"
 import type OmitId from "src/utils/omit-id";
 import type OmitReleaseDate from "src/utils/omit-release-date";
 import type OmitSlug from "src/utils/omit-slug";
-import type RequireAtLeastOne from "src/utils/require-at-least-one";
-import type RequireOnlyOne from "src/utils/require-only-one"
+import type { RequireAtLeastOne } from "type-fest";
+import type { RequireExactlyOne } from 'type-fest';
 import type { SearchDateInput } from "src/utils/search-date-input";
-import { buildStringSearchParameters, SearchStringInput } from "src/utils/search-string-input";
+import type { SearchStringInput } from "src/utils/search-string-input";
 import type { RelationInclude as BaseRelationInclude } from "src/relation-include/models/relation-include" ;
-import ReleaseQueryParameters from "src/release/models/release.query-parameters";
 import ParseBaseRelationIncludePipe from 'src/relation-include/relation-include.pipe';
 import BaseSortingParameter from 'src/sort/models/sorting-parameter';
 import ParseBaseSortingParameterPipe from 'src/sort/sort.pipe';
 import type GenreQueryParameters from "src/genre/models/genre.query-parameters";
-import SongQueryParameters from "src/song/models/song.query-params";
 
 namespace AlbumQueryParameters {
 
@@ -32,27 +30,10 @@ namespace AlbumQueryParameters {
 	/**
 	 * Query parameters to find one album
 	 */
-	export type WhereInput = RequireOnlyOne<{
+	export type WhereInput = RequireExactlyOne<{
 		byId: { id: number },
 		bySlug: { slug: Slug, artist?: ArtistQueryParameters.WhereInput }
 	}>;
-
-	/**
-	 * Build the query parameters for ORM, to select one album
-	 * @param where the query parameter to transform for ORM
-	 * @returns the ORM-ready query parameters
-	 */
-	export function buildQueryParametersForOne(where: WhereInput) {
-		return {
-			id: where.byId?.id,
-			slug: where.bySlug?.slug.toString(),
-			artist: where.bySlug ?
-				where.bySlug.artist
-					? ArtistQueryParameters.buildQueryParametersForOne(where.bySlug.artist)
-					: null
-			: undefined
-		}
-	}
 
 	/**
 	 * Query parameters to find multiple albums
@@ -64,35 +45,6 @@ namespace AlbumQueryParameters {
 		byReleaseDate: SearchDateInput,
 		byGenre: GenreQueryParameters.WhereInput
 	}>>;
-
-	/**
-	 * Build the query parameters for ORM, to select multiple rows
-	 * @param where the query parameter to transform for ORM
-	 * @returns the ORM-ready query parameters
-	 */
-	export function buildQueryParametersForMany(where: ManyWhereInput): Prisma.AlbumWhereInput {
-		return {
-			artist: where.byArtist
-				? where.byArtist.compilationArtist
-					? null
-					: ArtistQueryParameters.buildQueryParametersForOne(where.byArtist)	
-			: where.byArtist,
-			name: buildStringSearchParameters(where.byName),
-			releases: where.byLibrarySource || where.byGenre ? {
-				some: where.byLibrarySource
-					? ReleaseQueryParameters.buildQueryParametersForMany({ library: where.byLibrarySource })
-					: where.byGenre
-						? {
-							tracks: {
-								some: {
-									song: SongQueryParameters.buildQueryParametersForMany({ genre: where.byGenre })
-								}
-							}
-						}
-						: undefined
-			} : undefined
-		};
-	}
 
 	/**
  	 * The input required to update an album in the database
@@ -122,17 +74,6 @@ namespace AlbumQueryParameters {
 	export const AvailableFields = Object.values(Prisma.AlbumScalarFieldEnum);
 	export class SortingParameter extends BaseSortingParameter<typeof AvailableFields>{};
 	export const ParseSortingParameterPipe = new ParseBaseSortingParameterPipe(AvailableFields);
-
-	/**
-	 * Build the query parameters for ORM to include relations
-	 * @returns the ORM-ready query parameters
-	 */
-	export function buildIncludeParameters(include?: RelationInclude) {
-		return {
-			releases: include?.releases ?? false,
-			artist: include?.artist ?? false
-		};
-	}
 }
 
 export default AlbumQueryParameters;
