@@ -18,7 +18,7 @@ import MetadataService from './metadata.service';
 		SongModule,
 		ReleaseModule,
 		GenresModule,
-		FileModule,
+		forwardRef(() => FileModule),
 		forwardRef(() => AlbumModule),
 		ArtistModule],
 	providers: [MetadataService],

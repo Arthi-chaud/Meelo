@@ -1,16 +1,16 @@
 import { Prisma, Track, TrackType } from "@prisma/client";
-import FileQueryParameters from "src/file/models/file.query-parameters";
-import LibraryQueryParameters from "src/library/models/library.query-parameters";
-import ReleaseQueryParameters from "src/release/models/release.query-parameters";
-import SongQueryParameters from "src/song/models/song.query-params";
+import type FileQueryParameters from "src/file/models/file.query-parameters";
+import type LibraryQueryParameters from "src/library/models/library.query-parameters";
+import type ReleaseQueryParameters from "src/release/models/release.query-parameters";
+import type SongQueryParameters from "src/song/models/song.query-params";
 import type OmitId from "src/utils/omit-id";
-import type RequireAtLeastOne from "src/utils/require-at-least-one";
-import type RequireOnlyOne from "src/utils/require-only-one";
+import type { RequireAtLeastOne } from "type-fest";
+import type { RequireExactlyOne } from 'type-fest';;
 import type { RelationInclude as BaseRelationInclude } from "src/relation-include/models/relation-include";
 import ParseBaseRelationIncludePipe from "src/relation-include/relation-include.pipe";
 import BaseSortingParameter from 'src/sort/models/sorting-parameter';
 import ParseBaseSortingParameterPipe from 'src/sort/sort.pipe';
-import AlbumQueryParameters from "src/album/models/album.query-parameters";
+import type AlbumQueryParameters from "src/album/models/album.query-parameters";
 import type ArtistQueryParameters from "src/artist/models/artist.query-parameters";
 
 namespace TrackQueryParameters {
@@ -29,29 +29,11 @@ namespace TrackQueryParameters {
 	/**
 	 * Query parameters to find one track
 	 */
-	export type WhereInput = RequireOnlyOne<{
+	export type WhereInput = RequireExactlyOne<{
 		id: number,
 		sourceFile: FileQueryParameters.WhereInput,
 		masterOfSong: SongQueryParameters.WhereInput
 	}>;
-
-	/**
-	 * Build the query parameters for ORM, to select one track
-	 * @param where the query parameter to transform for ORM
-	 * @returns the ORM-ready query parameters
-	 */
-	export function buildQueryParametersForOne(where: WhereInput) {
-		return {
-			id: where.id,
-			master: where.masterOfSong ? true : undefined,
-			song: where.masterOfSong ?
-				SongQueryParameters.buildQueryParametersForOne(where.masterOfSong)
-			: undefined,
-			sourceFile: where.sourceFile ?
-				FileQueryParameters.buildQueryParametersForOne(where.sourceFile)
-			: undefined
-		}
-	}
 
 	/**
 	 * Query parameters to find multiple tracks
@@ -60,49 +42,11 @@ namespace TrackQueryParameters {
 		type: TrackType,
 		bySong: SongQueryParameters.WhereInput,
 		byLibrarySource: LibraryQueryParameters.WhereInput,
-	} & RequireOnlyOne<{
+	} & RequireExactlyOne<{
 		byArtist: ArtistQueryParameters.WhereInput,
 		byAlbum: AlbumQueryParameters.WhereInput,
 		byRelease: ReleaseQueryParameters.WhereInput,
 	}>>>;
-
-	/**
-	 * Build the query parameters for ORM, to select multiple rows
-	 * @param where the query parameter to transform for ORM
-	 * @returns the ORM-ready query parameters
-	 */
-	export function buildQueryParametersForMany(where: ManyWhereInput): Prisma.TrackWhereInput {
-		let queryParameters: Prisma.TrackWhereInput = {
-			type: where.type,
-			song: where.bySong ? SongQueryParameters.buildQueryParametersForOne(where.bySong) : undefined,
-			sourceFile: where.byLibrarySource ? {
-				library: LibraryQueryParameters.buildQueryParametersForOne(where.byLibrarySource)
-			} : undefined,
-		};
-		if (where.byRelease) {
-			queryParameters = {
-				...queryParameters,
-				release: ReleaseQueryParameters.buildQueryParametersForOne(where.byRelease)
-			}
-		}
-		if (where.byAlbum) {
-			queryParameters = {
-				...queryParameters,
-				release: {
-					album: AlbumQueryParameters.buildQueryParametersForOne(where.byAlbum!)	
-				}
-			}
-		}
-		if (where.byArtist) {
-			queryParameters = {
-				...queryParameters,
-				release: {
-					album: AlbumQueryParameters.buildQueryParametersForMany({ byArtist: where.byArtist })
-				}
-			}
-		}
-		return queryParameters;
-	}
 
 	/**
 	 * The input required to update a track in the database
@@ -125,7 +69,7 @@ namespace TrackQueryParameters {
 	/**
 	 * Query parameters to delete one track
 	 */
-	export type DeleteInput = RequireOnlyOne<Pick<WhereInput, 'id'> & { sourceFileId: number }>;
+	export type DeleteInput = RequireExactlyOne<Pick<WhereInput, 'id'> & { sourceFileId: number }>;
 
 	/**
 	 * Defines what relations to include in query
@@ -140,17 +84,6 @@ namespace TrackQueryParameters {
 	export const AvailableFields = Object.values(Prisma.TrackScalarFieldEnum);
 	export class SortingParameter extends BaseSortingParameter<typeof AvailableFields>{};
 	export const ParseSortingParameterPipe = new ParseBaseSortingParameterPipe(AvailableFields);
-
-	/**
-	 * Build the query parameters for ORM to include relations
-	 * @returns the ORM-ready query parameters
-	 */
-	export function buildIncludeParameters(include?: RelationInclude) {
-		return {
-			release: include?.release ?? false,
-			song: include?.song ?? false
-		};
-	}
 }
 
 export default TrackQueryParameters;

@@ -237,7 +237,7 @@ describe("Genre Service", () => {
 	describe("Delete Genre if empty", () => {
 		
 		it("should have deletes the genre, because it is not empty", async () => {
-			await songService.delete({ byId: { id: dummyRepository.songC1.id } });
+			await songService.delete({ id: dummyRepository.songC1.id });
 		
 			const test = async () => await genreService.delete({ id: dummyRepository.genreC.id });
 

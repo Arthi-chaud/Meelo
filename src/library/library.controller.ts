@@ -151,7 +151,7 @@ export default class LibraryController {
 			{ byLibrarySource: where }, paginationParameters, include, sortingParameter
 		);
 		if (artists.length == 0)
-			await this.libraryService.throwIfNotExist(where);
+			await this.libraryService.throwIfNotFound(where);
 		return new PaginatedResponse(
 			await Promise.all(artists.map((artist) => this.artistService.buildResponse(artist))),
 			request
@@ -177,7 +177,7 @@ export default class LibraryController {
 			{ byLibrarySource: where }, paginationParameters, include, sortingParameter
 		);
 		if (albums.length == 0)
-			await this.libraryService.throwIfNotExist(where);
+			await this.libraryService.throwIfNotFound(where);
 		return new PaginatedResponse(
 			await Promise.all(albums.map((album) => this.albumService.buildResponse(album))),
 			request
@@ -203,7 +203,7 @@ export default class LibraryController {
 			{ library: where }, paginationParameters, include, sortingParameter
 		);
 		if (releases.length == 0)
-			await this.libraryService.throwIfNotExist(where);
+			await this.libraryService.throwIfNotFound(where);
 		return new PaginatedResponse(
 			await Promise.all(releases.map((release) => this.releaseService.buildResponse(release))),
 			request
@@ -229,7 +229,7 @@ export default class LibraryController {
 			{ library: where }, paginationParameters, include, sortingParameter
 		);
 		if (songs.length == 0)
-			await this.libraryService.throwIfNotExist(where);
+			await this.libraryService.throwIfNotFound(where);
 		return new PaginatedResponse(
 			await Promise.all(songs.map((song) => this.songService.buildResponse(song))),
 			request
@@ -255,7 +255,7 @@ export default class LibraryController {
 			{ byLibrarySource: where }, paginationParameters, include, sortingParameter
 		);
 		if (tracks.length == 0)
-			await this.libraryService.throwIfNotExist(where);
+			await this.libraryService.throwIfNotFound(where);
 		return new PaginatedResponse(
 			await Promise.all(tracks.map(
 				(track) => this.trackService.buildResponse(track)

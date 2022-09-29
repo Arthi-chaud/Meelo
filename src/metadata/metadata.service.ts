@@ -34,6 +34,7 @@ export default class MetadataService {
 		private releaseService: ReleaseService,
 		private settingsService: SettingsService,
 		private genreService: GenreService,
+		@Inject(forwardRef(() => FileService))
 		private fileService: FileService,
 		private fileManagerService: FileManagerService) {
 		this.metadataFolderPath = `${this.fileManagerService.configFolderPath}/metadata`;
