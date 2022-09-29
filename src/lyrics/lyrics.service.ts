@@ -86,8 +86,7 @@ export class LyricsService extends RepositoryService<
 				data: this.formatUpdateInput(what),
 				where: this.formatDeleteInput({ songId: songId! })
 			});
-		} catch (e) {
-			console.log(e);
+		} catch {
 			throw await this.onUpdateFailure(what, where);
 		}
 		

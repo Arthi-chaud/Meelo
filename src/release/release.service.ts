@@ -44,6 +44,14 @@ export default class ReleaseService extends RepositoryService<
 	/**
 	 * Create
 	 */
+	async create<I extends ReleaseQueryParameters.RelationInclude>(
+		input: ReleaseQueryParameters.CreateInput, include?: I | undefined
+	) {
+		const release = await super.create(input, include);
+		await this.albumService.updateAlbumDate({ byId: { id: release.albumId }});
+		return release;
+
+	}
 	formatCreateInput(release: ReleaseQueryParameters.CreateInput) {
 		return {
 			name: release.name,

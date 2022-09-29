@@ -82,7 +82,7 @@ describe('Song Service', () => {
 		it("should throw, as the genre does not exist a new song", async () => {
 			const test = async () => await songService.create({
 				name: 'My Other Song',
-				artist: { id: 0 },
+				artist: { id: dummyRepository.artistC.id },
 				genres: [{ id: -1 }]
 			});
 
@@ -406,9 +406,9 @@ describe('Song Service', () => {
 
 	describe("Delete Song", () => {
 		it("should delete the song (by id)", async () => {
-			await songService.delete({ id: dummyRepository.songA1.id });
+			await songService.delete({ id: dummyRepository.songC1.id });
 
-			const test = async () => await songService.get({ byId: { id: dummyRepository.songA1.id } });
+			const test = async () => await songService.get({ byId: { id: dummyRepository.songC1.id } });
 			expect(test()).rejects.toThrow(SongNotFoundByIdException);
 		});
 
@@ -419,7 +419,7 @@ describe('Song Service', () => {
 
 		it("should throw, as the song song does not exist", async () => {
 			const test = async () => await songService.delete({ id: -1 });
-			expect(test()).rejects.toThrow(SongNotFoundException);
+			expect(test()).rejects.toThrow(SongNotFoundByIdException);
 		});
 	});
 });

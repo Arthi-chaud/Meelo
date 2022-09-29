@@ -31,7 +31,7 @@ export default class SongService extends RepositoryService<
 	Prisma.SongWhereUniqueInput
 > {
 	constructor(
-		prismaService: PrismaService,
+		private prismaService: PrismaService,
 		@Inject(forwardRef(() => ArtistService))
 		private artistService: ArtistService,
 		@Inject(forwardRef(() => TrackService))
@@ -49,6 +49,12 @@ export default class SongService extends RepositoryService<
 	/**
 	 * Create
 	 */
+	async create<I extends SongQueryParameters.RelationInclude>(input: SongQueryParameters.CreateInput, include?: I) {
+		await Promise.all(input.genres.map(
+			(genre) => this.genreService.throwIfNotFound(genre)
+		));
+		return await super.create(input, include);
+	}
 	formatCreateInput(song: SongQueryParameters.CreateInput) {
 		return {
 			genres: {
@@ -148,11 +154,21 @@ export default class SongService extends RepositoryService<
 			await Promise.all(
 				what.genres.map(async (where) => await this.genreService.get(where))
 			);
-		try {
+		if (where.bySlug) {
+			const artistId = (await this.artistService.select(where.bySlug.artist, { id: true })).id
+			try {
+				return await this.prismaService.song.update({
+					data: this.formatUpdateInput(what),
+					where: { slug_artistId: {
+						slug: where.bySlug!.slug.toString(),
+						artistId: artistId
+					} }
+				})
+			} catch {
+				throw await this.onUpdateFailure(what, where);
+			}
+		} else
 			return await super.update(what, where);
-		} catch {
-			throw await this.onNotFound(where);
-		}
 	}
 
 	/**

@@ -162,8 +162,7 @@ abstract class RepositoryService<
 			return await this.repository.delete({
 				where: this.formatDeleteInput(where)
 			});
-		} catch (e) {
-			console.log(e);
+		} catch {
 			throw await this.onDeletionFailure(where);
 		}
 	}
