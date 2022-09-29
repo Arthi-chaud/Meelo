@@ -27,7 +27,7 @@ export class LyricsService extends RepositoryService<
 > {
 	private readonly geniusApiKey: string | null;
 	constructor(
-		prismaService: PrismaService,
+		protected prismaService: PrismaService,
 		@Inject(forwardRef(() => SongService))
 		private songService: SongService,
 	) {
@@ -39,7 +39,10 @@ export class LyricsService extends RepositoryService<
 	 * Create
 	 */
 	formatCreateInput(input: LyricsQueryParameters.CreateInput) {
-		return { ...input, song: { connect: { id: input.songId } } };
+		return {
+			content: input.content,
+			song: { connect: { id: input.songId } }
+		};
 	}
 	protected formatCreateInputToWhereInput(input: LyricsQueryParameters.CreateInput) {
 		return { song: { byId: { id: input.songId } } };
@@ -72,6 +75,23 @@ export class LyricsService extends RepositoryService<
 	/**
 	 * Update
 	 */
+	async update(what: LyricsQueryParameters.UpdateInput, where: LyricsQueryParameters.WhereInput) {
+		if (where.id)
+			return super.update(what, { id: where.id });
+		let songId: number | undefined = where.song?.byId?.id;
+		if (where.song?.bySlug)
+			songId = (await this.songService.select(where.song, { id: true })).id
+		try {
+			return await this.prismaService.lyrics.update({
+				data: this.formatUpdateInput(what),
+				where: this.formatDeleteInput({ songId: songId! })
+			});
+		} catch (e) {
+			console.log(e);
+			throw await this.onUpdateFailure(what, where);
+		}
+		
+	}
 	formatUpdateInput(what: LyricsQueryParameters.UpdateInput) {
 		return  {
 			content: what.content
@@ -82,13 +102,7 @@ export class LyricsService extends RepositoryService<
 	 * Delete
 	 */
 	async onDeletionFailure(where: LyricsQueryParameters.DeleteInput) {
-		if (where.id !== undefined)
-			return await this.onNotFound({ id: where.id })
-		else {
-			return await this.onNotFound({
-				song: { byId: { id: where.songId }},
-			});
-		} 
+		return await this.onNotFound(this.formatDeleteInputToWhereInput(where));
 	}
 
 	async buildResponse(input: Lyrics & { song?: Song }): Promise<{ lyrics: string, song?: Song }> {
@@ -100,11 +114,7 @@ export class LyricsService extends RepositoryService<
 	formatDeleteInput(where: LyricsQueryParameters.DeleteInput) {
 		return {
 			id: where.id,
-			song: where.songId ? {
-				connect: {
-					id: where.songId
-				}
-			} : undefined
+			songId: where.songId,
 		};
 	}
 	protected formatDeleteInputToWhereInput(input: LyricsQueryParameters.DeleteInput): LyricsQueryParameters.WhereInput {

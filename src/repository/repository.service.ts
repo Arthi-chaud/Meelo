@@ -83,8 +83,7 @@ abstract class RepositoryService<
 				data: this.formatCreateInput(input),
 				include: RepositoryService.formatInclude(include)
 			}) as Model & Select<ModelRelations, I>;
-		} catch (e) {
-			console.log(e);
+		} catch {
 			throw await this.onCreationFailure(input);
 		}
 	}
@@ -163,7 +162,8 @@ abstract class RepositoryService<
 			return await this.repository.delete({
 				where: this.formatDeleteInput(where)
 			});
-		} catch {
+		} catch (e) {
+			console.log(e);
 			throw await this.onDeletionFailure(where);
 		}
 	}
