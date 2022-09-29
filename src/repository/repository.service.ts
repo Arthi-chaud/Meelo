@@ -76,6 +76,12 @@ abstract class RepositoryService<
 		count: (args: { where: RepositoryManyWhereInput }) => Promise<number>,
 	}) {}
 
+	/**
+	 * Creates an entity in the database
+	 * @param input the parameters to create an entity
+	 * @param include the relations to include with the returned entity
+	 * @returns the newly-created entity
+	 */
 	async create<I extends ModelSelector<ModelRelations>>(input: CreateInput, include?: I) {
 		try {
 			return await this.repository.create({
@@ -87,10 +93,26 @@ abstract class RepositoryService<
 			throw await this.onCreationFailure(input);
 		}
 	}
+	/**
+	 * Formats input into ORM-compatible parameter
+	 * @param input the ceation parameter passed to `create`
+	 */
 	abstract formatCreateInput(input: CreateInput): RepositoryCreateInput;
+	/**
+	 * @return an enxception to throw if the entity's creation failed
+	 */
 	protected abstract onCreationFailure(input: CreateInput): Promise<MeeloException> | MeeloException;
+	/**
+	 * Transform CreationInput into WhereInput
+	 */
 	protected abstract formatCreateInputToWhereInput(input: CreateInput): WhereInput;
 
+	/**
+	 * Find an entity in the database
+	 * @param where the query parameters to find an entity
+	 * @param include the relation fields to include with the returned entity
+	 * @returns The entity matching the query parameters
+	 */
 	async get<I extends ModelSelector<ModelRelations>>(where: WhereInput, include?: I) {
 		this.checkWhereInputIntegrity(where);
 		try {
@@ -103,10 +125,27 @@ abstract class RepositoryService<
 			throw await this.onNotFound(where);
 		}
 	}
+	/**
+	 * Checks if the Query parameters to find an entity are consistent
+	 * If it is not, it should throw. 
+	 */
 	checkWhereInputIntegrity(_input: WhereInput) {}
+	/**
+	 * Formats input into ORM-compatible parameter
+	 * @param input the ceation parameter passed to `get`
+	 */
 	abstract formatWhereInput(input: WhereInput): RepositoryWhereInput;
+	/**
+	 * @return an exception to throw if fetch failed 
+	 */
 	abstract onNotFound(where: WhereInput): Promise<MeeloException> | MeeloException;
 
+	/**
+	 * Find an entity in the database, and select fields
+	 * @param where the query parameters to find an entity
+	 * @param select the fields to fetch
+	 * @returns The entity matching the query parameters
+	 */
 	async select<S extends ModelSelector<Model>>(where: WhereInput, select: S): Promise<Select<Model, S>> {
 		this.checkWhereInputIntegrity(where);
 		try {
@@ -120,6 +159,14 @@ abstract class RepositoryService<
 		}
 	}
 
+	/**
+	 * Find multiple entities
+	 * @param where the query parameters to find entities
+	 * @param pagination the pagination parameters
+	 * @param include the relation fields to include with the returned entities
+	 * @param sort the sorting parameters
+	 * @returns matching entities
+	 */
 	async getMany<I extends ModelSelector<ModelRelations>, S extends { sortBy: string, order?: 'asc' | 'desc' }>(
 		where: ManyWhereInput,
 		pagination?: PaginationParameters,
@@ -133,14 +180,29 @@ abstract class RepositoryService<
 			...buildPaginationParameters(pagination) 
 		}) as Promise<(Model & Select<ModelRelations, I>)[]>;
 	}
+	/**
+	 * Formats input into ORM-compatible parameter
+	 * @param input the ceation parameter passed to `getMany`
+	 */
 	abstract formatManyWhereInput(input: ManyWhereInput): RepositoryManyWhereInput;
 
+	/**
+	 * Count entities matching the query parameters
+	 * @param where the query parameters
+	 * @returns the number of matching entities
+	 */
 	async count(where: ManyWhereInput): Promise<number> {
 		return this.repository.count({
 			where: this.formatManyWhereInput(where)
 		});
 	}
 
+	/**
+	 * Updates an entity in the database
+	 * @param what the fields to update
+	 * @param where the query parameters to find the entity to update
+	 * @returns the updated entity
+	 */
 	async update(what: UpdateInput, where: WhereInput): Promise<Model> {
 		this.checkWhereInputIntegrity(where);
 		try {
@@ -152,11 +214,23 @@ abstract class RepositoryService<
 			throw await this.onUpdateFailure(what, where);
 		}
 	}
+	/**
+	 * Formats input into ORM-compatible parameter
+	 * @param what the ceation parameter passed to `update`
+	 */
 	abstract formatUpdateInput(what: UpdateInput): RepositoryUpdateInput;
+	/**
+	 * @return an exception to throw if update failed 
+	 */
 	async onUpdateFailure(_what: UpdateInput, where: WhereInput): Promise<MeeloException> {
 		return await this.onNotFound(where);
 	}
 
+	/**
+	 * Delete an entity
+	 * @param where the query parameters to find an entity
+	 * @returns 
+	 */
 	async delete(where: DeleteInput): Promise<Model> {
 		try {
 			return await this.repository.delete({
@@ -166,12 +240,28 @@ abstract class RepositoryService<
 			throw await this.onDeletionFailure(where);
 		}
 	}
+	/**
+	 * Formats input into ORM-compatible parameter
+	 * @param where the ceation parameter passed to `delete`
+	 */
 	abstract formatDeleteInput(where: DeleteInput): RepositoryDeleteInput;
+	/**
+	 * Transform CreationInput into WhereInput
+	 */
 	protected abstract formatDeleteInputToWhereInput(input: DeleteInput): WhereInput;
+	/**
+	 * @return an exception to throw if deletion failed 
+	 */
 	async onDeletionFailure(where: DeleteInput): Promise<MeeloException> {
 		return await this.onNotFound(this.formatDeleteInputToWhereInput(where));
 	}
 
+	/**
+	 * Fetch an entity, or create one if it does not exist
+	 * @param input the creation input
+	 * @param include the relation fields to include with the returned entity
+	 * @returns the matching entity
+	 */
 	async getOrCreate<I extends ModelSelector<ModelRelations>>(input: CreateInput, include?: I) {
 		try {
 			return await this.get(this.formatCreateInputToWhereInput(input), include);
