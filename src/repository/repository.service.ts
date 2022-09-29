@@ -84,6 +84,7 @@ abstract class RepositoryService<
 				include: RepositoryService.formatInclude(include)
 			}) as Model & Select<ModelRelations, I>;
 		} catch (e) {
+			console.log(e);
 			throw await this.onCreationFailure(input);
 		}
 	}

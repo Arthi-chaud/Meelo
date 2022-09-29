@@ -32,7 +32,6 @@ export default class LibraryService extends RepositoryService<
 	Prisma.LibraryWhereUniqueInput
 > {
 	constructor(
-		prismaService: PrismaService,
 		private fileManagerService: FileManagerService,
 		@Inject(forwardRef(() => FileService))
 		private fileService: FileService,
@@ -40,7 +39,8 @@ export default class LibraryService extends RepositoryService<
 		private trackService: TrackService,
 		private metadataService: MetadataService,
 		private lyricsService: LyricsService,
-		private illustrationService: IllustrationService
+		private illustrationService: IllustrationService,
+		prismaService: PrismaService,
 	) {
 		super(prismaService.library);
 	}

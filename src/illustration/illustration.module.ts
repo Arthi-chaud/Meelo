@@ -17,7 +17,7 @@ import ArtistModule from 'src/artist/artist.module';
 		forwardRef(() => AlbumModule),
 		forwardRef(() => ReleaseModule),
 		forwardRef(() => TrackModule),
-		FileModule
+		forwardRef(() => FileModule),
 	],
 	controllers: [IllustrationController],
 	providers: [IllustrationService],

@@ -64,7 +64,7 @@ export class LyricsService extends RepositoryService<
 
 	static formatManyWhereInput(input: LyricsQueryParameters.ManyWhereInput) {
 		return {
-			song: SongService.formatManyWhereInput(input.bySongs)
+			song: input.bySongs ? SongService.formatManyWhereInput(input.bySongs) : undefined
 		}
 	}
 	formatManyWhereInput = LyricsService.formatManyWhereInput;

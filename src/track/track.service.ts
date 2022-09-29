@@ -45,6 +45,7 @@ export default class TrackService extends RepositoryService<
 		private releaseService: ReleaseService,
 		@Inject(forwardRef(() => IllustrationService))
 		private illustrationService: IllustrationService,
+		@Inject(forwardRef(() => FileService))
 		private fileService: FileService,
 		private prismaService: PrismaService,
 	) {

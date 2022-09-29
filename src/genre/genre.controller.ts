@@ -82,7 +82,7 @@ export class GenreController {
 			{ genre: where }, paginationParameters, include, sortingParameter
 		);
 		if (songs.length == 0)
-			await this.genreService.throwIfNotExist(where);
+			await this.genreService.throwIfNotFound(where);
 		return new PaginatedResponse(
 			await Promise.all(songs.map(
 				(song) => this.songService.buildResponse(song)
@@ -110,7 +110,7 @@ export class GenreController {
 			{ byGenre: where }, paginationParameters, include, sortingParameter
 		);
 		if (albums.length == 0)
-			await this.genreService.throwIfNotExist(where);
+			await this.genreService.throwIfNotFound(where);
 		return new PaginatedResponse(
 			await Promise.all(albums.map(
 				(album) => this.albumService.buildResponse(album)
@@ -138,7 +138,7 @@ export class GenreController {
 			{ byGenre: where }, paginationParameters , include, sortingParameter
 		);
 		if (artists.length == 0)
-			await this.genreService.throwIfNotExist(where);
+			await this.genreService.throwIfNotFound(where);
 		return new PaginatedResponse(
 			await Promise.all(artists.map(
 				(artist) => this.artistService.buildResponse(artist)

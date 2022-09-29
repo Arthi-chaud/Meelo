@@ -39,9 +39,14 @@ export default class FileService extends RepositoryService<
 	 * Create file
 	 */
 	formatCreateInput(input: FileQueryParameters.CreateInput) {
-		return { ...input, library: {
-			connect: { id: input.libraryId }
-		} };
+		return {
+			path: input.path,
+			md5Checksum: input.md5Checksum,
+			registerDate: input.registerDate,
+			library: {
+				connect: { id: input.libraryId }
+			}
+		};
 	}
 	protected formatCreateInputToWhereInput(input: FileQueryParameters.CreateInput): FileQueryParameters.WhereInput {
 		return { byPath: { path: input.path, library: { id: input.libraryId } } }
