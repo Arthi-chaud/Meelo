@@ -34,6 +34,7 @@ export default class IllustrationService implements OnModuleInit {
 		private albumService: AlbumService,
 		@Inject(forwardRef(() => TrackService))
 		private trackService: TrackService,
+		@Inject(forwardRef(() => FileService))
 		private fileService: FileService,
 		private fileManagerService: FileManagerService,
 		private moduleRef: ModuleRef

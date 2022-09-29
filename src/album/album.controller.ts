@@ -193,7 +193,7 @@ export default class AlbumController {
 			{ byAlbum: where, type: TrackType.Video }, paginationParameters, include, sortingParameter, 
 		);
 		if (videoTracks.length == 0)
-			await this.albumService.throwIfNotExist(where);
+			await this.albumService.throwIfNotFound(where);
 		return new PaginatedResponse(
 			await Promise.all(videoTracks.map(
 				(videoTrack) => this.trackService.buildResponse(videoTrack)

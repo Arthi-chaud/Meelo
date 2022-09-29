@@ -1,12 +1,10 @@
 import type { TestingModule } from "@nestjs/testing";
 import type { Lyrics } from "@prisma/client";
 import AlbumModule from "src/album/album.module";
-import { InvalidRequestException } from "src/exceptions/meelo-exception";
 import FileManagerModule from "src/file-manager/file-manager.module";
 import FileManagerService from "src/file-manager/file-manager.service";
 import FileModule from "src/file/file.module";
 import GenreModule from "src/genre/genre.module";
-import LibraryModule from "src/library/library.module";
 import PrismaModule from "src/prisma/prisma.module";
 import PrismaService from "src/prisma/prisma.service";
 import ReleaseModule from "src/release/release.module";
@@ -28,7 +26,7 @@ describe('Lyrics Service', () => {
 	let lyricsC1: Lyrics;
 	beforeAll(async () => {
 		const module: TestingModule = await createTestingModule({
-			imports: [PrismaModule, LibraryModule, SongModule, AlbumModule, ReleaseModule, FileModule, FileManagerModule, SettingsModule, GenreModule, LyricsModule],
+			imports: [PrismaModule, SongModule, AlbumModule, ReleaseModule, FileModule, FileManagerModule, SettingsModule, GenreModule, LyricsModule],
 			providers: [LyricsService],
 		}).overrideProvider(FileManagerService).useClass(FakeFileManagerService)
 		.overrideProvider(PrismaService).useClass(TestPrismaService).compile();
@@ -103,14 +101,16 @@ describe('Lyrics Service', () => {
 
 	describe('Get many lyrics', () => {
 		it("should throw, as the method is not implemented", async () => {
-			const test = () => lyricsService.getMany({});
-			expect(test()).rejects.toThrow(InvalidRequestException);
+			const allLyrics = await lyricsService.getMany({});
+			expect(allLyrics.length).toBe(2);
+			expect(allLyrics).toContainEqual(dummyRepository.lyricsA1);
+			expect(allLyrics).toContainEqual(lyricsB1);
 		});
 	});
 	describe('Count lyrics', () => {
 		it("should throw, as the method is not implemented", async () => {
-			const test = () => lyricsService.count({});
-			expect(test()).rejects.toThrow(InvalidRequestException);
+			const lyricsCount = await lyricsService.count({});
+			expect(lyricsCount).toBe(2);
 		});
 	});
 

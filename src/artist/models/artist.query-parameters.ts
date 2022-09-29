@@ -3,16 +3,14 @@ import type LibraryQueryParameters from "src/library/models/library.query-parame
 import type Slug from "src/slug/slug"
 import type OmitId from "src/utils/omit-id";
 import type OmitSlug from "src/utils/omit-slug";
-import type RequireAtLeastOne from "src/utils/require-at-least-one";
-import type RequireOnlyOne from "src/utils/require-only-one"
-import { buildStringSearchParameters, SearchStringInput } from "src/utils/search-string-input";
+import type { RequireAtLeastOne } from "type-fest";
+import type { RequireExactlyOne } from 'type-fest';
+import type { SearchStringInput } from "src/utils/search-string-input";
 import type { RelationInclude as BaseRelationInclude } from "src/relation-include/models/relation-include" ;
-import ReleaseQueryParameters from "src/release/models/release.query-parameters";
 import ParseBaseRelationIncludePipe from "src/relation-include/relation-include.pipe";
-import TrackQueryParameters from "src/track/models/track.query-parameters";
 import BaseSortingParameter from 'src/sort/models/sorting-parameter';
 import ParseBaseSortingParameterPipe from 'src/sort/sort.pipe';
-import GenreQueryParameters from "src/genre/models/genre.query-parameters";
+import type GenreQueryParameters from "src/genre/models/genre.query-parameters";
 
 namespace ArtistQueryParameters {
 
@@ -23,22 +21,11 @@ namespace ArtistQueryParameters {
 	/**
 	 * Query parameters to find one artist
 	 */
-	export type WhereInput = RequireOnlyOne<{
+	export type WhereInput = RequireExactlyOne<{
 		id: number,
 		slug: Slug,
 		compilationArtist: true
 	}>;
-	/**
-	 * Build the query parameters for ORM, to select one artist
-	 * @param where the query parameter to transform for ORM
-	 * @returns the ORM-ready query parameters
-	 */
-	export function buildQueryParametersForOne(where: WhereInput) {
-		return {
-			id: where.id,
-			slug: where.slug?.toString()
-		};
-	}
 	
 	/**
 	 * Query parameters to find multiple artists
@@ -52,37 +39,6 @@ namespace ArtistQueryParameters {
 	}>>;
 
 	/**
-	 * Build the query parameters for ORM, to select multiple artists
-	 * @param where the query parameter to transform for ORM
-	 * @returns the ORM-ready query parameters
-	 */
-	export function buildQueryParametersForMany(where: ManyWhereInput): Prisma.ArtistWhereInput {
-		return {
-			id: where.byIds ? {
-				in: where.byIds.in
-			} : undefined,
-			name: buildStringSearchParameters(where.byName),
-			albums: where.byLibrarySource ? {
-				some: {
-					releases: {
-						some: ReleaseQueryParameters.buildQueryParametersForMany({ library: where.byLibrarySource })
-					}
-				}
-			} : undefined,
-			songs: where.byLibrarySource || where.byGenre ? {
-				some: {
-					genres: where.byGenre ? {
-						some: GenreQueryParameters.buildQueryParametersForOne(where.byGenre)
-					} : undefined,
-					tracks: where.byLibrarySource ? {
-						some: TrackQueryParameters.buildQueryParametersForMany({ byLibrarySource: where.byLibrarySource })
-					} : undefined
-				}
-			} : undefined
-		};
-	}
-
-	/**
 	 * Parameters to update an Artist
 	 */
 	export type UpdateInput = Partial<CreateInput>;
@@ -90,7 +46,7 @@ namespace ArtistQueryParameters {
 	/**
 	 * Parameters to delete an Artist
 	 */
-	export type DeleteInput = RequireOnlyOne<Omit<WhereInput, 'compilationArtist'>>;
+	export type DeleteInput = RequireExactlyOne<Omit<WhereInput, 'compilationArtist'>>;
 	
 	/**
 	 * Parameters to find or create an Artist
@@ -110,17 +66,6 @@ namespace ArtistQueryParameters {
 	export const AvailableFields = Object.values(Prisma.ArtistScalarFieldEnum);
 	export class SortingParameter extends BaseSortingParameter<typeof AvailableFields>{};
 	export const ParseSortingParameterPipe = new ParseBaseSortingParameterPipe(AvailableFields);
-
-	/**
-	 * Build the query parameters for ORM to include relations
-	 * @returns the ORM-ready query parameters
-	 */
-	export function buildIncludeParameters(include?: RelationInclude) {
-		return {
-			albums: include?.albums ?? false,
-			songs: include?.songs ?? false
-		};
-	}
 }
 
 export default ArtistQueryParameters;

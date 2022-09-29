@@ -11,8 +11,6 @@ import { FileNotFoundFromIDException } from "src/file/file.exceptions";
 import FileModule from "src/file/file.module";
 import FileService from "src/file/file.service";
 import IllustrationModule from "src/illustration/illustration.module";
-import LibraryModule from "src/library/library.module";
-import LibraryService from "src/library/library.service";
 import MetadataModule from "src/metadata/metadata.module";
 import PrismaModule from "src/prisma/prisma.module";
 import PrismaService from "src/prisma/prisma.service";
@@ -48,8 +46,8 @@ describe('Track Service', () => {
 	
 	beforeAll(async () => {
 		const module: TestingModule = await createTestingModule({
-			imports: [PrismaModule, LibraryModule, MetadataModule, IllustrationModule,TrackModule, ArtistModule, SongModule, AlbumModule, ReleaseModule, FileModule, FileManagerModule, SettingsModule, GenreModule, LyricsModule],
-			providers: [PrismaService, LibraryService,TrackService, ArtistService, SongService, AlbumService, ReleaseService, FileService, FileManagerService, SettingsService],
+			imports: [PrismaModule, FileModule, MetadataModule, IllustrationModule,TrackModule, ArtistModule, SongModule, AlbumModule, ReleaseModule, FileManagerModule, SettingsModule, GenreModule, LyricsModule],
+			providers: [PrismaService,TrackService, ArtistService, SongService, AlbumService, ReleaseService, FileService, FileManagerService, SettingsService],
 		}).overrideProvider(FileManagerService).useClass(FakeFileManagerService)
 		.overrideProvider(PrismaService).useClass(TestPrismaService).compile();
 		await module.get<PrismaService>(PrismaService).onModuleInit();
@@ -58,10 +56,13 @@ describe('Track Service', () => {
 		artistService = module.get<ArtistService>(ArtistService);
 		songService = module.get<SongService>(SongService);
 		let fileService = module.get<FileService>(FileService);
-		let libraryService = module.get<LibraryService>(LibraryService);
-		secondLibrary = await libraryService.create({
-			name: "b",
-			path: "b"
+		let prismaService = module.get<PrismaService>(PrismaService);
+		secondLibrary = await prismaService.library.create({
+			data: {
+				name: "b",
+				slug: "b",
+				path: "b"
+			}
 		});
 		file = await fileService.create({
 			path: "My Artist/My Album/1-02 My dummyRepository.songA1.m4a",

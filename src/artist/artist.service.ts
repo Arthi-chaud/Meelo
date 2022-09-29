@@ -3,7 +3,7 @@ import Slug from 'src/slug/slug';
 import { ArtistAlreadyExistsException as ArtistAlreadyExistsException, ArtistNotFoundByIDException, ArtistNotFoundException, CompilationArtistException } from './artist.exceptions';
 import type { Album, Artist, Prisma, Song } from '@prisma/client';
 import PrismaService from 'src/prisma/prisma.service';
-import ArtistQueryParameters from './models/artist.query-parameters';
+import type ArtistQueryParameters from './models/artist.query-parameters';
 import { type PaginationParameters, buildPaginationParameters } from 'src/pagination/models/pagination-parameters';
 import SongService from 'src/song/song.service';
 import AlbumService from 'src/album/album.service';
@@ -11,18 +11,25 @@ import IllustrationService from 'src/illustration/illustration.service';
 import { buildSortingParameter } from 'src/sort/models/sorting-parameter';
 import RepositoryService from 'src/repository/repository.service';
 import type { MeeloException } from 'src/exceptions/meelo-exception';
+import { buildStringSearchParameters } from 'src/utils/search-string-input';
+import GenreService from 'src/genre/genre.service';
+import ReleaseService from 'src/release/release.service';
+import TrackService from 'src/track/track.service';
 
 @Injectable()
 export default class ArtistService extends RepositoryService<
 	Artist,
+	{ albums: Album[], songs: Song[] },
 	ArtistQueryParameters.CreateInput,
 	ArtistQueryParameters.WhereInput,
 	ArtistQueryParameters.ManyWhereInput,
 	ArtistQueryParameters.UpdateInput,
 	ArtistQueryParameters.DeleteInput,
-	ArtistQueryParameters.RelationInclude,
-	ArtistQueryParameters.SortingParameter,
-	Artist & { illustration: string }
+	Prisma.ArtistCreateInput,
+	Prisma.ArtistWhereInput,
+	Prisma.ArtistWhereInput,
+	Prisma.ArtistUpdateInput,
+	Prisma.ArtistWhereUniqueInput
 > {
 	constructor(
 		private prismaService: PrismaService,
@@ -32,95 +39,74 @@ export default class ArtistService extends RepositoryService<
 		private albumService: AlbumService,
 		private illustrationService: IllustrationService
 	) {
-		super();
+		super(prismaService.artist);
 	}
 	
 	/**
-	 * Creates an Artist
-	 * @param artist the parameters needed to create an artist
-	 * @param include the relation to include in the returned Artist
-	 * @returns 
+	 * Artist Creation
 	 */
-	async create(
-		artist: ArtistQueryParameters.CreateInput,
-		include?: ArtistQueryParameters.RelationInclude
-	) {
-		const artistSlug = new Slug(artist.name);
-		try {
-			return await this.prismaService.artist.create({
-				data: {
-					name: artist.name,
-					slug: artistSlug.toString()
-				},
-				include: ArtistQueryParameters.buildIncludeParameters(include)
-			});
-		} catch {
-			throw new ArtistAlreadyExistsException(artistSlug);
+	formatCreateInput(input: ArtistQueryParameters.CreateInput): Prisma.ArtistCreateInput {
+		return {
+			name: input.name,
+			slug: new Slug(input.name).toString()
 		}
+	}
+	protected formatCreateInputToWhereInput(input: ArtistQueryParameters.CreateInput) {
+		return { slug: new Slug(input.name) }
+	}
+	protected onCreationFailure(input: ArtistQueryParameters.CreateInput) {
+		return new ArtistAlreadyExistsException(new Slug(input.name));
 	}
 
 	/**
-	 * Find an artist
-	 * @param where the query parameters to find the artist
-	 * @param include the relations to include in the returned artist
+	 * Get Artist
 	 */
-	async get(
-		where: ArtistQueryParameters.WhereInput,
-		include?: ArtistQueryParameters.RelationInclude
-	) {
-		if (where.compilationArtist)
+	checkWhereInputIntegrity(input: ArtistQueryParameters.WhereInput): void {
+		if (input.compilationArtist)
 			throw new CompilationArtistException('Artist');
-		try {
-			return await this.prismaService.artist.findUnique({
-				rejectOnNotFound: true,
-				where: ArtistQueryParameters.buildQueryParametersForOne(where),
-				include: ArtistQueryParameters.buildIncludeParameters(include),
-			});
-		} catch {
-			throw this.onNotFound(where)
-		}
+	}
+	static formatWhereInput(input: ArtistQueryParameters.WhereInput) {
+		return {
+			id: input.id,
+			slug: input.slug?.toString()
+		};
+	}
+	formatWhereInput = ArtistService.formatWhereInput;
+	onNotFound(where: ArtistQueryParameters.WhereInput): MeeloException {
+		if (where.id !== undefined)
+			return new ArtistNotFoundByIDException(where.id);
+		return new ArtistNotFoundException(where.slug!);
 	}
 
 	/**
-	 * Find an artist and only return specified fields
-	 * @param where the parameters to find the artist 
-	 * @param select the fields to return
-	 * @returns the select fields of an object
+	 * Get Artists
 	 */
-	async select(
-		where: ArtistQueryParameters.WhereInput,
-		select: Partial<Record<keyof Artist, boolean>>
-	): Promise<Partial<Artist>> {
-		try {
-			return await this.prismaService.artist.findFirst({
-				rejectOnNotFound: true,
-				where: ArtistQueryParameters.buildQueryParametersForOne(where),
-				select: <Prisma.ArtistSelect>{...select}
-			});
-		} catch {
-			throw this.onNotFound(where);
-		}
+	static formatManyWhereInput(where: ArtistQueryParameters.ManyWhereInput) {
+		return {
+			id: where.byIds ? {
+				in: where.byIds.in
+			} : undefined,
+			name: buildStringSearchParameters(where.byName),
+			albums: where.byLibrarySource ? {
+				some: {
+					releases: {
+						some: ReleaseService.formatManyWhereInput({ library: where.byLibrarySource })
+					}
+				}
+			} : undefined,
+			songs: where.byLibrarySource || where.byGenre ? {
+				some: {
+					genres: where.byGenre ? {
+						some: GenreService.formatWhereInput(where.byGenre)
+					} : undefined,
+					tracks: where.byLibrarySource ? {
+						some: TrackService.formatManyWhereInput({ byLibrarySource: where.byLibrarySource })
+					} : undefined
+				}
+			} : undefined
+		};
 	}
-
-	/**
-	 * Find multiple artists
-	 * @param where the query parameters to find the artists
-	 * @param pagination the pagination paramters to filter entries
-	 * @param include the relations to include in the returned artists
-	 */
-	 async getMany(
-		where: ArtistQueryParameters.ManyWhereInput,
-		pagination?: PaginationParameters,
-		include?: ArtistQueryParameters.RelationInclude,
-		sort?: ArtistQueryParameters.SortingParameter
-	) {
-		return this.prismaService.artist.findMany({
-			where: ArtistQueryParameters.buildQueryParametersForMany(where),
-			include: ArtistQueryParameters.buildIncludeParameters(include),
-			orderBy: buildSortingParameter(sort),
-			...buildPaginationParameters(pagination)
-		});
-	}
+	formatManyWhereInput = ArtistService.formatManyWhereInput;
 
 	/**
 	 * Find multiple artists that have at least one album
@@ -128,56 +114,42 @@ export default class ArtistService extends RepositoryService<
 	 * @param pagination the pagination paramters to filter entries
 	 * @param include the relations to include in the returned artists
 	 */
-	async getAlbumsArtists(
+	async getAlbumsArtists<I extends ArtistQueryParameters.RelationInclude>(
 		where: ArtistQueryParameters.ManyWhereInput,
 		pagination?: PaginationParameters,
-		include?: ArtistQueryParameters.RelationInclude,
+		include?: I,
 		sort?: ArtistQueryParameters.SortingParameter
 	) {
 		return this.prismaService.artist.findMany({
 			where: {
-				...ArtistQueryParameters.buildQueryParametersForMany(where),
+				...this.formatManyWhereInput(where),
 				NOT: { albums: { none: {} } }
 			},
-			include: ArtistQueryParameters.buildIncludeParameters(include),
+			include: RepositoryService.formatInclude(include),
 			orderBy: buildSortingParameter(sort),
 			...buildPaginationParameters(pagination)
 		});
 	}
 
+
 	/**
-	 * Count the artists that match the query parameters
-	 * @param where the query parameters
+	 * Update Artist
 	 */
-	async count(where: ArtistQueryParameters.ManyWhereInput): Promise<number> {
-		return this.prismaService.artist.count({
-			where: ArtistQueryParameters.buildQueryParametersForMany(where)
-		});
+	formatUpdateInput(what: ArtistQueryParameters.UpdateInput) {
+		return {
+			name: what.name,
+			slug: what.name ? new Slug(what.name).toString() : undefined
+		};
 	}
 
 	/**
-	 * Updates an Artist
-	 * @param what the fields to update
-	 * @param where the query parameter to find the artist to update
-	 * @returns the updated artist
+	 * Artist deletion
 	 */
-	async update(
-		what: ArtistQueryParameters.UpdateInput,
-		where: ArtistQueryParameters.WhereInput
-	): Promise<Artist> {
-		if (where.compilationArtist)
-			throw new CompilationArtistException('Artist');
-		try {
-			return await this.prismaService.artist.update({
-				data: {
-					name: what.name,
-					slug: what.name ? new Slug(what.name).toString() : undefined
-				},
-				where: ArtistQueryParameters.buildQueryParametersForOne(where),
-			});
-		} catch {
-			throw this.onNotFound(where)
-		}
+	formatDeleteInput(where: ArtistQueryParameters.DeleteInput) {
+		return this.formatWhereInput(where);
+	}
+	protected formatDeleteInputToWhereInput(input: ArtistQueryParameters.DeleteInput) {
+		return input;
 	}
 
 	/**
@@ -191,13 +163,11 @@ export default class ArtistService extends RepositoryService<
 				(album) => this.albumService.delete({ byId: { id: album.id } })
 			),
 			...artist.songs.map(
-				(song) => this.songService.delete({ byId: { id: song.id } })
+				(song) => this.songService.delete({ id: song.id })
 			)
 		]);
 		try {
-			await this.prismaService.artist.delete({
-				where: ArtistQueryParameters.buildQueryParametersForOne(where)
-			});
+			await super.delete(where);
 		} catch {
 			return artist;
 		}
@@ -220,27 +190,6 @@ export default class ArtistService extends RepositoryService<
 		const songCount = await this.songService.count({ artist: where });
 		if (songCount == 0 && albumCount == 0)
 			await this.delete(where);
-	}
-
-	/**
-	 * Find an artist by its name, or creates one if not found
-	 * @param where the query parameters to find / create the artist
-	 */
-	async getOrCreate(
-		where: ArtistQueryParameters.GetOrCreateInput,
-		include?: ArtistQueryParameters.RelationInclude
-	) {
-		try {
-			return await this.get({ slug: new Slug(where.name) }, include);
-		} catch {
-			return this.create(where, include);
-		}
-	}
-
-	onNotFound(where: ArtistQueryParameters.WhereInput): MeeloException {
-		if (where.id !== undefined)
-			return new ArtistNotFoundByIDException(where.id);
-		return new ArtistNotFoundException(where.slug!);
 	}
 	
 	/**

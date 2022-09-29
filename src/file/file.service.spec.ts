@@ -6,8 +6,6 @@ import FileManagerModule from "src/file-manager/file-manager.module";
 import FileManagerService from "src/file-manager/file-manager.service";
 import GenreModule from "src/genre/genre.module";
 import IllustrationModule from "src/illustration/illustration.module";
-import LibraryModule from "src/library/library.module";
-import LibraryService from "src/library/library.service";
 import { LyricsModule } from "src/lyrics/lyrics.module";
 import MetadataModule from "src/metadata/metadata.module";
 import PrismaModule from "src/prisma/prisma.module";
@@ -25,26 +23,23 @@ import FileService from "./file.service";
 
 describe('File Service', () => {
 	let fileService: FileService;
-	let libraryService: LibraryService;
 	let dummyRepository: TestPrismaService;
 
 	let newFile: File;
 
 	beforeAll(async () => {
 		const module: TestingModule = await createTestingModule({
-			imports: [LibraryModule, PrismaModule, FileModule, MetadataModule, FileManagerModule, IllustrationModule, ArtistModule, AlbumModule, SongModule, ReleaseModule, TrackModule, SettingsModule, GenreModule, LyricsModule],
-			providers: [FileService, LibraryService],
+			imports: [FileModule, PrismaModule, MetadataModule, FileManagerModule, IllustrationModule, ArtistModule, AlbumModule, SongModule, ReleaseModule, TrackModule, SettingsModule, GenreModule, LyricsModule],
+			providers: [FileService],
 		}).overrideProvider(FileManagerService).useClass(FakeFileManagerService)
 		.overrideProvider(PrismaService).useClass(TestPrismaService).compile();
 		dummyRepository = module.get(PrismaService)
 		await dummyRepository.onModuleInit();
 		fileService = module.get<FileService>(FileService);
-		libraryService = module.get<LibraryService>(LibraryService);
 	});
 
 	it('should be defined', () => {
 		expect(fileService).toBeDefined();
-		expect(libraryService).toBeDefined();
 	});
 
 	const now = new Date();

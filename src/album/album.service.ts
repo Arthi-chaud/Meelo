@@ -2,32 +2,35 @@ import { forwardRef, Inject, Injectable, Logger } from '@nestjs/common';
 import ArtistService from 'src/artist/artist.service';
 import Slug from 'src/slug/slug';
 import { AlbumAlreadyExistsException, AlbumAlreadyExistsExceptionWithArtistID as AlbumAlreadyExistsWithArtistIDException, AlbumNotFoundException, AlbumNotFoundFromIDException } from './album.exceptions';
-import {AlbumType, Album, Release, Artist, Genre} from '@prisma/client';
+import {AlbumType, Album, Release, Artist, Genre, Prisma} from '@prisma/client';
 import PrismaService from 'src/prisma/prisma.service';
-import AlbumQueryParameters from './models/album.query-parameters';
-import ArtistQueryParameters from 'src/artist/models/artist.query-parameters';
-import { type PaginationParameters, buildPaginationParameters } from 'src/pagination/models/pagination-parameters';
+import type AlbumQueryParameters from './models/album.query-parameters';
+import type ArtistQueryParameters from 'src/artist/models/artist.query-parameters';
 import ReleaseService from 'src/release/release.service';
 import IllustrationService from 'src/illustration/illustration.service';
-import { buildSortingParameter } from 'src/sort/models/sorting-parameter';
 import RepositoryService from 'src/repository/repository.service';
 import type { MeeloException } from 'src/exceptions/meelo-exception';
 import GenreService from "../genre/genre.service";
+import { buildStringSearchParameters } from 'src/utils/search-string-input';
+import SongService from 'src/song/song.service';
 
 @Injectable()
 export default class AlbumService extends RepositoryService<
 	Album,
+	{ artist?: Artist, releases: Release[] },
 	AlbumQueryParameters.CreateInput,
 	AlbumQueryParameters.WhereInput,
 	AlbumQueryParameters.ManyWhereInput,
 	AlbumQueryParameters.UpdateInput,
 	AlbumQueryParameters.DeleteInput,
-	AlbumQueryParameters.RelationInclude,
-	AlbumQueryParameters.SortingParameter,
-	Album & { illustration: string }
+	Prisma.AlbumCreateInput,
+	Prisma.AlbumWhereInput,
+	Prisma.AlbumWhereInput,
+	Prisma.AlbumUpdateInput,
+	Prisma.AlbumWhereUniqueInput
 > {
 	constructor(
-		private prismaService: PrismaService,
+		prismaService: PrismaService,
 		@Inject(forwardRef(() => ArtistService))
 		private artistServce: ArtistService,
 		@Inject(forwardRef(() => ReleaseService))
@@ -36,141 +39,100 @@ export default class AlbumService extends RepositoryService<
 		private illustrationService: IllustrationService,
 		private genreService: GenreService
 	) {
-		super();
+		super(prismaService.album);
 	}
 
 
 	/**
-	 * Create an Album, and saves it in the database
-	 * @param album the album object to save
-	 * @param include the relation to include in the returned value
-	 * @returns the saved Album
+	 * Create an Album
 	 */
-	async create(
+	async create<I extends AlbumQueryParameters.RelationInclude>(
 		album: AlbumQueryParameters.CreateInput,
-		include?: AlbumQueryParameters.RelationInclude
+		include?: I
 	) {
-		const albumSlug = new Slug(album.name);
 		if (album.artist === undefined) {
 			if (await this.count({ byName: { is: album.name }, byArtist: { compilationArtist: true } }) != 0)
-				throw new AlbumAlreadyExistsException(albumSlug);
+				throw new AlbumAlreadyExistsException(new Slug(album.name));
 		}
-		try {
-			return await this.prismaService.album.create({
-				data: {
-					name: album.name,
-					artist: album.artist ? {
-						connect: ArtistQueryParameters.buildQueryParametersForOne(album.artist)
-					} : undefined,
-					slug: albumSlug.toString(),
-					releaseDate: album.releaseDate,
-					type: AlbumService.getAlbumTypeFromName(album.name)
-				},
-				include: AlbumQueryParameters.buildIncludeParameters(include)
-			});
-		} catch {
-			if (album.artist)
-				await this.artistServce.get(album.artist);
-			if (album.artist?.id)
-				throw new AlbumAlreadyExistsWithArtistIDException(albumSlug, album.artist.id);
-			throw new AlbumAlreadyExistsException(albumSlug, album.artist?.slug);
+		return await super.create(album, include);
+	}
+
+	formatCreateInput(input: AlbumQueryParameters.CreateInput) {
+		return {
+			name: input.name,
+			artist: input.artist ? {
+				connect: ArtistService.formatWhereInput(input.artist)
+			} : undefined,
+			slug: new Slug(input.name).toString(),
+			releaseDate: input.releaseDate,
+			type: AlbumService.getAlbumTypeFromName(input.name)
+		};
+	}
+	protected formatCreateInputToWhereInput(where: AlbumQueryParameters.CreateInput) {
+		return {
+			bySlug: { slug: new Slug(where.name), artist: where.artist },
 		}
+	}
+	protected async onCreationFailure(input: AlbumQueryParameters.CreateInput) {
+		const albumSlug = new Slug(input.name);
+		if (input.artist)
+			await this.artistServce.get(input.artist);
+		if (input.artist?.id)
+			return new AlbumAlreadyExistsWithArtistIDException(albumSlug, input.artist.id);
+		return new AlbumAlreadyExistsException(albumSlug, input.artist?.slug);
 	}
 
 	/**
 	 * Find an album
-	 * @param where the parameters to find the album
-	 * @param include the relations to include
 	 */
-	async get(
-		where: AlbumQueryParameters.WhereInput,
-		include?: AlbumQueryParameters.RelationInclude
-	) {
-		try {
-			return await this.prismaService.album.findFirst({
-				rejectOnNotFound: true,
-				where: AlbumQueryParameters.buildQueryParametersForOne(where),
-				include: AlbumQueryParameters.buildIncludeParameters(include),
-			});
-		} catch {
-			throw this.onNotFound(where);
+	static formatWhereInput(where: AlbumQueryParameters.WhereInput) {
+		return {
+			id: where.byId?.id,
+			slug: where.bySlug?.slug.toString(),
+			artist: where.bySlug ?
+				where.bySlug.artist
+					? ArtistService.formatWhereInput(where.bySlug.artist)
+					: null
+			: undefined
 		}
 	}
+	formatWhereInput = AlbumService.formatWhereInput;
+
+	static formatManyWhereInput(where: AlbumQueryParameters.ManyWhereInput) {
+		return {
+			artist: where.byArtist
+				? where.byArtist.compilationArtist
+					? null
+					: ArtistService.formatWhereInput(where.byArtist)	
+			: where.byArtist,
+			name: buildStringSearchParameters(where.byName),
+			releases: where.byLibrarySource || where.byGenre ? {
+				some: where.byLibrarySource
+					? ReleaseService.formatManyWhereInput({ library: where.byLibrarySource })
+					: where.byGenre
+						? {
+							tracks: {
+								some: {
+									song: SongService.formatManyWhereInput({ genre: where.byGenre })
+								}
+							}
+						}
+						: undefined
+			} : undefined
+		};
+	}
+	formatManyWhereInput = AlbumService.formatManyWhereInput;
+
 
 	/**
-	 * Find an album and only return specified fields
-	 * @param where the parameters to find the album 
-	 * @param select the fields to return
-	 * @returns the select fields of an object
+	 * Updates an album
 	 */
-	async select(
-		where: AlbumQueryParameters.WhereInput,
-		select: Partial<Record<keyof Album, boolean>>
-	): Promise<Partial<Album>> {
-		try {
-			return await this.prismaService.album.findFirst({
-				rejectOnNotFound: true,
-				where: AlbumQueryParameters.buildQueryParametersForOne(where),
-				select: select
-			});
-		} catch {
-			throw this.onNotFound(where);
+	formatUpdateInput(what: AlbumQueryParameters.UpdateInput) {
+		return {
+			...what,
+			slug: what.name ? new Slug(what.name).toString() : undefined,
 		}
 	}
-
-	/**
-	 * Find multiple albums
-	 * @param where the parameters to find the album
-	 * @param pagination the pagination paramters to filter entries
-	 * @param include the relations to include
-	 */
-	async getMany(
-		where: AlbumQueryParameters.ManyWhereInput,
-		pagination?: PaginationParameters,
-		include?: AlbumQueryParameters.RelationInclude,
-		sort?: AlbumQueryParameters.SortingParameter
-	) {
-		return await this.prismaService.album.findMany({
-			where: AlbumQueryParameters.buildQueryParametersForMany(where),
-			include: AlbumQueryParameters.buildIncludeParameters(include),
-			orderBy: buildSortingParameter(sort),
-			...buildPaginationParameters(pagination)
-		});
-	}
-
-	/**
-	 * Count the albums that match the query parameters
-	 * @param where the query parameters
-	 */
-	async count(where: AlbumQueryParameters.ManyWhereInput): Promise<number> {
-		return await this.prismaService.album.count({
-			where: AlbumQueryParameters.buildQueryParametersForMany(where)
-		});
-	}
-
-	/**
-	 * Updates an album in the database
-	 * @param what the fields to update
-	 * @param where the query parameters to find the album to update
-	 * @returns the updated album
-	 */
-	async update(
-		what: AlbumQueryParameters.UpdateInput,
-		where: AlbumQueryParameters.WhereInput
-	): Promise<Album> {
-		try {
-			return await this.prismaService.album.update({
-				data: {
-					...what,
-					slug: what.name ? new Slug(what.name).toString() : undefined,
-				},
-				where: AlbumQueryParameters.buildQueryParametersForOne(where)
-			});
-		} catch {
-			throw this.onNotFound(where);
-		}
-	}
-
 	/**
 	 * Updates an album date, using the earliest date from its releases
 	 * @param where the query parameter to get the album to update
@@ -198,9 +160,7 @@ export default class AlbumService extends RepositoryService<
 			)
 		);
 		try {
-			await this.prismaService.album.delete({
-				where: AlbumQueryParameters.buildQueryParametersForOne(where),
-			});
+			await super.delete(where);
 		} catch {
 			return album;
 		}
@@ -215,6 +175,12 @@ export default class AlbumService extends RepositoryService<
 		} catch {}
 		return album;
 	}
+	formatDeleteInput(where: AlbumQueryParameters.DeleteInput) {
+		return this.formatWhereInput(where);
+	}
+	protected formatDeleteInputToWhereInput(input: AlbumQueryParameters.DeleteInput) {
+		return input;
+	}
 
 	/**
 	 * Delete an album if it does not have related releases
@@ -226,22 +192,6 @@ export default class AlbumService extends RepositoryService<
 		});
 		if (albumCount == 0)
 			await this.delete({ byId: { id: albumId } });
-	}
-
-	/**
-	 * Get an album, or create it if it does not exist
-	 * @param where the query parameters to find / create he album
-	 * @param include the relation fields to include in the returned album
-	 * @returns 
-	 */
-	async getOrCreate(where: AlbumQueryParameters.GetOrCreateInput, include?: AlbumQueryParameters.RelationInclude) {
-		try {
-			return await this.get({
-				bySlug: { slug: new Slug(where.name), artist: where.artist },
-			}, include);
-		} catch {
-			return await this.create({...where}, include);
-		}
 	}
 
 	/**

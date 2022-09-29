@@ -304,7 +304,7 @@ describe('Album Service', () => {
 		it("should delete the album and the parent artist", async () => {
 			const albumQueryParameters = { byId: { id: dummyRepository.albumB1.id } };
 			await albumService.delete(albumQueryParameters);
-			await songService.delete({ byId: { id: dummyRepository.songB1.id } });
+			await songService.delete({ id: dummyRepository.songB1.id });
 			const test = async () => albumService.get(albumQueryParameters);
 			const testArtist = () => artistService.get({ id: dummyRepository.artistB.id });
 			expect(test()).rejects.toThrow(AlbumNotFoundFromIDException);

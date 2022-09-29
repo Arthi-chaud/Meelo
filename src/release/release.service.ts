@@ -4,30 +4,34 @@ import Slug from 'src/slug/slug';
 import type { Album, Prisma, Release, Track } from '@prisma/client';
 import { MasterReleaseNotFoundFromIDException, ReleaseAlreadyExists, ReleaseNotFoundException, ReleaseNotFoundFromIDException } from './release.exceptions';
 import PrismaService from 'src/prisma/prisma.service';
-import ReleaseQueryParameters from './models/release.query-parameters';
-import AlbumQueryParameters from 'src/album/models/album.query-parameters';
-import { type PaginationParameters, buildPaginationParameters } from 'src/pagination/models/pagination-parameters';
+import type ReleaseQueryParameters from './models/release.query-parameters';
+import type AlbumQueryParameters from 'src/album/models/album.query-parameters';
+import type { PaginationParameters } from 'src/pagination/models/pagination-parameters';
 import type { MeeloException } from 'src/exceptions/meelo-exception';
 import TrackService from 'src/track/track.service';
-import { buildSortingParameter } from 'src/sort/models/sorting-parameter';
 import RepositoryService from 'src/repository/repository.service';
 import IllustrationService from 'src/illustration/illustration.service';
 import type { IllustrationPath } from 'src/illustration/models/illustration-path.model';
+import { buildStringSearchParameters } from 'src/utils/search-string-input';
+import ArtistService from 'src/artist/artist.service';
 
 @Injectable()
 export default class ReleaseService extends RepositoryService<
 	Release,
+	{ tracks: Track[], album: Album },
 	ReleaseQueryParameters.CreateInput,
 	ReleaseQueryParameters.WhereInput,
 	ReleaseQueryParameters.ManyWhereInput,
 	ReleaseQueryParameters.UpdateInput,
 	ReleaseQueryParameters.DeleteInput,
-	ReleaseQueryParameters.RelationInclude,
-	ReleaseQueryParameters.SortingParameter,
-	Release & { illustration: string }
+	Prisma.ReleaseCreateInput,
+	Prisma.ReleaseWhereInput,
+	Prisma.ReleaseWhereInput,
+	Prisma.ReleaseUpdateInput,
+	Prisma.ReleaseWhereUniqueInput
 > {
 	constructor(
-		private prismaService: PrismaService,
+		protected prismaService: PrismaService,
 		@Inject(forwardRef(() => AlbumService))
 		private albumService: AlbumService,
 		@Inject(forwardRef(() => TrackService))
@@ -35,103 +39,87 @@ export default class ReleaseService extends RepositoryService<
 		@Inject(forwardRef(() => IllustrationService))
 		private illustrationService: IllustrationService
 	) {
-		super();
+		super(prismaService.release);
 	}
-
 	/**
-	 * Create a Release in the database
-	 * @param release the parameters needed to create the release
-	 * @param include the relation fields to inclide in the returned object
-	 * @returns the created release
+	 * Create
 	 */
-	async create(
-		release: ReleaseQueryParameters.CreateInput,
-		include?: ReleaseQueryParameters.RelationInclude
+	async create<I extends ReleaseQueryParameters.RelationInclude>(
+		input: ReleaseQueryParameters.CreateInput, include?: I | undefined
 	) {
-		const releaseSlug = new Slug(release.name);
-		try {
-			let createdRelease = await this.prismaService.release.create({
-				data: {
-					name: release.name,
-					releaseDate: release.releaseDate,
-					master: release.master,
-					album: {
-						connect: AlbumQueryParameters.buildQueryParametersForOne(release.album),
-					},
-					slug: releaseSlug.toString()
-				},
-				include: ReleaseQueryParameters.buildIncludeParameters(include)
-			});
-			let updatedAlbum = await this.albumService.updateAlbumDate({ byId: { id: createdRelease.albumId } });
-			if (include?.album ?? false)
-				createdRelease.album = updatedAlbum;
-			return createdRelease;
-		} catch {
-			const parentAlbum = await this.albumService.get(release.album);
-			throw new ReleaseAlreadyExists(releaseSlug, parentAlbum.artist ? new Slug(parentAlbum.artist!.slug) : undefined);
-		}
+		const release = await super.create(input, include);
+		await this.albumService.updateAlbumDate({ byId: { id: release.albumId }});
+		return release;
+
+	}
+	formatCreateInput(release: ReleaseQueryParameters.CreateInput) {
+		return {
+			name: release.name,
+			releaseDate: release.releaseDate,
+			master: release.master,
+			album: {
+				connect: AlbumService.formatWhereInput(release.album),
+			},
+			slug: new Slug(release.name).toString()
+		};
+	}
+	protected formatCreateInputToWhereInput(input: ReleaseQueryParameters.CreateInput): ReleaseQueryParameters.WhereInput {
+		return { bySlug: { slug: new Slug(input.name), album: input.album } }
+	}
+	protected async onCreationFailure(input: ReleaseQueryParameters.CreateInput) {
+		const parentAlbum = await this.albumService.get(input.album, { artist: true });
+		return new ReleaseAlreadyExists(new Slug(input.name), parentAlbum.artist ? new Slug(parentAlbum.artist!.slug) : undefined);
 	}
 
 	/**
-	 * Find a release
-	 * @param where the query parameters to find the release
-	 * @param include the relation fields to include
-	 * @returns a release. Throws if not found
+	 * Get
 	 */
-	async get(
-		where: ReleaseQueryParameters.WhereInput,
-		include?: ReleaseQueryParameters.RelationInclude
-	) {
-		try {
-			return await this.prismaService.release.findFirst({
-				rejectOnNotFound: true,
-				where: ReleaseQueryParameters.buildQueryParametersForOne(where),
-				include: ReleaseQueryParameters.buildIncludeParameters(include)
-			});
-		} catch {
-			throw await this.onNotFound(where);
-		}
+	static formatWhereInput(where: ReleaseQueryParameters.WhereInput) {
+		return {
+			id: where.byId?.id,
+			master: where.byMasterOf ? true : undefined,
+			slug: where.bySlug?.slug.toString(),
+			album: where.byMasterOf
+				? AlbumService.formatWhereInput(where.byMasterOf)
+			: where.bySlug
+				? AlbumService.formatWhereInput(where.bySlug.album)
+			: undefined
+		};
 	}
-
-	/**
-	 * Find release and only return specified fields
-	 * @param where the parameters to find the release 
-	 * @param select the fields to return
-	 * @returns the select fields of an object
-	 */
-	async select(
-		where: ReleaseQueryParameters.WhereInput,
-		select: Partial<Record<keyof Release, boolean>>
-	): Promise<Partial<Release>> {
-		try {
-			return await this.prismaService.release.findFirst({
-				rejectOnNotFound: true,
-				where: ReleaseQueryParameters.buildQueryParametersForOne(where),
-				select: <Prisma.ReleaseSelect>{...select}
-			});
-		} catch {
-			throw await this.onNotFound(where);
-		}
+	formatWhereInput = ReleaseService.formatWhereInput;
+	static formatManyWhereInput(where: ReleaseQueryParameters.ManyWhereInput) {
+		return {
+			name: buildStringSearchParameters(where.name),
+			album: where.album ? {
+				id: where.album.byId?.id,
+				slug: where.album.bySlug?.slug.toString(),
+				artist: where.album.bySlug ?
+					where.album.bySlug?.artist
+						? ArtistService.formatWhereInput(where.album.bySlug.artist)
+						: null
+				: undefined
+			} : undefined,
+			tracks: where.library ? {
+				some: TrackService.formatManyWhereInput({ byLibrarySource: where.library })
+			} : undefined
+		};
 	}
-
+	formatManyWhereInput = ReleaseService.formatManyWhereInput;
 	/**
-	 * Find releases
-	 * @param where the query parameters to find the releases
-	 * @param include the relation fields to includes
-	 * @returns an array of releases
+	 * Callback on release not found
+	 * @param where the query parameters that failed to get the release
 	 */
-	async getMany(
-		where: ReleaseQueryParameters.ManyWhereInput,
-		pagination?: PaginationParameters,
-		include?: ReleaseQueryParameters.RelationInclude,
-		sort?: ReleaseQueryParameters.SortingParameter
-	) {
-		return this.prismaService.release.findMany({
-			where: ReleaseQueryParameters.buildQueryParametersForMany(where),
-			include: ReleaseQueryParameters.buildIncludeParameters(include),
-			orderBy: buildSortingParameter(sort),
-			...buildPaginationParameters(pagination)
-		});
+	async onNotFound(where: ReleaseQueryParameters.WhereInput): Promise<MeeloException> {
+		if (where.byId) {
+			return new ReleaseNotFoundFromIDException(where.byId.id);
+		} else if (where.byMasterOf?.byId) {
+			return new MasterReleaseNotFoundFromIDException(where.byMasterOf.byId?.id);
+		} else {
+			const parentAlbum = await this.albumService.get(where.byMasterOf ?? where.bySlug.album, { artist: true });
+			const releaseSlug: Slug = where.bySlug!.slug;
+			const parentArtistSlug = parentAlbum.artist?.slug ? new Slug(parentAlbum.artist.slug) : undefined
+			return new ReleaseNotFoundException(releaseSlug, new Slug(parentAlbum.slug), parentArtistSlug);
+		}
 	}
 
 	/**
@@ -141,20 +129,20 @@ export default class ReleaseService extends RepositoryService<
 	 * @param include the relation to include in the returned objects
 	 * @returns 
 	 */
-	async getAlbumReleases(
+	async getAlbumReleases<I extends ReleaseQueryParameters.RelationInclude>(
 		where: AlbumQueryParameters.WhereInput,
 		pagination?: PaginationParameters,
-		include?: ReleaseQueryParameters.RelationInclude,
+		include?: I,
 		sort?: ReleaseQueryParameters.SortingParameter
 	) {
-		const releases = await this.getMany(
+		const releases = await super.getMany(
 			{ album: where },
 			pagination,
 			include,
 			sort
 		);
 		if (releases.length == 0) {
-			await this.albumService.throwIfNotExist(where);
+			await this.albumService.throwIfNotFound(where);
 		}
 		return releases;
 	}
@@ -173,13 +161,16 @@ export default class ReleaseService extends RepositoryService<
 	}
 
 	/**
-	 * Count the artists that match the query parameters
-	 * @param where the query parameters
+	 * Update
 	 */
-	async count(where: ReleaseQueryParameters.ManyWhereInput): Promise<number> {
-		return this.prismaService.release.count({
-			where: ReleaseQueryParameters.buildQueryParametersForMany(where)
-		});
+	formatUpdateInput(what: ReleaseQueryParameters.UpdateInput): Prisma.ReleaseUpdateInput {
+		return {
+			...what,
+			album: what.album ? {
+				connect: AlbumService.formatWhereInput(what.album),
+			} : undefined,
+			slug: what.name ? new Slug(what.name).toString() : undefined,
+		};
 	}
 
 	/**
@@ -192,16 +183,7 @@ export default class ReleaseService extends RepositoryService<
 		where: ReleaseQueryParameters.WhereInput
 	) {
 		let unmodifiedRelease = await this.get(where);
-		let updatedRelease = await this.prismaService.release.update({
-			data: {
-				...what,
-				album: what.album ? {
-					connect: AlbumQueryParameters.buildQueryParametersForOne(what.album),
-				} : undefined,
-				slug: what.name ? new Slug(what.name).toString() : undefined,
-			},
-			where: ReleaseQueryParameters.buildQueryParametersForOne(where),
-		});
+		let updatedRelease = await super.update(what, where);
 		const masterChangeInput: ReleaseQueryParameters.UpdateAlbumMaster = {
 			releaseId: updatedRelease.id,
 			album: { byId: { id: updatedRelease.albumId } }
@@ -215,6 +197,15 @@ export default class ReleaseService extends RepositoryService<
 		return updatedRelease;
 	}
 
+	/**
+	 * Delete
+	 */
+	formatDeleteInput(where: ReleaseQueryParameters.DeleteInput) {
+		return this.formatWhereInput(where);
+	}
+	protected formatDeleteInputToWhereInput(input: ReleaseQueryParameters.DeleteInput) {
+		return input;
+	}
 
 	/**
 	 * Deletes a release
@@ -227,9 +218,7 @@ export default class ReleaseService extends RepositoryService<
 			release.tracks.map((track) => this.trackService.delete({ id: track.id }, false))
 		);
 		try {
-			await this.prismaService.release.delete({
-				where: ReleaseQueryParameters.buildQueryParametersForOne(where),
-			});
+			await super.delete(where);
 		} catch {
 			return release;
 		}
@@ -252,42 +241,6 @@ export default class ReleaseService extends RepositoryService<
 		const trackCount = await this.trackService.count({ byRelease: where });
 		if (trackCount == 0)
 			await this.delete(where);
-	}
-
-	/**
-	 * Finds a release, or creates one if it does not exist already
-	 * @param where where the query parameters to fond or create the release
-	 * @returns the fetched or createdrelease
-	 */
-	async getOrCreate(
-		where: ReleaseQueryParameters.GetOrCreateInput,
-		include?: ReleaseQueryParameters.RelationInclude
-	) {
-		try {
-			return await this.get(
-				{ bySlug: { slug: new Slug(where.name), album: where.album}},
-				include
-			);
-		} catch {
-			return this.create(where, include);
-		}
-	}
-
-	/**
-	 * Callback on release not found
-	 * @param where the query parameters that failed to get the release
-	 */
-	async onNotFound(where: ReleaseQueryParameters.WhereInput): Promise<MeeloException> {
-		if (where.byId) {
-			return new ReleaseNotFoundFromIDException(where.byId.id);
-		} else if (where.byMasterOf?.byId) {
-			return new MasterReleaseNotFoundFromIDException(where.byMasterOf.byId?.id);
-		} else {
-			const parentAlbum = await this.albumService.get(where.byMasterOf ?? where.bySlug.album, { artist: true });
-			const releaseSlug: Slug = where.bySlug!.slug;
-			const parentArtistSlug = parentAlbum.artist?.slug ? new Slug(parentAlbum.artist.slug) : undefined
-			return new ReleaseNotFoundException(releaseSlug, new Slug(parentAlbum.slug), parentArtistSlug);
-		}
 	}
 
 	/**

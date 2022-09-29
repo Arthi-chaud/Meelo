@@ -126,8 +126,6 @@ describe('Artist Service', () => {
 	
 		it(('should create a new artist, as it does not exists'), async () => {
 			let artist = await artistService.getOrCreate({ name: 'My Artist 2'});
-			expect(artist.songs).toBeUndefined();
-			expect(artist.albums).toBeUndefined();
 			expect(artist.name).toBe('My Artist 2');
 			expect(artist.slug).toBe('my-artist-2');
 			expect(artist.id).not.toBe(dummyRepository.artistA.id);

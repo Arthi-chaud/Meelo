@@ -15,7 +15,7 @@ import AlbumModule from 'src/album/album.module';
 		forwardRef(() => ReleaseModule),
 		forwardRef(() => AlbumModule),
 		forwardRef(() => IllustrationModule),
-		FileModule
+		forwardRef(() => FileModule),
 	],
 	exports: [TrackService],
 	providers: [TrackService],
