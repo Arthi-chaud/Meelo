@@ -18,7 +18,7 @@ const ListItem = (props: ListItemProps) => {
 	return <>
 		<Grid container padding={1} spacing={2} sx={{ alignItems: 'center' }}>
 			<Grid item container xs sx={{ alignItems: 'center' }}>
-				<Grid item container columns={10} xs spacing={2}>
+				<Grid item container columns={10} xs spacing={2} sx={{ alignItems: 'center' }}>
 					<Grid item xs={2} sm={1.5} md={1} lg={0.5}>
 						{props.icon}
 					</Grid>
