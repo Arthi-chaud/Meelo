@@ -20,7 +20,6 @@ import IllustrationModule from "src/illustration/illustration.module";
 import GenreModule from "src/genre/genre.module";
 import TestPrismaService from "test/test-prisma.service";
 import type ReassignAlbumDTO from "./models/reassign-album.dto";
-import type Tracklist from "src/track/models/tracklist.model";
 
 describe('Album Controller', () => {
 	let dummyRepository: TestPrismaService;
