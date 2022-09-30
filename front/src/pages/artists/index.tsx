@@ -56,7 +56,7 @@ const LibraryArtistsPage = ({ librarySlug }: InferGetServerSidePropsType<typeof 
 			sortingOrder={order}
 			sortingFields={ArtistSortingFields}
 			enableToggle
-			view={router.query.view == 'list' ? 'list' : 'grid'}
+			view={router.query.view == 'grid' ? 'grid' : 'list'}
 			query={() => librarySlug ? libraryArtistsQuery(librarySlug, { sortBy, order }) : artistsQuery({ sortBy, order })}
 			renderListItem={(item: Artist) => <ArtistItem artist={item} key={item.id} />}
 			renderGridItem={(item: Artist) => <ArtistTile artist={item} key={item.id} />}

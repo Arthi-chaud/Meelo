@@ -1,9 +1,9 @@
 import { useState } from "react";
 import type { AppProps } from "next/app";
-import { QueryClient, QueryClientProvider, Hydrate, QueryCache } from "react-query";
+import { QueryClient, QueryClientProvider, Hydrate } from "react-query";
 import { ReactQueryDevtools } from "react-query/devtools";
 import "../../styles/global.css";
-import { Box, CssBaseline, ThemeProvider } from "@mui/material";
+import { Box, CssBaseline, Fab, ThemeProvider } from "@mui/material";
 import MeeloAppBar from "../components/appbar/appbar";
 import { ErrorBoundary } from 'react-error-boundary'
 import toast, { Toaster } from 'react-hot-toast';
@@ -11,6 +11,7 @@ import Head from "next/head";
 import store from '../state/store'
 import { Provider } from 'react-redux'
 import theme from "../theme";
+import Player from "../components/player/player";
 
 function MyApp({ Component, pageProps }: AppProps) {
 	const [queryClient] = useState(() => new QueryClient());
@@ -30,6 +31,7 @@ function MyApp({ Component, pageProps }: AppProps) {
 					<Hydrate state={pageProps.dehydratedState}>
 						<Component {...pageProps} />
 					</Hydrate>
+					<Player/>
 				</ErrorBoundary>
 				<Toaster toastOptions={{ duration: 10000 }} position='bottom-center'/>
 				<ReactQueryDevtools initialIsOpen={false} />

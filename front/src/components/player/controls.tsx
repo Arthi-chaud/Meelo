@@ -3,11 +3,13 @@ import { Typography, Grid, Slider, LinearProgress, IconButton } from "@mui/mater
 import formatDuration from "../../utils/formatDuration";
 import Illustration from "../illustration";
 import LoadingComponent from "../loading/loading";
+import AudiotrackIcon from '@mui/icons-material/Audiotrack';
 
 type PlayerControlsProps = {
 	title?: string;
 	artist?: string;
 	playing: boolean;
+	illustration?: string;
 	onPause: () => void;
 	onPlay: () => void;
 	onSkipTrack: () => void;
@@ -19,13 +21,19 @@ type PlayerControlsProps = {
 
 const DurationComponent = ({time}: { time?: number}) => (
 	<Typography>
-		{time ? formatDuration(time) : '-:--'}
+		{formatDuration(time)}
 	</Typography>
 )
 
 const PlayerControls = (props: PlayerControlsProps) => {
-	return <Grid container spacing={1} sx={{ alignItems: 'center', justifyContent: 'space-evenly' }}>
-		<Grid item container sx={{ flexDirection: 'column' }} xs={6}>
+	return <Grid container spacing={1} sx={{ alignItems: 'center', justifyContent: 'space-evenly', padding: 1 }}>
+		<Grid item xs={1.5} sm={1.25} md={0.75} lg={0.6} xl={0.5} sx={{ alignContent: 'center' }}>
+			{ props.illustration
+				? <Illustration url={props.illustration} fallback={<AudiotrackIcon/>}/>
+				: <AudiotrackIcon/>
+			}
+		</Grid>
+		<Grid item container sx={{ flexDirection: 'column'}} xs={6}>
 			<Grid item xs sx={{ display: 'flex', justifyContent: 'center' }}>
 				<Typography sx={{ textAlign: 'center' }}>
 					{ props.title && props.artist ? `${props.title} - ${props.artist}` : ''}

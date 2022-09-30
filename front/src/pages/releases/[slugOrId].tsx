@@ -142,16 +142,16 @@ const ReleasePage = ({ releaseIdentifier }: InferGetServerSidePropsType<typeof g
 						alignItems: 'left', [theme.breakpoints.down('md')]: { alignItems: 'center', textAlign: 'center' },
 					}}>
 						<Grid item>
-							<Typography variant='h2'>{release.data!.name}</Typography>
+							<Typography variant='h3' fontWeight='bold'>{release.data!.name}</Typography>
 						</Grid>
 						{albumArtist.data &&
 							<Grid item>
-								<Typography  variant='h3'>{albumArtist.data?.name}</Typography>
+								<Typography  variant='h4'>{albumArtist.data?.name}</Typography>
 							</Grid>
 						}
 						<Grid item>
-							<Typography variant='h6'>
-								{new Date(release.data!.album.releaseDate!).getFullYear()}{totalDuration && ` - ${formatDuration(totalDuration)}`}
+							<Typography  fontWeight='light'>
+								{new Date(release.data!.album.releaseDate!).getFullYear()}{` - ${formatDuration(totalDuration ?? undefined)}`}
 							</Typography>
 						</Grid>
 					</Grid>
@@ -214,9 +214,9 @@ const ReleasePage = ({ releaseIdentifier }: InferGetServerSidePropsType<typeof g
 					}
 					</Grid>
 				}
-				<Grid item md={hasGenres ? 9 : true} xs={12}>
-					{ formattedTrackList && otherArtistsQuery.findIndex((q) => q.data == undefined) == -1 &&
-						<>
+				<Grid item md={ hasGenres ? 9 : true} xs={12}>
+					{ albumGenres.data && formattedTrackList && otherArtistsQuery.findIndex((q) => q.data == undefined) == -1 &&
+						<FadeIn>
 							{ Array.from(formattedTrackList.entries()).map((disc, _, discs) => 
 								<List key={disc[0]} subheader={ discs.length !== 1 && <ListSubheader>Disc {disc[0]}</ListSubheader> }>
 									{ disc[1].map((track, _, tracks) => {
@@ -257,7 +257,7 @@ const ReleasePage = ({ releaseIdentifier }: InferGetServerSidePropsType<typeof g
 									}) }
 								</List>
 							) }
-						</>
+						</FadeIn>
 					}
 				</Grid>
 			</Grid>
