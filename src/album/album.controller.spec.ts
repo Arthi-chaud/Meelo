@@ -1,6 +1,6 @@
 import type { INestApplication } from "@nestjs/common";
 import type { TestingModule } from "@nestjs/testing";
-import type { Album, Artist, Release, Song, Track } from "@prisma/client";
+import type { Album, Artist, Release, Track } from "@prisma/client";
 import request from "supertest";
 import ArtistModule from "src/artist/artist.module";
 import ArtistService from "src/artist/artist.service";
@@ -20,7 +20,6 @@ import IllustrationModule from "src/illustration/illustration.module";
 import GenreModule from "src/genre/genre.module";
 import TestPrismaService from "test/test-prisma.service";
 import type ReassignAlbumDTO from "./models/reassign-album.dto";
-import type Tracklist from "src/track/models/tracklist.model";
 
 describe('Album Controller', () => {
 	let dummyRepository: TestPrismaService;
@@ -34,11 +33,6 @@ describe('Album Controller', () => {
 	const expectedAlbumResponse = (album: Album) => ({
 		...album,
 		releaseDate: album.releaseDate?.toISOString() ?? null,
-		illustration: null
-	});
-
-	const expectedSongResponse = (song: Song) => ({
-		...song,
 		illustration: null
 	});
 
@@ -229,51 +223,6 @@ describe('Album Controller', () => {
 		});
 	});
 
-	describe("Get Master's tracklist (GET /albums/:id/master/tracklist)", () => {
-		it("should get the tracklist", () => {
-			return request(app.getHttpServer())
-				.get(`/albums/${dummyRepository.albumA1.id}/master/tracklist`)
-				.expect(200)
-				.expect((res) => {
-					let tracklist: Tracklist = res.body;
-					expect(tracklist).toStrictEqual({
-						"1": [
-							expectedTrackResponse(dummyRepository.trackA1_1),
-						]
-					});
-				});
-		});
-	});
-
-	describe("Get Master's Playlist (GET /albums/:id/master/playlist)", () => {
-		it("should get the Playlist", () => {
-			return request(app.getHttpServer())
-				.get(`/albums/${dummyRepository.albumA1.id}/master/playlist`)
-				.expect(200)
-				.expect((res) => {
-					let tracklist: Track[] = res.body;
-					expect(tracklist).toStrictEqual([
-						expectedTrackResponse(dummyRepository.trackA1_1),
-					]);
-				});
-		});
-
-		it("should get the playlist, w/ related song", () => {
-			return request(app.getHttpServer())
-				.get(`/albums/${dummyRepository.albumB1.id}/master/playlist?with=song`)
-				.expect(200)
-				.expect((res) => {
-					let tracklist: Track[] = res.body;
-					expect(tracklist).toStrictEqual([
-						{
-							...expectedTrackResponse(dummyRepository.trackB1_1),
-							song: expectedSongResponse(dummyRepository.songB1)
-						},
-					]);
-				});
-		});
-	});
-
 	describe("Get Album's Releases (GET /albums/:id/releases)", () => {
 		it("Should return all album's releases", () => {
 			return request(app.getHttpServer())
@@ -337,14 +286,6 @@ describe('Album Controller', () => {
 						album: expectedAlbumResponse(dummyRepository.compilationAlbumA)
 					});
 				});
-		});
-	});
-
-	describe("Get Tracklist Album (GET /albums/:id/master/tracklist)", () => {
-		it("should return an error, as the release does not exist", () => {
-			return request(app.getHttpServer())
-				.get(`/albums/${-1}/master/tracklist`)
-				.expect(404);
 		});
 	});
 
