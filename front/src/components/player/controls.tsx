@@ -19,7 +19,7 @@ type PlayerControlsProps = {
 
 const DurationComponent = ({time}: { time?: number}) => (
 	<Typography>
-		{time ? formatDuration(time) : '-:--'}
+		{formatDuration(time)}
 	</Typography>
 )
 
