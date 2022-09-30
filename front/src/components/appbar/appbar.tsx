@@ -58,7 +58,7 @@ const MeeloAppBar = () => {
 						<MenuIcon />
 					</IconButton>
 					<Box style={{ paddingRight: 25 }}>
-						<Link href="/">
+						<Link href="/albums" style={{ cursor: 'pointer' }}>
 							<a><Image src="/banner.png" alt="icon" width={120} height={50}/></a>
 						</Link>
 					</Box>
