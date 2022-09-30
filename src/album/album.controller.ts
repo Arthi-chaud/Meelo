@@ -1,4 +1,4 @@
-import { Body, Controller, DefaultValuePipe, forwardRef, Get, Inject, Param, ParseBoolPipe, Post, Query, Req } from '@nestjs/common';
+import { Body, Controller, forwardRef, Get, Inject, Param, Post, Query, Req } from '@nestjs/common';
 import type { PaginationParameters } from 'src/pagination/models/pagination-parameters';
 import ParsePaginationParameterPipe from 'src/pagination/pagination.pipe';
 import ReleaseQueryParameters from 'src/release/models/release.query-parameters';
@@ -100,42 +100,6 @@ export default class AlbumController {
 	) {
 		let masterRelease = await this.releaseService.getMasterRelease(where, include);
 		return await this.releaseService.buildResponse(masterRelease);
-	}
-
-	@ApiOperation({
-		summary: 'Get the tracklist of master release of an album'
-	})
-	@Get(':idOrSlug/master/tracklist')
-	async getAlbumTracklist(
-		@Param(ParseAlbumIdentifierPipe)
-		where: AlbumQueryParameters.WhereInput,
-		@Query('with', TrackQueryParameters.ParseRelationIncludePipe)
-		include: TrackQueryParameters.RelationInclude,
-	) {
-		const masterRelease = await this.releaseService.getMasterRelease(where);
-		const tracklist = await this.trackService.getTracklist(
-			{ byId: { id: masterRelease.id } }, include
-		);
-		return await this.trackService.buildTracklistResponse(tracklist);
-	}
-
-	@ApiOperation({
-		summary: 'Get the playlist of master release of an album'
-	})
-	@Get(':idOrSlug/master/playlist')
-	async getAlbumPlaylist(
-		@Param(ParseAlbumIdentifierPipe)
-		where: AlbumQueryParameters.WhereInput,
-		@Query('with', TrackQueryParameters.ParseRelationIncludePipe)
-		include: TrackQueryParameters.RelationInclude,
-		@Query('random', new DefaultValuePipe(false), ParseBoolPipe)
-		random: boolean = false,
-	) {
-		const masterRelease = await this.releaseService.getMasterRelease(where);
-		const tracklist = await this.trackService.getPlaylist(
-			{ byId: { id: masterRelease.id } }, include, random
-		);
-		return await Promise.all(tracklist.map((track) => this.trackService.buildResponse(track)));
 	}
 
 	@ApiOperation({
