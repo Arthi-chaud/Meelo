@@ -142,15 +142,15 @@ const ReleasePage = ({ releaseIdentifier }: InferGetServerSidePropsType<typeof g
 						alignItems: 'left', [theme.breakpoints.down('md')]: { alignItems: 'center', textAlign: 'center' },
 					}}>
 						<Grid item>
-							<Typography variant='h2'>{release.data!.name}</Typography>
+							<Typography variant='h3' fontWeight='bold'>{release.data!.name}</Typography>
 						</Grid>
 						{albumArtist.data &&
 							<Grid item>
-								<Typography  variant='h3'>{albumArtist.data?.name}</Typography>
+								<Typography  variant='h4'>{albumArtist.data?.name}</Typography>
 							</Grid>
 						}
 						<Grid item>
-							<Typography variant='h6'>
+							<Typography  fontWeight='light'>
 								{new Date(release.data!.album.releaseDate!).getFullYear()}{totalDuration && ` - ${formatDuration(totalDuration)}`}
 							</Typography>
 						</Grid>
