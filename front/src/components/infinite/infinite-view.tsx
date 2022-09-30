@@ -1,4 +1,4 @@
-import { Box, Tooltip, Slide, Button, Chip, Menu, MenuItem, ListItem, Hidden, Fab, ButtonGroup, IconButton, Divider } from "@mui/material";
+import { Box, Tooltip, Slide, Button, Chip, Menu, MenuItem, ListItem, Hidden, Fab, ButtonGroup, IconButton, Divider, ListItemIcon, ListItemText } from "@mui/material";
 import FadeIn from "react-fade-in";
 import Resource from "../../models/resource";
 import StraightIcon from "@mui/icons-material/Straight"
@@ -13,7 +13,7 @@ import { useEffect, useState } from 'react';
 import NorthIcon from '@mui/icons-material/North';
 import SouthIcon from '@mui/icons-material/South';
 import { capitalCase } from "change-case";
-import { LastArrayElement } from 'type-fest'
+import CheckIcon from '@mui/icons-material/Check';
 
 type ResourceWithoutRelation<T> = { [key in keyof T as T[key] extends Resource | undefined ? never : key]: T[key] };
 
@@ -92,15 +92,23 @@ const InfiniteView = <T extends Resource,>(props: InfiniteViewProps<T>) => {
 						</MenuItem>
 					))}
 					<Divider/>
-					{ ["asc", "desc"].map((order) => (
-						<MenuItem key={order} selected={order == sortOrder} onClick={() => {
+					{ ["asc", "desc"].map((order) => {
+						const selected = order == sortOrder;
+						return <MenuItem key={order} selected={selected} onClick={() => {
 							setSortOrder(order as "asc" | "desc");
 							props.onSortingOrderSelect(order as 'asc' | 'desc');
 							handleMenuClose();
 						}}>
-							{capitalCase(order as string)}
+							<ListItemText>
+								{capitalCase(order as string)}
+							</ListItemText>
+							{ selected &&
+								<ListItemIcon>
+									<CheckIcon/>
+								</ListItemIcon>
+							}
 						</MenuItem>
-					))}
+					})}
     			  </Menu>
 				{ props.enableToggle &&
 					availableDisplayMethods.filter((method) => method.name != display)
