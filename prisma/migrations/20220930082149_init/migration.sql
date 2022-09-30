@@ -1,73 +1,13 @@
-/*
-  Warnings:
+CREATE EXTENSION IF NOT EXISTS citext;
 
-  - You are about to drop the `Album` table. If the table is not empty, all the data it contains will be lost.
-  - You are about to drop the `Artist` table. If the table is not empty, all the data it contains will be lost.
-  - You are about to drop the `File` table. If the table is not empty, all the data it contains will be lost.
-  - You are about to drop the `Genre` table. If the table is not empty, all the data it contains will be lost.
-  - You are about to drop the `Library` table. If the table is not empty, all the data it contains will be lost.
-  - You are about to drop the `Lyrics` table. If the table is not empty, all the data it contains will be lost.
-  - You are about to drop the `Release` table. If the table is not empty, all the data it contains will be lost.
-  - You are about to drop the `Song` table. If the table is not empty, all the data it contains will be lost.
-  - You are about to drop the `Track` table. If the table is not empty, all the data it contains will be lost.
+-- CreateEnum
+CREATE TYPE "AlbumType" AS ENUM ('StudioRecording', 'LiveRecording', 'Compilation', 'Single');
 
-*/
--- DropForeignKey
-ALTER TABLE "Album" DROP CONSTRAINT "Album_artistId_fkey";
+-- CreateEnum
+CREATE TYPE "RipSource" AS ENUM ('CD', 'DVD', 'BluRay', 'Cassette', 'Vinyl', 'Digital', 'Other');
 
--- DropForeignKey
-ALTER TABLE "File" DROP CONSTRAINT "File_libraryId_fkey";
-
--- DropForeignKey
-ALTER TABLE "Lyrics" DROP CONSTRAINT "Lyrics_songId_fkey";
-
--- DropForeignKey
-ALTER TABLE "Release" DROP CONSTRAINT "Release_albumId_fkey";
-
--- DropForeignKey
-ALTER TABLE "Song" DROP CONSTRAINT "Song_artistId_fkey";
-
--- DropForeignKey
-ALTER TABLE "Track" DROP CONSTRAINT "Track_releaseId_fkey";
-
--- DropForeignKey
-ALTER TABLE "Track" DROP CONSTRAINT "Track_songId_fkey";
-
--- DropForeignKey
-ALTER TABLE "Track" DROP CONSTRAINT "Track_sourceFileId_fkey";
-
--- DropForeignKey
-ALTER TABLE "_GenreToSong" DROP CONSTRAINT "_GenreToSong_A_fkey";
-
--- DropForeignKey
-ALTER TABLE "_GenreToSong" DROP CONSTRAINT "_GenreToSong_B_fkey";
-
--- DropTable
-DROP TABLE "Album";
-
--- DropTable
-DROP TABLE "Artist";
-
--- DropTable
-DROP TABLE "File";
-
--- DropTable
-DROP TABLE "Genre";
-
--- DropTable
-DROP TABLE "Library";
-
--- DropTable
-DROP TABLE "Lyrics";
-
--- DropTable
-DROP TABLE "Release";
-
--- DropTable
-DROP TABLE "Song";
-
--- DropTable
-DROP TABLE "Track";
+-- CreateEnum
+CREATE TYPE "TrackType" AS ENUM ('Audio', 'Video');
 
 -- CreateTable
 CREATE TABLE "genres" (
@@ -170,6 +110,12 @@ CREATE TABLE "tracks" (
     CONSTRAINT "tracks_pkey" PRIMARY KEY ("id")
 );
 
+-- CreateTable
+CREATE TABLE "_GenreToSong" (
+    "A" INTEGER NOT NULL,
+    "B" INTEGER NOT NULL
+);
+
 -- CreateIndex
 CREATE UNIQUE INDEX "genres_slug_key" ON "genres"("slug");
 
@@ -202,6 +148,12 @@ CREATE UNIQUE INDEX "lyrics_songId_key" ON "lyrics"("songId");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "tracks_sourceFileId_key" ON "tracks"("sourceFileId");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "_GenreToSong_AB_unique" ON "_GenreToSong"("A", "B");
+
+-- CreateIndex
+CREATE INDEX "_GenreToSong_B_index" ON "_GenreToSong"("B");
 
 -- AddForeignKey
 ALTER TABLE "albums" ADD CONSTRAINT "albums_artistId_fkey" FOREIGN KEY ("artistId") REFERENCES "artists"("id") ON DELETE SET NULL ON UPDATE CASCADE;
