@@ -17,6 +17,7 @@ model Genre {
 	slug			String	@unique
 	/// The songs from this genre
 	songs			Song[]
+	@@map("genres")
 }
 
 enum AlbumType {
@@ -28,6 +29,7 @@ enum AlbumType {
 	Compilation
 	/// Describes a collection of track, usually below 10, that are related to a single song, of songs from a common era
 	Single
+	@@map("album-types")
 }
 /// An album is a record of releases.
 model Album {
@@ -48,6 +50,7 @@ model Album {
 	artist			Artist?		@relation(fields: [artistId], references: [id])
 	artistId		Int?
 	@@unique([slug, artistId])
+	@@map("albums")
 }
 
 /// An artist is a person who has albums
@@ -61,6 +64,7 @@ model Artist {
 	albums			Album[]
 	/// The collection of relates songs
 	songs			Song[]
+	@@map("artists")
 }
 
 /// A file represent the source file from which a track is imported
@@ -79,6 +83,7 @@ model File {
 	library			Library	@relation(fields: [libraryId], references: id)
 	libraryId		Int
 	@@unique([path, libraryId])
+	@@map("files")
 }
 
 /// A Library groups files under a given path
@@ -92,6 +97,7 @@ model Library {
 	path			String	@unique
 	/// Files from the library
 	files			File[]
+	@@map("libraries")
 }
 
 /// A release is 'an instance' of an Album
@@ -111,6 +117,7 @@ model Release {
 	album			Album		@relation(fields: [albumId], references: [id])
 	albumId			Int
 	@@unique([albumId, slug])
+	@@map("releases")
 }
 /// A song is described by a title, an artist, and 'instanciated' by Tracks
 model Song {
@@ -129,6 +136,7 @@ model Song {
 	/// The genres of the song
 	genres Genre[]
 	@@unique([slug, artistId])
+	@@map("songs")
 }
 
 /// Enumeration of the different sources of a track rip
@@ -147,6 +155,7 @@ enum RipSource {
 	Digital
 	/// Other rip source
 	Other
+	@@map("rip-sources")
 }
 
 /// The lyrics of a song
@@ -157,6 +166,7 @@ model Lyrics {
 	/// The parent song
 	song			Song @relation(fields: [songId], references: [id])
 	songId			Int @unique
+	@@map("lyrics")
 }
 
 /// Enumeration of forms a Track can be
@@ -165,6 +175,7 @@ enum TrackType {
 	Audio
 	/// Video, for example: Music Video
 	Video
+	@@map("track-types")
 }
 
 /// An track is an 'instance' of a song
@@ -195,4 +206,5 @@ model Track {
 	/// The track from the file
 	sourceFile			File	@relation(fields: [sourceFileId], references: [id])
 	sourceFileId		Int		@unique
+	@@map("tracks")
 }
