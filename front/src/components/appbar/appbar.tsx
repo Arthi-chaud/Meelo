@@ -104,9 +104,7 @@ const MeeloAppBar = () => {
 									</Grid>
 								</Box>
 							</FadeIn>
-							<Box sx={{ flexGrow: 1 }}>
-								<Player/>
-							</Box>
+							<Box sx={{ flexGrow: 1 }}/>
 							<FadeIn>
 								<Box sx={{ display: { xs: 'none', sm: 'flex' } }}>
 									<IconButton>

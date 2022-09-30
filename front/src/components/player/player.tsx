@@ -1,4 +1,4 @@
-import { Box, Button, Link } from "@mui/material"
+import { Box, Button, Card, CardContent, Link, Paper, Slide, useTheme } from "@mui/material"
 import { useEffect, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import API from "../../api";
@@ -7,6 +7,7 @@ import { RootState } from "../../state/store";
 import PlayerControls from "./controls"
 
 const Player = () => {
+	const theme = useTheme();
 	const currentTrack = useSelector((state: RootState) => state.player.currentTrack);
 	const history = useSelector((state: RootState) => state.player.history);
 	const playlist = useSelector((state: RootState) => state.player.playlist);
@@ -37,37 +38,44 @@ const Player = () => {
 	}, [currentTrack]);
 	if (playlist.length == 0 && history.length == 0 && audio.current == undefined)
 		return <></>
-	return <PlayerControls
-		title={currentTrack?.track.name}
-		artist={currentTrack?.artist.name}
-		playing={playing ?? false}
-		onPause={() => {
-			setPlaying(false);
-			audio.current?.pause();
-		}}
-		onPlay={() => {
-			if (currentTrack == undefined)
-				dispatch(playNextTrack());
-			setPlaying(true);
-			audio.current?.play();
-		}}
-		duration={currentTrack?.track.duration}
-		progress={progress}
-		onSkipTrack={() => {
-			dispatch(pushCurrentTrackToHistory())
-			if (playlist.length == 0) {
-				setPlaying(false);
-				dispatch(setHistoryToPlaylist());
-			} else
-				dispatch(playNextTrack());
-		}}
-		onRewind={() => {
-			if (history.length == 0)
-				setPlaying(false);
-			dispatch(playPreviousTrack())
-		}}
-		onScroll={(newProgress) => audio.current?.fastSeek(newProgress)}
-	/>
+	return <Slide direction="up" in={true} mountOnEnter unmountOnExit>
+		<Box sx={{ width: '100%', display: "flex", position: 'fixed', bottom: 16, paddingX:2, zIndex: 'modal' }}>
+			<Paper elevation={20} sx={{ width: '100%', borderRadius: '0.5rem' }}>
+				<PlayerControls
+					illustration={currentTrack?.track.illustration}
+					title={currentTrack?.track.name}
+					artist={currentTrack?.artist.name}
+					playing={playing ?? false}
+					onPause={() => {
+						setPlaying(false);
+						audio.current?.pause();
+					}}
+					onPlay={() => {
+						if (currentTrack == undefined)
+							dispatch(playNextTrack());
+						setPlaying(true);
+						audio.current?.play();
+					}}
+					duration={currentTrack?.track.duration}
+					progress={progress}
+					onSkipTrack={() => {
+						dispatch(pushCurrentTrackToHistory())
+						if (playlist.length == 0) {
+							setPlaying(false);
+							dispatch(setHistoryToPlaylist());
+						} else
+							dispatch(playNextTrack());
+					}}
+					onRewind={() => {
+						if (history.length == 0)
+							setPlaying(false);
+						dispatch(playPreviousTrack())
+					}}
+					onScroll={(newProgress) => audio.current?.fastSeek(newProgress)}
+				/>
+			</Paper>
+		</Box>
+	</Slide>
 }
 
 export default Player;
