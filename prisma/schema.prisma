@@ -12,7 +12,7 @@ generator client {
 model Genre {
 	id				Int		@id @default(autoincrement())
 	/// The name of the genre
-	name			String
+	name			String	@db.Citext()
 	/// The slug of the album, based on its name
 	slug			String	@unique
 	/// The songs from this genre
@@ -34,7 +34,7 @@ model Album {
 	id				Int		@id @default(autoincrement())
 	/// The title of the album
 	/// It should not include descriptive suffixes like 'Deluxe Edition' of 'Explicit Version' 
-	name			String
+	name			String	@db.Citext()
 	/// The slug of the album, based on its name
 	slug			String
 	/// The date of the first release of the album
@@ -54,7 +54,7 @@ model Album {
 model Artist {
 	id				Int		@id @default(autoincrement())
 	/// The name of the artist
-	name			String
+	name			String	@db.Citext()
 	/// The slug of the artist, based on their name
 	slug			String	@unique
 	/// The collection of related albums
@@ -85,7 +85,7 @@ model File {
 model Library {
 	id				Int		@id @default(autoincrement())
 	/// The name of the library, whose slug will be built from
-	name			String	@unique
+	name			String	@db.Citext()	@unique
 	/// Slug of the library, based on its name
 	slug			String	@unique
 	/// Path of the library, relative to 'dataFolder' from settings.json
@@ -98,7 +98,7 @@ model Library {
 model Release {
 	id				Int		@id @default(autoincrement())
 	/// The title of the release
-	name			String
+	name			String	@db.Citext()
 	/// The sluf of the release
 	slug			String
 	/// The date of the release
@@ -116,7 +116,7 @@ model Release {
 model Song {
 	id				Int		@id @default(autoincrement())
 	/// The name of the track
-	name			String
+	name			String	@db.Citext()
 	slug			String
 	/// The artist of the song
 	artist			Artist	@relation(fields: [artistId], references: [id])
