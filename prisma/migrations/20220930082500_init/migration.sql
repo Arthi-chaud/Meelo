@@ -1,13 +1,12 @@
 CREATE EXTENSION IF NOT EXISTS citext;
+-- CreateEnum
+CREATE TYPE "album-types" AS ENUM ('StudioRecording', 'LiveRecording', 'Compilation', 'Single');
 
 -- CreateEnum
-CREATE TYPE "AlbumType" AS ENUM ('StudioRecording', 'LiveRecording', 'Compilation', 'Single');
+CREATE TYPE "rip-sources" AS ENUM ('CD', 'DVD', 'BluRay', 'Cassette', 'Vinyl', 'Digital', 'Other');
 
 -- CreateEnum
-CREATE TYPE "RipSource" AS ENUM ('CD', 'DVD', 'BluRay', 'Cassette', 'Vinyl', 'Digital', 'Other');
-
--- CreateEnum
-CREATE TYPE "TrackType" AS ENUM ('Audio', 'Video');
+CREATE TYPE "track-types" AS ENUM ('Audio', 'Video');
 
 -- CreateTable
 CREATE TABLE "genres" (
@@ -24,7 +23,7 @@ CREATE TABLE "albums" (
     "name" CITEXT NOT NULL,
     "slug" TEXT NOT NULL,
     "releaseDate" TIMESTAMP(3),
-    "type" "AlbumType" NOT NULL DEFAULT E'StudioRecording',
+    "type" "album-types" NOT NULL DEFAULT E'StudioRecording',
     "artistId" INTEGER,
 
     CONSTRAINT "albums_pkey" PRIMARY KEY ("id")
@@ -101,9 +100,9 @@ CREATE TABLE "tracks" (
     "master" BOOLEAN NOT NULL DEFAULT false,
     "discIndex" INTEGER,
     "trackIndex" INTEGER,
-    "type" "TrackType" NOT NULL,
+    "type" "track-types" NOT NULL,
     "bitrate" INTEGER NOT NULL,
-    "ripSource" "RipSource",
+    "ripSource" "rip-sources",
     "duration" INTEGER NOT NULL,
     "sourceFileId" INTEGER NOT NULL,
 

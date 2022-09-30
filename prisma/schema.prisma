@@ -29,6 +29,7 @@ enum AlbumType {
 	Compilation
 	/// Describes a collection of track, usually below 10, that are related to a single song, of songs from a common era
 	Single
+	@@map("album-types")
 }
 /// An album is a record of releases.
 model Album {
@@ -154,6 +155,7 @@ enum RipSource {
 	Digital
 	/// Other rip source
 	Other
+	@@map("rip-sources")
 }
 
 /// The lyrics of a song
@@ -173,6 +175,7 @@ enum TrackType {
 	Audio
 	/// Video, for example: Music Video
 	Video
+	@@map("track-types")
 }
 
 /// An track is an 'instance' of a song
