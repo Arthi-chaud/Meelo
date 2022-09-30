@@ -214,9 +214,9 @@ const ReleasePage = ({ releaseIdentifier }: InferGetServerSidePropsType<typeof g
 					}
 					</Grid>
 				}
-				<Grid item md={hasGenres ? 9 : true} xs={12}>
-					{ formattedTrackList && otherArtistsQuery.findIndex((q) => q.data == undefined) == -1 &&
-						<>
+				<Grid item md={ hasGenres ? 9 : true} xs={12}>
+					{ albumGenres.data && formattedTrackList && otherArtistsQuery.findIndex((q) => q.data == undefined) == -1 &&
+						<FadeIn>
 							{ Array.from(formattedTrackList.entries()).map((disc, _, discs) => 
 								<List key={disc[0]} subheader={ discs.length !== 1 && <ListSubheader>Disc {disc[0]}</ListSubheader> }>
 									{ disc[1].map((track, _, tracks) => {
@@ -257,7 +257,7 @@ const ReleasePage = ({ releaseIdentifier }: InferGetServerSidePropsType<typeof g
 									}) }
 								</List>
 							) }
-						</>
+						</FadeIn>
 					}
 				</Grid>
 			</Grid>
