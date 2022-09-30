@@ -36,11 +36,6 @@ describe('Album Controller', () => {
 		illustration: null
 	});
 
-	const expectedSongResponse = (song: Song) => ({
-		...song,
-		illustration: null
-	});
-
 	const expectedReleaseResponse = (release: Release) => ({
 		...release,
 		illustration: null
