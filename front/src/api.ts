@@ -328,6 +328,42 @@ export default class API {
 		});
 	}
 
+	static async searchArtists<T extends Artist = Artist>(
+		query: string,
+		pagination?: PaginationParameters,
+		include: ArtistInclude[] = []
+	): Promise<PaginatedResponse<T>> {
+		return API.fetch({
+			route: `/search/artists/${query}`,
+			errorMessage: 'Search failed',
+			parameters: { pagination, include }
+		})
+	}
+
+	static async searchAlbums<T extends Album = Album>(
+		query: string,
+		pagination?: PaginationParameters,
+		include: AlbumInclude[] = []
+	): Promise<PaginatedResponse<T>> {
+		return API.fetch({
+			route: `/search/albums/${query}`,
+			errorMessage: 'Search failed',
+			parameters: { pagination, include }
+		})
+	}
+
+	static async searchSongs<T extends Song = Song>(
+		query: string,
+		pagination?: PaginationParameters,
+		include: SongInclude[] = []
+	): Promise<PaginatedResponse<T>> {
+		return API.fetch({
+			route: `/search/songs/${query}`,
+			errorMessage: 'Search failed',
+			parameters: { pagination, include }
+		})
+	}
+
 	private static async fetch<T extends Resource>({ route, parameters, otherParameters, errorMessage }: FetchParameters<T>) {
 		const response = await fetch(this.buildURL(route, parameters, otherParameters));
 		const jsonResponse = await response.json().catch(() => {
