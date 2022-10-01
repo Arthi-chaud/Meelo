@@ -56,7 +56,7 @@ const SearchPage = () => {
 			</Grid>
 			<Grid item container spacing={2} sx={{ justifyContent: 'center' }}>
 			{ itemTypes.map((item) => (
-				<Grid item>
+				<Grid item key={item}>
 					<Chip label={item} variant={ selectedType == item ? 'filled' : 'outlined'} onClick={() => {
 						selectItemType(item);
 					}}/>
