@@ -341,6 +341,22 @@ describe('Song Service', () => {
 		});
 	});
 
+	describe("Get Song's Versions", () => {
+		it("should return the song's versions", async () => {
+			const version = await songService.create({ name: 'My Other Song (Remix)', artist: { id: dummyRepository.artistA.id }, genres: [] })
+			const versions = await songService.getSongVersions({ byId: { id: dummyRepository.songA2.id }});
+			expect(versions).toStrictEqual([
+				dummyRepository.songA2,
+				version
+			]);
+			await songService.delete({ id: version.id });
+		});
+		it("should throw, as the song song does not exist", async () => {
+			const test = async () => await songService.getSongVersions({ byId: { id: -1 }});
+			expect(test()).rejects.toThrow(SongNotFoundByIdException);
+		});
+	})
+
 	describe("Increment a song's play count", () => {
 		it("should throw, as the song does not exist", () => {
 			const test = async () => await songService.incrementPlayCount(
