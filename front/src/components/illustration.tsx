@@ -11,7 +11,7 @@ type IllustrationProps = {
 	 * URL of the illustration to display
 	 * Must be an URL from an API response
 	 */
-	url: string;
+	url: string | null;
 	/**
 	 * An icon to display when illustration rendering failed
 	 */
@@ -34,9 +34,10 @@ const Illustration = (props: IllustrationProps) => {
 					height={1}
 					objectFit="contain"
 					layout="responsive"
+					alt={(props.url?.split('/').join('-') ?? 'missing-illustration')}
 					{...props}
 					style={{ ...props.style, borderRadius: theme.shape.borderRadius, width: 'auto' }}
-					src={API.getIllustrationURL(props.url)}
+					src={API.getIllustrationURL(props.url ?? '')}
 				/>
 			}
 		</Box>

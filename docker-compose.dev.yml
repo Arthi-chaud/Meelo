@@ -6,6 +6,7 @@ services:
     ports:
       - "5000:5000"
       - "3000:3000"
+      - "4000:4000"
     depends_on:
       - "db"
     volumes:
