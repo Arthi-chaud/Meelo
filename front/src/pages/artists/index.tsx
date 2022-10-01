@@ -48,6 +48,7 @@ export const getServerSideProps = async (context: GetServerSidePropsContext) => 
 
 const LibraryArtistsPage = ({ librarySlug }: InferGetServerSidePropsType<typeof getServerSideProps>) => {
 	const router = useRouter();
+	librarySlug ??= getLibrarySlug(router.asPath);
 	const [order, setOrder] = useState(getOrderParams(router.query.order));
 	const [sortBy, setSortBy] = useState(getSortingFieldParams(router.query.sortBy, ArtistSortingFields));
 	return (
