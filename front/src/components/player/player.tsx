@@ -1,4 +1,4 @@
-import { Box, Button, Card, CardContent, Link, Paper, Slide, useTheme } from "@mui/material"
+import { BottomNavigation, Box, Button, Card, CardContent, Link, Paper, Slide, useTheme } from "@mui/material"
 import { useEffect, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import API from "../../api";
@@ -39,8 +39,8 @@ const Player = () => {
 	if (playlist.length == 0 && history.length == 0 && audio.current == undefined)
 		return <></>
 	return <Slide direction="up" in={true} mountOnEnter unmountOnExit>
-		<Box sx={{ width: '100%', display: "flex", position: 'fixed', bottom: 16, zIndex: 'modal', justifyContent: 'center' }}>
-			<Paper elevation={20} sx={{ width: '90%', borderRadius: '0.5rem' }}>
+		<BottomNavigation>
+			<Paper elevation={20} sx={{ width: '90%', borderRadius: '0.5rem', position: "fixed", bottom: 16, zIndex: 'modal' }}>
 				<PlayerControls
 					illustration={currentTrack?.track.illustration}
 					title={currentTrack?.track.name}
@@ -74,7 +74,7 @@ const Player = () => {
 					onScroll={(newProgress) => audio.current?.fastSeek(newProgress)}
 				/>
 			</Paper>
-		</Box>
+		</BottomNavigation>
 	</Slide>
 }
 
