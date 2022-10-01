@@ -20,11 +20,11 @@ type ResourceWithoutRelation<T> = { [key in keyof T as T[key] extends Resource |
 type InfiniteViewProps<T> = {
 	view: 'list' | 'grid';
 	initialSortingField?: keyof ResourceWithoutRelation<T>;
-	sortingFields: (keyof ResourceWithoutRelation<T>)[];
+	sortingFields?: (keyof ResourceWithoutRelation<T>)[];
 	sortingOrder?: 'asc' | 'desc';
 	query: MeeloInfiniteQueryFn<T>;
-	onSortingFieldSelect: (selected: keyof ResourceWithoutRelation<T>) => void;
-	onSortingOrderSelect: (selected: 'asc' | 'desc') => void;
+	onSortingFieldSelect?: (selected: keyof ResourceWithoutRelation<T>) => void;
+	onSortingOrderSelect?: (selected: 'asc' | 'desc') => void;
 	renderListItem: (item: T) => JSX.Element;
 	listItemExpanded?: (item: T) => JSX.Element;
 	renderGridItem: (item: T) => JSX.Element;
@@ -54,7 +54,7 @@ const availableDisplayMethods: DisplayMethod[] = [
 const InfiniteView = <T extends Resource,>(props: InfiniteViewProps<T>) => {
 	const [display, setDisplay] = useState(props.view);
 	const [backToTopVisible, setBackToTopVisible] = useState(false);
-	const [sortField, setSortField] = useState((props.initialSortingField ?? props.sortingFields[0]!) as keyof ResourceWithoutRelation<T>);
+	const [sortField, setSortField] = useState(props.sortingFields ? (props.initialSortingField ?? props.sortingFields[0]!) as keyof ResourceWithoutRelation<T> : undefined);
 	const [sortOrder, setSortOrder] = useState(props.sortingOrder ?? 'asc');
 	const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   	const menuOpen = Boolean(anchorEl);
@@ -69,60 +69,62 @@ const InfiniteView = <T extends Resource,>(props: InfiniteViewProps<T>) => {
 		return () => window.removeEventListener('scroll', handleScroll);
 	}, []);
 	return <>
-		<Box sx={{ display: 'flex', justifyContent: 'center', alignContent: 'center', paddingTop: 2 }}>
-			<ButtonGroup color='inherit'>
-				<Button
-					endIcon={sortOrder == 'desc' ? <SouthIcon/> : <NorthIcon/>}
-					onClick={handleMenuOpen}
-				>
-					{`Sort by ${capitalCase(sortField as string)}`}
-				</Button>
-				<Menu
-    			    anchorEl={anchorEl}
-    			    open={menuOpen}
-    			    onClose={handleMenuClose}
-    			>
-    			    { props.sortingFields.map((field) => (
-						<MenuItem key={field as string} selected={field == sortField} onClick={() => {
-							setSortField(field);
-							props.onSortingFieldSelect(field);
-							handleMenuClose();
-						}}>
-							{capitalCase(field as string)}
-						</MenuItem>
-					))}
-					<Divider/>
-					{ ["asc", "desc"].map((order) => {
-						const selected = order == sortOrder;
-						return <MenuItem key={order} selected={selected} onClick={() => {
-							setSortOrder(order as "asc" | "desc");
-							props.onSortingOrderSelect(order as 'asc' | 'desc');
-							handleMenuClose();
-						}}>
-							<ListItemText>
-								{capitalCase(order as string)}
-							</ListItemText>
-							{ selected &&
-								<ListItemIcon>
-									<CheckIcon/>
-								</ListItemIcon>
-							}
-						</MenuItem>
-					})}
-    			  </Menu>
-				{ props.enableToggle &&
-					availableDisplayMethods.filter((method) => method.name != display)
-						.map((method) => (
-							<Tooltip title="Change layout" key={method.name}>
-								<Button onClick={() => setDisplay(method.name)}>
-									{ method.icon }
-								</Button>
-							</Tooltip>
+		{ props.sortingFields &&
+			<Box sx={{ display: 'flex', justifyContent: 'center', alignContent: 'center', paddingTop: 2 }}>
+				<ButtonGroup color='inherit'>
+					<Button
+						endIcon={sortOrder == 'desc' ? <SouthIcon/> : <NorthIcon/>}
+						onClick={handleMenuOpen}
+					>
+						{`Sort by ${capitalCase(sortField as string)}`}
+					</Button>
+					<Menu
+    				    anchorEl={anchorEl}
+    				    open={menuOpen}
+    				    onClose={handleMenuClose}
+    				>
+    				    { props.sortingFields.map((field) => (
+							<MenuItem key={field as string} selected={field == sortField} onClick={() => {
+								setSortField(field);
+								props.onSortingFieldSelect && props.onSortingFieldSelect(field);
+								handleMenuClose();
+							}}>
+								{capitalCase(field as string)}
+							</MenuItem>
+						))}
+						<Divider/>
+						{ ["asc", "desc"].map((order) => {
+							const selected = order == sortOrder;
+							return <MenuItem key={order} selected={selected} onClick={() => {
+								setSortOrder(order as "asc" | "desc");
+								props.onSortingOrderSelect && props.onSortingOrderSelect(order as 'asc' | 'desc');
+								handleMenuClose();
+							}}>
+								<ListItemText>
+									{capitalCase(order as string)}
+								</ListItemText>
+								{ selected &&
+									<ListItemIcon>
+										<CheckIcon/>
+									</ListItemIcon>
+								}
+							</MenuItem>
+						})}
+    				</Menu>
+					{ props.enableToggle &&
+						availableDisplayMethods.filter((method) => method.name != display)
+							.map((method) => (
+								<Tooltip title="Change layout" key={method.name}>
+									<Button onClick={() => setDisplay(method.name)}>
+										{ method.icon }
+									</Button>
+								</Tooltip>
+							)
 						)
-					)
-				}
+					}
 				</ButtonGroup>
-		</Box>
+			</Box>
+		}
 		<Slide direction="up" in={backToTopVisible} mountOnEnter unmountOnExit>
 			<Tooltip title="Back to top">
 				<Fab
