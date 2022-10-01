@@ -355,7 +355,7 @@ describe('Song Service', () => {
 			const test = async () => await songService.getSongVersions({ byId: { id: -1 }});
 			expect(test()).rejects.toThrow(SongNotFoundByIdException);
 		});
-	})
+	});
 
 	describe("Increment a song's play count", () => {
 		it("should throw, as the song does not exist", () => {

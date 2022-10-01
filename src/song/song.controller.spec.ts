@@ -493,4 +493,25 @@ describe('Song Controller', () => {
 				.expect(404);
 		});
 	});
+
+	describe("Get Song's Versions (GET /songs/:id/versions", () => {
+		it("should return the song's versions", async () => {
+			const version = await songService.create({ name: 'My Other Song (Remix)', artist: { id: dummyRepository.artistA.id }, genres: [] })
+			return request(app.getHttpServer())
+				.get(`/songs/${dummyRepository.songA2.id}/versions?sortBy=id&order=desc`)
+				.expect(200)
+				.expect((res) => {
+					let fetchedSongs : Song[] = res.body.items
+					expect(fetchedSongs).toStrictEqual([
+						expectedSongResponse(version),
+						expectedSongResponse(dummyRepository.songA2),
+					]);
+				});
+		});
+		it("should return an error, as the song does not exist", () => {
+			return request(app.getHttpServer())
+				.get(`/songs/${-1}/versions`)
+				.expect(404);
+		});
+	});
 });
