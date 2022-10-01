@@ -9,7 +9,7 @@ type PlayerControlsProps = {
 	title?: string;
 	artist?: string;
 	playing: boolean;
-	illustration?: string;
+	illustration?: string | null;
 	onPause: () => void;
 	onPlay: () => void;
 	onSkipTrack: () => void;
