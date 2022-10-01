@@ -69,9 +69,9 @@ const InfiniteView = <T extends Resource,>(props: InfiniteViewProps<T>) => {
 		return () => window.removeEventListener('scroll', handleScroll);
 	}, []);
 	return <>
-		{ props.sortingFields &&
-			<Box sx={{ display: 'flex', justifyContent: 'center', alignContent: 'center', paddingTop: 2 }}>
-				<ButtonGroup color='inherit'>
+		<Box sx={{ display: 'flex', justifyContent: 'center', alignContent: 'center', paddingTop: 2 }}>
+			<ButtonGroup color='inherit'>
+				{ props.sortingFields && <>
 					<Button
 						endIcon={sortOrder == 'desc' ? <SouthIcon/> : <NorthIcon/>}
 						onClick={handleMenuOpen}
@@ -82,7 +82,7 @@ const InfiniteView = <T extends Resource,>(props: InfiniteViewProps<T>) => {
     				    anchorEl={anchorEl}
     				    open={menuOpen}
     				    onClose={handleMenuClose}
-    				>
+						>
     				    { props.sortingFields.map((field) => (
 							<MenuItem key={field as string} selected={field == sortField} onClick={() => {
 								setSortField(field);
@@ -111,20 +111,20 @@ const InfiniteView = <T extends Resource,>(props: InfiniteViewProps<T>) => {
 							</MenuItem>
 						})}
     				</Menu>
-					{ props.enableToggle &&
-						availableDisplayMethods.filter((method) => method.name != display)
-							.map((method) => (
-								<Tooltip title="Change layout" key={method.name}>
-									<Button onClick={() => setDisplay(method.name)}>
-										{ method.icon }
-									</Button>
-								</Tooltip>
-							)
+				</>}
+				{ props.enableToggle &&
+					availableDisplayMethods.filter((method) => method.name != display)
+						.map((method) => (
+							<Tooltip title="Change layout" key={method.name}>
+								<Button onClick={() => setDisplay(method.name)}>
+									{ method.icon }
+								</Button>
+							</Tooltip>
 						)
-					}
-				</ButtonGroup>
-			</Box>
-		}
+					)
+				}
+			</ButtonGroup>
+		</Box>
 		<Slide direction="up" in={backToTopVisible} mountOnEnter unmountOnExit>
 			<Tooltip title="Back to top">
 				<Fab
