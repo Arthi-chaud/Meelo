@@ -14,6 +14,8 @@ import type { Song, Track } from '@prisma/client';
 import { CompilationArtistException } from 'src/artist/artist.exceptions';
 import { buildStringSearchParameters } from 'src/utils/search-string-input';
 import IllustrationService from 'src/illustration/illustration.service';
+import { buildPaginationParameters, PaginationParameters } from 'src/pagination/models/pagination-parameters';
+import { buildSortingParameter } from 'src/sort/models/sorting-parameter';
 
 @Injectable()
 export default class SongService extends RepositoryService<
@@ -251,5 +253,51 @@ export default class SongService extends RepositoryService<
 				artist: await this.artistService.buildResponse(song.artist)
 			}
 		return response;
+	}
+
+	/**
+	 * Get songs from the sma eartist that have the same base name
+	 * @param where thr query parameters to find the song
+	 * @param pagination the pagination parameters
+	 * @param include the relations to include with the returned songs
+	 * @returns the matching songs
+	 */
+	async getSongVersions<I extends SongQueryParameters.RelationInclude>(
+		where: SongQueryParameters.WhereInput,
+		pagination?: PaginationParameters,
+		include?: I,
+		sort?: SongQueryParameters.SortingParameter
+	) {
+		const { name, artistId } = await this.select(where, { name: true, artistId: true });
+		const baseSongName = this.getBaseSongName(name);
+		return await this.prismaService.song.findMany({
+			where: {
+				artistId: artistId,
+				name: { contains: baseSongName }
+			},
+			orderBy: buildSortingParameter(sort),
+			include: RepositoryService.formatInclude(include),
+			...buildPaginationParameters(pagination)
+		})
+	}
+
+	/**
+	 * Removes all extensions for a song name
+	 * An extension is a group of characters in brackets, parenthesis or curly brackets
+	 * @param songName the name of the song to strip
+	 */
+	private getBaseSongName(songName: string): string {
+		const extensionDelimiters = [
+			['(', ')'],
+			['{', '}'],
+			['[', ']']
+		];
+		let strippedSongName = songName
+		for (const delimiter of extensionDelimiters) {
+			strippedSongName.match(`\\s*\\${delimiter[0]}.+\\${delimiter[1]}\\s*`)?.forEach((matched) => {
+				strippedSongName = strippedSongName.replace(matched, '')
+			})
+		}
+		return strippedSongName;
 	}
 }

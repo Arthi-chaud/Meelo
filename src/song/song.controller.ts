@@ -138,6 +138,28 @@ export class SongController {
 	}
 
 	@ApiOperation({
+		summary: "Get a song's versions"
+	})
+	@Get(':idOrSlug/versions')
+	async getSongVersions(
+		@Query(ParsePaginationParameterPipe)
+		paginationParameters: PaginationParameters,
+		@Query('with', SongQueryParameters.ParseRelationIncludePipe)
+		include: SongQueryParameters.RelationInclude,
+		@Param(ParseSongIdentifierPipe)
+		where: SongQueryParameters.WhereInput,
+		@Query(SongQueryParameters.ParseSortingParameterPipe)
+		sortingParameter: SongQueryParameters.SortingParameter,
+		@Req() request: Request
+	) {
+		const versions = await this.songService.getSongVersions(where, paginationParameters, include, sortingParameter)
+		return new PaginatedResponse(
+			await Promise.all(versions.map((song) => this.songService.buildResponse(song))),
+			request
+		);
+	}
+
+	@ApiOperation({
 		summary: 'Get all the song\'s video tracks'
 	})
 	@Get(':idOrSlug/videos')
