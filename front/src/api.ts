@@ -345,7 +345,7 @@ export default class API {
 	 * @returns the correct, rerouted URL
 	 */
 	static getIllustrationURL(imageURL: string): string {
-		return `/api${imageURL}`;
+		return this.buildURL(imageURL, {});
 	}
 
 	/**
@@ -354,7 +354,7 @@ export default class API {
 	 * @returns the correct, rerouted URL
 	 */
 	static getStreamURL(streamURL: string): string {
-		return `/api${streamURL}`;
+		return this.buildURL(streamURL, {});
 	}
 
 	/**
@@ -368,7 +368,9 @@ export default class API {
 	}
 
 	private static buildURL(route: string, parameters: QueryParameters<any>, otherParameters?: any): string {
-		const apiHost = (typeof window === 'undefined') ? process.env.ssrApiRoute : '/api';
+		const isSSR = typeof window === 'undefined';
+		const isDev = process.env.NODE_ENV === 'development';
+		const apiHost = ( isDev || isSSR ) ? process.env.ssrApiRoute : '/api';
 		return `${apiHost}${route}${this.formatQueryParameters(parameters, otherParameters)}`;
 	}
 
