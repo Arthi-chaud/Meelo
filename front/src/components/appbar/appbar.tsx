@@ -17,7 +17,6 @@ import Link from 'next/link';
 import { prepareMeeloQuery } from '../../query';
 import Library from '../../models/library';
 import toast from 'react-hot-toast';
-import Player from '../player/player';
 
 const libraryQuery = () => ({
 	key: ['libraries'],
@@ -59,7 +58,9 @@ const MeeloAppBar = () => {
 						<MenuIcon />
 					</IconButton>
 					<Box style={{ paddingRight: 25 }}>
-						<Image src="/banner.png" alt="me" width={120} height={50}/>
+						<Link href="/albums" style={{ cursor: 'pointer' }}>
+							<a><Image src="/banner.png" alt="icon" width={120} height={50}/></a>
+						</Link>
 					</Box>
 					{
 						availableLibraries == null
