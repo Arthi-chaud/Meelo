@@ -38,11 +38,12 @@ const Player = () => {
 	}, [currentTrack]);
 	if (playlist.length == 0 && history.length == 0 && audio.current == undefined)
 		return <></>
+	console.log(currentTrack?.track.illustration);
 	return <Slide direction="up" in={true} mountOnEnter unmountOnExit>
 		<BottomNavigation>
 			<Paper elevation={20} sx={{ width: '90%', borderRadius: '0.5rem', position: "fixed", bottom: 16, zIndex: 'modal' }}>
 				<PlayerControls
-					illustration={currentTrack?.track.illustration}
+					illustration={currentTrack?.track.illustration ?? currentTrack?.release.illustration}
 					title={currentTrack?.track.name}
 					artist={currentTrack?.artist.name}
 					playing={playing ?? false}
