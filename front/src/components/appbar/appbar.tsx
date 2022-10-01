@@ -108,9 +108,11 @@ const MeeloAppBar = () => {
 							<Box sx={{ flexGrow: 1 }}/>
 							<FadeIn>
 								<Box sx={{ display: { xs: 'none', sm: 'flex' } }}>
-									<IconButton>
-										<SearchIcon />
-									</IconButton>
+									<Link href={"/search"}>
+										<IconButton>
+											<SearchIcon />
+										</IconButton>
+									</Link>
 									<Divider orientation='vertical' flexItem sx={{ marginX: 1 }} />
 									<IconButton>
 										<MoreVertIcon />

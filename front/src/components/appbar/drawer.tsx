@@ -78,12 +78,14 @@ const MeeloAppBarDrawer = ({ availableLibraries, requestedLibrarySlug, isOpen, o
 			<Divider />
 			<List>
 				<ListItem disablePadding>
-					<ListItemButton>
-						<ListItemIcon>
-							<SearchIcon />
-						</ListItemIcon>
-						<ListItemText>Search</ListItemText>
-					</ListItemButton>
+					<Link href="/search">
+						<ListItemButton>
+							<ListItemIcon>
+									<SearchIcon />
+							</ListItemIcon>
+							<ListItemText>Search</ListItemText>
+						</ListItemButton>
+					</Link>
 				</ListItem>
 				<ListItem disablePadding>
 					<ListItemButton>
