@@ -39,8 +39,8 @@ const Player = () => {
 	if (playlist.length == 0 && history.length == 0 && audio.current == undefined)
 		return <></>
 	return <Slide direction="up" in={true} mountOnEnter unmountOnExit>
-		<Box sx={{ width: '100%', display: "flex", position: 'fixed', bottom: 16, paddingX:2, zIndex: 'modal' }}>
-			<Paper elevation={20} sx={{ width: '100%', borderRadius: '0.5rem' }}>
+		<Box sx={{ width: '100%', display: "flex", position: 'fixed', bottom: 16, zIndex: 'modal', justifyContent: 'center' }}>
+			<Paper elevation={20} sx={{ width: '90%', borderRadius: '0.5rem' }}>
 				<PlayerControls
 					illustration={currentTrack?.track.illustration}
 					title={currentTrack?.track.name}
