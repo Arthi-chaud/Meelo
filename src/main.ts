@@ -5,6 +5,7 @@ import AllExceptionsFilter from 'src/exceptions/all-exceptions.filter'
 import MeeloExceptionFilter from './exceptions/meelo-exception.filter';
 import NotFoundExceptionFilter from './exceptions/not-found.exception';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
+import mime from 'mime';
 
 async function bootstrapSwagger(app: INestApplication) {
 	const config = new DocumentBuilder()
@@ -20,6 +21,7 @@ async function bootstrapSwagger(app: INestApplication) {
 }
 
 async function bootstrap() {
+	mime.define({ 'audio/mpeg': [ 'm4a', ...mime.extension('audio/mpeg')!] })
 	const app = await NestFactory.create(AppModule);
 	const { httpAdapter } = app.get(HttpAdapterHost);
 	app.useGlobalFilters(

@@ -406,7 +406,7 @@ export default class API {
 	private static buildURL(route: string, parameters: QueryParameters<any>, otherParameters?: any): string {
 		const isSSR = typeof window === 'undefined';
 		const isDev = process.env.NODE_ENV === 'development';
-		const apiHost = ( isDev || isSSR ) ? process.env.ssrApiRoute : '/api';
+		const apiHost = ( isDev || isSSR ) ? 'http://129.12.151.147:4000' : '/api';
 		return `${apiHost}${route}${this.formatQueryParameters(parameters, otherParameters)}`;
 	}
 
