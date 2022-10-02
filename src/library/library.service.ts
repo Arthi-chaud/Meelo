@@ -162,6 +162,31 @@ export default class LibraryService extends RepositoryService<
 	}
 
 	/**
+	 * Re-register files who have been modified since their scan
+	 * Any file that has a different md5checksum that the one in the db will be re-registered
+	 * @param where 
+	 */
+	async resyncAllMetadata(where: LibraryQueryParameters.WhereInput): Promise<File[]> {
+		const library = await this.get(where, { files: true });
+		let updatedFiles: File[] = [];
+		Logger.log(`'${library.slug}' library: Refresh files metadata`);
+		for (const file of library.files ) {
+			const fullFilePath = `${this.fileManagerService.getLibraryFullPath(library)}/${file.path}`;
+			if (!this.fileManagerService.fileExists(fullFilePath))
+				continue;
+			const newMD5 = this.fileManagerService.getMd5Checksum(fullFilePath).toString();
+			if (newMD5 !== file.md5Checksum) {
+				Logger.log(`'${library.slug}' library: Refreshing '${file.path}' metadata`);
+				await this.unregisterFile({ id: file.id });
+				await this.registerFile(file.path, library);
+				updatedFiles.push({ ...file, md5Checksum: newMD5 });
+			}
+		}
+		Logger.log(`'${library.slug}' library: Refreshed ${updatedFiles.length} files metadata`);
+		return updatedFiles;
+	}
+
+	/**
 	 * Registers a File in the database, parses and push its metadata 
 	 * @param filePath the short path of the file to register (without base folder and library folder)
 	 * @param parentLibrary the parent library to register the file under

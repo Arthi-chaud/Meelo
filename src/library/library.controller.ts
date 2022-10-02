@@ -71,6 +71,19 @@ export default class LibraryController {
 	}
 
 	@ApiOperation({
+		summary: "Refresh all libraries' files metadata"
+	})
+	@Get('refresh-metadata')
+	async refreshLibrariesFilesMetadata() {
+		const libraries = await this.libraryService.getMany({});
+		libraries.forEach((library) => this.libraryService
+			.resyncAllMetadata({ id: library.id })
+			.catch((error) => Logger.error(error))
+		);
+		return `Refreshing ${libraries.length} libraries`
+	}
+
+	@ApiOperation({
 		summary: 'Clean all libraries'
 	})
 	@Get('clean')
@@ -107,6 +120,19 @@ export default class LibraryController {
 	) {
 		this.libraryService
 			.unregisterUnavailableFiles(where)
+			.catch((error) => Logger.error(error));
+	}
+
+	@ApiOperation({
+		summary: "Refresh all library's files metadata"
+	})
+	@Get('refresh-metadata/:idOrSlug')
+	async refreshLibraryFilesMetadata(
+		@Param(ParseLibraryIdentifierPipe)
+		where: LibraryQueryParameters.WhereInput
+	) {
+		await this.libraryService
+			.resyncAllMetadata(where)
 			.catch((error) => Logger.error(error));
 	}
 
