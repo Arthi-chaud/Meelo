@@ -13,6 +13,7 @@ import type { MeeloException } from 'src/exceptions/meelo-exception';
 import { buildDateSearchParameters } from 'src/utils/search-date-input';
 import LibraryService from 'src/library/library.service';
 import mime from 'mime';
+import Slug from 'src/slug/slug';
 
 @Injectable()
 export default class FileService extends RepositoryService<
@@ -159,7 +160,7 @@ export default class FileService extends RepositoryService<
 		if (this.fileManagerService.fileExists(fullFilePath) == false)
 			throw new SourceFileNotFoundExceptions(file.path);
 		res.set({
-			'Content-Disposition': `attachment; filename="${path.parse(file.path).base}"`,
+			'Content-Disposition': `attachment; filename="${new Slug(path.parse(file.path).name).toString()}${path.parse(file.path).ext}"`,
 			'Content-Type': mime.lookup(fullFilePath) ?? 'application/octet-stream'
 		});
 		return new StreamableFile(fs.createReadStream(fullFilePath));
