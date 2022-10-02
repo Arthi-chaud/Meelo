@@ -55,8 +55,8 @@ const Player = () => {
 	if (playlist.length == 0 && history.length == 0 && audio.current == undefined)
 		return <></>
 	return <Slide direction="up" in={true} mountOnEnter unmountOnExit>
-		<BottomNavigation>
-			<Paper elevation={20} sx={{ width: '90%', borderRadius: '0.5rem', position: "fixed", bottom: 16, zIndex: 'modal' }}>
+		<Box sx={{ width: '100%', display: 'flex', position: 'sticky', right: 16, bottom: 16,justifyContent: 'center' }}>
+			<Paper elevation={20} sx={{ width: '90%', borderRadius: '0.5rem', zIndex: 'modal' }}>
 				<PlayerControls
 					illustration={illustrationURL}
 					title={currentTrack?.track.name}
@@ -90,7 +90,7 @@ const Player = () => {
 					onScroll={(newProgress) => audio.current?.fastSeek(newProgress)}
 				/>
 			</Paper>
-		</BottomNavigation>
+		</Box>
 	</Slide>
 }
 

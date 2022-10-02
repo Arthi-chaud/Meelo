@@ -21,6 +21,6 @@ export default  responsiveFontSizes(createTheme({
 		}
 	},
 	shape: {
-		borderRadius: '3%'
+		borderRadius: '0.5rem'
 	},
 }));
