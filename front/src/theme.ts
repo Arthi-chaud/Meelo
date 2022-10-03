@@ -23,4 +23,13 @@ export default  responsiveFontSizes(createTheme({
 	shape: {
 		borderRadius: '0.5rem'
 	},
+	components: {
+		MuiListSubheader: {
+			styleOverrides: {
+				root: {
+					zIndex: 0
+				}
+			}
+		}
+	}
 }));
