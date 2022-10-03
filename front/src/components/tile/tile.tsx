@@ -1,6 +1,14 @@
 import {Box, Card, CardActionArea, CardContent, CardMedia, Grid, Typography} from "@mui/material";
 import { useTheme } from "@mui/system";
 import Link from 'next/link';
+import { CSSProperties } from "react";
+
+const titleStyle = {
+	overflow: 'hidden',
+	textOverflow: 'ellipsis',
+	display: '-webkit-box',
+	WebkitBoxOrient: 'vertical' as CSSProperties['WebkitBoxOrient']
+}
 
 type TileProps = {
 	title: string,
@@ -23,11 +31,11 @@ const Tile = (props: TileProps) => {
 						{props.illustration}
 					</CardMedia>
 						<CardContent style={{ flexDirection: 'column', display: 'flex', alignContent: 'center', justifyContent: 'center', height: '100%' }}>
-							<Typography sx={{ fontWeight: 'bold', textAlign: 'center', maxLines: 1 }}>
+							<Typography sx={{ fontWeight: 'bold', textAlign: 'center'}} style={{ ...titleStyle, WebkitLineClamp: 2 }}>
 								{props.title}
 							</Typography>
 							{ props.subtitle &&
-								<Typography sx={{ fontWeight: 'light', textAlign: 'center' }}>
+								<Typography sx={{ fontWeight: 'light', textAlign: 'center' }} style={{ ...titleStyle, WebkitLineClamp: 1 }}>
 									{props.subtitle}
 								</Typography>
 							}
