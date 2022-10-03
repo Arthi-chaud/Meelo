@@ -15,9 +15,9 @@ const InfiniteGrid = <T extends Resource,>(props: InfiniteGridProps<T>) => {
 	return <InfiniteScroll
 		{...props}
 		render={(items: T[]) =>
-			<Grid sx={{ padding: 3 }} container rowSpacing={2} columnSpacing={2}>
+			<Grid sx={{ padding: 3, alignItems: 'stretch', display: 'flex' }} container rowSpacing={2} columnSpacing={2}>
 				{items.map((item: T) => 
-					<Grid item xs={6} sm={3} md={12/5} lg={2} xl={1.5} style={{ height: '100%' }} key={item.id}>
+					<Grid item xs={6} sm={3} md={12/5} lg={2} xl={1.5} key={item.id}>
 						{props.render(item)}
 					</Grid>
 				)}
