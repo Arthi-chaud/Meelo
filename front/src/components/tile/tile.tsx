@@ -1,6 +1,14 @@
-import {Box, Card, CardActionArea, CardContent, CardMedia, IconButton, Typography} from "@mui/material";
+import {Box, Card, CardActionArea, CardContent, CardMedia, Grid, Typography} from "@mui/material";
 import { useTheme } from "@mui/system";
 import Link from 'next/link';
+import { CSSProperties } from "react";
+
+const titleStyle = {
+	overflow: 'hidden',
+	textOverflow: 'ellipsis',
+	display: '-webkit-box',
+	WebkitBoxOrient: 'vertical' as CSSProperties['WebkitBoxOrient']
+}
 
 type TileProps = {
 	title: string,
@@ -16,29 +24,25 @@ type TileProps = {
 const Tile = (props: TileProps) => {
 	const theme = useTheme();
 	return (
-		<Box sx={{ height: '100%' }}>
-			<Card style={{ border: "none", boxShadow: "none", borderRadius: theme.shape.borderRadius }}>
-				<CardActionArea>
-					<Link href={props.targetURL}>
-						<Box>
-							<CardMedia> 
-								{props.illustration}
-							</CardMedia>
-							<CardContent style={{ display:'flex', justifyContent:'center', alignItems: 'center', flexDirection: 'column' }}>
-								<Typography sx={{ fontWeight: 'bold', textAlign: 'center' }}>
-									{props.title}
+		<Card style={{ border: "none", boxShadow: "none", borderRadius: theme.shape.borderRadius, height: '100%' }}>
+			<Link href={props.targetURL}>
+				<CardActionArea sx={{ height: '100%', display: 'flex', flexDirection: 'column', alignItems: 'space-between'}}>
+					<CardMedia sx={{ width: '100%' }}> 
+						{props.illustration}
+					</CardMedia>
+						<CardContent style={{ flexDirection: 'column', display: 'flex', alignContent: 'center', justifyContent: 'center', height: '100%' }}>
+							<Typography sx={{ fontWeight: 'bold', textAlign: 'center'}} style={{ ...titleStyle, WebkitLineClamp: 2 }}>
+								{props.title}
+							</Typography>
+							{ props.subtitle &&
+								<Typography sx={{ fontWeight: 'light', textAlign: 'center' }} style={{ ...titleStyle, WebkitLineClamp: 1 }}>
+									{props.subtitle}
 								</Typography>
-								{ props.subtitle &&
-									<Typography sx={{ fontWeight: 'light', textAlign: 'center' }}>
-										{props.subtitle}
-									</Typography>
-								}
-							</CardContent>
-						</Box>
-					</Link>
+							}
+						</CardContent>
 				</CardActionArea>
-			</Card>
-		</Box>	
+			</Link>
+		</Card>
 	)
 }
 

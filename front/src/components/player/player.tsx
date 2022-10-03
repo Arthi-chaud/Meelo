@@ -17,12 +17,39 @@ const Player = () => {
 	const [progress, setProgress] = useState<number | undefined>();
 	const [playing, setPlaying] = useState<boolean>();
 	const [illustrationURL, setIllustrationURL] = useState<string | null>();
+	const play = () => {
+		if (currentTrack == undefined)
+			dispatch(playNextTrack());
+		setPlaying(true);
+		audio.current?.play();
+	};
+	const pause = () => {
+		setPlaying(false);
+		audio.current?.pause();
+	}
+	const onSkipTrack = () => {
+		dispatch(pushCurrentTrackToHistory())
+		if (playlist.length == 0) {
+			setPlaying(false);
+			dispatch(setHistoryToPlaylist());
+		} else
+			dispatch(playNextTrack());
+	}
+	const onRewind = () => {
+		if (history.length == 0)
+			setPlaying(false);
+		dispatch(playPreviousTrack())
+	}
 	useEffect(() => {
 		audio.current?.pause();
 		audio.current = undefined;
 		navigator.mediaSession.metadata = null;
 		clearInterval(interval.current);
 		setProgress(0);
+		navigator.mediaSession.setActionHandler('play', play);
+		navigator.mediaSession.setActionHandler('pause', pause);
+		navigator.mediaSession.setActionHandler('previoustrack', onRewind);
+		navigator.mediaSession.setActionHandler('nexttrack', onSkipTrack);
 		if (currentTrack) {
 			const newIllustrationURL = currentTrack?.track.illustration ?? currentTrack?.release.illustration;
 			setIllustrationURL(newIllustrationURL);
@@ -62,31 +89,12 @@ const Player = () => {
 					title={currentTrack?.track.name}
 					artist={currentTrack?.artist.name}
 					playing={playing ?? false}
-					onPause={() => {
-						setPlaying(false);
-						audio.current?.pause();
-					}}
-					onPlay={() => {
-						if (currentTrack == undefined)
-							dispatch(playNextTrack());
-						setPlaying(true);
-						audio.current?.play();
-					}}
+					onPause={pause}
+					onPlay={play}
 					duration={currentTrack?.track.duration}
 					progress={progress}
-					onSkipTrack={() => {
-						dispatch(pushCurrentTrackToHistory())
-						if (playlist.length == 0) {
-							setPlaying(false);
-							dispatch(setHistoryToPlaylist());
-						} else
-							dispatch(playNextTrack());
-					}}
-					onRewind={() => {
-						if (history.length == 0)
-							setPlaying(false);
-						dispatch(playPreviousTrack())
-					}}
+					onSkipTrack={onSkipTrack}
+					onRewind={onRewind}
 					onScroll={(newProgress) => audio.current?.fastSeek(newProgress)}
 				/>
 			</Paper>

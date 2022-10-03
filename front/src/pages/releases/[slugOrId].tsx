@@ -196,7 +196,7 @@ const ReleasePage = ({ releaseIdentifier }: InferGetServerSidePropsType<typeof g
 									<ListSubheader>Genres:</ListSubheader>
 								</Grid>
 								{ albumGenres.data.map((genre) => (
-									<Grid item xs="auto" key={genre.id}>
+									<Grid item key={genre.id} sx={{ display: 'flex' }}>
 										<Button variant="outlined" color='inherit'>
 											{ genre.name }
 										</Button>
@@ -266,7 +266,7 @@ const ReleasePage = ({ releaseIdentifier }: InferGetServerSidePropsType<typeof g
 				title={"Other releases of the same album:"}
 			>
 				<List>
-					{ relatedReleases.data?.items.filter((relatedRelease) => relatedRelease.id != release.data!.id).map((otherRelease) =>
+					{ relatedReleases.data?.items?.filter((relatedRelease) => relatedRelease.id != release.data!.id).map((otherRelease) =>
 						<ListItem key={otherRelease.id}>
 							<Tile
 								targetURL={`/releases/${albumArtist?.data?.slug ?? 'compilations'}+${release.data!.album.slug}+${otherRelease.slug}/`}
