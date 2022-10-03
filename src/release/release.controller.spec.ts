@@ -31,6 +31,7 @@ describe('Release Controller', () => {
 
 	const expectedReleaseResponse = (release: Release) => ({
 		...release,
+		releaseDate: release.releaseDate?.toISOString() ?? null,
 		illustration: null
 	});
 	const expectedAlbumResponse = (album: Album) => ({
@@ -361,8 +362,8 @@ describe('Release Controller', () => {
 					expect(fetchedAlbum).toStrictEqual({
 						...expectedAlbumResponse(dummyRepository.albumA1),
 						releases: [
-							expectedReleaseResponse(expectedReleaseResponse(dummyRepository.releaseA1_1)),
-							expectedReleaseResponse(expectedReleaseResponse(dummyRepository.releaseA1_2))
+							expectedReleaseResponse(dummyRepository.releaseA1_1),
+							expectedReleaseResponse(dummyRepository.releaseA1_2)
 						]
 					});
 				});

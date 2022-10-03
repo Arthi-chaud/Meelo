@@ -180,16 +180,16 @@ export default class SongService extends RepositoryService<
 	 */
 	async resetMasterTrack(where: SongQueryParameters.WhereInput): Promise<Track | null> {
 		let tracks = await this.trackService.getSongTracks(where, {}, { release: true });
-		const masterTrack = tracks.find((track) => track.master);
-		if (!masterTrack)
-			return null;
 		const sortedTracks = tracks
 			.filter((track) => track.release.releaseDate !== null)
 			.sort((trackA, trackB) => trackA.release.releaseDate!.getTime() - trackB.release.releaseDate!.getTime())
 		if (sortedTracks.length !== 0) {
 			const newMaster = sortedTracks.at(0)!
 			await this.trackService.setTrackAsMaster({ trackId: newMaster.id, song: where });
-			return newMaster;
+			return { ...newMaster, master: true };
+		} else if (tracks.length !== 0) {
+			await this.trackService.setTrackAsMaster({ trackId: tracks[0].id, song: where });
+			return { ...tracks[0], master: true };
 		}
 		return null;
 	}

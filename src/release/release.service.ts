@@ -49,8 +49,8 @@ export default class ReleaseService extends RepositoryService<
 	) {
 		const release = await super.create(input, include);
 		await this.albumService.updateAlbumDate({ byId: { id: release.albumId }});
-		await this.albumService.updateAlbumMaster({ byId: { id: release.albumId }});
-		return release;
+		const newMaster = await this.albumService.updateAlbumMaster({ byId: { id: release.albumId }});
+		return {...release, master: newMaster?.id == release.id};
 
 	}
 	formatCreateInput(release: ReleaseQueryParameters.CreateInput) {
@@ -225,10 +225,7 @@ export default class ReleaseService extends RepositoryService<
 		}
 		Logger.warn(`Release '${release.slug}' deleted`);
 		if (release.master)
-			await this.unsetReleaseAsMaster({
-				releaseId: release.id,
-				album: { byId: { id: release.albumId } }
-			});
+			await this.albumService.updateAlbumMaster({ byId: { id: release.albumId } });
 		if (deleteParent)
 			await this.albumService.deleteIfEmpty(release.albumId);
 		return release;

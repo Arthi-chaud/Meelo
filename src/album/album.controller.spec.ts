@@ -38,6 +38,7 @@ describe('Album Controller', () => {
 
 	const expectedReleaseResponse = (release: Release) => ({
 		...release,
+		releaseDate: release.releaseDate?.toISOString() ?? null,
 		illustration: null
 	});
 
