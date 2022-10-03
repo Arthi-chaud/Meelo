@@ -266,7 +266,7 @@ const ReleasePage = ({ releaseIdentifier }: InferGetServerSidePropsType<typeof g
 				title={"Other releases of the same album:"}
 			>
 				<List>
-					{ relatedReleases.data?.items.filter((relatedRelease) => relatedRelease.id != release.data!.id).map((otherRelease) =>
+					{ relatedReleases.data?.items?.filter((relatedRelease) => relatedRelease.id != release.data!.id).map((otherRelease) =>
 						<ListItem key={otherRelease.id}>
 							<Tile
 								targetURL={`/releases/${albumArtist?.data?.slug ?? 'compilations'}+${release.data!.album.slug}+${otherRelease.slug}/`}
