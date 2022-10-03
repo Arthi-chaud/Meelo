@@ -178,7 +178,7 @@ export default class SongService extends RepositoryService<
 	 * @param where The query params to find the song to update
 	 * @return the new master, if there is one
 	 */
-	async resetMasterTrack(where: SongQueryParameters.WhereInput): Promise<Track | null> {
+	async updateSongMaster(where: SongQueryParameters.WhereInput): Promise<Track | null> {
 		let tracks = await this.trackService.getSongTracks(where, {}, { release: true });
 		const sortedTracks = tracks
 			.filter((track) => track.release.releaseDate !== null)

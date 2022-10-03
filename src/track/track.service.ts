@@ -52,6 +52,12 @@ export default class TrackService extends RepositoryService<
 		super(prismaService.track);
 	}
 
+	async create<I extends TrackQueryParameters.RelationInclude>(input: TrackQueryParameters.CreateInput, include?: I) {
+		const created = await super.create(input, include);
+		await this.songService.updateSongMaster({ byId: { id: created.songId } });
+		return created;
+	}
+
 	/**
 	 * Create
 	 */
@@ -306,10 +312,7 @@ export default class TrackService extends RepositoryService<
 			let deletedTrack = await super.delete(where);
 			Logger.warn(`Track '${deletedTrack.name}' deleted`);
 			if (deletedTrack.master)
-				await this.unsetTrackAsMaster({
-					trackId: deletedTrack.id,
-					song: { byId: { id: deletedTrack.songId } }
-				});
+				await this.songService.updateSongMaster({ byId: { id: deletedTrack.songId } });
 			if (deleteParent) {
 				await this.songService.deleteIfEmpty({ id: deletedTrack.songId });
 				await this.releaseService.deleteIfEmpty({ byId: { id: deletedTrack.releaseId } });
