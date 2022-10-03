@@ -149,6 +149,26 @@ export default class AlbumService extends RepositoryService<
 	}
 
 	/**
+	 * Updates an album master, using the earliest date from its releases
+	 * @param where the query parameter to get the album to update
+	 */
+	 async updateAlbumMaster(where: AlbumQueryParameters.WhereInput): Promise<Release | null> {
+		let releases = await this.releaseService.getAlbumReleases(where);
+		const masterRelease = releases.find((releases) => releases.master);
+		if (!masterRelease)
+			return null;
+		const sortedReleases = releases
+			.filter((releases) => releases.releaseDate !== null)
+			.sort((releaseA, releaseB) => releaseA.releaseDate!.getTime() - releaseB.releaseDate!.getTime())
+		if (sortedReleases.length !== 0) {
+			const newMaster = sortedReleases.at(0)!
+			await this.releaseService.setReleaseAsMaster({ releaseId: newMaster.id, album: where });
+			return newMaster;
+		}
+		return null;
+	}
+
+	/**
 	 * Deletes an album
 	 * @param where the query parameter 
 	 */

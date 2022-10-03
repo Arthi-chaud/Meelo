@@ -191,7 +191,7 @@ export default class SongService extends RepositoryService<
 			await this.trackService.setTrackAsMaster({ trackId: newMaster.id, song: where });
 			return newMaster;
 		}
-		return null
+		return null;
 	}
 
 	/**

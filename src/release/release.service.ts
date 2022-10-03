@@ -49,6 +49,7 @@ export default class ReleaseService extends RepositoryService<
 	) {
 		const release = await super.create(input, include);
 		await this.albumService.updateAlbumDate({ byId: { id: release.albumId }});
+		await this.albumService.updateAlbumMaster({ byId: { id: release.albumId }});
 		return release;
 
 	}
