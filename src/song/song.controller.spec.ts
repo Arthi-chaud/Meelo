@@ -222,6 +222,12 @@ describe('Song Controller', () => {
 						song: expectedSongResponse(dummyRepository.songA1),
 						release: {
 							...dummyRepository.releaseA1_1,
+							id: dummyRepository.releaseA1_1.id,
+							name: dummyRepository.releaseA1_1.name,
+							slug: dummyRepository.releaseA1_1.slug,
+							albumId: dummyRepository.releaseA1_1.albumId,
+							master: dummyRepository.releaseA1_1.master,
+							releaseDate: dummyRepository.releaseA1_1.releaseDate?.toISOString() ?? null,
 							illustration: null
 						}
 					});

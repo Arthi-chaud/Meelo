@@ -153,6 +153,7 @@ describe('Track Controller', () => {
 						},
 						release: {
 							...dummyRepository.releaseA1_2,
+							releaseDate: dummyRepository.releaseA1_2.releaseDate?.toISOString() ?? null,
 							illustration: null
 						}
 					})
