@@ -162,10 +162,10 @@ export default class TrackService extends RepositoryService<
 	 * @param include the relation to include in the returned objects
 	 * @returns the list of tracks related to the song
 	 */
-	async getSongTracks(
+	async getSongTracks<I extends TrackQueryParameters.RelationInclude>(
 		where: SongQueryParameters.WhereInput,
 		pagination?: PaginationParameters,
-		include?: TrackQueryParameters.RelationInclude,
+		include?: I,
 		sort?: TrackQueryParameters.SortingParameter
 	) {
 		const tracks = await this.getMany(

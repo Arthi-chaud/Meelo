@@ -90,7 +90,7 @@ export default class MetadataService {
 		await this.albumService.update({ ...release.album }, { byId: { id: release.albumId }});
 		if (!release.releaseDate || ((metadata.releaseDate) && release.releaseDate < metadata.releaseDate))
 			await this.releaseService.update({ releaseDate: metadata.releaseDate }, { byId: { id: release.id } });
-		return this.trackService.create(track);
+		return this.trackService.create(track).finally(() => this.songService.resetMasterTrack({ byId: { id: song.id } }));
 	}
 
 	/**

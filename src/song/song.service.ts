@@ -174,6 +174,27 @@ export default class SongService extends RepositoryService<
 	}
 
 	/**
+	 * Use the earliest track as master
+	 * @param where The query params to find the song to update
+	 * @return the new master, if there is one
+	 */
+	async resetMasterTrack(where: SongQueryParameters.WhereInput): Promise<Track | null> {
+		let tracks = await this.trackService.getSongTracks(where, {}, { release: true });
+		const masterTrack = tracks.find((track) => track.master);
+		if (!masterTrack)
+			return null;
+		const sortedTracks = tracks
+			.filter((track) => track.release.releaseDate !== null)
+			.sort((trackA, trackB) => trackA.release.releaseDate!.getTime() - trackB.release.releaseDate!.getTime())
+		if (sortedTracks.length !== 0) {
+			const newMaster = sortedTracks.at(0)!
+			await this.trackService.setTrackAsMaster({ trackId: newMaster.id, song: where });
+			return newMaster;
+		}
+		return null
+	}
+
+	/**
 	 * Increment a song's play count
 	 * @param where the query parameter to find the song to update
 	 * @returns the updated song
