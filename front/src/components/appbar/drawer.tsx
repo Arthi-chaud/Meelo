@@ -79,9 +79,9 @@ const MeeloAppBarDrawer = ({ availableLibraries, requestedLibrarySlug, isOpen, o
 			<List>
 				<ListItem disablePadding>
 					<Link href="/search">
-						<ListItemButton>
+						<ListItemButton onClick={onClose}>
 							<ListItemIcon>
-									<SearchIcon />
+								<SearchIcon />
 							</ListItemIcon>
 							<ListItemText>Search</ListItemText>
 						</ListItemButton>
