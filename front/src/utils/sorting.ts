@@ -1,6 +1,6 @@
 import Resource from "../models/resource";
 
-export type SortingParameters<T extends Resource> = {
+export type SortingParameters<T> = {
 	sortBy: keyof T;
 	order?: 'asc' | 'desc';
 }
