@@ -25,6 +25,10 @@ const DurationComponent = ({time}: { time?: number}) => (
 	</Typography>
 )
 
+const playerTextStyle = {
+	whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', textAlign: 'center'
+}
+
 const PlayerControls = (props: PlayerControlsProps) => {
 	return <Grid container spacing={1} sx={{ alignItems: 'center', justifyContent: 'space-evenly', padding: 1 }}>
 		<Grid item xs={1.5} sm={1.25} md={0.75} lg={0.6} xl={0.5} sx={{ alignContent: 'center' }}>
@@ -34,9 +38,12 @@ const PlayerControls = (props: PlayerControlsProps) => {
 			}
 		</Grid>
 		<Grid item container sx={{ flexDirection: 'column'}} xs={6}>
-			<Grid item xs sx={{ display: 'flex', justifyContent: 'center' }}>
-				<Typography sx={{ textAlign: 'center' }}>
-					{ props.title && props.artist ? `${props.title} - ${props.artist}` : ''}
+			<Grid item xs sx={{ display: 'flex', justifyContent: 'center', flexDirection: 'column'}}>
+				<Typography sx={{ fontWeight: 'bold', ...playerTextStyle}}>
+					{ props.title }
+				</Typography>
+				<Typography sx={{ fontWeight: 'light', ...playerTextStyle}}>
+					{ props.artist }
 				</Typography>
 			</Grid>
 			<Grid item xs container sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }} spacing={2}>

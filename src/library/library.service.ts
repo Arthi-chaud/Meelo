@@ -127,7 +127,7 @@ export default class LibraryService extends RepositoryService<
 			files.map(async (file) => {
 				await this.metadataService.applyMetadataOnFile({ id: file.id });
 				await this.illustrationService.applyIllustrationOnFile({ id: file.id });
-				const newMd5 = this.fileManagerService.getMd5Checksum(`${libraryPath}/${file.path}`);
+				const newMd5 = await this.fileManagerService.getMd5Checksum(`${libraryPath}/${file.path}`);
 				await this.fileService.update({ md5Checksum: newMd5 }, { id: file.id });
 			})
 		)).length;
@@ -153,7 +153,8 @@ export default class LibraryService extends RepositoryService<
 		for (const candidate of candidates) {
 			try {
 				newlyRegistered.push(await this.registerFile(candidate, parentLibrary));
-			} catch {
+			} catch (e){
+				Logger.error(e.message);
 				continue;
 			}
 		}
@@ -168,19 +169,23 @@ export default class LibraryService extends RepositoryService<
 	 */
 	async resyncAllMetadata(where: LibraryQueryParameters.WhereInput): Promise<File[]> {
 		const library = await this.get(where, { files: true });
+		const libraryFullPath = this.fileManagerService.getLibraryFullPath(library);
 		let updatedFiles: File[] = [];
 		Logger.log(`'${library.slug}' library: Refresh files metadata`);
-		for (const file of library.files ) {
-			const fullFilePath = `${this.fileManagerService.getLibraryFullPath(library)}/${file.path}`;
-			if (!this.fileManagerService.fileExists(fullFilePath))
-				continue;
-			const newMD5 = this.fileManagerService.getMd5Checksum(fullFilePath).toString();
-			if (newMD5 !== file.md5Checksum) {
-				Logger.log(`'${library.slug}' library: Refreshing '${file.path}' metadata`);
-				await this.unregisterFile({ id: file.id });
-				await this.registerFile(file.path, library);
-				updatedFiles.push({ ...file, md5Checksum: newMD5 });
-			}
+		await Promise.all(
+			library.files.map(async (file) => {
+				const fullFilePath = `${libraryFullPath}/${file.path}`;
+				if (!this.fileManagerService.fileExists(fullFilePath))
+					return;
+				const newMD5 = await this.fileManagerService.getMd5Checksum(fullFilePath);
+				if (newMD5 !== file.md5Checksum)
+					updatedFiles.push(file);
+			})
+		)
+		for (const file of updatedFiles) {
+			Logger.log(`'${library.slug}' library: Refreshing '${file.path}' metadata`);
+			await this.unregisterFile({ id: file.id });
+			await this.registerFile(file.path, library);
 		}
 		Logger.log(`'${library.slug}' library: Refreshed ${updatedFiles.length} files metadata`);
 		return updatedFiles;
