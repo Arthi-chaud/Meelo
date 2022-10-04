@@ -15,6 +15,8 @@ import globalLibrary from './global-library';
 import { useEffect, useState } from "react";
 import buildLink from "./build-link";
 import Link from 'next/link';
+import API from '../../api';
+import toast from "react-hot-toast";
 
 interface DrawerProps {
 	availableLibraries: Library[] | null,
@@ -88,7 +90,10 @@ const MeeloAppBarDrawer = ({ availableLibraries, requestedLibrarySlug, isOpen, o
 					</Link>
 				</ListItem>
 				<ListItem disablePadding>
-					<ListItemButton>
+					<ListItemButton onClick={() => {
+						onClose();
+						API.scanLibraries().then(({ status }) => toast.success(status, { duration: 4000 }))
+					}}>
 						<ListItemIcon>
 							<AutoModeIcon />
 						</ListItemIcon>
