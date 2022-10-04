@@ -127,7 +127,7 @@ export default class LibraryService extends RepositoryService<
 			files.map(async (file) => {
 				await this.metadataService.applyMetadataOnFile({ id: file.id });
 				await this.illustrationService.applyIllustrationOnFile({ id: file.id });
-				const newMd5 = this.fileManagerService.getMd5Checksum(`${libraryPath}/${file.path}`);
+				const newMd5 = await this.fileManagerService.getMd5Checksum(`${libraryPath}/${file.path}`);
 				await this.fileService.update({ md5Checksum: newMd5 }, { id: file.id });
 			})
 		)).length;
@@ -170,11 +170,11 @@ export default class LibraryService extends RepositoryService<
 		const library = await this.get(where, { files: true });
 		let updatedFiles: File[] = [];
 		Logger.log(`'${library.slug}' library: Refresh files metadata`);
-		for (const file of library.files ) {
+		for (const file of library.files) {
 			const fullFilePath = `${this.fileManagerService.getLibraryFullPath(library)}/${file.path}`;
 			if (!this.fileManagerService.fileExists(fullFilePath))
 				continue;
-			const newMD5 = this.fileManagerService.getMd5Checksum(fullFilePath).toString();
+			const newMD5 = await this.fileManagerService.getMd5Checksum(fullFilePath);
 			if (newMD5 !== file.md5Checksum) {
 				Logger.log(`'${library.slug}' library: Refreshing '${file.path}' metadata`);
 				await this.unregisterFile({ id: file.id });

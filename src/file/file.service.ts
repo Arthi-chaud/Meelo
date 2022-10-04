@@ -142,7 +142,7 @@ export default class FileService extends RepositoryService<
 
 		return this.create({
 			path: filePath,
-			md5Checksum: this.fileManagerService.getMd5Checksum(fullFilePath).toString(),
+			md5Checksum: await this.fileManagerService.getMd5Checksum(fullFilePath),
 			registerDate: new Date(),
 			libraryId: parentLibrary.id
 		});
