@@ -153,7 +153,8 @@ export default class LibraryService extends RepositoryService<
 		for (const candidate of candidates) {
 			try {
 				newlyRegistered.push(await this.registerFile(candidate, parentLibrary));
-			} catch {
+			} catch (e){
+				Logger.error(e.message);
 				continue;
 			}
 		}
