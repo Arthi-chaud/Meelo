@@ -46,7 +46,7 @@ const SearchPage = () => {
 	return <Box sx={{ display: 'flex', justifyContent: 'center', padding: 3, flexDirection: 'column' }}>
 		<Grid container spacing={2} sx={{ flexDirection: 'column', alignItems: 'center' }}>
 			<Grid item>
-				<TextField id="outlined-basic" label="Search" variant="outlined" InputProps={{
+				<TextField id="outlined-basic" label="Search" variant="outlined" autoFocus InputProps={{
 					startAdornment: (
 						<InputAdornment position="start">
 							<Search />
