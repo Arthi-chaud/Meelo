@@ -10,13 +10,14 @@ import Tracklist from "./models/tracklist";
 import axios from 'axios';
 import Resource from "./models/resource";
 import { SortingParameters } from "./utils/sorting";
-type QueryParameters<T extends Resource = Resource> = {
+import LibraryTaskResponse from "./models/library-task-response";
+type QueryParameters<T = {}> = {
 	pagination?: PaginationParameters;
 	include?: string[];
 	sort?: SortingParameters<T>
 }
 
-type FetchParameters<T extends Resource> = {
+type FetchParameters<T> = {
 	route: string,
 	parameters: QueryParameters<T>,
 	otherParameters?: any,
@@ -364,7 +365,7 @@ export default class API {
 		})
 	}
 
-	private static async fetch<T extends Resource>({ route, parameters, otherParameters, errorMessage }: FetchParameters<T>) {
+	private static async fetch<T>({ route, parameters, otherParameters, errorMessage }: FetchParameters<T>) {
 		const response = await fetch(this.buildURL(route, parameters, otherParameters));
 		const jsonResponse = await response.json().catch(() => {
 			throw new Error("Error while parsing Server's response");
@@ -375,6 +376,12 @@ export default class API {
 		return jsonResponse;
 	}
 
+	static scanLibraries(): Promise<LibraryTaskResponse> {
+		return API.fetch<LibraryTaskResponse>({
+			route: `/libraries/scan`,
+			parameters: { }
+		})
+	}
 	/**
 	 * Builds the URL to get an illustration from an object returned by the API
 	 * @param imageURL 
