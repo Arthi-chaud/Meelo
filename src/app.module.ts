@@ -16,6 +16,7 @@ import { LyricsModule } from './lyrics/lyrics.module';
 import SearchModule from './search/search.module';
 import GenreModule from './genre/genre.module';
 import AppController from './app.controller';
+import TasksModule from './tasks/tasks.module';
 
 @Module({
 	imports: [
@@ -35,6 +36,7 @@ import AppController from './app.controller';
 		GenreModule,
 		SearchModule,
 		LyricsModule,
+		TasksModule
 	],
 	controllers: [AppController],
 	providers: [],

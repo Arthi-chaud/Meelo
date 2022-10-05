@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, Logger, Param, Post, Query, Req } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Post, Query, Req } from '@nestjs/common';
 import LibraryService from './library.service';
 import LibraryDto from './models/create-library.dto';
 import type { Library } from '@prisma/client';
@@ -19,7 +19,6 @@ import ParseLibraryIdentifierPipe from './library.pipe';
 import type { Request } from 'express';
 import PaginatedResponse from 'src/pagination/models/paginated-response';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
-import type LibraryTaskResponse from './models/library-task.response';
 
 @ApiTags("Libraries")
 @Controller('libraries')
@@ -42,6 +41,17 @@ export default class LibraryController {
 	}
 
 	@ApiOperation({
+		summary: 'Get a library'
+	})
+	@Get(':idOrSlug')
+	async getLibrary(
+		@Param(ParseLibraryIdentifierPipe)
+		where: LibraryQueryParameters.WhereInput,
+	): Promise<Library> {
+		return this.libraryService.get(where);
+	}
+
+	@ApiOperation({
 		summary: 'Get all libraries'
 	})
 	@Get()
@@ -56,113 +66,6 @@ export default class LibraryController {
 			await this.libraryService.getMany({}, paginationParameters, {}, sortingParameter),
 			request
 		);
-	}
-	
-	@ApiOperation({
-		summary: 'Scan all libraries'
-	})
-	@Get('scan')
-	async scanLibrariesFiles(): Promise<LibraryTaskResponse> {
-		const libraries = await this.libraryService.getMany({});
-		libraries.forEach((library) => this.libraryService
-			.registerNewFiles(library)
-			.catch((error) => Logger.error(error))
-		);
-		return {
-			status: `Scanning ${libraries.length} libraries`
-		}
-	}
-
-	@ApiOperation({
-		summary: "Refresh all libraries' files metadata"
-	})
-	@Get('refresh-metadata')
-	async refreshLibrariesFilesMetadata(): Promise<LibraryTaskResponse> {
-		const libraries = await this.libraryService.getMany({});
-		libraries.forEach((library) => this.libraryService
-			.resyncAllMetadata({ id: library.id })
-			.catch((error) => Logger.error(error))
-		);
-		return {
-			status: `Refreshing ${libraries.length} libraries`
-		}
-	}
-
-	@ApiOperation({
-		summary: 'Clean all libraries'
-	})
-	@Get('clean')
-	async cleanLibraries(): Promise<LibraryTaskResponse> {
-		const libraries = await this.libraryService.getMany({});
-		libraries.forEach((library) => this.libraryService
-			.unregisterUnavailableFiles({ id: library.id })
-			.catch((error) => Logger.error(error))
-		);
-		return {
-			status: `Cleanning ${libraries.length} libraries`
-		}
-	}
-
-	@ApiOperation({
-		summary: 'Scan a library'
-	})
-	@Get('scan/:idOrSlug')
-	async scanLibraryFiles(
-		@Param(ParseLibraryIdentifierPipe)
-		where: LibraryQueryParameters.WhereInput
-	): Promise<LibraryTaskResponse> {
-		let library = await this.libraryService.get(where);
-		this.libraryService
-			.registerNewFiles(library)
-			.catch((error) => Logger.error(error));
-		return {
-			status: `Scanning library '${library.slug}'`
-		}
-	}
-
-	@ApiOperation({
-		summary: 'Clean a library'
-	})
-	@Get('clean/:idOrSlug')
-	async cleanLibrary(
-		@Param(ParseLibraryIdentifierPipe)
-		where: LibraryQueryParameters.WhereInput
-	): Promise<LibraryTaskResponse> {
-		let library = await this.libraryService.get(where);
-		this.libraryService
-			.unregisterUnavailableFiles(where)
-			.catch((error) => Logger.error(error));
-		return {
-			status: `Cleaning library '${library.slug}'`
-		}
-	}
-
-	@ApiOperation({
-		summary: "Refresh all library's files metadata"
-	})
-	@Get('refresh-metadata/:idOrSlug')
-	async refreshLibraryFilesMetadata(
-		@Param(ParseLibraryIdentifierPipe)
-		where: LibraryQueryParameters.WhereInput
-	): Promise<LibraryTaskResponse> {
-		let library = await this.libraryService.get(where);
-		await this.libraryService
-			.resyncAllMetadata(where)
-			.catch((error) => Logger.error(error));
-		return {
-			status: `Refreshing metadata of library '${library.slug}'`
-		}
-	}
-
-	@ApiOperation({
-		summary: 'Get a library'
-	})
-	@Get(':idOrSlug')
-	async getLibrary(
-		@Param(ParseLibraryIdentifierPipe)
-		where: LibraryQueryParameters.WhereInput,
-	): Promise<Library> {
-		return this.libraryService.get(where);
 	}
 
 	@ApiOperation({
