@@ -175,9 +175,7 @@ export default class LibraryService extends RepositoryService<
 		await Promise.all(
 			library.files.map(async (file) => {
 				const fullFilePath = `${libraryFullPath}/${file.path}`;
-				if (!this.fileManagerService.fileExists(fullFilePath))
-					return;
-				const newMD5 = await this.fileManagerService.getMd5Checksum(fullFilePath);
+				const newMD5 = await this.fileManagerService.getMd5Checksum(fullFilePath).catch(() => null);
 				if (newMD5 !== file.md5Checksum)
 					updatedFiles.push(file);
 			})
