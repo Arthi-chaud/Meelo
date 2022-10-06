@@ -102,7 +102,7 @@ export default class TasksController {
 		where: LibraryQueryParameters.WhereInput
 	): Promise<LibraryTaskResponse> {
 		let library = await this.libraryService.get(where);
-		await this.libraryService
+		this.libraryService
 			.resyncAllMetadata(where)
 			.catch((error) => Logger.error(error));
 		return {
