@@ -1,9 +1,9 @@
 import { Controller, Get, Logger, Param } from '@nestjs/common';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
-import type LibraryTaskResponse from 'front/src/models/library-task-response';
 import ParseLibraryIdentifierPipe from 'src/library/library.pipe';
 import LibraryService from 'src/library/library.service';
 import type LibraryQueryParameters from 'src/library/models/library.query-parameters';
+import type TaskResponse from './models/task.response';
 
 @ApiTags('Tasks')
 @Controller('tasks')
@@ -17,7 +17,7 @@ export default class TasksController {
 		summary: 'Scan all libraries'
 	})
 	@Get('scan')
-	async scanLibrariesFiles(): Promise<LibraryTaskResponse> {
+	async scanLibrariesFiles(): Promise<TaskResponse> {
 		const libraries = await this.libraryService.getMany({});
 		libraries.forEach((library) => this.libraryService
 			.registerNewFiles(library)
@@ -35,7 +35,7 @@ export default class TasksController {
 	async scanLibraryFiles(
 		@Param(ParseLibraryIdentifierPipe)
 		where: LibraryQueryParameters.WhereInput
-	): Promise<LibraryTaskResponse> {
+	): Promise<TaskResponse> {
 		let library = await this.libraryService.get(where);
 		this.libraryService
 			.registerNewFiles(library)
@@ -49,7 +49,7 @@ export default class TasksController {
 		summary: 'Clean all libraries'
 	})
 	@Get('clean')
-	async cleanLibraries(): Promise<LibraryTaskResponse> {
+	async cleanLibraries(): Promise<TaskResponse> {
 		const libraries = await this.libraryService.getMany({});
 		libraries.forEach((library) => this.libraryService
 			.unregisterUnavailableFiles({ id: library.id })
@@ -67,7 +67,7 @@ export default class TasksController {
 	async cleanLibrary(
 		@Param(ParseLibraryIdentifierPipe)
 		where: LibraryQueryParameters.WhereInput
-	): Promise<LibraryTaskResponse> {
+	): Promise<TaskResponse> {
 		let library = await this.libraryService.get(where);
 		this.libraryService
 			.unregisterUnavailableFiles(where)
@@ -82,7 +82,7 @@ export default class TasksController {
 		summary: "Refresh all libraries' files metadata"
 	})
 	@Get('refresh-metadata')
-	async refreshLibrariesFilesMetadata(): Promise<LibraryTaskResponse> {
+	async refreshLibrariesFilesMetadata(): Promise<TaskResponse> {
 		const libraries = await this.libraryService.getMany({});
 		libraries.forEach((library) => this.libraryService
 			.resyncAllMetadata({ id: library.id })
@@ -100,7 +100,7 @@ export default class TasksController {
 	async refreshLibraryFilesMetadata(
 		@Param(ParseLibraryIdentifierPipe)
 		where: LibraryQueryParameters.WhereInput
-	): Promise<LibraryTaskResponse> {
+	): Promise<TaskResponse> {
 		let library = await this.libraryService.get(where);
 		this.libraryService
 			.resyncAllMetadata(where)
