@@ -4,7 +4,7 @@ import ParseLibraryIdentifierPipe from 'src/library/library.pipe';
 import LibraryService from 'src/library/library.service';
 import type LibraryQueryParameters from 'src/library/models/library.query-parameters';
 import type TaskResponse from './models/task.response';
-import type TasksService from './tasks.service';
+import TasksService from './tasks.service';
 
 @ApiTags('Tasks')
 @Controller('tasks')

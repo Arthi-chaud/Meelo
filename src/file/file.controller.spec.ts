@@ -12,6 +12,7 @@ import FileModule from "./file.module";
 import request from 'supertest';
 import TestPrismaService from "test/test-prisma.service";
 import { LyricsModule } from "src/lyrics/lyrics.module";
+import TasksModule from "src/tasks/tasks.module";
 
 describe('File Controller', () => {
 	let app: INestApplication;
@@ -20,7 +21,7 @@ describe('File Controller', () => {
 
 	beforeAll(async () => {
 		const module: TestingModule = await createTestingModule({
-			imports: [FileModule, LibraryModule, PrismaModule, LyricsModule]
+			imports: [FileModule, LibraryModule, PrismaModule, LyricsModule, TasksModule]
 		}).overrideProvider(FileManagerService).useClass(FakeFileManagerService)
 		.overrideProvider(PrismaService).useClass(TestPrismaService).compile();
 		app = await SetupApp(module);

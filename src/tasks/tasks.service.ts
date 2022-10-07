@@ -1,23 +1,25 @@
-import { Injectable, Logger } from '@nestjs/common';
+import { forwardRef, Inject, Injectable, Logger } from '@nestjs/common';
 import type LibraryQueryParameters from 'src/library/models/library.query-parameters';
 import type { File, Library } from '@prisma/client';
-import type FileManagerService from 'src/file-manager/file-manager.service';
+import FileManagerService from 'src/file-manager/file-manager.service';
 import type FileQueryParameters from 'src/file/models/file.query-parameters';
-import type TrackService from 'src/track/track.service';
-import type FileService from 'src/file/file.service';
-import type MetadataService from 'src/metadata/metadata.service';
-import type IllustrationService from 'src/illustration/illustration.service';
-import type { LyricsService } from 'src/lyrics/lyrics.service';
-import type LibraryService from 'src/library/library.service';
+import TrackService from 'src/track/track.service';
+import FileService from 'src/file/file.service';
+import MetadataService from 'src/metadata/metadata.service';
+import IllustrationService from 'src/illustration/illustration.service';
+import { LyricsService } from 'src/lyrics/lyrics.service';
+import LibraryService from 'src/library/library.service';
 
 @Injectable()
 export default class TasksService {
 	constructor(
 		private fileManagerService: FileManagerService,
+		@Inject(forwardRef(() => FileService))
 		private fileService: FileService,
 		private trackService: TrackService,
 		private metadataService: MetadataService,
 		private lyricsService: LyricsService,
+		@Inject(forwardRef(() => LibraryService))
 		private libraryService: LibraryService,
 		private illustrationService: IllustrationService,
 	) {}

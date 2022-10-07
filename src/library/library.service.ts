@@ -12,7 +12,7 @@ import normalize from 'normalize-path';
 import RepositoryService from 'src/repository/repository.service';
 import type { MeeloException } from 'src/exceptions/meelo-exception';
 import { buildStringSearchParameters } from 'src/utils/search-string-input';
-import type TasksService from 'src/tasks/tasks.service';
+import TasksService from 'src/tasks/tasks.service';
 
 @Injectable()
 export default class LibraryService extends RepositoryService<
@@ -35,6 +35,7 @@ export default class LibraryService extends RepositoryService<
 		private fileService: FileService,
 		private metadataService: MetadataService,
 		private illustrationService: IllustrationService,
+		@Inject(forwardRef(() => TasksService))
 		private tasksService: TasksService,
 		prismaService: PrismaService,
 	) {
