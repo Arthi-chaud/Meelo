@@ -29,14 +29,14 @@ const Illustration = (props: IllustrationProps) => {
 				</IconButton>
 				: <Image
 					onError={() => setLoadingFailed(true)}
-					loader={({ src }) => src}
+					loader={({ src, width }) => `${src}?width=${width}`}
 					width={1}
 					height={1}
 					objectFit="contain"
 					layout="responsive"
 					alt={(props.url?.split('/').join('-') ?? 'missing-illustration')}
 					{...props}
-					style={{ ...props.style, borderRadius: theme.shape.borderRadius, width: 'auto' }}
+					style={{ ...props.style, borderRadius: theme.shape.borderRadius }}
 					src={API.getIllustrationURL(props.url ?? '')}
 				/>
 			}
