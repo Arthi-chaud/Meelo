@@ -21,27 +21,26 @@ type IllustrationProps = {
 const Illustration = (props: IllustrationProps) => {
 	const theme = useTheme();
 	const [loadingFailed, setLoadingFailed] = useState(false);
-	return <FadeIn>
-		<Box sx={{ aspectRatio: '1', justifyContent: 'center', alignItems: 'center', display: loadingFailed ? 'flex' : undefined }}>
-			{ loadingFailed
-				? <IconButton disabled sx={{ fontSize: 'large' }}>
-					{props.fallback}
-				</IconButton>
-				: <Image
-					onError={() => setLoadingFailed(true)}
-					loader={({ src }) => src}
-					width={1}
-					height={1}
-					objectFit="contain"
-					layout="responsive"
-					alt={(props.url?.split('/').join('-') ?? 'missing-illustration')}
-					{...props}
-					style={{ ...props.style, borderRadius: theme.shape.borderRadius, width: 'auto' }}
-					src={API.getIllustrationURL(props.url ?? '')}
-				/>
-			}
-		</Box>
-	</FadeIn>
+	return <Box sx={{ aspectRatio: '1', justifyContent: 'center', alignItems: 'center', display: loadingFailed ? 'flex' : 'block' }}>
+		{ loadingFailed
+			? <IconButton disabled sx={{ fontSize: 'large' }}>
+				{props.fallback}
+			</IconButton>
+			: <Image
+				onError={() => setLoadingFailed(true)}
+				loader={({ src, width, quality }) => `${src}?width=${width}${quality ? `&quality=${quality}` : ''}`}
+				width={1}
+				height={1}
+				objectFit="contain"
+				layout="responsive"
+				loading="lazy"
+				alt={(props.url?.split('/').join('-') ?? 'missing-illustration')}
+				{...props}
+				style={{ ...props.style, borderRadius: theme.shape.borderRadius }}
+				src={API.getIllustrationURL(props.url ?? '')}
+			/>
+		}
+	</Box>
 }
 
 export default Illustration;
