@@ -12,6 +12,7 @@ import SongModule from 'src/song/song.module';
 import ReleaseModule from 'src/release/release.module';
 import TrackModule from 'src/track/track.module';
 import { LyricsModule } from 'src/lyrics/lyrics.module';
+import TasksModule from 'src/tasks/tasks.module';
 
 @Module({
 	imports: [
@@ -25,6 +26,7 @@ import { LyricsModule } from 'src/lyrics/lyrics.module';
 		LyricsModule,
 		SongModule,
 		ReleaseModule,
+		forwardRef(() => TasksModule),
 		forwardRef(() => TrackModule)
 	],
 	controllers: [LibraryController],

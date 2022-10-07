@@ -378,7 +378,7 @@ export default class API {
 
 	static scanLibraries(): Promise<LibraryTaskResponse> {
 		return API.fetch<LibraryTaskResponse>({
-			route: `/libraries/scan`,
+			route: `/tasks/scan`,
 			parameters: { }
 		})
 	}
