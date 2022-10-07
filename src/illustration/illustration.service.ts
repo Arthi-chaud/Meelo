@@ -20,6 +20,8 @@ import type FileQueryParameters from 'src/file/models/file.query-parameters';
 import TrackService from 'src/track/track.service';
 import FileService from 'src/file/file.service';
 import path from 'path';
+import { Readable } from 'stream';
+import type { IllustrationDimensionsDto } from './models/illustration-dimensions.dto';
 
 type IllustrationExtractStatus = 'extracted' | 'error' | 'already-extracted' | 'different-illustration';
 
@@ -358,14 +360,33 @@ export default class IllustrationService implements OnModuleInit {
 	 * @param res the Response Object of the request
 	 * @returns a StreamableFile of the illustration
 	 */
-	streamIllustration(sourceFilePath: string, as: string, res: any): StreamableFile {
+	async streamIllustration(sourceFilePath: string, as: string, dimensions: IllustrationDimensionsDto, res: any): Promise<StreamableFile> {
 		if (this.fileManagerService.fileExists(sourceFilePath) == false)
 			throw new NoIllustrationException("Illustration file not found");
-		const illustration = fs.createReadStream(sourceFilePath);
+		let illustration: fs.ReadStream | Readable;
 		res.set({
 			'Content-Disposition': `attachment; filename="${as}.jpg"`,
 		});
-		return new StreamableFile(illustration);
+		if (dimensions.width || dimensions.height) {
+			try {
+				let jimpImage = await Jimp.read(sourceFilePath);
+				if (dimensions.width && dimensions.height) {
+					jimpImage = jimpImage.resize(dimensions.width, dimensions.height);
+				} else if (dimensions.width) {
+					jimpImage = jimpImage.scale(dimensions.width / jimpImage.getWidth())
+				} else if (dimensions.height) {
+					jimpImage = jimpImage.scale(dimensions.height / jimpImage.getHeight())
+				}
+				if (dimensions.quality)
+					jimpImage = jimpImage.quality(dimensions.quality);
+				illustration = Readable.from(await jimpImage.getBufferAsync(Jimp.MIME_JPEG));
+			} catch {
+				Logger.error(`Streaming of illustration ${sourceFilePath} failed.`)
+			}
+		} else {
+			illustration = fs.createReadStream(sourceFilePath);
+		}
+		return new StreamableFile(illustration!);
 	}
 
 
