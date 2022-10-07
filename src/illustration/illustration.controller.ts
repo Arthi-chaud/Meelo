@@ -40,7 +40,6 @@ export class IllustrationController {
 		@Query() dimensions: IllustrationDimensionsDto,
 		res: Response,
 	) {
-		Logger.warn(dimensions);
 		let artist = await this.artistService.get(where);
 		return this.illustrationService.streamIllustration(
 			this.illustrationService.buildArtistIllustrationPath(new Slug(artist.slug)),
