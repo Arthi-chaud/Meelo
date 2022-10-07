@@ -373,14 +373,15 @@ export default class IllustrationService implements OnModuleInit {
 				if (dimensions.width && dimensions.height) {
 					jimpImage = jimpImage.resize(dimensions.width, dimensions.height);
 				} else if (dimensions.width) {
-					jimpImage = jimpImage.scale(dimensions.width / jimpImage.getWidth())
+					jimpImage = jimpImage.scale(Math.min(dimensions.width, jimpImage.getWidth()) / jimpImage.getWidth())
 				} else if (dimensions.height) {
-					jimpImage = jimpImage.scale(dimensions.height / jimpImage.getHeight())
+					jimpImage = jimpImage.scale(Math.min(dimensions.height, jimpImage.getHeight()) / jimpImage.getHeight())
 				}
 				if (dimensions.quality)
 					jimpImage = jimpImage.quality(dimensions.quality);
 				illustration = Readable.from(await jimpImage.getBufferAsync(Jimp.MIME_JPEG));
-			} catch {
+			} catch (e) {
+				Logger.debug(e);
 				Logger.error(`Streaming of illustration ${sourceFilePath} failed.`)
 			}
 		} else {
