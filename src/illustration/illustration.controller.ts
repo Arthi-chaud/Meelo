@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Param, Post,Response } from "@nestjs/common";
+import { Body, Controller, Get, Logger, Param, Post, Query, Response } from "@nestjs/common";
 import { ApiOperation, ApiTags } from "@nestjs/swagger";
 import ParseAlbumIdentifierPipe from "src/album/album.pipe";
 import type AlbumQueryParameters from "src/album/models/album.query-parameters";
@@ -14,8 +14,9 @@ import ParseSongIdentifierPipe from "src/song/song.pipe";
 import TrackService from "src/track/track.service";
 import { NoReleaseIllustrationException } from "./illustration.exceptions";
 import IllustrationService from "./illustration.service";
-import type { IllustrationDownloadDto } from "./models/illustration-dl.dto";
+import { IllustrationDownloadDto } from "./models/illustration-dl.dto";
 import ArtistQueryParameters from "src/artist/models/artist.query-parameters";
+import { IllustrationDimensionsDto } from "./models/illustration-dimensions.dto";
 
 @ApiTags("Illustrations")
 @Controller('illustrations')
@@ -31,16 +32,19 @@ export class IllustrationController {
 		summary: "Get an artist\'s illustration"
 	})
 	@Get('artists/:idOrSlug')
+	
 	async getArtistIllustration(
 		@Param(ParseArtistIdentifierPipe)
 		where: ArtistQueryParameters.WhereInput,
 		@Response({ passthrough: true })
-		res: Response
+		@Query() dimensions: IllustrationDimensionsDto,
+		res: Response,
 	) {
+		Logger.warn(dimensions);
 		let artist = await this.artistService.get(where);
 		return this.illustrationService.streamIllustration(
 			this.illustrationService.buildArtistIllustrationPath(new Slug(artist.slug)),
-			artist.slug, res
+			artist.slug, dimensions, res
 		);
 	}
 
@@ -65,49 +69,54 @@ export class IllustrationController {
 	@ApiOperation({
 		summary: "Get the album's illustration"
 	})
+	
 	@Get('albums/:idOrSlug')
 	async getAlbumIllustration(
 		@Param(ParseAlbumIdentifierPipe)
 		where: AlbumQueryParameters.WhereInput,
+		@Query() dimensions: IllustrationDimensionsDto,
 		@Response({ passthrough: true })
-		res: Response
+		res: Response,
 	) {
 		const masterRelease = await this.releaseService.get({ byMasterOf: where });
-		return this.getReleaseIllustration({ byId: { id: masterRelease.id } }, res)
+		return this.getReleaseIllustration({ byId: { id: masterRelease.id } }, dimensions, res)
 	}
 
 	@ApiOperation({
 		summary: "Get a song's illustration"
 	})
+	
 	@Get('songs/:idOrSlug')
 	async getSongIllustration(
 		@Param(ParseSongIdentifierPipe)
 		where: SongQueryParameters.WhereInput,
+		@Query() dimensions: IllustrationDimensionsDto,
 		@Response({ passthrough: true })
-		res: Response
+		res: Response,
 	) {
 		const master = await this.trackService.getMasterTrack(where);
-		return this.getTrackIllustration(master.id, res);
+		return this.getTrackIllustration(master.id, dimensions, res);
 		
 	}
 
 	@ApiOperation({
 		summary: "Get a release's illustration"
 	})
+	
 	@Get('releases/:idOrSlug')
 	async getReleaseIllustration(
 		@Param(ParseReleaseIdentifierPipe)
 		where: ReleaseQueryParameters.WhereInput,
+		@Query() dimensions: IllustrationDimensionsDto,
 		@Response({ passthrough: true })
-		res: Response
+		res: Response,
 	) {
 		const path = await this.releaseService.buildIllustrationPath(where);
 		let release = await this.releaseService.get(where, { album: true });
 		if (this.illustrationService.illustrationExists(path) == false)
 			throw new NoReleaseIllustrationException(new Slug(release.album.slug), new Slug(release.slug));
 		return this.illustrationService.streamIllustration(
-			path,
-			release.slug, res
+			path, release.slug, dimensions, res
 		);
 	}
 
@@ -131,22 +140,24 @@ export class IllustrationController {
 	@ApiOperation({
 		summary: "Get a track's illustration"
 	})
+	
 	@Get('tracks/:id')
 	async getTrackIllustration(
 		@Param('id', ParseIdPipe)
 		trackId: number,
+		@Query() dimensions: IllustrationDimensionsDto,
 		@Response({ passthrough: true })
-		res: Response
+		res: Response,
 	) {
 		const track = await this.trackService.get({ id: trackId }, { song: true })
 		const trackIllustrationPath = await this.trackService.buildIllustrationPath({ id: trackId });
 		if (this.illustrationService.illustrationExists(trackIllustrationPath)) {
 			return this.illustrationService.streamIllustration(
 				trackIllustrationPath,
-				track.song.slug, res
+				track.song.slug, dimensions, res
 			);
 		}
-		return this.getReleaseIllustration({ byId: { id: track.releaseId! } }, res);
+		return this.getReleaseIllustration({ byId: { id: track.releaseId! } }, dimensions, res);
 	}
 	
 	@ApiOperation({
