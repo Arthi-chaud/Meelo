@@ -1,4 +1,5 @@
 import { Module } from '@nestjs/common';
+import TasksService from './tasks.service';
 import LibraryModule from 'src/library/library.module';
 import TasksController  from './tasks.controller';
 
@@ -7,5 +8,7 @@ import TasksController  from './tasks.controller';
 		LibraryModule
 	],
 	controllers: [TasksController],
+	providers: [TasksService],
+	exports: [TasksService]
 })
 export default class TasksModule {}

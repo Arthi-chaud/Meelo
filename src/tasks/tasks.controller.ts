@@ -4,6 +4,7 @@ import ParseLibraryIdentifierPipe from 'src/library/library.pipe';
 import LibraryService from 'src/library/library.service';
 import type LibraryQueryParameters from 'src/library/models/library.query-parameters';
 import type TaskResponse from './models/task.response';
+import type TasksService from './tasks.service';
 
 @ApiTags('Tasks')
 @Controller('tasks')
@@ -11,6 +12,7 @@ export default class TasksController {
 
 	constructor(
 		private libraryService: LibraryService,
+		private tasksService: TasksService,
 	) {}
 
 	@ApiOperation({
@@ -19,7 +21,7 @@ export default class TasksController {
 	@Get('scan')
 	async scanLibrariesFiles(): Promise<TaskResponse> {
 		const libraries = await this.libraryService.getMany({});
-		libraries.forEach((library) => this.libraryService
+		libraries.forEach((library) => this.tasksService
 			.registerNewFiles(library)
 			.catch((error) => Logger.error(error))
 		);
@@ -37,7 +39,7 @@ export default class TasksController {
 		where: LibraryQueryParameters.WhereInput
 	): Promise<TaskResponse> {
 		let library = await this.libraryService.get(where);
-		this.libraryService
+		this.tasksService
 			.registerNewFiles(library)
 			.catch((error) => Logger.error(error));
 		return {
@@ -51,7 +53,7 @@ export default class TasksController {
 	@Get('clean')
 	async cleanLibraries(): Promise<TaskResponse> {
 		const libraries = await this.libraryService.getMany({});
-		libraries.forEach((library) => this.libraryService
+		libraries.forEach((library) => this.tasksService
 			.unregisterUnavailableFiles({ id: library.id })
 			.catch((error) => Logger.error(error))
 		);
@@ -69,7 +71,7 @@ export default class TasksController {
 		where: LibraryQueryParameters.WhereInput
 	): Promise<TaskResponse> {
 		let library = await this.libraryService.get(where);
-		this.libraryService
+		this.tasksService
 			.unregisterUnavailableFiles(where)
 			.catch((error) => Logger.error(error));
 		return {
@@ -84,7 +86,7 @@ export default class TasksController {
 	@Get('refresh-metadata')
 	async refreshLibrariesFilesMetadata(): Promise<TaskResponse> {
 		const libraries = await this.libraryService.getMany({});
-		libraries.forEach((library) => this.libraryService
+		libraries.forEach((library) => this.tasksService
 			.resyncAllMetadata({ id: library.id })
 			.catch((error) => Logger.error(error))
 		);
@@ -102,7 +104,7 @@ export default class TasksController {
 		where: LibraryQueryParameters.WhereInput
 	): Promise<TaskResponse> {
 		let library = await this.libraryService.get(where);
-		this.libraryService
+		this.tasksService
 			.resyncAllMetadata(where)
 			.catch((error) => Logger.error(error));
 		return {
