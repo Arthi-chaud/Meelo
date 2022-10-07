@@ -1,11 +1,12 @@
 import { INestApplication, ValidationPipe } from '@nestjs/common';
 import { HttpAdapterHost, NestFactory } from '@nestjs/core';
 import AppModule from './app.module';
-import AllExceptionsFilter from 'src/exceptions/all-exceptions.filter'
 import MeeloExceptionFilter from './exceptions/meelo-exception.filter';
 import NotFoundExceptionFilter from './exceptions/not-found.exception';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import mime from 'mime';
+import { InvalidRequestException } from './exceptions/meelo-exception';
+import AllExceptionsFilter from './exceptions/all-exceptions.filter';
 
 async function bootstrapSwagger(app: INestApplication) {
 	const config = new DocumentBuilder()
@@ -14,9 +15,7 @@ async function bootstrapSwagger(app: INestApplication) {
 		.setVersion('1.0')
 		.addServer("/api", "API Path")
 		.build();
-	const document = SwaggerModule.createDocument(app, config, {
-
-	});
+	const document = SwaggerModule.createDocument(app, config);
 	SwaggerModule.setup('/docs', app, document);
 }
 
@@ -29,7 +28,15 @@ async function bootstrap() {
 		new NotFoundExceptionFilter(),
 		new MeeloExceptionFilter()
 	);
-	app.useGlobalPipes(new ValidationPipe());
+	app.useGlobalPipes(new ValidationPipe({
+		exceptionFactory: (e) => {
+			const failedConstraint = Object.keys(e[0].constraints!)[0];
+			return new InvalidRequestException(e[0].constraints![failedConstraint]);
+		},
+		transformOptions: {
+			enableImplicitConversion: true
+		},
+	}));
 	if (process.env.NODE_ENV === 'development')
 		app.enableCors();
 	await bootstrapSwagger(app);
