@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Logger, Param, Post, Query, Response } from "@nestjs/common";
+import { Body, Controller, Get, Param, Post, Query, Response } from "@nestjs/common";
 import { ApiOperation, ApiTags } from "@nestjs/swagger";
 import ParseAlbumIdentifierPipe from "src/album/album.pipe";
 import type AlbumQueryParameters from "src/album/models/album.query-parameters";
