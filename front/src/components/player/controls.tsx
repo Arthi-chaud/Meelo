@@ -13,6 +13,7 @@ import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import API from '../../api';
 import { useQuery } from "react-query";
 import { prepareMeeloQuery } from "../../query";
+import LyricsBox from "./controls/lyrics";
 
 const lyricsQuery = (slugOrId: string | number) => ({
 	key: ['song', slugOrId, 'lyrics'],
@@ -90,17 +91,15 @@ const ExpandedPlayerControls = (props: PlayerControlsProps) => {
 			</Grid>
 		</Grid>
 		<Divider variant="middle"/>
-		{ props.track && <Box sx={{ paddingX: 4 }}>
-			<Accordion  style={{ backgroundColor: 'transparent', boxShadow: 'none', border: 'none',backgroundImage: 'none' }} expanded={lyricsOpen} onChange={() => setLyricsOpen(!lyricsOpen)}>
+		{ props.track && <Box sx={{ paddingX: 4, paddingBottom: 2 }}>
+			<Accordion style={{ backgroundColor: 'transparent', boxShadow: 'none', border: 'none',backgroundImage: 'none' }} expanded={lyricsOpen} onChange={() => setLyricsOpen(!lyricsOpen)}>
 				<AccordionSummary expandIcon={<ExpandMoreIcon />}>
-					<Typography sx={{ fontWeight: 'bold' }}>Lyrics</Typography>
+					<Typography variant="h6" sx={{ fontWeight: 'bold' }}>Lyrics</Typography>
 				</AccordionSummary>
 				<AccordionDetails>
 					{ lyrics.isLoading
 						? <WideLoadingComponent/>
-						: lyrics.data
-							? <Box flexDirection='column'>{lyrics.data.map((lyric, index) => <Typography key={index}>{lyric}</Typography>)}</Box>
-							: <Typography sx={{ fontStyle: 'italic' }}>No Lyrics found</Typography>
+						: <LyricsBox lyrics={lyrics.data} songName={props.track.name}/>
 					}
 				</AccordionDetails>
 			</Accordion>
