@@ -1,10 +1,11 @@
 import { FastForward, FastRewind, Pause, PlayArrow } from "@mui/icons-material";
-import { Typography, Grid, Slider, LinearProgress, IconButton } from "@mui/material";
+import { Typography, Grid, Slider, Button, IconButton, ButtonBase, CardActionArea, useTheme } from "@mui/material";
 import formatDuration from "../../utils/formatDuration";
 import Illustration from "../illustration";
 import LoadingComponent from "../loading/loading";
 import AudiotrackIcon from '@mui/icons-material/Audiotrack';
 import CloseIcon from '@mui/icons-material/Close';
+import { useState } from "react";
 
 type PlayerControlsProps = {
 	title?: string;
@@ -32,12 +33,16 @@ const playerTextStyle = {
 }
 
 const PlayerControls = (props: PlayerControlsProps) => {
+	const theme = useTheme();
+	const [expanded, setExpanded] = useState(false);
 	return <Grid container spacing={1} sx={{ alignItems: 'center', justifyContent: 'space-evenly', padding: 1 }}>
 		<Grid item xs={1.5} sm={1.25} md={0.75} lg={0.6} xl={0.5} sx={{ alignContent: 'center' }}>
-			{ props.illustration
-				? <Illustration url={props.illustration} fallback={<AudiotrackIcon/>}/>
-				: <AudiotrackIcon/>
-			}
+			<CardActionArea onClick={() => setExpanded(true)} sx={{ borderRadius: theme.shape.borderRadius }}>
+				{ props.illustration
+					? <Illustration url={props.illustration} fallback={<AudiotrackIcon/>}/>
+					: <AudiotrackIcon/>
+				}
+			</CardActionArea>
 		</Grid>
 		<Grid item container sx={{ flexDirection: 'column'}} xs={6}>
 			<Grid item xs sx={{ display: 'flex', justifyContent: 'center', flexDirection: 'column'}}>
