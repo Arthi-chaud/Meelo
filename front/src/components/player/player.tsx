@@ -4,7 +4,7 @@ import { useDispatch, useSelector } from "react-redux";
 import API from "../../api";
 import { playNextTrack, playPreviousTrack, pushCurrentTrackToHistory, setHistoryToPlaylist } from "../../state/playerSlice";
 import { RootState } from "../../state/store";
-import { PlayerControls, ExpandedPlayerControls } from "./controls";
+import PlayerControls from "./controls";
 
 const Player = () => {
 	const theme = useTheme();
@@ -31,7 +31,7 @@ const Player = () => {
 		setPlaying(true);
 		audio.current?.play();
 	};
-	const pause = () => {
+	const pause = () => {true
 		setPlaying(false);
 		audio.current?.pause();
 	}
@@ -108,9 +108,10 @@ const Player = () => {
 			mountOnEnter unmountOnExit
 			in={(playlist.length != 0 || history.length != 0 || audio.current != undefined) && !stopped}
 		>
-			<Box sx={{ width: '100%', height: '100%', padding: 2, display: 'flex', position: 'fixed', right: 0, bottom: 0, justifyContent: 'center', zIndex: 'modal', alignItems: 'flex-end' }} ref={playerComponentRef}>
+			<Box sx={{ width: '100%', height: '100%', padding: 2, display: 'flex', position: 'fixed', right: 0, bottom: 0, justifyContent: 'center', zIndex: 'modal', alignItems: 'flex-end' }}  ref={playerComponentRef}>
 				<Paper elevation={20} sx={{ borderRadius: '0.5rem', alignItems: 'center', display: 'flex', width: '100%', height: expanded ? '100%' : 'fit-content', overflow: 'scroll' }} >
-					{ expanded || <PlayerControls
+					<PlayerControls
+						expanded={expanded}
 						illustration={illustrationURL}
 						title={currentTrack?.track.name}
 						artist={currentTrack?.artist.name}
@@ -118,28 +119,13 @@ const Player = () => {
 						onPause={pause}
 						onPlay={play}
 						onStop={stop}
-						onExpand={() => setExpanded(true)}
+						onExpand={(expand) => setExpanded(expand)}
 						duration={currentTrack?.track.duration}
 						progress={progress}
 						onSkipTrack={onSkipTrack}
 						onRewind={onRewind}
-						onScroll={(newProgress) => audio.current?.fastSeek(newProgress)}
-					/>}
-					{ expanded && <ExpandedPlayerControls
-						illustration={illustrationURL}
-						title={currentTrack?.track.name}
-						artist={currentTrack?.artist.name}
-						playing={playing ?? false}
-						onPause={pause}
-						onPlay={play}
-						onStop={stop}
-						onExpand={() => setExpanded(false)}
-						duration={currentTrack?.track.duration}
-						progress={progress}
-						onSkipTrack={onSkipTrack}
-						onRewind={onRewind}
-						onScroll={(newProgress) => audio.current?.fastSeek(newProgress)}
-					/>}
+						onSlide={(newProgress) => audio.current?.fastSeek(newProgress)}
+					/>
 				</Paper>
 			</Box>
 		</Slide>
