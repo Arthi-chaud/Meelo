@@ -13,6 +13,7 @@ import { AlbumWithArtist } from "../../models/album"
 import Release from "../../models/release"
 import { Star } from "@mui/icons-material"
 import { Album } from "@mui/icons-material"
+import LoadingItemComponent from "../loading/loading-item"
 
 type AlbumItemProps = {
 	album: AlbumWithArtist;
@@ -41,7 +42,7 @@ const AlbumItem = ({ album }: AlbumItemProps) => {
 			trailing={album.releaseDate ? <Typography>{new Date(album.releaseDate).getFullYear()}</Typography> : undefined}
 			expanded={() => (
 				<InfiniteList
-					firstLoader={() => <WideLoadingComponent/>}
+					firstLoader={() => <LoadingItemComponent/>}
 					loader={() => <WideLoadingComponent/>}
 					query={() => ({
 						key: ['album', album.id, 'releases'],

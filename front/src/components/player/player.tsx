@@ -1,10 +1,10 @@
-import { BottomNavigation, Box, Button, Card, CardContent, Link, Paper, Slide, useTheme } from "@mui/material"
+import { BottomNavigation, Box, Button, Card, CardContent, Hidden, Link, Paper, Slide, Typography, useTheme } from "@mui/material"
 import { useEffect, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import API from "../../api";
 import { playNextTrack, playPreviousTrack, pushCurrentTrackToHistory, setHistoryToPlaylist } from "../../state/playerSlice";
 import { RootState } from "../../state/store";
-import PlayerControls from "./controls"
+import PlayerControls from "./controls";
 
 const Player = () => {
 	const theme = useTheme();
@@ -17,14 +17,26 @@ const Player = () => {
 	const [progress, setProgress] = useState<number | undefined>();
 	const [playing, setPlaying] = useState<boolean>();
 	const [illustrationURL, setIllustrationURL] = useState<string | null>();
+	const [stopped, setStopped] = useState(false);
+	const [playerHeight, setPlayerHeight] = useState(0);
+  	const playerComponentRef = useRef<HTMLDivElement>(null);
+	const [expanded, setExpanded] = useState(false);
+
+  	useEffect(() => {
+  		setPlayerHeight(playerComponentRef.current?.clientHeight ?? 0)
+  	}, [playerComponentRef])
 	const play = () => {
 		if (currentTrack == undefined)
 			dispatch(playNextTrack());
 		setPlaying(true);
 		audio.current?.play();
 	};
-	const pause = () => {
+	const pause = () => {true
 		setPlaying(false);
+		audio.current?.pause();
+	}
+	const stop = () => {
+		setStopped(true);
 		audio.current?.pause();
 	}
 	const onSkipTrack = () => {
@@ -51,6 +63,7 @@ const Player = () => {
 		navigator.mediaSession.setActionHandler('previoustrack', onRewind);
 		navigator.mediaSession.setActionHandler('nexttrack', onSkipTrack);
 		if (currentTrack) {
+			setStopped(false);
 			const newIllustrationURL = currentTrack?.track.illustration ?? currentTrack?.release.illustration;
 			setIllustrationURL(newIllustrationURL);
 			const newAudio = new Audio(API.getStreamURL(currentTrack.track.stream));
@@ -76,30 +89,49 @@ const Player = () => {
 					setProgress(audio.current?.currentTime);
 				}
 			}, 100);
+		} else {
+			setIllustrationURL(null);
 		}
 		return () => clearInterval(interval.current);
 	}, [currentTrack]);
-	if (playlist.length == 0 && history.length == 0 && audio.current == undefined)
-		return <></>
-	return <Slide direction="up" in={true} mountOnEnter unmountOnExit>
-		<Box sx={{ width: '100%', display: 'flex', position: 'sticky', right: 16, bottom: 16,justifyContent: 'center' }}>
-			<Paper elevation={20} sx={{ width: '90%', borderRadius: '0.5rem', zIndex: 'modal' }}>
-				<PlayerControls
-					illustration={illustrationURL}
-					title={currentTrack?.track.name}
-					artist={currentTrack?.artist.name}
-					playing={playing ?? false}
-					onPause={pause}
-					onPlay={play}
-					duration={currentTrack?.track.duration}
-					progress={progress}
-					onSkipTrack={onSkipTrack}
-					onRewind={onRewind}
-					onScroll={(newProgress) => audio.current?.fastSeek(newProgress)}
-				/>
-			</Paper>
-		</Box>
-	</Slide>
+	useEffect(() => {
+		// To avoid background scoll
+		if (expanded)
+			document.body.style.overflow = 'hidden';
+		else
+			document.body.style.overflow = 'unset';
+		return () => { document.body.style.overflow = 'unset' };
+	}, [expanded])
+	return <Box>
+		<Box sx={{ height: playerHeight, position: 'sticky', padding: 5 }} />
+		<Slide
+			direction="up"
+			mountOnEnter unmountOnExit
+			in={(playlist.length != 0 || history.length != 0 || audio.current != undefined) && !stopped}
+		>
+			<Box sx={{ width: '100%', height: expanded ? '100%' : undefined, padding: 2, display: 'flex', position: 'fixed', right: 0, bottom: 0, justifyContent: 'center', zIndex: 'modal', alignItems: 'flex-end' }}  ref={playerComponentRef}>
+				<Paper elevation={20} sx={{ borderRadius: '0.5rem', alignItems: 'center', display: 'flex', width: '100%', height: expanded ? '100%' : 'fit-content', overflow: 'scroll' }} >
+					<PlayerControls
+						expanded={expanded}
+						illustration={illustrationURL}
+						track={currentTrack?.track}
+						artist={currentTrack?.artist}
+						playing={playing ?? false}
+						onPause={pause}
+						onPlay={play}
+						onStop={stop}
+						onExpand={(expand) => setExpanded(expand)}
+						duration={currentTrack?.track.duration}
+						progress={progress}
+						onSkipTrack={onSkipTrack}
+						onRewind={onRewind}
+						onSlide={(newProgress) => audio.current?.fastSeek(newProgress)}
+					/>
+				</Paper>
+			</Box>
+		</Slide>
+	</Box>
+
 }
 
 export default Player;

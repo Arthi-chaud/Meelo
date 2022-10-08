@@ -250,7 +250,7 @@ const ReleasePage = ({ releaseIdentifier }: InferGetServerSidePropsType<typeof g
 												{ track.type == 'Video' &&
 													<ListItemIcon><MusicVideoIcon color='disabled' fontSize="small"/></ListItemIcon>
 												}
-												<Typography>{formatDuration(track.duration)}</Typography>
+												<Typography sx={{ paddingLeft: 2 }}>{formatDuration(track.duration)}</Typography>
 											</ListItemButton>
 											<Divider variant="inset"/>
 										</>

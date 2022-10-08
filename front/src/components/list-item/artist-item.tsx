@@ -14,6 +14,7 @@ import Album, { AlbumWithArtist } from "../../models/album"
 import Release from "../../models/release"
 import AccountCircle from "@mui/icons-material/AccountCircle"
 import AlbumIcon from "@mui/icons-material/Album"
+import LoadingItemComponent from "../loading/loading-item"
 
 type ArtistItemProps = {
 	artist: Artist;
@@ -31,7 +32,7 @@ const ArtistItem = ({ artist }: ArtistItemProps) => {
 			title={<Typography>{artist.name}</Typography>}
 			expanded={() => (
 				<InfiniteList
-					firstLoader={() => <WideLoadingComponent/>}
+					firstLoader={() => <LoadingItemComponent/>}
 					loader={() => <WideLoadingComponent/>}
 					query={() => ({
 						key: ['artist', artist.id, 'albums'],

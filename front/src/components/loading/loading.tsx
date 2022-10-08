@@ -30,8 +30,11 @@ const LoadingComponent = () => {
  * Loading component that take the whole width and center the loading animation
  * @returns 
  */
-const WideLoadingComponent = () => (
-	<Box width='100%' display="flex" justifyContent="center" paddingY={10}>
+type WideLoadingComponentProps = {
+	verticalPadding?: number
+}
+const WideLoadingComponent = (props: WideLoadingComponentProps) => (
+	<Box width='100%' display="flex" justifyContent="center" paddingY={props.verticalPadding ?? 10}>
 		<LoadingComponent/>
 	</Box>
 )
