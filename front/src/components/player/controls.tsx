@@ -67,7 +67,7 @@ const ExpandedPlayerControls = (props: PlayerControlsProps) => {
 				<PlayerButtonControls {...props}/>
 			</Grid>
 			<Grid item>
-				<PlayerSlider onSlide={props.onScroll} duration={props.duration} progress={props.progress}/>
+				<PlayerSlider onSlide={props.onSlide} duration={props.duration} progress={props.progress}/>
 			</Grid>
 		</Grid>
 	</Grid>

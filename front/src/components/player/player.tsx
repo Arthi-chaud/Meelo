@@ -108,7 +108,7 @@ const Player = () => {
 			mountOnEnter unmountOnExit
 			in={(playlist.length != 0 || history.length != 0 || audio.current != undefined) && !stopped}
 		>
-			<Box sx={{ width: '100%', height: '100%', padding: 2, display: 'flex', position: 'fixed', right: 0, bottom: 0, justifyContent: 'center', zIndex: 'modal', alignItems: 'flex-end' }}  ref={playerComponentRef}>
+			<Box sx={{ width: '100%', height: expanded ? '100%' : undefined, padding: 2, display: 'flex', position: 'fixed', right: 0, bottom: 0, justifyContent: 'center', zIndex: 'modal', alignItems: 'flex-end' }}  ref={playerComponentRef}>
 				<Paper elevation={20} sx={{ borderRadius: '0.5rem', alignItems: 'center', display: 'flex', width: '100%', height: expanded ? '100%' : 'fit-content', overflow: 'scroll' }} >
 					<PlayerControls
 						expanded={expanded}
