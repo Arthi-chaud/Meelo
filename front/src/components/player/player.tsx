@@ -58,7 +58,6 @@ const Player = () => {
 		navigator.mediaSession.metadata = null;
 		clearInterval(interval.current);
 		setProgress(0);
-		setIllustrationURL(null);
 		navigator.mediaSession.setActionHandler('play', play);
 		navigator.mediaSession.setActionHandler('pause', pause);
 		navigator.mediaSession.setActionHandler('previoustrack', onRewind);
@@ -90,6 +89,8 @@ const Player = () => {
 					setProgress(audio.current?.currentTime);
 				}
 			}, 100);
+		} else {
+			setIllustrationURL(null);
 		}
 		return () => clearInterval(interval.current);
 	}, [currentTrack]);

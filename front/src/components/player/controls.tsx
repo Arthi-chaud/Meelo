@@ -70,7 +70,12 @@ const ExpandedPlayerControls = (props: PlayerControlsProps) => {
 				</IconButton>
 			</Grid>
 			<Grid item xs sx={{ justifyContent: 'center', alignContent: 'center', display: 'flex' }}>
-				<Illustration url={props.illustration ?? null} fallback={<AudiotrackIcon />} />
+				{props.illustration
+					? <Illustration url={props.illustration} fallback={<AudiotrackIcon />} />
+					: <Box sx={{ height: '100%', display: 'flex', alignItems: 'center'}}>
+						<AudiotrackIcon />
+					</Box>
+				}
 			</Grid>
 			<Grid item xs={3} container direction="column" sx={{ justifyContent: 'space-between', display: 'flex' }}>
 				<Grid item>
@@ -85,7 +90,7 @@ const ExpandedPlayerControls = (props: PlayerControlsProps) => {
 			</Grid>
 		</Grid>
 		<Divider variant="middle"/>
-		<Box sx={{ height: '100vh', paddingX: 4 }}>
+		{ props.track && <Box sx={{ paddingX: 4 }}>
 			<Accordion  style={{ backgroundColor: 'transparent', boxShadow: 'none', border: 'none',backgroundImage: 'none' }} expanded={lyricsOpen} onChange={() => setLyricsOpen(!lyricsOpen)}>
 				<AccordionSummary expandIcon={<ExpandMoreIcon />}>
 					<Typography sx={{ fontWeight: 'bold' }}>Lyrics</Typography>
@@ -100,6 +105,7 @@ const ExpandedPlayerControls = (props: PlayerControlsProps) => {
 				</AccordionDetails>
 			</Accordion>
 		</Box>
+		}
 	</Box>
 }
 
