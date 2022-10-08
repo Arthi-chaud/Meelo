@@ -1,7 +1,9 @@
-import { Box, Typography } from "@mui/material";
+import { Box, Button, Typography } from "@mui/material";
+import Link from "next/link";
 import Artist from "../../../models/artist";
 import Song from "../../../models/song";
 import Track from "../../../models/track";
+import ListItemButton from "../../list-item/item-button";
 
 type PlayerTextProps = {
 	artist?: Artist;
@@ -14,13 +16,22 @@ const playerTextStyle = {
 
 
 const PlayerText = (props: PlayerTextProps) => {
-	return <Box sx={{ flexDirection: 'center' }}>
-		<Typography sx={{ fontWeight: 'bold', ...playerTextStyle}}>
-			{ props.artist?.name }
-		</Typography>
-		<Typography sx={{ fontWeight: 'light', ...playerTextStyle}}>
-			{ props.track?.name }
-		</Typography>
+	if (!props.track || !props.artist)
+		return <Box/>
+	return <Box sx={{ display: 'grid', justifyContent: 'center', flexDirection: 'column', ...playerTextStyle }}>
+		<Link href={`/releases/${props.track.releaseId}`}>
+			<Button sx={{ textTransform: 'none', color: 'inherit' }}>
+				<Typography sx={{ fontWeight: 'bold', ...playerTextStyle}}>
+					{ props.track?.name }
+				</Typography>
+			</Button>
+		</Link>
+		<Box>
+			<ListItemButton
+				url={`/artists/${props.artist.slug}`}
+				label={props.artist.name}
+			/>
+		</Box>
 	</Box>
 }
 
