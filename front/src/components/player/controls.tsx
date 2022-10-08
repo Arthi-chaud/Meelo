@@ -4,6 +4,7 @@ import formatDuration from "../../utils/formatDuration";
 import Illustration from "../illustration";
 import LoadingComponent from "../loading/loading";
 import AudiotrackIcon from '@mui/icons-material/Audiotrack';
+import CloseIcon from '@mui/icons-material/Close';
 
 type PlayerControlsProps = {
 	title?: string;
@@ -14,6 +15,7 @@ type PlayerControlsProps = {
 	onPlay: () => void;
 	onSkipTrack: () => void;
 	onRewind: () => void;
+	onStop: () => void;
 	duration?: number;
 	progress?: number;
 	onScroll: (requestedProgress: number) => void;
@@ -83,6 +85,11 @@ const PlayerControls = (props: PlayerControlsProps) => {
 					</IconButton>
 				</Grid>
 			))}
+		</Grid>
+		<Grid item>
+			<IconButton onClick={props.onStop}>
+				<CloseIcon/>
+			</IconButton>
 		</Grid>
 	</Grid>
 }

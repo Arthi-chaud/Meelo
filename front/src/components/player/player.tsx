@@ -17,6 +17,13 @@ const Player = () => {
 	const [progress, setProgress] = useState<number | undefined>();
 	const [playing, setPlaying] = useState<boolean>();
 	const [illustrationURL, setIllustrationURL] = useState<string | null>();
+	const [stopped, setStopped] = useState(false);
+	const [playerHeight, setPlayerHeight] = useState(0);
+  	const playerComponentRef = useRef<HTMLDivElement>(null);
+
+  	useEffect(() => {
+  		setPlayerHeight(playerComponentRef.current?.clientHeight ?? 0)
+  	}, [playerComponentRef])
 	const play = () => {
 		if (currentTrack == undefined)
 			dispatch(playNextTrack());
@@ -25,6 +32,10 @@ const Player = () => {
 	};
 	const pause = () => {
 		setPlaying(false);
+		audio.current?.pause();
+	}
+	const stop = () => {
+		setStopped(true);
 		audio.current?.pause();
 	}
 	const onSkipTrack = () => {
@@ -46,11 +57,13 @@ const Player = () => {
 		navigator.mediaSession.metadata = null;
 		clearInterval(interval.current);
 		setProgress(0);
+		setIllustrationURL(null);
 		navigator.mediaSession.setActionHandler('play', play);
 		navigator.mediaSession.setActionHandler('pause', pause);
 		navigator.mediaSession.setActionHandler('previoustrack', onRewind);
 		navigator.mediaSession.setActionHandler('nexttrack', onSkipTrack);
 		if (currentTrack) {
+			setStopped(false);
 			const newIllustrationURL = currentTrack?.track.illustration ?? currentTrack?.release.illustration;
 			setIllustrationURL(newIllustrationURL);
 			const newAudio = new Audio(API.getStreamURL(currentTrack.track.stream));
@@ -79,13 +92,15 @@ const Player = () => {
 		}
 		return () => clearInterval(interval.current);
 	}, [currentTrack]);
-	if (playlist.length == 0 && history.length == 0 && audio.current == undefined)
-		return <></>
-	return <Slide direction="up" in={true} mountOnEnter unmountOnExit>
-		<Box position='sticky'>
-			<Box sx={{ height: '15vh' }}/>
-			<Box sx={{ width: '100%', display: 'flex', position: 'fixed', right: 16, bottom: 16,justifyContent: 'center' }}>
-				<Paper elevation={20} sx={{ width: '90%', borderRadius: '0.5rem', zIndex: 'modal' }}>
+	return <Box>
+		<Box sx={{ height: playerHeight, position: 'sticky', padding: 5 }} />
+		<Slide
+			direction="up"
+			mountOnEnter unmountOnExit
+			in={(playlist.length != 0 || history.length != 0 || audio.current != undefined) && !stopped}
+		>
+			<Box sx={{ width: '100%', display: 'flex', position: 'fixed', right: 16, bottom: 16,justifyContent: 'center'}} ref={playerComponentRef}>
+				<Paper elevation={20} sx={{ width: '90%', borderRadius: '0.5rem', zIndex: 'modal' }} >
 					<PlayerControls
 						illustration={illustrationURL}
 						title={currentTrack?.track.name}
@@ -93,6 +108,7 @@ const Player = () => {
 						playing={playing ?? false}
 						onPause={pause}
 						onPlay={play}
+						onStop={stop}
 						duration={currentTrack?.track.duration}
 						progress={progress}
 						onSkipTrack={onSkipTrack}
@@ -101,8 +117,9 @@ const Player = () => {
 					/>
 				</Paper>
 			</Box>
-		</Box>
-	</Slide>
+		</Slide>
+	</Box>
+
 }
 
 export default Player;
