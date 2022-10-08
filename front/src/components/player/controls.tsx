@@ -99,7 +99,7 @@ const ExpandedPlayerControls = (props: PlayerControlsProps) => {
 					{ lyrics.isLoading
 						? <WideLoadingComponent/>
 						: lyrics.data
-							? <Box flexDirection='column'>{lyrics.data.map((lyric) => <Typography>{lyric}</Typography>)}</Box>
+							? <Box flexDirection='column'>{lyrics.data.map((lyric, index) => <Typography key={index}>{lyric}</Typography>)}</Box>
 							: <Typography sx={{ fontStyle: 'italic' }}>No Lyrics found</Typography>
 					}
 				</AccordionDetails>
