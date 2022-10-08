@@ -1,8 +1,11 @@
 import { Box, Typography } from "@mui/material";
+import Artist from "../../../models/artist";
+import Song from "../../../models/song";
+import Track from "../../../models/track";
 
 type PlayerTextProps = {
-	artist?: string;
-	title?: string;
+	artist?: Artist;
+	track?: Track;
 }
 
 const playerTextStyle = {
@@ -13,10 +16,10 @@ const playerTextStyle = {
 const PlayerText = (props: PlayerTextProps) => {
 	return <Box sx={{ flexDirection: 'center' }}>
 		<Typography sx={{ fontWeight: 'bold', ...playerTextStyle}}>
-			{ props.title }
+			{ props.artist?.name }
 		</Typography>
 		<Typography sx={{ fontWeight: 'light', ...playerTextStyle}}>
-			{ props.artist }
+			{ props.track?.name }
 		</Typography>
 	</Box>
 }

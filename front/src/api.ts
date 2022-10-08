@@ -317,6 +317,16 @@ export default class API {
 		});
 	}
 
+	static async getSongLyrics<T extends string[] = string[]>(
+		slugOrId: string | number
+	): Promise<T | null> {
+		return API.fetch<T>({
+			route: `/songs/${slugOrId}/lyrics`,
+			errorMessage: 'Lyrics loading failed',
+			parameters: { }
+		}).then((value) => value.lyrics.split('\n')).catch(() => null);
+	}
+
 
 	static async getArtist<T extends Artist = Artist>(
 		slugOrId: string | number,

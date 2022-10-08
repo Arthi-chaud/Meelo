@@ -113,8 +113,8 @@ const Player = () => {
 					<PlayerControls
 						expanded={expanded}
 						illustration={illustrationURL}
-						title={currentTrack?.track.name}
-						artist={currentTrack?.artist.name}
+						track={currentTrack?.track}
+						artist={currentTrack?.artist}
 						playing={playing ?? false}
 						onPause={pause}
 						onPlay={play}
