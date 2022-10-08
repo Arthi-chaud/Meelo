@@ -36,8 +36,8 @@ const PlayerControls = (props: PlayerControlsProps) => {
 
 const MinimizedPlayerControls = (props: PlayerControlsProps) => {
 	const theme = useTheme();
-	return <Grid container spacing={1} sx={{ alignItems: 'center', justifyContent: 'space-evenly', padding: 1 }}>
-		<Grid item xs={1.5} sm={1.25} md={0.75} lg={0.6} xl={0.5} sx={{ alignContent: 'center' }}>
+	return <Grid container  sx={{ alignItems: 'center', justifyContent: 'space-between', padding: 1 }}>
+		<Grid item xs={1.5} sm={1.25} md={0.75} lg={0.6} xl={0.5} sx={{ alignContent: 'center', marginX: 2 }}>
 			<CardActionArea onClick={() => props.onExpand(true)} sx={{ borderRadius: theme.shape.borderRadius }}>
 				{props.illustration
 					? <Illustration url={props.illustration} fallback={<AudiotrackIcon />} />
@@ -45,11 +45,11 @@ const MinimizedPlayerControls = (props: PlayerControlsProps) => {
 				}
 			</CardActionArea>
 		</Grid>
-		<Grid item container sx={{ flexDirection: 'column' }} xs={6}>
+		<Grid item container sx={{ flexDirection: 'column', display: 'block' }} xs>
 			<PlayerText artist={props.artist} track={props.track} />
 			<PlayerSlider onSlide={props.onSlide} duration={props.duration} progress={props.progress} />
 		</Grid>
-		<Grid item xs='auto'>
+		<Grid item xs='auto' sx={{ display: 'flex', flexDirection: 'row' }}>
 			<PlayerButtonControls {...props} />
 		</Grid>
 		<Grid item xs='auto'>
