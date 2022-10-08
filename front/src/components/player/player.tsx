@@ -82,22 +82,25 @@ const Player = () => {
 	if (playlist.length == 0 && history.length == 0 && audio.current == undefined)
 		return <></>
 	return <Slide direction="up" in={true} mountOnEnter unmountOnExit>
-		<Box sx={{ width: '100%', display: 'flex', position: 'sticky', right: 16, bottom: 16,justifyContent: 'center' }}>
-			<Paper elevation={20} sx={{ width: '90%', borderRadius: '0.5rem', zIndex: 'modal' }}>
-				<PlayerControls
-					illustration={illustrationURL}
-					title={currentTrack?.track.name}
-					artist={currentTrack?.artist.name}
-					playing={playing ?? false}
-					onPause={pause}
-					onPlay={play}
-					duration={currentTrack?.track.duration}
-					progress={progress}
-					onSkipTrack={onSkipTrack}
-					onRewind={onRewind}
-					onScroll={(newProgress) => audio.current?.fastSeek(newProgress)}
-				/>
-			</Paper>
+		<Box position='sticky'>
+			<Box sx={{ height: '15vh' }}/>
+			<Box sx={{ width: '100%', display: 'flex', position: 'fixed', right: 16, bottom: 16,justifyContent: 'center' }}>
+				<Paper elevation={20} sx={{ width: '90%', borderRadius: '0.5rem', zIndex: 'modal' }}>
+					<PlayerControls
+						illustration={illustrationURL}
+						title={currentTrack?.track.name}
+						artist={currentTrack?.artist.name}
+						playing={playing ?? false}
+						onPause={pause}
+						onPlay={play}
+						duration={currentTrack?.track.duration}
+						progress={progress}
+						onSkipTrack={onSkipTrack}
+						onRewind={onRewind}
+						onScroll={(newProgress) => audio.current?.fastSeek(newProgress)}
+					/>
+				</Paper>
+			</Box>
 		</Box>
 	</Slide>
 }
