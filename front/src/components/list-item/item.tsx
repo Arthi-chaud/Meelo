@@ -45,7 +45,7 @@ const ListItem = (props: ListItemProps) => {
 				}
 			</Grid>
 		</Grid>
-		<Collapse in={expanded} timeout="auto" unmountOnExit>
+		<Collapse in={expanded} timeout="auto" mountOnEnter>
 			{ props.expanded !== undefined && expanded && props.expanded() }
 		</Collapse>
 	</>

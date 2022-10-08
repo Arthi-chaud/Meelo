@@ -14,6 +14,7 @@ import { Star } from "@mui/icons-material"
 import AudiotrackIcon from '@mui/icons-material/Audiotrack';
 import { useDispatch } from "react-redux"
 import { emptyPlaylist, playNextTrack, playTrack } from "../../state/playerSlice"
+import LoadingItemComponent from "../loading/loading-item"
 
 type SongItemProps = {
 	song: SongWithArtist;
@@ -45,7 +46,7 @@ const SongItem = ({ song }: SongItemProps) => {
 			}
 			expanded={() => (
 				<InfiniteList
-					firstLoader={() => <WideLoadingComponent/>}
+					firstLoader={() => <LoadingItemComponent/>}
 					loader={() => <WideLoadingComponent/>}
 					query={() => ({
 						key: ['tracks', 'song', song.id.toString()],
