@@ -64,13 +64,13 @@ const ExpandedPlayerControls = (props: PlayerControlsProps) => {
 	const [lyricsOpen, setLyricsOpen] = useState(true);
 	const lyrics = useQuery(prepareMeeloQuery(lyricsQuery, props.track?.songId));
 	return <Box sx={{ width: '100%', height: '100%' }}>
-		<Grid container spacing={3} direction="column" sx={{ display: 'flex', height: '100%', padding: 2, justifyContent: 'space-between' }}>
-			<Grid item xs='auto' sx={{ justifyContent: 'flex-end', width: '100%', display: 'flex' }}>
-				<IconButton onClick={() => props.onExpand(false)}>
-					<CloseIcon />
-				</IconButton>
-			</Grid>
-			<Grid item xs sx={{ justifyContent: 'center', alignContent: 'center', display: 'flex' }}>
+		<Box sx={{ width: '100%', display: 'flex', justifyContent: 'flex-end', padding: 2 }}>
+			<IconButton onClick={() => props.onExpand(false)}>
+				<CloseIcon />
+			</IconButton>
+		</Box>
+		<Grid container direction='column' sx={{ height: '80vh', width: 'inherit', justifyContent: 'space-evenly', alignItems: 'center' }}>
+			<Grid item xs={4} sm sx={{ aspectRatio: '1', display: 'flex', justifyContent: 'center', alignItems: 'center'}}>
 				{props.illustration
 					? <Illustration url={props.illustration} fallback={<AudiotrackIcon />} />
 					: <Box sx={{ height: '100%', display: 'flex', alignItems: 'center'}}>
@@ -78,14 +78,14 @@ const ExpandedPlayerControls = (props: PlayerControlsProps) => {
 					</Box>
 				}
 			</Grid>
-			<Grid item xs={3} container direction="column" sx={{ justifyContent: 'space-between', display: 'flex' }}>
+			<Grid item xs={4} container spacing={3} direction="column" sx={{ width: 'inherit', height: '100%', justifyContent: 'space-evenly', alignItems: 'center', display: 'flex' }}>
 				<Grid item>
 					<PlayerText artist={props.artist} track={props.track} />
 				</Grid>
 				<Grid item>
 					<PlayerButtonControls {...props} />
 				</Grid>
-				<Grid item>
+				<Grid item sx={{ width: '90%' }}>
 					<PlayerSlider onSlide={props.onSlide} duration={props.duration} progress={props.progress} />
 				</Grid>
 			</Grid>

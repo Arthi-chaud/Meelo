@@ -21,7 +21,7 @@ type IllustrationProps = {
 const Illustration = (props: IllustrationProps) => {
 	const theme = useTheme();
 	const [loadingFailed, setLoadingFailed] = useState(false);
-	return <Box sx={{ aspectRatio: '1', justifyContent: 'center', alignItems: 'center', display: loadingFailed ? 'flex' : 'block' }}>
+	return <Box sx={{ aspectRatio: '1', width: '100%', justifyContent: 'center', alignItems: 'center', display: loadingFailed ? 'flex' : 'block' }}>
 		{ loadingFailed
 			? <IconButton disabled sx={{ fontSize: 'large' }}>
 				{props.fallback}
