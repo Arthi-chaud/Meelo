@@ -7,6 +7,27 @@ generator client {
   	provider 	= "prisma-client-js"
 }
 
+generator classes {
+  provider                        = "prisma-types-generator"
+  output                          = "../src/prisma/models"
+  outputToNestJsResourceStructure = "false"
+  flatResourceStructure           = "false"
+  exportRelationModifierClasses   = "true"
+  reExport                        = "false"
+  dtoSuffix                       = "Dto"
+  entityPrefix                    = ""
+  entitySuffix                    = ""
+  classValidation                 = "true"
+  fileNamingStyle                 = "camel"
+  noDependencies                  = "false"
+  excludeEntity                   = "false"
+  excludePlainDto                 = "true"
+  excludeCreateDto                = "true"
+  excludeUpdateDto                = "true"
+  excludeConnectDto               = "true"
+  definiteAssignmentAssertion     = "true"
+}
+
 /////// Models
 
 model Genre {
@@ -55,14 +76,18 @@ model Album {
 
 /// An artist is a person who has albums
 model Artist {
+	/// @description Unique numeric Artist identifier
+	/// @example 123
 	id				Int		@id @default(autoincrement())
-	/// The name of the artist
+	/// @description The name of the artist
+	/// @example My Artist
 	name			String	@db.Citext()
-	/// The slug of the artist, based on their name
+	/// @description Unique string identifer
+	/// @example my-artist
 	slug			String	@unique
-	/// The collection of related albums
+	/// @description Array of Albums where the artist is the main one
 	albums			Album[]
-	/// The collection of relates songs
+	/// @description Array of Songs by the artist
 	songs			Song[]
 	@@map("artists")
 }
