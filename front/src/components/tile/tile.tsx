@@ -7,6 +7,7 @@ const titleStyle = {
 	overflow: 'hidden',
 	textOverflow: 'ellipsis',
 	display: '-webkit-box',
+	overflowWrap: 'anywhere',
 	WebkitBoxOrient: 'vertical' as CSSProperties['WebkitBoxOrient']
 }
 
