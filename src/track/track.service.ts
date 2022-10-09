@@ -20,7 +20,7 @@ import type { IllustrationPath } from 'src/illustration/models/illustration-path
 import AlbumService from 'src/album/album.service';
 import IllustrationService from 'src/illustration/illustration.service';
 import LibraryService from 'src/library/library.service';
-import { Release, Song, Track } from '../prisma/models';
+import { Release, Song, Track } from 'src/prisma/models';
 
 @Injectable()
 export default class TrackService extends RepositoryService<

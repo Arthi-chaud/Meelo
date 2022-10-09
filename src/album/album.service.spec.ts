@@ -1,5 +1,5 @@
 import AlbumService from "./album.service";
-import { Album, AlbumType } from "@prisma/client";
+import { AlbumType } from "@prisma/client";
 import ArtistService from "src/artist/artist.service";
 import { createTestingModule } from "test/test-module";
 import type { TestingModule } from "@nestjs/testing";
@@ -17,6 +17,7 @@ import IllustrationModule from "src/illustration/illustration.module";
 import GenreModule from "src/genre/genre.module";
 import TestPrismaService from "test/test-prisma.service";
 import SongService from "src/song/song.service";
+import { Album } from "src/prisma/models";
 
 describe('Album Service', () => {
 	let albumService: AlbumService;

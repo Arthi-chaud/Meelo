@@ -1,5 +1,5 @@
 import { Get, Param, Controller, Query, Response } from "@nestjs/common";
-import type { File } from "@prisma/client";
+import type { File } from "src/prisma/models";
 import { ParseIdPipe } from "src/identifier/id.pipe";
 import FileService from "./file.service";
 import FileQueryParameters from "./models/file.query-parameters";

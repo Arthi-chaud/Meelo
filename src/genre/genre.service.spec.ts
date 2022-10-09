@@ -1,5 +1,5 @@
 import type { TestingModule } from "@nestjs/testing";
-import type { Genre } from "@prisma/client";
+import type { Genre } from "src/prisma/models";
 import AlbumModule from "src/album/album.module";
 import ArtistModule from "src/artist/artist.module";
 import ArtistService from "src/artist/artist.service";

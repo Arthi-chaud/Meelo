@@ -13,7 +13,8 @@ import type { Request } from 'express';
 import { ApiOperation, ApiQuery, ApiTags } from '@nestjs/swagger';
 import TrackQueryParameters from 'src/track/models/track.query-parameters';
 import TrackService from 'src/track/track.service';
-import { Artist, TrackType } from '@prisma/client';
+import { TrackType } from '@prisma/client';
+import { Artist } from 'src/prisma/models';
 
 @ApiTags("Artists")
 @Controller('artists')

@@ -1,5 +1,5 @@
 import { forwardRef, Inject, Injectable, Logger } from '@nestjs/common';
-import type { Lyrics, Prisma, Song } from '@prisma/client';
+import type { Lyrics, Song } from 'src/prisma/models';
 const { getLyrics } = require('genius-lyrics-api');
 import type { MeeloException } from 'src/exceptions/meelo-exception';
 import PrismaService from 'src/prisma/prisma.service';
@@ -9,6 +9,7 @@ import type SongQueryParameters from 'src/song/models/song.query-params';
 import SongService from 'src/song/song.service';
 import { LyricsAlreadyExistsExceptions, LyricsNotFoundByIDException, LyricsNotFoundBySongException, MissingGeniusAPIKeyException, NoLyricsFoundException } from './lyrics.exceptions';
 import type LyricsQueryParameters from './models/lyrics.query-parameters';
+import { Prisma } from '@prisma/client';
 
 @Injectable()
 export class LyricsService extends RepositoryService<

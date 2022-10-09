@@ -1,7 +1,7 @@
 import { forwardRef, Inject, Injectable, Logger } from '@nestjs/common';
 import Slug from 'src/slug/slug';
 import { ArtistAlreadyExistsException as ArtistAlreadyExistsException, ArtistNotFoundByIDException, ArtistNotFoundException, CompilationArtistException } from './artist.exceptions';
-import type { Album, Artist, Prisma, Song } from '@prisma/client';
+import type { Prisma } from '@prisma/client';
 import PrismaService from 'src/prisma/prisma.service';
 import type ArtistQueryParameters from './models/artist.query-parameters';
 import { type PaginationParameters, buildPaginationParameters } from 'src/pagination/models/pagination-parameters';
@@ -15,7 +15,7 @@ import { buildStringSearchParameters } from 'src/utils/search-string-input';
 import GenreService from 'src/genre/genre.service';
 import ReleaseService from 'src/release/release.service';
 import TrackService from 'src/track/track.service';
-
+import type { Album, Artist, Song } from 'src/prisma/models';
 @Injectable()
 export default class ArtistService extends RepositoryService<
 	Artist,

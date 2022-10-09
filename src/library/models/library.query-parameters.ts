@@ -1,20 +1,19 @@
-import { Library, Prisma } from "@prisma/client";
+import { Library } from "src/prisma/models";
 import type Slug from "src/slug/slug";
-import type OmitId from "src/utils/omit-id";
-import type OmitSlug from "src/utils/omit-slug";
 import type { RequireExactlyOne } from 'type-fest';;
 import type { SearchStringInput } from "src/utils/search-string-input";
 import type { RelationInclude as BaseRelationInclude } from "src/relation-include/models/relation-include" ;
 import ParseBaseRelationIncludePipe from "src/relation-include/relation-include.pipe";
 import BaseSortingParameter from 'src/sort/models/sorting-parameter';
 import ParseBaseSortingParameterPipe from 'src/sort/sort.pipe';
+import { Prisma } from "@prisma/client";
 
 namespace LibraryQueryParameters {
 
 	/**
 	 * Parameters required to create a Library
 	 */
-	export type CreateInput = OmitId<OmitSlug<Library>>;
+	export type CreateInput = Omit<Library, 'id' | 'slug' | 'files'>;
 
 	/**
 	 * The Query parameters to get a library

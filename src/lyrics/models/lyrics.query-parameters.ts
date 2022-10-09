@@ -1,7 +1,6 @@
-import type { Lyrics } from "@prisma/client";
+import type { Lyrics } from "src/prisma/models";
 import type SongQueryParameters from "src/song/models/song.query-params";
-import type OmitId from "src/utils/omit-id";
-import type { RequireExactlyOne } from 'type-fest';;
+import type { RequireExactlyOne } from 'type-fest';
 import type { RelationInclude as BaseRelationInclude } from 'src/relation-include/models/relation-include';
 import ParseBaseRelationIncludePipe from "src/relation-include/relation-include.pipe";
 
@@ -9,11 +8,11 @@ namespace LyricsQueryParameters {
 	/**
 	 * Parameters required to create a Lyric entry
 	 */
-	export type CreateInput = OmitId<Lyrics>
+	export type CreateInput = Omit<Lyrics, 'id' | 'song'>
 	/**
 	 * Query parameters to find one lyric entry
 	 */
-	export type WhereInput = RequireExactlyOne<Omit<Omit<Lyrics, 'songId'>, 'content'> & {
+	export type WhereInput = RequireExactlyOne<Omit<Lyrics, 'songId'  | 'song' | 'content'> & {
 		song: SongQueryParameters.WhereInput
 	}>;
 

@@ -1,9 +1,7 @@
-import { Genre, Prisma } from "@prisma/client";
+import { Prisma } from "@prisma/client";
 import type ArtistQueryParameters from "src/artist/models/artist.query-parameters";
 import type Slug from "src/slug/slug";
 import type SongQueryParameters from "src/song/models/song.query-params";
-import type OmitId from "src/utils/omit-id";
-import type OmitSlug from "src/utils/omit-slug";
 import type { RequireAtLeastOne } from "type-fest";
 import type { RequireExactlyOne } from 'type-fest';;
 import type { SearchStringInput } from "src/utils/search-string-input";
@@ -11,11 +9,12 @@ import ParseBaseRelationIncludePipe from 'src/relation-include/relation-include.
 import BaseSortingParameter from 'src/sort/models/sorting-parameter';
 import ParseBaseSortingParameterPipe from 'src/sort/sort.pipe';
 import type { RelationInclude as BaseRelationInclude } from "src/relation-include/models/relation-include" ;
+import { Genre } from "src/prisma/models";
 namespace GenreQueryParameters {
 	/**
 	 * The input required to save a genre in the database
 	 */
-	export type CreateInput = OmitSlug<OmitId<Genre>>;
+	export type CreateInput = Omit<Genre, 'id' | 'slug' | 'songs'>;
 
 	/**
 	 * Query parameters to find one genre

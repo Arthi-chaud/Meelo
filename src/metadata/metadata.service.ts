@@ -7,7 +7,7 @@ import { FileParsingException, PathParsingException } from './metadata.exception
 import SettingsService from 'src/settings/settings.service';
 import TrackService from 'src/track/track.service';
 import SongService from 'src/song/song.service';
-import { TrackType, AlbumType, File, Track} from '@prisma/client';
+import { TrackType, AlbumType } from '@prisma/client';
 import ReleaseService from 'src/release/release.service';
 import AlbumService from 'src/album/album.service';
 import ArtistService from 'src/artist/artist.service';
@@ -18,6 +18,7 @@ import Ffmpeg from 'fluent-ffmpeg';
 import * as fs from 'fs';
 import type FileQueryParameters from 'src/file/models/file.query-parameters';
 import FileService from 'src/file/file.service';
+import { Track, File } from 'src/prisma/models';
 @Injectable()
 export default class MetadataService {
 	public readonly metadataFolderPath;

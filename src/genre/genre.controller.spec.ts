@@ -1,6 +1,6 @@
 import { INestApplication, ValidationPipe } from "@nestjs/common";
 import type { TestingModule } from "@nestjs/testing";
-import type { Artist, Song, Genre, Album } from "@prisma/client";
+import type { Artist, Song, Genre, Album } from "src/prisma/models";
 import request from "supertest";
 import AlbumModule from "src/album/album.module";
 import ArtistModule from "src/artist/artist.module";

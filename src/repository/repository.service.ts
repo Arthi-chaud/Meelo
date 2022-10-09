@@ -1,8 +1,9 @@
 import type { MeeloException } from "src/exceptions/meelo-exception";
 import { buildPaginationParameters, PaginationParameters } from "src/pagination/models/pagination-parameters";
-import { Album } from "src/prisma/models";
 import { buildSortingParameter } from "src/sort/models/sorting-parameter";
-import { Primitive } from "type-fest";
+import type { Primitive } from "type-fest";
+
+type AtomicModel = { id: number };
 
 type ModelSelector<T extends {}> = Partial<Record<keyof T, boolean>>;
 
@@ -22,7 +23,7 @@ type Select<T extends {}, Selector extends ModelSelector<T>> = Pick<
 /**
  * Extract Relation fields from an entity object
  */
-type ModelRelations<T extends { id: number }> = Required<Omit<
+type ModelRelations<T extends AtomicModel> = Required<Omit<
 	T,
 	keyof {
 		[key in keyof T as T[key] extends Primitive | Date ? key : never]: key
@@ -32,12 +33,7 @@ type ModelRelations<T extends { id: number }> = Required<Omit<
 /**
  * Extract Base fields from an entity object
  */
-type Base<T extends { id: number }> = {
-	[key in keyof T as T[key] extends Primitive | Date ? key : never]: T[key]
-}
-
-
-type C = Base<{ id: number }>
+type Base<T extends AtomicModel> = AtomicModel & Omit<T, keyof ModelRelations<T>>
 
 /**
  * Type definition of a method that returns only one item
@@ -45,7 +41,7 @@ type C = Base<{ id: number }>
  * Or the methods can return related entities
  */
 type ORMGetterMethod<
-	Model extends { id: number },
+	Model extends AtomicModel,
 	ModelRelations extends {},
 	AdditionalParams extends {}
 > = <
@@ -61,7 +57,7 @@ type ORMGetterMethod<
  * Type definition of a method that returns multiple item items
  */
 type ORMManyGetterMethod<
-	Model extends { id: number },
+	Model extends AtomicModel,
 	ModelRelations extends {},
 	AdditionalParams extends {}
 > = <
@@ -77,7 +73,7 @@ type ORMManyGetterMethod<
  * Base Repository Service Definition 
  */
 abstract class RepositoryService<
-	Model extends { id: number },
+	Model extends AtomicModel,
 	CreateInput,
 	WhereInput,
 	ManyWhereInput,
@@ -88,7 +84,7 @@ abstract class RepositoryService<
 	RepositoryManyWhereInput,
 	RepositoryUpdateInput,
 	RepositoryDeleteInput,
-	BaseModel extends { id: number } = Base<Model>,
+	BaseModel extends AtomicModel = Base<Model>,
 	Relations extends ModelRelations<Model> = ModelRelations<Model>
 > {
 	constructor(protected repository: {

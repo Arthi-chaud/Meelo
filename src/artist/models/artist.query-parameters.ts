@@ -1,8 +1,6 @@
-import { Artist, Prisma } from "@prisma/client";
+import { Prisma } from "@prisma/client";
 import type LibraryQueryParameters from "src/library/models/library.query-parameters";
 import type Slug from "src/slug/slug"
-import type OmitId from "src/utils/omit-id";
-import type OmitSlug from "src/utils/omit-slug";
 import type { RequireAtLeastOne } from "type-fest";
 import type { RequireExactlyOne } from 'type-fest';
 import type { SearchStringInput } from "src/utils/search-string-input";
@@ -11,13 +9,14 @@ import ParseBaseRelationIncludePipe from "src/relation-include/relation-include.
 import BaseSortingParameter from 'src/sort/models/sorting-parameter';
 import ParseBaseSortingParameterPipe from 'src/sort/sort.pipe';
 import type GenreQueryParameters from "src/genre/models/genre.query-parameters";
+import { Artist } from "src/prisma/models";
 
 namespace ArtistQueryParameters {
 
 	/**
 	 * Parameters to create an Artist
 	 */
-	export type CreateInput = OmitSlug<OmitId<Artist>>;
+	export type CreateInput = Omit<Artist, 'id' | 'slug' | 'songs' | 'albums'>;
 	/**
 	 * Query parameters to find one artist
 	 */

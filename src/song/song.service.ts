@@ -1,7 +1,7 @@
 import { forwardRef, Inject, Injectable, Logger } from '@nestjs/common';
 import ArtistService from 'src/artist/artist.service';
 import Slug from 'src/slug/slug';
-import type { Artist, Genre, Lyrics, Prisma } from '@prisma/client';
+import type { Prisma } from '@prisma/client';
 import { SongAlreadyExistsException, SongNotFoundByIdException, SongNotFoundException } from './song.exceptions';
 import PrismaService from 'src/prisma/prisma.service';
 import type SongQueryParameters from './models/song.query-params';
@@ -10,12 +10,12 @@ import GenreService from 'src/genre/genre.service';
 import RepositoryService from 'src/repository/repository.service';
 import type { MeeloException } from 'src/exceptions/meelo-exception';
 import { LyricsService } from 'src/lyrics/lyrics.service';
-import type { Song, Track } from '@prisma/client';
 import { CompilationArtistException } from 'src/artist/artist.exceptions';
 import { buildStringSearchParameters } from 'src/utils/search-string-input';
 import IllustrationService from 'src/illustration/illustration.service';
 import { buildPaginationParameters, PaginationParameters } from 'src/pagination/models/pagination-parameters';
 import { buildSortingParameter } from 'src/sort/models/sorting-parameter';
+import { Artist, Song, Track } from 'src/prisma/models';
 
 @Injectable()
 export default class SongService extends RepositoryService<

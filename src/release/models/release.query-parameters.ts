@@ -1,9 +1,6 @@
-import { Prisma, Release } from "@prisma/client";
+import { Prisma } from "@prisma/client";
 import type AlbumQueryParameters from "src/album/models/album.query-parameters";
-import type Slug from "src/slug/slug"
-import type OmitId from "src/utils/omit-id";
-import type OmitReleaseDate from "src/utils/omit-release-date";
-import type OmitSlug from "src/utils/omit-slug";
+import type Slug from "src/slug/slug";
 import type { RequireExactlyOne } from 'type-fest';
 import type { RelationInclude as BaseRelationInclude } from "src/relation-include/models/relation-include" ;
 import type LibraryQueryParameters from "src/library/models/library.query-parameters";
@@ -11,16 +8,17 @@ import ParseBaseRelationIncludePipe from "src/relation-include/relation-include.
 import BaseSortingParameter from 'src/sort/models/sorting-parameter';
 import ParseBaseSortingParameterPipe from 'src/sort/sort.pipe';
 import type { SearchStringInput } from "src/utils/search-string-input";
+import { Release } from "src/prisma/models";
 
 namespace ReleaseQueryParameters {
-
-	type OmitAlbumId<T> = Omit<T, 'albumId'>;
 	/**
 	 * Parameters to create a release
 	 */
-	export type CreateInput = OmitReleaseDate<OmitAlbumId<OmitId<OmitSlug<Release>>>>
-		& { releaseDate?: Date }
-		& { album: AlbumQueryParameters.WhereInput };
+	export type CreateInput = Omit<Release, 'releaseDate' | 'album' | 'albumId' | 'id' | 'slug' | 'tracks'>
+		& {
+			releaseDate?: Date;
+			album: AlbumQueryParameters.WhereInput
+		};
 
 	/**
 	 * Query parameters to find one release

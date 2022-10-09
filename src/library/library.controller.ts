@@ -1,7 +1,7 @@
 import { Body, Controller, Delete, Get, Param, Post, Query, Req } from '@nestjs/common';
 import LibraryService from './library.service';
 import LibraryDto from './models/create-library.dto';
-import type { Library } from '@prisma/client';
+import type { Library } from 'src/prisma/models';
 import ParsePaginationParameterPipe from 'src/pagination/pagination.pipe';
 import type { PaginationParameters } from 'src/pagination/models/pagination-parameters';
 import ArtistService from 'src/artist/artist.service';

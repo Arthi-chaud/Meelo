@@ -12,9 +12,10 @@ import PaginatedResponse from 'src/pagination/models/paginated-response';
 import TrackService from 'src/track/track.service';
 import TrackQueryParameters from 'src/track/models/track.query-parameters';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
-import {Genre, TrackType} from '@prisma/client';
+import { TrackType } from '@prisma/client';
 import type ReassignAlbumDTO from './models/reassign-album.dto';
 import GenreService from "../genre/genre.service";
+import { Genre } from "src/prisma/models";
 
 @ApiTags("Albums")
 @Controller('albums')

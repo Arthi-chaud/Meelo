@@ -2,7 +2,7 @@ import { forwardRef, Inject, Injectable, Logger } from '@nestjs/common';
 import ArtistService from 'src/artist/artist.service';
 import Slug from 'src/slug/slug';
 import { AlbumAlreadyExistsException, AlbumAlreadyExistsExceptionWithArtistID as AlbumAlreadyExistsWithArtistIDException, AlbumNotFoundException, AlbumNotFoundFromIDException } from './album.exceptions';
-import {AlbumType, Album, Release, Artist, Genre, Prisma} from '@prisma/client';
+import { AlbumType,  Prisma } from '@prisma/client';
 import PrismaService from 'src/prisma/prisma.service';
 import type AlbumQueryParameters from './models/album.query-parameters';
 import type ArtistQueryParameters from 'src/artist/models/artist.query-parameters';
@@ -13,6 +13,7 @@ import type { MeeloException } from 'src/exceptions/meelo-exception';
 import GenreService from "../genre/genre.service";
 import { buildStringSearchParameters } from 'src/utils/search-string-input';
 import SongService from 'src/song/song.service';
+import { Album, Release, Artist, Genre } from "src/prisma/models";
 
 @Injectable()
 export default class AlbumService extends RepositoryService<

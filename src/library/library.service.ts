@@ -4,7 +4,7 @@ import FileService from 'src/file/file.service';
 import MetadataService from 'src/metadata/metadata.service';
 import Slug from 'src/slug/slug';
 import { LibraryAlreadyExistsException, LibraryNotFoundException, LibraryNotFoundFromIDException } from './library.exceptions';
-import type { Library, File, Prisma } from '@prisma/client';
+import type { Prisma } from '@prisma/client';
 import PrismaService from 'src/prisma/prisma.service';
 import IllustrationService from 'src/illustration/illustration.service';
 import type LibraryQueryParameters from './models/library.query-parameters';
@@ -13,6 +13,7 @@ import RepositoryService from 'src/repository/repository.service';
 import type { MeeloException } from 'src/exceptions/meelo-exception';
 import { buildStringSearchParameters } from 'src/utils/search-string-input';
 import TasksService from 'src/tasks/tasks.service';
+import { Library } from 'src/prisma/models';
 
 @Injectable()
 export default class LibraryService extends RepositoryService<

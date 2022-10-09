@@ -1,4 +1,4 @@
-import type { Track } from "@prisma/client";
+import type { Track } from "src/prisma/models";
 
 /**
  * Index to use if the disc index is unknown
