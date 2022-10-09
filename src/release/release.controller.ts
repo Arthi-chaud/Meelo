@@ -12,6 +12,9 @@ import type { Request } from 'express';
 import PaginatedResponse from 'src/pagination/models/paginated-response';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import type ReassignReleaseDTO from './models/reassign-release.dto';
+import { ReleaseResponse } from './models/release.response';
+import { ApiPaginatedResponse } from 'src/pagination/paginated-response.decorator';
+import { TrackResponse } from 'src/track/models/track.response';
 
 @ApiTags("Releases")
 @Controller('releases')
@@ -29,6 +32,7 @@ export default class ReleaseController {
 		summary: 'Get all releases'
 	})
 	@Get()
+	@ApiPaginatedResponse(ReleaseResponse)
 	async getReleases(
 		@Query(ParsePaginationParameterPipe)
 		paginationParameters: PaginationParameters,
@@ -66,6 +70,7 @@ export default class ReleaseController {
 	@ApiOperation({
 		summary: 'Get all tracks from a release'
 	})
+	@ApiPaginatedResponse(TrackResponse)
 	@Get(':idOrSlug/tracks')
 	async getReleaseTracks(
 		@Query(ParsePaginationParameterPipe)

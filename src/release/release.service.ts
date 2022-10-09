@@ -1,7 +1,7 @@
 import { forwardRef, Inject, Injectable, Logger } from '@nestjs/common';
 import AlbumService from 'src/album/album.service';
 import Slug from 'src/slug/slug';
-import type { Album, Release, Track } from 'src/prisma/models';
+import type { Release } from 'src/prisma/models';
 import type { Prisma } from '@prisma/client';
 import { MasterReleaseNotFoundFromIDException, ReleaseAlreadyExists, ReleaseNotFoundException, ReleaseNotFoundFromIDException } from './release.exceptions';
 import PrismaService from 'src/prisma/prisma.service';
@@ -15,6 +15,7 @@ import IllustrationService from 'src/illustration/illustration.service';
 import type { IllustrationPath } from 'src/illustration/models/illustration-path.model';
 import { buildStringSearchParameters } from 'src/utils/search-string-input';
 import ArtistService from 'src/artist/artist.service';
+import { ReleaseResponse } from './models/release.response';
 
 @Injectable()
 export default class ReleaseService extends RepositoryService<
@@ -340,10 +341,8 @@ export default class ReleaseService extends RepositoryService<
 		return this.illustrationService.illustrationExists(path);
 	}
 
-	async buildResponse<ResponseType extends Release & { illustration: string }>(
-		release: Release & Partial<{ tracks: Track[], album: Album }>
-	): Promise<ResponseType> {
-		let response = <ResponseType>{
+	async buildResponse(release: Release): Promise<ReleaseResponse> {
+		let response = <ReleaseResponse>{
 			...release,
 			illustration: await this.illustrationService.getReleaseIllustrationLink(release.id)
 		};

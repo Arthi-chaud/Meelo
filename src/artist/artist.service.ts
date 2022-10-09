@@ -15,7 +15,8 @@ import { buildStringSearchParameters } from 'src/utils/search-string-input';
 import GenreService from 'src/genre/genre.service';
 import ReleaseService from 'src/release/release.service';
 import TrackService from 'src/track/track.service';
-import type { Album, Artist, Song } from 'src/prisma/models';
+import type { Artist } from 'src/prisma/models';
+import { ArtistResponse } from './models/artist.response';
 @Injectable()
 export default class ArtistService extends RepositoryService<
 	Artist,
@@ -196,10 +197,8 @@ export default class ArtistService extends RepositoryService<
 	 * @param artist the Artist to build the response from
 	 * @returns the response Object
 	 */
-	async buildResponse<ResponseType extends Artist & { illustration: string }> (
-		artist: Artist & Partial<{ songs: Song[], albums: Album[] }>
-	): Promise<ResponseType> {
-		let response = <ResponseType>{
+	async buildResponse(artist: Artist): Promise<ArtistResponse> {
+		let response = <ArtistResponse>{
 			...artist,
 			illustration: this.illustrationService.getArtistIllustrationLink(new Slug(artist.slug))
 		};

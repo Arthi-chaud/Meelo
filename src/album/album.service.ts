@@ -13,7 +13,8 @@ import type { MeeloException } from 'src/exceptions/meelo-exception';
 import GenreService from "../genre/genre.service";
 import { buildStringSearchParameters } from 'src/utils/search-string-input';
 import SongService from 'src/song/song.service';
-import { Album, Release, Artist, Genre } from "src/prisma/models";
+import { Album, Release, Genre } from "src/prisma/models";
+import { AlbumResponse } from './models/album.response';
 
 @Injectable()
 export default class AlbumService extends RepositoryService<
@@ -267,10 +268,8 @@ export default class AlbumService extends RepositoryService<
 	 * Build an object for the API 
 	 * @param album the album to create the object from
 	 */
-	async buildResponse<ResponseType extends Album & { illustration: string }>(
-		album: Album & Partial<{ releases: Release[], artist: Artist | null }>
-	): Promise<ResponseType> {
-		let response = <ResponseType>{
+	async buildResponse(album: Album): Promise<AlbumResponse> {
+		let response = <AlbumResponse>{
 			...album,
 			illustration: await this.illustrationService.getAlbumIllustrationLink(album.id)
 		};

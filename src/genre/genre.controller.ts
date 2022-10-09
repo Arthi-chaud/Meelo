@@ -13,6 +13,11 @@ import SongQueryParameters from "src/song/models/song.query-params";
 import SongService from "src/song/song.service";
 import GenreService from "./genre.service";
 import GenreQueryParameters from "./models/genre.query-parameters";
+import { GenreResponse } from "./models/genre.response";
+import { ApiPaginatedResponse } from "src/pagination/paginated-response.decorator";
+import { SongResponse } from "src/song/models/song.response";
+import { AlbumResponse } from "src/album/models/album.response";
+import { ArtistResponse } from "src/artist/models/artist.response";
 
 @ApiTags("Genres")
 @Controller('genres')
@@ -31,6 +36,7 @@ export class GenreController {
 		summary: 'Get all genres'
 	})
 	@Get()
+	@ApiPaginatedResponse(GenreResponse)
 	async getMany(
 		@Query(ParsePaginationParameterPipe)
 		paginationParameters: PaginationParameters,
@@ -66,6 +72,7 @@ export class GenreController {
 	@ApiOperation({
 		summary: 'Get all songs with at least one song from the genre'
 	})
+	@ApiPaginatedResponse(SongResponse)
 	@Get(':idOrSlug/songs')
 	async getGenreSongs(
 		@Query(ParsePaginationParameterPipe)
@@ -94,6 +101,7 @@ export class GenreController {
 	@ApiOperation({
 		summary: 'Get all albums with at least one song from the genre'
 	})
+	@ApiPaginatedResponse(AlbumResponse)
 	@Get(':idOrSlug/albums')
 	async getGenreAlbums(
 		@Query(ParsePaginationParameterPipe)
@@ -122,6 +130,7 @@ export class GenreController {
 	@ApiOperation({
 		summary: 'Get all artists with at least one song from the genre'
 	})
+	@ApiPaginatedResponse(ArtistResponse)
 	@Get(':idOrSlug/artists')
 	async getGenreArtists(
 		@Query(ParsePaginationParameterPipe)

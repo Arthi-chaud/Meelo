@@ -1,7 +1,7 @@
 import { Body, Controller, Delete, Get, Param, Post, Query, Req } from '@nestjs/common';
 import LibraryService from './library.service';
 import LibraryDto from './models/create-library.dto';
-import type { Library } from 'src/prisma/models';
+import { Library } from 'src/prisma/models';
 import ParsePaginationParameterPipe from 'src/pagination/pagination.pipe';
 import type { PaginationParameters } from 'src/pagination/models/pagination-parameters';
 import ArtistService from 'src/artist/artist.service';
@@ -19,6 +19,12 @@ import ParseLibraryIdentifierPipe from './library.pipe';
 import type { Request } from 'express';
 import PaginatedResponse from 'src/pagination/models/paginated-response';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
+import { ApiPaginatedResponse } from 'src/pagination/paginated-response.decorator';
+import { ArtistResponse } from 'src/artist/models/artist.response';
+import { AlbumResponse } from 'src/album/models/album.response';
+import { ReleaseResponse } from 'src/release/models/release.response';
+import { SongResponse } from 'src/song/models/song.response';
+import { TrackResponse } from 'src/track/models/track.response';
 
 @ApiTags("Libraries")
 @Controller('libraries')
@@ -55,6 +61,7 @@ export default class LibraryController {
 		summary: 'Get all libraries'
 	})
 	@Get()
+	@ApiPaginatedResponse(Library)
 	async getLibraries(
 		@Query(ParsePaginationParameterPipe)
 		paginationParameters: PaginationParameters,
@@ -82,6 +89,7 @@ export default class LibraryController {
 	@ApiOperation({
 		summary: 'Get all album artists from a library'
 	})
+	@ApiPaginatedResponse(ArtistResponse)
 	@Get(':idOrSlug/artists')
 	async getArtistsByLibrary(
 		@Param(ParseLibraryIdentifierPipe)
@@ -108,6 +116,7 @@ export default class LibraryController {
 	@ApiOperation({
 		summary: 'Get all albums from a library'
 	})
+	@ApiPaginatedResponse(AlbumResponse)
 	@Get(':idOrSlug/albums')
 	async getAlbumsByLibrary(
 		@Param(ParseLibraryIdentifierPipe)
@@ -134,6 +143,7 @@ export default class LibraryController {
 	@ApiOperation({
 		summary: 'Get all releases from a library'
 	})
+	@ApiPaginatedResponse(ReleaseResponse)
 	@Get(':idOrSlug/releases')
 	async getReleasesByLibrary(
 		@Param(ParseLibraryIdentifierPipe)
@@ -160,6 +170,7 @@ export default class LibraryController {
 	@ApiOperation({
 		summary: 'Get all songs from a library'
 	})
+	@ApiPaginatedResponse(SongResponse)
 	@Get(':idOrSlug/songs')
 	async getSongsByLibrary(
 		@Param(ParseLibraryIdentifierPipe)
@@ -186,6 +197,7 @@ export default class LibraryController {
 	@ApiOperation({
 		summary: 'Get all tracks from a library'
 	})
+	@ApiPaginatedResponse(TrackResponse)
 	@Get(':idOrSlug/tracks')
 	async getTracksByLibrary(
 		@Param(ParseLibraryIdentifierPipe)

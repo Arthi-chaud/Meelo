@@ -3,7 +3,7 @@ import PrismaService from 'src/prisma/prisma.service';
 import Slug from 'src/slug/slug';
 import { GenreAlreadyExistsException, GenreNotFoundByIdException, GenreNotFoundException } from './genre.exceptions';
 import type GenreQueryParameters from './models/genre.query-parameters';
-import type { Genre, Song } from 'src/prisma/models';
+import type { Genre } from 'src/prisma/models';
 import SongService from 'src/song/song.service';
 import RepositoryService from 'src/repository/repository.service';
 import type { MeeloException } from 'src/exceptions/meelo-exception';
@@ -11,6 +11,7 @@ import type SongQueryParameters from "../song/models/song.query-params";
 import { buildStringSearchParameters } from 'src/utils/search-string-input';
 import ArtistService from 'src/artist/artist.service';
 import { Prisma } from '@prisma/client';
+import { GenreResponse } from './models/genre.response';
 
 @Injectable()
 export default class GenreService extends RepositoryService<
@@ -133,8 +134,8 @@ export default class GenreService extends RepositoryService<
 		return genres;
 	}
 
-	async buildResponse<ResponseType extends Genre>(genre: Genre & { songs?: Song[] }): Promise<ResponseType> {
-		let response = <ResponseType>genre;
+	async buildResponse(genre: Genre): Promise<GenreResponse> {
+		let response = <GenreResponse>genre;
 		if (genre.songs !== undefined)
 			response = {
 				...response,

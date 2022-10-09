@@ -9,6 +9,8 @@ import type { Request } from 'express';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import { TrackType } from '@prisma/client';
 import type ReassignTrackDTO from './models/reassign-track.dto';
+import { TrackResponse } from './models/track.response';
+import { ApiPaginatedResponse } from 'src/pagination/paginated-response.decorator';
 
 @ApiTags("Tracks")
 @Controller('tracks')
@@ -22,6 +24,7 @@ export class TrackController {
 		summary: 'Get all tracks'
 	})
 	@Get()
+	@ApiPaginatedResponse(TrackResponse)
 	async getMany(
 		@Query(ParsePaginationParameterPipe)
 		paginationParameters: PaginationParameters,
@@ -43,6 +46,7 @@ export class TrackController {
 	@ApiOperation({
 		summary: 'Get all the video tracks'
 	})
+	@ApiPaginatedResponse(TrackResponse)
 	@Get('videos')
 	async getVideoTracks(
 		@Query(ParsePaginationParameterPipe)

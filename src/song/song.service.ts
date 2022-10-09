@@ -15,7 +15,8 @@ import { buildStringSearchParameters } from 'src/utils/search-string-input';
 import IllustrationService from 'src/illustration/illustration.service';
 import { buildPaginationParameters, PaginationParameters } from 'src/pagination/models/pagination-parameters';
 import { buildSortingParameter } from 'src/sort/models/sorting-parameter';
-import { Artist, Song, Track } from 'src/prisma/models';
+import { Song, Track } from 'src/prisma/models';
+import { SongResponse } from './models/song.response';
 
 @Injectable()
 export default class SongService extends RepositoryService<
@@ -253,10 +254,8 @@ export default class SongService extends RepositoryService<
 			await this.delete(where);
 	}
 
-	async buildResponse<T extends Song & { illustration: string }> (
-		song: Song & Partial<{ tracks: Track[], artist: Artist }>
-	): Promise<T> {
-		let response: T = <T>{
+	async buildResponse(song: Song): Promise<SongResponse> {
+		let response = <SongResponse>{
 			...song,
 			illustration: await this.illustrationService.getSongIllustrationLink(song.id)
 		};

@@ -16,6 +16,10 @@ import { LyricsService } from 'src/lyrics/lyrics.service';
 import type LyricsDto from 'src/lyrics/models/update-lyrics.dto';
 import GenreService from 'src/genre/genre.service';
 import GenreQueryParameters from 'src/genre/models/genre.query-parameters';
+import { ApiPaginatedResponse } from 'src/pagination/paginated-response.decorator';
+import { SongResponse } from './models/song.response';
+import { TrackResponse } from 'src/track/models/track.response';
+import { GenreResponse } from 'src/genre/models/genre.response';
 
 @ApiTags("Songs")
 @Controller('songs')
@@ -36,6 +40,7 @@ export class SongController {
 	@ApiOperation({
 		summary: 'Get all songs'
 	})
+	@ApiPaginatedResponse(SongResponse)
 	@Get()
 	async getSongs(
 		@Query(ParsePaginationParameterPipe)
@@ -115,6 +120,7 @@ export class SongController {
 		summary: 'Get all the song\'s tracks'
 	})
 	@Get(':idOrSlug/tracks')
+	@ApiPaginatedResponse(TrackResponse)
 	async getSongTracks(
 		@Query(ParsePaginationParameterPipe)
 		paginationParameters: PaginationParameters,
@@ -140,6 +146,7 @@ export class SongController {
 	@ApiOperation({
 		summary: "Get a song's versions"
 	})
+	@ApiPaginatedResponse(SongResponse)
 	@Get(':idOrSlug/versions')
 	async getSongVersions(
 		@Query(ParsePaginationParameterPipe)
@@ -162,6 +169,7 @@ export class SongController {
 	@ApiOperation({
 		summary: 'Get all the song\'s video tracks'
 	})
+	@ApiPaginatedResponse(TrackResponse)
 	@Get(':idOrSlug/videos')
 	async getSongVideos(
 		@Query(ParsePaginationParameterPipe)
@@ -188,6 +196,7 @@ export class SongController {
 	@ApiOperation({
 		summary: 'Get all the song\'s genres'
 	})
+	@ApiPaginatedResponse(GenreResponse)
 	@Get(':idOrSlug/genres')
 	async getSongGenres(
 		@Query('with', GenreQueryParameters.ParseRelationIncludePipe)
