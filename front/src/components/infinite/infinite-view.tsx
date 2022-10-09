@@ -129,7 +129,7 @@ const InfiniteView = <T extends Resource,>(props: InfiniteViewProps<T>) => {
 			<Tooltip title="Back to top">
 				<Fab
 					color="secondary"
-					sx={{  zIndex: "modal", position: 'fixed', bottom: 16, right: 16 }}
+					sx={{  zIndex: "tooltip", position: 'fixed', bottom: 16, right: 16 }}
 					onClick={() => window.scrollTo({ top: 0, left: 0, behavior: "smooth" })}
 				>
 					<StraightIcon/>

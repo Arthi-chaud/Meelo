@@ -78,7 +78,7 @@ const ExpandedPlayerControls = (props: PlayerControlsProps) => {
 					</Box>
 				}
 			</Grid>
-			<Grid item xs={4} container spacing={3} direction="column" sx={{ width: 'inherit', height: '100%', justifyContent: 'space-evenly', alignItems: 'center', display: 'flex' }}>
+			<Grid item xs={4} container spacing={2} direction="column" sx={{ width: 'inherit', height: '100%', justifyContent: 'center', alignItems: 'center', display: 'flex' }}>
 				<Grid item>
 					<PlayerText artist={props.artist} track={props.track} />
 				</Grid>
