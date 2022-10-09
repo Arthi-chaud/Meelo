@@ -31,12 +31,16 @@ generator classes {
 /////// Models
 
 model Genre {
+	/// @description Unique numeric Genre identifier
+	/// @example 123
 	id				Int		@id @default(autoincrement())
-	/// The name of the genre
+	/// @description The name of the genre
+	/// @example My Genre
 	name			String	@db.Citext()
-	/// The slug of the album, based on its name
+	/// @description Unique string identifier
+	/// @example my-genre
 	slug			String	@unique
-	/// The songs from this genre
+	/// @description The songs from this genre
 	songs			Song[]
 	@@map("genres")
 }
@@ -54,21 +58,25 @@ enum AlbumType {
 }
 /// An album is a record of releases.
 model Album {
+	/// @description Unique numeric Album identifier
+	/// @example 123
 	id				Int		@id @default(autoincrement())
-	/// The title of the album
-	/// It should not include descriptive suffixes like 'Deluxe Edition' of 'Explicit Version' 
+	/// @description The title of the album
+	/// @example My Album
 	name			String	@db.Citext()
-	/// The slug of the album, based on its name
+	/// @description String identifier, for string-based finding
+	/// @example my-album
 	slug			String
-	/// The date of the first release of the album
+	/// @descrption The date of the first release of the album
 	releaseDate		DateTime?
-	/// Collections of related releases
+	/// @description Collections of related releases
 	releases		Release[]
-	/// Describes the type of the album
+	/// @description Describes the type of the album
 	type			AlbumType	@default(StudioRecording)
-	/// The artist of the album
-	/// This field is nullable, as albums may not have an entitled artist, like compilations
+	/// @description The artist of the album
 	artist			Artist?		@relation(fields: [artistId], references: [id])
+	/// @description Unique numeric identifier of the main artist, if there is one
+	/// @example 123
 	artistId		Int?
 	@@unique([slug, artistId])
 	@@map("albums")
@@ -94,18 +102,22 @@ model Artist {
 
 /// A file represent the source file from which a track is imported
 model File {
+	/// @description Unique numeric File identifier
+	/// @example 123
 	id				Int		@id @default(autoincrement())
-	/// The path of the file, relate to the parent library
+	/// @description The path of the file, relate to the parent library
+	/// @example path/to/file
 	path			String
-	/// @Is('MD5 Checksum', (value) => RegExp('^[a-f0-9]{32}$').test(value))
-	/// MD5 checksum of the file
+	/// @description MD5 checksum of the file
 	md5Checksum		String
-	/// Date of the file's registration
+	/// @description Date of the file\'s registration
 	registerDate	DateTime
-	/// Track on the file
+	/// @description Track from the file
 	track			Track?
-	/// Library the file is registered under
+	/// @descrption Library the file is registered under
 	library			Library	@relation(fields: [libraryId], references: id)
+	/// @description Unique numeric identifier of the library it is been registered under
+	/// @example 123
 	libraryId		Int
 	@@unique([path, libraryId])
 	@@map("files")
@@ -113,52 +125,73 @@ model File {
 
 /// A Library groups files under a given path
 model Library {
+	/// @description Unique numeric Library identifier
+	/// @example 123
 	id				Int		@id @default(autoincrement())
-	/// The name of the library, whose slug will be built from
+	/// @description The name of the library, whose slug will be built from
+	/// @example My Library
 	name			String	@db.Citext()	@unique
-	/// Slug of the library, based on its name
+	/// @descrption Slug of the library, based on its name
+	/// @example my-library
 	slug			String	@unique
-	/// Path of the library, relative to 'dataFolder' from settings.json
+	/// @description Path of the library
+	/// @example path/to/library
 	path			String	@unique
-	/// Files from the library
+	/// @descriptionFiles from the library
 	files			File[]
 	@@map("libraries")
 }
 
 /// A release is 'an instance' of an Album
 model Release {
+	/// @description Unique numeric Release identifier
+	/// @example 123
 	id				Int		@id @default(autoincrement())
-	/// The title of the release
+	/// @description The title of the release
+	/// @example My Album (Deluxe Edition)
 	name			String	@db.Citext()
-	/// The sluf of the release
+	/// @description String identifier of the release
+	/// @example my-album-deluxe-edition
 	slug			String
-	/// The date of the release
+	/// @description The date of the release
 	releaseDate		DateTime?
-	/// Is this release the 'main' / 'most used' version of the Album
+	/// @description Is this release the main/most used version of the Album
+	/// @example false
 	master			Boolean	@default(false)
-	/// The tracks on the release
+	/// @description The tracks on the release
 	tracks			Track[]
-	/// The reference Album
+	/// @description The reference Album
 	album			Album		@relation(fields: [albumId], references: [id])
+	/// @description Unique numeric identifier of the parent album
+	/// @example 123
 	albumId			Int
 	@@unique([albumId, slug])
 	@@map("releases")
 }
 /// A song is described by a title, an artist, and 'instanciated' by Tracks
 model Song {
+	/// @description Unique numeric Song identifier
+	/// @example 123
 	id				Int		@id @default(autoincrement())
-	/// The name of the track
+	/// @description Name of the song
+	/// @example My Song
 	name			String	@db.Citext()
+	/// @description String identifier of the song
+	/// @example my-song
 	slug			String
-	/// The artist of the song
+	/// @description The artist of the song
 	artist			Artist	@relation(fields: [artistId], references: [id])
+	/// @description Unique numeric identifier of the parent artist
+	/// @example 123
 	artistId		Int
-	/// The number of times, the song was played
+	/// @description The number of times, the song was played
+	/// @example 3
 	playCount		Int		@default(0)
+	/// @description Related tracks
 	tracks			Track[]
-	/// The lyrics of the song
+	/// @description The lyrics of the song
 	lyrics			Lyrics?
-	/// The genres of the song
+	/// @description The genres of the song
 	genres Genre[]
 	@@unique([slug, artistId])
 	@@map("songs")
@@ -185,11 +218,16 @@ enum RipSource {
 
 /// The lyrics of a song
 model Lyrics {
+	/// @description Unique numeric Lyrics identifier
+	/// @example 123
 	id				Int		@id @default(autoincrement())
-	/// The lyrics of the song
+	/// @description The lyrics of the song
+	/// @example Hello\\nWorld
 	content			String
-	/// The parent song
+	/// @description The parent song
 	song			Song @relation(fields: [songId], references: [id])
+	/// @description Unique numeric identifier of the related song
+	/// @example 123
 	songId			Int @unique
 	@@map("lyrics")
 }
@@ -205,31 +243,45 @@ enum TrackType {
 
 /// An track is an 'instance' of a song
 model Track {
+	/// @description Unique numeric Track identifier
+	/// @example 123
 	id				Int		@id @default(autoincrement())
-	/// The reference song
+	/// @description The reference song
 	song 			Song	@relation(fields: [songId], references: [id])
+	/// @description Unique numeric identifier of the parent song
+	/// @example 123
 	songId			Int
-	/// The parent release the track can be found on
+	/// @description The parent release the track can be found on
 	release 		Release	@relation(fields: [releaseId], references: [id])
+	/// @description Unique numeric identifier of the parent release
+	/// @example 123
 	releaseId		Int
-	/// The display name of the track
+	/// @description The display name of the track
+	/// @example My Album (Deluxe Edition)
 	name		String
-	/// Is this track the 'main' one
+	/// @description Is this track the main one
+	/// @example true
 	master			Boolean	@default(false)
-	/// The index of the disc the track is on
+	/// @description The index of the disc the track is on
+	/// @example 1
 	discIndex		Int?
-	/// The index of the track on the disc
+	/// @description The index of the track on the disc
+	/// @example 2
 	trackIndex		Int?
-	/// Type of track (Audio or Video)
+	/// @description Type of track (Audio or Video)
 	type			TrackType
-	/// Bitrate, i kbps
+	/// @description Bitrate, in kbps
+	/// @example 320
 	bitrate			Int
-	/// The type of source the track is ripped from
+	/// @description The type of source the track is ripped from
 	ripSource		RipSource?
-	/// The duration in seconds of the track
+	/// @description The duration in seconds of the track
+	/// @example 120
 	duration		Int
-	/// The track from the file
+	/// @description The track from the file
 	sourceFile			File	@relation(fields: [sourceFileId], references: [id])
+	/// @description Unique numeric identifier of the source file
+	/// @example 123
 	sourceFileId		Int		@unique
 	@@map("tracks")
 }
