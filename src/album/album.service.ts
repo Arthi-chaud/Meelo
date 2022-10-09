@@ -17,7 +17,6 @@ import SongService from 'src/song/song.service';
 @Injectable()
 export default class AlbumService extends RepositoryService<
 	Album,
-	{ artist?: Artist, releases: Release[] },
 	AlbumQueryParameters.CreateInput,
 	AlbumQueryParameters.WhereInput,
 	AlbumQueryParameters.ManyWhereInput,

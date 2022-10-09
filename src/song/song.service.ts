@@ -20,7 +20,6 @@ import { buildSortingParameter } from 'src/sort/models/sorting-parameter';
 @Injectable()
 export default class SongService extends RepositoryService<
 	Song,
-	{ tracks: Track[], artist: Artist, genres: Genre[], lyrics?: Lyrics },
 	SongQueryParameters.CreateInput,
 	SongQueryParameters.WhereInput,
 	SongQueryParameters.ManyWhereInput,

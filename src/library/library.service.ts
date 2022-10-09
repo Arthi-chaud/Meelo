@@ -17,7 +17,6 @@ import TasksService from 'src/tasks/tasks.service';
 @Injectable()
 export default class LibraryService extends RepositoryService<
 	Library,
-	{ files: File[] },
 	LibraryQueryParameters.CreateInput,
 	LibraryQueryParameters.WhereInput,
 	LibraryQueryParameters.ManyWhereInput,

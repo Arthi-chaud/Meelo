@@ -13,7 +13,6 @@ import type LyricsQueryParameters from './models/lyrics.query-parameters';
 @Injectable()
 export class LyricsService extends RepositoryService<
 	Lyrics,
-	{ song: Song },
 	LyricsQueryParameters.CreateInput,
 	LyricsQueryParameters.WhereInput,
 	LyricsQueryParameters.ManyWhereInput,

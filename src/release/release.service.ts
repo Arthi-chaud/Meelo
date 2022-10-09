@@ -18,7 +18,6 @@ import ArtistService from 'src/artist/artist.service';
 @Injectable()
 export default class ReleaseService extends RepositoryService<
 	Release,
-	{ tracks: Track[], album: Album },
 	ReleaseQueryParameters.CreateInput,
 	ReleaseQueryParameters.WhereInput,
 	ReleaseQueryParameters.ManyWhereInput,

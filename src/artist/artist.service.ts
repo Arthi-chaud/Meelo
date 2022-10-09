@@ -19,7 +19,6 @@ import TrackService from 'src/track/track.service';
 @Injectable()
 export default class ArtistService extends RepositoryService<
 	Artist,
-	{ albums: Album[], songs: Song[] },
 	ArtistQueryParameters.CreateInput,
 	ArtistQueryParameters.WhereInput,
 	ArtistQueryParameters.ManyWhereInput,

@@ -13,7 +13,7 @@ generator classes {
   outputToNestJsResourceStructure = "false"
   flatResourceStructure           = "false"
   exportRelationModifierClasses   = "true"
-  reExport                        = "false"
+  reExport                        = "true"
   dtoSuffix                       = "Dto"
   entityPrefix                    = ""
   entitySuffix                    = ""

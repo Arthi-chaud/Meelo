@@ -1,6 +1,6 @@
 import { forwardRef, Inject, Injectable, Logger } from '@nestjs/common';
 import PrismaService from 'src/prisma/prisma.service';
-import { Prisma, Release, Song, Track, TrackType } from '@prisma/client';
+import { Prisma, TrackType } from '@prisma/client';
 import SongService from 'src/song/song.service';
 import { MasterTrackNotFoundException, TrackAlreadyExistsException, TrackNotFoundByIdException } from './track.exceptions';
 import ReleaseService from 'src/release/release.service';
@@ -20,11 +20,11 @@ import type { IllustrationPath } from 'src/illustration/models/illustration-path
 import AlbumService from 'src/album/album.service';
 import IllustrationService from 'src/illustration/illustration.service';
 import LibraryService from 'src/library/library.service';
+import { Release, Song, Track } from '../prisma/models';
 
 @Injectable()
 export default class TrackService extends RepositoryService<
 	Track,
-	{ song: Song, release: Release },
 	TrackQueryParameters.CreateInput,
 	TrackQueryParameters.WhereInput,
 	TrackQueryParameters.ManyWhereInput,

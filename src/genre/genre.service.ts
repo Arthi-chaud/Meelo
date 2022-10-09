@@ -14,7 +14,6 @@ import ArtistService from 'src/artist/artist.service';
 @Injectable()
 export default class GenreService extends RepositoryService<
 	Genre,
-	{ songs: Song[] },
 	GenreQueryParameters.CreateInput,
 	GenreQueryParameters.WhereInput,
 	GenreQueryParameters.ManyWhereInput,

@@ -18,7 +18,6 @@ import Slug from 'src/slug/slug';
 @Injectable()
 export default class FileService extends RepositoryService<
 	File,
-	{ track: Track, library: Library },
 	FileQueryParameters.CreateInput,
 	FileQueryParameters.WhereInput,
 	FileQueryParameters.ManyWhereInput,
