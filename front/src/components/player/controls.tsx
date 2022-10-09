@@ -36,8 +36,8 @@ const PlayerControls = (props: PlayerControlsProps) => {
 
 const MinimizedPlayerControls = (props: PlayerControlsProps) => {
 	const theme = useTheme();
-	return <Grid container spacing={1} sx={{ alignItems: 'center', justifyContent: 'space-evenly', padding: 1 }}>
-		<Grid item xs={1.5} sm={1.25} md={0.75} lg={0.6} xl={0.5} sx={{ alignContent: 'center' }}>
+	return <Grid container  sx={{ alignItems: 'center', justifyContent: 'space-between', padding: 1 }}>
+		<Grid item xs={1.5} sm={1.25} md={0.75} lg={0.6} xl={0.5} sx={{ alignContent: 'center', marginX: 2 }}>
 			<CardActionArea onClick={() => props.onExpand(true)} sx={{ borderRadius: theme.shape.borderRadius }}>
 				{props.illustration
 					? <Illustration url={props.illustration} fallback={<AudiotrackIcon />} />
@@ -45,11 +45,11 @@ const MinimizedPlayerControls = (props: PlayerControlsProps) => {
 				}
 			</CardActionArea>
 		</Grid>
-		<Grid item container sx={{ flexDirection: 'column' }} xs={6}>
+		<Grid item container sx={{ flexDirection: 'column', display: 'block' }} xs>
 			<PlayerText artist={props.artist} track={props.track} />
 			<PlayerSlider onSlide={props.onSlide} duration={props.duration} progress={props.progress} />
 		</Grid>
-		<Grid item xs='auto'>
+		<Grid item xs='auto' sx={{ display: 'flex', flexDirection: 'row' }}>
 			<PlayerButtonControls {...props} />
 		</Grid>
 		<Grid item xs='auto'>
@@ -64,13 +64,13 @@ const ExpandedPlayerControls = (props: PlayerControlsProps) => {
 	const [lyricsOpen, setLyricsOpen] = useState(true);
 	const lyrics = useQuery(prepareMeeloQuery(lyricsQuery, props.track?.songId));
 	return <Box sx={{ width: '100%', height: '100%' }}>
-		<Grid container spacing={3} direction="column" sx={{ display: 'flex', height: '100%', padding: 2, justifyContent: 'space-between' }}>
-			<Grid item xs='auto' sx={{ justifyContent: 'flex-end', width: '100%', display: 'flex' }}>
-				<IconButton onClick={() => props.onExpand(false)}>
-					<CloseIcon />
-				</IconButton>
-			</Grid>
-			<Grid item xs sx={{ justifyContent: 'center', alignContent: 'center', display: 'flex' }}>
+		<Box sx={{ width: '100%', display: 'flex', justifyContent: 'flex-end', padding: 2 }}>
+			<IconButton onClick={() => props.onExpand(false)}>
+				<CloseIcon />
+			</IconButton>
+		</Box>
+		<Grid container direction='column' sx={{ height: '80vh', width: 'inherit', justifyContent: 'space-evenly', alignItems: 'center' }}>
+			<Grid item xs={4} sm sx={{ aspectRatio: '1', display: 'flex', justifyContent: 'center', alignItems: 'center'}}>
 				{props.illustration
 					? <Illustration url={props.illustration} fallback={<AudiotrackIcon />} />
 					: <Box sx={{ height: '100%', display: 'flex', alignItems: 'center'}}>
@@ -78,14 +78,14 @@ const ExpandedPlayerControls = (props: PlayerControlsProps) => {
 					</Box>
 				}
 			</Grid>
-			<Grid item xs={3} container direction="column" sx={{ justifyContent: 'space-between', display: 'flex' }}>
+			<Grid item xs={4} container spacing={2} direction="column" sx={{ width: 'inherit', height: '100%', justifyContent: 'center', alignItems: 'center', display: 'flex' }}>
 				<Grid item>
 					<PlayerText artist={props.artist} track={props.track} />
 				</Grid>
 				<Grid item>
 					<PlayerButtonControls {...props} />
 				</Grid>
-				<Grid item>
+				<Grid item sx={{ width: '90%' }}>
 					<PlayerSlider onSlide={props.onSlide} duration={props.duration} progress={props.progress} />
 				</Grid>
 			</Grid>

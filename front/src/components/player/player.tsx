@@ -109,8 +109,8 @@ const Player = () => {
 			mountOnEnter unmountOnExit
 			in={(playlist.length != 0 || history.length != 0 || audio.current != undefined) && !stopped}
 		>
-			<Box sx={{ width: '100%', height: expanded ? '100%' : undefined, padding: 2, display: 'flex', position: 'fixed', right: 0, bottom: 0, justifyContent: 'center', zIndex: 'modal', alignItems: 'flex-end' }}  ref={playerComponentRef}>
-				<Paper elevation={20} sx={{ borderRadius: '0.5rem', alignItems: 'center', display: 'flex', width: '100%', height: expanded ? '100%' : 'fit-content', overflow: 'scroll' }} >
+			<Box sx={{ width: '100%', height: expanded ? '100%' : undefined, padding: 2, display: 'flex', position: 'fixed', right: 0, bottom: 0, justifyContent: 'center', alignItems: 'flex-end', zIndex: expanded ? 'tooltip' : 'modal' }}  ref={playerComponentRef}>
+				<Paper elevation={20} sx={{ borderRadius: '0.5rem', display: 'flex', width: '100%', height: expanded ? '100%' : 'fit-content', overflowY: expanded ? 'scroll' : undefined, overflowX: 'clip' }}>
 					<PlayerControls
 						expanded={expanded}
 						illustration={illustrationURL}

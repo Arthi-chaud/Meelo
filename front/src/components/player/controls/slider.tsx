@@ -8,7 +8,7 @@ type PlayerSliderProps = {
 }
 
 const PlayerSlider = (props: PlayerSliderProps) => {
-	return <Grid item xs container sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }} spacing={2}>
+	return <Grid container sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }} spacing={2}>
 		<Grid item xs="auto">
 			<DurationComponent time={props.progress}/>
 		</Grid>
