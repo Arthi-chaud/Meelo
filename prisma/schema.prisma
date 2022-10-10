@@ -257,7 +257,7 @@ model Track {
 	/// @example 123
 	releaseId		Int
 	/// @description The display name of the track
-	/// @example My Album (Deluxe Edition)
+	/// @example My Song (Album Version)
 	name		String
 	/// @description Is this track the main one
 	/// @example true

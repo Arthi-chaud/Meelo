@@ -43,7 +43,9 @@ export default class LibraryController {
 	})
 	@Post('new')
 	async createLibrary(@Body() createLibraryDto: LibraryDto) {
-		return this.libraryService.create(createLibraryDto);
+		return await this.libraryService.buildResponse(
+			await this.libraryService.create(createLibraryDto)
+		);
 	}
 
 	@ApiOperation({
