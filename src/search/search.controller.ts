@@ -21,6 +21,7 @@ import { AlbumResponse } from 'src/album/models/album.response';
 import { SongResponse } from 'src/song/models/song.response';
 import { ReleaseResponse } from 'src/release/models/release.response';
 import { GenreResponse } from 'src/genre/models/genre.response';
+import { SearchAllResponse } from './models/search-all.response';
 
 @ApiTags("Search")
 @Controller('search')
@@ -41,7 +42,7 @@ export default class SearchController {
 	async searchItems(
 		@Param('query')
 		query: string,
-	) {
+	): Promise<SearchAllResponse> {
 		return {
 			artists: await Promise.all((await this.searchService.searchArtists(query))
 				.map((artist) => this.artistService.buildResponse(artist))),
