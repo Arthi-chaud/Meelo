@@ -7,7 +7,6 @@ const titleStyle = {
 	overflow: 'hidden',
 	textOverflow: 'ellipsis',
 	display: '-webkit-box',
-	overflowWrap: 'anywhere',
 	WebkitBoxOrient: 'vertical' as CSSProperties['WebkitBoxOrient']
 }
 
@@ -32,11 +31,11 @@ const Tile = (props: TileProps) => {
 						{props.illustration}
 					</CardMedia>
 						<CardContent style={{ flexDirection: 'column', display: 'flex', alignContent: 'center', justifyContent: 'center', height: '100%' }}>
-							<Typography sx={{ fontWeight: 'bold', textAlign: 'center'}} style={{ ...titleStyle, WebkitLineClamp: 2 }}>
+							<Typography sx={{ fontWeight: 'bold', textAlign: 'center'}} style={{ ...titleStyle, overflowWrap: 'anywhere',  WebkitLineClamp: 2 }}>
 								{props.title}
 							</Typography>
 							{ props.subtitle &&
-								<Typography sx={{ fontWeight: 'light', textAlign: 'center' }} style={{ ...titleStyle, WebkitLineClamp: 1 }}>
+								<Typography sx={{ fontWeight: 'light', textAlign: 'center' }} style={{ ...titleStyle, overflowWrap: 'anywhere', WebkitLineClamp: 1 }}>
 									{props.subtitle}
 								</Typography>
 							}
