@@ -38,6 +38,7 @@ export class IllustrationController {
 		where: ArtistQueryParameters.WhereInput,
 		@Response({ passthrough: true })
 		@Query() dimensions: IllustrationDimensionsDto,
+		@Response({ passthrough: true })
 		res: Response,
 	) {
 		let artist = await this.artistService.get(where);
