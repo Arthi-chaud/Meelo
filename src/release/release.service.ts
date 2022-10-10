@@ -1,7 +1,8 @@
 import { forwardRef, Inject, Injectable, Logger } from '@nestjs/common';
 import AlbumService from 'src/album/album.service';
 import Slug from 'src/slug/slug';
-import type { Album, Prisma, Release, Track } from '@prisma/client';
+import type { Release, ReleaseWithRelations } from 'src/prisma/models';
+import type { Prisma } from '@prisma/client';
 import { MasterReleaseNotFoundFromIDException, ReleaseAlreadyExists, ReleaseNotFoundException, ReleaseNotFoundFromIDException } from './release.exceptions';
 import PrismaService from 'src/prisma/prisma.service';
 import type ReleaseQueryParameters from './models/release.query-parameters';
@@ -14,11 +15,11 @@ import IllustrationService from 'src/illustration/illustration.service';
 import type { IllustrationPath } from 'src/illustration/models/illustration-path.model';
 import { buildStringSearchParameters } from 'src/utils/search-string-input';
 import ArtistService from 'src/artist/artist.service';
+import { ReleaseResponse } from './models/release.response';
 
 @Injectable()
 export default class ReleaseService extends RepositoryService<
-	Release,
-	{ tracks: Track[], album: Album },
+	ReleaseWithRelations,
 	ReleaseQueryParameters.CreateInput,
 	ReleaseQueryParameters.WhereInput,
 	ReleaseQueryParameters.ManyWhereInput,
@@ -340,25 +341,17 @@ export default class ReleaseService extends RepositoryService<
 		return this.illustrationService.illustrationExists(path);
 	}
 
-	async buildResponse<ResponseType extends Release & { illustration: string }>(
-		release: Release & Partial<{ tracks: Track[], album: Album }>
-	): Promise<ResponseType> {
-		let response = <ResponseType>{
+	async buildResponse(release: ReleaseWithRelations): Promise<ReleaseResponse> {
+		let response = <ReleaseResponse>{
 			...release,
 			illustration: await this.illustrationService.getReleaseIllustrationLink(release.id)
 		};
 		if (release.album !== undefined)
-			response = {
-				...response,
-				album: await this.albumService.buildResponse(release.album)
-			}
+			response.album = await this.albumService.buildResponse(release.album)
 		if (release.tracks !== undefined)
-			response = {
-				...response,
-				tracks: await Promise.all(release.tracks.map(
-					(track) => this.trackService.buildResponse(track)
-				))
-			}
+			response.tracks = await Promise.all(release.tracks.map(
+				(track) => this.trackService.buildResponse(track)
+			));
 		return response;
 	}
 }

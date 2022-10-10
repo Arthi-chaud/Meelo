@@ -7,7 +7,7 @@ import PrismaModule from "src/prisma/prisma.module";
 import FileManagerService from "src/file-manager/file-manager.service";
 import { FakeFileManagerService } from "test/fake-file-manager.module";
 import PrismaService from "src/prisma/prisma.service";
-import type {  Song } from "@prisma/client";
+import type { Song } from "src/prisma/models";
 import Slug from "src/slug/slug";
 import { SongAlreadyExistsException, SongNotFoundByIdException, SongNotFoundException } from "./song.exceptions";
 import { ArtistNotFoundByIDException, ArtistNotFoundException } from "src/artist/artist.exceptions";

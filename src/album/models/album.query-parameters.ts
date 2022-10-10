@@ -1,10 +1,7 @@
-import { Album, Prisma } from "@prisma/client";
+import { Prisma } from "@prisma/client";
 import type ArtistQueryParameters from "src/artist/models/artist.query-parameters";
 import type LibraryQueryParameters from "src/library/models/library.query-parameters";
-import type Slug from "src/slug/slug"
-import type OmitId from "src/utils/omit-id";
-import type OmitReleaseDate from "src/utils/omit-release-date";
-import type OmitSlug from "src/utils/omit-slug";
+import type Slug from "src/slug/slug";
 import type { RequireAtLeastOne } from "type-fest";
 import type { RequireExactlyOne } from 'type-fest';
 import type { SearchDateInput } from "src/utils/search-date-input";
@@ -14,18 +11,21 @@ import ParseBaseRelationIncludePipe from 'src/relation-include/relation-include.
 import BaseSortingParameter from 'src/sort/models/sorting-parameter';
 import ParseBaseSortingParameterPipe from 'src/sort/sort.pipe';
 import type GenreQueryParameters from "src/genre/models/genre.query-parameters";
+import { Album } from "src/prisma/models";
+import { IntersectionType, PartialType, PickType } from "@nestjs/swagger";
 
 namespace AlbumQueryParameters {
-
-	type OmitType<T> = Omit<T, 'type'>;
-	type OmitArtistId<T> = Omit<T, 'artistId'>;
 
 	/**
 	 * The input required to save an album in the database
 	 */
-	export type CreateInput = OmitReleaseDate<OmitId<OmitSlug<OmitArtistId<OmitType<Album>>>>>
-		& { releaseDate?: Date }
-		& { artist?: ArtistQueryParameters.WhereInput };
+	export class CreateInput extends IntersectionType(
+		PickType(Album, ['name'] as const),
+		class {
+			releaseDate?: Date;
+			artist?: ArtistQueryParameters.WhereInput
+		}
+	) {};
 
 	/**
 	 * Query parameters to find one album
@@ -49,7 +49,7 @@ namespace AlbumQueryParameters {
 	/**
  	 * The input required to update an album in the database
  	 */
-	export type UpdateInput = Partial<OmitId<OmitSlug<Album>>>;
+	export class UpdateInput extends  PartialType(PickType(Album, ['name', 'type', 'releaseDate', 'artistId'] as const)) {};
 
 	/**
 	 * The input to find or create an album

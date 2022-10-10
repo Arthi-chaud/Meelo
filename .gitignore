@@ -37,3 +37,5 @@ meelo/
 
 coverage/
 test/assets/metadata
+
+src/prisma/models

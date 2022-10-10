@@ -1,6 +1,6 @@
 import { forwardRef, Inject, Injectable, Logger } from '@nestjs/common';
 import type LibraryQueryParameters from 'src/library/models/library.query-parameters';
-import type { File, Library } from '@prisma/client';
+import type { File, Library } from 'src/prisma/models';
 import FileManagerService from 'src/file-manager/file-manager.service';
 import type FileQueryParameters from 'src/file/models/file.query-parameters';
 import TrackService from 'src/track/track.service';

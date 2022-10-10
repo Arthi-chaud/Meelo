@@ -12,9 +12,14 @@ import PaginatedResponse from 'src/pagination/models/paginated-response';
 import TrackService from 'src/track/track.service';
 import TrackQueryParameters from 'src/track/models/track.query-parameters';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
-import {Genre, TrackType} from '@prisma/client';
+import { TrackType } from '@prisma/client';
 import type ReassignAlbumDTO from './models/reassign-album.dto';
 import GenreService from "../genre/genre.service";
+import { Genre } from "src/prisma/models";
+import { AlbumResponse } from './models/album.response';
+import { ApiPaginatedResponse } from 'src/pagination/paginated-response.decorator';
+import { ReleaseResponse } from 'src/release/models/release.response';
+import { TrackResponse } from 'src/track/models/track.response';
 
 @ApiTags("Albums")
 @Controller('albums')
@@ -34,6 +39,7 @@ export default class AlbumController {
 		summary: 'Get all albums'
 	})
 	@Get()
+	@ApiPaginatedResponse(AlbumResponse)
 	async getMany(
 		@Query(ParsePaginationParameterPipe)
 		paginationParameters: PaginationParameters,
@@ -55,6 +61,7 @@ export default class AlbumController {
 	@ApiOperation({
 		summary: 'Get all compilations albums'
 	})
+	@ApiPaginatedResponse(AlbumResponse)
 	@Get(`${compilationAlbumArtistKeyword}`)
 	async getCompilationsAlbums(
 		@Query(ParsePaginationParameterPipe)
@@ -105,6 +112,7 @@ export default class AlbumController {
 	@ApiOperation({
 		summary: 'Get all the releases of an album'
 	})
+	@ApiPaginatedResponse(ReleaseResponse)
 	@Get(':idOrSlug/releases')
 	async getAlbumReleases(
 		@Query(ParsePaginationParameterPipe)
@@ -141,6 +149,7 @@ export default class AlbumController {
 	@ApiOperation({
 		summary: 'Get all the video tracks from an album'
 	})
+	@ApiPaginatedResponse(TrackResponse)
 	@Get(':idOrSlug/videos')
 	async getAlbumVideos(
 		@Query(ParsePaginationParameterPipe)

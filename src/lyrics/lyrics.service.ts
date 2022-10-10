@@ -1,5 +1,5 @@
 import { forwardRef, Inject, Injectable, Logger } from '@nestjs/common';
-import type { Lyrics, Prisma, Song } from '@prisma/client';
+import type { LyricsWithRelations } from 'src/prisma/models';
 const { getLyrics } = require('genius-lyrics-api');
 import type { MeeloException } from 'src/exceptions/meelo-exception';
 import PrismaService from 'src/prisma/prisma.service';
@@ -9,11 +9,12 @@ import type SongQueryParameters from 'src/song/models/song.query-params';
 import SongService from 'src/song/song.service';
 import { LyricsAlreadyExistsExceptions, LyricsNotFoundByIDException, LyricsNotFoundBySongException, MissingGeniusAPIKeyException, NoLyricsFoundException } from './lyrics.exceptions';
 import type LyricsQueryParameters from './models/lyrics.query-parameters';
+import { Prisma } from '@prisma/client';
+import { LyricsResponse } from './models/lyrics.response';
 
 @Injectable()
 export class LyricsService extends RepositoryService<
-	Lyrics,
-	{ song: Song },
+	LyricsWithRelations,
 	LyricsQueryParameters.CreateInput,
 	LyricsQueryParameters.WhereInput,
 	LyricsQueryParameters.ManyWhereInput,
@@ -104,8 +105,8 @@ export class LyricsService extends RepositoryService<
 		return await this.onNotFound(this.formatDeleteInputToWhereInput(where));
 	}
 
-	async buildResponse(input: Lyrics & { song?: Song }): Promise<{ lyrics: string, song?: Song }> {
-		let response: any = { lyrics: input.content };
+	async buildResponse(input: LyricsWithRelations): Promise<LyricsResponse> {
+		let response: LyricsResponse = { lyrics: input.content };
 		if (input.song)
 			response.song = await this.songService.buildResponse(input.song)
 		return response;

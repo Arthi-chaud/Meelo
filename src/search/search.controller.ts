@@ -15,6 +15,13 @@ import AlbumService from 'src/album/album.service';
 import GenreService from 'src/genre/genre.service';
 import ReleaseService from 'src/release/release.service';
 import SongService from 'src/song/song.service';
+import { ArtistResponse } from 'src/artist/models/artist.response';
+import { ApiPaginatedResponse } from 'src/pagination/paginated-response.decorator';
+import { AlbumResponse } from 'src/album/models/album.response';
+import { SongResponse } from 'src/song/models/song.response';
+import { ReleaseResponse } from 'src/release/models/release.response';
+import { GenreResponse } from 'src/genre/models/genre.response';
+import { SearchAllResponse } from './models/search-all.response';
 
 @ApiTags("Search")
 @Controller('search')
@@ -35,7 +42,7 @@ export default class SearchController {
 	async searchItems(
 		@Param('query')
 		query: string,
-	) {
+	): Promise<SearchAllResponse> {
 		return {
 			artists: await Promise.all((await this.searchService.searchArtists(query))
 				.map((artist) => this.artistService.buildResponse(artist))),
@@ -53,6 +60,7 @@ export default class SearchController {
 	@ApiOperation({
 		summary: 'Search album artists by their names'
 	})
+	@ApiPaginatedResponse(ArtistResponse)
 	@Get('/artists/:query')
 	async searchArtists(
 		@Param('query')
@@ -73,6 +81,7 @@ export default class SearchController {
 	@ApiOperation({
 		summary: 'Search albums by their names'
 	})
+	@ApiPaginatedResponse(AlbumResponse)
 	@Get('/albums/:query')
 	async searchAlbums(
 		@Param('query')
@@ -93,6 +102,7 @@ export default class SearchController {
 	@ApiOperation({
 		summary: 'Search songs by their names'
 	})
+	@ApiPaginatedResponse(SongResponse)
 	@Get('/songs/:query')
 	async searchSongs(
 		@Param('query')
@@ -113,6 +123,7 @@ export default class SearchController {
 	@ApiOperation({
 		summary: 'Search releases by their names'
 	})
+	@ApiPaginatedResponse(ReleaseResponse)
 	@Get('/releases/:query')
 	async searchRelease(
 		@Param('query')
@@ -133,6 +144,7 @@ export default class SearchController {
 	@ApiOperation({
 		summary: 'Search genres by their names'
 	})
+	@ApiPaginatedResponse(GenreResponse)
 	@Get('/genres/:query')
 	async searchGenres(
 		@Param('query')

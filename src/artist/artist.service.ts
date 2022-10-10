@@ -1,7 +1,7 @@
 import { forwardRef, Inject, Injectable, Logger } from '@nestjs/common';
 import Slug from 'src/slug/slug';
 import { ArtistAlreadyExistsException as ArtistAlreadyExistsException, ArtistNotFoundByIDException, ArtistNotFoundException, CompilationArtistException } from './artist.exceptions';
-import type { Album, Artist, Prisma, Song } from '@prisma/client';
+import type { Prisma } from '@prisma/client';
 import PrismaService from 'src/prisma/prisma.service';
 import type ArtistQueryParameters from './models/artist.query-parameters';
 import { type PaginationParameters, buildPaginationParameters } from 'src/pagination/models/pagination-parameters';
@@ -15,11 +15,11 @@ import { buildStringSearchParameters } from 'src/utils/search-string-input';
 import GenreService from 'src/genre/genre.service';
 import ReleaseService from 'src/release/release.service';
 import TrackService from 'src/track/track.service';
-
+import type { Artist, ArtistWithRelations } from 'src/prisma/models';
+import { ArtistResponse } from './models/artist.response';
 @Injectable()
 export default class ArtistService extends RepositoryService<
-	Artist,
-	{ albums: Album[], songs: Song[] },
+	ArtistWithRelations,
 	ArtistQueryParameters.CreateInput,
 	ArtistQueryParameters.WhereInput,
 	ArtistQueryParameters.ManyWhereInput,
@@ -197,27 +197,19 @@ export default class ArtistService extends RepositoryService<
 	 * @param artist the Artist to build the response from
 	 * @returns the response Object
 	 */
-	async buildResponse<ResponseType extends Artist & { illustration: string }> (
-		artist: Artist & Partial<{ songs: Song[], albums: Album[] }>
-	): Promise<ResponseType> {
-		let response = <ResponseType>{
+	async buildResponse(artist: ArtistWithRelations): Promise<ArtistResponse> {
+		let response = <ArtistResponse>{
 			...artist,
 			illustration: this.illustrationService.getArtistIllustrationLink(new Slug(artist.slug))
 		};
 		if (artist.songs != undefined)
-			response = {
-				...response,
-				songs: await Promise.all(artist.songs.map(
-					(song) => this.songService.buildResponse(song)
-				))
-			}
+			response.songs = await Promise.all(artist.songs.map(
+				(song) => this.songService.buildResponse(song)
+			));
 		if (artist.albums != undefined)
-			response = {
-				...response,
-				albums: await Promise.all(artist.albums.map(
-					(album) => this.albumService.buildResponse(album)
-				))
-			}
+			response.albums = await Promise.all(artist.albums.map(
+				(album) => this.albumService.buildResponse(album)
+			));
 		return response;
 	}
 }

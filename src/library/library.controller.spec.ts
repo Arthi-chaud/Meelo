@@ -13,7 +13,7 @@ import LibraryModule from "./library.module";
 import LibraryService from "./library.service";
 import IllustrationModule from "src/illustration/illustration.module";
 import request from 'supertest';
-import type { Album, Artist, Library, Release, Song, Track } from "@prisma/client";
+import type { Album, Artist, Library, Release, Song, Track } from "src/prisma/models";
 import NotFoundExceptionFilter from "src/exceptions/not-found.exception";
 import MeeloExceptionFilter from "src/exceptions/meelo-exception.filter";
 import AlbumModule from "src/album/album.module";

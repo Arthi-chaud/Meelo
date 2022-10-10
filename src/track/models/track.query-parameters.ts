@@ -1,9 +1,9 @@
-import { Prisma, Track, TrackType } from "@prisma/client";
+import { Prisma, TrackType } from "@prisma/client";
+import { Track } from "src/prisma/models";
 import type FileQueryParameters from "src/file/models/file.query-parameters";
 import type LibraryQueryParameters from "src/library/models/library.query-parameters";
 import type ReleaseQueryParameters from "src/release/models/release.query-parameters";
 import type SongQueryParameters from "src/song/models/song.query-params";
-import type OmitId from "src/utils/omit-id";
 import type { RequireAtLeastOne } from "type-fest";
 import type { RequireExactlyOne } from 'type-fest';;
 import type { RelationInclude as BaseRelationInclude } from "src/relation-include/models/relation-include";
@@ -14,14 +14,11 @@ import type AlbumQueryParameters from "src/album/models/album.query-parameters";
 import type ArtistQueryParameters from "src/artist/models/artist.query-parameters";
 
 namespace TrackQueryParameters {
-	type OmitSong<T> = Omit<T, 'songId'>;
-	type OmitSourceFile<T> = Omit<T, 'sourceFileId'>;
-	type OmitRelease<T> = Omit<T, 'releaseId'>;
 
 	/**
 	 * The input required to save a track in the database
 	 */
-	export type CreateInput = OmitRelease<OmitSourceFile<OmitSong<OmitId<Track>>>>
+	export type CreateInput = Omit<Track, 'id' | 'sourceFile' | 'sourceFileId' | 'release' | 'releaseId' | 'song' | 'songId'>
 		& { sourceFile: FileQueryParameters.WhereInput }
 		& { release: ReleaseQueryParameters.WhereInput }
 		& { song: SongQueryParameters.WhereInput };

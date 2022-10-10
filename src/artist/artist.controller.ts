@@ -13,7 +13,13 @@ import type { Request } from 'express';
 import { ApiOperation, ApiQuery, ApiTags } from '@nestjs/swagger';
 import TrackQueryParameters from 'src/track/models/track.query-parameters';
 import TrackService from 'src/track/track.service';
-import { Artist, TrackType } from '@prisma/client';
+import { TrackType } from '@prisma/client';
+import { Artist } from 'src/prisma/models';
+import { ArtistResponse } from './models/artist.response';
+import { ApiPaginatedResponse } from 'src/pagination/paginated-response.decorator';
+import { TrackResponse } from 'src/track/models/track.response';
+import { AlbumResponse } from 'src/album/models/album.response';
+import { SongResponse } from 'src/song/models/song.response';
 
 @ApiTags("Artists")
 @Controller('artists')
@@ -36,6 +42,7 @@ export default class ArtistController {
 		name: 'albumArtistOnly',
 		required: false
 	})
+	@ApiPaginatedResponse(ArtistResponse)
 	@Get()
 	async getMany(
 		@Query(ParsePaginationParameterPipe)
@@ -44,9 +51,9 @@ export default class ArtistController {
 		include: ArtistQueryParameters.RelationInclude,
 		@Query(ArtistQueryParameters.ParseSortingParameterPipe)
 		sortingParameter: ArtistQueryParameters.SortingParameter,
+		@Req() request: Request,
 		@Query('albumArtistOnly', new DefaultValuePipe(false), ParseBoolPipe)
 		albumArtistsOnly: boolean = false,
-		@Req() request: Request
 	) {
 		let artists: Artist[];
 		if (albumArtistsOnly) {
@@ -81,6 +88,7 @@ export default class ArtistController {
 	@ApiOperation({
 		summary: 'Get all the video tracks from an artist'
 	})
+	@ApiPaginatedResponse(TrackResponse)
 	@Get(':idOrSlug/videos')
 	async getArtistVideos(
 		@Query(ParsePaginationParameterPipe)
@@ -110,6 +118,7 @@ export default class ArtistController {
 		summary: 'Get all albums from an artist'
 	})
 	@Get(':idOrSlug/albums')
+	@ApiPaginatedResponse(AlbumResponse)
 	async getArtistAlbums(
 		@Query(ParsePaginationParameterPipe)
 		paginationParameters: PaginationParameters,
@@ -135,6 +144,7 @@ export default class ArtistController {
 	@ApiOperation({
 		summary: 'Get all songs from an artist',
 	})
+	@ApiPaginatedResponse(SongResponse)
 	@Get(':idOrSlug/songs')
 	async getArtistSongs(
 		@Query(ParsePaginationParameterPipe)

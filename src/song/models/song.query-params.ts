@@ -1,8 +1,6 @@
-import { Prisma, Song } from "@prisma/client";
+import { Prisma } from "@prisma/client";
 import type ArtistQueryParameters from "src/artist/models/artist.query-parameters";
 import type Slug from "src/slug/slug"
-import type OmitId from "src/utils/omit-id";
-import type OmitSlug from "src/utils/omit-slug";
 import type { RequireAtLeastOne } from "type-fest";
 import type { RequireExactlyOne } from 'type-fest';
 import type { SearchStringInput } from "src/utils/search-string-input";
@@ -12,14 +10,13 @@ import ParseBaseRelationIncludePipe from 'src/relation-include/relation-include.
 import BaseSortingParameter from 'src/sort/models/sorting-parameter';
 import ParseBaseSortingParameterPipe from 'src/sort/sort.pipe';
 import type GenreQueryParameters from "src/genre/models/genre.query-parameters";
+import { Song } from "src/prisma/models";
 
 namespace SongQueryParameters {
-	type OmitArtistId<T> = Omit<T, 'artistId'>;
-	type OmitPlayCount<T> = Omit<T, 'playCount'>;
 	/**
 	 * The input required to save a song in the database
 	 */
-	export type CreateInput = OmitSlug<OmitPlayCount<OmitId<OmitArtistId<Song>>>>
+	export type CreateInput = Omit<Song, 'slug' | 'id' | 'playCount' | 'artist' | 'artistId' | 'tracks' | 'genres' | 'lyrics'>
 		& {
 			artist: ArtistQueryParameters.WhereInput,
 			genres: GenreQueryParameters.WhereInput[]
@@ -55,11 +52,7 @@ namespace SongQueryParameters {
 	/**
 	 * The input required to update a song in the database
 	 */
-	export type UpdateInput = Partial<OmitId<OmitArtistId<Song>>>
-		& Partial<{
-			artist: ArtistQueryParameters.WhereInput,
-			genres: GenreQueryParameters.WhereInput[]
-		}>;
+	export type UpdateInput = Partial<CreateInput & Pick<Song, 'playCount'>>;
 	export type DeleteInput = {
 		id: number
 	};

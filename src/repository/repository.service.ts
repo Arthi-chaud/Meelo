@@ -1,27 +1,47 @@
 import type { MeeloException } from "src/exceptions/meelo-exception";
 import { buildPaginationParameters, PaginationParameters } from "src/pagination/models/pagination-parameters";
 import { buildSortingParameter } from "src/sort/models/sorting-parameter";
+import type { Primitive } from "type-fest";
+
+type AtomicModel = { id: number };
+
 type ModelSelector<T extends {}> = Partial<Record<keyof T, boolean>>;
 
 /**
  * Selects the fields to include, except relation fields
  */
-type Select<T extends {}, Selector extends ModelSelector<T>> = Omit<
+type Select<T extends {}, Selector extends ModelSelector<T>> = Pick<
 	T,
 	keyof {
 		[key in keyof T as key extends keyof Selector
-		? Selector[key] extends true ? never : key
-		: key
-		]: key
+			? Selector[key] extends true ? key : never
+			: never
+		]: T[key]
 	}
 >
+
+/**
+ * Extract Relation fields from an entity object
+ */
+type ModelRelations<T extends AtomicModel> = Required<Omit<
+	T,
+	keyof {
+		[key in keyof T as T[key] extends Primitive | Date ? key : never]: key
+	}
+>>
+
+/**
+ * Extract Base fields from an entity object
+ */
+type Base<T extends AtomicModel> = AtomicModel & Omit<T, keyof ModelRelations<T>>
+
 /**
  * Type definition of a method that returns only one item
  * The fields of the items can be selected.
  * Or the methods can return related entities
  */
 type ORMGetterMethod<
-	Model extends { id: number },
+	Model extends AtomicModel,
 	ModelRelations extends {},
 	AdditionalParams extends {}
 > = <
@@ -37,7 +57,7 @@ type ORMGetterMethod<
  * Type definition of a method that returns multiple item items
  */
 type ORMManyGetterMethod<
-	Model extends { id: number },
+	Model extends AtomicModel,
 	ModelRelations extends {},
 	AdditionalParams extends {}
 > = <
@@ -49,13 +69,11 @@ type ORMManyGetterMethod<
 	 : Model
 >(args: Params) => Promise<(Model | ReturnType)[]>;
 
-
 /**
  * Base Repository Service Definition 
  */
 abstract class RepositoryService<
-	Model extends { id: number },
-	ModelRelations extends {},
+	Model extends AtomicModel,
 	CreateInput,
 	WhereInput,
 	ManyWhereInput,
@@ -65,14 +83,16 @@ abstract class RepositoryService<
 	RepositoryWhereInput,
 	RepositoryManyWhereInput,
 	RepositoryUpdateInput,
-	RepositoryDeleteInput
+	RepositoryDeleteInput,
+	BaseModel extends AtomicModel = Base<Model>,
+	Relations extends ModelRelations<Model> = ModelRelations<Model>
 > {
 	constructor(protected repository: {
-		create: ORMGetterMethod<Model, ModelRelations, { data: RepositoryCreateInput }>,
-		findFirst: ORMGetterMethod<Model, ModelRelations, { where: RepositoryWhereInput, rejectOnNotFound: true }>
-		findMany: ORMManyGetterMethod<Model, ModelRelations, { where: RepositoryManyWhereInput }>
-		delete: (args: { where: RepositoryDeleteInput }) => Promise<Model>,
-		update: (args: { where: RepositoryWhereInput, data: RepositoryUpdateInput }) => Promise<Model>
+		create: ORMGetterMethod<BaseModel, Relations, { data: RepositoryCreateInput }>,
+		findFirst: ORMGetterMethod<BaseModel, Relations, { where: RepositoryWhereInput, rejectOnNotFound: true }>
+		findMany: ORMManyGetterMethod<BaseModel, Relations, { where: RepositoryManyWhereInput }>
+		delete: (args: { where: RepositoryDeleteInput }) => Promise<BaseModel>,
+		update: (args: { where: RepositoryWhereInput, data: RepositoryUpdateInput }) => Promise<BaseModel>
 		count: (args: { where: RepositoryManyWhereInput }) => Promise<number>,
 	}) {}
 
@@ -82,13 +102,13 @@ abstract class RepositoryService<
 	 * @param include the relations to include with the returned entity
 	 * @returns the newly-created entity
 	 */
-	async create<I extends ModelSelector<ModelRelations>>(input: CreateInput, include?: I) {
+	async create<I extends ModelSelector<Relations>>(input: CreateInput, include?: I) {
 		try {
 			return await this.repository.create({
 				rejectOnNotFound: true,
 				data: this.formatCreateInput(input),
 				include: RepositoryService.formatInclude(include)
-			}) as Model & Select<ModelRelations, I>;
+			}) as BaseModel & Select<Relations, I>;
 		} catch {
 			throw await this.onCreationFailure(input);
 		}
@@ -113,14 +133,14 @@ abstract class RepositoryService<
 	 * @param include the relation fields to include with the returned entity
 	 * @returns The entity matching the query parameters
 	 */
-	async get<I extends ModelSelector<ModelRelations>>(where: WhereInput, include?: I) {
+	async get<I extends ModelSelector<Relations>>(where: WhereInput, include?: I) {
 		this.checkWhereInputIntegrity(where);
 		try {
 			return await this.repository.findFirst({
 				rejectOnNotFound: true,
 				where: this.formatWhereInput(where),
 				include: RepositoryService.formatInclude(include)
-			}) as Model & Select<ModelRelations, I>;
+			}) as BaseModel & Select<Relations, I>;
 		} catch (e) {
 			throw await this.onNotFound(where);
 		}
@@ -146,7 +166,7 @@ abstract class RepositoryService<
 	 * @param select the fields to fetch
 	 * @returns The entity matching the query parameters
 	 */
-	async select<S extends ModelSelector<Model>>(where: WhereInput, select: S): Promise<Select<Model, S>> {
+	async select<S extends ModelSelector<BaseModel>>(where: WhereInput, select: S): Promise<Select<BaseModel, S>> {
 		this.checkWhereInputIntegrity(where);
 		try {
 			return await this.repository.findFirst({
@@ -167,7 +187,7 @@ abstract class RepositoryService<
 	 * @param sort the sorting parameters
 	 * @returns matching entities
 	 */
-	async getMany<I extends ModelSelector<ModelRelations>, S extends { sortBy: string, order?: 'asc' | 'desc' }>(
+	async getMany<I extends ModelSelector<Relations>, S extends { sortBy: string, order?: 'asc' | 'desc' }>(
 		where: ManyWhereInput,
 		pagination?: PaginationParameters,
 		include?: I,
@@ -178,7 +198,7 @@ abstract class RepositoryService<
 			include: RepositoryService.formatInclude(include),
 			orderBy: buildSortingParameter(sort),
 			...buildPaginationParameters(pagination) 
-		}) as Promise<(Model & Select<ModelRelations, I>)[]>;
+		}) as Promise<(BaseModel & Select<Relations, I>)[]>;
 	}
 	/**
 	 * Formats input into ORM-compatible parameter
@@ -203,7 +223,7 @@ abstract class RepositoryService<
 	 * @param where the query parameters to find the entity to update
 	 * @returns the updated entity
 	 */
-	async update(what: UpdateInput, where: WhereInput): Promise<Model> {
+	async update(what: UpdateInput, where: WhereInput): Promise<BaseModel> {
 		this.checkWhereInputIntegrity(where);
 		try {
 			return await this.repository.update({
@@ -231,7 +251,7 @@ abstract class RepositoryService<
 	 * @param where the query parameters to find an entity
 	 * @returns 
 	 */
-	async delete(where: DeleteInput): Promise<Model> {
+	async delete(where: DeleteInput): Promise<BaseModel> {
 		try {
 			return await this.repository.delete({
 				where: this.formatDeleteInput(where)
@@ -262,7 +282,7 @@ abstract class RepositoryService<
 	 * @param include the relation fields to include with the returned entity
 	 * @returns the matching entity
 	 */
-	async getOrCreate<I extends ModelSelector<ModelRelations>>(input: CreateInput, include?: I) {
+	async getOrCreate<I extends ModelSelector<Relations>>(input: CreateInput, include?: I) {
 		try {
 			return await this.get(this.formatCreateInputToWhereInput(input), include);
 		} catch {
@@ -292,7 +312,7 @@ abstract class RepositoryService<
 		await this.select(where, { });
 	}
 
-	abstract buildResponse(input: Model & Partial<ModelRelations>): unknown;
+	abstract buildResponse(input: Model): unknown;
 	static formatInclude<I extends ModelSelector<Relations>, Relations extends {}>(include?: I) {
 		if (include === undefined)
 			return include;

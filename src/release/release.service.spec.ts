@@ -1,6 +1,6 @@
 import { createTestingModule } from "test/test-module";
 import type { TestingModule } from "@nestjs/testing";
-import type { Release } from "@prisma/client";
+import type { Release } from "src/prisma/models";
 import { AlbumNotFoundException, AlbumNotFoundFromIDException } from "src/album/album.exceptions";
 import AlbumModule from "src/album/album.module";
 import AlbumService from "src/album/album.service";

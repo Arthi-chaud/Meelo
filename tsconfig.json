@@ -24,7 +24,7 @@
     "noUnusedParameters": true,
     "noUnusedLocals": true,
     "noImplicitThis": true,
-    "importsNotUsedAsValues": "error",
+    "importsNotUsedAsValues": "preserve",
     "allowJs": true
   },
   "lib": [  

@@ -1,6 +1,6 @@
 import type { INestApplication } from "@nestjs/common";
 import type { TestingModule } from "@nestjs/testing";
-import type { File } from "@prisma/client";
+import type { File } from "src/prisma/models";
 import FileManagerService from "src/file-manager/file-manager.service";
 import LibraryModule from "src/library/library.module";
 import PrismaModule from "src/prisma/prisma.module";

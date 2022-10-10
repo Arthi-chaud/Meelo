@@ -2,7 +2,7 @@ import { forwardRef, Inject, Injectable } from '@nestjs/common';
 import SettingsService from 'src/settings/settings.service';
 import md5File from 'md5-file';
 import * as fs from 'fs';
-import type { Library } from '@prisma/client';
+import type { Library } from 'src/prisma/models';
 import { FileDoesNotExistException, FolderDoesNotExistException } from './file-manager.exceptions';
 
 @Injectable()

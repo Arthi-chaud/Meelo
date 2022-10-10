@@ -14,7 +14,7 @@ import MetadataModule from "src/metadata/metadata.module";
 import IllustrationModule from "src/illustration/illustration.module";
 import TrackModule from "src/track/track.module";
 import TestPrismaService from "test/test-prisma.service";
-import type { Library } from "@prisma/client";
+import type { Library } from "src/prisma/models";
 import FileService from "src/file/file.service";
 import TrackService from "src/track/track.service";
 import { LyricsModule } from "src/lyrics/lyrics.module";

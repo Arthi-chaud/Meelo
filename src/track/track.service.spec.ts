@@ -1,6 +1,7 @@
 import { createTestingModule } from "test/test-module";
 import type { TestingModule } from "@nestjs/testing";
-import { File, Library, RipSource, Track, TrackType } from "@prisma/client";
+import {  TrackType, RipSource } from "@prisma/client";
+import { File, Library, Track } from "src/prisma/models";
 import AlbumModule from "src/album/album.module";
 import AlbumService from "src/album/album.service";
 import ArtistModule from "src/artist/artist.module";

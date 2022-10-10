@@ -14,7 +14,7 @@ import IllustrationModule from "src/illustration/illustration.module";
 import GenreModule from "src/genre/genre.module";
 import TrackModule from "src/track/track.module";
 import TestPrismaService from "test/test-prisma.service";
-import type { Artist } from "@prisma/client";
+import type { Artist } from "src/prisma/models";
 import { LyricsModule } from "src/lyrics/lyrics.module";
 
 describe('Artist Service', () => {

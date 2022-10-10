@@ -1,7 +1,7 @@
 import { forwardRef, Inject, Injectable, Logger, OnModuleInit, StreamableFile } from '@nestjs/common';
 import FileManagerService from 'src/file-manager/file-manager.service';
 import MetadataService from 'src/metadata/metadata.service';
-import type { Release, Track } from '@prisma/client';
+import type { Release, Track } from 'src/prisma/models';
 import ReleaseService from 'src/release/release.service';
 import Slug from 'src/slug/slug';
 import { CantDownloadIllustrationException, IllustrationNotExtracted, NoIllustrationException } from './illustration.exceptions';

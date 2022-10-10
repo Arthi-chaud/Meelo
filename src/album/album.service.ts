@@ -2,7 +2,7 @@ import { forwardRef, Inject, Injectable, Logger } from '@nestjs/common';
 import ArtistService from 'src/artist/artist.service';
 import Slug from 'src/slug/slug';
 import { AlbumAlreadyExistsException, AlbumAlreadyExistsExceptionWithArtistID as AlbumAlreadyExistsWithArtistIDException, AlbumNotFoundException, AlbumNotFoundFromIDException } from './album.exceptions';
-import {AlbumType, Album, Release, Artist, Genre, Prisma} from '@prisma/client';
+import { AlbumType,  Prisma } from '@prisma/client';
 import PrismaService from 'src/prisma/prisma.service';
 import type AlbumQueryParameters from './models/album.query-parameters';
 import type ArtistQueryParameters from 'src/artist/models/artist.query-parameters';
@@ -13,11 +13,12 @@ import type { MeeloException } from 'src/exceptions/meelo-exception';
 import GenreService from "../genre/genre.service";
 import { buildStringSearchParameters } from 'src/utils/search-string-input';
 import SongService from 'src/song/song.service';
+import { Album, Release, Genre, AlbumWithRelations } from "src/prisma/models";
+import { AlbumResponse } from './models/album.response';
 
 @Injectable()
 export default class AlbumService extends RepositoryService<
-	Album,
-	{ artist?: Artist, releases: Release[] },
+	AlbumWithRelations,
 	AlbumQueryParameters.CreateInput,
 	AlbumQueryParameters.WhereInput,
 	AlbumQueryParameters.ManyWhereInput,
@@ -267,25 +268,17 @@ export default class AlbumService extends RepositoryService<
 	 * Build an object for the API 
 	 * @param album the album to create the object from
 	 */
-	async buildResponse<ResponseType extends Album & { illustration: string }>(
-		album: Album & Partial<{ releases: Release[], artist: Artist | null }>
-	): Promise<ResponseType> {
-		let response = <ResponseType>{
+	async buildResponse(album: AlbumWithRelations): Promise<AlbumResponse> {
+		let response = <AlbumResponse>{
 			...album,
 			illustration: await this.illustrationService.getAlbumIllustrationLink(album.id)
 		};
 		if (album.releases)
-			response = {
-				...response,
-				releases: await Promise.all(album.releases.map(
-					(release) => this.releaseService.buildResponse(release)
-				))
-			};
+			response.releases = await Promise.all(album.releases.map(
+				(release) => this.releaseService.buildResponse(release)
+			));
 		if (album.artist != undefined)
-			response = {
-				...response,
-				artist: await this.artistServce.buildResponse(album.artist)
-			};
+			response.artist = await this.artistServce.buildResponse(album.artist)
 		return response;
 	}
 

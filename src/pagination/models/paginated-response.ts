@@ -3,10 +3,35 @@ import type { Request } from 'express';
 import InvalidPaginationParameterValue from '../pagination.exceptions';
 import { defaultPageSize } from './pagination-parameters';
 
+class PaginationMetadata {
+	@ApiProperty({
+		description: 'The current URL'
+	})
+	this: string;
+	@ApiProperty({
+		description: 'The URL of the next page, if there is one',
+		type: String,
+		nullable: true
+	})
+	next: string | null;
+	@ApiProperty({
+		description: 'The URL of the previous page, if there is one',
+		type: String,
+		nullable: true
+	})
+	previous: string | null;
+	@ApiProperty({
+		description: 'The index of the page, if there is one',
+		type: Number,
+		nullable: true,
+		example: 3
+	})
+	page: number | null;
+}
+
 export default class PaginatedResponse<T> {
 	@ApiProperty()
-	metadata: Record<'this' | 'next' | 'previous', string | null>
-			& { page: number | null };
+	metadata: PaginationMetadata;
 	@ApiProperty({ type: Array })
 	items: T[];
 	constructor(items: T[], request: Request | any) {

@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import type { Album, Artist, Genre, Release, Song } from '@prisma/client';
+import type { Album, Artist, Genre, Release, Song } from 'src/prisma/models';
 import AlbumService from 'src/album/album.service';
 import type AlbumQueryParameters from 'src/album/models/album.query-parameters';
 import ArtistService from 'src/artist/artist.service';

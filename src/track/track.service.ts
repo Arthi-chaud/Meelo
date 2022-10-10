@@ -1,6 +1,6 @@
 import { forwardRef, Inject, Injectable, Logger } from '@nestjs/common';
 import PrismaService from 'src/prisma/prisma.service';
-import { Prisma, Release, Song, Track, TrackType } from '@prisma/client';
+import { Prisma, TrackType } from '@prisma/client';
 import SongService from 'src/song/song.service';
 import { MasterTrackNotFoundException, TrackAlreadyExistsException, TrackNotFoundByIdException } from './track.exceptions';
 import ReleaseService from 'src/release/release.service';
@@ -20,11 +20,12 @@ import type { IllustrationPath } from 'src/illustration/models/illustration-path
 import AlbumService from 'src/album/album.service';
 import IllustrationService from 'src/illustration/illustration.service';
 import LibraryService from 'src/library/library.service';
+import { Track, TrackWithRelations } from 'src/prisma/models';
+import { TrackResponse } from './models/track.response';
 
 @Injectable()
 export default class TrackService extends RepositoryService<
-	Track,
-	{ song: Song, release: Release },
+	TrackWithRelations,
 	TrackQueryParameters.CreateInput,
 	TrackQueryParameters.WhereInput,
 	TrackQueryParameters.ManyWhereInput,
@@ -413,24 +414,16 @@ export default class TrackService extends RepositoryService<
 		);
 	}
 
-	async buildResponse<ResponseType extends Track & { illustration: string, stream: string }>(
-		track: Track & Partial<{ release: Release, song: Song }>
-	): Promise<ResponseType> {
-		let response = <ResponseType>{
+	async buildResponse(track: TrackWithRelations): Promise<TrackResponse> {
+		let response = <TrackResponse>{
 			...track,
 			illustration: await this.illustrationService.getTrackIllustrationLink(track.id),
 			stream: `/files/${track.sourceFileId}/stream`
 		};
 		if (track.release !== undefined)
-			response = {
-				...response,
-				release: await this.releaseService.buildResponse(track.release)
-			}
+			response.release = await this.releaseService.buildResponse(track.release);
 		if (track.song != undefined)
-			response = {
-				...response,
-				song: await this.songService.buildResponse(track.song)
-			}
+			response.song = await this.songService.buildResponse(track.song)
 		return response;
 	}
 

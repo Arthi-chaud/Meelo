@@ -1,6 +1,5 @@
-import type { File } from "@prisma/client";
+import type { File } from "src/prisma/models";
 import type LibraryQueryParameters from "src/library/models/library.query-parameters";
-import type OmitId from "src/utils/omit-id";
 import type { RequireAtLeastOne } from "type-fest";
 import type { RequireExactlyOne } from 'type-fest';;
 import type { SearchDateInput } from "src/utils/search-date-input";
@@ -10,7 +9,7 @@ namespace FileQueryParameters {
 	/**
 	 * Parameters to create a File
 	 */
-	 export type CreateInput = OmitId<File>;
+	 export type CreateInput = Omit<File, 'library' | 'id' | 'track'>;
 	/**
 	 * Query parameters to find one file
 	 */

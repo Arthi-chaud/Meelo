@@ -1,6 +1,6 @@
 import type { INestApplication } from "@nestjs/common";
 import type { TestingModule } from "@nestjs/testing";
-import type { Album, Artist, Release, Song, Track } from "@prisma/client";
+import type { Album, Artist, Release, Song, Track } from "src/prisma/models";
 import AlbumModule from "src/album/album.module";
 import FileManagerService from "src/file-manager/file-manager.service";
 import PrismaModule from "src/prisma/prisma.module";
