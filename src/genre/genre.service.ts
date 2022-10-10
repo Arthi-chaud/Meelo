@@ -3,7 +3,7 @@ import PrismaService from 'src/prisma/prisma.service';
 import Slug from 'src/slug/slug';
 import { GenreAlreadyExistsException, GenreNotFoundByIdException, GenreNotFoundException } from './genre.exceptions';
 import type GenreQueryParameters from './models/genre.query-parameters';
-import type { Genre } from 'src/prisma/models';
+import type { Genre, GenreWithRelations } from 'src/prisma/models';
 import SongService from 'src/song/song.service';
 import RepositoryService from 'src/repository/repository.service';
 import type { MeeloException } from 'src/exceptions/meelo-exception';
@@ -15,7 +15,7 @@ import { GenreResponse } from './models/genre.response';
 
 @Injectable()
 export default class GenreService extends RepositoryService<
-	Genre,
+	GenreWithRelations,
 	GenreQueryParameters.CreateInput,
 	GenreQueryParameters.WhereInput,
 	GenreQueryParameters.ManyWhereInput,
@@ -134,15 +134,12 @@ export default class GenreService extends RepositoryService<
 		return genres;
 	}
 
-	async buildResponse(genre: Genre): Promise<GenreResponse> {
+	async buildResponse(genre: GenreWithRelations): Promise<GenreResponse> {
 		let response = <GenreResponse>genre;
 		if (genre.songs !== undefined)
-			response = {
-				...response,
-				songs: await Promise.all(genre.songs.map(
-					(song) => this.songService.buildResponse(song)
-				))
-			}
+			response.songs = await Promise.all(genre.songs.map(
+				(song) => this.songService.buildResponse(song)
+			));
 		return response;
 	}
 

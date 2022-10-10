@@ -13,11 +13,11 @@ import RepositoryService from 'src/repository/repository.service';
 import type { MeeloException } from 'src/exceptions/meelo-exception';
 import { buildStringSearchParameters } from 'src/utils/search-string-input';
 import TasksService from 'src/tasks/tasks.service';
-import { Library } from 'src/prisma/models';
+import { Library, LibraryWithRelations } from 'src/prisma/models';
 
 @Injectable()
 export default class LibraryService extends RepositoryService<
-	Library,
+	LibraryWithRelations,
 	LibraryQueryParameters.CreateInput,
 	LibraryQueryParameters.WhereInput,
 	LibraryQueryParameters.ManyWhereInput,

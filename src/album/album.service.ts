@@ -13,12 +13,12 @@ import type { MeeloException } from 'src/exceptions/meelo-exception';
 import GenreService from "../genre/genre.service";
 import { buildStringSearchParameters } from 'src/utils/search-string-input';
 import SongService from 'src/song/song.service';
-import { Album, Release, Genre } from "src/prisma/models";
+import { Album, Release, Genre, AlbumWithRelations } from "src/prisma/models";
 import { AlbumResponse } from './models/album.response';
 
 @Injectable()
 export default class AlbumService extends RepositoryService<
-	Album,
+	AlbumWithRelations,
 	AlbumQueryParameters.CreateInput,
 	AlbumQueryParameters.WhereInput,
 	AlbumQueryParameters.ManyWhereInput,
@@ -268,23 +268,17 @@ export default class AlbumService extends RepositoryService<
 	 * Build an object for the API 
 	 * @param album the album to create the object from
 	 */
-	async buildResponse(album: Album): Promise<AlbumResponse> {
+	async buildResponse(album: AlbumWithRelations): Promise<AlbumResponse> {
 		let response = <AlbumResponse>{
 			...album,
 			illustration: await this.illustrationService.getAlbumIllustrationLink(album.id)
 		};
 		if (album.releases)
-			response = {
-				...response,
-				releases: await Promise.all(album.releases.map(
-					(release) => this.releaseService.buildResponse(release)
-				))
-			};
+			response.releases = await Promise.all(album.releases.map(
+				(release) => this.releaseService.buildResponse(release)
+			));
 		if (album.artist != undefined)
-			response = {
-				...response,
-				artist: await this.artistServce.buildResponse(album.artist)
-			};
+			response.artist = await this.artistServce.buildResponse(album.artist)
 		return response;
 	}
 

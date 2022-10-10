@@ -2,7 +2,7 @@ import { Injectable, StreamableFile } from '@nestjs/common';
 import FileManagerService from 'src/file-manager/file-manager.service';
 import { FileAlreadyExistsException, FileNotFoundFromIDException, FileNotFoundFromPathException, FileNotFoundFromTrackIDException, SourceFileNotFoundExceptions } from './file.exceptions';
 import PrismaService from 'src/prisma/prisma.service';
-import type { Library, File } from 'src/prisma/models';
+import type { Library, File, FileWithRelations } from 'src/prisma/models';
 import type FileQueryParameters from './models/file.query-parameters';
 import { FileNotReadableException } from 'src/file-manager/file-manager.exceptions';
 import * as fs from 'fs';
@@ -18,7 +18,7 @@ import { Prisma } from '@prisma/client';
 
 @Injectable()
 export default class FileService extends RepositoryService<
-	File,
+	FileWithRelations,
 	FileQueryParameters.CreateInput,
 	FileQueryParameters.WhereInput,
 	FileQueryParameters.ManyWhereInput,

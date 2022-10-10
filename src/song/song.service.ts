@@ -15,12 +15,12 @@ import { buildStringSearchParameters } from 'src/utils/search-string-input';
 import IllustrationService from 'src/illustration/illustration.service';
 import { buildPaginationParameters, PaginationParameters } from 'src/pagination/models/pagination-parameters';
 import { buildSortingParameter } from 'src/sort/models/sorting-parameter';
-import { Song, Track } from 'src/prisma/models';
+import { Song, SongWithRelations, Track } from 'src/prisma/models';
 import { SongResponse } from './models/song.response';
 
 @Injectable()
 export default class SongService extends RepositoryService<
-	Song,
+	SongWithRelations,
 	SongQueryParameters.CreateInput,
 	SongQueryParameters.WhereInput,
 	SongQueryParameters.ManyWhereInput,
@@ -254,23 +254,17 @@ export default class SongService extends RepositoryService<
 			await this.delete(where);
 	}
 
-	async buildResponse(song: Song): Promise<SongResponse> {
+	async buildResponse(song: SongWithRelations): Promise<SongResponse> {
 		let response = <SongResponse>{
 			...song,
 			illustration: await this.illustrationService.getSongIllustrationLink(song.id)
 		};
 		if (song.tracks !== undefined)
-			response = {
-				...response,
-				tracks: await Promise.all(song.tracks.map(
-					(track) => this.trackService.buildResponse(track)
-				))
-			}
+			response.tracks = await Promise.all(song.tracks.map(
+				(track) => this.trackService.buildResponse(track)
+			));
 		if (song.artist !== undefined)
-			response = {
-				...response,
-				artist: await this.artistService.buildResponse(song.artist)
-			}
+			response.artist = await this.artistService.buildResponse(song.artist);
 		return response;
 	}
 

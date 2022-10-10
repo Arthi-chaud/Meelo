@@ -312,7 +312,7 @@ abstract class RepositoryService<
 		await this.select(where, { });
 	}
 
-	abstract buildResponse(input: BaseModel): unknown;
+	abstract buildResponse(input: Model): unknown;
 	static formatInclude<I extends ModelSelector<Relations>, Relations extends {}>(include?: I) {
 		if (include === undefined)
 			return include;

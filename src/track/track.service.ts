@@ -20,12 +20,12 @@ import type { IllustrationPath } from 'src/illustration/models/illustration-path
 import AlbumService from 'src/album/album.service';
 import IllustrationService from 'src/illustration/illustration.service';
 import LibraryService from 'src/library/library.service';
-import { Track } from 'src/prisma/models';
+import { Track, TrackWithRelations } from 'src/prisma/models';
 import { TrackResponse } from './models/track.response';
 
 @Injectable()
 export default class TrackService extends RepositoryService<
-	Track,
+	TrackWithRelations,
 	TrackQueryParameters.CreateInput,
 	TrackQueryParameters.WhereInput,
 	TrackQueryParameters.ManyWhereInput,
@@ -414,22 +414,16 @@ export default class TrackService extends RepositoryService<
 		);
 	}
 
-	async buildResponse(track: Track): Promise<TrackResponse> {
+	async buildResponse(track: TrackWithRelations): Promise<TrackResponse> {
 		let response = <TrackResponse>{
 			...track,
 			illustration: await this.illustrationService.getTrackIllustrationLink(track.id),
 			stream: `/files/${track.sourceFileId}/stream`
 		};
 		if (track.release !== undefined)
-			response = {
-				...response,
-				release: await this.releaseService.buildResponse(track.release)
-			}
+			response.release = await this.releaseService.buildResponse(track.release);
 		if (track.song != undefined)
-			response = {
-				...response,
-				song: await this.songService.buildResponse(track.song)
-			}
+			response.song = await this.songService.buildResponse(track.song)
 		return response;
 	}
 

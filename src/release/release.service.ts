@@ -1,7 +1,7 @@
 import { forwardRef, Inject, Injectable, Logger } from '@nestjs/common';
 import AlbumService from 'src/album/album.service';
 import Slug from 'src/slug/slug';
-import type { Release } from 'src/prisma/models';
+import type { Release, ReleaseWithRelations } from 'src/prisma/models';
 import type { Prisma } from '@prisma/client';
 import { MasterReleaseNotFoundFromIDException, ReleaseAlreadyExists, ReleaseNotFoundException, ReleaseNotFoundFromIDException } from './release.exceptions';
 import PrismaService from 'src/prisma/prisma.service';
@@ -19,7 +19,7 @@ import { ReleaseResponse } from './models/release.response';
 
 @Injectable()
 export default class ReleaseService extends RepositoryService<
-	Release,
+	ReleaseWithRelations,
 	ReleaseQueryParameters.CreateInput,
 	ReleaseQueryParameters.WhereInput,
 	ReleaseQueryParameters.ManyWhereInput,
@@ -341,23 +341,17 @@ export default class ReleaseService extends RepositoryService<
 		return this.illustrationService.illustrationExists(path);
 	}
 
-	async buildResponse(release: Release): Promise<ReleaseResponse> {
+	async buildResponse(release: ReleaseWithRelations): Promise<ReleaseResponse> {
 		let response = <ReleaseResponse>{
 			...release,
 			illustration: await this.illustrationService.getReleaseIllustrationLink(release.id)
 		};
 		if (release.album !== undefined)
-			response = {
-				...response,
-				album: await this.albumService.buildResponse(release.album)
-			}
+			response.album = await this.albumService.buildResponse(release.album)
 		if (release.tracks !== undefined)
-			response = {
-				...response,
-				tracks: await Promise.all(release.tracks.map(
-					(track) => this.trackService.buildResponse(track)
-				))
-			}
+			response.tracks = await Promise.all(release.tracks.map(
+				(track) => this.trackService.buildResponse(track)
+			));
 		return response;
 	}
 }
