@@ -7,17 +7,18 @@ import Resource from "../../models/resource";
 import API from '../../api';
 import { Page } from '../../components/infinite/infinite-scroll';
 import Album, { AlbumSortingKeys, AlbumWithArtist } from '../../models/album';
-import Artist from '../../models/artist';
+import Artist, { ArtistSortingKeys } from '../../models/artist';
 import Song, { SongWithArtist } from '../../models/song';
 import ArtistTile from '../../components/tile/artist-tile';
 import ArtistItem from "../../components/list-item/artist-item";
 import InfiniteAlbumView from '../../components/infinite/infinite-album-view';
 import SongItem from "../../components/list-item/song-item";
 import { SortingParameters } from "../../utils/sorting";
+import InfiniteArtistView from "../../components/infinite/infinite-artist-view";
 
-const searchArtistsQuery = (query: string) => ({
-	key: ["search", "artists", query],
-	exec: (lastPage: Page<Artist>) => API.searchArtists(query, lastPage)
+const searchArtistsQuery = (query: string, sort?: SortingParameters<typeof ArtistSortingKeys>) => ({
+	key: ["search", "artists", query, sort ?? {}],
+	exec: (lastPage: Page<Artist>) => API.searchArtists(query, lastPage, sort)
 });
 
 const searchAlbumsQuery = (query: string, sort?: SortingParameters<typeof AlbumSortingKeys>) => ({
@@ -65,12 +66,11 @@ const SearchPage = () => {
 			</Grid>
 		</Grid>
 		{ query && (selectedType == 'Artists'
-			? <InfiniteView key={selectedType}
-				enableToggle
-				view={'list'}
-				query={() => searchArtistsQuery(query)}
-				renderGridItem={(artist: Artist) => <ArtistTile key={artist.id} artist={artist}/>}
-				renderListItem={(artist: Artist) => <ArtistItem key={artist.id} artist={artist}/>}
+			? <InfiniteArtistView
+				initialSortingField={'name'}
+				initialSortingOrder={'asc'}
+				initialView={'list'}
+				query={(sort) => searchArtistsQuery(query, sort)}
 			/>
 			: selectedType == 'Albums'
 				? <InfiniteAlbumView key={selectedType}

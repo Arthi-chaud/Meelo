@@ -58,7 +58,7 @@ const ArtistPage = ({ artistIdentifier }: InferGetServerSidePropsType<typeof get
 			</Grid>
 			<Grid item sx={{ display: 'flex', flexGrow: 1, justifyContent: 'space-between', alignItems: 'center'}}>
 				<Typography variant='h5' fontWeight='bold'>Albums</Typography>
-				{ true &&
+				{ topAlbums.data?.metadata.next &&
 				<Link href={`/artists/${artistIdentifier}/albums`}>
 					<Button variant='contained' endIcon={<ArrowRight/>} color='secondary' sx={{ textTransform: 'none', fontWeight: 'bold' }}>See all</Button>
 				</Link>

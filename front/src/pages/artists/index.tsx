@@ -4,7 +4,7 @@ import { useRouter } from 'next/router';
 import { Box, Typography } from '@mui/material';
 import API from '../../api';
 import ArtistTile from '../../components/tile/artist-tile';
-import Artist from '../../models/artist';
+import Artist, { ArtistSortingKeys } from '../../models/artist';
 import getLibrarySlug from '../../utils/getLibrarySlug';
 import { QueryClient, dehydrate } from 'react-query';
 import { Page } from '../../components/infinite/infinite-scroll';
@@ -14,15 +14,14 @@ import Illustration from '../../components/illustration';
 import ListItem from '../../components/list-item/item';
 import ArtistItem from '../../components/list-item/artist-item';
 import { getOrderParams, getSortingFieldParams, SortingParameters } from '../../utils/sorting';
+import InfiniteArtistView from '../../components/infinite/infinite-artist-view';
 
-const ArtistSortingFields: (keyof Artist)[] = ['name'];
-
-const artistsQuery = (sort: SortingParameters<Artist>) => ({
+const artistsQuery = (sort: SortingParameters<typeof ArtistSortingKeys>) => ({
 	key: ["artists", sort],
 	exec: (lastPage: Page<Artist>) => API.getAllArtists(lastPage, sort)
 });
 
-const libraryArtistsQuery = (slugOrId: string | number, sort: SortingParameters<Artist>) => ({
+const libraryArtistsQuery = (slugOrId: string | number, sort: SortingParameters<typeof ArtistSortingKeys>) => ({
 	key: ["library", slugOrId, "artists", sort],
 	exec: (lastPage: Page<Artist>) => API.getAllArtistsInLibrary(slugOrId, lastPage, sort)
 });
@@ -30,7 +29,7 @@ const libraryArtistsQuery = (slugOrId: string | number, sort: SortingParameters<
 export const getServerSideProps = async (context: GetServerSidePropsContext) => {
 	const queryClient = new QueryClient();
 	const order = getOrderParams(context.query.order);
-	const sortBy = getSortingFieldParams(context.query.sortBy, ArtistSortingFields);
+	const sortBy = getSortingFieldParams(context.query.sortBy, ArtistSortingKeys);
 	const librarySlug = getLibrarySlug(context.req.url!) ?? null;
 	if (librarySlug) {
 		await queryClient.prefetchInfiniteQuery(prepareMeeloInfiniteQuery(libraryArtistsQuery, librarySlug, { sortBy, order }));
@@ -50,21 +49,13 @@ const LibraryArtistsPage = ({ librarySlug }: InferGetServerSidePropsType<typeof 
 	const router = useRouter();
 	librarySlug ??= getLibrarySlug(router.asPath);
 	const [order, setOrder] = useState(getOrderParams(router.query.order));
-	const [sortBy, setSortBy] = useState(getSortingFieldParams(router.query.sortBy, ArtistSortingFields));
-	return (
-		<InfiniteView
-			initialSortingField={sortBy}
-			sortingOrder={order}
-			sortingFields={ArtistSortingFields}
-			enableToggle
-			view={router.query.view == 'grid' ? 'grid' : 'list'}
-			query={() => librarySlug ? libraryArtistsQuery(librarySlug, { sortBy, order }) : artistsQuery({ sortBy, order })}
-			renderListItem={(item: Artist) => <ArtistItem artist={item} key={item.id} />}
-			renderGridItem={(item: Artist) => <ArtistTile artist={item} key={item.id} />}
-			onSortingFieldSelect={(newField) => setSortBy(newField)}
-			onSortingOrderSelect={(newOrder) => setOrder(newOrder)}
-		/>
-	);
+	const [sortBy, setSortBy] = useState(getSortingFieldParams(router.query.sortBy, ArtistSortingKeys));
+	return <InfiniteArtistView
+		initialSortingField={sortBy}
+		initialSortingOrder={order}
+		initialView={(router.query.view == 'grid' ? 'grid' : 'list')}
+		query={(sort) => librarySlug ? libraryArtistsQuery(librarySlug, sort) : artistsQuery(sort)}
+	/>
 }
 
 
