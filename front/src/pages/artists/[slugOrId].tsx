@@ -8,6 +8,7 @@ import { WideLoadingComponent } from "../../components/loading/loading";
 import { prepareMeeloQuery } from "../../query";
 import ArrowRight from '@mui/icons-material/ArrowRight';
 import AlbumTile from "../../components/tile/album-tile";
+import Album from "@mui/icons-material/Album";
 
 const artistQuery = (slugOrId: string | number) => ({
 	key: ['artist', slugOrId],
@@ -48,8 +49,8 @@ const ArtistPage = ({ artistIdentifier }: InferGetServerSidePropsType<typeof get
 	return <Box>
 		<Grid container direction="column" spacing={4} sx={{ padding: 5, flex: 1, flexGrow: 1 }}>
 			<Grid item container spacing={4} sx={{ justifyContent: 'flex-start' }}>
-				<Grid item xs={6} sm={3} lg={2}>
-					<Illustration url={artist.data!.illustration} fallback={<></>}/> 
+				<Grid item xs={5} sm={3} lg={2}>
+					<Illustration url={artist.data!.illustration} fallback={<Album fontSize="large"/>}/> 
 				</Grid>
 				<Grid item sx={{ display: 'flex', alignItems: 'center' }}>
 					<Typography variant='h3' fontWeight='bold'>{artist.data!.name}</Typography>
@@ -58,11 +59,11 @@ const ArtistPage = ({ artistIdentifier }: InferGetServerSidePropsType<typeof get
 			<Grid item sx={{ display: 'flex', flexGrow: 1, justifyContent: 'space-between', alignItems: 'center'}}>
 				<Typography variant='h5' fontWeight='bold'>Albums</Typography>
 				{ topAlbums.data?.metadata.next &&
-					<Button variant='text' endIcon={<ArrowRight/>} color='inherit' sx={{ textTransform: 'none' }}>See all</Button>
+					<Button variant='contained' endIcon={<ArrowRight/>} color='secondary' sx={{ textTransform: 'none', fontWeight: 'bold' }}>See all</Button>
 				}
 			</Grid>
 			<Grid item container spacing={2} sx={{ display: 'flex', flexGrow: 1 }}>
-			{ topAlbums.data? topAlbums.data.items.map((album) => <Grid item xs={6} sm={3} md={2} lg={2}>
+			{ topAlbums.data? topAlbums.data.items.map((album) => <Grid  key={album.id} item xs={6} sm={3} md={2} lg={2}>
 					<AlbumTile album={{...album, artist: artist.data}}/>
 				</Grid>)
 				: <WideLoadingComponent/> 
