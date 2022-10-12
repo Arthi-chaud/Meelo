@@ -55,7 +55,6 @@ const LibrarySongsPage = ({ librarySlug }: InferGetServerSidePropsType<typeof ge
 	return <InfiniteSongView
 		initialSortingField={getSortingFieldParams(router.query.sortBy, SongSortingFields)}
 		initialSortingOrder={getOrderParams(router.query.order)}
-		initialView={'list'}
 		query={(sort) => librarySlug ? librarySongsQuery(librarySlug, sort) : songsQuery(sort)}
 	/>
 }

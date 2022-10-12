@@ -154,7 +154,7 @@ export default class API {
 	/**
 	 * Fetch all albums by an artist
 	 * @param pagination the parameters to choose how many items to load
-	 * @returns An array of songs
+	 * @returns An array of albums
 	 */
 	 static async getArtistAlbums<T extends Album = Album>(
 		artistSlugOrId: string | number,
@@ -168,6 +168,24 @@ export default class API {
 			parameters: { pagination, include, sort }
 		});
 	}
+
+	/**
+	 * Fetch all songs by an artist
+	 * @param pagination the parameters to choose how many items to load
+	 * @returns An array of songs
+	 */
+		 static async getArtistSongs<T extends Song = Song>(
+			artistSlugOrId: string | number,
+			pagination?: PaginationParameters,
+			sort?: SortingParameters<typeof SongSortingKeys>,
+			include: AlbumInclude[] = []
+		): Promise<PaginatedResponse<T>> {
+			return API.fetch({
+				route: `/artists/${artistSlugOrId}/songs`,
+				errorMessage: `Artist '${artistSlugOrId}' not found`,
+				parameters: { pagination, include, sort }
+			});
+		}
 
 	/**
 	 * Get the master track of a song

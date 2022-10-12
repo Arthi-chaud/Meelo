@@ -10,16 +10,23 @@ import ArrowRight from '@mui/icons-material/ArrowRight';
 import AlbumTile from "../../../components/tile/album-tile";
 import Album from "@mui/icons-material/Album";
 import Link from "next/link";
+import SongItem from "../../../components/list-item/song-item";
 
 const artistQuery = (slugOrId: string | number) => ({
 	key: ['artist', slugOrId],
 	exec: () => API.getArtist(slugOrId),
 });
 
-const topAlbumsQuery = (artistSlugOrId: string | number) => ({
+const latestAlbumsQuery = (artistSlugOrId: string | number) => ({
 	key: ['artist', artistSlugOrId, 'albums', { take: 7 }],
 	exec: () => API.getArtistAlbums(artistSlugOrId, { index: 0, pageSize: 7 }, { sortBy: 'releaseDate', order: 'desc' }),
 });
+
+const topSongsQuery = (artistSlugOrId: string | number) => ({
+	key: ['artist', artistSlugOrId, 'songs', { take: 7 }],
+	exec: () => API.getArtistSongs(artistSlugOrId, { index: 0, pageSize: 7 }, { sortBy: 'playCount', order: 'desc' }),
+});
+
 
 export const getServerSideProps = async (context: GetServerSidePropsContext) => {
 	const artistIdentifier = context.params!.slugOrId as string;
@@ -27,7 +34,8 @@ export const getServerSideProps = async (context: GetServerSidePropsContext) => 
   
 	await Promise.all([
 		queryClient.prefetchQuery(prepareMeeloQuery(artistQuery, artistIdentifier)),
-		queryClient.prefetchQuery(prepareMeeloQuery(topAlbumsQuery, artistIdentifier)),
+		queryClient.prefetchQuery(prepareMeeloQuery(latestAlbumsQuery, artistIdentifier)),
+		queryClient.prefetchQuery(prepareMeeloQuery(topSongsQuery, artistIdentifier)),
 	]);
 	return {
 		props: {
@@ -42,8 +50,9 @@ const ArtistPage = ({ artistIdentifier }: InferGetServerSidePropsType<typeof get
 	const router = useRouter();
 	artistIdentifier ??= router.query.slugOrId as string;
 	const artist = useQuery(prepareMeeloQuery(artistQuery, artistIdentifier));
-	const topAlbums = useQuery(prepareMeeloQuery(topAlbumsQuery, artistIdentifier))
-	if (!artist.data) {
+	const latestAlbums = useQuery(prepareMeeloQuery(latestAlbumsQuery, artistIdentifier));
+	const topSongs = useQuery(prepareMeeloQuery(topSongsQuery, artistIdentifier));
+	if (!artist.data || !latestAlbums.data || !topSongs.data) {
 		return <WideLoadingComponent/>
 	}
 	return <Box>
@@ -56,22 +65,44 @@ const ArtistPage = ({ artistIdentifier }: InferGetServerSidePropsType<typeof get
 					<Typography variant='h3' fontWeight='bold'>{artist.data!.name}</Typography>
 				</Grid>
 			</Grid>
-			<Grid item sx={{ display: 'flex', flexGrow: 1, justifyContent: 'space-between', alignItems: 'center'}}>
-				<Typography variant='h5' fontWeight='bold'>Albums</Typography>
-				{ topAlbums.data?.metadata.next &&
-				<Link href={`/artists/${artistIdentifier}/albums`}>
-					<Button variant='contained' endIcon={<ArrowRight/>} color='secondary' sx={{ textTransform: 'none', fontWeight: 'bold' }}>See all</Button>
-				</Link>
+			{ topSongs.data?.items.length != 0 && <>
+				<Grid item sx={{ display: 'flex', flexGrow: 1, justifyContent: 'space-between', alignItems: 'center'}}>
+					<Typography variant='h5' fontWeight='bold'>Top Songs</Typography>
+					{ topSongs.data?.metadata.next &&
+					<Link href={`/artists/${artistIdentifier}/songs`}>
+						<Button variant='contained' endIcon={<ArrowRight/>} color='secondary' sx={{ textTransform: 'none', fontWeight: 'bold' }}>See all</Button>
+					</Link>
+					}
+				</Grid>
+				<Grid item container spacing={2} sx={{ display: 'flex', flexGrow: 1 }}>
+				{ topSongs.data
+					? topSongs.data.items.slice(0, 6).map((song) => <Grid key={song.id} item xs={12} sm={6} md={4}>
+						<SongItem song={{...song, artist: artist.data}}/>
+					</Grid>)
+					: <WideLoadingComponent/> 
 				}
-			</Grid>
-			<Grid item container spacing={2} sx={{ display: 'flex', flexGrow: 1 }}>
-			{ topAlbums.data
-				? topAlbums.data.items.slice(0, 6).map((album) => <Grid  key={album.id} item xs={6} sm={3} md={2} lg={2}>
-					<AlbumTile album={{...album, artist: artist.data}}/>
-				</Grid>)
-				: <WideLoadingComponent/> 
+				</Grid>
+				</>
 			}
-			</Grid>
+			{ latestAlbums.data?.items.length != 0 && <>
+				<Grid item sx={{ display: 'flex', flexGrow: 1, justifyContent: 'space-between', alignItems: 'center'}}>
+					<Typography variant='h5' fontWeight='bold'>Albums</Typography>
+					{ latestAlbums.data?.metadata.next &&
+					<Link href={`/artists/${artistIdentifier}/albums`}>
+						<Button variant='contained' endIcon={<ArrowRight/>} color='secondary' sx={{ textTransform: 'none', fontWeight: 'bold' }}>See all</Button>
+					</Link>
+					}
+				</Grid>
+				<Grid item container spacing={2} sx={{ display: 'flex', flexGrow: 1 }}>
+				{ latestAlbums.data
+					? latestAlbums.data.items.slice(0, 6).map((album) => <Grid key={album.id} item xs={6} sm={4} md={2} lg={2}>
+						<AlbumTile album={{...album, artist: artist.data}}/>
+					</Grid>)
+					: <WideLoadingComponent/> 
+				}
+				</Grid>
+				</>
+			}
 		</Grid>
 	</Box>
 }
