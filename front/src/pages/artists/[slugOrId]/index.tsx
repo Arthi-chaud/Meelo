@@ -2,12 +2,12 @@ import { Box, Grid, Typography, Button } from "@mui/material"
 import { GetServerSidePropsContext, InferGetServerSidePropsType } from "next";
 import { useRouter } from "next/router";
 import { dehydrate, QueryClient, useQuery } from "react-query";
-import API from "../../api";
-import Illustration from "../../components/illustration";
-import { WideLoadingComponent } from "../../components/loading/loading";
-import { prepareMeeloQuery } from "../../query";
+import API from "../../../api";
+import Illustration from "../../../components/illustration";
+import { WideLoadingComponent } from "../../../components/loading/loading";
+import { prepareMeeloQuery } from "../../../query";
 import ArrowRight from '@mui/icons-material/ArrowRight';
-import AlbumTile from "../../components/tile/album-tile";
+import AlbumTile from "../../../components/tile/album-tile";
 import Album from "@mui/icons-material/Album";
 
 const artistQuery = (slugOrId: string | number) => ({
@@ -16,8 +16,8 @@ const artistQuery = (slugOrId: string | number) => ({
 });
 
 const topAlbumsQuery = (artistSlugOrId: string | number) => ({
-	key: ['artist', artistSlugOrId, 'albums', { take: 6 }],
-	exec: () => API.getArtistAlbums(artistSlugOrId, { index: 0, pageSize: 6}, { sortBy: 'releaseDate', order: 'desc' }),
+	key: ['artist', artistSlugOrId, 'albums', { take: 7 }],
+	exec: () => API.getArtistAlbums(artistSlugOrId, { index: 0, pageSize: 7 }, { sortBy: 'releaseDate', order: 'desc' }),
 });
 
 export const getServerSideProps = async (context: GetServerSidePropsContext) => {
@@ -28,7 +28,6 @@ export const getServerSideProps = async (context: GetServerSidePropsContext) => 
 		queryClient.prefetchQuery(prepareMeeloQuery(artistQuery, artistIdentifier)),
 		queryClient.prefetchQuery(prepareMeeloQuery(topAlbumsQuery, artistIdentifier)),
 	]);
-  
 	return {
 		props: {
 			artistIdentifier,
@@ -63,7 +62,8 @@ const ArtistPage = ({ artistIdentifier }: InferGetServerSidePropsType<typeof get
 				}
 			</Grid>
 			<Grid item container spacing={2} sx={{ display: 'flex', flexGrow: 1 }}>
-			{ topAlbums.data? topAlbums.data.items.map((album) => <Grid  key={album.id} item xs={6} sm={3} md={2} lg={2}>
+			{ topAlbums.data
+				? topAlbums.data.items.slice(0, 6).map((album) => <Grid  key={album.id} item xs={6} sm={3} md={2} lg={2}>
 					<AlbumTile album={{...album, artist: artist.data}}/>
 				</Grid>)
 				: <WideLoadingComponent/> 
