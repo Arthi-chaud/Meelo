@@ -9,6 +9,7 @@ import { prepareMeeloQuery } from "../../../query";
 import ArrowRight from '@mui/icons-material/ArrowRight';
 import AlbumTile from "../../../components/tile/album-tile";
 import Album from "@mui/icons-material/Album";
+import Link from "next/link";
 
 const artistQuery = (slugOrId: string | number) => ({
 	key: ['artist', slugOrId],
@@ -57,8 +58,10 @@ const ArtistPage = ({ artistIdentifier }: InferGetServerSidePropsType<typeof get
 			</Grid>
 			<Grid item sx={{ display: 'flex', flexGrow: 1, justifyContent: 'space-between', alignItems: 'center'}}>
 				<Typography variant='h5' fontWeight='bold'>Albums</Typography>
-				{ topAlbums.data?.metadata.next &&
+				{ true &&
+				<Link href={`/artists/${artistIdentifier}/albums`}>
 					<Button variant='contained' endIcon={<ArrowRight/>} color='secondary' sx={{ textTransform: 'none', fontWeight: 'bold' }}>See all</Button>
+				</Link>
 				}
 			</Grid>
 			<Grid item container spacing={2} sx={{ display: 'flex', flexGrow: 1 }}>

@@ -43,4 +43,5 @@ type SongWithLyrics = Song & {
 type SongInclude = 'artist' | 'genres' | 'lyrics';
 
 export default Song;
+export const SongSortingKeys = ['name', 'playCount'];
 export type { SongWithArtist, SongWithGenres, SongWithLyrics, SongInclude };

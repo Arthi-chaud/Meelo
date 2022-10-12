@@ -1,19 +1,21 @@
+import { Typography, Box } from "@mui/material";
 import { GetServerSidePropsContext, InferGetServerSidePropsType } from "next";
 import { useRouter } from "next/router";
-import { dehydrate, QueryClient } from "react-query";
+import { dehydrate, QueryClient, useQuery } from "react-query";
 import API from "../../../api";
+import InfiniteAlbumView from "../../../components/infinite/infinite-album-view";
 import { Page } from "../../../components/infinite/infinite-scroll";
 import InfiniteView from "../../../components/infinite/infinite-view";
 import AlbumItem from "../../../components/list-item/album-item";
 import ModalPage from "../../../components/modal-page";
 import AlbumTile from "../../../components/tile/album-tile";
-import Album, { AlbumWithArtist } from "../../../models/album";
+import Album, { AlbumSortingKeys, AlbumWithArtist } from "../../../models/album";
 import { prepareMeeloInfiniteQuery, prepareMeeloQuery } from "../../../query";
 import { SortingParameters } from "../../../utils/sorting";
 
-const artistAlbumsQuery = (artistSlugOrId: number | string) => ({
-	key: ["artist", artistSlugOrId, "albums"],
-	exec: (lastPage: Page<Album>) => API.getArtistAlbums<AlbumWithArtist>(artistSlugOrId, lastPage, undefined, ["artist"])
+const artistAlbumsQuery = (artistSlugOrId: number | string, sort?: SortingParameters<typeof AlbumSortingKeys>) => ({
+	key: ["artist", artistSlugOrId, "albums", sort ?? {}],
+	exec: (lastPage: Page<Album>) => API.getArtistAlbums<AlbumWithArtist>(artistSlugOrId, lastPage, sort, ["artist"])
 });
 
 const artistQuery = (slugOrId: string | number) => ({
@@ -41,14 +43,11 @@ export const getServerSideProps = async (context: GetServerSidePropsContext) => 
 const ArtistAlbumsPage = ({ artistIdentifier }: InferGetServerSidePropsType<typeof getServerSideProps>) => {
 	const router = useRouter();
 	artistIdentifier ??= router.query.slugOrId as string;
-	return <ModalPage>
-		<InfiniteView
-			enableToggle
-			view={'grid'}
-			query={() => artistAlbumsQuery(artistIdentifier)}
-			renderListItem={(item: AlbumWithArtist) => <AlbumItem album={item} key={item.id} />}
-			renderGridItem={(item: AlbumWithArtist) => <AlbumTile album={item} key={item.id} />}
-		/>
-	</ModalPage>
+	return <InfiniteAlbumView
+		initialSortingField={'releaseDate'}
+		initialSortingOrder={'desc'}
+		initialView={'grid'}
+		query={(sort) => artistAlbumsQuery(artistIdentifier, sort)}
+	/>
 }
 export default ArtistAlbumsPage;

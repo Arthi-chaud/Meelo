@@ -1,17 +1,17 @@
 import Resource from "../models/resource";
 
-export type SortingParameters<T> = {
-	sortBy: keyof T;
+export type SortingParameters<Keys extends string[]> = {
+	sortBy: Keys[number];
 	order?: 'asc' | 'desc';
 }
 
-const getOrderParams = (order: any): SortingParameters<Resource>['order'] => {
+const getOrderParams = (order: any): SortingParameters<[]>['order'] => {
 	if (order?.toLowerCase() === 'desc')
 		return 'desc';
 	return 'asc';
 }
 
-const getSortingFieldParams = <T extends Resource>(field: any, availableKeys: (keyof T)[]): SortingParameters<T>['sortBy'] => {
+const getSortingFieldParams = <T extends string[]>(field: any, availableKeys: readonly string[]): SortingParameters<T>['sortBy'] => {
 	for (const key of availableKeys) {
 		if (key.toString().toLowerCase() == field?.toLowerCase())
 			return key;

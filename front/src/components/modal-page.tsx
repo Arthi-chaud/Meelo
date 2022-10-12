@@ -12,7 +12,7 @@ const ModalPage = (props: ModalPageProps) => {
 	const [open, setOpen] = useState(true);
 	return <Slide direction="up" in={open} mountOnEnter unmountOnExit>
 		<Box sx={{ width: '100%', height: '100%', padding: 2, display: 'flex', position: 'fixed', right: 0, bottom: 0, justifyContent: 'center', alignItems: 'center', zIndex: 'modal' }}>
-			<Paper elevation={2} sx={{ borderRadius: '0.5rem', display: 'flex', width: '100%', height: '100%', overflowY: 'scroll', overflowX: 'clip', paddingX: 3, paddingTop: 2, flexDirection: 'column' }}>
+			<Paper sx={{ borderRadius: '0.5rem', display: 'flex', width: '100%', height: '100%', overflowY: 'scroll', overflowX: 'clip', paddingX: 3, paddingTop: 2, flexDirection: 'column' }}>
 				<Box sx={{ width: '100%', display: 'flex', justifyContent: 'flex-end' }}>
 					<IconButton onClick={() => {
 						setOpen(false);

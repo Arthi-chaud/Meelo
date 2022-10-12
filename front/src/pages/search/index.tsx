@@ -6,23 +6,23 @@ import InfiniteView from "../../components/infinite/infinite-view";
 import Resource from "../../models/resource";
 import API from '../../api';
 import { Page } from '../../components/infinite/infinite-scroll';
-import Album, { AlbumWithArtist } from '../../models/album';
+import Album, { AlbumSortingKeys, AlbumWithArtist } from '../../models/album';
 import Artist from '../../models/artist';
 import Song, { SongWithArtist } from '../../models/song';
 import ArtistTile from '../../components/tile/artist-tile';
 import ArtistItem from "../../components/list-item/artist-item";
-import AlbumTile from '../../components/tile/album-tile';
-import AlbumItem from "../../components/list-item/album-item";
+import InfiniteAlbumView from '../../components/infinite/infinite-album-view';
 import SongItem from "../../components/list-item/song-item";
+import { SortingParameters } from "../../utils/sorting";
 
 const searchArtistsQuery = (query: string) => ({
 	key: ["search", "artists", query],
 	exec: (lastPage: Page<Artist>) => API.searchArtists(query, lastPage)
 });
 
-const searchAlbumsQuery = (query: string) => ({
-	key: ["search", "albums", query],
-	exec: (lastPage: Page<AlbumWithArtist>) => API.searchAlbums<AlbumWithArtist>(query, lastPage, ['artist'])
+const searchAlbumsQuery = (query: string, sort?: SortingParameters<typeof AlbumSortingKeys>) => ({
+	key: ["search", "albums", query, sort ?? {}],
+	exec: (lastPage: Page<AlbumWithArtist>) => API.searchAlbums<AlbumWithArtist>(query, lastPage, sort, ['artist'])
 });
 
 const searchSongsQuery = (query: string) => ({
@@ -73,12 +73,11 @@ const SearchPage = () => {
 				renderListItem={(artist: Artist) => <ArtistItem key={artist.id} artist={artist}/>}
 			/>
 			: selectedType == 'Albums'
-				? <InfiniteView key={selectedType}
-					enableToggle
-					view={'grid'}
-					query={() => searchAlbumsQuery(query)}
-					renderGridItem={(album: AlbumWithArtist) => <AlbumTile key={album.id} album={album}/>}
-					renderListItem={(album: AlbumWithArtist) => <AlbumItem key={album.id} album={album}/>}
+				? <InfiniteAlbumView key={selectedType}
+					initialSortingField={'name'}
+					initialSortingOrder={'asc'}
+					initialView={'list'}
+					query={(sort) => searchAlbumsQuery(query, sort)}
 				/>
 				: selectedType == 'Songs'
 					? <InfiniteView key={selectedType}
