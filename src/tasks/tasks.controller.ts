@@ -5,6 +5,7 @@ import LibraryService from 'src/library/library.service';
 import type LibraryQueryParameters from 'src/library/models/library.query-parameters';
 import type TaskResponse from './models/task.response';
 import TasksService from './tasks.service';
+import { Timeout } from '@nestjs/schedule';
 
 @ApiTags('Tasks')
 @Controller('tasks')
@@ -18,6 +19,7 @@ export default class TasksController {
 	@ApiOperation({
 		summary: 'Scan all libraries'
 	})
+	@Timeout(5000)
 	@Get('scan')
 	async scanLibrariesFiles(): Promise<TaskResponse> {
 		const libraries = await this.libraryService.getMany({});
