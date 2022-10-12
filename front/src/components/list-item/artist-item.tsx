@@ -29,7 +29,10 @@ const ArtistItem = ({ artist }: ArtistItemProps) => {
 	return (
 		<ListItem
 			icon={<Illustration url={artist.illustration} fallback={<AccountCircle/>}/>}
-			title={<Typography>{artist.name}</Typography>}
+			title={<ListItemButton
+				url={`/artists/${artist?.slug}`}
+				label={artist.name}
+			/>}
 			expanded={() => (
 				<InfiniteList
 					firstLoader={() => <LoadingItemComponent/>}
