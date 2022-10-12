@@ -69,9 +69,11 @@ export default class SearchController {
 		paginationParameters: PaginationParameters,
 		@Query('with', ArtistQueryParameters.ParseRelationIncludePipe)
 		include: ArtistQueryParameters.RelationInclude,
+		@Query(ArtistQueryParameters.ParseSortingParameterPipe)
+		sortingParameter: ArtistQueryParameters.SortingParameter,
 		@Req() request: Request
 	) {
-		const artists = await this.searchService.searchArtists(query, paginationParameters, include);
+		const artists = await this.searchService.searchArtists(query, paginationParameters, include, sortingParameter);
 		return new PaginatedResponse(
 			await Promise.all(artists.map((artist) => this.artistService.buildResponse(artist))),
 			request
@@ -90,9 +92,11 @@ export default class SearchController {
 		paginationParameters: PaginationParameters,
 		@Query('with', AlbumQueryParameters.ParseRelationIncludePipe)
 		include: AlbumQueryParameters.RelationInclude,
+		@Query(AlbumQueryParameters.ParseSortingParameterPipe)
+		sortingParameter: AlbumQueryParameters.SortingParameter,
 		@Req() request: Request
 	) {
-		const albums = await this.searchService.searchAlbums(query, paginationParameters, include)
+		const albums = await this.searchService.searchAlbums(query, paginationParameters, include, sortingParameter)
 		return new PaginatedResponse(
 			await Promise.all(albums.map((album) => this.albumService.buildResponse(album))),
 			request
@@ -111,9 +115,11 @@ export default class SearchController {
 		paginationParameters: PaginationParameters,
 		@Query('with', SongQueryParameters.ParseRelationIncludePipe)
 		include: SongQueryParameters.RelationInclude,
+		@Query(SongQueryParameters.ParseSortingParameterPipe)
+		sortingParameter: SongQueryParameters.SortingParameter,
 		@Req() request: Request
 	) {
-		const songs = await this.searchService.searchSongs(query, paginationParameters, include);
+		const songs = await this.searchService.searchSongs(query, paginationParameters, include, sortingParameter);
 		return new PaginatedResponse(
 			await Promise.all(songs.map((song) => this.songService.buildResponse(song))),
 			request
@@ -132,9 +138,11 @@ export default class SearchController {
 		paginationParameters: PaginationParameters,
 		@Query('with', ReleaseQueryParameters.ParseRelationIncludePipe)
 		include: ReleaseQueryParameters.RelationInclude,
+		@Query(ReleaseQueryParameters.ParseSortingParameterPipe)
+		sortingParameter: ReleaseQueryParameters.SortingParameter,
 		@Req() request: Request
 	) {
-		const releases = await this.searchService.searchReleases(query, paginationParameters, include)
+		const releases = await this.searchService.searchReleases(query, paginationParameters, include, sortingParameter)
 		return new PaginatedResponse(
 			await Promise.all(releases.map((release) => this.releaseService.buildResponse(release))),
 			request
@@ -153,9 +161,11 @@ export default class SearchController {
 		paginationParameters: PaginationParameters,
 		@Query('with', GenreQueryParameters.ParseRelationIncludePipe)
 		include: GenreQueryParameters.RelationInclude,
+		@Query(GenreQueryParameters.ParseSortingParameterPipe)
+		sortingParameter: GenreQueryParameters.SortingParameter,
 		@Req() request: Request
 	) {
-		const genres = await this.searchService.searchGenres(query, paginationParameters, include);
+		const genres = await this.searchService.searchGenres(query, paginationParameters, include, sortingParameter);
 		return new PaginatedResponse(
 			await Promise.all(genres.map((genre) => this.genreService.buildResponse(genre))),
 			request
