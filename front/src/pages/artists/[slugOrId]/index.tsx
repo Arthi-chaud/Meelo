@@ -1,4 +1,4 @@
-import { Box, Grid, Typography, Button } from "@mui/material"
+import { Box, Grid, Typography, Button, ButtonBase } from "@mui/material"
 import { GetServerSidePropsContext, InferGetServerSidePropsType } from "next";
 import { useRouter } from "next/router";
 import { dehydrate, QueryClient, useQuery } from "react-query";
@@ -11,6 +11,37 @@ import AlbumTile from "../../../components/tile/album-tile";
 import Album from "@mui/icons-material/Album";
 import Link from "next/link";
 import SongItem from "../../../components/list-item/song-item";
+import song, { SongWithArtist } from "../../../models/song";
+import AudiotrackIcon from '@mui/icons-material/Audiotrack'
+import { useDispatch } from "react-redux";
+import { emptyPlaylist, playTrack } from "../../../state/playerSlice";
+import artist from "../../../models/artist";
+import { TrackWithRelease } from "../../../models/track";
+type SongButtonProps = {
+	song: SongWithArtist;
+}
+const SongButton = (props: SongButtonProps) => {
+	const dispatch = useDispatch();
+	return <ButtonBase sx={{ display: 'block', width: '100%', textAlign: 'left' }} onClick={() => {
+		API.getMasterTrack<TrackWithRelease>(props.song.id, ['release']).then((track) => {
+			dispatch(emptyPlaylist());
+			dispatch(playTrack({
+				artist: props.song.artist,
+				track,
+				release: track.release
+			}));
+		})
+	} }>
+		<Grid container spacing={3} direction={'row'} sx={{ alignItems: 'center' }}>
+			<Grid item xs={2} sm={3}>
+				<Illustration url={props.song.illustration} fallback={<AudiotrackIcon/>}/>
+			</Grid>
+			<Grid item xs>
+				<Typography fontWeight='bold'>{props.song.name}</Typography>
+			</Grid>
+		</Grid>
+	</ButtonBase>
+}
 
 const artistQuery = (slugOrId: string | number) => ({
 	key: ['artist', slugOrId],
@@ -45,7 +76,6 @@ export const getServerSideProps = async (context: GetServerSidePropsContext) => 
 	}
 }
 
-
 const ArtistPage = ({ artistIdentifier }: InferGetServerSidePropsType<typeof getServerSideProps>) => {
 	const router = useRouter();
 	artistIdentifier ??= router.query.slugOrId as string;
@@ -77,7 +107,7 @@ const ArtistPage = ({ artistIdentifier }: InferGetServerSidePropsType<typeof get
 				<Grid item container spacing={2} sx={{ display: 'flex', flexGrow: 1 }}>
 				{ topSongs.data
 					? topSongs.data.items.slice(0, 6).filter((song) => song.playCount > 0).map((song) => <Grid key={song.id} item xs={12} sm={6} md={4}>
-						<SongItem song={{...song, artist: artist.data}}/>
+						<SongButton song={{...song, artist: artist.data}}/>
 					</Grid>)
 					: <WideLoadingComponent/> 
 				}
