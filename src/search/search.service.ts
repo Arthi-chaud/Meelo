@@ -32,12 +32,13 @@ export default class SearchService {
 	searchArtists(
 		query: string,
 		paginationParameters?: PaginationParameters,
-		include?: ArtistQueryParameters.RelationInclude
+		include?: ArtistQueryParameters.RelationInclude,
+		sort?: ArtistQueryParameters.SortingParameter,
 	): Promise<Artist[]> {
 		return this.artistService.getAlbumsArtists(
 			{ byName: { contains: query } },
 			paginationParameters,
-			include
+			include, sort
 		)
 	}
 
@@ -51,12 +52,13 @@ export default class SearchService {
 	searchAlbums(
 		query: string,
 		paginationParameters?: PaginationParameters,
-		include?: AlbumQueryParameters.RelationInclude
+		include?: AlbumQueryParameters.RelationInclude,
+		sort?: AlbumQueryParameters.SortingParameter
 	): Promise<Album[]> {
 		return this.albumService.getMany(
 			{ byName: { contains: query } },
 			paginationParameters,
-			include
+			include, sort
 		)
 	}
 
@@ -70,12 +72,13 @@ export default class SearchService {
 	searchSongs(
 		query: string,
 		paginationParameters?: PaginationParameters,
-		include?: SongQueryParameters.RelationInclude
+		include?: SongQueryParameters.RelationInclude,
+		sort?: SongQueryParameters.SortingParameter
 	): Promise<Song[]> {
 		return this.songService.getMany(
 			{ name: { contains: query } },
 			paginationParameters,
-			include
+			include, sort
 		)
 	}
 
@@ -90,12 +93,13 @@ export default class SearchService {
 	searchReleases(
 		query: string,
 		paginationParameters?: PaginationParameters,
-		include?: ReleaseQueryParameters.RelationInclude
+		include?: ReleaseQueryParameters.RelationInclude,
+		sort?: ReleaseQueryParameters.SortingParameter
 	): Promise<Release[]> {
 		return this.releaseService.getMany(
 			{ name: { contains: query } },
 			paginationParameters,
-			include
+			include, sort
 		)
 	}
 
@@ -109,12 +113,13 @@ export default class SearchService {
 	searchGenres(
 		query: string,
 		paginationParameters?: PaginationParameters,
-		include?: GenreQueryParameters.RelationInclude
+		include?: GenreQueryParameters.RelationInclude,
+		sort?: GenreQueryParameters.SortingParameter
 	): Promise<Genre[]> {
 		return this.genreService.getMany(
 			{ byName: { contains: query } },
 			paginationParameters,
-			include
+			include, sort
 		);
 	}
 }

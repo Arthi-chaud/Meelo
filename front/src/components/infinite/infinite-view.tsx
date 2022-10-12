@@ -17,13 +17,13 @@ import CheckIcon from '@mui/icons-material/Check';
 
 type ResourceWithoutRelation<T> = { [key in keyof T as T[key] extends Resource | undefined ? never : key]: T[key] };
 
-type InfiniteViewProps<T> = {
+type InfiniteViewProps<T, SortingFields extends string[] | [] = []> = {
 	view: 'list' | 'grid';
-	initialSortingField?: keyof ResourceWithoutRelation<T>;
-	sortingFields?: (keyof ResourceWithoutRelation<T>)[];
+	initialSortingField?: SortingFields[number];
+	sortingFields?: SortingFields;
 	sortingOrder?: 'asc' | 'desc';
 	query: MeeloInfiniteQueryFn<T>;
-	onSortingFieldSelect?: (selected: keyof ResourceWithoutRelation<T>) => void;
+	onSortingFieldSelect?: (selected: SortingFields[number]) => void;
 	onSortingOrderSelect?: (selected: 'asc' | 'desc') => void;
 	renderListItem: (item: T) => JSX.Element;
 	listItemExpanded?: (item: T) => JSX.Element;
@@ -51,10 +51,10 @@ const availableDisplayMethods: DisplayMethod[] = [
  * Infinite scrolling view, which lets the user decide which way the data is displayed
  * @returns 
  */
-const InfiniteView = <T extends Resource,>(props: InfiniteViewProps<T>) => {
+const InfiniteView = <T extends Resource, Keys extends string[]>(props: InfiniteViewProps<T, Keys>) => {
 	const [display, setDisplay] = useState(props.view);
 	const [backToTopVisible, setBackToTopVisible] = useState(false);
-	const [sortField, setSortField] = useState(props.sortingFields ? (props.initialSortingField ?? props.sortingFields[0]!) as keyof ResourceWithoutRelation<T> : undefined);
+	const [sortField, setSortField] = useState(props.sortingFields ? (props.initialSortingField ?? props.sortingFields[0]!) as Keys[number] : undefined);
 	const [sortOrder, setSortOrder] = useState(props.sortingOrder ?? 'asc');
 	const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   	const menuOpen = Boolean(anchorEl);

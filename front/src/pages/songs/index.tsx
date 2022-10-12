@@ -4,7 +4,7 @@ import { GetServerSideProps, GetServerSidePropsContext, InferGetServerSidePropsT
 import { Box, Divider, List } from '@mui/material';
 import InfiniteList from '../../components/infinite/infinite-list';
 import { useRouter } from 'next/router';
-import Song, { SongWithArtist } from '../../models/song';
+import Song, { SongSortingKeys, SongWithArtist } from '../../models/song';
 import API from '../../api';
 import SongItem from '../../components/list-item/song-item';
 import LoadingPage from '../../components/loading/loading-page';
@@ -16,15 +16,16 @@ import { prepareMeeloInfiniteQuery } from '../../query';
 import { Page } from '../../components/infinite/infinite-scroll';
 import InfiniteView from '../../components/infinite/infinite-view';
 import { getOrderParams, getSortingFieldParams, SortingParameters } from '../../utils/sorting';
+import InfiniteSongView from '../../components/infinite/infinite-song-view';
 
 const SongSortingFields: (keyof Song)[] = ['name', 'playCount']
 
-const songsQuery = (sort: SortingParameters<Song>) => ({
+const songsQuery = (sort: SortingParameters<typeof SongSortingKeys>) => ({
 	key: ["songs", sort],
 	exec: (lastPage: Page<SongWithArtist>) => API.getAllSongs<SongWithArtist>(lastPage, sort, ['artist'])
 });
 
-const librarySongsQuery = (slugOrId: string | number, sort: SortingParameters<Song>) => ({
+const librarySongsQuery = (slugOrId: string | number, sort: SortingParameters<typeof SongSortingKeys>) => ({
 	key: ["library", slugOrId, "songs", sort],
 	exec: (lastPage: Page<SongWithArtist>) => API.getAllSongsInLibrary<SongWithArtist>(slugOrId, lastPage, sort, ['artist'])
 });
@@ -51,21 +52,11 @@ export const getServerSideProps = async (context: GetServerSidePropsContext) => 
 const LibrarySongsPage = ({ librarySlug }: InferGetServerSidePropsType<typeof getServerSideProps>) => {
 	const router = useRouter();
 	librarySlug ??= getLibrarySlug(router.asPath);
-	const [order, setOrder] = useState(getOrderParams(router.query.order));
-	const [sortBy, setSortBy] = useState(getSortingFieldParams(router.query.sortBy, SongSortingFields));
-	return (
-		<InfiniteView
-			initialSortingField={sortBy}
-			sortingFields={SongSortingFields}
-			view='list'
-			sortingOrder={order}
-			query={() => librarySlug ? librarySongsQuery(librarySlug, { sortBy, order }) : songsQuery({ sortBy, order })}
-			renderListItem={(item: SongWithArtist) => <SongItem song={item} key={item.id}/> }
-			renderGridItem={(item: SongWithArtist) => <></> }
-			onSortingFieldSelect={(newField) => setSortBy(newField)}
-			onSortingOrderSelect={(newOrder) => setOrder(newOrder)}
-		/>
-	);
+	return <InfiniteSongView
+		initialSortingField={getSortingFieldParams(router.query.sortBy, SongSortingFields)}
+		initialSortingOrder={getOrderParams(router.query.order)}
+		query={(sort) => librarySlug ? librarySongsQuery(librarySlug, sort) : songsQuery(sort)}
+	/>
 }
 
 export default LibrarySongsPage;

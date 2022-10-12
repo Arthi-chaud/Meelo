@@ -17,9 +17,11 @@ import SearchModule from './search/search.module';
 import GenreModule from './genre/genre.module';
 import AppController from './app.controller';
 import TasksModule from './tasks/tasks.module';
+import { ScheduleModule } from '@nestjs/schedule';
 
 @Module({
 	imports: [
+		ScheduleModule.forRoot(),
 		ConfigModule.forRoot(),
 		ArtistModule,
 		AlbumModule,

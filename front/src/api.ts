@@ -1,25 +1,25 @@
-import Album, { AlbumInclude, AlbumWithArtist } from "./models/album";
-import Artist, { ArtistInclude } from "./models/artist";
+import Album, { AlbumInclude, AlbumSortingKeys } from "./models/album";
+import Artist, { ArtistInclude, ArtistSortingKeys } from "./models/artist";
 import Genre from "./models/genre";
 import Library from "./models/library";
 import { PaginatedResponse, PaginationParameters } from "./models/pagination";
-import Release, { ReleaseInclude } from "./models/release";
-import Song, { SongInclude, SongWithArtist } from "./models/song";
-import Track, { TrackInclude, TrackWithRelease } from "./models/track";
+import Release, { ReleaseInclude, ReleaseSortingKeys } from "./models/release";
+import Song, { SongInclude, SongSortingKeys, SongWithArtist } from "./models/song";
+import Track, { TrackInclude, TrackSortingKeys, TrackWithRelease } from "./models/track";
 import Tracklist from "./models/tracklist";
 import axios from 'axios';
 import Resource from "./models/resource";
 import { SortingParameters } from "./utils/sorting";
 import LibraryTaskResponse from "./models/library-task-response";
-type QueryParameters<T = {}> = {
+type QueryParameters<Keys extends string[]> = {
 	pagination?: PaginationParameters;
 	include?: string[];
-	sort?: SortingParameters<T>
+	sort?: SortingParameters<Keys>
 }
 
-type FetchParameters<T> = {
+type FetchParameters<Keys extends string[]> = {
 	route: string,
-	parameters: QueryParameters<T>,
+	parameters: QueryParameters<Keys>,
 	otherParameters?: any,
 	errorMessage?: string
 }
@@ -49,7 +49,7 @@ export default class API {
 	 */
 	static async getAllArtists(
 		pagination?: PaginationParameters,
-		sort?: SortingParameters<Artist>
+		sort?: SortingParameters<typeof ArtistSortingKeys>
 	): Promise<PaginatedResponse<Artist>> {
 		return API.fetch({
 			route: `/artists`,
@@ -66,7 +66,7 @@ export default class API {
 	 */
 	static async getAllAlbums<T extends Album = Album>(
 		pagination?: PaginationParameters,
-		sort?: SortingParameters<Album>,
+		sort?: SortingParameters<typeof AlbumSortingKeys>,
 		include: AlbumInclude[] = []
 	): Promise<PaginatedResponse<T>> {
 		return API.fetch({
@@ -85,7 +85,7 @@ export default class API {
 	static async getAllArtistsInLibrary<T extends Artist = Artist>(
 		librarySlugOrId: string | number,
 		pagination?: PaginationParameters,
-		sort?: SortingParameters<Artist>,
+		sort?: SortingParameters<typeof ArtistSortingKeys>,
 		include: ArtistInclude[] = [],
 	): Promise<PaginatedResponse<T>> {
 		return API.fetch({
@@ -105,7 +105,7 @@ export default class API {
 	static async getAllAlbumsInLibrary<T extends Album = Album>(
 		librarySlugOrId: string | number,
 		pagination?: PaginationParameters,
-		sort?: SortingParameters<Album>,
+		sort?: SortingParameters<typeof AlbumSortingKeys>,
 		include: AlbumInclude[] = [],
 	): Promise<PaginatedResponse<T>> {
 		return API.fetch({
@@ -124,7 +124,7 @@ export default class API {
 	static async getAllSongsInLibrary<T extends Song = Song>(
 		librarySlugOrId: string | number,
 		pagination?: PaginationParameters,
-		sort?: SortingParameters<Song>,
+		sort?: SortingParameters<typeof SongSortingKeys>,
 		include: SongInclude[] = [],
 	): Promise<PaginatedResponse<T>> {
 		return API.fetch({
@@ -141,7 +141,7 @@ export default class API {
 	 */
 	static async getAllSongs<T extends Song = Song>(
 		pagination?: PaginationParameters,
-		sort?: SortingParameters<Song>,
+		sort?: SortingParameters<typeof SongSortingKeys>,
 		include: SongInclude[] = []
 	): Promise<PaginatedResponse<T>> {
 		return API.fetch({
@@ -154,12 +154,12 @@ export default class API {
 	/**
 	 * Fetch all albums by an artist
 	 * @param pagination the parameters to choose how many items to load
-	 * @returns An array of songs
+	 * @returns An array of albums
 	 */
 	 static async getArtistAlbums<T extends Album = Album>(
 		artistSlugOrId: string | number,
 		pagination?: PaginationParameters,
-		sort?: SortingParameters<Album>,
+		sort?: SortingParameters<typeof AlbumSortingKeys>,
 		include: AlbumInclude[] = []
 	): Promise<PaginatedResponse<T>> {
 		return API.fetch({
@@ -168,6 +168,24 @@ export default class API {
 			parameters: { pagination, include, sort }
 		});
 	}
+
+	/**
+	 * Fetch all songs by an artist
+	 * @param pagination the parameters to choose how many items to load
+	 * @returns An array of songs
+	 */
+		 static async getArtistSongs<T extends Song = Song>(
+			artistSlugOrId: string | number,
+			pagination?: PaginationParameters,
+			sort?: SortingParameters<typeof SongSortingKeys>,
+			include: AlbumInclude[] = []
+		): Promise<PaginatedResponse<T>> {
+			return API.fetch({
+				route: `/artists/${artistSlugOrId}/songs`,
+				errorMessage: `Artist '${artistSlugOrId}' not found`,
+				parameters: { pagination, include, sort }
+			});
+		}
 
 	/**
 	 * Get the master track of a song
@@ -227,7 +245,7 @@ export default class API {
 	static async getSongTracks<T extends Track = Track>(
 		songSlugOrId: string | number,
 		pagination?: PaginationParameters,
-		sort?: SortingParameters<Track>,
+		sort?: SortingParameters<typeof TrackSortingKeys>,
 		include: TrackInclude[] = []
 	): Promise<PaginatedResponse<T>> {
 		return API.fetch({
@@ -287,7 +305,7 @@ export default class API {
 	 static async getAlbumReleases<T extends Release = Release>(
 		albumSlugOrId: string | number,
 		pagination?: PaginationParameters,
-		sort?: SortingParameters<Release>,
+		sort?: SortingParameters<typeof ReleaseSortingKeys>,
 		include: ReleaseInclude[] = []
 	): Promise<PaginatedResponse<T>> {
 		return API.fetch({
@@ -317,10 +335,10 @@ export default class API {
 		});
 	}
 
-	static async getSongLyrics<T extends string[] = string[]>(
+	static async getSongLyrics(
 		slugOrId: string | number
-	): Promise<T | null> {
-		return API.fetch<T>({
+	): Promise<string[] | null> {
+		return API.fetch<{ lyrics: string }, []>({
 			route: `/songs/${slugOrId}/lyrics`,
 			errorMessage: 'Lyrics loading failed',
 			parameters: { }
@@ -332,7 +350,7 @@ export default class API {
 		slugOrId: string | number,
 		include: ArtistInclude[] = []
 	): Promise<T> {
-		return API.fetch<T>({
+		return API.fetch<T, []>({
 			route: `/artists/${slugOrId}`,
 			errorMessage: 'Artist could not be loaded',
 			parameters: { include }
@@ -342,40 +360,44 @@ export default class API {
 	static async searchArtists<T extends Artist = Artist>(
 		query: string,
 		pagination?: PaginationParameters,
+		sort?: SortingParameters<typeof ArtistSortingKeys>,
 		include: ArtistInclude[] = []
 	): Promise<PaginatedResponse<T>> {
 		return API.fetch({
 			route: `/search/artists/${query}`,
 			errorMessage: 'Search failed',
-			parameters: { pagination, include }
+			parameters: { pagination, include, sort }
 		})
 	}
 
 	static async searchAlbums<T extends Album = Album>(
 		query: string,
 		pagination?: PaginationParameters,
+		sort?: SortingParameters<typeof AlbumSortingKeys>,
 		include: AlbumInclude[] = []
 	): Promise<PaginatedResponse<T>> {
+		console.log(sort);
 		return API.fetch({
 			route: `/search/albums/${query}`,
 			errorMessage: 'Search failed',
-			parameters: { pagination, include }
+			parameters: { pagination, include, sort }
 		})
 	}
 
 	static async searchSongs<T extends Song = Song>(
 		query: string,
 		pagination?: PaginationParameters,
+		sort?: SortingParameters<typeof SongSortingKeys>,
 		include: SongInclude[] = []
 	): Promise<PaginatedResponse<T>> {
 		return API.fetch({
 			route: `/search/songs/${query}`,
 			errorMessage: 'Search failed',
-			parameters: { pagination, include }
+			parameters: { pagination, include, sort }
 		})
 	}
 
-	private static async fetch<T>({ route, parameters, otherParameters, errorMessage }: FetchParameters<T>) {
+	private static async fetch<T, Keys extends string[]>({ route, parameters, otherParameters, errorMessage }: FetchParameters<Keys>): Promise<T> {
 		const response = await fetch(this.buildURL(route, parameters, otherParameters));
 		const jsonResponse = await response.json().catch(() => {
 			throw new Error("Error while parsing Server's response");
@@ -387,7 +409,7 @@ export default class API {
 	}
 
 	static scanLibraries(): Promise<LibraryTaskResponse> {
-		return API.fetch<LibraryTaskResponse>({
+		return API.fetch<LibraryTaskResponse, []>({
 			route: `/tasks/scan`,
 			parameters: { }
 		})
@@ -427,7 +449,7 @@ export default class API {
 		return `${apiHost}${route}${this.formatQueryParameters(parameters, otherParameters)}`;
 	}
 
-	private static formatQueryParameters(parameters: QueryParameters, otherParameters?: any): string {
+	private static formatQueryParameters<Keys extends string[]>(parameters: QueryParameters<Keys>, otherParameters?: any): string {
 		let formattedQueryParams: string[] = [];
 		if (parameters.sort) {
 			formattedQueryParams.push(`sortBy=${parameters.sort.sortBy}`);
