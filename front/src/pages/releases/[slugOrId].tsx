@@ -10,7 +10,7 @@ import formatDuration from '../../utils/formatDuration';
 import { useEffect, useState } from "react";
 import { TrackWithSong } from "../../models/track";
 import Tracklist from "../../models/tracklist";
-
+import Link from 'next/link';
 import PlayCircleIcon from '@mui/icons-material/PlayCircle';
 import { Album, MoreHoriz, Shuffle } from "@mui/icons-material";
 import FadeIn from "react-fade-in";
@@ -146,7 +146,11 @@ const ReleasePage = ({ releaseIdentifier }: InferGetServerSidePropsType<typeof g
 						</Grid>
 						{albumArtist.data &&
 							<Grid item>
-								<Typography  variant='h4'>{albumArtist.data?.name}</Typography>
+								<Link href={`/artists/${albumArtist.data.slug}`}>
+									<Button color='inherit' sx={{ textTransform: 'none' }}>
+										<Typography variant='h4'>{albumArtist.data?.name}</Typography>
+									</Button>
+								</Link>
 							</Grid>
 						}
 						<Grid item>
