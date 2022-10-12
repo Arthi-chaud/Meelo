@@ -76,7 +76,7 @@ const ArtistPage = ({ artistIdentifier }: InferGetServerSidePropsType<typeof get
 				</Grid>
 				<Grid item container spacing={2} sx={{ display: 'flex', flexGrow: 1 }}>
 				{ topSongs.data
-					? topSongs.data.items.slice(0, 6).map((song) => <Grid key={song.id} item xs={12} sm={6} md={4}>
+					? topSongs.data.items.slice(0, 6).filter((song) => song.playCount > 0).map((song) => <Grid key={song.id} item xs={12} sm={6} md={4}>
 						<SongItem song={{...song, artist: artist.data}}/>
 					</Grid>)
 					: <WideLoadingComponent/> 
