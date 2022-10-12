@@ -369,12 +369,13 @@ export default class API {
 	static async searchSongs<T extends Song = Song>(
 		query: string,
 		pagination?: PaginationParameters,
+		sort?: SortingParameters<typeof SongSortingKeys>,
 		include: SongInclude[] = []
 	): Promise<PaginatedResponse<T>> {
 		return API.fetch({
 			route: `/search/songs/${query}`,
 			errorMessage: 'Search failed',
-			parameters: { pagination, include }
+			parameters: { pagination, include, sort }
 		})
 	}
 

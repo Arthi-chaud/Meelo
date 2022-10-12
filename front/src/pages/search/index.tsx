@@ -8,13 +8,14 @@ import API from '../../api';
 import { Page } from '../../components/infinite/infinite-scroll';
 import Album, { AlbumSortingKeys, AlbumWithArtist } from '../../models/album';
 import Artist, { ArtistSortingKeys } from '../../models/artist';
-import Song, { SongWithArtist } from '../../models/song';
+import Song, { SongSortingKeys, SongWithArtist } from '../../models/song';
 import ArtistTile from '../../components/tile/artist-tile';
 import ArtistItem from "../../components/list-item/artist-item";
 import InfiniteAlbumView from '../../components/infinite/infinite-album-view';
 import SongItem from "../../components/list-item/song-item";
 import { SortingParameters } from "../../utils/sorting";
 import InfiniteArtistView from "../../components/infinite/infinite-artist-view";
+import InfiniteSongView from "../../components/infinite/infinite-song-view";
 
 const searchArtistsQuery = (query: string, sort?: SortingParameters<typeof ArtistSortingKeys>) => ({
 	key: ["search", "artists", query, sort ?? {}],
@@ -26,9 +27,9 @@ const searchAlbumsQuery = (query: string, sort?: SortingParameters<typeof AlbumS
 	exec: (lastPage: Page<AlbumWithArtist>) => API.searchAlbums<AlbumWithArtist>(query, lastPage, sort, ['artist'])
 });
 
-const searchSongsQuery = (query: string) => ({
-	key: ["search", "songs", query],
-	exec: (lastPage: Page<Song>) => API.searchSongs<SongWithArtist>(query, lastPage, ['artist'])
+const searchSongsQuery = (query: string, sort?: SortingParameters<typeof SongSortingKeys>) => ({
+	key: ["search", "songs", query, sort ?? {}],
+	exec: (lastPage: Page<Song>) => API.searchSongs<SongWithArtist>(query, lastPage, sort, ['artist'])
 });
 
 const itemTypes = ['Artists', 'Albums', 'Songs'] as const;
@@ -80,12 +81,10 @@ const SearchPage = () => {
 					query={(sort) => searchAlbumsQuery(query, sort)}
 				/>
 				: selectedType == 'Songs'
-					? <InfiniteView key={selectedType}
-						view='list'
-						enableToggle={false}
-						query={() => searchSongsQuery(query)}
-						renderGridItem={(song: SongWithArtist) => <>A</>}
-						renderListItem={(song: SongWithArtist) => <SongItem key={song.id} song={song}/>}
+					? <InfiniteSongView key={selectedType}
+						initialSortingField={'name'}
+						initialSortingOrder={'asc'}
+						query={(sort) => searchSongsQuery(query, sort)}
 					/> : <></>
 		)}
 	</Box>

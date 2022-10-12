@@ -45,11 +45,9 @@ export const getServerSideProps = async (context: GetServerSidePropsContext) => 
 const LibraryAlbumsPage = ({ librarySlug }: InferGetServerSidePropsType<typeof getServerSideProps>) => {
 	const router = useRouter();
 	librarySlug ??= getLibrarySlug(router.asPath);
-	const [order, setOrder] = useState(getOrderParams(router.query.order));
-	const [sortBy, setSortBy] = useState(getSortingFieldParams(router.query.sortBy, AlbumSortingKeys));
 	return <InfiniteAlbumView
-		initialSortingField={sortBy}
-		initialSortingOrder={order}
+		initialSortingField={getSortingFieldParams(router.query.sortBy, AlbumSortingKeys)}
+		initialSortingOrder={getOrderParams(router.query.order)}
 		initialView={(router.query.view == 'list' ? 'list' : 'grid')}
 		query={(sort) => librarySlug ? libraryAlbumsQuery(librarySlug, sort) : albumsQuery(sort)}
 	/>
