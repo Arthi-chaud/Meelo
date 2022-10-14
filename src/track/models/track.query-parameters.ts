@@ -12,6 +12,7 @@ import BaseSortingParameter from 'src/sort/models/sorting-parameter';
 import ParseBaseSortingParameterPipe from 'src/sort/sort.pipe';
 import type AlbumQueryParameters from "src/album/models/album.query-parameters";
 import type ArtistQueryParameters from "src/artist/models/artist.query-parameters";
+import { ApiPropertyOptional } from "@nestjs/swagger";
 
 namespace TrackQueryParameters {
 
@@ -80,7 +81,10 @@ namespace TrackQueryParameters {
 	 */
 	export const SortingKeys = ['id', 'name', 'releaseName', 'bitrate', 'trackIndex', 'discIndex', 'addDate'] as const;
 	export type SortingKeys = typeof SortingKeys;
-	export class SortingParameter extends BaseSortingParameter<SortingKeys>{}
+	export class SortingParameter extends BaseSortingParameter<SortingKeys>{
+		@ApiPropertyOptional({ enum: SortingKeys })
+		sortBy: SortingKeys[number]
+	}
 	export const ParseSortingParameterPipe = new ParseBaseSortingParameterPipe(SortingKeys);
 }
 

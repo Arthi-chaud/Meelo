@@ -9,6 +9,7 @@ import BaseSortingParameter from 'src/sort/models/sorting-parameter';
 import ParseBaseSortingParameterPipe from 'src/sort/sort.pipe';
 import type { RelationInclude as BaseRelationInclude } from "src/relation-include/models/relation-include" ;
 import { Genre } from "src/prisma/models";
+import { ApiPropertyOptional } from "@nestjs/swagger";
 namespace GenreQueryParameters {
 	/**
 	 * The input required to save a genre in the database
@@ -59,7 +60,10 @@ namespace GenreQueryParameters {
 	 */
 	export const SortingKeys = ['id', 'name', 'songCount'] as const;
 	export type SortingKeys = typeof SortingKeys;
-	export class SortingParameter extends BaseSortingParameter<SortingKeys>{}
+	export class SortingParameter extends BaseSortingParameter<SortingKeys>{
+		@ApiPropertyOptional({ enum: SortingKeys })
+		sortBy: SortingKeys[number]
+	}
 	export const ParseSortingParameterPipe = new ParseBaseSortingParameterPipe(SortingKeys);
 
 

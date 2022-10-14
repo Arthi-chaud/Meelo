@@ -9,6 +9,7 @@ import BaseSortingParameter from 'src/sort/models/sorting-parameter';
 import ParseBaseSortingParameterPipe from 'src/sort/sort.pipe';
 import type GenreQueryParameters from "src/genre/models/genre.query-parameters";
 import { Artist } from "src/prisma/models";
+import { ApiPropertyOptional } from "@nestjs/swagger";
 
 namespace ArtistQueryParameters {
 
@@ -63,7 +64,10 @@ namespace ArtistQueryParameters {
 	 */
 	export const SortingKeys = ['id', 'name', 'albumCount', 'songCount', 'addDate'] as const;
 	export type SortingKeys = typeof SortingKeys
-	export class SortingParameter extends BaseSortingParameter<SortingKeys>{}
+	export class SortingParameter extends BaseSortingParameter<SortingKeys>{
+		@ApiPropertyOptional({ enum: SortingKeys })
+		sortBy: SortingKeys[number]
+	}
 	export const ParseSortingParameterPipe = new ParseBaseSortingParameterPipe(SortingKeys);
 }
 

@@ -11,7 +11,7 @@ import BaseSortingParameter from 'src/sort/models/sorting-parameter';
 import ParseBaseSortingParameterPipe from 'src/sort/sort.pipe';
 import type GenreQueryParameters from "src/genre/models/genre.query-parameters";
 import { Album } from "src/prisma/models";
-import { IntersectionType, PartialType, PickType } from "@nestjs/swagger";
+import { ApiPropertyOptional, IntersectionType, PartialType, PickType } from "@nestjs/swagger";
 
 namespace AlbumQueryParameters {
 
@@ -72,7 +72,10 @@ namespace AlbumQueryParameters {
 	 */
 	export const SortingKeys = ['id', 'name', 'artistName', 'releaseDate', 'addDate'] as const;
 	export type SortingKeys = typeof SortingKeys;
-	export class SortingParameter extends BaseSortingParameter<SortingKeys>{}
+	export class SortingParameter extends BaseSortingParameter<SortingKeys>{
+		@ApiPropertyOptional({ enum: SortingKeys })
+		sortBy: SortingKeys[number];
+	}
 	export const ParseSortingParameterPipe = new ParseBaseSortingParameterPipe(SortingKeys);
 }
 

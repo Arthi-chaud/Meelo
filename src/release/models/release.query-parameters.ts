@@ -8,6 +8,7 @@ import BaseSortingParameter from 'src/sort/models/sorting-parameter';
 import ParseBaseSortingParameterPipe from 'src/sort/sort.pipe';
 import type { SearchStringInput } from "src/utils/search-string-input";
 import { Release } from "src/prisma/models";
+import { ApiPropertyOptional } from "@nestjs/swagger";
 
 namespace ReleaseQueryParameters {
 	/**
@@ -72,7 +73,10 @@ namespace ReleaseQueryParameters {
 	 */
 	export const SortingKeys = ['id', 'name', 'releaseDate', 'trackCount', 'addDate'] as const;
 	export type SortingKeys = typeof SortingKeys;
-	export class SortingParameter extends BaseSortingParameter<SortingKeys>{}
+	export class SortingParameter extends BaseSortingParameter<SortingKeys>{
+		@ApiPropertyOptional({ enum: SortingKeys })
+		sortBy: SortingKeys[number]
+	}
 	export const ParseSortingParameterPipe = new ParseBaseSortingParameterPipe(SortingKeys);
 }
 

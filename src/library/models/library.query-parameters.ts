@@ -6,6 +6,7 @@ import type { RelationInclude as BaseRelationInclude } from "src/relation-includ
 import ParseBaseRelationIncludePipe from "src/relation-include/relation-include.pipe";
 import BaseSortingParameter from 'src/sort/models/sorting-parameter';
 import ParseBaseSortingParameterPipe from 'src/sort/sort.pipe';
+import { ApiPropertyOptional } from "@nestjs/swagger";
 
 namespace LibraryQueryParameters {
 
@@ -51,7 +52,10 @@ namespace LibraryQueryParameters {
 	 */
 	export const SortingKeys = ['id', 'name', 'fileCount', 'addDate'] as const;
 	export type SortingKeys = typeof SortingKeys;
-	export class SortingParameter extends BaseSortingParameter<SortingKeys>{}
+	export class SortingParameter extends BaseSortingParameter<SortingKeys>{
+		@ApiPropertyOptional({ enum: SortingKeys })
+		sortBy: SortingKeys[number]
+	}
 	export const ParseSortingParameterPipe = new ParseBaseSortingParameterPipe(SortingKeys);
 }
 
