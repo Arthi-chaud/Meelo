@@ -70,7 +70,7 @@ namespace ReleaseQueryParameters {
 	/**
 	 * Defines how to sort fetched entries
 	 */
-	export const SortingKeys = ['id', 'name', 'releaseDate', 'trackCount'] as const;
+	export const SortingKeys = ['id', 'name', 'releaseDate', 'trackCount', 'addDate'] as const;
 	export type SortingKeys = typeof SortingKeys;
 	export class SortingParameter extends BaseSortingParameter<SortingKeys>{}
 	export const ParseSortingParameterPipe = new ParseBaseSortingParameterPipe(SortingKeys);

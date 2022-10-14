@@ -126,6 +126,8 @@ export default class SongService extends RepositoryService<
 		switch (sortingParameter.sortBy) {
 			case 'name':
 				return { slug: sortingParameter.order };
+			case 'addDate':
+				return { id: sortingParameter.order }
 			case 'artistName':
 				return { artist: this.artistService.formatSortingInput(
 					{ sortBy: 'name', order: sortingParameter.order }

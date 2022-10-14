@@ -137,6 +137,8 @@ export default class AlbumService extends RepositoryService<
 				return { artist: this.artistServce.formatSortingInput(
 					{ sortBy: 'name', order :sortingParameter.order })
 				}
+			case 'addDate':
+				return { id: sortingParameter.order }
 			default:
 				return {[sortingParameter.sortBy ?? 'id']: sortingParameter.order}
 		}

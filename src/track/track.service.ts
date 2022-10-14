@@ -150,6 +150,8 @@ export default class TrackService extends RepositoryService<
 		switch (sortingParameter.sortBy) {
 			case 'releaseName':
 				return { release: { name: sortingParameter.order }};
+			case 'addDate':
+				return { id: sortingParameter.order }
 			case undefined:
 				return { id: sortingParameter.order }
 			default:

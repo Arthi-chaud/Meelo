@@ -78,7 +78,7 @@ namespace TrackQueryParameters {
 	/**
 	 * Defines how to sort fetched entries
 	 */
-	export const SortingKeys = ['id', 'name', 'releaseName', 'bitrate', 'trackIndex', 'discIndex'] as const;
+	export const SortingKeys = ['id', 'name', 'releaseName', 'bitrate', 'trackIndex', 'discIndex', 'addDate'] as const;
 	export type SortingKeys = typeof SortingKeys;
 	export class SortingParameter extends BaseSortingParameter<SortingKeys>{}
 	export const ParseSortingParameterPipe = new ParseBaseSortingParameterPipe(SortingKeys);

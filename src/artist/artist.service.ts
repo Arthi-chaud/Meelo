@@ -120,6 +120,8 @@ export default class ArtistService extends RepositoryService<
 				return { albums: { _count: sortingParameter.order } }
 			case 'songCount':
 				return { songs: { _count: sortingParameter.order } }
+			case 'addDate':
+				return { id: sortingParameter.order }
 			default:
 				return { [sortingParameter.sortBy ?? 'id']: sortingParameter.order }
 		}

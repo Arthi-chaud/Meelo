@@ -119,6 +119,8 @@ export default class ReleaseService extends RepositoryService<
 				return { slug: sortingParameter.order };
 			case 'trackCount':
 				return { tracks: { _count: sortingParameter.order }};
+			case 'addDate':
+				return { id: sortingParameter.order }
 			case undefined:
 				return { id: sortingParameter.order };
 			default:

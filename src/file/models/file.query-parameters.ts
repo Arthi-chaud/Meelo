@@ -40,7 +40,7 @@ namespace FileQueryParameters {
 	export type DeleteInput = Required<Pick<WhereInput, 'id'>>;
 	
 
-	export const SortingKeys = ['id', 'trackName', 'trackArtist'] as const;
+	export const SortingKeys = ['id', 'trackName', 'trackArtist', 'addDate'] as const;
 	export type SortingKeys = typeof SortingKeys;
 
 	/**

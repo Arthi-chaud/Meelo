@@ -45,5 +45,5 @@ type AlbumInclude = 'artist' | 'releases';
 
 
 export default Album;
-export const AlbumSortingKeys = ['name', 'artistName', 'releaseDate'];
+export const AlbumSortingKeys = ['name', 'artistName', 'releaseDate', 'addDate'];
 export type { AlbumWithArtist, AlbumWithReleases, AlbumInclude };

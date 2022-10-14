@@ -89,6 +89,8 @@ export default class LibraryService extends RepositoryService<
 				return { slug: sortingParameter.order };
 			case 'fileCount':
 				return { files: { _count: sortingParameter.order }};
+			case 'addDate':
+				return { id: sortingParameter.order }
 			case undefined:
 				return { id: sortingParameter.order }
 			default:

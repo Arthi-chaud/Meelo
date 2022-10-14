@@ -96,9 +96,18 @@ export default class FileService extends RepositoryService<
 	formatManyWhereInput = FileService.formatManyWhereInput;
 
 	formatSortingInput<S extends SortingParameter<FileQueryParameters.SortingKeys>>(
-		_sort: S
+		sort: S
 	): Prisma.FileOrderByWithRelationInput {
-		return { id: 'asc' };
+		switch (sort.sortBy) {
+			case 'addDate':
+				return { id: sort.order }
+			case 'trackArtist':
+				return { track: { song: { artist: { slug: sort.order } } } }
+			case 'trackName':
+				return { track: { song: { slug: sort.order }}}
+			default:
+				return { [sort.sortBy ?? 'id']: sort.order }
+		}
 	}
 
 	onNotFound(where: FileQueryParameters.WhereInput): MeeloException {

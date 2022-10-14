@@ -70,7 +70,7 @@ namespace AlbumQueryParameters {
 	/**
 	 * Defines how to sort fetched entries
 	 */
-	export const SortingKeys = ['id', 'name', 'artistName', 'releaseDate'] as const;
+	export const SortingKeys = ['id', 'name', 'artistName', 'releaseDate', 'addDate'] as const;
 	export type SortingKeys = typeof SortingKeys;
 	export class SortingParameter extends BaseSortingParameter<SortingKeys>{}
 	export const ParseSortingParameterPipe = new ParseBaseSortingParameterPipe(SortingKeys);
