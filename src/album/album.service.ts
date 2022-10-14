@@ -139,6 +139,8 @@ export default class AlbumService extends RepositoryService<
 				}
 			case 'addDate':
 				return { id: sortingParameter.order }
+			case 'releaseDate':
+				return { releaseDate: {sort: sortingParameter.order, nulls: 'last'}}
 			default:
 				return {[sortingParameter.sortBy ?? 'id']: sortingParameter.order}
 		}

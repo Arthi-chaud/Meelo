@@ -113,7 +113,7 @@ export default class ReleaseService extends RepositoryService<
 
 	formatSortingInput(
 		sortingParameter: SortingParameter<ReleaseQueryParameters.SortingKeys>
-	) {
+	): Prisma.ReleaseOrderByWithRelationInput {
 		switch (sortingParameter.sortBy) {
 			case 'name':
 				return { slug: sortingParameter.order };
@@ -121,10 +121,10 @@ export default class ReleaseService extends RepositoryService<
 				return { tracks: { _count: sortingParameter.order }};
 			case 'addDate':
 				return { id: sortingParameter.order }
-			case undefined:
-				return { id: sortingParameter.order };
+			case 'releaseDate':
+				return { releaseDate: {sort: sortingParameter.order, nulls: 'last'}}
 			default:
-				return {[sortingParameter.sortBy]: sortingParameter.order }
+				return {[sortingParameter.sortBy ?? 'id']: sortingParameter.order }
 		}
 	}
 	/**
