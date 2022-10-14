@@ -35,7 +35,7 @@ describe('File Controller', () => {
 				.get(`/files/${dummyRepository.fileA1_1.id}`)
 				.expect(200)
 				.expect((res) => {
-					let file: File = res.body;
+					const file: File = res.body;
 					expect(file).toStrictEqual({
 						...dummyRepository.fileA1_1,
 						registerDate: dummyRepository.fileA1_1.registerDate.toISOString()

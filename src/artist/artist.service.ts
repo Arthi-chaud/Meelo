@@ -1,14 +1,14 @@
 import { forwardRef, Inject, Injectable, Logger } from '@nestjs/common';
 import Slug from 'src/slug/slug';
 import { ArtistAlreadyExistsException as ArtistAlreadyExistsException, ArtistNotFoundByIDException, ArtistNotFoundException, CompilationArtistException } from './artist.exceptions';
-import type { Prisma } from '@prisma/client';
+import { Prisma } from '@prisma/client';
 import PrismaService from 'src/prisma/prisma.service';
 import type ArtistQueryParameters from './models/artist.query-parameters';
 import { type PaginationParameters, buildPaginationParameters } from 'src/pagination/models/pagination-parameters';
 import SongService from 'src/song/song.service';
 import AlbumService from 'src/album/album.service';
 import IllustrationService from 'src/illustration/illustration.service';
-import { buildSortingParameter } from 'src/sort/models/sorting-parameter';
+import SortingParameter from 'src/sort/models/sorting-parameter';
 import RepositoryService from 'src/repository/repository.service';
 import type { MeeloException } from 'src/exceptions/meelo-exception';
 import { buildStringSearchParameters } from 'src/utils/search-string-input';
@@ -25,11 +25,13 @@ export default class ArtistService extends RepositoryService<
 	ArtistQueryParameters.ManyWhereInput,
 	ArtistQueryParameters.UpdateInput,
 	ArtistQueryParameters.DeleteInput,
+	ArtistQueryParameters.SortingKeys,
 	Prisma.ArtistCreateInput,
 	Prisma.ArtistWhereInput,
 	Prisma.ArtistWhereInput,
 	Prisma.ArtistUpdateInput,
-	Prisma.ArtistWhereUniqueInput
+	Prisma.ArtistWhereUniqueInput,
+	Prisma.ArtistOrderByWithRelationInput
 > {
 	constructor(
 		private prismaService: PrismaService,
@@ -108,6 +110,22 @@ export default class ArtistService extends RepositoryService<
 	}
 	formatManyWhereInput = ArtistService.formatManyWhereInput;
 
+	formatSortingInput(
+		sortingParameter: SortingParameter<ArtistQueryParameters.SortingKeys>
+	): Prisma.ArtistOrderByWithRelationInput {
+		switch (sortingParameter.sortBy) {
+			case 'name':
+				return { slug: sortingParameter.order }
+			case 'albumCount':
+				return { albums: { _count: sortingParameter.order } }
+			case 'songCount':
+				return { songs: { _count: sortingParameter.order } }
+			case 'addDate':
+				return { id: sortingParameter.order }
+			default:
+				return { [sortingParameter.sortBy ?? 'id']: sortingParameter.order }
+		}
+	}
 	/**
 	 * Find multiple artists that have at least one album
 	 * @param where the query parameters to find the artists
@@ -126,7 +144,7 @@ export default class ArtistService extends RepositoryService<
 				NOT: { albums: { none: {} } }
 			},
 			include: RepositoryService.formatInclude(include),
-			orderBy: buildSortingParameter(sort),
+			orderBy: sort ? this.formatSortingInput(sort) : undefined,
 			...buildPaginationParameters(pagination)
 		});
 	}
@@ -157,7 +175,7 @@ export default class ArtistService extends RepositoryService<
 	 * @param where the query parameters to find the album to delete
 	 */
 	async delete(where: ArtistQueryParameters.DeleteInput): Promise<Artist> {
-		let artist = await this.get(where, { albums: true, songs: true });
+		const artist = await this.get(where, { albums: true, songs: true });
 		await Promise.allSettled([
 			...artist.albums.map(
 				(album) => this.albumService.delete({ byId: { id: album.id } })
@@ -198,7 +216,7 @@ export default class ArtistService extends RepositoryService<
 	 * @returns the response Object
 	 */
 	async buildResponse(artist: ArtistWithRelations): Promise<ArtistResponse> {
-		let response = <ArtistResponse>{
+		const response = <ArtistResponse>{
 			...artist,
 			illustration: this.illustrationService.getArtistIllustrationLink(new Slug(artist.slug))
 		};

@@ -4,7 +4,7 @@ import Slug from 'src/slug/slug';
 import { AlbumAlreadyExistsException, AlbumAlreadyExistsExceptionWithArtistID as AlbumAlreadyExistsWithArtistIDException, AlbumNotFoundException, AlbumNotFoundFromIDException } from './album.exceptions';
 import { AlbumType,  Prisma } from '@prisma/client';
 import PrismaService from 'src/prisma/prisma.service';
-import type AlbumQueryParameters from './models/album.query-parameters';
+import AlbumQueryParameters from './models/album.query-parameters';
 import type ArtistQueryParameters from 'src/artist/models/artist.query-parameters';
 import ReleaseService from 'src/release/release.service';
 import IllustrationService from 'src/illustration/illustration.service';
@@ -15,6 +15,7 @@ import { buildStringSearchParameters } from 'src/utils/search-string-input';
 import SongService from 'src/song/song.service';
 import { Album, Release, Genre, AlbumWithRelations } from "src/prisma/models";
 import { AlbumResponse } from './models/album.response';
+import SortingParameter from 'src/sort/models/sorting-parameter';
 
 @Injectable()
 export default class AlbumService extends RepositoryService<
@@ -24,11 +25,13 @@ export default class AlbumService extends RepositoryService<
 	AlbumQueryParameters.ManyWhereInput,
 	AlbumQueryParameters.UpdateInput,
 	AlbumQueryParameters.DeleteInput,
+	AlbumQueryParameters.SortingKeys,
 	Prisma.AlbumCreateInput,
 	Prisma.AlbumWhereInput,
 	Prisma.AlbumWhereInput,
 	Prisma.AlbumUpdateInput,
-	Prisma.AlbumWhereUniqueInput
+	Prisma.AlbumWhereUniqueInput,
+	Prisma.AlbumOrderByWithRelationInput
 > {
 	constructor(
 		prismaService: PrismaService,
@@ -124,7 +127,23 @@ export default class AlbumService extends RepositoryService<
 	}
 	formatManyWhereInput = AlbumService.formatManyWhereInput;
 
-
+	formatSortingInput(
+		sortingParameter: SortingParameter<AlbumQueryParameters.SortingKeys>
+	): Prisma.AlbumOrderByWithRelationInput {
+		switch (sortingParameter.sortBy) {
+			case 'name':
+				return { slug: sortingParameter.order }
+			case 'artistName':
+				return { artist: this.artistServce.formatSortingInput(
+					{ sortBy: 'name', order :sortingParameter.order })
+				}
+			case 'addDate':
+				return { id: sortingParameter.order }
+			default:
+				return {[sortingParameter.sortBy ?? 'id']: sortingParameter.order}
+		}
+	}
+	
 	/**
 	 * Updates an album
 	 */
@@ -139,7 +158,7 @@ export default class AlbumService extends RepositoryService<
 	 * @param where the query parameter to get the album to update
 	 */
 	async updateAlbumDate(where: AlbumQueryParameters.WhereInput) {
-		let album = await this.get(where, { releases: true });
+		const album = await this.get(where, { releases: true });
 		for (const release of album.releases) {
 			if (album.releaseDate == null ||
 				(release.releaseDate && release.releaseDate < album.releaseDate)) {
@@ -154,7 +173,7 @@ export default class AlbumService extends RepositoryService<
 	 * @param where the query parameter to get the album to update
 	 */
 	 async updateAlbumMaster(where: AlbumQueryParameters.WhereInput): Promise<Release | null> {
-		let releases = await this.releaseService.getAlbumReleases(where);
+		const releases = await this.releaseService.getAlbumReleases(where);
 		const sortedReleases = releases
 			.filter((releases) => releases.releaseDate !== null)
 			.sort((releaseA, releaseB) => releaseA.releaseDate!.getTime() - releaseB.releaseDate!.getTime())
@@ -174,7 +193,7 @@ export default class AlbumService extends RepositoryService<
 	 * @param where the query parameter 
 	 */
 	async delete(where: AlbumQueryParameters.DeleteInput): Promise<Album> {
-		let album = await this.get(where, { releases: true, artist: true });
+		const album = await this.get(where, { releases: true, artist: true });
 		await Promise.all(
 			album.releases.map(
 				(release) => this.releaseService.delete({ byId: { id: release.id }}, false)
@@ -255,7 +274,7 @@ export default class AlbumService extends RepositoryService<
 		const genres: Genre[] = (await Promise.all(
 			songsId.map((songId) => this.genreService.getSongGenres({ byId: { id: songId } }))
 		)).flat();
-		let genresOccurrences = genres.reduce(
+		const genresOccurrences = genres.reduce(
 			(occurences, genre) => occurences.set(genre.slug, (occurences.get(genre.slug) || 0) + 1),
 			new Map<string, number>()
 		);
@@ -269,7 +288,7 @@ export default class AlbumService extends RepositoryService<
 	 * @param album the album to create the object from
 	 */
 	async buildResponse(album: AlbumWithRelations): Promise<AlbumResponse> {
-		let response = <AlbumResponse>{
+		const response = <AlbumResponse>{
 			...album,
 			illustration: await this.illustrationService.getAlbumIllustrationLink(album.id)
 		};

@@ -67,7 +67,7 @@ describe("Genre Service", () => {
 		});
 
 		it(('should return an existing genre, without only its id and slug'), async () => {
-			let genre = await genreService.select({  id: dummyRepository.genreC.id }, { slug: true, id: true });
+			const genre = await genreService.select({  id: dummyRepository.genreC.id }, { slug: true, id: true });
 			expect(genre).toStrictEqual({ id: dummyRepository.genreC.id, slug: dummyRepository.genreC.slug});
 		});
 
@@ -177,7 +177,7 @@ describe("Genre Service", () => {
 		});
 
 		it("should create the genre", async () => {
-			let otherGenre = await genreService.getOrCreate({ name: 'My New Genre 2' });
+			const otherGenre = await genreService.getOrCreate({ name: 'My New Genre 2' });
 
 			expect(otherGenre.id).not.toBe(newGenre);
 			expect(otherGenre.id).not.toBe(dummyRepository.genreA);

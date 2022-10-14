@@ -8,7 +8,7 @@ export class FakeFileManagerService extends FileManagerService {
 	}
 }
 
-export let FakeFileManagerModule = {
+export const FakeFileManagerModule = {
 	provide: FileManagerService,
 	useClass: FakeFileManagerService
 };

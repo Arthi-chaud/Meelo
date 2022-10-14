@@ -51,7 +51,7 @@ export class SongController {
 		sortingParameter: SongQueryParameters.SortingParameter,
 		@Req() request: Request
 	) {
-		let songs = await this.songService.getMany(
+		const songs = await this.songService.getMany(
 			{}, paginationParameters, include, sortingParameter
 		);
 		return new PaginatedResponse(
@@ -70,7 +70,7 @@ export class SongController {
 		@Param(ParseSongIdentifierPipe)
 		where: SongQueryParameters.WhereInput
 	) {
-		let song = await this.songService.get(where, include);
+		const song = await this.songService.get(where, include);
 		return await this.songService.buildResponse(song);
 	}
 
@@ -95,8 +95,8 @@ export class SongController {
 		@Param(ParseSongIdentifierPipe)
 		where: SongQueryParameters.WhereInput
 	) {
-		let song = await this.songService.get(where);
-		let artist = await this.artistService.get({
+		const song = await this.songService.get(where);
+		const artist = await this.artistService.get({
 			id: song.artistId
 		}, include);
 		return await this.artistService.buildResponse(artist);
@@ -112,7 +112,7 @@ export class SongController {
 		@Param(ParseSongIdentifierPipe)
 		where: SongQueryParameters.WhereInput
 	) {
-		let master = await this.trackService.getMasterTrack(where, include);
+		const master = await this.trackService.getMasterTrack(where, include);
 		return await this.trackService.buildResponse(master);
 	}
 
@@ -132,7 +132,7 @@ export class SongController {
 		sortingParameter: TrackQueryParameters.SortingParameter,
 		@Req() request: Request
 	) {
-		let tracks = await this.trackService.getSongTracks(
+		const tracks = await this.trackService.getSongTracks(
 			where, paginationParameters, include, sortingParameter
 		);
 		if (tracks.length == 0)

@@ -55,12 +55,12 @@ describe('Artist Service', () => {
 
 	describe('Get Artist', () => {
 		it(('should return an existing artist, without relations'), async () => {
-			let artist = await artistService.get({ slug: new Slug(dummyRepository.artistC.slug) });
+			const artist = await artistService.get({ slug: new Slug(dummyRepository.artistC.slug) });
 			expect(artist).toStrictEqual(dummyRepository.artistC);
 		});
 
 		it(('should return an existing artist, without only its id and slug'), async () => {
-			let artist = await artistService.select({ slug: new Slug(dummyRepository.artistC.slug) }, { slug: true, id: true });
+			const artist = await artistService.select({ slug: new Slug(dummyRepository.artistC.slug) }, { slug: true, id: true });
 			expect(artist).toStrictEqual({ id: dummyRepository.artistC.id, slug: dummyRepository.artistC.slug});
 		});
 
@@ -70,7 +70,7 @@ describe('Artist Service', () => {
 		});
 	
 		it(('should return an existing artist, with relations'), async () => {
-			let artist = await artistService.get({ slug: new Slug(dummyRepository.artistB.slug) }, {
+			const artist = await artistService.get({ slug: new Slug(dummyRepository.artistB.slug) }, {
 				albums: true,
 				songs: true
 			});
@@ -84,7 +84,7 @@ describe('Artist Service', () => {
 
 	describe('Get Artists', () => {
 		it(('should return all artists'), async () => {
-			let artists = await artistService.getMany({ });
+			const artists = await artistService.getMany({ });
 			expect(artists.length).toBe(4);
 			expect(artists).toContainEqual(dummyRepository.artistA);
 			expect(artists).toContainEqual(dummyRepository.artistB);
@@ -93,7 +93,7 @@ describe('Artist Service', () => {
 		});
 
 		it(('should return all artists, sorted by name'), async () => {
-			let artists = await artistService.getMany({}, {}, {}, { sortBy: 'name', order: 'asc' });
+			const artists = await artistService.getMany({}, {}, {}, { sortBy: 'name', order: 'asc' });
 			expect(artists.length).toBe(4);
 			expect(artists[0]).toStrictEqual(dummyRepository.artistA);
 			expect(artists[1]).toStrictEqual(newArtist);
@@ -104,14 +104,14 @@ describe('Artist Service', () => {
 
 	describe('Get Album Artists', () => {
 		it(('should return all album artists'), async () => {
-			let artists = await artistService.getAlbumsArtists({ });
+			const artists = await artistService.getAlbumsArtists({ });
 			expect(artists.length).toBe(2);
 			expect(artists).toContainEqual(dummyRepository.artistA);
 			expect(artists).toContainEqual(dummyRepository.artistB);
 		});
 
 		it(('should return all album artists, sorted by name'), async () => {
-			let artists = await artistService.getAlbumsArtists({}, {}, {}, { sortBy: 'name', order: 'desc' });
+			const artists = await artistService.getAlbumsArtists({}, {}, {}, { sortBy: 'name', order: 'desc' });
 			expect(artists.length).toBe(2);
 			expect(artists[0]).toStrictEqual(dummyRepository.artistB);
 			expect(artists[1]).toStrictEqual(dummyRepository.artistA);
@@ -120,12 +120,12 @@ describe('Artist Service', () => {
 
 	describe('Get or Create Artist', () => {
 		it(('should get the existing artist'), async () => {
-			let artistGet = await artistService.getOrCreate({ name: dummyRepository.artistA.name });
+			const artistGet = await artistService.getOrCreate({ name: dummyRepository.artistA.name });
 			expect(artistGet).toStrictEqual(dummyRepository.artistA);
 		})
 	
 		it(('should create a new artist, as it does not exists'), async () => {
-			let artist = await artistService.getOrCreate({ name: 'My Artist 2'});
+			const artist = await artistService.getOrCreate({ name: 'My Artist 2'});
 			expect(artist.name).toBe('My Artist 2');
 			expect(artist.slug).toBe('my-artist-2');
 			expect(artist.id).not.toBe(dummyRepository.artistA.id);
@@ -137,17 +137,17 @@ describe('Artist Service', () => {
 
 	describe("Count Artist", () => {
 		it("should count the artist count", async () => {
-			let artistCount = await artistService.count({});
+			const artistCount = await artistService.count({});
 			expect(artistCount).toBe(5);
 		})
 
 		it("should count the artists by name (starts with)", async () => {
-			let artistCount = await artistService.count({ byName: { startsWith: 'My A' } });
+			const artistCount = await artistService.count({ byName: { startsWith: 'My A' } });
 			expect(artistCount).toBe(2);
 		});
 
 		it("should count the artists by name (is)", async () => {
-			let artistCount = await artistService.count({ byName: { is: dummyRepository.artistC.name } });
+			const artistCount = await artistService.count({ byName: { is: dummyRepository.artistC.name } });
 			expect(artistCount).toBe(1);
 		});
 	})

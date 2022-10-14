@@ -1,15 +1,15 @@
-import { Prisma } from "@prisma/client";
 import type ArtistQueryParameters from "src/artist/models/artist.query-parameters";
 import type Slug from "src/slug/slug";
 import type SongQueryParameters from "src/song/models/song.query-params";
 import type { RequireAtLeastOne } from "type-fest";
-import type { RequireExactlyOne } from 'type-fest';;
+import type { RequireExactlyOne } from 'type-fest';
 import type { SearchStringInput } from "src/utils/search-string-input";
 import ParseBaseRelationIncludePipe from 'src/relation-include/relation-include.pipe';
 import BaseSortingParameter from 'src/sort/models/sorting-parameter';
 import ParseBaseSortingParameterPipe from 'src/sort/sort.pipe';
 import type { RelationInclude as BaseRelationInclude } from "src/relation-include/models/relation-include" ;
 import { Genre } from "src/prisma/models";
+import { ApiPropertyOptional } from "@nestjs/swagger";
 namespace GenreQueryParameters {
 	/**
 	 * The input required to save a genre in the database
@@ -58,9 +58,13 @@ namespace GenreQueryParameters {
 	/**
 	 * Defines how to sort fetched entries
 	 */
-	export const AvailableFields = Object.values(Prisma.GenreScalarFieldEnum);
-	export class SortingParameter extends BaseSortingParameter<typeof AvailableFields>{};
-	export const ParseSortingParameterPipe = new ParseBaseSortingParameterPipe(AvailableFields);
+	export const SortingKeys = ['id', 'name', 'songCount'] as const;
+	export type SortingKeys = typeof SortingKeys;
+	export class SortingParameter extends BaseSortingParameter<SortingKeys>{
+		@ApiPropertyOptional({ enum: SortingKeys })
+		sortBy: SortingKeys[number]
+	}
+	export const ParseSortingParameterPipe = new ParseBaseSortingParameterPipe(SortingKeys);
 
 
 }

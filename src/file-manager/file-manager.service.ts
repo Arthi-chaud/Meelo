@@ -99,7 +99,7 @@ export default class FileManagerService {
 	 */
 	private getCandidateInFolder(folderPath: string): string[] {
 		try {
-			let directoryContent = fs.readdirSync(folderPath, { withFileTypes: true });
+			const directoryContent = fs.readdirSync(folderPath, { withFileTypes: true });
 			let candidates: string[] = [];
 	
 			directoryContent.forEach(
@@ -125,7 +125,7 @@ export default class FileManagerService {
 	 * @returns true if any of the RegExp matches
 	 */
 	private fileIsCandidate(filepath: string): boolean {
-		let matchingRegexes = this.settingsService.settingsValues.trackRegex.filter(
+		const matchingRegexes = this.settingsService.settingsValues.trackRegex.filter(
 			(regex) => filepath.match(regex) != null
 		);
 		return matchingRegexes.length > 0;

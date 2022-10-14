@@ -1,4 +1,3 @@
-import { Prisma } from "@prisma/client";
 import type LibraryQueryParameters from "src/library/models/library.query-parameters";
 import type Slug from "src/slug/slug"
 import type { RequireAtLeastOne } from "type-fest";
@@ -10,6 +9,7 @@ import BaseSortingParameter from 'src/sort/models/sorting-parameter';
 import ParseBaseSortingParameterPipe from 'src/sort/sort.pipe';
 import type GenreQueryParameters from "src/genre/models/genre.query-parameters";
 import { Artist } from "src/prisma/models";
+import { ApiPropertyOptional } from "@nestjs/swagger";
 
 namespace ArtistQueryParameters {
 
@@ -62,9 +62,13 @@ namespace ArtistQueryParameters {
 	/**
 	 * Defines how to sort fetched entries
 	 */
-	export const AvailableFields = Object.values(Prisma.ArtistScalarFieldEnum);
-	export class SortingParameter extends BaseSortingParameter<typeof AvailableFields>{};
-	export const ParseSortingParameterPipe = new ParseBaseSortingParameterPipe(AvailableFields);
+	export const SortingKeys = ['id', 'name', 'albumCount', 'songCount', 'addDate'] as const;
+	export type SortingKeys = typeof SortingKeys
+	export class SortingParameter extends BaseSortingParameter<SortingKeys>{
+		@ApiPropertyOptional({ enum: SortingKeys })
+		sortBy: SortingKeys[number]
+	}
+	export const ParseSortingParameterPipe = new ParseBaseSortingParameterPipe(SortingKeys);
 }
 
 export default ArtistQueryParameters;

@@ -15,6 +15,7 @@ import LibraryService from 'src/library/library.service';
 import mime from 'mime';
 import Slug from 'src/slug/slug';
 import { Prisma } from '@prisma/client';
+import SortingParameter from 'src/sort/models/sorting-parameter';
 
 @Injectable()
 export default class FileService extends RepositoryService<
@@ -24,11 +25,13 @@ export default class FileService extends RepositoryService<
 	FileQueryParameters.ManyWhereInput,
 	FileQueryParameters.UpdateInput,
 	FileQueryParameters.DeleteInput,
+	FileQueryParameters.SortingKeys,
 	Prisma.FileCreateInput,
 	Prisma.FileWhereInput,
 	Prisma.FileWhereInput,
 	Prisma.FileUpdateInput,
-	Prisma.FileWhereUniqueInput
+	Prisma.FileWhereUniqueInput,
+	Prisma.FileOrderByWithRelationInput
 > {
 	constructor(
 		private prismaService: PrismaService,
@@ -91,6 +94,21 @@ export default class FileService extends RepositoryService<
 		}
 	}
 	formatManyWhereInput = FileService.formatManyWhereInput;
+
+	formatSortingInput(
+		sort: SortingParameter<FileQueryParameters.SortingKeys>
+	): Prisma.FileOrderByWithRelationInput {
+		switch (sort.sortBy) {
+			case 'addDate':
+				return { id: sort.order }
+			case 'trackArtist':
+				return { track: { song: { artist: { slug: sort.order } } } }
+			case 'trackName':
+				return { track: { song: { slug: sort.order }}}
+			default:
+				return { [sort.sortBy ?? 'id']: sort.order }
+		}
+	}
 
 	onNotFound(where: FileQueryParameters.WhereInput): MeeloException {
 		if (where.id !== undefined)

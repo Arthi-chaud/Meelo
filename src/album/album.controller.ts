@@ -105,7 +105,7 @@ export default class AlbumController {
 		@Param(ParseAlbumIdentifierPipe)
 		where: AlbumQueryParameters.WhereInput
 	) {
-		let masterRelease = await this.releaseService.getMasterRelease(where, include);
+		const masterRelease = await this.releaseService.getMasterRelease(where, include);
 		return await this.releaseService.buildResponse(masterRelease);
 	}
 
@@ -125,7 +125,7 @@ export default class AlbumController {
 		where: AlbumQueryParameters.WhereInput,
 		@Req() request: Request
 	) {
-		let releases = await this.releaseService.getAlbumReleases(
+		const releases = await this.releaseService.getAlbumReleases(
 			where, paginationParameters, include, sortingParameter
 		);
 		return new PaginatedResponse(

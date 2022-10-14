@@ -4,7 +4,7 @@ import MeeloExceptionFilter from "src/exceptions/meelo-exception.filter";
 import NotFoundExceptionFilter from "src/exceptions/not-found.exception";
 
 export default async function SetupApp(module: TestingModule): Promise<INestApplication> {
-	let app = module.createNestApplication();
+	const app = module.createNestApplication();
 	app.useGlobalFilters(
 		new NotFoundExceptionFilter(),
 		new MeeloExceptionFilter()

@@ -24,5 +24,5 @@ type ArtistWithSongs = Artist & {
 }
 type ArtistInclude = 'albums' | 'songs';
 export default Artist;
-export const ArtistSortingKeys = ['name'];
+export const ArtistSortingKeys = ['name', 'albumCount', 'songCount'];
 export type { ArtistWithSongs, ArtistWithAlbums, ArtistInclude };

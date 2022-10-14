@@ -47,29 +47,29 @@ export default class MetadataService {
 	 * @param file the file to register the metadata under, it must be already registered
 	 */
 	async registerMetadata(metadata : Metadata, file: File): Promise<Track> {
-		let genres = metadata.genres ? await Promise.all(
+		const genres = metadata.genres ? await Promise.all(
 			metadata.genres.map(async (genre) => await this.genreService.getOrCreate({ name: genre }))
 		) : [];
-		let albumArtist = metadata.compilation == false ? await this.artistService.getOrCreate({ name: metadata.albumArtist ?? metadata.artist! }) : undefined;
-		let songArtist = await this.artistService.getOrCreate({ name: metadata.artist ?? metadata.albumArtist! });
-		let song = await this.songService.getOrCreate(
+		const albumArtist = metadata.compilation == false ? await this.artistService.getOrCreate({ name: metadata.albumArtist ?? metadata.artist! }) : undefined;
+		const songArtist = await this.artistService.getOrCreate({ name: metadata.artist ?? metadata.albumArtist! });
+		const song = await this.songService.getOrCreate(
 			{ name: this.removeTrackExtension(metadata.name!), artist: { id: songArtist.id }, genres: genres.map((genre) => ({ id: genre.id }))},
 			{ tracks: true, genres: true });
 		await this.songService.update(
 			{ genres: song.genres.concat(genres).map((genre) => ({ id: genre.id }))},
 			{ byId: { id: song.id } }
 		);
-		let album = await this.albumService.getOrCreate({
+		const album = await this.albumService.getOrCreate({
 			name: this.removeReleaseExtension(metadata.album ?? metadata.release!),
 			artist: albumArtist ? { id: albumArtist?.id} : undefined
 		}, { releases: true });
-		let release = await this.releaseService.getOrCreate({
+		const release = await this.releaseService.getOrCreate({
 			name: metadata.release ?? metadata.album!,
 			master: album.releases.length == 0,
 			releaseDate: metadata.releaseDate,
 			album: { byId: { id: album.id } }
 		}, { album: true });
-		let track: TrackQueryParameters.CreateInput = {
+		const track: TrackQueryParameters.CreateInput = {
 			name: metadata.name!,
 			master: song.tracks.length == 0,
 			discIndex: metadata.discIndex ?? null,
@@ -100,8 +100,8 @@ export default class MetadataService {
 	 * @returns a Metadata object
 	 */
 	async parseMetadata(filePath: string): Promise<Metadata> {
-		let fileMetadata: Metadata = await this.parseMetadataFromFile(filePath);
-		let pathMetadata: Metadata = this.parseMetadataFromPath(filePath);
+		const fileMetadata: Metadata = await this.parseMetadataFromFile(filePath);
+		const pathMetadata: Metadata = this.parseMetadataFromPath(filePath);
 		const settings = this.settingsService.settingsValues;
 
 		if (settings.metadata.order == "only") {
@@ -145,10 +145,10 @@ export default class MetadataService {
 	 */
 	public parseMetadataFromPath(filePath: string): Metadata {
 		try {
-			let matchingRegex: RegExpMatchArray = this.settingsService.settingsValues.trackRegex
+			const matchingRegex: RegExpMatchArray = this.settingsService.settingsValues.trackRegex
 				.map((regex) => filePath.match(regex))
 				.find((regexMatch) => regexMatch != null)!;
-			let groups = matchingRegex.groups!;
+			const groups = matchingRegex.groups!;
 			const isCompilation = groups['AlbumArtist']?.toLocaleLowerCase() === compilationAlbumArtistKeyword ||
 			groups['Artist']?.toLocaleLowerCase() === compilationAlbumArtistKeyword;
 			return {
@@ -169,7 +169,7 @@ export default class MetadataService {
 	}
 
 	private buildMetadataFromRaw(rawMetadata: IAudioMetadata): Metadata {
-		let isVideo: boolean = rawMetadata.format.trackInfo.length != 1;
+		const isVideo: boolean = rawMetadata.format.trackInfo.length != 1;
 		return {
 			genres: rawMetadata.common.genre,
 			compilation: rawMetadata.common.compilation ?? false,
@@ -342,7 +342,7 @@ export default class MetadataService {
 		const extensionsGroup = extensions.map((ext) => `(${ext})`).join('|');
 		for (const delimiter of extensionDelimiters) {
 			const regExp = new RegExp(`\\s+(?<extension>\\${delimiter[0]}.*(${extensionsGroup}).*\\${delimiter[1]})\\s*`, 'i');
-			let match = regExp.exec(source);
+			const match = regExp.exec(source);
 			if (match)
 				groupsFound = groupsFound.concat(match[1]);
 		}

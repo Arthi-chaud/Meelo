@@ -24,4 +24,4 @@ export default class ParseAlbumIdentifierPipe implements PipeTransform {
 			}
 		}
 	}
-};
+}

@@ -57,7 +57,7 @@ export default class IllustrationService implements OnModuleInit {
 	buildArtistIllustrationFolderPath(artistSlug?: Slug): string {
 		if (artistSlug == undefined)
 			return this.buildCompilationIllustrationFolderPath();
-		const artistMetadataFolder: string = `${this.illustrationFolderPath}/${artistSlug}`;
+		const artistMetadataFolder = `${this.illustrationFolderPath}/${artistSlug}`;
 		return artistMetadataFolder;
 	}
 	/**
@@ -67,7 +67,7 @@ export default class IllustrationService implements OnModuleInit {
 	 */
 	buildAlbumIllustrationFolderPath(albumSlug: Slug, artistSlug?: Slug): string {
 		const artistMetadataFolder: string = this.buildArtistIllustrationFolderPath(artistSlug);
-		const albumMetadataFolder: string = `${artistMetadataFolder}/${albumSlug}`;
+		const albumMetadataFolder = `${artistMetadataFolder}/${albumSlug}`;
 		return albumMetadataFolder;
 	}
 
@@ -79,7 +79,7 @@ export default class IllustrationService implements OnModuleInit {
 	 */
 	buildReleaseIllustrationFolderPath(albumSlug: Slug, releaseSlug: Slug, artistSlug?: Slug): string {
 		const albumMetadataFolder: string = this.buildAlbumIllustrationFolderPath(albumSlug, artistSlug);
-		const releaseMetadataFolder: string = `${albumMetadataFolder}/${releaseSlug.toString()}`;
+		const releaseMetadataFolder = `${albumMetadataFolder}/${releaseSlug.toString()}`;
 		return releaseMetadataFolder;
 	}
 
@@ -111,7 +111,7 @@ export default class IllustrationService implements OnModuleInit {
 	 */
 	buildReleaseIllustrationPath(albumSlug: Slug, releaseSlug: Slug, artistSlug?: Slug): IllustrationPath {
 		const releaseIllustrationFolder: string = this.buildReleaseIllustrationFolderPath(albumSlug, releaseSlug, artistSlug);
-		const releaseIllstrationPath: string = `${releaseIllustrationFolder}/cover.jpg`;
+		const releaseIllstrationPath = `${releaseIllustrationFolder}/cover.jpg`;
 		return releaseIllstrationPath;
 	}
 
@@ -176,8 +176,8 @@ export default class IllustrationService implements OnModuleInit {
 	 */
 	async extractTrackIllustration(track: Track, fullTrackPath: string): Promise<IllustrationPath | null> {
 		Logger.log(`Extracting illustration from track '${track.name}'`);
-		let release: Release = await this.releaseService.get({ byId: { id: track.releaseId } });
-		let album = await this.albumService.get(
+		const release: Release = await this.releaseService.get({ byId: { id: track.releaseId } });
+		const album = await this.albumService.get(
 			{ byId: { id: release.albumId }},
 			{ artist: true }
 		)
@@ -335,7 +335,7 @@ export default class IllustrationService implements OnModuleInit {
 	 */
 	async downloadIllustration(illustrationURL: string, outPath: IllustrationPath) {
 		try {
-			let image = await Jimp.read(illustrationURL);
+			const image = await Jimp.read(illustrationURL);
 			fs.mkdir(dir.dirname(outPath), { recursive: true }, function (_err) {});
 			image.write(outPath);
 		} catch {

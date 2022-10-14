@@ -5,7 +5,7 @@ describe('Slug Pipe', () => {
 	const inputMetadata: ArgumentMetadata = { type: 'custom' };
 
 	describe('Basic Slug Pipe', () => {
-		let slugPipe = new ParseSlugPipe();
+		const slugPipe = new ParseSlugPipe();
 		it("should format the string into a slug", () => {
 			const slugged = slugPipe.transform("Hello World", inputMetadata);
 			expect(slugged.toString()).toBe("hello-world");
@@ -18,7 +18,7 @@ describe('Slug Pipe', () => {
 
 	})
 	describe('Artist Slug Pipe', () => {
-		let artistSlugPipe = new ParseArtistSlugPipe();
+		const artistSlugPipe = new ParseArtistSlugPipe();
 	
 		it("should parse the artist slug", () => {
 			const slugged = artistSlugPipe.transform("My Artist", inputMetadata);

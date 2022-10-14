@@ -40,7 +40,7 @@ describe('Metadata Service', () => {
 		});
 
 		it("should extract the metadata values from the path", () => {
-			let parsedValues: Metadata = metadataService.parseMetadataFromPath(
+			const parsedValues: Metadata = metadataService.parseMetadataFromPath(
 				'/data/My Album Artist/My Album (2006)/1-02 My Track (My Artist).m4a'
 			);
 			
@@ -59,7 +59,7 @@ describe('Metadata Service', () => {
 		});
 
 		it("should extract the metadata values from the path (compilation)", () => {
-			let parsedValues: Metadata = metadataService.parseMetadataFromPath(
+			const parsedValues: Metadata = metadataService.parseMetadataFromPath(
 				'/data/Compilations/My Album (2006)/1-02 My Track.m4a'
 			);
 			
@@ -80,7 +80,7 @@ describe('Metadata Service', () => {
 
 	describe('Parse Metadata from embedded metadata', () => {
 		it("should extract the metadata values from the file's tags", async () => {
-			let parsedValues: Metadata = await metadataService.parseMetadataFromFile(
+			const parsedValues: Metadata = await metadataService.parseMetadataFromFile(
 				'test/assets/dreams.m4a'
 			);
 			

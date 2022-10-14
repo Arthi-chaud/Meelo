@@ -81,7 +81,7 @@ export default class ArtistController {
 		@Query('with', ArtistQueryParameters.ParseRelationIncludePipe)
 		include: ArtistQueryParameters.RelationInclude
 	) {
-		let artist = await this.artistService.get(where, include);
+		const artist = await this.artistService.get(where, include);
 		return await this.artistService.buildResponse(artist);
 	}
 
@@ -130,7 +130,7 @@ export default class ArtistController {
 		include: AlbumQueryParameters.RelationInclude,
 		@Req() request: Request
 	) {
-		let albums = await this.albumService.getMany(
+		const albums = await this.albumService.getMany(
 			{ byArtist: where }, paginationParameters, include, sortingParameter
 		);
 		if (albums.length == 0)
@@ -157,7 +157,7 @@ export default class ArtistController {
 		include: SongQueryParameters.RelationInclude,
 		@Req() request: Request
 	) {
-		let songs = await this.songService.getMany(
+		const songs = await this.songService.getMany(
 			{ artist: where }, paginationParameters, include, sortingParameter
 		);
 		if (songs.length == 0)

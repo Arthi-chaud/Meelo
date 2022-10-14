@@ -61,7 +61,7 @@ describe('Song Controller', () => {
 				.get(`/songs`)
 				.expect(200)
 				.expect((res) => {
-					let songs: Song[] = res.body.items
+					const songs: Song[] = res.body.items
 					expect(songs.length).toBe(4);
 					expect(songs[0]).toStrictEqual(expectedSongResponse(dummyRepository.songA1));
 					expect(songs[1]).toStrictEqual(expectedSongResponse(dummyRepository.songA2));
@@ -74,7 +74,7 @@ describe('Song Controller', () => {
 				.get(`/songs?sortBy=name&order=desc`)
 				.expect(200)
 				.expect((res) => {
-					let songs: Song[] = res.body.items
+					const songs: Song[] = res.body.items
 					expect(songs.length).toBe(4);
 					expect(songs[0]).toStrictEqual(expectedSongResponse(dummyRepository.songA1));
 					expect(songs[1]).toStrictEqual(expectedSongResponse(dummyRepository.songB1));
@@ -87,7 +87,7 @@ describe('Song Controller', () => {
 				.get(`/songs?skip=1&take=2`)
 				.expect(200)
 				.expect((res) => {
-					let songs: Song[] = res.body.items
+					const songs: Song[] = res.body.items
 					expect(songs.length).toBe(2);
 					expect(songs).toContainEqual(expectedSongResponse(dummyRepository.songB1));
 					expect(songs).toContainEqual(expectedSongResponse(dummyRepository.songA2));
@@ -98,7 +98,7 @@ describe('Song Controller', () => {
 				.get(`/songs?with=tracks&take=2`)
 				.expect(200)
 				.expect((res) => {
-					let songs: Song[] = res.body.items
+					const songs: Song[] = res.body.items
 					expect(songs.length).toBe(2);
 					expect(songs[0]).toStrictEqual({
 						...expectedSongResponse(dummyRepository.songA1),
@@ -120,7 +120,7 @@ describe('Song Controller', () => {
 				.get(`/songs?take=1&with=artist`)
 				.expect(200)
 				.expect((res) => {
-					let songs: Song[] = res.body.items
+					const songs: Song[] = res.body.items
 					expect(songs.length).toBe(1);
 					expect(songs[0]).toStrictEqual({
 						...expectedSongResponse(dummyRepository.songA1),
@@ -139,7 +139,7 @@ describe('Song Controller', () => {
 				.get(`/songs/${dummyRepository.songA1.id}`)
 				.expect(200)
 				.expect((res) => {
-					let song: Song = res.body
+					const song: Song = res.body
 					expect(song).toStrictEqual(expectedSongResponse(dummyRepository.songA1));
 				});
 		});
@@ -148,7 +148,7 @@ describe('Song Controller', () => {
 				.get(`/songs/${dummyRepository.artistA.slug}+${dummyRepository.songA2.slug}`)
 				.expect(200)
 				.expect((res) => {
-					let song: Song = res.body
+					const song: Song = res.body
 					expect(song).toStrictEqual(expectedSongResponse(dummyRepository.songA2));
 				});
 		});
@@ -157,7 +157,7 @@ describe('Song Controller', () => {
 				.get(`/songs/${dummyRepository.songA1.id}?with=artist`)
 				.expect(200)
 				.expect((res) => {
-					let song: Song = res.body
+					const song: Song = res.body
 					expect(song).toStrictEqual({
 						...expectedSongResponse(dummyRepository.songA1),
 						artist: {
@@ -172,7 +172,7 @@ describe('Song Controller', () => {
 				.get(`/songs/${dummyRepository.songA2.id}?with=genres`)
 				.expect(200)
 				.expect((res) => {
-					let song: Song = res.body
+					const song: Song = res.body
 					expect(song).toStrictEqual({
 						...expectedSongResponse(dummyRepository.songA2),
 						genres: [ dummyRepository.genreB ],
@@ -184,7 +184,7 @@ describe('Song Controller', () => {
 				.get(`/songs/${dummyRepository.songA1.id}?with=tracks`)
 				.expect(200)
 				.expect((res) => {
-					let song: Song = res.body
+					const song: Song = res.body
 					expect(song).toStrictEqual({
 						...expectedSongResponse(dummyRepository.songA1),
 						tracks: [
@@ -207,7 +207,7 @@ describe('Song Controller', () => {
 				.get(`/songs/${dummyRepository.songB1.id}/master`)
 				.expect(200)
 				.expect((res) => {
-					let track: Track = res.body
+					const track: Track = res.body
 					expect(track).toStrictEqual(expectedTrackResponse(dummyRepository.trackB1_1));
 				});
 		});
@@ -216,7 +216,7 @@ describe('Song Controller', () => {
 				.get(`/songs/${dummyRepository.songA1.id}/master?with=song,release`)
 				.expect(200)
 				.expect((res) => {
-					let track: Track = res.body
+					const track: Track = res.body
 					expect(track).toStrictEqual({
 						...expectedTrackResponse(dummyRepository.trackA1_1),
 						song: expectedSongResponse(dummyRepository.songA1),
@@ -246,7 +246,7 @@ describe('Song Controller', () => {
 				.get(`/songs/${dummyRepository.songA1.id}/tracks`)
 				.expect(200)
 				.expect((res) => {
-					let tracks: Track[] = res.body.items;
+					const tracks: Track[] = res.body.items;
 					expect(tracks.length).toBe(2);
 					expect(tracks[0]).toStrictEqual(expectedTrackResponse(dummyRepository.trackA1_1));
 					expect(tracks[1]).toStrictEqual(expectedTrackResponse(dummyRepository.trackA1_2Video));
@@ -257,7 +257,7 @@ describe('Song Controller', () => {
 				.get(`/songs/${dummyRepository.songA1.id}/tracks?take=1`)
 				.expect(200)
 				.expect((res) => {
-					let tracks: Track[] = res.body.items;
+					const tracks: Track[] = res.body.items;
 					expect(tracks.length).toBe(1);
 					expect(tracks[0]).toStrictEqual(expectedTrackResponse(dummyRepository.trackA1_1));
 				});
@@ -267,7 +267,7 @@ describe('Song Controller', () => {
 				.get(`/songs/${dummyRepository.songB1.id}/tracks?with=song`)
 				.expect(200)
 				.expect((res) => {
-					let tracks: Track[] = res.body.items;
+					const tracks: Track[] = res.body.items;
 					expect(tracks.length).toBe(1);
 					expect(tracks[0]).toStrictEqual({
 						...expectedTrackResponse(dummyRepository.trackB1_1),
@@ -329,7 +329,7 @@ describe('Song Controller', () => {
 				.get(`/songs/${dummyRepository.artistA.slug}+${dummyRepository.songA1.slug}/lyrics`)
 				.expect(200)
 				.expect((res) => {
-					let lyrics: Lyrics = res.body;
+					const lyrics: Lyrics = res.body;
 					expect(lyrics).toStrictEqual({
 						lyrics: dummyRepository.lyricsA1.content
 					});
@@ -355,7 +355,7 @@ describe('Song Controller', () => {
 				.get(`/songs/${dummyRepository.artistA.slug}+${dummyRepository.songA2.slug}/genres`)
 				.expect(200)
 				.expect((res) => {
-					let genres: Genre[] = res.body.items;
+					const genres: Genre[] = res.body.items;
 					expect(genres).toStrictEqual([
 						dummyRepository.genreB
 					]);
@@ -431,7 +431,7 @@ describe('Song Controller', () => {
 				.get(`/songs/${dummyRepository.songA1.id}/videos`)
 				.expect(200)
 				.expect((res) => {
-					let tracks: Track[] = res.body.items;
+					const tracks: Track[] = res.body.items;
 					expect(tracks.length).toBe(1);
 					expect(tracks[0]).toStrictEqual(expectedTrackResponse(dummyRepository.trackA1_2Video));
 				});
@@ -442,7 +442,7 @@ describe('Song Controller', () => {
 				.get(`/songs/${dummyRepository.songB1.id}/videos`)
 				.expect(200)
 				.expect((res) => {
-					let tracks: Track[] = res.body.items;
+					const tracks: Track[] = res.body.items;
 					expect(tracks.length).toBe(0);
 				});
 		});
@@ -455,7 +455,7 @@ describe('Song Controller', () => {
 				.get(`/songs/${dummyRepository.songB1.id}/artist`)
 				.expect(200)
 				.expect((res) => {
-					let fetchedArtist : Artist = res.body
+					const fetchedArtist : Artist = res.body
 					expect(fetchedArtist).toStrictEqual({
 						...dummyRepository.artistB,
 						illustration: null 
@@ -467,7 +467,7 @@ describe('Song Controller', () => {
 				.get(`/songs/${dummyRepository.artistA.slug}+${dummyRepository.songA2.slug}/artist`)
 				.expect(200)
 				.expect((res) => {
-					let fetchedArtist : Artist = res.body
+					const fetchedArtist : Artist = res.body
 					expect(fetchedArtist).toStrictEqual({
 						...dummyRepository.artistA,
 						illustration: null 
@@ -479,7 +479,7 @@ describe('Song Controller', () => {
 				.get(`/songs/${dummyRepository.songB1.id}/artist?with=songs,albums`)
 				.expect(200)
 				.expect((res) => {
-					let fetchedArtist : Artist = res.body
+					const fetchedArtist : Artist = res.body
 					expect(fetchedArtist).toStrictEqual({
 						...dummyRepository.artistB,
 						illustration: null,
@@ -507,7 +507,7 @@ describe('Song Controller', () => {
 				.get(`/songs/${dummyRepository.songA2.id}/versions?sortBy=id&order=desc`)
 				.expect(200)
 				.expect((res) => {
-					let fetchedSongs : Song[] = res.body.items
+					const fetchedSongs : Song[] = res.body.items
 					expect(fetchedSongs).toStrictEqual([
 						expectedSongResponse(version),
 						expectedSongResponse(dummyRepository.songA2),

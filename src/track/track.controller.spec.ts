@@ -54,7 +54,7 @@ describe('Track Controller', () => {
 				.get(`/tracks`)
 				.expect(200)
 				.expect((res) => {
-					let tracks: Track[] = res.body.items;
+					const tracks: Track[] = res.body.items;
 					expect(tracks.length).toBe(5);
 					expect(tracks).toContainEqual(expectedTrackResponse(dummyRepository.trackA1_1));
 					expect(tracks).toContainEqual(expectedTrackResponse(dummyRepository.trackA1_2Video));
@@ -68,7 +68,7 @@ describe('Track Controller', () => {
 				.get(`/tracks?sortBy=name`)
 				.expect(200)
 				.expect((res) => {
-					let tracks: Track[] = res.body.items;
+					const tracks: Track[] = res.body.items;
 					expect(tracks.length).toBe(5);
 					expect(tracks[0]).toStrictEqual(expectedTrackResponse(dummyRepository.trackC1_1));
 					expect(tracks[1]).toStrictEqual(expectedTrackResponse(dummyRepository.trackA2_1));
@@ -82,7 +82,7 @@ describe('Track Controller', () => {
 				.get(`/tracks?skip=1&take=2&sortBy=name`)
 				.expect(200)
 				.expect((res) => {
-					let tracks: Track[] = res.body.items;
+					const tracks: Track[] = res.body.items;
 					expect(tracks.length).toBe(2);
 					expect(tracks[0]).toStrictEqual(expectedTrackResponse(dummyRepository.trackA2_1));
 					expect(tracks[1]).toStrictEqual(expectedTrackResponse(dummyRepository.trackB1_1));
@@ -93,7 +93,7 @@ describe('Track Controller', () => {
 				.get(`/tracks?take=1&skip=1&with=song&sortBy=name`)
 				.expect(200)
 				.expect((res) => {
-					let tracks: Track[] = res.body.items;
+					const tracks: Track[] = res.body.items;
 					expect(tracks.length).toBe(1);
 					expect(tracks[0]).toStrictEqual({
 						...expectedTrackResponse(dummyRepository.trackA2_1),
@@ -112,7 +112,7 @@ describe('Track Controller', () => {
 				.get(`/tracks/videos`)
 				.expect(200)
 				.expect((res) => {
-					let tracks: Track[] = res.body.items;
+					const tracks: Track[] = res.body.items;
 					expect(tracks.length).toBe(1);
 					expect(tracks[0]).toStrictEqual(expectedTrackResponse(dummyRepository.trackA1_2Video));
 				});
@@ -123,7 +123,7 @@ describe('Track Controller', () => {
 				.get(`/tracks/videos?skip=1`)
 				.expect(200)
 				.expect((res) => {
-					let tracks: Track[] = res.body.items;
+					const tracks: Track[] = res.body.items;
 					expect(tracks.length).toBe(0);
 				});
 		});
@@ -135,7 +135,7 @@ describe('Track Controller', () => {
 				.get(`/tracks/${dummyRepository.trackA1_1.id}`)
 				.expect(200)
 				.expect((res) => {
-					let track: Track = res.body;
+					const track: Track = res.body;
 					expect(track).toStrictEqual(expectedTrackResponse(dummyRepository.trackA1_1));
 				});
 		});
@@ -144,7 +144,7 @@ describe('Track Controller', () => {
 				.get(`/tracks/${dummyRepository.trackA2_1.id}?with=song,release`)
 				.expect(200)
 				.expect((res) => {
-					let track: Track = res.body;
+					const track: Track = res.body;
 					expect(track).toStrictEqual({
 						...expectedTrackResponse(dummyRepository.trackA2_1),
 						song: {
@@ -176,7 +176,7 @@ describe('Track Controller', () => {
 				})
 				.expect(201)
 				.expect((res) => {
-					let track: Track = res.body;
+					const track: Track = res.body;
 					expect(track).toStrictEqual({
 						...expectedTrackResponse(dummyRepository.trackC1_1),
 						master: false,

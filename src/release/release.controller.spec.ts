@@ -73,7 +73,7 @@ describe('Release Controller', () => {
 				.get('/releases')
 				.expect(200)
 				.expect((res) => {
-					let releases: Release[] = res.body.items;
+					const releases: Release[] = res.body.items;
 					expect(releases.length).toBe(4);
 					expect(releases[0]).toStrictEqual(expectedReleaseResponse(dummyRepository.releaseA1_1));
 					expect(releases[1]).toStrictEqual(expectedReleaseResponse(dummyRepository.releaseA1_2));
@@ -87,7 +87,7 @@ describe('Release Controller', () => {
 				.get('/releases?sortBy=name')
 				.expect(200)
 				.expect((res) => {
-					let releases: Release[] = res.body.items;
+					const releases: Release[] = res.body.items;
 					expect(releases.length).toBe(4);
 					expect(releases[0]).toStrictEqual(expectedReleaseResponse(dummyRepository.releaseA1_1));
 					expect(releases[1]).toStrictEqual(expectedReleaseResponse(dummyRepository.releaseA1_2));
@@ -101,7 +101,7 @@ describe('Release Controller', () => {
 				.get('/releases?take=1&skip=2')
 				.expect(200)
 				.expect((res) => {
-					let releases: Release[] = res.body.items;
+					const releases: Release[] = res.body.items;
 					expect(releases.length).toBe(1);
 					expect(releases[0]).toStrictEqual(expectedReleaseResponse(dummyRepository.releaseB1_1));
 				});
@@ -112,7 +112,7 @@ describe('Release Controller', () => {
 				.get('/releases?with=album')
 				.expect(200)
 				.expect((res) => {
-					let releases: (Release & { album: Album }) [] = res.body.items;
+					const releases: (Release & { album: Album }) [] = res.body.items;
 					expect(releases.length).toBe(4);
 					expect(releases[0]).toStrictEqual({
 						...expectedReleaseResponse(dummyRepository.releaseA1_1),
@@ -140,7 +140,7 @@ describe('Release Controller', () => {
 				.get(`/releases/${dummyRepository.releaseA1_1.id}`)
 				.expect(200)
 				.expect((res) => {
-					let release: Release = res.body
+					const release: Release = res.body
 					expect(release).toStrictEqual(expectedReleaseResponse(dummyRepository.releaseA1_1));
 				});
 		});
@@ -150,7 +150,7 @@ describe('Release Controller', () => {
 				.get(`/releases/compilations+${dummyRepository.compilationAlbumA.slug}+${dummyRepository.compilationReleaseA1.slug}`)
 				.expect(200)
 				.expect((res) => {
-					let release: Release = res.body
+					const release: Release = res.body
 					expect(release).toStrictEqual(expectedReleaseResponse(dummyRepository.compilationReleaseA1));
 				});
 		});
@@ -160,7 +160,7 @@ describe('Release Controller', () => {
 				.get(`/releases/${dummyRepository.artistA.slug}+${dummyRepository.albumA1.slug}+${dummyRepository.releaseA1_2.slug}`)
 				.expect(200)
 				.expect((res) => {
-					let release: Release = res.body
+					const release: Release = res.body
 					expect(release).toStrictEqual(expectedReleaseResponse(dummyRepository.releaseA1_2));
 				});
 		});
@@ -182,7 +182,7 @@ describe('Release Controller', () => {
 				.get(`/releases/${dummyRepository.releaseA1_2.id}?with=tracks,album`)
 				.expect(200)
 				.expect((res) => {
-					let release: Release & { album: Album, tracks: Track[] } = res.body
+					const release: Release & { album: Album, tracks: Track[] } = res.body
 					expect(release.id).toBe(dummyRepository.releaseA1_2.id);
 					expect(release.tracks).toContainEqual(expectedTrackResponse(dummyRepository.trackA1_2Video));
 					expect(release.tracks).toContainEqual(expectedTrackResponse(dummyRepository.trackA2_1));
@@ -197,7 +197,7 @@ describe('Release Controller', () => {
 				.get(`/releases/${dummyRepository.releaseA1_2.id}/tracks`)
 				.expect(200)
 				.expect((res) => {
-					let tracks: Track[] = res.body.items;
+					const tracks: Track[] = res.body.items;
 					expect(tracks.length).toBe(2);
 					expect(tracks).toContainEqual(expectedTrackResponse(dummyRepository.trackA1_2Video));
 					expect(tracks).toContainEqual(expectedTrackResponse(dummyRepository.trackA2_1));
@@ -208,7 +208,7 @@ describe('Release Controller', () => {
 				.get(`/releases/${dummyRepository.releaseA1_1.id}/tracks`)
 				.expect(200)
 				.expect((res) => {
-					let tracks: Track[] = res.body.items;
+					const tracks: Track[] = res.body.items;
 					expect(tracks.length).toBe(1);
 					expect(tracks).toContainEqual(expectedTrackResponse(dummyRepository.trackA1_1));
 				});
@@ -218,7 +218,7 @@ describe('Release Controller', () => {
 				.get(`/releases/${dummyRepository.releaseA1_2.id}/tracks?sortBy=name`)
 				.expect(200)
 				.expect((res) => {
-					let tracks: Track[] = res.body.items;
+					const tracks: Track[] = res.body.items;
 					expect(tracks.length).toBe(2);
 					expect(tracks[0]).toStrictEqual(expectedTrackResponse(dummyRepository.trackA2_1));
 					expect(tracks[1]).toStrictEqual(expectedTrackResponse(dummyRepository.trackA1_2Video));
@@ -229,7 +229,7 @@ describe('Release Controller', () => {
 				.get(`/releases/${dummyRepository.releaseA1_2.id}/tracks?skip=1&sortBy=name`)
 				.expect(200)
 				.expect((res) => {
-					let tracks: Track[] = res.body.items;
+					const tracks: Track[] = res.body.items;
 					expect(tracks.length).toBe(1);
 					expect(tracks[0]).toStrictEqual(expectedTrackResponse(dummyRepository.trackA1_2Video));
 				});
@@ -239,7 +239,7 @@ describe('Release Controller', () => {
 				.get(`/releases/${dummyRepository.releaseA1_1.id}/tracks?with=song`)
 				.expect(200)
 				.expect((res) => {
-					let tracks: Track[] = res.body.items;;
+					const tracks: Track[] = res.body.items;
 					expect(tracks.length).toBe(1);
 					expect(tracks[0]).toStrictEqual({
 						...expectedTrackResponse(dummyRepository.trackA1_1),
@@ -260,7 +260,7 @@ describe('Release Controller', () => {
 				.get(`/releases/${dummyRepository.releaseA1_2.id}/tracklist`)
 				.expect(200)
 				.expect((res) => {
-					let tracklist: Tracklist = res.body;
+					const tracklist: Tracklist = res.body;
 					expect(tracklist).toStrictEqual({
 						'1': [expectedTrackResponse(dummyRepository.trackA2_1)],
 						'2': [expectedTrackResponse(dummyRepository.trackA1_2Video)],
@@ -273,7 +273,7 @@ describe('Release Controller', () => {
 				.get(`/releases/${dummyRepository.releaseA1_2.id}/tracklist?with=song`)
 				.expect(200)
 				.expect((res) => {
-					let tracklist: Tracklist = res.body;
+					const tracklist: Tracklist = res.body;
 					expect(tracklist).toStrictEqual({
 						'1': [{
 							...expectedTrackResponse(dummyRepository.trackA2_1),
@@ -300,7 +300,7 @@ describe('Release Controller', () => {
 				.get(`/releases/${dummyRepository.releaseA1_2.id}/playlist`)
 				.expect(200)
 				.expect((res) => {
-					let tracklist: Track[] = res.body;
+					const tracklist: Track[] = res.body;
 					expect(tracklist).toStrictEqual([
 						expectedTrackResponse(dummyRepository.trackA2_1),
 						expectedTrackResponse(dummyRepository.trackA1_2Video),
@@ -313,7 +313,7 @@ describe('Release Controller', () => {
 				.get(`/releases/${dummyRepository.releaseA1_2.id}/playlist?with=song`)
 				.expect(200)
 				.expect((res) => {
-					let tracklist: Track[] = res.body;
+					const tracklist: Track[] = res.body;
 					expect(tracklist).toStrictEqual([
 						{
 							...expectedTrackResponse(dummyRepository.trackA2_1),
@@ -340,7 +340,7 @@ describe('Release Controller', () => {
 				.get(`/releases/${dummyRepository.releaseB1_1.id}/album`)
 				.expect(200)
 				.expect((res) => {
-					let fetchedAlbum: Album = res.body;
+					const fetchedAlbum: Album = res.body;
 					expect(fetchedAlbum).toStrictEqual(expectedAlbumResponse(dummyRepository.albumB1));
 				});
 		});
@@ -349,7 +349,7 @@ describe('Release Controller', () => {
 				.get(`/releases/${dummyRepository.compilationReleaseA1.id}/album`)
 				.expect(200)
 				.expect((res) => {
-					let fetchedAlbum: Album = res.body;
+					const fetchedAlbum: Album = res.body;
 					expect(fetchedAlbum).toStrictEqual(expectedAlbumResponse(dummyRepository.compilationAlbumA));
 				});
 		});
@@ -358,7 +358,7 @@ describe('Release Controller', () => {
 				.get(`/releases/${dummyRepository.releaseA1_2.id}/album?with=releases`)
 				.expect(200)
 				.expect((res) => {
-					let fetchedAlbum: Album = res.body;
+					const fetchedAlbum: Album = res.body;
 					expect(fetchedAlbum).toStrictEqual({
 						...expectedAlbumResponse(dummyRepository.albumA1),
 						releases: [
@@ -373,7 +373,7 @@ describe('Release Controller', () => {
 				.get(`/releases/${dummyRepository.releaseB1_1.id}/album?with=artist`)
 				.expect(200)
 				.expect((res) => {
-					let fetchedAlbum: Album = res.body;
+					const fetchedAlbum: Album = res.body;
 					expect(fetchedAlbum).toStrictEqual({
 						...expectedAlbumResponse(dummyRepository.albumB1),
 						artist: {
@@ -400,7 +400,7 @@ describe('Release Controller', () => {
 				})
 				.expect(201)
 				.expect((res) => {
-					let release: Release = res.body;
+					const release: Release = res.body;
 					expect(release).toStrictEqual({
 						...expectedReleaseResponse(dummyRepository.releaseB1_1),
 						master: false,

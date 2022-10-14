@@ -4,7 +4,7 @@ import { InvalidSortingFieldException, InvalidSortingOrderException, MissingSort
 import ParseSortParameterPipe from "./sort.pipe";
 
 describe("Parse Sorting Parameter Pipe", () => {
-	const pipe = new ParseSortParameterPipe(AlbumQueryParameters.AvailableFields);
+	const pipe = new ParseSortParameterPipe(AlbumQueryParameters.SortingKeys);
 	const metadata: ArgumentMetadata = { type: 'custom' };
 	it("should parse the sorting parameter", () => {
 		const request = { sortBy: 'name', order: 'desc' };

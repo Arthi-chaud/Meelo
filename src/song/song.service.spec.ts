@@ -102,7 +102,7 @@ describe('Song Service', () => {
 
 	describe("Get Song", () => {
 		it("should retrieve the song (by Slug)", async () => {
-			let retrievedSong = await songService.get({
+			const retrievedSong = await songService.get({
 				bySlug: {
 					slug: new Slug('My Song'),
 					artist: { slug: new Slug(dummyRepository.artistA.name) }
@@ -113,7 +113,7 @@ describe('Song Service', () => {
 		});
 
 		it("should retrieve the song (by Id)", async () => {
-			let retrievedSong = await songService.get({
+			const retrievedSong = await songService.get({
 				byId: { id: dummyRepository.songA2.id },
 			});
 
@@ -121,7 +121,7 @@ describe('Song Service', () => {
 		});
 
 		it("should retrieve the song (w/ include)", async () => {
-			let retrievedSong = await songService.get(
+			const retrievedSong = await songService.get(
 				{ byId: { id: newSong.id } }, { artist: true, genres: true }
 			);
 
@@ -135,7 +135,7 @@ describe('Song Service', () => {
 		});
 
 		it(('should return an existing song, without only its id and slug'), async () => {
-			let song = await songService.select({ byId: { id: dummyRepository.songA1.id }}, { slug: true, id: true });
+			const song = await songService.select({ byId: { id: dummyRepository.songA1.id }}, { slug: true, id: true });
 			expect(song).toStrictEqual({ id: dummyRepository.songA1.id, slug: dummyRepository.songA1.slug});
 		});
 
@@ -174,7 +174,7 @@ describe('Song Service', () => {
 
 	describe('Get Multiple Songs', () => {
 		it('should get all the songs', async () => {
-			let songs = await songService.getMany({ });
+			const songs = await songService.getMany({ });
 
 			expect(songs.length).toBe(5);
 			expect(songs).toContainEqual(dummyRepository.songA1);
@@ -185,7 +185,7 @@ describe('Song Service', () => {
 		});
 		
 		it('should get the songs from the artist (1 expected)', async () => {
-			let songs = await songService.getMany({ 
+			const songs = await songService.getMany({ 
 				artist: { id: dummyRepository.artistB.id }
 			});
 
@@ -194,7 +194,7 @@ describe('Song Service', () => {
 		});
 
 		it('should get the songs from the artist (2 expected)', async () => {
-			let songs = await songService.getMany({ 
+			const songs = await songService.getMany({ 
 				artist: { id: dummyRepository.artistA.id }
 			});
 
@@ -205,7 +205,7 @@ describe('Song Service', () => {
 		});
 
 		it('should get the two songs, sorted by name (desc)', async () => {
-			let songs = await songService.getMany({ 
+			const songs = await songService.getMany({ 
 				artist: { id: dummyRepository.artistA.id }
 			}, {}, {}, { sortBy: 'name', order: 'desc' });
 
@@ -216,7 +216,7 @@ describe('Song Service', () => {
 		});
 
 		it('should get none, as the artist does not exist', async () => {
-			let songs = await songService.getMany({ 
+			const songs = await songService.getMany({ 
 				artist: { id: -1 }
 			});
 
@@ -224,7 +224,7 @@ describe('Song Service', () => {
 		});
 
 		it('should get the song by name (starts with)', async () => {
-			let songs = await songService.getMany({ 
+			const songs = await songService.getMany({ 
 				name: { startsWith: "My S" }
 			});
 
@@ -235,7 +235,7 @@ describe('Song Service', () => {
 		});
 
 		it('should get the song by name (ends with)', async () => {
-			let songs = await songService.getMany({ 
+			const songs = await songService.getMany({ 
 				name: { endsWith: " 3" }
 			});
 
@@ -246,7 +246,7 @@ describe('Song Service', () => {
 
 	describe("Count Songs", () => {
 		it("should get the number of song by the artist (3 expected)", async () => {
-			let songCount = await songService.count({
+			const songCount = await songService.count({
 				artist: { id: dummyRepository.artistA.id }
 			});
 
@@ -254,7 +254,7 @@ describe('Song Service', () => {
 		});
 
 		it("should get the number of song by the artist (& expected)", async () => {
-			let songCount = await songService.count({
+			const songCount = await songService.count({
 				artist: { id: dummyRepository.artistB.id }
 			});
 
@@ -262,7 +262,7 @@ describe('Song Service', () => {
 		});
 
 		it("should get the number of song with name equal", async () => {
-			let songCount = await songService.count({
+			const songCount = await songService.count({
 				name: { is: "My Other Song" },
 			});
 
@@ -272,7 +272,7 @@ describe('Song Service', () => {
 
 	describe("Update Song", () => {
 		it("should update the play count of the song", async () => {
-			let updatedSong = await songService.update(
+			const updatedSong = await songService.update(
 				{ playCount: 3 }, { byId: { id: dummyRepository.songA1.id } }
 			);
 
@@ -298,7 +298,7 @@ describe('Song Service', () => {
 		});
 
 		it("should change the genres of the song", async () => {
-			let updatedSong = await songService.update(
+			const updatedSong = await songService.update(
 				{ genres: [ { id: dummyRepository.genreA.id }, { id: dummyRepository.genreB.id } ] },
 				{ byId: { id: dummyRepository.songA2.id } }
 			);
@@ -392,7 +392,7 @@ describe('Song Service', () => {
 
 	describe("Get or Create Song", () => {
 		it("should get the song", async () => {
-			let fetchedSong = await songService.getOrCreate({
+			const fetchedSong = await songService.getOrCreate({
 				...dummyRepository.songA1,
 				artist: { id: dummyRepository.artistA.id },
 				genres: []
@@ -403,7 +403,7 @@ describe('Song Service', () => {
 		});
 
 		it("should create the song", async () => {
-			let createdSong = await songService.getOrCreate({
+			const createdSong = await songService.getOrCreate({
 				name: "My Song 4", artist: { id: dummyRepository.artistB.id },
 				genres: []
 			});

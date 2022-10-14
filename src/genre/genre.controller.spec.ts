@@ -64,7 +64,7 @@ describe("Genre Controller", () => {
 				.get(`/genres/${dummyRepository.genreA.slug}`)
 				.expect(200)
 				.expect((res) => {
-					let fetchedGenre: Genre = res.body;
+					const fetchedGenre: Genre = res.body;
 					expect(fetchedGenre).toStrictEqual(dummyRepository.genreA)
 				});
 		});
@@ -74,7 +74,7 @@ describe("Genre Controller", () => {
 				.get(`/genres/${dummyRepository.genreB.id}`)
 				.expect(200)
 				.expect((res) => {
-					let fetchedGenre: Genre = res.body;
+					const fetchedGenre: Genre = res.body;
 					expect(fetchedGenre).toStrictEqual(dummyRepository.genreB)
 				});
 		});
@@ -84,7 +84,7 @@ describe("Genre Controller", () => {
 				.get(`/genres/${dummyRepository.genreB.id}?with=songs`)
 				.expect(200)
 				.expect((res) => {
-					let fetchedGenre: Genre & { songs: Song[] } = res.body;
+					const fetchedGenre: Genre & { songs: Song[] } = res.body;
 					expect(fetchedGenre).toStrictEqual({
 						...dummyRepository.genreB,
 						songs: [
@@ -109,7 +109,7 @@ describe("Genre Controller", () => {
 				.get(`/genres`)
 				.expect(200)
 				.expect((res) => {
-					let genres: Genre[] = res.body.items;
+					const genres: Genre[] = res.body.items;
 					expect(genres.length).toBe(3);
 					expect(genres).toContainEqual(dummyRepository.genreA);
 					expect(genres).toContainEqual(dummyRepository.genreB);
@@ -122,7 +122,7 @@ describe("Genre Controller", () => {
 				.get(`/genres?take=2&sortBy=name`)
 				.expect(200)
 				.expect((res) => {
-					let genres: Genre[] = res.body.items;
+					const genres: Genre[] = res.body.items;
 					expect(genres.length).toBe(2);
 					expect(genres).toContainEqual(dummyRepository.genreA);
 					expect(genres).toContainEqual(dummyRepository.genreB);
@@ -134,7 +134,7 @@ describe("Genre Controller", () => {
 				.get(`/genres?sortBy=name&order=desc`)
 				.expect(200)
 				.expect((res) => {
-					let genres: Genre[] = res.body.items;
+					const genres: Genre[] = res.body.items;
 					expect(genres.length).toBe(3);
 					expect(genres[0]).toStrictEqual(dummyRepository.genreC);
 					expect(genres[1]).toStrictEqual(dummyRepository.genreB);
@@ -147,7 +147,7 @@ describe("Genre Controller", () => {
 				.get(`/genres?with=songs`)
 				.expect(200)
 				.expect((res) => {
-					let genres: (Genre & { songs: Song[] })[] = res.body.items;
+					const genres: (Genre & { songs: Song[] })[] = res.body.items;
 					expect(genres.length).toBe(3);
 					expect(genres).toContainEqual({
 						...dummyRepository.genreA,
@@ -179,7 +179,7 @@ describe("Genre Controller", () => {
 				.get(`/genres/${dummyRepository.genreB.id}/artists`)
 				.expect(200)
 				.expect((res) => {
-					let artists: Artist[] = res.body.items;
+					const artists: Artist[] = res.body.items;
 					expect(artists.length).toBe(2);
 					expect(artists).toContainEqual(expectedArtistResponse(dummyRepository.artistA));
 					expect(artists).toContainEqual(expectedArtistResponse(dummyRepository.artistB));
@@ -191,7 +191,7 @@ describe("Genre Controller", () => {
 				.get(`/genres/${dummyRepository.genreC.id}/artists`)
 				.expect(200)
 				.expect((res) => {
-					let artists: Artist[] = res.body.items;
+					const artists: Artist[] = res.body.items;
 					expect(artists.length).toBe(1);
 					expect(artists).toContainEqual(expectedArtistResponse(dummyRepository.artistC));
 				});
@@ -202,7 +202,7 @@ describe("Genre Controller", () => {
 				.get(`/genres/${dummyRepository.genreB.id}/artists?skip=1&sortBy=name`)
 				.expect(200)
 				.expect((res) => {
-					let artists: Artist[] = res.body.items;
+					const artists: Artist[] = res.body.items;
 					expect(artists.length).toBe(1);
 					expect(artists[0]).toStrictEqual(expectedArtistResponse(dummyRepository.artistB));
 				});
@@ -213,7 +213,7 @@ describe("Genre Controller", () => {
 				.get(`/genres/${dummyRepository.genreB.id}/artists?sortBy=name&order=desc`)
 				.expect(200)
 				.expect((res) => {
-					let artists: Artist[] = res.body.items;
+					const artists: Artist[] = res.body.items;
 					expect(artists.length).toBe(2);
 					expect(artists[0]).toStrictEqual(expectedArtistResponse(dummyRepository.artistB));
 					expect(artists[1]).toStrictEqual(expectedArtistResponse(dummyRepository.artistA));
@@ -225,7 +225,7 @@ describe("Genre Controller", () => {
 				.get(`/genres/${dummyRepository.genreC.id}/artists?sortBy=name&with=songs`)
 				.expect(200)
 				.expect((res) => {
-					let artists: (Artist & { songs: Song[] }) [] = res.body.items;
+					const artists: (Artist & { songs: Song[] }) [] = res.body.items;
 					expect(artists.length).toBe(1);
 					expect(artists[0]).toStrictEqual({
 						...expectedArtistResponse(dummyRepository.artistC),
@@ -249,7 +249,7 @@ describe("Genre Controller", () => {
 				.get(`/genres/${dummyRepository.genreB.id}/albums`)
 				.expect(200)
 				.expect((res) => {
-					let albums: Album[] = res.body.items;
+					const albums: Album[] = res.body.items;
 					expect(albums.length).toBe(2);
 					expect(albums).toContainEqual(expectedAlbumResponse(dummyRepository.albumA1));
 					expect(albums).toContainEqual(expectedAlbumResponse(dummyRepository.albumB1));
@@ -261,7 +261,7 @@ describe("Genre Controller", () => {
 				.get(`/genres/${dummyRepository.genreA.id}/albums`)
 				.expect(200)
 				.expect((res) => {
-					let artists: Artist[] = res.body.items;
+					const artists: Artist[] = res.body.items;
 					expect(artists.length).toBe(1);
 					expect(artists).toContainEqual(expectedAlbumResponse(dummyRepository.albumA1));
 				});
@@ -272,7 +272,7 @@ describe("Genre Controller", () => {
 				.get(`/genres/${dummyRepository.genreB.id}/albums?sortBy=name&take=1`)
 				.expect(200)
 				.expect((res) => {
-					let albums: Album[] = res.body.items;
+					const albums: Album[] = res.body.items;
 					expect(albums.length).toBe(1);
 					expect(albums[0]).toStrictEqual(expectedAlbumResponse(dummyRepository.albumA1));
 				});
@@ -283,7 +283,7 @@ describe("Genre Controller", () => {
 				.get(`/genres/${dummyRepository.genreB.id}/albums?sortBy=name`)
 				.expect(200)
 				.expect((res) => {
-					let albums: Album[] = res.body.items;
+					const albums: Album[] = res.body.items;
 					expect(albums.length).toBe(2);
 					expect(albums[0]).toStrictEqual(expectedAlbumResponse(dummyRepository.albumA1));
 					expect(albums[1]).toStrictEqual(expectedAlbumResponse(dummyRepository.albumB1));
@@ -295,7 +295,7 @@ describe("Genre Controller", () => {
 				.get(`/genres/${dummyRepository.genreB.id}/albums?sortBy=name&take=1&with=artist`)
 				.expect(200)
 				.expect((res) => {
-					let albums: Album[] = res.body.items;
+					const albums: Album[] = res.body.items;
 					expect(albums.length).toBe(1);
 					expect(albums[0]).toStrictEqual({
 						...expectedAlbumResponse(dummyRepository.albumA1),
@@ -316,7 +316,7 @@ describe("Genre Controller", () => {
 				.get(`/genres/${dummyRepository.genreB.id}/songs`)
 				.expect(200)
 				.expect((res) => {
-					let songs: Song[] = res.body.items;
+					const songs: Song[] = res.body.items;
 					expect(songs.length).toBe(3);
 					expect(songs).toContainEqual(expectedSongResponse(dummyRepository.songA1));
 					expect(songs).toContainEqual(expectedSongResponse(dummyRepository.songA2));
@@ -329,7 +329,7 @@ describe("Genre Controller", () => {
 				.get(`/genres/${dummyRepository.genreC.id}/songs`)
 				.expect(200)
 				.expect((res) => {
-					let songs: Song[] = res.body.items;
+					const songs: Song[] = res.body.items;
 					expect(songs.length).toBe(1);
 					expect(songs).toContainEqual(expectedSongResponse(dummyRepository.songC1));
 				});
@@ -340,7 +340,7 @@ describe("Genre Controller", () => {
 				.get(`/genres/${dummyRepository.genreB.id}/songs?skip=1&take=1`)
 				.expect(200)
 				.expect((res) => {
-					let songs: Song[] = res.body.items;
+					const songs: Song[] = res.body.items;
 					expect(songs.length).toBe(1);
 					expect(songs[0]).toStrictEqual(expectedSongResponse(dummyRepository.songA2));
 				});
@@ -351,7 +351,7 @@ describe("Genre Controller", () => {
 				.get(`/genres/${dummyRepository.genreB.id}/songs?sortBy=name&order=desc`)
 				.expect(200)
 				.expect((res) => {
-					let songs: Song[] = res.body.items;
+					const songs: Song[] = res.body.items;
 					expect(songs.length).toBe(3);
 					expect(songs[1]).toStrictEqual(expectedSongResponse(dummyRepository.songB1));
 					expect(songs[2]).toStrictEqual(expectedSongResponse(dummyRepository.songA2));
@@ -364,7 +364,7 @@ describe("Genre Controller", () => {
 				.get(`/genres/${dummyRepository.genreB.id}/songs?sortBy=name&take=1&with=artist`)
 				.expect(200)
 				.expect((res) => {
-					let songs: Song[] = res.body.items;
+					const songs: Song[] = res.body.items;
 					expect(songs.length).toBe(1);
 					expect(songs[0]).toStrictEqual({
 						...expectedSongResponse(dummyRepository.songA2),

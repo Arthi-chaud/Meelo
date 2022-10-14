@@ -31,15 +31,15 @@ export default class TasksService {
 	 */
 	async registerNewFiles(parentLibrary: Library): Promise<File[]> {
 		Logger.log(`'${parentLibrary.slug}' library: Registration of new files`);
-		let unfilteredCandidates = this.fileManagerService.getCandidateFilesInLibraryFolder(parentLibrary.path);
-		let alreadyRegistrered = await this.fileService.getMany({ paths: unfilteredCandidates });
+		const unfilteredCandidates = this.fileManagerService.getCandidateFilesInLibraryFolder(parentLibrary.path);
+		const alreadyRegistrered = await this.fileService.getMany({ paths: unfilteredCandidates });
 
-		let candidates = unfilteredCandidates.filter(
+		const candidates = unfilteredCandidates.filter(
 			(candidatePath) => {
 				return alreadyRegistrered.findIndex((registered) => registered.path == candidatePath) == -1;
 			}
 		);
-		let newlyRegistered: File[] = [];
+		const newlyRegistered: File[] = [];
 		for (const candidate of candidates) {
 			try {
 				newlyRegistered.push(await this.registerFile(candidate, parentLibrary));
@@ -62,9 +62,9 @@ export default class TasksService {
 		Logger.log(`${parentLibrary.slug} library: Registration of ${filePath}`);
 		const fullFilePath = `${this.fileManagerService.getLibraryFullPath(parentLibrary)}/${filePath}`;
 		const fileMetadata = await this.metadataService.parseMetadata(fullFilePath);
-		let registeredFile = await this.fileService.registerFile(filePath, parentLibrary);
+		const registeredFile = await this.fileService.registerFile(filePath, parentLibrary);
 		try {
-			let track = await this.metadataService.registerMetadata(fileMetadata, registeredFile);
+			const track = await this.metadataService.registerMetadata(fileMetadata, registeredFile);
 			this.lyricsService.registerLyrics({ byId: { id: track.songId } }, { force: false }).catch(() => {});
 			this.illustrationService.extractTrackIllustration(track, fullFilePath)
 				.catch(() => {})
@@ -88,11 +88,11 @@ export default class TasksService {
 	 * @returns The array of deleted file entry
 	 */
 	async unregisterUnavailableFiles(where: LibraryQueryParameters.WhereInput): Promise<File[]> {
-		let parentLibrary = await this.libraryService.get(where, { files: true });
+		const parentLibrary = await this.libraryService.get(where, { files: true });
 		Logger.log(`'Cleaning ${parentLibrary.slug}' library`);
 		const libraryPath = `${this.fileManagerService.getLibraryFullPath(parentLibrary)}`;
-		let registeredFiles: File[] = parentLibrary.files;
-		let unavailableFiles: File[] = registeredFiles.filter(
+		const registeredFiles: File[] = parentLibrary.files;
+		const unavailableFiles: File[] = registeredFiles.filter(
 			(file) => !this.fileManagerService.fileExists(`${libraryPath}/${file.path}`)
 		);
 		Logger.warn(`'${parentLibrary.slug}' library: Removing ${unavailableFiles.length} entries`);
@@ -115,7 +115,7 @@ export default class TasksService {
 	async resyncAllMetadata(where: LibraryQueryParameters.WhereInput): Promise<File[]> {
 		const library = await this.libraryService.get(where, { files: true });
 		const libraryFullPath = this.fileManagerService.getLibraryFullPath(library);
-		let updatedFiles: File[] = [];
+		const updatedFiles: File[] = [];
 		Logger.log(`'${library.slug}' library: Refresh files metadata`);
 		await Promise.all(
 			library.files.map(async (file) => {
