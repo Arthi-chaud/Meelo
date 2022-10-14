@@ -28,7 +28,7 @@ type ArtistItemProps = {
 const ArtistItem = ({ artist }: ArtistItemProps) => {
 	return (
 		<ListItem
-			icon={<Illustration url={artist.illustration} fallback={<AccountCircle/>}/>}
+			icon={<Illustration url={artist.illustration} objectFit="cover" fallback={<AccountCircle/>}/>}
 			title={<ListItemButton
 				url={`/artists/${artist?.slug}`}
 				label={artist.name}

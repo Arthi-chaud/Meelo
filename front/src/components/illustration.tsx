@@ -32,7 +32,7 @@ const Illustration = (props: IllustrationProps) => {
 				width={1}
 				height={1}
 				objectFit="contain"
-				layout="responsive"
+				layout={props.layout ?? "responsive"}
 				loading="lazy"
 				alt={(props.url?.split('/').join('-') ?? 'missing-illustration')}
 				{...props}
