@@ -111,8 +111,8 @@ export default class ReleaseService extends RepositoryService<
 	}
 	formatManyWhereInput = ReleaseService.formatManyWhereInput;
 
-	formatSortingInput<S extends SortingParameter<ReleaseQueryParameters.SortingKeys>>(
-		sortingParameter: S
+	formatSortingInput(
+		sortingParameter: SortingParameter<ReleaseQueryParameters.SortingKeys>
 	) {
 		switch (sortingParameter.sortBy) {
 			case 'name':

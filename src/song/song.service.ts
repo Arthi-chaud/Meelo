@@ -120,8 +120,8 @@ export default class SongService extends RepositoryService<
 	}
 	formatManyWhereInput = SongService.formatManyWhereInput;
 
-	formatSortingInput<S extends SortingParameter<SongQueryParameters.SortingKeys>>(
-		sortingParameter: S
+	formatSortingInput(
+		sortingParameter: SortingParameter<SongQueryParameters.SortingKeys>
 	): Prisma.SongOrderByWithRelationInput {
 		switch (sortingParameter.sortBy) {
 			case 'name':

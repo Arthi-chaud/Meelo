@@ -144,8 +144,8 @@ export default class TrackService extends RepositoryService<
 	}
 	formatManyWhereInput = TrackService.formatManyWhereInput;
 
-	formatSortingInput<S extends SortingParameter<TrackQueryParameters.SortingKeys>>(
-		sortingParameter: S
+	formatSortingInput(
+		sortingParameter: SortingParameter<TrackQueryParameters.SortingKeys>
 	): Prisma.TrackOrderByWithRelationInput {
 		switch (sortingParameter.sortBy) {
 			case 'releaseName':

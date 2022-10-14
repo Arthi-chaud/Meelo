@@ -81,8 +81,8 @@ export default class LibraryService extends RepositoryService<
 	}
 	formatManyWhereInput = LibraryService.formatManyWhereInput;
 
-	formatSortingInput<S extends SortingParameter<LibraryQueryParameters.SortingKeys>>(
-		sortingParameter: S
+	formatSortingInput(
+		sortingParameter: SortingParameter<LibraryQueryParameters.SortingKeys>
 	): Prisma.LibraryOrderByWithRelationInput {
 		switch (sortingParameter.sortBy) {
 			case 'name':

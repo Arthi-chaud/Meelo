@@ -189,11 +189,11 @@ abstract class RepositoryService<
 	 * @param sort the sorting parameters
 	 * @returns matching entities
 	 */
-	async getMany<I extends ModelSelector<Relations>, S extends SortingParameter<SortingKeys>>(
+	async getMany<I extends ModelSelector<Relations>>(
 		where: ManyWhereInput,
 		pagination?: PaginationParameters,
 		include?: I,
-		sort?: S
+		sort?: SortingParameter<SortingKeys>
 	){
 		return this.repository.findMany({
 			where: this.formatManyWhereInput(where),
@@ -211,8 +211,8 @@ abstract class RepositoryService<
 	/**
 	 * Format input into ORM-compatible parameter
 	 */
-	abstract formatSortingInput<S extends SortingParameter<SortingKeys>>(
-		sortingParameter: S
+	abstract formatSortingInput(
+		sortingParameter: SortingParameter<SortingKeys>
 	): RepositorySortingInput
 	/**
 	 * Count entities matching the query parameters

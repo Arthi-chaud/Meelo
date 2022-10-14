@@ -110,8 +110,8 @@ export default class ArtistService extends RepositoryService<
 	}
 	formatManyWhereInput = ArtistService.formatManyWhereInput;
 
-	formatSortingInput<S extends SortingParameter<ArtistQueryParameters.SortingKeys>>(
-		sortingParameter: S
+	formatSortingInput(
+		sortingParameter: SortingParameter<ArtistQueryParameters.SortingKeys>
 	): Prisma.ArtistOrderByWithRelationInput {
 		switch (sortingParameter.sortBy) {
 			case 'name':

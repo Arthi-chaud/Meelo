@@ -95,8 +95,8 @@ export default class FileService extends RepositoryService<
 	}
 	formatManyWhereInput = FileService.formatManyWhereInput;
 
-	formatSortingInput<S extends SortingParameter<FileQueryParameters.SortingKeys>>(
-		sort: S
+	formatSortingInput(
+		sort: SortingParameter<FileQueryParameters.SortingKeys>
 	): Prisma.FileOrderByWithRelationInput {
 		switch (sort.sortBy) {
 			case 'addDate':

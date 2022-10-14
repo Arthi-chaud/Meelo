@@ -81,8 +81,8 @@ export default class GenreService extends RepositoryService<
 	}
 	formatManyWhereInput = GenreService.formatManyWhereInput;
 
-	formatSortingInput<S extends SortingParameter<GenreQueryParameters.SortingKeys>>(
-		sortingParameter: S
+	formatSortingInput(
+		sortingParameter: SortingParameter<GenreQueryParameters.SortingKeys>
 	) {
 		switch (sortingParameter.sortBy) {
 			case 'name':

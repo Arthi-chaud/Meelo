@@ -127,8 +127,8 @@ export default class AlbumService extends RepositoryService<
 	}
 	formatManyWhereInput = AlbumService.formatManyWhereInput;
 
-	formatSortingInput<S extends SortingParameter<AlbumQueryParameters.SortingKeys>>(
-		sortingParameter: S
+	formatSortingInput(
+		sortingParameter: SortingParameter<AlbumQueryParameters.SortingKeys>
 	): Prisma.AlbumOrderByWithRelationInput {
 		switch (sortingParameter.sortBy) {
 			case 'name':
