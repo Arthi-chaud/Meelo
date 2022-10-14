@@ -23,4 +23,4 @@ export default class ParseSongIdentifierPipe implements PipeTransform {
 			}
 		}
 	}
-};
+}

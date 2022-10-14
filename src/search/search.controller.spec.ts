@@ -59,11 +59,11 @@ describe('Search Controller', () => {
 		app.useGlobalPipes(new ValidationPipe());
 		await app.init();
 		await dummyRepository.onModuleInit();
-		let artistService = module.get(ArtistService);
-		let albumService = module.get(AlbumService);
-		let songService = module.get(SongService);
-		let releaseService = module.get(ReleaseService);
-		let genreService = module.get(GenreService);
+		const artistService = module.get(ArtistService);
+		const albumService = module.get(AlbumService);
+		const songService = module.get(SongService);
+		const releaseService = module.get(ReleaseService);
+		const genreService = module.get(GenreService);
 		dummyRepository.artistA = await artistService.update({ name: 'Madonna' }, { id: dummyRepository.artistA.id }),
 		dummyRepository.artistB	= await artistService.update({ name: 'Goldfrapp' }, { id: dummyRepository.artistB.id }),
 		dummyRepository.artistC	= await artistService.update({ name: 'Doctor Rockit' }, { id: dummyRepository.artistC.id }),
@@ -120,7 +120,7 @@ describe('Search Controller', () => {
 				.get(`/search/artists/a`)
 				.expect(200)
 				.expect((res) => {
-					let artists: Artist[] = res.body.items;
+					const artists: Artist[] = res.body.items;
 					expect(artists.length).toBe(2);
 					expect(artists).toContainEqual(expectedArtistResponse(dummyRepository.artistA));
 					expect(artists).toContainEqual(expectedArtistResponse(dummyRepository.artistB));
@@ -132,7 +132,7 @@ describe('Search Controller', () => {
 				.get(`/search/artists/a?skip=1`)
 				.expect(200)
 				.expect((res) => {
-					let artists: Artist[] = res.body.items;
+					const artists: Artist[] = res.body.items;
 					expect(artists.length).toBe(1);
 					expect(artists).toContainEqual(expectedArtistResponse(dummyRepository.artistB));
 				}) 
@@ -145,7 +145,7 @@ describe('Search Controller', () => {
 				.get(`/search/albums/es`)
 				.expect(200)
 				.expect((res) => {
-					let albums: Album[] = res.body.items;
+					const albums: Album[] = res.body.items;
 					expect(albums.length).toBe(2);
 					expect(albums).toContainEqual(expectedAlbumResponse(dummyRepository.albumB1));
 					expect(albums).toContainEqual(expectedAlbumResponse(dummyRepository.compilationAlbumA));
@@ -157,7 +157,7 @@ describe('Search Controller', () => {
 				.get(`/search/albums/a?take=1`)
 				.expect(200)
 				.expect((res) => {
-					let albums: Album[] = res.body.items;
+					const albums: Album[] = res.body.items;
 					expect(albums.length).toBe(1);
 					expect(albums).toContainEqual(expectedAlbumResponse(dummyRepository.albumA1));
 				}) 
@@ -170,7 +170,7 @@ describe('Search Controller', () => {
 				.get(`/search/songs/h`)
 				.expect(200)
 				.expect((res) => {
-					let songs: Song[] = res.body.items;
+					const songs: Song[] = res.body.items;
 					expect(songs.length).toBe(2);
 					expect(songs).toContainEqual(expectedSongResponse(dummyRepository.songA1));
 					expect(songs).toContainEqual(expectedSongResponse(dummyRepository.songB1));
@@ -182,7 +182,7 @@ describe('Search Controller', () => {
 				.get(`/search/songs/e?take=2`)
 				.expect(200)
 				.expect((res) => {
-					let songs: Song[] = res.body.items;
+					const songs: Song[] = res.body.items;
 					expect(songs.length).toBe(2);
 					expect(songs).toContainEqual(expectedSongResponse(dummyRepository.songA2));
 					expect(songs).toContainEqual(expectedSongResponse(dummyRepository.songB1));
@@ -196,7 +196,7 @@ describe('Search Controller', () => {
 				.get(`/search/releases/fe`)
 				.expect(200)
 				.expect((res) => {
-					let releases: Release[] = res.body.items;
+					const releases: Release[] = res.body.items;
 					expect(releases.length).toBe(2);
 					expect(releases).toContainEqual(expectedReleaseResponse(dummyRepository.releaseA1_1));
 					expect(releases).toContainEqual(expectedReleaseResponse(dummyRepository.releaseA1_2));
@@ -208,7 +208,7 @@ describe('Search Controller', () => {
 				.get(`/search/releases/u?skip=1`)
 				.expect(200)
 				.expect((res) => {
-					let releases: Release[] = res.body.items;
+					const releases: Release[] = res.body.items;
 					expect(releases.length).toBe(1);
 					expect(releases).toContainEqual(expectedReleaseResponse(dummyRepository.compilationReleaseA1));
 				}) 

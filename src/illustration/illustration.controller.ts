@@ -41,7 +41,7 @@ export class IllustrationController {
 		@Response({ passthrough: true })
 		res: Response,
 	) {
-		let artist = await this.artistService.get(where);
+		const artist = await this.artistService.get(where);
 		return this.illustrationService.streamIllustration(
 			this.illustrationService.buildArtistIllustrationPath(new Slug(artist.slug)),
 			artist.slug, dimensions, res
@@ -58,7 +58,7 @@ export class IllustrationController {
 		@Body()
 		illustrationDto: IllustrationDownloadDto
 	) {
-		let artist = await this.artistService.get(where);
+		const artist = await this.artistService.get(where);
 		const artistIllustrationPath = this.illustrationService.buildArtistIllustrationPath(new Slug(artist.slug));
 		return this.illustrationService.downloadIllustration(
 			illustrationDto.url,
@@ -112,7 +112,7 @@ export class IllustrationController {
 		res: Response,
 	) {
 		const path = await this.releaseService.buildIllustrationPath(where);
-		let release = await this.releaseService.get(where, { album: true });
+		const release = await this.releaseService.get(where, { album: true });
 		if (this.illustrationService.illustrationExists(path) == false)
 			throw new NoReleaseIllustrationException(new Slug(release.album.slug), new Slug(release.slug));
 		return this.illustrationService.streamIllustration(

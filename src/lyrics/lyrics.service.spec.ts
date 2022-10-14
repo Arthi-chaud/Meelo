@@ -90,7 +90,7 @@ describe('Lyrics Service', () => {
 		});
 
 		it(('should return an existing lyric, without only its id'), async () => {
-			let lyrics = await lyricsService.select({ id: dummyRepository.lyricsA1.id }, { id: true });
+			const lyrics = await lyricsService.select({ id: dummyRepository.lyricsA1.id }, { id: true });
 			expect(lyrics).toStrictEqual({ id: dummyRepository.lyricsA1.id});
 		});
 		it(('should throw, as the album does not exist '), async () => {

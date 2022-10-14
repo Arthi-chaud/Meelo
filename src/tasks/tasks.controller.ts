@@ -40,7 +40,7 @@ export default class TasksController {
 		@Param(ParseLibraryIdentifierPipe)
 		where: LibraryQueryParameters.WhereInput
 	): Promise<TaskResponse> {
-		let library = await this.libraryService.get(where);
+		const library = await this.libraryService.get(where);
 		this.tasksService
 			.registerNewFiles(library)
 			.catch((error) => Logger.error(error));
@@ -72,7 +72,7 @@ export default class TasksController {
 		@Param(ParseLibraryIdentifierPipe)
 		where: LibraryQueryParameters.WhereInput
 	): Promise<TaskResponse> {
-		let library = await this.libraryService.get(where);
+		const library = await this.libraryService.get(where);
 		this.tasksService
 			.unregisterUnavailableFiles(where)
 			.catch((error) => Logger.error(error));
@@ -105,7 +105,7 @@ export default class TasksController {
 		@Param(ParseLibraryIdentifierPipe)
 		where: LibraryQueryParameters.WhereInput
 	): Promise<TaskResponse> {
-		let library = await this.libraryService.get(where);
+		const library = await this.libraryService.get(where);
 		this.tasksService
 			.resyncAllMetadata(where)
 			.catch((error) => Logger.error(error));

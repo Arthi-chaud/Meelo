@@ -12,6 +12,7 @@ import { buildStringSearchParameters } from 'src/utils/search-string-input';
 import ArtistService from 'src/artist/artist.service';
 import { Prisma } from '@prisma/client';
 import { GenreResponse } from './models/genre.response';
+import SortingParameter from 'src/sort/models/sorting-parameter';
 
 @Injectable()
 export default class GenreService extends RepositoryService<
@@ -21,11 +22,13 @@ export default class GenreService extends RepositoryService<
 	GenreQueryParameters.ManyWhereInput,
 	GenreQueryParameters.UpdateInput,
 	GenreQueryParameters.DeleteInput,
+	GenreQueryParameters.SortingKeys,
 	Prisma.GenreCreateInput,
 	Prisma.GenreWhereInput,
 	Prisma.GenreWhereInput,
 	Prisma.GenreUpdateInput,
-	Prisma.GenreWhereUniqueInput
+	Prisma.GenreWhereUniqueInput,
+	Prisma.GenreOrderByWithRelationInput
 > {
 	constructor(
 		prismaService: PrismaService,
@@ -78,6 +81,20 @@ export default class GenreService extends RepositoryService<
 	}
 	formatManyWhereInput = GenreService.formatManyWhereInput;
 
+	formatSortingInput<S extends SortingParameter<GenreQueryParameters.SortingKeys>>(
+		sortingParameter: S
+	) {
+		switch (sortingParameter.sortBy) {
+			case 'name':
+				return { slug: sortingParameter.order }
+			case 'songCount':
+				return { songs: { _count: sortingParameter.order } }
+			case undefined:
+				return { id: sortingParameter.order }
+			default:
+				return { [sortingParameter.sortBy]: sortingParameter.order }
+		}
+	}
 	/**
 	 * Update a genre
 	 */
@@ -135,7 +152,7 @@ export default class GenreService extends RepositoryService<
 	}
 
 	async buildResponse(genre: GenreWithRelations): Promise<GenreResponse> {
-		let response = <GenreResponse>genre;
+		const response = <GenreResponse>genre;
 		if (genre.songs !== undefined)
 			response.songs = await Promise.all(genre.songs.map(
 				(song) => this.songService.buildResponse(song)

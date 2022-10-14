@@ -14,7 +14,7 @@ import { CompilationArtistException } from 'src/artist/artist.exceptions';
 import { buildStringSearchParameters } from 'src/utils/search-string-input';
 import IllustrationService from 'src/illustration/illustration.service';
 import { buildPaginationParameters, PaginationParameters } from 'src/pagination/models/pagination-parameters';
-import { buildSortingParameter } from 'src/sort/models/sorting-parameter';
+import SortingParameter from 'src/sort/models/sorting-parameter';
 import { Song, SongWithRelations, Track } from 'src/prisma/models';
 import { SongResponse } from './models/song.response';
 
@@ -26,11 +26,13 @@ export default class SongService extends RepositoryService<
 	SongQueryParameters.ManyWhereInput,
 	SongQueryParameters.UpdateInput,
 	SongQueryParameters.DeleteInput,
+	SongQueryParameters.SortingKeys,
 	Prisma.SongCreateInput,
 	Prisma.SongWhereInput,
 	Prisma.SongWhereInput,
 	Prisma.SongUpdateInput,
-	Prisma.SongWhereUniqueInput
+	Prisma.SongWhereUniqueInput,
+	Prisma.SongOrderByWithRelationInput
 > {
 	constructor(
 		private prismaService: PrismaService,
@@ -76,7 +78,7 @@ export default class SongService extends RepositoryService<
 		}
 	}
 	protected async onCreationFailure(song: SongQueryParameters.CreateInput) {
-		let artist = await this.artistService.get(song.artist);
+		const artist = await this.artistService.get(song.artist);
 		return new SongAlreadyExistsException(new Slug(song.name), new Slug(artist.name));
 	}
 
@@ -117,6 +119,21 @@ export default class SongService extends RepositoryService<
 		};
 	}
 	formatManyWhereInput = SongService.formatManyWhereInput;
+
+	formatSortingInput<S extends SortingParameter<SongQueryParameters.SortingKeys>>(
+		sortingParameter: S
+	): Prisma.SongOrderByWithRelationInput {
+		switch (sortingParameter.sortBy) {
+			case 'name':
+				return { slug: sortingParameter.order };
+			case 'artistName':
+				return { artist: this.artistService.formatSortingInput(
+					{ sortBy: 'name', order: sortingParameter.order }
+				)};
+			default:
+				return { [sortingParameter.sortBy ?? 'id']: sortingParameter.order };
+		}
+	}
 
 	async onNotFound(where: SongQueryParameters.WhereInput): Promise<MeeloException> {
 		if (where.byId)
@@ -179,7 +196,7 @@ export default class SongService extends RepositoryService<
 	 * @return the new master, if there is one
 	 */
 	async updateSongMaster(where: SongQueryParameters.WhereInput): Promise<Track | null> {
-		let tracks = await this.trackService.getSongTracks(where, {}, { release: true });
+		const tracks = await this.trackService.getSongTracks(where, {}, { release: true });
 		const currentMaster = tracks.find((track) => track.master);
 		const sortedTracks = tracks
 			.filter((track) => track.release.releaseDate !== null)
@@ -224,7 +241,7 @@ export default class SongService extends RepositoryService<
 	 * @param where Query parameters to find the song to delete 
 	 */
 	async delete(where: SongQueryParameters.DeleteInput): Promise<Song> {
-		let song = await this.get(
+		const song = await this.get(
 			this.formatDeleteInputToWhereInput(where),
 			{ tracks: true, genres: true }
 		);
@@ -255,7 +272,7 @@ export default class SongService extends RepositoryService<
 	}
 
 	async buildResponse(song: SongWithRelations): Promise<SongResponse> {
-		let response = <SongResponse>{
+		const response = <SongResponse>{
 			...song,
 			illustration: await this.illustrationService.getSongIllustrationLink(song.id)
 		};
@@ -288,7 +305,7 @@ export default class SongService extends RepositoryService<
 				artistId: artistId,
 				name: { contains: baseSongName }
 			},
-			orderBy: buildSortingParameter(sort),
+			orderBy: sort ? this.formatSortingInput(sort) : undefined,
 			include: RepositoryService.formatInclude(include),
 			...buildPaginationParameters(pagination)
 		})

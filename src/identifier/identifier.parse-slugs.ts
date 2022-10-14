@@ -7,4 +7,4 @@ export default class ParseMultipleSlugPipe implements PipeTransform {
 		const slugs = value.split(SlugSeparator).map((slugString: string) => new Slug(slugString));
 		return slugs;
 	}
-};
+}

@@ -3,22 +3,16 @@ import type SortingOrder from "./sorting-order";
 import { availableSortingOrders } from "./sorting-order";
 
 
-class SortingParameter<Keys extends string[]> {
+class SortingParameter<Keys extends readonly string[]> {
 	@ApiPropertyOptional({
-		type: 'string'
+		type: 'string',
+		default: 'id'
 	})
 	sortBy: Keys[number];
 	@ApiPropertyOptional({
-		enum: availableSortingOrders
+		enum: availableSortingOrders,
+		default: 'asc'
 	})
-	order?: SortingOrder
+	order: SortingOrder
 }
 export default SortingParameter;
-
-export function buildSortingParameter<Keys extends string[]>(sortingParameters?: SortingParameter<Keys>) {
-	if (sortingParameters?.sortBy === undefined)
-		return {};
-	return {
-		[sortingParameters.sortBy]: sortingParameters.order ?? 'asc',
-	}
-}

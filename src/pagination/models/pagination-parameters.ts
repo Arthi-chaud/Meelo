@@ -14,8 +14,8 @@ export class PaginationParameters {
 		description: `Implicit default value: ${defaultPageSize}`
 	})
 	take?: number;
-};
+}
 
 export function buildPaginationParameters(parameters?: PaginationParameters) {
 	return parameters ?? {}
-};
+}

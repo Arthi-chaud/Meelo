@@ -1,4 +1,3 @@
-import { Prisma } from "@prisma/client";
 import type ArtistQueryParameters from "src/artist/models/artist.query-parameters";
 import type LibraryQueryParameters from "src/library/models/library.query-parameters";
 import type Slug from "src/slug/slug";
@@ -25,7 +24,7 @@ namespace AlbumQueryParameters {
 			releaseDate?: Date;
 			artist?: ArtistQueryParameters.WhereInput
 		}
-	) {};
+	) {}
 
 	/**
 	 * Query parameters to find one album
@@ -49,7 +48,7 @@ namespace AlbumQueryParameters {
 	/**
  	 * The input required to update an album in the database
  	 */
-	export class UpdateInput extends  PartialType(PickType(Album, ['name', 'type', 'releaseDate', 'artistId'] as const)) {};
+	export class UpdateInput extends  PartialType(PickType(Album, ['name', 'type', 'releaseDate', 'artistId'] as const)) {}
 
 	/**
 	 * The input to find or create an album
@@ -67,13 +66,14 @@ namespace AlbumQueryParameters {
 	export const AvailableIncludes = ['releases', 'artist'] as const;
 	export type RelationInclude = BaseRelationInclude<typeof AvailableIncludes>;
 	export const ParseRelationIncludePipe = new ParseBaseRelationIncludePipe(AvailableIncludes);
-
+	
 	/**
 	 * Defines how to sort fetched entries
 	 */
-	export const AvailableFields = Object.values(Prisma.AlbumScalarFieldEnum);
-	export class SortingParameter extends BaseSortingParameter<typeof AvailableFields>{};
-	export const ParseSortingParameterPipe = new ParseBaseSortingParameterPipe(AvailableFields);
+	export const SortingKeys = ['id', 'name', 'artistName', 'releaseDate'] as const;
+	export type SortingKeys = typeof SortingKeys;
+	export class SortingParameter extends BaseSortingParameter<SortingKeys>{}
+	export const ParseSortingParameterPipe = new ParseBaseSortingParameterPipe(SortingKeys);
 }
 
 export default AlbumQueryParameters;

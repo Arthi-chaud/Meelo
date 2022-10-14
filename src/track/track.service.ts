@@ -22,6 +22,7 @@ import IllustrationService from 'src/illustration/illustration.service';
 import LibraryService from 'src/library/library.service';
 import { Track, TrackWithRelations } from 'src/prisma/models';
 import { TrackResponse } from './models/track.response';
+import SortingParameter from 'src/sort/models/sorting-parameter';
 
 @Injectable()
 export default class TrackService extends RepositoryService<
@@ -31,11 +32,13 @@ export default class TrackService extends RepositoryService<
 	TrackQueryParameters.ManyWhereInput,
 	TrackQueryParameters.UpdateInput,
 	TrackQueryParameters.DeleteInput,
+	TrackQueryParameters.SortingKeys,
 	Prisma.TrackCreateInput,
 	Prisma.TrackWhereInput,
 	Prisma.TrackWhereInput,
 	Prisma.TrackUpdateInput,
-	Prisma.TrackWhereUniqueInput
+	Prisma.TrackWhereUniqueInput,
+	Prisma.TrackOrderByWithRelationInput
 >{
 	constructor(
 		@Inject(forwardRef(() => SongService))
@@ -141,6 +144,18 @@ export default class TrackService extends RepositoryService<
 	}
 	formatManyWhereInput = TrackService.formatManyWhereInput;
 
+	formatSortingInput<S extends SortingParameter<TrackQueryParameters.SortingKeys>>(
+		sortingParameter: S
+	): Prisma.TrackOrderByWithRelationInput {
+		switch (sortingParameter.sortBy) {
+			case 'releaseName':
+				return { release: { name: sortingParameter.order }};
+			case undefined:
+				return { id: sortingParameter.order }
+			default:
+				return { [sortingParameter.sortBy]: sortingParameter.order }
+		}
+	}
 	/**
 	 * Callback on track not found
 	 * @param where the query parameters that failed to get the release
@@ -231,7 +246,7 @@ export default class TrackService extends RepositoryService<
 	async getPlaylist(
 		where: ReleaseQueryParameters.WhereInput,
 		include?: TrackQueryParameters.RelationInclude,
-		random: boolean = false
+		random = false
 	): Promise<Track[]> {
 		const tracklist = await this.getTracklist(where, include);
 		let playlist: Track[] = [];
@@ -271,7 +286,7 @@ export default class TrackService extends RepositoryService<
 	) {
 		try {
 			const unmodifiedTrack = await this.get(where);
-			let updatedTrack = await super.update(what, where);
+			const updatedTrack = await super.update(what, where);
 			const masterChangeInput: TrackQueryParameters.UpdateSongMaster = {
 				trackId: updatedTrack.id,
 				song: { byId: { id: updatedTrack.songId } }
@@ -308,9 +323,9 @@ export default class TrackService extends RepositoryService<
 	 * Deletes a track
 	 * @param where Query parameters to find the track to delete 
 	 */
-	async delete(where: TrackQueryParameters.DeleteInput, deleteParent: boolean = true): Promise<Track> {
+	async delete(where: TrackQueryParameters.DeleteInput, deleteParent = true): Promise<Track> {
 		try {
-			let deletedTrack = await super.delete(where);
+			const deletedTrack = await super.delete(where);
 			Logger.warn(`Track '${deletedTrack.name}' deleted`);
 			if (deletedTrack.master)
 				await this.songService.updateSongMaster({ byId: { id: deletedTrack.songId } });
@@ -329,7 +344,7 @@ export default class TrackService extends RepositoryService<
 	 * @param where the query parameters to find the track to set as master
 	 */
 	async setTrackAsMaster(where: TrackQueryParameters.UpdateSongMaster): Promise<void> {
-		let otherTracks: Track[] = (await this.getSongTracks(where.song))
+		const otherTracks: Track[] = (await this.getSongTracks(where.song))
 			.filter((track) => track.id != where.trackId);
 		
 		await Promise.allSettled([
@@ -353,7 +368,7 @@ export default class TrackService extends RepositoryService<
 	 * @param where the query parameters to find the track to unset as master
 	 */
 	async unsetTrackAsMaster(where: TrackQueryParameters.UpdateSongMaster): Promise<void> {
-		let otherTracks: Track[] = (await this.getSongTracks(where.song, {}, {}, { sortBy: 'id', order: 'asc' }))
+		const otherTracks: Track[] = (await this.getSongTracks(where.song, {}, {}, { sortBy: 'id', order: 'asc' }))
 			.filter((track) => track.id != where.trackId);
 		if (otherTracks.find((track) => track.master))
 			return;
@@ -403,8 +418,8 @@ export default class TrackService extends RepositoryService<
 	 * @param where the query parameters to find the track
 	 */
 	async buildIllustrationPath(where: TrackQueryParameters.WhereInput): Promise<IllustrationPath> {
-		let track = await this.get(where, { release: true });
-		let album = await this.albumService.get({ byId: { id: track.release.albumId } }, { artist: true })
+		const track = await this.get(where, { release: true });
+		const album = await this.albumService.get({ byId: { id: track.release.albumId } }, { artist: true })
 		return this.illustrationService.buildTrackIllustrationPath(
 			new Slug(album.slug),
 			new Slug(track.release.slug),
@@ -415,7 +430,7 @@ export default class TrackService extends RepositoryService<
 	}
 
 	async buildResponse(track: TrackWithRelations): Promise<TrackResponse> {
-		let response = <TrackResponse>{
+		const response = <TrackResponse>{
 			...track,
 			illustration: await this.illustrationService.getTrackIllustrationLink(track.id),
 			stream: `/files/${track.sourceFileId}/stream`
@@ -429,7 +444,7 @@ export default class TrackService extends RepositoryService<
 
 	async buildTracklistResponse(tracklist: Tracklist) {
 		let response = {};
-		for (let [disc, tracks] of tracklist) {
+		for (const [disc, tracks] of tracklist) {
 			response = {
 				...response,
 				[disc]: await Promise.all(tracks.map((track) => this.buildResponse(track)))

@@ -1,6 +1,6 @@
 import type { MeeloException } from "src/exceptions/meelo-exception";
 import { buildPaginationParameters, PaginationParameters } from "src/pagination/models/pagination-parameters";
-import { buildSortingParameter } from "src/sort/models/sorting-parameter";
+import SortingParameter from "src/sort/models/sorting-parameter";
 import type { Primitive } from "type-fest";
 
 type AtomicModel = { id: number };
@@ -79,11 +79,13 @@ abstract class RepositoryService<
 	ManyWhereInput,
 	UpdateInput,
 	DeleteInput,
+	SortingKeys extends readonly string[],
 	RepositoryCreateInput,
 	RepositoryWhereInput,
 	RepositoryManyWhereInput,
 	RepositoryUpdateInput,
 	RepositoryDeleteInput,
+	RepositorySortingInput,
 	BaseModel extends AtomicModel = Base<Model>,
 	Relations extends ModelRelations<Model> = ModelRelations<Model>
 > {
@@ -187,7 +189,7 @@ abstract class RepositoryService<
 	 * @param sort the sorting parameters
 	 * @returns matching entities
 	 */
-	async getMany<I extends ModelSelector<Relations>, S extends { sortBy: string, order?: 'asc' | 'desc' }>(
+	async getMany<I extends ModelSelector<Relations>, S extends SortingParameter<SortingKeys>>(
 		where: ManyWhereInput,
 		pagination?: PaginationParameters,
 		include?: I,
@@ -196,7 +198,7 @@ abstract class RepositoryService<
 		return this.repository.findMany({
 			where: this.formatManyWhereInput(where),
 			include: RepositoryService.formatInclude(include),
-			orderBy: buildSortingParameter(sort),
+			orderBy: sort ? this.formatSortingInput(sort) : undefined,
 			...buildPaginationParameters(pagination) 
 		}) as Promise<(BaseModel & Select<Relations, I>)[]>;
 	}
@@ -206,6 +208,12 @@ abstract class RepositoryService<
 	 */
 	abstract formatManyWhereInput(input: ManyWhereInput): RepositoryManyWhereInput;
 
+	/**
+	 * Format input into ORM-compatible parameter
+	 */
+	abstract formatSortingInput<S extends SortingParameter<SortingKeys>>(
+		sortingParameter: S
+	): RepositorySortingInput
 	/**
 	 * Count entities matching the query parameters
 	 * @param where the query parameters

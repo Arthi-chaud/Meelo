@@ -17,7 +17,7 @@ export class ParseSlugPipe implements PipeTransform {
 @Injectable()
 export class ParseArtistSlugPipe implements PipeTransform {
 	transform(value: any, _metadata: ArgumentMetadata): Slug | undefined {
-		let slug = new Slug(value);
+		const slug = new Slug(value);
 		if (slug.toString() === compilationAlbumArtistKeyword)
 			return undefined
 		return slug;

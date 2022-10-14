@@ -16,6 +16,7 @@ import type { IllustrationPath } from 'src/illustration/models/illustration-path
 import { buildStringSearchParameters } from 'src/utils/search-string-input';
 import ArtistService from 'src/artist/artist.service';
 import { ReleaseResponse } from './models/release.response';
+import SortingParameter from 'src/sort/models/sorting-parameter';
 
 @Injectable()
 export default class ReleaseService extends RepositoryService<
@@ -25,11 +26,13 @@ export default class ReleaseService extends RepositoryService<
 	ReleaseQueryParameters.ManyWhereInput,
 	ReleaseQueryParameters.UpdateInput,
 	ReleaseQueryParameters.DeleteInput,
+	ReleaseQueryParameters.SortingKeys,
 	Prisma.ReleaseCreateInput,
 	Prisma.ReleaseWhereInput,
 	Prisma.ReleaseWhereInput,
 	Prisma.ReleaseUpdateInput,
-	Prisma.ReleaseWhereUniqueInput
+	Prisma.ReleaseWhereUniqueInput,
+	Prisma.ReleaseOrderByWithRelationInput
 > {
 	constructor(
 		protected prismaService: PrismaService,
@@ -107,6 +110,21 @@ export default class ReleaseService extends RepositoryService<
 		};
 	}
 	formatManyWhereInput = ReleaseService.formatManyWhereInput;
+
+	formatSortingInput<S extends SortingParameter<ReleaseQueryParameters.SortingKeys>>(
+		sortingParameter: S
+	) {
+		switch (sortingParameter.sortBy) {
+			case 'name':
+				return { slug: sortingParameter.order };
+			case 'trackCount':
+				return { tracks: { _count: sortingParameter.order }};
+			case undefined:
+				return { id: sortingParameter.order };
+			default:
+				return {[sortingParameter.sortBy]: sortingParameter.order }
+		}
+	}
 	/**
 	 * Callback on release not found
 	 * @param where the query parameters that failed to get the release
@@ -184,8 +202,8 @@ export default class ReleaseService extends RepositoryService<
 		what: ReleaseQueryParameters.UpdateInput,
 		where: ReleaseQueryParameters.WhereInput
 	) {
-		let unmodifiedRelease = await this.get(where);
-		let updatedRelease = await super.update(what, where);
+		const unmodifiedRelease = await this.get(where);
+		const updatedRelease = await super.update(what, where);
 		const masterChangeInput: ReleaseQueryParameters.UpdateAlbumMaster = {
 			releaseId: updatedRelease.id,
 			album: { byId: { id: updatedRelease.albumId } }
@@ -214,8 +232,8 @@ export default class ReleaseService extends RepositoryService<
 	 * Also delete related tracks.
 	 * @param where Query parameters to find the release to delete 
 	 */
-	async delete(where: ReleaseQueryParameters.DeleteInput, deleteParent: boolean = true): Promise<Release> {
-		let release = await this.get(where, { tracks: true });
+	async delete(where: ReleaseQueryParameters.DeleteInput, deleteParent = true): Promise<Release> {
+		const release = await this.get(where, { tracks: true });
 		await Promise.allSettled(
 			release.tracks.map((track) => this.trackService.delete({ id: track.id }, false))
 		);
@@ -247,7 +265,7 @@ export default class ReleaseService extends RepositoryService<
 	 * @param where release the query parameters to find the release to set as master
 	 */
 	async setReleaseAsMaster(where: ReleaseQueryParameters.UpdateAlbumMaster): Promise<void> {
-		let otherAlbumReleases: Release[] = (await this.getAlbumReleases(where.album))
+		const otherAlbumReleases: Release[] = (await this.getAlbumReleases(where.album))
 			.filter((albumRelease) => albumRelease.id != where.releaseId);
 		
 		await Promise.allSettled([
@@ -271,7 +289,7 @@ export default class ReleaseService extends RepositoryService<
 	 * @param where the query parameters to find the release to et as master
 	 */
 	async unsetReleaseAsMaster(where: ReleaseQueryParameters.UpdateAlbumMaster): Promise<void> {
-		let otherAlbumReleases: Release[] = (await this.getAlbumReleases(where.album, {}, {}, { sortBy: 'id' }))
+		const otherAlbumReleases: Release[] = (await this.getAlbumReleases(where.album, {}, {}, { sortBy: 'id', order: 'asc' }))
 			.filter((albumRelease) => albumRelease.id != where.releaseId);
 		if (otherAlbumReleases.find((albumRelease) => albumRelease.master))
 			return;
@@ -321,8 +339,8 @@ export default class ReleaseService extends RepositoryService<
 	 * @returns 
 	 */
 	async buildIllustrationPath(where: ReleaseQueryParameters.WhereInput): Promise<IllustrationPath> {
-		let release = await this.select(where, { slug: true, albumId: true });
-		let album = await this.albumService.get({ byId: { id: release.albumId! } }, { artist: true });
+		const release = await this.select(where, { slug: true, albumId: true });
+		const album = await this.albumService.get({ byId: { id: release.albumId! } }, { artist: true });
 		const path = this.illustrationService.buildReleaseIllustrationPath(
 			new Slug(album.slug),
 			new Slug(release.slug!),
@@ -342,7 +360,7 @@ export default class ReleaseService extends RepositoryService<
 	}
 
 	async buildResponse(release: ReleaseWithRelations): Promise<ReleaseResponse> {
-		let response = <ReleaseResponse>{
+		const response = <ReleaseResponse>{
 			...release,
 			illustration: await this.illustrationService.getReleaseIllustrationLink(release.id)
 		};

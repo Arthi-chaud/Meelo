@@ -4,7 +4,7 @@ import FileService from 'src/file/file.service';
 import MetadataService from 'src/metadata/metadata.service';
 import Slug from 'src/slug/slug';
 import { LibraryAlreadyExistsException, LibraryNotFoundException, LibraryNotFoundFromIDException } from './library.exceptions';
-import type { Prisma } from '@prisma/client';
+import { Prisma } from '@prisma/client';
 import PrismaService from 'src/prisma/prisma.service';
 import IllustrationService from 'src/illustration/illustration.service';
 import type LibraryQueryParameters from './models/library.query-parameters';
@@ -14,6 +14,7 @@ import type { MeeloException } from 'src/exceptions/meelo-exception';
 import { buildStringSearchParameters } from 'src/utils/search-string-input';
 import TasksService from 'src/tasks/tasks.service';
 import { Library, LibraryWithRelations } from 'src/prisma/models';
+import SortingParameter from 'src/sort/models/sorting-parameter';
 
 @Injectable()
 export default class LibraryService extends RepositoryService<
@@ -23,11 +24,13 @@ export default class LibraryService extends RepositoryService<
 	LibraryQueryParameters.ManyWhereInput,
 	LibraryQueryParameters.UpdateInput,
 	LibraryQueryParameters.DeleteInput,
+	LibraryQueryParameters.SortingKeys,
 	Prisma.LibraryCreateInput,
 	Prisma.LibraryWhereInput,
 	Prisma.LibraryWhereInput,
 	Prisma.LibraryUpdateInput,
-	Prisma.LibraryWhereUniqueInput
+	Prisma.LibraryWhereUniqueInput,
+	Prisma.LibraryOrderByWithRelationInput
 > {
 	constructor(
 		private fileManagerService: FileManagerService,
@@ -78,6 +81,21 @@ export default class LibraryService extends RepositoryService<
 	}
 	formatManyWhereInput = LibraryService.formatManyWhereInput;
 
+	formatSortingInput<S extends SortingParameter<LibraryQueryParameters.SortingKeys>>(
+		sortingParameter: S
+	): Prisma.LibraryOrderByWithRelationInput {
+		switch (sortingParameter.sortBy) {
+			case 'name':
+				return { slug: sortingParameter.order };
+			case 'fileCount':
+				return { files: { _count: sortingParameter.order }};
+			case undefined:
+				return { id: sortingParameter.order }
+			default:
+				return { [sortingParameter.sortBy]: sortingParameter.order };
+		}
+	}
+
 	onNotFound(where: LibraryQueryParameters.WhereInput): MeeloException {
 		if (where.id !== undefined)
 			return new LibraryNotFoundFromIDException(where.id);
@@ -110,7 +128,7 @@ export default class LibraryService extends RepositoryService<
 	 * @returns the deleted library
 	 */
 	async delete(where: LibraryQueryParameters.WhereInput): Promise<Library> {
-		let relatedFiles = await this.fileService.getMany({ library: where });
+		const relatedFiles = await this.fileService.getMany({ library: where });
 		for (const file of relatedFiles)
 			await this.tasksService.unregisterFile({ id: file.id });
 		return await super.delete(where);

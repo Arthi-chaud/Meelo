@@ -11,5 +11,5 @@ class ParseArtistIdentifierPipe extends ParseBaseIdentifierPipe<ArtistQueryParam
 		}
 		return transformedIdentifier;
 	}
-};
+}
 export default ParseArtistIdentifierPipe;

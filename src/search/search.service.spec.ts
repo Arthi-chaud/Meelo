@@ -31,10 +31,10 @@ describe('Search Service', () => {
 		dummyRepository = module.get(PrismaService);
 		searchService = module.get(SearchService);
 		await dummyRepository.onModuleInit();
-		let artistService = module.get(ArtistService);
-		let albumService = module.get(AlbumService);
-		let songService = module.get(SongService);
-		let releaseService = module.get(ReleaseService);
+		const artistService = module.get(ArtistService);
+		const albumService = module.get(AlbumService);
+		const songService = module.get(SongService);
+		const releaseService = module.get(ReleaseService);
 		dummyRepository.artistA = await artistService.update({ name: 'Madonna' }, { id: dummyRepository.artistA.id }),
 		dummyRepository.artistB	= await artistService.update({ name: 'Goldfrapp' }, { id: dummyRepository.artistB.id }),
 		dummyRepository.artistC	= await artistService.update({ name: 'Doctor Rockit' }, { id: dummyRepository.artistC.id }),

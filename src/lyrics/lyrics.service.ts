@@ -11,6 +11,7 @@ import { LyricsAlreadyExistsExceptions, LyricsNotFoundByIDException, LyricsNotFo
 import type LyricsQueryParameters from './models/lyrics.query-parameters';
 import { Prisma } from '@prisma/client';
 import { LyricsResponse } from './models/lyrics.response';
+import SortingParameter from 'src/sort/models/sorting-parameter';
 
 @Injectable()
 export class LyricsService extends RepositoryService<
@@ -20,11 +21,13 @@ export class LyricsService extends RepositoryService<
 	LyricsQueryParameters.ManyWhereInput,
 	LyricsQueryParameters.UpdateInput,
 	LyricsQueryParameters.DeleteInput,
+	[],
 	Prisma.LyricsCreateInput,
 	Prisma.LyricsWhereInput,
 	Prisma.LyricsWhereInput,
 	Prisma.LyricsUpdateInput,
-	Prisma.LyricsWhereUniqueInput
+	Prisma.LyricsWhereUniqueInput,
+	Prisma.LyricsOrderByWithRelationInput
 > {
 	private readonly geniusApiKey: string | null;
 	constructor(
@@ -73,6 +76,9 @@ export class LyricsService extends RepositoryService<
 	}
 	formatManyWhereInput = LyricsService.formatManyWhereInput;
 
+	formatSortingInput<S extends SortingParameter<[]>>(sortingParameter: S) {
+		return { id: sortingParameter.order }
+	}
 	/**
 	 * Update
 	 */
@@ -106,7 +112,7 @@ export class LyricsService extends RepositoryService<
 	}
 
 	async buildResponse(input: LyricsWithRelations): Promise<LyricsResponse> {
-		let response: LyricsResponse = { lyrics: input.content };
+		const response: LyricsResponse = { lyrics: input.content };
 		if (input.song)
 			response.song = await this.songService.buildResponse(input.song)
 		return response;

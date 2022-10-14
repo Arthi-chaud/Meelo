@@ -1,7 +1,7 @@
 import type { File } from "src/prisma/models";
 import type LibraryQueryParameters from "src/library/models/library.query-parameters";
 import type { RequireAtLeastOne } from "type-fest";
-import type { RequireExactlyOne } from 'type-fest';;
+import type { RequireExactlyOne } from 'type-fest';
 import type { SearchDateInput } from "src/utils/search-date-input";
 import type { RelationInclude as BaseRelationInclude } from "src/relation-include/models/relation-include" ;
 import ParseBaseRelationIncludePipe from "src/relation-include/relation-include.pipe";
@@ -37,8 +37,12 @@ namespace FileQueryParameters {
 	/**
 	 * Query parameters to delete one file
 	 */
-	 export type DeleteInput = Required<Pick<WhereInput, 'id'>>;
+	export type DeleteInput = Required<Pick<WhereInput, 'id'>>;
 	
+
+	export const SortingKeys = ['id', 'trackName', 'trackArtist'] as const;
+	export type SortingKeys = typeof SortingKeys;
+
 	/**
 	 * Relations to include in returned File object
 	 */

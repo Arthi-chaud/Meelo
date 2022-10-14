@@ -1,11 +1,11 @@
-import { Prisma, TrackType } from "@prisma/client";
+import { TrackType } from "@prisma/client";
 import { Track } from "src/prisma/models";
 import type FileQueryParameters from "src/file/models/file.query-parameters";
 import type LibraryQueryParameters from "src/library/models/library.query-parameters";
 import type ReleaseQueryParameters from "src/release/models/release.query-parameters";
 import type SongQueryParameters from "src/song/models/song.query-params";
 import type { RequireAtLeastOne } from "type-fest";
-import type { RequireExactlyOne } from 'type-fest';;
+import type { RequireExactlyOne } from 'type-fest';
 import type { RelationInclude as BaseRelationInclude } from "src/relation-include/models/relation-include";
 import ParseBaseRelationIncludePipe from "src/relation-include/relation-include.pipe";
 import BaseSortingParameter from 'src/sort/models/sorting-parameter';
@@ -78,9 +78,10 @@ namespace TrackQueryParameters {
 	/**
 	 * Defines how to sort fetched entries
 	 */
-	export const AvailableFields = Object.values(Prisma.TrackScalarFieldEnum);
-	export class SortingParameter extends BaseSortingParameter<typeof AvailableFields>{};
-	export const ParseSortingParameterPipe = new ParseBaseSortingParameterPipe(AvailableFields);
+	export const SortingKeys = ['id', 'name', 'releaseName', 'bitrate', 'trackIndex', 'discIndex'] as const;
+	export type SortingKeys = typeof SortingKeys;
+	export class SortingParameter extends BaseSortingParameter<SortingKeys>{}
+	export const ParseSortingParameterPipe = new ParseBaseSortingParameterPipe(SortingKeys);
 }
 
 export default TrackQueryParameters;
