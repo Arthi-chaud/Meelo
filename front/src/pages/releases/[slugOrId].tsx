@@ -155,7 +155,7 @@ const ReleasePage = ({ releaseIdentifier }: InferGetServerSidePropsType<typeof g
 						}
 						<Grid item>
 							<Typography  fontWeight='light'>
-								{release.data!.album.releaseDate && `${new Date(release.data!.album.releaseDate!).getFullYear()} -`}{formatDuration(totalDuration ?? undefined)}
+								{release.data!.album.releaseDate && `${new Date(release.data!.album.releaseDate!).getFullYear()} - `}{formatDuration(totalDuration ?? undefined)}
 							</Typography>
 						</Grid>
 					</Grid>
