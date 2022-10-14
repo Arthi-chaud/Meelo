@@ -152,10 +152,8 @@ export default class TrackService extends RepositoryService<
 				return { release: { name: sortingParameter.order }};
 			case 'addDate':
 				return { id: sortingParameter.order }
-			case undefined:
-				return { id: sortingParameter.order }
 			default:
-				return { [sortingParameter.sortBy]: sortingParameter.order }
+				return { [sortingParameter.sortBy ?? 'id']: sortingParameter.order }
 		}
 	}
 	/**
