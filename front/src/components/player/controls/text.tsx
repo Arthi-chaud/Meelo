@@ -26,12 +26,13 @@ const PlayerText = (props: PlayerTextProps) => {
 				</Typography>
 			</Button>
 		</Link>
-		<Box>
-			<ListItemButton
-				url={`/artists/${props.artist.slug}`}
-				label={props.artist.name}
-			/>
-		</Box>
+		<Link href={`/artists/${props.artist.slug}`}>
+			<Button sx={{ textTransform: 'none', color: 'inherit'}}>
+				<Typography sx={{ ...playerTextStyle}}>
+					{ props.artist?.name }
+				</Typography>
+			</Button>
+		</Link>
 	</Box>
 }
 

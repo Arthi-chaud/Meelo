@@ -169,7 +169,7 @@ export default class MetadataService {
 	}
 
 	private buildMetadataFromRaw(rawMetadata: IAudioMetadata): Metadata {
-		const isVideo: boolean = rawMetadata.format.trackInfo.length != 1;
+		const isVideo: boolean = rawMetadata.format.trackInfo.length > 1;
 		return {
 			genres: rawMetadata.common.genre,
 			compilation: rawMetadata.common.compilation ?? false,

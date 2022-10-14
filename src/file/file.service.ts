@@ -179,7 +179,7 @@ export default class FileService extends RepositoryService<
 			throw new SourceFileNotFoundExceptions(file.path);
 		res.set({
 			'Content-Disposition': `attachment; filename="${new Slug(path.parse(file.path).name).toString()}${path.parse(file.path).ext}"`,
-			'Content-Type': mime.lookup(fullFilePath) ?? 'application/octet-stream'
+			'Content-Type': mime.getType(fullFilePath) ?? 'application/octet-stream'
 		});
 		return new StreamableFile(fs.createReadStream(fullFilePath));
 	}

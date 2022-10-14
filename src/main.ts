@@ -20,7 +20,7 @@ async function bootstrapSwagger(app: INestApplication) {
 }
 
 async function bootstrap() {
-	mime.define({ 'audio/mpeg': [ 'm4a', ...mime.extension('audio/mpeg')!] })
+	mime.define({ 'audio/mpeg': [ 'm4a', mime.getExtension('audio/mpeg')!] }, true)
 	const app = await NestFactory.create(AppModule);
 	const { httpAdapter } = app.get(HttpAdapterHost);
 	app.useGlobalFilters(

@@ -43,6 +43,7 @@
     "fs": "^0.0.1-security",
     "genius-lyrics-api": "^3.2.0",
     "jimp": "^0.16.1",
+    "mime": "^3.0.0",
     "music-metadata": "^7.12.3",
     "mysql2": "^2.3.3",
     "normalize-path": "^3.0.0",
@@ -120,10 +121,16 @@
       "plugin:@typescript-eslint/recommended"
     ],
     "parser": "@typescript-eslint/parser",
-    "parserOptions": { "project": ["./tsconfig.json"] },
-    "plugins": [ "@typescript-eslint" ],
+    "parserOptions": {
+      "project": [
+        "./tsconfig.json"
+      ]
+    },
+    "plugins": [
+      "@typescript-eslint"
+    ],
     "rules": {
       "@typescript-eslint/switch-exhaustiveness-check": 2
     }
-}
+  }
 }

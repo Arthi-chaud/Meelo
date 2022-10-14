@@ -89,7 +89,7 @@ const ArtistPage = ({ artistIdentifier }: InferGetServerSidePropsType<typeof get
 		<Grid container direction="column" spacing={4} sx={{ padding: 5, flex: 1, flexGrow: 1 }}>
 			<Grid item container spacing={4} sx={{ justifyContent: 'flex-start' }}>
 				<Grid item xs={5} sm={3} lg={2}>
-					<Illustration url={artist.data!.illustration} fallback={<Album fontSize="large"/>}/> 
+					<Illustration url={artist.data!.illustration} objectFit="cover"  fallback={<Album fontSize="large"/>}/> 
 				</Grid>
 				<Grid item sx={{ display: 'flex', alignItems: 'center' }}>
 					<Typography variant='h3' fontWeight='bold'>{artist.data!.name}</Typography>
@@ -106,7 +106,7 @@ const ArtistPage = ({ artistIdentifier }: InferGetServerSidePropsType<typeof get
 				</Grid>
 				<Grid item container spacing={2} sx={{ display: 'flex', flexGrow: 1 }}>
 				{ topSongs.data
-					? topSongs.data.items.slice(0, 6).filter((song) => song.playCount > 0).map((song) => <Grid key={song.id} item xs={12} sm={6} md={4}>
+					? topSongs.data.items.slice(0, 6).map((song) => <Grid key={song.id} item xs={12} sm={6} md={4}>
 						<SongButton song={{...song, artist: artist.data}}/>
 					</Grid>)
 					: <WideLoadingComponent/> 
