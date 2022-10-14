@@ -91,7 +91,7 @@ abstract class RepositoryService<
 > {
 	constructor(protected repository: {
 		create: ORMGetterMethod<BaseModel, Relations, { data: RepositoryCreateInput }>,
-		findFirst: ORMGetterMethod<BaseModel, Relations, { where: RepositoryWhereInput, rejectOnNotFound: true }>
+		findFirstOrThrow: ORMGetterMethod<BaseModel, Relations, { where: RepositoryWhereInput }>
 		findMany: ORMManyGetterMethod<BaseModel, Relations, { where: RepositoryManyWhereInput }>
 		delete: (args: { where: RepositoryDeleteInput }) => Promise<BaseModel>,
 		update: (args: { where: RepositoryWhereInput, data: RepositoryUpdateInput }) => Promise<BaseModel>
@@ -107,7 +107,6 @@ abstract class RepositoryService<
 	async create<I extends ModelSelector<Relations>>(input: CreateInput, include?: I) {
 		try {
 			return await this.repository.create({
-				rejectOnNotFound: true,
 				data: this.formatCreateInput(input),
 				include: RepositoryService.formatInclude(include)
 			}) as BaseModel & Select<Relations, I>;
@@ -138,8 +137,7 @@ abstract class RepositoryService<
 	async get<I extends ModelSelector<Relations>>(where: WhereInput, include?: I) {
 		this.checkWhereInputIntegrity(where);
 		try {
-			return await this.repository.findFirst({
-				rejectOnNotFound: true,
+			return await this.repository.findFirstOrThrow({
 				where: this.formatWhereInput(where),
 				include: RepositoryService.formatInclude(include)
 			}) as BaseModel & Select<Relations, I>;
@@ -171,8 +169,7 @@ abstract class RepositoryService<
 	async select<S extends ModelSelector<BaseModel>>(where: WhereInput, select: S): Promise<Select<BaseModel, S>> {
 		this.checkWhereInputIntegrity(where);
 		try {
-			return await this.repository.findFirst({
-				rejectOnNotFound: true,
+			return await this.repository.findFirstOrThrow({
 				where: this.formatWhereInput(where),
 				select: { ...select,  id: true }
 			});
