@@ -125,7 +125,6 @@ export default class ArtistService extends RepositoryService<
 			default:
 				return { [sortingParameter.sortBy ?? 'id']: sortingParameter.order }
 		}
-		return { id: sortingParameter.order }
 	}
 	/**
 	 * Find multiple artists that have at least one album
