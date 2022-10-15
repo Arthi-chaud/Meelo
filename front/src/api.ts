@@ -253,7 +253,7 @@ export default class API {
 	/**
 	 * Get tracks of a song
 	 * @param songSlugOrId the id of the parent song
-	 * @param include the relation to inclide
+	 * @param include the relation to include
 	 * @returns an array of tracks
 	 */
 	static async getSongTracks<T extends Track = Track>(
@@ -264,6 +264,24 @@ export default class API {
 	): Promise<PaginatedResponse<T>> {
 		return API.fetch({
 			route: `/songs/${songSlugOrId}/tracks`,
+			parameters: { pagination, include, sort }
+		});
+	}
+
+	/**
+	 * Get versions of a song
+	 * @param songSlugOrId the id of the  song
+	 * @param include the relation to include
+	 * @returns an array of tracks
+	 */
+	 static async getSongVersions<T extends Song = Song>(
+		songSlugOrId: string | number,
+		pagination?: PaginationParameters,
+		sort?: SortingParameters<typeof SongSortingKeys>,
+		include: SongInclude[] = []
+	): Promise<PaginatedResponse<T>> {
+		return API.fetch({
+			route: `/songs/${songSlugOrId}/versions`,
 			parameters: { pagination, include, sort }
 		});
 	}

@@ -34,7 +34,7 @@ const SongItem = ({ track }: TrackItemProps) => {
 			secondTitle={
 				<ListItemButton url={`/releases/${release.id}`} label={release.name} />
 			}
-			trailing={track.master && <Star/>}
+			trailing={track.master ? <Star/> : <></>}
 		/>
 	)
 }

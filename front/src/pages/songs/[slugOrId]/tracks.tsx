@@ -33,11 +33,11 @@ export const getServerSideProps = async (context: GetServerSidePropsContext) => 
 	}
 }
 
-const ArtistAlbumsPage = ({ songIdentifier }: InferGetServerSidePropsType<typeof getServerSideProps>) => {
+const SongTracksPage = ({ songIdentifier }: InferGetServerSidePropsType<typeof getServerSideProps>) => {
 	songIdentifier ??= getSlugOrId();
 	return <InfiniteTrackView
 		initialSortingOrder={'asc'}
 		query={(sort) => songTracksQuery(songIdentifier, sort)}
 	/>
 }
-export default ArtistAlbumsPage;
+export default SongTracksPage;

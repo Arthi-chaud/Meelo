@@ -15,6 +15,7 @@ import AudiotrackIcon from '@mui/icons-material/Audiotrack';
 import { useDispatch } from "react-redux"
 import { emptyPlaylist, playNextTrack, playTrack } from "../../state/playerSlice"
 import LoadingItemComponent from "../loading/loading-item"
+import SongContextualMenu from "../contextual-menu/song-contextual-menu"
 
 type SongItemProps = {
 	song: SongWithArtist;
@@ -44,41 +45,7 @@ const SongItem = ({ song }: SongItemProps) => {
 			secondTitle={
 				<ListItemButton url={`/artists/${artist.slug}`} label={artist.name} />
 			}
-			expanded={() => (
-				<InfiniteList
-					firstLoader={() => <LoadingItemComponent/>}
-					loader={() => <WideLoadingComponent/>}
-					query={() => ({
-						key: ['tracks', 'song', song.id.toString()],
-						exec: (lastPage: Page<TrackWithRelease>) => API.getSongTracks<TrackWithRelease>(
-							song.id,
-							lastPage,
-							{ sortBy: 'name' },
-							['release']
-						)
-					})}
-					render={(track: TrackWithRelease) => <>
-						<ListItem
-							icon={<Illustration url={track.illustration} fallback={<AudiotrackIcon/>}/>}
-							title={<ListItemButton onClick={() => {
-								dispatch(emptyPlaylist());
-								dispatch(playTrack({
-									artist,
-									track,
-									release: track.release
-								}));
-							}} label={track.name}/>}
-							secondTitle={
-								<ListItemButton url={`/releases/${track.releaseId}`} label={track.release.name} />
-							}
-							trailing={track.master
-								? <Tooltip title="Master track"><Star/></Tooltip>
-								: <></>
-							}
-						/>
-					</>}
-				/>
-			)}
+			trailing={<SongContextualMenu song={song}/>}
 		/>
 	)
 }
