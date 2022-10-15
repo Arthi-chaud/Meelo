@@ -8,6 +8,7 @@ import { useDispatch } from "react-redux"
 import { emptyPlaylist, playTrack } from "../../state/playerSlice"
 import Artist from "../../models/artist";
 import { SongWithArtist } from "../../models/song";
+import { Star } from "@mui/icons-material";
 
 type TrackItemProps = {
 	track: TrackWithRelease;
@@ -33,6 +34,7 @@ const SongItem = ({ track }: TrackItemProps) => {
 			secondTitle={
 				<ListItemButton url={`/releases/${release.id}`} label={release.name} />
 			}
+			trailing={track.master && <Star/>}
 		/>
 	)
 }
