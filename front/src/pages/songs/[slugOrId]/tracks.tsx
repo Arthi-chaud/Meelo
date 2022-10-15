@@ -12,7 +12,7 @@ import { SortingParameters } from "../../../utils/sorting";
 
 const songTracksQuery = (songSlugOrId: number | string, sort?: SortingParameters<typeof TrackSortingKeys>) => ({
 	key: ["song", songSlugOrId, "tracks", sort ?? {}],
-	exec: (lastPage: Page<Track>) => API.getSongTracks<TrackWithRelease & TrackWithSong>(songSlugOrId, lastPage, sort, ["release", "song"])
+	exec: (lastPage: Page<Track>) => API.getSongTracks<TrackWithRelease>(songSlugOrId, lastPage, sort, ["release"])
 });
 
 
@@ -36,7 +36,6 @@ const ArtistAlbumsPage = ({ songIdentifier }: InferGetServerSidePropsType<typeof
 	const router = useRouter();
 	songIdentifier ??= router.query.slugOrId as string;
 	return <InfiniteTrackView
-		initialSortingField={'releaseName'}
 		initialSortingOrder={'asc'}
 		query={(sort) => songTracksQuery(songIdentifier, sort)}
 	/>

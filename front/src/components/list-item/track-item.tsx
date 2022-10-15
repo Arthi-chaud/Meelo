@@ -10,7 +10,7 @@ import Artist from "../../models/artist";
 import { SongWithArtist } from "../../models/song";
 
 type TrackItemProps = {
-	track: TrackWithRelease & TrackWithSong;
+	track: TrackWithRelease;
 }
 
 /**
