@@ -148,7 +148,7 @@ const ReleasePage = ({ releaseIdentifier }: InferGetServerSidePropsType<typeof g
 							<Grid item>
 								<Link href={`/artists/${albumArtist.data.slug}`}>
 									<Button color='inherit' sx={{ textTransform: 'none' }}>
-										<Typography variant='h4'>{albumArtist.data?.name}</Typography>
+										<Typography variant='h4' fontWeight='bold'>{albumArtist.data?.name}</Typography>
 									</Button>
 								</Link>
 							</Grid>
