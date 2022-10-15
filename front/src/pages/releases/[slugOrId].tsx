@@ -23,6 +23,7 @@ import { playNextTrack, playTrack, setTracksInPlaylist } from "../../state/playe
 import Song from "../../models/song";
 import Artist from "../../models/artist";
 import { shuffle } from 'd3-array';
+import getSlugOrId from "../../utils/getSlugOrId";
 
 const releaseQuery = (slugOrId: string | number) => ({
 	key: ['release', slugOrId],
@@ -55,7 +56,7 @@ const albumReleasesQuery = (slugOrId: string | number) => ({
 });
 
 export const getServerSideProps = async (context: GetServerSidePropsContext) => {
-	const releaseIdentifier = context.params!.slugOrId as string;
+	const releaseIdentifier = getSlugOrId(context.params);
 	const queryClient = new QueryClient()
   
 	await Promise.all([
@@ -96,6 +97,7 @@ const getSongArtist = (song: Song, albumArtist?: Artist, otherArtist: Artist[] =
 }
 
 const ReleasePage = ({ releaseIdentifier }: InferGetServerSidePropsType<typeof getServerSideProps>) => {
+	releaseIdentifier ??= getSlugOrId();
 	const theme = useTheme();
 	const dispatch = useDispatch();
 	const [totalDuration, setTotalDuration] = useState<number | null>(null);

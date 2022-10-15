@@ -8,6 +8,7 @@ import { Page } from "../../../components/infinite/infinite-scroll";
 import InfiniteTrackView from "../../../components/infinite/infinite-track-view";
 import Track, { TrackSortingKeys, TrackWithRelease, TrackWithSong } from "../../../models/track";
 import { prepareMeeloInfiniteQuery } from "../../../query";
+import getSlugOrId from "../../../utils/getSlugOrId";
 import { SortingParameters } from "../../../utils/sorting";
 
 const songTracksQuery = (songSlugOrId: number | string, sort?: SortingParameters<typeof TrackSortingKeys>) => ({
@@ -17,7 +18,7 @@ const songTracksQuery = (songSlugOrId: number | string, sort?: SortingParameters
 
 
 export const getServerSideProps = async (context: GetServerSidePropsContext) => {
-	const songIdentifier = context.params!.slugOrId as string;
+	const songIdentifier = getSlugOrId(context.params);
 	const queryClient = new QueryClient()
   
 	await Promise.all([
@@ -33,8 +34,7 @@ export const getServerSideProps = async (context: GetServerSidePropsContext) => 
 }
 
 const ArtistAlbumsPage = ({ songIdentifier }: InferGetServerSidePropsType<typeof getServerSideProps>) => {
-	const router = useRouter();
-	songIdentifier ??= router.query.slugOrId as string;
+	songIdentifier ??= getSlugOrId();
 	return <InfiniteTrackView
 		initialSortingOrder={'asc'}
 		query={(sort) => songTracksQuery(songIdentifier, sort)}
