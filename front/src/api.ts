@@ -408,7 +408,6 @@ export default class API {
 		sort?: SortingParameters<typeof AlbumSortingKeys>,
 		include: AlbumInclude[] = []
 	): Promise<PaginatedResponse<T>> {
-		console.log(sort);
 		return API.fetch({
 			route: `/search/albums/${query}`,
 			errorMessage: 'Search failed',
