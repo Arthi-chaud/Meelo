@@ -186,7 +186,21 @@ export default class API {
 				parameters: { pagination, include, sort }
 			});
 		}
-
+	/**
+	 * Get a song
+	 * @param songSlugOrId the identifier of a song
+	 * @param include the fields to include in the fetched item
+	 * @returns a Track
+	 */
+	 static async getSong<T extends Song = Song>(
+		songSlugOrId: string | number,
+		include: SongInclude[] = []
+	): Promise<T> {
+		return API.fetch({
+			route: `/songs/${songSlugOrId}`,
+			parameters: { include }
+		}); 
+	}
 	/**
 	 * Get the master track of a song
 	 * @param songSlugOrId the identifier of a song
