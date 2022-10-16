@@ -19,7 +19,6 @@ import ReleaseModule from "src/release/release.module";
 import GenreModule from "src/genre/genre.module";
 import TestPrismaService from "test/test-prisma.service";
 import SongService from "./song.service";
-import Slug from "src/slug/slug";
 import { LyricsModule } from "src/lyrics/lyrics.module";
 
 describe('Song Controller', () => {
@@ -290,33 +289,26 @@ describe('Song Controller', () => {
 		});
 
 		it("should increment a song's play count (by id)", () => {
-			const queryParameters = { byId: { id: dummyRepository.songC1.id } };
 			return request(app.getHttpServer())
 				.put(`/songs/${dummyRepository.songC1.id}/played`)
 				.expect(200)
-				.expect(async () => {
-					const updatedSong = await songService.get(queryParameters);
+				.expect(async (res) => {
+					const updatedSong: Song = res.body;
 					expect(updatedSong).toStrictEqual({
-						...dummyRepository.songC1,
+						...expectedSongResponse(dummyRepository.songC1),
 						playCount: dummyRepository.songC1.playCount + 1
 					});
 				});
 		});
 
 		it("should increment a song's play count (by slug)", () => {
-			const queryParameters = {
-				bySlug: {
-					slug: new Slug(dummyRepository.songC1.slug),
-					artist: { id: dummyRepository.artistC.id }
-				}
-			};
 			return request(app.getHttpServer())
 				.put(`/songs/${dummyRepository.artistC.slug}+${dummyRepository.songC1.slug}/played`)
 				.expect(200)
-				.expect(async () => {
-					const updatedSong = await songService.get(queryParameters);
+				.expect(async (res) => {
+					const updatedSong: Song = res.body;
 					expect(updatedSong).toStrictEqual({
-						...dummyRepository.songC1,
+						...expectedSongResponse(dummyRepository.songC1),
 						playCount: dummyRepository.songC1.playCount + 2
 					});
 				});

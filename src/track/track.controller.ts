@@ -1,4 +1,4 @@
-import { Controller, Get, Query, Param, Post, Body, Inject, forwardRef, Req } from '@nestjs/common';
+import { Controller, Get, Query, Param, Post, Body, Inject, forwardRef, Req, Put } from '@nestjs/common';
 import { ParseIdPipe } from 'src/identifier/id.pipe';
 import PaginatedResponse from 'src/pagination/models/paginated-response';
 import type { PaginationParameters } from 'src/pagination/models/pagination-parameters';
@@ -78,6 +78,22 @@ export class TrackController {
 	) {
 		const track = await this.trackService.get({ id: trackId }, include);
 		return await this.trackService.buildResponse(track);
+	}
+
+	@ApiOperation({
+		summary: 'Set a track as master track'
+	})
+	@Put(':id/master')
+	async setAsMaster(
+		@Param('id', ParseIdPipe) trackId: number
+	) {
+		const track = await this.trackService.get({ id: trackId });
+		await this.trackService.setTrackAsMaster({
+			trackId: track.id,
+			song: { byId: { id: track.songId } }
+		});
+		const updatedTrack = await this.trackService.getMasterTrack({ byId: { id: track.songId } });
+		return await this.trackService.buildResponse(updatedTrack);
 	}
 
 	@ApiOperation({

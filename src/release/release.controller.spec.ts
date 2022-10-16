@@ -410,5 +410,20 @@ describe('Release Controller', () => {
 		});
 	});
 
+	describe("Set Release as master (POST /releases/:id/master)", () => {
+		it("should set release as master", () => {
+			return request(app.getHttpServer())
+				.put(`/releases/${dummyRepository.releaseA1_2.id}/master`)
+				.expect(200)
+				.expect((res) => {
+					const release: Release = res.body;
+					expect(release).toStrictEqual({
+						...expectedReleaseResponse(dummyRepository.releaseA1_2),
+						master: true,
+					});
+				});
+		});
+	});
+
 	
 });
