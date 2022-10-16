@@ -15,19 +15,23 @@ type ListItemProps = {
 	onClick: () => void
 }>
 
+const textStyle = {
+	whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', textAlign: 'left'
+}
+
 const ListItem = (props: ListItemProps) => {
 	let clickableArea = <Button color='secondary' onClick={props.onClick} sx={{ textTransform: 'none', alignItems: 'center', width: '100%' }}>
 		<Grid container columns={10} spacing={2}>
 			<Grid item xs={2} sm={1.5} md={1} lg={0.5}>
 				{props.icon}
 			</Grid>
-			<Grid item container xs={8} sx={{ alignItems: 'center'}}>
-				<Grid item xs={12} sm={9} sx={{ display: 'flex', justifyContent: 'flex-start' }}>
-					<Typography textAlign='left'>{props.title}</Typography>
+			<Grid item container xs={8} spacing={2} sx={{ alignItems: 'center'}}>
+				<Grid item xs={12} sm={9} sx={textStyle}>
+					<Typography fontWeight='bold' sx={textStyle}>{props.title}</Typography>
 				</Grid>
 				{ props.secondTitle &&
-					<Grid item xs={12} sm={3} sx={{ display: 'flex', justifyContent: 'left' }}>
-						<Typography color="text.disabled" textAlign='left'>{props.secondTitle}</Typography>
+					<Grid item xs={12} sm={3} sx={textStyle}>
+						<Typography color="text.disabled" sx={textStyle}>{props.secondTitle}</Typography>
 					</Grid>
 				}
 			</Grid>
@@ -37,10 +41,10 @@ const ListItem = (props: ListItemProps) => {
 		clickableArea = <Link href={props.href} children={clickableArea}/>;
 	}
 	return <Grid container padding={1} spacing={2} sx={{ alignItems: 'center', width: 'inherit' }}>
-			<Grid item xs>
+			<Grid item xs={9} lg={11}>
 				{clickableArea}
 			</Grid>
-			<Grid item xs={1} sx={{ justifyContent: 'center', width: '100%', display: 'flex' }}>
+			<Grid item xs={3} lg={1} sx={{ justifyContent: 'flex-end', display: 'flex' }}>
 				{props.trailing}
 			</Grid>
 		</Grid>

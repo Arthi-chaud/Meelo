@@ -42,7 +42,7 @@ const SongButton = (props: SongButtonProps) => {
 						<Illustration url={props.song.illustration} fallback={<AudiotrackIcon/>}/>
 					</Grid>
 					<Grid item xs sx={{ display: 'flex', justifyContent: 'flex-start' }}>
-						<Typography fontWeight='bold'>{props.song.name}</Typography>
+						<Typography textAlign='left' fontWeight='bold'>{props.song.name}</Typography>
 					</Grid>
 				</Grid>
 			</Button>

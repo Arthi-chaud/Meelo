@@ -82,7 +82,7 @@ const MeeloAppBar = () => {
 										}}
         							>
         							  {[globalLibrary, ...availableLibraries].map((library) => (
-        							    <MenuItem key={library.slug} value={library.name}>
+        							    <MenuItem key={library.slug} value={library.name} sx={{ borderRadius: '0' }}>
         							    	{library.name}
         							    </MenuItem>
         							  ))}
@@ -91,15 +91,15 @@ const MeeloAppBar = () => {
 									<Grid container spacing={3} sx={{ paddingLeft: 2, flexWrap: 'nowrap' }}  flexDirection='row'>
 										{
 											itemType.map((type, index) => {
-												const isSelected = router.asPath == `/${type}` || (router.asPath.endsWith(`/${type}`) && (router.asPath.startsWith('/libraries')));
+												const isSelected = router.route == `/${type}`;
 												return <Grid item key={type}>
-													<Button variant="text" color='inherit'>
-														<Link href={buildLink(type, requestedLibrary.slug)}>
+													<Link href={buildLink(type, requestedLibrary.slug)}>
+														<Button variant="text" color='inherit'>
 															<Typography sx={{ fontWeight: isSelected ? 'bold' : 'normal' }}>
 																{formattedItemTypes.at(index)}
 															</Typography>
-														</Link>
-													</Button>
+														</Button>
+													</Link>
 												</Grid>
 											})
 										}
