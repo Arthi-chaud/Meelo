@@ -13,7 +13,7 @@ import { SortingParameters } from "../../../utils/sorting";
 
 const songTracksQuery = (songSlugOrId: number | string, sort?: SortingParameters<typeof TrackSortingKeys>) => ({
 	key: ["song", songSlugOrId, "tracks", sort ?? {}],
-	exec: (lastPage: Page<Track>) => API.getSongTracks<TrackWithRelease>(songSlugOrId, lastPage, sort, ["release"])
+	exec: (lastPage: Page<Track>) => API.getSongTracks<TrackWithRelease & TrackWithSong>(songSlugOrId, lastPage, sort, ["release", "song"])
 });
 
 

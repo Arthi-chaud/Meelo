@@ -367,6 +367,16 @@ export default class API {
 		});
 	}
 
+	static async getReleasePlaylist<T extends Track = Track> (
+		slugOrId: string | number,
+		include: TrackInclude[] = []
+	): Promise<T[]> {
+		return this.fetch({
+			route: `/releases/${slugOrId.toString()}/playlist`,
+			parameters: { include }
+		});
+	}
+
 	static async getSongLyrics(
 		slugOrId: string | number
 	): Promise<string[] | null> {
@@ -444,9 +454,9 @@ export default class API {
 		})
 	}
 
-	private static async fetch<T, Keys extends string[]>({ route, parameters, otherParameters, errorMessage }: FetchParameters<Keys>): Promise<T> {
-		const response = await fetch(this.buildURL(route, parameters, otherParameters));
-		const jsonResponse = await response.json().catch(() => {
+	private static async fetch<T, Keys extends string[]>({ route, parameters, otherParameters, errorMessage }: FetchParameters<Keys>, method: 'GET' | 'PUT' | 'POST' = 'GET' ): Promise<T> {
+		const response = await fetch(this.buildURL(route, parameters, otherParameters), { method });
+		const jsonResponse = await response.json().catch((e) => {
 			throw new Error("Error while parsing Server's response");
 		});
 		if (!response.ok) {
@@ -486,7 +496,37 @@ export default class API {
 	 * @returns 
 	 */
 	static async setSongAsPlayed(songSlugOrId: string | number): Promise<void> {
-		return fetch(API.buildURL(`/songs/${songSlugOrId}/played`, {}), { method: 'PUT' }).then(() => {});
+		return API.fetch({
+			route: `/songs/${songSlugOrId}/played`,
+			errorMessage: 'Song update failed',
+			parameters: {}
+		}, 'PUT');
+	}
+
+	/**
+	 * Mark a release as master
+	 * @param releaseSlugOrId 
+	 * @returns
+	 */
+	static async setReleaseAsMaster(releaseSlugOrId: string | number): Promise<void> {
+		return API.fetch({
+			route: `/releases/${releaseSlugOrId}/master`,
+			errorMessage: 'Release update failed',
+			parameters: {}
+		}, 'PUT');
+	}
+
+	/**
+	 * Mark a track as master
+	 * @param trackSlugOrId 
+	 * @returns
+	 */
+	 static async setTrackAsMaster(trackSlugOrId: string | number): Promise<void> {
+		return API.fetch({
+			route: `/tracks/${trackSlugOrId}/master`,
+			errorMessage: 'Track update failed',
+			parameters: {}
+		}, 'PUT');
 	}
 
 	private static buildURL(route: string, parameters: QueryParameters<any>, otherParameters?: any): string {

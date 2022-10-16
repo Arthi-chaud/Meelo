@@ -1,4 +1,4 @@
-import Release, { ReleaseSortingKeys } from "../../../models/release";
+import Release, { ReleaseSortingKeys, ReleaseWithAlbum } from "../../../models/release";
 import API from "../../../api";
 import { GetServerSidePropsContext, InferGetServerSidePropsType } from "next";
 import { QueryClient, dehydrate } from "react-query";
@@ -11,7 +11,7 @@ import InfiniteReleaseView from "../../../components/infinite/infinite-release-v
 
 const albumReleasesQuery = (albumSlugOrId: number | string, sort?: SortingParameters<typeof ReleaseSortingKeys>) => ({
 	key: ["album", albumSlugOrId, "releases", sort ?? {}],
-	exec: (lastPage: Page<Release>) => API.getAlbumReleases<Release>(albumSlugOrId, lastPage, sort)
+	exec: (lastPage: Page<ReleaseWithAlbum>) => API.getAlbumReleases<ReleaseWithAlbum>(albumSlugOrId, lastPage, sort, ['album'])
 });
 
 
