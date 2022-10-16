@@ -24,6 +24,7 @@ import Song from "../../models/song";
 import Artist from "../../models/artist";
 import { shuffle } from 'd3-array';
 import getSlugOrId from "../../utils/getSlugOrId";
+import AlbumContextualMenu from "../../components/contextual-menu/album-contextual-menu";
 
 const releaseQuery = (slugOrId: string | number) => ({
 	key: ['release', slugOrId],
@@ -188,7 +189,7 @@ const ReleasePage = ({ releaseIdentifier }: InferGetServerSidePropsType<typeof g
 						))
 					}
 					<Grid item>
-						<IconButton><MoreHoriz fontSize="large"/></IconButton>
+						<AlbumContextualMenu album={{...release.data.album, artist: albumArtist.data}}/>
 					</Grid>
 				</Grid>
 			</Grid>
