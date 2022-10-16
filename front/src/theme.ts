@@ -30,6 +30,13 @@ export default  responsiveFontSizes(createTheme({
 					zIndex: 0
 				}
 			}
+		},
+		MuiButtonBase: {
+			styleOverrides: {
+				root: {
+					borderRadius: '0.5rem'
+				}
+			}
 		}
 	}
 }));

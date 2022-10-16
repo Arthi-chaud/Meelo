@@ -30,10 +30,8 @@ const ArtistItem = ({ artist }: ArtistItemProps) => {
 	return (
 		<ListItem
 			icon={<Illustration url={artist.illustration} objectFit="cover" fallback={<AccountCircle/>}/>}
-			title={<ListItemButton
-				url={`/artists/${artist?.slug}`}
-				label={artist.name}
-			/>}
+			href={`/artists/${artist.slug}`}
+			title={artist.name}
 			trailing={<ArtistContextualMenu artist={artist}/>}
 		/>
 	)

@@ -30,16 +30,9 @@ const AlbumItem = ({ album }: AlbumItemProps) => {
 	return (
 		<ListItem
 			icon={<Illustration url={album.illustration} fallback={<Album/>}/>}
-			title={
-				<ListItemButton
-					url={`/albums/${artist?.slug ?? 'compilations'}+${album.slug}`}
-					label={album.name}
-				/>
-			}
-			secondTitle={artist?.slug
-				? <ListItemButton url={`/artists/${artist.slug}`} label={artist?.name} />
-				: <Typography margin={1}>Compilations</Typography>
-			}
+			href={`/albums/${artist?.slug ?? 'compilations'}+${album.slug}`}
+			title={album.name}
+			secondTitle={ artist?.name ?? 'Compilations'}
 			trailing={<AlbumContextualMenu album={album} />}
 		/>
 	)

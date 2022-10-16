@@ -32,7 +32,8 @@ const SongItem = ({ song }: SongItemProps) => {
 	return (
 		<ListItem
 			icon={<Illustration url={song.illustration} fallback={<AudiotrackIcon/>}/>}
-			title={<ListItemButton onClick={() => {
+			title={song.name}
+			onClick={() => {
 				API.getMasterTrack<TrackWithRelease>(song.id, ['release']).then((track) => {
 					dispatch(emptyPlaylist());
 					dispatch(playTrack({
@@ -41,10 +42,8 @@ const SongItem = ({ song }: SongItemProps) => {
 						release: track.release
 					}));
 				})
-			}} label={song.name}/>}
-			secondTitle={
-				<ListItemButton url={`/artists/${artist.slug}`} label={artist.name} />
-			}
+			}}
+			secondTitle={artist.name}
 			trailing={<SongContextualMenu song={song}/>}
 		/>
 	)
