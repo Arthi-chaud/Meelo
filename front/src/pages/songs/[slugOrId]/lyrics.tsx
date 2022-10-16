@@ -10,7 +10,7 @@ import LyricsBox from "../../../components/lyrics";
 import Song, { SongWithArtist } from "../../../models/song";
 import Track, { TrackSortingKeys, TrackWithRelease } from "../../../models/track";
 import { prepareMeeloInfiniteQuery, prepareMeeloQuery } from "../../../query";
-import getSlugOrId from "../../../utils/getSlugOrId";
+import useSlugOrId from "../../../utils/useSlugOrId";
 import { SortingParameters } from "../../../utils/sorting";
 import SongTracksPage from "./tracks";
 
@@ -26,7 +26,7 @@ const lyricsQuery = (songSlugOrId: number | string) => ({
 
 
 export const getServerSideProps = async (context: GetServerSidePropsContext) => {
-	const songIdentifier = getSlugOrId(context.params);
+	const songIdentifier = useSlugOrId(context.params);
 	const queryClient = new QueryClient()
   
 	await Promise.all([
@@ -43,7 +43,7 @@ export const getServerSideProps = async (context: GetServerSidePropsContext) => 
 }
 
 const SongLyricsPage = ({ songIdentifier }: InferGetServerSidePropsType<typeof getServerSideProps>) => {
-	songIdentifier ??= getSlugOrId();
+	songIdentifier ??= useSlugOrId();
 	const lyrics = useQuery(prepareMeeloQuery(lyricsQuery, songIdentifier));
 	const song = useQuery(prepareMeeloQuery(songQuery, songIdentifier));
 	if (!song.data || lyrics.isLoading ) {

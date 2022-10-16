@@ -17,7 +17,7 @@ import { useDispatch } from "react-redux";
 import { emptyPlaylist, playTrack } from "../../../state/playerSlice";
 import artist from "../../../models/artist";
 import { TrackWithRelease } from "../../../models/track";
-import getSlugOrId from "../../../utils/getSlugOrId";
+import useSlugOrId from "../../../utils/useSlugOrId";
 import SongContextualMenu from "../../../components/contextual-menu/song-contextual-menu";
 
 type SongButtonProps = {
@@ -70,7 +70,7 @@ const topSongsQuery = (artistSlugOrId: string | number) => ({
 
 
 export const getServerSideProps = async (context: GetServerSidePropsContext) => {
-	const artistIdentifier = getSlugOrId(context.params);
+	const artistIdentifier = useSlugOrId(context.params);
 	const queryClient = new QueryClient()
   
 	await Promise.all([
@@ -87,7 +87,7 @@ export const getServerSideProps = async (context: GetServerSidePropsContext) => 
 }
 
 const ArtistPage = ({ artistIdentifier }: InferGetServerSidePropsType<typeof getServerSideProps>) => {
-	artistIdentifier ??= getSlugOrId();
+	artistIdentifier ??= useSlugOrId();
 	const artist = useQuery(prepareMeeloQuery(artistQuery, artistIdentifier));
 	const latestAlbums = useQuery(prepareMeeloQuery(latestAlbumsQuery, artistIdentifier));
 	const topSongs = useQuery(prepareMeeloQuery(topSongsQuery, artistIdentifier));

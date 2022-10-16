@@ -29,7 +29,7 @@ const ContextualMenu = (props: ContextualMenuProps) => {
     		open={open}
     		onClose={handleClose}
       	>
-			{props.children.map((child) => <Box onClick={handleClose}>{child}</Box>)}
+			{props.children.map((child, index) => <Box onClick={handleClose} key={index}>{child}</Box>)}
 		</Menu>
 	</>
 }

@@ -9,7 +9,7 @@ import InfiniteSongView from "../../../components/infinite/infinite-song-view";
 import Album, { AlbumSortingKeys, AlbumWithArtist } from "../../../models/album";
 import Song, { SongSortingKeys, SongWithArtist } from "../../../models/song";
 import { prepareMeeloInfiniteQuery, prepareMeeloQuery } from "../../../query";
-import getSlugOrId from "../../../utils/getSlugOrId";
+import useSlugOrId from "../../../utils/useSlugOrId";
 import { SortingParameters } from "../../../utils/sorting";
 
 const artistSongsQuery = (artistSlugOrId: number | string, sort?: SortingParameters<typeof SongSortingKeys>) => ({
@@ -19,7 +19,7 @@ const artistSongsQuery = (artistSlugOrId: number | string, sort?: SortingParamet
 
 
 export const getServerSideProps = async (context: GetServerSidePropsContext) => {
-	const artistIdentifier = getSlugOrId(context.params);
+	const artistIdentifier = useSlugOrId(context.params);
 	const queryClient = new QueryClient()
   
 	await Promise.all([
@@ -35,7 +35,7 @@ export const getServerSideProps = async (context: GetServerSidePropsContext) => 
 }
 
 const ArtistAlbumsPage = ({ artistIdentifier }: InferGetServerSidePropsType<typeof getServerSideProps>) => {
-	artistIdentifier ??= getSlugOrId();
+	artistIdentifier ??= useSlugOrId();
 	return <InfiniteSongView
 		initialSortingField={'name'}
 		initialSortingOrder={'asc'}

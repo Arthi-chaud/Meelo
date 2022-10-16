@@ -16,8 +16,8 @@ const SongContextualMenu = (props: SongContextualMenuProps) => {
 	return <ContextualMenu>
 		<ContextualMenuItem icon={<AccountCircle/>} href={`/artists/${props.song.artist.slug}`} label={"Go to Artist"}/>
 		<ContextualMenuItem icon={<Album/>} label={"Go to Album"}
-			onClick={() => API.getSongMainRelease<ReleaseWithAlbum>(songSlug, ['album'])
-				.then((release) => router.push(`/releases/${props.song.artist.slug}+${release.album.slug}+${release.slug}`))
+			onClick={() => API.getSongMainRelease(songSlug)
+				.then((release) => router.push(`/releases/${release.id}`))
 			}
 		/>
 		<ContextualMenuItem icon={<Lyrics/>} href={`/songs/${songSlug}/lyrics`} label={"See Lyrics"}/>

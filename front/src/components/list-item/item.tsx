@@ -38,7 +38,7 @@ const ListItem = (props: ListItemProps) => {
 		</Grid>
 	</Button>;
 	if (props.href) {
-		clickableArea = <Link href={props.href} children={clickableArea}/>;
+		clickableArea = <Link href={props.href}>{clickableArea}</Link>;
 	}
 	return <Grid container padding={1} spacing={2} sx={{ alignItems: 'center', width: 'inherit' }}>
 			<Grid item xs={9} lg={11}>

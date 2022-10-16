@@ -5,7 +5,7 @@ import { Page } from "../../../components/infinite/infinite-scroll";
 import InfiniteSongView from "../../../components/infinite/infinite-song-view";
 import Song, { SongSortingKeys, SongWithArtist } from "../../../models/song";
 import { prepareMeeloInfiniteQuery } from "../../../query";
-import getSlugOrId from "../../../utils/getSlugOrId";
+import useSlugOrId from "../../../utils/useSlugOrId";
 import { SortingParameters } from "../../../utils/sorting";
 
 const songVersionsQuery = (songSlugOrId: number | string, sort?: SortingParameters<typeof SongSortingKeys>) => ({
@@ -14,7 +14,7 @@ const songVersionsQuery = (songSlugOrId: number | string, sort?: SortingParamete
 });
 
 export const getServerSideProps = async (context: GetServerSidePropsContext) => {
-	const songIdentifier = getSlugOrId(context.params);
+	const songIdentifier = useSlugOrId(context.params);
 	const queryClient = new QueryClient()
   
 	await Promise.all([
@@ -30,7 +30,7 @@ export const getServerSideProps = async (context: GetServerSidePropsContext) => 
 }
 
 const SongVersionsPage = ({ songIdentifier }: InferGetServerSidePropsType<typeof getServerSideProps>) => {
-	songIdentifier ??= getSlugOrId();
+	songIdentifier ??= useSlugOrId();
 	return <InfiniteSongView
 		query={(sort) => songVersionsQuery(songIdentifier, sort)}
 	/>

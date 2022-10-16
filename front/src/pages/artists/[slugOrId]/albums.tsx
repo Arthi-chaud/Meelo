@@ -7,7 +7,7 @@ import InfiniteAlbumView from "../../../components/infinite/infinite-album-view"
 import { Page } from "../../../components/infinite/infinite-scroll";
 import Album, { AlbumSortingKeys, AlbumWithArtist } from "../../../models/album";
 import { prepareMeeloInfiniteQuery, prepareMeeloQuery } from "../../../query";
-import getSlugOrId from "../../../utils/getSlugOrId";
+import useSlugOrId from "../../../utils/useSlugOrId";
 import { SortingParameters } from "../../../utils/sorting";
 
 const artistAlbumsQuery = (artistSlugOrId: number | string, sort?: SortingParameters<typeof AlbumSortingKeys>) => ({
@@ -21,7 +21,7 @@ const artistQuery = (slugOrId: string | number) => ({
 });
 
 export const getServerSideProps = async (context: GetServerSidePropsContext) => {
-	const artistIdentifier = getSlugOrId(context.params);
+	const artistIdentifier = useSlugOrId(context.params);
 	const queryClient = new QueryClient()
   
 	await Promise.all([
@@ -37,7 +37,7 @@ export const getServerSideProps = async (context: GetServerSidePropsContext) => 
 }
 
 const ArtistAlbumsPage = ({ artistIdentifier }: InferGetServerSidePropsType<typeof getServerSideProps>) => {
-	artistIdentifier ??= getSlugOrId();
+	artistIdentifier ??= useSlugOrId();
 	return <InfiniteAlbumView
 		initialSortingField={'releaseDate'}
 		initialSortingOrder={'desc'}
