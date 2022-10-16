@@ -14,13 +14,11 @@ type InfiniteGridProps<T extends Resource> = Omit<Parameters<TypedList<T>>[0], '
 const InfiniteGrid = <T extends Resource,>(props: InfiniteGridProps<T>) => {
 	return <InfiniteScroll
 		{...props}
-		render={(items: T[]) => 
+		render={(items: T[]) =>
 			<Grid sx={{ padding: 3, alignItems: 'stretch', display: 'flex' }} container rowSpacing={2} columnSpacing={2}>
 				{items.map((item: T) => 
 					<Grid item xs={6} sm={3} md={12/5} lg={2} xl={1.5} key={item.id}>
-						<FadeIn>
-							{props.render(item)}
-						</FadeIn>
+						{props.render(item)}
 					</Grid>
 				)}
 			</Grid>
