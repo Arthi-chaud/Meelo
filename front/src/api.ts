@@ -377,6 +377,22 @@ export default class API {
 		}).then((value) => value.lyrics.split('\n')).catch(() => null);
 	}
 
+	static async getSongMainAlbum<T extends Album = Album>(
+		songSlugOrId: string | number,
+		include: AlbumInclude[] = []
+	): Promise<T> {
+		return API.getMasterTrack<TrackWithRelease>(songSlugOrId, ['release'])
+			.then((track) => API.getAlbum(track.release.albumId, include));
+	}
+
+	static async getSongMainRelease<T extends Release = Release>(
+		songSlugOrId: string | number,
+		include: ReleaseInclude[] = []
+	): Promise<T> {
+		return API.getMasterTrack(songSlugOrId)
+			.then((track) => API.getRelease(track.releaseId, include));
+	}
+
 
 	static async getArtist<T extends Artist = Artist>(
 		slugOrId: string | number,
