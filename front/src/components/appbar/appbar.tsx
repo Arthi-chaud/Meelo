@@ -90,17 +90,18 @@ const MeeloAppBar = () => {
 									<Divider orientation='vertical' flexItem sx={{ paddingLeft: 2 }} />
 									<Grid container spacing={3} sx={{ paddingLeft: 2, flexWrap: 'nowrap' }}  flexDirection='row'>
 										{
-											itemType.map((type, index) => (
-												<Grid item key={type}>
+											itemType.map((type, index) => {
+												const isSelected = router.asPath == `/${type}` || (router.asPath.endsWith(`/${type}`) && (router.asPath.startsWith('/libraries')));
+												return <Grid item key={type}>
 													<Button variant="text" color='inherit'>
 														<Link href={buildLink(type, requestedLibrary.slug)}>
-															<Typography sx={{ fontWeight: router.asPath.endsWith(`/${type}`) ? 'bold' : 'normal' }}>
+															<Typography sx={{ fontWeight: isSelected ? 'bold' : 'normal' }}>
 																{formattedItemTypes.at(index)}
 															</Typography>
 														</Link>
 													</Button>
 												</Grid>
-											))
+											})
 										}
 									</Grid>
 								</Box>
