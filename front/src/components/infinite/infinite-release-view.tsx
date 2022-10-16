@@ -10,6 +10,7 @@ import { Typography } from "@mui/material";
 import { Album, Star } from "@mui/icons-material";
 import ListItemButton from "../list-item/item-button";
 import Illustration from "../illustration";
+import ReleaseItem from "../list-item/release-item";
 
 type InfiniteReleaseViewProps = {
 	query: (sort: SortingParameters<typeof ReleaseSortingKeys>) => ReturnType<MeeloInfiniteQueryFn<Release>>,
@@ -26,18 +27,7 @@ const InfiniteAlbumView = (props: InfiniteReleaseViewProps) => {
 		sortingFields={ReleaseSortingKeys}
 		view={'list'}
 		query={() => props.query({ sortBy, order })}
-		renderListItem={(item: Release) => <ListItem key={item.id}
-			icon={<Illustration url={item.illustration} fallback={<Album/>}/>}
-			title={<ListItemButton
-				url={`/releases/${item.id}`}
-				label={item.name}
-			/>}
-			secondTitle={item.releaseDate
-				? <Typography>{new Date(item.releaseDate).getFullYear()}</Typography>
-				: undefined
-			}
-			trailing={ item.master ? <Star/> : undefined }
-		/>}
+		renderListItem={(item: Release) => <ReleaseItem release={item}/>}
 		renderGridItem={(item: Release) => <></>}
 		onSortingFieldSelect={(newField) => setSortBy(newField)}
 		onSortingOrderSelect={(newOrder) => setOrder(newOrder)}
