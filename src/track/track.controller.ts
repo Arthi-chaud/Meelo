@@ -8,7 +8,7 @@ import TrackService from './track.service';
 import type { Request } from 'express';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import { TrackType } from '@prisma/client';
-import type ReassignTrackDTO from './models/reassign-track.dto';
+import ReassignTrackDTO from './models/reassign-track.dto';
 import { TrackResponse } from './models/track.response';
 import { ApiPaginatedResponse } from 'src/pagination/paginated-response.decorator';
 

@@ -11,7 +11,7 @@ import ParseReleaseIdentifierPipe from './release.pipe';
 import type { Request } from 'express';
 import PaginatedResponse from 'src/pagination/models/paginated-response';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
-import type ReassignReleaseDTO from './models/reassign-release.dto';
+import ReassignReleaseDTO from './models/reassign-release.dto';
 import { ReleaseResponse } from './models/release.response';
 import { ApiPaginatedResponse } from 'src/pagination/paginated-response.decorator';
 import { TrackResponse } from 'src/track/models/track.response';
@@ -148,7 +148,7 @@ export default class ReleaseController {
 		summary: 'Change the release\'s parent album'
 	})
 	@Post('reassign')
-	async reassignTrack(
+	async reassignRelease(
 		@Body() reassignmentDTO: ReassignReleaseDTO
 	) {
 		return await this.releaseService.buildResponse(
