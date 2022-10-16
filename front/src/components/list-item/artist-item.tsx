@@ -15,6 +15,7 @@ import Release from "../../models/release"
 import AccountCircle from "@mui/icons-material/AccountCircle"
 import AlbumIcon from "@mui/icons-material/Album"
 import LoadingItemComponent from "../loading/loading-item"
+import ArtistContextualMenu from "../contextual-menu/artist-contextual-menu"
 
 type ArtistItemProps = {
 	artist: Artist;
@@ -33,36 +34,7 @@ const ArtistItem = ({ artist }: ArtistItemProps) => {
 				url={`/artists/${artist?.slug}`}
 				label={artist.name}
 			/>}
-			expanded={() => (
-				<InfiniteList
-					firstLoader={() => <LoadingItemComponent/>}
-					loader={() => <WideLoadingComponent/>}
-					query={() => ({
-						key: ['artist', artist.id, 'albums'],
-						exec: (lastPage: Page<Album>) => API.getArtistAlbums(
-							artist.id,
-							lastPage,
-							{  sortBy: 'releaseDate', order: 'asc'}
-						)
-					})}
-					render={(album: Album) => <>
-						<ListItem
-							icon={<Illustration url={album.illustration} fallback={<AlbumIcon/>}/>}
-							title={
-								<ListItemButton
-									url={`/albums/${artist.slug}+${album.slug}`}
-									label={album.name}
-								/>
-							}
-							trailing={
-								<Typography>
-									{ album.releaseDate ? new Date(album.releaseDate).getFullYear() : ''}
-								</Typography>
-							}
-						/>
-					</>}
-				/>
-			)}
+			trailing={<ArtistContextualMenu artist={artist}/>}
 		/>
 	)
 }
