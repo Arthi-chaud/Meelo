@@ -1,11 +1,12 @@
 import { Album, Star } from "@mui/icons-material";
-import { ListItemButton, Typography } from "@mui/material";
-import Release from "../../models/release"
+import { Grid, ListItemButton, Typography } from "@mui/material";
+import Release, { ReleaseWithAlbum } from "../../models/release"
+import ReleaseContextualMenu from "../contextual-menu/release-contextual-menu";
 import Illustration from "../illustration";
 import ListItem from "./item";
 
 type ReleaseItemProps = {
-	release: Release;
+	release: ReleaseWithAlbum;
 }
 
 const ReleaseItem = ({ release }: ReleaseItemProps) => {
@@ -17,7 +18,10 @@ const ReleaseItem = ({ release }: ReleaseItemProps) => {
 			? new Date(release.releaseDate).getFullYear().toString()
 			: undefined
 		}
-		trailing={ release.master ? <Star/> : undefined }
+		trailing={ <Grid container sx={{  justifyContent: 'space-between' }}>
+			<Grid item sx={{ display: 'flex', alignItems: 'center' }}>{release.master ? <Star/> : undefined }</Grid>
+			<Grid item>{<ReleaseContextualMenu release={release}/>}</Grid>
+		</Grid> }
 	/>
 }
 export default ReleaseItem;

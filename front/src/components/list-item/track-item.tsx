@@ -2,16 +2,16 @@ import API from "../../api"
 import { TrackWithRelease, TrackWithSong } from "../../models/track"
 import Illustration from '../illustration';
 import ListItem from "./item";
-import ListItemButton from "./item-button"
 import AudiotrackIcon from '@mui/icons-material/Audiotrack';
 import { useDispatch } from "react-redux"
-import { emptyPlaylist, playTrack } from "../../state/playerSlice"
-import Artist from "../../models/artist";
+import { emptyPlaylist, playTrack } from "../../state/playerSlice";
 import { SongWithArtist } from "../../models/song";
-import { Star } from "@mui/icons-material";
+import StarIcon from "@mui/icons-material/Star";
+import TrackContextualMenu from "../contextual-menu/track-contextual-menu";
+import { Grid } from "@mui/material";
 
 type TrackItemProps = {
-	track: TrackWithRelease;
+	track: TrackWithRelease & TrackWithSong
 }
 
 /**
@@ -19,23 +19,26 @@ type TrackItemProps = {
  * @param props 
  * @returns 
  */
-const SongItem = ({ track }: TrackItemProps) => {
+const TrackItem = ({ track }: TrackItemProps) => {
 	const release = track.release;
 	const dispatch = useDispatch();
 	return (
 		<ListItem
 			icon={<Illustration url={track.illustration} fallback={<AudiotrackIcon/>}/>}
 			onClick={() => {
-				API.getSong<SongWithArtist>(track.songId).then((song) => {
+				API.getSong<SongWithArtist>(track.songId, ["artist"]).then((song) => {
 					dispatch(emptyPlaylist());
 					dispatch(playTrack({ artist: song.artist, track, release }));
 				})
 			}}
 			title={track.name}
 			secondTitle={release.name}
-			trailing={track.master ? <Star/> : <></>}
+			trailing={<Grid container sx={{  justifyContent: 'space-between' }}>
+				<Grid item sx={{ display: 'flex', alignItems: 'center' }}>{track.master ? <StarIcon/> : undefined }</Grid>
+				<Grid item>{<TrackContextualMenu track={track}/>}</Grid>
+			</Grid>}
 		/>
 	)
 }
 
-export default SongItem;
+export default TrackItem;

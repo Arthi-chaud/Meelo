@@ -9,7 +9,6 @@ import Illustration from '../illustration';
 import Link from 'next/link';
 import ListItem from "./item";
 import { Page } from "../infinite/infinite-scroll"
-import ListItemButton from "./item-button"
 import { Star } from "@mui/icons-material"
 import AudiotrackIcon from '@mui/icons-material/Audiotrack';
 import { useDispatch } from "react-redux"
@@ -19,6 +18,7 @@ import SongContextualMenu from "../contextual-menu/song-contextual-menu"
 
 type SongItemProps = {
 	song: SongWithArtist;
+	hideArtist?: boolean;
 }
 
 /**
@@ -26,7 +26,7 @@ type SongItemProps = {
  * @param props 
  * @returns 
  */
-const SongItem = ({ song }: SongItemProps) => {
+const SongItem = ({ song, hideArtist }: SongItemProps) => {
 	const artist = song.artist;
 	const dispatch = useDispatch();
 	return (
@@ -43,7 +43,7 @@ const SongItem = ({ song }: SongItemProps) => {
 					}));
 				})
 			}}
-			secondTitle={artist.name}
+			secondTitle={hideArtist === true ?  undefined : artist.name}
 			trailing={<SongContextualMenu song={song}/>}
 		/>
 	)

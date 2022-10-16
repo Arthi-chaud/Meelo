@@ -23,11 +23,11 @@ const ListItem = (props: ListItemProps) => {
 			</Grid>
 			<Grid item container xs={8} sx={{ alignItems: 'center'}}>
 				<Grid item xs={12} sm={9} sx={{ display: 'flex', justifyContent: 'flex-start' }}>
-					<Typography fontWeight='bold' textAlign='left'>{props.title}</Typography>
+					<Typography textAlign='left'>{props.title}</Typography>
 				</Grid>
 				{ props.secondTitle &&
 					<Grid item xs={12} sm={3} sx={{ display: 'flex', justifyContent: 'left' }}>
-						<Typography textAlign='left'>{props.secondTitle}</Typography>
+						<Typography color="text.disabled" textAlign='left'>{props.secondTitle}</Typography>
 					</Grid>
 				}
 			</Grid>

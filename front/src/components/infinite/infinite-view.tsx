@@ -84,7 +84,7 @@ const InfiniteView = <T extends Resource, Keys extends string[]>(props: Infinite
     				    onClose={handleMenuClose}
 						>
     				    { props.sortingFields.map((field) => (
-							<MenuItem key={field as string} selected={field == sortField} onClick={() => {
+							<MenuItem key={field as string}sx={{ borderRadius: '0' }}  selected={field == sortField} onClick={() => {
 								setSortField(field);
 								props.onSortingFieldSelect && props.onSortingFieldSelect(field);
 								handleMenuClose();
@@ -95,7 +95,7 @@ const InfiniteView = <T extends Resource, Keys extends string[]>(props: Infinite
 						<Divider/>
 						{ ["asc", "desc"].map((order) => {
 							const selected = order == sortOrder;
-							return <MenuItem key={order} selected={selected} onClick={() => {
+							return <MenuItem key={order} selected={selected} sx={{ borderRadius: '0' }} onClick={() => {
 								setSortOrder(order as "asc" | "desc");
 								props.onSortingOrderSelect && props.onSortingOrderSelect(order as 'asc' | 'desc');
 								handleMenuClose();

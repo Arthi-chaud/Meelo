@@ -3,7 +3,6 @@ import Link from "next/link";
 import Artist from "../../../models/artist";
 import Song from "../../../models/song";
 import Track from "../../../models/track";
-import ListItemButton from "../../list-item/item-button";
 
 type PlayerTextProps = {
 	artist?: Artist;
