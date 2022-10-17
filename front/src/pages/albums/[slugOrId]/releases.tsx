@@ -5,11 +5,12 @@ import { QueryClient, dehydrate } from "react-query";
 import { Page } from "../../../components/infinite/infinite-scroll";
 import InfiniteTrackView from "../../../components/infinite/infinite-track-view";
 import { prepareMeeloInfiniteQuery } from "../../../query";
-import useSlugOrId from "../../../utils/useSlugOrId";
+import getSlugOrId from "../../../utils/getSlugOrId";
 import { SortingParameters } from "../../../utils/sorting";
 import InfiniteReleaseView from "../../../components/infinite/infinite-release-view";
 import AlbumRelationPageHeader from "../../../components/relation-page-header/album-relation-page-header";
 import { Box } from "@mui/material";
+import { useRouter } from "next/router";
 
 const albumReleasesQuery = (albumSlugOrId: number | string, sort?: SortingParameters<typeof ReleaseSortingKeys>) => ({
 	key: ["album", albumSlugOrId, "releases", sort ?? {}],
@@ -18,7 +19,7 @@ const albumReleasesQuery = (albumSlugOrId: number | string, sort?: SortingParame
 
 
 export const getServerSideProps = async (context: GetServerSidePropsContext) => {
-	const albumIdentifier = useSlugOrId(context.params);
+	const albumIdentifier = getSlugOrId(context.params);
 	const queryClient = new QueryClient();
 	await Promise.all([
 		await queryClient.prefetchInfiniteQuery(prepareMeeloInfiniteQuery(albumReleasesQuery, albumIdentifier))
@@ -33,7 +34,8 @@ export const getServerSideProps = async (context: GetServerSidePropsContext) => 
 }
 
 const AlbumReleasesPage = ({ albumIdentifier }: InferGetServerSidePropsType<typeof getServerSideProps>) => {
-	albumIdentifier ??= useSlugOrId();
+	const router = useRouter();
+	albumIdentifier ??= getSlugOrId(router.query);
 	return <Box sx={{ width: '100%' }}>
 		<AlbumRelationPageHeader albumSlugOrId={albumIdentifier}/>
 		<InfiniteReleaseView

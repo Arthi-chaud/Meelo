@@ -5,10 +5,11 @@ import { Page } from "../../../components/infinite/infinite-scroll";
 import InfiniteSongView from "../../../components/infinite/infinite-song-view";
 import Song, { SongSortingKeys, SongWithArtist } from "../../../models/song";
 import { prepareMeeloInfiniteQuery } from "../../../query";
-import useSlugOrId from "../../../utils/useSlugOrId";
+import getSlugOrId from "../../../utils/getSlugOrId";
 import { SortingParameters } from "../../../utils/sorting";
 import { Box } from "@mui/material";
 import SongRelationPageHeader from "../../../components/relation-page-header/song-relation-page-header";
+import { useRouter } from "next/router";
 
 const songVersionsQuery = (songSlugOrId: number | string, sort?: SortingParameters<typeof SongSortingKeys>) => ({
 	key: ["song", songSlugOrId, "versions", sort ?? {}],
@@ -16,7 +17,7 @@ const songVersionsQuery = (songSlugOrId: number | string, sort?: SortingParamete
 });
 
 export const getServerSideProps = async (context: GetServerSidePropsContext) => {
-	const songIdentifier = useSlugOrId(context.params);
+	const songIdentifier = getSlugOrId(context.params);
 	const queryClient = new QueryClient()
   
 	await Promise.all([
@@ -32,7 +33,8 @@ export const getServerSideProps = async (context: GetServerSidePropsContext) => 
 }
 
 const SongVersionsPage = ({ songIdentifier }: InferGetServerSidePropsType<typeof getServerSideProps>) => {
-	songIdentifier ??= useSlugOrId();
+	const router = useRouter();
+	songIdentifier ??= getSlugOrId(router.query);
 	return  <Box sx={{ width: '100%' }}>
 		<SongRelationPageHeader songSlugOrId={songIdentifier}/>
 		<InfiniteSongView

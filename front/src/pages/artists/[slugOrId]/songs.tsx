@@ -9,7 +9,7 @@ import InfiniteSongView from "../../../components/infinite/infinite-song-view";
 import Album, { AlbumSortingKeys, AlbumWithArtist } from "../../../models/album";
 import Song, { SongSortingKeys, SongWithArtist } from "../../../models/song";
 import { prepareMeeloInfiniteQuery, prepareMeeloQuery } from "../../../query";
-import useSlugOrId from "../../../utils/useSlugOrId";
+import getSlugOrId from "../../../utils/getSlugOrId";
 import { SortingParameters } from "../../../utils/sorting";
 import ArtistRelationPageHeader from "../../../components/relation-page-header/artist-relation-page-header";
 
@@ -20,7 +20,7 @@ const artistSongsQuery = (artistSlugOrId: number | string, sort?: SortingParamet
 
 
 export const getServerSideProps = async (context: GetServerSidePropsContext) => {
-	const artistIdentifier = useSlugOrId(context.params);
+	const artistIdentifier = getSlugOrId(context.params);
 	const queryClient = new QueryClient()
   
 	await Promise.all([
@@ -36,7 +36,8 @@ export const getServerSideProps = async (context: GetServerSidePropsContext) => 
 }
 
 const ArtistAlbumsPage = ({ artistIdentifier }: InferGetServerSidePropsType<typeof getServerSideProps>) => {
-	artistIdentifier ??= useSlugOrId();
+	const router = useRouter();
+	artistIdentifier ??= getSlugOrId(router.query);
 	return <Box sx={{ width: '100%' }}>
 		<ArtistRelationPageHeader artistSlugOrId={artistIdentifier}/>
 		<InfiniteSongView

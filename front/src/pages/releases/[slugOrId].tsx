@@ -23,7 +23,7 @@ import { playNextTrack, playTrack, setTracksInPlaylist } from "../../state/playe
 import Song from "../../models/song";
 import Artist from "../../models/artist";
 import { shuffle } from 'd3-array';
-import useSlugOrId from "../../utils/useSlugOrId";
+import getSlugOrId from "../../utils/getSlugOrId";
 import AlbumContextualMenu from "../../components/contextual-menu/album-contextual-menu";
 
 const releaseQuery = (slugOrId: string | number) => ({
@@ -57,7 +57,7 @@ const albumReleasesQuery = (slugOrId: string | number) => ({
 });
 
 export const getServerSideProps = async (context: GetServerSidePropsContext) => {
-	const releaseIdentifier = useSlugOrId(context.params);
+	const releaseIdentifier = getSlugOrId(context.params);
 	const queryClient = new QueryClient()
   
 	await Promise.all([
@@ -98,7 +98,8 @@ const getSongArtist = (song: Song, albumArtist?: Artist, otherArtist: Artist[] =
 }
 
 const ReleasePage = ({ releaseIdentifier }: InferGetServerSidePropsType<typeof getServerSideProps>) => {
-	releaseIdentifier ??= useSlugOrId();
+	const router = useRouter();
+	releaseIdentifier ??= getSlugOrId(router.query);
 	const theme = useTheme();
 	const dispatch = useDispatch();
 	const [totalDuration, setTotalDuration] = useState<number | null>(null);

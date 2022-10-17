@@ -8,7 +8,7 @@ import { Page } from "../../../components/infinite/infinite-scroll";
 import InfiniteTrackView from "../../../components/infinite/infinite-track-view";
 import Track, { TrackSortingKeys, TrackWithRelease, TrackWithSong } from "../../../models/track";
 import { prepareMeeloInfiniteQuery } from "../../../query";
-import useSlugOrId from "../../../utils/useSlugOrId";
+import getSlugOrId from "../../../utils/getSlugOrId";
 import { SortingParameters } from "../../../utils/sorting";
 import SongRelationPageHeader from "../../../components/relation-page-header/song-relation-page-header";
 
@@ -19,7 +19,7 @@ const songTracksQuery = (songSlugOrId: number | string, sort?: SortingParameters
 
 
 export const getServerSideProps = async (context: GetServerSidePropsContext) => {
-	const songIdentifier = useSlugOrId(context.params);
+	const songIdentifier = getSlugOrId(context.params);
 	const queryClient = new QueryClient()
   
 	await Promise.all([
@@ -35,7 +35,8 @@ export const getServerSideProps = async (context: GetServerSidePropsContext) => 
 }
 
 const SongTracksPage = ({ songIdentifier }: InferGetServerSidePropsType<typeof getServerSideProps>) => {
-	songIdentifier ??= useSlugOrId();
+	const router = useRouter();
+	songIdentifier ??= getSlugOrId(router.query);
 	return <Box sx={{ width: '100%' }}>
 		<SongRelationPageHeader songSlugOrId={songIdentifier}/>
 		<InfiniteTrackView
