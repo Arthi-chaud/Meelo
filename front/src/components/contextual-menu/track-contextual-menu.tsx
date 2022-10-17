@@ -1,4 +1,4 @@
-import { AccountCircle, Album, Star } from "@mui/icons-material";
+import { AccountCircle, Album, Download, Star } from "@mui/icons-material";
 import { Divider } from "@mui/material";
 import { release } from "os";
 import { toast } from "react-hot-toast";
@@ -29,6 +29,9 @@ const TrackContextualMenu = (props: TrackContextualMenuProps) => {
 		<ContextualMenuItem icon={<Album/>} href={`/releases/${props.track.releaseId}`} label={"Go to Release"}/>
 		<ContextualMenuItem disabled={props.track.master} icon={<Star/>} label={"Set as Master"}
 			onClick={() => masterMutation.mutate()}
+		/>
+		<ContextualMenuItem icon={<Download/>} label={"Download"}
+			href={API.getStreamURL(props.track.stream)}
 		/>
 	</ContextualMenu>
 }
