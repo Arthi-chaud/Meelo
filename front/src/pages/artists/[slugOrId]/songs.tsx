@@ -11,6 +11,7 @@ import Song, { SongSortingKeys, SongWithArtist } from "../../../models/song";
 import { prepareMeeloInfiniteQuery, prepareMeeloQuery } from "../../../query";
 import useSlugOrId from "../../../utils/useSlugOrId";
 import { SortingParameters } from "../../../utils/sorting";
+import ArtistRelationPageHeader from "../../../components/relation-page-header/artist-relation-page-header";
 
 const artistSongsQuery = (artistSlugOrId: number | string, sort?: SortingParameters<typeof SongSortingKeys>) => ({
 	key: ["artist", artistSlugOrId, "songs", sort ?? {}],
@@ -36,10 +37,13 @@ export const getServerSideProps = async (context: GetServerSidePropsContext) => 
 
 const ArtistAlbumsPage = ({ artistIdentifier }: InferGetServerSidePropsType<typeof getServerSideProps>) => {
 	artistIdentifier ??= useSlugOrId();
-	return <InfiniteSongView
-		initialSortingField={'name'}
-		initialSortingOrder={'asc'}
-		query={(sort) => artistSongsQuery(artistIdentifier, sort)}
-	/>
+	return <Box sx={{ width: '100%' }}>
+		<ArtistRelationPageHeader artistSlugOrId={artistIdentifier}/>
+		<InfiniteSongView
+			initialSortingField={'name'}
+			initialSortingOrder={'asc'}
+			query={(sort) => artistSongsQuery(artistIdentifier, sort)}
+		/>
+	</Box>
 }
 export default ArtistAlbumsPage;

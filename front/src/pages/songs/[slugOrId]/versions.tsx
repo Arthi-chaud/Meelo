@@ -7,6 +7,8 @@ import Song, { SongSortingKeys, SongWithArtist } from "../../../models/song";
 import { prepareMeeloInfiniteQuery } from "../../../query";
 import useSlugOrId from "../../../utils/useSlugOrId";
 import { SortingParameters } from "../../../utils/sorting";
+import { Box } from "@mui/material";
+import SongRelationPageHeader from "../../../components/relation-page-header/song-relation-page-header";
 
 const songVersionsQuery = (songSlugOrId: number | string, sort?: SortingParameters<typeof SongSortingKeys>) => ({
 	key: ["song", songSlugOrId, "versions", sort ?? {}],
@@ -31,8 +33,11 @@ export const getServerSideProps = async (context: GetServerSidePropsContext) => 
 
 const SongVersionsPage = ({ songIdentifier }: InferGetServerSidePropsType<typeof getServerSideProps>) => {
 	songIdentifier ??= useSlugOrId();
-	return <InfiniteSongView
-		query={(sort) => songVersionsQuery(songIdentifier, sort)}
-	/>
+	return  <Box sx={{ width: '100%' }}>
+		<SongRelationPageHeader songSlugOrId={songIdentifier}/>
+		<InfiniteSongView
+			query={(sort) => songVersionsQuery(songIdentifier, sort)}
+		/>
+	</Box>
 }
 export default SongVersionsPage;

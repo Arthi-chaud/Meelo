@@ -10,6 +10,7 @@ import Track, { TrackSortingKeys, TrackWithRelease, TrackWithSong } from "../../
 import { prepareMeeloInfiniteQuery } from "../../../query";
 import useSlugOrId from "../../../utils/useSlugOrId";
 import { SortingParameters } from "../../../utils/sorting";
+import SongRelationPageHeader from "../../../components/relation-page-header/song-relation-page-header";
 
 const songTracksQuery = (songSlugOrId: number | string, sort?: SortingParameters<typeof TrackSortingKeys>) => ({
 	key: ["song", songSlugOrId, "tracks", sort ?? {}],
@@ -35,9 +36,13 @@ export const getServerSideProps = async (context: GetServerSidePropsContext) => 
 
 const SongTracksPage = ({ songIdentifier }: InferGetServerSidePropsType<typeof getServerSideProps>) => {
 	songIdentifier ??= useSlugOrId();
-	return <InfiniteTrackView
-		initialSortingOrder={'asc'}
-		query={(sort) => songTracksQuery(songIdentifier, sort)}
-	/>
+	return <Box sx={{ width: '100%' }}>
+		<SongRelationPageHeader songSlugOrId={songIdentifier}/>
+		<InfiniteTrackView
+			initialSortingOrder={'asc'}
+			query={(sort) => songTracksQuery(songIdentifier, sort)}
+		/>
+	</Box>
+	
 }
 export default SongTracksPage;

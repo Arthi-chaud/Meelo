@@ -13,6 +13,9 @@ import { prepareMeeloInfiniteQuery, prepareMeeloQuery } from "../../../query";
 import useSlugOrId from "../../../utils/useSlugOrId";
 import { SortingParameters } from "../../../utils/sorting";
 import SongTracksPage from "./tracks";
+import SongContextualMenu from "../../../components/contextual-menu/song-contextual-menu";
+import RelationPageHeader from "../../../components/relation-page-header/relation-page-header";
+import SongRelationPageHeader from "../../../components/relation-page-header/song-relation-page-header";
 
 const songQuery = (songSlugOrId: number | string) => ({
 	key: ["song", songSlugOrId],
@@ -50,24 +53,7 @@ const SongLyricsPage = ({ songIdentifier }: InferGetServerSidePropsType<typeof g
 		return <WideLoadingComponent/>
 	}
 	return <Box sx={{ width: '100%' }}>
-		<Grid container sx={{ width: 'inherit', height: 'auto' }}>
-			<Grid item xs={4} sm={3} md={2} xl={1} sx={{ padding: 3 }}>
-				<Illustration url={song.data.illustration} fallback={<Box/>}/>
-			</Grid>
-			<Grid item container direction='column' xs sx={{ justifyContent: 'space-evenly' }}>
-				<Grid item>
-					<Typography variant='h5' sx={{ fontWeight: 'bold' }}>
-						{song.data.name}
-					</Typography>
-				</Grid>
-				<Grid item>
-					<Typography>
-						{ song.data.artist.name }
-					</Typography>
-				</Grid>
-			</Grid>
-		</Grid>
-		<Divider variant="middle"/>
+		<SongRelationPageHeader song={song.data}/>
 		<Box sx={{ paddingX: 5, paddingY: 2 }}>
 			<LyricsBox songName={song.data.name} lyrics={lyrics.data}/>
 		</Box>
