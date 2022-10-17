@@ -21,7 +21,7 @@ const textStyle = {
 
 const ListItem = (props: ListItemProps) => {
 	let clickableArea = <Button color='secondary' onClick={props.onClick} sx={{ textTransform: 'none', alignItems: 'center', width: '100%' }}>
-		<Grid container columns={10} spacing={2}>
+		<Grid container columns={10} spacing={2} sx={{ alignItems: 'center' }}>
 			<Grid item xs={2} sm={1.5} md={1} lg={0.5}>
 				{props.icon}
 			</Grid>
