@@ -27,6 +27,7 @@ import getSlugOrId from "../../utils/getSlugOrId";
 import AlbumContextualMenu from "../../components/contextual-menu/album-contextual-menu";
 import TrackContextualMenu from "../../components/contextual-menu/track-contextual-menu";
 import SongContextualMenu from "../../components/contextual-menu/song-contextual-menu";
+import ReleaseTrackContextualMenu from "../../components/contextual-menu/release-track-contextual-menu";
 
 const releaseQuery = (slugOrId: string | number) => ({
 	key: ['release', slugOrId],
@@ -227,7 +228,7 @@ const ReleasePage = ({ releaseIdentifier }: InferGetServerSidePropsType<typeof g
 										const artist = getSongArtist(track.song, albumArtist.data, otherArtistsQuery.map((q) => q.data!))
 										return <>
 											<ListItem disablePadding disableGutters secondaryAction={
-												<SongContextualMenu song={{...track.song, artist: artist }}/>
+												<ReleaseTrackContextualMenu track={track} artist={artist}/>
 											}>
 											<ListItemButton key={track.id} onClick={() => {
 													if (tracks && otherArtistsQuery.findIndex((q) => q.data == undefined) == -1) {
