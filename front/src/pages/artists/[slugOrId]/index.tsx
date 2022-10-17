@@ -38,7 +38,7 @@ const SongButton = (props: SongButtonProps) => {
 				})
 			} }>
 				<Grid container spacing={3} direction={'row'} sx={{ alignItems: 'center' }}>
-					<Grid item xs={2} sm={3} md={2}>
+					<Grid item xs={2.5} sm={3} md={2}>
 						<Illustration url={props.song.illustration} fallback={<AudiotrackIcon/>}/>
 					</Grid>
 					<Grid item xs sx={{ display: 'flex', justifyContent: 'flex-start' }}>
