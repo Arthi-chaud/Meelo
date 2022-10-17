@@ -186,7 +186,21 @@ export default class API {
 				parameters: { pagination, include, sort }
 			});
 		}
-
+	/**
+	 * Get a song
+	 * @param songSlugOrId the identifier of a song
+	 * @param include the fields to include in the fetched item
+	 * @returns a Track
+	 */
+	 static async getSong<T extends Song = Song>(
+		songSlugOrId: string | number,
+		include: SongInclude[] = []
+	): Promise<T> {
+		return API.fetch({
+			route: `/songs/${songSlugOrId}`,
+			parameters: { include }
+		}); 
+	}
 	/**
 	 * Get the master track of a song
 	 * @param songSlugOrId the identifier of a song
@@ -239,7 +253,7 @@ export default class API {
 	/**
 	 * Get tracks of a song
 	 * @param songSlugOrId the id of the parent song
-	 * @param include the relation to inclide
+	 * @param include the relation to include
 	 * @returns an array of tracks
 	 */
 	static async getSongTracks<T extends Track = Track>(
@@ -250,6 +264,24 @@ export default class API {
 	): Promise<PaginatedResponse<T>> {
 		return API.fetch({
 			route: `/songs/${songSlugOrId}/tracks`,
+			parameters: { pagination, include, sort }
+		});
+	}
+
+	/**
+	 * Get versions of a song
+	 * @param songSlugOrId the id of the  song
+	 * @param include the relation to include
+	 * @returns an array of tracks
+	 */
+	 static async getSongVersions<T extends Song = Song>(
+		songSlugOrId: string | number,
+		pagination?: PaginationParameters,
+		sort?: SortingParameters<typeof SongSortingKeys>,
+		include: SongInclude[] = []
+	): Promise<PaginatedResponse<T>> {
+		return API.fetch({
+			route: `/songs/${songSlugOrId}/versions`,
 			parameters: { pagination, include, sort }
 		});
 	}
@@ -335,6 +367,16 @@ export default class API {
 		});
 	}
 
+	static async getReleasePlaylist<T extends Track = Track> (
+		slugOrId: string | number,
+		include: TrackInclude[] = []
+	): Promise<T[]> {
+		return this.fetch({
+			route: `/releases/${slugOrId.toString()}/playlist`,
+			parameters: { include }
+		});
+	}
+
 	static async getSongLyrics(
 		slugOrId: string | number
 	): Promise<string[] | null> {
@@ -343,6 +385,22 @@ export default class API {
 			errorMessage: 'Lyrics loading failed',
 			parameters: { }
 		}).then((value) => value.lyrics.split('\n')).catch(() => null);
+	}
+
+	static async getSongMainAlbum<T extends Album = Album>(
+		songSlugOrId: string | number,
+		include: AlbumInclude[] = []
+	): Promise<T> {
+		return API.getMasterTrack<TrackWithRelease>(songSlugOrId, ['release'])
+			.then((track) => API.getAlbum(track.release.albumId, include));
+	}
+
+	static async getSongMainRelease<T extends Release = Release>(
+		songSlugOrId: string | number,
+		include: ReleaseInclude[] = []
+	): Promise<T> {
+		return API.getMasterTrack(songSlugOrId)
+			.then((track) => API.getRelease(track.releaseId, include));
 	}
 
 
@@ -376,7 +434,6 @@ export default class API {
 		sort?: SortingParameters<typeof AlbumSortingKeys>,
 		include: AlbumInclude[] = []
 	): Promise<PaginatedResponse<T>> {
-		console.log(sort);
 		return API.fetch({
 			route: `/search/albums/${query}`,
 			errorMessage: 'Search failed',
@@ -397,9 +454,9 @@ export default class API {
 		})
 	}
 
-	private static async fetch<T, Keys extends string[]>({ route, parameters, otherParameters, errorMessage }: FetchParameters<Keys>): Promise<T> {
-		const response = await fetch(this.buildURL(route, parameters, otherParameters));
-		const jsonResponse = await response.json().catch(() => {
+	private static async fetch<T, Keys extends string[]>({ route, parameters, otherParameters, errorMessage }: FetchParameters<Keys>, method: 'GET' | 'PUT' | 'POST' = 'GET' ): Promise<T> {
+		const response = await fetch(this.buildURL(route, parameters, otherParameters), { method });
+		const jsonResponse = await response.json().catch((e) => {
 			throw new Error("Error while parsing Server's response");
 		});
 		if (!response.ok) {
@@ -439,7 +496,37 @@ export default class API {
 	 * @returns 
 	 */
 	static async setSongAsPlayed(songSlugOrId: string | number): Promise<void> {
-		return fetch(API.buildURL(`/songs/${songSlugOrId}/played`, {}), { method: 'PUT' }).then(() => {});
+		return API.fetch({
+			route: `/songs/${songSlugOrId}/played`,
+			errorMessage: 'Song update failed',
+			parameters: {}
+		}, 'PUT');
+	}
+
+	/**
+	 * Mark a release as master
+	 * @param releaseSlugOrId 
+	 * @returns
+	 */
+	static async setReleaseAsMaster(releaseSlugOrId: string | number): Promise<void> {
+		return API.fetch({
+			route: `/releases/${releaseSlugOrId}/master`,
+			errorMessage: 'Release update failed',
+			parameters: {}
+		}, 'PUT');
+	}
+
+	/**
+	 * Mark a track as master
+	 * @param trackSlugOrId 
+	 * @returns
+	 */
+	 static async setTrackAsMaster(trackSlugOrId: string | number): Promise<void> {
+		return API.fetch({
+			route: `/tracks/${trackSlugOrId}/master`,
+			errorMessage: 'Track update failed',
+			parameters: {}
+		}, 'PUT');
 	}
 
 	private static buildURL(route: string, parameters: QueryParameters<any>, otherParameters?: any): string {

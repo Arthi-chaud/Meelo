@@ -83,6 +83,7 @@ export class SongController {
 		where: SongQueryParameters.WhereInput
 	) {
 		await this.songService.incrementPlayCount(where);
+		return await this.songService.buildResponse(await this.songService.get(where));
 	}
 
 	@ApiOperation({

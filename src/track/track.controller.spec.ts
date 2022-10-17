@@ -185,4 +185,19 @@ describe('Track Controller', () => {
 				});
 		});
 	});
+
+	describe("Set Track as master (POST /tracks/:id/master)", () => {
+		it("should set track as master", () => {
+			return request(app.getHttpServer())
+				.put(`/tracks/${dummyRepository.trackA1_2Video.id}/master`)
+				.expect(200)
+				.expect((res) => {
+					const track: Track = res.body;
+					expect(track).toStrictEqual({
+						...expectedTrackResponse(dummyRepository.trackA1_2Video),
+						master: true,
+					});
+				});
+		});
+	});
 });

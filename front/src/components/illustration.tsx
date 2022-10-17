@@ -28,7 +28,7 @@ const Illustration = (props: IllustrationProps) => {
 			</IconButton>
 			: <Image
 				onError={() => setLoadingFailed(true)}
-				loader={({ src, width, quality }) => `${src}?width=${width}${quality ? `&quality=${quality}` : ''}`}
+				loader={({ src, width, quality }) => src}
 				width={1}
 				height={1}
 				objectFit="contain"

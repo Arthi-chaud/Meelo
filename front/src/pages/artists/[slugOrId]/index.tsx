@@ -17,30 +17,40 @@ import { useDispatch } from "react-redux";
 import { emptyPlaylist, playTrack } from "../../../state/playerSlice";
 import artist from "../../../models/artist";
 import { TrackWithRelease } from "../../../models/track";
+import getSlugOrId from "../../../utils/getSlugOrId";
+import SongContextualMenu from "../../../components/contextual-menu/song-contextual-menu";
+
 type SongButtonProps = {
 	song: SongWithArtist;
 }
 const SongButton = (props: SongButtonProps) => {
 	const dispatch = useDispatch();
-	return <ButtonBase sx={{ display: 'block', width: '100%', textAlign: 'left' }} onClick={() => {
-		API.getMasterTrack<TrackWithRelease>(props.song.id, ['release']).then((track) => {
-			dispatch(emptyPlaylist());
-			dispatch(playTrack({
-				artist: props.song.artist,
-				track,
-				release: track.release
-			}));
-		})
-	} }>
-		<Grid container spacing={3} direction={'row'} sx={{ alignItems: 'center' }}>
-			<Grid item xs={2} sm={3}>
-				<Illustration url={props.song.illustration} fallback={<AudiotrackIcon/>}/>
-			</Grid>
-			<Grid item xs>
-				<Typography fontWeight='bold'>{props.song.name}</Typography>
-			</Grid>
+	return <Grid container sx={{ alignItems: 'center' }}>
+		<Grid item xs>
+			<Button color='secondary' sx={{ textTransform: 'none', alignItems: 'center', width: '100%' }} onClick={() => {
+				API.getMasterTrack<TrackWithRelease>(props.song.id, ['release']).then((track) => {
+					dispatch(emptyPlaylist());
+					dispatch(playTrack({
+						artist: props.song.artist,
+						track,
+						release: track.release
+					}));
+				})
+			} }>
+				<Grid container spacing={3} direction={'row'} sx={{ alignItems: 'center' }}>
+					<Grid item xs={2} sm={3} md={2}>
+						<Illustration url={props.song.illustration} fallback={<AudiotrackIcon/>}/>
+					</Grid>
+					<Grid item xs sx={{ display: 'flex', justifyContent: 'flex-start' }}>
+						<Typography textAlign='left' fontWeight='bold'>{props.song.name}</Typography>
+					</Grid>
+				</Grid>
+			</Button>
 		</Grid>
-	</ButtonBase>
+		<Grid item xs='auto'>
+			<SongContextualMenu song={props.song} />
+		</Grid>
+	</Grid>
 }
 
 const artistQuery = (slugOrId: string | number) => ({
@@ -60,7 +70,7 @@ const topSongsQuery = (artistSlugOrId: string | number) => ({
 
 
 export const getServerSideProps = async (context: GetServerSidePropsContext) => {
-	const artistIdentifier = context.params!.slugOrId as string;
+	const artistIdentifier = getSlugOrId(context.params);
 	const queryClient = new QueryClient()
   
 	await Promise.all([
@@ -78,7 +88,7 @@ export const getServerSideProps = async (context: GetServerSidePropsContext) => 
 
 const ArtistPage = ({ artistIdentifier }: InferGetServerSidePropsType<typeof getServerSideProps>) => {
 	const router = useRouter();
-	artistIdentifier ??= router.query.slugOrId as string;
+	artistIdentifier ??= getSlugOrId(router.query);
 	const artist = useQuery(prepareMeeloQuery(artistQuery, artistIdentifier));
 	const latestAlbums = useQuery(prepareMeeloQuery(latestAlbumsQuery, artistIdentifier));
 	const topSongs = useQuery(prepareMeeloQuery(topSongsQuery, artistIdentifier));
@@ -106,7 +116,7 @@ const ArtistPage = ({ artistIdentifier }: InferGetServerSidePropsType<typeof get
 				</Grid>
 				<Grid item container spacing={2} sx={{ display: 'flex', flexGrow: 1 }}>
 				{ topSongs.data
-					? topSongs.data.items.slice(0, 6).map((song) => <Grid key={song.id} item xs={12} sm={6} md={4}>
+					? topSongs.data.items.slice(0, 6).map((song) => <Grid key={song.id} item xs={12} sm={6} lg={4}>
 						<SongButton song={{...song, artist: artist.data}}/>
 					</Grid>)
 					: <WideLoadingComponent/> 

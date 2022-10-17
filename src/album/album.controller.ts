@@ -13,7 +13,7 @@ import TrackService from 'src/track/track.service';
 import TrackQueryParameters from 'src/track/models/track.query-parameters';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import { TrackType } from '@prisma/client';
-import type ReassignAlbumDTO from './models/reassign-album.dto';
+import ReassignAlbumDTO from './models/reassign-album.dto';
 import GenreService from "../genre/genre.service";
 import { Genre } from "src/prisma/models";
 import { AlbumResponse } from './models/album.response';
@@ -179,7 +179,7 @@ export default class AlbumController {
 		summary: 'Change the album\'s parent artist'
 	})
 	@Post('reassign')
-	async reassignTrack(
+	async reassignAlbum(
 		@Body() reassignmentDTO: ReassignAlbumDTO
 	) {
 		return await this.albumService.buildResponse(

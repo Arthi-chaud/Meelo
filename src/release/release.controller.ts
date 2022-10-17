@@ -1,4 +1,4 @@
-import { Body, Controller, DefaultValuePipe, forwardRef, Get, Inject, Param, ParseBoolPipe, Post, Query, Req } from '@nestjs/common';
+import { Body, Controller, DefaultValuePipe, forwardRef, Get, Inject, Param, ParseBoolPipe, Post, Put, Query, Req } from '@nestjs/common';
 import ParsePaginationParameterPipe from 'src/pagination/pagination.pipe';
 import type { PaginationParameters } from 'src/pagination/models/pagination-parameters';
 import ReleaseQueryParameters from './models/release.query-parameters';
@@ -11,7 +11,7 @@ import ParseReleaseIdentifierPipe from './release.pipe';
 import type { Request } from 'express';
 import PaginatedResponse from 'src/pagination/models/paginated-response';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
-import type ReassignReleaseDTO from './models/reassign-release.dto';
+import ReassignReleaseDTO from './models/reassign-release.dto';
 import { ReleaseResponse } from './models/release.response';
 import { ApiPaginatedResponse } from 'src/pagination/paginated-response.decorator';
 import { TrackResponse } from 'src/track/models/track.response';
@@ -148,7 +148,7 @@ export default class ReleaseController {
 		summary: 'Change the release\'s parent album'
 	})
 	@Post('reassign')
-	async reassignTrack(
+	async reassignRelease(
 		@Body() reassignmentDTO: ReassignReleaseDTO
 	) {
 		return await this.releaseService.buildResponse(
@@ -156,5 +156,22 @@ export default class ReleaseController {
 			{ byId: { id: reassignmentDTO.releaseId }},
 			{ byId: { id: reassignmentDTO.albumId }}
 		));
+	}
+
+	@ApiOperation({
+		summary: 'Set a release as master release'
+	})
+	@Put(':idOrSlug/master')
+	async setAsMaster(
+		@Param(ParseReleaseIdentifierPipe)
+		where: ReleaseQueryParameters.WhereInput
+	) {
+		const release = await this.releaseService.get(where);
+		await this.releaseService.setReleaseAsMaster({
+			releaseId: release.id,
+			album: { byId: {id: release.albumId }}
+		});
+		const updatedReleases = await this.releaseService.getMasterRelease({ byId: {id: release.albumId }});
+		return await this.releaseService.buildResponse(updatedReleases);
 	}
 }

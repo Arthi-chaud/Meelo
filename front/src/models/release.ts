@@ -29,6 +29,10 @@ type Release = Resource & Illustration & {
 	 * Unique identifier of the parent album
 	 */
 	albumId: number;
+	/**
+	 * Date the release was *released*
+	 */
+	releaseDate?: Date;
 }
 
 type ReleaseWithAlbum = Release & {

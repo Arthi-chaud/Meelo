@@ -82,7 +82,7 @@ const MeeloAppBar = () => {
 										}}
         							>
         							  {[globalLibrary, ...availableLibraries].map((library) => (
-        							    <MenuItem key={library.slug} value={library.name}>
+        							    <MenuItem key={library.slug} value={library.name} sx={{ borderRadius: '0' }}>
         							    	{library.name}
         							    </MenuItem>
         							  ))}
@@ -90,17 +90,18 @@ const MeeloAppBar = () => {
 									<Divider orientation='vertical' flexItem sx={{ paddingLeft: 2 }} />
 									<Grid container spacing={3} sx={{ paddingLeft: 2, flexWrap: 'nowrap' }}  flexDirection='row'>
 										{
-											itemType.map((type, index) => (
-												<Grid item key={type}>
-													<Button variant="text" color='inherit'>
-														<Link href={buildLink(type, requestedLibrary.slug)}>
-															<Typography sx={{ fontWeight: router.asPath.endsWith(`/${type}`) ? 'bold' : 'normal' }}>
+											itemType.map((type, index) => {
+												const isSelected = router.route == `/${type}`;
+												return <Grid item key={type}>
+													<Link href={buildLink(type, requestedLibrary.slug)}>
+														<Button variant="text" color='inherit'>
+															<Typography sx={{ fontWeight: isSelected ? 'bold' : 'normal' }}>
 																{formattedItemTypes.at(index)}
 															</Typography>
-														</Link>
-													</Button>
+														</Button>
+													</Link>
 												</Grid>
-											))
+											})
 										}
 									</Grid>
 								</Box>

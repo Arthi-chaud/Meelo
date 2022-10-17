@@ -13,7 +13,7 @@ import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import API from '../../api';
 import { useQuery } from "react-query";
 import { prepareMeeloQuery } from "../../query";
-import LyricsBox from "./controls/lyrics";
+import LyricsBox from "../lyrics";
 
 const lyricsQuery = (slugOrId: string | number) => ({
 	key: ['song', slugOrId, 'lyrics'],

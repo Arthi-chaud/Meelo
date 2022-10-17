@@ -370,12 +370,14 @@ export default class IllustrationService implements OnModuleInit {
 		if (dimensions.width || dimensions.height) {
 			try {
 				let jimpImage = await Jimp.read(sourceFilePath);
+				const actualWidth = jimpImage.getWidth();
+				const actualHeight = jimpImage.getHeight();
 				if (dimensions.width && dimensions.height) {
 					jimpImage = jimpImage.resize(dimensions.width, dimensions.height);
-				} else if (dimensions.width) {
-					jimpImage = jimpImage.scale(Math.min(dimensions.width, jimpImage.getWidth()) / jimpImage.getWidth())
-				} else if (dimensions.height) {
-					jimpImage = jimpImage.scale(Math.min(dimensions.height, jimpImage.getHeight()) / jimpImage.getHeight())
+				} else if (dimensions.width && dimensions.width < actualWidth) {
+					jimpImage = jimpImage.scale(dimensions.width /actualWidth)
+				} else if (dimensions.height && dimensions.height < actualHeight) {
+					jimpImage = jimpImage.scale(dimensions.height / actualHeight)
 				}
 				if (dimensions.quality)
 					jimpImage = jimpImage.quality(dimensions.quality);

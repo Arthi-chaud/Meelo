@@ -7,13 +7,12 @@ import { WideLoadingComponent } from "../loading/loading"
 import Illustration from '../illustration';
 import Link from 'next/link';
 import ListItem from "./item";
-import { Page } from "../infinite/infinite-scroll"
-import ListItemButton from "./item-button"
 import { AlbumWithArtist } from "../../models/album"
 import Release from "../../models/release"
 import { Star } from "@mui/icons-material"
 import { Album } from "@mui/icons-material"
 import LoadingItemComponent from "../loading/loading-item"
+import AlbumContextualMenu from "../contextual-menu/album-contextual-menu"
 
 type AlbumItemProps = {
 	album: AlbumWithArtist;
@@ -29,45 +28,10 @@ const AlbumItem = ({ album }: AlbumItemProps) => {
 	return (
 		<ListItem
 			icon={<Illustration url={album.illustration} fallback={<Album/>}/>}
-			title={
-				<ListItemButton
-					url={`/albums/${artist?.slug ?? 'compilations'}+${album.slug}`}
-					label={album.name}
-				/>
-			}
-			secondTitle={artist?.slug
-				? <ListItemButton url={`/artists/${artist.slug}`} label={artist?.name} />
-				: <Typography margin={1}>Compilations</Typography>
-			}
-			trailing={album.releaseDate ? <Typography>{new Date(album.releaseDate).getFullYear()}</Typography> : undefined}
-			expanded={() => (
-				<InfiniteList
-					firstLoader={() => <LoadingItemComponent/>}
-					loader={() => <WideLoadingComponent/>}
-					query={() => ({
-						key: ['album', album.id, 'releases'],
-						exec: (lastPage: Page<Release>) => API.getAlbumReleases<Release>(
-							album.id,
-							lastPage
-						)
-					})}
-					render={(release: Release) => <>
-						<ListItem
-							icon={<Illustration url={release.illustration} fallback={<Album/>}/>}
-							title={
-								<ListItemButton
-									url={`/releases/${artist?.slug ?? 'compilations'}+${album.slug}+${release.slug}`}
-									label={release.name}
-								/>
-							}
-							trailing={release.master
-								? <Tooltip title="Master release"><Star/></Tooltip>
-								: <></>
-							}
-						/>
-					</>}
-				/>
-			)}
+			href={`/albums/${artist?.slug ?? 'compilations'}+${album.slug}`}
+			title={album.name}
+			secondTitle={ artist?.name ?? 'Compilations'}
+			trailing={<AlbumContextualMenu album={album} />}
 		/>
 	)
 }

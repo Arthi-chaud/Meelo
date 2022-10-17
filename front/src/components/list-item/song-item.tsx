@@ -9,15 +9,16 @@ import Illustration from '../illustration';
 import Link from 'next/link';
 import ListItem from "./item";
 import { Page } from "../infinite/infinite-scroll"
-import ListItemButton from "./item-button"
 import { Star } from "@mui/icons-material"
 import AudiotrackIcon from '@mui/icons-material/Audiotrack';
 import { useDispatch } from "react-redux"
 import { emptyPlaylist, playNextTrack, playTrack } from "../../state/playerSlice"
 import LoadingItemComponent from "../loading/loading-item"
+import SongContextualMenu from "../contextual-menu/song-contextual-menu"
 
 type SongItemProps = {
 	song: SongWithArtist;
+	hideArtist?: boolean;
 }
 
 /**
@@ -25,13 +26,14 @@ type SongItemProps = {
  * @param props 
  * @returns 
  */
-const SongItem = ({ song }: SongItemProps) => {
+const SongItem = ({ song, hideArtist }: SongItemProps) => {
 	const artist = song.artist;
 	const dispatch = useDispatch();
 	return (
 		<ListItem
 			icon={<Illustration url={song.illustration} fallback={<AudiotrackIcon/>}/>}
-			title={<ListItemButton onClick={() => {
+			title={song.name}
+			onClick={() => {
 				API.getMasterTrack<TrackWithRelease>(song.id, ['release']).then((track) => {
 					dispatch(emptyPlaylist());
 					dispatch(playTrack({
@@ -40,45 +42,9 @@ const SongItem = ({ song }: SongItemProps) => {
 						release: track.release
 					}));
 				})
-			}} label={song.name}/>}
-			secondTitle={
-				<ListItemButton url={`/artists/${artist.slug}`} label={artist.name} />
-			}
-			expanded={() => (
-				<InfiniteList
-					firstLoader={() => <LoadingItemComponent/>}
-					loader={() => <WideLoadingComponent/>}
-					query={() => ({
-						key: ['tracks', 'song', song.id.toString()],
-						exec: (lastPage: Page<TrackWithRelease>) => API.getSongTracks<TrackWithRelease>(
-							song.id,
-							lastPage,
-							{ sortBy: 'name' },
-							['release']
-						)
-					})}
-					render={(track: TrackWithRelease) => <>
-						<ListItem
-							icon={<Illustration url={track.illustration} fallback={<AudiotrackIcon/>}/>}
-							title={<ListItemButton onClick={() => {
-								dispatch(emptyPlaylist());
-								dispatch(playTrack({
-									artist,
-									track,
-									release: track.release
-								}));
-							}} label={track.name}/>}
-							secondTitle={
-								<ListItemButton url={`/releases/${track.releaseId}`} label={track.release.name} />
-							}
-							trailing={track.master
-								? <Tooltip title="Master track"><Star/></Tooltip>
-								: <></>
-							}
-						/>
-					</>}
-				/>
-			)}
+			}}
+			secondTitle={hideArtist === true ?  undefined : artist.name}
+			trailing={<SongContextualMenu song={song}/>}
 		/>
 	)
 }
