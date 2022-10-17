@@ -26,11 +26,11 @@ const ListItem = (props: ListItemProps) => {
 				{props.icon}
 			</Grid>
 			<Grid item container xs={8} spacing={2} sx={{ alignItems: 'center'}}>
-				<Grid item xs={12} sm={9} sx={textStyle}>
+				<Grid item xs={12} sm={8} sx={textStyle}>
 					<Typography fontWeight='bold' sx={textStyle}>{props.title}</Typography>
 				</Grid>
 				{ props.secondTitle &&
-					<Grid item xs={12} sm={3} sx={textStyle}>
+					<Grid item xs={12} sm sx={textStyle}>
 						<Typography color="text.disabled" sx={textStyle}>{props.secondTitle}</Typography>
 					</Grid>
 				}
@@ -40,11 +40,11 @@ const ListItem = (props: ListItemProps) => {
 	if (props.href) {
 		clickableArea = <Link href={props.href}>{clickableArea}</Link>;
 	}
-	return <Grid container padding={1} spacing={2} sx={{ alignItems: 'center', width: 'inherit' }}>
-			<Grid item xs={9} lg={11}>
+	return <Grid container padding={1} spacing={2} sx={{ alignItems: 'center', width: 'inherit', display: 'flex', justifyContent: 'space-between' }}>
+			<Grid item xs={9} sm={11}>
 				{clickableArea}
 			</Grid>
-			<Grid item xs={3} lg={1} sx={{ justifyContent: 'flex-end', display: 'flex' }}>
+			<Grid item xs={3} sm={1} sx={{ display: 'flex', justifyContent: 'center' }}>
 				{props.trailing}
 			</Grid>
 		</Grid>
