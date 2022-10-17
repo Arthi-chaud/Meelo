@@ -26,7 +26,7 @@ const RelationPageHeader = (props: RelationHeaderProps) => {
 					</Grid>
 				}
 			</Grid>
-			<Grid item xs={1} sx={{ alignItems: 'center', display: 'flex' }}>
+			<Grid item xs={2} sm={1} sx={{ alignItems: 'center', display: 'flex' }}>
 				{props.trailing}
 			</Grid>
 		</Grid>
