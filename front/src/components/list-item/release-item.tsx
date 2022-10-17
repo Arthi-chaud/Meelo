@@ -18,7 +18,7 @@ const ReleaseItem = ({ release }: ReleaseItemProps) => {
 			? new Date(release.releaseDate).getFullYear().toString()
 			: undefined
 		}
-		trailing={ <Grid container spacing={2} sx={{ justifyContent: 'flex-end' }}>
+		trailing={ <Grid container spacing={1} sx={{ justifyContent: 'flex-end' }}>
 			<Grid item sx={{ display: 'flex', alignItems: 'center' }}>{release.master ? <Star/> : undefined }</Grid>
 			<Grid item>{<ReleaseContextualMenu release={release}/>}</Grid>
 		</Grid> }
