@@ -141,23 +141,21 @@ const ReleasePage = ({ releaseIdentifier }: InferGetServerSidePropsType<typeof g
 				<Grid item md={3} xs={8}>
 					<Illustration url={release.data!.illustration} fallback={<Album/>}/> 
 				</Grid>
-				<Grid item sx={{ display: 'flex' }} md={6} sm={9} xs={12} >
-					<Grid container sx={{ flexDirection: 'column', justifyContent: 'space-evenly',
-						alignItems: 'left', [theme.breakpoints.down('md')]: { alignItems: 'center', textAlign: 'center' },
-					}}>
+				<Grid item container sx={{ width: '100%', display: 'flex', flexDirection: 'column', justifyContent: 'space-evenly',
+					alignItems: 'left', [theme.breakpoints.down('md')]: { alignItems: 'center', textAlign: 'center' },
+				}} md={6} sm={9} xs={12}>
+					<Grid item sx={{ width: 'inherit' }}>
+						<Typography variant='h3' fontWeight='bold' sx={{ textOverflow: 'ellipsis', overflow: 'hidden' }}>{release.data!.name}</Typography>
+					</Grid>
+					{albumArtist.data &&
 						<Grid item>
-							<Typography variant='h3' fontWeight='bold'>{release.data!.name}</Typography>
+							<Typography variant='h4'>{albumArtist.data?.name}</Typography>
 						</Grid>
-						{albumArtist.data &&
-							<Grid item>
-								<Typography variant='h4'>{albumArtist.data?.name}</Typography>
-							</Grid>
-						}
-						<Grid item>
-							<Typography  fontWeight='light'>
-								{release.data!.album.releaseDate && `${new Date(release.data!.album.releaseDate!).getFullYear()} - `}{formatDuration(totalDuration ?? undefined)}
-							</Typography>
-						</Grid>
+					}
+					<Grid item>
+						<Typography  fontWeight='light'>
+							{release.data!.album.releaseDate && `${new Date(release.data!.album.releaseDate!).getFullYear()} - `}{formatDuration(totalDuration ?? undefined)}
+						</Typography>
 					</Grid>
 				</Grid>
 				<Grid item container md={3} xs={12} sx={{ spacing: 5, alignItems: 'center', justifyContent: 'space-evenly', display: 'flex'}}>
