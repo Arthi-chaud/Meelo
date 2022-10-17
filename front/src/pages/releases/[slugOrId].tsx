@@ -1,4 +1,4 @@
-import { Grid, IconButton, ListItem, Typography, List, ListSubheader, ListItemText, Divider, ListItemIcon, Fade, useTheme, ListItemButton, Button } from "@mui/material";
+import { Grid, IconButton, ListItem, Typography, List, ListSubheader, ListItemText, Divider, ListItemIcon, Fade, useTheme, ListItemButton, Button, ListItemAvatar } from "@mui/material";
 import { Box } from "@mui/system";
 import { GetServerSidePropsContext, InferGetServerSidePropsType, NextPage } from "next";
 import { useRouter } from "next/router";
@@ -25,6 +25,8 @@ import Artist from "../../models/artist";
 import { shuffle } from 'd3-array';
 import getSlugOrId from "../../utils/getSlugOrId";
 import AlbumContextualMenu from "../../components/contextual-menu/album-contextual-menu";
+import TrackContextualMenu from "../../components/contextual-menu/track-contextual-menu";
+import SongContextualMenu from "../../components/contextual-menu/song-contextual-menu";
 
 const releaseQuery = (slugOrId: string | number) => ({
 	key: ['release', slugOrId],
@@ -224,6 +226,9 @@ const ReleasePage = ({ releaseIdentifier }: InferGetServerSidePropsType<typeof g
 									{ disc[1].map((track, _, tracks) => {
 										const artist = getSongArtist(track.song, albumArtist.data, otherArtistsQuery.map((q) => q.data!))
 										return <>
+											<ListItem disablePadding disableGutters secondaryAction={
+												<SongContextualMenu song={{...track.song, artist: artist }}/>
+											}>
 											<ListItemButton key={track.id} onClick={() => {
 													if (tracks && otherArtistsQuery.findIndex((q) => q.data == undefined) == -1) {
 														const otherArtists = otherArtistsQuery.map((q) => q.data!);
@@ -254,6 +259,7 @@ const ReleasePage = ({ releaseIdentifier }: InferGetServerSidePropsType<typeof g
 												}
 												<Typography sx={{ paddingLeft: 2 }}>{formatDuration(track.duration)}</Typography>
 											</ListItemButton>
+											</ListItem>
 											<Divider variant="inset"/>
 										</>
 									}) }
