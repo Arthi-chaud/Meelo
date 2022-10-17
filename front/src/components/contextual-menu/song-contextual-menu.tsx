@@ -1,4 +1,4 @@
-import { AccountCircle, Lyrics, Audiotrack, Difference, PlaylistAdd, QueueMusic, Album } from "@mui/icons-material";
+import { AccountCircle, Lyrics, Audiotrack, Difference, PlaylistAdd, QueueMusic, Album, Download } from "@mui/icons-material";
 import { Divider } from "@mui/material";
 import { useRouter } from "next/router";
 import API from "../../api";
@@ -21,8 +21,11 @@ const SongContextualMenu = (props: SongContextualMenuProps) => {
 			}
 		/>
 		<ContextualMenuItem icon={<Lyrics/>} href={`/songs/${songSlug}/lyrics`} label={"See Lyrics"}/>
-		<ContextualMenuItem icon={<Audiotrack/>} href={`/songs/${songSlug}/tracks`} label={"See Tracks"}/>
+		<ContextualMenuItem icon={<Audiotrack/>} href={`/songs/${songSlug}/tracks`} label={"See Related Tracks"}/>
 		<ContextualMenuItem icon={<Difference/>} href={`/songs/${songSlug}/versions`} label={"See Versions"}/>
+		<ContextualMenuItem icon={<Download/>} label={"Download"}
+			onClick={() => API.getMasterTrack(songSlug).then((track) => router.push(API.getStreamURL(track.stream)))}
+		/>
 	</ContextualMenu>
 }
 

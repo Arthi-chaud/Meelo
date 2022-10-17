@@ -1,4 +1,4 @@
-import { Injectable, StreamableFile } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import FileManagerService from 'src/file-manager/file-manager.service';
 import { FileAlreadyExistsException, FileNotFoundFromIDException, FileNotFoundFromPathException, FileNotFoundFromTrackIDException, SourceFileNotFoundExceptions } from './file.exceptions';
 import PrismaService from 'src/prisma/prisma.service';
@@ -173,7 +173,7 @@ export default class FileService extends RepositoryService<
 	 * @param res the Response Object of the request
 	 * @returns a StreamableFile of the file
 	 */
-	streamFile(file: File, parentLibrary: Library, res: any): StreamableFile {
+	streamFile(file: File, parentLibrary: Library, res: any): void {
 		const fullFilePath = `${this.settingsService.settingsValues.dataFolder}/${parentLibrary.path}/${file.path}`.normalize();
 		if (this.fileManagerService.fileExists(fullFilePath) == false)
 			throw new SourceFileNotFoundExceptions(file.path);
@@ -181,6 +181,6 @@ export default class FileService extends RepositoryService<
 			'Content-Disposition': `attachment; filename="${new Slug(path.parse(file.path).name).toString()}${path.parse(file.path).ext}"`,
 			'Content-Type': mime.getType(fullFilePath) ?? 'application/octet-stream'
 		});
-		return new StreamableFile(fs.createReadStream(fullFilePath));
+		res.send(fs.readFileSync(fullFilePath));
 	}
 }

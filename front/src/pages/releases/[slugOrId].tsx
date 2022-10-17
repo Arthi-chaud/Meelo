@@ -1,4 +1,4 @@
-import { Grid, IconButton, ListItem, Typography, List, ListSubheader, ListItemText, Divider, ListItemIcon, Fade, useTheme, ListItemButton, Button } from "@mui/material";
+import { Grid, IconButton, ListItem, Typography, List, ListSubheader, ListItemText, Divider, ListItemIcon, Fade, useTheme, ListItemButton, Button, ListItemAvatar } from "@mui/material";
 import { Box } from "@mui/system";
 import { GetServerSidePropsContext, InferGetServerSidePropsType, NextPage } from "next";
 import { useRouter } from "next/router";
@@ -25,6 +25,9 @@ import Artist from "../../models/artist";
 import { shuffle } from 'd3-array';
 import getSlugOrId from "../../utils/getSlugOrId";
 import AlbumContextualMenu from "../../components/contextual-menu/album-contextual-menu";
+import TrackContextualMenu from "../../components/contextual-menu/track-contextual-menu";
+import SongContextualMenu from "../../components/contextual-menu/song-contextual-menu";
+import ReleaseTrackContextualMenu from "../../components/contextual-menu/release-track-contextual-menu";
 
 const releaseQuery = (slugOrId: string | number) => ({
 	key: ['release', slugOrId],
@@ -141,23 +144,21 @@ const ReleasePage = ({ releaseIdentifier }: InferGetServerSidePropsType<typeof g
 				<Grid item md={3} xs={8}>
 					<Illustration url={release.data!.illustration} fallback={<Album/>}/> 
 				</Grid>
-				<Grid item sx={{ display: 'flex' }} md={6} sm={9} xs={12} >
-					<Grid container sx={{ flexDirection: 'column', justifyContent: 'space-evenly',
-						alignItems: 'left', [theme.breakpoints.down('md')]: { alignItems: 'center', textAlign: 'center' },
-					}}>
+				<Grid item container sx={{ width: '100%', display: 'flex', flexDirection: 'column', justifyContent: 'space-evenly',
+					alignItems: 'left', [theme.breakpoints.down('md')]: { alignItems: 'center', textAlign: 'center' },
+				}} md={6} sm={9} xs={12}>
+					<Grid item sx={{ width: 'inherit' }}>
+						<Typography variant='h3' fontWeight='bold' sx={{ textOverflow: 'ellipsis', overflow: 'hidden' }}>{release.data!.name}</Typography>
+					</Grid>
+					{albumArtist.data &&
 						<Grid item>
-							<Typography variant='h3' fontWeight='bold'>{release.data!.name}</Typography>
+							<Typography variant='h4'>{albumArtist.data?.name}</Typography>
 						</Grid>
-						{albumArtist.data &&
-							<Grid item>
-								<Typography variant='h4'>{albumArtist.data?.name}</Typography>
-							</Grid>
-						}
-						<Grid item>
-							<Typography  fontWeight='light'>
-								{release.data!.album.releaseDate && `${new Date(release.data!.album.releaseDate!).getFullYear()} - `}{formatDuration(totalDuration ?? undefined)}
-							</Typography>
-						</Grid>
+					}
+					<Grid item>
+						<Typography  fontWeight='light'>
+							{release.data!.album.releaseDate && `${new Date(release.data!.album.releaseDate!).getFullYear()} - `}{formatDuration(totalDuration ?? undefined)}
+						</Typography>
 					</Grid>
 				</Grid>
 				<Grid item container md={3} xs={12} sx={{ spacing: 5, alignItems: 'center', justifyContent: 'space-evenly', display: 'flex'}}>
@@ -226,6 +227,9 @@ const ReleasePage = ({ releaseIdentifier }: InferGetServerSidePropsType<typeof g
 									{ disc[1].map((track, _, tracks) => {
 										const artist = getSongArtist(track.song, albumArtist.data, otherArtistsQuery.map((q) => q.data!))
 										return <>
+											<ListItem disablePadding disableGutters secondaryAction={
+												<ReleaseTrackContextualMenu track={track} artist={artist}/>
+											}>
 											<ListItemButton key={track.id} onClick={() => {
 													if (tracks && otherArtistsQuery.findIndex((q) => q.data == undefined) == -1) {
 														const otherArtists = otherArtistsQuery.map((q) => q.data!);
@@ -256,6 +260,7 @@ const ReleasePage = ({ releaseIdentifier }: InferGetServerSidePropsType<typeof g
 												}
 												<Typography sx={{ paddingLeft: 2 }}>{formatDuration(track.duration)}</Typography>
 											</ListItemButton>
+											</ListItem>
 											<Divider variant="inset"/>
 										</>
 									}) }
