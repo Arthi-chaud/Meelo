@@ -129,10 +129,11 @@ export default class LibraryController {
 		include: AlbumQueryParameters.RelationInclude,
 		@Query(AlbumQueryParameters.ParseSortingParameterPipe)
 		sortingParameter: AlbumQueryParameters.SortingParameter,
+		@Query() filter: AlbumQueryParameters.AlbumFilterParameter,
 		@Req() request: Request
 	): Promise<PaginatedResponse<Object>> {
 		const albums = await this.albumService.getMany(
-			{ byLibrarySource: where }, paginationParameters, include, sortingParameter
+			{ byLibrarySource: where, byType: filter.type }, paginationParameters, include, sortingParameter
 		);
 		if (albums.length == 0)
 			await this.libraryService.throwIfNotFound(where);

@@ -112,10 +112,11 @@ export class GenreController {
 		where: GenreQueryParameters.WhereInput,
 		@Query(AlbumQueryParameters.ParseSortingParameterPipe)
 		sortingParameter: AlbumQueryParameters.SortingParameter,
+		@Query() filter: AlbumQueryParameters.AlbumFilterParameter,
 		@Req() request: Request
 	) {
 		const albums = await this.albumService.getMany(
-			{ byGenre: where }, paginationParameters, include, sortingParameter
+			{ byGenre: where, byType: filter.type }, paginationParameters, include, sortingParameter
 		);
 		if (albums.length == 0)
 			await this.genreService.throwIfNotFound(where);

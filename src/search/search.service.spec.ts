@@ -95,13 +95,13 @@ describe('Search Service', () => {
 		});
 
 		it("should find some Albums, paginated", async () => {
-			const albums = await searchService.searchAlbums('s', { take: 1 });
+			const albums = await searchService.searchAlbums('s', undefined, { take: 1 });
 			expect(albums.length).toBe(1);
 			expect(albums).toContainEqual(dummyRepository.albumB1);
 		});
 
 		it("should find some Albums, with related artist", async () => {
-			const albums = await searchService.searchAlbums('l', {}, { artist: true });
+			const albums = await searchService.searchAlbums('l', undefined, {}, { artist: true });
 			expect(albums.length).toBe(3);
 			expect(albums).toContainEqual({
 				...dummyRepository.compilationAlbumA,

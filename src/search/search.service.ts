@@ -11,6 +11,7 @@ import type ReleaseQueryParameters from 'src/release/models/release.query-parame
 import ReleaseService from 'src/release/release.service';
 import type SongQueryParameters from 'src/song/models/song.query-params';
 import SongService from 'src/song/song.service';
+import { AlbumType } from '@prisma/client';
 
 @Injectable()
 export default class SearchService {
@@ -51,12 +52,13 @@ export default class SearchService {
 	 */
 	searchAlbums(
 		query: string,
+		type?: AlbumType,
 		paginationParameters?: PaginationParameters,
 		include?: AlbumQueryParameters.RelationInclude,
 		sort?: AlbumQueryParameters.SortingParameter
 	): Promise<Album[]> {
 		return this.albumService.getMany(
-			{ byName: { contains: query } },
+			{ byName: { contains: query }, byType: type },
 			paginationParameters,
 			include, sort
 		)

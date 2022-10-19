@@ -12,6 +12,8 @@ import ParseBaseSortingParameterPipe from 'src/sort/sort.pipe';
 import type GenreQueryParameters from "src/genre/models/genre.query-parameters";
 import { Album } from "src/prisma/models";
 import { ApiPropertyOptional, IntersectionType, PartialType, PickType } from "@nestjs/swagger";
+import { AlbumType } from "@prisma/client";
+import { IsEnum, IsOptional } from "class-validator";
 
 namespace AlbumQueryParameters {
 
@@ -42,7 +44,8 @@ namespace AlbumQueryParameters {
 		byName: SearchStringInput,
 		byLibrarySource: LibraryQueryParameters.WhereInput,
 		byReleaseDate: SearchDateInput,
-		byGenre: GenreQueryParameters.WhereInput
+		byGenre: GenreQueryParameters.WhereInput,
+		byType: AlbumType
 	}>>;
 
 	/**
@@ -77,6 +80,15 @@ namespace AlbumQueryParameters {
 		sortBy: SortingKeys[number];
 	}
 	export const ParseSortingParameterPipe = new ParseBaseSortingParameterPipe(SortingKeys);
+
+	export class AlbumFilterParameter {
+		@IsEnum(AlbumType, {
+			message: () => `Album Type: Invalid value. Expected one of theses: ${Object.keys(AlbumType)}`
+		})
+		@IsOptional()
+		@ApiPropertyOptional({ enum: AlbumType })
+		type?: AlbumType
+	}
 }
 
 export default AlbumQueryParameters;

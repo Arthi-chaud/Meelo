@@ -47,10 +47,11 @@ export default class AlbumController {
 		sortingParameter: AlbumQueryParameters.SortingParameter,
 		@Query('with', AlbumQueryParameters.ParseRelationIncludePipe)
 		include: AlbumQueryParameters.RelationInclude,
-		@Req() request: Request
+		@Query() filter: AlbumQueryParameters.AlbumFilterParameter,
+		@Req() request: Request,
 	) {
 		const albums = await this.albumService.getMany(
-			{}, paginationParameters, include, sortingParameter
+			{ byType: filter.type }, paginationParameters, include, sortingParameter
 		);
 		return new PaginatedResponse(
 			await Promise.all(albums.map((album) => this.albumService.buildResponse(album))),
@@ -70,10 +71,11 @@ export default class AlbumController {
 		sortingParameter: AlbumQueryParameters.SortingParameter,
 		@Query('with', AlbumQueryParameters.ParseRelationIncludePipe)
 		include: AlbumQueryParameters.RelationInclude,
+		@Query() filter: AlbumQueryParameters.AlbumFilterParameter,
 		@Req() request: Request
 	) {
 		const albums = await this.albumService.getMany(
-			{ byArtist: { compilationArtist: true } }, paginationParameters, include, sortingParameter
+			{ byArtist: { compilationArtist: true }, byType: filter.type }, paginationParameters, include, sortingParameter
 		);
 		return new PaginatedResponse(
 			await Promise.all(albums.map((album) => this.albumService.buildResponse(album))),

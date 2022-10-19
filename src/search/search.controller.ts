@@ -94,9 +94,10 @@ export default class SearchController {
 		include: AlbumQueryParameters.RelationInclude,
 		@Query(AlbumQueryParameters.ParseSortingParameterPipe)
 		sortingParameter: AlbumQueryParameters.SortingParameter,
+		@Query() filter: AlbumQueryParameters.AlbumFilterParameter,
 		@Req() request: Request
 	) {
-		const albums = await this.searchService.searchAlbums(query, paginationParameters, include, sortingParameter)
+		const albums = await this.searchService.searchAlbums(query, filter.type, paginationParameters, include, sortingParameter)
 		return new PaginatedResponse(
 			await Promise.all(albums.map((album) => this.albumService.buildResponse(album))),
 			request

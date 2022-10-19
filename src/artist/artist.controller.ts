@@ -126,12 +126,13 @@ export default class ArtistController {
 		where: ArtistQueryParameters.WhereInput,
 		@Query(AlbumQueryParameters.ParseSortingParameterPipe)
 		sortingParameter: AlbumQueryParameters.SortingParameter,
+		@Query() filter: AlbumQueryParameters.AlbumFilterParameter,
 		@Query('with', AlbumQueryParameters.ParseRelationIncludePipe)
 		include: AlbumQueryParameters.RelationInclude,
 		@Req() request: Request
 	) {
 		const albums = await this.albumService.getMany(
-			{ byArtist: where }, paginationParameters, include, sortingParameter
+			{ byArtist: where, byType: filter.type }, paginationParameters, include, sortingParameter
 		);
 		if (albums.length == 0)
 			await this.artistService.throwIfNotFound(where);
