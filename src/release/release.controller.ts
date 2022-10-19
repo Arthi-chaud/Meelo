@@ -1,5 +1,5 @@
 import { Body, Controller, DefaultValuePipe, forwardRef, Get, Inject, ParseBoolPipe, Post, Put, Query, Req } from '@nestjs/common';
-import type { PaginationParameters } from 'src/pagination/models/pagination-parameters';
+import { PaginationParameters } from 'src/pagination/models/pagination-parameters';
 import ReleaseQueryParameters from './models/release.query-parameters';
 import ReleaseService from './release.service';
 import TrackService from 'src/track/track.service';

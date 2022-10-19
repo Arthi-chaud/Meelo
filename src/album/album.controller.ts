@@ -1,5 +1,5 @@
 import { Body, Controller, forwardRef, Get, Inject, Post, Query, Req } from '@nestjs/common';
-import type { PaginationParameters } from 'src/pagination/models/pagination-parameters';
+import { PaginationParameters } from 'src/pagination/models/pagination-parameters';
 import ReleaseQueryParameters from 'src/release/models/release.query-parameters';
 import ReleaseService from 'src/release/release.service';
 import compilationAlbumArtistKeyword from 'src/utils/compilation';

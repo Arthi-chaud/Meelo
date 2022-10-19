@@ -3,7 +3,7 @@ import type { Request } from 'express';
 import ArtistService from 'src/artist/artist.service';
 import ArtistQueryParameters from 'src/artist/models/artist.query-parameters';
 import PaginatedResponse from 'src/pagination/models/paginated-response';
-import type { PaginationParameters } from 'src/pagination/models/pagination-parameters';
+import { PaginationParameters } from 'src/pagination/models/pagination-parameters';
 import TrackQueryParameters from 'src/track/models/track.query-parameters';
 import TrackService from 'src/track/track.service';
 import SongQueryParameters from './models/song.query-params';

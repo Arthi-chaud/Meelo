@@ -7,7 +7,7 @@ import ArtistService from "src/artist/artist.service";
 import ArtistQueryParameters from "src/artist/models/artist.query-parameters";
 import ParseBaseIdentifierPipe from "src/identifier/identifier.base-pipe";
 import PaginatedResponse from "src/pagination/models/paginated-response";
-import type { PaginationParameters } from "src/pagination/models/pagination-parameters";
+import { PaginationParameters } from "src/pagination/models/pagination-parameters";
 import SongQueryParameters from "src/song/models/song.query-params";
 import SongService from "src/song/song.service";
 import GenreService from "./genre.service";

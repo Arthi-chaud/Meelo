@@ -1,7 +1,7 @@
 import { Controller, Get, Query, Param, Post, Body, Inject, forwardRef, Req, Put } from '@nestjs/common';
 import { ParseIdPipe } from 'src/identifier/id.pipe';
 import PaginatedResponse from 'src/pagination/models/paginated-response';
-import type { PaginationParameters } from 'src/pagination/models/pagination-parameters';
+import { PaginationParameters } from 'src/pagination/models/pagination-parameters';
 import TrackQueryParameters from './models/track.query-parameters';
 import TrackService from './track.service';
 import type { Request } from 'express';
