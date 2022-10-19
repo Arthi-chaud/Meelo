@@ -3,7 +3,6 @@ import AlbumService from 'src/album/album.service';
 import AlbumQueryParameters from 'src/album/models/album.query-parameters';
 import PaginatedResponse from 'src/pagination/models/paginated-response';
 import { PaginationParameters } from 'src/pagination/models/pagination-parameters';
-import ParsePaginationParameterPipe from 'src/pagination/pagination.pipe';
 import SongQueryParameters from 'src/song/models/song.query-params';
 import SongService from 'src/song/song.service';
 import ParseArtistIdentifierPipe from './artist.pipe';
@@ -20,6 +19,7 @@ import { ApiPaginatedResponse } from 'src/pagination/paginated-response.decorato
 import { TrackResponse } from 'src/track/models/track.response';
 import { AlbumResponse } from 'src/album/models/album.response';
 import { SongResponse } from 'src/song/models/song.response';
+import { PaginationQuery } from 'src/pagination/pagination-query.decorator';
 
 @ApiTags("Artists")
 @Controller('artists')
@@ -45,7 +45,7 @@ export default class ArtistController {
 	@ApiPaginatedResponse(ArtistResponse)
 	@Get()
 	async getMany(
-		@Query(ParsePaginationParameterPipe)
+		@PaginationQuery()
 		paginationParameters: PaginationParameters,
 		@Query('with', ArtistQueryParameters.ParseRelationIncludePipe)
 		include: ArtistQueryParameters.RelationInclude,
@@ -91,7 +91,7 @@ export default class ArtistController {
 	@ApiPaginatedResponse(TrackResponse)
 	@Get(':idOrSlug/videos')
 	async getArtistVideos(
-		@Query(ParsePaginationParameterPipe)
+		@PaginationQuery()
 		paginationParameters: PaginationParameters,
 		@Query('with', TrackQueryParameters.ParseRelationIncludePipe)
 		include: TrackQueryParameters.RelationInclude,
@@ -120,7 +120,7 @@ export default class ArtistController {
 	@Get(':idOrSlug/albums')
 	@ApiPaginatedResponse(AlbumResponse)
 	async getArtistAlbums(
-		@Query(ParsePaginationParameterPipe)
+		@PaginationQuery()
 		paginationParameters: PaginationParameters,
 		@Param(ParseArtistIdentifierPipe)
 		where: ArtistQueryParameters.WhereInput,
@@ -148,7 +148,7 @@ export default class ArtistController {
 	@ApiPaginatedResponse(SongResponse)
 	@Get(':idOrSlug/songs')
 	async getArtistSongs(
-		@Query(ParsePaginationParameterPipe)
+		@PaginationQuery()
 		paginationParameters: PaginationParameters,
 		@Param(ParseArtistIdentifierPipe)
 		where: ArtistQueryParameters.WhereInput,

@@ -4,7 +4,6 @@ import ArtistService from 'src/artist/artist.service';
 import ArtistQueryParameters from 'src/artist/models/artist.query-parameters';
 import PaginatedResponse from 'src/pagination/models/paginated-response';
 import type { PaginationParameters } from 'src/pagination/models/pagination-parameters';
-import ParsePaginationParameterPipe from 'src/pagination/pagination.pipe';
 import TrackQueryParameters from 'src/track/models/track.query-parameters';
 import TrackService from 'src/track/track.service';
 import SongQueryParameters from './models/song.query-params';
@@ -20,6 +19,7 @@ import { ApiPaginatedResponse } from 'src/pagination/paginated-response.decorato
 import { SongResponse } from './models/song.response';
 import { TrackResponse } from 'src/track/models/track.response';
 import { GenreResponse } from 'src/genre/models/genre.response';
+import { PaginationQuery } from 'src/pagination/pagination-query.decorator';
 
 @ApiTags("Songs")
 @Controller('songs')
@@ -43,7 +43,7 @@ export class SongController {
 	@ApiPaginatedResponse(SongResponse)
 	@Get()
 	async getSongs(
-		@Query(ParsePaginationParameterPipe)
+		@PaginationQuery()
 		paginationParameters: PaginationParameters,
 		@Query('with', SongQueryParameters.ParseRelationIncludePipe)
 		include: SongQueryParameters.RelationInclude,
@@ -123,7 +123,7 @@ export class SongController {
 	@Get(':idOrSlug/tracks')
 	@ApiPaginatedResponse(TrackResponse)
 	async getSongTracks(
-		@Query(ParsePaginationParameterPipe)
+		@PaginationQuery()
 		paginationParameters: PaginationParameters,
 		@Query('with', TrackQueryParameters.ParseRelationIncludePipe)
 		include: TrackQueryParameters.RelationInclude,
@@ -150,7 +150,7 @@ export class SongController {
 	@ApiPaginatedResponse(SongResponse)
 	@Get(':idOrSlug/versions')
 	async getSongVersions(
-		@Query(ParsePaginationParameterPipe)
+		@PaginationQuery()
 		paginationParameters: PaginationParameters,
 		@Query('with', SongQueryParameters.ParseRelationIncludePipe)
 		include: SongQueryParameters.RelationInclude,
@@ -173,7 +173,7 @@ export class SongController {
 	@ApiPaginatedResponse(TrackResponse)
 	@Get(':idOrSlug/videos')
 	async getSongVideos(
-		@Query(ParsePaginationParameterPipe)
+		@PaginationQuery()
 		paginationParameters: PaginationParameters,
 		@Query('with', TrackQueryParameters.ParseRelationIncludePipe)
 		include: TrackQueryParameters.RelationInclude,

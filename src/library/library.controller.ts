@@ -2,7 +2,6 @@ import { Body, Controller, Delete, Get, Param, Post, Query, Req } from '@nestjs/
 import LibraryService from './library.service';
 import LibraryDto from './models/create-library.dto';
 import { Library } from 'src/prisma/models';
-import ParsePaginationParameterPipe from 'src/pagination/pagination.pipe';
 import type { PaginationParameters } from 'src/pagination/models/pagination-parameters';
 import ArtistService from 'src/artist/artist.service';
 import ArtistQueryParameters from 'src/artist/models/artist.query-parameters';
@@ -25,6 +24,7 @@ import { AlbumResponse } from 'src/album/models/album.response';
 import { ReleaseResponse } from 'src/release/models/release.response';
 import { SongResponse } from 'src/song/models/song.response';
 import { TrackResponse } from 'src/track/models/track.response';
+import { PaginationQuery } from 'src/pagination/pagination-query.decorator';
 
 @ApiTags("Libraries")
 @Controller('libraries')
@@ -65,7 +65,7 @@ export default class LibraryController {
 	@Get()
 	@ApiPaginatedResponse(Library)
 	async getLibraries(
-		@Query(ParsePaginationParameterPipe)
+		@PaginationQuery()
 		paginationParameters: PaginationParameters,
 		@Query(LibraryQueryParameters.ParseSortingParameterPipe)
 		sortingParameter: LibraryQueryParameters.SortingParameter,
@@ -96,7 +96,7 @@ export default class LibraryController {
 	async getArtistsByLibrary(
 		@Param(ParseLibraryIdentifierPipe)
 		where: LibraryQueryParameters.WhereInput,
-		@Query(ParsePaginationParameterPipe)
+		@PaginationQuery()
 		paginationParameters: PaginationParameters,
 		@Query('with', ArtistQueryParameters.ParseRelationIncludePipe)
 		include: ArtistQueryParameters.RelationInclude,
@@ -123,7 +123,7 @@ export default class LibraryController {
 	async getAlbumsByLibrary(
 		@Param(ParseLibraryIdentifierPipe)
 		where: LibraryQueryParameters.WhereInput,
-		@Query(ParsePaginationParameterPipe)
+		@PaginationQuery()
 		paginationParameters: PaginationParameters,
 		@Query('with', AlbumQueryParameters.ParseRelationIncludePipe)
 		include: AlbumQueryParameters.RelationInclude,
@@ -151,7 +151,7 @@ export default class LibraryController {
 	async getReleasesByLibrary(
 		@Param(ParseLibraryIdentifierPipe)
 		where: LibraryQueryParameters.WhereInput,
-		@Query(ParsePaginationParameterPipe)
+		@PaginationQuery()
 		paginationParameters: PaginationParameters,
 		@Query('with', ReleaseQueryParameters.ParseRelationIncludePipe)
 		include: ReleaseQueryParameters.RelationInclude,
@@ -178,7 +178,7 @@ export default class LibraryController {
 	async getSongsByLibrary(
 		@Param(ParseLibraryIdentifierPipe)
 		where: LibraryQueryParameters.WhereInput,
-		@Query(ParsePaginationParameterPipe)
+		@PaginationQuery()
 		paginationParameters: PaginationParameters,
 		@Query('with', SongQueryParameters.ParseRelationIncludePipe)
 		include: SongQueryParameters.RelationInclude,
@@ -205,7 +205,7 @@ export default class LibraryController {
 	async getTracksByLibrary(
 		@Param(ParseLibraryIdentifierPipe)
 		where: LibraryQueryParameters.WhereInput,
-		@Query(ParsePaginationParameterPipe)
+		@PaginationQuery()
 		paginationParameters: PaginationParameters,
 		@Query('with',TrackQueryParameters.ParseRelationIncludePipe)
 		include: TrackQueryParameters.RelationInclude,

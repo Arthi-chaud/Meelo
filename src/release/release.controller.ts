@@ -1,5 +1,4 @@
 import { Body, Controller, DefaultValuePipe, forwardRef, Get, Inject, Param, ParseBoolPipe, Post, Put, Query, Req } from '@nestjs/common';
-import ParsePaginationParameterPipe from 'src/pagination/pagination.pipe';
 import type { PaginationParameters } from 'src/pagination/models/pagination-parameters';
 import ReleaseQueryParameters from './models/release.query-parameters';
 import ReleaseService from './release.service';
@@ -15,6 +14,7 @@ import ReassignReleaseDTO from './models/reassign-release.dto';
 import { ReleaseResponse } from './models/release.response';
 import { ApiPaginatedResponse } from 'src/pagination/paginated-response.decorator';
 import { TrackResponse } from 'src/track/models/track.response';
+import { PaginationQuery } from 'src/pagination/pagination-query.decorator';
 
 @ApiTags("Releases")
 @Controller('releases')
@@ -34,7 +34,7 @@ export default class ReleaseController {
 	@Get()
 	@ApiPaginatedResponse(ReleaseResponse)
 	async getReleases(
-		@Query(ParsePaginationParameterPipe)
+		@PaginationQuery()
 		paginationParameters: PaginationParameters,
 		@Query('with', ReleaseQueryParameters.ParseRelationIncludePipe)
 		include: ReleaseQueryParameters.RelationInclude,
@@ -73,7 +73,7 @@ export default class ReleaseController {
 	@ApiPaginatedResponse(TrackResponse)
 	@Get(':idOrSlug/tracks')
 	async getReleaseTracks(
-		@Query(ParsePaginationParameterPipe)
+		@PaginationQuery()
 		paginationParameters: PaginationParameters,
 		@Query('with', TrackQueryParameters.ParseRelationIncludePipe)
 		include: TrackQueryParameters.RelationInclude,

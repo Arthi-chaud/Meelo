@@ -5,7 +5,6 @@ import ArtistQueryParameters from 'src/artist/models/artist.query-parameters';
 import GenreQueryParameters from 'src/genre/models/genre.query-parameters';
 import PaginatedResponse from 'src/pagination/models/paginated-response';
 import type { PaginationParameters } from 'src/pagination/models/pagination-parameters';
-import ParsePaginationParameterPipe from 'src/pagination/pagination.pipe';
 import ReleaseQueryParameters from 'src/release/models/release.query-parameters';
 import SongQueryParameters from 'src/song/models/song.query-params';
 import SearchService from './search.service';
@@ -22,6 +21,7 @@ import { SongResponse } from 'src/song/models/song.response';
 import { ReleaseResponse } from 'src/release/models/release.response';
 import { GenreResponse } from 'src/genre/models/genre.response';
 import { SearchAllResponse } from './models/search-all.response';
+import { PaginationQuery } from 'src/pagination/pagination-query.decorator';
 
 @ApiTags("Search")
 @Controller('search')
@@ -65,7 +65,7 @@ export default class SearchController {
 	async searchArtists(
 		@Param('query')
 		query: string,
-		@Query(ParsePaginationParameterPipe)
+		@PaginationQuery()
 		paginationParameters: PaginationParameters,
 		@Query('with', ArtistQueryParameters.ParseRelationIncludePipe)
 		include: ArtistQueryParameters.RelationInclude,
@@ -88,7 +88,7 @@ export default class SearchController {
 	async searchAlbums(
 		@Param('query')
 		query: string,
-		@Query(ParsePaginationParameterPipe)
+		@PaginationQuery()
 		paginationParameters: PaginationParameters,
 		@Query('with', AlbumQueryParameters.ParseRelationIncludePipe)
 		include: AlbumQueryParameters.RelationInclude,
@@ -112,7 +112,7 @@ export default class SearchController {
 	async searchSongs(
 		@Param('query')
 		query: string,
-		@Query(ParsePaginationParameterPipe)
+		@PaginationQuery()
 		paginationParameters: PaginationParameters,
 		@Query('with', SongQueryParameters.ParseRelationIncludePipe)
 		include: SongQueryParameters.RelationInclude,
@@ -135,7 +135,7 @@ export default class SearchController {
 	async searchRelease(
 		@Param('query')
 		query: string,
-		@Query(ParsePaginationParameterPipe)
+		@PaginationQuery()
 		paginationParameters: PaginationParameters,
 		@Query('with', ReleaseQueryParameters.ParseRelationIncludePipe)
 		include: ReleaseQueryParameters.RelationInclude,
@@ -158,7 +158,7 @@ export default class SearchController {
 	async searchGenres(
 		@Param('query')
 		query: string,
-		@Query(ParsePaginationParameterPipe)
+		@PaginationQuery()
 		paginationParameters: PaginationParameters,
 		@Query('with', GenreQueryParameters.ParseRelationIncludePipe)
 		include: GenreQueryParameters.RelationInclude,

@@ -2,7 +2,6 @@ import { Controller, Get, Query, Param, Post, Body, Inject, forwardRef, Req, Put
 import { ParseIdPipe } from 'src/identifier/id.pipe';
 import PaginatedResponse from 'src/pagination/models/paginated-response';
 import type { PaginationParameters } from 'src/pagination/models/pagination-parameters';
-import ParsePaginationParameterPipe from 'src/pagination/pagination.pipe';
 import TrackQueryParameters from './models/track.query-parameters';
 import TrackService from './track.service';
 import type { Request } from 'express';
@@ -11,6 +10,7 @@ import { TrackType } from '@prisma/client';
 import ReassignTrackDTO from './models/reassign-track.dto';
 import { TrackResponse } from './models/track.response';
 import { ApiPaginatedResponse } from 'src/pagination/paginated-response.decorator';
+import { PaginationQuery } from 'src/pagination/pagination-query.decorator';
 
 @ApiTags("Tracks")
 @Controller('tracks')
@@ -26,7 +26,7 @@ export class TrackController {
 	@Get()
 	@ApiPaginatedResponse(TrackResponse)
 	async getMany(
-		@Query(ParsePaginationParameterPipe)
+		@PaginationQuery()
 		paginationParameters: PaginationParameters,
 		@Query('with', TrackQueryParameters.ParseRelationIncludePipe)
 		include: TrackQueryParameters.RelationInclude,
@@ -49,7 +49,7 @@ export class TrackController {
 	@ApiPaginatedResponse(TrackResponse)
 	@Get('videos')
 	async getVideoTracks(
-		@Query(ParsePaginationParameterPipe)
+		@PaginationQuery()
 		paginationParameters: PaginationParameters,
 		@Query('with', TrackQueryParameters.ParseRelationIncludePipe)
 		include: TrackQueryParameters.RelationInclude,

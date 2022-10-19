@@ -1,6 +1,5 @@
 import { Body, Controller, forwardRef, Get, Inject, Param, Post, Query, Req } from '@nestjs/common';
 import type { PaginationParameters } from 'src/pagination/models/pagination-parameters';
-import ParsePaginationParameterPipe from 'src/pagination/pagination.pipe';
 import ReleaseQueryParameters from 'src/release/models/release.query-parameters';
 import ReleaseService from 'src/release/release.service';
 import compilationAlbumArtistKeyword from 'src/utils/compilation';
@@ -20,6 +19,7 @@ import { AlbumResponse } from './models/album.response';
 import { ApiPaginatedResponse } from 'src/pagination/paginated-response.decorator';
 import { ReleaseResponse } from 'src/release/models/release.response';
 import { TrackResponse } from 'src/track/models/track.response';
+import { PaginationQuery } from 'src/pagination/pagination-query.decorator';
 
 @ApiTags("Albums")
 @Controller('albums')
@@ -41,7 +41,7 @@ export default class AlbumController {
 	@Get()
 	@ApiPaginatedResponse(AlbumResponse)
 	async getMany(
-		@Query(ParsePaginationParameterPipe)
+		@PaginationQuery()
 		paginationParameters: PaginationParameters,
 		@Query(AlbumQueryParameters.ParseSortingParameterPipe)
 		sortingParameter: AlbumQueryParameters.SortingParameter,
@@ -65,7 +65,7 @@ export default class AlbumController {
 	@ApiPaginatedResponse(AlbumResponse)
 	@Get(`${compilationAlbumArtistKeyword}`)
 	async getCompilationsAlbums(
-		@Query(ParsePaginationParameterPipe)
+		@PaginationQuery()
 		paginationParameters: PaginationParameters,
 		@Query(AlbumQueryParameters.ParseSortingParameterPipe)
 		sortingParameter: AlbumQueryParameters.SortingParameter,
@@ -117,7 +117,7 @@ export default class AlbumController {
 	@ApiPaginatedResponse(ReleaseResponse)
 	@Get(':idOrSlug/releases')
 	async getAlbumReleases(
-		@Query(ParsePaginationParameterPipe)
+		@PaginationQuery()
 		paginationParameters: PaginationParameters,
 		@Query('with', ReleaseQueryParameters.ParseRelationIncludePipe)
 		include: ReleaseQueryParameters.RelationInclude,
@@ -154,7 +154,7 @@ export default class AlbumController {
 	@ApiPaginatedResponse(TrackResponse)
 	@Get(':idOrSlug/videos')
 	async getAlbumVideos(
-		@Query(ParsePaginationParameterPipe)
+		@PaginationQuery()
 		paginationParameters: PaginationParameters,
 		@Query('with', TrackQueryParameters.ParseRelationIncludePipe)
 		include: TrackQueryParameters.RelationInclude,
