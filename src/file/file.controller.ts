@@ -1,4 +1,4 @@
-import { Get, Param, Controller, Query, Response } from "@nestjs/common";
+import { Get, Param, Controller, Query, Response, Req } from "@nestjs/common";
 import type { File } from "src/prisma/models";
 import { ParseIdPipe } from "src/identifier/id.pipe";
 import FileService from "./file.service";
@@ -32,10 +32,10 @@ export default class FileController {
 	async streamFile(
 		@Param('id', ParseIdPipe)
 		fileId: number,
-		@Response({ passthrough: true })
-		res: Response
+		@Response({ passthrough: true }) res: Response,
+		@Req() req: any
 	) {
 		const file = await this.fileService.get({ id: fileId }, { library: true });
-		return this.fileService.streamFile(file, file.library, res);
+		return this.fileService.streamFile(file, file.library, res, req);
 	}
 }

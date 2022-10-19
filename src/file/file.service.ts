@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, StreamableFile } from '@nestjs/common';
 import FileManagerService from 'src/file-manager/file-manager.service';
 import { FileAlreadyExistsException, FileNotFoundFromIDException, FileNotFoundFromPathException, FileNotFoundFromTrackIDException, SourceFileNotFoundExceptions } from './file.exceptions';
 import PrismaService from 'src/prisma/prisma.service';
@@ -173,14 +173,29 @@ export default class FileService extends RepositoryService<
 	 * @param res the Response Object of the request
 	 * @returns a StreamableFile of the file
 	 */
-	streamFile(file: File, parentLibrary: Library, res: any): void {
+	streamFile(file: File, parentLibrary: Library, res: any, req: any): StreamableFile {
 		const fullFilePath = `${this.settingsService.settingsValues.dataFolder}/${parentLibrary.path}/${file.path}`.normalize();
 		if (this.fileManagerService.fileExists(fullFilePath) == false)
 			throw new SourceFileNotFoundExceptions(file.path);
 		res.set({
 			'Content-Disposition': `attachment; filename="${new Slug(path.parse(file.path).name).toString()}${path.parse(file.path).ext}"`,
-			'Content-Type': mime.getType(fullFilePath) ?? 'application/octet-stream'
+			'Content-Type': mime.getType(fullFilePath) ?? 'application/octet-stream',
 		});
-		res.send(fs.readFileSync(fullFilePath));
+		const rangeHeader = req.headers['range'] ?? req.headers['Range'];
+		let requestedStartByte: number | undefined = undefined;
+		let requestedEndByte: number | undefined = undefined;
+		if (rangeHeader) {
+			const bytes = /^bytes\=(\d+)\-(\d+)?$/g.exec(rangeHeader);
+			if (bytes) {
+				const fileSize = fs.statSync(fullFilePath).size;
+				requestedStartByte = Number(bytes[1]);
+				requestedEndByte = Number(bytes[2]) || fileSize - 1;
+				res.set({
+					'Content-Range': `bytes ${requestedStartByte}-${requestedEndByte}/${fileSize}`
+				});
+			}
+		}
+		
+		return new StreamableFile(fs.createReadStream(fullFilePath, { start: requestedStartByte, end: requestedEndByte }));
 	}
 }
