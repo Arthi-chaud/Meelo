@@ -1,4 +1,4 @@
-import { Controller, DefaultValuePipe, forwardRef, Get, Inject, Param, ParseBoolPipe, Query, Req } from '@nestjs/common';
+import { Controller, DefaultValuePipe, forwardRef, Get, Inject, ParseBoolPipe, Query, Req } from '@nestjs/common';
 import AlbumService from 'src/album/album.service';
 import AlbumQueryParameters from 'src/album/models/album.query-parameters';
 import PaginatedResponse from 'src/pagination/models/paginated-response';
@@ -20,6 +20,7 @@ import { TrackResponse } from 'src/track/models/track.response';
 import { AlbumResponse } from 'src/album/models/album.response';
 import { SongResponse } from 'src/song/models/song.response';
 import { PaginationQuery } from 'src/pagination/pagination-query.decorator';
+import { IdentifierParam } from 'src/identifier/identifier-param.decorator';
 
 @ApiTags("Artists")
 @Controller('artists')
@@ -76,7 +77,7 @@ export default class ArtistController {
 	})
 	@Get(':idOrSlug')
 	async get(
-		@Param(ParseArtistIdentifierPipe)
+		@IdentifierParam(ParseArtistIdentifierPipe)
 		where: ArtistQueryParameters.WhereInput,
 		@Query('with', ArtistQueryParameters.ParseRelationIncludePipe)
 		include: ArtistQueryParameters.RelationInclude
@@ -97,7 +98,7 @@ export default class ArtistController {
 		include: TrackQueryParameters.RelationInclude,
 		@Query(TrackQueryParameters.ParseSortingParameterPipe)
 		sortingParameter: TrackQueryParameters.SortingParameter,
-		@Param(ParseArtistIdentifierPipe)
+		@IdentifierParam(ParseArtistIdentifierPipe)
 		where: ArtistQueryParameters.WhereInput,
 		@Req() request: Request
 	) {
@@ -122,7 +123,7 @@ export default class ArtistController {
 	async getArtistAlbums(
 		@PaginationQuery()
 		paginationParameters: PaginationParameters,
-		@Param(ParseArtistIdentifierPipe)
+		@IdentifierParam(ParseArtistIdentifierPipe)
 		where: ArtistQueryParameters.WhereInput,
 		@Query(AlbumQueryParameters.ParseSortingParameterPipe)
 		sortingParameter: AlbumQueryParameters.SortingParameter,
@@ -150,7 +151,7 @@ export default class ArtistController {
 	async getArtistSongs(
 		@PaginationQuery()
 		paginationParameters: PaginationParameters,
-		@Param(ParseArtistIdentifierPipe)
+		@IdentifierParam(ParseArtistIdentifierPipe)
 		where: ArtistQueryParameters.WhereInput,
 		@Query(SongQueryParameters.ParseSortingParameterPipe)
 		sortingParameter: SongQueryParameters.SortingParameter,

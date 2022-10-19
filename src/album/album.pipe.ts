@@ -7,11 +7,11 @@ import compilationAlbumArtistKeyword from "src/utils/compilation";
 import type AlbumQueryParameters from "./models/album.query-parameters";
 
 export default class ParseAlbumIdentifierPipe implements PipeTransform {
-	transform<T extends { idOrSlug: string; }>(value: T, _metadata: ArgumentMetadata): AlbumQueryParameters.WhereInput {
+	transform(value: string, _metadata: ArgumentMetadata): AlbumQueryParameters.WhereInput {
 		try {
-			return { byId: { id: new ParseIdPipe().transform(value.idOrSlug, _metadata) }};
+			return { byId: { id: new ParseIdPipe().transform(value, _metadata) }};
 		} catch {
-			const slugs = new ParseMultipleSlugPipe().transform(value.idOrSlug, _metadata);
+			const slugs = new ParseMultipleSlugPipe().transform(value, _metadata);
 			if (slugs.length != 2)
 				throw new InvalidRequestException(`Expected the following string format: 'artist-slug${SlugSeparator}album-slug'`);
 			return {

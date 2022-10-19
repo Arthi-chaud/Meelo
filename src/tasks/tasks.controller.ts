@@ -1,4 +1,4 @@
-import { Controller, Get, Logger, Param } from '@nestjs/common';
+import { Controller, Get, Logger } from '@nestjs/common';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import ParseLibraryIdentifierPipe from 'src/library/library.pipe';
 import LibraryService from 'src/library/library.service';
@@ -6,6 +6,7 @@ import type LibraryQueryParameters from 'src/library/models/library.query-parame
 import type TaskResponse from './models/task.response';
 import TasksService from './tasks.service';
 import { Timeout } from '@nestjs/schedule';
+import { IdentifierParam } from 'src/identifier/identifier-param.decorator';
 
 @ApiTags('Tasks')
 @Controller('tasks')
@@ -37,7 +38,7 @@ export default class TasksController {
 	})
 	@Get('scan/:idOrSlug')
 	async scanLibraryFiles(
-		@Param(ParseLibraryIdentifierPipe)
+		@IdentifierParam(ParseLibraryIdentifierPipe)
 		where: LibraryQueryParameters.WhereInput
 	): Promise<TaskResponse> {
 		const library = await this.libraryService.get(where);
@@ -69,7 +70,7 @@ export default class TasksController {
 	})
 	@Get('clean/:idOrSlug')
 	async cleanLibrary(
-		@Param(ParseLibraryIdentifierPipe)
+		@IdentifierParam(ParseLibraryIdentifierPipe)
 		where: LibraryQueryParameters.WhereInput
 	): Promise<TaskResponse> {
 		const library = await this.libraryService.get(where);
@@ -102,7 +103,7 @@ export default class TasksController {
 	})
 	@Get('refresh-metadata/:idOrSlug')
 	async refreshLibraryFilesMetadata(
-		@Param(ParseLibraryIdentifierPipe)
+		@IdentifierParam(ParseLibraryIdentifierPipe)
 		where: LibraryQueryParameters.WhereInput
 	): Promise<TaskResponse> {
 		const library = await this.libraryService.get(where);

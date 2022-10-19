@@ -1,4 +1,4 @@
-import { Controller, Inject, forwardRef, Get, Query, Req, Param } from "@nestjs/common";
+import { Controller, Inject, forwardRef, Get, Query, Req } from "@nestjs/common";
 import type { Request } from 'express';
 import { ApiOperation, ApiTags } from "@nestjs/swagger";
 import AlbumService from "src/album/album.service";
@@ -18,6 +18,7 @@ import { SongResponse } from "src/song/models/song.response";
 import { AlbumResponse } from "src/album/models/album.response";
 import { ArtistResponse } from "src/artist/models/artist.response";
 import { PaginationQuery } from "src/pagination/pagination-query.decorator";
+import { IdentifierParam } from "src/identifier/identifier-param.decorator";
 
 @ApiTags("Genres")
 @Controller('genres')
@@ -62,7 +63,7 @@ export class GenreController {
 	async get(
 		@Query('with', GenreQueryParameters.ParseRelationIncludePipe)
 		include: GenreQueryParameters.RelationInclude,
-		@Param(ParseBaseIdentifierPipe)
+		@IdentifierParam(ParseBaseIdentifierPipe)
 		where: GenreQueryParameters.WhereInput
 	) {
 		const genre = await this.genreService.get(where, include);
@@ -79,7 +80,7 @@ export class GenreController {
 		paginationParameters: PaginationParameters,
 		@Query('with', SongQueryParameters.ParseRelationIncludePipe)
 		include: SongQueryParameters.RelationInclude,
-		@Param(ParseBaseIdentifierPipe)
+		@IdentifierParam(ParseBaseIdentifierPipe)
 		where: GenreQueryParameters.WhereInput,
 		@Query(SongQueryParameters.ParseSortingParameterPipe)
 		sortingParameter: SongQueryParameters.SortingParameter,
@@ -108,7 +109,7 @@ export class GenreController {
 		paginationParameters: PaginationParameters,
 		@Query('with', AlbumQueryParameters.ParseRelationIncludePipe)
 		include: AlbumQueryParameters.RelationInclude,
-		@Param(ParseBaseIdentifierPipe)
+		@IdentifierParam(ParseBaseIdentifierPipe)
 		where: GenreQueryParameters.WhereInput,
 		@Query(AlbumQueryParameters.ParseSortingParameterPipe)
 		sortingParameter: AlbumQueryParameters.SortingParameter,
@@ -138,7 +139,7 @@ export class GenreController {
 		paginationParameters: PaginationParameters,
 		@Query('with', ArtistQueryParameters.ParseRelationIncludePipe)
 		include: ArtistQueryParameters.RelationInclude,
-		@Param(ParseBaseIdentifierPipe)
+		@IdentifierParam(ParseBaseIdentifierPipe)
 		where: GenreQueryParameters.WhereInput,
 		@Query(ArtistQueryParameters.ParseSortingParameterPipe)
 		sortingParameter: ArtistQueryParameters.SortingParameter,

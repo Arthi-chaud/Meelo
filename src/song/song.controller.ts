@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, forwardRef, Get, Inject, Param, Post, Put, Query, Req } from '@nestjs/common';
+import { Body, Controller, Delete, forwardRef, Get, Inject, Post, Put, Query, Req } from '@nestjs/common';
 import type { Request } from 'express';
 import ArtistService from 'src/artist/artist.service';
 import ArtistQueryParameters from 'src/artist/models/artist.query-parameters';
@@ -20,6 +20,7 @@ import { SongResponse } from './models/song.response';
 import { TrackResponse } from 'src/track/models/track.response';
 import { GenreResponse } from 'src/genre/models/genre.response';
 import { PaginationQuery } from 'src/pagination/pagination-query.decorator';
+import { IdentifierParam } from 'src/identifier/identifier-param.decorator';
 
 @ApiTags("Songs")
 @Controller('songs')
@@ -67,7 +68,7 @@ export class SongController {
 	async getSong(
 		@Query('with', SongQueryParameters.ParseRelationIncludePipe)
 		include: SongQueryParameters.RelationInclude,
-		@Param(ParseSongIdentifierPipe)
+		@IdentifierParam(ParseSongIdentifierPipe)
 		where: SongQueryParameters.WhereInput
 	) {
 		const song = await this.songService.get(where, include);
@@ -79,7 +80,7 @@ export class SongController {
 	})
 	@Put(':idOrSlug/played')
 	async incrementSongPlayCount(
-		@Param(ParseSongIdentifierPipe)
+		@IdentifierParam(ParseSongIdentifierPipe)
 		where: SongQueryParameters.WhereInput
 	) {
 		await this.songService.incrementPlayCount(where);
@@ -93,7 +94,7 @@ export class SongController {
 	async getSongArtist(
 		@Query('with', ArtistQueryParameters.ParseRelationIncludePipe)
 		include: ArtistQueryParameters.RelationInclude,
-		@Param(ParseSongIdentifierPipe)
+		@IdentifierParam(ParseSongIdentifierPipe)
 		where: SongQueryParameters.WhereInput
 	) {
 		const song = await this.songService.get(where);
@@ -110,7 +111,7 @@ export class SongController {
 	async getSongMaster(
 		@Query('with', TrackQueryParameters.ParseRelationIncludePipe)
 		include: TrackQueryParameters.RelationInclude,
-		@Param(ParseSongIdentifierPipe)
+		@IdentifierParam(ParseSongIdentifierPipe)
 		where: SongQueryParameters.WhereInput
 	) {
 		const master = await this.trackService.getMasterTrack(where, include);
@@ -127,7 +128,7 @@ export class SongController {
 		paginationParameters: PaginationParameters,
 		@Query('with', TrackQueryParameters.ParseRelationIncludePipe)
 		include: TrackQueryParameters.RelationInclude,
-		@Param(ParseSongIdentifierPipe)
+		@IdentifierParam(ParseSongIdentifierPipe)
 		where: SongQueryParameters.WhereInput,
 		@Query(TrackQueryParameters.ParseSortingParameterPipe)
 		sortingParameter: TrackQueryParameters.SortingParameter,
@@ -154,7 +155,7 @@ export class SongController {
 		paginationParameters: PaginationParameters,
 		@Query('with', SongQueryParameters.ParseRelationIncludePipe)
 		include: SongQueryParameters.RelationInclude,
-		@Param(ParseSongIdentifierPipe)
+		@IdentifierParam(ParseSongIdentifierPipe)
 		where: SongQueryParameters.WhereInput,
 		@Query(SongQueryParameters.ParseSortingParameterPipe)
 		sortingParameter: SongQueryParameters.SortingParameter,
@@ -179,7 +180,7 @@ export class SongController {
 		include: TrackQueryParameters.RelationInclude,
 		@Query(TrackQueryParameters.ParseSortingParameterPipe)
 		sortingParameter: TrackQueryParameters.SortingParameter,
-		@Param(ParseSongIdentifierPipe)
+		@IdentifierParam(ParseSongIdentifierPipe)
 		where: SongQueryParameters.WhereInput,
 		@Req() request: Request
 	) {
@@ -204,7 +205,7 @@ export class SongController {
 		include: GenreQueryParameters.RelationInclude,
 		@Query(GenreQueryParameters.ParseSortingParameterPipe)
 		sortingParameter: GenreQueryParameters.SortingParameter,
-		@Param(ParseSongIdentifierPipe)
+		@IdentifierParam(ParseSongIdentifierPipe)
 		where: SongQueryParameters.WhereInput,
 		@Req() request: Request
 	) {
@@ -220,7 +221,7 @@ export class SongController {
 	})
 	@Get(':idOrSlug/lyrics')
 	async getSongLyrics(
-		@Param(ParseSongIdentifierPipe)
+		@IdentifierParam(ParseSongIdentifierPipe)
 		where: SongQueryParameters.WhereInput
 	) {
 		const lyrics = await this.lyricsService.get({ song: where });
@@ -232,7 +233,7 @@ export class SongController {
 	})
 	@Post(':idOrSlug/lyrics')
 	async updateSongLyrics(
-		@Param(ParseSongIdentifierPipe)
+		@IdentifierParam(ParseSongIdentifierPipe)
 		where: SongQueryParameters.WhereInput,
 		@Body() updateLyricsDto: LyricsDto
 	) {
@@ -254,7 +255,7 @@ export class SongController {
 	})
 	@Delete(':idOrSlug/lyrics')
 	async deleteSongLyrics(
-		@Param(ParseSongIdentifierPipe)
+		@IdentifierParam(ParseSongIdentifierPipe)
 		where: SongQueryParameters.WhereInput
 	) {
 		const song = await this.songService.get(where);

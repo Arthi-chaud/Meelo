@@ -7,11 +7,11 @@ import compilationAlbumArtistKeyword from "src/utils/compilation";
 import type ReleaseQueryParameters from "./models/release.query-parameters";
 
 export default class ParseReleaseIdentifierPipe implements PipeTransform {
-	transform<T extends { idOrSlug: string; }>(value: T, _metadata: ArgumentMetadata): ReleaseQueryParameters.WhereInput {
+	transform(value: string, _metadata: ArgumentMetadata): ReleaseQueryParameters.WhereInput {
 		try {
-			return { byId: { id: new ParseIdPipe().transform(value.idOrSlug, _metadata) }};
+			return { byId: { id: new ParseIdPipe().transform(value, _metadata) }};
 		} catch {
-			const slugs = new ParseMultipleSlugPipe().transform(value.idOrSlug, _metadata);
+			const slugs = new ParseMultipleSlugPipe().transform(value, _metadata);
 			if (slugs.length != 3)
 				throw new InvalidRequestException(`Expected the following string format: 'artist-slug${SlugSeparator}album-slug${SlugSeparator}release-slug'`);
 			return {

@@ -17,6 +17,7 @@ import IllustrationService from "./illustration.service";
 import { IllustrationDownloadDto } from "./models/illustration-dl.dto";
 import ArtistQueryParameters from "src/artist/models/artist.query-parameters";
 import { IllustrationDimensionsDto } from "./models/illustration-dimensions.dto";
+import { IdentifierParam } from "src/identifier/identifier-param.decorator";
 
 @ApiTags("Illustrations")
 @Controller('illustrations')
@@ -34,7 +35,7 @@ export class IllustrationController {
 	@Get('artists/:idOrSlug')
 	
 	async getArtistIllustration(
-		@Param(ParseArtistIdentifierPipe)
+		@IdentifierParam(ParseArtistIdentifierPipe)
 		where: ArtistQueryParameters.WhereInput,
 		@Response({ passthrough: true })
 		@Query() dimensions: IllustrationDimensionsDto,
@@ -53,7 +54,7 @@ export class IllustrationController {
 	})
 	@Post('artists/:idOrSlug')
 	async updateArtistIllustration(
-		@Param(ParseArtistIdentifierPipe)
+		@IdentifierParam(ParseArtistIdentifierPipe)
 		where: ArtistQueryParameters.WhereInput,
 		@Body()
 		illustrationDto: IllustrationDownloadDto
@@ -72,7 +73,7 @@ export class IllustrationController {
 	
 	@Get('albums/:idOrSlug')
 	async getAlbumIllustration(
-		@Param(ParseAlbumIdentifierPipe)
+		@IdentifierParam(ParseAlbumIdentifierPipe)
 		where: AlbumQueryParameters.WhereInput,
 		@Query() dimensions: IllustrationDimensionsDto,
 		@Response({ passthrough: true })
@@ -88,7 +89,7 @@ export class IllustrationController {
 	
 	@Get('songs/:idOrSlug')
 	async getSongIllustration(
-		@Param(ParseSongIdentifierPipe)
+		@IdentifierParam(ParseSongIdentifierPipe)
 		where: SongQueryParameters.WhereInput,
 		@Query() dimensions: IllustrationDimensionsDto,
 		@Response({ passthrough: true })
@@ -105,7 +106,7 @@ export class IllustrationController {
 	
 	@Get('releases/:idOrSlug')
 	async getReleaseIllustration(
-		@Param(ParseReleaseIdentifierPipe)
+		@IdentifierParam(ParseReleaseIdentifierPipe)
 		where: ReleaseQueryParameters.WhereInput,
 		@Query() dimensions: IllustrationDimensionsDto,
 		@Response({ passthrough: true })
@@ -125,7 +126,7 @@ export class IllustrationController {
 	})
 	@Post('releases/:idOrSlug')
 	async updateReleaseIllustration(
-		@Param(ParseReleaseIdentifierPipe)
+		@IdentifierParam(ParseReleaseIdentifierPipe)
 		where: ReleaseQueryParameters.WhereInput,
 		@Body()
 		illustrationDto: IllustrationDownloadDto

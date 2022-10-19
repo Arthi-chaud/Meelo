@@ -1,4 +1,4 @@
-import { Body, Controller, forwardRef, Get, Inject, Param, Post, Query, Req } from '@nestjs/common';
+import { Body, Controller, forwardRef, Get, Inject, Post, Query, Req } from '@nestjs/common';
 import type { PaginationParameters } from 'src/pagination/models/pagination-parameters';
 import ReleaseQueryParameters from 'src/release/models/release.query-parameters';
 import ReleaseService from 'src/release/release.service';
@@ -20,6 +20,7 @@ import { ApiPaginatedResponse } from 'src/pagination/paginated-response.decorato
 import { ReleaseResponse } from 'src/release/models/release.response';
 import { TrackResponse } from 'src/track/models/track.response';
 import { PaginationQuery } from 'src/pagination/pagination-query.decorator';
+import { IdentifierParam } from 'src/identifier/identifier-param.decorator';
 
 @ApiTags("Albums")
 @Controller('albums')
@@ -90,7 +91,7 @@ export default class AlbumController {
 	async get(
 		@Query('with', AlbumQueryParameters.ParseRelationIncludePipe)
 		include: AlbumQueryParameters.RelationInclude,
-		@Param(ParseAlbumIdentifierPipe)
+		@IdentifierParam(ParseAlbumIdentifierPipe)
 		where: AlbumQueryParameters.WhereInput
 	) {
 		const album = await this.albumService.get(where, include);
@@ -104,7 +105,7 @@ export default class AlbumController {
 	async getAlbumMaster(
 		@Query('with', ReleaseQueryParameters.ParseRelationIncludePipe)
 		include: ReleaseQueryParameters.RelationInclude,
-		@Param(ParseAlbumIdentifierPipe)
+		@IdentifierParam(ParseAlbumIdentifierPipe)
 		where: AlbumQueryParameters.WhereInput
 	) {
 		const masterRelease = await this.releaseService.getMasterRelease(where, include);
@@ -123,7 +124,7 @@ export default class AlbumController {
 		include: ReleaseQueryParameters.RelationInclude,
 		@Query(ReleaseQueryParameters.ParseSortingParameterPipe)
 		sortingParameter: ReleaseQueryParameters.SortingParameter,
-		@Param(ParseAlbumIdentifierPipe)
+		@IdentifierParam(ParseAlbumIdentifierPipe)
 		where: AlbumQueryParameters.WhereInput,
 		@Req() request: Request
 	) {
@@ -141,7 +142,7 @@ export default class AlbumController {
 	})
 	@Get(':idOrSlug/genres')
 	async getAlbumGenres(
-		@Param(ParseAlbumIdentifierPipe)
+		@IdentifierParam(ParseAlbumIdentifierPipe)
 		where: AlbumQueryParameters.WhereInput,
 	): Promise<Genre[]> {
 		const genres = await this.albumService.getGenres(where);
@@ -160,7 +161,7 @@ export default class AlbumController {
 		include: TrackQueryParameters.RelationInclude,
 		@Query(TrackQueryParameters.ParseSortingParameterPipe)
 		sortingParameter: TrackQueryParameters.SortingParameter,
-		@Param(ParseAlbumIdentifierPipe)
+		@IdentifierParam(ParseAlbumIdentifierPipe)
 		where: AlbumQueryParameters.WhereInput,
 		@Req() request: Request
 	) {
