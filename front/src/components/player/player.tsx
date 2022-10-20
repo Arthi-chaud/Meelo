@@ -127,7 +127,11 @@ const Player = () => {
 						progress={progress}
 						onSkipTrack={onSkipTrack}
 						onRewind={onRewind}
-						onSlide={(newProgress) => audio.current?.fastSeek(newProgress)}
+						onSlide={(newProgress) => {
+							if (audio.current !== undefined) {
+								audio.current.currentTime = newProgress;
+							}
+						}}
 					/>
 				</Paper>
 			</Box>
