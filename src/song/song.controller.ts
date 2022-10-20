@@ -21,6 +21,7 @@ import { TrackResponse } from 'src/track/models/track.response';
 import { GenreResponse } from 'src/genre/models/genre.response';
 import { PaginationQuery } from 'src/pagination/pagination-query.decorator';
 import { IdentifierParam } from 'src/identifier/identifier-param.decorator';
+import RelationIncludeQuery from 'src/relation-include/relation-include-query.decorator';
 
 @ApiTags("Songs")
 @Controller('songs')
@@ -46,7 +47,7 @@ export class SongController {
 	async getSongs(
 		@PaginationQuery()
 		paginationParameters: PaginationParameters,
-		@Query('with', SongQueryParameters.ParseRelationIncludePipe)
+		@RelationIncludeQuery(SongQueryParameters.AvailableIncludes)
 		include: SongQueryParameters.RelationInclude,
 		@Query(SongQueryParameters.ParseSortingParameterPipe)
 		sortingParameter: SongQueryParameters.SortingParameter,
@@ -66,7 +67,7 @@ export class SongController {
 	})
 	@Get(':idOrSlug')
 	async getSong(
-		@Query('with', SongQueryParameters.ParseRelationIncludePipe)
+		@RelationIncludeQuery(SongQueryParameters.AvailableIncludes)
 		include: SongQueryParameters.RelationInclude,
 		@IdentifierParam(ParseSongIdentifierPipe)
 		where: SongQueryParameters.WhereInput
@@ -92,7 +93,7 @@ export class SongController {
 	})
 	@Get(':idOrSlug/artist')
 	async getSongArtist(
-		@Query('with', ArtistQueryParameters.ParseRelationIncludePipe)
+		@RelationIncludeQuery(ArtistQueryParameters.AvailableIncludes)
 		include: ArtistQueryParameters.RelationInclude,
 		@IdentifierParam(ParseSongIdentifierPipe)
 		where: SongQueryParameters.WhereInput
@@ -109,7 +110,7 @@ export class SongController {
 	})
 	@Get(':idOrSlug/master')
 	async getSongMaster(
-		@Query('with', TrackQueryParameters.ParseRelationIncludePipe)
+		@RelationIncludeQuery(TrackQueryParameters.AvailableIncludes)
 		include: TrackQueryParameters.RelationInclude,
 		@IdentifierParam(ParseSongIdentifierPipe)
 		where: SongQueryParameters.WhereInput
@@ -126,7 +127,7 @@ export class SongController {
 	async getSongTracks(
 		@PaginationQuery()
 		paginationParameters: PaginationParameters,
-		@Query('with', TrackQueryParameters.ParseRelationIncludePipe)
+		@RelationIncludeQuery(TrackQueryParameters.AvailableIncludes)
 		include: TrackQueryParameters.RelationInclude,
 		@IdentifierParam(ParseSongIdentifierPipe)
 		where: SongQueryParameters.WhereInput,
@@ -153,7 +154,7 @@ export class SongController {
 	async getSongVersions(
 		@PaginationQuery()
 		paginationParameters: PaginationParameters,
-		@Query('with', SongQueryParameters.ParseRelationIncludePipe)
+		@RelationIncludeQuery(SongQueryParameters.AvailableIncludes)
 		include: SongQueryParameters.RelationInclude,
 		@IdentifierParam(ParseSongIdentifierPipe)
 		where: SongQueryParameters.WhereInput,
@@ -176,7 +177,7 @@ export class SongController {
 	async getSongVideos(
 		@PaginationQuery()
 		paginationParameters: PaginationParameters,
-		@Query('with', TrackQueryParameters.ParseRelationIncludePipe)
+		@RelationIncludeQuery(TrackQueryParameters.AvailableIncludes)
 		include: TrackQueryParameters.RelationInclude,
 		@Query(TrackQueryParameters.ParseSortingParameterPipe)
 		sortingParameter: TrackQueryParameters.SortingParameter,
@@ -201,7 +202,7 @@ export class SongController {
 	@ApiPaginatedResponse(GenreResponse)
 	@Get(':idOrSlug/genres')
 	async getSongGenres(
-		@Query('with', GenreQueryParameters.ParseRelationIncludePipe)
+		@RelationIncludeQuery(GenreQueryParameters.AvailableIncludes)
 		include: GenreQueryParameters.RelationInclude,
 		@Query(GenreQueryParameters.ParseSortingParameterPipe)
 		sortingParameter: GenreQueryParameters.SortingParameter,

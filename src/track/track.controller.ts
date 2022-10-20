@@ -11,6 +11,7 @@ import ReassignTrackDTO from './models/reassign-track.dto';
 import { TrackResponse } from './models/track.response';
 import { ApiPaginatedResponse } from 'src/pagination/paginated-response.decorator';
 import { PaginationQuery } from 'src/pagination/pagination-query.decorator';
+import RelationIncludeQuery from 'src/relation-include/relation-include-query.decorator';
 
 @ApiTags("Tracks")
 @Controller('tracks')
@@ -28,7 +29,7 @@ export class TrackController {
 	async getMany(
 		@PaginationQuery()
 		paginationParameters: PaginationParameters,
-		@Query('with', TrackQueryParameters.ParseRelationIncludePipe)
+		@RelationIncludeQuery(TrackQueryParameters.AvailableIncludes)
 		include: TrackQueryParameters.RelationInclude,
 		@Query(TrackQueryParameters.ParseSortingParameterPipe)
 		sortingParameter: TrackQueryParameters.SortingParameter,
@@ -51,7 +52,7 @@ export class TrackController {
 	async getVideoTracks(
 		@PaginationQuery()
 		paginationParameters: PaginationParameters,
-		@Query('with', TrackQueryParameters.ParseRelationIncludePipe)
+		@RelationIncludeQuery(TrackQueryParameters.AvailableIncludes)
 		include: TrackQueryParameters.RelationInclude,
 		@Query(TrackQueryParameters.ParseSortingParameterPipe)
 		sortingParameter: TrackQueryParameters.SortingParameter,
@@ -71,7 +72,7 @@ export class TrackController {
 	})
 	@Get(':id')
 	async get(
-		@Query('with', TrackQueryParameters.ParseRelationIncludePipe)
+		@RelationIncludeQuery(TrackQueryParameters.AvailableIncludes)
 		include: TrackQueryParameters.RelationInclude,
 		@Param('id', ParseIdPipe)
 		trackId: number

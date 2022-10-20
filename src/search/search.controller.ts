@@ -22,6 +22,7 @@ import { ReleaseResponse } from 'src/release/models/release.response';
 import { GenreResponse } from 'src/genre/models/genre.response';
 import { SearchAllResponse } from './models/search-all.response';
 import { PaginationQuery } from 'src/pagination/pagination-query.decorator';
+import RelationIncludeQuery from 'src/relation-include/relation-include-query.decorator';
 
 @ApiTags("Search")
 @Controller('search')
@@ -67,7 +68,7 @@ export default class SearchController {
 		query: string,
 		@PaginationQuery()
 		paginationParameters: PaginationParameters,
-		@Query('with', ArtistQueryParameters.ParseRelationIncludePipe)
+		@RelationIncludeQuery(ArtistQueryParameters.AvailableIncludes)
 		include: ArtistQueryParameters.RelationInclude,
 		@Query(ArtistQueryParameters.ParseSortingParameterPipe)
 		sortingParameter: ArtistQueryParameters.SortingParameter,
@@ -90,7 +91,7 @@ export default class SearchController {
 		query: string,
 		@PaginationQuery()
 		paginationParameters: PaginationParameters,
-		@Query('with', AlbumQueryParameters.ParseRelationIncludePipe)
+		@RelationIncludeQuery(AlbumQueryParameters.AvailableIncludes)
 		include: AlbumQueryParameters.RelationInclude,
 		@Query(AlbumQueryParameters.ParseSortingParameterPipe)
 		sortingParameter: AlbumQueryParameters.SortingParameter,
@@ -114,7 +115,7 @@ export default class SearchController {
 		query: string,
 		@PaginationQuery()
 		paginationParameters: PaginationParameters,
-		@Query('with', SongQueryParameters.ParseRelationIncludePipe)
+		@RelationIncludeQuery(SongQueryParameters.AvailableIncludes)
 		include: SongQueryParameters.RelationInclude,
 		@Query(SongQueryParameters.ParseSortingParameterPipe)
 		sortingParameter: SongQueryParameters.SortingParameter,
@@ -137,7 +138,7 @@ export default class SearchController {
 		query: string,
 		@PaginationQuery()
 		paginationParameters: PaginationParameters,
-		@Query('with', ReleaseQueryParameters.ParseRelationIncludePipe)
+		@RelationIncludeQuery(ReleaseQueryParameters.AvailableIncludes)
 		include: ReleaseQueryParameters.RelationInclude,
 		@Query(ReleaseQueryParameters.ParseSortingParameterPipe)
 		sortingParameter: ReleaseQueryParameters.SortingParameter,
@@ -160,7 +161,7 @@ export default class SearchController {
 		query: string,
 		@PaginationQuery()
 		paginationParameters: PaginationParameters,
-		@Query('with', GenreQueryParameters.ParseRelationIncludePipe)
+		@RelationIncludeQuery(GenreQueryParameters.AvailableIncludes)
 		include: GenreQueryParameters.RelationInclude,
 		@Query(GenreQueryParameters.ParseSortingParameterPipe)
 		sortingParameter: GenreQueryParameters.SortingParameter,

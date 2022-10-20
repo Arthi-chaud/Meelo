@@ -19,6 +19,7 @@ import { AlbumResponse } from "src/album/models/album.response";
 import { ArtistResponse } from "src/artist/models/artist.response";
 import { PaginationQuery } from "src/pagination/pagination-query.decorator";
 import { IdentifierParam } from "src/identifier/identifier-param.decorator";
+import RelationIncludeQuery from "src/relation-include/relation-include-query.decorator";
 
 @ApiTags("Genres")
 @Controller('genres')
@@ -41,7 +42,7 @@ export class GenreController {
 	async getMany(
 		@PaginationQuery()
 		paginationParameters: PaginationParameters,
-		@Query('with', GenreQueryParameters.ParseRelationIncludePipe)
+		@RelationIncludeQuery(GenreQueryParameters.AvailableIncludes)
 		include: GenreQueryParameters.RelationInclude,
 		@Query(GenreQueryParameters.ParseSortingParameterPipe)
 		sortingParameter: GenreQueryParameters.SortingParameter,
@@ -61,7 +62,7 @@ export class GenreController {
 	})
 	@Get(':idOrSlug')
 	async get(
-		@Query('with', GenreQueryParameters.ParseRelationIncludePipe)
+		@RelationIncludeQuery(GenreQueryParameters.AvailableIncludes)
 		include: GenreQueryParameters.RelationInclude,
 		@IdentifierParam(ParseBaseIdentifierPipe)
 		where: GenreQueryParameters.WhereInput
@@ -78,7 +79,7 @@ export class GenreController {
 	async getGenreSongs(
 		@PaginationQuery()
 		paginationParameters: PaginationParameters,
-		@Query('with', SongQueryParameters.ParseRelationIncludePipe)
+		@RelationIncludeQuery(SongQueryParameters.AvailableIncludes)
 		include: SongQueryParameters.RelationInclude,
 		@IdentifierParam(ParseBaseIdentifierPipe)
 		where: GenreQueryParameters.WhereInput,
@@ -107,7 +108,7 @@ export class GenreController {
 	async getGenreAlbums(
 		@PaginationQuery()
 		paginationParameters: PaginationParameters,
-		@Query('with', AlbumQueryParameters.ParseRelationIncludePipe)
+		@RelationIncludeQuery(AlbumQueryParameters.AvailableIncludes)
 		include: AlbumQueryParameters.RelationInclude,
 		@IdentifierParam(ParseBaseIdentifierPipe)
 		where: GenreQueryParameters.WhereInput,
@@ -137,7 +138,7 @@ export class GenreController {
 	async getGenreArtists(
 		@PaginationQuery()
 		paginationParameters: PaginationParameters,
-		@Query('with', ArtistQueryParameters.ParseRelationIncludePipe)
+		@RelationIncludeQuery(ArtistQueryParameters.AvailableIncludes)
 		include: ArtistQueryParameters.RelationInclude,
 		@IdentifierParam(ParseBaseIdentifierPipe)
 		where: GenreQueryParameters.WhereInput,

@@ -26,6 +26,7 @@ import { SongResponse } from 'src/song/models/song.response';
 import { TrackResponse } from 'src/track/models/track.response';
 import { PaginationQuery } from 'src/pagination/pagination-query.decorator';
 import { IdentifierParam } from 'src/identifier/identifier-param.decorator';
+import RelationIncludeQuery from 'src/relation-include/relation-include-query.decorator';
 
 @ApiTags("Libraries")
 @Controller('libraries')
@@ -99,7 +100,7 @@ export default class LibraryController {
 		where: LibraryQueryParameters.WhereInput,
 		@PaginationQuery()
 		paginationParameters: PaginationParameters,
-		@Query('with', ArtistQueryParameters.ParseRelationIncludePipe)
+		@RelationIncludeQuery(ArtistQueryParameters.AvailableIncludes)
 		include: ArtistQueryParameters.RelationInclude,
 		@Query(ArtistQueryParameters.ParseSortingParameterPipe)
 		sortingParameter: ArtistQueryParameters.SortingParameter,
@@ -126,7 +127,7 @@ export default class LibraryController {
 		where: LibraryQueryParameters.WhereInput,
 		@PaginationQuery()
 		paginationParameters: PaginationParameters,
-		@Query('with', AlbumQueryParameters.ParseRelationIncludePipe)
+		@RelationIncludeQuery(AlbumQueryParameters.AvailableIncludes)
 		include: AlbumQueryParameters.RelationInclude,
 		@Query(AlbumQueryParameters.ParseSortingParameterPipe)
 		sortingParameter: AlbumQueryParameters.SortingParameter,
@@ -154,7 +155,7 @@ export default class LibraryController {
 		where: LibraryQueryParameters.WhereInput,
 		@PaginationQuery()
 		paginationParameters: PaginationParameters,
-		@Query('with', ReleaseQueryParameters.ParseRelationIncludePipe)
+		@RelationIncludeQuery(ReleaseQueryParameters.AvailableIncludes)
 		include: ReleaseQueryParameters.RelationInclude,
 		@Query(ReleaseQueryParameters.ParseSortingParameterPipe)
 		sortingParameter: ReleaseQueryParameters.SortingParameter,
@@ -181,7 +182,7 @@ export default class LibraryController {
 		where: LibraryQueryParameters.WhereInput,
 		@PaginationQuery()
 		paginationParameters: PaginationParameters,
-		@Query('with', SongQueryParameters.ParseRelationIncludePipe)
+		@RelationIncludeQuery(SongQueryParameters.AvailableIncludes)
 		include: SongQueryParameters.RelationInclude,
 		@Query(SongQueryParameters.ParseSortingParameterPipe)
 		sortingParameter: SongQueryParameters.SortingParameter,
@@ -208,7 +209,7 @@ export default class LibraryController {
 		where: LibraryQueryParameters.WhereInput,
 		@PaginationQuery()
 		paginationParameters: PaginationParameters,
-		@Query('with',TrackQueryParameters.ParseRelationIncludePipe)
+		@RelationIncludeQuery(TrackQueryParameters.AvailableIncludes)
 		include: TrackQueryParameters.RelationInclude,
 		@Query(TrackQueryParameters.ParseSortingParameterPipe)
 		sortingParameter: TrackQueryParameters.SortingParameter,

@@ -1,9 +1,10 @@
-import { Get, Param, Controller, Query, Response, Req } from "@nestjs/common";
+import { Get, Param, Controller, Response, Req } from "@nestjs/common";
 import type { File } from "src/prisma/models";
 import { ParseIdPipe } from "src/identifier/id.pipe";
 import FileService from "./file.service";
 import FileQueryParameters from "./models/file.query-parameters";
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
+import RelationIncludeQuery from "src/relation-include/relation-include-query.decorator";
 
 @ApiTags("Files")
 @Controller('files')
@@ -19,7 +20,7 @@ export default class FileController {
 	get(
 		@Param('id', ParseIdPipe)
 		fileId: number,
-		@Query('with', FileQueryParameters.ParseRelationIncludePipe)
+		@RelationIncludeQuery(FileQueryParameters.AvailableIncludes)
 		include: FileQueryParameters.RelationInclude,
 	): Promise<File> {
 		return this.fileService.get({ id: fileId }, include);

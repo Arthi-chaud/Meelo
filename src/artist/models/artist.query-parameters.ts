@@ -4,7 +4,6 @@ import type { RequireAtLeastOne } from "type-fest";
 import type { RequireExactlyOne } from 'type-fest';
 import type { SearchStringInput } from "src/utils/search-string-input";
 import type { RelationInclude as BaseRelationInclude } from "src/relation-include/models/relation-include" ;
-import ParseBaseRelationIncludePipe from "src/relation-include/relation-include.pipe";
 import BaseSortingParameter from 'src/sort/models/sorting-parameter';
 import ParseBaseSortingParameterPipe from 'src/sort/sort.pipe';
 import type GenreQueryParameters from "src/genre/models/genre.query-parameters";
@@ -57,7 +56,7 @@ namespace ArtistQueryParameters {
 	 */
 	export const AvailableIncludes = ['albums', 'songs'] as const;
 	export type RelationInclude = BaseRelationInclude<typeof AvailableIncludes>;
-	export const ParseRelationIncludePipe = new ParseBaseRelationIncludePipe(AvailableIncludes);
+	
 
 	/**
 	 * Defines how to sort fetched entries

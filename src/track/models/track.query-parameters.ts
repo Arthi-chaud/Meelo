@@ -7,7 +7,6 @@ import type SongQueryParameters from "src/song/models/song.query-params";
 import type { RequireAtLeastOne } from "type-fest";
 import type { RequireExactlyOne } from 'type-fest';
 import type { RelationInclude as BaseRelationInclude } from "src/relation-include/models/relation-include";
-import ParseBaseRelationIncludePipe from "src/relation-include/relation-include.pipe";
 import BaseSortingParameter from 'src/sort/models/sorting-parameter';
 import ParseBaseSortingParameterPipe from 'src/sort/sort.pipe';
 import type AlbumQueryParameters from "src/album/models/album.query-parameters";
@@ -74,12 +73,12 @@ namespace TrackQueryParameters {
 	 */
 	export const AvailableIncludes = ['song', 'release'] as const;
 	export type RelationInclude = BaseRelationInclude<typeof AvailableIncludes>;
-	export const ParseRelationIncludePipe = new ParseBaseRelationIncludePipe(AvailableIncludes);
+	
 
 	/**
 	 * Defines how to sort fetched entries
 	 */
-	export const SortingKeys = ['id', 'name', 'releaseName', 'bitrate', 'trackIndex', 'discIndex', 'addDate', 'releaseDate'] as const;
+	export const SortingKeys = ['id', 'name', 'releaseName', 'duration', 'bitrate', 'trackIndex', 'discIndex', 'addDate', 'releaseDate'] as const;
 	export type SortingKeys = typeof SortingKeys;
 	export class SortingParameter extends BaseSortingParameter<SortingKeys>{
 		@ApiPropertyOptional({ enum: SortingKeys })
