@@ -313,7 +313,9 @@ export default class AlbumService extends RepositoryService<
 	static getAlbumTypeFromName(albumName: string): AlbumType {
 		albumName = albumName.toLowerCase();
 		if (albumName.search(/.+(live).*/g) != -1 ||
-			albumName.includes(' tour')) {
+			albumName.includes(' tour') ||
+			albumName.includes('live from ') ||
+			albumName.includes('live at ')) {
 			return AlbumType.LiveRecording
 		}
 		if (albumName.endsWith('- single') ||

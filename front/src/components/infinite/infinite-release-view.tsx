@@ -4,6 +4,7 @@ import { MeeloInfiniteQueryFn } from "../../query";
 import { SortingParameters } from "../../utils/sorting";
 import InfiniteView from "./infinite-view";
 import ReleaseItem from "../list-item/release-item";
+import InfiniteSortableView from "./infinite-sortable-view";
 
 type InfiniteReleaseViewProps = {
 	query: (sort: SortingParameters<typeof ReleaseSortingKeys>) => ReturnType<MeeloInfiniteQueryFn<ReleaseWithAlbum>>,
@@ -14,11 +15,12 @@ type InfiniteReleaseViewProps = {
 const InfiniteReleaseView = (props: InfiniteReleaseViewProps) => {
 	const [order, setOrder] = useState(props.initialSortingOrder ?? 'asc');
 	const [sortBy, setSortBy] = useState(props.initialSortingField ?? 'name');
-	return <InfiniteView
-		initialSortingField={sortBy}
-		sortingOrder={order}
+	return <InfiniteSortableView
 		sortingFields={ReleaseSortingKeys}
+		initialSortingField={sortBy}
+		initialSortingOrder={order}
 		view={'list'}
+		options={[]}
 		query={() => props.query({ sortBy, order })}
 		renderListItem={(item: ReleaseWithAlbum) => <ReleaseItem release={item}/>}
 		renderGridItem={(item: ReleaseWithAlbum) => <></>}

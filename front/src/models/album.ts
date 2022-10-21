@@ -43,6 +43,8 @@ type AlbumWithReleases = Album & {
 
 type AlbumInclude = 'artist' | 'releases';
 
+export const AlbumType = ['StudioRecording', 'Single', 'LiveRecording', 'Compilation'];
+export type AlbumType = 'StudioRecording' | 'LiveRecording' | 'Compilation' | 'Single';
 
 export default Album;
 export const AlbumSortingKeys = ['name', 'artistName', 'releaseDate', 'addDate'];

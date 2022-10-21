@@ -7,6 +7,7 @@ import AlbumItem from "../list-item/album-item";
 import ArtistItem from "../list-item/artist-item";
 import AlbumTile from "../tile/album-tile";
 import ArtistTile from "../tile/artist-tile";
+import InfiniteSortableView from "./infinite-sortable-view";
 import InfiniteView from "./infinite-view";
 
 type InfiniteArtistViewProps = {
@@ -19,17 +20,18 @@ type InfiniteArtistViewProps = {
 const InfiniteArtistView = (props: InfiniteArtistViewProps) => {
 	const [order, setOrder] = useState(props.initialSortingOrder ?? 'asc');
 	const [sortBy, setSortBy] = useState(props.initialSortingField ?? 'name');
-	return <InfiniteView
-		initialSortingField={sortBy}
-		sortingOrder={order}
+	return <InfiniteSortableView
 		sortingFields={ArtistSortingKeys}
+		initialSortingField={sortBy}
+		initialSortingOrder={order}
+		onSortingFieldSelect={setSortBy}
+		onSortingOrderSelect={setOrder}
 		enableToggle
+		options={[]}
 		view={props.initialView}
 		query={() => props.query({ sortBy, order })}
 		renderListItem={(item: Artist) => <ArtistItem artist={item} key={item.id} />}
 		renderGridItem={(item: Artist) => <ArtistTile artist={item} key={item.id} />}
-		onSortingFieldSelect={(newField) => setSortBy(newField)}
-		onSortingOrderSelect={(newOrder) => setOrder(newOrder)}
 	/>
 }
 

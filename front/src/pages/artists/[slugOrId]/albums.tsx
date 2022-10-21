@@ -5,15 +5,15 @@ import { dehydrate, QueryClient, useQuery } from "react-query";
 import API from "../../../api";
 import InfiniteAlbumView from "../../../components/infinite/infinite-album-view";
 import { Page } from "../../../components/infinite/infinite-scroll";
-import Album, { AlbumSortingKeys, AlbumWithArtist } from "../../../models/album";
+import Album, { AlbumSortingKeys, AlbumType, AlbumWithArtist } from "../../../models/album";
 import { prepareMeeloInfiniteQuery, prepareMeeloQuery } from "../../../query";
 import getSlugOrId from "../../../utils/getSlugOrId";
 import { SortingParameters } from "../../../utils/sorting";
 import ArtistRelationPageHeader from "../../../components/relation-page-header/artist-relation-page-header";
 
-const artistAlbumsQuery = (artistSlugOrId: number | string, sort?: SortingParameters<typeof AlbumSortingKeys>) => ({
-	key: ["artist", artistSlugOrId, "albums", sort ?? {}],
-	exec: (lastPage: Page<Album>) => API.getArtistAlbums<AlbumWithArtist>(artistSlugOrId, lastPage, sort, ["artist"])
+const artistAlbumsQuery = (artistSlugOrId: number | string, sort?: SortingParameters<typeof AlbumSortingKeys>, type?: AlbumType) => ({
+	key: ["artist", artistSlugOrId, "albums", sort ?? {}, type ?? {}],
+	exec: (lastPage: Page<Album>) => API.getArtistAlbums<AlbumWithArtist>(artistSlugOrId, lastPage, type, sort, ["artist"])
 });
 
 const artistQuery = (slugOrId: string | number) => ({
@@ -46,7 +46,7 @@ const ArtistAlbumsPage = ({ artistIdentifier }: InferGetServerSidePropsType<type
 			initialSortingField={'releaseDate'}
 			initialSortingOrder={'desc'}
 			initialView={'grid'}
-			query={(sort) => artistAlbumsQuery(artistIdentifier, sort)}
+			query={(sort, type) => artistAlbumsQuery(artistIdentifier, sort, type)}
 		/>
 	</Box>
 }

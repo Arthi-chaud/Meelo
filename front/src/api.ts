@@ -1,4 +1,4 @@
-import Album, { AlbumInclude, AlbumSortingKeys } from "./models/album";
+import Album, { AlbumInclude, AlbumSortingKeys, AlbumType } from "./models/album";
 import Artist, { ArtistInclude, ArtistSortingKeys } from "./models/artist";
 import Genre from "./models/genre";
 import Library from "./models/library";
@@ -67,12 +67,14 @@ export default class API {
 	static async getAllAlbums<T extends Album = Album>(
 		pagination?: PaginationParameters,
 		sort?: SortingParameters<typeof AlbumSortingKeys>,
+		type?: AlbumType,
 		include: AlbumInclude[] = []
 	): Promise<PaginatedResponse<T>> {
 		return API.fetch({
 			route: `/albums`,
 			errorMessage: 'Albums could not be loaded',
-			parameters: { pagination, include, sort }
+			parameters: { pagination, include, sort },
+			otherParameters: { type }
 		});
 	}
 
@@ -105,13 +107,15 @@ export default class API {
 	static async getAllAlbumsInLibrary<T extends Album = Album>(
 		librarySlugOrId: string | number,
 		pagination?: PaginationParameters,
+		type?: AlbumType,
 		sort?: SortingParameters<typeof AlbumSortingKeys>,
 		include: AlbumInclude[] = [],
 	): Promise<PaginatedResponse<T>> {
 		return API.fetch({
 			route: `/libraries/${librarySlugOrId}/albums`,
 			errorMessage: 'Library does not exist',
-			parameters: { pagination, include, sort }
+			parameters: { pagination, include, sort },
+			otherParameters: { type }
 		});
 	}
 
@@ -159,13 +163,15 @@ export default class API {
 	 static async getArtistAlbums<T extends Album = Album>(
 		artistSlugOrId: string | number,
 		pagination?: PaginationParameters,
+		type?: AlbumType,
 		sort?: SortingParameters<typeof AlbumSortingKeys>,
 		include: AlbumInclude[] = []
 	): Promise<PaginatedResponse<T>> {
 		return API.fetch({
 			route: `/artists/${artistSlugOrId}/albums`,
 			errorMessage: `Artist '${artistSlugOrId}' not found`,
-			parameters: { pagination, include, sort }
+			parameters: { pagination, include, sort },
+			otherParameters: { type }
 		});
 	}
 
@@ -431,13 +437,15 @@ export default class API {
 	static async searchAlbums<T extends Album = Album>(
 		query: string,
 		pagination?: PaginationParameters,
+		type?: AlbumType,
 		sort?: SortingParameters<typeof AlbumSortingKeys>,
 		include: AlbumInclude[] = []
 	): Promise<PaginatedResponse<T>> {
 		return API.fetch({
 			route: `/search/albums/${query}`,
 			errorMessage: 'Search failed',
-			parameters: { pagination, include, sort }
+			parameters: { pagination, include, sort },
+			otherParameters: { type }
 		})
 	}
 
@@ -546,8 +554,10 @@ export default class API {
 			formattedQueryParams.push(this.formatInclude(parameters.include!)!);
 		if (parameters.pagination)
 			formattedQueryParams.push(this.formatPagination(parameters.pagination));
-		for (let otherParams in otherParameters)
-			formattedQueryParams.push(`${encodeURIComponent(otherParams)}=${encodeURIComponent(otherParameters[otherParams])}`);
+		for (let otherParams in otherParameters) {
+			if (otherParameters[otherParams] !== undefined)
+				formattedQueryParams.push(`${encodeURIComponent(otherParams)}=${encodeURIComponent(otherParameters[otherParams])}`);
+		}
 		if (formattedQueryParams.length === 0)
 			return '';
 		return `?${formattedQueryParams.join('&')}`;

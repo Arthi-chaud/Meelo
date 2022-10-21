@@ -14,17 +14,12 @@ import NorthIcon from '@mui/icons-material/North';
 import SouthIcon from '@mui/icons-material/South';
 import { capitalCase } from "change-case";
 import CheckIcon from '@mui/icons-material/Check';
+import InfiniteViewDropdownOption, { OptionGroup } from "./infinite-view-option";
 
-type ResourceWithoutRelation<T> = { [key in keyof T as T[key] extends Resource | undefined ? never : key]: T[key] };
-
-type InfiniteViewProps<T, SortingFields extends string[] | [] = []> = {
+export type InfiniteViewProps<T, OptionsValues extends string[][]> = {
 	view: 'list' | 'grid';
-	initialSortingField?: SortingFields[number];
-	sortingFields?: SortingFields;
-	sortingOrder?: 'asc' | 'desc';
+	options: OptionGroup<OptionsValues>[],
 	query: MeeloInfiniteQueryFn<T>;
-	onSortingFieldSelect?: (selected: SortingFields[number]) => void;
-	onSortingOrderSelect?: (selected: 'asc' | 'desc') => void;
 	renderListItem: (item: T) => JSX.Element;
 	listItemExpanded?: (item: T) => JSX.Element;
 	renderGridItem: (item: T) => JSX.Element;
@@ -37,29 +32,17 @@ type DisplayMethod = {
 }
 
 const availableDisplayMethods: DisplayMethod[] = [
-	{
-		name: 'grid',
-		icon: <AppsIcon/>
-	},
-	{
-		name: 'list',
-		icon: <ViewListIcon/>
-	}
+	{ name: 'grid', icon: <AppsIcon/> },
+	{ name: 'list', icon: <ViewListIcon/> }
 ]
 
 /**
  * Infinite scrolling view, which lets the user decide which way the data is displayed
  * @returns 
  */
-const InfiniteView = <T extends Resource, Keys extends string[]>(props: InfiniteViewProps<T, Keys>) => {
+const InfiniteView = <T extends Resource, Options extends string[][]>(props: InfiniteViewProps<T, Options>) => {
 	const [display, setDisplay] = useState(props.view);
 	const [backToTopVisible, setBackToTopVisible] = useState(false);
-	const [sortField, setSortField] = useState(props.sortingFields ? (props.initialSortingField ?? props.sortingFields[0]!) as Keys[number] : undefined);
-	const [sortOrder, setSortOrder] = useState(props.sortingOrder ?? 'asc');
-	const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
-  	const menuOpen = Boolean(anchorEl);
-  	const handleMenuOpen = (event: React.MouseEvent<HTMLButtonElement>) => setAnchorEl(event.currentTarget);
-  	const handleMenuClose = () => setAnchorEl(null);
 	const handleScroll = () => {
 		const position = window.pageYOffset;
 		setBackToTopVisible(position > window.innerHeight);
@@ -71,47 +54,7 @@ const InfiniteView = <T extends Resource, Keys extends string[]>(props: Infinite
 	return <>
 		<Box sx={{ display: 'flex', justifyContent: 'center', alignContent: 'center', paddingTop: 2 }}>
 			<ButtonGroup color='inherit'>
-				{ props.sortingFields && <>
-					<Button
-						endIcon={sortOrder == 'desc' ? <SouthIcon/> : <NorthIcon/>}
-						onClick={handleMenuOpen}
-					>
-						{`Sort by ${capitalCase(sortField as string)}`}
-					</Button>
-					<Menu
-    				    anchorEl={anchorEl}
-    				    open={menuOpen}
-    				    onClose={handleMenuClose}
-						>
-    				    { props.sortingFields.map((field) => (
-							<MenuItem key={field as string}sx={{ borderRadius: '0' }}  selected={field == sortField} onClick={() => {
-								setSortField(field);
-								props.onSortingFieldSelect && props.onSortingFieldSelect(field);
-								handleMenuClose();
-							}}>
-								{capitalCase(field as string)}
-							</MenuItem>
-						))}
-						<Divider/>
-						{ ["asc", "desc"].map((order) => {
-							const selected = order == sortOrder;
-							return <MenuItem key={order} selected={selected} sx={{ borderRadius: '0' }} onClick={() => {
-								setSortOrder(order as "asc" | "desc");
-								props.onSortingOrderSelect && props.onSortingOrderSelect(order as 'asc' | 'desc');
-								handleMenuClose();
-							}}>
-								<ListItemText>
-									{capitalCase(order as string)}
-								</ListItemText>
-								{ selected &&
-									<ListItemIcon>
-										<CheckIcon/>
-									</ListItemIcon>
-								}
-							</MenuItem>
-						})}
-    				</Menu>
-				</>}
+				{ props.options.map((option) => <InfiniteViewDropdownOption key={option.name}  option={option} />) }
 				{ props.enableToggle &&
 					availableDisplayMethods.filter((method) => method.name != display)
 						.map((method) => (
