@@ -6,7 +6,7 @@ import InfiniteView from "../../components/infinite/infinite-view";
 import Resource from "../../models/resource";
 import API from '../../api';
 import { Page } from '../../components/infinite/infinite-scroll';
-import Album, { AlbumSortingKeys, AlbumWithArtist } from '../../models/album';
+import Album, { AlbumSortingKeys, AlbumType, AlbumWithArtist } from '../../models/album';
 import Artist, { ArtistSortingKeys } from '../../models/artist';
 import Song, { SongSortingKeys, SongWithArtist } from '../../models/song';
 import ArtistTile from '../../components/tile/artist-tile';
@@ -22,9 +22,9 @@ const searchArtistsQuery = (query: string, sort?: SortingParameters<typeof Artis
 	exec: (lastPage: Page<Artist>) => API.searchArtists(query, lastPage, sort)
 });
 
-const searchAlbumsQuery = (query: string, sort?: SortingParameters<typeof AlbumSortingKeys>) => ({
-	key: ["search", "albums", query, sort ?? {}],
-	exec: (lastPage: Page<AlbumWithArtist>) => API.searchAlbums<AlbumWithArtist>(query, lastPage, sort, ['artist'])
+const searchAlbumsQuery = (query: string, sort?: SortingParameters<typeof AlbumSortingKeys>, type?: AlbumType) => ({
+	key: ["search", "albums", query, sort ?? {}, type ?? {}],
+	exec: (lastPage: Page<AlbumWithArtist>) => API.searchAlbums<AlbumWithArtist>(query, lastPage, type, sort, ['artist'])
 });
 
 const searchSongsQuery = (query: string, sort?: SortingParameters<typeof SongSortingKeys>) => ({
@@ -78,7 +78,7 @@ const SearchPage = () => {
 					initialSortingField={'name'}
 					initialSortingOrder={'asc'}
 					initialView={'list'}
-					query={(sort) => searchAlbumsQuery(query, sort)}
+					query={(sort, type) => searchAlbumsQuery(query, sort, type)}
 				/>
 				: selectedType == 'Songs'
 					? <InfiniteSongView key={selectedType}

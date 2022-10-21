@@ -60,7 +60,7 @@ const artistQuery = (slugOrId: string | number) => ({
 
 const latestAlbumsQuery = (artistSlugOrId: string | number) => ({
 	key: ['artist', artistSlugOrId, 'albums', { take: 7 }],
-	exec: () => API.getArtistAlbums(artistSlugOrId, { index: 0, pageSize: 7 }, { sortBy: 'releaseDate', order: 'desc' }),
+	exec: () => API.getArtistAlbums(artistSlugOrId, { index: 0, pageSize: 7 }, undefined, { sortBy: 'releaseDate', order: 'desc' }),
 });
 
 const topSongsQuery = (artistSlugOrId: string | number) => ({

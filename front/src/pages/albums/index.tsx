@@ -4,7 +4,7 @@ import { GetServerSidePropsContext, InferGetServerSidePropsType, NextPage } from
 import { Box, Typography } from '@mui/material';
 import { useRouter } from 'next/router';
 import API from '../../api';
-import Album, { AlbumSortingKeys, AlbumWithArtist } from '../../models/album';
+import Album, { AlbumSortingKeys, AlbumType, AlbumWithArtist } from '../../models/album';
 import AlbumTile from '../../components/tile/album-tile';
 import getLibrarySlug from '../../utils/getLibrarySlug';
 import { Page } from '../../components/infinite/infinite-scroll';
@@ -13,14 +13,14 @@ import { prepareMeeloInfiniteQuery, prepareMeeloQuery } from '../../query';
 import { getOrderParams, getSortingFieldParams, SortingParameters } from '../../utils/sorting';
 import InfiniteAlbumView from '../../components/infinite/infinite-album-view';
 
-const albumsQuery = (sort: SortingParameters<typeof AlbumSortingKeys>) => ({
-	key: ["albums", sort],
-	exec: (lastPage: Page<Album>) => API.getAllAlbums<AlbumWithArtist>(lastPage, sort, ["artist"])
+const albumsQuery = (sort: SortingParameters<typeof AlbumSortingKeys>, type?: AlbumType) => ({
+	key: ["albums", sort, type ?? {}],
+	exec: (lastPage: Page<Album>) => API.getAllAlbums<AlbumWithArtist>(lastPage, sort, type, ["artist"])
 });
 
-const libraryAlbumsQuery = (slugOrId: string | number, sort: SortingParameters<typeof AlbumSortingKeys>) => ({
-	key: ["library", slugOrId, "albums", sort],
-	exec: (lastPage: Page<Album>) => API.getAllAlbumsInLibrary<AlbumWithArtist>(slugOrId, lastPage, sort, ["artist"])
+const libraryAlbumsQuery = (slugOrId: string | number, sort: SortingParameters<typeof AlbumSortingKeys>, type?: AlbumType) => ({
+	key: ["library", slugOrId, "albums", sort, type ?? {}],
+	exec: (lastPage: Page<Album>) => API.getAllAlbumsInLibrary<AlbumWithArtist>(slugOrId, lastPage, type, sort, ["artist"])
 });
 
 export const getServerSideProps = async (context: GetServerSidePropsContext) => {
@@ -49,7 +49,7 @@ const LibraryAlbumsPage = ({ librarySlug }: InferGetServerSidePropsType<typeof g
 		initialSortingField={getSortingFieldParams(router.query.sortBy, AlbumSortingKeys)}
 		initialSortingOrder={getOrderParams(router.query.order)}
 		initialView={(router.query.view == 'list' ? 'list' : 'grid')}
-		query={(sort) => librarySlug ? libraryAlbumsQuery(librarySlug, sort) : albumsQuery(sort)}
+		query={(sort, type) => librarySlug ? libraryAlbumsQuery(librarySlug, sort, type) : albumsQuery(sort, type)}
 	/>
 } 
 
