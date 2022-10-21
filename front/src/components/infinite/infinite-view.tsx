@@ -54,7 +54,7 @@ const InfiniteView = <T extends Resource, Options extends string[][]>(props: Inf
 	return <>
 		<Box sx={{ display: 'flex', justifyContent: 'center', alignContent: 'center', paddingTop: 2 }}>
 			<ButtonGroup color='inherit'>
-				{ props.options.map((option) => <InfiniteViewDropdownOption option={option} />) }
+				{ props.options.map((option) => <InfiniteViewDropdownOption key={option.name}  option={option} />) }
 				{ props.enableToggle &&
 					availableDisplayMethods.filter((method) => method.name != display)
 						.map((method) => (
