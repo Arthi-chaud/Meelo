@@ -1,6 +1,5 @@
-import { Body, Controller, DefaultValuePipe, forwardRef, Get, Inject, Param, ParseBoolPipe, Post, Put, Query, Req } from '@nestjs/common';
-import ParsePaginationParameterPipe from 'src/pagination/pagination.pipe';
-import type { PaginationParameters } from 'src/pagination/models/pagination-parameters';
+import { Body, Controller, DefaultValuePipe, forwardRef, Get, Inject, ParseBoolPipe, Post, Put, Query, Req } from '@nestjs/common';
+import { PaginationParameters } from 'src/pagination/models/pagination-parameters';
 import ReleaseQueryParameters from './models/release.query-parameters';
 import ReleaseService from './release.service';
 import TrackService from 'src/track/track.service';
@@ -15,6 +14,10 @@ import ReassignReleaseDTO from './models/reassign-release.dto';
 import { ReleaseResponse } from './models/release.response';
 import { ApiPaginatedResponse } from 'src/pagination/paginated-response.decorator';
 import { TrackResponse } from 'src/track/models/track.response';
+import { PaginationQuery } from 'src/pagination/pagination-query.decorator';
+import { IdentifierParam } from 'src/identifier/identifier-param.decorator';
+import RelationIncludeQuery from 'src/relation-include/relation-include-query.decorator';
+import SortingQuery from 'src/sort/sort-query.decorator';
 
 @ApiTags("Releases")
 @Controller('releases')
@@ -34,11 +37,11 @@ export default class ReleaseController {
 	@Get()
 	@ApiPaginatedResponse(ReleaseResponse)
 	async getReleases(
-		@Query(ParsePaginationParameterPipe)
+		@PaginationQuery()
 		paginationParameters: PaginationParameters,
-		@Query('with', ReleaseQueryParameters.ParseRelationIncludePipe)
+		@RelationIncludeQuery(ReleaseQueryParameters.AvailableIncludes)
 		include: ReleaseQueryParameters.RelationInclude,
-		@Query(ReleaseQueryParameters.ParseSortingParameterPipe)
+		@SortingQuery(ReleaseQueryParameters.SortingKeys)
 		sortingParameter: ReleaseQueryParameters.SortingParameter,
 		@Req() request: Request
 	) {
@@ -58,9 +61,9 @@ export default class ReleaseController {
 	})
 	@Get(':idOrSlug')
 	async getRelease(
-		@Query('with', ReleaseQueryParameters.ParseRelationIncludePipe)
+		@RelationIncludeQuery(ReleaseQueryParameters.AvailableIncludes)
 		include: ReleaseQueryParameters.RelationInclude,
-		@Param(ParseReleaseIdentifierPipe)
+		@IdentifierParam(ParseReleaseIdentifierPipe)
 		where: ReleaseQueryParameters.WhereInput
 	) {
 		const release = await this.releaseService.get(where, include);
@@ -73,13 +76,13 @@ export default class ReleaseController {
 	@ApiPaginatedResponse(TrackResponse)
 	@Get(':idOrSlug/tracks')
 	async getReleaseTracks(
-		@Query(ParsePaginationParameterPipe)
+		@PaginationQuery()
 		paginationParameters: PaginationParameters,
-		@Query('with', TrackQueryParameters.ParseRelationIncludePipe)
+		@RelationIncludeQuery(TrackQueryParameters.AvailableIncludes)
 		include: TrackQueryParameters.RelationInclude,
-		@Param(ParseReleaseIdentifierPipe)
+		@IdentifierParam(ParseReleaseIdentifierPipe)
 		where: ReleaseQueryParameters.WhereInput,
-		@Query(TrackQueryParameters.ParseSortingParameterPipe)
+		@SortingQuery(TrackQueryParameters.SortingKeys)
 		sortingParameter: TrackQueryParameters.SortingParameter,
 		@Req() request: Request
 	) {
@@ -101,9 +104,9 @@ export default class ReleaseController {
 	})
 	@Get(':idOrSlug/tracklist')
 	async getReleaseTracklist(
-		@Param(ParseReleaseIdentifierPipe)
+		@IdentifierParam(ParseReleaseIdentifierPipe)
 		where: ReleaseQueryParameters.WhereInput,
-		@Query('with', TrackQueryParameters.ParseRelationIncludePipe)
+		@RelationIncludeQuery(TrackQueryParameters.AvailableIncludes)
 		include?: TrackQueryParameters.RelationInclude
 	) {
 		const tracklist = await this.trackService.getTracklist(where, include);
@@ -115,11 +118,11 @@ export default class ReleaseController {
 	})
 	@Get(':idOrSlug/playlist')
 	async getReleasePlaylist(
-		@Param(ParseReleaseIdentifierPipe)
+		@IdentifierParam(ParseReleaseIdentifierPipe)
 		where: ReleaseQueryParameters.WhereInput,
 		@Query('random', new DefaultValuePipe(false), ParseBoolPipe)
 		random: boolean,
-		@Query('with', TrackQueryParameters.ParseRelationIncludePipe)
+		@RelationIncludeQuery(TrackQueryParameters.AvailableIncludes)
 		include?: TrackQueryParameters.RelationInclude
 	) {
 		const tracklist = await this.trackService.getPlaylist(where, include, random);
@@ -131,9 +134,9 @@ export default class ReleaseController {
 	})
 	@Get(':idOrSlug/album')
 	async getReleaseAlbum(
-		@Query('with', AlbumQueryParameters.ParseRelationIncludePipe)
+		@RelationIncludeQuery(AlbumQueryParameters.AvailableIncludes)
 		include: AlbumQueryParameters.RelationInclude,
-		@Param(ParseReleaseIdentifierPipe)
+		@IdentifierParam(ParseReleaseIdentifierPipe)
 		where: ReleaseQueryParameters.WhereInput
 	) {
 		const release = this.releaseService.get(where);
@@ -163,7 +166,7 @@ export default class ReleaseController {
 	})
 	@Put(':idOrSlug/master')
 	async setAsMaster(
-		@Param(ParseReleaseIdentifierPipe)
+		@IdentifierParam(ParseReleaseIdentifierPipe)
 		where: ReleaseQueryParameters.WhereInput
 	) {
 		const release = await this.releaseService.get(where);

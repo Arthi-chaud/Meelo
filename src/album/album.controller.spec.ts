@@ -72,6 +72,16 @@ describe('Album Controller', () => {
 					expect(albums[2]).toStrictEqual(expectedAlbumResponse(dummyRepository.compilationAlbumA));
 				});
 		});
+		it("Should return best-of albums only", () => {
+			return request(app.getHttpServer())
+				.get(`/albums?type=Compilation`)
+				.expect(200)
+				.expect((res) => {
+					const albums: Album[] = res.body.items;
+					expect(albums.length).toBe(1);
+					expect(albums[0]).toStrictEqual(expectedAlbumResponse(dummyRepository.compilationAlbumA));
+				});
+		});
 		it("Should sort all albums", () => {
 			return request(app.getHttpServer())
 				.get(`/albums?sortBy=name&order=desc`)

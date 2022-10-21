@@ -5,9 +5,8 @@ import type { RequireExactlyOne } from 'type-fest';
 import type { SearchStringInput } from "src/utils/search-string-input";
 import type { RelationInclude as BaseRelationInclude } from "src/relation-include/models/relation-include";
 import type LibraryQueryParameters from "src/library/models/library.query-parameters";
-import ParseBaseRelationIncludePipe from 'src/relation-include/relation-include.pipe';
 import BaseSortingParameter from 'src/sort/models/sorting-parameter';
-import ParseBaseSortingParameterPipe from 'src/sort/sort.pipe';
+
 import type GenreQueryParameters from "src/genre/models/genre.query-parameters";
 import { Song } from "src/prisma/models";
 import { ApiPropertyOptional } from "@nestjs/swagger";
@@ -65,7 +64,7 @@ namespace SongQueryParameters {
 	 */
 	export const AvailableIncludes = ['tracks', 'artist', 'genres', 'lyrics'] as const;
 	export type RelationInclude = BaseRelationInclude<typeof AvailableIncludes>;
-	export const ParseRelationIncludePipe = new ParseBaseRelationIncludePipe(AvailableIncludes);
+	
 
 	/**
 	 * Defines how to sort fetched entries
@@ -76,7 +75,7 @@ namespace SongQueryParameters {
 		@ApiPropertyOptional({ enum: SortingKeys })
 		sortBy: SortingKeys[number]
 	}
-	export const ParseSortingParameterPipe = new ParseBaseSortingParameterPipe(SortingKeys);
+	
 
 }
 

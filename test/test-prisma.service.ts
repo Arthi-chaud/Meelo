@@ -1,5 +1,5 @@
 import { Injectable } from "@nestjs/common";
-import { Album, Artist, File, Genre, Library, Lyrics, Release, Song, Track, TrackType } from "@prisma/client";
+import { Album, AlbumType, Artist, File, Genre, Library, Lyrics, Release, Song, Track, TrackType } from "@prisma/client";
 import PrismaService from "src/prisma/prisma.service";
 
 
@@ -153,7 +153,7 @@ export default class TestPrismaService extends PrismaService {
 			data: { name: "My Third Artist", slug: "my-third-artist"}
 		});
 		this.compilationAlbumA = await this.album.create({
-			data: { name: "My Compilation Album", slug: 'my-compilation-album', releaseDate: new Date('2000') }
+			data: { name: "My Compilation Album", slug: 'my-compilation-album', releaseDate: new Date('2000'), type: AlbumType.Compilation }
 		});
 		this.compilationReleaseA1 = await this.release.create({
 			data: { name: "My Compilation Album 1", slug: 'my-compilation-album-1', albumId: this.compilationAlbumA.id, master: true,  releaseDate: new Date('2000') }

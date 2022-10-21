@@ -104,6 +104,7 @@ export default class AlbumService extends RepositoryService<
 
 	static formatManyWhereInput(where: AlbumQueryParameters.ManyWhereInput) {
 		return {
+			type: where.byType,
 			artist: where.byArtist
 				? where.byArtist.compilationArtist
 					? null

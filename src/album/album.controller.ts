@@ -1,6 +1,5 @@
-import { Body, Controller, forwardRef, Get, Inject, Param, Post, Query, Req } from '@nestjs/common';
-import type { PaginationParameters } from 'src/pagination/models/pagination-parameters';
-import ParsePaginationParameterPipe from 'src/pagination/pagination.pipe';
+import { Body, Controller, forwardRef, Get, Inject, Post, Query, Req } from '@nestjs/common';
+import { PaginationParameters } from 'src/pagination/models/pagination-parameters';
 import ReleaseQueryParameters from 'src/release/models/release.query-parameters';
 import ReleaseService from 'src/release/release.service';
 import compilationAlbumArtistKeyword from 'src/utils/compilation';
@@ -20,6 +19,12 @@ import { AlbumResponse } from './models/album.response';
 import { ApiPaginatedResponse } from 'src/pagination/paginated-response.decorator';
 import { ReleaseResponse } from 'src/release/models/release.response';
 import { TrackResponse } from 'src/track/models/track.response';
+import { PaginationQuery } from 'src/pagination/pagination-query.decorator';
+import { IdentifierParam } from 'src/identifier/identifier-param.decorator';
+import { ApiRelationInclude } from 'src/relation-include/relation-include-route.decorator';
+import { ApiIdentifierRoute } from 'src/identifier/identifier-route.decorator';
+import RelationIncludeQuery from 'src/relation-include/relation-include-query.decorator';
+import SortingQuery from 'src/sort/sort-query.decorator';
 
 @ApiTags("Albums")
 @Controller('albums')
@@ -35,22 +40,22 @@ export default class AlbumController {
 
 	) {}
 
-	@ApiOperation({
-		summary: 'Get all albums'
-	})
 	@Get()
+	@ApiOperation({ summary: 'Get all albums' })
+	@ApiRelationInclude(AlbumQueryParameters.AvailableIncludes)
 	@ApiPaginatedResponse(AlbumResponse)
 	async getMany(
-		@Query(ParsePaginationParameterPipe)
+		@PaginationQuery()
 		paginationParameters: PaginationParameters,
-		@Query(AlbumQueryParameters.ParseSortingParameterPipe)
+		@SortingQuery(AlbumQueryParameters.SortingKeys)
 		sortingParameter: AlbumQueryParameters.SortingParameter,
-		@Query('with', AlbumQueryParameters.ParseRelationIncludePipe)
+		@RelationIncludeQuery(AlbumQueryParameters.AvailableIncludes)
 		include: AlbumQueryParameters.RelationInclude,
-		@Req() request: Request
+		@Query() filter: AlbumQueryParameters.AlbumFilterParameter,
+		@Req() request: Request,
 	) {
 		const albums = await this.albumService.getMany(
-			{}, paginationParameters, include, sortingParameter
+			{ byType: filter.type }, paginationParameters, include, sortingParameter
 		);
 		return new PaginatedResponse(
 			await Promise.all(albums.map((album) => this.albumService.buildResponse(album))),
@@ -64,16 +69,17 @@ export default class AlbumController {
 	@ApiPaginatedResponse(AlbumResponse)
 	@Get(`${compilationAlbumArtistKeyword}`)
 	async getCompilationsAlbums(
-		@Query(ParsePaginationParameterPipe)
+		@PaginationQuery()
 		paginationParameters: PaginationParameters,
-		@Query(AlbumQueryParameters.ParseSortingParameterPipe)
+		@SortingQuery(AlbumQueryParameters.SortingKeys)
 		sortingParameter: AlbumQueryParameters.SortingParameter,
-		@Query('with', AlbumQueryParameters.ParseRelationIncludePipe)
+		@RelationIncludeQuery(AlbumQueryParameters.AvailableIncludes)
 		include: AlbumQueryParameters.RelationInclude,
+		@Query() filter: AlbumQueryParameters.AlbumFilterParameter,
 		@Req() request: Request
 	) {
 		const albums = await this.albumService.getMany(
-			{ byArtist: { compilationArtist: true } }, paginationParameters, include, sortingParameter
+			{ byArtist: { compilationArtist: true }, byType: filter.type }, paginationParameters, include, sortingParameter
 		);
 		return new PaginatedResponse(
 			await Promise.all(albums.map((album) => this.albumService.buildResponse(album))),
@@ -84,11 +90,12 @@ export default class AlbumController {
 	@ApiOperation({
 		summary: 'Get one album'
 	})
+	@ApiIdentifierRoute()
 	@Get(':idOrSlug')
 	async get(
-		@Query('with', AlbumQueryParameters.ParseRelationIncludePipe)
+		@RelationIncludeQuery(AlbumQueryParameters.AvailableIncludes)
 		include: AlbumQueryParameters.RelationInclude,
-		@Param(ParseAlbumIdentifierPipe)
+		@IdentifierParam(ParseAlbumIdentifierPipe)
 		where: AlbumQueryParameters.WhereInput
 	) {
 		const album = await this.albumService.get(where, include);
@@ -100,9 +107,9 @@ export default class AlbumController {
 	})
 	@Get(':idOrSlug/master')
 	async getAlbumMaster(
-		@Query('with', ReleaseQueryParameters.ParseRelationIncludePipe)
+		@RelationIncludeQuery(ReleaseQueryParameters.AvailableIncludes)
 		include: ReleaseQueryParameters.RelationInclude,
-		@Param(ParseAlbumIdentifierPipe)
+		@IdentifierParam(ParseAlbumIdentifierPipe)
 		where: AlbumQueryParameters.WhereInput
 	) {
 		const masterRelease = await this.releaseService.getMasterRelease(where, include);
@@ -115,13 +122,13 @@ export default class AlbumController {
 	@ApiPaginatedResponse(ReleaseResponse)
 	@Get(':idOrSlug/releases')
 	async getAlbumReleases(
-		@Query(ParsePaginationParameterPipe)
+		@PaginationQuery()
 		paginationParameters: PaginationParameters,
-		@Query('with', ReleaseQueryParameters.ParseRelationIncludePipe)
+		@RelationIncludeQuery(ReleaseQueryParameters.AvailableIncludes)
 		include: ReleaseQueryParameters.RelationInclude,
-		@Query(ReleaseQueryParameters.ParseSortingParameterPipe)
+		@SortingQuery(ReleaseQueryParameters.SortingKeys)
 		sortingParameter: ReleaseQueryParameters.SortingParameter,
-		@Param(ParseAlbumIdentifierPipe)
+		@IdentifierParam(ParseAlbumIdentifierPipe)
 		where: AlbumQueryParameters.WhereInput,
 		@Req() request: Request
 	) {
@@ -139,7 +146,7 @@ export default class AlbumController {
 	})
 	@Get(':idOrSlug/genres')
 	async getAlbumGenres(
-		@Param(ParseAlbumIdentifierPipe)
+		@IdentifierParam(ParseAlbumIdentifierPipe)
 		where: AlbumQueryParameters.WhereInput,
 	): Promise<Genre[]> {
 		const genres = await this.albumService.getGenres(where);
@@ -152,13 +159,13 @@ export default class AlbumController {
 	@ApiPaginatedResponse(TrackResponse)
 	@Get(':idOrSlug/videos')
 	async getAlbumVideos(
-		@Query(ParsePaginationParameterPipe)
+		@PaginationQuery()
 		paginationParameters: PaginationParameters,
-		@Query('with', TrackQueryParameters.ParseRelationIncludePipe)
+		@RelationIncludeQuery(TrackQueryParameters.AvailableIncludes)
 		include: TrackQueryParameters.RelationInclude,
-		@Query(TrackQueryParameters.ParseSortingParameterPipe)
+		@SortingQuery(TrackQueryParameters.SortingKeys)
 		sortingParameter: TrackQueryParameters.SortingParameter,
-		@Param(ParseAlbumIdentifierPipe)
+		@IdentifierParam(ParseAlbumIdentifierPipe)
 		where: AlbumQueryParameters.WhereInput,
 		@Req() request: Request
 	) {

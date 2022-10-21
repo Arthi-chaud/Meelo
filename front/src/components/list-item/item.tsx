@@ -1,9 +1,10 @@
-import { IconButton, Button, Link, ButtonBase, Typography, useTheme } from '@mui/material';
+import { IconButton, Button, ButtonBase, Typography, useTheme } from '@mui/material';
 import ExpandLess from "@mui/icons-material/ExpandLess";
 import ExpandMore from "@mui/icons-material/ExpandMore";
 import { Grid } from '@mui/material';
 import { useState } from 'react';
 import { RequireExactlyOne } from 'type-fest';
+import Link from 'next/link';
 
 type ListItemProps = {
 	icon?: JSX.Element;

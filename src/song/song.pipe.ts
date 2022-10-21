@@ -6,11 +6,11 @@ import { SlugSeparator } from "src/identifier/identifier.slug-separator";
 import type SongQueryParameters from "./models/song.query-params";
 
 export default class ParseSongIdentifierPipe implements PipeTransform {
-	transform<T extends { idOrSlug: string; }>(value: T, _metadata: ArgumentMetadata): SongQueryParameters.WhereInput {
+	transform(value: string, _metadata: ArgumentMetadata): SongQueryParameters.WhereInput {
 		try {
-			return { byId: { id: new ParseIdPipe().transform(value.idOrSlug, _metadata) }};
+			return { byId: { id: new ParseIdPipe().transform(value, _metadata) }};
 		} catch {
-			const slugs = new ParseMultipleSlugPipe().transform(value.idOrSlug, _metadata);
+			const slugs = new ParseMultipleSlugPipe().transform(value, _metadata);
 			if (slugs.length != 2)
 				throw new InvalidRequestException(`Expected the following string format: 'artist-slug${SlugSeparator}song-slug'`);
 			return {

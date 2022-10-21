@@ -4,8 +4,7 @@ import AlbumQueryParameters from 'src/album/models/album.query-parameters';
 import ArtistQueryParameters from 'src/artist/models/artist.query-parameters';
 import GenreQueryParameters from 'src/genre/models/genre.query-parameters';
 import PaginatedResponse from 'src/pagination/models/paginated-response';
-import type { PaginationParameters } from 'src/pagination/models/pagination-parameters';
-import ParsePaginationParameterPipe from 'src/pagination/pagination.pipe';
+import { PaginationParameters } from 'src/pagination/models/pagination-parameters';
 import ReleaseQueryParameters from 'src/release/models/release.query-parameters';
 import SongQueryParameters from 'src/song/models/song.query-params';
 import SearchService from './search.service';
@@ -22,6 +21,9 @@ import { SongResponse } from 'src/song/models/song.response';
 import { ReleaseResponse } from 'src/release/models/release.response';
 import { GenreResponse } from 'src/genre/models/genre.response';
 import { SearchAllResponse } from './models/search-all.response';
+import { PaginationQuery } from 'src/pagination/pagination-query.decorator';
+import RelationIncludeQuery from 'src/relation-include/relation-include-query.decorator';
+import SortingQuery from 'src/sort/sort-query.decorator';
 
 @ApiTags("Search")
 @Controller('search')
@@ -65,11 +67,11 @@ export default class SearchController {
 	async searchArtists(
 		@Param('query')
 		query: string,
-		@Query(ParsePaginationParameterPipe)
+		@PaginationQuery()
 		paginationParameters: PaginationParameters,
-		@Query('with', ArtistQueryParameters.ParseRelationIncludePipe)
+		@RelationIncludeQuery(ArtistQueryParameters.AvailableIncludes)
 		include: ArtistQueryParameters.RelationInclude,
-		@Query(ArtistQueryParameters.ParseSortingParameterPipe)
+		@SortingQuery(ArtistQueryParameters.SortingKeys)
 		sortingParameter: ArtistQueryParameters.SortingParameter,
 		@Req() request: Request
 	) {
@@ -88,15 +90,16 @@ export default class SearchController {
 	async searchAlbums(
 		@Param('query')
 		query: string,
-		@Query(ParsePaginationParameterPipe)
+		@PaginationQuery()
 		paginationParameters: PaginationParameters,
-		@Query('with', AlbumQueryParameters.ParseRelationIncludePipe)
+		@RelationIncludeQuery(AlbumQueryParameters.AvailableIncludes)
 		include: AlbumQueryParameters.RelationInclude,
-		@Query(AlbumQueryParameters.ParseSortingParameterPipe)
+		@SortingQuery(AlbumQueryParameters.SortingKeys)
 		sortingParameter: AlbumQueryParameters.SortingParameter,
+		@Query() filter: AlbumQueryParameters.AlbumFilterParameter,
 		@Req() request: Request
 	) {
-		const albums = await this.searchService.searchAlbums(query, paginationParameters, include, sortingParameter)
+		const albums = await this.searchService.searchAlbums(query, filter.type, paginationParameters, include, sortingParameter)
 		return new PaginatedResponse(
 			await Promise.all(albums.map((album) => this.albumService.buildResponse(album))),
 			request
@@ -111,11 +114,11 @@ export default class SearchController {
 	async searchSongs(
 		@Param('query')
 		query: string,
-		@Query(ParsePaginationParameterPipe)
+		@PaginationQuery()
 		paginationParameters: PaginationParameters,
-		@Query('with', SongQueryParameters.ParseRelationIncludePipe)
+		@RelationIncludeQuery(SongQueryParameters.AvailableIncludes)
 		include: SongQueryParameters.RelationInclude,
-		@Query(SongQueryParameters.ParseSortingParameterPipe)
+		@SortingQuery(SongQueryParameters.SortingKeys)
 		sortingParameter: SongQueryParameters.SortingParameter,
 		@Req() request: Request
 	) {
@@ -134,11 +137,11 @@ export default class SearchController {
 	async searchRelease(
 		@Param('query')
 		query: string,
-		@Query(ParsePaginationParameterPipe)
+		@PaginationQuery()
 		paginationParameters: PaginationParameters,
-		@Query('with', ReleaseQueryParameters.ParseRelationIncludePipe)
+		@RelationIncludeQuery(ReleaseQueryParameters.AvailableIncludes)
 		include: ReleaseQueryParameters.RelationInclude,
-		@Query(ReleaseQueryParameters.ParseSortingParameterPipe)
+		@SortingQuery(ReleaseQueryParameters.SortingKeys)
 		sortingParameter: ReleaseQueryParameters.SortingParameter,
 		@Req() request: Request
 	) {
@@ -157,11 +160,11 @@ export default class SearchController {
 	async searchGenres(
 		@Param('query')
 		query: string,
-		@Query(ParsePaginationParameterPipe)
+		@PaginationQuery()
 		paginationParameters: PaginationParameters,
-		@Query('with', GenreQueryParameters.ParseRelationIncludePipe)
+		@RelationIncludeQuery(GenreQueryParameters.AvailableIncludes)
 		include: GenreQueryParameters.RelationInclude,
-		@Query(GenreQueryParameters.ParseSortingParameterPipe)
+		@SortingQuery(GenreQueryParameters.SortingKeys)
 		sortingParameter: GenreQueryParameters.SortingParameter,
 		@Req() request: Request
 	) {

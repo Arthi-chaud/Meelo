@@ -1,10 +1,11 @@
-import { BottomNavigation, Box, Button, Card, CardContent, Hidden, Link, Paper, Slide, Typography, useTheme } from "@mui/material"
+import { BottomNavigation, Box, Button, Card, CardContent, Hidden, Paper, Slide, Typography, useTheme } from "@mui/material"
 import { useEffect, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import API from "../../api";
 import { playNextTrack, playPreviousTrack, pushCurrentTrackToHistory, setHistoryToPlaylist } from "../../state/playerSlice";
 import { RootState } from "../../state/store";
 import PlayerControls from "./controls";
+import Link from 'next/link';
 
 const Player = () => {
 	const theme = useTheme();
@@ -126,7 +127,11 @@ const Player = () => {
 						progress={progress}
 						onSkipTrack={onSkipTrack}
 						onRewind={onRewind}
-						onSlide={(newProgress) => audio.current?.fastSeek(newProgress)}
+						onSlide={(newProgress) => {
+							if (audio.current !== undefined) {
+								audio.current.currentTime = newProgress;
+							}
+						}}
 					/>
 				</Paper>
 			</Box>

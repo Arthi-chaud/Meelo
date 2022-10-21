@@ -155,6 +155,18 @@ describe('Album Service', () => {
 			expect(albums[1]).toStrictEqual(newCompilationAlbum);
 		});
 
+		it("should find only live albums", async () => {
+			const albums = await albumService.getMany({ byType: AlbumType.LiveRecording });
+			expect(albums.length).toBe(1);
+			expect(albums[0]).toStrictEqual(newAlbum);
+		});
+
+		it("should find only compilations albums", async () => {
+			const albums = await albumService.getMany({ byType: AlbumType.Compilation });
+			expect(albums.length).toBe(1);
+			expect(albums[0]).toStrictEqual(dummyRepository.compilationAlbumA);
+		});
+
 		it("should sort the albums", async () => {
 			const albums = await albumService.getMany({}, {}, {}, { sortBy: 'name', order: 'desc' });
 			expect(albums.length).toBe(5);
