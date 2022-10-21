@@ -2,6 +2,8 @@ import { capitalCase } from "change-case";
 import Album from "../../models/album";
 import Resource from "../../models/resource";
 import InfiniteView, { InfiniteViewProps } from "./infinite-view";
+import NorthIcon from '@mui/icons-material/North';
+import SouthIcon from '@mui/icons-material/South';
 
 type InfiniteSortableView<T extends Resource, Options extends (string[] | SortingKeys)[], SortingKeys extends string[]> = {
 	sortingFields: SortingKeys,
@@ -17,6 +19,7 @@ const InfiniteSortableView = <T extends Resource, Options extends (string[] | So
 		options={[
 			{
 				name: `Sort by ${capitalCase(props.initialSortingField)}`,
+				icon: props.initialSortingOrder == 'desc' ? <SouthIcon/> : <NorthIcon/>,
 				options: [
 					{ name: 'field', values: props.sortingFields, initValue: props.initialSortingField, onSelect: props.onSortingFieldSelect },
 					{

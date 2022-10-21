@@ -12,7 +12,7 @@ type Option<Values extends string[]> = {
 
 export type OptionGroup<OptionsValues extends string[][]> = {
 	name: string;
-	label?: string;
+	icon?: JSX.Element;
 	options: Option<OptionsValues[number]>[];
 }
 
@@ -28,8 +28,9 @@ const InfiniteViewDropdownOption = <Options extends string[][]>(props: InfiniteV
 	return <>
 		<Button
 			onClick={handleMenuOpen}
+			endIcon={props.option.icon}
 		>
-			{props.option.label ?? props.option.name}
+			{props.option.name}
 		</Button>
 		<Menu
 			anchorEl={anchorEl}
