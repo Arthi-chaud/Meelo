@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, forwardRef, Get, Inject, Post, Put, Query, Req } from '@nestjs/common';
+import { Body, Controller, Delete, forwardRef, Get, Inject, Post, Put, Req } from '@nestjs/common';
 import type { Request } from 'express';
 import ArtistService from 'src/artist/artist.service';
 import ArtistQueryParameters from 'src/artist/models/artist.query-parameters';
@@ -22,6 +22,7 @@ import { GenreResponse } from 'src/genre/models/genre.response';
 import { PaginationQuery } from 'src/pagination/pagination-query.decorator';
 import { IdentifierParam } from 'src/identifier/identifier-param.decorator';
 import RelationIncludeQuery from 'src/relation-include/relation-include-query.decorator';
+import SortingQuery from 'src/sort/sort-query.decorator';
 
 @ApiTags("Songs")
 @Controller('songs')
@@ -49,7 +50,7 @@ export class SongController {
 		paginationParameters: PaginationParameters,
 		@RelationIncludeQuery(SongQueryParameters.AvailableIncludes)
 		include: SongQueryParameters.RelationInclude,
-		@Query(SongQueryParameters.ParseSortingParameterPipe)
+		@SortingQuery(SongQueryParameters.SortingKeys)
 		sortingParameter: SongQueryParameters.SortingParameter,
 		@Req() request: Request
 	) {
@@ -131,7 +132,7 @@ export class SongController {
 		include: TrackQueryParameters.RelationInclude,
 		@IdentifierParam(ParseSongIdentifierPipe)
 		where: SongQueryParameters.WhereInput,
-		@Query(TrackQueryParameters.ParseSortingParameterPipe)
+		@SortingQuery(TrackQueryParameters.SortingKeys)
 		sortingParameter: TrackQueryParameters.SortingParameter,
 		@Req() request: Request
 	) {
@@ -158,7 +159,7 @@ export class SongController {
 		include: SongQueryParameters.RelationInclude,
 		@IdentifierParam(ParseSongIdentifierPipe)
 		where: SongQueryParameters.WhereInput,
-		@Query(SongQueryParameters.ParseSortingParameterPipe)
+		@SortingQuery(SongQueryParameters.SortingKeys)
 		sortingParameter: SongQueryParameters.SortingParameter,
 		@Req() request: Request
 	) {
@@ -179,7 +180,7 @@ export class SongController {
 		paginationParameters: PaginationParameters,
 		@RelationIncludeQuery(TrackQueryParameters.AvailableIncludes)
 		include: TrackQueryParameters.RelationInclude,
-		@Query(TrackQueryParameters.ParseSortingParameterPipe)
+		@SortingQuery(TrackQueryParameters.SortingKeys)
 		sortingParameter: TrackQueryParameters.SortingParameter,
 		@IdentifierParam(ParseSongIdentifierPipe)
 		where: SongQueryParameters.WhereInput,
@@ -204,7 +205,7 @@ export class SongController {
 	async getSongGenres(
 		@RelationIncludeQuery(GenreQueryParameters.AvailableIncludes)
 		include: GenreQueryParameters.RelationInclude,
-		@Query(GenreQueryParameters.ParseSortingParameterPipe)
+		@SortingQuery(GenreQueryParameters.SortingKeys)
 		sortingParameter: GenreQueryParameters.SortingParameter,
 		@IdentifierParam(ParseSongIdentifierPipe)
 		where: SongQueryParameters.WhereInput,

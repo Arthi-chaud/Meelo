@@ -22,6 +22,7 @@ import { SongResponse } from 'src/song/models/song.response';
 import { PaginationQuery } from 'src/pagination/pagination-query.decorator';
 import { IdentifierParam } from 'src/identifier/identifier-param.decorator';
 import RelationIncludeQuery from 'src/relation-include/relation-include-query.decorator';
+import SortingQuery from 'src/sort/sort-query.decorator';
 
 @ApiTags("Artists")
 @Controller('artists')
@@ -51,7 +52,7 @@ export default class ArtistController {
 		paginationParameters: PaginationParameters,
 		@RelationIncludeQuery(ArtistQueryParameters.AvailableIncludes)
 		include: ArtistQueryParameters.RelationInclude,
-		@Query(ArtistQueryParameters.ParseSortingParameterPipe)
+		@SortingQuery(ArtistQueryParameters.SortingKeys)
 		sortingParameter: ArtistQueryParameters.SortingParameter,
 		@Req() request: Request,
 		@Query('albumArtistOnly', new DefaultValuePipe(false), ParseBoolPipe)
@@ -97,7 +98,7 @@ export default class ArtistController {
 		paginationParameters: PaginationParameters,
 		@RelationIncludeQuery(TrackQueryParameters.AvailableIncludes)
 		include: TrackQueryParameters.RelationInclude,
-		@Query(TrackQueryParameters.ParseSortingParameterPipe)
+		@SortingQuery(TrackQueryParameters.SortingKeys)
 		sortingParameter: TrackQueryParameters.SortingParameter,
 		@IdentifierParam(ParseArtistIdentifierPipe)
 		where: ArtistQueryParameters.WhereInput,
@@ -126,7 +127,7 @@ export default class ArtistController {
 		paginationParameters: PaginationParameters,
 		@IdentifierParam(ParseArtistIdentifierPipe)
 		where: ArtistQueryParameters.WhereInput,
-		@Query(AlbumQueryParameters.ParseSortingParameterPipe)
+		@SortingQuery(AlbumQueryParameters.SortingKeys)
 		sortingParameter: AlbumQueryParameters.SortingParameter,
 		@Query() filter: AlbumQueryParameters.AlbumFilterParameter,
 		@RelationIncludeQuery(AlbumQueryParameters.AvailableIncludes)
@@ -154,7 +155,7 @@ export default class ArtistController {
 		paginationParameters: PaginationParameters,
 		@IdentifierParam(ParseArtistIdentifierPipe)
 		where: ArtistQueryParameters.WhereInput,
-		@Query(SongQueryParameters.ParseSortingParameterPipe)
+		@SortingQuery(SongQueryParameters.SortingKeys)
 		sortingParameter: SongQueryParameters.SortingParameter,
 		@RelationIncludeQuery(SongQueryParameters.AvailableIncludes)
 		include: SongQueryParameters.RelationInclude,

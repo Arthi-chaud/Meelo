@@ -1,4 +1,4 @@
-import { Controller, Get, Query, Param, Post, Body, Inject, forwardRef, Req, Put } from '@nestjs/common';
+import { Controller, Get, Param, Post, Body, Inject, forwardRef, Req, Put } from '@nestjs/common';
 import { ParseIdPipe } from 'src/identifier/id.pipe';
 import PaginatedResponse from 'src/pagination/models/paginated-response';
 import { PaginationParameters } from 'src/pagination/models/pagination-parameters';
@@ -12,6 +12,7 @@ import { TrackResponse } from './models/track.response';
 import { ApiPaginatedResponse } from 'src/pagination/paginated-response.decorator';
 import { PaginationQuery } from 'src/pagination/pagination-query.decorator';
 import RelationIncludeQuery from 'src/relation-include/relation-include-query.decorator';
+import SortingQuery from 'src/sort/sort-query.decorator';
 
 @ApiTags("Tracks")
 @Controller('tracks')
@@ -31,7 +32,7 @@ export class TrackController {
 		paginationParameters: PaginationParameters,
 		@RelationIncludeQuery(TrackQueryParameters.AvailableIncludes)
 		include: TrackQueryParameters.RelationInclude,
-		@Query(TrackQueryParameters.ParseSortingParameterPipe)
+		@SortingQuery(TrackQueryParameters.SortingKeys)
 		sortingParameter: TrackQueryParameters.SortingParameter,
 		@Req() request: Request
 	) {
@@ -54,7 +55,7 @@ export class TrackController {
 		paginationParameters: PaginationParameters,
 		@RelationIncludeQuery(TrackQueryParameters.AvailableIncludes)
 		include: TrackQueryParameters.RelationInclude,
-		@Query(TrackQueryParameters.ParseSortingParameterPipe)
+		@SortingQuery(TrackQueryParameters.SortingKeys)
 		sortingParameter: TrackQueryParameters.SortingParameter,
 		@Req() request: Request
 	) {

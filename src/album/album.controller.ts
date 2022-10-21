@@ -24,6 +24,7 @@ import { IdentifierParam } from 'src/identifier/identifier-param.decorator';
 import { ApiRelationInclude } from 'src/relation-include/relation-include-route.decorator';
 import { ApiIdentifierRoute } from 'src/identifier/identifier-route.decorator';
 import RelationIncludeQuery from 'src/relation-include/relation-include-query.decorator';
+import SortingQuery from 'src/sort/sort-query.decorator';
 
 @ApiTags("Albums")
 @Controller('albums')
@@ -46,7 +47,7 @@ export default class AlbumController {
 	async getMany(
 		@PaginationQuery()
 		paginationParameters: PaginationParameters,
-		@Query(AlbumQueryParameters.ParseSortingParameterPipe)
+		@SortingQuery(AlbumQueryParameters.SortingKeys)
 		sortingParameter: AlbumQueryParameters.SortingParameter,
 		@RelationIncludeQuery(AlbumQueryParameters.AvailableIncludes)
 		include: AlbumQueryParameters.RelationInclude,
@@ -70,7 +71,7 @@ export default class AlbumController {
 	async getCompilationsAlbums(
 		@PaginationQuery()
 		paginationParameters: PaginationParameters,
-		@Query(AlbumQueryParameters.ParseSortingParameterPipe)
+		@SortingQuery(AlbumQueryParameters.SortingKeys)
 		sortingParameter: AlbumQueryParameters.SortingParameter,
 		@RelationIncludeQuery(AlbumQueryParameters.AvailableIncludes)
 		include: AlbumQueryParameters.RelationInclude,
@@ -125,7 +126,7 @@ export default class AlbumController {
 		paginationParameters: PaginationParameters,
 		@RelationIncludeQuery(ReleaseQueryParameters.AvailableIncludes)
 		include: ReleaseQueryParameters.RelationInclude,
-		@Query(ReleaseQueryParameters.ParseSortingParameterPipe)
+		@SortingQuery(ReleaseQueryParameters.SortingKeys)
 		sortingParameter: ReleaseQueryParameters.SortingParameter,
 		@IdentifierParam(ParseAlbumIdentifierPipe)
 		where: AlbumQueryParameters.WhereInput,
@@ -162,7 +163,7 @@ export default class AlbumController {
 		paginationParameters: PaginationParameters,
 		@RelationIncludeQuery(TrackQueryParameters.AvailableIncludes)
 		include: TrackQueryParameters.RelationInclude,
-		@Query(TrackQueryParameters.ParseSortingParameterPipe)
+		@SortingQuery(TrackQueryParameters.SortingKeys)
 		sortingParameter: TrackQueryParameters.SortingParameter,
 		@IdentifierParam(ParseAlbumIdentifierPipe)
 		where: AlbumQueryParameters.WhereInput,

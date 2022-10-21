@@ -6,7 +6,7 @@ import type { SearchStringInput } from "src/utils/search-string-input";
 import type { RelationInclude as BaseRelationInclude } from "src/relation-include/models/relation-include";
 import type LibraryQueryParameters from "src/library/models/library.query-parameters";
 import BaseSortingParameter from 'src/sort/models/sorting-parameter';
-import ParseBaseSortingParameterPipe from 'src/sort/sort.pipe';
+
 import type GenreQueryParameters from "src/genre/models/genre.query-parameters";
 import { Song } from "src/prisma/models";
 import { ApiPropertyOptional } from "@nestjs/swagger";
@@ -75,7 +75,7 @@ namespace SongQueryParameters {
 		@ApiPropertyOptional({ enum: SortingKeys })
 		sortBy: SortingKeys[number]
 	}
-	export const ParseSortingParameterPipe = new ParseBaseSortingParameterPipe(SortingKeys);
+	
 
 }
 

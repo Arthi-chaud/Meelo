@@ -5,7 +5,7 @@ import type { RequireAtLeastOne } from "type-fest";
 import type { RequireExactlyOne } from 'type-fest';
 import type { SearchStringInput } from "src/utils/search-string-input";
 import BaseSortingParameter from 'src/sort/models/sorting-parameter';
-import ParseBaseSortingParameterPipe from 'src/sort/sort.pipe';
+
 import type { RelationInclude as BaseRelationInclude } from "src/relation-include/models/relation-include" ;
 import { Genre } from "src/prisma/models";
 import { ApiPropertyOptional } from "@nestjs/swagger";
@@ -63,7 +63,7 @@ namespace GenreQueryParameters {
 		@ApiPropertyOptional({ enum: SortingKeys })
 		sortBy: SortingKeys[number]
 	}
-	export const ParseSortingParameterPipe = new ParseBaseSortingParameterPipe(SortingKeys);
+	
 
 
 }

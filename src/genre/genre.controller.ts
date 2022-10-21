@@ -20,6 +20,7 @@ import { ArtistResponse } from "src/artist/models/artist.response";
 import { PaginationQuery } from "src/pagination/pagination-query.decorator";
 import { IdentifierParam } from "src/identifier/identifier-param.decorator";
 import RelationIncludeQuery from "src/relation-include/relation-include-query.decorator";
+import SortingQuery from "src/sort/sort-query.decorator";
 
 @ApiTags("Genres")
 @Controller('genres')
@@ -44,7 +45,7 @@ export class GenreController {
 		paginationParameters: PaginationParameters,
 		@RelationIncludeQuery(GenreQueryParameters.AvailableIncludes)
 		include: GenreQueryParameters.RelationInclude,
-		@Query(GenreQueryParameters.ParseSortingParameterPipe)
+		@SortingQuery(GenreQueryParameters.SortingKeys)
 		sortingParameter: GenreQueryParameters.SortingParameter,
 		@Req() request: Request
 	) {
@@ -83,7 +84,7 @@ export class GenreController {
 		include: SongQueryParameters.RelationInclude,
 		@IdentifierParam(ParseBaseIdentifierPipe)
 		where: GenreQueryParameters.WhereInput,
-		@Query(SongQueryParameters.ParseSortingParameterPipe)
+		@SortingQuery(SongQueryParameters.SortingKeys)
 		sortingParameter: SongQueryParameters.SortingParameter,
 		@Req() request: Request
 	) {
@@ -112,7 +113,7 @@ export class GenreController {
 		include: AlbumQueryParameters.RelationInclude,
 		@IdentifierParam(ParseBaseIdentifierPipe)
 		where: GenreQueryParameters.WhereInput,
-		@Query(AlbumQueryParameters.ParseSortingParameterPipe)
+		@SortingQuery(AlbumQueryParameters.SortingKeys)
 		sortingParameter: AlbumQueryParameters.SortingParameter,
 		@Query() filter: AlbumQueryParameters.AlbumFilterParameter,
 		@Req() request: Request
@@ -142,7 +143,7 @@ export class GenreController {
 		include: ArtistQueryParameters.RelationInclude,
 		@IdentifierParam(ParseBaseIdentifierPipe)
 		where: GenreQueryParameters.WhereInput,
-		@Query(ArtistQueryParameters.ParseSortingParameterPipe)
+		@SortingQuery(ArtistQueryParameters.SortingKeys)
 		sortingParameter: ArtistQueryParameters.SortingParameter,
 		@Req() request: Request
 	) {

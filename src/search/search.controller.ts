@@ -23,6 +23,7 @@ import { GenreResponse } from 'src/genre/models/genre.response';
 import { SearchAllResponse } from './models/search-all.response';
 import { PaginationQuery } from 'src/pagination/pagination-query.decorator';
 import RelationIncludeQuery from 'src/relation-include/relation-include-query.decorator';
+import SortingQuery from 'src/sort/sort-query.decorator';
 
 @ApiTags("Search")
 @Controller('search')
@@ -70,7 +71,7 @@ export default class SearchController {
 		paginationParameters: PaginationParameters,
 		@RelationIncludeQuery(ArtistQueryParameters.AvailableIncludes)
 		include: ArtistQueryParameters.RelationInclude,
-		@Query(ArtistQueryParameters.ParseSortingParameterPipe)
+		@SortingQuery(ArtistQueryParameters.SortingKeys)
 		sortingParameter: ArtistQueryParameters.SortingParameter,
 		@Req() request: Request
 	) {
@@ -93,7 +94,7 @@ export default class SearchController {
 		paginationParameters: PaginationParameters,
 		@RelationIncludeQuery(AlbumQueryParameters.AvailableIncludes)
 		include: AlbumQueryParameters.RelationInclude,
-		@Query(AlbumQueryParameters.ParseSortingParameterPipe)
+		@SortingQuery(AlbumQueryParameters.SortingKeys)
 		sortingParameter: AlbumQueryParameters.SortingParameter,
 		@Query() filter: AlbumQueryParameters.AlbumFilterParameter,
 		@Req() request: Request
@@ -117,7 +118,7 @@ export default class SearchController {
 		paginationParameters: PaginationParameters,
 		@RelationIncludeQuery(SongQueryParameters.AvailableIncludes)
 		include: SongQueryParameters.RelationInclude,
-		@Query(SongQueryParameters.ParseSortingParameterPipe)
+		@SortingQuery(SongQueryParameters.SortingKeys)
 		sortingParameter: SongQueryParameters.SortingParameter,
 		@Req() request: Request
 	) {
@@ -140,7 +141,7 @@ export default class SearchController {
 		paginationParameters: PaginationParameters,
 		@RelationIncludeQuery(ReleaseQueryParameters.AvailableIncludes)
 		include: ReleaseQueryParameters.RelationInclude,
-		@Query(ReleaseQueryParameters.ParseSortingParameterPipe)
+		@SortingQuery(ReleaseQueryParameters.SortingKeys)
 		sortingParameter: ReleaseQueryParameters.SortingParameter,
 		@Req() request: Request
 	) {
@@ -163,7 +164,7 @@ export default class SearchController {
 		paginationParameters: PaginationParameters,
 		@RelationIncludeQuery(GenreQueryParameters.AvailableIncludes)
 		include: GenreQueryParameters.RelationInclude,
-		@Query(GenreQueryParameters.ParseSortingParameterPipe)
+		@SortingQuery(GenreQueryParameters.SortingKeys)
 		sortingParameter: GenreQueryParameters.SortingParameter,
 		@Req() request: Request
 	) {

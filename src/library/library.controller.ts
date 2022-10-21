@@ -27,6 +27,7 @@ import { TrackResponse } from 'src/track/models/track.response';
 import { PaginationQuery } from 'src/pagination/pagination-query.decorator';
 import { IdentifierParam } from 'src/identifier/identifier-param.decorator';
 import RelationIncludeQuery from 'src/relation-include/relation-include-query.decorator';
+import SortingQuery from 'src/sort/sort-query.decorator';
 
 @ApiTags("Libraries")
 @Controller('libraries')
@@ -69,7 +70,7 @@ export default class LibraryController {
 	async getLibraries(
 		@PaginationQuery()
 		paginationParameters: PaginationParameters,
-		@Query(LibraryQueryParameters.ParseSortingParameterPipe)
+		@SortingQuery(LibraryQueryParameters.SortingKeys)
 		sortingParameter: LibraryQueryParameters.SortingParameter,
 		@Req() request: Request
 	): Promise<PaginatedResponse<Object>> {
@@ -102,7 +103,7 @@ export default class LibraryController {
 		paginationParameters: PaginationParameters,
 		@RelationIncludeQuery(ArtistQueryParameters.AvailableIncludes)
 		include: ArtistQueryParameters.RelationInclude,
-		@Query(ArtistQueryParameters.ParseSortingParameterPipe)
+		@SortingQuery(ArtistQueryParameters.SortingKeys)
 		sortingParameter: ArtistQueryParameters.SortingParameter,
 		@Req() request: Request
 	): Promise<PaginatedResponse<Object>> {
@@ -129,7 +130,7 @@ export default class LibraryController {
 		paginationParameters: PaginationParameters,
 		@RelationIncludeQuery(AlbumQueryParameters.AvailableIncludes)
 		include: AlbumQueryParameters.RelationInclude,
-		@Query(AlbumQueryParameters.ParseSortingParameterPipe)
+		@SortingQuery(AlbumQueryParameters.SortingKeys)
 		sortingParameter: AlbumQueryParameters.SortingParameter,
 		@Query() filter: AlbumQueryParameters.AlbumFilterParameter,
 		@Req() request: Request
@@ -157,7 +158,7 @@ export default class LibraryController {
 		paginationParameters: PaginationParameters,
 		@RelationIncludeQuery(ReleaseQueryParameters.AvailableIncludes)
 		include: ReleaseQueryParameters.RelationInclude,
-		@Query(ReleaseQueryParameters.ParseSortingParameterPipe)
+		@SortingQuery(ReleaseQueryParameters.SortingKeys)
 		sortingParameter: ReleaseQueryParameters.SortingParameter,
 		@Req() request: Request
 	): Promise<PaginatedResponse<Object>> {
@@ -184,7 +185,7 @@ export default class LibraryController {
 		paginationParameters: PaginationParameters,
 		@RelationIncludeQuery(SongQueryParameters.AvailableIncludes)
 		include: SongQueryParameters.RelationInclude,
-		@Query(SongQueryParameters.ParseSortingParameterPipe)
+		@SortingQuery(SongQueryParameters.SortingKeys)
 		sortingParameter: SongQueryParameters.SortingParameter,
 		@Req() request: Request
 	): Promise<PaginatedResponse<Object>> {
@@ -211,7 +212,7 @@ export default class LibraryController {
 		paginationParameters: PaginationParameters,
 		@RelationIncludeQuery(TrackQueryParameters.AvailableIncludes)
 		include: TrackQueryParameters.RelationInclude,
-		@Query(TrackQueryParameters.ParseSortingParameterPipe)
+		@SortingQuery(TrackQueryParameters.SortingKeys)
 		sortingParameter: TrackQueryParameters.SortingParameter,
 		@Req() request: Request
 	): Promise<PaginatedResponse<Object>> {

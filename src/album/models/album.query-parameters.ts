@@ -7,7 +7,7 @@ import type { SearchDateInput } from "src/utils/search-date-input";
 import type { SearchStringInput } from "src/utils/search-string-input";
 import type { RelationInclude as BaseRelationInclude } from "src/relation-include/models/relation-include" ;
 import BaseSortingParameter from 'src/sort/models/sorting-parameter';
-import ParseBaseSortingParameterPipe from 'src/sort/sort.pipe';
+
 import type GenreQueryParameters from "src/genre/models/genre.query-parameters";
 import { Album } from "src/prisma/models";
 import { ApiPropertyOptional, IntersectionType, PartialType, PickType } from "@nestjs/swagger";
@@ -78,7 +78,7 @@ namespace AlbumQueryParameters {
 		@ApiPropertyOptional({ enum: SortingKeys })
 		sortBy: SortingKeys[number];
 	}
-	export const ParseSortingParameterPipe = new ParseBaseSortingParameterPipe(SortingKeys);
+	
 
 	export class AlbumFilterParameter {
 		@IsEnum(AlbumType, {

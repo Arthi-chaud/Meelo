@@ -17,6 +17,7 @@ import { TrackResponse } from 'src/track/models/track.response';
 import { PaginationQuery } from 'src/pagination/pagination-query.decorator';
 import { IdentifierParam } from 'src/identifier/identifier-param.decorator';
 import RelationIncludeQuery from 'src/relation-include/relation-include-query.decorator';
+import SortingQuery from 'src/sort/sort-query.decorator';
 
 @ApiTags("Releases")
 @Controller('releases')
@@ -40,7 +41,7 @@ export default class ReleaseController {
 		paginationParameters: PaginationParameters,
 		@RelationIncludeQuery(ReleaseQueryParameters.AvailableIncludes)
 		include: ReleaseQueryParameters.RelationInclude,
-		@Query(ReleaseQueryParameters.ParseSortingParameterPipe)
+		@SortingQuery(ReleaseQueryParameters.SortingKeys)
 		sortingParameter: ReleaseQueryParameters.SortingParameter,
 		@Req() request: Request
 	) {
@@ -81,7 +82,7 @@ export default class ReleaseController {
 		include: TrackQueryParameters.RelationInclude,
 		@IdentifierParam(ParseReleaseIdentifierPipe)
 		where: ReleaseQueryParameters.WhereInput,
-		@Query(TrackQueryParameters.ParseSortingParameterPipe)
+		@SortingQuery(TrackQueryParameters.SortingKeys)
 		sortingParameter: TrackQueryParameters.SortingParameter,
 		@Req() request: Request
 	) {
