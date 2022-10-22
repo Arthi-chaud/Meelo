@@ -6,8 +6,11 @@ import Artist from "../../models/artist";
 import { ReleaseWithAlbum } from "../../models/release";
 import Song, { SongWithArtist } from "../../models/song";
 import { TrackWithSong } from "../../models/track";
+import copyLinkToClipboard from "../../utils/copy-link";
 import ContextualMenu from "./contextual-menu"
 import ContextualMenuItem from "./contextual-menu-item";
+
+import ShareIcon from '@mui/icons-material/Share';
 type ReleaseTrackContextualMenuProps = {
 	track: TrackWithSong;
 	artist: Artist
@@ -22,6 +25,7 @@ const ReleaseTrackContextualMenu = (props: ReleaseTrackContextualMenuProps) => {
 		<ContextualMenuItem icon={<Audiotrack/>} href={`/songs/${songSlug}/tracks`} label={"See Related Tracks"}/>
 		<ContextualMenuItem icon={<Difference/>} href={`/songs/${songSlug}/versions`} label={"See Other Versions"}/>
 		<ContextualMenuItem icon={<Download/>} label={"Download"} href={API.getStreamURL(props.track.stream)}/>
+		<ContextualMenuItem icon={<ShareIcon/>} label={"Share Song"} onClick={() => copyLinkToClipboard(`/songs/${songSlug}/versions`)}/>
 	</ContextualMenu>
 }
 
