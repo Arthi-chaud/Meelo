@@ -7,8 +7,10 @@ import API from "../../api";
 import { AlbumWithArtist } from "../../models/album";
 import { ReleaseWithAlbum } from "../../models/release";
 import Song, { SongWithArtist } from "../../models/song";
-import ContextualMenu from "./contextual-menu"
+import ContextualMenu from "./contextual-menu";
+import ShareIcon from '@mui/icons-material/Share';
 import ContextualMenuItem from "./contextual-menu-item";
+import copyLinkToClipboard from "../../utils/copy-link";
 type ReleaseContextualMenuProps = {
 	release: ReleaseWithAlbum;
 }
@@ -48,6 +50,7 @@ const ReleaseContextualMenu = (props: ReleaseContextualMenuProps) => {
 		<ContextualMenuItem icon={<Star/>} label={"Set all tracks as Master"}
 			onClick={() => tracksMasterMutation.mutate()}
 		/>
+		<ContextualMenuItem icon={<ShareIcon/>} label={"Share Release"} onClick={() => copyLinkToClipboard(`/releases/${props.release.id}`)}/>
 	</ContextualMenu>
 }
 
