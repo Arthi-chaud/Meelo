@@ -330,6 +330,6 @@ export default class SongService extends RepositoryService<
 				strippedSongName = strippedSongName.replace(matched, '')
 			})
 		}
-		return strippedSongName;
+		return strippedSongName.split(' - ')[0];
 	}
 }
