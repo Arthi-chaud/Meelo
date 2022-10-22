@@ -58,14 +58,20 @@ describe('Album Service', () => {
 			expect(AlbumService.getAlbumTypeFromName('11,000 Click (Live at Brixton)')).toBe(AlbumType.LiveRecording);
 		});
 
-		it('should says its a live album', () => {
-			expect(AlbumService.getAlbumTypeFromName('Happy BusDay: Best of Superbys')).toBe(AlbumType.Compilation);
+		it('should says its a compilation album', () => {
+			expect(AlbumService.getAlbumTypeFromName('Happy BusDay: Best of Superbus')).toBe(AlbumType.Compilation);
 			expect(AlbumService.getAlbumTypeFromName('The Very Best of Moby')).toBe(AlbumType.Compilation);
 			expect(AlbumService.getAlbumTypeFromName('The Best Mixes From The Album Debut')).toBe(AlbumType.Compilation);
+			expect(AlbumService.getAlbumTypeFromName('The Singles Collection')).toBe(AlbumType.Compilation);
+			expect(AlbumService.getAlbumTypeFromName('The Immaculate Collection')).toBe(AlbumType.Compilation);
+			expect(AlbumService.getAlbumTypeFromName('B In The Mix: The Remixes')).toBe(AlbumType.Compilation);
+			expect(AlbumService.getAlbumTypeFromName('Move To This - Remix Album')).toBe(AlbumType.Compilation);
+			expect(AlbumService.getAlbumTypeFromName('Greatest Hits: My Prerogative')).toBe(AlbumType.Compilation);
 		});
 
 		it('should says its a single', () => {
 			expect(AlbumService.getAlbumTypeFromName('Twist - Single')).toBe(AlbumType.Single);
+			expect(AlbumService.getAlbumTypeFromName('Twist - EP')).toBe(AlbumType.Single);
 			expect(AlbumService.getAlbumTypeFromName('Falling (Remixes)')).toBe(AlbumType.Single);
 		});
 	});

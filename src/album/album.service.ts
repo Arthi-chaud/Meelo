@@ -319,10 +319,16 @@ export default class AlbumService extends RepositoryService<
 			return AlbumType.LiveRecording
 		}
 		if (albumName.endsWith('- single') ||
+			albumName.endsWith('- ep') ||
 			albumName.endsWith('(remixes)')) {
 			return AlbumType.Single
 		}
 		if (albumName.includes('best of') ||
+			albumName.includes('greatest hits') ||
+			albumName.includes('remix album') ||
+			albumName.includes('singles') ||
+			albumName.includes(' the remixes') ||
+			albumName.includes('collection') ||
 			albumName.includes('best mixes')) {
 			return AlbumType.Compilation
 		}
