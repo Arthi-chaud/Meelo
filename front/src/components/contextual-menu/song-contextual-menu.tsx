@@ -8,6 +8,7 @@ import copyLinkToClipboard from "../../utils/copy-link";
 import ContextualMenu from "./contextual-menu"
 import ContextualMenuItem from "./contextual-menu-item";
 import ShareIcon from '@mui/icons-material/Share';
+import downloadAction from "../download-action";
 type SongContextualMenuProps = {
 	song: SongWithArtist;
 }
@@ -26,7 +27,7 @@ const SongContextualMenu = (props: SongContextualMenuProps) => {
 		<ContextualMenuItem icon={<Difference/>} href={`/songs/${songSlug}/tracks`} label={"See Related Tracks"}/>
 		<ContextualMenuItem icon={<Audiotrack/>} href={`/songs/${songSlug}/versions`} label={"See Other Versions"}/>
 		<ContextualMenuItem icon={<Download/>} label={"Download"}
-			onClick={() => API.getMasterTrack(songSlug).then((track) => router.push(API.getStreamURL(track.stream)))}
+			onClick={() => API.getMasterTrack(songSlug).then((track) => downloadAction(router, API.getStreamURL(track.stream)))}
 		/>
 		<ContextualMenuItem icon={<ShareIcon/>} label={"Share Song"} onClick={() => copyLinkToClipboard(`/songs/${songSlug}/versions`)}/>
 	</ContextualMenu>
