@@ -22,8 +22,8 @@ const ReleaseTrackContextualMenu = (props: ReleaseTrackContextualMenuProps) => {
 	return <ContextualMenu>
 		<ContextualMenuItem icon={<AccountCircle/>} href={`/artists/${props.artist.slug}`} label={"Go to Artist"}/>
 		<ContextualMenuItem icon={<Lyrics/>} href={`/songs/${songSlug}/lyrics`} label={"See Lyrics"}/>
-		<ContextualMenuItem icon={<Audiotrack/>} href={`/songs/${songSlug}/tracks`} label={"See Related Tracks"}/>
-		<ContextualMenuItem icon={<Difference/>} href={`/songs/${songSlug}/versions`} label={"See Other Versions"}/>
+		<ContextualMenuItem icon={<Difference/>} href={`/songs/${songSlug}/tracks`} label={"See Related Tracks"}/>
+		<ContextualMenuItem icon={<Audiotrack/>} href={`/songs/${songSlug}/versions`} label={"See Other Versions"}/>
 		<ContextualMenuItem icon={<Download/>} label={"Download"} href={API.getStreamURL(props.track.stream)}/>
 		<ContextualMenuItem icon={<ShareIcon/>} label={"Share Song"} onClick={() => copyLinkToClipboard(`/songs/${songSlug}/versions`)}/>
 	</ContextualMenu>
