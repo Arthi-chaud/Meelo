@@ -1,6 +1,6 @@
 import type { INestApplication } from "@nestjs/common";
 import type { TestingModule } from "@nestjs/testing";
-import type { Album, Artist, Release, Track } from "src/prisma/models";
+import type { Album, Artist, Release } from "src/prisma/models";
 import request from "supertest";
 import ArtistModule from "src/artist/artist.module";
 import ArtistService from "src/artist/artist.service";
@@ -40,12 +40,6 @@ describe('Album Controller', () => {
 		...release,
 		releaseDate: release.releaseDate?.toISOString() ?? null,
 		illustration: null
-	});
-
-	const expectedTrackResponse = (track: Track) => ({
-		...track,
-		illustration: null,
-		stream: `/files/${track.sourceFileId}/stream`
 	});
 
 	beforeAll(async () => {
@@ -219,16 +213,14 @@ describe('Album Controller', () => {
 				.get(`/albums/plop/releases`)
 				.expect(400);
 		});
-		it("Should include related tracks", () => {
+		it("Should include related album", () => {
 			return request(app.getHttpServer())
-				.get(`/albums/${dummyRepository.albumB1.id}/master?with=tracks`)
+				.get(`/albums/${dummyRepository.albumB1.id}/master?with=album`)
 				.expect(200)
 				.expect((res) => {
 					expect(res.body).toStrictEqual({
 						...expectedReleaseResponse(dummyRepository.releaseB1_1),
-						tracks: [
-							expectedTrackResponse(dummyRepository.trackB1_1)
-						],
+						album: expectedAlbumResponse(dummyRepository.albumB1)
 					})
 				});
 		});
@@ -282,18 +274,15 @@ describe('Album Controller', () => {
 				.get(`/albums/-1/releases`)
 				.expect(404);
 		});
-		it("Should include related tracks & parent album", () => {
+		it("Should include parent album", () => {
 			return request(app.getHttpServer())
-				.get(`/albums/${dummyRepository.compilationAlbumA.id}/releases?with=tracks,album`)
+				.get(`/albums/${dummyRepository.compilationAlbumA.id}/releases?with=album`)
 				.expect(200)
 				.expect((res) => {
 					const releases: Release[] = res.body.items;
 					expect(releases.length).toBe(1);
 					expect(releases[0]).toStrictEqual({
 						...expectedReleaseResponse(dummyRepository.compilationReleaseA1),
-						tracks: [
-							expectedTrackResponse(dummyRepository.trackC1_1),
-						],
 						album: expectedAlbumResponse(dummyRepository.compilationAlbumA)
 					});
 				});

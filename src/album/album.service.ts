@@ -295,10 +295,6 @@ export default class AlbumService extends RepositoryService<
 			...album,
 			illustration: await this.illustrationService.getAlbumIllustrationLink(album.id)
 		};
-		if (album.releases)
-			response.releases = await Promise.all(album.releases.map(
-				(release) => this.releaseService.buildResponse(release)
-			));
 		if (album.artist != undefined)
 			response.artist = await this.artistServce.buildResponse(album.artist)
 		return response;

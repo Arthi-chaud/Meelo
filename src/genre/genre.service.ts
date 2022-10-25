@@ -153,10 +153,6 @@ export default class GenreService extends RepositoryService<
 
 	async buildResponse(genre: GenreWithRelations): Promise<GenreResponse> {
 		const response = <GenreResponse>genre;
-		if (genre.songs !== undefined)
-			response.songs = await Promise.all(genre.songs.map(
-				(song) => this.songService.buildResponse(song)
-			));
 		return response;
 	}
 

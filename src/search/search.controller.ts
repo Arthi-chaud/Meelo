@@ -69,7 +69,7 @@ export default class SearchController {
 		query: string,
 		@PaginationQuery()
 		paginationParameters: PaginationParameters,
-		@RelationIncludeQuery(ArtistQueryParameters.AvailableIncludes)
+		@RelationIncludeQuery(ArtistQueryParameters.AvailableAtomicIncludes)
 		include: ArtistQueryParameters.RelationInclude,
 		@SortingQuery(ArtistQueryParameters.SortingKeys)
 		sortingParameter: ArtistQueryParameters.SortingParameter,
@@ -92,7 +92,7 @@ export default class SearchController {
 		query: string,
 		@PaginationQuery()
 		paginationParameters: PaginationParameters,
-		@RelationIncludeQuery(AlbumQueryParameters.AvailableIncludes)
+		@RelationIncludeQuery(AlbumQueryParameters.AvailableAtomicIncludes)
 		include: AlbumQueryParameters.RelationInclude,
 		@SortingQuery(AlbumQueryParameters.SortingKeys)
 		sortingParameter: AlbumQueryParameters.SortingParameter,
@@ -116,7 +116,7 @@ export default class SearchController {
 		query: string,
 		@PaginationQuery()
 		paginationParameters: PaginationParameters,
-		@RelationIncludeQuery(SongQueryParameters.AvailableIncludes)
+		@RelationIncludeQuery(SongQueryParameters.AvailableAtomicIncludes)
 		include: SongQueryParameters.RelationInclude,
 		@SortingQuery(SongQueryParameters.SortingKeys)
 		sortingParameter: SongQueryParameters.SortingParameter,
@@ -139,7 +139,7 @@ export default class SearchController {
 		query: string,
 		@PaginationQuery()
 		paginationParameters: PaginationParameters,
-		@RelationIncludeQuery(ReleaseQueryParameters.AvailableIncludes)
+		@RelationIncludeQuery(ReleaseQueryParameters.AvailableAtomicIncludes)
 		include: ReleaseQueryParameters.RelationInclude,
 		@SortingQuery(ReleaseQueryParameters.SortingKeys)
 		sortingParameter: ReleaseQueryParameters.SortingParameter,
@@ -162,7 +162,7 @@ export default class SearchController {
 		query: string,
 		@PaginationQuery()
 		paginationParameters: PaginationParameters,
-		@RelationIncludeQuery(GenreQueryParameters.AvailableIncludes)
+		@RelationIncludeQuery(GenreQueryParameters.AvailableAtomicIncludes)
 		include: GenreQueryParameters.RelationInclude,
 		@SortingQuery(GenreQueryParameters.SortingKeys)
 		sortingParameter: GenreQueryParameters.SortingParameter,

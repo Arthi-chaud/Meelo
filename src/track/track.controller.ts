@@ -30,7 +30,7 @@ export class TrackController {
 	async getMany(
 		@PaginationQuery()
 		paginationParameters: PaginationParameters,
-		@RelationIncludeQuery(TrackQueryParameters.AvailableIncludes)
+		@RelationIncludeQuery(TrackQueryParameters.AvailableAtomicIncludes)
 		include: TrackQueryParameters.RelationInclude,
 		@SortingQuery(TrackQueryParameters.SortingKeys)
 		sortingParameter: TrackQueryParameters.SortingParameter,
@@ -53,7 +53,7 @@ export class TrackController {
 	async getVideoTracks(
 		@PaginationQuery()
 		paginationParameters: PaginationParameters,
-		@RelationIncludeQuery(TrackQueryParameters.AvailableIncludes)
+		@RelationIncludeQuery(TrackQueryParameters.AvailableAtomicIncludes)
 		include: TrackQueryParameters.RelationInclude,
 		@SortingQuery(TrackQueryParameters.SortingKeys)
 		sortingParameter: TrackQueryParameters.SortingParameter,
@@ -73,7 +73,7 @@ export class TrackController {
 	})
 	@Get(':id')
 	async get(
-		@RelationIncludeQuery(TrackQueryParameters.AvailableIncludes)
+		@RelationIncludeQuery(TrackQueryParameters.AvailableAtomicIncludes)
 		include: TrackQueryParameters.RelationInclude,
 		@Param('id', ParseIdPipe)
 		trackId: number

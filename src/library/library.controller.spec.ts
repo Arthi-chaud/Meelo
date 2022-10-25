@@ -242,35 +242,6 @@ describe('Library Controller', () => {
 				});
 		});
 
-		it("should return artists (w/ songs)", () => {
-			return request(app.getHttpServer())
-				.get(`/libraries/${dummyRepository.library1.id}/artists?with=songs`)
-				.expect(200)
-				.expect((res) => {
-					const artists: (Artist & { songs: Song[] })[] = res.body.items;
-					expect(artists.length).toBe(1);
-					expect(artists[0].songs).toContainEqual(expectedSongResponse(dummyRepository.songA1));
-					expect(artists[0].songs).toContainEqual(expectedSongResponse(dummyRepository.songA2));
-					expect(artists[0].id).toStrictEqual(dummyRepository.artistA.id);
-				});
-		});
-
-		it("should return artists (w/ albums)", () => {
-			return request(app.getHttpServer())
-				.get(`/libraries/${dummyRepository.library2.id}/artists?with=albums`)
-				.expect(200)
-				.expect((res) => {
-					const artists: (Artist & { albums: Album[]}) [] = res.body.items;
-					expect(artists.length).toBe(1);
-					expect(artists[0]).toStrictEqual({
-						...expectedArtistResponse(dummyRepository.artistB),
-						albums: [
-							expectedAlbumResponse(dummyRepository.albumB1)
-						]
-					});
-				});
-		});
-
 		it("should return an error, as the library does not exist", () => {
 			return request(app.getHttpServer())
 				.get(`/libraries/-1/artists`)
@@ -319,59 +290,43 @@ describe('Library Controller', () => {
 	describe('Get all Related Releases (GET /libraries/:id/releases)', () => {
 		it("should return every releases, w/ tracks & parent album", () => {
 			return request(app.getHttpServer())
-				.get(`/libraries/${dummyRepository.library1.id}/releases?with=tracks,album`)
+				.get(`/libraries/${dummyRepository.library1.id}/releases?with=album`)
 				.expect(200)
 				.expect((res) => {
 					const releases: Release[] = res.body.items;
 					expect(releases.length).toBe(3);
 					expect(releases).toContainEqual({
 						...expectedReleaseResponse(dummyRepository.releaseA1_1),
-						album: expectedAlbumResponse(dummyRepository.albumA1),
-						tracks: [ expectedTrackResponse(dummyRepository.trackA1_1) ]
+						album: expectedAlbumResponse(dummyRepository.albumA1)
 					});
 					expect(releases).toContainEqual({
 						...expectedReleaseResponse(dummyRepository.releaseA1_2),
-						album: expectedAlbumResponse(dummyRepository.albumA1),
-						tracks: [
-							expectedTrackResponse(dummyRepository.trackA1_2Video),
-							expectedTrackResponse(dummyRepository.trackA2_1)
-						]
+						album: expectedAlbumResponse(dummyRepository.albumA1)
 					});
 					expect(releases).toContainEqual({
 						...expectedReleaseResponse(dummyRepository.compilationReleaseA1),
-						album: expectedAlbumResponse(dummyRepository.compilationAlbumA),
-						tracks: [
-							expectedTrackResponse(dummyRepository.trackC1_1)
-						]
+						album: expectedAlbumResponse(dummyRepository.compilationAlbumA)
 					});
 				});
 		});
 		it("should return every releases, sorted by name", () => {
 			return request(app.getHttpServer())
-				.get(`/libraries/${dummyRepository.library1.id}/releases?sortBy=name&order=desc&with=album,tracks`)
+				.get(`/libraries/${dummyRepository.library1.id}/releases?sortBy=name&order=desc&with=album`)
 				.expect(200)
 				.expect((res) => {
 					const releases: Release[] = res.body.items;
 					expect(releases.length).toBe(3);
 					expect(releases[0]).toStrictEqual({
 						...expectedReleaseResponse(dummyRepository.compilationReleaseA1),
-						album: expectedAlbumResponse(dummyRepository.compilationAlbumA),
-						tracks: [
-							expectedTrackResponse(dummyRepository.trackC1_1)
-						]
+						album: expectedAlbumResponse(dummyRepository.compilationAlbumA)
 					});
 					expect(releases[1]).toStrictEqual({
 						...expectedReleaseResponse(dummyRepository.releaseA1_2),
-						album: expectedAlbumResponse(dummyRepository.albumA1),
-						tracks: [
-							expectedTrackResponse(dummyRepository.trackA1_2Video),
-							expectedTrackResponse(dummyRepository.trackA2_1)
-						]
+						album: expectedAlbumResponse(dummyRepository.albumA1)
 					});
 					expect(releases[2]).toStrictEqual({
 						...expectedReleaseResponse(dummyRepository.releaseA1_1),
-						album: expectedAlbumResponse(dummyRepository.albumA1),
-						tracks: [ expectedTrackResponse(dummyRepository.trackA1_1) ]
+						album: expectedAlbumResponse(dummyRepository.albumA1)
 					});
 				});
 		});
@@ -420,9 +375,9 @@ describe('Library Controller', () => {
 	});
 
 	describe('Get all Related Songs (GET /libraries/:id/songs)', () => {
-		it("should return every songs, w/ tracks & parent artist", () => {
+		it("should return every songs, w/ parent artist", () => {
 			return request(app.getHttpServer())
-				.get(`/libraries/${dummyRepository.library1.id}/songs?with=tracks,artist`)
+				.get(`/libraries/${dummyRepository.library1.id}/songs?with=artist`)
 				.expect(200)
 				.expect((res) => {
 					const songs: Song[] = res.body.items;
@@ -430,24 +385,14 @@ describe('Library Controller', () => {
 					expect(songs).toContainEqual({
 						...expectedSongResponse(dummyRepository.songA1),
 						artist: expectedArtistResponse(dummyRepository.artistA),
-						tracks: [
-							expectedTrackResponse(dummyRepository.trackA1_1),
-							expectedTrackResponse(dummyRepository.trackA1_2Video),
-						],
 					});
 					expect(songs).toContainEqual({
 						...expectedSongResponse(dummyRepository.songA2),
 						artist: expectedArtistResponse(dummyRepository.artistA),
-						tracks: [
-							expectedTrackResponse(dummyRepository.trackA2_1)
-						],
 					});
 					expect(songs).toContainEqual({
 						...expectedSongResponse(dummyRepository.songC1),
 						artist: expectedArtistResponse(dummyRepository.artistC),
-						tracks: [
-							expectedTrackResponse(dummyRepository.trackC1_1)
-						],
 					});
 				});
 		});

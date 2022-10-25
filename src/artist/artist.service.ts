@@ -17,6 +17,7 @@ import ReleaseService from 'src/release/release.service';
 import TrackService from 'src/track/track.service';
 import type { Artist, ArtistWithRelations } from 'src/prisma/models';
 import { ArtistResponse } from './models/artist.response';
+import { IllustrationPath } from 'src/illustration/models/illustration-path.model';
 @Injectable()
 export default class ArtistService extends RepositoryService<
 	ArtistWithRelations,
@@ -209,6 +210,17 @@ export default class ArtistService extends RepositoryService<
 		if (songCount == 0 && albumCount == 0)
 			await this.delete(where);
 	}
+
+	/**
+	 * Builds the path to the artist's illustration
+	 * @param where the query parameters to find the artist
+	 * @returns the path of the illustration
+	 */
+	 async buildIllustrationPath(where: ArtistQueryParameters.WhereInput): Promise<IllustrationPath> {
+		const artist = await this.select(where, { slug: true });
+		const path = this.illustrationService.buildArtistIllustrationPath(new Slug(artist.slug));
+		return path;
+	}
 	
 	/**
 	 * Build API reponse for Artist Request
@@ -220,14 +232,6 @@ export default class ArtistService extends RepositoryService<
 			...artist,
 			illustration: this.illustrationService.getArtistIllustrationLink(new Slug(artist.slug))
 		};
-		if (artist.songs != undefined)
-			response.songs = await Promise.all(artist.songs.map(
-				(song) => this.songService.buildResponse(song)
-			));
-		if (artist.albums != undefined)
-			response.albums = await Promise.all(artist.albums.map(
-				(album) => this.albumService.buildResponse(album)
-			));
 		return response;
 	}
 }

@@ -143,6 +143,20 @@ export default class IllustrationService implements OnModuleInit {
 	}
 
 	/**
+	 * Deletes an illustration if it exists.
+	 * @return true if the illustration was sucessfully deleted
+	 * @return false if the illustration does not exist
+	 * @param illustrationPath full path to an illustration
+	 */
+	 deleteIllustrationSafe(illustrationPath: IllustrationPath) {
+		if (this.illustrationExists(illustrationPath)) {
+			this.fileManagerService.deleteFile(illustrationPath);
+			return true;
+		}
+		return false;
+	}
+
+	/**
 	 * @param illustrationFolderPath full path to an illustration folder
 	 */
 	deleteIllustrationFolder(illustrationFolderPath: IllustrationPath) {

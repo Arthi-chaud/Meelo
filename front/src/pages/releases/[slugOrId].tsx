@@ -56,7 +56,7 @@ const albumVideosQuery = (slugOrId: string | number) => ({
 
 const albumReleasesQuery = (slugOrId: string | number) => ({
 	key: ['album', slugOrId, 'releases'],
-	exec: () => API.getAlbumReleases<ReleaseWithTracks>(slugOrId, {}, undefined, ['tracks']),
+	exec: () => API.getAlbumReleases(slugOrId, {}),
 });
 
 export const getServerSideProps = async (context: GetServerSidePropsContext) => {
@@ -280,7 +280,7 @@ const ReleasePage = ({ releaseIdentifier }: InferGetServerSidePropsType<typeof g
 							<Tile
 								targetURL={`/releases/${albumArtist?.data?.slug ?? 'compilations'}+${release.data!.album.slug}+${otherRelease.slug}/`}
 								title={otherRelease.name}
-								subtitle={`${otherRelease.tracks.length} Tracks`}
+								subtitle={otherRelease.releaseDate ? new Date(otherRelease.releaseDate).getFullYear().toString() : undefined}
 								illustration={<Illustration url={otherRelease.illustration} fallback={<Album/>}/>}
 							/>
 						</ListItem>

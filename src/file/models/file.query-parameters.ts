@@ -4,6 +4,7 @@ import type { RequireAtLeastOne } from "type-fest";
 import type { RequireExactlyOne } from 'type-fest';
 import type { SearchDateInput } from "src/utils/search-date-input";
 import type { RelationInclude as BaseRelationInclude } from "src/relation-include/models/relation-include" ;
+import { filterAtomicRelationInclude } from "src/relation-include/atomic-relation-include.filter";
 namespace FileQueryParameters {
 	/**
 	 * Parameters to create a File
@@ -46,6 +47,7 @@ namespace FileQueryParameters {
 	 * Relations to include in returned File object
 	 */
 	export const AvailableIncludes = ['track', 'library'] as const;
+	export const AvailableAtomicIncludes = filterAtomicRelationInclude(AvailableIncludes);
 	export type RelationInclude = BaseRelationInclude<typeof AvailableIncludes>;
 	
 }

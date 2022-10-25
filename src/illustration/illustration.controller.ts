@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Param, Post, Query, Response } from "@nestjs/common";
+import { Body, Controller, Delete, Get, Param, Post, Query, Response } from "@nestjs/common";
 import { ApiOperation, ApiTags } from "@nestjs/swagger";
 import ParseAlbumIdentifierPipe from "src/album/album.pipe";
 import type AlbumQueryParameters from "src/album/models/album.query-parameters";
@@ -33,7 +33,6 @@ export class IllustrationController {
 		summary: "Get an artist\'s illustration"
 	})
 	@Get('artists/:idOrSlug')
-	
 	async getArtistIllustration(
 		@IdentifierParam(ParseArtistIdentifierPipe)
 		where: ArtistQueryParameters.WhereInput,
@@ -42,9 +41,10 @@ export class IllustrationController {
 		@Response({ passthrough: true })
 		res: Response,
 	) {
-		const artist = await this.artistService.get(where);
+		const artist = await this.artistService.select(where, { slug: true });
+		const artistIllustration = await this.artistService.buildIllustrationPath(where);
 		return this.illustrationService.streamIllustration(
-			this.illustrationService.buildArtistIllustrationPath(new Slug(artist.slug)),
+			artistIllustration,
 			artist.slug, dimensions, res
 		);
 	}
@@ -59,8 +59,7 @@ export class IllustrationController {
 		@Body()
 		illustrationDto: IllustrationDownloadDto
 	) {
-		const artist = await this.artistService.get(where);
-		const artistIllustrationPath = this.illustrationService.buildArtistIllustrationPath(new Slug(artist.slug));
+		const artistIllustrationPath = await this.artistService.buildIllustrationPath(where);
 		return this.illustrationService.downloadIllustration(
 			illustrationDto.url,
 			artistIllustrationPath
@@ -176,5 +175,41 @@ export class IllustrationController {
 			illustrationDto.url,
 			trackIllustrationPath
 		);
+	}
+
+	@ApiOperation({
+		summary: "Delete a track's illustration"
+	})
+	@Delete('tracks/:id')
+	async deleteTrackIllustration(
+		@Param('id', ParseIdPipe)
+		trackId: number,
+	) {
+		const trackIllustrationPath = await this.trackService.buildIllustrationPath({ id: trackId });
+		this.illustrationService.deleteIllustrationSafe(trackIllustrationPath);
+	}
+
+	@ApiOperation({
+		summary: "Delete a release's illustration"
+	})
+	@Delete('releases/:idOrSlug')
+	async deleteReleaseIllustration(
+		@IdentifierParam(ParseReleaseIdentifierPipe)
+		where: ReleaseQueryParameters.WhereInput,
+	) {
+		const releaseIllustrationPath = await this.releaseService.buildIllustrationPath(where);
+		this.illustrationService.deleteIllustrationSafe(releaseIllustrationPath);
+	}
+
+	@ApiOperation({
+		summary: "Delete an artist's illustration"
+	})
+	@Delete('artists/:idOrSlug')
+	async deleteArtistIllustration(
+		@IdentifierParam(ParseArtistIdentifierPipe)
+		where: ArtistQueryParameters.WhereInput,
+	) {
+		const artistIllustrationPath = await this.artistService.buildIllustrationPath(where);
+		this.illustrationService.deleteIllustrationSafe(artistIllustrationPath);
 	}
 }

@@ -39,7 +39,7 @@ export default class ReleaseController {
 	async getReleases(
 		@PaginationQuery()
 		paginationParameters: PaginationParameters,
-		@RelationIncludeQuery(ReleaseQueryParameters.AvailableIncludes)
+		@RelationIncludeQuery(ReleaseQueryParameters.AvailableAtomicIncludes)
 		include: ReleaseQueryParameters.RelationInclude,
 		@SortingQuery(ReleaseQueryParameters.SortingKeys)
 		sortingParameter: ReleaseQueryParameters.SortingParameter,
@@ -61,7 +61,7 @@ export default class ReleaseController {
 	})
 	@Get(':idOrSlug')
 	async getRelease(
-		@RelationIncludeQuery(ReleaseQueryParameters.AvailableIncludes)
+		@RelationIncludeQuery(ReleaseQueryParameters.AvailableAtomicIncludes)
 		include: ReleaseQueryParameters.RelationInclude,
 		@IdentifierParam(ParseReleaseIdentifierPipe)
 		where: ReleaseQueryParameters.WhereInput
@@ -78,7 +78,7 @@ export default class ReleaseController {
 	async getReleaseTracks(
 		@PaginationQuery()
 		paginationParameters: PaginationParameters,
-		@RelationIncludeQuery(TrackQueryParameters.AvailableIncludes)
+		@RelationIncludeQuery(TrackQueryParameters.AvailableAtomicIncludes)
 		include: TrackQueryParameters.RelationInclude,
 		@IdentifierParam(ParseReleaseIdentifierPipe)
 		where: ReleaseQueryParameters.WhereInput,
@@ -106,7 +106,7 @@ export default class ReleaseController {
 	async getReleaseTracklist(
 		@IdentifierParam(ParseReleaseIdentifierPipe)
 		where: ReleaseQueryParameters.WhereInput,
-		@RelationIncludeQuery(TrackQueryParameters.AvailableIncludes)
+		@RelationIncludeQuery(TrackQueryParameters.AvailableAtomicIncludes)
 		include?: TrackQueryParameters.RelationInclude
 	) {
 		const tracklist = await this.trackService.getTracklist(where, include);
@@ -122,7 +122,7 @@ export default class ReleaseController {
 		where: ReleaseQueryParameters.WhereInput,
 		@Query('random', new DefaultValuePipe(false), ParseBoolPipe)
 		random: boolean,
-		@RelationIncludeQuery(TrackQueryParameters.AvailableIncludes)
+		@RelationIncludeQuery(TrackQueryParameters.AvailableAtomicIncludes)
 		include?: TrackQueryParameters.RelationInclude
 	) {
 		const tracklist = await this.trackService.getPlaylist(where, include, random);
@@ -134,7 +134,7 @@ export default class ReleaseController {
 	})
 	@Get(':idOrSlug/album')
 	async getReleaseAlbum(
-		@RelationIncludeQuery(AlbumQueryParameters.AvailableIncludes)
+		@RelationIncludeQuery(AlbumQueryParameters.AvailableAtomicIncludes)
 		include: AlbumQueryParameters.RelationInclude,
 		@IdentifierParam(ParseReleaseIdentifierPipe)
 		where: ReleaseQueryParameters.WhereInput

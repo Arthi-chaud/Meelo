@@ -278,10 +278,6 @@ export default class SongService extends RepositoryService<
 			...song,
 			illustration: await this.illustrationService.getSongIllustrationLink(song.id)
 		};
-		if (song.tracks !== undefined)
-			response.tracks = await Promise.all(song.tracks.map(
-				(track) => this.trackService.buildResponse(track)
-			));
 		if (song.artist !== undefined)
 			response.artist = await this.artistService.buildResponse(song.artist);
 		return response;

@@ -489,7 +489,7 @@ export default class API {
 	}
 
 	/**
-	 * Builds the URL to get a track frile from an object returned by the API
+	 * Builds the URL to get a track file from an object returned by the API
 	 * @param streamURL 
 	 * @returns the correct, rerouted URL
 	 */

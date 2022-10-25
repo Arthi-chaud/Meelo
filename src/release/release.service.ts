@@ -368,10 +368,6 @@ export default class ReleaseService extends RepositoryService<
 		};
 		if (release.album !== undefined)
 			response.album = await this.albumService.buildResponse(release.album)
-		if (release.tracks !== undefined)
-			response.tracks = await Promise.all(release.tracks.map(
-				(track) => this.trackService.buildResponse(track)
-			));
 		return response;
 	}
 }
