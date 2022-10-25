@@ -12,6 +12,7 @@ import BaseSortingParameter from 'src/sort/models/sorting-parameter';
 import type AlbumQueryParameters from "src/album/models/album.query-parameters";
 import type ArtistQueryParameters from "src/artist/models/artist.query-parameters";
 import { ApiPropertyOptional } from "@nestjs/swagger";
+import { filterAtomicRelationInclude } from "src/relation-include/atomic-relation-include.filter";
 
 namespace TrackQueryParameters {
 
@@ -72,6 +73,7 @@ namespace TrackQueryParameters {
 	 * Defines what relations to include in query
 	 */
 	export const AvailableIncludes = ['song', 'release'] as const;
+	export const AvailableAtomicIncludes = filterAtomicRelationInclude(AvailableIncludes);
 	export type RelationInclude = BaseRelationInclude<typeof AvailableIncludes>;
 	
 

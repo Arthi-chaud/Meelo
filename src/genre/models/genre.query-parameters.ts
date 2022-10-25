@@ -9,6 +9,7 @@ import BaseSortingParameter from 'src/sort/models/sorting-parameter';
 import type { RelationInclude as BaseRelationInclude } from "src/relation-include/models/relation-include" ;
 import { Genre } from "src/prisma/models";
 import { ApiPropertyOptional } from "@nestjs/swagger";
+import { filterAtomicRelationInclude } from "src/relation-include/atomic-relation-include.filter";
 namespace GenreQueryParameters {
 	/**
 	 * The input required to save a genre in the database
@@ -51,6 +52,7 @@ namespace GenreQueryParameters {
 	 * Defines what relations to include in query
 	 */
 	export const AvailableIncludes = ['songs'] as const;
+	export const AvailableAtomicIncludes = filterAtomicRelationInclude(AvailableIncludes);
 	export type RelationInclude = BaseRelationInclude<typeof AvailableIncludes>;
 	
 

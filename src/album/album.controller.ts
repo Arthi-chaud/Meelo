@@ -42,14 +42,14 @@ export default class AlbumController {
 
 	@Get()
 	@ApiOperation({ summary: 'Get all albums' })
-	@ApiRelationInclude(AlbumQueryParameters.AvailableIncludes)
+	@ApiRelationInclude(AlbumQueryParameters.AvailableAtomicIncludes)
 	@ApiPaginatedResponse(AlbumResponse)
 	async getMany(
 		@PaginationQuery()
 		paginationParameters: PaginationParameters,
 		@SortingQuery(AlbumQueryParameters.SortingKeys)
 		sortingParameter: AlbumQueryParameters.SortingParameter,
-		@RelationIncludeQuery(AlbumQueryParameters.AvailableIncludes)
+		@RelationIncludeQuery(AlbumQueryParameters.AvailableAtomicIncludes)
 		include: AlbumQueryParameters.RelationInclude,
 		@Query() filter: AlbumQueryParameters.AlbumFilterParameter,
 		@Req() request: Request,
@@ -73,7 +73,7 @@ export default class AlbumController {
 		paginationParameters: PaginationParameters,
 		@SortingQuery(AlbumQueryParameters.SortingKeys)
 		sortingParameter: AlbumQueryParameters.SortingParameter,
-		@RelationIncludeQuery(AlbumQueryParameters.AvailableIncludes)
+		@RelationIncludeQuery(AlbumQueryParameters.AvailableAtomicIncludes)
 		include: AlbumQueryParameters.RelationInclude,
 		@Query() filter: AlbumQueryParameters.AlbumFilterParameter,
 		@Req() request: Request
@@ -93,7 +93,7 @@ export default class AlbumController {
 	@ApiIdentifierRoute()
 	@Get(':idOrSlug')
 	async get(
-		@RelationIncludeQuery(AlbumQueryParameters.AvailableIncludes)
+		@RelationIncludeQuery(AlbumQueryParameters.AvailableAtomicIncludes)
 		include: AlbumQueryParameters.RelationInclude,
 		@IdentifierParam(ParseAlbumIdentifierPipe)
 		where: AlbumQueryParameters.WhereInput
@@ -107,7 +107,7 @@ export default class AlbumController {
 	})
 	@Get(':idOrSlug/master')
 	async getAlbumMaster(
-		@RelationIncludeQuery(ReleaseQueryParameters.AvailableIncludes)
+		@RelationIncludeQuery(ReleaseQueryParameters.AvailableAtomicIncludes)
 		include: ReleaseQueryParameters.RelationInclude,
 		@IdentifierParam(ParseAlbumIdentifierPipe)
 		where: AlbumQueryParameters.WhereInput
@@ -124,7 +124,7 @@ export default class AlbumController {
 	async getAlbumReleases(
 		@PaginationQuery()
 		paginationParameters: PaginationParameters,
-		@RelationIncludeQuery(ReleaseQueryParameters.AvailableIncludes)
+		@RelationIncludeQuery(ReleaseQueryParameters.AvailableAtomicIncludes)
 		include: ReleaseQueryParameters.RelationInclude,
 		@SortingQuery(ReleaseQueryParameters.SortingKeys)
 		sortingParameter: ReleaseQueryParameters.SortingParameter,
@@ -161,7 +161,7 @@ export default class AlbumController {
 	async getAlbumVideos(
 		@PaginationQuery()
 		paginationParameters: PaginationParameters,
-		@RelationIncludeQuery(TrackQueryParameters.AvailableIncludes)
+		@RelationIncludeQuery(TrackQueryParameters.AvailableAtomicIncludes)
 		include: TrackQueryParameters.RelationInclude,
 		@SortingQuery(TrackQueryParameters.SortingKeys)
 		sortingParameter: TrackQueryParameters.SortingParameter,

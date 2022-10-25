@@ -20,7 +20,7 @@ export default class FileController {
 	get(
 		@Param('id', ParseIdPipe)
 		fileId: number,
-		@RelationIncludeQuery(FileQueryParameters.AvailableIncludes)
+		@RelationIncludeQuery(FileQueryParameters.AvailableAtomicIncludes)
 		include: FileQueryParameters.RelationInclude,
 	): Promise<File> {
 		return this.fileService.get({ id: fileId }, include);

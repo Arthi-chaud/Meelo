@@ -43,7 +43,7 @@ export class GenreController {
 	async getMany(
 		@PaginationQuery()
 		paginationParameters: PaginationParameters,
-		@RelationIncludeQuery(GenreQueryParameters.AvailableIncludes)
+		@RelationIncludeQuery(GenreQueryParameters.AvailableAtomicIncludes)
 		include: GenreQueryParameters.RelationInclude,
 		@SortingQuery(GenreQueryParameters.SortingKeys)
 		sortingParameter: GenreQueryParameters.SortingParameter,
@@ -63,7 +63,7 @@ export class GenreController {
 	})
 	@Get(':idOrSlug')
 	async get(
-		@RelationIncludeQuery(GenreQueryParameters.AvailableIncludes)
+		@RelationIncludeQuery(GenreQueryParameters.AvailableAtomicIncludes)
 		include: GenreQueryParameters.RelationInclude,
 		@IdentifierParam(ParseBaseIdentifierPipe)
 		where: GenreQueryParameters.WhereInput
@@ -80,7 +80,7 @@ export class GenreController {
 	async getGenreSongs(
 		@PaginationQuery()
 		paginationParameters: PaginationParameters,
-		@RelationIncludeQuery(SongQueryParameters.AvailableIncludes)
+		@RelationIncludeQuery(SongQueryParameters.AvailableAtomicIncludes)
 		include: SongQueryParameters.RelationInclude,
 		@IdentifierParam(ParseBaseIdentifierPipe)
 		where: GenreQueryParameters.WhereInput,
@@ -109,7 +109,7 @@ export class GenreController {
 	async getGenreAlbums(
 		@PaginationQuery()
 		paginationParameters: PaginationParameters,
-		@RelationIncludeQuery(AlbumQueryParameters.AvailableIncludes)
+		@RelationIncludeQuery(AlbumQueryParameters.AvailableAtomicIncludes)
 		include: AlbumQueryParameters.RelationInclude,
 		@IdentifierParam(ParseBaseIdentifierPipe)
 		where: GenreQueryParameters.WhereInput,
@@ -139,7 +139,7 @@ export class GenreController {
 	async getGenreArtists(
 		@PaginationQuery()
 		paginationParameters: PaginationParameters,
-		@RelationIncludeQuery(ArtistQueryParameters.AvailableIncludes)
+		@RelationIncludeQuery(ArtistQueryParameters.AvailableAtomicIncludes)
 		include: ArtistQueryParameters.RelationInclude,
 		@IdentifierParam(ParseBaseIdentifierPipe)
 		where: GenreQueryParameters.WhereInput,

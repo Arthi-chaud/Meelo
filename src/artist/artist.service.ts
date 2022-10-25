@@ -232,14 +232,6 @@ export default class ArtistService extends RepositoryService<
 			...artist,
 			illustration: this.illustrationService.getArtistIllustrationLink(new Slug(artist.slug))
 		};
-		if (artist.songs != undefined)
-			response.songs = await Promise.all(artist.songs.map(
-				(song) => this.songService.buildResponse(song)
-			));
-		if (artist.albums != undefined)
-			response.albums = await Promise.all(artist.albums.map(
-				(album) => this.albumService.buildResponse(album)
-			));
 		return response;
 	}
 }

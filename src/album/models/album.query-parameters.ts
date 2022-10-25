@@ -13,6 +13,7 @@ import { Album } from "src/prisma/models";
 import { ApiPropertyOptional, IntersectionType, PartialType, PickType } from "@nestjs/swagger";
 import { AlbumType } from "@prisma/client";
 import { IsEnum, IsOptional } from "class-validator";
+import { filterAtomicRelationInclude } from "src/relation-include/atomic-relation-include.filter";
 
 namespace AlbumQueryParameters {
 
@@ -66,6 +67,7 @@ namespace AlbumQueryParameters {
 	 * Defines what relations to include in query
 	 */
 	export const AvailableIncludes = ['releases', 'artist'] as const;
+	export const AvailableAtomicIncludes = filterAtomicRelationInclude(AvailableIncludes);
 	export type RelationInclude = BaseRelationInclude<typeof AvailableIncludes>;
 	
 	

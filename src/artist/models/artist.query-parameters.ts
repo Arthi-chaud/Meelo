@@ -9,6 +9,7 @@ import BaseSortingParameter from 'src/sort/models/sorting-parameter';
 import type GenreQueryParameters from "src/genre/models/genre.query-parameters";
 import { Artist } from "src/prisma/models";
 import { ApiPropertyOptional } from "@nestjs/swagger";
+import { filterAtomicRelationInclude } from "src/relation-include/atomic-relation-include.filter";
 
 namespace ArtistQueryParameters {
 
@@ -55,6 +56,7 @@ namespace ArtistQueryParameters {
 	 * Defines what relations to include in query
 	 */
 	export const AvailableIncludes = ['albums', 'songs'] as const;
+	export const AvailableAtomicIncludes = filterAtomicRelationInclude(AvailableIncludes);
 	export type RelationInclude = BaseRelationInclude<typeof AvailableIncludes>;
 	
 

@@ -8,6 +8,7 @@ import BaseSortingParameter from 'src/sort/models/sorting-parameter';
 import type { SearchStringInput } from "src/utils/search-string-input";
 import { Release } from "src/prisma/models";
 import { ApiPropertyOptional } from "@nestjs/swagger";
+import { filterAtomicRelationInclude } from "src/relation-include/atomic-relation-include.filter";
 
 namespace ReleaseQueryParameters {
 	/**
@@ -64,6 +65,7 @@ namespace ReleaseQueryParameters {
 	 * Defines what relations to include in query
 	 */
 	export const AvailableIncludes = ['album', 'tracks'] as const;
+	export const AvailableAtomicIncludes = filterAtomicRelationInclude(AvailableIncludes);
 	export type RelationInclude = BaseRelationInclude<typeof AvailableIncludes>;
 	
 	

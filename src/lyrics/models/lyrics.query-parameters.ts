@@ -2,6 +2,7 @@ import type { Lyrics } from "src/prisma/models";
 import type SongQueryParameters from "src/song/models/song.query-params";
 import type { RequireExactlyOne } from 'type-fest';
 import type { RelationInclude as BaseRelationInclude } from 'src/relation-include/models/relation-include';
+import { filterAtomicRelationInclude } from "src/relation-include/atomic-relation-include.filter";
 
 namespace LyricsQueryParameters {
 	/**
@@ -41,6 +42,7 @@ namespace LyricsQueryParameters {
 	 * Defines what relations to include in query
 	 */
 	export const AvailableIncludes = ['song'] as const;
+	export const AvailableAtomicIncludes = filterAtomicRelationInclude(AvailableIncludes);
 	export type RelationInclude = BaseRelationInclude<typeof AvailableIncludes>;
 	
 }

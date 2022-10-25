@@ -6,6 +6,7 @@ import type { RelationInclude as BaseRelationInclude } from "src/relation-includ
 import BaseSortingParameter from 'src/sort/models/sorting-parameter';
 
 import { ApiPropertyOptional } from "@nestjs/swagger";
+import { filterAtomicRelationInclude } from "src/relation-include/atomic-relation-include.filter";
 
 namespace LibraryQueryParameters {
 
@@ -43,6 +44,7 @@ namespace LibraryQueryParameters {
 	 * The relation field to include in a returned library
 	 */
 	export const AvailableIncludes = ['files'] as const;
+	export const AvailableAtomicIncludes = filterAtomicRelationInclude(AvailableIncludes);
 	export type RelationInclude = BaseRelationInclude<typeof AvailableIncludes>;
 	
 

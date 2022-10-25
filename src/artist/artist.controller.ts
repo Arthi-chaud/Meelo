@@ -50,7 +50,7 @@ export default class ArtistController {
 	async getMany(
 		@PaginationQuery()
 		paginationParameters: PaginationParameters,
-		@RelationIncludeQuery(ArtistQueryParameters.AvailableIncludes)
+		@RelationIncludeQuery(ArtistQueryParameters.AvailableAtomicIncludes)
 		include: ArtistQueryParameters.RelationInclude,
 		@SortingQuery(ArtistQueryParameters.SortingKeys)
 		sortingParameter: ArtistQueryParameters.SortingParameter,
@@ -81,7 +81,7 @@ export default class ArtistController {
 	async get(
 		@IdentifierParam(ParseArtistIdentifierPipe)
 		where: ArtistQueryParameters.WhereInput,
-		@RelationIncludeQuery(ArtistQueryParameters.AvailableIncludes)
+		@RelationIncludeQuery(ArtistQueryParameters.AvailableAtomicIncludes)
 		include: ArtistQueryParameters.RelationInclude
 	) {
 		const artist = await this.artistService.get(where, include);
@@ -96,7 +96,7 @@ export default class ArtistController {
 	async getArtistVideos(
 		@PaginationQuery()
 		paginationParameters: PaginationParameters,
-		@RelationIncludeQuery(TrackQueryParameters.AvailableIncludes)
+		@RelationIncludeQuery(TrackQueryParameters.AvailableAtomicIncludes)
 		include: TrackQueryParameters.RelationInclude,
 		@SortingQuery(TrackQueryParameters.SortingKeys)
 		sortingParameter: TrackQueryParameters.SortingParameter,
@@ -130,7 +130,7 @@ export default class ArtistController {
 		@SortingQuery(AlbumQueryParameters.SortingKeys)
 		sortingParameter: AlbumQueryParameters.SortingParameter,
 		@Query() filter: AlbumQueryParameters.AlbumFilterParameter,
-		@RelationIncludeQuery(AlbumQueryParameters.AvailableIncludes)
+		@RelationIncludeQuery(AlbumQueryParameters.AvailableAtomicIncludes)
 		include: AlbumQueryParameters.RelationInclude,
 		@Req() request: Request
 	) {
@@ -157,7 +157,7 @@ export default class ArtistController {
 		where: ArtistQueryParameters.WhereInput,
 		@SortingQuery(SongQueryParameters.SortingKeys)
 		sortingParameter: SongQueryParameters.SortingParameter,
-		@RelationIncludeQuery(SongQueryParameters.AvailableIncludes)
+		@RelationIncludeQuery(SongQueryParameters.AvailableAtomicIncludes)
 		include: SongQueryParameters.RelationInclude,
 		@Req() request: Request
 	) {
