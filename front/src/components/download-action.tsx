@@ -6,7 +6,7 @@ import { toast } from "react-hot-toast";
 const downloadAction = (router: NextRouter, downloadUrl: string) => {
 	let toastId: string | undefined = undefined;
 	const getToastId = () => toastId;
-	toastId = toast.error(<Box sx={{ flexDirection: 'column', display :'flex', justifyContent: 'center' }}>
+	toastId = toast(<Box sx={{ flexDirection: 'column', display :'flex', justifyContent: 'center' }}>
 		<Grid container sx={{ justifyContent: 'space-between', alignItems: 'center' }}>
 			<Grid item>
 				<Typography sx={{ fontWeight: 'bold', color: 'error' }}>Warning</Typography>
