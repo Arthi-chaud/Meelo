@@ -53,7 +53,7 @@ export class NoReleaseIllustrationException extends NoIllustrationException {
 
 export class CantDownloadIllustrationException extends InvalidRequestException {
 	constructor(illustrationURL: string) {
-		super(`Illustration from could not be downloaded from '${illustrationURL}'`);
+		super(`Illustration could not be downloaded from '${illustrationURL}'`);
 	}
 }
 

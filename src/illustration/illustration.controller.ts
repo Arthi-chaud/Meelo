@@ -206,7 +206,7 @@ export class IllustrationController {
 	})
 	@Delete('artists/:idOrSlug')
 	async deleteArtistIllustration(
-		@IdentifierParam(ParseReleaseIdentifierPipe)
+		@IdentifierParam(ParseArtistIdentifierPipe)
 		where: ArtistQueryParameters.WhereInput,
 	) {
 		const artistIllustrationPath = await this.artistService.buildIllustrationPath(where);
