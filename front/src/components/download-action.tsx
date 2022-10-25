@@ -16,7 +16,7 @@ const downloadAction = (router: NextRouter, downloadUrl: string) => {
 			</Grid>
 		</Grid>
 		<Box sx={{ paddingY: 2 }}>
-			Downloading copyrighted material you don't own is not authorized. Please proceed if, and only if, you own the original content.
+			{"Downloading copyrighted material you don't own is not authorized. Please proceed if, and only if, you own the original content."}
 		</Box>
 		<Button color='error' variant="outlined" onClick={() => {
 			router.push(downloadUrl);
