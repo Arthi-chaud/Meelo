@@ -41,7 +41,7 @@ type AlbumWithReleases = Album & {
 	releases: Release[];
 }
 
-type AlbumInclude = 'artist' | 'releases';
+type AlbumInclude = 'artist';
 
 export const AlbumType = ['StudioRecording', 'Single', 'LiveRecording', 'Compilation'];
 export type AlbumType = 'StudioRecording' | 'LiveRecording' | 'Compilation' | 'Single';
