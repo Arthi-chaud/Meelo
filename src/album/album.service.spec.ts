@@ -88,6 +88,7 @@ describe('Album Service', () => {
 			expect(AlbumService.getAlbumTypeFromName('Evita: The Complete Motion Picture Music Soundtrack')).toBe(AlbumType.Soundtrack);
 			expect(AlbumService.getAlbumTypeFromName("Who's That Girl (Original Motion Picture Soundtrack)")).toBe(AlbumType.Soundtrack);
 			expect(AlbumService.getAlbumTypeFromName("Berlin Calling (The Soundtrack)")).toBe(AlbumType.Soundtrack);
+			expect(AlbumService.getAlbumTypeFromName("The Next Best Thing: Music From the Motion Picture")).toBe(AlbumType.Soundtrack);
 		});
 
 		it('should identify title as single', () => {

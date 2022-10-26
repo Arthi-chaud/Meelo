@@ -308,7 +308,8 @@ export default class AlbumService extends RepositoryService<
 
 	static getAlbumTypeFromName(albumName: string): AlbumType {
 		albumName = albumName.toLowerCase();
-		if (albumName.includes('soundtrack')) {
+		if (albumName.includes('soundtrack') ||
+			albumName.includes('from the motion picture')) {
 			return AlbumType.Soundtrack
 		}
 		if (albumName.includes('music videos') ||
