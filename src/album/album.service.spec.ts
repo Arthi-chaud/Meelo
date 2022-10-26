@@ -73,6 +73,7 @@ describe('Album Service', () => {
 			expect(AlbumService.getAlbumTypeFromName('The Video Collection 93:99')).toBe(AlbumType.VideoAlbum);
 			expect(AlbumService.getAlbumTypeFromName('Music Videos')).toBe(AlbumType.VideoAlbum);
 			expect(AlbumService.getAlbumTypeFromName('Music Videos II')).toBe(AlbumType.VideoAlbum);
+			expect(AlbumService.getAlbumTypeFromName('In The Zone DVD')).toBe(AlbumType.VideoAlbum);
 		});
 		it("should identify title as remix album", () => {
 			expect(AlbumService.getAlbumTypeFromName('B In The Mix: The Remixes')).toBe(AlbumType.RemixAlbum);

@@ -314,7 +314,8 @@ export default class AlbumService extends RepositoryService<
 			return AlbumType.Soundtrack
 		}
 		if (albumName.includes('music videos') ||
-			albumName.includes('the video') ) {
+			albumName.includes('the video') ||
+			albumName.includes('dvd') ) {
 			return AlbumType.VideoAlbum;
 		}
 		if (albumName.search(/.+(live).*/g) != -1 ||
