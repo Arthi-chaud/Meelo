@@ -309,11 +309,13 @@ export default class AlbumService extends RepositoryService<
 	static getAlbumTypeFromName(albumName: string): AlbumType {
 		albumName = albumName.toLowerCase();
 		if (albumName.includes('soundtrack') ||
-			albumName.includes('from the motion picture')) {
+			albumName.includes('from the motion picture') ||
+			albumName.includes('bande originale')) {
 			return AlbumType.Soundtrack
 		}
 		if (albumName.includes('music videos') ||
-			albumName.includes('the video') ) {
+			albumName.includes('the video') ||
+			albumName.includes('dvd') ) {
 			return AlbumType.VideoAlbum;
 		}
 		if (albumName.search(/.+(live).*/g) != -1 ||
@@ -332,6 +334,7 @@ export default class AlbumService extends RepositoryService<
 			albumName.includes(' the remixes') ||
 			albumName.includes('mixes') ||
 			albumName.includes('remixes') ||
+			albumName.includes('remixed') ||
 			albumName.includes('best mixes')) {
 			return AlbumType.RemixAlbum
 		}

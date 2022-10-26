@@ -73,9 +73,11 @@ describe('Album Service', () => {
 			expect(AlbumService.getAlbumTypeFromName('The Video Collection 93:99')).toBe(AlbumType.VideoAlbum);
 			expect(AlbumService.getAlbumTypeFromName('Music Videos')).toBe(AlbumType.VideoAlbum);
 			expect(AlbumService.getAlbumTypeFromName('Music Videos II')).toBe(AlbumType.VideoAlbum);
+			expect(AlbumService.getAlbumTypeFromName('In The Zone DVD')).toBe(AlbumType.VideoAlbum);
 		});
 		it("should identify title as remix album", () => {
 			expect(AlbumService.getAlbumTypeFromName('B In The Mix: The Remixes')).toBe(AlbumType.RemixAlbum);
+			expect(AlbumService.getAlbumTypeFromName('Rated R: Remixed')).toBe(AlbumType.RemixAlbum);
 			expect(AlbumService.getAlbumTypeFromName('Move To This - Remix Album')).toBe(AlbumType.RemixAlbum);
 			expect(AlbumService.getAlbumTypeFromName('Essential Mixes - 12" Masters')).toBe(AlbumType.RemixAlbum);
 			expect(AlbumService.getAlbumTypeFromName('Everybody Move (To The Mixes)')).toBe(AlbumType.RemixAlbum);
@@ -89,6 +91,7 @@ describe('Album Service', () => {
 			expect(AlbumService.getAlbumTypeFromName("Who's That Girl (Original Motion Picture Soundtrack)")).toBe(AlbumType.Soundtrack);
 			expect(AlbumService.getAlbumTypeFromName("Berlin Calling (The Soundtrack)")).toBe(AlbumType.Soundtrack);
 			expect(AlbumService.getAlbumTypeFromName("The Next Best Thing: Music From the Motion Picture")).toBe(AlbumType.Soundtrack);
+			expect(AlbumService.getAlbumTypeFromName("8 femmes (Bande originale du film)")).toBe(AlbumType.Soundtrack);
 		});
 
 		it('should identify title as single', () => {

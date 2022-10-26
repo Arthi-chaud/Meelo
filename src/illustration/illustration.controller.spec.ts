@@ -229,7 +229,6 @@ describe('Illustration Controller', () => {
 				.expect(201)
 				.expect(async () => {
 					expect(fileManagerService.fileExists(releaseIllustrationPath));
-					expect(fileManagerService.getFileContent(releaseIllustrationPath)).not.toBe('');
 				});
 		});
 		it("should update the release illustration", async () => {
