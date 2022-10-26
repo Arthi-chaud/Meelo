@@ -90,6 +90,7 @@ describe('Album Service', () => {
 			expect(AlbumService.getAlbumTypeFromName('Evita: The Complete Motion Picture Music Soundtrack')).toBe(AlbumType.Soundtrack);
 			expect(AlbumService.getAlbumTypeFromName("Who's That Girl (Original Motion Picture Soundtrack)")).toBe(AlbumType.Soundtrack);
 			expect(AlbumService.getAlbumTypeFromName("Berlin Calling (The Soundtrack)")).toBe(AlbumType.Soundtrack);
+			expect(AlbumService.getAlbumTypeFromName('Desperate Housewives (Music From and Inspired By The Television Series)')).toBe(AlbumType.Soundtrack);
 			expect(AlbumService.getAlbumTypeFromName("The Next Best Thing: Music From the Motion Picture")).toBe(AlbumType.Soundtrack);
 			expect(AlbumService.getAlbumTypeFromName("8 femmes (Bande originale du film)")).toBe(AlbumType.Soundtrack);
 		});

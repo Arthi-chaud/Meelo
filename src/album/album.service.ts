@@ -310,7 +310,9 @@ export default class AlbumService extends RepositoryService<
 		albumName = albumName.toLowerCase();
 		if (albumName.includes('soundtrack') ||
 			albumName.includes('from the motion picture') ||
-			albumName.includes('bande originale')) {
+			albumName.includes('bande originale') ||
+			albumName.includes('music from and inspired by the television series') ||
+			albumName.includes('music from and inspired by the motion picture')) {
 			return AlbumType.Soundtrack
 		}
 		if (albumName.includes('music videos') ||
