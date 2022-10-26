@@ -310,7 +310,9 @@ export default class AlbumService extends RepositoryService<
 		albumName = albumName.toLowerCase();
 		if (albumName.includes('soundtrack') ||
 			albumName.includes('from the motion picture') ||
-			albumName.includes('bande originale')) {
+			albumName.includes('bande originale') ||
+			albumName.includes('music from and inspired by the television series') ||
+			albumName.includes('music from and inspired by the motion picture')) {
 			return AlbumType.Soundtrack
 		}
 		if (albumName.includes('music videos') ||
@@ -319,9 +321,11 @@ export default class AlbumService extends RepositoryService<
 			return AlbumType.VideoAlbum;
 		}
 		if (albumName.search(/.+(live).*/g) != -1 ||
+			albumName.includes('unplugged') ||
 			albumName.includes(' tour') ||
 			albumName.includes('live from ') ||
-			albumName.includes('live at ')) {
+			albumName.includes('live at ') ||
+			albumName.includes('live a ')) {
 			return AlbumType.LiveRecording
 		}
 		if (albumName.endsWith('- single') ||
@@ -339,6 +343,7 @@ export default class AlbumService extends RepositoryService<
 			return AlbumType.RemixAlbum
 		}
 		if (albumName.includes('best of') ||
+			albumName.includes('hits') ||
 			albumName.includes('greatest hits') ||
 			albumName.includes('singles') ||
 			albumName.includes('collection')) {
