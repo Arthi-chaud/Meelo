@@ -56,6 +56,8 @@ describe('Album Service', () => {
 			expect(AlbumService.getAlbumTypeFromName('Intimate & Live')).toBe(AlbumType.LiveRecording);
 			expect(AlbumService.getAlbumTypeFromName('Some Album (Live)')).toBe(AlbumType.LiveRecording);
 			expect(AlbumService.getAlbumTypeFromName('11,000 Click (Live at Brixton)')).toBe(AlbumType.LiveRecording);
+			expect(AlbumService.getAlbumTypeFromName('Unplugged')).toBe(AlbumType.Compilation);
+			expect(AlbumService.getAlbumTypeFromName('Live a Paris')).toBe(AlbumType.Compilation);
 		});
 
 		it('should identify title as compilation album', () => {
@@ -64,6 +66,7 @@ describe('Album Service', () => {
 			expect(AlbumService.getAlbumTypeFromName('The Singles Collection')).toBe(AlbumType.Compilation);
 			expect(AlbumService.getAlbumTypeFromName('The Immaculate Collection')).toBe(AlbumType.Compilation);
 			expect(AlbumService.getAlbumTypeFromName('Greatest Hits: My Prerogative')).toBe(AlbumType.Compilation);
+			expect(AlbumService.getAlbumTypeFromName('A decade of Hits')).toBe(AlbumType.Compilation);
 		});
 
 		it("should identify title as video album", () => {
