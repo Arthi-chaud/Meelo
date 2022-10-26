@@ -55,6 +55,12 @@ enum AlbumType {
 	Compilation
 	/// Describes a collection of track, usually below 10, that are related to a single song, of songs from a common era
 	Single
+	/// Describe a collection of tracks coming from another project's soundtrack
+	Soundtrack
+	/// Describe a collection of remixed tracks from the same artist
+	RemixAlbum
+	/// Describe a collection of video tracks from the same artist
+	VideoAlbum
 	@@map("album-types")
 }
 /// An album is a record of releases.

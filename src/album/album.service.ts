@@ -308,6 +308,14 @@ export default class AlbumService extends RepositoryService<
 
 	static getAlbumTypeFromName(albumName: string): AlbumType {
 		albumName = albumName.toLowerCase();
+		if (albumName.includes('soundtrack') ||
+			albumName.includes('from the motion picture')) {
+			return AlbumType.Soundtrack
+		}
+		if (albumName.includes('music videos') ||
+			albumName.includes('the video') ) {
+			return AlbumType.VideoAlbum;
+		}
 		if (albumName.search(/.+(live).*/g) != -1 ||
 			albumName.includes(' tour') ||
 			albumName.includes('live from ') ||
@@ -319,13 +327,18 @@ export default class AlbumService extends RepositoryService<
 			albumName.endsWith('(remixes)')) {
 			return AlbumType.Single
 		}
+		if (
+			albumName.includes('remix album') ||
+			albumName.includes(' the remixes') ||
+			albumName.includes('mixes') ||
+			albumName.includes('remixes') ||
+			albumName.includes('best mixes')) {
+			return AlbumType.RemixAlbum
+		}
 		if (albumName.includes('best of') ||
 			albumName.includes('greatest hits') ||
-			albumName.includes('remix album') ||
 			albumName.includes('singles') ||
-			albumName.includes(' the remixes') ||
-			albumName.includes('collection') ||
-			albumName.includes('best mixes')) {
+			albumName.includes('collection')) {
 			return AlbumType.Compilation
 		}
 		return AlbumType.StudioRecording;
