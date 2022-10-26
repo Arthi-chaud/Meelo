@@ -334,6 +334,7 @@ export default class AlbumService extends RepositoryService<
 			albumName.includes(' the remixes') ||
 			albumName.includes('mixes') ||
 			albumName.includes('remixes') ||
+			albumName.includes('remixed') ||
 			albumName.includes('best mixes')) {
 			return AlbumType.RemixAlbum
 		}

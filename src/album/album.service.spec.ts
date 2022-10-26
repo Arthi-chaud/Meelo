@@ -77,6 +77,7 @@ describe('Album Service', () => {
 		});
 		it("should identify title as remix album", () => {
 			expect(AlbumService.getAlbumTypeFromName('B In The Mix: The Remixes')).toBe(AlbumType.RemixAlbum);
+			expect(AlbumService.getAlbumTypeFromName('Rated R: Remixed')).toBe(AlbumType.RemixAlbum);
 			expect(AlbumService.getAlbumTypeFromName('Move To This - Remix Album')).toBe(AlbumType.RemixAlbum);
 			expect(AlbumService.getAlbumTypeFromName('Essential Mixes - 12" Masters')).toBe(AlbumType.RemixAlbum);
 			expect(AlbumService.getAlbumTypeFromName('Everybody Move (To The Mixes)')).toBe(AlbumType.RemixAlbum);
