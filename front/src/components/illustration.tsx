@@ -41,7 +41,7 @@ const Illustration = (props: IllustrationProps) => {
 				loading="lazy"
 				alt={(props.url?.split('/').join('-') ?? 'missing-illustration')}
 				{...props}
-				style={{ ...props.style, borderRadius: theme.shape.borderRadius, objectFit: 'contain',  width: 'auto', maxWidth: '100%', maxHeight: '100%', }}
+				style={{ objectFit: 'contain', ...props.style, borderRadius: theme.shape.borderRadius, width: 'auto', maxWidth: '100%', maxHeight: '100%', }}
 				src={API.getIllustrationURL(props.url ?? '')}
 			/>
 		}
