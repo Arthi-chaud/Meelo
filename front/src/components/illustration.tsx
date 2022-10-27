@@ -1,6 +1,6 @@
 import { Box, IconButton, useTheme } from "@mui/material";
 import Image, { ImageProps } from "next/image";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import FadeIn from "react-fade-in";
 import { useQuery } from "react-query";
 import API from "../api";
