@@ -70,7 +70,7 @@ const ExpandedPlayerControls = (props: PlayerControlsProps) => {
 			</IconButton>
 		</Box>
 		<Grid container direction='column' sx={{ height: '80vh', width: 'inherit', justifyContent: 'space-evenly', alignItems: 'center' }}>
-			<Grid item xs={4} sm sx={{ aspectRatio: '1', display: 'flex', justifyContent: 'center', alignItems: 'center'}}>
+			<Grid item xs={4} sm sx={{ aspectRatio: '1', display: 'flex', justifyContent: 'center', alignItems: 'center', overflow: 'hidden'}}>
 				{props.illustration
 					? <Illustration url={props.illustration} fallback={<AudiotrackIcon />} />
 					: <Box sx={{ height: '100%', display: 'flex', alignItems: 'center'}}>

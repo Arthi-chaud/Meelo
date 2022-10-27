@@ -99,7 +99,7 @@ const ArtistPage = ({ artistIdentifier }: InferGetServerSidePropsType<typeof get
 		<Grid container direction="column" spacing={4} sx={{ padding: 5, flex: 1, flexGrow: 1 }}>
 			<Grid item container spacing={4} sx={{ justifyContent: 'flex-start' }}>
 				<Grid item xs={5} sm={3} lg={2}>
-					<Illustration url={artist.data!.illustration} objectFit="cover"  fallback={<Album fontSize="large"/>}/> 
+					<Illustration url={artist.data!.illustration} fallback={<Album fontSize="large"/>}/> 
 				</Grid>
 				<Grid item xs sx={{ display: 'flex', alignItems: 'center' }}>
 					<Typography variant='h3' fontWeight='bold'>{artist.data!.name}</Typography>
