@@ -31,7 +31,7 @@ const ArtistRelationPageHeader = (props: ArtistRelationPageHeaderProps) => {
 		return <WideLoadingComponent/>
 	}
 	return <RelationPageHeader
-		illustration={<Illustration objectFit="cover" url={artist.data.illustration} fallback={<AccountCircle/>}/>}
+		illustration={<Illustration style={{ objectFit: 'cover' }} url={artist.data.illustration} fallback={<AccountCircle/>}/>}
 		title={artist.data.name}
 		trailing={<ArtistContextualMenu artist={artist.data}/>}
 	/>
