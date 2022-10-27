@@ -7,7 +7,7 @@ import { WideLoadingComponent } from "../loading/loading"
 import Illustration from '../illustration';
 import Link from 'next/link';
 import ListItem from "./item";
-import { AlbumWithArtist } from "../../models/album"
+import { AlbumWithArtist } from "./album"
 import Release from "../../models/release"
 import { Star } from "@mui/icons-material"
 import { Album } from "@mui/icons-material"

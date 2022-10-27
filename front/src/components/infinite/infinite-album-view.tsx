@@ -1,11 +1,11 @@
 import { useState } from "react";
-import Album, { AlbumWithArtist, AlbumSortingKeys } from "../../models/album";
+import Album, { AlbumWithArtist, AlbumSortingKeys } from "../list-item/album";
 import { MeeloInfiniteQueryFn } from "../../query";
 import { SortingParameters } from "../../utils/sorting";
 import AlbumItem from "../list-item/album-item";
 import AlbumTile from "../tile/album-tile";
 import InfiniteView from "./infinite-view";
-import { AlbumType } from '../../models/album';
+import { AlbumType } from '../list-item/album';
 import { capitalCase } from "change-case";
 import { off } from "process";
 import InfiniteSortableView from "./infinite-sortable-view";

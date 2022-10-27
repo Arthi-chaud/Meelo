@@ -1,7 +1,7 @@
-import Artist from "./artist";
-import Illustration from "./illustration";
-import Release from "./release";
-import Resource from "./resource";
+import Artist from "../../models/artist";
+import Illustration from "../../models/illustration";
+import Release from "../../models/release";
+import Resource from "../../models/resource";
 
 /**
  * A abstact data model 'instanciated' by releases

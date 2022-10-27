@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import API from './api'
-import { AlbumWithArtist } from './models/album';
+import { AlbumWithArtist } from './components/list-item/album';
 
 export async function middleware(request: NextRequest) {
 	const { pathname, origin } = request.nextUrl

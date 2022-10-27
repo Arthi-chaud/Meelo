@@ -4,7 +4,7 @@ import { GetServerSidePropsContext, InferGetServerSidePropsType, NextPage } from
 import { Box, Typography } from '@mui/material';
 import { useRouter } from 'next/router';
 import API from '../../api';
-import Album, { AlbumSortingKeys, AlbumType, AlbumWithArtist } from '../../models/album';
+import Album, { AlbumSortingKeys, AlbumType, AlbumWithArtist } from '../../components/list-item/album';
 import AlbumTile from '../../components/tile/album-tile';
 import getLibrarySlug from '../../utils/getLibrarySlug';
 import { Page } from '../../components/infinite/infinite-scroll';

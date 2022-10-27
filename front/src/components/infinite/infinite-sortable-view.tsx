@@ -1,5 +1,5 @@
 import { capitalCase } from "change-case";
-import Album from "../../models/album";
+import Album from "../list-item/album";
 import Resource from "../../models/resource";
 import InfiniteView, { InfiniteViewProps } from "./infinite-view";
 import NorthIcon from '@mui/icons-material/North';

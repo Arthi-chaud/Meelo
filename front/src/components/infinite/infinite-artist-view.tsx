@@ -1,5 +1,5 @@
 import { useState } from "react";
-import Album, { AlbumWithArtist, AlbumSortingKeys } from "../../models/album";
+import Album, { AlbumWithArtist, AlbumSortingKeys } from "../list-item/album";
 import Artist, { ArtistSortingKeys } from "../../models/artist";
 import { MeeloInfiniteQueryFn } from "../../query";
 import { SortingParameters } from "../../utils/sorting";
