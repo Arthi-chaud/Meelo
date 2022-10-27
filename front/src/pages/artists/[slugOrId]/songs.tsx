@@ -6,7 +6,7 @@ import API from "../../../api";
 import InfiniteAlbumView from "../../../components/infinite/infinite-album-view";
 import { Page } from "../../../components/infinite/infinite-scroll";
 import InfiniteSongView from "../../../components/infinite/infinite-song-view";
-import Album, { AlbumSortingKeys, AlbumWithArtist } from "../../../components/list-item/album";
+import Album, { AlbumSortingKeys, AlbumWithArtist } from "../../../models/album";
 import Song, { SongSortingKeys, SongWithArtist } from "../../../models/song";
 import { prepareMeeloInfiniteQuery, prepareMeeloQuery } from "../../../query";
 import getSlugOrId from "../../../utils/getSlugOrId";

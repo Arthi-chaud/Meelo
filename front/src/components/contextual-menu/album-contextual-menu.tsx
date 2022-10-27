@@ -1,6 +1,6 @@
 import { AccountCircle, Album } from "@mui/icons-material";
 import { Divider } from "@mui/material";
-import { AlbumWithArtist } from "../list-item/album";
+import { AlbumWithArtist } from "../../models/album";
 import Song, { SongWithArtist } from "../../models/song";
 import ContextualMenu from "./contextual-menu"
 import ContextualMenuItem from "./contextual-menu-item";

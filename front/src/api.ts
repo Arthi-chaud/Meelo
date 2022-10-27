@@ -1,4 +1,4 @@
-import Album, { AlbumInclude, AlbumSortingKeys, AlbumType } from "./components/list-item/album";
+import Album, { AlbumInclude, AlbumSortingKeys, AlbumType } from "./models/album";
 import Artist, { ArtistInclude, ArtistSortingKeys } from "./models/artist";
 import Genre from "./models/genre";
 import Library from "./models/library";

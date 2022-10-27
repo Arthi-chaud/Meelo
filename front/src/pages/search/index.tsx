@@ -6,7 +6,7 @@ import InfiniteView from "../../components/infinite/infinite-view";
 import Resource from "../../models/resource";
 import API from '../../api';
 import { Page } from '../../components/infinite/infinite-scroll';
-import Album, { AlbumSortingKeys, AlbumType, AlbumWithArtist } from '../../components/list-item/album';
+import Album, { AlbumSortingKeys, AlbumType, AlbumWithArtist } from '../../models/album';
 import Artist, { ArtistSortingKeys } from '../../models/artist';
 import Song, { SongSortingKeys, SongWithArtist } from '../../models/song';
 import ArtistTile from '../../components/tile/artist-tile';

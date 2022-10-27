@@ -8,7 +8,7 @@ import { WideLoadingComponent } from "../loading/loading"
 import Illustration from '../illustration';
 import Link from 'next/link';
 import ListItem from "./item";
-import Album, { AlbumWithArtist } from "./album"
+import Album, { AlbumWithArtist } from "../../models/album"
 import Release from "../../models/release"
 import AccountCircle from "@mui/icons-material/AccountCircle"
 import AlbumIcon from "@mui/icons-material/Album"

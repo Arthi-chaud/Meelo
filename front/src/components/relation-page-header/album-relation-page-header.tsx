@@ -3,7 +3,7 @@ import { Box } from "@mui/material";
 import { useQuery } from "react-query";
 import { RequireExactlyOne } from "type-fest";
 import API from "../../api";
-import { AlbumWithArtist } from "../list-item/album";
+import { AlbumWithArtist } from "../../models/album";
 import { prepareMeeloQuery } from "../../query";
 import AlbumContextualMenu from "../contextual-menu/album-contextual-menu";
 import SongContextualMenu from "../contextual-menu/song-contextual-menu";

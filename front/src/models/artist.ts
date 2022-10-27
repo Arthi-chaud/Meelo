@@ -1,4 +1,4 @@
-import Album from "../components/list-item/album";
+import Album from "./album";
 import Illustration from "./illustration";
 import Resource from "./resource";
 import Song from "./song";

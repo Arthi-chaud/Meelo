@@ -5,7 +5,7 @@ import { dehydrate, QueryClient, useQuery } from "react-query";
 import API from "../../../api";
 import InfiniteAlbumView from "../../../components/infinite/infinite-album-view";
 import { Page } from "../../../components/infinite/infinite-scroll";
-import Album, { AlbumSortingKeys, AlbumType, AlbumWithArtist } from "../../../components/list-item/album";
+import Album, { AlbumSortingKeys, AlbumType, AlbumWithArtist } from "../../../models/album";
 import { prepareMeeloInfiniteQuery, prepareMeeloQuery } from "../../../query";
 import getSlugOrId from "../../../utils/getSlugOrId";
 import { SortingParameters } from "../../../utils/sorting";

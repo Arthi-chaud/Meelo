@@ -1,7 +1,7 @@
 import {IconButton} from "@mui/material";
 import {AccountCircle, Album} from "@mui/icons-material";
 import Tile from "./tile";
-import { AlbumWithArtist } from "../list-item/album";
+import { AlbumWithArtist } from "../../models/album";
 import Illustration from "../illustration";
 
 const AlbumTile = (props: { album: AlbumWithArtist }) => {
