@@ -23,7 +23,7 @@ const Illustration = (props: IllustrationProps) => {
 	const [loadingFailed, setLoadingFailed] = useState(false);
 	const [imageWidth, setImageWidth] = useState(1);
 	const [imageHeight, setImageHeight] = useState(1);
-	return <Box sx={{ width: '100%', justifyContent: 'center', alignItems: 'center', display: 'flex',  aspectRatio: '1', objectFit: 'contain', overflow: 'hidden' }}>
+	return <Box sx={{ width: '100%', height: '100%', justifyContent: 'center', alignItems: 'center', display: 'flex',  aspectRatio: '1', objectFit: 'contain', overflow: 'hidden', borderRadius: theme.shape.borderRadius }}>
 		{ loadingFailed
 			? <IconButton disabled sx={{ fontSize: 'large' }}>
 				{props.fallback}
@@ -41,7 +41,7 @@ const Illustration = (props: IllustrationProps) => {
 				loading="lazy"
 				alt={(props.url?.split('/').join('-') ?? 'missing-illustration')}
 				{...props}
-				style={{ objectFit: 'contain', ...props.style, borderRadius: theme.shape.borderRadius, width: 'auto', maxWidth: '100%', maxHeight: '100%', }}
+				style={{ objectFit: 'contain', ...props.style, borderRadius: theme.shape.borderRadius, width: 'auto', height: 'auto', maxWidth: '100%', maxHeight: '100%', }}
 				src={API.getIllustrationURL(props.url ?? '')}
 			/>
 		}

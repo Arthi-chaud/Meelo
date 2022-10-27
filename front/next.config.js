@@ -6,12 +6,6 @@ module.exports = {
   env: {
     ssrApiRoute: 'http://localhost:4000'
   },
-  formats: ['image/avif'],
-  experimental: {
-    images: {
-      allowFutureImage: true,
-    },
-  },
   async redirects() {
     return [
       {
