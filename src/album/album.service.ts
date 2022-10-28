@@ -321,6 +321,7 @@ export default class AlbumService extends RepositoryService<
 			return AlbumType.VideoAlbum;
 		}
 		if (albumName.search(/.+(live).*/g) != -1 ||
+			albumName.includes('unplugged') ||
 			albumName.includes(' tour') ||
 			albumName.includes('live from ') ||
 			albumName.includes('live at ') ||
