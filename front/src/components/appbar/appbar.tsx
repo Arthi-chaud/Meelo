@@ -17,6 +17,9 @@ import Link from 'next/link';
 import { prepareMeeloQuery } from '../../query';
 import Library from '../../models/library';
 import toast from 'react-hot-toast';
+import ContextualMenu from '../contextual-menu/contextual-menu';
+import AppBarActions from './actions';
+import ContextualMenuItem from '../contextual-menu/contextual-menu-item';
 
 const libraryQuery = () => ({
 	key: ['libraries'],
@@ -59,7 +62,7 @@ const MeeloAppBar = () => {
 					</IconButton>
 					<Box style={{ paddingRight: 25 }}>
 						<Link href="/albums" style={{ cursor: 'pointer' }}>
-							<a><Image src="/banner.png" alt="icon" width={120} height={50}/></a>
+							<Image src="/banner.png" alt="icon" width={120} height={50}/>
 						</Link>
 					</Box>
 					{
@@ -115,9 +118,12 @@ const MeeloAppBar = () => {
 										</IconButton>
 									</Link>
 									<Divider orientation='vertical' flexItem sx={{ marginX: 1 }} />
-									<IconButton>
-										<MoreVertIcon />
-									</IconButton>
+									<ContextualMenu>
+										{ AppBarActions
+											.filter(a => a.label.toLowerCase() != 'search')
+											.map(action => <ContextualMenuItem {...action} key={action.label}/>)
+										}
+									</ContextualMenu>
 								</Box>
 							</FadeIn></>
 					}

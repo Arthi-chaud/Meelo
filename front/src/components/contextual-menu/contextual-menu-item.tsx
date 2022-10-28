@@ -1,15 +1,8 @@
 import { ListItemIcon, MenuItem,ListItemText } from "@mui/material";
 import Link from "next/link";
+import Action from "../action";
 
-type MenuItemProps = {
-	href?: string;
-	disabled?: boolean;
-	onClick?: () => void;
-	label: string;
-	icon?: JSX.Element;
-}
-
-const ContextualMenuItem = (props: MenuItemProps) => {
+const ContextualMenuItem = (props: Action) => {
 	let item = <MenuItem disabled={props.disabled} onClick={props.onClick} sx={{ borderRadius: '0' }}>
 		{ props.icon && <ListItemIcon>{props.icon}</ListItemIcon> }
 		<ListItemText>{props.label}</ListItemText>
