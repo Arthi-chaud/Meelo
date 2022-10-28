@@ -325,7 +325,7 @@ export default class AlbumService extends RepositoryService<
 			albumName.includes(' tour') ||
 			albumName.includes('live from ') ||
 			albumName.includes('live at ') ||
-			albumName.includes('live a ')) {
+			albumName.includes('live à ')) {
 			return AlbumType.LiveRecording
 		}
 		if (albumName.endsWith('- single') ||
