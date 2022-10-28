@@ -17,6 +17,7 @@ import buildLink from "./build-link";
 import Link from 'next/link';
 import API from '../../api';
 import toast from "react-hot-toast";
+import AppBarActions from "./actions";
 
 interface DrawerProps {
 	availableLibraries: Library[] | null,
@@ -79,35 +80,20 @@ const MeeloAppBarDrawer = ({ availableLibraries, requestedLibrarySlug, isOpen, o
 			</List>
 			<Divider />
 			<List>
-				<ListItem disablePadding>
-					<Link href="/search">
-						<ListItemButton onClick={onClose}>
-							<ListItemIcon>
-								<SearchIcon />
-							</ListItemIcon>
-							<ListItemText>Search</ListItemText>
-						</ListItemButton>
-					</Link>
-				</ListItem>
-				<ListItem disablePadding>
-					<ListItemButton onClick={() => {
+				{ AppBarActions.map((action) => {
+					const item = <ListItemButton onClick={() => {
+						action.onClick && action.onClick();
 						onClose();
-						API.scanLibraries().then(({ status }) => toast.success(status, { duration: 4000 }))
-					}}>
-						<ListItemIcon>
-							<AutoModeIcon />
-						</ListItemIcon>
-						<ListItemText>Refresh Libraries</ListItemText>
+					}} key={action.label} disabled={action.disabled} style={{ borderRadius: 0 }}>
+						<ListItemIcon>{action.icon}</ListItemIcon>
+						<ListItemText>{action.label}</ListItemText>
 					</ListItemButton>
-				</ListItem>
-				<ListItem disablePadding>
-					<ListItemButton>
-						<ListItemIcon>
-							<SettingsIcon />
-						</ListItemIcon>
-						<ListItemText>Settings</ListItemText>
-					</ListItemButton>
-				</ListItem>
+					if (action.href)
+						return <Link href={action.href} key={action.label}>
+							{item}
+						</Link>
+					return item
+				})}
 			</List>
 		</Drawer>
 	);
