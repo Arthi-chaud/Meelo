@@ -26,7 +26,7 @@ const ListItem = (props: ListItemProps) => {
 			<Grid item xs={2} sm={1.5} md={1} lg={0.5}>
 				{props.icon}
 			</Grid>
-			<Grid item container xs={8} spacing={2} sx={{ alignItems: 'center'}}>
+			<Grid item container xs={8} sm spacing={0.5} sx={{ alignItems: 'center'}}>
 				<Grid item xs={12} sm={8} sx={textStyle}>
 					<Typography fontWeight='bold' sx={textStyle}>{props.title}</Typography>
 				</Grid>
