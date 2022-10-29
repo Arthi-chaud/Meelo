@@ -104,39 +104,37 @@ const Player = () => {
 			document.body.style.overflow = 'unset';
 		return () => { document.body.style.overflow = 'unset' };
 	}, [expanded])
-	return <Box>
-		<Box sx={{ height: playerHeight, position: 'sticky', padding: 5 }} />
-		<Slide
+	return <Slide
+			style={{ position: 'sticky', bottom: 0 }}
 			direction="up"
 			mountOnEnter unmountOnExit
 			in={(playlist.length != 0 || history.length != 0 || audio.current != undefined) && !stopped}
 		>
-			<Box sx={{ width: '100%', height: expanded ? '100%' : undefined, padding: 2, display: 'flex', position: 'fixed', right: 0, bottom: 0, justifyContent: 'center', alignItems: 'flex-end', zIndex: expanded ? 'tooltip' : 'modal' }}  ref={playerComponentRef}>
-				<Paper elevation={20} sx={{ borderRadius: '0.5rem', display: 'flex', width: '100%', height: expanded ? '100%' : 'fit-content', overflowY: expanded ? 'scroll' : undefined, overflowX: 'clip' }}>
-					<PlayerControls
-						expanded={expanded}
-						illustration={illustrationURL}
-						track={currentTrack?.track}
-						artist={currentTrack?.artist}
-						playing={playing ?? false}
-						onPause={pause}
-						onPlay={play}
-						onStop={stop}
-						onExpand={(expand) => setExpanded(expand)}
-						duration={currentTrack?.track.duration}
-						progress={progress}
-						onSkipTrack={onSkipTrack}
-						onRewind={onRewind}
-						onSlide={(newProgress) => {
-							if (audio.current !== undefined) {
-								audio.current.currentTime = newProgress;
-							}
-						}}
-					/>
-				</Paper>
-			</Box>
-		</Slide>
-	</Box>
+		<Box sx={{ padding: 2 }}>
+			<Paper elevation={20} sx={{ borderRadius: '0.5', padding: { xs: 1, sm: 2 }, display: 'flex', width: '100%', height: expanded ? '100%' : 'fit-content', overflowY: expanded ? 'scroll' : undefined, overflowX: 'clip' }}>
+				<PlayerControls
+					expanded={expanded}
+					illustration={illustrationURL}
+					track={currentTrack?.track}
+					artist={currentTrack?.artist}
+					playing={playing ?? false}
+					onPause={pause}
+					onPlay={play}
+					onStop={stop}
+					onExpand={(expand) => setExpanded(expand)}
+					duration={currentTrack?.track.duration}
+					progress={progress}
+					onSkipTrack={onSkipTrack}
+					onRewind={onRewind}
+					onSlide={(newProgress) => {
+						if (audio.current !== undefined) {
+							audio.current.currentTime = newProgress;
+						}
+					}}
+				/>
+			</Paper>
+		</Box>
+	</Slide>
 
 }
 

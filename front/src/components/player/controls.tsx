@@ -34,28 +34,63 @@ const PlayerControls = (props: PlayerControlsProps) => {
 	return <ExpandedPlayerControls {...props} />
 }
 
+const playerTextStyle = {
+	whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis'
+}
+
+type ControlButtonProps = {
+	icon: JSX.Element;
+	onClick: () => void;
+}
+
+const ControlButton = (props: ControlButtonProps) => (
+	<IconButton onClick={props.onClick} color='inherit'>
+		{props.icon}
+	</IconButton>
+)
+
+const PlayButton = (props: { isPlaying: boolean, onPause: () => void, onPlay: () => void }) => (
+	<ControlButton
+		icon={props.isPlaying ? <Pause/> : <PlayArrow/>}
+		onClick={props.isPlaying ? props.onPause : props.onPlay}
+	/>
+);
+
+const SkipButton = (props: Omit<ControlButtonProps, 'icon'>) => (
+	<ControlButton {...props} icon={<FastForward/>} />
+);
+
+const PreviousButton = (props: Omit<ControlButtonProps, 'icon'>) => (
+	<ControlButton {...props} icon={<FastRewind/>} />
+);
+
 const MinimizedPlayerControls = (props: PlayerControlsProps) => {
-	const theme = useTheme();
-	return <Grid container  sx={{ alignItems: 'center', justifyContent: 'space-between', padding: 1 }}>
-		<Grid item xs={1.5} sm={1.25} md={0.75} lg={0.6} xl={0.5} sx={{ alignContent: 'center', marginX: 2 }}>
-			<CardActionArea onClick={() => props.onExpand(true)} sx={{ borderRadius: theme.shape.borderRadius }}>
-				{props.illustration
-					? <Illustration url={props.illustration} fallback={<AudiotrackIcon />} />
-					: <AudiotrackIcon />
-				}
-			</CardActionArea>
+	return <Grid container spacing={1} sx={{ alignItems: 'center', display: 'flex', justifyContent: 'center', paddingX: 1 }}>
+		<Grid item xs={1.5} sm={1} md={0.8} lg={0.6} xl={0.5}>
+			<Illustration url={props.illustration ?? null} fallback={ <AudiotrackIcon/> }/>
 		</Grid>
-		<Grid item container sx={{ flexDirection: 'column', display: 'block' }} xs>
-			<PlayerText artist={props.artist} track={props.track} />
-			<PlayerSlider onSlide={props.onSlide} duration={props.duration} progress={props.progress} />
+		<Grid item container xs spacing={0.5} sx={{ overflow: 'hidden', display: 'flex', alignItems: 'space-evenly', marginLeft: { xs: 0, sm: 1 } }}>
+			<Grid item sx={{ width: '100%',  display: 'flex', justifyContent: { xs: 'left', md: 'center' }, ...playerTextStyle }}>
+				<Typography sx={{ fontWeight: 'bold', ...playerTextStyle }}>
+					{props.track?.name}
+				</Typography>
+			</Grid>
+			<Grid item sx={{ display: 'flex', width: '100%', justifyContent: { xs: 'left', md: 'center' }, ...playerTextStyle }}>
+				<Typography sx={{ fontWeight: 'light', ...playerTextStyle, fontSize: { xs: 'smaller', md: 'medium'} }}>
+					{props.artist?.name}
+				</Typography>
+			</Grid>
 		</Grid>
-		<Grid item xs='auto' sx={{ display: 'flex', flexDirection: 'row' }}>
-			<PlayerButtonControls {...props} />
-		</Grid>
-		<Grid item xs='auto'>
-			<IconButton onClick={props.onStop}>
-				<CloseIcon />
-			</IconButton>
+		<Grid item container xs={3} sm={2}>
+			<Grid item xs sx={{ display: { xs: 'none', md: 'block' } }}>
+				<PreviousButton onClick={props.onRewind}/>
+			</Grid>
+			<Grid item xs>
+				<PlayButton onPause={props.onPause} onPlay={props.onPlay} isPlaying={props.playing}/>
+			</Grid>
+			<Grid item xs>
+				<SkipButton onClick={props.onSkipTrack}/>
+			</Grid>
 		</Grid>
 	</Grid>
 }
