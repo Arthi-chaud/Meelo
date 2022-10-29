@@ -104,12 +104,12 @@ const Player = () => {
 		return () => { document.body.style.overflow = 'unset' };
 	}, [expanded])
 	return <Slide
-			style={{ position: 'sticky', bottom: 0 }}
+			style={{ position: 'fixed', bottom: 0, left: 0 }}
 			direction="up"
 			mountOnEnter unmountOnExit
 			in={(playlist.length != 0 || history.length != 0 || audio.current != undefined) && !stopped}
 		>
-		<Box sx={{ padding: 2 }}>
+		<Box sx={{ padding: 2, zIndex: expanded ? 'tooltip' : 'modal', width: '100%', height: expanded ? '100%' : undefined  }}>
 			<Paper elevation={20} sx={{ borderRadius: '0.5', padding: { xs: 1, sm: 2 }, display: 'flex', width: '100%', height: expanded ? '100%' : 'fit-content', overflowY: expanded ? 'scroll' : undefined, overflowX: 'clip' }}>
 				<PlayerControls
 					expanded={expanded}

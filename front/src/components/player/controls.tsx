@@ -1,5 +1,5 @@
 import { FastForward, FastRewind, Pause, PlayArrow } from "@mui/icons-material";
-import { Typography, Grid, Slider, Box, IconButton, ButtonBase, CardActionArea, useTheme, Accordion, AccordionDetails, AccordionSummary, Divider } from "@mui/material";
+import { Typography, Grid, Slider, Box, IconButton, ButtonBase, CardActionArea, useTheme, Accordion, AccordionDetails, AccordionSummary, Divider, Slide } from "@mui/material";
 import formatDuration from "../../utils/formatDuration";
 import Illustration from "../illustration";
 import LoadingComponent, { WideLoadingComponent } from "../loading/loading";
