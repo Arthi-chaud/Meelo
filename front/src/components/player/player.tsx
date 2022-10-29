@@ -24,8 +24,8 @@ const Player = () => {
 	const [expanded, setExpanded] = useState(false);
 
   	useEffect(() => {
-  		setPlayerHeight(playerComponentRef.current?.clientHeight ?? 0)
-  	}, [playerComponentRef])
+		setPlayerHeight(playerComponentRef.current?.offsetHeight ?? 0)
+  	}, [playerComponentRef]);
 	const play = () => {
 		if (currentTrack == undefined)
 			dispatch(playNextTrack());
@@ -103,14 +103,16 @@ const Player = () => {
 			document.body.style.overflow = 'unset';
 		return () => { document.body.style.overflow = 'unset' };
 	}, [expanded])
-	return <Slide
+	return <>
+		<Box sx={{ height: playerHeight }}/>
+		<Slide
 			style={{ position: 'fixed', bottom: 0, left: 0 }}
 			direction="up"
 			mountOnEnter unmountOnExit
 			in={(playlist.length != 0 || history.length != 0 || audio.current != undefined) && !stopped}
 		>
 		<Box sx={{ padding: 2, zIndex: expanded ? 'tooltip' : 'modal', width: '100%', height: expanded ? '100%' : undefined  }}>
-			<Paper elevation={20} sx={{ borderRadius: '0.5', padding: { xs: 1, sm: 2 }, display: 'flex', width: '100%', height: expanded ? '100%' : 'fit-content', overflowY: expanded ? 'scroll' : undefined, overflowX: 'clip' }}>
+			<Paper ref={playerComponentRef} elevation={20} sx={{ borderRadius: '0.5', padding: { xs: 1, sm: 2 }, display: 'flex', width: '100%', height: expanded ? '100%' : 'fit-content', overflowY: expanded ? 'scroll' : undefined, overflowX: 'clip' }}>
 				<PlayerControls
 					expanded={expanded}
 					illustration={illustrationURL}
@@ -134,7 +136,7 @@ const Player = () => {
 			</Paper>
 		</Box>
 	</Slide>
-
+	</>
 }
 
 export default Player;
