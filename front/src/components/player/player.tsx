@@ -1,5 +1,5 @@
 import { BottomNavigation, Box, Button, Card, CardContent, Hidden, Paper, Slide, Typography, useTheme } from "@mui/material"
-import { useEffect, useLayoutEffect, useRef, useState } from "react";
+import { LegacyRef, useEffect, useLayoutEffect, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import API from "../../api";
 import { playNextTrack, playPreviousTrack, pushCurrentTrackToHistory, setHistoryToPlaylist } from "../../state/playerSlice";
@@ -8,11 +8,12 @@ import { MinimizedPlayerControls, ExpandedPlayerControls } from "./controls";
 import Link from 'next/link';
 
 const Player = () => {
-	const theme = useTheme();
 	const currentTrack = useSelector((state: RootState) => state.player.currentTrack);
 	const history = useSelector((state: RootState) => state.player.history);
 	const playlist = useSelector((state: RootState) => state.player.playlist);
-	const audio = useRef<HTMLAudioElement>();
+	const player = useRef<HTMLAudioElement | HTMLVideoElement>();
+	const audioPlayer = useRef<HTMLAudioElement>(typeof Audio !== "undefined" ? new Audio() : null);
+	const videoPlayer = useRef<HTMLVideoElement>();
 	const interval = useRef<NodeJS.Timer>();
 	const dispatch = useDispatch();
 	const [progress, setProgress] = useState<number | undefined>();
@@ -26,15 +27,15 @@ const Player = () => {
 		if (currentTrack == undefined)
 			dispatch(playNextTrack());
 		setPlaying(true);
-		audio.current?.play();
+		player.current?.play();
 	};
 	const pause = () => {true
 		setPlaying(false);
-		audio.current?.pause();
+		player.current?.pause();
 	}
 	const stop = () => {
 		setStopped(true);
-		audio.current?.pause();
+		player.current?.pause();
 	}
 	const onSkipTrack = () => {
 		dispatch(pushCurrentTrackToHistory())
@@ -50,8 +51,7 @@ const Player = () => {
 		dispatch(playPreviousTrack())
 	}
 	useEffect(() => {
-		audio.current?.pause();
-		audio.current = undefined;
+		player.current?.pause();
 		navigator.mediaSession.metadata = null;
 		clearInterval(interval.current);
 		setProgress(0);
@@ -63,7 +63,14 @@ const Player = () => {
 			setStopped(false);
 			const newIllustrationURL = currentTrack.track.illustration ?? currentTrack.release.illustration;
 			setIllustrationURL(newIllustrationURL);
-			const newAudio = new Audio(API.getStreamURL(currentTrack.track.stream));
+			const streamURL = API.getStreamURL(currentTrack.track.stream);
+			if (currentTrack.track.type == 'Audio') {
+				player.current = audioPlayer.current ?? undefined;
+			} else {
+				player.current = videoPlayer.current
+			}
+			player.current!.src = streamURL;
+			player.current!.play().then(() => setPlaying(true));
 			navigator.mediaSession.metadata = new MediaMetadata({
 				title: currentTrack.track.name,
 				artist: currentTrack.artist.name,
@@ -72,18 +79,16 @@ const Player = () => {
 					{ src: API.getIllustrationURL(newIllustrationURL) }
 				] : undefined
 			  });
-			newAudio.play().then(() => setPlaying(true));
-			audio.current = newAudio;
 			interval.current = setInterval(() => {
-				if (audio.current?.paused)
+				if (player.current?.paused)
 					setPlaying(false);
 				else
 					setPlaying(true);
-				if (audio.current?.ended) {
+				if (player.current?.ended) {
 					API.setSongAsPlayed(currentTrack.track.songId);
 					dispatch(playNextTrack());
 				} else {
-					setProgress(audio.current?.currentTime);
+					setProgress(player.current?.currentTime);
 				}
 			}, 100);
 		} else {
@@ -105,7 +110,7 @@ const Player = () => {
 			style={{ position: 'fixed', bottom: 0, left: 0 }}
 			direction="up"
 			mountOnEnter unmountOnExit
-			in={(playlist.length != 0 || history.length != 0 || audio.current != undefined) && !stopped}
+			in={(playlist.length != 0 || history.length != 0 || player.current != undefined) && !stopped}
 		>
 			<Box sx={{ padding: 2, zIndex: 'modal', width: '100%' }}>
 				<Paper ref={playerComponentRef} elevation={20} sx={{ borderRadius: '0.5', padding: { xs: 1, sm: 2 }, display: 'flex', width: '100%', height: 'fit-content' }}>
@@ -124,8 +129,8 @@ const Player = () => {
 						onSkipTrack={onSkipTrack}
 						onRewind={onRewind}
 						onSlide={(newProgress) => {
-							if (audio.current !== undefined) {
-								audio.current.currentTime = newProgress;
+							if (player.current !== undefined) {
+								player.current.currentTime = newProgress;
 							}
 						}}
 					/>
@@ -149,9 +154,10 @@ const Player = () => {
 						progress={progress}
 						onSkipTrack={onSkipTrack}
 						onRewind={onRewind}
+						videoRef={videoPlayer as unknown as LegacyRef<HTMLVideoElement>}
 						onSlide={(newProgress) => {
-							if (audio.current !== undefined) {
-								audio.current.currentTime = newProgress;
+							if (player.current !== undefined) {
+								player.current.currentTime = newProgress;
 							}
 						}}
 					/>

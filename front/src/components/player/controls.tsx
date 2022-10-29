@@ -5,7 +5,7 @@ import Illustration from "../illustration";
 import LoadingComponent, { WideLoadingComponent } from "../loading/loading";
 import AudiotrackIcon from '@mui/icons-material/Audiotrack';
 import CloseIcon from '@mui/icons-material/Close';
-import { useState } from "react";
+import { LegacyRef, useState } from "react";
 import PlayerSlider from "./controls/slider";
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import API from '../../api';
@@ -113,7 +113,7 @@ const MinimizedPlayerControls = (props: PlayerControlsProps) => {
 	</ButtonBase>
 }
 
-const ExpandedPlayerControls = (props: PlayerControlsProps) => {
+const ExpandedPlayerControls = (props: PlayerControlsProps & { videoRef: LegacyRef<HTMLVideoElement> }) => {
 	const [lyricsOpen, setLyricsOpen] = useState(true);
 	const lyrics = useQuery(prepareMeeloQuery(lyricsQuery, props.track?.songId));
 	return <Box sx={{ width: '100%', height: '100%' }}>
@@ -122,15 +122,20 @@ const ExpandedPlayerControls = (props: PlayerControlsProps) => {
 				<CloseIcon />
 			</IconButton>
 		</Box>
-		<Grid container direction='column' sx={{ height: '70vh', width: 'inherit', justifyContent: 'space-evenly', alignItems: 'center' }}>
-			<Grid item xs={6} sm sx={{ aspectRatio: '1', display: 'flex', justifyContent: 'center', alignItems: 'center'}}>
+		<Grid container direction='column' sx={{ height: props.track?.type != 'Video' ? '70vh' : undefined, width: 'inherit', justifyContent: 'space-evenly', alignItems: 'center' }}>
+			{props.track?.type == 'Video' ? 
+				<Grid item xs={12}>
+					<video controls playsInline disablePictureInPicture={false} ref={props.videoRef} width='100%' height='100%'/>
+				</Grid>
+				: <Grid item xs={6} sm sx={{ aspectRatio: '1', display: 'flex', justifyContent: 'center', alignItems: 'center'}}>
 				{props.illustration
 					? <Illustration url={props.illustration} fallback={<AudiotrackIcon />} />
 					: <Box sx={{ height: '100%', display: 'flex', alignItems: 'center'}}>
 						<AudiotrackIcon />
 					</Box>
 				}
-			</Grid>
+				</Grid>
+			}
 			<Grid item xs={4} container spacing={2} direction="column" sx={{ width: '100%', height: '100%', justifyContent: 'center', alignItems: 'center', display: 'flex', paddingY: 4 }}>
 				<Grid item container direction='column' sx={{ width: '100%', ...playerTextStyle, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
 				{  !props.track ? <Box/> : 
