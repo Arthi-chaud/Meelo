@@ -1,5 +1,5 @@
 import { BottomNavigation, Box, Button, Card, CardContent, Hidden, Paper, Slide, Typography, useTheme } from "@mui/material"
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import API from "../../api";
 import { playNextTrack, playPreviousTrack, pushCurrentTrackToHistory, setHistoryToPlaylist } from "../../state/playerSlice";
@@ -19,13 +19,9 @@ const Player = () => {
 	const [playing, setPlaying] = useState<boolean>();
 	const [illustrationURL, setIllustrationURL] = useState<string | null>();
 	const [stopped, setStopped] = useState(false);
-	const [playerHeight, setPlayerHeight] = useState(0);
   	const playerComponentRef = useRef<HTMLDivElement>(null);
 	const [expanded, setExpanded] = useState(false);
 
-  	useEffect(() => {
-		setPlayerHeight(playerComponentRef.current?.offsetHeight ?? 0)
-  	}, [playerComponentRef]);
 	const play = () => {
 		if (currentTrack == undefined)
 			dispatch(playNextTrack());
@@ -104,7 +100,7 @@ const Player = () => {
 		return () => { document.body.style.overflow = 'unset' };
 	}, [expanded])
 	return <>
-		<Box sx={{ height: playerHeight }}/>
+		<Box sx={{ height: playerComponentRef.current?.offsetHeight }}/>
 		<Slide
 			style={{ position: 'fixed', bottom: 0, left: 0 }}
 			direction="up"
@@ -138,7 +134,7 @@ const Player = () => {
 		</Slide>
 		<Slide in={expanded} style={{ position: 'fixed', bottom: 0, left: 0 }} direction="up">
 			<Box sx={{ padding: 2, zIndex: 'tooltip', width: '100%', height: '100%' }}>
-				<Paper ref={playerComponentRef} elevation={20} sx={{ borderRadius: '0.5', padding: { xs: 1, sm: 2 }, display: 'flex', width: '100%', height: '100%' , overflowY: 'scroll', overflowX: 'clip' }}>
+				<Paper elevation={20} sx={{ borderRadius: '0.5', padding: { xs: 1, sm: 2 }, display: 'flex', width: '100%', height: '100%' , overflowY: 'scroll', overflowX: 'clip' }}>
 					<ExpandedPlayerControls
 						expanded={expanded}
 						illustration={illustrationURL}

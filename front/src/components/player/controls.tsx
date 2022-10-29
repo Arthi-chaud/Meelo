@@ -1,31 +1,45 @@
 import { FastForward, FastRewind, Pause, PlayArrow } from "@mui/icons-material";
-import { Typography, Grid, Slider, Box, IconButton, ButtonBase, CardActionArea, useTheme, Accordion, AccordionDetails, AccordionSummary, Divider, Slide } from "@mui/material";
+import { Typography, Grid, Slider, Box, IconButton, ButtonBase, CardActionArea, useTheme, Accordion, AccordionDetails, AccordionSummary, Divider, Slide, Button } from "@mui/material";
 import formatDuration from "../../utils/formatDuration";
 import Illustration from "../illustration";
 import LoadingComponent, { WideLoadingComponent } from "../loading/loading";
 import AudiotrackIcon from '@mui/icons-material/Audiotrack';
 import CloseIcon from '@mui/icons-material/Close';
 import { useState } from "react";
-import PlayerButtonControls from "./controls/buttons";
 import PlayerSlider from "./controls/slider";
-import PlayerText from "./controls/text";
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import API from '../../api';
 import { useQuery } from "react-query";
 import { prepareMeeloQuery } from "../../query";
 import LyricsBox from "../lyrics";
+import Track from "../../models/track";
+import Artist from "../../models/artist";
+import Link from "next/link";
 
 const lyricsQuery = (slugOrId: string | number) => ({
 	key: ['song', slugOrId, 'lyrics'],
 	exec: () => API.getSongLyrics(slugOrId)
 });
 
+type PlayerButtonControlsProps = {
+	playing: boolean;
+	onPause: () => void;
+	onPlay: () => void;
+	onSkipTrack: () => void;
+	onRewind: () => void;
+	onStop: () => void;
+}
+
 
 type PlayerControlsProps =
 	Parameters<typeof PlayerSlider>[number] &
-	Parameters<typeof PlayerText>[number] &
-	Parameters<typeof PlayerButtonControls>[number] &
-	{ expanded: boolean, illustration?: string | null, onExpand: (expand: boolean) => void }
+	PlayerButtonControlsProps & {
+	expanded: boolean,
+	illustration?: string | null,
+	onExpand: (expand: boolean) => void,
+	artist?: Artist,
+	track?: Track 
+}
 
 
 const playerTextStyle = {
@@ -117,12 +131,41 @@ const ExpandedPlayerControls = (props: PlayerControlsProps) => {
 					</Box>
 				}
 			</Grid>
-			<Grid item xs={4} container spacing={2} direction="column" sx={{ width: 'inherit', height: '100%', justifyContent: 'center', alignItems: 'center', display: 'flex', paddingY: 4 }}>
-				<Grid item>
-					<PlayerText artist={props.artist} track={props.track} />
+			<Grid item xs={4} container spacing={2} direction="column" sx={{ width: '100%', height: '100%', justifyContent: 'center', alignItems: 'center', display: 'flex', paddingY: 4 }}>
+				<Grid item container direction='column' sx={{ width: '100%', ...playerTextStyle, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+				{  !props.track ? <Box/> : 
+					<Grid item sx={{ ...playerTextStyle, width: '100%', display: 'flex', justifyContent: 'center' }}>
+						<Link href={`/releases/${props.track.releaseId}`}>
+							<Button sx={{ textTransform: 'none', color: 'inherit' }} onClick={() => props.onExpand(false)}>
+								<Typography sx={{ fontWeight: 'bold', ...playerTextStyle}}>
+									{ props.track?.name }
+								</Typography>
+							</Button>
+						</Link>
+					</Grid>
+				}
+				{ (!props.track || !props.artist) ? <Box/> : 
+				<Grid item sx={{ width: '100%', ...playerTextStyle, display: 'flex', justifyContent: 'center' }}>
+					<Link href={`/artists/${props.artist.slug}`}>
+						<Button sx={{ textTransform: 'none', color: 'inherit', width: 'fit-content'}} onClick={() => props.onExpand(false)}>
+							<Typography sx={{ ...playerTextStyle}}>
+								{ props.artist?.name }
+							</Typography>
+						</Button>
+					</Link>
 				</Grid>
-				<Grid item>
-					<PlayerButtonControls {...props} />
+				}
+				</Grid>
+				<Grid item container spacing={5} sx={{ display: 'flex', justifyContent: 'center', width: '100%' }}>
+					<Grid item>
+						<PreviousButton onClick={props.onRewind}/>
+					</Grid>
+					<Grid item>
+						<PlayButton onPause={props.onPause} onPlay={props.onPlay} isPlaying={props.playing}/>
+					</Grid>
+					<Grid item>
+						<SkipButton onClick={props.onSkipTrack}/>
+					</Grid>
 				</Grid>
 				<Grid item sx={{ width: '90%' }}>
 					<PlayerSlider onSlide={props.onSlide} duration={props.duration} progress={props.progress} />
