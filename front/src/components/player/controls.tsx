@@ -65,7 +65,8 @@ const PreviousButton = (props: Omit<ControlButtonProps, 'icon'>) => (
 );
 
 const MinimizedPlayerControls = (props: PlayerControlsProps) => {
-	return <Grid container spacing={1} sx={{ alignItems: 'center', display: 'flex', justifyContent: 'center', paddingX: 1 }}>
+	return <ButtonBase onClick={() => props.onExpand(true)} disableTouchRipple sx={{ width: '100%', height: '100%', padding: 0, margin: 0 }}>
+	<Grid container spacing={1} sx={{ alignItems: 'center', display: 'flex', justifyContent: 'center', paddingX: 1 }}>
 		<Grid item xs={1.5} sm={1} md={0.8} lg={0.6} xl={0.5}>
 			{props.track
 				? <Illustration url={props.track?.illustration ?? null} fallback={<AudiotrackIcon />} />
@@ -81,15 +82,15 @@ const MinimizedPlayerControls = (props: PlayerControlsProps) => {
 				</Typography>
 			</Grid>
 			<Grid item sx={{ display: 'flex', width: '100%', justifyContent: { xs: 'left', md: 'center' }, ...playerTextStyle }}>
-				<Typography sx={{ fontWeight: 'light', ...playerTextStyle, fontSize: { xs: 'smaller', md: 'medium'} }}>
+				<Typography sx={{ fontWeight: 'light', ...playerTextStyle, fontSize: { xs: 'small', md: 'medium'} }}>
 					{props.artist?.name}
 				</Typography>
 			</Grid>
-			<Grid item sx={{ display: { xs: 'none', lg: 'flex' }, width: '90%', justifyContent: 'center' }}>
+			<Grid item sx={{ display: { xs: 'none', lg: 'flex' }, width: '90%', justifyContent: 'center' }} onClick={(e) => e.stopPropagation()}>
 				<PlayerSlider onSlide={props.onSlide} duration={props.duration} progress={props.progress} />
 			</Grid>
 		</Grid>
-		<Grid item container xs={3} sm={2}>
+		<Grid item container xs={3} sm={2} onClick={(e) => e.stopPropagation()}>
 			<Grid item xs sx={{ display: { xs: 'none', lg: 'block' } }}>
 				<PreviousButton onClick={props.onRewind}/>
 			</Grid>
@@ -101,6 +102,7 @@ const MinimizedPlayerControls = (props: PlayerControlsProps) => {
 			</Grid>
 		</Grid>
 	</Grid>
+	</ButtonBase>
 }
 
 const ExpandedPlayerControls = (props: PlayerControlsProps) => {

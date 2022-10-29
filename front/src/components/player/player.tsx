@@ -68,7 +68,6 @@ const Player = () => {
 			const newIllustrationURL = currentTrack.track.illustration ?? currentTrack.release.illustration;
 			setIllustrationURL(newIllustrationURL);
 			const newAudio = new Audio(API.getStreamURL(currentTrack.track.stream));
-			document.body.appendChild(newAudio);
 			navigator.mediaSession.metadata = new MediaMetadata({
 				title: currentTrack.track.name,
 				artist: currentTrack.artist.name,
