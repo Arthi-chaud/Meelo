@@ -73,7 +73,7 @@ const PreviousButton = (props: Omit<ControlButtonProps, 'icon'>) => (
 );
 
 const MinimizedPlayerControls = (props: PlayerControlsProps) => {
-	return <ButtonBase onClick={() => props.onExpand(true)} disableTouchRipple sx={{ width: '100%', height: '100%', padding: 0, margin: 0 }}>
+	return <ButtonBase  disabled={!props.track} onClick={() => props.onExpand(true)} disableTouchRipple sx={{ width: '100%', height: '100%', padding: 0, margin: 0 }}>
 	<Grid container spacing={1} sx={{ alignItems: 'center', display: 'flex', justifyContent: 'center', paddingX: 1 }}>
 		<Grid item xs={1.5} sm={1} md={0.8} lg={0.6} xl={0.5}>
 			{props.track

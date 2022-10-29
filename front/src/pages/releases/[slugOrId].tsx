@@ -254,6 +254,8 @@ const ReleasePage = ({ releaseIdentifier }: InferGetServerSidePropsType<typeof g
 													secondary={
 														track.song.artistId == albumArtist.data?.id ? undefined : artist?.name
 													}
+													primaryTypographyProps={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}
+													secondaryTypographyProps={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}
 												/>
 												{ track.type == 'Video' &&
 													<ListItemIcon><MusicVideoIcon color='disabled' fontSize="small"/></ListItemIcon>
