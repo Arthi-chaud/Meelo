@@ -31,7 +31,7 @@ const ListItem = (props: ListItemProps) => {
 					<Typography fontWeight='bold' sx={textStyle}>{props.title}</Typography>
 				</Grid>
 				{ props.secondTitle &&
-					<Grid item xs={12} sm sx={textStyle}>
+					<Grid item xs={12} sm={4} sx={textStyle}>
 						<Typography color="text.disabled" sx={textStyle}>{props.secondTitle}</Typography>
 					</Grid>
 				}
