@@ -67,7 +67,12 @@ const PreviousButton = (props: Omit<ControlButtonProps, 'icon'>) => (
 const MinimizedPlayerControls = (props: PlayerControlsProps) => {
 	return <Grid container spacing={1} sx={{ alignItems: 'center', display: 'flex', justifyContent: 'center', paddingX: 1 }}>
 		<Grid item xs={1.5} sm={1} md={0.8} lg={0.6} xl={0.5}>
-			<Illustration url={props.illustration ?? null} fallback={ <AudiotrackIcon/> }/>
+			{props.track
+				? <Illustration url={props.track?.illustration ?? null} fallback={<AudiotrackIcon />} />
+				: <Box sx={{ height: '100%', display: 'flex', alignItems: 'center'}}>
+					<AudiotrackIcon />
+				</Box>
+			}
 		</Grid>
 		<Grid item container xs spacing={0.5} sx={{ overflow: 'hidden', display: 'flex', alignItems: 'space-evenly', marginLeft: { xs: 0, sm: 1 } }}>
 			<Grid item sx={{ width: '100%',  display: 'flex', justifyContent: { xs: 'left', md: 'center' }, ...playerTextStyle }}>

@@ -65,7 +65,7 @@ const Player = () => {
 		navigator.mediaSession.setActionHandler('nexttrack', onSkipTrack);
 		if (currentTrack) {
 			setStopped(false);
-			const newIllustrationURL = currentTrack?.track.illustration ?? currentTrack?.release.illustration;
+			const newIllustrationURL = currentTrack.track.illustration ?? currentTrack.release.illustration;
 			setIllustrationURL(newIllustrationURL);
 			const newAudio = new Audio(API.getStreamURL(currentTrack.track.stream));
 			document.body.appendChild(newAudio);
