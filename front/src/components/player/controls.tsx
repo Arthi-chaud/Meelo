@@ -90,7 +90,7 @@ const MinimizedPlayerControls = (props: PlayerControlsProps) => {
 				</Typography>
 			</Grid>
 			<Grid item sx={{ display: 'flex', width: '100%', justifyContent: { xs: 'left', md: 'center' }, ...playerTextStyle }}>
-				<Typography sx={{ fontWeight: 'light', ...playerTextStyle, fontSize: { xs: 'small', md: 'medium'} }}>
+				<Typography sx={{ fontWeight: 'light', ...playerTextStyle, fontSize: { xs: 'medium'} }}>
 					{props.artist?.name}
 				</Typography>
 			</Grid>
