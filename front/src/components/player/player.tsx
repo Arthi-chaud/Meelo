@@ -4,7 +4,7 @@ import { useDispatch, useSelector } from "react-redux";
 import API from "../../api";
 import { playNextTrack, playPreviousTrack, pushCurrentTrackToHistory, setHistoryToPlaylist } from "../../state/playerSlice";
 import { RootState } from "../../state/store";
-import PlayerControls from "./controls";
+import { MinimizedPlayerControls, ExpandedPlayerControls } from "./controls";
 import Link from 'next/link';
 
 const Player = () => {
@@ -111,31 +111,57 @@ const Player = () => {
 			mountOnEnter unmountOnExit
 			in={(playlist.length != 0 || history.length != 0 || audio.current != undefined) && !stopped}
 		>
-		<Box sx={{ padding: 2, zIndex: expanded ? 'tooltip' : 'modal', width: '100%', height: expanded ? '100%' : undefined  }}>
-			<Paper ref={playerComponentRef} elevation={20} sx={{ borderRadius: '0.5', padding: { xs: 1, sm: 2 }, display: 'flex', width: '100%', height: expanded ? '100%' : 'fit-content', overflowY: expanded ? 'scroll' : undefined, overflowX: 'clip' }}>
-				<PlayerControls
-					expanded={expanded}
-					illustration={illustrationURL}
-					track={currentTrack?.track}
-					artist={currentTrack?.artist}
-					playing={playing ?? false}
-					onPause={pause}
-					onPlay={play}
-					onStop={stop}
-					onExpand={(expand) => setExpanded(expand)}
-					duration={currentTrack?.track.duration}
-					progress={progress}
-					onSkipTrack={onSkipTrack}
-					onRewind={onRewind}
-					onSlide={(newProgress) => {
-						if (audio.current !== undefined) {
-							audio.current.currentTime = newProgress;
-						}
-					}}
-				/>
-			</Paper>
-		</Box>
-	</Slide>
+			<Box sx={{ padding: 2, zIndex: 'modal', width: '100%' }}>
+				<Paper ref={playerComponentRef} elevation={20} sx={{ borderRadius: '0.5', padding: { xs: 1, sm: 2 }, display: 'flex', width: '100%', height: 'fit-content' }}>
+					<MinimizedPlayerControls
+						expanded={expanded}
+						illustration={illustrationURL}
+						track={currentTrack?.track}
+						artist={currentTrack?.artist}
+						playing={playing ?? false}
+						onPause={pause}
+						onPlay={play}
+						onStop={stop}
+						onExpand={(expand) => setExpanded(expand)}
+						duration={currentTrack?.track.duration}
+						progress={progress}
+						onSkipTrack={onSkipTrack}
+						onRewind={onRewind}
+						onSlide={(newProgress) => {
+							if (audio.current !== undefined) {
+								audio.current.currentTime = newProgress;
+							}
+						}}
+					/>
+				</Paper>
+			</Box>
+		</Slide>
+		<Slide in={expanded} style={{ position: 'fixed', bottom: 0, left: 0 }} direction="up">
+			<Box sx={{ padding: 2, zIndex: 'tooltip', width: '100%', height: '100%' }}>
+				<Paper ref={playerComponentRef} elevation={20} sx={{ borderRadius: '0.5', padding: { xs: 1, sm: 2 }, display: 'flex', width: '100%', height: '100%' , overflowY: 'scroll', overflowX: 'clip' }}>
+					<ExpandedPlayerControls
+						expanded={expanded}
+						illustration={illustrationURL}
+						track={currentTrack?.track}
+						artist={currentTrack?.artist}
+						playing={playing ?? false}
+						onPause={pause}
+						onPlay={play}
+						onStop={stop}
+						onExpand={(expand) => setExpanded(expand)}
+						duration={currentTrack?.track.duration}
+						progress={progress}
+						onSkipTrack={onSkipTrack}
+						onRewind={onRewind}
+						onSlide={(newProgress) => {
+							if (audio.current !== undefined) {
+								audio.current.currentTime = newProgress;
+							}
+						}}
+					/>
+				</Paper>
+			</Box>
+		</Slide>
 	</>
 }
 

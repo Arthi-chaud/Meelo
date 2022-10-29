@@ -28,12 +28,6 @@ type PlayerControlsProps =
 	{ expanded: boolean, illustration?: string | null, onExpand: (expand: boolean) => void }
 
 
-const PlayerControls = (props: PlayerControlsProps) => {
-	if (props.expanded === false)
-		return <MinimizedPlayerControls {...props} />
-	return <ExpandedPlayerControls {...props} />
-}
-
 const playerTextStyle = {
 	whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis'
 }
@@ -114,8 +108,8 @@ const ExpandedPlayerControls = (props: PlayerControlsProps) => {
 				<CloseIcon />
 			</IconButton>
 		</Box>
-		<Grid container direction='column' sx={{ height: '80vh', width: 'inherit', justifyContent: 'space-evenly', alignItems: 'center' }}>
-			<Grid item xs={4} sm sx={{ aspectRatio: '1', display: 'flex', justifyContent: 'center', alignItems: 'center'}}>
+		<Grid container direction='column' sx={{ height: '70vh', width: 'inherit', justifyContent: 'space-evenly', alignItems: 'center' }}>
+			<Grid item xs={6} sm sx={{ aspectRatio: '1', display: 'flex', justifyContent: 'center', alignItems: 'center'}}>
 				{props.illustration
 					? <Illustration url={props.illustration} fallback={<AudiotrackIcon />} />
 					: <Box sx={{ height: '100%', display: 'flex', alignItems: 'center'}}>
@@ -123,7 +117,7 @@ const ExpandedPlayerControls = (props: PlayerControlsProps) => {
 					</Box>
 				}
 			</Grid>
-			<Grid item xs={4} container spacing={2} direction="column" sx={{ width: 'inherit', height: '100%', justifyContent: 'center', alignItems: 'center', display: 'flex' }}>
+			<Grid item xs={4} container spacing={2} direction="column" sx={{ width: 'inherit', height: '100%', justifyContent: 'center', alignItems: 'center', display: 'flex', paddingY: 4 }}>
 				<Grid item>
 					<PlayerText artist={props.artist} track={props.track} />
 				</Grid>
@@ -154,4 +148,4 @@ const ExpandedPlayerControls = (props: PlayerControlsProps) => {
 }
 
 
-export default PlayerControls;
+export { MinimizedPlayerControls, ExpandedPlayerControls };
