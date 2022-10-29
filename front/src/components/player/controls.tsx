@@ -43,7 +43,7 @@ type PlayerControlsProps =
 
 
 const playerTextStyle = {
-	whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis'
+	whiteSpace: 'nowrap'
 }
 
 type ControlButtonProps = {

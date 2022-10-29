@@ -17,7 +17,7 @@ type ListItemProps = {
 }>
 
 const textStyle = {
-	whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', textAlign: 'left'
+	whiteSpace: 'nowrap', textAlign: 'left'
 }
 
 const ListItem = (props: ListItemProps) => {
