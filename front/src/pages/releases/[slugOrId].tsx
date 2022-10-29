@@ -148,7 +148,7 @@ const ReleasePage = ({ releaseIdentifier }: InferGetServerSidePropsType<typeof g
 					alignItems: 'left', [theme.breakpoints.down('md')]: { alignItems: 'center', textAlign: 'center' },
 				}} md={6} sm={9} xs={12}>
 					<Grid item sx={{ width: 'inherit' }}>
-						<Typography variant='h3' fontWeight='bold' sx={{ textOverflow: 'ellipsis', overflow: 'hidden' }}>{release.data!.name}</Typography>
+						<Typography variant='h3' fontWeight='bold'>{release.data!.name}</Typography>
 					</Grid>
 					{albumArtist.data &&
 						<Grid item>
@@ -254,13 +254,11 @@ const ReleasePage = ({ releaseIdentifier }: InferGetServerSidePropsType<typeof g
 													secondary={
 														track.song.artistId == albumArtist.data?.id ? undefined : artist?.name
 													}
-													primaryTypographyProps={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}
-													secondaryTypographyProps={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}
 												/>
 												{ track.type == 'Video' &&
 													<ListItemIcon><MusicVideoIcon color='disabled' fontSize="small"/></ListItemIcon>
 												}
-												<Typography sx={{ paddingLeft: 2 }}>{formatDuration(track.duration)}</Typography>
+												<Typography sx={{ paddingLeft: 2, overflow: 'unset' }}>{formatDuration(track.duration)}</Typography>
 											</ListItemButton>
 											</ListItem>
 											<Divider variant="inset"/>
