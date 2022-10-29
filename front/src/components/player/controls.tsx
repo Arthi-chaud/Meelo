@@ -80,9 +80,12 @@ const MinimizedPlayerControls = (props: PlayerControlsProps) => {
 					{props.artist?.name}
 				</Typography>
 			</Grid>
+			<Grid item sx={{ display: { xs: 'none', lg: 'flex' }, width: '90%', justifyContent: 'center' }}>
+				<PlayerSlider onSlide={props.onSlide} duration={props.duration} progress={props.progress} />
+			</Grid>
 		</Grid>
 		<Grid item container xs={3} sm={2}>
-			<Grid item xs sx={{ display: { xs: 'none', md: 'block' } }}>
+			<Grid item xs sx={{ display: { xs: 'none', lg: 'block' } }}>
 				<PreviousButton onClick={props.onRewind}/>
 			</Grid>
 			<Grid item xs>
