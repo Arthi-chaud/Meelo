@@ -32,11 +32,10 @@ const Illustration = (props: IllustrationProps) => {
 				loader={({ src, width, quality }) => src}
 				unoptimized
 				fill
-				loading="lazy"
 				alt={(props.url?.split('/').join('-') ?? 'missing-illustration')}
 				{...props}
 				style={{ borderRadius: theme.shape.borderRadius, objectFit: "contain", ...props.style }}
-				src={API.getIllustrationURL(props.url ?? '')}
+				src={API.getIllustrationURL(props.url)}
 			/>
 		}
 	</Box>
