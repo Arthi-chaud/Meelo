@@ -125,8 +125,8 @@ const ExpandedPlayerControls = (props: PlayerControlsProps & { videoRef: LegacyR
 		</Box>
 		<Grid container direction='column' sx={{ flexWrap: 'nowrap', height: props.track?.type != 'Video' ? '75vh' : '80vh', width: 'inherit', justifyContent: 'space-evenly', alignItems: 'center' }}>
 			{props.track?.type == 'Video' ? 
-				<Grid item xs={5}>
-					<video style={{ borderRadius: '2%' }}  playsInline disablePictureInPicture={false} ref={props.videoRef} width='100%' height='100%'/>
+				<Grid item xs={5} sm={8} sx={{ overflow: 'hidden' }}>
+					<video playsInline disablePictureInPicture={false} ref={props.videoRef} width='100%' height='100%'/>
 				</Grid>
 				: <Grid item xs={6} sm sx={{ aspectRatio: '1', display: 'flex', justifyContent: 'center', alignItems: 'center'}}>
 				{props.illustration
@@ -140,15 +140,20 @@ const ExpandedPlayerControls = (props: PlayerControlsProps & { videoRef: LegacyR
 			<Grid item xs={4} container spacing={2} direction="column" sx={{ width: '100%', height: '100%', justifyContent: 'center', alignItems: 'center', display: 'flex', paddingY: 4 }}>
 				<Grid item container direction='column' sx={{ width: '100%', ...playerTextStyle, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
 				{  (!props.artist || !props.track) ? <Box/> : 
-					<Grid item sx={{ ...playerTextStyle, width: '100%', display: 'flex', justifyContent: 'center' }}>
-						<Link href={`/releases/${props.track.releaseId}`}>
-							<Button sx={{ textTransform: 'none', color: 'inherit' }} onClick={() => props.onExpand(false)}>
-								<Typography sx={{ fontWeight: 'bold', ...playerTextStyle}}>
-									{ props.track?.name }
-								</Typography>
-							</Button>
-						</Link>
-						{ parentSong.data && <SongContextualMenu song={parentSong.data} onSelect={() => props.onExpand(false)} /> }
+					<Grid item container sx={{ ...playerTextStyle, width: '100%', display: 'flex', justifyContent: 'center'}}>
+						<Grid item xs={1}></Grid>
+						<Grid item xs={10} sx={{ ...playerTextStyle, display: 'flex', justifyContent: 'center' }}>
+							<Link href={`/releases/${props.track.releaseId}`}>
+								<Button sx={{ textTransform: 'none', color: 'inherit' }} onClick={() => props.onExpand(false)}>
+									<Typography sx={{ fontWeight: 'bold', ...playerTextStyle}}>
+										{ props.track?.name }
+									</Typography>
+								</Button>
+							</Link>
+						</Grid>
+						<Grid item xs={1}>
+							{parentSong.data && <SongContextualMenu song={parentSong.data} onSelect={() => props.onExpand(false)} /> }
+						</Grid>
 					</Grid>
 				}
 				{ (!props.track || !props.artist) ? <Box/> : 

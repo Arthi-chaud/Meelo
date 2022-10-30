@@ -37,7 +37,7 @@ type SongWithGenres = Song & {
 }
 
 type SongWithLyrics = Song & {
-	lyrics: Lyrics;
+	lyrics?: Lyrics;
 }
 
 type SongInclude = 'artist' | 'lyrics';

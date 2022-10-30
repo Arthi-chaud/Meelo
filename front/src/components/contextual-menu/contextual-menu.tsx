@@ -31,7 +31,7 @@ const ContextualMenu = (props: ContextualMenuProps) => {
     		onClose={handleClose}
 			style={{ zIndex: 99999 }}
       	>
-			{props.children.map((child, index) => <Box onClick={() => { handleClose(); props.onSelect && props.onSelect()}} key={index}>{child}</Box>)}
+			{props.children.map((child, index) => <Box onClick={handleClose} key={index}>{child}</Box>)}
 		</Menu>
 	</>
 }
