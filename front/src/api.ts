@@ -485,7 +485,10 @@ export default class API {
 	 * @returns the correct, rerouted URL
 	 */
 	static getIllustrationURL(imageURL: string): string {
-		return this.buildURL(imageURL, {});
+		const isDev = process.env.NODE_ENV === 'development';
+		if (isDev)
+			return `${process.env.ssrApiRoute}${imageURL}`;
+		return `/api/${imageURL}`;
 	}
 
 	/**
