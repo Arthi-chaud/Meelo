@@ -16,12 +16,12 @@ type IllustrationProps = {
 	 * An icon to display when illustration rendering failed
 	 */
 	fallback: JSX.Element;
-} & Omit<ImageProps, 'src'>
+} & Omit<ImageProps, 'src' | 'alt'>
 
 const Illustration = (props: IllustrationProps) => {
 	const theme = useTheme();
 	const [loadingFailed, setLoadingFailed] = useState(false);
-	return <Box sx={{ aspectRatio: '1', width: '100%', justifyContent: 'center', alignItems: 'center', display: loadingFailed ? 'flex' : 'block' }}>
+	return <Box sx={{ position: 'relative', aspectRatio: '1', width: '100%', justifyContent: 'center', alignItems: 'center', display: loadingFailed ? 'flex' : 'block' }}>
 		{ loadingFailed
 			? <IconButton disabled sx={{ fontSize: 'large' }}>
 				{props.fallback}
@@ -29,14 +29,12 @@ const Illustration = (props: IllustrationProps) => {
 			: <Image
 				onError={() => setLoadingFailed(true)}
 				loader={({ src, width, quality }) => src}
-				width={1}
-				height={1}
-				objectFit="contain"
-				layout={props.layout ?? "responsive"}
+				unoptimized
+				fill
 				loading="lazy"
 				alt={(props.url?.split('/').join('-') ?? 'missing-illustration')}
 				{...props}
-				style={{ ...props.style, borderRadius: theme.shape.borderRadius }}
+				style={{ borderRadius: theme.shape.borderRadius, objectFit: "contain", ...props.style }}
 				src={API.getIllustrationURL(props.url ?? '')}
 			/>
 		}
