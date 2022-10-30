@@ -26,7 +26,7 @@ type SongButtonProps = {
 const SongButton = (props: SongButtonProps) => {
 	const dispatch = useDispatch();
 	return <Grid container sx={{ alignItems: 'center' }}>
-		<Grid item xs>
+		<Grid item xs={10}>
 			<Button color='secondary' sx={{ textTransform: 'none', alignItems: 'center', width: '100%' }} onClick={() => {
 				API.getMasterTrack<TrackWithRelease>(props.song.id, ['release']).then((track) => {
 					dispatch(emptyPlaylist());
@@ -37,11 +37,11 @@ const SongButton = (props: SongButtonProps) => {
 					}));
 				})
 			} }>
-				<Grid container spacing={3} direction={'row'} sx={{ alignItems: 'center' }}>
+				<Grid container spacing={1.5} direction={'row'} sx={{ alignItems: 'center' }}>
 					<Grid item xs={2.5} sm={3} md={2}>
 						<Illustration url={props.song.illustration} fallback={<AudiotrackIcon/>}/>
 					</Grid>
-					<Grid item xs sx={{ display: 'flex', justifyContent: 'flex-start' }}>
+					<Grid item xs sx={{ display: 'flex', justifyContent: 'flex-start', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
 						<Typography textAlign='left' fontWeight='bold'>{props.song.name}</Typography>
 					</Grid>
 				</Grid>

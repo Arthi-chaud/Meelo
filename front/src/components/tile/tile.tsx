@@ -4,8 +4,6 @@ import Link from 'next/link';
 import { CSSProperties } from "react";
 
 const titleStyle = {
-	overflow: 'hidden',
-	textOverflow: 'ellipsis',
 	display: '-webkit-box',
 	WebkitBoxOrient: 'vertical' as CSSProperties['WebkitBoxOrient']
 }

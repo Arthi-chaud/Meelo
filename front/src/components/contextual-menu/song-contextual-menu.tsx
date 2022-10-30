@@ -11,12 +11,13 @@ import ShareIcon from '@mui/icons-material/Share';
 import downloadAction from "../download-action";
 type SongContextualMenuProps = {
 	song: SongWithArtist;
+	onSelect?: () => void;
 }
 
 const SongContextualMenu = (props: SongContextualMenuProps) => {
 	const songSlug = `${props.song.artist.slug}+${props.song.slug}`;
 	const router = useRouter();
-	return <ContextualMenu>
+	return <ContextualMenu onSelect={props.onSelect}>
 		<ContextualMenuItem icon={<AccountCircle/>} href={`/artists/${props.song.artist.slug}`} label={"Go to Artist"}/>
 		<ContextualMenuItem icon={<Album/>} label={"Go to Album"}
 			onClick={() => API.getMasterTrack(songSlug)

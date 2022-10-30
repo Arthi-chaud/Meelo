@@ -5,6 +5,7 @@ import ContextualMenuItem from "./contextual-menu-item";
 
 type ContextualMenuProps = {
 	children: JSX.Element[];
+	onSelect?: () => void;
 	buttonIcon?: JSX.Element;
 }
 const ContextualMenu = (props: ContextualMenuProps) => {
@@ -28,6 +29,7 @@ const ContextualMenu = (props: ContextualMenuProps) => {
     		anchorEl={anchorEl}
     		open={open}
     		onClose={handleClose}
+			style={{ zIndex: 99999 }}
       	>
 			{props.children.map((child, index) => <Box onClick={handleClose} key={index}>{child}</Box>)}
 		</Menu>

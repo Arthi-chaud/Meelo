@@ -14,6 +14,7 @@ const PlayerSlider = (props: PlayerSliderProps) => {
 		</Grid>
 		<Grid item xs>
 			<Slider
+				style={{ paddingBottom: 0 }}
 				disabled={!props.duration || props.progress === undefined}
 				size="small"
 				color="secondary"

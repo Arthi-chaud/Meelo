@@ -33,7 +33,7 @@ const TrackItem = ({ track }: TrackItemProps) => {
 			}}
 			title={track.name}
 			secondTitle={release.name}
-			trailing={<Grid container spacing={1} sx={{ justifyContent: 'flex-end' }}>
+			trailing={<Grid container spacing={1} sx={{ justifyContent: 'flex-end', flexWrap: 'nowrap' }}>
 				<Grid item sx={{ display: 'flex', alignItems: 'center' }}>{track.master ? <StarIcon/> : undefined }</Grid>
 				<Grid item>{<TrackContextualMenu track={track}/>}</Grid>
 			</Grid>}

@@ -24,6 +24,21 @@ export default  responsiveFontSizes(createTheme({
 		borderRadius: '0.5rem'
 	},
 	components: {
+		MuiTypography: {
+			styleOverrides: {
+				root: {
+					overflow: 'hidden',
+					textOverflow: 'ellipsis'
+				}
+			}
+		},
+		MuiListItemText: {
+			styleOverrides: {
+				root: {
+					whiteSpace: 'nowrap'
+				}
+			}
+		},
 		MuiListSubheader: {
 			styleOverrides: {
 				root: {

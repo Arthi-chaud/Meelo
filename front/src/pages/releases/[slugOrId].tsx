@@ -148,7 +148,7 @@ const ReleasePage = ({ releaseIdentifier }: InferGetServerSidePropsType<typeof g
 					alignItems: 'left', [theme.breakpoints.down('md')]: { alignItems: 'center', textAlign: 'center' },
 				}} md={6} sm={9} xs={12}>
 					<Grid item sx={{ width: 'inherit' }}>
-						<Typography variant='h3' fontWeight='bold' sx={{ textOverflow: 'ellipsis', overflow: 'hidden' }}>{release.data!.name}</Typography>
+						<Typography variant='h3' fontWeight='bold'>{release.data!.name}</Typography>
 					</Grid>
 					{albumArtist.data &&
 						<Grid item>
@@ -233,8 +233,8 @@ const ReleasePage = ({ releaseIdentifier }: InferGetServerSidePropsType<typeof g
 											<ListItemButton key={track.id} onClick={() => {
 													if (tracks && otherArtistsQuery.findIndex((q) => q.data == undefined) == -1) {
 														const otherArtists = otherArtistsQuery.map((q) => q.data!);
-														const trackIndex = tracks.findIndex((t) => t.id == track.id);
-														let playlist = tracks.slice(trackIndex).map((track) => ({
+														const trackIndex = discs.flatMap((disc) => disc[1]).findIndex((t) => t.id == track.id);
+														let playlist = discs.flatMap((disc) => disc[1]).slice(trackIndex).map((track) => ({
 															track: track,
 															artist: getSongArtist(track.song, albumArtist.data, otherArtists),
 															release: release.data
@@ -258,7 +258,7 @@ const ReleasePage = ({ releaseIdentifier }: InferGetServerSidePropsType<typeof g
 												{ track.type == 'Video' &&
 													<ListItemIcon><MusicVideoIcon color='disabled' fontSize="small"/></ListItemIcon>
 												}
-												<Typography sx={{ paddingLeft: 2 }}>{formatDuration(track.duration)}</Typography>
+												<Typography sx={{ paddingLeft: 2, overflow: 'unset' }}>{formatDuration(track.duration)}</Typography>
 											</ListItemButton>
 											</ListItem>
 											<Divider variant="inset"/>
