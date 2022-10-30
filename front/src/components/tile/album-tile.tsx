@@ -9,7 +9,7 @@ const AlbumTile = (props: { album: AlbumWithArtist }) => {
 		title={props.album.name}
 		subtitle={props.album.artist?.name ?? 'Compilation'}
 		targetURL={`/albums/${props.album.artist?.slug ?? 'compilations'}+${props.album.slug}`}
-		illustration={<Illustration url={props.album.illustration} fallback={<Album />}/>}
+		illustration={<Illustration url={props.album.illustration}/>}
 	/>
 }
 

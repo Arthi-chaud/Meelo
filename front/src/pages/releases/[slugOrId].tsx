@@ -142,7 +142,7 @@ const ReleasePage = ({ releaseIdentifier }: InferGetServerSidePropsType<typeof g
 		<Box sx={{ padding: 5, flex: 1, flexGrow: 1}}>
 			<Grid container spacing={4} sx={{ justifyContent: 'center' }}>
 				<Grid item md={3} xs={8}>
-					<Illustration url={release.data!.illustration} fallback={<Album/>}/> 
+					<Illustration url={release.data!.illustration}/> 
 				</Grid>
 				<Grid item container sx={{ width: '100%', display: 'flex', flexDirection: 'column', justifyContent: 'space-evenly',
 					alignItems: 'left', [theme.breakpoints.down('md')]: { alignItems: 'center', textAlign: 'center' },
@@ -281,7 +281,7 @@ const ReleasePage = ({ releaseIdentifier }: InferGetServerSidePropsType<typeof g
 								targetURL={`/releases/${albumArtist?.data?.slug ?? 'compilations'}+${release.data!.album.slug}+${otherRelease.slug}/`}
 								title={otherRelease.name}
 								subtitle={otherRelease.releaseDate ? new Date(otherRelease.releaseDate).getFullYear().toString() : undefined}
-								illustration={<Illustration url={otherRelease.illustration} fallback={<Album/>}/>}
+								illustration={<Illustration url={otherRelease.illustration}/>}
 							/>
 						</ListItem>
 					

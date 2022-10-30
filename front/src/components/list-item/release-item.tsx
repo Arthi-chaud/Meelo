@@ -11,7 +11,7 @@ type ReleaseItemProps = {
 
 const ReleaseItem = ({ release }: ReleaseItemProps) => {
 	return <ListItem key={release.id}
-		icon={<Illustration url={release.illustration} fallback={<Album/>}/>}
+		icon={<Illustration url={release.illustration}/>}
 		href={`/releases/${release.id}`}
 		title={release.name}
 		secondTitle={release.releaseDate
