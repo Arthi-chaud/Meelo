@@ -233,8 +233,8 @@ const ReleasePage = ({ releaseIdentifier }: InferGetServerSidePropsType<typeof g
 											<ListItemButton key={track.id} onClick={() => {
 													if (tracks && otherArtistsQuery.findIndex((q) => q.data == undefined) == -1) {
 														const otherArtists = otherArtistsQuery.map((q) => q.data!);
-														const trackIndex = tracks.findIndex((t) => t.id == track.id);
-														let playlist = tracks.slice(trackIndex).map((track) => ({
+														const trackIndex = discs.flatMap((disc) => disc[1]).findIndex((t) => t.id == track.id);
+														let playlist = discs.flatMap((disc) => disc[1]).slice(trackIndex).map((track) => ({
 															track: track,
 															artist: getSongArtist(track.song, albumArtist.data, otherArtists),
 															release: release.data
