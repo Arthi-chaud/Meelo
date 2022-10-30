@@ -123,7 +123,7 @@ const ExpandedPlayerControls = (props: PlayerControlsProps & { videoRef: LegacyR
 		</Box>
 		<Grid container direction='column' sx={{ flexWrap: 'nowrap', height: props.track?.type != 'Video' ? '70vh' : '80vh', width: 'inherit', justifyContent: 'space-evenly', alignItems: 'center' }}>
 			{props.track?.type == 'Video' ? 
-				<Grid item xs={8}>
+				<Grid item xs={5}>
 					<video playsInline disablePictureInPicture={false} ref={props.videoRef} width='100%' height='100%'/>
 				</Grid>
 				: <Grid item xs={6} sm sx={{ aspectRatio: '1', display: 'flex', justifyContent: 'center', alignItems: 'center'}}>
