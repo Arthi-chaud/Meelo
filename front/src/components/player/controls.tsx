@@ -5,7 +5,7 @@ import Illustration from "../illustration";
 import LoadingComponent, { WideLoadingComponent } from "../loading/loading";
 import AudiotrackIcon from '@mui/icons-material/Audiotrack';
 import CloseIcon from '@mui/icons-material/Close';
-import { LegacyRef, useState } from "react";
+import { LegacyRef, MouseEvent, useState } from "react";
 import PlayerSlider from "./controls/slider";
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import API from '../../api';
@@ -40,7 +40,6 @@ type PlayerControlsProps =
 	artist?: Artist,
 	track?: Track 
 }
-
 
 const playerTextStyle = {
 	whiteSpace: 'nowrap'
@@ -122,10 +121,10 @@ const ExpandedPlayerControls = (props: PlayerControlsProps & { videoRef: LegacyR
 				<CloseIcon />
 			</IconButton>
 		</Box>
-		<Grid container direction='column' sx={{ height: props.track?.type != 'Video' ? '70vh' : undefined, width: 'inherit', justifyContent: 'space-evenly', alignItems: 'center' }}>
+		<Grid container direction='column' sx={{ flexWrap: 'nowrap', height: props.track?.type != 'Video' ? '70vh' : '80vh', width: 'inherit', justifyContent: 'space-evenly', alignItems: 'center' }}>
 			{props.track?.type == 'Video' ? 
-				<Grid item xs={12}>
-					<video controls playsInline disablePictureInPicture={false} ref={props.videoRef} width='100%' height='100%'/>
+				<Grid item xs={8}>
+					<video playsInline disablePictureInPicture={false} ref={props.videoRef} width='100%' height='100%'/>
 				</Grid>
 				: <Grid item xs={6} sm sx={{ aspectRatio: '1', display: 'flex', justifyContent: 'center', alignItems: 'center'}}>
 				{props.illustration
