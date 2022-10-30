@@ -27,7 +27,7 @@ const AlbumItem = ({ album }: AlbumItemProps) => {
 	const artist = album.artist;
 	return (
 		<ListItem
-			icon={<Illustration url={album.illustration} fallback={<Album/>}/>}
+			icon={<Illustration url={album.illustration}/>}
 			href={`/albums/${artist?.slug ?? 'compilations'}+${album.slug}`}
 			title={album.name}
 			secondTitle={ artist?.name ?? 'Compilations'}

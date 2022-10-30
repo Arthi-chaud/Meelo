@@ -30,7 +30,7 @@ const AlbumRelationPageHeader = (props: AlbumRelationPageHeaderProps) => {
 		return <WideLoadingComponent/>
 	}
 	return <RelationPageHeader
-		illustration={<Illustration url={album.data.illustration} fallback={<Album/>}/>}
+		illustration={<Illustration url={album.data.illustration}/>}
 		title={album.data.name}
 		secondTitle={album.data.artist?.name}
 		trailing={<AlbumContextualMenu album={album.data}/>}
