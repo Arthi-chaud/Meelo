@@ -24,12 +24,14 @@ const Player = () => {
 	const [expanded, setExpanded] = useState(false);
 
 	const play = () => {
+		if (playlist.length == 0) 
+			dispatch(setHistoryToPlaylist());
 		if (currentTrack == undefined)
 			dispatch(playNextTrack());
 		setPlaying(true);
 		player.current?.play();
 	};
-	const pause = () => {true
+	const pause = () => {
 		setPlaying(false);
 		player.current?.pause();
 	}
