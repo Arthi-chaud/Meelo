@@ -27,7 +27,7 @@ type ArtistItemProps = {
 const ArtistItem = ({ artist }: ArtistItemProps) => {
 	return (
 		<ListItem
-			icon={<Illustration url={artist.illustration} objectFit="cover" fallback={<AccountCircle/>}/>}
+			icon={<Illustration url={artist.illustration} style={{ objectFit: "cover" }} fallback={<AccountCircle/>}/>}
 			href={`/artists/${artist.slug}`}
 			title={artist.name}
 			trailing={<ArtistContextualMenu artist={artist}/>}
