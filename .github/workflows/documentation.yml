@@ -12,7 +12,7 @@ jobs:
       - uses: actions/checkout@v3
       - name: Install Dependencies
         run: yarn install
-       - name: Generate Documentation
+      - name: Generate Documentation
         run: yarn install
       - name: Deploy
         uses: JamesIves/github-pages-deploy-action@v4
