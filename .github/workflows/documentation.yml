@@ -2,6 +2,7 @@ name: Generate and Deploy Documentation
 on:
   push:
     branches:
+      - '*'
       - master
 permissions:
   contents: write
