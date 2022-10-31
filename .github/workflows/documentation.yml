@@ -1,0 +1,20 @@
+name: Generate and Deploy Documentation
+on:
+  push:
+    branches:
+      - master
+permissions:
+  contents: write
+jobs:
+  generate-and-deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Install Dependencies
+        run: yarn install
+       - name: Generate Documentation
+        run: yarn install
+      - name: Deploy
+        uses: JamesIves/github-pages-deploy-action@v4
+        with:
+          folder: docs/generated
