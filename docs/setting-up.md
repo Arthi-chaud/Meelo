@@ -57,7 +57,7 @@ All fields are **required**
   - `AlbumArtist`: The artist of the parent album.
     - Special Case: If it equals `Compilations`, related album will be considered as compilation albums (with no main artist, like soundtrack albums)
   - `Artist`: The artist of the track. If it is not present, it will use the `AlbumArtist` field.
-  - `Release`: Usually no present in a standard file architecture; the name of the *release*. when it is not present, the `Album` field will 
+  - `Release`: Usually no present in a standard file architecture; the name of the *release*. when it is not present, the `Album` field will be used.
   - `Album`: The name of the album of the material. This field will then be parsed to group related album releases.
   - `Year`: The Year of the release of the material
   - `Disc`: The Index of the disc the track is on.
@@ -130,3 +130,37 @@ A few things to know:
 - you are free to configure your database volume as you want.
 - the `data` volume must contain all your libraries
 - the `meelo` volume should be mapped from your `Meelo` folder.
+
+## Start Meelo
+
+Once these three files are ready, run the following command from your `Meelo` folder:
+
+```bash
+docker-compose up --build
+```
+
+### Troubleshooting
+
+Two things can prevent Meelo from starting normally:
+
+- A bad `settings.json` file
+  - In that case, a message should tell you what went wrong
+- Connection to database failed
+  - In that case, you should have a red message telling you a query failed. To fix, simply restart the server
+
+## Create your first library
+
+Send the following `POST` request to `/api/libraries/new`:
+
+```json
+{
+  "name": "Library Name", // The name of the library to create
+  "path": "" // The path of the library, relative to /data folder.
+}
+```
+
+*Note*: To know more about the API routes, visit the `/api/docs` route.
+
+Once your library is created, you should run a scan to collect the related files. To do so, send an `GET` request to `/api/tasks/scan`. You'll see the scan steps in the docker logs
+
+Your Meelo server is ready to be used! Visit the `/` route on your favorite browser to enjoy your favorite music :).
