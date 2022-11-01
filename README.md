@@ -17,9 +17,10 @@ This project is made by a music collector, and for music collectors. Its goal is
 
 ## Features
 
-- Have your files organized in *Libraries*
+- Files organized in *Libraries*
 - Scan for new files, and remove deleted files
 - Music Organization close to a Music Collector's collection
+  - Artist
   - Album
     - Releases
   - Songs
@@ -27,7 +28,7 @@ This project is made by a music collector, and for music collectors. Its goal is
     - Versions
   - With the possibility to select the *main* item.
 - Support for Music Videos
-- Metadata scan using
+- Metadata scan using:
   - Embedded tags (including bitrate)
   - Path of file, using [customizable Regular Expressions](https://arthi-chaud.github.io/Meelo/additional-documentation/setting-up.html#prepare-your-settings)
   - Either using one of the two, or the two combined
