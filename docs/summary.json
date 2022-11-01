@@ -2,5 +2,9 @@
     {
         "title": "Setting Up",
         "file": "setting-up.md"
+    },
+    {
+        "title": "What is Meelo made of?",
+        "file": "technologies.md"
     }
 ]
