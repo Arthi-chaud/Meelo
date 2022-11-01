@@ -1,8 +1,8 @@
 services:
   meelo:
     build:
-      context: ./
-      dockerfile: Dockerfile.dev
+      context: ../
+      dockerfile: dev/Dockerfile
     ports:
       - "5000:5000"
       - "3000:3000"
@@ -10,10 +10,10 @@ services:
     depends_on:
       - "db"
     volumes:
-      - ./meelo:/meelo
-      - .:/app/back
-      - ./front:/app/front
-      - ./data:/data
+      - ../meelo:/meelo
+      - ../:/app/back
+      - ../front:/app/front
+      - ../data:/data
     env_file:
       - .env
   db:

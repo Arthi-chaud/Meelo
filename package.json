@@ -4,7 +4,7 @@
   "description": "Personnal Music Server, for music collectors and records maniacs",
   "author": "Arthi-chaud",
   "private": true,
-  "license": "UNLICENSED",
+  "license": "GNU GENERAL PUBLIC LICENSE v3",
   "scripts": {
     "prebuild": "rimraf dist",
     "build": "nest build",
@@ -59,6 +59,7 @@
     "jpeg-js": "^0.4.4"
   },
   "devDependencies": {
+    "@compodoc/compodoc": "^1.1.19",
     "@nestjs/axios": "^0.0.8",
     "@nestjs/cli": "^8.2.6",
     "@nestjs/schedule": "^2.1.0",
@@ -132,5 +133,13 @@
     "rules": {
       "@typescript-eslint/switch-exhaustiveness-check": 2
     }
+  },
+  "compodoc": {
+    "name": "Meelo Documentation",
+    "output": "docs/generated",
+    "customLogo": "./front/public/banner.png",
+    "customFavicon": "./front/public/icon.png",
+    "includes": "docs/",
+    "exclude": ["front", "test/", "node_modules/", "docs/generated"]
   }
 }

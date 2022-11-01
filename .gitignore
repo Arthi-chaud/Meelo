@@ -39,3 +39,4 @@ coverage/
 test/assets/metadata
 
 src/prisma/models
+docs/generated
