@@ -2,8 +2,6 @@
 
 ## Your music, your files, your experience
 
----
-
 [![Build](https://github.com/Arthi-chaud/Meelo/actions/workflows/build.yml/badge.svg)](https://github.com/Arthi-chaud/Meelo/actions/workflows/build.yml)
 [![Coverage](https://sonarcloud.io/api/project_badges/measure?project=Arthi-chaud_Meelo&metric=coverage)](https://sonarcloud.io/summary/new_code?id=Arthi-chaud_Meelo)
 [![Maintainability Rating](https://sonarcloud.io/api/project_badges/measure?project=Arthi-chaud_Meelo&metric=sqale_rating)](https://sonarcloud.io/summary/new_code?id=Arthi-chaud_Meelo)
