@@ -18,7 +18,7 @@ This project is made by a music collector, and for music collectors. Its goal is
 ## Features
 
 - Have your files organized in *Libraries*
-- Add files very easily
+- Scan for new files, and remove deleted files
 - Music Organization close to a Music Collector's collection
   - Album
     - Releases
@@ -26,7 +26,7 @@ This project is made by a music collector, and for music collectors. Its goal is
     - Tracks
     - Versions
   - With the possibility to select the *main* item.
-- Access, stream, and download songs from your server.
+- Support for Music Videos
 - Metadata scan using
   - Embedded tags (including bitrate)
   - Path of file, using [customizable Regular Expressions](https://arthi-chaud.github.io/Meelo/additional-documentation/setting-up.html#prepare-your-settings)
@@ -39,8 +39,8 @@ This project is made by a music collector, and for music collectors. Its goal is
   - Soundtrack Album
   - etc..
 - ... And allow filtering based on Album's types
-- Automated Lyrics download and management
-- Support for Music Videos
+- Automated Lyrics download
+- Access, stream, and download songs from your server.
 
 Keep track of the incoming features with the [project's issues](https://github.com/Arthi-chaud/Meelo/issues)
 
@@ -48,7 +48,7 @@ Keep track of the incoming features with the [project's issues](https://github.c
 
 [Plex](https://www.plex.tv/fr/), [Beets](https://github.com/beetbox/beets), [Koel](https://github.com/koel/koel), as well as iTunes are awesome solutions if you have a 'simple' music collection, but is not tailored for music collectors, who usually have multiple versions of a single album, multiple files for one single song (from multiple album releases). Therefore, the library ends up clustered and unpleasant to browse and use.
 
-## What is the philosophy behind Meelo
+## The philosophy behind Meelo
 
 The idea behind Meelo is to have a pleasant way to browse and enjoy your collection and making it the *best* one possible.
 
@@ -56,3 +56,17 @@ The *best* music collection is a collection that is fully useable in any music s
 To use Meelo, you'll need a 'clean' collection: either with embedded metadata or standard file/folder architecture. Using iTunes is a great way to start.
 
 In the future, Meelo's goal is to help you manage and enjoy your music collection, while keeping it flexible if you ever want to use another music server.
+
+## Screenshots
+
+![Album View](./docs/assets/album-view.png)
+
+![Player](./docs/assets/player.png)
+
+![Live Album View](./docs/assets/live-album-view.png)
+
+![Artist View](./docs/assets/artist-view.png)
+
+![Album Releases](./docs/assets/album-releases.png)
+
+![Song Versions](./docs/assets/song-versions.png)
