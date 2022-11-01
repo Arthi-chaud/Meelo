@@ -14,8 +14,8 @@ This project is made by a music collector, and for music collectors. Its goal is
 ## Getting Started
 
 - [Setup Instructions](https://arthi-chaud.github.io/Meelo/additional-documentation/setting-up.html)
-- [What is Meelo made of](https://arthi-chaud.github.io/Meelo/additional-documentation/techs.html)
-- [Code Documentation](https://arthi-chaud.github.io/Meelo/additional-documentation/technologies.html)
+- [What is Meelo made of](https://arthi-chaud.github.io/Meelo/additional-documentation/technologies.html)
+- [Code Documentation](https://arthi-chaud.github.io/Meelo/overview.html)
 
 ## Features
 
