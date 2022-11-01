@@ -14,7 +14,7 @@ jobs:
       - name: Install Dependencies
         run: yarn install
       - name: Generate Documentation
-        run: yarn compodoc -p tsconfig.json
+        run: yarn compodoc -p tsconfig.json --hideGenerator
       - name: Deploy
         uses: JamesIves/github-pages-deploy-action@v4
         with:
