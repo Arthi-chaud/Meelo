@@ -128,7 +128,7 @@ volumes:
 A few things to know:
 
 - you are free to configure your database volume as you want.
-- the `data` volume must contain all your libraries
+- the `data` volume should be mapped to a folder that contains all your libraries
 - the `meelo` volume should be mapped from your `Meelo` folder.
 
 ## Start Meelo
