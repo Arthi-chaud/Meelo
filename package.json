@@ -139,6 +139,7 @@
     "output": "docs/generated",
     "customLogo": "./front/public/banner.png",
     "customFavicon": "./front/public/icon.png",
-    "exclude": ["front", "test/", "node_modules/"]
+    "includes": "docs/",
+    "exclude": ["front", "test/", "node_modules/", "docs/generated"]
   }
 }
