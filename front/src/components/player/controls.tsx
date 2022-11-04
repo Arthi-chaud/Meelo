@@ -143,8 +143,8 @@ const ExpandedPlayerControls = (props: PlayerControlsProps & { videoRef: LegacyR
 					<Grid item container sx={{ ...playerTextStyle, width: '100%', display: 'flex', justifyContent: 'center'}}>
 						<Grid item xs={1}></Grid>
 						<Grid item xs={10} sx={{ ...playerTextStyle, display: 'flex', justifyContent: 'center' }}>
-							<Link href={`/releases/${props.track.releaseId}`}>
-								<Button sx={{ textTransform: 'none', color: 'inherit' }} onClick={() => props.onExpand(false)}>
+							<Link href={`/releases/${props.track.releaseId}`} style={{ overflow: 'hidden', textOverflow: 'ellipsis' }}>
+								<Button sx={{ textTransform: 'none', color: 'inherit', width: '100%' }} onClick={() => props.onExpand(false)}>
 									<Typography sx={{ fontWeight: 'bold', ...playerTextStyle}}>
 										{ props.track?.name }
 									</Typography>
@@ -158,8 +158,8 @@ const ExpandedPlayerControls = (props: PlayerControlsProps & { videoRef: LegacyR
 				}
 				{ (!props.track || !props.artist) ? <Box/> : 
 				<Grid item sx={{ width: '100%', ...playerTextStyle, display: 'flex', justifyContent: 'center' }}>
-					<Link href={`/artists/${props.artist.slug}`}>
-						<Button sx={{ textTransform: 'none', color: 'inherit', width: 'fit-content'}} onClick={() => props.onExpand(false)}>
+					<Link href={`/artists/${props.artist.slug}`} style={{ overflow: 'hidden', textOverflow: 'ellipsis' }}>
+						<Button sx={{ textTransform: 'none', color: 'inherit', width: '100%' }} onClick={() => props.onExpand(false)}>
 							<Typography sx={{ ...playerTextStyle}}>
 								{ props.artist?.name }
 							</Typography>
