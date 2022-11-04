@@ -202,9 +202,11 @@ const ReleasePage = ({ releaseIdentifier }: InferGetServerSidePropsType<typeof g
 								</Grid>
 								{ albumGenres.data.map((genre) => (
 									<Grid item key={genre.id} sx={{ display: 'flex' }}>
-										<Button variant="outlined" color='inherit'>
-											{ genre.name }
-										</Button>
+										<Link href={`/genres/${genre.slug}`}>
+											<Button variant="outlined" color='inherit'>
+												{ genre.name }
+											</Button>
+										</Link>
 									</Grid>
 								))}
 							</Grid>

@@ -101,7 +101,7 @@ const ArtistPage = ({ artistIdentifier }: InferGetServerSidePropsType<typeof get
 				<Grid item xs={5} sm={3} lg={2}>
 					<Illustration url={artist.data!.illustration} style={{ objectFit: "cover" }} /> 
 				</Grid>
-				<Grid item xs sx={{ display: 'flex', alignItems: 'center' }}>
+				<Grid item xs sx={{ display: 'flex', alignItems: 'center', overflow: 'hidden' }}>
 					<Typography variant='h3' fontWeight='bold'>{artist.data!.name}</Typography>
 				</Grid>
 			</Grid>

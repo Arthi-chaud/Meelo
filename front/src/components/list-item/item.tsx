@@ -42,12 +42,14 @@ const ListItem = (props: ListItemProps) => {
 		clickableArea = <Link href={props.href}>{clickableArea}</Link>;
 	}
 	return <Grid container padding={1} spacing={2} sx={{ alignItems: 'center', width: 'inherit', display: 'flex', justifyContent: 'space-between' }}>
-			<Grid item xs={9} sm={11}>
-				{clickableArea}
-			</Grid>
-			<Grid item xs={3} sm={1} sx={{ display: 'flex', justifyContent: 'center' }}>
-				{props.trailing}
-			</Grid>
+			{ props.trailing ? <>
+				<Grid item xs={9} sm={11}>
+					{clickableArea}
+				</Grid>
+				<Grid item xs={3} sm={1} sx={{ display: 'flex', justifyContent: 'center' }}>
+					{props.trailing}
+				</Grid></>
+			: <Grid item xs>{clickableArea}</Grid>}
 		</Grid>
 }
 

@@ -16,6 +16,7 @@ import SongItem from "../../components/list-item/song-item";
 import { SortingParameters } from "../../utils/sorting";
 import InfiniteArtistView from "../../components/infinite/infinite-artist-view";
 import InfiniteSongView from "../../components/infinite/infinite-song-view";
+import SelectableInfiniteView from "../../components/infinite/selectable-infinite-view";
 
 const searchArtistsQuery = (query: string, sort?: SortingParameters<typeof ArtistSortingKeys>) => ({
 	key: ["search", "artists", query, sort ?? {}],
@@ -32,8 +33,6 @@ const searchSongsQuery = (query: string, sort?: SortingParameters<typeof SongSor
 	exec: (lastPage: Page<Song>) => API.searchSongs<SongWithArtist>(query, lastPage, sort, ['artist'])
 });
 
-const itemTypes = ['Artists', 'Albums', 'Songs'] as const;
-
 const SearchPage = () => {
 	const [query, setQuery] = useState<string>();
 	const [buffer, setBuffer] = useState<string>();
@@ -43,50 +42,23 @@ const SearchPage = () => {
 				setQuery(buffer);
 		}, 500)
 	  	return () => clearTimeout(timer)
-	}, [buffer])
-	const [selectedType, selectItemType] = useState<typeof itemTypes[number]>('Albums');
-	return <Box sx={{ display: 'flex', justifyContent: 'center', padding: 3, flexDirection: 'column' }}>
-		<Grid container spacing={2} sx={{ flexDirection: 'column', alignItems: 'center' }}>
-			<Grid item>
-				<TextField id="outlined-basic" label="Search" variant="outlined" autoFocus InputProps={{
-					startAdornment: (
-						<InputAdornment position="start">
-							<Search />
-						</InputAdornment>
-					),
-				}} onChange={(e) => setBuffer(e.target.value)}/>
-			</Grid>
-			<Grid item container spacing={2} sx={{ justifyContent: 'center' }}>
-			{ itemTypes.map((item) => (
-				<Grid item key={item}>
-					<Chip label={item} variant={ selectedType == item ? 'filled' : 'outlined'} onClick={() => {
-						selectItemType(item);
-					}}/>
-				</Grid>
-			))}
-			</Grid>
-		</Grid>
-		{ query && (selectedType == 'Artists'
-			? <InfiniteArtistView
-				initialSortingField={'name'}
-				initialSortingOrder={'asc'}
-				initialView={'list'}
-				query={(sort) => searchArtistsQuery(query, sort)}
-			/>
-			: selectedType == 'Albums'
-				? <InfiniteAlbumView key={selectedType}
-					initialSortingField={'name'}
-					initialSortingOrder={'asc'}
-					initialView={'list'}
-					query={(sort, type) => searchAlbumsQuery(query, sort, type)}
-				/>
-				: selectedType == 'Songs'
-					? <InfiniteSongView key={selectedType}
-						initialSortingField={'name'}
-						initialSortingOrder={'asc'}
-						query={(sort) => searchSongsQuery(query, sort)}
-					/> : <></>
-		)}
+	}, [buffer]);
+	return <Box sx={{ display: 'flex', justifyContent: 'center', paddingY: 3, flexDirection: 'column' }}>
+		<Box sx={{ display: 'flex', justifyContent: 'center', paddingY: 2 }}>
+			<TextField id="outlined-basic" label="Search" variant="outlined" autoFocus InputProps={{
+				startAdornment: (
+					<InputAdornment position="start">
+						<Search />
+					</InputAdornment>
+				),
+			}} onChange={(e) => setBuffer(e.target.value)}/>
+		</Box>
+		<SelectableInfiniteView
+			enabled={query !== undefined}
+			artistQuery={(sort) => searchArtistsQuery(query!, sort)}
+			albumQuery={(sort, type) => searchAlbumsQuery(query!, sort, type)}
+			songQuery={(sort) => searchSongsQuery(query!, sort)}
+		/>
 	</Box>
 }
 export default SearchPage;
