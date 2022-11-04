@@ -15,6 +15,7 @@ import LyricsBox from "../lyrics";
 import Track from "../../models/track";
 import Artist from "../../models/artist";
 import Link from "next/link";
+import { MoreVert } from "@mui/icons-material";
 import { SongWithArtist, SongWithLyrics } from "../../models/song";
 import SongContextualMenu from "../contextual-menu/song-contextual-menu";
 
@@ -152,7 +153,9 @@ const ExpandedPlayerControls = (props: PlayerControlsProps & { videoRef: LegacyR
 							</Link>
 						</Grid>
 						<Grid item xs={1}>
-							{parentSong.data && <SongContextualMenu song={parentSong.data} onSelect={() => props.onExpand(false)} /> }
+							{parentSong.data
+								? <SongContextualMenu song={parentSong.data} onSelect={() => props.onExpand(false)} />
+								: <IconButton><MoreVert/></IconButton>}
 						</Grid>
 					</Grid>
 				}
