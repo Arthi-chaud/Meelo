@@ -1,4 +1,4 @@
-import Album, { AlbumInclude, AlbumSortingKeys, AlbumType } from "./models/album";
+import Album, { AlbumInclude, AlbumSortingKeys, AlbumType, AlbumWithArtist } from "./models/album";
 import Artist, { ArtistInclude, ArtistSortingKeys } from "./models/artist";
 import Genre from "./models/genre";
 import Library from "./models/library";
@@ -180,18 +180,18 @@ export default class API {
 	 * @param pagination the parameters to choose how many items to load
 	 * @returns An array of songs
 	 */
-		 static async getArtistSongs<T extends Song = Song>(
-			artistSlugOrId: string | number,
-			pagination?: PaginationParameters,
-			sort?: SortingParameters<typeof SongSortingKeys>,
-			include: AlbumInclude[] = []
-		): Promise<PaginatedResponse<T>> {
-			return API.fetch({
-				route: `/artists/${artistSlugOrId}/songs`,
-				errorMessage: `Artist '${artistSlugOrId}' not found`,
-				parameters: { pagination, include, sort }
-			});
-		}
+	static async getArtistSongs<T extends Song = Song>(
+		artistSlugOrId: string | number,
+		pagination?: PaginationParameters,
+		sort?: SortingParameters<typeof SongSortingKeys>,
+		include: AlbumInclude[] = []
+	): Promise<PaginatedResponse<T>> {
+		return API.fetch({
+			route: `/artists/${artistSlugOrId}/songs`,
+			errorMessage: `Artist '${artistSlugOrId}' not found`,
+			parameters: { pagination, include, sort }
+		});
+	}
 	/**
 	 * Get a song
 	 * @param songSlugOrId the identifier of a song
@@ -418,6 +418,79 @@ export default class API {
 			route: `/artists/${slugOrId}`,
 			errorMessage: 'Artist could not be loaded',
 			parameters: { include }
+		});
+	}
+
+	/**
+	 * Fetch all genres
+	 * @param pagination the parameters to choose how many items to load
+	 * @returns An array of genres
+	 */
+	static async getAllGenres(
+		pagination?: PaginationParameters,
+		sort?: SortingParameters<typeof ArtistSortingKeys>
+	): Promise<PaginatedResponse<Genre>> {
+		return API.fetch({
+			route: `/genres`,
+			errorMessage: 'Genres could not be loaded',
+			parameters: { pagination, include: [], sort }
+		});
+	}
+	
+	/**
+	 * Fetch one genre
+	 */
+	static async getGenre(idOrSlug: string | number): Promise<Genre> {
+		return API.fetch({
+			route: `/genres/${idOrSlug}`,
+			errorMessage: 'Genre not found',
+			parameters: {}
+		});
+	}
+
+	/**
+	 * Fetch all albums from a genre
+	 */
+	static async getGenreAlbums(
+		idOrSlug: string | number,
+		pagination?: PaginationParameters,
+		sort?: SortingParameters<typeof AlbumSortingKeys>,	
+		type?: AlbumType
+	): Promise<PaginatedResponse<AlbumWithArtist>> {
+		return API.fetch({
+			route: `/genres/${idOrSlug}/albums`,
+			errorMessage: 'Genre not found',
+			parameters: { pagination, include: ['artist'], sort },
+			otherParameters: { type }
+		});
+	}
+
+	/**
+	 * Fetch all artists from a genre
+	 */
+	static async getGenreArtists(
+		idOrSlug: string | number,
+		pagination?: PaginationParameters,
+		sort?: SortingParameters<typeof ArtistSortingKeys>,	
+	): Promise<PaginatedResponse<Artist>> {
+		return API.fetch({
+			route: `/genres/${idOrSlug}/artists`,
+			errorMessage: 'Genre not found',
+			parameters: { pagination, include: [], sort }
+		});
+	}
+	/**
+	 * Fetch all songs from a genre
+	 */
+	static async getGenreSongs(
+		idOrSlug: string | number,
+		pagination?: PaginationParameters,
+		sort?: SortingParameters<typeof SongSortingKeys>,	
+	): Promise<PaginatedResponse<SongWithArtist>> {
+		return API.fetch({
+			route: `/genres/${idOrSlug}/songs`,
+			errorMessage: 'Genre not found',
+			parameters: { pagination, include: ['artist'], sort }
 		});
 	}
 
