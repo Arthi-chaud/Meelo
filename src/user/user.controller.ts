@@ -1,6 +1,5 @@
-import { Controller, UseGuards, Get, Post, Request, Body } from "@nestjs/common";
+import { Controller, Get, Post, Request, Body } from "@nestjs/common";
 import { User } from "@prisma/client";
-import { JwtAuthGuard } from "src/authentication/jwt/jwt-auth.guard";
 import UserService from "./user.service";
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import UserCreateDTO from "./models/user.dto";
@@ -15,7 +14,6 @@ export default class UserController {
 	@ApiOperation({
 		summary: 'Get info about the currently authentified user'
 	})
-	@UseGuards(JwtAuthGuard)
 	@Get('me')
 	async getAuthenticatedUserProfile(@Request() request: Express.Request) {
 		// Required to return a proper build response

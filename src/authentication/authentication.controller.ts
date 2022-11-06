@@ -5,6 +5,7 @@ import { LocalAuthGuard } from './local/local-auth.guard';
 import { ApiOperation, ApiTags, ApiBody } from '@nestjs/swagger';
 import { User } from 'src/prisma/models';
 import LoginDTO from './models/login.dto';
+import { Public } from './public.decorator';
 
 @ApiTags('Authentication')
 @Controller('auth')
@@ -20,6 +21,7 @@ export default class AuthenticationController {
 	@ApiBody({
 		type: LoginDTO
 	})
+	@Public()
 	@UseGuards(LocalAuthGuard)
 	@Post('login')
 	async login(@Request() request: Express.Request) {

@@ -20,6 +20,8 @@ import TasksModule from './tasks/tasks.module';
 import { ScheduleModule } from '@nestjs/schedule';
 import AuthenticationModule from './authentication/authentication.module';
 import UserModule from './user/user.module';
+import { APP_GUARD } from '@nestjs/core';
+import JwtAuthGuard from './authentication/jwt/jwt-auth.guard';
 
 @Module({
 	imports: [
@@ -45,6 +47,9 @@ import UserModule from './user/user.module';
 		UserModule
 	],
 	controllers: [AppController],
-	providers: [],
+	providers: [{
+		provide: APP_GUARD,
+		useClass: JwtAuthGuard,
+	}],
 })
 export default class AppModule {}
