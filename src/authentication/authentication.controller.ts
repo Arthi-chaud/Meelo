@@ -23,7 +23,6 @@ export default class AuthenticationController {
 	@UseGuards(LocalAuthGuard)
 	@Post('login')
 	async login(@Request() request: Express.Request) {
-		console.log(request.user);
 		return this.authenticationService.login(request.user as User);
 	}
 }

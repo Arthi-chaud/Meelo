@@ -8,7 +8,7 @@ import { MeeloException } from 'src/exceptions/meelo-exception';
 import SortingParameter from 'src/sort/models/sorting-parameter';
 import bcrypt from 'bcrypt';
 import UserResponse from './models/user.response';
-import { UserAlreadyExistsException, UserNotFoundException, UserNotFoundFromCredentialsException, UserNotFoundFromIDException } from './user.exceptions';
+import { InvalidPasswordException, InvalidUsernameException, UserAlreadyExistsException, UserNotFoundException, UserNotFoundFromCredentialsException, UserNotFoundFromIDException } from './user.exceptions';
 
 @Injectable()
 export default class UserService extends RepositoryService<
@@ -39,7 +39,30 @@ export default class UserService extends RepositoryService<
 		return bcrypt.hashSync(plainTextPassword, this.passwordHashSaltRound);
 	}
 
-	formatCreateInput(input: UserQueryParameters.CreateInput): Prisma.UserCreateInput {
+	/**
+	 * Checks a username respect policy
+	 * @returns true if username is valid
+	 */
+	usernameIsValid(usernameCandidate: string): boolean {
+		return usernameCandidate.match('^[a-zA-Z0-9\-\_]{4,}$') != null;
+	}
+
+	/**
+	 * Checks a password respect policy
+	 * @returns true if password is valid
+	 */
+	passwordIsValid(passwordCandidate: string): boolean {
+		console.log(passwordCandidate, passwordCandidate.match('^\\S{6,}$'));
+		return passwordCandidate.match('^\\S{6,}$') != null;
+	}
+
+	formatCreateInput(input: UserQueryParameters.CreateInput) {
+		if (!this.usernameIsValid(input.name)) {
+			throw new InvalidUsernameException();
+		}
+		if (!this.passwordIsValid(input.password)) {
+			throw new InvalidPasswordException();
+		}
 		return {
 			name: input.name,
 			password: this.encryptPassword(input.password),
@@ -47,6 +70,12 @@ export default class UserService extends RepositoryService<
 			admin: input.admin
 		};
 	}
+
+	async create(input: UserQueryParameters.CreateInput): Promise<User> {
+		const formattedInput = this.formatCreateInput(input);
+		return super.create(formattedInput);
+	}
+
 	protected onCreationFailure(input: UserQueryParameters.CreateInput): MeeloException | Promise<MeeloException> {
 		throw new UserAlreadyExistsException(input.name);
 	}
@@ -91,7 +120,18 @@ export default class UserService extends RepositoryService<
 	formatSortingInput(_sortingParameter: SortingParameter<[]>): Prisma.UserOrderByWithRelationInput {
 		return {};
 	}
-	formatUpdateInput(what: UserQueryParameters.UpdateInput): Prisma.UserUpdateInput {
+	async update(what: UserQueryParameters.UpdateInput, where: UserQueryParameters.WhereInput): Promise<User> {
+		const formattedInput = this.formatUpdateInput(what);
+		return super.update(formattedInput, where);
+	}
+
+	formatUpdateInput(what: UserQueryParameters.UpdateInput) {
+		if (what.name && !this.usernameIsValid(what.name)) {
+			throw new InvalidUsernameException();
+		}
+		if (what.password && !this.passwordIsValid(what.password)) {
+			throw new InvalidPasswordException();
+		}
 		return {
 			...what,
 			password: what.password ? this.encryptPassword(what.password) : undefined

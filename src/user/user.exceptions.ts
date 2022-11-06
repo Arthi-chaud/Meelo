@@ -1,5 +1,5 @@
 import { ForbiddenException } from "@nestjs/common";
-import { AlreadyExistsException, NotFoundException } from "src/exceptions/meelo-exception";
+import { AlreadyExistsException, InvalidRequestException, NotFoundException } from "src/exceptions/meelo-exception";
 
 export class UserNotFoundException extends NotFoundException {
 	constructor(username: string) {
@@ -28,5 +28,17 @@ export class UserAlreadyExistsException extends AlreadyExistsException {
 export class UserNotEnabledException extends ForbiddenException {
 	constructor(username: string) {
 		super(`User '${username}' is not enabled.`);
+	}
+}
+
+export class InvalidUsernameException extends InvalidRequestException {
+	constructor() {
+		super(`Username is invalid. Must be at least 4 chars long, composed of letters, digits, dashes and underscores`);
+	}
+}
+
+export class InvalidPasswordException extends InvalidRequestException {
+	constructor() {
+		super(`Password is invalid. Must be at least 6 chars long, without spaces`);
 	}
 }
