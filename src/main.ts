@@ -7,6 +7,8 @@ import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import mime from 'mime';
 import { InvalidRequestException } from './exceptions/meelo-exception';
 import AllExceptionsFilter from './exceptions/all-exceptions.filter';
+import helmet from 'helmet';
+import csurf from 'csurf';
 
 async function bootstrapSwagger(app: INestApplication) {
 	const config = new DocumentBuilder()
@@ -21,7 +23,9 @@ async function bootstrapSwagger(app: INestApplication) {
 
 async function bootstrap() {
 	mime.define({ 'audio/mpeg': [ 'm4a', mime.getExtension('audio/mpeg')!] }, true)
-	const app = await NestFactory.create(AppModule);
+	const app = await NestFactory.create(AppModule, {
+		cors: process.env.NODE_ENV === 'development'
+	});
 	const { httpAdapter } = app.get(HttpAdapterHost);
 	app.useGlobalFilters(
 		new AllExceptionsFilter(httpAdapter),
@@ -37,8 +41,9 @@ async function bootstrap() {
 			enableImplicitConversion: true
 		},
 	}));
-	if (process.env.NODE_ENV === 'development')
-		app.enableCors();
+	app.use(helmet());
+	app.use(csurf());
+
 	await bootstrapSwagger(app);
 	await app.listen(4000);
 }
