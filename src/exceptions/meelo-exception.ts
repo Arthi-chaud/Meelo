@@ -52,3 +52,13 @@ export class InvalidRequestException extends MeeloException {
 		super(HttpStatus.BAD_REQUEST, message);
 	}
 }
+
+/**
+ * Exception which, if caught by the global filter will return a 401 HTTP response
+ * Used when a protected route is requested by an anonymous user
+ */
+ export class UnauthorizedRequestException extends MeeloException {
+	constructor(message: string) {
+		super(HttpStatus.UNAUTHORIZED, message);
+	}
+}

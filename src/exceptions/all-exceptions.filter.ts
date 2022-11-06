@@ -11,7 +11,8 @@ export default class AllExceptionsFilter extends BaseExceptionFilter {
 		response
 			.status(HttpStatus.INTERNAL_SERVER_ERROR)
 			.json({
-				error: "An error occured, Try again.",
+				statusCode: HttpStatus.INTERNAL_SERVER_ERROR,
+				message: "An error occured, Try again.",
 			});
 	}
 }
