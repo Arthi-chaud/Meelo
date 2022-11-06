@@ -18,6 +18,8 @@ import GenreModule from './genre/genre.module';
 import AppController from './app.controller';
 import TasksModule from './tasks/tasks.module';
 import { ScheduleModule } from '@nestjs/schedule';
+import AuthenticationModule from './authentication/authentication.module';
+import UserModule from './user/user.module';
 
 @Module({
 	imports: [
@@ -38,7 +40,9 @@ import { ScheduleModule } from '@nestjs/schedule';
 		GenreModule,
 		SearchModule,
 		LyricsModule,
-		TasksModule
+		TasksModule,
+		AuthenticationModule,
+		UserModule
 	],
 	controllers: [AppController],
 	providers: [],
