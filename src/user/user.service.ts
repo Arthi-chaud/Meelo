@@ -18,7 +18,7 @@ export default class UserService extends RepositoryService<
 	UserQueryParameters.ManyWhereInput,
 	UserQueryParameters.UpdateInput,
 	UserQueryParameters.DeleteInput,
-	[],
+	UserQueryParameters.SortingKeys,
 	Prisma.UserCreateInput,
 	Prisma.UserWhereInput,
 	Prisma.UserWhereInput,
@@ -117,8 +117,8 @@ export default class UserService extends RepositoryService<
 	formatManyWhereInput(input: UserQueryParameters.ManyWhereInput): Prisma.UserWhereInput {
 		return input;
 	}
-	formatSortingInput(_sortingParameter: SortingParameter<[]>): Prisma.UserOrderByWithRelationInput {
-		return {};
+	formatSortingInput(sortingParameter: SortingParameter<UserQueryParameters.SortingKeys>) {
+		return { [sortingParameter.sortBy]: sortingParameter.order }
 	}
 	async update(what: UserQueryParameters.UpdateInput, where: UserQueryParameters.WhereInput): Promise<User> {
 		const formattedInput = this.formatUpdateInput(what);

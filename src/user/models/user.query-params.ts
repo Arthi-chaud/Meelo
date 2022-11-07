@@ -1,5 +1,7 @@
 import { User } from 'src/prisma/models';
 import RequireOnlyOne from 'src/utils/require-only-one';
+import BaseSortingParameter from 'src/sort/models/sorting-parameter';
+import { ApiPropertyOptional } from '@nestjs/swagger';
 
 namespace UserQueryParameters {
 	
@@ -31,6 +33,16 @@ namespace UserQueryParameters {
 	 * Query parameters to delete one user
 	 */
 	export type DeleteInput = RequireOnlyOne<Pick<User, 'id' | 'name'>>;
+
+	/**
+	 * Defines how to sort fetched entries
+	 */
+	export const SortingKeys = ['id', 'name', 'admin', 'enabled'] as const;
+	export type SortingKeys = typeof SortingKeys;
+	export class SortingParameter extends BaseSortingParameter<SortingKeys>{
+		@ApiPropertyOptional({ enum: SortingKeys })
+		sortBy: SortingKeys[number]
+	}
 }
 
 export default UserQueryParameters;
