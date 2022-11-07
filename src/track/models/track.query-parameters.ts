@@ -8,7 +8,6 @@ import type { RequireAtLeastOne } from "type-fest";
 import type { RequireExactlyOne } from 'type-fest';
 import type { RelationInclude as BaseRelationInclude } from "src/relation-include/models/relation-include";
 import BaseSortingParameter from 'src/sort/models/sorting-parameter';
-
 import type AlbumQueryParameters from "src/album/models/album.query-parameters";
 import type ArtistQueryParameters from "src/artist/models/artist.query-parameters";
 import { ApiPropertyOptional } from "@nestjs/swagger";

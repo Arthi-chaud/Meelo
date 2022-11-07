@@ -13,6 +13,7 @@ import { ApiPaginatedResponse } from 'src/pagination/paginated-response.decorato
 import { PaginationQuery } from 'src/pagination/pagination-query.decorator';
 import RelationIncludeQuery from 'src/relation-include/relation-include-query.decorator';
 import SortingQuery from 'src/sort/sort-query.decorator';
+import Admin from 'src/roles/admin.decorator';
 
 @ApiTags("Tracks")
 @Controller('tracks')
@@ -85,6 +86,7 @@ export class TrackController {
 	@ApiOperation({
 		summary: 'Set a track as master track'
 	})
+	@Admin()
 	@Put(':id/master')
 	async setAsMaster(
 		@Param('id', ParseIdPipe) trackId: number
@@ -101,6 +103,7 @@ export class TrackController {
 	@ApiOperation({
 		summary: 'Change the track\'s parent song'
 	})
+	@Admin()
 	@Post('reassign')
 	async reassignTrack(
 		@Body() reassignmentDTO: ReassignTrackDTO
