@@ -73,7 +73,8 @@ export default class UserService extends RepositoryService<
 
 	async create(input: UserQueryParameters.CreateInput): Promise<User> {
 		const formattedInput = this.formatCreateInput(input);
-		return super.create(formattedInput);
+		const isFirstUser = await this.count({}) == 0;
+		return super.create({...formattedInput, admin: isFirstUser});
 	}
 
 	protected onCreationFailure(input: UserQueryParameters.CreateInput): MeeloException | Promise<MeeloException> {
