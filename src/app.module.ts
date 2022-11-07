@@ -22,6 +22,7 @@ import AuthenticationModule from './authentication/authentication.module';
 import UserModule from './user/user.module';
 import { APP_GUARD } from '@nestjs/core';
 import JwtAuthGuard from './authentication/jwt/jwt-auth.guard';
+import RolesGuard from './roles/roles.guard';
 
 @Module({
 	imports: [
@@ -50,6 +51,9 @@ import JwtAuthGuard from './authentication/jwt/jwt-auth.guard';
 	providers: [{
 		provide: APP_GUARD,
 		useClass: JwtAuthGuard,
+	},{
+		provide: APP_GUARD,
+		useClass: RolesGuard,
 	}],
 })
 export default class AppModule {}

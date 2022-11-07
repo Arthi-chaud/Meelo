@@ -8,7 +8,7 @@ import mime from 'mime';
 import { InvalidRequestException } from './exceptions/meelo-exception';
 import AllExceptionsFilter from './exceptions/all-exceptions.filter';
 import helmet from 'helmet';
-import csurf from 'csurf';
+import cookieParser from 'cookie-parser';
 
 async function bootstrapSwagger(app: INestApplication) {
 	const config = new DocumentBuilder()
@@ -42,7 +42,7 @@ async function bootstrap() {
 		},
 	}));
 	app.use(helmet());
-	app.use(csurf());
+	app.use(cookieParser());
 
 	await bootstrapSwagger(app);
 	await app.listen(4000);
