@@ -59,6 +59,6 @@ export class InvalidRequestException extends MeeloException {
  */
  export class UnauthorizedRequestException extends MeeloException {
 	constructor(message: string) {
-		super(HttpStatus.UNAUTHORIZED, message);
+		super(HttpStatus.UNAUTHORIZED, "Unauthorized: " + message);
 	}
 }

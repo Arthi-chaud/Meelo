@@ -2,7 +2,7 @@
 import { ExecutionContext, Injectable } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
 import { AuthGuard } from '@nestjs/passport';
-import { UnauthorizedRequestException } from 'src/exceptions/meelo-exception';
+import { UnauthorizedAnonymousRequestException } from '../authentication.exception';
 import { IS_PUBLIC_KEY } from '../public.decorator';
 
 @Injectable()
@@ -12,7 +12,7 @@ export default class JwtAuthGuard extends AuthGuard('jwt') {
 	}
 	handleRequest(err: any, user: any, _info: any, _context: ExecutionContext, _status?: any): any {
 		if (err || !user) {
-			throw err || new UnauthorizedRequestException("Unauthorized, authentication required");
+			throw err || new UnauthorizedAnonymousRequestException();
 		}
 		return user;
 	}
