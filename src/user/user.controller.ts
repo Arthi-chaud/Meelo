@@ -1,8 +1,8 @@
-import { Controller, Get, Post, Request, Body, Param, Put, Req } from "@nestjs/common";
+import { Controller, Get, Post, Request, Body, Param, Put, Req, ParseIntPipe } from "@nestjs/common";
 import { User } from "@prisma/client";
 import UserService from "./user.service";
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
-import UserCreateDTO from "./models/user.dto";
+import UserCreateDTO from "./models/create-user.dto";
 import Admin from "src/roles/admin.decorator";
 import { PaginationParameters } from "src/pagination/models/pagination-parameters";
 import { PaginationQuery } from "src/pagination/pagination-query.decorator";
@@ -33,7 +33,7 @@ export default class UserController {
 	@ApiOperation({
 		summary: 'Create a new user account'
 	})
-	@Post('create')
+	@Post('new')
 	async createUserAccount(
 		@Body() userDTO: UserCreateDTO
 	) {
@@ -47,7 +47,7 @@ export default class UserController {
 	@Admin()
 	@Put(':id')
 	async updateUserAccounts(
-		@Param('id') userId: number,
+		@Param('id', ParseIntPipe) userId: number,
 		@Body() updateUserDto: UpdateUserDTO,
 	) {
 		return this.userService.buildResponse(
@@ -94,6 +94,29 @@ export default class UserController {
 		return new PaginatedResponse(
 			(await this.userService.getMany(
 				{ enabled: false },
+				paginationParameters, {},
+				sortingParameter
+			)).map((user) => this.userService.buildResponse(user)),
+			request
+		);
+	}
+
+	@ApiOperation({
+		summary: 'Get enabled admin user accounts'
+	})
+	@ApiPaginatedResponse(UserResponse)
+	@Admin()
+	@Get('admins')
+	async getAdminUserAccounts(
+		@PaginationQuery()
+		paginationParameters: PaginationParameters,
+		@SortingQuery(UserQueryParameters.SortingKeys)
+		sortingParameter: UserQueryParameters.SortingParameter,
+		@Req() request: Request
+	) {
+		return new PaginatedResponse(
+			(await this.userService.getMany(
+				{ admin: true, enabled: true },
 				paginationParameters, {},
 				sortingParameter
 			)).map((user) => this.userService.buildResponse(user)),

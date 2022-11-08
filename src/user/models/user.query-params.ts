@@ -8,7 +8,7 @@ namespace UserQueryParameters {
 	/**
 	 * Paramters to create a user
 	 */
-	export type CreateInput = Omit<User, 'enabled' | 'id'>;
+	export type CreateInput = Omit<User, 'id' | 'enabled'> & Partial<Pick<User, 'enabled'>>;
 
 	/**
 	 * Parameters to find one users

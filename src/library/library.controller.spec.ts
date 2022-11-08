@@ -403,7 +403,7 @@ describe('Library Controller', () => {
 		});
 	});
 
-	describe("Get all Related Songs (POST /libraries/:id/update)", () => {
+	describe("Get all Related Songs (PUT /libraries/:id/update)", () => {
 		it("should update the path", async () => {
 			return request(app.getHttpServer())
 				.put(`/libraries/${dummyRepository.library1.slug}/update`)

@@ -52,29 +52,36 @@ export default class UserService extends RepositoryService<
 	 * @returns true if password is valid
 	 */
 	passwordIsValid(passwordCandidate: string): boolean {
-		console.log(passwordCandidate, passwordCandidate.match('^\\S{6,}$'));
 		return passwordCandidate.match('^\\S{6,}$') != null;
 	}
 
-	formatCreateInput(input: UserQueryParameters.CreateInput) {
-		if (!this.usernameIsValid(input.name)) {
+	/**
+	 * Throws is credentials candidate do not respect the policy
+	 * @param credentials the username and password
+	 */
+	checkCredentialsAreValid(credentials: Partial<Pick<User, 'name' | 'password'>>) {
+		if (credentials.name && !this.usernameIsValid(credentials.name)) {
 			throw new InvalidUsernameException();
 		}
-		if (!this.passwordIsValid(input.password)) {
+		if (credentials.password && !this.passwordIsValid(credentials.password)) {
 			throw new InvalidPasswordException();
 		}
+
+	}
+
+	formatCreateInput(input: UserQueryParameters.CreateInput) {
 		return {
 			name: input.name,
 			password: this.encryptPassword(input.password),
-			enabled: false,
+			enabled: input.enabled ?? false,
 			admin: input.admin
 		};
 	}
 
 	async create(input: UserQueryParameters.CreateInput): Promise<User> {
-		const formattedInput = this.formatCreateInput(input);
+		this.checkCredentialsAreValid(input);
 		const isFirstUser = await this.count({}) == 0;
-		return super.create({...formattedInput, admin: isFirstUser});
+		return super.create({...input, admin: isFirstUser, enabled: isFirstUser || input.enabled });
 	}
 
 	protected onCreationFailure(input: UserQueryParameters.CreateInput): MeeloException | Promise<MeeloException> {
