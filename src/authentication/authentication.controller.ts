@@ -5,7 +5,7 @@ import { LocalAuthGuard } from './local/local-auth.guard';
 import { ApiOperation, ApiTags, ApiBody } from '@nestjs/swagger';
 import { User } from 'src/prisma/models';
 import LoginDTO from './models/login.dto';
-import { Public } from './public.decorator';
+import { Public } from '../roles/public.decorator';
 
 @ApiTags('Authentication')
 @Controller('auth')

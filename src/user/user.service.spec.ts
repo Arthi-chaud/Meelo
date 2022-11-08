@@ -9,7 +9,7 @@ import TestPrismaService from "test/test-prisma.service";
 import UserModule from "./user.module";
 import UserService from "./user.service";
 import { User } from 'src/prisma/models';
-import { UserAlreadyExistsException, UserNotFoundException, UserNotFoundFromCredentialsException, UserNotFoundFromIDException } from "./user.exceptions";
+import { InvalidUserCredentialsException, UserAlreadyExistsException, UserNotFoundException, UserNotFoundFromIDException } from "./user.exceptions";
 
 describe('User Service', () => {
 	let userService: UserService;
@@ -78,7 +78,7 @@ describe('User Service', () => {
 		});
 		it("Should throw, as password is incorrect", () => {
 			const test = () => userService.get({ byCredentials: { name: user.name, password: '12345' } });
-			expect(test()).rejects.toThrow(UserNotFoundFromCredentialsException);
+			expect(test()).rejects.toThrow(InvalidUserCredentialsException);
 		});
 	});
 

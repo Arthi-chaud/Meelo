@@ -13,6 +13,12 @@ export class UserNotFoundFromCredentialsException extends NotFoundException {
 	}
 }
 
+export class InvalidUserCredentialsException extends ForbiddenException {
+	constructor(username: string) {
+		super(`Invalid Password for user '${username}'.`);
+	}
+}
+
 export class UserNotFoundFromIDException extends NotFoundException {
 	constructor(userId: number) {
 		super(`User number '${userId}' not found`);

@@ -12,6 +12,7 @@ import SortingQuery from "src/sort/sort-query.decorator";
 import UserQueryParameters from "./models/user.query-params";
 import UpdateUserDTO from "./models/update-user.dto";
 import PaginatedResponse from "src/pagination/models/paginated-response";
+import { Public } from "src/roles/public.decorator";
 
 @ApiTags("Users")
 @Controller("users")
@@ -33,6 +34,7 @@ export default class UserController {
 	@ApiOperation({
 		summary: 'Create a new user account'
 	})
+	@Public()
 	@Post('new')
 	async createUserAccount(
 		@Body() userDTO: UserCreateDTO

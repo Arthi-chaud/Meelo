@@ -8,7 +8,7 @@ import { MeeloException } from 'src/exceptions/meelo-exception';
 import SortingParameter from 'src/sort/models/sorting-parameter';
 import bcrypt from 'bcrypt';
 import UserResponse from './models/user.response';
-import { InvalidPasswordException, InvalidUsernameException, UserAlreadyExistsException, UserNotFoundException, UserNotFoundFromCredentialsException, UserNotFoundFromIDException } from './user.exceptions';
+import { InvalidPasswordException, InvalidUserCredentialsException, InvalidUsernameException, UserAlreadyExistsException, UserNotFoundException, UserNotFoundFromIDException } from './user.exceptions';
 
 @Injectable()
 export default class UserService extends RepositoryService<
@@ -115,7 +115,7 @@ export default class UserService extends RepositoryService<
 
 	onNotFound(where: UserQueryParameters.WhereInput): MeeloException | Promise<MeeloException> {
 		if (where.byCredentials) {
-			throw new UserNotFoundFromCredentialsException(where.byCredentials.name);
+			throw new InvalidUserCredentialsException(where.byCredentials.name);
 		}
 		if (where.byId) {
 			throw new UserNotFoundFromIDException(where.byId.id);
