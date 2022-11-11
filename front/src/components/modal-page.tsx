@@ -4,6 +4,7 @@ import CloseIcon from '@mui/icons-material/Close';
 import { useEffect, useState } from "react";
 
 type ModalPageProps = {
+	disposable?: boolean;
 	children: JSX.Element;
 }
 
@@ -25,7 +26,7 @@ const ModalPage = (props: ModalPageProps) => {
 						setOpen(false);
 						router.back();
 					}}>
-						<CloseIcon />
+						<CloseIcon sx={{ display: props.disposable == true ? undefined : 'none' }} />
 					</IconButton>
 				</Box>
 				{props.children}
