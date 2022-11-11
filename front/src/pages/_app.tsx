@@ -11,8 +11,9 @@ import store from '../state/store'
 import theme from "../theme";
 import Player from "../components/player/player";
 import { Provider } from "react-redux";
+import AuthenticationWall from "../components/authentication/authentication-wall";
 
-function MyApp({ Component, pageProps }: AppProps) {
+function MyApp({ Component, pageProps: { session, ...pageProps } }: AppProps) {
 	const [queryClient] = useState(() => new QueryClient());
 	return <Provider store={store}>
 		<ThemeProvider theme={theme}>
@@ -23,16 +24,18 @@ function MyApp({ Component, pageProps }: AppProps) {
     			<meta name="viewport" content="initial-scale=1.0, width=device-width" />
     		</Head>
 			<QueryClientProvider client={queryClient}>
-				<MeeloAppBar/>
-				<ErrorBoundary
-					FallbackComponent={() => <Box/>}
-					onError={(error: Error) => toast.error(error.message)}
-				>
-					<Hydrate state={pageProps.dehydratedState}>
-						<Component {...pageProps} />
-					</Hydrate>
-					<Player/>
-				</ErrorBoundary>
+				<AuthenticationWall>
+					<MeeloAppBar/>
+					<ErrorBoundary
+						FallbackComponent={() => <Box/>}
+						onError={(error: Error) => toast.error(error.message)}
+					>
+						<Hydrate state={pageProps.dehydratedState}>
+							<Component {...pageProps} />
+						</Hydrate>
+						<Player/>
+					</ErrorBoundary>
+				</AuthenticationWall>
 				<Toaster toastOptions={{ duration: 10000 }} position='bottom-center'/>
 				<ReactQueryDevtools initialIsOpen={false} />
 			</QueryClientProvider>
