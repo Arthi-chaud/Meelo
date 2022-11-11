@@ -52,6 +52,13 @@ export default  responsiveFontSizes(createTheme({
 					borderRadius: '0.5rem'
 				}
 			}
+		},
+		MuiDivider: {
+			styleOverrides: {
+				root: {
+					borderRadius: '0'
+				}
+			}
 		}
 	}
 }));

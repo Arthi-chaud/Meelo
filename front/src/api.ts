@@ -11,22 +11,56 @@ import axios from 'axios';
 import Resource from "./models/resource";
 import { SortingParameters } from "./utils/sorting";
 import LibraryTaskResponse from "./models/library-task-response";
+import store from "./state/store";
+import User from "./models/user";
+import { getCookie } from "cookies-next";
+import UserAccessTokenCookieKey from "./utils/user-access-token-cookie-key";
+
+type AuthenticationResponse = {
+	access_token: string;
+}
+
 type QueryParameters<Keys extends string[]> = {
 	pagination?: PaginationParameters;
 	include?: string[];
 	sort?: SortingParameters<Keys>
 }
 
+type AuthenticationInput = {
+	username: string;
+	password: string;
+}
+
 type FetchParameters<Keys extends string[]> = {
 	route: string,
 	parameters: QueryParameters<Keys>,
 	otherParameters?: any,
-	errorMessage?: string
+	errorMessage?: string,
+	data?: Object,
 }
 
 export default class API {
 
 	static defaultPageSize = 30;
+
+	static async login(credentials: AuthenticationInput): Promise<AuthenticationResponse> {
+		return API.fetch({
+			route: '/auth/login',
+			data: credentials,
+			parameters: {}
+		}, 'POST');
+	}
+	static async register(credentials: AuthenticationInput): Promise<User> {
+		return API.fetch({
+			route: '/users/new',
+			data: {
+				name: credentials.username,
+				password: credentials.password,
+				admin: false
+			},
+			parameters: {}
+		}, 'POST');
+	}
 
 	/**
 	 * Fetch all libraries
@@ -237,6 +271,13 @@ export default class API {
 			route: `/albums/${albumSlugOrId}`,
 			errorMessage: "Album not found",
 			parameters: { include }
+		}); 
+	}
+
+	static async getCurrentUserStatus(): Promise<User> {
+		return API.fetch({
+			route: `/users/me`,
+			parameters: { }
 		}); 
 	}
 
@@ -535,13 +576,27 @@ export default class API {
 		})
 	}
 
-	private static async fetch<T, Keys extends string[]>({ route, parameters, otherParameters, errorMessage }: FetchParameters<Keys>, method: 'GET' | 'PUT' | 'POST' = 'GET' ): Promise<T> {
-		const response = await fetch(this.buildURL(route, parameters, otherParameters), { method });
+	private static async fetch<T, Keys extends string[]>({ route, parameters, otherParameters, errorMessage, data }: FetchParameters<Keys>, method: 'GET' | 'PUT' | 'POST' = 'GET' ): Promise<T> {
+		const ssrContext = store.getState().context.context;
+		const accessToken = getCookie(UserAccessTokenCookieKey, ssrContext)?.valueOf();
+		console.log("Access token: " + accessToken);
+		const header = {
+			'Content-Type': 'application/json'
+		}
+		const response = await fetch(
+			this.buildURL(route, parameters, otherParameters), {
+			method,
+			body: data ? JSON.stringify(data) : undefined,
+			headers: accessToken ? {
+				...header,
+				'Authorization': `Bearer ${accessToken}`
+			} : header,
+		});
 		const jsonResponse = await response.json().catch((e) => {
 			throw new Error("Error while parsing Server's response");
 		});
 		if (!response.ok) {
-			throw new Error(errorMessage ?? jsonResponse.error ?? response.statusText)
+			throw new Error(errorMessage ?? jsonResponse.message ?? response.statusText)
 		}
 		return jsonResponse;
 	}
