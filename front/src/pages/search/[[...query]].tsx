@@ -54,8 +54,7 @@ const buildSearchUrl = (query: string | undefined, type: string | undefined) => 
 const SearchPage = ({ type, searchQuery }: InferGetServerSidePropsType<typeof getServerSideProps>) => {
 	const router = useRouter();
 	type ??= router.query.type as string;
-	const [query, setQuery] = useState<string | undefined>(Array.from(searchQuery ?? (router.query.query as string | undefined) ?? []).join(' '));
-
+	const [query, setQuery] = useState<string | undefined>(Array.from(searchQuery ?? (router.query.query as string | undefined) ?? []).join(' ') || undefined);
 	return <Box sx={{ display: 'flex', justifyContent: 'center', paddingY: 3, flexDirection: 'column' }}>
 		<Box sx={{ display: 'flex', justifyContent: 'center', paddingY: 2 }}>
 			<TextField id="outlined-basic" label="Search" variant="outlined" autoFocus InputProps={{
