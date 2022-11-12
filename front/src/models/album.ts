@@ -25,7 +25,7 @@ type Album = Resource & Illustration & {
 	/**
 	 * Type of the album
 	 */
-	type: 'StudioRecording' | 'LiveRecording' | 'Compilation' | 'Single';
+	type: AlbumType;
 	/**
 	 * Unique identifier of the parent artist
 	 * If undefined, the album is a compilation
