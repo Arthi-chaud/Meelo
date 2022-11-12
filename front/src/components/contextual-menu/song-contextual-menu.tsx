@@ -25,8 +25,8 @@ const SongContextualMenu = (props: SongContextualMenuProps) => {
 			}
 		/>
 		<ContextualMenuItem icon={<Lyrics/>} href={`/songs/${songSlug}/lyrics`} label={"See Lyrics"}/>
-		<ContextualMenuItem icon={<Difference/>} href={`/songs/${songSlug}/tracks`} label={"See Related Tracks"}/>
 		<ContextualMenuItem icon={<Audiotrack/>} href={`/songs/${songSlug}/versions`} label={"See Other Versions"}/>
+		<ContextualMenuItem icon={<Difference/>} href={`/songs/${songSlug}/tracks`} label={"See Related Tracks"}/>
 		<ContextualMenuItem icon={<Download/>} label={"Download"}
 			onClick={() => API.getMasterTrack(songSlug).then((track) => downloadAction(router, API.getStreamURL(track.stream)))}
 		/>

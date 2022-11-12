@@ -18,6 +18,8 @@ import Link from "next/link";
 import { MoreVert } from "@mui/icons-material";
 import { SongWithArtist, SongWithLyrics } from "../../models/song";
 import SongContextualMenu from "../contextual-menu/song-contextual-menu";
+import TrackContextualMenu from "../contextual-menu/track-contextual-menu";
+import ReleaseTrackContextualMenu from "../contextual-menu/release-track-contextual-menu";
 
 const songQuery = (slugOrId: string | number) => ({
 	key: ['song', slugOrId],
@@ -153,8 +155,8 @@ const ExpandedPlayerControls = (props: PlayerControlsProps & { videoRef: LegacyR
 							</Link>
 						</Grid>
 						<Grid item xs={1}>
-							{parentSong.data
-								? <SongContextualMenu song={parentSong.data} onSelect={() => props.onExpand(false)} />
+							{props.track && parentSong.data && props.artist
+								? <ReleaseTrackContextualMenu artist={props.artist} track={{...props.track, song: parentSong.data}} onSelect={() => props.onExpand(false)} />
 								: <IconButton><MoreVert/></IconButton>}
 						</Grid>
 					</Grid>

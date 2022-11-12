@@ -6,6 +6,7 @@ import { playNextTrack, playPreviousTrack, pushCurrentTrackToHistory, setHistory
 import { RootState } from "../../state/store";
 import { MinimizedPlayerControls, ExpandedPlayerControls } from "./controls";
 import Link from 'next/link';
+import { DefaultWindowTitle } from "../../utils/constants";
 
 const Player = () => {
 	const currentTrack = useSelector((state: RootState) => state.player.currentTrack);
@@ -62,6 +63,7 @@ const Player = () => {
 		navigator.mediaSession.setActionHandler('previoustrack', onRewind);
 		navigator.mediaSession.setActionHandler('nexttrack', onSkipTrack);
 		if (currentTrack) {
+			document.title = `${currentTrack.track.name} - ${DefaultWindowTitle}`;
 			setStopped(false);
 			const newIllustrationURL = currentTrack.track.illustration ?? currentTrack.release.illustration;
 			setIllustrationURL(newIllustrationURL);
@@ -94,6 +96,7 @@ const Player = () => {
 				}
 			}, 100);
 		} else {
+			document.title = DefaultWindowTitle;
 			setIllustrationURL(null);
 		}
 		return () => clearInterval(interval.current);

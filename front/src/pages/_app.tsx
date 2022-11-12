@@ -11,6 +11,7 @@ import store from '../state/store'
 import theme from "../theme";
 import Player from "../components/player/player";
 import { Provider } from "react-redux";
+import { DefaultWindowTitle } from '../utils/constants';
 
 function MyApp({ Component, pageProps }: AppProps) {
 	const [queryClient] = useState(() => new QueryClient());
@@ -19,7 +20,7 @@ function MyApp({ Component, pageProps }: AppProps) {
 			<CssBaseline />
 			<GlobalStyles styles={{ a: { color: 'inherit', textDecoration: 'none' } }}/>
 			<Head>
-    			<title>Meelo</title>
+    			<title>{DefaultWindowTitle}</title>
     			<meta name="viewport" content="initial-scale=1.0, width=device-width" />
     		</Head>
 			<QueryClientProvider client={queryClient}>
