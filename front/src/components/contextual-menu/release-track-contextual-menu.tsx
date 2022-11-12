@@ -15,13 +15,13 @@ import downloadAction from "../download-action";
 type ReleaseTrackContextualMenuProps = {
 	track: TrackWithSong;
 	artist: Artist
-
+	onSelect?: () => void;
 }
 
 const ReleaseTrackContextualMenu = (props: ReleaseTrackContextualMenuProps) => {
 	const songSlug = `${props.artist.slug}+${props.track.song.slug}`;
 	const router = useRouter();
-	return <ContextualMenu>
+	return <ContextualMenu onSelect={props.onSelect}>
 		<ContextualMenuItem icon={<AccountCircle/>} href={`/artists/${props.artist.slug}`} label={"Go to Artist"}/>
 		<ContextualMenuItem icon={<Lyrics/>} href={`/songs/${songSlug}/lyrics`} label={"See Lyrics"}/>
 		<ContextualMenuItem icon={<Difference/>} href={`/songs/${songSlug}/tracks`} label={"See Related Tracks"}/>

@@ -15,6 +15,7 @@ import ContextualMenuItem from "./contextual-menu-item";
 
 type TrackContextualMenuProps = {
 	track: TrackWithSong;
+	onSelect?: () => void;
 }
 
 const TrackContextualMenu = (props: TrackContextualMenuProps) => {
@@ -28,7 +29,7 @@ const TrackContextualMenu = (props: TrackContextualMenuProps) => {
 			})
 			.catch((e: Error) => toast.error(e.message))
 	});
-	return <ContextualMenu>
+	return <ContextualMenu onSelect={props.onSelect}>
 		<ContextualMenuItem icon={<Album/>} href={`/releases/${props.track.releaseId}`} label={"Go to Release"}/>
 		<ContextualMenuItem disabled={props.track.master} icon={<Star/>} label={"Set as Master"}
 			onClick={() => masterMutation.mutate()}
