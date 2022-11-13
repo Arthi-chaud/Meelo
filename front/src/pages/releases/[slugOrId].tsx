@@ -19,7 +19,7 @@ import MusicVideoIcon from '@mui/icons-material/MusicVideo';
 import { prepareMeeloQuery } from "../../query";
 import { QueryClient, dehydrate, useQuery, useQueries } from "react-query";
 import { useDispatch } from "react-redux";
-import { playNextTrack, playTrack, setTracksInPlaylist } from "../../state/playerSlice";
+import { playTracks } from "../../state/playerSlice";
 import Song from "../../models/song";
 import Artist from "../../models/artist";
 import { shuffle } from 'd3-array';
@@ -105,9 +105,9 @@ const ReleasePage = ({ releaseIdentifier }: InferGetServerSidePropsType<typeof g
 	releaseIdentifier ??= getSlugOrId(router.query);
 	const theme = useTheme();
 	const dispatch = useDispatch();
+	const [trackList, setTracklist] = useState<Tracklist<TrackWithSong>>();
 	const [totalDuration, setTotalDuration] = useState<number | null>(null);
-	const [tracks, setTracks] = useState<TrackWithSong[] | null>(null);
-	const [formattedTrackList, setFormattedTracklist] = useState<Tracklist<TrackWithSong>>();
+	const [tracks, setTracks] = useState<TrackWithSong[]>([]);
 
 	const release = useQuery(prepareMeeloQuery(releaseQuery, releaseIdentifier));
 	let artistId = release.data?.album?.artistId;
@@ -118,7 +118,7 @@ const ReleasePage = ({ releaseIdentifier }: InferGetServerSidePropsType<typeof g
 	const hasGenres = (albumGenres.data?.length ?? 0) > 0;
 	const albumVideos = useQuery(prepareMeeloQuery(albumVideosQuery, release.data?.albumId));
 
-	const otherArtistsQuery = useQueries((tracks ?? [])
+	const otherArtistsQuery = useQueries((tracks)
 		.filter((track: TrackWithSong) => track.song.artistId != albumArtist.data?.id)
 		.map((track) => prepareMeeloQuery(artistQuery, track.song.artistId))
 	);
@@ -126,16 +126,12 @@ const ReleasePage = ({ releaseIdentifier }: InferGetServerSidePropsType<typeof g
 	useEffect(() => {
 		if (tracklist.data) {
 			const discMap = new Map(Object.entries(tracklist.data));
-			setTracks(Array.from(discMap.values()).flat())
-			setFormattedTracklist(discMap);
+			const tracks = Array.from(discMap.values()).flat();
+			setTracks(tracks);
+			setTotalDuration(tracks.reduce((prevDuration, track) => prevDuration + track.duration, 0));
+			setTracklist(discMap);
 		}
-	}, [tracklist.data]);
-	useEffect(() => {
-		if (formattedTrackList) {
-			const flattenedTracks = Array.from(formattedTrackList.values()).flat();
-			setTotalDuration(flattenedTracks.reduce((prevDuration, track) => prevDuration + track.duration, 0));
-		}
-	}, [formattedTrackList]);
+	}, [tracklist]);
 	if (!release.data || !albumArtist)
 		return <WideLoadingComponent/>
 	return <Box>
@@ -177,8 +173,7 @@ const ReleasePage = ({ releaseIdentifier }: InferGetServerSidePropsType<typeof g
 										}));
 										if (index == 1)
 											playlist = shuffle(playlist);
-										dispatch(setTracksInPlaylist(playlist));
-										dispatch(playNextTrack());
+										dispatch(playTracks({ tracks: playlist }));
 									}
 							}}>
 									{icon()}
@@ -222,33 +217,27 @@ const ReleasePage = ({ releaseIdentifier }: InferGetServerSidePropsType<typeof g
 					</Grid>
 				}
 				<Grid item md={ hasGenres ? 9 : true} xs={12}>
-					{ albumGenres.data && formattedTrackList && otherArtistsQuery.findIndex((q) => q.data == undefined) == -1 &&
+					{ albumGenres.data && trackList && otherArtistsQuery.findIndex((q) => q.data == undefined) == -1 &&
 						<FadeIn>
-							{ Array.from(formattedTrackList.entries()).map((disc, _, discs) => 
+							{ Array.from(trackList.entries()).map((disc, _, discs) => 
 								<List key={disc[0]} subheader={ discs.length !== 1 && <ListSubheader>Disc {disc[0]}</ListSubheader> }>
-									{ disc[1].map((track, _, tracks) => {
+									{ disc[1].map((track) => {
 										const artist = getSongArtist(track.song, albumArtist.data, otherArtistsQuery.map((q) => q.data!))
 										return <>
 											<ListItem disablePadding disableGutters secondaryAction={
 												<ReleaseTrackContextualMenu track={track} artist={artist}/>
 											}>
 											<ListItemButton key={track.id} onClick={() => {
-													if (tracks && otherArtistsQuery.findIndex((q) => q.data == undefined) == -1) {
+													if (tracks && !otherArtistsQuery.find((q) => q.data == undefined)) {
 														const otherArtists = otherArtistsQuery.map((q) => q.data!);
-														const trackIndex = discs.flatMap((disc) => disc[1]).findIndex((t) => t.id == track.id);
-														let playlist = discs.flatMap((disc) => disc[1]).slice(trackIndex).map((track) => ({
+														const trackIndex = tracks.findIndex((t) => t.id == track.id);
+														let playlist = tracks.map((track) => ({
 															track: track,
 															artist: getSongArtist(track.song, albumArtist.data, otherArtists),
 															release: release.data
 														}));
-														dispatch(setTracksInPlaylist(playlist));
-														dispatch(playNextTrack());
+														dispatch(playTracks({ tracks: playlist, cursor: trackIndex }));
 													}
-													dispatch(playTrack({
-														track: track,
-														artist: artist!,
-														release: release.data!
-													}));
 												}}>
 												<ListItemIcon><Typography>{ track.trackIndex }</Typography></ListItemIcon>
 												<ListItemText
