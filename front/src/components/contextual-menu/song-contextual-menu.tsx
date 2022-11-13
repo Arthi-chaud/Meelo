@@ -1,4 +1,4 @@
-import { AccountCircle, Lyrics, Audiotrack, Difference, PlaylistAdd, QueueMusic, Album, Download } from "@mui/icons-material";
+import { AccountCircle, Lyrics, Audiotrack, Difference, PlaylistAdd, QueueMusic, Album, Download, PlaylistPlay } from "@mui/icons-material";
 import { Divider } from "@mui/material";
 import { useRouter } from "next/router";
 import API from "../../api";
@@ -9,6 +9,10 @@ import ContextualMenu from "./contextual-menu"
 import ContextualMenuItem from "./contextual-menu-item";
 import ShareIcon from '@mui/icons-material/Share';
 import downloadAction from "../download-action";
+import { useDispatch } from "react-redux";
+import { playAfter, playNext } from "../../state/playerSlice";
+import { TrackWithRelease } from "../../models/track";
+import Action from "../action";
 type SongContextualMenuProps = {
 	song: SongWithArtist;
 	onSelect?: () => void;
@@ -16,12 +20,24 @@ type SongContextualMenuProps = {
 
 const SongContextualMenu = (props: SongContextualMenuProps) => {
 	const songSlug = `${props.song.artist.slug}+${props.song.slug}`;
+	const getMasterTrack = () => API.getMasterTrack<TrackWithRelease>(songSlug, ['release']);
 	const router = useRouter();
+	const dispatch = useDispatch();
 	return <ContextualMenu onSelect={props.onSelect}>
 		<ContextualMenuItem icon={<AccountCircle/>} href={`/artists/${props.song.artist.slug}`} label={"Go to Artist"}/>
 		<ContextualMenuItem icon={<Album/>} label={"Go to Album"}
-			onClick={() => API.getMasterTrack(songSlug)
+			onClick={() => getMasterTrack()
 				.then((master) => router.push(`/releases/${master.releaseId}`))
+			}
+		/>
+		<ContextualMenuItem icon={<PlaylistPlay/>} label={"Play Next"}
+			onClick={() => getMasterTrack()
+				.then((master) => dispatch(playNext({ track: master, artist: props.song.artist, release: master.release })))
+			}
+		/>
+		<ContextualMenuItem icon={<PlaylistAdd/>} label={"Play After"}
+			onClick={() => getMasterTrack()
+				.then((master) => dispatch(playAfter({ track: master, artist: props.song.artist, release: master.release })))
 			}
 		/>
 		<ContextualMenuItem icon={<Lyrics/>} href={`/songs/${songSlug}/lyrics`} label={"See Lyrics"}/>
