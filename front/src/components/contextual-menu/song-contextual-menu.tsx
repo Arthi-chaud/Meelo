@@ -30,6 +30,8 @@ const SongContextualMenu = (props: SongContextualMenuProps) => {
 				.then((master) => router.push(`/releases/${master.releaseId}`))
 			}
 		/>
+		<ContextualMenuItem icon={<Lyrics/>} href={`/songs/${songSlug}/lyrics`} label={"See Lyrics"}/>
+		<Divider/>
 		<ContextualMenuItem icon={<PlaylistPlay/>} label={"Play Next"}
 			onClick={() => getMasterTrack()
 				.then((master) => dispatch(playNext({ track: master, artist: props.song.artist, release: master.release })))
@@ -40,12 +42,14 @@ const SongContextualMenu = (props: SongContextualMenuProps) => {
 				.then((master) => dispatch(playAfter({ track: master, artist: props.song.artist, release: master.release })))
 			}
 		/>
-		<ContextualMenuItem icon={<Lyrics/>} href={`/songs/${songSlug}/lyrics`} label={"See Lyrics"}/>
+		<Divider/>
 		<ContextualMenuItem icon={<Audiotrack/>} href={`/songs/${songSlug}/versions`} label={"See Other Versions"}/>
 		<ContextualMenuItem icon={<Difference/>} href={`/songs/${songSlug}/tracks`} label={"See Related Tracks"}/>
+		<Divider/>
 		<ContextualMenuItem icon={<Download/>} label={"Download"}
 			onClick={() => API.getMasterTrack(songSlug).then((track) => downloadAction(router, API.getStreamURL(track.stream)))}
 		/>
+		<Divider/>
 		<ContextualMenuItem icon={<ShareIcon/>} label={"Share Song"} onClick={() => copyLinkToClipboard(`/songs/${songSlug}/versions`)}/>
 	</ContextualMenu>
 }

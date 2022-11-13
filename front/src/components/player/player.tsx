@@ -125,6 +125,7 @@ const Player = () => {
 						illustration={illustrationURL}
 						track={currentTrack?.track}
 						artist={currentTrack?.artist}
+						release={currentTrack?.release}
 						playing={playing ?? false}
 						onPause={pause}
 						onPlay={play}
@@ -150,6 +151,7 @@ const Player = () => {
 						illustration={illustrationURL}
 						track={currentTrack?.track}
 						artist={currentTrack?.artist}
+						release={currentTrack?.release}
 						playing={playing ?? false}
 						onPause={pause}
 						onPlay={play}

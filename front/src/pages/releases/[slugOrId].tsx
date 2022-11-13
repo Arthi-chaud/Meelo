@@ -225,7 +225,7 @@ const ReleasePage = ({ releaseIdentifier }: InferGetServerSidePropsType<typeof g
 										const artist = getSongArtist(track.song, albumArtist.data, otherArtistsQuery.map((q) => q.data!))
 										return <>
 											<ListItem disablePadding disableGutters secondaryAction={
-												<ReleaseTrackContextualMenu track={track} artist={artist}/>
+												<ReleaseTrackContextualMenu release={release.data} track={track} artist={artist}/>
 											}>
 											<ListItemButton key={track.id} onClick={() => {
 													if (tracks && !otherArtistsQuery.find((q) => q.data == undefined)) {
