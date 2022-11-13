@@ -32,7 +32,6 @@ type PlayerButtonControlsProps = {
 	onPlay: () => void;
 	onSkipTrack: () => void;
 	onRewind: () => void;
-	onStop: () => void;
 }
 
 
