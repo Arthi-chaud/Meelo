@@ -12,6 +12,7 @@ const ArtistContextualMenu = (props: ArtistContextualMenuProps) => {
 		GoToArtistAction(artistSlug),
 		GoToArtistAlbumsAction(artistSlug),
 		GoToArtistSongsAction(artistSlug),
+	], [
 		ShareArtistAction(artistSlug)
 	]]}/>
 }
