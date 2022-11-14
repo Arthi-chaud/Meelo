@@ -32,13 +32,16 @@ const ContextualMenu = (props: ContextualMenuProps) => {
     		onClose={handleClose}
 			style={{ zIndex: 99999 }}
       	>
-			{props.actions.map((actions, actionGroupIndex, allActions) => <>
-				{actions.map((action, actionIndex) => <Box key={actionIndex} onClick={() => {
+			{props.actions.map((actions, actionGroupIndex, allActions) => [
+				actions.map((action, actionIndex) => <Box key={`${actionGroupIndex}/${actionIndex}`} onClick={() => {
 					handleClose();
 					props.onSelect && props.onSelect();
-				}}><ContextualMenuItem {...action}/></Box>)}
-				{ actionGroupIndex < allActions.length - 1 && <Divider key={actionGroupIndex} sx={{ marginY: 0.5 }} variant='middle'/>}
-			</>)}
+				}}><ContextualMenuItem {...action}/></Box>)]
+				.concat(actionGroupIndex < allActions.length - 1
+					? [<Divider key={actionGroupIndex} sx={{ marginY: 0.5 }} variant='middle'/>]
+					: []
+				))
+			}
 		</Menu>
 	</>
 }
