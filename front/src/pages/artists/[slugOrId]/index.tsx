@@ -14,7 +14,7 @@ import SongItem from "../../../components/list-item/song-item";
 import song, { SongWithArtist } from "../../../models/song";
 import AudiotrackIcon from '@mui/icons-material/Audiotrack'
 import { useDispatch } from "react-redux";
-import { emptyPlaylist, playTrack } from "../../../state/playerSlice";
+import { playTrack } from "../../../state/playerSlice";
 import artist from "../../../models/artist";
 import { TrackWithRelease } from "../../../models/track";
 import getSlugOrId from "../../../utils/getSlugOrId";
@@ -29,7 +29,6 @@ const SongButton = (props: SongButtonProps) => {
 		<Grid item xs={10}>
 			<Button color='secondary' sx={{ textTransform: 'none', alignItems: 'center', width: '100%' }} onClick={() => {
 				API.getMasterTrack<TrackWithRelease>(props.song.id, ['release']).then((track) => {
-					dispatch(emptyPlaylist());
 					dispatch(playTrack({
 						artist: props.song.artist,
 						track,

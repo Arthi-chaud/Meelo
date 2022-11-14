@@ -1,4 +1,4 @@
-import Action from "../action";
+import Action from "../contextual-menu/actions";
 import SearchIcon from '@mui/icons-material/Search';
 import AutoModeIcon from '@mui/icons-material/AutoMode';
 import API from "../../api";

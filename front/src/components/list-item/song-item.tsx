@@ -12,7 +12,7 @@ import { Page } from "../infinite/infinite-scroll"
 import { Star } from "@mui/icons-material"
 import AudiotrackIcon from '@mui/icons-material/Audiotrack';
 import { useDispatch } from "react-redux"
-import { emptyPlaylist, playNextTrack, playTrack } from "../../state/playerSlice"
+import { playTrack } from "../../state/playerSlice"
 import LoadingItemComponent from "../loading/loading-item"
 import SongContextualMenu from "../contextual-menu/song-contextual-menu"
 
@@ -35,7 +35,6 @@ const SongItem = ({ song, hideArtist }: SongItemProps) => {
 			title={song.name}
 			onClick={() => {
 				API.getMasterTrack<TrackWithRelease>(song.id, ['release']).then((track) => {
-					dispatch(emptyPlaylist());
 					dispatch(playTrack({
 						artist,
 						track,

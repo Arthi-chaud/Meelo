@@ -4,7 +4,7 @@ import Illustration from '../illustration';
 import ListItem from "./item";
 import AudiotrackIcon from '@mui/icons-material/Audiotrack';
 import { useDispatch } from "react-redux"
-import { emptyPlaylist, playTrack } from "../../state/playerSlice";
+import { playTrack } from "../../state/playerSlice";
 import { SongWithArtist } from "../../models/song";
 import StarIcon from "@mui/icons-material/Star";
 import TrackContextualMenu from "../contextual-menu/track-contextual-menu";
@@ -27,7 +27,6 @@ const TrackItem = ({ track }: TrackItemProps) => {
 			icon={<Illustration url={track.illustration} fallback={<AudiotrackIcon/>}/>}
 			onClick={() => {
 				API.getSong<SongWithArtist>(track.songId, ["artist"]).then((song) => {
-					dispatch(emptyPlaylist());
 					dispatch(playTrack({ artist: song.artist, track, release }));
 				})
 			}}

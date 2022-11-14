@@ -20,6 +20,7 @@ import { SongWithArtist, SongWithLyrics } from "../../models/song";
 import SongContextualMenu from "../contextual-menu/song-contextual-menu";
 import TrackContextualMenu from "../contextual-menu/track-contextual-menu";
 import ReleaseTrackContextualMenu from "../contextual-menu/release-track-contextual-menu";
+import Release from "../../models/release";
 
 const songQuery = (slugOrId: string | number) => ({
 	key: ['song', slugOrId],
@@ -32,7 +33,6 @@ type PlayerButtonControlsProps = {
 	onPlay: () => void;
 	onSkipTrack: () => void;
 	onRewind: () => void;
-	onStop: () => void;
 }
 
 
@@ -43,7 +43,8 @@ type PlayerControlsProps =
 	illustration?: string | null,
 	onExpand: (expand: boolean) => void,
 	artist?: Artist,
-	track?: Track 
+	track?: Track,
+	release?: Release 
 }
 
 const playerTextStyle = {
@@ -155,8 +156,8 @@ const ExpandedPlayerControls = (props: PlayerControlsProps & { videoRef: LegacyR
 							</Link>
 						</Grid>
 						<Grid item xs={1}>
-							{props.track && parentSong.data && props.artist
-								? <ReleaseTrackContextualMenu artist={props.artist} track={{...props.track, song: parentSong.data}} onSelect={() => props.onExpand(false)} />
+							{props.track && parentSong.data && props.artist && props.release
+								? <ReleaseTrackContextualMenu artist={props.artist} release={props.release} track={{...props.track, song: parentSong.data}} onSelect={() => props.onExpand(false)} />
 								: <IconButton><MoreVert/></IconButton>}
 						</Grid>
 					</Grid>
