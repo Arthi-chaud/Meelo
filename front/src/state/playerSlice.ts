@@ -28,7 +28,6 @@ export const playerSlice = createSlice({
 	initialState: <PlayerState>{
 		playlist: [],
 		cursor: -1,
-		stopped: true
 	},
 	reducers: {
 		playTrack: (state, action: PayloadAction<TrackState>) => {
@@ -49,7 +48,6 @@ export const playerSlice = createSlice({
 			state.cursor++;
 			if (state.cursor >= state.playlist.length)
 				state.cursor = -1;
-			console.log(state.cursor)
 		},
 		playPreviousTrack: (state, action: PayloadAction<void>) => {
 			if (state.cursor >= 0)
