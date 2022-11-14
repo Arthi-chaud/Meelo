@@ -48,7 +48,7 @@ const InfiniteViewDropdownOption = <Options extends string[][]>(props: InfiniteV
           				</ListItemIcon> 
 						{capitalCase(value)}
 					</MenuItem>
-				)).concat(index + 1 != array.length ? [<Divider/>] : [])
+				)).concat(index + 1 != array.length ? [<Divider key={index}/>] : [])
 			)}
 		</Menu>
 	</>
