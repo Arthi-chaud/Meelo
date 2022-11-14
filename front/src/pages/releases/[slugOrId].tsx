@@ -12,13 +12,13 @@ import { TrackWithSong } from "../../models/track";
 import Tracklist from "../../models/tracklist";
 import Link from 'next/link';
 import PlayCircleIcon from '@mui/icons-material/PlayCircle';
-import { Album, MoreHoriz, Shuffle } from "@mui/icons-material";
+import { Album, MoreHoriz, PlayArrow, Shuffle } from "@mui/icons-material";
 import FadeIn from "react-fade-in";
 import Tile from "../../components/tile/tile";
 import MusicVideoIcon from '@mui/icons-material/MusicVideo';
 import { prepareMeeloQuery } from "../../query";
 import { QueryClient, dehydrate, useQuery, useQueries } from "react-query";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { playTracks } from "../../state/playerSlice";
 import Song from "../../models/song";
 import Artist from "../../models/artist";
@@ -28,6 +28,7 @@ import AlbumContextualMenu from "../../components/contextual-menu/album-contextu
 import TrackContextualMenu from "../../components/contextual-menu/track-contextual-menu";
 import SongContextualMenu from "../../components/contextual-menu/song-contextual-menu";
 import ReleaseTrackContextualMenu from "../../components/contextual-menu/release-track-contextual-menu";
+import { RootState } from "../../state/store";
 
 const releaseQuery = (slugOrId: string | number) => ({
 	key: ['release', slugOrId],
@@ -123,6 +124,12 @@ const ReleasePage = ({ releaseIdentifier }: InferGetServerSidePropsType<typeof g
 		.map((track) => prepareMeeloQuery(artistQuery, track.song.artistId))
 	);
 	const relatedReleases = useQuery(prepareMeeloQuery(albumReleasesQuery, release.data?.albumId));
+	const albumIsPlaying = useSelector((state: RootState) => {
+		const playlistTracksId = state.player.playlist.map((track) => track.track.id);
+		const releaseTracksId = tracks.map((track) => track.id);
+		return playlistTracksId.toString() == releaseTracksId.toString();
+	})
+	const currentTrack = useSelector((state: RootState) => state.player.playlist[state.player.cursor]?.track);
 	useEffect(() => {
 		if (tracklist.data) {
 			const discMap = new Map(Object.entries(tracklist.data));
@@ -239,7 +246,7 @@ const ReleasePage = ({ releaseIdentifier }: InferGetServerSidePropsType<typeof g
 														dispatch(playTracks({ tracks: playlist, cursor: trackIndex }));
 													}
 												}}>
-												<ListItemIcon><Typography>{ track.trackIndex }</Typography></ListItemIcon>
+												<ListItemIcon>{ albumIsPlaying && currentTrack.id ==  track.id ? <PlayArrow/> : <Typography>{track.trackIndex}</Typography>}</ListItemIcon>
 												<ListItemText
 													primary={track.name}
 													secondary={
