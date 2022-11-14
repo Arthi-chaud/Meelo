@@ -37,8 +37,8 @@ const InfiniteViewDropdownOption = <Options extends string[][]>(props: InfiniteV
 			open={menuOpen}
 			onClose={handleMenuClose}
 			>
-			{ props.option.options.map((option, index, array) => <>
-				{ option.values.map((value) => (
+			{ props.option.options.map((option, index, array) =>
+				option.values.map((value) => (
 					<MenuItem key={value} sx={{ borderRadius: '0' }}  selected={option.initValue == value} onClick={() => {
 						option.onSelect && option.onSelect(value);
 						handleMenuClose();
@@ -48,9 +48,8 @@ const InfiniteViewDropdownOption = <Options extends string[][]>(props: InfiniteV
           				</ListItemIcon> 
 						{capitalCase(value)}
 					</MenuItem>
-				))}
-				{ (index + 1 != array.length) && <Divider/> }
-			</>)}
+				)).concat(index + 1 != array.length ? [<Divider key={index}/>] : [])
+			)}
 		</Menu>
 	</>
 }

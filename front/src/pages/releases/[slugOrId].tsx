@@ -133,12 +133,12 @@ const ReleasePage = ({ releaseIdentifier }: InferGetServerSidePropsType<typeof g
 	useEffect(() => {
 		if (tracklist.data) {
 			const discMap = new Map(Object.entries(tracklist.data));
-			const tracks = Array.from(discMap.values()).flat();
-			setTracks(tracks);
-			setTotalDuration(tracks.reduce((prevDuration, track) => prevDuration + track.duration, 0));
+			const flatTracks = Array.from(discMap.values()).flat();
+			setTracks(flatTracks);
+			setTotalDuration(flatTracks.reduce((prevDuration, track) => prevDuration + track.duration, 0));
 			setTracklist(discMap);
 		}
-	}, [tracklist]);
+	}, [tracklist.data]);
 	if (!release.data || !albumArtist)
 		return <WideLoadingComponent/>
 	return <Box>
@@ -231,10 +231,10 @@ const ReleasePage = ({ releaseIdentifier }: InferGetServerSidePropsType<typeof g
 									{ disc[1].map((track) => {
 										const artist = getSongArtist(track.song, albumArtist.data, otherArtistsQuery.map((q) => q.data!))
 										return <>
-											<ListItem disablePadding disableGutters secondaryAction={
+											<ListItem key={track.id} disablePadding disableGutters secondaryAction={
 												<ReleaseTrackContextualMenu release={release.data} track={track} artist={artist}/>
 											}>
-											<ListItemButton key={track.id} onClick={() => {
+											<ListItemButton onClick={() => {
 													if (tracks && !otherArtistsQuery.find((q) => q.data == undefined)) {
 														const otherArtists = otherArtistsQuery.map((q) => q.data!);
 														const trackIndex = tracks.findIndex((t) => t.id == track.id);
@@ -246,7 +246,7 @@ const ReleasePage = ({ releaseIdentifier }: InferGetServerSidePropsType<typeof g
 														dispatch(playTracks({ tracks: playlist, cursor: trackIndex }));
 													}
 												}}>
-												<ListItemIcon>{ albumIsPlaying && currentTrack.id ==  track.id ? <PlayArrow/> : <Typography>{track.trackIndex}</Typography>}</ListItemIcon>
+												<ListItemIcon><Typography>{track.trackIndex}</Typography></ListItemIcon>
 												<ListItemText
 													primary={track.name}
 													secondary={
