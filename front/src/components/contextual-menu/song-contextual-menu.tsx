@@ -12,7 +12,8 @@ import downloadAction from "../download-action";
 import { useDispatch } from "react-redux";
 import { playAfter, playNext } from "../../state/playerSlice";
 import { TrackWithRelease } from "../../models/track";
-import Action from "../action";
+import Action, { DownloadAction, DownloadAsyncAction, GoToAlbumAction, GoToArtistAction, GoToRelatedTracksAction, GoToReleaseAsyncAction, GoToSongLyricsAction, GoToSongVersionAction, PlayAfterAction, PlayNextAction, ShareSongAction } from "./actions";
+
 type SongContextualMenuProps = {
 	song: SongWithArtist;
 	onSelect?: () => void;
@@ -22,36 +23,22 @@ const SongContextualMenu = (props: SongContextualMenuProps) => {
 	const songSlug = `${props.song.artist.slug}+${props.song.slug}`;
 	const getMasterTrack = () => API.getMasterTrack<TrackWithRelease>(songSlug, ['release']);
 	const router = useRouter();
-	const dispatch = useDispatch();
-	return <ContextualMenu onSelect={props.onSelect}>
-		<ContextualMenuItem icon={<AccountCircle/>} href={`/artists/${props.song.artist.slug}`} label={"Go to Artist"}/>
-		<ContextualMenuItem icon={<Album/>} label={"Go to Album"}
-			onClick={() => getMasterTrack()
-				.then((master) => router.push(`/releases/${master.releaseId}`))
-			}
-		/>
-		<ContextualMenuItem icon={<Lyrics/>} href={`/songs/${songSlug}/lyrics`} label={"See Lyrics"}/>
-		<Divider/>
-		<ContextualMenuItem icon={<PlaylistPlay/>} label={"Play Next"}
-			onClick={() => getMasterTrack()
-				.then((master) => dispatch(playNext({ track: master, artist: props.song.artist, release: master.release })))
-			}
-		/>
-		<ContextualMenuItem icon={<PlaylistAdd/>} label={"Play After"}
-			onClick={() => getMasterTrack()
-				.then((master) => dispatch(playAfter({ track: master, artist: props.song.artist, release: master.release })))
-			}
-		/>
-		<Divider/>
-		<ContextualMenuItem icon={<Audiotrack/>} href={`/songs/${songSlug}/versions`} label={"See Other Versions"}/>
-		<ContextualMenuItem icon={<Difference/>} href={`/songs/${songSlug}/tracks`} label={"See Related Tracks"}/>
-		<Divider/>
-		<ContextualMenuItem icon={<Download/>} label={"Download"}
-			onClick={() => API.getMasterTrack(songSlug).then((track) => downloadAction(router, API.getStreamURL(track.stream)))}
-		/>
-		<Divider/>
-		<ContextualMenuItem icon={<ShareIcon/>} label={"Share Song"} onClick={() => copyLinkToClipboard(`/songs/${songSlug}/versions`)}/>
-	</ContextualMenu>
+	const getPlayNextProps = () => getMasterTrack().then((master) => ({ track: master, artist: props.song.artist, release: master.release }))
+	return <ContextualMenu onSelect={props.onSelect} actions={[[
+		GoToArtistAction(props.song.artist.slug),
+		GoToReleaseAsyncAction(router, async () => (await getMasterTrack()).releaseId),
+	], [
+		GoToSongLyricsAction(songSlug)
+	], [
+		PlayNextAction(getPlayNextProps),
+		PlayAfterAction(getPlayNextProps),
+	], [
+		GoToSongVersionAction(songSlug),
+		GoToRelatedTracksAction(songSlug),
+	], [
+		DownloadAsyncAction(router, () => API.getMasterTrack(songSlug).then((master) => master.stream)),
+		ShareSongAction(songSlug)
+	]]}/>
 }
 
 export default SongContextualMenu;

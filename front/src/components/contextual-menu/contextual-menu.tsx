@@ -1,10 +1,11 @@
 import { MoreVert } from "@mui/icons-material";
-import { Box, IconButton, Menu } from "@mui/material";
+import { Box, Divider, IconButton, Menu } from "@mui/material";
 import { useState } from "react";
+import Action from "./actions";
 import ContextualMenuItem from "./contextual-menu-item";
 
 type ContextualMenuProps = {
-	children: JSX.Element[];
+	actions: Action[][];
 	onSelect?: () => void;
 	buttonIcon?: JSX.Element;
 }
@@ -31,10 +32,13 @@ const ContextualMenu = (props: ContextualMenuProps) => {
     		onClose={handleClose}
 			style={{ zIndex: 99999 }}
       	>
-			{props.children.map((child, index) => <Box key={index} onClick={() => {
-				handleClose();
-				props.onSelect && props.onSelect();
-			}}>{child}</Box>)}
+			{props.actions.map((actions, actionGroupIndex, allActions) => <>
+				{actions.map((action, actionIndex) => <Box key={actionIndex} onClick={() => {
+					handleClose();
+					props.onSelect && props.onSelect();
+				}}><ContextualMenuItem {...action}/></Box>)}
+				{ actionGroupIndex < allActions.length - 1 && <Divider key={actionGroupIndex} sx={{ marginY: 0.5 }} variant='middle'/>}
+			</>)}
 		</Menu>
 	</>
 }

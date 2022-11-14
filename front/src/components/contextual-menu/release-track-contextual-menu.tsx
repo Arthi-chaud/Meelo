@@ -14,6 +14,7 @@ import ShareIcon from '@mui/icons-material/Share';
 import downloadAction from "../download-action";
 import { playNext, playAfter } from "../../state/playerSlice";
 import { useDispatch } from "react-redux";
+import { DownloadAction, GoToArtistAction, GoToRelatedTracksAction, GoToSongLyricsAction, GoToSongVersionAction, PlayAfterAction, PlayNextAction, ShareSongAction } from "./actions";
 type ReleaseTrackContextualMenuProps = {
 	track: TrackWithSong;
 	artist: Artist;
@@ -24,25 +25,20 @@ type ReleaseTrackContextualMenuProps = {
 const ReleaseTrackContextualMenu = (props: ReleaseTrackContextualMenuProps) => {
 	const songSlug = `${props.artist.slug}+${props.track.song.slug}`;
 	const router = useRouter();
-	const dispatch = useDispatch();
-	return <ContextualMenu onSelect={props.onSelect}>
-		<ContextualMenuItem icon={<AccountCircle/>} href={`/artists/${props.artist.slug}`} label={"Go to Artist"}/>
-		<ContextualMenuItem icon={<Download/>} label={"Download"} onClick={() => downloadAction(router, API.getStreamURL(props.track.stream))}/>
-		<Divider/>
-		<ContextualMenuItem icon={<Lyrics/>} href={`/songs/${songSlug}/lyrics`} label={"See Lyrics"}/>
-		<Divider/>
-		<ContextualMenuItem icon={<PlaylistPlay/>} label={"Play Next"}
-			onClick={() => dispatch(playNext(props))}
-		/>
-		<ContextualMenuItem icon={<PlaylistAdd/>} label={"Play After"}
-			onClick={() => dispatch(playNext(props))}
-		/>
-		<Divider/>
-		<ContextualMenuItem icon={<Audiotrack/>} href={`/songs/${songSlug}/versions`} label={"See Other Versions"}/>
-		<ContextualMenuItem icon={<Difference/>} href={`/songs/${songSlug}/tracks`} label={"See Related Tracks"}/>
-		<Divider/>
-		<ContextualMenuItem icon={<ShareIcon/>} label={"Share Song"} onClick={() => copyLinkToClipboard(`/songs/${songSlug}/versions`)}/>
-	</ContextualMenu>
+	return <ContextualMenu onSelect={props.onSelect} actions={[[
+		GoToArtistAction(props.artist.slug),
+	], [
+		GoToSongLyricsAction(songSlug)
+	], [
+		PlayNextAction(async () => props),
+		PlayAfterAction(async () => props)
+	], [
+		GoToSongVersionAction(songSlug),
+		GoToRelatedTracksAction(songSlug),
+	],[
+		DownloadAction(router, props.track.stream),
+		ShareSongAction(songSlug)
+	]]}/>
 }
 
 export default ReleaseTrackContextualMenu;

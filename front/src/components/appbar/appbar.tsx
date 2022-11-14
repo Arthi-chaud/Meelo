@@ -118,12 +118,9 @@ const MeeloAppBar = () => {
 										</IconButton>
 									</Link>
 									<Divider orientation='vertical' flexItem sx={{ marginX: 1 }} />
-									<ContextualMenu>
-										{ AppBarActions
-											.filter(a => a.label.toLowerCase() != 'search')
-											.map(action => <ContextualMenuItem {...action} key={action.label}/>)
-										}
-									</ContextualMenu>
+									<ContextualMenu actions={[
+										AppBarActions.filter(a => a.label.toLowerCase() != 'search')
+									]}/>
 								</Box>
 							</FadeIn></>
 					}
