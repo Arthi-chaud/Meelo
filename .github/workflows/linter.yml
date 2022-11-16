@@ -27,7 +27,7 @@ jobs:
       - name: Check out Git repository
         uses: actions/checkout@v3
       - name: Install dependencies
-        run: yarn
+        run: yarn install
       - name: Run linters
         uses: wearerequired/lint-action@v2
         with:
