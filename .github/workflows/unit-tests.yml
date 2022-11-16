@@ -4,6 +4,7 @@ on: [push, fork, workflow_dispatch]
 
 jobs:
   run_unit_tests:
+    name: Run Unit Tests (Back-End)
     runs-on: ubuntu-latest
     container: node:17
     services:
