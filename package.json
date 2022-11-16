@@ -6,7 +6,6 @@
   "private": true,
   "license": "GNU GENERAL PUBLIC LICENSE v3",
   "scripts": {
-    "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
     "lint": "eslint \"{src,apps,libs,test}/**/*.ts\"",
     "build": "nest build",
     "start": "nest start",
@@ -111,25 +110,6 @@
   },
   "prisma": {
     "schema": "prisma/schema.prisma"
-  },
-  "eslintConfig": {
-    "root": true,
-    "extends": [
-      "eslint:recommended",
-      "plugin:@typescript-eslint/recommended"
-    ],
-    "parser": "@typescript-eslint/parser",
-    "parserOptions": {
-      "project": [
-        "./tsconfig.json"
-      ]
-    },
-    "plugins": [
-      "@typescript-eslint"
-    ],
-    "rules": {
-      "@typescript-eslint/switch-exhaustiveness-check": 2
-    }
   },
   "compodoc": {
     "name": "Meelo Documentation",
