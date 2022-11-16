@@ -18,7 +18,7 @@
 		"@typescript-eslint/switch-exhaustiveness-check": 2,
 		"no-duplicate-imports": 2,
 		"id-length": 2,
-		"init-declaration": 2,
+		"init-declarations": 2,
 		"no-else-return": 2,
 		"one-var": 2,
 		"sort-imports": "error",
