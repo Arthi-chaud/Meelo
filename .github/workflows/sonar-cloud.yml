@@ -11,6 +11,9 @@ on:
 jobs:
   run_analysis:
     name: "Run analysis of ${{matrix.section}}-end"
+    defaults:
+      run:
+        working-directory: ${{ matrix.pwd }}
     strategy:
       fail-fast: false
       matrix:
@@ -21,7 +24,6 @@ jobs:
           - section: 'front'
             pwd: ./front
             token: SONAR_TOKEN_BACK
-    working-directory: ${{ matrix.pwd }}
     runs-on: ubuntu-latest
     steps:
       - name: Wait for build to succeed
