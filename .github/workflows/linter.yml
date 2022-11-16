@@ -23,7 +23,4 @@ jobs:
       - name: Install dependencies
         run: yarn install
       - name: Run linters
-        uses: wearerequired/lint-action@v2
-        with:
-          eslint: true
-          eslint_extensions: "ts"
+        run: yarn lint
