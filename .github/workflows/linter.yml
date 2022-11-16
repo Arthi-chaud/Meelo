@@ -19,7 +19,7 @@ jobs:
           - section: 'front'
             pwd: ./front
     name: Run linters (${{ matrix.section }})
-    default:
+    defaults:
       run:
         working-directort: ${{ matrix.pwd }}
     runs-on: ubuntu-latest
