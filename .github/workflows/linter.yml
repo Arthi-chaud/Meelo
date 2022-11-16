@@ -1,19 +1,33 @@
 name: Lint
 
 on:
+  push:
+    branches:
+      - '*'
   pull_request:
     branches:
       - main
 
 jobs:
   run-linters:
-    name: Run linters
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - section: 'back'
+            pwd: .
+          - section: 'front'
+            pwd: ./front
+    name: Run linters (${{ matrix.section }})
+    default:
+      run:
+        working-directort: ${{ matrix.pwd }}
     runs-on: ubuntu-latest
     steps:
       - name: Check out Git repository
         uses: actions/checkout@v3
       - name: Install dependencies
-        run: yarnnpm ci
+        run: yarn
       - name: Run linters
         uses: wearerequired/lint-action@v2
         with:
