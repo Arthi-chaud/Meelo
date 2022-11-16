@@ -21,7 +21,7 @@ jobs:
     name: Run linters (${{ matrix.section }})
     defaults:
       run:
-        working-directort: ${{ matrix.pwd }}
+        working-directory: ${{ matrix.pwd }}
     runs-on: ubuntu-latest
     steps:
       - name: Check out Git repository
