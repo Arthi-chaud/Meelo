@@ -33,3 +33,4 @@ jobs:
         with:
           eslint: true
           eslint_command_prefix: "yarn"
+          eslint_extensions: "ts"
