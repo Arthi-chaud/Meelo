@@ -6,7 +6,7 @@
     "start:dev": "next dev",
     "build": "next build",
     "start:prod": "next start",
-    "lint": "next lint"
+    "lint": "eslint \"{src,apps,libs,test}/**/*.ts\""
   },
   "dependencies": {
     "@emotion/react": "^11.10.0",
