@@ -17,10 +17,10 @@ jobs:
         include:
           - section: 'back'
             working-directory: .
-            token: FRONT
+            token: SONAR_TOKEN_FRONT
           - section: 'front'
             working-directory: ./front
-            token: BACK
+            token: SONAR_TOKEN_BACK
     runs-on: ubuntu-latest
     steps:
       - name: Wait for build to succeed
