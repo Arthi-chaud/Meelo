@@ -13,7 +13,7 @@
 	"plugins": [
 		"@typescript-eslint"
 	],
-	"ignorePatterns": ["node_modules/", "test/"],
+	"ignorePatterns": ["front/", "node_modules/", "test/"],
 	"rules": {
 		"@typescript-eslint/switch-exhaustiveness-check": "error",
 		"no-duplicate-imports": "error",
