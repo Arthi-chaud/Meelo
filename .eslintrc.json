@@ -13,6 +13,7 @@
 	"plugins": [
 		"@typescript-eslint"
 	],
+	"ignorePatterns": ["front/", "node_modules/", "test/"],
 	"rules": {
 		"@typescript-eslint/switch-exhaustiveness-check": 2
 	}
