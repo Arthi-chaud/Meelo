@@ -10,12 +10,15 @@ on:
 
 jobs:
   run_analysis:
+    name: "Run analysis of ${{matrix.section}}-end"
     strategy:
       fail-fast: false
       matrix:
         include:
-          - working-directory: .
-          - working-directory: ./front
+          - section: 'Back'
+            working-directory: .
+          - section: 'Front'
+            working-directory: ./front
     runs-on: ubuntu-latest
     steps:
       - name: Wait for build to succeed
