@@ -11,9 +11,6 @@ on:
 jobs:
   run_analysis:
     name: "Run analysis of ${{matrix.section}}-end"
-    defaults:
-      run:
-        working-directory: ${{ matrix.pwd }}
     strategy:
       fail-fast: false
       matrix:
@@ -41,9 +38,10 @@ jobs:
           workflow: unit-tests.yml
           name: coverage-report
           path: coverage
-      - run: ls
       - name: Run SonarCloud Scan
         uses: SonarSource/sonarcloud-github-action@master
+        with:
+          projectBaseDir: ${{ matrix.pwd }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           SONAR_TOKEN: ${{ secrets[matrix.token] }}
