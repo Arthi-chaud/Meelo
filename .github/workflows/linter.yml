@@ -1,6 +1,6 @@
 name: Linter
 
-on: [push, fork]
+on: [push, pull_request]
 
 jobs:
   run-linters:

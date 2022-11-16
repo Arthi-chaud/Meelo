@@ -1,6 +1,6 @@
 name: Sonar Cloud Analysis
 
-on: [push, fork]
+on: [push, pull_request]
 
 jobs:
   run_analysis:
