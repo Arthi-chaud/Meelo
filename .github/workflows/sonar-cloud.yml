@@ -15,10 +15,12 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - section: 'Back'
+          - section: 'back'
             working-directory: .
-          - section: 'Front'
+            token: ${{ secrets.SONAR_TOKEN_FRONT }}
+          - section: 'front'
             working-directory: ./front
+            token: ${{ secrets.SONAR_TOKEN_BACK }}
     runs-on: ubuntu-latest
     steps:
       - name: Wait for build to succeed
@@ -40,4 +42,4 @@ jobs:
         uses: SonarSource/sonarcloud-github-action@master
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          SONAR_TOKEN: ${{ secrets. SONAR_TOKEN }}
+          SONAR_TOKEN: ${{matrix.token}}
