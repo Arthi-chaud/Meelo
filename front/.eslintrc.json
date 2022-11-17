@@ -1,8 +1,5 @@
 {
-	"root": true,
 	"extends": [
-		"next/core-web-vitals",
-		"../.eslintrc.json",
-		"eslint:recommended"
+		"next/core-web-vitals"
 	]
 }
