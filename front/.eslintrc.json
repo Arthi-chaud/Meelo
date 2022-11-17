@@ -1,7 +1,10 @@
 {
-  "root": true,
-  "extends": [
-    "next/core-web-vitals",
-    "../.eslintrc.json"
-  ]
+	"root": true,
+	"extends": [
+		"next/core-web-vitals",
+		"../.eslintrc.json"
+	],
+	"plugins": [
+		"@typescript-eslint"
+	]
 }
