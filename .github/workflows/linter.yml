@@ -19,7 +19,7 @@ jobs:
       - name: Check out Git repository
         uses: actions/checkout@v3
       - name: Install dependencies
-        run: yarn install
+        run: yarn --cwd "${{ matrix.pwd }}" install
       - run: ls
       - name: Run linters
         run: yarn --cwd "${{ matrix.pwd }}" lint
