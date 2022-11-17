@@ -13,6 +13,7 @@ jobs:
             pwd: .
           - section: 'front'
             pwd: ./front
+    container: node:17
     name: Run linter (${{ matrix.section }})
     runs-on: ubuntu-latest
     steps:
