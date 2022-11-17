@@ -1,6 +1,5 @@
 {
 	"extends": [
-		"next/core-web-vitals",
-		"../.eslintrc.json"
+		"next/core-web-vitals"
 	]
 }
