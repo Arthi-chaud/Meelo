@@ -14,9 +14,6 @@ jobs:
           - section: 'front'
             pwd: ./front
     name: Run linter (${{ matrix.section }})
-    defaults:
-      run:
-        working-directory: ${{ matrix.pwd }}
     runs-on: ubuntu-latest
     steps:
       - name: Check out Git repository
@@ -25,4 +22,4 @@ jobs:
         run: yarn install
       - run: ls
       - name: Run linters
-        run: yarn lint
+        run: yarn --cwd "${{ matrix.pwd }}" lint
