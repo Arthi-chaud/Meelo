@@ -68,7 +68,9 @@
     "@typescript-eslint/eslint-plugin": "^5.0.0",
     "@typescript-eslint/parser": "^5.0.0",
     "eslint-config-prettier": "^8.3.0",
+    "eslint-plugin-import": "^2.26.0",
     "eslint-plugin-prettier": "^4.0.0",
+    "eslint-plugin-simple-import-sort": "^8.0.0",
     "jest": "^27.2.5",
     "md5-file": "^5.0.0",
     "prettier": "^2.3.2",
@@ -117,6 +119,11 @@
     "customLogo": "./front/public/banner.png",
     "customFavicon": "./front/public/icon.png",
     "includes": "docs/",
-    "exclude": ["front", "test/", "node_modules/", "docs/generated"]
+    "exclude": [
+      "front",
+      "test/",
+      "node_modules/",
+      "docs/generated"
+    ]
   }
 }
