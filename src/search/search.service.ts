@@ -1,5 +1,7 @@
 import { Injectable } from '@nestjs/common';
-import type { Album, Artist, Genre, Release, Song } from 'src/prisma/models';
+import type {
+	Album, Artist, Genre, Release, Song
+} from 'src/prisma/models';
 import AlbumService from 'src/album/album.service';
 import type AlbumQueryParameters from 'src/album/models/album.query-parameters';
 import ArtistService from 'src/artist/artist.service';
@@ -39,8 +41,9 @@ export default class SearchService {
 		return this.artistService.getAlbumsArtists(
 			{ byName: { contains: query } },
 			paginationParameters,
-			include, sort
-		)
+			include,
+			sort
+		);
 	}
 
 	/**
@@ -60,8 +63,9 @@ export default class SearchService {
 		return this.albumService.getMany(
 			{ byName: { contains: query }, byType: type },
 			paginationParameters,
-			include, sort
-		)
+			include,
+			sort
+		);
 	}
 
 	/**
@@ -80,11 +84,11 @@ export default class SearchService {
 		return this.songService.getMany(
 			{ name: { contains: query } },
 			paginationParameters,
-			include, sort
-		)
+			include,
+			sort
+		);
 	}
 
-	
 	/**
 	 * Search for releases by their name
 	 * @param query the string to search by
@@ -101,8 +105,9 @@ export default class SearchService {
 		return this.releaseService.getMany(
 			{ name: { contains: query } },
 			paginationParameters,
-			include, sort
-		)
+			include,
+			sort
+		);
 	}
 
 	/**
@@ -121,7 +126,8 @@ export default class SearchService {
 		return this.genreService.getMany(
 			{ byName: { contains: query } },
 			paginationParameters,
-			include, sort
+			include,
+			sort
 		);
 	}
 }

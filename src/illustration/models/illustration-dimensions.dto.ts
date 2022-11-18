@@ -7,9 +7,11 @@ export class IllustrationDimensionsDto {
 	@IsPositive({ message: () => "Illustration's width: Expected a strictly positive number" })
 	@IsOptional()
 	width?: number;
+
 	@IsPositive({ message: () => "Illustration's height: Expected a strictly positive number" })
 	@IsOptional()
 	height?: number;
+
 	@IsPositive({ message: () => "Illustration's quality: Expected a strictly positive number" })
 	@IsOptional()
 	quality?: number;

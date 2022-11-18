@@ -1,4 +1,6 @@
-import { forwardRef, Inject, Injectable } from '@nestjs/common';
+import {
+	Inject, Injectable, forwardRef
+} from '@nestjs/common';
 import SettingsService from 'src/settings/settings.service';
 import md5File from 'md5-file';
 import * as fs from 'fs';
@@ -9,7 +11,8 @@ import { FileDoesNotExistException, FolderDoesNotExistException } from './file-m
 export default class FileManagerService {
 	constructor(
 		@Inject(forwardRef(() => SettingsService))
-		private settingsService: SettingsService) {}
+		private settingsService: SettingsService
+	) {}
 
 	folderExists(folderPath: string): boolean {
 		try {
@@ -58,7 +61,6 @@ export default class FileManagerService {
 		} else {
 			throw new FileDoesNotExistException(filePath);
 		}
-		
 	}
 
 	/**
@@ -70,7 +72,6 @@ export default class FileManagerService {
 		} else {
 			throw new FolderDoesNotExistException(directoryPath);
 		}
-		
 	}
 
 	/**
@@ -88,6 +89,7 @@ export default class FileManagerService {
 	getCandidateFilesInLibraryFolder(libraryBaseDirectory: string): string[] {
 		const baseFolder = this.settingsService.settingsValues.dataFolder;
 		const libraryPath = `${baseFolder}/${libraryBaseDirectory}`;
+
 		return this.getCandidateInFolder(libraryPath).map(
 			(candidateFullPath) => candidateFullPath.substring(libraryPath.length + 1)
 		);
@@ -101,15 +103,17 @@ export default class FileManagerService {
 		try {
 			const directoryContent = fs.readdirSync(folderPath, { withFileTypes: true });
 			let candidates: string[] = [];
-	
+
 			directoryContent.forEach(
 				(dirEntry) => {
 					const entryFullPath = `${folderPath}/${dirEntry.name}`;
-					if (dirEntry.isDirectory())
-					candidates = candidates.concat(this.getCandidateInFolder(entryFullPath));
-					else if (dirEntry.isFile()) {
-						if (this.fileIsCandidate(entryFullPath))
+
+					if (dirEntry.isDirectory()) {
+						candidates = candidates.concat(this.getCandidateInFolder(entryFullPath));
+					} else if (dirEntry.isFile()) {
+						if (this.fileIsCandidate(entryFullPath)) {
 							candidates.push(entryFullPath);
+						}
 					}
 				}
 			);
@@ -128,6 +132,7 @@ export default class FileManagerService {
 		const matchingRegexes = this.settingsService.settingsValues.trackRegex.filter(
 			(regex) => filepath.match(regex) != null
 		);
+
 		return matchingRegexes.length > 0;
 	}
 }

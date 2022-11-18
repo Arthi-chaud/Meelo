@@ -20,7 +20,8 @@ import MetadataService from './metadata.service';
 		GenresModule,
 		forwardRef(() => FileModule),
 		forwardRef(() => AlbumModule),
-		ArtistModule],
+		ArtistModule
+	],
 	providers: [MetadataService],
 	exports: [MetadataService]
 })

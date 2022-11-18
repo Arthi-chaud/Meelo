@@ -1,4 +1,6 @@
-import { PipeTransform, Injectable, ArgumentMetadata } from '@nestjs/common';
+import {
+	ArgumentMetadata, Injectable, PipeTransform
+} from '@nestjs/common';
 import compilationAlbumArtistKeyword from 'src/utils/compilation';
 import Slug from './slug';
 
@@ -18,8 +20,10 @@ export class ParseSlugPipe implements PipeTransform {
 export class ParseArtistSlugPipe implements PipeTransform {
 	transform(value: any, _metadata: ArgumentMetadata): Slug | undefined {
 		const slug = new Slug(value);
-		if (slug.toString() === compilationAlbumArtistKeyword)
-			return undefined
+
+		if (slug.toString() === compilationAlbumArtistKeyword) {
+			return undefined;
+		}
 		return slug;
 	}
 }

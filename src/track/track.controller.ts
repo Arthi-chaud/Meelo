@@ -1,4 +1,6 @@
-import { Controller, Get, Param, Post, Body, Inject, forwardRef, Req, Put } from '@nestjs/common';
+import {
+	Body, Controller, Get, Inject, Param, Post, Put, Req, forwardRef
+} from '@nestjs/common';
 import { ParseIdPipe } from 'src/identifier/id.pipe';
 import PaginatedResponse from 'src/pagination/models/paginated-response';
 import { PaginationParameters } from 'src/pagination/models/pagination-parameters';
@@ -21,7 +23,7 @@ export class TrackController {
 		@Inject(forwardRef(() => TrackService))
 		private trackService: TrackService
 	) { }
-	
+
 	@ApiOperation({
 		summary: 'Get all tracks'
 	})
@@ -39,8 +41,9 @@ export class TrackController {
 		const tracks = await this.trackService.getMany(
 			{}, paginationParameters, include, sortingParameter
 		);
-		return new PaginatedResponse(
-			await Promise.all(tracks.map((track) => this.trackService.buildResponse(track))),
+
+		return PaginatedResponse.awaiting(
+			tracks.map((track) => this.trackService.buildResponse(track)),
 			request
 		);
 	}
@@ -60,10 +63,11 @@ export class TrackController {
 		@Req() request: Request
 	) {
 		const videoTracks = await this.trackService.getMany(
-			{ type: TrackType.Video }, paginationParameters, include, sortingParameter, 
+			{ type: TrackType.Video }, paginationParameters, include, sortingParameter,
 		);
-		return new PaginatedResponse(
-			await Promise.all(videoTracks.map((videoTrack) => this.trackService.buildResponse(videoTrack))),
+
+		return PaginatedResponse.awaiting(
+			videoTracks.map((videoTrack) => this.trackService.buildResponse(videoTrack)),
 			request
 		);
 	}
@@ -79,7 +83,8 @@ export class TrackController {
 		trackId: number
 	) {
 		const track = await this.trackService.get({ id: trackId }, include);
-		return await this.trackService.buildResponse(track);
+
+		return this.trackService.buildResponse(track);
 	}
 
 	@ApiOperation({
@@ -90,12 +95,14 @@ export class TrackController {
 		@Param('id', ParseIdPipe) trackId: number
 	) {
 		const track = await this.trackService.get({ id: trackId });
+
 		await this.trackService.setTrackAsMaster({
 			trackId: track.id,
 			song: { byId: { id: track.songId } }
 		});
 		const updatedTrack = await this.trackService.getMasterTrack({ byId: { id: track.songId } });
-		return await this.trackService.buildResponse(updatedTrack);
+
+		return this.trackService.buildResponse(updatedTrack);
 	}
 
 	@ApiOperation({
@@ -105,10 +112,11 @@ export class TrackController {
 	async reassignTrack(
 		@Body() reassignmentDTO: ReassignTrackDTO
 	) {
-		return await this.trackService.buildResponse(
+		return this.trackService.buildResponse(
 			await this.trackService.reassign(
-			{ id: reassignmentDTO.trackId },
-			{ byId: { id: reassignmentDTO.songId } }
-		));
+				{ id: reassignmentDTO.trackId },
+				{ byId: { id: reassignmentDTO.songId } }
+			)
+		);
 	}
 }

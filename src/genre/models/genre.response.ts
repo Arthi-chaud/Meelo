@@ -1,3 +1,3 @@
 import { Genre } from "src/prisma/models";
 
-export class GenreResponse extends Genre {};
+export class GenreResponse extends Genre {}

@@ -1,4 +1,6 @@
-import { forwardRef, Inject, Injectable, Logger } from '@nestjs/common';
+import {
+	Inject, Injectable, Logger, forwardRef
+} from '@nestjs/common';
 import FileManagerService from 'src/file-manager/file-manager.service';
 import type Metadata from './models/metadata';
 import mm, { type IAudioMetadata } from 'music-metadata';
@@ -7,7 +9,7 @@ import { FileParsingException, PathParsingException } from './metadata.exception
 import SettingsService from 'src/settings/settings.service';
 import TrackService from 'src/track/track.service';
 import SongService from 'src/song/song.service';
-import { TrackType, AlbumType } from '@prisma/client';
+import { AlbumType, TrackType } from '@prisma/client';
 import ReleaseService from 'src/release/release.service';
 import AlbumService from 'src/album/album.service';
 import ArtistService from 'src/artist/artist.service';
@@ -18,7 +20,8 @@ import Ffmpeg from 'fluent-ffmpeg';
 import * as fs from 'fs';
 import type FileQueryParameters from 'src/file/models/file.query-parameters';
 import FileService from 'src/file/file.service';
-import { Track, File } from 'src/prisma/models';
+import { File, Track } from 'src/prisma/models';
+
 @Injectable()
 export default class MetadataService {
 	public readonly metadataFolderPath;
@@ -37,7 +40,8 @@ export default class MetadataService {
 		private genreService: GenreService,
 		@Inject(forwardRef(() => FileService))
 		private fileService: FileService,
-		private fileManagerService: FileManagerService) {
+		private fileManagerService: FileManagerService
+	) {
 		this.metadataFolderPath = `${this.fileManagerService.configFolderPath}/metadata`;
 	}
 
@@ -53,15 +57,17 @@ export default class MetadataService {
 		const albumArtist = metadata.compilation == false ? await this.artistService.getOrCreate({ name: metadata.albumArtist ?? metadata.artist! }) : undefined;
 		const songArtist = await this.artistService.getOrCreate({ name: metadata.artist ?? metadata.albumArtist! });
 		const song = await this.songService.getOrCreate(
-			{ name: this.removeTrackExtension(metadata.name!), artist: { id: songArtist.id }, genres: genres.map((genre) => ({ id: genre.id }))},
-			{ tracks: true, genres: true });
+			{ name: this.removeTrackExtension(metadata.name!), artist: { id: songArtist.id }, genres: genres.map((genre) => ({ id: genre.id })) },
+			{ tracks: true, genres: true }
+		);
+
 		await this.songService.update(
-			{ genres: song.genres.concat(genres).map((genre) => ({ id: genre.id }))},
+			{ genres: song.genres.concat(genres).map((genre) => ({ id: genre.id })) },
 			{ byId: { id: song.id } }
 		);
 		const album = await this.albumService.getOrCreate({
 			name: this.removeReleaseExtension(metadata.album ?? metadata.release!),
-			artist: albumArtist ? { id: albumArtist?.id} : undefined
+			artist: albumArtist ? { id: albumArtist?.id } : undefined
 		}, { releases: true });
 		const release = await this.releaseService.getOrCreate({
 			name: metadata.release ?? metadata.album!,
@@ -82,17 +88,20 @@ export default class MetadataService {
 			release: { byId: { id: release.id } },
 			song: { byId: { id: song.id } },
 		};
-		if ((release.releaseDate !== null &&
+
+		if (release.releaseDate !== null &&
 			release.album.releaseDate !== null &&
-			release.album.releaseDate > release.releaseDate) || 
-			release.releaseDate !== undefined)
+			release.album.releaseDate > release.releaseDate ||
+			release.releaseDate !== undefined) {
 			release.album.releaseDate = release.releaseDate;
-		if (albumArtist === undefined && release.album.type == AlbumType.StudioRecording) {
-			release.album.type = AlbumType.Compilation
 		}
-		await this.albumService.update({ ...release.album }, { byId: { id: release.albumId }});
-		if (!release.releaseDate || ((metadata.releaseDate) && release.releaseDate < metadata.releaseDate))
+		if (albumArtist === undefined && release.album.type == AlbumType.StudioRecording) {
+			release.album.type = AlbumType.Compilation;
+		}
+		await this.albumService.update({ ...release.album }, { byId: { id: release.albumId } });
+		if (!release.releaseDate || metadata.releaseDate && release.releaseDate < metadata.releaseDate) {
 			await this.releaseService.update({ releaseDate: metadata.releaseDate }, { byId: { id: release.id } });
+		}
 		return this.trackService.create(track);
 	}
 
@@ -107,12 +116,14 @@ export default class MetadataService {
 		const settings = this.settingsService.settingsValues;
 
 		if (settings.metadata.order == "only") {
-			if (settings.metadata.source == "path")
+			if (settings.metadata.source == "path") {
 				return pathMetadata;
+			}
 			return fileMetadata;
 		}
-		if (settings.metadata.source == "path")
+		if (settings.metadata.source == "path") {
 			return this.mergeMetadata(pathMetadata, fileMetadata);
+		}
 		return this.mergeMetadata(fileMetadata, pathMetadata);
 	}
 
@@ -134,6 +145,7 @@ export default class MetadataService {
 				skipCovers: true,
 				includeChapters: false,
 			});
+
 			return this.buildMetadataFromRaw(rawMetadata);
 		} catch {
 			throw new FileParsingException(filePath);
@@ -141,7 +153,7 @@ export default class MetadataService {
 	}
 
 	/**
-	 * Parses a File path and 
+	 * Parses a File path and
 	 * @param filePath a path (full or not) to a file
 	 * @returns returns Metadata object with values from the capture groups of the regex in settings file
 	 */
@@ -153,9 +165,10 @@ export default class MetadataService {
 			const groups = matchingRegex.groups!;
 			const isCompilation = groups['AlbumArtist']?.toLocaleLowerCase() === compilationAlbumArtistKeyword ||
 			groups['Artist']?.toLocaleLowerCase() === compilationAlbumArtistKeyword;
+
 			return {
 				compilation: isCompilation,
-				albumArtist: isCompilation ? undefined : (groups['AlbumArtist'] ?? undefined),
+				albumArtist: isCompilation ? undefined : groups['AlbumArtist'] ?? undefined,
 				artist: groups['Artist'] ?? undefined,
 				release: groups['Release'] ?? undefined,
 				album: groups['Album'] ?? undefined,
@@ -164,7 +177,7 @@ export default class MetadataService {
 				index: groups['Index'] ? parseInt(groups['Index']) : undefined,
 				name: groups['Track'],
 				genres: groups['Genre'] ? [groups['Genre']] : undefined
-			}
+			};
 		} catch {
 			throw new PathParsingException(filePath);
 		}
@@ -172,6 +185,7 @@ export default class MetadataService {
 
 	private buildMetadataFromRaw(rawMetadata: IAudioMetadata): Metadata {
 		const isVideo: boolean = rawMetadata.format.trackInfo.length > 1;
+
 		return {
 			genres: rawMetadata.common.genre,
 			compilation: rawMetadata.common.compilation ?? false,
@@ -220,7 +234,7 @@ export default class MetadataService {
 		const file = await this.fileService.get(where, { library: true });
 		const track = await this.trackService.get({ sourceFile: where });
 		const song = await this.songService.get({ byId: { id: track.songId } }, { genres: true });
-		const release = await this.releaseService.get({ byId: { id: track.releaseId }}, { album: true });
+		const release = await this.releaseService.get({ byId: { id: track.releaseId } }, { album: true });
 		const album = await this.albumService.get({ byId: { id: release.albumId } }, { artist: true });
 		const artist = await this.artistService.get({ id: song.artistId });
 		const libraryPath = this.fileManagerService.getLibraryFullPath(file.library);
@@ -236,7 +250,8 @@ export default class MetadataService {
 			index: track.trackIndex ?? undefined,
 			discIndex: track.discIndex ?? undefined,
 			genres: song.genres!.map((genre) => genre.name)
-		}
+		};
+
 		this.applyMetadata(fullFilePath, metadata);
 	}
 
@@ -259,7 +274,8 @@ export default class MetadataService {
 			["track", metadata.index?.toString()],
 			["disc", metadata.discIndex?.toString()],
 			["genre", metadata.genres?.at(0)],
-		]
+		];
+
 		try {
 			Ffmpeg(filePath)
 				.inputOptions([
@@ -296,6 +312,7 @@ export default class MetadataService {
 			'Remaster',
 			'Remastered'
 		];
+
 		return this.removeExtensions(releaseName, extensionKeywords);
 	}
 
@@ -312,6 +329,7 @@ export default class MetadataService {
 			'Remastered',
 			'Album Version'
 		];
+
 		return this.removeExtensions(trackName, extensionKeywords);
 	}
 
@@ -323,8 +341,9 @@ export default class MetadataService {
 	 */
 	private removeExtensions(source: string, extensions: string[]): string {
 		let output = source;
+
 		this.extractExtensions(source, extensions)
-			.forEach((extension) => output = output.replace(extension, '').trim())
+			.forEach((extension) => output = output.replace(extension, '').trim());
 		return output;
 	}
 
@@ -342,13 +361,15 @@ export default class MetadataService {
 			['[', ']']
 		];
 		const extensionsGroup = extensions.map((ext) => `(${ext})`).join('|');
+
 		for (const delimiter of extensionDelimiters) {
 			const regExp = new RegExp(`\\s+(?<extension>\\${delimiter[0]}.*(${extensionsGroup}).*\\${delimiter[1]})\\s*`, 'i');
 			const match = regExp.exec(source);
-			if (match)
+
+			if (match) {
 				groupsFound = groupsFound.concat(match[1]);
+			}
 		}
 		return groupsFound;
 	}
-
 }

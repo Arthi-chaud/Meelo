@@ -8,6 +8,7 @@ export default class ReassignTrackDTO {
 	})
 	@IsNotEmpty()
 	trackId: number;
+
 	@ApiProperty({
 		description: 'The ID of the song to reassign the track to',
 		example: 2

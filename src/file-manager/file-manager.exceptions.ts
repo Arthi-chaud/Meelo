@@ -7,7 +7,7 @@ export class FileDoesNotExistException extends NotFoundException {
 }
 export class FolderDoesNotExistException extends NotFoundException {
 	constructor(folderPath: string) {
-		super(`Folder '${folderPath}' does not exist`)
+		super(`Folder '${folderPath}' does not exist`);
 	}
 }
 

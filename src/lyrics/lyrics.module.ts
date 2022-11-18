@@ -4,8 +4,8 @@ import SongModule from 'src/song/song.module';
 import { LyricsService } from './lyrics.service';
 
 @Module({
-  providers: [LyricsService],
-  exports: [LyricsService],
-  imports: [PrismaModule, forwardRef(() => SongModule),]
+	providers: [LyricsService],
+	exports: [LyricsService],
+	imports: [PrismaModule, forwardRef(() => SongModule),]
 })
 export class LyricsModule {}

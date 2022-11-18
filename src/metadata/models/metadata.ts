@@ -29,7 +29,7 @@ export default interface Metadata {
 	release?: string;
 
 	/**
-	 * Name of the track 
+	 * Name of the track
 	 */
 	name?: string;
 
@@ -64,4 +64,4 @@ export default interface Metadata {
 	 * Genres of the track
 	 */
 	genres?: string[]
-}
+};

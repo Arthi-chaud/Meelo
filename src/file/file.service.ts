@@ -1,8 +1,14 @@
-import { HttpStatus, Injectable, StreamableFile } from '@nestjs/common';
+import {
+	HttpStatus, Injectable, StreamableFile
+} from '@nestjs/common';
 import FileManagerService from 'src/file-manager/file-manager.service';
-import { FileAlreadyExistsException, FileNotFoundFromIDException, FileNotFoundFromPathException, FileNotFoundFromTrackIDException, SourceFileNotFoundExceptions } from './file.exceptions';
+import {
+	FileAlreadyExistsException, FileNotFoundFromIDException, FileNotFoundFromPathException, FileNotFoundFromTrackIDException, SourceFileNotFoundExceptions
+} from './file.exceptions';
 import PrismaService from 'src/prisma/prisma.service';
-import type { Library, File, FileWithRelations } from 'src/prisma/models';
+import type {
+	File, FileWithRelations, Library
+} from 'src/prisma/models';
 import type FileQueryParameters from './models/file.query-parameters';
 import { FileNotReadableException } from 'src/file-manager/file-manager.exceptions';
 import * as fs from 'fs';
@@ -40,6 +46,7 @@ export default class FileService extends RepositoryService<
 	) {
 		super(prismaService.file);
 	}
+
 	/**
 	 * Create file
 	 */
@@ -53,11 +60,13 @@ export default class FileService extends RepositoryService<
 			}
 		};
 	}
+
 	protected formatCreateInputToWhereInput(input: FileQueryParameters.CreateInput): FileQueryParameters.WhereInput {
-		return { byPath: { path: input.path, library: { id: input.libraryId } } }
+		return { byPath: { path: input.path, library: { id: input.libraryId } } };
 	}
+
 	protected onCreationFailure(input: FileQueryParameters.CreateInput) {
-		return new FileAlreadyExistsException(input.path, input.libraryId)
+		return new FileAlreadyExistsException(input.path, input.libraryId);
 	}
 
 	/**
@@ -75,6 +84,7 @@ export default class FileService extends RepositoryService<
 				: undefined
 		};
 	}
+
 	formatWhereInput = FileService.formatWhereInput;
 
 	static formatManyWhereInput(where: FileQueryParameters.ManyWhereInput) {
@@ -91,30 +101,32 @@ export default class FileService extends RepositoryService<
 			registerDate: where.byRegistrationDate
 				? buildDateSearchParameters(where.byRegistrationDate)
 				: undefined
-		}
+		};
 	}
+
 	formatManyWhereInput = FileService.formatManyWhereInput;
 
 	formatSortingInput(
 		sort: SortingParameter<FileQueryParameters.SortingKeys>
 	): Prisma.FileOrderByWithRelationInput {
 		switch (sort.sortBy) {
-			case 'addDate':
-				return { id: sort.order }
-			case 'trackArtist':
-				return { track: { song: { artist: { slug: sort.order } } } }
-			case 'trackName':
-				return { track: { song: { slug: sort.order }}}
-			default:
-				return { [sort.sortBy ?? 'id']: sort.order }
+		case 'addDate':
+			return { id: sort.order };
+		case 'trackArtist':
+			return { track: { song: { artist: { slug: sort.order } } } };
+		case 'trackName':
+			return { track: { song: { slug: sort.order } } };
+		default:
+			return { [sort.sortBy ?? 'id']: sort.order };
 		}
 	}
 
 	onNotFound(where: FileQueryParameters.WhereInput): MeeloException {
-		if (where.id !== undefined)
+		if (where.id !== undefined) {
 			return new FileNotFoundFromIDException(where.id);
-		else if (where.trackId !== undefined)
+		} else if (where.trackId !== undefined) {
 			return new FileNotFoundFromTrackIDException(where.trackId);
+		}
 		return new FileNotFoundFromPathException(where.byPath.path);
 	}
 
@@ -131,6 +143,7 @@ export default class FileService extends RepositoryService<
 	formatDeleteInput(where: FileQueryParameters.DeleteInput) {
 		return where;
 	}
+
 	protected formatDeleteInputToWhereInput(where: FileQueryParameters.DeleteInput) {
 		return where;
 	}
@@ -145,7 +158,6 @@ export default class FileService extends RepositoryService<
 		return input;
 	}
 
-
 	/**
 	 * Register a file in the Database
 	 * @param filePath The path to the file to register, relative to parent library path
@@ -154,6 +166,7 @@ export default class FileService extends RepositoryService<
 	async registerFile(filePath: string, parentLibrary: Library): Promise<File> {
 		const libraryPath = this.fileManagerService.getLibraryFullPath(parentLibrary);
 		const fullFilePath = `${libraryPath}/${filePath}`;
+
 		if (!this.fileManagerService.fileIsReadable(fullFilePath)) {
 			throw new FileNotReadableException(filePath);
 		}
@@ -167,7 +180,7 @@ export default class FileService extends RepositoryService<
 	}
 
 	/**
-	 * 
+	 *
 	 * @param file the file object of the file to stream
 	 * @param parentLibrary parent library of the file to stream
 	 * @param res the Response Object of the request
@@ -175,8 +188,10 @@ export default class FileService extends RepositoryService<
 	 */
 	streamFile(file: File, parentLibrary: Library, res: any, req: any): StreamableFile {
 		const fullFilePath = `${this.settingsService.settingsValues.dataFolder}/${parentLibrary.path}/${file.path}`.normalize();
-		if (this.fileManagerService.fileExists(fullFilePath) == false)
+
+		if (this.fileManagerService.fileExists(fullFilePath) == false) {
 			throw new SourceFileNotFoundExceptions(file.path);
+		}
 		res.status(HttpStatus.PARTIAL_CONTENT);
 		res.set({
 			'Content-Disposition': `attachment; filename="${new Slug(path.parse(file.path).name).toString()}${path.parse(file.path).ext}"`,
@@ -185,10 +200,13 @@ export default class FileService extends RepositoryService<
 		const rangeHeader = req.headers['range'] ?? req.headers['Range'];
 		let requestedStartByte: number | undefined = undefined;
 		let requestedEndByte: number | undefined = undefined;
+
 		if (rangeHeader) {
 			const bytes = /^bytes\=(\d+)\-(\d+)?$/g.exec(rangeHeader);
+
 			if (bytes) {
 				const fileSize = fs.statSync(fullFilePath).size;
+
 				requestedStartByte = Number(bytes[1]);
 				requestedEndByte = Number(bytes[2]) || fileSize - 1;
 				res.set({
@@ -196,7 +214,7 @@ export default class FileService extends RepositoryService<
 				});
 			}
 		}
-		
+
 		return new StreamableFile(fs.createReadStream(fullFilePath, { start: requestedStartByte, end: requestedEndByte }));
 	}
 }

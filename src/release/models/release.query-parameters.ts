@@ -1,10 +1,9 @@
 import type AlbumQueryParameters from "src/album/models/album.query-parameters";
 import type Slug from "src/slug/slug";
 import type { RequireExactlyOne } from 'type-fest';
-import type { RelationInclude as BaseRelationInclude } from "src/relation-include/models/relation-include" ;
+import type { RelationInclude as BaseRelationInclude } from "src/relation-include/models/relation-include";
 import type LibraryQueryParameters from "src/library/models/library.query-parameters";
 import BaseSortingParameter from 'src/sort/models/sorting-parameter';
-
 import type { SearchStringInput } from "src/utils/search-string-input";
 import { Release } from "src/prisma/models";
 import { ApiPropertyOptional } from "@nestjs/swagger";
@@ -47,7 +46,7 @@ namespace ReleaseQueryParameters {
 	 * Parameters to update the master release of an album
 	 */
 	export type UpdateAlbumMaster = {
-		releaseId: number, 
+		releaseId: number,
 		album: AlbumQueryParameters.WhereInput,
 	};
 
@@ -67,18 +66,23 @@ namespace ReleaseQueryParameters {
 	export const AvailableIncludes = ['album', 'tracks'] as const;
 	export const AvailableAtomicIncludes = filterAtomicRelationInclude(AvailableIncludes);
 	export type RelationInclude = BaseRelationInclude<typeof AvailableIncludes>;
-	
-	
+
 	/**
 	 * Defines how to sort fetched entries
 	 */
-	export const SortingKeys = ['id', 'name', 'releaseDate', 'trackCount', 'addDate'] as const;
+	export const SortingKeys = [
+		'id',
+		'name',
+		'releaseDate',
+		'trackCount',
+		'addDate'
+	] as const;
 	export type SortingKeys = typeof SortingKeys;
 	export class SortingParameter extends BaseSortingParameter<SortingKeys>{
 		@ApiPropertyOptional({ enum: SortingKeys })
-		sortBy: SortingKeys[number]
+		sortBy: SortingKeys[number];
 	}
-	
+
 }
 
 export default ReleaseQueryParameters;

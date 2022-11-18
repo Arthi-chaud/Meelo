@@ -1,12 +1,10 @@
 import type ArtistQueryParameters from "src/artist/models/artist.query-parameters";
-import type Slug from "src/slug/slug"
-import type { RequireAtLeastOne } from "type-fest";
-import type { RequireExactlyOne } from 'type-fest';
+import type Slug from "src/slug/slug";
+import type { RequireAtLeastOne, RequireExactlyOne } from "type-fest";
 import type { SearchStringInput } from "src/utils/search-string-input";
 import type { RelationInclude as BaseRelationInclude } from "src/relation-include/models/relation-include";
 import type LibraryQueryParameters from "src/library/models/library.query-parameters";
 import BaseSortingParameter from 'src/sort/models/sorting-parameter';
-
 import type GenreQueryParameters from "src/genre/models/genre.query-parameters";
 import { Song } from "src/prisma/models";
 import { ApiPropertyOptional } from "@nestjs/swagger";
@@ -21,7 +19,7 @@ namespace SongQueryParameters {
 			artist: ArtistQueryParameters.WhereInput,
 			genres: GenreQueryParameters.WhereInput[]
 		};
-	
+
 	/**
 	 * Query paraeters to find a song
 	 */
@@ -63,21 +61,30 @@ namespace SongQueryParameters {
 	/**
 	 * Defines what relations to include in query
 	 */
-	export const AvailableIncludes = ['tracks', 'artist', 'genres', 'lyrics'] as const;
+	export const AvailableIncludes = [
+		'tracks',
+		'artist',
+		'genres',
+		'lyrics'
+	] as const;
 	export const AvailableAtomicIncludes = filterAtomicRelationInclude(AvailableIncludes, ['lyrics']);
 	export type RelationInclude = BaseRelationInclude<typeof AvailableIncludes>;
-	
 
 	/**
 	 * Defines how to sort fetched entries
 	 */
-	export const SortingKeys = ['id', 'name', 'playCount', 'artistName', 'addDate'] as const;
+	export const SortingKeys = [
+		'id',
+		'name',
+		'playCount',
+		'artistName',
+		'addDate'
+	] as const;
 	export type SortingKeys = typeof SortingKeys;
 	export class SortingParameter extends BaseSortingParameter<SortingKeys>{
 		@ApiPropertyOptional({ enum: SortingKeys })
-		sortBy: SortingKeys[number]
+		sortBy: SortingKeys[number];
 	}
-	
 
 }
 

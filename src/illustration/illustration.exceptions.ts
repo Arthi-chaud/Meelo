@@ -1,6 +1,6 @@
-import { HttpStatus } from "@nestjs/common"
-import { MeeloException, InvalidRequestException } from "src/exceptions/meelo-exception"
-import type Slug from "src/slug/slug"
+import { HttpStatus } from "@nestjs/common";
+import { InvalidRequestException, MeeloException } from "src/exceptions/meelo-exception";
+import type Slug from "src/slug/slug";
 import compilationAlbumArtistKeyword from "src/utils/compilation";
 
 class NoIllustrationFolderException extends MeeloException {
@@ -11,43 +11,43 @@ class NoIllustrationFolderException extends MeeloException {
 
 export class NoArtistFolderIllustrationException extends NoIllustrationFolderException {
 	constructor(artistSlug: Slug) {
-		super(`No illustration folder found for artist '${artistSlug.toString()}'`)
+		super(`No illustration folder found for artist '${artistSlug.toString()}'`);
 	}
 }
 
 export class NoAlbumFolderIllustrationException extends NoIllustrationFolderException {
 	constructor(albumSlug: Slug) {
-		super(`No illustration folder found for album '${albumSlug.toString()}'`)
+		super(`No illustration folder found for album '${albumSlug.toString()}'`);
 	}
 }
 
 export class NoReleaseFolderIllustrationException extends NoIllustrationFolderException {
 	constructor(albumSlug: Slug, releaseSlug: Slug) {
-		super(`No illustration folder found for release '${releaseSlug.toString()}' of ${albumSlug.toString()}`)
+		super(`No illustration folder found for release '${releaseSlug.toString()}' of ${albumSlug.toString()}`);
 	}
 }
 
 export class NoIllustrationException extends MeeloException {
 	constructor(message: string) {
-		super(HttpStatus.NOT_FOUND, message)
+		super(HttpStatus.NOT_FOUND, message);
 	}
 }
 
 export class NoArtistIllustrationException extends NoIllustrationException {
 	constructor(artistSlug?: Slug) {
-		super(`No illustration found for artist '${artistSlug?.toString() ?? compilationAlbumArtistKeyword}'`)
+		super(`No illustration found for artist '${artistSlug?.toString() ?? compilationAlbumArtistKeyword}'`);
 	}
 }
 
 export class NoAlbumIllustrationException extends NoIllustrationException {
 	constructor(albumSlug: Slug) {
-		super(`No illustration found for album '${albumSlug.toString()}'`)
+		super(`No illustration found for album '${albumSlug.toString()}'`);
 	}
 }
 
 export class NoReleaseIllustrationException extends NoIllustrationException {
 	constructor(albumSlug: Slug, releaseSlug: Slug) {
-		super(`No illustration found for release '${releaseSlug.toString()}' of ${albumSlug.toString()}`)
+		super(`No illustration found for release '${releaseSlug.toString()}' of ${albumSlug.toString()}`);
 	}
 }
 

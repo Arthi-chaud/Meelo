@@ -7,6 +7,7 @@ import ReleaseModule from 'src/release/release.module';
 import IllustrationModule from 'src/illustration/illustration.module';
 import TrackModule from 'src/track/track.module';
 import GenreModule from "../genre/genre.module";
+
 @Module({
 	imports: [
 		PrismaModule,

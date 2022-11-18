@@ -1,4 +1,6 @@
-import { Body, Controller, DefaultValuePipe, forwardRef, Get, Inject, ParseBoolPipe, Post, Put, Query, Req } from '@nestjs/common';
+import {
+	Body, Controller, DefaultValuePipe, Get, Inject, ParseBoolPipe, Post, Put, Query, Req, forwardRef
+} from '@nestjs/common';
 import { PaginationParameters } from 'src/pagination/models/pagination-parameters';
 import ReleaseQueryParameters from './models/release.query-parameters';
 import ReleaseService from './release.service';
@@ -30,7 +32,7 @@ export default class ReleaseController {
 		@Inject(forwardRef(() => AlbumService))
 		private albumService: AlbumService
 	) { }
-	
+
 	@ApiOperation({
 		summary: 'Get all releases'
 	})
@@ -48,10 +50,11 @@ export default class ReleaseController {
 		const releases = await this.releaseService.getMany(
 			{}, paginationParameters, include, sortingParameter
 		);
-		return new PaginatedResponse(
-			await Promise.all(releases.map(
+
+		return PaginatedResponse.awaiting(
+			releases.map(
 				(release) => this.releaseService.buildResponse(release)
-			)),
+			),
 			request
 		);
 	}
@@ -67,7 +70,8 @@ export default class ReleaseController {
 		where: ReleaseQueryParameters.WhereInput
 	) {
 		const release = await this.releaseService.get(where, include);
-		return await this.releaseService.buildResponse(release);
+
+		return this.releaseService.buildResponse(release);
 	}
 
 	@ApiOperation({
@@ -89,12 +93,14 @@ export default class ReleaseController {
 		const tracks = await this.trackService.getMany(
 			{ byRelease: where }, paginationParameters, include, sortingParameter
 		);
-		if (tracks.length == 0)
+
+		if (tracks.length == 0) {
 			await this.releaseService.throwIfNotFound(where);
-		return new PaginatedResponse(
-			await Promise.all(tracks.map(
+		}
+		return PaginatedResponse.awaiting(
+			tracks.map(
 				(track) => this.trackService.buildResponse(track)
-			)),
+			),
 			request
 		);
 	}
@@ -110,7 +116,8 @@ export default class ReleaseController {
 		include?: TrackQueryParameters.RelationInclude
 	) {
 		const tracklist = await this.trackService.getTracklist(where, include);
-		return await this.trackService.buildTracklistResponse(tracklist);
+
+		return this.trackService.buildTracklistResponse(tracklist);
 	}
 
 	@ApiOperation({
@@ -126,7 +133,8 @@ export default class ReleaseController {
 		include?: TrackQueryParameters.RelationInclude
 	) {
 		const tracklist = await this.trackService.getPlaylist(where, include, random);
-		return await Promise.all(tracklist.map((track) => this.trackService.buildResponse(track)));
+
+		return Promise.all(tracklist.map((track) => this.trackService.buildResponse(track)));
 	}
 
 	@ApiOperation({
@@ -143,8 +151,8 @@ export default class ReleaseController {
 		const album = await this.albumService.get({
 			byId: { id: (await release).albumId }
 		}, include);
-		return await this.albumService.buildResponse(album);
 
+		return this.albumService.buildResponse(album);
 	}
 
 	@ApiOperation({
@@ -154,11 +162,12 @@ export default class ReleaseController {
 	async reassignRelease(
 		@Body() reassignmentDTO: ReassignReleaseDTO
 	) {
-		return await this.releaseService.buildResponse(
+		return this.releaseService.buildResponse(
 			await this.releaseService.reassign(
-			{ byId: { id: reassignmentDTO.releaseId }},
-			{ byId: { id: reassignmentDTO.albumId }}
-		));
+				{ byId: { id: reassignmentDTO.releaseId } },
+				{ byId: { id: reassignmentDTO.albumId } }
+			)
+		);
 	}
 
 	@ApiOperation({
@@ -170,11 +179,13 @@ export default class ReleaseController {
 		where: ReleaseQueryParameters.WhereInput
 	) {
 		const release = await this.releaseService.get(where);
+
 		await this.releaseService.setReleaseAsMaster({
 			releaseId: release.id,
-			album: { byId: {id: release.albumId }}
+			album: { byId: { id: release.albumId } }
 		});
-		const updatedReleases = await this.releaseService.getMasterRelease({ byId: {id: release.albumId }});
-		return await this.releaseService.buildResponse(updatedReleases);
+		const updatedReleases = await this.releaseService.getMasterRelease({ byId: { id: release.albumId } });
+
+		return this.releaseService.buildResponse(updatedReleases);
 	}
 }

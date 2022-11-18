@@ -1,7 +1,11 @@
-import { forwardRef, Inject, Injectable, Logger } from '@nestjs/common';
+import {
+	Inject, Injectable, Logger, forwardRef
+} from '@nestjs/common';
 import PrismaService from 'src/prisma/prisma.service';
 import Slug from 'src/slug/slug';
-import { GenreAlreadyExistsException, GenreNotFoundByIdException, GenreNotFoundException } from './genre.exceptions';
+import {
+	GenreAlreadyExistsException, GenreNotFoundByIdException, GenreNotFoundException
+} from './genre.exceptions';
 import type GenreQueryParameters from './models/genre.query-parameters';
 import type { Genre, GenreWithRelations } from 'src/prisma/models';
 import SongService from 'src/song/song.service';
@@ -35,8 +39,9 @@ export default class GenreService extends RepositoryService<
 		@Inject(forwardRef(() => SongService))
 		private songService: SongService,
 	) {
-		super (prismaService.genre);
+		super(prismaService.genre);
 	}
+
 	/**
 	 * Create
 	 */
@@ -44,11 +49,13 @@ export default class GenreService extends RepositoryService<
 		return {
 			...input,
 			slug: new Slug(input.name).toString()
-		}
+		};
 	}
+
 	protected formatCreateInputToWhereInput(input: GenreQueryParameters.CreateInput): GenreQueryParameters.WhereInput {
-		return { slug: new Slug(input.name) }
+		return { slug: new Slug(input.name) };
 	}
+
 	protected onCreationFailure(input: GenreQueryParameters.CreateInput) {
 		return new GenreAlreadyExistsException(new Slug(input.name));
 	}
@@ -60,8 +67,9 @@ export default class GenreService extends RepositoryService<
 		return {
 			...input,
 			slug: input?.slug?.toString()
-		}
+		};
 	}
+
 	formatWhereInput = GenreService.formatWhereInput;
 
 	static formatManyWhereInput(where: GenreQueryParameters.ManyWhereInput) {
@@ -76,25 +84,27 @@ export default class GenreService extends RepositoryService<
 						? { artist: ArtistService.formatWhereInput(where.byArtist) }
 						: undefined
 			} : undefined,
-			
-		}
+
+		};
 	}
+
 	formatManyWhereInput = GenreService.formatManyWhereInput;
 
 	formatSortingInput(
 		sortingParameter: SortingParameter<GenreQueryParameters.SortingKeys>
 	) {
 		switch (sortingParameter.sortBy) {
-			case 'name':
-				return { slug: sortingParameter.order }
-			case 'songCount':
-				return { songs: { _count: sortingParameter.order } }
-			case undefined:
-				return { id: sortingParameter.order }
-			default:
-				return { [sortingParameter.sortBy]: sortingParameter.order }
+		case 'name':
+			return { slug: sortingParameter.order };
+		case 'songCount':
+			return { songs: { _count: sortingParameter.order } };
+		case undefined:
+			return { id: sortingParameter.order };
+		default:
+			return { [sortingParameter.sortBy]: sortingParameter.order };
 		}
 	}
+
 	/**
 	 * Update a genre
 	 */
@@ -102,7 +112,7 @@ export default class GenreService extends RepositoryService<
 		return {
 			...what,
 			slug: new Slug(what.name).toString(),
-		}
+		};
 	}
 
 	/**
@@ -111,6 +121,7 @@ export default class GenreService extends RepositoryService<
 	formatDeleteInput(where: GenreQueryParameters.WhereInput) {
 		return this.formatWhereInput(where);
 	}
+
 	protected formatDeleteInputToWhereInput(input: GenreQueryParameters.WhereInput) {
 		return input;
 	}
@@ -121,9 +132,11 @@ export default class GenreService extends RepositoryService<
 	 */
 	async delete(where: GenreQueryParameters.DeleteInput): Promise<Genre> {
 		const deleted = await super.delete(where);
+
 		Logger.warn(`Genre '${deleted.slug}' deleted`);
 		return deleted;
 	}
+
 	/**
 	 * Deletes a genre, if empty
 	 * @param where the query parameter to find the genre to delete
@@ -132,8 +145,10 @@ export default class GenreService extends RepositoryService<
 		const songCount = await this.songService.count({
 			genre: where
 		});
-		if (songCount == 0)
+
+		if (songCount == 0) {
 			await this.delete(where);
+		}
 	}
 
 	/**
@@ -146,19 +161,23 @@ export default class GenreService extends RepositoryService<
 		sort?: GenreQueryParameters.SortingParameter
 	) {
 		const genres = await this.getMany({ bySong: where }, {}, include, sort);
-		if (genres.length == 0)
+
+		if (genres.length == 0) {
 			await this.songService.throwIfNotFound(where);
+		}
 		return genres;
 	}
 
 	async buildResponse(genre: GenreWithRelations): Promise<GenreResponse> {
 		const response = <GenreResponse>genre;
+
 		return response;
 	}
 
 	onNotFound(where: GenreQueryParameters.WhereInput): MeeloException {
-		if (where.id !== undefined)
+		if (where.id !== undefined) {
 			return new GenreNotFoundByIdException(where.id);
+		}
 		return new GenreNotFoundException(where.slug);
 	}
 }

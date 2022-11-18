@@ -1,4 +1,6 @@
-import { Body, Controller, Delete, forwardRef, Get, Inject, Post, Put, Req } from '@nestjs/common';
+import {
+	Body, Controller, Delete, Get, Inject, Post, Put, Req, forwardRef
+} from '@nestjs/common';
 import type { Request } from 'express';
 import ArtistService from 'src/artist/artist.service';
 import ArtistQueryParameters from 'src/artist/models/artist.query-parameters';
@@ -57,8 +59,9 @@ export class SongController {
 		const songs = await this.songService.getMany(
 			{}, paginationParameters, include, sortingParameter
 		);
-		return new PaginatedResponse(
-			await Promise.all(songs.map((song) => this.songService.buildResponse(song))),
+
+		return PaginatedResponse.awaiting(
+			songs.map((song) => this.songService.buildResponse(song)),
 			request
 		);
 	}
@@ -74,7 +77,8 @@ export class SongController {
 		where: SongQueryParameters.WhereInput
 	) {
 		const song = await this.songService.get(where, include);
-		return await this.songService.buildResponse(song);
+
+		return this.songService.buildResponse(song);
 	}
 
 	@ApiOperation({
@@ -86,7 +90,7 @@ export class SongController {
 		where: SongQueryParameters.WhereInput
 	) {
 		await this.songService.incrementPlayCount(where);
-		return await this.songService.buildResponse(await this.songService.get(where));
+		return this.songService.buildResponse(await this.songService.get(where));
 	}
 
 	@ApiOperation({
@@ -103,7 +107,8 @@ export class SongController {
 		const artist = await this.artistService.get({
 			id: song.artistId
 		}, include);
-		return await this.artistService.buildResponse(artist);
+
+		return this.artistService.buildResponse(artist);
 	}
 
 	@ApiOperation({
@@ -117,7 +122,8 @@ export class SongController {
 		where: SongQueryParameters.WhereInput
 	) {
 		const master = await this.trackService.getMasterTrack(where, include);
-		return await this.trackService.buildResponse(master);
+
+		return this.trackService.buildResponse(master);
 	}
 
 	@ApiOperation({
@@ -139,10 +145,12 @@ export class SongController {
 		const tracks = await this.trackService.getSongTracks(
 			where, paginationParameters, include, sortingParameter
 		);
-		if (tracks.length == 0)
+
+		if (tracks.length == 0) {
 			await this.songService.throwIfNotFound(where);
-		return new PaginatedResponse(
-			await Promise.all(tracks.map((track) => this.trackService.buildResponse(track))),
+		}
+		return PaginatedResponse.awaiting(
+			tracks.map((track) => this.trackService.buildResponse(track)),
 			request
 		);
 	}
@@ -163,9 +171,10 @@ export class SongController {
 		sortingParameter: SongQueryParameters.SortingParameter,
 		@Req() request: Request
 	) {
-		const versions = await this.songService.getSongVersions(where, paginationParameters, include, sortingParameter)
-		return new PaginatedResponse(
-			await Promise.all(versions.map((song) => this.songService.buildResponse(song))),
+		const versions = await this.songService.getSongVersions(where, paginationParameters, include, sortingParameter);
+
+		return PaginatedResponse.awaiting(
+			versions.map((song) => this.songService.buildResponse(song)),
 			request
 		);
 	}
@@ -187,12 +196,14 @@ export class SongController {
 		@Req() request: Request
 	) {
 		const videoTracks = await this.trackService.getMany(
-			{ bySong: where, type: TrackType.Video }, paginationParameters, include, sortingParameter, 
+			{ bySong: where, type: TrackType.Video }, paginationParameters, include, sortingParameter,
 		);
-		if (videoTracks.length == 0)
+
+		if (videoTracks.length == 0) {
 			await this.songService.throwIfNotFound(where);
-		return new PaginatedResponse(
-			await Promise.all(videoTracks.map((videoTrack) => this.trackService.buildResponse(videoTrack))),
+		}
+		return PaginatedResponse.awaiting(
+			videoTracks.map((videoTrack) => this.trackService.buildResponse(videoTrack)),
 			request
 		);
 	}
@@ -212,8 +223,9 @@ export class SongController {
 		@Req() request: Request
 	) {
 		const genres = await this.genreService.getSongGenres(where, include, sortingParameter);
-		return new PaginatedResponse(
-			await Promise.all(genres.map((genre) => this.genreService.buildResponse(genre))),
+
+		return PaginatedResponse.awaiting(
+			genres.map((genre) => this.genreService.buildResponse(genre)),
 			request
 		);
 	}
@@ -227,7 +239,8 @@ export class SongController {
 		where: SongQueryParameters.WhereInput
 	) {
 		const lyrics = await this.lyricsService.get({ song: where });
-		return await this.lyricsService.buildResponse(lyrics);
+
+		return this.lyricsService.buildResponse(lyrics);
 	}
 
 	@ApiOperation({
@@ -240,13 +253,14 @@ export class SongController {
 		@Body() updateLyricsDto: LyricsDto
 	) {
 		const song = await this.songService.get(where);
+
 		try {
-			return await this.lyricsService.update(
+			return this.lyricsService.update(
 				{ content: updateLyricsDto.lyrics },
 				{ song: where }
 			);
 		} catch {
-			return await this.lyricsService.create({
+			return this.lyricsService.create({
 				songId: song.id, content: updateLyricsDto.lyrics
 			});
 		}
@@ -261,6 +275,7 @@ export class SongController {
 		where: SongQueryParameters.WhereInput
 	) {
 		const song = await this.songService.get(where);
+
 		await this.lyricsService.delete({ songId: song.id });
 	}
 }

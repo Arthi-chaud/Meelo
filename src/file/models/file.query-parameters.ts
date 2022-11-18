@@ -1,10 +1,10 @@
 import type { File } from "src/prisma/models";
 import type LibraryQueryParameters from "src/library/models/library.query-parameters";
-import type { RequireAtLeastOne } from "type-fest";
-import type { RequireExactlyOne } from 'type-fest';
+import type { RequireAtLeastOne, RequireExactlyOne } from "type-fest";
 import type { SearchDateInput } from "src/utils/search-date-input";
-import type { RelationInclude as BaseRelationInclude } from "src/relation-include/models/relation-include" ;
+import type { RelationInclude as BaseRelationInclude } from "src/relation-include/models/relation-include";
 import { filterAtomicRelationInclude } from "src/relation-include/atomic-relation-include.filter";
+
 namespace FileQueryParameters {
 	/**
 	 * Parameters to create a File
@@ -18,7 +18,7 @@ namespace FileQueryParameters {
 		id: number,
 		byPath: { path: string, library: LibraryQueryParameters.WhereInput }
 	}>;
-	
+
 	/**
 	 * Query parameters to find multiple files
 	 */
@@ -38,9 +38,13 @@ namespace FileQueryParameters {
 	 * Query parameters to delete one file
 	 */
 	export type DeleteInput = Required<Pick<WhereInput, 'id'>>;
-	
 
-	export const SortingKeys = ['id', 'trackName', 'trackArtist', 'addDate'] as const;
+	export const SortingKeys = [
+		'id',
+		'trackName',
+		'trackArtist',
+		'addDate'
+	] as const;
 	export type SortingKeys = typeof SortingKeys;
 
 	/**
@@ -49,7 +53,7 @@ namespace FileQueryParameters {
 	export const AvailableIncludes = ['track', 'library'] as const;
 	export const AvailableAtomicIncludes = filterAtomicRelationInclude(AvailableIncludes);
 	export type RelationInclude = BaseRelationInclude<typeof AvailableIncludes>;
-	
+
 }
 
 export default FileQueryParameters;

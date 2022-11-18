@@ -6,5 +6,6 @@ export class LyricsResponse {
 		description: 'A new-line-separated string, representing the lyrics of a song'
 	})
 	lyrics: string;
+
 	song?: SongResponse;
 }

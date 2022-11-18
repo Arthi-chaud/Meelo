@@ -119,14 +119,14 @@ describe('Album Service', () => {
 
 			it('should throw, as an album with the same name exists (no artist)', () => {
 				const test = async () => {
-					return await albumService.create({ name: dummyRepository.compilationAlbumA.name });
+					return albumService.create({ name: dummyRepository.compilationAlbumA.name });
 				}
 				expect(test()).rejects.toThrow(AlbumAlreadyExistsException);
 			});
 
 			it('should throw, as an album with the same name exists (w/ artist)', () => {
 				const test = async () => {
-					return await albumService.create({
+					return albumService.create({
 						name: dummyRepository.albumA1.name,
 						artist: { id: dummyRepository.artistA.id }
 					});
@@ -152,7 +152,7 @@ describe('Album Service', () => {
 
 			it('should throw, as an album with the same name exists', () => {
 				const test = async () => {
-					return await albumService.create({
+					return albumService.create({
 						name: dummyRepository.albumA1.name,
 						artist: { id: dummyRepository.artistA.id }
 					});
@@ -162,7 +162,7 @@ describe('Album Service', () => {
 
 			it('should throw, as the related artist does not exists', () => {
 				const test = async () => {
-					return await albumService.create({
+					return albumService.create({
 						name: 'My album (Live)',
 						artist: { slug: new Slug('I do not exists') }
 					});

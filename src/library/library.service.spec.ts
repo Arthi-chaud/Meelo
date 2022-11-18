@@ -69,7 +69,7 @@ describe('Library Service', () => {
 
 		it(('should throw as library already exists (path already used)'), async () => {
 			const test = async () => {
-				return await libraryService.create({
+				return libraryService.create({
 					name: 'trolololol',
 					path: dummyRepository.library1.path
 				});

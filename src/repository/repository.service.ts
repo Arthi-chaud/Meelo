@@ -1,5 +1,6 @@
+/* eslint-disable @typescript-eslint/ban-types */
 import type { MeeloException } from "src/exceptions/meelo-exception";
-import { buildPaginationParameters, PaginationParameters } from "src/pagination/models/pagination-parameters";
+import { PaginationParameters, buildPaginationParameters } from "src/pagination/models/pagination-parameters";
 import SortingParameter from "src/sort/models/sorting-parameter";
 import type { Primitive } from "type-fest";
 
@@ -42,13 +43,13 @@ type Base<T extends AtomicModel> = AtomicModel & Omit<T, keyof ModelRelations<T>
  */
 type ORMGetterMethod<
 	Model extends AtomicModel,
-	ModelRelations extends {},
+	Relations extends {},
 	AdditionalParams extends {}
 > = <
 	Params extends AdditionalParams,
 	ReturnType extends Model = Params extends { include: infer RelationSelection }
-		? RelationSelection extends ModelSelector<ModelRelations>
-			? Model & Select<ModelRelations, RelationSelection>
+		? RelationSelection extends ModelSelector<Relations>
+			? Model & Select<Relations, RelationSelection>
 			: Model
 		: Model
 >(args: Params) => Promise<Model | ReturnType>;
@@ -58,19 +59,19 @@ type ORMGetterMethod<
  */
 type ORMManyGetterMethod<
 	Model extends AtomicModel,
-	ModelRelations extends {},
+	Relations extends {},
 	AdditionalParams extends {}
 > = <
- Params extends AdditionalParams & { take?: number, skip?: number },
- ReturnType extends Model = Params extends { include: infer RelationSelection }
-	 ? RelationSelection extends ModelSelector<ModelRelations>
-		 ? Model & Select<ModelRelations, RelationSelection>
-		 : Model
-	 : Model
+	Params extends AdditionalParams & { take?: number, skip?: number },
+	ReturnType extends Model = Params extends { include: infer RelationSelection }
+		? RelationSelection extends ModelSelector<Relations>
+			? Model & Select<Relations, RelationSelection>
+			: Model
+		: Model
 >(args: Params) => Promise<(Model | ReturnType)[]>;
 
 /**
- * Base Repository Service Definition 
+ * Base Repository Service Definition
  */
 abstract class RepositoryService<
 	Model extends AtomicModel,
@@ -94,7 +95,9 @@ abstract class RepositoryService<
 		findFirstOrThrow: ORMGetterMethod<BaseModel, Relations, { where: RepositoryWhereInput }>
 		findMany: ORMManyGetterMethod<BaseModel, Relations, { where: RepositoryManyWhereInput }>
 		delete: (args: { where: RepositoryDeleteInput }) => Promise<BaseModel>,
-		update: (args: { where: RepositoryWhereInput, data: RepositoryUpdateInput }) => Promise<BaseModel>
+		update: (args: {
+			where: RepositoryWhereInput, data: RepositoryUpdateInput
+		}) => Promise<BaseModel>
 		count: (args: { where: RepositoryManyWhereInput }) => Promise<number>,
 	}) {}
 
@@ -106,14 +109,15 @@ abstract class RepositoryService<
 	 */
 	async create<I extends ModelSelector<Relations>>(input: CreateInput, include?: I) {
 		try {
-			return await this.repository.create({
+			return this.repository.create({
 				data: this.formatCreateInput(input),
 				include: RepositoryService.formatInclude(include)
-			}) as BaseModel & Select<Relations, I>;
+			}) as Promise<BaseModel & Select<Relations, I>>;
 		} catch {
 			throw await this.onCreationFailure(input);
 		}
 	}
+
 	/**
 	 * Formats input into ORM-compatible parameter
 	 * @param input the ceation parameter passed to `create`
@@ -122,7 +126,10 @@ abstract class RepositoryService<
 	/**
 	 * @return an enxception to throw if the entity's creation failed
 	 */
-	protected abstract onCreationFailure(input: CreateInput): Promise<MeeloException> | MeeloException;
+	protected abstract onCreationFailure(
+		input: CreateInput
+	): Promise<MeeloException> | MeeloException;
+
 	/**
 	 * Transform CreationInput into WhereInput
 	 */
@@ -137,26 +144,30 @@ abstract class RepositoryService<
 	async get<I extends ModelSelector<Relations>>(where: WhereInput, include?: I) {
 		this.checkWhereInputIntegrity(where);
 		try {
-			return await this.repository.findFirstOrThrow({
+			return this.repository.findFirstOrThrow({
 				where: this.formatWhereInput(where),
 				include: RepositoryService.formatInclude(include)
-			}) as BaseModel & Select<Relations, I>;
-		} catch (e) {
+			}) as Promise<BaseModel & Select<Relations, I>>;
+		} catch {
 			throw await this.onNotFound(where);
 		}
 	}
+
 	/**
 	 * Checks if the Query parameters to find an entity are consistent
-	 * If it is not, it should throw. 
+	 * If it is not, it should throw.
 	 */
-	checkWhereInputIntegrity(_input: WhereInput) {}
+	checkWhereInputIntegrity(_input: WhereInput) {
+		return;
+	}
+
 	/**
 	 * Formats input into ORM-compatible parameter
 	 * @param input the ceation parameter passed to `get`
 	 */
 	abstract formatWhereInput(input: WhereInput): RepositoryWhereInput;
 	/**
-	 * @return an exception to throw if fetch failed 
+	 * @return an exception to throw if fetch failed
 	 */
 	abstract onNotFound(where: WhereInput): Promise<MeeloException> | MeeloException;
 
@@ -166,12 +177,14 @@ abstract class RepositoryService<
 	 * @param select the fields to fetch
 	 * @returns The entity matching the query parameters
 	 */
-	async select<S extends ModelSelector<BaseModel>>(where: WhereInput, select: S): Promise<Select<BaseModel, S>> {
+	async select<S extends ModelSelector<BaseModel>>(
+		where: WhereInput, select: S
+	): Promise<Select<BaseModel, S>> {
 		this.checkWhereInputIntegrity(where);
 		try {
-			return await this.repository.findFirstOrThrow({
+			return this.repository.findFirstOrThrow({
 				where: this.formatWhereInput(where),
-				select: { ...select,  id: true }
+				select: { ...select, id: true }
 			});
 		} catch {
 			throw await this.onNotFound(where);
@@ -196,9 +209,10 @@ abstract class RepositoryService<
 			where: this.formatManyWhereInput(where),
 			include: RepositoryService.formatInclude(include),
 			orderBy: sort ? this.formatSortingInput(sort) : undefined,
-			...buildPaginationParameters(pagination) 
+			...buildPaginationParameters(pagination)
 		}) as Promise<(BaseModel & Select<Relations, I>)[]>;
 	}
+
 	/**
 	 * Formats input into ORM-compatible parameter
 	 * @param input the ceation parameter passed to `getMany`
@@ -211,6 +225,7 @@ abstract class RepositoryService<
 	abstract formatSortingInput(
 		sortingParameter: SortingParameter<SortingKeys>
 	): RepositorySortingInput
+
 	/**
 	 * Count entities matching the query parameters
 	 * @param where the query parameters
@@ -231,7 +246,7 @@ abstract class RepositoryService<
 	async update(what: UpdateInput, where: WhereInput): Promise<BaseModel> {
 		this.checkWhereInputIntegrity(where);
 		try {
-			return await this.repository.update({
+			return this.repository.update({
 				data: this.formatUpdateInput(what),
 				where: this.formatWhereInput(where)
 			});
@@ -239,32 +254,34 @@ abstract class RepositoryService<
 			throw await this.onUpdateFailure(what, where);
 		}
 	}
+
 	/**
 	 * Formats input into ORM-compatible parameter
 	 * @param what the ceation parameter passed to `update`
 	 */
 	abstract formatUpdateInput(what: UpdateInput): RepositoryUpdateInput;
 	/**
-	 * @return an exception to throw if update failed 
+	 * @return an exception to throw if update failed
 	 */
 	async onUpdateFailure(_what: UpdateInput, where: WhereInput): Promise<MeeloException> {
-		return await this.onNotFound(where);
+		return this.onNotFound(where);
 	}
 
 	/**
 	 * Delete an entity
 	 * @param where the query parameters to find an entity
-	 * @returns 
+	 * @returns
 	 */
 	async delete(where: DeleteInput): Promise<BaseModel> {
 		try {
-			return await this.repository.delete({
+			return this.repository.delete({
 				where: this.formatDeleteInput(where)
 			});
 		} catch {
 			throw await this.onDeletionFailure(where);
 		}
 	}
+
 	/**
 	 * Formats input into ORM-compatible parameter
 	 * @param where the ceation parameter passed to `delete`
@@ -275,10 +292,10 @@ abstract class RepositoryService<
 	 */
 	protected abstract formatDeleteInputToWhereInput(input: DeleteInput): WhereInput;
 	/**
-	 * @return an exception to throw if deletion failed 
+	 * @return an exception to throw if deletion failed
 	 */
 	async onDeletionFailure(where: DeleteInput): Promise<MeeloException> {
-		return await this.onNotFound(this.formatDeleteInputToWhereInput(where));
+		return this.onNotFound(this.formatDeleteInputToWhereInput(where));
 	}
 
 	/**
@@ -289,12 +306,11 @@ abstract class RepositoryService<
 	 */
 	async getOrCreate<I extends ModelSelector<Relations>>(input: CreateInput, include?: I) {
 		try {
-			return await this.get(this.formatCreateInputToWhereInput(input), include);
+			return this.get(this.formatCreateInputToWhereInput(input), include);
 		} catch {
 			return this.create(input, include);
 		}
 	}
-	
 
 	/**
 	 * Checks if an entity exists in the database
@@ -309,6 +325,7 @@ abstract class RepositoryService<
 			return false;
 		}
 	}
+
 	/**
 	 * Throws the exception returned by 'onNotFound' method if the entity does not exist
 	 * @param where the query parameters to find the entity
@@ -318,11 +335,13 @@ abstract class RepositoryService<
 	}
 
 	abstract buildResponse(input: Model): unknown;
-	static formatInclude<I extends ModelSelector<Relations>, Relations extends {}>(include?: I) {
-		if (include === undefined)
+	static formatInclude<I extends ModelSelector<Relation>, Relation extends {}>(include?: I) {
+		if (include === undefined) {
 			return include;
-		if (Object.keys(include).length == 0)
+		}
+		if (Object.keys(include).length == 0) {
 			return undefined;
+		}
 		return include;
 	}
 }

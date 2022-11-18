@@ -2,7 +2,7 @@ import { InvalidRequestException } from "src/exceptions/meelo-exception";
 
 export class InvalidRelationIncludeParameterFormat extends InvalidRequestException {
 	constructor() {
-		super("Parsing requested includes failed: The requested include is not valid. Expected format: 'field1,field2,field3'.")
+		super("Parsing requested includes failed: The requested include is not valid. Expected format: 'field1,field2,field3'.");
 	}
 }
 

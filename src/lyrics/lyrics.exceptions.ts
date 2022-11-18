@@ -37,7 +37,7 @@ export class NoLyricsFoundException extends NotFoundException {
 /**
  * Exception when the Genius API is missing and the lyrics are requested
  */
- export class MissingGeniusAPIKeyException extends InvalidRequestException {
+export class MissingGeniusAPIKeyException extends InvalidRequestException {
 	constructor() {
 		super(`No (or empty) Genius API Key provided`);
 	}

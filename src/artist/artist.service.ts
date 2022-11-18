@@ -1,6 +1,10 @@
-import { forwardRef, Inject, Injectable, Logger } from '@nestjs/common';
+import {
+	Inject, Injectable, Logger, forwardRef
+} from '@nestjs/common';
 import Slug from 'src/slug/slug';
-import { ArtistAlreadyExistsException as ArtistAlreadyExistsException, ArtistNotFoundByIDException, ArtistNotFoundException, CompilationArtistException } from './artist.exceptions';
+import {
+	ArtistAlreadyExistsException as ArtistAlreadyExistsException, ArtistNotFoundByIDException, ArtistNotFoundException, CompilationArtistException
+} from './artist.exceptions';
 import { Prisma } from '@prisma/client';
 import PrismaService from 'src/prisma/prisma.service';
 import type ArtistQueryParameters from './models/artist.query-parameters';
@@ -18,6 +22,7 @@ import TrackService from 'src/track/track.service';
 import type { Artist, ArtistWithRelations } from 'src/prisma/models';
 import { ArtistResponse } from './models/artist.response';
 import { IllustrationPath } from 'src/illustration/models/illustration-path.model';
+
 @Injectable()
 export default class ArtistService extends RepositoryService<
 	ArtistWithRelations,
@@ -44,7 +49,7 @@ export default class ArtistService extends RepositoryService<
 	) {
 		super(prismaService.artist);
 	}
-	
+
 	/**
 	 * Artist Creation
 	 */
@@ -52,11 +57,13 @@ export default class ArtistService extends RepositoryService<
 		return {
 			name: input.name,
 			slug: new Slug(input.name).toString()
-		}
+		};
 	}
+
 	protected formatCreateInputToWhereInput(input: ArtistQueryParameters.CreateInput) {
-		return { slug: new Slug(input.name) }
+		return { slug: new Slug(input.name) };
 	}
+
 	protected onCreationFailure(input: ArtistQueryParameters.CreateInput) {
 		return new ArtistAlreadyExistsException(new Slug(input.name));
 	}
@@ -65,19 +72,23 @@ export default class ArtistService extends RepositoryService<
 	 * Get Artist
 	 */
 	checkWhereInputIntegrity(input: ArtistQueryParameters.WhereInput): void {
-		if (input.compilationArtist)
+		if (input.compilationArtist) {
 			throw new CompilationArtistException('Artist');
+		}
 	}
+
 	static formatWhereInput(input: ArtistQueryParameters.WhereInput) {
 		return {
 			id: input.id,
 			slug: input.slug?.toString()
 		};
 	}
+
 	formatWhereInput = ArtistService.formatWhereInput;
 	onNotFound(where: ArtistQueryParameters.WhereInput): MeeloException {
-		if (where.id !== undefined)
+		if (where.id !== undefined) {
 			return new ArtistNotFoundByIDException(where.id);
+		}
 		return new ArtistNotFoundException(where.slug!);
 	}
 
@@ -109,24 +120,26 @@ export default class ArtistService extends RepositoryService<
 			} : undefined
 		};
 	}
+
 	formatManyWhereInput = ArtistService.formatManyWhereInput;
 
 	formatSortingInput(
 		sortingParameter: SortingParameter<ArtistQueryParameters.SortingKeys>
 	): Prisma.ArtistOrderByWithRelationInput {
 		switch (sortingParameter.sortBy) {
-			case 'name':
-				return { slug: sortingParameter.order }
-			case 'albumCount':
-				return { albums: { _count: sortingParameter.order } }
-			case 'songCount':
-				return { songs: { _count: sortingParameter.order } }
-			case 'addDate':
-				return { id: sortingParameter.order }
-			default:
-				return { [sortingParameter.sortBy ?? 'id']: sortingParameter.order }
+		case 'name':
+			return { slug: sortingParameter.order };
+		case 'albumCount':
+			return { albums: { _count: sortingParameter.order } };
+		case 'songCount':
+			return { songs: { _count: sortingParameter.order } };
+		case 'addDate':
+			return { id: sortingParameter.order };
+		default:
+			return { [sortingParameter.sortBy ?? 'id']: sortingParameter.order };
 		}
 	}
+
 	/**
 	 * Find multiple artists that have at least one album
 	 * @param where the query parameters to find the artists
@@ -150,7 +163,6 @@ export default class ArtistService extends RepositoryService<
 		});
 	}
 
-
 	/**
 	 * Update Artist
 	 */
@@ -167,6 +179,7 @@ export default class ArtistService extends RepositoryService<
 	formatDeleteInput(where: ArtistQueryParameters.DeleteInput) {
 		return this.formatWhereInput(where);
 	}
+
 	protected formatDeleteInputToWhereInput(input: ArtistQueryParameters.DeleteInput) {
 		return input;
 	}
@@ -177,6 +190,7 @@ export default class ArtistService extends RepositoryService<
 	 */
 	async delete(where: ArtistQueryParameters.DeleteInput): Promise<Artist> {
 		const artist = await this.get(where, { albums: true, songs: true });
+
 		await Promise.allSettled([
 			...artist.albums.map(
 				(album) => this.albumService.delete({ byId: { id: album.id } })
@@ -195,6 +209,7 @@ export default class ArtistService extends RepositoryService<
 			const artistIllustrationFolder = this.illustrationService.buildArtistIllustrationFolderPath(
 				new Slug(artist.slug)
 			);
+
 			this.illustrationService.deleteIllustrationFolder(artistIllustrationFolder);
 		} catch {}
 		return artist;
@@ -207,8 +222,10 @@ export default class ArtistService extends RepositoryService<
 	async deleteArtistIfEmpty(where: ArtistQueryParameters.DeleteInput): Promise<void> {
 		const albumCount = await this.albumService.count({ byArtist: where });
 		const songCount = await this.songService.count({ artist: where });
-		if (songCount == 0 && albumCount == 0)
+
+		if (songCount == 0 && albumCount == 0) {
 			await this.delete(where);
+		}
 	}
 
 	/**
@@ -219,9 +236,10 @@ export default class ArtistService extends RepositoryService<
 	 async buildIllustrationPath(where: ArtistQueryParameters.WhereInput): Promise<IllustrationPath> {
 		const artist = await this.select(where, { slug: true });
 		const path = this.illustrationService.buildArtistIllustrationPath(new Slug(artist.slug));
+
 		return path;
 	}
-	
+
 	/**
 	 * Build API reponse for Artist Request
 	 * @param artist the Artist to build the response from
@@ -232,6 +250,7 @@ export default class ArtistService extends RepositoryService<
 			...artist,
 			illustration: this.illustrationService.getArtistIllustrationLink(new Slug(artist.slug))
 		};
+
 		return response;
 	}
 }
