@@ -14,7 +14,7 @@
 		"@typescript-eslint",
 		"import"
 	],
-	"ignorePatterns": ["front/", "node_modules/", "test/", "src/**/*.spec.ts"],
+	"ignorePatterns": ["front/", "node_modules/", "test/", "src/**/*.spec.ts", "src/prisma/models"],
 	"rules": {
 		"import/first": "error",
 		"import/newline-after-import": "error",
@@ -23,6 +23,7 @@
 		"@typescript-eslint/no-namespace": "off",
 		"@typescript-eslint/no-explicit-any": "off",
 		"@typescript-eslint/no-unused-vars": "off",
+		"@typescript-eslint/no-non-null-assertion": "off",
 		"no-duplicate-imports": "error",
 		"id-length": "error",
 		"init-declarations": "error",
