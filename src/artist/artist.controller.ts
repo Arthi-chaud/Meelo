@@ -62,7 +62,7 @@ export default class ArtistController {
 		@Query('albumArtistOnly', new DefaultValuePipe(false), ParseBoolPipe)
 		albumArtistsOnly = false,
 	) {
-		let artists: Artist[];
+		let artists: Artist[] = [];
 
 		if (albumArtistsOnly) {
 			artists = await this.artistService.getAlbumsArtists(
@@ -111,7 +111,10 @@ export default class ArtistController {
 		@Req() request: Request
 	) {
 		const videoTracks = await this.trackService.getMany(
-			{ byArtist: where, type: TrackType.Video }, paginationParameters, include, sortingParameter,
+			{ byArtist: where, type: TrackType.Video },
+			paginationParameters,
+			include,
+			sortingParameter
 		);
 
 		if (videoTracks.length == 0) {
@@ -143,7 +146,10 @@ export default class ArtistController {
 		@Req() request: Request
 	) {
 		const albums = await this.albumService.getMany(
-			{ byArtist: where, byType: filter.type }, paginationParameters, include, sortingParameter
+			{ byArtist: where, byType: filter.type },
+			paginationParameters,
+			include,
+			sortingParameter
 		);
 
 		if (albums.length == 0) {

@@ -9,7 +9,7 @@ namespace FileQueryParameters {
 	/**
 	 * Parameters to create a File
 	 */
-	 export type CreateInput = Omit<File, 'library' | 'id' | 'track'>;
+	export type CreateInput = Omit<File, 'library' | 'id' | 'track'>;
 	/**
 	 * Query parameters to find one file
 	 */

@@ -69,7 +69,7 @@
 		"func-call-spacing": ["warn", "never"],
 		"function-call-argument-newline": ["warn", "consistent"],
 		"no-return-await": "error",
-		"max-len": ["error", { "code": 100, "ignorePattern": "(^import)|(export\\s)", "ignoreTemplateLiterals": true, "ignoreComments": true }],
+		"max-len": ["error", { "code": 100, "ignorePattern": "(^import)|(export\\s)", "ignoreTemplateLiterals": true, "ignoreComments": true, "ignoreStrings": true }],
 		"quote-props": ["error", "consistent-as-needed"],
 		"key-spacing": ["error", { "beforeColon": false, "afterColon": true, "mode": "strict" }],
 		"semi-spacing": ["error", {"before": false, "after": true}],

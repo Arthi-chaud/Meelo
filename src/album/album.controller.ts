@@ -82,7 +82,10 @@ export default class AlbumController {
 		@Req() request: Request
 	) {
 		const albums = await this.albumService.getMany(
-			{ byArtist: { compilationArtist: true }, byType: filter.type }, paginationParameters, include, sortingParameter
+			{ byArtist: { compilationArtist: true }, byType: filter.type },
+			paginationParameters,
+			include,
+			sortingParameter
 		);
 
 		return PaginatedResponse.awaiting(
@@ -178,7 +181,10 @@ export default class AlbumController {
 		@Req() request: Request
 	) {
 		const videoTracks = await this.trackService.getMany(
-			{ byAlbum: where, type: TrackType.Video }, paginationParameters, include, sortingParameter,
+			{ byAlbum: where, type: TrackType.Video },
+			paginationParameters,
+			include,
+			sortingParameter,
 		);
 
 		if (videoTracks.length == 0) {

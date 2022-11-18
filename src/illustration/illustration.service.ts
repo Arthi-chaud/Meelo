@@ -23,7 +23,6 @@ import Ffmpeg from 'fluent-ffmpeg';
 import type FileQueryParameters from 'src/file/models/file.query-parameters';
 import TrackService from 'src/track/track.service';
 import FileService from 'src/file/file.service';
-import path from 'path';
 import { Readable } from 'stream';
 import type { IllustrationDimensionsDto } from './models/illustration-dimensions.dto';
 
@@ -86,8 +85,12 @@ export default class IllustrationService implements OnModuleInit {
 	 * @param albumSlug The slug of an album from the artist
 	 * @param releaseSlug The slug of a release of the album
 	 */
-	buildReleaseIllustrationFolderPath(albumSlug: Slug, releaseSlug: Slug, artistSlug?: Slug): string {
-		const albumMetadataFolder: string = this.buildAlbumIllustrationFolderPath(albumSlug, artistSlug);
+	buildReleaseIllustrationFolderPath(
+		albumSlug: Slug, releaseSlug: Slug, artistSlug?: Slug
+	): string {
+		const albumMetadataFolder: string = this.buildAlbumIllustrationFolderPath(
+			albumSlug, artistSlug
+		);
 		const releaseMetadataFolder = `${albumMetadataFolder}/${releaseSlug.toString()}`;
 
 		return releaseMetadataFolder;
@@ -109,12 +112,16 @@ export default class IllustrationService implements OnModuleInit {
 	 * @param artistSlug The slug of an artist
 	 * @param albumSlug The slug of an album
 	 */
-	async buildMasterReleaseIllustrationPath(albumSlug: Slug, artistSlug?: Slug): Promise<IllustrationPath> {
+	async buildMasterReleaseIllustrationPath(
+		albumSlug: Slug, artistSlug?: Slug
+	): Promise<IllustrationPath> {
 		const masterRelease: Release = await this.releaseService.getMasterRelease({
 			bySlug: { slug: albumSlug, artist: artistSlug ? { slug: artistSlug } : undefined }
 		});
 
-		return this.buildReleaseIllustrationPath(albumSlug, new Slug(masterRelease.slug), artistSlug);
+		return this.buildReleaseIllustrationPath(
+			albumSlug, new Slug(masterRelease.slug), artistSlug
+		);
 	}
 
 	/**
@@ -123,8 +130,12 @@ export default class IllustrationService implements OnModuleInit {
 	 * @param albumSlug The slug of an album
 	 * @param releaseSlug The slug of an release
 	 */
-	buildReleaseIllustrationPath(albumSlug: Slug, releaseSlug: Slug, artistSlug?: Slug): IllustrationPath {
-		const releaseIllustrationFolder: string = this.buildReleaseIllustrationFolderPath(albumSlug, releaseSlug, artistSlug);
+	buildReleaseIllustrationPath(
+		albumSlug: Slug, releaseSlug: Slug, artistSlug?: Slug
+	): IllustrationPath {
+		const releaseIllustrationFolder: string = this.buildReleaseIllustrationFolderPath(
+			albumSlug, releaseSlug, artistSlug
+		);
 		const releaseIllstrationPath = `${releaseIllustrationFolder}/cover.jpg`;
 
 		return releaseIllstrationPath;
@@ -133,7 +144,10 @@ export default class IllustrationService implements OnModuleInit {
 	/**
 	 * Builds the illustration path of the track
 	 */
-	buildTrackIllustrationPath(albumSlug: Slug, releaseSlug: Slug, artistSlug?: Slug, discIndex?: number, trackIndex?: number): IllustrationPath {
+	buildTrackIllustrationPath(
+		albumSlug: Slug, releaseSlug: Slug, artistSlug?: Slug,
+		discIndex?: number, trackIndex?: number
+	): IllustrationPath {
 		const releaseIllustrationFolder = this.buildReleaseIllustrationFolderPath(
 			albumSlug,
 			releaseSlug,
@@ -164,7 +178,7 @@ export default class IllustrationService implements OnModuleInit {
 	 * @return false if the illustration does not exist
 	 * @param illustrationPath full path to an illustration
 	 */
-	 deleteIllustrationSafe(illustrationPath: IllustrationPath) {
+	deleteIllustrationSafe(illustrationPath: IllustrationPath) {
 		if (this.illustrationExists(illustrationPath)) {
 			this.fileManagerService.deleteFile(illustrationPath);
 			return true;
@@ -189,10 +203,15 @@ export default class IllustrationService implements OnModuleInit {
 	}
 
 	reassignReleaseIllustrationFolder(
-		releaseSlug: Slug, oldAlbumSlug: Slug, newAlbumSlug: Slug, oldArtistSlug?: Slug, newArtistSlug?: Slug
+		releaseSlug: Slug, oldAlbumSlug: Slug, newAlbumSlug: Slug,
+		oldArtistSlug?: Slug, newArtistSlug?: Slug
 	) {
-		const previousPath = this.buildReleaseIllustrationFolderPath(oldAlbumSlug, releaseSlug, oldArtistSlug);
-		const newPath = this.buildReleaseIllustrationFolderPath(newAlbumSlug, releaseSlug, newArtistSlug);
+		const previousPath = this.buildReleaseIllustrationFolderPath(
+			oldAlbumSlug, releaseSlug, oldArtistSlug
+		);
+		const newPath = this.buildReleaseIllustrationFolderPath(
+			newAlbumSlug, releaseSlug, newArtistSlug
+		);
 
 		if (this.fileManagerService.folderExists(previousPath)) {
 			fs.renameSync(previousPath, newPath);
@@ -208,7 +227,9 @@ export default class IllustrationService implements OnModuleInit {
 	 * extracts the track's illustration as a track-specific illustration, and return its path
 	 * @param track the track to extract the illustration from
 	 */
-	async extractTrackIllustration(track: Track, fullTrackPath: string): Promise<IllustrationPath | null> {
+	async extractTrackIllustration(
+		track: Track, fullTrackPath: string
+	): Promise<IllustrationPath | null> {
 		Logger.log(`Extracting illustration from track '${track.name}'`);
 		const release: Release = await this.releaseService.get({ byId: { id: track.releaseId } });
 		const album = await this.albumService.get(
@@ -236,10 +257,13 @@ export default class IllustrationService implements OnModuleInit {
 			Logger.warn("No illustration to extract");
 			return null;
 		}
-		const illustrationBytes = await (await Jimp.read(illustration.data)).getBufferAsync(Jimp.MIME_JPEG);
+		const illustrationBytes = await (await Jimp.read(illustration.data))
+			.getBufferAsync(Jimp.MIME_JPEG);
 
 		for (const path of [releaseIllustrationPath, trackIllustrationPath]) {
-			const illustrationExtractionStatus = await this.saveIllustrationWithStatus(illustrationBytes, path);
+			const illustrationExtractionStatus = await this.saveIllustrationWithStatus(
+				illustrationBytes, path
+			);
 
 			if (illustrationExtractionStatus === 'error') {
 				throw new IllustrationNotExtracted('Illustration extraction failed');
@@ -260,9 +284,13 @@ export default class IllustrationService implements OnModuleInit {
 		return null;
 	}
 
-	private async saveIllustrationWithStatus(illustrationBuffer: Buffer, outputPath: string): Promise<IllustrationExtractStatus> {
+	private async saveIllustrationWithStatus(
+		illustrationBuffer: Buffer, outputPath: string
+	): Promise<IllustrationExtractStatus> {
 		if (this.fileManagerService.fileExists(outputPath)) {
-			if (this.fileManagerService.getFileContent(outputPath) == illustrationBuffer.toString()) {
+			const fileContent = this.fileManagerService.getFileContent(outputPath);
+
+			if (fileContent == illustrationBuffer.toString()) {
 				return 'already-extracted';
 			}
 			return 'different-illustration';
@@ -280,19 +308,18 @@ export default class IllustrationService implements OnModuleInit {
 	 * @param filePath the full path to the source file to scrap
 	 */
 	private async extractIllustrationFromFile(filePath: string): Promise<IPicture | null> {
-		let rawMetadata: IAudioMetadata;
-
 		if (!this.fileManagerService.fileExists(filePath)) {
 			throw new FileDoesNotExistException(filePath);
 		}
 		try {
-			rawMetadata = await mm.parseFile(filePath, {
+			const rawMetadata: IAudioMetadata = await mm.parseFile(filePath, {
 				skipCovers: false,
 			});
+
+			return mm.selectCover(rawMetadata.common.picture);
 		} catch {
 			throw new FileParsingException(filePath);
 		}
-		return mm.selectCover(rawMetadata.common.picture);
 	}
 
 	/**
@@ -303,13 +330,17 @@ export default class IllustrationService implements OnModuleInit {
 		const track: Track = file.track!;
 		const libraryPath = this.fileManagerService.getLibraryFullPath(file.library);
 		const fullFilePath = `${libraryPath}/${file.path}`;
-		const trackIllustrationPath = await this.trackService.buildIllustrationPath({ id: track.id });
+		const trackIllustrationPath = await this.trackService.buildIllustrationPath(
+			{ id: track.id }
+		);
 
 		if (this.illustrationExists(trackIllustrationPath)) {
 			this.applyIllustration(trackIllustrationPath, fullFilePath);
 			return;
 		}
-		const releaseIllustrationPath = await this.releaseService.buildIllustrationPath({ byId: { id: track.releaseId } });
+		const releaseIllustrationPath = await this.releaseService.buildIllustrationPath(
+			{ byId: { id: track.releaseId } }
+		);
 
 		if (this.illustrationExists(trackIllustrationPath)) {
 			this.applyIllustration(releaseIllustrationPath, fullFilePath);
@@ -356,15 +387,15 @@ export default class IllustrationService implements OnModuleInit {
 		if (!this.fileManagerService.fileExists(videoPath)) {
 			throw new FileDoesNotExistException(videoPath);
 		}
-		fs.mkdir(path.dirname(outPath), { recursive: true }, () => {});
+		fs.mkdir(dir.dirname(outPath), { recursive: true }, () => {});
 		Ffmpeg(videoPath).thumbnail({
 			count: 1,
-			filename: path.basename(outPath),
-			folder: path.dirname(outPath)
+			filename: dir.basename(outPath),
+			folder: dir.dirname(outPath)
 		}).on('error', () => {
-			Logger.error(`Taking a screenshot of '${path.basename(videoPath)}' failed`);
+			Logger.error(`Taking a screenshot of '${dir.basename(videoPath)}' failed`);
 		}).on('end', () => {
-			Logger.log(`Taking a screenshot of '${path.basename(videoPath)}' succeded`);
+			Logger.log(`Taking a screenshot of '${dir.basename(videoPath)}' succeded`);
 		});
 	}
 
@@ -402,10 +433,13 @@ export default class IllustrationService implements OnModuleInit {
 	 * @param res the Response Object of the request
 	 * @returns a StreamableFile of the illustration
 	 */
-	async streamIllustration(sourceFilePath: string, as: string, dimensions: IllustrationDimensionsDto, res: any): Promise<StreamableFile> {
+	async streamIllustration(
+		sourceFilePath: string, as: string, dimensions: IllustrationDimensionsDto, res: any
+	): Promise<StreamableFile> {
 		if (this.fileManagerService.fileExists(sourceFilePath) == false) {
 			throw new NoIllustrationException("Illustration file not found");
 		}
+		// eslint-disable-next-line init-declarations
 		let illustration: fs.ReadStream | Readable;
 
 		res.set({
@@ -428,8 +462,7 @@ export default class IllustrationService implements OnModuleInit {
 					jimpImage = jimpImage.quality(dimensions.quality);
 				}
 				illustration = Readable.from(await jimpImage.getBufferAsync(Jimp.MIME_JPEG));
-			} catch (e) {
-				Logger.debug(e);
+			} catch (error) {
 				Logger.error(`Streaming of illustration ${sourceFilePath} failed.`);
 			}
 		} else {
@@ -454,7 +487,9 @@ export default class IllustrationService implements OnModuleInit {
 	 * If there is no illustration, it will return null
 	 */
 	async getReleaseIllustrationLink(releaseId: number): Promise<string | null> {
-		if (this.illustrationExists(await this.releaseService.buildIllustrationPath({ byId: { id: releaseId } }))) {
+		if (this.illustrationExists(
+			await this.releaseService.buildIllustrationPath({ byId: { id: releaseId } })
+		)) {
 			return `/illustrations/releases/${releaseId}`;
 		}
 		return null;
@@ -466,7 +501,9 @@ export default class IllustrationService implements OnModuleInit {
 	 */
 	async getAlbumIllustrationLink(albumId: number): Promise<string | null> {
 		try {
-			const masterRelease = await this.releaseService.getMasterRelease({ byId: { id: albumId } });
+			const masterRelease = await this.releaseService.getMasterRelease(
+				{ byId: { id: albumId } }
+			);
 
 			return this.getReleaseIllustrationLink(masterRelease.id);
 		} catch {
@@ -478,7 +515,7 @@ export default class IllustrationService implements OnModuleInit {
 	 * Builds the URL to the track's illustration.
 	 * If there is no illustration, it will return null
 	 */
-	 async getTrackIllustrationLink(trackId: number): Promise<string | null> {
+	async getTrackIllustrationLink(trackId: number): Promise<string | null> {
 		const path = await this.trackService.buildIllustrationPath({ id: trackId });
 
 		if (this.illustrationExists(path)) {
@@ -493,7 +530,7 @@ export default class IllustrationService implements OnModuleInit {
 	 * Builds the URL to the track's illustration.
 	 * If there is no illustration, it will return null
 	 */
-	 async getSongIllustrationLink(songId: number): Promise<string | null> {
+	async getSongIllustrationLink(songId: number): Promise<string | null> {
 		try {
 			const masterRelease = await this.trackService.getMasterTrack({ byId: { id: songId } });
 

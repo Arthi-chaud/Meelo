@@ -31,7 +31,7 @@ namespace SongQueryParameters {
 	/**
 	 * Query paraeters to find a song to update
 	 */
-	 export type UpdateWhereInput = RequireExactlyOne<{
+	export type UpdateWhereInput = RequireExactlyOne<{
 		byId: { id: number },
 		bySlug: { slug: Slug, artistId: number }
 	}>;

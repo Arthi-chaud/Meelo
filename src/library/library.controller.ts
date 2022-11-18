@@ -75,9 +75,13 @@ export default class LibraryController {
 		@SortingQuery(LibraryQueryParameters.SortingKeys)
 		sortingParameter: LibraryQueryParameters.SortingParameter,
 		@Req() request: Request
-	): Promise<PaginatedResponse<Object>> {
-		return new PaginatedResponse(
-			await this.libraryService.getMany({}, paginationParameters, {}, sortingParameter),
+	): Promise<PaginatedResponse<Library>> {
+		const libraries = await this.libraryService.getMany(
+			{}, paginationParameters, {}, sortingParameter
+		);
+
+		return PaginatedResponse.awaiting(
+			libraries.map((library) => this.libraryService.buildResponse(library)),
 			request
 		);
 	}
@@ -108,7 +112,7 @@ export default class LibraryController {
 		@SortingQuery(ArtistQueryParameters.SortingKeys)
 		sortingParameter: ArtistQueryParameters.SortingParameter,
 		@Req() request: Request
-	): Promise<PaginatedResponse<Object>> {
+	) {
 		const artists = await this.artistService.getAlbumsArtists(
 			{ byLibrarySource: where }, paginationParameters, include, sortingParameter
 		);
@@ -138,9 +142,12 @@ export default class LibraryController {
 		sortingParameter: AlbumQueryParameters.SortingParameter,
 		@Query() filter: AlbumQueryParameters.AlbumFilterParameter,
 		@Req() request: Request
-	): Promise<PaginatedResponse<Object>> {
+	) {
 		const albums = await this.albumService.getMany(
-			{ byLibrarySource: where, byType: filter.type }, paginationParameters, include, sortingParameter
+			{ byLibrarySource: where, byType: filter.type },
+			paginationParameters,
+			include,
+			sortingParameter
 		);
 
 		if (albums.length == 0) {
@@ -167,7 +174,7 @@ export default class LibraryController {
 		@SortingQuery(ReleaseQueryParameters.SortingKeys)
 		sortingParameter: ReleaseQueryParameters.SortingParameter,
 		@Req() request: Request
-	): Promise<PaginatedResponse<Object>> {
+	) {
 		const releases = await this.releaseService.getMany(
 			{ library: where }, paginationParameters, include, sortingParameter
 		);
@@ -196,7 +203,7 @@ export default class LibraryController {
 		@SortingQuery(SongQueryParameters.SortingKeys)
 		sortingParameter: SongQueryParameters.SortingParameter,
 		@Req() request: Request
-	): Promise<PaginatedResponse<Object>> {
+	) {
 		const songs = await this.songService.getMany(
 			{ library: where }, paginationParameters, include, sortingParameter
 		);
@@ -225,7 +232,7 @@ export default class LibraryController {
 		@SortingQuery(TrackQueryParameters.SortingKeys)
 		sortingParameter: TrackQueryParameters.SortingParameter,
 		@Req() request: Request
-	): Promise<PaginatedResponse<Object>> {
+	) {
 		const tracks = await this.trackService.getMany(
 			{ byLibrarySource: where }, paginationParameters, include, sortingParameter
 		);

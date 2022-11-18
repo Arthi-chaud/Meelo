@@ -52,7 +52,9 @@ export default class GenreService extends RepositoryService<
 		};
 	}
 
-	protected formatCreateInputToWhereInput(input: GenreQueryParameters.CreateInput): GenreQueryParameters.WhereInput {
+	protected formatCreateInputToWhereInput(
+		input: GenreQueryParameters.CreateInput
+	): GenreQueryParameters.WhereInput {
 		return { slug: new Slug(input.name) };
 	}
 

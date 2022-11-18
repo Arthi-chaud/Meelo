@@ -260,7 +260,7 @@ export class SongController {
 		const song = await this.songService.get(where);
 
 		try {
-			return this.lyricsService.update(
+			return await this.lyricsService.update(
 				{ content: updateLyricsDto.lyrics },
 				{ song: where }
 			);

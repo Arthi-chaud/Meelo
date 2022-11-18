@@ -58,7 +58,7 @@ namespace ReleaseQueryParameters {
 	/**
 	 * Query parameters to delete one release
 	 */
-	 export type DeleteInput = Required<Pick<WhereInput, 'byId'>>;
+	export type DeleteInput = Required<Pick<WhereInput, 'byId'>>;
 
 	/**
 	 * Defines what relations to include in query

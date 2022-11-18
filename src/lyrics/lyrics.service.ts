@@ -9,13 +9,17 @@ import Slug from 'src/slug/slug';
 import type SongQueryParameters from 'src/song/models/song.query-params';
 import SongService from 'src/song/song.service';
 import {
-	LyricsAlreadyExistsExceptions, LyricsNotFoundByIDException, LyricsNotFoundBySongException, MissingGeniusAPIKeyException, NoLyricsFoundException
+	LyricsAlreadyExistsExceptions,
+	LyricsNotFoundByIDException,
+	LyricsNotFoundBySongException,
+	MissingGeniusAPIKeyException,
+	NoLyricsFoundException
 } from './lyrics.exceptions';
 import type LyricsQueryParameters from './models/lyrics.query-parameters';
 import { Prisma } from '@prisma/client';
 import { LyricsResponse } from './models/lyrics.response';
 import SortingParameter from 'src/sort/models/sorting-parameter';
-
+// eslint-disable-next-line @typescript-eslint/no-var-requires
 const { getLyrics } = require('genius-lyrics-api');
 
 @Injectable()
@@ -141,7 +145,9 @@ export class LyricsService extends RepositoryService<
 		};
 	}
 
-	protected formatDeleteInputToWhereInput(input: LyricsQueryParameters.DeleteInput): LyricsQueryParameters.WhereInput {
+	protected formatDeleteInputToWhereInput(
+		input: LyricsQueryParameters.DeleteInput
+	): LyricsQueryParameters.WhereInput {
 		if (input.id) {
 			return { id: input.id };
 		}
@@ -195,7 +201,9 @@ export class LyricsService extends RepositoryService<
 	 * @param options if 'force' is true, will refetch the lyrics even if they already exists
 	 * @returns an empty promise
 	 */
-	async registerLyrics(songWhere: SongQueryParameters.WhereInput, options: { force: boolean }): Promise<void> {
+	async registerLyrics(
+		songWhere: SongQueryParameters.WhereInput, options: { force: boolean }
+	): Promise<void> {
 		const song = await this.songService.get(songWhere, { artist: true, lyrics: true });
 
 		if (options.force == false && song.lyrics !== null) {

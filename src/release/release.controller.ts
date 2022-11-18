@@ -1,5 +1,6 @@
 import {
-	Body, Controller, DefaultValuePipe, Get, Inject, ParseBoolPipe, Post, Put, Query, Req, forwardRef
+	Body, Controller, DefaultValuePipe, Get, Inject,
+	ParseBoolPipe, Post, Put, Query, Req, forwardRef
 } from '@nestjs/common';
 import { PaginationParameters } from 'src/pagination/models/pagination-parameters';
 import ReleaseQueryParameters from './models/release.query-parameters';
@@ -184,7 +185,9 @@ export default class ReleaseController {
 			releaseId: release.id,
 			album: { byId: { id: release.albumId } }
 		});
-		const updatedReleases = await this.releaseService.getMasterRelease({ byId: { id: release.albumId } });
+		const updatedReleases = await this.releaseService.getMasterRelease({
+			byId: { id: release.albumId }
+		});
 
 		return this.releaseService.buildResponse(updatedReleases);
 	}

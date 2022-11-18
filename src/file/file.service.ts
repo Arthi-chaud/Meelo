@@ -3,7 +3,11 @@ import {
 } from '@nestjs/common';
 import FileManagerService from 'src/file-manager/file-manager.service';
 import {
-	FileAlreadyExistsException, FileNotFoundFromIDException, FileNotFoundFromPathException, FileNotFoundFromTrackIDException, SourceFileNotFoundExceptions
+	FileAlreadyExistsException,
+	FileNotFoundFromIDException,
+	FileNotFoundFromPathException,
+	FileNotFoundFromTrackIDException,
+	SourceFileNotFoundExceptions
 } from './file.exceptions';
 import PrismaService from 'src/prisma/prisma.service';
 import type {
@@ -61,7 +65,9 @@ export default class FileService extends RepositoryService<
 		};
 	}
 
-	protected formatCreateInputToWhereInput(input: FileQueryParameters.CreateInput): FileQueryParameters.WhereInput {
+	protected formatCreateInputToWhereInput(
+		input: FileQueryParameters.CreateInput
+	): FileQueryParameters.WhereInput {
 		return { byPath: { path: input.path, library: { id: input.libraryId } } };
 	}
 
@@ -202,6 +208,7 @@ export default class FileService extends RepositoryService<
 		let requestedEndByte: number | undefined = undefined;
 
 		if (rangeHeader) {
+			// eslint-disable-next-line no-useless-escape
 			const bytes = /^bytes\=(\d+)\-(\d+)?$/g.exec(rangeHeader);
 
 			if (bytes) {
@@ -215,6 +222,8 @@ export default class FileService extends RepositoryService<
 			}
 		}
 
-		return new StreamableFile(fs.createReadStream(fullFilePath, { start: requestedStartByte, end: requestedEndByte }));
+		return new StreamableFile(
+			fs.createReadStream(fullFilePath, { start: requestedStartByte, end: requestedEndByte })
+		);
 	}
 }

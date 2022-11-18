@@ -3,7 +3,10 @@ import {
 } from '@nestjs/common';
 import Slug from 'src/slug/slug';
 import {
-	ArtistAlreadyExistsException as ArtistAlreadyExistsException, ArtistNotFoundByIDException, ArtistNotFoundException, CompilationArtistException
+	ArtistAlreadyExistsException,
+	ArtistNotFoundByIDException,
+	ArtistNotFoundException,
+	CompilationArtistException
 } from './artist.exceptions';
 import { Prisma } from '@prisma/client';
 import PrismaService from 'src/prisma/prisma.service';
@@ -104,7 +107,8 @@ export default class ArtistService extends RepositoryService<
 			albums: where.byLibrarySource ? {
 				some: {
 					releases: {
-						some: ReleaseService.formatManyWhereInput({ library: where.byLibrarySource })
+						some: ReleaseService
+							.formatManyWhereInput({ library: where.byLibrarySource })
 					}
 				}
 			} : undefined,
@@ -114,7 +118,8 @@ export default class ArtistService extends RepositoryService<
 						some: GenreService.formatWhereInput(where.byGenre)
 					} : undefined,
 					tracks: where.byLibrarySource ? {
-						some: TrackService.formatManyWhereInput({ byLibrarySource: where.byLibrarySource })
+						some: TrackService
+							.formatManyWhereInput({ byLibrarySource: where.byLibrarySource })
 					} : undefined
 				}
 			} : undefined
@@ -206,12 +211,13 @@ export default class ArtistService extends RepositoryService<
 		}
 		Logger.warn(`Artist '${artist.slug}' deleted`);
 		try {
-			const artistIllustrationFolder = this.illustrationService.buildArtistIllustrationFolderPath(
-				new Slug(artist.slug)
-			);
+			const artistIllustrationFolder = this.illustrationService
+				.buildArtistIllustrationFolderPath(new Slug(artist.slug));
 
 			this.illustrationService.deleteIllustrationFolder(artistIllustrationFolder);
-		} catch {}
+		} catch {
+			return artist;
+		}
 		return artist;
 	}
 
@@ -233,7 +239,9 @@ export default class ArtistService extends RepositoryService<
 	 * @param where the query parameters to find the artist
 	 * @returns the path of the illustration
 	 */
-	 async buildIllustrationPath(where: ArtistQueryParameters.WhereInput): Promise<IllustrationPath> {
+	async buildIllustrationPath(
+		where: ArtistQueryParameters.WhereInput
+	): Promise<IllustrationPath> {
 		const artist = await this.select(where, { slug: true });
 		const path = this.illustrationService.buildArtistIllustrationPath(new Slug(artist.slug));
 

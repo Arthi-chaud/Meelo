@@ -32,7 +32,7 @@ export class IllustrationController {
 	) {}
 
 	@ApiOperation({
-		summary: "Get an artist\'s illustration"
+		summary: "Get an artist's illustration"
 	})
 	@Get('artists/:idOrSlug')
 	async getArtistIllustration(
@@ -122,7 +122,9 @@ export class IllustrationController {
 		const release = await this.releaseService.get(where, { album: true });
 
 		if (this.illustrationService.illustrationExists(path) == false) {
-			throw new NoReleaseIllustrationException(new Slug(release.album.slug), new Slug(release.slug));
+			throw new NoReleaseIllustrationException(
+				new Slug(release.album.slug), new Slug(release.slug)
+			);
 		}
 		return this.illustrationService.streamIllustration(
 			path, release.slug, dimensions, res
@@ -160,7 +162,9 @@ export class IllustrationController {
 		res: Response,
 	) {
 		const track = await this.trackService.get({ id: trackId }, { song: true });
-		const trackIllustrationPath = await this.trackService.buildIllustrationPath({ id: trackId });
+		const trackIllustrationPath = await this.trackService.buildIllustrationPath(
+			{ id: trackId }
+		);
 
 		if (this.illustrationService.illustrationExists(trackIllustrationPath)) {
 			return this.illustrationService.streamIllustration(
@@ -183,7 +187,9 @@ export class IllustrationController {
 		@Body()
 		illustrationDto: IllustrationDownloadDto
 	) {
-		const trackIllustrationPath = await this.trackService.buildIllustrationPath({ id: trackId });
+		const trackIllustrationPath = await this.trackService.buildIllustrationPath(
+			{ id: trackId }
+		);
 
 		return this.illustrationService.downloadIllustration(
 			illustrationDto.url,
@@ -199,7 +205,9 @@ export class IllustrationController {
 		@Param('id', ParseIdPipe)
 		trackId: number,
 	) {
-		const trackIllustrationPath = await this.trackService.buildIllustrationPath({ id: trackId });
+		const trackIllustrationPath = await this.trackService.buildIllustrationPath(
+			{ id: trackId }
+		);
 
 		this.illustrationService.deleteIllustrationSafe(trackIllustrationPath);
 	}

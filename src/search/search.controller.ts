@@ -77,7 +77,9 @@ export default class SearchController {
 		sortingParameter: ArtistQueryParameters.SortingParameter,
 		@Req() request: Request
 	) {
-		const artists = await this.searchService.searchArtists(query, paginationParameters, include, sortingParameter);
+		const artists = await this.searchService.searchArtists(
+			query, paginationParameters, include, sortingParameter
+		);
 
 		return PaginatedResponse.awaiting(
 			artists.map((artist) => this.artistService.buildResponse(artist)),
@@ -102,7 +104,9 @@ export default class SearchController {
 		@Query() filter: AlbumQueryParameters.AlbumFilterParameter,
 		@Req() request: Request
 	) {
-		const albums = await this.searchService.searchAlbums(query, filter.type, paginationParameters, include, sortingParameter);
+		const albums = await this.searchService.searchAlbums(
+			query, filter.type, paginationParameters, include, sortingParameter
+		);
 
 		return PaginatedResponse.awaiting(
 			albums.map((album) => this.albumService.buildResponse(album)),
@@ -126,7 +130,9 @@ export default class SearchController {
 		sortingParameter: SongQueryParameters.SortingParameter,
 		@Req() request: Request
 	) {
-		const songs = await this.searchService.searchSongs(query, paginationParameters, include, sortingParameter);
+		const songs = await this.searchService.searchSongs(
+			query, paginationParameters, include, sortingParameter
+		);
 
 		return PaginatedResponse.awaiting(
 			songs.map((song) => this.songService.buildResponse(song)),
@@ -150,7 +156,9 @@ export default class SearchController {
 		sortingParameter: ReleaseQueryParameters.SortingParameter,
 		@Req() request: Request
 	) {
-		const releases = await this.searchService.searchReleases(query, paginationParameters, include, sortingParameter);
+		const releases = await this.searchService.searchReleases(
+			query, paginationParameters, include, sortingParameter
+		);
 
 		return PaginatedResponse.awaiting(
 			releases.map((release) => this.releaseService.buildResponse(release)),
@@ -174,7 +182,9 @@ export default class SearchController {
 		sortingParameter: GenreQueryParameters.SortingParameter,
 		@Req() request: Request
 	) {
-		const genres = await this.searchService.searchGenres(query, paginationParameters, include, sortingParameter);
+		const genres = await this.searchService.searchGenres(
+			query, paginationParameters, include, sortingParameter
+		);
 
 		return PaginatedResponse.awaiting(
 			genres.map((genre) => this.genreService.buildResponse(genre)),

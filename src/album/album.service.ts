@@ -4,7 +4,10 @@ import {
 import ArtistService from 'src/artist/artist.service';
 import Slug from 'src/slug/slug';
 import {
-	AlbumAlreadyExistsException, AlbumAlreadyExistsExceptionWithArtistID as AlbumAlreadyExistsWithArtistIDException, AlbumNotFoundException, AlbumNotFoundFromIDException
+	AlbumAlreadyExistsException,
+	AlbumAlreadyExistsExceptionWithArtistID as AlbumAlreadyExistsWithArtistIDException,
+	AlbumNotFoundException,
+	AlbumNotFoundFromIDException
 } from './album.exceptions';
 import { AlbumType, Prisma } from '@prisma/client';
 import PrismaService from 'src/prisma/prisma.service';
@@ -60,7 +63,9 @@ export default class AlbumService extends RepositoryService<
 		include?: I
 	) {
 		if (album.artist === undefined) {
-			if (await this.count({ byName: { is: album.name }, byArtist: { compilationArtist: true } }) != 0) {
+			if (await this.count(
+				{ byName: { is: album.name }, byArtist: { compilationArtist: true } }
+			) != 0) {
 				throw new AlbumAlreadyExistsException(new Slug(album.name));
 			}
 		}
@@ -190,11 +195,11 @@ export default class AlbumService extends RepositoryService<
 	 * Updates an album master, using the earliest date from its releases
 	 * @param where the query parameter to get the album to update
 	 */
-	 async updateAlbumMaster(where: AlbumQueryParameters.WhereInput): Promise<Release | null> {
+	async updateAlbumMaster(where: AlbumQueryParameters.WhereInput): Promise<Release | null> {
 		const releases = await this.releaseService.getAlbumReleases(where);
 		const sortedReleases = releases
-			.filter((releases) => releases.releaseDate !== null)
-			.sort((releaseA, releaseB) => releaseA.releaseDate!.getTime() - releaseB.releaseDate!.getTime());
+			.filter((release) => release.releaseDate !== null)
+			.sort((r1, r2) => r1.releaseDate!.getTime() - r2.releaseDate!.getTime());
 
 		if (sortedReleases.length !== 0) {
 			const newMaster = sortedReleases.at(0)!;
@@ -202,7 +207,9 @@ export default class AlbumService extends RepositoryService<
 			await this.releaseService.setReleaseAsMaster({ releaseId: newMaster.id, album: where });
 			return { ...newMaster, master: true };
 		} else if (releases.length !== 0) {
-			await this.releaseService.setReleaseAsMaster({ releaseId: releases[0].id, album: where });
+			await this.releaseService.setReleaseAsMaster(
+				{ releaseId: releases[0].id, album: where }
+			);
 			return { ...releases[0], master: true };
 		}
 		return null;
@@ -230,12 +237,15 @@ export default class AlbumService extends RepositoryService<
 			await this.artistServce.deleteArtistIfEmpty({ id: album.artistId });
 		}
 		try {
-			const albumIllustrationFolder = this.illustrationService.buildAlbumIllustrationFolderPath(
-				new Slug(album.slug), album.artist ? new Slug(album.artist.slug) : undefined
-			);
+			const albumIllustrationFolder = this.illustrationService
+				.buildAlbumIllustrationFolderPath(
+					new Slug(album.slug), album.artist ? new Slug(album.artist.slug) : undefined
+				);
 
 			this.illustrationService.deleteIllustrationFolder(albumIllustrationFolder);
-		} catch {}
+		} catch {
+			return album;
+		}
 		return album;
 	}
 
@@ -285,7 +295,9 @@ export default class AlbumService extends RepositoryService<
 		}
 		const updatedAlbum = await this.update({ artistId: newArtist?.id ?? null }, albumWhere);
 
-		this.illustrationService.reassignAlbumIllustrationFolder(albumSlug, previousArtistSlug, newArtistSlug);
+		this.illustrationService.reassignAlbumIllustrationFolder(
+			albumSlug, previousArtistSlug, newArtistSlug
+		);
 		if (album.artistId) {
 			await this.artistServce.deleteArtistIfEmpty({ id: album.artistId });
 		}
@@ -300,18 +312,22 @@ export default class AlbumService extends RepositoryService<
 		where: AlbumQueryParameters.WhereInput
 	) : Promise<Genre[]> {
 		const releases = await this.releaseService.getAlbumReleases(where, {}, { tracks: true });
-		const songsId = Array.from(new Set(releases.map((release) => release.tracks.map((track) => track.songId)).flat()));
+		const songsId = Array.from(new Set(
+			releases.map((release) => release.tracks.map((track) => track.songId)).flat()
+		));
 		const genres: Genre[] = (await Promise.all(
 			songsId.map((songId) => this.genreService.getSongGenres({ byId: { id: songId } }))
 		)).flat();
 		const genresOccurrences = genres.reduce(
-			(occurences, genre) => occurences.set(genre.slug, (occurences.get(genre.slug) || 0) + 1),
+			(map, genre) => map.set(genre.slug, (map.get(genre.slug) || 0) + 1),
 			new Map<string, number>()
 		);
 
 		return Array.from(genresOccurrences.entries()).sort(
 			(genreA, genreB) => genreB[1] - genreA[1]
-		).map((genresSlugOccurrence) => genres.find((genre) => genresSlugOccurrence[0] == genre.slug)!);
+		).map(
+			(genresSlugOccurrence) => genres.find((genre) => genresSlugOccurrence[0] == genre.slug)!
+		);
 	}
 
 	/**
