@@ -20,7 +20,7 @@
 		"import/newline-after-import": "error",
 		"import/no-duplicates": "error",
 		"@typescript-eslint/switch-exhaustiveness-check": "error",
-		"@typescript-eslint/no-namespace": 0,
+		"@typescript-eslint/no-namespace": "off",
 		"no-duplicate-imports": "error",
 		"id-length": "error",
 		"init-declarations": "error",
@@ -83,6 +83,7 @@
 		"array-element-newline": ["error", { "multiline": true, "minItems": 3 }],
 		"array-bracket-newline": ["error", { "multiline": true }],
 		"no-shadow": "error",
-		"no-multi-spaces": "warn"
+		"no-multi-spaces": "warn",
+		"semi": "warn"
 	}
 }
