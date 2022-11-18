@@ -21,6 +21,8 @@
 		"import/no-duplicates": "error",
 		"@typescript-eslint/switch-exhaustiveness-check": "error",
 		"@typescript-eslint/no-namespace": "off",
+		"@typescript-eslint/no-explicit-any": "off",
+		"@typescript-eslint/no-unused-vars": "off",
 		"no-duplicate-imports": "error",
 		"id-length": "error",
 		"init-declarations": "error",
