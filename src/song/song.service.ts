@@ -59,7 +59,9 @@ export default class SongService extends RepositoryService<
 	/**
 	 * Create
 	 */
-	async create<I extends SongQueryParameters.RelationInclude>(input: SongQueryParameters.CreateInput, include?: I) {
+	async create<I extends SongQueryParameters.RelationInclude>(
+		input: SongQueryParameters.CreateInput, include?: I
+	) {
 		await Promise.all(input.genres.map(
 			(genre) => this.genreService.throwIfNotFound(genre)
 		));
@@ -80,7 +82,9 @@ export default class SongService extends RepositoryService<
 		};
 	}
 
-	protected formatCreateInputToWhereInput(input: SongQueryParameters.CreateInput): SongQueryParameters.WhereInput {
+	protected formatCreateInputToWhereInput(
+		input: SongQueryParameters.CreateInput
+	): SongQueryParameters.WhereInput {
 		return {
 			bySlug: { slug: new Slug(input.name), artist: input.artist },
 		};
@@ -188,14 +192,16 @@ export default class SongService extends RepositoryService<
 	) {
 		if (what.genres) {
 			await Promise.all(
-				what.genres.map(async (where) => await this.genreService.get(where))
+				what.genres.map((genreWhere) => this.genreService.get(genreWhere))
 			);
 		}
 		if (where.bySlug) {
-			const artistId = (await this.artistService.select(where.bySlug.artist, { id: true })).id;
+			const artistId = (await this.artistService.select(
+				where.bySlug.artist, { id: true }
+			)).id;
 
 			try {
-				return this.prismaService.song.update({
+				return await this.prismaService.song.update({
 					data: this.formatUpdateInput(what),
 					where: { slug_artistId: {
 						slug: where.bySlug!.slug.toString(),
@@ -220,7 +226,12 @@ export default class SongService extends RepositoryService<
 		const currentMaster = tracks.find((track) => track.master);
 		const sortedTracks = tracks
 			.filter((track) => track.release.releaseDate !== null)
-			.sort((trackA, trackB) => trackA.release.releaseDate!.getTime() - trackB.release.releaseDate!.getTime());
+			.sort((trackA, trackB) => {
+				const releaseA = trackA.release;
+				const releaseB = trackB.release;
+
+				return releaseA.releaseDate!.getTime() - releaseB.releaseDate!.getTime();
+			});
 		const sortedAudioTracks = sortedTracks.filter((track) => track.type == 'Audio');
 		const newMaster = sortedAudioTracks.at(0) ?? sortedTracks.at(0) ?? tracks.at(0);
 
@@ -239,7 +250,7 @@ export default class SongService extends RepositoryService<
 	 * @param where the query parameter to find the song to update
 	 * @returns the updated song
 	 */
-	 async incrementPlayCount(
+	async incrementPlayCount(
 		where: SongQueryParameters.WhereInput
 	): Promise<void> {
 		const song = await this.get(where);
@@ -257,7 +268,9 @@ export default class SongService extends RepositoryService<
 		return where;
 	}
 
-	protected formatDeleteInputToWhereInput(input: SongQueryParameters.DeleteInput): SongQueryParameters.WhereInput {
+	protected formatDeleteInputToWhereInput(
+		input: SongQueryParameters.DeleteInput
+	): SongQueryParameters.WhereInput {
 		return { byId: { id: input.id } };
 	}
 
@@ -292,7 +305,9 @@ export default class SongService extends RepositoryService<
 	 * Deletes a song if it does not have related tracks
 	 */
 	async deleteIfEmpty(where: SongQueryParameters.DeleteInput): Promise<void> {
-		const trackCount = await this.trackService.count({ bySong: this.formatDeleteInputToWhereInput(where) });
+		const trackCount = await this.trackService.count(
+			{ bySong: this.formatDeleteInputToWhereInput(where) }
+		);
 
 		if (trackCount == 0) {
 			await this.delete(where);

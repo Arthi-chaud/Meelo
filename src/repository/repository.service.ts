@@ -109,10 +109,10 @@ abstract class RepositoryService<
 	 */
 	async create<I extends ModelSelector<Relations>>(input: CreateInput, include?: I) {
 		try {
-			return this.repository.create({
+			return await this.repository.create({
 				data: this.formatCreateInput(input),
 				include: RepositoryService.formatInclude(include)
-			}) as Promise<BaseModel & Select<Relations, I>>;
+			}) as BaseModel & Select<Relations, I>;
 		} catch {
 			throw await this.onCreationFailure(input);
 		}
@@ -144,10 +144,10 @@ abstract class RepositoryService<
 	async get<I extends ModelSelector<Relations>>(where: WhereInput, include?: I) {
 		this.checkWhereInputIntegrity(where);
 		try {
-			return this.repository.findFirstOrThrow({
+			return await this.repository.findFirstOrThrow({
 				where: this.formatWhereInput(where),
 				include: RepositoryService.formatInclude(include)
-			}) as Promise<BaseModel & Select<Relations, I>>;
+			}) as BaseModel & Select<Relations, I>;
 		} catch {
 			throw await this.onNotFound(where);
 		}
@@ -182,7 +182,7 @@ abstract class RepositoryService<
 	): Promise<Select<BaseModel, S>> {
 		this.checkWhereInputIntegrity(where);
 		try {
-			return this.repository.findFirstOrThrow({
+			return await this.repository.findFirstOrThrow({
 				where: this.formatWhereInput(where),
 				select: { ...select, id: true }
 			});
@@ -246,7 +246,7 @@ abstract class RepositoryService<
 	async update(what: UpdateInput, where: WhereInput): Promise<BaseModel> {
 		this.checkWhereInputIntegrity(where);
 		try {
-			return this.repository.update({
+			return await this.repository.update({
 				data: this.formatUpdateInput(what),
 				where: this.formatWhereInput(where)
 			});
@@ -274,7 +274,7 @@ abstract class RepositoryService<
 	 */
 	async delete(where: DeleteInput): Promise<BaseModel> {
 		try {
-			return this.repository.delete({
+			return await this.repository.delete({
 				where: this.formatDeleteInput(where)
 			});
 		} catch {
@@ -306,7 +306,7 @@ abstract class RepositoryService<
 	 */
 	async getOrCreate<I extends ModelSelector<Relations>>(input: CreateInput, include?: I) {
 		try {
-			return this.get(this.formatCreateInputToWhereInput(input), include);
+			return await this.get(this.formatCreateInputToWhereInput(input), include);
 		} catch {
 			return this.create(input, include);
 		}

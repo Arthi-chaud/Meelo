@@ -171,7 +171,9 @@ export class SongController {
 		sortingParameter: SongQueryParameters.SortingParameter,
 		@Req() request: Request
 	) {
-		const versions = await this.songService.getSongVersions(where, paginationParameters, include, sortingParameter);
+		const versions = await this.songService.getSongVersions(
+			where, paginationParameters, include, sortingParameter
+		);
 
 		return PaginatedResponse.awaiting(
 			versions.map((song) => this.songService.buildResponse(song)),
@@ -196,7 +198,10 @@ export class SongController {
 		@Req() request: Request
 	) {
 		const videoTracks = await this.trackService.getMany(
-			{ bySong: where, type: TrackType.Video }, paginationParameters, include, sortingParameter,
+			{ bySong: where, type: TrackType.Video },
+			paginationParameters,
+			include,
+			sortingParameter,
 		);
 
 		if (videoTracks.length == 0) {

@@ -74,9 +74,9 @@ export default class TasksService {
 
 			this.lyricsService.registerLyrics(
 				{ byId: { id: track.songId } }, { force: false }
-			).catch(null);
+			).catch(() => {});
 			this.illustrationService.extractTrackIllustration(track, fullFilePath)
-				.catch(null)
+				.catch(() => {})
 				.then(async () => {
 					if (track.type == 'Video') {
 						const illustrationPath = await this.trackService.buildIllustrationPath(

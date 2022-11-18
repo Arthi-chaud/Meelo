@@ -103,7 +103,7 @@ export class LyricsService extends RepositoryService<
 			songId = (await this.songService.select(where.song, { id: true })).id;
 		}
 		try {
-			return this.prismaService.lyrics.update({
+			return await this.prismaService.lyrics.update({
 				data: this.formatUpdateInput(what),
 				where: this.formatDeleteInput({ songId: songId! })
 			});
