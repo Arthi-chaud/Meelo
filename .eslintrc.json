@@ -84,6 +84,7 @@
 		"array-bracket-newline": ["error", { "multiline": true }],
 		"no-shadow": "error",
 		"no-multi-spaces": "warn",
-		"semi": "warn"
+		"semi": "warn",
+		"function-paren-newline": ["error", { "minItems": 4 }]
 	}
 }
