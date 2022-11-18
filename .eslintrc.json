@@ -11,19 +11,24 @@
 		]
 	},
 	"plugins": [
-		"@typescript-eslint"
+		"@typescript-eslint",
+		"import"
 	],
-	"ignorePatterns": ["front/", "node_modules/", "test/"],
+	"ignorePatterns": ["front/", "node_modules/", "test/", "src/**/*.spec.ts"],
 	"rules": {
+		"import/first": "error",
+		"import/newline-after-import": "error",
+		"import/no-duplicates": "error",
 		"@typescript-eslint/switch-exhaustiveness-check": "error",
+		"@typescript-eslint/no-namespace": 0,
 		"no-duplicate-imports": "error",
 		"id-length": "error",
 		"init-declarations": "error",
 		"no-else-return": "error",
 		"curly": ["error", "all"],
-		"one-var": "error",
+		"one-var": ["error", "never"],
 		"brace-style": ["error", "1tbs"],
-		"sort-imports": "warn",
+		"sort-imports": ["warn", { "ignoreDeclarationSort": true }],
 		"vars-on-top": "warn",
 		"default-case-last": "warn",
 		"linebreak-style": ["error", "unix"],
@@ -34,7 +39,14 @@
 		"consistent-this": "error",
 		"no-console": "error",
 		"no-eval": "error",
-		"indent": ["error", "tab"],
+		"indent": ["error", "tab", {
+            "MemberExpression": 1,
+            "ignoredNodes": [
+                "FunctionExpression > .params[decorators.length > 0]",
+                "FunctionExpression > .params > :matches(Decorator, :not(:first-child))",
+                "ClassBody.body > PropertyDefinition[decorators.length > 0] > .key"
+            ]
+        }],
 		"no-extra-parens": "warn",
 		"no-multiple-empty-lines": ["warn", { "max": 1 }],
 		"no-trailing-spaces": "error",
@@ -43,7 +55,8 @@
 		"padding-line-between-statements": [
 			"error",
 			{ "blankLine": "always", "prev": ["const", "let", "var"], "next": "*"},
-			{ "blankLine": "any",    "prev": ["const", "let", "var"], "next": ["const", "let", "var"]}
+			{ "blankLine": "any",    "prev": ["const", "let", "var"], "next": ["const", "let", "var"]},
+			{ "blankLine": "never",  "prev": "import", "next": "import"}
 		],
 		"array-bracket-spacing": ["warn", "never"],
 		"arrow-spacing": ["warn", { "before": true, "after": true }],
@@ -53,15 +66,23 @@
 		"eol-last": ["error", "always"],
 		"func-call-spacing": ["warn", "never"],
 		"function-call-argument-newline": ["warn", "consistent"],
-		"max-len": ["error", { "code": 80 }],
+		"max-len": ["error", { "code": 80, "ignorePattern": "(^import)|(\\sexport\\s)|(\\|)", "ignoreTemplateLiterals": true }],
 		"quote-props": ["error", "consistent-as-needed"],
 		"key-spacing": ["error", { "beforeColon": false, "afterColon": true, "mode": "strict" }],
 		"semi-spacing": ["error", {"before": false, "after": true}],
 		"space-before-function-paren": ["error", { "asyncArrow": "always", "named": "never", "anonymous": "always" }],
 		"space-in-parens": ["warn", "never"],
-		"lines-between-class-members": ["warn", "always"],
+		"lines-between-class-members": ["warn", "always", { "exceptAfterSingleLine": true }],
 		"multiline-ternary": ["error", "never"],
 		"no-nested-ternary": ["error"],
-		"no-unneeded-ternary": ["error"]
+		"no-unneeded-ternary": ["error"],
+		"object-curly-newline": ["error", {
+			"ImportDeclaration": { "multiline": true, "minProperties": 3 }
+		}],
+		"object-curly-spacing": ["error", "always"],
+		"array-element-newline": ["error", { "multiline": true, "minItems": 3 }],
+		"array-bracket-newline": ["error", "consistent"],
+		"no-shadow": "error",
+		"no-multi-spaces": "warn"
 	}
 }
