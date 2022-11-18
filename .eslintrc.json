@@ -81,7 +81,7 @@
 		}],
 		"object-curly-spacing": ["error", "always"],
 		"array-element-newline": ["error", { "multiline": true, "minItems": 3 }],
-		"array-bracket-newline": ["error", "consistent"],
+		"array-bracket-newline": ["error", { "multiline": true }],
 		"no-shadow": "error",
 		"no-multi-spaces": "warn"
 	}
