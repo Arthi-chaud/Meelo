@@ -28,6 +28,8 @@ function MyApp({ Component, pageProps }: AppProps) {
 			<Head>
 				<title>{DefaultWindowTitle}</title>
 				<meta name="viewport" content="initial-scale=1.0, width=device-width" />
+				<link rel="shortcut icon" href="/favicon.ico"/>
+				<link rel="apple-touch-icon" href="/favicon.ico"/>
 			</Head>
 			<QueryClientProvider client={queryClient}>
 				<MeeloAppBar/>

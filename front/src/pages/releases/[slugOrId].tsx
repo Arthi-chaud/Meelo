@@ -1,6 +1,6 @@
 import {
 	Button, Divider, Grid, IconButton, List, ListItem,
-	ListItemButton, ListItemIcon, ListItemText, ListSubheader, Typography, useTheme
+	ListSubheader, Typography, useTheme
 } from "@mui/material";
 import { Box } from "@mui/system";
 import { GetServerSidePropsContext, InferGetServerSidePropsType } from "next";
@@ -18,20 +18,18 @@ import PlayCircleIcon from '@mui/icons-material/PlayCircle';
 import { Shuffle } from "@mui/icons-material";
 import FadeIn from "react-fade-in";
 import Tile from "../../components/tile/tile";
-import MusicVideoIcon from '@mui/icons-material/MusicVideo';
 import { prepareMeeloQuery } from "../../query";
 import {
 	QueryClient, dehydrate, useQueries, useQuery
 } from "react-query";
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
 import { playTracks } from "../../state/playerSlice";
 import Song from "../../models/song";
 import Artist from "../../models/artist";
 import { shuffle } from 'd3-array';
 import getSlugOrId from "../../utils/getSlugOrId";
 import AlbumContextualMenu from "../../components/contextual-menu/album-contextual-menu";
-import ReleaseTrackContextualMenu from "../../components/contextual-menu/release-track-contextual-menu";
-import { RootState } from "../../state/store";
+import ReleaseTrackList from "../../components/release-tracklist";
 
 const releaseQuery = (slugOrId: string | number) => ({
 	key: ['release', slugOrId],
@@ -145,26 +143,16 @@ const ReleasePage = (
 	const albumArtist = useQuery(prepareMeeloQuery(artistQuery, artistId));
 	const albumGenres = useQuery(prepareMeeloQuery(albumGenresQuery, release.data?.albumId));
 	const hasGenres = (albumGenres.data?.length ?? 0) > 0;
-	const albumVideos = useQuery(prepareMeeloQuery(albumVideosQuery, release.data?.albumId));
 
 	const otherArtistsQuery = useQueries(tracks
 		.filter((track: TrackWithSong) => track.song.artistId != albumArtist.data?.id)
 		.map((track) => prepareMeeloQuery(artistQuery, track.song.artistId)));
 	const relatedReleases = useQuery(prepareMeeloQuery(albumReleasesQuery, release.data?.albumId));
-	const albumIsPlaying = useSelector((state: RootState) => {
-		const playlistTracksId = state.player.playlist.map((track) => track.track.id);
-		const releaseTracksId = tracks.map((track) => track.id);
-
-		return playlistTracksId.toString() == releaseTracksId.toString();
-	});
-	const currentTrack = useSelector(
-		(state: RootState) => state.player.playlist[state.player.cursor]?.track
-	);
 
 	useEffect(() => {
 		if (tracklist.data) {
-			const discMap = new Map(Object.entries(tracklist.data));
-			const flatTracks = Array.from(discMap.values()).flat();
+			const discMap = tracklist.data;
+			const flatTracks = Array.from(Object.values(discMap)).flat();
 
 			setTracks(flatTracks);
 			setTotalDuration(
@@ -269,79 +257,29 @@ const ReleasePage = (
 					{ albumGenres.data && trackList &&
 						otherArtistsQuery.findIndex((query) => query.data == undefined) == -1 &&
 						<FadeIn>
-							{ Array.from(trackList.entries()).map((disc, __, discs) =>
-								<List key={disc[0]}
-									subheader={discs.length !== 1 &&
-										<ListSubheader>Disc {disc[0]}</ListSubheader>
-									}
-								>
-									{ disc[1].map((track) => {
-										const artist = getSongArtist(
-											track.song,
-											albumArtist.data,
-											otherArtistsQuery.map((query) => query.data!)
-										);
-
-										return <>
-											<ListItem key={track.id} disablePadding disableGutters
-												secondaryAction={
-													<ReleaseTrackContextualMenu
-														release={release.data}
-														track={track} artist={artist}
-													/>
-												}>
-												<ListItemButton onClick={() => {
-													if (tracks && !otherArtistsQuery
-														.find((query) => !query.data)
-													) {
-														const otherArtists = otherArtistsQuery
-															.map((query) => query.data!);
-														const trackIndex = tracks
-															.findIndex((tr) => tr.id == track.id);
-														const playlist = tracks
-															.map((playlistTrack) => ({
-																track: playlistTrack,
-																artist: getSongArtist(
-																	playlistTrack.song,
-																	albumArtist.data,
-																	otherArtists
-																),
-																release: release.data
-															}));
-
-														dispatch(playTracks(
-															{ tracks: playlist, cursor: trackIndex }
-														));
-													}
-												}}>
-													<ListItemIcon>
-														<Typography>
-															{track.trackIndex}
-														</Typography>
-													</ListItemIcon>
-													<ListItemText
-														primary={track.name}
-														secondary={
-															// eslint-disable-next-line max-len
-															track.song.artistId == albumArtist.data?.id
-																? undefined
-																: artist?.name
-														}
-													/>
-													{ track.type == 'Video' &&
-														<ListItemIcon>
-															<MusicVideoIcon color='disabled' fontSize="small"/>
-														</ListItemIcon>
-													}
-													<Typography sx={{ paddingLeft: 2, overflow: 'unset' }}>
-														{formatDuration(track.duration)}
-													</Typography>
-												</ListItemButton>
-											</ListItem>
-											<Divider variant="inset"/>
-										</>;
-									}) }
-								</List>) }
+							<ReleaseTrackList
+								mainArtist={albumArtist.data}
+								tracklist={Object.fromEntries(Array.from(Object.entries(trackList))
+									.map(([discKey, discTracks]) => [
+										discKey,
+										discTracks.map((discTrack) => ({
+											...discTrack,
+											song: {
+												...discTrack.song,
+												// eslint-disable-next-line max-len
+												artist: discTrack.song.artistId == albumArtist.data?.id
+													? albumArtist.data!
+													: otherArtistsQuery.find(
+														// eslint-disable-next-line max-len
+														(otherArtist) => otherArtist.data?.id == discTrack.song.artistId
+													)!.data!
+											}
+										}))
+									]))
+								}
+								release={release.data}
+								trackContextualMenu={() => <Box/>}
+							/>
 						</FadeIn>
 					}
 				</Grid>

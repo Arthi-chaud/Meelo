@@ -12,10 +12,12 @@
 	},
 	"plugins": [
 		"@typescript-eslint",
+		"unused-imports",
 		"import"
 	],
 	"ignorePatterns": ["front/", "node_modules/", "test/", "src/**/*.spec.ts", "src/prisma/models"],
 	"rules": {
+		"unused-imports/no-unused-imports": "warn",
 		"import/first": "error",
 		"import/newline-after-import": "error",
 		"import/no-duplicates": "error",
