@@ -1,5 +1,3 @@
-import Resource from "./resource";
-
 /**
  * Parameters for pagination in API requests
  */

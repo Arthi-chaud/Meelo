@@ -9,7 +9,7 @@ type Library = Resource & {
 	 * Slug of the library
 	 * Unique identifier
 	 */
-	slug: string;	
+	slug: string;
 }
 
 export default Library;

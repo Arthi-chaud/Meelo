@@ -61,5 +61,13 @@ type TrackWithRelease = Track & {
 type TrackInclude = 'song' | 'release';
 
 export default Track;
-export const TrackSortingKeys = ['name', 'releaseName', 'releaseDate', 'bitrate', 'addDate', 'trackIndex', 'discIndex'];
+export const TrackSortingKeys = [
+	'name',
+	'releaseName',
+	'releaseDate',
+	'bitrate',
+	'addDate',
+	'trackIndex',
+	'discIndex'
+];
 export type { TrackWithSong, TrackWithRelease, TrackInclude };
