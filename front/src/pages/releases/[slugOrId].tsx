@@ -278,7 +278,6 @@ const ReleasePage = (
 									]))
 								}
 								release={release.data}
-								trackContextualMenu={() => <Box/>}
 							/>
 						</FadeIn>
 					}

@@ -7,25 +7,23 @@ import Release from "../models/release";
 import { SongWithArtist } from "../models/song";
 import Track from "../models/track";
 import Tracklist from "../models/tracklist";
-import ContextualMenu from "./contextual-menu/contextual-menu";
 import { playTracks } from '../state/playerSlice';
-import formatDuration from "format-duration";
 import Artist from "../models/artist";
 import { MusicVideo } from "@mui/icons-material";
+import formatDuration from "../utils/formatDuration";
+import ReleaseTrackContextualMenu from "./contextual-menu/release-track-contextual-menu";
 
 type ReleaseTracklistProps = {
 	mainArtist?: Artist;
 	tracklist: Tracklist<Track & { song: SongWithArtist }>;
 	release: Release;
-	trackContextualMenu: (song: Track & { song: SongWithArtist }) =>
-		ReturnType<typeof ContextualMenu>;
 }
 
 /**
  * Interactive tracklist for a release
  */
 const ReleaseTrackList = (
-	{ tracklist, release, trackContextualMenu, mainArtist }: ReleaseTracklistProps
+	{ tracklist, release, mainArtist }: ReleaseTracklistProps
 ) => {
 	const dispatch = useDispatch();
 	const flatTracklist = Array.from(Object.values(tracklist)).flat();
@@ -38,7 +36,13 @@ const ReleaseTrackList = (
 				{ disc[1].map((currentTrack) => <>
 					<ListItem key={currentTrack.id}
 						disablePadding disableGutters
-						secondaryAction={trackContextualMenu(currentTrack)}
+						secondaryAction={
+							<ReleaseTrackContextualMenu
+								track={currentTrack}
+								artist={currentTrack.song.artist}
+								release={release}
+							/>
+						}
 					>
 						<ListItemButton onClick={() => dispatch(
 							playTracks({

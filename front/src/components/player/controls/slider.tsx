@@ -24,7 +24,9 @@ const PlayerSlider = (props: PlayerSliderProps) => {
 				valueLabelDisplay="off"
 				onChange={(event) => {
 					if (props.duration !== undefined) {
-						props.onSlide(event.target as any / 100 * props.duration);
+						const target: any = event.target;
+
+						props.onSlide(target.value / 100 * props.duration);
 					}
 				}}
 				value={props.duration && props.progress !== undefined
