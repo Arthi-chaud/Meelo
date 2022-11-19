@@ -1,5 +1,5 @@
 import {
-	Box, Button, ButtonGroup, Chip, Divider, Fab, Hidden, IconButton, ListItem, ListItemIcon, ListItemText, Menu, MenuItem, Slide, Tooltip
+	Box, Button, ButtonGroup, Fab, Slide, Tooltip
 } from "@mui/material";
 import FadeIn from "react-fade-in";
 import Resource from "../../models/resource";
@@ -12,10 +12,6 @@ import InfiniteList from "./infinite-list";
 import AppsIcon from '@mui/icons-material/Apps';
 import ViewListIcon from '@mui/icons-material/ViewList';
 import { useEffect, useState } from 'react';
-import NorthIcon from '@mui/icons-material/North';
-import SouthIcon from '@mui/icons-material/South';
-import { capitalCase } from "change-case";
-import CheckIcon from '@mui/icons-material/Check';
 import InfiniteViewDropdownOption, { OptionGroup } from "./infinite-view-option";
 
 export type InfiniteViewProps<T, OptionsValues extends string[][]> = {
@@ -39,7 +35,9 @@ const availableDisplayMethods: DisplayMethod[] = [{ name: 'grid', icon: <AppsIco
  * Infinite scrolling view, which lets the user decide which way the data is displayed
  * @returns
  */
-const InfiniteView = <T extends Resource, Options extends string[][]>(props: InfiniteViewProps<T, Options>) => {
+const InfiniteView = <T extends Resource, Options extends string[][]>(
+	props: InfiniteViewProps<T, Options>
+) => {
 	const [display, setDisplay] = useState(props.view);
 	const [backToTopVisible, setBackToTopVisible] = useState(false);
 	const handleScroll = () => {
@@ -55,7 +53,10 @@ const InfiniteView = <T extends Resource, Options extends string[][]>(props: Inf
 	return <>
 		<Box sx={{ display: 'flex', justifyContent: 'center', alignContent: 'center', paddingTop: 2 }}>
 			<ButtonGroup color='inherit'>
-				{ props.options.map((option) => <InfiniteViewDropdownOption key={option.name} option={option} />) }
+				{ props.options.map((option) => <InfiniteViewDropdownOption
+					key={option.name}
+					option={option}
+				/>)}
 				{ props.enableToggle &&
 					availableDisplayMethods.filter((method) => method.name != display)
 						.map((method) =>
@@ -89,8 +90,8 @@ const InfiniteView = <T extends Resource, Options extends string[][]>(props: Inf
 						{ props.renderListItem(item) }
 					</FadeIn>
 				}
-			/>
-			: <InfiniteGrid
+			/> :
+			<InfiniteGrid
 				query={props.query}
 				firstLoader={() => <LoadingPage/>}
 				loader={() => <WideLoadingComponent/>}

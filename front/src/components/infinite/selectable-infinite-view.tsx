@@ -1,5 +1,5 @@
 import {
-	Box, Chip, Divider, Grid
+	Box, Chip, Grid
 } from "@mui/material";
 import { capitalCase } from "change-case";
 import { useState } from "react";
@@ -39,22 +39,22 @@ const SelectableInfiniteView = (props: SelectableInfiniteViewProps) => {
 					}}/>
 				</Grid>)}
 		</Grid>
-		{ props.enabled && (selectedType == 'artist'
-			? <InfiniteArtistView
+		{ props.enabled && (selectedType == 'artist' ?
+			<InfiniteArtistView
 				initialSortingField={'name'}
 				initialSortingOrder={'asc'}
 				initialView={'list'}
 				query={(sort) => props.artistQuery(sort)}
 			/>
-			: selectedType == 'album'
-				? <InfiniteAlbumView key={selectedType}
+			: selectedType == 'album' ?
+				<InfiniteAlbumView key={selectedType}
 					initialSortingField={'name'}
 					initialSortingOrder={'asc'}
 					initialView={'list'}
 					query={(sort, type) => props.albumQuery(sort, type)}
 				/>
-				: selectedType == 'song'
-					? <InfiniteSongView key={selectedType}
+				: selectedType == 'song' ?
+					<InfiniteSongView key={selectedType}
 						initialSortingField={'name'}
 						initialSortingOrder={'asc'}
 						query={(sort) => props.songQuery(sort)}

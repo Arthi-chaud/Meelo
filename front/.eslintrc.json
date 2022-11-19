@@ -10,7 +10,8 @@
 	"rules": {
 		"react/react-in-jsx-scope": "off",
 		"react/sort-prop-types": "warn",
-		"react/jsx-max-props-per-line": ["error", { "maximum": 3 }],
+		"react/jsx-props-no-multi-spaces": "warn",
+		"react/jsx-max-props-per-line": ["error", { "maximum": 3, "when": "multiline" }],
 		"react/jsx-key": "error",
 		"react/jsx-indent-props": ["warn", "tab"],
 		"react/jsx-curly-spacing": ["warn", { "when": "never", "children": false }],
