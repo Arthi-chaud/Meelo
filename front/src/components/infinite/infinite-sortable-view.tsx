@@ -1,11 +1,13 @@
 import { capitalCase } from "change-case";
-import Album from "../../models/album";
 import Resource from "../../models/resource";
 import InfiniteView, { InfiniteViewProps } from "./infinite-view";
 import NorthIcon from '@mui/icons-material/North';
 import SouthIcon from '@mui/icons-material/South';
 
-type InfiniteSortableView<T extends Resource, Options extends (string[] | SortingKeys)[], SortingKeys extends string[]> = {
+type InfiniteSortableView<
+	T extends Resource, Options extends (string[] | SortingKeys)[],
+	SortingKeys extends string[]
+> = {
 	sortingFields: SortingKeys,
 	initialSortingField: SortingKeys[number]
 	initialSortingOrder: 'asc' | 'desc';
@@ -13,7 +15,10 @@ type InfiniteSortableView<T extends Resource, Options extends (string[] | Sortin
 	onSortingOrderSelect?: (selected: 'asc' | 'desc') => void;
 } & InfiniteViewProps<T, Options>;
 
-const InfiniteSortableView = <T extends Resource, Options extends (string[] | SortingKeys)[], SortingKeys extends string[]>(props: InfiniteSortableView<T, Options, SortingKeys>) => {
+const InfiniteSortableView = <
+	T extends Resource, Options extends (string[] | SortingKeys)[],
+	SortingKeys extends string[]
+>(props: InfiniteSortableView<T, Options, SortingKeys>) => {
 	return <InfiniteView<T, Options>
 		{...props}
 		options={[
@@ -31,7 +36,7 @@ const InfiniteSortableView = <T extends Resource, Options extends (string[] | So
 			},
 			...props.options,
 		]}
-	/>
-}
+	/>;
+};
 
 export default InfiniteSortableView;

@@ -18,7 +18,8 @@ const AppBarActions: Action[] = [
 	{
 		label: 'Refresh Libraries',
 		icon: createElement(AutoModeIcon),
-		onClick: () => API.scanLibraries().then(({ status }) => toast.success(status, { duration: 4000 })),
+		onClick: () => API.scanLibraries()
+			.then(({ status }) => toast.success(status, { duration: 4000 })),
 	},
 	{
 		label: 'Settings',

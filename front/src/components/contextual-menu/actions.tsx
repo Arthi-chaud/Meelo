@@ -1,9 +1,11 @@
-import { AlbumOutlined, Difference, Download, Lyrics, PlaylistAdd, PlaylistPlay } from "@mui/icons-material";
+import {
+	AlbumOutlined, Difference, Download, Lyrics, PlaylistAdd, PlaylistPlay
+} from "@mui/icons-material";
 import AccountCircle from "@mui/icons-material/AccountCircle";
 import Album from "@mui/icons-material/Album";
 import Audiotrack from '@mui/icons-material/Audiotrack';
 import Share from "@mui/icons-material/Share";
-import { NextRouter, Router } from "next/router";
+import { NextRouter } from "next/router";
 import { toast } from "react-hot-toast";
 import API from "../../api";
 import { playAfter, playNext } from "../../state/playerSlice";
@@ -88,13 +90,12 @@ export const ShareAction = (url: string): Action => ({
 	icon: <Share/>
 });
 
-
 export const PlayNextAction = (getTrack: () => PromiseLike<Parameters<typeof playNext>[0]>): Action => ({
 	onClick: () => getTrack().then((track) => {
-		store.dispatch(playNext(track))
+		store.dispatch(playNext(track));
 		toast.success(`'${track.track.name}' will play next!`, {
 			duration: 2000
-		})
+		});
 	}),
 	label: "Play Next",
 	icon: <PlaylistPlay/>
@@ -102,15 +103,14 @@ export const PlayNextAction = (getTrack: () => PromiseLike<Parameters<typeof pla
 
 export const PlayAfterAction = (getTrack: () => PromiseLike<Parameters<typeof playAfter>[0]>): Action => ({
 	onClick: () => getTrack().then((track) => {
-		store.dispatch(playAfter(track))
+		store.dispatch(playAfter(track));
 		toast.success(`'${track.track.name}' will play after!`, {
 			duration: 2000
-		})
+		});
 	}),
 	label: "Play After",
 	icon: <PlaylistAdd/>
-})
-
+});
 
 export const DownloadAction = (router: NextRouter, streamURL: string): Action => ({
 	icon: <Download/>,
@@ -122,7 +122,7 @@ export const DownloadAsyncAction = (router: NextRouter, streamURL: () => Promise
 	icon: <Download/>,
 	label: "Download",
 	onClick: () => streamURL().then((url) => downloadAction(router, API.getStreamURL(url)))
-})
+});
 
 export const ShareArtistAction = (artistIdentifier: string | number): Action => ShareAction(`/artists/${artistIdentifier}`);
 
@@ -131,6 +131,5 @@ export const ShareAlbumAction = (albumIdentifier: string | number): Action => Sh
 export const ShareReleaseAction = (releaseIdentifier: string | number): Action => ShareAction(`/releases/${releaseIdentifier}`);
 
 export const ShareSongAction = (songSlug: string | number): Action => ShareAction(`/songs/${songSlug}/versions`);
-
 
 export default Action;

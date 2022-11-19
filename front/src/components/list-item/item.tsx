@@ -1,8 +1,6 @@
-import { IconButton, Button, ButtonBase, Typography, useTheme } from '@mui/material';
-import ExpandLess from "@mui/icons-material/ExpandLess";
-import ExpandMore from "@mui/icons-material/ExpandMore";
-import { Grid } from '@mui/material';
-import { useState } from 'react';
+import {
+	Button, Grid, Typography
+} from '@mui/material';
 import { RequireExactlyOne } from 'type-fest';
 import Link from 'next/link';
 
@@ -18,39 +16,57 @@ type ListItemProps = {
 
 const textStyle = {
 	whiteSpace: 'nowrap', textAlign: 'left'
-}
+};
 
 const ListItem = (props: ListItemProps) => {
-	let clickableArea = <Button color='secondary' onClick={props.onClick} sx={{ textTransform: 'none', alignItems: 'center', width: '100%' }}>
-		<Grid container columns={10} spacing={2} sx={{ alignItems: 'center' }}>
-			<Grid item xs={2} sm={1.5} md={1} lg={0.5}>
+	let clickableArea = <Button color='secondary' onClick={props.onClick}
+		sx={{ textTransform: 'none', alignItems: 'center', width: '100%' }}
+	>
+		<Grid container columns={10} spacing={2}
+			sx={{ alignItems: 'center' }}
+		>
+			<Grid item xs={2} sm={1.5}
+				md={1} lg={0.5}
+			>
 				{props.icon}
 			</Grid>
-			<Grid item container xs={8} spacing={1} sx={{ alignItems: 'center'}}>
-				<Grid item xs={12} sm={8} sx={textStyle}>
-					<Typography fontWeight='bold' sx={textStyle}>{props.title}</Typography>
+			<Grid item container xs={8}
+				spacing={1} sx={{ alignItems: 'center' }}>
+				<Grid item xs={12} sm={8}
+					sx={textStyle}
+				>
+					<Typography fontWeight='bold' sx={textStyle}>
+						{props.title}
+					</Typography>
 				</Grid>
 				{ props.secondTitle &&
-					<Grid item xs={12} sm={4} sx={textStyle}>
-						<Typography color="text.disabled" sx={textStyle}>{props.secondTitle}</Typography>
+					<Grid item xs={12} sm={4}
+						sx={textStyle}>
+						<Typography color="text.disabled" sx={textStyle}>
+							{props.secondTitle}
+						</Typography>
 					</Grid>
 				}
 			</Grid>
 		</Grid>
 	</Button>;
+
 	if (props.href) {
 		clickableArea = <Link href={props.href}>{clickableArea}</Link>;
 	}
-	return <Grid container padding={1} spacing={2} sx={{ alignItems: 'center', width: 'inherit', display: 'flex', justifyContent: 'space-between' }}>
-			{ props.trailing ? <>
-				<Grid item xs={9} sm={11}>
-					{clickableArea}
-				</Grid>
-				<Grid item xs={3} sm={1} sx={{ display: 'flex', justifyContent: 'center' }}>
-					{props.trailing}
-				</Grid></>
+	return <Grid container padding={1} spacing={2}
+		sx={{ alignItems: 'center', width: 'inherit', display: 'flex', justifyContent: 'space-between' }}
+	>
+		{ props.trailing ? <>
+			<Grid item xs={9} sm={11}>
+				{clickableArea}
+			</Grid>
+			<Grid item xs={3} sm={1}
+				sx={{ display: 'flex', justifyContent: 'center' }}>
+				{props.trailing}
+			</Grid></>
 			: <Grid item xs>{clickableArea}</Grid>}
-		</Grid>
-}
+	</Grid>;
+};
 
 export default ListItem;

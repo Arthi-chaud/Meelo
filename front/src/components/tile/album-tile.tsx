@@ -1,5 +1,3 @@
-import {IconButton} from "@mui/material";
-import {AccountCircle, Album} from "@mui/icons-material";
 import Tile from "./tile";
 import { AlbumWithArtist } from "../../models/album";
 import Illustration from "../illustration";
@@ -10,7 +8,7 @@ const AlbumTile = (props: { album: AlbumWithArtist }) => {
 		subtitle={props.album.artist?.name ?? 'Compilation'}
 		targetURL={`/albums/${props.album.artist?.slug ?? 'compilations'}+${props.album.slug}`}
 		illustration={<Illustration url={props.album.illustration}/>}
-	/>
-}
+	/>;
+};
 
 export default AlbumTile;

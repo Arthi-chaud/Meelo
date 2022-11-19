@@ -5,10 +5,11 @@ import LoadingComponent from './loading';
  */
 const LoadingPage = () => {
 	return (
-		<Box width='100%' display="flex" justifyContent="center" alignItems="center" minHeight="100vh">
+		<Box width='100%' display="flex" justifyContent="center"
+			alignItems="center" minHeight="100vh">
 			<LoadingComponent />
 		</Box>
-	)
-}
+	);
+};
 
 export default LoadingPage;

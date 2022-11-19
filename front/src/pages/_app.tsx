@@ -1,13 +1,18 @@
+/* eslint-disable id-length */
 import { useState } from "react";
 import type { AppProps } from "next/app";
-import { QueryClient, QueryClientProvider, Hydrate } from "react-query";
+import {
+	Hydrate, QueryClient, QueryClientProvider
+} from "react-query";
 import { ReactQueryDevtools } from "react-query/devtools";
-import { Box, CssBaseline, Fab, GlobalStyles, ThemeProvider } from "@mui/material";
+import {
+	Box, CssBaseline, GlobalStyles, ThemeProvider
+} from "@mui/material";
 import MeeloAppBar from "../components/appbar/appbar";
-import { ErrorBoundary } from 'react-error-boundary'
+import { ErrorBoundary } from 'react-error-boundary';
 import toast, { Toaster } from 'react-hot-toast';
 import Head from "next/head";
-import store from '../state/store'
+import store from '../state/store';
 import theme from "../theme";
 import Player from "../components/player/player";
 import { Provider } from "react-redux";
@@ -15,14 +20,15 @@ import { DefaultWindowTitle } from '../utils/constants';
 
 function MyApp({ Component, pageProps }: AppProps) {
 	const [queryClient] = useState(() => new QueryClient());
+
 	return <Provider store={store}>
 		<ThemeProvider theme={theme}>
 			<CssBaseline />
 			<GlobalStyles styles={{ a: { color: 'inherit', textDecoration: 'none' } }}/>
 			<Head>
-    			<title>{DefaultWindowTitle}</title>
-    			<meta name="viewport" content="initial-scale=1.0, width=device-width" />
-    		</Head>
+				<title>{DefaultWindowTitle}</title>
+				<meta name="viewport" content="initial-scale=1.0, width=device-width" />
+			</Head>
 			<QueryClientProvider client={queryClient}>
 				<MeeloAppBar/>
 				<ErrorBoundary

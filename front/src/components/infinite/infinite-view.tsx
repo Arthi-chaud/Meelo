@@ -1,7 +1,9 @@
-import { Box, Tooltip, Slide, Button, Chip, Menu, MenuItem, ListItem, Hidden, Fab, ButtonGroup, IconButton, Divider, ListItemIcon, ListItemText } from "@mui/material";
+import {
+	Box, Button, ButtonGroup, Chip, Divider, Fab, Hidden, IconButton, ListItem, ListItemIcon, ListItemText, Menu, MenuItem, Slide, Tooltip
+} from "@mui/material";
 import FadeIn from "react-fade-in";
 import Resource from "../../models/resource";
-import StraightIcon from "@mui/icons-material/Straight"
+import StraightIcon from "@mui/icons-material/Straight";
 import { MeeloInfiniteQueryFn } from "../../query";
 import { WideLoadingComponent } from "../loading/loading";
 import LoadingPage from "../loading/loading-page";
@@ -31,22 +33,21 @@ type DisplayMethod = {
 	icon: JSX.Element
 }
 
-const availableDisplayMethods: DisplayMethod[] = [
-	{ name: 'grid', icon: <AppsIcon/> },
-	{ name: 'list', icon: <ViewListIcon/> }
-]
+const availableDisplayMethods: DisplayMethod[] = [{ name: 'grid', icon: <AppsIcon/> }, { name: 'list', icon: <ViewListIcon/> }];
 
 /**
  * Infinite scrolling view, which lets the user decide which way the data is displayed
- * @returns 
+ * @returns
  */
 const InfiniteView = <T extends Resource, Options extends string[][]>(props: InfiniteViewProps<T, Options>) => {
 	const [display, setDisplay] = useState(props.view);
 	const [backToTopVisible, setBackToTopVisible] = useState(false);
 	const handleScroll = () => {
 		const position = window.pageYOffset;
+
 		setBackToTopVisible(position > window.innerHeight);
 	};
+
 	useEffect(() => {
 		window.addEventListener('scroll', handleScroll, { passive: true });
 		return () => window.removeEventListener('scroll', handleScroll);
@@ -54,25 +55,24 @@ const InfiniteView = <T extends Resource, Options extends string[][]>(props: Inf
 	return <>
 		<Box sx={{ display: 'flex', justifyContent: 'center', alignContent: 'center', paddingTop: 2 }}>
 			<ButtonGroup color='inherit'>
-				{ props.options.map((option) => <InfiniteViewDropdownOption key={option.name}  option={option} />) }
+				{ props.options.map((option) => <InfiniteViewDropdownOption key={option.name} option={option} />) }
 				{ props.enableToggle &&
 					availableDisplayMethods.filter((method) => method.name != display)
-						.map((method) => (
+						.map((method) =>
 							<Tooltip title="Change layout" key={method.name}>
 								<Button onClick={() => setDisplay(method.name)}>
 									{ method.icon }
 								</Button>
-							</Tooltip>
-						)
-					)
+							</Tooltip>)
 				}
 			</ButtonGroup>
 		</Box>
-		<Slide direction="up" in={backToTopVisible} mountOnEnter unmountOnExit>
+		<Slide direction="up" in={backToTopVisible} mountOnEnter
+			unmountOnExit>
 			<Tooltip title="Back to top">
 				<Fab
 					color="secondary"
-					sx={{  zIndex: "tooltip", position: 'fixed', bottom: 16, right: 16 }}
+					sx={{ zIndex: "tooltip", position: 'fixed', bottom: 16, right: 16 }}
 					onClick={() => window.scrollTo({ top: 0, left: 0, behavior: "smooth" })}
 				>
 					<StraightIcon/>
@@ -98,7 +98,7 @@ const InfiniteView = <T extends Resource, Options extends string[][]>(props: Inf
 			/>
 		}
 
-	</>
-}
+	</>;
+};
 
 export default InfiniteView;

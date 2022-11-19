@@ -4,7 +4,9 @@ import { useMutation, useQueryClient } from "react-query";
 import API from "../../api";
 import { ReleaseWithAlbum } from "../../models/release";
 import ContextualMenu from "./contextual-menu";
-import { GoToAlbumAction, GoToArtistAction, ShareReleaseAction } from "./actions";
+import {
+	GoToAlbumAction, GoToArtistAction, ShareReleaseAction
+} from "./actions";
 
 type ReleaseContextualMenuProps = {
 	release: ReleaseWithAlbum;
@@ -16,9 +18,9 @@ const ReleaseContextualMenu = (props: ReleaseContextualMenuProps) => {
 		return API.setReleaseAsMaster(props.release.id)
 			.then(() => {
 				toast.success("Release set as master!");
-				queryClient.invalidateQueries()
+				queryClient.invalidateQueries();
 			})
-			.catch((e: Error) => toast.error(e.message))
+			.catch((error: Error) => toast.error(error.message));
 	});
 	const tracksMasterMutation = useMutation(async () => {
 		return API.getReleasePlaylist(props.release.id)
@@ -28,27 +30,28 @@ const ReleaseContextualMenu = (props: ReleaseContextualMenuProps) => {
 				).then(() => {
 					toast.success("Tracks successfully updated");
 					queryClient.invalidateQueries();
-				})
-				.catch((e) => toast.error(e.message))
-			})
-			
+				}).catch((error) => toast.error(error.message));
+			});
 	});
-	return <ContextualMenu actions={[[
-		...(props.release.album.artistId ? [GoToArtistAction(props.release.album.artistId)] : []),
-		GoToAlbumAction(props.release.album.id),
-		{
-			label: "Set as Master",
-			disabled: props.release.master,
-			icon: <Star/>,
-			onClick: () => masterMutation.mutate()
-		},
-		{
-			label: "Set all tracks as Master",
-			icon: <Star/>,
-			onClick: () => tracksMasterMutation.mutate()
-		},
-		ShareReleaseAction(props.release.id)
-	]]}/>
-}
+
+	return <ContextualMenu actions={[
+		[
+			...props.release.album.artistId ? [GoToArtistAction(props.release.album.artistId)] : [],
+			GoToAlbumAction(props.release.album.id),
+			{
+				label: "Set as Master",
+				disabled: props.release.master,
+				icon: <Star/>,
+				onClick: () => masterMutation.mutate()
+			},
+			{
+				label: "Set all tracks as Master",
+				icon: <Star/>,
+				onClick: () => tracksMasterMutation.mutate()
+			},
+			ShareReleaseAction(props.release.id)
+		]
+	]}/>;
+};
 
 export default ReleaseContextualMenu;
