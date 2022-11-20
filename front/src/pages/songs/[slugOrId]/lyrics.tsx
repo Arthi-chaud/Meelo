@@ -31,10 +31,10 @@ export const getServerSideProps = async (context: GetServerSidePropsContext) => 
 	const queryClient = new QueryClient();
 
 	await Promise.all([
-		await queryClient.prefetchQuery(
+		queryClient.prefetchQuery(
 			prepareMeeloQuery(songQuery, songIdentifier)
 		),
-		await queryClient.prefetchQuery(prepareMeeloQuery(lyricsQuery, songIdentifier))
+		queryClient.prefetchQuery(prepareMeeloQuery(lyricsQuery, songIdentifier))
 	]);
 
 	return {

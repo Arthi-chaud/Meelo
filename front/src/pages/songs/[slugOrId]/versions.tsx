@@ -29,7 +29,7 @@ export const getServerSideProps = async (context: GetServerSidePropsContext) => 
 	const queryClient = new QueryClient();
 
 	await Promise.all([
-		await queryClient.prefetchInfiniteQuery(
+		queryClient.prefetchInfiniteQuery(
 			prepareMeeloInfiniteQuery(songVersionsQuery, songIdentifier)
 		)
 	]);

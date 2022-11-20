@@ -38,11 +38,11 @@ export const getServerSideProps = async (context: GetServerSidePropsContext) => 
 	const sortBy = getSortingFieldParams(context.query.sortBy, SongSortingFields);
 
 	if (librarySlug) {
-		await queryClient.prefetchInfiniteQuery(
+		queryClient.prefetchInfiniteQuery(
 			prepareMeeloInfiniteQuery(librarySongsQuery, librarySlug, { sortBy, order })
 		);
 	} else {
-		await queryClient.prefetchInfiniteQuery(
+		queryClient.prefetchInfiniteQuery(
 			prepareMeeloInfiniteQuery(songsQuery, { sortBy, order })
 		);
 	}

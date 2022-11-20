@@ -36,11 +36,11 @@ export const getServerSideProps = async (context: GetServerSidePropsContext) => 
 	const librarySlug = getLibrarySlug(context.req.url!) ?? null;
 
 	if (librarySlug) {
-		await queryClient.prefetchInfiniteQuery(
+		queryClient.prefetchInfiniteQuery(
 			prepareMeeloInfiniteQuery(libraryArtistsQuery, librarySlug, { sortBy, order })
 		);
 	} else {
-		await queryClient.prefetchInfiniteQuery(
+		queryClient.prefetchInfiniteQuery(
 			prepareMeeloInfiniteQuery(artistsQuery, { sortBy, order })
 		);
 	}
