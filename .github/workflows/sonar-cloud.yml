@@ -32,7 +32,7 @@ jobs:
         with:
           workflow: unit-tests.yml
           name: coverage-report-${{ matrix.section }}
-          path: coverage
+          path: ${{ matrix.pwd }}/coverage
       - name: Run SonarCloud Scan
         uses: SonarSource/sonarcloud-github-action@master
         with:
