@@ -6,7 +6,7 @@ jobs:
   run_unit_tests_front:
     if: github.event_name == 'push' || github.event.pull_request.head.repo.full_name != github.repository
     runs-on: ubuntu-latest
-    container: node:17
+    container: node:18
     defaults:
       run:
         working-directory: ./front
@@ -25,7 +25,7 @@ jobs:
   run_unit_tests_back:
     if: github.event_name == 'push' || github.event.pull_request.head.repo.full_name != github.repository
     runs-on: ubuntu-latest
-    container: node:17
+    container: node:18
     services:
       postgres:
         image: postgres:alpine3.16
