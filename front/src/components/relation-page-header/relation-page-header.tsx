@@ -1,4 +1,6 @@
-import { Divider, Grid, Typography } from "@mui/material";
+import {
+	Divider, Grid, Typography
+} from "@mui/material";
 
 type RelationHeaderProps = {
 	illustration: JSX.Element;
@@ -9,10 +11,12 @@ type RelationHeaderProps = {
 const RelationPageHeader = (props: RelationHeaderProps) => {
 	return <>
 		<Grid container sx={{ width: 'inherit', height: 'auto' }}>
-			<Grid item xs={4} sm={3} md={2} xl={1} sx={{ padding: 3 }}>
+			<Grid item xs={4} sm={3}
+				md={2} xl={1} sx={{ padding: 3 }}>
 				{props.illustration}
 			</Grid>
-			<Grid item container direction='column' xs sx={{ justifyContent: 'space-evenly' }}>
+			<Grid item container direction='column'
+				xs sx={{ justifyContent: 'space-evenly' }}>
 				<Grid item>
 					<Typography variant='h5' sx={{ fontWeight: 'bold' }}>
 						{props.title}
@@ -26,12 +30,13 @@ const RelationPageHeader = (props: RelationHeaderProps) => {
 					</Grid>
 				}
 			</Grid>
-			<Grid item xs={2} sm={1} sx={{ alignItems: 'center', display: 'flex' }}>
+			<Grid item xs={2} sm={1}
+				sx={{ alignItems: 'center', display: 'flex' }}>
 				{props.trailing}
 			</Grid>
 		</Grid>
 		<Divider variant="middle"/>
-	</>
-}
+	</>;
+};
 
 export default RelationPageHeader;

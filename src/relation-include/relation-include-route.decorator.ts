@@ -1,6 +1,6 @@
 import { ApiQuery } from "@nestjs/swagger";
 
-export function ApiRelationInclude(keys: readonly string[], name: string = 'with') {
+export function ApiRelationInclude(keys: readonly string[], name = 'with') {
 	return ApiQuery({
 		name,
 		required: false,
@@ -9,5 +9,5 @@ export function ApiRelationInclude(keys: readonly string[], name: string = 'with
 		isArray: true,
 		style: 'label',
 		enum: keys
-	})
+	});
 }

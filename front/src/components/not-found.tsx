@@ -1,14 +1,14 @@
-import { Typography } from "@mui/material"
+import { Box, Typography } from "@mui/material";
 
 const NotFoundMessage = () => {
-	return <div>
+	return <Box>
 		<Typography variant="h1">
-		  Oops
+			Oops
 		</Typography>
 		<Typography variant="h3">
-		  The requested resource could not be found
+			The requested resource could not be found
 		</Typography>
-	</div>
-}
+	</Box>;
+};
 
-export default NotFoundMessage
+export default NotFoundMessage;

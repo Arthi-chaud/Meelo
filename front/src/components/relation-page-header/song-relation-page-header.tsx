@@ -1,4 +1,3 @@
-import { Box } from "@mui/material";
 import { useQuery } from "react-query";
 import { RequireExactlyOne } from "type-fest";
 import API from "../../api";
@@ -21,18 +20,19 @@ const songQuery = (songSlugOrId: number | string) => ({
 
 const SongRelationPageHeader = (props: SongRelationPageHeaderProps) => {
 	const song = useQuery(prepareMeeloQuery(songQuery, props.songSlugOrId));
+
 	if (props.song) {
 		song.data = props.song;
 	}
 	if (!song.data) {
-		return <WideLoadingComponent/>
+		return <WideLoadingComponent/>;
 	}
 	return <RelationPageHeader
 		illustration={<Illustration url={song.data.illustration}/>}
 		title={song.data.name}
 		secondTitle={song.data.artist.name}
 		trailing={<SongContextualMenu song={song.data}/>}
-	/>
-}
+	/>;
+};
 
 export default SongRelationPageHeader;

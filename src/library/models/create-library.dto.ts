@@ -7,6 +7,7 @@ export default class LibraryDto {
 	})
 	@IsNotEmpty()
 	path: string;
+
 	@ApiProperty({
 		description: 'The name of the library to create'
 	})

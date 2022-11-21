@@ -1,4 +1,6 @@
-import { Body, Controller, Delete, Get, Param, Post, Query, Response } from "@nestjs/common";
+import {
+	Body, Controller, Delete, Get, Param, Post, Query, Response
+} from "@nestjs/common";
 import { ApiOperation, ApiTags } from "@nestjs/swagger";
 import ParseAlbumIdentifierPipe from "src/album/album.pipe";
 import type AlbumQueryParameters from "src/album/models/album.query-parameters";
@@ -30,7 +32,7 @@ export class IllustrationController {
 	) {}
 
 	@ApiOperation({
-		summary: "Get an artist\'s illustration"
+		summary: "Get an artist's illustration"
 	})
 	@Get('artists/:idOrSlug')
 	async getArtistIllustration(
@@ -43,9 +45,12 @@ export class IllustrationController {
 	) {
 		const artist = await this.artistService.select(where, { slug: true });
 		const artistIllustration = await this.artistService.buildIllustrationPath(where);
+
 		return this.illustrationService.streamIllustration(
 			artistIllustration,
-			artist.slug, dimensions, res
+			artist.slug,
+			dimensions,
+			res
 		);
 	}
 
@@ -60,6 +65,7 @@ export class IllustrationController {
 		illustrationDto: IllustrationDownloadDto
 	) {
 		const artistIllustrationPath = await this.artistService.buildIllustrationPath(where);
+
 		return this.illustrationService.downloadIllustration(
 			illustrationDto.url,
 			artistIllustrationPath
@@ -69,7 +75,7 @@ export class IllustrationController {
 	@ApiOperation({
 		summary: "Get the album's illustration"
 	})
-	
+
 	@Get('albums/:idOrSlug')
 	async getAlbumIllustration(
 		@IdentifierParam(ParseAlbumIdentifierPipe)
@@ -79,13 +85,14 @@ export class IllustrationController {
 		res: Response,
 	) {
 		const masterRelease = await this.releaseService.get({ byMasterOf: where });
-		return this.getReleaseIllustration({ byId: { id: masterRelease.id } }, dimensions, res)
+
+		return this.getReleaseIllustration({ byId: { id: masterRelease.id } }, dimensions, res);
 	}
 
 	@ApiOperation({
 		summary: "Get a song's illustration"
 	})
-	
+
 	@Get('songs/:idOrSlug')
 	async getSongIllustration(
 		@IdentifierParam(ParseSongIdentifierPipe)
@@ -95,14 +102,14 @@ export class IllustrationController {
 		res: Response,
 	) {
 		const master = await this.trackService.getMasterTrack(where);
+
 		return this.getTrackIllustration(master.id, dimensions, res);
-		
 	}
 
 	@ApiOperation({
 		summary: "Get a release's illustration"
 	})
-	
+
 	@Get('releases/:idOrSlug')
 	async getReleaseIllustration(
 		@IdentifierParam(ParseReleaseIdentifierPipe)
@@ -113,8 +120,12 @@ export class IllustrationController {
 	) {
 		const path = await this.releaseService.buildIllustrationPath(where);
 		const release = await this.releaseService.get(where, { album: true });
-		if (this.illustrationService.illustrationExists(path) == false)
-			throw new NoReleaseIllustrationException(new Slug(release.album.slug), new Slug(release.slug));
+
+		if (this.illustrationService.illustrationExists(path) == false) {
+			throw new NoReleaseIllustrationException(
+				new Slug(release.album.slug), new Slug(release.slug)
+			);
+		}
 		return this.illustrationService.streamIllustration(
 			path, release.slug, dimensions, res
 		);
@@ -131,7 +142,8 @@ export class IllustrationController {
 		illustrationDto: IllustrationDownloadDto
 	) {
 		const path = await this.releaseService.buildIllustrationPath(where);
-		return await this.illustrationService.downloadIllustration(
+
+		return this.illustrationService.downloadIllustration(
 			illustrationDto.url,
 			path
 		);
@@ -140,7 +152,7 @@ export class IllustrationController {
 	@ApiOperation({
 		summary: "Get a track's illustration"
 	})
-	
+
 	@Get('tracks/:id')
 	async getTrackIllustration(
 		@Param('id', ParseIdPipe)
@@ -149,17 +161,22 @@ export class IllustrationController {
 		@Response({ passthrough: true })
 		res: Response,
 	) {
-		const track = await this.trackService.get({ id: trackId }, { song: true })
-		const trackIllustrationPath = await this.trackService.buildIllustrationPath({ id: trackId });
+		const track = await this.trackService.get({ id: trackId }, { song: true });
+		const trackIllustrationPath = await this.trackService.buildIllustrationPath(
+			{ id: trackId }
+		);
+
 		if (this.illustrationService.illustrationExists(trackIllustrationPath)) {
 			return this.illustrationService.streamIllustration(
 				trackIllustrationPath,
-				track.song.slug, dimensions, res
+				track.song.slug,
+				dimensions,
+				res
 			);
 		}
 		return this.getReleaseIllustration({ byId: { id: track.releaseId! } }, dimensions, res);
 	}
-	
+
 	@ApiOperation({
 		summary: "Change a track's illustration"
 	})
@@ -170,8 +187,11 @@ export class IllustrationController {
 		@Body()
 		illustrationDto: IllustrationDownloadDto
 	) {
-		const trackIllustrationPath = await this.trackService.buildIllustrationPath({ id: trackId });
-		return await this.illustrationService.downloadIllustration(
+		const trackIllustrationPath = await this.trackService.buildIllustrationPath(
+			{ id: trackId }
+		);
+
+		return this.illustrationService.downloadIllustration(
 			illustrationDto.url,
 			trackIllustrationPath
 		);
@@ -185,7 +205,10 @@ export class IllustrationController {
 		@Param('id', ParseIdPipe)
 		trackId: number,
 	) {
-		const trackIllustrationPath = await this.trackService.buildIllustrationPath({ id: trackId });
+		const trackIllustrationPath = await this.trackService.buildIllustrationPath(
+			{ id: trackId }
+		);
+
 		this.illustrationService.deleteIllustrationSafe(trackIllustrationPath);
 	}
 
@@ -198,6 +221,7 @@ export class IllustrationController {
 		where: ReleaseQueryParameters.WhereInput,
 	) {
 		const releaseIllustrationPath = await this.releaseService.buildIllustrationPath(where);
+
 		this.illustrationService.deleteIllustrationSafe(releaseIllustrationPath);
 	}
 
@@ -210,6 +234,7 @@ export class IllustrationController {
 		where: ArtistQueryParameters.WhereInput,
 	) {
 		const artistIllustrationPath = await this.artistService.buildIllustrationPath(where);
+
 		this.illustrationService.deleteIllustrationSafe(artistIllustrationPath);
 	}
 }

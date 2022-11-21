@@ -9,6 +9,7 @@ class MetadataSettings {
 	 */
 	@ApiProperty({ enum: metadataSourceValue })
 	source: typeof metadataSourceValue[number];
+
 	/**
 	 * Exclude the other source, or use is as a fallback
 	 */
@@ -24,11 +25,13 @@ export default class Settings {
 	 */
 	@ApiProperty()
 	dataFolder: string;
+
 	/**
 	 * Array of RegExp string, used to match track files
 	 */
 	@ApiProperty()
 	trackRegex: string[];
+
 	/**
 	 * Defines the metadata parsing policy
 	 */

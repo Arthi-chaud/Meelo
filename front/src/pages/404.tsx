@@ -1,16 +1,23 @@
-import { Box, Typography, Button } from '@mui/material'
-import { NextPage } from 'next'
-import Link from 'next/link'
+import {
+	Box, Button, Typography
+} from '@mui/material';
+import { NextPage } from 'next';
+import Link from 'next/link';
 
 const PageNotFound: NextPage = () => {
-	return <Box width='100%' display="flex" justifyContent="space-evenly" alignItems="center" minHeight="100vh" flexDirection="column">
-		<Typography variant="h1" sx={{ fontStyle: 'italic', textAlign: 'center', width: '90%' }}>
+	return <Box
+		width='100%' display="flex" justifyContent="space-evenly"
+		alignItems="center" minHeight="100vh" flexDirection="column"
+	>
+		<Typography variant="h1" sx={{
+			fontStyle: 'italic', textAlign: 'center', width: '90%'
+		}}>
 			Oops... Page not found
 		</Typography>
 		<Link href="/">
 			<Button color='inherit' variant="outlined">Go back home</Button>
 		</Link>
-	</Box>
-}
+	</Box>;
+};
 
-export default PageNotFound
+export default PageNotFound;

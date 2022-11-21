@@ -1,4 +1,6 @@
-import { Body, Controller, forwardRef, Get, Inject, Post, Query, Req } from '@nestjs/common';
+import {
+	Body, Controller, Get, Inject, Post, Query, Req, forwardRef
+} from '@nestjs/common';
 import { PaginationParameters } from 'src/pagination/models/pagination-parameters';
 import ReleaseQueryParameters from 'src/release/models/release.query-parameters';
 import ReleaseService from 'src/release/release.service';
@@ -57,8 +59,9 @@ export default class AlbumController {
 		const albums = await this.albumService.getMany(
 			{ byType: filter.type }, paginationParameters, include, sortingParameter
 		);
-		return new PaginatedResponse(
-			await Promise.all(albums.map((album) => this.albumService.buildResponse(album))),
+
+		return PaginatedResponse.awaiting(
+			albums.map((album) => this.albumService.buildResponse(album)),
 			request
 		);
 	}
@@ -79,10 +82,14 @@ export default class AlbumController {
 		@Req() request: Request
 	) {
 		const albums = await this.albumService.getMany(
-			{ byArtist: { compilationArtist: true }, byType: filter.type }, paginationParameters, include, sortingParameter
+			{ byArtist: { compilationArtist: true }, byType: filter.type },
+			paginationParameters,
+			include,
+			sortingParameter
 		);
-		return new PaginatedResponse(
-			await Promise.all(albums.map((album) => this.albumService.buildResponse(album))),
+
+		return PaginatedResponse.awaiting(
+			albums.map((album) => this.albumService.buildResponse(album)),
 			request
 		);
 	}
@@ -99,7 +106,8 @@ export default class AlbumController {
 		where: AlbumQueryParameters.WhereInput
 	) {
 		const album = await this.albumService.get(where, include);
-		return await this.albumService.buildResponse(album);
+
+		return this.albumService.buildResponse(album);
 	}
 
 	@ApiOperation({
@@ -113,7 +121,8 @@ export default class AlbumController {
 		where: AlbumQueryParameters.WhereInput
 	) {
 		const masterRelease = await this.releaseService.getMasterRelease(where, include);
-		return await this.releaseService.buildResponse(masterRelease);
+
+		return this.releaseService.buildResponse(masterRelease);
 	}
 
 	@ApiOperation({
@@ -135,8 +144,9 @@ export default class AlbumController {
 		const releases = await this.releaseService.getAlbumReleases(
 			where, paginationParameters, include, sortingParameter
 		);
-		return new PaginatedResponse(
-			await Promise.all(releases.map((release) => this.releaseService.buildResponse(release))),
+
+		return PaginatedResponse.awaiting(
+			releases.map((release) => this.releaseService.buildResponse(release)),
 			request
 		);
 	}
@@ -150,7 +160,8 @@ export default class AlbumController {
 		where: AlbumQueryParameters.WhereInput,
 	): Promise<Genre[]> {
 		const genres = await this.albumService.getGenres(where);
-		return await Promise.all(genres.map((genre) => this.genreService.buildResponse(genre)));
+
+		return Promise.all(genres.map((genre) => this.genreService.buildResponse(genre)));
 	}
 
 	@ApiOperation({
@@ -170,14 +181,19 @@ export default class AlbumController {
 		@Req() request: Request
 	) {
 		const videoTracks = await this.trackService.getMany(
-			{ byAlbum: where, type: TrackType.Video }, paginationParameters, include, sortingParameter, 
+			{ byAlbum: where, type: TrackType.Video },
+			paginationParameters,
+			include,
+			sortingParameter,
 		);
-		if (videoTracks.length == 0)
+
+		if (videoTracks.length == 0) {
 			await this.albumService.throwIfNotFound(where);
-		return new PaginatedResponse(
-			await Promise.all(videoTracks.map(
+		}
+		return PaginatedResponse.awaiting(
+			videoTracks.map(
 				(videoTrack) => this.trackService.buildResponse(videoTrack)
-			)),
+			),
 			request
 		);
 	}
@@ -189,14 +205,13 @@ export default class AlbumController {
 	async reassignAlbum(
 		@Body() reassignmentDTO: ReassignAlbumDTO
 	) {
-		return await this.albumService.buildResponse(
+		return this.albumService.buildResponse(
 			await this.albumService.reassign(
-			{ byId: { id: reassignmentDTO.albumId } },
-			reassignmentDTO.artistId == null
-				? { compilationArtist: true }
-				: { id: reassignmentDTO.artistId }
-		));
+				{ byId: { id: reassignmentDTO.albumId } },
+				reassignmentDTO.artistId == null
+					? { compilationArtist: true }
+					: { id: reassignmentDTO.artistId }
+			)
+		);
 	}
-
-
 }

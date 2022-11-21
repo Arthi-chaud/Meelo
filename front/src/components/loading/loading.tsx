@@ -5,16 +5,18 @@ import { Box, useTheme } from '@mui/material';
 
 /**
  * Base loading component
- * @returns 
+ * @returns
  */
 const LoadingComponent = () => {
 	const theme = useTheme();
 	const [displayLoad, setDisplay] = useState(false);
+
 	useEffect(() => {
 		const timeId = setTimeout(() => setDisplay(true), 2);
+
 		return () => {
-			clearTimeout(timeId)
-		}
+			clearTimeout(timeId);
+		};
 	}, []);
 	return <FadeIn visible={displayLoad}>
 		<Bars
@@ -23,21 +25,21 @@ const LoadingComponent = () => {
 			color={theme.palette.primary.contrastText}
 			ariaLabel="bars-loading"
 		/>
-	</FadeIn>
-}
+	</FadeIn>;
+};
 
 /**
  * Loading component that take the whole width and center the loading animation
- * @returns 
+ * @returns
  */
 type WideLoadingComponentProps = {
 	verticalPadding?: number
 }
-const WideLoadingComponent = (props: WideLoadingComponentProps) => (
-	<Box width='100%' display="flex" justifyContent="center" paddingY={props.verticalPadding ?? 10}>
+const WideLoadingComponent = (props: WideLoadingComponentProps) =>
+	<Box width='100%' display="flex" justifyContent="center"
+		paddingY={props.verticalPadding ?? 10}>
 		<LoadingComponent/>
-	</Box>
-)
+	</Box>;
 
 export default LoadingComponent;
 export { WideLoadingComponent };

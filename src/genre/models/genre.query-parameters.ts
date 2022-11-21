@@ -1,15 +1,14 @@
 import type ArtistQueryParameters from "src/artist/models/artist.query-parameters";
 import type Slug from "src/slug/slug";
 import type SongQueryParameters from "src/song/models/song.query-params";
-import type { RequireAtLeastOne } from "type-fest";
-import type { RequireExactlyOne } from 'type-fest';
+import type { RequireAtLeastOne, RequireExactlyOne } from "type-fest";
 import type { SearchStringInput } from "src/utils/search-string-input";
 import BaseSortingParameter from 'src/sort/models/sorting-parameter';
-
-import type { RelationInclude as BaseRelationInclude } from "src/relation-include/models/relation-include" ;
+import type { RelationInclude as BaseRelationInclude } from "src/relation-include/models/relation-include";
 import { Genre } from "src/prisma/models";
 import { ApiPropertyOptional } from "@nestjs/swagger";
 import { filterAtomicRelationInclude } from "src/relation-include/atomic-relation-include.filter";
+
 namespace GenreQueryParameters {
 	/**
 	 * The input required to save a genre in the database
@@ -54,19 +53,20 @@ namespace GenreQueryParameters {
 	export const AvailableIncludes = ['songs'] as const;
 	export const AvailableAtomicIncludes = filterAtomicRelationInclude(AvailableIncludes);
 	export type RelationInclude = BaseRelationInclude<typeof AvailableIncludes>;
-	
 
 	/**
 	 * Defines how to sort fetched entries
 	 */
-	export const SortingKeys = ['id', 'name', 'songCount'] as const;
+	export const SortingKeys = [
+		'id',
+		'name',
+		'songCount'
+	] as const;
 	export type SortingKeys = typeof SortingKeys;
 	export class SortingParameter extends BaseSortingParameter<SortingKeys>{
 		@ApiPropertyOptional({ enum: SortingKeys })
-		sortBy: SortingKeys[number]
+		sortBy: SortingKeys[number];
 	}
-	
-
 
 }
 

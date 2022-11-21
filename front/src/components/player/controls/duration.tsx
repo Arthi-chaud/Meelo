@@ -1,10 +1,9 @@
 import { Typography } from "@mui/material";
 import formatDuration from "../../../utils/formatDuration";
 
-const DurationComponent = ({time}: { time?: number}) => (
+const DurationComponent = ({ time }: { time?: number}) =>
 	<Typography>
 		{formatDuration(time)}
-	</Typography>
-)
+	</Typography>;
 
 export default DurationComponent;

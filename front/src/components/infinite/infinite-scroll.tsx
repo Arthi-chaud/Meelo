@@ -1,8 +1,5 @@
-import { Box, Grid } from "@mui/material";
 import { useInfiniteQuery } from "react-query";
-import LoadingComponent from "../loading/loading";
 import * as IScroll from 'react-infinite-scroller';
-import FadeIn from "react-fade-in";
 import Resource from "../../models/resource";
 import { PaginatedResponse } from "../../models/pagination";
 import API from "../../api";
@@ -58,38 +55,42 @@ export type Page<T> = {
 
 /**
  * Infinite scroll list w/ loading animation
- * @param props 
+ * @param props
  * @returns a dynamic list component
  */
 const InfiniteScroll = <T extends Resource>(props: InfiniteScrollProps<T>) => {
 	const pageSize = props.pageSize ?? API.defaultPageSize;
 	const {
-        isFetching,
-        data,
+		isFetching,
+		data,
 		hasNextPage,
-        fetchNextPage,
-        isFetchingNextPage
+		fetchNextPage,
+		isFetchingNextPage
 	} = useInfiniteQuery({
 		...prepareMeeloInfiniteQuery<T>(props.query),
-		getNextPageParam: (lastPage: Page<T>): Page<T> | undefined  => {
-			if (lastPage.end || lastPage.items.length < pageSize)
+		getNextPageParam: (lastPage: Page<T>): Page<T> | undefined => {
+			if (lastPage.end || lastPage.items.length < pageSize) {
 				return undefined;
+			}
 			return lastPage;
 		},
-	})
+	});
+
 	return <>
 		{ isFetching && !data && props.firstLoader() }
 		<IScroll.default
-		    pageStart={0}
-		    loadMore={() => {
-				if (hasNextPage && !isFetchingNextPage)
-					fetchNextPage()
+			pageStart={0}
+			loadMore={() => {
+				if (hasNextPage && !isFetchingNextPage) {
+					fetchNextPage();
+				}
 			}}
-		    hasMore={hasNextPage}
+			hasMore={hasNextPage}
 		>
-		{ data && props.render(data.pages.map((page) => page.items).flat()) }
-		{ isFetchingNextPage && props.loader() }
+			{ data && props.render(data.pages.map((page) => page.items).flat()) }
+			{ isFetchingNextPage && props.loader() }
 		</IScroll.default>
-	</>
-}
+	</>;
+};
+
 export default InfiniteScroll;

@@ -4,11 +4,9 @@ import type FileQueryParameters from "src/file/models/file.query-parameters";
 import type LibraryQueryParameters from "src/library/models/library.query-parameters";
 import type ReleaseQueryParameters from "src/release/models/release.query-parameters";
 import type SongQueryParameters from "src/song/models/song.query-params";
-import type { RequireAtLeastOne } from "type-fest";
-import type { RequireExactlyOne } from 'type-fest';
+import type { RequireAtLeastOne, RequireExactlyOne } from "type-fest";
 import type { RelationInclude as BaseRelationInclude } from "src/relation-include/models/relation-include";
 import BaseSortingParameter from 'src/sort/models/sorting-parameter';
-
 import type AlbumQueryParameters from "src/album/models/album.query-parameters";
 import type ArtistQueryParameters from "src/artist/models/artist.query-parameters";
 import { ApiPropertyOptional } from "@nestjs/swagger";
@@ -60,7 +58,7 @@ namespace TrackQueryParameters {
 	 * Parameters to update the master track of a song
 	 */
 	export type UpdateSongMaster = {
-		trackId: number, 
+		trackId: number,
 		song: SongQueryParameters.WhereInput,
 	};
 
@@ -75,18 +73,27 @@ namespace TrackQueryParameters {
 	export const AvailableIncludes = ['song', 'release'] as const;
 	export const AvailableAtomicIncludes = filterAtomicRelationInclude(AvailableIncludes);
 	export type RelationInclude = BaseRelationInclude<typeof AvailableIncludes>;
-	
 
 	/**
 	 * Defines how to sort fetched entries
 	 */
-	export const SortingKeys = ['id', 'name', 'releaseName', 'duration', 'bitrate', 'trackIndex', 'discIndex', 'addDate', 'releaseDate'] as const;
+	export const SortingKeys = [
+		'id',
+		'name',
+		'releaseName',
+		'duration',
+		'bitrate',
+		'trackIndex',
+		'discIndex',
+		'addDate',
+		'releaseDate'
+	] as const;
 	export type SortingKeys = typeof SortingKeys;
 	export class SortingParameter extends BaseSortingParameter<SortingKeys>{
 		@ApiPropertyOptional({ enum: SortingKeys })
-		sortBy: SortingKeys[number]
+		sortBy: SortingKeys[number];
 	}
-	
+
 }
 
 export default TrackQueryParameters;

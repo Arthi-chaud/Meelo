@@ -1,4 +1,4 @@
-import { forwardRef, Module } from '@nestjs/common';
+import { Module, forwardRef } from '@nestjs/common';
 import SettingsModule from 'src/settings/settings.module';
 import FileManagerService from './file-manager.service';
 

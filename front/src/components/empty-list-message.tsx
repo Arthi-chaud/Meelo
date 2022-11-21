@@ -1,14 +1,14 @@
-import { Typography } from "@mui/material"
+import { Box, Typography } from "@mui/material";
 
 const EmptyListMessage = () => {
-	return <div>
+	return <Box>
 		<Typography variant="h1">
-		  Well...
+			Well...
 		</Typography>
 		<Typography variant="h3">
-		  There is nothing to display here
+			There is nothing to display here
 		</Typography>
-	</div>
-}
+	</Box>;
+};
 
-export default EmptyListMessage
+export default EmptyListMessage;

@@ -1,4 +1,4 @@
-import { createSlice, PayloadAction } from '@reduxjs/toolkit'
+import { PayloadAction, createSlice } from '@reduxjs/toolkit';
 import Artist from '../models/artist';
 import Release from '../models/release';
 import Track from '../models/track';
@@ -8,7 +8,6 @@ type TrackState = {
 	artist: Artist;
 	release: Release;
 }
-
 
 interface PlayerState {
 	/**
@@ -46,17 +45,19 @@ export const playerSlice = createSlice({
 		},
 		skipTrack: (state, action: PayloadAction<void>) => {
 			state.cursor++;
-			if (state.cursor >= state.playlist.length)
+			if (state.cursor >= state.playlist.length) {
 				state.cursor = -1;
+			}
 		},
 		playPreviousTrack: (state, action: PayloadAction<void>) => {
-			if (state.cursor >= 0)
+			if (state.cursor >= 0) {
 				state.cursor--;
+			}
 		},
 
 	},
-})
+});
 
 export const { playTrack, playTracks, playNext, playAfter, skipTrack, playPreviousTrack } = playerSlice.actions;
 
-export default playerSlice.reducer
+export default playerSlice.reducer;

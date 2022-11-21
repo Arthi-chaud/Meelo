@@ -1,6 +1,8 @@
 import Artist from "../../models/artist";
-import ContextualMenu from "./contextual-menu"
-import { GoToArtistAction, GoToArtistAlbumsAction, GoToArtistSongsAction, ShareArtistAction } from "./actions";
+import ContextualMenu from "./contextual-menu";
+import {
+	GoToArtistAction, GoToArtistAlbumsAction, GoToArtistSongsAction, ShareArtistAction
+} from "./actions";
 
 type ArtistContextualMenuProps = {
 	artist: Artist;
@@ -8,13 +10,15 @@ type ArtistContextualMenuProps = {
 
 const ArtistContextualMenu = (props: ArtistContextualMenuProps) => {
 	const artistSlug = props.artist.slug;
-	return <ContextualMenu actions={[[
-		GoToArtistAction(artistSlug),
-		GoToArtistAlbumsAction(artistSlug),
-		GoToArtistSongsAction(artistSlug),
-	], [
-		ShareArtistAction(artistSlug)
-	]]}/>
-}
+
+	return <ContextualMenu actions={[
+		[
+			GoToArtistAction(artistSlug),
+			GoToArtistAlbumsAction(artistSlug),
+			GoToArtistSongsAction(artistSlug),
+		],
+		[ShareArtistAction(artistSlug)]
+	]}/>;
+};
 
 export default ArtistContextualMenu;

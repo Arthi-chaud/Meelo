@@ -12,20 +12,23 @@ export default class ParseRelationIncludePipe<Keys extends readonly string[], T 
 	transform(value: any, _metadata: ArgumentMetadata): T {
 		const separator = ',';
 		let includes: T = <T>{};
-		if (value === undefined || value === "")
+		const keysArray = this.keys as unknown as (keyof T)[];
+
+		if (value === undefined || value === "") {
 			return includes;
-
-		if (value.match(`[a-zA-Z]+(${separator}[a-zA-Z]+)*`) == null)
+		}
+		if (value.match(`[a-zA-Z]+(${separator}[a-zA-Z]+)*`) == null) {
 			throw new InvalidRelationIncludeParameterFormat();
-
-		(this.keys as unknown as (keyof T)[]).forEach(
-			(key: keyof T) => { includes = { ...includes, [key]: false } }
-		);
+		}
+		keysArray.forEach((key: keyof T) => {
+			includes = { ...includes, [key]: false };
+		});
 		value.split(separator)
 			.forEach((requestedInclude: string) => {
-				if (this.keys.includes(requestedInclude) == false)
+				if (this.keys.includes(requestedInclude) == false) {
 					throw new InvalidRelationIncludeParameter(requestedInclude, this.keys);
-				includes = { ...includes, [requestedInclude]: true }
+				}
+				includes = { ...includes, [requestedInclude]: true };
 			});
 		return includes;
 	}

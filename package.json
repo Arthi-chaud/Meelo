@@ -6,22 +6,18 @@
   "private": true,
   "license": "GNU GENERAL PUBLIC LICENSE v3",
   "scripts": {
-    "prebuild": "rimraf dist",
+    "lint": "eslint \"{src,apps,libs,test}/**/*.ts\"",
     "build": "nest build",
-    "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
     "start": "nest start",
     "start:dev": "NODE_ENV=development nest start --watch",
     "start:debug": "nest start --debug --watch",
     "start:prod": "node dist/main",
-    "lint": "eslint \"{src,apps,libs,test}/**/*.ts\" --fix",
     "test:db:up": "docker run -d --rm --env-file .env -p 5432:5432 --name test-db postgres:alpine3.16",
     "test:db:down": "docker container stop test-db",
     "test:db:migrate": "export POSTGRES_HOST=localhost; yarn run prisma migrate dev",
     "test": "export POSTGRES_HOST=localhost;  NODE_ENV=development jest -i",
-    "test:watch": "export POSTGRES_HOST=localhost; NODE_ENV=development jest --watch",
     "test:cov": "export POSTGRES_HOST=localhost; NODE_ENV=development jest --coverage -i",
-    "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
-    "test:e2e": "jest --config ./test/jest-e2e.json"
+    "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand"
   },
   "dependencies": {
     "@nestjs/common": "^8.0.0",
@@ -72,7 +68,10 @@
     "@typescript-eslint/eslint-plugin": "^5.0.0",
     "@typescript-eslint/parser": "^5.0.0",
     "eslint-config-prettier": "^8.3.0",
+    "eslint-plugin-import": "^2.26.0",
     "eslint-plugin-prettier": "^4.0.0",
+    "eslint-plugin-simple-import-sort": "^8.0.0",
+    "eslint-plugin-unused-imports": "^2.0.0",
     "jest": "^27.2.5",
     "md5-file": "^5.0.0",
     "prettier": "^2.3.2",
@@ -115,31 +114,17 @@
   "prisma": {
     "schema": "prisma/schema.prisma"
   },
-  "eslintConfig": {
-    "root": true,
-    "extends": [
-      "eslint:recommended",
-      "plugin:@typescript-eslint/recommended"
-    ],
-    "parser": "@typescript-eslint/parser",
-    "parserOptions": {
-      "project": [
-        "./tsconfig.json"
-      ]
-    },
-    "plugins": [
-      "@typescript-eslint"
-    ],
-    "rules": {
-      "@typescript-eslint/switch-exhaustiveness-check": 2
-    }
-  },
   "compodoc": {
     "name": "Meelo Documentation",
     "output": "docs/generated",
     "customLogo": "./front/public/banner.png",
     "customFavicon": "./front/public/icon.png",
     "includes": "docs/",
-    "exclude": ["front", "test/", "node_modules/", "docs/generated"]
+    "exclude": [
+      "front",
+      "test/",
+      "node_modules/",
+      "docs/generated"
+    ]
   }
 }

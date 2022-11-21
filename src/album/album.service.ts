@@ -1,8 +1,15 @@
-import { forwardRef, Inject, Injectable, Logger } from '@nestjs/common';
+import {
+	Inject, Injectable, Logger, forwardRef
+} from '@nestjs/common';
 import ArtistService from 'src/artist/artist.service';
 import Slug from 'src/slug/slug';
-import { AlbumAlreadyExistsException, AlbumAlreadyExistsExceptionWithArtistID as AlbumAlreadyExistsWithArtistIDException, AlbumNotFoundException, AlbumNotFoundFromIDException } from './album.exceptions';
-import { AlbumType,  Prisma } from '@prisma/client';
+import {
+	AlbumAlreadyExistsException,
+	AlbumAlreadyExistsExceptionWithArtistID as AlbumAlreadyExistsWithArtistIDException,
+	AlbumNotFoundException,
+	AlbumNotFoundFromIDException
+} from './album.exceptions';
+import { AlbumType, Prisma } from '@prisma/client';
 import PrismaService from 'src/prisma/prisma.service';
 import AlbumQueryParameters from './models/album.query-parameters';
 import type ArtistQueryParameters from 'src/artist/models/artist.query-parameters';
@@ -13,7 +20,9 @@ import type { MeeloException } from 'src/exceptions/meelo-exception';
 import GenreService from "../genre/genre.service";
 import { buildStringSearchParameters } from 'src/utils/search-string-input';
 import SongService from 'src/song/song.service';
-import { Album, Release, Genre, AlbumWithRelations } from "src/prisma/models";
+import {
+	Album, AlbumWithRelations, Genre, Release
+} from "src/prisma/models";
 import { AlbumResponse } from './models/album.response';
 import SortingParameter from 'src/sort/models/sorting-parameter';
 
@@ -46,7 +55,6 @@ export default class AlbumService extends RepositoryService<
 		super(prismaService.album);
 	}
 
-
 	/**
 	 * Create an Album
 	 */
@@ -55,10 +63,13 @@ export default class AlbumService extends RepositoryService<
 		include?: I
 	) {
 		if (album.artist === undefined) {
-			if (await this.count({ byName: { is: album.name }, byArtist: { compilationArtist: true } }) != 0)
+			if (await this.count(
+				{ byName: { is: album.name }, byArtist: { compilationArtist: true } }
+			) != 0) {
 				throw new AlbumAlreadyExistsException(new Slug(album.name));
+			}
 		}
-		return await super.create(album, include);
+		return super.create(album, include);
 	}
 
 	formatCreateInput(input: AlbumQueryParameters.CreateInput) {
@@ -72,17 +83,22 @@ export default class AlbumService extends RepositoryService<
 			type: AlbumService.getAlbumTypeFromName(input.name)
 		};
 	}
+
 	protected formatCreateInputToWhereInput(where: AlbumQueryParameters.CreateInput) {
 		return {
 			bySlug: { slug: new Slug(where.name), artist: where.artist },
-		}
+		};
 	}
+
 	protected async onCreationFailure(input: AlbumQueryParameters.CreateInput) {
 		const albumSlug = new Slug(input.name);
-		if (input.artist)
+
+		if (input.artist) {
 			await this.artistServce.get(input.artist);
-		if (input.artist?.id)
+		}
+		if (input.artist?.id) {
 			return new AlbumAlreadyExistsWithArtistIDException(albumSlug, input.artist.id);
+		}
 		return new AlbumAlreadyExistsException(albumSlug, input.artist?.slug);
 	}
 
@@ -97,9 +113,10 @@ export default class AlbumService extends RepositoryService<
 				where.bySlug.artist
 					? ArtistService.formatWhereInput(where.bySlug.artist)
 					: null
-			: undefined
-		}
+				: undefined
+		};
 	}
+
 	formatWhereInput = AlbumService.formatWhereInput;
 
 	static formatManyWhereInput(where: AlbumQueryParameters.ManyWhereInput) {
@@ -108,8 +125,8 @@ export default class AlbumService extends RepositoryService<
 			artist: where.byArtist
 				? where.byArtist.compilationArtist
 					? null
-					: ArtistService.formatWhereInput(where.byArtist)	
-			: where.byArtist,
+					: ArtistService.formatWhereInput(where.byArtist)
+				: where.byArtist,
 			name: buildStringSearchParameters(where.byName),
 			releases: where.byLibrarySource || where.byGenre ? {
 				some: where.byLibrarySource
@@ -126,27 +143,28 @@ export default class AlbumService extends RepositoryService<
 			} : undefined
 		};
 	}
+
 	formatManyWhereInput = AlbumService.formatManyWhereInput;
 
 	formatSortingInput(
 		sortingParameter: SortingParameter<AlbumQueryParameters.SortingKeys>
 	): Prisma.AlbumOrderByWithRelationInput {
 		switch (sortingParameter.sortBy) {
-			case 'name':
-				return { slug: sortingParameter.order }
-			case 'artistName':
-				return { artist: this.artistServce.formatSortingInput(
-					{ sortBy: 'name', order :sortingParameter.order })
-				}
-			case 'addDate':
-				return { id: sortingParameter.order }
-			case 'releaseDate':
-				return { releaseDate: {sort: sortingParameter.order, nulls: 'last'}}
-			default:
-				return {[sortingParameter.sortBy ?? 'id']: sortingParameter.order}
+		case 'name':
+			return { slug: sortingParameter.order };
+		case 'artistName':
+			return { artist: this.artistServce.formatSortingInput(
+				{ sortBy: 'name', order: sortingParameter.order }
+			) };
+		case 'addDate':
+			return { id: sortingParameter.order };
+		case 'releaseDate':
+			return { releaseDate: { sort: sortingParameter.order, nulls: 'last' } };
+		default:
+			return { [sortingParameter.sortBy ?? 'id']: sortingParameter.order };
 		}
 	}
-	
+
 	/**
 	 * Updates an album
 	 */
@@ -154,38 +172,44 @@ export default class AlbumService extends RepositoryService<
 		return {
 			...what,
 			slug: what.name ? new Slug(what.name).toString() : undefined,
-		}
+		};
 	}
+
 	/**
 	 * Updates an album date, using the earliest date from its releases
 	 * @param where the query parameter to get the album to update
 	 */
 	async updateAlbumDate(where: AlbumQueryParameters.WhereInput) {
 		const album = await this.get(where, { releases: true });
+
 		for (const release of album.releases) {
 			if (album.releaseDate == null ||
-				(release.releaseDate && release.releaseDate < album.releaseDate)) {
+				release.releaseDate && release.releaseDate < album.releaseDate) {
 				album.releaseDate = release.releaseDate;
 			}
 		}
-		return await this.update({ releaseDate: album.releaseDate }, { byId: { id: album.id }});
+		return this.update({ releaseDate: album.releaseDate }, { byId: { id: album.id } });
 	}
 
 	/**
 	 * Updates an album master, using the earliest date from its releases
 	 * @param where the query parameter to get the album to update
 	 */
-	 async updateAlbumMaster(where: AlbumQueryParameters.WhereInput): Promise<Release | null> {
+	async updateAlbumMaster(where: AlbumQueryParameters.WhereInput): Promise<Release | null> {
 		const releases = await this.releaseService.getAlbumReleases(where);
 		const sortedReleases = releases
-			.filter((releases) => releases.releaseDate !== null)
-			.sort((releaseA, releaseB) => releaseA.releaseDate!.getTime() - releaseB.releaseDate!.getTime())
+			.filter((release) => release.releaseDate !== null)
+			.sort((r1, r2) => r1.releaseDate!.getTime() - r2.releaseDate!.getTime());
+
 		if (sortedReleases.length !== 0) {
-			const newMaster = sortedReleases.at(0)!
+			const newMaster = sortedReleases.at(0)!;
+
 			await this.releaseService.setReleaseAsMaster({ releaseId: newMaster.id, album: where });
 			return { ...newMaster, master: true };
 		} else if (releases.length !== 0) {
-			await this.releaseService.setReleaseAsMaster({ releaseId: releases[0].id, album: where });
+			await this.releaseService.setReleaseAsMaster(
+				{ releaseId: releases[0].id, album: where }
+			);
 			return { ...releases[0], master: true };
 		}
 		return null;
@@ -193,13 +217,14 @@ export default class AlbumService extends RepositoryService<
 
 	/**
 	 * Deletes an album
-	 * @param where the query parameter 
+	 * @param where the query parameter
 	 */
 	async delete(where: AlbumQueryParameters.DeleteInput): Promise<Album> {
 		const album = await this.get(where, { releases: true, artist: true });
+
 		await Promise.all(
 			album.releases.map(
-				(release) => this.releaseService.delete({ byId: { id: release.id }}, false)
+				(release) => this.releaseService.delete({ byId: { id: release.id } }, false)
 			)
 		);
 		try {
@@ -208,33 +233,42 @@ export default class AlbumService extends RepositoryService<
 			return album;
 		}
 		Logger.warn(`Album '${album.slug}' deleted`);
-		if (album.artistId !== null)
+		if (album.artistId !== null) {
 			await this.artistServce.deleteArtistIfEmpty({ id: album.artistId });
+		}
 		try {
-			const albumIllustrationFolder = this.illustrationService.buildAlbumIllustrationFolderPath(
-				new Slug(album.slug), album.artist ? new Slug(album.artist.slug) : undefined
-			);
+			const albumIllustrationFolder = this.illustrationService
+				.buildAlbumIllustrationFolderPath(
+					new Slug(album.slug), album.artist ? new Slug(album.artist.slug) : undefined
+				);
+
 			this.illustrationService.deleteIllustrationFolder(albumIllustrationFolder);
-		} catch {}
+		} catch {
+			return album;
+		}
 		return album;
 	}
+
 	formatDeleteInput(where: AlbumQueryParameters.DeleteInput) {
 		return this.formatWhereInput(where);
 	}
+
 	protected formatDeleteInputToWhereInput(input: AlbumQueryParameters.DeleteInput) {
 		return input;
 	}
 
 	/**
 	 * Delete an album if it does not have related releases
-	 * @param albumId 
+	 * @param albumId
 	 */
 	async deleteIfEmpty(albumId: number): Promise<void> {
 		const albumCount = await this.releaseService.count({
 			album: { byId: { id: albumId } }
 		});
-		if (albumCount == 0)
+
+		if (albumCount == 0) {
 			await this.delete({ byId: { id: albumId } });
+		}
 	}
 
 	/**
@@ -255,13 +289,18 @@ export default class AlbumService extends RepositoryService<
 		const artistAlbums = newArtist
 			? newArtist.albums
 			: await this.getMany({ byArtist: { compilationArtist: true } });
-		
-		if (artistAlbums.find((artistAlbum) => album.slug == artistAlbum.slug))
-			throw new AlbumAlreadyExistsException(albumSlug, newArtistSlug)
+
+		if (artistAlbums.find((artistAlbum) => album.slug == artistAlbum.slug)) {
+			throw new AlbumAlreadyExistsException(albumSlug, newArtistSlug);
+		}
 		const updatedAlbum = await this.update({ artistId: newArtist?.id ?? null }, albumWhere);
-		this.illustrationService.reassignAlbumIllustrationFolder(albumSlug, previousArtistSlug, newArtistSlug);
-		if (album.artistId)
+
+		this.illustrationService.reassignAlbumIllustrationFolder(
+			albumSlug, previousArtistSlug, newArtistSlug
+		);
+		if (album.artistId) {
 			await this.artistServce.deleteArtistIfEmpty({ id: album.artistId });
+		}
 		return updatedAlbum;
 	}
 
@@ -273,21 +312,26 @@ export default class AlbumService extends RepositoryService<
 		where: AlbumQueryParameters.WhereInput
 	) : Promise<Genre[]> {
 		const releases = await this.releaseService.getAlbumReleases(where, {}, { tracks: true });
-		const songsId = Array.from(new Set(releases.map((release) => release.tracks.map((track) => track.songId)).flat()));
+		const songsId = Array.from(new Set(
+			releases.map((release) => release.tracks.map((track) => track.songId)).flat()
+		));
 		const genres: Genre[] = (await Promise.all(
 			songsId.map((songId) => this.genreService.getSongGenres({ byId: { id: songId } }))
 		)).flat();
 		const genresOccurrences = genres.reduce(
-			(occurences, genre) => occurences.set(genre.slug, (occurences.get(genre.slug) || 0) + 1),
+			(map, genre) => map.set(genre.slug, (map.get(genre.slug) || 0) + 1),
 			new Map<string, number>()
 		);
+
 		return Array.from(genresOccurrences.entries()).sort(
 			(genreA, genreB) => genreB[1] - genreA[1]
-		).map((genresSlugOccurrence) => genres.find((genre) => genresSlugOccurrence[0] == genre.slug)!);
+		).map(
+			(genresSlugOccurrence) => genres.find((genre) => genresSlugOccurrence[0] == genre.slug)!
+		);
 	}
 
 	/**
-	 * Build an object for the API 
+	 * Build an object for the API
 	 * @param album the album to create the object from
 	 */
 	async buildResponse(album: AlbumWithRelations): Promise<AlbumResponse> {
@@ -295,14 +339,17 @@ export default class AlbumService extends RepositoryService<
 			...album,
 			illustration: await this.illustrationService.getAlbumIllustrationLink(album.id)
 		};
-		if (album.artist != undefined)
-			response.artist = await this.artistServce.buildResponse(album.artist)
+
+		if (album.artist != undefined) {
+			response.artist = await this.artistServce.buildResponse(album.artist);
+		}
 		return response;
 	}
 
 	onNotFound(where: AlbumQueryParameters.WhereInput): MeeloException {
-		if (where.byId)
+		if (where.byId) {
 			return new AlbumNotFoundFromIDException(where.byId.id);
+		}
 		return new AlbumNotFoundException(where.bySlug.slug, where.bySlug.artist?.slug);
 	}
 
@@ -313,11 +360,11 @@ export default class AlbumService extends RepositoryService<
 			albumName.includes('bande originale') ||
 			albumName.includes('music from and inspired by the television series') ||
 			albumName.includes('music from and inspired by the motion picture')) {
-			return AlbumType.Soundtrack
+			return AlbumType.Soundtrack;
 		}
 		if (albumName.includes('music videos') ||
 			albumName.includes('the video') ||
-			albumName.includes('dvd') ) {
+			albumName.includes('dvd')) {
 			return AlbumType.VideoAlbum;
 		}
 		if (albumName.search(/.+(live).*/g) != -1 ||
@@ -326,12 +373,12 @@ export default class AlbumService extends RepositoryService<
 			albumName.includes('live from ') ||
 			albumName.includes('live at ') ||
 			albumName.includes('live à ')) {
-			return AlbumType.LiveRecording
+			return AlbumType.LiveRecording;
 		}
 		if (albumName.endsWith('- single') ||
 			albumName.endsWith('- ep') ||
 			albumName.endsWith('(remixes)')) {
-			return AlbumType.Single
+			return AlbumType.Single;
 		}
 		if (
 			albumName.includes('remix album') ||
@@ -340,14 +387,14 @@ export default class AlbumService extends RepositoryService<
 			albumName.includes('remixes') ||
 			albumName.includes('remixed') ||
 			albumName.includes('best mixes')) {
-			return AlbumType.RemixAlbum
+			return AlbumType.RemixAlbum;
 		}
 		if (albumName.includes('best of') ||
 			albumName.includes('hits') ||
 			albumName.includes('greatest hits') ||
 			albumName.includes('singles') ||
 			albumName.includes('collection')) {
-			return AlbumType.Compilation
+			return AlbumType.Compilation;
 		}
 		return AlbumType.StudioRecording;
 	}

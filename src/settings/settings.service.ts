@@ -1,36 +1,46 @@
-import { forwardRef, Inject, Injectable } from '@nestjs/common';
+import {
+	Inject, Injectable, forwardRef
+} from '@nestjs/common';
 import FileManagerService from 'src/file-manager/file-manager.service';
-import type Settings from './models/settings';
-import { metadataOrderValue, metadataSourceValue } from './models/settings';
-import { InvalidSettingsFileException, InvalidSettingsTypeException, MissingSettingsException, SettingsFileNotFoundException } from './settings.exception';
+import Settings, { metadataOrderValue, metadataSourceValue } from './models/settings';
+import {
+	InvalidSettingsFileException,
+	InvalidSettingsTypeException,
+	MissingSettingsException,
+	SettingsFileNotFoundException
+} from './settings.exception';
 
 @Injectable()
 export default class SettingsService {
-	protected settings: Settings; 
+	protected settings: Settings;
 	private readonly configPath: string;
 
 	constructor(
 		@Inject(forwardRef(() => FileManagerService))
-		private fileManagerService: FileManagerService) {
+		private fileManagerService: FileManagerService
+	) {
 		this.configPath = `${this.fileManagerService.configFolderPath}/settings.json`;
 		this.loadFromFile();
 	}
+
 	/**
 	 * Loading Settings configuration from a JSON file
 	 */
 	loadFromFile(): void {
-		let object: any;
+		let object: any = {};
+
 		try {
 			object = JSON.parse(this.fileManagerService.getFileContent(this.configPath).toString());
-		} catch (e) {
-			if (e instanceof SyntaxError) {
+		} catch (error) {
+			if (error instanceof SyntaxError) {
 				throw new InvalidSettingsFileException();
 			}
 			throw new SettingsFileNotFoundException();
 		}
 		this.settings = this.buildSettings(object);
-		if (this.settings.trackRegex.length < 1)
+		if (this.settings.trackRegex.length < 1) {
 			throw new InvalidSettingsFileException();
+		}
 	}
 
 	/**
@@ -38,26 +48,31 @@ export default class SettingsService {
 	 */
 	private buildSettings(object: any): Settings {
 		const settingsFields = {
-			'dataFolder': (i: any) => typeof i === 'string',
-			'trackRegex': (i: any) => Array.isArray(i),
-			'metadata': (i: any) => {
-				if (typeof i !== 'object')
-					return false
-				if (i.source === undefined)
+			dataFolder: (value: unknown) => typeof value === 'string',
+			trackRegex: (value: unknown) => Array.isArray(value),
+			metadata: (value: any) => {
+				if (typeof value !== 'object') {
+					return false;
+				}
+				if (value.source === undefined) {
 					throw new MissingSettingsException('source');
-				else if (i.order === undefined)
+				} else if (value.order === undefined) {
 					throw new MissingSettingsException('order');
-				return metadataSourceValue.includes(i.source) == true &&
-					metadataOrderValue.includes(i.order) == true
+				}
+				return metadataSourceValue.includes(value.source) == true &&
+					metadataOrderValue.includes(value.order) == true;
 			}
-		}
+		};
+		// eslint-disable-next-line init-declarations
 		let settingField: keyof typeof settingsFields;
+
 		for (settingField in settingsFields) {
 			const settingValue = object[settingField];
+
 			if (settingValue === undefined) {
 				throw new MissingSettingsException(settingField);
 			} else if (settingsFields[settingField](settingValue) != true) {
-				throw new InvalidSettingsTypeException(settingField, typeof settingValue)
+				throw new InvalidSettingsTypeException(settingField, typeof settingValue);
 			}
 		}
 		return {

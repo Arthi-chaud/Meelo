@@ -1,4 +1,6 @@
-import { Body, Controller, Delete, Get, Post, Query, Req } from '@nestjs/common';
+import {
+	Body, Controller, Delete, Get, Post, Query, Req
+} from '@nestjs/common';
 import LibraryService from './library.service';
 import LibraryDto from './models/create-library.dto';
 import { Library } from 'src/prisma/models';
@@ -46,7 +48,7 @@ export default class LibraryController {
 	})
 	@Post('new')
 	async createLibrary(@Body() createLibraryDto: LibraryDto) {
-		return await this.libraryService.buildResponse(
+		return this.libraryService.buildResponse(
 			await this.libraryService.create(createLibraryDto)
 		);
 	}
@@ -73,9 +75,13 @@ export default class LibraryController {
 		@SortingQuery(LibraryQueryParameters.SortingKeys)
 		sortingParameter: LibraryQueryParameters.SortingParameter,
 		@Req() request: Request
-	): Promise<PaginatedResponse<Object>> {
-		return new PaginatedResponse(
-			await this.libraryService.getMany({}, paginationParameters, {}, sortingParameter),
+	): Promise<PaginatedResponse<Library>> {
+		const libraries = await this.libraryService.getMany(
+			{}, paginationParameters, {}, sortingParameter
+		);
+
+		return PaginatedResponse.awaiting(
+			libraries.map((library) => this.libraryService.buildResponse(library)),
 			request
 		);
 	}
@@ -106,14 +112,16 @@ export default class LibraryController {
 		@SortingQuery(ArtistQueryParameters.SortingKeys)
 		sortingParameter: ArtistQueryParameters.SortingParameter,
 		@Req() request: Request
-	): Promise<PaginatedResponse<Object>> {
+	) {
 		const artists = await this.artistService.getAlbumsArtists(
 			{ byLibrarySource: where }, paginationParameters, include, sortingParameter
 		);
-		if (artists.length == 0)
+
+		if (artists.length == 0) {
 			await this.libraryService.throwIfNotFound(where);
-		return new PaginatedResponse(
-			await Promise.all(artists.map((artist) => this.artistService.buildResponse(artist))),
+		}
+		return PaginatedResponse.awaiting(
+			artists.map((artist) => this.artistService.buildResponse(artist)),
 			request
 		);
 	}
@@ -134,14 +142,19 @@ export default class LibraryController {
 		sortingParameter: AlbumQueryParameters.SortingParameter,
 		@Query() filter: AlbumQueryParameters.AlbumFilterParameter,
 		@Req() request: Request
-	): Promise<PaginatedResponse<Object>> {
+	) {
 		const albums = await this.albumService.getMany(
-			{ byLibrarySource: where, byType: filter.type }, paginationParameters, include, sortingParameter
+			{ byLibrarySource: where, byType: filter.type },
+			paginationParameters,
+			include,
+			sortingParameter
 		);
-		if (albums.length == 0)
+
+		if (albums.length == 0) {
 			await this.libraryService.throwIfNotFound(where);
-		return new PaginatedResponse(
-			await Promise.all(albums.map((album) => this.albumService.buildResponse(album))),
+		}
+		return PaginatedResponse.awaiting(
+			albums.map((album) => this.albumService.buildResponse(album)),
 			request
 		);
 	}
@@ -161,14 +174,16 @@ export default class LibraryController {
 		@SortingQuery(ReleaseQueryParameters.SortingKeys)
 		sortingParameter: ReleaseQueryParameters.SortingParameter,
 		@Req() request: Request
-	): Promise<PaginatedResponse<Object>> {
+	) {
 		const releases = await this.releaseService.getMany(
 			{ library: where }, paginationParameters, include, sortingParameter
 		);
-		if (releases.length == 0)
+
+		if (releases.length == 0) {
 			await this.libraryService.throwIfNotFound(where);
-		return new PaginatedResponse(
-			await Promise.all(releases.map((release) => this.releaseService.buildResponse(release))),
+		}
+		return PaginatedResponse.awaiting(
+			releases.map((release) => this.releaseService.buildResponse(release)),
 			request
 		);
 	}
@@ -188,14 +203,16 @@ export default class LibraryController {
 		@SortingQuery(SongQueryParameters.SortingKeys)
 		sortingParameter: SongQueryParameters.SortingParameter,
 		@Req() request: Request
-	): Promise<PaginatedResponse<Object>> {
-		const songs =  await this.songService.getMany(
+	) {
+		const songs = await this.songService.getMany(
 			{ library: where }, paginationParameters, include, sortingParameter
 		);
-		if (songs.length == 0)
+
+		if (songs.length == 0) {
 			await this.libraryService.throwIfNotFound(where);
-		return new PaginatedResponse(
-			await Promise.all(songs.map((song) => this.songService.buildResponse(song))),
+		}
+		return PaginatedResponse.awaiting(
+			songs.map((song) => this.songService.buildResponse(song)),
 			request
 		);
 	}
@@ -215,16 +232,18 @@ export default class LibraryController {
 		@SortingQuery(TrackQueryParameters.SortingKeys)
 		sortingParameter: TrackQueryParameters.SortingParameter,
 		@Req() request: Request
-	): Promise<PaginatedResponse<Object>> {
+	) {
 		const tracks = await this.trackService.getMany(
 			{ byLibrarySource: where }, paginationParameters, include, sortingParameter
 		);
-		if (tracks.length == 0)
+
+		if (tracks.length == 0) {
 			await this.libraryService.throwIfNotFound(where);
-		return new PaginatedResponse(
-			await Promise.all(tracks.map(
+		}
+		return PaginatedResponse.awaiting(
+			tracks.map(
 				(track) => this.trackService.buildResponse(track)
-			)),
+			),
 			request
 		);
 	}

@@ -43,9 +43,28 @@ type AlbumWithReleases = Album & {
 
 type AlbumInclude = 'artist';
 
-export const AlbumType = ['StudioRecording', 'Single', 'LiveRecording', 'Compilation', 'Soundtrack', 'RemixAlbum', 'VideoAlbum'];
-export type AlbumType = 'StudioRecording' | 'LiveRecording' | 'Compilation' | 'Single' | 'Soundtrack' | 'RemixAlbum' | 'VideoAlbum';
+export const AlbumType = [
+	'StudioRecording',
+	'Single',
+	'LiveRecording',
+	'Compilation',
+	'Soundtrack',
+	'RemixAlbum',
+	'VideoAlbum'
+];
+export type AlbumType = 'StudioRecording'
+	| 'LiveRecording'
+	| 'Compilation'
+	| 'Single'
+	| 'Soundtrack'
+	| 'RemixAlbum'
+	| 'VideoAlbum';
 
 export default Album;
-export const AlbumSortingKeys = ['name', 'artistName', 'releaseDate', 'addDate'];
+export const AlbumSortingKeys = [
+	'name',
+	'artistName',
+	'releaseDate',
+	'addDate'
+];
 export type { AlbumWithArtist, AlbumWithReleases, AlbumInclude };

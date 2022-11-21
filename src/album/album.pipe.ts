@@ -9,11 +9,13 @@ import type AlbumQueryParameters from "./models/album.query-parameters";
 export default class ParseAlbumIdentifierPipe implements PipeTransform {
 	transform(value: string, _metadata: ArgumentMetadata): AlbumQueryParameters.WhereInput {
 		try {
-			return { byId: { id: new ParseIdPipe().transform(value, _metadata) }};
+			return { byId: { id: new ParseIdPipe().transform(value, _metadata) } };
 		} catch {
 			const slugs = new ParseMultipleSlugPipe().transform(value, _metadata);
-			if (slugs.length != 2)
+
+			if (slugs.length != 2) {
 				throw new InvalidRequestException(`Expected the following string format: 'artist-slug${SlugSeparator}album-slug'`);
+			}
 			return {
 				bySlug: {
 					slug: slugs[1],
@@ -21,7 +23,7 @@ export default class ParseAlbumIdentifierPipe implements PipeTransform {
 						? undefined
 						: {	slug: slugs[0] }
 				}
-			}
+			};
 		}
 	}
 }

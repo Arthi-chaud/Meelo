@@ -12,7 +12,7 @@ namespace LyricsQueryParameters {
 	/**
 	 * Query parameters to find one lyric entry
 	 */
-	export type WhereInput = RequireExactlyOne<Omit<Lyrics, 'songId'  | 'song' | 'content'> & {
+	export type WhereInput = RequireExactlyOne<Omit<Lyrics, 'songId' | 'song' | 'content'> & {
 		song: SongQueryParameters.WhereInput
 	}>;
 
@@ -32,7 +32,7 @@ namespace LyricsQueryParameters {
 	 * The input to find or create a lyric entry
 	 */
 	export type GetOrCreateInput = CreateInput;
-	
+
 	/**
 	 * Query parameters to delete one lyric entry
 	 */
@@ -44,7 +44,7 @@ namespace LyricsQueryParameters {
 	export const AvailableIncludes = ['song'] as const;
 	export const AvailableAtomicIncludes = filterAtomicRelationInclude(AvailableIncludes);
 	export type RelationInclude = BaseRelationInclude<typeof AvailableIncludes>;
-	
+
 }
 
 export default LyricsQueryParameters;

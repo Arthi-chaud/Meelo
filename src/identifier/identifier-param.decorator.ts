@@ -1,4 +1,6 @@
-import { Param, PipeTransform, Type } from "@nestjs/common";
+import {
+	Param, PipeTransform, Type
+} from "@nestjs/common";
 
 /**
  * Decorator for a resource identifier

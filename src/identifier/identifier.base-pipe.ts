@@ -6,10 +6,10 @@ export default class ParseBaseIdentifierPipe<W extends Partial<{ id: number, slu
 	transform(value: string, _metadata: ArgumentMetadata): W {
 		try {
 			const id = new ParseIdPipe().transform(value, _metadata);
+
 			return <W>{ id: id };
 		} catch {
 			return <W>{ slug: new Slug(value) };
 		}
 	}
-	
 }

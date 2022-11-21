@@ -5,5 +5,5 @@ import ParsePaginationParameterPipe from "./pagination.pipe";
  * Decorator for the pagination query parameter
  */
 export function PaginationQuery() {
-	return Query(ParsePaginationParameterPipe)
+	return Query(ParsePaginationParameterPipe);
 }

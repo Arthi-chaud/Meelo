@@ -1,4 +1,6 @@
-import { Controller, DefaultValuePipe, forwardRef, Get, Inject, ParseBoolPipe, Query, Req } from '@nestjs/common';
+import {
+	Controller, DefaultValuePipe, Get, Inject, ParseBoolPipe, Query, Req, forwardRef
+} from '@nestjs/common';
 import AlbumService from 'src/album/album.service';
 import AlbumQueryParameters from 'src/album/models/album.query-parameters';
 import PaginatedResponse from 'src/pagination/models/paginated-response';
@@ -9,7 +11,9 @@ import ParseArtistIdentifierPipe from './artist.pipe';
 import ArtistService from './artist.service';
 import ArtistQueryParameters from './models/artist.query-parameters';
 import type { Request } from 'express';
-import { ApiOperation, ApiQuery, ApiTags } from '@nestjs/swagger';
+import {
+	ApiOperation, ApiQuery, ApiTags
+} from '@nestjs/swagger';
 import TrackQueryParameters from 'src/track/models/track.query-parameters';
 import TrackService from 'src/track/track.service';
 import { TrackType } from '@prisma/client';
@@ -56,9 +60,10 @@ export default class ArtistController {
 		sortingParameter: ArtistQueryParameters.SortingParameter,
 		@Req() request: Request,
 		@Query('albumArtistOnly', new DefaultValuePipe(false), ParseBoolPipe)
-		albumArtistsOnly: boolean = false,
+		albumArtistsOnly = false,
 	) {
-		let artists: Artist[];
+		let artists: Artist[] = [];
+
 		if (albumArtistsOnly) {
 			artists = await this.artistService.getAlbumsArtists(
 				{}, paginationParameters, include, sortingParameter
@@ -68,8 +73,8 @@ export default class ArtistController {
 				{}, paginationParameters, include, sortingParameter
 			);
 		}
-		return new PaginatedResponse(
-			await Promise.all(artists.map((artist) => this.artistService.buildResponse(artist))),
+		return PaginatedResponse.awaiting(
+			artists.map((artist) => this.artistService.buildResponse(artist)),
 			request
 		);
 	}
@@ -85,7 +90,8 @@ export default class ArtistController {
 		include: ArtistQueryParameters.RelationInclude
 	) {
 		const artist = await this.artistService.get(where, include);
-		return await this.artistService.buildResponse(artist);
+
+		return this.artistService.buildResponse(artist);
 	}
 
 	@ApiOperation({
@@ -105,14 +111,19 @@ export default class ArtistController {
 		@Req() request: Request
 	) {
 		const videoTracks = await this.trackService.getMany(
-			{ byArtist: where, type: TrackType.Video }, paginationParameters, include, sortingParameter, 
+			{ byArtist: where, type: TrackType.Video },
+			paginationParameters,
+			include,
+			sortingParameter
 		);
-		if (videoTracks.length == 0)
+
+		if (videoTracks.length == 0) {
 			await this.artistService.throwIfNotFound(where);
-		return new PaginatedResponse(
-			await Promise.all(videoTracks.map(
+		}
+		return PaginatedResponse.awaiting(
+			videoTracks.map(
 				(videoTrack) => this.trackService.buildResponse(videoTrack)
-			)),
+			),
 			request
 		);
 	}
@@ -135,12 +146,17 @@ export default class ArtistController {
 		@Req() request: Request
 	) {
 		const albums = await this.albumService.getMany(
-			{ byArtist: where, byType: filter.type }, paginationParameters, include, sortingParameter
+			{ byArtist: where, byType: filter.type },
+			paginationParameters,
+			include,
+			sortingParameter
 		);
-		if (albums.length == 0)
+
+		if (albums.length == 0) {
 			await this.artistService.throwIfNotFound(where);
-		return new PaginatedResponse(
-			await Promise.all(albums.map((album) => this.albumService.buildResponse(album))),
+		}
+		return PaginatedResponse.awaiting(
+			albums.map((album) => this.albumService.buildResponse(album)),
 			request
 		);
 	}
@@ -164,10 +180,12 @@ export default class ArtistController {
 		const songs = await this.songService.getMany(
 			{ artist: where }, paginationParameters, include, sortingParameter
 		);
-		if (songs.length == 0)
+
+		if (songs.length == 0) {
 			await this.artistService.throwIfNotFound(where);
-		return new PaginatedResponse(
-			await Promise.all(songs.map((song) => this.songService.buildResponse(song))),
+		}
+		return PaginatedResponse.awaiting(
+			songs.map((song) => this.songService.buildResponse(song)),
 			request
 		);
 	}

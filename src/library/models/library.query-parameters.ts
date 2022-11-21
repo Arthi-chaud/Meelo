@@ -2,9 +2,8 @@ import { Library } from "src/prisma/models";
 import type Slug from "src/slug/slug";
 import type { RequireExactlyOne } from 'type-fest';
 import type { SearchStringInput } from "src/utils/search-string-input";
-import type { RelationInclude as BaseRelationInclude } from "src/relation-include/models/relation-include" ;
+import type { RelationInclude as BaseRelationInclude } from "src/relation-include/models/relation-include";
 import BaseSortingParameter from 'src/sort/models/sorting-parameter';
-
 import { ApiPropertyOptional } from "@nestjs/swagger";
 import { filterAtomicRelationInclude } from "src/relation-include/atomic-relation-include.filter";
 
@@ -46,18 +45,22 @@ namespace LibraryQueryParameters {
 	export const AvailableIncludes = ['files'] as const;
 	export const AvailableAtomicIncludes = filterAtomicRelationInclude(AvailableIncludes);
 	export type RelationInclude = BaseRelationInclude<typeof AvailableIncludes>;
-	
 
 	/**
 	 * Defines how to sort fetched entries
 	 */
-	export const SortingKeys = ['id', 'name', 'fileCount', 'addDate'] as const;
+	export const SortingKeys = [
+		'id',
+		'name',
+		'fileCount',
+		'addDate'
+	] as const;
 	export type SortingKeys = typeof SortingKeys;
 	export class SortingParameter extends BaseSortingParameter<SortingKeys>{
 		@ApiPropertyOptional({ enum: SortingKeys })
-		sortBy: SortingKeys[number]
+		sortBy: SortingKeys[number];
 	}
-	
+
 }
 
 export default LibraryQueryParameters;

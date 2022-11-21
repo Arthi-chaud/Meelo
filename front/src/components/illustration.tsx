@@ -1,11 +1,11 @@
-import { Box, IconButton, useTheme } from "@mui/material";
+/* eslint-disable react/jsx-indent-props */
+import {
+	Box, IconButton, useTheme
+} from "@mui/material";
 import Image, { ImageProps } from "next/image";
-import { useEffect, useState } from "react";
-import FadeIn from "react-fade-in";
-import { useQuery } from "react-query";
+import { useState } from "react";
 import API from "../api";
-import illustrationFallback from '../../public/icon.png'
-
+import illustrationFallback from '../../public/icon.png';
 
 type IllustrationProps = {
 	/**
@@ -22,11 +22,23 @@ type IllustrationProps = {
 const Illustration = (props: IllustrationProps) => {
 	const theme = useTheme();
 	const [loadingFailed, setLoadingFailed] = useState(false);
-	return <Box sx={{ position: 'relative', aspectRatio: '1', width: '100%', justifyContent: 'center', alignItems: 'center', display: loadingFailed || !props.url ? 'flex' : 'block' }}>
-		{ loadingFailed || !props.url
+
+	return <Box sx={{
+		position: 'relative', aspectRatio: '1', width: '100%',
+		justifyContent: 'center', alignItems: 'center',
+		display: loadingFailed || !props.url ? 'flex' : 'block'
+	}}>{ loadingFailed || !props.url
 			? props.fallback
-				? <IconButton disabled sx={{ fontSize: 'large' }}>{props.fallback}</IconButton>
-				: <Image src={illustrationFallback} fill alt='missing-illustration' loading='eager' style={{ padding: '15%' }}/>
+				? <IconButton disabled sx={{ fontSize: 'large' }}>
+					{props.fallback}
+				</IconButton>
+				: <Image
+					src={illustrationFallback}
+					fill
+					alt='missing-illustration'
+					loading='eager'
+					style={{ padding: '15%' }}
+				/>
 			: <Image
 				onError={() => setLoadingFailed(true)}
 				loader={({ src, width, quality }) => src}
@@ -38,7 +50,7 @@ const Illustration = (props: IllustrationProps) => {
 				src={API.getIllustrationURL(props.url)}
 			/>
 		}
-	</Box>
-}
+	</Box>;
+};
 
 export default Illustration;
