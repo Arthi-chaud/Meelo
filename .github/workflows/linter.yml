@@ -13,10 +13,9 @@ jobs:
             pwd: .
           - section: 'front'
             pwd: ./front
-    container: node:17
+    container: node:18
     name: Run linter (${{ matrix.section }})
     runs-on: ubuntu-latest
-    container: node:18
     steps:
       - name: Check out Git repository
         uses: actions/checkout@v3
