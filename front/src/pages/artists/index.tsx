@@ -59,14 +59,9 @@ const LibraryArtistsPage = (
 	const router = useRouter();
 
 	librarySlug ??= getLibrarySlug(router.asPath);
-	const [order, setOrder] = useState(getOrderParams(router.query.order));
-	const [sortBy, setSortBy] = useState(
-		getSortingFieldParams(router.query.sortBy, ArtistSortingKeys)
-	);
-
 	return <InfiniteArtistView
-		initialSortingField={sortBy}
-		initialSortingOrder={order}
+		initialSortingField={getSortingFieldParams(router.query.sortBy, ArtistSortingKeys)}
+		initialSortingOrder={getOrderParams(router.query.order)}
 		initialView={(router.query.view == 'grid' ? 'grid' : 'list')}
 		query={(sort) => librarySlug ? libraryArtistsQuery(librarySlug, sort) : artistsQuery(sort)}
 	/>;
