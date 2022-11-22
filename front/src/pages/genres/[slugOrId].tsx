@@ -1,17 +1,17 @@
 import { Box, Typography } from "@mui/material";
 import { GetServerSidePropsContext, InferGetServerSidePropsType } from "next";
 import { useRouter } from "next/router";
-import {
-	QueryClient, dehydrate, useQuery
-} from "react-query";
-import API from "../../api";
+import { QueryClient, dehydrate } from "react-query";
+import API from "../../api/api";
 import { Page } from "../../components/infinite/infinite-scroll";
 import SelectableInfiniteView from "../../components/infinite/selectable-infinite-view";
 import { WideLoadingComponent } from "../../components/loading/loading";
 import Album, { AlbumSortingKeys, AlbumType } from "../../models/album";
 import Artist, { ArtistSortingKeys } from "../../models/artist";
 import { SongWithArtist } from "../../models/song";
-import { prepareMeeloInfiniteQuery, prepareMeeloQuery } from "../../query";
+import {
+	prepareMeeloInfiniteQuery, prepareMeeloQuery, useQuery
+} from "../../api/use-query";
 import getSlugOrId from "../../utils/getSlugOrId";
 import { SortingParameters } from "../../utils/sorting";
 
@@ -79,7 +79,7 @@ const GenrePage = ({ genreIdentifier }: InferGetServerSidePropsType<typeof getSe
 	const router = useRouter();
 
 	genreIdentifier ??= getSlugOrId(router.query);
-	const genre = useQuery(prepareMeeloQuery(genreQuery, genreIdentifier));
+	const genre = useQuery(genreQuery, genreIdentifier);
 
 	if (!genre.data) {
 		return <WideLoadingComponent/>;

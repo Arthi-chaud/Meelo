@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import API from './api';
+import API from './api/api';
 import { AlbumWithArtist } from './models/album';
 
 export async function middleware(request: NextRequest) {

@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { ReleaseSortingKeys, ReleaseWithAlbum } from "../../models/release";
-import { MeeloInfiniteQueryFn } from "../../query";
+import { MeeloInfiniteQueryFn } from "../../api/use-query";
 import { SortingParameters } from "../../utils/sorting";
 import ReleaseItem from "../list-item/release-item";
 import InfiniteSortableView from "./infinite-sortable-view";

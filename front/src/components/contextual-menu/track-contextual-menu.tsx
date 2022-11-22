@@ -2,7 +2,7 @@ import { Star } from "@mui/icons-material";
 import { useRouter } from "next/router";
 import { toast } from "react-hot-toast";
 import { useMutation, useQueryClient } from "react-query";
-import API from "../../api";
+import API from "../../api/api";
 import { TrackWithSong } from "../../models/track";
 import {
 	DownloadAction, GoToReleaseAction, PlayAfterAction, PlayNextAction

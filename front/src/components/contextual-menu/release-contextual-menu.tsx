@@ -1,7 +1,7 @@
 import { Star } from "@mui/icons-material";
 import { toast } from "react-hot-toast";
 import { useMutation, useQueryClient } from "react-query";
-import API from "../../api";
+import API from "../../api/api";
 import { ReleaseWithAlbum } from "../../models/release";
 import ContextualMenu from "./contextual-menu";
 import {

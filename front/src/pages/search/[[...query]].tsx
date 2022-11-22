@@ -3,7 +3,7 @@ import {
 	Box, InputAdornment, TextField
 } from "@mui/material";
 import { useState } from "react";
-import API from '../../api';
+import API from '../../api/api';
 import { Page } from '../../components/infinite/infinite-scroll';
 import {
 	AlbumSortingKeys, AlbumType, AlbumWithArtist
@@ -15,7 +15,7 @@ import SelectableInfiniteView from "../../components/infinite/selectable-infinit
 import { useRouter } from "next/router";
 import { GetServerSidePropsContext, InferGetServerSidePropsType } from "next";
 import { QueryClient, dehydrate } from "react-query";
-import { prepareMeeloInfiniteQuery } from "../../query";
+import { prepareMeeloInfiniteQuery } from "../../api/use-query";
 
 const searchArtistsQuery = (query: string, sort?: SortingParameters<typeof ArtistSortingKeys>) => ({
 	key: [

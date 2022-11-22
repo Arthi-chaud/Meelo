@@ -2,10 +2,10 @@ import React from 'react';
 import { GetServerSidePropsContext, InferGetServerSidePropsType } from "next";
 import { useRouter } from 'next/router';
 import Song, { SongSortingKeys, SongWithArtist } from '../../models/song';
-import API from '../../api';
+import API from '../../api/api';
 import getLibrarySlug from '../../utils/getLibrarySlug';
 import { QueryClient, dehydrate } from 'react-query';
-import { prepareMeeloInfiniteQuery } from '../../query';
+import { prepareMeeloInfiniteQuery } from '../../api/use-query';
 import { Page } from '../../components/infinite/infinite-scroll';
 import {
 	SortingParameters, getOrderParams, getSortingFieldParams

@@ -2,7 +2,7 @@ import { useState } from "react";
 import {
 	TrackSortingKeys, TrackWithRelease, TrackWithSong
 } from "../../models/track";
-import { MeeloInfiniteQueryFn } from "../../query";
+import { MeeloInfiniteQueryFn } from "../../api/use-query";
 import { SortingParameters } from "../../utils/sorting";
 import TrackItem from "../list-item/track-item";
 import InfiniteSortableView from "./infinite-sortable-view";

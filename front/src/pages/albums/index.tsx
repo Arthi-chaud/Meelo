@@ -1,14 +1,14 @@
 import React from 'react';
 import { GetServerSidePropsContext, InferGetServerSidePropsType } from "next";
 import { useRouter } from 'next/router';
-import API from '../../api';
+import API from '../../api/api';
 import Album, {
 	AlbumSortingKeys, AlbumType, AlbumWithArtist
 } from '../../models/album';
 import getLibrarySlug from '../../utils/getLibrarySlug';
 import { Page } from '../../components/infinite/infinite-scroll';
 import { QueryClient, dehydrate } from 'react-query';
-import { prepareMeeloInfiniteQuery } from '../../query';
+import { prepareMeeloInfiniteQuery } from '../../api/use-query';
 import {
 	SortingParameters, getOrderParams, getSortingFieldParams
 } from '../../utils/sorting';

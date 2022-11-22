@@ -1,13 +1,11 @@
 import { Box } from "@mui/material";
 import { GetServerSidePropsContext, InferGetServerSidePropsType } from "next";
-import {
-	QueryClient, dehydrate, useQuery
-} from "react-query";
-import API from "../../../api";
+import { QueryClient, dehydrate } from "react-query";
+import API from "../../../api/api";
 import { WideLoadingComponent } from "../../../components/loading/loading";
 import LyricsBox from "../../../components/lyrics";
 import { SongWithArtist } from "../../../models/song";
-import { prepareMeeloQuery } from "../../../query";
+import { prepareMeeloQuery, useQuery } from "../../../api/use-query";
 import getSlugOrId from "../../../utils/getSlugOrId";
 import SongRelationPageHeader from "../../../components/relation-page-header/song-relation-page-header";
 import { useRouter } from "next/router";
@@ -51,8 +49,8 @@ const SongLyricsPage = (
 	const router = useRouter();
 
 	songIdentifier ??= getSlugOrId(router.query);
-	const lyrics = useQuery(prepareMeeloQuery(lyricsQuery, songIdentifier));
-	const song = useQuery(prepareMeeloQuery(songQuery, songIdentifier));
+	const lyrics = useQuery(lyricsQuery, songIdentifier);
+	const song = useQuery(songQuery, songIdentifier);
 
 	if (!song.data || lyrics.isLoading) {
 		return <WideLoadingComponent/>;

@@ -5,7 +5,7 @@ import {
 import { Box } from "@mui/system";
 import { GetServerSidePropsContext, InferGetServerSidePropsType } from "next";
 import { useRouter } from "next/router";
-import API from "../../api";
+import API from "../../api/api";
 import Illustration from "../../components/illustration";
 import { WideLoadingComponent } from "../../components/loading/loading";
 import { ReleaseWithAlbum } from "../../models/release";
@@ -18,10 +18,10 @@ import PlayCircleIcon from '@mui/icons-material/PlayCircle';
 import { Shuffle } from "@mui/icons-material";
 import FadeIn from "react-fade-in";
 import Tile from "../../components/tile/tile";
-import { prepareMeeloQuery } from "../../query";
 import {
-	QueryClient, dehydrate, useQueries, useQuery
-} from "react-query";
+	prepareMeeloQuery, useQueries, useQuery
+} from "../../api/use-query";
+import { QueryClient, dehydrate } from "react-query";
 import { useDispatch } from "react-redux";
 import { playTracks } from "../../state/playerSlice";
 import Song from "../../models/song";
@@ -136,18 +136,22 @@ const ReleasePage = (
 	const [totalDuration, setTotalDuration] = useState<number | null>(null);
 	const [tracks, setTracks] = useState<TrackWithSong[]>([]);
 
-	const release = useQuery(prepareMeeloQuery(releaseQuery, releaseIdentifier));
+	const release = useQuery(releaseQuery, releaseIdentifier);
 	const artistId = release.data?.album?.artistId;
 
-	const tracklist = useQuery(prepareMeeloQuery(tracklistQuery, releaseIdentifier));
-	const albumArtist = useQuery(prepareMeeloQuery(artistQuery, artistId));
-	const albumGenres = useQuery(prepareMeeloQuery(albumGenresQuery, release.data?.albumId));
+	const tracklist = useQuery(tracklistQuery, releaseIdentifier);
+	const albumArtist = useQuery(artistQuery, artistId);
+	const albumGenres = useQuery(albumGenresQuery, release.data?.albumId);
 	const hasGenres = (albumGenres.data?.length ?? 0) > 0;
-
-	const otherArtistsQuery = useQueries(tracks
+	const otherArtistsQuery = useQueries(...tracks
 		.filter((track: TrackWithSong) => track.song.artistId != albumArtist.data?.id)
-		.map((track) => prepareMeeloQuery(artistQuery, track.song.artistId)));
-	const relatedReleases = useQuery(prepareMeeloQuery(albumReleasesQuery, release.data?.albumId));
+		.map((track) => {
+			const parameters: Parameters<typeof prepareMeeloQuery<Artist>> =
+				[artistQuery, track.song.artistId];
+
+			return parameters;
+		}));
+	const relatedReleases = useQuery(albumReleasesQuery, release.data?.albumId);
 
 	useEffect(() => {
 		if (tracklist.data) {

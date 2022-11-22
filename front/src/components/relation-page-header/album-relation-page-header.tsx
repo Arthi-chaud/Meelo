@@ -1,8 +1,7 @@
-import { useQuery } from "react-query";
 import { RequireExactlyOne } from "type-fest";
-import API from "../../api";
+import API from "../../api/api";
 import { AlbumWithArtist } from "../../models/album";
-import { prepareMeeloQuery } from "../../query";
+import { useQuery } from "../../api/use-query";
 import AlbumContextualMenu from "../contextual-menu/album-contextual-menu";
 import Illustration from "../illustration";
 import { WideLoadingComponent } from "../loading/loading";
@@ -19,7 +18,7 @@ const albumQuery = (albumSlugOrId: number | string) => ({
 });
 
 const AlbumRelationPageHeader = (props: AlbumRelationPageHeaderProps) => {
-	const album = useQuery(prepareMeeloQuery(albumQuery, props.albumSlugOrId));
+	const album = useQuery(albumQuery, props.albumSlugOrId);
 
 	if (props.album) {
 		album.data = props.album;

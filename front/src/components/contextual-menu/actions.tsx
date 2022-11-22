@@ -7,7 +7,7 @@ import Audiotrack from '@mui/icons-material/Audiotrack';
 import Share from "@mui/icons-material/Share";
 import { NextRouter } from "next/router";
 import { toast } from "react-hot-toast";
-import API from "../../api";
+import API from "../../api/api";
 import { playAfter, playNext } from "../../state/playerSlice";
 import store from "../../state/store";
 import copyLinkToClipboard from "../../utils/copy-link";

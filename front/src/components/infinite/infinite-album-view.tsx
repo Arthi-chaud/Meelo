@@ -2,7 +2,7 @@ import { useState } from "react";
 import {
 	AlbumSortingKeys, AlbumType, AlbumWithArtist
 } from "../../models/album";
-import { MeeloInfiniteQueryFn } from "../../query";
+import { MeeloInfiniteQueryFn } from "../../api/use-query";
 import { SortingParameters } from "../../utils/sorting";
 import AlbumItem from "../list-item/album-item";
 import AlbumTile from "../tile/album-tile";

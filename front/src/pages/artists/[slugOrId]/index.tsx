@@ -3,13 +3,11 @@ import {
 } from "@mui/material";
 import { GetServerSidePropsContext, InferGetServerSidePropsType } from "next";
 import { useRouter } from "next/router";
-import {
-	QueryClient, dehydrate, useQuery
-} from "react-query";
-import API from "../../../api";
+import { QueryClient, dehydrate } from "react-query";
+import API from "../../../api/api";
 import Illustration from "../../../components/illustration";
 import { WideLoadingComponent } from "../../../components/loading/loading";
-import { prepareMeeloQuery } from "../../../query";
+import { prepareMeeloQuery, useQuery } from "../../../api/use-query";
 import ArrowRight from '@mui/icons-material/ArrowRight';
 import AlbumTile from "../../../components/tile/album-tile";
 import Link from "next/link";
@@ -121,9 +119,9 @@ const ArtistPage = (
 	const router = useRouter();
 
 	artistIdentifier ??= getSlugOrId(router.query);
-	const artist = useQuery(prepareMeeloQuery(artistQuery, artistIdentifier));
-	const latestAlbums = useQuery(prepareMeeloQuery(latestAlbumsQuery, artistIdentifier));
-	const topSongs = useQuery(prepareMeeloQuery(topSongsQuery, artistIdentifier));
+	const artist = useQuery(artistQuery, artistIdentifier);
+	const latestAlbums = useQuery(latestAlbumsQuery, artistIdentifier);
+	const topSongs = useQuery(topSongsQuery, artistIdentifier);
 
 	if (!artist.data || !latestAlbums.data || !topSongs.data) {
 		return <WideLoadingComponent/>;

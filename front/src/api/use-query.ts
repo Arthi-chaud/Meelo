@@ -1,6 +1,12 @@
-import { QueryFunctionContext } from "react-query";
+/* eslint-disable no-restricted-imports */
+import {
+	QueryFunctionContext,
+	useInfiniteQuery as useReactInfiniteQuery,
+	useQueries as useReactQueries,
+	useQuery as useReactQuery
+} from "react-query";
 import API from "./api";
-import { InfiniteFetchFn } from "./components/infinite/infinite-scroll";
+import { InfiniteFetchFn } from "../components/infinite/infinite-scroll";
 
 type Key = string | number | Record<string, unknown>;
 
@@ -75,4 +81,27 @@ const prepareMeeloInfiniteQuery = <T, >(
 	};
 };
 
-export { prepareMeeloQuery, prepareMeeloInfiniteQuery };
+/**
+ * Wrapper for the react-query's *useQuery*
+ */
+const useQuery = <T>(
+	...query: Parameters<typeof prepareMeeloQuery<T>>
+) => {
+	return useReactQuery(prepareMeeloQuery<T>(query[0], query.slice(1)));
+};
+
+/**
+ * Wrapper for the react-query's *useQueries*
+ */
+const useQueries = <T>(...queries: Parameters<typeof prepareMeeloQuery<T>>[]) => {
+	return useReactQueries(queries.map((query) => prepareMeeloQuery(query[0], query.slice(1))));
+};
+
+/**
+ * Wrapper for the react-query's *useInfiniteQuery*
+ */
+const useInfiniteQuery = <T>(...query: Parameters<typeof prepareMeeloInfiniteQuery<T>>) => {
+	return useReactInfiniteQuery(prepareMeeloInfiniteQuery<T>(query[0], query.slice(1)));
+};
+
+export { useQuery, useQueries, useInfiniteQuery, prepareMeeloQuery, prepareMeeloInfiniteQuery };

@@ -1,4 +1,4 @@
-import API from "../../api";
+import API from "../../api/api";
 import { SongWithArtist } from "../../models/song";
 import { TrackWithRelease } from "../../models/track";
 import Illustration from '../illustration';

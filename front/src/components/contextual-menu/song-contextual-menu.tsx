@@ -1,5 +1,5 @@
 import { useRouter } from "next/router";
-import API from "../../api";
+import API from "../../api/api";
 import { SongWithArtist } from "../../models/song";
 import ContextualMenu from "./contextual-menu";
 import { TrackWithRelease } from "../../models/track";

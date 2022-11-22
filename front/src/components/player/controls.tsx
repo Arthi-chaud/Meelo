@@ -13,9 +13,8 @@ import CloseIcon from '@mui/icons-material/Close';
 import { LegacyRef, useState } from "react";
 import PlayerSlider from "./controls/slider";
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
-import API from '../../api';
-import { useQuery } from "react-query";
-import { prepareMeeloQuery } from "../../query";
+import API from '../../api/api';
+import { useQuery } from "../../api/use-query";
 import LyricsBox from "../lyrics";
 import Track from "../../models/track";
 import Artist from "../../models/artist";
@@ -160,7 +159,7 @@ const ExpandedPlayerControls = (
 	props: PlayerControlsProps & { videoRef: LegacyRef<HTMLVideoElement> }
 ) => {
 	const [lyricsOpen, setLyricsOpen] = useState(true);
-	const parentSong = useQuery(prepareMeeloQuery(songQuery, props.track?.songId));
+	const parentSong = useQuery(songQuery, props.track?.songId);
 
 	return <Box sx={{ width: '100%', height: '100%' }}>
 		<Box sx={{

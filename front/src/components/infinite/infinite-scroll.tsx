@@ -2,8 +2,8 @@ import { useInfiniteQuery } from "react-query";
 import * as IScroll from 'react-infinite-scroller';
 import Resource from "../../models/resource";
 import { PaginatedResponse } from "../../models/pagination";
-import API from "../../api";
-import { MeeloInfiniteQueryFn, prepareMeeloInfiniteQuery } from "../../query";
+import API from "../../api/api";
+import { MeeloInfiniteQueryFn, prepareMeeloInfiniteQuery } from "../../api/use-query";
 
 export type InfiniteFetchFn<T> = (lastPage: Page<T>) => Promise<PaginatedResponse<T>>;
 

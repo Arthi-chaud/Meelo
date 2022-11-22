@@ -1,7 +1,7 @@
 import Action from "../contextual-menu/actions";
 import SearchIcon from '@mui/icons-material/Search';
 import AutoModeIcon from '@mui/icons-material/AutoMode';
-import API from "../../api";
+import API from "../../api/api";
 import toast from "react-hot-toast";
 import SettingsIcon from '@mui/icons-material/Settings';
 import { createElement } from "react";

@@ -6,7 +6,7 @@ import { useState } from "react";
 import Album from "../../models/album";
 import Artist from "../../models/artist";
 import { SongWithArtist } from "../../models/song";
-import { MeeloInfiniteQueryFn } from "../../query";
+import { MeeloInfiniteQueryFn } from "../../api/use-query";
 import InfiniteAlbumView from "./infinite-album-view";
 import InfiniteArtistView from "./infinite-artist-view";
 import InfiniteSongView from "./infinite-song-view";

@@ -1,4 +1,4 @@
-import API from "../../api";
+import API from "../../api/api";
 import { TrackWithRelease, TrackWithSong } from "../../models/track";
 import Illustration from '../illustration';
 import ListItem from "./item";

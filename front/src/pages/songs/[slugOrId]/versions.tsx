@@ -1,10 +1,10 @@
 import { GetServerSidePropsContext, InferGetServerSidePropsType } from "next";
 import { QueryClient, dehydrate } from "react-query";
-import API from "../../../api";
+import API from "../../../api/api";
 import { Page } from "../../../components/infinite/infinite-scroll";
 import InfiniteSongView from "../../../components/infinite/infinite-song-view";
 import { SongSortingKeys, SongWithArtist } from "../../../models/song";
-import { prepareMeeloInfiniteQuery } from "../../../query";
+import { prepareMeeloInfiniteQuery } from "../../../api/use-query";
 import getSlugOrId from "../../../utils/getSlugOrId";
 import { SortingParameters } from "../../../utils/sorting";
 import { Box } from "@mui/material";

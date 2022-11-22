@@ -1,9 +1,9 @@
 import { ReleaseSortingKeys, ReleaseWithAlbum } from "../../../models/release";
-import API from "../../../api";
+import API from "../../../api/api";
 import { GetServerSidePropsContext, InferGetServerSidePropsType } from "next";
 import { QueryClient, dehydrate } from "react-query";
 import { Page } from "../../../components/infinite/infinite-scroll";
-import { prepareMeeloInfiniteQuery } from "../../../query";
+import { prepareMeeloInfiniteQuery } from "../../../api/use-query";
 import getSlugOrId from "../../../utils/getSlugOrId";
 import { SortingParameters } from "../../../utils/sorting";
 import InfiniteReleaseView from "../../../components/infinite/infinite-release-view";

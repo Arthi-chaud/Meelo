@@ -2,13 +2,13 @@ import { Box } from "@mui/material";
 import { GetServerSidePropsContext, InferGetServerSidePropsType } from "next";
 import { useRouter } from "next/router";
 import { QueryClient, dehydrate } from "react-query";
-import API from "../../../api";
+import API from "../../../api/api";
 import { Page } from "../../../components/infinite/infinite-scroll";
 import InfiniteTrackView from "../../../components/infinite/infinite-track-view";
 import Track, {
 	TrackSortingKeys, TrackWithRelease, TrackWithSong
 } from "../../../models/track";
-import { prepareMeeloInfiniteQuery } from "../../../query";
+import { prepareMeeloInfiniteQuery } from "../../../api/use-query";
 import getSlugOrId from "../../../utils/getSlugOrId";
 import { SortingParameters } from "../../../utils/sorting";
 import SongRelationPageHeader from "../../../components/relation-page-header/song-relation-page-header";
