@@ -2,6 +2,7 @@
 import { useState } from "react";
 import type { AppProps } from "next/app";
 import {
+	// eslint-disable-next-line no-restricted-imports
 	Hydrate, QueryClient, QueryClientProvider
 } from "react-query";
 import { ReactQueryDevtools } from "react-query/devtools";

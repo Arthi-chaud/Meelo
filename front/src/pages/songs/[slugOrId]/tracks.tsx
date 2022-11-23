@@ -1,17 +1,15 @@
 import { Box } from "@mui/material";
-import { GetServerSidePropsContext, InferGetServerSidePropsType } from "next";
 import { useRouter } from "next/router";
-import { QueryClient, dehydrate } from "react-query";
 import API from "../../../api/api";
 import { Page } from "../../../components/infinite/infinite-scroll";
 import InfiniteTrackView from "../../../components/infinite/infinite-track-view";
 import Track, {
 	TrackSortingKeys, TrackWithRelease, TrackWithSong
 } from "../../../models/track";
-import { prepareMeeloInfiniteQuery } from "../../../api/use-query";
 import getSlugOrId from "../../../utils/getSlugOrId";
 import { SortingParameters } from "../../../utils/sorting";
 import SongRelationPageHeader from "../../../components/relation-page-header/song-relation-page-header";
+import prepareSSR, { InferSSRProps } from "../../../ssr";
 
 const songTracksQuery = (
 	songSlugOrId: number | string, sort?: SortingParameters<typeof TrackSortingKeys>
@@ -26,26 +24,17 @@ const songTracksQuery = (
 		API.getSongTracks<TrackWithRelease & TrackWithSong>(songSlugOrId, lastPage, sort, ["release", "song"])
 });
 
-export const getServerSideProps = async (context: GetServerSidePropsContext) => {
+export const getServerSideProps = prepareSSR((context) => {
 	const songIdentifier = getSlugOrId(context.params);
-	const queryClient = new QueryClient();
-
-	await Promise.all([
-		queryClient.prefetchInfiniteQuery(
-			prepareMeeloInfiniteQuery(songTracksQuery, songIdentifier)
-		)
-	]);
 
 	return {
-		props: {
-			songIdentifier,
-			dehydratedState: JSON.parse(JSON.stringify(dehydrate(queryClient))),
-		},
+		additionalProps: { songIdentifier },
+		infiniteQueries: [songTracksQuery(songIdentifier)]
 	};
-};
+});
 
 const SongTracksPage = (
-	{ songIdentifier }: InferGetServerSidePropsType<typeof getServerSideProps>
+	{ songIdentifier }: InferSSRProps<typeof getServerSideProps>
 ) => {
 	const router = useRouter();
 

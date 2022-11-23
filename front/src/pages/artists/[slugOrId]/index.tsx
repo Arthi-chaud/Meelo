@@ -1,13 +1,11 @@
 import {
 	Box, Button, Grid, Typography
 } from "@mui/material";
-import { GetServerSidePropsContext, InferGetServerSidePropsType } from "next";
 import { useRouter } from "next/router";
-import { QueryClient, dehydrate } from "react-query";
 import API from "../../../api/api";
 import Illustration from "../../../components/illustration";
 import { WideLoadingComponent } from "../../../components/loading/loading";
-import { prepareMeeloQuery, useQuery } from "../../../api/use-query";
+import { useQuery } from "../../../api/use-query";
 import ArrowRight from '@mui/icons-material/ArrowRight';
 import AlbumTile from "../../../components/tile/album-tile";
 import Link from "next/link";
@@ -18,6 +16,7 @@ import { playTrack } from "../../../state/playerSlice";
 import { TrackWithRelease } from "../../../models/track";
 import getSlugOrId from "../../../utils/getSlugOrId";
 import SongContextualMenu from "../../../components/contextual-menu/song-contextual-menu";
+import prepareSSR, { InferSSRProps } from "../../../ssr";
 
 type SongButtonProps = {
 	song: SongWithArtist;
@@ -96,25 +95,21 @@ const topSongsQuery = (artistSlugOrId: string | number) => ({
 	),
 });
 
-export const getServerSideProps = async (context: GetServerSidePropsContext) => {
+export const getServerSideProps = prepareSSR((context) => {
 	const artistIdentifier = getSlugOrId(context.params);
-	const queryClient = new QueryClient();
 
-	await Promise.all([
-		queryClient.prefetchQuery(prepareMeeloQuery(artistQuery, artistIdentifier)),
-		queryClient.prefetchQuery(prepareMeeloQuery(latestAlbumsQuery, artistIdentifier)),
-		queryClient.prefetchQuery(prepareMeeloQuery(topSongsQuery, artistIdentifier)),
-	]);
 	return {
-		props: {
-			artistIdentifier,
-			dehydratedState: dehydrate(queryClient),
-		},
+		additionalProps: { artistIdentifier },
+		queries: [
+			artistQuery(artistIdentifier),
+			latestAlbumsQuery(artistIdentifier),
+			topSongsQuery(artistIdentifier)
+		]
 	};
-};
+});
 
 const ArtistPage = (
-	{ artistIdentifier }: InferGetServerSidePropsType<typeof getServerSideProps>
+	{ artistIdentifier }: InferSSRProps<typeof getServerSideProps>
 ) => {
 	const router = useRouter();
 

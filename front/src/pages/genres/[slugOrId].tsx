@@ -1,7 +1,5 @@
 import { Box, Typography } from "@mui/material";
-import { GetServerSidePropsContext, InferGetServerSidePropsType } from "next";
 import { useRouter } from "next/router";
-import { QueryClient, dehydrate } from "react-query";
 import API from "../../api/api";
 import { Page } from "../../components/infinite/infinite-scroll";
 import SelectableInfiniteView from "../../components/infinite/selectable-infinite-view";
@@ -9,11 +7,10 @@ import { WideLoadingComponent } from "../../components/loading/loading";
 import Album, { AlbumSortingKeys, AlbumType } from "../../models/album";
 import Artist, { ArtistSortingKeys } from "../../models/artist";
 import { SongWithArtist } from "../../models/song";
-import {
-	prepareMeeloInfiniteQuery, prepareMeeloQuery, useQuery
-} from "../../api/use-query";
+import { useQuery } from "../../api/use-query";
 import getSlugOrId from "../../utils/getSlugOrId";
 import { SortingParameters } from "../../utils/sorting";
+import prepareSSR, { InferSSRProps } from "../../ssr";
 
 const genreQuery = (idOrSlug: string | number) => ({
 	key: ["genre", idOrSlug],
@@ -57,25 +54,21 @@ const genreSongsQuery = (
 	exec: (lastPage: Page<SongWithArtist>) => API.getGenreSongs(slugOrId, lastPage, sort)
 });
 
-export const getServerSideProps = async (context: GetServerSidePropsContext) => {
+export const getServerSideProps = prepareSSR((context) => {
 	const genreIdentifier = getSlugOrId(context.params);
-	const queryClient = new QueryClient();
 
-	await Promise.all([
-		queryClient.prefetchQuery(prepareMeeloQuery(genreQuery, genreIdentifier)),
-		queryClient.prefetchQuery(prepareMeeloInfiniteQuery(genreArtistsQuery, genreIdentifier)),
-		queryClient.prefetchQuery(prepareMeeloInfiniteQuery(genreAlbumsQuery, genreIdentifier)),
-		queryClient.prefetchQuery(prepareMeeloInfiniteQuery(genreSongsQuery, genreIdentifier)),
-	]);
 	return {
-		props: {
-			genreIdentifier,
-			dehydratedState: dehydrate(queryClient),
-		},
+		additionalProps: { genreIdentifier },
+		queries: [genreQuery(genreIdentifier)],
+		infiniteQueries: [
+			genreArtistsQuery(genreIdentifier),
+			genreAlbumsQuery(genreIdentifier),
+			genreSongsQuery(genreIdentifier)
+		]
 	};
-};
+});
 
-const GenrePage = ({ genreIdentifier }: InferGetServerSidePropsType<typeof getServerSideProps>) => {
+const GenrePage = ({ genreIdentifier }: InferSSRProps<typeof getServerSideProps>) => {
 	const router = useRouter();
 
 	genreIdentifier ??= getSlugOrId(router.query);

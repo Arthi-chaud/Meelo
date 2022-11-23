@@ -3,7 +3,6 @@ import {
 	ListSubheader, Typography, useTheme
 } from "@mui/material";
 import { Box } from "@mui/system";
-import { GetServerSidePropsContext, InferGetServerSidePropsType } from "next";
 import { useRouter } from "next/router";
 import API from "../../api/api";
 import Illustration from "../../components/illustration";
@@ -21,7 +20,6 @@ import Tile from "../../components/tile/tile";
 import {
 	prepareMeeloQuery, useQueries, useQuery
 } from "../../api/use-query";
-import { QueryClient, dehydrate } from "react-query";
 import { useDispatch } from "react-redux";
 import { playTracks } from "../../state/playerSlice";
 import Song from "../../models/song";
@@ -30,6 +28,7 @@ import { shuffle } from 'd3-array';
 import getSlugOrId from "../../utils/getSlugOrId";
 import AlbumContextualMenu from "../../components/contextual-menu/album-contextual-menu";
 import ReleaseTrackList from "../../components/release-tracklist";
+import prepareSSR, { InferSSRProps } from "../../ssr";
 
 const releaseQuery = (slugOrId: string | number) => ({
 	key: ['release', slugOrId],
@@ -77,26 +76,14 @@ const albumReleasesQuery = (slugOrId: string | number) => ({
 	exec: () => API.getAlbumReleases(slugOrId, {}),
 });
 
-export const getServerSideProps = async (context: GetServerSidePropsContext) => {
+export const getServerSideProps = prepareSSR((context) => {
 	const releaseIdentifier = getSlugOrId(context.params);
-	const queryClient = new QueryClient();
-
-	await Promise.all([
-		queryClient.prefetchQuery(
-			prepareMeeloQuery(releaseQuery, releaseIdentifier)
-		),
-		queryClient.prefetchQuery(
-			prepareMeeloQuery(tracklistQuery, releaseIdentifier)
-		)
-	]);
 
 	return {
-		props: {
-			releaseIdentifier,
-			dehydratedState: dehydrate(queryClient),
-		},
+		additionalProps: { releaseIdentifier },
+		queries: [releaseQuery(releaseIdentifier), tracklistQuery(releaseIdentifier)]
 	};
-};
+});
 
 type RelatedContentSectionProps = {
 	display: boolean,
@@ -125,7 +112,7 @@ const getSongArtist = (song: Song, albumArtist?: Artist, otherArtists: Artist[] 
 };
 
 const ReleasePage = (
-	{ releaseIdentifier }: InferGetServerSidePropsType<typeof getServerSideProps>
+	{ releaseIdentifier }: InferSSRProps<typeof getServerSideProps>
 ) => {
 	const router = useRouter();
 
