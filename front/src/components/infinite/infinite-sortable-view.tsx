@@ -4,7 +4,7 @@ import InfiniteView, { InfiniteViewProps } from "./infinite-view";
 import NorthIcon from '@mui/icons-material/North';
 import SouthIcon from '@mui/icons-material/South';
 
-type InfiniteSortableView<
+type InfiniteSortableViewProps<
 	T extends Resource, Options extends (string[] | SortingKeys)[],
 	SortingKeys extends string[]
 > = {
@@ -18,7 +18,7 @@ type InfiniteSortableView<
 const InfiniteSortableView = <
 	T extends Resource, Options extends (string[] | SortingKeys)[],
 	SortingKeys extends string[]
->(props: InfiniteSortableView<T, Options, SortingKeys>) => {
+>(props: InfiniteSortableViewProps<T, Options, SortingKeys>) => {
 	return <InfiniteView<T, Options>
 		{...props}
 		options={[

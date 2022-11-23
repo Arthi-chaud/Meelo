@@ -41,7 +41,7 @@ const InfiniteView = <T extends Resource, Options extends string[][]>(
 	const [display, setDisplay] = useState(props.view);
 	const [backToTopVisible, setBackToTopVisible] = useState(false);
 	const handleScroll = () => {
-		const position = window.pageYOffset;
+		const position = window.scrollY;
 
 		setBackToTopVisible(position > window.innerHeight);
 	};
