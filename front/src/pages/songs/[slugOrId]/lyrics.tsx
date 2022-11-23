@@ -1,16 +1,13 @@
 import { Box } from "@mui/material";
-import { GetServerSidePropsContext, InferGetServerSidePropsType } from "next";
-import {
-	QueryClient, dehydrate, useQuery
-} from "react-query";
-import API from "../../../api";
+import API from "../../../api/api";
 import { WideLoadingComponent } from "../../../components/loading/loading";
 import LyricsBox from "../../../components/lyrics";
 import { SongWithArtist } from "../../../models/song";
-import { prepareMeeloQuery } from "../../../query";
+import { useQuery } from "../../../api/use-query";
 import getSlugOrId from "../../../utils/getSlugOrId";
 import SongRelationPageHeader from "../../../components/relation-page-header/song-relation-page-header";
 import { useRouter } from "next/router";
+import prepareSSR, { InferSSRProps } from "../../../ssr";
 
 const songQuery = (songSlugOrId: number | string) => ({
 	key: ["song", songSlugOrId],
@@ -26,33 +23,23 @@ const lyricsQuery = (songSlugOrId: number | string) => ({
 	exec: () => API.getSongLyrics(songSlugOrId)
 });
 
-export const getServerSideProps = async (context: GetServerSidePropsContext) => {
+export const getServerSideProps = prepareSSR((context) => {
 	const songIdentifier = getSlugOrId(context.params);
-	const queryClient = new QueryClient();
-
-	await Promise.all([
-		queryClient.prefetchQuery(
-			prepareMeeloQuery(songQuery, songIdentifier)
-		),
-		queryClient.prefetchQuery(prepareMeeloQuery(lyricsQuery, songIdentifier))
-	]);
 
 	return {
-		props: {
-			songIdentifier,
-			dehydratedState: JSON.parse(JSON.stringify(dehydrate(queryClient))),
-		},
+		additionalProps: { songIdentifier },
+		queries: [songQuery(songIdentifier), lyricsQuery(songIdentifier)]
 	};
-};
+});
 
 const SongLyricsPage = (
-	{ songIdentifier }: InferGetServerSidePropsType<typeof getServerSideProps>
+	{ songIdentifier }: InferSSRProps<typeof getServerSideProps>
 ) => {
 	const router = useRouter();
 
 	songIdentifier ??= getSlugOrId(router.query);
-	const lyrics = useQuery(prepareMeeloQuery(lyricsQuery, songIdentifier));
-	const song = useQuery(prepareMeeloQuery(songQuery, songIdentifier));
+	const lyrics = useQuery(lyricsQuery, songIdentifier);
+	const song = useQuery(songQuery, songIdentifier);
 
 	if (!song.data || lyrics.isLoading) {
 		return <WideLoadingComponent/>;

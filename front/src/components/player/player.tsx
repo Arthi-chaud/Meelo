@@ -5,7 +5,7 @@ import {
 	LegacyRef, useEffect, useRef, useState
 } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import API from "../../api";
+import API from "../../api/api";
 import { playPreviousTrack, skipTrack } from "../../state/playerSlice";
 import { RootState } from "../../state/store";
 import { ExpandedPlayerControls, MinimizedPlayerControls } from "./controls";

@@ -4,7 +4,7 @@ import {
 import FadeIn from "react-fade-in";
 import Resource from "../../models/resource";
 import StraightIcon from "@mui/icons-material/Straight";
-import { MeeloInfiniteQueryFn } from "../../query";
+import { MeeloInfiniteQueryFn } from "../../api/use-query";
 import { WideLoadingComponent } from "../loading/loading";
 import LoadingPage from "../loading/loading-page";
 import InfiniteGrid from "./infinite-grid";
@@ -41,7 +41,7 @@ const InfiniteView = <T extends Resource, Options extends string[][]>(
 	const [display, setDisplay] = useState(props.view);
 	const [backToTopVisible, setBackToTopVisible] = useState(false);
 	const handleScroll = () => {
-		const position = window.pageYOffset;
+		const position = window.scrollY;
 
 		setBackToTopVisible(position > window.innerHeight);
 	};

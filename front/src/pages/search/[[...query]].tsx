@@ -3,7 +3,7 @@ import {
 	Box, InputAdornment, TextField
 } from "@mui/material";
 import { useState } from "react";
-import API from '../../api';
+import API from '../../api/api';
 import { Page } from '../../components/infinite/infinite-scroll';
 import {
 	AlbumSortingKeys, AlbumType, AlbumWithArtist
@@ -13,9 +13,7 @@ import Song, { SongSortingKeys, SongWithArtist } from '../../models/song';
 import { SortingParameters } from "../../utils/sorting";
 import SelectableInfiniteView from "../../components/infinite/selectable-infinite-view";
 import { useRouter } from "next/router";
-import { GetServerSidePropsContext, InferGetServerSidePropsType } from "next";
-import { QueryClient, dehydrate } from "react-query";
-import { prepareMeeloInfiniteQuery } from "../../query";
+import prepareSSR, { InferSSRProps } from "../../ssr";
 
 const searchArtistsQuery = (query: string, sort?: SortingParameters<typeof ArtistSortingKeys>) => ({
 	key: [
@@ -51,38 +49,26 @@ const searchSongsQuery = (query: string, sort?: SortingParameters<typeof SongSor
 	exec: (lastPage: Page<Song>) => API.searchSongs<SongWithArtist>(query, lastPage, sort, ['artist'])
 });
 
-export const getServerSideProps = async (context: GetServerSidePropsContext) => {
-	const queryClient = new QueryClient();
+export const getServerSideProps = prepareSSR((context) => {
 	const searchQuery = context.query.query as string ?? null;
 	const type = context.query.type as string ?? null;
 
-	await Promise.all([
-		queryClient.prefetchInfiniteQuery(
-			prepareMeeloInfiniteQuery(searchArtistsQuery, searchQuery)
-		),
-		queryClient.prefetchInfiniteQuery(
-			prepareMeeloInfiniteQuery(searchAlbumsQuery, searchQuery)
-		),
-		queryClient.prefetchInfiniteQuery(
-			prepareMeeloInfiniteQuery(searchSongsQuery, searchQuery)
-		),
-	]);
-
 	return {
-		props: {
-			searchQuery,
-			type,
-			dehydratedState: JSON.parse(JSON.stringify(dehydrate(queryClient))),
-		},
+		additionalProps: { searchQuery, type },
+		infiniteQueries: [
+			searchArtistsQuery(searchQuery),
+			searchAlbumsQuery(searchQuery),
+			searchSongsQuery(searchQuery)
+		]
 	};
-};
+});
 
 const buildSearchUrl = (query: string | undefined, type: string | undefined) => {
 	return "/search/" + (query ?? '') + (type ? `?type=${type}` : '');
 };
 
 const SearchPage = (
-	{ type, searchQuery }: InferGetServerSidePropsType<typeof getServerSideProps>
+	{ type, searchQuery }: InferSSRProps<typeof getServerSideProps>
 ) => {
 	const router = useRouter();
 

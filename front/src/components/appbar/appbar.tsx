@@ -8,8 +8,7 @@ import { useRouter } from 'next/router';
 import SearchIcon from '@mui/icons-material/Search';
 import MenuIcon from '@mui/icons-material/Menu';
 import { useEffect, useState } from 'react';
-import { useQuery } from 'react-query';
-import API from '../../api';
+import API from '../../api/api';
 import LoadingComponent from '../loading/loading';
 import FadeIn from 'react-fade-in';
 import { formattedItemTypes, itemType } from './item-types';
@@ -17,7 +16,9 @@ import globalLibrary from './global-library';
 import MeeloAppBarDrawer from './drawer';
 import buildLink from './build-link';
 import Link from 'next/link';
-import { prepareMeeloQuery } from '../../query';
+// eslint-disable-next-line no-restricted-imports
+import { useQuery as useReactQuery } from 'react-query';
+import { prepareMeeloQuery } from '../../api/use-query';
 import Library from '../../models/library';
 import toast from 'react-hot-toast';
 import ContextualMenu from '../contextual-menu/contextual-menu';
@@ -32,7 +33,7 @@ const MeeloAppBar = () => {
 	const router = useRouter();
 	const [requestedLibrary, setRequestedLibrary] = useState(globalLibrary);
 	const [availableLibraries, setAvailableLibraries] = useState<Library[] | null>(null);
-	const librariesQuery = useQuery({
+	const librariesQuery = useReactQuery({
 		...prepareMeeloQuery(libraryQuery),
 		useErrorBoundary: false
 	});

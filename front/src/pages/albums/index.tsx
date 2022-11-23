@@ -1,18 +1,16 @@
 import React from 'react';
-import { GetServerSidePropsContext, InferGetServerSidePropsType } from "next";
 import { useRouter } from 'next/router';
-import API from '../../api';
+import API from '../../api/api';
 import Album, {
 	AlbumSortingKeys, AlbumType, AlbumWithArtist
 } from '../../models/album';
 import getLibrarySlug from '../../utils/getLibrarySlug';
 import { Page } from '../../components/infinite/infinite-scroll';
-import { QueryClient, dehydrate } from 'react-query';
-import { prepareMeeloInfiniteQuery } from '../../query';
 import {
 	SortingParameters, getOrderParams, getSortingFieldParams
 } from '../../utils/sorting';
 import InfiniteAlbumView from '../../components/infinite/infinite-album-view';
+import prepareSSR, { InferSSRProps } from '../../ssr';
 
 const albumsQuery = (sort: SortingParameters<typeof AlbumSortingKeys>, type?: AlbumType) => ({
 	key: [
@@ -40,32 +38,23 @@ const libraryAlbumsQuery = (
 	)
 });
 
-export const getServerSideProps = async (context: GetServerSidePropsContext) => {
-	const queryClient = new QueryClient();
+export const getServerSideProps = prepareSSR((context) => {
 	const order = getOrderParams(context.query.order);
 	const sortBy = getSortingFieldParams(context.query.sortBy, AlbumSortingKeys);
 	const librarySlug = getLibrarySlug(context.req.url!) ?? null;
 
-	if (librarySlug) {
-		queryClient.prefetchInfiniteQuery(
-			prepareMeeloInfiniteQuery(libraryAlbumsQuery, librarySlug, { sortBy, order })
-		);
-	} else {
-		queryClient.prefetchInfiniteQuery(
-			prepareMeeloInfiniteQuery(albumsQuery, { sortBy, order })
-		);
-	}
-
 	return {
-		props: {
-			librarySlug,
-			dehydratedState: JSON.parse(JSON.stringify(dehydrate(queryClient))),
-		},
+		additionalProps: { librarySlug },
+		infiniteQueries: [
+			librarySlug
+				? libraryAlbumsQuery(librarySlug, { sortBy, order })
+				: albumsQuery({ sortBy, order })
+		]
 	};
-};
+});
 
 const LibraryAlbumsPage = (
-	{ librarySlug }: InferGetServerSidePropsType<typeof getServerSideProps>
+	{ librarySlug }: InferSSRProps<typeof getServerSideProps>
 ) => {
 	const router = useRouter();
 

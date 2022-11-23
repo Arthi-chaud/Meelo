@@ -1,20 +1,21 @@
 import Album, {
 	AlbumInclude, AlbumSortingKeys, AlbumType, AlbumWithArtist
-} from "./models/album";
-import Artist, { ArtistInclude, ArtistSortingKeys } from "./models/artist";
-import Genre from "./models/genre";
-import Library from "./models/library";
-import { PaginatedResponse, PaginationParameters } from "./models/pagination";
-import Release, { ReleaseInclude, ReleaseSortingKeys } from "./models/release";
+} from "../models/album";
+import Artist, { ArtistInclude, ArtistSortingKeys } from "../models/artist";
+import Genre from "../models/genre";
+import Library from "../models/library";
+import { PaginatedResponse, PaginationParameters } from "../models/pagination";
+import Release, { ReleaseInclude, ReleaseSortingKeys } from "../models/release";
 import Song, {
 	SongInclude, SongSortingKeys, SongWithArtist
-} from "./models/song";
+} from "../models/song";
 import Track, {
 	TrackInclude, TrackSortingKeys, TrackWithRelease
-} from "./models/track";
-import Tracklist from "./models/tracklist";
-import { SortingParameters } from "./utils/sorting";
-import LibraryTaskResponse from "./models/library-task-response";
+} from "../models/track";
+import Tracklist from "../models/tracklist";
+import { SortingParameters } from "../utils/sorting";
+import LibraryTaskResponse from "../models/library-task-response";
+import { ResourceNotFound } from "../exceptions";
 
 type QueryParameters<Keys extends string[]> = {
 	pagination?: PaginationParameters;
@@ -550,7 +551,9 @@ export default class API {
 			throw new Error("Error while parsing Server's response");
 		});
 
-		if (!response.ok) {
+		if (response.status == 404) {
+			throw new ResourceNotFound(errorMessage ?? jsonResponse.error ?? response.statusText);
+		} else if (!response.ok) {
 			throw new Error(errorMessage ?? jsonResponse.error ?? response.statusText);
 		}
 		return jsonResponse;

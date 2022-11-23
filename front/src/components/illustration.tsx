@@ -4,7 +4,7 @@ import {
 } from "@mui/material";
 import Image, { ImageProps } from "next/image";
 import { useState } from "react";
-import API from "../api";
+import API from "../api/api";
 import illustrationFallback from '../../public/icon.png';
 
 type IllustrationProps = {

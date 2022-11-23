@@ -3,9 +3,8 @@ import {
 	ListSubheader, Typography, useTheme
 } from "@mui/material";
 import { Box } from "@mui/system";
-import { GetServerSidePropsContext, InferGetServerSidePropsType } from "next";
 import { useRouter } from "next/router";
-import API from "../../api";
+import API from "../../api/api";
 import Illustration from "../../components/illustration";
 import { WideLoadingComponent } from "../../components/loading/loading";
 import { ReleaseWithAlbum } from "../../models/release";
@@ -18,10 +17,7 @@ import PlayCircleIcon from '@mui/icons-material/PlayCircle';
 import { Shuffle } from "@mui/icons-material";
 import FadeIn from "react-fade-in";
 import Tile from "../../components/tile/tile";
-import { prepareMeeloQuery } from "../../query";
-import {
-	QueryClient, dehydrate, useQueries, useQuery
-} from "react-query";
+import { useQueries, useQuery } from "../../api/use-query";
 import { useDispatch } from "react-redux";
 import { playTracks } from "../../state/playerSlice";
 import Song from "../../models/song";
@@ -30,6 +26,7 @@ import { shuffle } from 'd3-array';
 import getSlugOrId from "../../utils/getSlugOrId";
 import AlbumContextualMenu from "../../components/contextual-menu/album-contextual-menu";
 import ReleaseTrackList from "../../components/release-tracklist";
+import prepareSSR, { InferSSRProps } from "../../ssr";
 
 const releaseQuery = (slugOrId: string | number) => ({
 	key: ['release', slugOrId],
@@ -77,26 +74,14 @@ const albumReleasesQuery = (slugOrId: string | number) => ({
 	exec: () => API.getAlbumReleases(slugOrId, {}),
 });
 
-export const getServerSideProps = async (context: GetServerSidePropsContext) => {
+export const getServerSideProps = prepareSSR((context) => {
 	const releaseIdentifier = getSlugOrId(context.params);
-	const queryClient = new QueryClient();
-
-	await Promise.all([
-		queryClient.prefetchQuery(
-			prepareMeeloQuery(releaseQuery, releaseIdentifier)
-		),
-		queryClient.prefetchQuery(
-			prepareMeeloQuery(tracklistQuery, releaseIdentifier)
-		)
-	]);
 
 	return {
-		props: {
-			releaseIdentifier,
-			dehydratedState: dehydrate(queryClient),
-		},
+		additionalProps: { releaseIdentifier },
+		queries: [releaseQuery(releaseIdentifier), tracklistQuery(releaseIdentifier)]
 	};
-};
+});
 
 type RelatedContentSectionProps = {
 	display: boolean,
@@ -125,7 +110,7 @@ const getSongArtist = (song: Song, albumArtist?: Artist, otherArtists: Artist[] 
 };
 
 const ReleasePage = (
-	{ releaseIdentifier }: InferGetServerSidePropsType<typeof getServerSideProps>
+	{ releaseIdentifier }: InferSSRProps<typeof getServerSideProps>
 ) => {
 	const router = useRouter();
 
@@ -136,18 +121,17 @@ const ReleasePage = (
 	const [totalDuration, setTotalDuration] = useState<number | null>(null);
 	const [tracks, setTracks] = useState<TrackWithSong[]>([]);
 
-	const release = useQuery(prepareMeeloQuery(releaseQuery, releaseIdentifier));
+	const release = useQuery(releaseQuery, releaseIdentifier);
 	const artistId = release.data?.album?.artistId;
 
-	const tracklist = useQuery(prepareMeeloQuery(tracklistQuery, releaseIdentifier));
-	const albumArtist = useQuery(prepareMeeloQuery(artistQuery, artistId));
-	const albumGenres = useQuery(prepareMeeloQuery(albumGenresQuery, release.data?.albumId));
+	const tracklist = useQuery(tracklistQuery, releaseIdentifier);
+	const albumArtist = useQuery(artistQuery, artistId);
+	const albumGenres = useQuery(albumGenresQuery, release.data?.albumId);
 	const hasGenres = (albumGenres.data?.length ?? 0) > 0;
-
-	const otherArtistsQuery = useQueries(tracks
+	const otherArtistsQuery = useQueries(...tracks
 		.filter((track: TrackWithSong) => track.song.artistId != albumArtist.data?.id)
-		.map((track) => prepareMeeloQuery(artistQuery, track.song.artistId)));
-	const relatedReleases = useQuery(prepareMeeloQuery(albumReleasesQuery, release.data?.albumId));
+		.map((track): Parameters<typeof useQuery<Artist>> => [artistQuery, track.song.artistId]));
+	const relatedReleases = useQuery(albumReleasesQuery, release.data?.albumId);
 
 	useEffect(() => {
 		if (tracklist.data) {

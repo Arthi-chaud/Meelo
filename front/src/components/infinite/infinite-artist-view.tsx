@@ -1,6 +1,6 @@
 import { useState } from "react";
 import Artist, { ArtistSortingKeys } from "../../models/artist";
-import { MeeloInfiniteQueryFn } from "../../query";
+import { MeeloInfiniteQueryFn } from "../../api/use-query";
 import { SortingParameters } from "../../utils/sorting";
 import ArtistItem from "../list-item/artist-item";
 import ArtistTile from "../tile/artist-tile";
