@@ -94,7 +94,7 @@ export default class LibraryController {
 		@IdentifierParam(ParseLibraryIdentifierPipe)
 		where: LibraryQueryParameters.WhereInput,
 	): Promise<void> {
-		this.libraryService.delete(where);
+		await this.libraryService.delete(where);
 	}
 
 	@ApiOperation({
