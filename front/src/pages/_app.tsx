@@ -52,8 +52,14 @@ function MyApp({ Component, pageProps }: AppProps) {
 						return <InternalError/>;
 					}}
 					onError={(error: Error) => {
-						setError(error instanceof ResourceNotFound ? 'not-found' : 'error');
-						toast.error(error.message);
+						if (errorType) {
+							toast.error(error.message);
+						}
+						if (error instanceof ResourceNotFound) {
+							setError('not-found');
+						} else {
+							setError('error');
+						}
 					}}
 				>
 					<Hydrate state={pageProps.dehydratedState}>
