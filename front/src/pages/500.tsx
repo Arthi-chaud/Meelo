@@ -1,7 +1,6 @@
-import { NextPage } from 'next';
 import ErrorPage from '../components/error-page';
 
-const InternalError: NextPage = () => {
+const InternalError = () => {
 	return <ErrorPage heading="Oops... An error occured"/>;
 };
 

@@ -1,7 +1,6 @@
-import { NextPage } from 'next';
 import ErrorPage from '../components/error-page';
 
-const PageNotFound: NextPage = () => {
+const PageNotFound = () => {
 	return <ErrorPage heading="Oops... Page not found"/>;
 };
 

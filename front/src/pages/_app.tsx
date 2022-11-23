@@ -1,5 +1,5 @@
 /* eslint-disable id-length */
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import type { AppProps } from "next/app";
 import {
 	// eslint-disable-next-line no-restricted-imports
@@ -7,7 +7,7 @@ import {
 } from "react-query";
 import { ReactQueryDevtools } from "react-query/devtools";
 import {
-	Box, CssBaseline, GlobalStyles, ThemeProvider
+	CssBaseline, GlobalStyles, ThemeProvider
 } from "@mui/material";
 import MeeloAppBar from "../components/appbar/appbar";
 import { ErrorBoundary } from 'react-error-boundary';
@@ -18,10 +18,19 @@ import theme from "../theme";
 import Player from "../components/player/player";
 import { Provider } from "react-redux";
 import { DefaultWindowTitle } from '../utils/constants';
+import { ResourceNotFound } from "../exceptions";
+import PageNotFound from "./404";
+import InternalError from "./500";
+import { useRouter } from "next/router";
 
 function MyApp({ Component, pageProps }: AppProps) {
 	const [queryClient] = useState(() => new QueryClient());
+	const router = useRouter();
+	const [errorType, setError] = useState<'not-found' | 'error' | undefined>();
 
+	useEffect(() => {
+		setError(undefined);
+	}, [router]);
 	return <Provider store={store}>
 		<ThemeProvider theme={theme}>
 			<CssBaseline />
@@ -35,8 +44,17 @@ function MyApp({ Component, pageProps }: AppProps) {
 			<QueryClientProvider client={queryClient}>
 				<MeeloAppBar/>
 				<ErrorBoundary
-					FallbackComponent={() => <Box/>}
-					onError={(error: Error) => toast.error(error.message)}
+					resetKeys={[errorType]}
+					FallbackComponent={() => {
+						if (errorType == 'not-found') {
+							return <PageNotFound/>;
+						}
+						return <InternalError/>;
+					}}
+					onError={(error: Error) => {
+						setError(error instanceof ResourceNotFound ? 'not-found' : 'error');
+						toast.error(error.message);
+					}}
 				>
 					<Hydrate state={pageProps.dehydratedState}>
 						<Component {...pageProps} />

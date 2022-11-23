@@ -15,6 +15,7 @@ import Track, {
 import Tracklist from "../models/tracklist";
 import { SortingParameters } from "../utils/sorting";
 import LibraryTaskResponse from "../models/library-task-response";
+import { ResourceNotFound } from "../exceptions";
 
 type QueryParameters<Keys extends string[]> = {
 	pagination?: PaginationParameters;
@@ -550,7 +551,9 @@ export default class API {
 			throw new Error("Error while parsing Server's response");
 		});
 
-		if (!response.ok) {
+		if (response.status == 404) {
+			throw new ResourceNotFound(errorMessage ?? jsonResponse.error ?? response.statusText);
+		} else if (!response.ok) {
 			throw new Error(errorMessage ?? jsonResponse.error ?? response.statusText);
 		}
 		return jsonResponse;
