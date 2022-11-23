@@ -41,6 +41,7 @@ This project is made by a music collector, and for music collectors. Its goal is
   - etc..
 - ... And allow filtering based on Album's types
 - Automated Lyrics download
+- Embedded and inline artwork file handling.
 - Access, stream, and download songs from your server.
 
 Keep track of the incoming features with the [project's issues](https://github.com/Arthi-chaud/Meelo/issues)

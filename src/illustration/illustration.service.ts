@@ -9,7 +9,7 @@ import Slug from 'src/slug/slug';
 import {
 	CantDownloadIllustrationException, IllustrationNotExtracted, NoIllustrationException
 } from './illustration.exceptions';
-import mm, { type IAudioMetadata, IPicture } from 'music-metadata';
+import mm, { type IAudioMetadata } from 'music-metadata';
 import * as fs from 'fs';
 import { FileParsingException } from 'src/metadata/metadata.exceptions';
 import * as dir from 'path';
@@ -25,6 +25,8 @@ import TrackService from 'src/track/track.service';
 import FileService from 'src/file/file.service';
 import { Readable } from 'stream';
 import type { IllustrationDimensionsDto } from './models/illustration-dimensions.dto';
+import SettingsService from 'src/settings/settings.service';
+import glob from 'glob';
 
 type IllustrationExtractStatus = 'extracted' | 'error' | 'already-extracted' | 'different-illustration';
 
@@ -41,6 +43,8 @@ export default class IllustrationService implements OnModuleInit {
 		private trackService: TrackService,
 		@Inject(forwardRef(() => FileService))
 		private fileService: FileService,
+		@Inject(forwardRef(() => SettingsService))
+		private settingsService: SettingsService,
 		private fileManagerService: FileManagerService,
 		private moduleRef: ModuleRef
 	) {	}
@@ -251,13 +255,20 @@ export default class IllustrationService implements OnModuleInit {
 			track.discIndex ?? undefined,
 			track.trackIndex ?? undefined
 		);
-		const illustration = await this.extractIllustrationFromFile(fullTrackPath);
+
+		const embeddedIllustration = await this.extractIllustrationFromFile(fullTrackPath);
+		const inlineIllustration = await this.extractIllustrationInFileFolder(fullTrackPath);
+		const illustration: Buffer | null = (this.settingsService.settingsValues.metadata
+			.source == 'embedded' ? embeddedIllustration : inlineIllustration)
+			?? (this.settingsService.settingsValues.metadata.order == 'preferred'
+				? embeddedIllustration ?? inlineIllustration
+				: null);
 
 		if (illustration == null) {
 			Logger.warn("No illustration to extract");
 			return null;
 		}
-		const illustrationBytes = await (await Jimp.read(illustration.data))
+		const illustrationBytes = await (await Jimp.read(illustration))
 			.getBufferAsync(Jimp.MIME_JPEG);
 
 		for (const path of [releaseIllustrationPath, trackIllustrationPath]) {
@@ -307,7 +318,7 @@ export default class IllustrationService implements OnModuleInit {
 	 * Extracts the embedded illustration of a file
 	 * @param filePath the full path to the source file to scrap
 	 */
-	private async extractIllustrationFromFile(filePath: string): Promise<IPicture | null> {
+	private async extractIllustrationFromFile(filePath: string): Promise<Buffer | null> {
 		if (!this.fileManagerService.fileExists(filePath)) {
 			throw new FileDoesNotExistException(filePath);
 		}
@@ -316,10 +327,24 @@ export default class IllustrationService implements OnModuleInit {
 				skipCovers: false,
 			});
 
-			return mm.selectCover(rawMetadata.common.picture);
+			return mm.selectCover(rawMetadata.common.picture)?.data ?? null;
 		} catch {
 			throw new FileParsingException(filePath);
 		}
+	}
+
+	/**
+	 * Get a stream of the illustration file in the same folder as file
+	 * @param filePath the full path to the source file to scrap
+	 */
+	private async extractIllustrationInFileFolder(filePath: string): Promise<Buffer | null> {
+		const fileFolder = dir.dirname(filePath);
+		const illustrationCandidates = glob.sync(`${fileFolder}/[Cc]over.*`);
+
+		if (illustrationCandidates.length == 0) {
+			return null;
+		}
+		return this.fileManagerService.getFileBuffer(illustrationCandidates[0]);
 	}
 
 	/**

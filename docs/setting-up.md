@@ -19,6 +19,7 @@ Artist 1
 │   └───Album 1
 │       │   01 Track 1.m4a
 │       │   02 Track 2.m4a
+|       |   cover.jpg
 │       │   ...
 │   ...
 ```
@@ -68,7 +69,7 @@ All fields are **required**
   - `source`: The **primary metadata source** to use:
     - `embedded`: Using the embedded tags
     - `path`: Using the Regular Expression's groups.
-  - `order`: Define the missing metadata fallback behaviour
+  - `order`: Define the missing metadata fallback behaviour. *Note*: if this method is enabled, it will consider 'cover.*' file in the same directory as the media file as an illustration candidate.
     - `only`: If a field is missing from the primary metadata source, will not use the other method to get it.
     - `preferred`: If a field is missing from the primary metadata source, will try to use the other method to get it.
 

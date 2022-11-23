@@ -127,6 +127,9 @@ export default class MetadataService {
 		const pathMetadata: Metadata = this.parseMetadataFromPath(filePath);
 		const settings = this.settingsService.settingsValues;
 
+		pathMetadata.duration = fileMetadata.duration;
+		pathMetadata.type = fileMetadata.type;
+		pathMetadata.bitrate = fileMetadata.bitrate;
 		if (settings.metadata.order == "only") {
 			if (settings.metadata.source == "path") {
 				return pathMetadata;
