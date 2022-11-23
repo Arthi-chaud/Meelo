@@ -8,6 +8,7 @@ import TrackModule from 'src/track/track.module';
 import FileModule from 'src/file/file.module';
 import { IllustrationController } from './illustration.controller';
 import ArtistModule from 'src/artist/artist.module';
+import SettingsModule from 'src/settings/settings.module';
 
 @Module({
 	imports: [
@@ -18,6 +19,7 @@ import ArtistModule from 'src/artist/artist.module';
 		forwardRef(() => ReleaseModule),
 		forwardRef(() => TrackModule),
 		forwardRef(() => FileModule),
+		SettingsModule
 	],
 	controllers: [IllustrationController],
 	providers: [IllustrationService],

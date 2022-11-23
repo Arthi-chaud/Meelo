@@ -43,6 +43,11 @@ export default class FileManagerService {
 		return fs.readFileSync(filePath, 'utf8');
 	}
 
+	async getFileBuffer(filePath: string): Promise<Buffer> {
+		return fs.promises.readFile(filePath)
+			.then((content) => Buffer.from(content));
+	}
+
 	/**
 	 * Compute the MD5 checksum of a file
 	 * @param filePath The Full Path to a file, whose MD5 checksum will be computed
