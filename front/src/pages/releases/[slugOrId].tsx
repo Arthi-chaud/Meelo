@@ -17,9 +17,7 @@ import PlayCircleIcon from '@mui/icons-material/PlayCircle';
 import { Shuffle } from "@mui/icons-material";
 import FadeIn from "react-fade-in";
 import Tile from "../../components/tile/tile";
-import {
-	prepareMeeloQuery, useQueries, useQuery
-} from "../../api/use-query";
+import { useQueries, useQuery } from "../../api/use-query";
 import { useDispatch } from "react-redux";
 import { playTracks } from "../../state/playerSlice";
 import Song from "../../models/song";
@@ -132,12 +130,7 @@ const ReleasePage = (
 	const hasGenres = (albumGenres.data?.length ?? 0) > 0;
 	const otherArtistsQuery = useQueries(...tracks
 		.filter((track: TrackWithSong) => track.song.artistId != albumArtist.data?.id)
-		.map((track) => {
-			const parameters: Parameters<typeof prepareMeeloQuery<Artist>> =
-				[artistQuery, track.song.artistId];
-
-			return parameters;
-		}));
+		.map((track): Parameters<typeof useQuery<Artist>> => [artistQuery, track.song.artistId]));
 	const relatedReleases = useQuery(albumReleasesQuery, release.data?.albumId);
 
 	useEffect(() => {

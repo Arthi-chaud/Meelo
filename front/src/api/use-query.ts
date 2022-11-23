@@ -24,14 +24,12 @@ export type InfiniteQuery<Type> = {
 //// Query functions
 
 export type MeeloQueryFn<
-	Parameters extends any[],
 	QueryReturnType = unknown
-> = (...args: Parameters) => Query<QueryReturnType>
+> = (...args: any[]) => Query<QueryReturnType>
 
 export type MeeloInfiniteQueryFn<
 	QueryReturnType,
-	Parameters extends any[],
-> = (...args: Parameters[]) => InfiniteQuery<QueryReturnType>
+> = (...args: any[]) => InfiniteQuery<QueryReturnType>
 
 const defaultMeeloQueryOptions = {
 	useErrorBoundary: true,
@@ -44,9 +42,9 @@ const defaultMeeloQueryOptions = {
  * @param queryArgs the arguments to pass the the query function. If one of them is undefined, the query will not be enabled
  * @returns
  */
-const prepareMeeloQuery = <QueryFnParameters extends any[], QueryReturnType = unknown>(
-	query: MeeloQueryFn<QueryFnParameters, QueryReturnType>,
-	...queryArgs: Partial<QueryFnParameters>
+const prepareMeeloQuery = <QueryReturnType = unknown>(
+	query: MeeloQueryFn<QueryReturnType>,
+	...queryArgs: Partial<Parameters<typeof query>>
 ) => {
 	const enabled = isEnabled(queryArgs);
 	const queryParams = query(...queryArgs as Parameters<typeof query>);
@@ -74,9 +72,9 @@ const isEnabled = (args: any[]) => {
  * @param queryArgs the arguments to pass the the query function. If one of them is undefined, the query will not be enabled
  * @returns
  */
-const prepareMeeloInfiniteQuery = <QueryFnParameters extends unknown[], QueryReturnType = unknown>(
-	query: MeeloInfiniteQueryFn<QueryReturnType, QueryFnParameters>,
-	...queryArgs: Partial<QueryFnParameters>
+const prepareMeeloInfiniteQuery = <QueryReturnType = unknown>(
+	query: MeeloInfiniteQueryFn<QueryReturnType>,
+	...queryArgs: Partial<Parameters<typeof query>>
 ) => {
 	const enabled = isEnabled(queryArgs);
 	const queryParams = query(...queryArgs as Parameters<typeof query>);
@@ -99,9 +97,9 @@ const prepareMeeloInfiniteQuery = <QueryFnParameters extends unknown[], QueryRet
 /**
  * Wrapper for the react-query's *useQuery*
  */
-const useQuery = <Params extends unknown[], ReturnType>(
-	query: MeeloQueryFn<Params, ReturnType>,
-	...queryParams: Partial<Params>
+const useQuery = <ReturnType>(
+	query: MeeloQueryFn<ReturnType>,
+	...queryParams: Partial<Parameters<typeof query>>
 ) => {
 	return useReactQuery(prepareMeeloQuery(query, ...queryParams));
 };
@@ -109,8 +107,8 @@ const useQuery = <Params extends unknown[], ReturnType>(
 /**
  * Wrapper for the react-query's *useQueries*
  */
-const useQueries = <Params extends unknown[], ReturnType>(
-	...queries: Parameters<typeof useQuery<Params, ReturnType>>[]
+const useQueries = <ReturnType>(
+	...queries: Parameters<typeof useQuery<ReturnType>>[]
 ) => {
 	return useReactQueries(
 		queries.map(([query, ...params]) => prepareMeeloQuery(query, ...params))
@@ -120,9 +118,9 @@ const useQueries = <Params extends unknown[], ReturnType>(
 /**
  * Wrapper for the react-query's *useInfiniteQuery*
  */
-const useInfiniteQuery = <Params extends unknown[], ReturnType>(
-	query: MeeloInfiniteQueryFn<ReturnType, Params>,
-	...queryParams: Partial<Params>
+const useInfiniteQuery = <ReturnType>(
+	query: MeeloInfiniteQueryFn<ReturnType>,
+	...queryParams: Partial<Parameters<typeof query>>
 ) => {
 	return useReactInfiniteQuery(prepareMeeloInfiniteQuery(query, ...queryParams));
 };
