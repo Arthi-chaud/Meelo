@@ -6,6 +6,7 @@ import MetadataService from 'src/metadata/metadata.service';
 import type { Release, Track } from 'src/prisma/models';
 import ReleaseService from 'src/release/release.service';
 import Slug from 'src/slug/slug';
+import escapeRegex from 'src/utils/escape-regex';
 import {
 	CantDownloadIllustrationException, IllustrationNotExtracted, NoIllustrationException
 } from './illustration.exceptions';
@@ -339,7 +340,7 @@ export default class IllustrationService implements OnModuleInit {
 	 */
 	private async extractIllustrationInFileFolder(filePath: string): Promise<Buffer | null> {
 		const fileFolder = dir.dirname(filePath);
-		const illustrationCandidates = glob.sync(`${fileFolder}/[Cc]over.*`);
+		const illustrationCandidates = glob.sync(`${escapeRegex(fileFolder)}/[Cc]over.*`);
 
 		if (illustrationCandidates.length == 0) {
 			return null;
