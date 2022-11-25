@@ -6,12 +6,17 @@ import {
 } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import API from "../../api/api";
-import { playPreviousTrack, skipTrack } from "../../state/playerSlice";
+import {
+	playPreviousTrack, playTracks, skipTrack
+} from "../../state/playerSlice";
 import { RootState } from "../../state/store";
 import { ExpandedPlayerControls, MinimizedPlayerControls } from "./controls";
 import { DefaultWindowTitle } from "../../utils/constants";
 
 const Player = () => {
+	const userIsAuthentified = useSelector(
+		(state: RootState) => state.user.accessToken !== undefined
+	);
 	const cursor = useSelector((state: RootState) => state.player.cursor);
 	const currentTrack = useSelector((state: RootState) => state.player.playlist[cursor]);
 	const playlist = useSelector((state: RootState) => state.player.playlist);
@@ -61,6 +66,11 @@ const Player = () => {
 		dispatch(playPreviousTrack());
 	};
 
+	useEffect(() => {
+		pause();
+		dispatch(playTracks({ tracks: [] }));
+	// eslint-disable-next-line react-hooks/exhaustive-deps
+	}, [userIsAuthentified]);
 	useEffect(() => {
 		player.current?.pause();
 		navigator.mediaSession.metadata = null;
