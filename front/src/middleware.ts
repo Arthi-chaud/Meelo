@@ -1,8 +1,12 @@
 import { NextRequest, NextResponse } from 'next/server';
 import API from './api/api';
 import { AlbumWithArtist } from './models/album';
+import store from './state/store';
+import { setAccessToken } from './state/userSlice';
+import UserAccessTokenCookieKey from './utils/user-access-token-cookie-key';
 
 export async function middleware(request: NextRequest) {
+	store.dispatch(setAccessToken(request.cookies.get(UserAccessTokenCookieKey)));
 	const { pathname, origin } = request.nextUrl;
 	// eslint-disable-next-line @typescript-eslint/no-non-null-asserted-optional-chain, no-useless-escape
 	const albumId = pathname.match('\/albums\/(?<slug>[^\/]*)')?.at(1)!;
