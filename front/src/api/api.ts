@@ -40,7 +40,7 @@ type FetchParameters<Keys extends string[]> = {
 	parameters: QueryParameters<Keys>,
 	otherParameters?: any,
 	errorMessage?: string,
-	data?: Object,
+	data?: Record<string, any>,
 }
 
 export default class API {
@@ -53,6 +53,7 @@ export default class API {
 			parameters: {}
 		}, 'POST');
 	}
+
 	static async register(credentials: AuthenticationInput): Promise<User> {
 		return API.fetch({
 			route: '/users/new',
@@ -284,7 +285,7 @@ export default class API {
 		return API.fetch({
 			route: `/users/me`,
 			parameters: { }
-		}); 
+		});
 	}
 
 	/**
@@ -584,30 +585,32 @@ export default class API {
 		});
 	}
 
-	private static async fetch<T, Keys extends string[]>({ route, parameters, otherParameters, errorMessage, data }: FetchParameters<Keys>, method: 'GET' | 'PUT' | 'POST' = 'GET' ): Promise<T> {
-		const ssrContext = store.getState().context.context;
-		const accessToken = getCookie(UserAccessTokenCookieKey, ssrContext)?.valueOf();
-		console.log("Access token: " + accessToken);
+	private static async fetch<T, Keys extends string[]>({ route, parameters, otherParameters, errorMessage, data }: FetchParameters<Keys>, method: 'GET' | 'PUT' | 'POST' = 'GET'): Promise<T> {
+		const accessToken = store.getState().user.accessToken;
 		const header = {
 			'Content-Type': 'application/json'
-		}
+		};
+
 		const response = await fetch(
 			this.buildURL(route, parameters, otherParameters), {
-			method,
-			body: data ? JSON.stringify(data) : undefined,
-			headers: accessToken ? {
-				...header,
-				'Authorization': `Bearer ${accessToken}`
-			} : header,
-		});
-		const jsonResponse = await response.json().catch((e) => {
+				method,
+				body: data ? JSON.stringify(data) : undefined,
+				headers: accessToken ? {
+					...header,
+					Authorization: `Bearer ${accessToken}`
+				} : header,
+			}
+		);
+		const jsonResponse = await response.json().catch(() => {
 			throw new Error("Error while parsing Server's response");
 		});
+
 		if (response.status == 404) {
 			throw new ResourceNotFound(errorMessage ?? jsonResponse.error ?? response.statusText);
 		} else if (!response.ok) {
-			throw new Error(errorMessage ?? jsonResponse.message ?? response.statusText)
+			throw new Error(errorMessage ?? jsonResponse.message ?? response.statusText);
 		}
+		return jsonResponse;
 	}
 
 	static scanLibraries(): Promise<LibraryTaskResponse> {

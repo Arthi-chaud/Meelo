@@ -1,47 +1,59 @@
-import { useQuery } from "react-query";
-import { prepareMeeloQuery } from "../../query";
-import API from '../../api';
+import { useQuery } from "../../api/use-query";
 import ModalPage from "../modal-page";
 import AuthenticationForm from "./authentication-form";
-import { Box, Grid } from "@mui/material";
+import { Grid } from "@mui/material";
 import Image from 'next/image';
-import { deleteCookie, getCookie } from "cookies-next";
-import UserAccessTokenCookieKey from "../../utils/user-access-token-cookie-key";
 import { useEffect, useState } from "react";
+import API from "../../api/api";
+import { RootState } from "../../state/store";
+import { useSelector } from "react-redux";
 
 const statusQuery = (accessToken?: string) => ({
-	key: ['user', 'status', accessToken ?? {}],
+	key: [
+		'user',
+		'status',
+		accessToken ?? {}
+	],
 	exec: () => API.getCurrentUserStatus()
-})
+});
 
 const AuthenticationWall = (props: { children: any }) => {
-	const accessToken = getCookie(UserAccessTokenCookieKey)?.valueOf();
-	const status = useQuery(prepareMeeloQuery(statusQuery, accessToken));
+	const accessToken = useSelector((store: RootState) => store.user.accessToken);
+	const status = useQuery(statusQuery, accessToken?.valueOf());
 	const [authentified, setAuthenticationStatus] = useState(false);
+
 	useEffect(() => {
-		if (accessToken && !status.error) {
+		if (accessToken && status.data && !status.error) {
 			setAuthenticationStatus(true);
 		}
-		if (status.error)
-			deleteCookie(UserAccessTokenCookieKey);
-		if (accessToken == undefined) {
+		if (status.error || accessToken?.valueOf() == undefined) {
 			setAuthenticationStatus(false);
 		}
-	}, [accessToken, status, authentified]);
+	}, [
+		accessToken,
+		status,
+		authentified
+	]);
 
 	if (!authentified) {
+		if (accessToken) {
+			return <></>;
+		}
 		return <ModalPage>
-			<Grid container direction='column' sx={{ width: '100%', height: '100%', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+			<Grid container direction='column' sx={{
+				width: '100%', height: '100%', display: 'flex',
+				justifyContent: 'center', alignItems: 'center'
+			}}>
 				<Grid xs={2} item sx={{ position: 'relative', width: '100%' }}>
 					<Image src="/banner.png" alt="title" fill style={{ objectFit: 'contain' }}/>
 				</Grid>
 				<Grid item xs>
-					<AuthenticationForm onAuthenticated={() => setAuthenticationStatus(true)}/>
+					<AuthenticationForm/>
 				</Grid>
 			</Grid>
-		</ModalPage>
+		</ModalPage>;
 	}
-	return props.children
-}
+	return props.children;
+};
 
 export default AuthenticationWall;

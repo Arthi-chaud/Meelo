@@ -1,16 +1,19 @@
-import { Button, Divider, Grid } from '@mui/material';
-import { setCookie } from 'cookies-next';
+import {
+	Button, Divider, Grid
+} from '@mui/material';
 import { HookTextField, useHookForm } from 'mui-react-hook-form-plus';
 import { useState } from 'react';
 import { toast } from 'react-hot-toast';
-import API from '../../api';
-import UserAccessTokenCookieKey from '../../utils/user-access-token-cookie-key';
+import { useDispatch } from 'react-redux';
+import API from '../../api/api';
+import { setAccessToken } from '../../state/userSlice';
 
-type AuthenticationFormProps = {
-	onAuthenticated: () => void;
-}
-
-const AuthenticationForm = (props: AuthenticationFormProps) => {
+/**
+ * Authentication form
+ * On successful authentication, update store with access token
+ */
+const AuthenticationForm = () => {
+	const dispatch = useDispatch();
 	const [formType, setFormType] = useState<'login' | 'signup'>('login');
 	const defaultValues = { username: '', password: '', confirm: '' };
 	const [password, setPassword] = useState(defaultValues.password);
@@ -22,18 +25,18 @@ const AuthenticationForm = (props: AuthenticationFormProps) => {
 		try {
 			if (formType == 'signup') {
 				const createdUser = await API.register(values);
+
 				if (!createdUser.enabled) {
 					setFormType('login');
-					toast.success("Congrats! Your Meelo account has been created. You now have to wait for the admin to enable your account")
+					toast.success("Congrats! Your Meelo account has been created. You now have to wait for the admin to enable your account");
 					return;
 				}
 			}
-			setCookie(UserAccessTokenCookieKey, (await API.login(values)).access_token);
-			props.onAuthenticated();
-		} catch (e: any) {
-			toast.error(e.message);
+			dispatch(setAccessToken((await API.login(values)).access_token));
+		} catch (error: any) {
+			toast.error(error.message);
 		}
-	}
+	};
 
 	return (
 		<form onSubmit={handleSubmit(onSubmit)} style={{ width: '100%', height: '100%' }}>
@@ -62,7 +65,7 @@ const AuthenticationForm = (props: AuthenticationFormProps) => {
 						label: 'Password',
 						type: 'password',
 						color: 'secondary',
-						onChange: (e) => setPassword(e.target.value)
+						onChange: (event) => setPassword(event.target.value)
 					}}
 					gridProps={{}}
 					rules={{
@@ -92,24 +95,28 @@ const AuthenticationForm = (props: AuthenticationFormProps) => {
 						},
 						validate: (confirmValue) => {
 							if (confirmValue !== password) {
-								return "Password are different"
+								return "Password are different";
 							}
 						}
 					}}
 				/>
 				}
 				<Grid item>
-					<Button type="submit" color='secondary' variant='contained' onClick={() => {}} >{formType == 'login' ? 'Login' : 'Signup'}</Button>
+					<Button type="submit" color='secondary' variant='contained' onClick={() => {}}>
+						{formType == 'login' ? 'Login' : 'Signup'}
+					</Button>
 				</Grid>
-				<Divider sx={{ width: '100%', paddingY: 1 }} color='secondary' variant='middle'/>
+				<Divider sx={{ width: '100%', paddingY: 1 }} variant='middle'/>
 				<Grid item>
-					<Button color='secondary' variant='outlined' onClick={() => setFormType(formType == 'login' ? 'signup' : 'login')}>
+					<Button color='secondary' variant='outlined'
+						onClick={() => setFormType(formType == 'login' ? 'signup' : 'login')}
+					>
 						{formType == 'login' ? "New here ? Signup" : 'Already have an account ? Login'}
 					</Button>
 				</Grid>
 			</Grid>
 		</form>
 	);
-}
+};
 
 export default AuthenticationForm;

@@ -6,9 +6,8 @@ import toast from "react-hot-toast";
 import SettingsIcon from '@mui/icons-material/Settings';
 import { createElement } from "react";
 import LogoutIcon from '@mui/icons-material/Logout';
-import { useDispatch } from "react-redux";
-import { deleteCookie } from "cookies-next";
-import UserAccessTokenCookieKey from "../../utils/user-access-token-cookie-key";
+import store from "../../state/store";
+import { setAccessToken } from "../../state/userSlice";
 
 /**
  * Collections of actions that are accessible from appbar and drawer
@@ -34,7 +33,7 @@ const AppBarActions: Action[] = [
 	{
 		label: 'Logout',
 		icon: createElement(LogoutIcon),
-		onClick: () => deleteCookie(UserAccessTokenCookieKey)
+		onClick: () => store.dispatch(setAccessToken())
 	}
 ];
 

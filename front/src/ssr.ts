@@ -2,7 +2,6 @@
 import { GetServerSidePropsContext, InferGetServerSidePropsType } from "next";
 // eslint-disable-next-line no-restricted-imports
 import { QueryClient, dehydrate } from "react-query";
-import { getCookie } from "cookies-next";
 import {
 	InfiniteQuery, Query, prepareMeeloInfiniteQuery, prepareMeeloQuery
 } from "./api/use-query";
@@ -52,10 +51,7 @@ const prepareSSR = <AdditionalProps>(
 		const queryClient = new QueryClient();
 		const parameters = cook(context);
 
-		store.dispatch(setAccessToken(getCookie(UserAccessTokenCookieKey, {
-			res: context.res,
-			req: context.req
-		})?.valueOf().toString() ?? undefined));
+		store.dispatch(setAccessToken(context.req.cookies[UserAccessTokenCookieKey]));
 		try {
 			await Promise.all([
 				parameters.infiniteQueries?.map(
