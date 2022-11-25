@@ -3,7 +3,7 @@ import type { TrackType } from "@prisma/client";
 /**
  * Extracted metadata from a track file
  */
-export default interface Metadata {
+interface Metadata {
 	/**
 	 * If the track is from a compilation album
 	 */
@@ -29,7 +29,7 @@ export default interface Metadata {
 	release?: string;
 
 	/**
-	 * Name of the track 
+	 * Name of the track
 	 */
 	name?: string;
 
@@ -63,5 +63,7 @@ export default interface Metadata {
 	/**
 	 * Genres of the track
 	 */
-	genres?: string[]
+	genres?: string[];
 }
+
+export default Metadata;

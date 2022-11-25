@@ -1,4 +1,6 @@
-import { AlreadyExistsException, InvalidRequestException, NotFoundException } from "src/exceptions/meelo-exception";
+import {
+	AlreadyExistsException, InvalidRequestException, NotFoundException
+} from "src/exceptions/meelo-exception";
 import type Slug from "src/slug/slug";
 
 export class ArtistNotFoundException extends NotFoundException {

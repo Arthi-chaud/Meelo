@@ -1,16 +1,16 @@
 import type ArtistQueryParameters from "src/artist/models/artist.query-parameters";
 import type LibraryQueryParameters from "src/library/models/library.query-parameters";
 import type Slug from "src/slug/slug";
-import type { RequireAtLeastOne } from "type-fest";
-import type { RequireExactlyOne } from 'type-fest';
+import type { RequireAtLeastOne, RequireExactlyOne } from "type-fest";
 import type { SearchDateInput } from "src/utils/search-date-input";
 import type { SearchStringInput } from "src/utils/search-string-input";
-import type { RelationInclude as BaseRelationInclude } from "src/relation-include/models/relation-include" ;
+import type { RelationInclude as BaseRelationInclude } from "src/relation-include/models/relation-include";
 import BaseSortingParameter from 'src/sort/models/sorting-parameter';
-
 import type GenreQueryParameters from "src/genre/models/genre.query-parameters";
 import { Album } from "src/prisma/models";
-import { ApiPropertyOptional, IntersectionType, PartialType, PickType } from "@nestjs/swagger";
+import {
+	ApiPropertyOptional, IntersectionType, PartialType, PickType
+} from "@nestjs/swagger";
 import { AlbumType } from "@prisma/client";
 import { IsEnum, IsOptional } from "class-validator";
 import { filterAtomicRelationInclude } from "src/relation-include/atomic-relation-include.filter";
@@ -24,7 +24,7 @@ namespace AlbumQueryParameters {
 		PickType(Album, ['name'] as const),
 		class {
 			releaseDate?: Date;
-			artist?: ArtistQueryParameters.WhereInput
+			artist?: ArtistQueryParameters.WhereInput;
 		}
 	) {}
 
@@ -51,7 +51,12 @@ namespace AlbumQueryParameters {
 	/**
  	 * The input required to update an album in the database
  	 */
-	export class UpdateInput extends  PartialType(PickType(Album, ['name', 'type', 'releaseDate', 'artistId'] as const)) {}
+	export class UpdateInput extends PartialType(PickType(Album, [
+		'name',
+		'type',
+		'releaseDate',
+		'artistId'
+	] as const)) {}
 
 	/**
 	 * The input to find or create an album
@@ -69,18 +74,22 @@ namespace AlbumQueryParameters {
 	export const AvailableIncludes = ['releases', 'artist'] as const;
 	export const AvailableAtomicIncludes = filterAtomicRelationInclude(AvailableIncludes);
 	export type RelationInclude = BaseRelationInclude<typeof AvailableIncludes>;
-	
-	
+
 	/**
 	 * Defines how to sort fetched entries
 	 */
-	export const SortingKeys = ['id', 'name', 'artistName', 'releaseDate', 'addDate'] as const;
+	export const SortingKeys = [
+		'id',
+		'name',
+		'artistName',
+		'releaseDate',
+		'addDate'
+	] as const;
 	export type SortingKeys = typeof SortingKeys;
 	export class SortingParameter extends BaseSortingParameter<SortingKeys>{
 		@ApiPropertyOptional({ enum: SortingKeys })
 		sortBy: SortingKeys[number];
 	}
-	
 
 	export class AlbumFilterParameter {
 		@IsEnum(AlbumType, {
@@ -88,7 +97,7 @@ namespace AlbumQueryParameters {
 		})
 		@IsOptional()
 		@ApiPropertyOptional({ enum: AlbumType })
-		type?: AlbumType
+		type?: AlbumType;
 	}
 }
 

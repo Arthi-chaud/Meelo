@@ -1,4 +1,4 @@
-import { AlreadyExistsException, NotFoundException } from "src/exceptions/meelo-exception"
+import { AlreadyExistsException, NotFoundException } from "src/exceptions/meelo-exception";
 import type Slug from "src/slug/slug";
 
 export class TrackNotFoundException extends NotFoundException {

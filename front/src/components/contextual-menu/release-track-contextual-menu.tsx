@@ -1,34 +1,32 @@
-import { AccountCircle, Lyrics, Audiotrack, Difference, PlaylistAdd, QueueMusic, Album, Download } from "@mui/icons-material";
-import { Divider } from "@mui/material";
 import { useRouter } from "next/router";
-import API from "../../api";
 import Artist from "../../models/artist";
-import { ReleaseWithAlbum } from "../../models/release";
-import Song, { SongWithArtist } from "../../models/song";
+import Release from "../../models/release";
 import { TrackWithSong } from "../../models/track";
-import copyLinkToClipboard from "../../utils/copy-link";
-import ContextualMenu from "./contextual-menu"
-import ContextualMenuItem from "./contextual-menu-item";
+import ContextualMenu from "./contextual-menu";
+import {
+	DownloadAction, GoToArtistAction,
+	GoToRelatedTracksAction, GoToSongLyricsAction,
+	GoToSongVersionAction, PlayAfterAction, PlayNextAction, ShareSongAction
+} from "./actions";
 
-import ShareIcon from '@mui/icons-material/Share';
-import downloadAction from "../download-action";
 type ReleaseTrackContextualMenuProps = {
 	track: TrackWithSong;
-	artist: Artist
-
+	artist: Artist;
+	release: Release;
+	onSelect?: () => void;
 }
 
 const ReleaseTrackContextualMenu = (props: ReleaseTrackContextualMenuProps) => {
 	const songSlug = `${props.artist.slug}+${props.track.song.slug}`;
 	const router = useRouter();
-	return <ContextualMenu>
-		<ContextualMenuItem icon={<AccountCircle/>} href={`/artists/${props.artist.slug}`} label={"Go to Artist"}/>
-		<ContextualMenuItem icon={<Lyrics/>} href={`/songs/${songSlug}/lyrics`} label={"See Lyrics"}/>
-		<ContextualMenuItem icon={<Difference/>} href={`/songs/${songSlug}/tracks`} label={"See Related Tracks"}/>
-		<ContextualMenuItem icon={<Audiotrack/>} href={`/songs/${songSlug}/versions`} label={"See Other Versions"}/>
-		<ContextualMenuItem icon={<Download/>} label={"Download"} onClick={() => downloadAction(router, API.getStreamURL(props.track.stream))}/>
-		<ContextualMenuItem icon={<ShareIcon/>} label={"Share Song"} onClick={() => copyLinkToClipboard(`/songs/${songSlug}/versions`)}/>
-	</ContextualMenu>
-}
+
+	return <ContextualMenu onSelect={props.onSelect} actions={[
+		[GoToArtistAction(props.artist.slug),],
+		[GoToSongLyricsAction(songSlug)],
+		[PlayNextAction(async () => props), PlayAfterAction(async () => props)],
+		[GoToSongVersionAction(songSlug), GoToRelatedTracksAction(songSlug),],
+		[DownloadAction(router, props.track.stream), ShareSongAction(songSlug)]
+	]}/>;
+};
 
 export default ReleaseTrackContextualMenu;

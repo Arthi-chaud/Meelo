@@ -46,5 +46,10 @@ type ReleaseWithTracks = Release & {
 type ReleaseInclude = 'album';
 
 export default Release;
-export const ReleaseSortingKeys = ['name', 'releaseDate', 'trackCount', 'addDate'];
+export const ReleaseSortingKeys = [
+	'name',
+	'releaseDate',
+	'trackCount',
+	'addDate'
+];
 export type { ReleaseWithAlbum, ReleaseWithTracks, ReleaseInclude };

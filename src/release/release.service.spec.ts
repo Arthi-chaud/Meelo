@@ -168,7 +168,7 @@ describe('Release Service', () => {
 
 		it("should throw, as the release does not exists", async () => {
 			const test = async () => {
-				return await releaseService.get({
+				return releaseService.get({
 					bySlug: {
 						slug: new Slug('I Do not exists'),
 						album: {
@@ -185,7 +185,7 @@ describe('Release Service', () => {
 
 		it("should throw, as the release's album does not exists", async () => {
 			const test = async () => {
-				return await releaseService.get({
+				return releaseService.get({
 					bySlug: {
 						slug: new Slug('I Do not exists'),
 						album: {
@@ -208,7 +208,7 @@ describe('Release Service', () => {
 
 		it("should throw, as no release has the id", async () => {
 			const test = async () => {
-				return await releaseService.get({ byId: { id: -1 } });
+				return releaseService.get({ byId: { id: -1 } });
 			}
 			expect(test()).rejects.toThrow(ReleaseNotFoundFromIDException);
 		});

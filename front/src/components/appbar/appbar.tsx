@@ -1,12 +1,14 @@
-import { AppBar, Toolbar, Typography, Box, Divider, IconButton, Grid, Button, InputLabel, ListItemButton, ListItemIcon, ListItemText, ListSubheader, Select, MenuItem } from '@mui/material';
+/* eslint-disable react/jsx-indent */
+import {
+	AppBar, Box, Button, Divider, Grid, IconButton,
+	MenuItem, Select, Toolbar, Typography
+} from '@mui/material';
 import Image from 'next/image';
 import { useRouter } from 'next/router';
 import SearchIcon from '@mui/icons-material/Search';
-import MoreVertIcon from '@mui/icons-material/MoreVert';
 import MenuIcon from '@mui/icons-material/Menu';
 import { useEffect, useState } from 'react';
-import { dehydrate, QueryClient, useQuery } from 'react-query';
-import API from '../../api';
+import API from '../../api/api';
 import LoadingComponent from '../loading/loading';
 import FadeIn from 'react-fade-in';
 import { formattedItemTypes, itemType } from './item-types';
@@ -14,12 +16,13 @@ import globalLibrary from './global-library';
 import MeeloAppBarDrawer from './drawer';
 import buildLink from './build-link';
 import Link from 'next/link';
-import { prepareMeeloQuery } from '../../query';
+// eslint-disable-next-line no-restricted-imports
+import { useQuery as useReactQuery } from 'react-query';
+import { prepareMeeloQuery } from '../../api/use-query';
 import Library from '../../models/library';
 import toast from 'react-hot-toast';
 import ContextualMenu from '../contextual-menu/contextual-menu';
 import AppBarActions from './actions';
-import ContextualMenuItem from '../contextual-menu/contextual-menu-item';
 
 const libraryQuery = () => ({
 	key: ['libraries'],
@@ -30,24 +33,36 @@ const MeeloAppBar = () => {
 	const router = useRouter();
 	const [requestedLibrary, setRequestedLibrary] = useState(globalLibrary);
 	const [availableLibraries, setAvailableLibraries] = useState<Library[] | null>(null);
-	const librariesQuery = useQuery({
+	const librariesQuery = useReactQuery({
 		...prepareMeeloQuery(libraryQuery),
 		useErrorBoundary: false
 	});
+
 	useEffect(() => {
 		if (librariesQuery.error) {
-			if (availableLibraries == null)
+			if (availableLibraries == null) {
 				toast.error("Libraries could not be loaded");
+			}
 			setAvailableLibraries([]);
 		} else if (librariesQuery.data) {
 			let requestedlibrarySlug = globalLibrary.slug;
-			if (router.asPath.startsWith('/libraries'))
+
+			if (router.asPath.startsWith('/libraries')) {
 				requestedlibrarySlug = router.asPath.split('/')[2];
-			setRequestedLibrary(librariesQuery.data.items.find((library) => library.slug === requestedlibrarySlug) ?? globalLibrary);
+			}
+			setRequestedLibrary(librariesQuery.data.items.find(
+				(library) => library.slug === requestedlibrarySlug
+			) ?? globalLibrary);
 			setAvailableLibraries(librariesQuery.data.items);
 		}
-	}, [router.asPath, librariesQuery.data, librariesQuery.error, availableLibraries]);
+	}, [
+		router.asPath,
+		librariesQuery.data,
+		librariesQuery.error,
+		availableLibraries
+	]);
 	const [drawerOpen, setDrawerOpen] = useState(false);
+
 	return (
 		<>
 			<AppBar position="sticky" style={{ padding: 5 }} elevation={1}>
@@ -62,7 +77,8 @@ const MeeloAppBar = () => {
 					</IconButton>
 					<Box style={{ paddingRight: 25 }}>
 						<Link href="/albums" style={{ cursor: 'pointer' }}>
-							<Image src="/banner.png" alt="icon" width={120} height={50}/>
+							<Image src="/banner.png" alt="icon" width={120}
+								height={50}/>
 						</Link>
 					</Box>
 					{
@@ -73,39 +89,43 @@ const MeeloAppBar = () => {
 									<Select
 										disableUnderline
 										variant='standard'
-        								value={requestedLibrary.name}
+										value={requestedLibrary.name}
 										onChange={(item) => {
 											const targetLibaryName = item.target.value;
+
 											if (targetLibaryName === globalLibrary.name) {
 												router.push(`/albums`);
 											} else {
-												const targetLibrary = availableLibraries.find((library) => library.name === targetLibaryName)!;
+												const targetLibrary = availableLibraries.find(
+													(library) => library.name === targetLibaryName
+												)!;
+
 												router.push(`/libraries/${targetLibrary.slug}/albums`);
 											}
 										}}
-        							>
-        							  {[globalLibrary, ...availableLibraries].map((library) => (
-        							    <MenuItem key={library.slug} value={library.name} sx={{ borderRadius: '0' }}>
-        							    	{library.name}
-        							    </MenuItem>
-        							  ))}
-        							</Select>
+									>
+										{[globalLibrary, ...availableLibraries].map((library) =>
+											<MenuItem key={library.slug} value={library.name} sx={{ borderRadius: '0' }}>
+												{library.name}
+											</MenuItem>)}
+									</Select>
 									<Divider orientation='vertical' flexItem sx={{ paddingLeft: 2 }} />
-									<Grid container spacing={3} sx={{ paddingLeft: 2, flexWrap: 'nowrap' }}  flexDirection='row'>
-										{
-											itemType.map((type, index) => {
-												const isSelected = router.route == `/${type}`;
-												return <Grid item key={type}>
-													<Link href={buildLink(type, requestedLibrary.slug)}>
-														<Button variant="text" color='inherit'>
-															<Typography sx={{ fontWeight: isSelected ? 'bold' : 'normal' }}>
-																{formattedItemTypes.at(index)}
-															</Typography>
-														</Button>
-													</Link>
-												</Grid>
-											})
-										}
+									<Grid container spacing={3} flexDirection='row'
+										sx={{ paddingLeft: 2, flexWrap: 'nowrap' }}
+									>
+										{ itemType.map((type, index) => {
+											const isSelected = router.route == `/${type}`;
+
+											return <Grid item key={type}>
+												<Link href={buildLink(type, requestedLibrary.slug)}>
+													<Button variant="text" color='inherit'>
+														<Typography sx={{ fontWeight: isSelected ? 'bold' : 'normal' }}>
+															{formattedItemTypes.at(index)}
+														</Typography>
+													</Button>
+												</Link>
+											</Grid>;
+										})}
 									</Grid>
 								</Box>
 							</FadeIn>
@@ -118,14 +138,12 @@ const MeeloAppBar = () => {
 										</IconButton>
 									</Link>
 									<Divider orientation='vertical' flexItem sx={{ marginX: 1 }} />
-									<ContextualMenu>
-										{ AppBarActions
-											.filter(a => a.label.toLowerCase() != 'search')
-											.map(action => <ContextualMenuItem {...action} key={action.label}/>)
-										}
-									</ContextualMenu>
+									<ContextualMenu actions={
+										[AppBarActions.filter((action) => action.label.toLowerCase() != 'search')]
+									}/>
 								</Box>
-							</FadeIn></>
+							</FadeIn>
+							</>
 					}
 				</Toolbar>
 			</AppBar>
@@ -136,7 +154,7 @@ const MeeloAppBar = () => {
 				requestedLibrarySlug={requestedLibrary.slug}
 			/>
 		</>
-	)
-}
+	);
+};
 
 export default MeeloAppBar;

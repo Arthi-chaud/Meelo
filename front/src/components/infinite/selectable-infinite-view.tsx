@@ -1,57 +1,66 @@
-import { Box, Chip, Divider, Grid } from "@mui/material";
+import {
+	Box, Chip, Grid
+} from "@mui/material";
+import { capitalCase } from "change-case";
 import { useState } from "react";
-import Album from "../../models/album"
+import Album from "../../models/album";
 import Artist from "../../models/artist";
-import Song, { SongWithArtist } from "../../models/song";
-import { MeeloInfiniteQueryFn } from "../../query"
+import { SongWithArtist } from "../../models/song";
+import { MeeloInfiniteQueryFn } from "../../api/use-query";
 import InfiniteAlbumView from "./infinite-album-view";
 import InfiniteArtistView from "./infinite-artist-view";
 import InfiniteSongView from "./infinite-song-view";
 
-const itemTypes = ['Artists', 'Albums', 'Songs'] as const;
+const itemTypes = [
+	'artist',
+	'album',
+	'song'
+];
 
 type SelectableInfiniteViewProps = {
 	albumQuery: MeeloInfiniteQueryFn<Album>;
 	artistQuery: MeeloInfiniteQueryFn<Artist>;
 	songQuery: MeeloInfiniteQueryFn<SongWithArtist>;
-	default?: typeof itemTypes[number];
+	default?: string | typeof itemTypes[number];
+	onTypeSelect?: (selectedType: SelectableInfiniteViewProps['default']) => void;
 	enabled: boolean;
 }
 
 const SelectableInfiniteView = (props: SelectableInfiniteViewProps) => {
-	const [selectedType, selectItemType] = useState<typeof itemTypes[number]>(props.default ?? 'Albums');
+	const [selectedType, selectItemType] = useState<typeof itemTypes[number]>(props.default && itemTypes.includes(props.default) ? props.default : 'album');
+
 	return <Box sx={{ width: '100%', display: 'flex', justifyContent: "center", flexDirection: 'column' }}>
 		<Grid container spacing={2} sx={{ justifyContent: 'center' }}>
-			{ itemTypes.map((item) => (
+			{ itemTypes.map((item) =>
 				<Grid item key={item}>
-					<Chip label={item} variant={ selectedType == item ? 'filled' : 'outlined'} onClick={() => {
+					<Chip label={capitalCase(item + 's')} variant={selectedType == item ? 'filled' : 'outlined'} onClick={() => {
 						selectItemType(item);
+						props.onTypeSelect && props.onTypeSelect(item);
 					}}/>
-				</Grid>
-			))}
+				</Grid>)}
 		</Grid>
-		{ props.enabled && (selectedType == 'Artists'
-			? <InfiniteArtistView
+		{ props.enabled && (selectedType == 'artist' ?
+			<InfiniteArtistView
 				initialSortingField={'name'}
 				initialSortingOrder={'asc'}
 				initialView={'list'}
 				query={(sort) => props.artistQuery(sort)}
 			/>
-			: selectedType == 'Albums'
-				? <InfiniteAlbumView key={selectedType}
+			: selectedType == 'album' ?
+				<InfiniteAlbumView key={selectedType}
 					initialSortingField={'name'}
 					initialSortingOrder={'asc'}
 					initialView={'list'}
 					query={(sort, type) => props.albumQuery(sort, type)}
 				/>
-				: selectedType == 'Songs'
-					? <InfiniteSongView key={selectedType}
+				: selectedType == 'song' ?
+					<InfiniteSongView key={selectedType}
 						initialSortingField={'name'}
 						initialSortingOrder={'asc'}
 						query={(sort) => props.songQuery(sort)}
 					/> : <></>
 		)}
-	</Box>
-}
+	</Box>;
+};
 
 export default SelectableInfiniteView;

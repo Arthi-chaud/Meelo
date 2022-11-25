@@ -1,4 +1,4 @@
-import type { PipeTransform, ArgumentMetadata } from "@nestjs/common";
+import type { ArgumentMetadata, PipeTransform } from "@nestjs/common";
 import { InvalidRequestException } from "src/exceptions/meelo-exception";
 import { ParseIdPipe } from "src/identifier/id.pipe";
 import ParseMultipleSlugPipe from "src/identifier/identifier.parse-slugs";
@@ -8,11 +8,13 @@ import type SongQueryParameters from "./models/song.query-params";
 export default class ParseSongIdentifierPipe implements PipeTransform {
 	transform(value: string, _metadata: ArgumentMetadata): SongQueryParameters.WhereInput {
 		try {
-			return { byId: { id: new ParseIdPipe().transform(value, _metadata) }};
+			return { byId: { id: new ParseIdPipe().transform(value, _metadata) } };
 		} catch {
 			const slugs = new ParseMultipleSlugPipe().transform(value, _metadata);
-			if (slugs.length != 2)
+
+			if (slugs.length != 2) {
 				throw new InvalidRequestException(`Expected the following string format: 'artist-slug${SlugSeparator}song-slug'`);
+			}
 			return {
 				bySlug: {
 					slug: slugs[1],
@@ -20,7 +22,7 @@ export default class ParseSongIdentifierPipe implements PipeTransform {
 						slug: slugs[0],
 					}
 				}
-			}
+			};
 		}
 	}
 }

@@ -1,18 +1,32 @@
 import { Close } from "@mui/icons-material";
-import { Box, Button, Grid, IconButton, Typography } from "@mui/material";
-import { NextRouter, useRouter } from "next/router";
+import {
+	Box, Button, Grid, IconButton, Typography
+} from "@mui/material";
+import { NextRouter } from "next/router";
 import { toast } from "react-hot-toast";
 
 const downloadAction = (router: NextRouter, downloadUrl: string) => {
 	let toastId: string | undefined = undefined;
 	const getToastId = () => toastId;
-	toastId = toast(<Box sx={{ flexDirection: 'column', display :'flex', justifyContent: 'center' }}>
-		<Grid container sx={{ justifyContent: 'space-between', alignItems: 'center' }}>
+
+	toastId = toast(<Box sx={{
+		flexDirection: 'column', display: 'flex',
+		justifyContent: 'center'
+	}}>
+		<Grid container sx={{
+			justifyContent: 'space-between', alignItems: 'center'
+		}}>
 			<Grid item>
-				<Typography sx={{ fontWeight: 'bold', color: 'error' }}>Warning</Typography>
+				<Typography sx={{ fontWeight: 'bold', color: 'error' }}>
+					Warning
+				</Typography>
 			</Grid>
 			<Grid item>
-				<IconButton  color='inherit' onClick={() => toast.dismiss(getToastId())}><Close/></IconButton>
+				<IconButton color='inherit'
+					onClick={() => toast.dismiss(getToastId())}
+				>
+					<Close/>
+				</IconButton>
 			</Grid>
 		</Grid>
 		<Box sx={{ paddingY: 2 }}>
@@ -23,6 +37,6 @@ const downloadAction = (router: NextRouter, downloadUrl: string) => {
 			toast.dismiss(getToastId());
 		}}>Download</Button>
 	</Box>, { duration: 4000 });
-}
+};
 
 export default downloadAction;

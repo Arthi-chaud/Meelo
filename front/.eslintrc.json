@@ -1,3 +1,38 @@
 {
-  "extends": "next/core-web-vitals"
+	"extends": [
+		"next/core-web-vitals",
+		"plugin:react/recommended",
+		"../.eslintrc.json"
+	],
+	"plugins": [
+		"react"
+	],
+	"ignorePatterns": ["node_modules/", "jest.config.js", "__tests__"],
+	"rules": {
+		"react/react-in-jsx-scope": "off",
+		"react/sort-prop-types": "warn",
+		"react/jsx-props-no-multi-spaces": "warn",
+		"react/jsx-max-props-per-line": ["error", { "maximum": 3, "when": "multiline" }],
+		"react/jsx-key": "error",
+		"react/jsx-indent-props": ["warn", "tab"],
+		"react/jsx-curly-spacing": ["warn", { "when": "never", "children": false }],
+		"react/jsx-indent": ["warn", "tab"],
+		"no-restricted-imports": ["error", {
+			"name": "react-query",
+			"importNames": ["useQuery", "useInfiniteQuery", "useQueries"],
+			"message": "Use wrapper functions provided by src/api/query"
+		}, {
+			"name": "react-query",
+			"importNames": ["QueryClient", "dehydrate"],
+			"message": "Use SSR wrapping function provided by src/ssr"
+		}, {
+			"name": "@mui/material",
+			"importNames": ["Link"],
+			"message": "Use Link from 'next/router"
+		}, {
+			"name": "next",
+			"importNames": ["GetServerSidePropsContext", "InferGetServerSidePropsType"],
+			"message": "Use wrapper functions provided by src/ssr"
+		}]
+	}
 }

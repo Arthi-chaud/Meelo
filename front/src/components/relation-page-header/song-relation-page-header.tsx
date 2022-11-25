@@ -1,9 +1,7 @@
-import { Box } from "@mui/material";
-import { useQuery } from "react-query";
 import { RequireExactlyOne } from "type-fest";
-import API from "../../api";
+import API from "../../api/api";
 import { SongWithArtist } from "../../models/song";
-import { prepareMeeloQuery } from "../../query";
+import { useQuery } from "../../api/use-query";
 import SongContextualMenu from "../contextual-menu/song-contextual-menu";
 import Illustration from "../illustration";
 import { WideLoadingComponent } from "../loading/loading";
@@ -20,19 +18,20 @@ const songQuery = (songSlugOrId: number | string) => ({
 });
 
 const SongRelationPageHeader = (props: SongRelationPageHeaderProps) => {
-	const song = useQuery(prepareMeeloQuery(songQuery, props.songSlugOrId));
+	const song = useQuery(songQuery, props.songSlugOrId);
+
 	if (props.song) {
 		song.data = props.song;
 	}
 	if (!song.data) {
-		return <WideLoadingComponent/>
+		return <WideLoadingComponent/>;
 	}
 	return <RelationPageHeader
 		illustration={<Illustration url={song.data.illustration}/>}
 		title={song.data.name}
 		secondTitle={song.data.artist.name}
 		trailing={<SongContextualMenu song={song.data}/>}
-	/>
-}
+	/>;
+};
 
 export default SongRelationPageHeader;

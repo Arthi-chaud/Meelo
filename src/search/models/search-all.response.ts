@@ -11,21 +11,25 @@ export class SearchAllResponse {
 		type: () => ArtistResponse
 	})
 	artists: ArtistResponse[];
+
 	@ApiProperty({
 		isArray: true,
 		type: () => AlbumResponse
 	})
 	albums: AlbumResponse[];
+
 	@ApiProperty({
 		isArray: true,
 		type: () => ReleaseResponse
 	})
 	releases: ReleaseResponse[];
+
 	@ApiProperty({
 		isArray: true,
 		type: () => SongResponse
 	})
 	songs: SongResponse[];
+
 	@ApiProperty({
 		isArray: true,
 		type: () => GenreResponse

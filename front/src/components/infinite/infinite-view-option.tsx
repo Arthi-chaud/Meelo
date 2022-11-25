@@ -1,5 +1,7 @@
 import { Check } from "@mui/icons-material";
-import { Button, Divider, ListItemIcon, ListItemText, Menu, MenuItem, MenuList } from "@mui/material";
+import {
+	Button, Divider, ListItemIcon, Menu, MenuItem
+} from "@mui/material";
 import { capitalCase } from "change-case";
 import { useState } from "react";
 
@@ -20,11 +22,15 @@ type InfiniteViewDropdownOptionProps<OptionsValues extends string[][]> = {
 	option: OptionGroup<OptionsValues>;
 }
 
-const InfiniteViewDropdownOption = <Options extends string[][]>(props: InfiniteViewDropdownOptionProps<Options>) => {
+const InfiniteViewDropdownOption = <Options extends string[][]>(
+	props: InfiniteViewDropdownOptionProps<Options>
+) => {
 	const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
 	const menuOpen = Boolean(anchorEl);
-	const handleMenuOpen = (event: React.MouseEvent<HTMLButtonElement>) => setAnchorEl(event.currentTarget);
+	const handleMenuOpen = (event: React.MouseEvent<HTMLButtonElement>) =>
+		setAnchorEl(event.currentTarget);
 	const handleMenuClose = () => setAnchorEl(null);
+
 	return <>
 		<Button
 			onClick={handleMenuOpen}
@@ -36,23 +42,23 @@ const InfiniteViewDropdownOption = <Options extends string[][]>(props: InfiniteV
 			anchorEl={anchorEl}
 			open={menuOpen}
 			onClose={handleMenuClose}
-			>
-			{ props.option.options.map((option, index, array) => <>
-				{ option.values.map((value) => (
-					<MenuItem key={value} sx={{ borderRadius: '0' }}  selected={option.initValue == value} onClick={() => {
-						option.onSelect && option.onSelect(value);
-						handleMenuClose();
-					}}>
+		>
+			{ props.option.options.map((option, index, array) =>
+				option.values.map((value) =>
+					<MenuItem key={value} sx={{ borderRadius: '0' }} selected={option.initValue == value}
+						onClick={() => {
+							option.onSelect && option.onSelect(value);
+							handleMenuClose();
+						}}
+					>
 						<ListItemIcon>
 							{ option.initValue == value && <Check />}
-          				</ListItemIcon> 
+						</ListItemIcon>
 						{capitalCase(value)}
-					</MenuItem>
-				))}
-				{ (index + 1 != array.length) && <Divider/> }
-			</>)}
+					</MenuItem>).concat(index + 1 != array.length ? [<Divider key={index}/>] : []))
+			}
 		</Menu>
-	</>
-}
+	</>;
+};
 
 export default InfiniteViewDropdownOption;

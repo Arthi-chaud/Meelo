@@ -1,8 +1,12 @@
-import { forwardRef, Inject, Injectable, Logger } from '@nestjs/common';
+import {
+	Inject, Injectable, Logger, forwardRef
+} from '@nestjs/common';
 import PrismaService from 'src/prisma/prisma.service';
 import { Prisma, TrackType } from '@prisma/client';
 import SongService from 'src/song/song.service';
-import { MasterTrackNotFoundException, TrackAlreadyExistsException, TrackNotFoundByIdException } from './track.exceptions';
+import {
+	MasterTrackNotFoundException, TrackAlreadyExistsException, TrackNotFoundByIdException
+} from './track.exceptions';
 import ReleaseService from 'src/release/release.service';
 import type TrackQueryParameters from './models/track.query-parameters';
 import type ReleaseQueryParameters from 'src/release/models/release.query-parameters';
@@ -12,8 +16,7 @@ import Slug from 'src/slug/slug';
 import { FileNotFoundFromIDException, FileNotFoundFromPathException } from 'src/file/file.exceptions';
 import type { PaginationParameters } from 'src/pagination/models/pagination-parameters';
 import type { MeeloException } from 'src/exceptions/meelo-exception';
-import type Tracklist from './models/tracklist.model';
-import { UnknownDiscIndexKey } from './models/tracklist.model';
+import Tracklist, { UnknownDiscIndexKey } from './models/tracklist.model';
 import RepositoryService from 'src/repository/repository.service';
 import { shuffle } from '@taumechanica/stout';
 import type { IllustrationPath } from 'src/illustration/models/illustration-path.model';
@@ -56,8 +59,11 @@ export default class TrackService extends RepositoryService<
 		super(prismaService.track);
 	}
 
-	async create<I extends TrackQueryParameters.RelationInclude>(input: TrackQueryParameters.CreateInput, include?: I) {
+	async create<I extends TrackQueryParameters.RelationInclude>(
+		input: TrackQueryParameters.CreateInput, include?: I
+	) {
 		const created = await super.create(input, include);
+
 		await this.songService.updateSongMaster({ byId: { id: created.songId } });
 		return created;
 	}
@@ -77,19 +83,24 @@ export default class TrackService extends RepositoryService<
 			sourceFile: {
 				connect: FileService.formatWhereInput(input.sourceFile)
 			}
-		}
+		};
 	}
+
 	protected async onCreationFailure(input: TrackQueryParameters.CreateInput) {
 		const parentSong = await this.songService.get(input.song, { artist: true });
 		const parentRelease = await this.releaseService.get(input.release);
+
 		await this.fileService.throwIfNotFound(input.sourceFile);
 		return new TrackAlreadyExistsException(
 			input.name,
 			new Slug(parentRelease.slug),
 			new Slug(parentSong.artist.slug)
-		);	
+		);
 	}
-	protected formatCreateInputToWhereInput(input: TrackQueryParameters.CreateInput): TrackQueryParameters.WhereInput {
+
+	protected formatCreateInputToWhereInput(
+		input: TrackQueryParameters.CreateInput
+	): TrackQueryParameters.WhereInput {
 		return input;
 	}
 
@@ -102,15 +113,18 @@ export default class TrackService extends RepositoryService<
 			master: where.masterOfSong ? true : undefined,
 			song: where.masterOfSong ?
 				SongService.formatWhereInput(where.masterOfSong)
-			: undefined,
+				: undefined,
 			sourceFile: where.sourceFile ?
 				FileService.formatWhereInput(where.sourceFile)
-			: undefined
-		}
+				: undefined
+		};
 	}
+
 	formatWhereInput = TrackService.formatWhereInput;
 
-	static formatManyWhereInput(where: TrackQueryParameters.ManyWhereInput): Prisma.TrackWhereInput {
+	static formatManyWhereInput(
+		where: TrackQueryParameters.ManyWhereInput
+	): Prisma.TrackWhereInput {
 		let queryParameters: Prisma.TrackWhereInput = {
 			type: where.type,
 			song: where.bySong ? SongService.formatWhereInput(where.bySong) : undefined,
@@ -118,19 +132,20 @@ export default class TrackService extends RepositoryService<
 				library: LibraryService.formatWhereInput(where.byLibrarySource)
 			} : undefined,
 		};
+
 		if (where.byRelease) {
 			queryParameters = {
 				...queryParameters,
 				release: ReleaseService.formatWhereInput(where.byRelease)
-			}
+			};
 		}
 		if (where.byAlbum) {
 			queryParameters = {
 				...queryParameters,
 				release: {
-					album: AlbumService.formatWhereInput(where.byAlbum!)	
+					album: AlbumService.formatWhereInput(where.byAlbum!)
 				}
-			}
+			};
 		}
 		if (where.byArtist) {
 			queryParameters = {
@@ -138,45 +153,49 @@ export default class TrackService extends RepositoryService<
 				release: {
 					album: AlbumService.formatManyWhereInput({ byArtist: where.byArtist })
 				}
-			}
+			};
 		}
-		return queryParameters; 
+		return queryParameters;
 	}
+
 	formatManyWhereInput = TrackService.formatManyWhereInput;
 
 	formatSortingInput(
 		sortingParameter: SortingParameter<TrackQueryParameters.SortingKeys>
 	): Prisma.TrackOrderByWithRelationInput {
 		switch (sortingParameter.sortBy) {
-			case 'releaseName':
-				return { release: { name: sortingParameter.order }};
-			case 'releaseDate':
-				return { release: { releaseDate: {sort: sortingParameter.order, nulls: 'last' }}};
-			case 'addDate':
-				return { id: sortingParameter.order }
-			default:
-				return { [sortingParameter.sortBy ?? 'id']: sortingParameter.order }
+		case 'releaseName':
+			return { release: { name: sortingParameter.order } };
+		case 'releaseDate':
+			return { release: { releaseDate: { sort: sortingParameter.order, nulls: 'last' } } };
+		case 'addDate':
+			return { id: sortingParameter.order };
+		default:
+			return { [sortingParameter.sortBy ?? 'id']: sortingParameter.order };
 		}
 	}
+
 	/**
 	 * Callback on track not found
 	 * @param where the query parameters that failed to get the release
 	 */
 	async onNotFound(where: TrackQueryParameters.WhereInput): Promise<MeeloException> {
-		if (where.id !== undefined)
+		if (where.id !== undefined) {
 			throw new TrackNotFoundByIdException(where.id);
+		}
 		if (where.masterOfSong) {
 			const parentSong = await this.songService.get(where.masterOfSong, { artist: true });
+
 			throw new MasterTrackNotFoundException(
 				new Slug(parentSong.slug),
 				new Slug(parentSong.artist!.slug)
 			);
-		} 
-		if (where.sourceFile.id !== undefined)
+		}
+		if (where.sourceFile.id !== undefined) {
 			throw new FileNotFoundFromIDException(where.sourceFile.id);
+		}
 		throw new FileNotFoundFromPathException(where.sourceFile.byPath!.path);
 	}
-
 
 	/**
 	 * Fetch the tracks from a song
@@ -198,11 +217,12 @@ export default class TrackService extends RepositoryService<
 			include,
 			sort
 		);
-		if (tracks.length == 0)
+
+		if (tracks.length == 0) {
 			await this.songService.throwIfNotFound(where);
+		}
 		return tracks;
 	}
-
 
 	/**
 	 * Fetch the master tracks of a song
@@ -222,7 +242,7 @@ export default class TrackService extends RepositoryService<
 
 	/**
 	 * Get Tracklist of release
-	 * @param where 
+	 * @param where
 	 * @returns the tracklist of the release
 	 */
 	async getTracklist(
@@ -230,12 +250,20 @@ export default class TrackService extends RepositoryService<
 		include?: TrackQueryParameters.RelationInclude,
 	): Promise<Tracklist> {
 		let tracklist: Tracklist = new Map();
-		const tracks = await this.getMany({ byRelease: where }, {}, include, { sortBy: 'trackIndex', order: 'asc' });
-		if (tracks.length == 0)
+		const tracks = await this.getMany(
+			{ byRelease: where }, {}, include, { sortBy: 'trackIndex', order: 'asc' }
+		);
+
+		if (tracks.length == 0) {
 			await this.releaseService.throwIfNotFound(where);
+		}
 		tracks.forEach((track) => {
 			const indexToString = track.discIndex?.toString() ?? UnknownDiscIndexKey;
-			tracklist = tracklist.set(indexToString, [ ...tracklist.get(indexToString) ?? [], track]);
+
+			tracklist = tracklist.set(
+				indexToString,
+				[...tracklist.get(indexToString) ?? [], track]
+			);
 		});
 		return new Map([...tracklist].sort());
 	}
@@ -252,9 +280,11 @@ export default class TrackService extends RepositoryService<
 	): Promise<Track[]> {
 		const tracklist = await this.getTracklist(where, include);
 		let playlist: Track[] = [];
+
 		tracklist.forEach((disc) => playlist = playlist.concat(disc));
-		if (random)
+		if (random) {
 			shuffle(playlist);
+		}
 		return playlist;
 	}
 
@@ -273,7 +303,7 @@ export default class TrackService extends RepositoryService<
 			sourceFile: what.sourceFile ? {
 				connect: FileService.formatWhereInput(what.sourceFile)
 			} : undefined
-		}
+		};
 	}
 
 	/**
@@ -281,7 +311,7 @@ export default class TrackService extends RepositoryService<
 	 * @param what the fields to update in the track
 	 * @param where the query parameters to find the track to update
 	 */
-	
+
 	async update(
 		what: TrackQueryParameters.UpdateInput,
 		where: TrackQueryParameters.WhereInput
@@ -293,6 +323,7 @@ export default class TrackService extends RepositoryService<
 				trackId: updatedTrack.id,
 				song: { byId: { id: updatedTrack.songId } }
 			};
+
 			if (!unmodifiedTrack.master && what.master) {
 				await this.setTrackAsMaster(masterChangeInput);
 			} else if (unmodifiedTrack.master && what.master === false) {
@@ -310,27 +341,33 @@ export default class TrackService extends RepositoryService<
 	formatDeleteInput(where: TrackQueryParameters.DeleteInput) {
 		return where;
 	}
+
 	async onDeletionFailure(where: TrackQueryParameters.DeleteInput) {
-		if (where.id !== undefined)
+		if (where.id !== undefined) {
 			return new TrackNotFoundByIdException(where.id);
+		}
 		return new FileNotFoundFromIDException(where.sourceFileId);
 	}
+
 	protected formatDeleteInputToWhereInput(input: TrackQueryParameters.DeleteInput) {
-		if (input.id)
+		if (input.id) {
 			return { id: input.id };
-		return { sourceFile: { id: input.sourceFileId! } }
+		}
+		return { sourceFile: { id: input.sourceFileId! } };
 	}
 
 	/**
 	 * Deletes a track
-	 * @param where Query parameters to find the track to delete 
+	 * @param where Query parameters to find the track to delete
 	 */
 	async delete(where: TrackQueryParameters.DeleteInput, deleteParent = true): Promise<Track> {
 		try {
 			const deletedTrack = await super.delete(where);
+
 			Logger.warn(`Track '${deletedTrack.name}' deleted`);
-			if (deletedTrack.master)
+			if (deletedTrack.master) {
 				await this.songService.updateSongMaster({ byId: { id: deletedTrack.songId } });
+			}
 			if (deleteParent) {
 				await this.songService.deleteIfEmpty({ id: deletedTrack.songId });
 				await this.releaseService.deleteIfEmpty({ byId: { id: deletedTrack.releaseId } });
@@ -348,7 +385,7 @@ export default class TrackService extends RepositoryService<
 	async setTrackAsMaster(where: TrackQueryParameters.UpdateSongMaster): Promise<void> {
 		const otherTracks: Track[] = (await this.getSongTracks(where.song))
 			.filter((track) => track.id != where.trackId);
-		
+
 		await Promise.allSettled([
 			this.prismaService.track.updateMany({
 				data: { master: false },
@@ -370,16 +407,22 @@ export default class TrackService extends RepositoryService<
 	 * @param where the query parameters to find the track to unset as master
 	 */
 	async unsetTrackAsMaster(where: TrackQueryParameters.UpdateSongMaster): Promise<void> {
-		const otherTracks: Track[] = (await this.getSongTracks(where.song, {}, {}, { sortBy: 'id', order: 'asc' }))
-			.filter((track) => track.id != where.trackId);
-		if (otherTracks.find((track) => track.master))
+		const otherTracks: Track[] = (await this.getSongTracks(
+			where.song, {}, {}, { sortBy: 'id', order: 'asc' }
+		)).filter((track) => track.id != where.trackId);
+
+		if (otherTracks.find((track) => track.master)) {
 			return;
-		if (otherTracks.length == 0)
+		}
+		if (otherTracks.length == 0) {
 			return;
+		}
 		let newMaster = otherTracks[0];
 		const audioTracks = otherTracks.filter((track) => track.type == TrackType.Audio);
-		if (audioTracks.length != 0)
+
+		if (audioTracks.length != 0) {
 			newMaster = audioTracks[0];
+		}
 		await Promise.allSettled([
 			this.update(
 				{ master: true },
@@ -391,7 +434,7 @@ export default class TrackService extends RepositoryService<
 			)
 		]);
 	}
-	
+
 	/**
 	 * Change the track's parent song
 	 * If the previous parent is empty, it will be deleted
@@ -403,6 +446,7 @@ export default class TrackService extends RepositoryService<
 	): Promise<Track> {
 		const track = await this.get(trackWhere);
 		const newParent = await this.songService.get(newParentWhere, { tracks: true });
+
 		await this.unsetTrackAsMaster({
 			trackId: track.id,
 			song: { byId: { id: track.songId } }
@@ -411,6 +455,7 @@ export default class TrackService extends RepositoryService<
 			song: { byId: { id: newParent.id } },
 			master: newParent.tracks.length == 0
 		}, trackWhere);
+
 		await this.songService.deleteIfEmpty({ id: track.songId });
 		return updatedTrack;
 	}
@@ -421,7 +466,10 @@ export default class TrackService extends RepositoryService<
 	 */
 	async buildIllustrationPath(where: TrackQueryParameters.WhereInput): Promise<IllustrationPath> {
 		const track = await this.get(where, { release: true });
-		const album = await this.albumService.get({ byId: { id: track.release.albumId } }, { artist: true })
+		const album = await this.albumService.get(
+			{ byId: { id: track.release.albumId } }, { artist: true }
+		);
+
 		return this.illustrationService.buildTrackIllustrationPath(
 			new Slug(album.slug),
 			new Slug(track.release.slug),
@@ -437,21 +485,25 @@ export default class TrackService extends RepositoryService<
 			illustration: await this.illustrationService.getTrackIllustrationLink(track.id),
 			stream: `/files/${track.sourceFileId}/stream`
 		};
-		if (track.release !== undefined)
+
+		if (track.release !== undefined) {
 			response.release = await this.releaseService.buildResponse(track.release);
-		if (track.song != undefined)
-			response.song = await this.songService.buildResponse(track.song)
+		}
+		if (track.song != undefined) {
+			response.song = await this.songService.buildResponse(track.song);
+		}
 		return response;
 	}
 
 	async buildTracklistResponse(tracklist: Tracklist) {
 		let response = {};
+
 		for (const [disc, tracks] of tracklist) {
 			response = {
 				...response,
 				[disc]: await Promise.all(tracks.map((track) => this.buildResponse(track)))
-			}
+			};
 		}
 		return response;
-	} 
+	}
 }

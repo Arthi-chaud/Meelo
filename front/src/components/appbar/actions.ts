@@ -1,7 +1,7 @@
-import Action from "../action";
+import Action from "../contextual-menu/actions";
 import SearchIcon from '@mui/icons-material/Search';
 import AutoModeIcon from '@mui/icons-material/AutoMode';
-import API from "../../api";
+import API from "../../api/api";
 import toast from "react-hot-toast";
 import SettingsIcon from '@mui/icons-material/Settings';
 import { createElement } from "react";
@@ -22,7 +22,8 @@ const AppBarActions: Action[] = [
 	{
 		label: 'Refresh Libraries',
 		icon: createElement(AutoModeIcon),
-		onClick: () => API.scanLibraries().then(({ status }) => toast.success(status, { duration: 4000 })),
+		onClick: () => API.scanLibraries()
+			.then(({ status }) => toast.success(status, { duration: 4000 })),
 	},
 	{
 		label: 'Settings',

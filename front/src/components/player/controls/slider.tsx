@@ -1,4 +1,4 @@
-import { Slider, Grid} from "@mui/material";
+import { Grid, Slider } from "@mui/material";
 import DurationComponent from "./duration";
 
 type PlayerSliderProps = {
@@ -8,7 +8,10 @@ type PlayerSliderProps = {
 }
 
 const PlayerSlider = (props: PlayerSliderProps) => {
-	return <Grid container sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }} spacing={2}>
+	return <Grid container spacing={2} sx={{
+		display: 'flex', justifyContent: 'space-between',
+		alignItems: 'center'
+	}}>
 		<Grid item xs="auto">
 			<DurationComponent time={props.progress}/>
 		</Grid>
@@ -20,10 +23,13 @@ const PlayerSlider = (props: PlayerSliderProps) => {
 				color="secondary"
 				valueLabelDisplay="off"
 				onChange={(event) => {
-					if (props.duration !== undefined)
-						props.onSlide((event.target as any).value / 100 * props.duration)
+					if (props.duration !== undefined) {
+						const target: any = event.target;
+
+						props.onSlide(target.value / 100 * props.duration);
+					}
 				}}
-				value={ props.duration && props.progress !== undefined
+				value={props.duration && props.progress !== undefined
 					? props.progress * 100 / (props.duration == 0 ? props.progress : props.duration)
 					: 0
 				}
@@ -32,7 +38,7 @@ const PlayerSlider = (props: PlayerSliderProps) => {
 		<Grid item xs="auto">
 			<DurationComponent time={props.duration}/>
 		</Grid>
-	</Grid>
-}
+	</Grid>;
+};
 
 export default PlayerSlider;

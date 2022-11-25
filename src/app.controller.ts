@@ -9,7 +9,7 @@ export default class AppController {
 	@Public()
 	welcome() {
 		return {
-			"message": "Welcome to Meelo! To know more about the API, visit '/docs'"
-		}
+			message: "Welcome to Meelo! To know more about the API, visit '/docs'"
+		};
 	}
 }

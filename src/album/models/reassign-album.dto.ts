@@ -8,6 +8,7 @@ export default class ReassignAlbumDTO {
 	})
 	@IsNotEmpty()
 	albumId: number;
+
 	@ApiProperty({
 		description: 'The ID of the artist to reassign the album to',
 		example: 123

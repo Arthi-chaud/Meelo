@@ -1,4 +1,6 @@
-import { Controller, Inject, forwardRef, Get, Query, Req } from "@nestjs/common";
+import {
+	Controller, Get, Inject, Query, Req, forwardRef
+} from "@nestjs/common";
 import type { Request } from 'express';
 import { ApiOperation, ApiTags } from "@nestjs/swagger";
 import AlbumService from "src/album/album.service";
@@ -52,8 +54,9 @@ export class GenreController {
 		const genres = await this.genreService.getMany(
 			{}, paginationParameters, include, sortingParameter
 		);
-		return new PaginatedResponse(
-			await Promise.all(genres.map((genre) => this.genreService.buildResponse(genre))),
+
+		return PaginatedResponse.awaiting(
+			genres.map((genre) => this.genreService.buildResponse(genre)),
 			request
 		);
 	}
@@ -69,7 +72,8 @@ export class GenreController {
 		where: GenreQueryParameters.WhereInput
 	) {
 		const genre = await this.genreService.get(where, include);
-		return await this.genreService.buildResponse(genre);
+
+		return this.genreService.buildResponse(genre);
 	}
 
 	@ApiOperation({
@@ -91,12 +95,14 @@ export class GenreController {
 		const songs = await this.songService.getMany(
 			{ genre: where }, paginationParameters, include, sortingParameter
 		);
-		if (songs.length == 0)
+
+		if (songs.length == 0) {
 			await this.genreService.throwIfNotFound(where);
-		return new PaginatedResponse(
-			await Promise.all(songs.map(
+		}
+		return PaginatedResponse.awaiting(
+			songs.map(
 				(song) => this.songService.buildResponse(song)
-			)),
+			),
 			request
 		);
 	}
@@ -121,14 +127,16 @@ export class GenreController {
 		const albums = await this.albumService.getMany(
 			{ byGenre: where, byType: filter.type }, paginationParameters, include, sortingParameter
 		);
-		if (albums.length == 0)
+
+		if (albums.length == 0) {
 			await this.genreService.throwIfNotFound(where);
-		return new PaginatedResponse(
-			await Promise.all(albums.map(
+		}
+		return PaginatedResponse.awaiting(
+			albums.map(
 				(album) => this.albumService.buildResponse(album)
-			)),
+			),
 			request
-		)
+		);
 	}
 
 	@ApiOperation({
@@ -148,14 +156,16 @@ export class GenreController {
 		@Req() request: Request
 	) {
 		const artists = await this.artistService.getMany(
-			{ byGenre: where }, paginationParameters , include, sortingParameter
+			{ byGenre: where }, paginationParameters, include, sortingParameter
 		);
-		if (artists.length == 0)
+
+		if (artists.length == 0) {
 			await this.genreService.throwIfNotFound(where);
-		return new PaginatedResponse(
-			await Promise.all(artists.map(
+		}
+		return PaginatedResponse.awaiting(
+			artists.map(
 				(artist) => this.artistService.buildResponse(artist)
-			)),
+			),
 			request
 		);
 	}

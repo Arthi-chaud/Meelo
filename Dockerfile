@@ -1,5 +1,5 @@
 ## Backend
-FROM node:17 AS back-builder
+FROM node:18 AS back-builder
 WORKDIR /app/back
 COPY ./*.json ./
 COPY ./*.lock ./
@@ -11,7 +11,7 @@ RUN yarn run build
 
 
 ## Frontend
-FROM node:17 AS front-builder
+FROM node:18 AS front-builder
 WORKDIR /app/front
 COPY ./front/*.json ./
 COPY ./front/*.lock ./

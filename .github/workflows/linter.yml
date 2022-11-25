@@ -1,0 +1,28 @@
+name: Linter
+
+on: [push, pull_request]
+
+jobs:
+  run_linters:
+    if: github.event_name == 'push' || github.event.pull_request.head.repo.full_name != github.repository
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - section: 'back'
+            pwd: .
+          - section: 'front'
+            pwd: ./front
+    container: node:18
+    name: Run linter (${{ matrix.section }})
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out Git repository
+        uses: actions/checkout@v3
+      - name: Install dependencies
+        run: yarn --cwd "${{ matrix.pwd }}" install
+      - name: Install root dependencies
+        if: ${{ matrix.section }} == "front"
+        run: yarn install
+      - name: Run linters
+        run: yarn --cwd "${{ matrix.pwd }}" lint

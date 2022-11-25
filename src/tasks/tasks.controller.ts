@@ -1,4 +1,6 @@
-import { Controller, Get, Logger } from '@nestjs/common';
+import {
+	Controller, Get, Logger
+} from '@nestjs/common';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import ParseLibraryIdentifierPipe from 'src/library/library.pipe';
 import LibraryService from 'src/library/library.service';
@@ -13,7 +15,6 @@ import Admin from 'src/roles/admin.decorator';
 @ApiTags('Tasks')
 @Controller('tasks')
 export default class TasksController {
-
 	constructor(
 		private libraryService: LibraryService,
 		private tasksService: TasksService,
@@ -26,13 +27,13 @@ export default class TasksController {
 	@Get('scan')
 	async scanLibrariesFiles(): Promise<TaskResponse> {
 		const libraries = await this.libraryService.getMany({});
+
 		libraries.forEach((library) => this.tasksService
 			.registerNewFiles(library)
-			.catch((error) => Logger.error(error))
-		);
+			.catch((error) => Logger.error(error)));
 		return {
 			status: `Scanning ${libraries.length} libraries`
-		}
+		};
 	}
 
 	@ApiOperation({
@@ -44,12 +45,13 @@ export default class TasksController {
 		where: LibraryQueryParameters.WhereInput
 	): Promise<TaskResponse> {
 		const library = await this.libraryService.get(where);
+
 		this.tasksService
 			.registerNewFiles(library)
 			.catch((error) => Logger.error(error));
 		return {
 			status: `Scanning library '${library.slug}'`
-		}
+		};
 	}
 
 	@ApiOperation({
@@ -58,13 +60,13 @@ export default class TasksController {
 	@Get('clean')
 	async cleanLibraries(): Promise<TaskResponse> {
 		const libraries = await this.libraryService.getMany({});
+
 		libraries.forEach((library) => this.tasksService
 			.unregisterUnavailableFiles({ id: library.id })
-			.catch((error) => Logger.error(error))
-		);
+			.catch((error) => Logger.error(error)));
 		return {
 			status: `Cleanning ${libraries.length} libraries`
-		}
+		};
 	}
 
 	@ApiOperation({
@@ -76,14 +78,14 @@ export default class TasksController {
 		where: LibraryQueryParameters.WhereInput
 	): Promise<TaskResponse> {
 		const library = await this.libraryService.get(where);
+
 		this.tasksService
 			.unregisterUnavailableFiles(where)
 			.catch((error) => Logger.error(error));
 		return {
 			status: `Cleaning library '${library.slug}'`
-		}
+		};
 	}
-
 
 	@ApiOperation({
 		summary: "Refresh all libraries' files metadata"
@@ -91,13 +93,13 @@ export default class TasksController {
 	@Get('refresh-metadata')
 	async refreshLibrariesFilesMetadata(): Promise<TaskResponse> {
 		const libraries = await this.libraryService.getMany({});
+
 		libraries.forEach((library) => this.tasksService
 			.resyncAllMetadata({ id: library.id })
-			.catch((error) => Logger.error(error))
-		);
+			.catch((error) => Logger.error(error)));
 		return {
 			status: `Refreshing ${libraries.length} libraries`
-		}
+		};
 	}
 
 	@ApiOperation({
@@ -109,12 +111,13 @@ export default class TasksController {
 		where: LibraryQueryParameters.WhereInput
 	): Promise<TaskResponse> {
 		const library = await this.libraryService.get(where);
+
 		this.tasksService
 			.resyncAllMetadata(where)
 			.catch((error) => Logger.error(error));
 		return {
 			status: `Refreshing metadata of library '${library.slug}'`
-		}
+		};
 	}
 }
 

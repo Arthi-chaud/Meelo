@@ -1,4 +1,6 @@
-import { Controller, Get, Param, Query, Req } from '@nestjs/common';
+import {
+	Controller, Get, Param, Query, Req
+} from '@nestjs/common';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import AlbumQueryParameters from 'src/album/models/album.query-parameters';
 import ArtistQueryParameters from 'src/artist/models/artist.query-parameters';
@@ -36,7 +38,7 @@ export default class SearchController {
 		private releaseService: ReleaseService,
 		private genreService: GenreService
 	) {}
-	
+
 	@ApiOperation({
 		summary: 'Search items by their names'
 	})
@@ -75,11 +77,14 @@ export default class SearchController {
 		sortingParameter: ArtistQueryParameters.SortingParameter,
 		@Req() request: Request
 	) {
-		const artists = await this.searchService.searchArtists(query, paginationParameters, include, sortingParameter);
-		return new PaginatedResponse(
-			await Promise.all(artists.map((artist) => this.artistService.buildResponse(artist))),
+		const artists = await this.searchService.searchArtists(
+			query, paginationParameters, include, sortingParameter
+		);
+
+		return PaginatedResponse.awaiting(
+			artists.map((artist) => this.artistService.buildResponse(artist)),
 			request
-		)
+		);
 	}
 
 	@ApiOperation({
@@ -99,11 +104,14 @@ export default class SearchController {
 		@Query() filter: AlbumQueryParameters.AlbumFilterParameter,
 		@Req() request: Request
 	) {
-		const albums = await this.searchService.searchAlbums(query, filter.type, paginationParameters, include, sortingParameter)
-		return new PaginatedResponse(
-			await Promise.all(albums.map((album) => this.albumService.buildResponse(album))),
+		const albums = await this.searchService.searchAlbums(
+			query, filter.type, paginationParameters, include, sortingParameter
+		);
+
+		return PaginatedResponse.awaiting(
+			albums.map((album) => this.albumService.buildResponse(album)),
 			request
-		)
+		);
 	}
 
 	@ApiOperation({
@@ -122,11 +130,14 @@ export default class SearchController {
 		sortingParameter: SongQueryParameters.SortingParameter,
 		@Req() request: Request
 	) {
-		const songs = await this.searchService.searchSongs(query, paginationParameters, include, sortingParameter);
-		return new PaginatedResponse(
-			await Promise.all(songs.map((song) => this.songService.buildResponse(song))),
+		const songs = await this.searchService.searchSongs(
+			query, paginationParameters, include, sortingParameter
+		);
+
+		return PaginatedResponse.awaiting(
+			songs.map((song) => this.songService.buildResponse(song)),
 			request
-		)
+		);
 	}
 
 	@ApiOperation({
@@ -145,11 +156,14 @@ export default class SearchController {
 		sortingParameter: ReleaseQueryParameters.SortingParameter,
 		@Req() request: Request
 	) {
-		const releases = await this.searchService.searchReleases(query, paginationParameters, include, sortingParameter)
-		return new PaginatedResponse(
-			await Promise.all(releases.map((release) => this.releaseService.buildResponse(release))),
+		const releases = await this.searchService.searchReleases(
+			query, paginationParameters, include, sortingParameter
+		);
+
+		return PaginatedResponse.awaiting(
+			releases.map((release) => this.releaseService.buildResponse(release)),
 			request
-		)
+		);
 	}
 
 	@ApiOperation({
@@ -168,10 +182,13 @@ export default class SearchController {
 		sortingParameter: GenreQueryParameters.SortingParameter,
 		@Req() request: Request
 	) {
-		const genres = await this.searchService.searchGenres(query, paginationParameters, include, sortingParameter);
-		return new PaginatedResponse(
-			await Promise.all(genres.map((genre) => this.genreService.buildResponse(genre))),
+		const genres = await this.searchService.searchGenres(
+			query, paginationParameters, include, sortingParameter
+		);
+
+		return PaginatedResponse.awaiting(
+			genres.map((genre) => this.genreService.buildResponse(genre)),
 			request
-		)
+		);
 	}
 }

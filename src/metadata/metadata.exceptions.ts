@@ -14,6 +14,12 @@ export class FileParsingException extends ParsingException {
 	}
 }
 
+export class MissingMetadataException extends ParsingException {
+	constructor(filePath: string) {
+		super(`Parsing file '${path.parse(filePath).base}' failed because of missing metadata.`);
+	}
+}
+
 export class PathParsingException extends ParsingException {
 	constructor(filePath: string) {
 		super(`Aborting parsing of '${path.parse(filePath).base}' file: It doesn't match any of the regex, or catch groups are missing`);

@@ -1,20 +1,24 @@
-import Album, { AlbumInclude, AlbumSortingKeys, AlbumType, AlbumWithArtist } from "./models/album";
-import Artist, { ArtistInclude, ArtistSortingKeys } from "./models/artist";
-import Genre from "./models/genre";
-import Library from "./models/library";
-import { PaginatedResponse, PaginationParameters } from "./models/pagination";
-import Release, { ReleaseInclude, ReleaseSortingKeys } from "./models/release";
-import Song, { SongInclude, SongSortingKeys, SongWithArtist } from "./models/song";
-import Track, { TrackInclude, TrackSortingKeys, TrackWithRelease } from "./models/track";
-import Tracklist from "./models/tracklist";
-import axios from 'axios';
-import Resource from "./models/resource";
-import { SortingParameters } from "./utils/sorting";
-import LibraryTaskResponse from "./models/library-task-response";
-import store from "./state/store";
-import User from "./models/user";
-import { getCookie } from "cookies-next";
-import UserAccessTokenCookieKey from "./utils/user-access-token-cookie-key";
+import Album, {
+	AlbumInclude, AlbumSortingKeys, AlbumType, AlbumWithArtist
+} from "../models/album";
+import Artist, { ArtistInclude, ArtistSortingKeys } from "../models/artist";
+import Genre from "../models/genre";
+import Library from "../models/library";
+import { PaginatedResponse, PaginationParameters } from "../models/pagination";
+import Release, { ReleaseInclude, ReleaseSortingKeys } from "../models/release";
+import Song, {
+	SongInclude, SongSortingKeys, SongWithArtist
+} from "../models/song";
+import Track, {
+	TrackInclude, TrackSortingKeys, TrackWithRelease
+} from "../models/track";
+import Tracklist from "../models/tracklist";
+import { SortingParameters } from "../utils/sorting";
+import LibraryTaskResponse from "../models/library-task-response";
+import { ResourceNotFound } from "../exceptions";
+import User from "../models/user";
+import store from "../state/store";
+import UserAccessTokenCookieKey from "../utils/user-access-token-cookie-key";
 
 type AuthenticationResponse = {
 	access_token: string;
@@ -40,7 +44,6 @@ type FetchParameters<Keys extends string[]> = {
 }
 
 export default class API {
-
 	static defaultPageSize = 30;
 
 	static async login(credentials: AuthenticationInput): Promise<AuthenticationResponse> {
@@ -76,6 +79,7 @@ export default class API {
 			parameters: { pagination: pagination, include: [] }
 		});
 	}
+
 	/**
 	 * Fetch all album artists
 	 * @param pagination the parameters to choose how many items to load
@@ -89,7 +93,7 @@ export default class API {
 			route: `/artists`,
 			errorMessage: 'Artists could not be loaded',
 			parameters: { pagination, include: [], sort },
-			otherParameters: {'albumArtistOnly': 'true'}
+			otherParameters: { albumArtistOnly: 'true' }
 		});
 	}
 
@@ -128,7 +132,7 @@ export default class API {
 			route: `/libraries/${librarySlugOrId}/artists`,
 			errorMessage: 'Library does not exist',
 			parameters: { pagination, include, sort },
-			otherParameters: {'albumArtistOnly': true}
+			otherParameters: { albumArtistOnly: true }
 		});
 	}
 
@@ -194,7 +198,7 @@ export default class API {
 	 * @param pagination the parameters to choose how many items to load
 	 * @returns An array of albums
 	 */
-	 static async getArtistAlbums<T extends Album = Album>(
+	static async getArtistAlbums<T extends Album = Album>(
 		artistSlugOrId: string | number,
 		pagination?: PaginationParameters,
 		type?: AlbumType,
@@ -226,21 +230,23 @@ export default class API {
 			parameters: { pagination, include, sort }
 		});
 	}
+
 	/**
 	 * Get a song
 	 * @param songSlugOrId the identifier of a song
 	 * @param include the fields to include in the fetched item
 	 * @returns a Track
 	 */
-	 static async getSong<T extends Song = Song>(
+	static async getSong<T extends Song = Song>(
 		songSlugOrId: string | number,
 		include: SongInclude[] = []
 	): Promise<T> {
 		return API.fetch({
 			route: `/songs/${songSlugOrId}`,
 			parameters: { include }
-		}); 
+		});
 	}
+
 	/**
 	 * Get the master track of a song
 	 * @param songSlugOrId the identifier of a song
@@ -254,7 +260,7 @@ export default class API {
 		return API.fetch({
 			route: `/songs/${songSlugOrId}/master`,
 			parameters: { include }
-		}); 
+		});
 	}
 
 	/**
@@ -271,7 +277,7 @@ export default class API {
 			route: `/albums/${albumSlugOrId}`,
 			errorMessage: "Album not found",
 			parameters: { include }
-		}); 
+		});
 	}
 
 	static async getCurrentUserStatus(): Promise<User> {
@@ -294,7 +300,7 @@ export default class API {
 		return API.fetch({
 			route: `/albums/${albumSlugOrId}/master`,
 			parameters: { include }
-		}); 
+		});
 	}
 
 	/**
@@ -321,7 +327,7 @@ export default class API {
 	 * @param include the relation to include
 	 * @returns an array of tracks
 	 */
-	 static async getSongVersions<T extends Song = Song>(
+	static async getSongVersions<T extends Song = Song>(
 		songSlugOrId: string | number,
 		pagination?: PaginationParameters,
 		sort?: SortingParameters<typeof SongSortingKeys>,
@@ -354,7 +360,7 @@ export default class API {
 	 * @param albumSlugOrId the id of the album
 	 * @returns an array of genres
 	 */
-	 static async getAlbumGenres(
+	static async getAlbumGenres(
 		albumSlugOrId: string | number,
 	): Promise<Genre[]> {
 		return API.fetch({
@@ -362,12 +368,13 @@ export default class API {
 			parameters: { include: [] }
 		});
 	}
+
 	/**
 	 * Get videos of a album
 	 * @param albumSlugOrId the id of the album
 	 * @returns an array of videos
 	 */
-	 static async getAlbumVideos(
+	static async getAlbumVideos(
 		albumSlugOrId: string | number,
 		pagination?: PaginationParameters,
 	): Promise<PaginatedResponse<Track>> {
@@ -376,12 +383,13 @@ export default class API {
 			parameters: { pagination, include: [] }
 		});
 	}
+
 	/**
 	 * Get releases of a album
 	 * @param albumSlugOrId the id of the album
 	 * @returns an array of releases
 	 */
-	 static async getAlbumReleases<T extends Release = Release>(
+	static async getAlbumReleases<T extends Release = Release>(
 		albumSlugOrId: string | number,
 		pagination?: PaginationParameters,
 		sort?: SortingParameters<typeof ReleaseSortingKeys>,
@@ -404,7 +412,7 @@ export default class API {
 		});
 	}
 
-	static async getReleaseTrackList<T extends Track = Track> (
+	static async getReleaseTrackList<T extends Track = Track>(
 		slugOrId: string | number,
 		include: TrackInclude[] = []
 	): Promise<Tracklist<T>> {
@@ -414,7 +422,7 @@ export default class API {
 		});
 	}
 
-	static async getReleasePlaylist<T extends Track = Track> (
+	static async getReleasePlaylist<T extends Track = Track>(
 		slugOrId: string | number,
 		include: TrackInclude[] = []
 	): Promise<T[]> {
@@ -450,7 +458,6 @@ export default class API {
 			.then((track) => API.getRelease(track.releaseId, include));
 	}
 
-
 	static async getArtist<T extends Artist = Artist>(
 		slugOrId: string | number,
 		include: ArtistInclude[] = []
@@ -477,7 +484,7 @@ export default class API {
 			parameters: { pagination, include: [], sort }
 		});
 	}
-	
+
 	/**
 	 * Fetch one genre
 	 */
@@ -495,7 +502,7 @@ export default class API {
 	static async getGenreAlbums(
 		idOrSlug: string | number,
 		pagination?: PaginationParameters,
-		sort?: SortingParameters<typeof AlbumSortingKeys>,	
+		sort?: SortingParameters<typeof AlbumSortingKeys>,
 		type?: AlbumType
 	): Promise<PaginatedResponse<AlbumWithArtist>> {
 		return API.fetch({
@@ -512,7 +519,7 @@ export default class API {
 	static async getGenreArtists(
 		idOrSlug: string | number,
 		pagination?: PaginationParameters,
-		sort?: SortingParameters<typeof ArtistSortingKeys>,	
+		sort?: SortingParameters<typeof ArtistSortingKeys>,
 	): Promise<PaginatedResponse<Artist>> {
 		return API.fetch({
 			route: `/genres/${idOrSlug}/artists`,
@@ -520,13 +527,14 @@ export default class API {
 			parameters: { pagination, include: [], sort }
 		});
 	}
+
 	/**
 	 * Fetch all songs from a genre
 	 */
 	static async getGenreSongs(
 		idOrSlug: string | number,
 		pagination?: PaginationParameters,
-		sort?: SortingParameters<typeof SongSortingKeys>,	
+		sort?: SortingParameters<typeof SongSortingKeys>,
 	): Promise<PaginatedResponse<SongWithArtist>> {
 		return API.fetch({
 			route: `/genres/${idOrSlug}/songs`,
@@ -545,7 +553,7 @@ export default class API {
 			route: `/search/artists/${query}`,
 			errorMessage: 'Search failed',
 			parameters: { pagination, include, sort }
-		})
+		});
 	}
 
 	static async searchAlbums<T extends Album = Album>(
@@ -560,7 +568,7 @@ export default class API {
 			errorMessage: 'Search failed',
 			parameters: { pagination, include, sort },
 			otherParameters: { type }
-		})
+		});
 	}
 
 	static async searchSongs<T extends Song = Song>(
@@ -573,7 +581,7 @@ export default class API {
 			route: `/search/songs/${query}`,
 			errorMessage: 'Search failed',
 			parameters: { pagination, include, sort }
-		})
+		});
 	}
 
 	private static async fetch<T, Keys extends string[]>({ route, parameters, otherParameters, errorMessage, data }: FetchParameters<Keys>, method: 'GET' | 'PUT' | 'POST' = 'GET' ): Promise<T> {
@@ -595,33 +603,37 @@ export default class API {
 		const jsonResponse = await response.json().catch((e) => {
 			throw new Error("Error while parsing Server's response");
 		});
-		if (!response.ok) {
+		if (response.status == 404) {
+			throw new ResourceNotFound(errorMessage ?? jsonResponse.error ?? response.statusText);
+		} else if (!response.ok) {
 			throw new Error(errorMessage ?? jsonResponse.message ?? response.statusText)
 		}
-		return jsonResponse;
 	}
 
 	static scanLibraries(): Promise<LibraryTaskResponse> {
 		return API.fetch<LibraryTaskResponse, []>({
 			route: `/tasks/scan`,
 			parameters: { }
-		})
+		});
 	}
+
 	/**
 	 * Builds the URL to get an illustration from an object returned by the API
-	 * @param imageURL 
+	 * @param imageURL
 	 * @returns the correct, rerouted URL
 	 */
 	static getIllustrationURL(imageURL: string): string {
 		const isDev = process.env.NODE_ENV === 'development';
-		if (isDev)
+
+		if (isDev) {
 			return `${process.env.ssrApiRoute}${imageURL}`;
+		}
 		return `/api/${imageURL}`;
 	}
 
 	/**
 	 * Builds the URL to get a track file from an object returned by the API
-	 * @param streamURL 
+	 * @param streamURL
 	 * @returns the correct, rerouted URL
 	 */
 	static getStreamURL(streamURL: string): string {
@@ -631,8 +643,8 @@ export default class API {
 	/**
 	 * Mark a song as played
 	 * To be called when a song ends.
-	 * @param songSlugOrId 
-	 * @returns 
+	 * @param songSlugOrId
+	 * @returns
 	 */
 	static async setSongAsPlayed(songSlugOrId: string | number): Promise<void> {
 		return API.fetch({
@@ -644,7 +656,7 @@ export default class API {
 
 	/**
 	 * Mark a release as master
-	 * @param releaseSlugOrId 
+	 * @param releaseSlugOrId
 	 * @returns
 	 */
 	static async setReleaseAsMaster(releaseSlugOrId: string | number): Promise<void> {
@@ -657,10 +669,10 @@ export default class API {
 
 	/**
 	 * Mark a track as master
-	 * @param trackSlugOrId 
+	 * @param trackSlugOrId
 	 * @returns
 	 */
-	 static async setTrackAsMaster(trackSlugOrId: string | number): Promise<void> {
+	static async setTrackAsMaster(trackSlugOrId: string | number): Promise<void> {
 		return API.fetch({
 			route: `/tracks/${trackSlugOrId}/master`,
 			errorMessage: 'Track update failed',
@@ -668,44 +680,57 @@ export default class API {
 		}, 'PUT');
 	}
 
-	private static buildURL(route: string, parameters: QueryParameters<any>, otherParameters?: any): string {
+	private static buildURL(
+		route: string, parameters: QueryParameters<any>, otherParameters?: any
+	): string {
 		const isSSR = typeof window === 'undefined';
 		const isDev = process.env.NODE_ENV === 'development';
-		const apiHost = ( isDev || isSSR ) ? process.env.ssrApiRoute : '/api';
+		const apiHost = isDev || isSSR ? process.env.ssrApiRoute : '/api';
+
 		return `${apiHost}${route}${this.formatQueryParameters(parameters, otherParameters)}`;
 	}
 
-	private static formatQueryParameters<Keys extends string[]>(parameters: QueryParameters<Keys>, otherParameters?: any): string {
-		let formattedQueryParams: string[] = [];
+	private static formatQueryParameters<Keys extends string[]>(
+		parameters: QueryParameters<Keys>, otherParameters?: any
+	): string {
+		const formattedQueryParams: string[] = [];
+
 		if (parameters.sort) {
 			formattedQueryParams.push(`sortBy=${parameters.sort.sortBy}`);
 			formattedQueryParams.push(`order=${parameters.sort.order ?? 'asc'}`);
 		}
-		if ((parameters.include?.length ?? 0)!== 0)
+		if ((parameters.include?.length ?? 0)!== 0) {
 			formattedQueryParams.push(this.formatInclude(parameters.include!)!);
-		if (parameters.pagination)
-			formattedQueryParams.push(this.formatPagination(parameters.pagination));
-		for (let otherParams in otherParameters) {
-			if (otherParameters[otherParams] !== undefined)
-				formattedQueryParams.push(`${encodeURIComponent(otherParams)}=${encodeURIComponent(otherParameters[otherParams])}`);
 		}
-		if (formattedQueryParams.length === 0)
+		if (parameters.pagination) {
+			formattedQueryParams.push(this.formatPagination(parameters.pagination));
+		}
+		for (const otherParams in otherParameters) {
+			if (otherParameters[otherParams] !== undefined) {
+				formattedQueryParams.push(`${encodeURIComponent(otherParams)}=${encodeURIComponent(otherParameters[otherParams])}`);
+			}
+		}
+		if (formattedQueryParams.length === 0) {
 			return '';
+		}
 		return `?${formattedQueryParams.join('&')}`;
 	}
 
 	private static formatInclude(include: string[]): string | null {
-		if (include.length == 0)
+		if (include.length == 0) {
 			return null;
+		}
 		return `with=${include.join(',')}`;
 	}
 
 	private static formatPagination(pagination: PaginationParameters): string {
-		let formattedParameters: string[] = [];
+		const formattedParameters: string[] = [];
 		const pageSize = pagination.pageSize ?? this.defaultPageSize;
 		const pageIndex = pagination.index ?? 0;
-		if (pageIndex !== 0)
+
+		if (pageIndex !== 0) {
 			formattedParameters.push(`skip=${pageSize * pageIndex}`);
+		}
 		formattedParameters.push(`take=${pageSize}`);
 		return formattedParameters.join('&');
 	}

@@ -1,4 +1,4 @@
-import { createSlice, PayloadAction } from '@reduxjs/toolkit'
+import { PayloadAction, createSlice } from '@reduxjs/toolkit';
 import Artist from '../models/artist';
 import Release from '../models/release';
 import Track from '../models/track';
@@ -11,66 +11,53 @@ type TrackState = {
 
 interface PlayerState {
 	/**
-	 * The last played tracks
-	 * The last element of the array is the last played tracks
-	 */
-	history: TrackState[];
-	currentTrack?: TrackState;
-	/**
-	 * The tracks to play next
-	 * The first element of the array is the last played tracks
+	 * The collection of track in the playlist
 	 */
 	playlist: TrackState[];
+	/**
+	 * The position of the current track in the playlist
+	 * Acts like a cursor
+	 * If it equals -1, the playlist is finished or not playing
+	 */
+	cursor: number;
 }
 
 export const playerSlice = createSlice({
 	name: 'player',
 	initialState: <PlayerState>{
-		history: [],
-		currentTrack: undefined,
-		playlist: []
+		playlist: [],
+		cursor: -1,
 	},
 	reducers: {
 		playTrack: (state, action: PayloadAction<TrackState>) => {
-			state.currentTrack = action.payload;
+			state.playlist = [action.payload];
+			state.cursor = 0;
 		},
-		addTracksInPlaylist: (state, action: PayloadAction<{ tracks: TrackState | TrackState[], index?: number }>) => {
-			if (Array.isArray(action.payload.tracks))
-				state.playlist.splice(action.payload.index ?? 0, 0, ...action.payload.tracks);
-			else
-				state.playlist.splice(action.payload.index ?? 0, 0, action.payload.tracks);
+		playNext: (state, action: PayloadAction<TrackState>) => {
+			state.playlist.splice(state.cursor + 1, 0, action.payload);
 		},
-		setTracksInPlaylist: (state, action: PayloadAction<TrackState[]>) => {
-			state.playlist = action.payload;
+		playAfter: (state, action: PayloadAction<TrackState>) => {
+			state.playlist.push(action.payload);
+		},
+		playTracks: (state, action: PayloadAction<{ tracks: TrackState[], cursor?: number }>) => {
+			state.playlist = action.payload.tracks;
+			state.cursor = action.payload.cursor ?? 0;
+		},
+		skipTrack: (state, action: PayloadAction<void>) => {
+			state.cursor++;
+			if (state.cursor >= state.playlist.length) {
+				state.cursor = -1;
+			}
 		},
 		playPreviousTrack: (state, action: PayloadAction<void>) => {
-			if (state.currentTrack)
-				state.playlist.splice(0, 0, state.currentTrack);
-			state.currentTrack = state.history.pop();
+			if (state.cursor >= 0) {
+				state.cursor--;
+			}
 		},
-		playNextTrack: (state, action: PayloadAction<void>) => {
-			if (state.currentTrack)
-				state.history.push(state.currentTrack);
-			state.currentTrack = state.playlist.shift();
-		},
-		pushCurrentTrackToHistory: (state, action: PayloadAction<void>) => {
-			if (state.currentTrack)
-				state.history.push(state.currentTrack);
-			state.currentTrack = undefined;
-		},
-		emptyPlaylist: (state, action: PayloadAction<void>) => {
-			state.playlist = [];
-		},
-		setHistoryToPlaylist: (state, action: PayloadAction<void>) => {
-			state.playlist = state.history;
-			state.history = [];
-		},
-		stopCurrentTrack: (state, action: PayloadAction<void>) => {
-			state.currentTrack = undefined;
-		}
+
 	},
-})
+});
 
-export const { addTracksInPlaylist, setTracksInPlaylist, playPreviousTrack, playTrack, playNextTrack, emptyPlaylist, setHistoryToPlaylist, stopCurrentTrack ,pushCurrentTrackToHistory } = playerSlice.actions
+export const { playTrack, playTracks, playNext, playAfter, skipTrack, playPreviousTrack } = playerSlice.actions;
 
-export default playerSlice.reducer
+export default playerSlice.reducer;

@@ -1,14 +1,14 @@
-import { AccountCircle, Lyrics, Audiotrack, Difference, PlaylistAdd, QueueMusic, Album, Download } from "@mui/icons-material";
-import { Divider } from "@mui/material";
 import { useRouter } from "next/router";
-import API from "../../api";
-import { ReleaseWithAlbum } from "../../models/release";
-import Song, { SongWithArtist } from "../../models/song";
-import copyLinkToClipboard from "../../utils/copy-link";
-import ContextualMenu from "./contextual-menu"
-import ContextualMenuItem from "./contextual-menu-item";
-import ShareIcon from '@mui/icons-material/Share';
-import downloadAction from "../download-action";
+import API from "../../api/api";
+import { SongWithArtist } from "../../models/song";
+import ContextualMenu from "./contextual-menu";
+import { TrackWithRelease } from "../../models/track";
+import {
+	DownloadAsyncAction, GoToArtistAction, GoToRelatedTracksAction,
+	GoToReleaseAsyncAction, GoToSongLyricsAction, GoToSongVersionAction,
+	PlayAfterAction, PlayNextAction, ShareSongAction
+} from "./actions";
+
 type SongContextualMenuProps = {
 	song: SongWithArtist;
 	onSelect?: () => void;
@@ -16,22 +16,28 @@ type SongContextualMenuProps = {
 
 const SongContextualMenu = (props: SongContextualMenuProps) => {
 	const songSlug = `${props.song.artist.slug}+${props.song.slug}`;
+	const getMasterTrack = () => API.getMasterTrack<TrackWithRelease>(songSlug, ['release']);
 	const router = useRouter();
-	return <ContextualMenu onSelect={props.onSelect}>
-		<ContextualMenuItem icon={<AccountCircle/>} href={`/artists/${props.song.artist.slug}`} label={"Go to Artist"}/>
-		<ContextualMenuItem icon={<Album/>} label={"Go to Album"}
-			onClick={() => API.getMasterTrack(songSlug)
-				.then((master) => router.push(`/releases/${master.releaseId}`))
-			}
-		/>
-		<ContextualMenuItem icon={<Lyrics/>} href={`/songs/${songSlug}/lyrics`} label={"See Lyrics"}/>
-		<ContextualMenuItem icon={<Difference/>} href={`/songs/${songSlug}/tracks`} label={"See Related Tracks"}/>
-		<ContextualMenuItem icon={<Audiotrack/>} href={`/songs/${songSlug}/versions`} label={"See Other Versions"}/>
-		<ContextualMenuItem icon={<Download/>} label={"Download"}
-			onClick={() => API.getMasterTrack(songSlug).then((track) => downloadAction(router, API.getStreamURL(track.stream)))}
-		/>
-		<ContextualMenuItem icon={<ShareIcon/>} label={"Share Song"} onClick={() => copyLinkToClipboard(`/songs/${songSlug}/versions`)}/>
-	</ContextualMenu>
-}
+	const getPlayNextProps = () => getMasterTrack()
+		.then((master) => ({ track: master, artist: props.song.artist, release: master.release }));
+
+	return <ContextualMenu onSelect={props.onSelect} actions={[
+		[
+			GoToArtistAction(props.song.artist.slug),
+			GoToReleaseAsyncAction(
+				router, async () => (await getMasterTrack()).releaseId
+			)
+		],
+		[GoToSongLyricsAction(songSlug)],
+		[PlayNextAction(getPlayNextProps), PlayAfterAction(getPlayNextProps),],
+		[GoToSongVersionAction(songSlug), GoToRelatedTracksAction(songSlug),],
+		[
+			DownloadAsyncAction(
+				router, () => API.getMasterTrack(songSlug).then((master) => master.stream)
+			),
+			ShareSongAction(songSlug)
+		]
+	]}/>;
+};
 
 export default SongContextualMenu;

@@ -1,18 +1,31 @@
 name: Unit tests
 
-on:
-  push:
-    branches:
-      - '*'
-  pull_request:
-    branches:
-      - '*'
-  workflow_dispatch:
+on: [push, pull_request, workflow_dispatch]
 
 jobs:
-  run_unit_tests:
+  run_unit_tests_front:
+    if: github.event_name == 'push' || github.event.pull_request.head.repo.full_name != github.repository
     runs-on: ubuntu-latest
-    container: node:17
+    container: node:18
+    defaults:
+      run:
+        working-directory: ./front
+    steps:
+      - uses: actions/checkout@v3
+      - name: Install test dependencies
+        run: yarn install
+      - name: Run unit tests with coverage
+        run: yarn test --coverage
+      - name: Upload Unit Tests artifact
+        if: ${{ always() }}
+        uses: actions/upload-artifact@v3
+        with:
+          name: coverage-report-front
+          path: front/coverage
+  run_unit_tests_back:
+    if: github.event_name == 'push' || github.event.pull_request.head.repo.full_name != github.repository
+    runs-on: ubuntu-latest
+    container: node:18
     services:
       postgres:
         image: postgres:alpine3.16
@@ -44,5 +57,5 @@ jobs:
         if: ${{ always() }}
         uses: actions/upload-artifact@v3
         with:
-          name: coverage-report
+          name: coverage-report-back
           path: coverage

@@ -3,8 +3,8 @@
 ## Your music, your files, your experience
 
 [![Build](https://github.com/Arthi-chaud/Meelo/actions/workflows/build.yml/badge.svg)](https://github.com/Arthi-chaud/Meelo/actions/workflows/build.yml)
-[![Coverage](https://sonarcloud.io/api/project_badges/measure?project=Arthi-chaud_Meelo&metric=coverage)](https://sonarcloud.io/summary/new_code?id=Arthi-chaud_Meelo)
-[![Maintainability Rating](https://sonarcloud.io/api/project_badges/measure?project=Arthi-chaud_Meelo&metric=sqale_rating)](https://sonarcloud.io/summary/new_code?id=Arthi-chaud_Meelo)
+[![Coverage (Back-end)](https://sonarcloud.io/api/project_badges/measure?project=arthi-chaud_Meelo-back&metric=coverage)](https://sonarcloud.io/summary/new_code?id=arthi-chaud_Meelo-back)
+[![Maintainability Rating](https://sonarcloud.io/api/project_badges/measure?project=arthi-chaud_Meelo-back&metric=sqale_rating)](https://sonarcloud.io/summary/new_code?id=arthi-chaud_Meelo-back)
 
 Meelo is a music server and application to enjoy your personal music files anywhere, anytime you want.
 This project is made by a music collector, and for music collectors. Its goal is to have a clean, organized, easy and accessible way to store and serve files.
@@ -41,6 +41,7 @@ This project is made by a music collector, and for music collectors. Its goal is
   - etc..
 - ... And allow filtering based on Album's types
 - Automated Lyrics download
+- Embedded and inline artwork file handling.
 - Access, stream, and download songs from your server.
 
 Keep track of the incoming features with the [project's issues](https://github.com/Arthi-chaud/Meelo/issues)

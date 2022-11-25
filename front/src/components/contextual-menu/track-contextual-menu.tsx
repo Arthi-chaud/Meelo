@@ -1,40 +1,47 @@
-import { AccountCircle, Album, Download, Star } from "@mui/icons-material";
-import { Divider } from "@mui/material";
+import { Star } from "@mui/icons-material";
 import { useRouter } from "next/router";
-import { release } from "os";
 import { toast } from "react-hot-toast";
 import { useMutation, useQueryClient } from "react-query";
-import API from "../../api";
-import { AlbumWithArtist } from "../../models/album";
-import { ReleaseWithAlbum } from "../../models/release";
-import Song, { SongWithArtist } from "../../models/song";
+import API from "../../api/api";
 import { TrackWithSong } from "../../models/track";
-import downloadAction from "../download-action";
-import ContextualMenu from "./contextual-menu"
-import ContextualMenuItem from "./contextual-menu-item";
+import {
+	DownloadAction, GoToReleaseAction, PlayAfterAction, PlayNextAction
+} from "./actions";
+import ContextualMenu from "./contextual-menu";
 
 type TrackContextualMenuProps = {
 	track: TrackWithSong;
+	onSelect?: () => void;
 }
 
 const TrackContextualMenu = (props: TrackContextualMenuProps) => {
 	const router = useRouter();
 	const queryClient = useQueryClient();
+	const getPlayNextProps = () => API.getArtist(props.track.song.artistId)
+		.then((artist) => API.getRelease(props.track.releaseId)
+			.then((release) => ({ track: props.track, artist, release })));
 	const masterMutation = useMutation(async () => {
 		return API.setTrackAsMaster(props.track.id)
 			.then(() => {
 				toast.success("Track set as master!");
-				queryClient.invalidateQueries()
+				queryClient.invalidateQueries();
 			})
-			.catch((e: Error) => toast.error(e.message))
+			.catch((error: Error) => toast.error(error.message));
 	});
-	return <ContextualMenu>
-		<ContextualMenuItem icon={<Album/>} href={`/releases/${props.track.releaseId}`} label={"Go to Release"}/>
-		<ContextualMenuItem disabled={props.track.master} icon={<Star/>} label={"Set as Master"}
-			onClick={() => masterMutation.mutate()}
-		/>
-		<ContextualMenuItem icon={<Download/>} label={"Download"} onClick={() => downloadAction(router, API.getStreamURL(props.track.stream))}/>
-	</ContextualMenu>
-}
+
+	return <ContextualMenu onSelect={props.onSelect} actions={[
+		[GoToReleaseAction(props.track.releaseId),],
+		[PlayNextAction(getPlayNextProps), PlayAfterAction(getPlayNextProps)],
+		[
+			{
+				label: "Set as as Master",
+				disabled: props.track.master,
+				icon: <Star/>,
+				onClick: () => masterMutation.mutate()
+			}
+		],
+		[DownloadAction(router, props.track.stream)]
+	]}/>;
+};
 
 export default TrackContextualMenu;
