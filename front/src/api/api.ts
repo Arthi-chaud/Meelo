@@ -18,7 +18,6 @@ import LibraryTaskResponse from "../models/library-task-response";
 import { ResourceNotFound } from "../exceptions";
 import User from "../models/user";
 import store from "../state/store";
-import UserAccessTokenCookieKey from "../utils/user-access-token-cookie-key";
 
 type AuthenticationResponse = {
 	access_token: string;
