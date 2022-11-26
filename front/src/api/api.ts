@@ -43,6 +43,12 @@ type FetchParameters<Keys extends string[]> = {
 }
 
 export default class API {
+	/**
+	 * Utilitary functions
+	 */
+	private static isSSR = () => typeof window === 'undefined';
+	private static isDev = () => process.env.NODE_ENV === 'development';
+
 	static defaultPageSize = 30;
 
 	static async login(credentials: AuthenticationInput): Promise<AuthenticationResponse> {
@@ -604,10 +610,24 @@ export default class API {
 			throw new Error("Error while parsing Server's response");
 		});
 
-		if (response.status == 404) {
+		switch (response.status) {
+		/// TODO SSR should be disabled if user is not authentified
+		case 401:
+			if (this.isSSR()) {
+				throw new Error("Unauthorized: Authentication required");
+			}
+			break;
+		case 403:
+			if (this.isSSR()) {
+				throw new Error("Unauthorized: Only for admins");
+			}
+			break;
+		case 404:
 			throw new ResourceNotFound(errorMessage ?? jsonResponse.error ?? response.statusText);
-		} else if (!response.ok) {
-			throw new Error(errorMessage ?? jsonResponse.message ?? response.statusText);
+		default:
+			if (!response.ok) {
+				throw new Error(errorMessage ?? jsonResponse.message ?? response.statusText);
+			}
 		}
 		return jsonResponse;
 	}
@@ -625,9 +645,7 @@ export default class API {
 	 * @returns the correct, rerouted URL
 	 */
 	static getIllustrationURL(imageURL: string): string {
-		const isDev = process.env.NODE_ENV === 'development';
-
-		if (isDev) {
+		if (API.isDev()) {
 			return `${process.env.ssrApiRoute}${imageURL}`;
 		}
 		return `/api/${imageURL}`;
@@ -685,9 +703,7 @@ export default class API {
 	private static buildURL(
 		route: string, parameters: QueryParameters<any>, otherParameters?: any
 	): string {
-		const isSSR = typeof window === 'undefined';
-		const isDev = process.env.NODE_ENV === 'development';
-		const apiHost = isDev || isSSR ? process.env.ssrApiRoute : '/api';
+		const apiHost = API.isDev() || API.isSSR() ? process.env.ssrApiRoute : '/api';
 
 		return `${apiHost}${route}${this.formatQueryParameters(parameters, otherParameters)}`;
 	}

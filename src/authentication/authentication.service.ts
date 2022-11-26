@@ -17,7 +17,8 @@ export default class AuthenticationService {
 		const requestedUser = await this.userService.get({ byCredentials: {
 			name: username,
 			password: plainTextPassword
-		}});
+		} });
+
 		if (!requestedUser.enabled) {
 			throw new DisabledUserAccountException();
 		}
@@ -26,8 +27,9 @@ export default class AuthenticationService {
 
 	async login(user: User): Promise<JwtResponse> {
 		const payload: JwtPayload = { name: user.name, id: user.id };
+
 		return {
 			access_token: this.jwtService.sign(payload)
-		}
+		};
 	}
 }

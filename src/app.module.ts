@@ -1,4 +1,6 @@
-import { Module } from '@nestjs/common';
+import {
+	MiddlewareConsumer, Module, RequestMethod
+} from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import FileModule from './file/file.module';
 import ArtistModule from './artist/artist.module';
@@ -23,6 +25,7 @@ import UserModule from './user/user.module';
 import { APP_GUARD } from '@nestjs/core';
 import JwtAuthGuard from './authentication/jwt/jwt-auth.guard';
 import RolesGuard from './roles/roles.guard';
+import JwtCookieMiddleware from './authentication/jwt/jwt-middleware';
 
 @Module({
 	imports: [
@@ -48,12 +51,21 @@ import RolesGuard from './roles/roles.guard';
 		UserModule
 	],
 	controllers: [AppController],
-	providers: [{
-		provide: APP_GUARD,
-		useClass: JwtAuthGuard,
-	},{
-		provide: APP_GUARD,
-		useClass: RolesGuard,
-	}],
+	providers: [
+		{
+			provide: APP_GUARD,
+			useClass: JwtAuthGuard,
+		},
+		{
+			provide: APP_GUARD,
+			useClass: RolesGuard,
+		}
+	],
 })
-export default class AppModule {}
+export default class AppModule {
+	configure(consumer: MiddlewareConsumer) {
+		consumer
+			.apply(JwtCookieMiddleware)
+			.forRoutes({ path: '*', method: RequestMethod.ALL });
+	}
+}

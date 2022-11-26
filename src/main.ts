@@ -23,7 +23,7 @@ async function bootstrapSwagger(app: INestApplication) {
 }
 
 async function bootstrap() {
-	mime.define({ 'audio/mpeg': [ 'm4a', mime.getExtension('audio/mpeg')!] }, true)
+	mime.define({ 'audio/mpeg': ['m4a', mime.getExtension('audio/mpeg')!] }, true);
 	const app = await NestFactory.create(AppModule, {
 		cors: process.env.NODE_ENV === 'development'
 	});
@@ -44,7 +44,11 @@ async function bootstrap() {
 			enableImplicitConversion: true
 		},
 	}));
-	app.use(helmet());
+	app.use(helmet({
+		crossOriginResourcePolicy: process.env.NODE_ENV === 'development'
+			? { policy: 'cross-origin' }
+			: true
+	}));
 	app.use(cookieParser());
 	await bootstrapSwagger(app);
 	await app.listen(4000);
