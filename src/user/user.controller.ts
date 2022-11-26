@@ -20,14 +20,15 @@ export default class UserController {
 	constructor(
 		private userService: UserService
 	) {}
-	
+
 	@ApiOperation({
 		summary: 'Get info about the currently authentified user'
 	})
 	@Get('me')
 	async getAuthenticatedUserProfile(@Request() request: Express.Request) {
 		// Required to return a proper build response
-		const user = await this.userService.get({ byId: { id: (request.user as User).id }});
+		const user = await this.userService.get({ byId: { id: (request.user as User).id } });
+
 		return this.userService.buildResponse(user);
 	}
 
@@ -41,7 +42,6 @@ export default class UserController {
 	) {
 		return this.userService.buildResponse(await this.userService.create(userDTO));
 	}
-
 
 	@ApiOperation({
 		summary: 'Update a user'

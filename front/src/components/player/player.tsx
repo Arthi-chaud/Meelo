@@ -67,8 +67,10 @@ const Player = () => {
 	};
 
 	useEffect(() => {
-		pause();
-		dispatch(playTracks({ tracks: [] }));
+		if (!userIsAuthentified) {
+			pause();
+			dispatch(playTracks({ tracks: [] }));
+		}
 	// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [userIsAuthentified]);
 	useEffect(() => {

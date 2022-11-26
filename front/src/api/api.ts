@@ -55,6 +55,7 @@ export default class API {
 		return API.fetch({
 			route: '/auth/login',
 			data: credentials,
+			errorMessage: "Username or password is incorrect",
 			parameters: {}
 		}, 'POST');
 	}
@@ -613,12 +614,12 @@ export default class API {
 		switch (response.status) {
 		/// TODO SSR should be disabled if user is not authentified
 		case 401:
-			if (this.isSSR()) {
+			if (!this.isSSR()) {
 				throw new Error("Unauthorized: Authentication required");
 			}
 			break;
 		case 403:
-			if (this.isSSR()) {
+			if (!this.isSSR()) {
 				throw new Error("Unauthorized: Only for admins");
 			}
 			break;

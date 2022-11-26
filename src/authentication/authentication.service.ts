@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { User } from 'src/prisma/models';
 import UserService from 'src/user/user.service';
-import { DisabledUserAccountException } from './authentication.exception';
+import { DisabledUserAccountException, UnknownUserException } from './authentication.exception';
 import JwtPayload from './models/jwt.payload';
 import JwtResponse from './models/jwt.response';
 
@@ -14,15 +14,22 @@ export default class AuthenticationService {
 	) { }
 
 	async validateUser(username: string, plainTextPassword: string): Promise<User> {
-		const requestedUser = await this.userService.get({ byCredentials: {
-			name: username,
-			password: plainTextPassword
-		} });
+		try {
+			const requestedUser = await this.userService.get({ byCredentials: {
+				name: username,
+				password: plainTextPassword
+			} });
 
-		if (!requestedUser.enabled) {
-			throw new DisabledUserAccountException();
+			if (!requestedUser.enabled) {
+				throw new DisabledUserAccountException();
+			}
+			return requestedUser;
+		} catch (error) {
+			if (error instanceof DisabledUserAccountException) {
+				throw error;
+			}
+			throw new UnknownUserException();
 		}
-		return requestedUser;
 	}
 
 	async login(user: User): Promise<JwtResponse> {

@@ -14,7 +14,7 @@ const statusQuery = (accessToken?: string) => ({
 		'status',
 		accessToken ?? {}
 	],
-	exec: () => API.getCurrentUserStatus()
+	exec: () => API.getCurrentUserStatus().catch(() => null)
 });
 
 const AuthenticationWall = (props: { children: any }) => {
@@ -23,7 +23,7 @@ const AuthenticationWall = (props: { children: any }) => {
 	const [authentified, setAuthenticationStatus] = useState(false);
 
 	useEffect(() => {
-		if (accessToken && status.data && !status.error) {
+		if (accessToken && status.data?.id && !status.error) {
 			setAuthenticationStatus(true);
 		}
 		if (status.error || accessToken?.valueOf() == undefined) {
@@ -35,8 +35,8 @@ const AuthenticationWall = (props: { children: any }) => {
 		authentified
 	]);
 
-	if (!authentified) {
-		if (accessToken) {
+	if (!authentified || !status.data?.id) {
+		if (accessToken && !status.data && status.isLoading) {
 			return <></>;
 		}
 		return <ModalPage>
