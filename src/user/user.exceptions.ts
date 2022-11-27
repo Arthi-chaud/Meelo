@@ -1,5 +1,7 @@
 import { ForbiddenException } from "@nestjs/common";
-import { AlreadyExistsException, InvalidRequestException, NotFoundException } from "src/exceptions/meelo-exception";
+import {
+	AlreadyExistsException, InvalidRequestException, NotFoundException
+} from "src/exceptions/meelo-exception";
 
 export class UserNotFoundException extends NotFoundException {
 	constructor(username: string) {

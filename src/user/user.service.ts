@@ -8,7 +8,11 @@ import { MeeloException } from 'src/exceptions/meelo-exception';
 import SortingParameter from 'src/sort/models/sorting-parameter';
 import bcrypt from 'bcrypt';
 import UserResponse from './models/user.response';
-import { InvalidPasswordException, InvalidUserCredentialsException, InvalidUsernameException, UserAlreadyExistsException, UserNotFoundException, UserNotFoundFromIDException } from './user.exceptions';
+import {
+	InvalidPasswordException, InvalidUserCredentialsException,
+	InvalidUsernameException, UserAlreadyExistsException,
+	UserNotFoundException, UserNotFoundFromIDException
+} from './user.exceptions';
 
 @Injectable()
 export default class UserService extends RepositoryService<
@@ -26,9 +30,8 @@ export default class UserService extends RepositoryService<
 	Prisma.UserWhereUniqueInput,
 	Prisma.UserOrderByWithRelationInput
 > {
-
 	private readonly passwordHashSaltRound = 9;
-	
+
 	constructor(
 		protected prismaService: PrismaService
 	) {
@@ -44,6 +47,7 @@ export default class UserService extends RepositoryService<
 	 * @returns true if username is valid
 	 */
 	usernameIsValid(usernameCandidate: string): boolean {
+		// eslint-disable-next-line no-useless-escape
 		return usernameCandidate.match('^[a-zA-Z0-9\-\_]{4,}$') != null;
 	}
 
@@ -66,7 +70,6 @@ export default class UserService extends RepositoryService<
 		if (credentials.password && !this.passwordIsValid(credentials.password)) {
 			throw new InvalidPasswordException();
 		}
-
 	}
 
 	formatCreateInput(input: UserQueryParameters.CreateInput) {
@@ -81,33 +84,47 @@ export default class UserService extends RepositoryService<
 	async create(input: UserQueryParameters.CreateInput): Promise<User> {
 		this.checkCredentialsAreValid(input);
 		const isFirstUser = await this.count({}) == 0;
-		return super.create({...input, admin: isFirstUser, enabled: isFirstUser || input.enabled });
+
+		return super.create({
+			...input,
+			admin: isFirstUser,
+			enabled: isFirstUser || input.enabled
+		});
 	}
 
-	protected onCreationFailure(input: UserQueryParameters.CreateInput): MeeloException | Promise<MeeloException> {
+	protected onCreationFailure(
+		input: UserQueryParameters.CreateInput
+	): MeeloException | Promise<MeeloException> {
 		throw new UserAlreadyExistsException(input.name);
 	}
-	protected formatCreateInputToWhereInput(input: UserQueryParameters.CreateInput): UserQueryParameters.WhereInput {
+
+	protected formatCreateInputToWhereInput(
+		input: UserQueryParameters.CreateInput
+	): UserQueryParameters.WhereInput {
 		return {
 			byName: {
 				name: input.name
 			}
-		}
+		};
 	}
+
 	formatWhereInput(input: UserQueryParameters.WhereInput): Prisma.UserWhereInput {
 		return {
 			id: input.byId?.id,
 			name: input.byName?.name ?? input.byCredentials?.name,
-			password: input.byCredentials ? this.encryptPassword(input.byCredentials.password) : undefined
-		}
+			password: input.byCredentials
+				? this.encryptPassword(input.byCredentials.password)
+				: undefined
+		};
 	}
 
 	async get(input: UserQueryParameters.WhereInput): Promise<User> {
 		const user = await super.get(input.byId
 			? { byId: input.byId }
-			: { byName: input.byName ?? { name: input.byCredentials.name } }
-		);
-		if (input.byCredentials && !bcrypt.compareSync(input.byCredentials.password, user.password)) {
+			: { byName: input.byName ?? { name: input.byCredentials.name } });
+
+		if (input.byCredentials &&
+			!bcrypt.compareSync(input.byCredentials.password, user.password)) {
 			throw await this.onNotFound(input);
 		}
 		return user;
@@ -122,14 +139,20 @@ export default class UserService extends RepositoryService<
 		}
 		throw new UserNotFoundException(where.byName.name);
 	}
+
 	formatManyWhereInput(input: UserQueryParameters.ManyWhereInput): Prisma.UserWhereInput {
 		return input;
 	}
+
 	formatSortingInput(sortingParameter: SortingParameter<UserQueryParameters.SortingKeys>) {
-		return { [sortingParameter.sortBy]: sortingParameter.order }
+		return { [sortingParameter.sortBy]: sortingParameter.order };
 	}
-	async update(what: UserQueryParameters.UpdateInput, where: UserQueryParameters.WhereInput): Promise<User> {
+
+	async update(
+		what: UserQueryParameters.UpdateInput, where: UserQueryParameters.WhereInput
+	): Promise<User> {
 		const formattedInput = this.formatUpdateInput(what);
+
 		return super.update(formattedInput, where);
 	}
 
@@ -143,17 +166,21 @@ export default class UserService extends RepositoryService<
 		return {
 			...what,
 			password: what.password ? this.encryptPassword(what.password) : undefined
-		}
+		};
 	}
+
 	formatDeleteInput(where: UserQueryParameters.DeleteInput): Prisma.UserWhereUniqueInput {
 		return {
 			id: where.id,
 			name: where.name
-		}
+		};
 	}
-	protected formatDeleteInputToWhereInput(input: UserQueryParameters.DeleteInput): UserQueryParameters.WhereInput {
+
+	protected formatDeleteInputToWhereInput(
+		input: UserQueryParameters.DeleteInput
+	): UserQueryParameters.WhereInput {
 		if (input.id) {
-			return { byId: { id: input.id }};
+			return { byId: { id: input.id } };
 		}
 		return { byName: { name: input.name! } };
 	}
@@ -166,5 +193,4 @@ export default class UserService extends RepositoryService<
 			enabled: input.enabled
 		};
 	}
-
 }

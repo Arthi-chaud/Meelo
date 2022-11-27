@@ -1,4 +1,6 @@
-import { Controller, Get, Post, Request, Body, Param, Put, Req, ParseIntPipe } from "@nestjs/common";
+import {
+	Body, Controller, Get, Param, ParseIntPipe, Post, Put, Req, Request
+} from "@nestjs/common";
 import { User } from "@prisma/client";
 import UserService from "./user.service";
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
@@ -27,7 +29,7 @@ export default class UserController {
 	@Get('me')
 	async getAuthenticatedUserProfile(@Request() request: Express.Request) {
 		// Required to return a proper build response
-		const user = await this.userService.get({ byId: { id: (request.user as User).id } });
+		const user = await this.userService.get({ byId: { id: request.user as User.id } });
 
 		return this.userService.buildResponse(user);
 	}
@@ -73,7 +75,8 @@ export default class UserController {
 		return new PaginatedResponse(
 			(await this.userService.getMany(
 				{ },
-				paginationParameters, {},
+				paginationParameters,
+				{},
 				sortingParameter
 			)).map((user) => this.userService.buildResponse(user)),
 			request
@@ -96,7 +99,8 @@ export default class UserController {
 		return new PaginatedResponse(
 			(await this.userService.getMany(
 				{ enabled: false },
-				paginationParameters, {},
+				paginationParameters,
+				{},
 				sortingParameter
 			)).map((user) => this.userService.buildResponse(user)),
 			request
@@ -119,7 +123,8 @@ export default class UserController {
 		return new PaginatedResponse(
 			(await this.userService.getMany(
 				{ admin: true, enabled: true },
-				paginationParameters, {},
+				paginationParameters,
+				{},
 				sortingParameter
 			)).map((user) => this.userService.buildResponse(user)),
 			request

@@ -4,7 +4,7 @@ import BaseSortingParameter from 'src/sort/models/sorting-parameter';
 import { ApiPropertyOptional } from '@nestjs/swagger';
 
 namespace UserQueryParameters {
-	
+
 	/**
 	 * Paramters to create a user
 	 */
@@ -15,8 +15,8 @@ namespace UserQueryParameters {
 	 */
 	export type WhereInput = RequireOnlyOne<{
 		byId: Pick<User, 'id'>;
-		byCredentials: Pick<User,  'name' | 'password' >;
-		byName: Pick<User,  'name'>
+		byCredentials: Pick<User, 'name' | 'password' >;
+		byName: Pick<User, 'name'>
 	}>
 
 	/**
@@ -37,11 +37,16 @@ namespace UserQueryParameters {
 	/**
 	 * Defines how to sort fetched entries
 	 */
-	export const SortingKeys = ['id', 'name', 'admin', 'enabled'] as const;
+	export const SortingKeys = [
+		'id',
+		'name',
+		'admin',
+		'enabled'
+	] as const;
 	export type SortingKeys = typeof SortingKeys;
 	export class SortingParameter extends BaseSortingParameter<SortingKeys>{
 		@ApiPropertyOptional({ enum: SortingKeys })
-		sortBy: SortingKeys[number]
+		sortBy: SortingKeys[number];
 	}
 }
 

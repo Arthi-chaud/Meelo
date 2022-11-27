@@ -6,6 +6,7 @@ export default class LoginDTO {
 		description: "The user's username"
 	})
 	username: string;
+
 	@ApiProperty({
 		required: true,
 		description: "The plain password of the user"
