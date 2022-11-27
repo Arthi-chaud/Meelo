@@ -27,7 +27,6 @@ const AppBarActions: Action[] = [
 	{
 		label: 'Settings',
 		icon: createElement(SettingsIcon),
-		disabled: true,
 		href: '/settings'
 	},
 	{

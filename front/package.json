@@ -15,6 +15,7 @@
     "@emotion/styled": "^11.10.0",
     "@mui/icons-material": "^5.8.4",
     "@mui/joy": "^5.0.0-alpha.43",
+    "@mui/lab": "^5.0.0-alpha.109",
     "@mui/material": "^5.10.1",
     "@mui/styles": "^5.10.2",
     "@mui/utils": "^5.10.6",
