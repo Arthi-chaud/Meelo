@@ -29,7 +29,8 @@ export default class UserController {
 	@Get('me')
 	async getAuthenticatedUserProfile(@Request() request: Express.Request) {
 		// Required to return a proper build response
-		const user = await this.userService.get({ byId: { id: request.user as User.id } });
+		// eslint-disable-next-line no-extra-parens
+		const user = await this.userService.get({ byId: { id: (request.user as User).id } });
 
 		return this.userService.buildResponse(user);
 	}

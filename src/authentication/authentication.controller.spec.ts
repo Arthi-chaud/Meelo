@@ -1,4 +1,4 @@
-import { INestApplication } from "@nestjs/common";
+import { INestApplication, MiddlewareConsumer, Module, RequestMethod } from "@nestjs/common";
 import { APP_GUARD } from "@nestjs/core";
 import { TestingModule } from "@nestjs/testing";
 import AlbumModule from "src/album/album.module";
@@ -26,6 +26,25 @@ import UserController from "src/user/user.controller";
 import AuthenticationModule from "./authentication.module";
 import { User } from "src/prisma/models";
 import SetupApp from "test/setup-app";
+import JwtCookieMiddleware from "./jwt/jwt-middleware";
+
+@Module({
+	imports: [AuthenticationModule, SettingsModule, UserModule, FileManagerModule, PrismaModule, ArtistModule, AlbumModule, PrismaModule, ReleaseModule, MetadataModule, SongModule, TrackModule, IllustrationModule, GenreModule],
+	providers: [UserService, PrismaService, UserController, {
+		provide: APP_GUARD,
+		useClass: JwtAuthGuard,
+	},{
+		provide: APP_GUARD,
+		useClass: RolesGuard,
+	}],
+})
+class TestAuthenticationModule {
+	configure(consumer: MiddlewareConsumer) {
+		consumer
+			.apply(JwtCookieMiddleware)
+			.forRoutes({ path: '*', method: RequestMethod.ALL });
+	}
+}
 
 describe('Authentication Controller & Role Management', () => {
 	let app: INestApplication;
@@ -38,16 +57,14 @@ describe('Authentication Controller & Role Management', () => {
 
 	beforeAll(async () => {
 		const module: TestingModule = await createTestingModule({
-			imports: [AuthenticationModule, SettingsModule, UserModule, FileManagerModule, PrismaModule, ArtistModule, AlbumModule, PrismaModule, ReleaseModule, MetadataModule, SongModule, TrackModule, IllustrationModule, GenreModule],
-			providers: [UserService, PrismaService, UserController, {
-				provide: APP_GUARD,
-				useClass: JwtAuthGuard,
-			},{
-				provide: APP_GUARD,
-				useClass: RolesGuard,
-			}],
+			imports: [TestAuthenticationModule],
 		}).overrideProvider(PrismaService).useClass(TestPrismaService)
 		.overrideProvider(FileManagerService).useClass(FakeFileManagerService).compile();
+		(module as any).configure = (consumer: MiddlewareConsumer) => {
+			consumer
+				.apply(JwtCookieMiddleware)
+				.forRoutes({ path: '*', method: RequestMethod.ALL });
+		}
 		app = await SetupApp(module);
 		dummyRepository = module.get(PrismaService);
 		userService = module.get(UserService);
@@ -97,7 +114,7 @@ describe('Authentication Controller & Role Management', () => {
 					username: 'azerty',
 					password: 'azertyPassword'
 				})
-				.expect(404)
+				.expect(401)
 		});
 		it("Should return an error, as credentials are invalid", () => {
 			return request(app.getHttpServer())
@@ -106,7 +123,7 @@ describe('Authentication Controller & Role Management', () => {
 					username: user.name,
 					password: 'userPassword'
 				})
-				.expect(403)
+				.expect(401)
 		});
 	});
 	
@@ -170,6 +187,14 @@ describe('Authentication Controller & Role Management', () => {
 				.post(`/users/new`)
 				.send({ name: 'user2', password: 'password1' })
 				.expect(201)
+		});
+	});
+	describe('Test Access Token Middlewre', () => {
+		it("Should Accept access token cookie", () => {
+			return request(app.getHttpServer())
+				.get(`/settings`)
+				.set('cookie', `access_token=${adminToken}`)
+				.expect(200)
 		});
 	});
 });

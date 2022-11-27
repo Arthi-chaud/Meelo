@@ -10,7 +10,7 @@ import {
 @Injectable()
 export class JwtCookieMiddleware implements NestMiddleware {
 	use(req: Request, _res: Response, next: NextFunction) {
-		if (req.cookies['access_token'] !== undefined) {
+		if (req.cookies && req.cookies['access_token'] !== undefined) {
 			req.headers.authorization ??= `Bearer ${req.cookies['access_token']}`;
 		}
 		next();
