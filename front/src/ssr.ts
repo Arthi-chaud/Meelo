@@ -52,6 +52,10 @@ const prepareSSR = <AdditionalProps>(
 		const parameters = cook(context);
 
 		store.dispatch(setAccessToken(context.req.cookies[UserAccessTokenCookieKey]));
+		if (!store.getState().user.accessToken) {
+			// Disable SSR if user is not authentified
+			return { props: {} };
+		}
 		try {
 			await Promise.all([
 				parameters.infiniteQueries?.map(
