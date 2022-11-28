@@ -16,7 +16,7 @@ import Tracklist from "../models/tracklist";
 import { SortingParameters } from "../utils/sorting";
 import LibraryTaskResponse from "../models/library-task-response";
 import { ResourceNotFound } from "../exceptions";
-import User from "../models/user";
+import User, { UserSortingKeys } from "../models/user";
 import store from "../state/store";
 
 type AuthenticationResponse = {
@@ -291,6 +291,22 @@ export default class API {
 		return API.fetch({
 			route: `/users/me`,
 			parameters: { }
+		});
+	}
+
+	/**
+	 * Fetch all users
+	 * @param pagination the parameters to choose how many items to load
+	 * @returns An array of users
+	 */
+	static async getUsers(
+		pagination?: PaginationParameters,
+		sort?: SortingParameters<typeof UserSortingKeys>,
+	): Promise<PaginatedResponse<User>> {
+		return API.fetch({
+			route: `/users`,
+			errorMessage: 'Users could not be loaded',
+			parameters: { pagination, include: [], sort }
 		});
 	}
 

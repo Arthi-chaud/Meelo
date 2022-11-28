@@ -4,7 +4,7 @@ import {
 import { useEffect, useState } from "react";
 import { useRouter } from "next/router";
 import LibrariesSettings from "../../components/settings/libraries-settings";
-import UsersSettings from "../../components/settings/users-settings copy";
+import UsersSettings from "../../components/settings/users-settings";
 
 const AvailablePanels = ['libraries', 'users'];
 
@@ -36,7 +36,7 @@ const SettingsPage = () => {
 			}
 		</Tabs>
 		{AvailablePanels.map((panelName) => panelName == panel &&
-			<Box key={panelName}>
+			<Box key={panelName} sx={{ padding: 6, width: '100%' }}>
 				{panelName == 'libraries' ? <LibrariesSettings/> : <UsersSettings/>}
 			</Box>)
 		}

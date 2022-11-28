@@ -7,7 +7,7 @@ import SettingsIcon from '@mui/icons-material/Settings';
 import { createElement } from "react";
 import LogoutIcon from '@mui/icons-material/Logout';
 import store from "../../state/store";
-import { setAccessToken } from "../../state/userSlice";
+import { unsetAccessToken } from "../../state/userSlice";
 
 /**
  * Collections of actions that are accessible from appbar and drawer
@@ -32,7 +32,7 @@ const AppBarActions: Action[] = [
 	{
 		label: 'Logout',
 		icon: createElement(LogoutIcon),
-		onClick: () => store.dispatch(setAccessToken())
+		onClick: () => store.dispatch(unsetAccessToken())
 	}
 ];
 
