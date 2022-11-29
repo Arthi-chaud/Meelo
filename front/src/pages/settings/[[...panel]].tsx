@@ -3,7 +3,6 @@ import {
 } from '@mui/material';
 import { useEffect, useState } from "react";
 import { useRouter } from "next/router";
-import LibrariesSettings from "../../components/settings/libraries-settings";
 import UsersSettings from "../../components/settings/users-settings";
 import prepareSSR, { InferSSRProps } from '../../ssr';
 
