@@ -50,9 +50,11 @@ const prepareSSR = <AdditionalProps>(
 	return async (context: GetServerSidePropsContext) => {
 		const queryClient = new QueryClient();
 		const parameters = cook(context);
+		const accessToken = context.req.cookies[UserAccessTokenCookieKey];
 
-		store.dispatch(setAccessToken(context.req.cookies[UserAccessTokenCookieKey]));
-		if (!store.getState().user.accessToken) {
+		if (accessToken) {
+			store.dispatch(setAccessToken(accessToken));
+		} else {
 			// Disable SSR if user is not authentified
 			return { props: {} };
 		}

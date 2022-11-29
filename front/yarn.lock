@@ -799,6 +799,20 @@
     prop-types "^15.8.1"
     react-is "^18.2.0"
 
+"@mui/lab@^5.0.0-alpha.109":
+  version "5.0.0-alpha.109"
+  resolved "https://registry.yarnpkg.com/@mui/lab/-/lab-5.0.0-alpha.109.tgz#e0004174be4c3bcefcdbe674955e201d24ce96e0"
+  integrity sha512-9ZyzM4AHA1qWh48ZcvqxqwWRH1CzBhQuP9VYP2eEprEjEeraiuvvsZILCNhCemc9WWN04GJh8UiD1FeCaU4kWg==
+  dependencies:
+    "@babel/runtime" "^7.20.1"
+    "@mui/base" "5.0.0-alpha.107"
+    "@mui/system" "^5.10.15"
+    "@mui/types" "^7.2.1"
+    "@mui/utils" "^5.10.15"
+    clsx "^1.2.1"
+    prop-types "^15.8.1"
+    react-is "^18.2.0"
+
 "@mui/material@^5.10.1":
   version "5.10.15"
   resolved "https://registry.yarnpkg.com/@mui/material/-/material-5.10.15.tgz#37345f5a3d71c662703af7b5be0cca229b2a1416"

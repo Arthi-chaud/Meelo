@@ -15,7 +15,8 @@ async function bootstrapSwagger(app: INestApplication) {
 		.setTitle('Meelo Swagger')
 		.setDescription('The Meelo API Documentation')
 		.setVersion('1.0')
-		.addServer("/api", "API Path")
+		.addServer("/api", "API Path (for Production use)")
+		.addServer("/", "Application Path (for Dev use)")
 		.build();
 	const document = SwaggerModule.createDocument(app, config);
 

@@ -16,7 +16,7 @@ import Tracklist from "../models/tracklist";
 import { SortingParameters } from "../utils/sorting";
 import LibraryTaskResponse from "../models/library-task-response";
 import { ResourceNotFound } from "../exceptions";
-import User from "../models/user";
+import User, { UserSortingKeys } from "../models/user";
 import store from "../state/store";
 
 type AuthenticationResponse = {
@@ -292,6 +292,54 @@ export default class API {
 			route: `/users/me`,
 			parameters: { }
 		});
+	}
+
+	/**
+	 * Fetch all users
+	 * @param pagination the parameters to choose how many items to load
+	 * @returns An array of users
+	 */
+	static async getUsers(
+		pagination?: PaginationParameters,
+		sort?: SortingParameters<typeof UserSortingKeys>,
+	): Promise<PaginatedResponse<User>> {
+		return API.fetch({
+			route: `/users`,
+			errorMessage: 'Users could not be loaded',
+			parameters: { pagination, include: [], sort }
+		});
+	}
+
+	/**
+	 * Update a user's permissions in the database
+	 * @param userId the id of the user to update
+	 * @param updatedFields the fields to update
+	 * @returns the updated user
+	 */
+	static async updateUser(
+		userId: number,
+		updatedFields: Partial<Pick<User, 'admin' | 'enabled'>>
+	): Promise<User> {
+		return API.fetch({
+			route: `/users/${userId}`,
+			errorMessage: 'User could not be updated',
+			data: updatedFields,
+			parameters: {}
+		}, 'PUT');
+	}
+
+	/**
+	 * Delete user
+	 * @param userId the id of the user to delete
+	 */
+	static async deleteUser(
+		userId: number,
+	): Promise<User> {
+		return API.fetch({
+			route: `/users/${userId}`,
+			errorMessage: 'User could not be deleted',
+			parameters: {}
+		}, 'DELETE');
 	}
 
 	/**
@@ -591,7 +639,7 @@ export default class API {
 		});
 	}
 
-	private static async fetch<T, Keys extends string[]>({ route, parameters, otherParameters, errorMessage, data }: FetchParameters<Keys>, method: 'GET' | 'PUT' | 'POST' = 'GET'): Promise<T> {
+	private static async fetch<T, Keys extends string[]>({ route, parameters, otherParameters, errorMessage, data }: FetchParameters<Keys>, method: 'GET' | 'PUT' | 'POST' | 'DELETE' = 'GET'): Promise<T> {
 		const accessToken = store.getState().user.accessToken;
 		const header = {
 			'Content-Type': 'application/json'

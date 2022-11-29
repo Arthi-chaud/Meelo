@@ -6,10 +6,12 @@ import { setAccessToken } from './state/userSlice';
 import UserAccessTokenCookieKey from './utils/user-access-token-cookie-key';
 
 export async function middleware(request: NextRequest) {
-	store.dispatch(setAccessToken(request.cookies.get(UserAccessTokenCookieKey)));
 	const { pathname, origin } = request.nextUrl;
+	const accessToken = request.cookies.get(UserAccessTokenCookieKey);
 
-	if (!store.getState().user.accessToken) {
+	if (accessToken) {
+		store.dispatch(setAccessToken(accessToken));
+	} else {
 		// Disable SSR if user is not authentified
 		return NextResponse.redirect(`${origin}/`);
 	}
