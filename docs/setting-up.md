@@ -92,6 +92,8 @@ POSTGRES_HOST=
 # The Access Token of Genius to download lyrics
 # Optional
 GENIUS_ACCESS_TOKEN=
+# Random String used to sign JWT Tokens
+JWT_SIGNATURE=
 # Do not change this
 DATABASE_URL=postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@${POSTGRES_HOST}:5432/${POSTGRES_DB}?schema=public
 ```

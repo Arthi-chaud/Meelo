@@ -15,7 +15,7 @@ import globalLibrary from './global-library';
 import { useEffect, useState } from "react";
 import buildLink from "./build-link";
 import Link from 'next/link';
-import AppBarActions from "./actions";
+import getAppBarActions from "./actions";
 
 interface DrawerProps {
 	availableLibraries: Library[] | null,
@@ -87,7 +87,7 @@ const MeeloAppBarDrawer = (
 			</List>
 			<Divider />
 			<List>
-				{ AppBarActions.map((action) => {
+				{ getAppBarActions().map((action) => {
 					const item = <ListItemButton
 						key={action.label} disabled={action.disabled}
 						style={{ borderRadius: 0 }}

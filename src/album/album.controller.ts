@@ -27,6 +27,7 @@ import { ApiRelationInclude } from 'src/relation-include/relation-include-route.
 import { ApiIdentifierRoute } from 'src/identifier/identifier-route.decorator';
 import RelationIncludeQuery from 'src/relation-include/relation-include-query.decorator';
 import SortingQuery from 'src/sort/sort-query.decorator';
+import Admin from 'src/roles/admin.decorator';
 
 @ApiTags("Albums")
 @Controller('albums')
@@ -201,6 +202,7 @@ export default class AlbumController {
 	@ApiOperation({
 		summary: 'Change the album\'s parent artist'
 	})
+	@Admin()
 	@Post('reassign')
 	async reassignAlbum(
 		@Body() reassignmentDTO: ReassignAlbumDTO

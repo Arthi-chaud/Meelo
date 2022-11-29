@@ -9,7 +9,9 @@ import type TaskResponse from './models/task.response';
 import TasksService from './tasks.service';
 import { Timeout } from '@nestjs/schedule';
 import { IdentifierParam } from 'src/identifier/identifier-param.decorator';
+import Admin from 'src/roles/admin.decorator';
 
+@Admin()
 @ApiTags('Tasks')
 @Controller('tasks')
 export default class TasksController {

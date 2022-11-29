@@ -21,7 +21,7 @@ export default responsiveFontSizes(createTheme({
 		}
 	},
 	shape: {
-		borderRadius: '0.5rem'
+		borderRadius: '0.5rem' as unknown as number
 	},
 	components: {
 		MuiTypography: {
@@ -50,6 +50,13 @@ export default responsiveFontSizes(createTheme({
 			styleOverrides: {
 				root: {
 					borderRadius: '0.5rem'
+				}
+			}
+		},
+		MuiDivider: {
+			styleOverrides: {
+				root: {
+					borderRadius: '0'
 				}
 			}
 		}

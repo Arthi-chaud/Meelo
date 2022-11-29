@@ -403,4 +403,37 @@ describe('Library Controller', () => {
 		});
 	});
 
+	describe("Get all Related Songs (PUT /libraries/:id/update)", () => {
+		it("should update the path", async () => {
+			return request(app.getHttpServer())
+				.put(`/libraries/${dummyRepository.library1.slug}/update`)
+				.send({
+					path: '/hello-world',
+				})
+				.expect(200)
+				.expect((res) => {
+					const updatedLibrary: Library = res.body;
+					expect(updatedLibrary).toStrictEqual({
+						...dummyRepository.library1,
+						path: '/hello-world'
+					});
+				});
+		});
+		it("should update the name, and the slug", async () => {
+			return request(app.getHttpServer())
+				.put(`/libraries/${dummyRepository.library2.slug}/update`)
+				.send({
+					name: 'Hello World Library',
+				})
+				.expect(200)
+				.expect((res) => {
+					const updatedLibrary: Library = res.body;
+					expect(updatedLibrary).toStrictEqual({
+						...dummyRepository.library2,
+						name: 'Hello World Library',
+						slug: 'hello-world-library'
+					});
+				});
+		});
+	})
 });

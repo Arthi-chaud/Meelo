@@ -5,6 +5,9 @@ import { QueryClient, dehydrate } from "react-query";
 import {
 	InfiniteQuery, Query, prepareMeeloInfiniteQuery, prepareMeeloQuery
 } from "./api/use-query";
+import store from "./state/store";
+import { setAccessToken } from "./state/userSlice";
+import UserAccessTokenCookieKey from "./utils/user-access-token-cookie-key";
 
 /**
  * Get the router + query client
@@ -47,7 +50,14 @@ const prepareSSR = <AdditionalProps>(
 	return async (context: GetServerSidePropsContext) => {
 		const queryClient = new QueryClient();
 		const parameters = cook(context);
+		const accessToken = context.req.cookies[UserAccessTokenCookieKey];
 
+		if (accessToken) {
+			store.dispatch(setAccessToken(accessToken));
+		} else {
+			// Disable SSR if user is not authentified
+			return { props: {} };
+		}
 		try {
 			await Promise.all([
 				parameters.infiniteQueries?.map(

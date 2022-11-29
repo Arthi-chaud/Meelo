@@ -16,6 +16,12 @@ import Tracklist from "../models/tracklist";
 import { SortingParameters } from "../utils/sorting";
 import LibraryTaskResponse from "../models/library-task-response";
 import { ResourceNotFound } from "../exceptions";
+import User, { UserSortingKeys } from "../models/user";
+import store from "../state/store";
+
+type AuthenticationResponse = {
+	access_token: string;
+}
 
 type QueryParameters<Keys extends string[]> = {
 	pagination?: PaginationParameters;
@@ -23,15 +29,48 @@ type QueryParameters<Keys extends string[]> = {
 	sort?: SortingParameters<Keys>
 }
 
+type AuthenticationInput = {
+	username: string;
+	password: string;
+}
+
 type FetchParameters<Keys extends string[]> = {
 	route: string,
 	parameters: QueryParameters<Keys>,
 	otherParameters?: any,
-	errorMessage?: string
+	errorMessage?: string,
+	data?: Record<string, any>,
 }
 
 export default class API {
+	/**
+	 * Utilitary functions
+	 */
+	private static isSSR = () => typeof window === 'undefined';
+	private static isDev = () => process.env.NODE_ENV === 'development';
+
 	static defaultPageSize = 30;
+
+	static async login(credentials: AuthenticationInput): Promise<AuthenticationResponse> {
+		return API.fetch({
+			route: '/auth/login',
+			data: credentials,
+			errorMessage: "Username or password is incorrect",
+			parameters: {}
+		}, 'POST');
+	}
+
+	static async register(credentials: AuthenticationInput): Promise<User> {
+		return API.fetch({
+			route: '/users/new',
+			data: {
+				name: credentials.username,
+				password: credentials.password,
+				admin: false
+			},
+			parameters: {}
+		}, 'POST');
+	}
 
 	/**
 	 * Fetch all libraries
@@ -246,6 +285,61 @@ export default class API {
 			errorMessage: "Album not found",
 			parameters: { include }
 		});
+	}
+
+	static async getCurrentUserStatus(): Promise<User> {
+		return API.fetch({
+			route: `/users/me`,
+			parameters: { }
+		});
+	}
+
+	/**
+	 * Fetch all users
+	 * @param pagination the parameters to choose how many items to load
+	 * @returns An array of users
+	 */
+	static async getUsers(
+		pagination?: PaginationParameters,
+		sort?: SortingParameters<typeof UserSortingKeys>,
+	): Promise<PaginatedResponse<User>> {
+		return API.fetch({
+			route: `/users`,
+			errorMessage: 'Users could not be loaded',
+			parameters: { pagination, include: [], sort }
+		});
+	}
+
+	/**
+	 * Update a user's permissions in the database
+	 * @param userId the id of the user to update
+	 * @param updatedFields the fields to update
+	 * @returns the updated user
+	 */
+	static async updateUser(
+		userId: number,
+		updatedFields: Partial<Pick<User, 'admin' | 'enabled'>>
+	): Promise<User> {
+		return API.fetch({
+			route: `/users/${userId}`,
+			errorMessage: 'User could not be updated',
+			data: updatedFields,
+			parameters: {}
+		}, 'PUT');
+	}
+
+	/**
+	 * Delete user
+	 * @param userId the id of the user to delete
+	 */
+	static async deleteUser(
+		userId: number,
+	): Promise<User> {
+		return API.fetch({
+			route: `/users/${userId}`,
+			errorMessage: 'User could not be deleted',
+			parameters: {}
+		}, 'DELETE');
 	}
 
 	/**
@@ -545,16 +639,44 @@ export default class API {
 		});
 	}
 
-	private static async fetch<T, Keys extends string[]>({ route, parameters, otherParameters, errorMessage }: FetchParameters<Keys>, method: 'GET' | 'PUT' | 'POST' = 'GET'): Promise<T> {
-		const response = await fetch(this.buildURL(route, parameters, otherParameters), { method });
+	private static async fetch<T, Keys extends string[]>({ route, parameters, otherParameters, errorMessage, data }: FetchParameters<Keys>, method: 'GET' | 'PUT' | 'POST' | 'DELETE' = 'GET'): Promise<T> {
+		const accessToken = store.getState().user.accessToken;
+		const header = {
+			'Content-Type': 'application/json'
+		};
+
+		const response = await fetch(
+			this.buildURL(route, parameters, otherParameters), {
+				method,
+				body: data ? JSON.stringify(data) : undefined,
+				headers: accessToken ? {
+					...header,
+					Authorization: `Bearer ${accessToken}`
+				} : header,
+			}
+		);
 		const jsonResponse = await response.json().catch(() => {
 			throw new Error("Error while parsing Server's response");
 		});
 
-		if (response.status == 404) {
-			throw new ResourceNotFound(errorMessage ?? jsonResponse.error ?? response.statusText);
-		} else if (!response.ok) {
-			throw new Error(errorMessage ?? jsonResponse.error ?? response.statusText);
+		switch (response.status) {
+		/// TODO SSR should be disabled if user is not authentified
+		case 401:
+			if (!this.isSSR()) {
+				throw new Error(jsonResponse.message ?? errorMessage);
+			}
+			break;
+		case 403:
+			if (!this.isSSR()) {
+				throw new Error(errorMessage ?? "Unauthorized: Only for admins");
+			}
+			break;
+		case 404:
+			throw new ResourceNotFound(errorMessage ?? jsonResponse.message ?? response.statusText);
+		default:
+			if (!response.ok) {
+				throw new Error(errorMessage ?? jsonResponse.message ?? response.statusText);
+			}
 		}
 		return jsonResponse;
 	}
@@ -572,9 +694,7 @@ export default class API {
 	 * @returns the correct, rerouted URL
 	 */
 	static getIllustrationURL(imageURL: string): string {
-		const isDev = process.env.NODE_ENV === 'development';
-
-		if (isDev) {
+		if (API.isDev()) {
 			return `${process.env.ssrApiRoute}${imageURL}`;
 		}
 		return `/api/${imageURL}`;
@@ -632,9 +752,7 @@ export default class API {
 	private static buildURL(
 		route: string, parameters: QueryParameters<any>, otherParameters?: any
 	): string {
-		const isSSR = typeof window === 'undefined';
-		const isDev = process.env.NODE_ENV === 'development';
-		const apiHost = isDev || isSSR ? process.env.ssrApiRoute : '/api';
+		const apiHost = API.isDev() || API.isSSR() ? process.env.ssrApiRoute : '/api';
 
 		return `${apiHost}${route}${this.formatQueryParameters(parameters, otherParameters)}`;
 	}

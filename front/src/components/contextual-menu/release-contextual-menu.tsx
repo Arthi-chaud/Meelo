@@ -7,12 +7,15 @@ import ContextualMenu from "./contextual-menu";
 import {
 	GoToAlbumAction, GoToArtistAction, ShareReleaseAction
 } from "./actions";
+import { useSelector } from "react-redux";
+import { RootState } from "../../state/store";
 
 type ReleaseContextualMenuProps = {
 	release: ReleaseWithAlbum;
 }
 
 const ReleaseContextualMenu = (props: ReleaseContextualMenuProps) => {
+	const userIsAdmin = useSelector((state: RootState) => state.user.user?.admin == true);
 	const queryClient = useQueryClient();
 	const masterMutation = useMutation(async () => {
 		return API.setReleaseAsMaster(props.release.id)
@@ -40,13 +43,14 @@ const ReleaseContextualMenu = (props: ReleaseContextualMenuProps) => {
 			GoToAlbumAction(props.release.album.id),
 			{
 				label: "Set as Master",
-				disabled: props.release.master,
+				disabled: props.release.master || !userIsAdmin,
 				icon: <Star/>,
 				onClick: () => masterMutation.mutate()
 			},
 			{
 				label: "Set all tracks as Master",
 				icon: <Star/>,
+				disabled: !userIsAdmin,
 				onClick: () => tracksMasterMutation.mutate()
 			},
 			ShareReleaseAction(props.release.id)

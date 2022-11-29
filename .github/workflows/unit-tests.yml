@@ -45,6 +45,7 @@ jobs:
       - name: "Create .env file"
         run: |
           echo 'DATABASE_URL="postgresql://test:test@postgres:5432/test?schema=public"' > .env
+          echo 'JWT_SIGNATURE=12345' >> .env
           echo "${{ secrets.GENIUS_ACCESS_TOKEN }}" >> .env
       - name: Install test dependencies
         run: yarn install

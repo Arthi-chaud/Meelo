@@ -31,6 +31,21 @@ generator classes {
 
 /////// Models
 
+model User {
+	/// @description Unique numeric user identifier
+	/// @example 123
+	id				Int		@id @default(autoincrement())
+	/// @description the username
+	name			String	@unique
+	/// @description the hashed password of the user\'s account
+	password		String
+	/// @description Indicates if the user is allowed to use the application
+	enabled			Boolean @default(false)
+	/// @description Indicates if the user is an admin or not
+	admin			Boolean @default(false)
+	@@map("users")
+}
+
 model Genre {
 	/// @description Unique numeric Genre identifier
 	/// @example 123

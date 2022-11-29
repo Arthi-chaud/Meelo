@@ -7,13 +7,16 @@ import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import mime from 'mime';
 import { InvalidRequestException } from './exceptions/meelo-exception';
 import AllExceptionsFilter from './exceptions/all-exceptions.filter';
+import helmet from 'helmet';
+import cookieParser from 'cookie-parser';
 
 async function bootstrapSwagger(app: INestApplication) {
 	const config = new DocumentBuilder()
 		.setTitle('Meelo Swagger')
 		.setDescription('The Meelo API Documentation')
 		.setVersion('1.0')
-		.addServer("/api", "API Path")
+		.addServer("/api", "API Path (for Production use)")
+		.addServer("/", "Application Path (for Dev use)")
 		.build();
 	const document = SwaggerModule.createDocument(app, config);
 
@@ -22,7 +25,9 @@ async function bootstrapSwagger(app: INestApplication) {
 
 async function bootstrap() {
 	mime.define({ 'audio/mpeg': ['m4a', mime.getExtension('audio/mpeg')!] }, true);
-	const app = await NestFactory.create(AppModule);
+	const app = await NestFactory.create(AppModule, {
+		cors: process.env.NODE_ENV === 'development'
+	});
 	const { httpAdapter } = app.get(HttpAdapterHost);
 
 	app.useGlobalFilters(
@@ -40,9 +45,12 @@ async function bootstrap() {
 			enableImplicitConversion: true
 		},
 	}));
-	if (process.env.NODE_ENV === 'development') {
-		app.enableCors();
-	}
+	app.use(helmet({
+		crossOriginResourcePolicy: process.env.NODE_ENV === 'development'
+			? { policy: 'cross-origin' }
+			: true
+	}));
+	app.use(cookieParser());
 	await bootstrapSwagger(app);
 	await app.listen(4000);
 }

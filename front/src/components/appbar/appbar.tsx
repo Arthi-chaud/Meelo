@@ -22,7 +22,7 @@ import { prepareMeeloQuery } from '../../api/use-query';
 import Library from '../../models/library';
 import toast from 'react-hot-toast';
 import ContextualMenu from '../contextual-menu/contextual-menu';
-import AppBarActions from './actions';
+import getAppBarActions from './actions';
 
 const libraryQuery = () => ({
 	key: ['libraries'],
@@ -139,7 +139,7 @@ const MeeloAppBar = () => {
 									</Link>
 									<Divider orientation='vertical' flexItem sx={{ marginX: 1 }} />
 									<ContextualMenu actions={
-										[AppBarActions.filter((action) => action.label.toLowerCase() != 'search')]
+										[getAppBarActions().filter((action) => action.label.toLowerCase() != 'search')]
 									}/>
 								</Box>
 							</FadeIn>

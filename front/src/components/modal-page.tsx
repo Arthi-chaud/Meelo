@@ -6,12 +6,14 @@ import CloseIcon from '@mui/icons-material/Close';
 import { useEffect, useState } from "react";
 
 type ModalPageProps = {
+	disposable?: boolean;
 	children: JSX.Element;
+	open?: boolean;
 }
 
 const ModalPage = (props: ModalPageProps) => {
 	const router = useRouter();
-	const [open, setOpen] = useState(true);
+	const [open, setOpen] = useState(props.open ?? true);
 
 	useEffect(() => {
 		if (open) {
@@ -42,7 +44,7 @@ const ModalPage = (props: ModalPageProps) => {
 						setOpen(false);
 						router.back();
 					}}>
-						<CloseIcon />
+						<CloseIcon sx={{ display: props.disposable == true ? undefined : 'none' }} />
 					</IconButton>
 				</Box>
 				{props.children}

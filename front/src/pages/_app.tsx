@@ -17,13 +17,14 @@ import store from '../state/store';
 import theme from "../theme";
 import Player from "../components/player/player";
 import { Provider } from "react-redux";
+import AuthenticationWall from "../components/authentication/authentication-wall";
 import { DefaultWindowTitle } from '../utils/constants';
 import { ResourceNotFound } from "../exceptions";
 import PageNotFound from "./404";
 import InternalError from "./500";
 import { useRouter } from "next/router";
 
-function MyApp({ Component, pageProps }: AppProps) {
+function MyApp({ Component, pageProps: { session, ...pageProps } }: AppProps) {
 	const [queryClient] = useState(() => new QueryClient());
 	const router = useRouter();
 	const [errorType, setError] = useState<'not-found' | 'error' | undefined>();
@@ -42,31 +43,32 @@ function MyApp({ Component, pageProps }: AppProps) {
 				<link rel="apple-touch-icon" href="/favicon.ico"/>
 			</Head>
 			<QueryClientProvider client={queryClient}>
-				<MeeloAppBar/>
-				<ErrorBoundary
-					resetKeys={[errorType]}
-					FallbackComponent={() => {
-						if (errorType == 'not-found') {
-							return <PageNotFound/>;
-						}
-						return <InternalError/>;
-					}}
-					onError={(error: Error) => {
-						if (errorType) {
-							toast.error(error.message);
-						}
-						if (error instanceof ResourceNotFound) {
-							setError('not-found');
-						} else {
-							setError('error');
-						}
-					}}
-				>
-					<Hydrate state={pageProps.dehydratedState}>
-						<Component {...pageProps} />
-					</Hydrate>
-					<Player/>
-				</ErrorBoundary>
+				<AuthenticationWall>
+					<MeeloAppBar/>
+					<ErrorBoundary
+						FallbackComponent={() => {
+							if (errorType == 'not-found') {
+								return <PageNotFound/>;
+							}
+							return <InternalError/>;
+						}}
+						onError={(error: Error) => {
+							if (errorType) {
+								toast.error(error.message);
+							}
+							if (error instanceof ResourceNotFound) {
+								setError('not-found');
+							} else {
+								setError('error');
+							}
+						}}
+					>
+						<Hydrate state={pageProps.dehydratedState}>
+							<Component {...pageProps} />
+						</Hydrate>
+						<Player/>
+					</ErrorBoundary>
+				</AuthenticationWall>
 				<Toaster toastOptions={{ duration: 10000 }} position='bottom-center'/>
 				<ReactQueryDevtools initialIsOpen={false} />
 			</QueryClientProvider>

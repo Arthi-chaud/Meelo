@@ -25,6 +25,7 @@ import { PaginationQuery } from 'src/pagination/pagination-query.decorator';
 import { IdentifierParam } from 'src/identifier/identifier-param.decorator';
 import RelationIncludeQuery from 'src/relation-include/relation-include-query.decorator';
 import SortingQuery from 'src/sort/sort-query.decorator';
+import Admin from 'src/roles/admin.decorator';
 
 @ApiTags("Songs")
 @Controller('songs')
@@ -251,6 +252,7 @@ export class SongController {
 	@ApiOperation({
 		summary: "Update a song's lyrics"
 	})
+	@Admin()
 	@Post(':idOrSlug/lyrics')
 	async updateSongLyrics(
 		@IdentifierParam(ParseSongIdentifierPipe)
@@ -274,6 +276,7 @@ export class SongController {
 	@ApiOperation({
 		summary: "Delete a song's lyrics"
 	})
+	@Admin()
 	@Delete(':idOrSlug/lyrics')
 	async deleteSongLyrics(
 		@IdentifierParam(ParseSongIdentifierPipe)

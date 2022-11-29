@@ -1,8 +1,7 @@
 import {
-	Body, Controller, Delete, Get, Post, Query, Req
+	Body, Controller, Delete, Get, Post, Put, Query, Req
 } from '@nestjs/common';
 import LibraryService from './library.service';
-import LibraryDto from './models/create-library.dto';
 import { Library } from 'src/prisma/models';
 import { PaginationParameters } from 'src/pagination/models/pagination-parameters';
 import ArtistService from 'src/artist/artist.service';
@@ -30,6 +29,9 @@ import { PaginationQuery } from 'src/pagination/pagination-query.decorator';
 import { IdentifierParam } from 'src/identifier/identifier-param.decorator';
 import RelationIncludeQuery from 'src/relation-include/relation-include-query.decorator';
 import SortingQuery from 'src/sort/sort-query.decorator';
+import Admin from 'src/roles/admin.decorator';
+import UpdateLibraryDto from './models/update-library.dto';
+import CreateLibraryDto from './models/create-library.dto';
 
 @ApiTags("Libraries")
 @Controller('libraries')
@@ -46,8 +48,9 @@ export default class LibraryController {
 	@ApiOperation({
 		summary: 'Create a new library'
 	})
+	@Admin()
 	@Post('new')
-	async createLibrary(@Body() createLibraryDto: LibraryDto) {
+	async createLibrary(@Body() createLibraryDto: CreateLibraryDto) {
 		return this.libraryService.buildResponse(
 			await this.libraryService.create(createLibraryDto)
 		);
@@ -62,6 +65,21 @@ export default class LibraryController {
 		where: LibraryQueryParameters.WhereInput,
 	): Promise<Library> {
 		return this.libraryService.get(where);
+	}
+
+	@ApiOperation({
+		summary: 'Update a new library'
+	})
+	@Admin()
+	@Put(':idOrSlug/update')
+	async updateLibrary(
+		@Body() updateLibraryDTO: UpdateLibraryDto,
+		@IdentifierParam(ParseLibraryIdentifierPipe)
+		where: LibraryQueryParameters.WhereInput,
+	) {
+		return this.libraryService.buildResponse(
+			await this.libraryService.update(updateLibraryDTO, where)
+		);
 	}
 
 	@ApiOperation({
@@ -89,6 +107,7 @@ export default class LibraryController {
 	@ApiOperation({
 		summary: 'Delete a library'
 	})
+	@Admin()
 	@Delete(':idOrSlug')
 	async deleteLibrary(
 		@IdentifierParam(ParseLibraryIdentifierPipe)

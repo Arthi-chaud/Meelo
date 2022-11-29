@@ -1,7 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsNotEmpty } from 'class-validator';
 
-export default class LibraryDto {
+export default class CreateLibraryDto {
 	@ApiProperty({
 		description: 'The local path to the library to create'
 	})

@@ -14,7 +14,8 @@ export default class MeeloExceptionFilter implements ExceptionFilter {
 		response
 			.status(status)
 			.json({
-				error: exception.message
+				statusCode: status,
+				message: exception.message
 			});
 	}
 }

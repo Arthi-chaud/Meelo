@@ -20,6 +20,7 @@ import { IllustrationDownloadDto } from "./models/illustration-dl.dto";
 import ArtistQueryParameters from "src/artist/models/artist.query-parameters";
 import { IllustrationDimensionsDto } from "./models/illustration-dimensions.dto";
 import { IdentifierParam } from "src/identifier/identifier-param.decorator";
+import Admin from "src/roles/admin.decorator";
 
 @ApiTags("Illustrations")
 @Controller('illustrations')
@@ -57,6 +58,7 @@ export class IllustrationController {
 	@ApiOperation({
 		summary: 'Change an artist\'s illustration'
 	})
+	@Admin()
 	@Post('artists/:idOrSlug')
 	async updateArtistIllustration(
 		@IdentifierParam(ParseArtistIdentifierPipe)
@@ -75,7 +77,6 @@ export class IllustrationController {
 	@ApiOperation({
 		summary: "Get the album's illustration"
 	})
-
 	@Get('albums/:idOrSlug')
 	async getAlbumIllustration(
 		@IdentifierParam(ParseAlbumIdentifierPipe)
@@ -92,7 +93,6 @@ export class IllustrationController {
 	@ApiOperation({
 		summary: "Get a song's illustration"
 	})
-
 	@Get('songs/:idOrSlug')
 	async getSongIllustration(
 		@IdentifierParam(ParseSongIdentifierPipe)
@@ -109,7 +109,6 @@ export class IllustrationController {
 	@ApiOperation({
 		summary: "Get a release's illustration"
 	})
-
 	@Get('releases/:idOrSlug')
 	async getReleaseIllustration(
 		@IdentifierParam(ParseReleaseIdentifierPipe)
@@ -134,6 +133,7 @@ export class IllustrationController {
 	@ApiOperation({
 		summary: "Change a release's illustration"
 	})
+	@Admin()
 	@Post('releases/:idOrSlug')
 	async updateReleaseIllustration(
 		@IdentifierParam(ParseReleaseIdentifierPipe)
@@ -152,7 +152,6 @@ export class IllustrationController {
 	@ApiOperation({
 		summary: "Get a track's illustration"
 	})
-
 	@Get('tracks/:id')
 	async getTrackIllustration(
 		@Param('id', ParseIdPipe)
@@ -180,6 +179,7 @@ export class IllustrationController {
 	@ApiOperation({
 		summary: "Change a track's illustration"
 	})
+	@Admin()
 	@Post('tracks/:id')
 	async updateTrackIllustration(
 		@Param('id', ParseIdPipe)
@@ -200,6 +200,7 @@ export class IllustrationController {
 	@ApiOperation({
 		summary: "Delete a track's illustration"
 	})
+	@Admin()
 	@Delete('tracks/:id')
 	async deleteTrackIllustration(
 		@Param('id', ParseIdPipe)
@@ -215,6 +216,7 @@ export class IllustrationController {
 	@ApiOperation({
 		summary: "Delete a release's illustration"
 	})
+	@Admin()
 	@Delete('releases/:idOrSlug')
 	async deleteReleaseIllustration(
 		@IdentifierParam(ParseReleaseIdentifierPipe)
@@ -228,6 +230,7 @@ export class IllustrationController {
 	@ApiOperation({
 		summary: "Delete an artist's illustration"
 	})
+	@Admin()
 	@Delete('artists/:idOrSlug')
 	async deleteArtistIllustration(
 		@IdentifierParam(ParseArtistIdentifierPipe)

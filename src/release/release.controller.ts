@@ -21,6 +21,7 @@ import { PaginationQuery } from 'src/pagination/pagination-query.decorator';
 import { IdentifierParam } from 'src/identifier/identifier-param.decorator';
 import RelationIncludeQuery from 'src/relation-include/relation-include-query.decorator';
 import SortingQuery from 'src/sort/sort-query.decorator';
+import Admin from 'src/roles/admin.decorator';
 
 @ApiTags("Releases")
 @Controller('releases')
@@ -159,6 +160,7 @@ export default class ReleaseController {
 	@ApiOperation({
 		summary: 'Change the release\'s parent album'
 	})
+	@Admin()
 	@Post('reassign')
 	async reassignRelease(
 		@Body() reassignmentDTO: ReassignReleaseDTO
@@ -174,6 +176,7 @@ export default class ReleaseController {
 	@ApiOperation({
 		summary: 'Set a release as master release'
 	})
+	@Admin()
 	@Put(':idOrSlug/master')
 	async setAsMaster(
 		@IdentifierParam(ParseReleaseIdentifierPipe)
