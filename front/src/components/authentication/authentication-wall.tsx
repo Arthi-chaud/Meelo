@@ -44,10 +44,7 @@ const AuthenticationWall = (props: { children: any }) => {
 	}, [status, dispatch]);
 
 	if (!authentified || !status.data?.id) {
-		if (accessToken && !status.data && status.isLoading) {
-			return <></>;
-		}
-		return <ModalPage>
+		return <ModalPage open={!(accessToken && !status.data && status.isLoading)}>
 			<Grid container direction='column' sx={{
 				width: '100%', height: '100%', display: 'flex',
 				justifyContent: 'center', alignItems: 'center'

@@ -8,7 +8,7 @@ export class UnauthorizedAnonymousRequestException extends UnauthorizedRequestEx
 
 export class UnknownUserException extends UnauthorizedRequestException {
 	constructor() {
-		super("Unknown user");
+		super("Username or password is incorrect");
 	}
 }
 

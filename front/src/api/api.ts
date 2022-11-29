@@ -663,16 +663,16 @@ export default class API {
 		/// TODO SSR should be disabled if user is not authentified
 		case 401:
 			if (!this.isSSR()) {
-				throw new Error("Unauthorized: Authentication required");
+				throw new Error(jsonResponse.message ?? errorMessage);
 			}
 			break;
 		case 403:
 			if (!this.isSSR()) {
-				throw new Error("Unauthorized: Only for admins");
+				throw new Error(errorMessage ?? "Unauthorized: Only for admins");
 			}
 			break;
 		case 404:
-			throw new ResourceNotFound(errorMessage ?? jsonResponse.error ?? response.statusText);
+			throw new ResourceNotFound(errorMessage ?? jsonResponse.message ?? response.statusText);
 		default:
 			if (!response.ok) {
 				throw new Error(errorMessage ?? jsonResponse.message ?? response.statusText);
