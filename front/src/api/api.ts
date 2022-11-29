@@ -311,6 +311,24 @@ export default class API {
 	}
 
 	/**
+	 * Update a user's permissions in the database
+	 * @param userId the id of the user to update
+	 * @param updatedFields the fields to update
+	 * @returns the updated user
+	 */
+	static async updateUser(
+		userId: number,
+		updatedFields: Partial<Pick<User, 'admin' | 'enabled'>>
+	): Promise<User> {
+		return API.fetch({
+			route: `/users/${userId}`,
+			errorMessage: 'User could not be updated',
+			data: updatedFields,
+			parameters: {}
+		}, 'PUT');
+	}
+
+	/**
 	 * Get the master release of an album
 	 * @param albumSlugOrId the identifier of an album
 	 * @param include the fields to include in the fetched item

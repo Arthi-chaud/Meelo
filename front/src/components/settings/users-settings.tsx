@@ -11,6 +11,8 @@ import LoadingPage from "../loading/loading-page";
 import DeleteIcon from '@mui/icons-material/Delete';
 import { useSelector } from "react-redux";
 import { RootState } from "../../state/store";
+import { useMutation, useQueryClient } from "react-query";
+import { toast } from "react-hot-toast";
 
 const girdItemStyle = {
 	display: 'flex',
@@ -22,6 +24,57 @@ const usersQuery = (sort?: SortingParameters<typeof UserSortingKeys>) => ({
 	key: ['users', sort ?? {}],
 	exec: (lastPage: Page<User>) => API.getUsers(lastPage, sort)
 });
+
+/**
+ * User item in list
+ * @param isCurrentUser if true, will disable action buttons
+ */
+const UserRow = ({ user, isCurrentUser }: { user: User, isCurrentUser: boolean }) => {
+	const queryClient = useQueryClient();
+	const userMutation = useMutation((status: Parameters<typeof API.updateUser>[1]) =>
+		API.updateUser(user.id, status)
+			.catch(() => toast.error("Updating user failed, try again"))
+			.then(() => {
+				toast.success("User updated successfully", { duration: 2000 });
+				queryClient.invalidateQueries();
+			}));
+
+	return <ListItem>
+		<Grid container item sx={{ justifyContent: 'center', alignItems: 'center' }}>
+			<Grid item xs={7} sx={{ display: 'inline-flex' }}>
+				<Typography>
+					{user.name}
+				</Typography>
+				{ isCurrentUser && <Typography color='gray' sx={{ paddingX: 1 }}>
+					{"(You)"}
+				</Typography> }
+			</Grid>
+			<Grid item xs={2} sx={girdItemStyle}>
+				<Checkbox checked={user.enabled} color='secondary'
+					disabled={isCurrentUser}
+					onChange={(event) => userMutation.mutate(
+						{ enabled: event.target.checked }
+					)}
+				/>
+			</Grid>
+			<Grid item xs={2} sx={girdItemStyle}>
+				<Checkbox checked={user.admin} color='secondary'
+					disabled={isCurrentUser}
+					onChange={(event) => userMutation.mutate(
+						{ admin: event.target.checked }
+					)}
+				/>
+			</Grid>
+			<Grid item xs={1} sx={girdItemStyle}>
+				<IconButton color="error"
+					disabled={isCurrentUser}
+				>
+					<DeleteIcon />
+				</IconButton>
+			</Grid>
+		</Grid>
+	</ListItem>;
+};
 
 const UsersSettings = () => {
 	const currentUser = useSelector((state: RootState) => state.user.user!);
@@ -45,35 +98,7 @@ const UsersSettings = () => {
 			loader={() => <WideLoadingComponent/>}
 			query={usersQuery}
 			render={(user: User) =>
-				<ListItem>
-					<Grid container item sx={{ justifyContent: 'center', alignItems: 'center' }}>
-						<Grid item xs={7} sx={{ display: 'inline-flex' }}>
-							<Typography>
-								{user.name}
-							</Typography>
-							{ user.id == currentUser.id && <Typography color='gray' sx={{ paddingX: 1 }}>
-								{"(You)"}
-							</Typography> }
-						</Grid>
-						<Grid item xs={2} sx={girdItemStyle}>
-							<Checkbox checked={user.enabled} color='secondary'
-								disabled={user.id == currentUser.id}
-							/>
-						</Grid>
-						<Grid item xs={2} sx={girdItemStyle}>
-							<Checkbox checked={user.admin} color='secondary'
-								disabled={user.id == currentUser.id}
-							/>
-						</Grid>
-						<Grid item xs={1} sx={girdItemStyle}>
-							<IconButton color="error"
-								disabled={user.id == currentUser.id}
-							>
-								<DeleteIcon />
-							</IconButton>
-						</Grid>
-					</Grid>
-				</ListItem>
+				<UserRow user={user} isCurrentUser={user.id == currentUser.id}/>
 			}
 		/>
 	</>;

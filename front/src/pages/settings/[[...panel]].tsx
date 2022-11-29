@@ -5,6 +5,7 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/router";
 import LibrariesSettings from "../../components/settings/libraries-settings";
 import UsersSettings from "../../components/settings/users-settings";
+import prepareSSR, { InferSSRProps } from '../../ssr';
 
 const AvailablePanels = ['libraries', 'users'];
 
@@ -15,9 +16,17 @@ const getPanelFromQuery = (query?: string): string => {
 	return query!;
 };
 
-const SettingsPage = () => {
+export const getServerSideProps = prepareSSR((context) => {
+	const panel = getPanelFromQuery(context.query.panel?.at(0));
+
+	return {
+		additionalProps: { panel }
+	};
+});
+
+const SettingsPage = (props: InferSSRProps<typeof getServerSideProps>) => {
 	const router = useRouter();
-	const [panel, setPanel] = useState(getPanelFromQuery(router.query.panel?.at(0)));
+	const [panel, setPanel] = useState(getPanelFromQuery(props.panel ?? router.query.panel?.at(0)));
 
 	useEffect(() => {
 		router.push(`/settings/${panel}`, undefined, { shallow: true });
