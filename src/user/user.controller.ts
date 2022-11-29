@@ -1,5 +1,5 @@
 import {
-	Body, Controller, Get, Param, ParseIntPipe, Post, Put, Req, Request
+	Body, Controller, Delete, Get, Param, ParseIntPipe, Post, Put, Req, Request
 } from "@nestjs/common";
 import { User } from "@prisma/client";
 import UserService from "./user.service";
@@ -15,6 +15,7 @@ import UserQueryParameters from "./models/user.query-params";
 import UpdateUserDTO from "./models/update-user.dto";
 import PaginatedResponse from "src/pagination/models/paginated-response";
 import { Public } from "src/roles/public.decorator";
+import { InvalidRequestException } from "src/exceptions/meelo-exception";
 
 @ApiTags("Users")
 @Controller("users")
@@ -57,6 +58,25 @@ export default class UserController {
 	) {
 		return this.userService.buildResponse(
 			await this.userService.update(updateUserDto, { byId: { id: userId } })
+		);
+	}
+
+	@ApiOperation({
+		summary: 'Delete a user'
+	})
+	@Admin()
+	@Delete(':id')
+	async deleteUserAccounts(
+		@Param('id', ParseIntPipe) userId: number,
+		@Req() request: Express.Request
+	) {
+		const authenticatedUser = request.user as User;
+
+		if (authenticatedUser.id == userId) {
+			throw new InvalidRequestException('Users can not delete themselves');
+		}
+		return this.userService.buildResponse(
+			await this.userService.delete({ id: userId })
 		);
 	}
 

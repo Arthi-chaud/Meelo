@@ -189,6 +189,25 @@ describe('Authentication Controller & Role Management', () => {
 				.expect(201)
 		});
 	});
+	describe('Test User Deletion', () => {
+		it("Should Not delete, as the requested user is the current user", () => {
+			return request(app.getHttpServer())
+				.delete(`/users/${admin.id}`)
+				.set('cookie', `access_token=${adminToken}`)
+				.expect(400)
+		});
+		it("Should delete user", () => {
+			return request(app.getHttpServer())
+				.delete(`/users/${user.id}`)
+				.set('cookie', `access_token=${adminToken}`)
+				.expect(200)
+		});
+		it("Should not delete user, not authentified", () => {
+			return request(app.getHttpServer())
+				.delete(`/users/${user.id}`)
+				.expect(401)
+		});
+	});
 	describe('Test Access Token Middlewre', () => {
 		it("Should Accept access token cookie", () => {
 			return request(app.getHttpServer())
