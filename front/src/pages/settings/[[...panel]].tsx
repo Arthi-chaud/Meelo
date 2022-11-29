@@ -7,11 +7,11 @@ import LibrariesSettings from "../../components/settings/libraries-settings";
 import UsersSettings from "../../components/settings/users-settings";
 import prepareSSR, { InferSSRProps } from '../../ssr';
 
-const AvailablePanels = ['libraries', 'users'];
+const AvailablePanels = ['users'];
 
 const getPanelFromQuery = (query?: string): string => {
 	if (!AvailablePanels.includes(query?.toLowerCase() ?? '')) {
-		return 'libraries';
+		return AvailablePanels[0];
 	}
 	return query!;
 };
@@ -46,7 +46,7 @@ const SettingsPage = (props: InferSSRProps<typeof getServerSideProps>) => {
 		</Tabs>
 		{AvailablePanels.map((panelName) => panelName == panel &&
 			<Box key={panelName} sx={{ padding: 6, width: '100%' }}>
-				{panelName == 'libraries' ? <LibrariesSettings/> : <UsersSettings/>}
+				<UsersSettings/>
 			</Box>)
 		}
 	</>;
