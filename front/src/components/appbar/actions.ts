@@ -12,7 +12,7 @@ import { unsetAccessToken } from "../../state/userSlice";
 /**
  * Collections of actions that are accessible from appbar and drawer
  */
-const AppBarActions: Action[] = [
+const getAppBarActions: () => Action[] = () => [
 	{
 		label: 'Search',
 		icon: createElement(SearchIcon),
@@ -21,19 +21,22 @@ const AppBarActions: Action[] = [
 	{
 		label: 'Refresh Libraries',
 		icon: createElement(AutoModeIcon),
+		disabled: store.getState().user.user?.admin !== true,
 		onClick: () => API.scanLibraries()
 			.then(({ status }) => toast.success(status, { duration: 4000 })),
 	},
 	{
 		label: 'Settings',
 		icon: createElement(SettingsIcon),
+		disabled: store.getState().user.user?.admin !== true,
 		href: '/settings'
 	},
 	{
 		label: 'Logout',
 		icon: createElement(LogoutIcon),
+		href: '/',
 		onClick: () => store.dispatch(unsetAccessToken())
 	}
 ];
 
-export default AppBarActions;
+export default getAppBarActions;

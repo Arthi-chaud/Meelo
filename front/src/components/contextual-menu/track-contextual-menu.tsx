@@ -2,8 +2,10 @@ import { Star } from "@mui/icons-material";
 import { useRouter } from "next/router";
 import { toast } from "react-hot-toast";
 import { useMutation, useQueryClient } from "react-query";
+import { useSelector } from "react-redux";
 import API from "../../api/api";
 import { TrackWithSong } from "../../models/track";
+import { RootState } from "../../state/store";
 import {
 	DownloadAction, GoToReleaseAction, PlayAfterAction, PlayNextAction
 } from "./actions";
@@ -15,6 +17,7 @@ type TrackContextualMenuProps = {
 }
 
 const TrackContextualMenu = (props: TrackContextualMenuProps) => {
+	const userIsAdmin = useSelector((state: RootState) => state.user.user?.admin == true);
 	const router = useRouter();
 	const queryClient = useQueryClient();
 	const getPlayNextProps = () => API.getArtist(props.track.song.artistId)
@@ -35,7 +38,7 @@ const TrackContextualMenu = (props: TrackContextualMenuProps) => {
 		[
 			{
 				label: "Set as as Master",
-				disabled: props.track.master,
+				disabled: props.track.master || !userIsAdmin,
 				icon: <Star/>,
 				onClick: () => masterMutation.mutate()
 			}

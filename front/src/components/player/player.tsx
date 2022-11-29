@@ -15,7 +15,7 @@ import { DefaultWindowTitle } from "../../utils/constants";
 
 const Player = () => {
 	const userIsAuthentified = useSelector(
-		(state: RootState) => state.user.accessToken !== undefined
+		(state: RootState) => state.user.user !== undefined
 	);
 	const cursor = useSelector((state: RootState) => state.player.cursor);
 	const currentTrack = useSelector((state: RootState) => state.player.playlist[cursor]);
