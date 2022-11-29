@@ -329,6 +329,20 @@ export default class API {
 	}
 
 	/**
+	 * Delete user
+	 * @param userId the id of the user to delete
+	 */
+	static async deleteUser(
+		userId: number,
+	): Promise<User> {
+		return API.fetch({
+			route: `/users/${userId}`,
+			errorMessage: 'User could not be deleted',
+			parameters: {}
+		}, 'DELETE');
+	}
+
+	/**
 	 * Get the master release of an album
 	 * @param albumSlugOrId the identifier of an album
 	 * @param include the fields to include in the fetched item
@@ -625,7 +639,7 @@ export default class API {
 		});
 	}
 
-	private static async fetch<T, Keys extends string[]>({ route, parameters, otherParameters, errorMessage, data }: FetchParameters<Keys>, method: 'GET' | 'PUT' | 'POST' = 'GET'): Promise<T> {
+	private static async fetch<T, Keys extends string[]>({ route, parameters, otherParameters, errorMessage, data }: FetchParameters<Keys>, method: 'GET' | 'PUT' | 'POST' | 'DELETE' = 'GET'): Promise<T> {
 		const accessToken = store.getState().user.accessToken;
 		const header = {
 			'Content-Type': 'application/json'
