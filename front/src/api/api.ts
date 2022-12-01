@@ -18,6 +18,7 @@ import LibraryTaskResponse from "../models/library-task-response";
 import { ResourceNotFound } from "../exceptions";
 import User, { UserSortingKeys } from "../models/user";
 import store from "../state/store";
+import File from "../models/file";
 
 type AuthenticationResponse = {
 	access_token: string;
@@ -267,6 +268,37 @@ export default class API {
 		return API.fetch({
 			route: `/songs/${songSlugOrId}/master`,
 			parameters: { include }
+		});
+	}
+
+	/**
+	 * Get the track of a song
+	 * @param trackId the identifier of a track
+	 * @param include the fields to include in the fetched item
+	 * @returns a Track
+	 */
+	static async getTrack<T extends Track = Track>(
+		trackId: string | number,
+		include: TrackInclude[] = []
+	): Promise<T> {
+		return API.fetch({
+			route: `/tracks/${trackId}`,
+			parameters: { include }
+		});
+	}
+
+	/**
+	 * Get source file of a track
+	 * @param sourceFileId the identifier of a file
+	 * @param include the fields to include in the fetched item
+	 * @returns a File
+	 */
+	static async getSourceFile<T extends File = File>(
+		sourceFileId: string | number
+	): Promise<T> {
+		return API.fetch({
+			route: `/files/${sourceFileId}`,
+			parameters: { include: [] }
 		});
 	}
 
