@@ -30,6 +30,10 @@
 			"importNames": ["Link"],
 			"message": "Use Link from 'next/router"
 		}, {
+			"name": "@mui/material",
+			"importNames": ["Modal"],
+			"message": "Use 'confirm' from 'material-ui-confirm'"
+		}, {
 			"name": "next",
 			"importNames": ["GetServerSidePropsContext", "InferGetServerSidePropsType"],
 			"message": "Use wrapper functions provided by src/ssr"

@@ -1,6 +1,6 @@
 import {
-	Box, Button,
-	Checkbox, Divider, Grid, IconButton, ListItem, Modal, Typography, useTheme
+	Checkbox, Divider, Grid,
+	IconButton, ListItem, Typography
 } from "@mui/material";
 import API from "../../api/api";
 import User, { UserSortingKeys } from "../../models/user";
@@ -14,7 +14,7 @@ import { useSelector } from "react-redux";
 import { RootState } from "../../state/store";
 import { useMutation, useQueryClient } from "react-query";
 import { toast } from "react-hot-toast";
-import { useState } from "react";
+import { useConfirm } from "material-ui-confirm";
 
 const girdItemStyle = {
 	display: 'flex',
@@ -29,6 +29,7 @@ const usersQuery = (sort?: SortingParameters<typeof UserSortingKeys>) => ({
 
 const DeleteButton = ({ userId, disabled }: { userId: number, disabled: boolean}) => {
 	const queryClient = useQueryClient();
+	const confirm = useConfirm();
 	const userDeletionMutation = useMutation(() =>
 		API.deleteUser(userId)
 			.catch(() => toast.error("User deletion failed, try again"))
@@ -36,53 +37,22 @@ const DeleteButton = ({ userId, disabled }: { userId: number, disabled: boolean}
 				toast.success("User deleted successfully", { duration: 2000 });
 				queryClient.invalidateQueries();
 			}));
-	const [open, setOpen] = useState(false);
-	const handleOpen = () => setOpen(true);
-	const handleClose = () => setOpen(false);
-	const theme = useTheme();
-	const modalStyle = {
-		position: 'absolute' as const,
-		top: '50%',
-		left: '50%',
-		transform: 'translate(-50%, -50%)',
-		width: 400,
-		bgcolor: 'background.paper',
-		borderRadius: theme.shape.borderRadius,
-		boxShadow: 24,
-		padding: 4,
-	};
 
-	return <>
-		<Modal
-			open={open}
-			onClose={handleClose}
-		>
-			<Box sx={modalStyle}>
-				<Typography id="modal-modal-title" variant="h6" component="h2">
-					Warning
-				</Typography>
-				<Typography id="modal-modal-description" sx={{ mt: 2 }}>
-					You are about to delete a user. This can not be undone.
-				</Typography>
-				<Box sx={{ display: 'flex', justifyContent: "center", paddingTop: 2 }}>
-					<Button variant="outlined" color='error'
-						onClick={() => {
-							userDeletionMutation.mutate();
-							handleClose();
-						}}
-					>
-						Delete User
-					</Button>
-				</Box>
-			</Box>
-		</Modal>
-		<IconButton color="error"
-			disabled={disabled}
-			onClick={handleOpen}
-		>
-			<DeleteIcon />
-		</IconButton>
-	</>;
+	return <IconButton color="error"
+		disabled={disabled}
+		onClick={() => confirm({
+			title: 'Warning',
+			description: 'You are about to delete a user. This can not be undone.',
+			confirmationText: 'Delete User',
+			confirmationButtonProps: {
+				variant: 'outlined',
+				color: 'error',
+				onClickCapture: () => userDeletionMutation.mutate()
+			}
+		})}
+	>
+		<DeleteIcon />
+	</IconButton>;
 };
 
 /**
