@@ -1,4 +1,5 @@
 /* eslint-disable id-length */
+import { ConfirmProvider } from "material-ui-confirm";
 import { useEffect, useState } from "react";
 import type { AppProps } from "next/app";
 import {
@@ -64,7 +65,11 @@ function MyApp({ Component, pageProps: { session, ...pageProps } }: AppProps) {
 						}}
 					>
 						<Hydrate state={pageProps.dehydratedState}>
-							<Component {...pageProps} />
+							<ConfirmProvider defaultOptions={{
+								cancellationButtonProps: { color: 'secondary' }
+							}}>
+								<Component {...pageProps} />
+							</ConfirmProvider>
 						</Hydrate>
 						<Player/>
 					</ErrorBoundary>

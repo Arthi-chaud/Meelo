@@ -1,5 +1,4 @@
 import { Star } from "@mui/icons-material";
-import { useRouter } from "next/router";
 import { toast } from "react-hot-toast";
 import { useMutation, useQueryClient } from "react-query";
 import { useSelector } from "react-redux";
@@ -10,6 +9,7 @@ import {
 	DownloadAction, GoToReleaseAction, PlayAfterAction, PlayNextAction
 } from "./actions";
 import ContextualMenu from "./contextual-menu";
+import { useConfirm } from "material-ui-confirm";
 
 type TrackContextualMenuProps = {
 	track: TrackWithSong;
@@ -18,8 +18,8 @@ type TrackContextualMenuProps = {
 
 const TrackContextualMenu = (props: TrackContextualMenuProps) => {
 	const userIsAdmin = useSelector((state: RootState) => state.user.user?.admin == true);
-	const router = useRouter();
 	const queryClient = useQueryClient();
+	const confirm = useConfirm();
 	const getPlayNextProps = () => API.getArtist(props.track.song.artistId)
 		.then((artist) => API.getRelease(props.track.releaseId)
 			.then((release) => ({ track: props.track, artist, release })));
@@ -43,7 +43,7 @@ const TrackContextualMenu = (props: TrackContextualMenuProps) => {
 				onClick: () => masterMutation.mutate()
 			}
 		],
-		[DownloadAction(router, props.track.stream)]
+		[DownloadAction(confirm, props.track.stream)]
 	]}/>;
 };
 

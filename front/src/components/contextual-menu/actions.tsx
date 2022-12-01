@@ -11,7 +11,8 @@ import API from "../../api/api";
 import { playAfter, playNext } from "../../state/playerSlice";
 import store from "../../state/store";
 import copyLinkToClipboard from "../../utils/copy-link";
-import downloadAction from "../download-action";
+import confirmDownloadAction from "../confirm-download-action";
+import { useConfirm } from "material-ui-confirm";
 
 /**
  * Props for a generic component to run an action/go to page
@@ -112,16 +113,20 @@ export const PlayAfterAction = (getTrack: () => PromiseLike<Parameters<typeof pl
 	icon: <PlaylistAdd/>
 });
 
-export const DownloadAction = (router: NextRouter, streamURL: string): Action => ({
+export const DownloadAction = (confirm: ReturnType<typeof useConfirm>, streamURL: string): Action => ({
 	icon: <Download/>,
 	label: "Download",
-	onClick: () => downloadAction(router, API.getStreamURL(streamURL))
+	onClick: () => confirmDownloadAction(confirm, API.getStreamURL(streamURL))
 });
 
-export const DownloadAsyncAction = (router: NextRouter, streamURL: () => PromiseLike<string>): Action => ({
+export const DownloadAsyncAction = (confirm: ReturnType<typeof useConfirm>, streamURL: () => PromiseLike<string>): Action => ({
 	icon: <Download/>,
 	label: "Download",
-	onClick: () => streamURL().then((url) => downloadAction(router, API.getStreamURL(url)))
+	onClick: () => streamURL()
+		.then((url) => confirmDownloadAction(
+			confirm,
+			API.getStreamURL(url)
+		))
 });
 
 export const ShareArtistAction = (artistIdentifier: string | number): Action => ShareAction(`/artists/${artistIdentifier}`);
