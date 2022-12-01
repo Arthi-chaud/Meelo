@@ -4,12 +4,13 @@ import {
 import { useConfirm } from "material-ui-confirm";
 import API from "../api/api";
 import { useQuery } from "../api/use-query";
+import { TrackWithSong } from "../models/track";
 import formatDuration from "../utils/formatDuration";
 import { WideLoadingComponent } from "./loading/loading";
 
 const trackQuery = (trackId: number) => ({
 	key: ['track', trackId],
-	exec: () => API.getTrack(trackId)
+	exec: () => API.getTrack<TrackWithSong>(trackId, ['song'])
 });
 
 const sourceFileQuery = (sourceFileId: number) => ({
@@ -30,10 +31,12 @@ const TrackFileInfo = ({ trackId }: { trackId: number }) => {
 	}
 	const tableContent = {
 		'Name': track.data.name,
+		'Play Count': track.data.song.playCount,
 		'Duration': formatDuration(track.data.duration),
 		'Master Track': track.data.master ? 'True' : 'False',
 		'Bit Rate': `${track.data.bitrate} kbps`,
 		'Type': track.data.type,
+		'Extension': sourceFile.data.path.split('.').reverse()[0].toLocaleUpperCase() ?? 'Unknown',
 		'Path': sourceFile.data.path,
 		'Registration Date': new Date(sourceFile.data.registerDate).toLocaleString()
 	};
@@ -50,8 +53,7 @@ const TrackFileInfo = ({ trackId }: { trackId: number }) => {
 					<TableCell>
 						{value}
 					</TableCell>
-				</TableRow>
-			)}
+				</TableRow>)}
 		</TableBody>
 	</Table>;
 };
