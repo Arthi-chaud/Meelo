@@ -66,7 +66,9 @@ function MyApp({ Component, pageProps: { session, ...pageProps } }: AppProps) {
 					>
 						<Hydrate state={pageProps.dehydratedState}>
 							<ConfirmProvider defaultOptions={{
-								cancellationButtonProps: { color: 'secondary' }
+								cancellationButtonProps: {
+									color: 'secondary', sx: { marginX: 2 }
+								},
 							}}>
 								<Component {...pageProps} />
 							</ConfirmProvider>
