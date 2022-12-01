@@ -5,7 +5,7 @@ import ContextualMenu from "./contextual-menu";
 import {
 	DownloadAction, GoToArtistAction,
 	GoToRelatedTracksAction, GoToSongLyricsAction,
-	GoToSongVersionAction, PlayAfterAction, PlayNextAction, ShareSongAction
+	GoToSongVersionAction, PlayAfterAction, PlayNextAction, ShareSongAction, ShowTrackFileInfoAction
 } from "./actions";
 import { useConfirm } from "material-ui-confirm";
 
@@ -21,10 +21,11 @@ const ReleaseTrackContextualMenu = (props: ReleaseTrackContextualMenuProps) => {
 	const confirm = useConfirm();
 
 	return <ContextualMenu onSelect={props.onSelect} actions={[
-		[GoToArtistAction(props.artist.slug),],
+		[GoToArtistAction(props.artist.slug)],
 		[GoToSongLyricsAction(songSlug)],
 		[PlayNextAction(async () => props), PlayAfterAction(async () => props)],
 		[GoToSongVersionAction(songSlug), GoToRelatedTracksAction(songSlug),],
+		[ShowTrackFileInfoAction(confirm, props.track.id)],
 		[DownloadAction(confirm, props.track.stream), ShareSongAction(songSlug)]
 	]}/>;
 };

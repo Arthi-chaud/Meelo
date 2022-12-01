@@ -1,5 +1,5 @@
 import {
-	AlbumOutlined, Difference, Download, Lyrics, PlaylistAdd, PlaylistPlay
+	AlbumOutlined, Difference, Download, Info, Lyrics, PlaylistAdd, PlaylistPlay
 } from "@mui/icons-material";
 import AccountCircle from "@mui/icons-material/AccountCircle";
 import Album from "@mui/icons-material/Album";
@@ -13,6 +13,7 @@ import store from "../../state/store";
 import copyLinkToClipboard from "../../utils/copy-link";
 import confirmDownloadAction from "../confirm-download-action";
 import { useConfirm } from "material-ui-confirm";
+import { openTrackFileInfoModal } from "../track-file-info";
 
 /**
  * Props for a generic component to run an action/go to page
@@ -127,6 +128,19 @@ export const DownloadAsyncAction = (confirm: ReturnType<typeof useConfirm>, stre
 			confirm,
 			API.getStreamURL(url)
 		))
+});
+
+export const ShowTrackFileInfoAction = (confirm: ReturnType<typeof useConfirm>, trackId: number): Action => ({
+	icon: <Info/>,
+	label: "More Info",
+	onClick: () => openTrackFileInfoModal(confirm, trackId)
+});
+
+export const ShowMasterTrackFileInfoAction = (confirm: ReturnType<typeof useConfirm>, songId: number): Action => ({
+	icon: <Info/>,
+	label: "More Info",
+	onClick: () => API.getMasterTrack(songId)
+		.then((song) => openTrackFileInfoModal(confirm, song.id))
 });
 
 export const ShareArtistAction = (artistIdentifier: string | number): Action => ShareAction(`/artists/${artistIdentifier}`);

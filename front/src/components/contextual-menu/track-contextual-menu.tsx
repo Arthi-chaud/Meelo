@@ -6,7 +6,7 @@ import API from "../../api/api";
 import { TrackWithSong } from "../../models/track";
 import { RootState } from "../../state/store";
 import {
-	DownloadAction, GoToReleaseAction, PlayAfterAction, PlayNextAction
+	DownloadAction, GoToReleaseAction, PlayAfterAction, PlayNextAction, ShowTrackFileInfoAction
 } from "./actions";
 import ContextualMenu from "./contextual-menu";
 import { useConfirm } from "material-ui-confirm";
@@ -33,7 +33,7 @@ const TrackContextualMenu = (props: TrackContextualMenuProps) => {
 	});
 
 	return <ContextualMenu onSelect={props.onSelect} actions={[
-		[GoToReleaseAction(props.track.releaseId),],
+		[GoToReleaseAction(props.track.releaseId)],
 		[PlayNextAction(getPlayNextProps), PlayAfterAction(getPlayNextProps)],
 		[
 			{
@@ -43,6 +43,7 @@ const TrackContextualMenu = (props: TrackContextualMenuProps) => {
 				onClick: () => masterMutation.mutate()
 			}
 		],
+		[ShowTrackFileInfoAction(confirm, props.track.id)],
 		[DownloadAction(confirm, props.track.stream)]
 	]}/>;
 };

@@ -7,7 +7,7 @@ import { useConfirm } from "material-ui-confirm";
 import {
 	DownloadAsyncAction, GoToArtistAction, GoToRelatedTracksAction,
 	GoToReleaseAsyncAction, GoToSongLyricsAction, GoToSongVersionAction,
-	PlayAfterAction, PlayNextAction, ShareSongAction
+	PlayAfterAction, PlayNextAction, ShareSongAction, ShowMasterTrackFileInfoAction
 } from "./actions";
 
 type SongContextualMenuProps = {
@@ -33,6 +33,7 @@ const SongContextualMenu = (props: SongContextualMenuProps) => {
 		[GoToSongLyricsAction(songSlug)],
 		[PlayNextAction(getPlayNextProps), PlayAfterAction(getPlayNextProps)],
 		[GoToSongVersionAction(songSlug), GoToRelatedTracksAction(songSlug)],
+		[ShowMasterTrackFileInfoAction(confirm, props.song.id)],
 		[
 			DownloadAsyncAction(
 				confirm,
