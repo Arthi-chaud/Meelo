@@ -48,6 +48,10 @@ type Track = Resource & Illustration & {
 	 * URL to stream track
 	 */
 	stream: string;
+	/**
+	 * ID of the source file
+	 */
+	sourceFileId: number;
 }
 
 type TrackWithSong = Track & {

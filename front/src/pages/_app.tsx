@@ -1,4 +1,5 @@
 /* eslint-disable id-length */
+import { ConfirmProvider } from "material-ui-confirm";
 import { useEffect, useState } from "react";
 import type { AppProps } from "next/app";
 import {
@@ -14,7 +15,7 @@ import { ErrorBoundary } from 'react-error-boundary';
 import toast, { Toaster } from 'react-hot-toast';
 import Head from "next/head";
 import store from '../state/store';
-import theme from "../theme";
+import theme, { Styles } from "../theme";
 import Player from "../components/player/player";
 import { Provider } from "react-redux";
 import AuthenticationWall from "../components/authentication/authentication-wall";
@@ -35,7 +36,7 @@ function MyApp({ Component, pageProps: { session, ...pageProps } }: AppProps) {
 	return <Provider store={store}>
 		<ThemeProvider theme={theme}>
 			<CssBaseline />
-			<GlobalStyles styles={{ a: { color: 'inherit', textDecoration: 'none' } }}/>
+			<GlobalStyles styles={Styles}/>
 			<Head>
 				<title>{DefaultWindowTitle}</title>
 				<meta name="viewport" content="initial-scale=1.0, width=device-width" />
@@ -64,7 +65,13 @@ function MyApp({ Component, pageProps: { session, ...pageProps } }: AppProps) {
 						}}
 					>
 						<Hydrate state={pageProps.dehydratedState}>
-							<Component {...pageProps} />
+							<ConfirmProvider defaultOptions={{
+								cancellationButtonProps: {
+									color: 'secondary', sx: { marginX: 2 }
+								},
+							}}>
+								<Component {...pageProps} />
+							</ConfirmProvider>
 						</Hydrate>
 						<Player/>
 					</ErrorBoundary>

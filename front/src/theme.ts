@@ -62,3 +62,31 @@ export default responsiveFontSizes(createTheme({
 		}
 	}
 }));
+
+export const Styles = {
+	// eslint-disable-next-line id-length
+	'a': {
+		color: 'inherit',
+		textDecoration: 'none'
+	},
+	/* width */
+	'::-webkit-scrollbar': {
+		width: '8px'
+	},
+
+	/* Track */
+	'::-webkit-scrollbar-track': {
+		display: 'none'
+	},
+
+	/* Handle */
+	'::-webkit-scrollbar-thumb': {
+		'background': '#676767',
+		'border-radius': '4px'
+	},
+
+	/* Handle on hover */
+	'::-webkit-scrollbar-thumb:hover': {
+		background: '#555'
+	},
+};

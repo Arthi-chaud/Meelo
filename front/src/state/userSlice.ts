@@ -22,8 +22,16 @@ export const userSlice = createSlice({
 			state.user = action.payload;
 		},
 		setAccessToken: (state, action: PayloadAction<string>) => {
+			const expires = new Date();
+
 			state.accessToken = action.payload;
-			setCookie(UserAccessTokenCookieKey, state.accessToken);
+			expires.setMonth(expires.getMonth() + 1);
+			setCookie(
+				UserAccessTokenCookieKey,
+				state.accessToken,
+				// Sets cookie for a month
+				{ expires }
+			);
 		},
 		unsetAccessToken: (state) => {
 			state.accessToken = undefined;

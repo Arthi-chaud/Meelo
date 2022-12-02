@@ -1,5 +1,4 @@
 import { Star } from "@mui/icons-material";
-import { useRouter } from "next/router";
 import { toast } from "react-hot-toast";
 import { useMutation, useQueryClient } from "react-query";
 import { useSelector } from "react-redux";
@@ -7,9 +6,10 @@ import API from "../../api/api";
 import { TrackWithSong } from "../../models/track";
 import { RootState } from "../../state/store";
 import {
-	DownloadAction, GoToReleaseAction, PlayAfterAction, PlayNextAction
+	DownloadAction, GoToReleaseAction, PlayAfterAction, PlayNextAction, ShowTrackFileInfoAction
 } from "./actions";
 import ContextualMenu from "./contextual-menu";
+import { useConfirm } from "material-ui-confirm";
 
 type TrackContextualMenuProps = {
 	track: TrackWithSong;
@@ -18,8 +18,8 @@ type TrackContextualMenuProps = {
 
 const TrackContextualMenu = (props: TrackContextualMenuProps) => {
 	const userIsAdmin = useSelector((state: RootState) => state.user.user?.admin == true);
-	const router = useRouter();
 	const queryClient = useQueryClient();
+	const confirm = useConfirm();
 	const getPlayNextProps = () => API.getArtist(props.track.song.artistId)
 		.then((artist) => API.getRelease(props.track.releaseId)
 			.then((release) => ({ track: props.track, artist, release })));
@@ -33,7 +33,7 @@ const TrackContextualMenu = (props: TrackContextualMenuProps) => {
 	});
 
 	return <ContextualMenu onSelect={props.onSelect} actions={[
-		[GoToReleaseAction(props.track.releaseId),],
+		[GoToReleaseAction(props.track.releaseId)],
 		[PlayNextAction(getPlayNextProps), PlayAfterAction(getPlayNextProps)],
 		[
 			{
@@ -43,7 +43,8 @@ const TrackContextualMenu = (props: TrackContextualMenuProps) => {
 				onClick: () => masterMutation.mutate()
 			}
 		],
-		[DownloadAction(router, props.track.stream)]
+		[ShowTrackFileInfoAction(confirm, props.track.id)],
+		[DownloadAction(confirm, props.track.stream)]
 	]}/>;
 };
 

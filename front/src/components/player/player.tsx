@@ -120,6 +120,9 @@ const Player = () => {
 			}, 100);
 		} else {
 			document.title = DefaultWindowTitle;
+			if (player.current) {
+				player.current.src = '';
+			}
 			setIllustrationURL(null);
 		}
 		return () => clearInterval(interval.current);
