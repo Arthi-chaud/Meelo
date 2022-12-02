@@ -12,7 +12,6 @@ import {
 import { RootState } from "../../state/store";
 import { ExpandedPlayerControls, MinimizedPlayerControls } from "./controls";
 import { DefaultWindowTitle } from "../../utils/constants";
-import { toast } from "react-hot-toast";
 
 const Player = () => {
 	const userIsAuthentified = useSelector(
