@@ -50,7 +50,7 @@ const MeeloAppBar = () => {
 			if (router.asPath.startsWith('/libraries')) {
 				requestedlibrarySlug = router.asPath.split('/')[2];
 			}
-			setRequestedLibrary(librariesQuery.data.items.find(
+			setRequestedLibrary(librariesQuery.data?.items.find(
 				(library) => library.slug === requestedlibrarySlug
 			) ?? globalLibrary);
 			setAvailableLibraries(librariesQuery.data.items);
