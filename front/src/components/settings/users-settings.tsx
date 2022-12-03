@@ -16,7 +16,7 @@ import { useMutation, useQueryClient } from "react-query";
 import { toast } from "react-hot-toast";
 import { useConfirm } from "material-ui-confirm";
 
-const girdItemStyle = {
+const gridItemStyle = {
 	display: 'flex',
 	justifyContent: 'center',
 	textAlign: 'center'
@@ -93,7 +93,7 @@ const UserRow = ({ user, isCurrentUser }: { user: User, isCurrentUser: boolean }
 					{"(You)"}
 				</Typography> }
 			</Grid>
-			<Grid item xs={2} sx={girdItemStyle}>
+			<Grid item xs={2} sx={gridItemStyle}>
 				<Checkbox checked={user.enabled} color='secondary'
 					disabled={isCurrentUser}
 					onChange={(event) => userMutation.mutate(
@@ -101,7 +101,7 @@ const UserRow = ({ user, isCurrentUser }: { user: User, isCurrentUser: boolean }
 					)}
 				/>
 			</Grid>
-			<Grid item xs={2} sx={girdItemStyle}>
+			<Grid item xs={2} sx={gridItemStyle}>
 				<Checkbox checked={user.admin} color='secondary'
 					disabled={isCurrentUser}
 					onChange={(event) => userMutation.mutate(
@@ -109,7 +109,7 @@ const UserRow = ({ user, isCurrentUser }: { user: User, isCurrentUser: boolean }
 					)}
 				/>
 			</Grid>
-			<Grid item xs={1} sx={girdItemStyle}>
+			<Grid item xs={1} sx={gridItemStyle}>
 				<DeleteButton userId={user.id} disabled={isCurrentUser}/>
 			</Grid>
 		</Grid>
@@ -124,10 +124,10 @@ const UsersSettings = () => {
 			<Grid item xs={7}>
 				Username
 			</Grid>
-			<Grid item xs={2} sx={girdItemStyle}>
+			<Grid item xs={2} sx={gridItemStyle}>
 				Enabled
 			</Grid>
-			<Grid item xs={2} sx={girdItemStyle}>
+			<Grid item xs={2} sx={gridItemStyle}>
 				Admin
 			</Grid>
 			<Grid item xs={1}/>
