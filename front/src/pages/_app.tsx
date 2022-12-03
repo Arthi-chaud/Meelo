@@ -45,36 +45,36 @@ function MyApp({ Component, pageProps: { session, ...pageProps } }: AppProps) {
 			</Head>
 			<QueryClientProvider client={queryClient}>
 				<AuthenticationWall>
-					<MeeloAppBar/>
-					<ErrorBoundary
-						FallbackComponent={() => {
-							if (errorType == 'not-found') {
-								return <PageNotFound/>;
-							}
-							return <InternalError/>;
-						}}
-						onError={(error: Error) => {
-							if (errorType) {
-								toast.error(error.message);
-							}
-							if (error instanceof ResourceNotFound) {
-								setError('not-found');
-							} else {
-								setError('error');
-							}
-						}}
-					>
-						<Hydrate state={pageProps.dehydratedState}>
-							<ConfirmProvider defaultOptions={{
-								cancellationButtonProps: {
-									color: 'secondary', sx: { marginX: 2 }
-								},
-							}}>
+					<ConfirmProvider defaultOptions={{
+						cancellationButtonProps: {
+							color: 'secondary', sx: { marginX: 2 }
+						},
+					}}>
+						<MeeloAppBar/>
+						<ErrorBoundary
+							FallbackComponent={() => {
+								if (errorType == 'not-found') {
+									return <PageNotFound/>;
+								}
+								return <InternalError/>;
+							}}
+							onError={(error: Error) => {
+								if (errorType) {
+									toast.error(error.message);
+								}
+								if (error instanceof ResourceNotFound) {
+									setError('not-found');
+								} else {
+									setError('error');
+								}
+							}}
+						>
+							<Hydrate state={pageProps.dehydratedState}>
 								<Component {...pageProps} />
-							</ConfirmProvider>
-						</Hydrate>
-						<Player/>
-					</ErrorBoundary>
+							</Hydrate>
+							<Player/>
+						</ErrorBoundary>
+					</ConfirmProvider>
 				</AuthenticationWall>
 				<Toaster toastOptions={{ duration: 10000 }} position='bottom-center'/>
 				<ReactQueryDevtools initialIsOpen={false} />
