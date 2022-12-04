@@ -889,6 +889,17 @@
     prop-types "^15.8.1"
     react-is "^18.2.0"
 
+"@mui/x-data-grid@^5.17.14":
+  version "5.17.14"
+  resolved "https://registry.yarnpkg.com/@mui/x-data-grid/-/x-data-grid-5.17.14.tgz#3475d45ba3b18bdb343bbc954346324b2f935df0"
+  integrity sha512-Cf3yeaEAaFzpWPoDO1YTHWL2Anz69pUnIw4Swa6UehvNwJIz3ZDoVf92xCytviugU14NmL95PjmtHqK72Jt05g==
+  dependencies:
+    "@babel/runtime" "^7.18.9"
+    "@mui/utils" "^5.10.3"
+    clsx "^1.2.1"
+    prop-types "^15.8.1"
+    reselect "^4.1.6"
+
 "@mui/x-date-pickers@^5.0.8":
   version "5.0.9"
   resolved "https://registry.yarnpkg.com/@mui/x-date-pickers/-/x-date-pickers-5.0.9.tgz#7490ba4615285280fcb42bdd38f68578f2faa5f4"
@@ -4724,7 +4735,7 @@ requires-port@^1.0.0:
   resolved "https://registry.yarnpkg.com/requires-port/-/requires-port-1.0.0.tgz#925d2601d39ac485e091cf0da5c6e694dc3dcaff"
   integrity sha512-KigOCHcocU3XODJxsu8i/j8T9tzT4adHiecwORRQ0ZZFcp7ahwXuRU1m+yuO90C5ZUyGeGfocHDI14M3L3yDAQ==
 
-reselect@^4.1.7:
+reselect@^4.1.6, reselect@^4.1.7:
   version "4.1.7"
   resolved "https://registry.yarnpkg.com/reselect/-/reselect-4.1.7.tgz#56480d9ff3d3188970ee2b76527bd94a95567a42"
   integrity sha512-Zu1xbUt3/OPwsXL46hvOOoQrap2azE7ZQbokq61BQfiXvhewsKDwhMeZjTX9sX0nvw1t/U5Audyn1I9P/m9z0A==

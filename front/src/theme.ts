@@ -89,4 +89,10 @@ export const Styles = {
 	'::-webkit-scrollbar-thumb:hover': {
 		background: '#555'
 	},
+	'& .MuiDataGrid-cell:focus': {
+		outline: 'none !important'
+	},
+	'& .MuiDataGrid-row:hover': {
+		'background-color': 'transparent !important'
+	},
 };

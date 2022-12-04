@@ -122,7 +122,17 @@ const useInfiniteQuery = <ReturnType>(
 	query: MeeloInfiniteQueryFn<ReturnType>,
 	...queryParams: Partial<Parameters<typeof query>>
 ) => {
-	return useReactInfiniteQuery(prepareMeeloInfiniteQuery(query, ...queryParams));
+	const pageSize = API.defaultPageSize;
+
+	return useReactInfiniteQuery({
+		...prepareMeeloInfiniteQuery(query, ...queryParams),
+		getNextPageParam: (lastPage: Page<ReturnType>): Page<ReturnType> | undefined => {
+			if (lastPage.end || lastPage.items.length < pageSize) {
+				return undefined;
+			}
+			return lastPage;
+		},
+	});
 };
 
 export { useQuery, useQueries, useInfiniteQuery, prepareMeeloQuery, prepareMeeloInfiniteQuery };
