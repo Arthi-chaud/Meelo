@@ -40,7 +40,13 @@ const AuthenticationForm = () => {
 
 	return (
 		<form onSubmit={handleSubmit(onSubmit)} style={{ width: '100%', height: '100%' }}>
-			<Grid container direction='column' spacing={3} sx={{ display: 'flex', height: '100%', width: '100%', justifyContent: 'center', alignItems: 'center' }}>
+			<Grid container direction='column' spacing={3}
+				sx={{
+					display: 'flex', height: '100%', width: '100%',
+					justifyContent: 'center', alignItems: 'center',
+					flexWrap: 'nowrap'
+				}}
+			>
 				<HookTextField
 					{...registerState('username')}
 					textFieldProps={{
