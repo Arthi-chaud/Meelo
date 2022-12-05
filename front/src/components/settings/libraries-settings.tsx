@@ -1,6 +1,6 @@
 import { Delete } from "@mui/icons-material";
 import {
-	Box, Button, Grid, Hidden, IconButton, useTheme
+	Box, Button, Grid, Hidden, IconButton
 } from "@mui/material";
 import { GridColDef } from "@mui/x-data-grid";
 import toast from "react-hot-toast";
