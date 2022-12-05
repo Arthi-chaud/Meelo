@@ -1,23 +1,19 @@
 import {
-	Box, Checkbox, Grid,
-	IconButton, ListItem, Typography
+	Checkbox,
+	IconButton, Typography
 } from "@mui/material";
 import API from "../../api/api";
 import User, { UserSortingKeys } from "../../models/user";
 import { SortingParameters } from "../../utils/sorting";
 import { Page } from "../infinite/infinite-scroll";
-import InfiniteList from "../infinite/infinite-list";
-import { WideLoadingComponent } from "../loading/loading";
-import LoadingPage from "../loading/loading-page";
 import DeleteIcon from '@mui/icons-material/Delete';
 import { useSelector } from "react-redux";
 import { RootState } from "../../state/store";
 import { useMutation, useQueryClient } from "react-query";
 import { toast } from "react-hot-toast";
 import { useConfirm } from "material-ui-confirm";
-import { DataGrid, GridColDef } from '@mui/x-data-grid';
-import { useInfiniteQuery } from "../../api/use-query";
-import { useEffect, useState } from "react";
+import { GridColDef } from '@mui/x-data-grid';
+import AdminGrid from "../admin-grid";
 
 const usersQuery = (sort?: SortingParameters<typeof UserSortingKeys>) => ({
 	key: ['users', sort ?? {}],
@@ -31,7 +27,7 @@ const DeleteButton = ({ userId, disabled }: { userId: number, disabled: boolean 
 		API.deleteUser(userId)
 			.catch(() => toast.error("User deletion failed, try again"))
 			.then(() => {
-				toast.success("User deleted successfully", { duration: 2000 });
+				toast.success("User deleted successfully");
 				queryClient.invalidateQueries();
 			}));
 
@@ -55,9 +51,6 @@ const DeleteButton = ({ userId, disabled }: { userId: number, disabled: boolean 
 const UsersSettings = () => {
 	const queryClient = useQueryClient();
 	const currentUser = useSelector((state: RootState) => state.user.user!);
-	const users = useInfiniteQuery(usersQuery);
-	const [currentPage, setCurrentPage] = useState(0);
-	const [itemsCount, setItemsCount] = useState(0);
 	const userMutation = useMutation((
 		{ user, status }: { user: User, status: Parameters<typeof API.updateUser>[1]}
 	) => API.updateUser(user.id, status)
@@ -76,7 +69,7 @@ const UsersSettings = () => {
 				toastMessages.push("User is not an admin anymore");
 			}
 			toastMessages.forEach(
-				(message) => toast.success(message, { duration: 2000 })
+				(message) => toast.success(message)
 			);
 			queryClient.invalidateQueries();
 		}));
@@ -85,7 +78,7 @@ const UsersSettings = () => {
 			return <Typography display="inline-flex">
 				{user.name}
 				{ user.id == currentUser?.id && <Typography color='grey' paddingX={1}>(You)</Typography>}
-			</Typography>
+			</Typography>;
 		} },
 		{ field: 'enabled', headerName: 'Enabled', flex: 2, renderCell: ({ row: user }) => {
 			return <Checkbox checked={user.enabled} color='secondary'
@@ -108,42 +101,14 @@ const UsersSettings = () => {
 		} }
 	];
 
-	useEffect(() => {
-		setItemsCount(users.data?.pages
-			.map((page) => page.items.length)
-			.reduce((pageSize, sum) => pageSize + sum, 0) ?? 0);
-		users.hasNextPage && users.fetchNextPage()
-	// eslint-disable-next-line react-hooks/exhaustive-deps
-	}, [users.data?.pages]);
-
-	return <Box sx={{ paddingBottom: 2 }}>
-		<DataGrid
-			loading={users.data?.pages[currentPage] == undefined}
-			rows={users.data?.pages[currentPage]?.items ?? []}
-			rowCount={itemsCount}
-			pageSize={API.defaultPageSize}
-			page={currentPage}
-			disableColumnSelector
-			disableColumnMenu
-			disableSelectionOnClick
-			paginationMode='server'
-			autoHeight
-			onPageChange={(page) => {
-				if (page == currentPage + 1) {
-					users.fetchNextPage();
-				} else if (page == currentPage - 1){
-					users.fetchPreviousPage();
-				}
-				setCurrentPage(page);
-			}}
-			columns={columns.map((column) => ({
-				...column,
-				sortable: false,
-				headerAlign: column.field == 'name' ? 'left' : 'center',
-				align: column.field == 'name' ? 'left' : 'center',
-			}))}
-		/>
-	</Box>;
+	return <AdminGrid
+		infiniteQuery={usersQuery}
+		columns={columns.map((column) => ({
+			...column,
+			headerAlign: column.field == 'name' ? 'left' : 'center',
+			align: column.field == 'name' ? 'left' : 'center',
+		}))}
+	/>;
 };
 
 export default UsersSettings;
