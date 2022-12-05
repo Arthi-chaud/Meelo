@@ -6,5 +6,5 @@ import toast from "react-hot-toast";
  */
 export default function copyLinkToClipboard(route: string) {
 	navigator.clipboard.writeText(location.protocol + '//' + location.host + route);
-	toast.success("Link copied to clipboard", { duration: 2000 });
+	toast.success("Link copied to clipboard");
 }

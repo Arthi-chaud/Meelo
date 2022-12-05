@@ -76,7 +76,7 @@ function MyApp({ Component, pageProps: { session, ...pageProps } }: AppProps) {
 						</ErrorBoundary>
 					</ConfirmProvider>
 				</AuthenticationWall>
-				<Toaster toastOptions={{ duration: 10000 }} position='bottom-center'/>
+				<Toaster toastOptions={{ duration: 2500 }} position='bottom-center'/>
 				<ReactQueryDevtools initialIsOpen={false} />
 			</QueryClientProvider>
 		</ThemeProvider>
