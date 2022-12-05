@@ -29,7 +29,7 @@ export const ScanLibraryAction = (librarySlugOrId: number | string): Action => (
 export const CleanAllLibrariesAction: Action = {
 	label: 'Clean Libraries',
 	icon: <CleaningServices/>,
-	onClick: () => handleTask(API.scanLibraries())
+	onClick: () => handleTask(API.cleanLibraries())
 };
 
 export const CleanLibraryAction = (librarySlugOrId: number | string): Action => ({
