@@ -1,8 +1,7 @@
 import { AlbumWithArtist } from "../../models/album";
+import { GoToAlbumReleasesAction, GoToArtistAction } from "../actions/link";
+import { ShareAlbumAction } from "../actions/share";
 import ContextualMenu from "./contextual-menu";
-import {
-	GoToAlbumReleasesAction, GoToArtistAction, ShareAlbumAction
-} from "./actions";
 
 type AlbumContextualMenuProps = {
 	album: AlbumWithArtist;

@@ -4,11 +4,10 @@ import { useMutation, useQueryClient } from "react-query";
 import API from "../../api/api";
 import { ReleaseWithAlbum } from "../../models/release";
 import ContextualMenu from "./contextual-menu";
-import {
-	GoToAlbumAction, GoToArtistAction, ShareReleaseAction
-} from "./actions";
+import { GoToAlbumAction, GoToArtistAction } from "../actions/link";
 import { useSelector } from "react-redux";
 import { RootState } from "../../state/store";
+import { ShareReleaseAction } from "../actions/share";
 
 type ReleaseContextualMenuProps = {
 	release: ReleaseWithAlbum;

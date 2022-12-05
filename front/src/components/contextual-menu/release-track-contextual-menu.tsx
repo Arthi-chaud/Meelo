@@ -2,12 +2,15 @@ import Artist from "../../models/artist";
 import Release from "../../models/release";
 import { TrackWithSong } from "../../models/track";
 import ContextualMenu from "./contextual-menu";
-import {
-	DownloadAction, GoToArtistAction,
-	GoToRelatedTracksAction, GoToSongLyricsAction,
-	GoToSongVersionAction, PlayAfterAction, PlayNextAction, ShareSongAction, ShowTrackFileInfoAction
-} from "./actions";
 import { useConfirm } from "material-ui-confirm";
+import { DownloadAction } from "../actions/download";
+import {
+	GoToArtistAction, GoToRelatedTracksAction,
+	GoToSongLyricsAction, GoToSongVersionAction
+} from "../actions/link";
+import { PlayAfterAction, PlayNextAction } from "../actions/playlist";
+import { ShareSongAction } from "../actions/share";
+import { ShowTrackFileInfoAction } from "../actions/show-track-info";
 
 type ReleaseTrackContextualMenuProps = {
 	track: TrackWithSong;
