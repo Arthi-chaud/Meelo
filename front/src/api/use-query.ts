@@ -6,7 +6,7 @@ import {
 	useQuery as useReactQuery
 } from "react-query";
 import API from "./api";
-import { InfiniteFetchFn } from "../components/infinite/infinite-scroll";
+import { InfiniteFetchFn, Page } from "../components/infinite/infinite-scroll";
 
 type Key = string | number | Record<string, unknown>;
 
