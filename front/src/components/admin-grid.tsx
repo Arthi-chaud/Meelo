@@ -1,4 +1,3 @@
-import { Box } from "@mui/material";
 import {
 	DataGrid, GridColDef, GridValidRowModel
 } from "@mui/x-data-grid";
@@ -34,33 +33,31 @@ const AdminGrid = <DataType extends GridValidRowModel>(
 			.reduce((pageSize, sum) => pageSize + sum, 0) ?? 0);
 	// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [data?.pages]);
-	return <Box sx={{ paddingBottom: 2 }}>
-		<DataGrid
-			loading={data?.pages[currentPage] == undefined}
-			rows={data?.pages[currentPage]?.items ?? []}
-			rowCount={itemsCount}
-			pageSize={API.defaultPageSize}
-			rowsPerPageOptions={[API.defaultPageSize]}
-			page={currentPage}
-			disableColumnSelector
-			disableColumnMenu
-			disableSelectionOnClick
-			paginationMode='server'
-			autoHeight
-			onPageChange={(page) => {
-				if (page == currentPage + 1 && hasNextPage) {
-					fetchNextPage();
-				} else if (page == currentPage - 1 && hasPreviousPage) {
-					fetchPreviousPage();
-				}
-				setCurrentPage(page);
-			}}
-			columns={columns.map((column) => ({
-				...column,
-				sortable: false,
-			}))}
-		/>
-	</Box>;
+	return <DataGrid
+		loading={data?.pages[currentPage] == undefined}
+		rows={data?.pages[currentPage]?.items ?? []}
+		rowCount={itemsCount}
+		pageSize={API.defaultPageSize}
+		rowsPerPageOptions={[API.defaultPageSize]}
+		page={currentPage}
+		disableColumnSelector
+		disableColumnMenu
+		disableSelectionOnClick
+		paginationMode='server'
+		autoHeight
+		onPageChange={(page) => {
+			if (page == currentPage + 1 && hasNextPage) {
+				fetchNextPage();
+			} else if (page == currentPage - 1 && hasPreviousPage) {
+				fetchPreviousPage();
+			}
+			setCurrentPage(page);
+		}}
+		columns={columns.map((column) => ({
+			...column,
+			sortable: false,
+		}))}
+	/>;
 };
 
 export default AdminGrid;

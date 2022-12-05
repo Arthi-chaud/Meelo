@@ -1,4 +1,5 @@
 import {
+	Box,
 	Checkbox,
 	IconButton, Typography
 } from "@mui/material";
@@ -101,14 +102,16 @@ const UsersSettings = () => {
 		} }
 	];
 
-	return <AdminGrid
-		infiniteQuery={usersQuery}
-		columns={columns.map((column) => ({
-			...column,
-			headerAlign: column.field == 'name' ? 'left' : 'center',
-			align: column.field == 'name' ? 'left' : 'center',
-		}))}
-	/>;
+	return <Box sx={{ paddingBottom: 2 }}>
+		<AdminGrid
+			infiniteQuery={usersQuery}
+			columns={columns.map((column) => ({
+				...column,
+				headerAlign: column.field == 'name' ? 'left' : 'center',
+				align: column.field == 'name' ? 'left' : 'center',
+			}))}
+		/>
+	</Box>;
 };
 
 export default UsersSettings;

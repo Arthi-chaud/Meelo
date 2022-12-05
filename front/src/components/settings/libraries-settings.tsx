@@ -1,68 +1,93 @@
+import { Delete } from "@mui/icons-material";
 import {
-	CleaningServices, Delete, Refresh
-} from "@mui/icons-material";
-import {
-	Button, Divider, Grid, IconButton, ListItem, Typography
+	Box, Button, Grid, IconButton
 } from "@mui/material";
+import { GridColDef } from "@mui/x-data-grid";
+import toast from "react-hot-toast";
+import { useMutation, useQueryClient } from "react-query";
 import API from "../../api/api";
 import Library from "../../models/library";
-import InfiniteList from "../infinite/infinite-list";
-import LoadingComponent, { WideLoadingComponent } from "../loading/loading";
+import { Page } from "../infinite/infinite-scroll";
+import AdminGrid from "../admin-grid";
+import {
+	CleanAllLibrariesAction, CleanLibraryAction,
+	ScanAllLibrariesAction, ScanLibraryAction
+} from "../actions/library-task";
 
 const librariesQuery = () => ({
 	key: ['libraries'],
-	exec: () => API.getAllLibraries()
+	exec: (lastPage: Page<Library>) => API.getAllLibraries(lastPage)
 });
 
-const gridItemStyle = {
-	display: 'flex',
-	justifyContent: 'center',
-	textAlign: 'center'
+const actionButtonStyle = {
+	overflow: 'hidden',
+	textOverflow: 'ellipsis'
 };
 
 const LibrariesSettings = () => {
-	return <>
-		<Grid container spacing={2} justifyContent='center'>
-			<Grid item xs='auto'>
-				<Button variant='outlined' color='secondary' startIcon={<CleaningServices/>}>
-					Clean All
+	const queryClient = useQueryClient();
+	const scanAllLibaries = ScanAllLibrariesAction;
+	const cleanAllLibaries = CleanAllLibrariesAction;
+	const deletionMutation = useMutation((libraryId: number) =>
+		API.deleteLibrary(libraryId)
+			.catch(() => toast.error("Deleting library failed, try again"))
+			.then(() => {
+				toast.success("Library deleted");
+				queryClient.invalidateQueries();
+			}));
+	const columns: GridColDef<Library>[] = [
+		{ field: 'name', headerName: 'Name', flex: 5 },
+		{ field: 'clean', headerName: 'Clean', flex: 3, renderCell: ({ row: library }) => {
+			const cleanAction = CleanLibraryAction(library.id);
+
+			return <Button variant='outlined' color='secondary' size='small'
+				startIcon={cleanAction.icon} onClick={cleanAction.onClick} sx={actionButtonStyle}
+			>
+				{cleanAction.label}
+			</Button>;
+		} },
+		{ field: 'scan', headerName: 'Scan', flex: 3, renderCell: ({ row: library }) => {
+			const scanAction = ScanLibraryAction(library.id);
+
+			return <Button variant='contained' color='secondary' size='small'
+				startIcon={scanAction.icon} onClick={scanAction.onClick} sx={actionButtonStyle}
+			>
+				{scanAction.label}
+			</Button>;
+		} },
+		{ field: 'delete', headerName: 'Delete', flex: 1, renderCell: ({ row: library }) => {
+			return <IconButton color='error'>
+				<Delete/>
+			</IconButton>;
+		} }
+	];
+
+	return <Box sx={{ paddingBottom: 2 }}>
+		<Grid container sx={{ justifyContent: { xs: 'space-evenly', md: 'flex-end' }, paddingY: 2 }} spacing={{ xs: 0, md: 2 }}>
+			<Grid item>
+				<Button variant='outlined' color='secondary'
+					startIcon={cleanAllLibaries.icon} onClick={cleanAllLibaries.onClick}
+				>
+					{cleanAllLibaries.label}
 				</Button>
 			</Grid>
-			<Grid item xs='auto'>
-				<Button variant='contained' color='secondary' startIcon={<Refresh/>}>
-					Scan All
+			<Grid item>
+				<Button variant='contained' color='secondary'
+					startIcon={scanAllLibaries.icon} onClick={scanAllLibaries.onClick}
+				>
+					{scanAllLibaries.label}
 				</Button>
 			</Grid>
 		</Grid>
-		<Divider sx={{ paddingY: 2 }}/>
-		<InfiniteList
-			query={librariesQuery}
-			firstLoader={() => <WideLoadingComponent/>}
-			loader={() => <LoadingComponent/>}
-			render={(library: Library) => <ListItem>
-				<Grid container>
-					<Grid item xs={7}>
-						<Typography>{library.name}</Typography>
-					</Grid>
-					<Grid item xs={2} sx={gridItemStyle}>
-						<Button variant='outlined' color='secondary' startIcon={<CleaningServices/>}>
-							Clean
-						</Button>
-					</Grid>
-					<Grid item xs={2} sx={gridItemStyle}>
-						<Button variant='contained' color='secondary' startIcon={<Refresh/>}>
-							Scan
-						</Button>
-					</Grid>
-					<Grid item xs={1} sx={gridItemStyle}>
-						<IconButton color='error'>
-							<Delete/>
-						</IconButton>
-					</Grid>
-				</Grid>
-			</ListItem>}
+		<AdminGrid
+			infiniteQuery={librariesQuery}
+			columns={columns.map((column) => ({
+				...column,
+				headerAlign: column.field == 'name' ? 'left' : 'center',
+				align: column.field == 'name' ? 'left' : 'center',
+			}))}
 		/>
-	</>;
+	</Box>;
 };
 
 export default LibrariesSettings;
