@@ -1,6 +1,6 @@
 import { Delete } from "@mui/icons-material";
 import {
-	Box, Button, Grid, IconButton
+	Box, Button, Grid, Hidden, IconButton, useTheme
 } from "@mui/material";
 import { GridColDef } from "@mui/x-data-grid";
 import toast from "react-hot-toast";
@@ -28,6 +28,7 @@ const LibrariesSettings = () => {
 	const queryClient = useQueryClient();
 	const scanAllLibaries = ScanAllLibrariesAction;
 	const cleanAllLibaries = CleanAllLibrariesAction;
+	const theme = useTheme();
 	const deletionMutation = useMutation((libraryId: number) =>
 		API.deleteLibrary(libraryId)
 			.catch(() => toast.error("Deleting library failed, try again"))
@@ -43,16 +44,17 @@ const LibrariesSettings = () => {
 			return <Button variant='outlined' color='secondary' size='small'
 				startIcon={cleanAction.icon} onClick={cleanAction.onClick} sx={actionButtonStyle}
 			>
-				{cleanAction.label}
+				<Hidden smDown>{cleanAction.label}</Hidden>
 			</Button>;
 		} },
 		{ field: 'scan', headerName: 'Scan', flex: 3, renderCell: ({ row: library }) => {
 			const scanAction = ScanLibraryAction(library.id);
 
 			return <Button variant='contained' color='secondary' size='small'
-				startIcon={scanAction.icon} onClick={scanAction.onClick} sx={actionButtonStyle}
+				startIcon={scanAction.icon} onClick={scanAction.onClick}
+				sx={actionButtonStyle}
 			>
-				{scanAction.label}
+				<Hidden smDown>{scanAction.label}</Hidden>
 			</Button>;
 		} },
 		{ field: 'delete', headerName: 'Delete', flex: 1, renderCell: ({ row: library }) => {
@@ -63,7 +65,7 @@ const LibrariesSettings = () => {
 	];
 
 	return <Box sx={{ paddingBottom: 2 }}>
-		<Grid container sx={{ justifyContent: { xs: 'space-evenly', md: 'flex-end' }, paddingY: 2 }} spacing={{ xs: 0, md: 2 }}>
+		<Grid container sx={{ justifyContent: { xs: 'space-evenly', md: 'flex-end' }, paddingY: 2 }} spacing={{ xs: 1, md: 2 }}>
 			<Grid item>
 				<Button variant='outlined' color='secondary'
 					startIcon={cleanAllLibaries.icon} onClick={cleanAllLibaries.onClick}
