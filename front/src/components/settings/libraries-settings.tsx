@@ -13,6 +13,7 @@ import {
 	CleanAllLibrariesAction, CleanLibraryAction,
 	ScanAllLibrariesAction, ScanLibraryAction
 } from "../actions/library-task";
+import { useConfirm } from "material-ui-confirm";
 
 const librariesQuery = () => ({
 	key: ['libraries'],
@@ -28,7 +29,7 @@ const LibrariesSettings = () => {
 	const queryClient = useQueryClient();
 	const scanAllLibaries = ScanAllLibrariesAction;
 	const cleanAllLibaries = CleanAllLibrariesAction;
-	const theme = useTheme();
+	const confirm = useConfirm();
 	const deletionMutation = useMutation((libraryId: number) =>
 		API.deleteLibrary(libraryId)
 			.catch(() => toast.error("Deleting library failed, try again"))
@@ -58,7 +59,16 @@ const LibrariesSettings = () => {
 			</Button>;
 		} },
 		{ field: 'delete', headerName: 'Delete', flex: 1, renderCell: ({ row: library }) => {
-			return <IconButton color='error'>
+			return <IconButton color='error' onClick={() => confirm({
+				title: 'Delete a Library',
+				description: 'You are about to delete a library. This can not be undone',
+				confirmationText: 'Delete Library',
+				confirmationButtonProps: {
+					variant: 'outlined',
+					color: 'error',
+					onClickCapture: () => deletionMutation.mutate(library.id)
+				}
+			})}>
 				<Delete/>
 			</IconButton>;
 		} }
