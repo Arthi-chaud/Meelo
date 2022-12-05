@@ -46,7 +46,7 @@ const AuthenticationWall = (props: { children: any }) => {
 	if (!authentified || !status.data?.id) {
 		return <ModalPage open={!(accessToken && !status.data && status.isLoading)}>
 			<Grid container direction='column' sx={{
-				width: '100%', height: '100%', display: 'flex',
+				width: '100%', height: '100%', display: 'flex', flexWrap: 'nowrap',
 				justifyContent: 'center', alignItems: 'center'
 			}}>
 				<Grid xs={2} item sx={{ position: 'relative', width: '100%', display: 'flex', justifyContent: 'center' }}>

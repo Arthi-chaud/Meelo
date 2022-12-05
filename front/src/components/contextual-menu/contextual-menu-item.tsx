@@ -2,7 +2,7 @@ import {
 	ListItemIcon, ListItemText, MenuItem
 } from "@mui/material";
 import Link from "next/link";
-import Action from "./actions";
+import Action from "../actions/action";
 
 const ContextualMenuItem = (props: Action) => {
 	const item = <MenuItem disabled={props.disabled} onClick={props.onClick} sx={{ borderRadius: '0' }}>

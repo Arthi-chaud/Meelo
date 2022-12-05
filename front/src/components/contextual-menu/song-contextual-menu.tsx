@@ -4,11 +4,14 @@ import { SongWithArtist } from "../../models/song";
 import ContextualMenu from "./contextual-menu";
 import { TrackWithRelease } from "../../models/track";
 import { useConfirm } from "material-ui-confirm";
+import { DownloadAsyncAction } from "../actions/download";
 import {
-	DownloadAsyncAction, GoToArtistAction, GoToRelatedTracksAction,
-	GoToReleaseAsyncAction, GoToSongLyricsAction, GoToSongVersionAction,
-	PlayAfterAction, PlayNextAction, ShareSongAction, ShowMasterTrackFileInfoAction
-} from "./actions";
+	GoToArtistAction, GoToRelatedTracksAction, GoToReleaseAsyncAction,
+	GoToSongLyricsAction, GoToSongVersionAction
+} from "../actions/link";
+import { PlayAfterAction, PlayNextAction } from "../actions/playlist";
+import { ShareSongAction } from "../actions/share";
+import { ShowMasterTrackFileInfoAction } from "../actions/show-track-info";
 
 type SongContextualMenuProps = {
 	song: SongWithArtist;

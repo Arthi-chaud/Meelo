@@ -5,14 +5,22 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/router";
 import UsersSettings from "../../components/settings/users-settings";
 import prepareSSR, { InferSSRProps } from '../../ssr';
+import LibrariesSettings from '../../components/settings/libraries-settings';
 
-const AvailablePanels = ['users'];
+const AvailablePanels = ['libraries', 'users'] as const;
 
-const getPanelFromQuery = (query?: string): string => {
-	if (!AvailablePanels.includes(query?.toLowerCase() ?? '')) {
+type PanelName = typeof AvailablePanels[number];
+
+const Panels: Record<PanelName, JSX.Element> = {
+	libraries: <LibrariesSettings/>,
+	users: <UsersSettings/>
+};
+
+const getPanelFromQuery = (query?: string): PanelName => {
+	if (!query || !AvailablePanels.includes(query.toLowerCase() as PanelName)) {
 		return AvailablePanels[0];
 	}
-	return query!;
+	return query as PanelName;
 };
 
 export const getServerSideProps = prepareSSR((context) => {
@@ -25,7 +33,7 @@ export const getServerSideProps = prepareSSR((context) => {
 
 const SettingsPage = (props: InferSSRProps<typeof getServerSideProps>) => {
 	const router = useRouter();
-	const [panel, setPanel] = useState(getPanelFromQuery(props.panel ?? router.query.panel?.at(0)));
+	const [panel, setPanel] = useState(props.panel ?? getPanelFromQuery(router.query.panel?.at(0)));
 
 	useEffect(() => {
 		router.push(`/settings/${panel}`, undefined, { shallow: true });
@@ -45,7 +53,7 @@ const SettingsPage = (props: InferSSRProps<typeof getServerSideProps>) => {
 		</Tabs>
 		{AvailablePanels.map((panelName) => panelName == panel &&
 			<Box key={panelName} sx={{ padding: 6, width: '100%' }}>
-				<UsersSettings/>
+				{Panels[panelName]}
 			</Box>)
 		}
 	</>;

@@ -18,6 +18,7 @@
     "@mui/material": "^5.10.1",
     "@mui/styles": "^5.10.2",
     "@mui/utils": "^5.10.6",
+    "@mui/x-data-grid": "^5.17.14",
     "@mui/x-date-pickers": "^5.0.8",
     "@reduxjs/toolkit": "^1.8.5",
     "@types/d3-array": "^3.0.3",

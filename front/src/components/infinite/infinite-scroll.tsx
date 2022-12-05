@@ -1,9 +1,7 @@
-import { useInfiniteQuery } from "react-query";
 import * as IScroll from 'react-infinite-scroller';
 import Resource from "../../models/resource";
 import { PaginatedResponse } from "../../models/pagination";
-import API from "../../api/api";
-import { MeeloInfiniteQueryFn, prepareMeeloInfiniteQuery } from "../../api/use-query";
+import { MeeloInfiniteQueryFn, useInfiniteQuery } from "../../api/use-query";
 
 export type InfiniteFetchFn<T> = (lastPage: Page<T>) => Promise<PaginatedResponse<T>>;
 
@@ -16,10 +14,6 @@ type InfiniteScrollProps<T extends Resource> = {
 	 * Query to use
 	 */
 	query: MeeloInfiniteQueryFn<T>
-	/**
-	 * The number to load at each query
-	 */
-	pageSize?: number
 	/**
 	 * Component to display on first load
 	 */
@@ -59,22 +53,13 @@ export type Page<T> = {
  * @returns a dynamic list component
  */
 const InfiniteScroll = <T extends Resource>(props: InfiniteScrollProps<T>) => {
-	const pageSize = props.pageSize ?? API.defaultPageSize;
 	const {
 		isFetching,
 		data,
 		hasNextPage,
 		fetchNextPage,
 		isFetchingNextPage
-	} = useInfiniteQuery({
-		...prepareMeeloInfiniteQuery<T>(props.query),
-		getNextPageParam: (lastPage: Page<T>): Page<T> | undefined => {
-			if (lastPage.end || lastPage.items.length < pageSize) {
-				return undefined;
-			}
-			return lastPage;
-		},
-	});
+	} = useInfiniteQuery(props.query);
 
 	return <>
 		{ isFetching && !data && props.firstLoader() }

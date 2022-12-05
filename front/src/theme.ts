@@ -81,12 +81,18 @@ export const Styles = {
 
 	/* Handle */
 	'::-webkit-scrollbar-thumb': {
-		'background': '#676767',
-		'border-radius': '4px'
+		background: '#676767',
+		borderRadius: '4px'
 	},
 
 	/* Handle on hover */
 	'::-webkit-scrollbar-thumb:hover': {
 		background: '#555'
+	},
+	'& .MuiDataGrid-cell:focus': {
+		outline: 'none !important'
+	},
+	'& .MuiDataGrid-row:hover': {
+		backgroundColor: 'transparent !important'
 	},
 };

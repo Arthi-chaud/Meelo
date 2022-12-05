@@ -89,6 +89,56 @@ export default class API {
 	}
 
 	/**
+	 * Clean all libraries
+	 */
+	static async cleanLibraries(): Promise<LibraryTaskResponse> {
+		return API.fetch({
+			route: `/tasks/clean`,
+			errorMessage: "Library clean failed",
+			parameters: { }
+		});
+	}
+
+	/**
+	 * Scan a library
+	 */
+	static async scanLibrary(
+		librarySlugOrId: number | string
+	): Promise<LibraryTaskResponse> {
+		return API.fetch({
+			route: `/tasks/scan/${librarySlugOrId}`,
+			errorMessage: "Library scan failed",
+			parameters: { }
+		});
+	}
+
+	/**
+	 * Clean a library
+	 */
+	static async cleanLibrary(
+		librarySlugOrId: number | string
+	): Promise<LibraryTaskResponse> {
+		return API.fetch({
+			route: `/tasks/clean/${librarySlugOrId}`,
+			errorMessage: "Library clean failed",
+			parameters: { }
+		});
+	}
+
+	/**
+	 * Delete a library
+	 */
+	static async deleteLibrary(
+		librarySlugOrId: number | string
+	): Promise<void> {
+		return API.fetch({
+			route: `/libraries/${librarySlugOrId}`,
+			errorMessage: "Library deletion failed",
+			parameters: { }
+		}, 'DELETE');
+	}
+
+	/**
 	 * Fetch all album artists
 	 * @param pagination the parameters to choose how many items to load
 	 * @returns An array of artists

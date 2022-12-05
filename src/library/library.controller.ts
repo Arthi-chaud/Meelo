@@ -112,8 +112,11 @@ export default class LibraryController {
 	async deleteLibrary(
 		@IdentifierParam(ParseLibraryIdentifierPipe)
 		where: LibraryQueryParameters.WhereInput,
-	): Promise<void> {
+	) {
+		const library = await this.libraryService.get(where);
+
 		await this.libraryService.delete(where);
+		return this.libraryService.buildResponse(library);
 	}
 
 	@ApiOperation({

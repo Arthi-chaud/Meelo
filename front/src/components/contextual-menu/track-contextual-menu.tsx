@@ -5,11 +5,12 @@ import { useSelector } from "react-redux";
 import API from "../../api/api";
 import { TrackWithSong } from "../../models/track";
 import { RootState } from "../../state/store";
-import {
-	DownloadAction, GoToReleaseAction, PlayAfterAction, PlayNextAction, ShowTrackFileInfoAction
-} from "./actions";
 import ContextualMenu from "./contextual-menu";
 import { useConfirm } from "material-ui-confirm";
+import { DownloadAction } from "../actions/download";
+import { GoToReleaseAction } from "../actions/link";
+import { PlayAfterAction, PlayNextAction } from "../actions/playlist";
+import { ShowTrackFileInfoAction } from "../actions/show-track-info";
 
 type TrackContextualMenuProps = {
 	track: TrackWithSong;

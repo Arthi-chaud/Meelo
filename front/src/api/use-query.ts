@@ -6,7 +6,7 @@ import {
 	useQuery as useReactQuery
 } from "react-query";
 import API from "./api";
-import { InfiniteFetchFn } from "../components/infinite/infinite-scroll";
+import { InfiniteFetchFn, Page } from "../components/infinite/infinite-scroll";
 
 type Key = string | number | Record<string, unknown>;
 
@@ -122,7 +122,17 @@ const useInfiniteQuery = <ReturnType>(
 	query: MeeloInfiniteQueryFn<ReturnType>,
 	...queryParams: Partial<Parameters<typeof query>>
 ) => {
-	return useReactInfiniteQuery(prepareMeeloInfiniteQuery(query, ...queryParams));
+	const pageSize = API.defaultPageSize;
+
+	return useReactInfiniteQuery({
+		...prepareMeeloInfiniteQuery(query, ...queryParams),
+		getNextPageParam: (lastPage: Page<ReturnType>): Page<ReturnType> | undefined => {
+			if (lastPage.end || lastPage.items.length < pageSize) {
+				return undefined;
+			}
+			return lastPage;
+		},
+	});
 };
 
 export { useQuery, useQueries, useInfiniteQuery, prepareMeeloQuery, prepareMeeloInfiniteQuery };

@@ -1,8 +1,9 @@
 import Artist from "../../models/artist";
 import ContextualMenu from "./contextual-menu";
 import {
-	GoToArtistAction, GoToArtistAlbumsAction, GoToArtistSongsAction, ShareArtistAction
-} from "./actions";
+	GoToArtistAction, GoToArtistAlbumsAction, GoToArtistSongsAction
+} from "../actions/link";
+import { ShareArtistAction } from "../actions/share";
 
 type ArtistContextualMenuProps = {
 	artist: Artist;

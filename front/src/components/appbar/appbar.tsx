@@ -17,24 +17,25 @@ import MeeloAppBarDrawer from './drawer';
 import buildLink from './build-link';
 import Link from 'next/link';
 // eslint-disable-next-line no-restricted-imports
-import { useQuery as useReactQuery } from 'react-query';
-import { prepareMeeloQuery } from '../../api/use-query';
+import { useInfiniteQuery as useReactInfiniteQuery } from 'react-query';
+import { prepareMeeloInfiniteQuery } from '../../api/use-query';
 import Library from '../../models/library';
 import toast from 'react-hot-toast';
 import ContextualMenu from '../contextual-menu/contextual-menu';
 import getAppBarActions from './actions';
+import { Page } from '../infinite/infinite-scroll';
 
 const libraryQuery = () => ({
 	key: ['libraries'],
-	exec: () => API.getAllLibraries()
+	exec: (lastPage: Page<Library>) => API.getAllLibraries(lastPage)
 });
 
 const MeeloAppBar = () => {
 	const router = useRouter();
 	const [requestedLibrary, setRequestedLibrary] = useState(globalLibrary);
 	const [availableLibraries, setAvailableLibraries] = useState<Library[] | null>(null);
-	const librariesQuery = useReactQuery({
-		...prepareMeeloQuery(libraryQuery),
+	const librariesQuery = useReactInfiniteQuery({
+		...prepareMeeloInfiniteQuery(libraryQuery),
 		useErrorBoundary: false
 	});
 
@@ -50,10 +51,10 @@ const MeeloAppBar = () => {
 			if (router.asPath.startsWith('/libraries')) {
 				requestedlibrarySlug = router.asPath.split('/')[2];
 			}
-			setRequestedLibrary(librariesQuery.data.items.find(
+			setRequestedLibrary(librariesQuery.data?.pages.at(0)?.items.find(
 				(library) => library.slug === requestedlibrarySlug
 			) ?? globalLibrary);
-			setAvailableLibraries(librariesQuery.data.items);
+			setAvailableLibraries(librariesQuery.data.pages.at(0)?.items ?? []);
 		}
 	}, [
 		router.asPath,

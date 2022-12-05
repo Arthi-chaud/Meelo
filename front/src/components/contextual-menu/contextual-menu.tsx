@@ -3,7 +3,7 @@ import {
 	Box, Divider, IconButton, Menu
 } from "@mui/material";
 import { useState } from "react";
-import Action from "./actions";
+import Action from "../actions/action";
 import ContextualMenuItem from "./contextual-menu-item";
 
 type ContextualMenuProps = {
