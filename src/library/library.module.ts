@@ -18,7 +18,7 @@ import TasksModule from 'src/tasks/tasks.module';
 	imports: [
 		PrismaModule,
 		FileManagerModule,
-		FileModule,
+		forwardRef(() => FileModule),
 		MetadataModule,
 		IllustrationModule,
 		ArtistModule,

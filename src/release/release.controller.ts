@@ -1,6 +1,6 @@
 import {
 	Body, Controller, DefaultValuePipe, Get, Inject,
-	ParseBoolPipe, Post, Put, Query, Req, forwardRef
+	ParseBoolPipe, Post, Put, Query, Req, Res, forwardRef
 } from '@nestjs/common';
 import { PaginationParameters } from 'src/pagination/models/pagination-parameters';
 import ReleaseQueryParameters from './models/release.query-parameters';
@@ -10,7 +10,7 @@ import TrackQueryParameters from 'src/track/models/track.query-parameters';
 import AlbumService from 'src/album/album.service';
 import AlbumQueryParameters from 'src/album/models/album.query-parameters';
 import ParseReleaseIdentifierPipe from './release.pipe';
-import type { Request } from 'express';
+import type { Request, Response } from 'express';
 import PaginatedResponse from 'src/pagination/models/paginated-response';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import ReassignReleaseDTO from './models/reassign-release.dto';
@@ -137,6 +137,18 @@ export default class ReleaseController {
 		const tracklist = await this.trackService.getPlaylist(where, include, random);
 
 		return Promise.all(tracklist.map((track) => this.trackService.buildResponse(track)));
+	}
+
+	@ApiOperation({
+		summary: 'Download an archive of the release'
+	})
+	@Get(':idOrSlug/archive')
+	async getReleaseArcive(
+		@IdentifierParam(ParseReleaseIdentifierPipe)
+		where: ReleaseQueryParameters.WhereInput,
+		@Res() response: Response
+	) {
+		return this.releaseService.pipeArchive(where, response);
 	}
 
 	@ApiOperation({

@@ -38,8 +38,6 @@ export default class FileController {
 		@Response({ passthrough: true }) res: Response,
 		@Req() req: any
 	) {
-		const file = await this.fileService.get({ id: fileId }, { library: true });
-
-		return this.fileService.streamFile(file, file.library, res, req);
+		return this.fileService.streamFile({ id: fileId }, res, req);
 	}
 }

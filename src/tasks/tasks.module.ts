@@ -13,7 +13,7 @@ import MetadataModule from 'src/metadata/metadata.module';
 	imports: [
 		forwardRef(() => LibraryModule),
 		FileManagerModule,
-		FileModule,
+		forwardRef(() => FileModule),
 		TrackModule,
 		MetadataModule,
 		LyricsModule,
