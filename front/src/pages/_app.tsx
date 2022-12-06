@@ -33,6 +33,9 @@ function MyApp({ Component, pageProps: { session, ...pageProps } }: AppProps) {
 	useEffect(() => {
 		setError(undefined);
 	}, [router]);
+	useEffect(() => {
+		Notification.requestPermission();
+	}, []);
 	return <Provider store={store}>
 		<ThemeProvider theme={theme}>
 			<CssBaseline />
