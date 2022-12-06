@@ -134,8 +134,7 @@ const Player = () => {
 			}, 100);
 			if (!windowFocused && Notification.permission == 'granted') {
 				try {
-					setNotification(new Notification(currentTrack.track.name, {
-						data: '4567',
+					setNotification(new Notification(`${currentTrack.track.name} - ${currentTrack.artist.name}`, {
 						icon: newIllustrationURL ? API.getIllustrationURL(newIllustrationURL) : '/icon.png'
 					}));
 				// eslint-disable-next-line no-empty
