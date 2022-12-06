@@ -23,7 +23,6 @@ import type { MeeloException } from 'src/exceptions/meelo-exception';
 import { buildDateSearchParameters } from 'src/utils/search-date-input';
 import LibraryService from 'src/library/library.service';
 import mime from 'mime';
-import Slug from 'src/slug/slug';
 import { Prisma } from '@prisma/client';
 import SortingParameter from 'src/sort/models/sorting-parameter';
 
@@ -216,7 +215,7 @@ export default class FileService extends RepositoryService<
 		}
 		res.status(HttpStatus.PARTIAL_CONTENT);
 		res.set({
-			'Content-Disposition': `attachment; filename="${new Slug(path.parse(file.path).name).toString()}${path.parse(file.path).ext}"`,
+			'Content-Disposition': `attachment; filename="${path.basename(file.path)}"`,
 			'Content-Type': mime.getType(fullFilePath) ?? 'application/octet-stream',
 		});
 		const rangeHeader = req.headers['range'] ?? req.headers['Range'];
