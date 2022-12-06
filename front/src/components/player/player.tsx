@@ -30,6 +30,8 @@ const Player = () => {
 	const [illustrationURL, setIllustrationURL] = useState<string | null>();
 	const playerComponentRef = useRef<HTMLDivElement>(null);
 	const [expanded, setExpanded] = useState(false);
+	const [windowFocused, setWindowFocused] = useState(true);
+	const [notification, setNotification] = useState<Notification>();
 
 	const play = () => {
 		// Do nothing if empty playlist
@@ -67,6 +69,17 @@ const Player = () => {
 	};
 
 	useEffect(() => {
+		const onFocus = () => setWindowFocused(true);
+		const onBlur = () => setWindowFocused(false);
+
+		window.addEventListener("focus", onFocus);
+		window.addEventListener("blur", onBlur);
+		return () => {
+			window.removeEventListener("focus", onFocus);
+			window.removeEventListener("blur", onBlur);
+		};
+	}, []);
+	useEffect(() => {
 		if (!userIsAuthentified) {
 			pause();
 			dispatch(playTracks({ tracks: [] }));
@@ -83,6 +96,7 @@ const Player = () => {
 		navigator.mediaSession.setActionHandler('previoustrack', onRewind);
 		navigator.mediaSession.setActionHandler('nexttrack', onSkipTrack);
 		if (currentTrack) {
+			notification?.close();
 			document.title = `${currentTrack.track.name} - ${DefaultWindowTitle}`;
 			const newIllustrationURL = currentTrack.track.illustration
 				?? currentTrack.release.illustration;
@@ -118,6 +132,15 @@ const Player = () => {
 					setProgress(player.current?.currentTime);
 				}
 			}, 100);
+			if (!windowFocused && Notification.permission == 'granted') {
+				try {
+					setNotification(new Notification(currentTrack.track.name, {
+						data: '4567',
+						icon: newIllustrationURL ? API.getIllustrationURL(newIllustrationURL) : '/icon.png'
+					}));
+				// eslint-disable-next-line no-empty
+				} catch {}
+			}
 		} else {
 			document.title = DefaultWindowTitle;
 			if (player.current) {
