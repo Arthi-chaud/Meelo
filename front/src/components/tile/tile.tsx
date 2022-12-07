@@ -18,7 +18,7 @@ type TileProps = {
 	/**
 	 * URL to push on tile tap
 	 */
-	targetURL: string
+	targetURL: string;
 }
 
 const Tile = (props: TileProps) => {

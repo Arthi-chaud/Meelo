@@ -17,6 +17,12 @@ type IllustrationProps = {
 	 * An icon to display when illustration rendering failed
 	 */
 	fallback?: JSX.Element;
+
+	/**
+	 * Aspect Ratio of the Illustration
+	 * @default 1
+	 */
+	aspectRatio?: number;
 } & Omit<ImageProps, 'src' | 'alt'>
 
 const Illustration = (props: IllustrationProps) => {
@@ -24,7 +30,7 @@ const Illustration = (props: IllustrationProps) => {
 	const [loadingFailed, setLoadingFailed] = useState(false);
 
 	return <Box sx={{
-		position: 'relative', aspectRatio: '1', width: '100%',
+		position: 'relative', aspectRatio: props.aspectRatio?.toString() ?? '1', width: '100%',
 		justifyContent: 'center', alignItems: 'center',
 		display: loadingFailed || !props.url ? 'flex' : 'block'
 	}}>{ loadingFailed || !props.url

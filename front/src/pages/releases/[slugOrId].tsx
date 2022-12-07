@@ -62,7 +62,7 @@ const albumVideosQuery = (slugOrId: string | number) => ({
 		slugOrId,
 		'videos'
 	],
-	exec: () => API.getAlbumVideos(slugOrId),
+	exec: () => API.getAlbumVideos(slugOrId, {}, { sortBy: 'name' }),
 });
 
 const albumReleasesQuery = (slugOrId: string | number) => ({
@@ -96,8 +96,10 @@ const RelatedContentSection = (props: RelatedContentSectionProps) => {
 	return (
 		<FadeIn>
 			<Divider/>
-			<Typography variant='h6' sx={{ paddingY: 3 }}>{props.title}</Typography>
-			{props.children}
+			<Box sx={{ padding: 3 }}>
+				<Typography variant='h6' sx={{ paddingBottom: 3 }}>{props.title}</Typography>
+				{props.children}
+			</Box>
 		</FadeIn>
 	);
 };
@@ -127,6 +129,7 @@ const ReleasePage = (
 	const tracklist = useQuery(tracklistQuery, releaseIdentifier);
 	const albumArtist = useQuery(artistQuery, artistId);
 	const albumGenres = useQuery(albumGenresQuery, release.data?.albumId);
+	const videos = useQuery(albumVideosQuery, release.data?.albumId);
 	const hasGenres = (albumGenres.data?.length ?? 0) > 0;
 	const otherArtistsQuery = useQueries(...tracks
 		.filter((track: TrackWithSong) => track.song.artistId != albumArtist.data?.id)
@@ -284,6 +287,29 @@ const ReleasePage = (
 									: undefined
 								}
 								illustration={<Illustration url={otherRelease.illustration}/>}
+							/>
+						</Grid>)
+					}
+				</Grid>
+			</RelatedContentSection>
+			<RelatedContentSection
+				display={(videos.data?.items?.length ?? 0) > 1}
+				title={"Music Videos:"}
+			>
+				<Grid container spacing={2}>
+					{ videos.data?.items.filter(
+						(video) => videos.data?.items.filter(
+							(otherVideo) => otherVideo.name == video.name
+						).length == 1
+					)?.map((video) =>
+						<Grid key={video.id} item xs={6} sm={4} md={2} lg={2}>
+							<Tile
+								targetURL={`/`}
+								title={video.name}
+								subtitle={formatDuration(video.duration)}
+								illustration={
+									<Illustration aspectRatio={16/9} url={video.illustration} style={{ objectFit: 'cover' }}/>
+								}
 							/>
 						</Grid>)
 					}
