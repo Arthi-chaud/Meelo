@@ -24,9 +24,9 @@ import Song from "../../models/song";
 import Artist from "../../models/artist";
 import { shuffle } from 'd3-array';
 import getSlugOrId from "../../utils/getSlugOrId";
-import AlbumContextualMenu from "../../components/contextual-menu/album-contextual-menu";
 import ReleaseTrackList from "../../components/release-tracklist";
 import prepareSSR, { InferSSRProps } from "../../ssr";
+import ReleaseContextualMenu from "../../components/contextual-menu/release-contextual-menu";
 
 const releaseQuery = (slugOrId: string | number) => ({
 	key: ['release', slugOrId],
@@ -202,8 +202,8 @@ const ReleasePage = (
 						</Grid>)
 					}
 					<Grid item>
-						<AlbumContextualMenu
-							album={{ ...release.data.album, artist: albumArtist.data }}
+						<ReleaseContextualMenu
+							release={{ ...release.data, album: release.data.album }}
 						/>
 					</Grid>
 				</Grid>

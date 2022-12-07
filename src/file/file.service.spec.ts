@@ -20,6 +20,7 @@ import TestPrismaService from "test/test-prisma.service";
 import { FileAlreadyExistsException, FileNotFoundFromIDException } from "./file.exceptions";
 import FileModule from "./file.module";
 import FileService from "./file.service";
+import LibraryModule from "src/library/library.module";
 
 describe('File Service', () => {
 	let fileService: FileService;
@@ -29,7 +30,7 @@ describe('File Service', () => {
 
 	beforeAll(async () => {
 		const module: TestingModule = await createTestingModule({
-			imports: [FileModule, PrismaModule, MetadataModule, FileManagerModule, IllustrationModule, ArtistModule, AlbumModule, SongModule, ReleaseModule, TrackModule, SettingsModule, GenreModule, LyricsModule],
+			imports: [FileModule, PrismaModule, MetadataModule, FileManagerModule, IllustrationModule, ArtistModule, AlbumModule, SongModule, ReleaseModule, TrackModule, SettingsModule, GenreModule, LyricsModule, LibraryModule],
 			providers: [FileService],
 		}).overrideProvider(FileManagerService).useClass(FakeFileManagerService)
 		.overrideProvider(PrismaService).useClass(TestPrismaService).compile();

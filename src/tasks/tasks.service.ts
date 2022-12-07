@@ -18,11 +18,14 @@ export default class TasksService {
 		private fileManagerService: FileManagerService,
 		@Inject(forwardRef(() => FileService))
 		private fileService: FileService,
+		@Inject(forwardRef(() => TrackService))
 		private trackService: TrackService,
+		@Inject(forwardRef(() => MetadataService))
 		private metadataService: MetadataService,
 		private lyricsService: LyricsService,
 		@Inject(forwardRef(() => LibraryService))
 		private libraryService: LibraryService,
+		@Inject(forwardRef(() => IllustrationService))
 		private illustrationService: IllustrationService,
 	) {}
 

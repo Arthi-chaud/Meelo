@@ -1,5 +1,6 @@
 import {
-	HttpStatus, Injectable, StreamableFile
+	HttpStatus,
+	Inject, Injectable, StreamableFile, forwardRef
 } from '@nestjs/common';
 import FileManagerService from 'src/file-manager/file-manager.service';
 import {
@@ -17,13 +18,11 @@ import type FileQueryParameters from './models/file.query-parameters';
 import { FileNotReadableException } from 'src/file-manager/file-manager.exceptions';
 import * as fs from 'fs';
 import path from 'path';
-import SettingsService from 'src/settings/settings.service';
 import RepositoryService from 'src/repository/repository.service';
 import type { MeeloException } from 'src/exceptions/meelo-exception';
 import { buildDateSearchParameters } from 'src/utils/search-date-input';
 import LibraryService from 'src/library/library.service';
 import mime from 'mime';
-import Slug from 'src/slug/slug';
 import { Prisma } from '@prisma/client';
 import SortingParameter from 'src/sort/models/sorting-parameter';
 
@@ -46,7 +45,8 @@ export default class FileService extends RepositoryService<
 	constructor(
 		private prismaService: PrismaService,
 		private fileManagerService: FileManagerService,
-		private settingsService: SettingsService
+		@Inject(forwardRef(() => LibraryService))
+		private libraryService: LibraryService
 	) {
 		super(prismaService.file);
 	}
@@ -186,21 +186,36 @@ export default class FileService extends RepositoryService<
 	}
 
 	/**
+	 * Builds full path of file
+	 * @param where the query parameters to find the file entry in the database
+	 */
+	async buildFullPath(where: FileQueryParameters.WhereInput): Promise<string> {
+		const file = await this.get(where);
+		const library = await this.libraryService.get({ id: file.libraryId });
+		const libraryPath = this.fileManagerService.getLibraryFullPath(library);
+
+		return `${libraryPath}/${file.path}`.normalize();
+	}
+
+	/**
 	 *
 	 * @param file the file object of the file to stream
 	 * @param parentLibrary parent library of the file to stream
 	 * @param res the Response Object of the request
 	 * @returns a StreamableFile of the file
 	 */
-	streamFile(file: File, parentLibrary: Library, res: any, req: any): StreamableFile {
-		const fullFilePath = `${this.settingsService.settingsValues.dataFolder}/${parentLibrary.path}/${file.path}`.normalize();
+	async streamFile(
+		where: FileQueryParameters.WhereInput, res: any, req: any
+	): Promise<StreamableFile> {
+		const file = await this.get(where);
+		const fullFilePath = await this.buildFullPath(where);
 
 		if (this.fileManagerService.fileExists(fullFilePath) == false) {
 			throw new SourceFileNotFoundExceptions(file.path);
 		}
 		res.status(HttpStatus.PARTIAL_CONTENT);
 		res.set({
-			'Content-Disposition': `attachment; filename="${new Slug(path.parse(file.path).name).toString()}${path.parse(file.path).ext}"`,
+			'Content-Disposition': `attachment; filename="${path.basename(file.path)}"`,
 			'Content-Type': mime.getType(fullFilePath) ?? 'application/octet-stream',
 		});
 		const rangeHeader = req.headers['range'] ?? req.headers['Range'];

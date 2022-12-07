@@ -16,6 +16,7 @@ import TrackModule from "src/track/track.module";
 import TestPrismaService from "test/test-prisma.service";
 import type { Artist } from "src/prisma/models";
 import { LyricsModule } from "src/lyrics/lyrics.module";
+import ReleaseModule from "src/release/release.module";
 
 describe('Artist Service', () => {
 	let artistService: ArtistService;
@@ -24,7 +25,7 @@ describe('Artist Service', () => {
 
 	beforeAll(async () => {
 		const module: TestingModule = await createTestingModule({
-			imports: [ArtistModule, PrismaModule, SongModule, AlbumModule, IllustrationModule, GenreModule, TrackModule, LyricsModule],
+			imports: [ArtistModule, PrismaModule, SongModule, AlbumModule, IllustrationModule, GenreModule, TrackModule, LyricsModule, ReleaseModule],
 			providers: [ArtistService],
 		}).overrideProvider(FileManagerService).useClass(FakeFileManagerService)
 		.overrideProvider(PrismaService).useClass(TestPrismaService).compile();

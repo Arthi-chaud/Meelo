@@ -40,7 +40,9 @@ export default class LibraryService extends RepositoryService<
 		private fileManagerService: FileManagerService,
 		@Inject(forwardRef(() => FileService))
 		private fileService: FileService,
+		@Inject(forwardRef(() => MetadataService))
 		private metadataService: MetadataService,
+		@Inject(forwardRef(() => IllustrationService))
 		private illustrationService: IllustrationService,
 		@Inject(forwardRef(() => TasksService))
 		private tasksService: TasksService,

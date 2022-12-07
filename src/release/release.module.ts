@@ -1,5 +1,6 @@
 import { Module, forwardRef } from '@nestjs/common';
 import AlbumModule from 'src/album/album.module';
+import FileModule from 'src/file/file.module';
 import IllustrationModule from 'src/illustration/illustration.module';
 import PrismaModule from 'src/prisma/prisma.module';
 import TrackModule from 'src/track/track.module';
@@ -11,7 +12,8 @@ import ReleaseService from './release.service';
 		PrismaModule,
 		forwardRef(() => AlbumModule),
 		forwardRef(() => TrackModule),
-		forwardRef(() => IllustrationModule)
+		forwardRef(() => IllustrationModule),
+		forwardRef(() => FileModule)
 	],
 	controllers: [ReleaseController],
 	providers: [ReleaseService],

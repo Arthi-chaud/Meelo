@@ -31,6 +31,7 @@ import { ArtistNotFoundByIDException } from "src/artist/artist.exceptions";
 import GenreModule from "src/genre/genre.module";
 import TestPrismaService from "test/test-prisma.service";
 import { LyricsModule } from "src/lyrics/lyrics.module";
+import LibraryModule from "src/library/library.module";
 
 describe('Track Service', () => {
 	let trackService: TrackService;
@@ -47,7 +48,7 @@ describe('Track Service', () => {
 	
 	beforeAll(async () => {
 		const module: TestingModule = await createTestingModule({
-			imports: [PrismaModule, FileModule, MetadataModule, IllustrationModule,TrackModule, ArtistModule, SongModule, AlbumModule, ReleaseModule, FileManagerModule, SettingsModule, GenreModule, LyricsModule],
+			imports: [PrismaModule, FileModule, MetadataModule, IllustrationModule,TrackModule, ArtistModule, SongModule, AlbumModule, ReleaseModule, FileManagerModule, SettingsModule, GenreModule, LyricsModule, LibraryModule],
 			providers: [PrismaService,TrackService, ArtistService, SongService, AlbumService, ReleaseService, FileService, FileManagerService, SettingsService],
 		}).overrideProvider(FileManagerService).useClass(FakeFileManagerService)
 		.overrideProvider(PrismaService).useClass(TestPrismaService).compile();
