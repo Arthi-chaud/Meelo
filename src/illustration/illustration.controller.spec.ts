@@ -31,7 +31,7 @@ describe('Illustration Controller', () => {
 	let trackService: TrackService;
 	beforeAll(async () => {
 		const module: TestingModule = await createTestingModule({
-			imports: [FileManagerModule, PrismaModule, FileModule, MetadataModule, FileManagerModule, ArtistModule, AlbumModule, SongModule, ReleaseModule, TrackModule, GenreModule, LyricsModule],
+			imports: [FileManagerModule, PrismaModule, FileModule, MetadataModule, FileManagerModule, FileModule, ArtistModule, AlbumModule, SongModule, ReleaseModule, TrackModule, GenreModule, LyricsModule],
 		}).overrideProvider(FileManagerService).useClass(FakeFileManagerService)
 		.overrideProvider(PrismaService).useClass(TestPrismaService).compile();
 		app = module.createNestApplication();

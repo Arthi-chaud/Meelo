@@ -13,7 +13,7 @@ import TrackModule from 'src/track/track.module';
 		forwardRef(() => SongModule),
 		forwardRef(() => AlbumModule),
 		forwardRef(() => TrackModule),
-		IllustrationModule
+		forwardRef(() => IllustrationModule)
 	],
 	exports: [ArtistService],
 	providers: [ArtistService],

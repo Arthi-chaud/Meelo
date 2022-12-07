@@ -37,6 +37,7 @@ export default class MetadataService {
 		@Inject(forwardRef(() => ReleaseService))
 		private releaseService: ReleaseService,
 		private settingsService: SettingsService,
+		@Inject(forwardRef(() => GenreService))
 		private genreService: GenreService,
 		@Inject(forwardRef(() => FileService))
 		private fileService: FileService,

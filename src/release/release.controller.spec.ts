@@ -24,6 +24,7 @@ import type Tracklist from "src/track/models/tracklist.model";
 import GenreModule from "src/genre/genre.module";
 import TestPrismaService from "test/test-prisma.service";
 import type ReassignReleaseDTO from "./models/reassign-release.dto";
+import FileModule from "src/file/file.module";
 
 describe('Release Controller', () => {
 	let dummyRepository: TestPrismaService;
@@ -51,7 +52,7 @@ describe('Release Controller', () => {
 
 	beforeAll(async () => {
 		const module: TestingModule = await createTestingModule({
-			imports: [PrismaModule, AlbumModule, ArtistModule, ReleaseModule, TrackModule, IllustrationModule, SongModule, MetadataModule, GenreModule],
+			imports: [PrismaModule, AlbumModule, ArtistModule, ReleaseModule, TrackModule, IllustrationModule, SongModule, FileModule, MetadataModule, GenreModule],
 			providers: [ReleaseService, AlbumService, ArtistService, ReleaseController],
 		}).overrideProvider(FileManagerService).useClass(FakeFileManagerService)
 		.overrideProvider(PrismaService).useClass(TestPrismaService).compile();

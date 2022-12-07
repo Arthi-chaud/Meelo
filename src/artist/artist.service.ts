@@ -48,6 +48,7 @@ export default class ArtistService extends RepositoryService<
 		private songService: SongService,
 		@Inject(forwardRef(() => AlbumService))
 		private albumService: AlbumService,
+		@Inject(forwardRef(() => IllustrationService))
 		private illustrationService: IllustrationService
 	) {
 		super(prismaService.artist);
