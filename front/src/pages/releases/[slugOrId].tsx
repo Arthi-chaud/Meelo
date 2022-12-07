@@ -272,7 +272,7 @@ const ReleasePage = (
 			</Grid>
 			<RelatedContentSection
 				display={(relatedReleases.data?.items?.length ?? 0) > 1}
-				title={"Other releases of the same album:"}
+				title={"Other releases of the same album"}
 			>
 				<Grid container spacing={2}>
 					{ relatedReleases.data?.items?.filter(
@@ -294,7 +294,7 @@ const ReleasePage = (
 			</RelatedContentSection>
 			<RelatedContentSection
 				display={(videos.data?.items?.length ?? 0) >= 1}
-				title={"Music Videos:"}
+				title={"Music Videos"}
 			>
 				<Grid container spacing={2}>
 					{ videos.data?.items.filter(
