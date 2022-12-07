@@ -792,6 +792,15 @@ export default class API {
 	}
 
 	/**
+	 * Builds the URL to get an archive of a given release
+	 * @param releaseId slug or id of the release
+	 * @returns the correct, rerouted URL
+	 */
+	static getReleaseArchiveURL(releaseId: number | string): string {
+		return this.buildURL(`/releases/${releaseId}/archive`, {});
+	}
+
+	/**
 	 * Mark a song as played
 	 * To be called when a song ends.
 	 * @param songSlugOrId

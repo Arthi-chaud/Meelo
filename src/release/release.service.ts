@@ -11,6 +11,7 @@ import {
 	ReleaseNotFoundException,
 	ReleaseNotFoundFromIDException
 } from './release.exceptions';
+import { basename } from 'path';
 import PrismaService from 'src/prisma/prisma.service';
 import type ReleaseQueryParameters from './models/release.query-parameters';
 import type AlbumQueryParameters from 'src/album/models/album.query-parameters';
@@ -24,6 +25,11 @@ import { buildStringSearchParameters } from 'src/utils/search-string-input';
 import ArtistService from 'src/artist/artist.service';
 import { ReleaseResponse } from './models/release.response';
 import SortingParameter from 'src/sort/models/sorting-parameter';
+import FileService from 'src/file/file.service';
+import archiver from 'archiver';
+import { createReadStream } from 'fs';
+import { Response } from 'express';
+import mime from 'mime';
 
 @Injectable()
 export default class ReleaseService extends RepositoryService<
@@ -47,8 +53,10 @@ export default class ReleaseService extends RepositoryService<
 		private albumService: AlbumService,
 		@Inject(forwardRef(() => TrackService))
 		private trackService: TrackService,
+		@Inject(forwardRef(() => FileService))
+		private fileService: FileService,
 		@Inject(forwardRef(() => IllustrationService))
-		private illustrationService: IllustrationService
+		private illustrationService: IllustrationService,
 	) {
 		super(prismaService.release);
 	}
@@ -425,6 +433,29 @@ export default class ReleaseService extends RepositoryService<
 		const path = await this.buildIllustrationPath(where);
 
 		return this.illustrationService.illustrationExists(path);
+	}
+
+	async pipeArchive(where: ReleaseQueryParameters.WhereInput, res: Response) {
+		const release = await this.get(where, { tracks: true });
+		const illustration = await this.buildIllustrationPath(where);
+		const archive = archiver('zip');
+		const outputName = `${release.slug}.zip`;
+
+		await Promise.all(
+			release.tracks.map((track) => this.fileService.buildFullPath({ id: track.id }))
+		).then((paths) => paths.forEach((path) => {
+			archive.append(createReadStream(path), { name: basename(path) });
+		}));
+		if (this.illustrationService.illustrationExists(illustration)) {
+			archive.append(createReadStream(illustration), { name: basename(illustration) });
+		}
+
+		res.set({
+			'Content-Disposition': `attachment; filename="${outputName}"`,
+			'Content-Type': mime.getType(outputName) ?? 'application/octet-stream',
+		});
+		archive.pipe(res);
+		archive.finalize();
 	}
 
 	async buildResponse(release: ReleaseWithRelations): Promise<ReleaseResponse> {

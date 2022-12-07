@@ -8,6 +8,8 @@ import { GoToAlbumAction, GoToArtistAction } from "../actions/link";
 import { useSelector } from "react-redux";
 import { RootState } from "../../state/store";
 import { ShareReleaseAction } from "../actions/share";
+import { DownloadReleaseAction } from "../actions/download";
+import { useConfirm } from "material-ui-confirm";
 
 type ReleaseContextualMenuProps = {
 	release: ReleaseWithAlbum;
@@ -16,6 +18,7 @@ type ReleaseContextualMenuProps = {
 const ReleaseContextualMenu = (props: ReleaseContextualMenuProps) => {
 	const userIsAdmin = useSelector((state: RootState) => state.user.user?.admin == true);
 	const queryClient = useQueryClient();
+	const confirm = useConfirm();
 	const masterMutation = useMutation(async () => {
 		return API.setReleaseAsMaster(props.release.id)
 			.then(() => {
@@ -52,8 +55,9 @@ const ReleaseContextualMenu = (props: ReleaseContextualMenuProps) => {
 				disabled: !userIsAdmin,
 				onClick: () => tracksMasterMutation.mutate()
 			},
-			ShareReleaseAction(props.release.id)
-		]
+		],
+		[DownloadReleaseAction(confirm, props.release.id)],
+		[ShareReleaseAction(props.release.id)]
 	]}/>;
 };
 

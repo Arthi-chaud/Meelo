@@ -14,13 +14,13 @@ import MetadataService from './metadata.service';
 	imports: [
 		SettingsModule,
 		FileManagerModule,
-		TrackModule,
-		SongModule,
-		ReleaseModule,
-		GenresModule,
+		forwardRef(() => TrackModule),
+		forwardRef(() => SongModule),
+		forwardRef(() => ReleaseModule),
+		forwardRef(() => GenresModule),
 		forwardRef(() => FileModule),
 		forwardRef(() => AlbumModule),
-		ArtistModule
+		forwardRef(() => ArtistModule)
 	],
 	providers: [MetadataService],
 	exports: [MetadataService]
