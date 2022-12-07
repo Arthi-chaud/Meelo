@@ -19,7 +19,7 @@ import FadeIn from "react-fade-in";
 import Tile from "../../components/tile/tile";
 import { useQueries, useQuery } from "../../api/use-query";
 import { useDispatch } from "react-redux";
-import { playTracks } from "../../state/playerSlice";
+import { playTrack, playTracks } from "../../state/playerSlice";
 import Song from "../../models/song";
 import Artist from "../../models/artist";
 import { shuffle } from 'd3-array';
@@ -280,7 +280,7 @@ const ReleasePage = (
 					).map((otherRelease) =>
 						<Grid key={otherRelease.id} item xs={6} sm={4} md={2} lg={2}>
 							<Tile
-								targetURL={`/releases/${albumArtist?.data?.slug ?? 'compilations'}+${release.data!.album.slug}+${otherRelease.slug}/`}
+								href={`/releases/${albumArtist?.data?.slug ?? 'compilations'}+${release.data!.album.slug}+${otherRelease.slug}/`}
 								title={otherRelease.name}
 								subtitle={otherRelease.releaseDate
 									? new Date(otherRelease.releaseDate).getFullYear().toString()
@@ -293,7 +293,7 @@ const ReleasePage = (
 				</Grid>
 			</RelatedContentSection>
 			<RelatedContentSection
-				display={(videos.data?.items?.length ?? 0) > 1}
+				display={(videos.data?.items?.length ?? 0) >= 1}
 				title={"Music Videos:"}
 			>
 				<Grid container spacing={2}>
@@ -304,7 +304,30 @@ const ReleasePage = (
 					)?.map((video) =>
 						<Grid key={video.id} item xs={6} sm={4} md={2} lg={2}>
 							<Tile
-								targetURL={`/`}
+								onClick={() => {
+									const parentSong = Object.values(trackList!)
+										.flat()
+										.find((track) => track.songId == video.songId)?.song;
+
+									if (!parentSong) {
+										// Should never happen
+										return;
+									}
+									const parentArtist = getSongArtist(
+										parentSong,
+										albumArtist.data,
+										otherArtistsQuery
+											.filter((query) => !query.data)
+											.map((query) => query.data!)
+									);
+
+									dispatch(playTrack({
+										track: video,
+										release: release.data,
+										artist: parentArtist
+
+									}));
+								}}
 								title={video.name}
 								subtitle={formatDuration(video.duration)}
 								illustration={
