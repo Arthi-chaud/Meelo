@@ -1,5 +1,5 @@
 import {
-	Button, Divider, Grid, IconButton, List, ListItem,
+	Button, Divider, Grid, IconButton,
 	ListSubheader, Typography, useTheme
 } from "@mui/material";
 import { Box } from "@mui/system";
@@ -96,7 +96,7 @@ const RelatedContentSection = (props: RelatedContentSectionProps) => {
 	return (
 		<FadeIn>
 			<Divider/>
-			<Typography variant='h6' sx={{ paddingTop: 3 }}>{props.title}</Typography>
+			<Typography variant='h6' sx={{ paddingY: 3 }}>{props.title}</Typography>
 			{props.children}
 		</FadeIn>
 	);
@@ -271,21 +271,23 @@ const ReleasePage = (
 				display={(relatedReleases.data?.items?.length ?? 0) > 1}
 				title={"Other releases of the same album:"}
 			>
-				<List>
+				<Grid container spacing={2}>
 					{ relatedReleases.data?.items?.filter(
 						(relatedRelease) => relatedRelease.id != release.data!.id
-					).map((otherRelease) => <ListItem key={otherRelease.id}>
-						<Tile
-							targetURL={`/releases/${albumArtist?.data?.slug ?? 'compilations'}+${release.data!.album.slug}+${otherRelease.slug}/`}
-							title={otherRelease.name}
-							subtitle={otherRelease.releaseDate
-								? new Date(otherRelease.releaseDate).getFullYear().toString()
-								: undefined
-							}
-							illustration={<Illustration url={otherRelease.illustration}/>}
-						/>
-					</ListItem>)}
-				</List>
+					).map((otherRelease) =>
+						<Grid key={otherRelease.id} item xs={6} sm={4} md={2} lg={2}>
+							<Tile
+								targetURL={`/releases/${albumArtist?.data?.slug ?? 'compilations'}+${release.data!.album.slug}+${otherRelease.slug}/`}
+								title={otherRelease.name}
+								subtitle={otherRelease.releaseDate
+									? new Date(otherRelease.releaseDate).getFullYear().toString()
+									: undefined
+								}
+								illustration={<Illustration url={otherRelease.illustration}/>}
+							/>
+						</Grid>)
+					}
+				</Grid>
 			</RelatedContentSection>
 		</Box>
 	</Box>;
