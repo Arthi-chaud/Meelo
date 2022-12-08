@@ -442,7 +442,9 @@ export default class ReleaseService extends RepositoryService<
 		const outputName = `${release.slug}.zip`;
 
 		await Promise.all(
-			release.tracks.map((track) => this.fileService.buildFullPath({ id: track.id }))
+			release.tracks.map(
+				(track) => this.fileService.buildFullPath({ id: track.sourceFileId })
+			)
 		).then((paths) => paths.forEach((path) => {
 			archive.append(createReadStream(path), { name: basename(path) });
 		}));
