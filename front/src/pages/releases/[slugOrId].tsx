@@ -10,7 +10,7 @@ import { WideLoadingComponent } from "../../components/loading/loading";
 import { ReleaseWithAlbum } from "../../models/release";
 import formatDuration from '../../utils/formatDuration';
 import { useEffect, useState } from "react";
-import { TrackWithSong } from "../../models/track";
+import Track, { TrackWithSong } from "../../models/track";
 import Tracklist from "../../models/tracklist";
 import Link from 'next/link';
 import PlayCircleIcon from '@mui/icons-material/PlayCircle';
@@ -56,13 +56,14 @@ const albumGenresQuery = (slugOrId: string | number) => ({
 	exec: () => API.getAlbumGenres(slugOrId),
 });
 
-const albumVideosQuery = (slugOrId: string | number) => ({
+const songVideosQuery = (slugOrId: string | number) => ({
 	key: [
-		'album',
+		'song',
 		slugOrId,
-		'videos'
+		'video'
 	],
-	exec: () => API.getAlbumVideos(slugOrId, {}, { sortBy: 'name' }),
+	exec: () => API.getSongVideos(slugOrId, { pageSize: 1 }, { sortBy: 'id' })
+		.then((page) => page.items.at(0)),
 });
 
 const albumReleasesQuery = (slugOrId: string | number) => ({
@@ -129,11 +130,18 @@ const ReleasePage = (
 	const tracklist = useQuery(tracklistQuery, releaseIdentifier);
 	const albumArtist = useQuery(artistQuery, artistId);
 	const albumGenres = useQuery(albumGenresQuery, release.data?.albumId);
-	const videos = useQuery(albumVideosQuery, release.data?.albumId);
 	const hasGenres = (albumGenres.data?.length ?? 0) > 0;
 	const otherArtistsQuery = useQueries(...tracks
 		.filter((track: TrackWithSong) => track.song.artistId != albumArtist.data?.id)
 		.map((track): Parameters<typeof useQuery<Artist>> => [artistQuery, track.song.artistId]));
+	const videos = useQueries(...tracks
+		.filter(
+			(track: TrackWithSong, index) => tracks.findIndex(
+				(otherTrack) => otherTrack.songId == track.songId
+			) == index
+		)
+		.map((track): Parameters<typeof useQuery<Track | undefined>> =>
+			[songVideosQuery, track.song.id]));
 	const relatedReleases = useQuery(albumReleasesQuery, release.data?.albumId);
 
 	useEffect(() => {
@@ -293,15 +301,13 @@ const ReleasePage = (
 				</Grid>
 			</RelatedContentSection>
 			<RelatedContentSection
-				display={(videos.data?.items?.length ?? 0) >= 1}
+				display={videos.filter((video) => video.data !== undefined).length >= 1}
 				title={"Music Videos"}
 			>
 				<Grid container spacing={2}>
-					{ videos.data?.items.filter(
-						(video) => videos.data?.items.filter(
-							(otherVideo) => otherVideo.name == video.name
-						).length == 1
-					)?.map((video) =>
+					{ videos.filter(
+						(video) => video.data !== undefined
+					).map((video) => video.data!).map((video) =>
 						<Grid key={video.id} item xs={6} sm={4} md={2} lg={2}>
 							<Tile
 								onClick={() => {

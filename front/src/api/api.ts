@@ -459,6 +459,24 @@ export default class API {
 	}
 
 	/**
+	 * Get video tracks of a song
+	 * @param songSlugOrId the id of the parent song
+	 * @param include the relation to include
+	 * @returns an array of video tracks
+	 */
+	static async getSongVideos<T extends Track = Track>(
+		songSlugOrId: string | number,
+		pagination?: PaginationParameters,
+		sort?: SortingParameters<typeof TrackSortingKeys>,
+		include: TrackInclude[] = []
+	): Promise<PaginatedResponse<T>> {
+		return API.fetch({
+			route: `/songs/${songSlugOrId}/videos`,
+			parameters: { pagination, include, sort }
+		});
+	}
+
+	/**
 	 * Get versions of a song
 	 * @param songSlugOrId the id of the  song
 	 * @param include the relation to include
