@@ -1,5 +1,5 @@
 import {
-	Button, Divider, Grid, IconButton, List, ListItem,
+	Button, Divider, Grid, IconButton,
 	ListSubheader, Typography, useTheme
 } from "@mui/material";
 import { Box } from "@mui/system";
@@ -19,7 +19,7 @@ import FadeIn from "react-fade-in";
 import Tile from "../../components/tile/tile";
 import { useQueries, useQuery } from "../../api/use-query";
 import { useDispatch } from "react-redux";
-import { playTracks } from "../../state/playerSlice";
+import { playTrack, playTracks } from "../../state/playerSlice";
 import Song from "../../models/song";
 import Artist from "../../models/artist";
 import { shuffle } from 'd3-array';
@@ -62,7 +62,7 @@ const albumVideosQuery = (slugOrId: string | number) => ({
 		slugOrId,
 		'videos'
 	],
-	exec: () => API.getAlbumVideos(slugOrId),
+	exec: () => API.getAlbumVideos(slugOrId, {}, { sortBy: 'name' }),
 });
 
 const albumReleasesQuery = (slugOrId: string | number) => ({
@@ -96,8 +96,10 @@ const RelatedContentSection = (props: RelatedContentSectionProps) => {
 	return (
 		<FadeIn>
 			<Divider/>
-			<Typography variant='h6' sx={{ paddingTop: 3 }}>{props.title}</Typography>
-			{props.children}
+			<Box sx={{ padding: 3 }}>
+				<Typography variant='h6' sx={{ paddingBottom: 3 }}>{props.title}</Typography>
+				{props.children}
+			</Box>
 		</FadeIn>
 	);
 };
@@ -127,6 +129,7 @@ const ReleasePage = (
 	const tracklist = useQuery(tracklistQuery, releaseIdentifier);
 	const albumArtist = useQuery(artistQuery, artistId);
 	const albumGenres = useQuery(albumGenresQuery, release.data?.albumId);
+	const videos = useQuery(albumVideosQuery, release.data?.albumId);
 	const hasGenres = (albumGenres.data?.length ?? 0) > 0;
 	const otherArtistsQuery = useQueries(...tracks
 		.filter((track: TrackWithSong) => track.song.artistId != albumArtist.data?.id)
@@ -269,23 +272,71 @@ const ReleasePage = (
 			</Grid>
 			<RelatedContentSection
 				display={(relatedReleases.data?.items?.length ?? 0) > 1}
-				title={"Other releases of the same album:"}
+				title={"Other releases of the same album"}
 			>
-				<List>
+				<Grid container spacing={2}>
 					{ relatedReleases.data?.items?.filter(
 						(relatedRelease) => relatedRelease.id != release.data!.id
-					).map((otherRelease) => <ListItem key={otherRelease.id}>
-						<Tile
-							targetURL={`/releases/${albumArtist?.data?.slug ?? 'compilations'}+${release.data!.album.slug}+${otherRelease.slug}/`}
-							title={otherRelease.name}
-							subtitle={otherRelease.releaseDate
-								? new Date(otherRelease.releaseDate).getFullYear().toString()
-								: undefined
-							}
-							illustration={<Illustration url={otherRelease.illustration}/>}
-						/>
-					</ListItem>)}
-				</List>
+					).map((otherRelease) =>
+						<Grid key={otherRelease.id} item xs={6} sm={4} md={2} lg={2}>
+							<Tile
+								href={`/releases/${albumArtist?.data?.slug ?? 'compilations'}+${release.data!.album.slug}+${otherRelease.slug}/`}
+								title={otherRelease.name}
+								subtitle={otherRelease.releaseDate
+									? new Date(otherRelease.releaseDate).getFullYear().toString()
+									: undefined
+								}
+								illustration={<Illustration url={otherRelease.illustration}/>}
+							/>
+						</Grid>)
+					}
+				</Grid>
+			</RelatedContentSection>
+			<RelatedContentSection
+				display={(videos.data?.items?.length ?? 0) >= 1}
+				title={"Music Videos"}
+			>
+				<Grid container spacing={2}>
+					{ videos.data?.items.filter(
+						(video) => videos.data?.items.filter(
+							(otherVideo) => otherVideo.name == video.name
+						).length == 1
+					)?.map((video) =>
+						<Grid key={video.id} item xs={6} sm={4} md={2} lg={2}>
+							<Tile
+								onClick={() => {
+									const parentSong = Object.values(trackList!)
+										.flat()
+										.find((track) => track.songId == video.songId)?.song;
+
+									if (!parentSong) {
+										// Should never happen
+										return;
+									}
+									const parentArtist = getSongArtist(
+										parentSong,
+										albumArtist.data,
+										otherArtistsQuery
+											.filter((query) => !query.data)
+											.map((query) => query.data!)
+									);
+
+									dispatch(playTrack({
+										track: video,
+										release: release.data,
+										artist: parentArtist
+
+									}));
+								}}
+								title={video.name}
+								subtitle={formatDuration(video.duration)}
+								illustration={
+									<Illustration aspectRatio={16/9} url={video.illustration} style={{ objectFit: 'cover' }}/>
+								}
+							/>
+						</Grid>)
+					}
+				</Grid>
 			</RelatedContentSection>
 		</Box>
 	</Box>;

@@ -514,10 +514,11 @@ export default class API {
 	static async getAlbumVideos(
 		albumSlugOrId: string | number,
 		pagination?: PaginationParameters,
+		sort?: SortingParameters<typeof TrackSortingKeys>,
 	): Promise<PaginatedResponse<Track>> {
 		return API.fetch({
 			route: `/albums/${albumSlugOrId}/videos`,
-			parameters: { pagination, include: [] }
+			parameters: { pagination, include: [], sort }
 		});
 	}
 

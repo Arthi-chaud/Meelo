@@ -132,7 +132,7 @@ const Player = () => {
 					setProgress(player.current?.currentTime);
 				}
 			}, 100);
-			if (!windowFocused && Notification.permission == 'granted') {
+			if (typeof Notification !== 'undefined' && !windowFocused && Notification.permission == 'granted') {
 				try {
 					setNotification(new Notification(`${currentTrack.track.name} - ${currentTrack.artist.name}`, {
 						icon: newIllustrationURL ? API.getIllustrationURL(newIllustrationURL) : '/icon.png'

@@ -18,48 +18,54 @@ type TileProps = {
 	/**
 	 * URL to push on tile tap
 	 */
-	targetURL: string
+	href?: string;
+	/**
+	 * Callback on tile tap
+	 */
+	onClick?: () => void;
 }
 
 const Tile = (props: TileProps) => {
 	const theme = useTheme();
 
-	return (
+	const component =
 		<Card style={{
 			border: "none", boxShadow: "none", height: '100%',
 			borderRadius: theme.shape.borderRadius
 		}}>
-			<Link href={props.targetURL}>
-				<CardActionArea sx={{
-					height: '100%', display: 'flex',
-					flexDirection: 'column', alignItems: 'space-between'
+			<CardActionArea onClick={props.onClick} sx={{
+				height: '100%', display: 'flex',
+				flexDirection: 'column', alignItems: 'space-between'
+			}}>
+				<CardMedia sx={{ width: '100%' }}>
+					{props.illustration}
+				</CardMedia>
+				<CardContent style={{
+					flexDirection: 'column', display: 'flex', height: '100%',
+					alignContent: 'center', justifyContent: 'center'
 				}}>
-					<CardMedia sx={{ width: '100%' }}>
-						{props.illustration}
-					</CardMedia>
-					<CardContent style={{
-						flexDirection: 'column', display: 'flex', height: '100%',
-						alignContent: 'center', justifyContent: 'center'
-					}}>
-						<Typography
-							sx={{ fontWeight: 'bold', textAlign: 'center' }}
-							style={{ ...titleStyle, overflowWrap: 'anywhere', WebkitLineClamp: 2 }}
-						>
-							{props.title}
-						</Typography>
-						{ props.subtitle &&
-						<Typography
-							sx={{ fontWeight: 'light', textAlign: 'center' }}
-							style={{ ...titleStyle, overflowWrap: 'anywhere', WebkitLineClamp: 1 }}
-						>
-							{props.subtitle}
-						</Typography>
-						}
-					</CardContent>
-				</CardActionArea>
-			</Link>
-		</Card>
-	);
+					<Typography
+						sx={{ fontWeight: 'bold', textAlign: 'center' }}
+						style={{ ...titleStyle, overflowWrap: 'anywhere', WebkitLineClamp: 2 }}
+					>
+						{props.title}
+					</Typography>
+					{ props.subtitle &&
+					<Typography
+						sx={{ fontWeight: 'light', textAlign: 'center' }}
+						style={{ ...titleStyle, overflowWrap: 'anywhere', WebkitLineClamp: 1 }}
+					>
+						{props.subtitle}
+					</Typography>
+					}
+				</CardContent>
+			</CardActionArea>
+		</Card>;
+
+	if (props.href) {
+		return <Link href={props.href}>{component}</Link>;
+	}
+	return component;
 };
 
 export default Tile;
