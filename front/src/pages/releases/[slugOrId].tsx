@@ -10,7 +10,6 @@ import { WideLoadingComponent } from "../../components/loading/loading";
 import { ReleaseWithAlbum } from "../../models/release";
 import formatDuration from '../../utils/formatDuration';
 import { useEffect, useState } from "react";
-import Track, { TrackWithSong } from "../../models/track";
 import Tracklist from "../../models/tracklist";
 import Link from 'next/link';
 import PlayCircleIcon from '@mui/icons-material/PlayCircle';
@@ -27,6 +26,7 @@ import getSlugOrId from "../../utils/getSlugOrId";
 import ReleaseTrackList from "../../components/release-tracklist";
 import prepareSSR, { InferSSRProps } from "../../ssr";
 import ReleaseContextualMenu from "../../components/contextual-menu/release-contextual-menu";
+import { TrackWithSong } from "../../models/track";
 
 const releaseQuery = (slugOrId: string | number) => ({
 	key: ['release', slugOrId],
@@ -56,14 +56,13 @@ const albumGenresQuery = (slugOrId: string | number) => ({
 	exec: () => API.getAlbumGenres(slugOrId),
 });
 
-const songVideosQuery = (slugOrId: string | number) => ({
+const albumVideosQuery = (slugOrId: string | number) => ({
 	key: [
-		'song',
+		'album',
 		slugOrId,
 		'video'
 	],
-	exec: () => API.getSongVideos(slugOrId, { pageSize: 1 }, { sortBy: 'id' })
-		.then((page) => page.items.at(0)),
+	exec: () => API.getAlbumVideos<TrackWithSong>(slugOrId, ['song']),
 });
 
 const albumReleasesQuery = (slugOrId: string | number) => ({
@@ -134,14 +133,7 @@ const ReleasePage = (
 	const otherArtistsQuery = useQueries(...tracks
 		.filter((track: TrackWithSong) => track.song.artistId != albumArtist.data?.id)
 		.map((track): Parameters<typeof useQuery<Artist>> => [artistQuery, track.song.artistId]));
-	const videos = useQueries(...tracks
-		.filter(
-			(track: TrackWithSong, index) => tracks.findIndex(
-				(otherTrack) => otherTrack.songId == track.songId
-			) == index
-		)
-		.map((track): Parameters<typeof useQuery<Track | undefined>> =>
-			[songVideosQuery, track.song.id]));
+	const albumVideos = useQuery(albumVideosQuery, release.data?.albumId);
 	const relatedReleases = useQuery(albumReleasesQuery, release.data?.albumId);
 
 	useEffect(() => {
@@ -307,26 +299,16 @@ const ReleasePage = (
 				</Grid>
 			</RelatedContentSection>
 			<RelatedContentSection
-				display={videos.filter((video) => video.data !== undefined).length >= 1}
+				display={albumVideos.data !== undefined && albumVideos.data.length != 0}
 				title={"Music Videos"}
 			>
 				<Grid container spacing={2}>
-					{ videos.filter(
-						(video) => video.data !== undefined
-					).map((video) => video.data!).map((video) =>
+					{ albumVideos.data?.map((video) =>
 						<Grid key={video.id} item xs={6} sm={4} md={2} lg={2}>
 							<Tile
 								onClick={() => {
-									const parentSong = Object.values(trackList!)
-										.flat()
-										.find((track) => track.songId == video.songId)?.song;
-
-									if (!parentSong) {
-										// Should never happen
-										return;
-									}
 									const parentArtist = getSongArtist(
-										parentSong,
+										video.song,
 										albumArtist.data,
 										otherArtistsQuery
 											.filter((query) => !query.data)

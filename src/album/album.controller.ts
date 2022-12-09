@@ -15,7 +15,7 @@ import TrackQueryParameters from 'src/track/models/track.query-parameters';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import ReassignAlbumDTO from './models/reassign-album.dto';
 import GenreService from "../genre/genre.service";
-import { Genre, Track } from "src/prisma/models";
+import { Genre } from "src/prisma/models";
 import { AlbumResponse } from './models/album.response';
 import { ApiPaginatedResponse } from 'src/pagination/paginated-response.decorator';
 import { ReleaseResponse } from 'src/release/models/release.response';
@@ -26,6 +26,7 @@ import { ApiIdentifierRoute } from 'src/identifier/identifier-route.decorator';
 import RelationIncludeQuery from 'src/relation-include/relation-include-query.decorator';
 import SortingQuery from 'src/sort/sort-query.decorator';
 import Admin from 'src/roles/admin.decorator';
+import { TrackResponse } from 'src/track/models/track.response';
 
 @ApiTags("Albums")
 @Controller('albums')
@@ -173,7 +174,7 @@ export default class AlbumController {
 		include: TrackQueryParameters.RelationInclude,
 		@IdentifierParam(ParseAlbumIdentifierPipe)
 		where: AlbumQueryParameters.WhereInput
-	): Promise<Track[]> {
+	): Promise<TrackResponse[]> {
 		const albumReleases = await this.releaseService.getAlbumReleases(
 			where, { }, { tracks: true }
 		);
@@ -196,7 +197,11 @@ export default class AlbumController {
 					type: 'Video',
 					bySong: { byId: { id: track.songId } },
 				}, { take: 1 }, include))
-		).then((tracks) => tracks.flat());
+		).then((tracks) => Promise.all(
+			tracks
+				.flat()
+				.map((track) => this.trackService.buildResponse(track))
+		));
 	}
 
 	@ApiOperation({
