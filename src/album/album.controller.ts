@@ -186,9 +186,9 @@ export default class AlbumController {
 				.filter((track, index, array) => index == array.indexOf(track))
 				.sort((track1, track2) => {
 					if (track1.discIndex != track2.discIndex) {
-						return (track1.discIndex ?? -1) - (track2.discIndex ?? -1);
+						return (track1.discIndex ?? 0) - (track2.discIndex ?? 0);
 					}
-					return (track1.trackIndex ?? -1) - (track2.trackIndex ?? -1);
+					return (track1.trackIndex ?? 0) - (track2.trackIndex ?? 0);
 				})
 				.filter((track, index, array) => array.findIndex(
 					(otherTrack) => otherTrack.songId == track.songId

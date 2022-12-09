@@ -11,7 +11,8 @@ export default class NotFoundExceptionFilter implements ExceptionFilter {
 		response
 			.status(HttpStatus.NOT_FOUND)
 			.json({
-				error: "Route not found."
+				statusCode: HttpStatus.NOT_FOUND,
+				message: "Route not found."
 			});
 	}
 }
