@@ -213,7 +213,6 @@ export default class FileService extends RepositoryService<
 		if (this.fileManagerService.fileExists(fullFilePath) == false) {
 			throw new SourceFileNotFoundExceptions(file.path);
 		}
-		res.status(HttpStatus.PARTIAL_CONTENT);
 		res.set({
 			'Content-Disposition': `attachment; filename="${path.basename(file.path)}"`,
 			'Content-Type': mime.getType(fullFilePath) ?? 'application/octet-stream',
@@ -223,6 +222,7 @@ export default class FileService extends RepositoryService<
 		let requestedEndByte: number | undefined = undefined;
 
 		if (rangeHeader) {
+			res.status(HttpStatus.PARTIAL_CONTENT);
 			// eslint-disable-next-line no-useless-escape
 			const bytes = /^bytes\=(\d+)\-(\d+)?$/g.exec(rangeHeader);
 
