@@ -1,6 +1,6 @@
 import { Delete } from "@mui/icons-material";
 import {
-	Box, Button, Grid, Hidden, IconButton
+	Box, Button, Grid, Hidden, IconButton, useMediaQuery, useTheme
 } from "@mui/material";
 import { GridColDef } from "@mui/x-data-grid";
 import toast from "react-hot-toast";
@@ -14,6 +14,7 @@ import {
 	ScanAllLibrariesAction, ScanLibraryAction
 } from "../actions/library-task";
 import { useConfirm } from "material-ui-confirm";
+import Action from "../actions/action";
 
 const librariesQuery = () => ({
 	key: ['libraries'],
@@ -23,6 +24,21 @@ const librariesQuery = () => ({
 const actionButtonStyle = {
 	overflow: 'hidden',
 	textOverflow: 'ellipsis'
+};
+
+const RunTaskButton = (
+	{ icon, label, onClick, variant }: Action & Pick<Parameters<typeof Button>[0], 'variant'>
+) => {
+	const theme = useTheme();
+	const viewPortIsSmall = useMediaQuery(theme.breakpoints.up('sm'));
+
+	return <Button variant={variant} size='small'
+		startIcon={viewPortIsSmall && icon}
+		onClick={onClick} sx={actionButtonStyle}
+	>
+		<Hidden smUp>{icon}</Hidden>
+		<Hidden smDown>{label}</Hidden>
+	</Button>;
 };
 
 const LibrariesSettings = () => {
@@ -39,25 +55,10 @@ const LibrariesSettings = () => {
 			}));
 	const columns: GridColDef<Library>[] = [
 		{ field: 'name', headerName: 'Name', flex: 5 },
-		{ field: 'clean', headerName: 'Clean', flex: 3, renderCell: ({ row: library }) => {
-			const cleanAction = CleanLibraryAction(library.id);
-
-			return <Button variant='outlined' color='secondary' size='small'
-				startIcon={cleanAction.icon} onClick={cleanAction.onClick} sx={actionButtonStyle}
-			>
-				<Hidden smDown>{cleanAction.label}</Hidden>
-			</Button>;
-		} },
-		{ field: 'scan', headerName: 'Scan', flex: 3, renderCell: ({ row: library }) => {
-			const scanAction = ScanLibraryAction(library.id);
-
-			return <Button variant='contained' color='secondary' size='small'
-				startIcon={scanAction.icon} onClick={scanAction.onClick}
-				sx={actionButtonStyle}
-			>
-				<Hidden smDown>{scanAction.label}</Hidden>
-			</Button>;
-		} },
+		{ field: 'clean', headerName: 'Clean', flex: 3, renderCell: ({ row: library }) =>
+			<RunTaskButton variant='outlined' {...CleanLibraryAction(library.id)}/> },
+		{ field: 'scan', headerName: 'Scan', flex: 3, renderCell: ({ row: library }) =>
+			<RunTaskButton variant='contained' {...ScanLibraryAction(library.id)}/> },
 		{ field: 'delete', headerName: 'Delete', flex: 1, renderCell: ({ row: library }) => {
 			return <IconButton color='error' onClick={() => confirm({
 				title: 'Delete a Library',
@@ -77,14 +78,14 @@ const LibrariesSettings = () => {
 	return <Box sx={{ paddingBottom: 2 }}>
 		<Grid container sx={{ justifyContent: { xs: 'space-evenly', md: 'flex-end' }, paddingY: 2 }} spacing={{ xs: 1, md: 2 }}>
 			<Grid item>
-				<Button variant='outlined' color='secondary'
+				<Button variant='outlined'
 					startIcon={cleanAllLibaries.icon} onClick={cleanAllLibaries.onClick}
 				>
 					{cleanAllLibaries.label}
 				</Button>
 			</Grid>
 			<Grid item>
-				<Button variant='contained' color='secondary'
+				<Button variant='contained'
 					startIcon={scanAllLibaries.icon} onClick={scanAllLibaries.onClick}
 				>
 					{scanAllLibaries.label}

@@ -6,9 +6,9 @@ import { ApiPropertyOptional } from '@nestjs/swagger';
 namespace UserQueryParameters {
 
 	/**
-	 * Paramters to create a user
+	 * Parameeters to create a user
 	 */
-	export type CreateInput = Omit<User, 'id' | 'enabled'> & Partial<Pick<User, 'enabled'>>;
+	export type CreateInput = Omit<User, 'id' | 'enabled' | 'admin'> & Partial<Pick<User, 'enabled' | 'admin'>>;
 
 	/**
 	 * Parameters to find one users

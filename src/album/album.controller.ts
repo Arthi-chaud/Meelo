@@ -13,14 +13,12 @@ import PaginatedResponse from 'src/pagination/models/paginated-response';
 import TrackService from 'src/track/track.service';
 import TrackQueryParameters from 'src/track/models/track.query-parameters';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
-import { TrackType } from '@prisma/client';
 import ReassignAlbumDTO from './models/reassign-album.dto';
 import GenreService from "../genre/genre.service";
 import { Genre } from "src/prisma/models";
 import { AlbumResponse } from './models/album.response';
 import { ApiPaginatedResponse } from 'src/pagination/paginated-response.decorator';
 import { ReleaseResponse } from 'src/release/models/release.response';
-import { TrackResponse } from 'src/track/models/track.response';
 import { PaginationQuery } from 'src/pagination/pagination-query.decorator';
 import { IdentifierParam } from 'src/identifier/identifier-param.decorator';
 import { ApiRelationInclude } from 'src/relation-include/relation-include-route.decorator';
@@ -28,6 +26,7 @@ import { ApiIdentifierRoute } from 'src/identifier/identifier-route.decorator';
 import RelationIncludeQuery from 'src/relation-include/relation-include-query.decorator';
 import SortingQuery from 'src/sort/sort-query.decorator';
 import Admin from 'src/roles/admin.decorator';
+import { TrackResponse } from 'src/track/models/track.response';
 
 @ApiTags("Albums")
 @Controller('albums')
@@ -166,37 +165,43 @@ export default class AlbumController {
 	}
 
 	@ApiOperation({
-		summary: 'Get all the video tracks from an album'
+		summary: 'Get all the video tracks from an album',
+		description: "Return all video tracks of songs in album, so it might include tracks that are not in the album's tracklist"
 	})
-	@ApiPaginatedResponse(TrackResponse)
 	@Get(':idOrSlug/videos')
 	async getAlbumVideos(
-		@PaginationQuery()
-		paginationParameters: PaginationParameters,
 		@RelationIncludeQuery(TrackQueryParameters.AvailableAtomicIncludes)
 		include: TrackQueryParameters.RelationInclude,
-		@SortingQuery(TrackQueryParameters.SortingKeys)
-		sortingParameter: TrackQueryParameters.SortingParameter,
 		@IdentifierParam(ParseAlbumIdentifierPipe)
-		where: AlbumQueryParameters.WhereInput,
-		@Req() request: Request
-	) {
-		const videoTracks = await this.trackService.getMany(
-			{ byAlbum: where, type: TrackType.Video },
-			paginationParameters,
-			include,
-			sortingParameter,
+		where: AlbumQueryParameters.WhereInput
+	): Promise<TrackResponse[]> {
+		const albumReleases = await this.releaseService.getAlbumReleases(
+			where, { }, { tracks: true }
 		);
 
-		if (videoTracks.length == 0) {
-			await this.albumService.throwIfNotFound(where);
-		}
-		return PaginatedResponse.awaiting(
-			videoTracks.map(
-				(videoTrack) => this.trackService.buildResponse(videoTrack)
-			),
-			request
-		);
+		return Promise.all(
+			albumReleases
+				.map((release) => release.tracks)
+				.flat()
+				.filter((track, index, array) => index == array.indexOf(track))
+				.sort((track1, track2) => {
+					if (track1.discIndex != track2.discIndex) {
+						return (track1.discIndex ?? 0) - (track2.discIndex ?? 0);
+					}
+					return (track1.trackIndex ?? 0) - (track2.trackIndex ?? 0);
+				})
+				.filter((track, index, array) => array.findIndex(
+					(otherTrack) => otherTrack.songId == track.songId
+				) == index)
+				.map((track) => this.trackService.getMany({
+					type: 'Video',
+					bySong: { byId: { id: track.songId } },
+				}, { take: 1 }, include))
+		).then((tracks) => Promise.all(
+			tracks
+				.flat()
+				.map((track) => this.trackService.buildResponse(track))
+		));
 	}
 
 	@ApiOperation({
