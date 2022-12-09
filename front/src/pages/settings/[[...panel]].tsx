@@ -43,8 +43,6 @@ const SettingsPage = (props: InferSSRProps<typeof getServerSideProps>) => {
 		<Tabs
 			value={panel}
 			onChange={(__, panelName) => setPanel(panelName)}
-			indicatorColor='secondary'
-			textColor='secondary'
 			centered
 		>
 			{AvailablePanels.map((panelName, index) =>

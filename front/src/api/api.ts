@@ -49,7 +49,7 @@ export default class API {
 	 */
 	private static isSSR = () => typeof window === 'undefined';
 	private static isDev = () => process.env.NODE_ENV === 'development';
-
+	private static SSR_API_URL = process.env.ssrApiRoute!;
 	static defaultPageSize = 30;
 
 	static async login(credentials: AuthenticationInput): Promise<AuthenticationResponse> {
@@ -796,7 +796,7 @@ export default class API {
 	 */
 	static getIllustrationURL(imageURL: string): string {
 		if (API.isDev()) {
-			return `${process.env.ssrApiRoute}${imageURL}`;
+			return `${this.SSR_API_URL}${imageURL}`;
 		}
 		return `/api/${imageURL}`;
 	}
@@ -862,7 +862,7 @@ export default class API {
 	private static buildURL(
 		route: string, parameters: QueryParameters<any>, otherParameters?: any
 	): string {
-		const apiHost = API.isDev() || API.isSSR() ? process.env.ssrApiRoute : '/api';
+		const apiHost = API.isDev() || API.isSSR() ? this.SSR_API_URL : '/api';
 
 		return `${apiHost}${route}${this.formatQueryParameters(parameters, otherParameters)}`;
 	}

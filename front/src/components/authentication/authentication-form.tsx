@@ -51,7 +51,6 @@ const AuthenticationForm = () => {
 					{...registerState('username')}
 					textFieldProps={{
 						label: 'Username',
-						color: 'secondary'
 					}}
 					gridProps={{}}
 					rules={{
@@ -70,7 +69,6 @@ const AuthenticationForm = () => {
 					textFieldProps={{
 						label: 'Password',
 						type: 'password',
-						color: 'secondary',
 						onChange: (event) => setPassword(event.target.value)
 					}}
 					gridProps={{}}
@@ -91,7 +89,6 @@ const AuthenticationForm = () => {
 					textFieldProps={{
 						label: 'Confirm',
 						type: 'password',
-						color: 'secondary'
 					}}
 					gridProps={{}}
 					rules={{
@@ -108,13 +105,13 @@ const AuthenticationForm = () => {
 				/>
 				}
 				<Grid item>
-					<Button type="submit" color='secondary' variant='contained' onClick={() => {}}>
+					<Button type="submit" variant='contained' onClick={() => {}}>
 						{formType == 'login' ? 'Login' : 'Signup'}
 					</Button>
 				</Grid>
 				<Divider sx={{ width: '100%', paddingY: 1 }} variant='middle'/>
 				<Grid item>
-					<Button color='secondary' variant='outlined'
+					<Button variant='outlined'
 						onClick={() => setFormType(formType == 'login' ? 'signup' : 'login')}
 					>
 						{formType == 'login' ? "New here ? Signup" : 'Already have an account ? Login'}

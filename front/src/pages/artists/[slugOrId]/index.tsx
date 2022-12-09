@@ -26,7 +26,7 @@ const SongButton = (props: SongButtonProps) => {
 
 	return <Grid container sx={{ alignItems: 'center' }}>
 		<Grid item xs={10}>
-			<Button color='secondary'
+			<Button
 				sx={{ textTransform: 'none', alignItems: 'center', width: '100%' }}
 				onClick={() => {
 					API.getMasterTrack<TrackWithRelease>(props.song.id, ['release']).then((track) => {
@@ -139,7 +139,7 @@ const ArtistPage = (
 					<Typography variant='h5' fontWeight='bold'>Top Songs</Typography>
 					{ topSongs.data?.metadata.next &&
 					<Link href={`/artists/${artistIdentifier}/songs`}>
-						<Button variant='contained' endIcon={<ArrowRight/>} color='secondary'
+						<Button variant='contained' endIcon={<ArrowRight/>}
 							sx={{ textTransform: 'none', fontWeight: 'bold' }}>See all</Button>
 					</Link>
 					}
@@ -164,7 +164,7 @@ const ArtistPage = (
 					<Typography variant='h5' fontWeight='bold'>Albums</Typography>
 					{ latestAlbums.data?.metadata.next &&
 					<Link href={`/artists/${artistIdentifier}/albums`}>
-						<Button variant='contained' endIcon={<ArrowRight/>} color='secondary'
+						<Button variant='contained' endIcon={<ArrowRight/>}
 							sx={{ textTransform: 'none', fontWeight: 'bold' }}>See all</Button>
 					</Link>
 					}

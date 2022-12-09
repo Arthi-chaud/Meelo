@@ -82,7 +82,7 @@ const UsersSettings = () => {
 			</Typography>;
 		} },
 		{ field: 'enabled', headerName: 'Enabled', flex: 2, renderCell: ({ row: user }) => {
-			return <Checkbox checked={user.enabled} color='secondary'
+			return <Checkbox checked={user.enabled}
 				disabled={user.id == currentUser?.id}
 				onChange={(event) => userMutation.mutate(
 					{ user, status: { enabled: event.target.checked } }
@@ -90,7 +90,7 @@ const UsersSettings = () => {
 			/>;
 		} },
 		{ field: 'admin', headerName: 'Admin', flex: 2, renderCell: ({ row: user }) => {
-			return <Checkbox checked={user.admin} color='secondary'
+			return <Checkbox checked={user.admin}
 				disabled={user.id == currentUser?.id}
 				onChange={(event) => userMutation.mutate(
 					{ user, status: { admin: event.target.checked } }
