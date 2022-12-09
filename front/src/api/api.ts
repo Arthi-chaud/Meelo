@@ -66,8 +66,7 @@ export default class API {
 			route: '/users/new',
 			data: {
 				name: credentials.username,
-				password: credentials.password,
-				admin: false
+				password: credentials.password
 			},
 			parameters: {}
 		}, 'POST');
