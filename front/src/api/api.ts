@@ -529,14 +529,13 @@ export default class API {
 	 * @param albumSlugOrId the id of the album
 	 * @returns an array of videos
 	 */
-	static async getAlbumVideos(
+	static async getAlbumVideos<T extends Track = Track>(
 		albumSlugOrId: string | number,
-		pagination?: PaginationParameters,
-		sort?: SortingParameters<typeof TrackSortingKeys>,
-	): Promise<PaginatedResponse<Track>> {
+		include: TrackInclude[] = []
+	): Promise<T[]> {
 		return API.fetch({
 			route: `/albums/${albumSlugOrId}/videos`,
-			parameters: { pagination, include: [], sort }
+			parameters: { include }
 		});
 	}
 
