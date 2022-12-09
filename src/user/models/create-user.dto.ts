@@ -1,7 +1,7 @@
-import { ApiProperty, OmitType } from "@nestjs/swagger";
+import { ApiProperty, PickType } from "@nestjs/swagger";
 import { User } from "src/prisma/models";
 
-export default class UserCreateDTO extends OmitType(User, ['id', 'enabled']) {
+export default class UserCreateDTO extends PickType(User, ['name', 'password']) {
 	@ApiProperty({
 		required: true,
 		description: "The user's username. Must be at least 4 characters long, composed of letters, digits, dash and underscore"
