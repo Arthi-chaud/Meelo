@@ -156,7 +156,8 @@ const ReleasePage = (
 			setTracklist(discMap);
 		}
 	}, [tracklist.data]);
-	if (!release.data || !albumArtist) {
+	// eslint-disable-next-line no-extra-parens
+	if (!release.data || (artistId && !albumArtist.data)) {
 		return <WideLoadingComponent/>;
 	}
 	return <Box>
