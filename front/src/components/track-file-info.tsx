@@ -63,8 +63,7 @@ const openTrackFileInfoModal = (
 ) => confirm({
 	title: "Track Information",
 	description: <TrackFileInfo trackId={trackId}/>,
-	cancellationButtonProps: { sx: { display: 'none' } },
-	confirmationButtonProps: { color: 'secondary' }
+	cancellationButtonProps: { sx: { display: 'none' } }
 });
 
 export default TrackFileInfo;

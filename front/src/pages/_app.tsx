@@ -52,7 +52,7 @@ function MyApp({ Component, pageProps: { session, ...pageProps } }: AppProps) {
 				<AuthenticationWall>
 					<ConfirmProvider defaultOptions={{
 						cancellationButtonProps: {
-							color: 'secondary', sx: { marginX: 2 }
+							sx: { marginX: 2 }
 						},
 					}}>
 						<MeeloAppBar/>

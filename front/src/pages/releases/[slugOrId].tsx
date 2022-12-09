@@ -178,7 +178,12 @@ const ReleasePage = (
 					</Grid>
 					{albumArtist.data &&
 						<Grid item>
-							<Typography variant='h4'>{albumArtist.data?.name}</Typography>
+							<Link href={`/artists/${albumArtist.data.slug}`}>
+								<Button variant='text' sx={{ textTransform: 'none' }}>
+									<Typography variant='h4'>{albumArtist.data.name}</Typography>
+
+								</Button>
+							</Link>
 						</Grid>
 					}
 					<Grid item>

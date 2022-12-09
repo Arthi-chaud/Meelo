@@ -4,9 +4,7 @@ export default responsiveFontSizes(createTheme({
 	palette: {
 		mode: 'dark',
 		primary: {
-			main: "#242120",
-			light: "#676767",
-			contrastText: "#FFFFFF"
+			main: "#ffffff"
 		},
 		secondary: {
 			main: "#ffffff"
@@ -18,7 +16,7 @@ export default responsiveFontSizes(createTheme({
 		text: {
 			primary: "#FFFFFF",
 			secondary: '#FFFFFF'
-		}
+		},
 	},
 	shape: {
 		borderRadius: '0.5rem' as unknown as number

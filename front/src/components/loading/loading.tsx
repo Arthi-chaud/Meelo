@@ -22,7 +22,7 @@ const LoadingComponent = () => {
 		<Bars
 			height="40"
 			width="40"
-			color={theme.palette.primary.contrastText}
+			color={theme.palette.text.primary}
 			ariaLabel="bars-loading"
 		/>
 	</FadeIn>;

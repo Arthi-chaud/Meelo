@@ -42,7 +42,7 @@ const LibrariesSettings = () => {
 		{ field: 'clean', headerName: 'Clean', flex: 3, renderCell: ({ row: library }) => {
 			const cleanAction = CleanLibraryAction(library.id);
 
-			return <Button variant='outlined' color='secondary' size='small'
+			return <Button variant='outlined' size='small'
 				startIcon={cleanAction.icon} onClick={cleanAction.onClick} sx={actionButtonStyle}
 			>
 				<Hidden smDown>{cleanAction.label}</Hidden>
@@ -51,7 +51,7 @@ const LibrariesSettings = () => {
 		{ field: 'scan', headerName: 'Scan', flex: 3, renderCell: ({ row: library }) => {
 			const scanAction = ScanLibraryAction(library.id);
 
-			return <Button variant='contained' color='secondary' size='small'
+			return <Button variant='contained' size='small'
 				startIcon={scanAction.icon} onClick={scanAction.onClick}
 				sx={actionButtonStyle}
 			>
@@ -77,14 +77,14 @@ const LibrariesSettings = () => {
 	return <Box sx={{ paddingBottom: 2 }}>
 		<Grid container sx={{ justifyContent: { xs: 'space-evenly', md: 'flex-end' }, paddingY: 2 }} spacing={{ xs: 1, md: 2 }}>
 			<Grid item>
-				<Button variant='outlined' color='secondary'
+				<Button variant='outlined'
 					startIcon={cleanAllLibaries.icon} onClick={cleanAllLibaries.onClick}
 				>
 					{cleanAllLibaries.label}
 				</Button>
 			</Grid>
 			<Grid item>
-				<Button variant='contained' color='secondary'
+				<Button variant='contained'
 					startIcon={scanAllLibaries.icon} onClick={scanAllLibaries.onClick}
 				>
 					{scanAllLibaries.label}
