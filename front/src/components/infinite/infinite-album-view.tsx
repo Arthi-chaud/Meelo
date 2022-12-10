@@ -1,4 +1,3 @@
-import { useState } from "react";
 import {
 	AlbumSortingKeys, AlbumType, AlbumWithArtist
 } from "../../models/album";
@@ -6,45 +5,47 @@ import { MeeloInfiniteQueryFn } from "../../api/use-query";
 import { SortingParameters } from "../../utils/sorting";
 import AlbumItem from "../list-item/album-item";
 import AlbumTile from "../tile/album-tile";
+import Controls from "../controls/controls";
+import InfiniteView from "./infinite-view";
 import { capitalCase } from "change-case";
-import InfiniteSortableView from "./infinite-sortable-view";
+import { useRouter } from "next/router";
+import { useState } from "react";
 
 type InfiniteAlbumViewProps = {
+	light?: boolean;
 	query: (sort: SortingParameters<typeof AlbumSortingKeys>, type?: AlbumType) =>
 		ReturnType<MeeloInfiniteQueryFn<AlbumWithArtist>>,
-	initialView: 'grid' | 'list',
-	initialSortingOrder?: 'asc' | 'desc',
-	initialSortingField?: typeof AlbumSortingKeys[number],
 }
 
 const InfiniteAlbumView = (props: InfiniteAlbumViewProps) => {
-	const [order, setOrder] = useState(props.initialSortingOrder ?? 'asc');
-	const [sortBy, setSortBy] = useState(props.initialSortingField ?? 'name');
-	const [type, setType] = useState<AlbumType | 'All'>('All');
+	const router = useRouter();
+	const [options, setOptions] = useState<Parameters<Parameters<typeof Controls>[0]['onChange']>[0]>();
 
-	return <InfiniteSortableView
-		enableToggle
-		view={props.initialView}
-		options={[
-			{
-				name: capitalCase(type ?? 'All'),
-				options: [
-					{
-						name: 'type', values: ['All', ...AlbumType],
-						initValue: type, onSelect: (newType) => setType(newType as AlbumType)
-					}
-				],
-			}
-		]}
-		sortingFields={AlbumSortingKeys}
-		initialSortingField={sortBy}
-		initialSortingOrder={order}
-		onSortingFieldSelect={setSortBy}
-		onSortingOrderSelect={setOrder}
-		query={() => props.query({ sortBy, order }, type == 'All' ? undefined : type)}
-		renderListItem={(item: AlbumWithArtist) => <AlbumItem album={item} key={item.id} />}
-		renderGridItem={(item: AlbumWithArtist) => <AlbumTile album={item} key={item.id} />}
-	/>;
+	return <>
+		<Controls
+			options={[
+				{
+					label: capitalCase(options?.type ?? 'All'),
+					name: 'type',
+					values: ['All', ...AlbumType],
+					currentValue: options?.type,
+				}
+			]}
+			onChange={setOptions}
+			sortingKeys={AlbumSortingKeys}
+			router={props.light == true ? undefined : router}
+			defaultLayout={"grid"}
+		/>
+		<InfiniteView
+			view={options?.view ?? 'grid'}
+			query={() => props.query({
+				sortBy: options?.sortBy ?? 'name',
+				order: options?.order ?? 'asc',
+			}, options?.type == 'All' ? undefined : options?.type as AlbumType | undefined)}
+			renderListItem={(item: AlbumWithArtist) => <AlbumItem album={item} key={item.id} />}
+			renderGridItem={(item: AlbumWithArtist) => <AlbumTile album={item} key={item.id} />}
+		/>;
+	</>;
 };
 
 export default InfiniteAlbumView;

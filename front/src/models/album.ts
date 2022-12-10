@@ -52,13 +52,7 @@ export const AlbumType = [
 	'RemixAlbum',
 	'VideoAlbum'
 ];
-export type AlbumType = 'StudioRecording'
-	| 'LiveRecording'
-	| 'Compilation'
-	| 'Single'
-	| 'Soundtrack'
-	| 'RemixAlbum'
-	| 'VideoAlbum';
+export type AlbumType = typeof AlbumType[number];
 
 export default Album;
 export const AlbumSortingKeys = [

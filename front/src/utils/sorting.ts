@@ -1,9 +1,13 @@
+export const Orders = ['asc', 'desc'];
+
+export type Order = typeof Orders[number];
+
 export type SortingParameters<Keys extends string[]> = {
 	sortBy: Keys[number];
-	order?: 'asc' | 'desc';
+	order?: Order;
 }
 
-const getOrderParams = (order: any): SortingParameters<[]>['order'] => {
+const getOrderParams = (order: any) => {
 	if (order?.toLowerCase() === 'desc') {
 		return 'desc';
 	}
