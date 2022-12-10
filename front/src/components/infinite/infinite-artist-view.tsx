@@ -7,9 +7,11 @@ import InfiniteView from "./infinite-view";
 import Artist, { ArtistSortingKeys } from "../../models/artist";
 import ArtistItem from "../list-item/artist-item";
 import ArtistTile from "../tile/artist-tile";
+import { LayoutOption } from "../../utils/layout";
 
 type InfiniteArtistViewProps = {
 	light?: boolean;
+	defaultLayout?: LayoutOption;
 	query: (sort: SortingParameters<typeof ArtistSortingKeys>) =>
 		ReturnType<MeeloInfiniteQueryFn<Artist>>,
 }
@@ -23,7 +25,7 @@ const InfiniteArtistView = (props: InfiniteArtistViewProps) => {
 			onChange={setOptions}
 			sortingKeys={ArtistSortingKeys}
 			router={props.light == true ? undefined : router}
-			defaultLayout={"list"}
+			defaultLayout={props.defaultLayout ?? "list"}
 		/>
 		<InfiniteView
 			view={options?.view ?? 'list'}

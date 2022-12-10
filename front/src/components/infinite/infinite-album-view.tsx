@@ -10,9 +10,11 @@ import InfiniteView from "./infinite-view";
 import { capitalCase } from "change-case";
 import { useRouter } from "next/router";
 import { useState } from "react";
+import { LayoutOption } from "../../utils/layout";
 
 type InfiniteAlbumViewProps = {
 	light?: boolean;
+	defaultLayout?: LayoutOption;
 	query: (sort: SortingParameters<typeof AlbumSortingKeys>, type?: AlbumType) =>
 		ReturnType<MeeloInfiniteQueryFn<AlbumWithArtist>>,
 }
@@ -34,7 +36,7 @@ const InfiniteAlbumView = (props: InfiniteAlbumViewProps) => {
 			onChange={setOptions}
 			sortingKeys={AlbumSortingKeys}
 			router={props.light == true ? undefined : router}
-			defaultLayout={"grid"}
+			defaultLayout={props.defaultLayout ?? "grid"}
 		/>
 		<InfiniteView
 			view={options?.view ?? 'grid'}

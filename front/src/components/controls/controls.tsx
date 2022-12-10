@@ -14,6 +14,7 @@ import {
 	Order, getOrderParams, getSortingFieldParams
 } from "../../utils/sorting";
 import { toast } from "react-hot-toast";
+import parseQueryParam from "../../utils/parse-query-param";
 
 type OptionState<
 	SortingKeys extends string[],
@@ -39,20 +40,6 @@ SortingKeys extends string[],
 	router?: NextRouter;
 };
 
-/**
- * Parses query param from router, comparing with an array of valid values
- */
-const getOptionValue = (
-	input: any, optionValues: string[]
-): string => {
-	for (const option of optionValues) {
-		if (input === option) {
-			return option;
-		}
-	}
-	return optionValues[0];
-};
-
 const Controls = <
 	SortingKeys extends string[],
 	Options extends Option<Values[number]>[],
@@ -68,7 +55,7 @@ const Controls = <
 		};
 
 		props.options?.forEach((option) => {
-			baseOptions[option.name] = getOptionValue(
+			baseOptions[option.name] = parseQueryParam(
 				props.router?.query[option.name], option.values
 			);
 		});

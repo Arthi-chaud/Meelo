@@ -41,22 +41,15 @@ const SelectableInfiniteView = (props: SelectableInfiniteViewProps) => {
 		</Grid>
 		{ props.enabled && (selectedType == 'artist' ?
 			<InfiniteArtistView
-				initialSortingField={'name'}
-				initialSortingOrder={'asc'}
-				initialView={'list'}
 				query={(sort) => props.artistQuery(sort)}
 			/>
 			: selectedType == 'album' ?
 				<InfiniteAlbumView key={selectedType}
-					initialSortingField={'name'}
-					initialSortingOrder={'asc'}
-					initialView={'list'}
+					defaultLayout='list'
 					query={(sort, type) => props.albumQuery(sort, type)}
 				/>
 				: selectedType == 'song' ?
 					<InfiniteSongView key={selectedType}
-						initialSortingField={'name'}
-						initialSortingOrder={'asc'}
 						query={(sort) => props.songQuery(sort)}
 					/> : <></>
 		)}
