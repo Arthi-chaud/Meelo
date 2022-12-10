@@ -39,8 +39,6 @@ const ArtistAlbumsPage = (
 	return <Box sx={{ width: '100%' }}>
 		<ArtistRelationPageHeader artistSlugOrId={artistIdentifier}/>
 		<InfiniteSongView
-			initialSortingField={'name'}
-			initialSortingOrder={'asc'}
 			query={(sort) => artistSongsQuery(artistIdentifier, sort)}
 		/>
 	</Box>;

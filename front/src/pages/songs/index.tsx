@@ -7,8 +7,8 @@ import { Page } from '../../components/infinite/infinite-scroll';
 import {
 	SortingParameters, getOrderParams, getSortingFieldParams
 } from '../../utils/sorting';
-import InfiniteSongView from '../../components/infinite/infinite-song-view';
 import prepareSSR, { InferSSRProps } from '../../ssr';
+import InfiniteSongView from '../../components/infinite/infinite-song-view';
 
 const SongSortingFields: (keyof Song)[] = ['name', 'playCount'];
 
@@ -51,8 +51,6 @@ const LibrarySongsPage = (
 
 	librarySlug ??= getLibrarySlug(router.asPath);
 	return <InfiniteSongView
-		initialSortingField={getSortingFieldParams(router.query.sortBy, SongSortingFields)}
-		initialSortingOrder={getOrderParams(router.query.order)}
 		query={(sort) => librarySlug ? librarySongsQuery(librarySlug, sort) : songsQuery(sort)}
 	/>;
 };
