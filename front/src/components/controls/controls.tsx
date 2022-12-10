@@ -86,19 +86,10 @@ const Controls = <
 		setOptionState({ ...optionsState, [name]: value });
 		if (props.router) {
 			const path = props.router.asPath.split('?')[0];
-			const params = props.router.query;
-			const newQueryParams = new URLSearchParams();
+			const params = new URLSearchParams(props.router.asPath.split('?').at(1) ?? '');
 
-			Object.entries(params).forEach((param) => {
-				if (param[1]) {
-					if (Array.isArray(param[1])) {
-						param[1] = param[1][0];
-					}
-					newQueryParams.set(param[0], param[1]);
-				}
-			});
-			newQueryParams.set(name, value);
-			props.router.push(`${path}?${newQueryParams.toString()}`, undefined, { shallow: true });
+			params.set(name, value);
+			props.router.push(`${path}?${params.toString()}`, undefined, { shallow: true });
 		}
 	};
 
@@ -143,7 +134,7 @@ const Controls = <
 					<Button onClick={() => updateOptionState(
 						{ name: 'view', value: optionsState.view == 'grid' ? 'list' : 'grid' }
 					)}>
-						{ optionsState.view == 'grid' ? <Apps/> : <ViewList/>}
+						{ optionsState.view == 'grid' ? <ViewList/> : <Apps/> }
 					</Button>
 				</Tooltip>
 			}
