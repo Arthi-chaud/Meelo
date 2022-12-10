@@ -13,7 +13,6 @@ import { LayoutOption, getLayoutParams } from "../../utils/layout";
 import {
 	Order, getOrderParams, getSortingFieldParams
 } from "../../utils/sorting";
-import { toast } from "react-hot-toast";
 import parseQueryParam from "../../utils/parse-query-param";
 
 type OptionState<

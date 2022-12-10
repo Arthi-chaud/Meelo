@@ -6,9 +6,9 @@ import { Page } from '../../components/infinite/infinite-scroll';
 import {
 	SortingParameters, getOrderParams, getSortingFieldParams
 } from '../../utils/sorting';
-import InfiniteArtistView from '../../components/infinite/infinite-artist-view';
 import prepareSSR, { InferSSRProps } from '../../ssr';
 import { useRouter } from 'next/router';
+import InfiniteArtistView from '../../components/infinite/infinite-artist-view';
 
 const artistsQuery = (sort: SortingParameters<typeof ArtistSortingKeys>) => ({
 	key: ["artists", sort],
@@ -49,9 +49,7 @@ const LibraryArtistsPage = (
 
 	librarySlug ??= getLibrarySlug(router.asPath);
 	return <InfiniteArtistView
-		initialSortingField={getSortingFieldParams(router.query.sortBy, ArtistSortingKeys)}
-		initialSortingOrder={getOrderParams(router.query.order)}
-		initialView={(router.query.view == 'grid' ? 'grid' : 'list')}
+		defaultLayout='list'
 		query={(sort) => librarySlug
 			? libraryArtistsQuery(librarySlug, sort)
 			: artistsQuery(sort)}

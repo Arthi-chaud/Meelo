@@ -1,9 +1,9 @@
 /**
  * Parses query param from router, comparing with an array of valid values
  */
-const parseQueryParam = (
-	input: any, optionValues: readonly string[]
-): string => {
+const parseQueryParam = <Keys extends readonly string[]>(
+	input: any, optionValues: Keys
+): Keys[number] => {
 	if (Array.isArray(input)) {
 		input = input[0];
 	}
