@@ -60,9 +60,6 @@ const LibraryAlbumsPage = (
 
 	librarySlug ??= getLibrarySlug(router.asPath);
 	return <InfiniteAlbumView
-		initialSortingField={getSortingFieldParams(router.query.sortBy, AlbumSortingKeys)}
-		initialSortingOrder={getOrderParams(router.query.order)}
-		initialView={(router.query.view == 'list' ? 'list' : 'grid')}
 		query={(sort, type) => librarySlug
 			? libraryAlbumsQuery(librarySlug, sort, type)
 			: albumsQuery(sort, type)

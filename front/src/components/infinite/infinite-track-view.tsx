@@ -5,33 +5,40 @@ import {
 import { MeeloInfiniteQueryFn } from "../../api/use-query";
 import { SortingParameters } from "../../utils/sorting";
 import TrackItem from "../list-item/track-item";
-import InfiniteSortableView from "./infinite-sortable-view";
+import { useRouter } from "next/router";
+import Controls from "../controls/controls";
+import InfiniteView from "./infinite-view";
 
 type InfiniteTrackViewProps = {
 	query: (sort: SortingParameters<typeof TrackSortingKeys>) =>
 		ReturnType<MeeloInfiniteQueryFn<TrackWithRelease & TrackWithSong>>,
-	initialSortingOrder?: 'asc' | 'desc',
-	initialSortingField?: typeof TrackSortingKeys[number],
+	light?: boolean;
 }
 
 const InfiniteTrackView = (props: InfiniteTrackViewProps) => {
-	const [order, setOrder] = useState(props.initialSortingOrder ?? 'asc');
-	const [sortBy, setSortBy] = useState(props.initialSortingField ?? 'name');
+	const router = useRouter();
+	const [options, setOptions] = useState<Parameters<Parameters<typeof Controls>[0]['onChange']>[0]>();
 
-	return <InfiniteSortableView
-		initialSortingField={sortBy}
-		initialSortingOrder={order}
-		sortingFields={TrackSortingKeys}
-		view={'list'}
-		options={[]}
-		query={() => props.query({ sortBy, order })}
-		renderListItem={(item: TrackWithRelease & TrackWithSong) =>
-			<TrackItem track={item} key={item.id} />
-		}
-		renderGridItem={(item: TrackWithRelease & TrackWithSong) => <></>}
-		onSortingFieldSelect={(newField) => setSortBy(newField)}
-		onSortingOrderSelect={(newOrder) => setOrder(newOrder)}
-	/>;
+	return <>
+		<Controls
+			onChange={setOptions}
+			sortingKeys={TrackSortingKeys}
+			router={props.light == true ? undefined : router}
+			disableLayoutToggle
+			defaultLayout={"list"}
+		/>
+		<InfiniteView
+			view={options?.view ?? 'list'}
+			query={() => props.query({
+				sortBy: options?.sortBy ?? 'name',
+				order: options?.order ?? 'asc',
+			})}
+			renderListItem={(item: TrackWithRelease & TrackWithSong) =>
+				<TrackItem track={item} key={item.id} />
+			}
+			renderGridItem={(item: TrackWithRelease & TrackWithSong) => <></>}
+		/>;
+	</>;
 };
 
 export default InfiniteTrackView;

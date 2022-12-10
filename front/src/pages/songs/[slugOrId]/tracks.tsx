@@ -42,7 +42,6 @@ const SongTracksPage = (
 	return <Box sx={{ width: '100%' }}>
 		<SongRelationPageHeader songSlugOrId={songIdentifier}/>
 		<InfiniteTrackView
-			initialSortingOrder={'asc'}
 			query={(sort) => songTracksQuery(songIdentifier, sort)}
 		/>
 	</Box>;

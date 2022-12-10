@@ -50,9 +50,6 @@ const ArtistAlbumsPage = (
 	return <Box sx={{ width: '100%' }}>
 		<ArtistRelationPageHeader artistSlugOrId={artistIdentifier}/>
 		<InfiniteAlbumView
-			initialSortingField={'releaseDate'}
-			initialSortingOrder={'desc'}
-			initialView={'grid'}
 			query={(sort, type) => artistAlbumsQuery(artistIdentifier, sort, type)}
 		/>
 	</Box>;

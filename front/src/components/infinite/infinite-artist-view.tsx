@@ -1,36 +1,42 @@
 import { useState } from "react";
-import Artist, { ArtistSortingKeys } from "../../models/artist";
 import { MeeloInfiniteQueryFn } from "../../api/use-query";
 import { SortingParameters } from "../../utils/sorting";
+import { useRouter } from "next/router";
+import Controls from "../controls/controls";
+import InfiniteView from "./infinite-view";
+import Artist, { ArtistSortingKeys } from "../../models/artist";
 import ArtistItem from "../list-item/artist-item";
 import ArtistTile from "../tile/artist-tile";
-import InfiniteSortableView from "./infinite-sortable-view";
+import { LayoutOption } from "../../utils/layout";
 
 type InfiniteArtistViewProps = {
+	light?: boolean;
+	defaultLayout?: LayoutOption;
 	query: (sort: SortingParameters<typeof ArtistSortingKeys>) =>
 		ReturnType<MeeloInfiniteQueryFn<Artist>>,
-	initialView: 'grid' | 'list',
-	initialSortingOrder?: 'asc' | 'desc',
-	initialSortingField?: typeof ArtistSortingKeys[number],
 }
 
 const InfiniteArtistView = (props: InfiniteArtistViewProps) => {
-	const [order, setOrder] = useState(props.initialSortingOrder ?? 'asc');
-	const [sortBy, setSortBy] = useState(props.initialSortingField ?? 'name');
+	const router = useRouter();
+	const [options, setOptions] = useState<Parameters<Parameters<typeof Controls>[0]['onChange']>[0]>();
 
-	return <InfiniteSortableView
-		sortingFields={ArtistSortingKeys}
-		initialSortingField={sortBy}
-		initialSortingOrder={order}
-		onSortingFieldSelect={setSortBy}
-		onSortingOrderSelect={setOrder}
-		enableToggle
-		options={[]}
-		view={props.initialView}
-		query={() => props.query({ sortBy, order })}
-		renderListItem={(item: Artist) => <ArtistItem artist={item} key={item.id} />}
-		renderGridItem={(item: Artist) => <ArtistTile artist={item} key={item.id} />}
-	/>;
+	return <>
+		<Controls
+			onChange={setOptions}
+			sortingKeys={ArtistSortingKeys}
+			router={props.light == true ? undefined : router}
+			defaultLayout={props.defaultLayout ?? "list"}
+		/>
+		<InfiniteView
+			view={options?.view ?? 'list'}
+			query={() => props.query({
+				sortBy: options?.sortBy ?? 'name',
+				order: options?.order ?? 'asc',
+			})}
+			renderListItem={(item: Artist) => <ArtistItem artist={item} key={item.id} />}
+			renderGridItem={(item: Artist) => <ArtistTile artist={item} key={item.id} />}
+		/>;
+	</>;
 };
 
 export default InfiniteArtistView;

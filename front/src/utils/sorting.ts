@@ -1,22 +1,20 @@
+import parseQueryParam from "./parse-query-param";
+
+export const Orders = ['asc', 'desc'] as const;
+
+export type Order = typeof Orders[number];
+
 export type SortingParameters<Keys extends string[]> = {
 	sortBy: Keys[number];
-	order?: 'asc' | 'desc';
+	order?: Order;
 }
 
-const getOrderParams = (order: any): SortingParameters<[]>['order'] => {
-	if (order?.toLowerCase() === 'desc') {
-		return 'desc';
-	}
-	return 'asc';
-};
+const getOrderParams = (order: any) => parseQueryParam(order, Orders);
 
-const getSortingFieldParams = <T extends string[]>(field: any, availableKeys: readonly string[]): SortingParameters<T>['sortBy'] => {
-	for (const key of availableKeys) {
-		if (key.toString().toLowerCase() == field?.toLowerCase()) {
-			return key;
-		}
-	}
-	return availableKeys[0]!;
+const getSortingFieldParams = <
+	T extends string[], Keys extends readonly string[]
+>(field: any, availableKeys: Keys): SortingParameters<T>['sortBy'] => {
+	return parseQueryParam(field, availableKeys);
 };
 
 export { getOrderParams, getSortingFieldParams };

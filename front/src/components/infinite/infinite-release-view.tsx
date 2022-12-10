@@ -2,32 +2,41 @@ import { useState } from "react";
 import { ReleaseSortingKeys, ReleaseWithAlbum } from "../../models/release";
 import { MeeloInfiniteQueryFn } from "../../api/use-query";
 import { SortingParameters } from "../../utils/sorting";
+import { useRouter } from "next/router";
+import Controls from "../controls/controls";
+import InfiniteView from "./infinite-view";
 import ReleaseItem from "../list-item/release-item";
-import InfiniteSortableView from "./infinite-sortable-view";
 
 type InfiniteReleaseViewProps = {
 	query: (sort: SortingParameters<typeof ReleaseSortingKeys>) =>
 		ReturnType<MeeloInfiniteQueryFn<ReleaseWithAlbum>>,
-	initialSortingOrder?: 'asc' | 'desc',
-	initialSortingField?: typeof ReleaseSortingKeys[number],
+	light?: boolean;
 }
 
 const InfiniteReleaseView = (props: InfiniteReleaseViewProps) => {
-	const [order, setOrder] = useState(props.initialSortingOrder ?? 'asc');
-	const [sortBy, setSortBy] = useState(props.initialSortingField ?? 'name');
+	const router = useRouter();
+	const [options, setOptions] = useState<Parameters<Parameters<typeof Controls>[0]['onChange']>[0]>();
 
-	return <InfiniteSortableView
-		sortingFields={ReleaseSortingKeys}
-		initialSortingField={sortBy}
-		initialSortingOrder={order}
-		view={'list'}
-		options={[]}
-		query={() => props.query({ sortBy, order })}
-		renderListItem={(item: ReleaseWithAlbum) => <ReleaseItem release={item}/>}
-		renderGridItem={(item: ReleaseWithAlbum) => <></>}
-		onSortingFieldSelect={(newField) => setSortBy(newField)}
-		onSortingOrderSelect={(newOrder) => setOrder(newOrder)}
-	/>;
+	return <>
+		<Controls
+			onChange={setOptions}
+			sortingKeys={ReleaseSortingKeys}
+			router={props.light == true ? undefined : router}
+			disableLayoutToggle
+			defaultLayout={"list"}
+		/>
+		<InfiniteView
+			view={options?.view ?? 'list'}
+			query={() => props.query({
+				sortBy: options?.sortBy ?? 'name',
+				order: options?.order ?? 'asc',
+			})}
+			renderListItem={(item: ReleaseWithAlbum) =>
+				<ReleaseItem release={item} key={item.id} />
+			}
+			renderGridItem={(item: ReleaseWithAlbum) => <></>}
+		/>;
+	</>;
 };
 
 export default InfiniteReleaseView;
