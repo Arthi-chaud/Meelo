@@ -10,9 +10,7 @@ import { useEffect, useState } from "react";
 import Option from "./option";
 import OptionButton from "./option-button";
 import { LayoutOption, getLayoutParams } from "../../utils/layout";
-import {
-	Order, getOrderParams, getSortingFieldParams
-} from "../../utils/sorting";
+import { Order, getOrderParams } from "../../utils/sorting";
 import parseQueryParam from "../../utils/parse-query-param";
 
 export type OptionState<
@@ -51,7 +49,7 @@ const Controls = <
 			view: (props.disableLayoutToggle !== true &&
 				getLayoutParams(props.router?.query.view) || undefined)
 				?? props.defaultLayout,
-			sortBy: getSortingFieldParams(props.router?.query.sortBy, props.sortingKeys)
+			sortBy: parseQueryParam(props.router?.query.sortBy, props.sortingKeys)
 				?? props.defaultSortingKey
 				?? props.sortingKeys[0],
 			order: getOrderParams(props.router?.query.order)
