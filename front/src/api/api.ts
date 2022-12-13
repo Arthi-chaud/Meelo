@@ -24,7 +24,7 @@ type AuthenticationResponse = {
 	access_token: string;
 }
 
-type QueryParameters<Keys extends string[]> = {
+type QueryParameters<Keys extends readonly string[]> = {
 	pagination?: PaginationParameters;
 	include?: string[];
 	sort?: SortingParameters<Keys>
@@ -35,7 +35,7 @@ type AuthenticationInput = {
 	password: string;
 }
 
-type FetchParameters<Keys extends string[]> = {
+type FetchParameters<Keys extends readonly string[]> = {
 	route: string,
 	parameters: QueryParameters<Keys>,
 	otherParameters?: any,
@@ -738,7 +738,10 @@ export default class API {
 		});
 	}
 
-	private static async fetch<T, Keys extends string[]>({ route, parameters, otherParameters, errorMessage, data }: FetchParameters<Keys>, method: 'GET' | 'PUT' | 'POST' | 'DELETE' = 'GET'): Promise<T> {
+	private static async fetch<T, Keys extends readonly string[]>(
+		{ route, parameters, otherParameters, errorMessage, data }: FetchParameters<Keys>,
+		method: 'GET' | 'PUT' | 'POST' | 'DELETE' = 'GET'
+	): Promise<T> {
 		const accessToken = store.getState().user.accessToken;
 		const header = {
 			'Content-Type': 'application/json'

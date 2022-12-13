@@ -12,9 +12,9 @@ export type SortingParameters<Keys extends readonly string[]> = {
 const getOrderParams = (order: any) => parseQueryParam(order, Orders);
 
 const getSortingFieldParams = <
-	T extends string[], Keys extends readonly string[]
->(field: any, availableKeys: Keys): SortingParameters<T>['sortBy'] | undefined => {
-	return parseQueryParam(field, availableKeys);
+	Keys extends readonly string[]
+>(field: any, availableKeys: Keys): Keys[number] => {
+	return parseQueryParam(field, availableKeys) ?? availableKeys[0];
 };
 
 export { getOrderParams, getSortingFieldParams };

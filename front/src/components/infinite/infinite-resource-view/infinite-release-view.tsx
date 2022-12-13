@@ -35,7 +35,7 @@ const InfiniteReleaseView = (
 				<ReleaseItem release={item} key={item.id} />
 			}
 			renderGridItem={(item: ReleaseWithAlbum) => <></>}
-		/>;
+		/>
 	</>;
 };
 

@@ -30,7 +30,7 @@ const InfiniteSongView = (
 			})}
 			renderListItem={(item: SongWithArtist) => <SongItem song={item} key={item.id} />}
 			renderGridItem={(item: SongWithArtist) => <></>}
-		/>;
+		/>
 	</>;
 };
 

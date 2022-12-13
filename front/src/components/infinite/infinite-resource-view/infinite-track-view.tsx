@@ -34,7 +34,7 @@ const InfiniteTrackView = (
 				<TrackItem track={item} key={item.id} />
 			}
 			renderGridItem={(item: TrackWithRelease & TrackWithSong) => <></>}
-		/>;
+		/>
 	</>;
 };
 

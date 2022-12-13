@@ -11,7 +11,7 @@ type Option<Values extends readonly string[]> = {
 
 export type OptionGroup<
 	Options extends Option<OptionsKeys[number]>[],
-	OptionsKeys extends readonly (readonly string[]) []
+	OptionsKeys extends (readonly string[]) []
 > = {
 	name: string;
 	icon?: JSX.Element;

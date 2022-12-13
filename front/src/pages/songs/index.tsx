@@ -1,6 +1,6 @@
 import React from 'react';
 import { useRouter } from 'next/router';
-import Song, { SongSortingKeys, SongWithArtist } from '../../models/song';
+import { SongSortingKeys, SongWithArtist } from '../../models/song';
 import API from '../../api/api';
 import getLibrarySlug from '../../utils/getLibrarySlug';
 import { Page } from '../../components/infinite/infinite-scroll';
@@ -9,8 +9,6 @@ import {
 } from '../../utils/sorting';
 import prepareSSR, { InferSSRProps } from '../../ssr';
 import InfiniteSongView from '../../components/infinite/infinite-resource-view/infinite-song-view';
-
-const SongSortingFields: (keyof Song)[] = ['name', 'playCount'];
 
 const songsQuery = (sort: SortingParameters<typeof SongSortingKeys>) => ({
 	key: ["songs", sort],
@@ -32,7 +30,7 @@ const librarySongsQuery = (
 export const getServerSideProps = prepareSSR((context) => {
 	const librarySlug = getLibrarySlug(context.req.url!) ?? null;
 	const order = getOrderParams(context.query.order);
-	const sortBy = getSortingFieldParams(context.query.sortBy, SongSortingFields);
+	const sortBy = getSortingFieldParams(context.query.sortBy, SongSortingKeys);
 
 	return {
 		additionalProps: { librarySlug },

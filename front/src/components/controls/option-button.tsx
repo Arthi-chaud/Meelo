@@ -8,7 +8,7 @@ import { useState } from 'react';
 
 type OptionButtonProps<
 	Options extends Option<OptionsKeys[number]>[],
-	OptionsKeys extends string[][]
+	OptionsKeys extends (readonly string[])[]
 > = {
 	optionGroup: OptionGroup<Options, OptionsKeys>;
 	onSelect?: (selected: { name: Options[number]['name'], value: OptionsKeys[number][number] }) => void
@@ -21,7 +21,7 @@ type OptionButtonProps<
 
 const OptionButton = <
 	Options extends Option<OptionsKeys[number]>[],
-	OptionsKeys extends string[][]
+	OptionsKeys extends (readonly string[])[]
 >(props: OptionButtonProps<Options, OptionsKeys>) => {
 	const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
 	const menuOpen = Boolean(anchorEl);
