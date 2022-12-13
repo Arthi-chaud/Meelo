@@ -47,9 +47,9 @@ const Illustration = (props: IllustrationProps) => {
 				/>
 			: <Image
 				onError={() => setLoadingFailed(true)}
-				loader={({ src, width, quality }) => src}
-				unoptimized
+				loader={({ src, width }) => src + `?width=${width}`}
 				fill
+				sizes="(max-width: 500px) 100vw, (max-width: 1000px) 50vw, 33vw"
 				alt={(props.url?.split('/').join('-') ?? 'missing-illustration')}
 				{...props}
 				style={{ borderRadius: theme.shape.borderRadius, objectFit: "contain", ...props.style }}

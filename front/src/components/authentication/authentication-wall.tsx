@@ -50,7 +50,7 @@ const AuthenticationWall = (props: { children: any }) => {
 				justifyContent: 'center', alignItems: 'center'
 			}}>
 				<Grid xs={2} item sx={{ position: 'relative', width: '100%', display: 'flex', justifyContent: 'center' }}>
-					<Image src="/banner.png" alt="title" width={200} height={150} style={{ objectFit: 'contain' }}/>
+					<Image src="/banner.png" alt="title" width={200} height={150} priority style={{ objectFit: 'contain' }}/>
 				</Grid>
 				<Grid item xs>
 					<AuthenticationForm/>
