@@ -1,3 +1,4 @@
+import sharp from 'sharp';
 import {
 	Inject, Injectable, Logger, OnModuleInit, StreamableFile, forwardRef
 } from '@nestjs/common';
@@ -460,41 +461,34 @@ export default class IllustrationService implements OnModuleInit {
 	 * @returns a StreamableFile of the illustration
 	 */
 	async streamIllustration(
-		sourceFilePath: string, as: string, dimensions: IllustrationDimensionsDto, res: any
+		sourceFilePath: string, as: string,
+		dimensions: IllustrationDimensionsDto, res: any
 	): Promise<StreamableFile> {
 		if (this.fileManagerService.fileExists(sourceFilePath) == false) {
 			throw new NoIllustrationException("Illustration file not found");
 		}
-		// eslint-disable-next-line init-declarations
-		let illustration: fs.ReadStream | Readable;
 
 		res.set({
 			'Content-Disposition': `attachment; filename="${as}.jpg"`,
 		});
 		if (dimensions.width || dimensions.height) {
 			try {
-				let jimpImage = await Jimp.read(sourceFilePath);
-				const actualWidth = jimpImage.getWidth();
-				const actualHeight = jimpImage.getHeight();
+				const sharpImage = sharp(sourceFilePath);
 
 				if (dimensions.width && dimensions.height) {
-					jimpImage = jimpImage.resize(dimensions.width, dimensions.height);
-				} else if (dimensions.width && dimensions.width < actualWidth) {
-					jimpImage = jimpImage.scale(dimensions.width /actualWidth);
-				} else if (dimensions.height && dimensions.height < actualHeight) {
-					jimpImage = jimpImage.scale(dimensions.height / actualHeight);
+					sharpImage.resize(dimensions.width, dimensions.height, { fit: 'fill' });
+				} else {
+					sharpImage.resize(dimensions.width || dimensions.height);
 				}
-				if (dimensions.quality) {
-					jimpImage = jimpImage.quality(dimensions.quality);
-				}
-				illustration = Readable.from(await jimpImage.getBufferAsync(Jimp.MIME_JPEG));
+				return sharpImage
+					.jpeg({ quality: dimensions.quality })
+					.toBuffer()
+					.then((buffer) => new StreamableFile(Readable.from(buffer)));
 			} catch (error) {
 				Logger.error(`Streaming of illustration ${sourceFilePath} failed.`);
 			}
-		} else {
-			illustration = fs.createReadStream(sourceFilePath);
 		}
-		return new StreamableFile(illustration!);
+		return new StreamableFile(fs.createReadStream(sourceFilePath));
 	}
 
 	/**
