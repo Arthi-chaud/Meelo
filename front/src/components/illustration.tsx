@@ -30,12 +30,17 @@ const Illustration = (props: IllustrationProps) => {
 	const [loadingFailed, setLoadingFailed] = useState(false);
 	const [aspectRatio, setAspectRatio] = useState<number>();
 
-	return <Box id='1234566' sx={{
+	return <Box sx={{
 		width: '100%', display: 'flex', justifyContent: "center",
-		aspectRatio: props.aspectRatio == 'auto' ? aspectRatio?.toString() : (props.aspectRatio ?? 1).toString(),
+		objectFit: 'contain',
+		borderRadius: theme.shape.borderRadius,
+		overflow: 'hidden',
+		aspectRatio: props.aspectRatio == 'auto'
+			? aspectRatio?.toString()
+			: (props.aspectRatio ?? 1).toString(),
 	}}>
 		<Box sx={{
-			position: 'relative',
+			position: 'relative', justifyContent: 'center',
 			aspectRatio: (aspectRatio ?? 1).toString(),
 			display: loadingFailed || !props.url ? 'flex' : 'block'
 		}}>{ loadingFailed || !props.url
