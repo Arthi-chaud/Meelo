@@ -73,5 +73,5 @@ export const TrackSortingKeys = [
 	'addDate',
 	'trackIndex',
 	'discIndex'
-];
+] as const;
 export type { TrackWithSong, TrackWithRelease, TrackInclude };

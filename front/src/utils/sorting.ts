@@ -4,7 +4,7 @@ export const Orders = ['asc', 'desc'] as const;
 
 export type Order = typeof Orders[number];
 
-export type SortingParameters<Keys extends string[]> = {
+export type SortingParameters<Keys extends readonly string[]> = {
 	sortBy: Keys[number];
 	order?: Order;
 }
@@ -13,7 +13,7 @@ const getOrderParams = (order: any) => parseQueryParam(order, Orders);
 
 const getSortingFieldParams = <
 	T extends string[], Keys extends readonly string[]
->(field: any, availableKeys: Keys): SortingParameters<T>['sortBy'] => {
+>(field: any, availableKeys: Keys): SortingParameters<T>['sortBy'] | undefined => {
 	return parseQueryParam(field, availableKeys);
 };
 

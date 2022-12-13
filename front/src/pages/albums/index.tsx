@@ -9,7 +9,7 @@ import { Page } from '../../components/infinite/infinite-scroll';
 import {
 	SortingParameters, getOrderParams, getSortingFieldParams
 } from '../../utils/sorting';
-import InfiniteAlbumView from '../../components/infinite/infinite-album-view';
+import InfiniteAlbumView from '../../components/infinite/infinite-resource-view/infinite-album-view';
 import prepareSSR, { InferSSRProps } from '../../ssr';
 
 const albumsQuery = (sort: SortingParameters<typeof AlbumSortingKeys>, type?: AlbumType) => ({

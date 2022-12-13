@@ -8,7 +8,7 @@ import {
 	SortingParameters, getOrderParams, getSortingFieldParams
 } from '../../utils/sorting';
 import prepareSSR, { InferSSRProps } from '../../ssr';
-import InfiniteSongView from '../../components/infinite/infinite-song-view';
+import InfiniteSongView from '../../components/infinite/infinite-resource-view/infinite-song-view';
 
 const SongSortingFields: (keyof Song)[] = ['name', 'playCount'];
 

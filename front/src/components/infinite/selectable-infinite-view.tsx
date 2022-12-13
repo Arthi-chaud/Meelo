@@ -7,7 +7,7 @@ import Album from "../../models/album";
 import Artist from "../../models/artist";
 import { SongWithArtist } from "../../models/song";
 import { MeeloInfiniteQueryFn } from "../../api/use-query";
-import InfiniteAlbumView from "./infinite-album-view";
+import InfiniteAlbumView from "./infinite-resource-view/infinite-album-view";
 import InfiniteArtistView from "./infinite-artist-view";
 import InfiniteSongView from "./infinite-song-view";
 

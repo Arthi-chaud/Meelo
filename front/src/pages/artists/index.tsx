@@ -8,7 +8,7 @@ import {
 } from '../../utils/sorting';
 import prepareSSR, { InferSSRProps } from '../../ssr';
 import { useRouter } from 'next/router';
-import InfiniteArtistView from '../../components/infinite/infinite-artist-view';
+import InfiniteArtistView from '../../components/infinite/infinite-resource-view/infinite-artist-view';
 
 const artistsQuery = (sort: SortingParameters<typeof ArtistSortingKeys>) => ({
 	key: ["artists", sort],

@@ -15,8 +15,8 @@ import {
 } from "../../utils/sorting";
 import parseQueryParam from "../../utils/parse-query-param";
 
-type OptionState<
-	SortingKeys extends string[],
+export type OptionState<
+	SortingKeys extends readonly string[],
 > = {
 	view: LayoutOption,
 	order: Order,
@@ -24,12 +24,14 @@ type OptionState<
 } & Record<string, string>
 
 type ControllerProps<
-SortingKeys extends string[],
+	SortingKeys extends readonly string[],
 	Options extends Option<Values[number]>[],
 	Values extends string[][]
 > = {
 	options?: Options;
 	sortingKeys: SortingKeys;
+	defaultSortingKey?: SortingKeys[number];
+	defaultSortingOrder?: Order;
 	defaultLayout: LayoutOption;
 	disableLayoutToggle?: boolean;
 	onChange: (state: OptionState<SortingKeys>) => void;
@@ -40,7 +42,7 @@ SortingKeys extends string[],
 };
 
 const Controls = <
-	SortingKeys extends string[],
+	SortingKeys extends readonly string[],
 	Options extends Option<Values[number]>[],
 	Values extends string[][],
 >(props: ControllerProps<SortingKeys, Options, Values>) => {
@@ -49,14 +51,18 @@ const Controls = <
 			view: (props.disableLayoutToggle !== true &&
 				getLayoutParams(props.router?.query.view) || undefined)
 				?? props.defaultLayout,
-			sortBy: getSortingFieldParams(props.router?.query.sortBy, props.sortingKeys),
-			order: getOrderParams(props.router?.query.order),
+			sortBy: getSortingFieldParams(props.router?.query.sortBy, props.sortingKeys)
+				?? props.defaultSortingKey
+				?? props.sortingKeys[0],
+			order: getOrderParams(props.router?.query.order)
+				?? props.defaultSortingOrder
+				?? 'asc',
 		};
 
 		props.options?.forEach((option) => {
 			baseOptions[option.name] = parseQueryParam(
 				props.router?.query[option.name], option.values
-			);
+			) ?? option.values[0];
 		});
 		return baseOptions;
 	});

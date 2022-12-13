@@ -28,5 +28,5 @@ export const ArtistSortingKeys = [
 	'name',
 	'albumCount',
 	'songCount'
-];
+] as const;
 export type { ArtistWithSongs, ArtistWithAlbums, ArtistInclude };

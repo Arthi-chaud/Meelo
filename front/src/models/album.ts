@@ -60,5 +60,5 @@ export const AlbumSortingKeys = [
 	'artistName',
 	'releaseDate',
 	'addDate'
-];
+] as const;
 export type { AlbumWithArtist, AlbumWithReleases, AlbumInclude };

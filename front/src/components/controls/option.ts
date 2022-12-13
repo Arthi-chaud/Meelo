@@ -1,7 +1,7 @@
 /**
  * An option is a feature that can be controlled with a Controller
  */
-type Option<Values extends string[]> = {
+type Option<Values extends readonly string[]> = {
 	name: string;
 	label?: string;
 	icon?: JSX.Element;
@@ -11,7 +11,7 @@ type Option<Values extends string[]> = {
 
 export type OptionGroup<
 	Options extends Option<OptionsKeys[number]>[],
-	OptionsKeys extends string[][]
+	OptionsKeys extends readonly (readonly string[]) []
 > = {
 	name: string;
 	icon?: JSX.Element;

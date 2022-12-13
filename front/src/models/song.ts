@@ -48,5 +48,5 @@ export const SongSortingKeys = [
 	'playCount',
 	'artistName',
 	'addDate'
-];
+] as const;
 export type { SongWithArtist, SongWithGenres, SongWithLyrics, SongInclude };

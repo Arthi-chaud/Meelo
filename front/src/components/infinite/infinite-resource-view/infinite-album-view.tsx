@@ -1,27 +1,24 @@
 import {
 	AlbumSortingKeys, AlbumType, AlbumWithArtist
-} from "../../models/album";
-import { MeeloInfiniteQueryFn } from "../../api/use-query";
-import { SortingParameters } from "../../utils/sorting";
-import AlbumItem from "../list-item/album-item";
-import AlbumTile from "../tile/album-tile";
-import Controls from "../controls/controls";
-import InfiniteView from "./infinite-view";
+} from "../../../models/album";
+import AlbumItem from "../../list-item/album-item";
+import AlbumTile from "../../tile/album-tile";
+import Controls, { OptionState } from "../../controls/controls";
+import InfiniteView from "../infinite-view";
 import { capitalCase } from "change-case";
 import { useRouter } from "next/router";
 import { useState } from "react";
-import { LayoutOption } from "../../utils/layout";
+import InfiniteResourceViewProps from "./infinite-resource-view-props";
 
-type InfiniteAlbumViewProps = {
-	light?: boolean;
-	defaultLayout?: LayoutOption;
-	query: (sort: SortingParameters<typeof AlbumSortingKeys>, type?: AlbumType) =>
-		ReturnType<MeeloInfiniteQueryFn<AlbumWithArtist>>,
-}
-
-const InfiniteAlbumView = (props: InfiniteAlbumViewProps) => {
+const InfiniteAlbumView = (
+	props: InfiniteResourceViewProps<
+		AlbumWithArtist,
+		typeof AlbumSortingKeys,
+		[type?: AlbumType]
+	>
+) => {
 	const router = useRouter();
-	const [options, setOptions] = useState<Parameters<Parameters<typeof Controls>[0]['onChange']>[0]>();
+	const [options, setOptions] = useState<OptionState<typeof AlbumSortingKeys>>();
 
 	return <>
 		<Controls
@@ -35,18 +32,20 @@ const InfiniteAlbumView = (props: InfiniteAlbumViewProps) => {
 			]}
 			onChange={setOptions}
 			sortingKeys={AlbumSortingKeys}
+			defaultSortingOrder={props.initialSortingOrder}
+			defaultSortingKey={props.initialSortingField}
 			router={props.light == true ? undefined : router}
 			defaultLayout={props.defaultLayout ?? "grid"}
 		/>
 		<InfiniteView
 			view={options?.view ?? 'grid'}
 			query={() => props.query({
-				sortBy: options?.sortBy ?? 'name',
+				sortBy: options?.sortBy ?? AlbumSortingKeys[0],
 				order: options?.order ?? 'asc',
 			}, options?.type == 'All' ? undefined : options?.type as AlbumType | undefined)}
 			renderListItem={(item: AlbumWithArtist) => <AlbumItem album={item} key={item.id} />}
 			renderGridItem={(item: AlbumWithArtist) => <AlbumTile album={item} key={item.id} />}
-		/>;
+		/>
 	</>;
 };
 
