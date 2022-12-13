@@ -31,10 +31,10 @@ const Illustration = (props: IllustrationProps) => {
 	const [aspectRatio, setAspectRatio] = useState<number>();
 
 	return <Box sx={{
-		width: '100%', display: 'flex', justifyContent: "center",
-		objectFit: 'contain',
+		width: '100%', height: '100%',
+		display: 'flex', justifyContent: "center",
+		objectFit: 'contain', overflow: 'hidden',
 		borderRadius: theme.shape.borderRadius,
-		overflow: 'hidden',
 		aspectRatio: props.aspectRatio == 'auto'
 			? aspectRatio?.toString()
 			: (props.aspectRatio ?? 1).toString(),
