@@ -3,7 +3,7 @@
  */
 const parseQueryParam = <Keys extends readonly string[]>(
 	input: any, optionValues: Keys
-): Keys[number] => {
+): Keys[number] | undefined => {
 	if (Array.isArray(input)) {
 		input = input[0];
 	}
@@ -12,7 +12,7 @@ const parseQueryParam = <Keys extends readonly string[]>(
 			return option;
 		}
 	}
-	return optionValues[0];
+	return undefined;
 };
 
 export default parseQueryParam;

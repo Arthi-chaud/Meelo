@@ -3,7 +3,7 @@ import API from "../../../api/api";
 import { Page } from "../../../components/infinite/infinite-scroll";
 import getSlugOrId from "../../../utils/getSlugOrId";
 import { SortingParameters } from "../../../utils/sorting";
-import InfiniteReleaseView from "../../../components/infinite/infinite-release-view";
+import InfiniteReleaseView from "../../../components/infinite/infinite-resource-view/infinite-release-view";
 import AlbumRelationPageHeader from "../../../components/relation-page-header/album-relation-page-header";
 import { Box } from "@mui/material";
 import { useRouter } from "next/router";

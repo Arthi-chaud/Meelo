@@ -11,6 +11,6 @@ export const UserSortingKeys = [
 	'name',
 	'admin',
 	'enabled'
-];
+] as const;
 
 export default User;

@@ -2,7 +2,7 @@ import { Box } from "@mui/material";
 import { useRouter } from "next/router";
 import API from "../../../api/api";
 import { Page } from "../../../components/infinite/infinite-scroll";
-import InfiniteTrackView from "../../../components/infinite/infinite-track-view";
+import InfiniteTrackView from "../../../components/infinite/infinite-resource-view/infinite-track-view";
 import Track, {
 	TrackSortingKeys, TrackWithRelease, TrackWithSong
 } from "../../../models/track";

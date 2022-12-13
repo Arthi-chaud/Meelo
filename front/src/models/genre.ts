@@ -11,6 +11,6 @@ type Genre = Resource & {
 	slug: string;
 }
 
-export const GenreSortingKeys = ['name', 'songCount'];
+export const GenreSortingKeys = ['name', 'songCount'] as const;
 
 export default Genre;

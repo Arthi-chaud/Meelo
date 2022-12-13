@@ -51,7 +51,7 @@ export const AlbumType = [
 	'Soundtrack',
 	'RemixAlbum',
 	'VideoAlbum'
-];
+] as const;
 export type AlbumType = typeof AlbumType[number];
 
 export default Album;
@@ -60,5 +60,5 @@ export const AlbumSortingKeys = [
 	'artistName',
 	'releaseDate',
 	'addDate'
-];
+] as const;
 export type { AlbumWithArtist, AlbumWithReleases, AlbumInclude };

@@ -1,7 +1,7 @@
 import { Box } from "@mui/material";
 import { useRouter } from "next/router";
 import API from "../../../api/api";
-import InfiniteAlbumView from "../../../components/infinite/infinite-album-view";
+import InfiniteAlbumView from "../../../components/infinite/infinite-resource-view/infinite-album-view";
 import { Page } from "../../../components/infinite/infinite-scroll";
 import Album, {
 	AlbumSortingKeys, AlbumType, AlbumWithArtist
@@ -50,6 +50,8 @@ const ArtistAlbumsPage = (
 	return <Box sx={{ width: '100%' }}>
 		<ArtistRelationPageHeader artistSlugOrId={artistIdentifier}/>
 		<InfiniteAlbumView
+			initialSortingField='releaseDate'
+			initialSortingOrder='desc'
 			query={(sort, type) => artistAlbumsQuery(artistIdentifier, sort, type)}
 		/>
 	</Box>;

@@ -51,5 +51,5 @@ export const ReleaseSortingKeys = [
 	'releaseDate',
 	'trackCount',
 	'addDate'
-];
+] as const;
 export type { ReleaseWithAlbum, ReleaseWithTracks, ReleaseInclude };

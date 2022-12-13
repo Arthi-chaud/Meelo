@@ -6,7 +6,7 @@ import SelectableInfiniteView from "../../components/infinite/selectable-infinit
 import { WideLoadingComponent } from "../../components/loading/loading";
 import Album, { AlbumSortingKeys, AlbumType } from "../../models/album";
 import Artist, { ArtistSortingKeys } from "../../models/artist";
-import { SongWithArtist } from "../../models/song";
+import { SongSortingKeys, SongWithArtist } from "../../models/song";
 import { useQuery } from "../../api/use-query";
 import getSlugOrId from "../../utils/getSlugOrId";
 import { SortingParameters } from "../../utils/sorting";
@@ -43,7 +43,7 @@ const genreAlbumsQuery = (
 });
 
 const genreSongsQuery = (
-	slugOrId: string | number, sort?: SortingParameters<typeof AlbumSortingKeys>
+	slugOrId: string | number, sort?: SortingParameters<typeof SongSortingKeys>
 ) => ({
 	key: [
 		"genres",
