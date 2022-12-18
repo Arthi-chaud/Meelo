@@ -41,7 +41,7 @@ export default class Slug {
 	}
 
 	private buildSingleSlug(arg: string): string {
-		let formatted = slug(arg);
+		let formatted = slug(arg.replace(/‐/g, '-'));
 
 		if (isNaN(Number(formatted)) == false) {
 			formatted += '!';
