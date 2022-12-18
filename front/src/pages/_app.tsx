@@ -35,7 +35,7 @@ function MyApp({ Component, pageProps: { session, ...pageProps } }: AppProps) {
 		setError(undefined);
 	}, [router]);
 	useEffect(() => {
-		if (typeof Notification !== 'undefined') {
+		if (typeof Notification !== 'undefined' && Notification.permission != 'granted') {
 			Notification.requestPermission();
 		}
 	}, []);
