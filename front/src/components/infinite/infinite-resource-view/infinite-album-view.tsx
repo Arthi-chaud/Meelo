@@ -9,7 +9,6 @@ import { capitalCase } from "change-case";
 import { useRouter } from "next/router";
 import { useState } from "react";
 import InfiniteResourceViewProps from "./infinite-resource-view-props";
-import { toast } from "react-hot-toast";
 
 const InfiniteAlbumView = (
 	props: InfiniteResourceViewProps<
