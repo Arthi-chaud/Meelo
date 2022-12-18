@@ -38,6 +38,10 @@ describe('Slugs', () => {
 		expect(new Slug('!!!').toString()).toBeDefined();
 	});
 
+	it('should transform hypen-similar chars to hyphens', () => {
+		expect(new Slug('Sophie Ellis‐Bextor').toString()).toBe('sophie-ellis-bextor');
+	});
+
 	it('should manage a realist album name', () => {
 		expect(
 			new Slug('The Dark Sidé of the Moon (Very Special Edition 20th anniversary)').toString()
