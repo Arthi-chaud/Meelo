@@ -25,6 +25,7 @@ import LibraryService from 'src/library/library.service';
 import mime from 'mime';
 import { Prisma } from '@prisma/client';
 import SortingParameter from 'src/sort/models/sorting-parameter';
+import Slug from 'src/slug/slug';
 
 @Injectable()
 export default class FileService extends RepositoryService<
@@ -209,12 +210,14 @@ export default class FileService extends RepositoryService<
 	): Promise<StreamableFile> {
 		const file = await this.get(where);
 		const fullFilePath = await this.buildFullPath(where);
+		const fileExtension = path.parse(fullFilePath).ext;
+		const sanitizedFileName = new Slug(path.parse(file.path).name).toString();
 
 		if (this.fileManagerService.fileExists(fullFilePath) == false) {
 			throw new SourceFileNotFoundExceptions(file.path);
 		}
 		res.set({
-			'Content-Disposition': `attachment; filename="${path.basename(file.path)}"`,
+			'Content-Disposition': `attachment; filename="${sanitizedFileName}${fileExtension}"`,
 			'Content-Type': mime.getType(fullFilePath) ?? 'application/octet-stream',
 		});
 		const rangeHeader = req.headers['range'] ?? req.headers['Range'];
