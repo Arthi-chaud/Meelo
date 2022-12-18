@@ -50,7 +50,7 @@ const Illustration = (props: IllustrationProps) => {
 				onError={() => setLoadingFailed(true)}
 				loader={({ src, width }) => src + `?width=${width}`}
 				fill
-				sizes="(max-width: 500px) 100vw, (max-width: 1000px) 50vw, 33vw"
+				sizes="(max-width: 500px) 100vw, (max-width: 1000px) 50vw, 25vw"
 				alt={(props.url?.split('/').join('-') ?? 'missing-illustration')}
 				{...props}
 				style={{ borderRadius: theme.shape.borderRadius, objectFit: "contain", ...props.style }}

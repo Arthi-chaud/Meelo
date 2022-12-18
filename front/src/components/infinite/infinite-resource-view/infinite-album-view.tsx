@@ -38,7 +38,7 @@ const InfiniteAlbumView = (
 			defaultLayout={props.defaultLayout ?? "grid"}
 		/>
 		<InfiniteView
-			view={options?.view ?? 'grid'}
+			view={options?.view ?? props.defaultLayout ?? "grid"}
 			query={() => props.query({
 				sortBy: options?.sortBy ?? AlbumSortingKeys[0],
 				order: options?.order ?? 'asc',
