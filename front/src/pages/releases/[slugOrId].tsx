@@ -325,7 +325,7 @@ const ReleasePage = (
 								title={video.name}
 								subtitle={formatDuration(video.duration)}
 								illustration={
-									<Illustration aspectRatio='auto' url={video.illustration} style={{ objectFit: 'cover' }}/>
+									<Illustration aspectRatio={16/9} url={video.illustration} style={{ objectFit: 'cover' }}/>
 								}
 							/>
 						</Grid>)

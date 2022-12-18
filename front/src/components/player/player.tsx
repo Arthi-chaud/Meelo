@@ -88,13 +88,15 @@ const Player = () => {
 	}, [userIsAuthentified]);
 	useEffect(() => {
 		player.current?.pause();
-		navigator.mediaSession.metadata = null;
 		clearInterval(interval.current);
 		setProgress(0);
-		navigator.mediaSession.setActionHandler('play', play);
-		navigator.mediaSession.setActionHandler('pause', pause);
-		navigator.mediaSession.setActionHandler('previoustrack', onRewind);
-		navigator.mediaSession.setActionHandler('nexttrack', onSkipTrack);
+		if (typeof navigator.mediaSession !== 'undefined') {
+			navigator.mediaSession.metadata = null;
+			navigator.mediaSession.setActionHandler('play', play);
+			navigator.mediaSession.setActionHandler('pause', pause);
+			navigator.mediaSession.setActionHandler('previoustrack', onRewind);
+			navigator.mediaSession.setActionHandler('nexttrack', onSkipTrack);
+		}
 		if (currentTrack) {
 			notification?.close();
 			document.title = `${currentTrack.track.name} - ${DefaultWindowTitle}`;
@@ -111,14 +113,16 @@ const Player = () => {
 			}
 			player.current!.src = streamURL;
 			player.current!.play().then(() => setPlaying(true));
-			navigator.mediaSession.metadata = new MediaMetadata({
-				title: currentTrack.track.name,
-				artist: currentTrack.artist.name,
-				album: currentTrack.release.name,
-				artwork: newIllustrationURL
-					? [{ src: API.getIllustrationURL(newIllustrationURL) }]
-					: undefined
-			});
+			if (typeof navigator.mediaSession !== 'undefined') {
+				navigator.mediaSession.metadata = new MediaMetadata({
+					title: currentTrack.track.name,
+					artist: currentTrack.artist.name,
+					album: currentTrack.release.name,
+					artwork: newIllustrationURL
+						? [{ src: API.getIllustrationURL(newIllustrationURL) }]
+						: undefined
+				});
+			}
 			interval.current = setInterval(() => {
 				if (player.current?.paused) {
 					setPlaying(false);
