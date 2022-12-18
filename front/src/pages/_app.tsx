@@ -24,6 +24,7 @@ import { ResourceNotFound } from "../exceptions";
 import PageNotFound from "./404";
 import InternalError from "./500";
 import { useRouter } from "next/router";
+import 'core-js/actual';
 
 function MyApp({ Component, pageProps: { session, ...pageProps } }: AppProps) {
 	const [queryClient] = useState(() => new QueryClient());
