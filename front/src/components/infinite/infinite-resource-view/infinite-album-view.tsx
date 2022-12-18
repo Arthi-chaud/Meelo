@@ -9,6 +9,7 @@ import { capitalCase } from "change-case";
 import { useRouter } from "next/router";
 import { useState } from "react";
 import InfiniteResourceViewProps from "./infinite-resource-view-props";
+import { toast } from "react-hot-toast";
 
 const InfiniteAlbumView = (
 	props: InfiniteResourceViewProps<
@@ -38,7 +39,7 @@ const InfiniteAlbumView = (
 			defaultLayout={props.defaultLayout ?? "grid"}
 		/>
 		<InfiniteView
-			view={options?.view ?? 'grid'}
+			view={options?.view ?? props.defaultLayout ?? "grid"}
 			query={() => props.query({
 				sortBy: options?.sortBy ?? AlbumSortingKeys[0],
 				order: options?.order ?? 'asc',
