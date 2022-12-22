@@ -6,5 +6,9 @@
     {
         "title": "Technologies",
         "file": "technologies.md"
+    },
+    {
+        "title": "Album Types",
+        "file": "album-types.md"
     }
 ]
