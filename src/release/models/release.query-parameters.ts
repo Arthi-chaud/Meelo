@@ -23,9 +23,9 @@ namespace ReleaseQueryParameters {
 	 * Query parameters to find one release
 	 */
 	export type WhereInput = RequireExactlyOne<{
-		byId: { id: number },
+		id: Release['id'],
 		bySlug: { slug: Slug, album: AlbumQueryParameters.WhereInput },
-		byMasterOf: AlbumQueryParameters.WhereInput,
+		masterOf: AlbumQueryParameters.WhereInput,
 	}>;
 
 	/**
@@ -46,7 +46,7 @@ namespace ReleaseQueryParameters {
 	 * Parameters to update the master release of an album
 	 */
 	export type UpdateAlbumMaster = {
-		releaseId: number,
+		releaseId: Release['id'],
 		album: AlbumQueryParameters.WhereInput,
 	};
 
@@ -58,7 +58,7 @@ namespace ReleaseQueryParameters {
 	/**
 	 * Query parameters to delete one release
 	 */
-	export type DeleteInput = Required<Pick<WhereInput, 'byId'>>;
+	export type DeleteInput = Required<Pick<WhereInput, 'id'>>;
 
 	/**
 	 * Defines what relations to include in query

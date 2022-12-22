@@ -93,7 +93,7 @@ export default class ReleaseController {
 		@Req() request: Request
 	) {
 		const tracks = await this.trackService.getMany(
-			{ byRelease: where }, paginationParameters, include, sortingParameter
+			{ release: where }, paginationParameters, include, sortingParameter
 		);
 
 		if (tracks.length == 0) {
@@ -163,7 +163,7 @@ export default class ReleaseController {
 	) {
 		const release = this.releaseService.get(where);
 		const album = await this.albumService.get({
-			byId: { id: (await release).albumId }
+			id: (await release).albumId
 		}, include);
 
 		return this.albumService.buildResponse(album);
@@ -179,8 +179,8 @@ export default class ReleaseController {
 	) {
 		return this.releaseService.buildResponse(
 			await this.releaseService.reassign(
-				{ byId: { id: reassignmentDTO.releaseId } },
-				{ byId: { id: reassignmentDTO.albumId } }
+				{ id: reassignmentDTO.releaseId },
+				{ id: reassignmentDTO.albumId }
 			)
 		);
 	}
@@ -198,10 +198,10 @@ export default class ReleaseController {
 
 		await this.releaseService.setReleaseAsMaster({
 			releaseId: release.id,
-			album: { byId: { id: release.albumId } }
+			album: { id: release.albumId }
 		});
 		const updatedReleases = await this.releaseService.getMasterRelease({
-			byId: { id: release.albumId }
+			id: release.albumId
 		});
 
 		return this.releaseService.buildResponse(updatedReleases);

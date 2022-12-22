@@ -56,11 +56,11 @@ describe('User Service', () => {
 
 	describe("Get user", () => {
 		it("Should find user by id", async () => {
-			const fetchedUser = await userService.get({ byId: { id: user.id } });
+			const fetchedUser = await userService.get({ id: user.id });
 			expect(fetchedUser).toStrictEqual(user);
 		});
 		it("Should find user by name", async () => {
-			const fetchedUser = await userService.get({ byName: { name: adminUser.name } });
+			const fetchedUser = await userService.get({ name: adminUser.name });
 			expect(fetchedUser).toStrictEqual(adminUser);
 		});
 		it("Should find user by credentials", async () => {
@@ -68,12 +68,12 @@ describe('User Service', () => {
 			expect(fetchedUser).toStrictEqual(user);
 		});
 		it("Should throw, as id is not used", () => {
-			const test = () => userService.get({ byId: { id: -1 } });
+			const test = () => userService.get({ id: -1 });
 			expect(test()).rejects.toThrow(UserNotFoundFromIDException);
 		});
 
 		it("Should throw, as name is not used", () => {
-			const test = () => userService.get({ byName: { name: 'user1' } });
+			const test = () => userService.get({ name: 'user1' });
 			expect(test()).rejects.toThrow(UserNotFoundException);
 		});
 		it("Should throw, as password is incorrect", () => {
@@ -101,15 +101,15 @@ describe('User Service', () => {
 
 	describe("Update user", () => {
 		it("Should set user as admin", async () => {
-			const updatedUser = await userService.update({ admin: true }, { byId: { id: user.id } });
+			const updatedUser = await userService.update({ admin: true }, { id: user.id });
 			expect(updatedUser).toStrictEqual({ ...user, admin: true });
 		});
 		it("Should set admin as user", async () => {
-			const updatedUser = await userService.update({ admin: false }, { byId: { id: user.id } });
+			const updatedUser = await userService.update({ admin: false }, { id: user.id });
 			expect(updatedUser).toStrictEqual(user);
 		});
 		it("Should enable user", async () => {
-			const updatedUser = await userService.update({ enabled: true }, { byId: { id: user.id } });
+			const updatedUser = await userService.update({ enabled: true }, { id: user.id });
 			expect(updatedUser).toStrictEqual({ ...user, enabled: true });
 		});
 	});

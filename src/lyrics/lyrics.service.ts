@@ -59,11 +59,11 @@ export class LyricsService extends RepositoryService<
 	}
 
 	protected formatCreateInputToWhereInput(input: LyricsQueryParameters.CreateInput) {
-		return { song: { byId: { id: input.songId } } };
+		return { song: { id: input.songId } };
 	}
 
 	protected async onCreationFailure(input: LyricsQueryParameters.CreateInput) {
-		const parentSong = await this.songService.get({ byId: { id: input.songId } });
+		const parentSong = await this.songService.get({ id: input.songId });
 
 		return new LyricsAlreadyExistsExceptions(new Slug(parentSong.slug));
 	}
@@ -84,7 +84,7 @@ export class LyricsService extends RepositoryService<
 
 	static formatManyWhereInput(input: LyricsQueryParameters.ManyWhereInput) {
 		return {
-			song: input.bySongs ? SongService.formatManyWhereInput(input.bySongs) : undefined
+			song: input.songs ? SongService.formatManyWhereInput(input.songs) : undefined
 		};
 	}
 
@@ -98,10 +98,10 @@ export class LyricsService extends RepositoryService<
 	 * Update
 	 */
 	async update(what: LyricsQueryParameters.UpdateInput, where: LyricsQueryParameters.WhereInput) {
-		if (where.id) {
+		if (where.id != undefined) {
 			return super.update(what, { id: where.id });
 		}
-		let songId: number | undefined = where.song?.byId?.id;
+		let songId: number | undefined = where.song?.id;
 
 		if (where.song?.bySlug) {
 			songId = (await this.songService.select(where.song, { id: true })).id;
@@ -151,7 +151,7 @@ export class LyricsService extends RepositoryService<
 		if (input.id) {
 			return { id: input.id };
 		}
-		return { song: { byId: { id: input.songId! } } };
+		return { song: { id: input.songId! } };
 	}
 
 	/**
@@ -163,7 +163,7 @@ export class LyricsService extends RepositoryService<
 	): Promise<MeeloException> {
 		if (where.song) {
 			await this.songService.throwIfNotFound(where.song);
-			throw new LyricsNotFoundBySongException(where.song.byId?.id ?? where.song.bySlug!.slug);
+			throw new LyricsNotFoundBySongException(where.song.id ?? where.song.bySlug!.slug);
 		}
 		throw new LyricsNotFoundByIDException(where.id);
 	}

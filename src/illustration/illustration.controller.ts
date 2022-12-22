@@ -85,9 +85,9 @@ export class IllustrationController {
 		@Response({ passthrough: true })
 		res: Response,
 	) {
-		const masterRelease = await this.releaseService.get({ byMasterOf: where });
+		const masterRelease = await this.releaseService.get({ masterOf: where });
 
-		return this.getReleaseIllustration({ byId: { id: masterRelease.id } }, dimensions, res);
+		return this.getReleaseIllustration({ id: masterRelease.id }, dimensions, res);
 	}
 
 	@ApiOperation({
@@ -173,7 +173,7 @@ export class IllustrationController {
 				res
 			);
 		}
-		return this.getReleaseIllustration({ byId: { id: track.releaseId! } }, dimensions, res);
+		return this.getReleaseIllustration({ id: track.releaseId! }, dimensions, res);
 	}
 
 	@ApiOperation({

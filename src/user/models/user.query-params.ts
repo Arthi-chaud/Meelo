@@ -14,9 +14,9 @@ namespace UserQueryParameters {
 	 * Parameters to find one users
 	 */
 	export type WhereInput = RequireOnlyOne<{
-		byId: Pick<User, 'id'>;
+		id: User['id'];
 		byCredentials: Pick<User, 'name' | 'password' >;
-		byName: Pick<User, 'name'>
+		name: User['name'];
 	}>
 
 	/**

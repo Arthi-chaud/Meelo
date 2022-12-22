@@ -114,7 +114,7 @@ describe('Song Service', () => {
 
 		it("should retrieve the song (by Id)", async () => {
 			const retrievedSong = await songService.get({
-				byId: { id: dummyRepository.songA2.id },
+				id: dummyRepository.songA2.id,
 			});
 
 			expect(retrievedSong).toStrictEqual(dummyRepository.songA2);
@@ -122,7 +122,7 @@ describe('Song Service', () => {
 
 		it("should retrieve the song (w/ include)", async () => {
 			const retrievedSong = await songService.get(
-				{ byId: { id: newSong.id } }, { artist: true, genres: true }
+				{ id: newSong.id }, { artist: true, genres: true }
 			);
 
 			expect(retrievedSong).toStrictEqual({
@@ -135,13 +135,13 @@ describe('Song Service', () => {
 		});
 
 		it(('should return an existing song, without only its id and slug'), async () => {
-			const song = await songService.select({ byId: { id: dummyRepository.songA1.id }}, { slug: true, id: true });
+			const song = await songService.select({ id: dummyRepository.songA1.id }, { slug: true, id: true });
 			expect(song).toStrictEqual({ id: dummyRepository.songA1.id, slug: dummyRepository.songA1.slug});
 		});
 
 		it("should throw, as the song does not exist (on select)", async () => {
 			const test = async () => await songService.select({
-				byId: { id: -1 }
+				id: -1
 			}, { id: true });
 
 			expect(test()).rejects.toThrow(SongNotFoundByIdException);
@@ -149,7 +149,7 @@ describe('Song Service', () => {
 
 		it("should throw, as the song does not exist (by Id)", async () => {
 			const test = async () => await songService.get({
-				byId: { id: -1 }
+				id: -1
 			});
 
 			expect(test()).rejects.toThrow(SongNotFoundByIdException);
@@ -273,7 +273,7 @@ describe('Song Service', () => {
 	describe("Update Song", () => {
 		it("should update the play count of the song", async () => {
 			const updatedSong = await songService.update(
-				{ playCount: 3 }, { byId: { id: dummyRepository.songA1.id } }
+				{ playCount: 3 }, { id: dummyRepository.songA1.id }
 			);
 
 			expect(updatedSong.id).toBe(dummyRepository.songA1.id);
@@ -291,7 +291,7 @@ describe('Song Service', () => {
 			expect(updatedSong.artistId).toBe(dummyRepository.artistB.id);
 			updatedSong = await songService.update(
 				{ artist: { id: dummyRepository.artistA.id } },
-				{ byId: { id: dummyRepository.songA1.id } }
+				{ id: dummyRepository.songA1.id }
 			);
 			expect(updatedSong.id).toBe(dummyRepository.songA1.id);
 			expect(updatedSong.artistId).toBe(dummyRepository.artistA.id);
@@ -300,18 +300,18 @@ describe('Song Service', () => {
 		it("should change the genres of the song", async () => {
 			const updatedSong = await songService.update(
 				{ genres: [ { id: dummyRepository.genreA.id }, { id: dummyRepository.genreB.id } ] },
-				{ byId: { id: dummyRepository.songA2.id } }
+				{ id: dummyRepository.songA2.id }
 			);
 
 			expect(updatedSong.id).toBe(dummyRepository.songA2.id);
-			const refreshedSong = await songService.get({ byId: { id:  dummyRepository.songA2.id } }, { genres: true });
+			const refreshedSong = await songService.get({ id:  dummyRepository.songA2.id }, { genres: true });
 			expect(refreshedSong.genres).toStrictEqual([  dummyRepository.genreA,  dummyRepository.genreB ])
 		});
 
 		it("should throw as the song does not exist (by Id)", async () => {
 			const test = async () => await songService.update(
 				{ name: "Tralala" },
-				{ byId: { id: -1 }}
+				{ id: -1}
 			);
 			expect(test()).rejects.toThrow(SongNotFoundByIdException);
 		});
@@ -344,7 +344,7 @@ describe('Song Service', () => {
 	describe("Get Song's Versions", () => {
 		it("should return the song's versions", async () => {
 			const version = await songService.create({ name: 'My Other Song (Remix)', artist: { id: dummyRepository.artistA.id }, genres: [] })
-			const versions = await songService.getSongVersions({ byId: { id: dummyRepository.songA2.id }});
+			const versions = await songService.getSongVersions({ id: dummyRepository.songA2.id});
 			expect(versions).toStrictEqual([
 				dummyRepository.songA2,
 				version
@@ -352,7 +352,7 @@ describe('Song Service', () => {
 			await songService.delete({ id: version.id });
 		});
 		it("should throw, as the song song does not exist", async () => {
-			const test = async () => await songService.getSongVersions({ byId: { id: -1 }});
+			const test = async () => await songService.getSongVersions({ id: -1});
 			expect(test()).rejects.toThrow(SongNotFoundByIdException);
 		});
 	});
@@ -360,12 +360,12 @@ describe('Song Service', () => {
 	describe("Increment a song's play count", () => {
 		it("should throw, as the song does not exist", () => {
 			const test = async () => await songService.incrementPlayCount(
-				{ byId: { id: -1 } }
+				{ id: -1 }
 			);
 			expect(test()).rejects.toThrow(SongNotFoundByIdException);
 		});
 		it("should increment the song's play count (by id)", async () => {
-			const queryParemeters = { byId: { id: dummyRepository.songA2.id } };
+			const queryParemeters = { id: dummyRepository.songA2.id };
 			await songService.incrementPlayCount(queryParemeters);
 			const updatedSong = await songService.get(queryParemeters);
 			expect(updatedSong).toStrictEqual({
@@ -424,7 +424,7 @@ describe('Song Service', () => {
 		it("should delete the song (by id)", async () => {
 			await songService.delete({ id: dummyRepository.songC1.id });
 
-			const test = async () => await songService.get({ byId: { id: dummyRepository.songC1.id } });
+			const test = async () => await songService.get({ id: dummyRepository.songC1.id });
 			expect(test()).rejects.toThrow(SongNotFoundByIdException);
 		});
 

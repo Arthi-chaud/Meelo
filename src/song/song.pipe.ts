@@ -8,7 +8,7 @@ import type SongQueryParameters from "./models/song.query-params";
 export default class ParseSongIdentifierPipe implements PipeTransform {
 	transform(value: string, _metadata: ArgumentMetadata): SongQueryParameters.WhereInput {
 		try {
-			return { byId: { id: new ParseIdPipe().transform(value, _metadata) } };
+			return { id: new ParseIdPipe().transform(value, _metadata) };
 		} catch {
 			const slugs = new ParseMultipleSlugPipe().transform(value, _metadata);
 

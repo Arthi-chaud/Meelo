@@ -76,14 +76,14 @@ export default class GenreService extends RepositoryService<
 
 	static formatManyWhereInput(where: GenreQueryParameters.ManyWhereInput) {
 		return {
-			name: where.byName
-				? buildStringSearchParameters(where.byName)
+			name: where.name
+				? buildStringSearchParameters(where.name)
 				: undefined,
-			songs: where.bySong || where.byArtist ? {
-				some: where.bySong
-					? SongService.formatWhereInput(where.bySong)
-					: where.byArtist
-						? { artist: ArtistService.formatWhereInput(where.byArtist) }
+			songs: where.song || where.artist ? {
+				some: where.song
+					? SongService.formatWhereInput(where.song)
+					: where.artist
+						? { artist: ArtistService.formatWhereInput(where.artist) }
 						: undefined
 			} : undefined,
 
@@ -162,7 +162,7 @@ export default class GenreService extends RepositoryService<
 		include?: GenreQueryParameters.RelationInclude,
 		sort?: GenreQueryParameters.SortingParameter
 	) {
-		const genres = await this.getMany({ bySong: where }, {}, include, sort);
+		const genres = await this.getMany({ song: where }, {}, include, sort);
 
 		if (genres.length == 0) {
 			await this.songService.throwIfNotFound(where);

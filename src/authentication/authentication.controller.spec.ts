@@ -95,7 +95,7 @@ describe('Authentication Controller & Role Management', () => {
 				}).expect(401);
 		});
 		it("Should get the user's access token", async () => {
-			await userService.update({ enabled: true }, { byName: { name: 'user' } });
+			await userService.update({ enabled: true }, { name: 'user' });
 			return request(app.getHttpServer())
 				.post(`/auth/login`)
 				.send({

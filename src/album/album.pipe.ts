@@ -9,7 +9,7 @@ import type AlbumQueryParameters from "./models/album.query-parameters";
 export default class ParseAlbumIdentifierPipe implements PipeTransform {
 	transform(value: string, _metadata: ArgumentMetadata): AlbumQueryParameters.WhereInput {
 		try {
-			return { byId: { id: new ParseIdPipe().transform(value, _metadata) } };
+			return { id: new ParseIdPipe().transform(value, _metadata) };
 		} catch {
 			const slugs = new ParseMultipleSlugPipe().transform(value, _metadata);
 

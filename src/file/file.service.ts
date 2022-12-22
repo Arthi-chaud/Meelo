@@ -105,8 +105,8 @@ export default class FileService extends RepositoryService<
 			path: where.paths !== undefined ? {
 				in: where.paths
 			} : undefined,
-			registerDate: where.byRegistrationDate
-				? buildDateSearchParameters(where.byRegistrationDate)
+			registerDate: where.registrationDate
+				? buildDateSearchParameters(where.registrationDate)
 				: undefined
 		};
 	}

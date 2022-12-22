@@ -64,7 +64,7 @@ export default class TrackService extends RepositoryService<
 	) {
 		const created = await super.create(input, include);
 
-		await this.songService.updateSongMaster({ byId: { id: created.songId } });
+		await this.songService.updateSongMaster({ id: created.songId });
 		return created;
 	}
 
@@ -127,31 +127,31 @@ export default class TrackService extends RepositoryService<
 	): Prisma.TrackWhereInput {
 		let queryParameters: Prisma.TrackWhereInput = {
 			type: where.type,
-			song: where.bySong ? SongService.formatWhereInput(where.bySong) : undefined,
-			sourceFile: where.byLibrarySource ? {
-				library: LibraryService.formatWhereInput(where.byLibrarySource)
+			song: where.song ? SongService.formatWhereInput(where.song) : undefined,
+			sourceFile: where.library ? {
+				library: LibraryService.formatWhereInput(where.library)
 			} : undefined,
 		};
 
-		if (where.byRelease) {
+		if (where.release) {
 			queryParameters = {
 				...queryParameters,
-				release: ReleaseService.formatWhereInput(where.byRelease)
+				release: ReleaseService.formatWhereInput(where.release)
 			};
 		}
-		if (where.byAlbum) {
+		if (where.album) {
 			queryParameters = {
 				...queryParameters,
 				release: {
-					album: AlbumService.formatWhereInput(where.byAlbum!)
+					album: AlbumService.formatWhereInput(where.album!)
 				}
 			};
 		}
-		if (where.byArtist) {
+		if (where.artist) {
 			queryParameters = {
 				...queryParameters,
 				release: {
-					album: AlbumService.formatManyWhereInput({ byArtist: where.byArtist })
+					album: AlbumService.formatManyWhereInput({ artist: where.artist })
 				}
 			};
 		}
@@ -212,7 +212,7 @@ export default class TrackService extends RepositoryService<
 		sort?: TrackQueryParameters.SortingParameter
 	) {
 		const tracks = await this.getMany(
-			{ bySong: where },
+			{ song: where },
 			pagination,
 			include,
 			sort
@@ -251,7 +251,7 @@ export default class TrackService extends RepositoryService<
 	): Promise<Tracklist> {
 		let tracklist: Tracklist = new Map();
 		const tracks = await this.getMany(
-			{ byRelease: where }, {}, include, { sortBy: 'trackIndex', order: 'asc' }
+			{ release: where }, {}, include, { sortBy: 'trackIndex', order: 'asc' }
 		);
 
 		if (tracks.length == 0) {
@@ -321,7 +321,7 @@ export default class TrackService extends RepositoryService<
 			const updatedTrack = await super.update(what, where);
 			const masterChangeInput: TrackQueryParameters.UpdateSongMaster = {
 				trackId: updatedTrack.id,
-				song: { byId: { id: updatedTrack.songId } }
+				song: { id: updatedTrack.songId }
 			};
 
 			if (!unmodifiedTrack.master && what.master) {
@@ -366,11 +366,11 @@ export default class TrackService extends RepositoryService<
 
 			Logger.warn(`Track '${deletedTrack.name}' deleted`);
 			if (deletedTrack.master) {
-				await this.songService.updateSongMaster({ byId: { id: deletedTrack.songId } });
+				await this.songService.updateSongMaster({ id: deletedTrack.songId });
 			}
 			if (deleteParent) {
 				await this.songService.deleteIfEmpty({ id: deletedTrack.songId });
-				await this.releaseService.deleteIfEmpty({ byId: { id: deletedTrack.releaseId } });
+				await this.releaseService.deleteIfEmpty({ id: deletedTrack.releaseId });
 			}
 			return deletedTrack;
 		} catch {
@@ -449,10 +449,10 @@ export default class TrackService extends RepositoryService<
 
 		await this.unsetTrackAsMaster({
 			trackId: track.id,
-			song: { byId: { id: track.songId } }
+			song: { id: track.songId }
 		});
 		const updatedTrack = await this.update({
-			song: { byId: { id: newParent.id } },
+			song: { id: newParent.id },
 			master: newParent.tracks.length == 0
 		}, trackWhere);
 
@@ -467,7 +467,7 @@ export default class TrackService extends RepositoryService<
 	async buildIllustrationPath(where: TrackQueryParameters.WhereInput): Promise<IllustrationPath> {
 		const track = await this.get(where, { release: true });
 		const album = await this.albumService.get(
-			{ byId: { id: track.release.albumId } }, { artist: true }
+			{ id: track.release.albumId }, { artist: true }
 		);
 
 		return this.illustrationService.buildTrackIllustrationPath(

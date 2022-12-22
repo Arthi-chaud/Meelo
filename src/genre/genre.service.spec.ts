@@ -111,7 +111,7 @@ describe("Genre Service", () => {
 		});
 		it("should get the genres by their names (starts with)", async () => {
 			const fetchedGenres = await genreService.getMany({
-				byName: { startsWith: 'My Genre' }
+				name: { startsWith: 'My Genre' }
 			});
 
 			expect(fetchedGenres.length).toBe(3);
@@ -122,7 +122,7 @@ describe("Genre Service", () => {
 
 		it("should get the genres by their names (ends with)", async () => {
 			const fetchedGenres = await genreService.getMany({
-				byName: { endsWith: 'Genre' }
+				name: { endsWith: 'Genre' }
 			});
 
 			expect(fetchedGenres).toStrictEqual([ newGenre ]);
@@ -131,10 +131,10 @@ describe("Genre Service", () => {
 		it("should get the genres by the song (two expected)", async () => {
 			await songService.update({
 				genres: [ { id: newGenre.id }, { id: dummyRepository.genreA.id } ] },
-				{ byId: { id: dummyRepository.songA1.id } }
+				{ id: dummyRepository.songA1.id }
 			);
 			const fetchedGenres = await genreService.getMany({
-				bySong: { byId: { id: dummyRepository.songA1.id } }
+				song: { id: dummyRepository.songA1.id }
 			});
 
 			expect(fetchedGenres.length).toBe(3);
@@ -145,7 +145,7 @@ describe("Genre Service", () => {
 		
 		it("should get the genres by the song (one expected)", async () => {
 			const fetchedGenres = await genreService.getMany({
-				bySong: { byId: { id: dummyRepository.songA2.id } }
+				song: { id: dummyRepository.songA2.id }
 			});
 
 			expect(fetchedGenres.length).toBe(1);
@@ -156,7 +156,7 @@ describe("Genre Service", () => {
 	describe("Count Genres", () => {
 		it("should get the genres by the song (two expected)", async () => {
 			const genresCounts = await genreService.count({
-				bySong: { byId: { id: dummyRepository.songA1.id } }
+				song: { id: dummyRepository.songA1.id }
 			});
 
 			expect(genresCounts).toBe(3);
@@ -164,7 +164,7 @@ describe("Genre Service", () => {
 
 		it("should get the genres by their names", async () => {
 			const genresCounts = await genreService.count({
-				byName: { endsWith: 'B' }
+				name: { endsWith: 'B' }
 			});
 
 			expect(genresCounts).toBe(1);
@@ -206,11 +206,11 @@ describe("Genre Service", () => {
 
 	describe("Get Song's genres", () => {
 		it("should throw, as the genre does not exist", () => {
-			const test = async () => await genreService.getSongGenres({ byId: { id: -1 } });
+			const test = async () => await genreService.getSongGenres({ id: -1 });
 			expect(test()).rejects.toThrow(SongNotFoundByIdException);
 		});
 		it("should find the song's genres", async () => {
-			const genres = await genreService.getSongGenres({ byId: { id: dummyRepository.songC1.id } });
+			const genres = await genreService.getSongGenres({ id: dummyRepository.songC1.id });
 			expect(genres).toStrictEqual([dummyRepository.genreC]);
 		});
 	});
@@ -224,7 +224,7 @@ describe("Genre Service", () => {
 		});
 
 		it('should have removed it from the song', async () => {
-			const genres = await genreService.count({ bySong: { byId: { id: dummyRepository.songA1.id } } });
+			const genres = await genreService.count({ song: { id: dummyRepository.songA1.id } });
 
 			expect(genres).toBe(2);
 		});

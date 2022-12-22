@@ -69,9 +69,9 @@ export default class ReleaseService extends RepositoryService<
 	) {
 		const release = await super.create(input, include);
 
-		await this.albumService.updateAlbumDate({ byId: { id: release.albumId } });
+		await this.albumService.updateAlbumDate({ id: release.albumId });
 		const newMaster = await this.albumService.updateAlbumMaster({
-			byId: { id: release.albumId }
+			id: release.albumId
 		});
 
 		return { ...release, master: newMaster?.id == release.id };
@@ -111,11 +111,11 @@ export default class ReleaseService extends RepositoryService<
 	 */
 	static formatWhereInput(where: ReleaseQueryParameters.WhereInput) {
 		return {
-			id: where.byId?.id,
-			master: where.byMasterOf ? true : undefined,
+			id: where.id,
+			master: where.masterOf ? true : undefined,
 			slug: where.bySlug?.slug.toString(),
-			album: where.byMasterOf
-				? AlbumService.formatWhereInput(where.byMasterOf)
+			album: where.masterOf
+				? AlbumService.formatWhereInput(where.masterOf)
 				: where.bySlug
 					? AlbumService.formatWhereInput(where.bySlug.album)
 					: undefined
@@ -127,7 +127,7 @@ export default class ReleaseService extends RepositoryService<
 		return {
 			name: buildStringSearchParameters(where.name),
 			album: where.album ? {
-				id: where.album.byId?.id,
+				id: where.album.id,
 				slug: where.album.bySlug?.slug.toString(),
 				artist: where.album.bySlug ?
 					where.album.bySlug?.artist
@@ -136,7 +136,7 @@ export default class ReleaseService extends RepositoryService<
 					: undefined
 			} : undefined,
 			tracks: where.library ? {
-				some: TrackService.formatManyWhereInput({ byLibrarySource: where.library })
+				some: TrackService.formatManyWhereInput({ library: where.library })
 			} : undefined
 		};
 	}
@@ -165,13 +165,13 @@ export default class ReleaseService extends RepositoryService<
 	 * @param where the query parameters that failed to get the release
 	 */
 	async onNotFound(where: ReleaseQueryParameters.WhereInput): Promise<MeeloException> {
-		if (where.byId) {
-			return new ReleaseNotFoundFromIDException(where.byId.id);
-		} else if (where.byMasterOf?.byId) {
-			return new MasterReleaseNotFoundFromIDException(where.byMasterOf.byId?.id);
+		if (where.id != undefined) {
+			return new ReleaseNotFoundFromIDException(where.id);
+		} else if (where.masterOf?.id) {
+			return new MasterReleaseNotFoundFromIDException(where.masterOf?.id);
 		}
 		const parentAlbum = await this.albumService.get(
-			where.byMasterOf ?? where.bySlug.album, { artist: true }
+			where.masterOf ?? where.bySlug.album, { artist: true }
 		);
 		const releaseSlug: Slug = where.bySlug!.slug;
 		const parentArtistSlug = parentAlbum.artist?.slug
@@ -219,7 +219,7 @@ export default class ReleaseService extends RepositoryService<
 		where: AlbumQueryParameters.WhereInput,
 		include?: ReleaseQueryParameters.RelationInclude
 	) {
-		return this.get({ byMasterOf: where }, include);
+		return this.get({ masterOf: where }, include);
 	}
 
 	/**
@@ -248,7 +248,7 @@ export default class ReleaseService extends RepositoryService<
 		const updatedRelease = await super.update(what, where);
 		const masterChangeInput: ReleaseQueryParameters.UpdateAlbumMaster = {
 			releaseId: updatedRelease.id,
-			album: { byId: { id: updatedRelease.albumId } }
+			album: { id: updatedRelease.albumId }
 		};
 
 		if (!unmodifiedRelease.master && what.master === true) {
@@ -256,7 +256,7 @@ export default class ReleaseService extends RepositoryService<
 		} else if (unmodifiedRelease.master && what.master === false) {
 			await this.unsetReleaseAsMaster(masterChangeInput);
 		}
-		await this.albumService.updateAlbumDate({ byId: { id: updatedRelease.albumId } });
+		await this.albumService.updateAlbumDate({ id: updatedRelease.albumId });
 		return updatedRelease;
 	}
 
@@ -289,7 +289,7 @@ export default class ReleaseService extends RepositoryService<
 		}
 		Logger.warn(`Release '${release.slug}' deleted`);
 		if (release.master) {
-			await this.albumService.updateAlbumMaster({ byId: { id: release.albumId } });
+			await this.albumService.updateAlbumMaster({ id: release.albumId });
 		}
 		if (deleteParent) {
 			await this.albumService.deleteIfEmpty(release.albumId);
@@ -302,7 +302,7 @@ export default class ReleaseService extends RepositoryService<
 	 * @param where the query parameters to find the track to delete
 	 */
 	async deleteIfEmpty(where: ReleaseQueryParameters.DeleteInput): Promise<void> {
-		const trackCount = await this.trackService.count({ byRelease: where });
+		const trackCount = await this.trackService.count({ release: where });
 
 		if (trackCount == 0) {
 			await this.delete(where);
@@ -328,7 +328,7 @@ export default class ReleaseService extends RepositoryService<
 			}),
 			this.update(
 				{ master: true },
-				{ byId: { id: where.releaseId } }
+				{ id: where.releaseId }
 			)
 		]);
 	}
@@ -351,11 +351,11 @@ export default class ReleaseService extends RepositoryService<
 		await Promise.allSettled([
 			this.update(
 				{ master: true },
-				{ byId: { id: otherAlbumReleases.at(0)!.id } }
+				{ id: otherAlbumReleases.at(0)!.id }
 			),
 			this.update(
 				{ master: false },
-				{ byId: { id: where.releaseId } }
+				{ id: where.releaseId }
 			)
 		]);
 	}
@@ -370,7 +370,7 @@ export default class ReleaseService extends RepositoryService<
 	): Promise<Release> {
 		const release = await this.get(releaseWhere);
 		const oldAlbum = await this.albumService.get(
-			{ byId: { id: release.albumId } }, { artist: true }
+			{ id: release.albumId }, { artist: true }
 		);
 		const newParent = await this.albumService.get(
 			albumWhere, { releases: true, artist: true }
@@ -385,7 +385,7 @@ export default class ReleaseService extends RepositoryService<
 			);
 		}
 		await this.unsetReleaseAsMaster(
-			{ releaseId: release.id, album: { byId: { id: release.albumId } } }
+			{ releaseId: release.id, album: { id: release.albumId } }
 		);
 		const updatedRelease = await this.update(
 			{ album: albumWhere, master: newParent.releases.length == 0 },
@@ -413,7 +413,7 @@ export default class ReleaseService extends RepositoryService<
 	): Promise<IllustrationPath> {
 		const release = await this.select(where, { slug: true, albumId: true });
 		const album = await this.albumService.get(
-			{ byId: { id: release.albumId! } }, { artist: true }
+			{ id: release.albumId! }, { artist: true }
 		);
 		const path = this.illustrationService.buildReleaseIllustrationPath(
 			new Slug(album.slug),

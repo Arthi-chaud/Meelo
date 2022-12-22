@@ -220,7 +220,7 @@ describe('Illustration Controller', () => {
 
 	describe("Update Release Illustration", () => {
 		it("should create the release illustration", async () => {
-			const releaseIllustrationPath = await releaseService.buildIllustrationPath({ byId: { id :dummyRepository.releaseB1_1.id }});
+			const releaseIllustrationPath = await releaseService.buildIllustrationPath({ id :dummyRepository.releaseB1_1.id});
 			return request(app.getHttpServer())
 				.post(`/illustrations/releases/${dummyRepository.releaseB1_1.id}`)
 				.send({
@@ -232,7 +232,7 @@ describe('Illustration Controller', () => {
 				});
 		});
 		it("should update the release illustration", async () => {
-			const releaseIllustrationPath = await releaseService.buildIllustrationPath({ byId: { id :dummyRepository.releaseB1_1.id }});
+			const releaseIllustrationPath = await releaseService.buildIllustrationPath({ id :dummyRepository.releaseB1_1.id});
 			return request(app.getHttpServer())
 				.post(`/illustrations/releases/${dummyRepository.releaseB1_1.id}`)
 				.send({
@@ -314,7 +314,7 @@ describe('Illustration Controller', () => {
 
 	describe("Delete Release Illustration", () => {
 		it("should delete the release illustration", async () => {
-			const releaseIllustrationPath = await releaseService.buildIllustrationPath({ byId: { id :dummyRepository.releaseB1_1.id }});
+			const releaseIllustrationPath = await releaseService.buildIllustrationPath({ id :dummyRepository.releaseB1_1.id});
 			return request(app.getHttpServer())
 				.delete(`/illustrations/releases/${dummyRepository.releaseB1_1.id}`)
 				.expect(200)
@@ -323,7 +323,7 @@ describe('Illustration Controller', () => {
 				})
 		});
 		it("should do nothing if the release illustration does nothing", async () => {
-			const releaseIllustrationPath = await releaseService.buildIllustrationPath({ byId: { id :dummyRepository.compilationReleaseA1.id }});
+			const releaseIllustrationPath = await releaseService.buildIllustrationPath({ id :dummyRepository.compilationReleaseA1.id});
 			return request(app.getHttpServer())
 				.delete(`/illustrations/releases/${dummyRepository.compilationReleaseA1.id}`)
 				.expect(200)

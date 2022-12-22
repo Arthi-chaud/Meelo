@@ -125,7 +125,7 @@ export class GenreController {
 		@Req() request: Request
 	) {
 		const albums = await this.albumService.getMany(
-			{ byGenre: where, byType: filter.type }, paginationParameters, include, sortingParameter
+			{ genre: where, type: filter.type }, paginationParameters, include, sortingParameter
 		);
 
 		if (albums.length == 0) {
@@ -156,7 +156,7 @@ export class GenreController {
 		@Req() request: Request
 	) {
 		const artists = await this.artistService.getMany(
-			{ byGenre: where }, paginationParameters, include, sortingParameter
+			{ genre: where }, paginationParameters, include, sortingParameter
 		);
 
 		if (artists.length == 0) {

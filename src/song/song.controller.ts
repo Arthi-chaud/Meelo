@@ -199,7 +199,7 @@ export class SongController {
 		@Req() request: Request
 	) {
 		const videoTracks = await this.trackService.getMany(
-			{ bySong: where, type: TrackType.Video },
+			{ song: where, type: TrackType.Video },
 			paginationParameters,
 			include,
 			sortingParameter,

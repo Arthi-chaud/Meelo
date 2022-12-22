@@ -101,26 +101,26 @@ export default class ArtistService extends RepositoryService<
 	 */
 	static formatManyWhereInput(where: ArtistQueryParameters.ManyWhereInput) {
 		return {
-			id: where.byIds ? {
-				in: where.byIds.in
+			id: where.ids ? {
+				in: where.ids.in
 			} : undefined,
-			name: buildStringSearchParameters(where.byName),
-			albums: where.byLibrarySource ? {
+			name: buildStringSearchParameters(where.name),
+			albums: where.library ? {
 				some: {
 					releases: {
 						some: ReleaseService
-							.formatManyWhereInput({ library: where.byLibrarySource })
+							.formatManyWhereInput({ library: where.library })
 					}
 				}
 			} : undefined,
-			songs: where.byLibrarySource || where.byGenre ? {
+			songs: where.library || where.genre ? {
 				some: {
-					genres: where.byGenre ? {
-						some: GenreService.formatWhereInput(where.byGenre)
+					genres: where.genre ? {
+						some: GenreService.formatWhereInput(where.genre)
 					} : undefined,
-					tracks: where.byLibrarySource ? {
+					tracks: where.library ? {
 						some: TrackService
-							.formatManyWhereInput({ byLibrarySource: where.byLibrarySource })
+							.formatManyWhereInput({ library: where.library })
 					} : undefined
 				}
 			} : undefined
@@ -199,7 +199,7 @@ export default class ArtistService extends RepositoryService<
 
 		await Promise.allSettled([
 			...artist.albums.map(
-				(album) => this.albumService.delete({ byId: { id: album.id } })
+				(album) => this.albumService.delete({ id: album.id })
 			),
 			...artist.songs.map(
 				(song) => this.songService.delete({ id: song.id })
@@ -227,7 +227,7 @@ export default class ArtistService extends RepositoryService<
 	 * @param where the query parameters to find the artist to delete
 	 */
 	async deleteArtistIfEmpty(where: ArtistQueryParameters.DeleteInput): Promise<void> {
-		const albumCount = await this.albumService.count({ byArtist: where });
+		const albumCount = await this.albumService.count({ artist: where });
 		const songCount = await this.songService.count({ artist: where });
 
 		if (songCount == 0 && albumCount == 0) {

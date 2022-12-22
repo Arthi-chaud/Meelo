@@ -1,5 +1,6 @@
 import { ApiProperty } from "@nestjs/swagger";
 import { IsNotEmpty } from "class-validator";
+import { Song, Track } from "src/prisma/models";
 
 export default class ReassignTrackDTO {
 	@ApiProperty({
@@ -7,12 +8,12 @@ export default class ReassignTrackDTO {
 		example: 1
 	})
 	@IsNotEmpty()
-	trackId: number;
+	trackId: Track['id'];
 
 	@ApiProperty({
 		description: 'The ID of the song to reassign the track to',
 		example: 2
 	})
 	@IsNotEmpty()
-	songId: number;
+	songId: Song['id'];
 }

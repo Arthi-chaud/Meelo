@@ -136,7 +136,7 @@ export default class LibraryController {
 		@Req() request: Request
 	) {
 		const artists = await this.artistService.getAlbumsArtists(
-			{ byLibrarySource: where }, paginationParameters, include, sortingParameter
+			{ library: where }, paginationParameters, include, sortingParameter
 		);
 
 		if (artists.length == 0) {
@@ -166,7 +166,7 @@ export default class LibraryController {
 		@Req() request: Request
 	) {
 		const albums = await this.albumService.getMany(
-			{ byLibrarySource: where, byType: filter.type },
+			{ library: where, type: filter.type },
 			paginationParameters,
 			include,
 			sortingParameter
@@ -256,7 +256,7 @@ export default class LibraryController {
 		@Req() request: Request
 	) {
 		const tracks = await this.trackService.getMany(
-			{ byLibrarySource: where }, paginationParameters, include, sortingParameter
+			{ library: where }, paginationParameters, include, sortingParameter
 		);
 
 		if (tracks.length == 0) {

@@ -31,7 +31,7 @@ export default class UserController {
 	async getAuthenticatedUserProfile(@Request() request: Express.Request) {
 		// Required to return a proper build response
 		// eslint-disable-next-line no-extra-parens
-		const user = await this.userService.get({ byId: { id: (request.user as User).id } });
+		const user = await this.userService.get({ id: (request.user as User).id });
 
 		return this.userService.buildResponse(user);
 	}
@@ -57,7 +57,7 @@ export default class UserController {
 		@Body() updateUserDto: UpdateUserDTO,
 	) {
 		return this.userService.buildResponse(
-			await this.userService.update(updateUserDto, { byId: { id: userId } })
+			await this.userService.update(updateUserDto, { id: userId })
 		);
 	}
 

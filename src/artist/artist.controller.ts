@@ -111,7 +111,7 @@ export default class ArtistController {
 		@Req() request: Request
 	) {
 		const videoTracks = await this.trackService.getMany(
-			{ byArtist: where, type: TrackType.Video },
+			{ artist: where, type: TrackType.Video },
 			paginationParameters,
 			include,
 			sortingParameter
@@ -146,7 +146,7 @@ export default class ArtistController {
 		@Req() request: Request
 	) {
 		const albums = await this.albumService.getMany(
-			{ byArtist: where, byType: filter.type },
+			{ artist: where, type: filter.type },
 			paginationParameters,
 			include,
 			sortingParameter

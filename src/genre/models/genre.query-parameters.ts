@@ -19,7 +19,7 @@ namespace GenreQueryParameters {
 	 * Query parameters to find one genre
 	 */
 	export type WhereInput = RequireExactlyOne<{
-		id: number,
+		id: Genre['id'],
 		slug: Slug
 	}>;
 
@@ -27,9 +27,9 @@ namespace GenreQueryParameters {
 	 * Query parameters to find multiple genre
 	 */
 	export type ManyWhereInput = Partial<RequireAtLeastOne<{
-		bySong: SongQueryParameters.WhereInput,
-		byArtist: ArtistQueryParameters.WhereInput,
-		byName: SearchStringInput,
+		song: SongQueryParameters.WhereInput,
+		artist: ArtistQueryParameters.WhereInput,
+		name: SearchStringInput,
 	}>>;
 
 	/**

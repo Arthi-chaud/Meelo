@@ -1,5 +1,5 @@
 import { TrackType } from "@prisma/client";
-import { Track } from "src/prisma/models";
+import { File, Track } from "src/prisma/models";
 import type FileQueryParameters from "src/file/models/file.query-parameters";
 import type LibraryQueryParameters from "src/library/models/library.query-parameters";
 import type ReleaseQueryParameters from "src/release/models/release.query-parameters";
@@ -26,7 +26,7 @@ namespace TrackQueryParameters {
 	 * Query parameters to find one track
 	 */
 	export type WhereInput = RequireExactlyOne<{
-		id: number,
+		id: Track['id'],
 		sourceFile: FileQueryParameters.WhereInput,
 		masterOfSong: SongQueryParameters.WhereInput
 	}>;
@@ -36,12 +36,12 @@ namespace TrackQueryParameters {
 	 */
 	export type ManyWhereInput = Partial<RequireAtLeastOne<{
 		type: TrackType,
-		bySong: SongQueryParameters.WhereInput,
-		byLibrarySource: LibraryQueryParameters.WhereInput,
+		song: SongQueryParameters.WhereInput,
+		library: LibraryQueryParameters.WhereInput,
 	} & RequireExactlyOne<{
-		byArtist: ArtistQueryParameters.WhereInput,
-		byAlbum: AlbumQueryParameters.WhereInput,
-		byRelease: ReleaseQueryParameters.WhereInput,
+		artist: ArtistQueryParameters.WhereInput,
+		album: AlbumQueryParameters.WhereInput,
+		release: ReleaseQueryParameters.WhereInput,
 	}>>>;
 
 	/**
@@ -58,14 +58,14 @@ namespace TrackQueryParameters {
 	 * Parameters to update the master track of a song
 	 */
 	export type UpdateSongMaster = {
-		trackId: number,
+		trackId: Track['id'],
 		song: SongQueryParameters.WhereInput,
 	};
 
 	/**
 	 * Query parameters to delete one track
 	 */
-	export type DeleteInput = RequireExactlyOne<Pick<WhereInput, 'id'> & { sourceFileId: number }>;
+	export type DeleteInput = RequireExactlyOne<Pick<WhereInput, 'id'> & { sourceFileId: File['id'] }>;
 
 	/**
 	 * Defines what relations to include in query

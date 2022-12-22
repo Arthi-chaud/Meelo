@@ -9,7 +9,7 @@ import type ReleaseQueryParameters from "./models/release.query-parameters";
 export default class ParseReleaseIdentifierPipe implements PipeTransform {
 	transform(value: string, _metadata: ArgumentMetadata): ReleaseQueryParameters.WhereInput {
 		try {
-			return { byId: { id: new ParseIdPipe().transform(value, _metadata) } };
+			return { id: new ParseIdPipe().transform(value, _metadata) };
 		} catch {
 			const slugs = new ParseMultipleSlugPipe().transform(value, _metadata);
 

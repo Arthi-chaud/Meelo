@@ -102,16 +102,14 @@ export default class UserService extends RepositoryService<
 		input: UserQueryParameters.CreateInput
 	): UserQueryParameters.WhereInput {
 		return {
-			byName: {
-				name: input.name
-			}
+			name: input.name
 		};
 	}
 
 	formatWhereInput(input: UserQueryParameters.WhereInput): Prisma.UserWhereInput {
 		return {
-			id: input.byId?.id,
-			name: input.byName?.name ?? input.byCredentials?.name,
+			id: input.id,
+			name: input.name ?? input.byCredentials?.name,
 			password: input.byCredentials
 				? this.encryptPassword(input.byCredentials.password)
 				: undefined
@@ -119,9 +117,9 @@ export default class UserService extends RepositoryService<
 	}
 
 	async get(input: UserQueryParameters.WhereInput): Promise<User> {
-		const user = await super.get(input.byId
-			? { byId: input.byId }
-			: { byName: input.byName ?? { name: input.byCredentials.name } });
+		const user = await super.get(input.id != undefined
+			? { id: input.id }
+			: { name: input.name ?? input.byCredentials.name });
 
 		if (input.byCredentials &&
 			!bcrypt.compareSync(input.byCredentials.password, user.password)) {
@@ -133,11 +131,11 @@ export default class UserService extends RepositoryService<
 	onNotFound(where: UserQueryParameters.WhereInput): MeeloException | Promise<MeeloException> {
 		if (where.byCredentials) {
 			throw new InvalidUserCredentialsException(where.byCredentials.name);
+		} else if (where.id !== undefined) {
+			throw new UserNotFoundFromIDException(where.id);
+		} else {
+			throw new UserNotFoundException(where.name);
 		}
-		if (where.byId) {
-			throw new UserNotFoundFromIDException(where.byId.id);
-		}
-		throw new UserNotFoundException(where.byName.name);
 	}
 
 	formatManyWhereInput(input: UserQueryParameters.ManyWhereInput): Prisma.UserWhereInput {
@@ -180,9 +178,9 @@ export default class UserService extends RepositoryService<
 		input: UserQueryParameters.DeleteInput
 	): UserQueryParameters.WhereInput {
 		if (input.id) {
-			return { byId: { id: input.id } };
+			return { id: input.id };
 		}
-		return { byName: { name: input.name! } };
+		return { name: input.name! };
 	}
 
 	buildResponse(input: User): UserResponse {

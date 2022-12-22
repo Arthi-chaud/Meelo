@@ -20,7 +20,7 @@ namespace LyricsQueryParameters {
 	 * Query parameters to find multiple lyric entry
 	 */
 	export type ManyWhereInput = Partial<{
-		bySongs: SongQueryParameters.ManyWhereInput
+		songs: SongQueryParameters.ManyWhereInput
 	}>;
 
 	/**

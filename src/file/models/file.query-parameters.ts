@@ -1,4 +1,4 @@
-import type { File } from "src/prisma/models";
+import type { File, Track } from "src/prisma/models";
 import type LibraryQueryParameters from "src/library/models/library.query-parameters";
 import type { RequireAtLeastOne, RequireExactlyOne } from "type-fest";
 import type { SearchDateInput } from "src/utils/search-date-input";
@@ -14,9 +14,9 @@ namespace FileQueryParameters {
 	 * Query parameters to find one file
 	 */
 	export type WhereInput = RequireExactlyOne<{
-		trackId: number,
-		id: number,
-		byPath: { path: string, library: LibraryQueryParameters.WhereInput }
+		trackId: Track['id'],
+		id: File['id'],
+		byPath: { path: File['path'], library: LibraryQueryParameters.WhereInput }
 	}>;
 
 	/**
@@ -24,9 +24,9 @@ namespace FileQueryParameters {
 	 */
 	export type ManyWhereInput = Partial<RequireAtLeastOne<{
 		library: LibraryQueryParameters.WhereInput,
-		ids: number[],
-		paths: string[],
-		byRegistrationDate: SearchDateInput
+		ids: File['id'][],
+		paths: File['path'][],
+		registrationDate: SearchDateInput
 	}>>;
 
 	/**

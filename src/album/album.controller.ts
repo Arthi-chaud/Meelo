@@ -57,7 +57,7 @@ export default class AlbumController {
 		@Req() request: Request,
 	) {
 		const albums = await this.albumService.getMany(
-			{ byType: filter.type }, paginationParameters, include, sortingParameter
+			{ type: filter.type }, paginationParameters, include, sortingParameter
 		);
 
 		return PaginatedResponse.awaiting(
@@ -82,7 +82,7 @@ export default class AlbumController {
 		@Req() request: Request
 	) {
 		const albums = await this.albumService.getMany(
-			{ byArtist: { compilationArtist: true }, byType: filter.type },
+			{ artist: { compilationArtist: true }, type: filter.type },
 			paginationParameters,
 			include,
 			sortingParameter
@@ -195,7 +195,7 @@ export default class AlbumController {
 				) == index)
 				.map((track) => this.trackService.getMany({
 					type: 'Video',
-					bySong: { byId: { id: track.songId } },
+					song: { id: track.songId },
 				}, { take: 1 }, include))
 		).then((tracks) => Promise.all(
 			tracks
@@ -214,7 +214,7 @@ export default class AlbumController {
 	) {
 		return this.albumService.buildResponse(
 			await this.albumService.reassign(
-				{ byId: { id: reassignmentDTO.albumId } },
+				{ id: reassignmentDTO.albumId },
 				reassignmentDTO.artistId == null
 					? { compilationArtist: true }
 					: { id: reassignmentDTO.artistId }

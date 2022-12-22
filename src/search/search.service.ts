@@ -39,7 +39,7 @@ export default class SearchService {
 		sort?: ArtistQueryParameters.SortingParameter,
 	): Promise<Artist[]> {
 		return this.artistService.getAlbumsArtists(
-			{ byName: { contains: query } },
+			{ name: { contains: query } },
 			paginationParameters,
 			include,
 			sort
@@ -61,7 +61,7 @@ export default class SearchService {
 		sort?: AlbumQueryParameters.SortingParameter
 	): Promise<Album[]> {
 		return this.albumService.getMany(
-			{ byName: { contains: query }, byType: type },
+			{ name: { contains: query }, type: type },
 			paginationParameters,
 			include,
 			sort
@@ -124,7 +124,7 @@ export default class SearchService {
 		sort?: GenreQueryParameters.SortingParameter
 	): Promise<Genre[]> {
 		return this.genreService.getMany(
-			{ byName: { contains: query } },
+			{ name: { contains: query } },
 			paginationParameters,
 			include,
 			sort

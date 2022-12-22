@@ -342,7 +342,7 @@ describe('Song Controller', () => {
 					lyrics: '123456',
 				})
 				.expect(async () => {
-					const song = await songService.get({ byId: { id: dummyRepository.songA2.id } }, { lyrics: true });
+					const song = await songService.get({ id: dummyRepository.songA2.id }, { lyrics: true });
 					expect(song.lyrics!.content).toBe('123456');
 				});
 		});
@@ -354,7 +354,7 @@ describe('Song Controller', () => {
 					lyrics: 'BLABLABLA',
 				})
 				.expect(async () => {
-					const song = await songService.get({ byId: { id: dummyRepository.songA1.id } }, { lyrics: true });
+					const song = await songService.get({ id: dummyRepository.songA1.id }, { lyrics: true });
 					expect(song.lyrics!.content).toBe('BLABLABLA');
 				});
 		});
@@ -372,7 +372,7 @@ describe('Song Controller', () => {
 				.delete(`/songs/${dummyRepository.artistA.slug}+${dummyRepository.songA1.slug}/lyrics`)
 				.expect(200)
 				.expect(async () => {
-					const song = await songService.get({ byId: { id: dummyRepository.songA1.id } }, { lyrics: true });
+					const song = await songService.get({ id: dummyRepository.songA1.id }, { lyrics: true });
 					expect(song.lyrics).toBeNull();
 				});
 		});

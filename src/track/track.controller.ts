@@ -100,9 +100,9 @@ export class TrackController {
 
 		await this.trackService.setTrackAsMaster({
 			trackId: track.id,
-			song: { byId: { id: track.songId } }
+			song: { id: track.songId }
 		});
-		const updatedTrack = await this.trackService.getMasterTrack({ byId: { id: track.songId } });
+		const updatedTrack = await this.trackService.getMasterTrack({ id: track.songId });
 
 		return this.trackService.buildResponse(updatedTrack);
 	}
@@ -118,7 +118,7 @@ export class TrackController {
 		return this.trackService.buildResponse(
 			await this.trackService.reassign(
 				{ id: reassignmentDTO.trackId },
-				{ byId: { id: reassignmentDTO.songId } }
+				{ id: reassignmentDTO.songId }
 			)
 		);
 	}

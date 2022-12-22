@@ -237,9 +237,9 @@ export default class IllustrationService implements OnModuleInit {
 		track: Track, fullTrackPath: string
 	): Promise<IllustrationPath | null> {
 		Logger.log(`Extracting illustration from track '${track.name}'`);
-		const release: Release = await this.releaseService.get({ byId: { id: track.releaseId } });
+		const release: Release = await this.releaseService.get({ id: track.releaseId });
 		const album = await this.albumService.get(
-			{ byId: { id: release.albumId } },
+			{ id: release.albumId },
 			{ artist: true }
 		);
 		const releaseSlug = new Slug(release.slug);
@@ -366,7 +366,7 @@ export default class IllustrationService implements OnModuleInit {
 			return;
 		}
 		const releaseIllustrationPath = await this.releaseService.buildIllustrationPath(
-			{ byId: { id: track.releaseId } }
+			{ id: track.releaseId }
 		);
 
 		if (this.illustrationExists(trackIllustrationPath)) {
@@ -508,7 +508,7 @@ export default class IllustrationService implements OnModuleInit {
 	 */
 	async getReleaseIllustrationLink(releaseId: number): Promise<string | null> {
 		if (this.illustrationExists(
-			await this.releaseService.buildIllustrationPath({ byId: { id: releaseId } })
+			await this.releaseService.buildIllustrationPath({ id: releaseId })
 		)) {
 			return `/illustrations/releases/${releaseId}`;
 		}
@@ -522,7 +522,7 @@ export default class IllustrationService implements OnModuleInit {
 	async getAlbumIllustrationLink(albumId: number): Promise<string | null> {
 		try {
 			const masterRelease = await this.releaseService.getMasterRelease(
-				{ byId: { id: albumId } }
+				{ id: albumId }
 			);
 
 			return this.getReleaseIllustrationLink(masterRelease.id);
@@ -552,7 +552,7 @@ export default class IllustrationService implements OnModuleInit {
 	 */
 	async getSongIllustrationLink(songId: number): Promise<string | null> {
 		try {
-			const masterRelease = await this.trackService.getMasterTrack({ byId: { id: songId } });
+			const masterRelease = await this.trackService.getMasterTrack({ id: songId });
 
 			return this.getTrackIllustrationLink(masterRelease.id);
 		} catch {
