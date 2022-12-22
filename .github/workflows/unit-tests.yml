@@ -52,7 +52,11 @@ jobs:
       - name: Migrate DB Schema
         run: yarn test:db:migrate
       - name: Run unit tests with coverage
-        run: yarn test --coverage
+        uses: nick-fields/retry@v2
+        with:
+          timeout_minutes: 10
+          max_attempts: 3
+          command: yarn test --coverage
       - name: Upload Unit Tests artifact
         if: ${{ always() }}
         uses: actions/upload-artifact@v3
