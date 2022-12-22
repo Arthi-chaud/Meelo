@@ -39,6 +39,7 @@ This project is made by a music collector, and for music collectors. Its goal is
   - Video Album
   - Soundtrack Album
   - etc..
+  - Look over [here](https://arthi-chaud.github.io/Meelo/additional-documentation/album-types.html) to know it works
 - ... And allow filtering based on Album's types
 - Automated Lyrics download
 - Embedded and inline artwork file handling.
