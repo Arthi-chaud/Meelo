@@ -17,6 +17,7 @@ import ArtistService from 'src/artist/artist.service';
 import { Prisma } from '@prisma/client';
 import { GenreResponse } from './models/genre.response';
 import SortingParameter from 'src/sort/models/sorting-parameter';
+import { parseIdentifierSlugs } from 'src/identifier/identifier.parse-slugs';
 
 @Injectable()
 export default class GenreService extends RepositoryService<
@@ -91,6 +92,12 @@ export default class GenreService extends RepositoryService<
 	}
 
 	formatManyWhereInput = GenreService.formatManyWhereInput;
+
+	formatIdentifierToWhereInput(identifier: string): GenreQueryParameters.WhereInput {
+		const [slug] = parseIdentifierSlugs(identifier, 1);
+
+		return { slug };
+	}
 
 	formatSortingInput(
 		sortingParameter: SortingParameter<GenreQueryParameters.SortingKeys>

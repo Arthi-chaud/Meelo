@@ -142,6 +142,8 @@ export default class UserService extends RepositoryService<
 		return input;
 	}
 
+	formatIdentifierToWhereInput = RepositoryService.UnexpectedStringIdentifier;
+
 	formatSortingInput(sortingParameter: SortingParameter<UserQueryParameters.SortingKeys>) {
 		return { [sortingParameter.sortBy]: sortingParameter.order };
 	}

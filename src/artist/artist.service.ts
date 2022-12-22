@@ -25,6 +25,8 @@ import TrackService from 'src/track/track.service';
 import type { Artist, ArtistWithRelations } from 'src/prisma/models';
 import { ArtistResponse } from './models/artist.response';
 import { IllustrationPath } from 'src/illustration/models/illustration-path.model';
+import compilationAlbumArtistKeyword from 'src/utils/compilation';
+import { parseIdentifierSlugs } from 'src/identifier/identifier.parse-slugs';
 
 @Injectable()
 export default class ArtistService extends RepositoryService<
@@ -128,6 +130,15 @@ export default class ArtistService extends RepositoryService<
 	}
 
 	formatManyWhereInput = ArtistService.formatManyWhereInput;
+
+	formatIdentifierToWhereInput(identifier: string): ArtistQueryParameters.WhereInput {
+		const [slug] = parseIdentifierSlugs(identifier, 1);
+
+		if (slug.toString() == compilationAlbumArtistKeyword) {
+			return { compilationArtist: true };
+		}
+		return { slug };
+	}
 
 	formatSortingInput(
 		sortingParameter: SortingParameter<ArtistQueryParameters.SortingKeys>

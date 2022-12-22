@@ -12,7 +12,7 @@ namespace LyricsQueryParameters {
 	/**
 	 * Query parameters to find one lyric entry
 	 */
-	export type WhereInput = RequireExactlyOne<Omit<Lyrics, 'songId' | 'song' | 'content'> & {
+	export type WhereInput = RequireExactlyOne<Pick<Lyrics, 'id'> & {
 		song: SongQueryParameters.WhereInput
 	}>;
 

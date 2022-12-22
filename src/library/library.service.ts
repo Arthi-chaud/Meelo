@@ -19,6 +19,7 @@ import { buildStringSearchParameters } from 'src/utils/search-string-input';
 import TasksService from 'src/tasks/tasks.service';
 import { Library, LibraryWithRelations } from 'src/prisma/models';
 import SortingParameter from 'src/sort/models/sorting-parameter';
+import { parseIdentifierSlugs } from 'src/identifier/identifier.parse-slugs';
 
 @Injectable()
 export default class LibraryService extends RepositoryService<
@@ -90,6 +91,12 @@ export default class LibraryService extends RepositoryService<
 	}
 
 	formatManyWhereInput = LibraryService.formatManyWhereInput;
+
+	formatIdentifierToWhereInput(identifier: string): LibraryQueryParameters.WhereInput {
+		const [slug] = parseIdentifierSlugs(identifier, 1);
+
+		return { slug };
+	}
 
 	formatSortingInput(
 		sortingParameter: SortingParameter<LibraryQueryParameters.SortingKeys>

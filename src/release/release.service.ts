@@ -30,6 +30,8 @@ import archiver from 'archiver';
 import { createReadStream } from 'fs';
 import { Response } from 'express';
 import mime from 'mime';
+import compilationAlbumArtistKeyword from 'src/utils/compilation';
+import { parseIdentifierSlugs } from 'src/identifier/identifier.parse-slugs';
 
 @Injectable()
 export default class ReleaseService extends RepositoryService<
@@ -142,6 +144,24 @@ export default class ReleaseService extends RepositoryService<
 	}
 
 	formatManyWhereInput = ReleaseService.formatManyWhereInput;
+
+	formatIdentifierToWhereInput(identifier: string): ReleaseQueryParameters.WhereInput {
+		const slugs = parseIdentifierSlugs(identifier, 3);
+
+		return {
+			bySlug: {
+				slug: slugs[2],
+				album: {
+					bySlug: {
+						slug: slugs[1],
+						artist: slugs[0].toString() == compilationAlbumArtistKeyword
+							? undefined
+							: { slug: slugs[0] }
+					}
+				}
+			}
+		};
+	}
 
 	formatSortingInput(
 		sortingParameter: SortingParameter<ReleaseQueryParameters.SortingKeys>

@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/ban-types */
-import type { MeeloException } from "src/exceptions/meelo-exception";
+import { InvalidRequestException, MeeloException } from "src/exceptions/meelo-exception";
+import Identifier from "src/identifier/models/identifier";
 import { PaginationParameters, buildPaginationParameters } from "src/pagination/models/pagination-parameters";
 import SortingParameter from "src/sort/models/sorting-parameter";
 import type { Primitive } from "type-fest";
@@ -76,7 +77,7 @@ type ORMManyGetterMethod<
 abstract class RepositoryService<
 	Model extends AtomicModel,
 	CreateInput,
-	WhereInput,
+	WhereInput extends Partial<{ id: any }> & {},
 	ManyWhereInput,
 	UpdateInput,
 	DeleteInput,
@@ -152,6 +153,34 @@ abstract class RepositoryService<
 			throw await this.onNotFound(where);
 		}
 	}
+
+	/**
+	 * Find an entity in the database
+	 * @param where an identifier to find the row to select
+	 * @param include the relation fields to include with the returned entity
+	 * @returns The entity matching the query parameters
+	 */
+	async getByIdentifier<I extends ModelSelector<Relations>>(
+		identifier: Identifier, include?: I
+	) {
+		if (typeof identifier == 'number') {
+			return this.get(<WhereInput>{ id: identifier }, include);
+		}
+		return this.get(this.formatIdentifierToWhereInput(identifier), include);
+	}
+
+	/**
+	 * Format string identifier into WhereInput
+	 * This should handle only string Identifier, not numbers
+	 */
+	abstract formatIdentifierToWhereInput(identifier: string): WhereInput;
+
+	/**
+	 * Fallback method to assign to `formatIdentifierToWhereInput` if no handling of string identifier is possible
+	 */
+	protected static UnexpectedStringIdentifier = (identifier: string): never => {
+		throw new InvalidRequestException(`Identifier: expected a number, got ${identifier}`);
+	};
 
 	/**
 	 * Checks if the Query parameters to find an entity are consistent

@@ -113,6 +113,8 @@ export default class FileService extends RepositoryService<
 
 	formatManyWhereInput = FileService.formatManyWhereInput;
 
+	formatIdentifierToWhereInput = RepositoryService.UnexpectedStringIdentifier;
+
 	formatSortingInput(
 		sort: SortingParameter<FileQueryParameters.SortingKeys>
 	): Prisma.FileOrderByWithRelationInput {

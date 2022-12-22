@@ -90,6 +90,8 @@ export class LyricsService extends RepositoryService<
 
 	formatManyWhereInput = LyricsService.formatManyWhereInput;
 
+	formatIdentifierToWhereInput = RepositoryService.UnexpectedStringIdentifier;
+
 	formatSortingInput<S extends SortingParameter<[]>>(sortingParameter: S) {
 		return { id: sortingParameter.order };
 	}

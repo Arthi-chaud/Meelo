@@ -160,6 +160,8 @@ export default class TrackService extends RepositoryService<
 
 	formatManyWhereInput = TrackService.formatManyWhereInput;
 
+	formatIdentifierToWhereInput = RepositoryService.UnexpectedStringIdentifier;
+
 	formatSortingInput(
 		sortingParameter: SortingParameter<TrackQueryParameters.SortingKeys>
 	): Prisma.TrackOrderByWithRelationInput {

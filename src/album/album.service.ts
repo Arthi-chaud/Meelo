@@ -25,6 +25,8 @@ import {
 } from "src/prisma/models";
 import { AlbumResponse } from './models/album.response';
 import SortingParameter from 'src/sort/models/sorting-parameter';
+import { parseIdentifierSlugs } from 'src/identifier/identifier.parse-slugs';
+import compilationAlbumArtistKeyword from 'src/utils/compilation';
 
 @Injectable()
 export default class AlbumService extends RepositoryService<
@@ -145,6 +147,19 @@ export default class AlbumService extends RepositoryService<
 	}
 
 	formatManyWhereInput = AlbumService.formatManyWhereInput;
+
+	formatIdentifierToWhereInput(identifier: string): AlbumQueryParameters.WhereInput {
+		const slugs = parseIdentifierSlugs(identifier, 2);
+
+		return {
+			bySlug: {
+				slug: slugs[1],
+				artist: slugs[0].toString() == compilationAlbumArtistKeyword
+					? undefined
+					: {	slug: slugs[0] }
+			}
+		};
+	}
 
 	formatSortingInput(
 		sortingParameter: SortingParameter<AlbumQueryParameters.SortingKeys>
