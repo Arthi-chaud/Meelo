@@ -30,7 +30,7 @@ const SelectableInfiniteView = (props: SelectableInfiniteViewProps) => {
 	const [selectedType, selectItemType] = useState<typeof itemTypes[number]>(props.default && itemTypes.includes(props.default) ? props.default : 'album');
 
 	return <Box sx={{ width: '100%', display: 'flex', justifyContent: "center", flexDirection: 'column' }}>
-		<Grid container spacing={2} sx={{ justifyContent: 'center' }}>
+		<Grid container spacing={2} sx={{ justifyContent: 'center', marginBottom: 2 }}>
 			{ itemTypes.map((item) =>
 				<Grid item key={item}>
 					<Chip label={capitalCase(item + 's')} variant={selectedType == item ? 'filled' : 'outlined'} onClick={() => {

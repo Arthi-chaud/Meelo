@@ -35,7 +35,7 @@ const RelationPageHeader = (props: RelationHeaderProps) => {
 				{props.trailing}
 			</Grid>
 		</Grid>
-		<Divider/>
+		<Divider sx={{ marginBottom: 2 }}/>
 	</>;
 };
 
