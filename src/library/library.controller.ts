@@ -1,5 +1,6 @@
 import {
-	Body, Controller, Delete, Get, Post, Put, Query, Req
+	Body, Controller, Delete, Get, Param,
+	Post, Put, Query, Req
 } from '@nestjs/common';
 import LibraryService from './library.service';
 import { Library } from 'src/prisma/models';
@@ -25,13 +26,12 @@ import { ReleaseResponse } from 'src/release/models/release.response';
 import { SongResponse } from 'src/song/models/song.response';
 import { TrackResponse } from 'src/track/models/track.response';
 import { PaginationQuery } from 'src/pagination/pagination-query.decorator';
-import { IdentifierParam } from 'src/identifier/identifier-param.decorator';
 import RelationIncludeQuery from 'src/relation-include/relation-include-query.decorator';
 import SortingQuery from 'src/sort/sort-query.decorator';
 import Admin from 'src/roles/admin.decorator';
 import UpdateLibraryDto from './models/update-library.dto';
 import CreateLibraryDto from './models/create-library.dto';
-import Identifier from 'src/identifier/models/identifier';
+import { IdentifierParam } from 'src/identifier/models/identifier';
 
 @ApiTags("Libraries")
 @Controller('libraries')
@@ -61,10 +61,9 @@ export default class LibraryController {
 	})
 	@Get(':idOrSlug')
 	async getLibrary(
-		@IdentifierParam()
-		identifier: Identifier,
+		@Param() { idOrSlug }: IdentifierParam
 	): Promise<Library> {
-		const where = LibraryService.formatIdentifierToWhereInput(identifier);
+		const where = LibraryService.formatIdentifierToWhereInput(idOrSlug);
 
 		return this.libraryService.get(where);
 	}
@@ -75,11 +74,10 @@ export default class LibraryController {
 	@Admin()
 	@Put(':idOrSlug/update')
 	async updateLibrary(
+		@Param() { idOrSlug }: IdentifierParam,
 		@Body() updateLibraryDTO: UpdateLibraryDto,
-		@IdentifierParam()
-		identifier: Identifier,
 	) {
-		const where = LibraryService.formatIdentifierToWhereInput(identifier);
+		const where = LibraryService.formatIdentifierToWhereInput(idOrSlug);
 
 		return this.libraryService.buildResponse(
 			await this.libraryService.update(updateLibraryDTO, where)
@@ -114,10 +112,9 @@ export default class LibraryController {
 	@Admin()
 	@Delete(':idOrSlug')
 	async deleteLibrary(
-		@IdentifierParam()
-		identifier: Identifier,
+		@Param() { idOrSlug }: IdentifierParam
 	) {
-		const where = LibraryService.formatIdentifierToWhereInput(identifier);
+		const where = LibraryService.formatIdentifierToWhereInput(idOrSlug);
 		const library = await this.libraryService.get(where);
 
 		await this.libraryService.delete(where);
@@ -130,8 +127,7 @@ export default class LibraryController {
 	@ApiPaginatedResponse(ArtistResponse)
 	@Get(':idOrSlug/artists')
 	async getArtistsByLibrary(
-		@IdentifierParam()
-		identifier: Identifier,
+		@Param() { idOrSlug }: IdentifierParam,
 		@PaginationQuery()
 		paginationParameters: PaginationParameters,
 		@RelationIncludeQuery(ArtistQueryParameters.AvailableAtomicIncludes)
@@ -140,7 +136,7 @@ export default class LibraryController {
 		sortingParameter: ArtistQueryParameters.SortingParameter,
 		@Req() request: Request
 	) {
-		const where = LibraryService.formatIdentifierToWhereInput(identifier);
+		const where = LibraryService.formatIdentifierToWhereInput(idOrSlug);
 		const artists = await this.artistService.getAlbumsArtists(
 			{ library: where }, paginationParameters, include, sortingParameter
 		);
@@ -160,8 +156,7 @@ export default class LibraryController {
 	@ApiPaginatedResponse(AlbumResponse)
 	@Get(':idOrSlug/albums')
 	async getAlbumsByLibrary(
-		@IdentifierParam()
-		identifier: Identifier,
+		@Param() { idOrSlug }: IdentifierParam,
 		@PaginationQuery()
 		paginationParameters: PaginationParameters,
 		@RelationIncludeQuery(AlbumQueryParameters.AvailableAtomicIncludes)
@@ -171,7 +166,7 @@ export default class LibraryController {
 		@Query() filter: AlbumQueryParameters.AlbumFilterParameter,
 		@Req() request: Request
 	) {
-		const where = LibraryService.formatIdentifierToWhereInput(identifier);
+		const where = LibraryService.formatIdentifierToWhereInput(idOrSlug);
 		const albums = await this.albumService.getMany(
 			{ library: where, type: filter.type },
 			paginationParameters,
@@ -194,8 +189,7 @@ export default class LibraryController {
 	@ApiPaginatedResponse(ReleaseResponse)
 	@Get(':idOrSlug/releases')
 	async getReleasesByLibrary(
-		@IdentifierParam()
-		identifier: Identifier,
+		@Param() { idOrSlug }: IdentifierParam,
 		@PaginationQuery()
 		paginationParameters: PaginationParameters,
 		@RelationIncludeQuery(ReleaseQueryParameters.AvailableAtomicIncludes)
@@ -204,7 +198,7 @@ export default class LibraryController {
 		sortingParameter: ReleaseQueryParameters.SortingParameter,
 		@Req() request: Request
 	) {
-		const where = LibraryService.formatIdentifierToWhereInput(identifier);
+		const where = LibraryService.formatIdentifierToWhereInput(idOrSlug);
 		const releases = await this.releaseService.getMany(
 			{ library: where }, paginationParameters, include, sortingParameter
 		);
@@ -224,8 +218,7 @@ export default class LibraryController {
 	@ApiPaginatedResponse(SongResponse)
 	@Get(':idOrSlug/songs')
 	async getSongsByLibrary(
-		@IdentifierParam()
-		identifier: Identifier,
+		@Param() { idOrSlug }: IdentifierParam,
 		@PaginationQuery()
 		paginationParameters: PaginationParameters,
 		@RelationIncludeQuery(SongQueryParameters.AvailableAtomicIncludes)
@@ -234,7 +227,7 @@ export default class LibraryController {
 		sortingParameter: SongQueryParameters.SortingParameter,
 		@Req() request: Request
 	) {
-		const where = LibraryService.formatIdentifierToWhereInput(identifier);
+		const where = LibraryService.formatIdentifierToWhereInput(idOrSlug);
 		const songs = await this.songService.getMany(
 			{ library: where }, paginationParameters, include, sortingParameter
 		);
@@ -254,8 +247,7 @@ export default class LibraryController {
 	@ApiPaginatedResponse(TrackResponse)
 	@Get(':idOrSlug/tracks')
 	async getTracksByLibrary(
-		@IdentifierParam()
-		identifier: Identifier,
+		@Param() { idOrSlug }: IdentifierParam,
 		@PaginationQuery()
 		paginationParameters: PaginationParameters,
 		@RelationIncludeQuery(TrackQueryParameters.AvailableAtomicIncludes)
@@ -264,7 +256,7 @@ export default class LibraryController {
 		sortingParameter: TrackQueryParameters.SortingParameter,
 		@Req() request: Request
 	) {
-		const where = LibraryService.formatIdentifierToWhereInput(identifier);
+		const where = LibraryService.formatIdentifierToWhereInput(idOrSlug);
 		const tracks = await this.trackService.getMany(
 			{ library: where }, paginationParameters, include, sortingParameter
 		);

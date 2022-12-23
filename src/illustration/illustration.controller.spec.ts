@@ -17,12 +17,11 @@ import SongModule from "src/song/song.module";
 import TrackModule from "src/track/track.module";
 // Import as a require to mock
 const fs = require('fs');
-import { INestApplication, ValidationPipe } from "@nestjs/common";
-import MeeloExceptionFilter from "src/exceptions/meelo-exception.filter";
-import NotFoundExceptionFilter from "src/exceptions/not-found.exception";
+import { INestApplication } from "@nestjs/common";
 import request from "supertest";
 import ReleaseService from "src/release/release.service";
 import TrackService from "src/track/track.service";
+import SetupApp from "test/setup-app";
 describe('Illustration Controller', () => {
 	let app: INestApplication;
 	let dummyRepository: TestPrismaService;
@@ -34,14 +33,8 @@ describe('Illustration Controller', () => {
 			imports: [FileManagerModule, PrismaModule, FileModule, MetadataModule, FileManagerModule, FileModule, ArtistModule, AlbumModule, SongModule, ReleaseModule, TrackModule, GenreModule, LyricsModule],
 		}).overrideProvider(FileManagerService).useClass(FakeFileManagerService)
 		.overrideProvider(PrismaService).useClass(TestPrismaService).compile();
-		app = module.createNestApplication();
-		app.useGlobalFilters(
-			new NotFoundExceptionFilter(),
-			new MeeloExceptionFilter()
-		);
-		app.useGlobalPipes(new ValidationPipe());
+		app = await SetupApp(module);
 		fileManagerService = module.get<FileManagerService>(FileManagerService);
-		await app.init();
 		dummyRepository = module.get(PrismaService);
 		releaseService = module.get(ReleaseService);
 		trackService = module.get(TrackService);

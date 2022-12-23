@@ -1,4 +1,4 @@
-import { INestApplication, ValidationPipe } from "@nestjs/common";
+import { INestApplication } from "@nestjs/common";
 import type { TestingModule } from "@nestjs/testing";
 import type { Artist, Album, Song, Release } from "src/prisma/models";
 import AlbumModule from "src/album/album.module";
@@ -21,6 +21,7 @@ import SearchModule from "./search.module";
 import request from "supertest";
 import MetadataModule from "src/metadata/metadata.module";
 import GenreService from "src/genre/genre.service";
+import SetupApp from "test/setup-app";
 
 describe('Search Controller', () => {
 	let dummyRepository: TestPrismaService;
@@ -55,9 +56,7 @@ describe('Search Controller', () => {
 		}).overrideProvider(FileManagerService).useClass(FakeFileManagerService)
 		.overrideProvider(PrismaService).useClass(TestPrismaService).compile();
 		dummyRepository = module.get(PrismaService);
-		app = module.createNestApplication();
-		app.useGlobalPipes(new ValidationPipe());
-		await app.init();
+		app = await SetupApp(module);
 		await dummyRepository.onModuleInit();
 		const artistService = module.get(ArtistService);
 		const albumService = module.get(AlbumService);

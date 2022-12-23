@@ -36,6 +36,7 @@ async function bootstrap() {
 		new MeeloExceptionFilter()
 	);
 	app.useGlobalPipes(new ValidationPipe({
+		transform: true,
 		exceptionFactory: (error) => {
 			const failedConstraint = Object.keys(error[0].constraints!)[0];
 

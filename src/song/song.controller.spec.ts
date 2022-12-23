@@ -8,9 +8,7 @@ import PrismaModule from "src/prisma/prisma.module";
 import PrismaService from "src/prisma/prisma.service";
 import { FakeFileManagerService } from "test/fake-file-manager.module";
 import request from "supertest";
-import { INestApplication, ValidationPipe } from "@nestjs/common";
-import NotFoundExceptionFilter from "src/exceptions/not-found.exception";
-import MeeloExceptionFilter from "src/exceptions/meelo-exception.filter";
+import { INestApplication } from "@nestjs/common";
 import TrackModule from "src/track/track.module";
 import IllustrationModule from "src/illustration/illustration.module";
 import SongModule from "src/song/song.module";
@@ -20,6 +18,7 @@ import GenreModule from "src/genre/genre.module";
 import TestPrismaService from "test/test-prisma.service";
 import SongService from "./song.service";
 import { LyricsModule } from "src/lyrics/lyrics.module";
+import SetupApp from "test/setup-app";
 
 describe('Song Controller', () => {
 	let dummyRepository: TestPrismaService;
@@ -47,13 +46,7 @@ describe('Song Controller', () => {
 			imports: [PrismaModule, AlbumModule, ArtistModule, ReleaseModule, TrackModule, IllustrationModule, SongModule, MetadataModule, GenreModule, LyricsModule],
 		}).overrideProvider(FileManagerService).useClass(FakeFileManagerService)
 		.overrideProvider(PrismaService).useClass(TestPrismaService).compile();
-		app = module.createNestApplication();
-		app.useGlobalFilters(
-			new NotFoundExceptionFilter(),
-			new MeeloExceptionFilter()
-		);
-		app.useGlobalPipes(new ValidationPipe());
-		await app.init();
+		app = await SetupApp(module);
 		dummyRepository = module.get(PrismaService);
 		songService = module.get(SongService);
 		await dummyRepository.onModuleInit();

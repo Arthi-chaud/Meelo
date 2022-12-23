@@ -10,7 +10,12 @@ export default async function SetupApp(module: TestingModule): Promise<INestAppl
 		new NotFoundExceptionFilter(),
 		new MeeloExceptionFilter()
 	);
-	app.useGlobalPipes(new ValidationPipe());
 	app.use(cookieParser());
-	return await app.init();
+	app.useGlobalPipes(new ValidationPipe({
+		transform: true,
+		transformOptions: {
+			enableImplicitConversion: true
+		},
+	}));
+	return app.init();
 }

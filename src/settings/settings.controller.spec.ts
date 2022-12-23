@@ -8,6 +8,7 @@ import FileManagerService from 'src/file-manager/file-manager.service';
 import type { INestApplication } from '@nestjs/common';
 import FileManagerModule from 'src/file-manager/file-manager.module';
 import request from 'supertest';
+import SetupApp from "test/setup-app";
 
 describe('Settings Controller', () => {
 	let controller: SettingsController;
@@ -22,8 +23,7 @@ describe('Settings Controller', () => {
 
 		fileService = module.get<FileManagerService>(FileManagerService);
 		controller = module.get<SettingsController>(SettingsController);
-		app = module.createNestApplication();
-		await app.init();
+		app = await SetupApp(module);
 		jest.spyOn(fileService, 'getFileContent').mockImplementationOnce(
 			() => fs.readFileSync('test/assets/settings.json').toString()
 		);

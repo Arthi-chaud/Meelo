@@ -1,5 +1,5 @@
 import {
-	Body, Controller, Delete, Get, Post, Put, Req, Request
+	Body, Controller, Delete, Get, Param, Post, Put, Req, Request
 } from "@nestjs/common";
 import { User } from "@prisma/client";
 import UserService from "./user.service";
@@ -16,8 +16,7 @@ import UpdateUserDTO from "./models/update-user.dto";
 import PaginatedResponse from "src/pagination/models/paginated-response";
 import { Public } from "src/roles/public.decorator";
 import { InvalidRequestException } from "src/exceptions/meelo-exception";
-import Identifier from "src/identifier/models/identifier";
-import { IdentifierParam } from "src/identifier/identifier-param.decorator";
+import { IdentifierParam } from "src/identifier/models/identifier";
 
 @ApiTags("Users")
 @Controller("users")
@@ -55,13 +54,13 @@ export default class UserController {
 	@Admin()
 	@Put(':idOrSlug')
 	async updateUserAccounts(
-		@IdentifierParam() identifier: Identifier,
+		@Param() { idOrSlug }: IdentifierParam,
 		@Body() updateUserDto: UpdateUserDTO,
 	) {
 		return this.userService.buildResponse(
 			await this.userService.update(
 				updateUserDto,
-				UserService.formatIdentifierToWhereInput(identifier)
+				UserService.formatIdentifierToWhereInput(idOrSlug)
 			)
 		);
 	}
@@ -72,11 +71,11 @@ export default class UserController {
 	@Admin()
 	@Delete(':idOrSlug')
 	async deleteUserAccounts(
-		@IdentifierParam() identifier: Identifier,
+		@Param() { idOrSlug }: IdentifierParam,
 		@Req() request: Express.Request
 	) {
 		const user = await this.userService.get(
-			UserService.formatIdentifierToWhereInput(identifier)
+			UserService.formatIdentifierToWhereInput(idOrSlug)
 		);
 		const authenticatedUser = request.user as User;
 

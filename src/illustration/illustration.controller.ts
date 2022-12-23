@@ -1,5 +1,5 @@
 import {
-	Body, Controller, Delete, Get, Post, Query, Response
+	Body, Controller, Delete, Get, Param, Post, Query, Response
 } from "@nestjs/common";
 import { ApiOperation, ApiTags } from "@nestjs/swagger";
 import ArtistService from "src/artist/artist.service";
@@ -10,9 +10,8 @@ import { NoReleaseIllustrationException } from "./illustration.exceptions";
 import IllustrationService from "./illustration.service";
 import { IllustrationDownloadDto } from "./models/illustration-dl.dto";
 import { IllustrationDimensionsDto } from "./models/illustration-dimensions.dto";
-import { IdentifierParam } from "src/identifier/identifier-param.decorator";
 import Admin from "src/roles/admin.decorator";
-import Identifier from "src/identifier/models/identifier";
+import { IdentifierParam } from "src/identifier/models/identifier";
 import AlbumService from "src/album/album.service";
 import SongService from "src/song/song.service";
 
@@ -31,13 +30,12 @@ export class IllustrationController {
 	})
 	@Get('artists/:idOrSlug')
 	async getArtistIllustration(
-		@IdentifierParam()
-		identifier: Identifier,
+		@Param() { idOrSlug }: IdentifierParam,
 		@Query() dimensions: IllustrationDimensionsDto,
 		@Response({ passthrough: true })
 		res: Response,
 	) {
-		const where = ArtistService.formatIdentifierToWhereInput(identifier);
+		const where = ArtistService.formatIdentifierToWhereInput(idOrSlug);
 		const artist = await this.artistService.select(where, { slug: true });
 		const artistIllustration = await this.artistService.buildIllustrationPath(where);
 
@@ -55,12 +53,10 @@ export class IllustrationController {
 	@Admin()
 	@Post('artists/:idOrSlug')
 	async updateArtistIllustration(
-		@IdentifierParam()
-		identifier: Identifier,
-		@Body()
-		illustrationDto: IllustrationDownloadDto
+		@Param() { idOrSlug }: IdentifierParam,
+		@Body() illustrationDto: IllustrationDownloadDto
 	) {
-		const where = ArtistService.formatIdentifierToWhereInput(identifier);
+		const where = ArtistService.formatIdentifierToWhereInput(idOrSlug);
 		const artistIllustrationPath = await this.artistService.buildIllustrationPath(where);
 
 		return this.illustrationService.downloadIllustration(
@@ -74,16 +70,18 @@ export class IllustrationController {
 	})
 	@Get('albums/:idOrSlug')
 	async getAlbumIllustration(
-		@IdentifierParam()
-		identifier: Identifier,
+		@Param() { idOrSlug }: IdentifierParam,
 		@Query() dimensions: IllustrationDimensionsDto,
-		@Response({ passthrough: true })
-		res: Response,
+		@Response({ passthrough: true }) res: Response,
 	) {
-		const where = AlbumService.formatIdentifierToWhereInput(identifier);
+		const where = AlbumService.formatIdentifierToWhereInput(idOrSlug);
 		const masterRelease = await this.releaseService.get({ masterOf: where });
 
-		return this.getReleaseIllustration(masterRelease.id, dimensions, res);
+		return this.getReleaseIllustration(
+			{ idOrSlug: masterRelease.id },
+			dimensions,
+			res
+		);
 	}
 
 	@ApiOperation({
@@ -91,16 +89,18 @@ export class IllustrationController {
 	})
 	@Get('songs/:idOrSlug')
 	async getSongIllustration(
-		@IdentifierParam()
-		identifier: Identifier,
+		@Param() { idOrSlug }: IdentifierParam,
 		@Query() dimensions: IllustrationDimensionsDto,
-		@Response({ passthrough: true })
-		res: Response,
+		@Response({ passthrough: true }) res: Response,
 	) {
-		const where = SongService.formatIdentifierToWhereInput(identifier);
+		const where = SongService.formatIdentifierToWhereInput(idOrSlug);
 		const master = await this.trackService.getMasterTrack(where);
 
-		return this.getTrackIllustration(master.id, dimensions, res);
+		return this.getTrackIllustration(
+			{ idOrSlug: master.id },
+			dimensions,
+			res
+		);
 	}
 
 	@ApiOperation({
@@ -108,13 +108,11 @@ export class IllustrationController {
 	})
 	@Get('releases/:idOrSlug')
 	async getReleaseIllustration(
-		@IdentifierParam()
-		identifier: Identifier,
+		@Param() { idOrSlug }: IdentifierParam,
 		@Query() dimensions: IllustrationDimensionsDto,
-		@Response({ passthrough: true })
-		res: Response,
+		@Response({ passthrough: true }) res: Response,
 	) {
-		const where = ReleaseService.formatIdentifierToWhereInput(identifier);
+		const where = ReleaseService.formatIdentifierToWhereInput(idOrSlug);
 		const path = await this.releaseService.buildIllustrationPath(where);
 		const release = await this.releaseService.get(where, { album: true });
 
@@ -134,12 +132,10 @@ export class IllustrationController {
 	@Admin()
 	@Post('releases/:idOrSlug')
 	async updateReleaseIllustration(
-		@IdentifierParam()
-		identifier: Identifier,
-		@Body()
-		illustrationDto: IllustrationDownloadDto
+		@Param() { idOrSlug }: IdentifierParam,
+		@Body()	illustrationDto: IllustrationDownloadDto
 	) {
-		const where = ReleaseService.formatIdentifierToWhereInput(identifier);
+		const where = ReleaseService.formatIdentifierToWhereInput(idOrSlug);
 		const path = await this.releaseService.buildIllustrationPath(where);
 
 		return this.illustrationService.downloadIllustration(
@@ -153,13 +149,11 @@ export class IllustrationController {
 	})
 	@Get('tracks/:idOrSlug')
 	async getTrackIllustration(
-		@IdentifierParam()
-		identifier: Identifier,
+		@Param() { idOrSlug }: IdentifierParam,
 		@Query() dimensions: IllustrationDimensionsDto,
-		@Response({ passthrough: true })
-		res: Response,
+		@Response({ passthrough: true }) res: Response,
 	) {
-		const where = TrackService.formatIdentifierToWhereInput(identifier);
+		const where = TrackService.formatIdentifierToWhereInput(idOrSlug);
 		const track = await this.trackService.get(where, { song: true });
 		const trackIllustrationPath = await this.trackService.buildIllustrationPath(where);
 
@@ -171,7 +165,11 @@ export class IllustrationController {
 				res
 			);
 		}
-		return this.getReleaseIllustration(track.releaseId, dimensions, res);
+		return this.getReleaseIllustration(
+			{ idOrSlug: track.releaseId },
+			dimensions,
+			res
+		);
 	}
 
 	@ApiOperation({
@@ -180,12 +178,10 @@ export class IllustrationController {
 	@Admin()
 	@Post('tracks/:idOrSlug')
 	async updateTrackIllustration(
-		@IdentifierParam()
-		identifier: Identifier,
-		@Body()
-		illustrationDto: IllustrationDownloadDto
+		@Param() { idOrSlug }: IdentifierParam,
+		@Body()	illustrationDto: IllustrationDownloadDto
 	) {
-		const where = TrackService.formatIdentifierToWhereInput(identifier);
+		const where = TrackService.formatIdentifierToWhereInput(idOrSlug);
 		const trackIllustrationPath = await this.trackService.buildIllustrationPath(where);
 
 		return this.illustrationService.downloadIllustration(
@@ -200,10 +196,9 @@ export class IllustrationController {
 	@Admin()
 	@Delete('tracks/:idOrSlug')
 	async deleteTrackIllustration(
-		@IdentifierParam()
-		identifier: Identifier,
+		@Param() { idOrSlug }: IdentifierParam
 	) {
-		const where = TrackService.formatIdentifierToWhereInput(identifier);
+		const where = TrackService.formatIdentifierToWhereInput(idOrSlug);
 		const trackIllustrationPath = await this.trackService.buildIllustrationPath(where);
 
 		this.illustrationService.deleteIllustrationSafe(trackIllustrationPath);
@@ -215,10 +210,9 @@ export class IllustrationController {
 	@Admin()
 	@Delete('releases/:idOrSlug')
 	async deleteReleaseIllustration(
-		@IdentifierParam()
-		identifier: Identifier,
+		@Param() { idOrSlug }: IdentifierParam
 	) {
-		const where = ReleaseService.formatIdentifierToWhereInput(identifier);
+		const where = ReleaseService.formatIdentifierToWhereInput(idOrSlug);
 		const releaseIllustrationPath = await this.releaseService.buildIllustrationPath(where);
 
 		this.illustrationService.deleteIllustrationSafe(releaseIllustrationPath);
@@ -230,10 +224,9 @@ export class IllustrationController {
 	@Admin()
 	@Delete('artists/:idOrSlug')
 	async deleteArtistIllustration(
-		@IdentifierParam()
-		identifier: Identifier,
+		@Param() { idOrSlug }: IdentifierParam
 	) {
-		const where = ArtistService.formatIdentifierToWhereInput(identifier);
+		const where = ArtistService.formatIdentifierToWhereInput(idOrSlug);
 		const artistIllustrationPath = await this.artistService.buildIllustrationPath(where);
 
 		this.illustrationService.deleteIllustrationSafe(artistIllustrationPath);

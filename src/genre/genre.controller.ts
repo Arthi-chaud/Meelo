@@ -1,5 +1,5 @@
 import {
-	Controller, Get, Inject, Query, Req, forwardRef
+	Controller, Get, Inject, Param, Query, Req, forwardRef
 } from "@nestjs/common";
 import type { Request } from 'express';
 import { ApiOperation, ApiTags } from "@nestjs/swagger";
@@ -19,10 +19,9 @@ import { SongResponse } from "src/song/models/song.response";
 import { AlbumResponse } from "src/album/models/album.response";
 import { ArtistResponse } from "src/artist/models/artist.response";
 import { PaginationQuery } from "src/pagination/pagination-query.decorator";
-import { IdentifierParam } from "src/identifier/identifier-param.decorator";
 import RelationIncludeQuery from "src/relation-include/relation-include-query.decorator";
 import SortingQuery from "src/sort/sort-query.decorator";
-import Identifier from "src/identifier/models/identifier";
+import { IdentifierParam } from "src/identifier/models/identifier";
 
 @ApiTags("Genres")
 @Controller('genres')
@@ -66,13 +65,12 @@ export class GenreController {
 	})
 	@Get(':idOrSlug')
 	async get(
+		@Param() { idOrSlug }: IdentifierParam,
 		@RelationIncludeQuery(GenreQueryParameters.AvailableAtomicIncludes)
 		include: GenreQueryParameters.RelationInclude,
-		@IdentifierParam()
-		identifier: Identifier,
 	) {
 		const genre = await this.genreService.get(
-			GenreService.formatIdentifierToWhereInput(identifier),
+			GenreService.formatIdentifierToWhereInput(idOrSlug),
 			include
 		);
 
@@ -85,17 +83,16 @@ export class GenreController {
 	@ApiPaginatedResponse(SongResponse)
 	@Get(':idOrSlug/songs')
 	async getGenreSongs(
+		@Param() { idOrSlug }: IdentifierParam,
 		@PaginationQuery()
 		paginationParameters: PaginationParameters,
 		@RelationIncludeQuery(SongQueryParameters.AvailableAtomicIncludes)
 		include: SongQueryParameters.RelationInclude,
-		@IdentifierParam()
-		identifier: Identifier,
 		@SortingQuery(SongQueryParameters.SortingKeys)
 		sortingParameter: SongQueryParameters.SortingParameter,
 		@Req() request: Request
 	) {
-		const where = GenreService.formatIdentifierToWhereInput(identifier);
+		const where = GenreService.formatIdentifierToWhereInput(idOrSlug);
 		const songs = await this.songService.getMany(
 			{ genre: where }, paginationParameters, include, sortingParameter
 		);
@@ -117,18 +114,17 @@ export class GenreController {
 	@ApiPaginatedResponse(AlbumResponse)
 	@Get(':idOrSlug/albums')
 	async getGenreAlbums(
+		@Param() { idOrSlug }: IdentifierParam,
 		@PaginationQuery()
 		paginationParameters: PaginationParameters,
 		@RelationIncludeQuery(AlbumQueryParameters.AvailableAtomicIncludes)
 		include: AlbumQueryParameters.RelationInclude,
-		@IdentifierParam()
-		identifier: Identifier,
 		@SortingQuery(AlbumQueryParameters.SortingKeys)
 		sortingParameter: AlbumQueryParameters.SortingParameter,
 		@Query() filter: AlbumQueryParameters.AlbumFilterParameter,
 		@Req() request: Request
 	) {
-		const where = GenreService.formatIdentifierToWhereInput(identifier);
+		const where = GenreService.formatIdentifierToWhereInput(idOrSlug);
 		const albums = await this.albumService.getMany(
 			{ genre: where, type: filter.type }, paginationParameters, include, sortingParameter
 		);
@@ -150,17 +146,16 @@ export class GenreController {
 	@ApiPaginatedResponse(ArtistResponse)
 	@Get(':idOrSlug/artists')
 	async getGenreArtists(
+		@Param() { idOrSlug }: IdentifierParam,
 		@PaginationQuery()
 		paginationParameters: PaginationParameters,
 		@RelationIncludeQuery(ArtistQueryParameters.AvailableAtomicIncludes)
 		include: ArtistQueryParameters.RelationInclude,
-		@IdentifierParam()
-		identifier: Identifier,
 		@SortingQuery(ArtistQueryParameters.SortingKeys)
 		sortingParameter: ArtistQueryParameters.SortingParameter,
 		@Req() request: Request
 	) {
-		const where = GenreService.formatIdentifierToWhereInput(identifier);
+		const where = GenreService.formatIdentifierToWhereInput(idOrSlug);
 		const artists = await this.artistService.getMany(
 			{ genre: where }, paginationParameters, include, sortingParameter
 		);

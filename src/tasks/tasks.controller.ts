@@ -1,14 +1,13 @@
 import {
-	Controller, Get, Logger
+	Controller, Get, Logger, Param
 } from '@nestjs/common';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import LibraryService from 'src/library/library.service';
 import type TaskResponse from './models/task.response';
 import TasksService from './tasks.service';
 import { Timeout } from '@nestjs/schedule';
-import { IdentifierParam } from 'src/identifier/identifier-param.decorator';
 import Admin from 'src/roles/admin.decorator';
-import Identifier from 'src/identifier/models/identifier';
+import { IdentifierParam } from 'src/identifier/models/identifier';
 
 @Admin()
 @ApiTags('Tasks')
@@ -40,10 +39,9 @@ export default class TasksController {
 	})
 	@Get('scan/:idOrSlug')
 	async scanLibraryFiles(
-		@IdentifierParam()
-		identifier: Identifier,
+		@Param() { idOrSlug }: IdentifierParam
 	): Promise<TaskResponse> {
-		const where = LibraryService.formatIdentifierToWhereInput(identifier);
+		const where = LibraryService.formatIdentifierToWhereInput(idOrSlug);
 		const library = await this.libraryService.get(where);
 
 		this.tasksService
@@ -74,10 +72,9 @@ export default class TasksController {
 	})
 	@Get('clean/:idOrSlug')
 	async cleanLibrary(
-		@IdentifierParam()
-		identifier: Identifier,
+		@Param() { idOrSlug }: IdentifierParam
 	): Promise<TaskResponse> {
-		const where = LibraryService.formatIdentifierToWhereInput(identifier);
+		const where = LibraryService.formatIdentifierToWhereInput(idOrSlug);
 		const library = await this.libraryService.get(where);
 
 		this.tasksService
@@ -108,10 +105,9 @@ export default class TasksController {
 	})
 	@Get('refresh-metadata/:idOrSlug')
 	async refreshLibraryFilesMetadata(
-		@IdentifierParam()
-		identifier: Identifier,
+		@Param() { idOrSlug }: IdentifierParam
 	): Promise<TaskResponse> {
-		const where = LibraryService.formatIdentifierToWhereInput(identifier);
+		const where = LibraryService.formatIdentifierToWhereInput(idOrSlug);
 		const library = await this.libraryService.get(where);
 
 		this.tasksService
