@@ -83,7 +83,7 @@ const Controls = <
 		}
 	};
 
-	return <Box sx={{ width: '100%', display: 'flex', justifyContent: 'center', marginY: 2 }}>
+	return <Box sx={{ width: '100%', display: 'flex', justifyContent: 'center', marginBottom: 2 }}>
 		<ButtonGroup color='inherit'>
 			<OptionButton
 				optionGroup={{
