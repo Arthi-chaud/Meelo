@@ -12,7 +12,10 @@ const LoadingComponent = () => {
 	const [displayLoad, setDisplay] = useState(false);
 
 	useEffect(() => {
-		const timeId = setTimeout(() => setDisplay(true), 2);
+		const timeId = setTimeout(
+			() => setDisplay(true),
+			2000
+		);
 
 		return () => {
 			clearTimeout(timeId);
