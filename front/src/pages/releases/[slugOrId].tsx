@@ -1,6 +1,6 @@
 import {
-	Button, Divider, Grid, IconButton,
-	ListSubheader, Typography, useTheme
+	Button, Container, Divider, Grow, Grid, IconButton,
+	ListSubheader, Typography, Zoom, useTheme, Fade
 } from "@mui/material";
 import { Box } from "@mui/system";
 import { useRouter } from "next/router";
@@ -90,17 +90,16 @@ type RelatedContentSectionProps = {
 }
 
 const RelatedContentSection = (props: RelatedContentSectionProps) => {
-	if (props.display == false) {
-		return <></>;
-	}
 	return (
-		<FadeIn>
-			<Divider/>
-			<Box sx={{ padding: 3 }}>
-				<Typography variant='h6' sx={{ paddingBottom: 3 }}>{props.title}</Typography>
-				{props.children}
-			</Box>
-		</FadeIn>
+		<Fade in={props.display == true}>
+			<Container>
+				<Divider/>
+				<Box sx={{ padding: 3 }}>
+					<Typography variant='h6' sx={{ paddingBottom: 3 }}>{props.title}</Typography>
+					{props.children}
+				</Box>
+			</Container>
+		</Fade>
 	);
 };
 
@@ -149,7 +148,7 @@ const ReleasePage = (
 		}
 	}, [tracklist.data]);
 	// eslint-disable-next-line no-extra-parens
-	if (!release.data || (artistId && !albumArtist.data)) {
+	if (!release.data || (artistId && !albumArtist.data) || !tracklist.data) {
 		return <WideLoadingComponent/>;
 	}
 	return <Box>
@@ -220,36 +219,36 @@ const ReleasePage = (
 			<Grid container spacing={1} sx={{ display: 'flex', paddingY: 2 }}>
 				{ hasGenres &&
 					<Grid item md={3} xs={12}>
-						{ albumGenres.data &&
-						<FadeIn>
-							<Grid container spacing={1} sx={{ alignItems: 'center' }}>
-								<Grid item>
-									<ListSubheader>Genres:</ListSubheader>
+						<Fade in={albumGenres.data != undefined}>
+							<Container>
+								<Grid container spacing={1} sx={{ alignItems: 'center' }}>
+									<Grid item>
+										<ListSubheader>Genres:</ListSubheader>
+									</Grid>
+									{ albumGenres.data?.map((genre) =>
+										<Grid item key={genre.id} sx={{ display: 'flex' }}>
+											<Link href={`/genres/${genre.slug}`}>
+												<Button variant="outlined" color='inherit'>
+													{ genre.name }
+												</Button>
+											</Link>
+										</Grid>) ?? []}
 								</Grid>
-								{ albumGenres.data.map((genre) =>
-									<Grid item key={genre.id} sx={{ display: 'flex' }}>
-										<Link href={`/genres/${genre.slug}`}>
-											<Button variant="outlined" color='inherit'>
-												{ genre.name }
-											</Button>
-										</Link>
-									</Grid>)}
-							</Grid>
-							<Divider sx={{
-								paddingY: 1,
-								display: "none",
-								[theme.breakpoints.down('md')]: {
-									display: 'block'
-								}
-							}} />
-						</FadeIn>
-						}
+								<Divider sx={{
+									paddingY: 1,
+									display: "none",
+									[theme.breakpoints.down('md')]: {
+										display: 'block'
+									}
+								}} />
+							</Container>
+						</Fade>
 					</Grid>
 				}
 				<Grid item md={hasGenres ? 9 : true} xs={12}>
 					{ albumGenres.data && trackList &&
 						otherArtistsQuery.findIndex((query) => query.data == undefined) == -1 &&
-						<FadeIn>
+						<Fade in><Container>
 							<ReleaseTrackList
 								mainArtist={albumArtist.data}
 								tracklist={Object.fromEntries(Array.from(Object.entries(trackList))
@@ -272,7 +271,7 @@ const ReleasePage = (
 								}
 								release={release.data}
 							/>
-						</FadeIn>
+						</Container></Fade>
 					}
 				</Grid>
 			</Grid>
