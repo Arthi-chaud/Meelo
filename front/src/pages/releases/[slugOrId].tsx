@@ -6,7 +6,6 @@ import { Box } from "@mui/system";
 import { useRouter } from "next/router";
 import API from "../../api/api";
 import Illustration from "../../components/illustration";
-import { WideLoadingComponent } from "../../components/loading/loading";
 import { ReleaseWithAlbum } from "../../models/release";
 import formatDuration from '../../utils/formatDuration';
 import { useEffect, useState } from "react";
@@ -26,6 +25,7 @@ import ReleaseTrackList from "../../components/release-tracklist";
 import prepareSSR, { InferSSRProps } from "../../ssr";
 import ReleaseContextualMenu from "../../components/contextual-menu/release-contextual-menu";
 import { TrackWithSong } from "../../models/track";
+import LoadingPage from "../../components/loading/loading-page";
 
 const releaseQuery = (slugOrId: string | number) => ({
 	key: ['release', slugOrId],
@@ -148,7 +148,7 @@ const ReleasePage = (
 	}, [tracklist.data]);
 	// eslint-disable-next-line no-extra-parens
 	if (!release.data || (artistId && !albumArtist.data) || !tracklist.data) {
-		return <WideLoadingComponent/>;
+		return <LoadingPage/>;
 	}
 	return <Box>
 		<Box sx={{ padding: 5, flex: 1, flexGrow: 1 }}>

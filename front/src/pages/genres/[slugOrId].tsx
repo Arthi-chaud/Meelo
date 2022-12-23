@@ -11,6 +11,7 @@ import { useQuery } from "../../api/use-query";
 import getSlugOrId from "../../utils/getSlugOrId";
 import { SortingParameters } from "../../utils/sorting";
 import prepareSSR, { InferSSRProps } from "../../ssr";
+import LoadingPage from "../../components/loading/loading-page";
 
 const genreQuery = (idOrSlug: string | number) => ({
 	key: ["genre", idOrSlug],
@@ -75,7 +76,7 @@ const GenrePage = ({ genreIdentifier }: InferSSRProps<typeof getServerSideProps>
 	const genre = useQuery(genreQuery, genreIdentifier);
 
 	if (!genre.data) {
-		return <WideLoadingComponent/>;
+		return <LoadingPage/>;
 	}
 	return <Box sx={{ width: '100%' }}>
 		<Box sx={{ width: '100%', justifyContent: "center", textAlign: 'center', padding: 4 }}>

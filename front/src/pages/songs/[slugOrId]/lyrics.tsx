@@ -1,6 +1,5 @@
 import { Box } from "@mui/material";
 import API from "../../../api/api";
-import { WideLoadingComponent } from "../../../components/loading/loading";
 import LyricsBox from "../../../components/lyrics";
 import { SongWithArtist } from "../../../models/song";
 import { useQuery } from "../../../api/use-query";
@@ -8,6 +7,7 @@ import getSlugOrId from "../../../utils/getSlugOrId";
 import SongRelationPageHeader from "../../../components/relation-page-header/song-relation-page-header";
 import { useRouter } from "next/router";
 import prepareSSR, { InferSSRProps } from "../../../ssr";
+import LoadingPage from "../../../components/loading/loading-page";
 
 const songQuery = (songSlugOrId: number | string) => ({
 	key: ["song", songSlugOrId],
@@ -42,7 +42,7 @@ const SongLyricsPage = (
 	const song = useQuery(songQuery, songIdentifier);
 
 	if (!song.data || lyrics.isLoading) {
-		return <WideLoadingComponent/>;
+		return <LoadingPage/>;
 	}
 	return <Box sx={{ width: '100%' }}>
 		<SongRelationPageHeader song={song.data}/>
