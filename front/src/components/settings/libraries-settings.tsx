@@ -75,7 +75,7 @@ const LibrariesSettings = () => {
 		} }
 	];
 
-	return <Box sx={{ paddingBottom: 2 }}>
+	return <Box>
 		<Grid container sx={{ justifyContent: { xs: 'space-evenly', md: 'flex-end' }, paddingY: 2 }} spacing={{ xs: 1, md: 2 }}>
 			<Grid item>
 				<Button variant='outlined'

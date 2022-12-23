@@ -123,7 +123,7 @@ const ArtistPage = (
 	}
 	return <Box>
 		<Grid container direction="column" spacing={4}
-			sx={{ padding: 5, flex: 1, flexGrow: 1 }}>
+			sx={{ padding: 2, flex: 1, flexGrow: 1 }}>
 			<Grid item container spacing={4}
 				sx={{ justifyContent: 'flex-start' }}>
 				<Grid item xs={5} sm={3}

@@ -78,12 +78,11 @@ const GenrePage = ({ genreIdentifier }: InferSSRProps<typeof getServerSideProps>
 		return <LoadingPage/>;
 	}
 	return <Box sx={{ width: '100%' }}>
-		<Box sx={{ width: '100%', justifyContent: "center", textAlign: 'center', padding: 4 }}>
+		<Box sx={{ width: '100%', justifyContent: "center", textAlign: 'center', marginY: 5 }}>
 			<Typography variant='h5' sx={{ fontWeight: 'bold' }}>
 				{genre.data.name}
 			</Typography>
 		</Box>
-		<Box sx={{ padding: 1 }}/>
 		<SelectableInfiniteView
 			enabled={true}
 			artistQuery={(sort) => genreArtistsQuery(genreIdentifier, sort)}

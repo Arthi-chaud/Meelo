@@ -10,9 +10,9 @@ type RelationHeaderProps = {
 }
 const RelationPageHeader = (props: RelationHeaderProps) => {
 	return <>
-		<Grid container sx={{ width: 'inherit', height: 'auto' }}>
+		<Grid container spacing={4} sx={{ width: 'inherit', height: 'auto' }}>
 			<Grid item xs={4} sm={3}
-				md={2} xl={1} sx={{ padding: 3 }}>
+				md={2} xl={1} sx={{ margin: 2 }}>
 				{props.illustration}
 			</Grid>
 			<Grid item container direction='column'
@@ -35,7 +35,7 @@ const RelationPageHeader = (props: RelationHeaderProps) => {
 				{props.trailing}
 			</Grid>
 		</Grid>
-		<Divider variant="middle"/>
+		<Divider/>
 	</>;
 };
 

@@ -109,9 +109,9 @@ const MeeloAppBar = () => {
 												{library.name}
 											</MenuItem>)}
 									</Select>
-									<Divider orientation='vertical' flexItem sx={{ paddingLeft: 2 }} />
+									<Divider orientation='vertical' flexItem sx={{ marginX: 2 }} />
 									<Grid container spacing={3} flexDirection='row'
-										sx={{ paddingLeft: 2, flexWrap: 'nowrap' }}
+										sx={{ flexWrap: 'nowrap' }}
 									>
 										{ itemType.map((type, index) => {
 											const isSelected = router.route == `/${type}`;

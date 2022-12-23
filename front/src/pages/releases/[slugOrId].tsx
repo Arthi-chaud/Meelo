@@ -91,12 +91,10 @@ type RelatedContentSectionProps = {
 const RelatedContentSection = (props: RelatedContentSectionProps) => {
 	return (
 		<Fade in={props.display == true}>
-			<Box sx={{ height: props.display ? undefined : 0 }}>
+			<Box sx={{ height: props.display ? undefined : 0, margin: 3 }}>
 				<Divider/>
-				<Box sx={{ padding: 3 }}>
-					<Typography variant='h6' sx={{ paddingBottom: 3 }}>{props.title}</Typography>
-					{props.children}
-				</Box>
+				<Typography variant='h6' sx={{ paddingY: 3 }}>{props.title}</Typography>
+				{props.children}
 			</Box>
 		</Fade>
 	);
@@ -150,8 +148,8 @@ const ReleasePage = (
 	if (!release.data || (artistId && !albumArtist.data) || !trackList) {
 		return <LoadingPage/>;
 	}
-	return <Box>
-		<Box sx={{ padding: 5, flex: 1, flexGrow: 1 }}>
+	return (
+		<Box sx={{ margin: 3 }}>
 			<Grid container spacing={4} sx={{ justifyContent: 'center' }}>
 				<Grid item md={3} xs={8}>
 					<Illustration url={release.data!.illustration}/>
@@ -331,7 +329,7 @@ const ReleasePage = (
 				</Grid>
 			</RelatedContentSection>
 		</Box>
-	</Box>;
+	);
 };
 
 export default ReleasePage;
