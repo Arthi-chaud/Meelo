@@ -1,5 +1,5 @@
 import {
-	Box, Divider, List, ListItem, ListItemButton, ListItemIcon,
+	Box, Divider, Icon, List, ListItem, ListItemButton, ListItemIcon,
 	ListItemText, ListSubheader, Typography
 } from "@mui/material";
 import { useDispatch } from "react-redux";
@@ -68,11 +68,11 @@ const ReleaseTrackList = (
 								}
 							/>
 							{currentTrack.type == 'Video' &&
-								<ListItemIcon>
+								<Icon sx={{ marginLeft: 2, display: 'flex', alignItems: 'center' }}>
 									<MusicVideo color='disabled' fontSize="small" />
-								</ListItemIcon>
+								</Icon>
 							}
-							<Typography sx={{ paddingLeft: 2, overflow: 'unset' }}>
+							<Typography sx={{ marginLeft: 2, overflow: 'unset' }}>
 								{formatDuration(currentTrack.duration)}
 							</Typography>
 						</ListItemButton>
