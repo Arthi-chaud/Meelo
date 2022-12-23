@@ -91,7 +91,7 @@ type RelatedContentSectionProps = {
 const RelatedContentSection = (props: RelatedContentSectionProps) => {
 	return (
 		<Fade in={props.display == true}>
-			<Box>
+			<Box sx={{ height: props.display ? undefined : 0 }}>
 				<Divider/>
 				<Box sx={{ padding: 3 }}>
 					<Typography variant='h6' sx={{ paddingBottom: 3 }}>{props.title}</Typography>
@@ -147,7 +147,7 @@ const ReleasePage = (
 		}
 	}, [tracklist.data]);
 	// eslint-disable-next-line no-extra-parens
-	if (!release.data || (artistId && !albumArtist.data) || !tracklist.data) {
+	if (!release.data || (artistId && !albumArtist.data) || !trackList) {
 		return <LoadingPage/>;
 	}
 	return <Box>

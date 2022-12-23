@@ -2,7 +2,7 @@ import { Box } from '@mui/material';
 import LoadingComponent from './loading';
 /**
  * Component that take the whole page for a loading animation
- * It should be at the root of the component tree as its content position's will be `fixed` 
+ * It should be at the root of the component tree as its content position's will be `fixed`
  */
 const LoadingPage = () => {
 	return (

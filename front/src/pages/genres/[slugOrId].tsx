@@ -3,7 +3,6 @@ import { useRouter } from "next/router";
 import API from "../../api/api";
 import { Page } from "../../components/infinite/infinite-scroll";
 import SelectableInfiniteView from "../../components/infinite/selectable-infinite-view";
-import { WideLoadingComponent } from "../../components/loading/loading";
 import Album, { AlbumSortingKeys, AlbumType } from "../../models/album";
 import Artist, { ArtistSortingKeys } from "../../models/artist";
 import { SongSortingKeys, SongWithArtist } from "../../models/song";
