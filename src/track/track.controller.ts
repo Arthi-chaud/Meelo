@@ -95,7 +95,7 @@ export class TrackController {
 		summary: 'Set a track as master track'
 	})
 	@Admin()
-	@Put(':id/master')
+	@Put(':idOrSlug/master')
 	async setAsMaster(
 		@IdentifierParam() identifier: Identifier
 	) {
