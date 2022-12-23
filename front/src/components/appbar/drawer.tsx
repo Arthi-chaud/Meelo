@@ -1,7 +1,7 @@
 import ExpandLess from "@mui/icons-material/ExpandLess";
 import ExpandMore from "@mui/icons-material/ExpandMore";
 import {
-	Collapse, Container, Divider, Drawer, Fade, Grid, List,
+	Box, Collapse, Container, Divider, Drawer, Fade, Grid, List,
 	ListItem, ListItemButton, ListItemIcon, ListItemText, ListSubheader
 } from "@mui/material";
 import Library from "../../models/library";
@@ -51,7 +51,7 @@ const MeeloAppBarDrawer = (
 				</ListSubheader>
 			}>
 				<Fade in={availableLibraries != null}>
-					<Container sx={{ width: '100%' }}>{
+					<Box>{
 						[globalLibrary, ...availableLibraries ?? []].map((library) => {
 							const open = selectedLibrarySlug === library.slug;
 
@@ -81,7 +81,7 @@ const MeeloAppBarDrawer = (
 								</Collapse>
 							</Container>;
 						})
-					}</Container>
+					}</Box>
 				</Fade>
 			</List>
 			<Divider />

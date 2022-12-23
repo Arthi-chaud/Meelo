@@ -1,7 +1,6 @@
 import {
 	Fab, Slide, Tooltip
 } from "@mui/material";
-import FadeIn from "react-fade-in";
 import StraightIcon from "@mui/icons-material/Straight";
 import { MeeloInfiniteQueryFn } from "../../api/use-query";
 import { WideLoadingComponent } from "../loading/loading";
@@ -53,11 +52,7 @@ const InfiniteView = <ItemType extends Resource, >(
 				firstLoader={() => <LoadingPage/>}
 				loader={() => <WideLoadingComponent/>}
 				query={props.query}
-				render={(item: ItemType) =>
-					<FadeIn key={item.id}>
-						{ props.renderListItem(item) }
-					</FadeIn>
-				}
+				render={props.renderListItem}
 			/> :
 			<InfiniteGrid
 				query={props.query}

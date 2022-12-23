@@ -10,7 +10,6 @@ import MenuIcon from '@mui/icons-material/Menu';
 import { useEffect, useState } from 'react';
 import API from '../../api/api';
 import LoadingComponent from '../loading/loading';
-import FadeIn from 'react-fade-in';
 import { formattedItemTypes, itemType } from './item-types';
 import globalLibrary from './global-library';
 import MeeloAppBarDrawer from './drawer';

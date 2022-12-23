@@ -14,7 +14,6 @@ import Tracklist from "../../models/tracklist";
 import Link from 'next/link';
 import PlayCircleIcon from '@mui/icons-material/PlayCircle';
 import { Shuffle } from "@mui/icons-material";
-import FadeIn from "react-fade-in";
 import Tile from "../../components/tile/tile";
 import { useQueries, useQuery } from "../../api/use-query";
 import { useDispatch } from "react-redux";
@@ -92,13 +91,13 @@ type RelatedContentSectionProps = {
 const RelatedContentSection = (props: RelatedContentSectionProps) => {
 	return (
 		<Fade in={props.display == true}>
-			<Container>
+			<Box>
 				<Divider/>
 				<Box sx={{ padding: 3 }}>
 					<Typography variant='h6' sx={{ paddingBottom: 3 }}>{props.title}</Typography>
 					{props.children}
 				</Box>
-			</Container>
+			</Box>
 		</Fade>
 	);
 };
@@ -220,7 +219,7 @@ const ReleasePage = (
 				{ hasGenres &&
 					<Grid item md={3} xs={12}>
 						<Fade in={albumGenres.data != undefined}>
-							<Container>
+							<Box>
 								<Grid container spacing={1} sx={{ alignItems: 'center' }}>
 									<Grid item>
 										<ListSubheader>Genres:</ListSubheader>
@@ -241,14 +240,14 @@ const ReleasePage = (
 										display: 'block'
 									}
 								}} />
-							</Container>
+							</Box>
 						</Fade>
 					</Grid>
 				}
 				<Grid item md={hasGenres ? 9 : true} xs={12}>
 					{ albumGenres.data && trackList &&
 						otherArtistsQuery.findIndex((query) => query.data == undefined) == -1 &&
-						<Fade in><Container>
+						<Fade in><Box>
 							<ReleaseTrackList
 								mainArtist={albumArtist.data}
 								tracklist={Object.fromEntries(Array.from(Object.entries(trackList))
@@ -271,7 +270,7 @@ const ReleasePage = (
 								}
 								release={release.data}
 							/>
-						</Container></Fade>
+						</Box></Fade>
 					}
 				</Grid>
 			</Grid>
