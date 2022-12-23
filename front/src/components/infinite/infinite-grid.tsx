@@ -17,7 +17,7 @@ const InfiniteGrid = <T extends Resource, >(props: InfiniteGridProps<T>) => {
 		{...props}
 		render={(items: T[]) =>
 			<Grid columnSpacing={2} container rowSpacing={2}
-				sx={{ padding: 3, alignItems: 'stretch', display: 'flex' }}
+				sx={{ alignItems: 'stretch', display: 'flex' }}
 			>
 				{items.map((item: T) =>
 					<Grid item xs={6} sm={3}

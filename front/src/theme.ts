@@ -19,7 +19,7 @@ export default responsiveFontSizes(createTheme({
 		},
 	},
 	shape: {
-		borderRadius: '0.5rem' as unknown as number
+		borderRadius: 8
 	},
 	components: {
 		MuiTypography: {
@@ -47,7 +47,7 @@ export default responsiveFontSizes(createTheme({
 		MuiButtonBase: {
 			styleOverrides: {
 				root: {
-					borderRadius: '0.5rem'
+					borderRadius: 8
 				}
 			}
 		},

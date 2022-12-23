@@ -16,7 +16,7 @@ const InfiniteList = <T extends Resource, >(props: InfiniteGridProps<T>) => {
 	return <InfiniteScroll
 		{...props}
 		render={(items: T[]) =>
-			<List sx={{ padding: 2 }}>
+			<List>
 				{items.map((item: T, index) => <>
 					{ props.render(item) }
 					{ index == items.length - 1 || <Divider variant='middle'/>}

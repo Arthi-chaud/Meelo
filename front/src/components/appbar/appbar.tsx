@@ -1,6 +1,6 @@
 /* eslint-disable react/jsx-indent */
 import {
-	AppBar, Box, Button, Divider, Grid, IconButton,
+	AppBar, Box, Button, Divider, Fade, Grid, IconButton,
 	MenuItem, Select, Toolbar, Typography
 } from '@mui/material';
 import Image from 'next/image';
@@ -10,7 +10,6 @@ import MenuIcon from '@mui/icons-material/Menu';
 import { useEffect, useState } from 'react';
 import API from '../../api/api';
 import LoadingComponent from '../loading/loading';
-import FadeIn from 'react-fade-in';
 import { formattedItemTypes, itemType } from './item-types';
 import globalLibrary from './global-library';
 import MeeloAppBarDrawer from './drawer';
@@ -85,7 +84,7 @@ const MeeloAppBar = () => {
 					{
 						availableLibraries == null
 							? <LoadingComponent />
-							: <><FadeIn>
+							: <><Fade in>
 								<Box sx={{ display: { xs: 'none', md: 'flex' }, marginLeft: 1, alignItems: 'center' }} flexDirection='row'>
 									<Select
 										disableUnderline
@@ -110,9 +109,9 @@ const MeeloAppBar = () => {
 												{library.name}
 											</MenuItem>)}
 									</Select>
-									<Divider orientation='vertical' flexItem sx={{ paddingLeft: 2 }} />
+									<Divider orientation='vertical' flexItem sx={{ marginX: 2 }} />
 									<Grid container spacing={3} flexDirection='row'
-										sx={{ paddingLeft: 2, flexWrap: 'nowrap' }}
+										sx={{ flexWrap: 'nowrap' }}
 									>
 										{ itemType.map((type, index) => {
 											const isSelected = router.route == `/${type}`;
@@ -129,9 +128,9 @@ const MeeloAppBar = () => {
 										})}
 									</Grid>
 								</Box>
-							</FadeIn>
+							</Fade>
 							<Box sx={{ flexGrow: 1 }}/>
-							<FadeIn>
+							<Fade in>
 								<Box sx={{ display: { xs: 'none', sm: 'flex' } }}>
 									<Link href={"/search"}>
 										<IconButton>
@@ -143,7 +142,7 @@ const MeeloAppBar = () => {
 										[getAppBarActions().filter((action) => action.label.toLowerCase() != 'search')]
 									}/>
 								</Box>
-							</FadeIn>
+							</Fade>
 							</>
 					}
 				</Toolbar>
