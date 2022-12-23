@@ -39,7 +39,7 @@ const MeeloAppBarDrawer = (
 			sx={{ display: { xs: 'block', md: 'none' } }}
 		>
 			<List subheader={
-				<ListSubheader disableSticky={false} sx={{ color: 'inherit' }}>
+				<ListSubheader disableSticky={false} sx={{ backgroundColor: 'inherit' }}>
 					<Grid container columnSpacing={2}
 						sx={{ flexDirection: 'row', alignItems: 'center' }}
 					>
