@@ -1,5 +1,5 @@
 import {
-	Fab, Slide, Tooltip
+	Box, Fab, Fade, Slide, Tooltip
 } from "@mui/material";
 import StraightIcon from "@mui/icons-material/Straight";
 import { MeeloInfiniteQueryFn } from "../../api/use-query";
@@ -52,13 +52,25 @@ const InfiniteView = <ItemType extends Resource, >(
 				firstLoader={() => <LoadingPage/>}
 				loader={() => <WideLoadingComponent/>}
 				query={props.query}
-				render={props.renderListItem}
+				render={(item: ItemType) =>
+					<Fade in>
+						<Box>
+							{ props.renderListItem(item) }
+						</Box>
+					</Fade>
+				}
 			/> :
 			<InfiniteGrid
 				query={props.query}
 				firstLoader={() => <LoadingPage/>}
 				loader={() => <WideLoadingComponent/>}
-				render={props.renderGridItem}
+				render={(item: ItemType) =>
+					<Fade in>
+						<Box sx={{ height: '100%' }}>
+							{ props.renderGridItem(item) }
+						</Box>
+					</Fade>
+				}
 			/>
 		}
 
