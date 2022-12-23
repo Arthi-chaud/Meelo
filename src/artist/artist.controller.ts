@@ -7,7 +7,6 @@ import PaginatedResponse from 'src/pagination/models/paginated-response';
 import { PaginationParameters } from 'src/pagination/models/pagination-parameters';
 import SongQueryParameters from 'src/song/models/song.query-params';
 import SongService from 'src/song/song.service';
-import ParseArtistIdentifierPipe from './artist.pipe';
 import ArtistService from './artist.service';
 import ArtistQueryParameters from './models/artist.query-parameters';
 import type { Request } from 'express';
@@ -27,6 +26,7 @@ import { PaginationQuery } from 'src/pagination/pagination-query.decorator';
 import { IdentifierParam } from 'src/identifier/identifier-param.decorator';
 import RelationIncludeQuery from 'src/relation-include/relation-include-query.decorator';
 import SortingQuery from 'src/sort/sort-query.decorator';
+import Identifier from 'src/identifier/models/identifier';
 
 @ApiTags("Artists")
 @Controller('artists')
@@ -84,12 +84,15 @@ export default class ArtistController {
 	})
 	@Get(':idOrSlug')
 	async get(
-		@IdentifierParam(ParseArtistIdentifierPipe)
-		where: ArtistQueryParameters.WhereInput,
+		@IdentifierParam()
+		identifier: Identifier,
 		@RelationIncludeQuery(ArtistQueryParameters.AvailableAtomicIncludes)
 		include: ArtistQueryParameters.RelationInclude
 	) {
-		const artist = await this.artistService.get(where, include);
+		const artist = await this.artistService.get(
+			ArtistService.formatIdentifierToWhereInput(identifier),
+			include
+		);
 
 		return this.artistService.buildResponse(artist);
 	}
@@ -106,10 +109,11 @@ export default class ArtistController {
 		include: TrackQueryParameters.RelationInclude,
 		@SortingQuery(TrackQueryParameters.SortingKeys)
 		sortingParameter: TrackQueryParameters.SortingParameter,
-		@IdentifierParam(ParseArtistIdentifierPipe)
-		where: ArtistQueryParameters.WhereInput,
+		@IdentifierParam()
+		identifier: Identifier,
 		@Req() request: Request
 	) {
+		const where = ArtistService.formatIdentifierToWhereInput(identifier);
 		const videoTracks = await this.trackService.getMany(
 			{ artist: where, type: TrackType.Video },
 			paginationParameters,
@@ -136,8 +140,8 @@ export default class ArtistController {
 	async getArtistAlbums(
 		@PaginationQuery()
 		paginationParameters: PaginationParameters,
-		@IdentifierParam(ParseArtistIdentifierPipe)
-		where: ArtistQueryParameters.WhereInput,
+		@IdentifierParam()
+		identifier: Identifier,
 		@SortingQuery(AlbumQueryParameters.SortingKeys)
 		sortingParameter: AlbumQueryParameters.SortingParameter,
 		@Query() filter: AlbumQueryParameters.AlbumFilterParameter,
@@ -145,6 +149,7 @@ export default class ArtistController {
 		include: AlbumQueryParameters.RelationInclude,
 		@Req() request: Request
 	) {
+		const where = ArtistService.formatIdentifierToWhereInput(identifier);
 		const albums = await this.albumService.getMany(
 			{ artist: where, type: filter.type },
 			paginationParameters,
@@ -169,14 +174,15 @@ export default class ArtistController {
 	async getArtistSongs(
 		@PaginationQuery()
 		paginationParameters: PaginationParameters,
-		@IdentifierParam(ParseArtistIdentifierPipe)
-		where: ArtistQueryParameters.WhereInput,
+		@IdentifierParam()
+		identifier: Identifier,
 		@SortingQuery(SongQueryParameters.SortingKeys)
 		sortingParameter: SongQueryParameters.SortingParameter,
 		@RelationIncludeQuery(SongQueryParameters.AvailableAtomicIncludes)
 		include: SongQueryParameters.RelationInclude,
 		@Req() request: Request
 	) {
+		const where = ArtistService.formatIdentifierToWhereInput(identifier);
 		const songs = await this.songService.getMany(
 			{ artist: where }, paginationParameters, include, sortingParameter
 		);

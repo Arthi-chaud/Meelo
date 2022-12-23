@@ -24,6 +24,7 @@ import {
 } from 'src/prisma/models';
 import { SongResponse } from './models/song.response';
 import { parseIdentifierSlugs } from 'src/identifier/identifier.parse-slugs';
+import Identifier from 'src/identifier/models/identifier';
 
 @Injectable()
 export default class SongService extends RepositoryService<
@@ -138,15 +139,17 @@ export default class SongService extends RepositoryService<
 
 	formatManyWhereInput = SongService.formatManyWhereInput;
 
-	formatIdentifierToWhereInput(identifier: string): SongQueryParameters.WhereInput {
-		const slugs = parseIdentifierSlugs(identifier, 2);
+	static formatIdentifierToWhereInput(identifier: Identifier): SongQueryParameters.WhereInput {
+		return RepositoryService.formatIdentifier(identifier, (stringIdentifier) => {
+			const slugs = parseIdentifierSlugs(stringIdentifier, 2);
 
-		return {
-			bySlug: {
-				slug: slugs[1],
-				artist: { slug: slugs[0] }
-			}
-		};
+			return {
+				bySlug: {
+					slug: slugs[1],
+					artist: { slug: slugs[0] }
+				}
+			};
+		});
 	}
 
 	formatSortingInput(

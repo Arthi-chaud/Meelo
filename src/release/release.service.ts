@@ -32,6 +32,7 @@ import { Response } from 'express';
 import mime from 'mime';
 import compilationAlbumArtistKeyword from 'src/utils/compilation';
 import { parseIdentifierSlugs } from 'src/identifier/identifier.parse-slugs';
+import Identifier from 'src/identifier/models/identifier';
 
 @Injectable()
 export default class ReleaseService extends RepositoryService<
@@ -145,22 +146,24 @@ export default class ReleaseService extends RepositoryService<
 
 	formatManyWhereInput = ReleaseService.formatManyWhereInput;
 
-	formatIdentifierToWhereInput(identifier: string): ReleaseQueryParameters.WhereInput {
-		const slugs = parseIdentifierSlugs(identifier, 3);
+	static formatIdentifierToWhereInput(identifier: Identifier): ReleaseQueryParameters.WhereInput {
+		return RepositoryService.formatIdentifier(identifier, (stringIdentifier) => {
+			const slugs = parseIdentifierSlugs(stringIdentifier, 3);
 
-		return {
-			bySlug: {
-				slug: slugs[2],
-				album: {
-					bySlug: {
-						slug: slugs[1],
-						artist: slugs[0].toString() == compilationAlbumArtistKeyword
-							? undefined
-							: { slug: slugs[0] }
+			return {
+				bySlug: {
+					slug: slugs[2],
+					album: {
+						bySlug: {
+							slug: slugs[1],
+							artist: slugs[0].toString() == compilationAlbumArtistKeyword
+								? undefined
+								: { slug: slugs[0] }
+						}
 					}
 				}
-			}
-		};
+			};
+		});
 	}
 
 	formatSortingInput(

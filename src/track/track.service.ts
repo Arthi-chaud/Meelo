@@ -26,6 +26,7 @@ import LibraryService from 'src/library/library.service';
 import { Track, TrackWithRelations } from 'src/prisma/models';
 import { TrackResponse } from './models/track.response';
 import SortingParameter from 'src/sort/models/sorting-parameter';
+import Identifier from 'src/identifier/models/identifier';
 
 @Injectable()
 export default class TrackService extends RepositoryService<
@@ -160,7 +161,12 @@ export default class TrackService extends RepositoryService<
 
 	formatManyWhereInput = TrackService.formatManyWhereInput;
 
-	formatIdentifierToWhereInput = RepositoryService.UnexpectedStringIdentifier;
+	static formatIdentifierToWhereInput(identifier: Identifier): TrackQueryParameters.WhereInput {
+		return RepositoryService.formatIdentifier(
+			identifier,
+			RepositoryService.UnexpectedStringIdentifier
+		);
+	}
 
 	formatSortingInput(
 		sortingParameter: SortingParameter<TrackQueryParameters.SortingKeys>

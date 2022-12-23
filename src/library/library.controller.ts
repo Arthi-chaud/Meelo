@@ -15,7 +15,6 @@ import TrackService from 'src/track/track.service';
 import ReleaseService from 'src/release/release.service';
 import SongService from 'src/song/song.service';
 import LibraryQueryParameters from './models/library.query-parameters';
-import ParseLibraryIdentifierPipe from './library.pipe';
 import type { Request } from 'express';
 import PaginatedResponse from 'src/pagination/models/paginated-response';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
@@ -32,6 +31,7 @@ import SortingQuery from 'src/sort/sort-query.decorator';
 import Admin from 'src/roles/admin.decorator';
 import UpdateLibraryDto from './models/update-library.dto';
 import CreateLibraryDto from './models/create-library.dto';
+import Identifier from 'src/identifier/models/identifier';
 
 @ApiTags("Libraries")
 @Controller('libraries')
@@ -61,9 +61,11 @@ export default class LibraryController {
 	})
 	@Get(':idOrSlug')
 	async getLibrary(
-		@IdentifierParam(ParseLibraryIdentifierPipe)
-		where: LibraryQueryParameters.WhereInput,
+		@IdentifierParam()
+		identifier: Identifier,
 	): Promise<Library> {
+		const where = LibraryService.formatIdentifierToWhereInput(identifier);
+
 		return this.libraryService.get(where);
 	}
 
@@ -74,9 +76,11 @@ export default class LibraryController {
 	@Put(':idOrSlug/update')
 	async updateLibrary(
 		@Body() updateLibraryDTO: UpdateLibraryDto,
-		@IdentifierParam(ParseLibraryIdentifierPipe)
-		where: LibraryQueryParameters.WhereInput,
+		@IdentifierParam()
+		identifier: Identifier,
 	) {
+		const where = LibraryService.formatIdentifierToWhereInput(identifier);
+
 		return this.libraryService.buildResponse(
 			await this.libraryService.update(updateLibraryDTO, where)
 		);
@@ -110,9 +114,10 @@ export default class LibraryController {
 	@Admin()
 	@Delete(':idOrSlug')
 	async deleteLibrary(
-		@IdentifierParam(ParseLibraryIdentifierPipe)
-		where: LibraryQueryParameters.WhereInput,
+		@IdentifierParam()
+		identifier: Identifier,
 	) {
+		const where = LibraryService.formatIdentifierToWhereInput(identifier);
 		const library = await this.libraryService.get(where);
 
 		await this.libraryService.delete(where);
@@ -125,8 +130,8 @@ export default class LibraryController {
 	@ApiPaginatedResponse(ArtistResponse)
 	@Get(':idOrSlug/artists')
 	async getArtistsByLibrary(
-		@IdentifierParam(ParseLibraryIdentifierPipe)
-		where: LibraryQueryParameters.WhereInput,
+		@IdentifierParam()
+		identifier: Identifier,
 		@PaginationQuery()
 		paginationParameters: PaginationParameters,
 		@RelationIncludeQuery(ArtistQueryParameters.AvailableAtomicIncludes)
@@ -135,6 +140,7 @@ export default class LibraryController {
 		sortingParameter: ArtistQueryParameters.SortingParameter,
 		@Req() request: Request
 	) {
+		const where = LibraryService.formatIdentifierToWhereInput(identifier);
 		const artists = await this.artistService.getAlbumsArtists(
 			{ library: where }, paginationParameters, include, sortingParameter
 		);
@@ -154,8 +160,8 @@ export default class LibraryController {
 	@ApiPaginatedResponse(AlbumResponse)
 	@Get(':idOrSlug/albums')
 	async getAlbumsByLibrary(
-		@IdentifierParam(ParseLibraryIdentifierPipe)
-		where: LibraryQueryParameters.WhereInput,
+		@IdentifierParam()
+		identifier: Identifier,
 		@PaginationQuery()
 		paginationParameters: PaginationParameters,
 		@RelationIncludeQuery(AlbumQueryParameters.AvailableAtomicIncludes)
@@ -165,6 +171,7 @@ export default class LibraryController {
 		@Query() filter: AlbumQueryParameters.AlbumFilterParameter,
 		@Req() request: Request
 	) {
+		const where = LibraryService.formatIdentifierToWhereInput(identifier);
 		const albums = await this.albumService.getMany(
 			{ library: where, type: filter.type },
 			paginationParameters,
@@ -187,8 +194,8 @@ export default class LibraryController {
 	@ApiPaginatedResponse(ReleaseResponse)
 	@Get(':idOrSlug/releases')
 	async getReleasesByLibrary(
-		@IdentifierParam(ParseLibraryIdentifierPipe)
-		where: LibraryQueryParameters.WhereInput,
+		@IdentifierParam()
+		identifier: Identifier,
 		@PaginationQuery()
 		paginationParameters: PaginationParameters,
 		@RelationIncludeQuery(ReleaseQueryParameters.AvailableAtomicIncludes)
@@ -197,6 +204,7 @@ export default class LibraryController {
 		sortingParameter: ReleaseQueryParameters.SortingParameter,
 		@Req() request: Request
 	) {
+		const where = LibraryService.formatIdentifierToWhereInput(identifier);
 		const releases = await this.releaseService.getMany(
 			{ library: where }, paginationParameters, include, sortingParameter
 		);
@@ -216,8 +224,8 @@ export default class LibraryController {
 	@ApiPaginatedResponse(SongResponse)
 	@Get(':idOrSlug/songs')
 	async getSongsByLibrary(
-		@IdentifierParam(ParseLibraryIdentifierPipe)
-		where: LibraryQueryParameters.WhereInput,
+		@IdentifierParam()
+		identifier: Identifier,
 		@PaginationQuery()
 		paginationParameters: PaginationParameters,
 		@RelationIncludeQuery(SongQueryParameters.AvailableAtomicIncludes)
@@ -226,6 +234,7 @@ export default class LibraryController {
 		sortingParameter: SongQueryParameters.SortingParameter,
 		@Req() request: Request
 	) {
+		const where = LibraryService.formatIdentifierToWhereInput(identifier);
 		const songs = await this.songService.getMany(
 			{ library: where }, paginationParameters, include, sortingParameter
 		);
@@ -245,8 +254,8 @@ export default class LibraryController {
 	@ApiPaginatedResponse(TrackResponse)
 	@Get(':idOrSlug/tracks')
 	async getTracksByLibrary(
-		@IdentifierParam(ParseLibraryIdentifierPipe)
-		where: LibraryQueryParameters.WhereInput,
+		@IdentifierParam()
+		identifier: Identifier,
 		@PaginationQuery()
 		paginationParameters: PaginationParameters,
 		@RelationIncludeQuery(TrackQueryParameters.AvailableAtomicIncludes)
@@ -255,6 +264,7 @@ export default class LibraryController {
 		sortingParameter: TrackQueryParameters.SortingParameter,
 		@Req() request: Request
 	) {
+		const where = LibraryService.formatIdentifierToWhereInput(identifier);
 		const tracks = await this.trackService.getMany(
 			{ library: where }, paginationParameters, include, sortingParameter
 		);

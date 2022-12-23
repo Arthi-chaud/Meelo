@@ -13,6 +13,7 @@ import {
 	InvalidUsernameException, UserAlreadyExistsException,
 	UserNotFoundException, UserNotFoundFromIDException
 } from './user.exceptions';
+import Identifier from 'src/identifier/models/identifier';
 
 @Injectable()
 export default class UserService extends RepositoryService<
@@ -142,7 +143,12 @@ export default class UserService extends RepositoryService<
 		return input;
 	}
 
-	formatIdentifierToWhereInput = RepositoryService.UnexpectedStringIdentifier;
+	static formatIdentifierToWhereInput(identifier: Identifier): UserQueryParameters.WhereInput {
+		return RepositoryService.formatIdentifier(
+			identifier,
+			RepositoryService.UnexpectedStringIdentifier
+		);
+	}
 
 	formatSortingInput(sortingParameter: SortingParameter<UserQueryParameters.SortingKeys>) {
 		return { [sortingParameter.sortBy]: sortingParameter.order };

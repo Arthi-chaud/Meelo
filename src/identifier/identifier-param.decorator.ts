@@ -1,11 +1,10 @@
-import {
-	Param, PipeTransform, Type
-} from "@nestjs/common";
+import { Param } from "@nestjs/common";
+import ParseIdentifierPipe from './identifier.pipe';
 
 /**
  * Decorator for a resource identifier
- * @param pipe the pipe to transform the identifier into a 'WhereInput' object
+ * @param pipe the pipe to transform the identifier into an `Identifier`
  */
-export function IdentifierParam(...pipes: (Type<PipeTransform> | PipeTransform)[]) {
-	return Param('idOrSlug', ...pipes);
+export function IdentifierParam() {
+	return Param('idOrSlug', ParseIdentifierPipe);
 }

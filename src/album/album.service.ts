@@ -27,6 +27,7 @@ import { AlbumResponse } from './models/album.response';
 import SortingParameter from 'src/sort/models/sorting-parameter';
 import { parseIdentifierSlugs } from 'src/identifier/identifier.parse-slugs';
 import compilationAlbumArtistKeyword from 'src/utils/compilation';
+import Identifier from 'src/identifier/models/identifier';
 
 @Injectable()
 export default class AlbumService extends RepositoryService<
@@ -148,17 +149,19 @@ export default class AlbumService extends RepositoryService<
 
 	formatManyWhereInput = AlbumService.formatManyWhereInput;
 
-	formatIdentifierToWhereInput(identifier: string): AlbumQueryParameters.WhereInput {
-		const slugs = parseIdentifierSlugs(identifier, 2);
+	static formatIdentifierToWhereInput(identifier: Identifier): AlbumQueryParameters.WhereInput {
+		return RepositoryService.formatIdentifier(identifier, (stringIdentifier) => {
+			const slugs = parseIdentifierSlugs(stringIdentifier, 2);
 
-		return {
-			bySlug: {
-				slug: slugs[1],
-				artist: slugs[0].toString() == compilationAlbumArtistKeyword
-					? undefined
-					: {	slug: slugs[0] }
-			}
-		};
+			return {
+				bySlug: {
+					slug: slugs[1],
+					artist: slugs[0].toString() == compilationAlbumArtistKeyword
+						? undefined
+						: {	slug: slugs[0] }
+				}
+			};
+		});
 	}
 
 	formatSortingInput(

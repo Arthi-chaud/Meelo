@@ -1,5 +1,5 @@
 import {
-	Body, Controller, Delete, Get, Param, ParseIntPipe, Post, Put, Req, Request
+	Body, Controller, Delete, Get, Post, Put, Req, Request
 } from "@nestjs/common";
 import { User } from "@prisma/client";
 import UserService from "./user.service";
@@ -16,6 +16,8 @@ import UpdateUserDTO from "./models/update-user.dto";
 import PaginatedResponse from "src/pagination/models/paginated-response";
 import { Public } from "src/roles/public.decorator";
 import { InvalidRequestException } from "src/exceptions/meelo-exception";
+import Identifier from "src/identifier/models/identifier";
+import { IdentifierParam } from "src/identifier/identifier-param.decorator";
 
 @ApiTags("Users")
 @Controller("users")
@@ -51,13 +53,16 @@ export default class UserController {
 		summary: 'Update a user'
 	})
 	@Admin()
-	@Put(':id')
+	@Put(':idOrSlug')
 	async updateUserAccounts(
-		@Param('id', ParseIntPipe) userId: number,
+		@IdentifierParam() identifier: Identifier,
 		@Body() updateUserDto: UpdateUserDTO,
 	) {
 		return this.userService.buildResponse(
-			await this.userService.update(updateUserDto, { id: userId })
+			await this.userService.update(
+				updateUserDto,
+				UserService.formatIdentifierToWhereInput(identifier)
+			)
 		);
 	}
 
@@ -65,18 +70,23 @@ export default class UserController {
 		summary: 'Delete a user'
 	})
 	@Admin()
-	@Delete(':id')
+	@Delete(':idOrSlug')
 	async deleteUserAccounts(
-		@Param('id', ParseIntPipe) userId: number,
+		@IdentifierParam() identifier: Identifier,
 		@Req() request: Express.Request
 	) {
+		const user = await this.userService.get(
+			UserService.formatIdentifierToWhereInput(identifier)
+		);
 		const authenticatedUser = request.user as User;
 
-		if (authenticatedUser.id == userId) {
+		if (authenticatedUser.id == user.id) {
 			throw new InvalidRequestException('Users can not delete themselves');
 		}
 		return this.userService.buildResponse(
-			await this.userService.delete({ id: userId })
+			await this.userService.delete(
+				{ id: user.id }
+			)
 		);
 	}
 

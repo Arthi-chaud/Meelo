@@ -77,7 +77,7 @@ type ORMManyGetterMethod<
 abstract class RepositoryService<
 	Model extends AtomicModel,
 	CreateInput,
-	WhereInput extends Partial<{ id: any }> & {},
+	WhereInput,
 	ManyWhereInput,
 	UpdateInput,
 	DeleteInput,
@@ -155,25 +155,34 @@ abstract class RepositoryService<
 	}
 
 	/**
-	 * Find an entity in the database
-	 * @param where an identifier to find the row to select
-	 * @param include the relation fields to include with the returned entity
-	 * @returns The entity matching the query parameters
+	 * Format an Identifier into a WhereInput
+	 * @param identifier the entity unique identifier
+	 * @param stringToWhereInput the methods to turn string identifier into a WhereInput
+	 * @param numberToWhereInput the methods to turn numeric identifier into a WhereInput
+	 * @returns a WhereInput
 	 */
-	async getByIdentifier<I extends ModelSelector<Relations>>(
-		identifier: Identifier, include?: I
-	) {
+	protected static formatIdentifier<RepoWhereInput>(
+		identifier: Identifier,
+		stringToWhereInput: (id: string) => RepoWhereInput,
+		numberToWhereInput?: (id: number) => RepoWhereInput
+	): RepoWhereInput {
 		if (typeof identifier == 'number') {
-			return this.get(<WhereInput>{ id: identifier }, include);
+			if (numberToWhereInput) {
+				return numberToWhereInput(identifier);
+			}
+			return RepositoryService.formatNumberIdentifierToWhereInput(identifier);
 		}
-		return this.get(this.formatIdentifierToWhereInput(identifier), include);
+		return stringToWhereInput(identifier);
 	}
 
 	/**
-	 * Format string identifier into WhereInput
-	 * This should handle only string Identifier, not numbers
+	 * Format numberic identifier into WhereInput
 	 */
-	abstract formatIdentifierToWhereInput(identifier: string): WhereInput;
+	static formatNumberIdentifierToWhereInput<RepoWhereInput>(
+		identifier: number
+	): RepoWhereInput {
+		return <RepoWhereInput>{ id: identifier };
+	}
 
 	/**
 	 * Fallback method to assign to `formatIdentifierToWhereInput` if no handling of string identifier is possible

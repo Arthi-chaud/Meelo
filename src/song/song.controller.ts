@@ -9,7 +9,6 @@ import { PaginationParameters } from 'src/pagination/models/pagination-parameter
 import TrackQueryParameters from 'src/track/models/track.query-parameters';
 import TrackService from 'src/track/track.service';
 import SongQueryParameters from './models/song.query-params';
-import ParseSongIdentifierPipe from './song.pipe';
 import SongService from './song.service';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import { TrackType } from '@prisma/client';
@@ -26,6 +25,7 @@ import { IdentifierParam } from 'src/identifier/identifier-param.decorator';
 import RelationIncludeQuery from 'src/relation-include/relation-include-query.decorator';
 import SortingQuery from 'src/sort/sort-query.decorator';
 import Admin from 'src/roles/admin.decorator';
+import Identifier from 'src/identifier/models/identifier';
 
 @ApiTags("Songs")
 @Controller('songs')
@@ -74,10 +74,13 @@ export class SongController {
 	async getSong(
 		@RelationIncludeQuery(SongQueryParameters.AvailableAtomicIncludes)
 		include: SongQueryParameters.RelationInclude,
-		@IdentifierParam(ParseSongIdentifierPipe)
-		where: SongQueryParameters.WhereInput
+		@IdentifierParam()
+		identifier: Identifier,
 	) {
-		const song = await this.songService.get(where, include);
+		const song = await this.songService.get(
+			SongService.formatIdentifierToWhereInput(identifier),
+			include
+		);
 
 		return this.songService.buildResponse(song);
 	}
@@ -87,9 +90,11 @@ export class SongController {
 	})
 	@Put(':idOrSlug/played')
 	async incrementSongPlayCount(
-		@IdentifierParam(ParseSongIdentifierPipe)
-		where: SongQueryParameters.WhereInput
+		@IdentifierParam()
+		identifier: Identifier,
 	) {
+		const where = SongService.formatIdentifierToWhereInput(identifier);
+
 		await this.songService.incrementPlayCount(where);
 		return this.songService.buildResponse(await this.songService.get(where));
 	}
@@ -101,9 +106,10 @@ export class SongController {
 	async getSongArtist(
 		@RelationIncludeQuery(ArtistQueryParameters.AvailableAtomicIncludes)
 		include: ArtistQueryParameters.RelationInclude,
-		@IdentifierParam(ParseSongIdentifierPipe)
-		where: SongQueryParameters.WhereInput
+		@IdentifierParam()
+		identifier: Identifier,
 	) {
+		const where = SongService.formatIdentifierToWhereInput(identifier);
 		const song = await this.songService.get(where);
 		const artist = await this.artistService.get({
 			id: song.artistId
@@ -119,9 +125,10 @@ export class SongController {
 	async getSongMaster(
 		@RelationIncludeQuery(TrackQueryParameters.AvailableAtomicIncludes)
 		include: TrackQueryParameters.RelationInclude,
-		@IdentifierParam(ParseSongIdentifierPipe)
-		where: SongQueryParameters.WhereInput
+		@IdentifierParam()
+		identifier: Identifier,
 	) {
+		const where = SongService.formatIdentifierToWhereInput(identifier);
 		const master = await this.trackService.getMasterTrack(where, include);
 
 		return this.trackService.buildResponse(master);
@@ -137,12 +144,13 @@ export class SongController {
 		paginationParameters: PaginationParameters,
 		@RelationIncludeQuery(TrackQueryParameters.AvailableAtomicIncludes)
 		include: TrackQueryParameters.RelationInclude,
-		@IdentifierParam(ParseSongIdentifierPipe)
-		where: SongQueryParameters.WhereInput,
+		@IdentifierParam()
+		identifier: Identifier,
 		@SortingQuery(TrackQueryParameters.SortingKeys)
 		sortingParameter: TrackQueryParameters.SortingParameter,
 		@Req() request: Request
 	) {
+		const where = SongService.formatIdentifierToWhereInput(identifier);
 		const tracks = await this.trackService.getSongTracks(
 			where, paginationParameters, include, sortingParameter
 		);
@@ -166,12 +174,13 @@ export class SongController {
 		paginationParameters: PaginationParameters,
 		@RelationIncludeQuery(SongQueryParameters.AvailableAtomicIncludes)
 		include: SongQueryParameters.RelationInclude,
-		@IdentifierParam(ParseSongIdentifierPipe)
-		where: SongQueryParameters.WhereInput,
+		@IdentifierParam()
+		identifier: Identifier,
 		@SortingQuery(SongQueryParameters.SortingKeys)
 		sortingParameter: SongQueryParameters.SortingParameter,
 		@Req() request: Request
 	) {
+		const where = SongService.formatIdentifierToWhereInput(identifier);
 		const versions = await this.songService.getSongVersions(
 			where, paginationParameters, include, sortingParameter
 		);
@@ -194,10 +203,11 @@ export class SongController {
 		include: TrackQueryParameters.RelationInclude,
 		@SortingQuery(TrackQueryParameters.SortingKeys)
 		sortingParameter: TrackQueryParameters.SortingParameter,
-		@IdentifierParam(ParseSongIdentifierPipe)
-		where: SongQueryParameters.WhereInput,
+		@IdentifierParam()
+		identifier: Identifier,
 		@Req() request: Request
 	) {
+		const where = SongService.formatIdentifierToWhereInput(identifier);
 		const videoTracks = await this.trackService.getMany(
 			{ song: where, type: TrackType.Video },
 			paginationParameters,
@@ -224,10 +234,11 @@ export class SongController {
 		include: GenreQueryParameters.RelationInclude,
 		@SortingQuery(GenreQueryParameters.SortingKeys)
 		sortingParameter: GenreQueryParameters.SortingParameter,
-		@IdentifierParam(ParseSongIdentifierPipe)
-		where: SongQueryParameters.WhereInput,
+		@IdentifierParam()
+		identifier: Identifier,
 		@Req() request: Request
 	) {
+		const where = SongService.formatIdentifierToWhereInput(identifier);
 		const genres = await this.genreService.getSongGenres(where, include, sortingParameter);
 
 		return PaginatedResponse.awaiting(
@@ -241,9 +252,10 @@ export class SongController {
 	})
 	@Get(':idOrSlug/lyrics')
 	async getSongLyrics(
-		@IdentifierParam(ParseSongIdentifierPipe)
-		where: SongQueryParameters.WhereInput
+		@IdentifierParam()
+		identifier: Identifier,
 	) {
+		const where = SongService.formatIdentifierToWhereInput(identifier);
 		const lyrics = await this.lyricsService.get({ song: where });
 
 		return this.lyricsService.buildResponse(lyrics);
@@ -255,10 +267,11 @@ export class SongController {
 	@Admin()
 	@Post(':idOrSlug/lyrics')
 	async updateSongLyrics(
-		@IdentifierParam(ParseSongIdentifierPipe)
-		where: SongQueryParameters.WhereInput,
+		@IdentifierParam()
+		identifier: Identifier,
 		@Body() updateLyricsDto: LyricsDto
 	) {
+		const where = SongService.formatIdentifierToWhereInput(identifier);
 		const song = await this.songService.get(where);
 
 		try {
@@ -279,9 +292,10 @@ export class SongController {
 	@Admin()
 	@Delete(':idOrSlug/lyrics')
 	async deleteSongLyrics(
-		@IdentifierParam(ParseSongIdentifierPipe)
-		where: SongQueryParameters.WhereInput
+		@IdentifierParam()
+		identifier: Identifier,
 	) {
+		const where = SongService.formatIdentifierToWhereInput(identifier);
 		const song = await this.songService.get(where);
 
 		await this.lyricsService.delete({ songId: song.id });

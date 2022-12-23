@@ -9,7 +9,6 @@ import TrackService from 'src/track/track.service';
 import TrackQueryParameters from 'src/track/models/track.query-parameters';
 import AlbumService from 'src/album/album.service';
 import AlbumQueryParameters from 'src/album/models/album.query-parameters';
-import ParseReleaseIdentifierPipe from './release.pipe';
 import type { Request, Response } from 'express';
 import PaginatedResponse from 'src/pagination/models/paginated-response';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
@@ -22,6 +21,7 @@ import { IdentifierParam } from 'src/identifier/identifier-param.decorator';
 import RelationIncludeQuery from 'src/relation-include/relation-include-query.decorator';
 import SortingQuery from 'src/sort/sort-query.decorator';
 import Admin from 'src/roles/admin.decorator';
+import Identifier from 'src/identifier/models/identifier';
 
 @ApiTags("Releases")
 @Controller('releases')
@@ -68,9 +68,10 @@ export default class ReleaseController {
 	async getRelease(
 		@RelationIncludeQuery(ReleaseQueryParameters.AvailableAtomicIncludes)
 		include: ReleaseQueryParameters.RelationInclude,
-		@IdentifierParam(ParseReleaseIdentifierPipe)
-		where: ReleaseQueryParameters.WhereInput
+		@IdentifierParam()
+		identifier: Identifier,
 	) {
+		const where = ReleaseService.formatIdentifierToWhereInput(identifier);
 		const release = await this.releaseService.get(where, include);
 
 		return this.releaseService.buildResponse(release);
@@ -86,12 +87,13 @@ export default class ReleaseController {
 		paginationParameters: PaginationParameters,
 		@RelationIncludeQuery(TrackQueryParameters.AvailableAtomicIncludes)
 		include: TrackQueryParameters.RelationInclude,
-		@IdentifierParam(ParseReleaseIdentifierPipe)
-		where: ReleaseQueryParameters.WhereInput,
+		@IdentifierParam()
+		identifier: Identifier,
 		@SortingQuery(TrackQueryParameters.SortingKeys)
 		sortingParameter: TrackQueryParameters.SortingParameter,
 		@Req() request: Request
 	) {
+		const where = ReleaseService.formatIdentifierToWhereInput(identifier);
 		const tracks = await this.trackService.getMany(
 			{ release: where }, paginationParameters, include, sortingParameter
 		);
@@ -112,11 +114,12 @@ export default class ReleaseController {
 	})
 	@Get(':idOrSlug/tracklist')
 	async getReleaseTracklist(
-		@IdentifierParam(ParseReleaseIdentifierPipe)
-		where: ReleaseQueryParameters.WhereInput,
+		@IdentifierParam()
+		identifier: Identifier,
 		@RelationIncludeQuery(TrackQueryParameters.AvailableAtomicIncludes)
 		include?: TrackQueryParameters.RelationInclude
 	) {
+		const where = ReleaseService.formatIdentifierToWhereInput(identifier);
 		const tracklist = await this.trackService.getTracklist(where, include);
 
 		return this.trackService.buildTracklistResponse(tracklist);
@@ -127,13 +130,14 @@ export default class ReleaseController {
 	})
 	@Get(':idOrSlug/playlist')
 	async getReleasePlaylist(
-		@IdentifierParam(ParseReleaseIdentifierPipe)
-		where: ReleaseQueryParameters.WhereInput,
+		@IdentifierParam()
+		identifier: Identifier,
 		@Query('random', new DefaultValuePipe(false), ParseBoolPipe)
 		random: boolean,
 		@RelationIncludeQuery(TrackQueryParameters.AvailableAtomicIncludes)
 		include?: TrackQueryParameters.RelationInclude
 	) {
+		const where = ReleaseService.formatIdentifierToWhereInput(identifier);
 		const tracklist = await this.trackService.getPlaylist(where, include, random);
 
 		return Promise.all(tracklist.map((track) => this.trackService.buildResponse(track)));
@@ -144,10 +148,12 @@ export default class ReleaseController {
 	})
 	@Get(':idOrSlug/archive')
 	async getReleaseArcive(
-		@IdentifierParam(ParseReleaseIdentifierPipe)
-		where: ReleaseQueryParameters.WhereInput,
+		@IdentifierParam()
+		identifier: Identifier,
 		@Res() response: Response
 	) {
+		const where = ReleaseService.formatIdentifierToWhereInput(identifier);
+
 		return this.releaseService.pipeArchive(where, response);
 	}
 
@@ -158,9 +164,10 @@ export default class ReleaseController {
 	async getReleaseAlbum(
 		@RelationIncludeQuery(AlbumQueryParameters.AvailableAtomicIncludes)
 		include: AlbumQueryParameters.RelationInclude,
-		@IdentifierParam(ParseReleaseIdentifierPipe)
-		where: ReleaseQueryParameters.WhereInput
+		@IdentifierParam()
+		identifier: Identifier,
 	) {
+		const where = ReleaseService.formatIdentifierToWhereInput(identifier);
 		const release = this.releaseService.get(where);
 		const album = await this.albumService.get({
 			id: (await release).albumId
@@ -191,9 +198,10 @@ export default class ReleaseController {
 	@Admin()
 	@Put(':idOrSlug/master')
 	async setAsMaster(
-		@IdentifierParam(ParseReleaseIdentifierPipe)
-		where: ReleaseQueryParameters.WhereInput
+		@IdentifierParam()
+		identifier: Identifier,
 	) {
+		const where = ReleaseService.formatIdentifierToWhereInput(identifier);
 		const release = await this.releaseService.get(where);
 
 		await this.releaseService.setReleaseAsMaster({

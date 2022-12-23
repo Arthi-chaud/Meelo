@@ -2,14 +2,13 @@ import {
 	Controller, Get, Logger
 } from '@nestjs/common';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
-import ParseLibraryIdentifierPipe from 'src/library/library.pipe';
 import LibraryService from 'src/library/library.service';
-import type LibraryQueryParameters from 'src/library/models/library.query-parameters';
 import type TaskResponse from './models/task.response';
 import TasksService from './tasks.service';
 import { Timeout } from '@nestjs/schedule';
 import { IdentifierParam } from 'src/identifier/identifier-param.decorator';
 import Admin from 'src/roles/admin.decorator';
+import Identifier from 'src/identifier/models/identifier';
 
 @Admin()
 @ApiTags('Tasks')
@@ -41,9 +40,10 @@ export default class TasksController {
 	})
 	@Get('scan/:idOrSlug')
 	async scanLibraryFiles(
-		@IdentifierParam(ParseLibraryIdentifierPipe)
-		where: LibraryQueryParameters.WhereInput
+		@IdentifierParam()
+		identifier: Identifier,
 	): Promise<TaskResponse> {
+		const where = LibraryService.formatIdentifierToWhereInput(identifier);
 		const library = await this.libraryService.get(where);
 
 		this.tasksService
@@ -74,9 +74,10 @@ export default class TasksController {
 	})
 	@Get('clean/:idOrSlug')
 	async cleanLibrary(
-		@IdentifierParam(ParseLibraryIdentifierPipe)
-		where: LibraryQueryParameters.WhereInput
+		@IdentifierParam()
+		identifier: Identifier,
 	): Promise<TaskResponse> {
+		const where = LibraryService.formatIdentifierToWhereInput(identifier);
 		const library = await this.libraryService.get(where);
 
 		this.tasksService
@@ -107,9 +108,10 @@ export default class TasksController {
 	})
 	@Get('refresh-metadata/:idOrSlug')
 	async refreshLibraryFilesMetadata(
-		@IdentifierParam(ParseLibraryIdentifierPipe)
-		where: LibraryQueryParameters.WhereInput
+		@IdentifierParam()
+		identifier: Identifier,
 	): Promise<TaskResponse> {
+		const where = LibraryService.formatIdentifierToWhereInput(identifier);
 		const library = await this.libraryService.get(where);
 
 		this.tasksService

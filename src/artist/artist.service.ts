@@ -27,6 +27,7 @@ import { ArtistResponse } from './models/artist.response';
 import { IllustrationPath } from 'src/illustration/models/illustration-path.model';
 import compilationAlbumArtistKeyword from 'src/utils/compilation';
 import { parseIdentifierSlugs } from 'src/identifier/identifier.parse-slugs';
+import Identifier from 'src/identifier/models/identifier';
 
 @Injectable()
 export default class ArtistService extends RepositoryService<
@@ -131,13 +132,15 @@ export default class ArtistService extends RepositoryService<
 
 	formatManyWhereInput = ArtistService.formatManyWhereInput;
 
-	formatIdentifierToWhereInput(identifier: string): ArtistQueryParameters.WhereInput {
-		const [slug] = parseIdentifierSlugs(identifier, 1);
+	static formatIdentifierToWhereInput(identifier: Identifier): ArtistQueryParameters.WhereInput {
+		return RepositoryService.formatIdentifier(identifier, (stringIdentifier) => {
+			const [slug] = parseIdentifierSlugs(stringIdentifier, 1);
 
-		if (slug.toString() == compilationAlbumArtistKeyword) {
-			return { compilationArtist: true };
-		}
-		return { slug };
+			if (slug.toString() == compilationAlbumArtistKeyword) {
+				return { compilationArtist: true };
+			}
+			return { slug };
+		});
 	}
 
 	formatSortingInput(

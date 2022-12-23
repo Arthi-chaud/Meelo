@@ -20,6 +20,7 @@ import TasksService from 'src/tasks/tasks.service';
 import { Library, LibraryWithRelations } from 'src/prisma/models';
 import SortingParameter from 'src/sort/models/sorting-parameter';
 import { parseIdentifierSlugs } from 'src/identifier/identifier.parse-slugs';
+import Identifier from 'src/identifier/models/identifier';
 
 @Injectable()
 export default class LibraryService extends RepositoryService<
@@ -92,10 +93,12 @@ export default class LibraryService extends RepositoryService<
 
 	formatManyWhereInput = LibraryService.formatManyWhereInput;
 
-	formatIdentifierToWhereInput(identifier: string): LibraryQueryParameters.WhereInput {
-		const [slug] = parseIdentifierSlugs(identifier, 1);
+	static formatIdentifierToWhereInput(identifier: Identifier): LibraryQueryParameters.WhereInput {
+		return RepositoryService.formatIdentifier(identifier, (stringIdentifier) => {
+			const [slug] = parseIdentifierSlugs(stringIdentifier, 1);
 
-		return { slug };
+			return { slug };
+		});
 	}
 
 	formatSortingInput(

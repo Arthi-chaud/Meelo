@@ -19,6 +19,7 @@ import type LyricsQueryParameters from './models/lyrics.query-parameters';
 import { Prisma } from '@prisma/client';
 import { LyricsResponse } from './models/lyrics.response';
 import SortingParameter from 'src/sort/models/sorting-parameter';
+import Identifier from 'src/identifier/models/identifier';
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const { getLyrics } = require('genius-lyrics-api');
 
@@ -90,7 +91,12 @@ export class LyricsService extends RepositoryService<
 
 	formatManyWhereInput = LyricsService.formatManyWhereInput;
 
-	formatIdentifierToWhereInput = RepositoryService.UnexpectedStringIdentifier;
+	static formatIdentifierToWhereInput(identifier: Identifier): LyricsQueryParameters.WhereInput {
+		return RepositoryService.formatIdentifier(
+			identifier,
+			RepositoryService.UnexpectedStringIdentifier
+		);
+	}
 
 	formatSortingInput<S extends SortingParameter<[]>>(sortingParameter: S) {
 		return { id: sortingParameter.order };
