@@ -1,0 +1,9 @@
+/*
+	Avoid White frame while loading images in safari.
+	Source: https://nextjs.org/docs/api-reference/next/image
+*/
+@supports (font: -apple-system-body) and (-webkit-appearance: none) {
+	img[loading="lazy"] {
+		clip-path: inset(1px)
+	}
+}
