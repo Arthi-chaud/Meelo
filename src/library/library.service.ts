@@ -19,6 +19,8 @@ import { buildStringSearchParameters } from 'src/utils/search-string-input';
 import TasksService from 'src/tasks/tasks.service';
 import { Library, LibraryWithRelations } from 'src/prisma/models';
 import SortingParameter from 'src/sort/models/sorting-parameter';
+import { parseIdentifierSlugs } from 'src/identifier/identifier.parse-slugs';
+import Identifier from 'src/identifier/models/identifier';
 
 @Injectable()
 export default class LibraryService extends RepositoryService<
@@ -85,11 +87,19 @@ export default class LibraryService extends RepositoryService<
 
 	static formatManyWhereInput(input: LibraryQueryParameters.ManyWhereInput) {
 		return {
-			name: input.byName ? buildStringSearchParameters(input.byName) : undefined
+			name: input.name ? buildStringSearchParameters(input.name) : undefined
 		};
 	}
 
 	formatManyWhereInput = LibraryService.formatManyWhereInput;
+
+	static formatIdentifierToWhereInput(identifier: Identifier): LibraryQueryParameters.WhereInput {
+		return RepositoryService.formatIdentifier(identifier, (stringIdentifier) => {
+			const [slug] = parseIdentifierSlugs(stringIdentifier, 1);
+
+			return { slug };
+		});
+	}
 
 	formatSortingInput(
 		sortingParameter: SortingParameter<LibraryQueryParameters.SortingKeys>

@@ -19,7 +19,7 @@ namespace ArtistQueryParameters {
 	 * Query parameters to find one artist
 	 */
 	export type WhereInput = RequireExactlyOne<{
-		id: number,
+		id: Artist['id'],
 		slug: Slug,
 		compilationArtist: true
 	}>;
@@ -28,10 +28,10 @@ namespace ArtistQueryParameters {
 	 * Query parameters to find multiple artists
 	 */
 	export type ManyWhereInput = Partial<RequireAtLeastOne<{
-		byLibrarySource: LibraryQueryParameters.WhereInput,
-		byName: SearchStringInput,
-		byIds: { in: number[] },
-		byGenre: GenreQueryParameters.WhereInput
+		library: LibraryQueryParameters.WhereInput,
+		name: SearchStringInput,
+		ids: { in: Artist['id'][] },
+		genre: GenreQueryParameters.WhereInput
 
 	}>>;
 

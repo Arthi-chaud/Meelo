@@ -18,7 +18,7 @@ namespace LibraryQueryParameters {
 	 * The Query parameters to get a library
 	 */
 	export type WhereInput = RequireExactlyOne<{
-		id: number,
+		id: Library['id'],
 		slug: Slug
 	}>;
 
@@ -26,7 +26,7 @@ namespace LibraryQueryParameters {
 	 * The Query parameters to get multiple libraries
 	 */
 	export type ManyWhereInput = Partial<RequireExactlyOne<{
-		byName: SearchStringInput
+		name: SearchStringInput
 	}>>;
 
 	/**

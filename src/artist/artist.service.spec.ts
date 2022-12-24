@@ -143,12 +143,12 @@ describe('Artist Service', () => {
 		})
 
 		it("should count the artists by name (starts with)", async () => {
-			const artistCount = await artistService.count({ byName: { startsWith: 'My A' } });
+			const artistCount = await artistService.count({ name: { startsWith: 'My A' } });
 			expect(artistCount).toBe(2);
 		});
 
 		it("should count the artists by name (is)", async () => {
-			const artistCount = await artistService.count({ byName: { is: dummyRepository.artistC.name } });
+			const artistCount = await artistService.count({ name: { is: dummyRepository.artistC.name } });
 			expect(artistCount).toBe(1);
 		});
 	})

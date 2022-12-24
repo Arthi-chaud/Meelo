@@ -191,13 +191,13 @@ describe('Album Service', () => {
 		});
 
 		it("should find only live albums", async () => {
-			const albums = await albumService.getMany({ byType: AlbumType.LiveRecording });
+			const albums = await albumService.getMany({ type: AlbumType.LiveRecording });
 			expect(albums.length).toBe(1);
 			expect(albums[0]).toStrictEqual(newAlbum);
 		});
 
 		it("should find only compilations albums", async () => {
-			const albums = await albumService.getMany({ byType: AlbumType.Compilation });
+			const albums = await albumService.getMany({ type: AlbumType.Compilation });
 			expect(albums.length).toBe(1);
 			expect(albums[0]).toStrictEqual(dummyRepository.compilationAlbumA);
 		});
@@ -230,17 +230,17 @@ describe('Album Service', () => {
 
 		it("should find the album (by id)", async () => {
 			const album = await albumService.get(
-				{ byId: { id: dummyRepository.albumB1.id } }, 
+				{ id: dummyRepository.albumB1.id }, 
 			);
 			expect(album).toStrictEqual(dummyRepository.albumB1);
 		});
 
 		it(('should return an existing album, without only its id and slug'), async () => {
-			const album = await albumService.select({ byId: { id: dummyRepository.albumA1.id }}, { slug: true, id: true });
+			const album = await albumService.select({ id: dummyRepository.albumA1.id }, { slug: true, id: true });
 			expect(album).toStrictEqual({ id: dummyRepository.albumA1.id, slug: dummyRepository.albumA1.slug});
 		});
 		it(('should throw, as the album does not exist '), async () => {
-			const test = () => albumService.select({ byId: { id: -1 }}, { slug: true, id: true });
+			const test = () => albumService.select({ id: -1 }, { slug: true, id: true });
 			expect(test()).rejects.toThrow(AlbumNotFoundFromIDException);
 		});
 	});
@@ -249,7 +249,7 @@ describe('Album Service', () => {
 		it('should change the information of the album in the database', async () => {
 			const updatedAlbum = await albumService.update(
 				{ name: 'My Album Live'},
-				{ byId: { id: newAlbum.id } }
+				{ id: newAlbum.id }
 			);
 			expect(updatedAlbum).toStrictEqual({
 				...newAlbum,
@@ -290,12 +290,12 @@ describe('Album Service', () => {
 
 	describe("Get an album's genres", () => { 
 		it('should throw, as the album does not exist', async () => {
-			const test = async () => albumService.getGenres({ byId: { id: -1 } });
+			const test = async () => albumService.getGenres({ id: -1 });
 			expect(test()).rejects.toThrow(AlbumNotFoundFromIDException); 
 		});
 
 		it("should find and sort the genres", async () => {
-			const genres = await albumService.getGenres({ byId: { id: dummyRepository.albumA1.id } });
+			const genres = await albumService.getGenres({ id: dummyRepository.albumA1.id });
 			expect(genres).toStrictEqual([
 				dummyRepository.genreB,
 				dummyRepository.genreA
@@ -306,7 +306,7 @@ describe('Album Service', () => {
 	describe('Reassign Album', () => {
 		it("should assign a compilation album to an artist", async () => {
 			const updatedAlbum = await albumService.reassign(
-				{ byId: { id: dummyRepository.compilationAlbumA.id }},
+				{ id: dummyRepository.compilationAlbumA.id },
 				{ id: dummyRepository.artistA.id }
 			);
 			expect(updatedAlbum).toStrictEqual({
@@ -316,7 +316,7 @@ describe('Album Service', () => {
 		});
 		it("should assign a album as a compilation", async () => {
 			const updatedAlbum = await albumService.reassign(
-				{ byId: { id: dummyRepository.compilationAlbumA.id }},
+				{ id: dummyRepository.compilationAlbumA.id },
 				{ compilationArtist: true }
 			);
 			expect(updatedAlbum).toStrictEqual({
@@ -326,31 +326,31 @@ describe('Album Service', () => {
 		});
 
 		it("should throw as the album does not exist", async () => {
-			const test = () => albumService.reassign({ byId: { id: -1  } }, { id: dummyRepository.artistA.id  });
+			const test = () => albumService.reassign({ id: -1  }, { id: dummyRepository.artistA.id  });
 			expect(test()).rejects.toThrow(AlbumNotFoundFromIDException);
 		});
 
 		it("should throw as the new artist does not exist", async () => {
-			const test = () => albumService.reassign({ byId: { id: dummyRepository.albumA1.id } }, { id: -1 });
+			const test = () => albumService.reassign({ id: dummyRepository.albumA1.id }, { id: -1 });
 			expect(test()).rejects.toThrow(ArtistNotFoundByIDException);
 		});
 	});
 
 	describe('Delete Album', () => {
 		it("should throw, as the album does not exist (by id)", () => {
-			const test = async () => albumService.delete({ byId: { id: -1 } });
+			const test = async () => albumService.delete({  id: -1 } );
 			expect(test()).rejects.toThrow(AlbumNotFoundFromIDException); 
 		});
 
 		it("should delete the album", async () => {
-			const albumQueryParameters = { byId: { id: dummyRepository.compilationAlbumA.id } };
+			const albumQueryParameters = {  id: dummyRepository.compilationAlbumA.id } ;
 			await albumService.delete(albumQueryParameters);
 			const test = async () => albumService.get(albumQueryParameters);
 			expect(test()).rejects.toThrow(AlbumNotFoundFromIDException); 
 		});
 
 		it("should delete the album and the parent artist", async () => {
-			const albumQueryParameters = { byId: { id: dummyRepository.albumB1.id } };
+			const albumQueryParameters = {  id: dummyRepository.albumB1.id } ;
 			await albumService.delete(albumQueryParameters);
 			await songService.delete({ id: dummyRepository.songB1.id });
 			const test = async () => albumService.get(albumQueryParameters);

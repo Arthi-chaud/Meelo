@@ -101,8 +101,8 @@ describe('Track Service', () => {
 			newTrack = await trackService.create({
 				...trackData,
 				name: 'My Song 3',
-				song: { byId: { id: dummyRepository.songA1.id } },
-				release: { byId: { id: dummyRepository.releaseA1_2.id } },
+				song: { id: dummyRepository.songA1.id },
+				release: { id: dummyRepository.releaseA1_2.id },
 				sourceFile: { id: file.id },
 			});
 
@@ -125,8 +125,8 @@ describe('Track Service', () => {
 				...trackData,
 				type: TrackType.Video,
 				name: 'My Song 4',
-				song: { byId: { id: dummyRepository.songA1.id } },
-				release: { byId: { id: dummyRepository.releaseA1_2.id } },
+				song: { id: dummyRepository.songA1.id },
+				release: { id: dummyRepository.releaseA1_2.id },
 				sourceFile: { id: file2.id },
 			});
 
@@ -147,8 +147,8 @@ describe('Track Service', () => {
 		it("should throw, as the source file does not exist", async () => {
 			const test = async () => await trackService.create({
 				...trackData,
-				song: { byId: { id: dummyRepository.songA1.id } },
-				release: { byId: { id: dummyRepository.releaseA1_1.id } },
+				song: { id: dummyRepository.songA1.id },
+				release: { id: dummyRepository.releaseA1_1.id },
 				sourceFile: { id: -1 },
 			});
 			expect(test()).rejects.toThrow(FileNotFoundFromIDException);
@@ -157,8 +157,8 @@ describe('Track Service', () => {
 		it("should throw, as the parent song does not exist", async () => {
 			const test = async () => await trackService.create({
 				...trackData,
-				song: { byId: { id: -1 } },
-				release: { byId: { id: dummyRepository.releaseA1_1.id } },
+				song: { id: -1 },
+				release: { id: dummyRepository.releaseA1_1.id },
 				sourceFile: { id: file.id },
 			});
 			expect(test()).rejects.toThrow(SongNotFoundByIdException);
@@ -167,8 +167,8 @@ describe('Track Service', () => {
 		it("should throw, as the parent release does not exist", async () => {
 			const test = async () => await trackService.create({
 				...trackData,
-				song: { byId: { id: dummyRepository.songA1.id } },
-				release: { byId: { id: -1 } },
+				song: { id: dummyRepository.songA1.id },
+				release: { id: -1 },
 				sourceFile: { id: file.id },
 			});
 			expect(test()).rejects.toThrow(ReleaseNotFoundFromIDException);
@@ -177,8 +177,8 @@ describe('Track Service', () => {
 		it("should throw, as the track already exists", async () => {
 			const test = async () => await trackService.create({
 				...trackData,
-				song: { byId: { id: dummyRepository.songA1.id } },
-				release: { byId: { id: dummyRepository.releaseA1_1.id } },
+				song: { id: dummyRepository.songA1.id },
+				release: { id: dummyRepository.releaseA1_1.id },
 				sourceFile: { id: file.id },
 			});
 
@@ -203,7 +203,7 @@ describe('Track Service', () => {
 
 		it("should retrieve the track (by song)", async () => {
 			const retrievedTrack = await trackService.get({
-				masterOfSong: { byId: { id: dummyRepository.songA1.id } }
+				masterOfSong: { id: dummyRepository.songA1.id }
 			});
 
 			expect(retrievedTrack).toStrictEqual(dummyRepository.trackA1_1);
@@ -228,7 +228,7 @@ describe('Track Service', () => {
 
 		it("should throw, as the parent song does not exist", async () => {
 			const test = async () => await trackService.get({
-				masterOfSong: { byId: { id: -1 } }
+				masterOfSong: { id: -1 }
 			});
 
 			expect(test()).rejects.toThrow(SongNotFoundByIdException);
@@ -276,7 +276,7 @@ describe('Track Service', () => {
 			expect(tracks[6]).toStrictEqual(newTrack2);
 		});
 		it('should retrieve the tracks by libraries (5 expected)', async () => {
-			const tracks = await trackService.getMany({ byLibrarySource: { id: dummyRepository.library1.id } });
+			const tracks = await trackService.getMany({ library: { id: dummyRepository.library1.id } });
 
 
 			expect(tracks).toContainEqual(newTrack);
@@ -288,7 +288,7 @@ describe('Track Service', () => {
 		});
 
 		it('should retrieve the tracks by libraries (1 expected)', async () => {
-			const tracks = await trackService.getMany({ byLibrarySource: { id: secondLibrary.id } });
+			const tracks = await trackService.getMany({ library: { id: secondLibrary.id } });
 
 			expect(tracks.length).toBe(1);
 			expect(tracks).toContainEqual(newTrack2);
@@ -296,7 +296,7 @@ describe('Track Service', () => {
 
 		it('should retrieve the tracks by song (w/ pagination)', async () => {
 			const tracks = await trackService.getMany(
-				{ bySong: { byId: { id: dummyRepository.songA1.id } } },
+				{ song: { id: dummyRepository.songA1.id } },
 				{ take: 1, skip: 1 }, {}, { sortBy: 'name', order: 'asc' }
 			);
 
@@ -306,7 +306,7 @@ describe('Track Service', () => {
 
 		it('should retrieve the tracks by song (w/ pagination, volume 2)', async () => {
 			const tracks = await trackService.getMany(
-				{ bySong: { byId: { id: dummyRepository.songA1.id } } },
+				{ song: { id: dummyRepository.songA1.id } },
 				{ take: 2, skip: 2 }, {}, { sortBy: 'name', order: 'asc' }
 			);
 			expect(tracks.length).toBe(2);
@@ -317,7 +317,7 @@ describe('Track Service', () => {
 
 	describe("Get a Song's Tracks", () => {
 		it('should retrieve the song\'s tracks', async () => {
-			const tracks = await trackService.getSongTracks({ byId: { id: dummyRepository.songA1.id } });
+			const tracks = await trackService.getSongTracks({ id: dummyRepository.songA1.id });
 
 			expect(tracks.length).toBe(4);
 			expect(tracks).toContainEqual(newTrack);
@@ -327,37 +327,37 @@ describe('Track Service', () => {
 		});
 
 		it('should throw, as the parent song does not exist', async () => {
-			const test = async () => await trackService.getSongTracks({ byId: { id: -1 } });
+			const test = async () => await trackService.getSongTracks({ id: -1 });
 			expect(test()).rejects.toThrow(SongNotFoundByIdException);
 		});
 	});
 
 	describe("Get a Song's Master Tracks", () => {
 		it('should retrieve the song\'s master track', async () => {
-			const track = await trackService.getMasterTrack({ byId: { id: dummyRepository.songA1.id } });
+			const track = await trackService.getMasterTrack({ id: dummyRepository.songA1.id });
 
 			expect(track).toStrictEqual(dummyRepository.trackA1_1);
 		});
 
 		it('should throw, as the parent song does not exist', async () => {
-			const test = async () => await trackService.getMasterTrack({ byId: { id: -1 } });
+			const test = async () => await trackService.getMasterTrack({ id: -1 });
 			expect(test()).rejects.toThrow(SongNotFoundByIdException);
 		});
 	});
 
 	describe("Count Tracks", () => {
 		it("should count the artist's tracks", async () => {
-			const trackCount = await trackService.count({ byArtist: { id: dummyRepository.artistA.id } });
+			const trackCount = await trackService.count({ artist: { id: dummyRepository.artistA.id } });
 			expect(trackCount).toBe(5);
 		});
 
 		it("should count the album's tracks", async () => {
-			const trackCount = await trackService.count({ byAlbum: { byId: { id: dummyRepository.albumA1.id } } });
+			const trackCount = await trackService.count({ album: { id: dummyRepository.albumA1.id } });
 			expect(trackCount).toBe(5);
 		});
 
 		it("should count the song's tracks", async () => {
-			const trackCount = await trackService.count({ bySong: { byId: { id: dummyRepository.songA2.id } } });
+			const trackCount = await trackService.count({ song: { id: dummyRepository.songA2.id } });
 			expect(trackCount).toBe(1);
 		});
 
@@ -381,10 +381,10 @@ describe('Track Service', () => {
 
 		it("should reassign the track's song", async () => {
 			let updatedTrack = await trackService.update({
-				song: { byId: dummyRepository.songA1 }}, { id: dummyRepository.trackA2_1.id } );
+				song: { id: dummyRepository.songA1.id }}, { id: dummyRepository.trackA2_1.id } );
 			expect(updatedTrack).toStrictEqual({ ...dummyRepository.trackA2_1, songId: dummyRepository.songA1.id})
 			updatedTrack = await trackService.update({
-				song: { byId: dummyRepository.songA2 }}, { id: dummyRepository.trackA2_1.id } );
+				song: { id: dummyRepository.songA2.id }}, { id: dummyRepository.trackA2_1.id } );
 			expect(updatedTrack).toStrictEqual({ ...dummyRepository.trackA2_1, songId: dummyRepository.songA2.id})
 		});
 
@@ -403,7 +403,7 @@ describe('Track Service', () => {
 
 			expect(updatedTrack.master).toBe(false);
 			expect(updatedTrack.id).toBe(dummyRepository.trackA1_1.id);
-			const newMasterTrack = await trackService.getMasterTrack({ byId: { id: dummyRepository.songA1.id }});
+			const newMasterTrack = await trackService.getMasterTrack({ id: dummyRepository.songA1.id});
 			expect(newMasterTrack.id).toStrictEqual(newTrack.id);
 
 		});
@@ -416,7 +416,7 @@ describe('Track Service', () => {
 
 			expect(updatedTrack.master).toBe(true);
 			expect(updatedTrack.id).toBe( dummyRepository.trackA1_1.id);
-			const newMasterTrack = await trackService.getMasterTrack({ byId: { id: dummyRepository.songA1.id }});
+			const newMasterTrack = await trackService.getMasterTrack({ id: dummyRepository.songA1.id});
 			expect(newMasterTrack).toStrictEqual(updatedTrack);
 			const otherTrack = await trackService.get({ id: newTrack.id });
 			expect(otherTrack.master).toBe(false); 
@@ -427,7 +427,7 @@ describe('Track Service', () => {
 		it("should reassign the track's parent song", async () => {
 			await trackService.reassign(
 				{ id: dummyRepository.trackC1_1.id },
-				{ byId: { id: dummyRepository.songB1.id } }
+				{ id: dummyRepository.songB1.id }
 			);
 			const updatedTrack = await trackService.get({ id: dummyRepository.trackC1_1.id });
 			expect(updatedTrack.songId).toBe(dummyRepository.songB1.id);
@@ -439,14 +439,14 @@ describe('Track Service', () => {
 		});
 
 		it("should have deleted previous, now empty, parent song", () => {
-			const test = async () => await songService.get({ byId: { id: dummyRepository.songC1.id  }});
+			const test = async () => await songService.get({ id: dummyRepository.songC1.id });
 			expect(test()).rejects.toThrow(SongNotFoundByIdException);
 		});
 
 		it("should reassign the master track", async () => {
 			await trackService.reassign(
 				{ id: dummyRepository.trackB1_1.id },
-				{ byId: { id: dummyRepository.songA2.id } }
+				{ id: dummyRepository.songA2.id }
 			);
 			const updatedTrack = await trackService.get({ id: dummyRepository.trackB1_1.id });
 			expect(updatedTrack.songId).toBe(dummyRepository.songA2.id);
@@ -468,7 +468,7 @@ describe('Track Service', () => {
 		});
 
 		it("should have changed the master track of the song", async () => {
-			await trackService.getMasterTrack({ byId: { id: dummyRepository.songA1.id } });
+			await trackService.getMasterTrack({ id: dummyRepository.songA1.id });
 		});
 
 		it("should delete the other tracks of the song (first song)", async () => {
@@ -492,7 +492,7 @@ describe('Track Service', () => {
 		});
 
 		it("should have delete the parent song", async () => {
-			const test = async () => await songService.get({ byId: { id: dummyRepository.songA2.id }});
+			const test = async () => await songService.get({ id: dummyRepository.songA2.id});
 			expect(test()).rejects.toThrow(SongNotFoundByIdException);
 		});
 

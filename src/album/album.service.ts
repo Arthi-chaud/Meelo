@@ -25,6 +25,9 @@ import {
 } from "src/prisma/models";
 import { AlbumResponse } from './models/album.response';
 import SortingParameter from 'src/sort/models/sorting-parameter';
+import { parseIdentifierSlugs } from 'src/identifier/identifier.parse-slugs';
+import compilationAlbumArtistKeyword from 'src/utils/compilation';
+import Identifier from 'src/identifier/models/identifier';
 
 @Injectable()
 export default class AlbumService extends RepositoryService<
@@ -64,7 +67,7 @@ export default class AlbumService extends RepositoryService<
 	) {
 		if (album.artist === undefined) {
 			if (await this.count(
-				{ byName: { is: album.name }, byArtist: { compilationArtist: true } }
+				{ name: { is: album.name }, artist: { compilationArtist: true } }
 			) != 0) {
 				throw new AlbumAlreadyExistsException(new Slug(album.name));
 			}
@@ -107,7 +110,7 @@ export default class AlbumService extends RepositoryService<
 	 */
 	static formatWhereInput(where: AlbumQueryParameters.WhereInput) {
 		return {
-			id: where.byId?.id,
+			id: where.id,
 			slug: where.bySlug?.slug.toString(),
 			artist: where.bySlug ?
 				where.bySlug.artist
@@ -121,21 +124,21 @@ export default class AlbumService extends RepositoryService<
 
 	static formatManyWhereInput(where: AlbumQueryParameters.ManyWhereInput) {
 		return {
-			type: where.byType,
-			artist: where.byArtist
-				? where.byArtist.compilationArtist
+			type: where.type,
+			artist: where.artist
+				? where.artist.compilationArtist
 					? null
-					: ArtistService.formatWhereInput(where.byArtist)
-				: where.byArtist,
-			name: buildStringSearchParameters(where.byName),
-			releases: where.byLibrarySource || where.byGenre ? {
-				some: where.byLibrarySource
-					? ReleaseService.formatManyWhereInput({ library: where.byLibrarySource })
-					: where.byGenre
+					: ArtistService.formatWhereInput(where.artist)
+				: where.artist,
+			name: buildStringSearchParameters(where.name),
+			releases: where.library || where.genre ? {
+				some: where.library
+					? ReleaseService.formatManyWhereInput({ library: where.library })
+					: where.genre
 						? {
 							tracks: {
 								some: {
-									song: SongService.formatManyWhereInput({ genre: where.byGenre })
+									song: SongService.formatManyWhereInput({ genre: where.genre })
 								}
 							}
 						}
@@ -145,6 +148,21 @@ export default class AlbumService extends RepositoryService<
 	}
 
 	formatManyWhereInput = AlbumService.formatManyWhereInput;
+
+	static formatIdentifierToWhereInput(identifier: Identifier): AlbumQueryParameters.WhereInput {
+		return RepositoryService.formatIdentifier(identifier, (stringIdentifier) => {
+			const slugs = parseIdentifierSlugs(stringIdentifier, 2);
+
+			return {
+				bySlug: {
+					slug: slugs[1],
+					artist: slugs[0].toString() == compilationAlbumArtistKeyword
+						? undefined
+						: {	slug: slugs[0] }
+				}
+			};
+		});
+	}
 
 	formatSortingInput(
 		sortingParameter: SortingParameter<AlbumQueryParameters.SortingKeys>
@@ -188,7 +206,7 @@ export default class AlbumService extends RepositoryService<
 				album.releaseDate = release.releaseDate;
 			}
 		}
-		return this.update({ releaseDate: album.releaseDate }, { byId: { id: album.id } });
+		return this.update({ releaseDate: album.releaseDate }, { id: album.id });
 	}
 
 	/**
@@ -224,7 +242,7 @@ export default class AlbumService extends RepositoryService<
 
 		await Promise.all(
 			album.releases.map(
-				(release) => this.releaseService.delete({ byId: { id: release.id } }, false)
+				(release) => this.releaseService.delete({ id: release.id }, false)
 			)
 		);
 		try {
@@ -263,11 +281,11 @@ export default class AlbumService extends RepositoryService<
 	 */
 	async deleteIfEmpty(albumId: number): Promise<void> {
 		const albumCount = await this.releaseService.count({
-			album: { byId: { id: albumId } }
+			album: { id: albumId }
 		});
 
 		if (albumCount == 0) {
-			await this.delete({ byId: { id: albumId } });
+			await this.delete({ id: albumId });
 		}
 	}
 
@@ -288,7 +306,7 @@ export default class AlbumService extends RepositoryService<
 		const newArtistSlug = newArtist ? new Slug(newArtist.slug) : undefined;
 		const artistAlbums = newArtist
 			? newArtist.albums
-			: await this.getMany({ byArtist: { compilationArtist: true } });
+			: await this.getMany({ artist: { compilationArtist: true } });
 
 		if (artistAlbums.find((artistAlbum) => album.slug == artistAlbum.slug)) {
 			throw new AlbumAlreadyExistsException(albumSlug, newArtistSlug);
@@ -316,7 +334,7 @@ export default class AlbumService extends RepositoryService<
 			releases.map((release) => release.tracks.map((track) => track.songId)).flat()
 		));
 		const genres: Genre[] = (await Promise.all(
-			songsId.map((songId) => this.genreService.getSongGenres({ byId: { id: songId } }))
+			songsId.map((songId) => this.genreService.getSongGenres({ id: songId }))
 		)).flat();
 		const genresOccurrences = genres.reduce(
 			(map, genre) => map.set(genre.slug, (map.get(genre.slug) || 0) + 1),
@@ -347,8 +365,8 @@ export default class AlbumService extends RepositoryService<
 	}
 
 	onNotFound(where: AlbumQueryParameters.WhereInput): MeeloException {
-		if (where.byId) {
-			return new AlbumNotFoundFromIDException(where.byId.id);
+		if (where.id != undefined) {
+			return new AlbumNotFoundFromIDException(where.id);
 		}
 		return new AlbumNotFoundException(where.bySlug.slug, where.bySlug.artist?.slug);
 	}

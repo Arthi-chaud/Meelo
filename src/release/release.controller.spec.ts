@@ -12,9 +12,7 @@ import { FakeFileManagerService } from "test/fake-file-manager.module";
 import ReleaseService from "./release.service";
 import ReleaseController from "./release.controller";
 import request from "supertest";
-import { INestApplication, ValidationPipe } from "@nestjs/common";
-import NotFoundExceptionFilter from "src/exceptions/not-found.exception";
-import MeeloExceptionFilter from "src/exceptions/meelo-exception.filter";
+import { INestApplication } from "@nestjs/common";
 import ReleaseModule from "./release.module";
 import TrackModule from "src/track/track.module";
 import IllustrationModule from "src/illustration/illustration.module";
@@ -25,6 +23,7 @@ import GenreModule from "src/genre/genre.module";
 import TestPrismaService from "test/test-prisma.service";
 import type ReassignReleaseDTO from "./models/reassign-release.dto";
 import FileModule from "src/file/file.module";
+import SetupApp from "test/setup-app";
 
 describe('Release Controller', () => {
 	let dummyRepository: TestPrismaService;
@@ -56,13 +55,7 @@ describe('Release Controller', () => {
 			providers: [ReleaseService, AlbumService, ArtistService, ReleaseController],
 		}).overrideProvider(FileManagerService).useClass(FakeFileManagerService)
 		.overrideProvider(PrismaService).useClass(TestPrismaService).compile();
-		app = module.createNestApplication();
-		app.useGlobalFilters(
-			new NotFoundExceptionFilter(),
-			new MeeloExceptionFilter()
-		);
-		app.useGlobalPipes(new ValidationPipe());
-		await app.init();
+		app = await SetupApp(module);
 		dummyRepository = module.get(PrismaService);
 		await dummyRepository.onModuleInit();
 	});

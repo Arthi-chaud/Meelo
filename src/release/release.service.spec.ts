@@ -56,7 +56,7 @@ describe('Release Service', () => {
 		it("should create the album's first release", async () => {
 			newRelease = await releaseService.create({
 				name: 'My Album (Deluxe Edition)',
-				album: { byId: { id: dummyRepository.albumA1.id } },
+				album: { id: dummyRepository.albumA1.id },
 				releaseDate: new Date('2023'),
 				master: false
 			});
@@ -70,7 +70,7 @@ describe('Release Service', () => {
 		it("should create the album's second release (compilation)", async () => {
 			newCompilationRelease = await releaseService.create({
 				name: 'My Compilation (Expanded Edition)',
-				album: { byId: { id: dummyRepository.compilationAlbumA.id } },
+				album: { id: dummyRepository.compilationAlbumA.id },
 				releaseDate: new Date('2005'),
 				master: false
 			});
@@ -84,21 +84,21 @@ describe('Release Service', () => {
 		it("should update set as master and the parent album year", async () => {
 			const newRelease2  = await releaseService.create({
 				name: 'My Album (TMD Edition)',
-				album: { byId: { id: dummyRepository.albumA1.id } },
+				album: { id: dummyRepository.albumA1.id },
 				releaseDate: new Date('2006'),
 				master: false
 			});
 			expect(newRelease2.master).toBe(true);
-			const album = await albumService.get({ byId: { id: dummyRepository.albumA1.id } });
+			const album = await albumService.get({ id: dummyRepository.albumA1.id });
 			expect(album.id).toStrictEqual(dummyRepository.albumA1.id);
 			expect(album.releaseDate).toStrictEqual(new Date('2006'));
-			await releaseService.delete({ byId: { id: newRelease2.id } });
-			const expectedMaster = await releaseService.get({ byId: { id: dummyRepository.releaseA1_1.id } });
+			await releaseService.delete({ id: newRelease2.id });
+			const expectedMaster = await releaseService.get({ id: dummyRepository.releaseA1_1.id });
 			expect(expectedMaster.master).toBe(true);
 		});
 
 		it("should not have updated the parent album metadata", async () => {
-			const album = await albumService.get({ byId: { id: newCompilationRelease.albumId } });
+			const album = await albumService.get({ id: newCompilationRelease.albumId });
 			expect(album.releaseDate?.getFullYear()).toStrictEqual(dummyRepository.compilationAlbumA.releaseDate!.getFullYear());
 			expect(album.name).toStrictEqual('My Compilation Album');
 		});
@@ -158,12 +158,12 @@ describe('Release Service', () => {
 		});
 
 		it(('should return an existing release, without only its id and slug'), async () => {
-			const release = await releaseService.select({ byId: { id: dummyRepository.releaseB1_1.id }}, { slug: true, id: true });
+			const release = await releaseService.select({ id: dummyRepository.releaseB1_1.id }, { slug: true, id: true });
 			expect(release).toStrictEqual({ id: dummyRepository.releaseB1_1.id, slug: dummyRepository.releaseB1_1.slug});
 		});
 
 		it(('should throw, as the release does not exist'), async () => {
-			const test = () => releaseService.select({ byId: { id: -1 }}, { slug: true, id: true });
+			const test = () => releaseService.select({ id: -1 }, { slug: true, id: true });
 			expect(test()).rejects.toThrow(ReleaseNotFoundFromIDException);
 		});
 
@@ -202,14 +202,14 @@ describe('Release Service', () => {
 
 		it("should get the release from its id", async () => {
 			const fetchedRelease = await releaseService.get({
-				byId: { id: dummyRepository.releaseA1_2.id }
+				id: dummyRepository.releaseA1_2.id
 			});
 			expect(fetchedRelease).toStrictEqual(dummyRepository.releaseA1_2);
 		});
 
 		it("should throw, as no release has the id", async () => {
 			const test = async () => {
-				return releaseService.get({ byId: { id: -1 } });
+				return releaseService.get({ id: -1 });
 			}
 			expect(test()).rejects.toThrow(ReleaseNotFoundFromIDException);
 		});
@@ -218,7 +218,7 @@ describe('Release Service', () => {
 	describe('Get Master Release', () => {
 		it("Should retrieve the master release", async () => {
 			const fetchedRelease = await releaseService.get(
-				{ byMasterOf: {
+				{ masterOf: {
 					bySlug: {
 						slug: new Slug(dummyRepository.albumA1.slug),
 						artist: { slug: new Slug(dummyRepository.artistA.slug) }
@@ -230,7 +230,7 @@ describe('Release Service', () => {
 
 		it("Should retrieve the master release (compilation)", async () => {
 			const compilationMaster = await releaseService.get(
-				{ byMasterOf: { bySlug: { slug: new Slug(dummyRepository.compilationAlbumA.slug) } }},
+				{ masterOf: { bySlug: { slug: new Slug(dummyRepository.compilationAlbumA.slug) } }},
 			);
 
 			expect(compilationMaster).toStrictEqual(dummyRepository.compilationReleaseA1);
@@ -241,8 +241,8 @@ describe('Release Service', () => {
 	describe('Reassign Release', () => {
 		it('should reassign a release to an album', async () => {
 			const updatedRelease = await releaseService.reassign(
-				{ byId: { id: dummyRepository.releaseB1_1.id } },
-				{ byId: { id: dummyRepository.albumA1.id } }
+				{ id: dummyRepository.releaseB1_1.id },
+				{ id: dummyRepository.albumA1.id }
 			);
 			expect(updatedRelease).toStrictEqual({
 				...dummyRepository.releaseB1_1,
@@ -252,7 +252,7 @@ describe('Release Service', () => {
 		});
 
 		it("should have deleted the empty parent", async () => {
-			const test = () => albumService.get({ byId: { id: dummyRepository.albumB1.id } });
+			const test = () => albumService.get({ id: dummyRepository.albumB1.id });
 			expect(test()).rejects.toThrow(AlbumNotFoundFromIDException);
 		});
 
@@ -261,26 +261,26 @@ describe('Release Service', () => {
 				name: dummyRepository.albumB1.name, artist: { id: dummyRepository.artistB.id }
 			});
 			await releaseService.reassign(
-				{ byId: { id: dummyRepository.releaseA1_1.id } },
-				{ byId: { id: dummyRepository.albumB1.id } }
+				{ id: dummyRepository.releaseA1_1.id },
+				{ id: dummyRepository.albumB1.id }
 			);
 			const otherRelease = await releaseService.get(
-				{ byId: { id: dummyRepository.releaseA1_2.id } }
+				{ id: dummyRepository.releaseA1_2.id }
 			);
 			expect(otherRelease).toStrictEqual({
 				...dummyRepository.releaseA1_2,
 				master: true,
 			});
 			await releaseService.reassign(
-				{ byId: { id: dummyRepository.releaseB1_1.id } },
-				{ byId: { id: dummyRepository.albumB1.id } }
+				{ id: dummyRepository.releaseB1_1.id },
+				{ id: dummyRepository.albumB1.id }
 			);
 		});
 
 		it("should assign a release to a compilation album", async () => {
 			const updatedRelease = await releaseService.reassign(
-				{ byId: { id: dummyRepository.releaseA1_1.id } },
-				{ byId: { id: dummyRepository.compilationAlbumA.id } }
+				{ id: dummyRepository.releaseA1_1.id },
+				{ id: dummyRepository.compilationAlbumA.id }
 			);
 			expect(updatedRelease).toStrictEqual({
 				...dummyRepository.releaseA1_1,
@@ -288,11 +288,11 @@ describe('Release Service', () => {
 				albumId: dummyRepository.compilationAlbumA.id
 			});
 			await releaseService.reassign(
-				{ byId: { id: dummyRepository.releaseA1_1.id } },
-				{ byId: { id: dummyRepository.albumA1.id } }
+				{ id: dummyRepository.releaseA1_1.id },
+				{ id: dummyRepository.albumA1.id }
 			);
 			await releaseService.setReleaseAsMaster({
-				album: { byId: { id: dummyRepository.albumA1.id }},
+				album: { id: dummyRepository.albumA1.id},
 				releaseId: dummyRepository.releaseA1_1.id
 			});
 		});
@@ -303,7 +303,7 @@ describe('Release Service', () => {
 		it("Should Update the release", async () => {
 			const updatedRelease = await releaseService.update(
 				{ name: 'My Album (Special Edition)' },
-				{ byId: { id: newRelease.id } },
+				{ id: newRelease.id },
 			);
 			expect(updatedRelease.id).toStrictEqual(newRelease.id);
 			expect(updatedRelease.albumId).toStrictEqual(newRelease.albumId);
@@ -315,7 +315,7 @@ describe('Release Service', () => {
 		it("Should Update the album's date", async () => {
 			newRelease = await releaseService.update(
 				{ releaseDate: new Date('2005') },
-				{ byId: { id: newRelease.id } }
+				{ id: newRelease.id }
 			);
 			const updatedAlbum = await albumService.get(
 				{ bySlug: { slug: new Slug(dummyRepository.albumA1.slug), artist: { slug: new Slug (dummyRepository.artistA.slug) } } },
@@ -325,16 +325,16 @@ describe('Release Service', () => {
 		});
 
 		it("Should Update the master release (unset)", async () => {
-			await releaseService.update({ master: false }, { byId: { id: dummyRepository.releaseA1_1.id } });
-			const expectedNewMaster = await releaseService.getMasterRelease({ byId: { id: dummyRepository.albumA1.id } });
+			await releaseService.update({ master: false }, { id: dummyRepository.releaseA1_1.id });
+			const expectedNewMaster = await releaseService.getMasterRelease({ id: dummyRepository.albumA1.id });
 			expect(expectedNewMaster).toStrictEqual({ ...dummyRepository.releaseA1_2, master: true });
 		});
 
 		it("Should Update the master release (set)", async () => {
-			await releaseService.update({ master: true }, { byId: { id: dummyRepository.releaseA1_1.id } });
-			const expectedNewMaster = await releaseService.getMasterRelease({ byId: { id: dummyRepository.albumA1.id } });
+			await releaseService.update({ master: true }, { id: dummyRepository.releaseA1_1.id });
+			const expectedNewMaster = await releaseService.getMasterRelease({ id: dummyRepository.albumA1.id });
 			expect(expectedNewMaster).toStrictEqual(dummyRepository.releaseA1_1);
-			const unsetRelease = await releaseService.get({ byId: { id: dummyRepository.releaseA1_2.id } });
+			const unsetRelease = await releaseService.get({ id: dummyRepository.releaseA1_2.id });
 			expect(unsetRelease.master).toBe(false);
 
 		});
@@ -343,14 +343,14 @@ describe('Release Service', () => {
 	describe('Find or create', () => {
 		it("should retrieve the existing release", async () => {
 			const fetchedRelease: Release = await releaseService.getOrCreate({
-				name: newRelease.name, album: { byId: { id: dummyRepository.albumA1.id } }, releaseDate: new Date('2008'), master: false
+				name: newRelease.name, album: { id: dummyRepository.albumA1.id }, releaseDate: new Date('2008'), master: false
 			});
 			expect(fetchedRelease).toStrictEqual(newRelease);
 		});
 
 		it("should create a new release", async () => {
 			newRelease2 = await releaseService.getOrCreate({
-				name: 'My Album (Edited Version)', album: { byId: { id: dummyRepository.albumA1.id } }, releaseDate: new Date('2007'), master: false
+				name: 'My Album (Edited Version)', album: { id: dummyRepository.albumA1.id }, releaseDate: new Date('2007'), master: false
 			});
 			expect(newRelease2.albumId).toBe(dummyRepository.albumA1.id);
 			expect(newRelease2.master).toBe(false);
@@ -362,40 +362,40 @@ describe('Release Service', () => {
 
 	describe('Delete Release', () => {
 		it("should delete only release, and parent album", async () => {
-			await releaseService.delete({ byId: { id: dummyRepository.releaseB1_1.id } });
-			const testRelease = async () => await releaseService.get({ byId: { id: dummyRepository.releaseB1_1.id } });
-			const testAlbum = async () => await albumService.get({ byId: { id: dummyRepository.albumB1.id } });
+			await releaseService.delete({ id: dummyRepository.releaseB1_1.id });
+			const testRelease = async () => await releaseService.get({ id: dummyRepository.releaseB1_1.id });
+			const testAlbum = async () => await albumService.get({ id: dummyRepository.albumB1.id });
 			expect(testRelease()).rejects.toThrow(ReleaseNotFoundFromIDException);
 			expect(testAlbum()).rejects.toThrow(AlbumNotFoundFromIDException);
 		});
 
 		it("should delete a release (not master)", async () => {
-			const queryParam = { byId: { id: newRelease.id } };
+			const queryParam = { id: newRelease.id };
 			await releaseService.delete(queryParam);
 			const testRelease = async () => await releaseService.get(queryParam);
 			expect(testRelease()).rejects.toThrow(ReleaseNotFoundFromIDException);
 			/// To check album still exists
-			const master = await releaseService.getMasterRelease({ byId: { id: dummyRepository.albumA1.id } });
+			const master = await releaseService.getMasterRelease({ id: dummyRepository.albumA1.id });
 			expect(master.id).toBe(newRelease2.id);
 		});
 
 		it("should delete master release, and update master status", async () => {
-			await releaseService.delete({ byId: { id: newRelease2.id } });
-			const testRelease = async () => await releaseService.get({ byId: { id: newRelease.id } });
+			await releaseService.delete({ id: newRelease2.id });
+			const testRelease = async () => await releaseService.get({ id: newRelease.id });
 			expect(testRelease()).rejects.toThrow(ReleaseNotFoundFromIDException);
-			const updatedSecondRelease =  await releaseService.getMasterRelease({ byId: { id: dummyRepository.albumA1.id } });
+			const updatedSecondRelease =  await releaseService.getMasterRelease({ id: dummyRepository.albumA1.id });
 			expect(updatedSecondRelease.id).toBe(dummyRepository.releaseA1_1.id);
 		});
 		
 		it("should delete release, and parent album & artist", async () => {
-			await releaseService.delete({ byId: { id: dummyRepository.releaseA1_1.id } });
-			await releaseService.delete({ byId: { id: dummyRepository.releaseA1_2.id } });
+			await releaseService.delete({ id: dummyRepository.releaseA1_1.id });
+			await releaseService.delete({ id: dummyRepository.releaseA1_2.id });
 			
 			/// Also have to delete related song 
 			await songService.delete({ id: dummyRepository.songA1.id });
 			await songService.delete({ id: dummyRepository.songA2.id });
 			///
-			const testAlbum = async () => await albumService.get({ byId: { id: dummyRepository.albumA1.id } });
+			const testAlbum = async () => await albumService.get({ id: dummyRepository.albumA1.id });
 			expect(testAlbum()).rejects.toThrow(AlbumNotFoundFromIDException);
 			const testArtist = async () => await artistService.get({ id: dummyRepository.artistA.id  });
 			expect(testArtist()).rejects.toThrow(ArtistNotFoundByIDException);

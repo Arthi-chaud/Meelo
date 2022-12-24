@@ -23,6 +23,8 @@ import {
 	Song, SongWithRelations, Track
 } from 'src/prisma/models';
 import { SongResponse } from './models/song.response';
+import { parseIdentifierSlugs } from 'src/identifier/identifier.parse-slugs';
+import Identifier from 'src/identifier/models/identifier';
 
 @Injectable()
 export default class SongService extends RepositoryService<
@@ -102,7 +104,7 @@ export default class SongService extends RepositoryService<
 
 	static formatWhereInput(where: SongQueryParameters.WhereInput) {
 		return {
-			id: where.byId?.id,
+			id: where.id,
 			slug: where.bySlug?.slug.toString(),
 			artist: where.bySlug
 				? ArtistService.formatWhereInput(where.bySlug.artist)
@@ -130,12 +132,25 @@ export default class SongService extends RepositoryService<
 				lt: where.playCount?.below
 			},
 			tracks: where.library ? {
-				some: TrackService.formatManyWhereInput({ byLibrarySource: where.library })
+				some: TrackService.formatManyWhereInput({ library: where.library })
 			} : undefined
 		};
 	}
 
 	formatManyWhereInput = SongService.formatManyWhereInput;
+
+	static formatIdentifierToWhereInput(identifier: Identifier): SongQueryParameters.WhereInput {
+		return RepositoryService.formatIdentifier(identifier, (stringIdentifier) => {
+			const slugs = parseIdentifierSlugs(stringIdentifier, 2);
+
+			return {
+				bySlug: {
+					slug: slugs[1],
+					artist: { slug: slugs[0] }
+				}
+			};
+		});
+	}
 
 	formatSortingInput(
 		sortingParameter: SortingParameter<SongQueryParameters.SortingKeys>
@@ -155,8 +170,8 @@ export default class SongService extends RepositoryService<
 	}
 
 	async onNotFound(where: SongQueryParameters.WhereInput): Promise<MeeloException> {
-		if (where.byId) {
-			throw new SongNotFoundByIdException(where.byId.id);
+		if (where.id != undefined) {
+			throw new SongNotFoundByIdException(where.id);
 		}
 		const artist = await this.artistService.get(where.bySlug.artist);
 
@@ -257,7 +272,7 @@ export default class SongService extends RepositoryService<
 
 		await this.update(
 			{ playCount: song.playCount + 1 },
-			{ byId: { id: song.id } },
+			{ id: song.id },
 		);
 	}
 
@@ -271,7 +286,7 @@ export default class SongService extends RepositoryService<
 	protected formatDeleteInputToWhereInput(
 		input: SongQueryParameters.DeleteInput
 	): SongQueryParameters.WhereInput {
-		return { byId: { id: input.id } };
+		return { id: input.id };
 	}
 
 	/**
@@ -306,7 +321,7 @@ export default class SongService extends RepositoryService<
 	 */
 	async deleteIfEmpty(where: SongQueryParameters.DeleteInput): Promise<void> {
 		const trackCount = await this.trackService.count(
-			{ bySong: this.formatDeleteInputToWhereInput(where) }
+			{ song: this.formatDeleteInputToWhereInput(where) }
 		);
 
 		if (trackCount == 0) {

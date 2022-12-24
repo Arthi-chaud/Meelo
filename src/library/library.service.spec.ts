@@ -181,7 +181,7 @@ describe('Library Service', () => {
 			expect(filesCount).toBe(0);
 		});
 		it('should have deletes the related tracks', async () => {
-			const trackCount = await trackService.count({ byArtist: { id: dummyRepository.artistB.id }});
+			const trackCount = await trackService.count({ artist: { id: dummyRepository.artistB.id }});
 			expect(trackCount).toBe(0);
 		});
 

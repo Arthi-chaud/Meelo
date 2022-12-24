@@ -76,7 +76,7 @@ export default class TasksService {
 			const track = await this.metadataService.registerMetadata(fileMetadata, registeredFile);
 
 			this.lyricsService.registerLyrics(
-				{ byId: { id: track.songId } }, { force: false }
+				{ id: track.songId }, { force: false }
 			).catch(() => {});
 			this.illustrationService.extractTrackIllustration(track, fullFilePath)
 				.catch(() => {})

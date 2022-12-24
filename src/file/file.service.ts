@@ -26,6 +26,7 @@ import mime from 'mime';
 import { Prisma } from '@prisma/client';
 import SortingParameter from 'src/sort/models/sorting-parameter';
 import Slug from 'src/slug/slug';
+import Identifier from 'src/identifier/models/identifier';
 
 @Injectable()
 export default class FileService extends RepositoryService<
@@ -105,13 +106,20 @@ export default class FileService extends RepositoryService<
 			path: where.paths !== undefined ? {
 				in: where.paths
 			} : undefined,
-			registerDate: where.byRegistrationDate
-				? buildDateSearchParameters(where.byRegistrationDate)
+			registerDate: where.registrationDate
+				? buildDateSearchParameters(where.registrationDate)
 				: undefined
 		};
 	}
 
 	formatManyWhereInput = FileService.formatManyWhereInput;
+
+	static formatIdentifierToWhereInput(identifier: Identifier): FileQueryParameters.WhereInput {
+		return RepositoryService.formatIdentifier(
+			identifier,
+			RepositoryService.UnexpectedStringIdentifier
+		);
+	}
 
 	formatSortingInput(
 		sort: SortingParameter<FileQueryParameters.SortingKeys>

@@ -5,7 +5,6 @@ import { PaginationParameters } from 'src/pagination/models/pagination-parameter
 import ReleaseQueryParameters from 'src/release/models/release.query-parameters';
 import ReleaseService from 'src/release/release.service';
 import compilationAlbumArtistKeyword from 'src/utils/compilation';
-import ParseAlbumIdentifierPipe from './album.pipe';
 import AlbumService from './album.service';
 import AlbumQueryParameters from './models/album.query-parameters';
 import type { Request } from 'express';
@@ -20,13 +19,11 @@ import { AlbumResponse } from './models/album.response';
 import { ApiPaginatedResponse } from 'src/pagination/paginated-response.decorator';
 import { ReleaseResponse } from 'src/release/models/release.response';
 import { PaginationQuery } from 'src/pagination/pagination-query.decorator';
-import { IdentifierParam } from 'src/identifier/identifier-param.decorator';
-import { ApiRelationInclude } from 'src/relation-include/relation-include-route.decorator';
-import { ApiIdentifierRoute } from 'src/identifier/identifier-route.decorator';
 import RelationIncludeQuery from 'src/relation-include/relation-include-query.decorator';
 import SortingQuery from 'src/sort/sort-query.decorator';
 import Admin from 'src/roles/admin.decorator';
 import { TrackResponse } from 'src/track/models/track.response';
+import IdentifierParam from 'src/identifier/identifier.pipe';
 
 @ApiTags("Albums")
 @Controller('albums')
@@ -44,7 +41,6 @@ export default class AlbumController {
 
 	@Get()
 	@ApiOperation({ summary: 'Get all albums' })
-	@ApiRelationInclude(AlbumQueryParameters.AvailableAtomicIncludes)
 	@ApiPaginatedResponse(AlbumResponse)
 	async getMany(
 		@PaginationQuery()
@@ -57,7 +53,7 @@ export default class AlbumController {
 		@Req() request: Request,
 	) {
 		const albums = await this.albumService.getMany(
-			{ byType: filter.type }, paginationParameters, include, sortingParameter
+			{ type: filter.type }, paginationParameters, include, sortingParameter
 		);
 
 		return PaginatedResponse.awaiting(
@@ -82,7 +78,7 @@ export default class AlbumController {
 		@Req() request: Request
 	) {
 		const albums = await this.albumService.getMany(
-			{ byArtist: { compilationArtist: true }, byType: filter.type },
+			{ artist: { compilationArtist: true }, type: filter.type },
 			paginationParameters,
 			include,
 			sortingParameter
@@ -97,15 +93,17 @@ export default class AlbumController {
 	@ApiOperation({
 		summary: 'Get one album'
 	})
-	@ApiIdentifierRoute()
 	@Get(':idOrSlug')
 	async get(
 		@RelationIncludeQuery(AlbumQueryParameters.AvailableAtomicIncludes)
 		include: AlbumQueryParameters.RelationInclude,
-		@IdentifierParam(ParseAlbumIdentifierPipe)
-		where: AlbumQueryParameters.WhereInput
+		@IdentifierParam(AlbumService)
+		where: AlbumQueryParameters.WhereInput,
 	) {
-		const album = await this.albumService.get(where, include);
+		const album = await this.albumService.get(
+			where,
+			include
+		);
 
 		return this.albumService.buildResponse(album);
 	}
@@ -117,10 +115,13 @@ export default class AlbumController {
 	async getAlbumMaster(
 		@RelationIncludeQuery(ReleaseQueryParameters.AvailableAtomicIncludes)
 		include: ReleaseQueryParameters.RelationInclude,
-		@IdentifierParam(ParseAlbumIdentifierPipe)
-		where: AlbumQueryParameters.WhereInput
+		@IdentifierParam(AlbumService)
+		where: AlbumQueryParameters.WhereInput,
 	) {
-		const masterRelease = await this.releaseService.getMasterRelease(where, include);
+		const masterRelease = await this.releaseService.getMasterRelease(
+			where,
+			include
+		);
 
 		return this.releaseService.buildResponse(masterRelease);
 	}
@@ -137,12 +138,15 @@ export default class AlbumController {
 		include: ReleaseQueryParameters.RelationInclude,
 		@SortingQuery(ReleaseQueryParameters.SortingKeys)
 		sortingParameter: ReleaseQueryParameters.SortingParameter,
-		@IdentifierParam(ParseAlbumIdentifierPipe)
+		@IdentifierParam(AlbumService)
 		where: AlbumQueryParameters.WhereInput,
 		@Req() request: Request
 	) {
 		const releases = await this.releaseService.getAlbumReleases(
-			where, paginationParameters, include, sortingParameter
+			where,
+			paginationParameters,
+			include,
+			sortingParameter
 		);
 
 		return PaginatedResponse.awaiting(
@@ -156,7 +160,7 @@ export default class AlbumController {
 	})
 	@Get(':idOrSlug/genres')
 	async getAlbumGenres(
-		@IdentifierParam(ParseAlbumIdentifierPipe)
+		@IdentifierParam(AlbumService)
 		where: AlbumQueryParameters.WhereInput,
 	): Promise<Genre[]> {
 		const genres = await this.albumService.getGenres(where);
@@ -172,11 +176,13 @@ export default class AlbumController {
 	async getAlbumVideos(
 		@RelationIncludeQuery(TrackQueryParameters.AvailableAtomicIncludes)
 		include: TrackQueryParameters.RelationInclude,
-		@IdentifierParam(ParseAlbumIdentifierPipe)
-		where: AlbumQueryParameters.WhereInput
+		@IdentifierParam(AlbumService)
+		where: AlbumQueryParameters.WhereInput,
 	): Promise<TrackResponse[]> {
 		const albumReleases = await this.releaseService.getAlbumReleases(
-			where, { }, { tracks: true }
+			where,
+			{ },
+			{ tracks: true }
 		);
 
 		return Promise.all(
@@ -195,7 +201,7 @@ export default class AlbumController {
 				) == index)
 				.map((track) => this.trackService.getMany({
 					type: 'Video',
-					bySong: { byId: { id: track.songId } },
+					song: { id: track.songId },
 				}, { take: 1 }, include))
 		).then((tracks) => Promise.all(
 			tracks
@@ -214,7 +220,7 @@ export default class AlbumController {
 	) {
 		return this.albumService.buildResponse(
 			await this.albumService.reassign(
-				{ byId: { id: reassignmentDTO.albumId } },
+				{ id: reassignmentDTO.albumId },
 				reassignmentDTO.artistId == null
 					? { compilationArtist: true }
 					: { id: reassignmentDTO.artistId }

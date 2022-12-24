@@ -1,7 +1,6 @@
 import {
-	Body, Controller, Get, Inject, Param, Post, Put, Req, forwardRef
+	Body, Controller, Get, Inject, Post, Put, Req, forwardRef
 } from '@nestjs/common';
-import { ParseIdPipe } from 'src/identifier/id.pipe';
 import PaginatedResponse from 'src/pagination/models/paginated-response';
 import { PaginationParameters } from 'src/pagination/models/pagination-parameters';
 import TrackQueryParameters from './models/track.query-parameters';
@@ -16,6 +15,7 @@ import { PaginationQuery } from 'src/pagination/pagination-query.decorator';
 import RelationIncludeQuery from 'src/relation-include/relation-include-query.decorator';
 import SortingQuery from 'src/sort/sort-query.decorator';
 import Admin from 'src/roles/admin.decorator';
+import IdentifierParam from 'src/identifier/identifier.pipe';
 
 @ApiTags("Tracks")
 @Controller('tracks')
@@ -76,14 +76,14 @@ export class TrackController {
 	@ApiOperation({
 		summary: 'Get a track'
 	})
-	@Get(':id')
+	@Get(':idOrSlug')
 	async get(
 		@RelationIncludeQuery(TrackQueryParameters.AvailableAtomicIncludes)
 		include: TrackQueryParameters.RelationInclude,
-		@Param('id', ParseIdPipe)
-		trackId: number
+		@IdentifierParam(TrackService)
+		where: TrackQueryParameters.WhereInput,
 	) {
-		const track = await this.trackService.get({ id: trackId }, include);
+		const track = await this.trackService.get(where, include);
 
 		return this.trackService.buildResponse(track);
 	}
@@ -92,17 +92,18 @@ export class TrackController {
 		summary: 'Set a track as master track'
 	})
 	@Admin()
-	@Put(':id/master')
+	@Put(':idOrSlug/master')
 	async setAsMaster(
-		@Param('id', ParseIdPipe) trackId: number
+		@IdentifierParam(TrackService)
+		where: TrackQueryParameters.WhereInput,
 	) {
-		const track = await this.trackService.get({ id: trackId });
+		const track = await this.trackService.get(where);
 
 		await this.trackService.setTrackAsMaster({
 			trackId: track.id,
-			song: { byId: { id: track.songId } }
+			song: { id: track.songId }
 		});
-		const updatedTrack = await this.trackService.getMasterTrack({ byId: { id: track.songId } });
+		const updatedTrack = await this.trackService.getMasterTrack({ id: track.songId });
 
 		return this.trackService.buildResponse(updatedTrack);
 	}
@@ -118,7 +119,7 @@ export class TrackController {
 		return this.trackService.buildResponse(
 			await this.trackService.reassign(
 				{ id: reassignmentDTO.trackId },
-				{ byId: { id: reassignmentDTO.songId } }
+				{ id: reassignmentDTO.songId }
 			)
 		);
 	}

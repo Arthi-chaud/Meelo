@@ -73,7 +73,7 @@ export default class MetadataService {
 
 		await this.songService.update(
 			{ genres: song.genres.concat(genres).map((genre) => ({ id: genre.id })) },
-			{ byId: { id: song.id } }
+			{ id: song.id }
 		);
 		const album = await this.albumService.getOrCreate({
 			name: this.removeReleaseExtension(metadata.album ?? metadata.release!),
@@ -83,7 +83,7 @@ export default class MetadataService {
 			name: metadata.release ?? metadata.album!,
 			master: album.releases.length == 0,
 			releaseDate: metadata.releaseDate,
-			album: { byId: { id: album.id } }
+			album: { id: album.id }
 		}, { album: true });
 		const track: TrackQueryParameters.CreateInput = {
 			name: metadata.name!,
@@ -95,8 +95,8 @@ export default class MetadataService {
 			ripSource: null,
 			duration: Math.floor(metadata.duration ?? 0),
 			sourceFile: { id: file.id },
-			release: { byId: { id: release.id } },
-			song: { byId: { id: song.id } },
+			release: { id: release.id },
+			song: { id: song.id },
 		};
 
 		if (release.releaseDate !== null &&
@@ -108,11 +108,11 @@ export default class MetadataService {
 		if (albumArtist === undefined && release.album.type == AlbumType.StudioRecording) {
 			release.album.type = AlbumType.Compilation;
 		}
-		await this.albumService.update({ ...release.album }, { byId: { id: release.albumId } });
+		await this.albumService.update({ ...release.album }, { id: release.albumId });
 		if (!release.releaseDate ||
 		metadata.releaseDate && release.releaseDate < metadata.releaseDate) {
 			await this.releaseService.update(
-				{ releaseDate: metadata.releaseDate }, { byId: { id: release.id } }
+				{ releaseDate: metadata.releaseDate }, { id: release.id }
 			);
 		}
 		return this.trackService.create(track);
@@ -255,12 +255,12 @@ export default class MetadataService {
 	async applyMetadataOnFile(where: FileQueryParameters.WhereInput): Promise<void> {
 		const file = await this.fileService.get(where, { library: true });
 		const track = await this.trackService.get({ sourceFile: where });
-		const song = await this.songService.get({ byId: { id: track.songId } }, { genres: true });
+		const song = await this.songService.get({ id: track.songId }, { genres: true });
 		const release = await this.releaseService.get(
-			{ byId: { id: track.releaseId } }, { album: true }
+			{ id: track.releaseId }, { album: true }
 		);
 		const album = await this.albumService.get(
-			{ byId: { id: release.albumId } }, { artist: true }
+			{ id: release.albumId }, { artist: true }
 		);
 		const artist = await this.artistService.get({ id: song.artistId });
 		const libraryPath = this.fileManagerService.getLibraryFullPath(file.library);

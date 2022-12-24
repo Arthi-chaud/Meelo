@@ -6,7 +6,7 @@ import type { RelationInclude as BaseRelationInclude } from "src/relation-includ
 import type LibraryQueryParameters from "src/library/models/library.query-parameters";
 import BaseSortingParameter from 'src/sort/models/sorting-parameter';
 import type GenreQueryParameters from "src/genre/models/genre.query-parameters";
-import { Song } from "src/prisma/models";
+import { Artist, Song } from "src/prisma/models";
 import { ApiPropertyOptional } from "@nestjs/swagger";
 import { filterAtomicRelationInclude } from "src/relation-include/atomic-relation-include.filter";
 
@@ -24,7 +24,7 @@ namespace SongQueryParameters {
 	 * Query paraeters to find a song
 	 */
 	export type WhereInput = RequireExactlyOne<{
-		byId: { id: number },
+		id: Song['id'],
 		bySlug: { slug: Slug, artist: ArtistQueryParameters.WhereInput }
 	}>;
 
@@ -32,8 +32,8 @@ namespace SongQueryParameters {
 	 * Query paraeters to find a song to update
 	 */
 	export type UpdateWhereInput = RequireExactlyOne<{
-		byId: { id: number },
-		bySlug: { slug: Slug, artistId: number }
+		id: Song['id'],
+		bySlug: { slug: Slug, artistId: Artist['id'] }
 	}>;
 
 	/**
@@ -44,7 +44,7 @@ namespace SongQueryParameters {
 		artist?: ArtistQueryParameters.WhereInput,
 		library: LibraryQueryParameters.WhereInput,
 		genre: GenreQueryParameters.WhereInput,
-		playCount: RequireExactlyOne<{ below: number, exact: number, moreThan: number }>,
+		playCount: RequireExactlyOne<Record<'below' | 'exact' | 'moreThan', number>>,
 	}>>;
 
 	/**
@@ -52,7 +52,7 @@ namespace SongQueryParameters {
 	 */
 	export type UpdateInput = Partial<CreateInput & Pick<Song, 'playCount'>>;
 	export type DeleteInput = {
-		id: number
+		id: Song['id']
 	};
 	/**
 	 * The input to find or create a song

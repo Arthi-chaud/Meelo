@@ -33,7 +33,7 @@ export default class RolesGuard implements CanActivate {
 		}
 		const request = context.switchToHttp().getRequest();
 		const userPayload = request.user;
-		const user = await this.userService.get({ byId: { id: userPayload.id } });
+		const user = await this.userService.get({ id: userPayload.id });
 
 		if (requiredRoles.includes(RoleEnum.Admin) && !user.admin) {
 			throw new InsufficientPermissionsException();

@@ -32,7 +32,7 @@ namespace AlbumQueryParameters {
 	 * Query parameters to find one album
 	 */
 	export type WhereInput = RequireExactlyOne<{
-		byId: { id: number },
+		id: Album['id'],
 		bySlug: { slug: Slug, artist?: ArtistQueryParameters.WhereInput }
 	}>;
 
@@ -40,12 +40,12 @@ namespace AlbumQueryParameters {
 	 * Query parameters to find multiple albums
 	 */
 	export type ManyWhereInput = Partial<RequireAtLeastOne<{
-		byArtist: ArtistQueryParameters.WhereInput,
-		byName: SearchStringInput,
-		byLibrarySource: LibraryQueryParameters.WhereInput,
-		byReleaseDate: SearchDateInput,
-		byGenre: GenreQueryParameters.WhereInput,
-		byType: AlbumType
+		artist: ArtistQueryParameters.WhereInput,
+		name: SearchStringInput,
+		library: LibraryQueryParameters.WhereInput,
+		releaseDate: SearchDateInput,
+		genre: GenreQueryParameters.WhereInput,
+		type: AlbumType
 	}>>;
 
 	/**
@@ -66,7 +66,7 @@ namespace AlbumQueryParameters {
 	/**
 	 * Query parameters to delete one album
 	 */
-	export type DeleteInput = Required<Pick<WhereInput, 'byId'>>;
+	export type DeleteInput = Required<Pick<WhereInput, 'id'>>;
 
 	/**
 	 * Defines what relations to include in query
