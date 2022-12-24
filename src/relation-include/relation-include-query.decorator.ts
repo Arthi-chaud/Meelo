@@ -13,14 +13,7 @@ export default function RelationIncludeQuery(keys: readonly string[]) {
 		if (keys.length != 0) {
 			const descriptor = Reflect.getOwnPropertyDescriptor(target, functionName)!;
 
-			if (descriptor) {
-				const method = descriptor.value;
-
-				if (method instanceof Function) {
-					descriptor.value = ApiRelationInclude(keys)(target, functionName, descriptor);
-				}
-				Object.defineProperty(target, functionName, descriptor);
-			}
+			ApiRelationInclude(keys)(target, functionName, descriptor);
 		}
 		return Query('with', new ParseBaseRelationIncludePipe(keys))(target, functionName, parameterIndex);
 	};
