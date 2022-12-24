@@ -8,6 +8,7 @@ import {
 } from "react-query";
 import { ReactQueryDevtools } from "react-query/devtools";
 import {
+	Container,
 	CssBaseline, GlobalStyles, ThemeProvider
 } from "@mui/material";
 import MeeloAppBar from "../components/appbar/appbar";
@@ -25,6 +26,7 @@ import PageNotFound from "./404";
 import InternalError from "./500";
 import { useRouter } from "next/router";
 import 'core-js/actual';
+import '../styles.css';
 
 function MyApp({ Component, pageProps: { session, ...pageProps } }: AppProps) {
 	const [queryClient] = useState(() => new QueryClient());
@@ -76,7 +78,9 @@ function MyApp({ Component, pageProps: { session, ...pageProps } }: AppProps) {
 							}}
 						>
 							<Hydrate state={pageProps.dehydratedState}>
-								<Component {...pageProps} />
+								<Container maxWidth={false} sx={{ paddingY: 2 }}>
+									<Component {...pageProps} />
+								</Container>
 							</Hydrate>
 							<Player/>
 						</ErrorBoundary>

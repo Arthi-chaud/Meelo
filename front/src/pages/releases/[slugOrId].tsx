@@ -1,12 +1,11 @@
 import {
-	Button, Divider, Grid, IconButton,
+	Button, Divider, Fade, Grid, IconButton,
 	ListSubheader, Typography, useTheme
 } from "@mui/material";
 import { Box } from "@mui/system";
 import { useRouter } from "next/router";
 import API from "../../api/api";
 import Illustration from "../../components/illustration";
-import { WideLoadingComponent } from "../../components/loading/loading";
 import { ReleaseWithAlbum } from "../../models/release";
 import formatDuration from '../../utils/formatDuration';
 import { useEffect, useState } from "react";
@@ -14,7 +13,6 @@ import Tracklist from "../../models/tracklist";
 import Link from 'next/link';
 import PlayCircleIcon from '@mui/icons-material/PlayCircle';
 import { Shuffle } from "@mui/icons-material";
-import FadeIn from "react-fade-in";
 import Tile from "../../components/tile/tile";
 import { useQueries, useQuery } from "../../api/use-query";
 import { useDispatch } from "react-redux";
@@ -27,6 +25,7 @@ import ReleaseTrackList from "../../components/release-tracklist";
 import prepareSSR, { InferSSRProps } from "../../ssr";
 import ReleaseContextualMenu from "../../components/contextual-menu/release-contextual-menu";
 import { TrackWithSong } from "../../models/track";
+import LoadingPage from "../../components/loading/loading-page";
 
 const releaseQuery = (slugOrId: string | number) => ({
 	key: ['release', slugOrId],
@@ -90,17 +89,14 @@ type RelatedContentSectionProps = {
 }
 
 const RelatedContentSection = (props: RelatedContentSectionProps) => {
-	if (props.display == false) {
-		return <></>;
-	}
 	return (
-		<FadeIn>
-			<Divider/>
-			<Box sx={{ padding: 3 }}>
-				<Typography variant='h6' sx={{ paddingBottom: 3 }}>{props.title}</Typography>
+		<Fade in={props.display == true}>
+			<Box sx={{ margin: 3, display: props.display ? undefined : 'none' }}>
+				<Divider/>
+				<Typography variant='h6' sx={{ paddingY: 3 }}>{props.title}</Typography>
 				{props.children}
 			</Box>
-		</FadeIn>
+		</Fade>
 	);
 };
 
@@ -149,11 +145,11 @@ const ReleasePage = (
 		}
 	}, [tracklist.data]);
 	// eslint-disable-next-line no-extra-parens
-	if (!release.data || (artistId && !albumArtist.data)) {
-		return <WideLoadingComponent/>;
+	if (!release.data || (artistId && !albumArtist.data) || !trackList) {
+		return <LoadingPage/>;
 	}
-	return <Box>
-		<Box sx={{ padding: 5, flex: 1, flexGrow: 1 }}>
+	return (
+		<Box sx={{ margin: 3 }}>
 			<Grid container spacing={4} sx={{ justifyContent: 'center' }}>
 				<Grid item md={3} xs={8}>
 					<Illustration url={release.data!.illustration}/>
@@ -220,36 +216,36 @@ const ReleasePage = (
 			<Grid container spacing={1} sx={{ display: 'flex', paddingY: 2 }}>
 				{ hasGenres &&
 					<Grid item md={3} xs={12}>
-						{ albumGenres.data &&
-						<FadeIn>
-							<Grid container spacing={1} sx={{ alignItems: 'center' }}>
-								<Grid item>
-									<ListSubheader>Genres:</ListSubheader>
+						<Fade in={albumGenres.data != undefined}>
+							<Box>
+								<Grid container spacing={1} sx={{ alignItems: 'center' }}>
+									<Grid item>
+										<ListSubheader>Genres:</ListSubheader>
+									</Grid>
+									{ albumGenres.data?.map((genre) =>
+										<Grid item key={genre.id} sx={{ display: 'flex' }}>
+											<Link href={`/genres/${genre.slug}`}>
+												<Button variant="outlined" color='inherit'>
+													{ genre.name }
+												</Button>
+											</Link>
+										</Grid>) ?? []}
 								</Grid>
-								{ albumGenres.data.map((genre) =>
-									<Grid item key={genre.id} sx={{ display: 'flex' }}>
-										<Link href={`/genres/${genre.slug}`}>
-											<Button variant="outlined" color='inherit'>
-												{ genre.name }
-											</Button>
-										</Link>
-									</Grid>)}
-							</Grid>
-							<Divider sx={{
-								paddingY: 1,
-								display: "none",
-								[theme.breakpoints.down('md')]: {
-									display: 'block'
-								}
-							}} />
-						</FadeIn>
-						}
+								<Divider sx={{
+									paddingY: 1,
+									display: "none",
+									[theme.breakpoints.down('md')]: {
+										display: 'block'
+									}
+								}} />
+							</Box>
+						</Fade>
 					</Grid>
 				}
 				<Grid item md={hasGenres ? 9 : true} xs={12}>
 					{ albumGenres.data && trackList &&
 						otherArtistsQuery.findIndex((query) => query.data == undefined) == -1 &&
-						<FadeIn>
+						<Fade in><Box>
 							<ReleaseTrackList
 								mainArtist={albumArtist.data}
 								tracklist={Object.fromEntries(Array.from(Object.entries(trackList))
@@ -272,7 +268,7 @@ const ReleasePage = (
 								}
 								release={release.data}
 							/>
-						</FadeIn>
+						</Box></Fade>
 					}
 				</Grid>
 			</Grid>
@@ -333,7 +329,7 @@ const ReleasePage = (
 				</Grid>
 			</RelatedContentSection>
 		</Box>
-	</Box>;
+	);
 };
 
 export default ReleasePage;

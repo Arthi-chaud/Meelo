@@ -3,7 +3,6 @@ import { useRouter } from "next/router";
 import API from "../../api/api";
 import { Page } from "../../components/infinite/infinite-scroll";
 import SelectableInfiniteView from "../../components/infinite/selectable-infinite-view";
-import { WideLoadingComponent } from "../../components/loading/loading";
 import Album, { AlbumSortingKeys, AlbumType } from "../../models/album";
 import Artist, { ArtistSortingKeys } from "../../models/artist";
 import { SongSortingKeys, SongWithArtist } from "../../models/song";
@@ -11,6 +10,7 @@ import { useQuery } from "../../api/use-query";
 import getSlugOrId from "../../utils/getSlugOrId";
 import { SortingParameters } from "../../utils/sorting";
 import prepareSSR, { InferSSRProps } from "../../ssr";
+import LoadingPage from "../../components/loading/loading-page";
 
 const genreQuery = (idOrSlug: string | number) => ({
 	key: ["genre", idOrSlug],
@@ -75,15 +75,14 @@ const GenrePage = ({ genreIdentifier }: InferSSRProps<typeof getServerSideProps>
 	const genre = useQuery(genreQuery, genreIdentifier);
 
 	if (!genre.data) {
-		return <WideLoadingComponent/>;
+		return <LoadingPage/>;
 	}
 	return <Box sx={{ width: '100%' }}>
-		<Box sx={{ width: '100%', justifyContent: "center", textAlign: 'center', padding: 4 }}>
+		<Box sx={{ width: '100%', justifyContent: "center", textAlign: 'center', marginY: 5 }}>
 			<Typography variant='h5' sx={{ fontWeight: 'bold' }}>
 				{genre.data.name}
 			</Typography>
 		</Box>
-		<Box sx={{ padding: 1 }}/>
 		<SelectableInfiniteView
 			enabled={true}
 			artistQuery={(sort) => genreArtistsQuery(genreIdentifier, sort)}

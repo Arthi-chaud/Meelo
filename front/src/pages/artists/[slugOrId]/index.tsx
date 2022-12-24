@@ -4,7 +4,6 @@ import {
 import { useRouter } from "next/router";
 import API from "../../../api/api";
 import Illustration from "../../../components/illustration";
-import { WideLoadingComponent } from "../../../components/loading/loading";
 import { useQuery } from "../../../api/use-query";
 import ArrowRight from '@mui/icons-material/ArrowRight';
 import AlbumTile from "../../../components/tile/album-tile";
@@ -17,6 +16,7 @@ import { TrackWithRelease } from "../../../models/track";
 import getSlugOrId from "../../../utils/getSlugOrId";
 import SongContextualMenu from "../../../components/contextual-menu/song-contextual-menu";
 import prepareSSR, { InferSSRProps } from "../../../ssr";
+import LoadingPage from "../../../components/loading/loading-page";
 
 type SongButtonProps = {
 	song: SongWithArtist;
@@ -119,11 +119,11 @@ const ArtistPage = (
 	const topSongs = useQuery(topSongsQuery, artistIdentifier);
 
 	if (!artist.data || !latestAlbums.data || !topSongs.data) {
-		return <WideLoadingComponent/>;
+		return <LoadingPage/>;
 	}
 	return <Box>
 		<Grid container direction="column" spacing={4}
-			sx={{ padding: 5, flex: 1, flexGrow: 1 }}>
+			sx={{ padding: 2, flex: 1, flexGrow: 1 }}>
 			<Grid item container spacing={4}
 				sx={{ justifyContent: 'flex-start' }}>
 				<Grid item xs={5} sm={3}
@@ -146,38 +146,33 @@ const ArtistPage = (
 				</Grid>
 				<Grid item container spacing={2}
 					sx={{ display: 'flex', flexGrow: 1 }}>
-					{ topSongs.data
-						? topSongs.data.items.slice(0, 6).map((song) =>
-							<Grid key={song.id} item xs={12} sm={6} lg={4}>
-								<SongButton song={{ ...song, artist: artist.data }}/>
-							</Grid>)
-						: <WideLoadingComponent/>
-					}
+					{ topSongs.data.items.slice(0, 6).map((song) =>
+						<Grid key={song.id} item xs={12} sm={6} lg={4}>
+							<SongButton song={{ ...song, artist: artist.data }}/>
+						</Grid>)}
 				</Grid>
 			</>
 			}
-			{ latestAlbums.data?.items.length != 0 && <>
+			{ latestAlbums.data.items.length != 0 && <>
 				<Grid item sx={{
 					display: 'flex', flexGrow: 1,
 					justifyContent: 'space-between', alignItems: 'center'
 				}}>
 					<Typography variant='h5' fontWeight='bold'>Albums</Typography>
-					{ latestAlbums.data?.metadata.next &&
+					{ latestAlbums.data.metadata.next &&
 					<Link href={`/artists/${artistIdentifier}/albums`}>
 						<Button variant='contained' endIcon={<ArrowRight/>}
-							sx={{ textTransform: 'none', fontWeight: 'bold' }}>See all</Button>
-					</Link>
-					}
+							sx={{ textTransform: 'none', fontWeight: 'bold' }}>
+							See all
+						</Button>
+					</Link>}
 				</Grid>
 				<Grid item container spacing={2}
 					sx={{ display: 'flex', flexGrow: 1 }}>
-					{ latestAlbums.data
-						? latestAlbums.data.items.slice(0, 6).map((album) =>
-							<Grid key={album.id} item xs={6} sm={4} md={2} lg={2}>
-								<AlbumTile album={{ ...album, artist: artist.data }}/>
-							</Grid>)
-						: <WideLoadingComponent/>
-					}
+					{latestAlbums.data.items.slice(0, 6).map((album) =>
+						<Grid key={album.id} item xs={6} sm={4} md={2} lg={2}>
+							<AlbumTile album={{ ...album, artist: artist.data }}/>
+						</Grid>)}
 				</Grid>
 			</>
 			}
