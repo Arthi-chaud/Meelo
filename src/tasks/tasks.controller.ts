@@ -1,5 +1,5 @@
 import {
-	Controller, Get, Logger, Param
+	Controller, Get, Logger
 } from '@nestjs/common';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import LibraryService from 'src/library/library.service';
@@ -7,7 +7,8 @@ import type TaskResponse from './models/task.response';
 import TasksService from './tasks.service';
 import { Timeout } from '@nestjs/schedule';
 import Admin from 'src/roles/admin.decorator';
-import { IdentifierParam } from 'src/identifier/models/identifier';
+import IdentifierParam from 'src/identifier/identifier.pipe';
+import LibraryQueryParameters from 'src/library/models/library.query-parameters';
 
 @Admin()
 @ApiTags('Tasks')
@@ -39,9 +40,9 @@ export default class TasksController {
 	})
 	@Get('scan/:idOrSlug')
 	async scanLibraryFiles(
-		@Param() { idOrSlug }: IdentifierParam
+		@IdentifierParam(LibraryService)
+		where: LibraryQueryParameters.WhereInput
 	): Promise<TaskResponse> {
-		const where = LibraryService.formatIdentifierToWhereInput(idOrSlug);
 		const library = await this.libraryService.get(where);
 
 		this.tasksService
@@ -72,9 +73,9 @@ export default class TasksController {
 	})
 	@Get('clean/:idOrSlug')
 	async cleanLibrary(
-		@Param() { idOrSlug }: IdentifierParam
+		@IdentifierParam(LibraryService)
+		where: LibraryQueryParameters.WhereInput
 	): Promise<TaskResponse> {
-		const where = LibraryService.formatIdentifierToWhereInput(idOrSlug);
 		const library = await this.libraryService.get(where);
 
 		this.tasksService
@@ -105,9 +106,9 @@ export default class TasksController {
 	})
 	@Get('refresh-metadata/:idOrSlug')
 	async refreshLibraryFilesMetadata(
-		@Param() { idOrSlug }: IdentifierParam
+		@IdentifierParam(LibraryService)
+		where: LibraryQueryParameters.WhereInput
 	): Promise<TaskResponse> {
-		const where = LibraryService.formatIdentifierToWhereInput(idOrSlug);
 		const library = await this.libraryService.get(where);
 
 		this.tasksService

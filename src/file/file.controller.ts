@@ -1,12 +1,12 @@
 import {
-	Controller, Get, Param, Req, Response
+	Controller, Get, Req, Response
 } from "@nestjs/common";
 import type { File } from "src/prisma/models";
 import FileService from "./file.service";
 import FileQueryParameters from "./models/file.query-parameters";
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import RelationIncludeQuery from "src/relation-include/relation-include-query.decorator";
-import { IdentifierParam } from "src/identifier/models/identifier";
+import IdentifierParam from 'src/identifier/identifier.pipe';
 
 @ApiTags("Files")
 @Controller('files')
@@ -20,14 +20,12 @@ export default class FileController {
 	})
 	@Get(':idOrSlug')
 	get(
-		@Param() { idOrSlug }: IdentifierParam,
 		@RelationIncludeQuery(FileQueryParameters.AvailableAtomicIncludes)
 		include: FileQueryParameters.RelationInclude,
+		@IdentifierParam(FileService)
+		where: FileQueryParameters.WhereInput
 	): Promise<File> {
-		return this.fileService.get(
-			FileService.formatIdentifierToWhereInput(idOrSlug),
-			include
-		);
+		return this.fileService.get(where, include);
 	}
 
 	@ApiOperation({
@@ -35,14 +33,11 @@ export default class FileController {
 	})
 	@Get(':idOrSlug/stream')
 	async streamFile(
-		@Param() { idOrSlug }: IdentifierParam,
+		@IdentifierParam(FileService)
+		where: FileQueryParameters.WhereInput,
 		@Response({ passthrough: true }) res: Response,
 		@Req() req: any
 	) {
-		return this.fileService.streamFile(
-			FileService.formatIdentifierToWhereInput(idOrSlug),
-			res,
-			req
-		);
+		return this.fileService.streamFile(where, res, req);
 	}
 }

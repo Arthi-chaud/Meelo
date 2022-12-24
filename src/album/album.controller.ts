@@ -1,5 +1,5 @@
 import {
-	Body, Controller, Get, Inject, Param, Post, Query, Req, forwardRef
+	Body, Controller, Get, Inject, Post, Query, Req, forwardRef
 } from '@nestjs/common';
 import { PaginationParameters } from 'src/pagination/models/pagination-parameters';
 import ReleaseQueryParameters from 'src/release/models/release.query-parameters';
@@ -19,12 +19,11 @@ import { AlbumResponse } from './models/album.response';
 import { ApiPaginatedResponse } from 'src/pagination/paginated-response.decorator';
 import { ReleaseResponse } from 'src/release/models/release.response';
 import { PaginationQuery } from 'src/pagination/pagination-query.decorator';
-import { ApiRelationInclude } from 'src/relation-include/relation-include-route.decorator';
 import RelationIncludeQuery from 'src/relation-include/relation-include-query.decorator';
 import SortingQuery from 'src/sort/sort-query.decorator';
 import Admin from 'src/roles/admin.decorator';
 import { TrackResponse } from 'src/track/models/track.response';
-import { IdentifierParam } from 'src/identifier/models/identifier';
+import IdentifierParam from 'src/identifier/identifier.pipe';
 
 @ApiTags("Albums")
 @Controller('albums')
@@ -42,7 +41,6 @@ export default class AlbumController {
 
 	@Get()
 	@ApiOperation({ summary: 'Get all albums' })
-	@ApiRelationInclude(AlbumQueryParameters.AvailableAtomicIncludes)
 	@ApiPaginatedResponse(AlbumResponse)
 	async getMany(
 		@PaginationQuery()
@@ -95,15 +93,15 @@ export default class AlbumController {
 	@ApiOperation({
 		summary: 'Get one album'
 	})
-
 	@Get(':idOrSlug')
 	async get(
-		@Param() { idOrSlug }: IdentifierParam,
 		@RelationIncludeQuery(AlbumQueryParameters.AvailableAtomicIncludes)
 		include: AlbumQueryParameters.RelationInclude,
+		@IdentifierParam(AlbumService)
+		where: AlbumQueryParameters.WhereInput,
 	) {
 		const album = await this.albumService.get(
-			AlbumService.formatIdentifierToWhereInput(idOrSlug),
+			where,
 			include
 		);
 
@@ -115,12 +113,13 @@ export default class AlbumController {
 	})
 	@Get(':idOrSlug/master')
 	async getAlbumMaster(
-		@Param() { idOrSlug }: IdentifierParam,
 		@RelationIncludeQuery(ReleaseQueryParameters.AvailableAtomicIncludes)
 		include: ReleaseQueryParameters.RelationInclude,
+		@IdentifierParam(AlbumService)
+		where: AlbumQueryParameters.WhereInput,
 	) {
 		const masterRelease = await this.releaseService.getMasterRelease(
-			AlbumService.formatIdentifierToWhereInput(idOrSlug),
+			where,
 			include
 		);
 
@@ -133,17 +132,18 @@ export default class AlbumController {
 	@ApiPaginatedResponse(ReleaseResponse)
 	@Get(':idOrSlug/releases')
 	async getAlbumReleases(
-		@Param() { idOrSlug }: IdentifierParam,
 		@PaginationQuery()
 		paginationParameters: PaginationParameters,
 		@RelationIncludeQuery(ReleaseQueryParameters.AvailableAtomicIncludes)
 		include: ReleaseQueryParameters.RelationInclude,
 		@SortingQuery(ReleaseQueryParameters.SortingKeys)
 		sortingParameter: ReleaseQueryParameters.SortingParameter,
+		@IdentifierParam(AlbumService)
+		where: AlbumQueryParameters.WhereInput,
 		@Req() request: Request
 	) {
 		const releases = await this.releaseService.getAlbumReleases(
-			AlbumService.formatIdentifierToWhereInput(idOrSlug),
+			where,
 			paginationParameters,
 			include,
 			sortingParameter
@@ -160,11 +160,10 @@ export default class AlbumController {
 	})
 	@Get(':idOrSlug/genres')
 	async getAlbumGenres(
-		@Param() { idOrSlug }: IdentifierParam
+		@IdentifierParam(AlbumService)
+		where: AlbumQueryParameters.WhereInput,
 	): Promise<Genre[]> {
-		const genres = await this.albumService.getGenres(
-			AlbumService.formatIdentifierToWhereInput(idOrSlug)
-		);
+		const genres = await this.albumService.getGenres(where);
 
 		return Promise.all(genres.map((genre) => this.genreService.buildResponse(genre)));
 	}
@@ -175,12 +174,13 @@ export default class AlbumController {
 	})
 	@Get(':idOrSlug/videos')
 	async getAlbumVideos(
-		@Param() { idOrSlug }: IdentifierParam,
 		@RelationIncludeQuery(TrackQueryParameters.AvailableAtomicIncludes)
 		include: TrackQueryParameters.RelationInclude,
+		@IdentifierParam(AlbumService)
+		where: AlbumQueryParameters.WhereInput,
 	): Promise<TrackResponse[]> {
 		const albumReleases = await this.releaseService.getAlbumReleases(
-			AlbumService.formatIdentifierToWhereInput(idOrSlug),
+			where,
 			{ },
 			{ tracks: true }
 		);

@@ -1,5 +1,5 @@
 import {
-	Body, Controller, Get, Inject, Param, Post, Put, Req, forwardRef
+	Body, Controller, Get, Inject, Post, Put, Req, forwardRef
 } from '@nestjs/common';
 import PaginatedResponse from 'src/pagination/models/paginated-response';
 import { PaginationParameters } from 'src/pagination/models/pagination-parameters';
@@ -15,7 +15,7 @@ import { PaginationQuery } from 'src/pagination/pagination-query.decorator';
 import RelationIncludeQuery from 'src/relation-include/relation-include-query.decorator';
 import SortingQuery from 'src/sort/sort-query.decorator';
 import Admin from 'src/roles/admin.decorator';
-import { IdentifierParam } from 'src/identifier/models/identifier';
+import IdentifierParam from 'src/identifier/identifier.pipe';
 
 @ApiTags("Tracks")
 @Controller('tracks')
@@ -78,14 +78,12 @@ export class TrackController {
 	})
 	@Get(':idOrSlug')
 	async get(
-		@Param() { idOrSlug }: IdentifierParam,
 		@RelationIncludeQuery(TrackQueryParameters.AvailableAtomicIncludes)
 		include: TrackQueryParameters.RelationInclude,
+		@IdentifierParam(TrackService)
+		where: TrackQueryParameters.WhereInput,
 	) {
-		const track = await this.trackService.get(
-			TrackService.formatIdentifierToWhereInput(idOrSlug),
-			include
-		);
+		const track = await this.trackService.get(where, include);
 
 		return this.trackService.buildResponse(track);
 	}
@@ -96,11 +94,10 @@ export class TrackController {
 	@Admin()
 	@Put(':idOrSlug/master')
 	async setAsMaster(
-		@Param() { idOrSlug }: IdentifierParam,
+		@IdentifierParam(TrackService)
+		where: TrackQueryParameters.WhereInput,
 	) {
-		const track = await this.trackService.get(
-			TrackService.formatIdentifierToWhereInput(idOrSlug),
-		);
+		const track = await this.trackService.get(where);
 
 		await this.trackService.setTrackAsMaster({
 			trackId: track.id,
