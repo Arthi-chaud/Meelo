@@ -22,7 +22,6 @@ import Link from "next/link";
 import { SongWithArtist, SongWithLyrics } from "../../models/song";
 import ReleaseTrackContextualMenu from "../contextual-menu/release-track-contextual-menu";
 import Release from "../../models/release";
-import { Container } from "@mui/system";
 
 const songQuery = (slugOrId: string | number) => ({
 	key: ['song', slugOrId],
@@ -184,15 +183,18 @@ const ExpandedPlayerControls = (
 						disablePictureInPicture={false}
 						width='100%' height='100%'
 					/>
-				</Grid> : <Grid item xs sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', aspectRatio: '1' }}>
-					<Container>
-						{props.illustration
-							? <Illustration url={props.illustration} fallback={<AudiotrackIcon />}/>
-							: <Box sx={{ height: '100%', display: 'flex', alignItems: 'center' }}>
-								<AudiotrackIcon />
-							</Box>
-						}
-					</Container>
+				</Grid> : <Grid
+					item
+					xs={6} sm sx={{
+						aspectRatio: '1', display: 'flex',
+						justifyContent: 'center', alignItems: 'center'
+					}}>
+					{props.illustration
+						? <Illustration url={props.illustration} fallback={<AudiotrackIcon />} />
+						: <Box sx={{ height: '100%', display: 'flex', alignItems: 'center' }}>
+							<AudiotrackIcon />
+						</Box>
+					}
 				</Grid>
 			}
 			<Grid item xs={4} container
