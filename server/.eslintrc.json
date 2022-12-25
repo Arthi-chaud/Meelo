@@ -15,7 +15,7 @@
 		"unused-imports",
 		"import"
 	],
-	"ignorePatterns": ["front/", "node_modules/", "test/", "src/**/*.spec.ts", "src/prisma/models"],
+	"ignorePatterns": ["node_modules/", "test/", "src/**/*.spec.ts", "src/prisma/models"],
 	"rules": {
 		"unused-imports/no-unused-imports": "warn",
 		"import/first": "error",

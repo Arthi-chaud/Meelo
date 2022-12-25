@@ -1,9 +1,10 @@
 #!/bin/bash
 
 if [ "$1" = "dev" ] ||  [ "$1" = "prod" ]; then
-	yarn --cwd /app/back run prisma migrate deploy
+	sleep 5
+	yarn --cwd /app/server run prisma migrate deploy
 	yarn --cwd /app/front start:"$1" &
-	yarn --cwd /app/back start:"$1"
+	yarn --cwd /app/server start:"$1"
 else
     echo "Expected one argument: 'prod' or 'dev'"
 	exit 1

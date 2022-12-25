@@ -26,6 +26,7 @@
     "@nestjs/jwt": "^9.0.0",
     "@nestjs/passport": "^9.0.0",
     "@nestjs/platform-express": "^8.0.0",
+    "@nestjs/serve-static": "^3.0.0",
     "@nestjs/swagger": "^6.0.4",
     "@prisma/client": "^4.1.0",
     "@taumechanica/stout": "^2.2.0",
@@ -137,15 +138,14 @@
   },
   "compodoc": {
     "name": "Meelo Documentation",
-    "output": "docs/generated",
-    "customLogo": "./front/public/banner.png",
-    "customFavicon": "./front/public/icon.png",
-    "includes": "docs/",
+    "output": "../docs/generated",
+    "customLogo": "./assets/banner.png",
+    "customFavicon": "./assets/icon.png",
+    "includes": "../docs/",
+    "includesName": "User Documentation",
     "exclude": [
-      "front",
       "test/",
-      "node_modules/",
-      "docs/generated"
+      "node_modules/"
     ]
   }
 }

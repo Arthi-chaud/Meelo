@@ -25,7 +25,8 @@
     "noUnusedLocals": true,
     "noImplicitThis": true,
     "importsNotUsedAsValues": "preserve",
-    "allowJs": true
+    "allowJs": true,
+    "plugins": [{ "name": "typescript-plugin-css-modules" }]
   },
   "lib": [  
     "dom",  

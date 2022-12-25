@@ -9,8 +9,8 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - section: 'back'
-            pwd: .
+          - section: 'server'
+            pwd: ./server
           - section: 'front'
             pwd: ./front
     container: node:18
@@ -22,7 +22,9 @@ jobs:
       - name: Install dependencies
         run: yarn --cwd "${{ matrix.pwd }}" install
       - name: Install root dependencies
+        ## Necessary, as front's linter config extends server's
         if: ${{ matrix.section }} == "front"
-        run: yarn install
+        ## Should use matrix.
+        run: yarn --cwd "server" install
       - name: Run linters
         run: yarn --cwd "${{ matrix.pwd }}" lint

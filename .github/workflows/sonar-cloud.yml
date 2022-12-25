@@ -11,7 +11,7 @@ jobs:
       matrix:
         include:
           - section: 'back'
-            pwd: .
+            pwd: './server'
             token: SONAR_TOKEN_FRONT
           - section: 'front'
             pwd: ./front

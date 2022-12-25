@@ -2,7 +2,7 @@
 	"extends": [
 		"next/core-web-vitals",
 		"plugin:react/recommended",
-		"../.eslintrc.json"
+		"../server/.eslintrc.json"
 	],
 	"plugins": [
 		"react"
