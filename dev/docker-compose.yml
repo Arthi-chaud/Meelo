@@ -11,8 +11,9 @@ services:
       - "db"
     volumes:
       - ../meelo:/meelo
-      - ../:/app/back
+      - ../assets:/app/assets
       - ../front:/app/front
+      - ../server:/app/server
       - ../data:/data
     env_file:
       - .env

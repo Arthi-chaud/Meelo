@@ -1,0 +1,28 @@
+# compiled output
+dist/
+node_modules/
+
+# Logs
+logs
+*.log
+npm-debug.log*
+pnpm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+lerna-debug.log*
+
+# Tests
+coverage
+.nyc_output
+
+
+# Envrionment/Secret files
+.env
+illustrations/
+data/
+meelo/
+
+coverage/
+test/assets/metadata
+
+src/prisma/models

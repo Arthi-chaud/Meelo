@@ -11,9 +11,9 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       - name: Install Dependencies
-        run: yarn install
+        run: yarn --cwd server install
       - name: Generate Documentation
-        run: yarn compodoc -p tsconfig.json --hideGenerator
+        run: yarn  --cwd server compodoc -p tsconfig.json --hideGenerator --disableDependencies --disableCoverage
       - name: Deploy
         uses: JamesIves/github-pages-deploy-action@v4
         with:

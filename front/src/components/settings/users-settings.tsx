@@ -102,7 +102,7 @@ const UsersSettings = () => {
 		} }
 	];
 
-	return <Box sx={{ paddingBottom: 2 }}>
+	return <Box>
 		<AdminGrid
 			infiniteQuery={usersQuery}
 			columns={columns.map((column) => ({

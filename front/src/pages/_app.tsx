@@ -8,6 +8,7 @@ import {
 } from "react-query";
 import { ReactQueryDevtools } from "react-query/devtools";
 import {
+	Container,
 	CssBaseline, GlobalStyles, ThemeProvider
 } from "@mui/material";
 import MeeloAppBar from "../components/appbar/appbar";
@@ -77,7 +78,9 @@ function MyApp({ Component, pageProps: { session, ...pageProps } }: AppProps) {
 							}}
 						>
 							<Hydrate state={pageProps.dehydratedState}>
-								<Component {...pageProps} />
+								<Container maxWidth={false} sx={{ paddingY: 2 }}>
+									<Component {...pageProps} />
+								</Container>
 							</Hydrate>
 							<Player/>
 						</ErrorBoundary>

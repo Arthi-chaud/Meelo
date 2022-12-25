@@ -10,8 +10,8 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - section: 'back'
-            pwd: .
+          - section: 'server'
+            pwd: './server'
             token: SONAR_TOKEN_FRONT
           - section: 'front'
             pwd: ./front
