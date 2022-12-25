@@ -59,7 +59,7 @@ jobs:
         with:
           timeout_minutes: 10
           max_attempts: 3
-          command: yarn test --coverage
+          command: yarn --cwd server test --coverage
       - name: Upload Unit Tests artifact
         if: ${{ always() }}
         uses: actions/upload-artifact@v3
