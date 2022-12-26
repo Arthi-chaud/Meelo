@@ -11,6 +11,14 @@
 	background: var(--swagger-bg) !important;
 }
 
+.swagger-ui .responses-inner h4 {
+	color: var(--swagger-color)!important;
+}
+
+.swagger-ui .responses-inner h5 {
+	color: var(--swagger-color)!important;
+}
+
 .swagger-ui .response-control-media-type--accept-controller select {
 	border-color: var(--swagger-color) !important;
 }
@@ -32,6 +40,9 @@ span {
 	color: var(--swagger-color) !important;
 }
 
+input {
+	color: var(--swagger-color) !important;
+}
 
 svg {
 	color: var(--swagger-color) !important;
@@ -110,5 +121,9 @@ button {
 }
 
 .swagger-ui .response-inner {
+	background: var(--swagger-bg);
+}
+
+.swagger-ui input[type=text].invalid {
 	background: var(--swagger-bg);
 }
