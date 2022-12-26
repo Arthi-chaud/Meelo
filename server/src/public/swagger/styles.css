@@ -1,0 +1,114 @@
+:root {
+	--swagger-bg: #242120;
+	--swagger-appbar-bg: #2F2C2B;
+	--swagger-input-bg: #2F2C2B;
+	--swagger-input-disabled-color: #666666;
+	--swagger-color: #ffffff;
+}
+
+.swagger-ui select {
+	color: var(--swagger-color) !important;
+	background: var(--swagger-bg) !important;
+}
+
+.swagger-ui .response-control-media-type--accept-controller select {
+	border-color: var(--swagger-color) !important;
+}
+
+.swagger-ui .tab li:first-of-type:after {
+	background: var(--swagger-color) !important;
+}
+
+.swagger-ui .parameters-col_description input {
+	background: var(--swagger-input-bg);
+	border-color: var(--swagger-color);
+}
+
+input:disabled {
+	color: var(--swagger-input-disabled-color);
+}
+
+span {
+	color: var(--swagger-color) !important;
+}
+
+
+svg {
+	color: var(--swagger-color) !important;
+}
+
+p {
+	color: var(--swagger-color) !important;
+}
+
+small {
+	color: var(--swagger-color) !important;
+}
+
+div {
+	color: var(--swagger-color) !important;
+}
+
+td {
+	color: var(--swagger-color) !important;
+}
+
+th {
+	color: var(--swagger-color) !important;
+}
+
+button {
+	color: var(--swagger-color) !important;
+}
+
+.title {
+	color: var(--swagger-color) !important;
+}
+
+.swagger-ui {
+	background: var(--swagger-bg) !important;
+	color: var(--swagger-color) !important;
+}
+
+.swagger-ui .scheme-container {
+	/* Avoid vairable duplicate */
+	background: transparent;
+}
+
+.swagger-ui .topbar {
+	background: var(--swagger-appbar-bg);
+}
+
+.swagger-ui .opblock .opblock-section-header {
+	background: var(--swagger-appbar-bg);
+}
+
+.swagger-ui .opblock .opblock-section-header h4 {
+	color: var(--swagger-color)
+}
+
+/* Parameters names in requests */
+.swagger-ui .parameter__name {
+	color: var(--swagger-color)
+}
+
+.swagger-ui .table-container {
+	background: var(--swagger-bg);
+}
+
+.swagger-ui .opblock-description-wrapper {
+	background: var(--swagger-bg);
+}
+
+.swagger-ui .execute-wrapper {
+	background: var(--swagger-bg);
+}
+
+
+.swagger-ui .opblock-body {
+	background: var(--swagger-bg);
+}
+
+.swagger-ui .response-inner {
+	background: var(--swagger-bg);
+}

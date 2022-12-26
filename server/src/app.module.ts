@@ -26,9 +26,14 @@ import { APP_GUARD } from '@nestjs/core';
 import JwtAuthGuard from './authentication/jwt/jwt-auth.guard';
 import RolesGuard from './roles/roles.guard';
 import JwtCookieMiddleware from './authentication/jwt/jwt-middleware';
+import { ServeStaticModule } from '@nestjs/serve-static';
+import { join } from 'path';
 
 @Module({
 	imports: [
+		ServeStaticModule.forRoot({
+			rootPath: join(__dirname, 'public'),
+		}),
 		ScheduleModule.forRoot(),
 		ConfigModule.forRoot(),
 		ArtistModule,

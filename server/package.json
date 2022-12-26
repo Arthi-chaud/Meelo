@@ -12,7 +12,7 @@
     "start:dev": "NODE_ENV=development nest start --watch",
     "start:debug": "nest start --debug --watch",
     "start:prod": "node dist/main",
-    "test:db:up": "docker run -d --rm --env-file .env -p 5432:5432 --name test-db postgres:alpine3.16",
+    "test:db:up": "docker run -d --rm --env-file ../.env -p 5432:5432 --name test-db postgres:alpine3.16",
     "test:db:down": "docker container stop test-db",
     "test:db:migrate": "export POSTGRES_HOST=localhost; yarn run prisma migrate dev",
     "test": "export POSTGRES_HOST=localhost;  NODE_ENV=development jest -i",

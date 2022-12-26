@@ -13,7 +13,7 @@ import SongService from './song.service';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import { TrackType } from '@prisma/client';
 import { LyricsService } from 'src/lyrics/lyrics.service';
-import type LyricsDto from 'src/lyrics/models/update-lyrics.dto';
+import LyricsDto from 'src/lyrics/models/update-lyrics.dto';
 import GenreService from 'src/genre/genre.service';
 import GenreQueryParameters from 'src/genre/models/genre.query-parameters';
 import { ApiPaginatedResponse } from 'src/pagination/paginated-response.decorator';
