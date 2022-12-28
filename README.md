@@ -1,4 +1,4 @@
-![Meelo](front/public/banner.png)
+![Meelo](assets/banner.png)
 
 ## Your music, your files, your experience
 
