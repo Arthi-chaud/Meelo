@@ -3,8 +3,7 @@ import { DocumentBuilder, SwaggerModule } from "@nestjs/swagger";
 
 export default async function bootstrapSwagger(app: INestApplication) {
 	const config = new DocumentBuilder()
-		.setTitle('Meelo')
-		.setDescription('API Documentation')
+		.setTitle('API Documentation')
 		.addServer("/api", "API Path (for Production use)")
 		.addServer("/", "Application Path (for Dev use)")
 		.build();
