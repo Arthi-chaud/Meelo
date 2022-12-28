@@ -36,7 +36,7 @@ input:disabled {
 	color: var(--swagger-input-disabled-color);
 }
 
-span {
+a  {
 	color: var(--swagger-color) !important;
 }
 
@@ -114,7 +114,6 @@ button {
 .swagger-ui .execute-wrapper {
 	background: var(--swagger-bg);
 }
-
 
 .swagger-ui .opblock-body {
 	background: var(--swagger-bg);
