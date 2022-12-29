@@ -355,7 +355,15 @@ describe('Song Controller', () => {
 		it("should return an error, as the song does not exist", () => {
 			return request(app.getHttpServer())
 				.post(`/songs/${-1}/lyrics`)
+				.send({
+					lyrics: 'BLABLABLA',
+				})
 				.expect(404);
+		});
+		it("should return an error, as the body is empty", () => {
+			return request(app.getHttpServer())
+				.post(`/songs/${dummyRepository.songB1.id}/lyrics`)
+				.expect(400);
 		});
 	});
 
