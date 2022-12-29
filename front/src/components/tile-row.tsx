@@ -6,7 +6,7 @@ type TileRowProps = {
 }
 
 const TileRow = (props: TileRowProps) => {
-	const width = { xs: '50%', sm: '33%', md: '20%', lg: '15%' };
+	const width = { xs: '50%', sm: 100/3 + '%', md: '20%', lg: 100/6 +'%' };
 
 	return <Stack sx={{ overflowX: 'scroll', paddingBottom: 1 }} direction='row'>
 		{props.tiles.map((tile, tileIndex) =>
