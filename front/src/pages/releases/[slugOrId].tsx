@@ -27,6 +27,7 @@ import prepareSSR, { InferSSRProps } from "../../ssr";
 import ReleaseContextualMenu from "../../components/contextual-menu/release-contextual-menu";
 import { TrackWithSong } from "../../models/track";
 import LoadingPage from "../../components/loading/loading-page";
+import TileRow from "../../components/tile-row";
 
 const releaseQuery = (slugOrId: string | number) => ({
 	key: ['release', slugOrId],
@@ -299,37 +300,29 @@ const ReleasePage = (
 				display={albumVideos.data !== undefined && albumVideos.data.length != 0}
 				title={"Music Videos"}
 			>
-				<Stack sx={{ overflowX: 'scroll', paddingBottom: 1 }} direction='row' spacing={0}>
-					{ albumVideos.data?.map((video) =>
-						<Box key={video.id} sx={{ paddingRight: 2,
-							minWidth: { xs: '50%', sm: '33%', md: '20%', lg: '15%' } }}
-						>
-							<Tile
-								onClick={() => {
-									const parentArtist = getSongArtist(
-										video.song,
-										albumArtist.data,
-										otherArtistsQuery
-											.filter((query) => !query.data)
-											.map((query) => query.data!)
-									);
+				<TileRow tiles={albumVideos.data?.map((video, videoIndex) =>
+					<Tile key={videoIndex}
+						onClick={() => {
+							const parentArtist = getSongArtist(
+								video.song,
+								albumArtist.data,
+								otherArtistsQuery
+									.filter((query) => !query.data)
+									.map((query) => query.data!)
+							);
 
-									dispatch(playTrack({
-										track: video,
-										release: release.data,
-										artist: parentArtist
-
-									}));
-								}}
-								title={video.name}
-								subtitle={formatDuration(video.duration)}
-								illustration={
-									<Illustration aspectRatio={16/9} url={video.illustration} style={{ objectFit: 'cover' }}/>
-								}
-							/>
-						</Box>)
-					}
-				</Stack>
+							dispatch(playTrack({
+								track: video,
+								release: release.data,
+								artist: parentArtist
+							}));
+						}}
+						title={video.name}
+						subtitle={formatDuration(video.duration)}
+						illustration={
+							<Illustration aspectRatio={16/9} url={video.illustration} style={{ objectFit: 'cover' }}/>
+						}/>) ?? []}
+				/>
 			</RelatedContentSection>
 		</Box>
 	);
