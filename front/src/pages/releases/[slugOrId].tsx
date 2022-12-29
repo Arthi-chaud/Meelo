@@ -1,6 +1,7 @@
 import {
 	Button, Divider, Fade, Grid, IconButton,
-	ListSubheader, Typography, useTheme
+	ImageList, ImageListItem,
+	ListSubheader, Stack, Typography, useTheme
 } from "@mui/material";
 import { Box } from "@mui/system";
 import { useRouter } from "next/router";
@@ -298,9 +299,11 @@ const ReleasePage = (
 				display={albumVideos.data !== undefined && albumVideos.data.length != 0}
 				title={"Music Videos"}
 			>
-				<Grid container spacing={2}>
+				<Stack sx={{ overflowX: 'scroll', paddingBottom: 1 }} direction='row' spacing={0}>
 					{ albumVideos.data?.map((video) =>
-						<Grid key={video.id} item xs={6} sm={4} md={2} lg={2}>
+						<Box key={video.id} sx={{ paddingRight: 2,
+							minWidth: { xs: '50%', sm: '33%', md: '20%', lg: '15%' } }}
+						>
 							<Tile
 								onClick={() => {
 									const parentArtist = getSongArtist(
@@ -324,9 +327,9 @@ const ReleasePage = (
 									<Illustration aspectRatio={16/9} url={video.illustration} style={{ objectFit: 'cover' }}/>
 								}
 							/>
-						</Grid>)
+						</Box>)
 					}
-				</Grid>
+				</Stack>
 			</RelatedContentSection>
 		</Box>
 	);
