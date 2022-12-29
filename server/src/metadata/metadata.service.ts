@@ -99,10 +99,14 @@ export default class MetadataService {
 			song: { id: song.id },
 		};
 
-		if (release.releaseDate !== null &&
+		/**
+		 * If the newly registered release is 'older' that the known album
+		 * Or if the album did not have a date, update album's date
+		 */
+		if ((release.releaseDate !== null &&
 			release.album.releaseDate !== null &&
-			release.album.releaseDate > release.releaseDate ||
-			release.releaseDate !== undefined) {
+			release.album.releaseDate > release.releaseDate) ||
+			(release.releaseDate && !release.album.releaseDate)) {
 			release.album.releaseDate = release.releaseDate;
 		}
 		if (albumArtist === undefined && release.album.type == AlbumType.StudioRecording) {
