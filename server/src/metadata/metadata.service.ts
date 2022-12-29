@@ -233,7 +233,7 @@ export default class MetadataService {
 	 */
 	private mergeMetadata(metadata1: Metadata, metadata2: Metadata): Metadata {
 		return <Metadata>{
-			genres: metadata1.genres ?? metadata2.compilation,
+			genres: metadata1.genres ?? metadata2.genres,
 			compilation: metadata1.compilation ?? metadata2.compilation,
 			artist: metadata1.artist ?? metadata2.artist,
 			albumArtist: metadata1.albumArtist ?? metadata2.albumArtist,
