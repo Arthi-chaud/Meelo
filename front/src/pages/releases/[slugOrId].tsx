@@ -26,6 +26,7 @@ import prepareSSR, { InferSSRProps } from "../../ssr";
 import ReleaseContextualMenu from "../../components/contextual-menu/release-contextual-menu";
 import { TrackWithSong } from "../../models/track";
 import LoadingPage from "../../components/loading/loading-page";
+import TileRow from "../../components/tile-row";
 
 const releaseQuery = (slugOrId: string | number) => ({
 	key: ['release', slugOrId],
@@ -276,57 +277,48 @@ const ReleasePage = (
 				display={(relatedReleases.data?.items?.length ?? 0) > 1}
 				title={"Other releases of the same album"}
 			>
-				<Grid container spacing={2}>
-					{ relatedReleases.data?.items?.filter(
+				<TileRow tiles={
+					relatedReleases.data?.items?.filter(
 						(relatedRelease) => relatedRelease.id != release.data!.id
-					).map((otherRelease) =>
-						<Grid key={otherRelease.id} item xs={6} sm={4} md={2} lg={2}>
-							<Tile
-								href={`/releases/${albumArtist?.data?.slug ?? 'compilations'}+${release.data!.album.slug}+${otherRelease.slug}/`}
-								title={otherRelease.name}
-								subtitle={otherRelease.releaseDate
-									? new Date(otherRelease.releaseDate).getFullYear().toString()
-									: undefined
-								}
-								illustration={<Illustration url={otherRelease.illustration}/>}
-							/>
-						</Grid>)
-					}
-				</Grid>
+					).map((otherRelease, otherReleaseIndex) =>
+						<Tile key={otherReleaseIndex}
+							href={`/releases/${albumArtist?.data?.slug ?? 'compilations'}+${release.data!.album.slug}+${otherRelease.slug}/`}
+							title={otherRelease.name}
+							subtitle={otherRelease.releaseDate
+								? new Date(otherRelease.releaseDate).getFullYear().toString()
+								: undefined
+							}
+							illustration={<Illustration url={otherRelease.illustration}/>}
+						/>) ?? []
+				}/>
 			</RelatedContentSection>
 			<RelatedContentSection
 				display={albumVideos.data !== undefined && albumVideos.data.length != 0}
 				title={"Music Videos"}
 			>
-				<Grid container spacing={2}>
-					{ albumVideos.data?.map((video) =>
-						<Grid key={video.id} item xs={6} sm={4} md={2} lg={2}>
-							<Tile
-								onClick={() => {
-									const parentArtist = getSongArtist(
-										video.song,
-										albumArtist.data,
-										otherArtistsQuery
-											.filter((query) => !query.data)
-											.map((query) => query.data!)
-									);
+				<TileRow tiles={albumVideos.data?.map((video, videoIndex) =>
+					<Tile key={videoIndex}
+						onClick={() => {
+							const parentArtist = getSongArtist(
+								video.song,
+								albumArtist.data,
+								otherArtistsQuery
+									.filter((query) => !query.data)
+									.map((query) => query.data!)
+							);
 
-									dispatch(playTrack({
-										track: video,
-										release: release.data,
-										artist: parentArtist
-
-									}));
-								}}
-								title={video.name}
-								subtitle={formatDuration(video.duration)}
-								illustration={
-									<Illustration aspectRatio={16/9} url={video.illustration} style={{ objectFit: 'cover' }}/>
-								}
-							/>
-						</Grid>)
-					}
-				</Grid>
+							dispatch(playTrack({
+								track: video,
+								release: release.data,
+								artist: parentArtist
+							}));
+						}}
+						title={video.name}
+						subtitle={formatDuration(video.duration)}
+						illustration={
+							<Illustration aspectRatio={16/9} url={video.illustration} style={{ objectFit: 'cover' }}/>
+						}/>) ?? []}
+				/>
 			</RelatedContentSection>
 		</Box>
 	);
