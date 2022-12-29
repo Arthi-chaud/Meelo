@@ -93,9 +93,10 @@ export default class TasksService {
 						}
 					}
 				});
-		} catch {
+		} catch (err) {
 			await this.fileService.delete({ id: registeredFile.id });
-			Logger.warn(`${parentLibrary.slug} library: Registration of ${filePath} failed because of bad metadata.`);
+			Logger.warn(`${parentLibrary.slug} library: Registration of ${filePath} failed because of bad metadata`);
+			throw err;
 		}
 		return registeredFile;
 	}
