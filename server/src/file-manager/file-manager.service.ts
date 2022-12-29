@@ -43,6 +43,10 @@ export default class FileManagerService {
 		return fs.readFileSync(filePath, 'utf8');
 	}
 
+	getFileStat(filePath: string) {
+		return fs.promises.stat(filePath);
+	}
+
 	async getFileBuffer(filePath: string): Promise<Buffer> {
 		return fs.promises.readFile(filePath)
 			.then((content) => Buffer.from(content));

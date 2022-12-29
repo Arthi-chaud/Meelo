@@ -143,6 +143,14 @@ export default class TasksService {
 		await Promise.all(
 			library.files.map(async (file) => {
 				const fullFilePath = `${libraryFullPath}/${file.path}`;
+				const fileStat = await this.fileManagerService.getFileStat(fullFilePath);
+
+				/**
+				 * If file has not been changed since, the md5checkum computation and rescan is canceled
+				 */
+				if (fileStat.mtime <= file.registerDate && fileStat.ctime <= file.registerDate) {
+					return;
+				}
 				const newMD5 = await this.fileManagerService
 					.getMd5Checksum(fullFilePath)
 					.catch(() => null);
