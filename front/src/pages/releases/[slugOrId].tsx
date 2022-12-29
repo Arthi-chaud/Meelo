@@ -278,23 +278,20 @@ const ReleasePage = (
 				display={(relatedReleases.data?.items?.length ?? 0) > 1}
 				title={"Other releases of the same album"}
 			>
-				<Grid container spacing={2}>
-					{ relatedReleases.data?.items?.filter(
+				<TileRow tiles={
+					relatedReleases.data?.items?.filter(
 						(relatedRelease) => relatedRelease.id != release.data!.id
-					).map((otherRelease) =>
-						<Grid key={otherRelease.id} item xs={6} sm={4} md={2} lg={2}>
-							<Tile
-								href={`/releases/${albumArtist?.data?.slug ?? 'compilations'}+${release.data!.album.slug}+${otherRelease.slug}/`}
-								title={otherRelease.name}
-								subtitle={otherRelease.releaseDate
-									? new Date(otherRelease.releaseDate).getFullYear().toString()
-									: undefined
-								}
-								illustration={<Illustration url={otherRelease.illustration}/>}
-							/>
-						</Grid>)
-					}
-				</Grid>
+					).map((otherRelease, otherReleaseIndex) =>
+						<Tile key={otherReleaseIndex}
+							href={`/releases/${albumArtist?.data?.slug ?? 'compilations'}+${release.data!.album.slug}+${otherRelease.slug}/`}
+							title={otherRelease.name}
+							subtitle={otherRelease.releaseDate
+								? new Date(otherRelease.releaseDate).getFullYear().toString()
+								: undefined
+							}
+							illustration={<Illustration url={otherRelease.illustration}/>}
+						/>) ?? []
+				}/>
 			</RelatedContentSection>
 			<RelatedContentSection
 				display={albumVideos.data !== undefined && albumVideos.data.length != 0}
