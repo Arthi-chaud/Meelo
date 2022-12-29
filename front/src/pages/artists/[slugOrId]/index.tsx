@@ -168,7 +168,7 @@ const ArtistPage = (
 						</Button>
 					</Link>}
 				</Grid>
-				<Grid item>
+				<Grid item sx={{ overflowX: 'clip', width: '100%' }}>
 					<TileRow tiles={
 						latestAlbums.data.items.slice(0, 10).map((album) =>
 							<AlbumTile key={album.id} album={{ ...album, artist: artist.data }}/>)
