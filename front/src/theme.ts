@@ -69,7 +69,11 @@ export const Styles = {
 	},
 	/* width */
 	'::-webkit-scrollbar': {
-		width: '8px'
+		width: '8px',
+		height: '5px',
+	},
+	"::-webkit-scrollbar-corner": {
+		background: '#00000000',
 	},
 
 	/* Track */

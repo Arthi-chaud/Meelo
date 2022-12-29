@@ -17,6 +17,7 @@ import getSlugOrId from "../../../utils/getSlugOrId";
 import SongContextualMenu from "../../../components/contextual-menu/song-contextual-menu";
 import prepareSSR, { InferSSRProps } from "../../../ssr";
 import LoadingPage from "../../../components/loading/loading-page";
+import TileRow from "../../../components/tile-row";
 
 type SongButtonProps = {
 	song: SongWithArtist;
@@ -90,7 +91,7 @@ const topSongsQuery = (artistSlugOrId: string | number) => ({
 	],
 	exec: () => API.getArtistSongs(
 		artistSlugOrId,
-		{ index: 0, pageSize: 7 },
+		{ index: 0, pageSize: 11 },
 		{ sortBy: 'playCount', order: 'desc' }
 	),
 });
@@ -167,12 +168,11 @@ const ArtistPage = (
 						</Button>
 					</Link>}
 				</Grid>
-				<Grid item container spacing={2}
-					sx={{ display: 'flex', flexGrow: 1 }}>
-					{latestAlbums.data.items.slice(0, 6).map((album) =>
-						<Grid key={album.id} item xs={6} sm={4} md={2} lg={2}>
-							<AlbumTile album={{ ...album, artist: artist.data }}/>
-						</Grid>)}
+				<Grid item sx={{ overflowX: 'clip', width: '100%' }}>
+					<TileRow tiles={
+						latestAlbums.data.items.slice(0, 10).map((album) =>
+							<AlbumTile key={album.id} album={{ ...album, artist: artist.data }}/>)
+					}/>
 				</Grid>
 			</>
 			}
