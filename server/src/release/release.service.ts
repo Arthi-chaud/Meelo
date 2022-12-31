@@ -1,5 +1,5 @@
 import {
-	Inject, Injectable, Logger, forwardRef
+	Inject, Injectable, forwardRef
 } from '@nestjs/common';
 import AlbumService from 'src/album/album.service';
 import Slug from 'src/slug/slug';
@@ -33,6 +33,7 @@ import mime from 'mime';
 import compilationAlbumArtistKeyword from 'src/utils/compilation';
 import { parseIdentifierSlugs } from 'src/identifier/identifier.parse-slugs';
 import Identifier from 'src/identifier/models/identifier';
+import Logger from 'src/logger/logger';
 
 @Injectable()
 export default class ReleaseService extends RepositoryService<
@@ -50,6 +51,7 @@ export default class ReleaseService extends RepositoryService<
 	Prisma.ReleaseWhereUniqueInput,
 	Prisma.ReleaseOrderByWithRelationInput
 > {
+	private readonly logger = new Logger(ReleaseService.name);
 	constructor(
 		protected prismaService: PrismaService,
 		@Inject(forwardRef(() => AlbumService))
@@ -310,7 +312,7 @@ export default class ReleaseService extends RepositoryService<
 		} catch {
 			return release;
 		}
-		Logger.warn(`Release '${release.slug}' deleted`);
+		this.logger.warn(`Release '${release.slug}' deleted`);
 		if (release.master) {
 			await this.albumService.updateAlbumMaster({ id: release.albumId });
 		}

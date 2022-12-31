@@ -1,10 +1,12 @@
 import {
-	INestApplication, Injectable, Logger, OnModuleInit
+	INestApplication, Injectable, OnModuleInit
 } from '@nestjs/common';
 import { PrismaClient } from '@prisma/client';
+import Logger from 'src/logger/logger';
 
 @Injectable()
 export default class PrismaService extends PrismaClient implements OnModuleInit {
+	private readonly logger = new Logger(PrismaService.name);
 	async onModuleInit() {
 		await this.$connect();
 		// if (process.env.NODE_ENV === 'development') {
@@ -19,7 +21,7 @@ export default class PrismaService extends PrismaClient implements OnModuleInit 
 	}
 
 	protected async flushDatabase() {
-		Logger.warn("Flushing database");
+		this.logger.warn("Flushing database");
 		const tablenames = await this.$queryRaw<Array<{ tablename: string }>>`SELECT tablename FROM pg_tables WHERE schemaname='public'`;
 
 		for (const { tablename } of tablenames) {
@@ -27,7 +29,7 @@ export default class PrismaService extends PrismaClient implements OnModuleInit 
 				try {
 					await this.$executeRawUnsafe(`TRUNCATE TABLE "public"."${tablename}" CASCADE;`);
 				} catch (error) {
-					Logger.error(`Flushing table '${tablename}' failed`);
+					this.logger.error(`Flushing table '${tablename}' failed`);
 				}
 			}
 		}

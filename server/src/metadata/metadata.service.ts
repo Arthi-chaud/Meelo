@@ -1,5 +1,5 @@
 import {
-	Inject, Injectable, Logger, forwardRef
+	Inject, Injectable, forwardRef
 } from '@nestjs/common';
 import FileManagerService from 'src/file-manager/file-manager.service';
 import type Metadata from './models/metadata';
@@ -21,10 +21,12 @@ import * as fs from 'fs';
 import type FileQueryParameters from 'src/file/models/file.query-parameters';
 import FileService from 'src/file/file.service';
 import { File, Track } from 'src/prisma/models';
+import Logger from 'src/logger/logger';
 
 @Injectable()
 export default class MetadataService {
 	public readonly metadataFolderPath;
+	private readonly logger = new Logger(MetadataService.name);
 	constructor(
 		@Inject(forwardRef(() => TrackService))
 		private trackService: TrackService,
@@ -317,11 +319,11 @@ export default class MetadataService {
 					)
 				])
 				.output(tmpOutput)
-				.on('end', () => Logger.error(`Applying metadata on file '${filePath}' successed`))
+				.on('end', () => this.logger.error(`Applying metadata on file '${filePath}' successed`))
 				.save(tmpOutput);
 			fs.rename(tmpOutput, filePath, () => {});
 		} catch {
-			Logger.error(`Applying metadata on file '${filePath}' failed`);
+			this.logger.error(`Applying metadata on file '${filePath}' failed`);
 		}
 	}
 

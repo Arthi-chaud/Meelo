@@ -1,5 +1,5 @@
 import {
-	Inject, Injectable, Logger, forwardRef
+	Inject, Injectable, forwardRef
 } from '@nestjs/common';
 import PrismaService from 'src/prisma/prisma.service';
 import { Prisma, TrackType } from '@prisma/client';
@@ -27,6 +27,7 @@ import { Track, TrackWithRelations } from 'src/prisma/models';
 import { TrackResponse } from './models/track.response';
 import SortingParameter from 'src/sort/models/sorting-parameter';
 import Identifier from 'src/identifier/models/identifier';
+import Logger from 'src/logger/logger';
 
 @Injectable()
 export default class TrackService extends RepositoryService<
@@ -44,6 +45,7 @@ export default class TrackService extends RepositoryService<
 	Prisma.TrackWhereUniqueInput,
 	Prisma.TrackOrderByWithRelationInput
 >{
+	private readonly logger = new Logger(TrackService.name);
 	constructor(
 		@Inject(forwardRef(() => SongService))
 		private songService: SongService,
@@ -372,7 +374,7 @@ export default class TrackService extends RepositoryService<
 		try {
 			const deletedTrack = await super.delete(where);
 
-			Logger.warn(`Track '${deletedTrack.name}' deleted`);
+			this.logger.warn(`Track '${deletedTrack.name}' deleted`);
 			if (deletedTrack.master) {
 				await this.songService.updateSongMaster({ id: deletedTrack.songId });
 			}

@@ -89,6 +89,11 @@
 		"no-shadow": "error",
 		"no-multi-spaces": "warn",
 		"semi": "warn",
-		"function-paren-newline": ["error", "consistent"]
+		"function-paren-newline": ["error", "consistent"],
+		"no-restricted-imports": ["error", {
+			"name": "@nestjs/common",
+			"importNames": ["Logger"],
+			"message": "Use Custom Logger to inject from 'src/logger/logger'"
+		}]
 	}
 }
