@@ -39,9 +39,12 @@ describe('Settings Controller', () => {
 		return request(app.getHttpServer())
 			.get('/settings')
 			.expect(200)
-			.expect(JSON.parse(
-				fs.readFileSync('test/assets/settings.json').toString()
-			));
+			.expect({
+				...JSON.parse(
+					fs.readFileSync('test/assets/settings.json').toString()
+				),
+				meeloFolder: 'test/assets/'
+			});
 	});
 
 	it('/GET /settings/reload', () => {

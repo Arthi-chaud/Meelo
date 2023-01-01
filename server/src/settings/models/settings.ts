@@ -21,6 +21,12 @@ class MetadataSettings {
  */
 export default class Settings {
 	/**
+	 * The folder where `settings.json` and metadata are stored
+	 */
+	@ApiProperty()
+	meeloFolder: string;
+
+	/**
 	 * The base folder where every libraries must be located
 	 */
 	@ApiProperty()

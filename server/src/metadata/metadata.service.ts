@@ -21,6 +21,7 @@ import * as fs from 'fs';
 import type FileQueryParameters from 'src/file/models/file.query-parameters';
 import FileService from 'src/file/file.service';
 import { File, Track } from 'src/prisma/models';
+import { join } from 'path';
 
 @Injectable()
 export default class MetadataService {
@@ -43,7 +44,10 @@ export default class MetadataService {
 		private fileService: FileService,
 		private fileManagerService: FileManagerService
 	) {
-		this.metadataFolderPath = `${this.fileManagerService.configFolderPath}/metadata`;
+		this.metadataFolderPath = join(
+			this.settingsService.settingsValues.meeloFolder,
+			'metadata'
+		);
 	}
 
 	/**

@@ -22,10 +22,6 @@ export default class FileManagerService {
 		}
 	}
 
-	get configFolderPath() {
-		return '/meelo';
-	}
-
 	fileExists(filePath: string): boolean {
 		return fs.existsSync(filePath);
 	}

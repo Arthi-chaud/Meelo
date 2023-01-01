@@ -42,6 +42,7 @@ describe('Settings Service', () => {
 			settingsService.loadFromFile();
 			expect(settingsService.settingsValues).toStrictEqual(<Settings>{
 				dataFolder: '/var/lib/meelo',
+				meeloFolder: 'test/assets/',
 				trackRegex: ['regex1', 'regex2'],
 				metadata: {
 					source: "embedded",
