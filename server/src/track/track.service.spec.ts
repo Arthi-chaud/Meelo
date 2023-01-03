@@ -7,7 +7,6 @@ import AlbumService from "src/album/album.service";
 import ArtistModule from "src/artist/artist.module";
 import ArtistService from "src/artist/artist.service";
 import FileManagerModule from "src/file-manager/file-manager.module";
-import FileManagerService from "src/file-manager/file-manager.service";
 import { FileNotFoundFromIDException } from "src/file/file.exceptions";
 import FileModule from "src/file/file.module";
 import FileService from "src/file/file.service";
@@ -23,7 +22,6 @@ import SettingsService from "src/settings/settings.service";
 import { SongNotFoundByIdException } from "src/song/song.exceptions";
 import SongModule from "src/song/song.module";
 import SongService from "src/song/song.service";
-import { FakeFileManagerService } from "test/fake-file-manager.module";
 import { TrackAlreadyExistsException, TrackNotFoundByIdException } from "./track.exceptions";
 import TrackModule from "./track.module";
 import TrackService from "./track.service";
@@ -32,6 +30,7 @@ import GenreModule from "src/genre/genre.module";
 import TestPrismaService from "test/test-prisma.service";
 import { LyricsModule } from "src/lyrics/lyrics.module";
 import LibraryModule from "src/library/library.module";
+import FileManagerService from "src/file-manager/file-manager.service";
 
 describe('Track Service', () => {
 	let trackService: TrackService;
@@ -50,8 +49,7 @@ describe('Track Service', () => {
 		const module: TestingModule = await createTestingModule({
 			imports: [PrismaModule, FileModule, MetadataModule, IllustrationModule,TrackModule, ArtistModule, SongModule, AlbumModule, ReleaseModule, FileManagerModule, SettingsModule, GenreModule, LyricsModule, LibraryModule],
 			providers: [PrismaService,TrackService, ArtistService, SongService, AlbumService, ReleaseService, FileService, FileManagerService, SettingsService],
-		}).overrideProvider(FileManagerService).useClass(FakeFileManagerService)
-		.overrideProvider(PrismaService).useClass(TestPrismaService).compile();
+		}).overrideProvider(PrismaService).useClass(TestPrismaService).compile();
 		await module.get<PrismaService>(PrismaService).onModuleInit();
 		trackService = module.get<TrackService>(TrackService);
 		dummyRepository = module.get(PrismaService);

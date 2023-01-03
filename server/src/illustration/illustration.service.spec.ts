@@ -4,14 +4,12 @@ import type { TestingModule } from "@nestjs/testing";
 import AlbumService from "src/album/album.service";
 import ArtistModule from "src/artist/artist.module";
 import FileManagerModule from "src/file-manager/file-manager.module";
-import FileManagerService from "src/file-manager/file-manager.service";
 import MetadataModule from "src/metadata/metadata.module";
 import PrismaModule from "src/prisma/prisma.module";
 import PrismaService from "src/prisma/prisma.service";
 import ReleaseService from "src/release/release.service";
 import SettingsModule from "src/settings/settings.module";
 import Slug from "src/slug/slug";
-import { FakeFileManagerService } from "test/fake-file-manager.module";
 import IllustrationService from "./illustration.service";
 import IllustrationModule from "./illustration.module";
 import * as fs from 'fs';
@@ -31,8 +29,7 @@ describe('Illustration Service', () => {
 	beforeAll(async () => {
 		const module: TestingModule = await createTestingModule({
 			imports: [HttpModule, FileManagerModule, IllustrationModule, PrismaModule, ArtistModule, MetadataModule, SettingsModule],
-		}).overrideProvider(FileManagerService).useClass(FakeFileManagerService)
-		.overrideProvider(PrismaService).useClass(TestPrismaService).compile();
+		}).overrideProvider(PrismaService).useClass(TestPrismaService).compile();
 		module.get(MetadataService).onModuleInit();
 		illustrationService = module.get<IllustrationService>(IllustrationService);
 		illustrationService.onModuleInit();

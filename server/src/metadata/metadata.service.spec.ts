@@ -2,14 +2,12 @@ import { TrackType } from "@prisma/client";
 import AlbumModule from "src/album/album.module";
 import ArtistModule from "src/artist/artist.module";
 import FileManagerModule from "src/file-manager/file-manager.module";
-import FileManagerService from "src/file-manager/file-manager.service";
 import FileModule from "src/file/file.module";
 import GenreModule from "src/genre/genre.module";
 import ReleaseModule from "src/release/release.module";
 import SettingsModule from "src/settings/settings.module";
 import SongModule from "src/song/song.module";
 import TrackModule from "src/track/track.module";
-import { FakeFileManagerService } from "test/fake-file-manager.module";
 import { createTestingModule } from "test/test-module";
 import { PathParsingException } from "./metadata.exceptions";
 import MetadataModule from "./metadata.module";
@@ -23,7 +21,7 @@ describe('Metadata Service', () => {
 		const moduleRef = await createTestingModule({
 			imports: [MetadataModule, TrackModule, SongModule, AlbumModule, ReleaseModule, SettingsModule, FileManagerModule, GenreModule, ArtistModule, GenreModule, FileModule],
 			providers: [MetadataService],
-		}).overrideProvider(FileManagerService).useClass(FakeFileManagerService).compile();
+		}).compile();
 		metadataService = moduleRef.get<MetadataService>(MetadataService);
 		metadataService.onModuleInit();
 	});

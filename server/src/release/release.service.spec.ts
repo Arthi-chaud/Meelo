@@ -6,11 +6,9 @@ import AlbumModule from "src/album/album.module";
 import AlbumService from "src/album/album.service";
 import ArtistModule from "src/artist/artist.module";
 import ArtistService from "src/artist/artist.service";
-import FileManagerService from "src/file-manager/file-manager.service";
 import PrismaModule from "src/prisma/prisma.module";
 import PrismaService from "src/prisma/prisma.service";
 import Slug from "src/slug/slug";
-import { FakeFileManagerService } from "test/fake-file-manager.module";
 import { ReleaseNotFoundException, ReleaseNotFoundFromIDException } from "./release.exceptions";
 import ReleaseService from "./release.service";
 import IllustrationModule from "src/illustration/illustration.module";
@@ -40,8 +38,7 @@ describe('Release Service', () => {
 		const module: TestingModule = await createTestingModule({
 			imports: [PrismaModule, AlbumModule, ArtistModule, TrackModule, IllustrationModule, SongModule, MetadataModule, GenreModule, FileModule],
 			providers: [ReleaseService, AlbumService, ArtistService],
-		}).overrideProvider(FileManagerService).useClass(FakeFileManagerService)
-		.overrideProvider(PrismaService).useClass(TestPrismaService).compile();
+		}).overrideProvider(PrismaService).useClass(TestPrismaService).compile();
 		module.get(MetadataService).onModuleInit();
 		module.get(IllustrationService).onModuleInit();
 		releaseService = module.get<ReleaseService>(ReleaseService);

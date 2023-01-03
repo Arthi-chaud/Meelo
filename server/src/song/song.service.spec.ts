@@ -4,8 +4,6 @@ import SongService from "src/song/song.service";
 import ArtistService from "src/artist/artist.service";
 import ArtistModule from "src/artist/artist.module";
 import PrismaModule from "src/prisma/prisma.module";
-import FileManagerService from "src/file-manager/file-manager.service";
-import { FakeFileManagerService } from "test/fake-file-manager.module";
 import PrismaService from "src/prisma/prisma.service";
 import type { Song } from "src/prisma/models";
 import Slug from "src/slug/slug";
@@ -31,8 +29,7 @@ describe('Song Service', () => {
 		const module: TestingModule = await createTestingModule({
 			imports: [PrismaModule, ArtistModule, TrackModule, AlbumModule, IllustrationModule, GenreModule, LyricsModule],
 			providers: [SongService, ArtistService, PrismaService],
-		}).overrideProvider(FileManagerService).useClass(FakeFileManagerService)
-		.overrideProvider(PrismaService).useClass(TestPrismaService).compile();
+		}).overrideProvider(PrismaService).useClass(TestPrismaService).compile();
 		dummyRepository = module.get(PrismaService);
 		songService = module.get(SongService);
 		artistService = module.get(ArtistService);

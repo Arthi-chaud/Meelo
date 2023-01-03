@@ -4,7 +4,6 @@ import { TestingModule } from "@nestjs/testing";
 import AlbumModule from "src/album/album.module";
 import ArtistModule from "src/artist/artist.module";
 import FileManagerModule from "src/file-manager/file-manager.module";
-import FileManagerService from "src/file-manager/file-manager.service";
 import GenreModule from "src/genre/genre.module";
 import IllustrationModule from "src/illustration/illustration.module";
 import MetadataModule from "src/metadata/metadata.module";
@@ -17,7 +16,6 @@ import SongModule from "src/song/song.module";
 import TrackModule from "src/track/track.module";
 import UserModule from "src/user/user.module";
 import UserService from "src/user/user.service";
-import { FakeFileManagerService } from "test/fake-file-manager.module";
 import { createTestingModule } from "test/test-module";
 import TestPrismaService from "test/test-prisma.service";
 import JwtAuthGuard from "./jwt/jwt-auth.guard";
@@ -58,8 +56,7 @@ describe('Authentication Controller & Role Management', () => {
 	beforeAll(async () => {
 		const module: TestingModule = await createTestingModule({
 			imports: [TestAuthenticationModule],
-		}).overrideProvider(PrismaService).useClass(TestPrismaService)
-		.overrideProvider(FileManagerService).useClass(FakeFileManagerService).compile();
+		}).overrideProvider(PrismaService).useClass(TestPrismaService).compile();
 		(module as any).configure = (consumer: MiddlewareConsumer) => {
 			consumer
 				.apply(JwtCookieMiddleware)

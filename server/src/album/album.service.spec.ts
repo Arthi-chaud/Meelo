@@ -6,8 +6,6 @@ import type { TestingModule } from "@nestjs/testing";
 import ArtistModule from "src/artist/artist.module";
 import PrismaModule from "src/prisma/prisma.module";
 import AlbumModule from "./album.module";
-import FileManagerService from "src/file-manager/file-manager.service";
-import { FakeFileManagerService } from "test/fake-file-manager.module";
 import PrismaService from "src/prisma/prisma.service";
 import { AlbumAlreadyExistsException, AlbumAlreadyExistsExceptionWithArtistID, AlbumNotFoundFromIDException } from "./album.exceptions";
 import Slug from "src/slug/slug";
@@ -32,8 +30,7 @@ describe('Album Service', () => {
 		const module: TestingModule = await createTestingModule({
 			imports: [AlbumModule, ArtistModule, PrismaModule, SongModule, IllustrationModule, GenreModule],
 			providers: [ArtistService],
-		}).overrideProvider(FileManagerService).useClass(FakeFileManagerService)
-		.overrideProvider(PrismaService).useClass(TestPrismaService).compile();
+		}).overrideProvider(PrismaService).useClass(TestPrismaService).compile();
 		module.get(MetadataService).onModuleInit();
 		module.get(IllustrationService).onModuleInit();
 		dummyRepository = module.get(PrismaService);

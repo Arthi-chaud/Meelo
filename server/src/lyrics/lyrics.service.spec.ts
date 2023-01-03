@@ -2,7 +2,6 @@ import type { TestingModule } from "@nestjs/testing";
 import type { Lyrics } from "src/prisma/models";
 import AlbumModule from "src/album/album.module";
 import FileManagerModule from "src/file-manager/file-manager.module";
-import FileManagerService from "src/file-manager/file-manager.service";
 import FileModule from "src/file/file.module";
 import GenreModule from "src/genre/genre.module";
 import PrismaModule from "src/prisma/prisma.module";
@@ -12,7 +11,6 @@ import SettingsModule from "src/settings/settings.module";
 import Slug from "src/slug/slug";
 import { SongNotFoundByIdException } from "src/song/song.exceptions";
 import SongModule from "src/song/song.module";
-import { FakeFileManagerService } from "test/fake-file-manager.module";
 import { createTestingModule } from "test/test-module";
 import TestPrismaService from "test/test-prisma.service";
 import { LyricsAlreadyExistsExceptions, LyricsNotFoundByIDException, LyricsNotFoundBySongException, NoLyricsFoundException } from "./lyrics.exceptions";
@@ -28,8 +26,7 @@ describe('Lyrics Service', () => {
 		const module: TestingModule = await createTestingModule({
 			imports: [PrismaModule, SongModule, AlbumModule, ReleaseModule, FileModule, FileManagerModule, SettingsModule, GenreModule, LyricsModule],
 			providers: [LyricsService],
-		}).overrideProvider(FileManagerService).useClass(FakeFileManagerService)
-		.overrideProvider(PrismaService).useClass(TestPrismaService).compile();
+		}).overrideProvider(PrismaService).useClass(TestPrismaService).compile();
 		await module.get<PrismaService>(PrismaService).onModuleInit();
 		dummyRepository = module.get(PrismaService);
 		lyricsService = module.get(LyricsService);
