@@ -1,5 +1,5 @@
 import {
-	Inject, Injectable, Logger, forwardRef
+	Inject, Injectable, forwardRef
 } from '@nestjs/common';
 import type LibraryQueryParameters from 'src/library/models/library.query-parameters';
 import type { File, Library } from 'src/prisma/models';
@@ -11,9 +11,11 @@ import MetadataService from 'src/metadata/metadata.service';
 import IllustrationService from 'src/illustration/illustration.service';
 import { LyricsService } from 'src/lyrics/lyrics.service';
 import LibraryService from 'src/library/library.service';
+import Logger from 'src/logger/logger';
 
 @Injectable()
 export default class TasksService {
+	private readonly logger = new Logger(TasksService.name);
 	constructor(
 		private fileManagerService: FileManagerService,
 		@Inject(forwardRef(() => FileService))
@@ -35,7 +37,7 @@ export default class TasksService {
 	 * @returns The array of newly registered Files
 	 */
 	async registerNewFiles(parentLibrary: Library): Promise<File[]> {
-		Logger.log(`'${parentLibrary.slug}' library: Registration of new files`);
+		this.logger.log(`'${parentLibrary.slug}' library: Registration of new files`);
 		const unfilteredCandidates = this.fileManagerService.getCandidateFilesInLibraryFolder(
 			parentLibrary.path
 		);
@@ -52,11 +54,11 @@ export default class TasksService {
 			try {
 				newlyRegistered.push(await this.registerFile(candidate, parentLibrary));
 			} catch (error){
-				Logger.error(error.message);
+				this.logger.error(error.message);
 				continue;
 			}
 		}
-		Logger.log(`${parentLibrary.slug} library: ${newlyRegistered.length} new files registered`);
+		this.logger.log(`${parentLibrary.slug} library: ${newlyRegistered.length} new files registered`);
 		return newlyRegistered;
 	}
 
@@ -67,7 +69,7 @@ export default class TasksService {
 	 * @returns a registered File entity
 	 */
 	async registerFile(filePath: string, parentLibrary: Library): Promise<File> {
-		Logger.log(`${parentLibrary.slug} library: Registration of ${filePath}`);
+		this.logger.log(`${parentLibrary.slug} library: Registration of ${filePath}`);
 		const fullFilePath = `${this.fileManagerService.getLibraryFullPath(parentLibrary)}/${filePath}`;
 		const fileMetadata = await this.metadataService.parseMetadata(fullFilePath);
 		const registeredFile = await this.fileService.registerFile(filePath, parentLibrary);
@@ -95,7 +97,7 @@ export default class TasksService {
 				});
 		} catch (err) {
 			await this.fileService.delete({ id: registeredFile.id });
-			Logger.warn(`${parentLibrary.slug} library: Registration of ${filePath} failed because of bad metadata`);
+			this.logger.warn(`${parentLibrary.slug} library: Registration of ${filePath} failed because of bad metadata`);
 			throw err;
 		}
 		return registeredFile;
@@ -109,22 +111,22 @@ export default class TasksService {
 	async unregisterUnavailableFiles(where: LibraryQueryParameters.WhereInput): Promise<File[]> {
 		const parentLibrary = await this.libraryService.get(where, { files: true });
 
-		Logger.log(`'Cleaning ${parentLibrary.slug}' library`);
+		this.logger.log(`'Cleaning ${parentLibrary.slug}' library`);
 		const libraryPath = `${this.fileManagerService.getLibraryFullPath(parentLibrary)}`;
 		const registeredFiles: File[] = parentLibrary.files;
 		const unavailableFiles: File[] = registeredFiles.filter(
 			(file) => !this.fileManagerService.fileExists(`${libraryPath}/${file.path}`)
 		);
 
-		Logger.warn(`'${parentLibrary.slug}' library: Removing ${unavailableFiles.length} entries`);
+		this.logger.warn(`'${parentLibrary.slug}' library: Removing ${unavailableFiles.length} entries`);
 		try {
 			for (const unavailableFile of unavailableFiles) {
 				await this.unregisterFile({ id: unavailableFile.id });
 			}
-			Logger.warn(`'${parentLibrary.slug}' library: Removed ${unavailableFiles.length} entries`);
+			this.logger.warn(`'${parentLibrary.slug}' library: Removed ${unavailableFiles.length} entries`);
 		} catch (error) {
-			Logger.error(`'${parentLibrary.slug}' library: Cleaning failed:`);
-			Logger.error(error);
+			this.logger.error(`'${parentLibrary.slug}' library: Cleaning failed:`);
+			this.logger.error(error);
 		}
 		return unavailableFiles;
 	}
@@ -139,7 +141,7 @@ export default class TasksService {
 		const libraryFullPath = this.fileManagerService.getLibraryFullPath(library);
 		const updatedFiles: File[] = [];
 
-		Logger.log(`'${library.slug}' library: Refresh files metadata`);
+		this.logger.log(`'${library.slug}' library: Refresh files metadata`);
 		await Promise.all(
 			library.files.map(async (file) => {
 				const fullFilePath = `${libraryFullPath}/${file.path}`;
@@ -161,11 +163,11 @@ export default class TasksService {
 			})
 		);
 		for (const file of updatedFiles) {
-			Logger.log(`'${library.slug}' library: Refreshing '${file.path}' metadata`);
+			this.logger.log(`'${library.slug}' library: Refreshing '${file.path}' metadata`);
 			await this.unregisterFile({ id: file.id });
 			await this.registerFile(file.path, library);
 		}
-		Logger.log(`'${library.slug}' library: Refreshed ${updatedFiles.length} files metadata`);
+		this.logger.log(`'${library.slug}' library: Refreshed ${updatedFiles.length} files metadata`);
 		return updatedFiles;
 	}
 

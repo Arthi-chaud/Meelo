@@ -1,5 +1,5 @@
 import {
-	Inject, Injectable, Logger, forwardRef
+	Inject, Injectable, forwardRef
 } from '@nestjs/common';
 import ArtistService from 'src/artist/artist.service';
 import Slug from 'src/slug/slug';
@@ -25,6 +25,7 @@ import {
 import { SongResponse } from './models/song.response';
 import { parseIdentifierSlugs } from 'src/identifier/identifier.parse-slugs';
 import Identifier from 'src/identifier/models/identifier';
+import Logger from 'src/logger/logger';
 
 @Injectable()
 export default class SongService extends RepositoryService<
@@ -42,6 +43,7 @@ export default class SongService extends RepositoryService<
 	Prisma.SongWhereUniqueInput,
 	Prisma.SongOrderByWithRelationInput
 > {
+	private readonly logger = new Logger(SongService.name);
 	constructor(
 		private prismaService: PrismaService,
 		@Inject(forwardRef(() => ArtistService))
@@ -308,7 +310,7 @@ export default class SongService extends RepositoryService<
 		} catch {
 			return song;
 		}
-		Logger.warn(`Song '${song.slug}' deleted`);
+		this.logger.warn(`Song '${song.slug}' deleted`);
 		await this.artistService.deleteArtistIfEmpty({ id: song.artistId });
 		await Promise.all(
 			song.genres.map((genre) => this.genreService.deleteIfEmpty({ id: genre.id }))

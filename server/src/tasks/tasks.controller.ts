@@ -1,6 +1,4 @@
-import {
-	Controller, Get, Logger
-} from '@nestjs/common';
+import { Controller, Get } from '@nestjs/common';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import LibraryService from 'src/library/library.service';
 import type TaskResponse from './models/task.response';
@@ -9,11 +7,13 @@ import { Timeout } from '@nestjs/schedule';
 import Admin from 'src/roles/admin.decorator';
 import IdentifierParam from 'src/identifier/identifier.pipe';
 import LibraryQueryParameters from 'src/library/models/library.query-parameters';
+import Logger from 'src/logger/logger';
 
 @Admin()
 @ApiTags('Tasks')
 @Controller('tasks')
 export default class TasksController {
+	private readonly logger = new Logger(TasksController.name);
 	constructor(
 		private libraryService: LibraryService,
 		private tasksService: TasksService,
@@ -29,7 +29,7 @@ export default class TasksController {
 
 		libraries.forEach((library) => this.tasksService
 			.registerNewFiles(library)
-			.catch((error) => Logger.error(error)));
+			.catch((error) => this.logger.error(error)));
 		return {
 			status: `Scanning ${libraries.length} libraries`
 		};
@@ -47,7 +47,7 @@ export default class TasksController {
 
 		this.tasksService
 			.registerNewFiles(library)
-			.catch((error) => Logger.error(error));
+			.catch((error) => this.logger.error(error));
 		return {
 			status: `Scanning library '${library.slug}'`
 		};
@@ -62,7 +62,7 @@ export default class TasksController {
 
 		libraries.forEach((library) => this.tasksService
 			.unregisterUnavailableFiles({ id: library.id })
-			.catch((error) => Logger.error(error)));
+			.catch((error) => this.logger.error(error)));
 		return {
 			status: `Cleanning ${libraries.length} libraries`
 		};
@@ -80,7 +80,7 @@ export default class TasksController {
 
 		this.tasksService
 			.unregisterUnavailableFiles(where)
-			.catch((error) => Logger.error(error));
+			.catch((error) => this.logger.error(error));
 		return {
 			status: `Cleaning library '${library.slug}'`
 		};
@@ -95,7 +95,7 @@ export default class TasksController {
 
 		libraries.forEach((library) => this.tasksService
 			.resyncAllMetadata({ id: library.id })
-			.catch((error) => Logger.error(error)));
+			.catch((error) => this.logger.error(error)));
 		return {
 			status: `Refreshing ${libraries.length} libraries`
 		};
@@ -113,7 +113,7 @@ export default class TasksController {
 
 		this.tasksService
 			.resyncAllMetadata(where)
-			.catch((error) => Logger.error(error));
+			.catch((error) => this.logger.error(error));
 		return {
 			status: `Refreshing metadata of library '${library.slug}'`
 		};

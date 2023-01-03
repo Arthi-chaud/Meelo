@@ -1,5 +1,5 @@
 import {
-	Inject, Injectable, Logger, forwardRef
+	Inject, Injectable, forwardRef
 } from '@nestjs/common';
 import PrismaService from 'src/prisma/prisma.service';
 import Slug from 'src/slug/slug';
@@ -19,6 +19,7 @@ import { GenreResponse } from './models/genre.response';
 import SortingParameter from 'src/sort/models/sorting-parameter';
 import { parseIdentifierSlugs } from 'src/identifier/identifier.parse-slugs';
 import Identifier from 'src/identifier/models/identifier';
+import Logger from 'src/logger/logger';
 
 @Injectable()
 export default class GenreService extends RepositoryService<
@@ -36,6 +37,7 @@ export default class GenreService extends RepositoryService<
 	Prisma.GenreWhereUniqueInput,
 	Prisma.GenreOrderByWithRelationInput
 > {
+	private readonly logger = new Logger(GenreService.name);
 	constructor(
 		prismaService: PrismaService,
 		@Inject(forwardRef(() => SongService))
@@ -145,7 +147,7 @@ export default class GenreService extends RepositoryService<
 	async delete(where: GenreQueryParameters.DeleteInput): Promise<Genre> {
 		const deleted = await super.delete(where);
 
-		Logger.warn(`Genre '${deleted.slug}' deleted`);
+		this.logger.warn(`Genre '${deleted.slug}' deleted`);
 		return deleted;
 	}
 

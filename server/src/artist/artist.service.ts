@@ -1,5 +1,5 @@
 import {
-	Inject, Injectable, Logger, forwardRef
+	Inject, Injectable, forwardRef
 } from '@nestjs/common';
 import Slug from 'src/slug/slug';
 import {
@@ -28,6 +28,7 @@ import { IllustrationPath } from 'src/illustration/models/illustration-path.mode
 import compilationAlbumArtistKeyword from 'src/utils/compilation';
 import { parseIdentifierSlugs } from 'src/identifier/identifier.parse-slugs';
 import Identifier from 'src/identifier/models/identifier';
+import Logger from 'src/logger/logger';
 
 @Injectable()
 export default class ArtistService extends RepositoryService<
@@ -45,6 +46,7 @@ export default class ArtistService extends RepositoryService<
 	Prisma.ArtistWhereUniqueInput,
 	Prisma.ArtistOrderByWithRelationInput
 > {
+	private readonly logger = new Logger(ArtistService.name);
 	constructor(
 		private prismaService: PrismaService,
 		@Inject(forwardRef(() => SongService))
@@ -224,7 +226,7 @@ export default class ArtistService extends RepositoryService<
 		} catch {
 			return artist;
 		}
-		Logger.warn(`Artist '${artist.slug}' deleted`);
+		this.logger.warn(`Artist '${artist.slug}' deleted`);
 		try {
 			const artistIllustrationFolder = this.illustrationService
 				.buildArtistIllustrationFolderPath(new Slug(artist.slug));

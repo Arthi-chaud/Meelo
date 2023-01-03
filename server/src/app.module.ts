@@ -28,6 +28,7 @@ import RolesGuard from './roles/roles.guard';
 import JwtCookieMiddleware from './authentication/jwt/jwt-middleware';
 import { ServeStaticModule } from '@nestjs/serve-static';
 import { join } from 'path';
+import LoggerModule from './logger/logger.module';
 
 @Module({
 	imports: [
@@ -53,7 +54,8 @@ import { join } from 'path';
 		LyricsModule,
 		TasksModule,
 		AuthenticationModule,
-		UserModule
+		UserModule,
+		LoggerModule
 	],
 	controllers: [AppController],
 	providers: [
