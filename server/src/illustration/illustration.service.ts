@@ -19,7 +19,6 @@ import type { IllustrationPath } from './models/illustration-path.model';
 import Jimp from 'jimp';
 import AlbumService from 'src/album/album.service';
 import { FileDoesNotExistException } from 'src/file-manager/file-manager.exceptions';
-import { ModuleRef } from '@nestjs/core';
 import compilationAlbumArtistKeyword from 'src/utils/compilation';
 import Ffmpeg from 'fluent-ffmpeg';
 import type FileQueryParameters from 'src/file/models/file.query-parameters';
@@ -36,8 +35,9 @@ type IllustrationExtractStatus = 'extracted' | 'error' | 'already-extracted' | '
 @Injectable()
 export default class IllustrationService implements OnModuleInit {
 	public illustrationFolderPath: string;
-	private metadataService: MetadataService;
+
 	private readonly logger = new Logger(IllustrationService.name);
+
 	constructor(
 		@Inject(forwardRef(() => ReleaseService))
 		private releaseService: ReleaseService,
@@ -50,12 +50,12 @@ export default class IllustrationService implements OnModuleInit {
 		@Inject(forwardRef(() => SettingsService))
 		private settingsService: SettingsService,
 		private fileManagerService: FileManagerService,
-		private moduleRef: ModuleRef
+		@Inject(forwardRef(() => MetadataService))
+		private metadataService: MetadataService,
 	) {	}
 
 	onModuleInit() {
-		this.metadataService = this.moduleRef.get(MetadataService, { strict: false });
-		this.illustrationFolderPath = this.metadataService.metadataFolderPath;
+		this.illustrationFolderPath = this.metadataService.folderPath;
 	}
 
 	buildCompilationIllustrationFolderPath(): string {

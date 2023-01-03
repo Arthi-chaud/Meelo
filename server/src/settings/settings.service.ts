@@ -4,11 +4,13 @@ import {
 import FileManagerService from 'src/file-manager/file-manager.service';
 import Settings, { metadataOrderValue, metadataSourceValue } from './models/settings';
 import {
+	InvalidMeeloDirVarException,
 	InvalidSettingsFileException,
 	InvalidSettingsTypeException,
 	MissingSettingsException,
 	SettingsFileNotFoundException
 } from './settings.exception';
+import { join } from 'path';
 
 @Injectable()
 export default class SettingsService {
@@ -19,7 +21,15 @@ export default class SettingsService {
 		@Inject(forwardRef(() => FileManagerService))
 		private fileManagerService: FileManagerService
 	) {
-		this.configPath = `${this.fileManagerService.configFolderPath}/settings.json`;
+		const meeloDir = process.env.MEELO_DIR;
+
+		if (meeloDir == undefined || !this.fileManagerService.folderExists(meeloDir)) {
+			throw new InvalidMeeloDirVarException(meeloDir);
+		}
+		this.configPath = join(
+			meeloDir,
+			'settings.json'
+		);
 		this.loadFromFile();
 	}
 
@@ -37,7 +47,10 @@ export default class SettingsService {
 			}
 			throw new SettingsFileNotFoundException();
 		}
-		this.settings = this.buildSettings(object);
+		this.settings = {
+			meeloFolder: process.env.MEELO_DIR!,
+			...this.buildSettings(object)
+		};
 		if (this.settings.trackRegex.length < 1) {
 			throw new InvalidSettingsFileException();
 		}
@@ -46,7 +59,7 @@ export default class SettingsService {
 	/**
 	 * Takes a JSON object as input, parses it and build a Settings interface instance
 	 */
-	private buildSettings(object: any): Settings {
+	private buildSettings(object: any): Omit<Settings, 'meeloFolder'> {
 		const settingsFields = {
 			dataFolder: (value: unknown) => typeof value === 'string',
 			trackRegex: (value: unknown) => Array.isArray(value),

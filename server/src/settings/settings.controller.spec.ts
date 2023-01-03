@@ -1,6 +1,5 @@
 import { createTestingModule } from "test/test-module";
 import type { TestingModule } from "@nestjs/testing";
-import { FakeFileManagerService } from 'test/fake-file-manager.module';
 import SettingsController from './settings.controller';
 import SettingsModule from './settings.module';
 import * as fs from 'fs';
@@ -12,14 +11,14 @@ import SetupApp from "test/setup-app";
 
 describe('Settings Controller', () => {
 	let controller: SettingsController;
-	let fileService: FakeFileManagerService;
+	let fileService: FileManagerService;
 	let app: INestApplication;
 
 	beforeAll(async () => {
 		const module: TestingModule = await createTestingModule({
 			imports: [SettingsModule, FileManagerModule],
 			providers: [SettingsController],
-		}).overrideProvider(FileManagerService).useClass(FakeFileManagerService).compile();
+		}).compile();
 
 		fileService = module.get<FileManagerService>(FileManagerService);
 		controller = module.get<SettingsController>(SettingsController);
@@ -39,9 +38,12 @@ describe('Settings Controller', () => {
 		return request(app.getHttpServer())
 			.get('/settings')
 			.expect(200)
-			.expect(JSON.parse(
-				fs.readFileSync('test/assets/settings.json').toString()
-			));
+			.expect({
+				...JSON.parse(
+					fs.readFileSync('test/assets/settings.json').toString()
+				),
+				meeloFolder: 'test/assets/'
+			});
 	});
 
 	it('/GET /settings/reload', () => {

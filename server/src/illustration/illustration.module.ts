@@ -9,11 +9,13 @@ import FileModule from 'src/file/file.module';
 import { IllustrationController } from './illustration.controller';
 import ArtistModule from 'src/artist/artist.module';
 import SettingsModule from 'src/settings/settings.module';
+import MetadataModule from 'src/metadata/metadata.module';
 
 @Module({
 	imports: [
 		FileManagerModule,
 		HttpModule,
+		forwardRef(() => MetadataModule),
 		forwardRef(() => ArtistModule),
 		forwardRef(() => AlbumModule),
 		forwardRef(() => ReleaseModule),

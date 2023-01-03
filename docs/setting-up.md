@@ -94,6 +94,8 @@ POSTGRES_HOST=
 GENIUS_ACCESS_TOKEN=
 # Random String used to sign JWT Tokens
 JWT_SIGNATURE=
+# The path to the `settings.json` file, and the illustration/metadata folder 
+MEELO_DIR=
 # Do not change this
 DATABASE_URL=postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@${POSTGRES_HOST}:5432/${POSTGRES_DB}?schema=public
 ```
