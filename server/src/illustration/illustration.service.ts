@@ -1,6 +1,6 @@
 import sharp from 'sharp';
 import {
-	Inject, Injectable, Logger, OnModuleInit, StreamableFile, forwardRef
+	Inject, Injectable, OnModuleInit, StreamableFile, forwardRef
 } from '@nestjs/common';
 import FileManagerService from 'src/file-manager/file-manager.service';
 import MetadataService from 'src/metadata/metadata.service';
@@ -28,12 +28,16 @@ import { Readable } from 'stream';
 import type { IllustrationDimensionsDto } from './models/illustration-dimensions.dto';
 import SettingsService from 'src/settings/settings.service';
 import glob from 'glob';
+import Logger from 'src/logger/logger';
 
 type IllustrationExtractStatus = 'extracted' | 'error' | 'already-extracted' | 'different-illustration';
 
 @Injectable()
 export default class IllustrationService implements OnModuleInit {
 	public illustrationFolderPath: string;
+
+	private readonly logger = new Logger(IllustrationService.name);
+
 	constructor(
 		@Inject(forwardRef(() => ReleaseService))
 		private releaseService: ReleaseService,
@@ -51,7 +55,7 @@ export default class IllustrationService implements OnModuleInit {
 	) {	}
 
 	onModuleInit() {
-		this.illustrationFolderPath = this.metadataService.foldetPath;
+		this.illustrationFolderPath = this.metadataService.folderPath;
 	}
 
 	buildCompilationIllustrationFolderPath(): string {
@@ -234,7 +238,7 @@ export default class IllustrationService implements OnModuleInit {
 	async extractTrackIllustration(
 		track: Track, fullTrackPath: string
 	): Promise<IllustrationPath | null> {
-		Logger.log(`Extracting illustration from track '${track.name}'`);
+		this.logger.log(`Extracting illustration from track '${track.name}'`);
 		const release: Release = await this.releaseService.get({ id: track.releaseId });
 		const album = await this.albumService.get(
 			{ id: release.albumId },
@@ -265,7 +269,7 @@ export default class IllustrationService implements OnModuleInit {
 				: null);
 
 		if (illustration == null) {
-			Logger.warn("No illustration to extract");
+			this.logger.warn("No illustration to extract");
 			return null;
 		}
 		const illustrationBytes = await (await Jimp.read(illustration))
@@ -280,18 +284,18 @@ export default class IllustrationService implements OnModuleInit {
 				throw new IllustrationNotExtracted('Illustration extraction failed');
 			}
 			if (illustrationExtractionStatus === 'already-extracted') {
-				Logger.log("Illustration was previously extracted");
+				this.logger.log("Illustration was previously extracted");
 				return path;
 			}
 			if (illustrationExtractionStatus === 'extracted') {
-				Logger.log("Illustration extracted successfully");
+				this.logger.log("Illustration extracted successfully");
 				return path;
 			}
 			if (illustrationExtractionStatus === 'different-illustration') {
 				continue;
 			}
 		}
-		Logger.warn("No illustration extracted");
+		this.logger.warn("No illustration extracted");
 		return null;
 	}
 
@@ -370,7 +374,7 @@ export default class IllustrationService implements OnModuleInit {
 		if (this.illustrationExists(trackIllustrationPath)) {
 			this.applyIllustration(releaseIllustrationPath, fullFilePath);
 		} else {
-			Logger.warn(`No illustration was applied to ${fullFilePath}`);
+			this.logger.warn(`No illustration was applied to ${fullFilePath}`);
 		}
 	}
 
@@ -399,7 +403,7 @@ export default class IllustrationService implements OnModuleInit {
 					"-disposition:0 attached_pic"
 				]);
 		} catch {
-			Logger.error(`Applying illustration to '${filePath}' failed`);
+			this.logger.error(`Applying illustration to '${filePath}' failed`);
 		}
 	}
 
@@ -418,9 +422,9 @@ export default class IllustrationService implements OnModuleInit {
 			filename: dir.basename(outPath),
 			folder: dir.dirname(outPath)
 		}).on('error', () => {
-			Logger.error(`Taking a screenshot of '${dir.basename(videoPath)}' failed`);
+			this.logger.error(`Taking a screenshot of '${dir.basename(videoPath)}' failed`);
 		}).on('end', () => {
-			Logger.log(`Taking a screenshot of '${dir.basename(videoPath)}' succeded`);
+			this.logger.log(`Taking a screenshot of '${dir.basename(videoPath)}' succeded`);
 		});
 	}
 
@@ -483,7 +487,7 @@ export default class IllustrationService implements OnModuleInit {
 					.toBuffer()
 					.then((buffer) => new StreamableFile(Readable.from(buffer)));
 			} catch (error) {
-				Logger.error(`Streaming of illustration ${sourceFilePath} failed.`);
+				this.logger.error(`Streaming of illustration ${sourceFilePath} failed.`);
 			}
 		}
 		return new StreamableFile(fs.createReadStream(sourceFilePath));

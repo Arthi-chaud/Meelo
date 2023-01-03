@@ -1,5 +1,5 @@
 import {
-	Inject, Injectable, Logger, forwardRef
+	Inject, Injectable, forwardRef
 } from '@nestjs/common';
 import type { LyricsWithRelations } from 'src/prisma/models';
 import type { MeeloException } from 'src/exceptions/meelo-exception';
@@ -20,6 +20,7 @@ import { Prisma } from '@prisma/client';
 import { LyricsResponse } from './models/lyrics.response';
 import SortingParameter from 'src/sort/models/sorting-parameter';
 import Identifier from 'src/identifier/models/identifier';
+import Logger from 'src/logger/logger';
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const { getLyrics } = require('genius-lyrics-api');
 
@@ -39,6 +40,7 @@ export class LyricsService extends RepositoryService<
 	Prisma.LyricsWhereUniqueInput,
 	Prisma.LyricsOrderByWithRelationInput
 > {
+	private readonly logger = new Logger(LyricsService.name);
 	private readonly geniusApiKey: string | null;
 	constructor(
 		protected prismaService: PrismaService,
@@ -220,14 +222,14 @@ export class LyricsService extends RepositoryService<
 		try {
 			const lyrics = await this.downloadLyrics(song.artist.name, song.name);
 
-			Logger.log(`Lyrics found for song '${song.name}' by '${song.artist.name}'`);
+			this.logger.log(`Lyrics found for song '${song.name}' by '${song.artist.name}'`);
 			if (song.lyrics) {
 				await this.update({ content: lyrics }, { song: songWhere });
 			} else {
 				await this.create({ content: lyrics, songId: song.id });
 			}
 		} catch {
-			Logger.warn(`No lyrics found for song '${song.name}' by '${song.artist.name}'`);
+			this.logger.warn(`No lyrics found for song '${song.name}' by '${song.artist.name}'`);
 			throw new NoLyricsFoundException(song.artist.name, song.name);
 		}
 	}

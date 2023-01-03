@@ -1,5 +1,5 @@
 import {
-	Inject, Injectable, Logger, OnModuleInit, forwardRef
+	Inject, Injectable, OnModuleInit, forwardRef
 } from '@nestjs/common';
 import FileManagerService from 'src/file-manager/file-manager.service';
 import type Metadata from './models/metadata';
@@ -22,6 +22,7 @@ import type FileQueryParameters from 'src/file/models/file.query-parameters';
 import FileService from 'src/file/file.service';
 import { File, Track } from 'src/prisma/models';
 import { join } from 'path';
+import Logger from 'src/logger/logger';
 
 @Injectable()
 export default class MetadataService implements OnModuleInit {
@@ -29,9 +30,11 @@ export default class MetadataService implements OnModuleInit {
 	 * The Full path to the metadata assets
 	 */
 	private metadataFolderPath: string;
-	public get foldetPath() {
+	public get folderPath() {
 		return this.metadataFolderPath;
 	}
+
+	private readonly logger = new Logger(MetadataService.name);
 
 	constructor(
 		@Inject(forwardRef(() => TrackService))
@@ -330,11 +333,11 @@ export default class MetadataService implements OnModuleInit {
 					)
 				])
 				.output(tmpOutput)
-				.on('end', () => Logger.error(`Applying metadata on file '${filePath}' successed`))
+				.on('end', () => this.logger.error(`Applying metadata on file '${filePath}' successed`))
 				.save(tmpOutput);
 			fs.rename(tmpOutput, filePath, () => {});
 		} catch {
-			Logger.error(`Applying metadata on file '${filePath}' failed`);
+			this.logger.error(`Applying metadata on file '${filePath}' failed`);
 		}
 	}
 

@@ -9,6 +9,7 @@ import AllExceptionsFilter from './exceptions/all-exceptions.filter';
 import helmet from 'helmet';
 import cookieParser from 'cookie-parser';
 import bootstrapSwagger from './swagger/bootstrap';
+import Logger from './logger/logger';
 
 async function bootstrap() {
 	mime.define({ 'audio/mpeg': ['m4a', mime.getExtension('audio/mpeg')!] }, true);
@@ -17,6 +18,7 @@ async function bootstrap() {
 	});
 	const { httpAdapter } = app.get(HttpAdapterHost);
 
+	app.useLogger(app.get(Logger));
 	app.useGlobalFilters(
 		new AllExceptionsFilter(httpAdapter),
 		new NotFoundExceptionFilter(),

@@ -1,5 +1,5 @@
 import {
-	Inject, Injectable, Logger, forwardRef
+	Inject, Injectable, forwardRef
 } from '@nestjs/common';
 import FileManagerService from 'src/file-manager/file-manager.service';
 import FileService from 'src/file/file.service';
@@ -21,6 +21,7 @@ import { Library, LibraryWithRelations } from 'src/prisma/models';
 import SortingParameter from 'src/sort/models/sorting-parameter';
 import { parseIdentifierSlugs } from 'src/identifier/identifier.parse-slugs';
 import Identifier from 'src/identifier/models/identifier';
+import Logger from 'src/logger/logger';
 
 @Injectable()
 export default class LibraryService extends RepositoryService<
@@ -38,6 +39,7 @@ export default class LibraryService extends RepositoryService<
 	Prisma.LibraryWhereUniqueInput,
 	Prisma.LibraryOrderByWithRelationInput
 > {
+	private readonly logger = new Logger(LibraryService.name);
 	constructor(
 		private fileManagerService: FileManagerService,
 		@Inject(forwardRef(() => FileService))
@@ -162,7 +164,7 @@ export default class LibraryService extends RepositoryService<
 	}
 
 	async applyMetadataOnFiles(parentLibrary: Library): Promise<void> {
-		Logger.log(`'${parentLibrary.slug}' library: Applying metadata started`);
+		this.logger.log(`'${parentLibrary.slug}' library: Applying metadata started`);
 		const files = await this.fileService.getMany({ library: { id: parentLibrary.id } });
 		const libraryPath = this.fileManagerService.getLibraryFullPath(parentLibrary);
 		const updatedFilesCount = (await Promise.allSettled(
@@ -175,7 +177,7 @@ export default class LibraryService extends RepositoryService<
 			})
 		)).length;
 
-		Logger.log(`${parentLibrary.slug} library: ${updatedFilesCount} files updated`);
+		this.logger.log(`${parentLibrary.slug} library: ${updatedFilesCount} files updated`);
 	}
 
 	async buildResponse(input: Library): Promise<Library> {
