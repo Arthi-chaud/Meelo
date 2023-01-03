@@ -23,7 +23,7 @@ export default class SettingsService {
 	) {
 		const meeloDir = process.env.MEELO_DIR;
 
-		if (!meeloDir || !this.fileManagerService.folderExists(meeloDir)) {
+		if (meeloDir == undefined || !this.fileManagerService.folderExists(meeloDir)) {
 			throw new InvalidMeeloDirVarException(meeloDir);
 		}
 		this.configPath = join(

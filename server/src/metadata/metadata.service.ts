@@ -1,5 +1,5 @@
 import {
-	Inject, Injectable, Logger, forwardRef
+	Inject, Injectable, Logger, OnModuleInit, forwardRef
 } from '@nestjs/common';
 import FileManagerService from 'src/file-manager/file-manager.service';
 import type Metadata from './models/metadata';
@@ -24,8 +24,15 @@ import { File, Track } from 'src/prisma/models';
 import { join } from 'path';
 
 @Injectable()
-export default class MetadataService {
-	public readonly metadataFolderPath;
+export default class MetadataService implements OnModuleInit {
+	/**
+	 * The Full path to the metadata assets
+	 */
+	private metadataFolderPath: string;
+	public get foldetPath() {
+		return this.metadataFolderPath;
+	}
+
 	constructor(
 		@Inject(forwardRef(() => TrackService))
 		private trackService: TrackService,
@@ -43,9 +50,11 @@ export default class MetadataService {
 		@Inject(forwardRef(() => FileService))
 		private fileService: FileService,
 		private fileManagerService: FileManagerService
-	) {
+	) {}
+
+	onModuleInit() {
 		this.metadataFolderPath = join(
-			this.settingsService.settingsValues.meeloFolder,
+			this.settingsService.settingsValues.meeloFolder!,
 			'metadata'
 		);
 	}

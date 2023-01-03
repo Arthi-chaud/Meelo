@@ -22,6 +22,7 @@ import request from "supertest";
 import ReleaseService from "src/release/release.service";
 import TrackService from "src/track/track.service";
 import SetupApp from "test/setup-app";
+import MetadataService from "src/metadata/metadata.service";
 describe('Illustration Controller', () => {
 	let app: INestApplication;
 	let dummyRepository: TestPrismaService;
@@ -33,6 +34,7 @@ describe('Illustration Controller', () => {
 			imports: [FileManagerModule, PrismaModule, FileModule, MetadataModule, FileManagerModule, FileModule, ArtistModule, AlbumModule, SongModule, ReleaseModule, TrackModule, GenreModule, LyricsModule],
 		}).overrideProvider(FileManagerService).useClass(FakeFileManagerService)
 		.overrideProvider(PrismaService).useClass(TestPrismaService).compile();
+		module.get(MetadataService).onModuleInit();
 		app = await SetupApp(module);
 		fileManagerService = module.get<FileManagerService>(FileManagerService);
 		dummyRepository = module.get(PrismaService);

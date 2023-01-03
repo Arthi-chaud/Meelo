@@ -24,6 +24,8 @@ import TestPrismaService from "test/test-prisma.service";
 import type ReassignReleaseDTO from "./models/reassign-release.dto";
 import FileModule from "src/file/file.module";
 import SetupApp from "test/setup-app";
+import IllustrationService from "src/illustration/illustration.service";
+import MetadataService from "src/metadata/metadata.service";
 
 describe('Release Controller', () => {
 	let dummyRepository: TestPrismaService;
@@ -55,6 +57,8 @@ describe('Release Controller', () => {
 			providers: [ReleaseService, AlbumService, ArtistService, ReleaseController],
 		}).overrideProvider(FileManagerService).useClass(FakeFileManagerService)
 		.overrideProvider(PrismaService).useClass(TestPrismaService).compile();
+		module.get(MetadataService).onModuleInit();
+		module.get(IllustrationService).onModuleInit();
 		app = await SetupApp(module);
 		dummyRepository = module.get(PrismaService);
 		await dummyRepository.onModuleInit();

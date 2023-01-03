@@ -22,6 +22,8 @@ import GenreModule from "src/genre/genre.module";
 import TestPrismaService from "test/test-prisma.service";
 import SongService from "src/song/song.service";
 import FileModule from "src/file/file.module";
+import MetadataService from "src/metadata/metadata.service";
+import IllustrationService from "src/illustration/illustration.service";
 
 describe('Release Service', () => {
 	let releaseService: ReleaseService;
@@ -40,6 +42,8 @@ describe('Release Service', () => {
 			providers: [ReleaseService, AlbumService, ArtistService],
 		}).overrideProvider(FileManagerService).useClass(FakeFileManagerService)
 		.overrideProvider(PrismaService).useClass(TestPrismaService).compile();
+		module.get(MetadataService).onModuleInit();
+		module.get(IllustrationService).onModuleInit();
 		releaseService = module.get<ReleaseService>(ReleaseService);
 		albumService = module.get<AlbumService>(AlbumService);
 		artistService = module.get(ArtistService);

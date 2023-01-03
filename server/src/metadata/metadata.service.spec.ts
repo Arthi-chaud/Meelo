@@ -25,6 +25,7 @@ describe('Metadata Service', () => {
 			providers: [MetadataService],
 		}).overrideProvider(FileManagerService).useClass(FakeFileManagerService).compile();
 		metadataService = moduleRef.get<MetadataService>(MetadataService);
+		metadataService.onModuleInit();
 	});
 
 	it('should be defined', () => {

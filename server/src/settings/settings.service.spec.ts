@@ -1,14 +1,15 @@
 import SettingsService from './settings.service';
 import * as fs from 'fs';
-import { FakeFileManagerModule, FakeFileManagerService } from 'test/fake-file-manager.module';
-import FileManagerService from 'src/file-manager/file-manager.service';
 import { InvalidSettingsFileException, InvalidSettingsTypeException, MissingSettingsException, SettingsFileNotFoundException } from './settings.exception';
 import type Settings from './models/settings';
 import { createTestingModule } from 'test/test-module';
+import SettingsModule from './settings.module';
+import FileManagerModule from 'src/file-manager/file-manager.module';
+import FileManagerService from 'src/file-manager/file-manager.service';
 
 describe('Settings Service', () => {
 	let settingsService: SettingsService;
-	let fileManagerService: FakeFileManagerService;
+	let fileManagerService: FileManagerService;
 
 	/**
 	 * Runs a tests where settings are loaded from an invalid file, and an error is expected
@@ -28,9 +29,9 @@ describe('Settings Service', () => {
 
 	beforeAll(async () => {
 		const moduleRef = await createTestingModule({
-			providers: [SettingsService, FakeFileManagerModule],
+			imports: [SettingsModule, FileManagerModule],
 		}).compile();
-		fileManagerService = moduleRef.get<FileManagerService>(FileManagerService);
+		fileManagerService = moduleRef.get(FileManagerService);
 		settingsService = moduleRef.get<SettingsService>(SettingsService);
 	});
 

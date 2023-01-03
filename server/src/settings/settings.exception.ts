@@ -2,7 +2,7 @@ import { InvalidRequestException, NotFoundException } from "src/exceptions/meelo
 
 export class InvalidMeeloDirVarException extends NotFoundException {
 	constructor(value: any) {
-		super(`MEELO_DIR value is valid. Got: '${value}'. Expected a path to a folder that exist`);
+		super(`Environemnt Variable 'MEELO_DIR' is valid. Got: '${value}'. Expected a path to a folder that exist`);
 	}
 }
 
