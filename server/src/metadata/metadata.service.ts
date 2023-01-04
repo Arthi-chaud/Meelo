@@ -25,7 +25,6 @@ import Logger from 'src/logger/logger';
 
 @Injectable()
 export default class MetadataService {
-
 	private readonly logger = new Logger(MetadataService.name);
 
 	constructor(
