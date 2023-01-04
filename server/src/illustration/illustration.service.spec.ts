@@ -17,7 +17,6 @@ import TestPrismaService from "test/test-prisma.service";
 import Jimp from 'jimp';
 import { FileDoesNotExistException } from "src/file-manager/file-manager.exceptions";
 import { FileParsingException } from "src/metadata/metadata.exceptions";
-import MetadataService from "src/metadata/metadata.service";
 
 describe('Illustration Service', () => {
 	let illustrationService: IllustrationService;
@@ -30,9 +29,7 @@ describe('Illustration Service', () => {
 		const module: TestingModule = await createTestingModule({
 			imports: [HttpModule, FileManagerModule, IllustrationModule, PrismaModule, ArtistModule, MetadataModule, SettingsModule],
 		}).overrideProvider(PrismaService).useClass(TestPrismaService).compile();
-		module.get(MetadataService).onModuleInit();
 		illustrationService = module.get<IllustrationService>(IllustrationService);
-		illustrationService.onModuleInit();
 		releaseService = module.get<ReleaseService>(ReleaseService);
 		albumService = module.get<AlbumService>(AlbumService);
 		dummyRepository = module.get(PrismaService);
