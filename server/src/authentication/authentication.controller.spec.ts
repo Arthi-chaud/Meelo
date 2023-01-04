@@ -27,7 +27,7 @@ import SetupApp from "test/setup-app";
 import JwtCookieMiddleware from "./jwt/jwt-middleware";
 
 @Module({
-	imports: [AuthenticationModule, SettingsModule, UserModule, FileManagerModule, PrismaModule, ArtistModule, AlbumModule, PrismaModule, ReleaseModule, MetadataModule, SongModule, TrackModule, IllustrationModule, GenreModule],
+	imports: [AuthenticationModule, UserModule, FileManagerModule, PrismaModule, ArtistModule, AlbumModule, PrismaModule, ReleaseModule, MetadataModule, SongModule, TrackModule, IllustrationModule, GenreModule, SettingsModule],
 	providers: [UserService, PrismaService, UserController, {
 		provide: APP_GUARD,
 		useClass: JwtAuthGuard,

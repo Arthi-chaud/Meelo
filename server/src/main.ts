@@ -14,11 +14,11 @@ import Logger from './logger/logger';
 async function bootstrap() {
 	mime.define({ 'audio/mpeg': ['m4a', mime.getExtension('audio/mpeg')!] }, true);
 	const app = await NestFactory.create(AppModule, {
-		cors: process.env.NODE_ENV === 'development'
+		cors: process.env.NODE_ENV === 'development',
+		logger: new Logger()
 	});
 	const { httpAdapter } = app.get(HttpAdapterHost);
 
-	app.useLogger(app.get(Logger));
 	app.useGlobalFilters(
 		new AllExceptionsFilter(httpAdapter),
 		new NotFoundExceptionFilter(),

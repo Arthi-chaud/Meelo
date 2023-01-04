@@ -1,9 +1,8 @@
 import sharp from 'sharp';
 import {
-	Inject, Injectable, OnModuleInit, StreamableFile, forwardRef
+	Inject, Injectable, StreamableFile, forwardRef
 } from '@nestjs/common';
 import FileManagerService from 'src/file-manager/file-manager.service';
-import MetadataService from 'src/metadata/metadata.service';
 import type { Release, Track } from 'src/prisma/models';
 import ReleaseService from 'src/release/release.service';
 import Slug from 'src/slug/slug';
@@ -29,11 +28,12 @@ import type { IllustrationDimensionsDto } from './models/illustration-dimensions
 import SettingsService from 'src/settings/settings.service';
 import glob from 'glob';
 import Logger from 'src/logger/logger';
+import { join } from 'path';
 
 type IllustrationExtractStatus = 'extracted' | 'error' | 'already-extracted' | 'different-illustration';
 
 @Injectable()
-export default class IllustrationService implements OnModuleInit {
+export default class IllustrationService {
 	public illustrationFolderPath: string;
 
 	private readonly logger = new Logger(IllustrationService.name);
@@ -47,15 +47,13 @@ export default class IllustrationService implements OnModuleInit {
 		private trackService: TrackService,
 		@Inject(forwardRef(() => FileService))
 		private fileService: FileService,
-		@Inject(forwardRef(() => SettingsService))
 		private settingsService: SettingsService,
 		private fileManagerService: FileManagerService,
-		@Inject(forwardRef(() => MetadataService))
-		private metadataService: MetadataService,
-	) {	}
-
-	onModuleInit() {
-		this.illustrationFolderPath = this.metadataService.folderPath;
+	) {
+		this.illustrationFolderPath = join(
+			this.settingsService.settingsValues.meeloFolder!,
+			'metadata'
+		);
 	}
 
 	buildCompilationIllustrationFolderPath(): string {

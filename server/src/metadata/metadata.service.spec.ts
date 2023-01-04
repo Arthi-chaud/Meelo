@@ -2,7 +2,6 @@ import { TrackType } from "@prisma/client";
 import AlbumModule from "src/album/album.module";
 import ArtistModule from "src/artist/artist.module";
 import FileManagerModule from "src/file-manager/file-manager.module";
-import FileModule from "src/file/file.module";
 import GenreModule from "src/genre/genre.module";
 import ReleaseModule from "src/release/release.module";
 import SettingsModule from "src/settings/settings.module";
@@ -12,6 +11,8 @@ import { createTestingModule } from "test/test-module";
 import { PathParsingException } from "./metadata.exceptions";
 import MetadataModule from "./metadata.module";
 import MetadataService from "./metadata.service";
+import IllustrationModule from "src/illustration/illustration.module";
+import PrismaModule from "src/prisma/prisma.module";
 import type Metadata from "./models/metadata";
 
 describe('Metadata Service', () => {
@@ -19,11 +20,9 @@ describe('Metadata Service', () => {
 
 	beforeAll(async () => {
 		const moduleRef = await createTestingModule({
-			imports: [MetadataModule, TrackModule, SongModule, AlbumModule, ReleaseModule, SettingsModule, FileManagerModule, GenreModule, ArtistModule, GenreModule, FileModule],
-			providers: [MetadataService],
+			imports: [FileManagerModule, PrismaModule, ArtistModule, AlbumModule, ReleaseModule, MetadataModule, SongModule, TrackModule, IllustrationModule, GenreModule, SettingsModule],
 		}).compile();
 		metadataService = moduleRef.get<MetadataService>(MetadataService);
-		metadataService.onModuleInit();
 	});
 
 	it('should be defined', () => {
