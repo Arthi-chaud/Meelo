@@ -5,11 +5,13 @@ import request from "supertest";
 import AlbumModule from "src/album/album.module";
 import ArtistModule from "src/artist/artist.module";
 import ArtistService from "src/artist/artist.service";
+import FileManagerService from "src/file-manager/file-manager.service";
 import IllustrationModule from "src/illustration/illustration.module";
 import PrismaModule from "src/prisma/prisma.module";
 import PrismaService from "src/prisma/prisma.service";
 import SongService from "src/song/song.service";
 import TrackModule from "src/track/track.module";
+import { FakeFileManagerService } from "test/fake-file-manager.module";
 import { createTestingModule } from "test/test-module";
 import GenreModule from "./genre.module";
 import TestPrismaService from "test/test-prisma.service";
@@ -42,7 +44,8 @@ describe("Genre Controller", () => {
 		const module: TestingModule = await createTestingModule({
 			imports: [PrismaModule, ArtistModule, TrackModule, AlbumModule, IllustrationModule, GenreModule, LyricsModule, MetadataModule],
 			providers: [SongService, ArtistService, PrismaService],
-		}).overrideProvider(PrismaService).useClass(TestPrismaService).compile();
+		}).overrideProvider(FileManagerService).useClass(FakeFileManagerService)
+		.overrideProvider(PrismaService).useClass(TestPrismaService).compile();
 		app = await SetupApp(module);
 		dummyRepository = module.get(PrismaService);
 		await dummyRepository.onModuleInit();

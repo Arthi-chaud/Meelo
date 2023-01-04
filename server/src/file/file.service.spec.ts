@@ -3,6 +3,7 @@ import type { File } from "src/prisma/models";
 import AlbumModule from "src/album/album.module";
 import ArtistModule from "src/artist/artist.module";
 import FileManagerModule from "src/file-manager/file-manager.module";
+import FileManagerService from "src/file-manager/file-manager.service";
 import GenreModule from "src/genre/genre.module";
 import IllustrationModule from "src/illustration/illustration.module";
 import { LyricsModule } from "src/lyrics/lyrics.module";
@@ -13,6 +14,7 @@ import ReleaseModule from "src/release/release.module";
 import SettingsModule from "src/settings/settings.module";
 import SongModule from "src/song/song.module";
 import TrackModule from "src/track/track.module";
+import { FakeFileManagerService } from "test/fake-file-manager.module";
 import { createTestingModule } from "test/test-module";
 import TestPrismaService from "test/test-prisma.service";
 import { FileAlreadyExistsException, FileNotFoundFromIDException } from "./file.exceptions";
@@ -30,7 +32,8 @@ describe('File Service', () => {
 		const module: TestingModule = await createTestingModule({
 			imports: [FileModule, PrismaModule, MetadataModule, FileManagerModule, IllustrationModule, ArtistModule, AlbumModule, SongModule, ReleaseModule, TrackModule, SettingsModule, GenreModule, LyricsModule, LibraryModule],
 			providers: [FileService],
-		}).overrideProvider(PrismaService).useClass(TestPrismaService).compile();
+		}).overrideProvider(FileManagerService).useClass(FakeFileManagerService)
+		.overrideProvider(PrismaService).useClass(TestPrismaService).compile();
 		dummyRepository = module.get(PrismaService)
 		await dummyRepository.onModuleInit();
 		fileService = module.get<FileService>(FileService);

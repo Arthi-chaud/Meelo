@@ -5,8 +5,10 @@ import AlbumModule from "src/album/album.module";
 import AlbumService from "src/album/album.service";
 import ArtistModule from "src/artist/artist.module";
 import ArtistService from "src/artist/artist.service";
+import FileManagerService from "src/file-manager/file-manager.service";
 import PrismaModule from "src/prisma/prisma.module";
 import PrismaService from "src/prisma/prisma.service";
+import { FakeFileManagerService } from "test/fake-file-manager.module";
 import ReleaseService from "./release.service";
 import ReleaseController from "./release.controller";
 import request from "supertest";
@@ -22,8 +24,6 @@ import TestPrismaService from "test/test-prisma.service";
 import type ReassignReleaseDTO from "./models/reassign-release.dto";
 import FileModule from "src/file/file.module";
 import SetupApp from "test/setup-app";
-import IllustrationService from "src/illustration/illustration.service";
-import MetadataService from "src/metadata/metadata.service";
 
 describe('Release Controller', () => {
 	let dummyRepository: TestPrismaService;
@@ -53,9 +53,8 @@ describe('Release Controller', () => {
 		const module: TestingModule = await createTestingModule({
 			imports: [PrismaModule, AlbumModule, ArtistModule, ReleaseModule, TrackModule, IllustrationModule, SongModule, FileModule, MetadataModule, GenreModule],
 			providers: [ReleaseService, AlbumService, ArtistService, ReleaseController],
-		}).overrideProvider(PrismaService).useClass(TestPrismaService).compile();
-		module.get(MetadataService).onModuleInit();
-		module.get(IllustrationService).onModuleInit();
+		}).overrideProvider(FileManagerService).useClass(FakeFileManagerService)
+		.overrideProvider(PrismaService).useClass(TestPrismaService).compile();
 		app = await SetupApp(module);
 		dummyRepository = module.get(PrismaService);
 		await dummyRepository.onModuleInit();

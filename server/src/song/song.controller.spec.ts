@@ -3,8 +3,10 @@ import type { TestingModule } from "@nestjs/testing";
 import type { Artist, Genre, Lyrics, Song, Track } from "src/prisma/models";
 import AlbumModule from "src/album/album.module";
 import ArtistModule from "src/artist/artist.module";
+import FileManagerService from "src/file-manager/file-manager.service";
 import PrismaModule from "src/prisma/prisma.module";
 import PrismaService from "src/prisma/prisma.service";
+import { FakeFileManagerService } from "test/fake-file-manager.module";
 import request from "supertest";
 import { INestApplication } from "@nestjs/common";
 import TrackModule from "src/track/track.module";
@@ -42,7 +44,8 @@ describe('Song Controller', () => {
 	beforeAll(async () => {
 		const module: TestingModule = await createTestingModule({
 			imports: [PrismaModule, AlbumModule, ArtistModule, ReleaseModule, TrackModule, IllustrationModule, SongModule, MetadataModule, GenreModule, LyricsModule],
-		}).overrideProvider(PrismaService).useClass(TestPrismaService).compile();
+		}).overrideProvider(FileManagerService).useClass(FakeFileManagerService)
+		.overrideProvider(PrismaService).useClass(TestPrismaService).compile();
 		app = await SetupApp(module);
 		dummyRepository = module.get(PrismaService);
 		songService = module.get(SongService);

@@ -2,6 +2,7 @@ import { createTestingModule } from "test/test-module";
 import type { TestingModule } from "@nestjs/testing";
 import FileManagerService from "src/file-manager/file-manager.service";
 import PrismaService from "src/prisma/prisma.service";
+import { FakeFileManagerService } from "test/fake-file-manager.module";
 import PrismaModule from "src/prisma/prisma.module";
 import TestPrismaService from "test/test-prisma.service";
 import ArtistModule from "src/artist/artist.module";
@@ -21,18 +22,17 @@ import request from "supertest";
 import ReleaseService from "src/release/release.service";
 import TrackService from "src/track/track.service";
 import SetupApp from "test/setup-app";
-import MetadataService from "src/metadata/metadata.service";
 describe('Illustration Controller', () => {
 	let app: INestApplication;
 	let dummyRepository: TestPrismaService;
-	let fileManagerService: FileManagerService;
+	let fileManagerService: FakeFileManagerService;
 	let releaseService: ReleaseService;
 	let trackService: TrackService;
 	beforeAll(async () => {
 		const module: TestingModule = await createTestingModule({
 			imports: [FileManagerModule, PrismaModule, FileModule, MetadataModule, FileManagerModule, FileModule, ArtistModule, AlbumModule, SongModule, ReleaseModule, TrackModule, GenreModule, LyricsModule],
-		}).overrideProvider(PrismaService).useClass(TestPrismaService).compile();
-		module.get(MetadataService).onModuleInit();
+		}).overrideProvider(FileManagerService).useClass(FakeFileManagerService)
+		.overrideProvider(PrismaService).useClass(TestPrismaService).compile();
 		app = await SetupApp(module);
 		fileManagerService = module.get<FileManagerService>(FileManagerService);
 		dummyRepository = module.get(PrismaService);

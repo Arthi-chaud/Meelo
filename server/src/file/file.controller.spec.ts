@@ -1,9 +1,11 @@
 import type { INestApplication } from "@nestjs/common";
 import type { TestingModule } from "@nestjs/testing";
 import type { File } from "src/prisma/models";
+import FileManagerService from "src/file-manager/file-manager.service";
 import LibraryModule from "src/library/library.module";
 import PrismaModule from "src/prisma/prisma.module";
 import PrismaService from "src/prisma/prisma.service";
+import { FakeFileManagerService } from "test/fake-file-manager.module";
 import SetupApp from "test/setup-app";
 import { createTestingModule } from "test/test-module";
 import FileModule from "./file.module";
@@ -20,7 +22,8 @@ describe('File Controller', () => {
 	beforeAll(async () => {
 		const module: TestingModule = await createTestingModule({
 			imports: [FileModule, LibraryModule, PrismaModule, LyricsModule, TasksModule]
-		}).overrideProvider(PrismaService).useClass(TestPrismaService).compile();
+		}).overrideProvider(FileManagerService).useClass(FakeFileManagerService)
+		.overrideProvider(PrismaService).useClass(TestPrismaService).compile();
 		app = await SetupApp(module);
 		dummyRepository = module.get(PrismaService);
 		await dummyRepository.onModuleInit();

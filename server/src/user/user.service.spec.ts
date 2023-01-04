@@ -1,7 +1,9 @@
 import { TestingModule } from "@nestjs/testing";
+import FileManagerService from "src/file-manager/file-manager.service";
 import FileModule from "src/file/file.module";
 import PrismaModule from "src/prisma/prisma.module";
 import PrismaService from "src/prisma/prisma.service";
+import { FakeFileManagerService } from "test/fake-file-manager.module";
 import { createTestingModule } from "test/test-module";
 import TestPrismaService from "test/test-prisma.service";
 import UserModule from "./user.module";
@@ -18,7 +20,8 @@ describe('User Service', () => {
 		const module: TestingModule = await createTestingModule({
 			imports: [PrismaModule, FileModule, UserModule],
 			providers: [PrismaService, UserService],
-		}).overrideProvider(PrismaService).useClass(TestPrismaService).compile();
+		}).overrideProvider(FileManagerService).useClass(FakeFileManagerService)
+		.overrideProvider(PrismaService).useClass(TestPrismaService).compile();
 		await module.get<PrismaService>(PrismaService).onModuleInit();
 		userService = module.get<UserService>(UserService);
 	});

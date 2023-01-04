@@ -1,7 +1,9 @@
 import { createTestingModule } from "test/test-module";
 import type { TestingModule } from "@nestjs/testing";
+import FileManagerService from "src/file-manager/file-manager.service";
 import PrismaService from "src/prisma/prisma.service";
 import Slug from "src/slug/slug";
+import { FakeFileManagerService } from "test/fake-file-manager.module";
 import { LibraryAlreadyExistsException, LibraryNotFoundException, LibraryNotFoundFromIDException } from "./library.exceptions";
 import LibraryService from "./library.service";
 import LibraryModule from "./library.module";
@@ -28,7 +30,8 @@ describe('Library Service', () => {
 		const module: TestingModule = await createTestingModule({
 			imports: [LibraryModule, PrismaModule, FileModule, MetadataModule, FileManagerModule, IllustrationModule, TrackModule, LyricsModule, TasksModule],
 			providers: [LibraryService],
-		}).overrideProvider(PrismaService).useClass(TestPrismaService).compile();
+		}).overrideProvider(FileManagerService).useClass(FakeFileManagerService)
+		.overrideProvider(PrismaService).useClass(TestPrismaService).compile();
 		libraryService = module.get<LibraryService>(LibraryService);
 		fileService = module.get(FileService);
 		trackService = module.get(TrackService);

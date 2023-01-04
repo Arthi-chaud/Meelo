@@ -3,6 +3,7 @@ import type { Genre } from "src/prisma/models";
 import AlbumModule from "src/album/album.module";
 import ArtistModule from "src/artist/artist.module";
 import ArtistService from "src/artist/artist.service";
+import FileManagerService from "src/file-manager/file-manager.service";
 import IllustrationModule from "src/illustration/illustration.module";
 import { LyricsModule } from "src/lyrics/lyrics.module";
 import PrismaModule from "src/prisma/prisma.module";
@@ -11,6 +12,7 @@ import Slug from "src/slug/slug";
 import { SongNotFoundByIdException } from "src/song/song.exceptions";
 import SongService from "src/song/song.service";
 import TrackModule from "src/track/track.module";
+import { FakeFileManagerService } from "test/fake-file-manager.module";
 import { createTestingModule } from "test/test-module";
 import TestPrismaService from "test/test-prisma.service";
 import { GenreAlreadyExistsException, GenreNotFoundByIdException, GenreNotFoundException } from "./genre.exceptions";
@@ -30,7 +32,8 @@ describe("Genre Service", () => {
 		const module: TestingModule = await createTestingModule({
 			imports: [PrismaModule, LibraryModule, IllustrationModule, MetadataModule, ArtistModule, TrackModule, AlbumModule, GenreModule, LyricsModule],
 			providers: [SongService, ArtistService, PrismaService],
-		}).overrideProvider(PrismaService).useClass(TestPrismaService).compile();
+		}).overrideProvider(FileManagerService).useClass(FakeFileManagerService)
+		.overrideProvider(PrismaService).useClass(TestPrismaService).compile();
 		songService = module.get<SongService>(SongService);
 		dummyRepository = module.get(PrismaService);
 		genreService = module.get<GenreService>(GenreService);
