@@ -15,7 +15,7 @@ import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import ReassignAlbumDTO from './models/reassign-album.dto';
 import GenreService from "../genre/genre.service";
 import { Genre } from "src/prisma/models";
-import { AlbumResponse } from './models/album.response';
+import { AlbumResponse, AlbumResponseBuilder } from './models/album.response';
 import { ApiPaginatedResponse } from 'src/pagination/paginated-response.decorator';
 import { ReleaseResponse } from 'src/release/models/release.response';
 import { PaginationQuery } from 'src/pagination/pagination-query.decorator';
@@ -24,6 +24,7 @@ import SortingQuery from 'src/sort/sort-query.decorator';
 import Admin from 'src/roles/admin.decorator';
 import { TrackResponse } from 'src/track/models/track.response';
 import IdentifierParam from 'src/identifier/identifier.pipe';
+import Response from 'src/response/response.decorator';
 
 @ApiTags("Albums")
 @Controller('albums')
@@ -40,6 +41,10 @@ export default class AlbumController {
 	) {}
 
 	@Get()
+	@Response({
+		handler: new AlbumResponseBuilder(),
+		page: true
+	})
 	@ApiOperation({ summary: 'Get all albums' })
 	@ApiPaginatedResponse(AlbumResponse)
 	async getMany(
@@ -50,15 +55,9 @@ export default class AlbumController {
 		@RelationIncludeQuery(AlbumQueryParameters.AvailableAtomicIncludes)
 		include: AlbumQueryParameters.RelationInclude,
 		@Query() filter: AlbumQueryParameters.AlbumFilterParameter,
-		@Req() request: Request,
 	) {
-		const albums = await this.albumService.getMany(
+		return this.albumService.getMany(
 			{ type: filter.type }, paginationParameters, include, sortingParameter
-		);
-
-		return PaginatedResponse.awaiting(
-			albums.map((album) => this.albumService.buildResponse(album)),
-			request
 		);
 	}
 
