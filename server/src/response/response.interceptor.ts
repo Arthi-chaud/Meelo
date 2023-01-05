@@ -6,22 +6,20 @@ import {
 } from "rxjs";
 import PaginatedResponse from "src/pagination/models/paginated-response";
 
-abstract class ResponseBuilder<FromType, ToType extends Type<unknown>> {
-	abstract buildResponse(fromInstance: FromType): Promise<ToType>;
-}
-
 /**
  * Interface for Interceptor that builds a response
  */
 export default abstract class ResponseBuilderInterceptor<
 	FromType,
 	ToType extends Type<unknown> = Type<unknown>
-> extends ResponseBuilder<FromType, ToType> implements NestInterceptor<FromType, ToType> {
+> implements NestInterceptor<FromType, ToType> {
 	/**
 	 * The Class of the Response instance
 	 * Used for OpenAPI
 	*/
 	abstract returnType: ToType;
+
+	abstract buildResponse(fromInstance: FromType): Promise<ToType>;
 
 	intercept(_context: ExecutionContext, next: CallHandler<FromType>) {
 		return next

@@ -1,3 +1,4 @@
+import { Injectable } from "@nestjs/common";
 import { IntersectionType } from "@nestjs/swagger";
 import { ArtistResponse } from "src/artist/models/artist.response";
 import { IllustratedModel } from "src/illustration/models/illustrated-model.response";
@@ -13,6 +14,7 @@ export class AlbumResponse extends IntersectionType(
 	}
 ) {}
 
+@Injectable()
 export class AlbumResponseBuilder extends ResponseBuilderInterceptor<Album, typeof AlbumResponse> {
 	constructor() {
 		super();

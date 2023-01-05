@@ -24,7 +24,7 @@ import SortingQuery from 'src/sort/sort-query.decorator';
 import Admin from 'src/roles/admin.decorator';
 import { TrackResponse } from 'src/track/models/track.response';
 import IdentifierParam from 'src/identifier/identifier.pipe';
-import Response from 'src/response/response.decorator';
+import Response, { ResponseType } from 'src/response/response.decorator';
 
 @ApiTags("Albums")
 @Controller('albums')
@@ -43,7 +43,7 @@ export default class AlbumController {
 	@Get()
 	@Response({
 		handler: new AlbumResponseBuilder(),
-		page: true
+		type: ResponseType.PAGE
 	})
 	@ApiOperation({ summary: 'Get all albums' })
 	@ApiPaginatedResponse(AlbumResponse)

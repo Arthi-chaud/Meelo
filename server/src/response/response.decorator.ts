@@ -3,14 +3,16 @@ import { Type, UseInterceptors } from "@nestjs/common";
 import { ApiPaginatedResponse } from "../pagination/paginated-response.decorator";
 import { ApiOkResponse } from "@nestjs/swagger";
 import ResponseBuilderInterceptor, { ArrayResponseBuilderInterceptor, PaginatedResponseBuilderInterceptor } from "./response.interceptor";
-import RequireOnlyOne from "src/utils/require-only-one";
+import ResponseType from "./response-type.enum";
 
 type ResponseDecoratorParam<ToType extends Type<unknown>, FromType = unknown> = {
 	handler: ResponseBuilderInterceptor<FromType, ToType>
-} & Partial<RequireOnlyOne<{
-	page: true,
-	array: true
-}>>
+	/**
+	 * Tells if the response is a single item, an array, or a page
+	 * @default SINGLE
+	 */
+	type?: ResponseType;
+}
 
 /**
  * Controller method decorator to:
@@ -25,16 +27,16 @@ const Response = <ToType extends Type<unknown>>(
 		const interceptors = [];
 		const openApiDecorators = [];
 
-		if (params.page) {
+		if (params.type == ResponseType.PAGE) {
 			openApiDecorators.push(ApiPaginatedResponse(params.handler.returnType));
 			interceptors.push(PaginatedResponseBuilderInterceptor);
-		} else if (params.array) {
+		} else if (params.type == ResponseType.ARRAY) {
 			openApiDecorators.push(ApiOkResponse({
 				type: params.handler.returnType,
 				isArray: true
 			}));
 		}
-		if (params.page || params.array) {
+		if (params.type == ResponseType.ARRAY || params.type == ResponseType.PAGE) {
 			interceptors.push(new ArrayResponseBuilderInterceptor(params.handler));
 		} else {
 			openApiDecorators.push(ApiOkResponse({
@@ -49,3 +51,4 @@ const Response = <ToType extends Type<unknown>>(
 };
 
 export default Response;
+export { ResponseType };
