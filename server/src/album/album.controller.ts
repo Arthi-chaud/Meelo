@@ -187,7 +187,7 @@ export default class AlbumController {
 			.map((track) => this.trackService.getMany({
 				type: 'Video',
 				song: { id: track.songId },
-			}, { take: 1 }, include)));
+			}, { take: 1 }, include))).then((tracks) => tracks.flat());
 	}
 
 	@ApiOperation({
