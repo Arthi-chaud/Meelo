@@ -1,5 +1,5 @@
 import {
-	Global, Inject, Injectable, forwardRef
+	Inject, Injectable, forwardRef
 } from "@nestjs/common";
 import { IntersectionType } from "@nestjs/swagger";
 import { ArtistResponse } from "src/artist/models/artist.response";
@@ -17,7 +17,6 @@ export class AlbumResponse extends IntersectionType(
 	}
 ) {}
 
-@Global()
 @Injectable()
 export class AlbumResponseBuilder extends ResponseBuilderInterceptor<Album, AlbumResponse> {
 	constructor(
