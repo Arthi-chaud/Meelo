@@ -19,7 +19,7 @@ export class AlbumResponse extends IntersectionType(
 
 @Global()
 @Injectable()
-export class AlbumResponseBuilder extends ResponseBuilderInterceptor<Album, typeof AlbumResponse> {
+export class AlbumResponseBuilder extends ResponseBuilderInterceptor<Album, AlbumResponse> {
 	constructor(
 		@Inject(forwardRef(() => AlbumService))
 		private albumService: AlbumService

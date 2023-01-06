@@ -12,8 +12,10 @@ import Constructor from "src/utils/constructor";
  */
 export default abstract class ResponseBuilderInterceptor<
 	FromType,
-	ToType extends Type<unknown> = Type<unknown>
-> implements NestInterceptor<FromType, InstanceType<ToType>> {
+	ToClass extends InstanceType<any>,
+	ToType extends ToClass extends InstanceType<infer T>
+		? T : never = (ToClass extends InstanceType<infer T> ? T : never)
+> implements NestInterceptor<FromType, ToType> {
 	constructor() {}
 	/**
 	 * The Class of the Response instance
@@ -49,7 +51,7 @@ export class PaginatedResponseBuilderInterceptor implements NestInterceptor {
 }
 
 export function ArrayResponseBuilderInterceptor<
-	FormData, ToType extends Type<unknown>,
+	FormData, ToType extends InstanceType<Type<unknown>>,
 	ResponseBuilder extends ResponseBuilderInterceptor<FormData, ToType>
 >(
 	responseBuilder: Constructor<ResponseBuilder>
