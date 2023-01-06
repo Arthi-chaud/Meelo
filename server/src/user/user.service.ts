@@ -7,7 +7,6 @@ import PrismaService from 'src/prisma/prisma.service';
 import { MeeloException } from 'src/exceptions/meelo-exception';
 import SortingParameter from 'src/sort/models/sorting-parameter';
 import bcrypt from 'bcrypt';
-import UserResponse from './models/user.response';
 import {
 	InvalidPasswordException, InvalidUserCredentialsException,
 	InvalidUsernameException, UserAlreadyExistsException,
@@ -189,14 +188,5 @@ export default class UserService extends RepositoryService<
 			return { id: input.id };
 		}
 		return { name: input.name! };
-	}
-
-	buildResponse(input: User): UserResponse {
-		return {
-			name: input.name,
-			id: input.id,
-			admin: input.admin,
-			enabled: input.enabled
-		};
 	}
 }

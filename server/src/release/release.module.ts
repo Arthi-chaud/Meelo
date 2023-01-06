@@ -6,6 +6,7 @@ import PrismaModule from 'src/prisma/prisma.module';
 import TrackModule from 'src/track/track.module';
 import ReleaseController from './release.controller';
 import ReleaseService from './release.service';
+import { ReleaseResponseBuilder } from './models/release.response';
 
 @Module({
 	imports: [
@@ -16,7 +17,7 @@ import ReleaseService from './release.service';
 		forwardRef(() => FileModule)
 	],
 	controllers: [ReleaseController],
-	providers: [ReleaseService],
-	exports: [ReleaseService]
+	providers: [ReleaseService, ReleaseResponseBuilder],
+	exports: [ReleaseService, ReleaseResponseBuilder]
 })
 export default class ReleaseModule {}

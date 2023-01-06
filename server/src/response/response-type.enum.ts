@@ -1,5 +1,5 @@
 enum ResponseType {
-	SINGLE, ARRAY, PAGE
+	Single, Array, Page
 }
 
 export default ResponseType;

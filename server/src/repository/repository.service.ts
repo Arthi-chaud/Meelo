@@ -372,7 +372,6 @@ abstract class RepositoryService<
 		await this.select(where, { });
 	}
 
-	buildResponse: never;
 	static formatInclude<I extends ModelSelector<Relation>, Relation extends {}>(include?: I) {
 		if (include === undefined) {
 			return include;

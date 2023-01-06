@@ -15,7 +15,6 @@ import type SongQueryParameters from "../song/models/song.query-params";
 import { buildStringSearchParameters } from 'src/utils/search-string-input';
 import ArtistService from 'src/artist/artist.service';
 import { Prisma } from '@prisma/client';
-import { GenreResponse } from './models/genre.response';
 import SortingParameter from 'src/sort/models/sorting-parameter';
 import { parseIdentifierSlugs } from 'src/identifier/identifier.parse-slugs';
 import Identifier from 'src/identifier/models/identifier';
@@ -180,12 +179,6 @@ export default class GenreService extends RepositoryService<
 			await this.songService.throwIfNotFound(where);
 		}
 		return genres;
-	}
-
-	async buildResponse(genre: GenreWithRelations): Promise<GenreResponse> {
-		const response = <GenreResponse>genre;
-
-		return response;
 	}
 
 	onNotFound(where: GenreQueryParameters.WhereInput): MeeloException {

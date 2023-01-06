@@ -169,10 +169,6 @@ export default class FileService extends RepositoryService<
 		})).count;
 	}
 
-	buildResponse(input: File): File {
-		return input;
-	}
-
 	/**
 	 * Register a file in the Database
 	 * @param filePath The path to the file to register, relative to parent library path

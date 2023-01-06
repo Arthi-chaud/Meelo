@@ -1,21 +1,19 @@
 import {
-	Body, Controller, Get, Inject, Post, Put, Req, forwardRef
+	Body, Controller, Get, Inject, Post, Put, forwardRef
 } from '@nestjs/common';
-import PaginatedResponse from 'src/pagination/models/paginated-response';
 import { PaginationParameters } from 'src/pagination/models/pagination-parameters';
 import TrackQueryParameters from './models/track.query-parameters';
 import TrackService from './track.service';
-import type { Request } from 'express';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import { TrackType } from '@prisma/client';
 import ReassignTrackDTO from './models/reassign-track.dto';
-import { TrackResponse } from './models/track.response';
-import { ApiPaginatedResponse } from 'src/pagination/paginated-response.decorator';
+import { TrackResponseBuilder } from './models/track.response';
 import { PaginationQuery } from 'src/pagination/pagination-query.decorator';
 import RelationIncludeQuery from 'src/relation-include/relation-include-query.decorator';
 import SortingQuery from 'src/sort/sort-query.decorator';
 import Admin from 'src/roles/admin.decorator';
 import IdentifierParam from 'src/identifier/identifier.pipe';
+import Response, { ResponseType } from 'src/response/response.decorator';
 
 @ApiTags("Tracks")
 @Controller('tracks')
@@ -29,30 +27,30 @@ export class TrackController {
 		summary: 'Get all tracks'
 	})
 	@Get()
-	@ApiPaginatedResponse(TrackResponse)
+	@Response({
+		handler: TrackResponseBuilder,
+		type: ResponseType.Page
+	})
 	async getMany(
 		@PaginationQuery()
 		paginationParameters: PaginationParameters,
 		@RelationIncludeQuery(TrackQueryParameters.AvailableAtomicIncludes)
 		include: TrackQueryParameters.RelationInclude,
 		@SortingQuery(TrackQueryParameters.SortingKeys)
-		sortingParameter: TrackQueryParameters.SortingParameter,
-		@Req() request: Request
+		sortingParameter: TrackQueryParameters.SortingParameter
 	) {
-		const tracks = await this.trackService.getMany(
+		return this.trackService.getMany(
 			{}, paginationParameters, include, sortingParameter
-		);
-
-		return PaginatedResponse.awaiting(
-			tracks.map((track) => this.trackService.buildResponse(track)),
-			request
 		);
 	}
 
 	@ApiOperation({
 		summary: 'Get all the video tracks'
 	})
-	@ApiPaginatedResponse(TrackResponse)
+	@Response({
+		handler: TrackResponseBuilder,
+		type: ResponseType.Page
+	})
 	@Get('videos')
 	async getVideoTracks(
 		@PaginationQuery()
@@ -60,22 +58,19 @@ export class TrackController {
 		@RelationIncludeQuery(TrackQueryParameters.AvailableAtomicIncludes)
 		include: TrackQueryParameters.RelationInclude,
 		@SortingQuery(TrackQueryParameters.SortingKeys)
-		sortingParameter: TrackQueryParameters.SortingParameter,
-		@Req() request: Request
+		sortingParameter: TrackQueryParameters.SortingParameter
 	) {
 		const videoTracks = await this.trackService.getMany(
 			{ type: TrackType.Video }, paginationParameters, include, sortingParameter,
 		);
 
-		return PaginatedResponse.awaiting(
-			videoTracks.map((videoTrack) => this.trackService.buildResponse(videoTrack)),
-			request
-		);
+		return videoTracks;
 	}
 
 	@ApiOperation({
 		summary: 'Get a track'
 	})
+	@Response({ handler: TrackResponseBuilder })
 	@Get(':idOrSlug')
 	async get(
 		@RelationIncludeQuery(TrackQueryParameters.AvailableAtomicIncludes)
@@ -83,15 +78,14 @@ export class TrackController {
 		@IdentifierParam(TrackService)
 		where: TrackQueryParameters.WhereInput,
 	) {
-		const track = await this.trackService.get(where, include);
-
-		return this.trackService.buildResponse(track);
+		return this.trackService.get(where, include);
 	}
 
 	@ApiOperation({
 		summary: 'Set a track as master track'
 	})
 	@Admin()
+	@Response({ handler: TrackResponseBuilder })
 	@Put(':idOrSlug/master')
 	async setAsMaster(
 		@IdentifierParam(TrackService)
@@ -103,24 +97,21 @@ export class TrackController {
 			trackId: track.id,
 			song: { id: track.songId }
 		});
-		const updatedTrack = await this.trackService.getMasterTrack({ id: track.songId });
-
-		return this.trackService.buildResponse(updatedTrack);
+		return this.trackService.getMasterTrack({ id: track.songId });
 	}
 
 	@ApiOperation({
 		summary: 'Change the track\'s parent song'
 	})
 	@Admin()
+	@Response({ handler: TrackResponseBuilder })
 	@Post('reassign')
 	async reassignTrack(
 		@Body() reassignmentDTO: ReassignTrackDTO
 	) {
-		return this.trackService.buildResponse(
-			await this.trackService.reassign(
-				{ id: reassignmentDTO.trackId },
-				{ id: reassignmentDTO.songId }
-			)
+		return this.trackService.reassign(
+			{ id: reassignmentDTO.trackId },
+			{ id: reassignmentDTO.songId }
 		);
 	}
 }

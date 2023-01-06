@@ -1,5 +1,5 @@
 import {
-	CallHandler, ExecutionContext, Inject, Injectable, NestInterceptor, Type
+	CallHandler, ExecutionContext, Global, Inject, Injectable, NestInterceptor, Type
 } from "@nestjs/common";
 import { from, mergeMap } from "rxjs";
 import Constructor from "src/utils/constructor";
@@ -11,6 +11,7 @@ export default function ArrayResponseBuilderInterceptor<
 >(
 	responseBuilder: Constructor<ResponseBuilder>
 ) {
+	@Global()
 	@Injectable()
 	class ArrayInterceptor implements NestInterceptor {
 		constructor(

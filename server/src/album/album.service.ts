@@ -23,7 +23,6 @@ import SongService from 'src/song/song.service';
 import {
 	Album, AlbumWithRelations, Genre, Release
 } from "src/prisma/models";
-import { AlbumResponse } from './models/album.response';
 import SortingParameter from 'src/sort/models/sorting-parameter';
 import { parseIdentifierSlugs } from 'src/identifier/identifier.parse-slugs';
 import compilationAlbumArtistKeyword from 'src/utils/compilation';
@@ -348,22 +347,6 @@ export default class AlbumService extends RepositoryService<
 		).map(
 			(genresSlugOccurrence) => genres.find((genre) => genresSlugOccurrence[0] == genre.slug)!
 		);
-	}
-
-	/**
-	 * Build an object for the API
-	 * @param album the album to create the object from
-	 */
-	async buildResponse(album: AlbumWithRelations): Promise<AlbumResponse> {
-		const response = <AlbumResponse>{
-			...album,
-			illustration: await this.illustrationService.getAlbumIllustrationLink(album.id)
-		};
-
-		if (album.artist != undefined) {
-			response.artist = await this.artistServce.buildResponse(album.artist);
-		}
-		return response;
 	}
 
 	onNotFound(where: AlbumQueryParameters.WhereInput): MeeloException {

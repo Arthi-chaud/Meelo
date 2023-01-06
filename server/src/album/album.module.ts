@@ -18,7 +18,7 @@ import { AlbumResponseBuilder } from './models/album.response';
 		forwardRef(() => TrackModule),
 		GenreModule,
 	],
-	exports: [AlbumService],
+	exports: [AlbumService, AlbumResponseBuilder],
 	providers: [AlbumService, AlbumResponseBuilder],
 	controllers: [AlbumController]
 })

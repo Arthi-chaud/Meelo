@@ -24,7 +24,6 @@ import AlbumService from 'src/album/album.service';
 import IllustrationService from 'src/illustration/illustration.service';
 import LibraryService from 'src/library/library.service';
 import { Track, TrackWithRelations } from 'src/prisma/models';
-import { TrackResponse } from './models/track.response';
 import SortingParameter from 'src/sort/models/sorting-parameter';
 import Identifier from 'src/identifier/models/identifier';
 import Logger from 'src/logger/logger';
@@ -487,33 +486,5 @@ export default class TrackService extends RepositoryService<
 			track.discIndex ?? undefined,
 			track.trackIndex ?? undefined
 		);
-	}
-
-	async buildResponse(track: TrackWithRelations): Promise<TrackResponse> {
-		const response = <TrackResponse>{
-			...track,
-			illustration: await this.illustrationService.getTrackIllustrationLink(track.id),
-			stream: `/files/${track.sourceFileId}/stream`
-		};
-
-		if (track.release !== undefined) {
-			response.release = await this.releaseService.buildResponse(track.release);
-		}
-		if (track.song != undefined) {
-			response.song = await this.songService.buildResponse(track.song);
-		}
-		return response;
-	}
-
-	async buildTracklistResponse(tracklist: Tracklist) {
-		let response = {};
-
-		for (const [disc, tracks] of tracklist) {
-			response = {
-				...response,
-				[disc]: await Promise.all(tracks.map((track) => this.buildResponse(track)))
-			};
-		}
-		return response;
 	}
 }

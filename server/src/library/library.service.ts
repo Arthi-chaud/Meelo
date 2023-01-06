@@ -179,8 +179,4 @@ export default class LibraryService extends RepositoryService<
 
 		this.logger.log(`${parentLibrary.slug} library: ${updatedFilesCount} files updated`);
 	}
-
-	async buildResponse(input: Library): Promise<Library> {
-		return input;
-	}
 }
