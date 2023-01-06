@@ -1,10 +1,11 @@
 import {
-	CallHandler, ExecutionContext, Injectable, NestInterceptor, Type
+	CallHandler, ExecutionContext, Inject, Injectable, NestInterceptor, Type
 } from "@nestjs/common";
 import {
 	from, map, mergeMap
 } from "rxjs";
 import PaginatedResponse from "src/pagination/models/paginated-response";
+import Constructor from "src/utils/constructor";
 
 /**
  * Interface for Interceptor that builds a response
@@ -12,14 +13,15 @@ import PaginatedResponse from "src/pagination/models/paginated-response";
 export default abstract class ResponseBuilderInterceptor<
 	FromType,
 	ToType extends Type<unknown> = Type<unknown>
-> implements NestInterceptor<FromType, ToType> {
+> implements NestInterceptor<FromType, InstanceType<ToType>> {
+	constructor() {}
 	/**
 	 * The Class of the Response instance
 	 * Used for OpenAPI
 	*/
 	abstract returnType: ToType;
 
-	abstract buildResponse(fromInstance: FromType): Promise<ToType>;
+	abstract buildResponse(fromInstance: FromType): Promise<InstanceType<ToType>>;
 
 	intercept(_context: ExecutionContext, next: CallHandler<FromType>) {
 		return next
@@ -46,24 +48,34 @@ export class PaginatedResponseBuilderInterceptor implements NestInterceptor {
 	}
 }
 
-/**
- * Interceptor that catches a array of items, and turns it into a array of response types
- */
-@Injectable()
-export class ArrayResponseBuilderInterceptor<FormData, ToType extends Type<unknown>> implements NestInterceptor {
-	constructor(
-		private responseBuilder: ResponseBuilderInterceptor<FormData, ToType>
-	) {}
+export function ArrayResponseBuilderInterceptor<
+	FormData, ToType extends Type<unknown>,
+	ResponseBuilder extends ResponseBuilderInterceptor<FormData, ToType>
+>(
+	responseBuilder: Constructor<ResponseBuilder>
+) {
+	@Injectable()
+	class ArrayInterceptor implements NestInterceptor {
+		constructor(
+			/**
+			 * Settings the property to public is a limitation of exported abstract classes
+			 */
+			@Inject(responseBuilder)
+			public builder: ResponseBuilder
+		) {}
 
-	intercept(_context: ExecutionContext, next: CallHandler<any>) {
-		return next
-			.handle()
-			.pipe(mergeMap(
-				(items: FormData[]) => from(Promise.all(
-					items.map(
-						(item: FormData) => this.responseBuilder.buildResponse(item)
-					)
-				)).pipe((data) => data)
-			));
+		intercept(_context: ExecutionContext, next: CallHandler<any>) {
+			return next
+				.handle()
+				.pipe(mergeMap(
+					(items: FormData[]) => from(Promise.all(
+						items.map(
+							(item: FormData) => this.builder.buildResponse(item)
+						)
+					)).pipe((data) => data)
+				));
+		}
 	}
+
+	return ArrayInterceptor;
 }

@@ -42,7 +42,7 @@ export default class AlbumController {
 
 	@Get()
 	@Response({
-		handler: new AlbumResponseBuilder(),
+		handler: AlbumResponseBuilder,
 		type: ResponseType.PAGE
 	})
 	@ApiOperation({ summary: 'Get all albums' })
