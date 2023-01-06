@@ -5,7 +5,7 @@ import { IntersectionType } from "@nestjs/swagger";
 import { ArtistResponse } from "src/artist/models/artist.response";
 import { IllustratedModel } from "src/illustration/models/illustrated-model.response";
 import { Album } from "src/prisma/models";
-import ResponseBuilderInterceptor from "src/response/response.interceptor";
+import ResponseBuilderInterceptor from "src/response/interceptors/response.interceptor";
 import AlbumService from "../album.service";
 
 export class AlbumResponse extends IntersectionType(
