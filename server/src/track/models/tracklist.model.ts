@@ -8,7 +8,7 @@ import {
 /**
  * Index to use if the disc index is unknown
  */
-export const UnknownDiscIndexKey = '?';
+export const UnknownDiscIndexKey = '?' as const;
 
 type Tracklist<T extends Track = Track> = Map<string, T[]>;
 export default Tracklist;
@@ -22,7 +22,7 @@ export class TracklistResponseBuilder extends ResponseBuilderInterceptor<Trackli
 		super();
 	}
 
-	returnType = class {};
+	returnType = Map<number | typeof UnknownDiscIndexKey, Track>;
 
 	async buildResponse(tracklist: Tracklist<Track>): Promise<Record<string, TrackResponse>> {
 		let response = {};

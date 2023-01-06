@@ -1,8 +1,5 @@
 
-import {
-	Global,
-	Injectable, Type, UseInterceptors
-} from "@nestjs/common";
+import { Type, UseInterceptors } from "@nestjs/common";
 import { ApiPaginatedResponse } from "../pagination/paginated-response.decorator";
 import { ApiOkResponse } from "@nestjs/swagger";
 import ResponseType from "./response-type.enum";
@@ -23,17 +20,17 @@ type ResponseDecoratorParam<ToType extends Type<unknown>, FromType = unknown> = 
 	returns: ToType;
 }>
 
-const createBasicResponseBuilder = <T extends Type<any>>(type: T) => {
-	@Global()
-	@Injectable()
-	class BaseResponseBuilder extends ResponseBuilderInterceptor<T, Type<T>> {
-		returnType = type;
+// const createBasicResponseBuilder = <T extends Type<any>>(type: T) => {
+// 	@Global()
+// 	@Injectable()
+// 	class BaseResponseBuilder extends ResponseBuilderInterceptor<T, Type<T>> {
+// 		returnType = type;
 
-		buildResponse = async (input: T) => input;
-	}
+// 		buildResponse = async (input: T) => input;
+// 	}
 
-	return BaseResponseBuilder;
-};
+// 	return BaseResponseBuilder;
+// };
 
 /**
  * Controller method decorator to:
@@ -47,27 +44,26 @@ const Response = <ToType extends Type<unknown>>(
 	return function (target: any, propertyKey: string, descriptor: any) {
 		const interceptors = [];
 		const openApiDecorators = [];
-		const handler = params.handler ?? createBasicResponseBuilder(params.returns);
-		const returnType = Reflect.construct(handler, []).returnType;
+		const returnType = params.returns ?? Reflect.construct(params.handler!, []).returnType;
 
 		if (params.type == ResponseType.Page) {
 			openApiDecorators.push(ApiPaginatedResponse(returnType));
 			interceptors.push(PaginatedResponseBuilderInterceptor);
-		} else if (params.type == ResponseType.Array) {
-			openApiDecorators.push(ApiOkResponse({
-				type: returnType,
-				isArray: true
-			}));
-		}
-		if (params.type == ResponseType.Array || params.type == ResponseType.Page) {
-			interceptors.push(ArrayResponseBuilderInterceptor(
-				handler as NonNullable<typeof params.handler>
-			));
 		} else {
 			openApiDecorators.push(ApiOkResponse({
-				type: returnType
+				type: returnType,
+				isArray: params.type == ResponseType.Array
 			}));
-			interceptors.push(handler);
+		}
+		if (params.handler) {
+			if (params.type == ResponseType.Array || params.type == ResponseType.Page) {
+				interceptors.push(ArrayResponseBuilderInterceptor(params.handler));
+			} else {
+				openApiDecorators.push(ApiOkResponse({
+					type: returnType
+				}));
+				interceptors.push(params.handler);
+			}
 		}
 		UseInterceptors(...interceptors)(target, propertyKey, descriptor);
 		openApiDecorators.forEach((decorator) => decorator(target, propertyKey, descriptor));

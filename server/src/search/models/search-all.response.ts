@@ -1,4 +1,6 @@
-import { Injectable } from "@nestjs/common";
+import {
+	Inject, Injectable, forwardRef
+} from "@nestjs/common";
 import { ApiProperty } from "@nestjs/swagger";
 import { AlbumResponse, AlbumResponseBuilder } from "src/album/models/album.response";
 import { ArtistResponse, ArtistResponseBuilder } from "src/artist/models/artist.response";
@@ -45,9 +47,13 @@ export class SearchAllResponse {
 @Injectable()
 export class SearchAllResponseBuilder extends ResponseBuilderInterceptor<SearchAllReturnType, SearchAllResponse> {
 	constructor(
+		@Inject(forwardRef(() => ArtistResponseBuilder))
 		private artistResponseBuilder: ArtistResponseBuilder,
+		@Inject(forwardRef(() => AlbumResponseBuilder))
 		private albumResponseBuilder: AlbumResponseBuilder,
+		@Inject(forwardRef(() => SongResponseBuilder))
 		private songResponseBuilder: SongResponseBuilder,
+		@Inject(forwardRef(() => ReleaseResponseBuilder))
 		private releaseResponseBuilder: ReleaseResponseBuilder
 	) {
 		super();
@@ -57,12 +63,18 @@ export class SearchAllResponseBuilder extends ResponseBuilderInterceptor<SearchA
 
 	async buildResponse(input: SearchAllReturnType): Promise<SearchAllResponse> {
 		return {
-			artists: await Promise.all(input.artists.map(this.artistResponseBuilder.buildResponse)),
-			albums: await Promise.all(input.albums.map(this.albumResponseBuilder.buildResponse)),
-			releases: await Promise.all(input.releases.map(
-				this.releaseResponseBuilder.buildResponse
+			artists: await Promise.all(input.artists.map(
+				(artist) => this.artistResponseBuilder.buildResponse(artist)
 			)),
-			songs: await Promise.all(input.songs.map(this.songResponseBuilder.buildResponse)),
+			albums: await Promise.all(input.albums.map(
+				(album) => this.albumResponseBuilder.buildResponse(album)
+			)),
+			releases: await Promise.all(input.releases.map(
+				(release) => this.releaseResponseBuilder.buildResponse(release)
+			)),
+			songs: await Promise.all(input.songs.map(
+				(song) => this.songResponseBuilder.buildResponse(song)
+			)),
 			genres: input.genres,
 		};
 	}

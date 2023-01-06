@@ -101,10 +101,7 @@ export default class ReleaseController {
 	@ApiOperation({
 		summary: 'Get the tracklist of a release'
 	})
-	@Response({
-		handler: TracklistResponseBuilder,
-		type: ResponseType.Page
-	})
+	@Response({ handler: TracklistResponseBuilder })
 	@Get(':idOrSlug/tracklist')
 	async getReleaseTracklist(
 		@RelationIncludeQuery(TrackQueryParameters.AvailableAtomicIncludes)

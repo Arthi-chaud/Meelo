@@ -18,6 +18,7 @@ import SortingQuery from 'src/sort/sort-query.decorator';
 import Response, { ResponseType } from 'src/response/response.decorator';
 import { ArtistResponseBuilder } from 'src/artist/models/artist.response';
 import { Genre } from 'src/prisma/models';
+import { SearchAllResponseBuilder } from './models/search-all.response';
 
 @ApiTags("Search")
 @Controller('search')
@@ -29,6 +30,7 @@ export default class SearchController {
 	@ApiOperation({
 		summary: 'Search items by their names'
 	})
+	@Response({ handler: SearchAllResponseBuilder })
 	@Get('/all/:query')
 	async searchItems(
 		@Param('query')

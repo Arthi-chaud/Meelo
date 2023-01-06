@@ -6,6 +6,8 @@ import ReleaseModule from 'src/release/release.module';
 import SongModule from 'src/song/song.module';
 import SearchController from './search.controller';
 import SearchService from './search.service';
+import { SearchAllResponseBuilder } from './models/search-all.response';
+import IllustrationModule from 'src/illustration/illustration.module';
 
 @Module({
 	imports: [
@@ -13,9 +15,10 @@ import SearchService from './search.service';
 		AlbumModule,
 		SongModule,
 		ReleaseModule,
-		GenreModule
+		GenreModule,
+		IllustrationModule
 	],
 	controllers: [SearchController],
-	providers: [SearchService]
+	providers: [SearchService, SearchAllResponseBuilder]
 })
 export default class SearchModule {}
