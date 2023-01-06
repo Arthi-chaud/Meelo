@@ -94,6 +94,12 @@
 			"name": "@nestjs/common",
 			"importNames": ["Logger"],
 			"message": "Use Custom Logger to inject from 'src/logger/logger'"
+		}, {
+			"name": "src/pagination/paginated-response.decorator",
+			"message": "Do not use the decorator directly. Use 'Response' decorator from 'src/response/response.decorator.ts'"
+		}, {
+			"name": "src/pagination/models/paginated-response",
+			"message": "Do not use the class directly. Use 'Response' decorator from 'src/response/response.decorator.ts'"
 		}]
 	}
 }
