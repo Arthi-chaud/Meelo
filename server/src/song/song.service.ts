@@ -16,13 +16,11 @@ import type { MeeloException } from 'src/exceptions/meelo-exception';
 import { LyricsService } from 'src/lyrics/lyrics.service';
 import { CompilationArtistException } from 'src/artist/artist.exceptions';
 import { buildStringSearchParameters } from 'src/utils/search-string-input';
-import IllustrationService from 'src/illustration/illustration.service';
 import { PaginationParameters, buildPaginationParameters } from 'src/pagination/models/pagination-parameters';
 import SortingParameter from 'src/sort/models/sorting-parameter';
 import {
 	Song, SongWithRelations, Track
 } from 'src/prisma/models';
-import { SongResponse } from './models/song.response';
 import { parseIdentifierSlugs } from 'src/identifier/identifier.parse-slugs';
 import Identifier from 'src/identifier/models/identifier';
 import Logger from 'src/logger/logger';
@@ -53,9 +51,7 @@ export default class SongService extends RepositoryService<
 		@Inject(forwardRef(() => GenreService))
 		private genreService: GenreService,
 		@Inject(forwardRef(() => LyricsService))
-		private lyricsService: LyricsService,
-		@Inject(forwardRef(() => IllustrationService))
-		private illustrationService: IllustrationService,
+		private lyricsService: LyricsService
 	) {
 		super(prismaService.song);
 	}
@@ -329,18 +325,6 @@ export default class SongService extends RepositoryService<
 		if (trackCount == 0) {
 			await this.delete(where);
 		}
-	}
-
-	async buildResponse(song: SongWithRelations): Promise<SongResponse> {
-		const response = <SongResponse>{
-			...song,
-			illustration: await this.illustrationService.getSongIllustrationLink(song.id)
-		};
-
-		if (song.artist !== undefined) {
-			response.artist = await this.artistService.buildResponse(song.artist);
-		}
-		return response;
 	}
 
 	/**

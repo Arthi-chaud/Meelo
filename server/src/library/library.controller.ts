@@ -1,6 +1,6 @@
 import {
 	Body, Controller, Delete, Get,
-	Post, Put, Query, Req
+	Post, Put, Query
 } from '@nestjs/common';
 import LibraryService from './library.service';
 import { Library } from 'src/prisma/models';
@@ -16,15 +16,12 @@ import TrackService from 'src/track/track.service';
 import ReleaseService from 'src/release/release.service';
 import SongService from 'src/song/song.service';
 import LibraryQueryParameters from './models/library.query-parameters';
-import type { Request } from 'express';
-import PaginatedResponse from 'src/pagination/models/paginated-response';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
-import { ApiPaginatedResponse } from 'src/pagination/paginated-response.decorator';
-import { ArtistResponse } from 'src/artist/models/artist.response';
-import { AlbumResponse } from 'src/album/models/album.response';
-import { ReleaseResponse } from 'src/release/models/release.response';
-import { SongResponse } from 'src/song/models/song.response';
-import { TrackResponse } from 'src/track/models/track.response';
+import { ArtistResponseBuilder } from 'src/artist/models/artist.response';
+import { AlbumResponseBuilder } from 'src/album/models/album.response';
+import { ReleaseResponseBuilder } from 'src/release/models/release.response';
+import { SongResponseBuilder } from 'src/song/models/song.response';
+import { TrackResponseBuilder } from 'src/track/models/track.response';
 import { PaginationQuery } from 'src/pagination/pagination-query.decorator';
 import RelationIncludeQuery from 'src/relation-include/relation-include-query.decorator';
 import SortingQuery from 'src/sort/sort-query.decorator';
@@ -32,6 +29,7 @@ import Admin from 'src/roles/admin.decorator';
 import UpdateLibraryDto from './models/update-library.dto';
 import CreateLibraryDto from './models/create-library.dto';
 import IdentifierParam from 'src/identifier/identifier.pipe';
+import Response, { ResponseType } from 'src/response/response.decorator';
 
 @ApiTags("Libraries")
 @Controller('libraries')
@@ -51,9 +49,7 @@ export default class LibraryController {
 	@Admin()
 	@Post('new')
 	async createLibrary(@Body() createLibraryDto: CreateLibraryDto) {
-		return this.libraryService.buildResponse(
-			await this.libraryService.create(createLibraryDto)
-		);
+		return this.libraryService.create(createLibraryDto);
 	}
 
 	@ApiOperation({
@@ -76,31 +72,26 @@ export default class LibraryController {
 		@Body() updateLibraryDTO: UpdateLibraryDto,
 		@IdentifierParam(LibraryService)
 		where: LibraryQueryParameters.WhereInput,
-	) {
-		return this.libraryService.buildResponse(
-			await this.libraryService.update(updateLibraryDTO, where)
-		);
+	): Promise<Library> {
+		return this.libraryService.update(updateLibraryDTO, where);
 	}
 
 	@ApiOperation({
 		summary: 'Get all libraries'
 	})
 	@Get()
-	@ApiPaginatedResponse(Library)
+	@Response({
+		returns: Library,
+		type: ResponseType.Page
+	})
 	async getLibraries(
 		@PaginationQuery()
 		paginationParameters: PaginationParameters,
 		@SortingQuery(LibraryQueryParameters.SortingKeys)
 		sortingParameter: LibraryQueryParameters.SortingParameter,
-		@Req() request: Request
-	): Promise<PaginatedResponse<Library>> {
-		const libraries = await this.libraryService.getMany(
+	) {
+		return this.libraryService.getMany(
 			{}, paginationParameters, {}, sortingParameter
-		);
-
-		return PaginatedResponse.awaiting(
-			libraries.map((library) => this.libraryService.buildResponse(library)),
-			request
 		);
 	}
 
@@ -116,13 +107,16 @@ export default class LibraryController {
 		const library = await this.libraryService.get(where);
 
 		await this.libraryService.delete(where);
-		return this.libraryService.buildResponse(library);
+		return library;
 	}
 
 	@ApiOperation({
 		summary: 'Get all album artists from a library'
 	})
-	@ApiPaginatedResponse(ArtistResponse)
+	@Response({
+		handler: ArtistResponseBuilder,
+		type: ResponseType.Page
+	})
 	@Get(':idOrSlug/artists')
 	async getArtistsByLibrary(
 		@PaginationQuery()
@@ -132,8 +126,7 @@ export default class LibraryController {
 		@SortingQuery(ArtistQueryParameters.SortingKeys)
 		sortingParameter: ArtistQueryParameters.SortingParameter,
 		@IdentifierParam(LibraryService)
-		where: LibraryQueryParameters.WhereInput,
-		@Req() request: Request
+		where: LibraryQueryParameters.WhereInput
 	) {
 		const artists = await this.artistService.getAlbumsArtists(
 			{ library: where }, paginationParameters, include, sortingParameter
@@ -142,16 +135,16 @@ export default class LibraryController {
 		if (artists.length == 0) {
 			await this.libraryService.throwIfNotFound(where);
 		}
-		return PaginatedResponse.awaiting(
-			artists.map((artist) => this.artistService.buildResponse(artist)),
-			request
-		);
+		return artists;
 	}
 
 	@ApiOperation({
 		summary: 'Get all albums from a library'
 	})
-	@ApiPaginatedResponse(AlbumResponse)
+	@Response({
+		handler: AlbumResponseBuilder,
+		type: ResponseType.Page
+	})
 	@Get(':idOrSlug/albums')
 	async getAlbumsByLibrary(
 		@PaginationQuery()
@@ -162,8 +155,7 @@ export default class LibraryController {
 		sortingParameter: AlbumQueryParameters.SortingParameter,
 		@Query() filter: AlbumQueryParameters.AlbumFilterParameter,
 		@IdentifierParam(LibraryService)
-		where: LibraryQueryParameters.WhereInput,
-		@Req() request: Request
+		where: LibraryQueryParameters.WhereInput
 	) {
 		const albums = await this.albumService.getMany(
 			{ library: where, type: filter.type },
@@ -175,16 +167,16 @@ export default class LibraryController {
 		if (albums.length == 0) {
 			await this.libraryService.throwIfNotFound(where);
 		}
-		return PaginatedResponse.awaiting(
-			albums.map((album) => this.albumService.buildResponse(album)),
-			request
-		);
+		return albums;
 	}
 
 	@ApiOperation({
 		summary: 'Get all releases from a library'
 	})
-	@ApiPaginatedResponse(ReleaseResponse)
+	@Response({
+		handler: ReleaseResponseBuilder,
+		type: ResponseType.Page
+	})
 	@Get(':idOrSlug/releases')
 	async getReleasesByLibrary(
 		@PaginationQuery()
@@ -194,8 +186,7 @@ export default class LibraryController {
 		@SortingQuery(ReleaseQueryParameters.SortingKeys)
 		sortingParameter: ReleaseQueryParameters.SortingParameter,
 		@IdentifierParam(LibraryService)
-		where: LibraryQueryParameters.WhereInput,
-		@Req() request: Request
+		where: LibraryQueryParameters.WhereInput
 	) {
 		const releases = await this.releaseService.getMany(
 			{ library: where }, paginationParameters, include, sortingParameter
@@ -204,16 +195,16 @@ export default class LibraryController {
 		if (releases.length == 0) {
 			await this.libraryService.throwIfNotFound(where);
 		}
-		return PaginatedResponse.awaiting(
-			releases.map((release) => this.releaseService.buildResponse(release)),
-			request
-		);
+		return releases;
 	}
 
 	@ApiOperation({
 		summary: 'Get all songs from a library'
 	})
-	@ApiPaginatedResponse(SongResponse)
+	@Response({
+		handler: SongResponseBuilder,
+		type: ResponseType.Page
+	})
 	@Get(':idOrSlug/songs')
 	async getSongsByLibrary(
 		@PaginationQuery()
@@ -223,8 +214,7 @@ export default class LibraryController {
 		@SortingQuery(SongQueryParameters.SortingKeys)
 		sortingParameter: SongQueryParameters.SortingParameter,
 		@IdentifierParam(LibraryService)
-		where: LibraryQueryParameters.WhereInput,
-		@Req() request: Request
+		where: LibraryQueryParameters.WhereInput
 	) {
 		const songs = await this.songService.getMany(
 			{ library: where }, paginationParameters, include, sortingParameter
@@ -233,16 +223,16 @@ export default class LibraryController {
 		if (songs.length == 0) {
 			await this.libraryService.throwIfNotFound(where);
 		}
-		return PaginatedResponse.awaiting(
-			songs.map((song) => this.songService.buildResponse(song)),
-			request
-		);
+		return songs;
 	}
 
 	@ApiOperation({
 		summary: 'Get all tracks from a library'
 	})
-	@ApiPaginatedResponse(TrackResponse)
+	@Response({
+		handler: TrackResponseBuilder,
+		type: ResponseType.Page
+	})
 	@Get(':idOrSlug/tracks')
 	async getTracksByLibrary(
 		@PaginationQuery()
@@ -252,8 +242,7 @@ export default class LibraryController {
 		@SortingQuery(TrackQueryParameters.SortingKeys)
 		sortingParameter: TrackQueryParameters.SortingParameter,
 		@IdentifierParam(LibraryService)
-		where: LibraryQueryParameters.WhereInput,
-		@Req() request: Request
+		where: LibraryQueryParameters.WhereInput
 	) {
 		const tracks = await this.trackService.getMany(
 			{ library: where }, paginationParameters, include, sortingParameter
@@ -262,11 +251,6 @@ export default class LibraryController {
 		if (tracks.length == 0) {
 			await this.libraryService.throwIfNotFound(where);
 		}
-		return PaginatedResponse.awaiting(
-			tracks.map(
-				(track) => this.trackService.buildResponse(track)
-			),
-			request
-		);
+		return tracks;
 	}
 }

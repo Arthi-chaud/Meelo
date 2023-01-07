@@ -17,7 +17,6 @@ import {
 } from './lyrics.exceptions';
 import type LyricsQueryParameters from './models/lyrics.query-parameters';
 import { Prisma } from '@prisma/client';
-import { LyricsResponse } from './models/lyrics.response';
 import SortingParameter from 'src/sort/models/sorting-parameter';
 import Identifier from 'src/identifier/models/identifier';
 import Logger from 'src/logger/logger';
@@ -137,15 +136,6 @@ export class LyricsService extends RepositoryService<
 	 */
 	async onDeletionFailure(where: LyricsQueryParameters.DeleteInput) {
 		return this.onNotFound(this.formatDeleteInputToWhereInput(where));
-	}
-
-	async buildResponse(input: LyricsWithRelations): Promise<LyricsResponse> {
-		const response: LyricsResponse = { lyrics: input.content };
-
-		if (input.song) {
-			response.song = await this.songService.buildResponse(input.song);
-		}
-		return response;
 	}
 
 	formatDeleteInput(where: LyricsQueryParameters.DeleteInput) {

@@ -41,12 +41,13 @@ export class IllustrationController {
 		@Response({ passthrough: true })
 		res: Response,
 	) {
-		const artist = await this.artistService.select(where, { slug: true });
-		const artistIllustration = await this.artistService.buildIllustrationPath(where);
+		const { slug } = await this.artistService.select(where, { slug: true });
+		const artistIllustration = this.illustrationService
+			.buildArtistIllustrationPath(new Slug(slug));
 
 		return this.illustrationService.streamIllustration(
 			artistIllustration,
-			artist.slug,
+			slug,
 			dimensions,
 			res
 		);
@@ -62,11 +63,13 @@ export class IllustrationController {
 		where: ArtistQueryParameters.WhereInput,
 		@Body() illustrationDto: IllustrationDownloadDto
 	) {
-		const artistIllustrationPath = await this.artistService.buildIllustrationPath(where);
+		const { slug } = await this.artistService.select(where, { slug: true });
+		const artistIllustration = this.illustrationService
+			.buildArtistIllustrationPath(new Slug(slug));
 
 		return this.illustrationService.downloadIllustration(
 			illustrationDto.url,
-			artistIllustrationPath
+			artistIllustration
 		);
 	}
 
@@ -232,8 +235,10 @@ export class IllustrationController {
 		@IdentifierParam(ArtistService)
 		where: ArtistQueryParameters.WhereInput,
 	) {
-		const artistIllustrationPath = await this.artistService.buildIllustrationPath(where);
+		const { slug } = await this.artistService.select(where, { slug: true });
+		const artistIllustration = this.illustrationService
+			.buildArtistIllustrationPath(new Slug(slug));
 
-		this.illustrationService.deleteIllustrationSafe(artistIllustrationPath);
+		this.illustrationService.deleteIllustrationSafe(artistIllustration);
 	}
 }

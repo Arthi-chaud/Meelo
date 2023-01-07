@@ -1,9 +1,16 @@
+import {
+	Inject, Injectable, forwardRef
+} from "@nestjs/common";
 import { ApiProperty } from "@nestjs/swagger";
-import { AlbumResponse } from "src/album/models/album.response";
-import { ArtistResponse } from "src/artist/models/artist.response";
-import { GenreResponse } from "src/genre/models/genre.response";
-import { ReleaseResponse } from "src/release/models/release.response";
-import { SongResponse } from "src/song/models/song.response";
+import { AlbumResponse, AlbumResponseBuilder } from "src/album/models/album.response";
+import { ArtistResponse, ArtistResponseBuilder } from "src/artist/models/artist.response";
+import { ReleaseResponse, ReleaseResponseBuilder } from "src/release/models/release.response";
+import ResponseBuilderInterceptor from "src/response/interceptors/response.interceptor";
+import { SongResponse, SongResponseBuilder } from "src/song/models/song.response";
+import SearchController from "../search.controller";
+import { Genre } from "src/prisma/models";
+
+export type SearchAllReturnType = Awaited<ReturnType<SearchController['searchItems']>>;
 
 export class SearchAllResponse {
 	@ApiProperty({
@@ -32,7 +39,43 @@ export class SearchAllResponse {
 
 	@ApiProperty({
 		isArray: true,
-		type: () => GenreResponse
+		type: () => Genre
 	})
-	genres: GenreResponse[];
+	genres: Genre[];
+}
+
+@Injectable()
+export class SearchAllResponseBuilder extends ResponseBuilderInterceptor<SearchAllReturnType, SearchAllResponse> {
+	constructor(
+		@Inject(forwardRef(() => ArtistResponseBuilder))
+		private artistResponseBuilder: ArtistResponseBuilder,
+		@Inject(forwardRef(() => AlbumResponseBuilder))
+		private albumResponseBuilder: AlbumResponseBuilder,
+		@Inject(forwardRef(() => SongResponseBuilder))
+		private songResponseBuilder: SongResponseBuilder,
+		@Inject(forwardRef(() => ReleaseResponseBuilder))
+		private releaseResponseBuilder: ReleaseResponseBuilder
+	) {
+		super();
+	}
+
+	returnType = SearchAllResponse;
+
+	async buildResponse(input: SearchAllReturnType): Promise<SearchAllResponse> {
+		return {
+			artists: await Promise.all(input.artists.map(
+				(artist) => this.artistResponseBuilder.buildResponse(artist)
+			)),
+			albums: await Promise.all(input.albums.map(
+				(album) => this.albumResponseBuilder.buildResponse(album)
+			)),
+			releases: await Promise.all(input.releases.map(
+				(release) => this.releaseResponseBuilder.buildResponse(release)
+			)),
+			songs: await Promise.all(input.songs.map(
+				(song) => this.songResponseBuilder.buildResponse(song)
+			)),
+			genres: input.genres,
+		};
+	}
 }

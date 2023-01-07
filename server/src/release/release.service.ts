@@ -23,7 +23,6 @@ import IllustrationService from 'src/illustration/illustration.service';
 import type { IllustrationPath } from 'src/illustration/models/illustration-path.model';
 import { buildStringSearchParameters } from 'src/utils/search-string-input';
 import ArtistService from 'src/artist/artist.service';
-import { ReleaseResponse } from './models/release.response';
 import SortingParameter from 'src/sort/models/sorting-parameter';
 import FileService from 'src/file/file.service';
 import archiver from 'archiver';
@@ -483,17 +482,5 @@ export default class ReleaseService extends RepositoryService<
 		});
 		archive.pipe(res);
 		archive.finalize();
-	}
-
-	async buildResponse(release: ReleaseWithRelations): Promise<ReleaseResponse> {
-		const response = <ReleaseResponse>{
-			...release,
-			illustration: await this.illustrationService.getReleaseIllustrationLink(release.id)
-		};
-
-		if (release.album !== undefined) {
-			response.album = await this.albumService.buildResponse(release.album);
-		}
-		return response;
 	}
 }

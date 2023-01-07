@@ -7,6 +7,8 @@ import TrackModule from 'src/track/track.module';
 import GenreModule from 'src/genre/genre.module';
 import { LyricsModule } from 'src/lyrics/lyrics.module';
 import IllustrationModule from 'src/illustration/illustration.module';
+import { SongResponseBuilder } from './models/song.response';
+import ReleaseModule from 'src/release/release.module';
 
 @Module({
 	imports: [
@@ -15,10 +17,11 @@ import IllustrationModule from 'src/illustration/illustration.module';
 		forwardRef(() => ArtistModule),
 		forwardRef(() => TrackModule),
 		forwardRef(() => GenreModule),
+		forwardRef(() => ReleaseModule),
 		forwardRef(() => IllustrationModule)
 	],
-	exports: [SongService],
-	providers: [SongService],
+	exports: [SongService, SongResponseBuilder],
+	providers: [SongService, SongResponseBuilder],
 	controllers: [SongController]
 })
 export default class SongModule {}

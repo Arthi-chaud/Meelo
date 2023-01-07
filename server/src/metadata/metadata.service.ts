@@ -294,7 +294,7 @@ export default class MetadataService {
 		if (!this.fileManagerService.fileExists(filePath)) {
 			throw new FileDoesNotExistException(filePath);
 		}
-		const tmpOutput = `${filePath}-temp`;
+		const tmpOutput = `temp-${filePath}`;
 		const ffmpegTags: [string, string | undefined | null][] = [
 			["artist", metadata.artist],
 			["album_artist", metadata.albumArtist],
