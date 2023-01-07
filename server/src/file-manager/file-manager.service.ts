@@ -6,6 +6,7 @@ import md5File from 'md5-file';
 import * as fs from 'fs';
 import type { Library } from 'src/prisma/models';
 import { FileDoesNotExistException, FolderDoesNotExistException } from './file-manager.exceptions';
+import { join } from 'path';
 
 @Injectable()
 export default class FileManagerService {
@@ -87,57 +88,41 @@ export default class FileManagerService {
 	}
 
 	/**
-	 * Get any file that matches the RegExps from the settings, in a Library's base folder
-	 * @param libraryBaseDirectory The path to the library, without settings's dataFolder
-	 * @returns A List of strings representing the path of candidate file, without dataFolder and libraryBaseDirectory
-	 */
-	getCandidateFilesInLibraryFolder(libraryBaseDirectory: string): string[] {
-		const baseFolder = this.settingsService.settingsValues.dataFolder;
-		const libraryPath = `${baseFolder}/${libraryBaseDirectory}`;
-
-		return this.getCandidateInFolder(libraryPath).map(
-			(candidateFullPath) => candidateFullPath.substring(libraryPath.length + 1)
-		);
-	}
-
-	/**
-	 * Get all file matching RegExp from Settings service, recursively in a folder
+	 * Get all directories in a folder
 	 * @param folderPath The path of a folder to go through
 	 */
-	private getCandidateInFolder(folderPath: string): string[] {
+	getDirectoriesInFolder(folderPath: string): string[] {
 		try {
 			const directoryContent = fs.readdirSync(folderPath, { withFileTypes: true });
-			let candidates: string[] = [];
 
-			directoryContent.forEach(
-				(dirEntry) => {
-					const entryFullPath = `${folderPath}/${dirEntry.name}`;
-
-					if (dirEntry.isDirectory()) {
-						candidates = candidates.concat(this.getCandidateInFolder(entryFullPath));
-					} else if (dirEntry.isFile()) {
-						if (this.fileIsCandidate(entryFullPath)) {
-							candidates.push(entryFullPath);
-						}
-					}
-				}
-			);
-			return candidates;
+			return directoryContent.filter((entry) => entry.isDirectory())
+				.map((entry) => join(folderPath, entry.name));
 		} catch {
 			throw new FolderDoesNotExistException(folderPath);
 		}
 	}
 
 	/**
-	 * Checks if a file matches one of the RegExp from the settings
-	 * @param filepath The Full path of a file
-	 * @returns true if any of the RegExp matches
+	 * Get all files in a folder
+	 * @param folderPath The path of a folder to go through
 	 */
-	private fileIsCandidate(filepath: string): boolean {
-		const matchingRegexes = this.settingsService.settingsValues.trackRegex.filter(
-			(regex) => filepath.match(regex) != null
-		);
+	getFilesInFolder(folderPath: string, recursive = false): string[] {
+		try {
+			const directoryContent = fs.readdirSync(folderPath, { withFileTypes: true });
+			const files = directoryContent
+				.filter((entry) => entry.isFile())
+				.map((entry) => join(folderPath, entry.name));
 
-		return matchingRegexes.length > 0;
+			if (recursive) {
+				const directories = this.getDirectoriesInFolder(folderPath);
+
+				files.push(...directories
+					.map((directory) => this.getFilesInFolder(directory, true))
+					.flat());
+			}
+			return files;
+		} catch {
+			throw new FolderDoesNotExistException(folderPath);
+		}
 	}
 }

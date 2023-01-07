@@ -8,6 +8,7 @@ import FileModule from 'src/file/file.module';
 import IllustrationModule from 'src/illustration/illustration.module';
 import { LyricsModule } from 'src/lyrics/lyrics.module';
 import MetadataModule from 'src/metadata/metadata.module';
+import SettingsModule from 'src/settings/settings.module';
 
 @Module({
 	imports: [
@@ -17,6 +18,7 @@ import MetadataModule from 'src/metadata/metadata.module';
 		forwardRef(() => TrackModule),
 		forwardRef(() => MetadataModule),
 		LyricsModule,
+		SettingsModule,
 		forwardRef(() => IllustrationModule),
 	],
 	controllers: [TasksController],

@@ -12,11 +12,13 @@ import IllustrationService from 'src/illustration/illustration.service';
 import { LyricsService } from 'src/lyrics/lyrics.service';
 import LibraryService from 'src/library/library.service';
 import Logger from 'src/logger/logger';
+import SettingsService from 'src/settings/settings.service';
 
 @Injectable()
 export default class TasksService {
 	private readonly logger = new Logger(TasksService.name);
 	constructor(
+		private settingsService: SettingsService,
 		private fileManagerService: FileManagerService,
 		@Inject(forwardRef(() => FileService))
 		private fileService: FileService,
@@ -38,16 +40,30 @@ export default class TasksService {
 	 */
 	async registerNewFiles(parentLibrary: Library): Promise<File[]> {
 		this.logger.log(`'${parentLibrary.slug}' library: Registration of new files`);
-		const unfilteredCandidates = this.fileManagerService.getCandidateFilesInLibraryFolder(
-			parentLibrary.path
-		);
+		const libraryFullPath = this.fileManagerService.getLibraryFullPath(parentLibrary);
+		const unfilteredCandidates = this.fileManagerService.getFilesInFolder(
+			libraryFullPath, true
+		).map((candidateFullPath) => candidateFullPath.substring(libraryFullPath.length + 1));
 		const alreadyRegistrered = await this.fileService.getMany({ paths: unfilteredCandidates });
 
-		const candidates = unfilteredCandidates.filter((candidatePath) => {
-			return alreadyRegistrered.findIndex(
-				(registered) => registered.path == candidatePath
-			) == -1;
-		});
+		const candidates = unfilteredCandidates
+			.filter((candidatePath) => {
+				return alreadyRegistrered.findIndex(
+					(registered) => registered.path == candidatePath
+				) == -1;
+			})
+			.filter((candidate) => {
+				const matchingRegex = this.settingsService.settingsValues.trackRegex.filter(
+					(regex) => candidate.match(regex) != null
+				).at(0);
+
+				if (matchingRegex) {
+					this.logger.warn(`File '${candidate}' does not match any of the regexes`);
+					return false;
+				}
+				return true;
+			});
+
 		const newlyRegistered: File[] = [];
 
 		for (const candidate of candidates) {
