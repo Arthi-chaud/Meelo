@@ -1,6 +1,5 @@
 import { HttpStatus } from "@nestjs/common";
 import { MeeloException } from "src/exceptions/meelo-exception";
-import path from 'path';
 
 class ParsingException extends MeeloException {
 	constructor(message: string) {
@@ -10,18 +9,18 @@ class ParsingException extends MeeloException {
 
 export class FileParsingException extends ParsingException {
 	constructor(filePath: string) {
-		super(`Parsing file '${path.parse(filePath).base}' failed.`);
+		super(`Parsing file '${filePath}' failed.`);
 	}
 }
 
 export class MissingMetadataException extends ParsingException {
 	constructor(filePath: string) {
-		super(`Parsing file '${path.parse(filePath).base}' failed because of missing metadata.`);
+		super(`Parsing file '${filePath}' failed because of missing metadata.`);
 	}
 }
 
 export class PathParsingException extends ParsingException {
 	constructor(filePath: string) {
-		super(`Aborting parsing of '${path.parse(filePath).base}' file: It doesn't match any of the regex, or catch groups are missing`);
+		super(`Aborting parsing of '${filePath}' file: It doesn't match any of the regex, or catch groups are missing`);
 	}
 }
