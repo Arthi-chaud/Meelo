@@ -2,6 +2,7 @@ import {
 	CallHandler, ExecutionContext, Injectable, NestInterceptor
 } from "@nestjs/common";
 import { map } from "rxjs";
+// eslint-disable-next-line no-restricted-imports
 import PaginatedResponse from "src/pagination/models/paginated-response";
 
 /**
