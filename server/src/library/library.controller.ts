@@ -106,7 +106,7 @@ export default class LibraryController {
 	) {
 		const library = await this.libraryService.get(where);
 
-		await this.libraryService.delete(where);
+		this.libraryService.delete(where);
 		return library;
 	}
 
