@@ -83,7 +83,7 @@ export class IllustrationController {
 		where: AlbumQueryParameters.WhereInput,
 		@Response({ passthrough: true }) res: Response,
 	) {
-		const masterRelease = await this.releaseService.get({ masterOf: where });
+		const masterRelease = await this.releaseService.getMasterRelease(where);
 
 		return this.getReleaseIllustration(
 			{ id: masterRelease.id },

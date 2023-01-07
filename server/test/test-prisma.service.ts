@@ -80,10 +80,10 @@ export default class TestPrismaService extends PrismaService {
 			data: { name: "My Album", slug: 'my-album', artistId: this.artistA.id, releaseDate: new Date('2022') }
 		});
 		this.releaseA1_1 = await this.release.create({
-			data: { name: "My Album 1", slug: 'my-album-1', albumId: this.albumA1.id, master: true, releaseDate:new Date('2022') }
+			data: { name: "My Album 1", slug: 'my-album-1', albumId: this.albumA1.id, releaseDate:new Date('2022') }
 		});
 		this.releaseA1_2 = await this.release.create({
-			data: { name: "My Album 2", slug: 'my-album-2', albumId: this.albumA1.id, master: false }
+			data: { name: "My Album 2", slug: 'my-album-2', albumId: this.albumA1.id }
 		});
 		this.songA1 = await this.song.create({
 			data: { name: "My Song", slug: 'my-song', artistId: this.artistA.id, genres:
@@ -133,7 +133,7 @@ export default class TestPrismaService extends PrismaService {
 			data: { name: "My Second Album", slug: 'my-second-album', artistId: this.artistB.id }
 		});
 		this.releaseB1_1 = await this.release.create({
-			data: { name: "My Second Album 1", slug: 'my-second-album-1', albumId: this.albumB1.id, master: true }
+			data: { name: "My Second Album 1", slug: 'my-second-album-1', albumId: this.albumB1.id }
 		});
 		this.songB1 = await this.song.create({
 			data: { name: "My Second Song", slug: 'my-second-song', artistId: this.artistB.id, genres:
@@ -156,7 +156,7 @@ export default class TestPrismaService extends PrismaService {
 			data: { name: "My Compilation Album", slug: 'my-compilation-album', releaseDate: new Date('2000'), type: AlbumType.Compilation }
 		});
 		this.compilationReleaseA1 = await this.release.create({
-			data: { name: "My Compilation Album 1", slug: 'my-compilation-album-1', albumId: this.compilationAlbumA.id, master: true,  releaseDate: new Date('2000') }
+			data: { name: "My Compilation Album 1", slug: 'my-compilation-album-1', albumId: this.compilationAlbumA.id,  releaseDate: new Date('2000') }
 		});
 		this.songC1 = await this.song.create({
 			data: { name: "My C Song", slug: 'my-c-song', artistId: this.artistC.id, genres:

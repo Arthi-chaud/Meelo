@@ -188,7 +188,6 @@ describe('Song Controller', () => {
 							name: dummyRepository.releaseA1_1.name,
 							slug: dummyRepository.releaseA1_1.slug,
 							albumId: dummyRepository.releaseA1_1.albumId,
-							master: dummyRepository.releaseA1_1.master,
 							releaseDate: dummyRepository.releaseA1_1.releaseDate?.toISOString() ?? null,
 							illustration: null
 						}

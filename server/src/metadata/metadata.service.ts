@@ -81,7 +81,6 @@ export default class MetadataService {
 		}, { releases: true });
 		const release = await this.releaseService.getOrCreate({
 			name: metadata.release ?? metadata.album!,
-			master: album.releases.length == 0,
 			releaseDate: metadata.releaseDate,
 			album: { id: album.id }
 		}, { album: true });

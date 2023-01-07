@@ -389,7 +389,6 @@ describe('Release Controller', () => {
 					const release: Release = res.body;
 					expect(release).toStrictEqual({
 						...expectedReleaseResponse(dummyRepository.releaseB1_1),
-						master: false,
 						albumId: dummyRepository.albumA1.id
 					});
 				});
@@ -405,7 +404,6 @@ describe('Release Controller', () => {
 					const release: Release = res.body;
 					expect(release).toStrictEqual({
 						...expectedReleaseResponse(dummyRepository.releaseA1_2),
-						master: true,
 					});
 				});
 		});

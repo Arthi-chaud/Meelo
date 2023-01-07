@@ -25,7 +25,6 @@ namespace ReleaseQueryParameters {
 	export type WhereInput = RequireExactlyOne<{
 		id: Release['id'],
 		bySlug: { slug: Slug, album: AlbumQueryParameters.WhereInput },
-		masterOf: AlbumQueryParameters.WhereInput,
 	}>;
 
 	/**

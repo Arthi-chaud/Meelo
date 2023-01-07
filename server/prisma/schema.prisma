@@ -91,8 +91,12 @@ model Album {
 	slug			String
 	/// @descrption The date of the first release of the album
 	releaseDate		DateTime?
+	/// @description The main/most used release of the Album, by default the first one
+	master			Release?	@relation("Master", fields: [masterId], references: [id], onDelete: SetNull)
+	/// @description Unique numeric identifier of the main release, if there is one
+	masterId		Int?		@unique
 	/// @description Collections of related releases
-	releases		Release[]
+	releases		Release[]	@relation("Releases")
 	/// @description Describes the type of the album
 	type			AlbumType	@default(StudioRecording)
 	/// @description The artist of the album
@@ -177,16 +181,14 @@ model Release {
 	slug			String
 	/// @description The date of the release
 	releaseDate		DateTime?
-	/// @description Is this release the main/most used version of the Album
-	/// @example false
-	master			Boolean	@default(false)
 	/// @description The tracks on the release
 	tracks			Track[]
 	/// @description The reference Album
-	album			Album		@relation(fields: [albumId], references: [id])
+	album			Album		@relation("Releases", fields: [albumId], references: [id])
 	/// @description Unique numeric identifier of the parent album
 	/// @example 123
 	albumId			Int
+	masterOf		Album?		@relation("Master")
 	@@unique([albumId, slug])
 	@@map("releases")
 }
