@@ -60,11 +60,14 @@ export default class ArtistController {
 		@Query('albumArtistOnly', new DefaultValuePipe(false), ParseBoolPipe)
 		albumArtistsOnly = false,
 	) {
-		const method = albumArtistsOnly
-			? this.artistService.getAlbumsArtists
-			: this.artistService.getMany;
-
-		return method({}, paginationParameters, include, sortingParameter);
+		if (albumArtistsOnly) {
+			return this.artistService.getAlbumsArtists(
+				{}, paginationParameters, include, sortingParameter
+			);
+		}
+		return this.artistService.getMany(
+			{}, paginationParameters, include, sortingParameter
+		);
 	}
 
 	@ApiOperation({

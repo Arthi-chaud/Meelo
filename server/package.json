@@ -15,8 +15,8 @@
     "test:db:up": "docker run -d --rm --env-file ../.env -p 5432:5432 --name test-db postgres:alpine3.16",
     "test:db:down": "docker container stop test-db",
     "test:db:migrate": "POSTGRES_HOST=localhost yarn run prisma migrate dev",
-    "test": "POSTGRES_HOST=localhost MEELO_DIR=test/assets/ NODE_ENV=development jest -i",
-    "test:cov": "POSTGRES_HOST=localhost MEELO_DIR=test/assets/ NODE_ENV=development jest --coverage -i",
+    "test": "POSTGRES_HOST=localhost MEELO_DIR=test/assets/ jest -i",
+    "test:cov": "POSTGRES_HOST=localhost MEELO_DIR=test/assets/ jest --coverage -i",
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand"
   },
   "dependencies": {

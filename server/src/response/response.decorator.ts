@@ -9,7 +9,7 @@ import PaginatedResponseBuilderInterceptor from "./interceptors/page-response.in
 import ResponseBuilderInterceptor from "./interceptors/response.interceptor";
 import type { RequireExactlyOne } from "type-fest";
 
-type ResponseDecoratorParam<ToType extends Type<unknown>, FromType = unknown> = {
+type ResponseDecoratorParam<ToType extends Type<{ id: number }>, FromType = unknown> = {
 	/**
 	 * Tells if the response is a single item, an array, or a page
 	 * @default SINGLE
@@ -38,7 +38,7 @@ type ResponseDecoratorParam<ToType extends Type<unknown>, FromType = unknown> = 
  * - 'Build' the response (i.e. finding the illustration path)
  * - Format pagination, if the response is a page
  */
-const Response = <ToType extends Type<unknown>>(
+const Response = <ToType extends Type<{ id: number }>>(
 	params: ResponseDecoratorParam<ToType>
 ): MethodDecorator => {
 	return function (target: any, propertyKey: string, descriptor: any) {

@@ -119,7 +119,7 @@ export default class SearchController {
 		summary: 'Search releases by their names'
 	})
 	@Response({
-		returns: ReleaseResponseBuilder,
+		handler: ReleaseResponseBuilder,
 		type: ResponseType.Page
 	})
 	@Get('/releases/:query')
