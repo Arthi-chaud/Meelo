@@ -98,20 +98,12 @@ export default class MetadataService {
 			song: { id: song.id },
 		};
 
-		/**
-		 * If the newly registered release is 'older' that the known album
-		 * Or if the album did not have a date, update album's date
-		 */
-		if ((release.releaseDate !== null &&
-			release.album.releaseDate !== null &&
-			release.album.releaseDate > release.releaseDate) ||
-			(release.releaseDate && !release.album.releaseDate)) {
-			release.album.releaseDate = release.releaseDate;
-		}
 		if (albumArtist === undefined && release.album.type == AlbumType.StudioRecording) {
-			release.album.type = AlbumType.Compilation;
+			await this.albumService.update(
+				{ type: AlbumType.Compilation },
+				{ id: release.albumId }
+			);
 		}
-		await this.albumService.update({ ...release.album }, { id: release.albumId });
 		if (!release.releaseDate ||
 		metadata.releaseDate && release.releaseDate < metadata.releaseDate) {
 			await this.releaseService.update(
