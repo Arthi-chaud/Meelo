@@ -10,6 +10,8 @@ type ReleaseItemProps = {
 }
 
 const ReleaseItem = ({ release }: ReleaseItemProps) => {
+	const isMaster = release.id == release.album.masterId;
+
 	return <ListItem key={release.id}
 		icon={<Illustration url={release.illustration}/>}
 		href={`/releases/${release.id}`}
@@ -20,7 +22,7 @@ const ReleaseItem = ({ release }: ReleaseItemProps) => {
 		}
 		trailing={<Grid container spacing={1} sx={{ justifyContent: 'flex-end', flexWrap: 'nowrap' }}>
 			<Grid item sx={{ display: 'flex', alignItems: 'center' }}>
-				{release.master ? <Star/> : undefined }
+				{isMaster ? <Star/> : undefined }
 			</Grid>
 			<Grid item>
 				{<ReleaseContextualMenu release={release}/>}
