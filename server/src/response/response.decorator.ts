@@ -20,18 +20,6 @@ type ResponseDecoratorParam<ToType extends Type<{ id: number }>, FromType = unkn
 	returns: ToType;
 }>
 
-// const createBasicResponseBuilder = <T extends Type<any>>(type: T) => {
-// 	@Global()
-// 	@Injectable()
-// 	class BaseResponseBuilder extends ResponseBuilderInterceptor<T, Type<T>> {
-// 		returnType = type;
-
-// 		buildResponse = async (input: T) => input;
-// 	}
-
-// 	return BaseResponseBuilder;
-// };
-
 /**
  * Controller method decorator to:
  * - Apply response type for OpenAPI
