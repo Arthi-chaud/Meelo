@@ -9,7 +9,7 @@ import ArtistService from "src/artist/artist.service";
 import PrismaModule from "src/prisma/prisma.module";
 import PrismaService from "src/prisma/prisma.service";
 import Slug from "src/slug/slug";
-import { ReleaseNotFoundException, ReleaseNotFoundFromIDException } from "./release.exceptions";
+import { MasterReleaseNotFoundException, ReleaseNotFoundException, ReleaseNotFoundFromIDException } from "./release.exceptions";
 import ReleaseService from "./release.service";
 import IllustrationModule from "src/illustration/illustration.module";
 import MetadataModule from "src/metadata/metadata.module";
@@ -223,6 +223,13 @@ describe('Release Service', () => {
 
 			expect(compilationMaster).toStrictEqual(dummyRepository.compilationReleaseA1);
 		});
+		it("Should throw, as the album does not have releases", async () => {
+			const tmpAlbum = await albumService.create({ name: 'A'  });
+			const test = () => releaseService.getMasterRelease({ id: tmpAlbum.id });
+			
+			expect(test()).rejects.toThrow(MasterReleaseNotFoundException);
+		});
+
 	});
 
 

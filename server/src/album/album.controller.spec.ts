@@ -19,10 +19,12 @@ import GenreModule from "src/genre/genre.module";
 import TestPrismaService from "test/test-prisma.service";
 import type ReassignAlbumDTO from "./models/reassign-album.dto";
 import FileModule from "src/file/file.module";
+import AlbumService from "./album.service";
 
 describe('Album Controller', () => {
 	let dummyRepository: TestPrismaService;
 	let app: INestApplication;
+	let albumService: AlbumService;
 
 	const expectedArtistResponse = (artist: Artist) => ({
 		...artist,
@@ -48,6 +50,7 @@ describe('Album Controller', () => {
 		}).overrideProvider(PrismaService).useClass(TestPrismaService).compile();
 		app = await SetupApp(module);
 		dummyRepository = module.get(PrismaService);
+		albumService = module.get(AlbumService);
 		await dummyRepository.onModuleInit();
 	});
 
@@ -210,6 +213,12 @@ describe('Album Controller', () => {
 			return request(app.getHttpServer())
 				.get(`/albums/plop/releases`)
 				.expect(400);
+		});
+		it("Should throw, as the album does not have releases", async () => {
+			const tmpAlbum = await albumService.create({ name: 'A'  });
+			return request(app.getHttpServer())
+				.get(`/albums/${tmpAlbum.id}/master`)
+				.expect(404);
 		});
 		it("Should include related album", () => {
 			return request(app.getHttpServer())

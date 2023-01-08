@@ -6,6 +6,7 @@ import Slug from 'src/slug/slug';
 import type { Release, ReleaseWithRelations } from 'src/prisma/models';
 import type { Prisma } from '@prisma/client';
 import {
+	MasterReleaseNotFoundException,
 	ReleaseAlreadyExists,
 	ReleaseNotFoundException,
 	ReleaseNotFoundFromIDException
@@ -237,12 +238,16 @@ export default class ReleaseService extends RepositoryService<
 				if (album.masterId != null) {
 					return this.get({ id: album.masterId }, include);
 				}
-				return this.getMany(
-					{ album: where },
-					{ take: 1 },
-					include,
-					{ sortBy: 'id', order: 'asc' }
-				).then((releases) => releases[0]);
+				return this.prismaService.release.findFirstOrThrow({
+					where: { album: AlbumService.formatWhereInput(where) },
+					include: RepositoryService.formatInclude(include),
+					orderBy: { id: 'asc' },
+
+				}).catch(() => {
+					throw new MasterReleaseNotFoundException(
+						new Slug(album.slug)
+					);
+				});
 			});
 	}
 
