@@ -175,14 +175,14 @@ export default class TrackService extends RepositoryService<
 	 * Callback on track not found
 	 * @param where the query parameters that failed to get the release
 	 */
-	async onNotFound(where: TrackQueryParameters.WhereInput): Promise<MeeloException> {
+	onNotFound(where: TrackQueryParameters.WhereInput): MeeloException {
 		if (where.id !== undefined) {
-			throw new TrackNotFoundByIdException(where.id);
+			return new TrackNotFoundByIdException(where.id);
 		}
 		if (where.sourceFile.id !== undefined) {
-			throw new FileNotFoundFromIDException(where.sourceFile.id);
+			return new FileNotFoundFromIDException(where.sourceFile.id);
 		}
-		throw new FileNotFoundFromPathException(where.sourceFile.byPath!.path);
+		return new FileNotFoundFromPathException(where.sourceFile.byPath!.path);
 	}
 
 	/**
@@ -339,7 +339,7 @@ export default class TrackService extends RepositoryService<
 			);
 
 			if (track.song.masterId == track.id) {
-				await this.albumService.unsetMasterRelease({ id: track.songId });
+				await this.songService.unsetMasterTrack({ id: track.songId });
 			}
 			await super.delete(where);
 			this.logger.warn(`Track '${track.name}' deleted`);
@@ -349,7 +349,7 @@ export default class TrackService extends RepositoryService<
 			}
 			return track;
 		} catch {
-			throw this.onDeletionFailure(where);
+			throw await this.onDeletionFailure(where);
 		}
 	}
 
