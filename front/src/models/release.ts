@@ -22,10 +22,6 @@ type Release = Resource & Illustration & {
 	 */
 	slug: string;
 	/**
-	 * Is the release the 'main' one
-	 */
-	master: boolean
-	/**
 	 * Unique identifier of the parent album
 	 */
 	albumId: number;

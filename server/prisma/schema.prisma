@@ -91,8 +91,13 @@ model Album {
 	slug			String
 	/// @descrption The date of the first release of the album
 	releaseDate		DateTime?
+	/// @description The main/most used release of the Album, by default the first one
+	master			Release?	@relation("Master", fields: [masterId], references: [id], onDelete: SetNull)
+	/// @description Unique numeric identifier of the main release, if there is one
+	/// @example 123
+	masterId		Int?		@unique
 	/// @description Collections of related releases
-	releases		Release[]
+	releases		Release[]	@relation("Releases")
 	/// @description Describes the type of the album
 	type			AlbumType	@default(StudioRecording)
 	/// @description The artist of the album
@@ -177,16 +182,14 @@ model Release {
 	slug			String
 	/// @description The date of the release
 	releaseDate		DateTime?
-	/// @description Is this release the main/most used version of the Album
-	/// @example false
-	master			Boolean	@default(false)
 	/// @description The tracks on the release
 	tracks			Track[]
 	/// @description The reference Album
-	album			Album		@relation(fields: [albumId], references: [id])
+	album			Album		@relation("Releases", fields: [albumId], references: [id])
 	/// @description Unique numeric identifier of the parent album
 	/// @example 123
 	albumId			Int
+	masterOf		Album?		@relation("Master")
 	@@unique([albumId, slug])
 	@@map("releases")
 }
@@ -209,6 +212,11 @@ model Song {
 	/// @description The number of times, the song was played
 	/// @example 3
 	playCount		Int		@default(0)
+	/// @description The main/most used track of the song, by default the first one
+	master			Track?	@relation("Master", fields: [masterId], references: [id], onDelete: SetNull)
+	/// @description Unique numeric identifier of the main release, if there is one
+	/// @example 123
+	masterId		Int?		@unique
 	/// @description Related tracks
 	tracks			Track[]
 	/// @description The lyrics of the song
@@ -281,9 +289,6 @@ model Track {
 	/// @description The display name of the track
 	/// @example My Song (Album Version)
 	name		String
-	/// @description Is this track the main one
-	/// @example true
-	master			Boolean	@default(false)
 	/// @description The index of the disc the track is on
 	/// @example 1
 	discIndex		Int?
@@ -305,5 +310,6 @@ model Track {
 	/// @description Unique numeric identifier of the source file
 	/// @example 123
 	sourceFileId		Int		@unique
+	masterOf		Song?		@relation("Master")
 	@@map("tracks")
 }

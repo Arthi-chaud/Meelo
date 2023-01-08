@@ -31,6 +31,11 @@ type Album = Resource & Illustration & {
 	 * If undefined, the album is a compilation
 	 */
 	artistId?: number;
+	/**
+	 * Unique identifier of the master release
+	 * If undefined, the first related release is chosen
+	 */
+	masterId?: number;
 }
 
 type AlbumWithArtist = Album & {

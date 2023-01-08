@@ -22,6 +22,7 @@ type TrackItemProps = {
 const TrackItem = ({ track }: TrackItemProps) => {
 	const release = track.release;
 	const dispatch = useDispatch();
+	const isMaster = track.song.masterId == track.id;
 
 	return (
 		<ListItem
@@ -35,7 +36,7 @@ const TrackItem = ({ track }: TrackItemProps) => {
 			secondTitle={release.name}
 			trailing={<Grid container spacing={1} sx={{ justifyContent: 'flex-end', flexWrap: 'nowrap' }}>
 				<Grid item sx={{ display: 'flex', alignItems: 'center' }}>
-					{track.master ? <StarIcon/> : undefined }
+					{isMaster ? <StarIcon/> : undefined }
 				</Grid>
 				<Grid item>
 					{<TrackContextualMenu track={track}/>}

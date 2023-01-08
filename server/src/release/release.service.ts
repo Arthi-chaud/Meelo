@@ -6,7 +6,7 @@ import Slug from 'src/slug/slug';
 import type { Release, ReleaseWithRelations } from 'src/prisma/models';
 import type { Prisma } from '@prisma/client';
 import {
-	MasterReleaseNotFoundFromIDException,
+	MasterReleaseNotFoundException,
 	ReleaseAlreadyExists,
 	ReleaseNotFoundException,
 	ReleaseNotFoundFromIDException
@@ -74,18 +74,13 @@ export default class ReleaseService extends RepositoryService<
 		const release = await super.create(input, include);
 
 		await this.albumService.updateAlbumDate({ id: release.albumId });
-		const newMaster = await this.albumService.updateAlbumMaster({
-			id: release.albumId
-		});
-
-		return { ...release, master: newMaster?.id == release.id };
+		return release;
 	}
 
 	formatCreateInput(release: ReleaseQueryParameters.CreateInput) {
 		return {
 			name: release.name,
 			releaseDate: release.releaseDate,
-			master: release.master,
 			album: {
 				connect: AlbumService.formatWhereInput(release.album),
 			},
@@ -116,13 +111,10 @@ export default class ReleaseService extends RepositoryService<
 	static formatWhereInput(where: ReleaseQueryParameters.WhereInput) {
 		return {
 			id: where.id,
-			master: where.masterOf ? true : undefined,
 			slug: where.bySlug?.slug.toString(),
-			album: where.masterOf
-				? AlbumService.formatWhereInput(where.masterOf)
-				: where.bySlug
-					? AlbumService.formatWhereInput(where.bySlug.album)
-					: undefined
+			album: where.bySlug
+				? AlbumService.formatWhereInput(where.bySlug.album)
+				: undefined
 		};
 	}
 
@@ -191,11 +183,9 @@ export default class ReleaseService extends RepositoryService<
 	async onNotFound(where: ReleaseQueryParameters.WhereInput): Promise<MeeloException> {
 		if (where.id != undefined) {
 			return new ReleaseNotFoundFromIDException(where.id);
-		} else if (where.masterOf?.id) {
-			return new MasterReleaseNotFoundFromIDException(where.masterOf?.id);
 		}
 		const parentAlbum = await this.albumService.get(
-			where.masterOf ?? where.bySlug.album, { artist: true }
+			where.bySlug.album, { artist: true }
 		);
 		const releaseSlug: Slug = where.bySlug!.slug;
 		const parentArtistSlug = parentAlbum.artist?.slug
@@ -243,7 +233,22 @@ export default class ReleaseService extends RepositoryService<
 		where: AlbumQueryParameters.WhereInput,
 		include?: ReleaseQueryParameters.RelationInclude
 	) {
-		return this.get({ masterOf: where }, include);
+		return this.albumService.get(where)
+			.then(async (album) => {
+				if (album.masterId != null) {
+					return this.get({ id: album.masterId }, include);
+				}
+				return this.prismaService.release.findFirstOrThrow({
+					where: { album: AlbumService.formatWhereInput(where) },
+					include: RepositoryService.formatInclude(include),
+					orderBy: { id: 'asc' },
+
+				}).catch(() => {
+					throw new MasterReleaseNotFoundException(
+						new Slug(album.slug)
+					);
+				});
+			});
 	}
 
 	/**
@@ -268,18 +273,8 @@ export default class ReleaseService extends RepositoryService<
 		what: ReleaseQueryParameters.UpdateInput,
 		where: ReleaseQueryParameters.WhereInput
 	) {
-		const unmodifiedRelease = await this.get(where);
 		const updatedRelease = await super.update(what, where);
-		const masterChangeInput: ReleaseQueryParameters.UpdateAlbumMaster = {
-			releaseId: updatedRelease.id,
-			album: { id: updatedRelease.albumId }
-		};
 
-		if (!unmodifiedRelease.master && what.master === true) {
-			await this.setReleaseAsMaster(masterChangeInput);
-		} else if (unmodifiedRelease.master && what.master === false) {
-			await this.unsetReleaseAsMaster(masterChangeInput);
-		}
 		await this.albumService.updateAlbumDate({ id: updatedRelease.albumId });
 		return updatedRelease;
 	}
@@ -301,20 +296,20 @@ export default class ReleaseService extends RepositoryService<
 	 * @param where Query parameters to find the release to delete
 	 */
 	async delete(where: ReleaseQueryParameters.DeleteInput, deleteParent = true): Promise<Release> {
-		const release = await this.get(where, { tracks: true });
+		const release = await this.get(where, { tracks: true, album: true });
 
 		await Promise.allSettled(
 			release.tracks.map((track) => this.trackService.delete({ id: track.id }, false))
 		);
+		if (release.album.masterId == release.id) {
+			await this.albumService.unsetMasterRelease({ id: release.albumId });
+		}
 		try {
 			await super.delete(where);
 		} catch {
 			return release;
 		}
 		this.logger.warn(`Release '${release.slug}' deleted`);
-		if (release.master) {
-			await this.albumService.updateAlbumMaster({ id: release.albumId });
-		}
 		if (deleteParent) {
 			await this.albumService.deleteIfEmpty(release.albumId);
 		}
@@ -331,57 +326,6 @@ export default class ReleaseService extends RepositoryService<
 		if (trackCount == 0) {
 			await this.delete(where);
 		}
-	}
-
-	/**
-	 * Sets provided release as the album's master release, unsetting other master from the same album
-	 * @param where release the query parameters to find the release to set as master
-	 */
-	async setReleaseAsMaster(where: ReleaseQueryParameters.UpdateAlbumMaster): Promise<void> {
-		const otherAlbumReleases: Release[] = (await this.getAlbumReleases(where.album))
-			.filter((albumRelease) => albumRelease.id != where.releaseId);
-
-		await Promise.allSettled([
-			this.prismaService.release.updateMany({
-				data: { master: false },
-				where: {
-					id: {
-						in: otherAlbumReleases.map((albumRelease) => albumRelease.id)
-					}
-				}
-			}),
-			this.update(
-				{ master: true },
-				{ id: where.releaseId }
-			)
-		]);
-	}
-
-	/**
-	 * Unsets provided release as the album's master release, setting another release a master of the album
-	 * @param where the query parameters to find the release to et as master
-	 */
-	async unsetReleaseAsMaster(where: ReleaseQueryParameters.UpdateAlbumMaster): Promise<void> {
-		const otherAlbumReleases: Release[] = (await this.getAlbumReleases(
-			where.album, {}, {}, { sortBy: 'id', order: 'asc' }
-		)).filter((albumRelease) => albumRelease.id != where.releaseId);
-
-		if (otherAlbumReleases.find((albumRelease) => albumRelease.master)) {
-			return;
-		}
-		if (otherAlbumReleases.length == 0) {
-			return;
-		}
-		await Promise.allSettled([
-			this.update(
-				{ master: true },
-				{ id: otherAlbumReleases.at(0)!.id }
-			),
-			this.update(
-				{ master: false },
-				{ id: where.releaseId }
-			)
-		]);
 	}
 
 	/**
@@ -408,11 +352,11 @@ export default class ReleaseService extends RepositoryService<
 					: undefined
 			);
 		}
-		await this.unsetReleaseAsMaster(
-			{ releaseId: release.id, album: { id: release.albumId } }
-		);
+		if (oldAlbum.masterId == release.id) {
+			await this.albumService.unsetMasterRelease(releaseWhere);
+		}
 		const updatedRelease = await this.update(
-			{ album: albumWhere, master: newParent.releases.length == 0 },
+			{ album: albumWhere },
 			releaseWhere
 		);
 

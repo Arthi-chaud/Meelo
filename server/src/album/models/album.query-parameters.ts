@@ -55,7 +55,7 @@ namespace AlbumQueryParameters {
 		'name',
 		'type',
 		'releaseDate',
-		'artistId'
+		'artistId',
 	] as const)) {}
 
 	/**

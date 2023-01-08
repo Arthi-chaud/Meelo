@@ -27,8 +27,7 @@ namespace TrackQueryParameters {
 	 */
 	export type WhereInput = RequireExactlyOne<{
 		id: Track['id'],
-		sourceFile: FileQueryParameters.WhereInput,
-		masterOfSong: SongQueryParameters.WhereInput
+		sourceFile: FileQueryParameters.WhereInput
 	}>;
 
 	/**

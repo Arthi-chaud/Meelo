@@ -59,6 +59,11 @@ describe('Lyrics Service', () => {
 	});
 
 	describe('Get lyrics', () => {
+		it("should throw, as the song does not have lyrics", async () => {
+			const test = () => lyricsService.get({ song: { id: dummyRepository.songC1.id }});
+			expect(test()).rejects.toThrow(LyricsNotFoundBySongException);
+		});
+
 		it("should get the lyrics (by its id)", async () => {
 			const fetchedLyrics = await lyricsService.get({ id: dummyRepository.lyricsA1.id });
 			expect(fetchedLyrics).toStrictEqual(dummyRepository.lyricsA1);
@@ -81,16 +86,11 @@ describe('Lyrics Service', () => {
 			expect(test()).rejects.toThrow(SongNotFoundByIdException);
 		});
 
-		it("should throw, as the song does not have lyrics", async () => {
-			const test = () => lyricsService.get({ song: { id: dummyRepository.songC1.id}});
-			expect(test()).rejects.toThrow(LyricsNotFoundBySongException);
-		});
-
-		it(('should return an existing lyric, without only its id'), async () => {
+		it(('should return an existing lyric, with only its id'), async () => {
 			const lyrics = await lyricsService.select({ id: dummyRepository.lyricsA1.id }, { id: true });
 			expect(lyrics).toStrictEqual({ id: dummyRepository.lyricsA1.id});
 		});
-		it(('should throw, as the album does not exist '), async () => {
+		it(('should throw, as the lyrics does not exist '), async () => {
 			const test = () => lyricsService.select({ id: -1 }, { id: true });
 			expect(test()).rejects.toThrow(LyricsNotFoundByIDException);
 		});
@@ -124,7 +124,7 @@ describe('Lyrics Service', () => {
 		});
 
 		it("should throw, as the song does not have lyrics", async () => {
-			const test = () => lyricsService.get({ song: { id: dummyRepository.songC1.id}});
+			const test = () => lyricsService.get({ song: { id: dummyRepository.songC1.id }});
 			expect(test()).rejects.toThrow(LyricsNotFoundBySongException);
 		});
 	});

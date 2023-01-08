@@ -26,6 +26,10 @@ type Song = Resource & Illustration & {
 	 * Number of times the song has been played
 	 */
 	playCount: number;
+	/**
+	 * The ID of the master track
+	 */
+	masterId?: number;
 }
 
 type SongWithArtist = Song & {

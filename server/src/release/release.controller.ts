@@ -188,12 +188,7 @@ export default class ReleaseController {
 	) {
 		const release = await this.releaseService.get(where);
 
-		await this.releaseService.setReleaseAsMaster({
-			releaseId: release.id,
-			album: { id: release.albumId }
-		});
-		return this.releaseService.getMasterRelease({
-			id: release.albumId
-		});
+		await this.albumService.setMasterRelease(where);
+		return release;
 	}
 }

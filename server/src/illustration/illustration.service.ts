@@ -28,7 +28,7 @@ import type { IllustrationDimensionsDto } from './models/illustration-dimensions
 import SettingsService from 'src/settings/settings.service';
 import glob from 'glob';
 import Logger from 'src/logger/logger';
-import { join } from 'path';
+import { join, parse } from 'path';
 
 type IllustrationExtractStatus = 'extracted' | 'error' | 'already-extracted' | 'different-illustration';
 
@@ -204,6 +204,7 @@ export default class IllustrationService {
 		const newPath = this.buildAlbumIllustrationFolderPath(albumSlug, newArtistSlug);
 
 		if (this.fileManagerService.folderExists(previousPath)) {
+			fs.mkdirSync(parse(newPath).dir, { recursive: true });
 			fs.renameSync(previousPath, newPath);
 		}
 	}
@@ -220,6 +221,7 @@ export default class IllustrationService {
 		);
 
 		if (this.fileManagerService.folderExists(previousPath)) {
+			fs.mkdirSync(parse(newPath).dir, { recursive: true });
 			fs.renameSync(previousPath, newPath);
 		}
 	}

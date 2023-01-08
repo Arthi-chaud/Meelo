@@ -45,7 +45,7 @@ const ReleaseContextualMenu = (props: ReleaseContextualMenuProps) => {
 			GoToAlbumAction(props.release.album.id),
 			{
 				label: "Set as Master",
-				disabled: props.release.master || !userIsAdmin,
+				disabled: props.release.id == props.release.album.masterId || !userIsAdmin,
 				icon: <Star/>,
 				onClick: () => masterMutation.mutate()
 			},

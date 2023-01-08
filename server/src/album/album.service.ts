@@ -21,13 +21,14 @@ import GenreService from "../genre/genre.service";
 import { buildStringSearchParameters } from 'src/utils/search-string-input';
 import SongService from 'src/song/song.service';
 import {
-	Album, AlbumWithRelations, Genre, Release
+	Album, AlbumWithRelations, Genre
 } from "src/prisma/models";
 import SortingParameter from 'src/sort/models/sorting-parameter';
 import { parseIdentifierSlugs } from 'src/identifier/identifier.parse-slugs';
 import compilationAlbumArtistKeyword from 'src/utils/compilation';
 import Identifier from 'src/identifier/models/identifier';
 import Logger from 'src/logger/logger';
+import ReleaseQueryParameters from 'src/release/models/release.query-parameters';
 
 @Injectable()
 export default class AlbumService extends RepositoryService<
@@ -47,7 +48,7 @@ export default class AlbumService extends RepositoryService<
 > {
 	private readonly logger = new Logger(AlbumService.name);
 	constructor(
-		prismaService: PrismaService,
+		private prismaService: PrismaService,
 		@Inject(forwardRef(() => ArtistService))
 		private artistServce: ArtistService,
 		@Inject(forwardRef(() => ReleaseService))
@@ -211,30 +212,6 @@ export default class AlbumService extends RepositoryService<
 	}
 
 	/**
-	 * Updates an album master, using the earliest date from its releases
-	 * @param where the query parameter to get the album to update
-	 */
-	async updateAlbumMaster(where: AlbumQueryParameters.WhereInput): Promise<Release | null> {
-		const releases = await this.releaseService.getAlbumReleases(where);
-		const sortedReleases = releases
-			.filter((release) => release.releaseDate !== null)
-			.sort((r1, r2) => r1.releaseDate!.getTime() - r2.releaseDate!.getTime());
-
-		if (sortedReleases.length !== 0) {
-			const newMaster = sortedReleases.at(0)!;
-
-			await this.releaseService.setReleaseAsMaster({ releaseId: newMaster.id, album: where });
-			return { ...newMaster, master: true };
-		} else if (releases.length !== 0) {
-			await this.releaseService.setReleaseAsMaster(
-				{ releaseId: releases[0].id, album: where }
-			);
-			return { ...releases[0], master: true };
-		}
-		return null;
-	}
-
-	/**
 	 * Deletes an album
 	 * @param where the query parameter
 	 */
@@ -288,6 +265,36 @@ export default class AlbumService extends RepositoryService<
 		if (albumCount == 0) {
 			await this.delete({ id: albumId });
 		}
+	}
+
+	/**
+	 * Set the release as album's master
+	 * @param releaseWhere the query parameters of the release
+	 * @returns the updated album
+	 */
+	async setMasterRelease(
+		releaseWhere: ReleaseQueryParameters.WhereInput
+	) {
+		const release = await this.releaseService.select(releaseWhere, { id: true, albumId: true });
+
+		return this.prismaService.album.update({
+			where: { id: release.albumId },
+			data: { masterId: release.id }
+		});
+	}
+
+	/**
+	 * unset album's master release
+	 * @param albumWhere the query parameters of the album
+	 * @returns the updated album
+	 */
+	async unsetMasterRelease(
+		albumWhere: AlbumQueryParameters.WhereInput
+	) {
+		return this.prismaService.album.update({
+			where: AlbumService.formatWhereInput(albumWhere),
+			data: { masterId: null }
+		});
 	}
 
 	/**
