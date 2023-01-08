@@ -14,13 +14,16 @@ import SortingQuery from 'src/sort/sort-query.decorator';
 import Admin from 'src/roles/admin.decorator';
 import IdentifierParam from 'src/identifier/identifier.pipe';
 import Response, { ResponseType } from 'src/response/response.decorator';
+import SongService from 'src/song/song.service';
 
 @ApiTags("Tracks")
 @Controller('tracks')
 export class TrackController {
 	constructor(
 		@Inject(forwardRef(() => TrackService))
-		private trackService: TrackService
+		private trackService: TrackService,
+		@Inject(forwardRef(() => SongService))
+		private songService: SongService
 	) { }
 
 	@ApiOperation({
@@ -93,11 +96,8 @@ export class TrackController {
 	) {
 		const track = await this.trackService.get(where);
 
-		await this.trackService.setTrackAsMaster({
-			trackId: track.id,
-			song: { id: track.songId }
-		});
-		return this.trackService.getMasterTrack({ id: track.songId });
+		await this.songService.setMasterTrack(where);
+		return track;
 	}
 
 	@ApiOperation({

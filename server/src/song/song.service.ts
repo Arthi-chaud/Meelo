@@ -18,12 +18,11 @@ import { CompilationArtistException } from 'src/artist/artist.exceptions';
 import { buildStringSearchParameters } from 'src/utils/search-string-input';
 import { PaginationParameters, buildPaginationParameters } from 'src/pagination/models/pagination-parameters';
 import SortingParameter from 'src/sort/models/sorting-parameter';
-import {
-	Song, SongWithRelations, Track
-} from 'src/prisma/models';
+import { Song, SongWithRelations } from 'src/prisma/models';
 import { parseIdentifierSlugs } from 'src/identifier/identifier.parse-slugs';
 import Identifier from 'src/identifier/models/identifier';
 import Logger from 'src/logger/logger';
+import TrackQueryParameters from 'src/track/models/track.query-parameters';
 
 @Injectable()
 export default class SongService extends RepositoryService<
@@ -230,32 +229,33 @@ export default class SongService extends RepositoryService<
 	}
 
 	/**
-	 * Use the earliest track as master
-	 * @param where The query params to find the song to update
-	 * @return the new master, if there is one
+	 * Set the track as song's master
+	 * @param trackWhere the query parameters of the track
+	 * @returns the updated song
 	 */
-	async updateSongMaster(where: SongQueryParameters.WhereInput): Promise<Track | null> {
-		const tracks = await this.trackService.getSongTracks(where, {}, { release: true });
-		const currentMaster = tracks.find((track) => track.master);
-		const sortedTracks = tracks
-			.filter((track) => track.release.releaseDate !== null)
-			.sort((trackA, trackB) => {
-				const releaseA = trackA.release;
-				const releaseB = trackB.release;
+	async setMasterTrack(
+		trackWhere: TrackQueryParameters.WhereInput
+	) {
+		const track = await this.trackService.select(trackWhere, { id: true, songId: true });
 
-				return releaseA.releaseDate!.getTime() - releaseB.releaseDate!.getTime();
-			});
-		const sortedAudioTracks = sortedTracks.filter((track) => track.type == 'Audio');
-		const newMaster = sortedAudioTracks.at(0) ?? sortedTracks.at(0) ?? tracks.at(0);
+		return this.prismaService.song.update({
+			where: { id: track.songId },
+			data: { masterId: track.id }
+		});
+	}
 
-		if (newMaster == null) {
-			return null;
-		}
-		if (newMaster.id === currentMaster?.id) {
-			return newMaster;
-		}
-		await this.trackService.setTrackAsMaster({ trackId: newMaster.id, song: where });
-		return { ...newMaster, master: true };
+	/**
+	 * Unset song's master track
+	 * @param song the query parameters of the song
+	 * @returns the updated song
+	 */
+	async unsetMasterTrack(
+		songWhere: SongQueryParameters.WhereInput
+	) {
+		return this.prismaService.song.update({
+			where: SongService.formatWhereInput(songWhere),
+			data: { masterId: null }
+		});
 	}
 
 	/**

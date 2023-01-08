@@ -170,7 +170,6 @@ describe('Track Controller', () => {
 					const track: Track = res.body;
 					expect(track).toStrictEqual({
 						...expectedTrackResponse(dummyRepository.trackC1_1),
-						master: false,
 						songId: dummyRepository.songB1.id
 					});
 				});
@@ -186,7 +185,6 @@ describe('Track Controller', () => {
 					const track: Track = res.body;
 					expect(track).toStrictEqual({
 						...expectedTrackResponse(dummyRepository.trackA1_2Video),
-						master: true,
 					});
 				});
 		});

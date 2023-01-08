@@ -86,7 +86,6 @@ export default class MetadataService {
 		}, { album: true });
 		const track: TrackQueryParameters.CreateInput = {
 			name: metadata.name!,
-			master: song.tracks.length == 0,
 			discIndex: metadata.discIndex ?? null,
 			trackIndex: metadata.index ?? null,
 			type: metadata.type!,

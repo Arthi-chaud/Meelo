@@ -417,6 +417,24 @@ describe('Song Service', () => {
 		});
 	});
 
+	describe('Set Master Track', () => {
+		it("should set track as master", async () => {
+			const updatedSong = await songService.setMasterTrack({ id: dummyRepository.trackA1_2Video.id });
+			expect(updatedSong).toStrictEqual({
+				...dummyRepository.songA1,
+				playCount: 3,
+				masterId: dummyRepository.trackA1_2Video.id
+			})
+		});
+		it("should unset track as master", async () => {
+			const updatedSong = await songService.unsetMasterTrack({ id: dummyRepository.songA1.id });
+			expect(updatedSong).toStrictEqual({
+				...dummyRepository.songA1,
+				playCount: 3
+			});
+		});
+	})
+
 	describe("Delete Song", () => {
 		it("should delete the song (by id)", async () => {
 			await songService.delete({ id: dummyRepository.songC1.id });

@@ -296,11 +296,14 @@ export default class ReleaseService extends RepositoryService<
 	 * @param where Query parameters to find the release to delete
 	 */
 	async delete(where: ReleaseQueryParameters.DeleteInput, deleteParent = true): Promise<Release> {
-		const release = await this.get(where, { tracks: true });
+		const release = await this.get(where, { tracks: true, album: true });
 
 		await Promise.allSettled(
 			release.tracks.map((track) => this.trackService.delete({ id: track.id }, false))
 		);
+		if (release.album.masterId == release.id) {
+			await this.albumService.unsetMasterRelease({ id: release.albumId });
+		}
 		try {
 			await super.delete(where);
 		} catch {

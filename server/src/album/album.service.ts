@@ -284,17 +284,15 @@ export default class AlbumService extends RepositoryService<
 	}
 
 	/**
-	 * unset the release as album's master
-	 * @param releaseWhere the query parameters of the release
+	 * unset album's master release
+	 * @param albumWhere the query parameters of the album
 	 * @returns the updated album
 	 */
 	async unsetMasterRelease(
-		releaseWhere: ReleaseQueryParameters.WhereInput
+		albumWhere: AlbumQueryParameters.WhereInput
 	) {
-		const release = await this.releaseService.select(releaseWhere, { albumId: true });
-
 		return this.prismaService.album.update({
-			where: { id: release.albumId },
+			where: AlbumService.formatWhereInput(albumWhere),
 			data: { masterId: null }
 		});
 	}

@@ -94,6 +94,7 @@ model Album {
 	/// @description The main/most used release of the Album, by default the first one
 	master			Release?	@relation("Master", fields: [masterId], references: [id], onDelete: SetNull)
 	/// @description Unique numeric identifier of the main release, if there is one
+	/// @example 123
 	masterId		Int?		@unique
 	/// @description Collections of related releases
 	releases		Release[]	@relation("Releases")
@@ -211,6 +212,11 @@ model Song {
 	/// @description The number of times, the song was played
 	/// @example 3
 	playCount		Int		@default(0)
+	/// @description The main/most used track of the song, by default the first one
+	master			Track?	@relation("Master", fields: [masterId], references: [id], onDelete: SetNull)
+	/// @description Unique numeric identifier of the main release, if there is one
+	/// @example 123
+	masterId		Int?		@unique
 	/// @description Related tracks
 	tracks			Track[]
 	/// @description The lyrics of the song
@@ -283,9 +289,6 @@ model Track {
 	/// @description The display name of the track
 	/// @example My Song (Album Version)
 	name		String
-	/// @description Is this track the main one
-	/// @example true
-	master			Boolean	@default(false)
 	/// @description The index of the disc the track is on
 	/// @example 1
 	discIndex		Int?
@@ -307,5 +310,6 @@ model Track {
 	/// @description Unique numeric identifier of the source file
 	/// @example 123
 	sourceFileId		Int		@unique
+	masterOf		Song?		@relation("Master")
 	@@map("tracks")
 }

@@ -2,7 +2,7 @@ import {
 	Inject, Injectable, forwardRef
 } from '@nestjs/common';
 import PrismaService from 'src/prisma/prisma.service';
-import { Prisma, TrackType } from '@prisma/client';
+import { Prisma } from '@prisma/client';
 import SongService from 'src/song/song.service';
 import {
 	MasterTrackNotFoundException, TrackAlreadyExistsException, TrackNotFoundByIdException
@@ -61,15 +61,6 @@ export default class TrackService extends RepositoryService<
 		super(prismaService.track);
 	}
 
-	async create<I extends TrackQueryParameters.RelationInclude>(
-		input: TrackQueryParameters.CreateInput, include?: I
-	) {
-		const created = await super.create(input, include);
-
-		await this.songService.updateSongMaster({ id: created.songId });
-		return created;
-	}
-
 	/**
 	 * Create
 	 */
@@ -112,10 +103,6 @@ export default class TrackService extends RepositoryService<
 	static formatWhereInput(where: TrackQueryParameters.WhereInput) {
 		return {
 			id: where.id,
-			master: where.masterOfSong ? true : undefined,
-			song: where.masterOfSong ?
-				SongService.formatWhereInput(where.masterOfSong)
-				: undefined,
 			sourceFile: where.sourceFile ?
 				FileService.formatWhereInput(where.sourceFile)
 				: undefined
@@ -192,14 +179,6 @@ export default class TrackService extends RepositoryService<
 		if (where.id !== undefined) {
 			throw new TrackNotFoundByIdException(where.id);
 		}
-		if (where.masterOfSong) {
-			const parentSong = await this.songService.get(where.masterOfSong, { artist: true });
-
-			throw new MasterTrackNotFoundException(
-				new Slug(parentSong.slug),
-				new Slug(parentSong.artist!.slug)
-			);
-		}
 		if (where.sourceFile.id !== undefined) {
 			throw new FileNotFoundFromIDException(where.sourceFile.id);
 		}
@@ -243,10 +222,23 @@ export default class TrackService extends RepositoryService<
 		where: SongQueryParameters.WhereInput,
 		include?: TrackQueryParameters.RelationInclude
 	) {
-		return this.get(
-			{ masterOfSong: where },
-			include
-		);
+		return this.songService.get(where, { artist: true })
+			.then(async (song) => {
+				if (song.masterId != null) {
+					return this.get({ id: song.masterId }, include);
+				}
+				return this.prismaService.track.findFirstOrThrow({
+					where: { song: SongService.formatWhereInput(where) },
+					include: RepositoryService.formatInclude(include),
+					orderBy: { release: {
+						releaseDate: { sort: 'asc', nulls: 'last' }
+					} },
+				}).catch(() => {
+					throw new MasterTrackNotFoundException(
+						new Slug(song.slug), new Slug(song.artist.slug)
+					);
+				});
+			});
 	}
 
 	/**
@@ -316,35 +308,6 @@ export default class TrackService extends RepositoryService<
 	}
 
 	/**
-	 * Updates the track in the database
-	 * @param what the fields to update in the track
-	 * @param where the query parameters to find the track to update
-	 */
-
-	async update(
-		what: TrackQueryParameters.UpdateInput,
-		where: TrackQueryParameters.WhereInput
-	) {
-		try {
-			const unmodifiedTrack = await this.get(where);
-			const updatedTrack = await super.update(what, where);
-			const masterChangeInput: TrackQueryParameters.UpdateSongMaster = {
-				trackId: updatedTrack.id,
-				song: { id: updatedTrack.songId }
-			};
-
-			if (!unmodifiedTrack.master && what.master) {
-				await this.setTrackAsMaster(masterChangeInput);
-			} else if (unmodifiedTrack.master && what.master === false) {
-				await this.unsetTrackAsMaster(masterChangeInput);
-			}
-			return updatedTrack;
-		} catch {
-			throw await this.onNotFound(where);
-		}
-	}
-
-	/**
 	 * Delete
 	 */
 	formatDeleteInput(where: TrackQueryParameters.DeleteInput) {
@@ -371,77 +334,23 @@ export default class TrackService extends RepositoryService<
 	 */
 	async delete(where: TrackQueryParameters.DeleteInput, deleteParent = true): Promise<Track> {
 		try {
-			const deletedTrack = await super.delete(where);
+			const track = await super.get(
+				this.formatDeleteInputToWhereInput(where), { song: true }
+			);
 
-			this.logger.warn(`Track '${deletedTrack.name}' deleted`);
-			if (deletedTrack.master) {
-				await this.songService.updateSongMaster({ id: deletedTrack.songId });
+			if (track.song.masterId == track.id) {
+				await this.albumService.unsetMasterRelease({ id: track.songId });
 			}
+			await super.delete(where);
+			this.logger.warn(`Track '${track.name}' deleted`);
 			if (deleteParent) {
-				await this.songService.deleteIfEmpty({ id: deletedTrack.songId });
-				await this.releaseService.deleteIfEmpty({ id: deletedTrack.releaseId });
+				await this.songService.deleteIfEmpty({ id: track.songId });
+				await this.releaseService.deleteIfEmpty({ id: track.releaseId });
 			}
-			return deletedTrack;
+			return track;
 		} catch {
 			throw this.onDeletionFailure(where);
 		}
-	}
-
-	/**
-	 * Sets provided track as the song's master track, unsetting other master from the same song
-	 * @param where the query parameters to find the track to set as master
-	 */
-	async setTrackAsMaster(where: TrackQueryParameters.UpdateSongMaster): Promise<void> {
-		const otherTracks: Track[] = (await this.getSongTracks(where.song))
-			.filter((track) => track.id != where.trackId);
-
-		await Promise.allSettled([
-			this.prismaService.track.updateMany({
-				data: { master: false },
-				where: {
-					id: {
-						in: otherTracks.map((track) => track.id)
-					}
-				}
-			}),
-			this.update(
-				{ master: true },
-				{ id: where.trackId }
-			)
-		]);
-	}
-
-	/**
-	 * Unsets provided track as the song's master track, setting another track as master of the song
-	 * @param where the query parameters to find the track to unset as master
-	 */
-	async unsetTrackAsMaster(where: TrackQueryParameters.UpdateSongMaster): Promise<void> {
-		const otherTracks: Track[] = (await this.getSongTracks(
-			where.song, {}, {}, { sortBy: 'id', order: 'asc' }
-		)).filter((track) => track.id != where.trackId);
-
-		if (otherTracks.find((track) => track.master)) {
-			return;
-		}
-		if (otherTracks.length == 0) {
-			return;
-		}
-		let newMaster = otherTracks[0];
-		const audioTracks = otherTracks.filter((track) => track.type == TrackType.Audio);
-
-		if (audioTracks.length != 0) {
-			newMaster = audioTracks[0];
-		}
-		await Promise.allSettled([
-			this.update(
-				{ master: true },
-				{ id: newMaster.id }
-			),
-			this.update(
-				{ master: false },
-				{ id: where.trackId }
-			)
-		]);
 	}
 
 	/**
@@ -453,17 +362,13 @@ export default class TrackService extends RepositoryService<
 	async reassign(
 		trackWhere: TrackQueryParameters.WhereInput, newParentWhere: SongQueryParameters.WhereInput
 	): Promise<Track> {
-		const track = await this.get(trackWhere);
-		const newParent = await this.songService.get(newParentWhere, { tracks: true });
+		const track = await this.get(trackWhere, { song: true });
+		const newParent = await this.songService.get(newParentWhere);
 
-		await this.unsetTrackAsMaster({
-			trackId: track.id,
-			song: { id: track.songId }
-		});
-		const updatedTrack = await this.update({
-			song: { id: newParent.id },
-			master: newParent.tracks.length == 0
-		}, trackWhere);
+		if (track.id == track.song.masterId) {
+			await this.albumService.unsetMasterRelease({ id: track.songId });
+		}
+		const updatedTrack = await this.update({ song: { id: newParent.id } }, trackWhere);
 
 		await this.songService.deleteIfEmpty({ id: track.songId });
 		return updatedTrack;

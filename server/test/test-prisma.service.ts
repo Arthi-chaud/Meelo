@@ -100,7 +100,7 @@ export default class TestPrismaService extends PrismaService {
 		});
 		this.trackA1_1 = await this.track.create({
 			data: { name: "My Song 1", ...this.baseTrack, songId: this.songA1.id,
-				releaseId: this.releaseA1_1.id, master: true, type: TrackType.Audio, sourceFileId: this.fileA1_1.id,
+				releaseId: this.releaseA1_1.id, type: TrackType.Audio, sourceFileId: this.fileA1_1.id,
 				trackIndex: 2, discIndex: 1
 			}
 		});
@@ -109,7 +109,7 @@ export default class TestPrismaService extends PrismaService {
 		});
 		this.trackA1_2Video = await this.track.create({
 			data: { ...this.baseTrack, name: "My Song 2 (Video)", songId: this.songA1.id, discIndex: 2,
-			releaseId: this.releaseA1_2.id, master: false, type: TrackType.Video, sourceFileId: this.fileA1_2Video.id
+			releaseId: this.releaseA1_2.id, type: TrackType.Video, sourceFileId: this.fileA1_2Video.id
 		}
 		});
 		this.songA2 = await this.song.create({
@@ -122,7 +122,7 @@ export default class TestPrismaService extends PrismaService {
 		});
 		this.trackA2_1 = await this.track.create({
 			data: { ...this.baseTrack, name: "My Other Song 1", songId: this.songA2.id, discIndex: 1,
-				releaseId: this.releaseA1_2.id, master: true, type: TrackType.Audio, sourceFileId: this.fileA2_1.id
+				releaseId: this.releaseA1_2.id, type: TrackType.Audio, sourceFileId: this.fileA2_1.id
 			}
 		});
 
@@ -145,7 +145,7 @@ export default class TestPrismaService extends PrismaService {
 		});
 		this.trackB1_1 = await this.track.create({
 			data: { ...this.baseTrack, name: "My Second Song 1", songId: this.songB1.id,
-				releaseId: this.releaseB1_1.id, master: true, type: TrackType.Audio, sourceFileId: this.fileB1_1.id
+				releaseId: this.releaseB1_1.id, type: TrackType.Audio, sourceFileId: this.fileB1_1.id
 			}
 		});
 
@@ -168,7 +168,7 @@ export default class TestPrismaService extends PrismaService {
 		});
 		this.trackC1_1 = await this.track.create({
 			data: { ...this.baseTrack, name: "My C Song 1", songId: this.songC1.id,
-				releaseId: this.compilationReleaseA1.id, master: true, type: TrackType.Audio, sourceFileId: this.fileC1_1.id
+				releaseId: this.compilationReleaseA1.id, type: TrackType.Audio, sourceFileId: this.fileC1_1.id
 			}
 		});
 
