@@ -33,7 +33,7 @@ const TrackFileInfo = ({ trackId }: { trackId: number }) => {
 		'Name': track.data.name,
 		'Play Count': track.data.song.playCount,
 		'Duration': formatDuration(track.data.duration),
-		'Master Track': track.data.master ? 'True' : 'False',
+		'Master Track': track.data.song.masterId == track.data.id ? 'True' : 'False',
 		'Bit Rate': `${track.data.bitrate} kbps`,
 		'Type': track.data.type,
 		'Extension': sourceFile.data.path.split('.').reverse()[0].toLocaleUpperCase() ?? 'Unknown',

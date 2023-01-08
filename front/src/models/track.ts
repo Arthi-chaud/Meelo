@@ -20,10 +20,6 @@ type Track = Resource & Illustration & {
 	 */
 	name: string;
 	/**
-	 * True if this is the 'main' version of the song
-	 */
-	master: boolean;
-	/**
 	 * Index of the disc the track is on
 	 */
 	discIndex?: number;

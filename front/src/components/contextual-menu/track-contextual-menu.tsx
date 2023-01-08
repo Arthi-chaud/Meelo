@@ -21,6 +21,7 @@ const TrackContextualMenu = (props: TrackContextualMenuProps) => {
 	const userIsAdmin = useSelector((state: RootState) => state.user.user?.admin == true);
 	const queryClient = useQueryClient();
 	const confirm = useConfirm();
+	const isMaster = props.track.song.masterId == props.track.id;
 	const getPlayNextProps = () => API.getArtist(props.track.song.artistId)
 		.then((artist) => API.getRelease(props.track.releaseId)
 			.then((release) => ({ track: props.track, artist, release })));
@@ -39,7 +40,7 @@ const TrackContextualMenu = (props: TrackContextualMenuProps) => {
 		[
 			{
 				label: "Set as as Master",
-				disabled: props.track.master || !userIsAdmin,
+				disabled: isMaster || !userIsAdmin,
 				icon: <Star/>,
 				onClick: () => masterMutation.mutate()
 			}
