@@ -28,6 +28,7 @@ import RolesGuard from './roles/roles.guard';
 import JwtCookieMiddleware from './authentication/jwt/jwt-middleware';
 import { ServeStaticModule } from '@nestjs/serve-static';
 import { join } from 'path';
+import FfmpegModule from './ffmpeg/ffmpeg.module';
 import LoggerModule from './logger/logger.module';
 
 @Module({
@@ -55,7 +56,8 @@ import LoggerModule from './logger/logger.module';
 		TasksModule,
 		AuthenticationModule,
 		UserModule,
-		LoggerModule
+		LoggerModule,
+		FfmpegModule
 	],
 	controllers: [AppController],
 	providers: [

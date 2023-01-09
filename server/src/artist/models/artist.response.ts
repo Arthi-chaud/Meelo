@@ -1,12 +1,9 @@
-import {
-	Inject, Injectable, forwardRef
-} from "@nestjs/common";
+import { Injectable } from "@nestjs/common";
 import { IntersectionType } from "@nestjs/swagger";
-import IllustrationService from "src/illustration/illustration.service";
 import { IllustratedModel } from "src/illustration/models/illustrated-model.response";
 import { Artist, ArtistWithRelations } from "src/prisma/models";
 import ResponseBuilderInterceptor from "src/response/interceptors/response.interceptor";
-import Slug from "src/slug/slug";
+import ArtistIllustrationService from "../artist-illustration.service";
 
 export class ArtistResponse extends IntersectionType(
 	Artist, IllustratedModel
@@ -15,8 +12,7 @@ export class ArtistResponse extends IntersectionType(
 @Injectable()
 export class ArtistResponseBuilder extends ResponseBuilderInterceptor<ArtistWithRelations, ArtistResponse> {
 	constructor(
-		@Inject(forwardRef(() => IllustrationService))
-		private illustrationService: IllustrationService
+		private artistIllustrationService: ArtistIllustrationService
 	) {
 		super();
 	}
@@ -26,7 +22,8 @@ export class ArtistResponseBuilder extends ResponseBuilderInterceptor<ArtistWith
 	async buildResponse(artist: ArtistWithRelations): Promise<ArtistResponse> {
 		const response = <ArtistResponse>{
 			...artist,
-			illustration: this.illustrationService.getArtistIllustrationLink(new Slug(artist.slug))
+			illustration: await this.artistIllustrationService
+				.getIllustrationLink({ id: artist.id })
 		};
 
 		return response;

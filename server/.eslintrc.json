@@ -95,6 +95,12 @@
 			"importNames": ["Logger"],
 			"message": "Use Custom Logger to inject from 'src/logger/logger'"
 		}, {
+			"name": "fluent-ffmpeg",
+			"message": "Use Ffmpeg Service"
+		}, {
+			"name": "fs",
+			"message": "Use FileManager Service"
+		}, {
 			"name": "src/pagination/paginated-response.decorator",
 			"message": "Do not use the decorator directly. Use 'Response' decorator from 'src/response/response.decorator.ts'"
 		}, {

@@ -3,10 +3,10 @@ import {
 } from "@nestjs/common";
 import { IntersectionType } from "@nestjs/swagger";
 import { ArtistResponse, ArtistResponseBuilder } from "src/artist/models/artist.response";
-import IllustrationService from "src/illustration/illustration.service";
 import { IllustratedModel } from "src/illustration/models/illustrated-model.response";
 import { Song, SongWithRelations } from "src/prisma/models";
 import ResponseBuilderInterceptor from "src/response/interceptors/response.interceptor";
+import SongIllustrationService from "../song-illustration.service";
 
 export class SongResponse extends IntersectionType(
 	IntersectionType(
@@ -20,8 +20,8 @@ export class SongResponse extends IntersectionType(
 @Injectable()
 export class SongResponseBuilder extends ResponseBuilderInterceptor<SongWithRelations, SongResponse> {
 	constructor(
-		@Inject(forwardRef(() => IllustrationService))
-		private illustrationService: IllustrationService,
+		@Inject(forwardRef(() => SongIllustrationService))
+		private songIllustrationService: SongIllustrationService,
 		@Inject(forwardRef(() => ArtistResponseBuilder))
 		private artistResponseBuilder: ArtistResponseBuilder,
 	) {
@@ -33,7 +33,7 @@ export class SongResponseBuilder extends ResponseBuilderInterceptor<SongWithRela
 	async buildResponse(song: SongWithRelations): Promise<SongResponse> {
 		const response = <SongResponse>{
 			...song,
-			illustration: await this.illustrationService.getSongIllustrationLink(song.id)
+			illustration: await this.songIllustrationService.getIllustrationLink({ id: song.id })
 		};
 
 		if (song.artist !== undefined) {

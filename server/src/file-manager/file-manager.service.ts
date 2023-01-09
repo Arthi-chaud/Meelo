@@ -3,10 +3,11 @@ import {
 } from '@nestjs/common';
 import SettingsService from 'src/settings/settings.service';
 import md5File from 'md5-file';
+// eslint-disable-next-line no-restricted-imports
 import * as fs from 'fs';
 import type { Library } from 'src/prisma/models';
 import { FileDoesNotExistException, FolderDoesNotExistException } from './file-manager.exceptions';
-import { join } from 'path';
+import { join, parse } from 'path';
 
 @Injectable()
 export default class FileManagerService {
@@ -78,6 +79,14 @@ export default class FileManagerService {
 		} else {
 			throw new FolderDoesNotExistException(directoryPath);
 		}
+	}
+
+	/**
+	 * Rename / Move a folder
+	 */
+	rename(oldPath: string, newPath: string) {
+		fs.mkdirSync(parse(newPath).dir, { recursive: true });
+		fs.renameSync(oldPath, newPath);
 	}
 
 	/**

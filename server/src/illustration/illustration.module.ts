@@ -9,6 +9,8 @@ import FileModule from 'src/file/file.module';
 import { IllustrationController } from './illustration.controller';
 import ArtistModule from 'src/artist/artist.module';
 import SettingsModule from 'src/settings/settings.module';
+import FfmpegModule from 'src/ffmpeg/ffmpeg.module';
+import SongModule from 'src/song/song.module';
 
 @Module({
 	imports: [
@@ -18,8 +20,10 @@ import SettingsModule from 'src/settings/settings.module';
 		forwardRef(() => AlbumModule),
 		forwardRef(() => ReleaseModule),
 		forwardRef(() => TrackModule),
+		forwardRef(() => SongModule),
 		forwardRef(() => FileModule),
-		SettingsModule
+		SettingsModule,
+		FfmpegModule
 	],
 	controllers: [IllustrationController],
 	providers: [IllustrationService],

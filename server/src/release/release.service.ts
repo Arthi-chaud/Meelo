@@ -19,13 +19,12 @@ import type { PaginationParameters } from 'src/pagination/models/pagination-para
 import type { MeeloException } from 'src/exceptions/meelo-exception';
 import TrackService from 'src/track/track.service';
 import RepositoryService from 'src/repository/repository.service';
-import IllustrationService from 'src/illustration/illustration.service';
-import type { IllustrationPath } from 'src/illustration/models/illustration-path.model';
 import { buildStringSearchParameters } from 'src/utils/search-string-input';
 import ArtistService from 'src/artist/artist.service';
 import SortingParameter from 'src/sort/models/sorting-parameter';
 import FileService from 'src/file/file.service';
 import archiver from 'archiver';
+// eslint-disable-next-line no-restricted-imports
 import { createReadStream } from 'fs';
 import { Response } from 'express';
 import mime from 'mime';
@@ -33,6 +32,7 @@ import compilationAlbumArtistKeyword from 'src/utils/compilation';
 import { parseIdentifierSlugs } from 'src/identifier/identifier.parse-slugs';
 import Identifier from 'src/identifier/models/identifier';
 import Logger from 'src/logger/logger';
+import ReleaseIllustrationService from './release-illustration.service';
 
 @Injectable()
 export default class ReleaseService extends RepositoryService<
@@ -59,8 +59,7 @@ export default class ReleaseService extends RepositoryService<
 		private trackService: TrackService,
 		@Inject(forwardRef(() => FileService))
 		private fileService: FileService,
-		@Inject(forwardRef(() => IllustrationService))
-		private illustrationService: IllustrationService,
+		private releaseIllustrationService: ReleaseIllustrationService,
 	) {
 		super(prismaService.release);
 	}
@@ -360,7 +359,7 @@ export default class ReleaseService extends RepositoryService<
 			releaseWhere
 		);
 
-		this.illustrationService.reassignReleaseIllustrationFolder(
+		this.releaseIllustrationService.reassignIllustrationFolder(
 			new Slug(release.slug),
 			new Slug(oldAlbum.slug),
 			new Slug(newParent.slug),
@@ -371,41 +370,9 @@ export default class ReleaseService extends RepositoryService<
 		return updatedRelease;
 	}
 
-	/**
-	 * Builds the path to the release's illustration
-	 * @param where the query parameters to find the release
-	 * @returns
-	 */
-	async buildIllustrationPath(
-		where: ReleaseQueryParameters.WhereInput
-	): Promise<IllustrationPath> {
-		const release = await this.select(where, { slug: true, albumId: true });
-		const album = await this.albumService.get(
-			{ id: release.albumId! }, { artist: true }
-		);
-		const path = this.illustrationService.buildReleaseIllustrationPath(
-			new Slug(album.slug),
-			new Slug(release.slug!),
-			album.artist ? new Slug(album.artist.slug) : undefined
-		);
-
-		return path;
-	}
-
-	/**
-	 * checks if the release's illustration exists
-	 * @param where the query parameters to find the release
-	 * @returns true if it exists
-	 */
-	async illustrationExists(where: ReleaseQueryParameters.WhereInput): Promise<boolean> {
-		const path = await this.buildIllustrationPath(where);
-
-		return this.illustrationService.illustrationExists(path);
-	}
-
 	async pipeArchive(where: ReleaseQueryParameters.WhereInput, res: Response) {
 		const release = await this.get(where, { tracks: true });
-		const illustration = await this.buildIllustrationPath(where);
+		const illustration = await this.releaseIllustrationService.getIllustrationPath(where);
 		const archive = archiver('zip');
 		const outputName = `${release.slug}.zip`;
 
@@ -416,7 +383,7 @@ export default class ReleaseService extends RepositoryService<
 		).then((paths) => paths.forEach((path) => {
 			archive.append(createReadStream(path), { name: basename(path) });
 		}));
-		if (this.illustrationService.illustrationExists(illustration)) {
+		if (this.releaseIllustrationService.illustrationExists(illustration)) {
 			archive.append(createReadStream(illustration), { name: basename(illustration) });
 		}
 

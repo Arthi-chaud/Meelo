@@ -4,9 +4,7 @@ import {
 import { ApiOperation, ApiTags } from "@nestjs/swagger";
 import ArtistService from "src/artist/artist.service";
 import ReleaseService from "src/release/release.service";
-import Slug from "src/slug/slug";
 import TrackService from "src/track/track.service";
-import { NoReleaseIllustrationException } from "./illustration.exceptions";
 import IllustrationService from "./illustration.service";
 import { IllustrationDownloadDto } from "./models/illustration-dl.dto";
 import { IllustrationDimensionsDto } from "./models/illustration-dimensions.dto";
@@ -19,15 +17,23 @@ import IdentifierParam from "src/identifier/identifier.pipe";
 import ArtistQueryParameters from 'src/artist/models/artist.query-parameters';
 import TrackQueryParameters from 'src/track/models/track.query-parameters';
 import ReleaseQueryParameters from 'src/release/models/release.query-parameters';
+import ArtistIllustrationService from "src/artist/artist-illustration.service";
+import ReleaseIllustrationService from "src/release/release-illustration.service";
+import TrackIllustrationService from "src/track/track-illustration.service";
+import { parse } from 'path';
+import AlbumIllustrationService from "src/album/album-illustration.service";
+import SongIllustrationService from "src/song/song-illustration.service";
 
 @ApiTags("Illustrations")
 @Controller('illustrations')
 export class IllustrationController {
 	constructor(
 		private illustrationService: IllustrationService,
-		private releaseService: ReleaseService,
-		private trackService: TrackService,
-		private artistService: ArtistService
+		private releaseIllustrationService: ReleaseIllustrationService,
+		private trackIllustrationService: TrackIllustrationService,
+		private artistIllustrationService: ArtistIllustrationService,
+		private songIllustrationService: SongIllustrationService,
+		private albumIllustrationService: AlbumIllustrationService,
 	) {}
 
 	@ApiOperation({
@@ -41,13 +47,12 @@ export class IllustrationController {
 		@Response({ passthrough: true })
 		res: Response,
 	) {
-		const { slug } = await this.artistService.select(where, { slug: true });
-		const artistIllustration = this.illustrationService
-			.buildArtistIllustrationPath(new Slug(slug));
+		const artistIllustration = await this.artistIllustrationService
+			.getIllustrationPath(where);
 
 		return this.illustrationService.streamIllustration(
 			artistIllustration,
-			slug,
+			parse(parse(artistIllustration).dir).name,
 			dimensions,
 			res
 		);
@@ -63,9 +68,8 @@ export class IllustrationController {
 		where: ArtistQueryParameters.WhereInput,
 		@Body() illustrationDto: IllustrationDownloadDto
 	) {
-		const { slug } = await this.artistService.select(where, { slug: true });
-		const artistIllustration = this.illustrationService
-			.buildArtistIllustrationPath(new Slug(slug));
+		const artistIllustration = await this.artistIllustrationService
+			.getIllustrationPath(where);
 
 		return this.illustrationService.downloadIllustration(
 			illustrationDto.url,
@@ -83,10 +87,12 @@ export class IllustrationController {
 		where: AlbumQueryParameters.WhereInput,
 		@Response({ passthrough: true }) res: Response,
 	) {
-		const masterRelease = await this.releaseService.getMasterRelease(where);
+		const illustrationPath = await this.albumIllustrationService
+			.getIllustrationPath(where);
 
-		return this.getReleaseIllustration(
-			{ id: masterRelease.id },
+		return this.illustrationService.streamIllustration(
+			illustrationPath,
+			parse(parse(illustrationPath).dir).name,
 			dimensions,
 			res
 		);
@@ -102,11 +108,13 @@ export class IllustrationController {
 		where: SongQueryParameters.WhereInput,
 		@Response({ passthrough: true }) res: Response,
 	) {
-		const master = await this.trackService.getMasterTrack(where);
+		const illustrationPath = await this.songIllustrationService
+			.getIllustrationPath(where);
 
-		return this.getTrackIllustration(
+		return this.illustrationService.streamIllustration(
+			illustrationPath,
+			parse(parse(illustrationPath).dir).name,
 			dimensions,
-			{ id: master.id },
 			res
 		);
 	}
@@ -121,16 +129,14 @@ export class IllustrationController {
 		@Query() dimensions: IllustrationDimensionsDto,
 		@Response({ passthrough: true }) res: Response,
 	) {
-		const path = await this.releaseService.buildIllustrationPath(where);
-		const release = await this.releaseService.get(where, { album: true });
+		const illustrationPath = await this.releaseIllustrationService
+			.getIllustrationPath(where);
 
-		if (this.illustrationService.illustrationExists(path) == false) {
-			throw new NoReleaseIllustrationException(
-				new Slug(release.album.slug), new Slug(release.slug)
-			);
-		}
 		return this.illustrationService.streamIllustration(
-			path, release.slug, dimensions, res
+			illustrationPath,
+			parse(parse(illustrationPath).dir).name,
+			dimensions,
+			res
 		);
 	}
 
@@ -144,7 +150,7 @@ export class IllustrationController {
 		where: ReleaseQueryParameters.WhereInput,
 		@Body()	illustrationDto: IllustrationDownloadDto
 	) {
-		const path = await this.releaseService.buildIllustrationPath(where);
+		const path = await this.releaseIllustrationService.getIllustrationPath(where);
 
 		return this.illustrationService.downloadIllustration(
 			illustrationDto.url,
@@ -162,19 +168,12 @@ export class IllustrationController {
 		where: TrackQueryParameters.WhereInput,
 		@Response({ passthrough: true }) res: Response,
 	) {
-		const track = await this.trackService.get(where, { song: true });
-		const trackIllustrationPath = await this.trackService.buildIllustrationPath(where);
+		const illustrationPath = await this.trackIllustrationService
+			.getIllustrationPath(where);
 
-		if (this.illustrationService.illustrationExists(trackIllustrationPath)) {
-			return this.illustrationService.streamIllustration(
-				trackIllustrationPath,
-				track.song.slug,
-				dimensions,
-				res
-			);
-		}
-		return this.getReleaseIllustration(
-			{ id: track.releaseId },
+		return this.illustrationService.streamIllustration(
+			illustrationPath,
+			parse(parse(illustrationPath).dir).name,
 			dimensions,
 			res
 		);
@@ -190,7 +189,8 @@ export class IllustrationController {
 		@IdentifierParam(TrackService)
 		where: TrackQueryParameters.WhereInput
 	) {
-		const trackIllustrationPath = await this.trackService.buildIllustrationPath(where);
+		const trackIllustrationPath = await this.trackIllustrationService
+			.getIllustrationPath(where);
 
 		return this.illustrationService.downloadIllustration(
 			illustrationDto.url,
@@ -207,9 +207,10 @@ export class IllustrationController {
 		@IdentifierParam(TrackService)
 		where: TrackQueryParameters.WhereInput,
 	) {
-		const trackIllustrationPath = await this.trackService.buildIllustrationPath(where);
+		const trackIllustrationPath = await this.trackIllustrationService
+			.getIllustrationFolderPath(where);
 
-		this.illustrationService.deleteIllustrationSafe(trackIllustrationPath);
+		this.trackIllustrationService.deleteIllustrationFolder(trackIllustrationPath);
 	}
 
 	@ApiOperation({
@@ -221,9 +222,10 @@ export class IllustrationController {
 		@IdentifierParam(ReleaseService)
 		where: ReleaseQueryParameters.WhereInput,
 	) {
-		const releaseIllustrationPath = await this.releaseService.buildIllustrationPath(where);
+		const releaseIllustrationPath = await this.releaseIllustrationService
+			.getIllustrationFolderPath(where);
 
-		this.illustrationService.deleteIllustrationSafe(releaseIllustrationPath);
+		this.trackIllustrationService.deleteIllustrationFolder(releaseIllustrationPath);
 	}
 
 	@ApiOperation({
@@ -235,10 +237,9 @@ export class IllustrationController {
 		@IdentifierParam(ArtistService)
 		where: ArtistQueryParameters.WhereInput,
 	) {
-		const { slug } = await this.artistService.select(where, { slug: true });
-		const artistIllustration = this.illustrationService
-			.buildArtistIllustrationPath(new Slug(slug));
+		const artistIllustration = await this.artistIllustrationService
+			.getIllustrationFolderPath(where);
 
-		this.illustrationService.deleteIllustrationSafe(artistIllustration);
+		this.artistIllustrationService.deleteIllustrationFolder(artistIllustration);
 	}
 }

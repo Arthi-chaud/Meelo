@@ -9,11 +9,13 @@ import SettingsModule from 'src/settings/settings.module';
 import SongModule from 'src/song/song.module';
 import TrackModule from 'src/track/track.module';
 import MetadataService from './metadata.service';
+import FfmpegModule from 'src/ffmpeg/ffmpeg.module';
 
 @Module({
 	imports: [
 		SettingsModule,
 		FileManagerModule,
+		FfmpegModule,
 		forwardRef(() => TrackModule),
 		forwardRef(() => SongModule),
 		forwardRef(() => ReleaseModule),

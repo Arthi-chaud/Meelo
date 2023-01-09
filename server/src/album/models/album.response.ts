@@ -6,7 +6,7 @@ import { ArtistResponse, ArtistResponseBuilder } from "src/artist/models/artist.
 import { IllustratedModel } from "src/illustration/models/illustrated-model.response";
 import { Album, AlbumWithRelations } from "src/prisma/models";
 import ResponseBuilderInterceptor from "src/response/interceptors/response.interceptor";
-import IllustrationService from "src/illustration/illustration.service";
+import AlbumIllustrationService from "../album-illustration.service";
 
 export class AlbumResponse extends IntersectionType(
 	IntersectionType(
@@ -20,8 +20,7 @@ export class AlbumResponse extends IntersectionType(
 @Injectable()
 export class AlbumResponseBuilder extends ResponseBuilderInterceptor<AlbumWithRelations, AlbumResponse> {
 	constructor(
-		@Inject(forwardRef(() => IllustrationService))
-		private illustrationService: IllustrationService,
+		private albumIllustrationService: AlbumIllustrationService,
 		@Inject(forwardRef(() => ArtistResponseBuilder))
 		private artistResponseBuilder: ArtistResponseBuilder
 	) {
@@ -33,7 +32,7 @@ export class AlbumResponseBuilder extends ResponseBuilderInterceptor<AlbumWithRe
 	async buildResponse(album: AlbumWithRelations): Promise<AlbumResponse> {
 		const response = <AlbumResponse>{
 			...album,
-			illustration: await this.illustrationService.getAlbumIllustrationLink(album.id)
+			illustration: await this.albumIllustrationService.getIllustrationLink({ id: album.id })
 		};
 
 		if (album.artist != undefined) {
