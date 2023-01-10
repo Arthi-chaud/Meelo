@@ -15,6 +15,7 @@ import Logger from 'src/logger/logger';
 import SettingsService from 'src/settings/settings.service';
 import TrackIllustrationService from 'src/track/track-illustration.service';
 import FfmpegService from 'src/ffmpeg/ffmpeg.service';
+import { NotFoundException } from 'src/exceptions/meelo-exception';
 
 @Injectable()
 export default class TasksService {
@@ -193,7 +194,11 @@ export default class TasksService {
 	}
 
 	async unregisterFile(where: FileQueryParameters.DeleteInput) {
-		await this.trackService.delete({ sourceFileId: where.id });
+		await this.trackService.delete({ sourceFileId: where.id }).catch((error) => {
+			if (!(error instanceof NotFoundException)) {
+				throw error;
+			}
+		});
 		await this.fileService.delete(where);
 	}
 }
