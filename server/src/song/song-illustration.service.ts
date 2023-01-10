@@ -1,4 +1,6 @@
-import { Inject, Injectable, forwardRef } from "@nestjs/common";
+import {
+	Inject, Injectable, forwardRef
+} from "@nestjs/common";
 import RepositoryIllustrationService from "src/repository/repository-illustration.service";
 import SongQueryParameters from "./models/song.query-params";
 import FileManagerService from "src/file-manager/file-manager.service";
@@ -6,6 +8,7 @@ import TrackIllustrationService from "src/track/track-illustration.service";
 import { IllustrationPath } from "src/illustration/models/illustration-path.model";
 import TrackService from "src/track/track.service";
 import { InvalidRequestException } from "src/exceptions/meelo-exception";
+import { MasterTrackNotFoundException } from "src/track/track.exceptions";
 
 @Injectable()
 export default class SongIllustrationService extends RepositoryIllustrationService<
@@ -26,8 +29,16 @@ export default class SongIllustrationService extends RepositoryIllustrationServi
 	}
 
 	async getIllustrationLink(where: SongQueryParameters.WhereInput): Promise<string | null> {
-		return this.trackService.getMasterTrack(where)
-			.then(({ id }) => this.trackIllustrationService.getIllustrationLink({ id }));
+		try {
+			const master = await this.trackService.getMasterTrack(where);
+
+			return this.trackIllustrationService.getIllustrationLink(master);
+		} catch (error) {
+			if (error instanceof MasterTrackNotFoundException) {
+				return null;
+			}
+			throw error;
+		}
 	}
 
 	formatWhereInputToIdentifiers(_where: SongQueryParameters.WhereInput): never {

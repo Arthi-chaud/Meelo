@@ -20,7 +20,6 @@ import Tracklist, { UnknownDiscIndexKey } from './models/tracklist.model';
 import RepositoryService from 'src/repository/repository.service';
 import { shuffle } from '@taumechanica/stout';
 import AlbumService from 'src/album/album.service';
-import IllustrationService from 'src/illustration/illustration.service';
 import LibraryService from 'src/library/library.service';
 import { Track, TrackWithRelations } from 'src/prisma/models';
 import SortingParameter from 'src/sort/models/sorting-parameter';
@@ -51,7 +50,7 @@ export default class TrackService extends RepositoryService<
 		private albumService: AlbumService,
 		@Inject(forwardRef(() => ReleaseService))
 		private releaseService: ReleaseService,
-		@Inject(forwardRef(() => IllustrationService))
+		@Inject(forwardRef(() => FileService))
 		private fileService: FileService,
 		private prismaService: PrismaService,
 	) {

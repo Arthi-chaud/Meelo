@@ -20,6 +20,7 @@ export class AlbumResponse extends IntersectionType(
 @Injectable()
 export class AlbumResponseBuilder extends ResponseBuilderInterceptor<AlbumWithRelations, AlbumResponse> {
 	constructor(
+		@Inject(forwardRef(() => AlbumIllustrationService))
 		private albumIllustrationService: AlbumIllustrationService,
 		@Inject(forwardRef(() => ArtistResponseBuilder))
 		private artistResponseBuilder: ArtistResponseBuilder

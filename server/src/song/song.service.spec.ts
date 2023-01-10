@@ -17,6 +17,7 @@ import { GenreNotFoundByIdException } from "src/genre/genre.exceptions";
 import TestPrismaService from "test/test-prisma.service";
 import type SongQueryParameters from "./models/song.query-params";
 import { LyricsModule } from "src/lyrics/lyrics.module";
+import ArtistIllustrationService from "src/artist/artist-illustration.service";
 
 describe('Song Service', () => {
 	let songService: SongService;
@@ -33,6 +34,7 @@ describe('Song Service', () => {
 		dummyRepository = module.get(PrismaService);
 		songService = module.get(SongService);
 		artistService = module.get(ArtistService);
+		module.get(ArtistIllustrationService).onModuleInit();
 		await dummyRepository.onModuleInit();
 	});
 

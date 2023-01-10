@@ -75,7 +75,7 @@ export default class FileManagerService {
 	 */
 	deleteFolder(directoryPath: string) {
 		if (this.folderExists(directoryPath)) {
-			fs.rm(directoryPath, { recursive: true }, () => {});
+			fs.rmSync(directoryPath, { recursive: true });
 		} else {
 			throw new FolderDoesNotExistException(directoryPath);
 		}

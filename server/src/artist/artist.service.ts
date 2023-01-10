@@ -219,14 +219,14 @@ export default class ArtistService extends RepositoryService<
 				(song) => this.songService.delete({ id: song.id })
 			)
 		]);
+		this.artistIllustrationService.getIllustrationPath(where)
+			.then((path) => this.artistIllustrationService.deleteIllustrationFolder(path));
 		try {
 			await super.delete(where);
 		} catch {
 			return artist;
 		}
 		this.logger.warn(`Artist '${artist.slug}' deleted`);
-		this.artistIllustrationService.getIllustrationPath(where)
-			.then((path) => this.artistIllustrationService.deleteIllustrationFolder(path));
 		return artist;
 	}
 

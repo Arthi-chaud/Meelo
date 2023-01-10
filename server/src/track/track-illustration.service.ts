@@ -1,4 +1,6 @@
-import { Inject, Injectable, forwardRef } from "@nestjs/common";
+import {
+	Inject, Injectable, forwardRef
+} from "@nestjs/common";
 import RepositoryIllustrationService from "src/repository/repository-illustration.service";
 import TrackQueryParameters from "./models/track.query-parameters";
 import FileManagerService from "src/file-manager/file-manager.service";
@@ -43,7 +45,7 @@ export default class TrackIllustrationService extends RepositoryIllustrationServ
 				releaseSlug,
 			);
 
-		return `${releaseIllustrationFolder}/${discIndex ? `disc-${discIndex}-` : ''}track-${trackIndex ?? 0 }/cover.jpg`;
+		return `${releaseIllustrationFolder}/${discIndex ? `disc-${discIndex}-` : ''}track-${trackIndex ?? 0 }`;
 	}
 
 	async getIllustrationLink(where: TrackQueryParameters.WhereInput): Promise<string | null> {

@@ -240,7 +240,7 @@ export default class IllustrationService {
 		sourceFilePath: string, as: string,
 		dimensions: IllustrationDimensionsDto, res: any
 	): Promise<StreamableFile> {
-		if (this.fileManagerService.fileExists(sourceFilePath) == false) {
+		if (!this.fileManagerService.fileExists(sourceFilePath)) {
 			throw new NoIllustrationException("Illustration file not found");
 		}
 

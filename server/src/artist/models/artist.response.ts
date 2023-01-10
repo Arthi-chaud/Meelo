@@ -1,4 +1,6 @@
-import { Injectable } from "@nestjs/common";
+import {
+	Inject, Injectable, forwardRef
+} from "@nestjs/common";
 import { IntersectionType } from "@nestjs/swagger";
 import { IllustratedModel } from "src/illustration/models/illustrated-model.response";
 import { Artist, ArtistWithRelations } from "src/prisma/models";
@@ -12,6 +14,7 @@ export class ArtistResponse extends IntersectionType(
 @Injectable()
 export class ArtistResponseBuilder extends ResponseBuilderInterceptor<ArtistWithRelations, ArtistResponse> {
 	constructor(
+		@Inject(forwardRef(() => ArtistIllustrationService))
 		private artistIllustrationService: ArtistIllustrationService
 	) {
 		super();

@@ -31,6 +31,7 @@ import TestPrismaService from "test/test-prisma.service";
 import { LyricsModule } from "src/lyrics/lyrics.module";
 import LibraryModule from "src/library/library.module";
 import FileManagerService from "src/file-manager/file-manager.service";
+import ArtistIllustrationService from "src/artist/artist-illustration.service";
 
 describe('Track Service', () => {
 	let trackService: TrackService;
@@ -55,6 +56,7 @@ describe('Track Service', () => {
 		dummyRepository = module.get(PrismaService);
 		artistService = module.get<ArtistService>(ArtistService);
 		songService = module.get<SongService>(SongService);
+		module.get(ArtistIllustrationService).onModuleInit();
 		const fileService = module.get<FileService>(FileService);
 		const prismaService = module.get<PrismaService>(PrismaService);
 		secondLibrary = await prismaService.library.create({

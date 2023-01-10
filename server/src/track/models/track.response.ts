@@ -37,7 +37,7 @@ export class TrackResponseBuilder extends ResponseBuilderInterceptor<TrackWithRe
 	async buildResponse(track: TrackWithRelations): Promise<TrackResponse> {
 		const response = <TrackResponse>{
 			...track,
-			illustration: await this.trackIllustrationService.getIllustrationPath({ id: track.id }),
+			illustration: await this.trackIllustrationService.getIllustrationLink({ id: track.id }),
 			stream: `/files/${track.sourceFileId}/stream`
 		};
 

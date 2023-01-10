@@ -10,9 +10,7 @@ import { IllustrationDownloadDto } from "./models/illustration-dl.dto";
 import { IllustrationDimensionsDto } from "./models/illustration-dimensions.dto";
 import Admin from "src/roles/admin.decorator";
 import AlbumService from "src/album/album.service";
-import SongService from "src/song/song.service";
 import AlbumQueryParameters from "src/album/models/album.query-parameters";
-import SongQueryParameters from "src/song/models/song.query-params";
 import IdentifierParam from "src/identifier/identifier.pipe";
 import ArtistQueryParameters from 'src/artist/models/artist.query-parameters';
 import TrackQueryParameters from 'src/track/models/track.query-parameters';
@@ -22,7 +20,10 @@ import ReleaseIllustrationService from "src/release/release-illustration.service
 import TrackIllustrationService from "src/track/track-illustration.service";
 import { parse } from 'path';
 import AlbumIllustrationService from "src/album/album-illustration.service";
-import SongIllustrationService from "src/song/song-illustration.service";
+import Slug from "src/slug/slug";
+import { NoReleaseIllustrationException } from "./illustration.exceptions";
+import SongService from "src/song/song.service";
+import SongQueryParameters from "src/song/models/song.query-params";
 
 @ApiTags("Illustrations")
 @Controller('illustrations')
@@ -32,8 +33,9 @@ export class IllustrationController {
 		private releaseIllustrationService: ReleaseIllustrationService,
 		private trackIllustrationService: TrackIllustrationService,
 		private artistIllustrationService: ArtistIllustrationService,
-		private songIllustrationService: SongIllustrationService,
 		private albumIllustrationService: AlbumIllustrationService,
+		private trackService: TrackService,
+		private releaseService: ReleaseService,
 	) {}
 
 	@ApiOperation({
@@ -108,13 +110,11 @@ export class IllustrationController {
 		where: SongQueryParameters.WhereInput,
 		@Response({ passthrough: true }) res: Response,
 	) {
-		const illustrationPath = await this.songIllustrationService
-			.getIllustrationPath(where);
+		const master = await this.trackService.getMasterTrack(where);
 
-		return this.illustrationService.streamIllustration(
-			illustrationPath,
-			parse(parse(illustrationPath).dir).name,
+		return this.getTrackIllustration(
 			dimensions,
+			{ id: master.id },
 			res
 		);
 	}
@@ -132,6 +132,13 @@ export class IllustrationController {
 		const illustrationPath = await this.releaseIllustrationService
 			.getIllustrationPath(where);
 
+		if (!this.releaseIllustrationService.illustrationExists(illustrationPath)) {
+			const release = await this.releaseService.get(where, { album: true });
+
+			throw new NoReleaseIllustrationException(
+				new Slug(release.album.slug), new Slug(release.slug)
+			);
+		}
 		return this.illustrationService.streamIllustration(
 			illustrationPath,
 			parse(parse(illustrationPath).dir).name,
@@ -171,9 +178,18 @@ export class IllustrationController {
 		const illustrationPath = await this.trackIllustrationService
 			.getIllustrationPath(where);
 
-		return this.illustrationService.streamIllustration(
-			illustrationPath,
-			parse(parse(illustrationPath).dir).name,
+		if (this.trackIllustrationService.illustrationExists(illustrationPath)) {
+			const track = await this.trackService.get(where, { song: true });
+
+			return this.illustrationService.streamIllustration(
+				illustrationPath,
+				track.song.slug,
+				dimensions,
+				res
+			);
+		}
+		return this.getReleaseIllustration(
+			{ id: (await this.trackService.select(where, { id: true })).id },
 			dimensions,
 			res
 		);

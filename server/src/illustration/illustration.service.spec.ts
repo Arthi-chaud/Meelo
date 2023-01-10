@@ -9,7 +9,6 @@ import PrismaModule from "src/prisma/prisma.module";
 import PrismaService from "src/prisma/prisma.service";
 import ReleaseService from "src/release/release.service";
 import SettingsModule from "src/settings/settings.module";
-import Slug from "src/slug/slug";
 import IllustrationService from "./illustration.service";
 import IllustrationModule from "./illustration.module";
 import * as fs from 'fs';
@@ -17,6 +16,7 @@ import TestPrismaService from "test/test-prisma.service";
 import Jimp from 'jimp';
 import { FileDoesNotExistException } from "src/file-manager/file-manager.exceptions";
 import { FileParsingException } from "src/metadata/metadata.exceptions";
+import ArtistIllustrationService from "src/artist/artist-illustration.service";
 
 describe('Illustration Service', () => {
 	let illustrationService: IllustrationService;
@@ -33,6 +33,7 @@ describe('Illustration Service', () => {
 		releaseService = module.get<ReleaseService>(ReleaseService);
 		albumService = module.get<AlbumService>(AlbumService);
 		dummyRepository = module.get(PrismaService);
+		module.get(ArtistIllustrationService).onModuleInit();
 		await dummyRepository.onModuleInit();
 	});
 
@@ -43,164 +44,14 @@ describe('Illustration Service', () => {
 	});
 
 	describe('Build Illustration paths', () => {
-		describe('Build Illustration folder path', () => { 
-			it('should build the compilation "artist" metadata folder path', () => {
-				expect(illustrationService.buildCompilationIllustrationFolderPath())
-					.toBe(`${baseMetadataFolder}/compilations`);
-				expect(illustrationService.buildArtistIllustrationFolderPath())
-					.toBe(`${baseMetadataFolder}/compilations`);
-			});
-			it('should build the artist metadata folder path', () => {
-				expect(illustrationService.buildArtistIllustrationFolderPath(new Slug('My Artist')))
-					.toBe(`${baseMetadataFolder}/my-artist`);
-				expect(illustrationService.buildArtistIllustrationFolderPath(new Slug('My Other Artist')))
-					.toBe(`${baseMetadataFolder}/my-other-artist`);
-			});
-			it('should build the album metadata folder path', () => {
-				expect(illustrationService.buildAlbumIllustrationFolderPath(
-					new Slug('My Album'), new Slug('My Artist')
-				)).toBe(`${baseMetadataFolder}/my-artist/my-album`);
-			});
-			it('should build the album metadata folder path (compilation)', () => {
-				expect(illustrationService.buildAlbumIllustrationFolderPath(
-					new Slug('My Other Album')
-				)).toBe(`${baseMetadataFolder}/compilations/my-other-album`);
-			});
-			it('should build the release metadata folder path', () => {
-				expect(illustrationService.buildReleaseIllustrationFolderPath(
-					new Slug('My Album'), new Slug('My Album (Deluxe Edition)'), new Slug('My Artist')
-				)).toBe(`${baseMetadataFolder}/my-artist/my-album/my-album-deluxe-edition`);
-			});
-			it('should build the release metadata folder path (compilation)', () => {
-				expect(illustrationService.buildReleaseIllustrationFolderPath(
-					new Slug('My Album'), new Slug('My Album (Deluxe Edition)')
-				)).toBe(`${baseMetadataFolder}/compilations/my-album/my-album-deluxe-edition`);
-			});
-		});
-		describe('Build Illustration path', () => { 
-			it('should build the compilation "artist" illustration path', () => {
-				expect(illustrationService.buildArtistIllustrationPath())
-					.toBe(`${baseMetadataFolder}/compilations/cover.jpg`);
-			});
-			it('should build the artist illustration path', () => {
-				expect(illustrationService.buildArtistIllustrationPath(new Slug('My Artist')))
-					.toBe(`${baseMetadataFolder}/my-artist/cover.jpg`);
-				expect(illustrationService.buildArtistIllustrationPath(new Slug('My Other Artist')))
-					.toBe(`${baseMetadataFolder}/my-other-artist/cover.jpg`);
-			});
-			it('should build the album illustration path', async () => {
-				expect(await illustrationService.buildMasterReleaseIllustrationPath(
-					new Slug(dummyRepository.albumA1.slug), new Slug(dummyRepository.artistA.slug)
-				)).toBe(`${baseMetadataFolder}/my-artist/my-album/my-album-1/cover.jpg`);
-			});
-			it('should build the album illustration path (compilation)', async() => {
-				expect(await illustrationService.buildMasterReleaseIllustrationPath(
-					new Slug(dummyRepository.compilationAlbumA.slug)
-				)).toBe(`${baseMetadataFolder}/compilations/my-compilation-album/my-compilation-album-1/cover.jpg`);
-			});
-			it('should build the release illustration path', () => {
-				expect(illustrationService.buildReleaseIllustrationPath(
-					new Slug('My Album'), new Slug('My Album (Deluxe Edition)'), new Slug('My Artist')
-				)).toBe(`${baseMetadataFolder}/my-artist/my-album/my-album-deluxe-edition/cover.jpg`);
-			});
-			it('should build the release illustration path (compilation)', () => {
-				expect(illustrationService.buildReleaseIllustrationPath(
-					new Slug('My Album'), new Slug('My Album (Deluxe Edition)')
-				)).toBe(`${baseMetadataFolder}/compilations/my-album/my-album-deluxe-edition/cover.jpg`);
-			});
-			it('should build the track illustration path', async () => {
-				expect(illustrationService.buildTrackIllustrationPath(
-					new Slug('My Album'), new Slug('My Album (Deluxe Edition)'), new Slug('My Artist'), 1, 2
-				)).toBe(`${baseMetadataFolder}/my-artist/my-album/my-album-deluxe-edition/disc-1-track-2/cover.jpg`);
-			});
-			it('should build the track illustration path (no disc provided)', async () => {
-				expect(illustrationService.buildTrackIllustrationPath(
-					new Slug('My Album'), new Slug('My Album (Deluxe Edition)'), new Slug('My Artist'), undefined, 2
-				)).toBe(`${baseMetadataFolder}/my-artist/my-album/my-album-deluxe-edition/track-2/cover.jpg`);
-			});
-			it('should build the track illustration path (compilation)', async () => {
-				expect(illustrationService.buildTrackIllustrationPath(
-					new Slug('My Album'), new Slug('My Album (Deluxe Edition)'), undefined, 1, 2
-				)).toBe(`${baseMetadataFolder}/compilations/my-album/my-album-deluxe-edition/disc-1-track-2/cover.jpg`);
-			});
-		});
-
-		describe("Get Illustration Link", () => {
-			describe("Artist", () => {
-				it("should return the illustration link", () => {
-					jest.spyOn(illustrationService, 'illustrationExists').mockReturnValueOnce(true);
-					expect(illustrationService.getArtistIllustrationLink(new Slug('artist'))).toBe("/illustrations/artists/artist");
-				});
-				it("should not return the illustration link", () => {
-					jest.spyOn(illustrationService, 'illustrationExists').mockReturnValueOnce(false);
-					expect(illustrationService.getArtistIllustrationLink(new Slug('artist'))).toBeNull();
-				});
-			});
-			describe("Release", () => {
-				it("should return the illustration link", async () => {
-					jest.spyOn(illustrationService, 'illustrationExists').mockReturnValueOnce(true);
-					expect(await illustrationService.getReleaseIllustrationLink(dummyRepository.releaseA1_1.id)).toBe(`/illustrations/releases/${dummyRepository.releaseA1_1.id}`);
-				});
-				it("should not return the illustration link", async () => {
-					jest.spyOn(illustrationService, 'illustrationExists').mockReturnValueOnce(false);
-					expect(await illustrationService.getReleaseIllustrationLink(dummyRepository.releaseA1_1.id)).toBeNull();
-				});
-			});
-
-			describe("Album", () => {
-				it("should return the master release's illustration link", async () => {
-					jest.spyOn(illustrationService, 'illustrationExists').mockReturnValueOnce(true);
-					expect(await illustrationService.getAlbumIllustrationLink(dummyRepository.albumB1.id))
-						.toBe(`/illustrations/releases/${dummyRepository.releaseB1_1.id}`);
-				});
-				it("should not return the illustration link", async () => {
-					jest.spyOn(illustrationService, 'illustrationExists').mockReturnValueOnce(false);
-					expect(await illustrationService.getAlbumIllustrationLink(dummyRepository.albumA1.id)).toBeNull();
-				});
-			});
-
-			describe("Track", () => {
-				it("should return the track illustration link", async () => {
-					jest.spyOn(illustrationService, 'illustrationExists').mockReturnValueOnce(true);
-					expect(await illustrationService.getTrackIllustrationLink(dummyRepository.trackA1_1.id))
-						.toBe(`/illustrations/tracks/${dummyRepository.trackA1_1.id}`);
-				});
-				it("should return the release's illustration link", async () => {
-					jest.spyOn(illustrationService, 'illustrationExists').mockReturnValueOnce(false).mockReturnValueOnce(true);
-					expect(await illustrationService.getTrackIllustrationLink(dummyRepository.trackA1_1.id))
-						.toBe(`/illustrations/releases/${dummyRepository.releaseA1_1.id}`);
-				});
-				it("should not return the illustration link", async () => {
-					jest.spyOn(illustrationService, 'illustrationExists').mockReturnValueOnce(false);
-					expect(await illustrationService.getTrackIllustrationLink(dummyRepository.trackA1_1.id)).toBeNull();
-				});
-			});
-
-			describe("Song ", () => {
-				it("should return the master track illustration link", async () => {
-					jest.spyOn(illustrationService, 'illustrationExists').mockReturnValueOnce(true);
-					expect(await illustrationService.getSongIllustrationLink(dummyRepository.songA1.id))
-						.toBe(`/illustrations/tracks/${dummyRepository.trackA1_1.id}`);
-				});
-				it("should return the release's illustration link", async () => {
-					jest.spyOn(illustrationService, 'illustrationExists').mockReturnValueOnce(false).mockReturnValueOnce(true);
-					expect(await illustrationService.getSongIllustrationLink(dummyRepository.songA1.id))
-						.toBe(`/illustrations/releases/${dummyRepository.releaseA1_1.id}`);
-				});
-				it("should not return the illustration link", async () => {
-					jest.spyOn(illustrationService, 'illustrationExists').mockReturnValueOnce(false);
-					expect(await illustrationService.getSongIllustrationLink(dummyRepository.songA1.id)).toBeNull();
-				});
-			})
-		})
 
 		describe('Illustration extraction', () => {
 			const outPath = `${baseMetadataFolder}/illustration.jpg`;
 			it("should write data to file", async () => {
-				if (illustrationService.illustrationExists(outPath))
+				if (fs.existsSync(outPath))
 					fs.rmSync(outPath);
 				illustrationService['saveIllustration'](Buffer.from('ABC'), outPath);
-				expect(illustrationService.illustrationExists(outPath)).toBe(true);
+				expect(fs.existsSync(outPath)).toBe(true);
 				expect(fs.readFileSync(outPath)).toStrictEqual(Buffer.from('ABC'));
 			});
 			it("should re-write data to file", async () => {
@@ -210,7 +61,7 @@ describe('Illustration Service', () => {
 			});
 
 			it("should extract the illustration to the file, with success status", async () => {
-				illustrationService.deleteIllustration(outPath);
+				fs.rmSync(outPath);
 				const status = await illustrationService['saveIllustrationWithStatus'](Buffer.from('ABC'), outPath);
 				expect(fs.existsSync(outPath)).toBe(true);
 				expect(fs.readFileSync(outPath)).toStrictEqual(Buffer.from('ABC'));
@@ -250,7 +101,7 @@ describe('Illustration Service', () => {
 			});
 
 			it("should not extract illustration to matching folder, as their is no embedded illustration", async () => {
-				illustrationService.deleteIllustration(outPath);
+				fs.rmSync(outPath);
 				const path = await illustrationService.extractTrackIllustration(dummyRepository.trackA1_1, 'test/assets/dreams.m4a');
 				expect(fs.existsSync(outPath)).toBe(false);
 				expect(path).toBe(null);

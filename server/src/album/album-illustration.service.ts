@@ -8,6 +8,7 @@ import { join } from "path";
 import ReleaseService from "src/release/release.service";
 import ReleaseIllustrationService from "src/release/release-illustration.service";
 import { Inject, forwardRef } from "@nestjs/common";
+import { MasterReleaseNotFoundException } from "src/release/release.exceptions";
 
 type ServiceArgs = [artistSlug: Slug | undefined, albumSlug: Slug];
 
@@ -37,8 +38,16 @@ export default class AlbumIllustrationService extends RepositoryIllustrationServ
 	}
 
 	async getIllustrationLink(where: AlbumQueryParameters.WhereInput): Promise<string | null> {
-		return this.releaseService.getMasterRelease(where)
-			.then((master) => this.releaseIllustrationService.getIllustrationLink(master));
+		try {
+			const master = await this.releaseService.getMasterRelease(where);
+
+			return this.releaseIllustrationService.getIllustrationLink(master);
+		} catch (error) {
+			if (error instanceof MasterReleaseNotFoundException) {
+				return null;
+			}
+			throw error;
+		}
 	}
 
 	async formatWhereInputToIdentifiers(

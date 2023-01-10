@@ -20,6 +20,7 @@ export class ReleaseResponse extends IntersectionType(
 @Injectable()
 export class ReleaseResponseBuilder extends ResponseBuilderInterceptor<ReleaseWithRelations, ReleaseResponse> {
 	constructor(
+		@Inject(forwardRef(() => ReleaseIllustrationService))
 		private releaseIllustrationService: ReleaseIllustrationService,
 		@Inject(forwardRef(() => AlbumResponseBuilder))
 		private albumResponseBuilder: AlbumResponseBuilder

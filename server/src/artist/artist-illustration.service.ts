@@ -51,7 +51,7 @@ export default class ArtistIllustrationService extends RepositoryIllustrationSer
 			if (where.compilationArtist) {
 				throw new CompilationArtistException('illustration');
 			}
-			const identifier = where.id ?? where.slug;
+			const identifier = where.slug ?? where.id;
 
 			return `/illustrations/artists/${identifier}`;
 		}

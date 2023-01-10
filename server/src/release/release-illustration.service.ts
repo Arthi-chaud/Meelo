@@ -19,6 +19,7 @@ export default class ReleaseIllustrationService extends RepositoryIllustrationSe
 	ReleaseQueryParameters.WhereInput
 > {
 	constructor(
+		@Inject(forwardRef(() => AlbumIllustrationService))
 		private albumIllustrationService: AlbumIllustrationService,
 		@Inject(forwardRef(() => ReleaseService))
 		private releaseService: ReleaseService,
@@ -55,7 +56,7 @@ export default class ReleaseIllustrationService extends RepositoryIllustrationSe
 	): Promise<ServiceArgs> {
 		return this.releaseService
 			.select(where, { slug: true, albumId: true })
-			.then(({ slug, albumId }) => {
+			.then(async ({ slug, albumId }) => {
 				return this.albumIllustrationService
 					.formatWhereInputToIdentifiers({ id: albumId })
 					.then((args) => [...args, new Slug(slug)]);
