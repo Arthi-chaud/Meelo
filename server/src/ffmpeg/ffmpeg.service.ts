@@ -3,6 +3,7 @@ import { Injectable } from '@nestjs/common';
 import Ffmpeg from 'fluent-ffmpeg';
 import { FileDoesNotExistException } from 'src/file-manager/file-manager.exceptions';
 import FileManagerService from 'src/file-manager/file-manager.service';
+// eslint-disable-next-line no-restricted-imports
 import * as fs from 'fs';
 import * as dir from 'path';
 import Logger from 'src/logger/logger';
