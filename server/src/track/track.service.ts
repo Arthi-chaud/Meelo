@@ -19,9 +19,7 @@ import type { MeeloException } from 'src/exceptions/meelo-exception';
 import Tracklist, { UnknownDiscIndexKey } from './models/tracklist.model';
 import RepositoryService from 'src/repository/repository.service';
 import { shuffle } from '@taumechanica/stout';
-import type { IllustrationPath } from 'src/illustration/models/illustration-path.model';
 import AlbumService from 'src/album/album.service';
-import IllustrationService from 'src/illustration/illustration.service';
 import LibraryService from 'src/library/library.service';
 import { Track, TrackWithRelations } from 'src/prisma/models';
 import SortingParameter from 'src/sort/models/sorting-parameter';
@@ -52,8 +50,6 @@ export default class TrackService extends RepositoryService<
 		private albumService: AlbumService,
 		@Inject(forwardRef(() => ReleaseService))
 		private releaseService: ReleaseService,
-		@Inject(forwardRef(() => IllustrationService))
-		private illustrationService: IllustrationService,
 		@Inject(forwardRef(() => FileService))
 		private fileService: FileService,
 		private prismaService: PrismaService,
@@ -372,24 +368,5 @@ export default class TrackService extends RepositoryService<
 
 		await this.songService.deleteIfEmpty({ id: track.songId });
 		return updatedTrack;
-	}
-
-	/**
-	 * builds the path of the illustration of the track.
-	 * @param where the query parameters to find the track
-	 */
-	async buildIllustrationPath(where: TrackQueryParameters.WhereInput): Promise<IllustrationPath> {
-		const track = await this.get(where, { release: true });
-		const album = await this.albumService.get(
-			{ id: track.release.albumId }, { artist: true }
-		);
-
-		return this.illustrationService.buildTrackIllustrationPath(
-			new Slug(album.slug),
-			new Slug(track.release.slug),
-			album.artist ? new Slug(album.artist.slug) : undefined,
-			track.discIndex ?? undefined,
-			track.trackIndex ?? undefined
-		);
 	}
 }

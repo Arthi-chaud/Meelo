@@ -18,6 +18,7 @@ import GenreModule from "./genre.module";
 import GenreService from "./genre.service";
 import LibraryModule from "src/library/library.module";
 import MetadataModule from "src/metadata/metadata.module";
+import ArtistIllustrationService from "src/artist/artist-illustration.service";
 
 describe("Genre Service", () => {
 	let genreService: GenreService;
@@ -34,6 +35,7 @@ describe("Genre Service", () => {
 		songService = module.get<SongService>(SongService);
 		dummyRepository = module.get(PrismaService);
 		genreService = module.get<GenreService>(GenreService);
+		module.get(ArtistIllustrationService).onModuleInit();
 		await dummyRepository.onModuleInit();
 	});
 

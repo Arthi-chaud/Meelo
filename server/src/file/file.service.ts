@@ -16,6 +16,7 @@ import type {
 } from 'src/prisma/models';
 import type FileQueryParameters from './models/file.query-parameters';
 import { FileNotReadableException } from 'src/file-manager/file-manager.exceptions';
+// eslint-disable-next-line no-restricted-imports
 import * as fs from 'fs';
 import path from 'path';
 import RepositoryService from 'src/repository/repository.service';

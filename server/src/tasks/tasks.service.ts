@@ -13,6 +13,9 @@ import { LyricsService } from 'src/lyrics/lyrics.service';
 import LibraryService from 'src/library/library.service';
 import Logger from 'src/logger/logger';
 import SettingsService from 'src/settings/settings.service';
+import TrackIllustrationService from 'src/track/track-illustration.service';
+import FfmpegService from 'src/ffmpeg/ffmpeg.service';
+import { NotFoundException } from 'src/exceptions/meelo-exception';
 
 @Injectable()
 export default class TasksService {
@@ -24,6 +27,7 @@ export default class TasksService {
 		private fileService: FileService,
 		@Inject(forwardRef(() => TrackService))
 		private trackService: TrackService,
+		private trackIllustrationService: TrackIllustrationService,
 		@Inject(forwardRef(() => MetadataService))
 		private metadataService: MetadataService,
 		private lyricsService: LyricsService,
@@ -31,6 +35,7 @@ export default class TasksService {
 		private libraryService: LibraryService,
 		@Inject(forwardRef(() => IllustrationService))
 		private illustrationService: IllustrationService,
+		private ffmpegService: FfmpegService
 	) {}
 
 	/**
@@ -100,12 +105,13 @@ export default class TasksService {
 				.catch(() => {})
 				.then(async () => {
 					if (track.type == 'Video') {
-						const illustrationPath = await this.trackService.buildIllustrationPath(
-							{ id: track.id }
-						);
+						const illustrationPath = await this.trackIllustrationService
+							.getIllustrationPath(
+								{ id: track.id }
+							);
 
-						if (!this.illustrationService.illustrationExists(illustrationPath)) {
-							this.illustrationService.takeVideoScreenshot(
+						if (!this.trackIllustrationService.illustrationExists(illustrationPath)) {
+							this.ffmpegService.takeVideoScreenshot(
 								fullFilePath, illustrationPath
 							);
 						}
@@ -188,7 +194,11 @@ export default class TasksService {
 	}
 
 	async unregisterFile(where: FileQueryParameters.DeleteInput) {
-		await this.trackService.delete({ sourceFileId: where.id });
+		await this.trackService.delete({ sourceFileId: where.id }).catch((error) => {
+			if (!(error instanceof NotFoundException)) {
+				throw error;
+			}
+		});
 		await this.fileService.delete(where);
 	}
 }

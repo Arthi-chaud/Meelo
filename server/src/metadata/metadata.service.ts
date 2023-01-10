@@ -16,17 +16,13 @@ import ArtistService from 'src/artist/artist.service';
 import type TrackQueryParameters from 'src/track/models/track.query-parameters';
 import compilationAlbumArtistKeyword from 'src/utils/compilation';
 import GenreService from 'src/genre/genre.service';
-import Ffmpeg from 'fluent-ffmpeg';
-import * as fs from 'fs';
 import type FileQueryParameters from 'src/file/models/file.query-parameters';
 import FileService from 'src/file/file.service';
 import { File, Track } from 'src/prisma/models';
-import Logger from 'src/logger/logger';
+import FfmpegService from 'src/ffmpeg/ffmpeg.service';
 
 @Injectable()
 export default class MetadataService {
-	private readonly logger = new Logger(MetadataService.name);
-
 	constructor(
 		@Inject(forwardRef(() => TrackService))
 		private trackService: TrackService,
@@ -43,7 +39,8 @@ export default class MetadataService {
 		private genreService: GenreService,
 		@Inject(forwardRef(() => FileService))
 		private fileService: FileService,
-		private fileManagerService: FileManagerService
+		private fileManagerService: FileManagerService,
+		private ffmpegService: FfmpegService,
 	) {}
 
 	/**
@@ -272,47 +269,7 @@ export default class MetadataService {
 			genres: song.genres!.map((genre) => genre.name)
 		};
 
-		this.applyMetadata(fullFilePath, metadata);
-	}
-
-	/**
-	 * Apply metadata to source file
-	 * @param filePath the full path of the file to apply the metadata to
-	 * @param metadata the metadata to apply
-	 */
-	applyMetadata(filePath: string, metadata: Metadata) {
-		if (!this.fileManagerService.fileExists(filePath)) {
-			throw new FileDoesNotExistException(filePath);
-		}
-		const tmpOutput = `temp-${filePath}`;
-		const ffmpegTags: [string, string | undefined | null][] = [
-			["artist", metadata.artist],
-			["album_artist", metadata.albumArtist],
-			["album", metadata.release],
-			["title", metadata.name],
-			["date", metadata.releaseDate?.getFullYear().toString()],
-			["track", metadata.index?.toString()],
-			["disc", metadata.discIndex?.toString()],
-			["genre", metadata.genres?.at(0)],
-		];
-
-		try {
-			Ffmpeg(filePath)
-				.inputOptions([
-					"-map 0",
-					"-map_metadata 0",
-					"-c copy",
-					...ffmpegTags.map(
-						([tag, value]) => `-metadata '${tag}'='${value?.toString()}'`
-					)
-				])
-				.output(tmpOutput)
-				.on('end', () => this.logger.error(`Applying metadata on file '${filePath}' successed`))
-				.save(tmpOutput);
-			fs.rename(tmpOutput, filePath, () => {});
-		} catch {
-			this.logger.error(`Applying metadata on file '${filePath}' failed`);
-		}
+		this.ffmpegService.applyMetadata(fullFilePath, metadata);
 	}
 
 	/**

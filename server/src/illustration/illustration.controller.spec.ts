@@ -18,15 +18,15 @@ import TrackModule from "src/track/track.module";
 const fs = require('fs');
 import { INestApplication } from "@nestjs/common";
 import request from "supertest";
-import ReleaseService from "src/release/release.service";
-import TrackService from "src/track/track.service";
 import SetupApp from "test/setup-app";
+import TrackIllustrationService from "src/track/track-illustration.service";
+import ReleaseIllustrationService from "src/release/release-illustration.service";
 describe('Illustration Controller', () => {
 	let app: INestApplication;
 	let dummyRepository: TestPrismaService;
 	let fileManagerService: FileManagerService;
-	let releaseService: ReleaseService;
-	let trackService: TrackService;
+	let releaseIllustrationService: ReleaseIllustrationService;
+	let trackIllustrationService: TrackIllustrationService;
 	beforeAll(async () => {
 		const module: TestingModule = await createTestingModule({
 			imports: [FileManagerModule, PrismaModule, FileModule, MetadataModule, FileModule, ArtistModule, AlbumModule, SongModule, ReleaseModule, TrackModule, GenreModule, LyricsModule],
@@ -34,8 +34,8 @@ describe('Illustration Controller', () => {
 		app = await SetupApp(module);
 		fileManagerService = module.get<FileManagerService>(FileManagerService);
 		dummyRepository = module.get(PrismaService);
-		releaseService = module.get(ReleaseService);
-		trackService = module.get(TrackService);
+		releaseIllustrationService = module.get(ReleaseIllustrationService);
+		trackIllustrationService = module.get(TrackIllustrationService);
 		await dummyRepository.onModuleInit();
 	});
 
@@ -79,13 +79,12 @@ describe('Illustration Controller', () => {
 	describe("Get Album Illustration", () => {
 		it("should return the master release illustration", () => {
 			jest.spyOn(fileManagerService, 'fileExists').mockReturnValueOnce(true);
-			jest.spyOn(fileManagerService, 'fileExists').mockReturnValueOnce(true);
 			jest.spyOn(fs, 'createReadStream').mockReturnValueOnce(getDummyIllustrationStream());
 			return request(app.getHttpServer())
 				.get(`/illustrations/albums/${dummyRepository.albumB1.id}`)
 				.expect(200)
 				.expect((res) => {
-					expectedFileName(res.headers, dummyRepository.releaseB1_1.slug);
+					expectedFileName(res.headers, dummyRepository.albumB1.slug);
 					expect(res.body).toStrictEqual(dummyIllustrationBytes);
 				});
 		});
@@ -211,7 +210,10 @@ describe('Illustration Controller', () => {
 
 	describe("Update Release Illustration", () => {
 		it("should create the release illustration", async () => {
-			const releaseIllustrationPath = await releaseService.buildIllustrationPath({ id :dummyRepository.releaseB1_1.id});
+			
+			const releaseIllustrationPath = releaseIllustrationService.buildIllustrationPath(
+				...await releaseIllustrationService.formatWhereInputToIdentifiers({ id :dummyRepository.releaseB1_1.id})
+			);
 			return request(app.getHttpServer())
 				.post(`/illustrations/releases/${dummyRepository.releaseB1_1.id}`)
 				.send({
@@ -223,7 +225,9 @@ describe('Illustration Controller', () => {
 				});
 		});
 		it("should update the release illustration", async () => {
-			const releaseIllustrationPath = await releaseService.buildIllustrationPath({ id :dummyRepository.releaseB1_1.id});
+			const releaseIllustrationPath = releaseIllustrationService.buildIllustrationPath(
+				...await releaseIllustrationService.formatWhereInputToIdentifiers({ id :dummyRepository.releaseB1_1.id})
+			);
 			return request(app.getHttpServer())
 				.post(`/illustrations/releases/${dummyRepository.releaseB1_1.id}`)
 				.send({
@@ -246,7 +250,9 @@ describe('Illustration Controller', () => {
 
 	describe("Update Track Illustration", () => {
 		it("should create the track illustration", async () => {
-			const releaseIllustrationPath = await trackService.buildIllustrationPath({ id :dummyRepository.trackC1_1.id });
+			const releaseIllustrationPath = trackIllustrationService.buildIllustrationPath(
+				...await trackIllustrationService.formatWhereInputToIdentifiers({ id :dummyRepository.trackC1_1.id})
+			);
 			return request(app.getHttpServer())
 				.post(`/illustrations/tracks/${dummyRepository.trackC1_1.id}`)
 				.send({
@@ -258,7 +264,9 @@ describe('Illustration Controller', () => {
 				});
 		});
 		it("should update the track illustration", async () => {
-			const releaseIllustrationPath = await trackService.buildIllustrationPath({ id :dummyRepository.trackC1_1.id });
+			const releaseIllustrationPath = trackIllustrationService.buildIllustrationPath(
+				...await trackIllustrationService.formatWhereInputToIdentifiers({ id :dummyRepository.trackC1_1.id})
+			);
 			return request(app.getHttpServer())
 				.post(`/illustrations/tracks/${dummyRepository.trackC1_1.id}`)
 				.send({
@@ -305,7 +313,9 @@ describe('Illustration Controller', () => {
 
 	describe("Delete Release Illustration", () => {
 		it("should delete the release illustration", async () => {
-			const releaseIllustrationPath = await releaseService.buildIllustrationPath({ id :dummyRepository.releaseB1_1.id});
+			const releaseIllustrationPath = releaseIllustrationService.buildIllustrationPath(
+				...await releaseIllustrationService.formatWhereInputToIdentifiers({ id :dummyRepository.releaseB1_1.id})
+			);
 			return request(app.getHttpServer())
 				.delete(`/illustrations/releases/${dummyRepository.releaseB1_1.id}`)
 				.expect(200)
@@ -314,7 +324,9 @@ describe('Illustration Controller', () => {
 				})
 		});
 		it("should do nothing if the release illustration does nothing", async () => {
-			const releaseIllustrationPath = await releaseService.buildIllustrationPath({ id :dummyRepository.compilationReleaseA1.id});
+			const releaseIllustrationPath = releaseIllustrationService.buildIllustrationPath(
+				...await releaseIllustrationService.formatWhereInputToIdentifiers({ id :dummyRepository.compilationReleaseA1.id})
+			);
 			return request(app.getHttpServer())
 				.delete(`/illustrations/releases/${dummyRepository.compilationReleaseA1.id}`)
 				.expect(200)
@@ -331,7 +343,9 @@ describe('Illustration Controller', () => {
 
 	describe("Delete track Illustration", () => {
 		it("should delete the track illustration", async () => {
-			const trackIllustrationPath = await trackService.buildIllustrationPath({ id :dummyRepository.trackC1_1.id });
+			const trackIllustrationPath = trackIllustrationService.buildIllustrationPath(
+				...await trackIllustrationService.formatWhereInputToIdentifiers({ id :dummyRepository.trackC1_1.id})
+			);
 			return request(app.getHttpServer())
 				.delete(`/illustrations/tracks/${dummyRepository.trackC1_1.id}`)
 				.expect(200)
@@ -340,7 +354,9 @@ describe('Illustration Controller', () => {
 				})
 		});
 		it("should do nothing if the track illustration does nothing", async () => {
-			const trackIllustrationPath = await trackService.buildIllustrationPath({ id :dummyRepository.trackA1_2Video.id });
+			const trackIllustrationPath = trackIllustrationService.buildIllustrationPath(
+				...await trackIllustrationService.formatWhereInputToIdentifiers({ id :dummyRepository.trackA1_2Video.id})
+			);
 			return request(app.getHttpServer())
 				.delete(`/illustrations/tracks/${dummyRepository.trackA1_2Video.id}`)
 				.expect(200)

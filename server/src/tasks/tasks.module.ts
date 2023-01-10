@@ -9,6 +9,7 @@ import IllustrationModule from 'src/illustration/illustration.module';
 import { LyricsModule } from 'src/lyrics/lyrics.module';
 import MetadataModule from 'src/metadata/metadata.module';
 import SettingsModule from 'src/settings/settings.module';
+import FfmpegModule from 'src/ffmpeg/ffmpeg.module';
 
 @Module({
 	imports: [
@@ -19,6 +20,7 @@ import SettingsModule from 'src/settings/settings.module';
 		forwardRef(() => MetadataModule),
 		LyricsModule,
 		SettingsModule,
+		FfmpegModule,
 		forwardRef(() => IllustrationModule),
 	],
 	controllers: [TasksController],

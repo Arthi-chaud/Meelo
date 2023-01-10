@@ -9,6 +9,7 @@ import IllustrationModule from 'src/illustration/illustration.module';
 import AlbumModule from 'src/album/album.module';
 import { TrackResponseBuilder } from './models/track.response';
 import { TracklistResponseBuilder } from './models/tracklist.model';
+import TrackIllustrationService from './track-illustration.service';
 
 @Module({
 	imports: [
@@ -19,8 +20,18 @@ import { TracklistResponseBuilder } from './models/tracklist.model';
 		forwardRef(() => IllustrationModule),
 		forwardRef(() => FileModule),
 	],
-	exports: [TrackService, TrackResponseBuilder, TracklistResponseBuilder],
-	providers: [TrackService, TrackResponseBuilder, TracklistResponseBuilder],
+	exports: [
+		TrackService,
+		TrackResponseBuilder,
+		TracklistResponseBuilder,
+		TrackIllustrationService
+	],
+	providers: [
+		TrackService,
+		TrackResponseBuilder,
+		TracklistResponseBuilder,
+		TrackIllustrationService
+	],
 	controllers: [TrackController]
 })
 export default class TrackModule {}

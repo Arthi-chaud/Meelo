@@ -14,7 +14,6 @@ import PrismaService from 'src/prisma/prisma.service';
 import AlbumQueryParameters from './models/album.query-parameters';
 import type ArtistQueryParameters from 'src/artist/models/artist.query-parameters';
 import ReleaseService from 'src/release/release.service';
-import IllustrationService from 'src/illustration/illustration.service';
 import RepositoryService from 'src/repository/repository.service';
 import type { MeeloException } from 'src/exceptions/meelo-exception';
 import GenreService from "../genre/genre.service";
@@ -29,6 +28,7 @@ import compilationAlbumArtistKeyword from 'src/utils/compilation';
 import Identifier from 'src/identifier/models/identifier';
 import Logger from 'src/logger/logger';
 import ReleaseQueryParameters from 'src/release/models/release.query-parameters';
+import AlbumIllustrationService from './album-illustration.service';
 
 @Injectable()
 export default class AlbumService extends RepositoryService<
@@ -53,8 +53,8 @@ export default class AlbumService extends RepositoryService<
 		private artistServce: ArtistService,
 		@Inject(forwardRef(() => ReleaseService))
 		private releaseService: ReleaseService,
-		@Inject(forwardRef(() => IllustrationService))
-		private illustrationService: IllustrationService,
+		@Inject(forwardRef(() => AlbumIllustrationService))
+		private albumIllustrationService: AlbumIllustrationService,
 		private genreService: GenreService
 	) {
 		super(prismaService.album);
@@ -233,12 +233,12 @@ export default class AlbumService extends RepositoryService<
 			await this.artistServce.deleteArtistIfEmpty({ id: album.artistId });
 		}
 		try {
-			const albumIllustrationFolder = this.illustrationService
-				.buildAlbumIllustrationFolderPath(
-					new Slug(album.slug), album.artist ? new Slug(album.artist.slug) : undefined
+			const albumIllustrationFolder = this.albumIllustrationService
+				.buildIllustrationFolderPath(
+					album.artist ? new Slug(album.artist.slug) : undefined, new Slug(album.slug),
 				);
 
-			this.illustrationService.deleteIllustrationFolder(albumIllustrationFolder);
+			this.albumIllustrationService.deleteIllustrationFolder(albumIllustrationFolder);
 		} catch {
 			return album;
 		}
@@ -321,7 +321,7 @@ export default class AlbumService extends RepositoryService<
 		}
 		const updatedAlbum = await this.update({ artistId: newArtist?.id ?? null }, albumWhere);
 
-		this.illustrationService.reassignAlbumIllustrationFolder(
+		this.albumIllustrationService.reassignIllustrationFolder(
 			albumSlug, previousArtistSlug, newArtistSlug
 		);
 		if (album.artistId) {

@@ -14,7 +14,6 @@ import type ArtistQueryParameters from './models/artist.query-parameters';
 import { type PaginationParameters, buildPaginationParameters } from 'src/pagination/models/pagination-parameters';
 import SongService from 'src/song/song.service';
 import AlbumService from 'src/album/album.service';
-import IllustrationService from 'src/illustration/illustration.service';
 import SortingParameter from 'src/sort/models/sorting-parameter';
 import RepositoryService from 'src/repository/repository.service';
 import type { MeeloException } from 'src/exceptions/meelo-exception';
@@ -27,6 +26,7 @@ import compilationAlbumArtistKeyword from 'src/utils/compilation';
 import { parseIdentifierSlugs } from 'src/identifier/identifier.parse-slugs';
 import Identifier from 'src/identifier/models/identifier';
 import Logger from 'src/logger/logger';
+import ArtistIllustrationService from './artist-illustration.service';
 
 @Injectable()
 export default class ArtistService extends RepositoryService<
@@ -51,8 +51,8 @@ export default class ArtistService extends RepositoryService<
 		private songService: SongService,
 		@Inject(forwardRef(() => AlbumService))
 		private albumService: AlbumService,
-		@Inject(forwardRef(() => IllustrationService))
-		private illustrationService: IllustrationService
+		@Inject(forwardRef(() => ArtistIllustrationService))
+		private artistIllustrationService: ArtistIllustrationService
 	) {
 		super(prismaService.artist);
 	}
@@ -219,20 +219,14 @@ export default class ArtistService extends RepositoryService<
 				(song) => this.songService.delete({ id: song.id })
 			)
 		]);
+		this.artistIllustrationService.getIllustrationPath(where)
+			.then((path) => this.artistIllustrationService.deleteIllustrationFolder(path));
 		try {
 			await super.delete(where);
 		} catch {
 			return artist;
 		}
 		this.logger.warn(`Artist '${artist.slug}' deleted`);
-		try {
-			const artistIllustrationFolder = this.illustrationService
-				.buildArtistIllustrationFolderPath(new Slug(artist.slug));
-
-			this.illustrationService.deleteIllustrationFolder(artistIllustrationFolder);
-		} catch {
-			return artist;
-		}
 		return artist;
 	}
 
