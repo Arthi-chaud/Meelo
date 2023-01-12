@@ -2,7 +2,12 @@ import {
 	Inject, Injectable, forwardRef
 } from '@nestjs/common';
 import Slug from 'src/slug/slug';
-import { CompilationArtistException } from './artist.exceptions';
+import {
+	ArtistAlreadyExistsException,
+	ArtistNotFoundByIDException,
+	ArtistNotFoundException,
+	CompilationArtistException
+} from './artist.exceptions';
 import { Prisma } from '@prisma/client';
 import PrismaService from 'src/prisma/prisma.service';
 import type ArtistQueryParameters from './models/artist.query-parameters';
@@ -21,7 +26,7 @@ import { parseIdentifierSlugs } from 'src/identifier/identifier.parse-slugs';
 import Identifier from 'src/identifier/models/identifier';
 import Logger from 'src/logger/logger';
 import ArtistIllustrationService from './artist-illustration.service';
-import { UnhandledORMErrorException } from 'src/exceptions/orm-exceptions';
+import { PrismaError } from 'prisma-error-enum';
 
 @Injectable()
 export default class ArtistService extends RepositoryService<
@@ -66,9 +71,12 @@ export default class ArtistService extends RepositoryService<
 		return { slug: new Slug(input.name) };
 	}
 
-	protected onCreationFailure(error: Error, input: ArtistQueryParameters.CreateInput): never {
-		throw new UnhandledORMErrorException(error, input);
-		// throw new ArtistAlreadyExistsException(new Slug(input.name));
+	protected onCreationFailure(error: Error, input: ArtistQueryParameters.CreateInput): Error {
+		if (error instanceof Prisma.PrismaClientKnownRequestError
+			&& error.code == PrismaError.UniqueConstraintViolation) {
+			return new ArtistAlreadyExistsException(new Slug(input.name));
+		}
+		return this.onUnknownError(error, input);
 	}
 
 	/**
@@ -88,12 +96,15 @@ export default class ArtistService extends RepositoryService<
 	}
 
 	formatWhereInput = ArtistService.formatWhereInput;
-	onNotFound(error: Error, where: ArtistQueryParameters.WhereInput): never {
-		throw new UnhandledORMErrorException(error, where);
-		/*if (where.id !== undefined) {
-			return new ArtistNotFoundByIDException(where.id);
+	onNotFound(error: Error, where: ArtistQueryParameters.WhereInput) {
+		if (error instanceof Prisma.PrismaClientKnownRequestError
+			&& error.code == PrismaError.RecordsNotFound) {
+			if (where.id !== undefined) {
+				return new ArtistNotFoundByIDException(where.id);
+			}
+			return new ArtistNotFoundException(where.slug!);
 		}
-		return new ArtistNotFoundException(where.slug!);*/
+		return this.onUnknownError(error, where);
 	}
 
 	/**
@@ -190,14 +201,6 @@ export default class ArtistService extends RepositoryService<
 		};
 	}
 
-	onUpdateFailure(
-		error: Error,
-		what: ArtistQueryParameters.UpdateInput,
-		where: ArtistQueryParameters.WhereInput
-	): never {
-		throw new UnhandledORMErrorException(error, what, where);
-	}
-
 	/**
 	 * Artist deletion
 	 */
@@ -207,10 +210,6 @@ export default class ArtistService extends RepositoryService<
 
 	protected formatDeleteInputToWhereInput(input: ArtistQueryParameters.DeleteInput) {
 		return input;
-	}
-
-	onDeletionFailure(error: Error, where: ArtistQueryParameters.DeleteInput): never {
-		throw new UnhandledORMErrorException(error, where);
 	}
 
 	/**

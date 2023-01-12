@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/ban-types */
 import { InvalidRequestException } from "src/exceptions/meelo-exception";
+// eslint-disable-next-line no-restricted-imports
 import { UnhandledORMErrorException } from "src/exceptions/orm-exceptions";
 import Identifier from "src/identifier/models/identifier";
 import { PaginationParameters, buildPaginationParameters } from "src/pagination/models/pagination-parameters";
@@ -116,7 +117,7 @@ abstract class RepositoryService<
 				include: RepositoryService.formatInclude(include)
 			}) as BaseModel & Select<Relations, I>;
 		} catch (error) {
-			this.onCreationFailure(error, input);
+			throw await this.onCreationFailure(error, input);
 		}
 	}
 
@@ -126,12 +127,11 @@ abstract class RepositoryService<
 	 */
 	abstract formatCreateInput(input: CreateInput): RepositoryCreateInput;
 	/**
-	 * Fallback on Creation Failure
-	 * @throws
+	 * @return The error to throw on 'create' error
 	 * @param error The error thrown by the ORM
 	 * @param input The creation method input
 	 */
-	protected abstract onCreationFailure(error: Error, input: CreateInput): never;
+	protected abstract onCreationFailure(error: Error, input: CreateInput): Error | Promise<Error>;
 
 	/**
 	 * Transform CreationInput into WhereInput
@@ -152,7 +152,7 @@ abstract class RepositoryService<
 				include: RepositoryService.formatInclude(include)
 			}) as BaseModel & Select<Relations, I>;
 		} catch (error) {
-			this.onNotFound(error, where);
+			throw await this.onNotFound(error, where);
 		}
 	}
 
@@ -207,12 +207,11 @@ abstract class RepositoryService<
 	 */
 	abstract formatWhereInput(input: WhereInput): RepositoryWhereInput;
 	/**
-	 * Fallback on Find Failure
-	 * @throws
+	 * @return The error to throw on 'get' or 'select' error
 	 * @param error The error thrown by the ORM
 	 * @param where: the find method input
 	 */
-	abstract onNotFound(error: Error, where: WhereInput): never;
+	abstract onNotFound(error: Error, where: WhereInput): Error | Promise<Error>;
 
 	/**
 	 * Find an entity in the database, and select fields
@@ -230,7 +229,7 @@ abstract class RepositoryService<
 				select: { ...select, id: true }
 			});
 		} catch (error) {
-			this.onNotFound(error, where);
+			throw await this.onNotFound(error, where);
 		}
 	}
 
@@ -294,7 +293,7 @@ abstract class RepositoryService<
 				where: this.formatWhereInput(where)
 			});
 		} catch (error) {
-			this.onUpdateFailure(error, what, where);
+			throw await this.onUpdateFailure(error, what, where);
 		}
 	}
 
@@ -304,13 +303,14 @@ abstract class RepositoryService<
 	 */
 	abstract formatUpdateInput(what: UpdateInput): RepositoryUpdateInput;
 	/**
-	 * Fallback on Update Failure
-	 * @throws
+	 * @return The error to throw on 'update' error
 	 * @param error The error thrown by the ORM
 	 * @param what the input of the update method
 	 * @param where the input of the update method
 	 */
-	abstract onUpdateFailure(error: Error, what: UpdateInput, where: WhereInput): never;
+	onUpdateFailure(error: Error, _what: UpdateInput, where: WhereInput): Error | Promise<Error> {
+		return this.onNotFound(error, where);
+	}
 
 	/**
 	 * Delete an entity
@@ -323,7 +323,7 @@ abstract class RepositoryService<
 				where: this.formatDeleteInput(where)
 			});
 		} catch (error) {
-			this.onDeletionFailure(error, where);
+			throw await this.onDeletionFailure(error, where);
 		}
 	}
 
@@ -337,12 +337,13 @@ abstract class RepositoryService<
 	 */
 	protected abstract formatDeleteInputToWhereInput(input: DeleteInput): WhereInput;
 	/**
-	 * Fallback on Deletion Failure
-	 * @throws
+	 * @return The error to throw on deletion error
 	 * @param error The error thrown by the ORM
 	 * @param input The delete method input
 	 */
-	abstract onDeletionFailure(error: Error, input: DeleteInput): never;
+	onDeletionFailure(error: Error, input: DeleteInput): Error | Promise<Error> {
+		return this.onNotFound(error, this.formatDeleteInputToWhereInput(input));
+	}
 
 	/**
 	 * Fetch an entity, or create one if it does not exist
@@ -373,11 +374,11 @@ abstract class RepositoryService<
 	}
 
 	/**
-	 * Fallback on unhandled Prisma Exception
+	 * @return the error to throw on unknown ORM error
 	 * @param error the error throw by the ORM
 	 */
-	onUnknownError(error: Error, ...inputs: any[]): never {
-		throw new UnhandledORMErrorException(error, ...inputs);
+	onUnknownError(error: Error, ...inputs: any[]): Error {
+		return new UnhandledORMErrorException(error, ...inputs);
 	}
 
 	/**
