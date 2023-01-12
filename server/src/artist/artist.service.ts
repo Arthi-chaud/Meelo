@@ -2,12 +2,7 @@ import {
 	Inject, Injectable, forwardRef
 } from '@nestjs/common';
 import Slug from 'src/slug/slug';
-import {
-	ArtistAlreadyExistsException,
-	ArtistNotFoundByIDException,
-	ArtistNotFoundException,
-	CompilationArtistException
-} from './artist.exceptions';
+import { CompilationArtistException } from './artist.exceptions';
 import { Prisma } from '@prisma/client';
 import PrismaService from 'src/prisma/prisma.service';
 import type ArtistQueryParameters from './models/artist.query-parameters';
@@ -16,7 +11,6 @@ import SongService from 'src/song/song.service';
 import AlbumService from 'src/album/album.service';
 import SortingParameter from 'src/sort/models/sorting-parameter';
 import RepositoryService from 'src/repository/repository.service';
-import type { MeeloException } from 'src/exceptions/meelo-exception';
 import { buildStringSearchParameters } from 'src/utils/search-string-input';
 import GenreService from 'src/genre/genre.service';
 import ReleaseService from 'src/release/release.service';
@@ -27,6 +21,7 @@ import { parseIdentifierSlugs } from 'src/identifier/identifier.parse-slugs';
 import Identifier from 'src/identifier/models/identifier';
 import Logger from 'src/logger/logger';
 import ArtistIllustrationService from './artist-illustration.service';
+import { UnhandledORMErrorException } from 'src/exceptions/orm-exceptions';
 
 @Injectable()
 export default class ArtistService extends RepositoryService<
@@ -71,8 +66,9 @@ export default class ArtistService extends RepositoryService<
 		return { slug: new Slug(input.name) };
 	}
 
-	protected onCreationFailure(input: ArtistQueryParameters.CreateInput) {
-		return new ArtistAlreadyExistsException(new Slug(input.name));
+	protected onCreationFailure(error: Error, input: ArtistQueryParameters.CreateInput): never {
+		throw new UnhandledORMErrorException(error, input);
+		// throw new ArtistAlreadyExistsException(new Slug(input.name));
 	}
 
 	/**
@@ -92,11 +88,12 @@ export default class ArtistService extends RepositoryService<
 	}
 
 	formatWhereInput = ArtistService.formatWhereInput;
-	onNotFound(where: ArtistQueryParameters.WhereInput): MeeloException {
-		if (where.id !== undefined) {
+	onNotFound(error: Error, where: ArtistQueryParameters.WhereInput): never {
+		throw new UnhandledORMErrorException(error, where);
+		/*if (where.id !== undefined) {
 			return new ArtistNotFoundByIDException(where.id);
 		}
-		return new ArtistNotFoundException(where.slug!);
+		return new ArtistNotFoundException(where.slug!);*/
 	}
 
 	/**
@@ -193,6 +190,14 @@ export default class ArtistService extends RepositoryService<
 		};
 	}
 
+	onUpdateFailure(
+		error: Error,
+		what: ArtistQueryParameters.UpdateInput,
+		where: ArtistQueryParameters.WhereInput
+	): never {
+		throw new UnhandledORMErrorException(error, what, where);
+	}
+
 	/**
 	 * Artist deletion
 	 */
@@ -202,6 +207,10 @@ export default class ArtistService extends RepositoryService<
 
 	protected formatDeleteInputToWhereInput(input: ArtistQueryParameters.DeleteInput) {
 		return input;
+	}
+
+	onDeletionFailure(error: Error, where: ArtistQueryParameters.DeleteInput): never {
+		throw new UnhandledORMErrorException(error, where);
 	}
 
 	/**

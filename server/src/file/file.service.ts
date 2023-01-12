@@ -3,13 +3,7 @@ import {
 	Inject, Injectable, StreamableFile, forwardRef
 } from '@nestjs/common';
 import FileManagerService from 'src/file-manager/file-manager.service';
-import {
-	FileAlreadyExistsException,
-	FileNotFoundFromIDException,
-	FileNotFoundFromPathException,
-	FileNotFoundFromTrackIDException,
-	SourceFileNotFoundExceptions
-} from './file.exceptions';
+import { SourceFileNotFoundExceptions } from './file.exceptions';
 import PrismaService from 'src/prisma/prisma.service';
 import type {
 	File, FileWithRelations, Library
@@ -20,7 +14,6 @@ import { FileNotReadableException } from 'src/file-manager/file-manager.exceptio
 import * as fs from 'fs';
 import path from 'path';
 import RepositoryService from 'src/repository/repository.service';
-import type { MeeloException } from 'src/exceptions/meelo-exception';
 import { buildDateSearchParameters } from 'src/utils/search-date-input';
 import LibraryService from 'src/library/library.service';
 import mime from 'mime';
@@ -28,6 +21,7 @@ import { Prisma } from '@prisma/client';
 import SortingParameter from 'src/sort/models/sorting-parameter';
 import Slug from 'src/slug/slug';
 import Identifier from 'src/identifier/models/identifier';
+import { UnhandledORMErrorException } from 'src/exceptions/orm-exceptions';
 
 @Injectable()
 export default class FileService extends RepositoryService<
@@ -74,8 +68,9 @@ export default class FileService extends RepositoryService<
 		return { byPath: { path: input.path, library: { id: input.libraryId } } };
 	}
 
-	protected onCreationFailure(input: FileQueryParameters.CreateInput) {
-		return new FileAlreadyExistsException(input.path, input.libraryId);
+	onCreationFailure(error: Error, input: FileQueryParameters.CreateInput): never {
+		throw new UnhandledORMErrorException(error, input);
+		// return new FileAlreadyExistsException(input.path, input.libraryId);
 	}
 
 	/**
@@ -137,13 +132,14 @@ export default class FileService extends RepositoryService<
 		}
 	}
 
-	onNotFound(where: FileQueryParameters.WhereInput): MeeloException {
-		if (where.id !== undefined) {
+	onNotFound(error: Error, where: FileQueryParameters.WhereInput): never{
+		throw new UnhandledORMErrorException(error, where);
+		/*if (where.id !== undefined) {
 			return new FileNotFoundFromIDException(where.id);
 		} else if (where.trackId !== undefined) {
 			return new FileNotFoundFromTrackIDException(where.trackId);
 		}
-		return new FileNotFoundFromPathException(where.byPath.path);
+		return new FileNotFoundFromPathException(where.byPath.path);*/
 	}
 
 	/**
@@ -153,11 +149,23 @@ export default class FileService extends RepositoryService<
 		return file;
 	}
 
+	onUpdateFailure(
+		error: Error,
+		what: FileQueryParameters.UpdateInput,
+		where: FileQueryParameters.WhereInput
+	): never {
+		throw new UnhandledORMErrorException(error, what, where);
+	}
+
 	/**
 	 * Delete a File
 	 */
 	formatDeleteInput(where: FileQueryParameters.DeleteInput) {
 		return where;
+	}
+
+	onDeletionFailure(error: Error, where: FileQueryParameters.DeleteInput): never {
+		throw new UnhandledORMErrorException(error, where);
 	}
 
 	protected formatDeleteInputToWhereInput(where: FileQueryParameters.DeleteInput) {

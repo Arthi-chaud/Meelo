@@ -2,16 +2,11 @@ import {
 	Inject, Injectable, forwardRef
 } from '@nestjs/common';
 import type { LyricsWithRelations } from 'src/prisma/models';
-import type { MeeloException } from 'src/exceptions/meelo-exception';
 import PrismaService from 'src/prisma/prisma.service';
 import RepositoryService from 'src/repository/repository.service';
-import Slug from 'src/slug/slug';
 import type SongQueryParameters from 'src/song/models/song.query-params';
 import SongService from 'src/song/song.service';
 import {
-	LyricsAlreadyExistsExceptions,
-	LyricsNotFoundByIDException,
-	LyricsNotFoundBySongException,
 	MissingGeniusAPIKeyException,
 	NoLyricsFoundException
 } from './lyrics.exceptions';
@@ -20,6 +15,7 @@ import { Prisma } from '@prisma/client';
 import SortingParameter from 'src/sort/models/sorting-parameter';
 import Identifier from 'src/identifier/models/identifier';
 import Logger from 'src/logger/logger';
+import { UnhandledORMErrorException } from 'src/exceptions/orm-exceptions';
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const { getLyrics } = require('genius-lyrics-api');
 
@@ -64,10 +60,11 @@ export class LyricsService extends RepositoryService<
 		return { song: { id: input.songId } };
 	}
 
-	protected async onCreationFailure(input: LyricsQueryParameters.CreateInput) {
-		const parentSong = await this.songService.get({ id: input.songId });
+	protected onCreationFailure(error: Error, input: LyricsQueryParameters.CreateInput): never {
+		throw new UnhandledORMErrorException(error, input);
+		/*const parentSong = await this.songService.get({ id: input.songId });
 
-		return new LyricsAlreadyExistsExceptions(new Slug(parentSong.slug));
+		return new LyricsAlreadyExistsExceptions(new Slug(parentSong.slug));*/
 	}
 
 	/**
@@ -120,8 +117,8 @@ export class LyricsService extends RepositoryService<
 				data: this.formatUpdateInput(what),
 				where: this.formatDeleteInput({ songId: songId! })
 			});
-		} catch {
-			throw await this.onUpdateFailure(what, where);
+		} catch (error) {
+			this.onUpdateFailure(error, what, where);
 		}
 	}
 
@@ -131,11 +128,20 @@ export class LyricsService extends RepositoryService<
 		};
 	}
 
+	onUpdateFailure(
+		error: Error,
+		what: LyricsQueryParameters.UpdateInput,
+		where: LyricsQueryParameters.WhereInput
+	): never {
+		throw new UnhandledORMErrorException(error, what, where);
+	}
+
 	/**
 	 * Delete
 	 */
-	async onDeletionFailure(where: LyricsQueryParameters.DeleteInput) {
-		return this.onNotFound(this.formatDeleteInputToWhereInput(where));
+	onDeletionFailure(error: Error, where: LyricsQueryParameters.DeleteInput): never {
+		throw new UnhandledORMErrorException(error, where);
+		// return this.onNotFound(this.formatDeleteInputToWhereInput(where));
 	}
 
 	formatDeleteInput(where: LyricsQueryParameters.DeleteInput) {
@@ -158,14 +164,13 @@ export class LyricsService extends RepositoryService<
 	 * Returns an exception for when a lyric is not found in the database
 	 * @param where the queryparameters used to find the lyrics
 	 */
-	async onNotFound(
-		where: LyricsQueryParameters.WhereInput
-	): Promise<MeeloException> {
-		if (where.song) {
+	onNotFound(error: Error, where: LyricsQueryParameters.WhereInput): never {
+		throw new UnhandledORMErrorException(error, where);
+		/*if (where.song) {
 			await this.songService.throwIfNotFound(where.song);
 			throw new LyricsNotFoundBySongException(where.song.id ?? where.song.bySlug!.slug);
 		}
-		throw new LyricsNotFoundByIDException(where.id);
+		throw new LyricsNotFoundByIDException(where.id);*/
 	}
 
 	/**

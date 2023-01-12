@@ -4,15 +4,14 @@ import type { User } from 'src/prisma/models';
 import type { Prisma } from '@prisma/client';
 import type UserQueryParameters from './models/user.query-params';
 import PrismaService from 'src/prisma/prisma.service';
-import { MeeloException } from 'src/exceptions/meelo-exception';
 import SortingParameter from 'src/sort/models/sorting-parameter';
 import bcrypt from 'bcrypt';
 import {
 	InvalidPasswordException, InvalidUserCredentialsException,
-	InvalidUsernameException, UserAlreadyExistsException,
-	UserNotFoundException, UserNotFoundFromIDException
+	InvalidUsernameException
 } from './user.exceptions';
 import Identifier from 'src/identifier/models/identifier';
+import { UnhandledORMErrorException } from 'src/exceptions/orm-exceptions';
 
 @Injectable()
 export default class UserService extends RepositoryService<
@@ -92,10 +91,8 @@ export default class UserService extends RepositoryService<
 		});
 	}
 
-	protected onCreationFailure(
-		input: UserQueryParameters.CreateInput
-	): MeeloException | Promise<MeeloException> {
-		throw new UserAlreadyExistsException(input.name);
+	protected onCreationFailure(error: Error):never {
+		throw new UnhandledORMErrorException(error);
 	}
 
 	protected formatCreateInputToWhereInput(
@@ -123,19 +120,20 @@ export default class UserService extends RepositoryService<
 
 		if (input.byCredentials &&
 			!bcrypt.compareSync(input.byCredentials.password, user.password)) {
-			throw await this.onNotFound(input);
+			throw new InvalidUserCredentialsException(input.byCredentials.name);
 		}
 		return user;
 	}
 
-	onNotFound(where: UserQueryParameters.WhereInput): MeeloException | Promise<MeeloException> {
-		if (where.byCredentials) {
+	onNotFound(error: Error, where: UserQueryParameters.WhereInput): never {
+		throw new UnhandledORMErrorException(error, where);
+		/*if (where.byCredentials) {
 			throw new InvalidUserCredentialsException(where.byCredentials.name);
 		} else if (where.id !== undefined) {
 			throw new UserNotFoundFromIDException(where.id);
 		} else {
 			throw new UserNotFoundException(where.name);
-		}
+		}*/
 	}
 
 	formatManyWhereInput(input: UserQueryParameters.ManyWhereInput): Prisma.UserWhereInput {
@@ -151,6 +149,14 @@ export default class UserService extends RepositoryService<
 
 	formatSortingInput(sortingParameter: SortingParameter<UserQueryParameters.SortingKeys>) {
 		return { [sortingParameter.sortBy]: sortingParameter.order };
+	}
+
+	onUpdateFailure(
+		error: Error,
+		what: UserQueryParameters.UpdateInput,
+		where: UserQueryParameters.WhereInput
+	): never {
+		throw new UnhandledORMErrorException(error, what, where);
 	}
 
 	async update(
@@ -179,6 +185,10 @@ export default class UserService extends RepositoryService<
 			id: where.id,
 			name: where.name
 		};
+	}
+
+	onDeletionFailure(error: Error, where: UserQueryParameters.DeleteInput): never {
+		throw new UnhandledORMErrorException(error, where);
 	}
 
 	protected formatDeleteInputToWhereInput(

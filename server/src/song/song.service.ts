@@ -4,15 +4,11 @@ import {
 import ArtistService from 'src/artist/artist.service';
 import Slug from 'src/slug/slug';
 import type { Prisma } from '@prisma/client';
-import {
-	SongAlreadyExistsException, SongNotFoundByIdException, SongNotFoundException
-} from './song.exceptions';
 import PrismaService from 'src/prisma/prisma.service';
 import type SongQueryParameters from './models/song.query-params';
 import TrackService from 'src/track/track.service';
 import GenreService from 'src/genre/genre.service';
 import RepositoryService from 'src/repository/repository.service';
-import type { MeeloException } from 'src/exceptions/meelo-exception';
 import { LyricsService } from 'src/lyrics/lyrics.service';
 import { CompilationArtistException } from 'src/artist/artist.exceptions';
 import { buildStringSearchParameters } from 'src/utils/search-string-input';
@@ -23,6 +19,7 @@ import { parseIdentifierSlugs } from 'src/identifier/identifier.parse-slugs';
 import Identifier from 'src/identifier/models/identifier';
 import Logger from 'src/logger/logger';
 import TrackQueryParameters from 'src/track/models/track.query-parameters';
+import { UnhandledORMErrorException } from 'src/exceptions/orm-exceptions';
 
 @Injectable()
 export default class SongService extends RepositoryService<
@@ -89,10 +86,11 @@ export default class SongService extends RepositoryService<
 		};
 	}
 
-	protected async onCreationFailure(song: SongQueryParameters.CreateInput) {
-		const artist = await this.artistService.get(song.artist);
+	protected onCreationFailure(error: Error, input: SongQueryParameters.CreateInput): never {
+		throw new UnhandledORMErrorException(error, input);
+		/*const artist = await this.artistService.get(song.artist);
 
-		return new SongAlreadyExistsException(new Slug(song.name), new Slug(artist.name));
+		return new SongAlreadyExistsException(new Slug(song.name), new Slug(artist.name));*/
 	}
 
 	/**
@@ -166,13 +164,14 @@ export default class SongService extends RepositoryService<
 		}
 	}
 
-	async onNotFound(where: SongQueryParameters.WhereInput): Promise<MeeloException> {
-		if (where.id != undefined) {
+	onNotFound(error: Error, where: SongQueryParameters.WhereInput): never {
+		throw new UnhandledORMErrorException(error, where);
+		/*if (where.id != undefined) {
 			throw new SongNotFoundByIdException(where.id);
 		}
 		const artist = await this.artistService.get(where.bySlug.artist);
 
-		throw new SongNotFoundException(where.bySlug.slug, new Slug(artist.slug));
+		throw new SongNotFoundException(where.bySlug.slug, new Slug(artist.slug));*/
 	}
 
 	/**
@@ -190,6 +189,14 @@ export default class SongService extends RepositoryService<
 				connect: ArtistService.formatWhereInput(what.artist),
 			} : undefined,
 		};
+	}
+
+	onUpdateFailure(
+		error: Error,
+		what: SongQueryParameters.UpdateInput,
+		where: SongQueryParameters.WhereInput
+	): never {
+		throw new UnhandledORMErrorException(error, what, where);
 	}
 
 	/**
@@ -220,8 +227,8 @@ export default class SongService extends RepositoryService<
 						artistId: artistId
 					} }
 				});
-			} catch {
-				throw await this.onUpdateFailure(what, where);
+			} catch (error) {
+				this.onUpdateFailure(error, what, where);
 			}
 		} else {
 			return super.update(what, where);
@@ -285,6 +292,10 @@ export default class SongService extends RepositoryService<
 		input: SongQueryParameters.DeleteInput
 	): SongQueryParameters.WhereInput {
 		return { id: input.id };
+	}
+
+	onDeletionFailure(error: Error, where: SongQueryParameters.DeleteInput): never {
+		throw new UnhandledORMErrorException(error, where);
 	}
 
 	/**

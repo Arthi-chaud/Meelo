@@ -4,18 +4,14 @@ import {
 import PrismaService from 'src/prisma/prisma.service';
 import { Prisma } from '@prisma/client';
 import SongService from 'src/song/song.service';
-import {
-	MasterTrackNotFoundException, TrackAlreadyExistsException, TrackNotFoundByIdException
-} from './track.exceptions';
+import { MasterTrackNotFoundException } from './track.exceptions';
 import ReleaseService from 'src/release/release.service';
 import type TrackQueryParameters from './models/track.query-parameters';
 import type ReleaseQueryParameters from 'src/release/models/release.query-parameters';
 import type SongQueryParameters from 'src/song/models/song.query-params';
 import FileService from 'src/file/file.service';
 import Slug from 'src/slug/slug';
-import { FileNotFoundFromIDException, FileNotFoundFromPathException } from 'src/file/file.exceptions';
 import type { PaginationParameters } from 'src/pagination/models/pagination-parameters';
-import type { MeeloException } from 'src/exceptions/meelo-exception';
 import Tracklist, { UnknownDiscIndexKey } from './models/tracklist.model';
 import RepositoryService from 'src/repository/repository.service';
 import { shuffle } from '@taumechanica/stout';
@@ -25,6 +21,7 @@ import { Track, TrackWithRelations } from 'src/prisma/models';
 import SortingParameter from 'src/sort/models/sorting-parameter';
 import Identifier from 'src/identifier/models/identifier';
 import Logger from 'src/logger/logger';
+import { UnhandledORMErrorException } from 'src/exceptions/orm-exceptions';
 
 @Injectable()
 export default class TrackService extends RepositoryService<
@@ -50,8 +47,8 @@ export default class TrackService extends RepositoryService<
 		private albumService: AlbumService,
 		@Inject(forwardRef(() => ReleaseService))
 		private releaseService: ReleaseService,
-		@Inject(forwardRef(() => FileService))
-		private fileService: FileService,
+		// @Inject(forwardRef(() => FileService))
+		// private fileService: FileService,
 		private prismaService: PrismaService,
 	) {
 		super(prismaService.track);
@@ -75,8 +72,9 @@ export default class TrackService extends RepositoryService<
 		};
 	}
 
-	protected async onCreationFailure(input: TrackQueryParameters.CreateInput) {
-		const parentSong = await this.songService.get(input.song, { artist: true });
+	protected onCreationFailure(error: Error, input: TrackQueryParameters.CreateInput): never {
+		throw new UnhandledORMErrorException(error, input);
+		/*const parentSong = await this.songService.get(input.song, { artist: true });
 		const parentRelease = await this.releaseService.get(input.release);
 
 		await this.fileService.throwIfNotFound(input.sourceFile);
@@ -84,7 +82,7 @@ export default class TrackService extends RepositoryService<
 			input.name,
 			new Slug(parentRelease.slug),
 			new Slug(parentSong.artist.slug)
-		);
+		);*/
 	}
 
 	protected formatCreateInputToWhereInput(
@@ -171,14 +169,15 @@ export default class TrackService extends RepositoryService<
 	 * Callback on track not found
 	 * @param where the query parameters that failed to get the release
 	 */
-	onNotFound(where: TrackQueryParameters.WhereInput): MeeloException {
-		if (where.id !== undefined) {
+	onNotFound(error: Error, where: TrackQueryParameters.WhereInput): never {
+		throw new UnhandledORMErrorException(error, where);
+		/*if (where.id !== undefined) {
 			return new TrackNotFoundByIdException(where.id);
 		}
 		if (where.sourceFile.id !== undefined) {
 			return new FileNotFoundFromIDException(where.sourceFile.id);
 		}
-		return new FileNotFoundFromPathException(where.sourceFile.byPath!.path);
+		return new FileNotFoundFromPathException(where.sourceFile.byPath!.path);*/
 	}
 
 	/**
@@ -303,6 +302,14 @@ export default class TrackService extends RepositoryService<
 		};
 	}
 
+	onUpdateFailure(
+		error: Error,
+		what: TrackQueryParameters.UpdateInput,
+		where: TrackQueryParameters.WhereInput
+	): never {
+		throw new UnhandledORMErrorException(error, what, where);
+	}
+
 	/**
 	 * Delete
 	 */
@@ -310,11 +317,12 @@ export default class TrackService extends RepositoryService<
 		return where;
 	}
 
-	async onDeletionFailure(where: TrackQueryParameters.DeleteInput) {
-		if (where.id !== undefined) {
+	onDeletionFailure(error: Error, where: TrackQueryParameters.DeleteInput): never {
+		throw new UnhandledORMErrorException(error, where);
+		/*if (where.id !== undefined) {
 			return new TrackNotFoundByIdException(where.id);
 		}
-		return new FileNotFoundFromIDException(where.sourceFileId);
+		return new FileNotFoundFromIDException(where.sourceFileId);*/
 	}
 
 	protected formatDeleteInputToWhereInput(input: TrackQueryParameters.DeleteInput) {
@@ -344,8 +352,8 @@ export default class TrackService extends RepositoryService<
 				await this.releaseService.deleteIfEmpty({ id: track.releaseId });
 			}
 			return track;
-		} catch {
-			throw await this.onDeletionFailure(where);
+		} catch (error) {
+			this.onDeletionFailure(error, where);
 		}
 	}
 

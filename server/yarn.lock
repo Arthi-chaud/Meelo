@@ -8040,6 +8040,11 @@ pretty-format@^27.0.0, pretty-format@^27.5.1:
     ansi-styles "^5.0.0"
     react-is "^17.0.1"
 
+prisma-error-enum@^0.1.3:
+  version "0.1.3"
+  resolved "https://registry.yarnpkg.com/prisma-error-enum/-/prisma-error-enum-0.1.3.tgz#8d5820a83698fbaf4df5e13528b7d54941dc81c6"
+  integrity sha512-Ybu1gnxsj4IMCdGjOqdQ7Jaf9XnDzrnnVK+LBOCQBG9OCUuBxUikgwUzBeJX3oKvZ0ni//lHqsTga0Qvh3ZfCQ==
+
 prisma-types-generator@^1.3.2:
   version "1.3.2"
   resolved "https://registry.yarnpkg.com/prisma-types-generator/-/prisma-types-generator-1.3.2.tgz#9bc4bc602e4a441d0a6085924a9b60ff41a59ebb"

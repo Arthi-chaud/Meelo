@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/ban-types */
-import { InvalidRequestException, MeeloException } from "src/exceptions/meelo-exception";
+import { InvalidRequestException } from "src/exceptions/meelo-exception";
+import { UnhandledORMErrorException } from "src/exceptions/orm-exceptions";
 import Identifier from "src/identifier/models/identifier";
 import { PaginationParameters, buildPaginationParameters } from "src/pagination/models/pagination-parameters";
 import SortingParameter from "src/sort/models/sorting-parameter";
@@ -114,8 +115,8 @@ abstract class RepositoryService<
 				data: this.formatCreateInput(input),
 				include: RepositoryService.formatInclude(include)
 			}) as BaseModel & Select<Relations, I>;
-		} catch {
-			throw await this.onCreationFailure(input);
+		} catch (error) {
+			this.onCreationFailure(error, input);
 		}
 	}
 
@@ -125,11 +126,12 @@ abstract class RepositoryService<
 	 */
 	abstract formatCreateInput(input: CreateInput): RepositoryCreateInput;
 	/**
-	 * @return an enxception to throw if the entity's creation failed
+	 * Fallback on Creation Failure
+	 * @throws
+	 * @param error The error thrown by the ORM
+	 * @param input The creation method input
 	 */
-	protected abstract onCreationFailure(
-		input: CreateInput
-	): Promise<MeeloException> | MeeloException;
+	protected abstract onCreationFailure(error: Error, input: CreateInput): never;
 
 	/**
 	 * Transform CreationInput into WhereInput
@@ -149,8 +151,8 @@ abstract class RepositoryService<
 				where: this.formatWhereInput(where),
 				include: RepositoryService.formatInclude(include)
 			}) as BaseModel & Select<Relations, I>;
-		} catch {
-			throw await this.onNotFound(where);
+		} catch (error) {
+			this.onNotFound(error, where);
 		}
 	}
 
@@ -205,9 +207,12 @@ abstract class RepositoryService<
 	 */
 	abstract formatWhereInput(input: WhereInput): RepositoryWhereInput;
 	/**
-	 * @return an exception to throw if fetch failed
+	 * Fallback on Find Failure
+	 * @throws
+	 * @param error The error thrown by the ORM
+	 * @param where: the find method input
 	 */
-	abstract onNotFound(where: WhereInput): Promise<MeeloException> | MeeloException;
+	abstract onNotFound(error: Error, where: WhereInput): never;
 
 	/**
 	 * Find an entity in the database, and select fields
@@ -224,8 +229,8 @@ abstract class RepositoryService<
 				where: this.formatWhereInput(where),
 				select: { ...select, id: true }
 			});
-		} catch {
-			throw await this.onNotFound(where);
+		} catch (error) {
+			this.onNotFound(error, where);
 		}
 	}
 
@@ -288,8 +293,8 @@ abstract class RepositoryService<
 				data: this.formatUpdateInput(what),
 				where: this.formatWhereInput(where)
 			});
-		} catch {
-			throw await this.onUpdateFailure(what, where);
+		} catch (error) {
+			this.onUpdateFailure(error, what, where);
 		}
 	}
 
@@ -299,11 +304,13 @@ abstract class RepositoryService<
 	 */
 	abstract formatUpdateInput(what: UpdateInput): RepositoryUpdateInput;
 	/**
-	 * @return an exception to throw if update failed
+	 * Fallback on Update Failure
+	 * @throws
+	 * @param error The error thrown by the ORM
+	 * @param what the input of the update method
+	 * @param where the input of the update method
 	 */
-	async onUpdateFailure(_what: UpdateInput, where: WhereInput): Promise<MeeloException> {
-		return this.onNotFound(where);
-	}
+	abstract onUpdateFailure(error: Error, what: UpdateInput, where: WhereInput): never;
 
 	/**
 	 * Delete an entity
@@ -315,8 +322,8 @@ abstract class RepositoryService<
 			return await this.repository.delete({
 				where: this.formatDeleteInput(where)
 			});
-		} catch {
-			throw await this.onDeletionFailure(where);
+		} catch (error) {
+			this.onDeletionFailure(error, where);
 		}
 	}
 
@@ -330,11 +337,12 @@ abstract class RepositoryService<
 	 */
 	protected abstract formatDeleteInputToWhereInput(input: DeleteInput): WhereInput;
 	/**
-	 * @return an exception to throw if deletion failed
+	 * Fallback on Deletion Failure
+	 * @throws
+	 * @param error The error thrown by the ORM
+	 * @param input The delete method input
 	 */
-	async onDeletionFailure(where: DeleteInput): Promise<MeeloException> {
-		return this.onNotFound(this.formatDeleteInputToWhereInput(where));
-	}
+	abstract onDeletionFailure(error: Error, input: DeleteInput): never;
 
 	/**
 	 * Fetch an entity, or create one if it does not exist
@@ -362,6 +370,14 @@ abstract class RepositoryService<
 		} catch {
 			return false;
 		}
+	}
+
+	/**
+	 * Fallback on unhandled Prisma Exception
+	 * @param error the error throw by the ORM
+	 */
+	onUnknownError(error: Error, ...inputs: any[]): never {
+		throw new UnhandledORMErrorException(error, ...inputs);
 	}
 
 	/**

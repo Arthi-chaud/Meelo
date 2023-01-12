@@ -3,14 +3,10 @@ import {
 } from '@nestjs/common';
 import PrismaService from 'src/prisma/prisma.service';
 import Slug from 'src/slug/slug';
-import {
-	GenreAlreadyExistsException, GenreNotFoundByIdException, GenreNotFoundException
-} from './genre.exceptions';
 import type GenreQueryParameters from './models/genre.query-parameters';
 import type { Genre, GenreWithRelations } from 'src/prisma/models';
 import SongService from 'src/song/song.service';
 import RepositoryService from 'src/repository/repository.service';
-import type { MeeloException } from 'src/exceptions/meelo-exception';
 import type SongQueryParameters from "../song/models/song.query-params";
 import { buildStringSearchParameters } from 'src/utils/search-string-input';
 import ArtistService from 'src/artist/artist.service';
@@ -19,6 +15,7 @@ import SortingParameter from 'src/sort/models/sorting-parameter';
 import { parseIdentifierSlugs } from 'src/identifier/identifier.parse-slugs';
 import Identifier from 'src/identifier/models/identifier';
 import Logger from 'src/logger/logger';
+import { UnhandledORMErrorException } from 'src/exceptions/orm-exceptions';
 
 @Injectable()
 export default class GenreService extends RepositoryService<
@@ -61,8 +58,9 @@ export default class GenreService extends RepositoryService<
 		return { slug: new Slug(input.name) };
 	}
 
-	protected onCreationFailure(input: GenreQueryParameters.CreateInput) {
-		return new GenreAlreadyExistsException(new Slug(input.name));
+	protected onCreationFailure(error: Error, input: GenreQueryParameters.CreateInput): never {
+		throw new UnhandledORMErrorException(error, input);
+		//return new GenreAlreadyExistsException(new Slug(input.name));
 	}
 
 	/**
@@ -128,6 +126,14 @@ export default class GenreService extends RepositoryService<
 		};
 	}
 
+	onUpdateFailure(
+		error: Error,
+		what: GenreQueryParameters.UpdateInput,
+		where: GenreQueryParameters.WhereInput
+	): never {
+		throw new UnhandledORMErrorException(error, what, where);
+	}
+
 	/**
 	 * Delete a genre
 	 */
@@ -137,6 +143,10 @@ export default class GenreService extends RepositoryService<
 
 	protected formatDeleteInputToWhereInput(input: GenreQueryParameters.WhereInput) {
 		return input;
+	}
+
+	onDeletionFailure(error: Error, where: GenreQueryParameters.DeleteInput): never {
+		throw new UnhandledORMErrorException(error, where);
 	}
 
 	/**
@@ -181,10 +191,11 @@ export default class GenreService extends RepositoryService<
 		return genres;
 	}
 
-	onNotFound(where: GenreQueryParameters.WhereInput): MeeloException {
-		if (where.id !== undefined) {
-			return new GenreNotFoundByIdException(where.id);
-		}
-		return new GenreNotFoundException(where.slug);
+	onNotFound(error: Error, where: GenreQueryParameters.WhereInput): never {
+		throw new UnhandledORMErrorException(error, where);
+		// if (where.id !== undefined) {
+		// 	return new GenreNotFoundByIdException(where.id);
+		// }
+		// return new GenreNotFoundException(where.slug);
 	}
 }

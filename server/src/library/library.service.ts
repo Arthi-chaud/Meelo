@@ -5,16 +5,12 @@ import FileManagerService from 'src/file-manager/file-manager.service';
 import FileService from 'src/file/file.service';
 import MetadataService from 'src/metadata/metadata.service';
 import Slug from 'src/slug/slug';
-import {
-	LibraryAlreadyExistsException, LibraryNotFoundException, LibraryNotFoundFromIDException
-} from './library.exceptions';
 import { Prisma } from '@prisma/client';
 import PrismaService from 'src/prisma/prisma.service';
 import IllustrationService from 'src/illustration/illustration.service';
 import type LibraryQueryParameters from './models/library.query-parameters';
 import normalize from 'normalize-path';
 import RepositoryService from 'src/repository/repository.service';
-import type { MeeloException } from 'src/exceptions/meelo-exception';
 import { buildStringSearchParameters } from 'src/utils/search-string-input';
 import TasksService from 'src/tasks/tasks.service';
 import { Library, LibraryWithRelations } from 'src/prisma/models';
@@ -22,6 +18,7 @@ import SortingParameter from 'src/sort/models/sorting-parameter';
 import { parseIdentifierSlugs } from 'src/identifier/identifier.parse-slugs';
 import Identifier from 'src/identifier/models/identifier';
 import Logger from 'src/logger/logger';
+import { UnhandledORMErrorException } from 'src/exceptions/orm-exceptions';
 
 @Injectable()
 export default class LibraryService extends RepositoryService<
@@ -71,8 +68,9 @@ export default class LibraryService extends RepositoryService<
 		return { slug: new Slug(input.name) };
 	}
 
-	protected onCreationFailure(input: LibraryQueryParameters.CreateInput) {
-		return new LibraryAlreadyExistsException(new Slug(input.name), input.path);
+	protected onCreationFailure(error: Error, input: LibraryQueryParameters.CreateInput): never {
+		throw new UnhandledORMErrorException(error, input);
+		// return new LibraryAlreadyExistsException(new Slug(input.name), input.path);
 	}
 
 	/**
@@ -120,11 +118,12 @@ export default class LibraryService extends RepositoryService<
 		}
 	}
 
-	onNotFound(where: LibraryQueryParameters.WhereInput): MeeloException {
-		if (where.id !== undefined) {
-			return new LibraryNotFoundFromIDException(where.id);
-		}
-		return new LibraryNotFoundException(where.slug);
+	onNotFound(error: Error, where: LibraryQueryParameters.WhereInput): never {
+		throw new UnhandledORMErrorException(error, where);
+		// if (where.id !== undefined) {
+		// 	return new LibraryNotFoundFromIDException(where.id);
+		// }
+		// return new LibraryNotFoundException(where.slug);
 	}
 
 	/**
@@ -138,6 +137,14 @@ export default class LibraryService extends RepositoryService<
 		};
 	}
 
+	onUpdateFailure(
+		error: Error,
+		what: LibraryQueryParameters.UpdateInput,
+		where: LibraryQueryParameters.WhereInput
+	): never {
+		throw new UnhandledORMErrorException(error, what, where);
+	}
+
 	/**
 	 * Delete
 	 */
@@ -147,6 +154,10 @@ export default class LibraryService extends RepositoryService<
 
 	protected formatDeleteInputToWhereInput(input: LibraryQueryParameters.WhereInput) {
 		return input;
+	}
+
+	onDeletionFailure(error: Error, where: LibraryQueryParameters.DeleteInput): never {
+		throw new UnhandledORMErrorException(error, where);
 	}
 
 	/**

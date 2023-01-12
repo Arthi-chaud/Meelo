@@ -95,6 +95,10 @@
 			"importNames": ["Logger"],
 			"message": "Use Custom Logger to inject from 'src/logger/logger'"
 		}, {
+			"name": "src/exceptions/orm-exceptions",
+			"importNames": ["UnhandledORMErrorException"],
+			"message": "If used in a RepositoryService, use 'onUnknownError' instead. Otherwise ignore"
+		}, {
 			"name": "fluent-ffmpeg",
 			"message": "Use Ffmpeg Service"
 		}, {

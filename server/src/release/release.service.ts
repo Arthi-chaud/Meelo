@@ -7,16 +7,13 @@ import type { Release, ReleaseWithRelations } from 'src/prisma/models';
 import type { Prisma } from '@prisma/client';
 import {
 	MasterReleaseNotFoundException,
-	ReleaseAlreadyExists,
-	ReleaseNotFoundException,
-	ReleaseNotFoundFromIDException
+	ReleaseAlreadyExists
 } from './release.exceptions';
 import { basename } from 'path';
 import PrismaService from 'src/prisma/prisma.service';
 import type ReleaseQueryParameters from './models/release.query-parameters';
 import type AlbumQueryParameters from 'src/album/models/album.query-parameters';
 import type { PaginationParameters } from 'src/pagination/models/pagination-parameters';
-import type { MeeloException } from 'src/exceptions/meelo-exception';
 import TrackService from 'src/track/track.service';
 import RepositoryService from 'src/repository/repository.service';
 import { buildStringSearchParameters } from 'src/utils/search-string-input';
@@ -33,6 +30,7 @@ import { parseIdentifierSlugs } from 'src/identifier/identifier.parse-slugs';
 import Identifier from 'src/identifier/models/identifier';
 import Logger from 'src/logger/logger';
 import ReleaseIllustrationService from './release-illustration.service';
+import { UnhandledORMErrorException } from 'src/exceptions/orm-exceptions';
 
 @Injectable()
 export default class ReleaseService extends RepositoryService<
@@ -93,15 +91,16 @@ export default class ReleaseService extends RepositoryService<
 		return { bySlug: { slug: new Slug(input.name), album: input.album } };
 	}
 
-	protected async onCreationFailure(input: ReleaseQueryParameters.CreateInput) {
-		const parentAlbum = await this.albumService.get(input.album, { artist: true });
+	protected onCreationFailure(error: Error, input: ReleaseQueryParameters.CreateInput): never {
+		throw new UnhandledORMErrorException(error, input);
+		/*const parentAlbum = await this.albumService.get(input.album, { artist: true });
 
 		return new ReleaseAlreadyExists(
 			new Slug(input.name),
 			parentAlbum.artist
 				? new Slug(parentAlbum.artist!.slug)
 				: undefined
-		);
+		);*/
 	}
 
 	/**
@@ -179,8 +178,9 @@ export default class ReleaseService extends RepositoryService<
 	 * Callback on release not found
 	 * @param where the query parameters that failed to get the release
 	 */
-	async onNotFound(where: ReleaseQueryParameters.WhereInput): Promise<MeeloException> {
-		if (where.id != undefined) {
+	onNotFound(error: Error, where: ReleaseQueryParameters.WhereInput): never {
+		throw new UnhandledORMErrorException(error, where);
+		/*if (where.id != undefined) {
 			return new ReleaseNotFoundFromIDException(where.id);
 		}
 		const parentAlbum = await this.albumService.get(
@@ -193,7 +193,7 @@ export default class ReleaseService extends RepositoryService<
 
 		return new ReleaseNotFoundException(
 			releaseSlug, new Slug(parentAlbum.slug), parentArtistSlug
-		);
+		);*/
 	}
 
 	/**
@@ -263,6 +263,14 @@ export default class ReleaseService extends RepositoryService<
 		};
 	}
 
+	onUpdateFailure(
+		error: Error,
+		what: ReleaseQueryParameters.UpdateInput,
+		where: ReleaseQueryParameters.WhereInput
+	): never {
+		throw new UnhandledORMErrorException(error, what, where);
+	}
+
 	/**
 	 * Updates the release in the database
 	 * @param what the fields to update in the release
@@ -287,6 +295,10 @@ export default class ReleaseService extends RepositoryService<
 
 	protected formatDeleteInputToWhereInput(input: ReleaseQueryParameters.DeleteInput) {
 		return input;
+	}
+
+	onDeletionFailure(error: Error, where: ReleaseQueryParameters.DeleteInput): never {
+		throw new UnhandledORMErrorException(error, where);
 	}
 
 	/**
