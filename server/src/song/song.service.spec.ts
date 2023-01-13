@@ -7,7 +7,7 @@ import PrismaModule from "src/prisma/prisma.module";
 import PrismaService from "src/prisma/prisma.service";
 import type { Song } from "src/prisma/models";
 import Slug from "src/slug/slug";
-import { SongAlreadyExistsException, SongNotFoundByIdException, SongNotFoundException } from "./song.exceptions";
+import { SongAlreadyExistsException, SongNotEmptyException, SongNotFoundByIdException, SongNotFoundException } from "./song.exceptions";
 import { ArtistNotFoundByIDException, ArtistNotFoundException } from "src/artist/artist.exceptions";
 import TrackModule from "src/track/track.module";
 import AlbumModule from "src/album/album.module";
@@ -18,11 +18,13 @@ import TestPrismaService from "test/test-prisma.service";
 import type SongQueryParameters from "./models/song.query-params";
 import { LyricsModule } from "src/lyrics/lyrics.module";
 import ArtistIllustrationService from "src/artist/artist-illustration.service";
+import { LyricsService } from "src/lyrics/lyrics.service";
+import { LyricsNotFoundByIDException } from "src/lyrics/lyrics.exceptions";
 
 describe('Song Service', () => {
 	let songService: SongService;
+	let lyricsService: LyricsService;
 	let dummyRepository: TestPrismaService;
-	let artistService: ArtistService;
 
 	let newSong: Song;
 	
@@ -33,7 +35,7 @@ describe('Song Service', () => {
 		}).overrideProvider(PrismaService).useClass(TestPrismaService).compile();
 		dummyRepository = module.get(PrismaService);
 		songService = module.get(SongService);
-		artistService = module.get(ArtistService);
+		lyricsService = module.get(LyricsService);
 		module.get(ArtistIllustrationService).onModuleInit();
 		await dummyRepository.onModuleInit();
 	});
@@ -438,21 +440,23 @@ describe('Song Service', () => {
 	})
 
 	describe("Delete Song", () => {
-		it("should delete the song (by id)", async () => {
-			await songService.delete({ id: dummyRepository.songC1.id });
-
-			const test = async () => await songService.get({ id: dummyRepository.songC1.id });
-			expect(test()).rejects.toThrow(SongNotFoundByIdException);
-		});
-
-		it("should have deleted the parent artist", async () => {
-			const test = async () => await artistService.delete({ id :dummyRepository.artistC.id });
-			expect(test()).rejects.toThrow(ArtistNotFoundByIDException);
-		});
-
-		it("should throw, as the song song does not exist", async () => {
+		it("should throw, as the song does not exist", async () => {
 			const test = async () => await songService.delete({ id: -1 });
 			expect(test()).rejects.toThrow(SongNotFoundByIdException);
+		});
+
+		it("should throw, as the song is not empty", async () => {
+			const test = async () => await songService.delete({ id: dummyRepository.songA1.id });
+			expect(test()).rejects.toThrow(SongNotEmptyException);
+		});
+		it("should delete the song", async () => {
+			const tmpSong = await songService.create({ name: '1234', artist: { id: dummyRepository.artistA.id }, genres: [] });
+			const tmpLyrics = await lyricsService.create({ content: '1234', songId: tmpSong.id });
+			await songService.delete({ id: tmpSong.id });
+			const test = async () => await songService.get({ id: tmpSong.id });
+			expect(test()).rejects.toThrow(SongNotFoundByIdException);
+			const testLyrics = async () => await lyricsService.get({ id: tmpLyrics.id });
+			expect(testLyrics()).rejects.toThrow(LyricsNotFoundByIDException);
 		});
 	});
 });

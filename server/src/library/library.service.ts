@@ -5,16 +5,12 @@ import FileManagerService from 'src/file-manager/file-manager.service';
 import FileService from 'src/file/file.service';
 import MetadataService from 'src/metadata/metadata.service';
 import Slug from 'src/slug/slug';
-import {
-	LibraryAlreadyExistsException, LibraryNotFoundException, LibraryNotFoundFromIDException
-} from './library.exceptions';
 import { Prisma } from '@prisma/client';
 import PrismaService from 'src/prisma/prisma.service';
 import IllustrationService from 'src/illustration/illustration.service';
 import type LibraryQueryParameters from './models/library.query-parameters';
 import normalize from 'normalize-path';
 import RepositoryService from 'src/repository/repository.service';
-import type { MeeloException } from 'src/exceptions/meelo-exception';
 import { buildStringSearchParameters } from 'src/utils/search-string-input';
 import TasksService from 'src/tasks/tasks.service';
 import { Library, LibraryWithRelations } from 'src/prisma/models';
@@ -22,6 +18,12 @@ import SortingParameter from 'src/sort/models/sorting-parameter';
 import { parseIdentifierSlugs } from 'src/identifier/identifier.parse-slugs';
 import Identifier from 'src/identifier/models/identifier';
 import Logger from 'src/logger/logger';
+import { PrismaError } from 'prisma-error-enum';
+import {
+	LibraryAlreadyExistsException,
+	LibraryNotFoundException,
+	LibraryNotFoundFromIDException
+} from './library.exceptions';
 
 @Injectable()
 export default class LibraryService extends RepositoryService<
@@ -71,8 +73,12 @@ export default class LibraryService extends RepositoryService<
 		return { slug: new Slug(input.name) };
 	}
 
-	protected onCreationFailure(input: LibraryQueryParameters.CreateInput) {
-		return new LibraryAlreadyExistsException(new Slug(input.name), input.path);
+	protected onCreationFailure(error: Error, input: LibraryQueryParameters.CreateInput) {
+		if (error instanceof Prisma.PrismaClientKnownRequestError
+			&& error.code == PrismaError.UniqueConstraintViolation) {
+			return new LibraryAlreadyExistsException(new Slug(input.name), input.path);
+		}
+		return this.onUnknownError(error, input);
 	}
 
 	/**
@@ -120,11 +126,15 @@ export default class LibraryService extends RepositoryService<
 		}
 	}
 
-	onNotFound(where: LibraryQueryParameters.WhereInput): MeeloException {
-		if (where.id !== undefined) {
-			return new LibraryNotFoundFromIDException(where.id);
+	onNotFound(error: Error, where: LibraryQueryParameters.WhereInput) {
+		if (error instanceof Prisma.PrismaClientKnownRequestError &&
+			error.code == PrismaError.RecordsNotFound) {
+			if (where.id !== undefined) {
+				return new LibraryNotFoundFromIDException(where.id);
+			}
+			return new LibraryNotFoundException(where.slug);
 		}
-		return new LibraryNotFoundException(where.slug);
+		return this.onUnknownError(error, where);
 	}
 
 	/**
@@ -157,11 +167,14 @@ export default class LibraryService extends RepositoryService<
 	async delete(where: LibraryQueryParameters.WhereInput): Promise<Library> {
 		const relatedFiles = await this.fileService.getMany({ library: where });
 
-		for (const file of relatedFiles) {
-			await this.tasksService.unregisterFile({ id: file.id });
-		}
+		await Promise.all(
+			relatedFiles.map((file) => this.tasksService.unregisterFile({ id: file.id }))
+		);
+		await this.tasksService.housekeeping();
 		return super.delete(where);
 	}
+
+	async housekeeping(): Promise<void> {}
 
 	async applyMetadataOnFiles(parentLibrary: Library): Promise<void> {
 		this.logger.log(`'${parentLibrary.slug}' library: Applying metadata started`);

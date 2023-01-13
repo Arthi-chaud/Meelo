@@ -3,14 +3,10 @@ import {
 } from '@nestjs/common';
 import PrismaService from 'src/prisma/prisma.service';
 import Slug from 'src/slug/slug';
-import {
-	GenreAlreadyExistsException, GenreNotFoundByIdException, GenreNotFoundException
-} from './genre.exceptions';
 import type GenreQueryParameters from './models/genre.query-parameters';
 import type { Genre, GenreWithRelations } from 'src/prisma/models';
 import SongService from 'src/song/song.service';
 import RepositoryService from 'src/repository/repository.service';
-import type { MeeloException } from 'src/exceptions/meelo-exception';
 import type SongQueryParameters from "../song/models/song.query-params";
 import { buildStringSearchParameters } from 'src/utils/search-string-input';
 import ArtistService from 'src/artist/artist.service';
@@ -19,6 +15,13 @@ import SortingParameter from 'src/sort/models/sorting-parameter';
 import { parseIdentifierSlugs } from 'src/identifier/identifier.parse-slugs';
 import Identifier from 'src/identifier/models/identifier';
 import Logger from 'src/logger/logger';
+import { PrismaError } from 'prisma-error-enum';
+import {
+	GenreAlreadyExistsException,
+	GenreNotEmptyException,
+	GenreNotFoundByIdException,
+	GenreNotFoundException
+} from './genre.exceptions';
 
 @Injectable()
 export default class GenreService extends RepositoryService<
@@ -38,7 +41,7 @@ export default class GenreService extends RepositoryService<
 > {
 	private readonly logger = new Logger(GenreService.name);
 	constructor(
-		prismaService: PrismaService,
+		private prismaService: PrismaService,
 		@Inject(forwardRef(() => SongService))
 		private songService: SongService,
 	) {
@@ -61,8 +64,12 @@ export default class GenreService extends RepositoryService<
 		return { slug: new Slug(input.name) };
 	}
 
-	protected onCreationFailure(input: GenreQueryParameters.CreateInput) {
-		return new GenreAlreadyExistsException(new Slug(input.name));
+	protected onCreationFailure(error: Error, input: GenreQueryParameters.CreateInput) {
+		if (error instanceof Prisma.PrismaClientKnownRequestError &&
+			error.code == PrismaError.UniqueConstraintViolation) {
+			return new GenreAlreadyExistsException(new Slug(input.name));
+		}
+		return this.onUnknownError(error, input);
 	}
 
 	/**
@@ -144,24 +151,35 @@ export default class GenreService extends RepositoryService<
 	 * @param where the query parameter to find the genre to delete
 	 */
 	async delete(where: GenreQueryParameters.DeleteInput): Promise<Genre> {
-		const deleted = await super.delete(where);
+		const genre = await this.get(where, { songs: true });
 
-		this.logger.warn(`Genre '${deleted.slug}' deleted`);
-		return deleted;
+		if (genre.songs.length == 0) {
+			return super.delete(where).then((deleted) => {
+				this.logger.warn(`Genre '${deleted.slug}' deleted`);
+				return deleted;
+			});
+		}
+		throw new GenreNotEmptyException(genre.id);
 	}
 
 	/**
-	 * Deletes a genre, if empty
-	 * @param where the query parameter to find the genre to delete
+	 * Delete all genres that do not have related songs
 	 */
-	async deleteIfEmpty(where: GenreQueryParameters.DeleteInput): Promise<void> {
-		const songCount = await this.songService.count({
-			genre: where
-		});
+	async housekeeping(): Promise<void> {
+		const emptyGenres = await this.prismaService.genre.findMany({
+			select: {
+				id: true,
+				_count: {
+					select: { songs: true }
+				}
+			}
+		}).then((genres) => genres.filter(
+			(genre) => !genre._count.songs
+		));
 
-		if (songCount == 0) {
-			await this.delete(where);
-		}
+		await Promise.all(
+			emptyGenres.map(({ id }) => this.delete({ id }))
+		);
 	}
 
 	/**
@@ -181,10 +199,14 @@ export default class GenreService extends RepositoryService<
 		return genres;
 	}
 
-	onNotFound(where: GenreQueryParameters.WhereInput): MeeloException {
-		if (where.id !== undefined) {
-			return new GenreNotFoundByIdException(where.id);
+	onNotFound(error: Error, where: GenreQueryParameters.WhereInput) {
+		if (error instanceof Prisma.PrismaClientKnownRequestError &&
+			error.code == PrismaError.RecordsNotFound) {
+			if (where.id !== undefined) {
+				return new GenreNotFoundByIdException(where.id);
+			}
+			return new GenreNotFoundException(where.slug);
 		}
-		return new GenreNotFoundException(where.slug);
+		return this.onUnknownError(error, where);
 	}
 }

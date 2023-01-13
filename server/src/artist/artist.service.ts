@@ -4,6 +4,7 @@ import {
 import Slug from 'src/slug/slug';
 import {
 	ArtistAlreadyExistsException,
+	ArtistNotEmptyException,
 	ArtistNotFoundByIDException,
 	ArtistNotFoundException,
 	CompilationArtistException
@@ -12,11 +13,8 @@ import { Prisma } from '@prisma/client';
 import PrismaService from 'src/prisma/prisma.service';
 import type ArtistQueryParameters from './models/artist.query-parameters';
 import { type PaginationParameters, buildPaginationParameters } from 'src/pagination/models/pagination-parameters';
-import SongService from 'src/song/song.service';
-import AlbumService from 'src/album/album.service';
 import SortingParameter from 'src/sort/models/sorting-parameter';
 import RepositoryService from 'src/repository/repository.service';
-import type { MeeloException } from 'src/exceptions/meelo-exception';
 import { buildStringSearchParameters } from 'src/utils/search-string-input';
 import GenreService from 'src/genre/genre.service';
 import ReleaseService from 'src/release/release.service';
@@ -27,6 +25,7 @@ import { parseIdentifierSlugs } from 'src/identifier/identifier.parse-slugs';
 import Identifier from 'src/identifier/models/identifier';
 import Logger from 'src/logger/logger';
 import ArtistIllustrationService from './artist-illustration.service';
+import { PrismaError } from 'prisma-error-enum';
 
 @Injectable()
 export default class ArtistService extends RepositoryService<
@@ -47,10 +46,6 @@ export default class ArtistService extends RepositoryService<
 	private readonly logger = new Logger(ArtistService.name);
 	constructor(
 		private prismaService: PrismaService,
-		@Inject(forwardRef(() => SongService))
-		private songService: SongService,
-		@Inject(forwardRef(() => AlbumService))
-		private albumService: AlbumService,
 		@Inject(forwardRef(() => ArtistIllustrationService))
 		private artistIllustrationService: ArtistIllustrationService
 	) {
@@ -71,8 +66,12 @@ export default class ArtistService extends RepositoryService<
 		return { slug: new Slug(input.name) };
 	}
 
-	protected onCreationFailure(input: ArtistQueryParameters.CreateInput) {
-		return new ArtistAlreadyExistsException(new Slug(input.name));
+	protected onCreationFailure(error: Error, input: ArtistQueryParameters.CreateInput): Error {
+		if (error instanceof Prisma.PrismaClientKnownRequestError
+			&& error.code == PrismaError.UniqueConstraintViolation) {
+			return new ArtistAlreadyExistsException(new Slug(input.name));
+		}
+		return this.onUnknownError(error, input);
 	}
 
 	/**
@@ -92,11 +91,15 @@ export default class ArtistService extends RepositoryService<
 	}
 
 	formatWhereInput = ArtistService.formatWhereInput;
-	onNotFound(where: ArtistQueryParameters.WhereInput): MeeloException {
-		if (where.id !== undefined) {
-			return new ArtistNotFoundByIDException(where.id);
+	onNotFound(error: Error, where: ArtistQueryParameters.WhereInput) {
+		if (error instanceof Prisma.PrismaClientKnownRequestError
+			&& error.code == PrismaError.RecordsNotFound) {
+			if (where.id !== undefined) {
+				return new ArtistNotFoundByIDException(where.id);
+			}
+			return new ArtistNotFoundException(where.slug!);
 		}
-		return new ArtistNotFoundException(where.slug!);
+		return this.onUnknownError(error, where);
 	}
 
 	/**
@@ -209,37 +212,41 @@ export default class ArtistService extends RepositoryService<
 	 * @param where the query parameters to find the album to delete
 	 */
 	async delete(where: ArtistQueryParameters.DeleteInput): Promise<Artist> {
-		const artist = await this.get(where, { albums: true, songs: true });
+		const deletedArtist = await super.delete(where);
+		const illustrationPath = this.artistIllustrationService.buildIllustrationFolderPath(
+			new Slug(deletedArtist.slug)
+		);
 
-		await Promise.allSettled([
-			...artist.albums.map(
-				(album) => this.albumService.delete({ id: album.id })
-			),
-			...artist.songs.map(
-				(song) => this.songService.delete({ id: song.id })
-			)
-		]);
-		this.artistIllustrationService.getIllustrationPath(where)
-			.then((path) => this.artistIllustrationService.deleteIllustrationFolder(path));
-		try {
-			await super.delete(where);
-		} catch {
-			return artist;
+		this.artistIllustrationService.deleteIllustrationFolder(illustrationPath);
+		this.logger.warn(`Artist '${deletedArtist.slug}' deleted`);
+		return deletedArtist;
+	}
+
+	onDeletionFailure(error: Error, input: ArtistQueryParameters.DeleteInput) {
+		if (error instanceof Prisma.PrismaClientKnownRequestError &&
+			error.code == PrismaError.ForeignConstraintViolation) {
+			return new ArtistNotEmptyException(input.slug ?? input.id);
 		}
-		this.logger.warn(`Artist '${artist.slug}' deleted`);
-		return artist;
+		return super.onDeletionFailure(error, input);
 	}
 
 	/**
-	 * Deletes an artist if it does not have any album or song
-	 * @param where the query parameters to find the artist to delete
+	 * Call 'delete' method on all artist that do not have any songs or albums
 	 */
-	async deleteArtistIfEmpty(where: ArtistQueryParameters.DeleteInput): Promise<void> {
-		const albumCount = await this.albumService.count({ artist: where });
-		const songCount = await this.songService.count({ artist: where });
+	async housekeeping(): Promise<void> {
+		const emptyArtists = await this.prismaService.artist.findMany({
+			select: {
+				id: true,
+				_count: {
+					select: { albums: true, songs: true },
+				},
+			},
+		}).then((artists) => artists.filter(
+			({ _count }) => !_count.albums && !_count.songs
+		));
 
-		if (songCount == 0 && albumCount == 0) {
-			await this.delete(where);
-		}
+		await Promise.all(
+			emptyArtists.map(({ id }) => this.delete({ id }))
+		);
 	}
 }

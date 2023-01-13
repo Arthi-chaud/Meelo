@@ -2,10 +2,8 @@ import {
 	Inject, Injectable, forwardRef
 } from '@nestjs/common';
 import type { LyricsWithRelations } from 'src/prisma/models';
-import type { MeeloException } from 'src/exceptions/meelo-exception';
 import PrismaService from 'src/prisma/prisma.service';
 import RepositoryService from 'src/repository/repository.service';
-import Slug from 'src/slug/slug';
 import type SongQueryParameters from 'src/song/models/song.query-params';
 import SongService from 'src/song/song.service';
 import {
@@ -20,6 +18,8 @@ import { Prisma } from '@prisma/client';
 import SortingParameter from 'src/sort/models/sorting-parameter';
 import Identifier from 'src/identifier/models/identifier';
 import Logger from 'src/logger/logger';
+import { PrismaError } from 'prisma-error-enum';
+import Slug from 'src/slug/slug';
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const { getLyrics } = require('genius-lyrics-api');
 
@@ -64,10 +64,15 @@ export class LyricsService extends RepositoryService<
 		return { song: { id: input.songId } };
 	}
 
-	protected async onCreationFailure(input: LyricsQueryParameters.CreateInput) {
-		const parentSong = await this.songService.get({ id: input.songId });
+	protected async onCreationFailure(error: Error, input: LyricsQueryParameters.CreateInput) {
+		if (error instanceof Prisma.PrismaClientKnownRequestError) {
+			const parentSong = await this.songService.get({ id: input.songId });
 
-		return new LyricsAlreadyExistsExceptions(new Slug(parentSong.slug));
+			if (error.code == PrismaError.RequiredRelationViolation) {
+				return new LyricsAlreadyExistsExceptions(new Slug(parentSong.slug));
+			}
+		}
+		throw this.onUnknownError(error, input);
 	}
 
 	/**
@@ -120,8 +125,8 @@ export class LyricsService extends RepositoryService<
 				data: this.formatUpdateInput(what),
 				where: this.formatDeleteInput({ songId: songId! })
 			});
-		} catch {
-			throw await this.onUpdateFailure(what, where);
+		} catch (error) {
+			throw await this.onUpdateFailure(error, what, where);
 		}
 	}
 
@@ -129,13 +134,6 @@ export class LyricsService extends RepositoryService<
 		return {
 			content: what.content
 		};
-	}
-
-	/**
-	 * Delete
-	 */
-	async onDeletionFailure(where: LyricsQueryParameters.DeleteInput) {
-		return this.onNotFound(this.formatDeleteInputToWhereInput(where));
 	}
 
 	formatDeleteInput(where: LyricsQueryParameters.DeleteInput) {
@@ -158,14 +156,16 @@ export class LyricsService extends RepositoryService<
 	 * Returns an exception for when a lyric is not found in the database
 	 * @param where the queryparameters used to find the lyrics
 	 */
-	async onNotFound(
-		where: LyricsQueryParameters.WhereInput
-	): Promise<MeeloException> {
-		if (where.song) {
-			await this.songService.throwIfNotFound(where.song);
-			throw new LyricsNotFoundBySongException(where.song.id ?? where.song.bySlug!.slug);
+	async onNotFound(error: Error, where: LyricsQueryParameters.WhereInput) {
+		if (error instanceof Prisma.PrismaClientKnownRequestError &&
+			error.code == PrismaError.RecordsNotFound) {
+			if (where.song) {
+				await this.songService.throwIfNotFound(where.song);
+				return new LyricsNotFoundBySongException(where.song.id ?? where.song.bySlug!.slug);
+			}
+			return new LyricsNotFoundByIDException(where.id);
 		}
-		throw new LyricsNotFoundByIDException(where.id);
+		throw this.onUnknownError(error, where);
 	}
 
 	/**
@@ -223,4 +223,6 @@ export class LyricsService extends RepositoryService<
 			throw new NoLyricsFoundException(song.artist.name, song.name);
 		}
 	}
+
+	async housekeeping(): Promise<void> {}
 }

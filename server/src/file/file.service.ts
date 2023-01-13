@@ -20,7 +20,6 @@ import { FileNotReadableException } from 'src/file-manager/file-manager.exceptio
 import * as fs from 'fs';
 import path from 'path';
 import RepositoryService from 'src/repository/repository.service';
-import type { MeeloException } from 'src/exceptions/meelo-exception';
 import { buildDateSearchParameters } from 'src/utils/search-date-input';
 import LibraryService from 'src/library/library.service';
 import mime from 'mime';
@@ -28,6 +27,7 @@ import { Prisma } from '@prisma/client';
 import SortingParameter from 'src/sort/models/sorting-parameter';
 import Slug from 'src/slug/slug';
 import Identifier from 'src/identifier/models/identifier';
+import { PrismaError } from 'prisma-error-enum';
 
 @Injectable()
 export default class FileService extends RepositoryService<
@@ -74,8 +74,12 @@ export default class FileService extends RepositoryService<
 		return { byPath: { path: input.path, library: { id: input.libraryId } } };
 	}
 
-	protected onCreationFailure(input: FileQueryParameters.CreateInput) {
-		return new FileAlreadyExistsException(input.path, input.libraryId);
+	onCreationFailure(error: Error, input: FileQueryParameters.CreateInput) {
+		if (error instanceof Prisma.PrismaClientKnownRequestError
+			&& error.code == PrismaError.UniqueConstraintViolation) {
+			return new FileAlreadyExistsException(input.path, input.libraryId);
+		}
+		return this.onUnknownError(error, input);
 	}
 
 	/**
@@ -137,13 +141,17 @@ export default class FileService extends RepositoryService<
 		}
 	}
 
-	onNotFound(where: FileQueryParameters.WhereInput): MeeloException {
-		if (where.id !== undefined) {
-			return new FileNotFoundFromIDException(where.id);
-		} else if (where.trackId !== undefined) {
-			return new FileNotFoundFromTrackIDException(where.trackId);
+	onNotFound(error: Error, where: FileQueryParameters.WhereInput) {
+		if (error instanceof Prisma.PrismaClientKnownRequestError &&
+			error.code == PrismaError.RecordsNotFound) {
+			if (where.id !== undefined) {
+				return new FileNotFoundFromIDException(where.id);
+			} else if (where.trackId !== undefined) {
+				return new FileNotFoundFromTrackIDException(where.trackId);
+			}
+			return new FileNotFoundFromPathException(where.byPath.path);
 		}
-		return new FileNotFoundFromPathException(where.byPath.path);
+		return this.onUnknownError(error, where);
 	}
 
 	/**
@@ -169,6 +177,11 @@ export default class FileService extends RepositoryService<
 			where: FileService.formatManyWhereInput(where)
 		})).count;
 	}
+
+	/**
+	 * Does nothing, nothing to housekeep
+	 */
+	async housekeeping(): Promise<void> {}
 
 	/**
 	 * Register a file in the Database

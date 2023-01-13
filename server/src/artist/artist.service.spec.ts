@@ -3,7 +3,7 @@ import type { TestingModule } from "@nestjs/testing";
 import PrismaModule from "src/prisma/prisma.module";
 import PrismaService from "src/prisma/prisma.service";
 import Slug from "src/slug/slug";
-import { ArtistAlreadyExistsException, ArtistNotFoundByIDException, ArtistNotFoundException } from "./artist.exceptions";
+import { ArtistAlreadyExistsException, ArtistNotEmptyException, ArtistNotFoundByIDException, ArtistNotFoundException } from "./artist.exceptions";
 import ArtistModule from "./artist.module";
 import ArtistService from "./artist.service"
 import SongModule from "src/song/song.module";
@@ -164,12 +164,20 @@ describe('Artist Service', () => {
 		});
 
 		it("should delete the artist", async () => {
+			const tmpArtist = await artistService.create({ name: '1234' });
 			const artistQueryParameters = {
-				slug: new Slug(dummyRepository.artistB.name)
+				slug: new Slug(tmpArtist.slug)
 			}
 			await artistService.delete(artistQueryParameters);
 			const test = async () => artistService.get(artistQueryParameters);
 			expect(test()).rejects.toThrow(ArtistNotFoundException); 
+		});
+		it("should not delete the artist, as it is not empty", async () => {
+			const artistQueryParameters = {
+				slug: new Slug(dummyRepository.artistB.name)
+			}
+			const test = async () => artistService.delete(artistQueryParameters);;
+			expect(test()).rejects.toThrow(ArtistNotEmptyException); 
 		});
 	});
 })

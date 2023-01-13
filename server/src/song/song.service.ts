@@ -3,17 +3,12 @@ import {
 } from '@nestjs/common';
 import ArtistService from 'src/artist/artist.service';
 import Slug from 'src/slug/slug';
-import type { Prisma } from '@prisma/client';
-import {
-	SongAlreadyExistsException, SongNotFoundByIdException, SongNotFoundException
-} from './song.exceptions';
+import { Prisma } from '@prisma/client';
 import PrismaService from 'src/prisma/prisma.service';
 import type SongQueryParameters from './models/song.query-params';
 import TrackService from 'src/track/track.service';
 import GenreService from 'src/genre/genre.service';
 import RepositoryService from 'src/repository/repository.service';
-import type { MeeloException } from 'src/exceptions/meelo-exception';
-import { LyricsService } from 'src/lyrics/lyrics.service';
 import { CompilationArtistException } from 'src/artist/artist.exceptions';
 import { buildStringSearchParameters } from 'src/utils/search-string-input';
 import { PaginationParameters, buildPaginationParameters } from 'src/pagination/models/pagination-parameters';
@@ -23,6 +18,13 @@ import { parseIdentifierSlugs } from 'src/identifier/identifier.parse-slugs';
 import Identifier from 'src/identifier/models/identifier';
 import Logger from 'src/logger/logger';
 import TrackQueryParameters from 'src/track/models/track.query-parameters';
+import { PrismaError } from 'prisma-error-enum';
+import {
+	SongAlreadyExistsException,
+	SongNotEmptyException,
+	SongNotFoundByIdException,
+	SongNotFoundException
+} from './song.exceptions';
 
 @Injectable()
 export default class SongService extends RepositoryService<
@@ -48,9 +50,7 @@ export default class SongService extends RepositoryService<
 		@Inject(forwardRef(() => TrackService))
 		private trackService: TrackService,
 		@Inject(forwardRef(() => GenreService))
-		private genreService: GenreService,
-		@Inject(forwardRef(() => LyricsService))
-		private lyricsService: LyricsService
+		private genreService: GenreService
 	) {
 		super(prismaService.song);
 	}
@@ -89,10 +89,15 @@ export default class SongService extends RepositoryService<
 		};
 	}
 
-	protected async onCreationFailure(song: SongQueryParameters.CreateInput) {
-		const artist = await this.artistService.get(song.artist);
+	protected async onCreationFailure(error: Error, input: SongQueryParameters.CreateInput) {
+		if (error instanceof Prisma.PrismaClientKnownRequestError) {
+			const artist = await this.artistService.get(input.artist);
 
-		return new SongAlreadyExistsException(new Slug(song.name), new Slug(artist.name));
+			if (error.code === PrismaError.UniqueConstraintViolation) {
+				return new SongAlreadyExistsException(new Slug(input.name), new Slug(artist.name));
+			}
+		}
+		return this.onUnknownError(error, input);
 	}
 
 	/**
@@ -166,13 +171,17 @@ export default class SongService extends RepositoryService<
 		}
 	}
 
-	async onNotFound(where: SongQueryParameters.WhereInput): Promise<MeeloException> {
-		if (where.id != undefined) {
-			throw new SongNotFoundByIdException(where.id);
-		}
-		const artist = await this.artistService.get(where.bySlug.artist);
+	async onNotFound(error: Error, where: SongQueryParameters.WhereInput) {
+		if (error instanceof Prisma.PrismaClientKnownRequestError &&
+			error.code == PrismaError.RecordsNotFound) {
+			if (where.id != undefined) {
+				throw new SongNotFoundByIdException(where.id);
+			}
+			const artist = await this.artistService.get(where.bySlug.artist);
 
-		throw new SongNotFoundException(where.bySlug.slug, new Slug(artist.slug));
+			throw new SongNotFoundException(where.bySlug.slug, new Slug(artist.slug));
+		}
+		return this.onUnknownError(error, where);
 	}
 
 	/**
@@ -220,8 +229,8 @@ export default class SongService extends RepositoryService<
 						artistId: artistId
 					} }
 				});
-			} catch {
-				throw await this.onUpdateFailure(what, where);
+			} catch (error) {
+				throw await this.onUpdateFailure(error, what, where);
 			}
 		} else {
 			return super.update(what, where);
@@ -292,39 +301,38 @@ export default class SongService extends RepositoryService<
 	 * @param where Query parameters to find the song to delete
 	 */
 	async delete(where: SongQueryParameters.DeleteInput): Promise<Song> {
-		const song = await this.get(
-			this.formatDeleteInputToWhereInput(where),
-			{ tracks: true, genres: true }
-		);
+		return super.delete(where).then((deleted) => {
+			this.logger.warn(`Song '${deleted.slug}' deleted`);
+			return deleted;
+		});
+	}
 
-		await Promise.allSettled(
-			song.tracks.map((track) => this.trackService.delete({ id: track.id }))
-		);
-		try {
-			await this.lyricsService.delete({ songId: song.id }).catch(() => {});
-			await super.delete(where);
-		} catch {
-			return song;
+	onDeletionFailure(error: Error, input: SongQueryParameters.DeleteInput) {
+		if (error instanceof Prisma.PrismaClientKnownRequestError &&
+			error.code == PrismaError.ForeignConstraintViolation) {
+			return new SongNotEmptyException(input.id);
 		}
-		this.logger.warn(`Song '${song.slug}' deleted`);
-		await this.artistService.deleteArtistIfEmpty({ id: song.artistId });
-		await Promise.all(
-			song.genres.map((genre) => this.genreService.deleteIfEmpty({ id: genre.id }))
-		);
-		return song;
+		return super.onDeletionFailure(error, input);
 	}
 
 	/**
-	 * Deletes a song if it does not have related tracks
+	 * Call 'delete' on all songs that do not have tracks
 	 */
-	async deleteIfEmpty(where: SongQueryParameters.DeleteInput): Promise<void> {
-		const trackCount = await this.trackService.count(
-			{ song: this.formatDeleteInputToWhereInput(where) }
-		);
+	async housekeeping(): Promise<void> {
+		const emptySongs = await this.prismaService.song.findMany({
+			select: {
+				id: true,
+				_count: {
+					select: { tracks: true }
+				}
+			}
+		}).then((genres) => genres.filter(
+			(genre) => !genre._count.tracks
+		));
 
-		if (trackCount == 0) {
-			await this.delete(where);
-		}
+		await Promise.all(
+			emptySongs.map(({ id }) => this.delete({ id }))
+		);
 	}
 
 	/**

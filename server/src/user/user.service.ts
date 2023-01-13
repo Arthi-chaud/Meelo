@@ -1,18 +1,20 @@
 import { Injectable } from '@nestjs/common';
 import RepositoryService from 'src/repository/repository.service';
 import type { User } from 'src/prisma/models';
-import type { Prisma } from '@prisma/client';
+import { Prisma } from '@prisma/client';
 import type UserQueryParameters from './models/user.query-params';
 import PrismaService from 'src/prisma/prisma.service';
-import { MeeloException } from 'src/exceptions/meelo-exception';
 import SortingParameter from 'src/sort/models/sorting-parameter';
 import bcrypt from 'bcrypt';
 import {
 	InvalidPasswordException, InvalidUserCredentialsException,
-	InvalidUsernameException, UserAlreadyExistsException,
-	UserNotFoundException, UserNotFoundFromIDException
+	InvalidUsernameException,
+	UserAlreadyExistsException,
+	UserNotFoundException,
+	UserNotFoundFromIDException
 } from './user.exceptions';
 import Identifier from 'src/identifier/models/identifier';
+import { PrismaError } from 'prisma-error-enum';
 
 @Injectable()
 export default class UserService extends RepositoryService<
@@ -92,10 +94,12 @@ export default class UserService extends RepositoryService<
 		});
 	}
 
-	protected onCreationFailure(
-		input: UserQueryParameters.CreateInput
-	): MeeloException | Promise<MeeloException> {
-		throw new UserAlreadyExistsException(input.name);
+	protected onCreationFailure(error: Error, input: UserQueryParameters.CreateInput) {
+		if (error instanceof Prisma.PrismaClientKnownRequestError &&
+			error.code == PrismaError.UniqueConstraintViolation) {
+			return new UserAlreadyExistsException(input.name);
+		}
+		return this.onUnknownError(error, input);
 	}
 
 	protected formatCreateInputToWhereInput(
@@ -123,19 +127,24 @@ export default class UserService extends RepositoryService<
 
 		if (input.byCredentials &&
 			!bcrypt.compareSync(input.byCredentials.password, user.password)) {
-			throw await this.onNotFound(input);
+			throw new InvalidUserCredentialsException(input.byCredentials.name);
 		}
 		return user;
 	}
 
-	onNotFound(where: UserQueryParameters.WhereInput): MeeloException | Promise<MeeloException> {
-		if (where.byCredentials) {
-			throw new InvalidUserCredentialsException(where.byCredentials.name);
-		} else if (where.id !== undefined) {
-			throw new UserNotFoundFromIDException(where.id);
-		} else {
-			throw new UserNotFoundException(where.name);
+	onNotFound(error: Error, where: UserQueryParameters.WhereInput) {
+		if (error instanceof Prisma.PrismaClientKnownRequestError &&
+			error.code === PrismaError.RecordsNotFound) {
+			if (where.byCredentials) {
+				throw new InvalidUserCredentialsException(where.byCredentials.name);
+			} else if (where.id !== undefined) {
+				throw new UserNotFoundFromIDException(where.id);
+			} else {
+				throw new UserNotFoundException(where.name);
+			}
 		}
+
+		return this.onUnknownError(error, where);
 	}
 
 	formatManyWhereInput(input: UserQueryParameters.ManyWhereInput): Prisma.UserWhereInput {
@@ -189,4 +198,6 @@ export default class UserService extends RepositoryService<
 		}
 		return { name: input.name! };
 	}
+
+	async housekeeping(): Promise<void> {}
 }

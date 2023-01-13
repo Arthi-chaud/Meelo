@@ -26,3 +26,9 @@ export class ArtistAlreadyExistsException extends AlreadyExistsException {
 		super(`Artist '${artistSlug.toString()}' already exists`);
 	}
 }
+
+export class ArtistNotEmptyException extends InvalidRequestException {
+	constructor(artistSlugOrId: Slug | number) {
+		super(`Artist '${artistSlugOrId.toString()}' can not be deleted: it has related songs and/or albums`);
+	}
+}

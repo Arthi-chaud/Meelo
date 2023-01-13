@@ -16,6 +16,11 @@ import SettingsService from 'src/settings/settings.service';
 import TrackIllustrationService from 'src/track/track-illustration.service';
 import FfmpegService from 'src/ffmpeg/ffmpeg.service';
 import { NotFoundException } from 'src/exceptions/meelo-exception';
+import SongService from 'src/song/song.service';
+import ReleaseService from 'src/release/release.service';
+import AlbumService from 'src/album/album.service';
+import ArtistService from 'src/artist/artist.service';
+import GenreService from 'src/genre/genre.service';
 
 @Injectable()
 export default class TasksService {
@@ -35,7 +40,17 @@ export default class TasksService {
 		private libraryService: LibraryService,
 		@Inject(forwardRef(() => IllustrationService))
 		private illustrationService: IllustrationService,
-		private ffmpegService: FfmpegService
+		private ffmpegService: FfmpegService,
+		@Inject(forwardRef(() => SongService))
+		private songService: SongService,
+		@Inject(forwardRef(() => ReleaseService))
+		private releaseService: ReleaseService,
+		@Inject(forwardRef(() => AlbumService))
+		private albumService: AlbumService,
+		@Inject(forwardRef(() => ArtistService))
+		private artistService: ArtistService,
+		@Inject(forwardRef(() => GenreService))
+		private genresService: GenreService,
 	) {}
 
 	/**
@@ -142,10 +157,11 @@ export default class TasksService {
 
 		this.logger.warn(`'${parentLibrary.slug}' library: Removing ${unavailableFiles.length} entries`);
 		try {
-			for (const unavailableFile of unavailableFiles) {
-				await this.unregisterFile({ id: unavailableFile.id });
-			}
+			await Promise.all(
+				unavailableFiles.map((file) => this.unregisterFile({ id: file.id }))
+			);
 			this.logger.warn(`'${parentLibrary.slug}' library: Removed ${unavailableFiles.length} entries`);
+			await this.housekeeping();
 		} catch (error) {
 			this.logger.error(`'${parentLibrary.slug}' library: Cleaning failed:`);
 			this.logger.error(error);
@@ -190,15 +206,30 @@ export default class TasksService {
 			await this.registerFile(file.path, library);
 		}
 		this.logger.log(`'${library.slug}' library: Refreshed ${updatedFiles.length} files metadata`);
+		await this.housekeeping();
 		return updatedFiles;
 	}
 
-	async unregisterFile(where: FileQueryParameters.DeleteInput) {
+	async unregisterFile(where: FileQueryParameters.DeleteInput, housekeeping = false) {
 		await this.trackService.delete({ sourceFileId: where.id }).catch((error) => {
 			if (!(error instanceof NotFoundException)) {
 				throw error;
 			}
 		});
 		await this.fileService.delete(where);
+		if (housekeeping) {
+			await this.housekeeping();
+		}
+	}
+
+	/**
+	 * Calls housekeeping methods on repository services
+	 */
+	async housekeeping(): Promise<void> {
+		await this.songService.housekeeping();
+		await this.releaseService.housekeeping();
+		await this.albumService.housekeeping();
+		await this.artistService.housekeeping();
+		await this.genresService.housekeeping();
 	}
 }

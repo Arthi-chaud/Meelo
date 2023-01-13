@@ -4,10 +4,11 @@ import {
 import AlbumService from 'src/album/album.service';
 import Slug from 'src/slug/slug';
 import type { Release, ReleaseWithRelations } from 'src/prisma/models';
-import type { Prisma } from '@prisma/client';
+import { Prisma } from '@prisma/client';
 import {
 	MasterReleaseNotFoundException,
 	ReleaseAlreadyExists,
+	ReleaseNotEmptyException,
 	ReleaseNotFoundException,
 	ReleaseNotFoundFromIDException
 } from './release.exceptions';
@@ -16,7 +17,6 @@ import PrismaService from 'src/prisma/prisma.service';
 import type ReleaseQueryParameters from './models/release.query-parameters';
 import type AlbumQueryParameters from 'src/album/models/album.query-parameters';
 import type { PaginationParameters } from 'src/pagination/models/pagination-parameters';
-import type { MeeloException } from 'src/exceptions/meelo-exception';
 import TrackService from 'src/track/track.service';
 import RepositoryService from 'src/repository/repository.service';
 import { buildStringSearchParameters } from 'src/utils/search-string-input';
@@ -33,6 +33,7 @@ import { parseIdentifierSlugs } from 'src/identifier/identifier.parse-slugs';
 import Identifier from 'src/identifier/models/identifier';
 import Logger from 'src/logger/logger';
 import ReleaseIllustrationService from './release-illustration.service';
+import { PrismaError } from 'prisma-error-enum';
 
 @Injectable()
 export default class ReleaseService extends RepositoryService<
@@ -55,8 +56,6 @@ export default class ReleaseService extends RepositoryService<
 		protected prismaService: PrismaService,
 		@Inject(forwardRef(() => AlbumService))
 		private albumService: AlbumService,
-		@Inject(forwardRef(() => TrackService))
-		private trackService: TrackService,
 		@Inject(forwardRef(() => FileService))
 		private fileService: FileService,
 		private releaseIllustrationService: ReleaseIllustrationService,
@@ -93,15 +92,20 @@ export default class ReleaseService extends RepositoryService<
 		return { bySlug: { slug: new Slug(input.name), album: input.album } };
 	}
 
-	protected async onCreationFailure(input: ReleaseQueryParameters.CreateInput) {
-		const parentAlbum = await this.albumService.get(input.album, { artist: true });
+	protected async onCreationFailure(error: Error, input: ReleaseQueryParameters.CreateInput) {
+		if (error instanceof Prisma.PrismaClientKnownRequestError) {
+			const parentAlbum = await this.albumService.get(input.album, { artist: true });
 
-		return new ReleaseAlreadyExists(
-			new Slug(input.name),
-			parentAlbum.artist
-				? new Slug(parentAlbum.artist!.slug)
-				: undefined
-		);
+			if (error.code == PrismaError.UniqueConstraintViolation) {
+				return new ReleaseAlreadyExists(
+					new Slug(input.name),
+					parentAlbum.artist
+						? new Slug(parentAlbum.artist!.slug)
+						: undefined
+				);
+			}
+		}
+		return this.onUnknownError(error, input);
 	}
 
 	/**
@@ -179,21 +183,25 @@ export default class ReleaseService extends RepositoryService<
 	 * Callback on release not found
 	 * @param where the query parameters that failed to get the release
 	 */
-	async onNotFound(where: ReleaseQueryParameters.WhereInput): Promise<MeeloException> {
-		if (where.id != undefined) {
-			return new ReleaseNotFoundFromIDException(where.id);
-		}
-		const parentAlbum = await this.albumService.get(
-			where.bySlug.album, { artist: true }
-		);
-		const releaseSlug: Slug = where.bySlug!.slug;
-		const parentArtistSlug = parentAlbum.artist?.slug
-			? new Slug(parentAlbum.artist.slug)
-			: undefined;
+	async onNotFound(error: Error, where: ReleaseQueryParameters.WhereInput) {
+		if (error instanceof Prisma.PrismaClientKnownRequestError
+			&& error.code == PrismaError.RecordsNotFound) {
+			if (where.id != undefined) {
+				return new ReleaseNotFoundFromIDException(where.id);
+			}
+			const parentAlbum = await this.albumService.get(
+				where.bySlug.album, { artist: true }
+			);
+			const releaseSlug: Slug = where.bySlug!.slug;
+			const parentArtistSlug = parentAlbum.artist?.slug
+				? new Slug(parentAlbum.artist.slug)
+				: undefined;
 
-		return new ReleaseNotFoundException(
-			releaseSlug, new Slug(parentAlbum.slug), parentArtistSlug
-		);
+			return new ReleaseNotFoundException(
+				releaseSlug, new Slug(parentAlbum.slug), parentArtistSlug
+			);
+		}
+		return this.onUnknownError(error, where);
 	}
 
 	/**
@@ -294,37 +302,43 @@ export default class ReleaseService extends RepositoryService<
 	 * Also delete related tracks.
 	 * @param where Query parameters to find the release to delete
 	 */
-	async delete(where: ReleaseQueryParameters.DeleteInput, deleteParent = true): Promise<Release> {
-		const release = await this.get(where, { tracks: true, album: true });
+	async delete(where: ReleaseQueryParameters.DeleteInput): Promise<Release> {
+		const illustrationFolder = await this.releaseIllustrationService
+			.getIllustrationFolderPath(where);
 
-		await Promise.allSettled(
-			release.tracks.map((track) => this.trackService.delete({ id: track.id }, false))
-		);
-		if (release.album.masterId == release.id) {
-			await this.albumService.unsetMasterRelease({ id: release.albumId });
+		this.releaseIllustrationService.deleteIllustrationFolder(illustrationFolder);
+		return super.delete(where).then((deleted) => {
+			this.logger.warn(`Release '${deleted.slug}' deleted`);
+			return deleted;
+		});
+	}
+
+	onDeletionFailure(error: Error, input: ReleaseQueryParameters.DeleteInput) {
+		if (error instanceof Prisma.PrismaClientKnownRequestError &&
+			error.code == PrismaError.ForeignConstraintViolation) {
+			return new ReleaseNotEmptyException(input.id);
 		}
-		try {
-			await super.delete(where);
-		} catch {
-			return release;
-		}
-		this.logger.warn(`Release '${release.slug}' deleted`);
-		if (deleteParent) {
-			await this.albumService.deleteIfEmpty(release.albumId);
-		}
-		return release;
+		return super.onDeletionFailure(error, input);
 	}
 
 	/**
-	 * Deletes a release if it does not have related tracks
-	 * @param where the query parameters to find the track to delete
+	 * Calls 'delete' on all releases that do not have tracks
 	 */
-	async deleteIfEmpty(where: ReleaseQueryParameters.DeleteInput): Promise<void> {
-		const trackCount = await this.trackService.count({ release: where });
+	async housekeeping(): Promise<void> {
+		const emptyReleases = await this.prismaService.release.findMany({
+			select: {
+				id: true,
+				_count: {
+					select: { tracks: true }
+				}
+			}
+		}).then((releases) => releases.filter(
+			(release) => !release._count.tracks
+		));
 
-		if (trackCount == 0) {
-			await this.delete(where);
-		}
+		await Promise.all(
+			emptyReleases.map(({ id }) => this.delete({ id }))
+		);
 	}
 
 	/**
@@ -366,7 +380,6 @@ export default class ReleaseService extends RepositoryService<
 			oldAlbum.artist ? new Slug(oldAlbum.artist.slug) : undefined,
 			newParent.artist ? new Slug(newParent.artist.slug) : undefined,
 		);
-		await this.albumService.deleteIfEmpty(release.albumId);
 		return updatedRelease;
 	}
 

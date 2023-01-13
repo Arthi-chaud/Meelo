@@ -25,7 +25,6 @@ import SongService from "src/song/song.service";
 import { MasterTrackNotFoundException, TrackAlreadyExistsException, TrackNotFoundByIdException } from "./track.exceptions";
 import TrackModule from "./track.module";
 import TrackService from "./track.service";
-import { ArtistNotFoundByIDException } from "src/artist/artist.exceptions";
 import GenreModule from "src/genre/genre.module";
 import TestPrismaService from "test/test-prisma.service";
 import { LyricsModule } from "src/lyrics/lyrics.module";
@@ -36,7 +35,6 @@ import ArtistIllustrationService from "src/artist/artist-illustration.service";
 describe('Track Service', () => {
 	let trackService: TrackService;
 	let dummyRepository: TestPrismaService;
-	let artistService: ArtistService;
 	let songService: SongService;
 
 	let file: File;
@@ -54,7 +52,6 @@ describe('Track Service', () => {
 		await module.get<PrismaService>(PrismaService).onModuleInit();
 		trackService = module.get<TrackService>(TrackService);
 		dummyRepository = module.get(PrismaService);
-		artistService = module.get<ArtistService>(ArtistService);
 		songService = module.get<SongService>(SongService);
 		module.get(ArtistIllustrationService).onModuleInit();
 		const fileService = module.get<FileService>(FileService);
@@ -393,11 +390,6 @@ describe('Track Service', () => {
 			expect(updatedTrack.songId).toBe(dummyRepository.songB1.id);
 		});
 
-		it("should have deleted previous, now empty, parent song", () => {
-			const test = async () => await songService.get({ id: dummyRepository.songC1.id });
-			expect(test()).rejects.toThrow(SongNotFoundByIdException);
-		});
-
 		it("should reassign the master track", async () => {
 			await trackService.reassign(
 				{ id: dummyRepository.trackB1_1.id },
@@ -412,45 +404,17 @@ describe('Track Service', () => {
 	});
 
 	describe("Delete Track", () => {
-		it("should delete the master track", async () => {
-			await trackService.delete({ id:  dummyRepository.trackA1_1.id });
+		it("should delete the track", async () => {
+			await songService.setMasterTrack({ id: dummyRepository.trackA1_1.id })
+			await trackService.delete({ id: dummyRepository.trackA1_1.id });
 
 			const test = async () => await trackService.get({ id: dummyRepository.trackA1_1.id });
 			expect(test()).rejects.toThrow(TrackNotFoundByIdException);
 		});
 
-		it("should have changed the master track of the song", async () => {
-			await trackService.getMasterTrack({ id: dummyRepository.songA1.id });
-		});
-
-		it("should delete the other tracks of the song (first song)", async () => {
-			await trackService.delete({ id: dummyRepository.trackA1_2Video.id });
-			await trackService.delete({ id: newTrack.id });
-			await trackService.delete({ id: newTrack2.id });
-
-			const testMaster = async () => await trackService.get({ id: dummyRepository.trackA1_2Video.id });
-			expect(testMaster()).rejects.toThrow(TrackNotFoundByIdException);
-			const testNew1 = async () => await trackService.get({ id: newTrack.id });
-			expect(testNew1()).rejects.toThrow(TrackNotFoundByIdException);
-			const testNew2 = async () => await trackService.get({ id: newTrack2.id });
-			expect(testNew2()).rejects.toThrow(TrackNotFoundByIdException);
-		});
-
-		it("should delete the last song's track (second song)", async () => {
-			await trackService.delete({ id: dummyRepository.trackA2_1.id });
-
-			const test = async () => await trackService.get({ id: dummyRepository.trackA2_1.id });
-			expect(test()).rejects.toThrow(TrackNotFoundByIdException);
-		});
-
-		it("should have delete the parent song", async () => {
-			const test = async () => await songService.get({ id: dummyRepository.songA2.id});
-			expect(test()).rejects.toThrow(SongNotFoundByIdException);
-		});
-
-		it("should have delete the parent artist", async () => {
-			const test = async () => await artistService.get({ id: dummyRepository.artistA.id  });
-			expect(test()).rejects.toThrow(ArtistNotFoundByIDException);
+		it("should have unset of the song", async () => {
+			const song = await songService.get({ id: dummyRepository.songA1.id });
+			expect(song.masterId).toBeNull();
 		});
 
 		it("should throw, as the track does not exists", async () => {
