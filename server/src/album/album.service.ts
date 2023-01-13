@@ -6,6 +6,7 @@ import Slug from 'src/slug/slug';
 import {
 	AlbumAlreadyExistsException,
 	AlbumAlreadyExistsWithArtistIDException,
+	AlbumNotEmptyException,
 	AlbumNotFoundException,
 	AlbumNotFoundFromIDException
 } from './album.exceptions';
@@ -221,33 +222,20 @@ export default class AlbumService extends RepositoryService<
 	 * @param where the query parameter
 	 */
 	async delete(where: AlbumQueryParameters.DeleteInput): Promise<Album> {
-		const album = await this.get(where, { releases: true, artist: true });
+		const illustrationFolder = await this.albumIllustrationService.getIllustrationPath(where);
+		const album = await super.delete(where);
 
-		await Promise.all(
-			album.releases.map(
-				(release) => this.releaseService.delete({ id: release.id }, false)
-			)
-		);
-		try {
-			await super.delete(where);
-		} catch {
-			return album;
-		}
+		this.albumIllustrationService.deleteIllustrationFolder(illustrationFolder);
 		this.logger.warn(`Album '${album.slug}' deleted`);
-		if (album.artistId !== null) {
-			await this.artistServce.deleteArtistIfEmpty({ id: album.artistId });
-		}
-		try {
-			const albumIllustrationFolder = this.albumIllustrationService
-				.buildIllustrationFolderPath(
-					album.artist ? new Slug(album.artist.slug) : undefined, new Slug(album.slug),
-				);
-
-			this.albumIllustrationService.deleteIllustrationFolder(albumIllustrationFolder);
-		} catch {
-			return album;
-		}
 		return album;
+	}
+
+	onDeletionFailure(error: Error, input: AlbumQueryParameters.DeleteInput) {
+		if (error instanceof Prisma.PrismaClientKnownRequestError &&
+			error.code == PrismaError.RequiredRelationViolation) {
+			return new AlbumNotEmptyException(input.id);
+		}
+		return super.onUnknownError(error, input);
 	}
 
 	formatDeleteInput(where: AlbumQueryParameters.DeleteInput) {
@@ -259,17 +247,23 @@ export default class AlbumService extends RepositoryService<
 	}
 
 	/**
-	 * Delete an album if it does not have related releases
-	 * @param albumId
+	 * Delete all albums that do not have relaed releases
 	 */
-	async deleteIfEmpty(albumId: number): Promise<void> {
-		const albumCount = await this.releaseService.count({
-			album: { id: albumId }
-		});
+	async housekeeping(): Promise<void> {
+		const emptyAlbums = await this.prismaService.album.findMany({
+			select: {
+				id: true,
+				_count: {
+					select: { releases: true }
+				}
+			}
+		}).then((albums) => albums.filter(
+			(album) => !album._count.releases
+		));
 
-		if (albumCount == 0) {
-			await this.delete({ id: albumId });
-		}
+		await Promise.all(
+			emptyAlbums.map(({ id }) => this.delete({ id }))
+		);
 	}
 
 	/**
@@ -329,9 +323,6 @@ export default class AlbumService extends RepositoryService<
 		this.albumIllustrationService.reassignIllustrationFolder(
 			albumSlug, previousArtistSlug, newArtistSlug
 		);
-		if (album.artistId) {
-			await this.artistServce.deleteArtistIfEmpty({ id: album.artistId });
-		}
 		return updatedAlbum;
 	}
 

@@ -1,4 +1,8 @@
-import { AlreadyExistsException, NotFoundException } from "src/exceptions/meelo-exception";
+import {
+	AlreadyExistsException,
+	InvalidRequestException,
+	NotFoundException
+} from "src/exceptions/meelo-exception";
 import type Slug from "src/slug/slug";
 
 export class AlbumNotFoundException extends NotFoundException {
@@ -22,5 +26,11 @@ export class AlbumAlreadyExistsException extends AlreadyExistsException {
 export class AlbumAlreadyExistsWithArtistIDException extends AlreadyExistsException {
 	constructor(albumSlug: Slug, artistId: number) {
 		super(`${albumSlug.toString()} by artist n°${artistId} already exists`);
+	}
+}
+
+export class AlbumNotEmptyException extends InvalidRequestException {
+	constructor(albumId: number) {
+		super(`Album n°${albumId} could not be deleted: It has related releases`);
 	}
 }
