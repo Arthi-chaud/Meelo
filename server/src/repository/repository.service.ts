@@ -398,6 +398,12 @@ abstract class RepositoryService<
 		}
 		return include;
 	}
+
+	/**
+	 * Housekeeping function
+	 * Should 'clean' the repository, remove 'empty' items, etc.
+	 */
+	abstract housekeeping(): Promise<void>;
 }
 
 export default RepositoryService;
