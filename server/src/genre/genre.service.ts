@@ -40,7 +40,7 @@ export default class GenreService extends RepositoryService<
 > {
 	private readonly logger = new Logger(GenreService.name);
 	constructor(
-		prismaService: PrismaService,
+		private prismaService: PrismaService,
 		@Inject(forwardRef(() => SongService))
 		private songService: SongService,
 	) {
@@ -150,24 +150,30 @@ export default class GenreService extends RepositoryService<
 	 * @param where the query parameter to find the genre to delete
 	 */
 	async delete(where: GenreQueryParameters.DeleteInput): Promise<Genre> {
-		const deleted = await super.delete(where);
-
-		this.logger.warn(`Genre '${deleted.slug}' deleted`);
-		return deleted;
+		return super.delete(where).then((deleted) => {
+			this.logger.warn(`Genre '${deleted.slug}' deleted`);
+			return deleted;
+		});
 	}
 
 	/**
-	 * Deletes a genre, if empty
-	 * @param where the query parameter to find the genre to delete
+	 * Delete all genres that do not have related songs
 	 */
-	async deleteIfEmpty(where: GenreQueryParameters.DeleteInput): Promise<void> {
-		const songCount = await this.songService.count({
-			genre: where
-		});
+	async housekeeping(): Promise<void> {
+		const emptyGenres = await this.prismaService.genre.findMany({
+			select: {
+				id: true,
+				_count: {
+					select: { songs: true }
+				}
+			}
+		}).then((genres) => genres.filter(
+			(genre) => !genre._count.songs
+		));
 
-		if (songCount == 0) {
-			await this.delete(where);
-		}
+		await Promise.all(
+			emptyGenres.map(({ id }) => this.delete({ id }))
+		);
 	}
 
 	/**
