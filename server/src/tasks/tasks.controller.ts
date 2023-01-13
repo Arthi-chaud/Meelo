@@ -20,6 +20,17 @@ export default class TasksController {
 	) {}
 
 	@ApiOperation({
+		summary: 'Run houskeeping'
+	})
+	@Get('housekeeping')
+	async housekeeping(): Promise<TaskResponse> {
+		this.tasksService.housekeeping();
+		return {
+			status: `Running housekeeping`
+		};
+	}
+
+	@ApiOperation({
 		summary: 'Scan all libraries'
 	})
 	@Timeout(5000)
