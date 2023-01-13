@@ -179,6 +179,11 @@ export default class FileService extends RepositoryService<
 	}
 
 	/**
+	 * Does nothing, nothing to housekeep
+	 */
+	async housekeeping(): Promise<void> {}
+
+	/**
 	 * Register a file in the Database
 	 * @param filePath The path to the file to register, relative to parent library path
 	 * @param parentLibrary The parent Library the new file will be registered under
