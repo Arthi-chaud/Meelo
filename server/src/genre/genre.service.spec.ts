@@ -54,6 +54,16 @@ describe("Genre Service", () => {
 		});
 	});
 
+	describe("Get an album's genres", () => { 
+		it("should find and sort the genres", async () => {
+			const genres = await genreService.getAlbumGenres({ id: dummyRepository.albumA1.id });
+			expect(genres).toStrictEqual([
+				dummyRepository.genreB,
+				dummyRepository.genreA
+			]);
+		});
+	});
+
 	describe("Get Genre", () => {
 		it("should get the genre by its slug", async () => {
 			const fetchedGenre = await genreService.get({ slug: new Slug(dummyRepository.genreB.slug) });
