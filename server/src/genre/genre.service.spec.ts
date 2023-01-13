@@ -56,7 +56,10 @@ describe("Genre Service", () => {
 
 	describe("Get an album's genres", () => { 
 		it("should find and sort the genres", async () => {
-			const genres = await genreService.getAlbumGenres({ id: dummyRepository.albumA1.id });
+			const genres = await genreService.getAlbumGenres(
+				{ id: dummyRepository.albumA1.id },
+				undefined, { order: 'desc', sortBy: 'name'}
+			);
 			expect(genres).toStrictEqual([
 				dummyRepository.genreB,
 				dummyRepository.genreA
