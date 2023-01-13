@@ -305,13 +305,13 @@ describe('Album Controller', () => {
 
 		it("should return an array of genres", () => {
 			return request(app.getHttpServer())
-				.get(`/albums/${dummyRepository.albumA1.id}/genres`)
+				.get(`/albums/${dummyRepository.albumA1.id}/genres?sortBy=name`)
 				.expect(200)
 				.expect((res) => {
-					const releases: Release[] = res.body;
+					const releases: Release[] = res.body.items;
 					expect(releases).toStrictEqual([
+						dummyRepository.genreA,
 						dummyRepository.genreB,
-						dummyRepository.genreA
 					])
 				});
 		});

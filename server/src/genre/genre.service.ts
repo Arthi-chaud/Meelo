@@ -4,7 +4,7 @@ import {
 import PrismaService from 'src/prisma/prisma.service';
 import Slug from 'src/slug/slug';
 import type GenreQueryParameters from './models/genre.query-parameters';
-import type { Genre, GenreWithRelations } from 'src/prisma/models';
+import { Genre, GenreWithRelations } from 'src/prisma/models';
 import SongService from 'src/song/song.service';
 import RepositoryService from 'src/repository/repository.service';
 import type SongQueryParameters from "../song/models/song.query-params";
@@ -22,6 +22,9 @@ import {
 	GenreNotFoundByIdException,
 	GenreNotFoundException
 } from './genre.exceptions';
+import AlbumQueryParameters from 'src/album/models/album.query-parameters';
+import AlbumService from 'src/album/album.service';
+import { PaginationParameters, buildPaginationParameters } from 'src/pagination/models/pagination-parameters';
 
 @Injectable()
 export default class GenreService extends RepositoryService<
@@ -44,6 +47,8 @@ export default class GenreService extends RepositoryService<
 		private prismaService: PrismaService,
 		@Inject(forwardRef(() => SongService))
 		private songService: SongService,
+		@Inject(forwardRef(() => AlbumService))
+		private albumService: AlbumService,
 	) {
 		super(prismaService.genre);
 	}
@@ -189,12 +194,53 @@ export default class GenreService extends RepositoryService<
 	async getSongGenres(
 		where: SongQueryParameters.WhereInput,
 		include?: GenreQueryParameters.RelationInclude,
-		sort?: GenreQueryParameters.SortingParameter
+		sort?: GenreQueryParameters.SortingParameter,
+		pagination?: PaginationParameters
 	) {
-		const genres = await this.getMany({ song: where }, {}, include, sort);
+		const genres = await this.getMany(
+			{ song: where },
+			pagination,
+			include,
+			sort
+		);
 
 		if (genres.length == 0) {
 			await this.songService.throwIfNotFound(where);
+		}
+		return genres;
+	}
+
+	/**
+	 * Find the album's genres
+	 * @param where the query parameters to find the song
+	 */
+	async getAlbumGenres(
+		where: AlbumQueryParameters.WhereInput,
+		include?: GenreQueryParameters.RelationInclude,
+		sort?: GenreQueryParameters.SortingParameter,
+		pagination?: PaginationParameters
+	) {
+		const genres = await this.prismaService.genre.findMany({
+			where: {
+				songs: {
+					some: {
+						tracks: {
+							some: {
+								release: {
+									album: AlbumService.formatWhereInput(where)
+								}
+							}
+						}
+					}
+				}
+			},
+			include: RepositoryService.formatInclude(include),
+			orderBy: sort ? this.formatSortingInput(sort) : undefined,
+			...buildPaginationParameters(pagination),
+		});
+
+		if (genres.length == 0) {
+			await this.albumService.throwIfNotFound(where);
 		}
 		return genres;
 	}

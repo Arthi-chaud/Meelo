@@ -16,12 +16,9 @@ import AlbumQueryParameters from './models/album.query-parameters';
 import type ArtistQueryParameters from 'src/artist/models/artist.query-parameters';
 import ReleaseService from 'src/release/release.service';
 import RepositoryService from 'src/repository/repository.service';
-import GenreService from "../genre/genre.service";
 import { buildStringSearchParameters } from 'src/utils/search-string-input';
 import SongService from 'src/song/song.service';
-import {
-	Album, AlbumWithRelations, Genre
-} from "src/prisma/models";
+import { Album, AlbumWithRelations } from "src/prisma/models";
 import SortingParameter from 'src/sort/models/sorting-parameter';
 import { parseIdentifierSlugs } from 'src/identifier/identifier.parse-slugs';
 import compilationAlbumArtistKeyword from 'src/utils/compilation';
@@ -55,9 +52,7 @@ export default class AlbumService extends RepositoryService<
 		@Inject(forwardRef(() => ReleaseService))
 		private releaseService: ReleaseService,
 		@Inject(forwardRef(() => AlbumIllustrationService))
-		private albumIllustrationService: AlbumIllustrationService,
-		@Inject(forwardRef(() => GenreService))
-		private genreService: GenreService
+		private albumIllustrationService: AlbumIllustrationService
 	) {
 		super(prismaService.album);
 	}
@@ -327,32 +322,6 @@ export default class AlbumService extends RepositoryService<
 			albumSlug, previousArtistSlug, newArtistSlug
 		);
 		return updatedAlbum;
-	}
-
-	/**
-	 * Get an album's genres, based on the songs on its releases
-	 * Genres will be ordered by occurences
-	 */
-	async getGenres(
-		where: AlbumQueryParameters.WhereInput
-	) : Promise<Genre[]> {
-		const releases = await this.releaseService.getAlbumReleases(where, {}, { tracks: true });
-		const songsId = Array.from(new Set(
-			releases.map((release) => release.tracks.map((track) => track.songId)).flat()
-		));
-		const genres: Genre[] = (await Promise.all(
-			songsId.map((songId) => this.genreService.getSongGenres({ id: songId }))
-		)).flat();
-		const genresOccurrences = genres.reduce(
-			(map, genre) => map.set(genre.slug, (map.get(genre.slug) || 0) + 1),
-			new Map<string, number>()
-		);
-
-		return Array.from(genresOccurrences.entries()).sort(
-			(genreA, genreB) => genreB[1] - genreA[1]
-		).map(
-			(genresSlugOccurrence) => genres.find((genre) => genresSlugOccurrence[0] == genre.slug)!
-		);
 	}
 
 	async onNotFound(error: Error, where: AlbumQueryParameters.WhereInput) {

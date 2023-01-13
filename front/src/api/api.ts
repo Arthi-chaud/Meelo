@@ -516,7 +516,7 @@ export default class API {
 	 */
 	static async getAlbumGenres(
 		albumSlugOrId: string | number,
-	): Promise<Genre[]> {
+	): Promise<PaginatedResponse<Genre>> {
 		return API.fetch({
 			route: `/albums/${albumSlugOrId}/genres`,
 			parameters: { include: [] }
