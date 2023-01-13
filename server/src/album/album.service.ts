@@ -56,6 +56,7 @@ export default class AlbumService extends RepositoryService<
 		private releaseService: ReleaseService,
 		@Inject(forwardRef(() => AlbumIllustrationService))
 		private albumIllustrationService: AlbumIllustrationService,
+		@Inject(forwardRef(() => GenreService))
 		private genreService: GenreService
 	) {
 		super(prismaService.album);
@@ -234,10 +235,10 @@ export default class AlbumService extends RepositoryService<
 
 	onDeletionFailure(error: Error, input: AlbumQueryParameters.DeleteInput) {
 		if (error instanceof Prisma.PrismaClientKnownRequestError &&
-			error.code == PrismaError.RequiredRelationViolation) {
+			error.code == PrismaError.ForeignConstraintViolation) {
 			return new AlbumNotEmptyException(input.id);
 		}
-		return super.onUnknownError(error, input);
+		return super.onDeletionFailure(error, input);
 	}
 
 	formatDeleteInput(where: AlbumQueryParameters.DeleteInput) {

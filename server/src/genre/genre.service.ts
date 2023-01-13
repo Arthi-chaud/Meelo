@@ -18,6 +18,7 @@ import Logger from 'src/logger/logger';
 import { PrismaError } from 'prisma-error-enum';
 import {
 	GenreAlreadyExistsException,
+	GenreNotEmptyException,
 	GenreNotFoundByIdException,
 	GenreNotFoundException
 } from './genre.exceptions';
@@ -150,10 +151,15 @@ export default class GenreService extends RepositoryService<
 	 * @param where the query parameter to find the genre to delete
 	 */
 	async delete(where: GenreQueryParameters.DeleteInput): Promise<Genre> {
-		return super.delete(where).then((deleted) => {
-			this.logger.warn(`Genre '${deleted.slug}' deleted`);
-			return deleted;
-		});
+		const genre = await this.get(where, { songs: true });
+
+		if (genre.songs.length == 0) {
+			return super.delete(where).then((deleted) => {
+				this.logger.warn(`Genre '${deleted.slug}' deleted`);
+				return deleted;
+			});
+		}
+		throw new GenreNotEmptyException(genre.id);
 	}
 
 	/**

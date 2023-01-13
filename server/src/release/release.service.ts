@@ -315,10 +315,10 @@ export default class ReleaseService extends RepositoryService<
 
 	onDeletionFailure(error: Error, input: ReleaseQueryParameters.DeleteInput) {
 		if (error instanceof Prisma.PrismaClientKnownRequestError &&
-			error.code == PrismaError.RequiredRelationViolation) {
+			error.code == PrismaError.ForeignConstraintViolation) {
 			return new ReleaseNotEmptyException(input.id);
 		}
-		return super.onUnknownError(error, input);
+		return super.onDeletionFailure(error, input);
 	}
 
 	/**

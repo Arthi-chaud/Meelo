@@ -1,4 +1,4 @@
-import { NotFoundException } from "src/exceptions/meelo-exception";
+import { InvalidRequestException, NotFoundException } from "src/exceptions/meelo-exception";
 import type Slug from "src/slug/slug";
 
 export class GenreNotFoundException extends NotFoundException {
@@ -16,5 +16,11 @@ export class GenreNotFoundByIdException extends NotFoundException {
 export class GenreAlreadyExistsException extends NotFoundException {
 	constructor(genreSlug: Slug) {
 		super(`Genre '${genreSlug.toString()}' already exists`);
+	}
+}
+
+export class GenreNotEmptyException extends InvalidRequestException {
+	constructor(genreId: number) {
+		super(`Genre n°${genreId} could not be deleted: It has related songs`);
 	}
 }

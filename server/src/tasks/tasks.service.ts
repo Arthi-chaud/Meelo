@@ -41,10 +41,15 @@ export default class TasksService {
 		@Inject(forwardRef(() => IllustrationService))
 		private illustrationService: IllustrationService,
 		private ffmpegService: FfmpegService,
+		@Inject(forwardRef(() => SongService))
 		private songService: SongService,
+		@Inject(forwardRef(() => ReleaseService))
 		private releaseService: ReleaseService,
+		@Inject(forwardRef(() => AlbumService))
 		private albumService: AlbumService,
+		@Inject(forwardRef(() => ArtistService))
 		private artistService: ArtistService,
+		@Inject(forwardRef(() => GenreService))
 		private genresService: GenreService,
 	) {}
 

@@ -224,10 +224,10 @@ export default class ArtistService extends RepositoryService<
 
 	onDeletionFailure(error: Error, input: ArtistQueryParameters.DeleteInput) {
 		if (error instanceof Prisma.PrismaClientKnownRequestError &&
-			error.code == PrismaError.RequiredRelationViolation) {
+			error.code == PrismaError.ForeignConstraintViolation) {
 			return new ArtistNotEmptyException(input.slug ?? input.id);
 		}
-		return super.onUnknownError(error, input);
+		return super.onDeletionFailure(error, input);
 	}
 
 	/**

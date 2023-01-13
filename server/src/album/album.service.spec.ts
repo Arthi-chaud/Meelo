@@ -7,21 +7,19 @@ import ArtistModule from "src/artist/artist.module";
 import PrismaModule from "src/prisma/prisma.module";
 import AlbumModule from "./album.module";
 import PrismaService from "src/prisma/prisma.service";
-import { AlbumAlreadyExistsException, AlbumAlreadyExistsWithArtistIDException, AlbumNotFoundFromIDException } from "./album.exceptions";
+import { AlbumAlreadyExistsException, AlbumAlreadyExistsWithArtistIDException, AlbumNotEmptyException, AlbumNotFoundFromIDException } from "./album.exceptions";
 import Slug from "src/slug/slug";
 import { ArtistNotFoundByIDException, ArtistNotFoundException } from "src/artist/artist.exceptions";
 import SongModule from "src/song/song.module";
 import IllustrationModule from "src/illustration/illustration.module";
 import GenreModule from "src/genre/genre.module";
 import TestPrismaService from "test/test-prisma.service";
-import SongService from "src/song/song.service";
 import { Album } from "src/prisma/models";
 import ArtistIllustrationService from "src/artist/artist-illustration.service";
 
 describe('Album Service', () => {
 	let albumService: AlbumService;
 	let artistService: ArtistService;
-	let songService: SongService;
 	let newAlbum: Album;
 	let newCompilationAlbum: Album;
 	let dummyRepository: TestPrismaService;
@@ -35,7 +33,6 @@ describe('Album Service', () => {
 		module.get(ArtistIllustrationService).onModuleInit();
 		artistService = module.get<ArtistService>(ArtistService);
 		albumService = module.get<AlbumService>(AlbumService);
-		songService = module.get(SongService);
 	})
 
 	it('should be defined', () => {
@@ -341,21 +338,18 @@ describe('Album Service', () => {
 			expect(test()).rejects.toThrow(AlbumNotFoundFromIDException); 
 		});
 
-		it("should delete the album", async () => {
+		it("should not delete the album, as it has releases", async () => {
 			const albumQueryParameters = {  id: dummyRepository.compilationAlbumA.id } ;
-			await albumService.delete(albumQueryParameters);
-			const test = async () => albumService.get(albumQueryParameters);
-			expect(test()).rejects.toThrow(AlbumNotFoundFromIDException); 
+			
+			const test = async () => await albumService.delete(albumQueryParameters);;
+			expect(test()).rejects.toThrow(AlbumNotEmptyException); 
 		});
 
-		it("should delete the album and the parent artist", async () => {
-			const albumQueryParameters = {  id: dummyRepository.albumB1.id } ;
-			await albumService.delete(albumQueryParameters);
-			await songService.delete({ id: dummyRepository.songB1.id });
-			const test = async () => albumService.get(albumQueryParameters);
-			const testArtist = () => artistService.get({ id: dummyRepository.artistB.id });
+		it("should delete the album", async () => {
+			const tmpAlbum = await albumService.create({ name: '1234' });
+			await albumService.delete({ id: tmpAlbum.id });
+			const test = async () => albumService.get({ id: tmpAlbum.id });
 			expect(test()).rejects.toThrow(AlbumNotFoundFromIDException);
-			expect(testArtist()).rejects.toThrow(ArtistNotFoundByIDException); 
 		});
 	});
 });
