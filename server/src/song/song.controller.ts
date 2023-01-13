@@ -218,9 +218,16 @@ export class SongController {
 		@SortingQuery(GenreQueryParameters.SortingKeys)
 		sortingParameter: GenreQueryParameters.SortingParameter,
 		@IdentifierParam(SongService)
-		where: SongQueryParameters.WhereInput
+		where: SongQueryParameters.WhereInput,
+		@PaginationQuery()
+		paginationParameters: PaginationParameters,
 	) {
-		return this.genreService.getSongGenres(where, include, sortingParameter);
+		return this.genreService.getSongGenres(
+			where,
+			include,
+			sortingParameter,
+			paginationParameters
+		);
 	}
 
 	@ApiOperation({

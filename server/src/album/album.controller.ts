@@ -21,6 +21,8 @@ import Admin from 'src/roles/admin.decorator';
 import { TrackResponseBuilder } from 'src/track/models/track.response';
 import IdentifierParam from 'src/identifier/identifier.pipe';
 import Response, { ResponseType } from 'src/response/response.decorator';
+import GenreService from 'src/genre/genre.service';
+import GenreQueryParameters from 'src/genre/models/genre.query-parameters';
 
 @ApiTags("Albums")
 @Controller('albums')
@@ -32,6 +34,8 @@ export default class AlbumController {
 		private albumService: AlbumService,
 		@Inject(forwardRef(() => TrackService))
 		private trackService: TrackService,
+		@Inject(forwardRef(() => GenreService))
+		private genreService: GenreService,
 	) {}
 
 	@Get()
@@ -142,12 +146,27 @@ export default class AlbumController {
 	@ApiOperation({
 		summary: 'Get all the genres of an album'
 	})
+	@Response({
+		returns: Genre,
+		type: ResponseType.Page
+	})
 	@Get(':idOrSlug/genres')
 	async getAlbumGenres(
 		@IdentifierParam(AlbumService)
 		where: AlbumQueryParameters.WhereInput,
-	): Promise<Genre[]> {
-		return this.albumService.getGenres(where);
+		@RelationIncludeQuery(GenreQueryParameters.AvailableAtomicIncludes)
+		include: GenreQueryParameters.RelationInclude,
+		@SortingQuery(GenreQueryParameters.SortingKeys)
+		sortingParameter: GenreQueryParameters.SortingParameter,
+		@PaginationQuery()
+		paginationParameters: PaginationParameters,
+	) {
+		return this.genreService.getAlbumGenres(
+			where,
+			include,
+			sortingParameter,
+			paginationParameters
+		);
 	}
 
 	@ApiOperation({
