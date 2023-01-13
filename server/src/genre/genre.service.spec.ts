@@ -19,6 +19,7 @@ import GenreService from "./genre.service";
 import LibraryModule from "src/library/library.module";
 import MetadataModule from "src/metadata/metadata.module";
 import ArtistIllustrationService from "src/artist/artist-illustration.service";
+import { AlbumNotFoundFromIDException } from "src/album/album.exceptions";
 
 describe("Genre Service", () => {
 	let genreService: GenreService;
@@ -55,6 +56,14 @@ describe("Genre Service", () => {
 	});
 
 	describe("Get an album's genres", () => { 
+		it("should throw, as the album does not exist", async () => {
+			const test = () => genreService.getAlbumGenres(
+				{ id: -1 },
+				undefined, { order: 'desc', sortBy: 'name'}
+			);
+			expect(test()).rejects.toThrow(AlbumNotFoundFromIDException);
+			
+		});
 		it("should find and sort the genres", async () => {
 			const genres = await genreService.getAlbumGenres(
 				{ id: dummyRepository.albumA1.id },

@@ -47,6 +47,8 @@ export default class GenreService extends RepositoryService<
 		private prismaService: PrismaService,
 		@Inject(forwardRef(() => SongService))
 		private songService: SongService,
+		@Inject(forwardRef(() => AlbumService))
+		private albumService: AlbumService,
 	) {
 		super(prismaService.genre);
 	}
@@ -218,7 +220,7 @@ export default class GenreService extends RepositoryService<
 		sort?: GenreQueryParameters.SortingParameter,
 		pagination?: PaginationParameters
 	) {
-		return this.prismaService.genre.findMany({
+		const genres = await this.prismaService.genre.findMany({
 			where: {
 				songs: {
 					some: {
@@ -236,6 +238,11 @@ export default class GenreService extends RepositoryService<
 			orderBy: sort ? this.formatSortingInput(sort) : undefined,
 			...buildPaginationParameters(pagination),
 		});
+
+		if (genres.length == 0) {
+			await this.albumService.throwIfNotFound(where);
+		}
+		return genres;
 	}
 
 	onNotFound(error: Error, where: GenreQueryParameters.WhereInput) {
