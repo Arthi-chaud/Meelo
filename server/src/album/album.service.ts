@@ -222,7 +222,9 @@ export default class AlbumService extends RepositoryService<
 	 * @param where the query parameter
 	 */
 	async delete(where: AlbumQueryParameters.DeleteInput): Promise<Album> {
-		const illustrationFolder = await this.albumIllustrationService.getIllustrationPath(where);
+		const illustrationFolder = await this.albumIllustrationService.getIllustrationFolderPath(
+			where
+		);
 		const album = await super.delete(where);
 
 		this.albumIllustrationService.deleteIllustrationFolder(illustrationFolder);

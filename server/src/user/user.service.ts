@@ -198,4 +198,6 @@ export default class UserService extends RepositoryService<
 		}
 		return { name: input.name! };
 	}
+
+	async housekeeping(): Promise<void> {}
 }

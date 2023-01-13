@@ -173,6 +173,8 @@ export default class LibraryService extends RepositoryService<
 		return super.delete(where);
 	}
 
+	async housekeeping(): Promise<void> {}
+
 	async applyMetadataOnFiles(parentLibrary: Library): Promise<void> {
 		this.logger.log(`'${parentLibrary.slug}' library: Applying metadata started`);
 		const files = await this.fileService.getMany({ library: { id: parentLibrary.id } });

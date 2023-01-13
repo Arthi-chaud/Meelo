@@ -255,7 +255,7 @@ model Lyrics {
 	/// @example Hello\\nWorld
 	content			String
 	/// @description The parent song
-	song			Song @relation(fields: [songId], references: [id])
+	song			Song @relation(fields: [songId], references: [id], onDelete: Cascade)
 	/// @description Unique numeric identifier of the related song
 	/// @example 123
 	songId			Int @unique

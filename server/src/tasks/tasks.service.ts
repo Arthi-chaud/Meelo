@@ -16,6 +16,11 @@ import SettingsService from 'src/settings/settings.service';
 import TrackIllustrationService from 'src/track/track-illustration.service';
 import FfmpegService from 'src/ffmpeg/ffmpeg.service';
 import { NotFoundException } from 'src/exceptions/meelo-exception';
+import SongService from 'src/song/song.service';
+import ReleaseService from 'src/release/release.service';
+import AlbumService from 'src/album/album.service';
+import ArtistService from 'src/artist/artist.service';
+import GenreService from 'src/genre/genre.service';
 
 @Injectable()
 export default class TasksService {
@@ -35,7 +40,12 @@ export default class TasksService {
 		private libraryService: LibraryService,
 		@Inject(forwardRef(() => IllustrationService))
 		private illustrationService: IllustrationService,
-		private ffmpegService: FfmpegService
+		private ffmpegService: FfmpegService,
+		private songService: SongService,
+		private releaseService: ReleaseService,
+		private albumService: AlbumService,
+		private artistService: ArtistService,
+		private genresService: GenreService,
 	) {}
 
 	/**
@@ -200,5 +210,17 @@ export default class TasksService {
 			}
 		});
 		await this.fileService.delete(where);
+		await this.housekeeping();
+	}
+
+	/**
+	 * Calls housekeeping methods on repository services
+	 */
+	async housekeeping(): Promise<void> {
+		await this.songService.housekeeping();
+		await this.releaseService.housekeeping();
+		await this.albumService.housekeeping();
+		await this.artistService.housekeeping();
+		await this.genresService.housekeeping();
 	}
 }

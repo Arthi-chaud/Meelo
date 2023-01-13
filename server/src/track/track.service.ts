@@ -27,6 +27,7 @@ import Identifier from 'src/identifier/models/identifier';
 import Logger from 'src/logger/logger';
 import { PrismaError } from 'prisma-error-enum';
 import { FileNotFoundFromIDException, FileNotFoundFromPathException } from 'src/file/file.exceptions';
+import TrackIllustrationService from './track-illustration.service';
 
 @Injectable()
 export default class TrackService extends RepositoryService<
@@ -55,6 +56,8 @@ export default class TrackService extends RepositoryService<
 		@Inject(forwardRef(() => FileService))
 		private fileService: FileService,
 		private prismaService: PrismaService,
+		@Inject(forwardRef(() => TrackIllustrationService))
+		private trackIllustrationService: TrackIllustrationService
 	) {
 		super(prismaService.track);
 	}
@@ -332,26 +335,22 @@ export default class TrackService extends RepositoryService<
 	 * Deletes a track
 	 * @param where Query parameters to find the track to delete
 	 */
-	async delete(where: TrackQueryParameters.DeleteInput, deleteParent = true): Promise<Track> {
-		try {
-			const track = await super.get(
-				this.formatDeleteInputToWhereInput(where), { song: true }
-			);
+	async delete(where: TrackQueryParameters.DeleteInput): Promise<Track> {
+		const illustrationPath = await this.trackIllustrationService.getIllustrationFolderPath(
+			this.formatDeleteInputToWhereInput(where)
+		);
 
-			if (track.song.masterId == track.id) {
-				await this.songService.unsetMasterTrack({ id: track.songId });
-			}
-			await super.delete(where);
-			this.logger.warn(`Track '${track.name}' deleted`);
-			if (deleteParent) {
-				await this.songService.deleteIfEmpty({ id: track.songId });
-				await this.releaseService.deleteIfEmpty({ id: track.releaseId });
-			}
-			return track;
-		} catch (error) {
-			throw await this.onDeletionFailure(error, where);
-		}
+		this.trackIllustrationService.deleteIllustrationFolder(illustrationPath);
+		return super.delete(where).then((deleted) => {
+			this.logger.warn(`Track '${deleted.name}' deleted`);
+			return deleted;
+		});
 	}
+
+	/**
+	 * Does nothing, nothing to housekeep.
+	 */
+	async housekeeping(): Promise<void> {}
 
 	/**
 	 * Change the track's parent song
@@ -360,7 +359,8 @@ export default class TrackService extends RepositoryService<
 	 * @param newParentWhere the query parameters to find the song to reassign the track to
 	 */
 	async reassign(
-		trackWhere: TrackQueryParameters.WhereInput, newParentWhere: SongQueryParameters.WhereInput
+		trackWhere: TrackQueryParameters.WhereInput,
+		newParentWhere: SongQueryParameters.WhereInput
 	): Promise<Track> {
 		const track = await this.get(trackWhere, { song: true });
 		const newParent = await this.songService.get(newParentWhere);
@@ -368,9 +368,6 @@ export default class TrackService extends RepositoryService<
 		if (track.id == track.song.masterId) {
 			await this.albumService.unsetMasterRelease({ id: track.songId });
 		}
-		const updatedTrack = await this.update({ song: { id: newParent.id } }, trackWhere);
-
-		await this.songService.deleteIfEmpty({ id: track.songId });
-		return updatedTrack;
+		return this.update({ song: { id: newParent.id } }, trackWhere);
 	}
 }

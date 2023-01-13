@@ -9,7 +9,6 @@ import type SongQueryParameters from './models/song.query-params';
 import TrackService from 'src/track/track.service';
 import GenreService from 'src/genre/genre.service';
 import RepositoryService from 'src/repository/repository.service';
-import { LyricsService } from 'src/lyrics/lyrics.service';
 import { CompilationArtistException } from 'src/artist/artist.exceptions';
 import { buildStringSearchParameters } from 'src/utils/search-string-input';
 import { PaginationParameters, buildPaginationParameters } from 'src/pagination/models/pagination-parameters';
@@ -22,6 +21,7 @@ import TrackQueryParameters from 'src/track/models/track.query-parameters';
 import { PrismaError } from 'prisma-error-enum';
 import {
 	SongAlreadyExistsException,
+	SongNotEmptyException,
 	SongNotFoundByIdException,
 	SongNotFoundException
 } from './song.exceptions';
@@ -50,9 +50,7 @@ export default class SongService extends RepositoryService<
 		@Inject(forwardRef(() => TrackService))
 		private trackService: TrackService,
 		@Inject(forwardRef(() => GenreService))
-		private genreService: GenreService,
-		@Inject(forwardRef(() => LyricsService))
-		private lyricsService: LyricsService
+		private genreService: GenreService
 	) {
 		super(prismaService.song);
 	}
@@ -303,39 +301,38 @@ export default class SongService extends RepositoryService<
 	 * @param where Query parameters to find the song to delete
 	 */
 	async delete(where: SongQueryParameters.DeleteInput): Promise<Song> {
-		const song = await this.get(
-			this.formatDeleteInputToWhereInput(where),
-			{ tracks: true, genres: true }
-		);
+		return super.delete(where).then((deleted) => {
+			this.logger.warn(`Song '${deleted.slug}' deleted`);
+			return deleted;
+		});
+	}
 
-		await Promise.allSettled(
-			song.tracks.map((track) => this.trackService.delete({ id: track.id }))
-		);
-		try {
-			await this.lyricsService.delete({ songId: song.id }).catch(() => {});
-			await super.delete(where);
-		} catch {
-			return song;
+	onDeletionFailure(error: Error, input: SongQueryParameters.DeleteInput) {
+		if (error instanceof Prisma.PrismaClientKnownRequestError &&
+			error.code == PrismaError.RequiredRelationViolation) {
+			return new SongNotEmptyException(input.id);
 		}
-		this.logger.warn(`Song '${song.slug}' deleted`);
-		await this.artistService.deleteArtistIfEmpty({ id: song.artistId });
-		await Promise.all(
-			song.genres.map((genre) => this.genreService.deleteIfEmpty({ id: genre.id }))
-		);
-		return song;
+		return super.onUnknownError(error, input);
 	}
 
 	/**
-	 * Deletes a song if it does not have related tracks
+	 * Call 'delete' on all songs that do not have tracks
 	 */
-	async deleteIfEmpty(where: SongQueryParameters.DeleteInput): Promise<void> {
-		const trackCount = await this.trackService.count(
-			{ song: this.formatDeleteInputToWhereInput(where) }
-		);
+	async housekeeping(): Promise<void> {
+		const emptySongs = await this.prismaService.song.findMany({
+			select: {
+				id: true,
+				_count: {
+					select: { tracks: true }
+				}
+			}
+		}).then((genres) => genres.filter(
+			(genre) => !genre._count.tracks
+		));
 
-		if (trackCount == 0) {
-			await this.delete(where);
-		}
+		await Promise.all(
+			emptySongs.map(({ id }) => this.delete({ id }))
+		);
 	}
 
 	/**

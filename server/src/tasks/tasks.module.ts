@@ -10,6 +10,11 @@ import { LyricsModule } from 'src/lyrics/lyrics.module';
 import MetadataModule from 'src/metadata/metadata.module';
 import SettingsModule from 'src/settings/settings.module';
 import FfmpegModule from 'src/ffmpeg/ffmpeg.module';
+import SongModule from 'src/song/song.module';
+import ReleaseModule from 'src/release/release.module';
+import AlbumModule from 'src/album/album.module';
+import ArtistModule from 'src/artist/artist.module';
+import GenreModule from 'src/genre/genre.module';
 
 @Module({
 	imports: [
@@ -21,6 +26,11 @@ import FfmpegModule from 'src/ffmpeg/ffmpeg.module';
 		LyricsModule,
 		SettingsModule,
 		FfmpegModule,
+		SongModule,
+		ReleaseModule,
+		AlbumModule,
+		ArtistModule,
+		GenreModule,
 		forwardRef(() => IllustrationModule),
 	],
 	controllers: [TasksController],

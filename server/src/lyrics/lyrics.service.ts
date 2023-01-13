@@ -223,4 +223,6 @@ export class LyricsService extends RepositoryService<
 			throw new NoLyricsFoundException(song.artist.name, song.name);
 		}
 	}
+
+	async housekeeping(): Promise<void> {}
 }
