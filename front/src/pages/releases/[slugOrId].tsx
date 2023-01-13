@@ -126,7 +126,7 @@ const ReleasePage = (
 	const tracklist = useQuery(tracklistQuery, releaseIdentifier);
 	const albumArtist = useQuery(artistQuery, artistId);
 	const albumGenres = useQuery(albumGenresQuery, release.data?.albumId);
-	const hasGenres = (albumGenres.data?.length ?? 0) > 0;
+	const hasGenres = (albumGenres.data?.items.length ?? 0) > 0;
 	const otherArtistsQuery = useQueries(...tracks
 		.filter((track: TrackWithSong) => track.song.artistId != albumArtist.data?.id)
 		.map((track): Parameters<typeof useQuery<Artist>> => [artistQuery, track.song.artistId]));
@@ -225,7 +225,7 @@ const ReleasePage = (
 									<Grid item>
 										<ListSubheader>Genres:</ListSubheader>
 									</Grid>
-									{ albumGenres.data?.map((genre) =>
+									{ albumGenres.data?.items.map((genre) =>
 										<Grid item key={genre.id} sx={{ display: 'flex' }}>
 											<Link href={`/genres/${genre.slug}`}>
 												<Button variant="outlined" color='inherit'>
