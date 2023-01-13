@@ -18,7 +18,12 @@ import SortingParameter from 'src/sort/models/sorting-parameter';
 import { parseIdentifierSlugs } from 'src/identifier/identifier.parse-slugs';
 import Identifier from 'src/identifier/models/identifier';
 import Logger from 'src/logger/logger';
-import { UnhandledORMErrorException } from 'src/exceptions/orm-exceptions';
+import { PrismaError } from 'prisma-error-enum';
+import {
+	LibraryAlreadyExistsException,
+	LibraryNotFoundException,
+	LibraryNotFoundFromIDException
+} from './library.exceptions';
 
 @Injectable()
 export default class LibraryService extends RepositoryService<
@@ -68,9 +73,12 @@ export default class LibraryService extends RepositoryService<
 		return { slug: new Slug(input.name) };
 	}
 
-	protected onCreationFailure(error: Error, input: LibraryQueryParameters.CreateInput): never {
-		throw new UnhandledORMErrorException(error, input);
-		// return new LibraryAlreadyExistsException(new Slug(input.name), input.path);
+	protected onCreationFailure(error: Error, input: LibraryQueryParameters.CreateInput) {
+		if (error instanceof Prisma.PrismaClientKnownRequestError
+			&& error.code == PrismaError.UniqueConstraintViolation) {
+			return new LibraryAlreadyExistsException(new Slug(input.name), input.path);
+		}
+		return this.onUnknownError(error, input);
 	}
 
 	/**
@@ -118,12 +126,15 @@ export default class LibraryService extends RepositoryService<
 		}
 	}
 
-	onNotFound(error: Error, where: LibraryQueryParameters.WhereInput): never {
-		throw new UnhandledORMErrorException(error, where);
-		// if (where.id !== undefined) {
-		// 	return new LibraryNotFoundFromIDException(where.id);
-		// }
-		// return new LibraryNotFoundException(where.slug);
+	onNotFound(error: Error, where: LibraryQueryParameters.WhereInput) {
+		if (error instanceof Prisma.PrismaClientKnownRequestError &&
+			error.code == PrismaError.RecordsNotFound) {
+			if (where.id !== undefined) {
+				return new LibraryNotFoundFromIDException(where.id);
+			}
+			return new LibraryNotFoundException(where.slug);
+		}
+		return this.onUnknownError(error, where);
 	}
 
 	/**
@@ -137,14 +148,6 @@ export default class LibraryService extends RepositoryService<
 		};
 	}
 
-	onUpdateFailure(
-		error: Error,
-		what: LibraryQueryParameters.UpdateInput,
-		where: LibraryQueryParameters.WhereInput
-	): never {
-		throw new UnhandledORMErrorException(error, what, where);
-	}
-
 	/**
 	 * Delete
 	 */
@@ -154,10 +157,6 @@ export default class LibraryService extends RepositoryService<
 
 	protected formatDeleteInputToWhereInput(input: LibraryQueryParameters.WhereInput) {
 		return input;
-	}
-
-	onDeletionFailure(error: Error, where: LibraryQueryParameters.DeleteInput): never {
-		throw new UnhandledORMErrorException(error, where);
 	}
 
 	/**

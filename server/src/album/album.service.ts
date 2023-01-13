@@ -5,6 +5,7 @@ import ArtistService from 'src/artist/artist.service';
 import Slug from 'src/slug/slug';
 import {
 	AlbumAlreadyExistsException,
+	AlbumAlreadyExistsWithArtistIDException,
 	AlbumNotFoundException,
 	AlbumNotFoundFromIDException
 } from './album.exceptions';
@@ -27,7 +28,6 @@ import Identifier from 'src/identifier/models/identifier';
 import Logger from 'src/logger/logger';
 import ReleaseQueryParameters from 'src/release/models/release.query-parameters';
 import AlbumIllustrationService from './album-illustration.service';
-import { UnhandledORMErrorException } from 'src/exceptions/orm-exceptions';
 import { PrismaError } from 'prisma-error-enum';
 
 @Injectable()
@@ -95,17 +95,21 @@ export default class AlbumService extends RepositoryService<
 		};
 	}
 
-	protected onCreationFailure(error: Error, input: AlbumQueryParameters.CreateInput): never {
-		throw new UnhandledORMErrorException(error, input);
-		/*const albumSlug = new Slug(input.name);
+	protected async onCreationFailure(error: Error, input: AlbumQueryParameters.CreateInput) {
+		if (error instanceof Prisma.PrismaClientKnownRequestError) {
+			const albumSlug = new Slug(input.name);
 
-		if (input.artist) {
-			await this.artistServce.get(input.artist);
+			if (input.artist) {
+				await this.artistServce.get(input.artist);
+			}
+			if (error.code == PrismaError.UniqueConstraintViolation) {
+				if (input.artist?.id) {
+					return new AlbumAlreadyExistsWithArtistIDException(albumSlug, input.artist.id);
+				}
+				return new AlbumAlreadyExistsException(albumSlug, input.artist?.slug);
+			}
 		}
-		if (input.artist?.id) {
-			return new AlbumAlreadyExistsWithArtistIDException(albumSlug, input.artist.id);
-		}
-		return new AlbumAlreadyExistsException(albumSlug, input.artist?.slug);*/
+		return this.onUnknownError(error, input);
 	}
 
 	/**
@@ -196,14 +200,6 @@ export default class AlbumService extends RepositoryService<
 		};
 	}
 
-	onUpdateFailure(
-		error: Error,
-		what: AlbumQueryParameters.UpdateInput,
-		where: AlbumQueryParameters.WhereInput
-	): never {
-		throw new UnhandledORMErrorException(error, what, where);
-	}
-
 	/**
 	 * Updates an album date, using the earliest date from its releases
 	 * @param where the query parameter to get the album to update
@@ -218,10 +214,6 @@ export default class AlbumService extends RepositoryService<
 			}
 		}
 		return this.update({ releaseDate: album.releaseDate }, { id: album.id });
-	}
-
-	onDeletionFailure(error: Error, where: AlbumQueryParameters.DeleteInput): never {
-		throw new UnhandledORMErrorException(error, where);
 	}
 
 	/**
@@ -369,15 +361,18 @@ export default class AlbumService extends RepositoryService<
 		);
 	}
 
-	onNotFound(error: Error, where: AlbumQueryParameters.WhereInput): never {
+	async onNotFound(error: Error, where: AlbumQueryParameters.WhereInput) {
 		if (error instanceof Prisma.PrismaClientKnownRequestError
 			&& error.code == PrismaError.RecordsNotFound) {
 			if (where.id != undefined) {
-				throw new AlbumNotFoundFromIDException(where.id);
+				return new AlbumNotFoundFromIDException(where.id);
 			}
-			throw new AlbumNotFoundException(where.bySlug.slug, where.bySlug.artist?.slug);
+			if (where.bySlug.artist) {
+				await this.artistServce.throwIfNotFound(where.bySlug.artist);
+			}
+			return new AlbumNotFoundException(where.bySlug.slug, where.bySlug.artist?.slug);
 		}
-		this.onUnknownError(error, where);
+		return this.onUnknownError(error, where);
 	}
 
 	static getAlbumTypeFromName(albumName: string): AlbumType {

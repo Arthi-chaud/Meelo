@@ -15,7 +15,12 @@ import SortingParameter from 'src/sort/models/sorting-parameter';
 import { parseIdentifierSlugs } from 'src/identifier/identifier.parse-slugs';
 import Identifier from 'src/identifier/models/identifier';
 import Logger from 'src/logger/logger';
-import { UnhandledORMErrorException } from 'src/exceptions/orm-exceptions';
+import { PrismaError } from 'prisma-error-enum';
+import {
+	GenreAlreadyExistsException,
+	GenreNotFoundByIdException,
+	GenreNotFoundException
+} from './genre.exceptions';
 
 @Injectable()
 export default class GenreService extends RepositoryService<
@@ -58,9 +63,12 @@ export default class GenreService extends RepositoryService<
 		return { slug: new Slug(input.name) };
 	}
 
-	protected onCreationFailure(error: Error, input: GenreQueryParameters.CreateInput): never {
-		throw new UnhandledORMErrorException(error, input);
-		//return new GenreAlreadyExistsException(new Slug(input.name));
+	protected onCreationFailure(error: Error, input: GenreQueryParameters.CreateInput) {
+		if (error instanceof Prisma.PrismaClientKnownRequestError &&
+			error.code == PrismaError.UniqueConstraintViolation) {
+			return new GenreAlreadyExistsException(new Slug(input.name));
+		}
+		return this.onUnknownError(error, input);
 	}
 
 	/**
@@ -126,14 +134,6 @@ export default class GenreService extends RepositoryService<
 		};
 	}
 
-	onUpdateFailure(
-		error: Error,
-		what: GenreQueryParameters.UpdateInput,
-		where: GenreQueryParameters.WhereInput
-	): never {
-		throw new UnhandledORMErrorException(error, what, where);
-	}
-
 	/**
 	 * Delete a genre
 	 */
@@ -143,10 +143,6 @@ export default class GenreService extends RepositoryService<
 
 	protected formatDeleteInputToWhereInput(input: GenreQueryParameters.WhereInput) {
 		return input;
-	}
-
-	onDeletionFailure(error: Error, where: GenreQueryParameters.DeleteInput): never {
-		throw new UnhandledORMErrorException(error, where);
 	}
 
 	/**
@@ -191,11 +187,14 @@ export default class GenreService extends RepositoryService<
 		return genres;
 	}
 
-	onNotFound(error: Error, where: GenreQueryParameters.WhereInput): never {
-		throw new UnhandledORMErrorException(error, where);
-		// if (where.id !== undefined) {
-		// 	return new GenreNotFoundByIdException(where.id);
-		// }
-		// return new GenreNotFoundException(where.slug);
+	onNotFound(error: Error, where: GenreQueryParameters.WhereInput) {
+		if (error instanceof Prisma.PrismaClientKnownRequestError &&
+			error.code == PrismaError.RecordsNotFound) {
+			if (where.id !== undefined) {
+				return new GenreNotFoundByIdException(where.id);
+			}
+			return new GenreNotFoundException(where.slug);
+		}
+		return this.onUnknownError(error, where);
 	}
 }

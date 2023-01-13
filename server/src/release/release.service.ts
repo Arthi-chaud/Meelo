@@ -4,10 +4,12 @@ import {
 import AlbumService from 'src/album/album.service';
 import Slug from 'src/slug/slug';
 import type { Release, ReleaseWithRelations } from 'src/prisma/models';
-import type { Prisma } from '@prisma/client';
+import { Prisma } from '@prisma/client';
 import {
 	MasterReleaseNotFoundException,
-	ReleaseAlreadyExists
+	ReleaseAlreadyExists,
+	ReleaseNotFoundException,
+	ReleaseNotFoundFromIDException
 } from './release.exceptions';
 import { basename } from 'path';
 import PrismaService from 'src/prisma/prisma.service';
@@ -30,7 +32,7 @@ import { parseIdentifierSlugs } from 'src/identifier/identifier.parse-slugs';
 import Identifier from 'src/identifier/models/identifier';
 import Logger from 'src/logger/logger';
 import ReleaseIllustrationService from './release-illustration.service';
-import { UnhandledORMErrorException } from 'src/exceptions/orm-exceptions';
+import { PrismaError } from 'prisma-error-enum';
 
 @Injectable()
 export default class ReleaseService extends RepositoryService<
@@ -91,16 +93,20 @@ export default class ReleaseService extends RepositoryService<
 		return { bySlug: { slug: new Slug(input.name), album: input.album } };
 	}
 
-	protected onCreationFailure(error: Error, input: ReleaseQueryParameters.CreateInput): never {
-		throw new UnhandledORMErrorException(error, input);
-		/*const parentAlbum = await this.albumService.get(input.album, { artist: true });
+	protected async onCreationFailure(error: Error, input: ReleaseQueryParameters.CreateInput) {
+		if (error instanceof Prisma.PrismaClientKnownRequestError) {
+			const parentAlbum = await this.albumService.get(input.album, { artist: true });
 
-		return new ReleaseAlreadyExists(
-			new Slug(input.name),
-			parentAlbum.artist
-				? new Slug(parentAlbum.artist!.slug)
-				: undefined
-		);*/
+			if (error.code == PrismaError.UniqueConstraintViolation) {
+				return new ReleaseAlreadyExists(
+					new Slug(input.name),
+					parentAlbum.artist
+						? new Slug(parentAlbum.artist!.slug)
+						: undefined
+				);
+			}
+		}
+		return this.onUnknownError(error, input);
 	}
 
 	/**
@@ -178,22 +184,25 @@ export default class ReleaseService extends RepositoryService<
 	 * Callback on release not found
 	 * @param where the query parameters that failed to get the release
 	 */
-	onNotFound(error: Error, where: ReleaseQueryParameters.WhereInput): never {
-		throw new UnhandledORMErrorException(error, where);
-		/*if (where.id != undefined) {
-			return new ReleaseNotFoundFromIDException(where.id);
-		}
-		const parentAlbum = await this.albumService.get(
-			where.bySlug.album, { artist: true }
-		);
-		const releaseSlug: Slug = where.bySlug!.slug;
-		const parentArtistSlug = parentAlbum.artist?.slug
-			? new Slug(parentAlbum.artist.slug)
-			: undefined;
+	async onNotFound(error: Error, where: ReleaseQueryParameters.WhereInput) {
+		if (error instanceof Prisma.PrismaClientKnownRequestError
+			&& error.code == PrismaError.RecordsNotFound) {
+			if (where.id != undefined) {
+				return new ReleaseNotFoundFromIDException(where.id);
+			}
+			const parentAlbum = await this.albumService.get(
+				where.bySlug.album, { artist: true }
+			);
+			const releaseSlug: Slug = where.bySlug!.slug;
+			const parentArtistSlug = parentAlbum.artist?.slug
+				? new Slug(parentAlbum.artist.slug)
+				: undefined;
 
-		return new ReleaseNotFoundException(
-			releaseSlug, new Slug(parentAlbum.slug), parentArtistSlug
-		);*/
+			return new ReleaseNotFoundException(
+				releaseSlug, new Slug(parentAlbum.slug), parentArtistSlug
+			);
+		}
+		return this.onUnknownError(error, where);
 	}
 
 	/**
@@ -263,14 +272,6 @@ export default class ReleaseService extends RepositoryService<
 		};
 	}
 
-	onUpdateFailure(
-		error: Error,
-		what: ReleaseQueryParameters.UpdateInput,
-		where: ReleaseQueryParameters.WhereInput
-	): never {
-		throw new UnhandledORMErrorException(error, what, where);
-	}
-
 	/**
 	 * Updates the release in the database
 	 * @param what the fields to update in the release
@@ -295,10 +296,6 @@ export default class ReleaseService extends RepositoryService<
 
 	protected formatDeleteInputToWhereInput(input: ReleaseQueryParameters.DeleteInput) {
 		return input;
-	}
-
-	onDeletionFailure(error: Error, where: ReleaseQueryParameters.DeleteInput): never {
-		throw new UnhandledORMErrorException(error, where);
 	}
 
 	/**

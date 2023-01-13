@@ -7,7 +7,7 @@ import ArtistModule from "src/artist/artist.module";
 import PrismaModule from "src/prisma/prisma.module";
 import AlbumModule from "./album.module";
 import PrismaService from "src/prisma/prisma.service";
-import { AlbumAlreadyExistsException, AlbumAlreadyExistsExceptionWithArtistID, AlbumNotFoundFromIDException } from "./album.exceptions";
+import { AlbumAlreadyExistsException, AlbumAlreadyExistsWithArtistIDException, AlbumNotFoundFromIDException } from "./album.exceptions";
 import Slug from "src/slug/slug";
 import { ArtistNotFoundByIDException, ArtistNotFoundException } from "src/artist/artist.exceptions";
 import SongModule from "src/song/song.module";
@@ -130,7 +130,7 @@ describe('Album Service', () => {
 						artist: { id: dummyRepository.artistA.id }
 					});
 				}
-				expect(test()).rejects.toThrow(AlbumAlreadyExistsExceptionWithArtistID);
+				expect(test()).rejects.toThrow(AlbumAlreadyExistsWithArtistIDException);
 			});
 		});
 
@@ -156,7 +156,7 @@ describe('Album Service', () => {
 						artist: { id: dummyRepository.artistA.id }
 					});
 				}
-				expect(test()).rejects.toThrow(AlbumAlreadyExistsExceptionWithArtistID);
+				expect(test()).rejects.toThrow(AlbumAlreadyExistsWithArtistIDException);
 			});
 
 			it('should throw, as the related artist does not exists', () => {
