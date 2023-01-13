@@ -167,9 +167,10 @@ export default class LibraryService extends RepositoryService<
 	async delete(where: LibraryQueryParameters.WhereInput): Promise<Library> {
 		const relatedFiles = await this.fileService.getMany({ library: where });
 
-		for (const file of relatedFiles) {
-			await this.tasksService.unregisterFile({ id: file.id });
-		}
+		await Promise.all(
+			relatedFiles.map((file) => this.tasksService.unregisterFile({ id: file.id }))
+		);
+		await this.tasksService.housekeeping();
 		return super.delete(where);
 	}
 

@@ -152,10 +152,11 @@ export default class TasksService {
 
 		this.logger.warn(`'${parentLibrary.slug}' library: Removing ${unavailableFiles.length} entries`);
 		try {
-			for (const unavailableFile of unavailableFiles) {
-				await this.unregisterFile({ id: unavailableFile.id });
-			}
+			await Promise.all(
+				unavailableFiles.map((file) => this.unregisterFile({ id: file.id }))
+			);
 			this.logger.warn(`'${parentLibrary.slug}' library: Removed ${unavailableFiles.length} entries`);
+			await this.housekeeping();
 		} catch (error) {
 			this.logger.error(`'${parentLibrary.slug}' library: Cleaning failed:`);
 			this.logger.error(error);
@@ -200,17 +201,20 @@ export default class TasksService {
 			await this.registerFile(file.path, library);
 		}
 		this.logger.log(`'${library.slug}' library: Refreshed ${updatedFiles.length} files metadata`);
+		await this.housekeeping();
 		return updatedFiles;
 	}
 
-	async unregisterFile(where: FileQueryParameters.DeleteInput) {
+	async unregisterFile(where: FileQueryParameters.DeleteInput, housekeeping = false) {
 		await this.trackService.delete({ sourceFileId: where.id }).catch((error) => {
 			if (!(error instanceof NotFoundException)) {
 				throw error;
 			}
 		});
 		await this.fileService.delete(where);
-		await this.housekeeping();
+		if (housekeeping) {
+			await this.housekeeping();
+		}
 	}
 
 	/**
