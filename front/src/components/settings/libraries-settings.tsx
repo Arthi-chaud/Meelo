@@ -11,6 +11,7 @@ import { Page } from "../infinite/infinite-scroll";
 import AdminGrid from "../admin-grid";
 import {
 	CleanAllLibrariesAction, CleanLibraryAction,
+	RefreshMetadataLibraryAction,
 	ScanAllLibrariesAction, ScanLibraryAction
 } from "../actions/library-task";
 import { useConfirm } from "material-ui-confirm";
@@ -59,6 +60,8 @@ const LibrariesSettings = () => {
 			<RunTaskButton variant='outlined' {...CleanLibraryAction(library.id)}/> },
 		{ field: 'scan', headerName: 'Scan', flex: 3, renderCell: ({ row: library }) =>
 			<RunTaskButton variant='contained' {...ScanLibraryAction(library.id)}/> },
+		{ field: 'refresh', headerName: 'Refresh metadata', flex: 3, renderCell: ({ row: library }) =>
+			<RunTaskButton variant='outlined' {...RefreshMetadataLibraryAction(library.id)} label='Refresh'/> },
 		{ field: 'delete', headerName: 'Delete', flex: 1, renderCell: ({ row: library }) => {
 			return <IconButton color='error' onClick={() => confirm({
 				title: 'Delete a Library',
