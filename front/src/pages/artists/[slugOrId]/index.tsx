@@ -8,8 +8,6 @@ import { useQuery } from "../../../api/use-query";
 import ArrowRight from '@mui/icons-material/ArrowRight';
 import AlbumTile from "../../../components/tile/album-tile";
 import Link from "next/link";
-import { SongWithArtist } from "../../../models/song";
-import AudiotrackIcon from '@mui/icons-material/Audiotrack';
 import { useDispatch } from "react-redux";
 import { playTrack } from "../../../state/playerSlice";
 import { TrackWithRelease } from "../../../models/track";
@@ -18,49 +16,7 @@ import SongContextualMenu from "../../../components/contextual-menu/song-context
 import prepareSSR, { InferSSRProps } from "../../../ssr";
 import LoadingPage from "../../../components/loading/loading-page";
 import TileRow from "../../../components/tile-row";
-
-type SongButtonProps = {
-	song: SongWithArtist;
-}
-const SongButton = (props: SongButtonProps) => {
-	const dispatch = useDispatch();
-
-	return <Grid container sx={{ alignItems: 'center' }}>
-		<Grid item xs={10}>
-			<Button
-				sx={{ textTransform: 'none', alignItems: 'center', width: '100%' }}
-				onClick={() => {
-					API.getMasterTrack<TrackWithRelease>(props.song.id, ['release']).then((track) => {
-						dispatch(playTrack({
-							artist: props.song.artist,
-							track,
-							release: track.release
-						}));
-					});
-				}}
-			>
-				<Grid container spacing={1.5} direction={'row'}
-					sx={{ alignItems: 'center' }}>
-					<Grid item xs={2.5} sm={3}
-						md={2}>
-						<Illustration url={props.song.illustration} fallback={<AudiotrackIcon/>}/>
-					</Grid>
-					<Grid item xs sx={{
-						display: 'flex', justifyContent: 'flex-start', overflow: 'hidden',
-						textOverflow: 'ellipsis', whiteSpace: 'nowrap'
-					}}>
-						<Typography textAlign='left' fontWeight='bold'>
-							{props.song.name}
-						</Typography>
-					</Grid>
-				</Grid>
-			</Button>
-		</Grid>
-		<Grid item xs='auto'>
-			<SongContextualMenu song={props.song} />
-		</Grid>
-	</Grid>;
-};
+import ListItem from "../../../components/list-item/item";
 
 const artistQuery = (slugOrId: string | number) => ({
 	key: ['artist', slugOrId],
@@ -118,6 +74,7 @@ const ArtistPage = (
 	const artist = useQuery(artistQuery, artistIdentifier);
 	const latestAlbums = useQuery(latestAlbumsQuery, artistIdentifier);
 	const topSongs = useQuery(topSongsQuery, artistIdentifier);
+	const dispatch = useDispatch();
 
 	if (!artist.data || !latestAlbums.data || !topSongs.data) {
 		return <LoadingPage/>;
@@ -149,7 +106,22 @@ const ArtistPage = (
 					sx={{ display: 'flex', flexGrow: 1 }}>
 					{ topSongs.data.items.slice(0, 6).map((song) =>
 						<Grid key={song.id} item xs={12} sm={6} lg={4}>
-							<SongButton song={{ ...song, artist: artist.data }}/>
+							<ListItem
+								icon={<Illustration url={song.illustration}/>}
+								title={song.name}
+								trailing={<SongContextualMenu
+									song={{ ...song, artist: artist.data }}
+								/>}
+								onClick={() => {
+									API.getMasterTrack<TrackWithRelease>(song.id, ['release']).then((track) => {
+										dispatch(playTrack({
+											artist: artist.data,
+											track,
+											release: track.release
+										}));
+									});
+								}}
+							/>
 						</Grid>)}
 				</Grid>
 			</>
