@@ -125,6 +125,19 @@ export default class API {
 	}
 
 	/**
+	 * Refresh metadata of files in library a library
+	 */
+	static async refreshMetadataInLibrary(
+		librarySlugOrId: number | string
+	): Promise<LibraryTaskResponse> {
+		return API.fetch({
+			route: `/tasks/refresh-metadata/${librarySlugOrId}`,
+			errorMessage: "Library refresh failed",
+			parameters: { }
+		});
+	}
+
+	/**
 	 * Delete a library
 	 */
 	static async deleteLibrary(
