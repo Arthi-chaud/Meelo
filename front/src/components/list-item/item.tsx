@@ -47,7 +47,7 @@ const ListItem = (props: ListItemProps) => {
 					secondaryTypographyProps={secondaryTextStyle}
 				/> :
 				<Grid container spacing={2}>
-					<Grid item xs={8}>
+					<Grid item xs={props.secondTitle ? 8 : 10}>
 						<Typography sx={{ ...textStyle, ...primaryTextStyle }}>
 							{props.title}
 						</Typography>
