@@ -3,8 +3,8 @@ import {
 	, PlayArrow
 } from "@mui/icons-material";
 import {
-	Accordion, AccordionDetails, AccordionSummary, Box,
-	Button, ButtonBase, Divider, Grid, IconButton, Typography
+	Box, Button, ButtonBase, Divider, Grid,
+	IconButton, Tab, Tabs, Typography
 } from "@mui/material";
 import Illustration from "../illustration";
 import { WideLoadingComponent } from "../loading/loading";
@@ -12,7 +12,6 @@ import AudiotrackIcon from '@mui/icons-material/Audiotrack';
 import CloseIcon from '@mui/icons-material/Close';
 import { LegacyRef, useState } from "react";
 import PlayerSlider from "./controls/slider";
-import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import API from '../../api/api';
 import { useQuery } from "../../api/use-query";
 import LyricsBox from "../lyrics";
@@ -22,6 +21,10 @@ import Link from "next/link";
 import { SongWithArtist, SongWithLyrics } from "../../models/song";
 import ReleaseTrackContextualMenu from "../contextual-menu/release-track-contextual-menu";
 import Release from "../../models/release";
+import { useDispatch, useSelector } from "react-redux";
+import { RootState } from "../../state/store";
+import ListItem from '../list-item/item';
+import { skipTrack } from '../../state/playerSlice';
 
 const songQuery = (slugOrId: string | number) => ({
 	key: ['song', slugOrId],
@@ -159,8 +162,11 @@ const MinimizedPlayerControls = (props: PlayerControlsProps) => {
 const ExpandedPlayerControls = (
 	props: PlayerControlsProps & { videoRef: LegacyRef<HTMLVideoElement> }
 ) => {
-	const [lyricsOpen, setLyricsOpen] = useState(true);
+	const dispatch = useDispatch();
 	const parentSong = useQuery(songQuery, props.track?.songId);
+	const [panel, setPanel] = useState<'lyrics' | 'playlist'>('lyrics');
+	const playlist = useSelector((state: RootState) => state.player.playlist);
+	const cursor = useSelector((state: RootState) => state.player.cursor);
 
 	return <Box sx={{ width: '100%', height: '100%' }}>
 		<Box sx={{
@@ -290,26 +296,43 @@ const ExpandedPlayerControls = (
 			</Grid>
 		</Grid>
 		<Divider variant="middle"/>
-		{ props.track && <Box sx={{ paddingX: 4, paddingBottom: 2 }}>
-			<Accordion style={{
-				backgroundColor: 'transparent', boxShadow: 'none',
-				border: 'none', backgroundImage: 'none'
-			}} expanded={lyricsOpen} onChange={() => setLyricsOpen(!lyricsOpen)}>
-				<AccordionSummary expandIcon={<ExpandMoreIcon />}>
-					<Typography variant="h6" sx={{ fontWeight: 'bold' }}>Lyrics</Typography>
-				</AccordionSummary>
-				<AccordionDetails>
-					{ !parentSong.data ?
-						<WideLoadingComponent/> :
-						<LyricsBox
-							lyrics={parentSong.data.lyrics?.content.split('\n')}
-							songName={props.track.name}
-						/>
-					}
-				</AccordionDetails>
-			</Accordion>
+		<Box sx={{ padding: 4 }}>
+			<Tabs
+				value={panel}
+				onChange={(__, panelName) => setPanel(panelName)}
+				variant="fullWidth"
+				sx={{ paddingBottom: 2 }}
+			>
+				<Tab key={0} value={'lyrics'} label={'Lyrics'}/>
+				<Tab key={1} value={'playlist'} label={'Playlist'}/>
+			</Tabs>
+			{ panel == 'lyrics' && props.track && (!parentSong.data ?
+				<WideLoadingComponent/> :
+				<LyricsBox
+					lyrics={parentSong.data.lyrics?.content.split('\n')}
+					songName={props.track.name}
+				/>)
+			}
+			{ panel == 'playlist' && playlist.slice(cursor + 1).map(
+				(playlistItem, index) =>
+					<ListItem
+						key={`playlist-track-${index}-${playlistItem.track.id}`}
+						icon={<Illustration url={playlistItem.track.illustration}/>}
+						title={playlistItem.track.name}
+						secondTitle={playlistItem.artist.name}
+						trailing={<></>}
+						onClick={() => {
+							let toSkip = index + 1;
+
+							while (toSkip > 0) {
+								dispatch(skipTrack());
+								toSkip--;
+							}
+						}}
+					/>
+			)}
 		</Box>
-		}
+
 	</Box>;
 };
 
