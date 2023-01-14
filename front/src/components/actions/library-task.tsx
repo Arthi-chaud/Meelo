@@ -3,6 +3,7 @@ import toast from "react-hot-toast";
 import API from "../../api/api";
 import LibraryTaskResponse from "../../models/library-task-response";
 import Action from "./action";
+import SyncIcon from '@mui/icons-material/Sync';
 
 /**
  * Using the resolved value of the task porimise, triggers an appropriate toast
@@ -16,7 +17,7 @@ const handleTask = <T extends LibraryTaskResponse>(
 
 export const ScanAllLibrariesAction: Action = {
 	label: 'Scan Libraries',
-	icon: <AutoMode/>,
+	icon: <SyncIcon/>,
 	onClick: () => handleTask(API.scanLibraries())
 };
 
@@ -24,6 +25,12 @@ export const ScanLibraryAction = (librarySlugOrId: number | string): Action => (
 	label: 'Scan',
 	icon: ScanAllLibrariesAction.icon,
 	onClick: () => handleTask(API.scanLibrary(librarySlugOrId))
+});
+
+export const RefreshMetadataLibraryAction = (librarySlugOrId: number | string): Action => ({
+	label: 'Refresh Metadata',
+	icon: <AutoMode/>,
+	onClick: () => handleTask(API.refreshMetadataInLibrary(librarySlugOrId))
 });
 
 export const CleanAllLibrariesAction: Action = {
