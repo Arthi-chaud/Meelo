@@ -301,12 +301,11 @@ const ExpandedPlayerControls = (
 				value={panel}
 				onChange={(__, panelName) => setPanel(panelName)}
 				variant="fullWidth"
-				sx={{ paddingBottom: 2 }}
 			>
 				<Tab key={0} value={'lyrics'} label={'Lyrics'}/>
 				<Tab key={1} value={'playlist'} label={'Playlist'}/>
 			</Tabs>
-			<Container maxWidth={false}>
+			<Container maxWidth={false} sx={{ paddingY: 2 }}>
 				{ panel == 'lyrics' && props.track && (!parentSong.data ?
 					<WideLoadingComponent/> :
 					<LyricsBox
@@ -315,7 +314,7 @@ const ExpandedPlayerControls = (
 					/>)
 				}
 				{ panel == 'playlist' && playlist.slice(cursor + 1).map(
-					(playlistItem, index) =>
+					(playlistItem, index) => <>
 						<ListItem
 							key={`playlist-track-${index}-${playlistItem.track.id}`}
 							icon={<Illustration url={playlistItem.track.illustration}/>}
@@ -331,6 +330,8 @@ const ExpandedPlayerControls = (
 								}
 							}}
 						/>
+						<Divider variant='middle'/>
+					</>
 				)}
 			</Container>
 		</Container>
