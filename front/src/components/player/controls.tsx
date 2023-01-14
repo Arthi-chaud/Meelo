@@ -24,12 +24,13 @@ import Release from "../../models/release";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../../state/store";
 import ListItem from '../list-item/item';
-import { skipTrack, reorder } from '../../state/playerSlice';
+import { reorder, skipTrack } from '../../state/playerSlice';
 import {
 	DragDropContext,
 	Draggable,
 	Droppable
 } from 'react-beautiful-dnd';
+import DragHandleIcon from '@mui/icons-material/DragHandle';
 
 const songQuery = (slugOrId: string | number) => ({
 	key: ['song', slugOrId],
@@ -334,17 +335,18 @@ const ExpandedPlayerControls = (
 							return <Draggable draggableId={index.toString()}
 								key={index} index={index}
 							>
-								{(providedChild, snapshot) => <div
+								{(providedChild) => <div
 									ref={providedChild.innerRef}
 									{...providedChild.draggableProps}
-									{...providedChild.dragHandleProps}
 									style={providedChild.draggableProps.style}
 								>
 									<ListItem
 										icon={<Illustration url={playlistItem.track.illustration}/>}
 										title={playlistItem.track.name}
 										secondTitle={playlistItem.artist.name}
-										trailing={<></>}
+										trailing={<Box {...providedChild.dragHandleProps}>
+											<DragHandleIcon/>
+										</Box>}
 										onClick={() => {
 											let toSkip = index + 1;
 
