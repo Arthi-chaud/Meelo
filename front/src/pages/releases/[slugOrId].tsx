@@ -1,5 +1,5 @@
 import {
-	Button, Divider, Fade, Grid, IconButton,
+	Button, Container, Divider, Fade, Grid, IconButton,
 	ListSubheader, Typography, useTheme
 } from "@mui/material";
 import { Box } from "@mui/system";
@@ -150,7 +150,7 @@ const ReleasePage = (
 		return <LoadingPage/>;
 	}
 	return (
-		<Box sx={{ margin: 3 }}>
+		<Container maxWidth={false} sx={{ marginY: 3 }} >
 			<Grid container spacing={4} sx={{ justifyContent: 'center' }}>
 				<Grid item md={3} xs={8}>
 					<Illustration url={release.data!.illustration}/>
@@ -322,7 +322,7 @@ const ReleasePage = (
 						}/>) ?? []}
 				/>
 			</RelatedContentSection>
-		</Box>
+		</Container>
 	);
 };
 
