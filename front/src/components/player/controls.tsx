@@ -3,7 +3,7 @@ import {
 	, PlayArrow
 } from "@mui/icons-material";
 import {
-	Box, Button, ButtonBase, Divider, Grid,
+	Box, Button, ButtonBase, Container, Divider, Grid,
 	IconButton, Tab, Tabs, Typography
 } from "@mui/material";
 import Illustration from "../illustration";
@@ -296,7 +296,7 @@ const ExpandedPlayerControls = (
 			</Grid>
 		</Grid>
 		<Divider variant="middle"/>
-		<Box sx={{ padding: 4 }}>
+		<Container maxWidth={false}>
 			<Tabs
 				value={panel}
 				onChange={(__, panelName) => setPanel(panelName)}
@@ -306,33 +306,34 @@ const ExpandedPlayerControls = (
 				<Tab key={0} value={'lyrics'} label={'Lyrics'}/>
 				<Tab key={1} value={'playlist'} label={'Playlist'}/>
 			</Tabs>
-			{ panel == 'lyrics' && props.track && (!parentSong.data ?
-				<WideLoadingComponent/> :
-				<LyricsBox
-					lyrics={parentSong.data.lyrics?.content.split('\n')}
-					songName={props.track.name}
-				/>)
-			}
-			{ panel == 'playlist' && playlist.slice(cursor + 1).map(
-				(playlistItem, index) =>
-					<ListItem
-						key={`playlist-track-${index}-${playlistItem.track.id}`}
-						icon={<Illustration url={playlistItem.track.illustration}/>}
-						title={playlistItem.track.name}
-						secondTitle={playlistItem.artist.name}
-						trailing={<></>}
-						onClick={() => {
-							let toSkip = index + 1;
+			<Container maxWidth={false}>
+				{ panel == 'lyrics' && props.track && (!parentSong.data ?
+					<WideLoadingComponent/> :
+					<LyricsBox
+						lyrics={parentSong.data.lyrics?.content.split('\n')}
+						songName={props.track.name}
+					/>)
+				}
+				{ panel == 'playlist' && playlist.slice(cursor + 1).map(
+					(playlistItem, index) =>
+						<ListItem
+							key={`playlist-track-${index}-${playlistItem.track.id}`}
+							icon={<Illustration url={playlistItem.track.illustration}/>}
+							title={playlistItem.track.name}
+							secondTitle={playlistItem.artist.name}
+							trailing={<></>}
+							onClick={() => {
+								let toSkip = index + 1;
 
-							while (toSkip > 0) {
-								dispatch(skipTrack());
-								toSkip--;
-							}
-						}}
-					/>
-			)}
-		</Box>
-
+								while (toSkip > 0) {
+									dispatch(skipTrack());
+									toSkip--;
+								}
+							}}
+						/>
+				)}
+			</Container>
+		</Container>
 	</Box>;
 };
 
