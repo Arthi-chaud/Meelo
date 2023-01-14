@@ -31,6 +31,7 @@ import {
 	Droppable
 } from 'react-beautiful-dnd';
 import DragHandleIcon from '@mui/icons-material/DragHandle';
+import formatDuration from "../../utils/formatDuration";
 
 const songQuery = (slugOrId: string | number) => ({
 	key: ['song', slugOrId],
@@ -331,8 +332,8 @@ const ExpandedPlayerControls = (
 						{...provided.droppableProps}
 						ref={provided.innerRef}
 					>
-						{playlist.slice(cursor + 1).map((playlistItem, index) => {
-							return <Draggable draggableId={index.toString()}
+						{playlist.slice(cursor + 1).map((playlistItem, index) => <>
+							<Draggable draggableId={index.toString()}
 								key={index} index={index}
 							>
 								{(providedChild) => <div
@@ -341,12 +342,14 @@ const ExpandedPlayerControls = (
 									style={providedChild.draggableProps.style}
 								>
 									<ListItem
-										icon={<Illustration url={playlistItem.track.illustration}/>}
 										title={playlistItem.track.name}
 										secondTitle={playlistItem.artist.name}
-										trailing={<Box {...providedChild.dragHandleProps}>
+										icon={<Box {...providedChild.dragHandleProps}>
 											<DragHandleIcon/>
 										</Box>}
+										trailing={<Typography color="text.disabled">
+											{formatDuration(playlistItem.track.duration)}
+										</Typography>}
 										onClick={() => {
 											let toSkip = index + 1;
 
@@ -358,8 +361,9 @@ const ExpandedPlayerControls = (
 									/>
 								</div>
 								}
-							</Draggable>;
-						})}
+							</Draggable>
+							<Divider variant="middle"/>
+						</>)}
 						{provided.placeholder}
 					</div>}</Droppable>
 				</DragDropContext>}
