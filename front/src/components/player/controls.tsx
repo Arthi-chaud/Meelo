@@ -24,7 +24,12 @@ import Release from "../../models/release";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../../state/store";
 import ListItem from '../list-item/item';
-import { skipTrack } from '../../state/playerSlice';
+import { skipTrack, reorder } from '../../state/playerSlice';
+import {
+	DragDropContext,
+	Draggable,
+	Droppable
+} from 'react-beautiful-dnd';
 
 const songQuery = (slugOrId: string | number) => ({
 	key: ['song', slugOrId],
@@ -305,7 +310,7 @@ const ExpandedPlayerControls = (
 				<Tab key={0} value={'lyrics'} label={'Lyrics'}/>
 				<Tab key={1} value={'playlist'} label={'Playlist'}/>
 			</Tabs>
-			<Container maxWidth={false} sx={{ paddingY: 2 }}>
+			<Box sx={{ paddingY: 2 }}>
 				{ panel == 'lyrics' && props.track && (!parentSong.data ?
 					<WideLoadingComponent/> :
 					<LyricsBox
@@ -313,27 +318,50 @@ const ExpandedPlayerControls = (
 						songName={props.track.name}
 					/>)
 				}
-				{ panel == 'playlist' && playlist.slice(cursor + 1).map(
-					(playlistItem, index) => <>
-						<ListItem
-							key={`playlist-track-${index}-${playlistItem.track.id}`}
-							icon={<Illustration url={playlistItem.track.illustration}/>}
-							title={playlistItem.track.name}
-							secondTitle={playlistItem.artist.name}
-							trailing={<></>}
-							onClick={() => {
-								let toSkip = index + 1;
+				{ panel == 'playlist' && <DragDropContext onDragEnd={(result) => {
+					if (result.destination) {
+						dispatch(reorder({
+							from: result.source.index + cursor + 1,
+							to: result.destination.index + cursor + 1
+						}));
+					}
+				}}>
+					<Droppable droppableId="droppable">{(provided) => <div
+						{...provided.droppableProps}
+						ref={provided.innerRef}
+					>
+						{playlist.slice(cursor + 1).map((playlistItem, index) => {
+							return <Draggable draggableId={index.toString()}
+								key={index} index={index}
+							>
+								{(providedChild, snapshot) => <div
+									ref={providedChild.innerRef}
+									{...providedChild.draggableProps}
+									{...providedChild.dragHandleProps}
+									style={providedChild.draggableProps.style}
+								>
+									<ListItem
+										icon={<Illustration url={playlistItem.track.illustration}/>}
+										title={playlistItem.track.name}
+										secondTitle={playlistItem.artist.name}
+										trailing={<></>}
+										onClick={() => {
+											let toSkip = index + 1;
 
-								while (toSkip > 0) {
-									dispatch(skipTrack());
-									toSkip--;
+											while (toSkip > 0) {
+												dispatch(skipTrack());
+												toSkip--;
+											}
+										}}
+									/>
+								</div>
 								}
-							}}
-						/>
-						<Divider variant='middle'/>
-					</>
-				)}
-			</Container>
+							</Draggable>;
+						})}
+						{provided.placeholder}
+					</div>}</Droppable>
+				</DragDropContext>}
+			</Box>
 		</Container>
 	</Box>;
 };

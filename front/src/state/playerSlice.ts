@@ -54,10 +54,14 @@ export const playerSlice = createSlice({
 				state.cursor--;
 			}
 		},
+		reorder: (state, action: PayloadAction<Record<'from' | 'to', number>>) => {
+			const [removed] = state.playlist.splice(action.payload.from, 1);
 
+			state.playlist.splice(action.payload.to, 0, removed);
+		}
 	},
 });
 
-export const { playTrack, playTracks, playNext, playAfter, skipTrack, playPreviousTrack } = playerSlice.actions;
+export const { playTrack, playTracks, playNext, playAfter, skipTrack, playPreviousTrack, reorder } = playerSlice.actions;
 
 export default playerSlice.reducer;
