@@ -57,6 +57,13 @@ export default responsiveFontSizes(createTheme({
 					borderRadius: '0'
 				}
 			}
+		},
+		MuiTab: {
+			styleOverrides: {
+				root: {
+					borderRadius: '0'
+				}
+			}
 		}
 	}
 }));

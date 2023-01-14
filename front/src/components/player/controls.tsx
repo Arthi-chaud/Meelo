@@ -3,8 +3,8 @@ import {
 	, PlayArrow
 } from "@mui/icons-material";
 import {
-	Accordion, AccordionDetails, AccordionSummary, Box,
-	Button, ButtonBase, Divider, Grid, IconButton, Typography
+	Box, Button, ButtonBase, Container, Divider, Grid,
+	IconButton, Tab, Tabs, Typography
 } from "@mui/material";
 import Illustration from "../illustration";
 import { WideLoadingComponent } from "../loading/loading";
@@ -12,7 +12,6 @@ import AudiotrackIcon from '@mui/icons-material/Audiotrack';
 import CloseIcon from '@mui/icons-material/Close';
 import { LegacyRef, useState } from "react";
 import PlayerSlider from "./controls/slider";
-import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import API from '../../api/api';
 import { useQuery } from "../../api/use-query";
 import LyricsBox from "../lyrics";
@@ -22,6 +21,17 @@ import Link from "next/link";
 import { SongWithArtist, SongWithLyrics } from "../../models/song";
 import ReleaseTrackContextualMenu from "../contextual-menu/release-track-contextual-menu";
 import Release from "../../models/release";
+import { useDispatch, useSelector } from "react-redux";
+import { RootState } from "../../state/store";
+import ListItem from '../list-item/item';
+import { reorder, skipTrack } from '../../state/playerSlice';
+import {
+	DragDropContext,
+	Draggable,
+	Droppable
+} from 'react-beautiful-dnd';
+import DragHandleIcon from '@mui/icons-material/DragHandle';
+import formatDuration from "../../utils/formatDuration";
 
 const songQuery = (slugOrId: string | number) => ({
 	key: ['song', slugOrId],
@@ -159,8 +169,11 @@ const MinimizedPlayerControls = (props: PlayerControlsProps) => {
 const ExpandedPlayerControls = (
 	props: PlayerControlsProps & { videoRef: LegacyRef<HTMLVideoElement> }
 ) => {
-	const [lyricsOpen, setLyricsOpen] = useState(true);
+	const dispatch = useDispatch();
 	const parentSong = useQuery(songQuery, props.track?.songId);
+	const [panel, setPanel] = useState<'lyrics' | 'playlist'>('lyrics');
+	const playlist = useSelector((state: RootState) => state.player.playlist);
+	const cursor = useSelector((state: RootState) => state.player.cursor);
 
 	return <Box sx={{ width: '100%', height: '100%' }}>
 		<Box sx={{
@@ -290,26 +303,72 @@ const ExpandedPlayerControls = (
 			</Grid>
 		</Grid>
 		<Divider variant="middle"/>
-		{ props.track && <Box sx={{ paddingX: 4, paddingBottom: 2 }}>
-			<Accordion style={{
-				backgroundColor: 'transparent', boxShadow: 'none',
-				border: 'none', backgroundImage: 'none'
-			}} expanded={lyricsOpen} onChange={() => setLyricsOpen(!lyricsOpen)}>
-				<AccordionSummary expandIcon={<ExpandMoreIcon />}>
-					<Typography variant="h6" sx={{ fontWeight: 'bold' }}>Lyrics</Typography>
-				</AccordionSummary>
-				<AccordionDetails>
-					{ !parentSong.data ?
-						<WideLoadingComponent/> :
-						<LyricsBox
-							lyrics={parentSong.data.lyrics?.content.split('\n')}
-							songName={props.track.name}
-						/>
+		<Container maxWidth={false}>
+			<Tabs
+				value={panel}
+				onChange={(__, panelName) => setPanel(panelName)}
+				variant="fullWidth"
+			>
+				<Tab key={0} value={'lyrics'} label={'Lyrics'}/>
+				<Tab key={1} value={'playlist'} label={'Playlist'}/>
+			</Tabs>
+			<Box sx={{ paddingY: 2 }}>
+				{ panel == 'lyrics' && props.track && (!parentSong.data ?
+					<WideLoadingComponent/> :
+					<LyricsBox
+						lyrics={parentSong.data.lyrics?.content.split('\n')}
+						songName={props.track.name}
+					/>)
+				}
+				{ panel == 'playlist' && <DragDropContext onDragEnd={(result) => {
+					if (result.destination) {
+						dispatch(reorder({
+							from: result.source.index + cursor + 1,
+							to: result.destination.index + cursor + 1
+						}));
 					}
-				</AccordionDetails>
-			</Accordion>
-		</Box>
-		}
+				}}>
+					<Droppable droppableId="droppable">{(provided) => <div
+						{...provided.droppableProps}
+						ref={provided.innerRef}
+					>
+						{playlist.slice(cursor + 1).map((playlistItem, index) => <>
+							<Draggable draggableId={index.toString()}
+								key={index} index={index}
+							>
+								{(providedChild) => <div
+									ref={providedChild.innerRef}
+									{...providedChild.draggableProps}
+									style={providedChild.draggableProps.style}
+								>
+									<ListItem
+										title={playlistItem.track.name}
+										secondTitle={playlistItem.artist.name}
+										icon={<Box {...providedChild.dragHandleProps}>
+											<DragHandleIcon/>
+										</Box>}
+										trailing={<Typography color="text.disabled">
+											{formatDuration(playlistItem.track.duration)}
+										</Typography>}
+										onClick={() => {
+											let toSkip = index + 1;
+
+											while (toSkip > 0) {
+												dispatch(skipTrack());
+												toSkip--;
+											}
+										}}
+									/>
+								</div>
+								}
+							</Draggable>
+							<Divider variant="middle"/>
+						</>)}
+						{provided.placeholder}
+					</div>}</Droppable>
+				</DragDropContext>}
+			</Box>
+		</Container>
 	</Box>;
 };
 
