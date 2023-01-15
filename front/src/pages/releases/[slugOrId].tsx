@@ -152,15 +152,15 @@ const ReleasePage = (
 	return (
 		<Container maxWidth={false} sx={{ marginY: 3 }} >
 			<Grid container spacing={4} sx={{ justifyContent: 'center' }}>
-				<Grid item md={3} xs={8}>
+				<Grid item md={3} sm={5} xs={8}>
 					<Illustration url={release.data!.illustration}/>
 				</Grid>
 				<Grid item container
 					sx={{
 						width: '100%', display: 'flex', flexDirection: 'column', justifyContent: 'space-evenly',
-						alignItems: 'left', [theme.breakpoints.down('md')]: { alignItems: 'center', textAlign: 'center' }
+						alignItems: 'left', [theme.breakpoints.down('sm')]: { alignItems: 'center', textAlign: 'center' }
 					}}
-					md={6} sm={9} xs={12}
+					md={6} sm={7} xs={12}
 				>
 					<Grid item sx={{ width: 'inherit' }}>
 						<Typography variant='h3' fontWeight='bold'>{release.data!.name}</Typography>
