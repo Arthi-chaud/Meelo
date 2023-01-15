@@ -52,7 +52,7 @@ const Tile = (props: TileProps) => {
 					</Typography>
 					{ props.subtitle &&
 					<Typography
-						sx={{ fontWeight: 'light', textAlign: 'center' }}
+						sx={{ color: "text.disabled", textAlign: 'center' }}
 						style={{ ...titleStyle, overflowWrap: 'anywhere', WebkitLineClamp: 1 }}
 					>
 						{props.subtitle}

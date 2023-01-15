@@ -123,7 +123,7 @@ const MinimizedPlayerControls = (props: PlayerControlsProps) => {
 					justifyContent: { xs: 'left', md: 'center' }
 				}}>
 					<Typography sx={{
-						fontWeight: 'light', ...playerTextStyle,
+						color: 'text.disabled', ...playerTextStyle,
 						fontSize: { xs: 'medium' }
 					}}>
 						{props.artist?.name}

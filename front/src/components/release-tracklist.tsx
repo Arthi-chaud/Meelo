@@ -33,7 +33,7 @@ const ReleaseTrackList = (
 			<List key={disc[0]} subheader={discs.length !== 1 &&
 				<ListSubheader>Disc {disc[0]}</ListSubheader>
 			}>
-				{ disc[1].map((currentTrack) => <>
+				{ disc[1].map((currentTrack, index, discTracks) => <>
 					<ListItem key={currentTrack.id}
 						disablePadding disableGutters
 						secondaryAction={
@@ -53,9 +53,9 @@ const ReleaseTrackList = (
 									(flatTrack) => flatTrack.id == currentTrack.id
 								)
 							})
-						)}>
+						)} sx={{ borderTopRightRadius: 0, borderBottomRightRadius: 0 }}>
 							<ListItemIcon>
-								<Typography>
+								<Typography color='text.disabled'>
 									{currentTrack.trackIndex}
 								</Typography>
 							</ListItemIcon>
@@ -66,13 +66,16 @@ const ReleaseTrackList = (
 										? undefined
 										: currentTrack.song.artist?.name
 								}
+								secondaryTypographyProps={{
+									color: 'text.disabled'
+								}}
 							/>
 							{currentTrack.type == 'Video' &&
 								<Icon sx={{ marginLeft: 2, display: 'flex', alignItems: 'center' }}>
 									<MusicVideo color='disabled' fontSize="small" />
 								</Icon>
 							}
-							<Typography sx={{ marginLeft: 2, overflow: 'unset' }}>
+							<Typography color='text.disabled' sx={{ marginLeft: 2, overflow: 'unset' }}>
 								{formatDuration(currentTrack.duration)}
 							</Typography>
 						</ListItemButton>
