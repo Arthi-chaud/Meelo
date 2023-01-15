@@ -34,11 +34,13 @@ import ArtistIllustrationService from "src/artist/artist-illustration.service";
 
 describe('Track Service', () => {
 	let trackService: TrackService;
+	let releaseService: ReleaseService;
 	let dummyRepository: TestPrismaService;
 	let songService: SongService;
 
 	let file: File;
 	let file2: File;
+	let tmpFile: File;
 	let newTrack: Track;
 	let newTrack2: Track;
 
@@ -53,6 +55,7 @@ describe('Track Service', () => {
 		trackService = module.get<TrackService>(TrackService);
 		dummyRepository = module.get(PrismaService);
 		songService = module.get<SongService>(SongService);
+		releaseService = module.get(ReleaseService);
 		module.get(ArtistIllustrationService).onModuleInit();
 		const fileService = module.get<FileService>(FileService);
 		const prismaService = module.get<PrismaService>(PrismaService);
@@ -71,6 +74,12 @@ describe('Track Service', () => {
 		});
 		file2 = await fileService.create({
 			path: "My Artist/My Album (Special Edition)/1-02 My dummyRepository.songA1.m4a",
+			libraryId: secondLibrary.id,
+			registerDate: new Date(),
+			md5Checksum: ''
+		});
+		tmpFile = await fileService.create({
+			path: "My Artist/My Album (Special Edition)/2-01 My dummyRepository.songA1 video.m4a",
 			libraryId: secondLibrary.id,
 			registerDate: new Date(),
 			md5Checksum: ''
@@ -312,8 +321,30 @@ describe('Track Service', () => {
 
 	describe("Get a Song's Master Track", () => {
 		it('should retrieve the song\'s master track', async () => {
+			const tmpRelease = await releaseService.create({
+				album: {
+					id: dummyRepository.albumA1.id
+				},
+				name: 'tmp',
+				releaseDate: new Date('2001')
+			})
+			const tmpTrack = await trackService.create({
+				type: TrackType.Video,
+				name: '',
+				discIndex: 1,
+				trackIndex: 2,
+				bitrate: 320,
+				ripSource: RipSource.CD,
+				duration: 180,
+				sourceFile: { id: tmpFile.id },
+				release: {
+					id: tmpRelease.id
+				},
+				song: { id: dummyRepository.songA1.id }
+			})
 			const track = await trackService.getMasterTrack({ id: dummyRepository.songA1.id });
-
+			await trackService.delete({ id: tmpTrack.id });
+			await releaseService.delete({ id: tmpRelease.id });
 			expect(track).toStrictEqual(dummyRepository.trackA1_1);
 		});
 

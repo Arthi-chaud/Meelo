@@ -237,17 +237,22 @@ export default class TrackService extends RepositoryService<
 				if (song.masterId != null) {
 					return this.get({ id: song.masterId }, include);
 				}
-				return this.prismaService.track.findFirstOrThrow({
+				const tracks = await this.prismaService.track.findMany({
 					where: { song: SongService.formatWhereInput(where) },
 					include: RepositoryService.formatInclude(include),
 					orderBy: { release: {
 						releaseDate: { sort: 'asc', nulls: 'last' }
 					} },
-				}).catch(() => {
+				});
+				const master = tracks.find((track) => track.type == 'Audio')
+					?? tracks.at(0);
+
+				if (!master) {
 					throw new MasterTrackNotFoundException(
 						new Slug(song.slug), new Slug(song.artist.slug)
 					);
-				});
+				}
+				return master;
 			});
 	}
 
