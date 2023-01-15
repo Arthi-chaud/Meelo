@@ -66,6 +66,9 @@ const ReleaseTrackList = (
 										? undefined
 										: currentTrack.song.artist?.name
 								}
+								secondaryTypographyProps={{
+									color: 'text.disabled'
+								}}
 							/>
 							{currentTrack.type == 'Video' &&
 								<Icon sx={{ marginLeft: 2, display: 'flex', alignItems: 'center' }}>

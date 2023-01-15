@@ -168,15 +168,14 @@ const ReleasePage = (
 					{albumArtist.data &&
 						<Grid item>
 							<Link href={`/artists/${albumArtist.data.slug}`}>
-								<Button variant='text' sx={{ textTransform: 'none' }}>
+								<Button variant='text' sx={{ textTransform: 'none', position: 'relative', left: -8 }}>
 									<Typography variant='h4'>{albumArtist.data.name}</Typography>
-
 								</Button>
 							</Link>
 						</Grid>
 					}
 					<Grid item>
-						<Typography fontWeight='light'>
+						<Typography sx={{ color: 'text.disabled' }}>
 							{(release.data.releaseDate || release.data.album.releaseDate) &&
 								`${new Date(release.data.releaseDate ?? release.data.album.releaseDate!).getFullYear()} - `}
 							{formatDuration(totalDuration ?? undefined)}
