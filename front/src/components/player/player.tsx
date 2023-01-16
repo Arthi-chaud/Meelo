@@ -207,8 +207,8 @@ const Player = () => {
 		<Slide in={expanded} style={{ position: 'fixed', bottom: 0, left: 0 }} direction="up">
 			<Box sx={{ padding: 2, zIndex: 'tooltip', width: '100%', height: '100%' }}>
 				<Paper elevation={20} sx={{
-					borderRadius: '0.5', padding: { xs: 1, sm: 2 }, display: 'flex',
-					width: '100%', height: '100%', overflowY: 'scroll', overflowX: 'clip'
+					borderRadius: '0.5', display: 'flex',
+					width: '100%', height: '100%', overflow: 'clip'
 				}}>
 					<ExpandedPlayerControls
 						expanded={expanded}
