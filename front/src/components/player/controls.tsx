@@ -175,15 +175,15 @@ const ExpandedPlayerControls = (
 	const playlist = useSelector((state: RootState) => state.player.playlist);
 	const cursor = useSelector((state: RootState) => state.player.cursor);
 
-	return <Stack sx={{ width: '100%', height: '100%', display: 'flex', padding: 2, overflowY: { xs: 'auto', lg: 'clip' } }} direction='column'>
+	return <Stack sx={{ width: '100%', height: '100%', display: 'flex', padding: 2, overflowY: { xs: 'auto', lg: 'clip' }, overflowX: 'clip' }} direction='column'>
 		<Box sx={{ alignSelf: 'flex-end', margin: 1 }}>
 			<IconButton onClick={() => props.onExpand(false)}>
 				<CloseIcon />
 			</IconButton>
 		</Box>
-		<Grid container sx={{ height: 'min-content' }}>
-			<Grid item container xs={12} lg={7} sx={{ height: { xs: '80vh', lg: '90vh' } }} direction='column'>
-				<Grid item xs={8} sx={{ padding: 3, overflow: 'hidden' }}>
+		<Grid container>
+			<Grid item container xs={12} lg={7} sx={{ height: { xs: '80vh', lg: '90vh' }, flexWrap: 'nowrap', justifyContent: { lg: 'center' } }} direction='column'>
+				<Grid item xs={7} sx={{ padding: 3, overflow: 'hidden', aspectRatio: '1' }}>
 					{ props.track?.type == 'Video'
 						? <video playsInline ref={props.videoRef}
 							disablePictureInPicture={false}
@@ -192,10 +192,10 @@ const ExpandedPlayerControls = (
 						: <Illustration url={props.illustration} fallback={<AudiotrackIcon />} />
 					}
 				</Grid>
-				<Grid item xs={4} sx={{ width: '100%' }}>
-					<Stack spacing={2}>
+				<Grid item sx={{ width: '100%' }}>
+					<Stack spacing={2} sx={{ justifyContent: 'space-evenly' }}>
 						<Grid container sx={{
-							...playerTextStyle, width: '100%',
+							...playerTextStyle, width: '100%', flexGrow: 1,
 							display: 'flex', justifyContent: 'center'
 						}}>
 							<Grid item xs={1}></Grid>
