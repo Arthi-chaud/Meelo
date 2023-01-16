@@ -192,7 +192,7 @@ const ExpandedPlayerControls = (
 						: <Illustration url={props.illustration} fallback={<AudiotrackIcon />} />
 					}
 				</Grid>
-				<Grid item xs={4}>
+				<Grid item xs={4} sx={{ width: '100%' }}>
 					<Stack spacing={2}>
 						<Grid container sx={{
 							...playerTextStyle, width: '100%',
@@ -230,10 +230,10 @@ const ExpandedPlayerControls = (
 						<Box sx={{ display: 'flex', justifyContent: 'center' }}>
 							{ props.track && props.artist &&
 								<Link href={`/artists/${props.artist.slug}`}
-									style={{ overflow: 'hidden', textOverflow: 'ellipsis'}}
+									style={{ overflow: 'hidden', textOverflow: 'ellipsis' }}
 								>
 									<Button onClick={() => props.onExpand(false)} sx={{
-										textTransform: 'none', color: 'inherit'
+										textTransform: 'none', color: 'inherit', width: '100%'
 									}}>
 										<Typography sx={{ ...playerTextStyle }}>
 											{ props.artist?.name }
