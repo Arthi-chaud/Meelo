@@ -4,7 +4,7 @@ import {
 } from "@mui/icons-material";
 import {
 	Box, Button, ButtonBase, Container, Divider, Grid,
-	IconButton, Tab, Tabs, Typography
+	IconButton, Stack, Tab, Tabs, Typography
 } from "@mui/material";
 import Illustration from "../illustration";
 import { WideLoadingComponent } from "../loading/loading";
@@ -175,64 +175,34 @@ const ExpandedPlayerControls = (
 	const playlist = useSelector((state: RootState) => state.player.playlist);
 	const cursor = useSelector((state: RootState) => state.player.cursor);
 
-	return <Box sx={{ width: '100%', height: '100%' }}>
-		<Box sx={{
-			width: '100%', display: 'flex',
-			justifyContent: 'flex-end', padding: 2
-		}}>
+	return <Stack sx={{ width: '100%', height: '100%', display: 'flex', padding: 2, overflowY: { xs: 'auto', lg: 'clip' }, overflowX: 'clip' }} direction='column'>
+		<Box sx={{ alignSelf: 'flex-end', margin: 1 }}>
 			<IconButton onClick={() => props.onExpand(false)}>
 				<CloseIcon />
 			</IconButton>
 		</Box>
-		<Grid container direction='column' sx={{
-			flexWrap: 'nowrap', height: props.track?.type != 'Video' ? '75vh' : '80vh',
-			width: 'inherit', justifyContent: 'space-evenly', alignItems: 'center'
-		}}>
-			{props.track?.type == 'Video' ?
-				<Grid item xs={5} sm={8}
-					sx={{ overflow: 'hidden' }}>
-					<video
-						playsInline ref={props.videoRef}
-						disablePictureInPicture={false}
-						width='100%' height='100%'
-					/>
-				</Grid> : <Grid
-					item
-					xs={6} sm sx={{
-						aspectRatio: '1', display: 'flex',
-						justifyContent: 'center', alignItems: 'center'
-					}}>
-					{props.illustration
-						? <Illustration url={props.illustration} fallback={<AudiotrackIcon />} />
-						: <Box sx={{ height: '100%', display: 'flex', alignItems: 'center' }}>
-							<AudiotrackIcon />
-						</Box>
+		<Grid container>
+			<Grid item container xs={12} lg={7} sx={{ height: { xs: '80vh', lg: '90vh' }, flexWrap: 'nowrap', justifyContent: { lg: 'center' } }} direction='column'>
+				<Grid item xs={7} sx={{ padding: 3, overflow: 'hidden', aspectRatio: '1' }}>
+					{ props.track?.type == 'Video'
+						? <video playsInline ref={props.videoRef}
+							disablePictureInPicture={false}
+							width='100%' height='100%'
+						/>
+						: <Illustration url={props.illustration} fallback={<AudiotrackIcon />} />
 					}
 				</Grid>
-			}
-			<Grid item xs={4} container
-				spacing={2} direction="column" sx={{
-					width: '100%', height: '100%', justifyContent: 'center',
-					alignItems: 'center', display: 'flex', paddingY: 4
-				}}
-			>
-				<Grid item container direction='column'
-					sx={{
-						width: '100%', ...playerTextStyle, display: 'flex',
-						alignItems: 'center', justifyContent: 'center'
-					}}
-				>
-					{ !props.artist || !props.track
-						? <Box/>
-						: <Grid item container sx={{
-							...playerTextStyle, width: '100%',
+				<Grid item sx={{ width: '100%' }}>
+					<Stack spacing={2} sx={{ justifyContent: 'space-evenly' }}>
+						<Grid container sx={{
+							...playerTextStyle, width: '100%', flexGrow: 1,
 							display: 'flex', justifyContent: 'center'
 						}}>
 							<Grid item xs={1}></Grid>
 							<Grid item xs={10} sx={{
 								...playerTextStyle, display: 'flex', justifyContent: 'center'
 							}}>
-								<Link href={`/releases/${props.track.releaseId}`} style={{
+								{ props.artist && props.track && <Link href={`/releases/${props.track.releaseId}`} style={{
 									overflow: 'hidden', textOverflow: 'ellipsis'
 								}}>
 									<Button
@@ -243,7 +213,7 @@ const ExpandedPlayerControls = (
 											{ props.track?.name }
 										</Typography>
 									</Button>
-								</Link>
+								</Link> }
 							</Grid>
 							<Grid item xs={1}>
 								{props.track && parentSong.data && props.artist && props.release ?
@@ -253,123 +223,114 @@ const ExpandedPlayerControls = (
 										onSelect={() => props.onExpand(false)}
 									/> :
 									<IconButton><MoreVert/></IconButton>
+									// To avoid slight shift on loaded
 								}
 							</Grid>
 						</Grid>
-					}
-					{ !props.track || !props.artist ?
-						<Box/> :
-						<Grid item sx={{
-							width: '100%', ...playerTextStyle,
-							display: 'flex', justifyContent: 'center'
-						}}>
-							<Link href={`/artists/${props.artist.slug}`}
-								style={{ overflow: 'hidden', textOverflow: 'ellipsis' }}
-							>
-								<Button onClick={() => props.onExpand(false)} sx={{
-									textTransform: 'none', color: 'inherit', width: '100%'
-								}}>
-									<Typography sx={{ ...playerTextStyle }}>
-										{ props.artist?.name }
-									</Typography>
-								</Button>
-							</Link>
-						</Grid>
-					}
-				</Grid>
-				<Grid item container spacing={5}
-					sx={{ display: 'flex', justifyContent: 'center', width: '100%' }}>
-					<Grid item>
-						<PreviousButton onClick={props.onRewind}/>
-					</Grid>
-					<Grid item>
-						<PlayButton
-							onPause={props.onPause}
-							onPlay={props.onPlay}
-							isPlaying={props.playing}
-						/>
-					</Grid>
-					<Grid item>
-						<SkipButton onClick={props.onSkipTrack}/>
-					</Grid>
-				</Grid>
-				<Grid item sx={{ width: '90%' }}>
-					<PlayerSlider
-						onSlide={props.onSlide}
-						duration={props.duration}
-						progress={props.progress}
-					/>
+						<Box sx={{ display: 'flex', justifyContent: 'center' }}>
+							{ props.track && props.artist &&
+								<Link href={`/artists/${props.artist.slug}`}
+									style={{ overflow: 'hidden', textOverflow: 'ellipsis' }}
+								>
+									<Button onClick={() => props.onExpand(false)} sx={{
+										textTransform: 'none', color: 'inherit', width: '100%'
+									}}>
+										<Typography sx={{ ...playerTextStyle }}>
+											{ props.artist?.name }
+										</Typography>
+									</Button>
+								</Link>
+							}
+						</Box>
+						<Stack spacing={2} sx={{ justifyContent: "center", display: 'flex' }} direction='row'>
+							<PreviousButton onClick={props.onRewind}/>
+							<PlayButton
+								onPause={props.onPause}
+								onPlay={props.onPlay}
+								isPlaying={props.playing}
+							/>
+							<SkipButton onClick={props.onSkipTrack}/>
+						</Stack>
+						<Container maxWidth={false}>
+							<PlayerSlider
+								onSlide={props.onSlide}
+								duration={props.duration}
+								progress={props.progress}
+							/>
+						</Container>
+					</Stack>
 				</Grid>
 			</Grid>
-		</Grid>
-		<Divider variant="middle"/>
-		<Container maxWidth={false}>
-			<Tabs
-				value={panel}
-				onChange={(__, panelName) => setPanel(panelName)}
-				variant="fullWidth"
-			>
-				<Tab key={0} value={'lyrics'} label={'Lyrics'}/>
-				<Tab key={1} value={'playlist'} label={'Playlist'}/>
-			</Tabs>
-			<Box sx={{ paddingY: 2 }}>
-				{ panel == 'lyrics' && props.track && (!parentSong.data ?
-					<WideLoadingComponent/> :
-					<LyricsBox
-						lyrics={parentSong.data.lyrics?.content.split('\n')}
-						songName={props.track.name}
-					/>)
-				}
-				{ panel == 'playlist' && <DragDropContext onDragEnd={(result) => {
-					if (result.destination) {
-						dispatch(reorder({
-							from: result.source.index + cursor + 1,
-							to: result.destination.index + cursor + 1
-						}));
-					}
-				}}>
-					<Droppable droppableId="droppable">{(provided) => <div
-						{...provided.droppableProps}
-						ref={provided.innerRef}
+			<Grid item xs={12} lg={5}>
+				<Container maxWidth={false}>
+					<Tabs
+						value={panel}
+						onChange={(__, panelName) => setPanel(panelName)}
+						variant="fullWidth"
 					>
-						{playlist.slice(cursor + 1).map((playlistItem, index) => <>
-							<Draggable draggableId={index.toString()}
-								key={index} index={index}
+						<Tab key={0} value={'lyrics'} label={'Lyrics'}/>
+						<Tab key={1} value={'playlist'} label={'Playlist'}/>
+					</Tabs>
+					<Box sx={{ paddingY: 2, height: { xs: '100%', lg: '80vh' }, overflowY: 'scroll' }}>
+						{ panel == 'lyrics' && props.track && (!parentSong.data ?
+							<WideLoadingComponent/> :
+							<LyricsBox
+								lyrics={parentSong.data.lyrics?.content.split('\n')}
+								songName={props.track.name}
+							/>)
+						}
+						{ panel == 'playlist' && <DragDropContext onDragEnd={(result) => {
+							if (result.destination) {
+								dispatch(reorder({
+									from: result.source.index + cursor + 1,
+									to: result.destination.index + cursor + 1
+								}));
+							}
+						}}>
+							<Droppable droppableId="droppable">{(provided) => <div
+								{...provided.droppableProps}
+								ref={provided.innerRef}
 							>
-								{(providedChild) => <div
-									ref={providedChild.innerRef}
-									{...providedChild.draggableProps}
-									style={providedChild.draggableProps.style}
-								>
-									<ListItem
-										title={playlistItem.track.name}
-										secondTitle={playlistItem.artist.name}
-										icon={<Box {...providedChild.dragHandleProps}>
-											<DragHandleIcon/>
-										</Box>}
-										trailing={<Typography color="text.disabled">
-											{formatDuration(playlistItem.track.duration)}
-										</Typography>}
-										onClick={() => {
-											let toSkip = index + 1;
+								{playlist.slice(cursor + 1).map((playlistItem, index) => <>
+									<Draggable draggableId={index.toString()}
+										key={index} index={index}
+									>
+										{(providedChild) => <div
+											ref={providedChild.innerRef}
+											{...providedChild.draggableProps}
+											style={providedChild.draggableProps.style}
+										>
+											<ListItem
+												title={playlistItem.track.name}
+												secondTitle={playlistItem.artist.name}
+												icon={<Box {...providedChild.dragHandleProps}>
+													<DragHandleIcon/>
+												</Box>}
+												trailing={<Typography color="text.disabled">
+													{formatDuration(playlistItem.track.duration)}
+												</Typography>}
+												onClick={() => {
+													let toSkip = index + 1;
 
-											while (toSkip > 0) {
-												dispatch(skipTrack());
-												toSkip--;
-											}
-										}}
-									/>
-								</div>
-								}
-							</Draggable>
-							<Divider variant="middle"/>
-						</>)}
-						{provided.placeholder}
-					</div>}</Droppable>
-				</DragDropContext>}
-			</Box>
-		</Container>
-	</Box>;
+													while (toSkip > 0) {
+														dispatch(skipTrack());
+														toSkip--;
+													}
+												}}
+											/>
+										</div>
+										}
+									</Draggable>
+									<Divider variant="middle"/>
+								</>)}
+								{provided.placeholder}
+							</div>}</Droppable>
+						</DragDropContext>}
+					</Box>
+				</Container>
+			</Grid>
+		</Grid>
+	</Stack>;
 };
 
 export { MinimizedPlayerControls, ExpandedPlayerControls };

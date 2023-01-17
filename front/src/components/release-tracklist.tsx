@@ -33,8 +33,9 @@ const ReleaseTrackList = (
 			<List key={disc[0]} subheader={discs.length !== 1 &&
 				<ListSubheader>Disc {disc[0]}</ListSubheader>
 			}>
-				{ disc[1].map((currentTrack, index, discTracks) => <>
+				{ disc[1].map((currentTrack) => <>
 					<ListItem key={currentTrack.id}
+						dense={currentTrack.song.artistId != mainArtist?.id}
 						disablePadding disableGutters
 						secondaryAction={
 							<ReleaseTrackContextualMenu
@@ -61,12 +62,16 @@ const ReleaseTrackList = (
 							</ListItemIcon>
 							<ListItemText
 								primary={currentTrack.name}
+								primaryTypographyProps={{
+									fontSize: 'medium',
+								}}
 								secondary={
 									currentTrack.song.artistId == mainArtist?.id
 										? undefined
 										: currentTrack.song.artist?.name
 								}
 								secondaryTypographyProps={{
+									fontSize: 'small',
 									color: 'text.disabled'
 								}}
 							/>
