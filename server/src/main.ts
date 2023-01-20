@@ -26,6 +26,7 @@ async function bootstrap() {
 	);
 	app.useGlobalPipes(new ValidationPipe({
 		transform: true,
+		forbidUnknownValues: false,
 		exceptionFactory: (error) => {
 			const failedConstraint = Object.keys(error[0].constraints!)[0];
 

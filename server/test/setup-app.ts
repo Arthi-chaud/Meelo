@@ -13,6 +13,7 @@ export default async function SetupApp(module: TestingModule): Promise<INestAppl
 	app.use(cookieParser());
 	app.useGlobalPipes(new ValidationPipe({
 		transform: true,
+		forbidUnknownValues: false,
 		transformOptions: {
 			enableImplicitConversion: true
 		},
