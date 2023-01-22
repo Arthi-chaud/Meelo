@@ -1,7 +1,6 @@
 import { User } from 'src/prisma/models';
 import RequireOnlyOne from 'src/utils/require-only-one';
-import BaseSortingParameter from 'src/sort/models/sorting-parameter';
-import { ApiPropertyOptional } from '@nestjs/swagger';
+import { ModelSortingParameter } from 'src/sort/models/sorting-parameter';
 
 namespace UserQueryParameters {
 
@@ -44,10 +43,7 @@ namespace UserQueryParameters {
 		'enabled'
 	] as const;
 	export type SortingKeys = typeof SortingKeys;
-	export class SortingParameter extends BaseSortingParameter<SortingKeys>{
-		@ApiPropertyOptional({ enum: SortingKeys })
-		sortBy: SortingKeys[number];
-	}
+	export class SortingParameter extends ModelSortingParameter(SortingKeys) {}
 }
 
 export default UserQueryParameters;

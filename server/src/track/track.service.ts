@@ -22,7 +22,6 @@ import { shuffle } from '@taumechanica/stout';
 import AlbumService from 'src/album/album.service';
 import LibraryService from 'src/library/library.service';
 import { Track, TrackWithRelations } from 'src/prisma/models';
-import SortingParameter from 'src/sort/models/sorting-parameter';
 import Identifier from 'src/identifier/models/identifier';
 import Logger from 'src/logger/logger';
 import { PrismaError } from 'prisma-error-enum';
@@ -163,7 +162,7 @@ export default class TrackService extends RepositoryService<
 	}
 
 	formatSortingInput(
-		sortingParameter: SortingParameter<TrackQueryParameters.SortingKeys>
+		sortingParameter: TrackQueryParameters.SortingParameter
 	): Prisma.TrackOrderByWithRelationInput {
 		switch (sortingParameter.sortBy) {
 		case 'releaseName':

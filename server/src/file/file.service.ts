@@ -24,7 +24,6 @@ import { buildDateSearchParameters } from 'src/utils/search-date-input';
 import LibraryService from 'src/library/library.service';
 import mime from 'mime';
 import { Prisma } from '@prisma/client';
-import SortingParameter from 'src/sort/models/sorting-parameter';
 import Slug from 'src/slug/slug';
 import Identifier from 'src/identifier/models/identifier';
 import { PrismaError } from 'prisma-error-enum';
@@ -127,7 +126,7 @@ export default class FileService extends RepositoryService<
 	}
 
 	formatSortingInput(
-		sort: SortingParameter<FileQueryParameters.SortingKeys>
+		sort: FileQueryParameters.SortingParameter
 	): Prisma.FileOrderByWithRelationInput {
 		switch (sort.sortBy) {
 		case 'addDate':

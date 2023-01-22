@@ -5,7 +5,6 @@ import type { RequireAtLeastOne, RequireExactlyOne } from "type-fest";
 import type { SearchDateInput } from "src/utils/search-date-input";
 import type { SearchStringInput } from "src/utils/search-string-input";
 import type { RelationInclude as BaseRelationInclude } from "src/relation-include/models/relation-include";
-import BaseSortingParameter from 'src/sort/models/sorting-parameter';
 import type GenreQueryParameters from "src/genre/models/genre.query-parameters";
 import { Album } from "src/prisma/models";
 import {
@@ -14,6 +13,7 @@ import {
 import { AlbumType } from "@prisma/client";
 import { IsEnum, IsOptional } from "class-validator";
 import { filterAtomicRelationInclude } from "src/relation-include/atomic-relation-include.filter";
+import { ModelSortingParameter } from "src/sort/models/sorting-parameter";
 
 namespace AlbumQueryParameters {
 
@@ -86,10 +86,7 @@ namespace AlbumQueryParameters {
 		'addDate'
 	] as const;
 	export type SortingKeys = typeof SortingKeys;
-	export class SortingParameter extends BaseSortingParameter<SortingKeys>{
-		@ApiPropertyOptional({ enum: SortingKeys })
-		sortBy: SortingKeys[number];
-	}
+	export class SortingParameter extends ModelSortingParameter(SortingKeys) {}
 
 	export class AlbumFilterParameter {
 		@IsEnum(AlbumType, {

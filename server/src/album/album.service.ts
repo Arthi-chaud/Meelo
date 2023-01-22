@@ -19,7 +19,6 @@ import RepositoryService from 'src/repository/repository.service';
 import { buildStringSearchParameters } from 'src/utils/search-string-input';
 import SongService from 'src/song/song.service';
 import { Album, AlbumWithRelations } from "src/prisma/models";
-import SortingParameter from 'src/sort/models/sorting-parameter';
 import { parseIdentifierSlugs } from 'src/identifier/identifier.parse-slugs';
 import compilationAlbumArtistKeyword from 'src/utils/compilation';
 import Identifier from 'src/identifier/models/identifier';
@@ -169,7 +168,7 @@ export default class AlbumService extends RepositoryService<
 	}
 
 	formatSortingInput(
-		sortingParameter: SortingParameter<AlbumQueryParameters.SortingKeys>
+		sortingParameter: AlbumQueryParameters.SortingParameter
 	): Prisma.AlbumOrderByWithRelationInput {
 		switch (sortingParameter.sortBy) {
 		case 'name':

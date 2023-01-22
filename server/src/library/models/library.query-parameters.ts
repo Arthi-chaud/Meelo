@@ -3,8 +3,7 @@ import type Slug from "src/slug/slug";
 import type { RequireExactlyOne } from 'type-fest';
 import type { SearchStringInput } from "src/utils/search-string-input";
 import type { RelationInclude as BaseRelationInclude } from "src/relation-include/models/relation-include";
-import BaseSortingParameter from 'src/sort/models/sorting-parameter';
-import { ApiPropertyOptional } from "@nestjs/swagger";
+import { ModelSortingParameter } from 'src/sort/models/sorting-parameter';
 import { filterAtomicRelationInclude } from "src/relation-include/atomic-relation-include.filter";
 
 namespace LibraryQueryParameters {
@@ -56,10 +55,7 @@ namespace LibraryQueryParameters {
 		'addDate'
 	] as const;
 	export type SortingKeys = typeof SortingKeys;
-	export class SortingParameter extends BaseSortingParameter<SortingKeys>{
-		@ApiPropertyOptional({ enum: SortingKeys })
-		sortBy: SortingKeys[number];
-	}
+	export class SortingParameter extends ModelSortingParameter(SortingKeys) {}
 
 }
 

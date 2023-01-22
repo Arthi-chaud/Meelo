@@ -3,10 +3,9 @@ import type Slug from "src/slug/slug";
 import type { RequireExactlyOne } from 'type-fest';
 import type { RelationInclude as BaseRelationInclude } from "src/relation-include/models/relation-include";
 import type LibraryQueryParameters from "src/library/models/library.query-parameters";
-import BaseSortingParameter from 'src/sort/models/sorting-parameter';
+import { ModelSortingParameter } from 'src/sort/models/sorting-parameter';
 import type { SearchStringInput } from "src/utils/search-string-input";
 import { Release } from "src/prisma/models";
-import { ApiPropertyOptional } from "@nestjs/swagger";
 import { filterAtomicRelationInclude } from "src/relation-include/atomic-relation-include.filter";
 
 namespace ReleaseQueryParameters {
@@ -77,10 +76,7 @@ namespace ReleaseQueryParameters {
 		'addDate'
 	] as const;
 	export type SortingKeys = typeof SortingKeys;
-	export class SortingParameter extends BaseSortingParameter<SortingKeys>{
-		@ApiPropertyOptional({ enum: SortingKeys })
-		sortBy: SortingKeys[number];
-	}
+	export class SortingParameter extends ModelSortingParameter(SortingKeys) {}
 
 }
 

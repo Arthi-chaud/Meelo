@@ -11,7 +11,6 @@ import type SongQueryParameters from "../song/models/song.query-params";
 import { buildStringSearchParameters } from 'src/utils/search-string-input';
 import ArtistService from 'src/artist/artist.service';
 import { Prisma } from '@prisma/client';
-import SortingParameter from 'src/sort/models/sorting-parameter';
 import { parseIdentifierSlugs } from 'src/identifier/identifier.parse-slugs';
 import Identifier from 'src/identifier/models/identifier';
 import Logger from 'src/logger/logger';
@@ -116,7 +115,7 @@ export default class GenreService extends RepositoryService<
 	}
 
 	formatSortingInput(
-		sortingParameter: SortingParameter<GenreQueryParameters.SortingKeys>
+		sortingParameter: GenreQueryParameters.SortingParameter
 	) {
 		switch (sortingParameter.sortBy) {
 		case 'name':
