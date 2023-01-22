@@ -4,6 +4,7 @@ import type { RequireAtLeastOne, RequireExactlyOne } from "type-fest";
 import type { SearchDateInput } from "src/utils/search-date-input";
 import type { RelationInclude as BaseRelationInclude } from "src/relation-include/models/relation-include";
 import { filterAtomicRelationInclude } from "src/relation-include/atomic-relation-include.filter";
+import { ModelSortingParameter } from "src/sort/models/sorting-parameter";
 
 namespace FileQueryParameters {
 	/**
@@ -46,6 +47,7 @@ namespace FileQueryParameters {
 		'addDate'
 	] as const;
 	export type SortingKeys = typeof SortingKeys;
+	export class SortingParameter extends ModelSortingParameter(SortingKeys) {}
 
 	/**
 	 * Relations to include in returned File object

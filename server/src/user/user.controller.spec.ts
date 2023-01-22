@@ -41,6 +41,7 @@ describe('User Controller', () => {
 					expect(adminUser.admin).toBe(true);
 					expect(adminUser.name).toBe('admin');
 					expect(adminUser.enabled).toBe(true);
+					expect(adminUser.id).toBeDefined();
 				});
 		});
 
@@ -57,6 +58,7 @@ describe('User Controller', () => {
 					expect(user.admin).toBe(false);
 					expect(user.name).toBe('user');
 					expect(user.enabled).toBe(false);
+					expect(user.id).toBeDefined();
 				});
 		});
 

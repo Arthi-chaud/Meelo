@@ -3,6 +3,7 @@ import type SongQueryParameters from "src/song/models/song.query-params";
 import type { RequireExactlyOne } from 'type-fest';
 import type { RelationInclude as BaseRelationInclude } from 'src/relation-include/models/relation-include';
 import { filterAtomicRelationInclude } from "src/relation-include/atomic-relation-include.filter";
+import { ModelSortingParameter } from "src/sort/models/sorting-parameter";
 
 namespace LyricsQueryParameters {
 	/**
@@ -37,6 +38,8 @@ namespace LyricsQueryParameters {
 	 * Query parameters to delete one lyric entry
 	 */
 	export type DeleteInput = RequireExactlyOne<Omit<Lyrics, 'content'>>;
+
+	export class SortingParameter extends ModelSortingParameter([]) {}
 
 	/**
 	 * Defines what relations to include in query

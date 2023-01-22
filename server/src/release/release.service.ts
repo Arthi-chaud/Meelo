@@ -21,7 +21,6 @@ import TrackService from 'src/track/track.service';
 import RepositoryService from 'src/repository/repository.service';
 import { buildStringSearchParameters } from 'src/utils/search-string-input';
 import ArtistService from 'src/artist/artist.service';
-import SortingParameter from 'src/sort/models/sorting-parameter';
 import FileService from 'src/file/file.service';
 import archiver from 'archiver';
 // eslint-disable-next-line no-restricted-imports
@@ -163,7 +162,7 @@ export default class ReleaseService extends RepositoryService<
 	}
 
 	formatSortingInput(
-		sortingParameter: SortingParameter<ReleaseQueryParameters.SortingKeys>
+		sortingParameter: ReleaseQueryParameters.SortingParameter
 	): Prisma.ReleaseOrderByWithRelationInput {
 		switch (sortingParameter.sortBy) {
 		case 'name':

@@ -12,7 +12,6 @@ import RepositoryService from 'src/repository/repository.service';
 import { CompilationArtistException } from 'src/artist/artist.exceptions';
 import { buildStringSearchParameters } from 'src/utils/search-string-input';
 import { PaginationParameters, buildPaginationParameters } from 'src/pagination/models/pagination-parameters';
-import SortingParameter from 'src/sort/models/sorting-parameter';
 import { Song, SongWithRelations } from 'src/prisma/models';
 import { parseIdentifierSlugs } from 'src/identifier/identifier.parse-slugs';
 import Identifier from 'src/identifier/models/identifier';
@@ -155,7 +154,7 @@ export default class SongService extends RepositoryService<
 	}
 
 	formatSortingInput(
-		sortingParameter: SortingParameter<SongQueryParameters.SortingKeys>
+		sortingParameter: SongQueryParameters.SortingParameter
 	): Prisma.SongOrderByWithRelationInput {
 		switch (sortingParameter.sortBy) {
 		case 'name':

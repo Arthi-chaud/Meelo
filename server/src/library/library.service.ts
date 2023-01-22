@@ -14,7 +14,6 @@ import RepositoryService from 'src/repository/repository.service';
 import { buildStringSearchParameters } from 'src/utils/search-string-input';
 import TasksService from 'src/tasks/tasks.service';
 import { Library, LibraryWithRelations } from 'src/prisma/models';
-import SortingParameter from 'src/sort/models/sorting-parameter';
 import { parseIdentifierSlugs } from 'src/identifier/identifier.parse-slugs';
 import Identifier from 'src/identifier/models/identifier';
 import Logger from 'src/logger/logger';
@@ -110,7 +109,7 @@ export default class LibraryService extends RepositoryService<
 	}
 
 	formatSortingInput(
-		sortingParameter: SortingParameter<LibraryQueryParameters.SortingKeys>
+		sortingParameter: LibraryQueryParameters.SortingParameter
 	): Prisma.LibraryOrderByWithRelationInput {
 		switch (sortingParameter.sortBy) {
 		case 'name':

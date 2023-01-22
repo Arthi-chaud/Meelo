@@ -6,10 +6,9 @@ import type ReleaseQueryParameters from "src/release/models/release.query-parame
 import type SongQueryParameters from "src/song/models/song.query-params";
 import type { RequireAtLeastOne, RequireExactlyOne } from "type-fest";
 import type { RelationInclude as BaseRelationInclude } from "src/relation-include/models/relation-include";
-import BaseSortingParameter from 'src/sort/models/sorting-parameter';
+import { ModelSortingParameter } from 'src/sort/models/sorting-parameter';
 import type AlbumQueryParameters from "src/album/models/album.query-parameters";
 import type ArtistQueryParameters from "src/artist/models/artist.query-parameters";
-import { ApiPropertyOptional } from "@nestjs/swagger";
 import { filterAtomicRelationInclude } from "src/relation-include/atomic-relation-include.filter";
 
 namespace TrackQueryParameters {
@@ -88,10 +87,7 @@ namespace TrackQueryParameters {
 		'releaseDate'
 	] as const;
 	export type SortingKeys = typeof SortingKeys;
-	export class SortingParameter extends BaseSortingParameter<SortingKeys>{
-		@ApiPropertyOptional({ enum: SortingKeys })
-		sortBy: SortingKeys[number];
-	}
+	export class SortingParameter extends ModelSortingParameter(SortingKeys) {}
 
 }
 

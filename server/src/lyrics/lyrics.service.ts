@@ -15,7 +15,6 @@ import {
 } from './lyrics.exceptions';
 import type LyricsQueryParameters from './models/lyrics.query-parameters';
 import { Prisma } from '@prisma/client';
-import SortingParameter from 'src/sort/models/sorting-parameter';
 import Identifier from 'src/identifier/models/identifier';
 import Logger from 'src/logger/logger';
 import { PrismaError } from 'prisma-error-enum';
@@ -104,7 +103,9 @@ export class LyricsService extends RepositoryService<
 		);
 	}
 
-	formatSortingInput<S extends SortingParameter<[]>>(sortingParameter: S) {
+	formatSortingInput<S extends LyricsQueryParameters.SortingParameter>(
+		sortingParameter: S
+	) {
 		return { id: sortingParameter.order };
 	}
 

@@ -13,7 +13,6 @@ import { Prisma } from '@prisma/client';
 import PrismaService from 'src/prisma/prisma.service';
 import type ArtistQueryParameters from './models/artist.query-parameters';
 import { type PaginationParameters, buildPaginationParameters } from 'src/pagination/models/pagination-parameters';
-import SortingParameter from 'src/sort/models/sorting-parameter';
 import RepositoryService from 'src/repository/repository.service';
 import { buildStringSearchParameters } from 'src/utils/search-string-input';
 import GenreService from 'src/genre/genre.service';
@@ -147,7 +146,7 @@ export default class ArtistService extends RepositoryService<
 	}
 
 	formatSortingInput(
-		sortingParameter: SortingParameter<ArtistQueryParameters.SortingKeys>
+		sortingParameter: ArtistQueryParameters.SortingParameter
 	): Prisma.ArtistOrderByWithRelationInput {
 		switch (sortingParameter.sortBy) {
 		case 'name':

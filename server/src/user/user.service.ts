@@ -4,7 +4,6 @@ import type { User } from 'src/prisma/models';
 import { Prisma } from '@prisma/client';
 import type UserQueryParameters from './models/user.query-params';
 import PrismaService from 'src/prisma/prisma.service';
-import SortingParameter from 'src/sort/models/sorting-parameter';
 import bcrypt from 'bcrypt';
 import {
 	InvalidPasswordException, InvalidUserCredentialsException,
@@ -158,7 +157,7 @@ export default class UserService extends RepositoryService<
 		);
 	}
 
-	formatSortingInput(sortingParameter: SortingParameter<UserQueryParameters.SortingKeys>) {
+	formatSortingInput(sortingParameter: UserQueryParameters.SortingParameter) {
 		return { [sortingParameter.sortBy]: sortingParameter.order };
 	}
 
