@@ -6,7 +6,7 @@ import getSlugOrId from "../../utils/getSlugOrId";
 import { useQuery } from "../../api/use-query";
 import LoadingPage from "../../components/loading/loading-page";
 import {
-	Box, Button, Stack, Tab, Tabs, Typography
+	Box, Button, Divider, Stack, Tab, Tabs, Typography
 } from "@mui/material";
 import LyricsBox from "../../components/lyrics";
 import SongRelationPageHeader from "../../components/relation-page-header/song-relation-page-header";
@@ -121,6 +121,7 @@ const SongPage = (
 				</Button>
 			</Link>)}
 		</Stack>
+		<Divider sx={{ paddingY: 1 }}/>
 		<Tabs
 			value={tab}
 			onChange={(__, tabName) => setTabs(tabName)}
