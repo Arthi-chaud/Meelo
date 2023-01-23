@@ -6,7 +6,7 @@ import getSlugOrId from "../../utils/getSlugOrId";
 import { useQuery } from "../../api/use-query";
 import LoadingPage from "../../components/loading/loading-page";
 import {
-	Box, Button, Divider, Stack, Tab, Tabs, Typography
+	Box, Button, Divider, Grid, Stack, Tab, Tabs, Typography
 } from "@mui/material";
 import LyricsBox from "../../components/lyrics";
 import SongRelationPageHeader from "../../components/relation-page-header/song-relation-page-header";
@@ -21,6 +21,9 @@ import Track, {
 import { SortingParameters } from "../../utils/sorting";
 import InfiniteTrackView from "../../components/infinite/infinite-resource-view/infinite-track-view";
 import Link from "next/link";
+import { PlayArrow } from "@mui/icons-material";
+import { useDispatch } from "react-redux";
+import { playTrack } from "../../state/playerSlice";
 
 const songQuery = (songSlugOrId: number | string) => ({
 	key: ["song", songSlugOrId],
@@ -93,6 +96,7 @@ const SongPage = (
 	const lyrics = useQuery(lyricsQuery, songIdentifier);
 	const song = useQuery(songQuery, songIdentifier);
 	const genres = useQuery(songGenresQuery, songIdentifier);
+	const dispatch = useDispatch();
 
 	useEffect(() => {
 		setTabs(() => tabs.find(
@@ -113,14 +117,28 @@ const SongPage = (
 	}
 	return <Box sx={{ width: '100%' }}>
 		<SongRelationPageHeader song={song.data}/>
-		<Stack direction='row' sx={{ overflowY: 'scroll', alignItems: 'center' }} spacing={2}>
-			<Typography sx={{ overflow: 'unset' }}>Genres:</Typography>
-			{ genres.data.items.map((genre) => <Link key={genre.slug} href={`/genres/${genre.slug}`}>
-				<Button variant="outlined">
-					{genre.name}
-				</Button>
-			</Link>)}
-		</Stack>
+		<Grid container direction={{ xs: 'column', md: 'row' }} spacing={2}>
+			<Grid item xs>
+				<Stack direction='row' sx={{ overflowY: 'scroll', alignItems: 'center' }} spacing={2}>
+					<Typography sx={{ overflow: 'unset' }}>Genres:</Typography>
+					{ genres.data.items.map((genre) => <Link key={genre.slug} href={`/genres/${genre.slug}`}>
+						<Button variant="outlined">
+							{genre.name}
+						</Button>
+					</Link>)}
+				</Stack>
+			</Grid>
+			<Grid item>
+				<Button variant="contained" sx={{ width: '100%' }} endIcon={<PlayArrow />}
+					onClick={() => API.getMasterTrack<TrackWithRelease>(songIdentifier, ['release'])
+						.then((master) => dispatch(playTrack({
+							track: master,
+							artist: song.data.artist,
+							release: master.release
+						})))
+					}>Play</Button>
+			</Grid>
+		</Grid>
 		<Divider sx={{ paddingY: 1 }}/>
 		<Tabs
 			value={tab}
@@ -133,9 +151,9 @@ const SongPage = (
 		</Tabs>
 		<Box sx={{ paddingY: 2 }}>
 			{ tab == 'lyrics' && (
-				lyrics.data
-					? <LyricsBox songName={song.data.name} lyrics={lyrics.data}/>
-					: <LoadingPage/>
+				lyrics.isLoading
+					? <LoadingPage/>
+					: <LyricsBox songName={song.data.name} lyrics={lyrics.data}/>
 			)}
 			{ tab == 'versions' &&
 				<InfiniteSongView
