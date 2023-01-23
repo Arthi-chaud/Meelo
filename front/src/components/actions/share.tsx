@@ -14,4 +14,4 @@ export const ShareAlbumAction = (albumIdentifier: string | number): Action => Sh
 
 export const ShareReleaseAction = (releaseIdentifier: string | number): Action => ShareAction(`/releases/${releaseIdentifier}`);
 
-export const ShareSongAction = (songSlug: string | number): Action => ShareAction(`/songs/${songSlug}/versions`);
+export const ShareSongAction = (songSlug: string | number): Action => ShareAction(`/songs/${songSlug}`);
