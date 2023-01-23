@@ -304,7 +304,8 @@ export default class MetadataService {
 			'Video',
 			'Remaster',
 			'Remastered',
-			'Album Version'
+			'Album Version',
+			'Main Version'
 		];
 
 		return this.removeExtensions(trackName, extensionKeywords);
