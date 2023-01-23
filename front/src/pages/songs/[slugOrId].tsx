@@ -58,8 +58,7 @@ const songGenresQuery = (songSlugOrId: number | string) => ({
 		songSlugOrId,
 		"genres"
 	],
-	exec: (lastPage: Page<SongWithArtist>) =>
-		API.getSongGenres(songSlugOrId, lastPage)
+	exec: () =>	API.getSongGenres(songSlugOrId)
 });
 
 const songTracksQuery = (
