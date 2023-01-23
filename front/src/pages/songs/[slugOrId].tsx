@@ -6,7 +6,7 @@ import getSlugOrId from "../../utils/getSlugOrId";
 import { useQuery } from "../../api/use-query";
 import LoadingPage from "../../components/loading/loading-page";
 import {
-	Box, Tab, Tabs
+	Box, Button, Stack, Tab, Tabs, Typography
 } from "@mui/material";
 import LyricsBox from "../../components/lyrics";
 import SongRelationPageHeader from "../../components/relation-page-header/song-relation-page-header";
@@ -20,6 +20,7 @@ import Track, {
 } from "../../models/track";
 import { SortingParameters } from "../../utils/sorting";
 import InfiniteTrackView from "../../components/infinite/infinite-resource-view/infinite-track-view";
+import Link from "next/link";
 
 const songQuery = (songSlugOrId: number | string) => ({
 	key: ["song", songSlugOrId],
@@ -46,6 +47,16 @@ const songVersionsQuery = (
 	],
 	exec: (lastPage: Page<SongWithArtist>) =>
 		API.getSongVersions<SongWithArtist>(songSlugOrId, lastPage, sort, ['artist'])
+});
+
+const songGenresQuery = (songSlugOrId: number | string) => ({
+	key: [
+		"song",
+		songSlugOrId,
+		"genres"
+	],
+	exec: (lastPage: Page<SongWithArtist>) =>
+		API.getSongGenres(songSlugOrId, lastPage)
 });
 
 const songTracksQuery = (
@@ -81,6 +92,7 @@ const SongPage = (
 	songIdentifier ??= getSlugOrId(router.query);
 	const lyrics = useQuery(lyricsQuery, songIdentifier);
 	const song = useQuery(songQuery, songIdentifier);
+	const genres = useQuery(songGenresQuery, songIdentifier);
 
 	useEffect(() => {
 		setTabs(() => tabs.find(
@@ -96,11 +108,19 @@ const SongPage = (
 		router.push(`${path}?${params.toString()}`, undefined, { shallow: true });
 	}, [tab]);
 
-	if (!song.data) {
+	if (!song.data || !genres.data) {
 		return <LoadingPage/>;
 	}
 	return <Box sx={{ width: '100%' }}>
 		<SongRelationPageHeader song={song.data}/>
+		<Stack direction='row' sx={{ overflowY: 'scroll', alignItems: 'center' }} spacing={2}>
+			<Typography sx={{ overflow: 'unset' }}>Genres:</Typography>
+			{ genres.data.items.map((genre) => <Link key={genre.slug} href={`/genres/${genre.slug}`}>
+				<Button variant="outlined">
+					{genre.name}
+				</Button>
+			</Link>)}
+		</Stack>
 		<Tabs
 			value={tab}
 			onChange={(__, tabName) => setTabs(tabName)}
