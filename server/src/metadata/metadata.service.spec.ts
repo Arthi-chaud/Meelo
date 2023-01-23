@@ -170,8 +170,16 @@ describe('Metadata Service', () => {
 			expect(metadataService.removeTrackExtension('My Song  (Album Version)')).toBe('My Song');
 		});
 
+		it("should remove 'Main Version' extension", () => {
+			expect(metadataService.removeTrackExtension('My Song  (Main Version)')).toBe('My Song');
+		});
+
 		it("should remove multiple extensions", () => {
 			expect(metadataService.removeTrackExtension('My Song  {Music Video}  (Remaster)')).toBe('My Song');
-		})
+		});
+
+		it("should not remove extension", () => {
+			expect(metadataService.removeTrackExtension('My Song (Yeah)')).toBe('My Song (Yeah)');
+		});
 	})
 })
