@@ -1,6 +1,4 @@
-import {
-	Divider, Grid, Typography
-} from "@mui/material";
+import { Grid, Typography } from "@mui/material";
 
 type RelationHeaderProps = {
 	illustration: JSX.Element;
@@ -35,7 +33,6 @@ const RelationPageHeader = (props: RelationHeaderProps) => {
 				{props.trailing}
 			</Grid>
 		</Grid>
-		<Divider sx={{ marginBottom: 2 }}/>
 	</>;
 };
 
