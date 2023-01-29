@@ -9,7 +9,7 @@ import {
 import { ReactQueryDevtools } from "react-query/devtools";
 import {
 	Container,
-	CssBaseline, GlobalStyles, ThemeProvider
+	CssBaseline, GlobalStyles, ThemeProvider, useTheme
 } from "@mui/material";
 import MeeloAppBar from "../components/appbar/appbar";
 import { ErrorBoundary } from 'react-error-boundary';
@@ -48,6 +48,8 @@ function MyApp({ Component, pageProps: { session, ...pageProps } }: AppProps) {
 			<Head>
 				<title>{DefaultWindowTitle}</title>
 				<meta name="viewport" content="initial-scale=1.0, width=device-width" />
+				<meta name="apple-mobile-web-app-capable" content="yes" />
+				<meta name="apple-mobile-web-app-status-bar-style" content="black"/>
 				<link rel="shortcut icon" href="/favicon.ico"/>
 				<link rel="apple-touch-icon" href="/favicon.ico"/>
 			</Head>

@@ -32,6 +32,7 @@ import {
 } from 'react-beautiful-dnd';
 import DragHandleIcon from '@mui/icons-material/DragHandle';
 import formatDuration from "../../utils/formatDuration";
+import { toast } from "react-hot-toast";
 
 const songQuery = (slugOrId: string | number) => ({
 	key: ['song', slugOrId],
@@ -185,6 +186,10 @@ const ExpandedPlayerControls = (
 			el.mozRequestFullScreen();
 		} else if (el.webkitRequestFullscreen) {
 			el.webkitRequestFullscreen();
+		} else if (el.webkitEnterFullscreen) {
+			el.webkitEnterFullscreen();
+		} else if (el.enterFullscreen) {
+			el.enterFullscreen();
 		}
 	};
 
