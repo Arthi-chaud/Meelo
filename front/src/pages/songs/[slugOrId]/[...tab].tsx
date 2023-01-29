@@ -1,29 +1,29 @@
 import { useRouter } from "next/router";
-import API from "../../api/api";
-import { SongSortingKeys, SongWithArtist } from "../../models/song";
-import prepareSSR, { InferSSRProps } from "../../ssr";
-import getSlugOrId from "../../utils/getSlugOrId";
-import { useQuery } from "../../api/use-query";
-import LoadingPage from "../../components/loading/loading-page";
+import API from "../../../api/api";
+import { SongSortingKeys, SongWithArtist } from "../../../models/song";
+import prepareSSR, { InferSSRProps } from "../../../ssr";
+import getSlugOrId from "../../../utils/getSlugOrId";
+import { useQuery } from "../../../api/use-query";
+import LoadingPage from "../../../components/loading/loading-page";
 import {
 	Box, Button, Divider, Grid, Stack, Tab, Tabs, Typography
 } from "@mui/material";
-import LyricsBox from "../../components/lyrics";
-import SongRelationPageHeader from "../../components/relation-page-header/song-relation-page-header";
+import LyricsBox from "../../../components/lyrics";
+import SongRelationPageHeader from "../../../components/relation-page-header/song-relation-page-header";
 import { useEffect, useState } from "react";
-import InfiniteSongView from "../../components/infinite/infinite-resource-view/infinite-song-view";
-import { Page } from "../../components/infinite/infinite-scroll";
+import InfiniteSongView from "../../../components/infinite/infinite-resource-view/infinite-song-view";
+import { Page } from "../../../components/infinite/infinite-scroll";
 import Track, {
 	TrackSortingKeys,
 	TrackWithRelease,
 	TrackWithSong
-} from "../../models/track";
-import { SortingParameters } from "../../utils/sorting";
-import InfiniteTrackView from "../../components/infinite/infinite-resource-view/infinite-track-view";
+} from "../../../models/track";
+import { SortingParameters } from "../../../utils/sorting";
+import InfiniteTrackView from "../../../components/infinite/infinite-resource-view/infinite-track-view";
 import Link from "next/link";
 import { PlayArrow } from "@mui/icons-material";
 import { useDispatch } from "react-redux";
-import { playTrack } from "../../state/playerSlice";
+import { playTrack } from "../../../state/playerSlice";
 
 const songQuery = (songSlugOrId: number | string) => ({
 	key: ["song", songSlugOrId],
@@ -88,28 +88,20 @@ const tabs = ['lyrics', 'versions', 'tracks'] as const;
 const SongPage = (
 	{ songIdentifier }: InferSSRProps<typeof getServerSideProps>
 ) => {
+	/**
+	 * Parses the query to find the requested tab, fallback on tabs[0]
+	 */
+	const getTabFromQuery = () => tabs.find(
+		(availableTab) => availableTab == router.query.tab.toString().toLowerCase()
+	) ?? tabs[0];
 	const router = useRouter();
-	const [tab, setTabs] = useState<typeof tabs[number]>(tabs[0]);
+	const [tab, setTabs] = useState<typeof tabs[number]>(getTabFromQuery());
 
 	songIdentifier ??= getSlugOrId(router.query);
 	const lyrics = useQuery(lyricsQuery, songIdentifier);
 	const song = useQuery(songQuery, songIdentifier);
 	const genres = useQuery(songGenresQuery, songIdentifier);
 	const dispatch = useDispatch();
-
-	useEffect(() => {
-		setTabs(() => tabs.find(
-			(availableTab) => availableTab == router.query.tab?.toString().toLowerCase()
-		) ?? tabs[0]);
-	}, [router]);
-
-	useEffect(() => {
-		const path = router.asPath.split('?')[0];
-		const params = new URLSearchParams(router.asPath.split('?').at(1) ?? '');
-
-		params.set('tab', tab);
-		router.push(`${path}?${params.toString()}`, undefined, { shallow: true });
-	}, [tab]);
 
 	if (!song.data || !genres.data) {
 		return <LoadingPage/>;
@@ -118,14 +110,14 @@ const SongPage = (
 		<SongRelationPageHeader song={song.data}/>
 		<Grid container direction={{ xs: 'column', md: 'row' }} spacing={2}>
 			<Grid item xs>
-				<Stack direction='row' sx={{ overflowY: 'scroll', alignItems: 'center' }} spacing={2}>
+				{ (genres.data.items.length ?? 0) != 0 && <Stack direction='row' sx={{ overflowY: 'scroll', alignItems: 'center' }} spacing={2}>
 					<Typography sx={{ overflow: 'unset' }}>Genres:</Typography>
 					{ genres.data.items.map((genre) => <Link key={genre.slug} href={`/genres/${genre.slug}`}>
 						<Button variant="outlined">
 							{genre.name}
 						</Button>
 					</Link>)}
-				</Stack>
+				</Stack>}
 			</Grid>
 			<Grid item>
 				<Button variant="contained" sx={{ width: '100%' }} endIcon={<PlayArrow />}
@@ -141,7 +133,10 @@ const SongPage = (
 		<Divider sx={{ paddingY: 1 }}/>
 		<Tabs
 			value={tab}
-			onChange={(__, tabName) => setTabs(tabName)}
+			onChange={(__, tabName) => {
+				setTabs(tabName);
+				router.push(`/songs/${songIdentifier}/${tabName}`, undefined, { shallow: true });
+			}}
 			variant="fullWidth"
 		>
 			<Tab key={0} value={'lyrics'} label={'Lyrics'}/>
