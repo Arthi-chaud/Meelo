@@ -22,6 +22,11 @@ module.exports = {
         destination: '/libraries/:slug/albums',
         permanent: true,
       },
+      {
+        source: '/songs/:slug',
+        destination: '/songs/:slug/lyrics',
+        permanent: true,
+      },
     ]
   },
   async rewrites() {

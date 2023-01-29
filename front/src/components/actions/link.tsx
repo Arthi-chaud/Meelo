@@ -8,7 +8,7 @@ import { NextRouter } from "next/router";
 import Action from "./action";
 
 export const GoToSongLyricsAction = (songIdentifier: string | number): Action => ({
-	href: `/songs/${songIdentifier}?tab=lyrics`,
+	href: `/songs/${songIdentifier}/lyrics`,
 	label: 'See Lyrics',
 	icon: <Lyrics/>
 });
@@ -56,13 +56,13 @@ export const GoToAlbumReleasesAction = (albumIdentifier: string | number): Actio
 });
 
 export const GoToSongVersionAction = (songIdentifier: string | number): Action => ({
-	href: `/songs/${songIdentifier}?tab=versions`,
+	href: `/songs/${songIdentifier}/versions`,
 	label: 'See Other Versions',
 	icon: <Audiotrack/>
 });
 
 export const GoToRelatedTracksAction = (songIdentifier: string | number): Action => ({
-	href: `/songs/${songIdentifier}?tab=tracks`,
+	href: `/songs/${songIdentifier}/tracks`,
 	label: 'See Related Tracks',
 	icon: <Difference/>
 });

@@ -1,5 +1,5 @@
 import {
-	FastForward, FastRewind, MoreVert, Pause
+	FastForward, FastRewind, Fullscreen, MoreVert, Pause
 	, PlayArrow
 } from "@mui/icons-material";
 import {
@@ -174,6 +174,19 @@ const ExpandedPlayerControls = (
 	const [panel, setPanel] = useState<'lyrics' | 'playlist'>('lyrics');
 	const playlist = useSelector((state: RootState) => state.player.playlist);
 	const cursor = useSelector((state: RootState) => state.player.cursor);
+	const requestFullscreen = () => {
+		const el: any = document.getElementById("videoPlayer");
+
+		if (el.requestFullscreen) {
+			el.requestFullscreen();
+		} else if (el.msRequestFullscreen) {
+			el.msRequestFullscreen();
+		} else if (el.mozRequestFullScreen) {
+			el.mozRequestFullScreen();
+		} else if (el.webkitRequestFullscreen) {
+			el.webkitRequestFullscreen();
+		}
+	};
 
 	return <Stack sx={{ width: '100%', height: '100%', display: 'flex', padding: 2, overflowY: { xs: 'auto', lg: 'clip' }, overflowX: 'clip' }} direction='column'>
 		<Box sx={{ alignSelf: 'flex-end', margin: 1 }}>
@@ -185,9 +198,9 @@ const ExpandedPlayerControls = (
 			<Grid item container xs={12} lg={7} sx={{ height: { xs: '80vh', lg: '90vh' }, flexWrap: 'nowrap', justifyContent: { lg: 'center' } }} direction='column'>
 				<Grid item xs={7} sx={{ padding: 3, overflow: 'hidden', aspectRatio: '1' }}>
 					{ props.track?.type == 'Video'
-						? <video playsInline ref={props.videoRef}
+						? <video playsInline id="videoPlayer" ref={props.videoRef}
 							disablePictureInPicture={false}
-							width='100%' height='100%'
+							width='100%' height='100%' onClick={requestFullscreen}
 						/>
 						: <Illustration url={props.illustration} fallback={<AudiotrackIcon />} />
 					}
@@ -198,7 +211,13 @@ const ExpandedPlayerControls = (
 							...playerTextStyle, width: '100%', flexGrow: 1,
 							display: 'flex', justifyContent: 'center'
 						}}>
-							<Grid item xs={1}></Grid>
+							<Grid item xs={1} sx={{ display: 'flex', justifyContent: 'end' }}>
+								{props.track?.type == 'Video' &&
+									<IconButton onClick={requestFullscreen}>
+										<Fullscreen/>
+									</IconButton>
+								}
+							</Grid>
 							<Grid item xs={10} sx={{
 								...playerTextStyle, display: 'flex', justifyContent: 'center'
 							}}>
