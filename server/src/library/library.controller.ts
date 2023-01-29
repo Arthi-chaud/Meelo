@@ -46,6 +46,9 @@ export default class LibraryController {
 	@ApiOperation({
 		summary: 'Create a new library'
 	})
+	@Response({
+		returns: Library
+	})
 	@Admin()
 	@Post('new')
 	async createLibrary(@Body() createLibraryDto: CreateLibraryDto) {
