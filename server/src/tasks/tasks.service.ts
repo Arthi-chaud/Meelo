@@ -68,6 +68,9 @@ export default class TasksService {
 
 		const candidates = unfilteredCandidates
 			.filter((candidatePath) => {
+				return candidatePath.match(`/${IllustrationService.SOURCE_ILLUSTRATON_FILE}$`) == null;
+			})
+			.filter((candidatePath) => {
 				return alreadyRegistrered.findIndex(
 					(registered) => registered.path == candidatePath
 				) == -1;

@@ -51,6 +51,10 @@ export default class IllustrationService {
 	) {}
 
 	/**
+	 * Regular Expression to match source cover files
+	 */
+	public static SOURCE_ILLUSTRATON_FILE = '[Cc]over.*';
+	/**
 	 * Extracts the embedded illustration in a track file
 	 * If no illustration is embedded, returns null
 	 * If the embedded illustration is the same as the release's, nothing is done and return null
@@ -167,7 +171,7 @@ export default class IllustrationService {
 	 */
 	private async extractIllustrationInFileFolder(filePath: string): Promise<Buffer | null> {
 		const fileFolder = dir.dirname(filePath);
-		const illustrationCandidates = glob.sync(`${escapeRegex(fileFolder)}/[Cc]over.*`);
+		const illustrationCandidates = glob.sync(`${escapeRegex(fileFolder)}/${IllustrationService.SOURCE_ILLUSTRATON_FILE}`);
 
 		if (illustrationCandidates.length == 0) {
 			return null;
