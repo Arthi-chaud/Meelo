@@ -49,7 +49,7 @@ export default class API {
 	 */
 	private static isSSR = () => typeof window === 'undefined';
 	private static isDev = () => process.env.NODE_ENV === 'development';
-	private static SSR_API_URL = 'http://129.12.149.204:4000'!;
+	private static SSR_API_URL = process.env.ssrApiRoute!;
 	static defaultPageSize = 25;
 
 	static async login(credentials: AuthenticationInput): Promise<AuthenticationResponse> {

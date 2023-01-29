@@ -118,14 +118,14 @@ const SongPage = (
 		<SongRelationPageHeader song={song.data}/>
 		<Grid container direction={{ xs: 'column', md: 'row' }} spacing={2}>
 			<Grid item xs>
-				<Stack direction='row' sx={{ overflowY: 'scroll', alignItems: 'center' }} spacing={2}>
+				{ (genres.data.items.length ?? 0) != 0 && <Stack direction='row' sx={{ overflowY: 'scroll', alignItems: 'center' }} spacing={2}>
 					<Typography sx={{ overflow: 'unset' }}>Genres:</Typography>
 					{ genres.data.items.map((genre) => <Link key={genre.slug} href={`/genres/${genre.slug}`}>
 						<Button variant="outlined">
 							{genre.name}
 						</Button>
 					</Link>)}
-				</Stack>
+				</Stack>}
 			</Grid>
 			<Grid item>
 				<Button variant="contained" sx={{ width: '100%' }} endIcon={<PlayArrow />}
