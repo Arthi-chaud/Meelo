@@ -13,8 +13,8 @@ export class SettingsFileNotFoundException extends NotFoundException {
 }
 
 export class InvalidSettingsFileException extends InvalidRequestException {
-	constructor() {
-		super(`Invalid Settings File`);
+	constructor(validationError?: string) {
+		super(`Invalid Settings File${validationError ? `: ${validationError}` : ''}`);
 	}
 }
 
@@ -24,8 +24,3 @@ export class MissingSettingsException extends InvalidRequestException {
 	}
 }
 
-export class InvalidSettingsTypeException extends InvalidRequestException {
-	constructor(fieldName: string, actualType: string) {
-		super(`Settings File: Invalid field '${fieldName}' type: ${actualType}`);
-	}
-}
