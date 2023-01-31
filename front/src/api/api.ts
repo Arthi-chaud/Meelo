@@ -46,10 +46,17 @@ type FetchParameters<Keys extends readonly string[]> = {
 
 export default class API {
 	/**
+	 * Formats an array of include keys for Query keys
+	 */
+	private static formatIncludeKeys = (includes: string[]) => includes
+		.map((include) => `include-${include}`);
+
+	/**
 	 * Utilitary functions
 	 */
 	private static isSSR = () => typeof window === 'undefined';
 	private static isDev = () => process.env.NODE_ENV === 'development';
+
 	private static SSR_API_URL = process.env.ssrApiRoute!;
 	static defaultPageSize = 25;
 
@@ -81,10 +88,10 @@ export default class API {
 	static getAllLibraries(): InfiniteQuery<Library> {
 		return {
 			key: ['libraries'],
-			exec: (lastPage) => API.fetch({
+			exec: (pagination) => API.fetch({
 				route: `/libraries`,
 				errorMessage: "Libraries could not be loaded",
-				parameters: { pagination: lastPage, include: [] }
+				parameters: { pagination: pagination, include: [] }
 			})
 		};
 	}
@@ -162,10 +169,10 @@ export default class API {
 	): InfiniteQuery<Artist> {
 		return {
 			key: ['artists', sort ?? {}],
-			exec: (lastPage) => API.fetch({
+			exec: (pagination) => API.fetch({
 				route: `/artists`,
 				errorMessage: 'Artists could not be loaded',
-				parameters: { pagination: lastPage, include: [], sort },
+				parameters: { pagination: pagination, include: [], sort },
 				otherParameters: { albumArtistOnly: 'true' }
 			})
 		};
@@ -181,11 +188,11 @@ export default class API {
 		include: AlbumInclude[] = []
 	): InfiniteQuery<T> {
 		return {
-			key: ['albums', sort ?? {}, type ?? {}, ...include],
-			exec: (lastPage) => API.fetch({
+			key: ['albums', sort ?? {}, type ?? {}, ...API.formatIncludeKeys(include)],
+			exec: (pagination) => API.fetch({
 				route: `/albums`,
 				errorMessage: 'Albums could not be loaded',
-				parameters: { pagination: lastPage, include, sort },
+				parameters: { pagination: pagination, include, sort },
 				otherParameters: { type }
 			})
 		};
@@ -203,11 +210,11 @@ export default class API {
 		include: ArtistInclude[] = [],
 	): InfiniteQuery<T> {
 		return {
-			key: ['libraries', librarySlugOrId, 'artists', sort ?? {}, ...include],
-			exec: (lastPage) => API.fetch({
+			key: ['libraries', librarySlugOrId, 'artists', sort ?? {}, ...API.formatIncludeKeys(include)],
+			exec: (pagination) => API.fetch({
 				route: `/libraries/${librarySlugOrId}/artists`,
 				errorMessage: 'Library does not exist',
-				parameters: { pagination: lastPage, include, sort },
+				parameters: { pagination: pagination, include, sort },
 				otherParameters: { albumArtistOnly: true }
 			})
 		};
@@ -226,11 +233,11 @@ export default class API {
 		include: AlbumInclude[] = [],
 	): InfiniteQuery<T> {
 		return {
-			key: ['libraries', librarySlugOrId, 'albums', sort ?? {}, ...include, type ?? {}],
-			exec: (lastPage) => API.fetch({
+			key: ['libraries', librarySlugOrId, 'albums', sort ?? {}, ...API.formatIncludeKeys(include), type ?? {}],
+			exec: (pagination) => API.fetch({
 				route: `/libraries/${librarySlugOrId}/albums`,
 				errorMessage: 'Library does not exist',
-				parameters: { pagination: lastPage, include, sort },
+				parameters: { pagination: pagination, include, sort },
 				otherParameters: { type }
 			})
 		};
@@ -248,11 +255,11 @@ export default class API {
 		include: SongInclude[] = [],
 	): InfiniteQuery<T> {
 		return {
-			key: ['libraries', librarySlugOrId, 'songs', sort ?? {}, ...include],
-			exec: (lastPage) => API.fetch({
+			key: ['libraries', librarySlugOrId, 'songs', sort ?? {}, ...API.formatIncludeKeys(include)],
+			exec: (pagination) => API.fetch({
 				route: `/libraries/${librarySlugOrId}/songs`,
 				errorMessage: 'Library does not exist',
-				parameters: { pagination: lastPage, include, sort }
+				parameters: { pagination: pagination, include, sort }
 			})
 		};
 	}
@@ -267,11 +274,11 @@ export default class API {
 		include: SongInclude[] = []
 	): InfiniteQuery<T> {
 		return {
-			key: ['songs', ...include, sort ?? {}],
-			exec: (lastPage) => API.fetch({
+			key: ['songs', ...API.formatIncludeKeys(include), sort ?? {}],
+			exec: (pagination) => API.fetch({
 				route: `/songs`,
 				errorMessage: 'Songs could not be loaded',
-				parameters: { pagination: lastPage, include, sort }
+				parameters: { pagination: pagination, include, sort }
 			})
 		};
 	}
@@ -288,11 +295,11 @@ export default class API {
 		include: AlbumInclude[] = []
 	): InfiniteQuery<T> {
 		return {
-			key: ['artist', artistSlugOrId, 'albums', sort ?? {}, ...include, type ?? {}],
-			exec: (lastPage) => API.fetch({
+			key: ['artist', artistSlugOrId, 'albums', sort ?? {}, ...API.formatIncludeKeys(include), type ?? {}],
+			exec: (pagination) => API.fetch({
 				route: `/artists/${artistSlugOrId}/albums`,
 				errorMessage: `Artist '${artistSlugOrId}' not found`,
-				parameters: { pagination: lastPage, include, sort },
+				parameters: { pagination: pagination, include, sort },
 				otherParameters: { type }
 			})
 		};
@@ -309,11 +316,11 @@ export default class API {
 		include: AlbumInclude[] = []
 	): InfiniteQuery<T> {
 		return {
-			key: ['artist', artistSlugOrId, 'songs', sort ?? {}, ...include],
-			exec: (lastPage) => API.fetch({
+			key: ['artist', artistSlugOrId, 'songs', sort ?? {}, ...API.formatIncludeKeys(include)],
+			exec: (pagination) => API.fetch({
 				route: `/artists/${artistSlugOrId}/songs`,
 				errorMessage: `Artist '${artistSlugOrId}' not found`,
-				parameters: { pagination: lastPage, include, sort }
+				parameters: { pagination: pagination, include, sort }
 			})
 		};
 	}
@@ -329,7 +336,7 @@ export default class API {
 		include: SongInclude[] = []
 	): Query<T> {
 		return {
-			key: ['song', songSlugOrId, ...include],
+			key: ['song', songSlugOrId, ...API.formatIncludeKeys(include)],
 			exec: () => API.fetch({
 				route: `/songs/${songSlugOrId}`,
 				parameters: { include }
@@ -348,7 +355,7 @@ export default class API {
 		include: TrackInclude[] = []
 	): Query<T> {
 		return {
-			key: ['song', songSlugOrId, 'master', ...include],
+			key: ['song', songSlugOrId, 'master', ...API.formatIncludeKeys(include)],
 			exec: () => API.fetch({
 				route: `/songs/${songSlugOrId}/master`,
 				parameters: { include }
@@ -367,7 +374,7 @@ export default class API {
 		include: TrackInclude[] = []
 	): Query<T> {
 		return {
-			key: ['track', trackId, ...include],
+			key: ['track', trackId, ...API.formatIncludeKeys(include)],
 			exec: () => API.fetch({
 				route: `/tracks/${trackId}`,
 				parameters: { include }
@@ -404,7 +411,7 @@ export default class API {
 		include: AlbumInclude[] = []
 	): Query<T> {
 		return {
-			key: ['album', albumSlugOrId, ...include],
+			key: ['album', albumSlugOrId, ...API.formatIncludeKeys(include)],
 			exec: () => API.fetch({
 				route: `/albums/${albumSlugOrId}`,
 				errorMessage: "Album not found",
@@ -433,10 +440,10 @@ export default class API {
 	): InfiniteQuery<User> {
 		return {
 			key: ['users', sort ?? {}],
-			exec: (lastPage) => API.fetch({
+			exec: (pagination) => API.fetch({
 				route: `/users`,
 				errorMessage: 'Users could not be loaded',
-				parameters: { pagination: lastPage, include: [], sort }
+				parameters: { pagination: pagination, include: [], sort }
 			})
 		};
 	}
@@ -484,7 +491,7 @@ export default class API {
 		include: ReleaseInclude[] = []
 	): Query<T> {
 		return {
-			key: ['album', albumSlugOrId, 'master', ...include],
+			key: ['album', albumSlugOrId, 'master', ...API.formatIncludeKeys(include)],
 			exec: () => API.fetch({
 				route: `/albums/${albumSlugOrId}/master`,
 				parameters: { include }
@@ -504,10 +511,10 @@ export default class API {
 		include: TrackInclude[] = []
 	): InfiniteQuery<T> {
 		return {
-			key: ['song', songSlugOrId, 'tracks', sort ?? {}, ...include],
-			exec: (lastPage) => API.fetch({
+			key: ['song', songSlugOrId, 'tracks', sort ?? {}, ...API.formatIncludeKeys(include)],
+			exec: (pagination) => API.fetch({
 				route: `/songs/${songSlugOrId}/tracks`,
-				parameters: { pagination: lastPage, include, sort }
+				parameters: { pagination: pagination, include, sort }
 			})
 		};
 	}
@@ -524,10 +531,10 @@ export default class API {
 		include: TrackInclude[] = []
 	): InfiniteQuery<T> {
 		return {
-			key: ['song', songSlugOrId, 'videos', sort ?? {}, ...include],
-			exec: (lastPage) => API.fetch({
+			key: ['song', songSlugOrId, 'videos', sort ?? {}, ...API.formatIncludeKeys(include)],
+			exec: (pagination) => API.fetch({
 				route: `/songs/${songSlugOrId}/videos`,
-				parameters: { pagination: lastPage, include, sort }
+				parameters: { pagination: pagination, include, sort }
 			})
 		};
 	}
@@ -544,10 +551,10 @@ export default class API {
 		include: SongInclude[] = []
 	): InfiniteQuery<T> {
 		return {
-			key: ['song', songSlugOrId, 'versions', sort ?? {}, ...include],
-			exec: (lastPage) => API.fetch({
+			key: ['song', songSlugOrId, 'versions', sort ?? {}, ...API.formatIncludeKeys(include)],
+			exec: (pagination) => API.fetch({
 				route: `/songs/${songSlugOrId}/versions`,
-				parameters: { pagination: lastPage, include, sort }
+				parameters: { pagination: pagination, include, sort }
 			})
 		};
 	}
@@ -563,9 +570,9 @@ export default class API {
 	): InfiniteQuery<Genre> {
 		return {
 			key: ['song', songSlugOrId, 'genres'],
-			exec: (lastPage) => API.fetch({
+			exec: (pagination) => API.fetch({
 				route: `/songs/${songSlugOrId}/genres`,
-				parameters: { pagination: lastPage, include: [] }
+				parameters: { pagination: pagination, include: [] }
 			})
 		};
 	}
@@ -580,7 +587,7 @@ export default class API {
 	): InfiniteQuery<Genre> {
 		return {
 			key: ['album', albumSlugOrId, 'genres'],
-			exec: (lastPage) => API.fetch({
+			exec: (pagination) => API.fetch({
 				route: `/albums/${albumSlugOrId}/genres`,
 				parameters: { include: [] }
 			})
@@ -597,7 +604,7 @@ export default class API {
 		include: TrackInclude[] = []
 	): Query<T[]> {
 		return {
-			key: ['album', albumSlugOrId, 'videos', ...include],
+			key: ['album', albumSlugOrId, 'videos', ...API.formatIncludeKeys(include)],
 			exec: () => API.fetch({
 				route: `/albums/${albumSlugOrId}/videos`,
 				parameters: { include }
@@ -616,10 +623,10 @@ export default class API {
 		include: ReleaseInclude[] = []
 	): InfiniteQuery<T> {
 		return {
-			key: ['album', albumSlugOrId, 'releases', sort ?? {}, ...include],
-			exec: (lastPage) => API.fetch({
+			key: ['album', albumSlugOrId, 'releases', sort ?? {}, ...API.formatIncludeKeys(include)],
+			exec: (pagination) => API.fetch({
 				route: `/albums/${albumSlugOrId}/releases`,
-				parameters: { include, pagination: lastPage, sort }
+				parameters: { include, pagination: pagination, sort }
 			})
 		};
 	}
@@ -629,7 +636,7 @@ export default class API {
 		include: ReleaseInclude[] = []
 	): Query<T> {
 		return {
-			key: ['release', slugOrId, ...include],
+			key: ['release', slugOrId, ...API.formatIncludeKeys(include)],
 			exec: () => API.fetch({
 				route: `/releases/${slugOrId}`,
 				errorMessage: 'Release not found',
@@ -643,7 +650,7 @@ export default class API {
 		include: TrackInclude[] = []
 	): Query<Tracklist<T>> {
 		return {
-			key: ['release', slugOrId, 'tracklist', ...include],
+			key: ['release', slugOrId, 'tracklist', ...API.formatIncludeKeys(include)],
 			exec: () => API.fetch({
 				route: `/releases/${slugOrId.toString()}/tracklist`,
 				parameters: { include }
@@ -656,7 +663,7 @@ export default class API {
 		include: TrackInclude[] = []
 	): Query<T[]> {
 		return {
-			key: ['release', slugOrId, 'playlist', ...include],
+			key: ['release', slugOrId, 'playlist', ...API.formatIncludeKeys(include)],
 			exec: () => API.fetch({
 				route: `/releases/${slugOrId.toString()}/playlist`,
 				parameters: { include }
@@ -684,7 +691,7 @@ export default class API {
 		include: AlbumInclude[] = []
 	): Query<T> {
 		return {
-			key: ['song', songSlugOrId, 'album', ...include],
+			key: ['song', songSlugOrId, 'album', ...API.formatIncludeKeys(include)],
 			exec: () => API.getMasterTrack<TrackWithRelease>(songSlugOrId, ['release'])
 				.exec()
 				.then((track) => API.getAlbum<T>(track.release.albumId, include).exec())
@@ -696,7 +703,7 @@ export default class API {
 		include: ReleaseInclude[] = []
 	): Query<T> {
 		return {
-			key: ['song', songSlugOrId, 'release', ...include],
+			key: ['song', songSlugOrId, 'release', ...API.formatIncludeKeys(include)],
 			exec: () => API.getMasterTrack(songSlugOrId)
 				.exec()
 				.then((track) => API.getRelease<T>(track.releaseId, include).exec())
@@ -708,7 +715,7 @@ export default class API {
 		include: ArtistInclude[] = []
 	): Query<T> {
 		return {
-			key: ['artist', slugOrId, ...include],
+			key: ['artist', slugOrId, ...API.formatIncludeKeys(include)],
 			exec: () => API.fetch<T, []>({
 				route: `/artists/${slugOrId}`,
 				errorMessage: 'Artist could not be loaded',
@@ -727,10 +734,10 @@ export default class API {
 	): InfiniteQuery<Genre> {
 		return {
 			key: ['genres', sort ?? {}],
-			exec: (lastPage) => API.fetch({
+			exec: (pagination) => API.fetch({
 				route: `/genres`,
 				errorMessage: 'Genres could not be loaded',
-				parameters: { pagination: lastPage, include: [], sort }
+				parameters: { pagination: pagination, include: [], sort }
 			})
 		};
 	}
@@ -756,10 +763,10 @@ export default class API {
 	): InfiniteQuery<AlbumWithArtist> {
 		return {
 			key: ['genre', idOrSlug, 'albums', sort ?? {}, type ?? {}],
-			exec: (lastPage) => API.fetch({
+			exec: (pagination) => API.fetch({
 				route: `/genres/${idOrSlug}/albums`,
 				errorMessage: 'Genre not found',
-				parameters: { pagination: lastPage, include: ['artist'], sort },
+				parameters: { pagination: pagination, include: ['artist'], sort },
 				otherParameters: { type }
 			})
 		};
@@ -774,10 +781,10 @@ export default class API {
 	): InfiniteQuery<Artist> {
 		return {
 			key: ['genre', idOrSlug, 'artists', sort ?? {}],
-			exec: (lastPage) => API.fetch({
+			exec: (pagination) => API.fetch({
 				route: `/genres/${idOrSlug}/artists`,
 				errorMessage: 'Genre not found',
-				parameters: { pagination: lastPage, include: [], sort }
+				parameters: { pagination: pagination, include: [], sort }
 			})
 		};
 	}
@@ -791,10 +798,10 @@ export default class API {
 	): InfiniteQuery<SongWithArtist> {
 		return {
 			key: ['genre', idOrSlug, 'songs', sort ?? {}],
-			exec: (lastPage) => API.fetch({
+			exec: (pagination) => API.fetch({
 				route: `/genres/${idOrSlug}/songs`,
 				errorMessage: 'Genre not found',
-				parameters: { pagination: lastPage, include: ['artist'], sort }
+				parameters: { pagination: pagination, include: ['artist'], sort }
 			})
 		};
 	}
@@ -805,11 +812,11 @@ export default class API {
 		include: ArtistInclude[] = []
 	): InfiniteQuery<T> {
 		return {
-			key: ['search', 'artists', query, sort ?? {}, ...include],
-			exec: (lastPage) => API.fetch({
+			key: ['search', 'artists', query, sort ?? {}, ...API.formatIncludeKeys(include)],
+			exec: (pagination) => API.fetch({
 				route: `/search/artists/${query}`,
 				errorMessage: 'Search failed',
-				parameters: { pagination: lastPage, include, sort }
+				parameters: { pagination: pagination, include, sort }
 			})
 		};
 	}
@@ -821,11 +828,11 @@ export default class API {
 		include: AlbumInclude[] = []
 	): InfiniteQuery<T> {
 		return {
-			key: ['search', 'albums', query, sort ?? {}, type ?? {}, ...include],
-			exec: (lastPage) => API.fetch({
+			key: ['search', 'albums', query, sort ?? {}, type ?? {}, ...API.formatIncludeKeys(include)],
+			exec: (pagination) => API.fetch({
 				route: `/search/albums/${query}`,
 				errorMessage: 'Search failed',
-				parameters: { pagination: lastPage, include, sort },
+				parameters: { pagination: pagination, include, sort },
 				otherParameters: { type }
 			})
 		};
@@ -837,11 +844,11 @@ export default class API {
 		include: SongInclude[] = []
 	): InfiniteQuery<T> {
 		return {
-			key: ['search', 'songs', query, sort ?? {}, ...include],
-			exec: (lastPage) => API.fetch({
+			key: ['search', 'songs', query, sort ?? {}, ...API.formatIncludeKeys(include)],
+			exec: (pagination) => API.fetch({
 				route: `/search/songs/${query}`,
 				errorMessage: 'Search failed',
-				parameters: { pagination: lastPage, include, sort }
+				parameters: { pagination: pagination, include, sort }
 			})
 		};
 	}
