@@ -50,15 +50,12 @@ type Track = Resource & Illustration & {
 	sourceFileId: number;
 }
 
-type TrackWithSong = Track & {
-	song: Song;
-}
-
-type TrackWithRelease = Track & {
-	release: Release;
-}
-
 type TrackInclude = 'song' | 'release';
+
+type TrackWithRelations<I extends TrackInclude[]> = Track & Pick<
+	{ song: Song, release?: Release },
+	I[number]
+>
 
 export default Track;
 export const TrackSortingKeys = [
@@ -70,4 +67,4 @@ export const TrackSortingKeys = [
 	'trackIndex',
 	'discIndex'
 ] as const;
-export type { TrackWithSong, TrackWithRelease, TrackInclude };
+export type { TrackWithRelations, TrackInclude };
