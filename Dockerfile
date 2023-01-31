@@ -6,7 +6,7 @@ COPY ./server/*.lock ./
 RUN yarn
 COPY ./server/src ./src
 COPY ./server/prisma/ ./prisma
-RUN yarn run prisma generate
+RUN yarn run prebuild
 RUN yarn run build
 
 

@@ -1,7 +1,6 @@
 import SettingsService from './settings.service';
 import * as fs from 'fs';
-import { InvalidSettingsFileException, InvalidSettingsTypeException, MissingSettingsException, SettingsFileNotFoundException } from './settings.exception';
-import type Settings from './models/settings';
+import { InvalidSettingsFileException, MissingSettingsException, SettingsFileNotFoundException } from './settings.exception';
 import { createTestingModule } from 'test/test-module';
 import SettingsModule from './settings.module';
 import FileManagerModule from 'src/file-manager/file-manager.module';
@@ -41,7 +40,7 @@ describe('Settings Service', () => {
 				() => fs.readFileSync('test/assets/settings-fake-regex.json').toString()
 			);
 			settingsService.loadFromFile();
-			expect(settingsService.settingsValues).toStrictEqual(<Settings>{
+			expect(settingsService.settingsValues).toMatchObject({
 				dataFolder: '/var/lib/meelo',
 				meeloFolder: 'test/assets/',
 				trackRegex: ['regex1', 'regex2'],
@@ -89,8 +88,8 @@ describe('Settings Service', () => {
 		});
 
 		it('should throw because a field data type is incorrect', async () => {
-			expectExceptionWhenParsing('settings-wrong-type.json', InvalidSettingsTypeException);
-			expectExceptionWhenParsing('settings-wrong-type-metadata-source.json', InvalidSettingsTypeException);
+			expectExceptionWhenParsing('settings-wrong-type.json', InvalidSettingsFileException);
+			expectExceptionWhenParsing('settings-wrong-type-metadata-source.json', InvalidSettingsFileException);
 		});
 	});
 })

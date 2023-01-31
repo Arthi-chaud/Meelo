@@ -2,15 +2,16 @@ import {
 	Inject, Injectable, forwardRef
 } from '@nestjs/common';
 import FileManagerService from 'src/file-manager/file-manager.service';
-import Settings, { metadataOrderValue, metadataSourceValue } from './models/settings';
+import Settings from './models/settings';
 import {
 	InvalidMeeloDirVarException,
 	InvalidSettingsFileException,
-	InvalidSettingsTypeException,
 	MissingSettingsException,
 	SettingsFileNotFoundException
 } from './settings.exception';
 import { join } from 'path';
+import { plainToClass } from 'class-transformer';
+import { validateSync } from 'class-validator';
 
 @Injectable()
 export default class SettingsService {
@@ -47,52 +48,44 @@ export default class SettingsService {
 			}
 			throw new SettingsFileNotFoundException();
 		}
-		this.settings = {
+		const uncheckedSettings = plainToClass(Settings, {
 			meeloFolder: process.env.MEELO_DIR!,
-			...this.buildSettings(object)
-		};
-		if (this.settings.trackRegex.length < 1) {
-			throw new InvalidSettingsFileException();
-		}
-	}
+			...object
+		});
+		// Validation
+		const validationError = validateSync(
+			uncheckedSettings,
+			{ forbidUnknownValues: true }
+		).at(0);
 
-	/**
-	 * Takes a JSON object as input, parses it and build a Settings interface instance
-	 */
-	private buildSettings(object: any): Omit<Settings, 'meeloFolder'> {
-		const settingsFields = {
-			dataFolder: (value: unknown) => typeof value === 'string',
-			trackRegex: (value: unknown) => Array.isArray(value),
-			metadata: (value: any) => {
-				if (typeof value !== 'object') {
-					return false;
-				}
-				if (value.source === undefined) {
-					throw new MissingSettingsException('source');
-				} else if (value.order === undefined) {
-					throw new MissingSettingsException('order');
-				}
-				return metadataSourceValue.includes(value.source) == true &&
-					metadataOrderValue.includes(value.order) == true;
+		if (validationError) {
+			const undefinedChild = validationError.children?.find(
+				(child) => child.value === undefined
+			);
+
+			if (validationError.value === undefined) {
+				throw new MissingSettingsException(validationError.property);
+			} else if (validationError.value && undefinedChild) {
+				throw new MissingSettingsException(undefinedChild.property);
 			}
-		};
-		// eslint-disable-next-line init-declarations
-		let settingField: keyof typeof settingsFields;
+			try {
+				const constraint = validationError.constraints
+					?? validationError.children?.at(0)?.constraints;
+				const constraintName = Object.keys(constraint!).at(0)!;
+				const constraintError = constraint![constraintName];
 
-		for (settingField in settingsFields) {
-			const settingValue = object[settingField];
-
-			if (settingValue === undefined) {
-				throw new MissingSettingsException(settingField);
-			} else if (settingsFields[settingField](settingValue) != true) {
-				throw new InvalidSettingsTypeException(settingField, typeof settingValue);
+				if (constraintName == 'nestedValidation') {
+					throw new InvalidSettingsFileException();
+				}
+				throw new InvalidSettingsFileException(constraintError);
+			} catch (err) {
+				if (err instanceof InvalidSettingsFileException) {
+					throw err;
+				}
+				throw new InvalidSettingsFileException();
 			}
 		}
-		return {
-			dataFolder: object.dataFolder,
-			trackRegex: object.trackRegex,
-			metadata: object.metadata
-		};
+		this.settings = uncheckedSettings;
 	}
 
 	get settingsValues(): Settings {
