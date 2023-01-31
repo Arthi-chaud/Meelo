@@ -7,6 +7,7 @@
   "license": "GNU GENERAL PUBLIC LICENSE v3",
   "scripts": {
     "lint": "eslint \"{src,apps,libs,test}/**/*.ts\"",
+    "prebuild": "yarn run prisma generate",
     "build": "nest build",
     "start": "nest start",
     "start:dev": "NODE_ENV=development nest start --watch",
