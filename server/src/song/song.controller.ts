@@ -25,6 +25,7 @@ import Response, { ResponseType } from 'src/response/response.decorator';
 import { ArtistResponseBuilder } from 'src/artist/models/artist.response';
 import { Genre } from 'src/prisma/models';
 import { LyricsResponseBuilder } from 'src/lyrics/models/lyrics.response';
+import { SongWithVideoResponseBuilder } from './models/song-with-video.response';
 
 @ApiTags("Songs")
 @Controller('songs')
@@ -60,6 +61,27 @@ export class SongController {
 	) {
 		return this.songService.getMany(
 			{}, paginationParameters, include, sortingParameter
+		);
+	}
+
+	@ApiOperation({
+		summary: 'Get all songs with at least one video.'
+	})
+	@Response({
+		handler: SongWithVideoResponseBuilder,
+		type: ResponseType.Page
+	})
+	@Get('/videos')
+	async getVideosByLibrary(
+		@PaginationQuery()
+		paginationParameters: PaginationParameters,
+		@RelationIncludeQuery(SongQueryParameters.AvailableAtomicIncludes)
+		include: SongQueryParameters.RelationInclude,
+		@SortingQuery(SongQueryParameters.SortingKeys)
+		sortingParameter: SongQueryParameters.SortingParameter,
+	) {
+		return this.songService.getSongsWithVideo(
+			{ }, paginationParameters, include, sortingParameter
 		);
 	}
 
