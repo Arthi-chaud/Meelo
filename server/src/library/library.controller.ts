@@ -30,6 +30,7 @@ import UpdateLibraryDto from './models/update-library.dto';
 import CreateLibraryDto from './models/create-library.dto';
 import IdentifierParam from 'src/identifier/identifier.pipe';
 import Response, { ResponseType } from 'src/response/response.decorator';
+import { SongWithVideoResponseBuilder } from 'src/song/models/song-with-video.response';
 
 @ApiTags("Libraries")
 @Controller('libraries')
@@ -220,6 +221,34 @@ export default class LibraryController {
 		where: LibraryQueryParameters.WhereInput
 	) {
 		const songs = await this.songService.getMany(
+			{ library: where }, paginationParameters, include, sortingParameter
+		);
+
+		if (songs.length == 0) {
+			await this.libraryService.throwIfNotFound(where);
+		}
+		return songs;
+	}
+
+	@ApiOperation({
+		summary: 'Get all songs with at least one video from a library.'
+	})
+	@Response({
+		handler: SongWithVideoResponseBuilder,
+		type: ResponseType.Page
+	})
+	@Get(':idOrSlug/videos')
+	async getVideosByLibrary(
+		@PaginationQuery()
+		paginationParameters: PaginationParameters,
+		@RelationIncludeQuery(SongQueryParameters.AvailableAtomicIncludes)
+		include: SongQueryParameters.RelationInclude,
+		@SortingQuery(SongQueryParameters.SortingKeys)
+		sortingParameter: SongQueryParameters.SortingParameter,
+		@IdentifierParam(LibraryService)
+		where: LibraryQueryParameters.WhereInput
+	) {
+		const songs = await this.songService.getSongsWithVideo(
 			{ library: where }, paginationParameters, include, sortingParameter
 		);
 
