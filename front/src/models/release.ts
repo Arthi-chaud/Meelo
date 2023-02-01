@@ -32,9 +32,9 @@ type Release = Resource & Illustration & {
 
 type ReleaseInclude = 'album';
 
-type ReleaseWithRelations<I extends ReleaseInclude[]> = Release & Pick<
+type ReleaseWithRelations<I extends ReleaseInclude> = Release & Pick<
 	{ album: Album },
-	I[number]
+	I
 >;
 
 export default Release;

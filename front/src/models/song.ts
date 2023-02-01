@@ -33,9 +33,9 @@ type Song = Resource & Illustration & {
 
 type SongInclude = 'artist' | 'lyrics';
 
-type SongWithRelations<I extends SongInclude[]> = Song & Pick<
+type SongWithRelations<I extends SongInclude> = Song & Pick<
 	{ artist: Artist, lyrics?: Lyrics },
-	I[number]
+	I
 >;
 
 export default Song;

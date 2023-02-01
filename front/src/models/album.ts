@@ -39,9 +39,9 @@ type Album = Resource & Illustration & {
 
 type AlbumInclude = 'artist';
 
-type AlbumWithRelations<I extends AlbumInclude[]> = Album & Pick<
+type AlbumWithRelations<I extends AlbumInclude> = Album & Pick<
 	{ artist?: Artist },
-	I[number]
+	I
 >
 
 export const AlbumType = [
