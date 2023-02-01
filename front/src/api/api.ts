@@ -62,6 +62,10 @@ export default class API {
 	private static SSR_API_URL = process.env.ssrApiRoute!;
 	static defaultPageSize = 25;
 
+	/**
+	 * @param credentials the credentials of the user to authenticate
+	 * @returns An object holding the access token to use for authenticated requests
+	 */
 	static async login(credentials: AuthenticationInput): Promise<AuthenticationResponse> {
 		return API.fetch({
 			route: '/auth/login',
@@ -71,6 +75,11 @@ export default class API {
 		}, 'POST');
 	}
 
+	/**
+	 * Creates a new user
+	 * @param credentials the credentails of the new user
+	 * @returns The newly created user
+	 */
 	static async register(credentials: AuthenticationInput): Promise<User> {
 		return API.fetch({
 			route: '/users/new',
@@ -84,8 +93,7 @@ export default class API {
 
 	/**
 	 * Fetch all libraries
-	 * @param pagination the parameters to choose how many items to load
-	 * @returns An array of libaries
+	 * @returns An InfiniteQuery of Libraries
 	 */
 	static getAllLibraries(): InfiniteQuery<Library> {
 		return {
@@ -99,7 +107,8 @@ export default class API {
 	}
 
 	/**
-	 * Clean all libraries
+	 * Calls for a task to clean all libraries
+	 * @returns A object with the status of the task
 	 */
 	static async cleanLibraries(): Promise<LibraryTaskResponse> {
 		return API.fetch({
@@ -110,7 +119,8 @@ export default class API {
 	}
 
 	/**
-	 * Scan a library
+	 * Calls for a task to scan a library
+	 * @returns A object with the status of the task
 	 */
 	static async scanLibrary(
 		librarySlugOrId: number | string
@@ -123,7 +133,8 @@ export default class API {
 	}
 
 	/**
-	 * Clean a library
+	 * Calls for a task to clean a library
+	 * @returns A object with the status of the task
 	 */
 	static async cleanLibrary(
 		librarySlugOrId: number | string
@@ -136,7 +147,19 @@ export default class API {
 	}
 
 	/**
-	 * Refresh metadata of files in library a library
+	 * Calls for a task to scan all libraries
+	 * @returns the status of the task
+	 */
+	static scanLibraries(): Promise<LibraryTaskResponse> {
+		return API.fetch<LibraryTaskResponse, []>({
+			route: `/tasks/scan`,
+			parameters: { }
+		});
+	}
+
+	/**
+	 * Calls for a task to refresh metadata of files in a library
+	 * @returns A object with the status of the task
 	 */
 	static async refreshMetadataInLibrary(
 		librarySlugOrId: number | string
@@ -150,6 +173,7 @@ export default class API {
 
 	/**
 	 * Delete a library
+	 * @returns An empty promise
 	 */
 	static async deleteLibrary(
 		librarySlugOrId: number | string
@@ -163,8 +187,7 @@ export default class API {
 
 	/**
 	 * Fetch all album artists
-	 * @param pagination the parameters to choose how many items to load
-	 * @returns An array of artists
+	 * @returns An InfiniteQuery of Artists
 	 */
 	static getAllArtists(
 		sort?: SortingParameters<typeof ArtistSortingKeys>
@@ -182,7 +205,7 @@ export default class API {
 
 	/**
 	 * Fetch all albums
-	 * @returns An array of albums
+	 * @returns An InfiniteQuery of Albums
 	 */
 	static getAllAlbums<I extends AlbumInclude[] = []>(
 		sort?: SortingParameters<typeof AlbumSortingKeys>,
@@ -203,8 +226,7 @@ export default class API {
 	/**
 	 * Fetch all album artists in a library
 	 * @param librarySlugOrId the identifier of the library
-	 * @param pagination the parameters to choose how many items to load
-	 * @returns An array of artists
+	 * @returns An InfiniteQuery of Artists
 	 */
 	static getAllArtistsInLibrary(
 		librarySlugOrId: string | number,
@@ -222,10 +244,9 @@ export default class API {
 	}
 
 	/**
-	 * Fetch all album in a library
+	 * Fetch all albums in a library
 	 * @param librarySlugOrId the identifier of the library
-	 * @param pagination the parameters to choose how many items to load
-	 * @returns An array of albums
+	 * @returns An InfiniteQuery of Albums
 	 */
 	static getAllAlbumsInLibrary<I extends AlbumInclude[] = []>(
 		librarySlugOrId: string | number,
@@ -247,8 +268,7 @@ export default class API {
 	/**
 	 * Fetch all songs in a library
 	 * @param librarySlugOrId the identifier of the library
-	 * @param pagination the parameters to choose how many items to load
-	 * @returns An array of songs
+	 * @returns An InfiniteQuery of songs
 	 */
 	static getAllSongsInLibrary<I extends SongInclude[] = []>(
 		librarySlugOrId: string | number,
@@ -267,8 +287,7 @@ export default class API {
 
 	/**
 	 * Fetch all songs
-	 * @param pagination the parameters to choose how many items to load
-	 * @returns An array of songs
+	 * @returns An InfiniteQuery of Songs
 	 */
 	static getAllSongs<I extends SongInclude[] = []>(
 		sort?: SortingParameters<typeof SongSortingKeys>,
@@ -286,8 +305,7 @@ export default class API {
 
 	/**
 	 * Fetch all albums by an artist
-	 * @param pagination the parameters to choose how many items to load
-	 * @returns An array of albums
+	 * @returns An Infinite Query of Albums
 	 */
 	static getArtistAlbums<I extends AlbumInclude[] = []>(
 		artistSlugOrId: string | number,
@@ -308,8 +326,7 @@ export default class API {
 
 	/**
 	 * Fetch all songs by an artist
-	 * @param pagination the parameters to choose how many items to load
-	 * @returns An array of songs
+	 * @returns An Infinite Query of songs
 	 */
 	static getArtistSongs<I extends SongInclude[] = []>(
 		artistSlugOrId: string | number,
@@ -329,8 +346,7 @@ export default class API {
 	/**
 	 * Get a song
 	 * @param songSlugOrId the identifier of a song
-	 * @param include the fields to include in the fetched item
-	 * @returns a Track
+	 * @returns a Query for a Song
 	 */
 	static getSong<I extends SongInclude[] = []>(
 		songSlugOrId: string | number,
@@ -349,7 +365,7 @@ export default class API {
 	 * Get the master track of a song
 	 * @param songSlugOrId the identifier of a song
 	 * @param include the fields to include in the fetched item
-	 * @returns a Track
+	 * @returns a Query for a Track
 	 */
 	static getMasterTrack<I extends TrackInclude[] = []>(
 		songSlugOrId: string | number,
@@ -368,7 +384,7 @@ export default class API {
 	 * Get the track of a song
 	 * @param trackId the identifier of a track
 	 * @param include the fields to include in the fetched item
-	 * @returns a Track
+	 * @returns a Query for a Track
 	 */
 	static getTrack<I extends TrackInclude[] = []>(
 		trackId: string | number,
@@ -387,7 +403,7 @@ export default class API {
 	 * Get source file of a track
 	 * @param sourceFileId the identifier of a file
 	 * @param include the fields to include in the fetched item
-	 * @returns a File
+	 * @returns a Query for a File
 	 */
 	static getSourceFile(
 		sourceFileId: string | number
@@ -405,7 +421,7 @@ export default class API {
 	 * Get the album
 	 * @param albumSlugOrId the identifier of an album
 	 * @param include the fields to include in the fetched item
-	 * @returns a release
+	 * @returns a query for an albums
 	 */
 	static getAlbum<I extends AlbumInclude[] = []>(
 		albumSlugOrId: string | number,
@@ -421,6 +437,10 @@ export default class API {
 		};
 	}
 
+	/**
+	 * Get the User object of the authentified user
+	 * @returns A query to a User object
+	 */
 	static getCurrentUserStatus(): Query<User> {
 		return {
 			key: ['user'],
@@ -433,8 +453,7 @@ export default class API {
 
 	/**
 	 * Fetch all users
-	 * @param pagination the parameters to choose how many items to load
-	 * @returns An array of users
+	 * @returns An Infinite Query of users
 	 */
 	static getUsers(
 		sort?: SortingParameters<typeof UserSortingKeys>,
@@ -485,7 +504,7 @@ export default class API {
 	 * Get the master release of an album
 	 * @param albumSlugOrId the identifier of an album
 	 * @param include the fields to include in the fetched item
-	 * @returns a release
+	 * @returns a query for a release
 	 */
 	static getMasterRelease<I extends ReleaseInclude[] = []>(
 		albumSlugOrId: string | number,
@@ -504,7 +523,7 @@ export default class API {
 	 * Get tracks of a song
 	 * @param songSlugOrId the id of the parent song
 	 * @param include the relation to include
-	 * @returns an array of tracks
+	 * @returns an Infinite Query of tracks
 	 */
 	static getSongTracks<I extends TrackInclude[] = []>(
 		songSlugOrId: string | number,
@@ -524,7 +543,7 @@ export default class API {
 	 * Get video tracks of a song
 	 * @param songSlugOrId the id of the parent song
 	 * @param include the relation to include
-	 * @returns an array of video tracks
+	 * @returns An Infinite query of Tracks
 	 */
 	static getSongVideos<I extends TrackInclude[] = []>(
 		songSlugOrId: string | number,
@@ -544,7 +563,7 @@ export default class API {
 	 * Get versions of a song
 	 * @param songSlugOrId the id of the  song
 	 * @param include the relation to include
-	 * @returns an array of tracks
+	 * @returns An Infinite query of Tracks
 	 */
 	static getSongVersions<I extends SongInclude[] = []>(
 		songSlugOrId: string | number,
@@ -563,8 +582,7 @@ export default class API {
 	/**
 	 * Get genres of a song
 	 * @param songSlugOrId the id of the parent song
-	 * @param pagination
-	 * @returns an array of genres
+	 * @returns An Infinite query of Genres
 	 */
 	static getSongGenres(
 		songSlugOrId: string | number
@@ -581,7 +599,7 @@ export default class API {
 	/**
 	 * Get genres of a album
 	 * @param albumSlugOrId the id of the album
-	 * @returns an array of genres
+	 * @returns An Infinite query of Genres
 	 */
 	static getAlbumGenres(
 		albumSlugOrId: string | number,
@@ -598,7 +616,7 @@ export default class API {
 	/**
 	 * Get videos of a album
 	 * @param albumSlugOrId the id of the album
-	 * @returns an array of videos
+	 * @returns A query for an array of tracks
 	 */
 	static getAlbumVideos<I extends TrackInclude[] = []>(
 		albumSlugOrId: string | number,
@@ -616,7 +634,7 @@ export default class API {
 	/**
 	 * Get releases of a album
 	 * @param albumSlugOrId the id of the album
-	 * @returns an array of releases
+	 * @returns An Infinite query of Releases
 	 */
 	static getAlbumReleases<I extends ReleaseInclude[] = []>(
 		albumSlugOrId: string | number,
@@ -632,6 +650,11 @@ export default class API {
 		};
 	}
 
+	/**
+	 * Get a release
+	 * @param slugOrId the id of the release
+	 * @returns A query for a Release
+	 */
 	static getRelease<I extends ReleaseInclude[] = []>(
 		slugOrId: string | number,
 		include?: I
@@ -646,6 +669,11 @@ export default class API {
 		};
 	}
 
+	/**
+	 * Get a release's tracklist
+	 * @param slugOrId the id of the release
+	 * @returns A query for a Tracklist
+	 */
 	static getReleaseTrackList<I extends TrackInclude[] = []>(
 		slugOrId: string | number,
 		include?: I
@@ -659,6 +687,11 @@ export default class API {
 		};
 	}
 
+	/**
+	 * Get a release's playlist
+	 * @param slugOrId the id of the release
+	 * @returns A query for an array of tracks
+	 */
 	static getReleasePlaylist<I extends TrackInclude[] = []>(
 		slugOrId: string | number,
 		include?: I
@@ -672,6 +705,11 @@ export default class API {
 		};
 	}
 
+	/**
+	 * Get the song's lyrics
+	 * @param slugOrId the id of the song
+	 * @returns A query for an array of strings
+	 */
 	static getSongLyrics(
 		slugOrId: string | number
 	): Query<string[] | null> {
@@ -687,6 +725,11 @@ export default class API {
 		};
 	}
 
+	/**
+	 * Get a song's main album
+	 * @param songSlugOrId the id of the song
+	 * @returns A query for an Album
+	 */
 	static getSongMainAlbum<I extends AlbumInclude[] = []>(
 		songSlugOrId: string | number,
 		include?: I
@@ -699,6 +742,11 @@ export default class API {
 		};
 	}
 
+	/**
+	 * Get a song's main release
+	 * @param songSlugOrId the id of the song
+	 * @returns A query for a Release
+	 */
 	static getSongMainRelease<I extends ReleaseInclude[] = []>(
 		songSlugOrId: string | number,
 		include?: I
@@ -711,6 +759,11 @@ export default class API {
 		};
 	}
 
+	/**
+	 * Get an artist
+	 * @param slugOrId the id of the artist
+	 * @returns A query for an Artist
+	 */
 	static getArtist(
 		slugOrId: string | number,
 	): Query<Artist> {
@@ -726,8 +779,7 @@ export default class API {
 
 	/**
 	 * Fetch all genres
-	 * @param pagination the parameters to choose how many items to load
-	 * @returns An array of genres
+	 * @returns An Infinite Query of genres
 	 */
 	static getAllGenres(
 		sort?: SortingParameters<typeof ArtistSortingKeys>
@@ -743,18 +795,25 @@ export default class API {
 	}
 
 	/**
-	 * Fetch one genre
+	 * Get one genre
+	 * @param idOrSlug The id of the genre
+	 * @returns A query for a Genre
 	 */
-	static async getGenre(idOrSlug: string | number): Promise<Genre> {
-		return API.fetch({
-			route: `/genres/${idOrSlug}`,
-			errorMessage: 'Genre not found',
-			parameters: {}
-		});
+	static getGenre(idOrSlug: string | number): Query<Genre> {
+		return {
+			key: ['genre', idOrSlug],
+			exec: () => API.fetch({
+				route: `/genres/${idOrSlug}`,
+				errorMessage: 'Genre not found',
+				parameters: {}
+			})
+		};
 	}
 
 	/**
 	 * Fetch all albums from a genre
+	 * @param idOrSlug the identifier of the genre
+	 * @returns An Infinite Query for Albums
 	 */
 	static getGenreAlbums(
 		idOrSlug: string | number,
@@ -774,6 +833,8 @@ export default class API {
 
 	/**
 	 * Fetch all artists from a genre
+	 * @param idOrSlug the identifier of the genre
+	 * @returns An Infinite Query for artists
 	 */
 	static getGenreArtists(
 		idOrSlug: string | number,
@@ -791,6 +852,8 @@ export default class API {
 
 	/**
 	 * Fetch all songs from a genre
+	 * @param idOrSlug the identifier of the genre
+	 * @returns An Infinite Query for songs
 	 */
 	static getGenreSongs(
 		idOrSlug: string | number,
@@ -806,6 +869,11 @@ export default class API {
 		};
 	}
 
+	/**
+	 * Search for artists
+	 * @param query token to find artists
+	 * @returns An Infinite Query for artists
+	 */
 	static searchArtists(
 		query: string,
 		sort?: SortingParameters<typeof ArtistSortingKeys>,
@@ -820,6 +888,11 @@ export default class API {
 		};
 	}
 
+	/**
+	 * Search for albums
+	 * @param query token to find albums
+	 * @returns An Infinite Query for albums
+	 */
 	static searchAlbums<I extends AlbumInclude[] = []>(
 		query: string,
 		type?: AlbumType,
@@ -837,6 +910,11 @@ export default class API {
 		};
 	}
 
+	/**
+	 * Search for songs
+	 * @param query token to find songs
+	 * @returns An Infinite Query for songs
+	 */
 	static searchSongs<I extends SongInclude[] = []>(
 		query: string,
 		sort?: SortingParameters<typeof SongSortingKeys>,
@@ -895,13 +973,6 @@ export default class API {
 			}
 		}
 		return jsonResponse;
-	}
-
-	static scanLibraries(): Promise<LibraryTaskResponse> {
-		return API.fetch<LibraryTaskResponse, []>({
-			route: `/tasks/scan`,
-			parameters: { }
-		});
 	}
 
 	/**
