@@ -397,10 +397,9 @@ export default class SongService extends RepositoryService<
 					}
 				}
 			}
-		}).then((songs) => songs.map((song) => ({
+		}).then((songs) => songs.map(({ tracks, ...song }) => ({
 			...song,
-			video: song.tracks[0],
-			tracks: undefined
+			video: tracks[0]
 		})));
 	}
 
