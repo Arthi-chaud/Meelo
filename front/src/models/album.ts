@@ -40,7 +40,7 @@ type Album = Resource & Illustration & {
 type AlbumInclude = 'artist';
 
 type AlbumWithRelations<I extends AlbumInclude> = Album & Pick<
-	{ artist?: Artist },
+	{ artist: Artist | null },
 	I
 >
 

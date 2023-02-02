@@ -897,7 +897,7 @@ export default class API {
 		query: string,
 		type?: AlbumType,
 		sort?: SortingParameters<typeof AlbumSortingKeys>,
-		include: AlbumInclude[] = []
+		include?: I
 	): InfiniteQuery<AlbumWithRelations<I[number]>> {
 		return {
 			key: ['search', 'albums', query, sort ?? {}, type ?? {}, ...API.formatIncludeKeys(include)],

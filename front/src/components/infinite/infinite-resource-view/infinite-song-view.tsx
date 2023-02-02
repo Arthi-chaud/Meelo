@@ -1,13 +1,13 @@
 import { useRouter } from "next/router";
 import { useState } from "react";
-import { SongSortingKeys, SongWithArtist } from "../../../models/song";
+import { SongSortingKeys, SongWithRelations } from "../../../models/song";
 import Controls, { OptionState } from "../../controls/controls";
 import SongItem from "../../list-item/song-item";
 import InfiniteView from "../infinite-view";
 import InfiniteResourceViewProps from "./infinite-resource-view-props";
 
 const InfiniteSongView = (
-	props: InfiniteResourceViewProps<SongWithArtist, typeof SongSortingKeys>
+	props: InfiniteResourceViewProps<SongWithRelations<'artist'>, typeof SongSortingKeys>
 ) => {
 	const router = useRouter();
 	const [options, setOptions] = useState<OptionState<typeof SongSortingKeys>>();
@@ -28,8 +28,8 @@ const InfiniteSongView = (
 				sortBy: options?.sortBy ?? 'name',
 				order: options?.order ?? 'asc',
 			})}
-			renderListItem={(item: SongWithArtist) => <SongItem song={item} key={item.id} />}
-			renderGridItem={(item: SongWithArtist) => <></>}
+			renderListItem={(item: SongWithRelations<'artist'>) => <SongItem song={item} key={item.id} />}
+			renderGridItem={(item: SongWithRelations<'artist'>) => <></>}
 		/>
 	</>;
 };

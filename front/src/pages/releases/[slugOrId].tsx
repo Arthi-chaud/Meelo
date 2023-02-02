@@ -6,7 +6,6 @@ import { Box } from "@mui/system";
 import { useRouter } from "next/router";
 import API from "../../api/api";
 import Illustration from "../../components/illustration";
-import { ReleaseWithAlbum } from "../../models/release";
 import formatDuration from '../../utils/formatDuration';
 import { useEffect, useState } from "react";
 import Tracklist from "../../models/tracklist";
@@ -14,7 +13,9 @@ import Link from 'next/link';
 import PlayCircleIcon from '@mui/icons-material/PlayCircle';
 import { Shuffle } from "@mui/icons-material";
 import Tile from "../../components/tile/tile";
-import { useQueries, useQuery } from "../../api/use-query";
+import {
+	useInfiniteQuery, useQueries, useQuery
+} from "../../api/use-query";
 import { useDispatch } from "react-redux";
 import { playTrack, playTracks } from "../../state/playerSlice";
 import Song from "../../models/song";
@@ -24,62 +25,16 @@ import getSlugOrId from "../../utils/getSlugOrId";
 import ReleaseTrackList from "../../components/release-tracklist";
 import prepareSSR, { InferSSRProps } from "../../ssr";
 import ReleaseContextualMenu from "../../components/contextual-menu/release-contextual-menu";
-import { TrackWithSong } from "../../models/track";
 import LoadingPage from "../../components/loading/loading-page";
 import TileRow from "../../components/tile-row";
-
-const releaseQuery = (slugOrId: string | number) => ({
-	key: ['release', slugOrId],
-	exec: () => API.getRelease<ReleaseWithAlbum>(slugOrId, ['album'])
-});
-
-const tracklistQuery = (releaseSlugOrId: string | number) => ({
-	key: [
-		'release',
-		releaseSlugOrId,
-		'tracklist'
-	],
-	exec: () => API.getReleaseTrackList<TrackWithSong>(releaseSlugOrId, ['song']),
-});
-
-const artistQuery = (slugOrId: string | number) => ({
-	key: ['artist', slugOrId],
-	exec: () => API.getArtist(slugOrId!),
-});
-
-const albumGenresQuery = (slugOrId: string | number) => ({
-	key: [
-		'album',
-		slugOrId,
-		'genres'
-	],
-	exec: () => API.getAlbumGenres(slugOrId),
-});
-
-const albumVideosQuery = (slugOrId: string | number) => ({
-	key: [
-		'album',
-		slugOrId,
-		'video'
-	],
-	exec: () => API.getAlbumVideos<TrackWithSong>(slugOrId, ['song']),
-});
-
-const albumReleasesQuery = (slugOrId: string | number) => ({
-	key: [
-		'album',
-		slugOrId,
-		'releases'
-	],
-	exec: () => API.getAlbumReleases(slugOrId, {}),
-});
+import { TrackWithRelations } from "../../models/track";
 
 export const getServerSideProps = prepareSSR((context) => {
 	const releaseIdentifier = getSlugOrId(context.params);
 
 	return {
 		additionalProps: { releaseIdentifier },
-		queries: [releaseQuery(releaseIdentifier), tracklistQuery(releaseIdentifier)]
+		queries: [API.getRelease(releaseIdentifier), API.getReleaseTrackList(releaseIdentifier)]
 	};
 });
 
@@ -116,26 +71,26 @@ const ReleasePage = (
 	releaseIdentifier ??= getSlugOrId(router.query);
 	const theme = useTheme();
 	const dispatch = useDispatch();
-	const [trackList, setTracklist] = useState<Tracklist<TrackWithSong>>();
+	const [trackList, setTracklist] = useState<Tracklist<TrackWithRelations<'song'>>>();
 	const [totalDuration, setTotalDuration] = useState<number | null>(null);
-	const [tracks, setTracks] = useState<TrackWithSong[]>([]);
+	const [tracks, setTracks] = useState<TrackWithRelations<'song'>[]>([]);
 
-	const release = useQuery(releaseQuery, releaseIdentifier);
+	const release = useQuery(API.getRelease, releaseIdentifier);
 	const artistId = release.data?.album?.artistId;
 
-	const tracklist = useQuery(tracklistQuery, releaseIdentifier);
-	const albumArtist = useQuery(artistQuery, artistId);
-	const albumGenres = useQuery(albumGenresQuery, release.data?.albumId);
-	const hasGenres = (albumGenres.data?.items.length ?? 0) > 0;
+	const tracklist = useQuery(API.getReleaseTrackList, releaseIdentifier, ['song']);
+	const albumArtist = useQuery(API.getArtist, artistId);
+	const albumGenres = useInfiniteQuery(API.getAlbumGenres, release.data?.albumId);
+	const hasGenres = (albumGenres.data?.pages.at(0)?.items.length ?? 0) > 0;
 	const otherArtistsQuery = useQueries(...tracks
-		.filter((track: TrackWithSong) => track.song.artistId != albumArtist.data?.id)
-		.map((track): Parameters<typeof useQuery<Artist>> => [artistQuery, track.song.artistId]));
-	const albumVideos = useQuery(albumVideosQuery, release.data?.albumId);
-	const relatedReleases = useQuery(albumReleasesQuery, release.data?.albumId);
+		.filter((track: TrackWithRelations<'song'>) => track.song.artistId != albumArtist.data?.id)
+		.map((track): Parameters<typeof useQuery<Artist>> => [API.getArtist, track.song.artistId]));
+	const albumVideos = useQuery(API.getAlbumVideos, release.data?.albumId);
+	const relatedReleases = useInfiniteQuery(API.getAlbumReleases, release.data?.albumId);
 
 	useEffect(() => {
 		if (tracklist.data) {
-			const discMap = tracklist.data;
+			const discMap: Tracklist<TrackWithRelations<'song'>> = tracklist.data as unknown as any;
 			const flatTracks = Array.from(Object.values(discMap)).flat();
 
 			setTracks(flatTracks);
@@ -224,7 +179,7 @@ const ReleasePage = (
 									<Grid item>
 										<ListSubheader>Genres:</ListSubheader>
 									</Grid>
-									{ albumGenres.data?.items.map((genre) =>
+									{ albumGenres.data?.pages.at(0)?.items.map((genre) =>
 										<Grid item key={genre.id} sx={{ display: 'flex' }}>
 											<Link href={`/genres/${genre.slug}`}>
 												<Button variant="outlined" color='inherit'>
@@ -275,11 +230,11 @@ const ReleasePage = (
 				</Grid>
 			</Grid>
 			<RelatedContentSection
-				display={(relatedReleases.data?.items?.length ?? 0) > 1}
+				display={(relatedReleases.data?.pages.at(0)?.items?.length ?? 0) > 1}
 				title={"Other releases of the same album"}
 			>
 				<TileRow tiles={
-					relatedReleases.data?.items?.filter(
+					relatedReleases.data?.pages.at(0)?.items?.filter(
 						(relatedRelease) => relatedRelease.id != release.data!.id
 					).map((otherRelease, otherReleaseIndex) =>
 						<Tile key={otherReleaseIndex}

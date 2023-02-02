@@ -14,6 +14,7 @@ type Key = string | number | Record<string, unknown>;
 
 export type Query<Type> = {
 	key: Key[],
+	// @warning If you call this method 'by hand', please consider using a query client instead
 	exec: () => Promise<Type>
 };
 

@@ -1,85 +1,36 @@
 import { useRouter } from "next/router";
 import API from "../../../api/api";
-import { SongSortingKeys, SongWithArtist } from "../../../models/song";
 import prepareSSR, { InferSSRProps } from "../../../ssr";
 import getSlugOrId from "../../../utils/getSlugOrId";
-import { useQuery } from "../../../api/use-query";
+import { useInfiniteQuery, useQuery } from "../../../api/use-query";
 import LoadingPage from "../../../components/loading/loading-page";
 import {
 	Box, Button, Divider, Grid, Stack, Tab, Tabs, Typography
 } from "@mui/material";
 import LyricsBox from "../../../components/lyrics";
 import SongRelationPageHeader from "../../../components/relation-page-header/song-relation-page-header";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import InfiniteSongView from "../../../components/infinite/infinite-resource-view/infinite-song-view";
-import { Page } from "../../../components/infinite/infinite-scroll";
-import Track, {
-	TrackSortingKeys,
-	TrackWithRelease,
-	TrackWithSong
-} from "../../../models/track";
-import { SortingParameters } from "../../../utils/sorting";
 import InfiniteTrackView from "../../../components/infinite/infinite-resource-view/infinite-track-view";
 import Link from "next/link";
 import { PlayArrow } from "@mui/icons-material";
 import { useDispatch } from "react-redux";
 import { playTrack } from "../../../state/playerSlice";
-
-const songQuery = (songSlugOrId: number | string) => ({
-	key: ["song", songSlugOrId],
-	exec: () => API.getSong<SongWithArtist>(songSlugOrId, ["artist"])
-});
-
-const lyricsQuery = (songSlugOrId: number | string) => ({
-	key: [
-		"song",
-		songSlugOrId,
-		"lyrics"
-	],
-	exec: () => API.getSongLyrics(songSlugOrId)
-});
-
-const songVersionsQuery = (
-	songSlugOrId: number | string, sort?: SortingParameters<typeof SongSortingKeys>
-) => ({
-	key: [
-		"song",
-		songSlugOrId,
-		"versions",
-		sort ?? {}
-	],
-	exec: (lastPage: Page<SongWithArtist>) =>
-		API.getSongVersions<SongWithArtist>(songSlugOrId, lastPage, sort, ['artist'])
-});
-
-const songGenresQuery = (songSlugOrId: number | string) => ({
-	key: [
-		"song",
-		songSlugOrId,
-		"genres"
-	],
-	exec: () =>	API.getSongGenres(songSlugOrId)
-});
-
-const songTracksQuery = (
-	songSlugOrId: number | string, sort?: SortingParameters<typeof TrackSortingKeys>
-) => ({
-	key: [
-		"song",
-		songSlugOrId,
-		"tracks",
-		sort ?? {}
-	],
-	exec: (lastPage: Page<Track>) =>
-		API.getSongTracks<TrackWithRelease & TrackWithSong>(songSlugOrId, lastPage, sort, ["release", "song"])
-});
+import { useQueryClient } from "react-query";
 
 export const getServerSideProps = prepareSSR((context) => {
 	const songIdentifier = getSlugOrId(context.params);
 
 	return {
 		additionalProps: { songIdentifier },
-		queries: [songQuery(songIdentifier), lyricsQuery(songIdentifier)]
+		queries: [
+			API.getSong(songIdentifier),
+			API.getSongLyrics(songIdentifier),
+		],
+		infiniteQueries: [
+			API.getSongVersions(songIdentifier, undefined, ['artist']),
+			API.getSongTracks(songIdentifier)
+		]
 	};
 });
 
@@ -98,10 +49,11 @@ const SongPage = (
 	const [tab, setTabs] = useState<typeof tabs[number]>(getTabFromQuery());
 
 	songIdentifier ??= getSlugOrId(router.query);
-	const lyrics = useQuery(lyricsQuery, songIdentifier);
-	const song = useQuery(songQuery, songIdentifier);
-	const genres = useQuery(songGenresQuery, songIdentifier);
+	const lyrics = useQuery(API.getSongLyrics, songIdentifier);
+	const song = useQuery(API.getSong, songIdentifier);
+	const genres = useInfiniteQuery(API.getSongGenres, songIdentifier);
 	const dispatch = useDispatch();
+	const queryClient = useQueryClient();
 
 	if (!song.data || !genres.data) {
 		return <LoadingPage/>;
@@ -110,9 +62,9 @@ const SongPage = (
 		<SongRelationPageHeader song={song.data}/>
 		<Grid container direction={{ xs: 'column', md: 'row' }} spacing={2}>
 			<Grid item xs>
-				{ (genres.data.items.length ?? 0) != 0 && <Stack direction='row' sx={{ overflowY: 'scroll', alignItems: 'center' }} spacing={2}>
+				{ (genres.data.pages.at(0)?.items.length ?? 0) != 0 && <Stack direction='row' sx={{ overflowY: 'scroll', alignItems: 'center' }} spacing={2}>
 					<Typography sx={{ overflow: 'unset' }}>Genres:</Typography>
-					{ genres.data.items.map((genre) => <Link key={genre.slug} href={`/genres/${genre.slug}`}>
+					{ genres.data.pages.at(0)?.items.map((genre) => <Link key={genre.slug} href={`/genres/${genre.slug}`}>
 						<Button variant="outlined">
 							{genre.name}
 						</Button>
@@ -121,7 +73,8 @@ const SongPage = (
 			</Grid>
 			<Grid item>
 				<Button variant="contained" sx={{ width: '100%' }} endIcon={<PlayArrow />}
-					onClick={() => API.getMasterTrack<TrackWithRelease>(songIdentifier, ['release'])
+					onClick={() => API.getMasterTrack(songIdentifier, ['release'])
+						.exec()
 						.then((master) => dispatch(playTrack({
 							track: master,
 							artist: song.data.artist,
@@ -151,12 +104,12 @@ const SongPage = (
 			)}
 			{ tab == 'versions' &&
 				<InfiniteSongView
-					query={(sort) => songVersionsQuery(songIdentifier, sort)}
+					query={(sort) => API.getSongVersions(songIdentifier, sort, ['artist'])}
 				/>
 			}
 			{ tab == 'tracks' &&
 				<InfiniteTrackView
-					query={(sort) => songTracksQuery(songIdentifier, sort)}
+					query={(sort) => API.getSongTracks(songIdentifier, sort)}
 				/>
 			}
 		</Box>
