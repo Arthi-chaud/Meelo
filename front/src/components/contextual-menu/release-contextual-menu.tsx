@@ -2,7 +2,6 @@ import { Star } from "@mui/icons-material";
 import { toast } from "react-hot-toast";
 import { useMutation, useQueryClient } from "react-query";
 import API from "../../api/api";
-import { ReleaseWithAlbum } from "../../models/release";
 import ContextualMenu from "./contextual-menu";
 import { GoToAlbumAction, GoToArtistAction } from "../actions/link";
 import { useSelector } from "react-redux";
@@ -10,9 +9,10 @@ import { RootState } from "../../state/store";
 import { ShareReleaseAction } from "../actions/share";
 import { DownloadReleaseAction } from "../actions/download";
 import { useConfirm } from "material-ui-confirm";
+import { ReleaseWithRelations } from "../../models/release";
 
 type ReleaseContextualMenuProps = {
-	release: ReleaseWithAlbum;
+	release: ReleaseWithRelations<'album'>;
 }
 
 const ReleaseContextualMenu = (props: ReleaseContextualMenuProps) => {
@@ -29,6 +29,7 @@ const ReleaseContextualMenu = (props: ReleaseContextualMenuProps) => {
 	});
 	const tracksMasterMutation = useMutation(async () => {
 		return API.getReleasePlaylist(props.release.id)
+			.exec()
 			.then((tracks) => {
 				Promise.allSettled(
 					tracks.reverse().map((track) =>	API.setTrackAsMaster(track.id))

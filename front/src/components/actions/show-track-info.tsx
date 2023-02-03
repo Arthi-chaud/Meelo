@@ -18,5 +18,6 @@ export const ShowMasterTrackFileInfoAction = (
 	icon: <Info/>,
 	label: "More Info",
 	onClick: () => API.getMasterTrack(songId)
+		.exec()
 		.then((song) => openTrackFileInfoModal(confirm, song.id))
 });

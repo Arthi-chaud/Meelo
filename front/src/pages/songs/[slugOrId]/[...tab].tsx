@@ -16,7 +16,6 @@ import Link from "next/link";
 import { PlayArrow } from "@mui/icons-material";
 import { useDispatch } from "react-redux";
 import { playTrack } from "../../../state/playerSlice";
-import { useQueryClient } from "react-query";
 
 export const getServerSideProps = prepareSSR((context) => {
 	const songIdentifier = getSlugOrId(context.params);
@@ -50,10 +49,9 @@ const SongPage = (
 
 	songIdentifier ??= getSlugOrId(router.query);
 	const lyrics = useQuery(API.getSongLyrics, songIdentifier);
-	const song = useQuery(API.getSong, songIdentifier);
+	const song = useQuery((id) => API.getSong(id, ['artist']), songIdentifier);
 	const genres = useInfiniteQuery(API.getSongGenres, songIdentifier);
 	const dispatch = useDispatch();
-	const queryClient = useQueryClient();
 
 	if (!song.data || !genres.data) {
 		return <LoadingPage/>;
@@ -109,7 +107,7 @@ const SongPage = (
 			}
 			{ tab == 'tracks' &&
 				<InfiniteTrackView
-					query={(sort) => API.getSongTracks(songIdentifier, sort)}
+					query={(sort) => API.getSongTracks(songIdentifier, sort, ['release', 'song'])}
 				/>
 			}
 		</Box>

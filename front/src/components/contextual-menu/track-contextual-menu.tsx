@@ -3,7 +3,6 @@ import { toast } from "react-hot-toast";
 import { useMutation, useQueryClient } from "react-query";
 import { useSelector } from "react-redux";
 import API from "../../api/api";
-import { TrackWithSong } from "../../models/track";
 import { RootState } from "../../state/store";
 import ContextualMenu from "./contextual-menu";
 import { useConfirm } from "material-ui-confirm";
@@ -11,9 +10,10 @@ import { DownloadAction } from "../actions/download";
 import { GoToReleaseAction } from "../actions/link";
 import { PlayAfterAction, PlayNextAction } from "../actions/playlist";
 import { ShowTrackFileInfoAction } from "../actions/show-track-info";
+import { TrackWithRelations } from "../../models/track";
 
 type TrackContextualMenuProps = {
-	track: TrackWithSong;
+	track: TrackWithRelations<'song'>;
 	onSelect?: () => void;
 }
 
@@ -22,8 +22,8 @@ const TrackContextualMenu = (props: TrackContextualMenuProps) => {
 	const queryClient = useQueryClient();
 	const confirm = useConfirm();
 	const isMaster = props.track.song.masterId == props.track.id;
-	const getPlayNextProps = () => API.getArtist(props.track.song.artistId)
-		.then((artist) => API.getRelease(props.track.releaseId)
+	const getPlayNextProps = () => API.getArtist(props.track.song.artistId).exec()
+		.then((artist) => API.getRelease(props.track.releaseId).exec()
 			.then((release) => ({ track: props.track, artist, release })));
 	const masterMutation = useMutation(async () => {
 		return API.setTrackAsMaster(props.track.id)

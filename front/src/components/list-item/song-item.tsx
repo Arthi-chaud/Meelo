@@ -1,6 +1,5 @@
 import API from "../../api/api";
-import { SongWithArtist } from "../../models/song";
-import { TrackWithRelease } from "../../models/track";
+import { SongWithRelations } from "../../models/song";
 import Illustration from '../illustration';
 import ListItem from "./item";
 import AudiotrackIcon from '@mui/icons-material/Audiotrack';
@@ -9,7 +8,7 @@ import { playTrack } from "../../state/playerSlice";
 import SongContextualMenu from "../contextual-menu/song-contextual-menu";
 
 type SongItemProps = {
-	song: SongWithArtist;
+	song: SongWithRelations<'artist'>;
 	hideArtist?: boolean;
 }
 
@@ -27,7 +26,7 @@ const SongItem = ({ song, hideArtist }: SongItemProps) => {
 			icon={<Illustration url={song.illustration} fallback={<AudiotrackIcon/>}/>}
 			title={song.name}
 			onClick={() => {
-				API.getMasterTrack<TrackWithRelease>(song.id, ['release']).then((track) => {
+				API.getMasterTrack(song.id, ['release']).exec().then((track) => {
 					dispatch(playTrack({
 						artist,
 						track,

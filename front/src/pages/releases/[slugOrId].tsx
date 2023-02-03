@@ -78,7 +78,7 @@ const ReleasePage = (
 	const release = useQuery(API.getRelease, releaseIdentifier);
 	const artistId = release.data?.album?.artistId;
 
-	const tracklist = useQuery(API.getReleaseTrackList, releaseIdentifier, ['song']);
+	const tracklist = useQuery((id) => API.getReleaseTrackList(id, ['song']), releaseIdentifier);
 	const albumArtist = useQuery(API.getArtist, artistId);
 	const albumGenres = useInfiniteQuery(API.getAlbumGenres, release.data?.albumId);
 	const hasGenres = (albumGenres.data?.pages.at(0)?.items.length ?? 0) > 0;
@@ -90,7 +90,7 @@ const ReleasePage = (
 
 	useEffect(() => {
 		if (tracklist.data) {
-			const discMap: Tracklist<TrackWithRelations<'song'>> = tracklist.data as unknown as any;
+			const discMap = tracklist.data;
 			const flatTracks = Array.from(Object.values(discMap)).flat();
 
 			setTracks(flatTracks);

@@ -1,6 +1,5 @@
 import Artist from "../../models/artist";
 import Release from "../../models/release";
-import { TrackWithSong } from "../../models/track";
 import ContextualMenu from "./contextual-menu";
 import { useConfirm } from "material-ui-confirm";
 import { DownloadAction } from "../actions/download";
@@ -11,9 +10,10 @@ import {
 import { PlayAfterAction, PlayNextAction } from "../actions/playlist";
 import { ShareSongAction } from "../actions/share";
 import { ShowTrackFileInfoAction } from "../actions/show-track-info";
+import { TrackWithRelations } from "../../models/track";
 
 type ReleaseTrackContextualMenuProps = {
-	track: TrackWithSong;
+	track: TrackWithRelations<'song'>;
 	artist: Artist;
 	release: Release;
 	onSelect?: () => void;

@@ -1,17 +1,16 @@
 import API from "../../api/api";
-import { TrackWithRelease, TrackWithSong } from "../../models/track";
+import { TrackWithRelations } from "../../models/track";
 import Illustration from '../illustration';
 import ListItem from "./item";
 import AudiotrackIcon from '@mui/icons-material/Audiotrack';
 import { useDispatch } from "react-redux";
 import { playTrack } from "../../state/playerSlice";
-import { SongWithArtist } from "../../models/song";
 import StarIcon from "@mui/icons-material/Star";
 import TrackContextualMenu from "../contextual-menu/track-contextual-menu";
 import { Grid } from "@mui/material";
 
 type TrackItemProps = {
-	track: TrackWithRelease & TrackWithSong
+	track: TrackWithRelations<'release' | 'song'>
 }
 
 /**
@@ -28,7 +27,7 @@ const TrackItem = ({ track }: TrackItemProps) => {
 		<ListItem
 			icon={<Illustration url={track.illustration} fallback={<AudiotrackIcon/>}/>}
 			onClick={() => {
-				API.getSong<SongWithArtist>(track.songId, ["artist"]).then((song) => {
+				API.getSong(track.songId, ["artist"]).exec().then((song) => {
 					dispatch(playTrack({ artist: song.artist, track, release }));
 				});
 			}}

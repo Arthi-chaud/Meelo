@@ -7,7 +7,6 @@ import toast from "react-hot-toast";
 import { useMutation, useQueryClient } from "react-query";
 import API from "../../api/api";
 import Library from "../../models/library";
-import { Page } from "../infinite/infinite-scroll";
 import AdminGrid from "../admin-grid";
 import {
 	CleanAllLibrariesAction, CleanLibraryAction,
@@ -16,11 +15,6 @@ import {
 } from "../actions/library-task";
 import { useConfirm } from "material-ui-confirm";
 import Action from "../actions/action";
-
-const librariesQuery = () => ({
-	key: ['libraries'],
-	exec: (lastPage: Page<Library>) => API.getAllLibraries(lastPage)
-});
 
 const actionButtonStyle = {
 	overflow: 'hidden',
@@ -96,7 +90,7 @@ const LibrariesSettings = () => {
 			</Grid>
 		</Grid>
 		<AdminGrid
-			infiniteQuery={librariesQuery}
+			infiniteQuery={API.getAllLibraries}
 			columns={columns.map((column) => ({
 				...column,
 				headerAlign: column.field == 'name' ? 'left' : 'center',

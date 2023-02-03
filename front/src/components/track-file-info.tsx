@@ -4,27 +4,16 @@ import {
 import { useConfirm } from "material-ui-confirm";
 import API from "../api/api";
 import { useQuery } from "../api/use-query";
-import { TrackWithSong } from "../models/track";
 import formatDuration from "../utils/formatDuration";
 import { WideLoadingComponent } from "./loading/loading";
-
-const trackQuery = (trackId: number) => ({
-	key: ['track', trackId],
-	exec: () => API.getTrack<TrackWithSong>(trackId, ['song'])
-});
-
-const sourceFileQuery = (sourceFileId: number) => ({
-	key: ['file', sourceFileId],
-	exec: () => API.getSourceFile(sourceFileId)
-});
 
 /**
  * Table component, listing info of track and its source file
  * @param trackId the id of the track to fetch
  */
 const TrackFileInfo = ({ trackId }: { trackId: number }) => {
-	const track = useQuery(trackQuery, trackId);
-	const sourceFile = useQuery(sourceFileQuery, track.data?.sourceFileId);
+	const track = useQuery(API.getTrack, trackId);
+	const sourceFile = useQuery(API.getSourceFile, track.data?.sourceFileId);
 
 	if (!track.data || !sourceFile.data) {
 		return <WideLoadingComponent/>;

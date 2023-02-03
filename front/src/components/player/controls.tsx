@@ -18,7 +18,6 @@ import LyricsBox from "../lyrics";
 import Track from "../../models/track";
 import Artist from "../../models/artist";
 import Link from "next/link";
-import { SongWithArtist, SongWithLyrics } from "../../models/song";
 import ReleaseTrackContextualMenu from "../contextual-menu/release-track-contextual-menu";
 import Release from "../../models/release";
 import { useDispatch, useSelector } from "react-redux";
@@ -32,12 +31,6 @@ import {
 } from 'react-beautiful-dnd';
 import DragHandleIcon from '@mui/icons-material/DragHandle';
 import formatDuration from "../../utils/formatDuration";
-import { toast } from "react-hot-toast";
-
-const songQuery = (slugOrId: string | number) => ({
-	key: ['song', slugOrId],
-	exec: () => API.getSong<SongWithLyrics & SongWithArtist>(slugOrId, ['lyrics', 'artist'])
-});
 
 type PlayerButtonControlsProps = {
 	playing: boolean;
@@ -171,7 +164,7 @@ const ExpandedPlayerControls = (
 	props: PlayerControlsProps & { videoRef: LegacyRef<HTMLVideoElement> }
 ) => {
 	const dispatch = useDispatch();
-	const parentSong = useQuery(songQuery, props.track?.songId);
+	const parentSong = useQuery((id) => API.getSong(id, ['artist', 'lyrics']), props.track?.id);
 	const [panel, setPanel] = useState<'lyrics' | 'playlist'>('lyrics');
 	const playlist = useSelector((state: RootState) => state.player.playlist);
 	const cursor = useSelector((state: RootState) => state.player.cursor);

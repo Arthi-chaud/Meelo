@@ -425,7 +425,7 @@ export default class API {
 	 */
 	static getAlbum<I extends AlbumInclude[] = []>(
 		albumSlugOrId: string | number,
-		include: AlbumInclude[] = []
+		include: I
 	): Query<AlbumWithRelations<I[number]>> {
 		return {
 			key: ['album', albumSlugOrId, ...API.formatIncludeKeys(include)],

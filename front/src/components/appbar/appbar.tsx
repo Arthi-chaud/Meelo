@@ -22,19 +22,13 @@ import Library from '../../models/library';
 import toast from 'react-hot-toast';
 import ContextualMenu from '../contextual-menu/contextual-menu';
 import getAppBarActions from './actions';
-import { Page } from '../infinite/infinite-scroll';
-
-const libraryQuery = () => ({
-	key: ['libraries'],
-	exec: (lastPage: Page<Library>) => API.getAllLibraries(lastPage)
-});
 
 const MeeloAppBar = () => {
 	const router = useRouter();
 	const [requestedLibrary, setRequestedLibrary] = useState(globalLibrary);
 	const [availableLibraries, setAvailableLibraries] = useState<Library[] | null>(null);
 	const librariesQuery = useReactInfiniteQuery({
-		...prepareMeeloInfiniteQuery(libraryQuery),
+		...prepareMeeloInfiniteQuery(API.getAllLibraries),
 		useErrorBoundary: false
 	});
 

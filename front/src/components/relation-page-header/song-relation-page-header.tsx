@@ -1,6 +1,6 @@
 import { RequireExactlyOne } from "type-fest";
 import API from "../../api/api";
-import { SongWithArtist } from "../../models/song";
+import { SongWithRelations } from "../../models/song";
 import { useQuery } from "../../api/use-query";
 import SongContextualMenu from "../contextual-menu/song-contextual-menu";
 import Illustration from "../illustration";
@@ -9,16 +9,11 @@ import RelationPageHeader from "./relation-page-header";
 
 type SongRelationPageHeaderProps = RequireExactlyOne<{
 	songSlugOrId: number | string;
-	song: SongWithArtist
+	song: SongWithRelations<'artist'>
 }>
 
-const songQuery = (songSlugOrId: number | string) => ({
-	key: ["song", songSlugOrId],
-	exec: () => API.getSong<SongWithArtist>(songSlugOrId, ["artist"])
-});
-
 const SongRelationPageHeader = (props: SongRelationPageHeaderProps) => {
-	const song = useQuery(songQuery, props.songSlugOrId);
+	const song = useQuery((id) => API.getSong(id, ['artist']), props.songSlugOrId);
 
 	if (props.song) {
 		song.data = props.song;
