@@ -424,7 +424,7 @@ export default class API {
 	 */
 	static getAlbum<I extends AlbumInclude[] = []>(
 		albumSlugOrId: string | number,
-		include: I
+		include?: I
 	): Query<AlbumWithRelations<I>> {
 		return {
 			key: ['album', albumSlugOrId, ...API.formatIncludeKeys(include)],
@@ -721,23 +721,6 @@ export default class API {
 			})
 				.then((value) => value.lyrics.split('\n'))
 				.catch(() => null)
-		};
-	}
-
-	/**
-	 * Get a song's main album
-	 * @param songSlugOrId the id of the song
-	 * @returns A query for an Album
-	 */
-	static getSongMainAlbum<I extends AlbumInclude[] = []>(
-		songSlugOrId: string | number,
-		include?: I
-	): Query<AlbumWithRelations<I>> {
-		return {
-			key: ['song', songSlugOrId, 'album', ...API.formatIncludeKeys(include)],
-			exec: () => API.getMasterTrack(songSlugOrId, ['release'])
-				.exec()
-				.then((track) => API.getAlbum<I>(track.release.albumId, include).exec())
 		};
 	}
 

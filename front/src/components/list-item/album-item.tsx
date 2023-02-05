@@ -5,6 +5,7 @@ import { AlbumWithRelations } from '../../models/album';
 
 type AlbumItemProps = {
 	album: AlbumWithRelations<['artist']>;
+	formatSubtitle?: (album: AlbumWithRelations<['artist']>) => string
 }
 
 /**
@@ -12,7 +13,7 @@ type AlbumItemProps = {
  * @param props
  * @returns
  */
-const AlbumItem = ({ album }: AlbumItemProps) => {
+const AlbumItem = ({ album, formatSubtitle }: AlbumItemProps) => {
 	const artist = album.artist;
 
 	return (
@@ -20,7 +21,7 @@ const AlbumItem = ({ album }: AlbumItemProps) => {
 			icon={<Illustration url={album.illustration}/>}
 			href={`/albums/${artist?.slug ?? 'compilations'}+${album.slug}`}
 			title={album.name}
-			secondTitle={artist?.name ?? 'Compilations'}
+			secondTitle={formatSubtitle?.call(this, album) ?? artist?.name ?? 'Compilations'}
 			trailing={<AlbumContextualMenu album={album} />}
 		/>
 	);

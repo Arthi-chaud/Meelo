@@ -29,7 +29,7 @@ const ReleaseContextualMenu = (props: ReleaseContextualMenuProps) => {
 			.catch((error: Error) => toast.error(error.message));
 	});
 	const tracksMasterMutation = useMutation(async () => {
-		return queryClient.fetchQuery(API.getReleasePlaylist, props.release.id)
+		return queryClient.fetchQuery(API.getReleasePlaylist(props.release.id))
 			.then((tracks) => {
 				Promise.allSettled(
 					tracks.reverse().map((track) =>	API.setTrackAsMaster(track.id))

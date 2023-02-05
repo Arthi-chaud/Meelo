@@ -15,7 +15,7 @@ const InfiniteAlbumView = (
 		AlbumWithRelations<['artist']>,
 		typeof AlbumSortingKeys,
 		[type?: AlbumType]
-	>
+	> & Pick<Parameters<typeof AlbumTile>[0], 'formatSubtitle'>
 ) => {
 	const router = useRouter();
 	const [options, setOptions] = useState<OptionState<typeof AlbumSortingKeys>>();
@@ -43,8 +43,8 @@ const InfiniteAlbumView = (
 				sortBy: options?.sortBy ?? AlbumSortingKeys[0],
 				order: options?.order ?? 'asc',
 			}, options?.type == 'All' ? undefined : options?.type as AlbumType | undefined)}
-			renderListItem={(item: AlbumWithRelations<['artist']>) => <AlbumItem album={item} key={item.id} />}
-			renderGridItem={(item: AlbumWithRelations<['artist']>) => <AlbumTile album={item} key={item.id} />}
+			renderListItem={(item: AlbumWithRelations<['artist']>) => <AlbumItem album={item} key={item.id} formatSubtitle={props.formatSubtitle}/>}
+			renderGridItem={(item: AlbumWithRelations<['artist']>) => <AlbumTile album={item} key={item.id} formatSubtitle={props.formatSubtitle}/>}
 		/>
 	</>;
 };

@@ -7,7 +7,8 @@ import InfiniteView from "../infinite-view";
 import InfiniteResourceViewProps from "./infinite-resource-view-props";
 
 const InfiniteSongView = (
-	props: InfiniteResourceViewProps<SongWithRelations<['artist']>, typeof SongSortingKeys>
+	props: InfiniteResourceViewProps<SongWithRelations<['artist']>, typeof SongSortingKeys> &
+		Pick<Parameters<typeof SongItem>[0], 'formatSubtitle'>
 ) => {
 	const router = useRouter();
 	const [options, setOptions] = useState<OptionState<typeof SongSortingKeys>>();
@@ -28,7 +29,7 @@ const InfiniteSongView = (
 				sortBy: options?.sortBy ?? 'name',
 				order: options?.order ?? 'asc',
 			})}
-			renderListItem={(item: SongWithRelations<['artist']>) => <SongItem song={item} key={item.id} />}
+			renderListItem={(item: SongWithRelations<['artist']>) => <SongItem song={item} key={item.id} formatSubtitle={props.formatSubtitle} />}
 			renderGridItem={(item: SongWithRelations<['artist']>) => <></>}
 		/>
 	</>;
