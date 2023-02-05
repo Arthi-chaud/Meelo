@@ -2,7 +2,7 @@ import Tile from "./tile";
 import { AlbumWithRelations } from "../../models/album";
 import Illustration from "../illustration";
 
-const AlbumTile = (props: { album: AlbumWithRelations<'artist'> }) => {
+const AlbumTile = (props: { album: AlbumWithRelations<['artist']> }) => {
 	return <Tile
 		title={props.album.name}
 		subtitle={props.album.artist?.name ?? 'Compilation'}

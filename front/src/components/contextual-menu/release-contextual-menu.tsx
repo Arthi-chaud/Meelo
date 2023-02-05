@@ -12,7 +12,7 @@ import { useConfirm } from "material-ui-confirm";
 import { ReleaseWithRelations } from "../../models/release";
 
 type ReleaseContextualMenuProps = {
-	release: ReleaseWithRelations<'album'>;
+	release: ReleaseWithRelations<['album']>;
 }
 
 const ReleaseContextualMenu = (props: ReleaseContextualMenuProps) => {

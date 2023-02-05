@@ -9,7 +9,7 @@ import RelationPageHeader from "./relation-page-header";
 
 type SongRelationPageHeaderProps = RequireExactlyOne<{
 	songSlugOrId: number | string;
-	song: SongWithRelations<'artist'>
+	song: SongWithRelations<['artist']>
 }>
 
 const SongRelationPageHeader = (props: SongRelationPageHeaderProps) => {

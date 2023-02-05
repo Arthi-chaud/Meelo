@@ -71,11 +71,11 @@ const ReleasePage = (
 	releaseIdentifier ??= getSlugOrId(router.query);
 	const theme = useTheme();
 	const dispatch = useDispatch();
-	const [trackList, setTracklist] = useState<Tracklist<TrackWithRelations<'song'>>>();
+	const [trackList, setTracklist] = useState<Tracklist<TrackWithRelations<['song']>>>();
 	const [totalDuration, setTotalDuration] = useState<number | null>(null);
-	const [tracks, setTracks] = useState<TrackWithRelations<'song'>[]>([]);
+	const [tracks, setTracks] = useState<TrackWithRelations<['song']>[]>([]);
 
-	const release = useQuery(API.getRelease, releaseIdentifier);
+	const release = useQuery((id) => API.getRelease(id, ['album']), releaseIdentifier);
 	const artistId = release.data?.album?.artistId;
 
 	const tracklist = useQuery((id) => API.getReleaseTrackList(id, ['song']), releaseIdentifier);
@@ -83,9 +83,10 @@ const ReleasePage = (
 	const albumGenres = useInfiniteQuery(API.getAlbumGenres, release.data?.albumId);
 	const hasGenres = (albumGenres.data?.pages.at(0)?.items.length ?? 0) > 0;
 	const otherArtistsQuery = useQueries(...tracks
-		.filter((track: TrackWithRelations<'song'>) => track.song.artistId != albumArtist.data?.id)
-		.map((track): Parameters<typeof useQuery<Artist>> => [API.getArtist, track.song.artistId]));
-	const albumVideos = useQuery(API.getAlbumVideos, release.data?.albumId);
+		.filter((track: TrackWithRelations<['song']>) => track.song.artistId != albumArtist.data?.id)
+		.map((track): Parameters<typeof useQuery<Artist, Parameters<typeof API.getArtist>>> =>
+			[API.getArtist, track.song.artistId]));
+	const albumVideos = useQuery((id) => API.getAlbumVideos(id, ['song']), release.data?.albumId);
 	const relatedReleases = useInfiniteQuery(API.getAlbumReleases, release.data?.albumId);
 
 	useEffect(() => {

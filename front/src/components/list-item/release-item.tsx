@@ -6,7 +6,7 @@ import Illustration from "../illustration";
 import ListItem from "./item";
 
 type ReleaseItemProps = {
-	release: ReleaseWithRelations<'album'>;
+	release: ReleaseWithRelations<['album']>;
 }
 
 const ReleaseItem = ({ release }: ReleaseItemProps) => {

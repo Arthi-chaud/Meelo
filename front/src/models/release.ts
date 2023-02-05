@@ -32,10 +32,15 @@ type Release = Resource & Illustration & {
 
 type ReleaseInclude = 'album';
 
-type ReleaseWithRelations<I extends ReleaseInclude> = Release & Pick<
+type ReleaseWithRelations<
+	I extends K[],
+	K extends ReleaseInclude = ReleaseInclude
+> = Release & Pick<
 	{ album: Album },
-	I
+	I[number]
 >;
+
+type B = ReleaseWithRelations<any>['album'];
 
 export default Release;
 export const ReleaseSortingKeys = [

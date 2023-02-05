@@ -13,7 +13,7 @@ import { ShowMasterTrackFileInfoAction } from "../actions/show-track-info";
 import { SongWithRelations } from "../../models/song";
 
 type SongContextualMenuProps = {
-	song: SongWithRelations<'artist'>;
+	song: SongWithRelations<['artist']>;
 	onSelect?: () => void;
 }
 

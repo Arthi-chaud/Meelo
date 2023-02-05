@@ -12,7 +12,7 @@ import { WideLoadingComponent } from "./loading/loading";
  * @param trackId the id of the track to fetch
  */
 const TrackFileInfo = ({ trackId }: { trackId: number }) => {
-	const track = useQuery(API.getTrack, trackId);
+	const track = useQuery((id) => API.getTrack(id, ['song']), trackId);
 	const sourceFile = useQuery(API.getSourceFile, track.data?.sourceFileId);
 
 	if (!track.data || !sourceFile.data) {

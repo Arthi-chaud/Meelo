@@ -4,7 +4,7 @@ import AlbumContextualMenu from "../contextual-menu/album-contextual-menu";
 import { AlbumWithRelations } from '../../models/album';
 
 type AlbumItemProps = {
-	album: AlbumWithRelations<'artist'>;
+	album: AlbumWithRelations<['artist']>;
 }
 
 /**

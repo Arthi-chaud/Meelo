@@ -52,9 +52,9 @@ type Track = Resource & Illustration & {
 
 type TrackInclude = 'song' | 'release';
 
-type TrackWithRelations<I extends TrackInclude> = Track & Pick<
-	{ song: Song, release?: Release },
-	I
+type TrackWithRelations<I extends K[], K extends TrackInclude = TrackInclude> = Track & Pick<
+	{ song: Song, release: Release },
+	I[number]
 >
 
 export default Track;

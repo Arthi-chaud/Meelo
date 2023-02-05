@@ -10,7 +10,7 @@ import TrackContextualMenu from "../contextual-menu/track-contextual-menu";
 import { Grid } from "@mui/material";
 
 type TrackItemProps = {
-	track: TrackWithRelations<'release' | 'song'>
+	track: TrackWithRelations<['release' | 'song']>
 }
 
 /**

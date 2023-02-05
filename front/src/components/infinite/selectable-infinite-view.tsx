@@ -18,9 +18,9 @@ const itemTypes = [
 ];
 
 type SelectableInfiniteViewProps = {
-	albumQuery: MeeloInfiniteQueryFn<AlbumWithRelations<'artist'>>;
+	albumQuery: MeeloInfiniteQueryFn<AlbumWithRelations<['artist']>>;
 	artistQuery: MeeloInfiniteQueryFn<Artist>;
-	songQuery: MeeloInfiniteQueryFn<SongWithRelations<'artist'>>;
+	songQuery: MeeloInfiniteQueryFn<SongWithRelations<['artist']>>;
 	default?: string | typeof itemTypes[number];
 	onTypeSelect?: (selectedType: SelectableInfiniteViewProps['default']) => void;
 	enabled: boolean;

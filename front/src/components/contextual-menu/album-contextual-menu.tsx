@@ -7,7 +7,7 @@ import ContextualMenu from "./contextual-menu";
 import { AlbumWithRelations } from "../../models/album";
 
 type AlbumContextualMenuProps = {
-	album: AlbumWithRelations<'artist'>;
+	album: AlbumWithRelations<['artist']>;
 }
 
 const AlbumContextualMenu = (props: AlbumContextualMenuProps) => {

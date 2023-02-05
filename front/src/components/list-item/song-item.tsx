@@ -8,7 +8,7 @@ import { playTrack } from "../../state/playerSlice";
 import SongContextualMenu from "../contextual-menu/song-contextual-menu";
 
 type SongItemProps = {
-	song: SongWithRelations<'artist'>;
+	song: SongWithRelations<['artist']>;
 	hideArtist?: boolean;
 }
 

@@ -8,7 +8,7 @@ import InfiniteView from "../infinite-view";
 
 const InfiniteReleaseView = (
 	props: InfiniteResourceViewProps<
-		ReleaseWithRelations<'album'>,
+		ReleaseWithRelations<['album']>,
 		typeof ReleaseSortingKeys
 	>
 ) => {
@@ -31,10 +31,10 @@ const InfiniteReleaseView = (
 				sortBy: options?.sortBy ?? 'name',
 				order: options?.order ?? 'asc',
 			})}
-			renderListItem={(item: ReleaseWithRelations<'album'>) =>
+			renderListItem={(item: ReleaseWithRelations<['album']>) =>
 				<ReleaseItem release={item} key={item.id} />
 			}
-			renderGridItem={(item: ReleaseWithRelations<'album'>) => <></>}
+			renderGridItem={(item: ReleaseWithRelations<['album']>) => <></>}
 		/>
 	</>;
 };
