@@ -271,7 +271,7 @@ const ReleasePage = (
 						title={video.name}
 						subtitle={formatDuration(video.duration)}
 						illustration={
-							<Illustration aspectRatio={16/9} url={video.illustration} style={{ objectFit: 'fill' }}/>
+							<Illustration aspectRatio={16/9} url={video.illustration} style={{ objectFit: 'cover' }}/>
 						}/>) ?? []}
 				/>
 			</RelatedContentSection>
