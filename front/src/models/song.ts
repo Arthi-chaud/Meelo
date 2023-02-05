@@ -2,6 +2,7 @@ import Artist from "./artist";
 import Illustration from "./illustration";
 import Lyrics from "./lyrics";
 import Resource from "./resource";
+import Track from "./track";
 
 /**
  * Abstract data model, instanciated by tracks
@@ -33,10 +34,24 @@ type Song = Resource & Illustration & {
 
 type SongInclude = 'artist' | 'lyrics';
 
-type SongWithRelations<I extends K[], K extends SongInclude = SongInclude> = Song & Pick<
+type BaseSongWithRelations<
+	S extends Song, I extends K[], K extends SongInclude = SongInclude
+> = S & Pick<
 	{ artist: Artist, lyrics?: Lyrics },
 	I[number]
 >;
+
+type SongWithRelations<
+	I extends K[], K extends SongInclude = SongInclude
+> = BaseSongWithRelations<Song, I, K>;
+
+type SongWithVideo = Song & {
+	video: Track;
+};
+
+type SongWithVideoWithRelations<
+	I extends K[], K extends SongInclude = SongInclude
+> = BaseSongWithRelations<SongWithVideo, I, K>;
 
 export default Song;
 export const SongSortingKeys = [
@@ -45,4 +60,4 @@ export const SongSortingKeys = [
 	'artistName',
 	'addDate'
 ] as const;
-export type { SongWithRelations, SongInclude };
+export type { SongWithRelations, SongWithVideoWithRelations, SongWithVideo, SongInclude };

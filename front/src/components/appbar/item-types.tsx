@@ -1,13 +1,15 @@
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import AudiotrackIcon from '@mui/icons-material/Audiotrack';
 import AlbumIcon from '@mui/icons-material/Album';
+import { MusicVideo } from '@mui/icons-material';
 /**
  * Array of possible item types
  */
 const itemType = [
 	'artists',
 	'albums',
-	'songs'
+	'songs',
+	'videos'
 ] as const;
 const formattedItemTypes = itemType.map((type) => type.charAt(0).toUpperCase() + type.slice(1));
 const getTypeIcon = (type: typeof itemType[number]) => {
@@ -18,6 +20,8 @@ const getTypeIcon = (type: typeof itemType[number]) => {
 		return <AccountCircleIcon/>;
 	case 'songs':
 		return <AudiotrackIcon/>;
+	case 'videos':
+		return <MusicVideo/>;
 	}
 };
 

@@ -32,7 +32,7 @@ module.exports = {
   async rewrites() {
     return [
       {
-        source: '/libraries/:slug/:itemType(albums|artists|songs)',
+        source: '/libraries/:slug/:itemType(albums|artists|songs|videos)',
         destination: '/:itemType',
       },
     ]

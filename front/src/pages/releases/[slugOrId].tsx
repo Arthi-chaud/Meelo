@@ -17,7 +17,7 @@ import {
 	useInfiniteQuery, useQueries, useQuery
 } from "../../api/use-query";
 import { useDispatch } from "react-redux";
-import { playTrack, playTracks } from "../../state/playerSlice";
+import { playTracks } from "../../state/playerSlice";
 import Song from "../../models/song";
 import Artist from "../../models/artist";
 import { shuffle } from 'd3-array';
@@ -28,6 +28,7 @@ import ReleaseContextualMenu from "../../components/contextual-menu/release-cont
 import LoadingPage from "../../components/loading/loading-page";
 import TileRow from "../../components/tile-row";
 import { TrackWithRelations } from "../../models/track";
+import VideoTile from "../../components/tile/video-tile";
 
 export const getServerSideProps = prepareSSR((context) => {
 	const releaseIdentifier = getSlugOrId(context.params);
@@ -254,27 +255,7 @@ const ReleasePage = (
 				title={"Music Videos"}
 			>
 				<TileRow tiles={albumVideos.data?.map((video, videoIndex) =>
-					<Tile key={videoIndex}
-						onClick={() => {
-							const parentArtist = getSongArtist(
-								video.song,
-								albumArtist.data,
-								otherArtistsQuery
-									.filter((query) => !query.data)
-									.map((query) => query.data!)
-							);
-
-							dispatch(playTrack({
-								track: video,
-								release: release.data,
-								artist: parentArtist
-							}));
-						}}
-						title={video.name}
-						subtitle={formatDuration(video.duration)}
-						illustration={
-							<Illustration aspectRatio={16/9} url={video.illustration} style={{ objectFit: 'fill' }}/>
-						}/>) ?? []}
+					<VideoTile key={videoIndex} video={video}/>) ?? []}
 				/>
 			</RelatedContentSection>
 		</Container>
