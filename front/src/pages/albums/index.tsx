@@ -1,42 +1,11 @@
 import React from 'react';
 import { useRouter } from 'next/router';
 import API from '../../api/api';
-import Album, {
-	AlbumSortingKeys, AlbumType, AlbumWithArtist
-} from '../../models/album';
+import { AlbumSortingKeys } from '../../models/album';
 import getLibrarySlug from '../../utils/getLibrarySlug';
-import { Page } from '../../components/infinite/infinite-scroll';
-import {
-	SortingParameters, getOrderParams, getSortingFieldParams
-} from '../../utils/sorting';
+import { getOrderParams, getSortingFieldParams } from '../../utils/sorting';
 import InfiniteAlbumView from '../../components/infinite/infinite-resource-view/infinite-album-view';
 import prepareSSR, { InferSSRProps } from '../../ssr';
-
-const albumsQuery = (sort: SortingParameters<typeof AlbumSortingKeys>, type?: AlbumType) => ({
-	key: [
-		"albums",
-		sort,
-		type ?? {}
-	],
-	exec: (lastPage: Page<Album>) => API.getAllAlbums<AlbumWithArtist>(lastPage, sort, type, ["artist"])
-});
-
-const libraryAlbumsQuery = (
-	slugOrId: string | number,
-	sort: SortingParameters<typeof AlbumSortingKeys>,
-	type?: AlbumType
-) => ({
-	key: [
-		"library",
-		slugOrId,
-		"albums",
-		sort,
-		type ?? {}
-	],
-	exec: (lastPage: Page<Album>) => API.getAllAlbumsInLibrary<AlbumWithArtist>(
-		slugOrId, lastPage, type, sort, ["artist"]
-	)
-});
 
 export const getServerSideProps = prepareSSR((context) => {
 	const order = getOrderParams(context.query.order);
@@ -47,8 +16,8 @@ export const getServerSideProps = prepareSSR((context) => {
 		additionalProps: { librarySlug },
 		infiniteQueries: [
 			librarySlug
-				? libraryAlbumsQuery(librarySlug, { sortBy, order })
-				: albumsQuery({ sortBy, order })
+				? API.getAllAlbumsInLibrary(librarySlug, undefined, { sortBy, order }, ["artist"])
+				: API.getAllAlbums({ sortBy, order }, undefined, ["artist"])
 		]
 	};
 });
@@ -61,8 +30,8 @@ const LibraryAlbumsPage = (
 	librarySlug ??= getLibrarySlug(router.asPath);
 	return <InfiniteAlbumView
 		query={(sort, type) => librarySlug
-			? libraryAlbumsQuery(librarySlug, sort, type)
-			: albumsQuery(sort, type)
+			? API.getAllAlbumsInLibrary(librarySlug, type, sort, ['artist'])
+			: API.getAllAlbums(sort, type, ['artist'])
 		}
 	/>;
 };

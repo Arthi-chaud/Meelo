@@ -1,8 +1,6 @@
 import { useRouter } from "next/router";
 import API from "../../api/api";
-import { SongWithArtist } from "../../models/song";
 import ContextualMenu from "./contextual-menu";
-import { TrackWithRelease } from "../../models/track";
 import { useConfirm } from "material-ui-confirm";
 import { DownloadAsyncAction } from "../actions/download";
 import {
@@ -12,15 +10,20 @@ import {
 import { PlayAfterAction, PlayNextAction } from "../actions/playlist";
 import { ShareSongAction } from "../actions/share";
 import { ShowMasterTrackFileInfoAction } from "../actions/show-track-info";
+import { SongWithRelations } from "../../models/song";
+import { useQueryClient } from "../../api/use-query";
 
 type SongContextualMenuProps = {
-	song: SongWithArtist;
+	song: SongWithRelations<['artist']>;
 	onSelect?: () => void;
 }
 
 const SongContextualMenu = (props: SongContextualMenuProps) => {
 	const songSlug = `${props.song.artist.slug}+${props.song.slug}`;
-	const getMasterTrack = () => API.getMasterTrack<TrackWithRelease>(songSlug, ['release']);
+	const queryClient = useQueryClient();
+	const getMasterTrack = () => queryClient.fetchQuery(
+		(id) => API.getMasterTrack(id, ['release']), songSlug
+	);
 	const router = useRouter();
 	const confirm = useConfirm();
 	const getPlayNextProps = () => getMasterTrack()
@@ -36,12 +39,11 @@ const SongContextualMenu = (props: SongContextualMenuProps) => {
 		[GoToSongLyricsAction(songSlug)],
 		[PlayNextAction(getPlayNextProps), PlayAfterAction(getPlayNextProps)],
 		[GoToSongVersionAction(songSlug), GoToRelatedTracksAction(songSlug)],
-		[ShowMasterTrackFileInfoAction(confirm, props.song.id)],
+		[ShowMasterTrackFileInfoAction(confirm, queryClient, props.song.id)],
 		[
 			DownloadAsyncAction(
 				confirm,
-				() => API.getMasterTrack(songSlug)
-					.then((master) => master.stream)
+				() => getMasterTrack().then((master) => master.stream)
 			),
 			ShareSongAction(songSlug)
 		]

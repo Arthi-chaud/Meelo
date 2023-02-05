@@ -19,7 +19,7 @@
 		"react/jsx-indent": ["warn", "tab"],
 		"no-restricted-imports": ["error", {
 			"name": "react-query",
-			"importNames": ["useQuery", "useInfiniteQuery", "useQueries"],
+			"importNames": ["useQueryClient", "useQuery", "useInfiniteQuery", "useQueries"],
 			"message": "Use wrapper functions provided by src/api/query"
 		}, {
 			"name": "react-query",

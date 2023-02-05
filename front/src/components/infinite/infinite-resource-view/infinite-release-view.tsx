@@ -2,13 +2,13 @@ import { useState } from "react";
 import InfiniteResourceViewProps from "./infinite-resource-view-props";
 import Controls, { OptionState } from "../../controls/controls";
 import { useRouter } from "next/router";
-import { ReleaseSortingKeys, ReleaseWithAlbum } from "../../../models/release";
+import { ReleaseSortingKeys, ReleaseWithRelations } from "../../../models/release";
 import ReleaseItem from "../../list-item/release-item";
 import InfiniteView from "../infinite-view";
 
 const InfiniteReleaseView = (
 	props: InfiniteResourceViewProps<
-		ReleaseWithAlbum,
+		ReleaseWithRelations<['album']>,
 		typeof ReleaseSortingKeys
 	>
 ) => {
@@ -31,10 +31,10 @@ const InfiniteReleaseView = (
 				sortBy: options?.sortBy ?? 'name',
 				order: options?.order ?? 'asc',
 			})}
-			renderListItem={(item: ReleaseWithAlbum) =>
+			renderListItem={(item: ReleaseWithRelations<['album']>) =>
 				<ReleaseItem release={item} key={item.id} />
 			}
-			renderGridItem={(item: ReleaseWithAlbum) => <></>}
+			renderGridItem={(item: ReleaseWithRelations<['album']>) => <></>}
 		/>
 	</>;
 };

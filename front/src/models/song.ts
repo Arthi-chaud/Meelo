@@ -1,5 +1,4 @@
 import Artist from "./artist";
-import Genre from "./genre";
 import Illustration from "./illustration";
 import Lyrics from "./lyrics";
 import Resource from "./resource";
@@ -32,19 +31,12 @@ type Song = Resource & Illustration & {
 	masterId?: number;
 }
 
-type SongWithArtist = Song & {
-	artist: Artist;
-}
-
-type SongWithGenres = Song & {
-	genres: Genre[];
-}
-
-type SongWithLyrics = Song & {
-	lyrics?: Lyrics;
-}
-
 type SongInclude = 'artist' | 'lyrics';
+
+type SongWithRelations<I extends K[], K extends SongInclude = SongInclude> = Song & Pick<
+	{ artist: Artist, lyrics?: Lyrics },
+	I[number]
+>;
 
 export default Song;
 export const SongSortingKeys = [
@@ -53,4 +45,4 @@ export const SongSortingKeys = [
 	'artistName',
 	'addDate'
 ] as const;
-export type { SongWithArtist, SongWithGenres, SongWithLyrics, SongInclude };
+export type { SongWithRelations, SongInclude };

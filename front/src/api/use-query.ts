@@ -3,7 +3,8 @@ import {
 	QueryFunctionContext,
 	useInfiniteQuery as useReactInfiniteQuery,
 	useQueries as useReactQueries,
-	useQuery as useReactQuery
+	useQuery as useReactQuery,
+	useQueryClient as useReactQueryClient
 } from "react-query";
 import API from "./api";
 import { InfiniteFetchFn, Page } from "../components/infinite/infinite-scroll";
@@ -14,6 +15,7 @@ type Key = string | number | Record<string, unknown>;
 
 export type Query<Type> = {
 	key: Key[],
+	// @warning If you call this method 'by hand', please consider using a query client instead
 	exec: () => Promise<Type>
 };
 
@@ -24,12 +26,14 @@ export type InfiniteQuery<Type> = {
 //// Query functions
 
 export type MeeloQueryFn<
-	QueryReturnType = unknown
-> = (...args: any[]) => Query<QueryReturnType>
+	QueryReturnType = unknown,
+	Params extends any[] = any[]
+> = (...args: Params) => Query<QueryReturnType>
 
 export type MeeloInfiniteQueryFn<
 	QueryReturnType,
-> = (...args: any[]) => InfiniteQuery<QueryReturnType>
+	Params extends any[] = any[]
+> = (...args: Params) => InfiniteQuery<QueryReturnType>
 
 const defaultMeeloQueryOptions = {
 	useErrorBoundary: true,
@@ -97,9 +101,9 @@ const prepareMeeloInfiniteQuery = <QueryReturnType = unknown>(
 /**
  * Wrapper for the react-query's *useQuery*
  */
-const useQuery = <ReturnType>(
-	query: MeeloQueryFn<ReturnType>,
-	...queryParams: Partial<Parameters<typeof query>>
+const useQuery = <ReturnType, Params extends any[]>(
+	query: MeeloQueryFn<ReturnType, Params>,
+	...queryParams: Partial<Params>
 ) => {
 	return useReactQuery(prepareMeeloQuery(query, ...queryParams));
 };
@@ -107,8 +111,8 @@ const useQuery = <ReturnType>(
 /**
  * Wrapper for the react-query's *useQueries*
  */
-const useQueries = <ReturnType>(
-	...queries: Parameters<typeof useQuery<ReturnType>>[]
+const useQueries = <ReturnType, Params extends any[][]>(
+	...queries: Parameters<typeof useQuery<ReturnType, Params[number]>>[]
 ) => {
 	return useReactQueries(
 		queries.map(([query, ...params]) => prepareMeeloQuery(query, ...params))
@@ -118,9 +122,9 @@ const useQueries = <ReturnType>(
 /**
  * Wrapper for the react-query's *useInfiniteQuery*
  */
-const useInfiniteQuery = <ReturnType>(
-	query: MeeloInfiniteQueryFn<ReturnType>,
-	...queryParams: Partial<Parameters<typeof query>>
+const useInfiniteQuery = <ReturnType, Params extends any[]>(
+	query: MeeloInfiniteQueryFn<ReturnType, Params>,
+	...queryParams: Partial<Params>
 ) => {
 	const pageSize = API.defaultPageSize;
 
@@ -135,4 +139,23 @@ const useInfiniteQuery = <ReturnType>(
 	});
 };
 
-export { useQuery, useQueries, useInfiniteQuery, prepareMeeloQuery, prepareMeeloInfiniteQuery };
+/**
+ * Wrapper of the useQueryClient Hook, to wrap `prepareMeeloQuery`
+ */
+const useQueryClient = () => {
+	const queryClient = useReactQueryClient();
+
+	return {
+		client: queryClient,
+		fetchQuery: <ReturnType, Params extends any[]>(
+			query: MeeloQueryFn<ReturnType, Params>,
+			...queryParams: Params
+		) => queryClient.fetchQuery(
+			prepareMeeloQuery(query, ...queryParams)
+		)
+	};
+};
+
+export type QueryClient = ReturnType<typeof useQueryClient>;
+
+export { useQuery, useQueries, useInfiniteQuery, useQueryClient, prepareMeeloQuery, prepareMeeloInfiniteQuery };

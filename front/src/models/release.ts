@@ -1,7 +1,6 @@
 import Album from "./album";
 import Illustration from "./illustration";
 import Resource from "./resource";
-import Track from "./track";
 
 /**
  * A version of an album
@@ -31,15 +30,17 @@ type Release = Resource & Illustration & {
 	releaseDate?: Date;
 }
 
-type ReleaseWithAlbum = Release & {
-	album: Album;
-}
-
-type ReleaseWithTracks = Release & {
-	tracks: Track[];
-}
-
 type ReleaseInclude = 'album';
+
+type ReleaseWithRelations<
+	I extends K[],
+	K extends ReleaseInclude = ReleaseInclude
+> = Release & Pick<
+	{ album: Album },
+	I[number]
+>;
+
+type B = ReleaseWithRelations<any>['album'];
 
 export default Release;
 export const ReleaseSortingKeys = [
@@ -48,4 +49,4 @@ export const ReleaseSortingKeys = [
 	'trackCount',
 	'addDate'
 ] as const;
-export type { ReleaseWithAlbum, ReleaseWithTracks, ReleaseInclude };
+export type { ReleaseWithRelations, ReleaseInclude };

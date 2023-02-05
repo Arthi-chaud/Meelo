@@ -3,51 +3,10 @@ import {
 	Box, InputAdornment, TextField
 } from "@mui/material";
 import { useState } from "react";
-import API from '../../api/api';
-import { Page } from '../../components/infinite/infinite-scroll';
-import {
-	AlbumSortingKeys, AlbumType, AlbumWithArtist
-} from '../../models/album';
-import Artist, { ArtistSortingKeys } from '../../models/artist';
-import Song, { SongSortingKeys, SongWithArtist } from '../../models/song';
-import { SortingParameters } from "../../utils/sorting";
 import SelectableInfiniteView from "../../components/infinite/selectable-infinite-view";
 import { useRouter } from "next/router";
 import prepareSSR, { InferSSRProps } from "../../ssr";
-
-const searchArtistsQuery = (query: string, sort?: SortingParameters<typeof ArtistSortingKeys>) => ({
-	key: [
-		"search",
-		"artists",
-		query,
-		sort ?? {}
-	],
-	exec: (lastPage: Page<Artist>) => API.searchArtists(query, lastPage, sort)
-});
-
-const searchAlbumsQuery = (
-	query: string, sort?: SortingParameters<typeof AlbumSortingKeys>, type?: AlbumType
-) => ({
-	key: [
-		"search",
-		"albums",
-		query,
-		sort ?? {},
-		type ?? {}
-	],
-	exec: (lastPage: Page<AlbumWithArtist>) =>
-		API.searchAlbums<AlbumWithArtist>(query, lastPage, type, sort, ['artist'])
-});
-
-const searchSongsQuery = (query: string, sort?: SortingParameters<typeof SongSortingKeys>) => ({
-	key: [
-		"search",
-		"songs",
-		query,
-		sort ?? {}
-	],
-	exec: (lastPage: Page<Song>) => API.searchSongs<SongWithArtist>(query, lastPage, sort, ['artist'])
-});
+import API from "../../api/api";
 
 export const getServerSideProps = prepareSSR((context) => {
 	const searchQuery = context.query.query as string ?? null;
@@ -56,9 +15,9 @@ export const getServerSideProps = prepareSSR((context) => {
 	return {
 		additionalProps: { searchQuery, type },
 		infiniteQueries: [
-			searchArtistsQuery(searchQuery),
-			searchAlbumsQuery(searchQuery),
-			searchSongsQuery(searchQuery)
+			API.searchArtists(searchQuery),
+			API.searchAlbums(searchQuery, undefined, undefined, ['artist']),
+			API.searchSongs(searchQuery, undefined, ['artist'])
 		]
 	};
 });
@@ -98,11 +57,11 @@ const SearchPage = (
 			onTypeSelect={(selectedType) =>
 				router.push(buildSearchUrl(query, selectedType), undefined, { shallow: true })}
 			enabled={query != undefined}
-			artistQuery={(sort) => searchArtistsQuery(encodeURIComponent(query!), sort)}
+			artistQuery={(sort) => API.searchArtists(encodeURIComponent(query!), sort)}
 			albumQuery={(sort, selectedType) =>
-				searchAlbumsQuery(encodeURIComponent(query!), sort, selectedType)
+				API.searchAlbums(encodeURIComponent(query!), sort, selectedType, ['artist'])
 			}
-			songQuery={(sort) => searchSongsQuery(encodeURIComponent(query!), sort)}
+			songQuery={(sort) => API.searchSongs(encodeURIComponent(query!), sort, ['artist'])}
 		/>
 	</Box>;
 };

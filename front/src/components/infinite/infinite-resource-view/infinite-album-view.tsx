@@ -1,5 +1,5 @@
 import {
-	AlbumSortingKeys, AlbumType, AlbumWithArtist
+	AlbumSortingKeys, AlbumType, AlbumWithRelations
 } from "../../../models/album";
 import AlbumItem from "../../list-item/album-item";
 import AlbumTile from "../../tile/album-tile";
@@ -12,7 +12,7 @@ import InfiniteResourceViewProps from "./infinite-resource-view-props";
 
 const InfiniteAlbumView = (
 	props: InfiniteResourceViewProps<
-		AlbumWithArtist,
+		AlbumWithRelations<['artist']>,
 		typeof AlbumSortingKeys,
 		[type?: AlbumType]
 	>
@@ -43,8 +43,8 @@ const InfiniteAlbumView = (
 				sortBy: options?.sortBy ?? AlbumSortingKeys[0],
 				order: options?.order ?? 'asc',
 			}, options?.type == 'All' ? undefined : options?.type as AlbumType | undefined)}
-			renderListItem={(item: AlbumWithArtist) => <AlbumItem album={item} key={item.id} />}
-			renderGridItem={(item: AlbumWithArtist) => <AlbumTile album={item} key={item.id} />}
+			renderListItem={(item: AlbumWithRelations<['artist']>) => <AlbumItem album={item} key={item.id} />}
+			renderGridItem={(item: AlbumWithRelations<['artist']>) => <AlbumTile album={item} key={item.id} />}
 		/>
 	</>;
 };

@@ -15,7 +15,7 @@ const statusQuery = (accessToken?: string) => ({
 		'status',
 		accessToken ?? {}
 	],
-	exec: () => API.getCurrentUserStatus().catch(() => null)
+	exec: () => API.getCurrentUserStatus().exec().catch(() => null)
 });
 
 const AuthenticationWall = (props: { children: any }) => {

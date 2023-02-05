@@ -1,12 +1,12 @@
 import { Star } from "@mui/icons-material";
 import { Grid } from "@mui/material";
-import { ReleaseWithAlbum } from "../../models/release";
+import { ReleaseWithRelations } from "../../models/release";
 import ReleaseContextualMenu from "../contextual-menu/release-contextual-menu";
 import Illustration from "../illustration";
 import ListItem from "./item";
 
 type ReleaseItemProps = {
-	release: ReleaseWithAlbum;
+	release: ReleaseWithRelations<['album']>;
 }
 
 const ReleaseItem = ({ release }: ReleaseItemProps) => {

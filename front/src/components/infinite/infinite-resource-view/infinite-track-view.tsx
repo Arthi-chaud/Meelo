@@ -2,14 +2,12 @@ import { useState } from "react";
 import InfiniteResourceViewProps from "./infinite-resource-view-props";
 import Controls, { OptionState } from "../../controls/controls";
 import { useRouter } from "next/router";
-import {
-	TrackSortingKeys, TrackWithRelease, TrackWithSong
-} from "../../../models/track";
+import { TrackSortingKeys, TrackWithRelations } from "../../../models/track";
 import TrackItem from "../../list-item/track-item";
 import InfiniteView from "../infinite-view";
 
 const InfiniteTrackView = (
-	props: InfiniteResourceViewProps<TrackWithRelease & TrackWithSong, typeof TrackSortingKeys>
+	props: InfiniteResourceViewProps<TrackWithRelations<['song' | 'release']>, typeof TrackSortingKeys>
 ) => {
 	const router = useRouter();
 	const [options, setOptions] = useState<OptionState<typeof TrackSortingKeys>>();
@@ -30,10 +28,10 @@ const InfiniteTrackView = (
 				sortBy: options?.sortBy ?? 'name',
 				order: options?.order ?? 'asc',
 			})}
-			renderListItem={(item: TrackWithRelease & TrackWithSong) =>
+			renderListItem={(item: TrackWithRelations<['song' | 'release']>) =>
 				<TrackItem track={item} key={item.id} />
 			}
-			renderGridItem={(item: TrackWithRelease & TrackWithSong) => <></>}
+			renderGridItem={(item: TrackWithRelations<['song' | 'release']>) => <></>}
 		/>
 	</>;
 };

@@ -3,13 +3,13 @@ import {
 } from "@mui/material";
 import { capitalCase } from "change-case";
 import { useState } from "react";
-import Album from "../../models/album";
+import { AlbumWithRelations } from "../../models/album";
 import Artist from "../../models/artist";
-import { SongWithArtist } from "../../models/song";
 import { MeeloInfiniteQueryFn } from "../../api/use-query";
 import InfiniteAlbumView from "./infinite-resource-view/infinite-album-view";
 import InfiniteArtistView from "./infinite-resource-view/infinite-artist-view";
 import InfiniteSongView from "./infinite-resource-view/infinite-song-view";
+import { SongWithRelations } from "../../models/song";
 
 const itemTypes = [
 	'artist',
@@ -18,9 +18,9 @@ const itemTypes = [
 ];
 
 type SelectableInfiniteViewProps = {
-	albumQuery: MeeloInfiniteQueryFn<Album>;
+	albumQuery: MeeloInfiniteQueryFn<AlbumWithRelations<['artist']>>;
 	artistQuery: MeeloInfiniteQueryFn<Artist>;
-	songQuery: MeeloInfiniteQueryFn<SongWithArtist>;
+	songQuery: MeeloInfiniteQueryFn<SongWithRelations<['artist']>>;
 	default?: string | typeof itemTypes[number];
 	onTypeSelect?: (selectedType: SelectableInfiniteViewProps['default']) => void;
 	enabled: boolean;

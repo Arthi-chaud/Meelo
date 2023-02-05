@@ -4,22 +4,16 @@ import {
 	IconButton, Typography
 } from "@mui/material";
 import API from "../../api/api";
-import User, { UserSortingKeys } from "../../models/user";
-import { SortingParameters } from "../../utils/sorting";
-import { Page } from "../infinite/infinite-scroll";
+import User from "../../models/user";
 import DeleteIcon from '@mui/icons-material/Delete';
 import { useSelector } from "react-redux";
 import { RootState } from "../../state/store";
-import { useMutation, useQueryClient } from "react-query";
+import { useMutation } from "react-query";
+import { useQueryClient } from "../../api/use-query";
 import { toast } from "react-hot-toast";
 import { useConfirm } from "material-ui-confirm";
 import { GridColDef } from '@mui/x-data-grid';
 import AdminGrid from "../admin-grid";
-
-const usersQuery = (sort?: SortingParameters<typeof UserSortingKeys>) => ({
-	key: ['users', sort ?? {}],
-	exec: (lastPage: Page<User>) => API.getUsers(lastPage, sort)
-});
 
 const DeleteButton = ({ userId, disabled }: { userId: number, disabled: boolean }) => {
 	const queryClient = useQueryClient();
@@ -29,7 +23,7 @@ const DeleteButton = ({ userId, disabled }: { userId: number, disabled: boolean 
 			.catch(() => toast.error("User deletion failed, try again"))
 			.then(() => {
 				toast.success("User deleted successfully");
-				queryClient.invalidateQueries();
+				queryClient.client.invalidateQueries();
 			}));
 
 	return <IconButton color="error"
@@ -72,7 +66,7 @@ const UsersSettings = () => {
 			toastMessages.forEach(
 				(message) => toast.success(message)
 			);
-			queryClient.invalidateQueries();
+			queryClient.client.invalidateQueries();
 		}));
 	const columns: GridColDef<User>[] = [
 		{ field: 'name', headerName: 'Name', flex: 7, renderCell: ({ row: user }) => {
@@ -104,7 +98,7 @@ const UsersSettings = () => {
 
 	return <Box>
 		<AdminGrid
-			infiniteQuery={usersQuery}
+			infiniteQuery={API.getUsers}
 			columns={columns.map((column) => ({
 				...column,
 				headerAlign: column.field == 'name' ? 'left' : 'center',
