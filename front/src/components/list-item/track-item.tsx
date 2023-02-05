@@ -1,17 +1,17 @@
 import API from "../../api/api";
-import { TrackWithRelease, TrackWithSong } from "../../models/track";
+import { TrackWithRelations } from "../../models/track";
 import Illustration from '../illustration';
 import ListItem from "./item";
 import AudiotrackIcon from '@mui/icons-material/Audiotrack';
 import { useDispatch } from "react-redux";
 import { playTrack } from "../../state/playerSlice";
-import { SongWithArtist } from "../../models/song";
 import StarIcon from "@mui/icons-material/Star";
 import TrackContextualMenu from "../contextual-menu/track-contextual-menu";
 import { Grid } from "@mui/material";
+import { useQueryClient } from "../../api/use-query";
 
 type TrackItemProps = {
-	track: TrackWithRelease & TrackWithSong
+	track: TrackWithRelations<['release' | 'song']>
 }
 
 /**
@@ -23,15 +23,17 @@ const TrackItem = ({ track }: TrackItemProps) => {
 	const release = track.release;
 	const dispatch = useDispatch();
 	const isMaster = track.song.masterId == track.id;
+	const queryClient = useQueryClient();
 
 	return (
 		<ListItem
 			icon={<Illustration url={track.illustration} fallback={<AudiotrackIcon/>}/>}
-			onClick={() => {
-				API.getSong<SongWithArtist>(track.songId, ["artist"]).then((song) => {
+			onClick={() => queryClient
+				.fetchQuery((id) => API.getSong(id, ["artist"]), track.songId)
+				.then((song) => {
 					dispatch(playTrack({ artist: song.artist, track, release }));
-				});
-			}}
+				})
+			}
 			title={track.name}
 			secondTitle={release.name}
 			trailing={<Grid container spacing={1} sx={{ justifyContent: 'flex-end', flexWrap: 'nowrap' }}>

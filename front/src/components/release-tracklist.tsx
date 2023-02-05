@@ -4,7 +4,6 @@ import {
 } from "@mui/material";
 import { useDispatch } from "react-redux";
 import Release from "../models/release";
-import { SongWithArtist } from "../models/song";
 import Track from "../models/track";
 import Tracklist from "../models/tracklist";
 import { playTracks } from '../state/playerSlice';
@@ -12,10 +11,11 @@ import Artist from "../models/artist";
 import { MusicVideo } from "@mui/icons-material";
 import formatDuration from "../utils/formatDuration";
 import ReleaseTrackContextualMenu from "./contextual-menu/release-track-contextual-menu";
+import { SongWithRelations } from "../models/song";
 
 type ReleaseTracklistProps = {
 	mainArtist?: Artist;
-	tracklist: Tracklist<Track & { song: SongWithArtist }>;
+	tracklist: Tracklist<Track & { song: SongWithRelations<['artist']> }>;
 	release: Release;
 }
 

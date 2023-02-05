@@ -1,24 +1,19 @@
 import { RequireExactlyOne } from "type-fest";
 import API from "../../api/api";
-import { AlbumWithArtist } from "../../models/album";
 import { useQuery } from "../../api/use-query";
 import AlbumContextualMenu from "../contextual-menu/album-contextual-menu";
 import Illustration from "../illustration";
 import { WideLoadingComponent } from "../loading/loading";
 import RelationPageHeader from "./relation-page-header";
+import { AlbumWithRelations } from "../../models/album";
 
 type AlbumRelationPageHeaderProps = RequireExactlyOne<{
 	albumSlugOrId: number | string;
-	album: AlbumWithArtist;
+	album: AlbumWithRelations<['artist']>;
 }>
 
-const albumQuery = (albumSlugOrId: number | string) => ({
-	key: ["album", albumSlugOrId],
-	exec: () => API.getAlbum<AlbumWithArtist>(albumSlugOrId, ['artist'])
-});
-
 const AlbumRelationPageHeader = (props: AlbumRelationPageHeaderProps) => {
-	const album = useQuery(albumQuery, props.albumSlugOrId);
+	const album = useQuery((id) => API.getAlbum(id, ['artist']), props.albumSlugOrId);
 
 	if (props.album) {
 		album.data = props.album;

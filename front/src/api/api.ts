@@ -1,16 +1,18 @@
-import Album, {
-	AlbumInclude, AlbumSortingKeys, AlbumType, AlbumWithArtist
+import {
+	AlbumInclude, AlbumSortingKeys, AlbumType, AlbumWithRelations
 } from "../models/album";
-import Artist, { ArtistInclude, ArtistSortingKeys } from "../models/artist";
+import Artist, { ArtistSortingKeys } from "../models/artist";
 import Genre from "../models/genre";
 import Library from "../models/library";
-import { PaginatedResponse, PaginationParameters } from "../models/pagination";
-import Release, { ReleaseInclude, ReleaseSortingKeys } from "../models/release";
-import Song, {
-	SongInclude, SongSortingKeys, SongWithArtist
+import { PaginationParameters } from "../models/pagination";
+import {
+	ReleaseInclude, ReleaseSortingKeys, ReleaseWithRelations
+} from "../models/release";
+import {
+	SongInclude, SongSortingKeys, SongWithRelations
 } from "../models/song";
-import Track, {
-	TrackInclude, TrackSortingKeys, TrackWithRelease
+import {
+	TrackInclude, TrackSortingKeys, TrackWithRelations
 } from "../models/track";
 import Tracklist from "../models/tracklist";
 import { SortingParameters } from "../utils/sorting";
@@ -19,6 +21,7 @@ import { ResourceNotFound } from "../exceptions";
 import User, { UserSortingKeys } from "../models/user";
 import store from "../state/store";
 import File from "../models/file";
+import { InfiniteQuery, Query } from './use-query';
 
 type AuthenticationResponse = {
 	access_token: string;
@@ -45,13 +48,23 @@ type FetchParameters<Keys extends readonly string[]> = {
 
 export default class API {
 	/**
+	 * Formats an array of include keys for Query keys
+	 */
+	private static formatIncludeKeys = (includes?: string[]) => includes?.map((include) => `include-${include}`) ?? [];
+
+	/**
 	 * Utilitary functions
 	 */
 	private static isSSR = () => typeof window === 'undefined';
 	private static isDev = () => process.env.NODE_ENV === 'development';
+
 	private static SSR_API_URL = process.env.ssrApiRoute!;
 	static defaultPageSize = 25;
 
+	/**
+	 * @param credentials the credentials of the user to authenticate
+	 * @returns An object holding the access token to use for authenticated requests
+	 */
 	static async login(credentials: AuthenticationInput): Promise<AuthenticationResponse> {
 		return API.fetch({
 			route: '/auth/login',
@@ -61,6 +74,11 @@ export default class API {
 		}, 'POST');
 	}
 
+	/**
+	 * Creates a new user
+	 * @param credentials the credentails of the new user
+	 * @returns The newly created user
+	 */
 	static async register(credentials: AuthenticationInput): Promise<User> {
 		return API.fetch({
 			route: '/users/new',
@@ -74,21 +92,22 @@ export default class API {
 
 	/**
 	 * Fetch all libraries
-	 * @param pagination the parameters to choose how many items to load
-	 * @returns An array of libaries
+	 * @returns An InfiniteQuery of Libraries
 	 */
-	static async getAllLibraries(
-		pagination?: PaginationParameters
-	): Promise<PaginatedResponse<Library>> {
-		return API.fetch({
-			route: `/libraries`,
-			errorMessage: "Libraries could not be loaded",
-			parameters: { pagination: pagination, include: [] }
-		});
+	static getAllLibraries(): InfiniteQuery<Library> {
+		return {
+			key: ['libraries'],
+			exec: (pagination) => API.fetch({
+				route: `/libraries`,
+				errorMessage: "Libraries could not be loaded",
+				parameters: { pagination: pagination, include: [] }
+			})
+		};
 	}
 
 	/**
-	 * Clean all libraries
+	 * Calls for a task to clean all libraries
+	 * @returns A object with the status of the task
 	 */
 	static async cleanLibraries(): Promise<LibraryTaskResponse> {
 		return API.fetch({
@@ -99,7 +118,8 @@ export default class API {
 	}
 
 	/**
-	 * Scan a library
+	 * Calls for a task to scan a library
+	 * @returns A object with the status of the task
 	 */
 	static async scanLibrary(
 		librarySlugOrId: number | string
@@ -112,7 +132,8 @@ export default class API {
 	}
 
 	/**
-	 * Clean a library
+	 * Calls for a task to clean a library
+	 * @returns A object with the status of the task
 	 */
 	static async cleanLibrary(
 		librarySlugOrId: number | string
@@ -125,7 +146,19 @@ export default class API {
 	}
 
 	/**
-	 * Refresh metadata of files in library a library
+	 * Calls for a task to scan all libraries
+	 * @returns the status of the task
+	 */
+	static scanLibraries(): Promise<LibraryTaskResponse> {
+		return API.fetch<LibraryTaskResponse, []>({
+			route: `/tasks/scan`,
+			parameters: { }
+		});
+	}
+
+	/**
+	 * Calls for a task to refresh metadata of files in a library
+	 * @returns A object with the status of the task
 	 */
 	static async refreshMetadataInLibrary(
 		librarySlugOrId: number | string
@@ -139,6 +172,7 @@ export default class API {
 
 	/**
 	 * Delete a library
+	 * @returns An empty promise
 	 */
 	static async deleteLibrary(
 		librarySlugOrId: number | string
@@ -152,256 +186,285 @@ export default class API {
 
 	/**
 	 * Fetch all album artists
-	 * @param pagination the parameters to choose how many items to load
-	 * @returns An array of artists
+	 * @returns An InfiniteQuery of Artists
 	 */
-	static async getAllArtists(
-		pagination?: PaginationParameters,
+	static getAllArtists(
 		sort?: SortingParameters<typeof ArtistSortingKeys>
-	): Promise<PaginatedResponse<Artist>> {
-		return API.fetch({
-			route: `/artists`,
-			errorMessage: 'Artists could not be loaded',
-			parameters: { pagination, include: [], sort },
-			otherParameters: { albumArtistOnly: 'true' }
-		});
+	): InfiniteQuery<Artist> {
+		return {
+			key: ['artists', sort ?? {}],
+			exec: (pagination) => API.fetch({
+				route: `/artists`,
+				errorMessage: 'Artists could not be loaded',
+				parameters: { pagination: pagination, include: [], sort },
+				otherParameters: { albumArtistOnly: 'true' }
+			})
+		};
 	}
 
 	/**
 	 * Fetch all albums
-	 * @param pagination the parameters to choose how many items to load
-	 * @returns An array of albums
+	 * @returns An InfiniteQuery of Albums
 	 */
-	static async getAllAlbums<T extends Album = Album>(
-		pagination?: PaginationParameters,
+	static getAllAlbums<I extends AlbumInclude[] = []>(
 		sort?: SortingParameters<typeof AlbumSortingKeys>,
 		type?: AlbumType,
-		include: AlbumInclude[] = []
-	): Promise<PaginatedResponse<T>> {
-		return API.fetch({
-			route: `/albums`,
-			errorMessage: 'Albums could not be loaded',
-			parameters: { pagination, include, sort },
-			otherParameters: { type }
-		});
+		include?: I
+	): InfiniteQuery<AlbumWithRelations<I>> {
+		return {
+			key: ['albums', sort ?? {}, type ?? {}, ...API.formatIncludeKeys(include)],
+			exec: (pagination) => API.fetch({
+				route: `/albums`,
+				errorMessage: 'Albums could not be loaded',
+				parameters: { pagination: pagination, include, sort },
+				otherParameters: { type }
+			})
+		};
 	}
 
 	/**
 	 * Fetch all album artists in a library
 	 * @param librarySlugOrId the identifier of the library
-	 * @param pagination the parameters to choose how many items to load
-	 * @returns An array of artists
+	 * @returns An InfiniteQuery of Artists
 	 */
-	static async getAllArtistsInLibrary<T extends Artist = Artist>(
+	static getAllArtistsInLibrary(
 		librarySlugOrId: string | number,
-		pagination?: PaginationParameters,
 		sort?: SortingParameters<typeof ArtistSortingKeys>,
-		include: ArtistInclude[] = [],
-	): Promise<PaginatedResponse<T>> {
-		return API.fetch({
-			route: `/libraries/${librarySlugOrId}/artists`,
-			errorMessage: 'Library does not exist',
-			parameters: { pagination, include, sort },
-			otherParameters: { albumArtistOnly: true }
-		});
+	): InfiniteQuery<Artist> {
+		return {
+			key: ['libraries', librarySlugOrId, 'artists', sort ?? {}],
+			exec: (pagination) => API.fetch({
+				route: `/libraries/${librarySlugOrId}/artists`,
+				errorMessage: 'Library does not exist',
+				parameters: { pagination: pagination, sort },
+				otherParameters: { albumArtistOnly: true }
+			})
+		};
 	}
 
 	/**
-	 * Fetch all album in a library
+	 * Fetch all albums in a library
 	 * @param librarySlugOrId the identifier of the library
-	 * @param pagination the parameters to choose how many items to load
-	 * @returns An array of albums
+	 * @returns An InfiniteQuery of Albums
 	 */
-	static async getAllAlbumsInLibrary<T extends Album = Album>(
+	static getAllAlbumsInLibrary<I extends AlbumInclude[] = []>(
 		librarySlugOrId: string | number,
-		pagination?: PaginationParameters,
 		type?: AlbumType,
 		sort?: SortingParameters<typeof AlbumSortingKeys>,
-		include: AlbumInclude[] = [],
-	): Promise<PaginatedResponse<T>> {
-		return API.fetch({
-			route: `/libraries/${librarySlugOrId}/albums`,
-			errorMessage: 'Library does not exist',
-			parameters: { pagination, include, sort },
-			otherParameters: { type }
-		});
+		include?: I,
+	): InfiniteQuery<AlbumWithRelations<I>> {
+		return {
+			key: ['libraries', librarySlugOrId, 'albums', sort ?? {}, ...API.formatIncludeKeys(include), type ?? {}],
+			exec: (pagination) => API.fetch({
+				route: `/libraries/${librarySlugOrId}/albums`,
+				errorMessage: 'Library does not exist',
+				parameters: { pagination: pagination, include, sort },
+				otherParameters: { type }
+			})
+		};
 	}
 
 	/**
 	 * Fetch all songs in a library
 	 * @param librarySlugOrId the identifier of the library
-	 * @param pagination the parameters to choose how many items to load
-	 * @returns An array of songs
+	 * @returns An InfiniteQuery of songs
 	 */
-	static async getAllSongsInLibrary<T extends Song = Song>(
+	static getAllSongsInLibrary<I extends SongInclude[] = []>(
 		librarySlugOrId: string | number,
-		pagination?: PaginationParameters,
 		sort?: SortingParameters<typeof SongSortingKeys>,
-		include: SongInclude[] = [],
-	): Promise<PaginatedResponse<T>> {
-		return API.fetch({
-			route: `/libraries/${librarySlugOrId}/songs`,
-			errorMessage: 'Library does not exist',
-			parameters: { pagination, include, sort }
-		});
+		include?: I
+	): InfiniteQuery<SongWithRelations<I>> {
+		return {
+			key: ['libraries', librarySlugOrId, 'songs', sort ?? {}, ...API.formatIncludeKeys(include)],
+			exec: (pagination) => API.fetch({
+				route: `/libraries/${librarySlugOrId}/songs`,
+				errorMessage: 'Library does not exist',
+				parameters: { pagination: pagination, include, sort }
+			})
+		};
 	}
 
 	/**
 	 * Fetch all songs
-	 * @param pagination the parameters to choose how many items to load
-	 * @returns An array of songs
+	 * @returns An InfiniteQuery of Songs
 	 */
-	static async getAllSongs<T extends Song = Song>(
-		pagination?: PaginationParameters,
+	static getAllSongs<I extends SongInclude[] = []>(
 		sort?: SortingParameters<typeof SongSortingKeys>,
-		include: SongInclude[] = []
-	): Promise<PaginatedResponse<T>> {
-		return API.fetch({
-			route: `/songs`,
-			errorMessage: 'Songs could not be loaded',
-			parameters: { pagination, include, sort }
-		});
+		include?: I
+	): InfiniteQuery<SongWithRelations<I>> {
+		return {
+			key: ['songs', ...API.formatIncludeKeys(include), sort ?? {}],
+			exec: (pagination) => API.fetch({
+				route: `/songs`,
+				errorMessage: 'Songs could not be loaded',
+				parameters: { pagination: pagination, include, sort }
+			})
+		};
 	}
 
 	/**
 	 * Fetch all albums by an artist
-	 * @param pagination the parameters to choose how many items to load
-	 * @returns An array of albums
+	 * @returns An Infinite Query of Albums
 	 */
-	static async getArtistAlbums<T extends Album = Album>(
+	static getArtistAlbums<I extends AlbumInclude[] = []>(
 		artistSlugOrId: string | number,
-		pagination?: PaginationParameters,
 		type?: AlbumType,
 		sort?: SortingParameters<typeof AlbumSortingKeys>,
-		include: AlbumInclude[] = []
-	): Promise<PaginatedResponse<T>> {
-		return API.fetch({
-			route: `/artists/${artistSlugOrId}/albums`,
-			errorMessage: `Artist '${artistSlugOrId}' not found`,
-			parameters: { pagination, include, sort },
-			otherParameters: { type }
-		});
+		include?: I
+	): InfiniteQuery<AlbumWithRelations<I>> {
+		return {
+			key: ['artist', artistSlugOrId, 'albums', sort ?? {}, ...API.formatIncludeKeys(include), type ?? {}],
+			exec: (pagination) => API.fetch({
+				route: `/artists/${artistSlugOrId}/albums`,
+				errorMessage: `Artist '${artistSlugOrId}' not found`,
+				parameters: { pagination: pagination, include, sort },
+				otherParameters: { type }
+			})
+		};
 	}
 
 	/**
 	 * Fetch all songs by an artist
-	 * @param pagination the parameters to choose how many items to load
-	 * @returns An array of songs
+	 * @returns An Infinite Query of songs
 	 */
-	static async getArtistSongs<T extends Song = Song>(
+	static getArtistSongs<I extends SongInclude[] = []>(
 		artistSlugOrId: string | number,
-		pagination?: PaginationParameters,
 		sort?: SortingParameters<typeof SongSortingKeys>,
-		include: AlbumInclude[] = []
-	): Promise<PaginatedResponse<T>> {
-		return API.fetch({
-			route: `/artists/${artistSlugOrId}/songs`,
-			errorMessage: `Artist '${artistSlugOrId}' not found`,
-			parameters: { pagination, include, sort }
-		});
+		include?: I
+	): InfiniteQuery<SongWithRelations<I>> {
+		return {
+			key: ['artist', artistSlugOrId, 'songs', sort ?? {}, ...API.formatIncludeKeys(include)],
+			exec: (pagination) => API.fetch({
+				route: `/artists/${artistSlugOrId}/songs`,
+				errorMessage: `Artist '${artistSlugOrId}' not found`,
+				parameters: { pagination: pagination, include, sort }
+			})
+		};
 	}
 
 	/**
 	 * Get a song
 	 * @param songSlugOrId the identifier of a song
-	 * @param include the fields to include in the fetched item
-	 * @returns a Track
+	 * @returns a Query for a Song
 	 */
-	static async getSong<T extends Song = Song>(
+	static getSong<I extends SongInclude[] = []>(
 		songSlugOrId: string | number,
-		include: SongInclude[] = []
-	): Promise<T> {
-		return API.fetch({
-			route: `/songs/${songSlugOrId}`,
-			parameters: { include }
-		});
+		include?: I
+	): Query<SongWithRelations<I>> {
+		return {
+			key: ['song', songSlugOrId, ...API.formatIncludeKeys(include)],
+			exec: () => API.fetch({
+				route: `/songs/${songSlugOrId}`,
+				parameters: { include }
+			})
+		};
 	}
 
 	/**
 	 * Get the master track of a song
 	 * @param songSlugOrId the identifier of a song
 	 * @param include the fields to include in the fetched item
-	 * @returns a Track
+	 * @returns a Query for a Track
 	 */
-	static async getMasterTrack<T extends Track = Track>(
+	static getMasterTrack<I extends TrackInclude[] = []>(
 		songSlugOrId: string | number,
-		include: TrackInclude[] = []
-	): Promise<T> {
-		return API.fetch({
-			route: `/songs/${songSlugOrId}/master`,
-			parameters: { include }
-		});
+		include?: I
+	): Query<TrackWithRelations<I>> {
+		return {
+			key: ['song', songSlugOrId, 'master', ...API.formatIncludeKeys(include)],
+			exec: () => API.fetch({
+				route: `/songs/${songSlugOrId}/master`,
+				parameters: { include }
+			})
+		};
 	}
 
 	/**
 	 * Get the track of a song
 	 * @param trackId the identifier of a track
 	 * @param include the fields to include in the fetched item
-	 * @returns a Track
+	 * @returns a Query for a Track
 	 */
-	static async getTrack<T extends Track = Track>(
+	static getTrack<I extends TrackInclude[] = []>(
 		trackId: string | number,
-		include: TrackInclude[] = []
-	): Promise<T> {
-		return API.fetch({
-			route: `/tracks/${trackId}`,
-			parameters: { include }
-		});
+		include?: I
+	): Query<TrackWithRelations<I>> {
+		return {
+			key: ['track', trackId, ...API.formatIncludeKeys(include)],
+			exec: () => API.fetch({
+				route: `/tracks/${trackId}`,
+				parameters: { include }
+			})
+		};
 	}
 
 	/**
 	 * Get source file of a track
 	 * @param sourceFileId the identifier of a file
 	 * @param include the fields to include in the fetched item
-	 * @returns a File
+	 * @returns a Query for a File
 	 */
-	static async getSourceFile<T extends File = File>(
+	static getSourceFile(
 		sourceFileId: string | number
-	): Promise<T> {
-		return API.fetch({
-			route: `/files/${sourceFileId}`,
-			parameters: { include: [] }
-		});
+	): Query<File> {
+		return {
+			key: ['file', sourceFileId],
+			exec: () => API.fetch({
+				route: `/files/${sourceFileId}`,
+				parameters: { include: [] }
+			})
+		};
 	}
 
 	/**
 	 * Get the album
 	 * @param albumSlugOrId the identifier of an album
 	 * @param include the fields to include in the fetched item
-	 * @returns a release
+	 * @returns a query for an albums
 	 */
-	static async getAlbum<T extends Album = Album>(
+	static getAlbum<I extends AlbumInclude[] = []>(
 		albumSlugOrId: string | number,
-		include: AlbumInclude[] = []
-	): Promise<T> {
-		return API.fetch({
-			route: `/albums/${albumSlugOrId}`,
-			errorMessage: "Album not found",
-			parameters: { include }
-		});
+		include: I
+	): Query<AlbumWithRelations<I>> {
+		return {
+			key: ['album', albumSlugOrId, ...API.formatIncludeKeys(include)],
+			exec: () => API.fetch({
+				route: `/albums/${albumSlugOrId}`,
+				errorMessage: "Album not found",
+				parameters: { include }
+			})
+		};
 	}
 
-	static async getCurrentUserStatus(): Promise<User> {
-		return API.fetch({
-			route: `/users/me`,
-			parameters: { }
-		});
+	/**
+	 * Get the User object of the authentified user
+	 * @returns A query to a User object
+	 */
+	static getCurrentUserStatus(): Query<User> {
+		return {
+			key: ['user'],
+			exec: () => API.fetch({
+				route: `/users/me`,
+				parameters: { }
+			})
+		};
 	}
 
 	/**
 	 * Fetch all users
-	 * @param pagination the parameters to choose how many items to load
-	 * @returns An array of users
+	 * @returns An Infinite Query of users
 	 */
-	static async getUsers(
-		pagination?: PaginationParameters,
+	static getUsers(
 		sort?: SortingParameters<typeof UserSortingKeys>,
-	): Promise<PaginatedResponse<User>> {
-		return API.fetch({
-			route: `/users`,
-			errorMessage: 'Users could not be loaded',
-			parameters: { pagination, include: [], sort }
-		});
+	): InfiniteQuery<User> {
+		return {
+			key: ['users', sort ?? {}],
+			exec: (pagination) => API.fetch({
+				route: `/users`,
+				errorMessage: 'Users could not be loaded',
+				parameters: { pagination: pagination, include: [], sort }
+			})
+		};
 	}
 
 	/**
@@ -440,315 +503,413 @@ export default class API {
 	 * Get the master release of an album
 	 * @param albumSlugOrId the identifier of an album
 	 * @param include the fields to include in the fetched item
-	 * @returns a release
+	 * @returns a query for a release
 	 */
-	static async getMasterRelease<T extends Release = Release>(
+	static getMasterRelease<I extends ReleaseInclude[] = []>(
 		albumSlugOrId: string | number,
-		include: ReleaseInclude[] = []
-	): Promise<T> {
-		return API.fetch({
-			route: `/albums/${albumSlugOrId}/master`,
-			parameters: { include }
-		});
+		include?: I
+	): Query<ReleaseWithRelations<I>> {
+		return {
+			key: ['album', albumSlugOrId, 'master', ...API.formatIncludeKeys(include)],
+			exec: () => API.fetch({
+				route: `/albums/${albumSlugOrId}/master`,
+				parameters: { include }
+			})
+		};
 	}
 
 	/**
 	 * Get tracks of a song
 	 * @param songSlugOrId the id of the parent song
 	 * @param include the relation to include
-	 * @returns an array of tracks
+	 * @returns an Infinite Query of tracks
 	 */
-	static async getSongTracks<T extends Track = Track>(
+	static getSongTracks<I extends TrackInclude[] = []>(
 		songSlugOrId: string | number,
-		pagination?: PaginationParameters,
 		sort?: SortingParameters<typeof TrackSortingKeys>,
-		include: TrackInclude[] = []
-	): Promise<PaginatedResponse<T>> {
-		return API.fetch({
-			route: `/songs/${songSlugOrId}/tracks`,
-			parameters: { pagination, include, sort }
-		});
+		include?: I
+	): InfiniteQuery<TrackWithRelations<I>> {
+		return {
+			key: ['song', songSlugOrId, 'tracks', sort ?? {}, ...API.formatIncludeKeys(include)],
+			exec: (pagination) => API.fetch({
+				route: `/songs/${songSlugOrId}/tracks`,
+				parameters: { pagination: pagination, include, sort }
+			})
+		};
 	}
 
 	/**
 	 * Get video tracks of a song
 	 * @param songSlugOrId the id of the parent song
 	 * @param include the relation to include
-	 * @returns an array of video tracks
+	 * @returns An Infinite query of Tracks
 	 */
-	static async getSongVideos<T extends Track = Track>(
+	static getSongVideos<I extends TrackInclude[] = []>(
 		songSlugOrId: string | number,
-		pagination?: PaginationParameters,
 		sort?: SortingParameters<typeof TrackSortingKeys>,
-		include: TrackInclude[] = []
-	): Promise<PaginatedResponse<T>> {
-		return API.fetch({
-			route: `/songs/${songSlugOrId}/videos`,
-			parameters: { pagination, include, sort }
-		});
+		include?: I
+	): InfiniteQuery<TrackWithRelations<I>> {
+		return {
+			key: ['song', songSlugOrId, 'videos', sort ?? {}, ...API.formatIncludeKeys(include)],
+			exec: (pagination) => API.fetch({
+				route: `/songs/${songSlugOrId}/videos`,
+				parameters: { pagination: pagination, include, sort }
+			})
+		};
 	}
 
 	/**
 	 * Get versions of a song
 	 * @param songSlugOrId the id of the  song
 	 * @param include the relation to include
-	 * @returns an array of tracks
+	 * @returns An Infinite query of Tracks
 	 */
-	static async getSongVersions<T extends Song = Song>(
+	static getSongVersions<I extends SongInclude[] = []>(
 		songSlugOrId: string | number,
-		pagination?: PaginationParameters,
 		sort?: SortingParameters<typeof SongSortingKeys>,
-		include: SongInclude[] = []
-	): Promise<PaginatedResponse<T>> {
-		return API.fetch({
-			route: `/songs/${songSlugOrId}/versions`,
-			parameters: { pagination, include, sort }
-		});
+		include?: I
+	): InfiniteQuery<SongWithRelations<I>> {
+		return {
+			key: ['song', songSlugOrId, 'versions', sort ?? {}, ...API.formatIncludeKeys(include)],
+			exec: (pagination) => API.fetch({
+				route: `/songs/${songSlugOrId}/versions`,
+				parameters: { pagination: pagination, include, sort }
+			})
+		};
 	}
 
 	/**
 	 * Get genres of a song
 	 * @param songSlugOrId the id of the parent song
-	 * @param pagination
-	 * @returns an array of genres
+	 * @returns An Infinite query of Genres
 	 */
-	static async getSongGenres(
-		songSlugOrId: string | number,
-		pagination?: PaginationParameters
-	): Promise<PaginatedResponse<Genre>> {
-		return API.fetch({
-			route: `/songs/${songSlugOrId}/genres`,
-			parameters: { pagination, include: [] }
-		});
+	static getSongGenres(
+		songSlugOrId: string | number
+	): InfiniteQuery<Genre> {
+		return {
+			key: ['song', songSlugOrId, 'genres'],
+			exec: (pagination) => API.fetch({
+				route: `/songs/${songSlugOrId}/genres`,
+				parameters: { pagination: pagination, include: [] }
+			})
+		};
 	}
 
 	/**
 	 * Get genres of a album
 	 * @param albumSlugOrId the id of the album
-	 * @returns an array of genres
+	 * @returns An Infinite query of Genres
 	 */
-	static async getAlbumGenres(
+	static getAlbumGenres(
 		albumSlugOrId: string | number,
-	): Promise<PaginatedResponse<Genre>> {
-		return API.fetch({
-			route: `/albums/${albumSlugOrId}/genres`,
-			parameters: { include: [] }
-		});
+	): InfiniteQuery<Genre> {
+		return {
+			key: ['album', albumSlugOrId, 'genres'],
+			exec: (pagination) => API.fetch({
+				route: `/albums/${albumSlugOrId}/genres`,
+				parameters: { include: [] }
+			})
+		};
 	}
 
 	/**
 	 * Get videos of a album
 	 * @param albumSlugOrId the id of the album
-	 * @returns an array of videos
+	 * @returns A query for an array of tracks
 	 */
-	static async getAlbumVideos<T extends Track = Track>(
+	static getAlbumVideos<I extends TrackInclude[] = []>(
 		albumSlugOrId: string | number,
-		include: TrackInclude[] = []
-	): Promise<T[]> {
-		return API.fetch({
-			route: `/albums/${albumSlugOrId}/videos`,
-			parameters: { include }
-		});
+		include?: I
+	): Query<TrackWithRelations<I>[]> {
+		return {
+			key: ['album', albumSlugOrId, 'videos', ...API.formatIncludeKeys(include)],
+			exec: () => API.fetch({
+				route: `/albums/${albumSlugOrId}/videos`,
+				parameters: { include }
+			})
+		};
 	}
 
 	/**
 	 * Get releases of a album
 	 * @param albumSlugOrId the id of the album
-	 * @returns an array of releases
+	 * @returns An Infinite query of Releases
 	 */
-	static async getAlbumReleases<T extends Release = Release>(
+	static getAlbumReleases<I extends ReleaseInclude[] = []>(
 		albumSlugOrId: string | number,
-		pagination?: PaginationParameters,
 		sort?: SortingParameters<typeof ReleaseSortingKeys>,
-		include: ReleaseInclude[] = []
-	): Promise<PaginatedResponse<T>> {
-		return API.fetch({
-			route: `/albums/${albumSlugOrId}/releases`,
-			parameters: { include, pagination, sort }
-		});
+		include?: I
+	): InfiniteQuery<ReleaseWithRelations<I>> {
+		return {
+			key: ['album', albumSlugOrId, 'releases', sort ?? {}, ...API.formatIncludeKeys(include)],
+			exec: (pagination) => API.fetch({
+				route: `/albums/${albumSlugOrId}/releases`,
+				parameters: { include, pagination: pagination, sort }
+			})
+		};
 	}
 
-	static async getRelease<T extends Release = Release>(
+	/**
+	 * Get a release
+	 * @param slugOrId the id of the release
+	 * @returns A query for a Release
+	 */
+	static getRelease<I extends ReleaseInclude[] = []>(
 		slugOrId: string | number,
-		include: ReleaseInclude[] = []
-	): Promise<T> {
-		return API.fetch({
-			route: `/releases/${slugOrId}`,
-			errorMessage: 'Release not found',
-			parameters: { include }
-		});
+		include?: I
+	): Query<ReleaseWithRelations<I>> {
+		return {
+			key: ['release', slugOrId, ...API.formatIncludeKeys(include)],
+			exec: () => API.fetch({
+				route: `/releases/${slugOrId}`,
+				errorMessage: 'Release not found',
+				parameters: { include }
+			})
+		};
 	}
 
-	static async getReleaseTrackList<T extends Track = Track>(
+	/**
+	 * Get a release's tracklist
+	 * @param slugOrId the id of the release
+	 * @returns A query for a Tracklist
+	 */
+	static getReleaseTrackList<I extends TrackInclude[] = []>(
 		slugOrId: string | number,
-		include: TrackInclude[] = []
-	): Promise<Tracklist<T>> {
-		return this.fetch({
-			route: `/releases/${slugOrId.toString()}/tracklist`,
-			parameters: { include }
-		});
+		include?: I
+	): Query<Tracklist<TrackWithRelations<I>>> {
+		return {
+			key: ['release', slugOrId, 'tracklist', ...API.formatIncludeKeys(include)],
+			exec: () => API.fetch({
+				route: `/releases/${slugOrId.toString()}/tracklist`,
+				parameters: { include }
+			})
+		};
 	}
 
-	static async getReleasePlaylist<T extends Track = Track>(
+	/**
+	 * Get a release's playlist
+	 * @param slugOrId the id of the release
+	 * @returns A query for an array of tracks
+	 */
+	static getReleasePlaylist<I extends TrackInclude[] = []>(
 		slugOrId: string | number,
-		include: TrackInclude[] = []
-	): Promise<T[]> {
-		return this.fetch({
-			route: `/releases/${slugOrId.toString()}/playlist`,
-			parameters: { include }
-		});
+		include?: I
+	): Query<TrackWithRelations<I>[]> {
+		return {
+			key: ['release', slugOrId, 'playlist', ...API.formatIncludeKeys(include)],
+			exec: () => API.fetch({
+				route: `/releases/${slugOrId.toString()}/playlist`,
+				parameters: { include }
+			})
+		};
 	}
 
-	static async getSongLyrics(
+	/**
+	 * Get the song's lyrics
+	 * @param slugOrId the id of the song
+	 * @returns A query for an array of strings
+	 */
+	static getSongLyrics(
 		slugOrId: string | number
-	): Promise<string[] | null> {
-		return API.fetch<{ lyrics: string }, []>({
-			route: `/songs/${slugOrId}/lyrics`,
-			errorMessage: 'Lyrics loading failed',
-			parameters: { }
-		}).then((value) => value.lyrics.split('\n')).catch(() => null);
+	): Query<string[] | null> {
+		return {
+			key: ['song', slugOrId, 'lyrics'],
+			exec: () => API.fetch<{ lyrics: string }, []>({
+				route: `/songs/${slugOrId}/lyrics`,
+				errorMessage: 'Lyrics loading failed',
+				parameters: { }
+			})
+				.then((value) => value.lyrics.split('\n'))
+				.catch(() => null)
+		};
 	}
 
-	static async getSongMainAlbum<T extends Album = Album>(
+	/**
+	 * Get a song's main album
+	 * @param songSlugOrId the id of the song
+	 * @returns A query for an Album
+	 */
+	static getSongMainAlbum<I extends AlbumInclude[] = []>(
 		songSlugOrId: string | number,
-		include: AlbumInclude[] = []
-	): Promise<T> {
-		return API.getMasterTrack<TrackWithRelease>(songSlugOrId, ['release'])
-			.then((track) => API.getAlbum(track.release.albumId, include));
+		include?: I
+	): Query<AlbumWithRelations<I>> {
+		return {
+			key: ['song', songSlugOrId, 'album', ...API.formatIncludeKeys(include)],
+			exec: () => API.getMasterTrack(songSlugOrId, ['release'])
+				.exec()
+				.then((track) => API.getAlbum<I>(track.release.albumId, include).exec())
+		};
 	}
 
-	static async getSongMainRelease<T extends Release = Release>(
-		songSlugOrId: string | number,
-		include: ReleaseInclude[] = []
-	): Promise<T> {
-		return API.getMasterTrack(songSlugOrId)
-			.then((track) => API.getRelease(track.releaseId, include));
-	}
-
-	static async getArtist<T extends Artist = Artist>(
+	/**
+	 * Get an artist
+	 * @param slugOrId the id of the artist
+	 * @returns A query for an Artist
+	 */
+	static getArtist(
 		slugOrId: string | number,
-		include: ArtistInclude[] = []
-	): Promise<T> {
-		return API.fetch<T, []>({
-			route: `/artists/${slugOrId}`,
-			errorMessage: 'Artist could not be loaded',
-			parameters: { include }
-		});
+	): Query<Artist> {
+		return {
+			key: ['artist', slugOrId],
+			exec: () => API.fetch({
+				route: `/artists/${slugOrId}`,
+				errorMessage: 'Artist could not be loaded',
+				parameters: { }
+			})
+		};
 	}
 
 	/**
 	 * Fetch all genres
-	 * @param pagination the parameters to choose how many items to load
-	 * @returns An array of genres
+	 * @returns An Infinite Query of genres
 	 */
-	static async getAllGenres(
-		pagination?: PaginationParameters,
+	static getAllGenres(
 		sort?: SortingParameters<typeof ArtistSortingKeys>
-	): Promise<PaginatedResponse<Genre>> {
-		return API.fetch({
-			route: `/genres`,
-			errorMessage: 'Genres could not be loaded',
-			parameters: { pagination, include: [], sort }
-		});
+	): InfiniteQuery<Genre> {
+		return {
+			key: ['genres', sort ?? {}],
+			exec: (pagination) => API.fetch({
+				route: `/genres`,
+				errorMessage: 'Genres could not be loaded',
+				parameters: { pagination: pagination, include: [], sort }
+			})
+		};
 	}
 
 	/**
-	 * Fetch one genre
+	 * Get one genre
+	 * @param idOrSlug The id of the genre
+	 * @returns A query for a Genre
 	 */
-	static async getGenre(idOrSlug: string | number): Promise<Genre> {
-		return API.fetch({
-			route: `/genres/${idOrSlug}`,
-			errorMessage: 'Genre not found',
-			parameters: {}
-		});
+	static getGenre(idOrSlug: string | number): Query<Genre> {
+		return {
+			key: ['genre', idOrSlug],
+			exec: () => API.fetch({
+				route: `/genres/${idOrSlug}`,
+				errorMessage: 'Genre not found',
+				parameters: {}
+			})
+		};
 	}
 
 	/**
 	 * Fetch all albums from a genre
+	 * @param idOrSlug the identifier of the genre
+	 * @returns An Infinite Query for Albums
 	 */
-	static async getGenreAlbums(
+	static getGenreAlbums(
 		idOrSlug: string | number,
-		pagination?: PaginationParameters,
 		sort?: SortingParameters<typeof AlbumSortingKeys>,
 		type?: AlbumType
-	): Promise<PaginatedResponse<AlbumWithArtist>> {
-		return API.fetch({
-			route: `/genres/${idOrSlug}/albums`,
-			errorMessage: 'Genre not found',
-			parameters: { pagination, include: ['artist'], sort },
-			otherParameters: { type }
-		});
+	): InfiniteQuery<AlbumWithRelations<['artist']>> {
+		return {
+			key: ['genre', idOrSlug, 'albums', sort ?? {}, type ?? {}],
+			exec: (pagination) => API.fetch({
+				route: `/genres/${idOrSlug}/albums`,
+				errorMessage: 'Genre not found',
+				parameters: { pagination: pagination, include: ['artist'], sort },
+				otherParameters: { type }
+			})
+		};
 	}
 
 	/**
 	 * Fetch all artists from a genre
+	 * @param idOrSlug the identifier of the genre
+	 * @returns An Infinite Query for artists
 	 */
-	static async getGenreArtists(
+	static getGenreArtists(
 		idOrSlug: string | number,
-		pagination?: PaginationParameters,
 		sort?: SortingParameters<typeof ArtistSortingKeys>,
-	): Promise<PaginatedResponse<Artist>> {
-		return API.fetch({
-			route: `/genres/${idOrSlug}/artists`,
-			errorMessage: 'Genre not found',
-			parameters: { pagination, include: [], sort }
-		});
+	): InfiniteQuery<Artist> {
+		return {
+			key: ['genre', idOrSlug, 'artists', sort ?? {}],
+			exec: (pagination) => API.fetch({
+				route: `/genres/${idOrSlug}/artists`,
+				errorMessage: 'Genre not found',
+				parameters: { pagination: pagination, include: [], sort }
+			})
+		};
 	}
 
 	/**
 	 * Fetch all songs from a genre
+	 * @param idOrSlug the identifier of the genre
+	 * @returns An Infinite Query for songs
 	 */
-	static async getGenreSongs(
+	static getGenreSongs(
 		idOrSlug: string | number,
-		pagination?: PaginationParameters,
 		sort?: SortingParameters<typeof SongSortingKeys>,
-	): Promise<PaginatedResponse<SongWithArtist>> {
-		return API.fetch({
-			route: `/genres/${idOrSlug}/songs`,
-			errorMessage: 'Genre not found',
-			parameters: { pagination, include: ['artist'], sort }
-		});
+	): InfiniteQuery<SongWithRelations<['artist']>> {
+		return {
+			key: ['genre', idOrSlug, 'songs', sort ?? {}],
+			exec: (pagination) => API.fetch({
+				route: `/genres/${idOrSlug}/songs`,
+				errorMessage: 'Genre not found',
+				parameters: { pagination: pagination, include: ['artist'], sort }
+			})
+		};
 	}
 
-	static async searchArtists<T extends Artist = Artist>(
+	/**
+	 * Search for artists
+	 * @param query token to find artists
+	 * @returns An Infinite Query for artists
+	 */
+	static searchArtists(
 		query: string,
-		pagination?: PaginationParameters,
 		sort?: SortingParameters<typeof ArtistSortingKeys>,
-		include: ArtistInclude[] = []
-	): Promise<PaginatedResponse<T>> {
-		return API.fetch({
-			route: `/search/artists/${query}`,
-			errorMessage: 'Search failed',
-			parameters: { pagination, include, sort }
-		});
+	): InfiniteQuery<Artist> {
+		return {
+			key: ['search', 'artists', query, sort ?? {}],
+			exec: (pagination) => API.fetch({
+				route: `/search/artists/${query}`,
+				errorMessage: 'Search failed',
+				parameters: { pagination: pagination, sort }
+			})
+		};
 	}
 
-	static async searchAlbums<T extends Album = Album>(
+	/**
+	 * Search for albums
+	 * @param query token to find albums
+	 * @returns An Infinite Query for albums
+	 */
+	static searchAlbums<I extends AlbumInclude[] = []>(
 		query: string,
-		pagination?: PaginationParameters,
 		type?: AlbumType,
 		sort?: SortingParameters<typeof AlbumSortingKeys>,
-		include: AlbumInclude[] = []
-	): Promise<PaginatedResponse<T>> {
-		return API.fetch({
-			route: `/search/albums/${query}`,
-			errorMessage: 'Search failed',
-			parameters: { pagination, include, sort },
-			otherParameters: { type }
-		});
+		include?: I
+	): InfiniteQuery<AlbumWithRelations<I>> {
+		return {
+			key: ['search', 'albums', query, sort ?? {}, type ?? {}, ...API.formatIncludeKeys(include)],
+			exec: (pagination) => API.fetch({
+				route: `/search/albums/${query}`,
+				errorMessage: 'Search failed',
+				parameters: { pagination: pagination, include, sort },
+				otherParameters: { type }
+			})
+		};
 	}
 
-	static async searchSongs<T extends Song = Song>(
+	/**
+	 * Search for songs
+	 * @param query token to find songs
+	 * @returns An Infinite Query for songs
+	 */
+	static searchSongs<I extends SongInclude[] = []>(
 		query: string,
-		pagination?: PaginationParameters,
 		sort?: SortingParameters<typeof SongSortingKeys>,
-		include: SongInclude[] = []
-	): Promise<PaginatedResponse<T>> {
-		return API.fetch({
-			route: `/search/songs/${query}`,
-			errorMessage: 'Search failed',
-			parameters: { pagination, include, sort }
-		});
+		include?: I
+	): InfiniteQuery<SongWithRelations<I>> {
+		return {
+			key: ['search', 'songs', query, sort ?? {}, ...API.formatIncludeKeys(include)],
+			exec: (pagination) => API.fetch({
+				route: `/search/songs/${query}`,
+				errorMessage: 'Search failed',
+				parameters: { pagination: pagination, include, sort }
+			})
+		};
 	}
 
 	private static async fetch<T, Keys extends readonly string[]>(
@@ -794,13 +955,6 @@ export default class API {
 			}
 		}
 		return jsonResponse;
-	}
-
-	static scanLibraries(): Promise<LibraryTaskResponse> {
-		return API.fetch<LibraryTaskResponse, []>({
-			route: `/tasks/scan`,
-			parameters: { }
-		});
 	}
 
 	/**

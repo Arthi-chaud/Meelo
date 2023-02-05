@@ -1,10 +1,10 @@
 import Illustration from '../illustration';
 import ListItem from "./item";
-import { AlbumWithArtist } from "../../models/album";
 import AlbumContextualMenu from "../contextual-menu/album-contextual-menu";
+import { AlbumWithRelations } from '../../models/album';
 
 type AlbumItemProps = {
-	album: AlbumWithArtist;
+	album: AlbumWithRelations<['artist']>;
 }
 
 /**

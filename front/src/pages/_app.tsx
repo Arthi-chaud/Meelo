@@ -9,7 +9,7 @@ import {
 import { ReactQueryDevtools } from "react-query/devtools";
 import {
 	Container,
-	CssBaseline, GlobalStyles, ThemeProvider, useTheme
+	CssBaseline, GlobalStyles, ThemeProvider
 } from "@mui/material";
 import MeeloAppBar from "../components/appbar/appbar";
 import { ErrorBoundary } from 'react-error-boundary';

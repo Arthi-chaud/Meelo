@@ -1,6 +1,5 @@
 import Artist from "./artist";
 import Illustration from "./illustration";
-import Release from "./release";
 import Resource from "./resource";
 
 /**
@@ -38,15 +37,12 @@ type Album = Resource & Illustration & {
 	masterId?: number;
 }
 
-type AlbumWithArtist = Album & {
-	artist?: Artist;
-}
-
-type AlbumWithReleases = Album & {
-	releases: Release[];
-}
-
 type AlbumInclude = 'artist';
+
+type AlbumWithRelations<I extends K[], K extends AlbumInclude = AlbumInclude> = Album & Pick<
+	{ artist: Artist | null },
+	I[number]
+>
 
 export const AlbumType = [
 	'StudioRecording',
@@ -66,4 +62,4 @@ export const AlbumSortingKeys = [
 	'releaseDate',
 	'addDate'
 ] as const;
-export type { AlbumWithArtist, AlbumWithReleases, AlbumInclude };
+export type { AlbumWithRelations, AlbumInclude };

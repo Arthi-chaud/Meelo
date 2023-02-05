@@ -1,69 +1,22 @@
 import { Box, Typography } from "@mui/material";
 import { useRouter } from "next/router";
-import API from "../../api/api";
-import { Page } from "../../components/infinite/infinite-scroll";
 import SelectableInfiniteView from "../../components/infinite/selectable-infinite-view";
-import Album, { AlbumSortingKeys, AlbumType } from "../../models/album";
-import Artist, { ArtistSortingKeys } from "../../models/artist";
-import { SongSortingKeys, SongWithArtist } from "../../models/song";
 import { useQuery } from "../../api/use-query";
 import getSlugOrId from "../../utils/getSlugOrId";
-import { SortingParameters } from "../../utils/sorting";
 import prepareSSR, { InferSSRProps } from "../../ssr";
 import LoadingPage from "../../components/loading/loading-page";
-
-const genreQuery = (idOrSlug: string | number) => ({
-	key: ["genre", idOrSlug],
-	exec: () => API.getGenre(idOrSlug)
-});
-
-const genreArtistsQuery = (
-	slugOrId: string | number, sort?: SortingParameters<typeof ArtistSortingKeys>
-) => ({
-	key: [
-		"genres",
-		slugOrId,
-		"artists",
-		sort ?? {}
-	],
-	exec: (lastPage: Page<Artist>) => API.getGenreArtists(slugOrId, lastPage, sort)
-});
-
-const genreAlbumsQuery = (
-	slugOrId: string | number, sort?: SortingParameters<typeof AlbumSortingKeys>, type?: AlbumType
-) => ({
-	key: [
-		"genres",
-		slugOrId,
-		"albums",
-		sort ?? {},
-		type ?? {}
-	],
-	exec: (lastPage: Page<Album>) => API.getGenreAlbums(slugOrId, lastPage, sort, type)
-});
-
-const genreSongsQuery = (
-	slugOrId: string | number, sort?: SortingParameters<typeof SongSortingKeys>
-) => ({
-	key: [
-		"genres",
-		slugOrId,
-		"songs",
-		sort ?? {}
-	],
-	exec: (lastPage: Page<SongWithArtist>) => API.getGenreSongs(slugOrId, lastPage, sort)
-});
+import API from "../../api/api";
 
 export const getServerSideProps = prepareSSR((context) => {
 	const genreIdentifier = getSlugOrId(context.params);
 
 	return {
 		additionalProps: { genreIdentifier },
-		queries: [genreQuery(genreIdentifier)],
+		queries: [API.getGenre(genreIdentifier)],
 		infiniteQueries: [
-			genreArtistsQuery(genreIdentifier),
-			genreAlbumsQuery(genreIdentifier),
-			genreSongsQuery(genreIdentifier)
+			API.getGenreAlbums(genreIdentifier),
+			API.getGenreArtists(genreIdentifier),
+			API.getGenreSongs(genreIdentifier)
 		]
 	};
 });
@@ -72,7 +25,7 @@ const GenrePage = ({ genreIdentifier }: InferSSRProps<typeof getServerSideProps>
 	const router = useRouter();
 
 	genreIdentifier ??= getSlugOrId(router.query);
-	const genre = useQuery(genreQuery, genreIdentifier);
+	const genre = useQuery(API.getGenre, genreIdentifier);
 
 	if (!genre.data) {
 		return <LoadingPage/>;
@@ -85,9 +38,9 @@ const GenrePage = ({ genreIdentifier }: InferSSRProps<typeof getServerSideProps>
 		</Box>
 		<SelectableInfiniteView
 			enabled={true}
-			artistQuery={(sort) => genreArtistsQuery(genreIdentifier, sort)}
-			albumQuery={(sort, type) => genreAlbumsQuery(genreIdentifier, sort, type)}
-			songQuery={(sort) => genreSongsQuery(genreIdentifier, sort)}
+			artistQuery={(sort) => API.getGenreArtists(genreIdentifier, sort)}
+			albumQuery={(sort, type) => API.getGenreAlbums(genreIdentifier, sort, type)}
+			songQuery={(sort) => API.getGenreSongs(genreIdentifier, sort)}
 		/>
 	</Box>;
 };

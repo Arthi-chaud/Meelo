@@ -4,10 +4,10 @@ import {
 } from "@mui/material";
 import { GridColDef } from "@mui/x-data-grid";
 import toast from "react-hot-toast";
-import { useMutation, useQueryClient } from "react-query";
+import { useMutation } from "react-query";
+import { useQueryClient } from "../../api/use-query";
 import API from "../../api/api";
 import Library from "../../models/library";
-import { Page } from "../infinite/infinite-scroll";
 import AdminGrid from "../admin-grid";
 import {
 	CleanAllLibrariesAction, CleanLibraryAction,
@@ -16,11 +16,6 @@ import {
 } from "../actions/library-task";
 import { useConfirm } from "material-ui-confirm";
 import Action from "../actions/action";
-
-const librariesQuery = () => ({
-	key: ['libraries'],
-	exec: (lastPage: Page<Library>) => API.getAllLibraries(lastPage)
-});
 
 const actionButtonStyle = {
 	overflow: 'hidden',
@@ -52,7 +47,7 @@ const LibrariesSettings = () => {
 			.catch(() => toast.error("Deleting library failed, try again"))
 			.then(() => {
 				toast.success("Library deleted");
-				queryClient.invalidateQueries();
+				queryClient.client.invalidateQueries();
 			}));
 	const columns: GridColDef<Library>[] = [
 		{ field: 'name', headerName: 'Name', flex: 5 },
@@ -96,7 +91,7 @@ const LibrariesSettings = () => {
 			</Grid>
 		</Grid>
 		<AdminGrid
-			infiniteQuery={librariesQuery}
+			infiniteQuery={API.getAllLibraries}
 			columns={columns.map((column) => ({
 				...column,
 				headerAlign: column.field == 'name' ? 'left' : 'center',
