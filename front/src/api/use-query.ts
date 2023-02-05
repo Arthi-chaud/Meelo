@@ -147,12 +147,9 @@ const useQueryClient = () => {
 
 	return {
 		client: queryClient,
-		fetchQuery: <ReturnType, Params extends any[]>(
-			query: MeeloQueryFn<ReturnType, Params>,
-			...queryParams: Params
-		) => queryClient.fetchQuery(
-			prepareMeeloQuery(query, ...queryParams)
-		)
+		fetchQuery: <R, Params extends any[]>(
+			query: ReturnType<MeeloQueryFn<R, Params>>
+		) => queryClient.fetchQuery(prepareMeeloQuery(() => query))
 	};
 };
 

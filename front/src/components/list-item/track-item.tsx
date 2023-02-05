@@ -29,7 +29,7 @@ const TrackItem = ({ track }: TrackItemProps) => {
 		<ListItem
 			icon={<Illustration url={track.illustration} fallback={<AudiotrackIcon/>}/>}
 			onClick={() => queryClient
-				.fetchQuery((id) => API.getSong(id, ["artist"]), track.songId)
+				.fetchQuery(API.getSong(track.songId, ["artist"]))
 				.then((song) => {
 					dispatch(playTrack({ artist: song.artist, track, release }));
 				})

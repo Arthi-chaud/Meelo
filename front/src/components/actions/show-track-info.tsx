@@ -18,6 +18,6 @@ export const ShowMasterTrackFileInfoAction = (
 ): Action => ({
 	icon: <Info/>,
 	label: "More Info",
-	onClick: () => queryClient.fetchQuery(API.getMasterTrack, songId)
+	onClick: () => queryClient.fetchQuery(API.getMasterTrack(songId))
 		.then((track) => openTrackFileInfoModal(confirm, track.id))
 });

@@ -93,7 +93,7 @@ const ArtistPage = (
 									song={{ ...song, artist: artist.data }}
 								/>}
 								onClick={() => queryClient
-									.fetchQuery((id) => API.getMasterTrack(id, ['release']), song.id)
+									.fetchQuery(API.getMasterTrack(song.id, ['release']))
 									.then((track) => {
 										dispatch(playTrack({
 											artist: artist.data,

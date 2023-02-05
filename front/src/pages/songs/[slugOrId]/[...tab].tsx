@@ -74,7 +74,7 @@ const SongPage = (
 			</Grid>
 			<Grid item>
 				<Button variant="contained" sx={{ width: '100%' }} endIcon={<PlayArrow />}
-					onClick={() => queryClient.fetchQuery((id) => API.getMasterTrack(id, ['release']), songIdentifier)
+					onClick={() => queryClient.fetchQuery(API.getMasterTrack(songIdentifier, ['release']))
 						.then((master) => dispatch(playTrack({
 							track: master,
 							artist: song.data.artist,
