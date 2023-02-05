@@ -22,7 +22,7 @@ const SongContextualMenu = (props: SongContextualMenuProps) => {
 	const songSlug = `${props.song.artist.slug}+${props.song.slug}`;
 	const queryClient = useQueryClient();
 	const getMasterTrack = () => queryClient.fetchQuery(
-		(id) => API.getMasterTrack(id, ['release']), songSlug
+		API.getMasterTrack(songSlug, ['release'])
 	);
 	const router = useRouter();
 	const confirm = useConfirm();

@@ -23,7 +23,7 @@ const AlbumContextualMenu = (props: AlbumContextualMenuProps) => {
 		], [
 			DownloadReleaseAsyncAction(
 				confirm,
-				() => queryClient.fetchQuery(API.getMasterRelease, albumSlug)
+				() => queryClient.fetchQuery(API.getMasterRelease(albumSlug))
 					.then((release) => release.id)
 			),
 		], [ShareAlbumAction(albumSlug)]

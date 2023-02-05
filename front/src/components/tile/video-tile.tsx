@@ -18,8 +18,8 @@ const VideoTile = ({ video, formatSubtitle }: VideoTileProps) => {
 
 	return <Tile
 		onClick={() => Promise.all([
-			queryClient.fetchQuery(() => API.getArtist(video.song.artistId)),
-			queryClient.fetchQuery(() => API.getRelease(video.releaseId))
+			queryClient.fetchQuery(API.getArtist(video.song.artistId)),
+			queryClient.fetchQuery(API.getRelease(video.releaseId))
 		]).then(([artist, release]) =>
 			dispatch(playTrack({
 				track: video,
@@ -30,7 +30,7 @@ const VideoTile = ({ video, formatSubtitle }: VideoTileProps) => {
 		title={video.name}
 		subtitle={formatSubtitle?.call(this, video) ?? formatDuration(video.duration)}
 		illustration={
-			<Illustration aspectRatio={16/9} url={video.illustration} style={{ objectFit: 'fill' }}/>
+			<Illustration aspectRatio={16/9} url={video.illustration} style={{ objectFit: 'cover' }}/>
 		}
 	/>;
 };
