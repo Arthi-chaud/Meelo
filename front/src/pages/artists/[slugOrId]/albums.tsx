@@ -5,6 +5,7 @@ import InfiniteAlbumView from "../../../components/infinite/infinite-resource-vi
 import getSlugOrId from "../../../utils/getSlugOrId";
 import ArtistRelationPageHeader from "../../../components/relation-page-header/artist-relation-page-header";
 import prepareSSR, { InferSSRProps } from "../../../ssr";
+import getYear from "../../../utils/getYear";
 
 export const getServerSideProps = prepareSSR((context) => {
 	const artistIdentifier = getSlugOrId(context.params);
@@ -26,6 +27,7 @@ const ArtistAlbumsPage = (
 		<InfiniteAlbumView
 			initialSortingField='releaseDate'
 			initialSortingOrder='desc'
+			formatSubtitle={(album) => getYear(album.releaseDate)?.toString() ?? ''}
 			query={(sort, type) => API.getArtistAlbums(artistIdentifier, type, sort, ['artist'])}
 		/>
 	</Box>;

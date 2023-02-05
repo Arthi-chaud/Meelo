@@ -4,6 +4,7 @@ import { ReleaseWithRelations } from "../../models/release";
 import ReleaseContextualMenu from "../contextual-menu/release-contextual-menu";
 import Illustration from "../illustration";
 import ListItem from "./item";
+import getYear from "../../utils/getYear";
 
 type ReleaseItemProps = {
 	release: ReleaseWithRelations<['album']>;
@@ -16,10 +17,7 @@ const ReleaseItem = ({ release }: ReleaseItemProps) => {
 		icon={<Illustration url={release.illustration}/>}
 		href={`/releases/${release.id}`}
 		title={release.name}
-		secondTitle={release.releaseDate
-			? new Date(release.releaseDate).getFullYear().toString()
-			: undefined
-		}
+		secondTitle={getYear(release.releaseDate)?.toString()}
 		trailing={<Grid container spacing={1} sx={{ justifyContent: 'flex-end', flexWrap: 'nowrap' }}>
 			<Grid item sx={{ display: 'flex', alignItems: 'center' }}>
 				{isMaster ? <Star/> : undefined }

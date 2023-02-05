@@ -18,6 +18,7 @@ import prepareSSR, { InferSSRProps } from "../../../ssr";
 import LoadingPage from "../../../components/loading/loading-page";
 import TileRow from "../../../components/tile-row";
 import ListItem from "../../../components/list-item/item";
+import getYear from "../../../utils/getYear";
 
 const latestAlbumsQuery = (artistSlugOrId: string | number) => API.getArtistAlbums(
 	artistSlugOrId,
@@ -123,7 +124,11 @@ const ArtistPage = (
 				<Grid item sx={{ overflowX: 'clip', width: '100%' }}>
 					<TileRow tiles={
 						latestAlbums.data.pages.at(0)?.items.slice(0, 10).map((album) =>
-							<AlbumTile key={album.id} album={{ ...album, artist: artist.data }}/>)
+							<AlbumTile
+								key={album.id}
+								album={{ ...album, artist: artist.data }}
+								formatSubtitle={(albumItem) => getYear(albumItem.releaseDate)?.toString() ?? ''}
+							/>)
 					}/>
 				</Grid>
 			</>

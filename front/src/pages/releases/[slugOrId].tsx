@@ -28,6 +28,7 @@ import ReleaseContextualMenu from "../../components/contextual-menu/release-cont
 import LoadingPage from "../../components/loading/loading-page";
 import TileRow from "../../components/tile-row";
 import { TrackWithRelations } from "../../models/track";
+import getYear from "../../utils/getYear";
 
 export const getServerSideProps = prepareSSR((context) => {
 	const releaseIdentifier = getSlugOrId(context.params);
@@ -241,10 +242,7 @@ const ReleasePage = (
 						<Tile key={otherReleaseIndex}
 							href={`/releases/${albumArtist?.data?.slug ?? 'compilations'}+${release.data!.album.slug}+${otherRelease.slug}/`}
 							title={otherRelease.name}
-							subtitle={otherRelease.releaseDate
-								? new Date(otherRelease.releaseDate).getFullYear().toString()
-								: undefined
-							}
+							subtitle={getYear(otherRelease.releaseDate)?.toString()}
 							illustration={<Illustration url={otherRelease.illustration}/>}
 						/>) ?? []
 				}/>
