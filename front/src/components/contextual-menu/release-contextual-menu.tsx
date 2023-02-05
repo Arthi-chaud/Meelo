@@ -1,6 +1,7 @@
 import { Star } from "@mui/icons-material";
 import { toast } from "react-hot-toast";
-import { useMutation, useQueryClient } from "react-query";
+import { useMutation } from "react-query";
+import { useQueryClient } from "../../api/use-query";
 import API from "../../api/api";
 import ContextualMenu from "./contextual-menu";
 import { GoToAlbumAction, GoToArtistAction } from "../actions/link";
@@ -23,19 +24,18 @@ const ReleaseContextualMenu = (props: ReleaseContextualMenuProps) => {
 		return API.setReleaseAsMaster(props.release.id)
 			.then(() => {
 				toast.success("Release set as master!");
-				queryClient.invalidateQueries();
+				queryClient.client.invalidateQueries();
 			})
 			.catch((error: Error) => toast.error(error.message));
 	});
 	const tracksMasterMutation = useMutation(async () => {
-		return API.getReleasePlaylist(props.release.id)
-			.exec()
+		return queryClient.fetchQuery(API.getReleasePlaylist, props.release.id)
 			.then((tracks) => {
 				Promise.allSettled(
 					tracks.reverse().map((track) =>	API.setTrackAsMaster(track.id))
 				).then(() => {
 					toast.success("Tracks successfully updated");
-					queryClient.invalidateQueries();
+					queryClient.client.invalidateQueries();
 				}).catch((error) => toast.error(error.message));
 			});
 	});

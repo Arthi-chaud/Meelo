@@ -2,7 +2,9 @@ import { useRouter } from "next/router";
 import API from "../../../api/api";
 import prepareSSR, { InferSSRProps } from "../../../ssr";
 import getSlugOrId from "../../../utils/getSlugOrId";
-import { useInfiniteQuery, useQuery } from "../../../api/use-query";
+import {
+	useInfiniteQuery, useQuery, useQueryClient
+} from "../../../api/use-query";
 import LoadingPage from "../../../components/loading/loading-page";
 import {
 	Box, Button, Divider, Grid, Stack, Tab, Tabs, Typography
@@ -46,6 +48,7 @@ const SongPage = (
 	) ?? tabs[0];
 	const router = useRouter();
 	const [tab, setTabs] = useState<typeof tabs[number]>(getTabFromQuery());
+	const queryClient = useQueryClient();
 
 	songIdentifier ??= getSlugOrId(router.query);
 	const lyrics = useQuery(API.getSongLyrics, songIdentifier);
@@ -71,8 +74,7 @@ const SongPage = (
 			</Grid>
 			<Grid item>
 				<Button variant="contained" sx={{ width: '100%' }} endIcon={<PlayArrow />}
-					onClick={() => API.getMasterTrack(songIdentifier, ['release'])
-						.exec()
+					onClick={() => queryClient.fetchQuery((id) => API.getMasterTrack(id, ['release']), songIdentifier)
 						.then((master) => dispatch(playTrack({
 							track: master,
 							artist: song.data.artist,

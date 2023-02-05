@@ -4,7 +4,9 @@ import {
 import { useRouter } from "next/router";
 import API from "../../../api/api";
 import Illustration from "../../../components/illustration";
-import { useInfiniteQuery, useQuery } from "../../../api/use-query";
+import {
+	useInfiniteQuery, useQuery, useQueryClient
+} from "../../../api/use-query";
 import ArrowRight from '@mui/icons-material/ArrowRight';
 import AlbumTile from "../../../components/tile/album-tile";
 import Link from "next/link";
@@ -51,6 +53,7 @@ const ArtistPage = (
 	const latestAlbums = useInfiniteQuery(latestAlbumsQuery, artistIdentifier);
 	const topSongs = useInfiniteQuery(topSongsQuery, artistIdentifier);
 	const dispatch = useDispatch();
+	const queryClient = useQueryClient();
 
 	if (!artist.data || !latestAlbums.data || !topSongs.data) {
 		return <LoadingPage/>;
@@ -88,15 +91,16 @@ const ArtistPage = (
 								trailing={<SongContextualMenu
 									song={{ ...song, artist: artist.data }}
 								/>}
-								onClick={() => {
-									API.getMasterTrack(song.id, ['release']).exec().then((track) => {
+								onClick={() => queryClient
+									.fetchQuery((id) => API.getMasterTrack(id, ['release']), song.id)
+									.then((track) => {
 										dispatch(playTrack({
 											artist: artist.data,
 											track,
 											release: track.release
 										}));
-									});
-								}}
+									})
+								}
 							/>
 						</Grid>)}
 				</Grid>

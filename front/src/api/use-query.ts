@@ -3,7 +3,8 @@ import {
 	QueryFunctionContext,
 	useInfiniteQuery as useReactInfiniteQuery,
 	useQueries as useReactQueries,
-	useQuery as useReactQuery
+	useQuery as useReactQuery,
+	useQueryClient as useReactQueryClient
 } from "react-query";
 import API from "./api";
 import { InfiniteFetchFn, Page } from "../components/infinite/infinite-scroll";
@@ -138,4 +139,23 @@ const useInfiniteQuery = <ReturnType, Params extends any[]>(
 	});
 };
 
-export { useQuery, useQueries, useInfiniteQuery, prepareMeeloQuery, prepareMeeloInfiniteQuery };
+/**
+ * Wrapper of the useQueryClient Hook, to wrap `prepareMeeloQuery`
+ */
+const useQueryClient = () => {
+	const queryClient = useReactQueryClient();
+
+	return {
+		client: queryClient,
+		fetchQuery: <ReturnType, Params extends any[]>(
+			query: MeeloQueryFn<ReturnType, Params>,
+			...queryParams: Params
+		) => queryClient.fetchQuery(
+			prepareMeeloQuery(query, ...queryParams)
+		)
+	};
+};
+
+export type QueryClient = ReturnType<typeof useQueryClient>;
+
+export { useQuery, useQueries, useInfiniteQuery, useQueryClient, prepareMeeloQuery, prepareMeeloInfiniteQuery };

@@ -5,6 +5,7 @@ import { GoToAlbumReleasesAction, GoToArtistAction } from "../actions/link";
 import { ShareAlbumAction } from "../actions/share";
 import ContextualMenu from "./contextual-menu";
 import { AlbumWithRelations } from "../../models/album";
+import { useQueryClient } from "../../api/use-query";
 
 type AlbumContextualMenuProps = {
 	album: AlbumWithRelations<['artist']>;
@@ -13,6 +14,7 @@ type AlbumContextualMenuProps = {
 const AlbumContextualMenu = (props: AlbumContextualMenuProps) => {
 	const albumSlug = `${props.album.artist?.slug ?? 'compilations'}+${props.album.slug}`;
 	const confirm = useConfirm();
+	const queryClient = useQueryClient();
 
 	return <ContextualMenu actions={[
 		[
@@ -21,7 +23,8 @@ const AlbumContextualMenu = (props: AlbumContextualMenuProps) => {
 		], [
 			DownloadReleaseAsyncAction(
 				confirm,
-				() => API.getMasterRelease(albumSlug).exec().then((release) => release.id)
+				() => queryClient.fetchQuery(API.getMasterRelease, albumSlug)
+					.then((release) => release.id)
 			),
 		], [ShareAlbumAction(albumSlug)]
 	]}/>;

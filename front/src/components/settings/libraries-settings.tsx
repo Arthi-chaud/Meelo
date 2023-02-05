@@ -4,7 +4,8 @@ import {
 } from "@mui/material";
 import { GridColDef } from "@mui/x-data-grid";
 import toast from "react-hot-toast";
-import { useMutation, useQueryClient } from "react-query";
+import { useMutation } from "react-query";
+import { useQueryClient } from "../../api/use-query";
 import API from "../../api/api";
 import Library from "../../models/library";
 import AdminGrid from "../admin-grid";
@@ -46,7 +47,7 @@ const LibrariesSettings = () => {
 			.catch(() => toast.error("Deleting library failed, try again"))
 			.then(() => {
 				toast.success("Library deleted");
-				queryClient.invalidateQueries();
+				queryClient.client.invalidateQueries();
 			}));
 	const columns: GridColDef<Library>[] = [
 		{ field: 'name', headerName: 'Name', flex: 5 },

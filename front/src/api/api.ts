@@ -742,23 +742,6 @@ export default class API {
 	}
 
 	/**
-	 * Get a song's main release
-	 * @param songSlugOrId the id of the song
-	 * @returns A query for a Release
-	 */
-	static getSongMainRelease<I extends ReleaseInclude[] = []>(
-		songSlugOrId: string | number,
-		include?: I
-	): Query<ReleaseWithRelations<I>> {
-		return {
-			key: ['song', songSlugOrId, 'release', ...API.formatIncludeKeys(include)],
-			exec: () => API.getMasterTrack(songSlugOrId)
-				.exec()
-				.then((track) => API.getRelease(track.releaseId, include).exec())
-		};
-	}
-
-	/**
 	 * Get an artist
 	 * @param slugOrId the id of the artist
 	 * @returns A query for an Artist
