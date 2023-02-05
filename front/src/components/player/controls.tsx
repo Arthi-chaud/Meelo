@@ -164,7 +164,7 @@ const ExpandedPlayerControls = (
 	props: PlayerControlsProps & { videoRef: LegacyRef<HTMLVideoElement> }
 ) => {
 	const dispatch = useDispatch();
-	const parentSong = useQuery((id) => API.getSong(id, ['artist', 'lyrics']), props.track?.id);
+	const parentSong = useQuery((id) => API.getSong(id, ['artist', 'lyrics']), props.track?.songId);
 	const [panel, setPanel] = useState<'lyrics' | 'playlist'>('lyrics');
 	const playlist = useSelector((state: RootState) => state.player.playlist);
 	const cursor = useSelector((state: RootState) => state.player.cursor);

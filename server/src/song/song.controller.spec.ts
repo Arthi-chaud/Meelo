@@ -1,6 +1,6 @@
 import { createTestingModule } from "test/test-module";
 import type { TestingModule } from "@nestjs/testing";
-import type { Artist, Genre, Lyrics, Song, Track } from "src/prisma/models";
+import type { Artist, Genre, Lyrics, Song, SongWithRelations, Track } from "src/prisma/models";
 import AlbumModule from "src/album/album.module";
 import ArtistModule from "src/artist/artist.module";
 import PrismaModule from "src/prisma/prisma.module";
@@ -17,13 +17,14 @@ import TestPrismaService from "test/test-prisma.service";
 import SongService from "./song.service";
 import { LyricsModule } from "src/lyrics/lyrics.module";
 import SetupApp from "test/setup-app";
+import { SongWithVideoResponse } from "./models/song-with-video.response";
 
 describe('Song Controller', () => {
 	let dummyRepository: TestPrismaService;
 	let app: INestApplication;
 	let songService: SongService;
 
-	const expectedSongResponse = (song: Song) => ({
+	const expectedSongResponse = (song: SongWithRelations) => ({
 		...song,
 		illustration: null
 	});
@@ -117,6 +118,47 @@ describe('Song Controller', () => {
 							...dummyRepository.artistA,
 							illustration: null
 						}
+					});
+				});
+		});
+	});
+
+	describe("Get Songs With Videos", () => {
+		it("should return the songs With video", async () => {
+			return request(app.getHttpServer())
+				.get(`/songs/videos`)
+				.expect(200)
+				.expect((res) => {
+					const videoSongs: SongWithVideoResponse[] = res.body.items;
+					expect(videoSongs.length).toBe(1);
+					expect(videoSongs[0]).toStrictEqual({
+						...expectedSongResponse(dummyRepository.songA1),
+						video: expectedTrackResponse(dummyRepository.trackA1_2Video)
+					});
+				});
+		});
+		it("should return an empty list (pagination)", async () => {
+			return request(app.getHttpServer())
+				.get(`/songs/videos?skip=1`)
+				.expect(200)
+				.expect((res) => {
+					const videoSongs: SongWithVideoResponse[] = res.body.items;
+					expect(videoSongs.length).toBe(0);
+				});
+		});
+		it("should return songs with their lyrics", async () => {
+			return request(app.getHttpServer())
+				.get(`/songs/videos?with=lyrics`)
+				.expect(200)
+				.expect((res) => {
+					const videoSongs: SongWithVideoResponse[] = res.body.items;
+					expect(videoSongs.length).toBe(1);
+					expect(videoSongs[0]).toStrictEqual({
+						...expectedSongResponse({
+							...dummyRepository.songA1,
+							lyrics: dummyRepository.lyricsA1
+						}),
+						video: expectedTrackResponse(dummyRepository.trackA1_2Video)
 					});
 				});
 		});

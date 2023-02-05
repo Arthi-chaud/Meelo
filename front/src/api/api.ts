@@ -9,7 +9,7 @@ import {
 	ReleaseInclude, ReleaseSortingKeys, ReleaseWithRelations
 } from "../models/release";
 import {
-	SongInclude, SongSortingKeys, SongWithRelations
+	SongInclude, SongSortingKeys, SongWithRelations, SongWithVideoWithRelations
 } from "../models/song";
 import {
 	TrackInclude, TrackSortingKeys, TrackWithRelations
@@ -285,6 +285,26 @@ export default class API {
 	}
 
 	/**
+	 * Fetch all video songs in a library
+	 * @param librarySlugOrId the identifier of the library
+	 * @returns An InfiniteQuery of Song
+	 */
+	static getAllVideosInLibrary<I extends SongInclude[] = []>(
+		librarySlugOrId: string | number,
+		sort?: SortingParameters<typeof SongSortingKeys>,
+		include?: I
+	): InfiniteQuery<SongWithVideoWithRelations<I>> {
+		return {
+			key: ['libraries', librarySlugOrId, 'videos', sort ?? {}, ...API.formatIncludeKeys(include)],
+			exec: (pagination) => API.fetch({
+				route: `/libraries/${librarySlugOrId}/videos`,
+				errorMessage: 'Library does not exist',
+				parameters: { pagination: pagination, include, sort }
+			})
+		};
+	}
+
+	/**
 	 * Fetch all songs
 	 * @returns An InfiniteQuery of Songs
 	 */
@@ -296,6 +316,24 @@ export default class API {
 			key: ['songs', ...API.formatIncludeKeys(include), sort ?? {}],
 			exec: (pagination) => API.fetch({
 				route: `/songs`,
+				errorMessage: 'Songs could not be loaded',
+				parameters: { pagination: pagination, include, sort }
+			})
+		};
+	}
+
+	/**
+	 * Fetch all songs
+	 * @returns An InfiniteQuery of Songs
+	 */
+	static getAllVideos<I extends SongInclude[] = []>(
+		sort?: SortingParameters<typeof SongSortingKeys>,
+		include?: I
+	): InfiniteQuery<SongWithVideoWithRelations<I>> {
+		return {
+			key: ['videos', ...API.formatIncludeKeys(include), sort ?? {}],
+			exec: (pagination) => API.fetch({
+				route: `/songs/videos`,
 				errorMessage: 'Songs could not be loaded',
 				parameters: { pagination: pagination, include, sort }
 			})

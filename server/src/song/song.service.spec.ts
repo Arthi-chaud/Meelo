@@ -271,6 +271,30 @@ describe('Song Service', () => {
 		});
 	});
 
+	describe("Get Songs With Videos", () => {
+		it("should return the songs With video", async () => {
+			const videoSongs = await songService.getSongsWithVideo({});
+			expect(videoSongs.length).toBe(1);
+			expect(videoSongs[0]).toStrictEqual({
+				...dummyRepository.songA1,
+				video: dummyRepository.trackA1_2Video
+			});
+		});
+		it("should return an empty list (pagination)", async () => {
+			const videoSongs = await songService.getSongsWithVideo({}, { skip: 1 });
+			expect(videoSongs.length).toBe(0);
+		});
+		it("should return songs with their artist", async () => {
+			const videoSongs = await songService.getSongsWithVideo({}, {}, { artist: true });
+			expect(videoSongs.length).toBe(1);
+			expect(videoSongs[0]).toStrictEqual({
+				...dummyRepository.songA1,
+				artist: dummyRepository.artistA,
+				video: dummyRepository.trackA1_2Video
+			});
+		});
+	});
+
 	describe("Update Song", () => {
 		it("should update the play count of the song", async () => {
 			const updatedSong = await songService.update(

@@ -6,7 +6,7 @@ import PaginatedResponse from "./models/paginated-response";
 
 export const ApiPaginatedResponse = <DataDto extends Parameters<typeof getSchemaPath>[0]>(dataDto: DataDto) =>
 	applyDecorators(
-		ApiExtraModels(PaginatedResponse),
+		ApiExtraModels(PaginatedResponse, dataDto as any),
 		ApiOkResponse({
 			schema: {
 				allOf: [

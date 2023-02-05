@@ -336,7 +336,7 @@ export default class SongService extends RepositoryService<
 
 	/**
 	 * Get songs from the sma eartist that have the same base name
-	 * @param where thr query parameters to find the song
+	 * @param where the query parameters to find the song
 	 * @param pagination the pagination parameters
 	 * @param include the relations to include with the returned songs
 	 * @returns the matching songs
@@ -359,6 +359,48 @@ export default class SongService extends RepositoryService<
 			include: RepositoryService.formatInclude(include),
 			...buildPaginationParameters(pagination)
 		});
+	}
+
+	/**
+	 * Get songs with at least one video track
+	 * The songs are returned with its first video track
+     * @param where the query parameters to find the songs
+	 * @param pagination the pagination parameters
+	 * @param include the relations to include with the returned songs
+	 */
+	async getSongsWithVideo<I extends Omit<SongQueryParameters.RelationInclude, 'tracks'>>(
+		where: SongQueryParameters.ManyWhereInput,
+		pagination?: PaginationParameters,
+		include?: I,
+		sort?: SongQueryParameters.SortingParameter
+	) {
+		return this.prismaService.song.findMany({
+			orderBy: sort ? this.formatSortingInput(sort) : undefined,
+			include: {
+				...RepositoryService.formatInclude(include),
+				tracks: {
+					where: {
+						type: 'Video'
+					},
+					orderBy: { id: 'asc' },
+					take: 1
+				}
+			},
+			...buildPaginationParameters(pagination),
+			where: {
+				...this.formatManyWhereInput(where),
+				AND: {
+					tracks: {
+						some: {
+							type: "Video"
+						}
+					}
+				}
+			}
+		}).then((songs) => songs.map(({ tracks, ...song }) => ({
+			...song,
+			video: tracks[0]
+		})));
 	}
 
 	/**
