@@ -3,13 +3,16 @@ import {
 } from "@mui/material";
 import { capitalCase } from "change-case";
 import { useState } from "react";
-import { AlbumWithRelations } from "../../models/album";
-import Artist from "../../models/artist";
+import {
+	AlbumSortingKeys, AlbumType, AlbumWithRelations
+} from "../../models/album";
+import Artist, { ArtistSortingKeys } from "../../models/artist";
 import { MeeloInfiniteQueryFn } from "../../api/use-query";
 import InfiniteAlbumView from "./infinite-resource-view/infinite-album-view";
 import InfiniteArtistView from "./infinite-resource-view/infinite-artist-view";
 import InfiniteSongView from "./infinite-resource-view/infinite-song-view";
-import { SongWithRelations } from "../../models/song";
+import { SongSortingKeys, SongWithRelations } from "../../models/song";
+import { SortingParameters } from "../../utils/sorting";
 
 const itemTypes = [
 	'artist',
@@ -18,9 +21,9 @@ const itemTypes = [
 ];
 
 type SelectableInfiniteViewProps = {
-	albumQuery: MeeloInfiniteQueryFn<AlbumWithRelations<['artist']>>;
-	artistQuery: MeeloInfiniteQueryFn<Artist>;
-	songQuery: MeeloInfiniteQueryFn<SongWithRelations<['artist']>>;
+	albumQuery: MeeloInfiniteQueryFn<AlbumWithRelations<['artist']>, [sort: SortingParameters<typeof AlbumSortingKeys>, type: AlbumType]>;
+	artistQuery: MeeloInfiniteQueryFn<Artist, [sort: SortingParameters<typeof ArtistSortingKeys>]>;
+	songQuery: MeeloInfiniteQueryFn<SongWithRelations<['artist']>, [sort: SortingParameters<typeof SongSortingKeys>]>;
 	default?: string | typeof itemTypes[number];
 	onTypeSelect?: (selectedType: SelectableInfiniteViewProps['default']) => void;
 	enabled: boolean;

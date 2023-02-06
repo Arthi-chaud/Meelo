@@ -59,7 +59,7 @@ const SearchPage = (
 			enabled={query != undefined}
 			artistQuery={(sort) => API.searchArtists(encodeURIComponent(query!), sort)}
 			albumQuery={(sort, selectedType) =>
-				API.searchAlbums(encodeURIComponent(query!), sort, selectedType, ['artist'])
+				API.searchAlbums(encodeURIComponent(query!), selectedType, sort, ['artist'])
 			}
 			songQuery={(sort) => API.searchSongs(encodeURIComponent(query!), sort, ['artist'])}
 		/>
