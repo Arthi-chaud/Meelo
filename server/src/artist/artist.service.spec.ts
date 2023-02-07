@@ -39,9 +39,11 @@ describe('Artist Service', () => {
 
 	describe('Create Artist', () => {
 		it(('should create a new artist'), async () => {
-			newArtist = await artistService.create({ name: 'My New Artist' });
+			const registeredAt = new Date("2001");
+			newArtist = await artistService.create({ name: 'My New Artist', registeredAt });
 			expect(newArtist.name).toBe('My New Artist');
 			expect(newArtist.slug).toBe('my-new-artist');
+			expect(newArtist.registeredAt).toStrictEqual(registeredAt);
 			expect(newArtist.id).toBeDefined();
 		});
 	

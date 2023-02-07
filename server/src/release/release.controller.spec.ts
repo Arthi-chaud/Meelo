@@ -1,6 +1,6 @@
 import { createTestingModule } from "test/test-module";
 import type { TestingModule } from "@nestjs/testing";
-import type { Album, Release, Song, Track } from "src/prisma/models";
+import type { Album, Artist, Release, Song, Track } from "src/prisma/models";
 import AlbumModule from "src/album/album.module";
 import AlbumService from "src/album/album.service";
 import ArtistModule from "src/artist/artist.module";
@@ -29,11 +29,18 @@ describe('Release Controller', () => {
 
 	const expectedReleaseResponse = (release: Release) => ({
 		...release,
+		registeredAt: release.registeredAt.toISOString(),
 		releaseDate: release.releaseDate?.toISOString() ?? null,
+		illustration: null
+	});
+	const expectedArtistResponse = (artist: Artist) => ({
+		...artist,
+		registeredAt: artist.registeredAt.toISOString(),
 		illustration: null
 	});
 	const expectedAlbumResponse = (album: Album) => ({
 		...album,
+		registeredAt: album.registeredAt.toISOString(),
 		releaseDate: album.releaseDate?.toISOString() ?? null,
 		illustration: null
 	});
@@ -44,6 +51,7 @@ describe('Release Controller', () => {
 	});
 	const expectedSongResponse = (song: Song) => ({
 		...song,
+		registeredAt: song.registeredAt.toISOString(),
 		illustration: null
 	}); 
 
@@ -362,10 +370,7 @@ describe('Release Controller', () => {
 					const fetchedAlbum: Album = res.body;
 					expect(fetchedAlbum).toStrictEqual({
 						...expectedAlbumResponse(dummyRepository.albumB1),
-						artist: {
-							...dummyRepository.artistB,
-							illustration: null
-						}
+						artist: expectedArtistResponse(dummyRepository.artistB)
 					});
 				});
 		});

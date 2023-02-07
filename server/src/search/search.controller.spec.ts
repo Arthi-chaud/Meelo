@@ -27,22 +27,26 @@ describe('Search Controller', () => {
 
 	const expectedArtistResponse = (artist: Artist) => ({
 		...artist,
+		registeredAt: artist.registeredAt.toISOString(),
 		illustration: null
 	});
 
 	const expectedAlbumResponse = (album: Album) => ({
 		...album,
+		registeredAt: album.registeredAt.toISOString(),
 		releaseDate: album.releaseDate?.toISOString() ?? null,
 		illustration: null
 	});
 
 	const expectedSongResponse = (song: Song) => ({
 		...song,
+		registeredAt: song.registeredAt.toISOString(),
 		illustration: null
 	});
 
 	const expectedReleaseResponse = (release: Release) => ({
 		...release,
+		registeredAt: release.registeredAt.toISOString(),
 		releaseDate: release.releaseDate?.toISOString() ?? null,
 		illustration: null
 	});

@@ -77,6 +77,7 @@ export default class ReleaseService extends RepositoryService<
 	formatCreateInput(release: ReleaseQueryParameters.CreateInput) {
 		return {
 			name: release.name,
+			registeredAt: release.registeredAt,
 			releaseDate: release.releaseDate,
 			album: {
 				connect: AlbumService.formatWhereInput(release.album),
@@ -170,7 +171,7 @@ export default class ReleaseService extends RepositoryService<
 		case 'trackCount':
 			return { tracks: { _count: sortingParameter.order } };
 		case 'addDate':
-			return { id: sortingParameter.order };
+			return { registeredAt: sortingParameter.order };
 		case 'releaseDate':
 			return { releaseDate: { sort: sortingParameter.order, nulls: 'last' } };
 		default:

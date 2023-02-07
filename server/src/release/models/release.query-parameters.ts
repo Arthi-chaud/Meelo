@@ -12,9 +12,10 @@ namespace ReleaseQueryParameters {
 	/**
 	 * Parameters to create a release
 	 */
-	export type CreateInput = Omit<Release, 'releaseDate' | 'album' | 'albumId' | 'id' | 'slug' | 'tracks'>
+	export type CreateInput = Omit<Release, 'releaseDate' | 'album' | 'albumId' | 'id' | 'slug' | 'tracks' | 'registeredAt'>
 		& {
 			releaseDate?: Date;
+			registeredAt?: Date;
 			album: AlbumQueryParameters.WhereInput
 		};
 

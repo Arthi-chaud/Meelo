@@ -13,7 +13,9 @@ namespace ArtistQueryParameters {
 	/**
 	 * Parameters to create an Artist
 	 */
-	export type CreateInput = Omit<Artist, 'id' | 'slug' | 'songs' | 'albums'>;
+	export type CreateInput = Omit<Artist, 'id' | 'slug' | 'songs' | 'albums' | 'registeredAt'> & {
+		registeredAt?: Date
+	};
 	/**
 	 * Query parameters to find one artist
 	 */

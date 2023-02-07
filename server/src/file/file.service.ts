@@ -130,7 +130,7 @@ export default class FileService extends RepositoryService<
 	): Prisma.FileOrderByWithRelationInput {
 		switch (sort.sortBy) {
 		case 'addDate':
-			return { id: sort.order };
+			return { registerDate: sort.order };
 		case 'trackArtist':
 			return { track: { song: { artist: { slug: sort.order } } } };
 		case 'trackName':

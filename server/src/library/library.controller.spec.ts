@@ -30,22 +30,26 @@ describe('Library Controller', () => {
 
 	const expectedArtistResponse = (artist: Artist) => ({
 		...artist,
+		registeredAt: artist.registeredAt.toISOString(),
 		illustration: null
 	});
 
 	const expectedAlbumResponse = (album: Album) => ({
 		...album,
+		registeredAt: album.registeredAt.toISOString(),
 		releaseDate: album.releaseDate?.toISOString() ?? null,
 		illustration: null
 	});
 
 	const expectedSongResponse = (song: Song) => ({
 		...song,
+		registeredAt: song.registeredAt.toISOString(),
 		illustration: null
 	});
 
 	const expectedReleaseResponse = (release: Release) => ({
 		...release,
+		registeredAt: release.registeredAt.toISOString(),
 		releaseDate: release.releaseDate?.toISOString() ?? null,
 		illustration: null
 	});
@@ -201,10 +205,9 @@ describe('Library Controller', () => {
 				.expect((res) => {
 					const artists: Artist[] = res.body.items;
 					expect(artists.length).toBe(1);
-					expect(artists[0]).toStrictEqual({
-						...dummyRepository.artistA,
-						illustration: null
-					});
+					expect(artists[0]).toStrictEqual(
+						expectedArtistResponse(dummyRepository.artistA)
+					);
 				});
 		});
 
@@ -215,10 +218,9 @@ describe('Library Controller', () => {
 				.expect((res) => {
 					const artists: Artist[] = res.body.items;
 					expect(artists.length).toBe(1);
-					expect(artists[0]).toStrictEqual({
-						...dummyRepository.artistB,
-						illustration: null
-					});
+					expect(artists[0]).toStrictEqual(
+						expectedArtistResponse(dummyRepository.artistB)
+					);
 				});
 		});
 

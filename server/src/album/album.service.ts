@@ -81,6 +81,7 @@ export default class AlbumService extends RepositoryService<
 			} : undefined,
 			slug: new Slug(input.name).toString(),
 			releaseDate: input.releaseDate,
+			registeredAt: input.registeredAt,
 			type: AlbumService.getAlbumTypeFromName(input.name)
 		};
 	}
@@ -178,7 +179,7 @@ export default class AlbumService extends RepositoryService<
 				{ sortBy: 'name', order: sortingParameter.order }
 			) };
 		case 'addDate':
-			return { id: sortingParameter.order };
+			return { registeredAt: sortingParameter.order };
 		case 'releaseDate':
 			return { releaseDate: { sort: sortingParameter.order, nulls: 'last' } };
 		default:

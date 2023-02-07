@@ -1,6 +1,6 @@
 import { createTestingModule } from "test/test-module";
 import type { TestingModule } from "@nestjs/testing";
-import type { Track } from "src/prisma/models";
+import type { Release, SongWithRelations, Track } from "src/prisma/models";
 import AlbumModule from "src/album/album.module";
 import ArtistModule from "src/artist/artist.module";
 import PrismaModule from "src/prisma/prisma.module";
@@ -22,6 +22,19 @@ import SetupApp from "test/setup-app";
 describe('Track Controller', () => {
 	let app: INestApplication;
 	let dummyRepository: TestPrismaService;
+
+	const expectedReleaseResponse = (release: Release) => ({
+		...release,
+		registeredAt: release.registeredAt.toISOString(),
+		releaseDate: release.releaseDate?.toISOString() ?? null,
+		illustration: null
+	});
+
+	const expectedSongResponse = (song: SongWithRelations) => ({
+		...song,
+		registeredAt: song.registeredAt.toISOString(),
+		illustration: null
+	});
 
 	const expectedTrackResponse = (track: Track) => ({
 		...track,
@@ -88,10 +101,7 @@ describe('Track Controller', () => {
 					expect(tracks.length).toBe(1);
 					expect(tracks[0]).toStrictEqual({
 						...expectedTrackResponse(dummyRepository.trackA2_1),
-						song: {
-							...dummyRepository.songA2,
-							illustration: null
-						},
+						song: expectedSongResponse(dummyRepository.songA2),
 					});
 				});
 		});
@@ -138,15 +148,8 @@ describe('Track Controller', () => {
 					const track: Track = res.body;
 					expect(track).toStrictEqual({
 						...expectedTrackResponse(dummyRepository.trackA2_1),
-						song: {
-							...dummyRepository.songA2,
-							illustration: null
-						},
-						release: {
-							...dummyRepository.releaseA1_2,
-							releaseDate: dummyRepository.releaseA1_2.releaseDate?.toISOString() ?? null,
-							illustration: null
-						}
+						song: expectedSongResponse(dummyRepository.songA2),
+						release: expectedReleaseResponse(dummyRepository.releaseA1_2)
 					})
 				});
 		});

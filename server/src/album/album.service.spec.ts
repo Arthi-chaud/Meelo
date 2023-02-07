@@ -104,11 +104,13 @@ describe('Album Service', () => {
 	describe('Create an album', () => {
 		describe('No artist', () => {
 			it('should create an album (no artist)', async () => {
-				newCompilationAlbum = await albumService.create({ name: 'My Other Compilation Album' });
+				const registeredAt = new Date("2001");
+				newCompilationAlbum = await albumService.create({ name: 'My Other Compilation Album', registeredAt });
 
 				expect(newCompilationAlbum.id).toBeDefined();
 				expect(newCompilationAlbum.artistId).toBeNull();
 				expect(newCompilationAlbum.releaseDate).toBeNull();
+				expect(newCompilationAlbum.registeredAt).toStrictEqual(registeredAt);
 				expect(newCompilationAlbum.slug).toBe('my-other-compilation-album');
 				expect(newCompilationAlbum.type).toBe(AlbumType.StudioRecording);
 			});
@@ -141,6 +143,7 @@ describe('Album Service', () => {
 				expect(newAlbum.id).toBeDefined();
 				expect(newAlbum.artistId).toBe(dummyRepository.artistA.id);
 				expect(newAlbum.releaseDate).toStrictEqual(new Date('2006'));
+				expect(newAlbum.registeredAt.getUTCDate()).toStrictEqual(new Date(Date.now()).getUTCDate());
 				expect(newAlbum.name).toBe('My Live Album');
 				expect(newAlbum.slug).toBe('my-live-album');
 				expect(newAlbum.type).toBe(AlbumType.LiveRecording);

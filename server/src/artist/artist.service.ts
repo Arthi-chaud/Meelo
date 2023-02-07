@@ -57,6 +57,7 @@ export default class ArtistService extends RepositoryService<
 	formatCreateInput(input: ArtistQueryParameters.CreateInput): Prisma.ArtistCreateInput {
 		return {
 			name: input.name,
+			registeredAt: input.registeredAt,
 			slug: new Slug(input.name).toString()
 		};
 	}
@@ -156,7 +157,7 @@ export default class ArtistService extends RepositoryService<
 		case 'songCount':
 			return { songs: { _count: sortingParameter.order } };
 		case 'addDate':
-			return { id: sortingParameter.order };
+			return { registeredAt: sortingParameter.order };
 		default:
 			return { [sortingParameter.sortBy ?? 'id']: sortingParameter.order };
 		}

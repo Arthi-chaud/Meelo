@@ -47,7 +47,9 @@ describe('Song Service', () => {
 
 	describe("Create a song", () => {
 		it("should create a new song", async () => {
+			const registeredAt = new Date("2005");
 			newSong = await songService.create({
+				registeredAt,
 				name: 'My Song 3',
 				artist: { slug: new Slug(dummyRepository.artistA.name) },
 				genres: [ { id: dummyRepository.genreA.id }, { id: dummyRepository.genreC.id } ]
@@ -57,6 +59,7 @@ describe('Song Service', () => {
 			expect(newSong.artistId).toBe(dummyRepository.artistA.id);
 			expect(newSong.name).toBe('My Song 3');
 			expect(newSong.slug).toBe('my-song-3');
+			expect(newSong.registeredAt).toStrictEqual(registeredAt);
 			expect(newSong.playCount).toBe(0);
 		});
 

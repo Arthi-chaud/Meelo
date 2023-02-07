@@ -51,7 +51,9 @@ describe('Release Service', () => {
 	
 	describe('Create a release', () => {
 		it("should create the album's first release", async () => {
+			const registeredAt = new Date("2005");
 			newRelease = await releaseService.create({
+				registeredAt,
 				name: 'My Album (Deluxe Edition)',
 				album: { id: dummyRepository.albumA1.id },
 				releaseDate: new Date('2023')
@@ -59,6 +61,7 @@ describe('Release Service', () => {
 			expect(newRelease.albumId).toBe(dummyRepository.albumA1.id);
 			expect(newRelease.releaseDate).toStrictEqual(new Date('2023'));
 			expect(newRelease.name).toBe('My Album (Deluxe Edition)');
+			expect(newRelease.registeredAt).toStrictEqual(registeredAt);
 			expect(newRelease.slug).toBe('my-album-deluxe-edition');
 		});
 
@@ -71,6 +74,7 @@ describe('Release Service', () => {
 			expect(newCompilationRelease.albumId).toBe(dummyRepository.compilationAlbumA.id);
 			expect(newCompilationRelease.releaseDate).toStrictEqual(new Date('2005'));
 			expect(newCompilationRelease.name).toBe('My Compilation (Expanded Edition)');
+			expect(newCompilationRelease.registeredAt.getUTCDate()).toStrictEqual(new Date(Date.now()).getUTCDate());
 			expect(newCompilationRelease.slug).toBe('my-compilation-expanded-edition');
 		});
 
