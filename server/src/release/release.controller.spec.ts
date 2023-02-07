@@ -1,6 +1,6 @@
 import { createTestingModule } from "test/test-module";
 import type { TestingModule } from "@nestjs/testing";
-import type { Album, Release, Song, Track } from "src/prisma/models";
+import type { Album, Release, Track } from "src/prisma/models";
 import AlbumModule from "src/album/album.module";
 import AlbumService from "src/album/album.service";
 import ArtistModule from "src/artist/artist.module";
@@ -22,30 +22,11 @@ import TestPrismaService from "test/test-prisma.service";
 import type ReassignReleaseDTO from "./models/reassign-release.dto";
 import FileModule from "src/file/file.module";
 import SetupApp from "test/setup-app";
+import { expectedReleaseResponse, expectedAlbumResponse, expectedTrackResponse, expectedSongResponse, expectedArtistResponse } from "test/expected-responses";
 
 describe('Release Controller', () => {
 	let dummyRepository: TestPrismaService;
 	let app: INestApplication;
-
-	const expectedReleaseResponse = (release: Release) => ({
-		...release,
-		releaseDate: release.releaseDate?.toISOString() ?? null,
-		illustration: null
-	});
-	const expectedAlbumResponse = (album: Album) => ({
-		...album,
-		releaseDate: album.releaseDate?.toISOString() ?? null,
-		illustration: null
-	});
-	const expectedTrackResponse = (track: Track) => ({
-		...track,
-		illustration: null,
-		stream: `/files/${track.sourceFileId}/stream`
-	});
-	const expectedSongResponse = (song: Song) => ({
-		...song,
-		illustration: null
-	}); 
 
 	beforeAll(async () => {
 		const module: TestingModule = await createTestingModule({
@@ -362,10 +343,7 @@ describe('Release Controller', () => {
 					const fetchedAlbum: Album = res.body;
 					expect(fetchedAlbum).toStrictEqual({
 						...expectedAlbumResponse(dummyRepository.albumB1),
-						artist: {
-							...dummyRepository.artistB,
-							illustration: null
-						}
+						artist: expectedArtistResponse(dummyRepository.artistB)
 					});
 				});
 		});

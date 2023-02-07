@@ -170,7 +170,7 @@ export default class TrackService extends RepositoryService<
 		case 'releaseDate':
 			return { release: { releaseDate: { sort: sortingParameter.order, nulls: 'last' } } };
 		case 'addDate':
-			return { id: sortingParameter.order };
+			return { sourceFile: { registerDate: sortingParameter.order } };
 		default:
 			return { [sortingParameter.sortBy ?? 'id']: sortingParameter.order };
 		}

@@ -23,38 +23,11 @@ import { LyricsModule } from "src/lyrics/lyrics.module";
 import TasksModule from "src/tasks/tasks.module";
 import SetupApp from "test/setup-app";
 import { SongWithVideoResponse } from "src/song/models/song-with-video.response";
+import { expectedArtistResponse, expectedAlbumResponse, expectedSongResponse, expectedTrackResponse, expectedReleaseResponse } from "test/expected-responses";
 describe('Library Controller', () => {
 	let app: INestApplication;
 	let dummyRepository: TestPrismaService;
 	let newLibrary: Library;
-
-	const expectedArtistResponse = (artist: Artist) => ({
-		...artist,
-		illustration: null
-	});
-
-	const expectedAlbumResponse = (album: Album) => ({
-		...album,
-		releaseDate: album.releaseDate?.toISOString() ?? null,
-		illustration: null
-	});
-
-	const expectedSongResponse = (song: Song) => ({
-		...song,
-		illustration: null
-	});
-
-	const expectedReleaseResponse = (release: Release) => ({
-		...release,
-		releaseDate: release.releaseDate?.toISOString() ?? null,
-		illustration: null
-	});
-
-	const expectedTrackResponse = (track: Track) => ({
-		...track,
-		illustration: null,
-		stream: `/files/${track.sourceFileId}/stream`
-	});
 
 	beforeAll(async () => {
 		const module: TestingModule = await createTestingModule({
@@ -201,10 +174,9 @@ describe('Library Controller', () => {
 				.expect((res) => {
 					const artists: Artist[] = res.body.items;
 					expect(artists.length).toBe(1);
-					expect(artists[0]).toStrictEqual({
-						...dummyRepository.artistA,
-						illustration: null
-					});
+					expect(artists[0]).toStrictEqual(
+						expectedArtistResponse(dummyRepository.artistA)
+					);
 				});
 		});
 
@@ -215,10 +187,9 @@ describe('Library Controller', () => {
 				.expect((res) => {
 					const artists: Artist[] = res.body.items;
 					expect(artists.length).toBe(1);
-					expect(artists[0]).toStrictEqual({
-						...dummyRepository.artistB,
-						illustration: null
-					});
+					expect(artists[0]).toStrictEqual(
+						expectedArtistResponse(dummyRepository.artistB)
+					);
 				});
 		});
 

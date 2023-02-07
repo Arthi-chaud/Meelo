@@ -74,6 +74,7 @@ export default class SongService extends RepositoryService<
 			artist: {
 				connect: ArtistService.formatWhereInput(song.artist)
 			},
+			registeredAt: song.registeredAt,
 			playCount: 0,
 			name: song.name,
 			slug: new Slug(song.name).toString()
@@ -160,7 +161,7 @@ export default class SongService extends RepositoryService<
 		case 'name':
 			return { slug: sortingParameter.order };
 		case 'addDate':
-			return { id: sortingParameter.order };
+			return { registeredAt: sortingParameter.order };
 		case 'artistName':
 			return { artist: this.artistService.formatSortingInput(
 				{ sortBy: 'name', order: sortingParameter.order }

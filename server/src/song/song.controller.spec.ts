@@ -1,6 +1,6 @@
 import { createTestingModule } from "test/test-module";
 import type { TestingModule } from "@nestjs/testing";
-import type { Artist, Genre, Lyrics, Song, SongWithRelations, Track } from "src/prisma/models";
+import type { Artist, Genre, Lyrics, Song, Track } from "src/prisma/models";
 import AlbumModule from "src/album/album.module";
 import ArtistModule from "src/artist/artist.module";
 import PrismaModule from "src/prisma/prisma.module";
@@ -18,27 +18,12 @@ import SongService from "./song.service";
 import { LyricsModule } from "src/lyrics/lyrics.module";
 import SetupApp from "test/setup-app";
 import { SongWithVideoResponse } from "./models/song-with-video.response";
+import { expectedSongResponse, expectedArtistResponse, expectedTrackResponse, expectedReleaseResponse } from "test/expected-responses";
 
 describe('Song Controller', () => {
 	let dummyRepository: TestPrismaService;
 	let app: INestApplication;
 	let songService: SongService;
-
-	const expectedSongResponse = (song: SongWithRelations) => ({
-		...song,
-		illustration: null
-	});
-
-	const expectedArtistResponse = (artist: Artist) => ({
-		...artist,
-		illustration: null
-	});
-
-	const expectedTrackResponse = (track: Track) => ({
-		...track,
-		illustration: null,
-		stream: `/files/${track.sourceFileId}/stream`
-	});
 	
 	beforeAll(async () => {
 		const module: TestingModule = await createTestingModule({
@@ -114,10 +99,7 @@ describe('Song Controller', () => {
 					expect(songs.length).toBe(1);
 					expect(songs[0]).toStrictEqual({
 						...expectedSongResponse(dummyRepository.songA1),
-						artist: {
-							...dummyRepository.artistA,
-							illustration: null
-						}
+						artist: expectedArtistResponse(dummyRepository.artistA)
 					});
 				});
 		});
@@ -191,10 +173,7 @@ describe('Song Controller', () => {
 					const song: Song = res.body
 					expect(song).toStrictEqual({
 						...expectedSongResponse(dummyRepository.songA1),
-						artist: {
-							...dummyRepository.artistA,
-							illustration: null
-						}
+						artist: expectedArtistResponse(dummyRepository.artistA)
 					});
 				});
 		});
@@ -224,15 +203,7 @@ describe('Song Controller', () => {
 					expect(track).toStrictEqual({
 						...expectedTrackResponse(dummyRepository.trackA1_1),
 						song: expectedSongResponse(dummyRepository.songA1),
-						release: {
-							...dummyRepository.releaseA1_1,
-							id: dummyRepository.releaseA1_1.id,
-							name: dummyRepository.releaseA1_1.name,
-							slug: dummyRepository.releaseA1_1.slug,
-							albumId: dummyRepository.releaseA1_1.albumId,
-							releaseDate: dummyRepository.releaseA1_1.releaseDate?.toISOString() ?? null,
-							illustration: null
-						}
+						release: expectedReleaseResponse(dummyRepository.releaseA1_1)
 					});
 				});
 		});
@@ -460,10 +431,9 @@ describe('Song Controller', () => {
 				.expect(200)
 				.expect((res) => {
 					const fetchedArtist : Artist = res.body
-					expect(fetchedArtist).toStrictEqual({
-						...dummyRepository.artistB,
-						illustration: null 
-					});
+					expect(fetchedArtist).toStrictEqual(
+						expectedArtistResponse(dummyRepository.artistB)
+					);
 				});
 		});
 		it("should return artist (by slug)", () => {
@@ -472,10 +442,9 @@ describe('Song Controller', () => {
 				.expect(200)
 				.expect((res) => {
 					const fetchedArtist : Artist = res.body
-					expect(fetchedArtist).toStrictEqual({
-						...dummyRepository.artistA,
-						illustration: null 
-					});
+					expect(fetchedArtist).toStrictEqual(
+						expectedArtistResponse(dummyRepository.artistA)
+					);
 				});
 		});
 		it("should return an error, as the song does not exist", () => {

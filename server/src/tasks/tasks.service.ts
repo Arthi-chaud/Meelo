@@ -105,13 +105,18 @@ export default class TasksService {
 	 * Registers a File in the database, parses and push its metadata
 	 * @param filePath the short path of the file to register (without base folder and library folder)
 	 * @param parentLibrary the parent library to register the file under
+	 * @param registrationDate optional date to custom registration date of models
 	 * @returns a registered File entity
 	 */
-	async registerFile(filePath: string, parentLibrary: Library): Promise<File> {
+	async registerFile(
+		filePath: string, parentLibrary: Library, registrationDate?: Date
+	): Promise<File> {
 		this.logger.log(`${parentLibrary.slug} library: Registration of ${filePath}`);
 		const fullFilePath = `${this.fileManagerService.getLibraryFullPath(parentLibrary)}/${filePath}`;
 		const fileMetadata = await this.metadataService.parseMetadata(fullFilePath);
-		const registeredFile = await this.fileService.registerFile(filePath, parentLibrary);
+		const registeredFile = await this.fileService.registerFile(
+			filePath, parentLibrary, registrationDate
+		);
 
 		try {
 			const track = await this.metadataService.registerMetadata(fileMetadata, registeredFile);
@@ -206,7 +211,7 @@ export default class TasksService {
 		for (const file of updatedFiles) {
 			this.logger.log(`'${library.slug}' library: Refreshing '${file.path}' metadata`);
 			await this.unregisterFile({ id: file.id });
-			await this.registerFile(file.path, library);
+			await this.registerFile(file.path, library, file.registerDate);
 		}
 		this.logger.log(`'${library.slug}' library: Refreshed ${updatedFiles.length} files metadata`);
 		await this.housekeeping();

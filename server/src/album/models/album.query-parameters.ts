@@ -24,6 +24,7 @@ namespace AlbumQueryParameters {
 		PickType(Album, ['name'] as const),
 		class {
 			releaseDate?: Date;
+			registeredAt?: Date;
 			artist?: ArtistQueryParameters.WhereInput;
 		}
 	) {}

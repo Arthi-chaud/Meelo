@@ -30,7 +30,8 @@ const ModelSortingParameter = <
 	class CustomSortingParameter {
 		@ApiPropertyOptional({
 			type: 'string',
-			default: 'id'
+			default: 'id',
+			enum: sortingKeys
 		})
 		@IsOptional()
 		@IsIn(sortingKeys)
