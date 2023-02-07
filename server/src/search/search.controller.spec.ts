@@ -20,38 +20,12 @@ import request from "supertest";
 import MetadataModule from "src/metadata/metadata.module";
 import GenreService from "src/genre/genre.service";
 import SetupApp from "test/setup-app";
+import { expectedArtistResponse, expectedAlbumResponse, expectedSongResponse, expectedReleaseResponse } from "test/expected-responses";
 
 describe('Search Controller', () => {
 	let dummyRepository: TestPrismaService;
 	let app: INestApplication;
 
-	const expectedArtistResponse = (artist: Artist) => ({
-		...artist,
-		registeredAt: artist.registeredAt.toISOString(),
-		illustration: null
-	});
-
-	const expectedAlbumResponse = (album: Album) => ({
-		...album,
-		registeredAt: album.registeredAt.toISOString(),
-		releaseDate: album.releaseDate?.toISOString() ?? null,
-		illustration: null
-	});
-
-	const expectedSongResponse = (song: Song) => ({
-		...song,
-		registeredAt: song.registeredAt.toISOString(),
-		illustration: null
-	});
-
-	const expectedReleaseResponse = (release: Release) => ({
-		...release,
-		registeredAt: release.registeredAt.toISOString(),
-		releaseDate: release.releaseDate?.toISOString() ?? null,
-		illustration: null
-	});
-
-	
 	beforeAll(async () => {
 		const module: TestingModule = await createTestingModule({
 			imports: [PrismaModule, ArtistModule, TrackModule, AlbumModule, ReleaseModule, GenreModule, IllustrationModule, SearchModule, MetadataModule],

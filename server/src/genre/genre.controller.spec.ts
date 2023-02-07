@@ -16,30 +16,11 @@ import TestPrismaService from "test/test-prisma.service";
 import { LyricsModule } from "src/lyrics/lyrics.module";
 import MetadataModule from "src/metadata/metadata.module";
 import SetupApp from "test/setup-app";
+import { expectedArtistResponse, expectedAlbumResponse, expectedSongResponse } from "test/expected-responses";
 
 describe("Genre Controller", () => {
 	let app: INestApplication;
 	let dummyRepository: TestPrismaService;
-
-	const expectedSongResponse = (song: Song) => ({
-		...song,
-		registeredAt: song.registeredAt.toISOString(),
-		illustration: null
-	});
-
-	const expectedArtistResponse = (artist: Artist) => ({
-		...artist,
-		registeredAt: artist.registeredAt.toISOString(),
-		illustration: null
-	});
-
-	const expectedAlbumResponse = (album: Album) => ({
-		...album,
-		registeredAt: album.registeredAt.toISOString(),
-		releaseDate: album.releaseDate?.toISOString() ?? null,
-		illustration: null
-	});
-
 
 	beforeAll(async () => {
 		const module: TestingModule = await createTestingModule({

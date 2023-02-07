@@ -1,6 +1,6 @@
 import type { INestApplication } from "@nestjs/common";
 import type { TestingModule } from "@nestjs/testing";
-import type { Album, Artist, Release } from "src/prisma/models";
+import type { Album, Release } from "src/prisma/models";
 import request from "supertest";
 import ArtistModule from "src/artist/artist.module";
 import ArtistService from "src/artist/artist.service";
@@ -20,31 +20,12 @@ import TestPrismaService from "test/test-prisma.service";
 import type ReassignAlbumDTO from "./models/reassign-album.dto";
 import FileModule from "src/file/file.module";
 import AlbumService from "./album.service";
+import { expectedAlbumResponse, expectedArtistResponse, expectedReleaseResponse } from "test/expected-responses";
 
 describe('Album Controller', () => {
 	let dummyRepository: TestPrismaService;
 	let app: INestApplication;
 	let albumService: AlbumService;
-
-	const expectedArtistResponse = (artist: Artist) => ({
-		...artist,
-		registeredAt: artist.registeredAt.toISOString(),
-		illustration: null
-	});
-
-	const expectedAlbumResponse = (album: Album) => ({
-		...album,
-		registeredAt: album.registeredAt.toISOString(),
-		releaseDate: album.releaseDate?.toISOString() ?? null,
-		illustration: null
-	});
-
-	const expectedReleaseResponse = (release: Release) => ({
-		...release,
-		registeredAt: release.registeredAt.toISOString(),
-		releaseDate: release.releaseDate?.toISOString() ?? null,
-		illustration: null
-	});
 
 	beforeAll(async () => {
 		const module: TestingModule = await createTestingModule({
