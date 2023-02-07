@@ -187,7 +187,11 @@ export default class FileService extends RepositoryService<
 	 * @param filePath The path to the file to register, relative to parent library path
 	 * @param parentLibrary The parent Library the new file will be registered under
 	 */
-	async registerFile(filePath: string, parentLibrary: Library): Promise<File> {
+	async registerFile(
+		filePath: string,
+		parentLibrary: Library,
+		registrationDate?: Date
+	): Promise<File> {
 		const libraryPath = this.fileManagerService.getLibraryFullPath(parentLibrary);
 		const fullFilePath = `${libraryPath}/${filePath}`;
 
@@ -198,7 +202,7 @@ export default class FileService extends RepositoryService<
 		return this.create({
 			path: filePath,
 			md5Checksum: await this.fileManagerService.getMd5Checksum(fullFilePath),
-			registerDate: new Date(),
+			registerDate: registrationDate ?? new Date(),
 			libraryId: parentLibrary.id
 		});
 	}

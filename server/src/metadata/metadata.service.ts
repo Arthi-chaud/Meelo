@@ -48,22 +48,28 @@ export default class MetadataService {
 	 * @param metadata the metadata instance to push
 	 * @param file the file to register the metadata under, it must be already registered
 	 */
-	async registerMetadata(metadata : Metadata, file: File): Promise<Track> {
+	async registerMetadata(
+		metadata : Metadata,
+		file: File
+	): Promise<Track> {
 		const genres = metadata.genres ? await Promise.all(
 			metadata.genres.map((genre) => this.genreService.getOrCreate({ name: genre }))
 		) : [];
 		const albumArtist = !metadata.compilation
-			? await this.artistService.getOrCreate(
-				{ name: metadata.albumArtist ?? metadata.artist! }
-			)
+			? await this.artistService.getOrCreate({
+				name: metadata.albumArtist ?? metadata.artist!,
+				registeredAt: file.registerDate
+			})
 			: undefined;
-		const songArtist = await this.artistService.getOrCreate(
-			{ name: metadata.artist ?? metadata.albumArtist! }
-		);
+		const songArtist = await this.artistService.getOrCreate({
+			name: metadata.artist ?? metadata.albumArtist!,
+			registeredAt: file.registerDate
+		});
 		const song = await this.songService.getOrCreate({
 			name: this.removeTrackExtension(metadata.name!),
 			artist: { id: songArtist.id },
-			genres: genres.map((genre) => ({ id: genre.id }))
+			genres: genres.map((genre) => ({ id: genre.id })),
+			registeredAt: file.registerDate
 		}, {
 			tracks: true, genres: true
 		});
@@ -74,12 +80,14 @@ export default class MetadataService {
 		);
 		const album = await this.albumService.getOrCreate({
 			name: this.removeReleaseExtension(metadata.album ?? metadata.release!),
-			artist: albumArtist ? { id: albumArtist?.id } : undefined
+			artist: albumArtist ? { id: albumArtist?.id } : undefined,
+			registeredAt: file.registerDate
 		}, { releases: true });
 		const release = await this.releaseService.getOrCreate({
 			name: metadata.release ?? metadata.album!,
 			releaseDate: metadata.releaseDate,
-			album: { id: album.id }
+			album: { id: album.id },
+			registeredAt: file.registerDate
 		}, { album: true });
 		const track: TrackQueryParameters.CreateInput = {
 			name: metadata.name!,
