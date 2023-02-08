@@ -20,6 +20,11 @@ import TileRow from "../../../components/tile-row";
 import ListItem from "../../../components/list-item/item";
 import getYear from "../../../utils/getYear";
 
+// Number of Song item in the 'Top Song' section
+const songListSize = 6;
+// Number of Album item in the 'Latest albums' section
+const albumListSize = 10;
+
 const latestAlbumsQuery = (artistSlugOrId: string | number) => API.getArtistAlbums(
 	artistSlugOrId,
 	undefined,
@@ -75,7 +80,7 @@ const ArtistPage = (
 			{ topSongs.data?.pages.at(0)?.items.length != 0 && <>
 				<Grid item sx={{ display: 'flex', flexGrow: 1, justifyContent: 'space-between', alignItems: 'center' }}>
 					<Typography variant='h5' fontWeight='bold'>Top Songs</Typography>
-					{ topSongs.data?.pages.at(0)?.end ||
+					{ (topSongs.data?.pages.at(0)?.items.length ?? 0) > songListSize &&
 					<Link href={`/artists/${artistIdentifier}/songs`}>
 						<Button variant='contained' endIcon={<ArrowRight/>}
 							sx={{ textTransform: 'none', fontWeight: 'bold' }}>See all</Button>
@@ -84,7 +89,7 @@ const ArtistPage = (
 				</Grid>
 				<Grid item container spacing={2}
 					sx={{ display: 'flex', flexGrow: 1 }}>
-					{ topSongs.data.pages.at(0)?.items.slice(0, 6).map((song) =>
+					{ topSongs.data.pages.at(0)?.items.slice(0, songListSize).map((song) =>
 						<Grid key={song.id} item xs={12} sm={6} lg={4}>
 							<ListItem
 								icon={<Illustration url={song.illustration}/>}
@@ -113,7 +118,7 @@ const ArtistPage = (
 					justifyContent: 'space-between', alignItems: 'center'
 				}}>
 					<Typography variant='h5' fontWeight='bold'>Albums</Typography>
-					{ latestAlbums.data.pages.at(0)?.end ||
+					{ (latestAlbums.data.pages.at(0)?.items.length ?? 0) > albumListSize &&
 					<Link href={`/artists/${artistIdentifier}/albums`}>
 						<Button variant='contained' endIcon={<ArrowRight/>}
 							sx={{ textTransform: 'none', fontWeight: 'bold' }}>
@@ -123,7 +128,7 @@ const ArtistPage = (
 				</Grid>
 				<Grid item sx={{ overflowX: 'clip', width: '100%' }}>
 					<TileRow tiles={
-						latestAlbums.data.pages.at(0)?.items.slice(0, 10).map((album) =>
+						latestAlbums.data.pages.at(0)?.items.slice(0, albumListSize).map((album) =>
 							<AlbumTile
 								key={album.id}
 								album={{ ...album, artist: artist.data }}
