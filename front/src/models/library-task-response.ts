@@ -1,8 +1,12 @@
-type LibraryTaskResponse = {
+import { z } from "zod";
+
+const LibraryTaskResponse = z.object({
 	/**
 	 * Status of the task
 	 */
-	status: string;
-}
+	status: z.string()
+});
+
+type LibraryTaskResponse = z.infer<typeof LibraryTaskResponse>;
 
 export default LibraryTaskResponse;

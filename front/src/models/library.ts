@@ -1,15 +1,18 @@
+import { z } from "zod";
 import Resource from "./resource";
 
-type Library = Resource & {
+const Library = Resource.and(z.object({
 	/**
 	 * Title of the library
 	 */
-	name: string;
+	name: z.string(),
 	/**
 	 * Slug of the library
 	 * Unique identifier
 	 */
-	slug: string;
-}
+	slug: z.string()
+}));
+
+type Library = z.infer<typeof Library>;
 
 export default Library;

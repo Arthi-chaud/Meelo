@@ -1,3 +1,5 @@
+import { z } from "zod";
+
 /**
  * Parameters for pagination in API requests
  */
@@ -12,26 +14,28 @@ type PaginationParameters = Partial<{
 	pageSize: number;
 }>
 
-type PaginatedResponse<T> = {
-	items: T[];
-	metadata: {
+const PaginatedResponse = <T>(itemType: z.ZodType<T>) => z.object({
+	items: z.array(itemType),
+	metadata: z.object({
 		/**
 		 * Current route
 		 */
-		this: string;
+		this: z.string(),
 		/**
 		 * route to use for the next items
 		 */
-		next: string | null;
+		next: z.string().nullable(),
 		/**
 		 * route to use for the previous items
 		 */
-		previous: string | null;
+		previous: z.string().nullable(),
 		/**
 		 * The current page number
 		 */
-		page: number;
-	}
-}
+		page: z.number(),
+	})
+});
+
+type PaginatedResponse<T> = z.infer<ReturnType<typeof PaginatedResponse<T>>>;
 
 export type { PaginatedResponse, PaginationParameters };

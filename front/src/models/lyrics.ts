@@ -1,14 +1,17 @@
+import { z } from "zod";
 import Resource from "./resource";
 
-type Lyrics = Resource & {
+const Lyrics = Resource.and(z.object({
 	/**
 	 * Raw lyrics, with '\n' as line seperator
 	 */
-	content: string;
+	content: z.string(),
 	/**
 	 * Unique identifier of the parent song
 	 */
-	songId: number
-}
+	songId: z.number()
+}));
+
+type Lyrics = z.infer<typeof Lyrics>;
 
 export default Lyrics;

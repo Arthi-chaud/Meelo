@@ -1,10 +1,13 @@
+import { z } from "zod";
 import Resource from "./resource";
 
-type User = Resource & {
-	name: string;
-	enabled: boolean;
-	admin: boolean;
-}
+const User = Resource.and(z.object({
+	name: z.string(),
+	enabled: z.boolean(),
+	admin: z.boolean(),
+}));
+
+type User = z.infer<typeof User>;
 
 export const UserSortingKeys = [
 	'id',

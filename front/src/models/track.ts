@@ -1,3 +1,4 @@
+import { z } from "zod";
 import Illustration from "./illustration";
 import Release from "./release";
 import Resource from "./resource";
@@ -6,49 +7,54 @@ import Song from "./song";
 /**
  * 'Instance' of a song on a release
  */
-type Track = Resource & Illustration & {
+const Track = z.intersection(
+	Resource,
+	Illustration
+).and(z.object({
 	/**
 	 * Unique identifier of the parent song
 	 */
-	songId: number;
+	songId: z.number(),
 	/**
 	 * Unique identifier of the parent release
 	 */
-	releaseId: number;
+	releaseId: z.number(),
 	/**
 	 * Title of the track
 	 */
-	name: string;
+	name: z.string(),
 	/**
 	 * Index of the disc the track is on
 	 */
-	discIndex?: number;
+	discIndex: z.number().nullable(),
 	/**
 	 * Index of the track on the disc
 	 */
-	trackIndex?: number;
+	trackIndex: z.number(),
 	/**
 	 * Type of media
 	 */
-	type: 'Audio' | 'Video';
+	type: z.enum(['Audio', 'Video']),
 	/**
 	 * Bit rate of the track's audio.
 	 * In kbits/s
 	 */
-	bitrate: number;
+	bitrate: z.number(),
 	/**
 	 * Duration in seconds of the track
 	 */
-	duration: number;
+	duration: z.number(),
 	/**
 	 * URL to stream track
 	 */
-	stream: string;
+	stream: z.string(),
 	/**
 	 * ID of the source file
 	 */
-	sourceFileId: number;
-}
+	sourceFileId: z.number(),
+}));
+
+type Track = z.infer<typeof Track>;
 
 type TrackInclude = 'song' | 'release';
 

@@ -1,3 +1,4 @@
+import { z } from "zod";
 import Album from "./album";
 import Illustration from "./illustration";
 import Resource from "./resource";
@@ -5,30 +6,35 @@ import Resource from "./resource";
 /**
  * A version of an album
  */
-type Release = Resource & Illustration & {
+const Release = z.intersection(
+	Resource,
+	Illustration,
+).and(z.object({
 	/**
 	 * The title of the release
 	 */
-	name: string;
+	name: z.string(),
 	/**
 	 * The unique ID of the release
 	 */
-	id: number;
+	id: z.number(),
 	/**
 	 * The slug of the release
 	 * To be used with the parent's artist's slug and the parent album's slug:
 	 * ${artistSlug}+${albumSlug}+${releaseSlug}
 	 */
-	slug: string;
+	slug: z.string(),
 	/**
 	 * Unique identifier of the parent album
 	 */
-	albumId: number;
+	albumId: z.number(),
 	/**
 	 * Date the release was *released*
 	 */
-	releaseDate?: Date;
-}
+	releaseDate: z.date().nullable()
+}));
+
+type Release = z.infer<typeof Release>;
 
 type ReleaseInclude = 'album';
 

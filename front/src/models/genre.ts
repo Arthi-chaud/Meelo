@@ -1,15 +1,16 @@
+import { z } from "zod";
 import Resource from "./resource";
 
-type Genre = Resource & {
+const Genre = Resource.and(z.object({
 	/**
 	 * Name of the genre
 	 */
-	name: string;
+	name: z.string(),
 	/**
 	 * Unique identifier as a string
 	 */
-	slug: string;
-}
+	slug: z.string(),
+}));
 
 export const GenreSortingKeys = ['name', 'songCount'] as const;
 

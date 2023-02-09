@@ -1,3 +1,4 @@
+import { z } from "zod";
 import Artist from "./artist";
 import Illustration from "./illustration";
 import Lyrics from "./lyrics";
@@ -7,30 +8,35 @@ import Track from "./track";
 /**
  * Abstract data model, instanciated by tracks
  */
-type Song = Resource & Illustration & {
+const Song = z.intersection(
+	Resource,
+	Illustration
+).and(z.object({
 	/**
 	 * title of the song
 	 */
-	name: string;
+	name: z.string(),
 	/*
 	 * The slug of the release
 	 * To be used with the parent's artist's slug:
 	 * ${artistSlug}+${songSlug}
 	 */
-	slug: string;
+	slug: z.string(),
 	/**
 	 * Unique identifier of the parent artist
 	 */
-	artistId: number;
+	artistId: z.number(),
 	/**
 	 * Number of times the song has been played
 	 */
-	playCount: number;
+	playCount: z.number(),
 	/**
 	 * The ID of the master track
 	 */
-	masterId?: number;
-}
+	masterId: z.number().nullable()
+}));
+
+type Song = z.infer<typeof Song>;
 
 type SongInclude = 'artist' | 'lyrics';
 
