@@ -2,6 +2,8 @@ import { z } from "zod";
 import Artist from "./artist";
 import Illustration from "./illustration";
 import Resource from "./resource";
+import RelationSelector, { arrayToRelationSelector } from "../utils/relation-selector";
+import { Simplify } from "type-fest";
 
 export const AlbumType = [
 	'StudioRecording',
@@ -54,10 +56,15 @@ type Album = z.infer<typeof Album>;
 
 type AlbumInclude = 'artist';
 
-type AlbumWithRelations<I extends K[], K extends AlbumInclude = AlbumInclude> = Album & Pick<
-	{ artist: Artist | null },
-	I[number]
->
+const AlbumWithRelations = <Selection extends AlbumInclude | never = never>(
+	relation: Selection[]
+) => Album.and(z.object({
+		artist: Artist.nullable()
+	}).pick(arrayToRelationSelector(relation)));
+
+type AlbumWithRelations<Selection extends AlbumInclude | never = never> =
+	z.infer<ReturnType<typeof AlbumWithRelations<Selection>>>
+
 
 export default Album;
 export const AlbumSortingKeys = [
