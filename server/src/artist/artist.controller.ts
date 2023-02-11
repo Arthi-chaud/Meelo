@@ -11,11 +11,7 @@ import ArtistQueryParameters from './models/artist.query-parameters';
 import {
 	ApiOperation, ApiQuery, ApiTags
 } from '@nestjs/swagger';
-import TrackQueryParameters from 'src/track/models/track.query-parameters';
-import TrackService from 'src/track/track.service';
-import { TrackType } from '@prisma/client';
 import { ArtistResponseBuilder } from './models/artist.response';
-import { TrackResponseBuilder } from 'src/track/models/track.response';
 import { AlbumResponseBuilder } from 'src/album/models/album.response';
 import { SongResponseBuilder } from 'src/song/models/song.response';
 import { PaginationQuery } from 'src/pagination/pagination-query.decorator';
@@ -23,6 +19,7 @@ import IdentifierParam from 'src/identifier/identifier.pipe';
 import RelationIncludeQuery from 'src/relation-include/relation-include-query.decorator';
 import SortingQuery from 'src/sort/sort-query.decorator';
 import Response, { ResponseType } from 'src/response/response.decorator';
+import { SongWithVideoResponseBuilder } from 'src/song/models/song-with-video.response';
 
 @ApiTags("Artists")
 @Controller('artists')
@@ -33,9 +30,7 @@ export default class ArtistController {
 		@Inject(forwardRef(() => AlbumService))
 		private albumService: AlbumService,
 		@Inject(forwardRef(() => SongService))
-		private songService: SongService,
-		@Inject(forwardRef(() => TrackService))
-		private trackService: TrackService
+		private songService: SongService
 	) {}
 
 	@ApiOperation({
@@ -90,22 +85,22 @@ export default class ArtistController {
 		summary: 'Get all the video tracks from an artist'
 	})
 	@Response({
-		handler: TrackResponseBuilder,
+		handler: SongWithVideoResponseBuilder,
 		type: ResponseType.Page
 	})
 	@Get(':idOrSlug/videos')
 	async getArtistVideos(
 		@PaginationQuery()
 		paginationParameters: PaginationParameters,
-		@RelationIncludeQuery(TrackQueryParameters.AvailableAtomicIncludes)
-		include: TrackQueryParameters.RelationInclude,
-		@SortingQuery(TrackQueryParameters.SortingKeys)
-		sortingParameter: TrackQueryParameters.SortingParameter,
+		@RelationIncludeQuery(SongQueryParameters.AvailableAtomicIncludes)
+		include: SongQueryParameters.RelationInclude,
+		@SortingQuery(SongQueryParameters.SortingKeys)
+		sortingParameter: SongQueryParameters.SortingParameter,
 		@IdentifierParam(ArtistService)
 		where: ArtistQueryParameters.WhereInput
 	) {
-		const videoTracks = await this.trackService.getMany(
-			{ artist: where, type: TrackType.Video },
+		const videoTracks = await this.songService.getSongsWithVideo(
+			{ artist: where },
 			paginationParameters,
 			include,
 			sortingParameter
