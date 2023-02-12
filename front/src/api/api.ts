@@ -645,7 +645,7 @@ export default class API {
 			key: ['album', albumSlugOrId, 'genres'],
 			exec: (pagination) => API.fetch({
 				route: `/albums/${albumSlugOrId}/genres`,
-				parameters: { include: [] }
+				parameters: { pagination, include: [] }
 			})
 		};
 	}
@@ -680,9 +680,9 @@ export default class API {
 	): InfiniteQuery<SongWithVideoWithRelations<I>> {
 		return {
 			key: ['artist', artistSlugOrId, 'videos', sort ?? {}, ...API.formatIncludeKeys(include)],
-			exec: () => API.fetch({
+			exec: (pagination) => API.fetch({
 				route: `/artists/${artistSlugOrId}/videos`,
-				parameters: { include, sort }
+				parameters: { pagination: pagination, include, sort }
 			})
 		};
 	}
