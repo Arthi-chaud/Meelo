@@ -1,4 +1,4 @@
-import { z } from "zod";
+import * as yup from 'yup';
 import Artist from "./artist";
 import Illustration from "./illustration";
 import Lyrics from "./lyrics";
@@ -8,56 +8,58 @@ import Track from "./track";
 /**
  * Abstract data model, instanciated by tracks
  */
-const Song = z.intersection(
-	Resource,
-	Illustration
-).and(z.object({
+const Song = Resource.concat(Illustration).concat(yup.object({
 	/**
 	 * title of the song
 	 */
-	name: z.string(),
+	name: yup.string().required(),
 	/*
 	 * The slug of the release
 	 * To be used with the parent's artist's slug:
 	 * ${artistSlug}+${songSlug}
 	 */
-	slug: z.string(),
+	slug: yup.string().required(),
 	/**
 	 * Unique identifier of the parent artist
 	 */
-	artistId: z.number(),
+	artistId: yup.number().required(),
 	/**
 	 * Number of times the song has been played
 	 */
-	playCount: z.number(),
+	playCount: yup.number().required(),
 	/**
 	 * The ID of the master track
 	 */
-	masterId: z.number().nullable()
+	masterId: yup.number().required().nullable()
 }));
 
-type Song = z.infer<typeof Song>;
+const SongWithVideo = Song.concat(yup.object({
+	video: Track.required()
+}));
+
+type Song = yup.InferType<typeof Song>;
+type SongWithVideo = yup.InferType<typeof SongWithVideo>;
 
 type SongInclude = 'artist' | 'lyrics';
 
-type BaseSongWithRelations<
-	S extends Song, I extends K[], K extends SongInclude = SongInclude
-> = S & Pick<
-	{ artist: Artist, lyrics?: Lyrics },
-	I[number]
->;
+const SongRelations = yup.object({
+	artist: Artist.required(),
+	lyrics: Lyrics.required().nullable()
+});
 
-type SongWithRelations<
-	I extends K[], K extends SongInclude = SongInclude
-> = BaseSongWithRelations<Song, I, K>;
+const SongWithRelations = <Selection extends SongInclude | never = never>(
+	relation: Selection[]
+) => Song.concat(SongRelations.pick(relation));
 
-type SongWithVideo = Song & {
-	video: Track;
-};
+const SongWithVideoWithRelations = <Selection extends SongInclude | never = never>(
+	relation: Selection[]
+) => SongWithVideo.concat(SongRelations.pick(relation));
 
-type SongWithVideoWithRelations<
-	I extends K[], K extends SongInclude = SongInclude
-> = BaseSongWithRelations<SongWithVideo, I, K>;
+type SongWithRelations<Selection extends SongInclude | never = never> =
+	yup.InferType<ReturnType<typeof SongWithRelations<Selection>>>
+
+type SongWithVideoWithRelations<Selection extends SongInclude | never = never> =
+ yup.InferType<ReturnType<typeof SongWithVideoWithRelations<Selection>>>
 
 export default Song;
 export const SongSortingKeys = [

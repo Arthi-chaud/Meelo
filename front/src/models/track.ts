@@ -1,67 +1,71 @@
-import { z } from "zod";
+import * as yup from 'yup';
 import Illustration from "./illustration";
 import Release from "./release";
 import Resource from "./resource";
 import Song from "./song";
 
+export const TrackType = ['Audio', 'Video'] as const;
+
 /**
  * 'Instance' of a song on a release
  */
-const Track = z.intersection(
-	Resource,
-	Illustration
-).and(z.object({
+const Track = Resource.concat(Illustration).concat(yup.object({
 	/**
 	 * Unique identifier of the parent song
 	 */
-	songId: z.number(),
+	songId: yup.number().required(),
 	/**
 	 * Unique identifier of the parent release
 	 */
-	releaseId: z.number(),
+	releaseId: yup.number().required(),
 	/**
 	 * Title of the track
 	 */
-	name: z.string(),
+	name: yup.string().required(),
 	/**
 	 * Index of the disc the track is on
 	 */
-	discIndex: z.number().nullable(),
+	discIndex: yup.number().required().nullable(),
 	/**
 	 * Index of the track on the disc
 	 */
-	trackIndex: z.number(),
+	trackIndex: yup.number().required(),
 	/**
 	 * Type of media
 	 */
-	type: z.enum(['Audio', 'Video']),
+	type: yup.mixed<TrackType>().oneOf(TrackType).required(),
 	/**
 	 * Bit rate of the track's audio.
 	 * In kbits/s
 	 */
-	bitrate: z.number(),
+	bitrate: yup.number().required(),
 	/**
 	 * Duration in seconds of the track
 	 */
-	duration: z.number(),
+	duration: yup.number().required(),
 	/**
 	 * URL to stream track
 	 */
-	stream: z.string(),
+	stream: yup.string().required(),
 	/**
 	 * ID of the source file
 	 */
-	sourceFileId: z.number(),
+	sourceFileId: yup.number().required(),
 }));
 
-type Track = z.infer<typeof Track>;
+type Track = yup.InferType<typeof Track>;
 
 type TrackInclude = 'song' | 'release';
 
-type TrackWithRelations<I extends K[], K extends TrackInclude = TrackInclude> = Track & Pick<
-	{ song: Song, release: Release },
-	I[number]
->
+const TrackWithRelations = <Selection extends TrackInclude | never = never>(
+	relation: Selection[]
+) => Track.concat(yup.object({
+		song: Song.required(),
+		release: Release.required()
+	}).pick(relation));
+
+type TrackWithRelations<Selection extends TrackInclude | never = never> =
+	yup.InferType<ReturnType<typeof TrackWithRelations<Selection>>>
 
 export default Track;
 export const TrackSortingKeys = [

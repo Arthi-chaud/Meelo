@@ -1,4 +1,4 @@
-import { z } from "zod";
+import * as yup from 'yup';
 import Album from "./album";
 import Illustration from "./illustration";
 import Resource from "./resource";
@@ -6,49 +6,46 @@ import Resource from "./resource";
 /**
  * A version of an album
  */
-const Release = z.intersection(
-	Resource,
-	Illustration,
-).and(z.object({
+const Release = Resource.concat(Illustration).concat(yup.object({
 	/**
 	 * The title of the release
 	 */
-	name: z.string(),
+	name: yup.string().required(),
 	/**
 	 * The unique ID of the release
 	 */
-	id: z.number(),
+	id: yup.number().required(),
 	/**
 	 * The slug of the release
 	 * To be used with the parent's artist's slug and the parent album's slug:
 	 * ${artistSlug}+${albumSlug}+${releaseSlug}
 	 */
-	slug: z.string(),
+	slug: yup.string().required(),
 	/**
 	 * Unique identifier of the parent album
 	 */
-	albumId: z.number(),
+	albumId: yup.number().required(),
 	/**
 	 * Date the release was *released*
 	 */
-	releaseDate: z.date().nullable()
+	releaseDate: yup.date().required().nullable()
 }));
 
-type Release = z.infer<typeof Release>;
+type Release = yup.InferType<typeof Release>;
 
 type ReleaseInclude = 'album';
 
-type ReleaseWithRelations<
-	I extends K[],
-	K extends ReleaseInclude = ReleaseInclude
-> = Release & Pick<
-	{ album: Album },
-	I[number]
->;
+const ReleaseWithRelations = <Selection extends ReleaseInclude | never = never>(
+	relation: Selection[]
+) => Release.concat(yup.object({
+		album: Album.required()
+	}).pick(relation));
 
-type B = ReleaseWithRelations<any>['album'];
+type ReleaseWithRelations<Selection extends ReleaseInclude | never = never> =
+	yup.InferType<ReturnType<typeof ReleaseWithRelations<Selection>>>
 
 export default Release;
+
 export const ReleaseSortingKeys = [
 	'name',
 	'releaseDate',

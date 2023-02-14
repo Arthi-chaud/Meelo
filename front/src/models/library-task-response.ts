@@ -1,12 +1,12 @@
-import { z } from "zod";
+import * as yup from 'yup';
 
-const LibraryTaskResponse = z.object({
+const LibraryTaskResponse = yup.object({
 	/**
 	 * Status of the task
 	 */
-	status: z.string()
+	status: yup.string().required()
 });
 
-type LibraryTaskResponse = z.infer<typeof LibraryTaskResponse>;
+type LibraryTaskResponse = yup.InferType<typeof LibraryTaskResponse>;
 
 export default LibraryTaskResponse;

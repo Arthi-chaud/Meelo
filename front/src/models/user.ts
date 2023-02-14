@@ -1,13 +1,13 @@
-import { z } from "zod";
+import * as yup from 'yup';
 import Resource from "./resource";
 
-const User = Resource.and(z.object({
-	name: z.string(),
-	enabled: z.boolean(),
-	admin: z.boolean(),
+const User = Resource.concat(yup.object({
+	name: yup.string().required(),
+	enabled: yup.boolean().required(),
+	admin: yup.boolean().required(),
 }));
 
-type User = z.infer<typeof User>;
+type User = yup.InferType<typeof User>;
 
 export const UserSortingKeys = [
 	'id',

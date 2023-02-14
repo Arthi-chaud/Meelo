@@ -1,25 +1,25 @@
-import { z } from "zod";
+import * as yup from 'yup';
 import Resource from "./resource";
 
-const File = Resource.and(z.object({
+const File = Resource.concat(yup.object({
 	/**
 	 * Path of the track, relative to the parent library
 	 */
-	path: z.string(),
+	path: yup.string().required(),
 	/**
 	 * MD5 checksum of the file
 	 */
-	md5Checksum: z.string(),
+	md5Checksum: yup.string().required(),
 	/**
 	 * Date of the file registration
 	 */
-	registerDate: z.date(),
+	registerDate: yup.date().required(),
 	/**
 	 * ID of the library
 	 */
-	libraryId: z.number(),
+	libraryId: yup.number().required(),
 }));
 
-type File = z.infer<typeof File>;
+type File = yup.InferType<typeof File>;
 
 export default File;

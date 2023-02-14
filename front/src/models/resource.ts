@@ -1,12 +1,12 @@
-import { z } from "zod";
+import * as yup from 'yup';
 
-const Resource = z.object({
+const Resource = yup.object({
 	/**
 	 * Unique identifier
 	 */
-	id: z.number()
+	id: yup.number().required()
 });
 
-type Resource = z.infer<typeof Resource>;
+type Resource = yup.InferType<typeof Resource>;
 
 export default Resource;

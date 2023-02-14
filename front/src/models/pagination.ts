@@ -1,4 +1,4 @@
-import { z } from "zod";
+import * as yup from 'yup';
 
 /**
  * Parameters for pagination in API requests
@@ -14,28 +14,28 @@ type PaginationParameters = Partial<{
 	pageSize: number;
 }>
 
-const PaginatedResponse = <T>(itemType: z.ZodType<T>) => z.object({
-	items: z.array(itemType),
-	metadata: z.object({
+const PaginatedResponse = <T>(itemType: yup.Schema<T>) => yup.object({
+	items: yup.array(itemType).required(),
+	metadata: yup.object({
 		/**
 		 * Current route
 		 */
-		this: z.string(),
+		this: yup.string().required(),
 		/**
 		 * route to use for the next items
 		 */
-		next: z.string().nullable(),
+		next: yup.string().required().nullable(),
 		/**
 		 * route to use for the previous items
 		 */
-		previous: z.string().nullable(),
+		previous: yup.string().required().nullable(),
 		/**
 		 * The current page number
 		 */
-		page: z.number(),
+		page: yup.number().required(),
 	})
 });
 
-type PaginatedResponse<T> = z.infer<ReturnType<typeof PaginatedResponse<T>>>;
+type PaginatedResponse<T> = yup.InferType<ReturnType<typeof PaginatedResponse<T>>>;
 
 export type { PaginatedResponse, PaginationParameters };

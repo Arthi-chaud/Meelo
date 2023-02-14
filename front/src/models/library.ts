@@ -1,18 +1,18 @@
-import { z } from "zod";
+import * as yup from 'yup';
 import Resource from "./resource";
 
-const Library = Resource.and(z.object({
+const Library = Resource.concat(yup.object({
 	/**
 	 * Title of the library
 	 */
-	name: z.string(),
+	name: yup.string().required(),
 	/**
 	 * Slug of the library
 	 * Unique identifier
 	 */
-	slug: z.string()
+	slug: yup.string().required(),
 }));
 
-type Library = z.infer<typeof Library>;
+type Library = yup.InferType<typeof Library>;
 
 export default Library;

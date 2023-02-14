@@ -1,12 +1,12 @@
-import { z } from "zod";
+import * as yup from 'yup';
 
-const Illustration = z.object({
+const Illustration = yup.object({
 	/**
 	 * Path of the route of the API to get the illustration
 	 */
-	illustration: z.string().nullable()
+	illustration: yup.string().required().nullable()
 });
 
-type Illustration = z.infer<typeof Illustration>;
+type Illustration = yup.InferType<typeof Illustration>;
 
 export default Illustration;

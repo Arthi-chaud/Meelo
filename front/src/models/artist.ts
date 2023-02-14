@@ -1,23 +1,20 @@
 import Illustration from "./illustration";
 import Resource from "./resource";
-import { z } from 'zod';
+import * as yup from 'yup';
 
-const Artist = z.intersection(
-	Resource,
-	Illustration
-).and(z.object({
+const Artist = Resource.concat(Illustration).concat(yup.object({
 	/**
 	 * The name of the artist
 	 */
-	name: z.string(),
+	name: yup.string().required(),
 	/**
 	 * Slug of the name
 	 * Also an identifier of the artist
 	 */
-	slug: z.string()
+	slug: yup.string().required()
 }));
 
-type Artist = z.infer<typeof Artist>;
+type Artist = yup.InferType<typeof Artist>;
 
 export default Artist;
 export const ArtistSortingKeys = [

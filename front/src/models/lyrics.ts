@@ -1,17 +1,17 @@
-import { z } from "zod";
+import * as yup from 'yup';
 import Resource from "./resource";
 
-const Lyrics = Resource.and(z.object({
+const Lyrics = Resource.concat(yup.object({
 	/**
 	 * Raw lyrics, with '\n' as line seperator
 	 */
-	content: z.string(),
+	content: yup.string().required(),
 	/**
 	 * Unique identifier of the parent song
 	 */
-	songId: z.number()
+	songId: yup.number().required(),
 }));
 
-type Lyrics = z.infer<typeof Lyrics>;
+type Lyrics = yup.InferType<typeof Lyrics>;
 
 export default Lyrics;

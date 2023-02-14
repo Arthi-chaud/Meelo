@@ -1,11 +1,11 @@
-import { z } from 'zod';
+import * as yup from 'yup';
 import Track from './track';
 
-const Tracklist = z.map(
-	z.union([z.literal('?'), z.number()]),
+const Tracklist = yup.map(
+	yup.union([yup.literal('?'), yup.number()]),
 	Track.array()
 );
 //TODO Use Templates
-type Tracklist = z.infer<typeof Tracklist>;
+type Tracklist = yup.InferType<typeof Tracklist>;
 
 export default Tracklist;
