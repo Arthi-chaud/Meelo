@@ -5,6 +5,7 @@ import Resource from "./resource";
 import Song from "./song";
 
 export const TrackType = ['Audio', 'Video'] as const;
+export type TrackType = typeof TrackType[number];
 
 /**
  * 'Instance' of a song on a release

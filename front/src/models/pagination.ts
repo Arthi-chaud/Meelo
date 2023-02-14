@@ -3,7 +3,7 @@ import * as yup from 'yup';
 /**
  * Parameters for pagination in API requests
  */
-type PaginationParameters = Partial<{
+export type PaginationParameters = Partial<{
 	/**
 	 * The index of the page to fetch
 	 */
@@ -38,4 +38,4 @@ const PaginatedResponse = <T>(itemType: yup.Schema<T>) => yup.object({
 
 type PaginatedResponse<T> = yup.InferType<ReturnType<typeof PaginatedResponse<T>>>;
 
-export type { PaginatedResponse, PaginationParameters };
+export { PaginatedResponse };

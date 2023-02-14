@@ -68,4 +68,4 @@ export const SongSortingKeys = [
 	'artistName',
 	'addDate'
 ] as const;
-export type { SongWithRelations, SongWithVideoWithRelations, SongWithVideo, SongInclude };
+export { SongWithRelations, SongWithVideoWithRelations, SongWithVideo };
