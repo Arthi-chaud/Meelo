@@ -11,7 +11,7 @@ import { Grid } from "@mui/material";
 import { useQueryClient } from "../../api/use-query";
 
 type TrackItemProps = {
-	track: TrackWithRelations<['release' | 'song']>
+	track: TrackWithRelations<'release' | 'song'>
 }
 
 /**

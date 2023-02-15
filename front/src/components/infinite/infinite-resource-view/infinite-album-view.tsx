@@ -12,7 +12,7 @@ import InfiniteResourceViewProps from "./infinite-resource-view-props";
 
 const InfiniteAlbumView = (
 	props: InfiniteResourceViewProps<
-		AlbumWithRelations<['artist']>,
+		AlbumWithRelations<'artist'>,
 		typeof AlbumSortingKeys,
 		[type?: AlbumType]
 	> & Pick<Parameters<typeof AlbumTile>[0], 'formatSubtitle'>
@@ -43,8 +43,8 @@ const InfiniteAlbumView = (
 				sortBy: options?.sortBy ?? AlbumSortingKeys[0],
 				order: options?.order ?? 'asc',
 			}, options?.type == 'All' ? undefined : options?.type as AlbumType | undefined)}
-			renderListItem={(item: AlbumWithRelations<['artist']>) => <AlbumItem album={item} key={item.id} formatSubtitle={props.formatSubtitle}/>}
-			renderGridItem={(item: AlbumWithRelations<['artist']>) => <AlbumTile album={item} key={item.id} formatSubtitle={props.formatSubtitle}/>}
+			renderListItem={(item: AlbumWithRelations<'artist'>) => <AlbumItem album={item} key={item.id} formatSubtitle={props.formatSubtitle}/>}
+			renderGridItem={(item: AlbumWithRelations<'artist'>) => <AlbumTile album={item} key={item.id} formatSubtitle={props.formatSubtitle}/>}
 		/>
 	</>;
 };

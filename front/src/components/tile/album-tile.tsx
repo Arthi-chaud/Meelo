@@ -3,8 +3,8 @@ import { AlbumWithRelations } from "../../models/album";
 import Illustration from "../illustration";
 
 const AlbumTile = (props: {
-	album: AlbumWithRelations<['artist']>,
-	formatSubtitle?: (album: AlbumWithRelations<['artist']>) => string
+	album: AlbumWithRelations<'artist'>,
+	formatSubtitle?: (album: AlbumWithRelations<'artist'>) => string
 }) => {
 	return <Tile
 		title={props.album.name}

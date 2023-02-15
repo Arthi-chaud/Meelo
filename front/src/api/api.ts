@@ -2,7 +2,7 @@ import {
 	AlbumInclude, AlbumSortingKeys, AlbumType, AlbumWithRelations
 } from "../models/album";
 import Artist, { ArtistSortingKeys } from "../models/artist";
-import Genre from "../models/genre";
+import { Genre } from "../models/genre";
 import Library from "../models/library";
 import { PaginationParameters } from "../models/pagination";
 import {
@@ -12,7 +12,7 @@ import {
 	SongInclude, SongSortingKeys, SongWithRelations, SongWithVideoWithRelations
 } from "../models/song";
 import {
-	TrackInclude, TrackSortingKeys, TrackWithRelations
+	TrackInclude, TrackSortingKeys, type TrackWithRelations
 } from "../models/track";
 import Tracklist from "../models/tracklist";
 import { SortingParameters } from "../utils/sorting";
@@ -44,6 +44,7 @@ type FetchParameters<Keys extends readonly string[]> = {
 	otherParameters?: any,
 	errorMessage?: string,
 	data?: Record<string, any>,
+	method?: 'GET' | 'PUT' | 'POST' | 'DELETE'
 }
 
 export default class API {
@@ -70,8 +71,9 @@ export default class API {
 			route: '/auth/login',
 			data: credentials,
 			errorMessage: "Username or password is incorrect",
-			parameters: {}
-		}, 'POST');
+			parameters: {},
+			method: 'POST'
+		});
 	}
 
 	/**
@@ -86,8 +88,9 @@ export default class API {
 				name: credentials.username,
 				password: credentials.password
 			},
-			parameters: {}
-		}, 'POST');
+			parameters: {},
+			method: 'POST'
+		});
 	}
 
 	/**
@@ -180,8 +183,9 @@ export default class API {
 		return API.fetch({
 			route: `/libraries/${librarySlugOrId}`,
 			errorMessage: "Library deletion failed",
-			parameters: { }
-		}, 'DELETE');
+			parameters: { },
+			method: 'DELETE'
+		});
 	}
 
 	/**
@@ -206,10 +210,10 @@ export default class API {
 	 * Fetch all albums
 	 * @returns An InfiniteQuery of Albums
 	 */
-	static getAllAlbums<I extends AlbumInclude[] = []>(
+	static getAllAlbums<I extends AlbumInclude>(
 		sort?: SortingParameters<typeof AlbumSortingKeys>,
 		type?: AlbumType,
-		include?: I
+		include?: I[]
 	): InfiniteQuery<AlbumWithRelations<I>> {
 		return {
 			key: ['albums', sort ?? {}, type ?? {}, ...API.formatIncludeKeys(include)],
@@ -247,11 +251,11 @@ export default class API {
 	 * @param librarySlugOrId the identifier of the library
 	 * @returns An InfiniteQuery of Albums
 	 */
-	static getAllAlbumsInLibrary<I extends AlbumInclude[] = []>(
+	static getAllAlbumsInLibrary<I extends AlbumInclude>(
 		librarySlugOrId: string | number,
 		type?: AlbumType,
 		sort?: SortingParameters<typeof AlbumSortingKeys>,
-		include?: I,
+		include?: I[],
 	): InfiniteQuery<AlbumWithRelations<I>> {
 		return {
 			key: ['libraries', librarySlugOrId, 'albums', sort ?? {}, ...API.formatIncludeKeys(include), type ?? {}],
@@ -269,10 +273,10 @@ export default class API {
 	 * @param librarySlugOrId the identifier of the library
 	 * @returns An InfiniteQuery of songs
 	 */
-	static getAllSongsInLibrary<I extends SongInclude[] = []>(
+	static getAllSongsInLibrary<I extends SongInclude>(
 		librarySlugOrId: string | number,
 		sort?: SortingParameters<typeof SongSortingKeys>,
-		include?: I
+		include?: I[]
 	): InfiniteQuery<SongWithRelations<I>> {
 		return {
 			key: ['libraries', librarySlugOrId, 'songs', sort ?? {}, ...API.formatIncludeKeys(include)],
@@ -289,10 +293,10 @@ export default class API {
 	 * @param librarySlugOrId the identifier of the library
 	 * @returns An InfiniteQuery of Song
 	 */
-	static getAllVideosInLibrary<I extends SongInclude[] = []>(
+	static getAllVideosInLibrary<I extends SongInclude>(
 		librarySlugOrId: string | number,
 		sort?: SortingParameters<typeof SongSortingKeys>,
-		include?: I
+		include?: I[]
 	): InfiniteQuery<SongWithVideoWithRelations<I>> {
 		return {
 			key: ['libraries', librarySlugOrId, 'videos', sort ?? {}, ...API.formatIncludeKeys(include)],
@@ -308,9 +312,9 @@ export default class API {
 	 * Fetch all songs
 	 * @returns An InfiniteQuery of Songs
 	 */
-	static getAllSongs<I extends SongInclude[] = []>(
+	static getAllSongs<I extends SongInclude>(
 		sort?: SortingParameters<typeof SongSortingKeys>,
-		include?: I
+		include?: I[]
 	): InfiniteQuery<SongWithRelations<I>> {
 		return {
 			key: ['songs', ...API.formatIncludeKeys(include), sort ?? {}],
@@ -326,9 +330,9 @@ export default class API {
 	 * Fetch all songs
 	 * @returns An InfiniteQuery of Songs
 	 */
-	static getAllVideos<I extends SongInclude[] = []>(
+	static getAllVideos<I extends SongInclude>(
 		sort?: SortingParameters<typeof SongSortingKeys>,
-		include?: I
+		include?: I[]
 	): InfiniteQuery<SongWithVideoWithRelations<I>> {
 		return {
 			key: ['videos', ...API.formatIncludeKeys(include), sort ?? {}],
@@ -344,11 +348,11 @@ export default class API {
 	 * Fetch all albums by an artist
 	 * @returns An Infinite Query of Albums
 	 */
-	static getArtistAlbums<I extends AlbumInclude[] = []>(
+	static getArtistAlbums<I extends AlbumInclude>(
 		artistSlugOrId: string | number,
 		type?: AlbumType,
 		sort?: SortingParameters<typeof AlbumSortingKeys>,
-		include?: I
+		include?: I[]
 	): InfiniteQuery<AlbumWithRelations<I>> {
 		return {
 			key: ['artist', artistSlugOrId, 'albums', sort ?? {}, ...API.formatIncludeKeys(include), type ?? {}],
@@ -365,10 +369,10 @@ export default class API {
 	 * Fetch all songs by an artist
 	 * @returns An Infinite Query of songs
 	 */
-	static getArtistSongs<I extends SongInclude[] = []>(
+	static getArtistSongs<I extends SongInclude>(
 		artistSlugOrId: string | number,
 		sort?: SortingParameters<typeof SongSortingKeys>,
-		include?: I
+		include?: I[]
 	): InfiniteQuery<SongWithRelations<I>> {
 		return {
 			key: ['artist', artistSlugOrId, 'songs', sort ?? {}, ...API.formatIncludeKeys(include)],
@@ -385,9 +389,9 @@ export default class API {
 	 * @param songSlugOrId the identifier of a song
 	 * @returns a Query for a Song
 	 */
-	static getSong<I extends SongInclude[] = []>(
+	static getSong<I extends SongInclude>(
 		songSlugOrId: string | number,
-		include?: I
+		include?: I[]
 	): Query<SongWithRelations<I>> {
 		return {
 			key: ['song', songSlugOrId, ...API.formatIncludeKeys(include)],
@@ -404,9 +408,9 @@ export default class API {
 	 * @param include the fields to include in the fetched item
 	 * @returns a Query for a Track
 	 */
-	static getMasterTrack<I extends TrackInclude[] = []>(
+	static getMasterTrack<I extends TrackInclude>(
 		songSlugOrId: string | number,
-		include?: I
+		include?: I[]
 	): Query<TrackWithRelations<I>> {
 		return {
 			key: ['song', songSlugOrId, 'master', ...API.formatIncludeKeys(include)],
@@ -423,9 +427,9 @@ export default class API {
 	 * @param include the fields to include in the fetched item
 	 * @returns a Query for a Track
 	 */
-	static getTrack<I extends TrackInclude[] = []>(
+	static getTrack<I extends TrackInclude>(
 		trackId: string | number,
-		include?: I
+		include?: I[]
 	): Query<TrackWithRelations<I>> {
 		return {
 			key: ['track', trackId, ...API.formatIncludeKeys(include)],
@@ -460,9 +464,9 @@ export default class API {
 	 * @param include the fields to include in the fetched item
 	 * @returns a query for an albums
 	 */
-	static getAlbum<I extends AlbumInclude[] = []>(
+	static getAlbum<I extends AlbumInclude>(
 		albumSlugOrId: string | number,
-		include?: I
+		include?: I[]
 	): Query<AlbumWithRelations<I>> {
 		return {
 			key: ['album', albumSlugOrId, ...API.formatIncludeKeys(include)],
@@ -519,8 +523,9 @@ export default class API {
 			route: `/users/${userId}`,
 			errorMessage: 'User could not be updated',
 			data: updatedFields,
-			parameters: {}
-		}, 'PUT');
+			parameters: {},
+			method: 'PUT'
+		});
 	}
 
 	/**
@@ -533,8 +538,9 @@ export default class API {
 		return API.fetch({
 			route: `/users/${userId}`,
 			errorMessage: 'User could not be deleted',
-			parameters: {}
-		}, 'DELETE');
+			parameters: {},
+			method: 'DELETE'
+		});
 	}
 
 	/**
@@ -543,9 +549,9 @@ export default class API {
 	 * @param include the fields to include in the fetched item
 	 * @returns a query for a release
 	 */
-	static getMasterRelease<I extends ReleaseInclude[] = []>(
+	static getMasterRelease<I extends ReleaseInclude>(
 		albumSlugOrId: string | number,
-		include?: I
+		include?: I[]
 	): Query<ReleaseWithRelations<I>> {
 		return {
 			key: ['album', albumSlugOrId, 'master', ...API.formatIncludeKeys(include)],
@@ -562,10 +568,10 @@ export default class API {
 	 * @param include the relation to include
 	 * @returns an Infinite Query of tracks
 	 */
-	static getSongTracks<I extends TrackInclude[] = []>(
+	static getSongTracks<I extends TrackInclude>(
 		songSlugOrId: string | number,
 		sort?: SortingParameters<typeof TrackSortingKeys>,
-		include?: I
+		include?: I[]
 	): InfiniteQuery<TrackWithRelations<I>> {
 		return {
 			key: ['song', songSlugOrId, 'tracks', sort ?? {}, ...API.formatIncludeKeys(include)],
@@ -582,10 +588,10 @@ export default class API {
 	 * @param include the relation to include
 	 * @returns An Infinite query of Tracks
 	 */
-	static getSongVideos<I extends TrackInclude[] = []>(
+	static getSongVideos<I extends TrackInclude>(
 		songSlugOrId: string | number,
 		sort?: SortingParameters<typeof TrackSortingKeys>,
-		include?: I
+		include?: I[]
 	): InfiniteQuery<TrackWithRelations<I>> {
 		return {
 			key: ['song', songSlugOrId, 'videos', sort ?? {}, ...API.formatIncludeKeys(include)],
@@ -602,10 +608,10 @@ export default class API {
 	 * @param include the relation to include
 	 * @returns An Infinite query of Tracks
 	 */
-	static getSongVersions<I extends SongInclude[] = []>(
+	static getSongVersions<I extends SongInclude>(
 		songSlugOrId: string | number,
 		sort?: SortingParameters<typeof SongSortingKeys>,
-		include?: I
+		include?: I[]
 	): InfiniteQuery<SongWithRelations<I>> {
 		return {
 			key: ['song', songSlugOrId, 'versions', sort ?? {}, ...API.formatIncludeKeys(include)],
@@ -655,9 +661,9 @@ export default class API {
 	 * @param albumSlugOrId the id of the album
 	 * @returns A query for an array of tracks
 	 */
-	static getAlbumVideos<I extends TrackInclude[] = []>(
+	static getAlbumVideos<I extends TrackInclude>(
 		albumSlugOrId: string | number,
-		include?: I
+		include?: I[]
 	): Query<TrackWithRelations<I>[]> {
 		return {
 			key: ['album', albumSlugOrId, 'videos', ...API.formatIncludeKeys(include)],
@@ -673,10 +679,10 @@ export default class API {
 	 * @param albumSlugOrId the id of the album
 	 * @returns An Infinite query of Releases
 	 */
-	static getAlbumReleases<I extends ReleaseInclude[] = []>(
+	static getAlbumReleases<I extends ReleaseInclude>(
 		albumSlugOrId: string | number,
 		sort?: SortingParameters<typeof ReleaseSortingKeys>,
-		include?: I
+		include?: I[]
 	): InfiniteQuery<ReleaseWithRelations<I>> {
 		return {
 			key: ['album', albumSlugOrId, 'releases', sort ?? {}, ...API.formatIncludeKeys(include)],
@@ -692,9 +698,9 @@ export default class API {
 	 * @param slugOrId the id of the release
 	 * @returns A query for a Release
 	 */
-	static getRelease<I extends ReleaseInclude[] = []>(
+	static getRelease<I extends ReleaseInclude>(
 		slugOrId: string | number,
-		include?: I
+		include?: I[]
 	): Query<ReleaseWithRelations<I>> {
 		return {
 			key: ['release', slugOrId, ...API.formatIncludeKeys(include)],
@@ -711,9 +717,9 @@ export default class API {
 	 * @param slugOrId the id of the release
 	 * @returns A query for a Tracklist
 	 */
-	static getReleaseTrackList<I extends TrackInclude[] = []>(
+	static getReleaseTrackList<I extends TrackInclude>(
 		slugOrId: string | number,
-		include?: I
+		include?: I[]
 	): Query<Tracklist<TrackWithRelations<I>>> {
 		return {
 			key: ['release', slugOrId, 'tracklist', ...API.formatIncludeKeys(include)],
@@ -729,9 +735,9 @@ export default class API {
 	 * @param slugOrId the id of the release
 	 * @returns A query for an array of tracks
 	 */
-	static getReleasePlaylist<I extends TrackInclude[] = []>(
+	static getReleasePlaylist<I extends TrackInclude>(
 		slugOrId: string | number,
-		include?: I
+		include?: I[]
 	): Query<TrackWithRelations<I>[]> {
 		return {
 			key: ['release', slugOrId, 'playlist', ...API.formatIncludeKeys(include)],
@@ -822,7 +828,7 @@ export default class API {
 		idOrSlug: string | number,
 		sort?: SortingParameters<typeof AlbumSortingKeys>,
 		type?: AlbumType
-	): InfiniteQuery<AlbumWithRelations<['artist']>> {
+	): InfiniteQuery<AlbumWithRelations<'artist'>> {
 		return {
 			key: ['genre', idOrSlug, 'albums', sort ?? {}, type ?? {}],
 			exec: (pagination) => API.fetch({
@@ -861,7 +867,7 @@ export default class API {
 	static getGenreSongs(
 		idOrSlug: string | number,
 		sort?: SortingParameters<typeof SongSortingKeys>,
-	): InfiniteQuery<SongWithRelations<['artist']>> {
+	): InfiniteQuery<SongWithRelations<'artist'>> {
 		return {
 			key: ['genre', idOrSlug, 'songs', sort ?? {}],
 			exec: (pagination) => API.fetch({
@@ -896,11 +902,11 @@ export default class API {
 	 * @param query token to find albums
 	 * @returns An Infinite Query for albums
 	 */
-	static searchAlbums<I extends AlbumInclude[] = []>(
+	static searchAlbums<I extends AlbumInclude>(
 		query: string,
 		type?: AlbumType,
 		sort?: SortingParameters<typeof AlbumSortingKeys>,
-		include?: I
+		include?: I[]
 	): InfiniteQuery<AlbumWithRelations<I>> {
 		return {
 			key: ['search', 'albums', query, sort ?? {}, type ?? {}, ...API.formatIncludeKeys(include)],
@@ -918,10 +924,10 @@ export default class API {
 	 * @param query token to find songs
 	 * @returns An Infinite Query for songs
 	 */
-	static searchSongs<I extends SongInclude[] = []>(
+	static searchSongs<I extends SongInclude>(
 		query: string,
 		sort?: SortingParameters<typeof SongSortingKeys>,
-		include?: I
+		include?: I[]
 	): InfiniteQuery<SongWithRelations<I>> {
 		return {
 			key: ['search', 'songs', query, sort ?? {}, ...API.formatIncludeKeys(include)],
@@ -934,8 +940,7 @@ export default class API {
 	}
 
 	private static async fetch<T, Keys extends readonly string[]>(
-		{ route, parameters, otherParameters, errorMessage, data }: FetchParameters<Keys>,
-		method: 'GET' | 'PUT' | 'POST' | 'DELETE' = 'GET'
+		{ route, parameters, otherParameters, errorMessage, data, method }: FetchParameters<Keys>,
 	): Promise<T> {
 		const accessToken = store.getState().user.accessToken;
 		const header = {
@@ -944,7 +949,7 @@ export default class API {
 
 		const response = await fetch(
 			this.buildURL(route, parameters, otherParameters), {
-				method,
+				method: method ?? 'GET',
 				body: data ? JSON.stringify(data) : undefined,
 				headers: accessToken ? {
 					...header,
@@ -1018,8 +1023,9 @@ export default class API {
 		return API.fetch({
 			route: `/songs/${songSlugOrId}/played`,
 			errorMessage: 'Song update failed',
-			parameters: {}
-		}, 'PUT');
+			parameters: {},
+			method: 'PUT'
+		});
 	}
 
 	/**
@@ -1031,8 +1037,9 @@ export default class API {
 		return API.fetch({
 			route: `/releases/${releaseSlugOrId}/master`,
 			errorMessage: 'Release update failed',
-			parameters: {}
-		}, 'PUT');
+			parameters: {},
+			method: 'PUT'
+		});
 	}
 
 	/**
@@ -1044,8 +1051,9 @@ export default class API {
 		return API.fetch({
 			route: `/tracks/${trackSlugOrId}/master`,
 			errorMessage: 'Track update failed',
-			parameters: {}
-		}, 'PUT');
+			parameters: {},
+			method: 'PUT'
+		});
 	}
 
 	private static buildURL(

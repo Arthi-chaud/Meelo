@@ -56,7 +56,7 @@ const Track = Resource.concat(Illustration).concat(yup.object({
 
 type Track = yup.InferType<typeof Track>;
 
-type TrackInclude = 'song' | 'release';
+export type TrackInclude = 'song' | 'release';
 
 const TrackWithRelations = <Selection extends TrackInclude | never = never>(
 	relation: Selection[]
@@ -65,7 +65,7 @@ const TrackWithRelations = <Selection extends TrackInclude | never = never>(
 		release: Release.required()
 	}).pick(relation));
 
-type TrackWithRelations<Selection extends TrackInclude | never = never> =
+export type TrackWithRelations<Selection extends TrackInclude | never = never> =
 	yup.InferType<ReturnType<typeof TrackWithRelations<Selection>>>
 
 export default Track;
@@ -78,4 +78,5 @@ export const TrackSortingKeys = [
 	'trackIndex',
 	'discIndex'
 ] as const;
-export type { TrackWithRelations, TrackInclude };
+
+export { TrackWithRelations };

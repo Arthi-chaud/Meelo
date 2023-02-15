@@ -40,7 +40,7 @@ const SongWithVideo = Song.concat(yup.object({
 type Song = yup.InferType<typeof Song>;
 type SongWithVideo = yup.InferType<typeof SongWithVideo>;
 
-type SongInclude = 'artist' | 'lyrics';
+export type SongInclude = 'artist' | 'lyrics';
 
 const SongRelations = yup.object({
 	artist: Artist.required(),

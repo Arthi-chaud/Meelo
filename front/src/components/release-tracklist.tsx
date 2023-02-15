@@ -15,7 +15,7 @@ import { SongWithRelations } from "../models/song";
 
 type ReleaseTracklistProps = {
 	mainArtist?: Artist;
-	tracklist: Tracklist<Track & { song: SongWithRelations<['artist']> }>;
+	tracklist: Tracklist<Track & { song: SongWithRelations<'artist'> }>;
 	release: Release;
 }
 
