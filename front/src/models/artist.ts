@@ -17,6 +17,7 @@ const Artist = Resource.concat(Illustration).concat(yup.object({
 type Artist = yup.InferType<typeof Artist>;
 
 export default Artist;
+
 export const ArtistSortingKeys = [
 	'name',
 	'albumCount',

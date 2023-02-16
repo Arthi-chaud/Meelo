@@ -31,7 +31,7 @@ export type MeeloQueryFn<
 > = (...args: Params) => Query<QueryReturnType>
 
 export type MeeloInfiniteQueryFn<
-	QueryReturnType,
+	QueryReturnType = unknown,
 	Params extends any[] = any[]
 > = (...args: Params) => InfiniteQuery<QueryReturnType>
 
@@ -46,9 +46,9 @@ const defaultMeeloQueryOptions = {
  * @param queryArgs the arguments to pass the the query function. If one of them is undefined, the query will not be enabled
  * @returns
  */
-const prepareMeeloQuery = <QueryReturnType = unknown>(
-	query: MeeloQueryFn<QueryReturnType>,
-	...queryArgs: Partial<Parameters<typeof query>>
+const prepareMeeloQuery = <QueryReturnType = unknown, Params extends any[] = unknown[]>(
+	query: MeeloQueryFn<QueryReturnType, Params>,
+	...queryArgs: Partial<Params>
 ) => {
 	const enabled = isEnabled(queryArgs);
 	const queryParams = query(...queryArgs as Parameters<typeof query>);
@@ -76,18 +76,18 @@ const isEnabled = (args: any[]) => {
  * @param queryArgs the arguments to pass the the query function. If one of them is undefined, the query will not be enabled
  * @returns
  */
-const prepareMeeloInfiniteQuery = <QueryReturnType = unknown>(
-	query: MeeloInfiniteQueryFn<QueryReturnType>,
-	...queryArgs: Partial<Parameters<typeof query>>
+const prepareMeeloInfiniteQuery = <QueryReturnType = unknown, Params extends any[] = unknown[]>(
+	query: MeeloInfiniteQueryFn<QueryReturnType, Params>,
+	...queryArgs: Partial<Params>
 ) => {
 	const enabled = isEnabled(queryArgs);
-	const queryParams = query(...queryArgs as Parameters<typeof query>);
+	const queryParams = query(...queryArgs as Params);
 
 	return {
 		queryKey: queryParams.key,
 		queryFn: (context: QueryFunctionContext) =>
 			queryParams.exec(context.pageParam ?? { index: 0, pageSize: API.defaultPageSize })
-				.then((result) => ({
+				.then((result): Page<QueryReturnType> => ({
 					pageSize: result.items.length,
 					items: result.items,
 					index: result.metadata.page,

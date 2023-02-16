@@ -56,6 +56,8 @@ const Track = Resource.concat(Illustration).concat(yup.object({
 
 type Track = yup.InferType<typeof Track>;
 
+export default Track;
+
 export type TrackInclude = 'song' | 'release';
 
 const TrackWithRelations = <Selection extends TrackInclude | never = never>(
@@ -65,10 +67,10 @@ const TrackWithRelations = <Selection extends TrackInclude | never = never>(
 		release: Release.required()
 	}).pick(relation));
 
-export type TrackWithRelations<Selection extends TrackInclude | never = never> =
-	yup.InferType<ReturnType<typeof TrackWithRelations<Selection>>>
+type TrackWithRelations<Selection extends TrackInclude | never = never> =
+	// Union-ing with Track fixed type error coming from yup
+	Track & yup.InferType<ReturnType<typeof TrackWithRelations<Selection>>>
 
-export default Track;
 export const TrackSortingKeys = [
 	'name',
 	'releaseName',

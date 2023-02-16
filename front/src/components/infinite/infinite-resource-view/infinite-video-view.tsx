@@ -35,8 +35,8 @@ const InfiniteVideoView = (
 				<VideoTile video={{
 					...item.video,
 					song: item
-				}} formatSubtitle={props.formatSubtitle != undefined
-					? () => props.formatSubtitle(item)
+				}} formatSubtitle={props.formatSubtitle
+					? () => (props.formatSubtitle as Required<typeof props>['formatSubtitle'])(item)
 					: undefined
 				} />
 			}

@@ -33,7 +33,9 @@ const Release = Resource.concat(Illustration).concat(yup.object({
 
 type Release = yup.InferType<typeof Release>;
 
-type ReleaseInclude = 'album';
+export default Release;
+
+export type ReleaseInclude = 'album';
 
 const ReleaseWithRelations = <Selection extends ReleaseInclude | never = never>(
 	relation: Selection[]
@@ -44,7 +46,7 @@ const ReleaseWithRelations = <Selection extends ReleaseInclude | never = never>(
 type ReleaseWithRelations<Selection extends ReleaseInclude | never = never> =
 	yup.InferType<ReturnType<typeof ReleaseWithRelations<Selection>>>
 
-export default Release;
+export { ReleaseWithRelations };
 
 export const ReleaseSortingKeys = [
 	'name',
@@ -52,4 +54,3 @@ export const ReleaseSortingKeys = [
 	'trackCount',
 	'addDate'
 ] as const;
-export type { ReleaseWithRelations, ReleaseInclude };

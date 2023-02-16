@@ -1,4 +1,4 @@
-import Track from './track';
+import type Track from './track';
 
 type Tracklist<T extends Track = Track> = Record<string | '?', T[]>;
 

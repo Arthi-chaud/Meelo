@@ -200,7 +200,10 @@ const ExpandedPlayerControls = (
 							disablePictureInPicture={false}
 							width='100%' height='100%' onClick={requestFullscreen}
 						/>
-						: <Illustration url={props.illustration} fallback={<AudiotrackIcon />} />
+						: <Illustration
+							url={props.illustration ?? null}
+							fallback={<AudiotrackIcon />}
+						/>
 					}
 				</Grid>
 				<Grid item sx={{ width: '100%' }}>

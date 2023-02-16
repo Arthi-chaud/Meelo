@@ -134,6 +134,7 @@ const ArtistPage = (
 								album={{ ...album, artist: artist.data }}
 								formatSubtitle={(albumItem) => getYear(albumItem.releaseDate)?.toString() ?? ''}
 							/>)
+						?? []
 					}/>
 				</Grid>
 			</>

@@ -36,6 +36,6 @@ const PaginatedResponse = <T>(itemType: yup.Schema<T>) => yup.object({
 	})
 });
 
-export type PaginatedResponse<T> = yup.InferType<ReturnType<typeof PaginatedResponse<T>>>;
+type PaginatedResponse<T> = yup.InferType<ReturnType<typeof PaginatedResponse<T>>>;
 
-export { PaginatedResponse };
+export default PaginatedResponse;

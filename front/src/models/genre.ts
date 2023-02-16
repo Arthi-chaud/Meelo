@@ -14,6 +14,6 @@ const Genre = Resource.concat(yup.object({
 
 export type Genre = yup.InferType<typeof Genre>;
 
-export const GenreSortingKeys = ['name', 'songCount'] as const;
-
 export default Genre;
+
+export const GenreSortingKeys = ['name', 'songCount'] as const;
