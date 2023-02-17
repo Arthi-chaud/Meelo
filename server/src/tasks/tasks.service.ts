@@ -80,7 +80,7 @@ export default class TasksService {
 					(regex) => candidate.match(regex) != null
 				).at(0);
 
-				if (matchingRegex) {
+				if (!matchingRegex) {
 					this.logger.warn(`File '${candidate}' does not match any of the regexes`);
 					return false;
 				}
