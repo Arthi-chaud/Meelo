@@ -4,7 +4,7 @@ import {
 import Artist, { ArtistSortingKeys } from "../models/artist";
 import { Genre } from "../models/genre";
 import Library from "../models/library";
-import { PaginationParameters } from "../models/pagination";
+import PaginatedResponse, { PaginationParameters } from "../models/pagination";
 import {
 	ReleaseInclude, ReleaseSortingKeys, ReleaseWithRelations
 } from "../models/release";
@@ -22,6 +22,7 @@ import User, { UserSortingKeys } from "../models/user";
 import store from "../state/store";
 import File from "../models/file";
 import { InfiniteQuery, Query } from './use-query';
+import * as yup from 'yup';
 
 type AuthenticationResponse = {
 	access_token: string;
@@ -38,13 +39,14 @@ type AuthenticationInput = {
 	password: string;
 }
 
-type FetchParameters<Keys extends readonly string[]> = {
+type FetchParameters<Keys extends readonly string[], ReturnType> = {
 	route: string,
 	parameters: QueryParameters<Keys>,
 	otherParameters?: any,
 	errorMessage?: string,
 	data?: Record<string, any>,
-	method?: 'GET' | 'PUT' | 'POST' | 'DELETE'
+	method?: 'GET' | 'PUT' | 'POST' | 'DELETE',
+	validator?: yup.Schema<ReturnType>
 }
 
 export default class API {
@@ -179,7 +181,7 @@ export default class API {
 	 */
 	static async deleteLibrary(
 		librarySlugOrId: number | string
-	): Promise<void> {
+	): Promise<unknown> {
 		return API.fetch({
 			route: `/libraries/${librarySlugOrId}`,
 			errorMessage: "Library deletion failed",
@@ -283,7 +285,8 @@ export default class API {
 			exec: (pagination) => API.fetch({
 				route: `/libraries/${librarySlugOrId}/songs`,
 				errorMessage: 'Library does not exist',
-				parameters: { pagination: pagination, include, sort }
+				parameters: { pagination: pagination, include, sort },
+				validator: PaginatedResponse(SongWithRelations(include ?? []))
 			})
 		};
 	}
@@ -679,9 +682,9 @@ export default class API {
 	 * @param artistSlugOrId the id of the artist
 	 * @returns A query for an array of tracks
 	 */
-	static getArtistVideos<I extends SongInclude[] = []>(
+	static getArtistVideos<I extends SongInclude>(
 		artistSlugOrId: string | number,
-		include?: I,
+		include?: I[],
 		sort?: SortingParameters<typeof SongSortingKeys>,
 	): InfiniteQuery<SongWithVideoWithRelations<I>> {
 		return {
@@ -958,9 +961,10 @@ export default class API {
 		};
 	}
 
-	private static async fetch<T, Keys extends readonly string[]>(
-		{ route, parameters, otherParameters, errorMessage, data, method }: FetchParameters<Keys>,
-	): Promise<T> {
+	private static async fetch<ReturnType, Keys extends readonly string[]>({
+		route, parameters, otherParameters,
+		errorMessage, data, method, validator
+	}: FetchParameters<Keys, ReturnType>): Promise<ReturnType> {
 		const accessToken = store.getState().user.accessToken;
 		const header = {
 			'Content-Type': 'application/json'
@@ -998,6 +1002,10 @@ export default class API {
 			if (!response.ok) {
 				throw new Error(errorMessage ?? jsonResponse.message ?? response.statusText);
 			}
+		}
+		if (validator) {
+			return validator.validate(jsonResponse)
+				.then((validated) => validator.cast(validated));
 		}
 		return jsonResponse;
 	}
@@ -1038,7 +1046,7 @@ export default class API {
 	 * @param songSlugOrId
 	 * @returns
 	 */
-	static async setSongAsPlayed(songSlugOrId: string | number): Promise<void> {
+	static async setSongAsPlayed(songSlugOrId: string | number): Promise<unknown> {
 		return API.fetch({
 			route: `/songs/${songSlugOrId}/played`,
 			errorMessage: 'Song update failed',
@@ -1052,7 +1060,7 @@ export default class API {
 	 * @param releaseSlugOrId
 	 * @returns
 	 */
-	static async setReleaseAsMaster(releaseSlugOrId: string | number): Promise<void> {
+	static async setReleaseAsMaster(releaseSlugOrId: string | number): Promise<unknown> {
 		return API.fetch({
 			route: `/releases/${releaseSlugOrId}/master`,
 			errorMessage: 'Release update failed',
@@ -1066,7 +1074,7 @@ export default class API {
 	 * @param trackSlugOrId
 	 * @returns
 	 */
-	static async setTrackAsMaster(trackSlugOrId: string | number): Promise<void> {
+	static async setTrackAsMaster(trackSlugOrId: string | number): Promise<unknown> {
 		return API.fetch({
 			route: `/tracks/${trackSlugOrId}/master`,
 			errorMessage: 'Track update failed',
