@@ -40,6 +40,9 @@
 		}, {
 			"name": "cookies-next",
 			"message": "Don't manage cookies 'by hand', use redux state to interact with them"
+		}, {
+			"name": "format-duration",
+			"message": "Use wrapper"
 		}]
 	}
 }

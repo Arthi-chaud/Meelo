@@ -60,7 +60,7 @@ export default class API {
 	private static isDev = () => process.env.NODE_ENV === 'development';
 
 	private static SSR_API_URL = process.env.ssrApiRoute!;
-	static defaultPageSize = 25;
+	static defaultPageSize = 35;
 
 	/**
 	 * @param credentials the credentials of the user to authenticate
@@ -651,7 +651,7 @@ export default class API {
 			key: ['album', albumSlugOrId, 'genres'],
 			exec: (pagination) => API.fetch({
 				route: `/albums/${albumSlugOrId}/genres`,
-				parameters: { include: [] }
+				parameters: { pagination, include: [] }
 			})
 		};
 	}
@@ -670,6 +670,25 @@ export default class API {
 			exec: () => API.fetch({
 				route: `/albums/${albumSlugOrId}/videos`,
 				parameters: { include }
+			})
+		};
+	}
+
+	/**
+	 * Get videos of an artist
+	 * @param artistSlugOrId the id of the artist
+	 * @returns A query for an array of tracks
+	 */
+	static getArtistVideos<I extends SongInclude[] = []>(
+		artistSlugOrId: string | number,
+		include?: I,
+		sort?: SortingParameters<typeof SongSortingKeys>,
+	): InfiniteQuery<SongWithVideoWithRelations<I>> {
+		return {
+			key: ['artist', artistSlugOrId, 'videos', sort ?? {}, ...API.formatIncludeKeys(include)],
+			exec: (pagination) => API.fetch({
+				route: `/artists/${artistSlugOrId}/videos`,
+				parameters: { pagination: pagination, include, sort }
 			})
 		};
 	}

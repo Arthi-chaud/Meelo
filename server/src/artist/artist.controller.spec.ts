@@ -22,7 +22,8 @@ import GenreModule from "src/genre/genre.module";
 import TestPrismaService from "test/test-prisma.service";
 import { LyricsModule } from "src/lyrics/lyrics.module";
 import FileModule from "src/file/file.module";
-import { expectedAlbumResponse, expectedArtistResponse, expectedSongResponse } from "test/expected-responses";
+import { expectedAlbumResponse, expectedArtistResponse, expectedSongResponse, expectedTrackResponse } from "test/expected-responses";
+import { SongWithVideoResponse } from "src/song/models/song-with-video.response";
 
 describe('Artist Controller', () => {
 	let dummyRepository: TestPrismaService;
@@ -184,6 +185,36 @@ describe('Artist Controller', () => {
 				.expect(404);
 		});
 		
+	});
+
+	describe('Get Artist\'s Videos (GET /artists/:id/videos)', () => {
+		it("should get all the artist's videos", () => {
+			return request(app.getHttpServer())
+				.get(`/artists/${dummyRepository.artistA.id}/videos`)
+				.expect(200)
+				.expect((res) => {
+					const songs: SongWithVideoResponse[] = res.body.items;
+					expect(songs.length).toBe(1);
+					expect(songs[0]).toStrictEqual({
+						...expectedSongResponse(dummyRepository.songA1),
+						video: expectedTrackResponse(dummyRepository.trackA1_2Video)
+					});
+				});
+		});
+		it("should get 0 videos", () => {
+			return request(app.getHttpServer())
+				.get(`/artists/${dummyRepository.artistC.id}/videos`)
+				.expect(200)
+				.expect((res) => {
+					const songs: SongWithVideoResponse[] = res.body.items;
+					expect(songs.length).toBe(0);
+				});
+		});
+		it("should return an error, as the artist does not exist", () => {
+			return request(app.getHttpServer())
+				.get(`/artists/-1/videos`)
+				.expect(404);
+		});
 	});
 
 	describe('Get Artist\'s Albums (GET /artists/:id/albums)', () => {
