@@ -12,7 +12,7 @@ const Genre = Resource.concat(yup.object({
 	slug: yup.string().required(),
 }));
 
-export type Genre = yup.InferType<typeof Genre>;
+type Genre = yup.InferType<typeof Genre>;
 
 export default Genre;
 

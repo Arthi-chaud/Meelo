@@ -69,7 +69,7 @@ const TrackWithRelations = <Selection extends TrackInclude | never = never>(
 
 type TrackWithRelations<Selection extends TrackInclude | never = never> =
 	// Union-ing with Track fixed type error coming from yup
-	Track & yup.InferType<ReturnType<typeof TrackWithRelations<Selection>>>
+	yup.InferType<ReturnType<typeof TrackWithRelations<Selection>>>
 
 export const TrackSortingKeys = [
 	'name',

@@ -2,7 +2,7 @@ import {
 	AlbumInclude, AlbumSortingKeys, AlbumType, AlbumWithRelations
 } from "../models/album";
 import Artist, { ArtistSortingKeys } from "../models/artist";
-import { Genre } from "../models/genre";
+import Genre from "../models/genre";
 import Library from "../models/library";
 import PaginatedResponse, { PaginationParameters } from "../models/pagination";
 import {
@@ -12,7 +12,7 @@ import {
 	SongInclude, SongSortingKeys, SongWithRelations, SongWithVideoWithRelations
 } from "../models/song";
 import {
-	TrackInclude, TrackSortingKeys, type TrackWithRelations
+	TrackInclude, TrackSortingKeys, TrackWithRelations
 } from "../models/track";
 import Tracklist from "../models/tracklist";
 import { SortingParameters } from "../utils/sorting";
@@ -23,10 +23,13 @@ import store from "../state/store";
 import File from "../models/file";
 import { InfiniteQuery, Query } from './use-query';
 import * as yup from 'yup';
+import Lyrics from "../models/lyrics";
 
-type AuthenticationResponse = {
-	access_token: string;
-}
+const AuthenticationResponse = yup.object({
+	access_token: yup.string().required()
+});
+
+type AuthenticationResponse = yup.InferType<typeof AuthenticationResponse>;
 
 type QueryParameters<Keys extends readonly string[]> = {
 	pagination?: PaginationParameters;
@@ -46,7 +49,7 @@ type FetchParameters<Keys extends readonly string[], ReturnType> = {
 	errorMessage?: string,
 	data?: Record<string, any>,
 	method?: 'GET' | 'PUT' | 'POST' | 'DELETE',
-	validator?: yup.Schema<ReturnType>
+	validator: yup.Schema<ReturnType>
 }
 
 export default class API {
@@ -74,7 +77,8 @@ export default class API {
 			data: credentials,
 			errorMessage: "Username or password is incorrect",
 			parameters: {},
-			method: 'POST'
+			method: 'POST',
+			validator: AuthenticationResponse
 		});
 	}
 
@@ -91,7 +95,8 @@ export default class API {
 				password: credentials.password
 			},
 			parameters: {},
-			method: 'POST'
+			method: 'POST',
+			validator: User
 		});
 	}
 
@@ -105,8 +110,9 @@ export default class API {
 			exec: (pagination) => API.fetch({
 				route: `/libraries`,
 				errorMessage: "Libraries could not be loaded",
-				parameters: { pagination: pagination, include: [] }
-			})
+				parameters: { pagination: pagination, include: [] },
+				validator: PaginatedResponse(Library)
+			}),
 		};
 	}
 
@@ -118,7 +124,8 @@ export default class API {
 		return API.fetch({
 			route: `/tasks/clean`,
 			errorMessage: "Library clean failed",
-			parameters: { }
+			parameters: { },
+			validator: LibraryTaskResponse
 		});
 	}
 
@@ -132,7 +139,8 @@ export default class API {
 		return API.fetch({
 			route: `/tasks/scan/${librarySlugOrId}`,
 			errorMessage: "Library scan failed",
-			parameters: { }
+			parameters: { },
+			validator: LibraryTaskResponse
 		});
 	}
 
@@ -146,7 +154,8 @@ export default class API {
 		return API.fetch({
 			route: `/tasks/clean/${librarySlugOrId}`,
 			errorMessage: "Library clean failed",
-			parameters: { }
+			parameters: { },
+			validator: LibraryTaskResponse
 		});
 	}
 
@@ -157,7 +166,8 @@ export default class API {
 	static scanLibraries(): Promise<LibraryTaskResponse> {
 		return API.fetch<LibraryTaskResponse, []>({
 			route: `/tasks/scan`,
-			parameters: { }
+			parameters: { },
+			validator: LibraryTaskResponse
 		});
 	}
 
@@ -171,7 +181,8 @@ export default class API {
 		return API.fetch({
 			route: `/tasks/refresh-metadata/${librarySlugOrId}`,
 			errorMessage: "Library refresh failed",
-			parameters: { }
+			parameters: { },
+			validator: LibraryTaskResponse
 		});
 	}
 
@@ -186,7 +197,8 @@ export default class API {
 			route: `/libraries/${librarySlugOrId}`,
 			errorMessage: "Library deletion failed",
 			parameters: { },
-			method: 'DELETE'
+			method: 'DELETE',
+			validator: yup.mixed()
 		});
 	}
 
@@ -203,8 +215,9 @@ export default class API {
 				route: `/artists`,
 				errorMessage: 'Artists could not be loaded',
 				parameters: { pagination: pagination, include: [], sort },
-				otherParameters: { albumArtistOnly: 'true' }
-			})
+				otherParameters: { albumArtistOnly: 'true' },
+				validator: PaginatedResponse(Artist)
+			}),
 		};
 	}
 
@@ -223,7 +236,8 @@ export default class API {
 				route: `/albums`,
 				errorMessage: 'Albums could not be loaded',
 				parameters: { pagination: pagination, include, sort },
-				otherParameters: { type }
+				otherParameters: { type },
+				validator: PaginatedResponse(AlbumWithRelations(include ?? []))
 			})
 		};
 	}
@@ -243,7 +257,8 @@ export default class API {
 				route: `/libraries/${librarySlugOrId}/artists`,
 				errorMessage: 'Library does not exist',
 				parameters: { pagination: pagination, sort },
-				otherParameters: { albumArtistOnly: true }
+				otherParameters: { albumArtistOnly: true },
+				validator: PaginatedResponse(Artist)
 			})
 		};
 	}
@@ -265,7 +280,8 @@ export default class API {
 				route: `/libraries/${librarySlugOrId}/albums`,
 				errorMessage: 'Library does not exist',
 				parameters: { pagination: pagination, include, sort },
-				otherParameters: { type }
+				otherParameters: { type },
+				validator: PaginatedResponse(AlbumWithRelations(include ?? []))
 			})
 		};
 	}
@@ -306,7 +322,8 @@ export default class API {
 			exec: (pagination) => API.fetch({
 				route: `/libraries/${librarySlugOrId}/videos`,
 				errorMessage: 'Library does not exist',
-				parameters: { pagination: pagination, include, sort }
+				parameters: { pagination: pagination, include, sort },
+				validator: PaginatedResponse(SongWithVideoWithRelations(include ?? []))
 			})
 		};
 	}
@@ -324,7 +341,8 @@ export default class API {
 			exec: (pagination) => API.fetch({
 				route: `/songs`,
 				errorMessage: 'Songs could not be loaded',
-				parameters: { pagination: pagination, include, sort }
+				parameters: { pagination: pagination, include, sort },
+				validator: PaginatedResponse(SongWithRelations(include ?? []))
 			})
 		};
 	}
@@ -342,7 +360,8 @@ export default class API {
 			exec: (pagination) => API.fetch({
 				route: `/songs/videos`,
 				errorMessage: 'Songs could not be loaded',
-				parameters: { pagination: pagination, include, sort }
+				parameters: { pagination: pagination, include, sort },
+				validator: PaginatedResponse(SongWithVideoWithRelations(include ?? []))
 			})
 		};
 	}
@@ -363,7 +382,8 @@ export default class API {
 				route: `/artists/${artistSlugOrId}/albums`,
 				errorMessage: `Artist '${artistSlugOrId}' not found`,
 				parameters: { pagination: pagination, include, sort },
-				otherParameters: { type }
+				otherParameters: { type },
+				validator: PaginatedResponse(AlbumWithRelations(include ?? []))
 			})
 		};
 	}
@@ -382,7 +402,8 @@ export default class API {
 			exec: (pagination) => API.fetch({
 				route: `/artists/${artistSlugOrId}/songs`,
 				errorMessage: `Artist '${artistSlugOrId}' not found`,
-				parameters: { pagination: pagination, include, sort }
+				parameters: { pagination: pagination, include, sort },
+				validator: PaginatedResponse(SongWithRelations(include ?? []))
 			})
 		};
 	}
@@ -400,7 +421,8 @@ export default class API {
 			key: ['song', songSlugOrId, ...API.formatIncludeKeys(include)],
 			exec: () => API.fetch({
 				route: `/songs/${songSlugOrId}`,
-				parameters: { include }
+				parameters: { include },
+				validator: SongWithRelations(include ?? [])
 			})
 		};
 	}
@@ -419,7 +441,8 @@ export default class API {
 			key: ['song', songSlugOrId, 'master', ...API.formatIncludeKeys(include)],
 			exec: () => API.fetch({
 				route: `/songs/${songSlugOrId}/master`,
-				parameters: { include }
+				parameters: { include },
+				validator: TrackWithRelations(include ?? [])
 			})
 		};
 	}
@@ -438,7 +461,8 @@ export default class API {
 			key: ['track', trackId, ...API.formatIncludeKeys(include)],
 			exec: () => API.fetch({
 				route: `/tracks/${trackId}`,
-				parameters: { include }
+				parameters: { include },
+				validator: TrackWithRelations(include ?? [])
 			})
 		};
 	}
@@ -456,7 +480,8 @@ export default class API {
 			key: ['file', sourceFileId],
 			exec: () => API.fetch({
 				route: `/files/${sourceFileId}`,
-				parameters: { include: [] }
+				parameters: { include: [] },
+				validator: File
 			})
 		};
 	}
@@ -476,7 +501,8 @@ export default class API {
 			exec: () => API.fetch({
 				route: `/albums/${albumSlugOrId}`,
 				errorMessage: "Album not found",
-				parameters: { include }
+				parameters: { include },
+				validator: AlbumWithRelations(include ?? [])
 			})
 		};
 	}
@@ -490,7 +516,8 @@ export default class API {
 			key: ['user'],
 			exec: () => API.fetch({
 				route: `/users/me`,
-				parameters: { }
+				parameters: { },
+				validator: User
 			})
 		};
 	}
@@ -507,7 +534,8 @@ export default class API {
 			exec: (pagination) => API.fetch({
 				route: `/users`,
 				errorMessage: 'Users could not be loaded',
-				parameters: { pagination: pagination, include: [], sort }
+				parameters: { pagination: pagination, include: [], sort },
+				validator: PaginatedResponse(User)
 			})
 		};
 	}
@@ -527,7 +555,8 @@ export default class API {
 			errorMessage: 'User could not be updated',
 			data: updatedFields,
 			parameters: {},
-			method: 'PUT'
+			method: 'PUT',
+			validator: User
 		});
 	}
 
@@ -542,7 +571,8 @@ export default class API {
 			route: `/users/${userId}`,
 			errorMessage: 'User could not be deleted',
 			parameters: {},
-			method: 'DELETE'
+			method: 'DELETE',
+			validator: User
 		});
 	}
 
@@ -560,7 +590,8 @@ export default class API {
 			key: ['album', albumSlugOrId, 'master', ...API.formatIncludeKeys(include)],
 			exec: () => API.fetch({
 				route: `/albums/${albumSlugOrId}/master`,
-				parameters: { include }
+				parameters: { include },
+				validator: ReleaseWithRelations(include ?? [])
 			})
 		};
 	}
@@ -580,7 +611,8 @@ export default class API {
 			key: ['song', songSlugOrId, 'tracks', sort ?? {}, ...API.formatIncludeKeys(include)],
 			exec: (pagination) => API.fetch({
 				route: `/songs/${songSlugOrId}/tracks`,
-				parameters: { pagination: pagination, include, sort }
+				parameters: { pagination: pagination, include, sort },
+				validator: PaginatedResponse(TrackWithRelations(include ?? []))
 			})
 		};
 	}
@@ -600,7 +632,8 @@ export default class API {
 			key: ['song', songSlugOrId, 'videos', sort ?? {}, ...API.formatIncludeKeys(include)],
 			exec: (pagination) => API.fetch({
 				route: `/songs/${songSlugOrId}/videos`,
-				parameters: { pagination: pagination, include, sort }
+				parameters: { pagination: pagination, include, sort },
+				validator: PaginatedResponse(TrackWithRelations(include ?? []))
 			})
 		};
 	}
@@ -620,7 +653,8 @@ export default class API {
 			key: ['song', songSlugOrId, 'versions', sort ?? {}, ...API.formatIncludeKeys(include)],
 			exec: (pagination) => API.fetch({
 				route: `/songs/${songSlugOrId}/versions`,
-				parameters: { pagination: pagination, include, sort }
+				parameters: { pagination: pagination, include, sort },
+				validator: PaginatedResponse(SongWithRelations(include ?? []))
 			})
 		};
 	}
@@ -637,7 +671,8 @@ export default class API {
 			key: ['song', songSlugOrId, 'genres'],
 			exec: (pagination) => API.fetch({
 				route: `/songs/${songSlugOrId}/genres`,
-				parameters: { pagination: pagination, include: [] }
+				parameters: { pagination: pagination, include: [] },
+				validator: PaginatedResponse(Genre)
 			})
 		};
 	}
@@ -654,7 +689,8 @@ export default class API {
 			key: ['album', albumSlugOrId, 'genres'],
 			exec: (pagination) => API.fetch({
 				route: `/albums/${albumSlugOrId}/genres`,
-				parameters: { pagination, include: [] }
+				parameters: { pagination, include: [] },
+				validator: PaginatedResponse(Genre)
 			})
 		};
 	}
@@ -672,7 +708,8 @@ export default class API {
 			key: ['album', albumSlugOrId, 'videos', ...API.formatIncludeKeys(include)],
 			exec: () => API.fetch({
 				route: `/albums/${albumSlugOrId}/videos`,
-				parameters: { include }
+				parameters: { include },
+				validator: yup.array(TrackWithRelations(include ?? []).required()).required()
 			})
 		};
 	}
@@ -691,7 +728,8 @@ export default class API {
 			key: ['artist', artistSlugOrId, 'videos', sort ?? {}, ...API.formatIncludeKeys(include)],
 			exec: (pagination) => API.fetch({
 				route: `/artists/${artistSlugOrId}/videos`,
-				parameters: { pagination: pagination, include, sort }
+				parameters: { pagination: pagination, include, sort },
+				validator: PaginatedResponse(SongWithVideoWithRelations(include ?? []))
 			})
 		};
 	}
@@ -710,7 +748,8 @@ export default class API {
 			key: ['album', albumSlugOrId, 'releases', sort ?? {}, ...API.formatIncludeKeys(include)],
 			exec: (pagination) => API.fetch({
 				route: `/albums/${albumSlugOrId}/releases`,
-				parameters: { include, pagination: pagination, sort }
+				parameters: { include, pagination: pagination, sort },
+				validator: PaginatedResponse(ReleaseWithRelations(include ?? []))
 			})
 		};
 	}
@@ -729,7 +768,8 @@ export default class API {
 			exec: () => API.fetch({
 				route: `/releases/${slugOrId}`,
 				errorMessage: 'Release not found',
-				parameters: { include }
+				parameters: { include },
+				validator: ReleaseWithRelations(include ?? [])
 			})
 		};
 	}
@@ -765,7 +805,8 @@ export default class API {
 			key: ['release', slugOrId, 'playlist', ...API.formatIncludeKeys(include)],
 			exec: () => API.fetch({
 				route: `/releases/${slugOrId.toString()}/playlist`,
-				parameters: { include }
+				parameters: { include },
+				validator: yup.array(TrackWithRelations(include ?? [])).required()
 			})
 		};
 	}
@@ -780,10 +821,11 @@ export default class API {
 	): Query<string[] | null> {
 		return {
 			key: ['song', slugOrId, 'lyrics'],
-			exec: () => API.fetch<{ lyrics: string }, []>({
+			exec: () => API.fetch({
 				route: `/songs/${slugOrId}/lyrics`,
 				errorMessage: 'Lyrics loading failed',
-				parameters: { }
+				parameters: { },
+				validator: Lyrics
 			})
 				.then((value) => value.lyrics.split('\n'))
 				.catch(() => null)
@@ -803,7 +845,8 @@ export default class API {
 			exec: () => API.fetch({
 				route: `/artists/${slugOrId}`,
 				errorMessage: 'Artist could not be loaded',
-				parameters: { }
+				parameters: { },
+				validator: Artist
 			})
 		};
 	}
@@ -820,8 +863,9 @@ export default class API {
 			exec: (pagination) => API.fetch({
 				route: `/genres`,
 				errorMessage: 'Genres could not be loaded',
-				parameters: { pagination: pagination, include: [], sort }
-			})
+				parameters: { pagination: pagination, include: [], sort },
+				validator: PaginatedResponse(Genre)
+			}),
 		};
 	}
 
@@ -836,7 +880,8 @@ export default class API {
 			exec: () => API.fetch({
 				route: `/genres/${idOrSlug}`,
 				errorMessage: 'Genre not found',
-				parameters: {}
+				parameters: {},
+				validator: Genre
 			})
 		};
 	}
@@ -857,7 +902,8 @@ export default class API {
 				route: `/genres/${idOrSlug}/albums`,
 				errorMessage: 'Genre not found',
 				parameters: { pagination: pagination, include: ['artist'], sort },
-				otherParameters: { type }
+				otherParameters: { type },
+				validator: PaginatedResponse(AlbumWithRelations(['artist']))
 			})
 		};
 	}
@@ -876,7 +922,8 @@ export default class API {
 			exec: (pagination) => API.fetch({
 				route: `/genres/${idOrSlug}/artists`,
 				errorMessage: 'Genre not found',
-				parameters: { pagination: pagination, include: [], sort }
+				parameters: { pagination: pagination, include: [], sort },
+				validator: PaginatedResponse(Artist)
 			})
 		};
 	}
@@ -895,7 +942,8 @@ export default class API {
 			exec: (pagination) => API.fetch({
 				route: `/genres/${idOrSlug}/songs`,
 				errorMessage: 'Genre not found',
-				parameters: { pagination: pagination, include: ['artist'], sort }
+				parameters: { pagination: pagination, include: ['artist'], sort },
+				validator: PaginatedResponse(SongWithRelations(['artist']))
 			})
 		};
 	}
@@ -914,7 +962,8 @@ export default class API {
 			exec: (pagination) => API.fetch({
 				route: `/search/artists/${query}`,
 				errorMessage: 'Search failed',
-				parameters: { pagination: pagination, sort }
+				parameters: { pagination: pagination, sort },
+				validator: PaginatedResponse(Artist)
 			})
 		};
 	}
@@ -936,7 +985,8 @@ export default class API {
 				route: `/search/albums/${query}`,
 				errorMessage: 'Search failed',
 				parameters: { pagination: pagination, include, sort },
-				otherParameters: { type }
+				otherParameters: { type },
+				validator: PaginatedResponse(AlbumWithRelations(include ?? []))
 			})
 		};
 	}
@@ -956,8 +1006,9 @@ export default class API {
 			exec: (pagination) => API.fetch({
 				route: `/search/songs/${query}`,
 				errorMessage: 'Search failed',
-				parameters: { pagination: pagination, include, sort }
-			})
+				parameters: { pagination: pagination, include, sort },
+				validator: PaginatedResponse(SongWithRelations(include ?? []))
+			}),
 		};
 	}
 
@@ -1051,7 +1102,8 @@ export default class API {
 			route: `/songs/${songSlugOrId}/played`,
 			errorMessage: 'Song update failed',
 			parameters: {},
-			method: 'PUT'
+			method: 'PUT',
+			validator: yup.mixed()
 		});
 	}
 
@@ -1065,7 +1117,8 @@ export default class API {
 			route: `/releases/${releaseSlugOrId}/master`,
 			errorMessage: 'Release update failed',
 			parameters: {},
-			method: 'PUT'
+			method: 'PUT',
+			validator: yup.mixed()
 		});
 	}
 
@@ -1079,7 +1132,8 @@ export default class API {
 			route: `/tracks/${trackSlugOrId}/master`,
 			errorMessage: 'Track update failed',
 			parameters: {},
-			method: 'PUT'
+			method: 'PUT',
+			validator: yup.mixed()
 		});
 	}
 
