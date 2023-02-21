@@ -90,7 +90,7 @@ const prepareMeeloInfiniteQuery = <QueryReturnType = unknown, Params extends any
 				.then((result): Page<QueryReturnType> => ({
 					pageSize: result.items.length,
 					items: result.items,
-					index: result.metadata.page,
+					index: result.metadata.page ?? 0,
 					end: result.metadata.next === null
 				})),
 		enabled: enabled,
