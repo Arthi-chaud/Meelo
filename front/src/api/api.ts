@@ -9,8 +9,9 @@ import {
 	ReleaseInclude, ReleaseSortingKeys, ReleaseWithRelations
 } from "../models/release";
 import {
-	SongInclude, SongSortingKeys, SongWithRelations, SongWithVideoWithRelations
+	SongInclude, SongSortingKeys, SongWithRelations
 } from "../models/song";
+import { SongWithVideoWithRelations } from "../models/song-with-video";
 import {
 	TrackInclude, TrackSortingKeys, TrackWithRelations
 } from "../models/track";

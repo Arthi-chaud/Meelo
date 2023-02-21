@@ -1,6 +1,7 @@
 import { useRouter } from "next/router";
 import { useState } from "react";
-import { SongSortingKeys, SongWithVideoWithRelations } from "../../../models/song";
+import { SongSortingKeys } from "../../../models/song";
+import { SongWithVideoWithRelations } from "../../../models/song-with-video";
 import Controls, { OptionState } from "../../controls/controls";
 import InfiniteView from "../infinite-view";
 import InfiniteResourceViewProps from "./infinite-resource-view-props";
