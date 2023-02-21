@@ -34,6 +34,10 @@
 			"importNames": ["Modal"],
 			"message": "Use 'confirm' from 'material-ui-confirm'"
 		}, {
+			"name": "@mui/material",
+			"importNames": ["ThemeProvider"],
+			"message": "Use wrapper from theme/provider"
+		},{
 			"name": "next",
 			"importNames": ["GetServerSidePropsContext", "InferGetServerSidePropsType"],
 			"message": "Use wrapper functions provided by src/ssr"
