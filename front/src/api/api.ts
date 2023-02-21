@@ -24,7 +24,6 @@ import store from "../state/store";
 import File from "../models/file";
 import { InfiniteQuery, Query } from './use-query';
 import * as yup from 'yup';
-import Lyrics from "../models/lyrics";
 import { RequireExactlyOne } from "type-fest";
 
 const AuthenticationResponse = yup.object({
@@ -830,10 +829,8 @@ export default class API {
 				route: `/songs/${slugOrId}/lyrics`,
 				errorMessage: 'Lyrics loading failed',
 				parameters: { },
-				validator: Lyrics
-			})
-				.then((value) => value.lyrics.split('\n'))
-				.catch(() => null)
+				customValidator: async (value) => (value as { lyrics: string }).lyrics.split('\n')
+			}).catch(() => null)
 		};
 	}
 
@@ -1069,7 +1066,7 @@ export default class API {
 		} catch (err) {
 			// eslint-disable-next-line no-console
 			console.error(err);
-			throw new Error("Error while parsing Server's response");
+			throw new Error("Error: Invalid Response Type");
 		}
 		return jsonResponse;
 	}

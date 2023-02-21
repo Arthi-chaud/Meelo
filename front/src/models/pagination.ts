@@ -32,7 +32,7 @@ const PaginatedResponse = <T>(itemType: yup.Schema<T>) => yup.object({
 		/**
 		 * The current page number
 		 */
-		page: yup.number().required(),
+		page: yup.number().required().nullable(),
 	})
 });
 

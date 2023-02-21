@@ -295,7 +295,7 @@ const ExpandedPlayerControls = (
 						{ panel == 'lyrics' && props.track && (!parentSong.data ?
 							<WideLoadingComponent/> :
 							<LyricsBox
-								lyrics={parentSong.data.lyrics?.lyrics.split('\n')}
+								lyrics={parentSong.data.lyrics?.content.split('\n')}
 								songName={props.track.name}
 							/>)
 						}
