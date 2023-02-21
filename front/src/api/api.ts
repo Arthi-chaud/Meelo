@@ -24,6 +24,7 @@ import File from "../models/file";
 import { InfiniteQuery, Query } from './use-query';
 import * as yup from 'yup';
 import Lyrics from "../models/lyrics";
+import { RequireExactlyOne } from "type-fest";
 
 const AuthenticationResponse = yup.object({
 	access_token: yup.string().required()
@@ -49,8 +50,10 @@ type FetchParameters<Keys extends readonly string[], ReturnType> = {
 	errorMessage?: string,
 	data?: Record<string, any>,
 	method?: 'GET' | 'PUT' | 'POST' | 'DELETE',
-	validator: yup.Schema<ReturnType>
-}
+} & RequireExactlyOne<{
+	validator: yup.Schema<ReturnType>,
+	customValidator: (value: unknown) => Promise<ReturnType>
+}>
 
 export default class API {
 	/**
@@ -782,12 +785,13 @@ export default class API {
 	static getReleaseTrackList<I extends TrackInclude>(
 		slugOrId: string | number,
 		include?: I[]
-	): Query<Tracklist<TrackWithRelations<I>>> {
+	) {
 		return {
 			key: ['release', slugOrId, 'tracklist', ...API.formatIncludeKeys(include)],
 			exec: () => API.fetch({
 				route: `/releases/${slugOrId.toString()}/tracklist`,
-				parameters: { include }
+				parameters: { include },
+				customValidator: Tracklist(include ?? [])
 			})
 		};
 	}
@@ -1014,7 +1018,7 @@ export default class API {
 
 	private static async fetch<ReturnType, Keys extends readonly string[]>({
 		route, parameters, otherParameters,
-		errorMessage, data, method, validator
+		errorMessage, data, method, validator, customValidator
 	}: FetchParameters<Keys, ReturnType>): Promise<ReturnType> {
 		const accessToken = store.getState().user.accessToken;
 		const header = {
@@ -1054,9 +1058,17 @@ export default class API {
 				throw new Error(errorMessage ?? jsonResponse.message ?? response.statusText);
 			}
 		}
-		if (validator) {
-			return validator.validate(jsonResponse)
-				.then((validated) => validator.cast(validated));
+		try {
+			if (customValidator) {
+				return await customValidator(jsonResponse);
+			}
+			const validated = await validator.validate(jsonResponse);
+
+			return validator.cast(validated);
+		} catch (err) {
+			// eslint-disable-next-line no-console
+			console.error(err);
+			throw new Error("Error while parsing Server's response");
 		}
 		return jsonResponse;
 	}

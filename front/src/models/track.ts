@@ -60,16 +60,17 @@ export default Track;
 
 export type TrackInclude = 'song' | 'release';
 
-const TrackWithRelations = <Selection extends TrackInclude | never = never>(
-	relation: Selection[]
-) => Track.concat(yup.object({
-		song: Song.required(),
-		release: Release.required()
-	}).pick(relation));
+const TrackRelations = yup.object({
+	song: Song.required(),
+	release: Release.required()
+});
 
-type TrackWithRelations<Selection extends TrackInclude | never = never> =
-	// Union-ing with Track fixed type error coming from yup
-	yup.InferType<ReturnType<typeof TrackWithRelations<Selection>>>
+const TrackWithRelations = <Selection extends TrackInclude | never>(
+	relation: Selection[]
+) => Track.concat(TrackRelations.pick(relation).clone());
+
+type TrackWithRelations<Selection extends TrackInclude | never> =
+	yup.InferType<ReturnType<typeof TrackWithRelations<Selection>>>;
 
 export const TrackSortingKeys = [
 	'name',
