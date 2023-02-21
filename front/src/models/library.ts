@@ -1,15 +1,18 @@
+import * as yup from 'yup';
 import Resource from "./resource";
 
-type Library = Resource & {
+const Library = Resource.concat(yup.object({
 	/**
 	 * Title of the library
 	 */
-	name: string;
+	name: yup.string().required(),
 	/**
 	 * Slug of the library
 	 * Unique identifier
 	 */
-	slug: string;
-}
+	slug: yup.string().required(),
+}));
+
+type Library = yup.InferType<typeof Library>;
 
 export default Library;

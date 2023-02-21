@@ -10,8 +10,8 @@ import { useQueryClient } from "../../api/use-query";
 import { useState } from "react";
 
 type SongItemProps = {
-	song: SongWithRelations<['artist']>;
-	formatSubtitle?: (song: SongWithRelations<['artist']>) => Promise<string>;
+	song: SongWithRelations<'artist'>;
+	formatSubtitle?: (song: SongWithRelations<'artist'>) => Promise<string>;
 }
 
 /**

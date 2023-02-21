@@ -8,8 +8,8 @@ import { playTrack } from "../../state/playerSlice";
 import formatDuration from "../../utils/formatDuration";
 
 type VideoTileProps = {
-	video: TrackWithRelations<['song']>;
-	formatSubtitle?: (video: TrackWithRelations<['song']>) => string
+	video: TrackWithRelations<'song'>;
+	formatSubtitle?: (video: TrackWithRelations<'song'>) => string
 }
 
 const VideoTile = ({ video, formatSubtitle }: VideoTileProps) => {

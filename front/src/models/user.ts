@@ -1,10 +1,13 @@
+import * as yup from 'yup';
 import Resource from "./resource";
 
-type User = Resource & {
-	name: string;
-	enabled: boolean;
-	admin: boolean;
-}
+const User = Resource.concat(yup.object({
+	name: yup.string().required(),
+	enabled: yup.boolean().required(),
+	admin: yup.boolean().required(),
+}));
+
+type User = yup.InferType<typeof User>;
 
 export const UserSortingKeys = [
 	'id',

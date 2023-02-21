@@ -91,11 +91,11 @@ const ArtistPage = (
 			{ topSongs.data?.pages.at(0)?.items.length != 0 && <>
 				<SectionHeader
 					heading="Top Songs"
-					trailing={(topSongs.data?.pages.at(0)?.items.length ?? 0) > songListSize &&
+					trailing={(topSongs.data?.pages.at(0)?.items.length ?? 0) > songListSize ?
 						<Link href={`/artists/${artistIdentifier}/songs`}>
 							<Button variant='contained' endIcon={<ArrowRight/>}
 								sx={{ textTransform: 'none', fontWeight: 'bold' }}>See all</Button>
-						</Link>
+						</Link> : undefined
 					}
 				/>
 				<Grid item container spacing={2}
@@ -126,13 +126,13 @@ const ArtistPage = (
 			{ latestAlbums.data?.pages.at(0)?.items.length != 0 && <>
 				<SectionHeader
 					heading="Albums"
-					trailing={(latestAlbums.data?.pages.at(0)?.items.length ?? 0) > albumListSize &&
+					trailing={(latestAlbums.data?.pages.at(0)?.items.length ?? 0) > albumListSize ?
 						<Link href={`/artists/${artistIdentifier}/albums`}>
 							<Button variant='contained' endIcon={<ArrowRight/>}
 								sx={{ textTransform: 'none', fontWeight: 'bold' }}>
 								See all
 							</Button>
-						</Link>
+						</Link> : undefined
 					}
 				/>
 				<Grid item sx={{ overflowX: 'clip', width: '100%' }}>
@@ -143,6 +143,7 @@ const ArtistPage = (
 								album={{ ...album, artist: artist.data }}
 								formatSubtitle={(albumItem) => getYear(albumItem.releaseDate)?.toString() ?? ''}
 							/>)
+						?? []
 					}/>
 				</Grid>
 			</>
@@ -150,13 +151,13 @@ const ArtistPage = (
 			{ videos.data.pages.at(0)?.items.length != 0 && <>
 				<SectionHeader
 					heading="Top Videos"
-					trailing={(videos.data.pages.at(0)?.items.length ?? 0) > albumListSize &&
+					trailing={(videos.data.pages.at(0)?.items.length ?? 0) > albumListSize ?
 						<Link href={`/artists/${artistIdentifier}/videos`}>
 							<Button variant='contained' endIcon={<ArrowRight/>}
 								sx={{ textTransform: 'none', fontWeight: 'bold' }}>
 								See all
 							</Button>
-						</Link>
+						</Link> : undefined
 					}
 				/>
 				<Grid item sx={{ overflowX: 'clip', width: '100%' }}>
@@ -165,7 +166,7 @@ const ArtistPage = (
 							key={video.id}
 							video={{ ...video, song }}
 							formatSubtitle={(item) => formatDuration(item.duration).toString()}
-						/>)
+						/>) ?? []
 					}/>
 				</Grid>
 			</>

@@ -1,14 +1,15 @@
 import { useRouter } from "next/router";
 import { useState } from "react";
-import { SongSortingKeys, SongWithVideoWithRelations } from "../../../models/song";
+import { SongSortingKeys } from "../../../models/song";
+import { SongWithVideoWithRelations } from "../../../models/song-with-video";
 import Controls, { OptionState } from "../../controls/controls";
 import InfiniteView from "../infinite-view";
 import InfiniteResourceViewProps from "./infinite-resource-view-props";
 import VideoTile from "../../tile/video-tile";
 
 const InfiniteVideoView = (
-	props: InfiniteResourceViewProps<SongWithVideoWithRelations<['artist']>, typeof SongSortingKeys> & {
-		formatSubtitle?: (video: SongWithVideoWithRelations<['artist']>) => string
+	props: InfiniteResourceViewProps<SongWithVideoWithRelations<'artist'>, typeof SongSortingKeys> & {
+		formatSubtitle?: (video: SongWithVideoWithRelations<'artist'>) => string
 	}
 ) => {
 	const router = useRouter();
@@ -30,12 +31,15 @@ const InfiniteVideoView = (
 				sortBy: options?.sortBy ?? 'name',
 				order: options?.order ?? 'asc',
 			})}
-			renderListItem={(item: SongWithVideoWithRelations<['artist']>) => <></>}
-			renderGridItem={(item: SongWithVideoWithRelations<['artist']>) =>
+			renderListItem={(item: SongWithVideoWithRelations<'artist'>) => <></>}
+			renderGridItem={(item: SongWithVideoWithRelations<'artist'>) =>
 				<VideoTile video={{
 					...item.video,
 					song: item
-				}} formatSubtitle={() => props.formatSubtitle(item)} />
+				}} formatSubtitle={props.formatSubtitle
+					? () => (props.formatSubtitle as Required<typeof props>['formatSubtitle'])(item)
+					: undefined
+				} />
 			}
 		/>
 	</>;

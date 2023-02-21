@@ -8,7 +8,7 @@ type SectionHeaderProps<T> = {
 /**
  * A scrollable row (possibly of tiles) with a header with a 'more' button
  */
-const SectionHeader = <T,>(props: SectionHeaderProps<T>) => {
+const SectionHeader = <T, >(props: SectionHeaderProps<T>) => {
 	return <Grid item sx={{
 		display: 'flex', flexGrow: 1,
 		justifyContent: 'space-between', alignItems: 'center'

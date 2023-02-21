@@ -1,5 +1,13 @@
-import Track from './track';
+import MapValidator from '../utils/map-validator';
+import Track, { TrackInclude, TrackWithRelations } from './track';
+import * as yup from 'yup';
 
-type Tracklist<T extends Track = Track> = Record<string | '?', T[]>;
+const Tracklist = <Selection extends TrackInclude | never>(selection: Selection[]) =>
+	MapValidator(
+		yup.string().required(),
+		yup.array(TrackWithRelations(selection).required()).required()
+	);
+
+type Tracklist<T extends Track> = Record<string | '?', T[]>;
 
 export default Tracklist;

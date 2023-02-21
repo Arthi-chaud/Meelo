@@ -14,7 +14,7 @@ import { SongWithRelations } from "../../models/song";
 import { useQueryClient } from "../../api/use-query";
 
 type SongContextualMenuProps = {
-	song: SongWithRelations<['artist']>;
+	song: SongWithRelations<'artist'>;
 	onSelect?: () => void;
 }
 

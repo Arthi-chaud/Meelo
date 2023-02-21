@@ -1,3 +1,4 @@
+import * as yup from 'yup';
 import Album from "./album";
 import Illustration from "./illustration";
 import Resource from "./resource";
@@ -5,48 +6,51 @@ import Resource from "./resource";
 /**
  * A version of an album
  */
-type Release = Resource & Illustration & {
+const Release = Resource.concat(Illustration).concat(yup.object({
 	/**
 	 * The title of the release
 	 */
-	name: string;
+	name: yup.string().required(),
 	/**
 	 * The unique ID of the release
 	 */
-	id: number;
+	id: yup.number().required(),
 	/**
 	 * The slug of the release
 	 * To be used with the parent's artist's slug and the parent album's slug:
 	 * ${artistSlug}+${albumSlug}+${releaseSlug}
 	 */
-	slug: string;
+	slug: yup.string().required(),
 	/**
 	 * Unique identifier of the parent album
 	 */
-	albumId: number;
+	albumId: yup.number().required(),
 	/**
 	 * Date the release was *released*
 	 */
-	releaseDate?: Date;
-}
+	releaseDate: yup.date().required().nullable()
+}));
 
-type ReleaseInclude = 'album';
-
-type ReleaseWithRelations<
-	I extends K[],
-	K extends ReleaseInclude = ReleaseInclude
-> = Release & Pick<
-	{ album: Album },
-	I[number]
->;
-
-type B = ReleaseWithRelations<any>['album'];
+type Release = yup.InferType<typeof Release>;
 
 export default Release;
+
+export type ReleaseInclude = 'album';
+
+const ReleaseWithRelations = <Selection extends ReleaseInclude | never = never>(
+	relation: Selection[]
+) => Release.concat(yup.object({
+		album: Album.required()
+	}).pick(relation));
+
+type ReleaseWithRelations<Selection extends ReleaseInclude | never = never> =
+	yup.InferType<ReturnType<typeof ReleaseWithRelations<Selection>>>
+
+export { ReleaseWithRelations };
+
 export const ReleaseSortingKeys = [
 	'name',
 	'releaseDate',
 	'trackCount',
 	'addDate'
 ] as const;
-export type { ReleaseWithRelations, ReleaseInclude };

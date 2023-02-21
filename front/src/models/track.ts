@@ -1,63 +1,77 @@
+import * as yup from 'yup';
 import Illustration from "./illustration";
 import Release from "./release";
 import Resource from "./resource";
 import Song from "./song";
 
+export const TrackType = ['Audio', 'Video'] as const;
+export type TrackType = typeof TrackType[number];
+
 /**
  * 'Instance' of a song on a release
  */
-type Track = Resource & Illustration & {
+const Track = Resource.concat(Illustration).concat(yup.object({
 	/**
 	 * Unique identifier of the parent song
 	 */
-	songId: number;
+	songId: yup.number().required(),
 	/**
 	 * Unique identifier of the parent release
 	 */
-	releaseId: number;
+	releaseId: yup.number().required(),
 	/**
 	 * Title of the track
 	 */
-	name: string;
+	name: yup.string().required(),
 	/**
 	 * Index of the disc the track is on
 	 */
-	discIndex?: number;
+	discIndex: yup.number().required().nullable(),
 	/**
 	 * Index of the track on the disc
 	 */
-	trackIndex?: number;
+	trackIndex: yup.number().required(),
 	/**
 	 * Type of media
 	 */
-	type: 'Audio' | 'Video';
+	type: yup.mixed<TrackType>().oneOf(TrackType).required(),
 	/**
 	 * Bit rate of the track's audio.
 	 * In kbits/s
 	 */
-	bitrate: number;
+	bitrate: yup.number().required(),
 	/**
 	 * Duration in seconds of the track
 	 */
-	duration: number;
+	duration: yup.number().required(),
 	/**
 	 * URL to stream track
 	 */
-	stream: string;
+	stream: yup.string().required(),
 	/**
 	 * ID of the source file
 	 */
-	sourceFileId: number;
-}
+	sourceFileId: yup.number().required(),
+}));
 
-type TrackInclude = 'song' | 'release';
-
-type TrackWithRelations<I extends K[], K extends TrackInclude = TrackInclude> = Track & Pick<
-	{ song: Song, release: Release },
-	I[number]
->
+type Track = yup.InferType<typeof Track>;
 
 export default Track;
+
+export type TrackInclude = 'song' | 'release';
+
+const TrackRelations = yup.object({
+	song: Song.required(),
+	release: Release.required()
+});
+
+const TrackWithRelations = <Selection extends TrackInclude | never>(
+	relation: Selection[]
+) => Track.concat(TrackRelations.pick(relation).clone());
+
+type TrackWithRelations<Selection extends TrackInclude | never> =
+	yup.InferType<ReturnType<typeof TrackWithRelations<Selection>>>;
+
 export const TrackSortingKeys = [
 	'name',
 	'releaseName',
@@ -67,4 +81,5 @@ export const TrackSortingKeys = [
 	'trackIndex',
 	'discIndex'
 ] as const;
-export type { TrackWithRelations, TrackInclude };
+
+export { TrackWithRelations };

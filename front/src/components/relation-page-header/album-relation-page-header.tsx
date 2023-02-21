@@ -9,7 +9,7 @@ import { AlbumWithRelations } from "../../models/album";
 
 type AlbumRelationPageHeaderProps = RequireExactlyOne<{
 	albumSlugOrId: number | string;
-	album: AlbumWithRelations<['artist']>;
+	album: AlbumWithRelations<'artist'>;
 }>
 
 const AlbumRelationPageHeader = (props: AlbumRelationPageHeaderProps) => {

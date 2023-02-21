@@ -1,57 +1,52 @@
+import * as yup from 'yup';
 import Artist from "./artist";
 import Illustration from "./illustration";
 import Lyrics from "./lyrics";
 import Resource from "./resource";
-import Track from "./track";
 
 /**
  * Abstract data model, instanciated by tracks
  */
-type Song = Resource & Illustration & {
+const Song = Resource.concat(Illustration).concat(yup.object({
 	/**
 	 * title of the song
 	 */
-	name: string;
+	name: yup.string().required(),
 	/*
 	 * The slug of the release
 	 * To be used with the parent's artist's slug:
 	 * ${artistSlug}+${songSlug}
 	 */
-	slug: string;
+	slug: yup.string().required(),
 	/**
 	 * Unique identifier of the parent artist
 	 */
-	artistId: number;
+	artistId: yup.number().required(),
 	/**
 	 * Number of times the song has been played
 	 */
-	playCount: number;
+	playCount: yup.number().required(),
 	/**
 	 * The ID of the master track
 	 */
-	masterId?: number;
-}
+	masterId: yup.number().required().nullable()
+}));
+
+type Song = yup.InferType<typeof Song>;
 
 type SongInclude = 'artist' | 'lyrics';
 
-type BaseSongWithRelations<
-	S extends Song, I extends K[], K extends SongInclude = SongInclude
-> = S & Pick<
-	{ artist: Artist, lyrics?: Lyrics },
-	I[number]
->;
+const SongRelations = yup.object({
+	artist: Artist.required(),
+	lyrics: Lyrics.required().nullable()
+});
 
-type SongWithRelations<
-	I extends K[], K extends SongInclude = SongInclude
-> = BaseSongWithRelations<Song, I, K>;
+const SongWithRelations = <Selection extends SongInclude | never = never>(
+	relation: Selection[]
+) => Song.concat(SongRelations.pick(relation));
 
-type SongWithVideo = Song & {
-	video: Track;
-};
-
-type SongWithVideoWithRelations<
-	I extends K[], K extends SongInclude = SongInclude
-> = BaseSongWithRelations<SongWithVideo, I, K>;
+type SongWithRelations<Selection extends SongInclude | never = never> =
+	yup.InferType<ReturnType<typeof SongWithRelations<Selection>>>
 
 export default Song;
 export const SongSortingKeys = [
@@ -60,4 +55,4 @@ export const SongSortingKeys = [
 	'artistName',
 	'addDate'
 ] as const;
-export type { SongWithRelations, SongWithVideoWithRelations, SongWithVideo, SongInclude };
+export { type SongInclude, SongWithRelations, SongRelations };

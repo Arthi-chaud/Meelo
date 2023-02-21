@@ -44,7 +44,7 @@ const SongPage = (
 	 * Parses the query to find the requested tab, fallback on tabs[0]
 	 */
 	const getTabFromQuery = () => tabs.find(
-		(availableTab) => availableTab == router.query.tab.toString().toLowerCase()
+		(availableTab) => availableTab == router.query.tab?.toString().toLowerCase()
 	) ?? tabs[0];
 	const router = useRouter();
 	const [tab, setTabs] = useState<typeof tabs[number]>(getTabFromQuery());

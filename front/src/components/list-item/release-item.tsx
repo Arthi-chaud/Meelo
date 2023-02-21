@@ -7,7 +7,7 @@ import ListItem from "./item";
 import getYear from "../../utils/getYear";
 
 type ReleaseItemProps = {
-	release: ReleaseWithRelations<['album']>;
+	release: ReleaseWithRelations<'album'>;
 }
 
 const ReleaseItem = ({ release }: ReleaseItemProps) => {

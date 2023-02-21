@@ -14,7 +14,7 @@ import { ShowTrackFileInfoAction } from "../actions/show-track-info";
 import { TrackWithRelations } from "../../models/track";
 
 type TrackContextualMenuProps = {
-	track: TrackWithRelations<['song']>;
+	track: TrackWithRelations<'song'>;
 	onSelect?: () => void;
 }
 

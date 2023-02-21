@@ -8,7 +8,7 @@ import { AlbumWithRelations } from "../../models/album";
 import { useQueryClient } from "../../api/use-query";
 
 type AlbumContextualMenuProps = {
-	album: AlbumWithRelations<['artist']>;
+	album: AlbumWithRelations<'artist'>;
 }
 
 const AlbumContextualMenu = (props: AlbumContextualMenuProps) => {

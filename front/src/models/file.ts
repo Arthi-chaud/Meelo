@@ -1,23 +1,25 @@
+import * as yup from 'yup';
 import Resource from "./resource";
 
-type File = Resource & {
+const File = Resource.concat(yup.object({
 	/**
 	 * Path of the track, relative to the parent library
 	 */
-	path: string;
+	path: yup.string().required(),
 	/**
 	 * MD5 checksum of the file
 	 */
-	md5Checksum: string;
+	md5Checksum: yup.string().required(),
 	/**
 	 * Date of the file registration
 	 */
-	registerDate: Date;
-
+	registerDate: yup.date().required(),
 	/**
 	 * ID of the library
 	 */
-	libraryId: number;
-}
+	libraryId: yup.number().required(),
+}));
+
+type File = yup.InferType<typeof File>;
 
 export default File;

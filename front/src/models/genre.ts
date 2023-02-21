@@ -1,16 +1,19 @@
+import * as yup from 'yup';
 import Resource from "./resource";
 
-type Genre = Resource & {
+const Genre = Resource.concat(yup.object({
 	/**
 	 * Name of the genre
 	 */
-	name: string;
+	name: yup.string().required(),
 	/**
 	 * Unique identifier as a string
 	 */
-	slug: string;
-}
+	slug: yup.string().required(),
+}));
 
-export const GenreSortingKeys = ['name', 'songCount'] as const;
+type Genre = yup.InferType<typeof Genre>;
 
 export default Genre;
+
+export const GenreSortingKeys = ['name', 'songCount'] as const;

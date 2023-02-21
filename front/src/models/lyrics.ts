@@ -1,14 +1,10 @@
-import Resource from "./resource";
+import * as yup from 'yup';
 
-type Lyrics = Resource & {
-	/**
-	 * Raw lyrics, with '\n' as line seperator
-	 */
-	content: string;
-	/**
-	 * Unique identifier of the parent song
-	 */
-	songId: number
-}
+const Lyrics = yup.object({
+	id: yup.number().required(),
+	content: yup.string().required()
+});
+
+export type Lyrics = yup.InferType<typeof Lyrics>;
 
 export default Lyrics;

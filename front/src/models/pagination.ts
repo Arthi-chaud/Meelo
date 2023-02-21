@@ -1,7 +1,9 @@
+import * as yup from 'yup';
+
 /**
  * Parameters for pagination in API requests
  */
-type PaginationParameters = Partial<{
+export type PaginationParameters = Partial<{
 	/**
 	 * The index of the page to fetch
 	 */
@@ -12,26 +14,28 @@ type PaginationParameters = Partial<{
 	pageSize: number;
 }>
 
-type PaginatedResponse<T> = {
-	items: T[];
-	metadata: {
+const PaginatedResponse = <T>(itemType: yup.Schema<T>) => yup.object({
+	items: yup.array(itemType).required(),
+	metadata: yup.object({
 		/**
 		 * Current route
 		 */
-		this: string;
+		this: yup.string().required(),
 		/**
 		 * route to use for the next items
 		 */
-		next: string | null;
+		next: yup.string().required().nullable(),
 		/**
 		 * route to use for the previous items
 		 */
-		previous: string | null;
+		previous: yup.string().required().nullable(),
 		/**
 		 * The current page number
 		 */
-		page: number;
-	}
-}
+		page: yup.number().required().nullable(),
+	})
+});
 
-export type { PaginatedResponse, PaginationParameters };
+type PaginatedResponse<T> = yup.InferType<ReturnType<typeof PaginatedResponse<T>>>;
+
+export default PaginatedResponse;
