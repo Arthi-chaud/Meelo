@@ -3,7 +3,6 @@ import Artist from "./artist";
 import Illustration from "./illustration";
 import Lyrics from "./lyrics";
 import Resource from "./resource";
-import Track from "./track";
 
 /**
  * Abstract data model, instanciated by tracks
@@ -33,14 +32,9 @@ const Song = Resource.concat(Illustration).concat(yup.object({
 	masterId: yup.number().required().nullable()
 }));
 
-const SongWithVideo = Song.concat(yup.object({
-	video: Track.required()
-}));
-
 type Song = yup.InferType<typeof Song>;
-type SongWithVideo = yup.InferType<typeof SongWithVideo>;
 
-export type SongInclude = 'artist' | 'lyrics';
+type SongInclude = 'artist' | 'lyrics';
 
 const SongRelations = yup.object({
 	artist: Artist.required(),
@@ -51,15 +45,8 @@ const SongWithRelations = <Selection extends SongInclude | never = never>(
 	relation: Selection[]
 ) => Song.concat(SongRelations.pick(relation));
 
-const SongWithVideoWithRelations = <Selection extends SongInclude | never = never>(
-	relation: Selection[]
-) => SongWithVideo.concat(SongRelations.pick(relation));
-
 type SongWithRelations<Selection extends SongInclude | never = never> =
 	yup.InferType<ReturnType<typeof SongWithRelations<Selection>>>
-
-type SongWithVideoWithRelations<Selection extends SongInclude | never = never> =
- yup.InferType<ReturnType<typeof SongWithVideoWithRelations<Selection>>>
 
 export default Song;
 export const SongSortingKeys = [
@@ -68,4 +55,4 @@ export const SongSortingKeys = [
 	'artistName',
 	'addDate'
 ] as const;
-export { SongWithRelations, SongWithVideoWithRelations, SongWithVideo };
+export { type SongInclude, SongWithRelations, SongRelations };
