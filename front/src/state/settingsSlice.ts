@@ -9,7 +9,7 @@ type SettingsState = {
 export const settingsSlice = createSlice({
 	name: 'settings',
 	initialState: <SettingsState>{
-		colorScheme: 'light'
+		colorScheme: 'dark'
 	},
 	reducers: {
 		setColorScheme: (state, action: PayloadAction<ColorScheme>) => {

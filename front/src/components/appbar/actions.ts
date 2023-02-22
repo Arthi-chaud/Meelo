@@ -16,11 +16,11 @@ const getAppBarActions = (selectedColorScheme: RootState['settings']['colorSchem
 		...ScanAllLibrariesAction,
 		disabled: store.getState().user.user?.admin !== true
 	},
-	selectedColorScheme == 'system'
+	selectedColorScheme == 'dark'
 		? SetLightColorSchemeAction
 		: selectedColorScheme == 'light'
-			? SetDarkColorSchemeAction
-			: SetSystemColorSchemeAction,
+			? SetSystemColorSchemeAction
+			: SetDarkColorSchemeAction,
 	{
 		...GoToSettingsAction,
 		disabled: store.getState().user.user?.admin !== true

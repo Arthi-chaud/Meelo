@@ -1,7 +1,12 @@
 import { PaletteOptions, ThemeOptions } from "@mui/material";
 
 const LightTheme: Omit<PaletteOptions, 'mode'> = {
-
+	primary: {
+		main: '#009688',
+	},
+	secondary: {
+		main: '#009688',
+	},
 };
 
 const DarkTheme: Omit<PaletteOptions, 'mode'> = {
@@ -66,6 +71,13 @@ const GlobalTheme: Omit<ThemeOptions, 'palette'> = {
 			styleOverrides: {
 				root: {
 					borderRadius: '0'
+				}
+			}
+		},
+		MuiSelect: {
+			styleOverrides: {
+				icon: {
+					color: 'inherit'
 				}
 			}
 		}

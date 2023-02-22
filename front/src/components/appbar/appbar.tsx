@@ -1,7 +1,7 @@
 /* eslint-disable react/jsx-indent */
 import {
 	AppBar, Box, Button, Divider, Fade, Grid, IconButton,
-	MenuItem, Select, Toolbar, Typography
+	MenuItem, Select, Toolbar, Typography, useTheme
 } from '@mui/material';
 import Image from 'next/image';
 import { useRouter } from 'next/router';
@@ -26,6 +26,7 @@ import getAppBarActions from './actions';
 import { GoToSearchAction } from '../actions/link';
 import { useSelector } from 'react-redux';
 import { RootState } from '../../state/store';
+import useColorScheme from '../../theme/color-scheme';
 
 const MeeloAppBar = () => {
 	const router = useRouter();
@@ -37,6 +38,8 @@ const MeeloAppBar = () => {
 		...prepareMeeloInfiniteQuery(API.getAllLibraries),
 		useErrorBoundary: false
 	});
+	const colorScheme = useColorScheme();
+	const theme = useTheme();
 
 	useEffect(() => {
 		if (librariesQuery.error) {
@@ -89,7 +92,11 @@ const MeeloAppBar = () => {
 									<Select
 										disableUnderline
 										variant='standard'
+										color='success'
 										value={requestedLibrary.name}
+										sx={{ color: colorScheme == 'light'
+											? theme.palette.primary.contrastText
+											: theme.palette.primary.main }}
 										onChange={(item) => {
 											const targetLibaryName = item.target.value;
 

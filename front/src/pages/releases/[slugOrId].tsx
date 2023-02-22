@@ -185,7 +185,7 @@ const ReleasePage = (
 									{ albumGenres.data?.pages.at(0)?.items.map((genre) =>
 										<Grid item key={genre.id} sx={{ display: 'flex' }}>
 											<Link href={`/genres/${genre.slug}`}>
-												<Button variant="outlined" color='inherit'>
+												<Button variant="outlined">
 													{ genre.name }
 												</Button>
 											</Link>
