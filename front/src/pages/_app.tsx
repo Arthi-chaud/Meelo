@@ -7,16 +7,12 @@ import {
 	Hydrate, QueryClient, QueryClientProvider
 } from "react-query";
 import { ReactQueryDevtools } from "react-query/devtools";
-import {
-	Container,
-	CssBaseline, GlobalStyles, ThemeProvider
-} from "@mui/material";
+import { Container } from "@mui/material";
 import MeeloAppBar from "../components/appbar/appbar";
 import { ErrorBoundary } from 'react-error-boundary';
 import toast, { Toaster } from 'react-hot-toast';
 import Head from "next/head";
 import store from '../state/store';
-import theme, { Styles } from "../theme";
 import Player from "../components/player/player";
 import { Provider } from "react-redux";
 import AuthenticationWall from "../components/authentication/authentication-wall";
@@ -26,7 +22,8 @@ import PageNotFound from "./404";
 import InternalError from "./500";
 import { useRouter } from "next/router";
 import 'core-js/actual';
-import '../styles.css';
+import '../theme/styles.css';
+import ThemeProvider from "../theme/provider";
 
 function MyApp({ Component, pageProps: { session, ...pageProps } }: AppProps) {
 	const [queryClient] = useState(() => new QueryClient());
@@ -42,9 +39,7 @@ function MyApp({ Component, pageProps: { session, ...pageProps } }: AppProps) {
 		}
 	}, []);
 	return <Provider store={store}>
-		<ThemeProvider theme={theme}>
-			<CssBaseline />
-			<GlobalStyles styles={Styles}/>
+		<ThemeProvider>
 			<Head>
 				<title>{DefaultWindowTitle}</title>
 				<meta name="viewport" content="initial-scale=1.0, width=device-width" />

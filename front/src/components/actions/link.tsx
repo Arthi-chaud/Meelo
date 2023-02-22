@@ -67,7 +67,7 @@ export const GoToRelatedTracksAction = (songIdentifier: string | number): Action
 	icon: <Difference/>
 });
 
-export const GoToSearchAction: Action = {
+export const GoToSearchAction = {
 	label: 'Search',
 	icon: <Search/>,
 	href: '/search',

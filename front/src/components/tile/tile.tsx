@@ -29,10 +29,7 @@ const Tile = (props: TileProps) => {
 	const theme = useTheme();
 
 	const component =
-		<Card style={{
-			border: "none", boxShadow: "none", height: '100%',
-			borderRadius: theme.shape.borderRadius
-		}}>
+		<Card sx={{ height: '100%' }}>
 			<CardActionArea onClick={props.onClick} sx={{
 				height: '100%', display: 'flex',
 				flexDirection: 'column', alignItems: 'space-between'

@@ -93,7 +93,7 @@ const ArtistPage = (
 					heading="Top Songs"
 					trailing={(topSongs.data?.pages.at(0)?.items.length ?? 0) > songListSize ?
 						<Link href={`/artists/${artistIdentifier}/songs`}>
-							<Button variant='contained' endIcon={<ArrowRight/>}
+							<Button variant='contained' color='secondary' endIcon={<ArrowRight/>}
 								sx={{ textTransform: 'none', fontWeight: 'bold' }}>See all</Button>
 						</Link> : undefined
 					}
@@ -128,7 +128,7 @@ const ArtistPage = (
 					heading="Albums"
 					trailing={(latestAlbums.data?.pages.at(0)?.items.length ?? 0) > albumListSize ?
 						<Link href={`/artists/${artistIdentifier}/albums`}>
-							<Button variant='contained' endIcon={<ArrowRight/>}
+							<Button variant='contained' color='secondary' endIcon={<ArrowRight/>}
 								sx={{ textTransform: 'none', fontWeight: 'bold' }}>
 								See all
 							</Button>
@@ -153,7 +153,7 @@ const ArtistPage = (
 					heading="Top Videos"
 					trailing={(videos.data.pages.at(0)?.items.length ?? 0) > albumListSize ?
 						<Link href={`/artists/${artistIdentifier}/videos`}>
-							<Button variant='contained' endIcon={<ArrowRight/>}
+							<Button variant='contained' color='secondary' endIcon={<ArrowRight/>}
 								sx={{ textTransform: 'none', fontWeight: 'bold' }}>
 								See all
 							</Button>
