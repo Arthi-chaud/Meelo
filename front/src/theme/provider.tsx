@@ -1,7 +1,8 @@
 import {
 	// eslint-disable-next-line no-restricted-imports
 	CssBaseline, GlobalStyles, ThemeProvider as MUIThemeProvider,
-	createTheme, responsiveFontSizes} from "@mui/material";
+	createTheme, responsiveFontSizes
+} from "@mui/material";
 import Styles from "./style";
 import { useMemo } from "react";
 import {

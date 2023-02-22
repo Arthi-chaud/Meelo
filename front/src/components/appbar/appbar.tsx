@@ -5,9 +5,10 @@ import {
 } from '@mui/material';
 import Image from 'next/image';
 import { useRouter } from 'next/router';
-import SearchIcon from '@mui/icons-material/Search';
 import MenuIcon from '@mui/icons-material/Menu';
-import { useEffect, useState } from 'react';
+import {
+	useEffect, useMemo, useState
+} from 'react';
 import API from '../../api/api';
 import LoadingComponent from '../loading/loading';
 import { formattedItemTypes, itemType } from './item-types';
@@ -22,11 +23,16 @@ import Library from '../../models/library';
 import toast from 'react-hot-toast';
 import ContextualMenu from '../contextual-menu/contextual-menu';
 import getAppBarActions from './actions';
+import { GoToSearchAction } from '../actions/link';
+import { useSelector } from 'react-redux';
+import { RootState } from '../../state/store';
 
 const MeeloAppBar = () => {
 	const router = useRouter();
 	const [requestedLibrary, setRequestedLibrary] = useState(globalLibrary);
 	const [availableLibraries, setAvailableLibraries] = useState<Library[] | null>(null);
+	const colorSchemeSetting = useSelector((state: RootState) => state.settings.colorScheme);
+	const actions = useMemo(() => getAppBarActions(colorSchemeSetting), [colorSchemeSetting]);
 	const librariesQuery = useReactInfiniteQuery({
 		...prepareMeeloInfiniteQuery(API.getAllLibraries),
 		useErrorBoundary: false
@@ -126,14 +132,14 @@ const MeeloAppBar = () => {
 							<Box sx={{ flexGrow: 1 }}/>
 							<Fade in>
 								<Box sx={{ display: { xs: 'none', sm: 'flex' } }}>
-									<Link href={"/search"}>
-										<IconButton>
-											<SearchIcon />
+									<Link href={GoToSearchAction.href}>
+										<IconButton color='inherit'>
+											{GoToSearchAction.icon}
 										</IconButton>
 									</Link>
 									<Divider orientation='vertical' flexItem sx={{ marginX: 1 }} />
 									<ContextualMenu actions={
-										[getAppBarActions().filter((action) => action.label.toLowerCase() != 'search')]
+										[actions.filter((action) => action.label.toLowerCase() != 'search')]
 									}/>
 								</Box>
 							</Fade>

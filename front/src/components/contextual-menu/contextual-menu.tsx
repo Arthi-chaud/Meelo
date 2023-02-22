@@ -26,6 +26,7 @@ const ContextualMenu = (props: ContextualMenuProps) => {
 			aria-haspopup="true"
 			aria-expanded={open ? 'true' : undefined}
 			onClick={handleClick}
+			color='inherit'
 		>
 			{props.buttonIcon ?? <MoreVert/>}
 		</IconButton>
