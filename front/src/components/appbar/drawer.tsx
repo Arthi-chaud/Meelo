@@ -11,10 +11,15 @@ import {
 } from "./item-types";
 import LibraryMusicIcon from '@mui/icons-material/LibraryMusic';
 import globalLibrary from './global-library';
-import { useEffect, useState } from "react";
+import {
+	useEffect, useMemo, useState
+} from "react";
 import buildLink from "./build-link";
 import Link from 'next/link';
 import getAppBarActions from "./actions";
+import { useSelector } from "react-redux";
+import { RootState } from "../../state/store";
+import Action from "../actions/action";
 
 interface DrawerProps {
 	availableLibraries: Library[] | null,
@@ -27,6 +32,8 @@ const MeeloAppBarDrawer = (
 	{ availableLibraries, requestedLibrarySlug, isOpen, onClose }: DrawerProps
 ) => {
 	const [selectedLibrarySlug, setSelectedLibrary] = useState<string | null>(requestedLibrarySlug);
+	const colorSchemeSetting = useSelector((state: RootState) => state.settings.colorScheme);
+	const actions = useMemo(() => getAppBarActions(colorSchemeSetting), [colorSchemeSetting]);
 
 	useEffect(() => setSelectedLibrary(requestedLibrarySlug), [requestedLibrarySlug, isOpen]);
 	return (
@@ -86,7 +93,7 @@ const MeeloAppBarDrawer = (
 			</List>
 			<Divider />
 			<List>
-				{ getAppBarActions().map((action) => {
+				{ actions.map((action: Action) => {
 					const item = <ListItemButton
 						key={action.label} disabled={action.disabled}
 						style={{ borderRadius: 0 }}
