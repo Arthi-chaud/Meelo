@@ -92,7 +92,6 @@ const MeeloAppBar = () => {
 									<Select
 										disableUnderline
 										variant='standard'
-										color='success'
 										value={requestedLibrary.name}
 										sx={{ color: colorScheme == 'light'
 											? theme.palette.primary.contrastText

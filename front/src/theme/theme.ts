@@ -2,23 +2,23 @@ import { PaletteOptions, ThemeOptions } from "@mui/material";
 
 const LightTheme: Omit<PaletteOptions, 'mode'> = {
 	primary: {
-		main: '#009688',
+		main: '#242120',
 	},
 	secondary: {
-		main: '#009688',
+		main: '#242120',
 	},
 };
 
 const DarkTheme: Omit<PaletteOptions, 'mode'> = {
 	primary: {
-		main: "#ffffff"
+		main: "#ffffff",
 	},
 	secondary: {
 		main: "#ffffff"
 	},
 	background: {
 		default: "#242120",
-		paper: "#242120"
+		paper: "#242120",
 	},
 	text: {
 		primary: "#FFFFFF",
