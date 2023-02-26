@@ -44,7 +44,7 @@ export default class SearchController {
 			artists: await this.artistService.search(query, {}),
 			albums: await this.albumService.getMany({ name: { contains: query } }),
 			songs: await this.songService.search(query, {}),
-			genres: await this.genreService.getMany({ name: { contains: query } })
+			genres: await this.genreService.getMany({ slug: { contains: query } })
 		};
 	}
 
@@ -140,7 +140,7 @@ export default class SearchController {
 		sortingParameter: GenreQueryParameters.SortingParameter
 	) {
 		return this.genreService.getMany(
-			{ name: { contains: query } }, paginationParameters, include, sortingParameter
+			{ slug: { contains: query } }, paginationParameters, include, sortingParameter
 		);
 	}
 }

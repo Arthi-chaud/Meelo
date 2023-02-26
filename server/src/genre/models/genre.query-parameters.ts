@@ -28,7 +28,7 @@ namespace GenreQueryParameters {
 	export type ManyWhereInput = Partial<RequireAtLeastOne<{
 		song: SongQueryParameters.WhereInput,
 		artist: ArtistQueryParameters.WhereInput,
-		name: SearchStringInput,
+		slug: SearchStringInput,
 	}>>;
 
 	/**
