@@ -4,7 +4,6 @@ import {
 import { ApiProperty } from "@nestjs/swagger";
 import { AlbumResponse, AlbumResponseBuilder } from "src/album/models/album.response";
 import { ArtistResponse, ArtistResponseBuilder } from "src/artist/models/artist.response";
-import { ReleaseResponse, ReleaseResponseBuilder } from "src/release/models/release.response";
 import ResponseBuilderInterceptor from "src/response/interceptors/response.interceptor";
 import { SongResponse, SongResponseBuilder } from "src/song/models/song.response";
 import SearchController from "../search.controller";
@@ -27,12 +26,6 @@ export class SearchAllResponse {
 
 	@ApiProperty({
 		isArray: true,
-		type: () => ReleaseResponse
-	})
-	releases: ReleaseResponse[];
-
-	@ApiProperty({
-		isArray: true,
 		type: () => SongResponse
 	})
 	songs: SongResponse[];
@@ -52,9 +45,7 @@ export class SearchAllResponseBuilder extends ResponseBuilderInterceptor<SearchA
 		@Inject(forwardRef(() => AlbumResponseBuilder))
 		private albumResponseBuilder: AlbumResponseBuilder,
 		@Inject(forwardRef(() => SongResponseBuilder))
-		private songResponseBuilder: SongResponseBuilder,
-		@Inject(forwardRef(() => ReleaseResponseBuilder))
-		private releaseResponseBuilder: ReleaseResponseBuilder
+		private songResponseBuilder: SongResponseBuilder
 	) {
 		super();
 	}
@@ -68,9 +59,6 @@ export class SearchAllResponseBuilder extends ResponseBuilderInterceptor<SearchA
 			)),
 			albums: await Promise.all(input.albums.map(
 				(album) => this.albumResponseBuilder.buildResponse(album)
-			)),
-			releases: await Promise.all(input.releases.map(
-				(release) => this.releaseResponseBuilder.buildResponse(release)
 			)),
 			songs: await Promise.all(input.songs.map(
 				(song) => this.songResponseBuilder.buildResponse(song)
