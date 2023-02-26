@@ -36,7 +36,7 @@ export class LyricsService extends RepositoryService<
 	Prisma.LyricsWhereInput,
 	Prisma.LyricsUpdateInput,
 	Prisma.LyricsWhereUniqueInput,
-	Prisma.LyricsOrderByWithRelationInput
+	Prisma.LyricsOrderByWithRelationAndSearchRelevanceInput
 > {
 	private readonly logger = new Logger(LyricsService.name);
 	private readonly geniusApiKey: string | null;

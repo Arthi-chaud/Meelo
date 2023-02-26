@@ -40,7 +40,7 @@ export default class ArtistService extends RepositoryService<
 	Prisma.ArtistWhereInput,
 	Prisma.ArtistUpdateInput,
 	Prisma.ArtistWhereUniqueInput,
-	Prisma.ArtistOrderByWithRelationInput
+	Prisma.ArtistOrderByWithRelationAndSearchRelevanceInput
 > {
 	private readonly logger = new Logger(ArtistService.name);
 	constructor(
@@ -148,7 +148,7 @@ export default class ArtistService extends RepositoryService<
 
 	formatSortingInput(
 		sortingParameter: ArtistQueryParameters.SortingParameter
-	): Prisma.ArtistOrderByWithRelationInput {
+	): Prisma.ArtistOrderByWithRelationAndSearchRelevanceInput {
 		switch (sortingParameter.sortBy) {
 		case 'name':
 			return { slug: sortingParameter.order };

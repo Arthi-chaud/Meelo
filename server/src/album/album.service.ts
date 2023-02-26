@@ -41,7 +41,7 @@ export default class AlbumService extends RepositoryService<
 	Prisma.AlbumWhereInput,
 	Prisma.AlbumUpdateInput,
 	Prisma.AlbumWhereUniqueInput,
-	Prisma.AlbumOrderByWithRelationInput
+	Prisma.AlbumOrderByWithRelationAndSearchRelevanceInput
 > {
 	private readonly logger = new Logger(AlbumService.name);
 	constructor(
@@ -170,7 +170,7 @@ export default class AlbumService extends RepositoryService<
 
 	formatSortingInput(
 		sortingParameter: AlbumQueryParameters.SortingParameter
-	): Prisma.AlbumOrderByWithRelationInput {
+	): Prisma.AlbumOrderByWithRelationAndSearchRelevanceInput {
 		switch (sortingParameter.sortBy) {
 		case 'name':
 			return { slug: sortingParameter.order };

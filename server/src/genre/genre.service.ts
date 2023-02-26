@@ -39,7 +39,7 @@ export default class GenreService extends RepositoryService<
 	Prisma.GenreWhereInput,
 	Prisma.GenreUpdateInput,
 	Prisma.GenreWhereUniqueInput,
-	Prisma.GenreOrderByWithRelationInput
+	Prisma.GenreOrderByWithRelationAndSearchRelevanceInput
 > {
 	private readonly logger = new Logger(GenreService.name);
 	constructor(

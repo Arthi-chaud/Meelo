@@ -42,7 +42,7 @@ export default class TrackService extends RepositoryService<
 	Prisma.TrackWhereInput,
 	Prisma.TrackUpdateInput,
 	Prisma.TrackWhereUniqueInput,
-	Prisma.TrackOrderByWithRelationInput
+	Prisma.TrackOrderByWithRelationAndSearchRelevanceInput
 >{
 	private readonly logger = new Logger(TrackService.name);
 	constructor(
@@ -163,7 +163,7 @@ export default class TrackService extends RepositoryService<
 
 	formatSortingInput(
 		sortingParameter: TrackQueryParameters.SortingParameter
-	): Prisma.TrackOrderByWithRelationInput {
+	): Prisma.TrackOrderByWithRelationAndSearchRelevanceInput {
 		switch (sortingParameter.sortBy) {
 		case 'releaseName':
 			return { release: { name: sortingParameter.order } };

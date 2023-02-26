@@ -38,7 +38,7 @@ export default class LibraryService extends RepositoryService<
 	Prisma.LibraryWhereInput,
 	Prisma.LibraryUpdateInput,
 	Prisma.LibraryWhereUniqueInput,
-	Prisma.LibraryOrderByWithRelationInput
+	Prisma.LibraryOrderByWithRelationAndSearchRelevanceInput
 > {
 	private readonly logger = new Logger(LibraryService.name);
 	constructor(
@@ -110,7 +110,7 @@ export default class LibraryService extends RepositoryService<
 
 	formatSortingInput(
 		sortingParameter: LibraryQueryParameters.SortingParameter
-	): Prisma.LibraryOrderByWithRelationInput {
+	): Prisma.LibraryOrderByWithRelationAndSearchRelevanceInput {
 		switch (sortingParameter.sortBy) {
 		case 'name':
 			return { slug: sortingParameter.order };

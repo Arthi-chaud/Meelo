@@ -39,7 +39,7 @@ export default class SongService extends RepositoryService<
 	Prisma.SongWhereInput,
 	Prisma.SongUpdateInput,
 	Prisma.SongWhereUniqueInput,
-	Prisma.SongOrderByWithRelationInput
+	Prisma.SongOrderByWithRelationAndSearchRelevanceInput
 > {
 	private readonly logger = new Logger(SongService.name);
 	constructor(
@@ -156,7 +156,7 @@ export default class SongService extends RepositoryService<
 
 	formatSortingInput(
 		sortingParameter: SongQueryParameters.SortingParameter
-	): Prisma.SongOrderByWithRelationInput {
+	): Prisma.SongOrderByWithRelationAndSearchRelevanceInput {
 		switch (sortingParameter.sortBy) {
 		case 'name':
 			return { slug: sortingParameter.order };
@@ -402,6 +402,48 @@ export default class SongService extends RepositoryService<
 			...song,
 			video: tracks[0]
 		})));
+	}
+
+	/**
+	 * Search for songs using a token.
+	 * To match, the song's slug, or its artist's, or one of its track's releases must match the token
+	 */
+	public async search<I extends SongQueryParameters.RelationInclude>(
+		token: string,
+		where: SongQueryParameters.ManyWhereInput,
+		pagination?: PaginationParameters,
+		include?: I,
+		sort?: SongQueryParameters.SortingParameter
+	) {
+		if (token.length == 0) {
+			return [];
+		}
+		// Transforms the toke into a slug, and remove trailing excl. mark if token is numeric
+		const slug = new Slug(token).toString().replace('!', '');
+		const ormSearchToken = slug.split(Slug.separator);
+		const ormSearchFilter = ormSearchToken.map((subToken: string) => ({ contains: subToken }));
+
+		return this.prismaService.song.findMany({
+			...buildPaginationParameters(pagination),
+			orderBy: sort ? this.formatSortingInput(sort) : {
+				_relevance: {
+					fields: ['slug'],
+					search: slug,
+					sort: 'asc'
+				}
+			},
+			include: RepositoryService.formatInclude(include),
+			where: {
+				...this.formatManyWhereInput(where),
+				OR: [
+					...ormSearchFilter.map((filter) => ({ slug: filter })),
+					...ormSearchFilter.map((filter) => ({ artist: { slug: filter } })),
+					...ormSearchFilter.map((filter) => ({
+						tracks: { some: { release: { slug: filter } } }
+					}))
+				]
+			}
+		});
 	}
 
 	/**

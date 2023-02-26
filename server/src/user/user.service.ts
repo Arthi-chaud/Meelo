@@ -29,7 +29,7 @@ export default class UserService extends RepositoryService<
 	Prisma.UserWhereInput,
 	Prisma.UserUpdateInput,
 	Prisma.UserWhereUniqueInput,
-	Prisma.UserOrderByWithRelationInput
+	Prisma.UserOrderByWithRelationAndSearchRelevanceInput
 > {
 	private readonly passwordHashSaltRound = 9;
 

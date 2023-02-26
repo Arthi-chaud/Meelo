@@ -42,7 +42,7 @@ export default class FileService extends RepositoryService<
 	Prisma.FileWhereInput,
 	Prisma.FileUpdateInput,
 	Prisma.FileWhereUniqueInput,
-	Prisma.FileOrderByWithRelationInput
+	Prisma.FileOrderByWithRelationAndSearchRelevanceInput
 > {
 	constructor(
 		private prismaService: PrismaService,
@@ -127,7 +127,7 @@ export default class FileService extends RepositoryService<
 
 	formatSortingInput(
 		sort: FileQueryParameters.SortingParameter
-	): Prisma.FileOrderByWithRelationInput {
+	): Prisma.FileOrderByWithRelationAndSearchRelevanceInput {
 		switch (sort.sortBy) {
 		case 'addDate':
 			return { registerDate: sort.order };
