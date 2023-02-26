@@ -26,6 +26,7 @@ import Logger from 'src/logger/logger';
 import ReleaseQueryParameters from 'src/release/models/release.query-parameters';
 import AlbumIllustrationService from './album-illustration.service';
 import { PrismaError } from 'prisma-error-enum';
+import { PaginationParameters, buildPaginationParameters } from 'src/pagination/models/pagination-parameters';
 
 @Injectable()
 export default class AlbumService extends RepositoryService<
@@ -336,6 +337,48 @@ export default class AlbumService extends RepositoryService<
 			return new AlbumNotFoundException(where.bySlug.slug, where.bySlug.artist?.slug);
 		}
 		return this.onUnknownError(error, where);
+	}
+
+	/**
+	 * Search for albums using a token.
+	 * To match, the albums's slug, or its artist's, or one of its releases's song must match the token
+	 */
+	public async search<I extends AlbumQueryParameters.RelationInclude>(
+		token: string,
+		where: AlbumQueryParameters.ManyWhereInput,
+		pagination?: PaginationParameters,
+		include?: I,
+		sort?: AlbumQueryParameters.SortingParameter
+	) {
+		if (token.length == 0) {
+			return [];
+		}
+		// Transforms the toke into a slug, and remove trailing excl. mark if token is numeric
+		const slug = new Slug(token).toString().replace('!', '');
+		const ormSearchToken = slug.split(Slug.separator);
+		const ormSearchFilter = ormSearchToken.map((subToken: string) => ({ contains: subToken }));
+
+		return this.prismaService.album.findMany({
+			...buildPaginationParameters(pagination),
+			orderBy: sort ? this.formatSortingInput(sort) : {
+				_relevance: {
+					fields: ['slug'],
+					search: slug,
+					sort: 'asc'
+				}
+			},
+			include: RepositoryService.formatInclude(include),
+			where: {
+				...this.formatManyWhereInput(where),
+				OR: [
+					...ormSearchFilter.map((filter) => ({ slug: filter })),
+					...ormSearchFilter.map((filter) => ({ artist: { slug: filter } })),
+					...ormSearchFilter.map((filter) => ({
+						releases: { some: { tracks: { some: { song: { slug: filter } } } } }
+					}))
+				]
+			}
+		});
 	}
 
 	static getAlbumTypeFromName(albumName: string): AlbumType {
