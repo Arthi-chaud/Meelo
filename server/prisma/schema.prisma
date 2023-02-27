@@ -5,7 +5,7 @@ datasource db {
 
 generator client {
   	provider 	= "prisma-client-js"
-	previewFeatures = ["orderByNulls", "filteredRelationCount"]
+	previewFeatures = ["orderByNulls", "filteredRelationCount", "fullTextSearch"]
 }
 
 generator classes {

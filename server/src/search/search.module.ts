@@ -5,7 +5,6 @@ import GenreModule from 'src/genre/genre.module';
 import ReleaseModule from 'src/release/release.module';
 import SongModule from 'src/song/song.module';
 import SearchController from './search.controller';
-import SearchService from './search.service';
 import { SearchAllResponseBuilder } from './models/search-all.response';
 import IllustrationModule from 'src/illustration/illustration.module';
 
@@ -19,6 +18,6 @@ import IllustrationModule from 'src/illustration/illustration.module';
 		IllustrationModule
 	],
 	controllers: [SearchController],
-	providers: [SearchService, SearchAllResponseBuilder]
+	providers: [SearchAllResponseBuilder]
 })
 export default class SearchModule {}

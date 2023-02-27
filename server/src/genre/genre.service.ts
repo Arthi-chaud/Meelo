@@ -39,7 +39,7 @@ export default class GenreService extends RepositoryService<
 	Prisma.GenreWhereInput,
 	Prisma.GenreUpdateInput,
 	Prisma.GenreWhereUniqueInput,
-	Prisma.GenreOrderByWithRelationInput
+	Prisma.GenreOrderByWithRelationAndSearchRelevanceInput
 > {
 	private readonly logger = new Logger(GenreService.name);
 	constructor(
@@ -90,8 +90,8 @@ export default class GenreService extends RepositoryService<
 
 	static formatManyWhereInput(where: GenreQueryParameters.ManyWhereInput) {
 		return {
-			name: where.name
-				? buildStringSearchParameters(where.name)
+			slug: where.slug
+				? buildStringSearchParameters(where.slug)
 				: undefined,
 			songs: where.song || where.artist ? {
 				some: where.song

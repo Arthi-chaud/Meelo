@@ -6,6 +6,12 @@ import slug from 'slug';
  */
 export default class Slug {
 	private readonly content: string;
+
+	/**
+	 * Separator of 'words' in a Slug
+	 */
+	static readonly separator = '-';
+
 	/**
 	 * @return true is the string is already a slug
 	 */
@@ -36,12 +42,12 @@ export default class Slug {
 		default:
 			return this.buildSingleSlug(args.map(
 				(arg) => this.buildSingleSlug(arg)
-			).join('-'));
+			).join(Slug.separator));
 		}
 	}
 
 	private buildSingleSlug(arg: string): string {
-		let formatted = slug(arg.replace(/‐/g, '-'));
+		let formatted = slug(arg.replace(/‐/g, Slug.separator));
 
 		if (isNaN(Number(formatted)) == false) {
 			formatted += '!';

@@ -6,12 +6,9 @@ import AlbumQueryParameters from 'src/album/models/album.query-parameters';
 import ArtistQueryParameters from 'src/artist/models/artist.query-parameters';
 import GenreQueryParameters from 'src/genre/models/genre.query-parameters';
 import { PaginationParameters } from 'src/pagination/models/pagination-parameters';
-import ReleaseQueryParameters from 'src/release/models/release.query-parameters';
 import SongQueryParameters from 'src/song/models/song.query-params';
-import SearchService from './search.service';
 import { AlbumResponseBuilder } from 'src/album/models/album.response';
 import { SongResponseBuilder } from 'src/song/models/song.response';
-import { ReleaseResponseBuilder } from 'src/release/models/release.response';
 import { PaginationQuery } from 'src/pagination/pagination-query.decorator';
 import RelationIncludeQuery from 'src/relation-include/relation-include-query.decorator';
 import SortingQuery from 'src/sort/sort-query.decorator';
@@ -19,12 +16,19 @@ import Response, { ResponseType } from 'src/response/response.decorator';
 import { ArtistResponseBuilder } from 'src/artist/models/artist.response';
 import { Genre } from 'src/prisma/models';
 import { SearchAllResponseBuilder } from './models/search-all.response';
+import AlbumService from 'src/album/album.service';
+import ArtistService from 'src/artist/artist.service';
+import GenreService from 'src/genre/genre.service';
+import SongService from 'src/song/song.service';
 
 @ApiTags("Search")
 @Controller('search')
 export default class SearchController {
 	constructor(
-		private searchService: SearchService,
+		private artistService: ArtistService,
+		private albumService: AlbumService,
+		private songService: SongService,
+		private genreService: GenreService,
 	) {}
 
 	@ApiOperation({
@@ -37,11 +41,10 @@ export default class SearchController {
 		query: string,
 	) {
 		return {
-			artists: await this.searchService.searchArtists(query),
-			albums: await this.searchService.searchAlbums(query),
-			songs: await this.searchService.searchSongs(query),
-			releases: await this.searchService.searchReleases(query),
-			genres: await this.searchService.searchGenres(query)
+			artists: await this.artistService.search(query, {}),
+			albums: await this.albumService.search(query, {}),
+			songs: await this.songService.search(query, {}),
+			genres: await this.genreService.getMany({ slug: { contains: query } })
 		};
 	}
 
@@ -63,8 +66,8 @@ export default class SearchController {
 		@SortingQuery(ArtistQueryParameters.SortingKeys)
 		sortingParameter: ArtistQueryParameters.SortingParameter
 	) {
-		return this.searchService.searchArtists(
-			query, paginationParameters, include, sortingParameter
+		return this.artistService.search(
+			query, {}, paginationParameters, include, sortingParameter
 		);
 	}
 
@@ -87,8 +90,12 @@ export default class SearchController {
 		sortingParameter: AlbumQueryParameters.SortingParameter,
 		@Query() filter: AlbumQueryParameters.AlbumFilterParameter
 	) {
-		return this.searchService.searchAlbums(
-			query, filter.type, paginationParameters, include, sortingParameter
+		return this.albumService.search(
+			query,
+			{ type: filter.type },
+			paginationParameters,
+			include,
+			sortingParameter
 		);
 	}
 
@@ -110,31 +117,8 @@ export default class SearchController {
 		@SortingQuery(SongQueryParameters.SortingKeys)
 		sortingParameter: SongQueryParameters.SortingParameter
 	) {
-		return this.searchService.searchSongs(
-			query, paginationParameters, include, sortingParameter
-		);
-	}
-
-	@ApiOperation({
-		summary: 'Search releases by their names'
-	})
-	@Response({
-		handler: ReleaseResponseBuilder,
-		type: ResponseType.Page
-	})
-	@Get('/releases/:query')
-	async searchRelease(
-		@Param('query')
-		query: string,
-		@PaginationQuery()
-		paginationParameters: PaginationParameters,
-		@RelationIncludeQuery(ReleaseQueryParameters.AvailableAtomicIncludes)
-		include: ReleaseQueryParameters.RelationInclude,
-		@SortingQuery(ReleaseQueryParameters.SortingKeys)
-		sortingParameter: ReleaseQueryParameters.SortingParameter
-	) {
-		return this.searchService.searchReleases(
-			query, paginationParameters, include, sortingParameter
+		return this.songService.search(
+			query, {}, paginationParameters, include, sortingParameter
 		);
 	}
 
@@ -156,8 +140,8 @@ export default class SearchController {
 		@SortingQuery(GenreQueryParameters.SortingKeys)
 		sortingParameter: GenreQueryParameters.SortingParameter
 	) {
-		return this.searchService.searchGenres(
-			query, paginationParameters, include, sortingParameter
+		return this.genreService.getMany(
+			{ slug: { contains: query } }, paginationParameters, include, sortingParameter
 		);
 	}
 }

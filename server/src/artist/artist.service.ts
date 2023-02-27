@@ -40,7 +40,7 @@ export default class ArtistService extends RepositoryService<
 	Prisma.ArtistWhereInput,
 	Prisma.ArtistUpdateInput,
 	Prisma.ArtistWhereUniqueInput,
-	Prisma.ArtistOrderByWithRelationInput
+	Prisma.ArtistOrderByWithRelationAndSearchRelevanceInput
 > {
 	private readonly logger = new Logger(ArtistService.name);
 	constructor(
@@ -148,7 +148,7 @@ export default class ArtistService extends RepositoryService<
 
 	formatSortingInput(
 		sortingParameter: ArtistQueryParameters.SortingParameter
-	): Prisma.ArtistOrderByWithRelationInput {
+	): Prisma.ArtistOrderByWithRelationAndSearchRelevanceInput {
 		switch (sortingParameter.sortBy) {
 		case 'name':
 			return { slug: sortingParameter.order };
@@ -248,5 +248,47 @@ export default class ArtistService extends RepositoryService<
 		await Promise.all(
 			emptyArtists.map(({ id }) => this.delete({ id }))
 		);
+	}
+
+	/**
+	 * Search for artists
+	 * The token is used to look through an artist's name, or their songs or album
+	 */
+	public async search<I extends ArtistQueryParameters.RelationInclude>(
+		token: string,
+		where: ArtistQueryParameters.ManyWhereInput,
+		pagination?: PaginationParameters,
+		include?: I,
+		sort?: ArtistQueryParameters.SortingParameter
+	) {
+		if (token.length == 0) {
+			return [];
+		}
+		// Transforms the toke into a slug, and remove trailing excl. mark if token is numeric
+		const slug = new Slug(token).toString().replace('!', '');
+		const ormSearchToken = slug.split(Slug.separator);
+		const ormSearchFilter = ormSearchToken.map((subToken: string) => ({ contains: subToken }));
+
+		return this.prismaService.artist.findMany({
+			...buildPaginationParameters(pagination),
+			orderBy: sort ? this.formatSortingInput(sort): {
+				_relevance: {
+					fields: ['slug'],
+					search: slug,
+					sort: 'asc'
+				}
+			},
+			include: RepositoryService.formatInclude(include),
+			where: {
+				...this.formatManyWhereInput(where),
+				OR: [
+					...ormSearchFilter.map((filter) => ({ slug: filter })),
+					...ormSearchFilter.map((filter) => ({ songs: { some: { slug: filter } } })),
+					...ormSearchFilter.map((filter) => ({
+						albums: { some: { releases: { some: { slug: filter } } } }
+					}))
+				]
+			}
+		});
 	}
 }

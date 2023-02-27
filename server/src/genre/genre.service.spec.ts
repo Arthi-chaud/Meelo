@@ -132,7 +132,7 @@ describe("Genre Service", () => {
 		});
 		it("should get the genres by their names (starts with)", async () => {
 			const fetchedGenres = await genreService.getMany({
-				name: { startsWith: 'My Genre' }
+				slug: { startsWith: 'my-genre' }
 			});
 
 			expect(fetchedGenres.length).toBe(3);
@@ -143,7 +143,7 @@ describe("Genre Service", () => {
 
 		it("should get the genres by their names (ends with)", async () => {
 			const fetchedGenres = await genreService.getMany({
-				name: { endsWith: 'Genre' }
+				slug: { endsWith: 'genre' }
 			});
 
 			expect(fetchedGenres).toStrictEqual([ newGenre ]);
@@ -185,7 +185,7 @@ describe("Genre Service", () => {
 
 		it("should get the genres by their names", async () => {
 			const genresCounts = await genreService.count({
-				name: { endsWith: 'B' }
+				slug: { endsWith: 'b' }
 			});
 
 			expect(genresCounts).toBe(1);

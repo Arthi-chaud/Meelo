@@ -48,7 +48,7 @@ export default class ReleaseService extends RepositoryService<
 	Prisma.ReleaseWhereInput,
 	Prisma.ReleaseUpdateInput,
 	Prisma.ReleaseWhereUniqueInput,
-	Prisma.ReleaseOrderByWithRelationInput
+	Prisma.ReleaseOrderByWithRelationAndSearchRelevanceInput
 > {
 	private readonly logger = new Logger(ReleaseService.name);
 	constructor(
@@ -164,7 +164,7 @@ export default class ReleaseService extends RepositoryService<
 
 	formatSortingInput(
 		sortingParameter: ReleaseQueryParameters.SortingParameter
-	): Prisma.ReleaseOrderByWithRelationInput {
+	): Prisma.ReleaseOrderByWithRelationAndSearchRelevanceInput {
 		switch (sortingParameter.sortBy) {
 		case 'name':
 			return { slug: sortingParameter.order };
