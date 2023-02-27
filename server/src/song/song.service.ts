@@ -190,6 +190,7 @@ export default class SongService extends RepositoryService<
 	formatUpdateInput(what: SongQueryParameters.UpdateInput): Prisma.SongUpdateInput {
 		return {
 			...what,
+			slug: what.name ? new Slug(what.name).toString() : undefined,
 			genres: what.genres ? {
 				connect: what.genres.map(
 					(genre) => GenreService.formatWhereInput(genre)

@@ -1,6 +1,6 @@
 import { INestApplication } from "@nestjs/common";
 import type { TestingModule } from "@nestjs/testing";
-import type { Artist, Album, Song, Release } from "src/prisma/models";
+import type { Artist, Album, Song } from "src/prisma/models";
 import AlbumModule from "src/album/album.module";
 import AlbumService from "src/album/album.service";
 import ArtistModule from "src/artist/artist.module";
@@ -20,7 +20,7 @@ import request from "supertest";
 import MetadataModule from "src/metadata/metadata.module";
 import GenreService from "src/genre/genre.service";
 import SetupApp from "test/setup-app";
-import { expectedArtistResponse, expectedAlbumResponse, expectedSongResponse, expectedReleaseResponse } from "test/expected-responses";
+import { expectedArtistResponse, expectedAlbumResponse, expectedSongResponse } from "test/expected-responses";
 
 describe('Search Controller', () => {
 	let dummyRepository: TestPrismaService;
@@ -63,7 +63,9 @@ describe('Search Controller', () => {
 				.expect((res) => {
 					expect(res.body).toStrictEqual({
 						artists: [
-							expectedArtistResponse(dummyRepository.artistB)
+							expectedArtistResponse(dummyRepository.artistA),
+							expectedArtistResponse(dummyRepository.artistB),
+							expectedArtistResponse(dummyRepository.artistC)
 						],
 						albums: [
 							expectedAlbumResponse(dummyRepository.albumA1),
@@ -72,13 +74,9 @@ describe('Search Controller', () => {
 						],
 						songs: [
 							expectedSongResponse(dummyRepository.songA1),
+							expectedSongResponse(dummyRepository.songA2),
+							expectedSongResponse(dummyRepository.songB1),
 							expectedSongResponse(dummyRepository.songC1)
-						],
-						releases: [
-							expectedReleaseResponse(dummyRepository.releaseA1_1),
-							expectedReleaseResponse(dummyRepository.releaseA1_2),
-							expectedReleaseResponse(dummyRepository.releaseB1_1),
-							expectedReleaseResponse(dummyRepository.compilationReleaseA1),
 						],
 						genres: [
 							dummyRepository.genreC
@@ -95,9 +93,10 @@ describe('Search Controller', () => {
 				.expect(200)
 				.expect((res) => {
 					const artists: Artist[] = res.body.items;
-					expect(artists.length).toBe(2);
+					expect(artists.length).toBe(3);
 					expect(artists).toContainEqual(expectedArtistResponse(dummyRepository.artistA));
 					expect(artists).toContainEqual(expectedArtistResponse(dummyRepository.artistB));
+					expect(artists).toContainEqual(expectedArtistResponse(dummyRepository.artistC));
 				}) 
 		});
 
@@ -107,8 +106,9 @@ describe('Search Controller', () => {
 				.expect(200)
 				.expect((res) => {
 					const artists: Artist[] = res.body.items;
-					expect(artists.length).toBe(1);
+					expect(artists.length).toBe(2);
 					expect(artists).toContainEqual(expectedArtistResponse(dummyRepository.artistB));
+					expect(artists).toContainEqual(expectedArtistResponse(dummyRepository.artistC));
 				}) 
 		})
 	});
@@ -145,46 +145,22 @@ describe('Search Controller', () => {
 				.expect(200)
 				.expect((res) => {
 					const songs: Song[] = res.body.items;
-					expect(songs.length).toBe(2);
+					expect(songs.length).toBe(3);
 					expect(songs).toContainEqual(expectedSongResponse(dummyRepository.songA1));
+					expect(songs).toContainEqual(expectedSongResponse(dummyRepository.songC1));
 					expect(songs).toContainEqual(expectedSongResponse(dummyRepository.songB1));
 				}) 
 		});
 
 		it("Search songs, w/ pagination", () => {
 			return request(app.getHttpServer())
-				.get(`/search/songs/e?take=2`)
+				.get(`/search/songs/e?skip=1&take=2`)
 				.expect(200)
 				.expect((res) => {
 					const songs: Song[] = res.body.items;
 					expect(songs.length).toBe(2);
 					expect(songs).toContainEqual(expectedSongResponse(dummyRepository.songA2));
 					expect(songs).toContainEqual(expectedSongResponse(dummyRepository.songB1));
-				}) 
-		})
-	});
-
-	describe('Search Releases', () => {
-		it("Search Releases", () => {
-			return request(app.getHttpServer())
-				.get(`/search/releases/fe`)
-				.expect(200)
-				.expect((res) => {
-					const releases: Release[] = res.body.items;
-					expect(releases.length).toBe(2);
-					expect(releases).toContainEqual(expectedReleaseResponse(dummyRepository.releaseA1_1));
-					expect(releases).toContainEqual(expectedReleaseResponse(dummyRepository.releaseA1_2));
-				}) 
-		});
-
-		it("Search releases, w/ pagination", () => {
-			return request(app.getHttpServer())
-				.get(`/search/releases/u?skip=1`)
-				.expect(200)
-				.expect((res) => {
-					const releases: Release[] = res.body.items;
-					expect(releases.length).toBe(1);
-					expect(releases).toContainEqual(expectedReleaseResponse(dummyRepository.compilationReleaseA1));
 				}) 
 		})
 	});
