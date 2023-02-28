@@ -177,10 +177,9 @@ export class IllustrationController {
 	) {
 		const illustrationPath = await this.trackIllustrationService
 			.getIllustrationPath(where);
+		const track = await this.trackService.get(where, { song: true });
 
 		if (this.trackIllustrationService.illustrationExists(illustrationPath)) {
-			const track = await this.trackService.get(where, { song: true });
-
 			return this.illustrationService.streamIllustration(
 				illustrationPath,
 				track.song.slug,
@@ -189,7 +188,7 @@ export class IllustrationController {
 			);
 		}
 		return this.getReleaseIllustration(
-			{ id: (await this.trackService.select(where, { id: true })).id },
+			{ id: track.releaseId },
 			dimensions,
 			res
 		);
