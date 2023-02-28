@@ -19,7 +19,6 @@ import ArtistIllustrationService from "src/artist/artist-illustration.service";
 import ReleaseIllustrationService from "src/release/release-illustration.service";
 import TrackIllustrationService from "src/track/track-illustration.service";
 import { parse } from 'path';
-import AlbumIllustrationService from "src/album/album-illustration.service";
 import Slug from "src/slug/slug";
 import { NoReleaseIllustrationException } from "./illustration.exceptions";
 import SongService from "src/song/song.service";
@@ -33,7 +32,6 @@ export class IllustrationController {
 		private releaseIllustrationService: ReleaseIllustrationService,
 		private trackIllustrationService: TrackIllustrationService,
 		private artistIllustrationService: ArtistIllustrationService,
-		private albumIllustrationService: AlbumIllustrationService,
 		private trackService: TrackService,
 		private releaseService: ReleaseService,
 	) {}
@@ -89,12 +87,10 @@ export class IllustrationController {
 		where: AlbumQueryParameters.WhereInput,
 		@Response({ passthrough: true }) res: Response,
 	) {
-		const illustrationPath = await this.albumIllustrationService
-			.getIllustrationPath(where);
+		const master = await this.releaseService.getMasterRelease(where);
 
-		return this.illustrationService.streamIllustration(
-			illustrationPath,
-			parse(parse(illustrationPath).dir).name,
+		return this.getReleaseIllustration(
+			{ id: master.id },
 			dimensions,
 			res
 		);

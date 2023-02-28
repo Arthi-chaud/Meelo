@@ -5,10 +5,8 @@ import FileManagerService from "src/file-manager/file-manager.service";
 import ArtistIllustrationService from "src/artist/artist-illustration.service";
 import AlbumService from "./album.service";
 import { join } from "path";
-import ReleaseService from "src/release/release.service";
-import ReleaseIllustrationService from "src/release/release-illustration.service";
 import { Inject, forwardRef } from "@nestjs/common";
-import { MasterReleaseNotFoundException } from "src/release/release.exceptions";
+import Identifier from "src/identifier/models/identifier";
 
 type ServiceArgs = [artistSlug: Slug | undefined, albumSlug: Slug];
 
@@ -19,10 +17,6 @@ export default class AlbumIllustrationService extends RepositoryIllustrationServ
 	constructor(
 		@Inject(forwardRef(() => AlbumService))
 		private albumService: AlbumService,
-		@Inject(forwardRef(() => ReleaseService))
-		private releaseService: ReleaseService,
-		@Inject(forwardRef(() => ReleaseIllustrationService))
-		private releaseIllustrationService: ReleaseIllustrationService,
 		@Inject(forwardRef(() => ArtistIllustrationService))
 		private artistIllustrationService: ArtistIllustrationService,
 		fileManagerService: FileManagerService
@@ -37,17 +31,8 @@ export default class AlbumIllustrationService extends RepositoryIllustrationServ
 		);
 	}
 
-	async getIllustrationLink(where: AlbumQueryParameters.WhereInput): Promise<string | null> {
-		try {
-			const master = await this.releaseService.getMasterRelease(where);
-
-			return this.releaseIllustrationService.getIllustrationLink(master);
-		} catch (error) {
-			if (error instanceof MasterReleaseNotFoundException) {
-				return null;
-			}
-			throw error;
-		}
+	buildIllustrationLink(identifier: Identifier): string {
+		return `${this.IllustrationControllerPath}/albums/${identifier}`;
 	}
 
 	async formatWhereInputToIdentifiers(

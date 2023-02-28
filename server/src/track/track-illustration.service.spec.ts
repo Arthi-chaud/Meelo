@@ -59,34 +59,15 @@ describe('Track Illustration Service', () => {
 	describe('Get Illustration Illustration', () => {
 		it("should get Track Illustration Link", async () => {
 			jest.spyOn(fileManagerService, 'fileExists').mockReturnValueOnce(true);
-			expect(await trackIllustrationService.getIllustrationLink({
-				id: dummyRepository.trackB1_1.id
-			})).toBe(`/illustrations/tracks/${dummyRepository.trackB1_1.id}`);
+			expect(trackIllustrationService.buildIllustrationLink(
+				dummyRepository.trackB1_1.id
+			)).toBe(`/illustrations/tracks/${dummyRepository.trackB1_1.id}`);
 		})
 		it("should get Track Illustration Link, from compilation release", async () => {
 			jest.spyOn(fileManagerService, 'fileExists').mockReturnValueOnce(true);
-			expect(await trackIllustrationService.getIllustrationLink({
-				id: dummyRepository.trackC1_1.id
-			})).toBe(`/illustrations/tracks/${dummyRepository.trackC1_1.id}`);
-		})
-		it("should get Parent Release Illustration Link", async () => {
-			jest.spyOn(fileManagerService, 'fileExists').mockReturnValueOnce(false);
-			jest.spyOn(fileManagerService, 'fileExists').mockReturnValueOnce(true);
-			expect(await trackIllustrationService.getIllustrationLink({
-				id: dummyRepository.trackA1_1.id
-			})).toBe(`/illustrations/releases/${dummyRepository.artistA.slug}+${dummyRepository.albumA1.slug}+${dummyRepository.releaseA1_1.slug}`);
-		})
-		it("should get Parent Compilation Release Illustration Link", async () => {
-			jest.spyOn(fileManagerService, 'fileExists').mockReturnValueOnce(false);
-			jest.spyOn(fileManagerService, 'fileExists').mockReturnValueOnce(true);
-			expect(await trackIllustrationService.getIllustrationLink({
-				id: dummyRepository.trackC1_1.id
-			})).toBe(`/illustrations/releases/compilations+${dummyRepository.compilationAlbumA.slug}+${dummyRepository.compilationReleaseA1.slug}`);
-		})
-		it("should return null, as the illustration does not exist", async () => {
-			expect(await trackIllustrationService.getIllustrationLink({
-				id: dummyRepository.trackA1_1.id
-			})).toBeNull();
+			expect(trackIllustrationService.buildIllustrationLink(
+				dummyRepository.trackC1_1.id
+			)).toBe(`/illustrations/tracks/${dummyRepository.trackC1_1.id}`);
 		})
 	})
 })

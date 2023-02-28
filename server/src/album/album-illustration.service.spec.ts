@@ -58,19 +58,14 @@ describe('Album Illustration Service', () => {
 		it("should get Album Illustration Link", async () => {
 			jest.spyOn(fileManagerService, 'fileExists').mockReturnValueOnce(true);
 			expect(
-				await albumIllustrationService.getIllustrationLink({ id: dummyRepository.albumA1.id })
-			).toBe(`/illustrations/releases/${dummyRepository.artistA.slug}+${dummyRepository.albumA1.slug}+${dummyRepository.releaseA1_1.slug}`);
+				albumIllustrationService.buildIllustrationLink(dummyRepository.albumA1.id)
+			).toBe(`/illustrations/albums/${dummyRepository.albumA1.id}`);
 		})
 		it("should build Compilation Album Illustration Link", async () => {
 			jest.spyOn(fileManagerService, 'fileExists').mockReturnValueOnce(true);
 			expect(
-				await albumIllustrationService.getIllustrationLink({ id: dummyRepository.compilationAlbumA.id })
-			).toBe(`/illustrations/releases/compilations+${dummyRepository.compilationAlbumA.slug}+${dummyRepository.compilationReleaseA1.slug}`);
-		})
-		it("should return null, as the illustration does not exist", async () => {
-			expect(
-				await albumIllustrationService.getIllustrationLink({ id: dummyRepository.albumA1.id })
-			).toBeNull();
+				albumIllustrationService.buildIllustrationLink(dummyRepository.compilationAlbumA.id)
+			).toBe(`/illustrations/albums/${dummyRepository.compilationAlbumA.id}`);
 		})
 	})
 })

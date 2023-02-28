@@ -33,8 +33,7 @@ export class ReleaseResponseBuilder extends ResponseBuilderInterceptor<ReleaseWi
 	async buildResponse(release: ReleaseWithRelations): Promise<ReleaseResponse> {
 		const response = <ReleaseResponse>{
 			...release,
-			illustration: await this.releaseIllustrationService
-				.getIllustrationLink({ id: release.id })
+			illustration: this.releaseIllustrationService.buildIllustrationLink(release.id)
 		};
 
 		if (release.album !== undefined) {

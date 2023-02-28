@@ -33,7 +33,7 @@ export class AlbumResponseBuilder extends ResponseBuilderInterceptor<AlbumWithRe
 	async buildResponse(album: AlbumWithRelations): Promise<AlbumResponse> {
 		const response = <AlbumResponse>{
 			...album,
-			illustration: await this.albumIllustrationService.getIllustrationLink({ id: album.id })
+			illustration: this.albumIllustrationService.buildIllustrationLink(album.id)
 		};
 
 		if (album.artist != undefined) {

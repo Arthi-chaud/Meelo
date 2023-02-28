@@ -58,19 +58,14 @@ describe('Release Illustration Service', () => {
 		it("should get Release Illustration Link", async () => {
 			jest.spyOn(fileManagerService, 'fileExists').mockReturnValueOnce(true);
 			expect(
-				await releaseIllustrationService.getIllustrationLink({ id: dummyRepository.releaseB1_1.id })
-			).toBe(`/illustrations/releases/${dummyRepository.artistB.slug}+${dummyRepository.albumB1.slug}+${dummyRepository.releaseB1_1.slug}`);
+				releaseIllustrationService.buildIllustrationLink(dummyRepository.releaseB1_1.id)
+			).toBe(`/illustrations/releases/${dummyRepository.releaseB1_1.id}`);
 		})
 		it("should build Compilation Release Illustration Link", async () => {
 			jest.spyOn(fileManagerService, 'fileExists').mockReturnValueOnce(true);
 			expect(
-				await releaseIllustrationService.getIllustrationLink({ id: dummyRepository.compilationReleaseA1.id })
-			).toBe(`/illustrations/releases/compilations+${dummyRepository.compilationAlbumA.slug}+${dummyRepository.compilationReleaseA1.slug}`);
-		})
-		it("should return null, as the illustration does not exist", async () => {
-			expect(
-				await releaseIllustrationService.getIllustrationLink({ id: dummyRepository.releaseA1_1.id })
-			).toBeNull();
+				releaseIllustrationService.buildIllustrationLink(dummyRepository.compilationReleaseA1.id)
+			).toBe(`/illustrations/releases/${dummyRepository.compilationReleaseA1.id}`);
 		})
 	})
 })

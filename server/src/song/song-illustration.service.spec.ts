@@ -32,20 +32,15 @@ describe('Song Illustration Service', () => {
 		it("should get Song's Master Track Illustration Link", async () => {
 			jest.spyOn(fileManagerService, 'fileExists').mockReturnValueOnce(true);
 			expect(
-				await songIllustrationService.getIllustrationLink({ id: dummyRepository.songA1.id })
-			).toBe(`/illustrations/tracks/${dummyRepository.trackA1_1.id}`)
+				songIllustrationService.buildIllustrationLink(dummyRepository.songA1.id)
+			).toBe(`/illustrations/songs/${dummyRepository.songA1.id}`)
 		})
 		it("should build Compilation Song Illustration Link", async () => {
 			jest.spyOn(fileManagerService, 'fileExists').mockReturnValueOnce(false);
 			jest.spyOn(fileManagerService, 'fileExists').mockReturnValueOnce(true);
 			expect(
-				await songIllustrationService.getIllustrationLink({ id: dummyRepository.songA2.id })
-			).toBe(`/illustrations/releases/${dummyRepository.artistA.slug}+${dummyRepository.albumA1.slug}+${dummyRepository.releaseA1_2.slug}`)
-		})
-		it("should return null, as the illustration does not exist", async () => {
-			expect(
-				await songIllustrationService.getIllustrationLink({ id: dummyRepository.songA2.id })
-			).toBeNull();
+				songIllustrationService.buildIllustrationLink(dummyRepository.songA2.id)
+			).toBe(`/illustrations/songs/${dummyRepository.songA2.id}`)
 		})
 	})
 })

@@ -33,7 +33,7 @@ export class SongResponseBuilder extends ResponseBuilderInterceptor<SongWithRela
 	async buildResponse(song: SongWithRelations): Promise<SongResponse> {
 		const response = <SongResponse>{
 			...song,
-			illustration: await this.songIllustrationService.getIllustrationLink({ id: song.id })
+			illustration: this.songIllustrationService.buildIllustrationLink(song.id)
 		};
 
 		if (song.artist !== undefined) {

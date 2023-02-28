@@ -79,12 +79,13 @@ describe('Illustration Controller', () => {
 	describe("Get Album Illustration", () => {
 		it("should return the master release illustration", () => {
 			jest.spyOn(fileManagerService, 'fileExists').mockReturnValueOnce(true);
+			jest.spyOn(fileManagerService, 'fileExists').mockReturnValueOnce(true);
 			jest.spyOn(fs, 'createReadStream').mockReturnValueOnce(getDummyIllustrationStream());
 			return request(app.getHttpServer())
 				.get(`/illustrations/albums/${dummyRepository.albumB1.id}`)
 				.expect(200)
 				.expect((res) => {
-					expectedFileName(res.headers, dummyRepository.albumB1.slug);
+					expectedFileName(res.headers, dummyRepository.releaseB1_1.slug);
 					expect(res.body).toStrictEqual(dummyIllustrationBytes);
 				});
 		});

@@ -51,19 +51,14 @@ describe('Artist Illustration Service', () => {
 		it("should get Artist Illustration Link (using ID)", async () => {
 			jest.spyOn(fileManagerService, 'fileExists').mockReturnValueOnce(true);
 			expect(
-				await artistIllustrationService.getIllustrationLink({ id: dummyRepository.artistA.id })
+				artistIllustrationService.buildIllustrationLink(dummyRepository.artistA.id)
 			).toBe(`/illustrations/artists/${dummyRepository.artistA.id}`);
 		})
 		it("should get Artist Illustration Link (using Slug)", async () => {
 			jest.spyOn(fileManagerService, 'fileExists').mockReturnValueOnce(true);
 			expect(
-				await artistIllustrationService.getIllustrationLink({ slug: new Slug(dummyRepository.artistB.slug) })
+				artistIllustrationService.buildIllustrationLink(new Slug(dummyRepository.artistB.slug).toString())
 			).toBe(`/illustrations/artists/${dummyRepository.artistB.slug}`);
-		})
-		it("should return null, as the illustration does not exist", async () => {
-			expect(
-				await artistIllustrationService.getIllustrationLink({ id: dummyRepository.artistB.id })
-			).toBeNull();
 		})
 	})
 })

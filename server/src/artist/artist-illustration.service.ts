@@ -9,7 +9,7 @@ import ArtistService from './artist.service';
 import SettingsService from 'src/settings/settings.service';
 import { join } from 'path';
 import compilationAlbumArtistKeyword from 'src/utils/compilation';
-import { CompilationArtistException } from './artist.exceptions';
+import Identifier from 'src/identifier/models/identifier';
 
 type ServiceArgs = [artistSlug?: Slug];
 
@@ -44,18 +44,8 @@ export default class ArtistIllustrationService extends RepositoryIllustrationSer
 		);
 	}
 
-	async getIllustrationLink(where: ArtistQueryParameters.WhereInput): Promise<string | null> {
-		const path = await this.getIllustrationPath(where);
-
-		if (this.illustrationExists(path)) {
-			if (where.compilationArtist) {
-				throw new CompilationArtistException('illustration');
-			}
-			const identifier = where.slug ?? where.id;
-
-			return `/illustrations/artists/${identifier}`;
-		}
-		return null;
+	buildIllustrationLink(identifier: Identifier): string {
+		return `${this.IllustrationControllerPath}/artists/${identifier}`;
 	}
 
 	async formatWhereInputToIdentifiers(
