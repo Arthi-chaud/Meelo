@@ -25,8 +25,7 @@ export class ArtistResponseBuilder extends ResponseBuilderInterceptor<ArtistWith
 	async buildResponse(artist: ArtistWithRelations): Promise<ArtistResponse> {
 		const response = <ArtistResponse>{
 			...artist,
-			illustration: await this.artistIllustrationService
-				.getIllustrationLink({ id: artist.id })
+			illustration: this.artistIllustrationService.buildIllustrationLink(artist.id)
 		};
 
 		return response;

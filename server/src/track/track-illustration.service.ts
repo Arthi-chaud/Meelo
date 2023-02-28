@@ -7,6 +7,7 @@ import FileManagerService from "src/file-manager/file-manager.service";
 import Slug from "src/slug/slug";
 import ReleaseIllustrationService from "src/release/release-illustration.service";
 import TrackService from "./track.service";
+import Identifier from "src/identifier/models/identifier";
 
 type ServiceArgs = [
 	albumArtistSlug: Slug | undefined,
@@ -48,15 +49,8 @@ export default class TrackIllustrationService extends RepositoryIllustrationServ
 		return `${releaseIllustrationFolder}/${discIndex ? `disc-${discIndex}-` : ''}track-${trackIndex ?? 0 }`;
 	}
 
-	async getIllustrationLink(where: TrackQueryParameters.WhereInput): Promise<string | null> {
-		const track = await this.trackService.get(where);
-		const identifiers = await this.formatWhereInputToIdentifiers(where);
-		const trackIllustrationPath = this.buildIllustrationPath(...identifiers);
-
-		if (this.illustrationExists(trackIllustrationPath)) {
-			return `/illustrations/tracks/${track.id}`;
-		}
-		return this.releaseIllustrationService.getIllustrationLink({ id: track.releaseId });
+	buildIllustrationLink(identifier: Identifier): string {
+		return `${this.IllustrationControllerPath}/tracks/${identifier}`;
 	}
 
 	async formatWhereInputToIdentifiers(

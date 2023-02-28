@@ -1,6 +1,7 @@
 import FileManagerService from "src/file-manager/file-manager.service";
 import { IllustrationFolderPath, IllustrationPath } from "src/illustration/models/illustration-path.model";
 import { join } from 'path';
+import Identifier from "src/identifier/models/identifier";
 
 /**
  * Illustration Service dedicated to a reposiory
@@ -12,6 +13,8 @@ export default abstract class RepositoryIllustrationService<
 	constructor(
 		protected fileManagerService: FileManagerService
 	) {}
+
+	protected readonly IllustrationControllerPath = '/illustrations';
 
 	/**
 	 * From an entity's identifiers, build its illustration folder path
@@ -66,9 +69,8 @@ export default abstract class RepositoryIllustrationService<
 
 	/**
 	 * Gets the URL to the release's illustration.
-	 * If there is no illustration, it will return null
 	 */
-	abstract getIllustrationLink(where: GetByWhereParams): Promise<string | null>;
+	abstract buildIllustrationLink(identifier: Identifier): string;
 
 	/**
 	 * Uses WhereInput into build parameters for the other methods

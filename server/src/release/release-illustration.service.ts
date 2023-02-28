@@ -8,8 +8,7 @@ import ReleaseService from "./release.service";
 import FileManagerService from "src/file-manager/file-manager.service";
 import { join } from 'path';
 import AlbumIllustrationService from "src/album/album-illustration.service";
-import compilationAlbumArtistKeyword from "src/utils/compilation";
-import { SlugSeparator } from "src/identifier/identifier.slug-separator";
+import Identifier from "src/identifier/models/identifier";
 
 type ServiceArgs = [artistSlug: Slug | undefined, albumSlug: Slug, releaseSlug: Slug];
 
@@ -37,18 +36,8 @@ export default class ReleaseIllustrationService extends RepositoryIllustrationSe
 		);
 	}
 
-	async getIllustrationLink(where: ReleaseQueryParameters.WhereInput): Promise<string | null> {
-		const identifiers = await this.formatWhereInputToIdentifiers(where);
-		const path = await this.getIllustrationPath(where);
-
-		if (this.illustrationExists(path)) {
-			const [artistSlug, albumSlug, releaseSlug] = identifiers;
-
-			return '/illustrations/releases/' + [artistSlug ?? new Slug(compilationAlbumArtistKeyword), albumSlug, releaseSlug]
-				.map((slug) => slug.toString())
-				.join(SlugSeparator);
-		}
-		return null;
+	buildIllustrationLink(identifier: Identifier): string {
+		return `${this.IllustrationControllerPath}/releases/${identifier}`;
 	}
 
 	async formatWhereInputToIdentifiers(
