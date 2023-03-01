@@ -5,6 +5,7 @@ import {
 	IsDefined,
 	IsIn, IsString, ValidateNested
 } from "class-validator";
+import ProvidersSettings from "src/providers/models/providers.settings";
 
 export const metadataSourceValue = ["path", "embedded"] as const;
 export const metadataOrderValue = ["only", "preferred"] as const;
@@ -60,4 +61,15 @@ export default class Settings {
 	@ValidateNested()
 	@IsDefined()
 	metadata: MetadataSettings;
+
+	/**
+	 * Settings for the providers
+	 */
+	@ApiProperty({
+		type: ProvidersSettings
+	})
+	@Type(() => ProvidersSettings)
+	@ValidateNested()
+	@IsDefined()
+	providers: ProvidersSettings;
 }

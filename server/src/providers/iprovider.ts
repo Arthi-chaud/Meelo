@@ -1,16 +1,24 @@
 import { AlbumType } from "@prisma/client";
 import { ProviderMethodNotAvailable } from "./provider.exception";
+import ProviderActions from "./provider-actions";
+import BaseProviderSettings from "./models/provider.base-settings";
 
 /**
  * Abstraction of External Metadata Provider
  */
-export default abstract class IProvider {
+export default abstract class IProvider<SettingsType> implements ProviderActions {
 	constructor(
 		/**
 		 * Name of the Provider, used to identify it
 		 */
 		protected readonly name: string
 	) {}
+
+	protected _settings: SettingsType;
+
+	set settings(settings: SettingsType) {
+		this._settings = settings;
+	}
 
 	/**
 	 * The URL to get the provider's Banner
