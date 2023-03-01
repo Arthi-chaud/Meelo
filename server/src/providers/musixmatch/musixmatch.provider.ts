@@ -5,7 +5,7 @@ import MusixMatchSettings from "./musixmatch.settings";
 @Injectable()
 export default class MusixMatchProvider extends IProvider<MusixMatchSettings> {
 	constructor() {
-		super('Musixmatch');
+		super('musixmatch');
 	}
 
 	getProviderBannerUrl(): string {

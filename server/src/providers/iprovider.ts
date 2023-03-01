@@ -1,7 +1,7 @@
 import { AlbumType } from "@prisma/client";
-import { ProviderMethodNotAvailable } from "./provider.exception";
+import { ProviderMethodNotAvailableError } from "./provider.exception";
 import ProviderActions from "./provider-actions";
-import BaseProviderSettings from "./models/provider.base-settings";
+import ProvidersSettings from "./models/providers.settings";
 
 /**
  * Abstraction of External Metadata Provider
@@ -9,10 +9,10 @@ import BaseProviderSettings from "./models/provider.base-settings";
 export default abstract class IProvider<SettingsType> implements ProviderActions {
 	constructor(
 		/**
-		 * Name of the Provider, used to identify it
+		 * Name of the Provider, used to identify it in the database and the settings
 		 */
-		protected readonly name: string
-	) {}
+		public readonly name: keyof ProvidersSettings
+	) { }
 
 	protected _settings: SettingsType;
 
@@ -36,7 +36,7 @@ export default abstract class IProvider<SettingsType> implements ProviderActions
 	 * @param songName can be used to differentiate artists with same name
 	 */
 	getArtistIdentifier(artistName: string, songName?: string): Promise<string> {
-		throw new ProviderMethodNotAvailable(this.name);
+		throw new ProviderMethodNotAvailableError(this.name);
 	}
 
 	/**
@@ -45,7 +45,7 @@ export default abstract class IProvider<SettingsType> implements ProviderActions
 	 * @param artistName Name of the artist
 	 */
 	getSongIdentifier(songName: string, artistName: string): Promise<string> {
-		throw new ProviderMethodNotAvailable(this.name);
+		throw new ProviderMethodNotAvailableError(this.name);
 	}
 
 	/**
@@ -54,7 +54,7 @@ export default abstract class IProvider<SettingsType> implements ProviderActions
 	 * @param artistName Name of the artist, if there is one
 	 */
 	getAlbumIdentifier(albumName: string, artistName?: string): Promise<string> {
-		throw new ProviderMethodNotAvailable(this.name);
+		throw new ProviderMethodNotAvailableError(this.name);
 	}
 
 	/**
@@ -62,7 +62,7 @@ export default abstract class IProvider<SettingsType> implements ProviderActions
 	 * @param albumIdentifer The identifer of the album
 	 */
 	getAlbumType(albumIdentifer: string): Promise<AlbumType> {
-		throw new ProviderMethodNotAvailable(this.name);
+		throw new ProviderMethodNotAvailableError(this.name);
 	}
 
 	/**
@@ -70,7 +70,7 @@ export default abstract class IProvider<SettingsType> implements ProviderActions
 	 * @param artistIdentifer The identifier provided by `getArtistIdentifier`
 	 */
 	getArtistIllustrationUrl(artistIdentifer: string): Promise<string> {
-		throw new ProviderMethodNotAvailable(this.name);
+		throw new ProviderMethodNotAvailableError(this.name);
 	}
 
 	/**
@@ -78,7 +78,7 @@ export default abstract class IProvider<SettingsType> implements ProviderActions
 	 * @param songIdentifier the identifer of the song
 	 */
 	getSongLyrics(songIdentifier: string): Promise<string> {
-		throw new ProviderMethodNotAvailable(this.name);
+		throw new ProviderMethodNotAvailableError(this.name);
 	}
 
 	/**
@@ -86,6 +86,6 @@ export default abstract class IProvider<SettingsType> implements ProviderActions
 	 * @param songIdentifier the identifer of the song
 	 */
 	getSongGenres(songIdentifier: string): Promise<string[]> {
-		throw new ProviderMethodNotAvailable(this.name);
+		throw new ProviderMethodNotAvailableError(this.name);
 	}
 }
