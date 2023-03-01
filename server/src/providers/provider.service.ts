@@ -13,10 +13,18 @@ export default class ProviderService implements ProviderActions {
 	private readonly enabledProviders: IProvider<unknown>[];
 
 	constructor(
-		private musixmatchProvider: MusixMatchProvider,
+		musixmatchProvider: MusixMatchProvider,
 		private settingsService: SettingsService
 	) {
-		this.enabledProviders = [musixmatchProvider];
+		const providersSettings = this.settingsService.settingsValues.providers;
+		const providers = [musixmatchProvider];
+
+		providers.forEach((provider) => {
+			if (providersSettings[provider.name].enabled === true) {
+				provider.settings = providersSettings[provider.name];
+				this.enabledProviders.push(provider);
+			}
+		});
 	}
 
 	getArtistIdentifier(artistName: string, songName?: string | undefined): Promise<string> {
