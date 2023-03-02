@@ -71,4 +71,52 @@ export default class MusixMatchProvider extends IProvider<MusixMatchSettings> {
 			throw new ProviderActionFailedError(this.name, 'getArtistIllustrationUrl', err.message);
 		}
 	}
+
+	async getSongIdentifier(songName: string, artistIdentifer: string): Promise<string> {
+		try {
+			const sluggedSongName = new Slug(songName).toString();
+			const searchPage = await this.httpService.axiosRef
+				.get(`/search/${artistIdentifer} ${songName}/tracks`, { baseURL: this.rootUrl });
+			const searchResults = cheerio.load(searchPage.data)('.media-card');
+
+			return searchResults
+				.map((__, element) => {
+					const parsedElement = cheerio.load(element);
+					const title = parsedElement('.title');
+					const artist = parsedElement('.artist');
+
+					return {
+						id: title.attr()!['href'].replace('/lyrics/', ''),
+						name: title.text(),
+						artistId: artist.attr()!['href'].replace('/artist/', ''),
+					};
+				}).toArray()
+				.filter(({ artistId }) => artistId == artistIdentifer)
+				.map((track) => ({
+					...track,
+					similarity: levenshtein(
+						new Slug(track.name).toString(),
+						sluggedSongName
+					).similarity
+				}))
+				.sort((candidateA, candidateB) => candidateB.similarity - candidateA.similarity)
+				.at(0)!.id;
+		} catch (err) {
+			throw new ProviderActionFailedError(this.name, 'getSongIdentifier', err.message);
+		}
+	}
+
+	async getSongLyrics(songIdentifier: string): Promise<string> {
+		try {
+			const lyricsPage = await this.httpService.axiosRef
+				.get(`/lyrics/${songIdentifier}`, { baseURL: this.rootUrl });
+
+			return cheerio.load(lyricsPage.data)('.lyrics__content__ok')
+				.map((__, lyricSegment) => cheerio.load(lyricSegment).text())
+				.toArray()
+				.join('\n');
+		} catch (err) {
+			throw new ProviderActionFailedError(this.name, 'getSongLyrics', err.message);
+		}
+	}
 }
