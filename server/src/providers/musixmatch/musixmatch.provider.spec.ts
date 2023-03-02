@@ -4,13 +4,14 @@ import { createTestingModule } from "test/test-module";
 import TestPrismaService from "test/test-prisma.service";
 import MusixMatchProvider from "./musixmatch.provider";
 import { ProviderActionFailedError } from "../provider.exception";
+import { HttpModule } from "@nestjs/axios";
 
 describe('MusixMatch Provider', () => {
 	let musixmatchProvider: MusixMatchProvider;
 
 	beforeAll(async () => {
 		const module: TestingModule = await createTestingModule({
-			imports: [],
+			imports: [HttpModule],
 			providers: [MusixMatchProvider],
 		}).overrideProvider(PrismaService).useClass(TestPrismaService).compile();
 		musixmatchProvider = module.get(MusixMatchProvider);
@@ -24,10 +25,6 @@ describe('MusixMatch Provider', () => {
 			expect(await musixmatchProvider.getArtistIdentifier('P!nk'))
 				.toBe("P-nk");
 		});
-		it("should get main artist's Identifier", async () => {
-			expect(await musixmatchProvider.getArtistIdentifier('P!nk'))
-				.toBe("P-nk");
-		});
 		it("should fail, as the artist does not exist", () => {
 			expect(() => musixmatchProvider.getArtistIdentifier("azertyuiop"))
 				.rejects.toThrow(ProviderActionFailedError);
@@ -36,8 +33,16 @@ describe('MusixMatch Provider', () => {
 
 	describe('Get Artist Illustration', () => {
 		it("should get artist illustration", async () => {
-			expect(await musixmatchProvider.getArtistIllustrationUrl('Britney-Spearc'))
+			expect(await musixmatchProvider.getArtistIllustrationUrl('Britney-Spears'))
 				.toBe("https://static.musixmatch.com/images-storage/mxmimages/0/3/3/0/0/2/43200330_14.jpg");
+		});
+		it("should get artist illustration (2)", async () => {
+			expect(await musixmatchProvider.getArtistIllustrationUrl('P-nk'))
+				.toBe("https://static.musixmatch.com/images-storage/mxmimages/9/6/7/0/1/10769_14.jpg");
+		});
+		it("should get artist illustration (3)", async () => {
+			expect(await musixmatchProvider.getArtistIllustrationUrl('Christina-Aguilera'))
+				.toBe("https://static.musixmatch.com/images-storage/mxmimages/7/2/7/7/3/37727_14.jpg");
 		});
 		it("should fail, as the artist does not have an illustration", () => {
 			expect(() => musixmatchProvider.getArtistIllustrationUrl("osunlade"))

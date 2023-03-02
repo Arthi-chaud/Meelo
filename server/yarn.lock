@@ -2265,6 +2265,11 @@
   dependencies:
     "@types/express-serve-static-core" "*"
 
+"@types/damerau-levenshtein@^1.0.0":
+  version "1.0.0"
+  resolved "https://registry.yarnpkg.com/@types/damerau-levenshtein/-/damerau-levenshtein-1.0.0.tgz#b0b78d767f63235ff94b748fa318debf732db9e1"
+  integrity sha512-8XQ1jJHlOl6HjZ3/fU9Yrm/14jxM4gXVezPWiwkyiG0GnYROsI6wdh8DwKccAFGDNiNYBooTZkRXVe4du6plKA==
+
 "@types/debug@4.1.7":
   version "4.1.7"
   resolved "https://registry.yarnpkg.com/@types/debug/-/debug-4.1.7.tgz#7cc0ea761509124709b8b2d1090d8f6c17aadb82"
@@ -3601,7 +3606,7 @@ cheerio-without-node-native@0.20.2:
   optionalDependencies:
     jsdom "^7.0.2"
 
-cheerio@^1.0.0-rc.10:
+cheerio@^1.0.0-rc.10, cheerio@^1.0.0-rc.12:
   version "1.0.0-rc.12"
   resolved "https://registry.yarnpkg.com/cheerio/-/cheerio-1.0.0-rc.12.tgz#788bf7466506b1c6bf5fae51d24a2c4d62e47683"
   integrity sha512-VqR8m68vM46BNnuZ5NtnGBKIE/DfN0cRIzg9n40EIq9NOv90ayxLBXA8fXC5gquFRGJSTRqBq25Jt2ECLR431Q==
@@ -4079,6 +4084,11 @@ d@1, d@^1.0.1:
   dependencies:
     es5-ext "^0.10.50"
     type "^1.0.1"
+
+damerau-levenshtein@^1.0.8:
+  version "1.0.8"
+  resolved "https://registry.yarnpkg.com/damerau-levenshtein/-/damerau-levenshtein-1.0.8.tgz#b43d286ccbd36bc5b2f7ed41caf2d0aba1f8a6e7"
+  integrity sha512-sdQSFB7+llfUcQHUQO3+B8ERRj0Oa4w9POWMI/puGtuf7gFywGmkaLCElnudfTiKZV+NvHqL0ifzdrI8Ro7ESA==
 
 dash-ast@^2.0.1:
   version "2.0.1"
