@@ -12,6 +12,12 @@ export class UnknownProviderError extends InvalidRequestException {
 	}
 }
 
+export class ProviderActionFailedError extends NotFoundException {
+	constructor(providerName: string, actionName: string, message: string) {
+		super(`Provider '${providerName}' '${actionName}' Failed: ${message}`);
+	}
+}
+
 export class AllProvidersFailedError extends NotFoundException {
 	constructor(actionName: string) {
 		super(`All providers failed action '${actionName}'`);
