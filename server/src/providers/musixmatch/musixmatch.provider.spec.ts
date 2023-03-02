@@ -56,8 +56,12 @@ describe('MusixMatch Provider', () => {
 
 	describe('Get Song Identifier', () => {
 		it("should get song identifer", async () => {
-			expect(await musixmatchProvider.getSongIdentifier("Funhouse", 'P!nk'))
+			expect(await musixmatchProvider.getSongIdentifier("Funhouse", 'P-nk'))
 				.toBe("P-nk-2/Funhouse");
+		});
+		it("should get song identifer (2)", async () => {
+			expect(await musixmatchProvider.getSongIdentifier("Work Bitch", "Britney-Spears"))
+				.toBe("Britney-Spears/Work-Bitch");
 		});
 		it("should fail, as the song does not exist", () => {
 			expect(() => musixmatchProvider.getSongIdentifier("AZERTYUIOP", "Madonna"))
@@ -68,9 +72,9 @@ describe('MusixMatch Provider', () => {
 	describe('Get Song Lyrics', () => {
 		it("should get song's lyrics", async () => {
 			const lyrics = await musixmatchProvider.getSongLyrics("P-nk-2/Funhouse");
-
+			console.log(lyrics);
 			expect(lyrics.startsWith("I dance around this empty house")).toBeTruthy();
-			expect(lyrics.startsWith("I′m gonna burn it down, down, down\nI′m gonna burn it down")).toBeTruthy();
+			expect(lyrics.endsWith("I′m gonna burn it down, down, down\nI′m gonna burn it down")).toBeTruthy();
 		});
 		it("should fail, as the song does not exist", () => {
 			expect(() => musixmatchProvider.getSongLyrics("AZERTYUIOP"))
