@@ -10,7 +10,6 @@ import {
 	LyricsAlreadyExistsExceptions,
 	LyricsNotFoundByIDException,
 	LyricsNotFoundBySongException,
-	MissingGeniusAPIKeyException,
 	NoLyricsFoundException
 } from './lyrics.exceptions';
 import type LyricsQueryParameters from './models/lyrics.query-parameters';
@@ -20,8 +19,6 @@ import Logger from 'src/logger/logger';
 import { PrismaError } from 'prisma-error-enum';
 import Slug from 'src/slug/slug';
 import ProviderService from 'src/providers/provider.service';
-// eslint-disable-next-line @typescript-eslint/no-var-requires
-const { getLyrics } = require('genius-lyrics-api');
 
 @Injectable()
 export class LyricsService extends RepositoryService<

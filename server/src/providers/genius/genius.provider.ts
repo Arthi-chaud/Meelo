@@ -8,7 +8,7 @@ import levenshtein from "damerau-levenshtein";
 import { ProviderActionFailedError } from "../provider.exception";
 
 @Injectable()
-export default class GeniusProvider extends IProvider<GeniusSettings> implements OnModuleInit {
+export default class GeniusProvider extends IProvider<GeniusSettings, number> implements OnModuleInit {
 	private geniusClient: Genius.Client;
 	constructor(
 		private settingsService: SettingsService
@@ -31,7 +31,7 @@ export default class GeniusProvider extends IProvider<GeniusSettings> implements
 		return "https://images.genius.com/8ed669cadd956443e29c70361ec4f372.1000x1000x1.png";
 	}
 
-	async getArtistIdentifier(artistName: string, songName?: string): Promise<string> {
+	async getArtistIdentifier(artistName: string, songName?: string): Promise<number> {
 		try {
 			const sluggedArtistName = new Slug(artistName).toString();
 			const searchResults = await this.geniusClient.songs.search(
@@ -48,13 +48,13 @@ export default class GeniusProvider extends IProvider<GeniusSettings> implements
 					id: song.artist.id
 				}))
 				.sort((artistA, artistB) => artistB.similarity - artistA.similarity)
-				.at(0)!.id.toString();
+				.at(0)!.id;
 		} catch (err) {
 			throw new ProviderActionFailedError(this.name, 'getArtistIdentifier', err.message);
 		}
 	}
 
-	async getSongIdentifier(songName: string, artistIdentifer: string): Promise<string> {
+	async getSongIdentifier(songName: string, artistIdentifer: number): Promise<number> {
 		try {
 			const sluggedSongName = new Slug(songName).toString();
 			const searchResults = await this.geniusClient.songs.search(
@@ -63,7 +63,7 @@ export default class GeniusProvider extends IProvider<GeniusSettings> implements
 			);
 
 			return searchResults
-				.filter((song) => song.artist.id.toString() == artistIdentifer)
+				.filter((song) => song.artist.id == artistIdentifer)
 				.map((song) => ({
 					similarity: levenshtein(
 						new Slug(song.title).toString(),
@@ -72,14 +72,14 @@ export default class GeniusProvider extends IProvider<GeniusSettings> implements
 					id: song.id
 				}))
 				.sort((songA, songB) => songB.similarity - songA.similarity)
-				.at(0)!.id.toString();
+				.at(0)!.id;
 		} catch (err) {
 			throw new ProviderActionFailedError(this.name, 'getSongIdentifier', err.message);
 		}
 	}
 
-	async getArtistIllustrationUrl(artistIdentifer: string): Promise<string> {
-		const artist = await this.geniusClient.artists.get(+artistIdentifer).catch((err) => {
+	async getArtistIllustrationUrl(artistIdentifer: number): Promise<string> {
+		const artist = await this.geniusClient.artists.get(artistIdentifer).catch((err) => {
 			throw new ProviderActionFailedError(this.name, 'getSongIdentifier', err.message);
 		});
 
@@ -89,10 +89,13 @@ export default class GeniusProvider extends IProvider<GeniusSettings> implements
 		return artist.image;
 	}
 
-	async getSongLyrics(songIdentifier: string): Promise<string> {
-		return (await this.geniusClient.songs.get(+songIdentifier))
-			.lyrics().catch((err) => {
-				throw new ProviderActionFailedError(this.name, 'getSongLyrics', err);
-			});
+	async getSongLyrics(songIdentifier: number): Promise<string> {
+		try {
+			const song = await this.geniusClient.songs.get(songIdentifier);
+
+			return await song.lyrics();
+		} catch (err) {
+			throw new ProviderActionFailedError(this.name, 'getSongLyrics', err);
+		}
 	}
 }
