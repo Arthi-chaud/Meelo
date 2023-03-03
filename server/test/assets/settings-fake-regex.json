@@ -7,5 +7,6 @@
 	"metadata": {
 		"source": "embedded",
 		"order": "only"
-	}
+	},
+	"providers": {}
 }

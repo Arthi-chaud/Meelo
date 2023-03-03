@@ -72,7 +72,6 @@ describe('MusixMatch Provider', () => {
 	describe('Get Song Lyrics', () => {
 		it("should get song's lyrics", async () => {
 			const lyrics = await musixmatchProvider.getSongLyrics("P-nk-2/Funhouse");
-			console.log(lyrics);
 			expect(lyrics.startsWith("I dance around this empty house")).toBeTruthy();
 			expect(lyrics.endsWith("I′m gonna burn it down, down, down\nI′m gonna burn it down")).toBeTruthy();
 		});
