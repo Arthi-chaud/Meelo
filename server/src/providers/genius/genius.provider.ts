@@ -88,4 +88,11 @@ export default class GeniusProvider extends IProvider<GeniusSettings> implements
 		}
 		return artist.image;
 	}
+
+	async getSongLyrics(songIdentifier: string): Promise<string> {
+		return (await this.geniusClient.songs.get(+songIdentifier))
+			.lyrics().catch((err) => {
+				throw new ProviderActionFailedError(this.name, 'getSongLyrics', err);
+			});
+	}
 }

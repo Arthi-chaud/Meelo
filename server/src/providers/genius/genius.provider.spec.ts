@@ -41,6 +41,33 @@ describe('Genius Provider', () => {
 		});
 	});
 
+	describe('Get Song Identifier', () => {
+		it("should get simple song Identifier", async () => {
+			expect(await geniusProvider.getSongIdentifier("Work B**ch", '1052'))
+				.toBe("6547774");
+		});
+		it("should get simple song Identifier (2)", async () => {
+			expect(await geniusProvider.getSongIdentifier("Work Bitch", '1052'))
+				.toBe("218073");
+		});
+		it("should get simple song Identifier (2)", async () => {
+			expect(await geniusProvider.getSongIdentifier('Fun For Me', '343316'))
+				.toBe("1631056");
+		});
+		it("should get song with special character Identifier", async () => {
+			expect(await geniusProvider.getSongIdentifier('M!ssundaztood', '345'))
+				.toBe("195068");
+		});
+		it("should throw as the song does not have lyrics", async () => {
+			expect(() => geniusProvider.getSongIdentifier('Drive', '379198'))
+				.rejects.toThrow(ProviderActionFailedError);
+		});
+		it("should fail, as the song does not exist", () => {
+			expect(() => geniusProvider.getSongIdentifier("azertyuiop", "345"))
+				.rejects.toThrow(ProviderActionFailedError);
+		});
+	});
+
 	describe('Get Artist Illustration', () => {
 		it("should get artist illustration", async () => {
 			expect(await geniusProvider.getArtistIllustrationUrl('345'))
