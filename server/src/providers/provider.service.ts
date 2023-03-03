@@ -11,7 +11,7 @@ import Logger from "src/logger/logger";
  */
 @Injectable()
 export default class ProviderService implements ProviderActions {
-	private readonly enabledProviders: IProvider<unknown>[];
+	private readonly enabledProviders: IProvider<unknown>[] = [];
 	private readonly logger = new Logger(ProviderService.name);
 
 	constructor(
@@ -22,7 +22,7 @@ export default class ProviderService implements ProviderActions {
 		const providers = [musixmatchProvider];
 
 		providers.forEach((provider) => {
-			if (providersSettings[provider.name].enabled === true) {
+			if (providersSettings[provider.name]?.enabled === true) {
 				this.logger.log(`Provider '${provider.name}' enabled`);
 				provider.settings = providersSettings[provider.name];
 				this.enabledProviders.push(provider);

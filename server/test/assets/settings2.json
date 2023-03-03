@@ -6,5 +6,8 @@
 	"metadata": {
 		"source": "path",
 		"order": "preferred"
+	},
+	"providers": {
+		
 	}
 }
