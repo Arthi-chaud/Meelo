@@ -2,24 +2,25 @@ import { Injectable } from "@nestjs/common";
 import MusixMatchProvider from "./musixmatch/musixmatch.provider";
 import IProvider from "./iprovider";
 import SettingsService from "src/settings/settings.service";
-import ProviderActions from "./provider-actions";
 import { AllProvidersFailedError } from "./provider.exception";
 import Logger from "src/logger/logger";
+import GeniusProvider from "./genius/genius.provider";
 
 /**
  * Orchestrates of Providers
  */
 @Injectable()
-export default class ProviderService implements ProviderActions {
+export default class ProviderService {
 	private readonly enabledProviders: IProvider<unknown>[] = [];
 	private readonly logger = new Logger(ProviderService.name);
 
 	constructor(
 		musixmatchProvider: MusixMatchProvider,
+		geniusProvider: GeniusProvider,
 		private settingsService: SettingsService
 	) {
 		const providersSettings = this.settingsService.settingsValues.providers;
-		const providers = [musixmatchProvider];
+		const providers = [musixmatchProvider, geniusProvider];
 
 		providers.forEach((provider) => {
 			if (providersSettings[provider.name]?.enabled === true) {
@@ -32,49 +33,54 @@ export default class ProviderService implements ProviderActions {
 		});
 	}
 
-	getArtistIdentifier(...parameters: Parameters<ProviderActions['getArtistIdentifier']>) {
-		return this.runAction('getArtistIdentifier', parameters);
+	getAlbumType(albumName: string, artistName?: string) {
+		return this.runAction(async (provider) => {
+			const albumId = await provider.getAlbumIdentifier(albumName, artistName);
+
+			return provider.getAlbumType(albumId);
+		});
 	}
 
-	getSongIdentifier(...parameters: Parameters<ProviderActions['getSongIdentifier']>) {
-		return this.runAction('getSongIdentifier', parameters);
+	getArtistIllustrationUrl(artistName: string, songName?: string) {
+		return this.runAction(async (provider) => {
+			const artistId = await provider.getArtistIdentifier(artistName, songName);
+
+			return provider.getArtistIllustrationUrl(artistId);
+		});
 	}
 
-	getAlbumIdentifier(...parameters: Parameters<ProviderActions['getAlbumIdentifier']>) {
-		return this.runAction('getAlbumIdentifier', parameters);
+	getSongLyrics(songName: string, artistName: string) {
+		return this.runAction(async (provider) => {
+			const artistId = await provider.getArtistIdentifier(artistName, songName);
+			const songId = await provider.getSongIdentifier(songName, artistId);
+
+			return provider.getSongLyrics(songId);
+		});
 	}
 
-	getAlbumType(...parameters: Parameters<ProviderActions['getAlbumType']>) {
-		return this.runAction('getAlbumType', parameters);
-	}
+	getSongGenres(songName: string, artistName: string) {
+		return this.runAction(async (provider) => {
+			const artistId = await provider.getArtistIdentifier(artistName, songName);
+			const songId = await provider.getSongIdentifier(songName, artistId);
 
-	getArtistIllustrationUrl(...parameters: Parameters<ProviderActions['getArtistIllustrationUrl']>) {
-		return this.runAction('getArtistIllustrationUrl', parameters);
-	}
-
-	getSongLyrics(...parameters: Parameters<ProviderActions['getSongLyrics']>) {
-		return this.runAction('getSongLyrics', parameters);
-	}
-
-	getSongGenres(...parameters: Parameters<ProviderActions['getSongGenres']>) {
-		return this.runAction('getSongGenres', parameters);
+			return provider.getSongGenres(songId);
+		});
 	}
 
 	/**
 	 * Calls action method on each enabled provider, until one suceeds
 	 * If all fails, rejects
 	 */
-	private async runAction<ActionName extends keyof ProviderActions = keyof ProviderActions>(
-		actionName: ActionName,
-		parameters: Parameters<ProviderActions[ActionName]>
-	): Promise<Awaited<ReturnType<ProviderActions[ActionName]>>> {
+	private async runAction<Returns>(
+		action: (provider: IProvider<unknown>) => Promise<Returns>,
+	): Promise<Awaited<Returns>> {
 		for (const provider of this.enabledProviders) {
 			try {
-				return await provider[actionName].call(provider, ...parameters);
+				return await action(provider);
 			} catch {
 				continue;
 			}
 		}
-		throw new AllProvidersFailedError(actionName);
+		throw new AllProvidersFailedError();
 	}
 }
