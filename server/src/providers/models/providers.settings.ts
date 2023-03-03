@@ -2,6 +2,7 @@ import { IsOptional, ValidateNested } from "class-validator";
 import MusixMatchSettings from "../musixmatch/musixmatch.settings";
 import { ApiProperty } from "@nestjs/swagger";
 import { Type } from "class-transformer";
+import GeniusSettings from "../genius/genius.settings";
 
 /**
  * Settings for the Providers
@@ -18,4 +19,16 @@ export default class ProvidersSettings {
 	@ValidateNested()
 	@IsOptional()
 	musixmatch: MusixMatchSettings;
+
+	/**
+	 * Settings for the Genius provider
+	 */
+	@ApiProperty({
+		type: GeniusSettings,
+		required: false
+	})
+	@Type(() => GeniusSettings)
+	@ValidateNested()
+	@IsOptional()
+	genius: GeniusSettings;
 }
