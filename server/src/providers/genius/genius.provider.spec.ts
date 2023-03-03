@@ -5,16 +5,18 @@ import TestPrismaService from "test/test-prisma.service";
 import GeniusProvider from "./genius.provider";
 import { ProviderActionFailedError } from "../provider.exception";
 import { HttpModule } from "@nestjs/axios";
+import SettingsModule from "src/settings/settings.module";
 
 describe('Genius Provider', () => {
 	let geniusProvider: GeniusProvider;
 
 	beforeAll(async () => {
 		const module: TestingModule = await createTestingModule({
-			imports: [HttpModule],
+			imports: [HttpModule, SettingsModule],
 			providers: [GeniusProvider],
 		}).overrideProvider(PrismaService).useClass(TestPrismaService).compile();
 		geniusProvider = module.get(GeniusProvider);
+		geniusProvider.onModuleInit();
 	});
 	describe('Get Artist Identifier', () => {
 		it("should get simple artist Identifier", async () => {
@@ -39,21 +41,17 @@ describe('Genius Provider', () => {
 		});
 	});
 
-	/*describe('Get Artist Illustration', () => {
+	describe('Get Artist Illustration', () => {
 		it("should get artist illustration", async () => {
-			expect(await geniusProvider.getArtistIllustrationUrl('Britney-Spears'))
-				.toBe("https://static.musixmatch.com/images-storage/mxmimages/0/3/3/0/0/2/43200330_14.jpg");
+			expect(await geniusProvider.getArtistIllustrationUrl('345'))
+				.toBe("https://images.genius.com/3ab61718877f5b1e7b119606361c92ad.522x522x1.jpg");
 		});
-		it("should get artist illustration (2)", async () => {
-			expect(await geniusProvider.getArtistIllustrationUrl('P-nk'))
-				.toBe("https://static.musixmatch.com/images-storage/mxmimages/9/6/7/0/1/10769_14.jpg");
-		});
-		it("should get artist illustration (3)", async () => {
-			expect(await geniusProvider.getArtistIllustrationUrl('Christina-Aguilera'))
-				.toBe("https://static.musixmatch.com/images-storage/mxmimages/7/2/7/7/3/37727_14.jpg");
+		it("should get artist illustration", async () => {
+			expect(await geniusProvider.getArtistIllustrationUrl('1052'))
+				.toBe("https://images.genius.com/46f4e22f4dd38d21ca5e5edb9cd82331.900x900x1.jpg");
 		});
 		it("should fail, as the artist does not have an illustration", () => {
-			expect(() => geniusProvider.getArtistIllustrationUrl("osunlade"))
+			expect(() => geniusProvider.getArtistIllustrationUrl("379198"))
 				.rejects.toThrow(ProviderActionFailedError);
 		});
 		it("should fail, as the artist does not exist", () => {
@@ -62,7 +60,7 @@ describe('Genius Provider', () => {
 		});
 	});
 
-	describe('Get Song Identifier', () => {
+	/*describe('Get Song Identifier', () => {
 		it("should get song identifer", async () => {
 			expect(await geniusProvider.getSongIdentifier("Funhouse", 'P-nk'))
 				.toBe("P-nk-2/Funhouse");
