@@ -11,7 +11,7 @@ import GeniusProvider from "./genius/genius.provider";
  */
 @Injectable()
 export default class ProviderService {
-	private readonly enabledProviders: IProvider<unknown>[] = [];
+	private readonly enabledProviders: IProvider<unknown, unknown>[] = [];
 	private readonly logger = new Logger(ProviderService.name);
 
 	constructor(
@@ -72,7 +72,7 @@ export default class ProviderService {
 	 * If all fails, rejects
 	 */
 	private async runAction<Returns>(
-		action: (provider: IProvider<unknown>) => Promise<Returns>,
+		action: (provider: IProvider<unknown, unknown>) => Promise<Returns>,
 	): Promise<Awaited<Returns>> {
 		for (const provider of this.enabledProviders) {
 			try {
