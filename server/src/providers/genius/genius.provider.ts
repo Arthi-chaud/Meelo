@@ -6,6 +6,7 @@ import * as Genius from 'genius-lyrics';
 import Slug from "src/slug/slug";
 import levenshtein from "damerau-levenshtein";
 import { ProviderActionFailedError } from "../provider.exception";
+import { name, version } from 'package.json';
 
 @Injectable()
 export default class GeniusProvider extends IProvider<GeniusSettings, number> implements OnModuleInit {
@@ -21,6 +22,11 @@ export default class GeniusProvider extends IProvider<GeniusSettings, number> im
 		this.geniusClient = new Genius.Client(
 			process.env.NODE_ENV == 'test' ? process.env.GENIUS_ACCESS_TOKEN : this._settings.apiKey
 		);
+		this.geniusClient.config.requestOptions = {
+			headers: {
+				"User-Agent": `${name}, ${version}`
+			}
+		};
 	}
 
 	getProviderBannerUrl(): string {
