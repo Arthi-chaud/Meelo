@@ -2,7 +2,7 @@ import { Injectable, OnModuleInit } from "@nestjs/common";
 import IProvider from "../iprovider";
 import GeniusSettings from "./genius.settings";
 import SettingsService from "src/settings/settings.service";
-import Genius from 'genius-lyrics';
+import * as Genius from 'genius-lyrics';
 import Slug from "src/slug/slug";
 import levenshtein from "damerau-levenshtein";
 import { ProviderActionFailedError } from "../provider.exception";
@@ -14,12 +14,13 @@ export default class GeniusProvider extends IProvider<GeniusSettings> implements
 		private settingsService: SettingsService
 	) {
 		super("genius");
-		this._settings = settingsService.settingsValues.providers.genius;
 	}
 
 	onModuleInit() {
 		this._settings = this.settingsService.settingsValues.providers.genius;
-		this.geniusClient = new Genius.Client(this._settings.apiKey);
+		this.geniusClient = new Genius.Client(
+			process.env.NODE_ENV == 'test' ? process.env.GENIUS_ACCESS_TOKEN : this._settings.apiKey
+		);
 	}
 
 	getProviderBannerUrl(): string {
@@ -30,10 +31,13 @@ export default class GeniusProvider extends IProvider<GeniusSettings> implements
 		return "https://images.genius.com/8ed669cadd956443e29c70361ec4f372.1000x1000x1.png";
 	}
 
-	async getArtistIdentifier(artistName: string, songName?: string | undefined): Promise<string> {
+	async getArtistIdentifier(artistName: string, songName?: string): Promise<string> {
 		try {
 			const sluggedArtistName = new Slug(artistName).toString();
-			const searchResults = await this.geniusClient.songs.search(`${artistName} ${songName ?? ''}`);
+			const searchResults = await this.geniusClient.songs.search(
+				`${artistName} ${songName ?? ''}`,
+				{ sanitizeQuery: true }
+			);
 
 			return searchResults
 				.map((song) => ({
@@ -48,5 +52,40 @@ export default class GeniusProvider extends IProvider<GeniusSettings> implements
 		} catch (err) {
 			throw new ProviderActionFailedError(this.name, 'getArtistIdentifier', err.message);
 		}
+	}
+
+	async getSongIdentifier(songName: string, artistIdentifer: string): Promise<string> {
+		try {
+			const sluggedSongName = new Slug(songName).toString();
+			const searchResults = await this.geniusClient.songs.search(
+				songName,
+				{ sanitizeQuery: true }
+			);
+
+			return searchResults
+				.filter((song) => song.artist.id.toString() == artistIdentifer)
+				.map((song) => ({
+					similarity: levenshtein(
+						new Slug(song.title).toString(),
+						sluggedSongName
+					).similarity,
+					id: song.id
+				}))
+				.sort((songA, songB) => songB.similarity - songA.similarity)
+				.at(0)!.id.toString();
+		} catch (err) {
+			throw new ProviderActionFailedError(this.name, 'getSongIdentifier', err.message);
+		}
+	}
+
+	async getArtistIllustrationUrl(artistIdentifer: string): Promise<string> {
+		const artist = await this.geniusClient.artists.get(+artistIdentifer).catch((err) => {
+			throw new ProviderActionFailedError(this.name, 'getSongIdentifier', err.message);
+		});
+
+		if (artist.image.includes("default_avatar")) {
+			throw new ProviderActionFailedError(this.name, 'getSongIdentifier', "No Image");
+		}
+		return artist.image;
 	}
 }

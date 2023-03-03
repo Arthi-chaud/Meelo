@@ -20,7 +20,7 @@ export class ProviderActionFailedError extends NotFoundException {
 }
 
 export class AllProvidersFailedError extends NotFoundException {
-	constructor(actionName: string) {
-		super(`All providers failed action '${actionName}'`);
+	constructor() {
+		super("All Providers Failed at task");
 	}
 }
