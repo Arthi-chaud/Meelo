@@ -19,6 +19,7 @@ import Identifier from 'src/identifier/models/identifier';
 import Logger from 'src/logger/logger';
 import { PrismaError } from 'prisma-error-enum';
 import Slug from 'src/slug/slug';
+import ProviderService from 'src/providers/provider.service';
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const { getLyrics } = require('genius-lyrics-api');
 
@@ -39,14 +40,13 @@ export class LyricsService extends RepositoryService<
 	Prisma.LyricsOrderByWithRelationAndSearchRelevanceInput
 > {
 	private readonly logger = new Logger(LyricsService.name);
-	private readonly geniusApiKey: string | null;
 	constructor(
 		protected prismaService: PrismaService,
+		protected providerService: ProviderService,
 		@Inject(forwardRef(() => SongService))
 		private songService: SongService,
 	) {
 		super(prismaService.lyrics);
-		this.geniusApiKey = process.env.GENIUS_ACCESS_TOKEN ?? null;
 	}
 
 	/**
@@ -175,25 +175,7 @@ export class LyricsService extends RepositoryService<
 	 * @param songName the name of the song to fetch the lyrics of
 	 */
 	async downloadLyrics(artistName: string, songName: string): Promise<string> {
-		if (!this.geniusApiKey) {
-			throw new MissingGeniusAPIKeyException();
-		}
-		try {
-			const query = {
-				apiKey: this.geniusApiKey,
-				title: songName,
-				artist: artistName,
-				optimizeQuery: true
-			};
-			const lyrics = await getLyrics(query);
-
-			if (lyrics === null) {
-				throw new NoLyricsFoundException(artistName, songName);
-			}
-			return lyrics;
-		} catch {
-			throw new NoLyricsFoundException(artistName, songName);
-		}
+		return this.providerService.getSongLyrics(songName, artistName);
 	}
 
 	/**

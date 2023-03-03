@@ -3,10 +3,11 @@ import PrismaModule from 'src/prisma/prisma.module';
 import SongModule from 'src/song/song.module';
 import { LyricsService } from './lyrics.service';
 import { LyricsResponseBuilder } from './models/lyrics.response';
+import ProvidersModule from 'src/providers/providers.module';
 
 @Module({
 	providers: [LyricsService, LyricsResponseBuilder],
 	exports: [LyricsService, LyricsResponseBuilder],
-	imports: [PrismaModule, forwardRef(() => SongModule),]
+	imports: [PrismaModule, forwardRef(() => SongModule), ProvidersModule]
 })
 export class LyricsModule {}
