@@ -6,7 +6,7 @@ import ProvidersSettings from "./models/providers.settings";
 /**
  * Abstraction of External Metadata Provider
  */
-export default abstract class IProvider<SettingsType> implements ProviderActions {
+export default abstract class IProvider<SettingsType, IdentifierType = string> implements ProviderActions<IdentifierType> {
 	constructor(
 		/**
 		 * Name of the Provider, used to identify it in the database and the settings
@@ -35,25 +35,30 @@ export default abstract class IProvider<SettingsType> implements ProviderActions
 	 * @param artistName Name of the artist
 	 * @param songName can be used to differentiate artists with same name
 	 */
-	getArtistIdentifier(_artistName: string, _songName?: string): Promise<string> {
+	getArtistIdentifier(_artistName: string, _songName?: string): Promise<IdentifierType> {
 		throw new ProviderMethodNotAvailableError(this.name);
 	}
 
 	/**
 	 * @returns the provider's Identifer of the song.
 	 * @param songName The name of the song
-	 * @param artistName Name of the artist
+	 * @param _artistIdentifier Identifier of the artist
 	 */
-	getSongIdentifier(_songName: string, _artistName: string): Promise<string> {
+	getSongIdentifier(
+		_songName: string,
+		_artistIdentifier: IdentifierType
+	): Promise<IdentifierType> {
 		throw new ProviderMethodNotAvailableError(this.name);
 	}
 
 	/**
 	 * @returns the provider's Identifer of the album.
 	 * @param albumName The name of the album
-	 * @param artistName Name of the artist, if there is one
+	 * @param artistIdentifier Name of the artist, if there is one
 	 */
-	getAlbumIdentifier(_albumName: string, _artistName?: string): Promise<string> {
+	getAlbumIdentifier(
+		_albumName: string, _artistIdentifier?: IdentifierType
+	): Promise<IdentifierType> {
 		throw new ProviderMethodNotAvailableError(this.name);
 	}
 
@@ -61,7 +66,7 @@ export default abstract class IProvider<SettingsType> implements ProviderActions
 	 * @returns the type of an album.
 	 * @param albumIdentifer The identifer of the album
 	 */
-	getAlbumType(_albumIdentifer: string): Promise<AlbumType> {
+	getAlbumType(_albumIdentifer: IdentifierType): Promise<AlbumType> {
 		throw new ProviderMethodNotAvailableError(this.name);
 	}
 
@@ -69,7 +74,7 @@ export default abstract class IProvider<SettingsType> implements ProviderActions
 	 * @returns the URL from the Provider of the artist's illustration
 	 * @param artistIdentifer The identifier provided by `getArtistIdentifier`
 	 */
-	getArtistIllustrationUrl(_artistIdentifer: string): Promise<string> {
+	getArtistIllustrationUrl(_artistIdentifer: IdentifierType): Promise<string> {
 		throw new ProviderMethodNotAvailableError(this.name);
 	}
 
@@ -77,7 +82,7 @@ export default abstract class IProvider<SettingsType> implements ProviderActions
 	 * @returns the lyrics of a song
 	 * @param songIdentifier the identifer of the song
 	 */
-	getSongLyrics(_songIdentifier: string): Promise<string> {
+	getSongLyrics(_songIdentifier: IdentifierType): Promise<string> {
 		throw new ProviderMethodNotAvailableError(this.name);
 	}
 
@@ -85,7 +90,7 @@ export default abstract class IProvider<SettingsType> implements ProviderActions
 	 * @returns the genres of a song
 	 * @param songIdentifier the identifer of the song
 	 */
-	getSongGenres(_songIdentifier: string): Promise<string[]> {
+	getSongGenres(_songIdentifier: IdentifierType): Promise<string[]> {
 		throw new ProviderMethodNotAvailableError(this.name);
 	}
 }

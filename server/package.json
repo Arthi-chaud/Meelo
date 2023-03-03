@@ -44,7 +44,6 @@
     "fluent-ffmpeg": "^2.1.2",
     "fs": "^0.0.1-security",
     "genius-lyrics": "^4.4.3",
-    "genius-lyrics-api": "^3.2.0",
     "glob": "^8.0.3",
     "helmet": "^6.0.0",
     "jimp": "^0.16.1",

@@ -8,7 +8,7 @@ import Slug from "src/slug/slug";
 import levenshtein from 'damerau-levenshtein';
 
 @Injectable()
-export default class MusixMatchProvider extends IProvider<MusixMatchSettings> {
+export default class MusixMatchProvider extends IProvider<MusixMatchSettings, string> {
 	constructor(
 		protected readonly httpService: HttpService,
 	) {
