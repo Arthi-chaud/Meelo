@@ -16,6 +16,7 @@ import TestPrismaService from "test/test-prisma.service";
 import { LyricsAlreadyExistsExceptions, LyricsNotFoundByIDException, LyricsNotFoundBySongException, NoLyricsFoundException } from "./lyrics.exceptions";
 import { LyricsModule } from "./lyrics.module";
 import { LyricsService } from "./lyrics.service";
+import ProvidersModule from "src/providers/providers.module";
 
 describe('Lyrics Service', () => {
 	let dummyRepository: TestPrismaService;
@@ -24,7 +25,7 @@ describe('Lyrics Service', () => {
 	let lyricsC1: Lyrics;
 	beforeAll(async () => {
 		const module: TestingModule = await createTestingModule({
-			imports: [PrismaModule, SongModule, AlbumModule, ReleaseModule, FileModule, FileManagerModule, SettingsModule, GenreModule, LyricsModule],
+			imports: [PrismaModule, SongModule, AlbumModule, ReleaseModule, FileModule, FileManagerModule, SettingsModule, GenreModule, LyricsModule, ProvidersModule],
 			providers: [LyricsService],
 		}).overrideProvider(PrismaService).useClass(TestPrismaService).compile();
 		await module.get<PrismaService>(PrismaService).onModuleInit();
