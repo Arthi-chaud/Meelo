@@ -87,6 +87,14 @@ export default abstract class IProvider<SettingsType, IdentifierType = string> i
 	}
 
 	/**
+	 * @returns A short description of the artist
+	 * @param artistIdentifer The identifier of the artist
+	 */
+	getArtistDescription(_artistIdentifer: IdentifierType): Promise<string> {
+		throw new ProviderMethodNotAvailableError(this.name);
+	}
+
+	/**
 	 * @returns the lyrics of a song
 	 * @param songIdentifier the identifer of the song
 	 */
