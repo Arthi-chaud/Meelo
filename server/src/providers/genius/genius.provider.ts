@@ -149,4 +149,30 @@ export default class GeniusProvider extends IProvider<GeniusSettings, number> im
 		}
 		throw new ProviderActionFailedError(this.name, 'getSongLyrics', "No Lyrics Found");
 	}
+
+	async getAlbumDescription(albumIdentifer: number): Promise<string> {
+		try {
+			const album = await this.fetchAPI('/albums/' + albumIdentifer).then((res) => res.album);
+			const descAnnotation = album.description_annotation;
+			const desc: string = descAnnotation.annotations
+				.map((annotation: any) => {
+					const parser = (child: any): string => {
+						if (typeof child == 'string') {
+							return child;
+						}
+						return child.children.map(parser).join(' ').replaceAll('  ', ' ');
+					};
+
+					return parser(annotation.body.dom);
+				})
+				.join('\n').replaceAll('\n\n', '\n');
+
+			if (desc.length) {
+				return desc;
+			}
+		} catch (err) {
+			throw new ProviderActionFailedError(this.name, 'getAlbumDescription', err.message);
+		}
+		throw new ProviderActionFailedError(this.name, 'getAlbumDescription', "No Description Found");
+	}
 }
