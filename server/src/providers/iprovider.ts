@@ -71,6 +71,14 @@ export default abstract class IProvider<SettingsType, IdentifierType = string> i
 	}
 
 	/**
+	 * @returns A short description of the album
+	 * @param albumIdentifer The identifier of the album
+	 */
+	getAlbumDescription(_albumIdentifer: IdentifierType): Promise<string> {
+		throw new ProviderMethodNotAvailableError(this.name);
+	}
+
+	/**
 	 * @returns the URL from the Provider of the artist's illustration
 	 * @param artistIdentifer The identifier provided by `getArtistIdentifier`
 	 */
