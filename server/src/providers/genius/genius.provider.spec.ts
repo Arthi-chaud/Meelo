@@ -103,6 +103,21 @@ describe('Genius Provider', () => {
 		});
 	});
 
+	describe('Get Album Identifier', () => {
+		//Skipping this tes tin CI as Action runner has been flagged as robot by Genius
+		if (process.env.GITHUB_ACTIONS != 'true') {
+			it("should get album's Identifier (1)", async () => {
+				expect(await geniusProvider.getAlbumIdentifier("Ray of Light - Single", 276)).toBe(615085)
+			});
+			it("should get album's Identifier (2)", async () => {
+				expect(await geniusProvider.getAlbumIdentifier("Pink Friday: Roman Reloaded", 92)).toBe(13529)
+			});
+			it("should throw as the album does not exist", async () => {
+				expect(() => geniusProvider.getAlbumIdentifier("AZERTYUIOP", 276)).rejects.toThrow(ProviderActionFailedError);
+			});
+		}
+	});
+
 	describe('Get Album Description', () => {
 		it("should get album's description (1)", async () => {
 			const description = await geniusProvider.getAlbumDescription(13529);
