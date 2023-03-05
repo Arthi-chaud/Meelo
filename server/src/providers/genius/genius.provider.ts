@@ -122,7 +122,7 @@ export default class GeniusProvider extends IProvider<GeniusSettings, number> im
 			const song = await this.fetchAPI(`/songs/${songIdentifier}`).catch((err) => {
 				throw new ProviderActionFailedError(this.name, 'getSongLyrics', err.message);
 			}).then((res) => res.song);
-			const songPage = await this.fetchWebPage(song.url);
+			const songPage = await this.fetchWebPage(song.path);
 			const parsedPage = cheerio.load(songPage);
 			// Inspired by https://github.com/zyrouge/node-genius-lyrics/blob/8499a0aeb91fd5eba296f96c19a24db28a2177d5/lib/songs/song.ts#L76
 			const primaryLyricsContainer = parsedPage(".lyrics").text().trim();
