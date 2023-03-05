@@ -180,6 +180,43 @@ export default class GeniusProvider extends IProvider<GeniusSettings, number> im
 		throw new ProviderActionFailedError(this.name, 'getAlbumDescription', "No Description Found");
 	}
 
+	async getAlbumIdentifier(albumName: string, artistIdentifier?: number): Promise<number> {
+		if (!artistIdentifier) {
+			throw new ProviderActionFailedError(this.name, 'getAlbumDescription', 'Artist Identifier is Required');
+		}
+		try {
+			const sluggedAlbumName = new Slug(albumName).toString();
+			const albumListPage = await this.fetchWebPage('/artists/albums?for_artist_page=' + artistIdentifier)
+				.then((content) => cheerio.load(content));
+			const albumList = albumListPage('.album_link')
+				.map((__, child) => {
+					const parsedChild = cheerio.load(child);
+					const slug = new Slug(parsedChild.text()).toString();
+					const similiary = levenshtein(
+						slug, sluggedAlbumName
+					).similarity;
+
+					return {
+						slug,
+						similiary,
+						link: child.attribs['href'],
+					};
+				})
+				.toArray()
+				.sort((albumA, albumB) => albumB.similiary - albumA.similiary);
+			const firstMatch = albumList.at(0);
+
+			if (firstMatch && firstMatch.similiary > 0.7) {
+				const albumPage: string = await this.fetchWebPage(firstMatch.link);
+
+				return +albumPage.match(/api_path&quot;:&quot;\/albums\/(?<id>\d+)&quot;/)!.groups!['id']!;
+			}
+		} catch (err) {
+			throw new ProviderActionFailedError(this.name, 'getAlbumDescription', err.message);
+		}
+		throw new ProviderActionFailedError(this.name, 'getAlbumDescription', "Album Not Found");
+	}
+
 	private parseDescriptionAnnotation(descriptionAnnotation: any): string {
 		return descriptionAnnotation.annotations
 			.map((annotation: any) => {
