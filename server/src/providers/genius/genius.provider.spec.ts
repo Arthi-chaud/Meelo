@@ -108,13 +108,22 @@ describe('Genius Provider', () => {
 			const description = await geniusProvider.getAlbumDescription(13529);
 
 			expect(description.startsWith("Pink Friday: Roman Reloaded was released April 2, 2012, and is Nicki’s second LP. It made it to number 1 on the Billboard charts, ")).toBeTruthy();
-			expect(description.includes("blatantly stated that this is a “rap album,” her pop sensibilities are also on full display.")).toBeTruthy();
+			expect(description.endsWith("blatantly stated that this is a “rap album,” her pop sensibilities are also on full display.")).toBeTruthy();
 		});
 		it("should get album's description (2)", async () => {
 			const description = await geniusProvider.getAlbumDescription(40495);
 
 			expect(description.startsWith("Missundaztood is the second studio album by P!nk. The album was a success worldwide and with critics, selling thirteen million copies")).toBeTruthy();
-			expect(description.includes('“Get the Party Started”, “Don’t Let Me Get Me”, “Just like a Pill”, and “Family Portrait”. The album is P!nk’s best-selling album to date and rose her into international stardom.')).toBeTruthy();
+			expect(description.endsWith('“Get the Party Started”, “Don’t Let Me Get Me”, “Just like a Pill”, and “Family Portrait”. The album is P!nk’s best-selling album to date and rose her into international stardom.')).toBeTruthy();
+		});
+	});
+
+	describe('Get Artist Description', () => {
+		it("should get artist's description", async () => {
+			const description = await geniusProvider.getArtistDescription(276);
+
+			expect(description.startsWith("With more than 335 million copies of her albums sold, Madonna is the most successful female artist of all time.")).toBeTruthy();
+			expect(description.endsWith("female empowerment and the search for fame.")).toBeTruthy();
 		});
 	});
 })

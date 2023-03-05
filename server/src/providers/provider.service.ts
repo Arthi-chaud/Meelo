@@ -49,6 +49,14 @@ export default class ProviderService {
 		});
 	}
 
+	getArtistDescription(artistName: string) {
+		return this.runAction(async (provider) => {
+			const artistId = await provider.getArtistIdentifier(artistName);
+
+			return provider.getArtistDescription(artistId);
+		});
+	}
+
 	getArtistIllustrationUrl(artistName: string, songName?: string) {
 		return this.runAction(async (provider) => {
 			const artistId = await provider.getArtistIdentifier(artistName, songName);

@@ -40,6 +40,12 @@ export default interface ProviderActions<IdentifierType = string> {
 	getAlbumDescription(albumIdentifer: IdentifierType): Promise<string>;
 
 	/**
+	 * @returns A short description of the artist
+	 * @param artistIdentifer The identifier of the artist
+	 */
+	getArtistDescription(artistIdentifer: IdentifierType): Promise<string>;
+
+	/**
 	 * @returns the URL from the Provider of the artist's illustration
 	 * @param artistIdentifer The identifier provided by `getArtistIdentifier`
 	 */

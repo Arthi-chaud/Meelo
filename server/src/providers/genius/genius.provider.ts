@@ -150,22 +150,26 @@ export default class GeniusProvider extends IProvider<GeniusSettings, number> im
 		throw new ProviderActionFailedError(this.name, 'getSongLyrics', "No Lyrics Found");
 	}
 
+	async getArtistDescription(artistIdentifer: number): Promise<string> {
+		try {
+			const artist = await this.fetchAPI('/artists/' + artistIdentifer).then((res) => res.artist);
+			const descAnnotation = artist.description_annotation;
+			const desc = this.parseDescriptionAnnotation(descAnnotation);
+
+			if (desc.length) {
+				return desc;
+			}
+		} catch (err) {
+			throw new ProviderActionFailedError(this.name, 'getArtistDescription', err.message);
+		}
+		throw new ProviderActionFailedError(this.name, 'getArtistDescription', "No Description Found");
+	}
+
 	async getAlbumDescription(albumIdentifer: number): Promise<string> {
 		try {
 			const album = await this.fetchAPI('/albums/' + albumIdentifer).then((res) => res.album);
 			const descAnnotation = album.description_annotation;
-			const desc: string = descAnnotation.annotations
-				.map((annotation: any) => {
-					const parser = (child: any): string => {
-						if (typeof child == 'string') {
-							return child;
-						}
-						return child.children.map(parser).join(' ').replaceAll('  ', ' ');
-					};
-
-					return parser(annotation.body.dom);
-				})
-				.join('\n').replaceAll('\n\n', '\n');
+			const desc = this.parseDescriptionAnnotation(descAnnotation);
 
 			if (desc.length) {
 				return desc;
@@ -174,5 +178,23 @@ export default class GeniusProvider extends IProvider<GeniusSettings, number> im
 			throw new ProviderActionFailedError(this.name, 'getAlbumDescription', err.message);
 		}
 		throw new ProviderActionFailedError(this.name, 'getAlbumDescription', "No Description Found");
+	}
+
+	private parseDescriptionAnnotation(descriptionAnnotation: any): string {
+		return descriptionAnnotation.annotations
+			.map((annotation: any) => {
+				const parser = (child: any): string => {
+					if (typeof child == 'string') {
+						return child;
+					}
+					if (child.children) {
+						return child.children.map(parser).join(' ').replaceAll('  ', ' ');
+					}
+					return "";
+				};
+
+				return parser(annotation.body.dom);
+			})
+			.join('\n').replaceAll('\n\n', '\n');
 	}
 }
