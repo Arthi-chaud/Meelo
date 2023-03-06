@@ -5,6 +5,7 @@ import SettingsService from "src/settings/settings.service";
 import { AllProvidersFailedError } from "./provider.exception";
 import Logger from "src/logger/logger";
 import GeniusProvider from "./genius/genius.provider";
+import MusicBrainzProvider from "./musicbrainz/musicbrainz.provider";
 
 /**
  * Orchestrates of Providers
@@ -17,10 +18,11 @@ export default class ProviderService {
 	constructor(
 		musixmatchProvider: MusixMatchProvider,
 		geniusProvider: GeniusProvider,
+		musicbrainzProvider: MusicBrainzProvider,
 		private settingsService: SettingsService
 	) {
 		const providersSettings = this.settingsService.settingsValues.providers;
-		const providers = [musixmatchProvider, geniusProvider];
+		const providers = [musixmatchProvider, geniusProvider, musicbrainzProvider];
 
 		providers.forEach((provider) => {
 			if (providersSettings[provider.name]?.enabled === true) {
