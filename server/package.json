@@ -4,6 +4,7 @@
   "description": "Personnal Music Server, for music collectors and records maniacs",
   "author": "Arthi-chaud",
   "private": true,
+  "homepage": "https://github.com/Arthi-chaud/Meelo",
   "license": "GNU GENERAL PUBLIC LICENSE v3",
   "scripts": {
     "lint": "eslint \"{src,apps,libs,test}/**/*.ts\"",
