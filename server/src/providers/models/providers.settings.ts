@@ -3,7 +3,7 @@ import MusixMatchSettings from "../musixmatch/musixmatch.settings";
 import { ApiProperty } from "@nestjs/swagger";
 import { Type } from "class-transformer";
 import GeniusSettings from "../genius/genius.settings";
-import MusicBrainzProvider from "../musicbrainz/musicbrainz.provider";
+import MusicBrainzSettings from "../musicbrainz/musicbrainz.settings";
 
 /**
  * Settings for the Providers
@@ -37,11 +37,11 @@ export default class ProvidersSettings {
 	 * Settings for the Musicbrainz provider
 	 */
 	@ApiProperty({
-		type: MusicBrainzProvider,
+		type: MusicBrainzSettings,
 		required: false
 	})
-	@Type(() => MusicBrainzProvider)
+	@Type(() => MusicBrainzSettings)
 	@ValidateNested()
 	@IsOptional()
-	musicbrainz: GeniusSettings;
+	musicbrainz: MusicBrainzSettings;
 }
