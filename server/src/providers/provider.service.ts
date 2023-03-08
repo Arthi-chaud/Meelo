@@ -77,7 +77,7 @@ export default class ProviderService {
 	}
 
 	getSongGenres(songName: string, artistName: string) {
-		return this.runAction(async (provider) => {
+		return this.collectActions(async (provider) => {
 			const artistId = await provider.getArtistIdentifier(artistName, songName);
 			const songId = await provider.getSongIdentifier(songName, artistId);
 
@@ -100,5 +100,21 @@ export default class ProviderService {
 			}
 		}
 		throw new AllProvidersFailedError();
+	}
+
+	/**
+	 * Calls action method on each enabled provider, and returns all successes
+	 */
+	private async collectActions<Returns>(
+		action: (provider: IProvider<unknown, unknown>) => Promise<Returns[]>,
+	): Promise<Returns[]> {
+		const promiseResultsFilter = (result: PromiseSettledResult<Returns[]>):
+			result is PromiseFulfilledResult<Returns[]> => result.status == 'fulfilled';
+
+		return Promise.allSettled(this.enabledProviders.map(action))
+			.then((results) => results
+				.filter(promiseResultsFilter)
+				.map((result) => result.value)
+				.flat());
 	}
 }
