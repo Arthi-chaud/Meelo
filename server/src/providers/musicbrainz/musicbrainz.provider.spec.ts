@@ -40,4 +40,23 @@ describe('MusicBrainz Provider', () => {
 				.rejects.toThrow(ProviderActionFailedError);
 		});
 	});
+
+	describe('Get Song Identifier', () => {
+		it("should get song Identifier", async () => {
+			expect(await musicBrainzProvider.getSongIdentifier("Breathe On Me", "45a663b5-b1cb-4a91-bff6-2bef7bbfdd76"))
+				.toBe("86b8e139-e31b-3bb9-9883-2f86e47b0e74");
+		});
+		it("should get song Identifier (w/ Special chars)", async () => {
+			expect(await musicBrainzProvider.getSongIdentifier('100%', '2f94016a-3880-4d8c-9af9-0e197ee77189'))
+				.toBe("893fad96-434a-4c2d-a851-12bb10cfc823");
+		});
+		it("should throw, as the artist does not exist", async () => {
+			expect(() => musicBrainzProvider.getSongIdentifier('aerty', 'Britney Spears'))
+				.rejects.toThrow(ProviderActionFailedError);
+		});
+		it("should throw, as the song does not exist", async () => {
+			expect(() => musicBrainzProvider.getSongIdentifier("AZERTY", "45a663b5-b1cb-4a91-bff6-2bef7bbfdd76"))
+				.rejects.toThrow(ProviderActionFailedError);
+		});
+	});
 })
