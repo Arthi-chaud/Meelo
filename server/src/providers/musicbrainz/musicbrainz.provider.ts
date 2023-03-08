@@ -49,4 +49,45 @@ export default class MusicBrainzProvider extends IProvider<MusicBrainzSettings, 
 			throw new ProviderActionFailedError(this.name, 'getArtistIdentifier', err.message);
 		}
 	}
+
+	async getSongIdentifier(songName: string, artistIdentifier: string): Promise<string> {
+		try {
+			const results = await this.mbClient.search<mb.IIsrcSearchResult>(
+				'recording',
+				{ query: `query="${songName}" AND arid:${artistIdentifier}` }
+			).then((result) => result.recordings
+				.filter((recording) => recording["artist-credit"]
+					?.find((artist) => artist.artist.id == artistIdentifier)));
+
+			for (const recordingId of results.map(({ id }) => id)) {
+				const recording = await this.mbClient.lookupRecording(recordingId, ['work-rels']);
+
+				const workId = recording.relations?.map((relation) => {
+					if ('work' in relation) {
+						return (relation['work'] as { id: MBID }).id;
+					}
+					return undefined;
+				}).find((value) => value);
+
+				if (workId) {
+					return workId;
+				}
+			}
+		} catch (err) {
+			throw new ProviderActionFailedError(this.name, 'getSongIdentifier', err.message);
+		}
+		throw new ProviderActionFailedError(this.name, 'getSongIdentifier', 'Song not found');
+	}
+
+	async getSongGenres(songIdentifier: MBID): Promise<string[]> {
+		try {
+			const song = await this.mbClient.lookupWork(songIdentifier, ['genres']);
+			const genres = (song as unknown as { genres: { name: string }[] }).genres;
+
+			// Stripping other members
+			return genres.map(({ name }) => name);
+		} catch (err) {
+			throw new ProviderActionFailedError(this.name, 'getSongGenres', err.message);
+		}
+	}
 }
