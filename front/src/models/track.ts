@@ -30,7 +30,7 @@ const Track = Resource.concat(Illustration).concat(yup.object({
 	/**
 	 * Index of the track on the disc
 	 */
-	trackIndex: yup.number().required(),
+	trackIndex: yup.number().required().nullable(),
 	/**
 	 * Type of media
 	 */
