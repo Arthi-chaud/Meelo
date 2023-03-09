@@ -17,7 +17,7 @@ describe('Settings Controller', () => {
 	beforeAll(async () => {
 		const module: TestingModule = await createTestingModule({
 			imports: [SettingsModule, FileManagerModule],
-			providers: [SettingsController],
+			controllers: [SettingsController],
 		}).compile();
 
 		fileService = module.get<FileManagerService>(FileManagerService);
