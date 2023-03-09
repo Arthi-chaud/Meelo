@@ -5,7 +5,9 @@ import FileManagerService from 'src/file-manager/file-manager.service';
 import type Metadata from './models/metadata';
 import mm, { type IAudioMetadata } from 'music-metadata';
 import { FileDoesNotExistException, FileNotReadableException } from 'src/file-manager/file-manager.exceptions';
-import { FileParsingException, PathParsingException } from './metadata.exceptions';
+import {
+	FileParsingException, MissingMetadataFieldException, PathParsingException
+} from './metadata.exceptions';
 import SettingsService from 'src/settings/settings.service';
 import TrackService from 'src/track/track.service';
 import SongService from 'src/song/song.service';
@@ -55,6 +57,10 @@ export default class MetadataService {
 		const genres = metadata.genres ? await Promise.all(
 			metadata.genres.map((genre) => this.genreService.getOrCreate({ name: genre }))
 		) : [];
+
+		if (!metadata.compilation && !metadata.albumArtist && !metadata.artist) {
+			throw new MissingMetadataFieldException('Album Artist / Artist');
+		}
 		const albumArtist = !metadata.compilation
 			? await this.artistService.getOrCreate({
 				name: metadata.albumArtist ?? metadata.artist!,
