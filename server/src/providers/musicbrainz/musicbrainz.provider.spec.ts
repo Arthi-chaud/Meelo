@@ -50,12 +50,31 @@ describe('MusicBrainz Provider', () => {
 			expect(await musicBrainzProvider.getSongIdentifier('100%', '2f94016a-3880-4d8c-9af9-0e197ee77189'))
 				.toBe("893fad96-434a-4c2d-a851-12bb10cfc823");
 		});
-		it("should throw, as the artist does not exist", async () => {
+		it("should throw, as the artist does not exist", () => {
 			expect(() => musicBrainzProvider.getSongIdentifier('aerty', 'Britney Spears'))
 				.rejects.toThrow(ProviderActionFailedError);
 		});
-		it("should throw, as the song does not exist", async () => {
+		it("should throw, as the song does not exist", () => {
 			expect(() => musicBrainzProvider.getSongIdentifier("AZERTY", "45a663b5-b1cb-4a91-bff6-2bef7bbfdd76"))
+				.rejects.toThrow(ProviderActionFailedError);
+		});
+	});
+
+	describe('Get Album Identifier', () => {
+		it("should get album Identifier", async () => {
+			expect(await musicBrainzProvider.getAlbumIdentifier("Blackout", "45a663b5-b1cb-4a91-bff6-2bef7bbfdd76"))
+			.toBe("0b8e14e1-d44d-3770-8617-5c6137a444a8");
+		});
+		it("should get compilation album Identifier", async () => {
+			expect(await musicBrainzProvider.getAlbumIdentifier("Nova Tunes 01"))
+				.toBe("a6875c2b-3fc2-34b2-9eb6-3b73578a8ea8");
+		});
+		it("should throw, as the album does not exist", () => {
+			expect(() => musicBrainzProvider.getAlbumIdentifier("AZERTY", "45a663b5-b1cb-4a91-bff6-2bef7bbfdd76"))
+				.rejects.toThrow(ProviderActionFailedError);
+		});
+		it("should throw, as the artist does not exist", () => {
+			expect(() => musicBrainzProvider.getAlbumIdentifier('aerty', 'Britney Spears'))
 				.rejects.toThrow(ProviderActionFailedError);
 		});
 	});

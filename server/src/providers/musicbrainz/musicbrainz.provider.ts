@@ -15,6 +15,7 @@ type MBID = string;
 @Injectable()
 export default class MusicBrainzProvider extends IProvider<MusicBrainzSettings, MBID> implements OnModuleInit {
 	private mbClient: mb.MusicBrainzApi;
+	private readonly compilationArtistID = "89ad4ac3-39f7-470e-963a-56509c546377";
 
 	constructor(
 		@Inject(forwardRef(() => SettingsService))
@@ -47,6 +48,20 @@ export default class MusicBrainzProvider extends IProvider<MusicBrainzSettings, 
 			return searchResult.artists.at(0)!.id;
 		} catch (err) {
 			throw new ProviderActionFailedError(this.name, 'getArtistIdentifier', err.message);
+		}
+	}
+
+	async getAlbumIdentifier(albumName: string, artistIdentifier?: string): Promise<MBID> {
+		try {
+			const searchResult = await this.mbClient.searchRelease({
+				query: `query="${albumName}" AND arid:${artistIdentifier ?? this.compilationArtistID}`
+			}).then((result) => result.releases
+				.filter((release) => release["artist-credit"]?.find((artist) =>
+					artist.artist.id == (artistIdentifier ?? this.compilationArtistID))));
+
+			return searchResult.at(0)!["release-group"]!.id;
+		} catch (err) {
+			throw new ProviderActionFailedError(this.name, 'getAlbumIdentifier', err.message);
 		}
 	}
 
