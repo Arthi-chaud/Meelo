@@ -107,6 +107,8 @@ model Album {
 	/// @description Unique numeric identifier of the main artist, if there is one
 	/// @example 123
 	artistId		Int?
+	/// @description Array of external IDs
+	externalIds		AlbumExternalId[]
 	@@unique([slug, artistId])
 	@@map("albums")
 }
@@ -128,6 +130,8 @@ model Artist {
 	songs			Song[]
 	/// @description The date the artist was registered
 	registeredAt		DateTime	@default(now())
+	/// @description Array of external IDs
+	externalIds		ArtistExternalId[]
 	@@map("artists")
 }
 
@@ -231,6 +235,8 @@ model Song {
 	registeredAt		DateTime	@default(now())
 	/// @description The genres of the song
 	genres Genre[]
+	/// @description Array of external IDs
+	externalIds		SongExternalId[]
 	@@unique([slug, artistId])
 	@@map("songs")
 }
@@ -320,4 +326,64 @@ model Track {
 	sourceFileId		Int		@unique
 	masterOf		Song?		@relation("Master")
 	@@map("tracks")
+}
+
+model Provider {
+	/// @description Unique numeric Provider identifier
+	/// @example 123
+	id				Int		@id @default(autoincrement())
+	/// @description the name of the provider
+	name			String	@unique
+	/// @description Unique string identifer
+	/// @example music-brainz
+	slug			String	@unique
+	/// @description Identifiers of Songs
+	songIds			SongExternalId[]
+	/// @description Identifiers of Artist
+	artistIds		ArtistExternalId[]
+	/// @description Identifiers of Albums
+	albumIds		AlbumExternalId[]
+	@@map("providers")
+}
+
+model SongExternalId {
+	/// @description The song
+	song			Song @relation(fields: [songId], references: [id], onDelete: Cascade)
+	/// @description Unique numeric identifier of the related song
+	/// @example 123
+	songId			Int @unique
+	/// @description The Provider
+	provider		Provider @relation(fields: [providerId], references: [id], onDelete: Cascade)
+	/// @description Unique numeric identifier of the related song
+	/// @example 123
+	providerId			Int @unique
+	@@map("song_external_id")
+}
+
+model ArtistExternalId {
+	/// @description The artist
+	artist			Artist @relation(fields: [artistId], references: [id], onDelete: Cascade)
+	/// @description Unique numeric identifier of the related artist
+	/// @example 123
+	artistId		Int @unique
+	/// @description The Provider
+	provider		Provider @relation(fields: [providerId], references: [id], onDelete: Cascade)
+	/// @description Unique numeric identifier of the related song
+	/// @example 123
+	providerId			Int @unique
+	@@map("artist_external_ids")
+}
+
+model AlbumExternalId {
+	/// @description The album
+	album			Album @relation(fields: [albumId], references: [id], onDelete: Cascade)
+	/// @description Unique numeric identifier of the related album
+	/// @example 123
+	albumId			Int @unique
+	/// @description The Provider
+	provider		Provider @relation(fields: [providerId], references: [id], onDelete: Cascade)
+	/// @description Unique numeric identifier of the related song
+	/// @example 123
+	providerId			Int @unique
+	@@map("album_external_ids")
 }

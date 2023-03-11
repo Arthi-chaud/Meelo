@@ -1,4 +1,4 @@
-import { Injectable } from "@nestjs/common";
+import { Injectable, OnModuleInit } from "@nestjs/common";
 import MusixMatchProvider from "./musixmatch/musixmatch.provider";
 import IProvider from "./iprovider";
 import SettingsService from "src/settings/settings.service";
@@ -6,25 +6,29 @@ import { AllProvidersFailedError } from "./provider.exception";
 import Logger from "src/logger/logger";
 import GeniusProvider from "./genius/genius.provider";
 import MusicBrainzProvider from "./musicbrainz/musicbrainz.provider";
+import PrismaService from "src/prisma/prisma.service";
+import Slug from "src/slug/slug";
 
 /**
  * Orchestrates of Providers
  */
 @Injectable()
-export default class ProviderService {
+export default class ProviderService implements OnModuleInit {
 	private readonly enabledProviders: IProvider<unknown, unknown>[] = [];
 	private readonly logger = new Logger(ProviderService.name);
+	private readonly providers: IProvider<unknown, unknown>[] = [];
 
 	constructor(
 		musixmatchProvider: MusixMatchProvider,
 		geniusProvider: GeniusProvider,
 		musicbrainzProvider: MusicBrainzProvider,
+		private prismaService: PrismaService,
 		private settingsService: SettingsService
 	) {
 		const providersSettings = this.settingsService.settingsValues.providers;
-		const providers = [musixmatchProvider, geniusProvider, musicbrainzProvider];
 
-		providers.forEach((provider) => {
+		this.providers = [musixmatchProvider, geniusProvider, musicbrainzProvider];
+		this.providers.forEach((provider) => {
 			if (providersSettings[provider.name]?.enabled === true) {
 				this.logger.log(`Provider '${provider.name}' enabled`);
 				provider.settings = providersSettings[provider.name];
@@ -33,6 +37,23 @@ export default class ProviderService {
 				this.logger.warn(`Provider '${provider.name}' disabled`);
 			}
 		});
+	}
+
+	async onModuleInit() {
+		return this.prismaService.$transaction(
+			this.providers.map((provider) => {
+				const providerSlug = new Slug(provider.name).toString();
+
+				return this.prismaService.provider.upsert({
+					create: {
+						name: provider.name,
+						slug: providerSlug
+					},
+					where: { slug: providerSlug },
+					update: {}
+				});
+			})
+		);
 	}
 
 	getAlbumType(albumName: string, artistName?: string) {
