@@ -78,4 +78,18 @@ describe('MusicBrainz Provider', () => {
 				.rejects.toThrow(ProviderActionFailedError);
 		});
 	});
+
+	describe('Get Album Description', () => {
+		it("should get album description", async () => {
+			const description = await musicBrainzProvider.getAlbumDescription("b59f1cf2-b3f7-341c-963f-acd0c19d5e96");
+
+			expect(description.startsWith('Do You Like My Tight Sweater? is the first album by the electronic/dance duo Moloko, ')).toBeTruthy();
+			expect(description.includes('("Where Is the What If the What Is in Why?", "Party Weirdo", and "Ho Humm")')).toBeTruthy();
+			expect(description.endsWith('Industry in July 2013, for UK sales exceeding 60,000 copies.')).toBeTruthy();
+		});
+		it("should throw, as the album does not exist", () => {
+			expect(() => musicBrainzProvider.getAlbumDescription("AZERTY"))
+				.rejects.toThrow(ProviderActionFailedError);
+		});
+	})
 })

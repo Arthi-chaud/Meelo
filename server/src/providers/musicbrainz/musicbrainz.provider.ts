@@ -9,6 +9,7 @@ import {
 import SettingsService from "src/settings/settings.service";
 import MusicBrainzSettings from "./musicbrainz.settings";
 import { ProviderActionFailedError } from "../provider.exception";
+import { HttpService } from "@nestjs/axios";
 
 type MBID = string;
 
@@ -19,7 +20,8 @@ export default class MusicBrainzProvider extends IProvider<MusicBrainzSettings, 
 
 	constructor(
 		@Inject(forwardRef(() => SettingsService))
-		private settingsSettings: SettingsService
+		private settingsSettings: SettingsService,
+		private readonly httpService: HttpService
 	) {
 		super('musicbrainz');
 	}
@@ -103,6 +105,38 @@ export default class MusicBrainzProvider extends IProvider<MusicBrainzSettings, 
 			return genres.map(({ name }) => name);
 		} catch (err) {
 			throw new ProviderActionFailedError(this.name, 'getSongGenres', err.message);
+		}
+	}
+
+	async getAlbumDescription(albumIdentifer: MBID): Promise<string> {
+		try {
+			const album = await this.mbClient.lookupReleaseGroup(albumIdentifer, ['url-rels']);
+			const externalUrls = (album as mb.IReleaseGroup & mb.IRelationList).relations;
+			const wikipediaId = externalUrls
+				.map((relation) => relation.url?.resource)
+				.find((url) => url?.includes('wikipedia'))!.split('/').pop()!;
+			const wikipediaResponse = await this.httpService.axiosRef.get(
+				'/w/api.php',
+				{
+					baseURL: 'https://en.wikipedia.org',
+					params: {
+						format: 'json',
+						action: 'query',
+						prop: 'extracts',
+						exintro: true,
+						explaintext: true,
+						redirects: 1,
+						titles: decodeURIComponent(wikipediaId)
+					}
+				}
+			).then(({ data }) => data);
+
+			return (Object
+				.entries(wikipediaResponse.query.pages)
+				.at(0)![1] as { extract: string })
+				.extract.trim();
+		} catch (err) {
+			throw new ProviderActionFailedError(this.name, 'getAlbumDescription', err.message);
 		}
 	}
 }
