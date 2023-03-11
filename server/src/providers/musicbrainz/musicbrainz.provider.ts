@@ -115,28 +115,47 @@ export default class MusicBrainzProvider extends IProvider<MusicBrainzSettings, 
 			const wikipediaId = externalUrls
 				.map((relation) => relation.url?.resource)
 				.find((url) => url?.includes('wikipedia'))!.split('/').pop()!;
-			const wikipediaResponse = await this.httpService.axiosRef.get(
-				'/w/api.php',
-				{
-					baseURL: 'https://en.wikipedia.org',
-					params: {
-						format: 'json',
-						action: 'query',
-						prop: 'extracts',
-						exintro: true,
-						explaintext: true,
-						redirects: 1,
-						titles: decodeURIComponent(wikipediaId)
-					}
-				}
-			).then(({ data }) => data);
 
-			return (Object
-				.entries(wikipediaResponse.query.pages)
-				.at(0)![1] as { extract: string })
-				.extract.trim();
+			return await this.getWikipediaDescription(wikipediaId);
 		} catch (err) {
 			throw new ProviderActionFailedError(this.name, 'getAlbumDescription', err.message);
 		}
+	}
+
+	async getArtistDescription(artistIdentifier: MBID): Promise<string> {
+		try {
+			const artist = await this.mbClient.lookupArtist(artistIdentifier, ['url-rels']);
+			const externalUrls = (artist as mb.IArtist & mb.IRelationList).relations;
+			const wikipediaId = externalUrls
+				.map((relation) => relation.url?.resource)
+				.find((url) => url?.includes('wikipedia'))!.split('/').pop()!;
+
+			return await this.getWikipediaDescription(wikipediaId);
+		} catch (err) {
+			throw new ProviderActionFailedError(this.name, 'getArtistDescription', err.message);
+		}
+	}
+
+	private async getWikipediaDescription(resourceId: string): Promise<string> {
+		const wikipediaResponse = await this.httpService.axiosRef.get(
+			'/w/api.php',
+			{
+				baseURL: 'https://en.wikipedia.org',
+				params: {
+					format: 'json',
+					action: 'query',
+					prop: 'extracts',
+					exintro: true,
+					explaintext: true,
+					redirects: 1,
+					titles: decodeURIComponent(resourceId)
+				}
+			}
+		).then(({ data }) => data);
+
+		return (Object
+			.entries(wikipediaResponse.query.pages)
+			.at(0)![1] as { extract: string })
+			.extract.trim();
 	}
 }
