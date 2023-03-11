@@ -15,6 +15,10 @@ export default class MusixMatchProvider extends IProvider<MusixMatchSettings, st
 		super('musixmatch');
 	}
 
+	getProviderHomepage(): string {
+		return 'https://www.musixmatch.com';
+	}
+
 	getProviderBannerUrl(): string {
 		return "https://upload.wikimedia.org/wikipedia/commons/thumb/0/06/Musixmatch_compact_logo_on_white.svg/566px-Musixmatch_compact_logo_on_white.svg.png";
 	}

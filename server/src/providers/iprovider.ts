@@ -31,6 +31,11 @@ export default abstract class IProvider<SettingsType, IdentifierType = string> i
 	abstract getProviderIconUrl(): string;
 
 	/**
+	 * The URL to get the provider's Homrpage
+	 */
+	abstract getProviderHomepage(): string;
+
+	/**
 	 * @returns the provider's Identifer of the artist.
 	 * @param artistName Name of the artist
 	 * @param songName can be used to differentiate artists with same name

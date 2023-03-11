@@ -35,6 +35,10 @@ export default class MusicBrainzProvider extends IProvider<MusicBrainzSettings, 
 		});
 	}
 
+	getProviderHomepage(): string {
+		return 'https://musicbrainz.org';
+	}
+
 	getProviderBannerUrl(): string {
 		return "https://wiki.musicbrainz.org/images/a/a9/MusicBrainz_Logo_Transparent.png";
 	}

@@ -55,6 +55,10 @@ export default class GeniusProvider extends IProvider<GeniusSettings, number> im
 		this._settings = this.settingsService.settingsValues.providers.genius;
 	}
 
+	getProviderHomepage(): string {
+		return 'https://genius.com';
+	}
+
 	getProviderBannerUrl(): string {
 		return "https://t2.genius.com/unsafe/440x440/https:%2F%2Fimages.genius.com%2F1d88f9c0c8623d60cf6d85ad3b38a6de.999x999x1.png";
 	}
