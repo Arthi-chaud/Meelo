@@ -1,6 +1,4 @@
-import {
-	MiddlewareConsumer, Module, RequestMethod
-} from '@nestjs/common';
+import { MiddlewareConsumer, Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import FileModule from './file/file.module';
 import ArtistModule from './artist/artist.module';
@@ -22,15 +20,12 @@ import TasksModule from './tasks/tasks.module';
 import { ScheduleModule } from '@nestjs/schedule';
 import AuthenticationModule from './authentication/authentication.module';
 import UserModule from './user/user.module';
-import { APP_GUARD } from '@nestjs/core';
-import JwtAuthGuard from './authentication/jwt/jwt-auth.guard';
-import RolesGuard from './roles/roles.guard';
-import JwtCookieMiddleware from './authentication/jwt/jwt-middleware';
 import { ServeStaticModule } from '@nestjs/serve-static';
 import { join } from 'path';
 import ProvidersModule from './providers/providers.module';
 import FfmpegModule from './ffmpeg/ffmpeg.module';
 import LoggerModule from './logger/logger.module';
+import * as Plugins from './app.plugins';
 
 @Module({
 	imports: [
@@ -62,21 +57,10 @@ import LoggerModule from './logger/logger.module';
 		ProvidersModule
 	],
 	controllers: [AppController],
-	providers: [
-		{
-			provide: APP_GUARD,
-			useClass: JwtAuthGuard,
-		},
-		{
-			provide: APP_GUARD,
-			useClass: RolesGuard,
-		}
-	],
+	providers: Plugins.AppProviders
 })
 export default class AppModule {
 	configure(consumer: MiddlewareConsumer) {
-		consumer
-			.apply(JwtCookieMiddleware)
-			.forRoutes({ path: '*', method: RequestMethod.ALL });
+		Plugins.applyMiddlewares(consumer);
 	}
 }

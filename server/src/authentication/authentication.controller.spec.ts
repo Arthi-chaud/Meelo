@@ -1,5 +1,4 @@
-import { INestApplication, MiddlewareConsumer, Module, RequestMethod } from "@nestjs/common";
-import { APP_GUARD } from "@nestjs/core";
+import { INestApplication, MiddlewareConsumer, Module } from "@nestjs/common";
 import { TestingModule } from "@nestjs/testing";
 import AlbumModule from "src/album/album.module";
 import ArtistModule from "src/artist/artist.module";
@@ -10,7 +9,6 @@ import MetadataModule from "src/metadata/metadata.module";
 import PrismaModule from "src/prisma/prisma.module";
 import PrismaService from "src/prisma/prisma.service";
 import ReleaseModule from "src/release/release.module";
-import RolesGuard from "src/roles/roles.guard";
 import SettingsModule from "src/settings/settings.module";
 import SongModule from "src/song/song.module";
 import TrackModule from "src/track/track.module";
@@ -18,29 +16,20 @@ import UserModule from "src/user/user.module";
 import UserService from "src/user/user.service";
 import { createTestingModule } from "test/test-module";
 import TestPrismaService from "test/test-prisma.service";
-import JwtAuthGuard from "./jwt/jwt-auth.guard";
 import request from 'supertest';
 import UserController from "src/user/user.controller";
 import AuthenticationModule from "./authentication.module";
 import { User } from "src/prisma/models";
 import SetupApp from "test/setup-app";
-import JwtCookieMiddleware from "./jwt/jwt-middleware";
+import * as Plugins from '../app.plugins';
 
 @Module({
 	imports: [AuthenticationModule, UserModule, FileManagerModule, PrismaModule, ArtistModule, AlbumModule, PrismaModule, ReleaseModule, MetadataModule, SongModule, TrackModule, IllustrationModule, GenreModule, SettingsModule],
-	providers: [UserService, PrismaService, UserController, {
-		provide: APP_GUARD,
-		useClass: JwtAuthGuard,
-	},{
-		provide: APP_GUARD,
-		useClass: RolesGuard,
-	}],
+	providers: [UserService, PrismaService, UserController, ...Plugins.AppProviders],
 })
 class TestAuthenticationModule {
 	configure(consumer: MiddlewareConsumer) {
-		consumer
-			.apply(JwtCookieMiddleware)
-			.forRoutes({ path: '*', method: RequestMethod.ALL });
+		Plugins.applyMiddlewares(consumer);
 	}
 }
 
@@ -58,9 +47,7 @@ describe('Authentication Controller & Role Management', () => {
 			imports: [TestAuthenticationModule],
 		}).overrideProvider(PrismaService).useClass(TestPrismaService).compile();
 		(module as any).configure = (consumer: MiddlewareConsumer) => {
-			consumer
-				.apply(JwtCookieMiddleware)
-				.forRoutes({ path: '*', method: RequestMethod.ALL });
+			Plugins.applyMiddlewares(consumer);
 		}
 		app = await SetupApp(module);
 		dummyRepository = module.get(PrismaService);
