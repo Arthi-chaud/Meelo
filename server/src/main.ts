@@ -1,5 +1,5 @@
-import { ValidationPipe } from '@nestjs/common';
-import { HttpAdapterHost, NestFactory } from '@nestjs/core';
+import { ClassSerializerInterceptor, ValidationPipe } from '@nestjs/common';
+import { HttpAdapterHost, NestFactory, Reflector } from '@nestjs/core';
 import AppModule from './app.module';
 import MeeloExceptionFilter from './exceptions/meelo-exception.filter';
 import NotFoundExceptionFilter from './exceptions/not-found.exception';
@@ -35,6 +35,9 @@ async function bootstrap() {
 			enableImplicitConversion: true
 		},
 	}));
+	app.useGlobalInterceptors(
+		new ClassSerializerInterceptor(app.get(Reflector))
+	);
 	app.use(helmet({
 		crossOriginResourcePolicy: process.env.NODE_ENV === 'development'
 			? { policy: 'cross-origin' }

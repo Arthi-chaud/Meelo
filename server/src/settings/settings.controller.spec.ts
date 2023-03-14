@@ -44,6 +44,7 @@ describe('Settings Controller', () => {
 				),
 				providers: {
 					musixmatch: { enabled: true },
+					genius: { enabled: true },
 					musicbrainz: { enabled: true }
 				},
 				meeloFolder: 'test/assets/'
