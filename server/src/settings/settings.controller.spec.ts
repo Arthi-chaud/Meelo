@@ -42,6 +42,10 @@ describe('Settings Controller', () => {
 				...JSON.parse(
 					fs.readFileSync('test/assets/settings.json').toString()
 				),
+				providers: {
+					musixmatch: { enabled: true },
+					musicbrainz: { enabled: true }
+				},
 				meeloFolder: 'test/assets/'
 			});
 	});
