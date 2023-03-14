@@ -5,6 +5,13 @@ changelog:
     labels:
       - dependencies
   categories:
+    - title: Web App
+      labels:
+        - Front
+        - Layout
+    - title: Server
+      labels:
+        - Back
     - title: Exciting New Features 🎉
       labels:
         - Feature
