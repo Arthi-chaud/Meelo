@@ -5,6 +5,7 @@ changelog:
     labels:
       - dependencies
   categories:
+<<<<<<< HEAD
     - title: Web App
       labels:
         - Front
@@ -12,6 +13,8 @@ changelog:
     - title: Server
       labels:
         - Back
+=======
+>>>>>>> c01c174 (Gtihub: Add Changelog & Publish action)
     - title: Exciting New Features 🎉
       labels:
         - Feature
