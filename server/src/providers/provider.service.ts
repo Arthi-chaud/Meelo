@@ -14,9 +14,9 @@ import Slug from "src/slug/slug";
  */
 @Injectable()
 export default class ProviderService implements OnModuleInit {
-	private readonly enabledProviders: IProvider<unknown, unknown>[] = [];
+	private readonly _enabledProviders: IProvider<unknown, unknown>[] = [];
 	private readonly logger = new Logger(ProviderService.name);
-	private readonly providers: IProvider<unknown, unknown>[] = [];
+	private readonly _providerCatalogue: IProvider<unknown, unknown>[] = [];
 
 	constructor(
 		musixmatchProvider: MusixMatchProvider,
@@ -25,23 +25,34 @@ export default class ProviderService implements OnModuleInit {
 		private prismaService: PrismaService,
 		private settingsService: SettingsService
 	) {
-		const providersSettings = this.settingsService.settingsValues.providers;
+		this._providerCatalogue = [musixmatchProvider, geniusProvider, musicbrainzProvider];
+	}
 
-		this.providers = [musixmatchProvider, geniusProvider, musicbrainzProvider];
-		this.providers.forEach((provider) => {
-			if (providersSettings[provider.name]?.enabled === true) {
+	get enabledProviders() {
+		return this._enabledProviders.map((provider) => provider.name);
+	}
+
+	get providerCatalogue() {
+		return this._providerCatalogue.map((provider) => provider.name);
+	}
+
+	async onModuleInit() {
+		const providerSettings = this.settingsService.settingsValues.providers;
+
+		// Flushing the enabled provider list, before pushing everything back again
+		// In case of resets
+		this._enabledProviders.splice(0, this._enabledProviders.length);
+		this._providerCatalogue.forEach((provider) => {
+			if (providerSettings[provider.name]?.enabled === true) {
 				this.logger.log(`Provider '${provider.name}' enabled`);
-				provider.settings = providersSettings[provider.name];
-				this.enabledProviders.push(provider);
+				provider.settings = providerSettings[provider.name];
+				this._enabledProviders.push(provider);
 			} else {
 				this.logger.warn(`Provider '${provider.name}' disabled`);
 			}
 		});
-	}
-
-	async onModuleInit() {
 		return this.prismaService.$transaction(
-			this.providers.map((provider) => {
+			this._providerCatalogue.map((provider) => {
 				const providerSlug = new Slug(provider.name).toString();
 
 				return this.prismaService.provider.upsert({
@@ -53,7 +64,7 @@ export default class ProviderService implements OnModuleInit {
 					update: {}
 				});
 			})
-		);
+		).then(() => {});
 	}
 
 	getAlbumType(albumName: string, artistName?: string) {
@@ -113,7 +124,7 @@ export default class ProviderService implements OnModuleInit {
 	private async runAction<Returns>(
 		action: (provider: IProvider<unknown, unknown>) => Promise<Returns>,
 	): Promise<Awaited<Returns>> {
-		for (const provider of this.enabledProviders) {
+		for (const provider of this._enabledProviders) {
 			try {
 				return await action(provider);
 			} catch {
@@ -132,7 +143,7 @@ export default class ProviderService implements OnModuleInit {
 		const promiseResultsFilter = (result: PromiseSettledResult<Returns[]>):
 			result is PromiseFulfilledResult<Returns[]> => result.status == 'fulfilled';
 
-		return Promise.allSettled(this.enabledProviders.map(action))
+		return Promise.allSettled(this._enabledProviders.map(action))
 			.then((results) => results
 				.filter(promiseResultsFilter)
 				.map((result) => result.value)
