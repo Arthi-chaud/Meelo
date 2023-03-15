@@ -6,6 +6,7 @@ import MusicBrainzProvider from "./musicbrainz.provider";
 import { ProviderActionFailedError } from "../provider.exception";
 import { HttpModule } from "@nestjs/axios";
 import SettingsModule from "src/settings/settings.module";
+import { AlbumType } from "@prisma/client";
 
 describe('MusicBrainz Provider', () => {
 	let musicBrainzProvider: MusicBrainzProvider;
@@ -104,5 +105,68 @@ describe('MusicBrainz Provider', () => {
 			expect(() => musicBrainzProvider.getArtistDescription("AZERTY"))
 				.rejects.toThrow(ProviderActionFailedError);
 		});
-	})
+	});
+
+	describe('Get Album Type', () => {
+		describe('Simple', () => {
+			it("should return Studio Recording", async () => {
+				// Standard Studio Recording
+				const albumType = await musicBrainzProvider.getAlbumType('c58894f6-ff01-3bbd-afa5-4eb54aec6dab')
+				expect(albumType).toBe(AlbumType.StudioRecording);
+			});
+			it("should return Live", async () => {
+				// Live Album
+				const albumType = await musicBrainzProvider.getAlbumType('47e4706a-4178-37f4-a4b9-043906ef0b59')
+				expect(albumType).toBe(AlbumType.LiveRecording);
+			})
+			it("should return Compilation", async () => {
+				// Compilation album
+				const albumType = await musicBrainzProvider.getAlbumType('bd252c17-ff32-4369-8e73-4d0a65a316bd')
+				expect(albumType).toBe(AlbumType.Compilation);
+			})
+			it("should return Single", async () => {
+				// Standard Single
+				const albumType = await musicBrainzProvider.getAlbumType('70d97b9e-8eec-4ae1-a301-81e530fc389d')
+				expect(albumType).toBe(AlbumType.Single);
+			});
+			it("should return Single, for an EP", async () => {
+				// EP
+				const albumType = await musicBrainzProvider.getAlbumType('f7389c03-a459-3d0d-8718-99f66d761c16')
+				expect(albumType).toBe(AlbumType.Single);
+			});
+			it("should return Soundtrack", async () => {
+				// Standard Soundtrack album
+				const albumType = await musicBrainzProvider.getAlbumType('240a3a12-1b3f-3a1c-ab98-147f3a2d2af1')
+				expect(albumType).toBe(AlbumType.Soundtrack);
+			})
+			it("should return Remix Album", async () => {
+				// Standard Studio Recording
+				const albumType = await musicBrainzProvider.getAlbumType('ce018797-8764-34f8-aee4-10089fc7393d')
+				expect(albumType).toBe(AlbumType.RemixAlbum);
+			})
+		});
+
+		describe('Types Combinations', () => {
+			it("should return Remix Album", async () => {
+				// Remixe Compilation
+				const albumType = await musicBrainzProvider.getAlbumType('86def221-c6fc-452b-9596-cb210cbfdd0b')
+				expect(albumType).toBe(AlbumType.RemixAlbum);
+			});
+			it("should return Single", async () => {
+				// Single from Soundtrack
+				const albumType = await musicBrainzProvider.getAlbumType('4a5f1d42-cf14-4948-8702-76154644a825')
+				expect(albumType).toBe(AlbumType.Single);
+			})
+			
+			it("should return Single", async () => {
+				// EP Compilation
+				const albumType = await musicBrainzProvider.getAlbumType('d7a8ca59-6243-4171-8247-18634344057b')
+				expect(albumType).toBe(AlbumType.Compilation);
+			})
+		});
+		it("should throw, as the album does not exist", () => {
+			expect(() => musicBrainzProvider.getAlbumType("AZERTY"))
+				.rejects.toThrow(ProviderActionFailedError);
+		});
+	});
 })

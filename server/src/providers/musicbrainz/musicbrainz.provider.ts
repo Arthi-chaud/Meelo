@@ -10,6 +10,7 @@ import SettingsService from "src/settings/settings.service";
 import MusicBrainzSettings from "./musicbrainz.settings";
 import { ProviderActionFailedError } from "../provider.exception";
 import { HttpService } from "@nestjs/axios";
+import { AlbumType } from "@prisma/client";
 
 type MBID = string;
 
@@ -124,6 +125,60 @@ export default class MusicBrainzProvider extends IProvider<MusicBrainzSettings, 
 		} catch (err) {
 			throw new ProviderActionFailedError(this.name, 'getAlbumDescription', err.message);
 		}
+	}
+
+	async getAlbumType(albumIdentifer: MBID): Promise<AlbumType> {
+		try {
+			const album = await this.mbClient.lookupReleaseGroup(albumIdentifer);
+			const primaryType: string | undefined = album['primary-type'];
+			const secondaryTypes: string[] = (album as any)['secondary-types'] ?? [];
+
+			if (secondaryTypes.length == 0) {
+				switch (primaryType) {
+				case "Album":
+					return AlbumType.StudioRecording;
+				case "EP":
+				case "Single":
+					return AlbumType.Single;
+				case "Broadcast":
+					return AlbumType.LiveRecording;
+				default:
+					break;
+				}
+			}
+			// https://musicbrainz.org/release-group/ce018797-8764-34f8-aee4-10089fc7393d
+			if (!primaryType && secondaryTypes.includes("Remix")) {
+				return AlbumType.RemixAlbum;
+			}
+			if (primaryType == "Album") {
+				// https://musicbrainz.org/release-group/a1b16f9c-7b93-3351-9453-0f3545a5f989
+				if (secondaryTypes.includes("Remix")) {
+					return AlbumType.RemixAlbum;
+				}
+				// https://musicbrainz.org/release-group/35f4c727-8b32-3457-a2e7-42a697dd39c2
+				if (secondaryTypes.includes("Compilation")) {
+					return AlbumType.Compilation;
+				}
+				if (secondaryTypes.includes("Live")) {
+					return AlbumType.LiveRecording;
+				}
+				if (secondaryTypes.includes("Soundtrack")) {
+					return AlbumType.Soundtrack;
+				}
+			}
+			if (primaryType == "Single") {
+				return AlbumType.Single;
+			}
+			if (primaryType == "EP") {
+				if (secondaryTypes.includes("Compilation")) {
+					return AlbumType.Compilation;
+				}
+				return AlbumType.Single;
+			}
+		} catch (err) {
+			throw new ProviderActionFailedError(this.name, 'getAlbumDescription', err.message);
+		}
+		throw new ProviderActionFailedError(this.name, 'getAlbumDescription', "Album Type unknown");
 	}
 
 	async getArtistDescription(artistIdentifier: MBID): Promise<string> {
