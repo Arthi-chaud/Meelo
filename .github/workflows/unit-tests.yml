@@ -59,6 +59,7 @@ jobs:
         with:
           timeout_minutes: 10
           max_attempts: 3
+          retry_wait_seconds: 30
           command: yarn --cwd server test --coverage
       - name: Upload Unit Tests artifact
         if: ${{ always() }}

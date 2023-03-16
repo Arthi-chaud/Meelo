@@ -103,8 +103,12 @@ export default class MusicBrainzProvider extends IProvider<MusicBrainzSettings, 
 
 	async getSongGenres(songIdentifier: MBID): Promise<string[]> {
 		try {
-			const song = await this.mbClient.lookupWork(songIdentifier, ['genres']);
-			const genres = (song as unknown as { genres: { name: string }[] }).genres;
+			const recordings = await this.mbClient
+				.browseEntity<{ recordings: mb.IRecording & { genres: { name: string }[] }[]}>('recording', {
+					work: songIdentifier,
+					inc: 'genres'
+				}).then((res) => res.recordings);
+			const genres = recordings.map((recording) => recording.genres).flat();
 
 			// Stripping other members
 			return genres.map(({ name }) => name);
@@ -118,10 +122,19 @@ export default class MusicBrainzProvider extends IProvider<MusicBrainzSettings, 
 			const album = await this.mbClient.lookupReleaseGroup(albumIdentifer, ['url-rels']);
 			const externalUrls = (album as mb.IReleaseGroup & mb.IRelationList).relations;
 			const wikipediaId = externalUrls
-				.map((relation) => relation.url?.resource)
-				.find((url) => url?.includes('wikipedia'))!.split('/').pop()!;
+				.find((resource) => resource.type == 'wikipedia')?.url
+				?.resource
+				?.split('/').pop();
+			const wikidataId = externalUrls
+				.find((resource) => resource.type == 'wikidata')?.url
+				?.resource
+				?.split('/').pop();
 
-			return await this.getWikipediaDescription(wikipediaId);
+			return await this.getWikipediaDescription(
+				wikidataId && !wikipediaId
+					? await this.getWikipediaArticleName(wikidataId)
+					: wikipediaId!
+			);
 		} catch (err) {
 			throw new ProviderActionFailedError(this.name, 'getAlbumDescription', err.message);
 		}
@@ -193,6 +206,26 @@ export default class MusicBrainzProvider extends IProvider<MusicBrainzSettings, 
 		} catch (err) {
 			throw new ProviderActionFailedError(this.name, 'getArtistDescription', err.message);
 		}
+	}
+
+	private async getWikipediaArticleName(wikidataId: string): Promise<string> {
+		const wikidataResponse = await this.httpService.axiosRef.get(
+			'/w/api.php',
+			{
+				baseURL: 'https://www.wikidata.org',
+				params: {
+					action: 'wbgetentities',
+					props: 'sitelinks',
+					ids: wikidataId,
+					sitefilter: 'enwiki',
+					format: 'json'
+				}
+			}
+		).then(({ data }) => data);
+
+		return (Object.entries(wikidataResponse.entities)
+			.at(0)![1] as any)
+			.sitelinks.enwiki.title;
 	}
 
 	private async getWikipediaDescription(resourceId: string): Promise<string> {

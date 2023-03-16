@@ -14,12 +14,15 @@ import SettingsService from "src/settings/settings.service";
 import FileManagerService from "src/file-manager/file-manager.service";
 import * as fs from 'fs';
 import FileManagerModule from "src/file-manager/file-manager.module";
+import { AllProvidersFailedError, ProviderActionFailedError } from "./provider.exception";
+import { AlbumType } from "@prisma/client";
 
 describe("Provider Service", () => {
 	let providerService: ProviderService;
 	let settingsService: SettingsService;
 	let prismaService: PrismaService;
 	let fileManagerService: FileManagerService;
+	let geniusService: GeniusProvider;
 
 	beforeAll(async () => {
 		const module: TestingModule = await createTestingModule({
@@ -30,6 +33,8 @@ describe("Provider Service", () => {
 		prismaService = module.get(PrismaService);
 		settingsService = module.get(SettingsService);
 		fileManagerService = module.get(FileManagerService);
+		geniusService = module.get(GeniusProvider);
+		module.get(MusicBrainzProvider).onModuleInit();
 		await providerService.onModuleInit();
 	});
 
@@ -63,5 +68,62 @@ describe("Provider Service", () => {
 			expect(providerService.enabledProviders).toContain('genius');
 			expect(providerService.enabledProviders).toContain('musicbrainz');
 		})
-	})
+	});
+
+	describe('Get Album Type', () => {
+		it('should return album type', async () => {
+			expect(await providerService.getAlbumType('11,000 Clicks', 'Moloko'))
+				.toBe(AlbumType.LiveRecording);
+		});
+	});
+
+	describe('Get Album Description', () => {
+		if (process.env.GITHUB_ACTIONS != 'true') {
+			it("should get Description from Genius Provider", async () => {
+				const description = await providerService.getAlbumDescription("Sour", "Olivia Rodrigo");
+			
+				expect(description
+					.startsWith("SOUR is the debut studio album by Olivia Rodrigo, released through Geffen Records and Interscope Records")
+				).toBeTruthy();
+			});
+		}
+		it("should get Description from Musicbrainz Provider", async () => {
+			jest.spyOn(geniusService, 'getAlbumDescription').mockImplementationOnce(() => {
+				throw new ProviderActionFailedError('genius', 'getAlbumDescription', '');
+			})
+			expect((await providerService.getAlbumDescription("Sour", "Olivia Rodrigo"))
+				.startsWith("Sour (stylized in all caps) is the debut studio album by American singer-songwriter Olivia Rodrigo.")
+			).toBeTruthy();
+		});
+	});
+
+	describe('Get Artist Description', () => {
+		it("should get Description from Genius Provider", async () => {
+			const description = await providerService.getArtistDescription("Moloko");
+
+			expect(description
+				.endsWith("which became an international hit.")
+			).toBeTruthy();
+		});
+	});
+
+	describe('Get Song Genres', () => {
+		it("should collect all genres", async () => {
+			const genres = await providerService.getSongGenres("One More Time", "Daft Punk");
+
+			expect(genres).toContain('house');
+			expect(genres).toContain('electronic');
+			expect(genres).toContain('dance');
+			expect(genres).toContain('electronica');
+			expect(genres).toContain('disco');
+		});
+	});
+
+	describe('Error handling', () => {
+		it("should throw expected error when all providers failed", async () => {
+			const test = () => providerService.getArtistDescription("");
+
+			expect(test).rejects.toThrow(AllProvidersFailedError);
+		});
+	});
 })

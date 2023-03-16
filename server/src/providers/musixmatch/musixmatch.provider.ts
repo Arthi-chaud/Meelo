@@ -114,11 +114,16 @@ export default class MusixMatchProvider extends IProvider<MusixMatchSettings, st
 		try {
 			const lyricsPage = await this.httpService.axiosRef
 				.get(`/lyrics/${songIdentifier}`, { baseURL: this.rootUrl });
-
-			return cheerio.load(lyricsPage.data)('.lyrics__content__ok')
+			const lyrics = cheerio.load(lyricsPage.data)('.lyrics__content__ok')
 				.map((__, lyricSegment) => cheerio.load(lyricSegment).text())
 				.toArray()
-				.join('\n');
+				.join('\n')
+				.trim();
+
+			if (!lyrics.length) {
+				throw new Error("No lyrics found");
+			}
+			return lyrics;
 		} catch (err) {
 			throw new ProviderActionFailedError(this.name, 'getSongLyrics', err.message);
 		}

@@ -69,7 +69,10 @@ export default class ProviderService implements OnModuleInit {
 
 	getAlbumType(albumName: string, artistName?: string) {
 		return this.runAction(async (provider) => {
-			const albumId = await provider.getAlbumIdentifier(albumName, artistName);
+			const artistId = artistName
+				? await provider.getArtistIdentifier(artistName)
+				: undefined;
+			const albumId = await provider.getAlbumIdentifier(albumName, artistId);
 
 			return provider.getAlbumType(albumId);
 		});
@@ -77,7 +80,10 @@ export default class ProviderService implements OnModuleInit {
 
 	getAlbumDescription(albumName: string, artistName?: string) {
 		return this.runAction(async (provider) => {
-			const albumId = await provider.getAlbumIdentifier(albumName, artistName);
+			const artistId = artistName
+				? await provider.getArtistIdentifier(artistName)
+				: undefined;
+			const albumId = await provider.getAlbumIdentifier(albumName, artistId);
 
 			return provider.getAlbumDescription(albumId);
 		});
