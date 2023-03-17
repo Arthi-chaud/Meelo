@@ -38,6 +38,7 @@ COPY --from=front-builder /app/front/.next ./front/.next
 COPY --from=front-builder /app/front/node_modules ./front/node_modules
 COPY --from=front-builder /app/front/package.json ./front/
 COPY --from=front-builder /app/front/public ./front/public
+COPY --from=front-builder /app/front/next.config.js ./front/
 COPY ./assets ./assets
 COPY ./nginx.conf /etc/nginx/nginx.conf
 COPY ./Meelo .
