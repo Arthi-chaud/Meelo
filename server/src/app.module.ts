@@ -20,8 +20,6 @@ import TasksModule from './tasks/tasks.module';
 import { ScheduleModule } from '@nestjs/schedule';
 import AuthenticationModule from './authentication/authentication.module';
 import UserModule from './user/user.module';
-import { ServeStaticModule } from '@nestjs/serve-static';
-import { join } from 'path';
 import ProvidersModule from './providers/providers.module';
 import FfmpegModule from './ffmpeg/ffmpeg.module';
 import LoggerModule from './logger/logger.module';
@@ -29,9 +27,6 @@ import * as Plugins from './app.plugins';
 
 @Module({
 	imports: [
-		ServeStaticModule.forRoot({
-			rootPath: join(__dirname, 'public'),
-		}),
 		ScheduleModule.forRoot(),
 		ConfigModule.forRoot(),
 		ArtistModule,
