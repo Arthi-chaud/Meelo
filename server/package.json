@@ -29,7 +29,6 @@
     "@nestjs/passport": "^9.0.3",
     "@nestjs/platform-express": "^9.3.9",
     "@nestjs/schedule": "^2.1.0",
-    "@nestjs/serve-static": "^3.0.1",
     "@nestjs/swagger": "^6.2.1",
     "@prisma/client": "^4.1.0",
     "@taumechanica/stout": "^2.2.0",

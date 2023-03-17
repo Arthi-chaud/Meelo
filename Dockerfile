@@ -6,6 +6,8 @@ COPY ./server/*.lock ./
 RUN yarn
 COPY ./server/src ./src
 COPY ./server/prisma/ ./prisma
+## To Provide static assets at build time
+COPY ./assets /app/assets
 RUN yarn run prebuild
 RUN yarn run build
 ## Removing dev dependencies
