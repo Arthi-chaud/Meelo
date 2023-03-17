@@ -10,15 +10,18 @@ import helmet from 'helmet';
 import cookieParser from 'cookie-parser';
 import bootstrapSwagger from './swagger/bootstrap';
 import Logger from './logger/logger';
+import { NestExpressApplication } from '@nestjs/platform-express';
+import { join } from 'path';
 
 async function bootstrap() {
 	mime.define({ 'audio/mpeg': ['m4a', mime.getExtension('audio/mpeg')!] }, true);
-	const app = await NestFactory.create(AppModule, {
+	const app = await NestFactory.create<NestExpressApplication>(AppModule, {
 		cors: process.env.NODE_ENV === 'development',
 		logger: new Logger()
 	});
 	const { httpAdapter } = app.get(HttpAdapterHost);
 
+	app.useStaticAssets(join(__dirname, 'public'));
 	app.useGlobalFilters(
 		new AllExceptionsFilter(httpAdapter),
 		new NotFoundExceptionFilter(),
