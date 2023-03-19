@@ -9,20 +9,32 @@ CREATE TABLE "providers" (
 
 -- CreateTable
 CREATE TABLE "song_external_id" (
+    "id" SERIAL NOT NULL,
     "songId" INTEGER NOT NULL,
-    "providerId" INTEGER NOT NULL
+    "providerId" INTEGER NOT NULL,
+    "value" TEXT NOT NULL,
+
+    CONSTRAINT "song_external_id_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
 CREATE TABLE "artist_external_ids" (
+    "id" SERIAL NOT NULL,
     "artistId" INTEGER NOT NULL,
-    "providerId" INTEGER NOT NULL
+    "providerId" INTEGER NOT NULL,
+    "value" TEXT NOT NULL,
+
+    CONSTRAINT "artist_external_ids_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
 CREATE TABLE "album_external_ids" (
+    "id" SERIAL NOT NULL,
     "albumId" INTEGER NOT NULL,
-    "providerId" INTEGER NOT NULL
+    "providerId" INTEGER NOT NULL,
+    "value" TEXT NOT NULL,
+
+    CONSTRAINT "album_external_ids_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateIndex
@@ -30,24 +42,6 @@ CREATE UNIQUE INDEX "providers_name_key" ON "providers"("name");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "providers_slug_key" ON "providers"("slug");
-
--- CreateIndex
-CREATE UNIQUE INDEX "song_external_id_songId_key" ON "song_external_id"("songId");
-
--- CreateIndex
-CREATE UNIQUE INDEX "song_external_id_providerId_key" ON "song_external_id"("providerId");
-
--- CreateIndex
-CREATE UNIQUE INDEX "artist_external_ids_artistId_key" ON "artist_external_ids"("artistId");
-
--- CreateIndex
-CREATE UNIQUE INDEX "artist_external_ids_providerId_key" ON "artist_external_ids"("providerId");
-
--- CreateIndex
-CREATE UNIQUE INDEX "album_external_ids_albumId_key" ON "album_external_ids"("albumId");
-
--- CreateIndex
-CREATE UNIQUE INDEX "album_external_ids_providerId_key" ON "album_external_ids"("providerId");
 
 -- AddForeignKey
 ALTER TABLE "song_external_id" ADD CONSTRAINT "song_external_id_songId_fkey" FOREIGN KEY ("songId") REFERENCES "songs"("id") ON DELETE CASCADE ON UPDATE CASCADE;
