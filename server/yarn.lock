@@ -1798,6 +1798,13 @@
     path-to-regexp "3.2.0"
     tslib "2.5.0"
 
+"@nestjs/event-emitter@^1.4.1":
+  version "1.4.1"
+  resolved "https://registry.yarnpkg.com/@nestjs/event-emitter/-/event-emitter-1.4.1.tgz#a96fae678b0257b9cd8f6c82c9f3f82a0690e221"
+  integrity sha512-PmLpzMYgEKJNxOUrRjb6kNSm2PC6J+BeLTuF/bkYViGM/mVGvYOgU5jq8DQnXmiSmDmyWN+tO2cHSnR7odJJRA==
+  dependencies:
+    eventemitter2 "6.4.9"
+
 "@nestjs/jwt@^10.0.2":
   version "10.0.2"
   resolved "https://registry.yarnpkg.com/@nestjs/jwt/-/jwt-10.0.2.tgz#bc049fe1622299e456a849999ebf30cb56ab4dd1"
@@ -4828,6 +4835,11 @@ event-stream@4.0.1:
     split "^1.0.1"
     stream-combiner "^0.2.2"
     through "^2.3.8"
+
+eventemitter2@6.4.9:
+  version "6.4.9"
+  resolved "https://registry.yarnpkg.com/eventemitter2/-/eventemitter2-6.4.9.tgz#41f2750781b4230ed58827bc119d293471ecb125"
+  integrity sha512-JEPTiaOt9f04oa6NOkc4aH+nVp5I3wEjpHbIPqfgCdD5v5bUzy7xQqwcVO2aDQgOWhI28da57HksMrzK9HlRxg==
 
 events@^3.2.0:
   version "3.3.0"

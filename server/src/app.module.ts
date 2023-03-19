@@ -24,11 +24,13 @@ import ProvidersModule from './providers/providers.module';
 import FfmpegModule from './ffmpeg/ffmpeg.module';
 import LoggerModule from './logger/logger.module';
 import * as Plugins from './app.plugins';
+import { EventEmitterModule } from '@nestjs/event-emitter';
 
 @Module({
 	imports: [
 		ScheduleModule.forRoot(),
 		ConfigModule.forRoot(),
+		EventEmitterModule.forRoot(),
 		ArtistModule,
 		AlbumModule,
 		SongModule,

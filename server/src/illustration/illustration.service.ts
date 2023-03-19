@@ -19,14 +19,11 @@ import type { IllustrationPath } from './models/illustration-path.model';
 import Jimp from 'jimp';
 import AlbumService from 'src/album/album.service';
 import { FileDoesNotExistException } from 'src/file-manager/file-manager.exceptions';
-import type FileQueryParameters from 'src/file/models/file.query-parameters';
-import FileService from 'src/file/file.service';
 import { Readable } from 'stream';
 import type { IllustrationDimensionsDto } from './models/illustration-dimensions.dto';
 import SettingsService from 'src/settings/settings.service';
 import glob from 'glob';
 import Logger from 'src/logger/logger';
-import FfmpegService from 'src/ffmpeg/ffmpeg.service';
 import ReleaseIllustrationService from 'src/release/release-illustration.service';
 import TrackIllustrationService from 'src/track/track-illustration.service';
 
@@ -41,11 +38,9 @@ export default class IllustrationService {
 		private releaseService: ReleaseService,
 		@Inject(forwardRef(() => AlbumService))
 		private albumService: AlbumService,
-		@Inject(forwardRef(() => FileService))
-		private fileService: FileService,
 		private settingsService: SettingsService,
 		private fileManagerService: FileManagerService,
-		private ffmpegService: FfmpegService,
+		@Inject(forwardRef(() => ReleaseIllustrationService))
 		private releaseIllustrationService: ReleaseIllustrationService,
 		private trackIllustrationService: TrackIllustrationService
 	) {}
@@ -182,7 +177,7 @@ export default class IllustrationService {
 	/**
 	 * Apply the illustration of a track on its source track
 	 */
-	async applyIllustrationOnFile(where: FileQueryParameters.WhereInput): Promise<void> {
+	/*async applyIllustrationOnFile(where: FileQueryParameters.WhereInput): Promise<void> {
 		const file = await this.fileService.get(where, { library: true, track: true });
 		const track: Track = file.track!;
 		const libraryPath = this.fileManagerService.getLibraryFullPath(file.library);
@@ -204,7 +199,7 @@ export default class IllustrationService {
 		} else {
 			this.logger.warn(`No illustration was applied to ${fullFilePath}`);
 		}
-	}
+	}*/
 
 	/**
 	 * Downloads an illustration from a URL, and stores it in the illustration file system

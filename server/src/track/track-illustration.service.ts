@@ -24,6 +24,7 @@ export default class TrackIllustrationService extends RepositoryIllustrationServ
 >{
 	constructor(
 		fileManagerService: FileManagerService,
+		@Inject(forwardRef(() => ReleaseIllustrationService))
 		private releaseIllustrationService: ReleaseIllustrationService,
 		@Inject(forwardRef(() => TrackService))
 		private trackService: TrackService

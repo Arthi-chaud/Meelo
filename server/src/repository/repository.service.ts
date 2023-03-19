@@ -112,14 +112,23 @@ abstract class RepositoryService<
 	 */
 	async create<I extends ModelSelector<Relations>>(input: CreateInput, include?: I) {
 		try {
-			return await this.repository.create({
+			const created = await this.repository.create({
 				data: this.formatCreateInput(input),
 				include: RepositoryService.formatInclude(include)
 			}) as BaseModel & Select<Relations, I>;
+
+			this.onCreated(created);
+			return created;
 		} catch (error) {
 			throw await this.onCreationFailure(error, input);
 		}
 	}
+
+	/**
+	 * Callback when an item is inserted in the database
+	 * Could be use for logging or for event dispatch
+	 */
+	protected onCreated(_created: BaseModel): void | Promise<void> {}
 
 	/**
 	 * Formats input into ORM-compatible parameter
@@ -291,11 +300,20 @@ abstract class RepositoryService<
 			return await this.repository.update({
 				data: this.formatUpdateInput(what),
 				where: this.formatWhereInput(where)
+			}).then((updated) => {
+				this.onUpdated(updated);
+				return updated;
 			});
 		} catch (error) {
 			throw await this.onUpdateFailure(error, what, where);
 		}
 	}
+
+	/**
+	 * Callback when an item is updated in the database
+	 * Could be use for logging or for event dispatch
+	 */
+	protected onUpdated(_deleted: BaseModel): void | Promise<void> {}
 
 	/**
 	 * Formats input into ORM-compatible parameter
@@ -321,11 +339,20 @@ abstract class RepositoryService<
 		try {
 			return await this.repository.delete({
 				where: this.formatDeleteInput(where)
+			}).then((deleted) => {
+				this.onDeleted(deleted);
+				return deleted;
 			});
 		} catch (error) {
 			throw await this.onDeletionFailure(error, where);
 		}
 	}
+
+	/**
+	 * Callback when an item is deleted in the database
+	 * Could be use for logging or for event dispatch
+	 */
+	protected onDeleted(_deleted: BaseModel): void | Promise<void> {}
 
 	/**
 	 * Formats input into ORM-compatible parameter

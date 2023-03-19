@@ -8,11 +8,15 @@ import { ArtistResponseBuilder } from './models/artist.response';
 import ArtistIllustrationService from './artist-illustration.service';
 import SettingsModule from 'src/settings/settings.module';
 import TrackModule from 'src/track/track.module';
+import IllustrationModule from 'src/illustration/illustration.module';
+import ProvidersModule from 'src/providers/providers.module';
 
 @Module({
 	imports: [
 		PrismaModule,
 		SettingsModule,
+		ProvidersModule,
+		forwardRef(() => IllustrationModule),
 		forwardRef(() => SongModule),
 		forwardRef(() => AlbumModule),
 		forwardRef(() => TrackModule),

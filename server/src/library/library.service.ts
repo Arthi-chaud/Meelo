@@ -1,13 +1,10 @@
 import {
 	Inject, Injectable, forwardRef
 } from '@nestjs/common';
-import FileManagerService from 'src/file-manager/file-manager.service';
 import FileService from 'src/file/file.service';
-import MetadataService from 'src/metadata/metadata.service';
 import Slug from 'src/slug/slug';
 import { Prisma } from '@prisma/client';
 import PrismaService from 'src/prisma/prisma.service';
-import IllustrationService from 'src/illustration/illustration.service';
 import type LibraryQueryParameters from './models/library.query-parameters';
 import normalize from 'normalize-path';
 import RepositoryService from 'src/repository/repository.service';
@@ -16,7 +13,6 @@ import TasksService from 'src/tasks/tasks.service';
 import { Library, LibraryWithRelations } from 'src/prisma/models';
 import { parseIdentifierSlugs } from 'src/identifier/identifier.parse-slugs';
 import Identifier from 'src/identifier/models/identifier';
-import Logger from 'src/logger/logger';
 import { PrismaError } from 'prisma-error-enum';
 import {
 	LibraryAlreadyExistsException,
@@ -40,15 +36,9 @@ export default class LibraryService extends RepositoryService<
 	Prisma.LibraryWhereUniqueInput,
 	Prisma.LibraryOrderByWithRelationAndSearchRelevanceInput
 > {
-	private readonly logger = new Logger(LibraryService.name);
 	constructor(
-		private fileManagerService: FileManagerService,
 		@Inject(forwardRef(() => FileService))
 		private fileService: FileService,
-		@Inject(forwardRef(() => MetadataService))
-		private metadataService: MetadataService,
-		@Inject(forwardRef(() => IllustrationService))
-		private illustrationService: IllustrationService,
 		@Inject(forwardRef(() => TasksService))
 		private tasksService: TasksService,
 		prismaService: PrismaService,
@@ -175,7 +165,7 @@ export default class LibraryService extends RepositoryService<
 
 	async housekeeping(): Promise<void> {}
 
-	async applyMetadataOnFiles(parentLibrary: Library): Promise<void> {
+	/*async applyMetadataOnFiles(parentLibrary: Library): Promise<void> {
 		this.logger.log(`'${parentLibrary.slug}' library: Applying metadata started`);
 		const files = await this.fileService.getMany({ library: { id: parentLibrary.id } });
 		const libraryPath = this.fileManagerService.getLibraryFullPath(parentLibrary);
@@ -190,5 +180,5 @@ export default class LibraryService extends RepositoryService<
 		)).length;
 
 		this.logger.log(`${parentLibrary.slug} library: ${updatedFilesCount} files updated`);
-	}
+	}*/
 }

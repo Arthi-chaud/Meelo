@@ -10,6 +10,11 @@ import SettingsService from 'src/settings/settings.service';
 import { join } from 'path';
 import compilationAlbumArtistKeyword from 'src/utils/compilation';
 import Identifier from 'src/identifier/models/identifier';
+import { OnRepositoryEvent } from 'src/events/event.decorators';
+import { Artist } from 'src/prisma/models';
+import ProviderService from 'src/providers/provider.service';
+import Logger from 'src/logger/logger';
+import IllustrationService from 'src/illustration/illustration.service';
 
 type ServiceArgs = [artistSlug?: Slug];
 
@@ -17,11 +22,15 @@ type ServiceArgs = [artistSlug?: Slug];
 export default class ArtistIllustrationService extends RepositoryIllustrationService<
 	ServiceArgs, ArtistQueryParameters.WhereInput
 > implements OnModuleInit {
+	private readonly logger = new Logger(ArtistIllustrationService.name);
 	private baseIllustrationFolderPath: string;
 	constructor(
 		private settingsService: SettingsService,
 		@Inject(forwardRef(() => ArtistService))
 		private artistService: ArtistService,
+		private providerService: ProviderService,
+		@Inject(forwardRef(() => IllustrationService))
+		private illustrationService: IllustrationService,
 		fileManagerService: FileManagerService,
 	) {
 		super(fileManagerService);
@@ -60,5 +69,18 @@ export default class ArtistIllustrationService extends RepositoryIllustrationSer
 		return this.artistService
 			.select(where, { slug: true })
 			.then(({ slug }) => [new Slug(slug)]);
+	}
+
+	@OnRepositoryEvent('created', 'Artist', { async: true })
+	async onArtistCreation(artist: Artist) {
+		return this.providerService
+			.getArtistIllustrationUrl(artist.name)
+			.then(async (url) => {
+				await this.illustrationService.downloadIllustration(
+					url,
+					this.buildIllustrationPath(new Slug(artist.slug))
+				).then(() => this.logger.log(`Illustration for artist '${artist.slug}' downloaded`));
+			}).catch((error) =>
+				this.logger.error(`Downloading Artist Illustration for ${artist.slug} failed: ` + error.message));
 	}
 }
