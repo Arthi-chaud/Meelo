@@ -8,6 +8,8 @@ import GeniusProvider from "./genius/genius.provider";
 import MusicBrainzProvider from "./musicbrainz/musicbrainz.provider";
 import PrismaService from "src/prisma/prisma.service";
 import Slug from "src/slug/slug";
+import { OnRepositoryEvent } from "src/events/event.decorators";
+import { Artist } from "src/prisma/models";
 
 /**
  * Orchestrates of Providers
@@ -120,7 +122,29 @@ export default class ProviderService implements OnModuleInit {
 			const songId = await provider.getSongIdentifier(songName, artistId);
 
 			return provider.getSongGenres(songId);
+		}).then((genres) => genres.flat());
+	}
+
+	@OnRepositoryEvent('created', 'Artist', { async: true })
+	protected async onArtistCreatedEvent(artist: Artist) {
+		// const providerEntries = await this.prismaService.provider.findMany();
+		const ids = await this.collectActions(async (provider) => {
+			const id = await provider.getArtistIdentifier(artist.name);
+
+			this.logger.log(`${provider.name} external id for ${artist.name} found`);
+			return { provider, id };
 		});
+
+		await Promise.allSettled(
+			ids.map(({ provider, id }) =>
+				this.prismaService.artistExternalId.create({
+					data: {
+						artist: { connect: { id: artist.id } },
+						provider: { connect: { name: provider.name } },
+						value: (id as string).toString()
+					},
+				}))
+		);
 	}
 
 	/**
@@ -129,7 +153,7 @@ export default class ProviderService implements OnModuleInit {
 	 */
 	private async runAction<Returns>(
 		action: (provider: IProvider<unknown, unknown>) => Promise<Returns>,
-	): Promise<Awaited<Returns>> {
+	): Promise<Returns> {
 		for (const provider of this._enabledProviders) {
 			try {
 				return await action(provider);
@@ -144,15 +168,14 @@ export default class ProviderService implements OnModuleInit {
 	 * Calls action method on each enabled provider, and returns all successes
 	 */
 	private async collectActions<Returns>(
-		action: (provider: IProvider<unknown, unknown>) => Promise<Returns[]>,
+		action: (provider: IProvider<unknown, unknown>) => Promise<Returns>,
 	): Promise<Returns[]> {
-		const promiseResultsFilter = (result: PromiseSettledResult<Returns[]>):
-			result is PromiseFulfilledResult<Returns[]> => result.status == 'fulfilled';
+		const promiseResultsFilter = (result: PromiseSettledResult<Returns>):
+			result is PromiseFulfilledResult<Awaited<Returns>> => result.status == 'fulfilled';
 
 		return Promise.allSettled(this._enabledProviders.map(action))
 			.then((results) => results
 				.filter(promiseResultsFilter)
-				.map((result) => result.value)
-				.flat());
+				.map((result) => result.value));
 	}
 }
