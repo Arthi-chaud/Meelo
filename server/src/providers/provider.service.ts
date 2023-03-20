@@ -9,7 +9,7 @@ import MusicBrainzProvider from "./musicbrainz/musicbrainz.provider";
 import PrismaService from "src/prisma/prisma.service";
 import Slug from "src/slug/slug";
 import { OnRepositoryEvent } from "src/events/event.decorators";
-import { Artist } from "src/prisma/models";
+import { Artist, Provider } from "src/prisma/models";
 
 /**
  * Orchestrates of Providers
@@ -19,6 +19,7 @@ export default class ProviderService implements OnModuleInit {
 	private readonly _enabledProviders: IProvider<unknown, unknown>[] = [];
 	private readonly logger = new Logger(ProviderService.name);
 	private readonly _providerCatalogue: IProvider<unknown, unknown>[] = [];
+	private readonly _providerRows: Provider[] = [];
 
 	constructor(
 		musixmatchProvider: MusixMatchProvider,
@@ -28,6 +29,14 @@ export default class ProviderService implements OnModuleInit {
 		private settingsService: SettingsService
 	) {
 		this._providerCatalogue = [musixmatchProvider, geniusProvider, musicbrainzProvider];
+	}
+
+	getProviderById(id: number) {
+		return this._providerCatalogue.find(
+			({ name }) => this._providerRows.find(
+				(provider) => provider.id == id
+			)?.name == name
+		)!;
 	}
 
 	get enabledProviders() {
@@ -53,7 +62,7 @@ export default class ProviderService implements OnModuleInit {
 				this.logger.warn(`Provider '${provider.name}' disabled`);
 			}
 		});
-		return this.prismaService.$transaction(
+		this._providerRows.push(...await this.prismaService.$transaction(
 			this._providerCatalogue.map((provider) => {
 				const providerSlug = new Slug(provider.name).toString();
 
@@ -66,7 +75,7 @@ export default class ProviderService implements OnModuleInit {
 					update: {}
 				});
 			})
-		).then(() => {});
+		));
 	}
 
 	getAlbumType(albumName: string, artistName?: string) {

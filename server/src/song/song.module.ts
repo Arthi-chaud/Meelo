@@ -11,10 +11,12 @@ import { SongResponseBuilder } from './models/song.response';
 import ReleaseModule from 'src/release/release.module';
 import SongIllustrationService from './song-illustration.service';
 import { SongWithVideoResponseBuilder } from './models/song-with-video.response';
+import ProvidersModule from 'src/providers/providers.module';
 
 @Module({
 	imports: [
 		PrismaModule,
+		ProvidersModule,
 		forwardRef(() => LyricsModule),
 		forwardRef(() => ArtistModule),
 		forwardRef(() => TrackModule),

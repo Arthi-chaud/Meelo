@@ -58,6 +58,10 @@ export default class MusicBrainzProvider extends IProvider<MusicBrainzSettings, 
 		}
 	}
 
+	getArtistURL(artistIdentifier: MBID): string {
+		return `${this.getProviderHomepage()}/artist/${artistIdentifier}`;
+	}
+
 	async getAlbumIdentifier(albumName: string, artistIdentifier?: string): Promise<MBID> {
 		try {
 			const searchResult = await this.mbClient.searchRelease({
@@ -70,6 +74,10 @@ export default class MusicBrainzProvider extends IProvider<MusicBrainzSettings, 
 		} catch (err) {
 			throw new ProviderActionFailedError(this.name, 'getAlbumIdentifier', err.message);
 		}
+	}
+
+	getAlbumURL(artistIdentifier: MBID): string {
+		return `${this.getProviderHomepage()}/release-group/${artistIdentifier}`;
 	}
 
 	async getSongIdentifier(songName: string, artistIdentifier: string): Promise<string> {
@@ -99,6 +107,10 @@ export default class MusicBrainzProvider extends IProvider<MusicBrainzSettings, 
 			throw new ProviderActionFailedError(this.name, 'getSongIdentifier', err.message);
 		}
 		throw new ProviderActionFailedError(this.name, 'getSongIdentifier', 'Song not found');
+	}
+
+	getSongURL(artistIdentifier: MBID): string {
+		return `${this.getProviderHomepage()}/work/${artistIdentifier}`;
 	}
 
 	async getSongGenres(songIdentifier: MBID): Promise<string[]> {

@@ -60,6 +60,10 @@ export default class MusixMatchProvider extends IProvider<MusixMatchSettings, st
 		}
 	}
 
+	getArtistURL(artistIdentifier: string): string {
+		return `${this.getProviderHomepage()}/artists/${artistIdentifier}`;
+	}
+
 	async getArtistIllustrationUrl(artistIdentifer: string): Promise<string> {
 		try {
 			const artistPage = await this.httpService.axiosRef
@@ -108,6 +112,10 @@ export default class MusixMatchProvider extends IProvider<MusixMatchSettings, st
 		} catch (err) {
 			throw new ProviderActionFailedError(this.name, 'getSongIdentifier', err.message);
 		}
+	}
+
+	getSongURL(songIdentifier: string): string {
+		return `${this.getProviderHomepage()}/lyricws/${songIdentifier}`;
 	}
 
 	async getSongLyrics(songIdentifier: string): Promise<string> {

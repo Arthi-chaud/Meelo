@@ -45,6 +45,14 @@ export default abstract class IProvider<SettingsType, IdentifierType = string> i
 	}
 
 	/**
+	 * @returns The URL to the provider's web page of the artist
+	 * @param artistIdentifier provider's identifier for the artist
+	 */
+	getArtistURL(_artistIdentifier: IdentifierType): string {
+		throw new ProviderMethodNotAvailableError(this.name);
+	}
+
+	/**
 	 * @returns the provider's Identifer of the song.
 	 * @param songName The name of the song
 	 * @param _artistIdentifier Identifier of the artist
@@ -57,6 +65,14 @@ export default abstract class IProvider<SettingsType, IdentifierType = string> i
 	}
 
 	/**
+	 * @returns The URL to the provider's web page of the song
+	 * @param songIdentifier provider's identifier for the song
+	 */
+	getSongURL(_songIdentifier: IdentifierType): string {
+		throw new ProviderMethodNotAvailableError(this.name);
+	}
+
+	/**
 	 * @returns the provider's Identifer of the album.
 	 * @param albumName The name of the album
 	 * @param artistIdentifier Name of the artist, if there is one
@@ -64,6 +80,14 @@ export default abstract class IProvider<SettingsType, IdentifierType = string> i
 	getAlbumIdentifier(
 		_albumName: string, _artistIdentifier?: IdentifierType
 	): Promise<IdentifierType> {
+		throw new ProviderMethodNotAvailableError(this.name);
+	}
+
+	/**
+	 * @returns The URL to the provider's web page of the album
+	 * @param albumIdentifier provider's identifier for the album
+	 */
+	getAlbumURL(_albumIdentifier: IdentifierType): string {
 		throw new ProviderMethodNotAvailableError(this.name);
 	}
 
