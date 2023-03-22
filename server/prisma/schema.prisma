@@ -362,7 +362,7 @@ model SongExternalId {
 	providerId		Int
 	/// @description Actual Value of the external identifier
 	value			String
-	@@map("song_external_id")
+	@@map("song_external_ids")
 }
 
 model ArtistExternalId {

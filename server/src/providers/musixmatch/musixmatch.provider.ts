@@ -61,7 +61,7 @@ export default class MusixMatchProvider extends IProvider<MusixMatchSettings, st
 	}
 
 	getArtistURL(artistIdentifier: string): string {
-		return `${this.getProviderHomepage()}/artists/${artistIdentifier}`;
+		return `${this.getProviderHomepage()}/artist/${artistIdentifier}`;
 	}
 
 	async getArtistIllustrationUrl(artistIdentifer: string): Promise<string> {
@@ -115,7 +115,7 @@ export default class MusixMatchProvider extends IProvider<MusixMatchSettings, st
 	}
 
 	getSongURL(songIdentifier: string): string {
-		return `${this.getProviderHomepage()}/lyricws/${songIdentifier}`;
+		return `${this.getProviderHomepage()}/lyrics/${songIdentifier}`;
 	}
 
 	async getSongLyrics(songIdentifier: string): Promise<string> {

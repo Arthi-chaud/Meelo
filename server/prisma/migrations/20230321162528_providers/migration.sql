@@ -8,13 +8,13 @@ CREATE TABLE "providers" (
 );
 
 -- CreateTable
-CREATE TABLE "song_external_id" (
+CREATE TABLE "song_external_ids" (
     "id" SERIAL NOT NULL,
     "songId" INTEGER NOT NULL,
     "providerId" INTEGER NOT NULL,
     "value" TEXT NOT NULL,
 
-    CONSTRAINT "song_external_id_pkey" PRIMARY KEY ("id")
+    CONSTRAINT "song_external_ids_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
@@ -44,10 +44,10 @@ CREATE UNIQUE INDEX "providers_name_key" ON "providers"("name");
 CREATE UNIQUE INDEX "providers_slug_key" ON "providers"("slug");
 
 -- AddForeignKey
-ALTER TABLE "song_external_id" ADD CONSTRAINT "song_external_id_songId_fkey" FOREIGN KEY ("songId") REFERENCES "songs"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE "song_external_ids" ADD CONSTRAINT "song_external_ids_songId_fkey" FOREIGN KEY ("songId") REFERENCES "songs"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "song_external_id" ADD CONSTRAINT "song_external_id_providerId_fkey" FOREIGN KEY ("providerId") REFERENCES "providers"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE "song_external_ids" ADD CONSTRAINT "song_external_ids_providerId_fkey" FOREIGN KEY ("providerId") REFERENCES "providers"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "artist_external_ids" ADD CONSTRAINT "artist_external_ids_artistId_fkey" FOREIGN KEY ("artistId") REFERENCES "artists"("id") ON DELETE CASCADE ON UPDATE CASCADE;

@@ -9,7 +9,9 @@ import MusicBrainzProvider from "./musicbrainz/musicbrainz.provider";
 import PrismaService from "src/prisma/prisma.service";
 import Slug from "src/slug/slug";
 import { OnRepositoryEvent } from "src/events/event.decorators";
-import { Artist, Provider } from "src/prisma/models";
+import {
+	Artist, Provider, Song
+} from "src/prisma/models";
 
 /**
  * Orchestrates of Providers
@@ -136,11 +138,10 @@ export default class ProviderService implements OnModuleInit {
 
 	@OnRepositoryEvent('created', 'Artist', { async: true })
 	protected async onArtistCreatedEvent(artist: Artist) {
-		// const providerEntries = await this.prismaService.provider.findMany();
 		const ids = await this.collectActions(async (provider) => {
 			const id = await provider.getArtistIdentifier(artist.name);
 
-			this.logger.log(`${provider.name} external id for ${artist.name} found`);
+			this.logger.verbose(`${provider.name} external id for artist '${artist.name}' found`);
 			return { provider, id };
 		});
 
@@ -149,6 +150,34 @@ export default class ProviderService implements OnModuleInit {
 				this.prismaService.artistExternalId.create({
 					data: {
 						artist: { connect: { id: artist.id } },
+						provider: { connect: { name: provider.name } },
+						value: (id as string).toString()
+					},
+				}))
+		);
+	}
+
+	@OnRepositoryEvent('created', 'Song', { async: true })
+	protected async onSongCreatedEvent(song: Song) {
+		const artist = await this.prismaService.artist.findUnique({
+			where: { id: song.artistId },
+			include: { externalIds: { include: { provider: true } } }
+		});
+		const ids = await this.collectActions(async (provider) => {
+			const id = await provider.getSongIdentifier(
+				song.name,
+				artist?.externalIds.find((externalId) => externalId.provider.name == provider.name)
+			);
+
+			this.logger.verbose(`${provider.name} external id for song '${song.name}' found`);
+			return { provider, id };
+		});
+
+		await Promise.allSettled(
+			ids.map(({ provider, id }) =>
+				this.prismaService.songExternalId.create({
+					data: {
+						song: { connect: { id: song.id } },
 						provider: { connect: { name: provider.name } },
 						value: (id as string).toString()
 					},
