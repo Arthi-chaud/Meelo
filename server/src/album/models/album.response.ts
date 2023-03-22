@@ -7,6 +7,7 @@ import { IllustratedModel } from "src/illustration/models/illustrated-model.resp
 import { Album, AlbumWithRelations } from "src/prisma/models";
 import ResponseBuilderInterceptor from "src/response/interceptors/response.interceptor";
 import AlbumIllustrationService from "../album-illustration.service";
+import ExternalIdResponse, { ExternalIdResponseBuilder } from "src/providers/models/external-id.response";
 
 export class AlbumResponse extends IntersectionType(
 	IntersectionType(
@@ -14,6 +15,7 @@ export class AlbumResponse extends IntersectionType(
 	),
 	class {
 		artist?: ArtistResponse | null;
+		externalIds?: ExternalIdResponse[];
 	}
 ) {}
 
@@ -23,7 +25,9 @@ export class AlbumResponseBuilder extends ResponseBuilderInterceptor<AlbumWithRe
 		@Inject(forwardRef(() => AlbumIllustrationService))
 		private albumIllustrationService: AlbumIllustrationService,
 		@Inject(forwardRef(() => ArtistResponseBuilder))
-		private artistResponseBuilder: ArtistResponseBuilder
+		private artistResponseBuilder: ArtistResponseBuilder,
+		@Inject(forwardRef(() => ExternalIdResponseBuilder))
+		private externalIdResponseBuilder: ExternalIdResponseBuilder
 	) {
 		super();
 	}
@@ -38,6 +42,13 @@ export class AlbumResponseBuilder extends ResponseBuilderInterceptor<AlbumWithRe
 
 		if (album.artist != undefined) {
 			response.artist = await this.artistResponseBuilder.buildResponse(album.artist);
+		}
+		if (album.externalIds !== undefined) {
+			response.externalIds = await Promise.all(
+				album.externalIds?.map(
+					(id) => this.externalIdResponseBuilder.buildResponse(id)
+				) ?? []
+			);
 		}
 		return response;
 	}

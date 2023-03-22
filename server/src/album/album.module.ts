@@ -9,10 +9,12 @@ import TrackModule from 'src/track/track.module';
 import GenreModule from "../genre/genre.module";
 import { AlbumResponseBuilder } from './models/album.response';
 import AlbumIllustrationService from './album-illustration.service';
+import ProvidersModule from 'src/providers/providers.module';
 
 @Module({
 	imports: [
 		PrismaModule,
+		ProvidersModule,
 		forwardRef(() => IllustrationModule),
 		forwardRef(() => ArtistModule),
 		forwardRef(() => ReleaseModule),

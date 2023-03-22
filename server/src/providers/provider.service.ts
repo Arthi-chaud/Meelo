@@ -157,6 +157,34 @@ export default class ProviderService implements OnModuleInit {
 		);
 	}
 
+	@OnRepositoryEvent('created', 'Album', { async: true })
+	protected async onAlbumCreatedEvent(album: Song) {
+		const artist = album.artistId ? await this.prismaService.artist.findFirst({
+			where: { id: album.artistId },
+			include: { externalIds: { include: { provider: true } } }
+		}) : null;
+		const ids = await this.collectActions(async (provider) => {
+			const id = await provider.getAlbumIdentifier(
+				album.name,
+				artist?.externalIds.find((externalId) => externalId.provider.name == provider.name)
+			);
+
+			this.logger.verbose(`${provider.name} external id for album '${album.name}' found`);
+			return { provider, id };
+		});
+
+		await Promise.allSettled(
+			ids.map(({ provider, id }) =>
+				this.prismaService.albumExternalId.create({
+					data: {
+						album: { connect: { id: album.id } },
+						provider: { connect: { name: provider.name } },
+						value: (id as string).toString()
+					},
+				}))
+		);
+	}
+
 	@OnRepositoryEvent('created', 'Song', { async: true })
 	protected async onSongCreatedEvent(song: Song) {
 		const artist = await this.prismaService.artist.findUnique({

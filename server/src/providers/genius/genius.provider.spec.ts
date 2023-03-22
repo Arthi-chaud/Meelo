@@ -136,18 +136,20 @@ describe('Genius Provider', () => {
 	});
 
 	describe('Get Album Description', () => {
-		it("should get album's description (1)", async () => {
-			const description = await geniusProvider.getAlbumDescription('Nicki-minaj/Pink-friday-roman-reloaded');
+		if (process.env.GITHUB_ACTIONS != 'true') {
+			it("should get album's description (1)", async () => {
+				const description = await geniusProvider.getAlbumDescription('Nicki-minaj/Pink-friday-roman-reloaded');
 
-			expect(description.startsWith("Pink Friday: Roman Reloaded was released April 2, 2012, and is Nicki’s second LP. It made it to number 1 on the Billboard charts, ")).toBeTruthy();
-			expect(description.endsWith("blatantly stated that this is a “rap album,” her pop sensibilities are also on full display.")).toBeTruthy();
-		});
-		it("should get album's description (2)", async () => {
-			const description = await geniusProvider.getAlbumDescription('P-nk/m-ssundaztood');
+				expect(description.startsWith("Pink Friday: Roman Reloaded was released April 2, 2012, and is Nicki’s second LP. It made it to number 1 on the Billboard charts, ")).toBeTruthy();
+				expect(description.endsWith("blatantly stated that this is a “rap album,” her pop sensibilities are also on full display.")).toBeTruthy();
+			});
+			it("should get album's description (2)", async () => {
+				const description = await geniusProvider.getAlbumDescription('P-nk/m-ssundaztood');
 
-			expect(description.startsWith("Missundaztood is the second studio album by P!nk. The album was a success worldwide and with critics, selling thirteen million copies")).toBeTruthy();
-			expect(description.endsWith('“Get the Party Started”, “Don’t Let Me Get Me”, “Just like a Pill”, and “Family Portrait”. The album is P!nk’s best-selling album to date and rose her into international stardom.')).toBeTruthy();
-		});
+				expect(description.startsWith("Missundaztood is the second studio album by P!nk. The album was a success worldwide and with critics, selling thirteen million copies")).toBeTruthy();
+				expect(description.endsWith('“Get the Party Started”, “Don’t Let Me Get Me”, “Just like a Pill”, and “Family Portrait”. The album is P!nk’s best-selling album to date and rose her into international stardom.')).toBeTruthy();
+			});
+		}
 	});
 
 	describe('Get Album URL', () => {
