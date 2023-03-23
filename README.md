@@ -62,14 +62,14 @@ In the future, Meelo's goal is to help you manage and enjoy your music collectio
 
 ## Screenshots
 
-![Album View](./docs/assets/album-view.png)
+![Album View](./assets/examples/album-view.png)
 
-![Player](./docs/assets/player.png)
+![Player](./assets/examples/player.png)
 
-![Live Album View](./docs/assets/live-album-view.png)
+![Live Album View](./assets/examples/live-album-view.png)
 
-![Artist View](./docs/assets/artist-view.png)
+![Artist View](./assets/examples/artist-view.png)
 
-![Album Releases](./docs/assets/album-releases.png)
+![Album Releases](./assets/examples/album-releases.png)
 
-![Song Versions](./docs/assets/song-versions.png)
+![Song Versions](./assets/examples/song-versions.png)
