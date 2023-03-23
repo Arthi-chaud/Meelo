@@ -1,0 +1,24 @@
+site_name: Meelo - User Documentation
+docs_dir: './src'
+repo_url: https://github.com/Arthi-chaud/Meelo
+nav:
+  - Setup: setting-up.md
+  - Album Types: album-types.md
+theme:
+  name: material
+  language: en
+  palette:
+    scheme: default
+  titles_only: true
+  icon: 
+    repo: fontawesome/brands/github
+  font:
+    text: Noto Sans
+  logo: ./icon.png
+  favicon: ./favicon.ico
+extra_css:
+  - stylesheets/extra.css
+plugins:
+  - search
+markdown_extensions:
+  - mdx_truly_sane_lists
