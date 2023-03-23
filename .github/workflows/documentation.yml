@@ -3,7 +3,6 @@ on:
   push:
     branches:
       - master
-      - user-doc-deployment
 permissions:
   contents: write
 jobs:
