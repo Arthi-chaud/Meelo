@@ -43,10 +43,8 @@ export default class ExternalIdService {
 		resources: (R & { externalIds: (IDType & { provider: Provider } []) })[],
 		action: (resource: R, provider: IProvider<unknown, unknown>) =>
 			Promise<ActionReturn | undefined>,
-		onActionSuccess: (resource: R, res: ActionReturn) => void,
+		onActionGroupSuccess: (resource: R, res: ActionReturn[]) => Promise<void>,
 	) {
-		const ids: ActionReturn[] = [];
-
 		for (const resource of resources) {
 			const externalIds = resource.externalIds;
 			const missingProviders = this.providerService.enabledProviders
@@ -60,10 +58,8 @@ export default class ExternalIdService {
 				return action(resource, provider);
 			})).filter((id): id is Exclude<typeof id, undefined> => id !== undefined);
 
-			newIds.forEach((id) => onActionSuccess(resource, id));
-			ids.push(...newIds);
+			await onActionGroupSuccess(resource, newIds);
 		}
-		return ids;
 	}
 
 	/**
@@ -73,7 +69,8 @@ export default class ExternalIdService {
 		const artists = await this.prismaService.artist.findMany(
 			this.buildQueryForMissingProviderId()
 		);
-		const newIds = await this.fetchMissingResourceExternalId(
+
+		await this.fetchMissingResourceExternalId(
 			artists,
 			async (artist, provider) => ({
 				providerName: provider.name,
@@ -81,14 +78,15 @@ export default class ExternalIdService {
 				artistId: artist.id,
 				value: (await provider.getArtistIdentifier(artist.name) as string).toString()
 			}),
-			(artist, res) => this.logger
-				.verbose(`External ID from ${res.providerName} found for artist '${artist.name}'`)
+			async (artist, res) => {
+				res.forEach(({ providerName }) =>
+					this.logger.verbose(`External ID from ${providerName} found for artist '${artist.name}'`));
+				await this.prismaService.artistExternalId.createMany({
+					data: res.map(({ providerName, ...id }) => id),
+					skipDuplicates: true
+				});
+			}
 		);
-
-		await this.prismaService.artistExternalId.createMany({
-			data: newIds.map(({ providerName, ...id }) => id),
-			skipDuplicates: true
-		});
 	}
 
 	/**
@@ -99,11 +97,12 @@ export default class ExternalIdService {
 		const albums = await this.prismaService.album.findMany({
 			...query,
 			include: {
-				artist: { include: { externalIds: { include: { provider: true } } } },
+				artist: true,
 				...query.include
 			}
 		});
-		const newIds = await this.fetchMissingResourceExternalId(
+
+		await this.fetchMissingResourceExternalId(
 			albums,
 			async (album, provider) => {
 				const artistExternalId = album.artistId ?
@@ -123,13 +122,61 @@ export default class ExternalIdService {
 					value: (albumExternalId as string).toString()
 				};
 			},
-			(album, res) => this.logger
-				.verbose(`External ID from ${res.providerName} found for album '${album.name}'`)
+			async (album, res) => {
+				res.forEach(({ providerName }) =>
+					this.logger.verbose(`External ID from ${providerName} found for album '${album.name}'`));
+				await this.prismaService.albumExternalId.createMany({
+					data: res.map(({ providerName, ...id }) => id),
+					skipDuplicates: true
+				});
+			}
 		);
+	}
 
-		await this.prismaService.albumExternalId.createMany({
-			data: newIds.map(({ providerName, ...id }) => id),
-			skipDuplicates: true
+	/**
+	 * Fetch & registers missing External IDs for songs
+	 */
+	async fetchMissingSongExternalIDs() {
+		const query = this.buildQueryForMissingProviderId();
+		const songs = await this.prismaService.song.findMany({
+			...query,
+			include: {
+				artist: true,
+				...query.include
+			}
 		});
+
+		await this.fetchMissingResourceExternalId(
+			songs,
+			async (song, provider) => {
+				const artistExternalId = (await this.prismaService.artistExternalId.findFirst({
+					where: {
+						artistId: song.artistId,
+						provider: { name: provider.name }
+					}
+				}))?.value;
+
+				if (!artistExternalId) {
+					return undefined;
+				}
+				const songExternalId = await provider
+					.getSongIdentifier(song.name, artistExternalId);
+
+				return {
+					providerName: provider.name,
+					providerId: this.providerService.getProviderId(provider.name),
+					songId: song.id,
+					value: (songExternalId as string).toString()
+				};
+			},
+			async (song, res) => {
+				res.forEach(({ providerName }) =>
+					this.logger.verbose(`External ID from ${providerName} found for song '${song.name}'`));
+				await this.prismaService.songExternalId.createMany({
+					data: res.map(({ providerName, ...id }) => id),
+					skipDuplicates: true
+				});
+			}
+		);
 	}
 }
