@@ -26,6 +26,7 @@ import glob from 'glob';
 import Logger from 'src/logger/logger';
 import ReleaseIllustrationService from 'src/release/release-illustration.service';
 import TrackIllustrationService from 'src/track/track-illustration.service';
+import { basename } from 'path';
 
 type IllustrationExtractStatus = 'extracted' | 'error' | 'already-extracted' | 'different-illustration';
 
@@ -61,7 +62,6 @@ export default class IllustrationService {
 	async extractTrackIllustration(
 		track: Track, fullTrackPath: string
 	): Promise<IllustrationPath | null> {
-		this.logger.log(`Extracting illustration from track '${track.name}'`);
 		const release: Release = await this.releaseService.get({ id: track.releaseId });
 		const album = await this.albumService.get(
 			{ id: release.albumId },
@@ -92,7 +92,6 @@ export default class IllustrationService {
 				: null);
 
 		if (illustration == null) {
-			this.logger.warn("No illustration to extract");
 			return null;
 		}
 		const illustrationBytes = await (await Jimp.read(illustration))
@@ -102,23 +101,23 @@ export default class IllustrationService {
 			const illustrationExtractionStatus = await this.saveIllustrationWithStatus(
 				illustrationBytes, path
 			);
+			const fileName = basename(track.name);
 
 			if (illustrationExtractionStatus === 'error') {
-				throw new IllustrationNotExtracted('Illustration extraction failed');
+				throw new IllustrationNotExtracted(`Extracting illustration from '${fileName}' failed`);
 			}
 			if (illustrationExtractionStatus === 'already-extracted') {
-				this.logger.log("Illustration was previously extracted");
+				this.logger.verbose(`Extracting illustration from '${fileName}' already done`);
 				return path;
 			}
 			if (illustrationExtractionStatus === 'extracted') {
-				this.logger.log("Illustration extracted successfully");
+				this.logger.verbose(`Extracting illustration from '${fileName}' successful`);
 				return path;
 			}
 			if (illustrationExtractionStatus === 'different-illustration') {
 				continue;
 			}
 		}
-		this.logger.warn("No illustration extracted");
 		return null;
 	}
 
