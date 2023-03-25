@@ -21,7 +21,7 @@ import ReleaseService from 'src/release/release.service';
 import AlbumService from 'src/album/album.service';
 import ArtistService from 'src/artist/artist.service';
 import GenreService from 'src/genre/genre.service';
-import ProviderService from 'src/providers/provider.service';
+import ExternalIdService from 'src/providers/external-id.provider';
 
 @Injectable()
 export default class TasksService {
@@ -52,7 +52,7 @@ export default class TasksService {
 		private artistService: ArtistService,
 		@Inject(forwardRef(() => GenreService))
 		private genresService: GenreService,
-		private providerService: ProviderService
+		private externalIdService: ExternalIdService
 	) {}
 
 	/**
@@ -100,7 +100,7 @@ export default class TasksService {
 			}
 		}
 		this.logger.log(`${parentLibrary.slug} library: ${newlyRegistered.length} new files registered`);
-		await this.fetchExternalIds();
+		await this.fetchExternalMetadata();
 		return newlyRegistered;
 	}
 
@@ -218,7 +218,7 @@ export default class TasksService {
 		}
 		this.logger.log(`'${library.slug}' library: Refreshed ${updatedFiles.length} files metadata`);
 		await this.housekeeping();
-		await this.fetchExternalIds();
+		await this.fetchExternalMetadata();
 		return updatedFiles;
 	}
 
@@ -234,11 +234,28 @@ export default class TasksService {
 		}
 	}
 
+	async fetchExternalMetadata(): Promise<void> {
+		await this.fetchExternalIds();
+		await this.fetchExternalIllustrations();
+		await this.fetchLyrics();
+	}
+
 	/**
 	 * Fetch Missing External IDs for artists, songs and albums
 	 */
 	async fetchExternalIds(): Promise<void> {
-		await this.providerService.fetchMissingArtistExternalIDs();
+		await this.externalIdService.fetchMissingArtistExternalIDs();
+	}
+
+	/**
+	 * Fetch Missing External Illustrations from providers
+	 */
+	async fetchExternalIllustrations(): Promise<void> {
+
+	}
+
+	async fetchLyrics(): Promise<void> {
+
 	}
 
 	/**

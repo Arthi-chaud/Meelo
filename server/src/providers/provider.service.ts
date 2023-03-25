@@ -38,6 +38,10 @@ export default class ProviderService implements OnModuleInit {
 		)!;
 	}
 
+	getProviderId(providerName: typeof IProvider<unknown, unknown>['prototype']['name']) {
+		return this._providerRows.find((provider) => provider.name == providerName)!.id;
+	}
+
 	get enabledProviders() {
 		return this._enabledProviders.map((provider) => provider.name);
 	}
@@ -78,98 +82,6 @@ export default class ProviderService implements OnModuleInit {
 		));
 	}
 
-	/**
-	 * Builds Prisma Query to fetchesources that miss an external id
-	 */
-	private buildQueryForMissingProviderId() {
-		const providerIdFilter = {
-			providerId: {
-				notIn: this._enabledProviders
-					.map((provider) => provider.name)
-					.map((providerName) => this._providerRows
-						.find((provider) => provider.name == providerName)!.id)
-			}
-		};
-
-		return {
-			where: {
-				OR: [
-					{ externalIds: { some: providerIdFilter } },
-					{ externalIds: { none: providerIdFilter } }
-				]
-			},
-			include: { externalIds: { include: { provider: true } } }
-		};
-	}
-
-	/**
-	 * Fetch & registers missing External IDs for artists
-	 */
-	async fetchMissingArtistExternalIDs() {
-		const artists = await this.prismaService.artist.findMany(
-			this.buildQueryForMissingProviderId()
-		);
-
-		for (const artist of artists) {
-			const externalIds = artist.externalIds;
-			const missingProviders = this._enabledProviders
-				.filter((provider) => externalIds
-					.map((id) => id.provider.name)
-					.includes(provider.name) == false);
-			const newIds = await this.collectActions(async (provider) => ({
-				providerName: provider.name,
-				providerId: this._providerRows
-					.find((providerRow) => providerRow.name == provider.name)!.id,
-				artistId: artist.id,
-				value: (await provider.getArtistIdentifier(artist.name) as string).toString()
-			}), missingProviders);
-
-			newIds.map((id) => this.logger.verbose(`External ID from ${id.providerName} found for artist ${artist.name}`));
-			await this.prismaService.artistExternalId.createMany({
-				data: newIds.map(({ providerName, ...id }) => id),
-				skipDuplicates: true
-			});
-		}
-	}
-
-	getAlbumType(albumName: string, artistName?: string) {
-		return this.runAction(async (provider) => {
-			const artistId = artistName
-				? await provider.getArtistIdentifier(artistName)
-				: undefined;
-			const albumId = await provider.getAlbumIdentifier(albumName, artistId);
-
-			return provider.getAlbumType(albumId);
-		});
-	}
-
-	getAlbumDescription(albumName: string, artistName?: string) {
-		return this.runAction(async (provider) => {
-			const artistId = artistName
-				? await provider.getArtistIdentifier(artistName)
-				: undefined;
-			const albumId = await provider.getAlbumIdentifier(albumName, artistId);
-
-			return provider.getAlbumDescription(albumId);
-		});
-	}
-
-	getArtistDescription(artistName: string) {
-		return this.runAction(async (provider) => {
-			const artistId = await provider.getArtistIdentifier(artistName);
-
-			return provider.getArtistDescription(artistId);
-		});
-	}
-
-	getArtistIllustrationUrl(artistName: string, songName?: string) {
-		return this.runAction(async (provider) => {
-			const artistId = await provider.getArtistIdentifier(artistName, songName);
-
-			return provider.getArtistIllustrationUrl(artistId);
-		});
-	}
-
 	getSongLyrics(songName: string, artistName: string) {
 		return this.runAction(async (provider) => {
 			const artistId = await provider.getArtistIdentifier(artistName, songName);
@@ -179,24 +91,14 @@ export default class ProviderService implements OnModuleInit {
 		});
 	}
 
-	getSongGenres(songName: string, artistName: string) {
-		return this.collectActions(async (provider) => {
-			const artistId = await provider.getArtistIdentifier(artistName, songName);
-			const songId = await provider.getSongIdentifier(songName, artistId);
-
-			return provider.getSongGenres(songId);
-		}).then((genres) => genres.flat());
-	}
-
 	/**
 	 * Calls action method on each enabled provider, until one suceeds
 	 * If all fails, rejects
 	 */
-	private async runAction<Returns>(
-		action: (provider: IProvider<unknown, unknown>) => Promise<Returns>,
-		providers?: IProvider<unknown, unknown>[]
+	async runAction<Returns>(
+		action: (provider: IProvider<unknown, unknown>) => Promise<Returns>
 	): Promise<Returns> {
-		for (const provider of (providers ?? this._enabledProviders)) {
+		for (const provider of this._enabledProviders) {
 			try {
 				return await action(provider);
 			} catch {
@@ -209,14 +111,13 @@ export default class ProviderService implements OnModuleInit {
 	/**
 	 * Calls action method on each enabled provider, and returns all successes
 	 */
-	private async collectActions<Returns>(
-		action: (provider: IProvider<unknown, unknown>) => Promise<Returns>,
-		providers?: IProvider<unknown, unknown>[]
+	async collectActions<Returns>(
+		action: (provider: IProvider<unknown, unknown>) => Promise<Returns>
 	): Promise<Returns[]> {
 		const promiseResultsFilter = (result: PromiseSettledResult<Returns>):
 			result is PromiseFulfilledResult<Awaited<Returns>> => result.status == 'fulfilled';
 
-		return Promise.allSettled((providers ?? this._enabledProviders).map(action))
+		return Promise.allSettled(this._enabledProviders.map(action))
 			.then((results) => results
 				.filter(promiseResultsFilter)
 				.map((result) => result.value));
