@@ -164,7 +164,7 @@ Send the following `POST` request to `/api/libraries/new`:
 }
 ```
 
-*Note*: To know more about the API routes, visit the `/api/docs` route.
+*Note*: To know more about the API routes, visit the `/api/swagger` route.
 
 Once your library is created, you should run a scan to collect the related files. To do so, send an `GET` request to `/api/tasks/scan`. You'll see the scan steps in the docker logs
 

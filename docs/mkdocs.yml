@@ -16,6 +16,15 @@ theme:
     text: Noto Sans
   logo: ./icon.png
   favicon: ./favicon.ico
+  features:
+    - navigation.instant
+    - navigation.tracking
+    - navigation.tabs
+    - navigation.tabs.sticky
+    - navigation.sections
+    - navigation.indexes
+    - toc.integrate
+    - navigation.top
 extra_css:
   - stylesheets/extra.css
 plugins:
