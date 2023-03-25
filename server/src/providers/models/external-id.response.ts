@@ -1,17 +1,11 @@
 import { ApiProperty } from "@nestjs/swagger";
-import {
-	AlbumExternalId,
-	ArtistExternalId,
-	SongExternalId
-} from "src/prisma/models";
 import ResponseBuilderInterceptor from "src/response/interceptors/response.interceptor";
 import ProviderService from "../provider.service";
 import {
 	Inject, Injectable, forwardRef
 } from "@nestjs/common";
 import ProviderResponse from "./provider.response";
-
-type ExternalId = ArtistExternalId | AlbumExternalId | SongExternalId;
+import ExternalId from "./external-id";
 
 export default class ExternalIdResponse {
 	@ApiProperty({

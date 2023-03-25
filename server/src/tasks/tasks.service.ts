@@ -245,6 +245,7 @@ export default class TasksService {
 	 */
 	async fetchExternalIds(): Promise<void> {
 		await this.externalIdService.fetchMissingArtistExternalIDs();
+		await this.externalIdService.fetchMissingAlbumExternalIDs();
 	}
 
 	/**
