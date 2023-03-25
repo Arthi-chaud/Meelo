@@ -9,7 +9,7 @@ Meelo is easy to setup! But you'll need the following thing before continuing
 
 ## Prepare your music library
 
-The toughest part is to have an organised music library. The way files are organized are up to you! But here is a recommended architecture:
+The toughest part is to have an organised music library. The way files are organised are up to you! But here is a recommended architecture:
 
 ```tree
 Library's Folder   
@@ -24,7 +24,7 @@ Artist 1
 │   ...
 ```
 
-Meelo provides two way of collecting metadata: using embedded tags, or using the path of the file. If a metadata source does not provide a specific field, you can use the other as a fallback. (You will configure this behaviour in the next sections). But before going any further, you should decide which metadata collection method to use.
+Meelo provides two ways of collecting metadata: using embedded tags, or using the path of the file. If a metadata source does not provide a specific field, you can use the other as a fallback. (You will configure this behaviour in the next sections). But before going any further, you should decide which metadata collection method to use.
 
 ## Create a configuration folder
 
@@ -32,7 +32,7 @@ Meelo is runnable through a Docker container. But it needs a way to be parameter
 
 Therefore, it is recommended that you create a dedicated folder on your computer for Meelo.
 
-For clarity sake, in this documentation, we'll name this folder `Meelo`.
+For the sake of clarity, in this documentation, we'll refer to this folder as `Meelo`.
 
 ## Prepare your settings
 
@@ -132,16 +132,16 @@ volumes:
 
 A few things to know:
 
-- you are free to configure your database volume as you want.
-- the `data` volume should be mapped to a folder that contains all your libraries
-- the `meelo` volume should be mapped from your `Meelo` folder.
+- You are free to configure your database volume as you want.
+- The `data` volume should be mapped to a folder that contains all your libraries
+- The `meelo` volume should be mapped from your `Meelo` folder.
 
 ## Start Meelo
 
 Once these three files are ready, run the following command from your `Meelo` folder:
 
 ```bash
-docker-compose up --build
+docker-compose up
 ```
 
 ### Troubleshooting
@@ -166,6 +166,6 @@ Send the following `POST` request to `/api/libraries/new`:
 
 *Note*: To know more about the API routes, visit the `/api/swagger` route.
 
-Once your library is created, you should run a scan to collect the related files. To do so, send an `GET` request to `/api/tasks/scan`. You'll see the scan steps in the docker logs
+Once your library is created, you should run a scan to collect the related files. To do so, send a `GET` request to `/api/tasks/scan`. You'll see the scan steps in the docker logs
 
-Your Meelo server is ready to be used! Visit the `/` route on your favorite browser to enjoy your favorite music :).
+Your Meelo server is ready to be used! Visit the `/` route on your favourite browser to enjoy your favourite music :).
