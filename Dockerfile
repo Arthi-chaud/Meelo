@@ -27,6 +27,13 @@ COPY ./front/next.config.js .
 COPY ./assets /app/assets
 RUN yarn build
 
+FROM squidfunk/mkdocs-material AS doc-builder
+WORKDIR /app/docs
+COPY ./assets /app/assets
+COPY ./docs /app/docs
+RUN pip install -r requirements.txt
+RUN mkdocs build
+
 FROM node:18-alpine
 WORKDIR /app
 RUN apk update && apk add ffmpeg nginx
@@ -39,6 +46,7 @@ COPY --from=front-builder /app/front/node_modules ./front/node_modules
 COPY --from=front-builder /app/front/package.json ./front/
 COPY --from=front-builder /app/front/public ./front/public
 COPY --from=front-builder /app/front/next.config.js ./front/
+COPY --from=doc-builder /app/docs/site /app/docs
 COPY ./assets ./assets
 COPY ./nginx.conf /etc/nginx/nginx.conf
 COPY ./Meelo .
