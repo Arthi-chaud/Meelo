@@ -21,6 +21,7 @@ import ReleaseService from 'src/release/release.service';
 import AlbumService from 'src/album/album.service';
 import ArtistService from 'src/artist/artist.service';
 import GenreService from 'src/genre/genre.service';
+import ProviderService from 'src/providers/provider.service';
 
 @Injectable()
 export default class TasksService {
@@ -51,6 +52,7 @@ export default class TasksService {
 		private artistService: ArtistService,
 		@Inject(forwardRef(() => GenreService))
 		private genresService: GenreService,
+		private providerService: ProviderService
 	) {}
 
 	/**
@@ -98,6 +100,7 @@ export default class TasksService {
 			}
 		}
 		this.logger.log(`${parentLibrary.slug} library: ${newlyRegistered.length} new files registered`);
+		await this.fetchExternalIds();
 		return newlyRegistered;
 	}
 
@@ -215,6 +218,7 @@ export default class TasksService {
 		}
 		this.logger.log(`'${library.slug}' library: Refreshed ${updatedFiles.length} files metadata`);
 		await this.housekeeping();
+		await this.fetchExternalIds();
 		return updatedFiles;
 	}
 
@@ -228,6 +232,13 @@ export default class TasksService {
 		if (housekeeping) {
 			await this.housekeeping();
 		}
+	}
+
+	/**
+	 * Fetch Missing External IDs for artists, songs and albums
+	 */
+	async fetchExternalIds(): Promise<void> {
+		await this.providerService.fetchMissingArtistExternalIDs();
 	}
 
 	/**

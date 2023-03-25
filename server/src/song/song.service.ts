@@ -24,7 +24,6 @@ import {
 	SongNotFoundByIdException,
 	SongNotFoundException
 } from './song.exceptions';
-import { EventEmitter2 } from '@nestjs/event-emitter';
 
 @Injectable()
 export default class SongService extends RepositoryService<
@@ -51,7 +50,6 @@ export default class SongService extends RepositoryService<
 		private trackService: TrackService,
 		@Inject(forwardRef(() => GenreService))
 		private genreService: GenreService,
-		private eventEmitter: EventEmitter2
 	) {
 		super(prismaService.song);
 	}
@@ -81,10 +79,6 @@ export default class SongService extends RepositoryService<
 			name: song.name,
 			slug: new Slug(song.name).toString()
 		};
-	}
-
-	protected onCreated(created: Song) {
-		this.eventEmitter.emit(['Song', 'created'], created);
 	}
 
 	protected formatCreateInputToWhereInput(

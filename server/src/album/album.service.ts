@@ -27,7 +27,6 @@ import ReleaseQueryParameters from 'src/release/models/release.query-parameters'
 import AlbumIllustrationService from './album-illustration.service';
 import { PrismaError } from 'prisma-error-enum';
 import { PaginationParameters, buildPaginationParameters } from 'src/pagination/models/pagination-parameters';
-import { EventEmitter2 } from '@nestjs/event-emitter';
 
 @Injectable()
 export default class AlbumService extends RepositoryService<
@@ -54,7 +53,6 @@ export default class AlbumService extends RepositoryService<
 		private releaseService: ReleaseService,
 		@Inject(forwardRef(() => AlbumIllustrationService))
 		private albumIllustrationService: AlbumIllustrationService,
-		private eventEmitter: EventEmitter2
 	) {
 		super(prismaService.album);
 	}
@@ -74,10 +72,6 @@ export default class AlbumService extends RepositoryService<
 			}
 		}
 		return super.create(album, include);
-	}
-
-	protected onCreated(created: Album) {
-		this.eventEmitter.emit(['Album', 'created'], created);
 	}
 
 	formatCreateInput(input: AlbumQueryParameters.CreateInput) {

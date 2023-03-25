@@ -25,7 +25,6 @@ import Identifier from 'src/identifier/models/identifier';
 import Logger from 'src/logger/logger';
 import ArtistIllustrationService from './artist-illustration.service';
 import { PrismaError } from 'prisma-error-enum';
-import { EventEmitter2 } from '@nestjs/event-emitter';
 
 @Injectable()
 export default class ArtistService extends RepositoryService<
@@ -48,7 +47,6 @@ export default class ArtistService extends RepositoryService<
 		private prismaService: PrismaService,
 		@Inject(forwardRef(() => ArtistIllustrationService))
 		private artistIllustrationService: ArtistIllustrationService,
-		private eventEmitter: EventEmitter2
 	) {
 		super(prismaService.artist);
 	}
@@ -66,10 +64,6 @@ export default class ArtistService extends RepositoryService<
 
 	protected formatCreateInputToWhereInput(input: ArtistQueryParameters.CreateInput) {
 		return { slug: new Slug(input.name) };
-	}
-
-	protected onCreated(created: Artist) {
-		this.eventEmitter.emit(['Artist', 'created'], created);
 	}
 
 	protected onCreationFailure(error: Error, input: ArtistQueryParameters.CreateInput): Error {

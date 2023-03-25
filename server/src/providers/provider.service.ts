@@ -8,10 +8,7 @@ import GeniusProvider from "./genius/genius.provider";
 import MusicBrainzProvider from "./musicbrainz/musicbrainz.provider";
 import PrismaService from "src/prisma/prisma.service";
 import Slug from "src/slug/slug";
-import { OnRepositoryEvent } from "src/events/event.decorators";
-import {
-	Artist, Provider, Song
-} from "src/prisma/models";
+import { Provider } from "src/prisma/models";
 
 /**
  * Orchestrates of Providers
@@ -55,6 +52,7 @@ export default class ProviderService implements OnModuleInit {
 		// Flushing the enabled provider list, before pushing everything back again
 		// In case of resets
 		this._enabledProviders.splice(0, this._enabledProviders.length);
+		this._providerRows.splice(0, this._providerRows.length);
 		this._providerCatalogue.forEach((provider) => {
 			if (providerSettings[provider.name]?.enabled === true) {
 				this.logger.log(`Provider '${provider.name}' enabled`);
@@ -78,6 +76,60 @@ export default class ProviderService implements OnModuleInit {
 				});
 			})
 		));
+	}
+
+	/**
+	 * Builds Prisma Query to fetchesources that miss an external id
+	 */
+	private buildQueryForMissingProviderId() {
+		const providerIdFilter = {
+			providerId: {
+				notIn: this._enabledProviders
+					.map((provider) => provider.name)
+					.map((providerName) => this._providerRows
+						.find((provider) => provider.name == providerName)!.id)
+			}
+		};
+
+		return {
+			where: {
+				OR: [
+					{ externalIds: { some: providerIdFilter } },
+					{ externalIds: { none: providerIdFilter } }
+				]
+			},
+			include: { externalIds: { include: { provider: true } } }
+		};
+	}
+
+	/**
+	 * Fetch & registers missing External IDs for artists
+	 */
+	async fetchMissingArtistExternalIDs() {
+		const artists = await this.prismaService.artist.findMany(
+			this.buildQueryForMissingProviderId()
+		);
+
+		for (const artist of artists) {
+			const externalIds = artist.externalIds;
+			const missingProviders = this._enabledProviders
+				.filter((provider) => externalIds
+					.map((id) => id.provider.name)
+					.includes(provider.name) == false);
+			const newIds = await this.collectActions(async (provider) => ({
+				providerName: provider.name,
+				providerId: this._providerRows
+					.find((providerRow) => providerRow.name == provider.name)!.id,
+				artistId: artist.id,
+				value: (await provider.getArtistIdentifier(artist.name) as string).toString()
+			}), missingProviders);
+
+			newIds.map((id) => this.logger.verbose(`External ID from ${id.providerName} found for artist ${artist.name}`));
+			await this.prismaService.artistExternalId.createMany({
+				data: newIds.map(({ providerName, ...id }) => id),
+				skipDuplicates: true
+			});
+		}
 	}
 
 	getAlbumType(albumName: string, artistName?: string) {
@@ -136,91 +188,15 @@ export default class ProviderService implements OnModuleInit {
 		}).then((genres) => genres.flat());
 	}
 
-	@OnRepositoryEvent('created', 'Artist', { async: true })
-	protected async onArtistCreatedEvent(artist: Artist) {
-		const ids = await this.collectActions(async (provider) => {
-			const id = await provider.getArtistIdentifier(artist.name);
-
-			this.logger.verbose(`${provider.name} external id for artist '${artist.name}' found`);
-			return { provider, id };
-		});
-
-		await Promise.allSettled(
-			ids.map(({ provider, id }) =>
-				this.prismaService.artistExternalId.create({
-					data: {
-						artist: { connect: { id: artist.id } },
-						provider: { connect: { name: provider.name } },
-						value: (id as string).toString()
-					},
-				}))
-		);
-	}
-
-	@OnRepositoryEvent('created', 'Album', { async: true })
-	protected async onAlbumCreatedEvent(album: Song) {
-		const artist = album.artistId ? await this.prismaService.artist.findFirst({
-			where: { id: album.artistId },
-			include: { externalIds: { include: { provider: true } } }
-		}) : null;
-		const ids = await this.collectActions(async (provider) => {
-			const id = await provider.getAlbumIdentifier(
-				album.name,
-				artist?.externalIds.find((externalId) => externalId.provider.name == provider.name)
-			);
-
-			this.logger.verbose(`${provider.name} external id for album '${album.name}' found`);
-			return { provider, id };
-		});
-
-		await Promise.allSettled(
-			ids.map(({ provider, id }) =>
-				this.prismaService.albumExternalId.create({
-					data: {
-						album: { connect: { id: album.id } },
-						provider: { connect: { name: provider.name } },
-						value: (id as string).toString()
-					},
-				}))
-		);
-	}
-
-	@OnRepositoryEvent('created', 'Song', { async: true })
-	protected async onSongCreatedEvent(song: Song) {
-		const artist = await this.prismaService.artist.findUnique({
-			where: { id: song.artistId },
-			include: { externalIds: { include: { provider: true } } }
-		});
-		const ids = await this.collectActions(async (provider) => {
-			const id = await provider.getSongIdentifier(
-				song.name,
-				artist?.externalIds.find((externalId) => externalId.provider.name == provider.name)
-			);
-
-			this.logger.verbose(`${provider.name} external id for song '${song.name}' found`);
-			return { provider, id };
-		});
-
-		await Promise.allSettled(
-			ids.map(({ provider, id }) =>
-				this.prismaService.songExternalId.create({
-					data: {
-						song: { connect: { id: song.id } },
-						provider: { connect: { name: provider.name } },
-						value: (id as string).toString()
-					},
-				}))
-		);
-	}
-
 	/**
 	 * Calls action method on each enabled provider, until one suceeds
 	 * If all fails, rejects
 	 */
 	private async runAction<Returns>(
 		action: (provider: IProvider<unknown, unknown>) => Promise<Returns>,
+		providers?: IProvider<unknown, unknown>[]
 	): Promise<Returns> {
-		for (const provider of this._enabledProviders) {
+		for (const provider of (providers ?? this._enabledProviders)) {
 			try {
 				return await action(provider);
 			} catch {
@@ -235,11 +211,12 @@ export default class ProviderService implements OnModuleInit {
 	 */
 	private async collectActions<Returns>(
 		action: (provider: IProvider<unknown, unknown>) => Promise<Returns>,
+		providers?: IProvider<unknown, unknown>[]
 	): Promise<Returns[]> {
 		const promiseResultsFilter = (result: PromiseSettledResult<Returns>):
 			result is PromiseFulfilledResult<Awaited<Returns>> => result.status == 'fulfilled';
 
-		return Promise.allSettled(this._enabledProviders.map(action))
+		return Promise.allSettled((providers ?? this._enabledProviders).map(action))
 			.then((results) => results
 				.filter(promiseResultsFilter)
 				.map((result) => result.value));
