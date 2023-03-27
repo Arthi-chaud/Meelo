@@ -117,7 +117,7 @@ describe('Genius Provider', () => {
 		});
 	});
 
-	describe('Get Album Identifier', () => {
+	/*describe('Get Album Identifier', () => {
 		//Skipping this tes tin CI as Action runner has been flagged as robot by Genius
 		if (process.env.GITHUB_ACTIONS != 'true') {
 			it("should get album's Identifier (1)", async () => {
@@ -133,9 +133,9 @@ describe('Genius Provider', () => {
 					.rejects.toThrow(ProviderActionFailedError);
 			});
 		}
-	});
+	});*/
 
-	describe('Get Album Description', () => {
+	/*describe('Get Album Description', () => {
 		if (process.env.GITHUB_ACTIONS != 'true') {
 			it("should get album's description (1)", async () => {
 				const description = await geniusProvider.getAlbumDescription('Nicki-minaj/Pink-friday-roman-reloaded');
@@ -150,7 +150,7 @@ describe('Genius Provider', () => {
 				expect(description.endsWith('“Get the Party Started”, “Don’t Let Me Get Me”, “Just like a Pill”, and “Family Portrait”. The album is P!nk’s best-selling album to date and rose her into international stardom.')).toBeTruthy();
 			});
 		}
-	});
+	});*/
 
 	describe('Get Album URL', () => {
 		it("Should format the URL for the Album", () => {

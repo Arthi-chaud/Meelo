@@ -4,21 +4,16 @@ import {
 import type { LyricsWithRelations } from 'src/prisma/models';
 import PrismaService from 'src/prisma/prisma.service';
 import RepositoryService from 'src/repository/repository.service';
-import type SongQueryParameters from 'src/song/models/song.query-params';
 import SongService from 'src/song/song.service';
 import {
 	LyricsAlreadyExistsExceptions,
 	LyricsNotFoundByIDException,
-	LyricsNotFoundBySongException,
-	NoLyricsFoundException
-} from './lyrics.exceptions';
+	LyricsNotFoundBySongException} from './lyrics.exceptions';
 import type LyricsQueryParameters from './models/lyrics.query-parameters';
 import { Prisma } from '@prisma/client';
 import Identifier from 'src/identifier/models/identifier';
-import Logger from 'src/logger/logger';
 import { PrismaError } from 'prisma-error-enum';
 import Slug from 'src/slug/slug';
-import ProviderService from 'src/providers/provider.service';
 
 @Injectable()
 export class LyricsService extends RepositoryService<
@@ -36,10 +31,8 @@ export class LyricsService extends RepositoryService<
 	Prisma.LyricsWhereUniqueInput,
 	Prisma.LyricsOrderByWithRelationAndSearchRelevanceInput
 > {
-	private readonly logger = new Logger(LyricsService.name);
 	constructor(
 		protected prismaService: PrismaService,
-		protected providerService: ProviderService,
 		@Inject(forwardRef(() => SongService))
 		private songService: SongService,
 	) {
@@ -164,44 +157,6 @@ export class LyricsService extends RepositoryService<
 			return new LyricsNotFoundByIDException(where.id);
 		}
 		throw this.onUnknownError(error, where);
-	}
-
-	/**
-	 * Fetch a song's lyrics from Genius
-	 * @param artistName the name of the artist of the song
-	 * @param songName the name of the song to fetch the lyrics of
-	 */
-	async downloadLyrics(artistName: string, songName: string): Promise<string> {
-		return this.providerService.getSongLyrics(songName, artistName);
-	}
-
-	/**
-	 * Fetch  and save lyrics of a song in the database
-	 * @param songWhere
-	 * @param options if 'force' is true, will refetch the lyrics even if they already exists
-	 * @returns an empty promise
-	 */
-	async registerLyrics(
-		songWhere: SongQueryParameters.WhereInput, options: { force: boolean }
-	): Promise<void> {
-		const song = await this.songService.get(songWhere, { artist: true, lyrics: true });
-
-		if (options.force == false && song.lyrics !== null) {
-			return;
-		}
-		try {
-			const lyrics = await this.downloadLyrics(song.artist.name, song.name);
-
-			this.logger.log(`Lyrics found for song '${song.name}' by '${song.artist.name}'`);
-			if (song.lyrics) {
-				await this.update({ content: lyrics }, { song: songWhere });
-			} else {
-				await this.create({ content: lyrics, songId: song.id });
-			}
-		} catch {
-			this.logger.warn(`No lyrics found for song '${song.name}' by '${song.artist.name}'`);
-			throw new NoLyricsFoundException(song.artist.name, song.name);
-		}
 	}
 
 	async housekeeping(): Promise<void> {}

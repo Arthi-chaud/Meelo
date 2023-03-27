@@ -7,7 +7,8 @@ import levenshtein from "damerau-levenshtein";
 import { ProviderActionFailedError } from "../provider.exception";
 import { name, version } from 'package.json';
 import { HttpService } from "@nestjs/axios";
-import * as cheerio from 'cheerio';
+// eslint-disable-next-line @typescript-eslint/no-var-requires
+const { getLyrics } = require('genius-lyrics-api');
 
 @Injectable()
 export default class GeniusProvider extends IProvider<GeniusSettings, string> implements OnModuleInit {
@@ -23,9 +24,9 @@ export default class GeniusProvider extends IProvider<GeniusSettings, string> im
 			.then((res) => res.response);
 	}
 
-	private fetchWebPage(route: string) {
+	/*private fetchWebPage(route: string) {
 		return this._fetch(route, 'https://genius.com');
-	}
+	}*/
 
 	private _fetch(route: string, baseURL: string) {
 		const accessToken = process.env.NODE_ENV == 'test'
@@ -81,20 +82,20 @@ export default class GeniusProvider extends IProvider<GeniusSettings, string> im
 		return res;
 	}
 
-	private async getSongBySlug(songIdentifier: string): Promise<any> {
+	/*private async getSongBySlug(songIdentifier: string): Promise<any> {
 		const searchResults = await this.fetchAPI('/search?q=' + songIdentifier)
 			.then((res) => res.hits.map((hit: any) => hit.result));
 
 		return searchResults
 			.find((song: any) => song.url.split('/').pop().replace('-lyrics', '') == songIdentifier)!;
-	}
+	}*/
 
-	private async getAlbumBySlug(albumSlug: string): Promise<any> {
+	/*private async getAlbumBySlug(albumSlug: string): Promise<any> {
 		const albumPage = await this.fetchWebPage(`/albums/${albumSlug}`);
 		const id = albumPage.match(/api_path&quot;:&quot;\/albums\/(?<id>\d+)&quot;/)!.groups!['id']!;
 
 		return this.fetchAPI('/albums/' + id).then((res) => res.album);
-	}
+	}*/
 
 	async getArtistIdentifier(artistName: string, songName?: string): Promise<string> {
 		try {
@@ -157,34 +158,15 @@ export default class GeniusProvider extends IProvider<GeniusSettings, string> im
 	}
 
 	async getSongLyrics(songIdentifier: string): Promise<string> {
-		try {
-			const song = await this.getSongBySlug(songIdentifier);
-			const songPage = await this.fetchWebPage(song.path);
-			const parsedPage = cheerio.load(songPage);
-			// Inspired by https://github.com/zyrouge/node-genius-lyrics/blob/8499a0aeb91fd5eba296f96c19a24db28a2177d5/lib/songs/song.ts#L76
-			const primaryLyricsContainer = parsedPage(".lyrics").text().trim();
+		const lyrics = await getLyrics(this.getSongURL(songIdentifier))
+			.catch((error: any) => {
+				throw new ProviderActionFailedError(this.name, 'getSongLyrics', error.message);
+			});
 
-			if (primaryLyricsContainer.length) {
-				return primaryLyricsContainer;
-			}
-			const secondaryLyricsContainer = parsedPage("div[class*='Lyrics__Container']")
-				.toArray()
-				.map((lyricContainer: any) => {
-					const parsedLyrics = parsedPage(lyricContainer as any);
-
-					parsedLyrics.find("br").replaceWith("\n");
-					return parsedLyrics.text();
-				})
-				.join("\n")
-				.trim();
-
-			if (secondaryLyricsContainer.length) {
-				return secondaryLyricsContainer;
-			}
-		} catch (err) {
-			throw new ProviderActionFailedError(this.name, 'getSongLyrics', err.message);
+		if (lyrics == null) {
+			throw new ProviderActionFailedError(this.name, 'getSongLyrics', "No Lyrics Found");
 		}
-		throw new ProviderActionFailedError(this.name, 'getSongLyrics', "No Lyrics Found");
+		return lyrics;
 	}
 
 	async getArtistDescription(artistIdentifer: string): Promise<string> {
@@ -203,7 +185,7 @@ export default class GeniusProvider extends IProvider<GeniusSettings, string> im
 		throw new ProviderActionFailedError(this.name, 'getArtistDescription', "No Description Found");
 	}
 
-	async getAlbumDescription(albumIdentifer: string): Promise<string> {
+	/*async getAlbumDescription(albumIdentifer: string): Promise<string> {
 		try {
 			const album = await this.getAlbumBySlug(albumIdentifer);
 			const descAnnotation = album.description_annotation;
@@ -216,9 +198,9 @@ export default class GeniusProvider extends IProvider<GeniusSettings, string> im
 			throw new ProviderActionFailedError(this.name, 'getAlbumDescription', err.message);
 		}
 		throw new ProviderActionFailedError(this.name, 'getAlbumDescription', "No Description Found");
-	}
+	}*/
 
-	async getAlbumIdentifier(albumName: string, artistIdentifier?: string): Promise<string> {
+	/*async getAlbumIdentifier(albumName: string, artistIdentifier?: string): Promise<string> {
 		if (!artistIdentifier) {
 			throw new ProviderActionFailedError(this.name, 'getAlbumDescription', 'Artist Identifier is Required');
 		}
@@ -252,7 +234,7 @@ export default class GeniusProvider extends IProvider<GeniusSettings, string> im
 			throw new ProviderActionFailedError(this.name, 'getAlbumIdentifier', err.message);
 		}
 		throw new ProviderActionFailedError(this.name, 'getAlbumIdentifier', "Album Not Found");
-	}
+	}*/
 
 	getAlbumURL(albumIdentifier: string): string {
 		return `${this.getProviderHomepage()}/albums/${albumIdentifier}`;

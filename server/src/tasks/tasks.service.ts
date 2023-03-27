@@ -9,7 +9,6 @@ import TrackService from 'src/track/track.service';
 import FileService from 'src/file/file.service';
 import MetadataService from 'src/metadata/metadata.service';
 import IllustrationService from 'src/illustration/illustration.service';
-import { LyricsService } from 'src/lyrics/lyrics.service';
 import LibraryService from 'src/library/library.service';
 import Logger from 'src/logger/logger';
 import SettingsService from 'src/settings/settings.service';
@@ -22,6 +21,7 @@ import AlbumService from 'src/album/album.service';
 import ArtistService from 'src/artist/artist.service';
 import GenreService from 'src/genre/genre.service';
 import ExternalIdService from 'src/providers/external-id.provider';
+import ProviderService from 'src/providers/provider.service';
 
 @Injectable()
 export default class TasksService {
@@ -36,7 +36,6 @@ export default class TasksService {
 		private trackIllustrationService: TrackIllustrationService,
 		@Inject(forwardRef(() => MetadataService))
 		private metadataService: MetadataService,
-		private lyricsService: LyricsService,
 		@Inject(forwardRef(() => LibraryService))
 		private libraryService: LibraryService,
 		@Inject(forwardRef(() => IllustrationService))
@@ -52,7 +51,8 @@ export default class TasksService {
 		private artistService: ArtistService,
 		@Inject(forwardRef(() => GenreService))
 		private genresService: GenreService,
-		private externalIdService: ExternalIdService
+		private externalIdService: ExternalIdService,
+		private providerService: ProviderService,
 	) {}
 
 	/**
@@ -124,9 +124,6 @@ export default class TasksService {
 		try {
 			const track = await this.metadataService.registerMetadata(fileMetadata, registeredFile);
 
-			this.lyricsService.registerLyrics(
-				{ id: track.songId }, { force: false }
-			).catch(() => {});
 			this.illustrationService.extractTrackIllustration(track, fullFilePath)
 				.catch(() => {})
 				.then(async () => {
@@ -237,7 +234,7 @@ export default class TasksService {
 	async fetchExternalMetadata(): Promise<void> {
 		await this.fetchExternalIds();
 		await this.fetchExternalIllustrations();
-		await this.fetchLyrics();
+		await this.providerService.fetchMissingLyrics();
 	}
 
 	/**
@@ -253,10 +250,6 @@ export default class TasksService {
 	 * Fetch Missing External Illustrations from providers
 	 */
 	async fetchExternalIllustrations(): Promise<void> {
-
-	}
-
-	async fetchLyrics(): Promise<void> {
 
 	}
 
