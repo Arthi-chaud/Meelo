@@ -52,7 +52,6 @@
                 "ClassBody.body > PropertyDefinition[decorators.length > 0] > .key"
             ]
         }],
-		"no-extra-parens": "warn",
 		"no-multiple-empty-lines": ["warn", { "max": 1 }],
 		"no-trailing-spaces": "error",
 		"no-whitespace-before-property": "error",

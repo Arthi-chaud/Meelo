@@ -8,10 +8,9 @@ import MusicBrainzProvider from './musicbrainz/musicbrainz.provider';
 import PrismaModule from 'src/prisma/prisma.module';
 import { ExternalIdResponseBuilder } from './models/external-id.response';
 import ExternalIdService from './external-id.provider';
-import { LyricsModule } from 'src/lyrics/lyrics.module';
 
 @Module({
-	imports: [HttpModule, SettingsModule, PrismaModule, LyricsModule],
+	imports: [HttpModule, SettingsModule, PrismaModule],
 	providers: [
 		GeniusProvider,
 		MusicBrainzProvider,

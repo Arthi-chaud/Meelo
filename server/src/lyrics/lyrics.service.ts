@@ -8,12 +8,15 @@ import SongService from 'src/song/song.service';
 import {
 	LyricsAlreadyExistsExceptions,
 	LyricsNotFoundByIDException,
-	LyricsNotFoundBySongException} from './lyrics.exceptions';
+	LyricsNotFoundBySongException
+} from './lyrics.exceptions';
 import type LyricsQueryParameters from './models/lyrics.query-parameters';
 import { Prisma } from '@prisma/client';
 import Identifier from 'src/identifier/models/identifier';
 import { PrismaError } from 'prisma-error-enum';
 import Slug from 'src/slug/slug';
+import ProviderService from 'src/providers/provider.service';
+import Logger from 'src/logger/logger';
 
 @Injectable()
 export class LyricsService extends RepositoryService<
@@ -31,10 +34,12 @@ export class LyricsService extends RepositoryService<
 	Prisma.LyricsWhereUniqueInput,
 	Prisma.LyricsOrderByWithRelationAndSearchRelevanceInput
 > {
+	private readonly logger = new Logger(LyricsService.name);
 	constructor(
 		protected prismaService: PrismaService,
 		@Inject(forwardRef(() => SongService))
 		private songService: SongService,
+		private providerService: ProviderService
 	) {
 		super(prismaService.lyrics);
 	}
@@ -160,4 +165,31 @@ export class LyricsService extends RepositoryService<
 	}
 
 	async housekeeping(): Promise<void> {}
+
+	async fetchMissingLyrics() {
+		const songs = await this.prismaService.song.findMany({
+			where: { lyrics: null },
+			include: { externalIds: true }
+		});
+
+		for (const song of songs) {
+			try {
+				const lyrics = await this.providerService.runAction(async (provider) => {
+					const songExternalId = song.externalIds
+						.find((id) => this.providerService
+							.getProviderById(id.providerId).name == provider.name)?.value;
+
+					if (!songExternalId) {
+						throw new Error('Missing External ID');
+					}
+					return provider.getSongLyrics(songExternalId);
+				});
+
+				this.logger.verbose(`Lyrics found for song '${song.name}'`);
+				await this.create({ content: lyrics, songId: song.id });
+			} catch {
+				continue;
+			}
+		}
+	}
 }

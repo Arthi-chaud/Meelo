@@ -8,7 +8,6 @@ import MusicBrainzProvider from "./musicbrainz/musicbrainz.provider";
 import PrismaService from "src/prisma/prisma.service";
 import Slug from "src/slug/slug";
 import { Provider } from "src/prisma/models";
-import { LyricsService } from "src/lyrics/lyrics.service";
 
 /**
  * Orchestrates of Providers
@@ -24,8 +23,7 @@ export default class ProviderService implements OnModuleInit {
 		geniusProvider: GeniusProvider,
 		musicbrainzProvider: MusicBrainzProvider,
 		private prismaService: PrismaService,
-		private settingsService: SettingsService,
-		private lyricsService: LyricsService
+		private settingsService: SettingsService
 	) {
 		this._providerCatalogue = [geniusProvider, musicbrainzProvider];
 	}
@@ -80,34 +78,6 @@ export default class ProviderService implements OnModuleInit {
 				});
 			})
 		));
-	}
-
-	async fetchMissingLyrics() {
-		const songs = await this.prismaService.song.findMany({
-			where: { lyrics: null },
-			include: {
-				externalIds: { include: { provider: true } }
-			}
-		});
-
-		for (const song of songs) {
-			try {
-				const lyrics = await this.runAction(async (provider) => {
-					const songExternalId = song.externalIds
-						.find((id) => id.provider.name == provider.name)?.value;
-
-					if (!songExternalId) {
-						throw new Error('Missing External ID');
-					}
-					return provider.getSongLyrics(songExternalId);
-				});
-
-				this.logger.verbose(`Lyrics found for song '${song.name}'`);
-				await this.lyricsService.create({ content: lyrics, songId: song.id });
-			} catch {
-				continue;
-			}
-		}
 	}
 
 	/**

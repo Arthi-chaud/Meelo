@@ -10,6 +10,9 @@ import SettingsService from 'src/settings/settings.service';
 import { join } from 'path';
 import compilationAlbumArtistKeyword from 'src/utils/compilation';
 import Identifier from 'src/identifier/models/identifier';
+import ProviderService from 'src/providers/provider.service';
+import IllustrationService from 'src/illustration/illustration.service';
+import Logger from 'src/logger/logger';
 
 type ServiceArgs = [artistSlug?: Slug];
 
@@ -17,11 +20,14 @@ type ServiceArgs = [artistSlug?: Slug];
 export default class ArtistIllustrationService extends RepositoryIllustrationService<
 	ServiceArgs, ArtistQueryParameters.WhereInput
 > implements OnModuleInit {
+	private readonly logger = new Logger(ArtistIllustrationService.name);
 	private baseIllustrationFolderPath: string;
 	constructor(
 		private settingsService: SettingsService,
 		@Inject(forwardRef(() => ArtistService))
 		private artistService: ArtistService,
+		private providerService: ProviderService,
+		private illustrationService: IllustrationService,
 		fileManagerService: FileManagerService,
 	) {
 		super(fileManagerService);
@@ -60,5 +66,34 @@ export default class ArtistIllustrationService extends RepositoryIllustrationSer
 		return this.artistService
 			.select(where, { slug: true })
 			.then(({ slug }) => [new Slug(slug)]);
+	}
+
+	async downloadMissingIllustrations() {
+		const artists = await this.artistService.getMany({}, undefined, { externalIds: true });
+
+		await Promise.allSettled(
+			artists.map((artist) => {
+				const illustrationPath = this.buildIllustrationPath(new Slug(artist.slug));
+
+				if (this.fileManagerService.fileExists(illustrationPath)) {
+					return;
+				}
+				return this.providerService.runAction(async (provider) => {
+					const externalIdProvider = artist.externalIds
+						.find((id) => this.providerService
+							.getProviderById(id.providerId).name == provider.name);
+
+					if (!externalIdProvider) {
+						return;
+					}
+					const illustrationUrl = await provider
+						.getArtistIllustrationUrl(externalIdProvider.value);
+
+					return this.illustrationService
+						.downloadIllustration(illustrationUrl, illustrationPath)
+						.then(() => this.logger.verbose(`Illustration found for artist '${artist.name}'`));
+				});
+			})
+		);
 	}
 }

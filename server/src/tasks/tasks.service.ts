@@ -21,7 +21,8 @@ import AlbumService from 'src/album/album.service';
 import ArtistService from 'src/artist/artist.service';
 import GenreService from 'src/genre/genre.service';
 import ExternalIdService from 'src/providers/external-id.provider';
-import ProviderService from 'src/providers/provider.service';
+import { LyricsService } from 'src/lyrics/lyrics.service';
+import ArtistIllustrationService from 'src/artist/artist-illustration.service';
 
 @Injectable()
 export default class TasksService {
@@ -52,7 +53,8 @@ export default class TasksService {
 		@Inject(forwardRef(() => GenreService))
 		private genresService: GenreService,
 		private externalIdService: ExternalIdService,
-		private providerService: ProviderService,
+		private lyricsService: LyricsService,
+		private artistIllustrationService: ArtistIllustrationService,
 	) {}
 
 	/**
@@ -234,7 +236,7 @@ export default class TasksService {
 	async fetchExternalMetadata(): Promise<void> {
 		await this.fetchExternalIds();
 		await this.fetchExternalIllustrations();
-		await this.providerService.fetchMissingLyrics();
+		await this.lyricsService.fetchMissingLyrics();
 	}
 
 	/**
@@ -250,7 +252,7 @@ export default class TasksService {
 	 * Fetch Missing External Illustrations from providers
 	 */
 	async fetchExternalIllustrations(): Promise<void> {
-
+		await this.artistIllustrationService.downloadMissingIllustrations();
 	}
 
 	/**
