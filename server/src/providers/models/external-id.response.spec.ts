@@ -8,7 +8,6 @@ import { createTestingModule } from "test/test-module";
 import TestPrismaService from "test/test-prisma.service";
 import GeniusProvider from "../genius/genius.provider";
 import MusicBrainzProvider from "../musicbrainz/musicbrainz.provider";
-import MusixMatchProvider from "../musixmatch/musixmatch.provider";
 import ProviderService from "../provider.service";
 import ProvidersModule from "../providers.module";
 import { ExternalIdResponseBuilder } from "./external-id.response";
@@ -22,7 +21,7 @@ describe('External ID Response', () => {
 	beforeAll(async () => {
 		const module: TestingModule = await createTestingModule({
 			imports: [HttpModule, SettingsModule, ProvidersModule, PrismaModule, FileManagerModule],
-			providers: [MusixMatchProvider, GeniusProvider, MusicBrainzProvider, ProviderService, PrismaService],
+			providers: [GeniusProvider, MusicBrainzProvider, ProviderService, PrismaService],
 		}).overrideProvider(PrismaService).useClass(TestPrismaService).compile();
 		providerService = module.get(ProviderService);
 		prismaService = module.get(PrismaService);

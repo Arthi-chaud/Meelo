@@ -1,3 +1,4 @@
+/*
 import { Injectable } from "@nestjs/common";
 import IProvider from "../iprovider";
 import MusixMatchSettings from "./musixmatch.settings";
@@ -137,3 +138,4 @@ export default class MusixMatchProvider extends IProvider<MusixMatchSettings, st
 		}
 	}
 }
+*/

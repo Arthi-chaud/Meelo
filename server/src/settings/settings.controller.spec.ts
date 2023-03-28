@@ -43,7 +43,6 @@ describe('Settings Controller', () => {
 					fs.readFileSync('test/assets/settings.json').toString()
 				),
 				providers: {
-					musixmatch: { enabled: true },
 					genius: { enabled: true },
 					musicbrainz: { enabled: true }
 				},

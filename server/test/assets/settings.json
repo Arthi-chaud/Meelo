@@ -9,7 +9,6 @@
 		"order": "only"
 	},
 	"providers": {
-		"musixmatch": {},
 		"genius": { "apiKey": "azerty" },
 		"musicbrainz": {}
 	}

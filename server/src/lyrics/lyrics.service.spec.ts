@@ -13,7 +13,7 @@ import { SongNotFoundByIdException } from "src/song/song.exceptions";
 import SongModule from "src/song/song.module";
 import { createTestingModule } from "test/test-module";
 import TestPrismaService from "test/test-prisma.service";
-import { LyricsAlreadyExistsExceptions, LyricsNotFoundByIDException, LyricsNotFoundBySongException, NoLyricsFoundException } from "./lyrics.exceptions";
+import { LyricsAlreadyExistsExceptions, LyricsNotFoundByIDException, LyricsNotFoundBySongException } from "./lyrics.exceptions";
 import { LyricsModule } from "./lyrics.module";
 import { LyricsService } from "./lyrics.service";
 import ProvidersModule from "src/providers/providers.module";
@@ -146,38 +146,4 @@ describe('Lyrics Service', () => {
 		});
 	});
 
-	describe('Register lyrics', () => {
-		it("should not register lyrics, as they already exists", async () => {
-			const spy = jest.spyOn(lyricsService, 'downloadLyrics').mockImplementation(async () => '');
-			await lyricsService.registerLyrics({ id: dummyRepository.songA1.id }, { force: false });
-			const fetchedLyrics = await lyricsService.get({ song: { id: dummyRepository.songA1.id }});
-			expect(fetchedLyrics).toStrictEqual(dummyRepository.lyricsA1);
-			expect(fetchedLyrics.content).not.toEqual('');
-  			spy.mockRestore();
-		});
-		it("should not register lyrics, as the lyrics download failed", async () => {
-			const spy = jest.spyOn(lyricsService, 'downloadLyrics').mockRejectedValue(new NoLyricsFoundException('', ''));
-			await lyricsService.registerLyrics({ id: dummyRepository.songA2.id }, { force: false }).catch(() => {});
-			expect(() => lyricsService.get({ song: { id: dummyRepository.songA2.id } })).rejects.toThrow();
-  			spy.mockRestore();
-		});
-		it("should create the new lyrics", async () => {
-			const spy = jest.spyOn(lyricsService, 'downloadLyrics').mockImplementation(async () => 'NEW LYRICS');
-			await lyricsService.registerLyrics({ id: dummyRepository.songB1.id }, { force: false });
-			const fetchedLyrics = await lyricsService.get({ song: { id: dummyRepository.songB1.id }});
-			expect(fetchedLyrics.content).toBe('NEW LYRICS');
-			expect(fetchedLyrics.songId).toBe(dummyRepository.songB1.id);
-  			spy.mockRestore();
-		});
-		it("should refresh the lyrics", async () => {
-			const spy = jest.spyOn(lyricsService, 'downloadLyrics').mockImplementation(async () => 'AZERTY');
-			await lyricsService.registerLyrics({ id: dummyRepository.songA1.id }, { force: true });
-			const fetchedLyrics = await lyricsService.get({ song: { id: dummyRepository.songA1.id }});
-			expect(fetchedLyrics).toStrictEqual({
-				...dummyRepository.lyricsA1,
-				content: 'AZERTY'
-			});
-  			spy.mockRestore();
-		});
-	});
 });

@@ -54,6 +54,7 @@ export default class TasksService {
 		private genresService: GenreService,
 		private externalIdService: ExternalIdService,
 		private lyricsService: LyricsService,
+		@Inject(forwardRef(() => ArtistIllustrationService))
 		private artistIllustrationService: ArtistIllustrationService,
 	) {}
 

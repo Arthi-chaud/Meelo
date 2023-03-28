@@ -27,6 +27,7 @@ export default class ArtistIllustrationService extends RepositoryIllustrationSer
 		@Inject(forwardRef(() => ArtistService))
 		private artistService: ArtistService,
 		private providerService: ProviderService,
+		@Inject(forwardRef(() => IllustrationService))
 		private illustrationService: IllustrationService,
 		fileManagerService: FileManagerService,
 	) {
