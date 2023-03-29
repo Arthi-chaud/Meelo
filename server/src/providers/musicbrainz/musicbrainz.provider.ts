@@ -45,7 +45,7 @@ export default class MusicBrainzProvider extends IProvider<MusicBrainzSettings, 
 	}
 
 	getProviderIconUrl(): string {
-		return "https://upload.wikimedia.org/wikipedia/commons/8/8c/MusicBrainz_Picard_logo.svg";
+		return "https://s3-us-west-1.amazonaws.com/coppertino/vox-blog/artwork-musicbrainz.png";
 	}
 
 	async getArtistIdentifier(artistName: string, _songName?: string): Promise<MBID> {
