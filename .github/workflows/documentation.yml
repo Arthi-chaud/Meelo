@@ -1,4 +1,4 @@
-name: Generate and Deploy Documentation
+name: Generate and Deploy User Documentation
 on:
   push:
     branches:
@@ -6,16 +6,15 @@ on:
 permissions:
   contents: write
 jobs:
-  generate-and-deploy:
+  build:
+    name: Deploy docs
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
-      - name: Install Dependencies
-        run: yarn --cwd server install
-      - name: Generate Documentation
-        run: yarn  --cwd server compodoc -p tsconfig.json --hideGenerator --disableDependencies --disableCoverage
-      - name: Deploy
-        uses: JamesIves/github-pages-deploy-action@v4
-        with:
-          folder: docs/generated
-          branch: docs
+      - name: Checkout main
+        uses: actions/checkout@v3
+      - name: Deploy docs
+        uses: mhausenblas/mkdocs-deploy-gh-pages@master
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          CONFIG_FILE: docs/mkdocs.yml
+          REQUIREMENTS: docs/requirements.txt

@@ -11,9 +11,7 @@ This project is made by a music collector, and for music collectors. Its goal is
 
 ## Getting Started
 
-- [Setup Instructions](https://arthi-chaud.github.io/Meelo/additional-documentation/setting-up.html)
-- [What is Meelo made of](https://arthi-chaud.github.io/Meelo/additional-documentation/technologies.html)
-- [Code Documentation](https://arthi-chaud.github.io/Meelo/overview.html)
+- [Setup Instructions](https://arthi-chaud.github.io/Meelo/setting-up/)
 
 ## Features
 
@@ -30,7 +28,7 @@ This project is made by a music collector, and for music collectors. Its goal is
 - Support for Music Videos
 - Metadata scan using:
   - Embedded tags (including bitrate)
-  - Path of file, using [customizable Regular Expressions](https://arthi-chaud.github.io/Meelo/additional-documentation/setting-up.html#prepare-your-settings)
+  - Path of file, using [customizable Regular Expressions](https://arthi-chaud.github.io/Meelo/setting-up/#prepare-your-settings)
   - Either using one of the two, or the two combined
 - Automatically set type to Albums, based on their title
   - Studio Recording
@@ -39,7 +37,7 @@ This project is made by a music collector, and for music collectors. Its goal is
   - Video Album
   - Soundtrack Album
   - etc..
-  - Look over [here](https://arthi-chaud.github.io/Meelo/additional-documentation/album-types.html) to know it works
+  - Look over [here](https://arthi-chaud.github.io/Meelo/album-types/) to know it works
 - ... And allow filtering based on Album's types
 - Automated Lyrics download
 - Embedded and inline artwork file handling.
@@ -62,14 +60,14 @@ In the future, Meelo's goal is to help you manage and enjoy your music collectio
 
 ## Screenshots
 
-![Album View](./docs/assets/album-view.png)
+![Album View](./assets/examples/album-view.png)
 
-![Player](./docs/assets/player.png)
+![Player](./assets/examples/player.png)
 
-![Live Album View](./docs/assets/live-album-view.png)
+![Live Album View](./assets/examples/live-album-view.png)
 
-![Artist View](./docs/assets/artist-view.png)
+![Artist View](./assets/examples/artist-view.png)
 
-![Album Releases](./docs/assets/album-releases.png)
+![Album Releases](./assets/examples/album-releases.png)
 
-![Song Versions](./docs/assets/song-versions.png)
+![Song Versions](./assets/examples/song-versions.png)

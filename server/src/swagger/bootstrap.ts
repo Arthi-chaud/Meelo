@@ -9,10 +9,10 @@ export default async function bootstrapSwagger(app: INestApplication) {
 		.build();
 	const document = SwaggerModule.createDocument(app, config,);
 
-	SwaggerModule.setup('/docs', app, document, {
+	SwaggerModule.setup('/swagger', app, document, {
 		customSiteTitle: 'Swagger - Meelo',
-		customfavIcon: './favicon.ico',
-		customCssUrl: './swagger/styles.css',
-		customJs: './swagger/script.js'
+		customfavIcon: './assets/favicon.ico',
+		customCssUrl: './assets/swagger/styles.css',
+		customJs: './assets/swagger/script.js'
 	});
 }
