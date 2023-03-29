@@ -236,14 +236,14 @@ export default class IllustrationService {
 	 */
 	async streamIllustration(
 		sourceFilePath: string, as: string,
-		dimensions: IllustrationDimensionsDto, res: any
+		dimensions: IllustrationDimensionsDto, res: any, ext = '.jpg'
 	): Promise<StreamableFile> {
 		if (!this.fileManagerService.fileExists(sourceFilePath)) {
 			throw new NoIllustrationException("Illustration file not found");
 		}
 
 		res.set({
-			'Content-Disposition': `attachment; filename="${as}.jpg"`,
+			'Content-Disposition': `attachment; filename="${as}${ext}"`,
 		});
 		if (dimensions.width || dimensions.height) {
 			try {

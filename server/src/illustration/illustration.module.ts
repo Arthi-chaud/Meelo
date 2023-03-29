@@ -10,6 +10,7 @@ import ArtistModule from 'src/artist/artist.module';
 import SettingsModule from 'src/settings/settings.module';
 import FfmpegModule from 'src/ffmpeg/ffmpeg.module';
 import SongModule from 'src/song/song.module';
+import ProvidersModule from 'src/providers/providers.module';
 
 @Module({
 	imports: [
@@ -20,6 +21,7 @@ import SongModule from 'src/song/song.module';
 		forwardRef(() => TrackModule),
 		forwardRef(() => SongModule),
 		forwardRef(() => FileModule),
+		forwardRef(() => ProvidersModule),
 		SettingsModule,
 		FfmpegModule
 	],
