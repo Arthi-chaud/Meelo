@@ -27,7 +27,7 @@ import ProvidersModule from 'src/providers/providers.module';
 		LyricsModule,
 		SettingsModule,
 		FfmpegModule,
-		ProvidersModule,
+		forwardRef(() => ProvidersModule),
 		forwardRef(() => SongModule),
 		forwardRef(() => ReleaseModule),
 		forwardRef(() => AlbumModule),

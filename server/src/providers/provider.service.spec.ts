@@ -5,7 +5,6 @@ import SettingsModule from "src/settings/settings.module";
 import { createTestingModule } from "test/test-module";
 import TestPrismaService from "test/test-prisma.service";
 import ProviderService from "./provider.service";
-import ProvidersModule from "./providers.module";
 import PrismaModule from "src/prisma/prisma.module";
 import GeniusProvider from "./genius/genius.provider";
 import MusicBrainzProvider from "./musicbrainz/musicbrainz.provider";
@@ -13,6 +12,9 @@ import SettingsService from "src/settings/settings.service";
 import FileManagerService from "src/file-manager/file-manager.service";
 import * as fs from 'fs';
 import FileManagerModule from "src/file-manager/file-manager.module";
+import IllustrationModule from "src/illustration/illustration.module";
+import { forwardRef } from "@nestjs/common";
+import ProvidersModule from "./providers.module";
 
 describe("Provider Service", () => {
 	let providerService: ProviderService;
@@ -22,7 +24,7 @@ describe("Provider Service", () => {
 
 	beforeAll(async () => {
 		const module: TestingModule = await createTestingModule({
-			imports: [HttpModule, SettingsModule, ProvidersModule, PrismaModule, FileManagerModule],
+			imports: [HttpModule, ProvidersModule, SettingsModule, PrismaModule, FileManagerModule, forwardRef(() => IllustrationModule)],
 			providers: [GeniusProvider, MusicBrainzProvider, ProviderService, PrismaService],
 		}).overrideProvider(PrismaService).useClass(TestPrismaService).compile();
 		providerService = module.get(ProviderService);

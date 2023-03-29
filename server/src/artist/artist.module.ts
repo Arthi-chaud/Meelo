@@ -15,7 +15,7 @@ import ProvidersModule from 'src/providers/providers.module';
 	imports: [
 		PrismaModule,
 		SettingsModule,
-		ProvidersModule,
+		forwardRef(() => ProvidersModule),
 		forwardRef(() => IllustrationModule),
 		forwardRef(() => SongModule),
 		forwardRef(() => AlbumModule),

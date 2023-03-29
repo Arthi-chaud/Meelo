@@ -11,6 +11,8 @@ import MusicBrainzProvider from "../musicbrainz/musicbrainz.provider";
 import ProviderService from "../provider.service";
 import ProvidersModule from "../providers.module";
 import { ExternalIdResponseBuilder } from "./external-id.response";
+import { forwardRef } from "@nestjs/common";
+import IllustrationModule from "src/illustration/illustration.module";
 
 describe('External ID Response', () => {
 	let providerService: ProviderService;
@@ -20,7 +22,7 @@ describe('External ID Response', () => {
 	//TODO Test Provider Image
 	beforeAll(async () => {
 		const module: TestingModule = await createTestingModule({
-			imports: [HttpModule, SettingsModule, ProvidersModule, PrismaModule, FileManagerModule],
+			imports: [HttpModule, SettingsModule, forwardRef(() => ProvidersModule), PrismaModule, FileManagerModule, forwardRef(() => IllustrationModule)],
 			providers: [GeniusProvider, MusicBrainzProvider, ProviderService, PrismaService],
 		}).overrideProvider(PrismaService).useClass(TestPrismaService).compile();
 		providerService = module.get(ProviderService);

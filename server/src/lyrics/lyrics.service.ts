@@ -39,6 +39,7 @@ export class LyricsService extends RepositoryService<
 		protected prismaService: PrismaService,
 		@Inject(forwardRef(() => SongService))
 		private songService: SongService,
+		@Inject(forwardRef(() => ProviderService))
 		private providerService: ProviderService
 	) {
 		super(prismaService.lyrics);

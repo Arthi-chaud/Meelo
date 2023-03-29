@@ -14,7 +14,7 @@ import ProvidersModule from 'src/providers/providers.module';
 @Module({
 	imports: [
 		PrismaModule,
-		ProvidersModule,
+		forwardRef(() => ProvidersModule),
 		forwardRef(() => AlbumModule),
 		forwardRef(() => ArtistModule),
 		forwardRef(() => TrackModule),

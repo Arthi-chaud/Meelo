@@ -8,6 +8,6 @@ import ProvidersModule from 'src/providers/providers.module';
 @Module({
 	providers: [LyricsService, LyricsResponseBuilder],
 	exports: [LyricsService, LyricsResponseBuilder],
-	imports: [PrismaModule, forwardRef(() => SongModule), ProvidersModule]
+	imports: [PrismaModule, forwardRef(() => SongModule), forwardRef(() => ProvidersModule)]
 })
 export class LyricsModule {}

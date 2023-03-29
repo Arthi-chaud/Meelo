@@ -1,4 +1,6 @@
-import { Injectable, OnModuleInit } from "@nestjs/common";
+import {
+	Inject, Injectable, OnModuleInit, forwardRef
+} from "@nestjs/common";
 import IProvider from "./iprovider";
 import SettingsService from "src/settings/settings.service";
 import { AllProvidersFailedError } from "./provider.exception";
@@ -8,6 +10,7 @@ import MusicBrainzProvider from "./musicbrainz/musicbrainz.provider";
 import PrismaService from "src/prisma/prisma.service";
 import Slug from "src/slug/slug";
 import { Provider } from "src/prisma/models";
+import ProvidersIllustrationService from "./provider-illustration.service";
 
 /**
  * Orchestrates of Providers
@@ -23,7 +26,9 @@ export default class ProviderService implements OnModuleInit {
 		geniusProvider: GeniusProvider,
 		musicbrainzProvider: MusicBrainzProvider,
 		private prismaService: PrismaService,
-		private settingsService: SettingsService
+		private settingsService: SettingsService,
+		@Inject(forwardRef(() => ProvidersIllustrationService))
+		private providerIllustrationService: ProvidersIllustrationService,
 	) {
 		this._providerCatalogue = [geniusProvider, musicbrainzProvider];
 	}
@@ -78,6 +83,7 @@ export default class ProviderService implements OnModuleInit {
 				});
 			})
 		));
+		this.providerIllustrationService.downloadMissingProviderImages();
 	}
 
 	/**
