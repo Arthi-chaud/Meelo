@@ -6,16 +6,24 @@ import { IllustratedModel } from "src/illustration/models/illustrated-model.resp
 import { Artist, ArtistWithRelations } from "src/prisma/models";
 import ResponseBuilderInterceptor from "src/response/interceptors/response.interceptor";
 import ArtistIllustrationService from "../artist-illustration.service";
+import ExternalIdResponse, { ExternalIdResponseBuilder } from "src/providers/models/external-id.response";
 
 export class ArtistResponse extends IntersectionType(
-	Artist, IllustratedModel
+	IntersectionType(
+		Artist, IllustratedModel,
+	),
+	class {
+		externalIds?: ExternalIdResponse[];
+	}
 ) {}
 
 @Injectable()
 export class ArtistResponseBuilder extends ResponseBuilderInterceptor<ArtistWithRelations, ArtistResponse> {
 	constructor(
 		@Inject(forwardRef(() => ArtistIllustrationService))
-		private artistIllustrationService: ArtistIllustrationService
+		private artistIllustrationService: ArtistIllustrationService,
+		@Inject(forwardRef(() => ExternalIdResponseBuilder))
+		private externalIdResponseBuilder: ExternalIdResponseBuilder
 	) {
 		super();
 	}
@@ -27,6 +35,14 @@ export class ArtistResponseBuilder extends ResponseBuilderInterceptor<ArtistWith
 			...artist,
 			illustration: this.artistIllustrationService.buildIllustrationLink(artist.id)
 		};
+
+		if (artist.externalIds !== undefined) {
+			response.externalIds = await Promise.all(
+				artist.externalIds?.map(
+					(id) => this.externalIdResponseBuilder.buildResponse(id)
+				) ?? []
+			);
+		}
 
 		return response;
 	}

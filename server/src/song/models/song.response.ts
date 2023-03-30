@@ -7,6 +7,7 @@ import { IllustratedModel } from "src/illustration/models/illustrated-model.resp
 import { Song, SongWithRelations } from "src/prisma/models";
 import ResponseBuilderInterceptor from "src/response/interceptors/response.interceptor";
 import SongIllustrationService from "../song-illustration.service";
+import ExternalIdResponse, { ExternalIdResponseBuilder } from "src/providers/models/external-id.response";
 
 export class SongResponse extends IntersectionType(
 	IntersectionType(
@@ -14,6 +15,7 @@ export class SongResponse extends IntersectionType(
 	),
 	class {
 		artist?: ArtistResponse;
+		externalIds?: ExternalIdResponse[];
 	}
 ) {}
 
@@ -24,6 +26,8 @@ export class SongResponseBuilder extends ResponseBuilderInterceptor<SongWithRela
 		private songIllustrationService: SongIllustrationService,
 		@Inject(forwardRef(() => ArtistResponseBuilder))
 		private artistResponseBuilder: ArtistResponseBuilder,
+		@Inject(forwardRef(() => ExternalIdResponseBuilder))
+		private externalIdResponseBuilder: ExternalIdResponseBuilder
 	) {
 		super();
 	}
@@ -38,6 +42,13 @@ export class SongResponseBuilder extends ResponseBuilderInterceptor<SongWithRela
 
 		if (song.artist !== undefined) {
 			response.artist = await this.artistResponseBuilder.buildResponse(song.artist);
+		}
+		if (song.externalIds !== undefined) {
+			response.externalIds = await Promise.all(
+				song.externalIds?.map(
+					(id) => this.externalIdResponseBuilder.buildResponse(id)
+				) ?? []
+			);
 		}
 		return response;
 	}

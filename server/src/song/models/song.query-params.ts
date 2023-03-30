@@ -65,9 +65,10 @@ namespace SongQueryParameters {
 		'tracks',
 		'artist',
 		'genres',
-		'lyrics'
+		'lyrics',
+		'externalIds'
 	] as const;
-	export const AvailableAtomicIncludes = filterAtomicRelationInclude(AvailableIncludes, ['lyrics']);
+	export const AvailableAtomicIncludes = filterAtomicRelationInclude(AvailableIncludes, ['lyrics', 'externalIds']);
 	export type RelationInclude = BaseRelationInclude<typeof AvailableIncludes>;
 
 	/**

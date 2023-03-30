@@ -9,7 +9,6 @@ import TrackService from 'src/track/track.service';
 import FileService from 'src/file/file.service';
 import MetadataService from 'src/metadata/metadata.service';
 import IllustrationService from 'src/illustration/illustration.service';
-import { LyricsService } from 'src/lyrics/lyrics.service';
 import LibraryService from 'src/library/library.service';
 import Logger from 'src/logger/logger';
 import SettingsService from 'src/settings/settings.service';
@@ -21,6 +20,9 @@ import ReleaseService from 'src/release/release.service';
 import AlbumService from 'src/album/album.service';
 import ArtistService from 'src/artist/artist.service';
 import GenreService from 'src/genre/genre.service';
+import ExternalIdService from 'src/providers/external-id.provider';
+import { LyricsService } from 'src/lyrics/lyrics.service';
+import ArtistIllustrationService from 'src/artist/artist-illustration.service';
 
 @Injectable()
 export default class TasksService {
@@ -35,7 +37,6 @@ export default class TasksService {
 		private trackIllustrationService: TrackIllustrationService,
 		@Inject(forwardRef(() => MetadataService))
 		private metadataService: MetadataService,
-		private lyricsService: LyricsService,
 		@Inject(forwardRef(() => LibraryService))
 		private libraryService: LibraryService,
 		@Inject(forwardRef(() => IllustrationService))
@@ -51,6 +52,10 @@ export default class TasksService {
 		private artistService: ArtistService,
 		@Inject(forwardRef(() => GenreService))
 		private genresService: GenreService,
+		private externalIdService: ExternalIdService,
+		private lyricsService: LyricsService,
+		@Inject(forwardRef(() => ArtistIllustrationService))
+		private artistIllustrationService: ArtistIllustrationService,
 	) {}
 
 	/**
@@ -98,6 +103,7 @@ export default class TasksService {
 			}
 		}
 		this.logger.log(`${parentLibrary.slug} library: ${newlyRegistered.length} new files registered`);
+		await this.fetchExternalMetadata();
 		return newlyRegistered;
 	}
 
@@ -121,9 +127,6 @@ export default class TasksService {
 		try {
 			const track = await this.metadataService.registerMetadata(fileMetadata, registeredFile);
 
-			this.lyricsService.registerLyrics(
-				{ id: track.songId }, { force: false }
-			).catch(() => {});
 			this.illustrationService.extractTrackIllustration(track, fullFilePath)
 				.catch(() => {})
 				.then(async () => {
@@ -215,6 +218,7 @@ export default class TasksService {
 		}
 		this.logger.log(`'${library.slug}' library: Refreshed ${updatedFiles.length} files metadata`);
 		await this.housekeeping();
+		await this.fetchExternalMetadata();
 		return updatedFiles;
 	}
 
@@ -228,6 +232,28 @@ export default class TasksService {
 		if (housekeeping) {
 			await this.housekeeping();
 		}
+	}
+
+	async fetchExternalMetadata(): Promise<void> {
+		await this.fetchExternalIds();
+		await this.fetchExternalIllustrations();
+		await this.lyricsService.fetchMissingLyrics();
+	}
+
+	/**
+	 * Fetch Missing External IDs for artists, songs and albums
+	 */
+	async fetchExternalIds(): Promise<void> {
+		await this.externalIdService.fetchMissingArtistExternalIDs();
+		await this.externalIdService.fetchMissingAlbumExternalIDs();
+		await this.externalIdService.fetchMissingSongExternalIDs();
+	}
+
+	/**
+	 * Fetch Missing External Illustrations from providers
+	 */
+	async fetchExternalIllustrations(): Promise<void> {
+		await this.artistIllustrationService.downloadMissingIllustrations();
 	}
 
 	/**

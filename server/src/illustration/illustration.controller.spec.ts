@@ -21,6 +21,7 @@ import request from "supertest";
 import SetupApp from "test/setup-app";
 import TrackIllustrationService from "src/track/track-illustration.service";
 import ReleaseIllustrationService from "src/release/release-illustration.service";
+import ProvidersModule from "src/providers/providers.module";
 describe('Illustration Controller', () => {
 	let app: INestApplication;
 	let dummyRepository: TestPrismaService;
@@ -29,7 +30,7 @@ describe('Illustration Controller', () => {
 	let trackIllustrationService: TrackIllustrationService;
 	beforeAll(async () => {
 		const module: TestingModule = await createTestingModule({
-			imports: [FileManagerModule, PrismaModule, FileModule, MetadataModule, FileModule, ArtistModule, AlbumModule, SongModule, ReleaseModule, TrackModule, GenreModule, LyricsModule],
+			imports: [FileManagerModule, PrismaModule, FileModule, MetadataModule, FileModule, ArtistModule, AlbumModule, SongModule, ReleaseModule, TrackModule, GenreModule, LyricsModule, ProvidersModule],
 		}).overrideProvider(PrismaService).useClass(TestPrismaService).compile();
 		app = await SetupApp(module);
 		fileManagerService = module.get<FileManagerService>(FileManagerService);

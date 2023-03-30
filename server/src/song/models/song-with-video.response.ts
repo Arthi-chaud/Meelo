@@ -29,7 +29,7 @@ export class SongWithVideoResponseBuilder extends ResponseBuilderInterceptor<Son
 
 	returnType = SongWithVideoResponse;
 
-	async buildResponse(song: SongWithVideoResponse): Promise<SongWithVideoResponse> {
+	async buildResponse(song: Song & { video: Track }): Promise<SongWithVideoResponse> {
 		return {
 			...await this.songResponseBuilder.buildResponse(song),
 			video: await this.trackResponseBuilder.buildResponse(song.video)

@@ -52,7 +52,7 @@ export default class AlbumService extends RepositoryService<
 		@Inject(forwardRef(() => ReleaseService))
 		private releaseService: ReleaseService,
 		@Inject(forwardRef(() => AlbumIllustrationService))
-		private albumIllustrationService: AlbumIllustrationService
+		private albumIllustrationService: AlbumIllustrationService,
 	) {
 		super(prismaService.album);
 	}

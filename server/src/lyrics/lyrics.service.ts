@@ -4,23 +4,19 @@ import {
 import type { LyricsWithRelations } from 'src/prisma/models';
 import PrismaService from 'src/prisma/prisma.service';
 import RepositoryService from 'src/repository/repository.service';
-import type SongQueryParameters from 'src/song/models/song.query-params';
 import SongService from 'src/song/song.service';
 import {
 	LyricsAlreadyExistsExceptions,
 	LyricsNotFoundByIDException,
-	LyricsNotFoundBySongException,
-	MissingGeniusAPIKeyException,
-	NoLyricsFoundException
+	LyricsNotFoundBySongException
 } from './lyrics.exceptions';
 import type LyricsQueryParameters from './models/lyrics.query-parameters';
 import { Prisma } from '@prisma/client';
 import Identifier from 'src/identifier/models/identifier';
-import Logger from 'src/logger/logger';
 import { PrismaError } from 'prisma-error-enum';
 import Slug from 'src/slug/slug';
-// eslint-disable-next-line @typescript-eslint/no-var-requires
-const { getLyrics } = require('genius-lyrics-api');
+import ProviderService from 'src/providers/provider.service';
+import Logger from 'src/logger/logger';
 
 @Injectable()
 export class LyricsService extends RepositoryService<
@@ -39,14 +35,14 @@ export class LyricsService extends RepositoryService<
 	Prisma.LyricsOrderByWithRelationAndSearchRelevanceInput
 > {
 	private readonly logger = new Logger(LyricsService.name);
-	private readonly geniusApiKey: string | null;
 	constructor(
 		protected prismaService: PrismaService,
 		@Inject(forwardRef(() => SongService))
 		private songService: SongService,
+		@Inject(forwardRef(() => ProviderService))
+		private providerService: ProviderService
 	) {
 		super(prismaService.lyrics);
-		this.geniusApiKey = process.env.GENIUS_ACCESS_TOKEN ?? null;
 	}
 
 	/**
@@ -169,61 +165,32 @@ export class LyricsService extends RepositoryService<
 		throw this.onUnknownError(error, where);
 	}
 
-	/**
-	 * Fetch a song's lyrics from Genius
-	 * @param artistName the name of the artist of the song
-	 * @param songName the name of the song to fetch the lyrics of
-	 */
-	async downloadLyrics(artistName: string, songName: string): Promise<string> {
-		if (!this.geniusApiKey) {
-			throw new MissingGeniusAPIKeyException();
-		}
-		try {
-			const query = {
-				apiKey: this.geniusApiKey,
-				title: songName,
-				artist: artistName,
-				optimizeQuery: true
-			};
-			const lyrics = await getLyrics(query);
-
-			if (lyrics === null) {
-				throw new NoLyricsFoundException(artistName, songName);
-			}
-			return lyrics;
-		} catch {
-			throw new NoLyricsFoundException(artistName, songName);
-		}
-	}
-
-	/**
-	 * Fetch  and save lyrics of a song in the database
-	 * @param songWhere
-	 * @param options if 'force' is true, will refetch the lyrics even if they already exists
-	 * @returns an empty promise
-	 */
-	async registerLyrics(
-		songWhere: SongQueryParameters.WhereInput, options: { force: boolean }
-	): Promise<void> {
-		const song = await this.songService.get(songWhere, { artist: true, lyrics: true });
-
-		if (options.force == false && song.lyrics !== null) {
-			return;
-		}
-		try {
-			const lyrics = await this.downloadLyrics(song.artist.name, song.name);
-
-			this.logger.log(`Lyrics found for song '${song.name}' by '${song.artist.name}'`);
-			if (song.lyrics) {
-				await this.update({ content: lyrics }, { song: songWhere });
-			} else {
-				await this.create({ content: lyrics, songId: song.id });
-			}
-		} catch {
-			this.logger.warn(`No lyrics found for song '${song.name}' by '${song.artist.name}'`);
-			throw new NoLyricsFoundException(song.artist.name, song.name);
-		}
-	}
-
 	async housekeeping(): Promise<void> {}
+
+	async fetchMissingLyrics() {
+		const songs = await this.prismaService.song.findMany({
+			where: { lyrics: null },
+			include: { externalIds: true }
+		});
+
+		for (const song of songs) {
+			try {
+				const lyrics = await this.providerService.runAction(async (provider) => {
+					const songExternalId = song.externalIds
+						.find((id) => this.providerService
+							.getProviderById(id.providerId).name == provider.name)?.value;
+
+					if (!songExternalId) {
+						throw new Error('Missing External ID');
+					}
+					return provider.getSongLyrics(songExternalId);
+				});
+
+				this.logger.verbose(`Lyrics found for song '${song.name}'`);
+				await this.create({ content: lyrics, songId: song.id });
+			} catch {
+				continue;
+			}
+		}
+	}
 }

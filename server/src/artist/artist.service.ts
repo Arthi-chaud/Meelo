@@ -46,7 +46,7 @@ export default class ArtistService extends RepositoryService<
 	constructor(
 		private prismaService: PrismaService,
 		@Inject(forwardRef(() => ArtistIllustrationService))
-		private artistIllustrationService: ArtistIllustrationService
+		private artistIllustrationService: ArtistIllustrationService,
 	) {
 		super(prismaService.artist);
 	}

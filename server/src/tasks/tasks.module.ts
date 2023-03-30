@@ -15,6 +15,7 @@ import ReleaseModule from 'src/release/release.module';
 import AlbumModule from 'src/album/album.module';
 import ArtistModule from 'src/artist/artist.module';
 import GenreModule from 'src/genre/genre.module';
+import ProvidersModule from 'src/providers/providers.module';
 
 @Module({
 	imports: [
@@ -26,6 +27,7 @@ import GenreModule from 'src/genre/genre.module';
 		LyricsModule,
 		SettingsModule,
 		FfmpegModule,
+		forwardRef(() => ProvidersModule),
 		forwardRef(() => SongModule),
 		forwardRef(() => ReleaseModule),
 		forwardRef(() => AlbumModule),

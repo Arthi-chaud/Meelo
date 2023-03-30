@@ -24,15 +24,20 @@ import { LyricsModule } from "src/lyrics/lyrics.module";
 import FileModule from "src/file/file.module";
 import { expectedAlbumResponse, expectedArtistResponse, expectedSongResponse, expectedTrackResponse } from "test/expected-responses";
 import { SongWithVideoResponse } from "src/song/models/song-with-video.response";
+import ProvidersModule from "src/providers/providers.module";
+import SettingsModule from "src/settings/settings.module";
+import SettingsService from "src/settings/settings.service";
+import ProviderService from "src/providers/provider.service";
 
 describe('Artist Controller', () => {
 	let dummyRepository: TestPrismaService;
 	let app: INestApplication;
 	let albumA2: Album;
+	let providerService: ProviderService;
 
 	beforeAll(async () => {
 		const module: TestingModule = await createTestingModule({
-			imports: [ReleaseModule, PrismaModule, ArtistModule, SongModule, AlbumModule, TrackModule, MetadataModule, IllustrationModule, GenreModule, LyricsModule, FileModule],
+			imports: [ReleaseModule, PrismaModule, ArtistModule, SongModule, AlbumModule, TrackModule, MetadataModule, IllustrationModule, GenreModule, LyricsModule, FileModule, ProvidersModule, SettingsModule],
 			providers: [ArtistService, SongService, AlbumService, ReleaseService],
 		}).overrideProvider(PrismaService).useClass(TestPrismaService).compile();
 		app = await SetupApp(module);
@@ -42,6 +47,9 @@ describe('Artist Controller', () => {
 		albumA2 = await albumService.create({
 			name: "My Album 2", artist: { id: dummyRepository.artistA.id }
 		});
+		providerService = module.get(ProviderService);
+		module.get(SettingsService).loadFromFile();
+		await providerService.onModuleInit();
 
 	});
 	
@@ -113,6 +121,36 @@ describe('Artist Controller', () => {
 					const artist: Artist = res.body;
 					expect(artist).toStrictEqual(expectedArtistResponse(dummyRepository.artistB));
 			});
+		});
+
+		it("should return artist w/ external ID", async () => {
+			const provider = await dummyRepository.provider.findFirstOrThrow();
+			await dummyRepository.artistExternalId.create({
+				data: {
+					artistId: dummyRepository.artistA.id,
+					providerId: provider.id,
+					value: '1234'
+				}
+			})
+			return request(app.getHttpServer())
+				.get(`/artists/${dummyRepository.artistA.id}?with=externalIds`)
+				.expect(200)
+				.expect((res) => {
+					const artist: Artist = res.body
+					expect(artist).toStrictEqual({
+						...expectedArtistResponse(dummyRepository.artistA),
+						externalIds: [{
+							provider: {
+								name: provider.name,
+								homepage: providerService.getProviderById(provider.id).getProviderHomepage(),
+								banner: `/illustrations/providers/${provider.name}/banner`,
+								icon: `/illustrations/providers/${provider.name}/icon`,
+							},
+							value: '1234',
+							url: providerService.getProviderById(provider.id).getArtistURL('1234')
+						}]
+					});
+				});
 		});
 
 		it("should return an error, as the artist does not exist", () => {

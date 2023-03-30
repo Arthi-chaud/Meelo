@@ -1,7 +1,9 @@
 import {
-	Body, Controller, Delete, Get, Post, Query, Response
+	Body, Controller, Delete, Get, HttpStatus, Param, Post, Query, Response
 } from "@nestjs/common";
-import { ApiOperation, ApiTags } from "@nestjs/swagger";
+import {
+	ApiOperation, ApiParam, ApiTags
+} from "@nestjs/swagger";
 import ArtistService from "src/artist/artist.service";
 import ReleaseService from "src/release/release.service";
 import TrackService from "src/track/track.service";
@@ -23,6 +25,11 @@ import Slug from "src/slug/slug";
 import { NoReleaseIllustrationException } from "./illustration.exceptions";
 import SongService from "src/song/song.service";
 import SongQueryParameters from "src/song/models/song.query-params";
+import ProviderIllustrationService from "src/providers/provider-illustration.service";
+import ProviderService from "src/providers/provider.service";
+import ProvidersSettings from "src/providers/models/providers.settings";
+import { UnknownProviderError } from "src/providers/provider.exception";
+import { MeeloException } from "src/exceptions/meelo-exception";
 
 @ApiTags("Illustrations")
 @Controller('illustrations')
@@ -34,6 +41,8 @@ export class IllustrationController {
 		private artistIllustrationService: ArtistIllustrationService,
 		private trackService: TrackService,
 		private releaseService: ReleaseService,
+		private providerIllustrationService: ProviderIllustrationService,
+		private providerService: ProviderService
 	) {}
 
 	@ApiOperation({
@@ -252,5 +261,45 @@ export class IllustrationController {
 			.getIllustrationFolderPath(where);
 
 		this.artistIllustrationService.deleteIllustrationFolder(artistIllustration);
+	}
+
+	@ApiOperation({
+		summary: "Get a Provider's icon or banner"
+	})
+	@ApiParam({
+		name: 'type',
+		enum: ['icon', 'banner'],
+	})
+	@Get('providers/:name/:type')
+	async getProviderIillustration(
+		@Param('name') providerName: string,
+		@Param('type') type: string,
+		@Query() dimensions: IllustrationDimensionsDto,
+		@Response({ passthrough: true }) res: Response
+	) {
+		const pNameIsValid = (str: string): str is keyof ProvidersSettings =>
+			this.providerService.enabledProviders.includes(str as any);
+		let illustrationPath = '';
+
+		if (!pNameIsValid(providerName)) {
+			throw new UnknownProviderError(providerName);
+		}
+		switch (type) {
+		case 'icon':
+			illustrationPath = this.providerIllustrationService.buildIconPath(providerName);
+			break;
+		case 'banner':
+			illustrationPath = this.providerIllustrationService.buildBannerPath(providerName);
+			break;
+		default:
+			throw new MeeloException(HttpStatus.BAD_REQUEST, 'Invalid Provider Illustration type');
+		}
+		return this.illustrationService.streamIllustration(
+			illustrationPath,
+			`${providerName}-${parse(illustrationPath).name}`,
+			dimensions,
+			res,
+			parse(illustrationPath).ext
+		);
 	}
 }

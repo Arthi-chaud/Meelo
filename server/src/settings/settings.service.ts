@@ -59,15 +59,17 @@ export default class SettingsService {
 		).at(0);
 
 		if (validationError) {
-			const undefinedChild = validationError.children?.find(
-				(child) => child.value === undefined
-			);
+			validationError.children?.concat(validationError).forEach((error) => {
+				const undefinedChild = error.children?.find(
+					(child) => child.value === undefined
+				);
 
-			if (validationError.value === undefined) {
-				throw new MissingSettingsException(validationError.property);
-			} else if (validationError.value && undefinedChild) {
-				throw new MissingSettingsException(undefinedChild.property);
-			}
+				if (error.value === undefined) {
+					throw new MissingSettingsException(validationError.property);
+				} else if (error.value && undefinedChild) {
+					throw new MissingSettingsException(undefinedChild.property);
+				}
+			});
 			try {
 				const constraint = validationError.constraints
 					?? validationError.children?.at(0)?.constraints;

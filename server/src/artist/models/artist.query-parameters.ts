@@ -54,8 +54,8 @@ namespace ArtistQueryParameters {
 	/**
 	 * Defines what relations to include in query
 	 */
-	export const AvailableIncludes = ['albums', 'songs'] as const;
-	export const AvailableAtomicIncludes = filterAtomicRelationInclude(AvailableIncludes);
+	export const AvailableIncludes = ['albums', 'songs', 'externalIds'] as const;
+	export const AvailableAtomicIncludes = filterAtomicRelationInclude(AvailableIncludes, ['externalIds']);
 	export type RelationInclude = BaseRelationInclude<typeof AvailableIncludes>;
 
 	/**

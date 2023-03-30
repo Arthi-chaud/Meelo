@@ -83,6 +83,10 @@ describe('Settings Service', () => {
 			expectExceptionWhenParsing('settings-missing-metadata-source.json', MissingSettingsException);
 		});
 
+		it('should throw because a nested field is missing', async () => {
+			expectExceptionWhenParsing('settings-missing-nested-value.json', MissingSettingsException);
+		});
+
 		it('should throw because the RegExp array is empty', async () => {
 			expectExceptionWhenParsing('settings-empty-regex.json', InvalidSettingsFileException);
 		});

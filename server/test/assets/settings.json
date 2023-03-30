@@ -7,5 +7,9 @@
 	"metadata": {
 		"source": "embedded",
 		"order": "only"
+	},
+	"providers": {
+		"genius": { "apiKey": "azerty" },
+		"musicbrainz": {}
 	}
 }

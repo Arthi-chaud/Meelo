@@ -21,11 +21,14 @@ import type ReassignAlbumDTO from "./models/reassign-album.dto";
 import FileModule from "src/file/file.module";
 import AlbumService from "./album.service";
 import { expectedAlbumResponse, expectedArtistResponse, expectedReleaseResponse } from "test/expected-responses";
+import ProviderService from "src/providers/provider.service";
+import SettingsService from "src/settings/settings.service";
 
 describe('Album Controller', () => {
 	let dummyRepository: TestPrismaService;
 	let app: INestApplication;
 	let albumService: AlbumService;
+	let providerService: ProviderService;
 
 	beforeAll(async () => {
 		const module: TestingModule = await createTestingModule({
@@ -36,6 +39,9 @@ describe('Album Controller', () => {
 		dummyRepository = module.get(PrismaService);
 		albumService = module.get(AlbumService);
 		await dummyRepository.onModuleInit();
+		providerService = module.get(ProviderService);
+		module.get(SettingsService).loadFromFile();
+		await providerService.onModuleInit();
 	});
 
 	describe("Get Albums (GET /albums)", () => {
@@ -151,6 +157,35 @@ describe('Album Controller', () => {
 						...expectedAlbumResponse(dummyRepository.albumB1),
 						artist: expectedArtistResponse(dummyRepository.artistB)
 					})
+				});
+		});
+		it("should return album w/ external ID", async () => {
+			const provider = await dummyRepository.provider.findFirstOrThrow();
+			await dummyRepository.albumExternalId.create({
+				data: {
+					albumId: dummyRepository.albumA1.id,
+					providerId: provider.id,
+					value: '1234'
+				}
+			})
+			return request(app.getHttpServer())
+				.get(`/albums/${dummyRepository.albumA1.id}?with=externalIds`)
+				.expect(200)
+				.expect((res) => {
+					const album: Album = res.body
+					expect(album).toStrictEqual({
+						...expectedAlbumResponse(dummyRepository.albumA1),
+						externalIds: [{
+							provider: {
+								name: provider.name,
+								homepage: providerService.getProviderById(provider.id).getProviderHomepage(),
+								banner: `/illustrations/providers/${provider.name}/banner`,
+								icon: `/illustrations/providers/${provider.name}/icon`,
+							},
+							value: '1234',
+							url: providerService.getProviderById(provider.id).getAlbumURL('1234')
+						}]
+					});
 				});
 		});
 		it("Should include related artist (null)", () => {

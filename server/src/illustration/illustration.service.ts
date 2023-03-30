@@ -19,16 +19,14 @@ import type { IllustrationPath } from './models/illustration-path.model';
 import Jimp from 'jimp';
 import AlbumService from 'src/album/album.service';
 import { FileDoesNotExistException } from 'src/file-manager/file-manager.exceptions';
-import type FileQueryParameters from 'src/file/models/file.query-parameters';
-import FileService from 'src/file/file.service';
 import { Readable } from 'stream';
 import type { IllustrationDimensionsDto } from './models/illustration-dimensions.dto';
 import SettingsService from 'src/settings/settings.service';
 import glob from 'glob';
 import Logger from 'src/logger/logger';
-import FfmpegService from 'src/ffmpeg/ffmpeg.service';
 import ReleaseIllustrationService from 'src/release/release-illustration.service';
 import TrackIllustrationService from 'src/track/track-illustration.service';
+import { basename } from 'path';
 
 type IllustrationExtractStatus = 'extracted' | 'error' | 'already-extracted' | 'different-illustration';
 
@@ -41,11 +39,9 @@ export default class IllustrationService {
 		private releaseService: ReleaseService,
 		@Inject(forwardRef(() => AlbumService))
 		private albumService: AlbumService,
-		@Inject(forwardRef(() => FileService))
-		private fileService: FileService,
 		private settingsService: SettingsService,
 		private fileManagerService: FileManagerService,
-		private ffmpegService: FfmpegService,
+		@Inject(forwardRef(() => ReleaseIllustrationService))
 		private releaseIllustrationService: ReleaseIllustrationService,
 		private trackIllustrationService: TrackIllustrationService
 	) {}
@@ -66,7 +62,6 @@ export default class IllustrationService {
 	async extractTrackIllustration(
 		track: Track, fullTrackPath: string
 	): Promise<IllustrationPath | null> {
-		this.logger.log(`Extracting illustration from track '${track.name}'`);
 		const release: Release = await this.releaseService.get({ id: track.releaseId });
 		const album = await this.albumService.get(
 			{ id: release.albumId },
@@ -97,7 +92,6 @@ export default class IllustrationService {
 				: null);
 
 		if (illustration == null) {
-			this.logger.warn("No illustration to extract");
 			return null;
 		}
 		const illustrationBytes = await (await Jimp.read(illustration))
@@ -107,23 +101,23 @@ export default class IllustrationService {
 			const illustrationExtractionStatus = await this.saveIllustrationWithStatus(
 				illustrationBytes, path
 			);
+			const fileName = basename(track.name);
 
 			if (illustrationExtractionStatus === 'error') {
-				throw new IllustrationNotExtracted('Illustration extraction failed');
+				throw new IllustrationNotExtracted(`Extracting illustration from '${fileName}' failed`);
 			}
 			if (illustrationExtractionStatus === 'already-extracted') {
-				this.logger.log("Illustration was previously extracted");
+				this.logger.verbose(`Extracting illustration from '${fileName}' already done`);
 				return path;
 			}
 			if (illustrationExtractionStatus === 'extracted') {
-				this.logger.log("Illustration extracted successfully");
+				this.logger.verbose(`Extracting illustration from '${fileName}' successful`);
 				return path;
 			}
 			if (illustrationExtractionStatus === 'different-illustration') {
 				continue;
 			}
 		}
-		this.logger.warn("No illustration extracted");
 		return null;
 	}
 
@@ -182,7 +176,7 @@ export default class IllustrationService {
 	/**
 	 * Apply the illustration of a track on its source track
 	 */
-	async applyIllustrationOnFile(where: FileQueryParameters.WhereInput): Promise<void> {
+	/*async applyIllustrationOnFile(where: FileQueryParameters.WhereInput): Promise<void> {
 		const file = await this.fileService.get(where, { library: true, track: true });
 		const track: Track = file.track!;
 		const libraryPath = this.fileManagerService.getLibraryFullPath(file.library);
@@ -204,7 +198,7 @@ export default class IllustrationService {
 		} else {
 			this.logger.warn(`No illustration was applied to ${fullFilePath}`);
 		}
-	}
+	}*/
 
 	/**
 	 * Downloads an illustration from a URL, and stores it in the illustration file system
@@ -242,14 +236,14 @@ export default class IllustrationService {
 	 */
 	async streamIllustration(
 		sourceFilePath: string, as: string,
-		dimensions: IllustrationDimensionsDto, res: any
+		dimensions: IllustrationDimensionsDto, res: any, ext = '.jpg'
 	): Promise<StreamableFile> {
 		if (!this.fileManagerService.fileExists(sourceFilePath)) {
 			throw new NoIllustrationException("Illustration file not found");
 		}
 
 		res.set({
-			'Content-Disposition': `attachment; filename="${as}.jpg"`,
+			'Content-Disposition': `attachment; filename="${as}${ext}"`,
 		});
 		if (dimensions.width || dimensions.height) {
 			try {

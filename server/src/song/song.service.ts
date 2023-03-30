@@ -49,7 +49,7 @@ export default class SongService extends RepositoryService<
 		@Inject(forwardRef(() => TrackService))
 		private trackService: TrackService,
 		@Inject(forwardRef(() => GenreService))
-		private genreService: GenreService
+		private genreService: GenreService,
 	) {
 		super(prismaService.song);
 	}
