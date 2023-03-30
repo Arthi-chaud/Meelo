@@ -3968,12 +3968,7 @@ content-disposition@0.5.4:
   dependencies:
     safe-buffer "5.2.1"
 
-content-type@^1.0.4:
-  version "1.0.4"
-  resolved "https://registry.yarnpkg.com/content-type/-/content-type-1.0.4.tgz#e138cc75e040c727b1966fe5e5f8c9aee256fe3b"
-  integrity sha512-hIP3EEPs8tB9AT1L+NUqtwOAps4mk2Zob89MWXMHjHWg9milF/j4osnnQLXBCBFBk/tvIG/tUc9mOUJiPBhPXA==
-
-content-type@~1.0.4:
+content-type@^1.0.5, content-type@~1.0.4:
   version "1.0.5"
   resolved "https://registry.yarnpkg.com/content-type/-/content-type-1.0.5.tgz#8b773162656d1d1086784c8f23a54ce6d73d7918"
   integrity sha512-nTjqfcBFEipKdXCv4YDQWCfmcLZKm81ldF0pAopTvyrFGVbcR6P/VAAd5G7N+0tTr8QqiU0tFadD6FK4NtJwOA==
@@ -7475,13 +7470,13 @@ multer@1.4.4-lts.1:
     type-is "^1.6.4"
     xtend "^4.0.0"
 
-music-metadata@^7.12.3:
-  version "7.13.0"
-  resolved "https://registry.yarnpkg.com/music-metadata/-/music-metadata-7.13.0.tgz#796415621f274e17f5ec04d7224d5503f18157ef"
-  integrity sha512-EoDmAoK84Z9xarNEgjE7YQ4x7cIwHI9kOI3RdA2QlEHCsqBvBuBbIcP3vONGO/SBiPhXe5FF+IVAW+1T2owjEA==
+music-metadata@^7.13.4:
+  version "7.13.4"
+  resolved "https://registry.yarnpkg.com/music-metadata/-/music-metadata-7.13.4.tgz#17d2d3d894fdee9899cc5b08110f790788758f7e"
+  integrity sha512-eRRoEMhhYdth2Ws24FmkvIqrtkIBE9sqjHbrRNpkg2Iux3zc37PQKRv2/r/mTtELb7XlB1uWC2UcKKX7BzNMGA==
   dependencies:
     "@tokenizer/token" "^0.3.0"
-    content-type "^1.0.4"
+    content-type "^1.0.5"
     debug "^4.3.4"
     file-type "^16.5.4"
     media-typer "^1.1.0"

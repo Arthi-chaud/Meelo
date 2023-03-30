@@ -51,7 +51,7 @@
     "jimp": "^0.16.1",
     "md5-file": "^5.0.0",
     "mime": "^3.0.0",
-    "music-metadata": "^7.12.3",
+    "music-metadata": "^7.13.4",
     "musicbrainz-api": "^0.10.2",
     "mysql2": "^2.3.3",
     "normalize-path": "^3.0.0",
