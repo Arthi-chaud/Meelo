@@ -45,12 +45,17 @@ const topSongsQuery = (artistSlugOrId: string | number) => API.getArtistSongs(
 	{ sortBy: 'playCount', order: 'desc' }
 );
 
+const artistQuery = (artistSlugOrId: string | number) => API.getArtist(
+	artistSlugOrId,
+	['externalIds']
+);
+
 export const getServerSideProps = prepareSSR((context) => {
 	const artistIdentifier = getSlugOrId(context.params);
 
 	return {
 		additionalProps: { artistIdentifier },
-		queries: [API.getArtist(artistIdentifier),],
+		queries: [artistQuery(artistIdentifier)],
 		infiniteQueries: [
 			latestAlbumsQuery(artistIdentifier),
 			videosQuery(artistIdentifier),
@@ -65,7 +70,7 @@ const ArtistPage = (
 	const router = useRouter();
 
 	artistIdentifier ??= getSlugOrId(router.query);
-	const artist = useQuery(API.getArtist, artistIdentifier);
+	const artist = useQuery(artistQuery, artistIdentifier);
 	const latestAlbums = useInfiniteQuery(latestAlbumsQuery, artistIdentifier);
 	const videos = useInfiniteQuery(videosQuery, artistIdentifier);
 	const topSongs = useInfiniteQuery(topSongsQuery, artistIdentifier);
@@ -168,6 +173,22 @@ const ArtistPage = (
 							formatSubtitle={(item) => formatDuration(item.duration).toString()}
 						/>) ?? []
 					}/>
+				</Grid>
+			</>
+			}
+			{ artist.data.externalIds.length != 0 && <>
+				<Grid container item spacing={1}>
+					<Grid item sx={{ paddingRight: 3 }}>
+						<SectionHeader heading="More on:"/>
+					</Grid>
+					{ artist.data.externalIds.map(({ provider, url }) =>
+						<Grid item key={provider.name} sx={{ display: 'flex' }}>
+							<Link href={url}>
+								<Button variant="outlined">
+									{ provider.name }
+								</Button>
+							</Link>
+						</Grid>) ?? []}
 				</Grid>
 			</>
 			}

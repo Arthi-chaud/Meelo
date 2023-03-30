@@ -1,3 +1,4 @@
+import ExternalId from "./external-id";
 import Illustration from "./illustration";
 import Resource from "./resource";
 import * as yup from 'yup';
@@ -16,6 +17,18 @@ const Artist = Resource.concat(Illustration).concat(yup.object({
 
 type Artist = yup.InferType<typeof Artist>;
 
+export type ArtistInclude = 'externalIds';
+
+const ArtistWithRelations = <Selection extends ArtistInclude | never = never>(
+	relation: Selection[]
+) => Artist.concat(yup.object({
+		artist: Artist.required().nullable(),
+		externalIds: yup.array(ExternalId.required()).required()
+	}).pick(relation));
+
+type ArtistWithRelations<Selection extends ArtistInclude | never = never> =
+	yup.InferType<ReturnType<typeof ArtistWithRelations<Selection>>>
+
 export default Artist;
 
 export const ArtistSortingKeys = [
@@ -24,3 +37,4 @@ export const ArtistSortingKeys = [
 	'songCount'
 ] as const;
 
+export { ArtistWithRelations };

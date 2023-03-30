@@ -1,7 +1,9 @@
 import {
 	AlbumInclude, AlbumSortingKeys, AlbumType, AlbumWithRelations
 } from "../models/album";
-import Artist, { ArtistSortingKeys } from "../models/artist";
+import Artist, {
+	ArtistInclude, ArtistSortingKeys, ArtistWithRelations
+} from "../models/artist";
 import Genre from "../models/genre";
 import Library from "../models/library";
 import PaginatedResponse, { PaginationParameters } from "../models/pagination";
@@ -839,16 +841,17 @@ export default class API {
 	 * @param slugOrId the id of the artist
 	 * @returns A query for an Artist
 	 */
-	static getArtist(
+	static getArtist<I extends ArtistInclude>(
 		slugOrId: string | number,
-	): Query<Artist> {
+		include?: I[]
+	): Query<ArtistWithRelations<I>> {
 		return {
-			key: ['artist', slugOrId],
+			key: ['artist', slugOrId, ...API.formatIncludeKeys(include)],
 			exec: () => API.fetch({
 				route: `/artists/${slugOrId}`,
 				errorMessage: 'Artist could not be loaded',
-				parameters: { },
-				validator: Artist
+				parameters: { include },
+				validator: ArtistWithRelations(include ?? [])
 			})
 		};
 	}
