@@ -19,20 +19,28 @@ import { LyricsModule } from "src/lyrics/lyrics.module";
 import SetupApp from "test/setup-app";
 import { SongWithVideoResponse } from "./models/song-with-video.response";
 import { expectedSongResponse, expectedArtistResponse, expectedTrackResponse, expectedReleaseResponse } from "test/expected-responses";
+import ProvidersModule from "src/providers/providers.module";
+import ProviderService from "src/providers/provider.service";
+import SettingsModule from "src/settings/settings.module";
+import SettingsService from "src/settings/settings.service";
 
 describe('Song Controller', () => {
 	let dummyRepository: TestPrismaService;
 	let app: INestApplication;
 	let songService: SongService;
+	let providerService: ProviderService;
 	
 	beforeAll(async () => {
 		const module: TestingModule = await createTestingModule({
-			imports: [PrismaModule, AlbumModule, ArtistModule, ReleaseModule, TrackModule, IllustrationModule, SongModule, MetadataModule, GenreModule, LyricsModule],
+			imports: [PrismaModule, AlbumModule, ArtistModule, ReleaseModule, TrackModule, IllustrationModule, SongModule, MetadataModule, GenreModule, LyricsModule, ProvidersModule, SettingsModule],
 		}).overrideProvider(PrismaService).useClass(TestPrismaService).compile();
 		app = await SetupApp(module);
 		dummyRepository = module.get(PrismaService);
 		songService = module.get(SongService);
+		providerService = module.get(ProviderService);
+		module.get(SettingsService).loadFromFile();
 		await dummyRepository.onModuleInit();
+		await providerService.onModuleInit();
 	});
 
 	describe("Get Songs (GET /songs)", () => {
@@ -174,6 +182,35 @@ describe('Song Controller', () => {
 					expect(song).toStrictEqual({
 						...expectedSongResponse(dummyRepository.songA1),
 						artist: expectedArtistResponse(dummyRepository.artistA)
+					});
+				});
+		});
+		it("should return song w/ external ID", async () => {
+			const provider = await dummyRepository.provider.findFirstOrThrow();
+			await dummyRepository.songExternalId.create({
+				data: {
+					songId: dummyRepository.songA1.id,
+					providerId: provider.id,
+					value: '1234'
+				}
+			})
+			return request(app.getHttpServer())
+				.get(`/songs/${dummyRepository.songA1.id}?with=externalIds`)
+				.expect(200)
+				.expect((res) => {
+					const song: Song = res.body
+					expect(song).toStrictEqual({
+						...expectedSongResponse(dummyRepository.songA1),
+						externalIds: [{
+							provider: {
+								name: provider.name,
+								homepage: providerService.getProviderById(provider.id).getProviderHomepage(),
+								banner: `/illustrations/providers/${provider.name}/banner`,
+								icon: `/illustrations/providers/${provider.name}/icon`,
+							},
+							value: '1234',
+							url: providerService.getProviderById(provider.id).getSongURL('1234')
+						}]
 					});
 				});
 		});
@@ -454,7 +491,7 @@ describe('Song Controller', () => {
 		});
 	});
 
-	describe("Get Song's Versions (GET /songs/:id/versions", () => {
+	describe("Get Song's Versions (GET /songs/:id/versions)", () => {
 		it("should return the song's versions", async () => {
 			const version = await songService.create({ name: 'My Other Song (Remix)', artist: { id: dummyRepository.artistA.id }, genres: [] })
 			return request(app.getHttpServer())
