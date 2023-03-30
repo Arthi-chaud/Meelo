@@ -6,7 +6,7 @@ jobs:
   run_unit_tests_front:
     if: github.event_name == 'push' || github.event.pull_request.head.repo.full_name != github.repository
     runs-on: ubuntu-latest
-    container: node:18
+    container: node:18-alpine
     defaults:
       run:
         working-directory: ./front
@@ -25,7 +25,7 @@ jobs:
   run_unit_tests_back:
     if: github.event_name == 'push' || github.event.pull_request.head.repo.full_name != github.repository
     runs-on: ubuntu-latest
-    container: node:18
+    container: node:18-alpine
     defaults:
       run:
         working-directory: ./server
@@ -56,11 +56,14 @@ jobs:
         run: yarn test:db:migrate
       - name: Run unit tests with coverage
         uses: nick-fields/retry@v2
+        env:
+          NODE_OPTIONS: "--max_old_space_size=4096"
         with:
+          shell: sh 
           timeout_minutes: 10
           max_attempts: 3
           retry_wait_seconds: 30
-          command: yarn --cwd server test --coverage
+          command: yarn --cwd server test --coverage --ci --detectOpenHandles
       - name: Upload Unit Tests artifact
         if: ${{ always() }}
         uses: actions/upload-artifact@v3
