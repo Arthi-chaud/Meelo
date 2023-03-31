@@ -11,7 +11,7 @@ This project is made by a music collector, and for music collectors. Its goal is
 
 ## Getting Started
 
-- [Setup Instructions](https://arthi-chaud.github.io/Meelo/setting-up/)
+- [Setup Instructions](https://arthi-chaud.github.io/Meelo/setup/requirements/)
 
 ## Features
 
