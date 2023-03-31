@@ -1,4 +1,6 @@
-import { AutoMode, CleaningServices, CloudSyncOutlined } from "@mui/icons-material";
+import {
+	AutoMode, CleaningServices, CloudSyncOutlined
+} from "@mui/icons-material";
 import toast from "react-hot-toast";
 import API from "../../api/api";
 import LibraryTaskResponse from "../../models/library-task-response";
