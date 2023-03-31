@@ -97,8 +97,7 @@ export default class TasksService {
 		for (const candidate of candidates) {
 			try {
 				newlyRegistered.push(await this.registerFile(candidate, parentLibrary));
-			} catch (error){
-				this.logger.error(error.message);
+			} catch (error) {
 				continue;
 			}
 		}
@@ -118,7 +117,11 @@ export default class TasksService {
 	): Promise<File> {
 		this.logger.log(`${parentLibrary.slug} library: Registration of ${filePath}`);
 		const fullFilePath = `${this.fileManagerService.getLibraryFullPath(parentLibrary)}/${filePath}`;
-		const fileMetadata = await this.metadataService.parseMetadata(fullFilePath);
+		const fileMetadata = await this.metadataService.parseMetadata(fullFilePath).catch((err) => {
+			this.logger.error(`${parentLibrary.slug} library: Registration of ${filePath} failed`);
+			this.logger.error(err);
+			throw err;
+		});
 		const registeredFile = await this.fileService.registerFile(
 			filePath, parentLibrary, registrationDate
 		);
@@ -144,7 +147,8 @@ export default class TasksService {
 				});
 		} catch (err) {
 			await this.fileService.delete({ id: registeredFile.id });
-			this.logger.warn(`${parentLibrary.slug} library: Registration of ${filePath} failed because of bad metadata`);
+			this.logger.error(`${parentLibrary.slug} library: Registration of ${filePath} failed`);
+			this.logger.error(err);
 			throw err;
 		}
 		return registeredFile;

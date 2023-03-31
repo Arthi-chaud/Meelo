@@ -2,11 +2,12 @@ import {
 	Inject, Injectable, forwardRef
 } from '@nestjs/common';
 import FileManagerService from 'src/file-manager/file-manager.service';
-import type Metadata from './models/metadata';
+import Metadata from './models/metadata';
 import mm, { type IAudioMetadata } from 'music-metadata';
 import { FileDoesNotExistException, FileNotReadableException } from 'src/file-manager/file-manager.exceptions';
 import {
-	FileParsingException, MissingMetadataFieldException, PathParsingException
+	BadMetadataException,
+	FileParsingException, PathParsingException
 } from './metadata.exceptions';
 import SettingsService from 'src/settings/settings.service';
 import TrackService from 'src/track/track.service';
@@ -18,10 +19,8 @@ import ArtistService from 'src/artist/artist.service';
 import type TrackQueryParameters from 'src/track/models/track.query-parameters';
 import compilationAlbumArtistKeyword from 'src/utils/compilation';
 import GenreService from 'src/genre/genre.service';
-import type FileQueryParameters from 'src/file/models/file.query-parameters';
-import FileService from 'src/file/file.service';
 import { File, Track } from 'src/prisma/models';
-import FfmpegService from 'src/ffmpeg/ffmpeg.service';
+import { validate } from 'class-validator';
 
 @Injectable()
 export default class MetadataService {
@@ -39,10 +38,7 @@ export default class MetadataService {
 		private settingsService: SettingsService,
 		@Inject(forwardRef(() => GenreService))
 		private genreService: GenreService,
-		@Inject(forwardRef(() => FileService))
-		private fileService: FileService,
 		private fileManagerService: FileManagerService,
-		private ffmpegService: FfmpegService,
 	) {}
 
 	/**
@@ -54,13 +50,9 @@ export default class MetadataService {
 		metadata : Metadata,
 		file: File
 	): Promise<Track> {
-		const genres = metadata.genres ? await Promise.all(
+		const genres = await Promise.all(
 			metadata.genres.map((genre) => this.genreService.getOrCreate({ name: genre }))
-		) : [];
-
-		if (!metadata.compilation && !metadata.albumArtist && !metadata.artist) {
-			throw new MissingMetadataFieldException('Album Artist / Artist');
-		}
+		);
 		const albumArtist = !metadata.compilation
 			? await this.artistService.getOrCreate({
 				name: metadata.albumArtist ?? metadata.artist!,
@@ -68,7 +60,7 @@ export default class MetadataService {
 			})
 			: undefined;
 		const songArtist = await this.artistService.getOrCreate({
-			name: metadata.artist ?? metadata.albumArtist!,
+			name: metadata.artist,
 			registeredAt: file.registerDate
 		});
 		const song = await this.songService.getOrCreate({
@@ -85,24 +77,24 @@ export default class MetadataService {
 			{ id: song.id }
 		);
 		const album = await this.albumService.getOrCreate({
-			name: this.removeReleaseExtension(metadata.album ?? metadata.release!),
+			name: this.removeReleaseExtension(metadata.album),
 			artist: albumArtist ? { id: albumArtist?.id } : undefined,
 			registeredAt: file.registerDate
 		}, { releases: true });
 		const release = await this.releaseService.getOrCreate({
-			name: metadata.release ?? metadata.album!,
+			name: metadata.release,
 			releaseDate: metadata.releaseDate,
 			album: { id: album.id },
 			registeredAt: file.registerDate
 		}, { album: true });
 		const track: TrackQueryParameters.CreateInput = {
-			name: metadata.name!,
+			name: metadata.name,
 			discIndex: metadata.discIndex ?? null,
 			trackIndex: metadata.index ?? null,
-			type: metadata.type!,
-			bitrate: Math.floor(metadata.bitrate ?? 0),
+			type: metadata.type,
+			bitrate: Math.floor(metadata.bitrate),
 			ripSource: null,
-			duration: Math.floor(metadata.duration ?? 0),
+			duration: Math.floor(metadata.duration),
 			sourceFile: { id: file.id },
 			release: { id: release.id },
 			song: { id: song.id },
@@ -132,20 +124,26 @@ export default class MetadataService {
 		const fileMetadata: Metadata = await this.parseMetadataFromFile(filePath);
 		const pathMetadata: Metadata = this.parseMetadataFromPath(filePath);
 		const settings = this.settingsService.settingsValues;
+		// eslint-disable-next-line init-declarations
+		let metadata: Metadata;
 
 		pathMetadata.duration = fileMetadata.duration;
 		pathMetadata.type = fileMetadata.type;
 		pathMetadata.bitrate = fileMetadata.bitrate;
 		if (settings.metadata.order == "only") {
 			if (settings.metadata.source == "path") {
-				return pathMetadata;
+				metadata = pathMetadata;
+			} else {
+				metadata = fileMetadata;
 			}
-			return fileMetadata;
+		} else {
+			if (settings.metadata.source == "path") {
+				metadata = this.mergeMetadata(pathMetadata, fileMetadata);
+			} else {
+				metadata = this.mergeMetadata(fileMetadata, pathMetadata);
+			}
 		}
-		if (settings.metadata.source == "path") {
-			return this.mergeMetadata(pathMetadata, fileMetadata);
-		}
-		return this.mergeMetadata(fileMetadata, pathMetadata);
+		return this.sanitizeAndValidateMetadata(metadata);
 	}
 
 	/**
@@ -186,19 +184,19 @@ export default class MetadataService {
 			const groups = matchingRegex.groups!;
 			const isCompilation = groups['AlbumArtist']?.toLocaleLowerCase() === compilationAlbumArtistKeyword ||
 			groups['Artist']?.toLocaleLowerCase() === compilationAlbumArtistKeyword;
+			const metadata = new Metadata();
 
-			return {
-				compilation: isCompilation,
-				albumArtist: isCompilation ? undefined : groups['AlbumArtist'] ?? undefined,
-				artist: groups['Artist'] ?? undefined,
-				release: groups['Release'] ?? undefined,
-				album: groups['Album'] ?? undefined,
-				releaseDate: groups['Year'] ? new Date(groups['Year']) : undefined,
-				discIndex: groups['Disc'] ? parseInt(groups['Disc']) : undefined,
-				index: groups['Index'] ? parseInt(groups['Index']) : undefined,
-				name: groups['Track'],
-				genres: groups['Genre'] ? [groups['Genre']] : undefined
-			};
+			metadata.compilation = isCompilation,
+			metadata.albumArtist = isCompilation ? undefined : groups['AlbumArtist'];
+			metadata.artist = groups['Artist'];
+			metadata.release = groups['Release'];
+			metadata.album = groups['Album'];
+			metadata.releaseDate = groups['Year'] ? new Date(groups['Year']) : undefined;
+			metadata.discIndex = groups['Disc'] ? parseInt(groups['Disc']) : undefined;
+			metadata.index = groups['Index'] ? parseInt(groups['Index']) : undefined;
+			metadata.name = groups['Track'];
+			metadata.genres = groups['Genre'] ? [groups['Genre']] : [];
+			return metadata;
 		} catch {
 			throw new PathParsingException(filePath);
 		}
@@ -206,28 +204,30 @@ export default class MetadataService {
 
 	private buildMetadataFromRaw(rawMetadata: IAudioMetadata): Metadata {
 		const isVideo: boolean = rawMetadata.format.trackInfo.length > 1;
+		const metadata = new Metadata();
 
-		return {
-			genres: rawMetadata.common.genre,
-			compilation: rawMetadata.common.compilation ?? false,
-			artist: rawMetadata.common.artist,
-			albumArtist: rawMetadata.common.compilation
-				? undefined
-				: rawMetadata.common.albumartist,
-			album: rawMetadata.common.album,
-			release: rawMetadata.common.album,
-			name: rawMetadata.common.title,
-			index: rawMetadata.common.track.no ?? undefined,
-			discIndex: rawMetadata.common.disk.no ?? undefined,
-			bitrate: rawMetadata.format.bitrate
-				? Math.floor(rawMetadata.format.bitrate / 1000)
-				: undefined,
-			duration: rawMetadata.format.duration
-				? Math.floor(rawMetadata.format.duration)
-				: undefined,
-			releaseDate: rawMetadata.common.date ? new Date(rawMetadata.common.date) : undefined,
-			type: isVideo ? TrackType.Video : TrackType.Audio
-		};
+		metadata.genres = rawMetadata.common.genre ?? [];
+		metadata.compilation = rawMetadata.common.compilation ?? false;
+		metadata.artist = rawMetadata.common.artist!;
+		metadata.albumArtist = rawMetadata.common.compilation
+			? undefined
+			: rawMetadata.common.albumartist;
+		metadata.album = rawMetadata.common.album!;
+		metadata.release = rawMetadata.common.album!;
+		metadata.name = rawMetadata.common.title!;
+		metadata.index = rawMetadata.common.track.no ?? undefined;
+		metadata.discIndex = rawMetadata.common.disk.no ?? undefined;
+		metadata.bitrate = rawMetadata.format.bitrate
+			? Math.floor(rawMetadata.format.bitrate / 1000)
+			: undefined!;
+		metadata.duration = rawMetadata.format.duration
+			? Math.floor(rawMetadata.format.duration)
+			: undefined!;
+		metadata.releaseDate = rawMetadata.common.date
+			? new Date(rawMetadata.common.date)
+			: undefined;
+		metadata.type = isVideo ? TrackType.Video : TrackType.Audio;
+		return metadata;
 	}
 
 	/**
@@ -237,27 +237,45 @@ export default class MetadataService {
 	 * @returns the merged metadata
 	 */
 	private mergeMetadata(metadata1: Metadata, metadata2: Metadata): Metadata {
-		return <Metadata>{
-			genres: metadata1.genres ?? metadata2.genres,
-			compilation: metadata1.compilation ?? metadata2.compilation,
-			artist: metadata1.artist ?? metadata2.artist,
-			albumArtist: metadata1.albumArtist ?? metadata2.albumArtist,
-			album: metadata1.album ?? metadata2.album,
-			release: metadata1.release ?? metadata2.release,
-			name: metadata1.name ?? metadata2.name,
-			releaseDate: metadata1.releaseDate ?? metadata2.releaseDate,
-			index: metadata1.index ?? metadata2.index,
-			discIndex: metadata1.discIndex ?? metadata2.discIndex,
-			bitrate: metadata1.bitrate ?? metadata2.bitrate,
-			duration: metadata1.duration ?? metadata2.duration,
-			type: metadata1.type ?? metadata2.type,
-		};
+		const mergedMetadata = metadata1;
+
+		mergedMetadata.genres = (mergedMetadata.genres ?? []).concat(metadata2.genres ?? []);
+		mergedMetadata.compilation ??= metadata2.compilation;
+		mergedMetadata.artist ??= metadata2.artist;
+		mergedMetadata.albumArtist ??= metadata2.albumArtist;
+		mergedMetadata.album ??= metadata2.album;
+		mergedMetadata.release ??= metadata2.release;
+		mergedMetadata.name ??= metadata2.name;
+		mergedMetadata.releaseDate ??= metadata2.releaseDate;
+		mergedMetadata.index ??= metadata2.index;
+		mergedMetadata.discIndex ??= metadata2.discIndex;
+		mergedMetadata.bitrate ??= metadata2.bitrate;
+		mergedMetadata.duration ??= metadata2.duration;
+		mergedMetadata.type ??= metadata2.type;
+		return mergedMetadata;
+	}
+
+	private async sanitizeAndValidateMetadata(metadata: Metadata): Promise<Metadata> {
+		metadata.album ??= metadata.release!;
+		metadata.release ??= metadata.album!;
+		metadata.artist ??= metadata.albumArtist!;
+		if (!metadata.compilation && !metadata.albumArtist && !metadata.artist) {
+			throw new BadMetadataException('Missing Field Album Artist / Artist');
+		}
+		const errors = await validate(metadata);
+
+		if (errors.length != 0) {
+			throw new BadMetadataException(
+				errors.map((error) => JSON.stringify(error.constraints ?? {})).join('\n')
+			);
+		}
+		return metadata;
 	}
 
 	/**
 	 * Apply metadata on a file found in the database
 	 */
-	async applyMetadataOnFile(where: FileQueryParameters.WhereInput): Promise<void> {
+	/*async applyMetadataOnFile(where: FileQueryParameters.WhereInput): Promise<void> {
 		const file = await this.fileService.get(where, { library: true });
 		const track = await this.trackService.get({ sourceFile: where });
 		const song = await this.songService.get({ id: track.songId }, { genres: true });
@@ -284,7 +302,7 @@ export default class MetadataService {
 		};
 
 		this.ffmpegService.applyMetadata(fullFilePath, metadata);
-	}
+	}*/
 
 	/**
 	 * Removes an extension from a release's name
