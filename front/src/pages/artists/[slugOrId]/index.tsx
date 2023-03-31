@@ -1,5 +1,5 @@
 import {
-	Box, Button, Grid, Typography
+	Box, Button, Divider, Grid, Typography
 } from "@mui/material";
 import { useRouter } from "next/router";
 import API from "../../../api/api";
@@ -22,6 +22,7 @@ import getYear from "../../../utils/getYear";
 import SectionHeader from "../../../components/section-header";
 import VideoTile from "../../../components/tile/video-tile";
 import formatDuration from "../../../utils/formatDuration";
+import ExternalIdBadge from "../../../components/external-id-badge";
 
 // Number of Song item in the 'Top Song' section
 const songListSize = 6;
@@ -177,17 +178,14 @@ const ArtistPage = (
 			</>
 			}
 			{ artist.data.externalIds.length != 0 && <>
-				<Grid container item spacing={1}>
+				<Divider/>
+				<Grid container item spacing={1} sx={{ alignItems: 'center' }}>
 					<Grid item sx={{ paddingRight: 3 }}>
-						<SectionHeader heading="More on:"/>
+						<SectionHeader heading="External Links"/>
 					</Grid>
-					{ artist.data.externalIds.map(({ provider, url }) =>
-						<Grid item key={provider.name} sx={{ display: 'flex' }}>
-							<Link href={url}>
-								<Button variant="outlined">
-									{ provider.name }
-								</Button>
-							</Link>
+					{ artist.data.externalIds.map((externalId) =>
+						<Grid item key={externalId.provider.name}>
+							<ExternalIdBadge externalId={externalId}/>
 						</Grid>) ?? []}
 				</Grid>
 			</>
