@@ -1,6 +1,6 @@
 import {
 	Button, Container, Divider, Fade, Grid, IconButton,
-	ListSubheader, Typography, useTheme
+	ListSubheader, Stack, Typography, useTheme
 } from "@mui/material";
 import { Box } from "@mui/system";
 import { useRouter } from "next/router";
@@ -30,6 +30,7 @@ import TileRow from "../../components/tile-row";
 import { TrackWithRelations } from "../../models/track";
 import VideoTile from "../../components/tile/video-tile";
 import getYear from "../../utils/getYear";
+import ExternalIdBadge from "../../components/external-id-badge";
 
 export const getServerSideProps = prepareSSR((context) => {
 	const releaseIdentifier = getSlugOrId(context.params);
@@ -80,6 +81,7 @@ const ReleasePage = (
 	const release = useQuery((id) => API.getRelease(id, ['album']), releaseIdentifier);
 	const artistId = release.data?.album?.artistId;
 
+	const album = useQuery((id) => API.getAlbum(id, ['externalIds']), release.data?.albumId);
 	const tracklist = useQuery((id) => API.getReleaseTrackList(id, ['song']), releaseIdentifier);
 	const albumArtist = useQuery(API.getArtist, artistId ?? undefined);
 	const albumGenres = useInfiniteQuery(API.getAlbumGenres, release.data?.albumId);
@@ -104,7 +106,7 @@ const ReleasePage = (
 		}
 	}, [tracklist.data]);
 	// eslint-disable-next-line no-extra-parens
-	if (!release.data || (artistId && !albumArtist.data) || !trackList) {
+	if (!release.data || !album.data || (artistId && !albumArtist.data) || !trackList) {
 		return <LoadingPage/>;
 	}
 	return (
@@ -255,6 +257,16 @@ const ReleasePage = (
 				<TileRow tiles={albumVideos.data?.map((video, videoIndex) =>
 					<VideoTile key={videoIndex} video={video}/>) ?? []}
 				/>
+			</RelatedContentSection>
+			<RelatedContentSection
+				display={album.data.externalIds.length != 0}
+				title={"External Links"}
+			>
+				<Stack spacing={2}>
+					{album.data.externalIds.map((externalId) =>
+						<ExternalIdBadge key={externalId.provider.name} externalId={externalId}/>)
+					}
+				</Stack>
 			</RelatedContentSection>
 		</Container>
 	);
