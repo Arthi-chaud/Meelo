@@ -102,7 +102,6 @@ export default class TasksService {
 			}
 		}
 		this.logger.log(`${parentLibrary.slug} library: ${newlyRegistered.length} new files registered`);
-		await this.fetchExternalMetadata();
 		return newlyRegistered;
 	}
 
@@ -222,7 +221,6 @@ export default class TasksService {
 		}
 		this.logger.log(`'${library.slug}' library: Refreshed ${updatedFiles.length} files metadata`);
 		await this.housekeeping();
-		await this.fetchExternalMetadata();
 		return updatedFiles;
 	}
 

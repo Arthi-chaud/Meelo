@@ -11,6 +11,7 @@ import Library from "../../models/library";
 import AdminGrid from "../admin-grid";
 import {
 	CleanAllLibrariesAction, CleanLibraryAction,
+	FetchExternalMetadata,
 	RefreshMetadataLibraryAction,
 	ScanAllLibrariesAction, ScanLibraryAction
 } from "../actions/library-task";
@@ -41,6 +42,7 @@ const LibrariesSettings = () => {
 	const queryClient = useQueryClient();
 	const scanAllLibaries = ScanAllLibrariesAction;
 	const cleanAllLibaries = CleanAllLibrariesAction;
+	const fetchMetadata = FetchExternalMetadata;
 	const confirm = useConfirm();
 	const deletionMutation = useMutation((libraryId: number) =>
 		API.deleteLibrary(libraryId)
@@ -87,6 +89,13 @@ const LibrariesSettings = () => {
 					startIcon={scanAllLibaries.icon} onClick={scanAllLibaries.onClick}
 				>
 					{scanAllLibaries.label}
+				</Button>
+			</Grid>
+			<Grid item>
+				<Button variant='outlined'
+					startIcon={fetchMetadata.icon} onClick={fetchMetadata.onClick}
+				>
+					{fetchMetadata.label}
 				</Button>
 			</Grid>
 		</Grid>
