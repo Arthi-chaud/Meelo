@@ -42,7 +42,7 @@ describe('Metadata Service', () => {
 				'/data/My Album Artist/My Album (2006)/1-02 My Track (My Artist).m4a'
 			);
 			
-			expect(parsedValues).toStrictEqual(<Metadata>{
+			expect(parsedValues).toMatchObject({
 				albumArtist: 'My Album Artist',
 				artist: 'My Artist',
 				compilation: false,
@@ -51,7 +51,7 @@ describe('Metadata Service', () => {
 				releaseDate: new Date('2006'),
 				discIndex: 1,
 				index: 2,
-				genres: undefined,
+				genres: [],
 				name: 'My Track'
 			});
 		});
@@ -61,7 +61,7 @@ describe('Metadata Service', () => {
 				'/data/Compilations/My Album (2006)/1-02 My Track.m4a'
 			);
 			
-			expect(parsedValues).toStrictEqual(<Metadata>{
+			expect(parsedValues).toMatchObject({
 				artist: undefined,
 				albumArtist: undefined,
 				compilation: true,
@@ -70,7 +70,7 @@ describe('Metadata Service', () => {
 				releaseDate: new Date('2006'),
 				discIndex: 1,
 				index: 2,
-				genres: undefined,
+				genres: [],
 				name: 'My Track'
 			});
 		});
@@ -82,7 +82,7 @@ describe('Metadata Service', () => {
 				'test/assets/dreams.m4a'
 			);
 			
-			expect(parsedValues).toStrictEqual(<Metadata>{
+			expect(parsedValues).toMatchObject({
 				compilation: false,
 				artist: 'My Artist',
 				albumArtist: 'My Album Artist',

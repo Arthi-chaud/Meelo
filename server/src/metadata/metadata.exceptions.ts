@@ -19,9 +19,9 @@ export class MissingMetadataException extends ParsingException {
 	}
 }
 
-export class MissingMetadataFieldException extends ParsingException {
-	constructor(missingField: string) {
-		super(`Parsing file failed because of missing field: ${missingField}.`);
+export class BadMetadataException extends ParsingException {
+	constructor(error: string) {
+		super(`Bad Metadata: ${error}.`);
 	}
 }
 

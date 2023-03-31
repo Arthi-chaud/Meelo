@@ -1,69 +1,111 @@
-import type { TrackType } from "@prisma/client";
+import { TrackType } from "@prisma/client";
+import {
+	IsBoolean, IsDate, IsDefined, IsEnum,
+	IsNotEmpty, IsNumber, IsOptional, IsPositive, IsString
+} from "class-validator";
 
 /**
  * Extracted metadata from a track file
  */
-interface Metadata {
+export default class Metadata {
 	/**
 	 * If the track is from a compilation album
 	 */
-	compilation?: boolean;
+	@IsBoolean()
+	@IsDefined()
+	compilation: boolean;
+
 	/**
 	 * Name of the artist of the track
 	 */
-	artist?: string;
+	@IsString()
+	@IsNotEmpty()
+	@IsDefined()
+	artist: string;
 
 	/**
 	 * Name of the artist of the parent album
 	 */
+	@IsString()
+	@IsNotEmpty()
+	@IsOptional()
 	albumArtist?: string;
 
 	/**
 	 * Name of the album of the track
 	 */
-	album?: string;
+	@IsString()
+	@IsNotEmpty()
+	@IsDefined()
+	album: string;
 
 	/**
 	 * Name of the release of the track
 	 */
-	release?: string;
+	@IsString()
+	@IsNotEmpty()
+	@IsDefined()
+	release: string;
 
 	/**
 	 * Name of the track
 	 */
-	name?: string;
+	@IsString()
+	@IsNotEmpty()
+	@IsDefined()
+	name: string;
 
 	/**
 	 * Release date of the track
 	 */
+	@IsDate()
+	@IsDefined()
+	@IsOptional()
 	releaseDate?: Date;
+
 	/**
 	 * Index of the track on the disc
 	 */
+	@IsPositive()
+	@IsNumber()
+	@IsOptional()
 	index?: number;
 
 	/**
 	 * Index of the disc the track is on
 	 */
+	@IsPositive()
+	@IsNumber()
+	@IsOptional()
 	discIndex?: number;
 
 	/**
 	 * Bitrate of the file
 	 */
-	bitrate?: number;
+	@IsPositive()
+	@IsNumber()
+	@IsDefined()
+	bitrate: number;
 
 	/**
 	 * Duration in seconds of the track
 	 */
-	duration?: number;
+	@IsPositive()
+	@IsNumber()
+	@IsDefined()
+	duration: number;
+
 	/**
 	 * Type of the track
 	 */
-	type?: TrackType;
+	@IsEnum(TrackType)
+	@IsDefined()
+	type: TrackType;
+
 	/**
 	 * Genres of the track
 	 */
-	genres?: string[];
+	@IsString({ each: true })
+	@IsDefined()
+	genres: string[];
 }
-
-export default Metadata;
