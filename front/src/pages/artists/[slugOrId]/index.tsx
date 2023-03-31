@@ -1,5 +1,5 @@
 import {
-	Box, Button, Grid, Typography
+	Box, Button, Divider, Grid, Typography
 } from "@mui/material";
 import { useRouter } from "next/router";
 import API from "../../../api/api";
@@ -22,6 +22,7 @@ import getYear from "../../../utils/getYear";
 import SectionHeader from "../../../components/section-header";
 import VideoTile from "../../../components/tile/video-tile";
 import formatDuration from "../../../utils/formatDuration";
+import ExternalIdBadge from "../../../components/external-id-badge";
 
 // Number of Song item in the 'Top Song' section
 const songListSize = 6;
@@ -45,12 +46,17 @@ const topSongsQuery = (artistSlugOrId: string | number) => API.getArtistSongs(
 	{ sortBy: 'playCount', order: 'desc' }
 );
 
+const artistQuery = (artistSlugOrId: string | number) => API.getArtist(
+	artistSlugOrId,
+	['externalIds']
+);
+
 export const getServerSideProps = prepareSSR((context) => {
 	const artistIdentifier = getSlugOrId(context.params);
 
 	return {
 		additionalProps: { artistIdentifier },
-		queries: [API.getArtist(artistIdentifier),],
+		queries: [artistQuery(artistIdentifier)],
 		infiniteQueries: [
 			latestAlbumsQuery(artistIdentifier),
 			videosQuery(artistIdentifier),
@@ -65,7 +71,7 @@ const ArtistPage = (
 	const router = useRouter();
 
 	artistIdentifier ??= getSlugOrId(router.query);
-	const artist = useQuery(API.getArtist, artistIdentifier);
+	const artist = useQuery(artistQuery, artistIdentifier);
 	const latestAlbums = useInfiniteQuery(latestAlbumsQuery, artistIdentifier);
 	const videos = useInfiniteQuery(videosQuery, artistIdentifier);
 	const topSongs = useInfiniteQuery(topSongsQuery, artistIdentifier);
@@ -168,6 +174,19 @@ const ArtistPage = (
 							formatSubtitle={(item) => formatDuration(item.duration).toString()}
 						/>) ?? []
 					}/>
+				</Grid>
+			</>
+			}
+			{ artist.data.externalIds.length != 0 && <>
+				<Divider/>
+				<Grid container item spacing={1} sx={{ alignItems: 'center' }}>
+					<Grid item sx={{ paddingRight: 3 }}>
+						<SectionHeader heading="External Links"/>
+					</Grid>
+					{ artist.data.externalIds.map((externalId) =>
+						<Grid item key={externalId.provider.name}>
+							<ExternalIdBadge externalId={externalId}/>
+						</Grid>) ?? []}
 				</Grid>
 			</>
 			}

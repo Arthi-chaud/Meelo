@@ -3,6 +3,7 @@ import Artist from "./artist";
 import Illustration from "./illustration";
 import Lyrics from "./lyrics";
 import Resource from "./resource";
+import ExternalId from './external-id';
 
 /**
  * Abstract data model, instanciated by tracks
@@ -34,11 +35,12 @@ const Song = Resource.concat(Illustration).concat(yup.object({
 
 type Song = yup.InferType<typeof Song>;
 
-type SongInclude = 'artist' | 'lyrics';
+type SongInclude = 'artist' | 'lyrics' | 'externalIds';
 
 const SongRelations = yup.object({
 	artist: Artist.required(),
-	lyrics: Lyrics.required().nullable()
+	lyrics: Lyrics.required().nullable(),
+	externalIds: yup.array(ExternalId.required()).required()
 });
 
 const SongWithRelations = <Selection extends SongInclude | never = never>(
