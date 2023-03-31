@@ -129,5 +129,17 @@ export default class TasksController {
 			status: `Refreshing metadata of library '${library.slug}'`
 		};
 	}
+
+	@ApiOperation({
+		summary: "Fetch External Metadata from providers"
+	})
+	@Get('fetch-external-metadata')
+	async fetchExternalMetadata(): Promise<TaskResponse> {
+		this.tasksService.fetchExternalMetadata()
+			.catch((error) => this.logger.error(error));
+		return {
+			status: `Fetching External Metadata`
+		};
+	}
 }
 
