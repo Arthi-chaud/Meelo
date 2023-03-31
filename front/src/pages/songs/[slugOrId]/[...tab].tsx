@@ -18,6 +18,7 @@ import Link from "next/link";
 import { PlayArrow } from "@mui/icons-material";
 import { useDispatch } from "react-redux";
 import { playTrack } from "../../../state/playerSlice";
+import ExternalIdBadge from "../../../components/external-id-badge";
 
 export const getServerSideProps = prepareSSR((context) => {
 	const songIdentifier = getSlugOrId(context.params);
@@ -25,7 +26,7 @@ export const getServerSideProps = prepareSSR((context) => {
 	return {
 		additionalProps: { songIdentifier },
 		queries: [
-			API.getSong(songIdentifier),
+			API.getSong(songIdentifier, ['artist', 'externalIds']),
 			API.getSongLyrics(songIdentifier),
 		],
 		infiniteQueries: [
@@ -52,7 +53,7 @@ const SongPage = (
 
 	songIdentifier ??= getSlugOrId(router.query);
 	const lyrics = useQuery(API.getSongLyrics, songIdentifier);
-	const song = useQuery((id) => API.getSong(id, ['artist']), songIdentifier);
+	const song = useQuery((id) => API.getSong(id, ['artist', 'externalIds']), songIdentifier);
 	const genres = useInfiniteQuery(API.getSongGenres, songIdentifier);
 	const dispatch = useDispatch();
 
@@ -70,6 +71,12 @@ const SongPage = (
 							{genre.name}
 						</Button>
 					</Link>)}
+				</Stack>}
+				{ song.data.externalIds.length != 0 && <Stack direction='row' sx={{ overflowY: 'scroll', alignItems: 'center', paddingTop: 2 }} spacing={2}>
+					<Typography sx={{ overflow: 'unset' }}>External Links:</Typography>
+					{ song.data.externalIds.map((externalId) =>
+						<ExternalIdBadge key={externalId.provider.name} externalId={externalId}/>)
+					}
 				</Stack>}
 			</Grid>
 			<Grid item>
