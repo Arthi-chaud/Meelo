@@ -764,7 +764,7 @@ export default class API {
 	 * @param slugOrId the id of the release
 	 * @returns A query for a Release
 	 */
-	static getRelease<I extends ReleaseInclude>(
+	static getRelease<I extends ReleaseInclude | never>(
 		slugOrId: string | number,
 		include?: I[]
 	): Query<ReleaseWithRelations<I>> {
@@ -843,7 +843,7 @@ export default class API {
 	 */
 	static getArtist<I extends ArtistInclude>(
 		slugOrId: string | number,
-		include?: I[]
+		include: I[] = []
 	): Query<ArtistWithRelations<I>> {
 		return {
 			key: ['artist', slugOrId, ...API.formatIncludeKeys(include)],

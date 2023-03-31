@@ -22,7 +22,6 @@ export type ArtistInclude = 'externalIds';
 const ArtistWithRelations = <Selection extends ArtistInclude | never = never>(
 	relation: Selection[]
 ) => Artist.concat(yup.object({
-		artist: Artist.required().nullable(),
 		externalIds: yup.array(ExternalId.required()).required()
 	}).pick(relation));
 
