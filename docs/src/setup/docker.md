@@ -5,8 +5,7 @@ In your `Meelo` folder, create one last file named `docker-compose.yml`. It will
 ```yml
 services:
   meelo:
-    build:
-      context: ./
+    image: ghcr.io/arthi-chaud/meelo:latest
     ports:
       - "5000:5000" ## Defines on which port to expose Meelo. In the container, it is exposed on port 5000
     depends_on:
