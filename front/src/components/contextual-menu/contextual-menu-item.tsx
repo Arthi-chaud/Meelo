@@ -10,7 +10,7 @@ const ContextualMenuItem = (props: Action) => {
 		<ListItemText>{props.label}</ListItemText>
 	</MenuItem>;
 
-	if (props.href) {
+	if (props.href && !props.disabled) {
 		return <Link href={props.href}>{item}</Link>;
 	}
 	return item;
