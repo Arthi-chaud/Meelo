@@ -8,13 +8,13 @@ type ExternalIdBadgeProps = {
 }
 
 const ExternalIdBadge = ({ externalId }: ExternalIdBadgeProps) => {
-	return <Link href={externalId.url}>
+	return <Link href={externalId.url} rel="noopener noreferrer" target="_blank">
 		<Button variant="outlined" startIcon={<Box sx={{ width: 30 }}>
 			<Illustration url={externalId.provider.icon}/>
 		</Box>}>
 			{externalId.provider.name }
 		</Button>
 	</Link>;
-}
+};
 
 export default ExternalIdBadge;
