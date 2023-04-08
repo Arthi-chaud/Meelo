@@ -100,7 +100,7 @@ export default class GeniusProvider extends IProvider<GeniusSettings, string> im
 	async getArtistIdentifier(artistName: string, songName?: string): Promise<string> {
 		try {
 			const sluggedArtistName = new Slug(artistName).toString();
-			const searchResults = await this.fetchAPI('/search?q=' + this.sanitizeQuery(`${artistName} ${songName ?? ''}`))
+			const searchResults = await this.fetchAPI('/search?q=' + encodeURIComponent(this.sanitizeQuery(`${artistName} ${songName ?? ''}`)))
 				.then((res) => res.hits.map((hit: any) => hit.result));
 
 			return searchResults

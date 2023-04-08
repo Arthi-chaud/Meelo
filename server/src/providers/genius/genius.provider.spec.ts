@@ -35,6 +35,10 @@ describe('Genius Provider', () => {
 			expect(await geniusProvider.getArtistIdentifier('P!nk'))
 				.toBe('P-nk');
 		});
+		it("should get artist with special character Identifier (1)", async () => {
+			expect(await geniusProvider.getArtistIdentifier('Björk'))
+				.toBe('Bjork');
+		});
 		it("should fail, as the artist does not exist", () => {
 			expect(() => geniusProvider.getArtistIdentifier("azertyuiop"))
 				.rejects.toThrow(ProviderActionFailedError);
