@@ -23,6 +23,7 @@
   },
   "dependencies": {
     "@nestjs/axios": "^0.0.8",
+    "@nestjs/bull": "^0.6.3",
     "@nestjs/common": "^9.3.9",
     "@nestjs/config": "^2.3.1",
     "@nestjs/core": "^9.3.9",
@@ -36,6 +37,7 @@
     "archiver": "^5.3.1",
     "axios": "^0.27.2",
     "bcrypt": "^5.1.0",
+    "bull": "^4.10.4",
     "cheerio": "^1.0.0-rc.12",
     "class-transformer": "^0.5.1",
     "class-validator": "^0.14.0",
@@ -78,6 +80,7 @@
     "@nestjs/testing": "^9.3.9",
     "@types/archiver": "^5.3.1",
     "@types/bcrypt": "^5.0.0",
+    "@types/bull": "^4.10.0",
     "@types/cookie-parser": "^1.4.3",
     "@types/cron": "^2.0.0",
     "@types/damerau-levenshtein": "^1.0.0",

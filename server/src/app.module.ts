@@ -24,11 +24,23 @@ import ProvidersModule from './providers/providers.module';
 import FfmpegModule from './ffmpeg/ffmpeg.module';
 import LoggerModule from './logger/logger.module';
 import * as Plugins from './app.plugins';
+import { BullModule } from '@nestjs/bull';
 
 @Module({
 	imports: [
 		ScheduleModule.forRoot(),
 		ConfigModule.forRoot(),
+		BullModule.forRoot({
+			redis: {
+				host: process.env.REDIS_HOST,
+				port: 6379,
+			},
+			defaultJobOptions: {
+				attempts: 1,
+				removeOnComplete: true,
+				removeOnFail: true
+			}
+		}),
 		ArtistModule,
 		AlbumModule,
 		SongModule,

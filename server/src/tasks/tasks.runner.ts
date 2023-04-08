@@ -1,5 +1,10 @@
+import Task from './models/tasks';
 import {
-	Inject, Injectable, forwardRef
+	OnQueueError, Process, Processor
+} from '@nestjs/bull';
+import { Job } from 'bull';
+import {
+	HttpStatus, Inject, forwardRef
 } from '@nestjs/common';
 import type LibraryQueryParameters from 'src/library/models/library.query-parameters';
 import type { File, Library } from 'src/prisma/models';
@@ -14,7 +19,7 @@ import Logger from 'src/logger/logger';
 import SettingsService from 'src/settings/settings.service';
 import TrackIllustrationService from 'src/track/track-illustration.service';
 import FfmpegService from 'src/ffmpeg/ffmpeg.service';
-import { NotFoundException } from 'src/exceptions/meelo-exception';
+import { MeeloException, NotFoundException } from 'src/exceptions/meelo-exception';
 import SongService from 'src/song/song.service';
 import ReleaseService from 'src/release/release.service';
 import AlbumService from 'src/album/album.service';
@@ -24,9 +29,11 @@ import ExternalIdService from 'src/providers/external-id.provider';
 import { LyricsService } from 'src/lyrics/lyrics.service';
 import ArtistIllustrationService from 'src/artist/artist-illustration.service';
 
-@Injectable()
-export default class TasksService {
-	private readonly logger = new Logger(TasksService.name);
+export const TaskQueue = 'task-queue';
+
+@Processor(TaskQueue)
+export default class TaskRunner {
+	private readonly logger = new Logger(TaskRunner.name);
 	constructor(
 		private settingsService: SettingsService,
 		private fileManagerService: FileManagerService,
@@ -56,14 +63,81 @@ export default class TasksService {
 		private lyricsService: LyricsService,
 		@Inject(forwardRef(() => ArtistIllustrationService))
 		private artistIllustrationService: ArtistIllustrationService,
-	) {}
+	) { }
+
+	@OnQueueError()
+	onError(err: Error) {
+		throw new MeeloException(HttpStatus.INTERNAL_SERVER_ERROR, err.message);
+	}
+
+	@Process('*')
+	async processTask(job: Job<any>) {
+		const taskName = job.name as Task;
+
+		switch (taskName) {
+		case Task.UnregisterFile:
+			return this.runTask(job, (where) => this.unregisterFile(where));
+		case Task.CleanLibrary:
+			return this.runTask(job, (where) => this.cleanLibrary(where));
+		case Task.ScanLibrary:
+			return this.runTask(job, (where) => this.scanLibrary(where));
+		case Task.Housekeeping:
+			return this.runTask(job, () => this.housekeeping());
+		case Task.RefreshLibraryMetadata:
+			return this.runTask(job, (where) => this.refreshLibraryMetadata(where));
+		case Task.FetchExternalMetadata:
+			return this.runTask(job, () => this.fetchExternalMetadata());
+		case Task.Clean:
+			job.name = Task.CleanLibrary;
+			return this.forEachLibrary(job, (where) => this.cleanLibrary(where));
+		case Task.Scan:
+			job.name = Task.ScanLibrary;
+			return this.forEachLibrary(job, (where) => this.scanLibrary(where));
+		case Task.RefreshMetadata:
+			job.name = Task.RefreshLibraryMetadata;
+			return this.forEachLibrary(job, (where) => this.refreshLibraryMetadata(where));
+		}
+		await job.moveToFailed({ message: 'Unknown Task' });
+	}
+
+	private async runTask<T>(
+		job: Job<T>,
+		task: (payload: T) => Promise<void>
+	): Promise<void> {
+		this.logger.log(`Task '${job.name}' started`);
+		try {
+			await task(job.data);
+			this.logger.log(`Task '${job.name}' completed`);
+		} catch (err) {
+			this.logger.error(`Task '${job.name}' failed: ${err.message}`);
+			await job.moveToFailed(err.message);
+		}
+	}
+
+	/**
+	 * Run task for each library
+	 * One after the other
+	 */
+	private async forEachLibrary(
+		job: Job<unknown>,
+		task: (where: LibraryQueryParameters.WhereInput) => Promise<void>
+	) {
+		const libraries = await this.libraryService.getMany({});
+
+		for (const library of libraries) {
+			job.data = { id: library.id };
+			await this.runTask(job, task);
+		}
+	}
 
 	/**
 	 * Registers new files a Library
-	 * @param parentLibrary The Library the files will be registered under
+	 * @param where the query parameters to find the parent library the files will be registered under
 	 * @returns The array of newly registered Files
 	 */
-	async registerNewFiles(parentLibrary: Library): Promise<File[]> {
+	private async scanLibrary(where: LibraryQueryParameters.WhereInput): Promise<void> {
+		const parentLibrary = await this.libraryService.get(where);
+
 		this.logger.log(`'${parentLibrary.slug}' library: Registration of new files`);
 		const libraryFullPath = this.fileManagerService.getLibraryFullPath(parentLibrary);
 		const unfilteredCandidates = this.fileManagerService.getFilesInFolder(
@@ -102,56 +176,6 @@ export default class TasksService {
 			}
 		}
 		this.logger.log(`${parentLibrary.slug} library: ${newlyRegistered.length} new files registered`);
-		return newlyRegistered;
-	}
-
-	/**
-	 * Registers a File in the database, parses and push its metadata
-	 * @param filePath the short path of the file to register (without base folder and library folder)
-	 * @param parentLibrary the parent library to register the file under
-	 * @param registrationDate optional date to custom registration date of models
-	 * @returns a registered File entity
-	 */
-	async registerFile(
-		filePath: string, parentLibrary: Library, registrationDate?: Date
-	): Promise<File> {
-		this.logger.log(`${parentLibrary.slug} library: Registration of ${filePath}`);
-		const fullFilePath = `${this.fileManagerService.getLibraryFullPath(parentLibrary)}/${filePath}`;
-		const fileMetadata = await this.metadataService.parseMetadata(fullFilePath).catch((err) => {
-			this.logger.error(`${parentLibrary.slug} library: Registration of ${filePath} failed`);
-			this.logger.error(err);
-			throw err;
-		});
-		const registeredFile = await this.fileService.registerFile(
-			filePath, parentLibrary, registrationDate
-		);
-
-		try {
-			const track = await this.metadataService.registerMetadata(fileMetadata, registeredFile);
-
-			this.illustrationService.extractTrackIllustration(track, fullFilePath)
-				.catch(() => {})
-				.then(async () => {
-					if (track.type == 'Video') {
-						const illustrationPath = await this.trackIllustrationService
-							.getIllustrationPath(
-								{ id: track.id }
-							);
-
-						if (!this.trackIllustrationService.illustrationExists(illustrationPath)) {
-							this.ffmpegService.takeVideoScreenshot(
-								fullFilePath, illustrationPath
-							);
-						}
-					}
-				});
-		} catch (err) {
-			await this.fileService.delete({ id: registeredFile.id });
-			this.logger.error(`${parentLibrary.slug} library: Registration of ${filePath} failed`);
-			this.logger.error(err);
-			throw err;
-		}
-		return registeredFile;
 	}
 
 	/**
@@ -159,7 +183,7 @@ export default class TasksService {
 	 * @param where the query parameters to find the parent library to clean
 	 * @returns The array of deleted file entry
 	 */
-	async unregisterUnavailableFiles(where: LibraryQueryParameters.WhereInput): Promise<File[]> {
+	private async cleanLibrary(where: LibraryQueryParameters.WhereInput): Promise<void> {
 		const parentLibrary = await this.libraryService.get(where, { files: true });
 
 		this.logger.log(`'Cleaning ${parentLibrary.slug}' library`);
@@ -180,7 +204,6 @@ export default class TasksService {
 			this.logger.error(`'${parentLibrary.slug}' library: Cleaning failed:`);
 			this.logger.error(error);
 		}
-		return unavailableFiles;
 	}
 
 	/**
@@ -188,7 +211,7 @@ export default class TasksService {
 	 * Any file that has a different md5checksum that the one in the db will be re-registered
 	 * @param where
 	 */
-	async resyncAllMetadata(where: LibraryQueryParameters.WhereInput): Promise<File[]> {
+	private async refreshLibraryMetadata(where: LibraryQueryParameters.WhereInput): Promise<void> {
 		const library = await this.libraryService.get(where, { files: true });
 		const libraryFullPath = this.fileManagerService.getLibraryFullPath(library);
 		const updatedFiles: File[] = [];
@@ -221,8 +244,26 @@ export default class TasksService {
 		}
 		this.logger.log(`'${library.slug}' library: Refreshed ${updatedFiles.length} files metadata`);
 		await this.housekeeping();
-		return updatedFiles;
 	}
+
+	private async fetchExternalMetadata(): Promise<void> {
+		await this.fetchExternalIds();
+		await this.fetchExternalIllustrations();
+		await this.lyricsService.fetchMissingLyrics();
+	}
+
+	/**
+	 * Calls housekeeping methods on repository services
+	 */
+	async housekeeping(): Promise<void> {
+		await this.songService.housekeeping();
+		await this.releaseService.housekeeping();
+		await this.albumService.housekeeping();
+		await this.artistService.housekeeping();
+		await this.genresService.housekeeping();
+	}
+
+	///// Sub tasks
 
 	async unregisterFile(where: FileQueryParameters.DeleteInput, housekeeping = false) {
 		await this.trackService.delete({ sourceFileId: where.id }).catch((error) => {
@@ -236,16 +277,10 @@ export default class TasksService {
 		}
 	}
 
-	async fetchExternalMetadata(): Promise<void> {
-		await this.fetchExternalIds();
-		await this.fetchExternalIllustrations();
-		await this.lyricsService.fetchMissingLyrics();
-	}
-
 	/**
 	 * Fetch Missing External IDs for artists, songs and albums
 	 */
-	async fetchExternalIds(): Promise<void> {
+	private async fetchExternalIds(): Promise<void> {
 		await this.externalIdService.fetchMissingArtistExternalIDs();
 		await this.externalIdService.fetchMissingAlbumExternalIDs();
 		await this.externalIdService.fetchMissingSongExternalIDs();
@@ -254,18 +289,56 @@ export default class TasksService {
 	/**
 	 * Fetch Missing External Illustrations from providers
 	 */
-	async fetchExternalIllustrations(): Promise<void> {
+	private async fetchExternalIllustrations(): Promise<void> {
 		await this.artistIllustrationService.downloadMissingIllustrations();
 	}
 
 	/**
-	 * Calls housekeeping methods on repository services
+	 * Registers a File in the database, parses and push its metadata
+	 * @param filePath the short path of the file to register (without base folder and library folder)
+	 * @param parentLibrary the parent library to register the file under
+	 * @param registrationDate optional date to custom registration date of models
+	 * @returns a registered File entity
 	 */
-	async housekeeping(): Promise<void> {
-		await this.songService.housekeeping();
-		await this.releaseService.housekeeping();
-		await this.albumService.housekeeping();
-		await this.artistService.housekeeping();
-		await this.genresService.housekeeping();
+	private async registerFile(
+		filePath: string, parentLibrary: Library, registrationDate?: Date
+	): Promise<File> {
+		this.logger.log(`${parentLibrary.slug} library: Registration of ${filePath}`);
+		const fullFilePath = `${this.fileManagerService.getLibraryFullPath(parentLibrary)}/${filePath}`;
+		const fileMetadata = await this.metadataService.parseMetadata(fullFilePath).catch((err) => {
+			this.logger.error(`${parentLibrary.slug} library: Registration of ${filePath} failed`);
+			this.logger.error(err);
+			throw err;
+		});
+		const registeredFile = await this.fileService.registerFile(
+			filePath, parentLibrary, registrationDate
+		);
+
+		try {
+			const track = await this.metadataService.registerMetadata(fileMetadata, registeredFile);
+
+			this.illustrationService.extractTrackIllustration(track, fullFilePath)
+				.catch(() => { })
+				.then(async () => {
+					if (track.type == 'Video') {
+						const illustrationPath = await this.trackIllustrationService
+							.getIllustrationPath(
+								{ id: track.id }
+							);
+
+						if (!this.trackIllustrationService.illustrationExists(illustrationPath)) {
+							this.ffmpegService.takeVideoScreenshot(
+								fullFilePath, illustrationPath
+							);
+						}
+					}
+				});
+		} catch (err) {
+			await this.fileService.delete({ id: registeredFile.id });
+			this.logger.error(`${parentLibrary.slug} library: Registration of ${filePath} failed`);
+			this.logger.error(err);
+			throw err;
+		}
+		return registeredFile;
 	}
 }
