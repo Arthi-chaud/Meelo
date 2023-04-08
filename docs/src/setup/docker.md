@@ -15,6 +15,13 @@ services:
       - data:/data
     env_file:
       - .env
+  redis:
+    image: redis:7.0-alpine
+    healthcheck:
+      test: ["CMD", "redis-cli","ping"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
   db:
     image: postgres:alpine3.14
     env_file:

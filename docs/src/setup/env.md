@@ -12,6 +12,9 @@ POSTGRES_DB=
 # Hostname from which Meelo can access the database
 # If dockerized, this must be the container_name
 POSTGRES_HOST=
+# Hostname from which Meelo can access the redis queues
+# If dockerized, this must be the container_name
+REDIS_HOST=
 # Random String used to sign JWT Tokens
 JWT_SIGNATURE=
 # The path to the `settings.json` file, and the illustration/metadata folder 
