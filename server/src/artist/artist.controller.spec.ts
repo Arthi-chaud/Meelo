@@ -35,8 +35,9 @@ describe('Artist Controller', () => {
 	let albumA2: Album;
 	let providerService: ProviderService;
 
+	let module: TestingModule;
 	beforeAll(async () => {
-		const module: TestingModule = await createTestingModule({
+		module = await createTestingModule({
 			imports: [ReleaseModule, PrismaModule, ArtistModule, SongModule, AlbumModule, TrackModule, MetadataModule, IllustrationModule, GenreModule, LyricsModule, FileModule, ProvidersModule, SettingsModule],
 			providers: [ArtistService, SongService, AlbumService, ReleaseService],
 		}).overrideProvider(PrismaService).useClass(TestPrismaService).compile();
@@ -51,6 +52,11 @@ describe('Artist Controller', () => {
 		module.get(SettingsService).loadFromFile();
 		await providerService.onModuleInit();
 
+	});
+
+	afterAll(() => {
+		module.close();
+		app.close();
 	});
 	
 	describe('Get Artists (GET /artists)', () => {

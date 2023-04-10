@@ -38,7 +38,7 @@ export default class TasksController {
 			name: activeJob.name,
 			data: activeJob.data,
 			description: TasksDescription[activeJob.name as Tasks]
-		} : null,
+		} : null;
 		response.waiting = waitingJob.map((job) => ({
 			name: job.name,
 			description: TasksDescription[job.name as Tasks]
@@ -51,7 +51,7 @@ export default class TasksController {
 	})
 	@Get('housekeeping')
 	async housekeeping(): Promise<TaskStatusResponse> {
-		this.tasksQueue.add(Tasks.Housekeeping);
+		await this.tasksQueue.add(Tasks.Housekeeping);
 		return this.onTaskAdded();
 	}
 
@@ -61,7 +61,7 @@ export default class TasksController {
 	@Timeout(5000)
 	@Get('scan')
 	async scanLibrariesFiles(): Promise<TaskStatusResponse> {
-		this.tasksQueue.add(Tasks.Scan);
+		await this.tasksQueue.add(Tasks.Scan);
 		return this.onTaskAdded();
 	}
 
@@ -73,7 +73,7 @@ export default class TasksController {
 		@IdentifierParam(LibraryService)
 		where: LibraryQueryParameters.WhereInput
 	): Promise<TaskStatusResponse> {
-		this.tasksQueue.add(Tasks.ScanLibrary, where);
+		await this.tasksQueue.add(Tasks.ScanLibrary, where);
 		return this.onTaskAdded();
 	}
 
@@ -82,7 +82,7 @@ export default class TasksController {
 	})
 	@Get('clean')
 	async cleanLibraries(): Promise<TaskStatusResponse> {
-		this.tasksQueue.add(Tasks.Clean);
+		await this.tasksQueue.add(Tasks.Clean);
 		return this.onTaskAdded();
 	}
 
@@ -94,7 +94,7 @@ export default class TasksController {
 		@IdentifierParam(LibraryService)
 		where: LibraryQueryParameters.WhereInput
 	): Promise<TaskStatusResponse> {
-		this.tasksQueue.add(Tasks.CleanLibrary, where);
+		await this.tasksQueue.add(Tasks.CleanLibrary, where);
 		return this.onTaskAdded();
 	}
 
@@ -103,7 +103,7 @@ export default class TasksController {
 	})
 	@Get('refresh-metadata')
 	async refreshLibrariesFilesMetadata(): Promise<TaskStatusResponse> {
-		this.tasksQueue.add(Tasks.RefreshMetadata);
+		await this.tasksQueue.add(Tasks.RefreshMetadata);
 		return this.onTaskAdded();
 	}
 
@@ -115,7 +115,7 @@ export default class TasksController {
 		@IdentifierParam(LibraryService)
 		where: LibraryQueryParameters.WhereInput
 	): Promise<TaskStatusResponse> {
-		this.tasksQueue.add(Tasks.RefreshLibraryMetadata, where);
+		await this.tasksQueue.add(Tasks.RefreshLibraryMetadata, where);
 		return this.onTaskAdded();
 	}
 
@@ -124,7 +124,7 @@ export default class TasksController {
 	})
 	@Get('fetch-external-metadata')
 	async fetchExternalMetadata(): Promise<TaskStatusResponse> {
-		this.tasksQueue.add(Tasks.FetchExternalMetadata);
+		await this.tasksQueue.add(Tasks.FetchExternalMetadata);
 		return this.onTaskAdded();
 	}
 }

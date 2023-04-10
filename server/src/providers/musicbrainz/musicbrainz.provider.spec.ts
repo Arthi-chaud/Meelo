@@ -11,13 +11,18 @@ import { AlbumType } from "@prisma/client";
 describe('MusicBrainz Provider', () => {
 	let musicBrainzProvider: MusicBrainzProvider;
 
+	let module: TestingModule;
 	beforeAll(async () => {
-		const module: TestingModule = await createTestingModule({
+		module = await createTestingModule({
 			imports: [HttpModule, SettingsModule],
 			providers: [MusicBrainzProvider],
 		}).overrideProvider(PrismaService).useClass(TestPrismaService).compile();
 		musicBrainzProvider = module.get(MusicBrainzProvider);
 		musicBrainzProvider.onModuleInit();
+	});
+
+	afterAll(() => {
+		module.close();
 	});
 	describe('Get Artist Identifier', () => {
 		it("should get simple artist Identifier", async () => {

@@ -9,8 +9,9 @@ import { HttpModule } from "@nestjs/axios";
 describe('MusixMatch Provider', () => {
 	let musixmatchProvider: MusixMatchProvider;
 
+	let module: TestingModule;
 	beforeAll(async () => {
-		const module: TestingModule = await createTestingModule({
+		module = await createTestingModule({
 			imports: [HttpModule],
 			providers: [MusixMatchProvider],
 		}).overrideProvider(PrismaService).useClass(TestPrismaService).compile();

@@ -28,8 +28,9 @@ describe('Song Service', () => {
 
 	let newSong: Song;
 	
+	let module: TestingModule;
 	beforeAll(async () => {
-		const module: TestingModule = await createTestingModule({
+		module = await createTestingModule({
 			imports: [PrismaModule, ArtistModule, TrackModule, AlbumModule, IllustrationModule, GenreModule, LyricsModule],
 			providers: [SongService, ArtistService, PrismaService],
 		}).overrideProvider(PrismaService).useClass(TestPrismaService).compile();
@@ -38,6 +39,10 @@ describe('Song Service', () => {
 		lyricsService = module.get(LyricsService);
 		module.get(ArtistIllustrationService).onModuleInit();
 		await dummyRepository.onModuleInit();
+	});
+
+	afterAll(() => {
+		module.close();
 	});
 
 	it('should be defined', () => {

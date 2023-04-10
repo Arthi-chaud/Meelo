@@ -22,14 +22,20 @@ describe("Genre Controller", () => {
 	let app: INestApplication;
 	let dummyRepository: TestPrismaService;
 
+	let module: TestingModule;
 	beforeAll(async () => {
-		const module: TestingModule = await createTestingModule({
+		module = await createTestingModule({
 			imports: [PrismaModule, ArtistModule, TrackModule, AlbumModule, IllustrationModule, GenreModule, LyricsModule, MetadataModule],
 			providers: [SongService, ArtistService, PrismaService],
 		}).overrideProvider(PrismaService).useClass(TestPrismaService).compile();
 		app = await SetupApp(module);
 		dummyRepository = module.get(PrismaService);
 		await dummyRepository.onModuleInit();
+	});
+
+	afterAll(() => {
+		module.close();
+		app.close();
 	});
 
 	describe("Get Genre", () => {

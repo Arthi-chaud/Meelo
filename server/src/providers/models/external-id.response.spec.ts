@@ -20,8 +20,9 @@ describe('External ID Response', () => {
 	let musicbrainzService: MusicBrainzProvider; 
 	let responseBuilder: ExternalIdResponseBuilder;
 	//TODO Test Provider Image
+	let module: TestingModule;
 	beforeAll(async () => {
-		const module: TestingModule = await createTestingModule({
+		module = await createTestingModule({
 			imports: [HttpModule, SettingsModule, forwardRef(() => ProvidersModule), PrismaModule, FileManagerModule, forwardRef(() => IllustrationModule)],
 			providers: [GeniusProvider, MusicBrainzProvider, ProviderService, PrismaService],
 		}).overrideProvider(PrismaService).useClass(TestPrismaService).compile();
@@ -32,6 +33,11 @@ describe('External ID Response', () => {
 		musicbrainzService.onModuleInit();
 		await providerService.onModuleInit();
 	});
+
+	afterAll(() => {
+		module.close();
+	});
+
 	it("Should format Artist External ID", async () => {
 		const provider = await prismaService.provider.findUniqueOrThrow({ where: { name: musicbrainzService.name } });
 		const response = await responseBuilder.buildResponse({

@@ -42,8 +42,9 @@ describe('Authentication Controller & Role Management', () => {
 	let adminToken: string;
 	let userToken: string;
 
+	let module: TestingModule;
 	beforeAll(async () => {
-		const module: TestingModule = await createTestingModule({
+		module = await createTestingModule({
 			imports: [TestAuthenticationModule],
 		}).overrideProvider(PrismaService).useClass(TestPrismaService).compile();
 		(module as any).configure = (consumer: MiddlewareConsumer) => {
@@ -55,6 +56,11 @@ describe('Authentication Controller & Role Management', () => {
 		await dummyRepository.onModuleInit();
 		admin = await userService.create({ name: 'admin', password: 'azerty1234', admin: true });
 		user = await userService.create({ name: 'user', password: 'azerty1234', admin: false });
+	});
+
+	afterAll(() => {
+		module.close();
+		app.close();
 	});
 
 	describe('Login', () => {

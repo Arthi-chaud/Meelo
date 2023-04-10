@@ -1,28 +1,19 @@
 import { createTestingModule } from "test/test-module";
-import type { TestingModule } from "@nestjs/testing";
+import { TestingModule } from "@nestjs/testing";
 import type { Artist, Genre, Lyrics, Song, Track } from "src/prisma/models";
-import AlbumModule from "src/album/album.module";
-import ArtistModule from "src/artist/artist.module";
-import PrismaModule from "src/prisma/prisma.module";
 import PrismaService from "src/prisma/prisma.service";
 import request from "supertest";
 import { INestApplication } from "@nestjs/common";
-import TrackModule from "src/track/track.module";
-import IllustrationModule from "src/illustration/illustration.module";
 import SongModule from "src/song/song.module";
-import MetadataModule from "src/metadata/metadata.module";
-import ReleaseModule from "src/release/release.module";
-import GenreModule from "src/genre/genre.module";
 import TestPrismaService from "test/test-prisma.service";
 import SongService from "./song.service";
-import { LyricsModule } from "src/lyrics/lyrics.module";
 import SetupApp from "test/setup-app";
 import { SongWithVideoResponse } from "./models/song-with-video.response";
 import { expectedSongResponse, expectedArtistResponse, expectedTrackResponse, expectedReleaseResponse } from "test/expected-responses";
-import ProvidersModule from "src/providers/providers.module";
 import ProviderService from "src/providers/provider.service";
-import SettingsModule from "src/settings/settings.module";
 import SettingsService from "src/settings/settings.service";
+
+jest.setTimeout(60000);
 
 describe('Song Controller', () => {
 	let dummyRepository: TestPrismaService;
@@ -30,9 +21,10 @@ describe('Song Controller', () => {
 	let songService: SongService;
 	let providerService: ProviderService;
 	
+	let module: TestingModule;
 	beforeAll(async () => {
-		const module: TestingModule = await createTestingModule({
-			imports: [PrismaModule, AlbumModule, ArtistModule, ReleaseModule, TrackModule, IllustrationModule, SongModule, MetadataModule, GenreModule, LyricsModule, ProvidersModule, SettingsModule],
+		module = await createTestingModule({
+			imports: [SongModule],
 		}).overrideProvider(PrismaService).useClass(TestPrismaService).compile();
 		app = await SetupApp(module);
 		dummyRepository = module.get(PrismaService);
@@ -42,6 +34,10 @@ describe('Song Controller', () => {
 		await dummyRepository.onModuleInit();
 		await providerService.onModuleInit();
 	});
+
+	afterAll(() => {
+		app.close();
+	})
 
 	describe("Get Songs (GET /songs)", () => {
 		it("should return all songs", () => {
@@ -114,7 +110,7 @@ describe('Song Controller', () => {
 	});
 
 	describe("Get Songs With Videos", () => {
-		it("should return the songs With video", async () => {
+		it("should return the songs With video", () => {
 			return request(app.getHttpServer())
 				.get(`/songs/videos`)
 				.expect(200)
@@ -127,7 +123,7 @@ describe('Song Controller', () => {
 					});
 				});
 		});
-		it("should return an empty list (pagination)", async () => {
+		it("should return an empty list (pagination)", () => {
 			return request(app.getHttpServer())
 				.get(`/songs/videos?skip=1`)
 				.expect(200)
@@ -136,7 +132,7 @@ describe('Song Controller', () => {
 					expect(videoSongs.length).toBe(0);
 				});
 		});
-		it("should return songs with their lyrics", async () => {
+		it("should return songs with their lyrics", () => {
 			return request(app.getHttpServer())
 				.get(`/songs/videos?with=lyrics`)
 				.expect(200)
@@ -317,7 +313,7 @@ describe('Song Controller', () => {
 			return request(app.getHttpServer())
 				.put(`/songs/${dummyRepository.artistC.slug}+${dummyRepository.songC1.slug}/played`)
 				.expect(200)
-				.expect(async (res) => {
+				.expect((res) => {
 					const updatedSong: Song = res.body;
 					expect(updatedSong).toStrictEqual({
 						...expectedSongResponse(dummyRepository.songC1),

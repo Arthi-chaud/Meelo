@@ -46,8 +46,9 @@ describe('Track Service', () => {
 
 	let secondLibrary: Library;
 	
+	let module: TestingModule;
 	beforeAll(async () => {
-		const module: TestingModule = await createTestingModule({
+		module = await createTestingModule({
 			imports: [PrismaModule, FileModule, MetadataModule, IllustrationModule,TrackModule, ArtistModule, SongModule, AlbumModule, ReleaseModule, FileManagerModule, SettingsModule, GenreModule, LyricsModule, LibraryModule],
 			providers: [PrismaService,TrackService, ArtistService, SongService, AlbumService, ReleaseService, FileService, FileManagerService, SettingsService],
 		}).overrideProvider(PrismaService).useClass(TestPrismaService).compile();
@@ -85,6 +86,10 @@ describe('Track Service', () => {
 			md5Checksum: ''
 		});
 
+	});
+
+	afterAll(() => {
+		module.close();
 	});
 
 	it('should be defined', () => {

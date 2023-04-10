@@ -10,14 +10,20 @@ import SettingsModule from "src/settings/settings.module";
 describe('Genius Provider', () => {
 	let geniusProvider: GeniusProvider;
 
+	let module: TestingModule;
 	beforeAll(async () => {
-		const module: TestingModule = await createTestingModule({
+		module = await createTestingModule({
 			imports: [HttpModule, SettingsModule],
 			providers: [GeniusProvider],
 		}).overrideProvider(PrismaService).useClass(TestPrismaService).compile();
 		geniusProvider = module.get(GeniusProvider);
 		geniusProvider.onModuleInit();
 	});
+
+	afterAll(() => {
+		module.close();
+	});
+
 	describe('Get Artist Identifier', () => {
 		it("should get simple artist Identifier", async () => {
 			expect(await geniusProvider.getArtistIdentifier('Britney Spears'))

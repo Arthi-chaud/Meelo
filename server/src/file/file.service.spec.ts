@@ -26,14 +26,19 @@ describe('File Service', () => {
 
 	let newFile: File;
 
+	let module: TestingModule;
 	beforeAll(async () => {
-		const module: TestingModule = await createTestingModule({
+		module = await createTestingModule({
 			imports: [FileModule, PrismaModule, MetadataModule, FileManagerModule, IllustrationModule, ArtistModule, AlbumModule, SongModule, ReleaseModule, TrackModule, SettingsModule, GenreModule, LyricsModule, LibraryModule],
 			providers: [FileService],
 		}).overrideProvider(PrismaService).useClass(TestPrismaService).compile();
 		dummyRepository = module.get(PrismaService)
 		await dummyRepository.onModuleInit();
 		fileService = module.get<FileService>(FileService);
+	});
+
+	afterAll(() => {
+		module.close();
 	});
 
 	it('should be defined', () => {

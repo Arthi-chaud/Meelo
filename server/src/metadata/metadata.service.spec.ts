@@ -14,15 +14,21 @@ import MetadataService from "./metadata.service";
 import IllustrationModule from "src/illustration/illustration.module";
 import PrismaModule from "src/prisma/prisma.module";
 import type Metadata from "./models/metadata";
+import { TestingModule } from "@nestjs/testing";
 
 describe('Metadata Service', () => {
 	let metadataService: MetadataService
 
+	let moduleRef: TestingModule;
 	beforeAll(async () => {
-		const moduleRef = await createTestingModule({
+		moduleRef = await createTestingModule({
 			imports: [FileManagerModule, PrismaModule, ArtistModule, AlbumModule, ReleaseModule, MetadataModule, SongModule, TrackModule, IllustrationModule, GenreModule, SettingsModule],
 		}).compile();
 		metadataService = moduleRef.get<MetadataService>(MetadataService);
+	});
+
+	afterAll(() => {
+		moduleRef.close();
 	});
 
 	it('should be defined', () => {

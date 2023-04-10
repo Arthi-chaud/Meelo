@@ -29,14 +29,20 @@ describe('Release Controller', () => {
 	let dummyRepository: TestPrismaService;
 	let app: INestApplication;
 
+	let module: TestingModule;
 	beforeAll(async () => {
-		const module: TestingModule = await createTestingModule({
+		module = await createTestingModule({
 			imports: [PrismaModule, AlbumModule, ArtistModule, ReleaseModule, TrackModule, IllustrationModule, SongModule, FileModule, MetadataModule, GenreModule, ProvidersModule],
 			providers: [ReleaseService, AlbumService, ArtistService, ReleaseController],
 		}).overrideProvider(PrismaService).useClass(TestPrismaService).compile();
 		app = await SetupApp(module);
 		dummyRepository = module.get(PrismaService);
 		await dummyRepository.onModuleInit();
+	});
+
+	afterAll(() => {
+		module.close();
+		app.close();
 	});
 
 	describe('Get Releases (GET /releases)', () => {

@@ -18,8 +18,9 @@ describe('Song Illustration Service', () => {
 	let dummyRepository: TestPrismaService;
 	let songIllustrationService: SongIllustrationService;
 	let fileManagerService: FileManagerService;
+	let module: TestingModule;
 	beforeAll(async () => {
-		const module: TestingModule = await createTestingModule({
+		module = await createTestingModule({
 			imports: [FileManagerModule, PrismaModule, ArtistModule, AlbumModule, SettingsModule, ReleaseModule, SongModule, TrackModule],
 		}).overrideProvider(PrismaService).useClass(TestPrismaService).compile();
 		songIllustrationService = module.get(SongIllustrationService);
@@ -28,14 +29,19 @@ describe('Song Illustration Service', () => {
 		await dummyRepository.onModuleInit();
 		module.get(ArtistIllustrationService).onModuleInit();
 	});
+
+	afterAll(() => {
+		module.close();
+	});
+
 	describe('Get Illustration Illustration', () => {
-		it("should get Song's Master Track Illustration Link", async () => {
+		it("should get Song's Master Track Illustration Link", () => {
 			jest.spyOn(fileManagerService, 'fileExists').mockReturnValueOnce(true);
 			expect(
 				songIllustrationService.buildIllustrationLink(dummyRepository.songA1.id)
 			).toBe(`/illustrations/songs/${dummyRepository.songA1.id}`)
 		})
-		it("should build Compilation Song Illustration Link", async () => {
+		it("should build Compilation Song Illustration Link", () => {
 			jest.spyOn(fileManagerService, 'fileExists').mockReturnValueOnce(false);
 			jest.spyOn(fileManagerService, 'fileExists').mockReturnValueOnce(true);
 			expect(

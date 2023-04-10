@@ -17,14 +17,23 @@ describe('User Controller', () => {
 	let adminUser: User;
 	let user: User;
 	
+	let module: TestingModule;
 	beforeAll(async () => {
-		const module: TestingModule = await createTestingModule({
+		module = await createTestingModule({
 			imports: [PrismaModule, FileModule, UserModule],
 			providers: [PrismaService, UserService],
 		}).overrideProvider(PrismaService).useClass(TestPrismaService).compile();
 		app = await SetupApp(module);
 		dummyRepository = module.get(PrismaService);
 		await dummyRepository.onModuleInit();
+	});
+
+	afterAll(() => {
+		module.close();
+	});
+
+	afterAll(() => {
+		app.close();
 	});
 
 	describe("Create a user account", () => {

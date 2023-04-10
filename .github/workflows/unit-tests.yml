@@ -25,10 +25,16 @@ jobs:
   run_unit_tests_back:
     if: github.event_name == 'push' || github.event.pull_request.head.repo.full_name != github.repository
     runs-on: ubuntu-latest
-    container: node:18-alpine
+    container: node:19-alpine
     defaults:
       run:
         working-directory: ./server
+    env:
+      NODE_OPTIONS: "--max_old_space_size=4096"
+      REDIS_HOST: "redis"
+      DATABASE_URL: "postgresql://test:test@postgres:5432/test?schema=public"
+      JWT_SIGNATURE: "12345"
+      GENIUS_ACCESS_TOKEN: "${{ secrets.GENIUS_ACCESS_TOKEN }}"
     services:
       postgres:
         image: postgres:alpine3.16
@@ -48,31 +54,24 @@ jobs:
         ports:
           - 6379:6379
         options: >-
-          --health-cmd redis_cli ping
-          --health-interval 5s
+          --health-cmd "redis-cli ping"
+          --health-interval 10s
           --health-timeout 5s
           --health-retries 5
     steps:
       - uses: actions/checkout@v3
-      - name: "Create .env file"
-        run: |
-          echo 'DATABASE_URL="postgresql://test:test@postgres:5432/test?schema=public"' > .env
-          echo 'JWT_SIGNATURE=12345' >> .env
-          echo "GENIUS_ACCESS_TOKEN=${{ secrets.GENIUS_ACCESS_TOKEN }}" >> .env
       - name: Install test dependencies
         run: yarn install
       - name: Migrate DB Schema
-        run: yarn test:db:migrate
+        run: yarn run prisma migrate dev
       - name: Run unit tests with coverage
         uses: nick-fields/retry@v2
-        env:
-          NODE_OPTIONS: "--max_old_space_size=4096"
         with:
           shell: sh 
           timeout_minutes: 10
           max_attempts: 3
           retry_wait_seconds: 30
-          command: yarn --cwd server test --coverage --ci --detectOpenHandles
+          command: rm -rf server/test/assets/metadata; yarn --cwd server test --coverage --ci
       - name: Upload Unit Tests artifact
         if: ${{ always() }}
         uses: actions/upload-artifact@v3

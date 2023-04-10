@@ -14,13 +14,18 @@ describe('User Service', () => {
 	let adminUser: User;
 	let user: User;
 	
+	let module: TestingModule;
 	beforeAll(async () => {
-		const module: TestingModule = await createTestingModule({
+		module = await createTestingModule({
 			imports: [PrismaModule, FileModule, UserModule],
 			providers: [PrismaService, UserService],
 		}).overrideProvider(PrismaService).useClass(TestPrismaService).compile();
 		await module.get<PrismaService>(PrismaService).onModuleInit();
 		userService = module.get<UserService>(UserService);
+	});
+
+	afterAll(() => {
+		module.close();
 	});
 
 	describe("Create user", () => {
