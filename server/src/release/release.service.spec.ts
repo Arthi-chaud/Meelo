@@ -32,8 +32,9 @@ describe('Release Service', () => {
 	let newCompilationRelease: Release;
 	let newRelease2: Release;
 	
+	let module: TestingModule;
 	beforeAll(async () => {
-		const module: TestingModule = await createTestingModule({
+		module = await createTestingModule({
 			imports: [PrismaModule, AlbumModule, ArtistModule, TrackModule, IllustrationModule, SongModule, MetadataModule, GenreModule, FileModule],
 			providers: [ReleaseIllustrationService, ReleaseService, AlbumService, ArtistService],
 		}).overrideProvider(PrismaService).useClass(TestPrismaService).compile();
@@ -44,6 +45,10 @@ describe('Release Service', () => {
 		module.get(ArtistIllustrationService).onModuleInit();
 		await dummyRepository.onModuleInit();
 	})
+
+	afterAll(() => {
+		module.close();
+	});
 
 	it('should be defined', () => {
 		expect(releaseService).toBeDefined();

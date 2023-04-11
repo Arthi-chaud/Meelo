@@ -9,7 +9,7 @@ import type LibraryQueryParameters from './models/library.query-parameters';
 import normalize from 'normalize-path';
 import RepositoryService from 'src/repository/repository.service';
 import { buildStringSearchParameters } from 'src/utils/search-string-input';
-import TasksService from 'src/tasks/tasks.service';
+import TasksRunner from 'src/tasks/tasks.runner';
 import { Library, LibraryWithRelations } from 'src/prisma/models';
 import { parseIdentifierSlugs } from 'src/identifier/identifier.parse-slugs';
 import Identifier from 'src/identifier/models/identifier';
@@ -39,8 +39,7 @@ export default class LibraryService extends RepositoryService<
 	constructor(
 		@Inject(forwardRef(() => FileService))
 		private fileService: FileService,
-		@Inject(forwardRef(() => TasksService))
-		private tasksService: TasksService,
+		private tasksService: TasksRunner,
 		prismaService: PrismaService,
 	) {
 		super(prismaService.library);

@@ -1,33 +1,61 @@
 import { Controller, Get } from '@nestjs/common';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import LibraryService from 'src/library/library.service';
-import type TaskResponse from './models/task.response';
-import TasksService from './tasks.service';
 import { Timeout } from '@nestjs/schedule';
 import Admin from 'src/roles/admin.decorator';
 import IdentifierParam from 'src/identifier/identifier.pipe';
 import LibraryQueryParameters from 'src/library/models/library.query-parameters';
-import Logger from 'src/logger/logger';
+import { TaskQueue } from './tasks.runner';
+import { Queue } from 'bull';
+import Tasks, { TasksDescription } from './models/tasks';
+import { InjectQueue } from '@nestjs/bull';
+import { TaskQueueStatusResponse, TaskStatusResponse } from './models/task.response';
 
 @Admin()
 @ApiTags('Tasks')
 @Controller('tasks')
 export default class TasksController {
-	private readonly logger = new Logger(TasksController.name);
 	constructor(
-		private libraryService: LibraryService,
-		private tasksService: TasksService,
+		@InjectQueue(TaskQueue)
+		private tasksQueue: Queue
 	) {}
+
+	private onTaskAdded(): TaskStatusResponse {
+		return {
+			status: `Task added to queue`
+		};
+	}
+
+	@ApiOperation({
+		summary: 'Get running and pending tasks'
+	})
+	@Get('status')
+	async getTaskQueueStatus(): Promise<TaskQueueStatusResponse> {
+		const [activeJob, waitingJob] = await Promise.all([
+			this.tasksQueue.getActive(0, 1).then((jobs) => jobs.at(0)),
+			this.tasksQueue.getWaiting()
+		]);
+		const response = new TaskQueueStatusResponse();
+
+		response.active = activeJob ? {
+			name: activeJob.name,
+			data: activeJob.data ?? null,
+			description: TasksDescription[activeJob.name as Tasks]
+		} : null;
+		response.pending = waitingJob.map((job) => ({
+			name: job.name,
+			description: TasksDescription[job.name as Tasks]
+		}));
+		return response;
+	}
 
 	@ApiOperation({
 		summary: 'Run houskeeping'
 	})
 	@Get('housekeeping')
-	async housekeeping(): Promise<TaskResponse> {
-		this.tasksService.housekeeping();
-		return {
-			status: `Running housekeeping`
-		};
+	async housekeeping(): Promise<TaskStatusResponse> {
+		await this.tasksQueue.add(Tasks.Housekeeping);
+		return this.onTaskAdded();
 	}
 
 	@ApiOperation({
@@ -35,15 +63,9 @@ export default class TasksController {
 	})
 	@Timeout(5000)
 	@Get('scan')
-	async scanLibrariesFiles(): Promise<TaskResponse> {
-		const libraries = await this.libraryService.getMany({});
-
-		libraries.forEach((library) => this.tasksService
-			.registerNewFiles(library)
-			.catch((error) => this.logger.error(error)));
-		return {
-			status: `Scanning ${libraries.length} libraries`
-		};
+	async scanLibrariesFiles(): Promise<TaskStatusResponse> {
+		await this.tasksQueue.add(Tasks.Scan);
+		return this.onTaskAdded();
 	}
 
 	@ApiOperation({
@@ -53,30 +75,18 @@ export default class TasksController {
 	async scanLibraryFiles(
 		@IdentifierParam(LibraryService)
 		where: LibraryQueryParameters.WhereInput
-	): Promise<TaskResponse> {
-		const library = await this.libraryService.get(where);
-
-		this.tasksService
-			.registerNewFiles(library)
-			.catch((error) => this.logger.error(error));
-		return {
-			status: `Scanning library '${library.slug}'`
-		};
+	): Promise<TaskStatusResponse> {
+		await this.tasksQueue.add(Tasks.ScanLibrary, where);
+		return this.onTaskAdded();
 	}
 
 	@ApiOperation({
 		summary: 'Clean all libraries'
 	})
 	@Get('clean')
-	async cleanLibraries(): Promise<TaskResponse> {
-		const libraries = await this.libraryService.getMany({});
-
-		libraries.forEach((library) => this.tasksService
-			.unregisterUnavailableFiles({ id: library.id })
-			.catch((error) => this.logger.error(error)));
-		return {
-			status: `Cleanning ${libraries.length} libraries`
-		};
+	async cleanLibraries(): Promise<TaskStatusResponse> {
+		await this.tasksQueue.add(Tasks.Clean);
+		return this.onTaskAdded();
 	}
 
 	@ApiOperation({
@@ -86,30 +96,18 @@ export default class TasksController {
 	async cleanLibrary(
 		@IdentifierParam(LibraryService)
 		where: LibraryQueryParameters.WhereInput
-	): Promise<TaskResponse> {
-		const library = await this.libraryService.get(where);
-
-		this.tasksService
-			.unregisterUnavailableFiles(where)
-			.catch((error) => this.logger.error(error));
-		return {
-			status: `Cleaning library '${library.slug}'`
-		};
+	): Promise<TaskStatusResponse> {
+		await this.tasksQueue.add(Tasks.CleanLibrary, where);
+		return this.onTaskAdded();
 	}
 
 	@ApiOperation({
 		summary: "Refresh all libraries' files metadata"
 	})
 	@Get('refresh-metadata')
-	async refreshLibrariesFilesMetadata(): Promise<TaskResponse> {
-		const libraries = await this.libraryService.getMany({});
-
-		libraries.forEach((library) => this.tasksService
-			.resyncAllMetadata({ id: library.id })
-			.catch((error) => this.logger.error(error)));
-		return {
-			status: `Refreshing ${libraries.length} libraries`
-		};
+	async refreshLibrariesFilesMetadata(): Promise<TaskStatusResponse> {
+		await this.tasksQueue.add(Tasks.RefreshMetadata);
+		return this.onTaskAdded();
 	}
 
 	@ApiOperation({
@@ -119,27 +117,18 @@ export default class TasksController {
 	async refreshLibraryFilesMetadata(
 		@IdentifierParam(LibraryService)
 		where: LibraryQueryParameters.WhereInput
-	): Promise<TaskResponse> {
-		const library = await this.libraryService.get(where);
-
-		this.tasksService
-			.resyncAllMetadata(where)
-			.catch((error) => this.logger.error(error));
-		return {
-			status: `Refreshing metadata of library '${library.slug}'`
-		};
+	): Promise<TaskStatusResponse> {
+		await this.tasksQueue.add(Tasks.RefreshLibraryMetadata, where);
+		return this.onTaskAdded();
 	}
 
 	@ApiOperation({
 		summary: "Fetch External Metadata from providers"
 	})
 	@Get('fetch-external-metadata')
-	async fetchExternalMetadata(): Promise<TaskResponse> {
-		this.tasksService.fetchExternalMetadata()
-			.catch((error) => this.logger.error(error));
-		return {
-			status: `Fetching External Metadata`
-		};
+	async fetchExternalMetadata(): Promise<TaskStatusResponse> {
+		await this.tasksQueue.add(Tasks.FetchExternalMetadata);
+		return this.onTaskAdded();
 	}
 }
 

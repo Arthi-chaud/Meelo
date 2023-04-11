@@ -28,8 +28,9 @@ describe('Illustration Controller', () => {
 	let fileManagerService: FileManagerService;
 	let releaseIllustrationService: ReleaseIllustrationService;
 	let trackIllustrationService: TrackIllustrationService;
+	let module: TestingModule;
 	beforeAll(async () => {
-		const module: TestingModule = await createTestingModule({
+		module = await createTestingModule({
 			imports: [FileManagerModule, PrismaModule, FileModule, MetadataModule, FileModule, ArtistModule, AlbumModule, SongModule, ReleaseModule, TrackModule, GenreModule, LyricsModule, ProvidersModule],
 		}).overrideProvider(PrismaService).useClass(TestPrismaService).compile();
 		app = await SetupApp(module);
@@ -38,6 +39,11 @@ describe('Illustration Controller', () => {
 		releaseIllustrationService = module.get(ReleaseIllustrationService);
 		trackIllustrationService = module.get(TrackIllustrationService);
 		await dummyRepository.onModuleInit();
+	});
+
+	afterAll(() => {
+		module.close();
+		app.close();
 	});
 
 	const expectedFileName = (headers: any, expected: string) => {

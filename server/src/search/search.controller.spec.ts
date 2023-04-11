@@ -25,9 +25,9 @@ import { expectedArtistResponse, expectedAlbumResponse, expectedSongResponse } f
 describe('Search Controller', () => {
 	let dummyRepository: TestPrismaService;
 	let app: INestApplication;
-
+	let module: TestingModule;
 	beforeAll(async () => {
-		const module: TestingModule = await createTestingModule({
+		module = await createTestingModule({
 			imports: [PrismaModule, ArtistModule, TrackModule, AlbumModule, ReleaseModule, GenreModule, IllustrationModule, SearchModule, MetadataModule],
 		}).overrideProvider(PrismaService).useClass(TestPrismaService).compile();
 		dummyRepository = module.get(PrismaService);
@@ -53,6 +53,11 @@ describe('Search Controller', () => {
 		dummyRepository.releaseB1_1 = await releaseService.update({ name: 'Tales of Us' }, { id: dummyRepository.releaseB1_1.id });
 		dummyRepository.compilationReleaseA1 = await releaseService.update({ name: 'Hotel Costes (Deluxe)' }, { id: dummyRepository.compilationReleaseA1.id });
 		dummyRepository.genreC = await genreService.update({ name: 'Electronic' }, { id: dummyRepository.genreC.id } );
+	});
+
+	afterAll(() => {
+		module.close();
+		app.close();
 	});
 
 	describe('Search All', () => {

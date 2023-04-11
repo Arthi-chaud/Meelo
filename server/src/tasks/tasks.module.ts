@@ -1,5 +1,4 @@
 import { Module, forwardRef } from '@nestjs/common';
-import TasksService from './tasks.service';
 import LibraryModule from 'src/library/library.module';
 import TasksController from './tasks.controller';
 import TrackModule from 'src/track/track.module';
@@ -16,9 +15,14 @@ import AlbumModule from 'src/album/album.module';
 import ArtistModule from 'src/artist/artist.module';
 import GenreModule from 'src/genre/genre.module';
 import ProvidersModule from 'src/providers/providers.module';
+import TaskRunner, { TaskQueue } from './tasks.runner';
+import { BullModule } from '@nestjs/bull';
 
 @Module({
 	imports: [
+		BullModule.registerQueue({
+			name: TaskQueue,
+		}),
 		forwardRef(() => LibraryModule),
 		FileManagerModule,
 		forwardRef(() => FileModule),
@@ -36,7 +40,7 @@ import ProvidersModule from 'src/providers/providers.module';
 		forwardRef(() => IllustrationModule),
 	],
 	controllers: [TasksController],
-	providers: [TasksService],
-	exports: [TasksService]
+	providers: [TaskRunner],
+	exports: [TaskRunner]
 })
 export default class TasksModule {}

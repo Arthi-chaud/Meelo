@@ -23,14 +23,19 @@ describe('Lyrics Service', () => {
 	let lyricsService: LyricsService;
 	let lyricsB1: Lyrics;
 	let lyricsC1: Lyrics;
+	let module: TestingModule;
 	beforeAll(async () => {
-		const module: TestingModule = await createTestingModule({
+		module = await createTestingModule({
 			imports: [PrismaModule, SongModule, AlbumModule, ReleaseModule, FileModule, FileManagerModule, SettingsModule, GenreModule, LyricsModule, ProvidersModule],
 			providers: [LyricsService],
 		}).overrideProvider(PrismaService).useClass(TestPrismaService).compile();
 		await module.get<PrismaService>(PrismaService).onModuleInit();
 		dummyRepository = module.get(PrismaService);
 		lyricsService = module.get(LyricsService);
+	});
+
+	afterAll(() => {
+		module.close();
 	});
 
 	it('should be defined', () => {

@@ -25,8 +25,9 @@ describe('Library Service', () => {
 	let dummyRepository: TestPrismaService;
 	let newLibrary: Library;
 
+	let module: TestingModule;
 	beforeAll(async () => {
-		const module: TestingModule = await createTestingModule({
+		module = await createTestingModule({
 			imports: [LibraryModule, PrismaModule, FileModule, MetadataModule, FileManagerModule, IllustrationModule, TrackModule, LyricsModule, TasksModule],
 			providers: [LibraryService],
 		}).overrideProvider(PrismaService).useClass(TestPrismaService).compile();
@@ -36,6 +37,10 @@ describe('Library Service', () => {
 		dummyRepository = module.get(PrismaService);
 		module.get(ArtistIllustrationService).onModuleInit();
 		await dummyRepository.onModuleInit();
+	});
+
+	afterAll(() => {
+		module.close();
 	});
 
 	it('should be defined', () => {

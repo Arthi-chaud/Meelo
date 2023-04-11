@@ -29,9 +29,9 @@ describe('Album Controller', () => {
 	let app: INestApplication;
 	let albumService: AlbumService;
 	let providerService: ProviderService;
-
+	let module: TestingModule;
 	beforeAll(async () => {
-		const module: TestingModule = await createTestingModule({
+		module = await createTestingModule({
 			imports: [ArtistModule, AlbumModule, PrismaModule, ReleaseModule, MetadataModule, SongModule, TrackModule, IllustrationModule, GenreModule, FileModule],
 			providers: [ArtistService, ReleaseService],
 		}).overrideProvider(PrismaService).useClass(TestPrismaService).compile();
@@ -42,6 +42,11 @@ describe('Album Controller', () => {
 		providerService = module.get(ProviderService);
 		module.get(SettingsService).loadFromFile();
 		await providerService.onModuleInit();
+	});
+
+	afterAll(() => {
+		app.close();
+		module.close();
 	});
 
 	describe("Get Albums (GET /albums)", () => {

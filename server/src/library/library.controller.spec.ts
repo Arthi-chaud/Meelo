@@ -29,8 +29,9 @@ describe('Library Controller', () => {
 	let dummyRepository: TestPrismaService;
 	let newLibrary: Library;
 
+	let module: TestingModule;
 	beforeAll(async () => {
-		const module: TestingModule = await createTestingModule({
+		module = await createTestingModule({
 			imports: [LibraryModule, FileManagerModule, PrismaModule, FileModule, MetadataModule, FileManagerModule, IllustrationModule, ArtistModule, AlbumModule, SongModule, ReleaseModule, TrackModule, GenreModule, LyricsModule, TasksModule],
 			providers: [LibraryController, LibraryService, PrismaService],
 		}).overrideProvider(PrismaService).useClass(TestPrismaService).compile();
@@ -40,6 +41,10 @@ describe('Library Controller', () => {
 		
 	});
 
+	afterAll(() => {
+		module.close();
+		app.close();
+	});
 
 	describe('Create Library (POST /libraries/new)', () => {
 		it("should create a library", async () => {

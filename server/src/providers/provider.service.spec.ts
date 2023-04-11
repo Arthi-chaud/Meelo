@@ -22,8 +22,9 @@ describe("Provider Service", () => {
 	let prismaService: PrismaService;
 	let fileManagerService: FileManagerService;
 
+	let module: TestingModule;
 	beforeAll(async () => {
-		const module: TestingModule = await createTestingModule({
+		module = await createTestingModule({
 			imports: [HttpModule, ProvidersModule, SettingsModule, PrismaModule, FileManagerModule, forwardRef(() => IllustrationModule)],
 			providers: [GeniusProvider, MusicBrainzProvider, ProviderService, PrismaService],
 		}).overrideProvider(PrismaService).useClass(TestPrismaService).compile();
@@ -33,6 +34,10 @@ describe("Provider Service", () => {
 		fileManagerService = module.get(FileManagerService);
 		module.get(MusicBrainzProvider).onModuleInit();
 		await providerService.onModuleInit();
+	});
+
+	afterAll(() => {
+		module.close();
 	});
 
 	describe('Push Providers to DB', () => {

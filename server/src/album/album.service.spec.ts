@@ -23,8 +23,9 @@ describe('Album Service', () => {
 	let newAlbum: Album;
 	let newCompilationAlbum: Album;
 	let dummyRepository: TestPrismaService;
+	let module: TestingModule;
 	beforeAll(async () => {
-		const module: TestingModule = await createTestingModule({
+		module = await createTestingModule({
 			imports: [AlbumModule, ArtistModule, PrismaModule, SongModule, IllustrationModule, GenreModule],
 			providers: [ArtistService],
 		}).overrideProvider(PrismaService).useClass(TestPrismaService).compile();
@@ -34,6 +35,10 @@ describe('Album Service', () => {
 		artistService = module.get<ArtistService>(ArtistService);
 		albumService = module.get<AlbumService>(AlbumService);
 	})
+
+	afterAll(() => {
+		module.close();
+	});
 
 	it('should be defined', () => {
 		expect(artistService).toBeDefined();

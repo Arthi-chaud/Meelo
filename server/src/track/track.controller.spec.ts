@@ -24,14 +24,20 @@ describe('Track Controller', () => {
 	let app: INestApplication;
 	let dummyRepository: TestPrismaService;
 	
+	let module: TestingModule;
 	beforeAll(async () => {
-		const module: TestingModule = await createTestingModule({
+		module = await createTestingModule({
 			imports: [PrismaModule, AlbumModule, ArtistModule, ReleaseModule, TrackModule, IllustrationModule, SongModule, MetadataModule, GenreModule, LyricsModule, LibraryModule],
 		}).overrideProvider(PrismaService).useClass(TestPrismaService).compile();
 		app = await SetupApp(module);
 		dummyRepository = module.get(PrismaService);
 		await dummyRepository.onModuleInit();
 
+	});
+
+	afterAll(() => {
+		module.close();
+		app.close();
 	});
 
 	describe("Get Tracks (GET /tracks)", () => {

@@ -14,8 +14,9 @@ describe('Settings Controller', () => {
 	let fileService: FileManagerService;
 	let app: INestApplication;
 
+	let module: TestingModule;
 	beforeAll(async () => {
-		const module: TestingModule = await createTestingModule({
+		module = await createTestingModule({
 			imports: [SettingsModule, FileManagerModule],
 			controllers: [SettingsController],
 		}).compile();
@@ -27,6 +28,11 @@ describe('Settings Controller', () => {
 			() => fs.readFileSync('test/assets/settings.json').toString()
 		);
 		controller.reload();
+	});
+
+	afterAll(() => {
+		module.close();
+		app.close();
 	});
 
 

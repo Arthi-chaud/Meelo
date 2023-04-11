@@ -18,9 +18,9 @@ describe('Album Illustration Service', () => {
 	let albumIllustrationService: AlbumIllustrationService;
 	let fileManagerService: FileManagerService;
 	const baseMetadataFolder = 'test/assets/metadata';
-
+	let module: TestingModule;
 	beforeAll(async () => {
-		const module: TestingModule = await createTestingModule({
+		module = await createTestingModule({
 			imports: [FileManagerModule, PrismaModule, ArtistModule, AlbumModule, SettingsModule, ReleaseModule],
 		}).overrideProvider(PrismaService).useClass(TestPrismaService).compile();
 		albumIllustrationService = module.get<AlbumIllustrationService>(AlbumIllustrationService);
@@ -28,6 +28,9 @@ describe('Album Illustration Service', () => {
 		fileManagerService = module.get(FileManagerService);
 		await dummyRepository.onModuleInit();
 		module.get(ArtistIllustrationService).onModuleInit();
+	});
+	afterAll(() => {
+		module.close();
 	});
 
 	describe('build Illustration Folder Path', () => {
