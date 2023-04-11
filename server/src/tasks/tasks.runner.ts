@@ -110,7 +110,7 @@ export default class TaskRunner {
 			this.logger.log(`Task '${job.name}' completed`);
 		} catch (err) {
 			this.logger.error(`Task '${job.name}' failed: ${err.message}`);
-			await job.moveToFailed(err.message);
+			await job.moveToFailed({ message: err.message });
 		}
 	}
 

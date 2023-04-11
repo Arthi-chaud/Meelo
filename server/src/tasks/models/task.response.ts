@@ -21,9 +21,11 @@ export class TaskStatusResponse {
 
 export class ActiveTaskResponse extends TaskResponse {
 	@ApiProperty({
-		description: 'JSON Parameter of the task'
+		description: 'JSON Parameter of the task',
+		type: JSON,
+		nullable: true
 	})
-	data: JSON;
+	data: JSON | null;
 }
 
 export class TaskQueueStatusResponse {
@@ -39,5 +41,5 @@ export class TaskQueueStatusResponse {
 		description: 'Tasks waiting to be processed',
 		isArray: true
 	})
-	waiting: TaskResponse[];
+	pending: TaskResponse[];
 }

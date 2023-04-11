@@ -26,6 +26,9 @@ export default class TasksController {
 		};
 	}
 
+	@ApiOperation({
+		summary: 'Get running and pending tasks'
+	})
 	@Get('status')
 	async getTaskQueueStatus(): Promise<TaskQueueStatusResponse> {
 		const [activeJob, waitingJob] = await Promise.all([
@@ -36,10 +39,10 @@ export default class TasksController {
 
 		response.active = activeJob ? {
 			name: activeJob.name,
-			data: activeJob.data,
+			data: activeJob.data ?? null,
 			description: TasksDescription[activeJob.name as Tasks]
 		} : null;
-		response.waiting = waitingJob.map((job) => ({
+		response.pending = waitingJob.map((job) => ({
 			name: job.name,
 			description: TasksDescription[job.name as Tasks]
 		}));
