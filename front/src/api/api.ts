@@ -53,6 +53,7 @@ type FetchParameters<Keys extends readonly string[], ReturnType> = {
 	data?: Record<string, any>,
 	method?: 'GET' | 'PUT' | 'POST' | 'DELETE',
 } & RequireExactlyOne<{
+	emptyResponse: true,
 	validator: yup.Schema<ReturnType>,
 	customValidator: (value: unknown) => Promise<ReturnType>
 }>
@@ -217,6 +218,57 @@ export default class API {
 			parameters: { },
 			method: 'DELETE',
 			validator: yup.mixed()
+		});
+	}
+
+	/**
+	 * Update Artist Illustration
+	 */
+	static async updateArtistIllustration(
+		artistSlugOrId: number | string,
+		illustrationUrl: string,
+	): Promise<unknown> {
+		return API.fetch({
+			route: `/illustrations/artists/${artistSlugOrId}`,
+			errorMessage: "Update Illustration Failed",
+			method: 'POST',
+			parameters: {},
+			emptyResponse: true,
+			data: { url: illustrationUrl }
+		});
+	}
+
+	/**
+	 * Update Release Illustration
+	 */
+	static async updateReleaseIllustration(
+		releaseSlugOrId: number | string,
+		illustrationUrl: string,
+	): Promise<unknown> {
+		return API.fetch({
+			route: `/illustrations/releases/${releaseSlugOrId}`,
+			errorMessage: "Update Illustration Failed",
+			method: 'POST',
+			parameters: {},
+			emptyResponse: true,
+			data: { url: illustrationUrl }
+		});
+	}
+
+	/**
+	 * Update Track Illustration
+	 */
+	static async updateTrackIllustration(
+		trackSlugOrId: number | string,
+		illustrationUrl: string,
+	): Promise<unknown> {
+		return API.fetch({
+			route: `/illustrations/tracks/${trackSlugOrId}`,
+			errorMessage: "Update Illustration Failed",
+			method: 'POST',
+			parameters: {},
+			emptyResponse: true,
+			data: { url: illustrationUrl }
 		});
 	}
 
@@ -1032,7 +1084,7 @@ export default class API {
 
 	private static async fetch<ReturnType, Keys extends readonly string[]>({
 		route, parameters, otherParameters,
-		errorMessage, data, method, validator, customValidator
+		errorMessage, data, method, validator, customValidator, emptyResponse
 	}: FetchParameters<Keys, ReturnType>): Promise<ReturnType> {
 		const accessToken = store.getState().user.accessToken;
 		const header = {
@@ -1049,7 +1101,7 @@ export default class API {
 				} : header,
 			}
 		);
-		const jsonResponse = await response.json().catch(() => {
+		const jsonResponse = emptyResponse ? undefined : await response.json().catch(() => {
 			throw new Error("Error while parsing Server's response");
 		});
 
@@ -1071,6 +1123,9 @@ export default class API {
 			if (!response.ok) {
 				throw new Error(errorMessage ?? jsonResponse.message ?? response.statusText);
 			}
+		}
+		if (emptyResponse) {
+			return {} as ReturnType;
 		}
 		try {
 			if (customValidator) {
