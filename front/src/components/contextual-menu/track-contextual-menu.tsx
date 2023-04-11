@@ -12,6 +12,7 @@ import { GoToReleaseAction } from "../actions/link";
 import { PlayAfterAction, PlayNextAction } from "../actions/playlist";
 import { ShowTrackFileInfoAction } from "../actions/show-track-info";
 import { TrackWithRelations } from "../../models/track";
+import { UpdateTrackIllustrationAction } from "../actions/update-illustration";
 
 type TrackContextualMenuProps = {
 	track: TrackWithRelations<'song'>;
@@ -47,6 +48,7 @@ const TrackContextualMenu = (props: TrackContextualMenuProps) => {
 				onClick: () => masterMutation.mutate()
 			}
 		],
+		[UpdateTrackIllustrationAction(confirm, queryClient, props.track.id)],
 		[ShowTrackFileInfoAction(confirm, props.track.id)],
 		[DownloadAction(confirm, props.track.stream)]
 	]}/>;

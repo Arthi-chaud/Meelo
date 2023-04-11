@@ -1,4 +1,4 @@
-import { Star } from "@mui/icons-material";
+import { Star, SwitchAccessShortcut } from "@mui/icons-material";
 import { toast } from "react-hot-toast";
 import { useMutation } from "react-query";
 import { useQueryClient } from "../../api/use-query";
@@ -11,6 +11,7 @@ import { ShareReleaseAction } from "../actions/share";
 import { DownloadReleaseAction } from "../actions/download";
 import { useConfirm } from "material-ui-confirm";
 import { ReleaseWithRelations } from "../../models/release";
+import { UpdateReleaseIllustrationAction } from "../actions/update-illustration";
 
 type ReleaseContextualMenuProps = {
 	release: ReleaseWithRelations<'album'>;
@@ -52,11 +53,12 @@ const ReleaseContextualMenu = (props: ReleaseContextualMenuProps) => {
 			},
 			{
 				label: "Set all tracks as Master",
-				icon: <Star/>,
+				icon: <SwitchAccessShortcut/>,
 				disabled: !userIsAdmin,
 				onClick: () => tracksMasterMutation.mutate()
 			},
 		],
+		[UpdateReleaseIllustrationAction(confirm, queryClient, props.release.id)],
 		[DownloadReleaseAction(confirm, props.release.id)],
 		[ShareReleaseAction(props.release.id)]
 	]}/>;
