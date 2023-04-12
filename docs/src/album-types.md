@@ -4,7 +4,7 @@ In Music Apps, we usually call any song container an *Album*. While this is tech
 
 ## Available Types
 
-Meelo supports this categorizations, and the following album types:
+Meelo supports this categorization, and the following album types:
 
 - Studio Recording
   - What we would usually call *Albums*
@@ -19,7 +19,7 @@ Meelo supports this categorizations, and the following album types:
 
 ## Type recognition
 
-Meelo tries to be as independent from user interactions as possible. Therefore, type recognition is done automatically, when a new album is registered.
+Meelo tries to be as independent of user interactions as possible. Therefore, type recognition is done automatically, when a new album is registered.
 
 For now, Type recognition is solely based on the Album's title. Keywords to recognize an album's type were inspired by the way other music streaming services would categorize an album. Therefore, if your music collection's naming convention work a similar way to Spotify, Apple Music, ..., there might not be a lot to change if you want to fully enjoy this feature. However, if you consider that one of the following ways to recognize a type is incomplete or incorrect, feel free to [open an issue](https://github.com/Arthi-chaud/Meelo/issues).
 
@@ -38,5 +38,5 @@ For now, Type recognition is solely based on the Album's title. Keywords to reco
 Notes:
 
 - Keywords are case-insensitive.
-- Any album that would not fall into the other categories will be considered a Compilation IF the album is a 'compilation' album (see metadata)
-- Any album that would not fall into the other categories will be considered a Studio Recording
+- Any album that would not fall into the other categories will be considered to be a Compilation IF the album is a 'compilation' album (see metadata)
+- Any album that would not fall into the other categories will be considered to be a Studio Recording

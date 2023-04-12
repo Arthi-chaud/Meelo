@@ -1,6 +1,6 @@
 # Prepare your music library
 
-The toughest part is to have an organised music library. The way files are organised are up to you! But here is a recommended architecture:
+The toughest part is to have an structured music library. The way files are organised are up to you! But here is a recommended architecture:
 
 ```tree
 Library's Folder   
