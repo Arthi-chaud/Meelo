@@ -1,6 +1,6 @@
 # Requirements
 
-Meelo is easy to setup! But you'll need the following thing before continuing
+Meelo is easy to setup! But you'll need the following things before continuing
 
 - Have you music library ready (see [*this step*](../prepare-music-library))
 - Know how `Docker` and `docker-compose` work
