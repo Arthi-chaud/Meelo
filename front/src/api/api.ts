@@ -313,6 +313,25 @@ export default class API {
 	}
 
 	/**
+	 * Fetch all releases
+	 * @returns An InfiniteQuery of releases
+	 */
+	static getAllReleases<I extends ReleaseInclude>(
+		sort?: SortingParameters<typeof ReleaseSortingKeys>,
+		include?: I[]
+	): InfiniteQuery<ReleaseWithRelations<I>> {
+		return {
+			key: ['releases', sort ?? {}, ...API.formatIncludeKeys(include)],
+			exec: (pagination) => API.fetch({
+				route: `/releases`,
+				errorMessage: 'Releases could not be loaded',
+				parameters: { pagination: pagination, include, sort },
+				validator: PaginatedResponse(ReleaseWithRelations(include ?? []))
+			})
+		};
+	}
+
+	/**
 	 * Fetch all album artists in a library
 	 * @param librarySlugOrId the identifier of the library
 	 * @returns An InfiniteQuery of Artists

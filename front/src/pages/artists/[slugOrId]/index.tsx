@@ -11,18 +11,16 @@ import ArrowRight from '@mui/icons-material/ArrowRight';
 import AlbumTile from "../../../components/tile/album-tile";
 import Link from "next/link";
 import { useDispatch } from "react-redux";
-import { playTrack } from "../../../state/playerSlice";
 import getSlugOrId from "../../../utils/getSlugOrId";
-import SongContextualMenu from "../../../components/contextual-menu/song-contextual-menu";
 import prepareSSR, { InferSSRProps } from "../../../ssr";
 import LoadingPage from "../../../components/loading/loading-page";
 import TileRow from "../../../components/tile-row";
-import ListItem from "../../../components/list-item/item";
 import getYear from "../../../utils/getYear";
 import SectionHeader from "../../../components/section-header";
 import VideoTile from "../../../components/tile/video-tile";
 import formatDuration from "../../../utils/formatDuration";
 import ExternalIdBadge from "../../../components/external-id-badge";
+import SongGrid from "../../../components/song-grid";
 
 // Number of Song item in the 'Top Song' section
 const songListSize = 6;
@@ -104,28 +102,14 @@ const ArtistPage = (
 						</Link> : undefined
 					}
 				/>
-				<Grid item container spacing={2}
-					sx={{ display: 'flex', flexGrow: 1 }}>
-					{ topSongs.data.pages.at(0)?.items.slice(0, songListSize).map((song) =>
-						<Grid key={song.id} item xs={12} sm={6} lg={4}>
-							<ListItem
-								icon={<Illustration url={song.illustration}/>}
-								title={song.name}
-								trailing={<SongContextualMenu
-									song={{ ...song, artist: artist.data }}
-								/>}
-								onClick={() => queryClient
-									.fetchQuery(API.getMasterTrack(song.id, ['release']))
-									.then((track) => {
-										dispatch(playTrack({
-											artist: artist.data,
-											track,
-											release: track.release
-										}));
-									})
-								}
-							/>
-						</Grid>)}
+				<Grid item container sx={{ display: 'block', flexGrow: 1 }}>
+					<SongGrid
+						hideArtistName={true}
+						songs={topSongs.data.pages.at(0)?.items
+							.slice(0, songListSize)
+							.map((song) => ({ ...song, artist: artist.data })) ?? []
+						}
+					/>
 				</Grid>
 			</>
 			}
