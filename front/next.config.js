@@ -13,11 +13,6 @@ module.exports = {
   async redirects() {
     return [
       {
-        source: '/',
-        destination: '/albums',
-        permanent: true,
-      },
-      {
         source: '/libraries/:slug',
         destination: '/libraries/:slug/albums',
         permanent: true,

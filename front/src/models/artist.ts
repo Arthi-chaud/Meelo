@@ -33,7 +33,8 @@ export default Artist;
 export const ArtistSortingKeys = [
 	'name',
 	'albumCount',
-	'songCount'
+	'songCount',
+	'addDate'
 ] as const;
 
 export { ArtistWithRelations };
