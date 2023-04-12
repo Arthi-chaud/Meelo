@@ -20,6 +20,7 @@ import getAppBarActions from "./actions";
 import { useSelector } from "react-redux";
 import { RootState } from "../../state/store";
 import Action from "../actions/action";
+import HomeIcon from '@mui/icons-material/Home';
 
 interface DrawerProps {
 	availableLibraries: Library[] | null,
@@ -45,6 +46,16 @@ const MeeloAppBarDrawer = (
 			onClose={onClose}
 			sx={{ display: { xs: 'block', md: 'none' } }}
 		>
+			<List>
+				<Link href='/'>
+					<ListItem disableGutters>
+						<ListItemButton sx={{ borderRadius: '0' }} onClick={onClose}>
+							<ListItemIcon><HomeIcon/></ListItemIcon>
+							<ListItemText>Home</ListItemText>
+						</ListItemButton>
+					</ListItem>
+				</Link>
+			</List>
 			<List subheader={
 				<ListSubheader disableSticky={false} sx={{ backgroundColor: 'inherit' }}>
 					<Grid container columnSpacing={2}
