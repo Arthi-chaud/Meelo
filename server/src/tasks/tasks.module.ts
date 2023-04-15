@@ -17,6 +17,7 @@ import GenreModule from 'src/genre/genre.module';
 import ProvidersModule from 'src/providers/providers.module';
 import TaskRunner, { TaskQueue } from './tasks.runner';
 import { BullModule } from '@nestjs/bull';
+import PlaylistModule from 'src/playlist/playlist.module';
 
 @Module({
 	imports: [
@@ -38,6 +39,7 @@ import { BullModule } from '@nestjs/bull';
 		forwardRef(() => ArtistModule),
 		forwardRef(() => GenreModule),
 		forwardRef(() => IllustrationModule),
+		forwardRef(() => PlaylistModule),
 	],
 	controllers: [TasksController],
 	providers: [TaskRunner],

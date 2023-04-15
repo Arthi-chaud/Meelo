@@ -1,5 +1,6 @@
 import { Injectable } from "@nestjs/common";
-import { Album, AlbumType, Artist, File, Genre, Library, Lyrics, Release, Song, Track, TrackType } from "@prisma/client";
+import { Album, AlbumType, Artist, File, Genre, Library, Lyrics, PlaylistEntry, Release, Song, Track, TrackType } from "@prisma/client";
+import { Playlist } from "src/prisma/models";
 import PrismaService from "src/prisma/prisma.service";
 
 
@@ -37,6 +38,13 @@ export default class TestPrismaService extends PrismaService {
 	public fileB1_1: File;
 	public fileC1_1: File;
 	public lyricsA1: Lyrics;
+	public playlist1: Playlist;
+	public playlist2: Playlist;
+	public playlist3: Playlist;
+
+	public playlistEntry1: PlaylistEntry;
+	public playlistEntry2: PlaylistEntry;
+	public playlistEntry3: PlaylistEntry;
 
 	public compilationAlbumA: Album;
 	public compilationReleaseA1: Release;
@@ -169,6 +177,39 @@ export default class TestPrismaService extends PrismaService {
 		this.trackC1_1 = await this.track.create({
 			data: { ...this.baseTrack, name: "My C Song 1", songId: this.songC1.id,
 				releaseId: this.compilationReleaseA1.id, type: TrackType.Audio, sourceFileId: this.fileC1_1.id
+			}
+		});
+		this.playlist1 = await this.playlist.create({ data: {
+			name: 'My Playlist 1',
+			slug: 'my-playlist-1'
+		}});
+		this.playlist2 = await this.playlist.create({ data: {
+			name: 'The Playlist 2',
+			slug: 'the-playlist-2'
+		}});
+		this.playlist3 = await this.playlist.create({ data: {
+			name: 'Playlist 3',
+			slug: 'playlist-3'
+		}});
+		this.playlistEntry2 = await this.playlistEntry.create({
+			data: {
+				playlistId: this.playlist1.id,
+				songId: this.songA1.id,
+				index: 2
+			}
+		});
+		this.playlistEntry1 = await this.playlistEntry.create({
+			data: {
+				playlistId: this.playlist1.id,
+				songId: this.songA2.id,
+				index: 1
+			}
+		});
+		this.playlistEntry3 = await this.playlistEntry.create({
+			data: {
+				playlistId: this.playlist1.id,
+				songId: this.songC1.id,
+				index: 0
 			}
 		});
 

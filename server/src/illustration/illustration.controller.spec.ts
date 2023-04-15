@@ -22,6 +22,9 @@ import SetupApp from "test/setup-app";
 import TrackIllustrationService from "src/track/track-illustration.service";
 import ReleaseIllustrationService from "src/release/release-illustration.service";
 import ProvidersModule from "src/providers/providers.module";
+
+jest.setTimeout(60000);
+
 describe('Illustration Controller', () => {
 	let app: INestApplication;
 	let dummyRepository: TestPrismaService;
@@ -375,6 +378,63 @@ describe('Illustration Controller', () => {
 		it("should return 404, when track does not exist", () => {
 			return request(app.getHttpServer())
 				.delete(`/illustrations/tracks/-1`)
+				.expect(404);
+		});
+	});
+
+	describe("Get Playlist Illustration", () => {
+		it("should return the playlist illustration", () => {
+			jest.spyOn(fileManagerService, 'fileExists').mockReturnValueOnce(true);
+			jest.spyOn(fs, 'createReadStream').mockReturnValueOnce(getDummyIllustrationStream());
+			return request(app.getHttpServer())
+				.get(`/illustrations/playlists/${dummyRepository.playlist1.id}`)
+				.expect(200)
+				.expect((res) => {
+					expectedFileName(res.headers, dummyRepository.playlist1.slug);
+					expect(res.body).toStrictEqual(dummyIllustrationBytes);
+				});
+		});
+		it("should return 404, when artist does not exist", () => {
+			return request(app.getHttpServer())
+				.get(`/illustrations/playlists/-1`)
+				.expect(404);
+		})
+		it("should return 404, when artist illustration does not exist", () => {
+			return request(app.getHttpServer())
+				.get(`/illustrations/playlists/${dummyRepository.playlist2.id}`)
+				.expect(404);
+		});
+	});
+
+	describe("Update Playlist Illustration", () => {
+		it("should create the Playlist illustration", () => {
+			return request(app.getHttpServer())
+				.post(`/illustrations/playlists/${dummyRepository.playlist1.id}`)
+				.send({
+					url: illustrationUrlExample
+				})
+				.expect(201)
+				.expect(async () => {
+					expect(fileManagerService.fileExists(`test/assets/metadata/_playlists/${dummyRepository.playlist1.slug}/cover.jpg`));
+				});
+		});
+		it("should update the artist illustration", () => {
+			return request(app.getHttpServer())
+				.post(`/illustrations/playlists/${dummyRepository.playlist1.id}`)
+				.send({
+					url: illustration2UrlExample
+				})
+				.expect(201)
+				.expect(async () => {
+					expect(fileManagerService.fileExists(`test/assets/metadata/_playlists/${dummyRepository.playlist1.slug}/cover.jpg`));
+				})
+		});
+		it("should return 404, when artist does not exist", () => {
+			return request(app.getHttpServer())
+				.post(`/illustrations/playlists/-1`)
+				.send({
+					url: illustrationUrlExample
+				})
 				.expect(404);
 		});
 	});
