@@ -67,7 +67,7 @@ describe('Playlist Service', () => {
 			expect(playlists.at(2)?.id).toBe(dummyRepository.playlist2.id);
 		});
 		it('Should sort playlists by create date', async () => {
-			const playlists = await playlistService.getMany({ }, {}, {}, { order: 'asc', sortBy: "createDate" });
+			const playlists = await playlistService.getMany({ }, {}, {}, { order: 'asc', sortBy: "creationDate" });
 
 			expect(playlists.length).toBe(3);
 			expect(playlists.at(0)?.id).toBe(dummyRepository.playlist1.id);

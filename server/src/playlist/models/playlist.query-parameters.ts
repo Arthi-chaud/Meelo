@@ -56,7 +56,7 @@ namespace PlaylistQueryParameters {
 		'id',
 		'name',
 		'entryCount',
-		'createDate'
+		'creationDate'
 	] as const;
 	export type SortingKeys = typeof SortingKeys;
 	export class SortingParameter extends ModelSortingParameter(SortingKeys) {}

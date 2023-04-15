@@ -23,8 +23,8 @@ generator classes {
   noDependencies                  = "false"
   excludeEntity                   = "false"
   excludePlainDto                 = "false"
-  excludeCreateDto                = "true"
-  excludeUpdateDto                = "true"
+  excludeCreateDto                = "false"
+  excludeUpdateDto                = "false"
   excludeConnectDto               = "true"
   definiteAssignmentAssertion     = "true"
 }
@@ -412,9 +412,11 @@ model Playlist {
 	id				Int		@id @default(autoincrement())
 	/// @description The name of the playlist
 	/// @example My Playlist
+	/// @minLength 1
 	name			String	@db.Citext()
 	/// @description Unique string identifer
 	/// @example my-playlist
+	/// @minLength 1
 	slug			String	@unique
 	/// @description The date the playlist was created
 	createdAt		DateTime	@default(now())
@@ -433,6 +435,7 @@ model PlaylistEntry {
 	/// @description The Identifier of the parent playlist 
 	playlistId		Int
 	playlist		Playlist @relation(fields: [playlistId], references: [id], onDelete: Cascade)
+	/// @minimum 0
 	/// @description The index of the entry in the playlist, starting at 0
 	index			Int
 	@@map("playlist_entries")

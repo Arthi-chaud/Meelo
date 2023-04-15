@@ -1,4 +1,6 @@
-import { NotFoundException } from "@nestjs/common";
+import {
+	AlreadyExistsException, InvalidRequestException, NotFoundException
+} from "src/exceptions/meelo-exception";
 import Slug from "src/slug/slug";
 
 export class PlaylistNotFoundException extends NotFoundException {
@@ -7,7 +9,7 @@ export class PlaylistNotFoundException extends NotFoundException {
 	}
 }
 
-export class PlaylistAlreadyExistsException extends NotFoundException {
+export class PlaylistAlreadyExistsException extends AlreadyExistsException {
 	constructor(playlistName: string) {
 		super(`Playlist '${playlistName}': Playlist already exists`);
 	}
@@ -28,5 +30,11 @@ export class AddSongToPlaylistFailureException extends NotFoundException {
 export class PlaylistEntryNotFoundException extends NotFoundException {
 	constructor(entryId: number) {
 		super(`Playlist entry ${entryId} not found`);
+	}
+}
+
+export class InvalidPlaylistEntryIndexException extends InvalidRequestException {
+	constructor() {
+		super('Invalid Playlist entry Index');
 	}
 }

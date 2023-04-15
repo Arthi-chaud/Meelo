@@ -10,6 +10,7 @@ import SongService from 'src/song/song.service';
 import { PrismaError } from 'prisma-error-enum';
 import {
 	AddSongToPlaylistFailureException,
+	InvalidPlaylistEntryIndexException,
 	PlaylistAlreadyExistsException, PlaylistEntryNotFoundException,
 	PlaylistNotFoundException, PlaylistNotFoundFromIDException
 } from './playlist.exceptions';
@@ -112,7 +113,7 @@ export default class PlaylistService extends RepositoryService<
 		switch (sortingParameter.sortBy) {
 		case 'name':
 			return { slug: sortingParameter.order };
-		case 'createDate':
+		case 'creationDate':
 			return { createdAt: sortingParameter.order };
 		case 'entryCount':
 			return { entries: { _count: sortingParameter.order } };
@@ -155,6 +156,9 @@ export default class PlaylistService extends RepositoryService<
 	 * @param newIndex the new index of the entry
 	 */
 	async moveEntry(entryId: number, newIndex: number) {
+		if (newIndex < 0) {
+			throw new InvalidPlaylistEntryIndexException();
+		}
 		const entry = await this.prismaService.playlistEntry
 			.findFirstOrThrow({ where: { id: entryId } })
 			.catch(() => {
@@ -171,6 +175,7 @@ export default class PlaylistService extends RepositoryService<
 				where: { id: entry.id }, data: { index: newIndex }
 			}))
 		);
+		await this.flatten({ id: entry.playlistId });
 	}
 
 	/**
@@ -184,7 +189,7 @@ export default class PlaylistService extends RepositoryService<
 				throw new PlaylistEntryNotFoundException(entryId);
 			});
 
-		this.flatten({ id: deleted.playlistId });
+		await this.flatten({ id: deleted.playlistId });
 	}
 
 	/**
