@@ -133,6 +133,16 @@ const MeeloAppBar = () => {
 											</Grid>;
 										})}
 									</Grid>
+									<Divider orientation='vertical' flexItem sx={{ marginX: 2 }} />
+									<Grid item>
+										<Link href='/playlists'>
+											<Button variant="text" color='inherit'>
+												<Typography sx={{ fontWeight: router.route == `/playlists` ? 'bold' : 'normal' }}>
+													Playlists
+												</Typography>
+											</Button>
+										</Link>
+									</Grid>
 								</Box>
 							</Fade>
 							<Box sx={{ flexGrow: 1 }}/>
