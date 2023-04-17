@@ -27,6 +27,7 @@ import File from "../models/file";
 import { InfiniteQuery, Query } from './use-query';
 import * as yup from 'yup';
 import { RequireExactlyOne } from "type-fest";
+import Playlist, { PlaylistSortingKeys } from "../models/playlist";
 
 const AuthenticationResponse = yup.object({
 	access_token: yup.string().required()
@@ -118,6 +119,24 @@ export default class API {
 				errorMessage: "Libraries could not be loaded",
 				parameters: { pagination: pagination, include: [] },
 				validator: PaginatedResponse(Library)
+			}),
+		};
+	}
+
+	/**
+	 * Fetch all playlists
+	 * @returns An InfiniteQuery of playlists
+	 */
+	static getAllPlaylists(
+		sort?: SortingParameters<typeof PlaylistSortingKeys>
+	): InfiniteQuery<Playlist> {
+		return {
+			key: ['playlists', sort ?? {}],
+			exec: (pagination) => API.fetch({
+				route: `/playlists`,
+				errorMessage: "Playlists could not be loaded",
+				parameters: { pagination: pagination, include: [], sort },
+				validator: PaginatedResponse(Playlist)
 			}),
 		};
 	}
@@ -1189,6 +1208,21 @@ export default class API {
 	 */
 	static getReleaseArchiveURL(releaseId: number | string): string {
 		return this.buildURL(`/releases/${releaseId}/archive`, {});
+	}
+
+	/**
+	 * Add song to playlist
+	 * @returns Empty Promise
+	 */
+	static async addSongToPlaylist(songId: number, playlistId: number): Promise<unknown> {
+		return API.fetch({
+			route: `/playlists/entries/new`,
+			errorMessage: 'Failed to add song to playlist',
+			parameters: {},
+			data: { songId, playlistId },
+			method: 'POST',
+			validator: yup.mixed()
+		});
 	}
 
 	/**
