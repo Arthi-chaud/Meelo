@@ -27,7 +27,9 @@ import File from "../models/file";
 import { InfiniteQuery, Query } from './use-query';
 import * as yup from 'yup';
 import { RequireExactlyOne } from "type-fest";
-import Playlist, { PlaylistSortingKeys } from "../models/playlist";
+import Playlist, {
+	PlaylistInclude, PlaylistSortingKeys, PlaylistWithRelations
+} from "../models/playlist";
 
 const AuthenticationResponse = yup.object({
 	access_token: yup.string().required()
@@ -138,6 +140,24 @@ export default class API {
 				parameters: { pagination: pagination, include: [], sort },
 				validator: PaginatedResponse(Playlist)
 			}),
+		};
+	}
+
+	/**
+	 * Fetch one playlist
+	 * @returns An query for a playlist
+	 */
+	static getPlaylist<I extends PlaylistInclude>(
+		playlistSlugOrId: string | number,
+		include?: I[]
+	): Query<PlaylistWithRelations<I>> {
+		return {
+			key: ['playlist', playlistSlugOrId, ...API.formatIncludeKeys(include)],
+			exec: () => API.fetch({
+				route: `/playlists/${playlistSlugOrId}`,
+				parameters: { include },
+				validator: PlaylistWithRelations(include ?? [])
+			})
 		};
 	}
 
