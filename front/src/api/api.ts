@@ -247,14 +247,7 @@ export default class API {
 		artistSlugOrId: number | string,
 		illustrationUrl: string,
 	): Promise<unknown> {
-		return API.fetch({
-			route: `/illustrations/artists/${artistSlugOrId}`,
-			errorMessage: "Update Illustration Failed",
-			method: 'POST',
-			parameters: {},
-			emptyResponse: true,
-			data: { url: illustrationUrl }
-		});
+		return API.updateResourceIllustration(artistSlugOrId, illustrationUrl, 'artists');
 	}
 
 	/**
@@ -264,14 +257,7 @@ export default class API {
 		releaseSlugOrId: number | string,
 		illustrationUrl: string,
 	): Promise<unknown> {
-		return API.fetch({
-			route: `/illustrations/releases/${releaseSlugOrId}`,
-			errorMessage: "Update Illustration Failed",
-			method: 'POST',
-			parameters: {},
-			emptyResponse: true,
-			data: { url: illustrationUrl }
-		});
+		return API.updateResourceIllustration(releaseSlugOrId, illustrationUrl, 'releases');
 	}
 
 	/**
@@ -281,8 +267,29 @@ export default class API {
 		trackSlugOrId: number | string,
 		illustrationUrl: string,
 	): Promise<unknown> {
+		return API.updateResourceIllustration(trackSlugOrId, illustrationUrl, 'tracks');
+	}
+
+	/**
+	 * Update Track Illustration
+	 */
+	static async updatePlaylistIllustration(
+		playlistSlugOrId: number | string,
+		illustrationUrl: string,
+	): Promise<unknown> {
+		return API.updateResourceIllustration(playlistSlugOrId, illustrationUrl, 'playlists');
+	}
+
+	/**
+	 * Update Resourse Illustration
+	 */
+	private static async updateResourceIllustration(
+		resourceSlugOrId: number | string,
+		illustrationUrl: string,
+		resourceType: 'artists' | 'releases' | 'tracks' | 'playlists'
+	): Promise<unknown> {
 		return API.fetch({
-			route: `/illustrations/tracks/${trackSlugOrId}`,
+			route: `/illustrations/${resourceType}/${resourceSlugOrId}`,
 			errorMessage: "Update Illustration Failed",
 			method: 'POST',
 			parameters: {},
