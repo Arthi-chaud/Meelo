@@ -10,6 +10,8 @@ const PlaylistEntry = Song.concat(yup.object({
 	entryId: yup.number().required()
 }));
 
+export type PlaylistEntry = yup.InferType<typeof PlaylistEntry>;
+
 const Playlist = Resource.concat(Illustration).concat(yup.object({
 	/**
 	 * The name of the playlist
