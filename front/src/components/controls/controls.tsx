@@ -27,6 +27,7 @@ type ControllerProps<
 	Values extends string[][]
 > = {
 	options?: Options;
+	actions?: Action[],
 	sortingKeys: SortingKeys;
 	defaultSortingKey?: SortingKeys[number];
 	defaultSortingOrder?: Order;
@@ -85,6 +86,11 @@ const Controls = <
 
 	return <Box sx={{ width: '100%', display: 'flex', justifyContent: 'center', marginBottom: 2 }}>
 		<ButtonGroup color='inherit'>
+			{ props.actions?.map((action, index) => (
+				<Button key={'action-' + index} startIcon={action.icon} variant='contained' color="primary">
+					{action.label}
+				</Button>
+			)) ?? []}
 			<OptionButton
 				optionGroup={{
 					name: `Sort by ${capitalCase(optionsState.sortBy)}`,

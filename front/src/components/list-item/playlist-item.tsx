@@ -24,6 +24,6 @@ const PlaylistItem = ({ playlist }: PlaylistItemProps) => {
 		title={playlist.name}
 		trailing={<PlaylistContextualMenu playlist={playlist} />}
 	/>;
-}
+};
 
 export default PlaylistItem;

@@ -6,6 +6,7 @@ import PlaylistItem from "../../list-item/playlist-item";
 import PlaylistTile from "../../tile/playlist-tile";
 import InfiniteView from "../infinite-view";
 import InfiniteResourceViewProps from "./infinite-resource-view-props";
+import { Add } from "@mui/icons-material";
 
 const InfinitePlaylistView = (
 	props: InfiniteResourceViewProps<Playlist, typeof PlaylistSortingKeys>
@@ -15,6 +16,7 @@ const InfinitePlaylistView = (
 
 	return <>
 		<Controls
+			actions={[{ label: 'New', icon: <Add/> }]}
 			onChange={setOptions}
 			sortingKeys={PlaylistSortingKeys}
 			defaultSortingOrder={props.initialSortingOrder}
