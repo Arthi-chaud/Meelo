@@ -1253,6 +1253,34 @@ export default class API {
 	}
 
 	/**
+	 * Delete entry in playlist
+	 * @returns Empty Promise
+	 */
+	static async deletePlaylistEntry(entryId: number): Promise<unknown> {
+		return API.fetch({
+			route: `/playlists/entries/${entryId}`,
+			errorMessage: 'Failed to remove song from playlist',
+			parameters: {},
+			method: 'DELETE',
+			emptyResponse: true
+		});
+	}
+
+	/**
+	 * Delete playlist
+	 * @returns Empty Promise
+	 */
+	static async deletePlaylist(playlistSlugOrId: number | string): Promise<unknown> {
+		return API.fetch({
+			route: `/playlists/${playlistSlugOrId}`,
+			errorMessage: 'Failed to remove playlist',
+			parameters: {},
+			method: 'DELETE',
+			emptyResponse: true
+		});
+	}
+
+	/**
 	 * Mark a song as played
 	 * To be called when a song ends.
 	 * @param songSlugOrId
