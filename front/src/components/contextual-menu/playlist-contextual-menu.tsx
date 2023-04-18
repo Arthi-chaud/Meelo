@@ -1,4 +1,3 @@
-import { useConfirm } from "material-ui-confirm";
 import Playlist from "../../models/playlist";
 import { SharePlaylistAction } from "../actions/share";
 import { UpdatePlaylistIllustrationAction } from "../actions/update-illustration";
@@ -11,11 +10,10 @@ type PlaylistContextualMenuProps = {
 }
 
 const PlaylistContextualMenu = (props: PlaylistContextualMenuProps) => {
-	const confirm = useConfirm();
 	const queryClient = useQueryClient();
 
 	return <ContextualMenu onSelect={props.onSelect} actions={[
-		[UpdatePlaylistIllustrationAction(confirm, queryClient, props.playlist.slug)],
+		[UpdatePlaylistIllustrationAction(queryClient, props.playlist.slug)],
 		[SharePlaylistAction(props.playlist.slug)]
 	]}/>;
 };

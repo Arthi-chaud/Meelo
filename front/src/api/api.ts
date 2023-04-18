@@ -143,6 +143,17 @@ export default class API {
 		};
 	}
 
+	static async createPlaylist(playlistName: string): Promise<Playlist> {
+		return API.fetch({
+			route: '/playlists/new',
+			data: { name: playlistName },
+			errorMessage: "Playlist Creation Failed",
+			parameters: {},
+			method: 'POST',
+			validator: Playlist
+		});
+	}
+
 	/**
 	 * Fetch one playlist
 	 * @returns An query for a playlist

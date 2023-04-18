@@ -107,11 +107,10 @@ const UpdateTrackIllustrationAction = (
 );
 
 const UpdatePlaylistIllustrationAction = (
-	confirm: ReturnType<typeof useConfirm>,
 	queryClient: QueryClient,
 	playlistSlugOrId: number | string
 ) => UpdateIllustrationAction(
-	confirm, queryClient, playlistSlugOrId, 'playlist'
+	queryClient, playlistSlugOrId, 'playlist'
 );
 
 export { UpdateArtistIllustrationAction, UpdateReleaseIllustrationAction, UpdateTrackIllustrationAction, UpdatePlaylistIllustrationAction };

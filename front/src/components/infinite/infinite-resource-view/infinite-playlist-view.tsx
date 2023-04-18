@@ -6,17 +6,19 @@ import PlaylistItem from "../../list-item/playlist-item";
 import PlaylistTile from "../../tile/playlist-tile";
 import InfiniteView from "../infinite-view";
 import InfiniteResourceViewProps from "./infinite-resource-view-props";
-import { Add } from "@mui/icons-material";
+import { CreatePlaylistAction } from "../../actions/playlist";
+import { useQueryClient } from "../../../api/use-query";
 
 const InfinitePlaylistView = (
 	props: InfiniteResourceViewProps<Playlist, typeof PlaylistSortingKeys>
 ) => {
+	const queryClient = useQueryClient();
 	const router = useRouter();
 	const [options, setOptions] = useState<OptionState<typeof PlaylistSortingKeys>>();
 
 	return <>
 		<Controls
-			actions={[{ label: 'New', icon: <Add/> }]}
+			actions={[CreatePlaylistAction(queryClient)]}
 			onChange={setOptions}
 			sortingKeys={PlaylistSortingKeys}
 			defaultSortingOrder={props.initialSortingOrder}
