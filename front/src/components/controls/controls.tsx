@@ -13,7 +13,6 @@ import { LayoutOption, getLayoutParams } from "../../utils/layout";
 import { Order, getOrderParams } from "../../utils/sorting";
 import parseQueryParam from "../../utils/parse-query-param";
 import Action from "../actions/action";
-import { toast } from "react-hot-toast";
 
 export type OptionState<
 	SortingKeys extends readonly string[],

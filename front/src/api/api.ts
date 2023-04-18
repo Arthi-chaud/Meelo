@@ -154,6 +154,19 @@ export default class API {
 		});
 	}
 
+	static async updatePlaylist(
+		playlistName: string,
+		playlistSlugOrId: number | string
+	): Promise<Playlist> {
+		return API.fetch({
+			route: `/playlists/${playlistSlugOrId}`,
+			data: { name: playlistName },
+			parameters: {},
+			method: 'PUT',
+			validator: Playlist
+		});
+	}
+
 	/**
 	 * Fetch one playlist
 	 * @returns An query for a playlist

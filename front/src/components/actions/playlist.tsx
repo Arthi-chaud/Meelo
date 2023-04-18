@@ -1,5 +1,5 @@
 import {
-	Add, PlaylistAdd, PlaylistPlay
+	Add, Edit, PlaylistAdd, PlaylistPlay
 } from "@mui/icons-material";
 import Action from "./action";
 import toast from "react-hot-toast";
@@ -12,6 +12,7 @@ import { HookTextField, useHookForm } from "mui-react-hook-form-plus";
 import { QueryClient } from "../../api/use-query";
 import { useMutation } from "react-query";
 import API from "../../api/api";
+import Playlist from "../../models/playlist";
 
 export const PlayNextAction = (
 	getTrack: () => PromiseLike<Parameters<typeof playNext>[0]>
@@ -100,3 +101,26 @@ export const CreatePlaylistAction = (
 	}
 });
 
+export const UpdatePlaylistAction = (
+	playlist: Playlist,
+	queryClient: QueryClient
+): Action => ({
+	label: 'Update',
+	icon: <Edit/>,
+	dialog: ({ close }) => {
+		// eslint-disable-next-line react-hooks/rules-of-hooks
+		const mutation = useMutation((playlistName: string) => {
+			return API.updatePlaylist(playlistName, playlist.slug)
+				.then(() => {
+					toast.success("Playlist updated!");
+					queryClient.client.invalidateQueries('playlists');
+					queryClient.client.invalidateQueries('playlist');
+				})
+				.catch((error: Error) => toast.error(error.message));
+		});
+
+		return <CreateOrUpdatePlaylistForm
+			onClose={close} onSubmit={(name) => mutation.mutate(name)} defaultValue={playlist.name}
+		/>;
+	}
+});
