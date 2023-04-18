@@ -15,6 +15,8 @@ import { TrackWithRelations } from "../../../models/track";
 import { SongWithRelations } from "../../../models/song";
 import { Audiotrack } from "@mui/icons-material";
 import ListItem from "../../../components/list-item/item";
+import SongContextualMenu from "../../../components/contextual-menu/song-contextual-menu";
+import { PlaylistEntry } from "../../../models/playlist";
 
 const playlistQuery = (idOrSlug: number | string) => API.getPlaylist(idOrSlug, ['entries']);
 const masterTrackQuery = (songId: number | string) => API.getMasterTrack(songId, ['release']);
@@ -30,15 +32,16 @@ export const getServerSideProps = prepareSSR((context) => {
 
 type PlaylistEntryItemProps = {
 	onClick: () => void;
-	song: SongWithRelations<'artist'>
+	entry: PlaylistEntry & SongWithRelations<'artist'>
 }
 
-const PlaylistEntryItem = ({ song, onClick }: PlaylistEntryItemProps) => (
+const PlaylistEntryItem = ({ entry, onClick }: PlaylistEntryItemProps) => (
 	<ListItem
-		icon={<Illustration url={song.illustration} fallback={<Audiotrack/>}/>}
-		title={song.name}
+		icon={<Illustration url={entry.illustration} fallback={<Audiotrack/>}/>}
+		title={entry.name}
 		onClick={onClick}
-		secondTitle={song.artist.name}
+		trailing={<SongContextualMenu song={entry} entryId={entry.entryId}/>}
+		secondTitle={entry.artist.name}
 	/>
 );
 
@@ -93,7 +96,7 @@ const PlaylistPage = (
 		<Divider sx={{ marginY: 2 }}/>
 		<Stack spacing={1}>
 			{entries.map((entry, index) => <PlaylistEntryItem key={entry.id}
-				song={entry}
+				entry={entry}
 				onClick={() => playPlaylist(index)} />)}
 		</Stack>
 	</>;
