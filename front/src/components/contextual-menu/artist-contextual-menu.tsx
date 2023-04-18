@@ -5,7 +5,6 @@ import {
 } from "../actions/link";
 import { ShareArtistAction } from "../actions/share";
 import { UpdateArtistIllustrationAction } from "../actions/update-illustration";
-import { useConfirm } from "material-ui-confirm";
 import { useQueryClient } from "../../api/use-query";
 
 type ArtistContextualMenuProps = {
@@ -14,7 +13,6 @@ type ArtistContextualMenuProps = {
 
 const ArtistContextualMenu = (props: ArtistContextualMenuProps) => {
 	const artistSlug = props.artist.slug;
-	const confirm = useConfirm();
 	const queryClient = useQueryClient();
 
 	return <ContextualMenu actions={[
@@ -23,7 +21,7 @@ const ArtistContextualMenu = (props: ArtistContextualMenuProps) => {
 			GoToArtistAlbumsAction(artistSlug),
 			GoToArtistSongsAction(artistSlug),
 		],
-		[UpdateArtistIllustrationAction(confirm, queryClient, props.artist.id)],
+		[UpdateArtistIllustrationAction(queryClient, props.artist.id)],
 		[ShareArtistAction(artistSlug)]
 	]}/>;
 };

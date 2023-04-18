@@ -31,7 +31,7 @@ const ReleaseTrackContextualMenu = (props: ReleaseTrackContextualMenuProps) => {
 		[GoToSongLyricsAction(songSlug)],
 		[PlayNextAction(async () => props), PlayAfterAction(async () => props)],
 		[GoToSongVersionAction(songSlug), GoToRelatedTracksAction(songSlug),],
-		[UpdateTrackIllustrationAction(confirm, queryClient, props.track.id)],
+		[UpdateTrackIllustrationAction(queryClient, props.track.id)],
 		[ShowTrackFileInfoAction(confirm, props.track.id)],
 		[DownloadAction(confirm, props.track.stream), ShareSongAction(songSlug)]
 	]}/>;

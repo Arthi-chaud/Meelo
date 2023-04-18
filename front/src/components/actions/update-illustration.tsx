@@ -1,33 +1,56 @@
-import { useConfirm } from "material-ui-confirm";
 import { QueryClient } from "../../api/use-query";
-import { TextField } from "@mui/material";
+import {
+	Button, DialogActions, DialogContent, DialogTitle
+} from "@mui/material";
 import Action from "./action";
 import store from "../../state/store";
 import InsertPhotoIcon from '@mui/icons-material/InsertPhoto';
 import { toast } from "react-hot-toast";
-import { useState } from "react";
 import API from "../../api/api";
 import { useMutation } from "react-query";
+import { HookTextField, useHookForm } from "mui-react-hook-form-plus";
 
-const IllustrationForm = ({ id }: { id: string }) => {
-	const [value, setValue] = useState<string>('');
+type IllustrationUpdateFormType = {
+	onSubmit: (newUrl: string) => void;
+	onClose: () => void;
+}
 
-	return <TextField
-		autoFocus
-		label="Enter the URL of the new illustration"
-		type="url"
-		id={id}
-		fullWidth
-		value={value}
-		variant="standard"
-		onChange={(change) => {
-			setValue(change.target.value.toString());
-		}}
-	/>;
+const IllustrationUpdateForm = (props: IllustrationUpdateFormType) => {
+	const defaultValues = { url: '' };
+	const { registerState, handleSubmit } = useHookForm({
+		defaultValues,
+	});
+	const onSubmit = (values: typeof defaultValues) => props.onSubmit(values.url);
+
+	return <>
+		<DialogTitle>Update Illustration</DialogTitle>
+		<form onSubmit={handleSubmit(onSubmit)} style={{ width: '100%', height: '100%' }}>
+			<DialogContent>
+				<HookTextField
+					{...registerState('url')}
+					textFieldProps={{
+						autoFocus: true,
+						fullWidth: true,
+						label: 'Enter URL of the new illustration',
+					}}
+					gridProps={{}}
+					rules={{
+						required: {
+							value: true,
+							message: 'URL is required',
+						},
+					}}
+				/>
+			</DialogContent>
+			<DialogActions>
+				<Button onClick={props.onClose}>Cancel</Button>
+				<Button type='submit' onClick={props.onClose}>Update</Button>
+			</DialogActions>
+		</form>
+	</>;
 };
 
 const UpdateIllustrationAction = (
-	confirm: ReturnType<typeof useConfirm>,
 	queryClient: QueryClient,
 	resourceId: number | string,
 	resourceType: 'artist' | 'track' | 'release',
@@ -43,7 +66,8 @@ const UpdateIllustrationAction = (
 		return updator(resourceId, newUrl)
 			.then(() => {
 				toast.success('Illustration updated!');
-				queryClient.client.invalidateQueries();
+				queryClient.client.invalidateQueries(resourceType);
+				queryClient.client.invalidateQueries(resourceType + 's');
 			})
 			.catch(() => toast.error('Illustration update failed'));
 	});
@@ -51,52 +75,33 @@ const UpdateIllustrationAction = (
 	return {
 		label: "Change Illustration",
 		disabled: store.getState().user.user?.admin !== true,
-		icon: <InsertPhotoIcon/>,
-		onClick: () => confirm({
-
-			title: "Update illustration",
-			content: <IllustrationForm id={textFieldId}/>,
-			confirmationText: "Update",
-			confirmationButtonProps: {
-				color: 'secondary',
-				variant: 'outlined',
-				onClickCapture: () => {
-					const textField: any = document.getElementById(textFieldId)!;
-					const newUrl: string = textField.value;
-
-					if (!newUrl) {
-						toast.error('URL should not be empty');
-						return;
-					}
-					mutation.mutate(newUrl);
-				}
-			}
-		})
+		icon: <InsertPhotoIcon />,
+		dialog: (controls) => <IllustrationUpdateForm
+			onClose={controls.close}
+			onSubmit={(url) => mutation.mutate(url)}
+		/>
 	};
 };
 
 const UpdateArtistIllustrationAction = (
-	confirm: ReturnType<typeof useConfirm>,
 	queryClient: QueryClient,
 	artistSlugOrId: number | string
 ) => UpdateIllustrationAction(
-	confirm, queryClient, artistSlugOrId, 'artist'
+	queryClient, artistSlugOrId, 'artist'
 );
 
 const UpdateReleaseIllustrationAction = (
-	confirm: ReturnType<typeof useConfirm>,
 	queryClient: QueryClient,
 	releaseSlugOrId: number | string
 ) => UpdateIllustrationAction(
-	confirm, queryClient, releaseSlugOrId, 'release'
+	queryClient, releaseSlugOrId, 'release'
 );
 
 const UpdateTrackIllustrationAction = (
-	confirm: ReturnType<typeof useConfirm>,
 	queryClient: QueryClient,
 	trackSlugOrId: number | string
 ) => UpdateIllustrationAction(
-	confirm, queryClient, trackSlugOrId, 'track'
+	queryClient, trackSlugOrId, 'track'
 );
 
 export { UpdateArtistIllustrationAction, UpdateReleaseIllustrationAction, UpdateTrackIllustrationAction };
