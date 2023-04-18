@@ -79,4 +79,3 @@ export const GoToSettingsAction: Action = {
 	href: '/settings',
 };
 
-export default Action;

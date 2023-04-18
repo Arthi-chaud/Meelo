@@ -48,7 +48,7 @@ const TrackContextualMenu = (props: TrackContextualMenuProps) => {
 				onClick: () => masterMutation.mutate()
 			}
 		],
-		[UpdateTrackIllustrationAction(confirm, queryClient, props.track.id)],
+		[UpdateTrackIllustrationAction(queryClient, props.track.id)],
 		[ShowTrackFileInfoAction(confirm, props.track.id)],
 		[DownloadAction(confirm, props.track.stream)]
 	]}/>;

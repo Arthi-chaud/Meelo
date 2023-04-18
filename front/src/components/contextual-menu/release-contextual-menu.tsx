@@ -58,7 +58,7 @@ const ReleaseContextualMenu = (props: ReleaseContextualMenuProps) => {
 				onClick: () => tracksMasterMutation.mutate()
 			},
 		],
-		[UpdateReleaseIllustrationAction(confirm, queryClient, props.release.id)],
+		[UpdateReleaseIllustrationAction(queryClient, props.release.id)],
 		[DownloadReleaseAction(confirm, props.release.id)],
 		[ShareReleaseAction(props.release.id)]
 	]}/>;

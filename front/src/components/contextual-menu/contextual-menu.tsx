@@ -8,7 +8,7 @@ import ContextualMenuItem from "./contextual-menu-item";
 
 type ContextualMenuProps = {
 	actions: Action[][];
-	onSelect?: () => void;
+	onSelect?: (action: Action) => void;
 	buttonIcon?: JSX.Element;
 }
 const ContextualMenu = (props: ContextualMenuProps) => {
@@ -34,12 +34,13 @@ const ContextualMenu = (props: ContextualMenuProps) => {
 			anchorEl={anchorEl}
 			open={open}
 			onClose={handleClose}
+			keepMounted={props.actions.flat().find((action) => !action.dialog) !== undefined}
 			style={{ zIndex: 99999 }}
 		>
 			{props.actions.map((actions, actionGroupIndex, allActions) => [
 				actions.map((action, actionIndex) => <Box key={`${actionGroupIndex}/${actionIndex}`} onClick={() => {
 					handleClose();
-					props.onSelect && props.onSelect();
+					props.onSelect && props.onSelect(action);
 				}}><ContextualMenuItem {...action}/></Box>)
 			].concat(actionGroupIndex < allActions.length - 1
 				? [<Divider key={actionGroupIndex} sx={{ marginY: 0.5 }} variant='middle'/>]
