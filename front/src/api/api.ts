@@ -167,6 +167,19 @@ export default class API {
 		});
 	}
 
+	static async reorderPlaylist(
+		playlistSlugOrId: number | string,
+		entriesIds: number[]
+	): Promise<void> {
+		return API.fetch({
+			route: `/playlists/${playlistSlugOrId}/reorder`,
+			data: { entryIds: entriesIds },
+			parameters: {},
+			method: 'PUT',
+			emptyResponse: true
+		});
+	}
+
 	/**
 	 * Fetch one playlist
 	 * @returns An query for a playlist
