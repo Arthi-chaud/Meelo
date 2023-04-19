@@ -220,12 +220,68 @@ describe('Playlist Controller', () => {
 		});
 	})
 
-	describe('Move Playlist Entry', () => {
-		it("Should Move Entry", async () => {
+	describe('Reorder Entry', () => {
+
+		it("Should Error: Negative Number", async () => {
 			await request(app.getHttpServer())
-				.put(`/playlists/entries/${dummyRepository.playlistEntry1.id}`)
+				.put(`/playlists/${dummyRepository.playlist1.id}/reorder`)
 				.send({
-					index: 0
+					entryIds: [
+						dummyRepository.playlistEntry1.id,
+						dummyRepository.playlistEntry2.id,
+						-1
+					]
+				})
+				.expect(400)
+		});
+
+		it("Should Error: Incomplete List", async () => {
+			await request(app.getHttpServer())
+				.put(`/playlists/${dummyRepository.playlist1.id}/reorder`)
+				.send({
+					entryIds: [
+						dummyRepository.playlistEntry1.id,
+						dummyRepository.playlistEntry3.id
+					]
+				})
+				.expect(400)
+		});
+
+
+		it("Should Error: Unknown Index", async () => {
+			await request(app.getHttpServer())
+				.put(`/playlists/${dummyRepository.playlist1.id}/reorder`)
+				.send({
+					entryIds: [
+						dummyRepository.playlistEntry1.id,
+						dummyRepository.playlistEntry2.id,
+						0
+					]
+				})
+				.expect(400)
+		});
+
+		it("Should Error: Duplicate Index", async () => {
+			await request(app.getHttpServer())
+				.put(`/playlists/${dummyRepository.playlist1.id}/reorder`)
+				.send({
+					entryIds: [
+						dummyRepository.playlistEntry1.id,
+						dummyRepository.playlistEntry2.id,
+						dummyRepository.playlistEntry2.id,
+					]
+				})
+				.expect(400)
+		});
+		it("Should Move Entries", async () => {
+			await request(app.getHttpServer())
+				.put(`/playlists/${dummyRepository.playlist1.id}/reorder`)
+				.send({
+					entryIds: [
+						dummyRepository.playlistEntry1.id,
+						dummyRepository.playlistEntry2.id,
+						dummyRepository.playlistEntry3.id,
+					]
 				})
 				.expect(200)
 			await request(app.getHttpServer())
@@ -237,57 +293,31 @@ describe('Playlist Controller', () => {
 						...expectedPlaylistResponse(dummyRepository.playlist1),
 						entries: [
 							expectedPlaylistEntryResponse(dummyRepository.songA2, dummyRepository.playlistEntry1.id),
+							expectedPlaylistEntryResponse(dummyRepository.songA1, dummyRepository.playlistEntry2.id),
 							expectedPlaylistEntryResponse(dummyRepository.songC1, dummyRepository.playlistEntry3.id),
-							expectedPlaylistEntryResponse(dummyRepository.songA1, dummyRepository.playlistEntry2.id)
 						]
 					});
 				})
-		});
-
-		it("Should Have Flattened Playlist", async () => {
-			const { entries } = await playlistService.get({ id: dummyRepository.playlist1.id }, { entries: true });
-			expect(entries.length).toBe(3);
-			expect(entries).toContainEqual({ ...dummyRepository.playlistEntry3, index: 1});
-			expect(entries).toContainEqual({ ...dummyRepository.playlistEntry2, index: 2});
-			expect(entries).toContainEqual({ ...dummyRepository.playlistEntry1, index: 0});
-		});
-
-		it("Should Error: Entry not found", async () => {
-			await request(app.getHttpServer())
-				.put(`/playlists/entries/-1`)
-				.send({
-					index: 0
-				})
-				.expect(404)
-		});
-
-		it("Should Error: Negative Index", async () => {
-			await request(app.getHttpServer())
-				.put(`/playlists/entries/${dummyRepository.playlistEntry3.id}`)
-				.send({
-					index: -1
-				})
-				.expect(HttpStatus.BAD_REQUEST)
 		});
 	});
 
 	describe('Delete Playlist Entry', () => {
 		it("Should Move Entry", async () => {
 			await request(app.getHttpServer())
-				.delete(`/playlists/entries/${dummyRepository.playlistEntry1.id}`)
+				.delete(`/playlists/entries/${dummyRepository.playlistEntry2.id}`)
 				.expect(200)
 		});
 
 		it("Should Have Flattened Playlist", async () => {
 			const { entries } = await playlistService.get({ id: dummyRepository.playlist1.id }, { entries: true });
 			expect(entries.length).toBe(2);
-			expect(entries).toContainEqual({ ...dummyRepository.playlistEntry3, index: 0});
-			expect(entries).toContainEqual({ ...dummyRepository.playlistEntry2, index: 1});
+			expect(entries).toContainEqual({ ...dummyRepository.playlistEntry3, index: 1});
+			expect(entries).toContainEqual({ ...dummyRepository.playlistEntry1, index: 0});
 		});
 
 		it("Should Error: Entry not found", async () => {
 			await request(app.getHttpServer())
-				.delete(`/playlists/entries/${dummyRepository.playlistEntry1.id}`)
+				.delete(`/playlists/entries/${dummyRepository.playlistEntry2.id}`)
 				.expect(404)
 		});
 	});

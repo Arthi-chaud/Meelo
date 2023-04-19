@@ -1,6 +1,6 @@
 import { ApiProperty, PickType } from "@nestjs/swagger";
-import { IsNumber } from "class-validator";
-import { CreatePlaylist, CreatePlaylistEntry } from "src/prisma/models";
+import { IsNumber, IsPositive } from "class-validator";
+import { CreatePlaylist } from "src/prisma/models";
 
 export class CreatePlaylistDTO extends PickType(CreatePlaylist, ['name']) {}
 
@@ -20,4 +20,10 @@ export class CreatePlaylistEntryDTO {
 	songId: number;
 }
 
-export class UpdatePlaylistEntryDTO extends PickType(CreatePlaylistEntry, ['index']) {}
+export class ReorderPlaylistDTO {
+	@ApiProperty({
+		description: "The IDs of the playlist's entries, ordered"
+	})
+	@IsPositive({ each: true })
+	entryIds: number[];
+}

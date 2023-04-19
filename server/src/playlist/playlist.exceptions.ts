@@ -38,3 +38,9 @@ export class InvalidPlaylistEntryIndexException extends InvalidRequestException 
 		super('Invalid Playlist entry Index');
 	}
 }
+
+export class PlaylistReorderInvalidArrayException extends InvalidRequestException {
+	constructor() {
+		super('Invalid Playlist Reoder array');
+	}
+}

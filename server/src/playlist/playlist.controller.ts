@@ -13,7 +13,8 @@ import { PaginationParameters } from 'src/pagination/models/pagination-parameter
 import { PaginationQuery } from 'src/pagination/pagination-query.decorator';
 import SortingQuery from 'src/sort/sort-query.decorator';
 import {
-	CreatePlaylistDTO, CreatePlaylistEntryDTO, UpdatePlaylistDTO, UpdatePlaylistEntryDTO
+	CreatePlaylistDTO, CreatePlaylistEntryDTO,
+	ReorderPlaylistDTO, UpdatePlaylistDTO
 } from './models/playlist.dto';
 
 @Controller('playlists')
@@ -115,18 +116,17 @@ export default class PlaylistController {
 	}
 
 	@ApiOperation({
-		summary: 'Move Entry in Playlist'
+		summary: 'Reorder Entries in Playlist'
 	})
-	@Put('entries/:id')
+	@Put(':idOrSlug/reorder')
 	async moveEntryInPlaylist(
 		@Body()
-		playlistEntryDTO: UpdatePlaylistEntryDTO,
-		@Param('id', new ParseIntPipe())
-		entryId: number
+		{ entryIds }: ReorderPlaylistDTO,
+		@IdentifierParam(PlaylistService)
+		where: PlaylistQueryParameters.WhereInput,
 	) {
-		await this.playlistService.moveEntry(
-			entryId,
-			playlistEntryDTO.index
+		await this.playlistService.reorderPlaylist(
+			where, entryIds
 		);
 	}
 

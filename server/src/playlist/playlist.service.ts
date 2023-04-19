@@ -10,9 +10,8 @@ import SongService from 'src/song/song.service';
 import { PrismaError } from 'prisma-error-enum';
 import {
 	AddSongToPlaylistFailureException,
-	InvalidPlaylistEntryIndexException,
 	PlaylistAlreadyExistsException, PlaylistEntryNotFoundException,
-	PlaylistNotFoundException, PlaylistNotFoundFromIDException
+	PlaylistNotFoundException, PlaylistNotFoundFromIDException, PlaylistReorderInvalidArrayException
 } from './playlist.exceptions';
 import PrismaService from 'src/prisma/prisma.service';
 import SongQueryParameters from 'src/song/models/song.query-params';
@@ -151,31 +150,32 @@ export default class PlaylistService extends RepositoryService<
 	}
 
 	/**
-	 * Moves a Playlist Entry to the given index, shifting the following entries if necessary
-	 * @param entryId the identifer of the entry
-	 * @param newIndex the new index of the entry
+	 * Reorders a plyalist using list of entry ids
+	 * @param where the query parametrs to find the playlist
+	 * @param entryIds the list of entry ids of the playlist
+	 * The list must be complete
 	 */
-	async moveEntry(entryId: number, newIndex: number) {
-		if (newIndex < 0) {
-			throw new InvalidPlaylistEntryIndexException();
-		}
-		const entry = await this.prismaService.playlistEntry
-			.findFirstOrThrow({ where: { id: entryId } })
-			.catch(() => {
-				throw new PlaylistEntryNotFoundException(entryId);
-			});
-		const followingEntries = await this.prismaService.playlistEntry.findMany({
-			where: { index: { gte: newIndex }, playlistId: entry.playlistId }
-		});
+	async reorderPlaylist(
+		where: PlaylistQueryParameters.WhereInput,
+		entryIds: number[]
+	) {
+		const playlist = await this.get(where, { entries: true });
+		const entries = playlist.entries;
 
+		const missingEntryIds = entries.filter(({ id }) => entryIds.indexOf(id) == -1);
+		const unknownEntryIds = entryIds.filter((id) => !entries.find((entry) => entry.id == id));
+
+		if (entries.length != entryIds.length ||
+			unknownEntryIds.length != 0 || missingEntryIds.length != 0) {
+			throw new PlaylistReorderInvalidArrayException();
+		}
 		await this.prismaService.$transaction(
-			followingEntries.map((fEntry) => this.prismaService.playlistEntry.update({
-				where: { id: fEntry.id }, data: { index: { increment: 1 } }
-			})).concat(this.prismaService.playlistEntry.update({
-				where: { id: entry.id }, data: { index: newIndex }
-			}))
+			entryIds
+				.map((id, newIndex) => this.prismaService.playlistEntry.update({
+					where: { id },
+					data: { index: newIndex }
+				}))
 		);
-		await this.flatten({ id: entry.playlistId });
 	}
 
 	/**
