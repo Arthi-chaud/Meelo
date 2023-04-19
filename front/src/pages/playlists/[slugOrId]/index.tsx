@@ -162,7 +162,6 @@ const PlaylistPage = (
 			title={playlist.data.name}
 			trailing={<PlaylistContextualMenu playlist={playlist.data}/>}
 		/>
-		<Divider sx={{ marginY: 2 }}/>
 		{ editState
 			? <DragAndDropPlaylist entries={tempPlaylistEdit} onDropped={setTempEdit}/>
 			: <Stack spacing={1}>
@@ -209,7 +208,16 @@ const PlaylistPage = (
 				</Button>
 			</Grid>
 			<Grid item>
-				<Button variant="outlined" color='error' startIcon={<Delete/>} sx={{ width: '100%' }}>
+				<Button variant="outlined" color='error'
+					startIcon={<Delete/>} sx={{ width: '100%' }}
+					onClick={() => API.deletePlaylist(playlistIdentifier)
+						.then(() => {
+							toast.success('Playlist deleted');
+							router.push('/playlists');
+						})
+						.catch(() => toast.success('Playlist deletion failed'))
+					}
+				>
 					Delete
 				</Button>
 			</Grid>
