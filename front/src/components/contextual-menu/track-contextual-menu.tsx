@@ -9,7 +9,9 @@ import ContextualMenu from "./contextual-menu";
 import { useConfirm } from "material-ui-confirm";
 import { DownloadAction } from "../actions/download";
 import { GoToReleaseAction } from "../actions/link";
-import { PlayAfterAction, PlayNextAction } from "../actions/playlist";
+import {
+	AddToPlaylistAction, PlayAfterAction, PlayNextAction
+} from "../actions/playlist";
 import { ShowTrackFileInfoAction } from "../actions/show-track-info";
 import { TrackWithRelations } from "../../models/track";
 import { UpdateTrackIllustrationAction } from "../actions/update-illustration";
@@ -40,6 +42,7 @@ const TrackContextualMenu = (props: TrackContextualMenuProps) => {
 	return <ContextualMenu onSelect={props.onSelect} actions={[
 		[GoToReleaseAction(props.track.releaseId)],
 		[PlayNextAction(getPlayNextProps), PlayAfterAction(getPlayNextProps)],
+		[AddToPlaylistAction(props.track.songId, queryClient)],
 		[
 			{
 				label: "Set as as Master",

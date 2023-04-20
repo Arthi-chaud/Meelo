@@ -1285,7 +1285,7 @@ export default class API {
 			parameters: {},
 			data: { songId, playlistId },
 			method: 'POST',
-			validator: yup.mixed()
+			emptyResponse: true
 		});
 	}
 

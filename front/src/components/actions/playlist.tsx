@@ -1,5 +1,5 @@
 import {
-	Add, Edit, PlaylistAdd, PlaylistPlay
+	Add, Edit, PlaylistAdd, PlaylistPlay, QueueMusic
 } from "@mui/icons-material";
 import Action from "./action";
 import toast from "react-hot-toast";
@@ -9,10 +9,15 @@ import {
 	Button, DialogActions, DialogContent, DialogTitle
 } from "@mui/material";
 import { HookTextField, useHookForm } from "mui-react-hook-form-plus";
-import { QueryClient } from "../../api/use-query";
+import { MeeloInfiniteQueryFn, QueryClient } from "../../api/use-query";
 import { useMutation } from "react-query";
 import API from "../../api/api";
 import Playlist from "../../models/playlist";
+import InfiniteList from "../infinite/infinite-list";
+import { WideLoadingComponent } from "../loading/loading";
+import LoadingPage from "../loading/loading-page";
+import ListItem from "../list-item/item";
+import Illustration from "../illustration";
 
 export const PlayNextAction = (
 	getTrack: () => PromiseLike<Parameters<typeof playNext>[0]>
@@ -121,6 +126,62 @@ export const UpdatePlaylistAction = (
 
 		return <CreateOrUpdatePlaylistForm
 			onClose={close} onSubmit={(name) => mutation.mutate(name)} defaultValue={playlist.name}
+		/>;
+	}
+});
+
+type SelectPlaylistFormProps = {
+	playlistQuery: MeeloInfiniteQueryFn<Playlist>,
+	onSubmit: (playlistId: number) => void;
+	onClose: () => void;
+}
+
+const SelectPlaylistForm = (props: SelectPlaylistFormProps) => {
+	return <>
+		<DialogTitle>Select a playlist</DialogTitle>
+		<DialogContent>
+			<InfiniteList
+				firstLoader={() => <LoadingPage/>}
+				loader={() => <WideLoadingComponent/>}
+				query={props.playlistQuery}
+				render={(item: Playlist) => <ListItem
+					title={item.name}
+					icon={<Illustration url={item.illustration} fallback={<QueueMusic />} />}
+					onClick={() => {
+						props.onSubmit(item.id);
+						props.onClose();
+					}}
+				/>}
+			/>
+		</DialogContent>
+		<DialogActions>
+			<Button onClick={props.onClose} variant='outlined'>Cancel</Button>
+		</DialogActions>
+	</>;
+};
+
+export const AddToPlaylistAction = (
+	songId: number,
+	queryClient: QueryClient
+): Action => ({
+	icon: <PlaylistAdd/>,
+	label: 'Add to Playlist',
+	dialog: ({ close }) => {
+		// eslint-disable-next-line react-hooks/rules-of-hooks
+		const mutation = useMutation((playlistId: number) => {
+			return API.addSongToPlaylist(songId, playlistId)
+				.then(() => {
+					toast.success("Song added to Playlist");
+					queryClient.client.invalidateQueries('playlists');
+					queryClient.client.invalidateQueries('playlist');
+				})
+				.catch((error: Error) => toast.error(error.message));
+		});
+
+		return <SelectPlaylistForm
+			onClose={close}
+			onSubmit={(playlistId) => mutation.mutate(playlistId)}
+			playlistQuery={API.getAllPlaylists}
 		/>;
 	}
 });
