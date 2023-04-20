@@ -3,7 +3,7 @@ import API from "../../../api/api";
 import RelationPageHeader from "../../../components/relation-page-header/relation-page-header";
 import prepareSSR, { InferSSRProps } from "../../../ssr";
 import getSlugOrId from "../../../utils/getSlugOrId";
-import { useQueries, useQuery } from "../../../api/use-query";
+import { useQueries, useQuery, useQueryClient } from "../../../api/use-query";
 import PlaylistContextualMenu from "../../../components/contextual-menu/playlist-contextual-menu";
 import LoadingPage from "../../../components/loading/loading-page";
 import Illustration from "../../../components/illustration";
@@ -17,7 +17,7 @@ import { playTracks } from "../../../state/playerSlice";
 import { TrackWithRelations } from "../../../models/track";
 import { SongWithRelations } from "../../../models/song";
 import {
-	Audiotrack, Delete, Done, DragHandle, Edit, MoreVert, PlayArrow, Shuffle
+	Audiotrack, Done, DragHandle, Edit, MoreVert, PlayArrow, Shuffle
 } from "@mui/icons-material";
 import ListItem from "../../../components/list-item/item";
 import SongContextualMenu from "../../../components/contextual-menu/song-contextual-menu";
@@ -29,6 +29,8 @@ import {
 import toast from "react-hot-toast";
 import { useMutation } from "react-query";
 import { shuffle } from "d3-array";
+import { DeletePlaylistAction } from "../../../components/actions/playlist";
+import { useConfirm } from "material-ui-confirm";
 
 const playlistQuery = (idOrSlug: number | string) => API.getPlaylist(idOrSlug, ['entries']);
 const masterTrackQuery = (songId: number | string) => API.getMasterTrack(songId, ['release']);
@@ -110,10 +112,13 @@ const PlaylistPage = (
 ) => {
 	const router = useRouter();
 	const dispatch = useDispatch();
+	const confirm = useConfirm();
+	const queryClient = useQueryClient();
 	const [editState, setEditState] = useState(false);
 	const [tempPlaylistEdit, setTempEdit] = useState<(PlaylistEntry & SongWithRelations<'artist'>)[]>([]);
 
 	playlistIdentifier ??= getSlugOrId(router.query);
+	const deleteAction = DeletePlaylistAction(confirm, queryClient, playlistIdentifier, () => router.push('/playlists'));
 	const playlist = useQuery(playlistQuery, playlistIdentifier);
 	const artistsQueries = useQueries(
 		...playlist.data?.entries.map(
@@ -171,7 +176,7 @@ const PlaylistPage = (
 			title={playlist.data.name}
 			trailing={<PlaylistContextualMenu playlist={playlist.data}/>}
 		/>
-		{ entries.length > 2 && <>
+		{ entries.length > 1 && <>
 			<Grid container direction={{ xs: 'column', sm: 'row' }} spacing={1}>
 				<Grid item xs>
 					<Button variant="contained" color='primary' startIcon={<PlayArrow/>}
@@ -237,16 +242,9 @@ const PlaylistPage = (
 			</Grid>
 			<Grid item>
 				<Button variant="outlined" color='error'
-					startIcon={<Delete/>} sx={{ width: '100%' }}
-					onClick={() => API.deletePlaylist(playlistIdentifier)
-						.then(() => {
-							toast.success('Playlist deleted');
-							router.push('/playlists');
-						})
-						.catch(() => toast.success('Playlist deletion failed'))
-					}
-				>
-					Delete
+					startIcon={deleteAction.icon} sx={{ width: '100%' }}
+					onClick={deleteAction.onClick}>
+					{deleteAction.label}
 				</Button>
 			</Grid>
 		</Grid>

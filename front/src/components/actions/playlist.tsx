@@ -1,5 +1,5 @@
 import {
-	Add, Edit, PlaylistAdd, PlaylistPlay, QueueMusic
+	Add, Delete, Edit, PlaylistAdd, PlaylistPlay, QueueMusic
 } from "@mui/icons-material";
 import Action from "./action";
 import toast from "react-hot-toast";
@@ -18,6 +18,7 @@ import { WideLoadingComponent } from "../loading/loading";
 import LoadingPage from "../loading/loading-page";
 import ListItem from "../list-item/item";
 import Illustration from "../illustration";
+import { useConfirm } from "material-ui-confirm";
 
 export const PlayNextAction = (
 	getTrack: () => PromiseLike<Parameters<typeof playNext>[0]>
@@ -128,6 +129,33 @@ export const UpdatePlaylistAction = (
 			onClose={close} onSubmit={(name) => mutation.mutate(name)} defaultValue={playlist.name}
 		/>;
 	}
+});
+
+export const DeletePlaylistAction = (
+	confirm: ReturnType<typeof useConfirm>,
+	queryClient: QueryClient,
+	librarySlugOrId: number | string,
+	onDeleted: () => void
+): Action => ({
+	label: 'Delete',
+	icon: <Delete/>,
+	onClick: () => confirm({
+		title: 'Delete Playlist',
+		description: 'You are about to delete a playlist. This can not be undone.',
+		confirmationText: 'Delete Playlist',
+		confirmationButtonProps: {
+			variant: 'outlined',
+			color: 'error',
+			onClickCapture: () => API.deletePlaylist(librarySlugOrId)
+				.then(() => {
+					onDeleted();
+					queryClient.client.invalidateQueries('playlist');
+					queryClient.client.invalidateQueries('playlists');
+					toast.success('Playlist deleted');
+				})
+				.catch(() => toast.error('Playlist deletion failed'))
+		}
+	})
 });
 
 type SelectPlaylistFormProps = {
