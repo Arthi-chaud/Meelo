@@ -17,7 +17,7 @@ import { playTracks } from "../../../state/playerSlice";
 import { TrackWithRelations } from "../../../models/track";
 import { SongWithRelations } from "../../../models/song";
 import {
-	Audiotrack, Delete, Done, DragHandle, Edit, MoreVert
+	Audiotrack, Delete, Done, DragHandle, Edit, MoreVert, PlayArrow, Shuffle
 } from "@mui/icons-material";
 import ListItem from "../../../components/list-item/item";
 import SongContextualMenu from "../../../components/contextual-menu/song-contextual-menu";
@@ -28,6 +28,7 @@ import {
 } from "react-beautiful-dnd";
 import toast from "react-hot-toast";
 import { useMutation } from "react-query";
+import { shuffle } from "d3-array";
 
 const playlistQuery = (idOrSlug: number | string) => API.getPlaylist(idOrSlug, ['entries']);
 const masterTrackQuery = (songId: number | string) => API.getMasterTrack(songId, ['release']);
@@ -155,6 +156,14 @@ const PlaylistPage = (
 		})),
 		cursor: fromIndex
 	}));
+	const shufflePlaylist = () => dispatch(playTracks({
+		tracks: shuffle(entries.map((entry) => ({
+			track: entry.track,
+			artist: entry.artist,
+			release: entry.track.release
+		}))),
+		cursor: 0
+	}));
 
 	return <>
 		<RelationPageHeader
@@ -162,10 +171,29 @@ const PlaylistPage = (
 			title={playlist.data.name}
 			trailing={<PlaylistContextualMenu playlist={playlist.data}/>}
 		/>
+		{ entries.length > 2 && <>
+			<Grid container direction={{ xs: 'column', sm: 'row' }} spacing={1}>
+				<Grid item xs>
+					<Button variant="contained" color='primary' startIcon={<PlayArrow/>}
+						sx={{ width: '100%' }} onClick={() => playPlaylist(0)}
+					>
+						Play
+					</Button>
+				</Grid>
+				<Grid item xs>
+					<Button variant="outlined" color='primary' startIcon={<Shuffle/>}
+						sx={{ width: '100%' }} onClick={() => shufflePlaylist()}
+					>
+						Shuffle
+					</Button>
+				</Grid>
+			</Grid>
+			<Divider sx={{ marginY: 2 }}/>
+		</>}
 		{ editState
 			? <DragAndDropPlaylist entries={tempPlaylistEdit} onDropped={setTempEdit}/>
 			: <Stack spacing={1}>
-				{entries.map((entry, index) => <PlaylistEntryItem key={entry.id}
+				{entries.map((entry, index) => <PlaylistEntryItem key={entry.entryId}
 					entry={entry}
 					onClick={() => playPlaylist(index)} />)}
 			</Stack>
