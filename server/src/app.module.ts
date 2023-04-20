@@ -25,6 +25,7 @@ import FfmpegModule from './ffmpeg/ffmpeg.module';
 import LoggerModule from './logger/logger.module';
 import * as Plugins from './app.plugins';
 import { BullModule } from '@nestjs/bull';
+import PlaylistModule from './playlist/playlist.module';
 
 @Module({
 	imports: [
@@ -61,7 +62,8 @@ import { BullModule } from '@nestjs/bull';
 		UserModule,
 		LoggerModule,
 		FfmpegModule,
-		ProvidersModule
+		ProvidersModule,
+		PlaylistModule
 	],
 	controllers: [AppController],
 	providers: Plugins.AppProviders

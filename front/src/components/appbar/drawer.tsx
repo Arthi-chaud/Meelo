@@ -21,6 +21,7 @@ import { useSelector } from "react-redux";
 import { RootState } from "../../state/store";
 import Action from "../actions/action";
 import HomeIcon from '@mui/icons-material/Home';
+import { QueueMusic } from "@mui/icons-material";
 
 interface DrawerProps {
 	availableLibraries: Library[] | null,
@@ -52,6 +53,14 @@ const MeeloAppBarDrawer = (
 						<ListItemButton sx={{ borderRadius: '0' }} onClick={onClose}>
 							<ListItemIcon><HomeIcon/></ListItemIcon>
 							<ListItemText>Home</ListItemText>
+						</ListItemButton>
+					</ListItem>
+				</Link>
+				<Link href='/playlists'>
+					<ListItem disableGutters>
+						<ListItemButton sx={{ borderRadius: '0' }} onClick={onClose}>
+							<ListItemIcon><QueueMusic/></ListItemIcon>
+							<ListItemText>Playlists</ListItemText>
 						</ListItemButton>
 					</ListItem>
 				</Link>

@@ -23,8 +23,8 @@ generator classes {
   noDependencies                  = "false"
   excludeEntity                   = "false"
   excludePlainDto                 = "false"
-  excludeCreateDto                = "true"
-  excludeUpdateDto                = "true"
+  excludeCreateDto                = "false"
+  excludeUpdateDto                = "false"
   excludeConnectDto               = "true"
   definiteAssignmentAssertion     = "true"
 }
@@ -237,6 +237,8 @@ model Song {
 	genres Genre[]
 	/// @description Array of external IDs
 	externalIds		SongExternalId[]
+	/// @description List of relations to playlists
+	playlists PlaylistEntry[]
 	@@unique([slug, artistId])
 	@@map("songs")
 }
@@ -401,4 +403,40 @@ model AlbumExternalId {
 	/// @description Actual Value of the external identifier
 	value			String
 	@@map("album_external_ids")
+}
+
+/// A Playlist connects songs together, in an ordered wa
+model Playlist {
+	/// @description Unique numeric Playlist identifier
+	/// @example 123
+	id				Int		@id @default(autoincrement())
+	/// @description The name of the playlist
+	/// @example My Playlist
+	/// @minLength 1
+	name			String	@db.Citext()
+	/// @description Unique string identifer
+	/// @example my-playlist
+	/// @minLength 1
+	slug			String	@unique
+	/// @description The date the playlist was created
+	createdAt		DateTime	@default(now())
+	/// @description Array of external IDs
+	entries		PlaylistEntry[]
+	@@map("playlists")
+}
+
+model PlaylistEntry {
+	/// @description Unique numeric identifier
+	/// @example 123
+	id				Int		@id @default(autoincrement())
+	/// @description The Identifier of the song
+	songId			Int
+	song			Song 	@relation(fields: [songId], references: [id], onDelete: Cascade)
+	/// @description The Identifier of the parent playlist 
+	playlistId		Int
+	playlist		Playlist @relation(fields: [playlistId], references: [id], onDelete: Cascade)
+	/// @minimum 0
+	/// @description The index of the entry in the playlist, starting at 0
+	index			Int
+	@@map("playlist_entries")
 }

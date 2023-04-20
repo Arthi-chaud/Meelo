@@ -7,15 +7,21 @@ import {
 	GoToArtistAction, GoToRelatedTracksAction, GoToReleaseAsyncAction,
 	GoToSongLyricsAction, GoToSongVersionAction
 } from "../actions/link";
-import { PlayAfterAction, PlayNextAction } from "../actions/playlist";
+import {
+	AddToPlaylistAction, PlayAfterAction, PlayNextAction
+} from "../actions/playlist";
 import { ShareSongAction } from "../actions/share";
 import { ShowMasterTrackFileInfoAction } from "../actions/show-track-info";
 import { SongWithRelations } from "../../models/song";
 import { useQueryClient } from "../../api/use-query";
+import { Delete } from "@mui/icons-material";
+import { toast } from "react-hot-toast";
 
 type SongContextualMenuProps = {
 	song: SongWithRelations<'artist'>;
 	onSelect?: () => void;
+	// Should be set if song is from a playlist
+	entryId?: number
 }
 
 const SongContextualMenu = (props: SongContextualMenuProps) => {
@@ -38,6 +44,7 @@ const SongContextualMenu = (props: SongContextualMenuProps) => {
 		],
 		[GoToSongLyricsAction(songSlug)],
 		[PlayNextAction(getPlayNextProps), PlayAfterAction(getPlayNextProps)],
+		[AddToPlaylistAction(props.song.id, queryClient)],
 		[GoToSongVersionAction(songSlug), GoToRelatedTracksAction(songSlug)],
 		[ShowMasterTrackFileInfoAction(confirm, queryClient, props.song.id)],
 		[
@@ -46,8 +53,22 @@ const SongContextualMenu = (props: SongContextualMenuProps) => {
 				() => getMasterTrack().then((master) => master.stream)
 			),
 			ShareSongAction(songSlug)
+		],
+	].concat(props.entryId !== undefined ? [
+		[
+			{
+				label: 'Delete from Playlist',
+				icon: <Delete/>,
+				onClick: () => API.deletePlaylistEntry(props.entryId!)
+					.then(() => {
+						toast.success('Deletion Successful');
+						queryClient.client.invalidateQueries('playlist');
+						queryClient.client.invalidateQueries('playlists');
+					})
+					.catch(() => {})
+			}
 		]
-	]}/>;
+	] : [])}/>;
 };
 
 export default SongContextualMenu;

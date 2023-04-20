@@ -2,7 +2,7 @@ import {
 	Apps, North, South, ViewList
 } from "@mui/icons-material";
 import {
-	Box, Button, ButtonGroup, Tooltip
+	Box, Button, ButtonGroup, Dialog, Tooltip
 } from "@mui/material";
 import { capitalCase } from "change-case";
 import { NextRouter } from "next/router";
@@ -12,6 +12,7 @@ import OptionButton from "./option-button";
 import { LayoutOption, getLayoutParams } from "../../utils/layout";
 import { Order, getOrderParams } from "../../utils/sorting";
 import parseQueryParam from "../../utils/parse-query-param";
+import Action from "../actions/action";
 
 export type OptionState<
 	SortingKeys extends readonly string[],
@@ -27,6 +28,7 @@ type ControllerProps<
 	Values extends string[][]
 > = {
 	options?: Options;
+	actions?: Action[],
 	sortingKeys: SortingKeys;
 	defaultSortingKey?: SortingKeys[number];
 	defaultSortingOrder?: Order;
@@ -64,6 +66,8 @@ const Controls = <
 		});
 		return baseOptions;
 	});
+	const [openActionModal, setOpenActionModal] = useState<string | null>(null);
+	const closeModal = () => setOpenActionModal(null);
 
 	/**
 	 * To pass the options to parent after initialization
@@ -85,6 +89,28 @@ const Controls = <
 
 	return <Box sx={{ width: '100%', display: 'flex', justifyContent: 'center', marginBottom: 2 }}>
 		<ButtonGroup color='inherit'>
+			{ props.actions?.map((action, index) => (
+				<Button key={'action-' + action.label} startIcon={action.icon}
+					variant='contained'
+					color="primary"
+					onClickCapture={() => {
+						if (action.disabled === true) {
+							return;
+						}
+						action.onClick && action.onClick();
+						action.dialog && setOpenActionModal(action.label);
+					}}
+				>
+					{action.label}
+					{action.dialog &&
+						<Dialog open={openActionModal === action.label}
+							onClose={closeModal} fullWidth
+						>
+							{action.dialog({ close: closeModal })}
+						</Dialog>
+					}
+				</Button>
+			)) ?? []}
 			<OptionButton
 				optionGroup={{
 					name: `Sort by ${capitalCase(optionsState.sortBy)}`,

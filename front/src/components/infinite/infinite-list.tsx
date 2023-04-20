@@ -3,7 +3,7 @@ import Resource from "../../models/resource";
 import InfiniteScroll from "./infinite-scroll";
 
 type TypedList<T extends Resource> = typeof InfiniteScroll<T>;
-type InfiniteGridProps<T extends Resource> = Omit<
+type InfiniteListProps<T extends Resource> = Omit<
 	Parameters<TypedList<T>>[0], 'render'
 > & { render: (item: T) => JSX.Element }
 
@@ -12,7 +12,7 @@ type InfiniteGridProps<T extends Resource> = Omit<
  * @param props
  * @returns
  */
-const InfiniteList = <T extends Resource, >(props: InfiniteGridProps<T>) => {
+const InfiniteList = <T extends Resource, >(props: InfiniteListProps<T>) => {
 	return <InfiniteScroll
 		{...props}
 		render={(items: T[]) =>

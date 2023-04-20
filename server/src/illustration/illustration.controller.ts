@@ -30,6 +30,9 @@ import ProviderService from "src/providers/provider.service";
 import ProvidersSettings from "src/providers/models/providers.settings";
 import { UnknownProviderError } from "src/providers/provider.exception";
 import { MeeloException } from "src/exceptions/meelo-exception";
+import PlaylistService from "src/playlist/playlist.service";
+import PlaylistQueryParameters from "src/playlist/models/playlist.query-parameters";
+import PlaylistIllustrationService from "src/playlist/playlist-illustration.service";
 
 @ApiTags("Illustrations")
 @Controller('illustrations')
@@ -39,6 +42,7 @@ export class IllustrationController {
 		private releaseIllustrationService: ReleaseIllustrationService,
 		private trackIllustrationService: TrackIllustrationService,
 		private artistIllustrationService: ArtistIllustrationService,
+		private playlistIllustrationService: PlaylistIllustrationService,
 		private trackService: TrackService,
 		private releaseService: ReleaseService,
 		private providerIllustrationService: ProviderIllustrationService,
@@ -300,6 +304,46 @@ export class IllustrationController {
 			dimensions,
 			res,
 			parse(illustrationPath).ext
+		);
+	}
+
+	@ApiOperation({
+		summary: "Get a playlist's illustration"
+	})
+	@Get('playlists/:idOrSlug')
+	async getPlaylistIllustration(
+		@Query() dimensions: IllustrationDimensionsDto,
+		@IdentifierParam(PlaylistService)
+		where: PlaylistQueryParameters.WhereInput,
+		@Response({ passthrough: true })
+		res: Response,
+	) {
+		const playlistIllustration = await this.playlistIllustrationService
+			.getIllustrationPath(where);
+
+		return this.illustrationService.streamIllustration(
+			playlistIllustration,
+			parse(parse(playlistIllustration).dir).name,
+			dimensions,
+			res
+		);
+	}
+
+	@ApiOperation({
+		summary: "Change a playlist's illustration"
+	})
+	@Admin()
+	@Post('playlists/:idOrSlug')
+	async updatePlaylistIllustration(
+		@IdentifierParam(PlaylistService)
+		where: PlaylistQueryParameters.WhereInput,
+		@Body()	illustrationDto: IllustrationDownloadDto
+	) {
+		const path = await this.playlistIllustrationService.getIllustrationPath(where);
+
+		return this.illustrationService.downloadIllustration(
+			illustrationDto.url,
+			path
 		);
 	}
 }

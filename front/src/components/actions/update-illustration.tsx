@@ -53,7 +53,7 @@ const IllustrationUpdateForm = (props: IllustrationUpdateFormType) => {
 const UpdateIllustrationAction = (
 	queryClient: QueryClient,
 	resourceId: number | string,
-	resourceType: 'artist' | 'track' | 'release',
+	resourceType: 'artist' | 'track' | 'release' | 'playlist',
 ): Action => {
 	const textFieldId = `update-illustration-${resourceType}-${resourceId}`;
 	const mutation = useMutation(async (newUrl: string) => {
@@ -61,7 +61,9 @@ const UpdateIllustrationAction = (
 			? API.updateArtistIllustration
 			: resourceType == 'release'
 				? API.updateReleaseIllustration
-				: API.updateTrackIllustration;
+				: resourceType == 'playlist'
+					? API.updatePlaylistIllustration
+					: API.updateTrackIllustration;
 
 		return updator(resourceId, newUrl)
 			.then(() => {
@@ -104,4 +106,11 @@ const UpdateTrackIllustrationAction = (
 	queryClient, trackSlugOrId, 'track'
 );
 
-export { UpdateArtistIllustrationAction, UpdateReleaseIllustrationAction, UpdateTrackIllustrationAction };
+const UpdatePlaylistIllustrationAction = (
+	queryClient: QueryClient,
+	playlistSlugOrId: number | string
+) => UpdateIllustrationAction(
+	queryClient, playlistSlugOrId, 'playlist'
+);
+
+export { UpdateArtistIllustrationAction, UpdateReleaseIllustrationAction, UpdateTrackIllustrationAction, UpdatePlaylistIllustrationAction };

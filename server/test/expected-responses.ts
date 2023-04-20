@@ -1,4 +1,4 @@
-import { Release, Track, Artist, Album, SongWithRelations } from "src/prisma/models";
+import { Release, Track, Artist, Album, SongWithRelations, Playlist } from "src/prisma/models";
 
 export const expectedArtistResponse = (artist: Artist) => ({
 	...artist,
@@ -30,4 +30,15 @@ export const expectedTrackResponse = (track: Track) => ({
 	...track,
 	illustration: `/illustrations/tracks/${track.id}`,
 	stream: `/files/${track.sourceFileId}/stream`
+});
+
+export const expectedPlaylistResponse = (playlist: Playlist) => ({
+	...playlist,
+	createdAt: playlist.createdAt.toISOString(),
+	illustration: `/illustrations/playlists/${playlist.slug}`
+});
+
+export const expectedPlaylistEntryResponse = (song: SongWithRelations, id: number) => ({
+	...expectedSongResponse(song),
+	entryId: id
 });

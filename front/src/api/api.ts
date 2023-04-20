@@ -27,6 +27,9 @@ import File from "../models/file";
 import { InfiniteQuery, Query } from './use-query';
 import * as yup from 'yup';
 import { RequireExactlyOne } from "type-fest";
+import Playlist, {
+	PlaylistInclude, PlaylistSortingKeys, PlaylistWithRelations
+} from "../models/playlist";
 
 const AuthenticationResponse = yup.object({
 	access_token: yup.string().required()
@@ -119,6 +122,79 @@ export default class API {
 				parameters: { pagination: pagination, include: [] },
 				validator: PaginatedResponse(Library)
 			}),
+		};
+	}
+
+	/**
+	 * Fetch all playlists
+	 * @returns An InfiniteQuery of playlists
+	 */
+	static getAllPlaylists(
+		sort?: SortingParameters<typeof PlaylistSortingKeys>
+	): InfiniteQuery<Playlist> {
+		return {
+			key: ['playlists', sort ?? {}],
+			exec: (pagination) => API.fetch({
+				route: `/playlists`,
+				errorMessage: "Playlists could not be loaded",
+				parameters: { pagination: pagination, include: [], sort },
+				validator: PaginatedResponse(Playlist)
+			}),
+		};
+	}
+
+	static async createPlaylist(playlistName: string): Promise<Playlist> {
+		return API.fetch({
+			route: '/playlists/new',
+			data: { name: playlistName },
+			errorMessage: "Playlist Creation Failed",
+			parameters: {},
+			method: 'POST',
+			validator: Playlist
+		});
+	}
+
+	static async updatePlaylist(
+		playlistName: string,
+		playlistSlugOrId: number | string
+	): Promise<Playlist> {
+		return API.fetch({
+			route: `/playlists/${playlistSlugOrId}`,
+			data: { name: playlistName },
+			parameters: {},
+			method: 'PUT',
+			validator: Playlist
+		});
+	}
+
+	static async reorderPlaylist(
+		playlistSlugOrId: number | string,
+		entriesIds: number[]
+	): Promise<void> {
+		return API.fetch({
+			route: `/playlists/${playlistSlugOrId}/reorder`,
+			data: { entryIds: entriesIds },
+			parameters: {},
+			method: 'PUT',
+			emptyResponse: true
+		});
+	}
+
+	/**
+	 * Fetch one playlist
+	 * @returns An query for a playlist
+	 */
+	static getPlaylist<I extends PlaylistInclude>(
+		playlistSlugOrId: string | number,
+		include?: I[]
+	): Query<PlaylistWithRelations<I>> {
+		return {
+			key: ['playlist', playlistSlugOrId, ...API.formatIncludeKeys(include)],
+			exec: () => API.fetch({
+				route: `/playlists/${playlistSlugOrId}`,
+				parameters: { include },
+				validator: PlaylistWithRelations(include ?? [])
+			})
 		};
 	}
 
@@ -228,14 +304,7 @@ export default class API {
 		artistSlugOrId: number | string,
 		illustrationUrl: string,
 	): Promise<unknown> {
-		return API.fetch({
-			route: `/illustrations/artists/${artistSlugOrId}`,
-			errorMessage: "Update Illustration Failed",
-			method: 'POST',
-			parameters: {},
-			emptyResponse: true,
-			data: { url: illustrationUrl }
-		});
+		return API.updateResourceIllustration(artistSlugOrId, illustrationUrl, 'artists');
 	}
 
 	/**
@@ -245,14 +314,7 @@ export default class API {
 		releaseSlugOrId: number | string,
 		illustrationUrl: string,
 	): Promise<unknown> {
-		return API.fetch({
-			route: `/illustrations/releases/${releaseSlugOrId}`,
-			errorMessage: "Update Illustration Failed",
-			method: 'POST',
-			parameters: {},
-			emptyResponse: true,
-			data: { url: illustrationUrl }
-		});
+		return API.updateResourceIllustration(releaseSlugOrId, illustrationUrl, 'releases');
 	}
 
 	/**
@@ -262,8 +324,29 @@ export default class API {
 		trackSlugOrId: number | string,
 		illustrationUrl: string,
 	): Promise<unknown> {
+		return API.updateResourceIllustration(trackSlugOrId, illustrationUrl, 'tracks');
+	}
+
+	/**
+	 * Update Track Illustration
+	 */
+	static async updatePlaylistIllustration(
+		playlistSlugOrId: number | string,
+		illustrationUrl: string,
+	): Promise<unknown> {
+		return API.updateResourceIllustration(playlistSlugOrId, illustrationUrl, 'playlists');
+	}
+
+	/**
+	 * Update Resourse Illustration
+	 */
+	private static async updateResourceIllustration(
+		resourceSlugOrId: number | string,
+		illustrationUrl: string,
+		resourceType: 'artists' | 'releases' | 'tracks' | 'playlists'
+	): Promise<unknown> {
 		return API.fetch({
-			route: `/illustrations/tracks/${trackSlugOrId}`,
+			route: `/illustrations/${resourceType}/${resourceSlugOrId}`,
 			errorMessage: "Update Illustration Failed",
 			method: 'POST',
 			parameters: {},
@@ -1189,6 +1272,49 @@ export default class API {
 	 */
 	static getReleaseArchiveURL(releaseId: number | string): string {
 		return this.buildURL(`/releases/${releaseId}/archive`, {});
+	}
+
+	/**
+	 * Add song to playlist
+	 * @returns Empty Promise
+	 */
+	static async addSongToPlaylist(songId: number, playlistId: number): Promise<unknown> {
+		return API.fetch({
+			route: `/playlists/entries/new`,
+			errorMessage: 'Failed to add song to playlist',
+			parameters: {},
+			data: { songId, playlistId },
+			method: 'POST',
+			emptyResponse: true
+		});
+	}
+
+	/**
+	 * Delete entry in playlist
+	 * @returns Empty Promise
+	 */
+	static async deletePlaylistEntry(entryId: number): Promise<unknown> {
+		return API.fetch({
+			route: `/playlists/entries/${entryId}`,
+			errorMessage: 'Failed to remove song from playlist',
+			parameters: {},
+			method: 'DELETE',
+			emptyResponse: true
+		});
+	}
+
+	/**
+	 * Delete playlist
+	 * @returns Empty Promise
+	 */
+	static async deletePlaylist(playlistSlugOrId: number | string): Promise<unknown> {
+		return API.fetch({
+			route: `/playlists/${playlistSlugOrId}`,
+			errorMessage: 'Failed to remove playlist',
+			parameters: {},
+			method: 'DELETE',
+			emptyResponse: true
+		});
 	}
 
 	/**

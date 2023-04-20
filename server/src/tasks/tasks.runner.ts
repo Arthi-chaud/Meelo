@@ -28,6 +28,7 @@ import GenreService from 'src/genre/genre.service';
 import ExternalIdService from 'src/providers/external-id.provider';
 import { LyricsService } from 'src/lyrics/lyrics.service';
 import ArtistIllustrationService from 'src/artist/artist-illustration.service';
+import PlaylistService from 'src/playlist/playlist.service';
 
 export const TaskQueue = 'task-queue';
 
@@ -61,6 +62,8 @@ export default class TaskRunner {
 		private genresService: GenreService,
 		private externalIdService: ExternalIdService,
 		private lyricsService: LyricsService,
+		@Inject(forwardRef(() => PlaylistService))
+		private playlistService: PlaylistService,
 		@Inject(forwardRef(() => ArtistIllustrationService))
 		private artistIllustrationService: ArtistIllustrationService,
 	) { }
@@ -261,6 +264,7 @@ export default class TaskRunner {
 		await this.albumService.housekeeping();
 		await this.artistService.housekeeping();
 		await this.genresService.housekeeping();
+		await this.playlistService.housekeeping();
 	}
 
 	///// Sub tasks
