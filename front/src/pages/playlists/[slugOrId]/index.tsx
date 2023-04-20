@@ -3,7 +3,9 @@ import API from "../../../api/api";
 import RelationPageHeader from "../../../components/relation-page-header/relation-page-header";
 import prepareSSR, { InferSSRProps } from "../../../ssr";
 import getSlugOrId from "../../../utils/getSlugOrId";
-import { useQueries, useQuery, useQueryClient } from "../../../api/use-query";
+import {
+	useQueries, useQuery, useQueryClient
+} from "../../../api/use-query";
 import PlaylistContextualMenu from "../../../components/contextual-menu/playlist-contextual-menu";
 import LoadingPage from "../../../components/loading/loading-page";
 import Illustration from "../../../components/illustration";
