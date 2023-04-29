@@ -20,7 +20,10 @@ const IllustrationUpdateForm = (props: IllustrationUpdateFormType) => {
 	const { registerState, handleSubmit } = useHookForm({
 		defaultValues,
 	});
-	const onSubmit = (values: typeof defaultValues) => props.onSubmit(values.url);
+	const onSubmit = (values: typeof defaultValues) => {
+		props.onSubmit(values.url);
+		props.onClose();
+	};
 
 	return <>
 		<DialogTitle>Update Illustration</DialogTitle>
@@ -44,7 +47,7 @@ const IllustrationUpdateForm = (props: IllustrationUpdateFormType) => {
 			</DialogContent>
 			<DialogActions>
 				<Button onClick={props.onClose}>Cancel</Button>
-				<Button type='submit' onClick={props.onClose}>Update</Button>
+				<Button type='submit'>Update</Button>
 			</DialogActions>
 		</form>
 	</>;
