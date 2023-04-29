@@ -1,4 +1,6 @@
-import { Add, Delete } from "@mui/icons-material";
+import {
+	Add, Delete, Edit
+} from "@mui/icons-material";
 import {
 	Box, Button, Dialog, Grid, Hidden, IconButton, useMediaQuery, useTheme
 } from "@mui/material";
@@ -47,7 +49,9 @@ const LibrariesSettings = () => {
 	const fetchMetadata = FetchExternalMetadata;
 	const confirm = useConfirm();
 	const [createModalOpen, setCreateModalOpen] = useState(false);
-	const closeModal = () => setCreateModalOpen(false);
+	const [libraryEdit, setLibraryEdit] = useState<Library | undefined>(); // If set, open modal to edit library
+	const closeEditModal = () => setLibraryEdit(undefined);
+	const closeCreateModal = () => setCreateModalOpen(false);
 	const deletionMutation = useMutation((libraryId: number) =>
 		API.deleteLibrary(libraryId)
 			.then(() => {
@@ -62,6 +66,13 @@ const LibrariesSettings = () => {
 				queryClient.client.invalidateQueries(['libraries']);
 			})
 			.catch((err) => toast.error(err.message)));
+	const editMutation = useMutation((updatedLibrary: { id: number, name: string, path: string}) =>
+		API.updateLibrary(updatedLibrary.id, updatedLibrary.name, updatedLibrary.path)
+			.then(() => {
+				toast.success("Library updated");
+				queryClient.client.invalidateQueries(['libraries']);
+			})
+			.catch((err) => toast.error(err.message)));
 	const columns: GridColDef<Library>[] = [
 		{ field: 'name', headerName: 'Name', flex: 5 },
 		{ field: 'clean', headerName: 'Clean', flex: 3, renderCell: ({ row: library }) =>
@@ -70,6 +81,11 @@ const LibrariesSettings = () => {
 			<RunTaskButton variant='contained' {...ScanLibraryAction(library.id)}/> },
 		{ field: 'refresh', headerName: 'Refresh metadata', flex: 3, renderCell: ({ row: library }) =>
 			<RunTaskButton variant='outlined' {...RefreshMetadataLibraryAction(library.id)} label='Refresh'/> },
+		{ field: 'edit', headerName: 'Edit', flex: 1, renderCell: ({ row: library }) => {
+			return <IconButton onClick={() => setLibraryEdit(library)}>
+				<Edit/>
+			</IconButton>;
+		} },
 		{ field: 'delete', headerName: 'Delete', flex: 1, renderCell: ({ row: library }) => {
 			return <IconButton color='error' onClick={() => confirm({
 				title: 'Delete a Library',
@@ -101,8 +117,15 @@ const LibrariesSettings = () => {
 				</Grid>
 			))}
 		</Grid>
-		<Dialog open={createModalOpen} onClose={closeModal} fullWidth>
-			<LibraryForm onClose={closeModal} onSubmit={(fields) => createMutation.mutate(fields)}/>
+		<Dialog open={libraryEdit != undefined} onClose={closeEditModal} fullWidth>
+			<LibraryForm defaultValues={libraryEdit} onClose={closeEditModal}
+				onSubmit={(fields) => editMutation.mutate({ ...fields, id: libraryEdit!.id })}
+			/>
+		</Dialog>
+		<Dialog open={createModalOpen} onClose={closeCreateModal} fullWidth>
+			<LibraryForm onClose={closeCreateModal}
+				onSubmit={(fields) => createMutation.mutate(fields)}
+			/>
 		</Dialog>
 		<AdminGrid
 			infiniteQuery={API.getAllLibraries}

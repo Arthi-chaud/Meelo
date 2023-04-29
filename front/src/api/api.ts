@@ -292,6 +292,21 @@ export default class API {
 		});
 	}
 
+	static async updateLibrary(
+		libraryId: number,
+		libraryName: string,
+		libraryPath: string
+	): Promise<Library> {
+		return API.fetch({
+			route: `/libraries/${libraryId}/update`,
+			data: { name: libraryName, path: libraryPath },
+			errorMessage: "Library Update Failed",
+			parameters: {},
+			method: 'PUT',
+			validator: Library
+		});
+	}
+
 	/**
 	 * Delete a library
 	 * @returns An empty promise
