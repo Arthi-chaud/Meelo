@@ -71,7 +71,7 @@ export default class LibraryController {
 		summary: 'Update a new library'
 	})
 	@Admin()
-	@Put(':idOrSlug/update')
+	@Put(':idOrSlug')
 	async updateLibrary(
 		@Body() updateLibraryDTO: UpdateLibraryDto,
 		@IdentifierParam(LibraryService)

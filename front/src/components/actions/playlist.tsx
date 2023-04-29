@@ -53,7 +53,10 @@ const CreateOrUpdatePlaylistForm = (props: CreateOrUpdatePlaylistFormProps) => {
 	const { registerState, handleSubmit } = useHookForm({
 		defaultValues,
 	});
-	const onSubmit = (values: typeof defaultValues) => props.onSubmit(values.name);
+	const onSubmit = (values: typeof defaultValues) => {
+		props.onSubmit(values.name);
+		props.onClose();
+	};
 
 	return <>
 		<DialogTitle>{props.defaultValue ? 'Update' : 'Create'} Playlist</DialogTitle>
@@ -77,7 +80,7 @@ const CreateOrUpdatePlaylistForm = (props: CreateOrUpdatePlaylistFormProps) => {
 			</DialogContent>
 			<DialogActions>
 				<Button onClick={props.onClose}>Cancel</Button>
-				<Button onClick={props.onClose} type='submit' color='primary' variant="contained">
+				<Button type='submit' color='primary' variant="contained">
 					{props.defaultValue ? 'Update' : 'Create'}
 				</Button>
 			</DialogActions>
