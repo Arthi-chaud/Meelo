@@ -281,6 +281,17 @@ export default class API {
 		});
 	}
 
+	static async createLibrary(libraryName: string, libraryPath: string): Promise<Library> {
+		return API.fetch({
+			route: '/libraries/new',
+			data: { name: libraryName, path: libraryPath },
+			errorMessage: "Library Creation Failed",
+			parameters: {},
+			method: 'POST',
+			validator: Library
+		});
+	}
+
 	/**
 	 * Delete a library
 	 * @returns An empty promise
