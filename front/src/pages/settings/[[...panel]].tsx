@@ -50,7 +50,7 @@ const SettingsPage = (props: InferSSRProps<typeof getServerSideProps>) => {
 			}
 		</Tabs>
 		{AvailablePanels.map((panelName) => panelName == panel &&
-			<Box key={panelName} sx={{ padding: 6, width: '100%' }}>
+			<Box key={panelName} sx={{ paddingX: 1, paddingY: 2, width: '100%' }}>
 				{Panels[panelName]}
 			</Box>)
 		}
