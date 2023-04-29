@@ -11,6 +11,10 @@ const Library = Resource.concat(yup.object({
 	 * Unique identifier
 	 */
 	slug: yup.string().required(),
+	/**
+	 * Path of the library
+	 */
+	path: yup.string().required(),
 }));
 
 type Library = yup.InferType<typeof Library>;
