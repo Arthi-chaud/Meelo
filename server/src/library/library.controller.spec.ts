@@ -404,10 +404,10 @@ describe('Library Controller', () => {
 		});
 	});
 
-	describe("Get all Related Songs (PUT /libraries/:id/update)", () => {
+	describe("Get all Related Songs (PUT /libraries/:id)", () => {
 		it("should update the path", async () => {
 			return request(app.getHttpServer())
-				.put(`/libraries/${dummyRepository.library1.slug}/update`)
+				.put(`/libraries/${dummyRepository.library1.slug}`)
 				.send({
 					path: '/hello-world',
 				})
@@ -422,7 +422,7 @@ describe('Library Controller', () => {
 		});
 		it("should update the name, and the slug", async () => {
 			return request(app.getHttpServer())
-				.put(`/libraries/${dummyRepository.library2.slug}/update`)
+				.put(`/libraries/${dummyRepository.library2.slug}`)
 				.send({
 					name: 'Hello World Library',
 				})
