@@ -298,7 +298,7 @@ export default class API {
 		libraryPath: string
 	): Promise<Library> {
 		return API.fetch({
-			route: `/libraries/${libraryId}/update`,
+			route: `/libraries/${libraryId}`,
 			data: { name: libraryName, path: libraryPath },
 			errorMessage: "Library Update Failed",
 			parameters: {},
