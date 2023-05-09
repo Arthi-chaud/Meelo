@@ -145,8 +145,13 @@ describe('MusicBrainz Provider', () => {
 				expect(albumType).toBe(AlbumType.Soundtrack);
 			})
 			it("should return Remix Album", async () => {
-				// Standard Studio Recording
+				// DJ Mix
 				const albumType = await musicBrainzProvider.getAlbumType('ce018797-8764-34f8-aee4-10089fc7393d')
+				expect(albumType).toBe(AlbumType.RemixAlbum);
+			})
+			it("should return Remix Album", async () => {
+				// Remix compilation
+				const albumType = await musicBrainzProvider.getAlbumType('664197fb-1e5c-4687-9bf4-a178bc2fd68e')
 				expect(albumType).toBe(AlbumType.RemixAlbum);
 			})
 		});
