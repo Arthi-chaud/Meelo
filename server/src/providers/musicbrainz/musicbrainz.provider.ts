@@ -180,6 +180,10 @@ export default class MusicBrainzProvider extends IProvider<MusicBrainzSettings, 
 				if (secondaryTypes.includes("Remix")) {
 					return AlbumType.RemixAlbum;
 				}
+				// https://musicbrainz.org/release-group/ce018797-8764-34f8-aee4-10089fc7393d
+				if (secondaryTypes.includes("DJ-mix")) {
+					return AlbumType.RemixAlbum;
+				}
 				// https://musicbrainz.org/release-group/35f4c727-8b32-3457-a2e7-42a697dd39c2
 				if (secondaryTypes.includes("Compilation")) {
 					return AlbumType.Compilation;
