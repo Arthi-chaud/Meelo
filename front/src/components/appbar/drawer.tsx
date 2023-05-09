@@ -22,6 +22,7 @@ import { RootState } from "../../state/store";
 import Action from "../actions/action";
 import HomeIcon from '@mui/icons-material/Home';
 import { QueueMusic } from "@mui/icons-material";
+import Translate from "../../i18n/translate";
 
 interface DrawerProps {
 	availableLibraries: Library[] | null,
@@ -56,7 +57,9 @@ const MeeloAppBarDrawer = (
 					<ListItem disableGutters>
 						<ListItemButton sx={{ borderRadius: '0' }} onClick={onClose}>
 							<ListItemIcon><HomeIcon/></ListItemIcon>
-							<ListItemText>Home</ListItemText>
+							<ListItemText>
+								<Translate translationKey="home"/>
+							</ListItemText>
 						</ListItemButton>
 					</ListItem>
 				</Link>
@@ -64,7 +67,9 @@ const MeeloAppBarDrawer = (
 					<ListItem disableGutters>
 						<ListItemButton sx={{ borderRadius: '0' }} onClick={onClose}>
 							<ListItemIcon><QueueMusic/></ListItemIcon>
-							<ListItemText>Playlists</ListItemText>
+							<ListItemText>
+								<Translate translationKey="playlists"/>
+							</ListItemText>
 						</ListItemButton>
 					</ListItem>
 				</Link>
@@ -75,7 +80,9 @@ const MeeloAppBarDrawer = (
 						sx={{ flexDirection: 'row', alignItems: 'center' }}
 					>
 						<Grid item sx={{ paddingTop: 1.6 }}><LibraryMusicIcon /></Grid>
-						<Grid item>Libraries</Grid>
+						<Grid item>
+							<Translate translationKey="libraries"/>
+						</Grid>
 						<Grid item sx={{ flexGrow: 1 }} />
 						{ availableLibraries == null && <Grid item><LoadingComponent /></Grid>}
 					</Grid>

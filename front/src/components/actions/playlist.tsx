@@ -19,6 +19,7 @@ import LoadingPage from "../loading/loading-page";
 import ListItem from "../list-item/item";
 import Illustration from "../illustration";
 import { useConfirm } from "material-ui-confirm";
+import Translate from "../../i18n/translate";
 
 export const PlayNextAction = (
 	getTrack: () => PromiseLike<Parameters<typeof playNext>[0]>
@@ -79,7 +80,9 @@ const CreateOrUpdatePlaylistForm = (props: CreateOrUpdatePlaylistFormProps) => {
 				/>
 			</DialogContent>
 			<DialogActions>
-				<Button onClick={props.onClose}>Cancel</Button>
+				<Button onClick={props.onClose}>
+					<Translate translationKey="cancel"/>
+				</Button>
 				<Button type='submit' color='primary' variant="contained">
 					{props.defaultValue ? 'Update' : 'Create'}
 				</Button>
@@ -186,7 +189,9 @@ const SelectPlaylistForm = (props: SelectPlaylistFormProps) => {
 			/>
 		</DialogContent>
 		<DialogActions>
-			<Button onClick={props.onClose} variant='outlined'>Cancel</Button>
+			<Button onClick={props.onClose} variant='outlined'>
+				<Translate translationKey="cancel"/>
+			</Button>
 		</DialogActions>
 	</>;
 };

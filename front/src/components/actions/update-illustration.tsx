@@ -9,6 +9,7 @@ import { toast } from "react-hot-toast";
 import API from "../../api/api";
 import { useMutation } from "react-query";
 import { HookTextField, useHookForm } from "mui-react-hook-form-plus";
+import Translate from "../../i18n/translate";
 
 type IllustrationUpdateFormType = {
 	onSubmit: (newUrl: string) => void;
@@ -46,8 +47,12 @@ const IllustrationUpdateForm = (props: IllustrationUpdateFormType) => {
 				/>
 			</DialogContent>
 			<DialogActions>
-				<Button onClick={props.onClose}>Cancel</Button>
-				<Button type='submit'>Update</Button>
+				<Button onClick={props.onClose}>
+					<Translate translationKey="cancel"/>
+				</Button>
+				<Button type='submit'>
+					<Translate translationKey="update"/>
+				</Button>
 			</DialogActions>
 		</form>
 	</>;

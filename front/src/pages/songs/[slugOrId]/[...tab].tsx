@@ -19,6 +19,7 @@ import { PlayArrow } from "@mui/icons-material";
 import { useDispatch } from "react-redux";
 import { playTrack } from "../../../state/playerSlice";
 import ExternalIdBadge from "../../../components/external-id-badge";
+import Translate from "../../../i18n/translate";
 
 export const getServerSideProps = prepareSSR((context) => {
 	const songIdentifier = getSlugOrId(context.params);
@@ -87,7 +88,9 @@ const SongPage = (
 							artist: song.data.artist,
 							release: master.release
 						})))
-					}>Play</Button>
+					}>
+					<Translate translationKey="play"/>
+				</Button>
 			</Grid>
 		</Grid>
 		<Divider sx={{ paddingY: 1 }}/>

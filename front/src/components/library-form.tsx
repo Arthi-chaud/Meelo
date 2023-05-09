@@ -3,6 +3,7 @@ import {
 } from "@mui/material";
 import Library from "../models/library";
 import { HookTextField, useHookForm } from "mui-react-hook-form-plus";
+import Translate from "../i18n/translate";
 
 type LibraryFormFields = Pick<Library, 'name' | 'path'>;
 
@@ -59,7 +60,9 @@ const LibraryForm = (props: LibraryFormProps) => {
 				</Grid>
 			</DialogContent>
 			<DialogActions>
-				<Button onClick={props.onClose}>Cancel</Button>
+				<Button onClick={props.onClose}>
+					<Translate translationKey="cancel"/>
+				</Button>
 				<Button type='submit' color='primary' variant="contained">
 					{props.defaultValues ? 'Update' : 'Create'}
 				</Button>
