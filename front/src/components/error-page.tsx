@@ -4,7 +4,7 @@ import {
 import Link from "next/link";
 
 type ErrorPageProps = {
-	heading: string;
+	heading: string | JSX.Element;
 }
 
 /**

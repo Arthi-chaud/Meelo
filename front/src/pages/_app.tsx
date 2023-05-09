@@ -25,6 +25,7 @@ import 'core-js/actual';
 import '../theme/styles.css';
 import ThemeProvider from "../theme/provider";
 import { PersistGate } from "redux-persist/integration/react";
+import { LightTheme } from "../theme/theme";
 
 function MyApp({ Component, pageProps: { session, ...pageProps } }: AppProps) {
 	const [queryClient] = useState(() => new QueryClient());
@@ -47,6 +48,7 @@ function MyApp({ Component, pageProps: { session, ...pageProps } }: AppProps) {
 					<meta name="viewport" content="initial-scale=1.0, width=device-width" />
 					<meta name="apple-mobile-web-app-capable" content="yes" />
 					<meta name="apple-mobile-web-app-status-bar-style" content="black" />
+					<meta name="theme-color" content={LightTheme.background?.default}/>
 					<link rel="shortcut icon" href="/favicon.ico" />
 					<link rel="apple-touch-icon" href="/favicon.ico" />
 				</Head>
