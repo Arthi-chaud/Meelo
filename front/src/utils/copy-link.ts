@@ -1,4 +1,5 @@
 import toast from "react-hot-toast";
+import { translate } from "../i18n/translate";
 
 /**
  * Copy meelo url to clipboard, with hostname
@@ -6,5 +7,5 @@ import toast from "react-hot-toast";
  */
 export default function copyLinkToClipboard(route: string) {
 	navigator.clipboard.writeText(location.protocol + '//' + location.host + route);
-	toast.success("Link copied to clipboard");
+	toast.success(translate('linkCopied'));
 }

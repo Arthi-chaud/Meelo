@@ -4,7 +4,8 @@ const en = {
 	play: 'Play',
 	libraries: 'Libraries',
 	home: 'Home',
-	playlists: 'Playlists'
+	playlists: 'Playlists',
+	linkCopied: 'Link copied to clipboard'
 };
 
 export default en;

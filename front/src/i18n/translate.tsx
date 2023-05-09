@@ -1,7 +1,22 @@
 import { useSelector } from "react-redux";
-import { RootState } from "../state/store";
+import store, { RootState } from "../state/store";
 import TranslationMap from "./translations/type";
 import i18n, { Languages } from "./i18n";
+
+const getSystemLanguage = () => {
+	return Languages.find((ln) => new RegExp(`/${ln}\b/`).test(navigator.language)) ?? 'en';
+};
+
+// Translate text according to store
+const translate = (key: keyof TranslationMap) => {
+	const language = store.getState().settings.language;
+
+	return i18n.t(key, {
+		lng: language == 'system'
+			? getSystemLanguage()
+			: language
+	});
+};
 
 type TranslateProps = {
 	translationKey: keyof TranslationMap;
@@ -16,7 +31,7 @@ const Translate = (props: TranslateProps) => {
 		const currentLanguage = state.settings.language;
 
 		if (currentLanguage == 'system') {
-			return Languages.find((ln) => new RegExp(`/${ln}\b/`).test(navigator.language)) ?? 'en';
+			return getSystemLanguage();
 		}
 		return currentLanguage;
 	});
@@ -26,3 +41,4 @@ const Translate = (props: TranslateProps) => {
 };
 
 export default Translate;
+export { translate };

@@ -7,7 +7,8 @@ const fr: TranslationMap = {
 	play: 'Écouter',
 	libraries: 'Bibliothèques',
 	home: 'Accueil',
-	playlists: en.playlists
+	playlists: en.playlists,
+	linkCopied: 'Lien copié dans le presse-papier'
 };
 
 export default fr;
