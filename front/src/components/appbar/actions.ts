@@ -6,11 +6,15 @@ import { LogoutAction } from "../actions/auth";
 import {
 	SetDarkColorSchemeAction, SetLightColorSchemeAction, SetSystemColorSchemeAction
 } from "../actions/color-scheme";
+import ChangeLanguageAction from "../actions/language";
 
 /**
  * Collections of actions that are accessible from appbar and drawer
  */
-const getAppBarActions = (selectedColorScheme: RootState['settings']['colorScheme']): Action[] => [
+const getAppBarActions = (
+	selectedColorScheme: RootState['settings']['colorScheme'],
+	selectedLanguage: RootState['settings']['language']
+): Action[] => [
 	GoToSearchAction,
 	{
 		...ScanAllLibrariesAction,
@@ -21,6 +25,7 @@ const getAppBarActions = (selectedColorScheme: RootState['settings']['colorSchem
 		: selectedColorScheme == 'light'
 			? SetSystemColorSchemeAction
 			: SetDarkColorSchemeAction,
+	ChangeLanguageAction(selectedLanguage),
 	{
 		...GoToSettingsAction,
 		disabled: store.getState().user.user?.admin !== true

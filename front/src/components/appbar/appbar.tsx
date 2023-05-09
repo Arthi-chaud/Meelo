@@ -33,7 +33,11 @@ const MeeloAppBar = () => {
 	const [requestedLibrary, setRequestedLibrary] = useState(globalLibrary);
 	const [availableLibraries, setAvailableLibraries] = useState<Library[] | null>(null);
 	const colorSchemeSetting = useSelector((state: RootState) => state.settings.colorScheme);
-	const actions = useMemo(() => getAppBarActions(colorSchemeSetting), [colorSchemeSetting]);
+	const languageSetting = useSelector((state: RootState) => state.settings.language);
+	const actions = useMemo(
+		() => getAppBarActions(colorSchemeSetting, languageSetting),
+		[colorSchemeSetting, languageSetting]
+	);
 	const librariesQuery = useReactInfiniteQuery({
 		...prepareMeeloInfiniteQuery(API.getAllLibraries),
 		useErrorBoundary: false

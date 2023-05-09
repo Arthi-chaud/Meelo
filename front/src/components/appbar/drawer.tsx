@@ -35,7 +35,11 @@ const MeeloAppBarDrawer = (
 ) => {
 	const [selectedLibrarySlug, setSelectedLibrary] = useState<string | null>(requestedLibrarySlug);
 	const colorSchemeSetting = useSelector((state: RootState) => state.settings.colorScheme);
-	const actions = useMemo(() => getAppBarActions(colorSchemeSetting), [colorSchemeSetting]);
+	const languageSetting = useSelector((state: RootState) => state.settings.language);
+	const actions = useMemo(
+		() => getAppBarActions(colorSchemeSetting, languageSetting),
+		[colorSchemeSetting, languageSetting]
+	);
 
 	useEffect(() => setSelectedLibrary(requestedLibrarySlug), [requestedLibrarySlug, isOpen]);
 	return (
