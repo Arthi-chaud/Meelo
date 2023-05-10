@@ -9,6 +9,7 @@ const en = {
 	libraries: 'Libraries',
 	users: 'Users',
 	home: 'Home',
+	create: 'Create',
 	playlists: 'Playlists',
 	linkCopied: 'Link copied to clipboard',
 	newlyAddedAlbums: 'Newly Added Albums',
@@ -27,7 +28,63 @@ const en = {
 	otherAlbumReleases: 'Other releases of the same album',
 	musicVideos: 'Music Videos',
 	playlistReorderSuccess: 'Playlist Reordered!',
-	playlistReorderFail: 'Playlist Reordering Failed'
+	playlistReorderFail: 'Playlist Reordering Failed',
+	topSongs: 'Top Songs',
+	topVideos: 'Top Videos',
+	albums: 'Albums',
+	seeAll: 'See All',
+	trackInformation: 'Track Information',
+	name: 'Name',
+	playCount: 'Play Count',
+	duration: 'Duration',
+	bitRate: 'Bit Rate',
+	type: 'Type',
+	extension: 'Extension',
+	path: 'Path',
+	registrationDate: 'Registration Date',
+	noLyricsFound: 'No Lyrics Found',
+
+	libraryDeleted: 'Library deleted',
+	libraryDeletionFail: 'Deleting library failed',
+	libraryCreated: 'Library created',
+	libraryCreationFail: 'Creating library failed',
+	libraryUpdated: 'Library updated',
+
+	nameOfLibrary: 'Name of the library',
+	nameIsRequired: 'Name is required',
+	pathOfLibrary: 'Path of the library',
+	pathIsRequired: 'Path is required',
+	goBackHome: "Go Back Home",
+
+	warning: 'Warning',
+	downloadWarning: "Downloading copyrighted material you don't own is not authorized. Please proceed if, and only if, you own the original content.",
+	download: 'Download',
+	compilation: 'Compilation',
+
+	clean: 'Clean',
+	refresh: 'Refresh',
+	scan: 'Scan',
+	refreshMetadata: 'Refresh Metadata',
+
+	createLibrary: 'Create Library',
+
+	deleteLibrary: 'Delete Library',
+	deleteLibraryAction: 'Delete a Library',
+	deleteLibraryWarning: 'You are about to delete a library. This can not be undone',
+
+	deleteUser: 'Delete User',
+	deleteUserWarning: 'You are about to delete a user. This can not be undone.',
+	userDeleted: 'User deleted',
+	userDeletionFail: 'User deletion failed',
+	userUpdateFail: 'Updating user failed',
+
+	userNowEnabled: 'User is now enabled',
+	userNowDisabled: 'User is now disabled',
+	userNowAdmin: 'User is now an admin and can run administrative tasks',
+	userNowNotAdmin: 'User is not an admin anymore',
+	you: 'You',
+	admin: 'Admin',
+	enabled: 'Enabled'
 };
 
 export default en;

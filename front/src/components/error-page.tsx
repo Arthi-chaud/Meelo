@@ -2,6 +2,7 @@ import {
 	Box, Button, Typography
 } from "@mui/material";
 import Link from "next/link";
+import Translate from "../i18n/translate";
 
 type ErrorPageProps = {
 	heading: string | JSX.Element;
@@ -22,7 +23,9 @@ const ErrorPage = ({ heading }: ErrorPageProps) => {
 			{heading}
 		</Typography>
 		<Link href="/">
-			<Button color='inherit' variant="outlined">Go back home</Button>
+			<Button color='inherit' variant="outlined">
+				<Translate translationKey="goBackHome"/>
+			</Button>
 		</Link>
 	</Box>;
 };

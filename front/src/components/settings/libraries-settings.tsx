@@ -19,8 +19,9 @@ import {
 } from "../actions/library-task";
 import { useConfirm } from "material-ui-confirm";
 import Action from "../actions/action";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import LibraryForm from "../library-form";
+import Translate, { translate, useLanguage } from "../../i18n/translate";
 
 const actionButtonStyle = {
 	overflow: 'hidden',
@@ -38,7 +39,7 @@ const RunTaskButton = (
 		onClick={onClick} sx={actionButtonStyle}
 	>
 		<Hidden smUp>{icon}</Hidden>
-		<Hidden smDown>{label}</Hidden>
+		<Hidden smDown><Translate translationKey={label}/></Hidden>
 	</Button>;
 };
 
@@ -48,6 +49,7 @@ const LibrariesSettings = () => {
 	const cleanAllLibaries = CleanAllLibrariesAction;
 	const fetchMetadata = FetchExternalMetadata;
 	const confirm = useConfirm();
+	const language = useLanguage();
 	const [createModalOpen, setCreateModalOpen] = useState(false);
 	const [libraryEdit, setLibraryEdit] = useState<Library | undefined>(); // If set, open modal to edit library
 	const closeEditModal = () => setLibraryEdit(undefined);
@@ -55,42 +57,42 @@ const LibrariesSettings = () => {
 	const deletionMutation = useMutation((libraryId: number) =>
 		API.deleteLibrary(libraryId)
 			.then(() => {
-				toast.success("Library deleted");
+				toast.success(translate('libraryDeleted'));
 				queryClient.client.invalidateQueries();
 			})
-			.catch(() => toast.error("Deleting library failed, try again")));
+			.catch(() => toast.error(translate('libraryDeletionFail'))));
 	const createMutation = useMutation((createForm: { name: string, path: string}) =>
 		API.createLibrary(createForm.name, createForm.path)
 			.then(() => {
-				toast.success("Library created");
+				toast.success(translate('libraryCreated'));
 				queryClient.client.invalidateQueries(['libraries']);
 			})
 			.catch((err) => toast.error(err.message)));
 	const editMutation = useMutation((updatedLibrary: { id: number, name: string, path: string}) =>
 		API.updateLibrary(updatedLibrary.id, updatedLibrary.name, updatedLibrary.path)
 			.then(() => {
-				toast.success("Library updated");
+				toast.success(translate('libraryUpdated'));
 				queryClient.client.invalidateQueries(['libraries']);
 			})
 			.catch((err) => toast.error(err.message)));
-	const columns: GridColDef<Library>[] = [
-		{ field: 'name', headerName: 'Name', flex: 5 },
-		{ field: 'clean', headerName: 'Clean', flex: 3, renderCell: ({ row: library }) =>
+	const columns: GridColDef<Library>[] = useMemo(() => [
+		{ field: 'name', headerName: translate('name'), flex: 5 },
+		{ field: 'clean', headerName: translate('clean'), flex: 3, renderCell: ({ row: library }) =>
 			<RunTaskButton variant='outlined' {...CleanLibraryAction(library.id)}/> },
-		{ field: 'scan', headerName: 'Scan', flex: 3, renderCell: ({ row: library }) =>
+		{ field: 'scan', headerName: translate('scan'), flex: 3, renderCell: ({ row: library }) =>
 			<RunTaskButton variant='contained' {...ScanLibraryAction(library.id)}/> },
-		{ field: 'refresh', headerName: 'Refresh metadata', flex: 3, renderCell: ({ row: library }) =>
-			<RunTaskButton variant='outlined' {...RefreshMetadataLibraryAction(library.id)} label='Refresh'/> },
-		{ field: 'edit', headerName: 'Edit', flex: 1, renderCell: ({ row: library }) => {
+		{ field: 'refresh', headerName: translate('refreshMetadata'), flex: 3, renderCell: ({ row: library }) =>
+			<RunTaskButton variant='outlined' {...RefreshMetadataLibraryAction(library.id)} label='refresh'/> },
+		{ field: 'edit', headerName: translate('edit'), flex: 1, renderCell: ({ row: library }) => {
 			return <IconButton onClick={() => setLibraryEdit(library)}>
 				<Edit/>
 			</IconButton>;
 		} },
-		{ field: 'delete', headerName: 'Delete', flex: 1, renderCell: ({ row: library }) => {
+		{ field: 'delete', headerName: translate('delete'), flex: 1, renderCell: ({ row: library }) => {
 			return <IconButton color='error' onClick={() => confirm({
-				title: 'Delete a Library',
-				description: 'You are about to delete a library. This can not be undone',
-				confirmationText: 'Delete Library',
+				title: <Translate translationKey="deleteLibraryAction"/>,
+				description: <Translate translationKey="deleteLibraryWarning"/>,
+				confirmationText: <Translate translationKey="deleteLibrary"/>,
 				confirmationButtonProps: {
 					variant: 'outlined',
 					color: 'error',
@@ -100,19 +102,19 @@ const LibrariesSettings = () => {
 				<Delete/>
 			</IconButton>;
 		} }
-	];
+	], [language]);
 
 	return <Box>
 		<Grid container sx={{ justifyContent: { xs: 'space-evenly', md: 'flex-end' }, paddingY: 2 }} spacing={{ xs: 1, md: 2 }}>
 			<Grid item>
 				<Button variant='contained' startIcon={<Add/>} onClick={() => setCreateModalOpen(true)}>
-					Create Library
+					<Translate translationKey="createLibrary"/>
 				</Button>
 			</Grid>
 			{[cleanAllLibaries, scanAllLibaries, fetchMetadata].map((action, index) => (
 				<Grid item key={'Library-action-' + index}>
 					<Button variant={index % 2 ? 'contained' : 'outlined'} startIcon={action.icon} onClick={action.onClick}>
-						{action.label}
+						<Translate translationKey={action.label}/>
 					</Button>
 				</Grid>
 			))}

@@ -1,12 +1,13 @@
 import { useConfirm } from "material-ui-confirm";
+import { translate } from "../i18n/translate";
 
 const confirmDownloadAction = (
 	confirm: ReturnType<typeof useConfirm>, downloadUrl: string
 ) => {
 	confirm({
-		title: "Warning",
-		description: "Downloading copyrighted material you don't own is not authorized. Please proceed if, and only if, you own the original content.",
-		confirmationText: "Download",
+		title: translate('warning'),
+		description: translate('downloadWarning'),
+		confirmationText: translate('download'),
 		confirmationButtonProps: { color: 'error', variant: 'outlined', href: downloadUrl }
 	});
 };

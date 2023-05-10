@@ -6,6 +6,8 @@ import API from "../api/api";
 import { useQuery } from "../api/use-query";
 import formatDuration from "../utils/formatDuration";
 import { WideLoadingComponent } from "./loading/loading";
+import Translate, { translate } from "../i18n/translate";
+import { TranslationKey } from "../i18n/translations/type";
 
 /**
  * Table component, listing info of track and its source file
@@ -18,15 +20,15 @@ const TrackFileInfo = ({ trackId }: { trackId: number }) => {
 	if (!track.data || !sourceFile.data) {
 		return <WideLoadingComponent/>;
 	}
-	const tableContent = {
-		'Name': track.data.name,
-		'Play Count': track.data.song.playCount,
-		'Duration': formatDuration(track.data.duration),
-		'Bit Rate': `${track.data.bitrate} kbps`,
-		'Type': track.data.type,
-		'Extension': sourceFile.data.path.split('.').reverse()[0].toLocaleUpperCase() ?? 'Unknown',
-		'Path': sourceFile.data.path,
-		'Registration Date': new Date(sourceFile.data.registerDate).toLocaleString()
+	const tableContent: Partial<Record<TranslationKey, string | number>> = {
+		name: track.data.name,
+		playCount: track.data.song.playCount,
+		duration: formatDuration(track.data.duration),
+		bitRate: `${track.data.bitrate} kbps`,
+		type: track.data.type,
+		extension: sourceFile.data.path.split('.').reverse()[0].toLocaleUpperCase() ?? 'Unknown',
+		path: sourceFile.data.path,
+		registrationDate: new Date(sourceFile.data.registerDate).toLocaleString()
 	};
 
 	return <Table>
@@ -35,7 +37,7 @@ const TrackFileInfo = ({ trackId }: { trackId: number }) => {
 				<TableRow key={index}>
 					<TableCell>
 						<Typography fontWeight='bold'>
-							{key}
+							<Translate translationKey={key as TranslationKey}/>
 						</Typography>
 					</TableCell>
 					<TableCell>
@@ -49,7 +51,7 @@ const TrackFileInfo = ({ trackId }: { trackId: number }) => {
 const openTrackFileInfoModal = (
 	confirm: ReturnType<typeof useConfirm>, trackId: number
 ) => confirm({
-	title: "Track Information",
+	title: translate('trackInformation'),
 	description: <TrackFileInfo trackId={trackId}/>,
 	cancellationButtonProps: { sx: { display: 'none' } }
 });

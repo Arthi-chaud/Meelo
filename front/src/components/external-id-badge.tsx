@@ -12,7 +12,7 @@ const ExternalIdBadge = ({ externalId }: ExternalIdBadgeProps) => {
 		<Button variant="outlined" startIcon={<Box sx={{ width: 30 }}>
 			<Illustration url={externalId.provider.icon}/>
 		</Box>}>
-			{externalId.provider.name }
+			{externalId.provider.name}
 		</Button>
 	</Link>;
 };
