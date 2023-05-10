@@ -33,6 +33,7 @@ import { useMutation } from "react-query";
 import { shuffle } from "d3-array";
 import { DeletePlaylistAction } from "../../../components/actions/playlist";
 import { useConfirm } from "material-ui-confirm";
+import Translate, { translate } from "../../../i18n/translate";
 
 const playlistQuery = (idOrSlug: number | string) => API.getPlaylist(idOrSlug, ['entries']);
 const masterTrackQuery = (songId: number | string) => API.getMasterTrack(songId, ['release']);
@@ -137,10 +138,10 @@ const PlaylistPage = (
 	const reorderMutation = useMutation((reorderedEntries: number[]) => {
 		return API.reorderPlaylist(playlistIdentifier, reorderedEntries)
 			.then(() => {
-				toast.success('Playlist Reordered');
+				toast.success(translate('playlistReorderSuccess'));
 				return playlist.refetch();
 			})
-			.catch(() => toast.error('Playlist reorder failed'));
+			.catch(() => toast.error(translate('playlistReorderFail')));
 	});
 
 	if (!playlist.data ||
@@ -184,14 +185,14 @@ const PlaylistPage = (
 					<Button variant="contained" color='primary' startIcon={<PlayArrow/>}
 						sx={{ width: '100%' }} onClick={() => playPlaylist(0)}
 					>
-						Play
+						<Translate translationKey="play"/>
 					</Button>
 				</Grid>
 				<Grid item xs>
 					<Button variant="outlined" color='primary' startIcon={<Shuffle/>}
 						sx={{ width: '100%' }} onClick={() => shufflePlaylist()}
 					>
-						Shuffle
+						<Translate translationKey="shuffle"/>
 					</Button>
 				</Grid>
 			</Grid>
@@ -239,14 +240,14 @@ const PlaylistPage = (
 						}
 					}}
 				>
-					{editState ? 'Done' : 'Edit'}
+					<Translate translationKey={editState ? 'done' : 'edit'} />
 				</Button>
 			</Grid>
 			<Grid item>
 				<Button variant="outlined" color='error'
 					startIcon={deleteAction.icon} sx={{ width: '100%' }}
 					onClick={deleteAction.onClick}>
-					{deleteAction.label}
+					<Translate translationKey={deleteAction.label} />
 				</Button>
 			</Grid>
 		</Grid>

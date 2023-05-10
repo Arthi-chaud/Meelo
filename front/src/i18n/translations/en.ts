@@ -2,7 +2,12 @@ const en = {
 	cancel: 'Cancel',
 	update: 'Update',
 	play: 'Play',
+	shuffle: 'Shuffle',
+	done: 'Done',
+	edit: 'Edit',
+	delete: 'Delete',
 	libraries: 'Libraries',
+	users: 'Users',
 	home: 'Home',
 	playlists: 'Playlists',
 	linkCopied: 'Link copied to clipboard',
@@ -12,7 +17,17 @@ const en = {
 	newlyAddedReleases: 'Newly Added Releases',
 	mostPlayedSongs: 'Most Played Songs',
 	errorOccured: 'Oops... An error occured',
-	pageNotFound: 'Oops... Page not found'
+	pageNotFound: 'Oops... Page not found',
+	lyrics: 'Lyrics',
+	versions: 'Versions',
+	tracks: 'Tracks',
+	genres: 'Genres',
+	externalLinks: 'External Links',
+	disc: 'Disc',
+	otherAlbumReleases: 'Other releases of the same album',
+	musicVideos: 'Music Videos',
+	playlistReorderSuccess: 'Playlist Reordered!',
+	playlistReorderFail: 'Playlist Reordering Failed'
 };
 
 export default en;

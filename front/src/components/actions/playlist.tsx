@@ -143,7 +143,7 @@ export const DeletePlaylistAction = (
 	librarySlugOrId: number | string,
 	onDeleted: () => void
 ): Action => ({
-	label: 'Delete',
+	label: 'delete',
 	icon: <Delete/>,
 	onClick: () => confirm({
 		title: 'Delete Playlist',

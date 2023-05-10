@@ -6,6 +6,7 @@ import { useRouter } from "next/router";
 import UsersSettings from "../../components/settings/users-settings";
 import prepareSSR, { InferSSRProps } from '../../ssr';
 import LibrariesSettings from '../../components/settings/libraries-settings';
+import Translate from '../../i18n/translate';
 
 const AvailablePanels = ['libraries', 'users'] as const;
 
@@ -46,7 +47,9 @@ const SettingsPage = (props: InferSSRProps<typeof getServerSideProps>) => {
 			centered
 		>
 			{AvailablePanels.map((panelName, index) =>
-				<Tab key={index} value={panelName} label={panelName}/>)
+				<Tab key={index} value={panelName}
+					label={<Translate translationKey={panelName}/>}
+				/>)
 			}
 		</Tabs>
 		{AvailablePanels.map((panelName) => panelName == panel &&

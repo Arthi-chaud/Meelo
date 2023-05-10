@@ -66,7 +66,7 @@ const SongPage = (
 		<Grid container direction={{ xs: 'column', md: 'row' }} spacing={2}>
 			<Grid item xs>
 				{ (genres.data.pages.at(0)?.items.length ?? 0) != 0 && <Stack direction='row' sx={{ overflowY: 'scroll', alignItems: 'center' }} spacing={2}>
-					<Typography sx={{ overflow: 'unset' }}>Genres:</Typography>
+					<Typography sx={{ overflow: 'unset' }}><Translate translationKey="genres"/>:</Typography>
 					{ genres.data.pages.at(0)?.items.map((genre) => <Link key={genre.slug} href={`/genres/${genre.slug}`}>
 						<Button variant="outlined">
 							{genre.name}
@@ -74,7 +74,7 @@ const SongPage = (
 					</Link>)}
 				</Stack>}
 				{ song.data.externalIds.length != 0 && <Stack direction='row' sx={{ overflowY: 'scroll', alignItems: 'center', paddingTop: 2 }} spacing={2}>
-					<Typography sx={{ overflow: 'unset' }}>External Links:</Typography>
+					<Typography sx={{ overflow: 'unset' }}><Translate translationKey="externalLinks"/>:</Typography>
 					{ song.data.externalIds.map((externalId) =>
 						<ExternalIdBadge key={externalId.provider.name} externalId={externalId}/>)
 					}
@@ -102,9 +102,9 @@ const SongPage = (
 			}}
 			variant="fullWidth"
 		>
-			<Tab key={0} value={'lyrics'} label={'Lyrics'}/>
-			<Tab key={1} value={'versions'} label={'Versions'}/>
-			<Tab key={2} value={'tracks'} label={'Tracks'}/>
+			{tabs.map((value, index) => (
+				<Tab key={index} value={value} label={<Translate translationKey={value}/>}/>
+			))}
 		</Tabs>
 		<Box sx={{ paddingY: 2 }}>
 			{ tab == 'lyrics' && (

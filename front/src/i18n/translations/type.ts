@@ -1,5 +1,5 @@
 import en from './en';
 
-type TranslationMap = typeof en;
+export type TranslationMap = typeof en;
+export type TranslationKey = keyof TranslationMap;
 
-export default TranslationMap;

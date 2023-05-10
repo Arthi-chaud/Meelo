@@ -5,6 +5,7 @@ import {
 import { useState } from "react";
 import Action from "../actions/action";
 import ContextualMenuItem from "./contextual-menu-item";
+import { useLanguage } from "../../i18n/translate";
 
 type ContextualMenuProps = {
 	actions: Action[][];
@@ -13,6 +14,7 @@ type ContextualMenuProps = {
 }
 const ContextualMenu = (props: ContextualMenuProps) => {
 	const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+	const language = useLanguage();
 	const open = Boolean(anchorEl);
 	const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
 		setAnchorEl(event.currentTarget);
