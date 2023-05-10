@@ -5,6 +5,7 @@ import {
 import Link from "next/link";
 import Action from "../actions/action";
 import { useState } from "react";
+import Translate from "../../i18n/translate";
 
 const ContextualMenuItem = (props: Action) => {
 	const [modalOpen, setModalOpen] = useState(false);
@@ -20,7 +21,7 @@ const ContextualMenuItem = (props: Action) => {
 	const closeModal = () => setModalOpen(false);
 	const item = <MenuItem disabled={props.disabled} onClick={onClick} sx={{ borderRadius: '0' }}>
 		{ props.icon && <ListItemIcon>{props.icon}</ListItemIcon> }
-		<ListItemText>{props.label}</ListItemText>
+		<ListItemText><Translate translationKey={props.label}/></ListItemText>
 	</MenuItem>;
 
 	if (props.href && !props.disabled) {
