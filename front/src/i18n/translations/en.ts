@@ -11,6 +11,7 @@ const en = {
 	home: 'Home',
 	create: 'Create',
 	playlists: 'Playlists',
+	playlist: 'Playlist',
 	linkCopied: 'Link copied to clipboard',
 	newlyAddedAlbums: 'Newly Added Albums',
 	latestAlbums: 'Latest Albums',
@@ -84,7 +85,8 @@ const en = {
 	userNowNotAdmin: 'User is not an admin anymore',
 	you: 'You',
 	admin: 'Admin',
-	enabled: 'Enabled'
+	enabled: 'Enabled',
+
 };
 
 export default en;

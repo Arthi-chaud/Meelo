@@ -13,6 +13,7 @@ const fr: TranslationMap = {
 	home: 'Accueil',
 	create: 'Créer',
 	playlists: en.playlists,
+	playlist: "File d'attente",
 	linkCopied: 'Lien copié dans le presse-papier',
 	newlyAddedAlbums: "Ajoutés Récemment",
 	latestAlbums: "Dernières Sorties",
@@ -51,7 +52,7 @@ const fr: TranslationMap = {
 	pathOfLibrary: 'Chemin de la bibliothèque',
 	pathIsRequired: 'Le chemin est obligatoire',
 	goBackHome: "Retour à l'accueil",
-	noLyricsFound: "Aucune Parole trouvée",
+	noLyricsFound: "Aucune Parole Trouvée",
 
 	warning: 'Attention',
 	downloadWarning: "Il est interdit de télécharger du contenu sans en posséder l'original. Ne téléchagez pas si vous ne le posséder pas légalement.",
@@ -70,7 +71,20 @@ const fr: TranslationMap = {
 	createLibrary: "Créer une Bibliothèque",
 	deleteLibrary: "Supprimer la Bibliothèque",
 	deleteLibraryAction: "Supprimer une Bibliothèque",
-	deleteLibraryWarning: "Vous êtes sur le point de supprimer une bibliothèque. Il sera impossible de revenir en arrière."
+	deleteLibraryWarning: "Vous êtes sur le point de supprimer une bibliothèque. Il sera impossible de revenir en arrière.",
+
+	deleteUser: "Supprimer Compte",
+	deleteUserWarning: "Vous allez supprimer un compte utilisateur. Cela ne pourra pas être annulé.",
+	userDeleted: "Compte Supprimé",
+	userDeletionFail: "Echec de la suppression du compte",
+	userUpdateFail: "Echec de la mise à jour de l'utilisateur",
+	userNowEnabled: "Le compte utilisateur est activé",
+	userNowDisabled: "Le compte utilisateur est desactivé",
+	userNowAdmin: "L'utilisateur est maintenant administrateur",
+	userNowNotAdmin: "L'utilisateur n'est plus administrateur",
+	you: "Vous",
+	admin: "Administrateur",
+	enabled: "Activé"
 };
 
 export default fr;
