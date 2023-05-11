@@ -25,7 +25,7 @@ const primaryTextStyle = {
 };
 
 const secondaryTextStyle = {
-	color: "text.disabled"
+	color: "text.disabled",
 };
 
 const ListItem = (props: ListItemProps) => {
@@ -46,13 +46,13 @@ const ListItem = (props: ListItemProps) => {
 					secondary={props.secondTitle}
 					secondaryTypographyProps={secondaryTextStyle}
 				/> :
-				<Grid container spacing={2}>
+				<Grid container spacing={2} flexWrap='nowrap'>
 					<Grid item xs={props.secondTitle ? 8 : 10}>
 						<Typography sx={{ ...textStyle, ...primaryTextStyle }}>
 							{props.title}
 						</Typography>
 					</Grid>
-					<Grid item xs>
+					<Grid item xs sx={{ overflow: 'hidden', textOverflow: 'ellipsis' }}>
 						<Typography sx={{ ...textStyle, ...secondaryTextStyle }}>
 							{props.secondTitle}
 						</Typography>
