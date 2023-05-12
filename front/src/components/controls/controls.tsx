@@ -13,6 +13,8 @@ import { LayoutOption, getLayoutParams } from "../../utils/layout";
 import { Order, getOrderParams } from "../../utils/sorting";
 import parseQueryParam from "../../utils/parse-query-param";
 import Action from "../actions/action";
+import Translate, { translate, useLanguage } from "../../i18n/translate";
+import { TranslationKey } from "../../i18n/translations/type";
 
 export type OptionState<
 	SortingKeys extends readonly string[],
@@ -66,6 +68,7 @@ const Controls = <
 		});
 		return baseOptions;
 	});
+	const language = useLanguage();
 	const [openActionModal, setOpenActionModal] = useState<string | null>(null);
 	const closeModal = () => setOpenActionModal(null);
 
@@ -113,7 +116,7 @@ const Controls = <
 			)) ?? []}
 			<OptionButton
 				optionGroup={{
-					name: `Sort by ${capitalCase(optionsState.sortBy)}`,
+					name: `${translate('sortBy')} ${translate(optionsState.sortBy as TranslationKey)}`,
 					icon: optionsState.order == 'desc' ? <South/> : <North/>,
 					options: [
 						{
@@ -146,7 +149,7 @@ const Controls = <
 				/>;
 			})}
 			{ props.disableLayoutToggle !== true &&
-				<Tooltip title="Change layout">
+				<Tooltip title={<Translate translationKey='changeLayout'/>}>
 					<Button onClick={() => updateOptionState(
 						{ name: 'view', value: optionsState.view == 'grid' ? 'list' : 'grid' }
 					)}>

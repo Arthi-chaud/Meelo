@@ -84,7 +84,41 @@ const fr: TranslationMap = {
 	userNowNotAdmin: "L'utilisateur n'est plus administrateur",
 	you: "Vous",
 	admin: "Administrateur",
-	enabled: "Activé"
+	enabled: "Activé",
+
+	All: 'Tous Types',
+	StudioRecording: 'Album Studio',
+	Single: 'Single',
+	LiveRecording: 'Album Live',
+	Compilation: 'Compilation',
+	Soundtrack: 'Bande Originale',
+	RemixAlbum: 'Album de Remixes',
+	VideoAlbum: 'Collection de Vidéos',
+
+	backToTop: 'Retour en haut',
+	changeLayout: 'Changer la disposition',
+
+	sortBy: 'Trier par',
+	order: 'Ordre',
+	asc: 'Asc',
+	desc: 'Desc',
+	artistName: 'Nom d\'Artiste',
+	releaseDate: 'Date de Sortie',
+	addDate: 'Date d\'Ajout',
+	albumCount: 'Nombre d\'Albums',
+	trackCount: 'Nombre de Pistes',
+	songCount: 'Nombre de Titres',
+	entryCount: 'Nombre de Titres',
+	creationDate: 'Date de création',
+	releaseName: 'Nom de Disque',
+	bitrate: 'Bitrate',
+	trackIndex: 'Index de piste',
+	discIndex: 'Index de disque',
+	artist: "Artiste",
+	artists: "Artistes",
+	album: "Album",
+	songs: "Titres",
+	song: "Titre"
 };
 
 export default fr;

@@ -32,7 +32,12 @@ const en = {
 	playlistReorderFail: 'Playlist Reordering Failed',
 	topSongs: 'Top Songs',
 	topVideos: 'Top Videos',
+	artist: 'Artist',
+	artists: 'Artists',
 	albums: 'Albums',
+	album: 'Album',
+	songs: 'Songs',
+	song: 'Song',
 	seeAll: 'See All',
 	trackInformation: 'Track Information',
 	name: 'Name',
@@ -87,6 +92,36 @@ const en = {
 	admin: 'Admin',
 	enabled: 'Enabled',
 
+	// Albums Types
+	All: 'All',
+	StudioRecording: 'Studio Recording',
+	Single: 'Single',
+	LiveRecording: 'Live Recording',
+	Compilation: 'Compilation',
+	Soundtrack: 'Soundtrack',
+	RemixAlbum: 'Remix Album',
+	VideoAlbum: 'Video Album',
+
+	backToTop: 'Back To Top',
+	changeLayout: 'Change layout',
+
+	// Sorting Keys
+	sortBy: 'Sort By',
+	order: 'Order',
+	asc: 'Asc',
+	desc: 'Desc',
+	artistName: 'Artist Name',
+	releaseDate: 'Release Date',
+	addDate: 'Add Date',
+	albumCount: 'Album Count',
+	songCount: 'Song Count',
+	entryCount: 'Entry Count',
+	creationDate: 'Creation Date',
+	trackCount: 'Track Count',
+	releaseName: 'Release Name',
+	bitrate: 'Bitrate',
+	trackIndex: 'Track Index',
+	discIndex: 'Disc Index'
 };
 
 export default en;

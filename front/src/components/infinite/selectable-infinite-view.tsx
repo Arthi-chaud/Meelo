@@ -13,12 +13,13 @@ import InfiniteArtistView from "./infinite-resource-view/infinite-artist-view";
 import InfiniteSongView from "./infinite-resource-view/infinite-song-view";
 import { SongSortingKeys, SongWithRelations } from "../../models/song";
 import { SortingParameters } from "../../utils/sorting";
+import Translate from "../../i18n/translate";
 
 const itemTypes = [
 	'artist',
 	'album',
 	'song'
-];
+] as const;
 
 type SelectableInfiniteViewProps = {
 	albumQuery: MeeloInfiniteQueryFn<AlbumWithRelations<'artist'>, [sort: SortingParameters<typeof AlbumSortingKeys>, type: AlbumType | undefined]>;
@@ -30,13 +31,17 @@ type SelectableInfiniteViewProps = {
 }
 
 const SelectableInfiniteView = (props: SelectableInfiniteViewProps) => {
-	const [selectedType, selectItemType] = useState<typeof itemTypes[number]>(props.default && itemTypes.includes(props.default) ? props.default : 'album');
+	const [selectedType, selectItemType] = useState<typeof itemTypes[number]>(
+		props.default && itemTypes.includes(props.default as typeof itemTypes[number])
+			? props.default as typeof itemTypes[number]
+			: 'album'
+	);
 
 	return <Box sx={{ width: '100%', display: 'flex', justifyContent: "center", flexDirection: 'column' }}>
 		<Grid container spacing={2} sx={{ justifyContent: 'center', marginBottom: 2 }}>
 			{ itemTypes.map((item) =>
 				<Grid item key={item}>
-					<Chip label={capitalCase(item + 's')} variant={selectedType == item ? 'filled' : 'outlined'} onClick={() => {
+					<Chip label={<Translate translationKey={item}/>} variant={selectedType == item ? 'filled' : 'outlined'} onClick={() => {
 						selectItemType(item);
 						props.onTypeSelect && props.onTypeSelect(item);
 					}}/>
