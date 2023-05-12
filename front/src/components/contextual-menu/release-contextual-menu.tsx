@@ -12,6 +12,7 @@ import { DownloadReleaseAction } from "../actions/download";
 import { useConfirm } from "material-ui-confirm";
 import { ReleaseWithRelations } from "../../models/release";
 import { UpdateReleaseIllustrationAction } from "../actions/update-illustration";
+import { translate } from "../../i18n/translate";
 
 type ReleaseContextualMenuProps = {
 	release: ReleaseWithRelations<'album'>;
@@ -24,7 +25,7 @@ const ReleaseContextualMenu = (props: ReleaseContextualMenuProps) => {
 	const masterMutation = useMutation(async () => {
 		return API.setReleaseAsMaster(props.release.id)
 			.then(() => {
-				toast.success("Release set as master!");
+				toast.success(translate('releaseSetAsMaster'));
 				queryClient.client.invalidateQueries();
 			})
 			.catch((error: Error) => toast.error(error.message));
@@ -35,7 +36,7 @@ const ReleaseContextualMenu = (props: ReleaseContextualMenuProps) => {
 				Promise.allSettled(
 					tracks.reverse().map((track) =>	API.setTrackAsMaster(track.id))
 				).then(() => {
-					toast.success("Tracks successfully updated");
+					toast.success(translate('tracksUpdated'));
 					queryClient.client.invalidateQueries();
 				}).catch((error) => toast.error(error.message));
 			});
@@ -46,13 +47,13 @@ const ReleaseContextualMenu = (props: ReleaseContextualMenuProps) => {
 			...props.release.album.artistId ? [GoToArtistAction(props.release.album.artistId)] : [],
 			GoToAlbumAction(props.release.album.id),
 			{
-				label: "Set as Master",
+				label: 'setAsMaster',
 				disabled: props.release.id == props.release.album.masterId || !userIsAdmin,
 				icon: <Star/>,
 				onClick: () => masterMutation.mutate()
 			},
 			{
-				label: "Set all tracks as Master",
+				label: "setAllTracksAsMaster",
 				icon: <SwitchAccessShortcut/>,
 				disabled: !userIsAdmin,
 				onClick: () => tracksMasterMutation.mutate()

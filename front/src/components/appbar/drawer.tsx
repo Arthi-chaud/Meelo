@@ -6,9 +6,7 @@ import {
 } from "@mui/material";
 import Library from "../../models/library";
 import LoadingComponent from "../loading/loading";
-import {
-	formattedItemTypes, getTypeIcon, itemType
-} from "./item-types";
+import { getTypeIcon, itemType } from "./item-types";
 import LibraryMusicIcon from '@mui/icons-material/LibraryMusic';
 import globalLibrary from './global-library';
 import {
@@ -111,7 +109,7 @@ const MeeloAppBarDrawer = (
 														{ getTypeIcon(item) }
 													</ListItemIcon>
 													<ListItemText
-														primary={formattedItemTypes.at(index)}
+														primary={<Translate translationKey={item}/>}
 													/>
 												</ListItemButton>
 											</Link>)}
@@ -134,10 +132,10 @@ const MeeloAppBarDrawer = (
 						}}
 					>
 						<ListItemIcon>{action.icon}</ListItemIcon>
-						<ListItemText>{action.label}</ListItemText>
+						<ListItemText><Translate translationKey={action.label}/></ListItemText>
 					</ListItemButton>;
 
-					if (action.href) {
+					if (action.href && action.disabled !== true) {
 						return <Link href={action.href} key={action.label}>
 							{item}
 						</Link>;

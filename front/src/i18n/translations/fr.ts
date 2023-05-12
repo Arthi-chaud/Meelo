@@ -117,8 +117,10 @@ const fr: TranslationMap = {
 	artist: "Artiste",
 	artists: "Artistes",
 	album: "Album",
-	songs: "Titres",
-	song: "Titre"
+	songs: "Morceaux",
+	song: "Titre",
+	search: 'Rechercher',
+	settings: 'Préférences'
 };
 
 export default fr;

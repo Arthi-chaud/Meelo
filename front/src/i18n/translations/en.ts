@@ -9,6 +9,8 @@ const en = {
 	libraries: 'Libraries',
 	users: 'Users',
 	home: 'Home',
+	search: 'Search',
+	settings: 'Settings',
 	create: 'Create',
 	playlists: 'Playlists',
 	playlist: 'Playlist',
@@ -30,6 +32,7 @@ const en = {
 	musicVideos: 'Music Videos',
 	playlistReorderSuccess: 'Playlist Reordered!',
 	playlistReorderFail: 'Playlist Reordering Failed',
+	playlistItemDeletionSuccess: 'Deletion Successful',
 	topSongs: 'Top Songs',
 	topVideos: 'Top Videos',
 	artist: 'Artist',
@@ -38,6 +41,7 @@ const en = {
 	album: 'Album',
 	songs: 'Songs',
 	song: 'Song',
+	videos: 'Videos',
 	seeAll: 'See All',
 	trackInformation: 'Track Information',
 	name: 'Name',
@@ -92,6 +96,8 @@ const en = {
 	admin: 'Admin',
 	enabled: 'Enabled',
 
+	trackSetAsMaster: 'Track set as Master',
+
 	// Albums Types
 	All: 'All',
 	StudioRecording: 'Studio Recording',
@@ -121,7 +127,34 @@ const en = {
 	releaseName: 'Release Name',
 	bitrate: 'Bitrate',
 	trackIndex: 'Track Index',
-	discIndex: 'Disc Index'
+	discIndex: 'Disc Index',
+
+	allLibraries: 'All',
+
+	// Actions
+	setAsMaster: 'Set as Master',
+	setAllTracksAsMaster: 'Set all tracks as Master',
+	deleteFromPlaylist: 'Delete from Playlist',
+
+	releaseSetAsMaster: 'Release set as master',
+	tracksUpdated: 'Tracks successfully updated',
+
+	librariesLoadFail: 'Libraries could not be loaded',
+
+	// Login
+	username: 'Username',
+	password: 'Password',
+	confirmPassword: 'Confirm',
+	pleaseConfirm: 'Please, confirm password',
+	passwordsAreDifferent: 'Password are different',
+	signupButton: 'New here ? Signup',
+	signinButton: 'Already have an account ? Login',
+	usernameIsRequired: 'Username is required',
+	passwordIsRequired: 'Password is required',
+	usernameTooShort: 'Username is too short',
+	passwordTooShort: 'Password is too short',
+	accountCreated: "Congrats! Your Meelo account has been created. You now have to wait for the admin to enable your account"
 };
+
 
 export default en;

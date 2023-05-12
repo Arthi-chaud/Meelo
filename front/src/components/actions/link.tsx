@@ -68,13 +68,13 @@ export const GoToRelatedTracksAction = (songIdentifier: string | number): Action
 });
 
 export const GoToSearchAction = {
-	label: 'Search',
+	label: 'search',
 	icon: <Search/>,
 	href: '/search',
 };
 
 export const GoToSettingsAction: Action = {
-	label: 'Settings',
+	label: 'settings',
 	icon: <Settings/>,
 	href: '/settings',
 };
