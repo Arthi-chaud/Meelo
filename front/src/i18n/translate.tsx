@@ -1,6 +1,6 @@
 import { useSelector } from "react-redux";
 import store, { RootState } from "../state/store";
-import { TranslationMap, TranslationKey } from "./translations/type";
+import { TranslationKey } from "./translations/type";
 import i18n, { Languages } from "./i18n";
 
 // Hook to Get current language

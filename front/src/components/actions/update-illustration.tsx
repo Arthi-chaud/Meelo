@@ -83,7 +83,7 @@ const UpdateIllustrationAction = (
 	});
 
 	return {
-		label: "Change Illustration",
+		label: 'changeIllutration',
 		disabled: store.getState().user.user?.admin !== true,
 		icon: <InsertPhotoIcon />,
 		dialog: (controls) => <IllustrationUpdateForm

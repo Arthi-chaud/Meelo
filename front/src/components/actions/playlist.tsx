@@ -28,7 +28,7 @@ export const PlayNextAction = (
 		store.dispatch(playNext(track));
 		toast.success(`'${track.track.name}' will play next!`);
 	}),
-	label: "Play Next",
+	label: 'playNext',
 	icon: <PlaylistPlay/>
 });
 
@@ -39,7 +39,7 @@ export const PlayAfterAction = (
 		store.dispatch(playAfter(track));
 		toast.success(`'${track.track.name}' will play after!`);
 	}),
-	label: "Play After",
+	label: 'playAfter',
 	icon: <PlaylistAdd/>
 });
 
@@ -94,7 +94,7 @@ const CreateOrUpdatePlaylistForm = (props: CreateOrUpdatePlaylistFormProps) => {
 export const CreatePlaylistAction = (
 	queryClient: QueryClient
 ): Action => ({
-	label: 'New',
+	label: 'new',
 	icon: <Add/>,
 	dialog: ({ close }) => {
 		// eslint-disable-next-line react-hooks/rules-of-hooks
@@ -117,7 +117,7 @@ export const UpdatePlaylistAction = (
 	playlist: Playlist,
 	queryClient: QueryClient
 ): Action => ({
-	label: 'Update',
+	label: 'update',
 	icon: <Edit/>,
 	dialog: ({ close }) => {
 		// eslint-disable-next-line react-hooks/rules-of-hooks
@@ -201,7 +201,7 @@ export const AddToPlaylistAction = (
 	queryClient: QueryClient
 ): Action => ({
 	icon: <PlaylistAdd/>,
-	label: 'Add to Playlist',
+	label: 'addToPlaylist',
 	dialog: ({ close }) => {
 		// eslint-disable-next-line react-hooks/rules-of-hooks
 		const mutation = useMutation((playlistId: number) => {

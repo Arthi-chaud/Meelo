@@ -9,7 +9,7 @@ export const ShowTrackFileInfoAction = (
 	confirm: ReturnType<typeof useConfirm>, trackId: number
 ): Action => ({
 	icon: <Info/>,
-	label: "More Info",
+	label: 'moreInfo',
 	onClick: () => openTrackFileInfoModal(confirm, trackId)
 });
 
@@ -17,7 +17,7 @@ export const ShowMasterTrackFileInfoAction = (
 	confirm: ReturnType<typeof useConfirm>, queryClient: QueryClient, songId: number
 ): Action => ({
 	icon: <Info/>,
-	label: "More Info",
+	label: 'moreInfo',
 	onClick: () => queryClient.fetchQuery(API.getMasterTrack(songId))
 		.then((track) => openTrackFileInfoModal(confirm, track.id))
 });

@@ -18,37 +18,37 @@ const handleTask = <T extends LibraryTaskResponse>(
 		.catch(({ status }) => toast.error(status));
 
 export const ScanAllLibrariesAction: Action = {
-	label: 'Scan Libraries',
+	label: 'scanLibraries',
 	icon: <SyncIcon/>,
 	onClick: () => handleTask(API.scanLibraries())
 };
 
 export const ScanLibraryAction = (librarySlugOrId: number | string): Action => ({
-	label: 'Scan',
+	label: 'scan',
 	icon: ScanAllLibrariesAction.icon,
 	onClick: () => handleTask(API.scanLibrary(librarySlugOrId))
 });
 
 export const RefreshMetadataLibraryAction = (librarySlugOrId: number | string): Action => ({
-	label: 'Refresh Metadata',
+	label: 'refreshMetadata',
 	icon: <AutoMode/>,
 	onClick: () => handleTask(API.refreshMetadataInLibrary(librarySlugOrId))
 });
 
 export const CleanAllLibrariesAction: Action = {
-	label: 'Clean Libraries',
+	label: 'cleanLibraries',
 	icon: <CleaningServices/>,
 	onClick: () => handleTask(API.cleanLibraries())
 };
 
 export const CleanLibraryAction = (librarySlugOrId: number | string): Action => ({
-	label: 'Clean',
+	label: 'clean',
 	icon: CleanAllLibrariesAction.icon,
 	onClick: () => handleTask(API.cleanLibrary(librarySlugOrId))
 });
 
 export const FetchExternalMetadata: Action = {
-	label: 'Fetch Metadata',
+	label: 'fetchMetadata',
 	icon: <CloudSyncOutlined/>,
 	onClick: () => handleTask(API.fetchExternalMetadata())
 };

@@ -135,7 +135,7 @@ const en = {
 	setAsMaster: 'Set as Master',
 	setAllTracksAsMaster: 'Set all tracks as Master',
 	deleteFromPlaylist: 'Delete from Playlist',
-
+	changeIllutration: 'Change Illustration',
 	releaseSetAsMaster: 'Release set as master',
 	tracksUpdated: 'Tracks successfully updated',
 
@@ -153,8 +153,30 @@ const en = {
 	passwordIsRequired: 'Password is required',
 	usernameTooShort: 'Username is too short',
 	passwordTooShort: 'Password is too short',
-	accountCreated: "Congrats! Your Meelo account has been created. You now have to wait for the admin to enable your account"
+	accountCreated: "Congrats! Your Meelo account has been created. You now have to wait for the admin to enable your account",
+	moreInfo: 'More Info',
+	share: 'Share',
+	playNext: 'Play Next',
+	playAfter: 'Play After',
+	new: 'New',
+	addToPlaylist: 'Add to Playlist',
+	seeLyrics: 'See Lyrics',
+	goToArtist: 'Go To Artist',
+	seeAlbums: 'See Albums',
+	seeSongs: 'See Songs',
+	goToAlbum: 'Go To Album',
+	seeReleases: 'See Releases',
+	seeOtherVersions: 'See Other Versions',
+	seeRelatedTracks: 'See Related Tracks',
+	scanLibraries: 'Scan Libraries',
+	cleanLibraries: 'Clean Libraries',
+	fetchMetadata: 'Fetch Metadata',
+	switchToDefaultLng: 'Switch to default language',
+	archive: 'Archive',
+	lightMode: 'Light Mode',
+	darkMode: 'Dark Mode',
+	autoMode: 'Auto Mode',
+	logout: 'Logout',
 };
-
 
 export default en;

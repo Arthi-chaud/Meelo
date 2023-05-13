@@ -3,6 +3,7 @@ import Action from "./action";
 import TranslateIcon from '@mui/icons-material/Translate';
 import { Language, Languages } from "../../i18n/i18n";
 import { resetLanguage, setLanguage } from "../../state/settingsSlice";
+import { TranslationKey } from "../../i18n/translations/type";
 
 const getLanguageDisplayName = (ln: Language) => {
 	switch (ln) {
@@ -22,14 +23,14 @@ const ChangeLanguageAction = (selectedLanguage: RootState['settings']['language'
 	if (selectedLanguage == Languages.at(-1)) {
 		return {
 			...baseAction,
-			label: 'Switch to default language',
+			label: 'switchToDefaultLng',
 			onClick: () => store.dispatch(resetLanguage())
 		};
 	}
 
 	return {
 		...baseAction,
-		label: `Switch to ${getLanguageDisplayName(Languages.at(nextLanguageIndex)!)}`,
+		label: `Switch to ${getLanguageDisplayName(Languages.at(nextLanguageIndex)!)}` as TranslationKey,
 		onClick: () => store.dispatch(setLanguage(Languages.at(nextLanguageIndex)!))
 	};
 };

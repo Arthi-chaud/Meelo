@@ -104,7 +104,7 @@ const Controls = <
 						action.dialog && setOpenActionModal(action.label);
 					}}
 				>
-					{action.label}
+					<Translate translationKey={action.label}/>
 					{action.dialog &&
 						<Dialog open={openActionModal === action.label}
 							onClose={closeModal} fullWidth
