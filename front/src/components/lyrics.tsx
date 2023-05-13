@@ -1,4 +1,5 @@
 import { Box, Typography } from "@mui/material";
+import Translate from "../i18n/translate";
 
 type LyricsProps = {
 	lyrics?: string[] | null,
@@ -7,7 +8,7 @@ type LyricsProps = {
 const LyricsBox = (props: LyricsProps) => {
 	if (!props.lyrics) {
 		return <Typography sx={{ fontStyle: 'italic' }}>
-			No Lyrics found
+			<Translate translationKey="noLyricsFound"/>
 		</Typography>;
 	}
 	return <Box flexDirection='column'>

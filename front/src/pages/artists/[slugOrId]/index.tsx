@@ -21,6 +21,7 @@ import VideoTile from "../../../components/tile/video-tile";
 import formatDuration from "../../../utils/formatDuration";
 import ExternalIdBadge from "../../../components/external-id-badge";
 import SongGrid from "../../../components/song-grid";
+import Translate from "../../../i18n/translate";
 
 // Number of Song item in the 'Top Song' section
 const songListSize = 6;
@@ -94,11 +95,11 @@ const ArtistPage = (
 			</Grid>
 			{ topSongs.data?.pages.at(0)?.items.length != 0 && <>
 				<SectionHeader
-					heading="Top Songs"
+					heading={<Translate translationKey="topSongs"/>}
 					trailing={(topSongs.data?.pages.at(0)?.items.length ?? 0) > songListSize ?
 						<Link href={`/artists/${artistIdentifier}/songs`}>
 							<Button variant='contained' color='secondary' endIcon={<ArrowRight/>}
-								sx={{ textTransform: 'none', fontWeight: 'bold' }}>See all</Button>
+								sx={{ textTransform: 'none', fontWeight: 'bold' }}><Translate translationKey="seeAll"/></Button>
 						</Link> : undefined
 					}
 				/>
@@ -115,12 +116,12 @@ const ArtistPage = (
 			}
 			{ latestAlbums.data?.pages.at(0)?.items.length != 0 && <>
 				<SectionHeader
-					heading="Albums"
+					heading={<Translate translationKey="albums"/>}
 					trailing={(latestAlbums.data?.pages.at(0)?.items.length ?? 0) > albumListSize ?
 						<Link href={`/artists/${artistIdentifier}/albums`}>
 							<Button variant='contained' color='secondary' endIcon={<ArrowRight/>}
 								sx={{ textTransform: 'none', fontWeight: 'bold' }}>
-								See all
+								<Translate translationKey="seeAll"/>
 							</Button>
 						</Link> : undefined
 					}
@@ -140,12 +141,12 @@ const ArtistPage = (
 			}
 			{ videos.data.pages.at(0)?.items.length != 0 && <>
 				<SectionHeader
-					heading="Top Videos"
+					heading={<Translate translationKey="topVideos"/>}
 					trailing={(videos.data.pages.at(0)?.items.length ?? 0) > albumListSize ?
 						<Link href={`/artists/${artistIdentifier}/videos`}>
 							<Button variant='contained' color='secondary' endIcon={<ArrowRight/>}
 								sx={{ textTransform: 'none', fontWeight: 'bold' }}>
-								See all
+								<Translate translationKey="seeAll"/>
 							</Button>
 						</Link> : undefined
 					}
@@ -165,7 +166,7 @@ const ArtistPage = (
 				<Divider/>
 				<Grid container item spacing={1} sx={{ alignItems: 'center' }}>
 					<Grid item sx={{ paddingRight: 3 }}>
-						<SectionHeader heading="External Links"/>
+						<SectionHeader heading={<Translate translationKey="externalLinks"/>}/>
 					</Grid>
 					{ artist.data.externalIds.map((externalId) =>
 						<Grid item key={externalId.provider.name}>

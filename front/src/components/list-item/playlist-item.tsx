@@ -1,8 +1,8 @@
 import { QueueMusic } from "@mui/icons-material";
 import Playlist from "../../models/playlist";
 import Illustration from "../illustration";
-import ListItem from "./item"
-import PlaylistContextualMenu from "../contextual-menu/playlist-contextual-menu"
+import ListItem from "./item";
+import PlaylistContextualMenu from "../contextual-menu/playlist-contextual-menu";
 
 type PlaylistItemProps = {
 	playlist: Playlist

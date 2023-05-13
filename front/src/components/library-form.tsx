@@ -3,6 +3,8 @@ import {
 } from "@mui/material";
 import Library from "../models/library";
 import { HookTextField, useHookForm } from "mui-react-hook-form-plus";
+import Translate, { translate, useLanguage } from "../i18n/translate";
+import { useMemo } from "react";
 
 type LibraryFormFields = Pick<Library, 'name' | 'path'>;
 
@@ -17,10 +19,16 @@ const LibraryForm = (props: LibraryFormProps) => {
 	const { registerState, handleSubmit } = useHookForm({
 		defaultValues,
 	});
+	const language = useLanguage();
 	const onSubmit = (values: typeof defaultValues) => {
 		props.onSubmit(values);
 		props.onClose();
 	};
+	const [nameIsRequired, pathIsRequired] = useMemo(
+		() => [translate('nameIsRequired'), translate('pathIsRequired')],
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+		[language]
+	);
 
 	return <>
 		<DialogTitle>{props.defaultValues ? 'Update' : 'Create'} Library</DialogTitle>
@@ -32,13 +40,13 @@ const LibraryForm = (props: LibraryFormProps) => {
 						textFieldProps={{
 							autoFocus: true,
 							fullWidth: true,
-							label: 'Name of the library',
+							label: <Translate translationKey="nameOfLibrary"/>
 						}}
 						gridProps={{}}
 						rules={{
 							required: {
 								value: true,
-								message: 'Name is required',
+								message: nameIsRequired
 							},
 						}}
 					/>
@@ -46,22 +54,24 @@ const LibraryForm = (props: LibraryFormProps) => {
 						{...registerState('path')}
 						textFieldProps={{
 							fullWidth: true,
-							label: 'Path of the library',
+							label: <Translate translationKey="pathOfLibrary"/>,
 						}}
 						gridProps={{}}
 						rules={{
 							required: {
 								value: true,
-								message: 'Path is required',
+								message: pathIsRequired,
 							},
 						}}
 					/>
 				</Grid>
 			</DialogContent>
 			<DialogActions>
-				<Button onClick={props.onClose}>Cancel</Button>
+				<Button onClick={props.onClose}>
+					<Translate translationKey="cancel"/>
+				</Button>
 				<Button type='submit' color='primary' variant="contained">
-					{props.defaultValues ? 'Update' : 'Create'}
+					<Translate translationKey={props.defaultValues ? 'update' : 'create'}/>
 				</Button>
 			</DialogActions>
 		</form>

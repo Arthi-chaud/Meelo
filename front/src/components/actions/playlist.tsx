@@ -19,6 +19,7 @@ import LoadingPage from "../loading/loading-page";
 import ListItem from "../list-item/item";
 import Illustration from "../illustration";
 import { useConfirm } from "material-ui-confirm";
+import Translate from "../../i18n/translate";
 
 export const PlayNextAction = (
 	getTrack: () => PromiseLike<Parameters<typeof playNext>[0]>
@@ -27,7 +28,7 @@ export const PlayNextAction = (
 		store.dispatch(playNext(track));
 		toast.success(`'${track.track.name}' will play next!`);
 	}),
-	label: "Play Next",
+	label: 'playNext',
 	icon: <PlaylistPlay/>
 });
 
@@ -38,7 +39,7 @@ export const PlayAfterAction = (
 		store.dispatch(playAfter(track));
 		toast.success(`'${track.track.name}' will play after!`);
 	}),
-	label: "Play After",
+	label: 'playAfter',
 	icon: <PlaylistAdd/>
 });
 
@@ -79,7 +80,9 @@ const CreateOrUpdatePlaylistForm = (props: CreateOrUpdatePlaylistFormProps) => {
 				/>
 			</DialogContent>
 			<DialogActions>
-				<Button onClick={props.onClose}>Cancel</Button>
+				<Button onClick={props.onClose}>
+					<Translate translationKey="cancel"/>
+				</Button>
 				<Button type='submit' color='primary' variant="contained">
 					{props.defaultValue ? 'Update' : 'Create'}
 				</Button>
@@ -91,7 +94,7 @@ const CreateOrUpdatePlaylistForm = (props: CreateOrUpdatePlaylistFormProps) => {
 export const CreatePlaylistAction = (
 	queryClient: QueryClient
 ): Action => ({
-	label: 'New',
+	label: 'new',
 	icon: <Add/>,
 	dialog: ({ close }) => {
 		// eslint-disable-next-line react-hooks/rules-of-hooks
@@ -114,7 +117,7 @@ export const UpdatePlaylistAction = (
 	playlist: Playlist,
 	queryClient: QueryClient
 ): Action => ({
-	label: 'Update',
+	label: 'update',
 	icon: <Edit/>,
 	dialog: ({ close }) => {
 		// eslint-disable-next-line react-hooks/rules-of-hooks
@@ -140,7 +143,7 @@ export const DeletePlaylistAction = (
 	librarySlugOrId: number | string,
 	onDeleted: () => void
 ): Action => ({
-	label: 'Delete',
+	label: 'delete',
 	icon: <Delete/>,
 	onClick: () => confirm({
 		title: 'Delete Playlist',
@@ -186,7 +189,9 @@ const SelectPlaylistForm = (props: SelectPlaylistFormProps) => {
 			/>
 		</DialogContent>
 		<DialogActions>
-			<Button onClick={props.onClose} variant='outlined'>Cancel</Button>
+			<Button onClick={props.onClose} variant='outlined'>
+				<Translate translationKey="cancel"/>
+			</Button>
 		</DialogActions>
 	</>;
 };
@@ -196,7 +201,7 @@ export const AddToPlaylistAction = (
 	queryClient: QueryClient
 ): Action => ({
 	icon: <PlaylistAdd/>,
-	label: 'Add to Playlist',
+	label: 'addToPlaylist',
 	dialog: ({ close }) => {
 		// eslint-disable-next-line react-hooks/rules-of-hooks
 		const mutation = useMutation((playlistId: number) => {

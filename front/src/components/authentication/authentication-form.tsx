@@ -7,6 +7,7 @@ import { toast } from 'react-hot-toast';
 import { useDispatch } from 'react-redux';
 import API from '../../api/api';
 import { setAccessToken } from '../../state/userSlice';
+import Translate, { translate, useLanguage } from '../../i18n/translate';
 
 /**
  * Authentication form
@@ -20,6 +21,7 @@ const AuthenticationForm = () => {
 	const { registerState, handleSubmit } = useHookForm({
 		defaultValues,
 	});
+	const language = useLanguage();
 
 	const onSubmit = async (values: typeof defaultValues) => {
 		try {
@@ -28,7 +30,7 @@ const AuthenticationForm = () => {
 
 				if (!createdUser.enabled) {
 					setFormType('login');
-					toast.success("Congrats! Your Meelo account has been created. You now have to wait for the admin to enable your account");
+					toast.success(translate('accountCreated'));
 					return;
 				}
 			}
@@ -50,24 +52,24 @@ const AuthenticationForm = () => {
 				<HookTextField
 					{...registerState('username')}
 					textFieldProps={{
-						label: 'Username',
+						label: <Translate translationKey='username'/>,
 					}}
 					gridProps={{}}
 					rules={{
 						required: {
 							value: true,
-							message: 'Username is required',
+							message: translate('usernameIsRequired')
 						},
 						minLength: {
 							value: 4,
-							message: 'Username is too short'
+							message: translate('usernameTooShort')
 						}
 					}}
 				/>
 				<HookTextField
 					{...registerState('password')}
 					textFieldProps={{
-						label: 'Password',
+						label: <Translate translationKey='password'/>,
 						type: 'password',
 						onChange: (event) => setPassword(event.target.value)
 					}}
@@ -75,11 +77,11 @@ const AuthenticationForm = () => {
 					rules={{
 						required: {
 							value: true,
-							message: 'Password is required',
+							message: translate('passwordIsRequired')
 						},
 						minLength: {
 							value: 6,
-							message: 'Password is too short'
+							message: translate('passwordTooShort')
 						}
 					}}
 				/>
@@ -87,18 +89,18 @@ const AuthenticationForm = () => {
 				<HookTextField
 					{...registerState('confirm')}
 					textFieldProps={{
-						label: 'Confirm',
+						label: <Translate translationKey='confirmPassword'/>,
 						type: 'password',
 					}}
 					gridProps={{}}
 					rules={{
 						required: {
 							value: true,
-							message: 'Please, confirm password',
+							message: translate('pleaseConfirm')
 						},
 						validate: (confirmValue) => {
 							if (confirmValue !== password) {
-								return "Password are different";
+								return translate('passwordsAreDifferent');
 							}
 						}
 					}}
@@ -114,7 +116,7 @@ const AuthenticationForm = () => {
 					<Button variant='outlined'
 						onClick={() => setFormType(formType == 'login' ? 'signup' : 'login')}
 					>
-						{formType == 'login' ? "New here ? Signup" : 'Already have an account ? Login'}
+						<Translate translationKey={formType == 'login' ? 'signupButton' : 'signinButton'}/>
 					</Button>
 				</Grid>
 			</Grid>

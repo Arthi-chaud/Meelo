@@ -6,9 +6,7 @@ import {
 } from "@mui/material";
 import Library from "../../models/library";
 import LoadingComponent from "../loading/loading";
-import {
-	formattedItemTypes, getTypeIcon, itemType
-} from "./item-types";
+import { getTypeIcon, itemType } from "./item-types";
 import LibraryMusicIcon from '@mui/icons-material/LibraryMusic';
 import globalLibrary from './global-library';
 import {
@@ -22,6 +20,7 @@ import { RootState } from "../../state/store";
 import Action from "../actions/action";
 import HomeIcon from '@mui/icons-material/Home';
 import { QueueMusic } from "@mui/icons-material";
+import Translate from "../../i18n/translate";
 
 interface DrawerProps {
 	availableLibraries: Library[] | null,
@@ -35,7 +34,11 @@ const MeeloAppBarDrawer = (
 ) => {
 	const [selectedLibrarySlug, setSelectedLibrary] = useState<string | null>(requestedLibrarySlug);
 	const colorSchemeSetting = useSelector((state: RootState) => state.settings.colorScheme);
-	const actions = useMemo(() => getAppBarActions(colorSchemeSetting), [colorSchemeSetting]);
+	const languageSetting = useSelector((state: RootState) => state.settings.language);
+	const actions = useMemo(
+		() => getAppBarActions(colorSchemeSetting, languageSetting),
+		[colorSchemeSetting, languageSetting]
+	);
 
 	useEffect(() => setSelectedLibrary(requestedLibrarySlug), [requestedLibrarySlug, isOpen]);
 	return (
@@ -52,7 +55,9 @@ const MeeloAppBarDrawer = (
 					<ListItem disableGutters>
 						<ListItemButton sx={{ borderRadius: '0' }} onClick={onClose}>
 							<ListItemIcon><HomeIcon/></ListItemIcon>
-							<ListItemText>Home</ListItemText>
+							<ListItemText>
+								<Translate translationKey="home"/>
+							</ListItemText>
 						</ListItemButton>
 					</ListItem>
 				</Link>
@@ -60,7 +65,9 @@ const MeeloAppBarDrawer = (
 					<ListItem disableGutters>
 						<ListItemButton sx={{ borderRadius: '0' }} onClick={onClose}>
 							<ListItemIcon><QueueMusic/></ListItemIcon>
-							<ListItemText>Playlists</ListItemText>
+							<ListItemText>
+								<Translate translationKey="playlists"/>
+							</ListItemText>
 						</ListItemButton>
 					</ListItem>
 				</Link>
@@ -71,7 +78,9 @@ const MeeloAppBarDrawer = (
 						sx={{ flexDirection: 'row', alignItems: 'center' }}
 					>
 						<Grid item sx={{ paddingTop: 1.6 }}><LibraryMusicIcon /></Grid>
-						<Grid item>Libraries</Grid>
+						<Grid item>
+							<Translate translationKey="libraries"/>
+						</Grid>
 						<Grid item sx={{ flexGrow: 1 }} />
 						{ availableLibraries == null && <Grid item><LoadingComponent /></Grid>}
 					</Grid>
@@ -100,7 +109,7 @@ const MeeloAppBarDrawer = (
 														{ getTypeIcon(item) }
 													</ListItemIcon>
 													<ListItemText
-														primary={formattedItemTypes.at(index)}
+														primary={<Translate translationKey={item}/>}
 													/>
 												</ListItemButton>
 											</Link>)}
@@ -123,10 +132,10 @@ const MeeloAppBarDrawer = (
 						}}
 					>
 						<ListItemIcon>{action.icon}</ListItemIcon>
-						<ListItemText>{action.label}</ListItemText>
+						<ListItemText><Translate translationKey={action.label}/></ListItemText>
 					</ListItemButton>;
 
-					if (action.href) {
+					if (action.href && action.disabled !== true) {
 						return <Link href={action.href} key={action.label}>
 							{item}
 						</Link>;

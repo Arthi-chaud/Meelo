@@ -12,6 +12,7 @@ import { MusicVideo } from "@mui/icons-material";
 import formatDuration from "../utils/formatDuration";
 import ReleaseTrackContextualMenu from "./contextual-menu/release-track-contextual-menu";
 import { SongWithRelations } from "../models/song";
+import Translate from "../i18n/translate";
 
 type ReleaseTracklistProps = {
 	mainArtist?: Artist;
@@ -31,7 +32,7 @@ const ReleaseTrackList = (
 	return <Box>
 		{Array.from(Object.entries(tracklist)).map((disc, __, discs) =>
 			<List key={disc[0]} subheader={discs.length !== 1 &&
-				<ListSubheader>Disc {disc[0]}</ListSubheader>
+				<ListSubheader><Translate translationKey='disc'/> {disc[0]}</ListSubheader>
 			}>
 				{ disc[1].map((currentTrack) => <>
 					<ListItem key={currentTrack.id}

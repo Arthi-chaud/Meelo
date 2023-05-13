@@ -11,7 +11,6 @@ const itemType = [
 	'songs',
 	'videos'
 ] as const;
-const formattedItemTypes = itemType.map((type) => type.charAt(0).toUpperCase() + type.slice(1));
 const getTypeIcon = (type: typeof itemType[number]) => {
 	switch (type) {
 	case 'albums':
@@ -25,4 +24,4 @@ const getTypeIcon = (type: typeof itemType[number]) => {
 	}
 };
 
-export { itemType, formattedItemTypes, getTypeIcon };
+export { itemType, getTypeIcon };

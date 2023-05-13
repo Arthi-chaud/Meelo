@@ -9,6 +9,7 @@ import InfiniteGrid from "./infinite-grid";
 import InfiniteList from "./infinite-list";
 import { useEffect, useState } from 'react';
 import Resource from "../../models/resource";
+import Translate from "../../i18n/translate";
 
 export type InfiniteViewProps<ItemType> = {
 	view: 'list' | 'grid';
@@ -37,7 +38,7 @@ const InfiniteView = <ItemType extends Resource, >(
 	}, []);
 	return <>
 		<Slide direction="up" in={backToTopVisible} mountOnEnter unmountOnExit>
-			<Tooltip title="Back to top">
+			<Tooltip title={<Translate translationKey="backToTop"/>}>
 				<Fab
 					color="secondary"
 					sx={{ zIndex: "tooltip", position: 'fixed', bottom: 16, right: 16 }}

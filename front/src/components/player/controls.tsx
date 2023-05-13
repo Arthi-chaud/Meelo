@@ -31,6 +31,7 @@ import {
 } from 'react-beautiful-dnd';
 import DragHandleIcon from '@mui/icons-material/DragHandle';
 import formatDuration from "../../utils/formatDuration";
+import Translate from "../../i18n/translate";
 
 type PlayerButtonControlsProps = {
 	playing: boolean;
@@ -160,12 +161,14 @@ const MinimizedPlayerControls = (props: PlayerControlsProps) => {
 	</ButtonBase>;
 };
 
+const Panels = ['lyrics', 'playlist'] as const;
+
 const ExpandedPlayerControls = (
 	props: PlayerControlsProps & { videoRef: LegacyRef<HTMLVideoElement> }
 ) => {
 	const dispatch = useDispatch();
 	const parentSong = useQuery((id) => API.getSong(id, ['artist', 'lyrics']), props.track?.songId);
-	const [panel, setPanel] = useState<'lyrics' | 'playlist'>('lyrics');
+	const [panel, setPanel] = useState<typeof Panels[number]>('lyrics');
 	const playlist = useSelector((state: RootState) => state.player.playlist);
 	const cursor = useSelector((state: RootState) => state.player.cursor);
 	const requestFullscreen = () => {
@@ -288,8 +291,11 @@ const ExpandedPlayerControls = (
 						onChange={(__, panelName) => setPanel(panelName)}
 						variant="fullWidth"
 					>
-						<Tab key={0} value={'lyrics'} label={'Lyrics'}/>
-						<Tab key={1} value={'playlist'} label={'Playlist'}/>
+						{Panels.map((tabName, index) => (
+							<Tab key={index} value={tabName}
+								label={<Translate translationKey={tabName}/>}
+							/>
+						))}
 					</Tabs>
 					<Box sx={{ paddingY: 2, height: { xs: '100%', lg: '80vh' }, overflowY: 'scroll' }}>
 						{ panel == 'lyrics' && props.track && (!parentSong.data ?

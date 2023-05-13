@@ -1,7 +1,7 @@
 import { Grid, Typography } from "@mui/material";
 
 type SectionHeaderProps<T> = {
-	heading: string;
+	heading: string | JSX.Element;
 	trailing?: JSX.Element;
 }
 

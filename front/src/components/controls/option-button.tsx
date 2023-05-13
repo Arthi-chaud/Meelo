@@ -2,9 +2,10 @@ import { Check } from '@mui/icons-material';
 import {
 	Button, Divider, ListItemIcon, Menu, MenuItem
 } from '@mui/material';
-import { capitalCase } from 'change-case';
 import Option, { OptionGroup } from './option';
 import { useState } from 'react';
+import Translate from '../../i18n/translate';
+import { TranslationKey } from '../../i18n/translations/type';
 
 type OptionButtonProps<
 	Options extends Option<OptionsKeys[number]>[],
@@ -34,7 +35,7 @@ const OptionButton = <
 			onClick={handleMenuOpen}
 			endIcon={props.optionGroup.icon}
 		>
-			{props.optionGroup.name}
+			<Translate translationKey={props.optionGroup.name as TranslationKey}/>
 		</Button>
 		<Menu
 			anchorEl={anchorEl}
@@ -57,7 +58,8 @@ const OptionButton = <
 						<ListItemIcon>
 							{ option.currentValue == value && <Check />}
 						</ListItemIcon>
-						{capitalCase(value)}
+						{/* If value is not a Translation Key, will fall through */}
+						<Translate translationKey={value as TranslationKey}/>
 					</MenuItem>).concat(index + 1 != array.length ? [<Divider key={index}/>] : []))
 			}
 		</Menu>

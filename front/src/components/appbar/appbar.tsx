@@ -11,7 +11,7 @@ import {
 } from 'react';
 import API from '../../api/api';
 import LoadingComponent from '../loading/loading';
-import { formattedItemTypes, itemType } from './item-types';
+import { itemType } from './item-types';
 import globalLibrary from './global-library';
 import MeeloAppBarDrawer from './drawer';
 import buildLink from './build-link';
@@ -27,13 +27,18 @@ import { GoToSearchAction } from '../actions/link';
 import { useSelector } from 'react-redux';
 import { RootState } from '../../state/store';
 import useColorScheme from '../../theme/color-scheme';
+import Translate, { translate } from '../../i18n/translate';
 
 const MeeloAppBar = () => {
 	const router = useRouter();
 	const [requestedLibrary, setRequestedLibrary] = useState(globalLibrary);
 	const [availableLibraries, setAvailableLibraries] = useState<Library[] | null>(null);
 	const colorSchemeSetting = useSelector((state: RootState) => state.settings.colorScheme);
-	const actions = useMemo(() => getAppBarActions(colorSchemeSetting), [colorSchemeSetting]);
+	const languageSetting = useSelector((state: RootState) => state.settings.language);
+	const actions = useMemo(
+		() => getAppBarActions(colorSchemeSetting, languageSetting),
+		[colorSchemeSetting, languageSetting]
+	);
 	const librariesQuery = useReactInfiniteQuery({
 		...prepareMeeloInfiniteQuery(API.getAllLibraries),
 		useErrorBoundary: false
@@ -44,7 +49,7 @@ const MeeloAppBar = () => {
 	useEffect(() => {
 		if (librariesQuery.error) {
 			if (availableLibraries == null) {
-				toast.error("Libraries could not be loaded");
+				toast.error(translate('librariesLoadFail'));
 			}
 			setAvailableLibraries([]);
 		} else if (librariesQuery.data) {
@@ -112,7 +117,10 @@ const MeeloAppBar = () => {
 									>
 										{[globalLibrary, ...availableLibraries].map((library) =>
 											<MenuItem key={library.slug} value={library.name} sx={{ borderRadius: '0' }}>
-												{library.name}
+												{globalLibrary.id == library.id
+													? <Translate translationKey={'allLibraries'} />
+													: library.name
+												}
 											</MenuItem>)}
 									</Select>
 									<Divider orientation='vertical' flexItem sx={{ marginX: 2 }} />
@@ -126,7 +134,7 @@ const MeeloAppBar = () => {
 												<Link href={buildLink(type, requestedLibrary.slug)}>
 													<Button variant="text" color='inherit'>
 														<Typography sx={{ fontWeight: isSelected ? 'bold' : 'normal' }}>
-															{formattedItemTypes.at(index)}
+															<Translate translationKey={type} />
 														</Typography>
 													</Button>
 												</Link>
@@ -138,7 +146,7 @@ const MeeloAppBar = () => {
 										<Link href='/playlists'>
 											<Button variant="text" color='inherit'>
 												<Typography sx={{ fontWeight: router.route == `/playlists` ? 'bold' : 'normal' }}>
-													Playlists
+													<Translate translationKey='playlists'/>
 												</Typography>
 											</Button>
 										</Link>
@@ -155,7 +163,7 @@ const MeeloAppBar = () => {
 									</Link>
 									<Divider orientation='vertical' flexItem sx={{ marginX: 1 }} />
 									<ContextualMenu actions={
-										[actions.filter((action) => action.label.toLowerCase() != 'search')]
+										[actions.filter((action) => action.label != 'search')]
 									}/>
 								</Box>
 							</Fade>

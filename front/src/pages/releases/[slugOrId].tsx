@@ -31,6 +31,7 @@ import { TrackWithRelations } from "../../models/track";
 import VideoTile from "../../components/tile/video-tile";
 import getYear from "../../utils/getYear";
 import ExternalIdBadge from "../../components/external-id-badge";
+import Translate from "../../i18n/translate";
 
 export const getServerSideProps = prepareSSR((context) => {
 	const releaseIdentifier = getSlugOrId(context.params);
@@ -43,7 +44,7 @@ export const getServerSideProps = prepareSSR((context) => {
 
 type RelatedContentSectionProps = {
 	display: boolean,
-	title: string,
+	title: string | JSX.Element,
 	children: JSX.Element;
 }
 
@@ -182,7 +183,7 @@ const ReleasePage = (
 							<Box>
 								<Grid container spacing={1} sx={{ alignItems: 'center' }}>
 									<Grid item>
-										<ListSubheader>Genres:</ListSubheader>
+										<ListSubheader><Translate translationKey="genres"/>:</ListSubheader>
 									</Grid>
 									{ albumGenres.data?.pages.at(0)?.items.map((genre) =>
 										<Grid item key={genre.id} sx={{ display: 'flex' }}>
@@ -236,7 +237,7 @@ const ReleasePage = (
 			</Grid>
 			<RelatedContentSection
 				display={(relatedReleases.data?.pages.at(0)?.items?.length ?? 0) > 1}
-				title={"Other releases of the same album"}
+				title={<Translate translationKey="otherAlbumReleases"/>}
 			>
 				<TileRow tiles={
 					relatedReleases.data?.pages.at(0)?.items?.filter(
@@ -252,7 +253,7 @@ const ReleasePage = (
 			</RelatedContentSection>
 			<RelatedContentSection
 				display={albumVideos.data !== undefined && albumVideos.data.length != 0}
-				title={"Music Videos"}
+				title={<Translate translationKey="musicVideos"/>}
 			>
 				<TileRow tiles={albumVideos.data?.map((video, videoIndex) =>
 					<VideoTile key={videoIndex} video={video}/>) ?? []}
@@ -260,7 +261,7 @@ const ReleasePage = (
 			</RelatedContentSection>
 			<RelatedContentSection
 				display={album.data.externalIds.length != 0}
-				title={"External Links"}
+				title={<Translate translationKey="externalLinks"/>}
 			>
 				<Stack spacing={2}>
 					{album.data.externalIds.map((externalId) =>

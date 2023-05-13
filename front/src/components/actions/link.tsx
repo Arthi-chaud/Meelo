@@ -9,72 +9,72 @@ import Action from "./action";
 
 export const GoToSongLyricsAction = (songIdentifier: string | number): Action => ({
 	href: `/songs/${songIdentifier}/lyrics`,
-	label: 'See Lyrics',
+	label: 'seeLyrics',
 	icon: <Lyrics/>
 });
 
 export const GoToArtistAction = (artistIdentifier: string | number): Action => ({
 	href: `/artists/${artistIdentifier}`,
-	label: 'Go to Artist',
+	label: 'goToArtist',
 	icon: <AccountCircle/>
 });
 
 export const GoToArtistAlbumsAction = (artistIdentifier: string | number): Action => ({
 	href: `/artists/${artistIdentifier}/albums`,
-	label: 'See Albums',
+	label: 'seeAlbums',
 	icon: <Album/>
 });
 
 export const GoToArtistSongsAction = (artistIdentifier: string | number): Action => ({
 	href: `/artists/${artistIdentifier}/songs`,
-	label: 'See Songs',
+	label: 'seeSongs',
 	icon: <Audiotrack/>
 });
 
 export const GoToAlbumAction = (albumIdentifier: string | number): Action => ({
 	href: `/albums/${albumIdentifier}`,
-	label: 'Go To Album',
+	label: 'goToAlbum',
 	icon: <Album/>
 });
 
 export const GoToReleaseAction = (releaseIdentifier: string | number): Action => ({
 	href: `/releases/${releaseIdentifier}`,
-	label: 'Go To Album',
+	label: 'goToAlbum',
 	icon: <Album/>
 });
 
 export const GoToReleaseAsyncAction = (router: NextRouter, albumIdentifier: () => PromiseLike<number | string>): Action => ({
 	onClick: () => albumIdentifier().then((id) => router.push(`/releases/${id}`)),
-	label: 'Go To Album',
+	label: 'goToAlbum',
 	icon: <Album/>
 });
 
 export const GoToAlbumReleasesAction = (albumIdentifier: string | number): Action => ({
 	href: `/albums/${albumIdentifier}/releases`,
-	label: 'See Releases',
+	label: 'seeReleases',
 	icon: <AlbumOutlined/>
 });
 
 export const GoToSongVersionAction = (songIdentifier: string | number): Action => ({
 	href: `/songs/${songIdentifier}/versions`,
-	label: 'See Other Versions',
+	label: 'seeOtherVersions',
 	icon: <Audiotrack/>
 });
 
 export const GoToRelatedTracksAction = (songIdentifier: string | number): Action => ({
 	href: `/songs/${songIdentifier}/tracks`,
-	label: 'See Related Tracks',
+	label: 'seeRelatedTracks',
 	icon: <Difference/>
 });
 
 export const GoToSearchAction = {
-	label: 'Search',
+	label: 'search',
 	icon: <Search/>,
 	href: '/search',
-};
+} as const;
 
 export const GoToSettingsAction: Action = {
-	label: 'Settings',
+	label: 'settings',
 	icon: <Settings/>,
 	href: '/settings',
 };

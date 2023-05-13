@@ -4,7 +4,7 @@ import Action from "./action";
 
 export const ShareAction = (url: string): Action => ({
 	onClick: () => copyLinkToClipboard(url),
-	label: 'Share',
+	label: 'share',
 	icon: <Share/>
 });
 

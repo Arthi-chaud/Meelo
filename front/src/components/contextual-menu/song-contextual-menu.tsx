@@ -16,6 +16,7 @@ import { SongWithRelations } from "../../models/song";
 import { useQueryClient } from "../../api/use-query";
 import { Delete } from "@mui/icons-material";
 import { toast } from "react-hot-toast";
+import { translate } from "../../i18n/translate";
 
 type SongContextualMenuProps = {
 	song: SongWithRelations<'artist'>;
@@ -57,11 +58,11 @@ const SongContextualMenu = (props: SongContextualMenuProps) => {
 	].concat(props.entryId !== undefined ? [
 		[
 			{
-				label: 'Delete from Playlist',
+				label: 'deleteFromPlaylist',
 				icon: <Delete/>,
 				onClick: () => API.deletePlaylistEntry(props.entryId!)
 					.then(() => {
-						toast.success('Deletion Successful');
+						toast.success(translate('playlistItemDeletionSuccess'));
 						queryClient.client.invalidateQueries('playlist');
 						queryClient.client.invalidateQueries('playlists');
 					})

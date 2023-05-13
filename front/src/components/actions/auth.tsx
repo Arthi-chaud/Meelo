@@ -4,7 +4,7 @@ import { unsetAccessToken } from "../../state/userSlice";
 import Action from "./action";
 
 export const LogoutAction: Action = {
-	label: 'Logout',
+	label: 'logout',
 	icon: <Logout/>,
 	href: '/',
 	onClick: () => store.dispatch(unsetAccessToken())

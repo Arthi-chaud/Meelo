@@ -15,6 +15,7 @@ import {
 import { ShowTrackFileInfoAction } from "../actions/show-track-info";
 import { TrackWithRelations } from "../../models/track";
 import { UpdateTrackIllustrationAction } from "../actions/update-illustration";
+import { translate } from "../../i18n/translate";
 
 type TrackContextualMenuProps = {
 	track: TrackWithRelations<'song'>;
@@ -33,7 +34,7 @@ const TrackContextualMenu = (props: TrackContextualMenuProps) => {
 	const masterMutation = useMutation(async () => {
 		return API.setTrackAsMaster(props.track.id)
 			.then(() => {
-				toast.success("Track set as master!");
+				toast.success(translate('trackSetAsMaster'));
 				queryClient.client.invalidateQueries();
 			})
 			.catch((error: Error) => toast.error(error.message));
@@ -45,7 +46,7 @@ const TrackContextualMenu = (props: TrackContextualMenuProps) => {
 		[AddToPlaylistAction(props.track.songId, queryClient)],
 		[
 			{
-				label: "Set as as Master",
+				label: 'setAsMaster',
 				disabled: isMaster || !userIsAdmin,
 				icon: <Star/>,
 				onClick: () => masterMutation.mutate()

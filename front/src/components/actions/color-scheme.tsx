@@ -6,19 +6,19 @@ import store from "../../state/store";
 import Action from './action';
 
 export const SetLightColorSchemeAction: Action = {
-	label: 'Light Mode',
+	label: 'lightMode',
 	icon: <LightMode/>,
 	onClick: () => store.dispatch(setColorScheme('light'))
 };
 
 export const SetDarkColorSchemeAction: Action = {
-	label: 'Dark Mode',
+	label: 'darkMode',
 	icon: <DarkMode/>,
 	onClick: () => store.dispatch(setColorScheme('dark'))
 };
 
 export const SetSystemColorSchemeAction: Action = {
-	label: 'Auto Mode',
+	label: 'autoMode',
 	icon: <BrightnessAuto/>,
 	onClick: () => store.dispatch(setColorScheme('system'))
 };
