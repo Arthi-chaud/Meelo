@@ -4,7 +4,6 @@ import {
 import {
 	Box, Button, ButtonGroup, Dialog, Tooltip
 } from "@mui/material";
-import { capitalCase } from "change-case";
 import { NextRouter } from "next/router";
 import { useEffect, useState } from "react";
 import Option from "./option";

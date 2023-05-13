@@ -4,7 +4,6 @@ import {
 import { useEffect, useState } from "react";
 import API from "../api/api";
 import { MeeloInfiniteQueryFn, useInfiniteQuery } from "../api/use-query";
-import Translate from "../i18n/translate";
 
 type AdminGridProps<DataType extends GridValidRowModel> = {
 	infiniteQuery: MeeloInfiniteQueryFn<DataType>;

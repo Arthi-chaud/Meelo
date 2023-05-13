@@ -1,7 +1,6 @@
 import {
 	Box, Chip, Grid
 } from "@mui/material";
-import { capitalCase } from "change-case";
 import { useState } from "react";
 import {
 	AlbumSortingKeys, AlbumType, AlbumWithRelations

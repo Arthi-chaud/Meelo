@@ -2,7 +2,6 @@ import { Check } from '@mui/icons-material';
 import {
 	Button, Divider, ListItemIcon, Menu, MenuItem
 } from '@mui/material';
-import { capitalCase } from 'change-case';
 import Option, { OptionGroup } from './option';
 import { useState } from 'react';
 import Translate from '../../i18n/translate';

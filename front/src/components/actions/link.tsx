@@ -71,7 +71,7 @@ export const GoToSearchAction = {
 	label: 'search',
 	icon: <Search/>,
 	href: '/search',
-};
+} as const;
 
 export const GoToSettingsAction: Action = {
 	label: 'settings',
