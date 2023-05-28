@@ -11,7 +11,7 @@ import LibraryModule from "./library.module";
 import LibraryService from "./library.service";
 import IllustrationModule from "src/illustration/illustration.module";
 import request from 'supertest';
-import type { Album, Artist, Library, Release, Song, Track } from "src/prisma/models";
+import type { Artist, Library, Release, Song, Track } from "src/prisma/models";
 import AlbumModule from "src/album/album.module";
 import ArtistModule from "src/artist/artist.module";
 import ReleaseModule from "src/release/release.module";
@@ -215,43 +215,6 @@ describe('Library Controller', () => {
 				.expect(404);
 		});
 		
-	});
-
-	describe('Get all Related Albums (GET /libraries/:id/albums)', () => {
-		it("should return every albums w/ artist", () => {
-			return request(app.getHttpServer())
-				.get(`/libraries/${dummyRepository.library1.id}/albums?with=artist`)
-				.expect(200)
-				.expect((res) => {
-					const albums: Album[] = res.body.items;
-					expect(albums.length).toBe(2);
-					expect(albums[0]).toStrictEqual({
-						...expectedAlbumResponse(dummyRepository.albumA1),
-						artist: expectedArtistResponse(dummyRepository.artistA)
-					});
-					expect(albums[1]).toStrictEqual({
-						...expectedAlbumResponse(dummyRepository.compilationAlbumA),
-						artist: null
-					});
-				});
-		});
-
-		it("should return every albums (from library's slug))", () => {
-			return request(app.getHttpServer())
-				.get(`/libraries/${dummyRepository.library1.slug}/albums`)
-				.expect(200)
-				.expect((res) => {
-					const albums: Album[] = res.body.items;
-					expect(albums.length).toBe(2);
-					expect(albums[0]).toStrictEqual(expectedAlbumResponse(dummyRepository.albumA1));
-					expect(albums[1]).toStrictEqual(expectedAlbumResponse(dummyRepository.compilationAlbumA));
-				});
-		});
-		it("should return an error, as the library does not exist", () => {
-			return request(app.getHttpServer())
-				.get(`/libraries/-1/albums`)
-				.expect(404);
-		});
 	});
 
 	describe('Get all Related Videos (GET /libraries/:id/videos)', () => {

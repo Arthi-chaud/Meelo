@@ -35,7 +35,7 @@ const ModelSortingParameter = <
 		})
 		@IsOptional()
 		@IsIn(sortingKeys)
-		sortBy: SortingKeys[number];
+		sortBy: SortingKeys[number] = 'id';
 
 		@ApiPropertyOptional({
 			enum: availableSortingOrders,
@@ -43,7 +43,7 @@ const ModelSortingParameter = <
 		})
 		@IsIn(availableSortingOrders)
 		@IsOptional()
-		order: SortingOrder;
+		order: SortingOrder = 'asc';
 	}
 	return CustomSortingParameter;
 };

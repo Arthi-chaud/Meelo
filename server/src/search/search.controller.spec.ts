@@ -1,6 +1,6 @@
 import { INestApplication } from "@nestjs/common";
 import type { TestingModule } from "@nestjs/testing";
-import type { Artist, Album, Song } from "src/prisma/models";
+import type { Artist, Song } from "src/prisma/models";
 import AlbumModule from "src/album/album.module";
 import AlbumService from "src/album/album.service";
 import ArtistModule from "src/artist/artist.module";
@@ -118,30 +118,7 @@ describe('Search Controller', () => {
 		})
 	});
 
-	describe('Search Albums', () => {
-		it("Search albums", () => {
-			return request(app.getHttpServer())
-				.get(`/search/albums/es`)
-				.expect(200)
-				.expect((res) => {
-					const albums: Album[] = res.body.items;
-					expect(albums.length).toBe(2);
-					expect(albums).toContainEqual(expectedAlbumResponse(dummyRepository.albumB1));
-					expect(albums).toContainEqual(expectedAlbumResponse(dummyRepository.compilationAlbumA));
-				}) 
-		});
-
-		it("Search albums, w/ pagination", () => {
-			return request(app.getHttpServer())
-				.get(`/search/albums/a?take=1`)
-				.expect(200)
-				.expect((res) => {
-					const albums: Album[] = res.body.items;
-					expect(albums.length).toBe(1);
-					expect(albums).toContainEqual(expectedAlbumResponse(dummyRepository.albumA1));
-				}) 
-		})
-	});
+	
 
 	describe('Search Songs', () => {
 		it("Search songs", () => {

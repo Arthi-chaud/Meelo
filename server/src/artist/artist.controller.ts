@@ -1,8 +1,6 @@
 import {
 	Controller, DefaultValuePipe, Get, Inject, ParseBoolPipe, Query, forwardRef
 } from '@nestjs/common';
-import AlbumService from 'src/album/album.service';
-import AlbumQueryParameters from 'src/album/models/album.query-parameters';
 import { PaginationParameters } from 'src/pagination/models/pagination-parameters';
 import SongQueryParameters from 'src/song/models/song.query-params';
 import SongService from 'src/song/song.service';
@@ -12,7 +10,6 @@ import {
 	ApiOperation, ApiQuery, ApiTags
 } from '@nestjs/swagger';
 import { ArtistResponseBuilder } from './models/artist.response';
-import { AlbumResponseBuilder } from 'src/album/models/album.response';
 import { SongResponseBuilder } from 'src/song/models/song.response';
 import { PaginationQuery } from 'src/pagination/pagination-query.decorator';
 import IdentifierParam from 'src/identifier/identifier.pipe';
@@ -27,8 +24,6 @@ export default class ArtistController {
 	constructor(
 		@Inject(forwardRef(() => ArtistService))
 		private artistService: ArtistService,
-		@Inject(forwardRef(() => AlbumService))
-		private albumService: AlbumService,
 		@Inject(forwardRef(() => SongService))
 		private songService: SongService
 	) {}
@@ -110,38 +105,6 @@ export default class ArtistController {
 			await this.artistService.throwIfNotFound(where);
 		}
 		return videoTracks;
-	}
-
-	@ApiOperation({
-		summary: 'Get all albums from an artist'
-	})
-	@Response({
-		handler: AlbumResponseBuilder,
-		type: ResponseType.Page
-	})
-	@Get(':idOrSlug/albums')
-	async getArtistAlbums(
-		@PaginationQuery()
-		paginationParameters: PaginationParameters,
-		@SortingQuery(AlbumQueryParameters.SortingKeys)
-		sortingParameter: AlbumQueryParameters.SortingParameter,
-		@Query() filter: AlbumQueryParameters.AlbumFilterParameter,
-		@RelationIncludeQuery(AlbumQueryParameters.AvailableAtomicIncludes)
-		include: AlbumQueryParameters.RelationInclude,
-		@IdentifierParam(ArtistService)
-		where: ArtistQueryParameters.WhereInput
-	) {
-		const albums = await this.albumService.getMany(
-			{ artist: where, type: filter.type },
-			paginationParameters,
-			include,
-			sortingParameter
-		);
-
-		if (albums.length == 0) {
-			await this.artistService.throwIfNotFound(where);
-		}
-		return albums;
 	}
 
 	@ApiOperation({

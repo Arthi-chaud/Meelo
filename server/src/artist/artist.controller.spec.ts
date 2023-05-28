@@ -1,6 +1,6 @@
 import type { INestApplication } from "@nestjs/common";
 import type { TestingModule } from "@nestjs/testing";
-import type { Album, Artist, Song } from "src/prisma/models";
+import type { Artist, Song } from "src/prisma/models";
 import AlbumModule from "src/album/album.module";
 import PrismaModule from "src/prisma/prisma.module";
 import PrismaService from "src/prisma/prisma.service";
@@ -22,7 +22,7 @@ import GenreModule from "src/genre/genre.module";
 import TestPrismaService from "test/test-prisma.service";
 import { LyricsModule } from "src/lyrics/lyrics.module";
 import FileModule from "src/file/file.module";
-import { expectedAlbumResponse, expectedArtistResponse, expectedSongResponse, expectedTrackResponse } from "test/expected-responses";
+import { expectedArtistResponse, expectedSongResponse, expectedTrackResponse } from "test/expected-responses";
 import { SongWithVideoResponse } from "src/song/models/song-with-video.response";
 import ProvidersModule from "src/providers/providers.module";
 import SettingsModule from "src/settings/settings.module";
@@ -32,7 +32,6 @@ import ProviderService from "src/providers/provider.service";
 describe('Artist Controller', () => {
 	let dummyRepository: TestPrismaService;
 	let app: INestApplication;
-	let albumA2: Album;
 	let providerService: ProviderService;
 
 	let module: TestingModule;
@@ -44,10 +43,6 @@ describe('Artist Controller', () => {
 		app = await SetupApp(module);
 		dummyRepository = module.get(PrismaService);
 		await dummyRepository.onModuleInit();
-		const albumService = module.get(AlbumService);
-		albumA2 = await albumService.create({
-			name: "My Album 2", artist: { id: dummyRepository.artistA.id }
-		});
 		providerService = module.get(ProviderService);
 		module.get(SettingsService).loadFromFile();
 		await providerService.onModuleInit();
@@ -257,60 +252,6 @@ describe('Artist Controller', () => {
 		it("should return an error, as the artist does not exist", () => {
 			return request(app.getHttpServer())
 				.get(`/artists/-1/videos`)
-				.expect(404);
-		});
-	});
-
-	describe('Get Artist\'s Albums (GET /artists/:id/albums)', () => {
-		it("should get all the artist's albums", () => {
-			return request(app.getHttpServer())
-				.get(`/artists/${dummyRepository.artistA.id}/albums`)
-				.expect(200)
-				.expect((res) => {
-					const albums: Album[] = res.body.items;
-					expect(albums.length).toBe(2);
-					expect(albums[0]).toStrictEqual(expectedAlbumResponse(dummyRepository.albumA1));
-					expect(albums[1]).toStrictEqual(expectedAlbumResponse(albumA2));
-				});
-		});
-		it("should get all the artist's albums, sorted by name", () => {
-			return request(app.getHttpServer())
-				.get(`/artists/${dummyRepository.artistA.id}/albums?sortBy=name&order=desc`)
-				.expect(200)
-				.expect((res) => {
-					const albums: Album[] = res.body.items;
-					expect(albums.length).toBe(2);
-					expect(albums[0]).toStrictEqual(expectedAlbumResponse(albumA2));
-					expect(albums[1]).toStrictEqual(expectedAlbumResponse(dummyRepository.albumA1));
-				});
-		});
-		it("should get some albums (w/ pagination)", () => {
-			return request(app.getHttpServer())
-				.get(`/artists/${dummyRepository.artistA.id}/albums?take=1`)
-				.expect(200)
-				.expect((res) => {
-					const albums: Album[] = res.body.items;
-					expect(albums.length).toBe(1);
-					expect(albums[0]).toStrictEqual(expectedAlbumResponse(dummyRepository.albumA1));
-				});
-		});
-		it("should get all albums, w/ artist", () => {
-			return request(app.getHttpServer())
-				.get(`/artists/${dummyRepository.artistB.id}/albums?with=artist`)
-				.expect(200)
-				.expect((res) => {
-					const albums: Album[] = res.body.items;
-					expect(albums.length).toBe(1);
-					expect(albums[0]).toStrictEqual({
-						...expectedAlbumResponse(dummyRepository.albumB1),
-						artist: expectedArtistResponse(dummyRepository.artistB)
-					});
-				});
-		});
-
-		it("should return an error, as the artist does not exist", () => {
-			return request(app.getHttpServer())
-				.get(`/artists/${-1}/albums`)
 				.expect(404);
 		});
 	});

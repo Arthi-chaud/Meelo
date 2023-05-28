@@ -1,9 +1,7 @@
 import {
-	Controller, Get, Inject, Query, forwardRef
+	Controller, Get, Inject, forwardRef
 } from "@nestjs/common";
 import { ApiOperation, ApiTags } from "@nestjs/swagger";
-import AlbumService from "src/album/album.service";
-import AlbumQueryParameters from "src/album/models/album.query-parameters";
 import ArtistService from "src/artist/artist.service";
 import ArtistQueryParameters from "src/artist/models/artist.query-parameters";
 import { PaginationParameters } from "src/pagination/models/pagination-parameters";
@@ -12,7 +10,6 @@ import SongService from "src/song/song.service";
 import GenreService from "./genre.service";
 import GenreQueryParameters from "./models/genre.query-parameters";
 import { SongResponseBuilder } from "src/song/models/song.response";
-import { AlbumResponseBuilder } from "src/album/models/album.response";
 import { ArtistResponseBuilder } from "src/artist/models/artist.response";
 import { PaginationQuery } from "src/pagination/pagination-query.decorator";
 import RelationIncludeQuery from "src/relation-include/relation-include-query.decorator";
@@ -27,8 +24,6 @@ export class GenreController {
 	constructor(
 		@Inject(forwardRef(() => SongService))
 		private songService: SongService,
-		@Inject(forwardRef(() => AlbumService))
-		private albumService: AlbumService,
 		@Inject(forwardRef(() => ArtistService))
 		private artistService: ArtistService,
 		private genreService: GenreService
@@ -95,35 +90,6 @@ export class GenreController {
 			await this.genreService.throwIfNotFound(where);
 		}
 		return songs;
-	}
-
-	@ApiOperation({
-		summary: 'Get all albums with at least one song from the genre'
-	})
-	@Response({
-		handler: AlbumResponseBuilder,
-		type: ResponseType.Page
-	})
-	@Get(':idOrSlug/albums')
-	async getGenreAlbums(
-		@PaginationQuery()
-		paginationParameters: PaginationParameters,
-		@RelationIncludeQuery(AlbumQueryParameters.AvailableAtomicIncludes)
-		include: AlbumQueryParameters.RelationInclude,
-		@SortingQuery(AlbumQueryParameters.SortingKeys)
-		sortingParameter: AlbumQueryParameters.SortingParameter,
-		@Query() filter: AlbumQueryParameters.AlbumFilterParameter,
-		@IdentifierParam(GenreService)
-		where: GenreQueryParameters.WhereInput
-	) {
-		const albums = await this.albumService.getMany(
-			{ genre: where, type: filter.type }, paginationParameters, include, sortingParameter
-		);
-
-		if (albums.length == 0) {
-			await this.genreService.throwIfNotFound(where);
-		}
-		return albums;
 	}
 
 	@ApiOperation({

@@ -1,13 +1,11 @@
 import {
-	Controller, Get, Param, Query
+	Controller, Get, Param
 } from '@nestjs/common';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
-import AlbumQueryParameters from 'src/album/models/album.query-parameters';
 import ArtistQueryParameters from 'src/artist/models/artist.query-parameters';
 import GenreQueryParameters from 'src/genre/models/genre.query-parameters';
 import { PaginationParameters } from 'src/pagination/models/pagination-parameters';
 import SongQueryParameters from 'src/song/models/song.query-params';
-import { AlbumResponseBuilder } from 'src/album/models/album.response';
 import { SongResponseBuilder } from 'src/song/models/song.response';
 import { PaginationQuery } from 'src/pagination/pagination-query.decorator';
 import RelationIncludeQuery from 'src/relation-include/relation-include-query.decorator';
@@ -68,34 +66,6 @@ export default class SearchController {
 	) {
 		return this.artistService.search(
 			query, {}, paginationParameters, include, sortingParameter
-		);
-	}
-
-	@ApiOperation({
-		summary: 'Search albums by their names'
-	})
-	@Response({
-		handler: AlbumResponseBuilder,
-		type: ResponseType.Page
-	})
-	@Get('/albums/:query')
-	async searchAlbums(
-		@Param('query')
-		query: string,
-		@PaginationQuery()
-		paginationParameters: PaginationParameters,
-		@RelationIncludeQuery(AlbumQueryParameters.AvailableAtomicIncludes)
-		include: AlbumQueryParameters.RelationInclude,
-		@SortingQuery(AlbumQueryParameters.SortingKeys)
-		sortingParameter: AlbumQueryParameters.SortingParameter,
-		@Query() filter: AlbumQueryParameters.AlbumFilterParameter
-	) {
-		return this.albumService.search(
-			query,
-			{ type: filter.type },
-			paginationParameters,
-			include,
-			sortingParameter
 		);
 	}
 
