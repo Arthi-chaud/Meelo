@@ -3,7 +3,7 @@ import {
 } from '@nestjs/common';
 import type Settings from './models/settings';
 import SettingsService from './settings.service';
-import { ApiTags } from '@nestjs/swagger';
+import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import Admin from 'src/roles/admin.decorator';
 
 @Admin()
@@ -13,11 +13,17 @@ export default class SettingsController {
 	constructor(private settingsService: SettingsService) {}
 
 	@Get()
+	@ApiOperation({
+		summary: 'Get settings'
+	})
 	getSettings(): Settings {
 		return this.settingsService.settingsValues;
 	}
 
 	@Get('reload')
+	@ApiOperation({
+		summary: 'Reload settings'
+	})
 	@Redirect('/settings', HttpStatus.FOUND)
 	reload() {
 		this.settingsService.loadFromFile();
