@@ -1,6 +1,6 @@
 import { createTestingModule } from "test/test-module";
 import { TestingModule } from "@nestjs/testing";
-import type { Artist, Lyrics, Song, Track } from "src/prisma/models";
+import type { Lyrics, Song, Track } from "src/prisma/models";
 import PrismaService from "src/prisma/prisma.service";
 import request from "supertest";
 import { INestApplication } from "@nestjs/common";
@@ -493,36 +493,6 @@ describe('Song Controller', () => {
 				.delete(`/songs/${dummyRepository.songC1.id}/lyrics`)
 				.expect(404);
 		})
-	});
-
-	describe("Get Song Artist (GET /songs/:id/artist)", () => {
-		it("should return artist (by id)", () => {
-			return request(app.getHttpServer())
-				.get(`/songs/${dummyRepository.songB1.id}/artist`)
-				.expect(200)
-				.expect((res) => {
-					const fetchedArtist : Artist = res.body
-					expect(fetchedArtist).toStrictEqual(
-						expectedArtistResponse(dummyRepository.artistB)
-					);
-				});
-		});
-		it("should return artist (by slug)", () => {
-			return request(app.getHttpServer())
-				.get(`/songs/${dummyRepository.artistA.slug}+${dummyRepository.songA2.slug}/artist`)
-				.expect(200)
-				.expect((res) => {
-					const fetchedArtist : Artist = res.body
-					expect(fetchedArtist).toStrictEqual(
-						expectedArtistResponse(dummyRepository.artistA)
-					);
-				});
-		});
-		it("should return an error, as the song does not exist", () => {
-			return request(app.getHttpServer())
-				.get(`/songs/${-1}/artist`)
-				.expect(404);
-		});
 	});
 
 	describe("Get Song's Versions (GET /songs/:id/versions)", () => {

@@ -21,7 +21,6 @@ import SortingQuery from 'src/sort/sort-query.decorator';
 import Admin from 'src/roles/admin.decorator';
 import IdentifierParam from 'src/identifier/identifier.pipe';
 import Response, { ResponseType } from 'src/response/response.decorator';
-import { ArtistResponseBuilder } from 'src/artist/models/artist.response';
 import { LyricsResponseBuilder } from 'src/lyrics/models/lyrics.response';
 import { IsOptional } from 'class-validator';
 import TransformIdentifier from 'src/identifier/identifier.transform';
@@ -67,8 +66,6 @@ export class SongController {
 		private songService: SongService,
 		@Inject(forwardRef(() => TrackService))
 		private trackService: TrackService,
-		@Inject(forwardRef(() => ArtistService))
-		private artistService: ArtistService,
 		@Inject(forwardRef(() => LyricsService))
 		private lyricsService: LyricsService,
 	) { }
@@ -130,24 +127,6 @@ export class SongController {
 	) {
 		await this.songService.incrementPlayCount(where);
 		return this.songService.get(where);
-	}
-
-	@ApiOperation({
-		summary: 'Get a song\'s artist'
-	})
-	@Response({ handler: ArtistResponseBuilder })
-	@Get(':idOrSlug/artist')
-	async getSongArtist(
-		@RelationIncludeQuery(ArtistQueryParameters.AvailableAtomicIncludes)
-		include: ArtistQueryParameters.RelationInclude,
-		@IdentifierParam(SongService)
-		where: SongQueryParameters.WhereInput,
-	) {
-		const song = await this.songService.get(where);
-
-		return this.artistService.get({
-			id: song.artistId
-		}, include);
 	}
 
 	@ApiOperation({

@@ -22,7 +22,6 @@ import IdentifierParam from 'src/identifier/identifier.pipe';
 import Response, { ResponseType } from 'src/response/response.decorator';
 import { ReleaseResponseBuilder } from './models/release.response';
 import { TracklistResponseBuilder } from 'src/track/models/tracklist.model';
-import { AlbumResponseBuilder } from 'src/album/models/album.response';
 import { IsOptional } from 'class-validator';
 import TransformIdentifier from 'src/identifier/identifier.transform';
 import LibraryService from 'src/library/library.service';
@@ -133,24 +132,6 @@ export default class ReleaseController {
 		@Res() response: ExpressResponse
 	) {
 		return this.releaseService.pipeArchive(where, response);
-	}
-
-	@ApiOperation({
-		summary: 'Get the parent album of a release'
-	})
-	@Get(':idOrSlug/album')
-	@Response({ handler: AlbumResponseBuilder })
-	async getReleaseAlbum(
-		@IdentifierParam(ReleaseService)
-		where: ReleaseQueryParameters.WhereInput,
-		@RelationIncludeQuery(AlbumQueryParameters.AvailableAtomicIncludes)
-		include: AlbumQueryParameters.RelationInclude,
-	) {
-		const release = this.releaseService.get(where);
-
-		return this.albumService.get({
-			id: (await release).albumId
-		}, include);
 	}
 
 	@ApiOperation({
