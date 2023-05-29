@@ -10,7 +10,9 @@ import TrackQueryParameters from 'src/track/models/track.query-parameters';
 import AlbumService from 'src/album/album.service';
 import AlbumQueryParameters from 'src/album/models/album.query-parameters';
 import type { Response as ExpressResponse } from 'express';
-import { ApiOperation, ApiTags } from '@nestjs/swagger';
+import {
+	ApiOperation, ApiPropertyOptional, ApiTags, IntersectionType
+} from '@nestjs/swagger';
 import ReassignReleaseDTO from './models/reassign-release.dto';
 import { TrackResponseBuilder } from 'src/track/models/track.response';
 import { PaginationQuery } from 'src/pagination/pagination-query.decorator';
@@ -22,6 +24,26 @@ import Response, { ResponseType } from 'src/response/response.decorator';
 import { ReleaseResponseBuilder } from './models/release.response';
 import { TracklistResponseBuilder } from 'src/track/models/tracklist.model';
 import { AlbumResponseBuilder } from 'src/album/models/album.response';
+import { IsOptional } from 'class-validator';
+import TransformIdentifier from 'src/identifier/identifier.transform';
+import LibraryService from 'src/library/library.service';
+import LibraryQueryParameters from 'src/library/models/library.query-parameters';
+
+class Selector extends IntersectionType(ReleaseQueryParameters.SortingParameter) {
+	@IsOptional()
+	@ApiPropertyOptional({
+		description: `Filter releases by albums`
+	})
+	@TransformIdentifier(AlbumService)
+	album?: AlbumQueryParameters.WhereInput;
+
+	@IsOptional()
+	@ApiPropertyOptional({
+		description: `Filter releases by library`
+	})
+	@TransformIdentifier(LibraryService)
+	library?: LibraryQueryParameters.WhereInput;
+}
 
 @ApiTags("Releases")
 @Controller('releases')
@@ -36,7 +58,7 @@ export default class ReleaseController {
 	) { }
 
 	@ApiOperation({
-		summary: 'Get all releases'
+		summary: 'Get many releases'
 	})
 	@Get()
 	@Response({
@@ -44,15 +66,14 @@ export default class ReleaseController {
 		type: ResponseType.Page
 	})
 	async getReleases(
+		@Query() selector: Selector,
 		@PaginationQuery()
 		paginationParameters: PaginationParameters,
 		@RelationIncludeQuery(ReleaseQueryParameters.AvailableAtomicIncludes)
-		include: ReleaseQueryParameters.RelationInclude,
-		@SortingQuery(ReleaseQueryParameters.SortingKeys)
-		sortingParameter: ReleaseQueryParameters.SortingParameter
+		include: ReleaseQueryParameters.RelationInclude
 	) {
 		return this.releaseService.getMany(
-			{}, paginationParameters, include, sortingParameter
+			selector, paginationParameters, include, selector
 		);
 	}
 

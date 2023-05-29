@@ -1,6 +1,6 @@
 import type { INestApplication } from "@nestjs/common";
 import type { TestingModule } from "@nestjs/testing";
-import type { Album, Artist, Release } from "src/prisma/models";
+import type { Album, Artist } from "src/prisma/models";
 import request from "supertest";
 import ArtistModule from "src/artist/artist.module";
 import ArtistService from "src/artist/artist.service";
@@ -382,7 +382,7 @@ describe('Album Controller', () => {
 		});
 		it("Should return an error, as the id is not valid", () => {
 			return request(app.getHttpServer())
-				.get(`/albums/plop/releases`)
+				.get(`/albums/plop/master`)
 				.expect(400);
 		});
 		it("Should throw, as the album does not have releases", async () => {
@@ -400,69 +400,6 @@ describe('Album Controller', () => {
 						...expectedReleaseResponse(dummyRepository.releaseB1_1),
 						album: expectedAlbumResponse(dummyRepository.albumB1)
 					})
-				});
-		});
-	});
-
-	describe("Get Album's Releases (GET /albums/:id/releases)", () => {
-		it("Should return all album's releases", () => {
-			return request(app.getHttpServer())
-				.get(`/albums/${dummyRepository.albumA1.id}/releases`)
-				.expect(200)
-				.expect((res) => {
-					const releases: Release[] = res.body.items;
-					expect(releases.length).toBe(2);
-					expect(releases[0]).toStrictEqual(expectedReleaseResponse(dummyRepository.releaseA1_1));
-					expect(releases[1]).toStrictEqual(expectedReleaseResponse(dummyRepository.releaseA1_2));
-				});
-		});
-		it("Should return all album's releases, sorted by id, desc", () => {
-			return request(app.getHttpServer())
-				.get(`/albums/${dummyRepository.albumA1.id}/releases?sortBy=id&order=desc`)
-				.expect(200)
-				.expect((res) => {
-					const releases: Release[] = res.body.items;
-					expect(releases.length).toBe(2);
-					expect(releases[0]).toStrictEqual(expectedReleaseResponse(dummyRepository.releaseA1_2));
-					expect(releases[1]).toStrictEqual(expectedReleaseResponse(dummyRepository.releaseA1_1));
-				});
-		});
-		it("Should return all album's releases (by slug)", () => {
-			return request(app.getHttpServer())
-				.get(`/albums/${dummyRepository.artistB.slug}+${dummyRepository.albumB1.slug}/releases`)
-				.expect(200)
-				.expect((res) => {
-					const releases: Release[] = res.body.items;
-					expect(releases.length).toBe(1);
-					expect(releases[0]).toStrictEqual(expectedReleaseResponse(dummyRepository.releaseB1_1));
-				});
-		});
-		it("Should return some album's releases (w/ pagination)", () => {
-			return request(app.getHttpServer())
-				.get(`/albums/${dummyRepository.albumA1.id}/releases?take=1`)
-				.expect(200)
-				.expect((res) => {
-					const releases: Release[] = res.body.items;
-					expect(releases.length).toBe(1);
-					expect(releases[0]).toStrictEqual(expectedReleaseResponse(dummyRepository.releaseA1_1));
-				});
-		});
-		it("Should return an error, as the album does not exist", () => {
-			return request(app.getHttpServer())
-				.get(`/albums/-1/releases`)
-				.expect(404);
-		});
-		it("Should include parent album", () => {
-			return request(app.getHttpServer())
-				.get(`/albums/${dummyRepository.compilationAlbumA.id}/releases?with=album`)
-				.expect(200)
-				.expect((res) => {
-					const releases: Release[] = res.body.items;
-					expect(releases.length).toBe(1);
-					expect(releases[0]).toStrictEqual({
-						...expectedReleaseResponse(dummyRepository.compilationReleaseA1),
-						album: expectedAlbumResponse(dummyRepository.compilationAlbumA)
-					});
 				});
 		});
 	});

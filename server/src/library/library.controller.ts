@@ -5,15 +5,12 @@ import {
 import LibraryService from './library.service';
 import { Library } from 'src/prisma/models';
 import { PaginationParameters } from 'src/pagination/models/pagination-parameters';
-import ReleaseQueryParameters from 'src/release/models/release.query-parameters';
 import SongQueryParameters from 'src/song/models/song.query-params';
 import TrackQueryParameters from 'src/track/models/track.query-parameters';
 import TrackService from 'src/track/track.service';
-import ReleaseService from 'src/release/release.service';
 import SongService from 'src/song/song.service';
 import LibraryQueryParameters from './models/library.query-parameters';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
-import { ReleaseResponseBuilder } from 'src/release/models/release.response';
 import { SongResponseBuilder } from 'src/song/models/song.response';
 import { TrackResponseBuilder } from 'src/track/models/track.response';
 import { PaginationQuery } from 'src/pagination/pagination-query.decorator';
@@ -33,7 +30,6 @@ export default class LibraryController {
 		private libraryService: LibraryService,
 		private trackService: TrackService,
 		private songService: SongService,
-		private releaseService: ReleaseService,
 	) { }
 
 	@ApiOperation({
@@ -104,34 +100,6 @@ export default class LibraryController {
 
 		this.libraryService.delete(where);
 		return library;
-	}
-
-	@ApiOperation({
-		summary: 'Get all releases from a library'
-	})
-	@Response({
-		handler: ReleaseResponseBuilder,
-		type: ResponseType.Page
-	})
-	@Get(':idOrSlug/releases')
-	async getReleasesByLibrary(
-		@PaginationQuery()
-		paginationParameters: PaginationParameters,
-		@RelationIncludeQuery(ReleaseQueryParameters.AvailableAtomicIncludes)
-		include: ReleaseQueryParameters.RelationInclude,
-		@SortingQuery(ReleaseQueryParameters.SortingKeys)
-		sortingParameter: ReleaseQueryParameters.SortingParameter,
-		@IdentifierParam(LibraryService)
-		where: LibraryQueryParameters.WhereInput
-	) {
-		const releases = await this.releaseService.getMany(
-			{ library: where }, paginationParameters, include, sortingParameter
-		);
-
-		if (releases.length == 0) {
-			await this.libraryService.throwIfNotFound(where);
-		}
-		return releases;
 	}
 
 	@ApiOperation({

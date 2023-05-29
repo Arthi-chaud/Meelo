@@ -17,7 +17,6 @@ import { AlbumResponseBuilder } from './models/album.response';
 import { ReleaseResponseBuilder } from 'src/release/models/release.response';
 import { PaginationQuery } from 'src/pagination/pagination-query.decorator';
 import RelationIncludeQuery from 'src/relation-include/relation-include-query.decorator';
-import SortingQuery from 'src/sort/sort-query.decorator';
 import Admin from 'src/roles/admin.decorator';
 import { TrackResponseBuilder } from 'src/track/models/track.response';
 import IdentifierParam from 'src/identifier/identifier.pipe';
@@ -147,32 +146,6 @@ export default class AlbumController {
 		return this.releaseService.getMasterRelease(
 			where,
 			include
-		);
-	}
-
-	@ApiOperation({
-		summary: 'Get all the releases of an album'
-	})
-	@Response({
-		handler: ReleaseResponseBuilder,
-		type: ResponseType.Page
-	})
-	@Get(':idOrSlug/releases')
-	async getAlbumReleases(
-		@PaginationQuery()
-		paginationParameters: PaginationParameters,
-		@RelationIncludeQuery(ReleaseQueryParameters.AvailableAtomicIncludes)
-		include: ReleaseQueryParameters.RelationInclude,
-		@SortingQuery(ReleaseQueryParameters.SortingKeys)
-		sortingParameter: ReleaseQueryParameters.SortingParameter,
-		@IdentifierParam(AlbumService)
-		where: AlbumQueryParameters.WhereInput,
-	) {
-		return this.releaseService.getAlbumReleases(
-			where,
-			paginationParameters,
-			include,
-			sortingParameter
 		);
 	}
 
