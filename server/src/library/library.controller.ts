@@ -11,7 +11,6 @@ import TrackService from 'src/track/track.service';
 import SongService from 'src/song/song.service';
 import LibraryQueryParameters from './models/library.query-parameters';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
-import { SongResponseBuilder } from 'src/song/models/song.response';
 import { TrackResponseBuilder } from 'src/track/models/track.response';
 import { PaginationQuery } from 'src/pagination/pagination-query.decorator';
 import RelationIncludeQuery from 'src/relation-include/relation-include-query.decorator';
@@ -100,34 +99,6 @@ export default class LibraryController {
 
 		this.libraryService.delete(where);
 		return library;
-	}
-
-	@ApiOperation({
-		summary: 'Get all songs from a library'
-	})
-	@Response({
-		handler: SongResponseBuilder,
-		type: ResponseType.Page
-	})
-	@Get(':idOrSlug/songs')
-	async getSongsByLibrary(
-		@PaginationQuery()
-		paginationParameters: PaginationParameters,
-		@RelationIncludeQuery(SongQueryParameters.AvailableAtomicIncludes)
-		include: SongQueryParameters.RelationInclude,
-		@SortingQuery(SongQueryParameters.SortingKeys)
-		sortingParameter: SongQueryParameters.SortingParameter,
-		@IdentifierParam(LibraryService)
-		where: LibraryQueryParameters.WhereInput
-	) {
-		const songs = await this.songService.getMany(
-			{ library: where }, paginationParameters, include, sortingParameter
-		);
-
-		if (songs.length == 0) {
-			await this.libraryService.throwIfNotFound(where);
-		}
-		return songs;
 	}
 
 	@ApiOperation({

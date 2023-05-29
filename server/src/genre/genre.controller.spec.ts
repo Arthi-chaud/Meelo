@@ -1,6 +1,6 @@
 import { INestApplication } from "@nestjs/common";
 import type { TestingModule } from "@nestjs/testing";
-import type { Song, Genre } from "src/prisma/models";
+import type { Genre } from "src/prisma/models";
 import request from "supertest";
 import AlbumModule from "src/album/album.module";
 import ArtistModule from "src/artist/artist.module";
@@ -16,7 +16,6 @@ import TestPrismaService from "test/test-prisma.service";
 import { LyricsModule } from "src/lyrics/lyrics.module";
 import MetadataModule from "src/metadata/metadata.module";
 import SetupApp from "test/setup-app";
-import { expectedArtistResponse, expectedSongResponse } from "test/expected-responses";
 
 describe("Genre Controller", () => {
 	let app: INestApplication;
@@ -133,71 +132,6 @@ describe("Genre Controller", () => {
 						dummyRepository.genreA,
 						dummyRepository.genreB,
 					])
-				});
-		});
-	});
-
-
-	describe("Get Genre's songs", () => {
-		it("Should get all the songs", () => {
-			return request(app.getHttpServer())
-				.get(`/genres/${dummyRepository.genreB.id}/songs`)
-				.expect(200)
-				.expect((res) => {
-					const songs: Song[] = res.body.items;
-					expect(songs.length).toBe(3);
-					expect(songs).toContainEqual(expectedSongResponse(dummyRepository.songA1));
-					expect(songs).toContainEqual(expectedSongResponse(dummyRepository.songA2));
-					expect(songs).toContainEqual(expectedSongResponse(dummyRepository.songB1));
-				});
-		});
-
-		it("Should get all the songs (one expected)", () => {
-			return request(app.getHttpServer())
-				.get(`/genres/${dummyRepository.genreC.id}/songs`)
-				.expect(200)
-				.expect((res) => {
-					const songs: Song[] = res.body.items;
-					expect(songs.length).toBe(1);
-					expect(songs).toContainEqual(expectedSongResponse(dummyRepository.songC1));
-				});
-		});
-
-		it("Should get some songs (w/ pagination)", () => {
-			return request(app.getHttpServer())
-				.get(`/genres/${dummyRepository.genreB.id}/songs?skip=1&take=1`)
-				.expect(200)
-				.expect((res) => {
-					const songs: Song[] = res.body.items;
-					expect(songs.length).toBe(1);
-					expect(songs[0]).toStrictEqual(expectedSongResponse(dummyRepository.songA2));
-				});
-		});
-
-		it("Should get all songs, sorted", () => {
-			return request(app.getHttpServer())
-				.get(`/genres/${dummyRepository.genreB.id}/songs?sortBy=name&order=desc`)
-				.expect(200)
-				.expect((res) => {
-					const songs: Song[] = res.body.items;
-					expect(songs.length).toBe(3);
-					expect(songs[1]).toStrictEqual(expectedSongResponse(dummyRepository.songB1));
-					expect(songs[2]).toStrictEqual(expectedSongResponse(dummyRepository.songA2));
-					expect(songs[0]).toStrictEqual(expectedSongResponse(dummyRepository.songA1));
-				});
-		});
-
-		it("Should get songs, w/ artist", () => {
-			return request(app.getHttpServer())
-				.get(`/genres/${dummyRepository.genreB.id}/songs?sortBy=name&take=1&with=artist`)
-				.expect(200)
-				.expect((res) => {
-					const songs: Song[] = res.body.items;
-					expect(songs.length).toBe(1);
-					expect(songs[0]).toStrictEqual({
-						...expectedSongResponse(dummyRepository.songA2),
-						artist: expectedArtistResponse(dummyRepository.artistA)
-					});
 				});
 		});
 	});

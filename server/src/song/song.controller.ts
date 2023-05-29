@@ -1,5 +1,5 @@
 import {
-	Body, Controller, Delete, Get, Inject, Post, Put, forwardRef
+	Body, Controller, Delete, Get, Inject, Post, Put, Query, forwardRef
 } from '@nestjs/common';
 import ArtistService from 'src/artist/artist.service';
 import ArtistQueryParameters from 'src/artist/models/artist.query-parameters';
@@ -8,7 +8,9 @@ import TrackQueryParameters from 'src/track/models/track.query-parameters';
 import TrackService from 'src/track/track.service';
 import SongQueryParameters from './models/song.query-params';
 import SongService from './song.service';
-import { ApiOperation, ApiTags } from '@nestjs/swagger';
+import {
+	ApiOperation, ApiPropertyOptional, ApiTags, IntersectionType
+} from '@nestjs/swagger';
 import { TrackType } from '@prisma/client';
 import { LyricsService } from 'src/lyrics/lyrics.service';
 import LyricsDto from 'src/lyrics/models/update-lyrics.dto';
@@ -23,6 +25,41 @@ import Response, { ResponseType } from 'src/response/response.decorator';
 import { ArtistResponseBuilder } from 'src/artist/models/artist.response';
 import { LyricsResponseBuilder } from 'src/lyrics/models/lyrics.response';
 import { SongWithVideoResponseBuilder } from './models/song-with-video.response';
+import { IsOptional } from 'class-validator';
+import TransformIdentifier from 'src/identifier/identifier.transform';
+import LibraryQueryParameters from 'src/library/models/library.query-parameters';
+import LibraryService from 'src/library/library.service';
+import GenreQueryParameters from 'src/genre/models/genre.query-parameters';
+import GenreService from 'src/genre/genre.service';
+
+class Selector extends IntersectionType(SongQueryParameters.SortingParameter) {
+	@IsOptional()
+	@ApiPropertyOptional({
+		description: 'Filter songs by artist'
+	})
+	@TransformIdentifier(ArtistService)
+	artist?: ArtistQueryParameters.WhereInput;
+
+	@IsOptional()
+	@ApiPropertyOptional({
+		description: 'Filter songs by library'
+	})
+	@TransformIdentifier(LibraryService)
+	library?: LibraryQueryParameters.WhereInput;
+
+	@IsOptional()
+	@ApiPropertyOptional({
+		description: 'Filter songs by genre'
+	})
+	@TransformIdentifier(GenreService)
+	genre?: GenreQueryParameters.WhereInput;
+
+	@IsOptional()
+	@ApiPropertyOptional({
+		description: 'Search songs using a string token'
+	})
+	query?: string;
+}
 
 @ApiTags("Songs")
 @Controller('songs')
@@ -39,7 +76,7 @@ export class SongController {
 	) { }
 
 	@ApiOperation({
-		summary: 'Get all songs'
+		summary: 'Get many songs'
 	})
 	@Response({
 		handler: SongResponseBuilder,
@@ -47,15 +84,26 @@ export class SongController {
 	})
 	@Get()
 	async getSongs(
+		@Query() selector: Selector,
 		@PaginationQuery()
 		paginationParameters: PaginationParameters,
 		@RelationIncludeQuery(SongQueryParameters.AvailableAtomicIncludes)
-		include: SongQueryParameters.RelationInclude,
-		@SortingQuery(SongQueryParameters.SortingKeys)
-		sortingParameter: SongQueryParameters.SortingParameter
+		include: SongQueryParameters.RelationInclude
 	) {
+		if (selector.query) {
+			return this.songService.search(
+				selector.query,
+				selector,
+				paginationParameters,
+				include,
+				selector
+			);
+		}
 		return this.songService.getMany(
-			{}, paginationParameters, include, sortingParameter
+			selector,
+			paginationParameters,
+			include,
+			selector
 		);
 	}
 

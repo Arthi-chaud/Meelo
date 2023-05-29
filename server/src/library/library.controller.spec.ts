@@ -11,7 +11,7 @@ import LibraryModule from "./library.module";
 import LibraryService from "./library.service";
 import IllustrationModule from "src/illustration/illustration.module";
 import request from 'supertest';
-import type { Library, Song, Track } from "src/prisma/models";
+import type { Library, Track } from "src/prisma/models";
 import AlbumModule from "src/album/album.module";
 import ArtistModule from "src/artist/artist.module";
 import ReleaseModule from "src/release/release.module";
@@ -23,7 +23,7 @@ import { LyricsModule } from "src/lyrics/lyrics.module";
 import TasksModule from "src/tasks/tasks.module";
 import SetupApp from "test/setup-app";
 import { SongWithVideoResponse } from "src/song/models/song-with-video.response";
-import { expectedArtistResponse, expectedSongResponse, expectedTrackResponse, expectedReleaseResponse } from "test/expected-responses";
+import { expectedSongResponse, expectedTrackResponse, expectedReleaseResponse } from "test/expected-responses";
 describe('Library Controller', () => {
 	let app: INestApplication;
 	let dummyRepository: TestPrismaService;
@@ -238,35 +238,6 @@ describe('Library Controller', () => {
 		it("should return an error, as the library does not exist", () => {
 			return request(app.getHttpServer())
 				.get(`/libraries/-1/tracks`)
-				.expect(404);
-		});
-	});
-
-	describe('Get all Related Songs (GET /libraries/:id/songs)', () => {
-		it("should return every songs, w/ parent artist", () => {
-			return request(app.getHttpServer())
-				.get(`/libraries/${dummyRepository.library1.id}/songs?with=artist`)
-				.expect(200)
-				.expect((res) => {
-					const songs: Song[] = res.body.items;
-					expect(songs.length).toBe(3);
-					expect(songs).toContainEqual({
-						...expectedSongResponse(dummyRepository.songA1),
-						artist: expectedArtistResponse(dummyRepository.artistA),
-					});
-					expect(songs).toContainEqual({
-						...expectedSongResponse(dummyRepository.songA2),
-						artist: expectedArtistResponse(dummyRepository.artistA),
-					});
-					expect(songs).toContainEqual({
-						...expectedSongResponse(dummyRepository.songC1),
-						artist: expectedArtistResponse(dummyRepository.artistC),
-					});
-				});
-		});
-		it("should return an error, as the library does not exist", () => {
-			return request(app.getHttpServer())
-				.get(`/libraries/-1/songs`)
 				.expect(404);
 		});
 	});

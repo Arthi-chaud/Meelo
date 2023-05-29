@@ -10,7 +10,6 @@ import {
 	ApiOperation, ApiPropertyOptional, ApiTags, IntersectionType
 } from '@nestjs/swagger';
 import { ArtistResponseBuilder } from './models/artist.response';
-import { SongResponseBuilder } from 'src/song/models/song.response';
 import { PaginationQuery } from 'src/pagination/pagination-query.decorator';
 import IdentifierParam from 'src/identifier/identifier.pipe';
 import RelationIncludeQuery from 'src/relation-include/relation-include-query.decorator';
@@ -139,33 +138,5 @@ export default class ArtistController {
 			await this.artistService.throwIfNotFound(where);
 		}
 		return videoTracks;
-	}
-
-	@ApiOperation({
-		summary: 'Get all songs from an artist',
-	})
-	@Response({
-		handler: SongResponseBuilder,
-		type: ResponseType.Page
-	})
-	@Get(':idOrSlug/songs')
-	async getArtistSongs(
-		@PaginationQuery()
-		paginationParameters: PaginationParameters,
-		@SortingQuery(SongQueryParameters.SortingKeys)
-		sortingParameter: SongQueryParameters.SortingParameter,
-		@RelationIncludeQuery(SongQueryParameters.AvailableAtomicIncludes)
-		include: SongQueryParameters.RelationInclude,
-		@IdentifierParam(ArtistService)
-		where: ArtistQueryParameters.WhereInput
-	) {
-		const songs = await this.songService.getMany(
-			{ artist: where }, paginationParameters, include, sortingParameter
-		);
-
-		if (songs.length == 0) {
-			await this.artistService.throwIfNotFound(where);
-		}
-		return songs;
 	}
 }
