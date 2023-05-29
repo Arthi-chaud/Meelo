@@ -56,7 +56,7 @@ class Selector extends IntersectionType(
 		type: String,
 		description: 'The Identifier of the genre of the album'
 	})
-	@TransformIdentifier(ArtistService)
+	@TransformIdentifier(GenreService)
 	genre?: GenreQueryParameters.WhereInput;
 
 	@IsOptional()

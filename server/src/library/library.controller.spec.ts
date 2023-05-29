@@ -11,7 +11,7 @@ import LibraryModule from "./library.module";
 import LibraryService from "./library.service";
 import IllustrationModule from "src/illustration/illustration.module";
 import request from 'supertest';
-import type { Artist, Library, Release, Song, Track } from "src/prisma/models";
+import type { Library, Release, Song, Track } from "src/prisma/models";
 import AlbumModule from "src/album/album.module";
 import ArtistModule from "src/artist/artist.module";
 import ReleaseModule from "src/release/release.module";
@@ -169,52 +169,6 @@ describe('Library Controller', () => {
 					expect(libraries.length).toBe(0);
 				});
 		});
-	});
-
-	describe('Get all Related album Artists (GET /libraries/:id/artists)', () => {
-		it("should return every artists (1 expected)", () => {
-			return request(app.getHttpServer())
-				.get(`/libraries/${dummyRepository.library1.id}/artists`)
-				.expect(200)
-				.expect((res) => {
-					const artists: Artist[] = res.body.items;
-					expect(artists.length).toBe(1);
-					expect(artists[0]).toStrictEqual(
-						expectedArtistResponse(dummyRepository.artistA)
-					);
-				});
-		});
-
-		it("should return every artists (1 expected)", () => {
-			return request(app.getHttpServer())
-				.get(`/libraries/${dummyRepository.library2.id}/artists`)
-				.expect(200)
-				.expect((res) => {
-					const artists: Artist[] = res.body.items;
-					expect(artists.length).toBe(1);
-					expect(artists[0]).toStrictEqual(
-						expectedArtistResponse(dummyRepository.artistB)
-					);
-				});
-		});
-
-		it("should return every artists (from library's slug)", () => {
-			return request(app.getHttpServer())
-				.get(`/libraries/${dummyRepository.library1.slug}/artists`)
-				.expect(200)
-				.expect((res) => {
-					const artists: Artist[] = res.body.items;
-					expect(artists.length).toBe(1);
-					expect(artists[0]).toStrictEqual(expectedArtistResponse(dummyRepository.artistA));
-				});
-		});
-
-		it("should return an error, as the library does not exist", () => {
-			return request(app.getHttpServer())
-				.get(`/libraries/-1/artists`)
-				.expect(404);
-		});
-		
 	});
 
 	describe('Get all Related Videos (GET /libraries/:id/videos)', () => {

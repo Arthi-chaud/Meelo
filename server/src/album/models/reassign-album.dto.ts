@@ -1,5 +1,7 @@
 import { ApiProperty } from "@nestjs/swagger";
-import { IsNotEmpty, IsNumber, ValidateIf } from "class-validator";
+import {
+	IsNotEmpty, IsNumber, ValidateIf
+} from "class-validator";
 import { Album, Artist } from "src/prisma/models";
 
 export default class ReassignAlbumDTO {

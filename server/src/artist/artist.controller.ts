@@ -1,5 +1,5 @@
 import {
-	Controller, DefaultValuePipe, Get, Inject, ParseBoolPipe, Query, forwardRef
+	Controller, Get, Inject, Query, forwardRef
 } from '@nestjs/common';
 import { PaginationParameters } from 'src/pagination/models/pagination-parameters';
 import SongQueryParameters from 'src/song/models/song.query-params';
@@ -7,7 +7,7 @@ import SongService from 'src/song/song.service';
 import ArtistService from './artist.service';
 import ArtistQueryParameters from './models/artist.query-parameters';
 import {
-	ApiOperation, ApiQuery, ApiTags
+	ApiOperation, ApiPropertyOptional, ApiTags, IntersectionType
 } from '@nestjs/swagger';
 import { ArtistResponseBuilder } from './models/artist.response';
 import { SongResponseBuilder } from 'src/song/models/song.response';
@@ -17,6 +17,42 @@ import RelationIncludeQuery from 'src/relation-include/relation-include-query.de
 import SortingQuery from 'src/sort/sort-query.decorator';
 import Response, { ResponseType } from 'src/response/response.decorator';
 import { SongWithVideoResponseBuilder } from 'src/song/models/song-with-video.response';
+import { IsOptional } from 'class-validator';
+import TransformIdentifier from 'src/identifier/identifier.transform';
+import GenreService from 'src/genre/genre.service';
+import LibraryService from 'src/library/library.service';
+import LibraryQueryParameters from 'src/library/models/library.query-parameters';
+import GenreQueryParameters from 'src/genre/models/genre.query-parameters';
+
+class Selector extends IntersectionType(ArtistQueryParameters.SortingParameter) {
+	@IsOptional()
+	@ApiPropertyOptional({
+		description: 'The Query for a string-based search'
+	})
+	query?: string;
+
+	@IsOptional()
+	@ApiPropertyOptional({
+		description: 'Only return artists that have at least one album'
+	})
+	albumArtistOnly?: boolean;
+
+	@IsOptional()
+	@ApiPropertyOptional({
+		type: String,
+		description: 'The Identifier of the genre of the artist'
+	})
+	@TransformIdentifier(GenreService)
+	genre?: GenreQueryParameters.WhereInput;
+
+	@IsOptional()
+	@ApiPropertyOptional({
+		type: String,
+		description: 'The Identifier of the parent library'
+	})
+	@TransformIdentifier(LibraryService)
+	library?: LibraryQueryParameters.WhereInput;
+}
 
 @ApiTags("Artists")
 @Controller('artists')
@@ -31,10 +67,6 @@ export default class ArtistController {
 	@ApiOperation({
 		summary: 'Get all artists'
 	})
-	@ApiQuery({
-		name: 'albumArtistOnly',
-		required: false
-	})
 	@Response({
 		handler: ArtistResponseBuilder,
 		type: ResponseType.Page,
@@ -43,20 +75,24 @@ export default class ArtistController {
 	async getMany(
 		@PaginationQuery()
 		paginationParameters: PaginationParameters,
+		@Query() selector: Selector,
 		@RelationIncludeQuery(ArtistQueryParameters.AvailableAtomicIncludes)
 		include: ArtistQueryParameters.RelationInclude,
-		@SortingQuery(ArtistQueryParameters.SortingKeys)
-		sortingParameter: ArtistQueryParameters.SortingParameter,
-		@Query('albumArtistOnly', new DefaultValuePipe(false), ParseBoolPipe)
-		albumArtistsOnly = false,
 	) {
-		if (albumArtistsOnly) {
-			return this.artistService.getAlbumsArtists(
-				{}, paginationParameters, include, sortingParameter
+		if (selector.query) {
+			return this.artistService.search(
+				selector.query,
+				selector,
+				paginationParameters,
+				include,
+				selector
 			);
 		}
 		return this.artistService.getMany(
-			{}, paginationParameters, include, sortingParameter
+			selector,
+			paginationParameters,
+			include,
+			selector
 		);
 	}
 

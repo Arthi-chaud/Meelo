@@ -29,6 +29,7 @@ const ModelSortingParameter = <
 >(sortingKeys: SortingKeys) => {
 	class CustomSortingParameter {
 		@ApiPropertyOptional({
+			description: 'The Field used to sort the results',
 			type: 'string',
 			default: 'id',
 			enum: sortingKeys
@@ -38,6 +39,7 @@ const ModelSortingParameter = <
 		sortBy: SortingKeys[number] = 'id';
 
 		@ApiPropertyOptional({
+			description: 'The Order of the results',
 			enum: availableSortingOrders,
 			default: 'asc'
 		})

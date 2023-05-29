@@ -1,6 +1,6 @@
 import { INestApplication } from "@nestjs/common";
 import type { TestingModule } from "@nestjs/testing";
-import type { Artist, Song, Genre } from "src/prisma/models";
+import type { Song, Genre } from "src/prisma/models";
 import request from "supertest";
 import AlbumModule from "src/album/album.module";
 import ArtistModule from "src/artist/artist.module";
@@ -103,60 +103,6 @@ describe("Genre Controller", () => {
 					expect(genres[1]).toStrictEqual(dummyRepository.genreB);
 					expect(genres[2]).toStrictEqual(dummyRepository.genreA);
 				});
-		});
-	});
-
-	describe("Get Genre's Artists", () => {
-		it("Should get all the artists", () => {
-			return request(app.getHttpServer())
-				.get(`/genres/${dummyRepository.genreB.id}/artists`)
-				.expect(200)
-				.expect((res) => {
-					const artists: Artist[] = res.body.items;
-					expect(artists.length).toBe(2);
-					expect(artists).toContainEqual(expectedArtistResponse(dummyRepository.artistA));
-					expect(artists).toContainEqual(expectedArtistResponse(dummyRepository.artistB));
-				});
-		});
-
-		it("Should get all the artists (one expected)", () => {
-			return request(app.getHttpServer())
-				.get(`/genres/${dummyRepository.genreC.id}/artists`)
-				.expect(200)
-				.expect((res) => {
-					const artists: Artist[] = res.body.items;
-					expect(artists.length).toBe(1);
-					expect(artists).toContainEqual(expectedArtistResponse(dummyRepository.artistC));
-				});
-		});
-
-		it("Should get some artists (w/ pagination)", () => {
-			return request(app.getHttpServer())
-				.get(`/genres/${dummyRepository.genreB.id}/artists?skip=1&sortBy=name`)
-				.expect(200)
-				.expect((res) => {
-					const artists: Artist[] = res.body.items;
-					expect(artists.length).toBe(1);
-					expect(artists[0]).toStrictEqual(expectedArtistResponse(dummyRepository.artistB));
-				});
-		});
-
-		it("Should get all artists, sorted", () => {
-			return request(app.getHttpServer())
-				.get(`/genres/${dummyRepository.genreB.id}/artists?sortBy=name&order=desc`)
-				.expect(200)
-				.expect((res) => {
-					const artists: Artist[] = res.body.items;
-					expect(artists.length).toBe(2);
-					expect(artists[0]).toStrictEqual(expectedArtistResponse(dummyRepository.artistB));
-					expect(artists[1]).toStrictEqual(expectedArtistResponse(dummyRepository.artistA));
-				});
-		});
-
-		it("Should return an error, as the genre does not exist", () => {
-			return request(app.getHttpServer())
-				.get(`/genres/${-1}/artists`)
-				.expect(404);
 		});
 	});
 

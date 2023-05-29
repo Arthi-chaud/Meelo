@@ -167,6 +167,120 @@ describe('Artist Controller', () => {
 		});
 	});
 
+	describe('Get all album Artists from library', () => {
+		it("should return every artists (1 expected)", () => {
+			return request(app.getHttpServer())
+				.get(`/artists?albumArtistOnly=true&library=${dummyRepository.library1.id}`)
+				.expect(200)
+				.expect((res) => {
+					const artists: Artist[] = res.body.items;
+					expect(artists.length).toBe(1);
+					expect(artists[0]).toStrictEqual(
+						expectedArtistResponse(dummyRepository.artistA)
+					);
+				});
+		});
+
+		it("should return every artists (1 expected)", () => {
+			return request(app.getHttpServer())
+				.get(`/artists?albumArtistOnly=true&library=${dummyRepository.library2.id}`)
+				.expect(200)
+				.expect((res) => {
+					const artists: Artist[] = res.body.items;
+					expect(artists.length).toBe(1);
+					expect(artists[0]).toStrictEqual(
+						expectedArtistResponse(dummyRepository.artistB)
+					);
+				});
+		});
+
+		it("should return every artists (from library's slug)", () => {
+			return request(app.getHttpServer())
+				.get(`/artists?albumArtistOnly=true&library=${dummyRepository.library1.slug}`)
+				.expect(200)
+				.expect((res) => {
+					const artists: Artist[] = res.body.items;
+					expect(artists.length).toBe(1);
+					expect(artists[0]).toStrictEqual(expectedArtistResponse(dummyRepository.artistA));
+				});
+		});
+	});
+
+	describe("Get Artists by genre", () => {
+		it("Should get all the artists", () => {
+			return request(app.getHttpServer())
+				.get(`/artists?genre=${dummyRepository.genreB.id}`)
+				.expect(200)
+				.expect((res) => {
+					const artists: Artist[] = res.body.items;
+					expect(artists.length).toBe(2);
+					expect(artists).toContainEqual(expectedArtistResponse(dummyRepository.artistA));
+					expect(artists).toContainEqual(expectedArtistResponse(dummyRepository.artistB));
+				});
+		});
+
+		it("Should get all the artists (one expected)", () => {
+			return request(app.getHttpServer())
+				.get(`/artists?genre=${dummyRepository.genreC.id}`)
+				.expect(200)
+				.expect((res) => {
+					const artists: Artist[] = res.body.items;
+					expect(artists.length).toBe(1);
+					expect(artists).toContainEqual(expectedArtistResponse(dummyRepository.artistC));
+				});
+		});
+
+		it("Should get some artists (w/ pagination)", () => {
+			return request(app.getHttpServer())
+				.get(`/artists?genre=${dummyRepository.genreB.id}&skip=1&sortBy=name`)
+				.expect(200)
+				.expect((res) => {
+					const artists: Artist[] = res.body.items;
+					expect(artists.length).toBe(1);
+					expect(artists[0]).toStrictEqual(expectedArtistResponse(dummyRepository.artistB));
+				});
+		});
+
+		it("Should get all artists, sorted", () => {
+			return request(app.getHttpServer())
+				.get(`/artists?genre=${dummyRepository.genreB.id}&sortBy=name&order=desc`)
+				.expect(200)
+				.expect((res) => {
+					const artists: Artist[] = res.body.items;
+					expect(artists.length).toBe(2);
+					expect(artists[0]).toStrictEqual(expectedArtistResponse(dummyRepository.artistB));
+					expect(artists[1]).toStrictEqual(expectedArtistResponse(dummyRepository.artistA));
+				});
+		});
+	});
+
+	describe('Search Artists', () => {
+		it("Search artists", () => {
+			return request(app.getHttpServer())
+				.get(`/artists?query=a`)
+				.expect(200)
+				.expect((res) => {
+					const artists: Artist[] = res.body.items;
+					expect(artists.length).toBe(3);
+					expect(artists).toContainEqual(expectedArtistResponse(dummyRepository.artistA));
+					expect(artists).toContainEqual(expectedArtistResponse(dummyRepository.artistB));
+					expect(artists).toContainEqual(expectedArtistResponse(dummyRepository.artistC));
+				}) 
+		});
+
+		it("Search artists, w/ pagination", () => {
+			return request(app.getHttpServer())
+				.get(`/artists?query=a&skip=1`)
+				.expect(200)
+				.expect((res) => {
+					const artists: Artist[] = res.body.items;
+					expect(artists.length).toBe(2);
+					expect(artists).toContainEqual(expectedArtistResponse(dummyRepository.artistB));
+					expect(artists).toContainEqual(expectedArtistResponse(dummyRepository.artistC));
+				}) 
+		})
+	});
+
 	describe('Get Artist\'s Songs (GET /artists/:id/songs)', () => {
 		it("should get all the artist's songs", () => {
 			return request(app.getHttpServer())

@@ -2,15 +2,12 @@ import {
 	Controller, Get, Inject, forwardRef
 } from "@nestjs/common";
 import { ApiOperation, ApiTags } from "@nestjs/swagger";
-import ArtistService from "src/artist/artist.service";
-import ArtistQueryParameters from "src/artist/models/artist.query-parameters";
 import { PaginationParameters } from "src/pagination/models/pagination-parameters";
 import SongQueryParameters from "src/song/models/song.query-params";
 import SongService from "src/song/song.service";
 import GenreService from "./genre.service";
 import GenreQueryParameters from "./models/genre.query-parameters";
 import { SongResponseBuilder } from "src/song/models/song.response";
-import { ArtistResponseBuilder } from "src/artist/models/artist.response";
 import { PaginationQuery } from "src/pagination/pagination-query.decorator";
 import RelationIncludeQuery from "src/relation-include/relation-include-query.decorator";
 import SortingQuery from "src/sort/sort-query.decorator";
@@ -24,8 +21,6 @@ export class GenreController {
 	constructor(
 		@Inject(forwardRef(() => SongService))
 		private songService: SongService,
-		@Inject(forwardRef(() => ArtistService))
-		private artistService: ArtistService,
 		private genreService: GenreService
 	) {}
 
@@ -90,33 +85,5 @@ export class GenreController {
 			await this.genreService.throwIfNotFound(where);
 		}
 		return songs;
-	}
-
-	@ApiOperation({
-		summary: 'Get all artists with at least one song from the genre'
-	})
-	@Response({
-		handler: ArtistResponseBuilder,
-		type: ResponseType.Page
-	})
-	@Get(':idOrSlug/artists')
-	async getGenreArtists(
-		@PaginationQuery()
-		paginationParameters: PaginationParameters,
-		@RelationIncludeQuery(ArtistQueryParameters.AvailableAtomicIncludes)
-		include: ArtistQueryParameters.RelationInclude,
-		@SortingQuery(ArtistQueryParameters.SortingKeys)
-		sortingParameter: ArtistQueryParameters.SortingParameter,
-		@IdentifierParam(GenreService)
-		where: GenreQueryParameters.WhereInput
-	) {
-		const artists = await this.artistService.getMany(
-			{ genre: where }, paginationParameters, include, sortingParameter
-		);
-
-		if (artists.length == 0) {
-			await this.genreService.throwIfNotFound(where);
-		}
-		return artists;
 	}
 }

@@ -1,6 +1,6 @@
 import { INestApplication } from "@nestjs/common";
 import type { TestingModule } from "@nestjs/testing";
-import type { Artist, Song } from "src/prisma/models";
+import type { Song } from "src/prisma/models";
 import AlbumModule from "src/album/album.module";
 import AlbumService from "src/album/album.service";
 import ArtistModule from "src/artist/artist.module";
@@ -89,36 +89,7 @@ describe('Search Controller', () => {
 					})
 				}) 
 		});
-	});
-
-	describe('Search Artists', () => {
-		it("Search artists", () => {
-			return request(app.getHttpServer())
-				.get(`/search/artists/a`)
-				.expect(200)
-				.expect((res) => {
-					const artists: Artist[] = res.body.items;
-					expect(artists.length).toBe(3);
-					expect(artists).toContainEqual(expectedArtistResponse(dummyRepository.artistA));
-					expect(artists).toContainEqual(expectedArtistResponse(dummyRepository.artistB));
-					expect(artists).toContainEqual(expectedArtistResponse(dummyRepository.artistC));
-				}) 
-		});
-
-		it("Search artists, w/ pagination", () => {
-			return request(app.getHttpServer())
-				.get(`/search/artists/a?skip=1`)
-				.expect(200)
-				.expect((res) => {
-					const artists: Artist[] = res.body.items;
-					expect(artists.length).toBe(2);
-					expect(artists).toContainEqual(expectedArtistResponse(dummyRepository.artistB));
-					expect(artists).toContainEqual(expectedArtistResponse(dummyRepository.artistC));
-				}) 
-		})
-	});
-
-	
+	});	
 
 	describe('Search Songs', () => {
 		it("Search songs", () => {

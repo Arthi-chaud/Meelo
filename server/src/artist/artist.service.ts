@@ -129,7 +129,8 @@ export default class ArtistService extends RepositoryService<
 							.formatManyWhereInput({ library: where.library })
 					} : undefined
 				}
-			} : undefined
+			} : undefined,
+			...(where.albumArtistOnly === true ? { NOT: { albums: { none: {} } } } : {})
 		};
 	}
 
@@ -161,29 +162,6 @@ export default class ArtistService extends RepositoryService<
 		default:
 			return { [sortingParameter.sortBy ?? 'id']: sortingParameter.order };
 		}
-	}
-
-	/**
-	 * Find multiple artists that have at least one album
-	 * @param where the query parameters to find the artists
-	 * @param pagination the pagination paramters to filter entries
-	 * @param include the relations to include in the returned artists
-	 */
-	async getAlbumsArtists<I extends ArtistQueryParameters.RelationInclude>(
-		where: ArtistQueryParameters.ManyWhereInput,
-		pagination?: PaginationParameters,
-		include?: I,
-		sort?: ArtistQueryParameters.SortingParameter
-	) {
-		return this.prismaService.artist.findMany({
-			where: {
-				...this.formatManyWhereInput(where),
-				NOT: { albums: { none: {} } }
-			},
-			include: RepositoryService.formatInclude(include),
-			orderBy: sort ? this.formatSortingInput(sort) : undefined,
-			...buildPaginationParameters(pagination)
-		});
 	}
 
 	/**

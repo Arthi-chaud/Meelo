@@ -2,7 +2,6 @@ import {
 	Controller, Get, Param
 } from '@nestjs/common';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
-import ArtistQueryParameters from 'src/artist/models/artist.query-parameters';
 import GenreQueryParameters from 'src/genre/models/genre.query-parameters';
 import { PaginationParameters } from 'src/pagination/models/pagination-parameters';
 import SongQueryParameters from 'src/song/models/song.query-params';
@@ -11,7 +10,6 @@ import { PaginationQuery } from 'src/pagination/pagination-query.decorator';
 import RelationIncludeQuery from 'src/relation-include/relation-include-query.decorator';
 import SortingQuery from 'src/sort/sort-query.decorator';
 import Response, { ResponseType } from 'src/response/response.decorator';
-import { ArtistResponseBuilder } from 'src/artist/models/artist.response';
 import { Genre } from 'src/prisma/models';
 import { SearchAllResponseBuilder } from './models/search-all.response';
 import AlbumService from 'src/album/album.service';
@@ -44,29 +42,6 @@ export default class SearchController {
 			songs: await this.songService.search(query, {}),
 			genres: await this.genreService.getMany({ slug: { contains: query } })
 		};
-	}
-
-	@ApiOperation({
-		summary: 'Search album artists by their names'
-	})
-	@Response({
-		handler: ArtistResponseBuilder,
-		type: ResponseType.Page
-	})
-	@Get('/artists/:query')
-	async searchArtists(
-		@Param('query')
-		query: string,
-		@PaginationQuery()
-		paginationParameters: PaginationParameters,
-		@RelationIncludeQuery(ArtistQueryParameters.AvailableAtomicIncludes)
-		include: ArtistQueryParameters.RelationInclude,
-		@SortingQuery(ArtistQueryParameters.SortingKeys)
-		sortingParameter: ArtistQueryParameters.SortingParameter
-	) {
-		return this.artistService.search(
-			query, {}, paginationParameters, include, sortingParameter
-		);
 	}
 
 	@ApiOperation({

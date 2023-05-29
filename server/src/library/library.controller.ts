@@ -5,8 +5,6 @@ import {
 import LibraryService from './library.service';
 import { Library } from 'src/prisma/models';
 import { PaginationParameters } from 'src/pagination/models/pagination-parameters';
-import ArtistService from 'src/artist/artist.service';
-import ArtistQueryParameters from 'src/artist/models/artist.query-parameters';
 import ReleaseQueryParameters from 'src/release/models/release.query-parameters';
 import SongQueryParameters from 'src/song/models/song.query-params';
 import TrackQueryParameters from 'src/track/models/track.query-parameters';
@@ -15,7 +13,6 @@ import ReleaseService from 'src/release/release.service';
 import SongService from 'src/song/song.service';
 import LibraryQueryParameters from './models/library.query-parameters';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
-import { ArtistResponseBuilder } from 'src/artist/models/artist.response';
 import { ReleaseResponseBuilder } from 'src/release/models/release.response';
 import { SongResponseBuilder } from 'src/song/models/song.response';
 import { TrackResponseBuilder } from 'src/track/models/track.response';
@@ -34,7 +31,6 @@ import { SongWithVideoResponseBuilder } from 'src/song/models/song-with-video.re
 export default class LibraryController {
 	constructor(
 		private libraryService: LibraryService,
-		private artistService: ArtistService,
 		private trackService: TrackService,
 		private songService: SongService,
 		private releaseService: ReleaseService,
@@ -108,34 +104,6 @@ export default class LibraryController {
 
 		this.libraryService.delete(where);
 		return library;
-	}
-
-	@ApiOperation({
-		summary: 'Get all album artists from a library'
-	})
-	@Response({
-		handler: ArtistResponseBuilder,
-		type: ResponseType.Page
-	})
-	@Get(':idOrSlug/artists')
-	async getArtistsByLibrary(
-		@PaginationQuery()
-		paginationParameters: PaginationParameters,
-		@RelationIncludeQuery(ArtistQueryParameters.AvailableAtomicIncludes)
-		include: ArtistQueryParameters.RelationInclude,
-		@SortingQuery(ArtistQueryParameters.SortingKeys)
-		sortingParameter: ArtistQueryParameters.SortingParameter,
-		@IdentifierParam(LibraryService)
-		where: LibraryQueryParameters.WhereInput
-	) {
-		const artists = await this.artistService.getAlbumsArtists(
-			{ library: where }, paginationParameters, include, sortingParameter
-		);
-
-		if (artists.length == 0) {
-			await this.libraryService.throwIfNotFound(where);
-		}
-		return artists;
 	}
 
 	@ApiOperation({
