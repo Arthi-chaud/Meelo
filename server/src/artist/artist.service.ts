@@ -261,10 +261,10 @@ export default class ArtistService extends RepositoryService<
 				...this.formatManyWhereInput(where),
 				OR: [
 					...ormSearchFilter.map((filter) => ({ slug: filter })),
-					...ormSearchFilter.map((filter) => ({ songs: { some: { slug: filter } } })),
-					...ormSearchFilter.map((filter) => ({
-						albums: { some: { releases: { some: { slug: filter } } } }
-					}))
+					// ...ormSearchFilter.map((filter) => ({ songs: { some: { slug: filter } } })),
+					// ...ormSearchFilter.map((filter) => ({
+					// 	albums: { some: { releases: { some: { slug: filter } } } }
+					// }))
 				]
 			}
 		});

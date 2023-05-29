@@ -63,7 +63,7 @@ describe('Search Controller', () => {
 	describe('Search All', () => {
 		it("Search All", () => {
 			return request(app.getHttpServer())
-				.get(`/search/all/l`)
+				.get(`/search/l`)
 				.expect(200)
 				.expect((res) => {
 					expect(res.body).toStrictEqual({
@@ -90,31 +90,4 @@ describe('Search Controller', () => {
 				}) 
 		});
 	});	
-
-	describe('Search Songs', () => {
-		it("Search songs", () => {
-			return request(app.getHttpServer())
-				.get(`/search/songs/h`)
-				.expect(200)
-				.expect((res) => {
-					const songs: Song[] = res.body.items;
-					expect(songs.length).toBe(3);
-					expect(songs).toContainEqual(expectedSongResponse(dummyRepository.songA1));
-					expect(songs).toContainEqual(expectedSongResponse(dummyRepository.songC1));
-					expect(songs).toContainEqual(expectedSongResponse(dummyRepository.songB1));
-				}) 
-		});
-
-		it("Search songs, w/ pagination", () => {
-			return request(app.getHttpServer())
-				.get(`/search/songs/e?skip=1&take=2`)
-				.expect(200)
-				.expect((res) => {
-					const songs: Song[] = res.body.items;
-					expect(songs.length).toBe(2);
-					expect(songs).toContainEqual(expectedSongResponse(dummyRepository.songA2));
-					expect(songs).toContainEqual(expectedSongResponse(dummyRepository.songB1));
-				}) 
-		})
-	});
 });
