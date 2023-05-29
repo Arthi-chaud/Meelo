@@ -29,21 +29,23 @@ const ModelSortingParameter = <
 >(sortingKeys: SortingKeys) => {
 	class CustomSortingParameter {
 		@ApiPropertyOptional({
+			description: 'The Field used to sort the results',
 			type: 'string',
 			default: 'id',
 			enum: sortingKeys
 		})
 		@IsOptional()
 		@IsIn(sortingKeys)
-		sortBy: SortingKeys[number];
+		sortBy: SortingKeys[number] = 'id';
 
 		@ApiPropertyOptional({
+			description: 'The Order of the results',
 			enum: availableSortingOrders,
 			default: 'asc'
 		})
 		@IsIn(availableSortingOrders)
 		@IsOptional()
-		order: SortingOrder;
+		order: SortingOrder = 'asc';
 	}
 	return CustomSortingParameter;
 };

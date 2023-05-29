@@ -153,9 +153,9 @@ const ArtistPage = (
 				/>
 				<Grid item sx={{ overflowX: 'clip', width: '100%' }}>
 					<TileRow tiles={videos.data.pages.at(0)?.items.slice(0, albumListSize)
-						.map(({ video, ...song }) => <VideoTile
-							key={video.id}
-							video={{ ...video, song }}
+						.map(({ track, ...song }) => <VideoTile
+							key={track.id}
+							video={{ ...track, song }}
 							formatSubtitle={(item) => formatDuration(item.duration).toString()}
 						/>) ?? []
 					}/>

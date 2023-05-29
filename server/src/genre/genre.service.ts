@@ -1,13 +1,10 @@
-import {
-	Inject, Injectable, forwardRef
-} from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import PrismaService from 'src/prisma/prisma.service';
 import Slug from 'src/slug/slug';
 import type GenreQueryParameters from './models/genre.query-parameters';
 import { Genre, GenreWithRelations } from 'src/prisma/models';
 import SongService from 'src/song/song.service';
 import RepositoryService from 'src/repository/repository.service';
-import type SongQueryParameters from "../song/models/song.query-params";
 import { buildStringSearchParameters } from 'src/utils/search-string-input';
 import ArtistService from 'src/artist/artist.service';
 import { Prisma } from '@prisma/client';
@@ -21,9 +18,7 @@ import {
 	GenreNotFoundByIdException,
 	GenreNotFoundException
 } from './genre.exceptions';
-import AlbumQueryParameters from 'src/album/models/album.query-parameters';
 import AlbumService from 'src/album/album.service';
-import { PaginationParameters, buildPaginationParameters } from 'src/pagination/models/pagination-parameters';
 
 @Injectable()
 export default class GenreService extends RepositoryService<
@@ -44,10 +39,6 @@ export default class GenreService extends RepositoryService<
 	private readonly logger = new Logger(GenreService.name);
 	constructor(
 		private prismaService: PrismaService,
-		@Inject(forwardRef(() => SongService))
-		private songService: SongService,
-		@Inject(forwardRef(() => AlbumService))
-		private albumService: AlbumService,
 	) {
 		super(prismaService.genre);
 	}
@@ -93,12 +84,16 @@ export default class GenreService extends RepositoryService<
 			slug: where.slug
 				? buildStringSearchParameters(where.slug)
 				: undefined,
-			songs: where.song || where.artist ? {
+			songs: where.song || where.artist || where.album ? {
 				some: where.song
 					? SongService.formatWhereInput(where.song)
 					: where.artist
 						? { artist: ArtistService.formatWhereInput(where.artist) }
-						: undefined
+						: where.album ? {
+							tracks: { some: {
+								release: { album: AlbumService.formatWhereInput(where.album) }
+							} }
+						} : undefined
 			} : undefined,
 
 		};
@@ -184,64 +179,6 @@ export default class GenreService extends RepositoryService<
 		await Promise.all(
 			emptyGenres.map(({ id }) => this.delete({ id }))
 		);
-	}
-
-	/**
-	 * Find the song's genres
-	 * @param where the query parameters to find the song
-	 */
-	async getSongGenres(
-		where: SongQueryParameters.WhereInput,
-		include?: GenreQueryParameters.RelationInclude,
-		sort?: GenreQueryParameters.SortingParameter,
-		pagination?: PaginationParameters
-	) {
-		const genres = await this.getMany(
-			{ song: where },
-			pagination,
-			include,
-			sort
-		);
-
-		if (genres.length == 0) {
-			await this.songService.throwIfNotFound(where);
-		}
-		return genres;
-	}
-
-	/**
-	 * Find the album's genres
-	 * @param where the query parameters to find the song
-	 */
-	async getAlbumGenres(
-		where: AlbumQueryParameters.WhereInput,
-		include?: GenreQueryParameters.RelationInclude,
-		sort?: GenreQueryParameters.SortingParameter,
-		pagination?: PaginationParameters
-	) {
-		const genres = await this.prismaService.genre.findMany({
-			where: {
-				songs: {
-					some: {
-						tracks: {
-							some: {
-								release: {
-									album: AlbumService.formatWhereInput(where)
-								}
-							}
-						}
-					}
-				}
-			},
-			include: RepositoryService.formatInclude(include),
-			orderBy: sort ? this.formatSortingInput(sort) : undefined,
-			...buildPaginationParameters(pagination),
-		});
-
-		if (genres.length == 0) {
-			await this.albumService.throwIfNotFound(where);
-		}
-		return genres;
 	}
 
 	onNotFound(error: Error, where: GenreQueryParameters.WhereInput) {

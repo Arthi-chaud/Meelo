@@ -1,5 +1,5 @@
 import {
-	Body, Controller, Delete, Get, Inject, Post, Put, forwardRef
+	Body, Controller, Delete, Get, Inject, Post, Put, Query, forwardRef
 } from '@nestjs/common';
 import ArtistService from 'src/artist/artist.service';
 import ArtistQueryParameters from 'src/artist/models/artist.query-parameters';
@@ -8,12 +8,11 @@ import TrackQueryParameters from 'src/track/models/track.query-parameters';
 import TrackService from 'src/track/track.service';
 import SongQueryParameters from './models/song.query-params';
 import SongService from './song.service';
-import { ApiOperation, ApiTags } from '@nestjs/swagger';
-import { TrackType } from '@prisma/client';
+import {
+	ApiOperation, ApiPropertyOptional, ApiTags, IntersectionType
+} from '@nestjs/swagger';
 import { LyricsService } from 'src/lyrics/lyrics.service';
 import LyricsDto from 'src/lyrics/models/update-lyrics.dto';
-import GenreService from 'src/genre/genre.service';
-import GenreQueryParameters from 'src/genre/models/genre.query-parameters';
 import { SongResponseBuilder } from './models/song.response';
 import { TrackResponseBuilder } from 'src/track/models/track.response';
 import { PaginationQuery } from 'src/pagination/pagination-query.decorator';
@@ -22,10 +21,42 @@ import SortingQuery from 'src/sort/sort-query.decorator';
 import Admin from 'src/roles/admin.decorator';
 import IdentifierParam from 'src/identifier/identifier.pipe';
 import Response, { ResponseType } from 'src/response/response.decorator';
-import { ArtistResponseBuilder } from 'src/artist/models/artist.response';
-import { Genre } from 'src/prisma/models';
 import { LyricsResponseBuilder } from 'src/lyrics/models/lyrics.response';
-import { SongWithVideoResponseBuilder } from './models/song-with-video.response';
+import { IsOptional } from 'class-validator';
+import TransformIdentifier from 'src/identifier/identifier.transform';
+import LibraryQueryParameters from 'src/library/models/library.query-parameters';
+import LibraryService from 'src/library/library.service';
+import GenreQueryParameters from 'src/genre/models/genre.query-parameters';
+import GenreService from 'src/genre/genre.service';
+
+export class Selector extends IntersectionType(SongQueryParameters.SortingParameter) {
+	@IsOptional()
+	@ApiPropertyOptional({
+		description: 'Filter songs by artist'
+	})
+	@TransformIdentifier(ArtistService)
+	artist?: ArtistQueryParameters.WhereInput;
+
+	@IsOptional()
+	@ApiPropertyOptional({
+		description: 'Filter songs by library'
+	})
+	@TransformIdentifier(LibraryService)
+	library?: LibraryQueryParameters.WhereInput;
+
+	@IsOptional()
+	@ApiPropertyOptional({
+		description: 'Filter songs by genre'
+	})
+	@TransformIdentifier(GenreService)
+	genre?: GenreQueryParameters.WhereInput;
+
+	@IsOptional()
+	@ApiPropertyOptional({
+		description: 'Search songs using a string token'
+	})
+	query?: string;
+}
 
 @ApiTags("Songs")
 @Controller('songs')
@@ -35,16 +66,12 @@ export class SongController {
 		private songService: SongService,
 		@Inject(forwardRef(() => TrackService))
 		private trackService: TrackService,
-		@Inject(forwardRef(() => ArtistService))
-		private artistService: ArtistService,
 		@Inject(forwardRef(() => LyricsService))
 		private lyricsService: LyricsService,
-		@Inject(forwardRef(() => GenreService))
-		private genreService: GenreService
 	) { }
 
 	@ApiOperation({
-		summary: 'Get all songs'
+		summary: 'Get many songs'
 	})
 	@Response({
 		handler: SongResponseBuilder,
@@ -52,36 +79,26 @@ export class SongController {
 	})
 	@Get()
 	async getSongs(
+		@Query() selector: Selector,
 		@PaginationQuery()
 		paginationParameters: PaginationParameters,
 		@RelationIncludeQuery(SongQueryParameters.AvailableAtomicIncludes)
-		include: SongQueryParameters.RelationInclude,
-		@SortingQuery(SongQueryParameters.SortingKeys)
-		sortingParameter: SongQueryParameters.SortingParameter
+		include: SongQueryParameters.RelationInclude
 	) {
+		if (selector.query) {
+			return this.songService.search(
+				selector.query,
+				selector,
+				paginationParameters,
+				include,
+				selector
+			);
+		}
 		return this.songService.getMany(
-			{}, paginationParameters, include, sortingParameter
-		);
-	}
-
-	@ApiOperation({
-		summary: 'Get all songs with at least one video.'
-	})
-	@Response({
-		handler: SongWithVideoResponseBuilder,
-		type: ResponseType.Page
-	})
-	@Get('/videos')
-	async getVideosByLibrary(
-		@PaginationQuery()
-		paginationParameters: PaginationParameters,
-		@RelationIncludeQuery(SongQueryParameters.AvailableAtomicIncludes)
-		include: SongQueryParameters.RelationInclude,
-		@SortingQuery(SongQueryParameters.SortingKeys)
-		sortingParameter: SongQueryParameters.SortingParameter,
-	) {
-		return this.songService.getSongsWithVideo(
-			{ }, paginationParameters, include, sortingParameter
+			selector,
+			paginationParameters,
+			include,
+			selector
 		);
 	}
 
@@ -113,24 +130,6 @@ export class SongController {
 	}
 
 	@ApiOperation({
-		summary: 'Get a song\'s artist'
-	})
-	@Response({ handler: ArtistResponseBuilder })
-	@Get(':idOrSlug/artist')
-	async getSongArtist(
-		@RelationIncludeQuery(ArtistQueryParameters.AvailableAtomicIncludes)
-		include: ArtistQueryParameters.RelationInclude,
-		@IdentifierParam(SongService)
-		where: SongQueryParameters.WhereInput,
-	) {
-		const song = await this.songService.get(where);
-
-		return this.artistService.get({
-			id: song.artistId
-		}, include);
-	}
-
-	@ApiOperation({
 		summary: 'Get a song\'s master track'
 	})
 	@Response({ handler: TrackResponseBuilder })
@@ -142,34 +141,6 @@ export class SongController {
 		where: SongQueryParameters.WhereInput,
 	) {
 		return this.trackService.getMasterTrack(where, include);
-	}
-
-	@ApiOperation({
-		summary: 'Get all the song\'s tracks'
-	})
-	@Get(':idOrSlug/tracks')
-	@Response({
-		handler: TrackResponseBuilder,
-		type: ResponseType.Page
-	})
-	async getSongTracks(
-		@PaginationQuery()
-		paginationParameters: PaginationParameters,
-		@RelationIncludeQuery(TrackQueryParameters.AvailableAtomicIncludes)
-		include: TrackQueryParameters.RelationInclude,
-		@SortingQuery(TrackQueryParameters.SortingKeys)
-		sortingParameter: TrackQueryParameters.SortingParameter,
-		@IdentifierParam(SongService)
-		where: SongQueryParameters.WhereInput
-	) {
-		const tracks = await this.trackService.getSongTracks(
-			where, paginationParameters, include, sortingParameter
-		);
-
-		if (tracks.length == 0) {
-			await this.songService.throwIfNotFound(where);
-		}
-		return tracks;
 	}
 
 	@ApiOperation({
@@ -192,63 +163,6 @@ export class SongController {
 	) {
 		return this.songService.getSongVersions(
 			where, paginationParameters, include, sortingParameter
-		);
-	}
-
-	@ApiOperation({
-		summary: 'Get all the song\'s video tracks'
-	})
-	@Response({
-		handler: TrackResponseBuilder,
-		type: ResponseType.Page
-	})
-	@Get(':idOrSlug/videos')
-	async getSongVideos(
-		@PaginationQuery()
-		paginationParameters: PaginationParameters,
-		@RelationIncludeQuery(TrackQueryParameters.AvailableAtomicIncludes)
-		include: TrackQueryParameters.RelationInclude,
-		@SortingQuery(TrackQueryParameters.SortingKeys)
-		sortingParameter: TrackQueryParameters.SortingParameter,
-		@IdentifierParam(SongService)
-		where: SongQueryParameters.WhereInput
-	) {
-		const videoTracks = await this.trackService.getMany(
-			{ song: where, type: TrackType.Video },
-			paginationParameters,
-			include,
-			sortingParameter,
-		);
-
-		if (videoTracks.length == 0) {
-			await this.songService.throwIfNotFound(where);
-		}
-		return videoTracks;
-	}
-
-	@ApiOperation({
-		summary: 'Get all the song\'s genres'
-	})
-	@Response({
-		returns: Genre,
-		type: ResponseType.Page
-	})
-	@Get(':idOrSlug/genres')
-	async getSongGenres(
-		@RelationIncludeQuery(GenreQueryParameters.AvailableAtomicIncludes)
-		include: GenreQueryParameters.RelationInclude,
-		@SortingQuery(GenreQueryParameters.SortingKeys)
-		sortingParameter: GenreQueryParameters.SortingParameter,
-		@IdentifierParam(SongService)
-		where: SongQueryParameters.WhereInput,
-		@PaginationQuery()
-		paginationParameters: PaginationParameters,
-	) {
-		return this.genreService.getSongGenres(
-			where,
-			include,
-			sortingParameter,
-			paginationParameters
 		);
 	}
 

@@ -1,6 +1,6 @@
 import type { INestApplication } from "@nestjs/common";
 import type { TestingModule } from "@nestjs/testing";
-import type { Album, Release } from "src/prisma/models";
+import type { Album, Artist } from "src/prisma/models";
 import request from "supertest";
 import ArtistModule from "src/artist/artist.module";
 import ArtistService from "src/artist/artist.service";
@@ -23,6 +23,8 @@ import AlbumService from "./album.service";
 import { expectedAlbumResponse, expectedArtistResponse, expectedReleaseResponse } from "test/expected-responses";
 import ProviderService from "src/providers/provider.service";
 import SettingsService from "src/settings/settings.service";
+
+jest.setTimeout(60000);
 
 describe('Album Controller', () => {
 	let dummyRepository: TestPrismaService;
@@ -109,15 +111,77 @@ describe('Album Controller', () => {
 		});
 	});
 
-	describe("Get Compilations Albums (GET /albums/compilations)", () => {
+	describe("Get Compilations Albums", () => {
 		it("Should return all albums", () => {
 			return request(app.getHttpServer())
-				.get(`/albums/compilations`)
+				.get(`/albums?artist=compilations`)
 				.expect(200)
 				.expect((res) => {
 					const albums: Album[] = res.body.items;
 					expect(albums.length).toBe(1);
 					expect(albums[0]).toStrictEqual(expectedAlbumResponse(dummyRepository.compilationAlbumA));
+				});
+		});
+	});
+
+	describe("Get Genre's albums", () => {
+		it("Should get all the albums (2 expected)", () => {
+			return request(app.getHttpServer())
+				.get(`/albums?genre=${dummyRepository.genreB.id}`)
+				.expect(200)
+				.expect((res) => {
+					const albums: Album[] = res.body.items;
+					expect(albums.length).toBe(2);
+					expect(albums).toContainEqual(expectedAlbumResponse(dummyRepository.albumA1));
+					expect(albums).toContainEqual(expectedAlbumResponse(dummyRepository.albumB1));
+				});
+		});
+
+		it("Should get all the albums (1 expected)", () => {
+			return request(app.getHttpServer())
+				.get(`/albums?genre=${dummyRepository.genreA.id}`)
+				.expect(200)
+				.expect((res) => {
+					const artists: Artist[] = res.body.items;
+					expect(artists.length).toBe(1);
+					expect(artists).toContainEqual(expectedAlbumResponse(dummyRepository.albumA1));
+				});
+		});
+
+		it("Should get some albums (w/ pagination)", () => {
+			return request(app.getHttpServer())
+				.get(`/albums?genre=${dummyRepository.genreB.id}&sortBy=name&take=1`)
+				.expect(200)
+				.expect((res) => {
+					const albums: Album[] = res.body.items;
+					expect(albums.length).toBe(1);
+					expect(albums[0]).toStrictEqual(expectedAlbumResponse(dummyRepository.albumA1));
+				});
+		});
+
+		it("Should get all albums, sorted", () => {
+			return request(app.getHttpServer())
+				.get(`/albums?genre=${dummyRepository.genreB.id}&sortBy=name`)
+				.expect(200)
+				.expect((res) => {
+					const albums: Album[] = res.body.items;
+					expect(albums.length).toBe(2);
+					expect(albums[0]).toStrictEqual(expectedAlbumResponse(dummyRepository.albumA1));
+					expect(albums[1]).toStrictEqual(expectedAlbumResponse(dummyRepository.albumB1));
+				});
+		});
+
+		it("Should get all albums, w/ artist", () => {
+			return request(app.getHttpServer())
+				.get(`/albums?genre=${dummyRepository.genreB.id}&sortBy=name&take=1&with=artist`)
+				.expect(200)
+				.expect((res) => {
+					const albums: Album[] = res.body.items;
+					expect(albums.length).toBe(1);
+					expect(albums[0]).toStrictEqual({
+						...expectedAlbumResponse(dummyRepository.albumA1),
+						artist: expectedArtistResponse(dummyRepository.artistA)
+					});
 				});
 		});
 	});
@@ -211,6 +275,89 @@ describe('Album Controller', () => {
 		});
 	});
 
+	describe('Search Albums', () => {
+		it("Search albums", () => {
+			return request(app.getHttpServer())
+				.get(`/albums?query=se`)
+				.expect(200)
+				.expect((res) => {
+					const albums: Album[] = res.body.items;
+					expect(albums.length).toBe(1);
+					expect(albums).toContainEqual(expectedAlbumResponse(dummyRepository.albumB1));
+				}) 
+		});
+
+		it("Search albums, w/ pagination", () => {
+			return request(app.getHttpServer())
+				.get(`/albums?query=a&take=1`)
+				.expect(200)
+				.expect((res) => {
+					const albums: Album[] = res.body.items;
+					expect(albums.length).toBe(1);
+					expect(albums).toContainEqual(expectedAlbumResponse(dummyRepository.albumA1));
+				}) 
+		})
+	});
+
+	describe('Get Albums by Library', () => {
+		it("should return every albums w/ artist", () => {
+			return request(app.getHttpServer())
+				.get(`/albums?library=${dummyRepository.library1.id}&with=artist`)
+				.expect(200)
+				.expect((res) => {
+					const albums: Album[] = res.body.items;
+					expect(albums.length).toBe(2);
+					expect(albums[0]).toStrictEqual({
+						...expectedAlbumResponse(dummyRepository.albumA1),
+						artist: expectedArtistResponse(dummyRepository.artistA)
+					});
+					expect(albums[1]).toStrictEqual({
+						...expectedAlbumResponse(dummyRepository.compilationAlbumA),
+						artist: null
+					});
+				});
+		});
+
+		it("should return every albums (from library's slug))", () => {
+			return request(app.getHttpServer())
+				.get(`/albums?library=${dummyRepository.library1.slug}`)
+				.expect(200)
+				.expect((res) => {
+					const albums: Album[] = res.body.items;
+					expect(albums.length).toBe(2);
+					expect(albums[0]).toStrictEqual(expectedAlbumResponse(dummyRepository.albumA1));
+					expect(albums[1]).toStrictEqual(expectedAlbumResponse(dummyRepository.compilationAlbumA));
+				});
+		});
+	});
+
+
+	describe('Get Artist\'s Albums', () => {
+		it("should get all the artist's albums", () => {
+			return request(app.getHttpServer())
+				.get(`/albums?artist=${dummyRepository.artistA.id}`)
+				.expect(200)
+				.expect((res) => {
+					const albums: Album[] = res.body.items;
+					expect(albums.length).toBe(1);
+					expect(albums[0]).toStrictEqual(expectedAlbumResponse(dummyRepository.albumA1));
+				});
+		});
+		it("should get all albums, w/ artist", () => {
+			return request(app.getHttpServer())
+				.get(`/albums?artist=${dummyRepository.artistB.id}&with=artist`)
+				.expect(200)
+				.expect((res) => {
+					const albums: Album[] = res.body.items;
+					expect(albums.length).toBe(1);
+					expect(albums[0]).toStrictEqual({
+						...expectedAlbumResponse(dummyRepository.albumB1),
+						artist: expectedArtistResponse(dummyRepository.artistB)
+					});
+				});
+		});
+	});
+
 	describe("Get Album's Master (GET /albums/:id/master)", () => {
 		it("Should return album's master", () => {
 			return request(app.getHttpServer())
@@ -235,7 +382,7 @@ describe('Album Controller', () => {
 		});
 		it("Should return an error, as the id is not valid", () => {
 			return request(app.getHttpServer())
-				.get(`/albums/plop/releases`)
+				.get(`/albums/plop/master`)
 				.expect(400);
 		});
 		it("Should throw, as the album does not have releases", async () => {
@@ -257,96 +404,11 @@ describe('Album Controller', () => {
 		});
 	});
 
-	describe("Get Album's Releases (GET /albums/:id/releases)", () => {
-		it("Should return all album's releases", () => {
-			return request(app.getHttpServer())
-				.get(`/albums/${dummyRepository.albumA1.id}/releases`)
-				.expect(200)
-				.expect((res) => {
-					const releases: Release[] = res.body.items;
-					expect(releases.length).toBe(2);
-					expect(releases[0]).toStrictEqual(expectedReleaseResponse(dummyRepository.releaseA1_1));
-					expect(releases[1]).toStrictEqual(expectedReleaseResponse(dummyRepository.releaseA1_2));
-				});
-		});
-		it("Should return all album's releases, sorted by id, desc", () => {
-			return request(app.getHttpServer())
-				.get(`/albums/${dummyRepository.albumA1.id}/releases?sortBy=id&order=desc`)
-				.expect(200)
-				.expect((res) => {
-					const releases: Release[] = res.body.items;
-					expect(releases.length).toBe(2);
-					expect(releases[0]).toStrictEqual(expectedReleaseResponse(dummyRepository.releaseA1_2));
-					expect(releases[1]).toStrictEqual(expectedReleaseResponse(dummyRepository.releaseA1_1));
-				});
-		});
-		it("Should return all album's releases (by slug)", () => {
-			return request(app.getHttpServer())
-				.get(`/albums/${dummyRepository.artistB.slug}+${dummyRepository.albumB1.slug}/releases`)
-				.expect(200)
-				.expect((res) => {
-					const releases: Release[] = res.body.items;
-					expect(releases.length).toBe(1);
-					expect(releases[0]).toStrictEqual(expectedReleaseResponse(dummyRepository.releaseB1_1));
-				});
-		});
-		it("Should return some album's releases (w/ pagination)", () => {
-			return request(app.getHttpServer())
-				.get(`/albums/${dummyRepository.albumA1.id}/releases?take=1`)
-				.expect(200)
-				.expect((res) => {
-					const releases: Release[] = res.body.items;
-					expect(releases.length).toBe(1);
-					expect(releases[0]).toStrictEqual(expectedReleaseResponse(dummyRepository.releaseA1_1));
-				});
-		});
-		it("Should return an error, as the album does not exist", () => {
-			return request(app.getHttpServer())
-				.get(`/albums/-1/releases`)
-				.expect(404);
-		});
-		it("Should include parent album", () => {
-			return request(app.getHttpServer())
-				.get(`/albums/${dummyRepository.compilationAlbumA.id}/releases?with=album`)
-				.expect(200)
-				.expect((res) => {
-					const releases: Release[] = res.body.items;
-					expect(releases.length).toBe(1);
-					expect(releases[0]).toStrictEqual({
-						...expectedReleaseResponse(dummyRepository.compilationReleaseA1),
-						album: expectedAlbumResponse(dummyRepository.compilationAlbumA)
-					});
-				});
-		});
-	});
-
-	describe("Get Album's genres (GET /albums/:id/genres", () => {
-		it("should return an error, as the release does not exist", () => {
-			return request(app.getHttpServer())
-				.get(`/albums/${-1}/genres`)
-				.expect(404);
-		});
-
-		it("should return an array of genres", () => {
-			return request(app.getHttpServer())
-				.get(`/albums/${dummyRepository.albumA1.id}/genres?sortBy=name`)
-				.expect(200)
-				.expect((res) => {
-					const releases: Release[] = res.body.items;
-					expect(releases).toStrictEqual([
-						dummyRepository.genreA,
-						dummyRepository.genreB,
-					])
-				});
-		});
-	});
-
-	describe("Reassign the album (POST /albums/reassign)", () => {
+	describe("Reassign the album", () => {
 		it("should reassign the compilation album to an artist", () => {
 			return request(app.getHttpServer())
-				.post(`/albums/reassign`)
+				.post(`/albums/${dummyRepository.compilationAlbumA.id}`)
 				.send(<ReassignAlbumDTO>{
-					albumId: dummyRepository.compilationAlbumA.id,
 					artistId: dummyRepository.artistB.id
 				})
 				.expect(201)
@@ -361,7 +423,7 @@ describe('Album Controller', () => {
 
 		it("should reassign the album as a compilation", () => {
 			return request(app.getHttpServer())
-				.post(`/albums/reassign`)
+				.post(`/albums/${dummyRepository.compilationAlbumA.id}`)
 				.send(<ReassignAlbumDTO>{
 					albumId: dummyRepository.compilationAlbumA.id,
 					artistId: null

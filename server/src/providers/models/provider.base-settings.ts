@@ -8,5 +8,6 @@ export default class BaseProviderSettings {
 	@ApiProperty()
 	@IsOptional()
 	@IsBoolean()
+	@ApiProperty({ type: Boolean })
 	enabled = true;
 }

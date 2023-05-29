@@ -25,7 +25,7 @@ const ArtistSongPage = (
 		<ArtistRelationPageHeader artistSlugOrId={artistIdentifier}/>
 		<InfiniteVideoView
 			query={(sort) => API.getArtistVideos(artistIdentifier, ['artist'], sort)}
-			formatSubtitle={(song) => formatDuration(song.video.duration)}
+			formatSubtitle={(song) => formatDuration(song.track.duration)}
 		/>
 	</>;
 };

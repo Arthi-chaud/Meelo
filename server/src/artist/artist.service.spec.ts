@@ -111,14 +111,14 @@ describe('Artist Service', () => {
 
 	describe('Get Album Artists', () => {
 		it(('should return all album artists'), async () => {
-			const artists = await artistService.getAlbumsArtists({ });
+			const artists = await artistService.getMany({ albumArtistOnly: true });
 			expect(artists.length).toBe(2);
 			expect(artists).toContainEqual(dummyRepository.artistA);
 			expect(artists).toContainEqual(dummyRepository.artistB);
 		});
 
 		it(('should return all album artists, sorted by name'), async () => {
-			const artists = await artistService.getAlbumsArtists({}, {}, {}, { sortBy: 'name', order: 'desc' });
+			const artists = await artistService.getMany({ albumArtistOnly: true }, {}, {}, { sortBy: 'name', order: 'desc' });
 			expect(artists.length).toBe(2);
 			expect(artists[0]).toStrictEqual(dummyRepository.artistB);
 			expect(artists[1]).toStrictEqual(dummyRepository.artistA);

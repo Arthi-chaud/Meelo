@@ -13,6 +13,10 @@ export default async function bootstrapSwagger(app: INestApplication) {
 		customSiteTitle: 'Swagger - Meelo',
 		customfavIcon: './assets/favicon.ico',
 		customCssUrl: './assets/swagger/styles.css',
-		customJs: './assets/swagger/script.js'
+		customJs: './assets/swagger/script.js',
+		swaggerOptions: {
+			tagsSorter: 'alpha',
+			operationsSorter: 'alpha',
+		},
 	});
 }

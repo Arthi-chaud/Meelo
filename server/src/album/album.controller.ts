@@ -7,22 +7,68 @@ import ReleaseService from 'src/release/release.service';
 import compilationAlbumArtistKeyword from 'src/utils/compilation';
 import AlbumService from './album.service';
 import AlbumQueryParameters from './models/album.query-parameters';
-import TrackService from 'src/track/track.service';
-import TrackQueryParameters from 'src/track/models/track.query-parameters';
-import { ApiOperation, ApiTags } from '@nestjs/swagger';
+import {
+	ApiOperation, ApiPropertyOptional, ApiTags, IntersectionType
+} from '@nestjs/swagger';
 import ReassignAlbumDTO from './models/reassign-album.dto';
-import { Genre } from "src/prisma/models";
 import { AlbumResponseBuilder } from './models/album.response';
 import { ReleaseResponseBuilder } from 'src/release/models/release.response';
 import { PaginationQuery } from 'src/pagination/pagination-query.decorator';
 import RelationIncludeQuery from 'src/relation-include/relation-include-query.decorator';
-import SortingQuery from 'src/sort/sort-query.decorator';
 import Admin from 'src/roles/admin.decorator';
-import { TrackResponseBuilder } from 'src/track/models/track.response';
 import IdentifierParam from 'src/identifier/identifier.pipe';
 import Response, { ResponseType } from 'src/response/response.decorator';
 import GenreService from 'src/genre/genre.service';
 import GenreQueryParameters from 'src/genre/models/genre.query-parameters';
+import { IsEnum, IsOptional } from 'class-validator';
+import { AlbumType } from '@prisma/client';
+import ArtistQueryParameters from 'src/artist/models/artist.query-parameters';
+import TransformIdentifier from 'src/identifier/identifier.transform';
+import ArtistService from 'src/artist/artist.service';
+import LibraryQueryParameters from 'src/library/models/library.query-parameters';
+import LibraryService from 'src/library/library.service';
+
+class Selector extends IntersectionType(
+	AlbumQueryParameters.SortingParameter
+) {
+	@IsEnum(AlbumType, {
+		message: () => `Album Type: Invalid value. Expected one of theses: ${Object.keys(AlbumType)}`
+	})
+	@IsOptional()
+	@ApiPropertyOptional({
+		enum: AlbumType,
+		description: 'Filter the albums by type'
+	})
+	type?: AlbumType;
+
+	@IsOptional()
+	@ApiPropertyOptional({
+		description: `Filter albums by (album) artist, using their identifier.<br/>
+		For compilation albums, use '${compilationAlbumArtistKeyword}'`
+	})
+	@TransformIdentifier(ArtistService)
+	artist?: ArtistQueryParameters.WhereInput;
+
+	@IsOptional()
+	@ApiPropertyOptional({
+		description: 'Filter albums by genre'
+	})
+	@TransformIdentifier(GenreService)
+	genre?: GenreQueryParameters.WhereInput;
+
+	@IsOptional()
+	@ApiPropertyOptional({
+		description: 'Search albums using a string token'
+	})
+	query?: string;
+
+	@IsOptional()
+	@ApiPropertyOptional({
+		description: 'Filter albums by library'
+	})
+	@TransformIdentifier(LibraryService)
+	library?: LibraryQueryParameters.WhereInput;
+}
 
 @ApiTags("Albums")
 @Controller('albums')
@@ -32,10 +78,6 @@ export default class AlbumController {
 		private releaseService: ReleaseService,
 		@Inject(forwardRef(() => AlbumService))
 		private albumService: AlbumService,
-		@Inject(forwardRef(() => TrackService))
-		private trackService: TrackService,
-		@Inject(forwardRef(() => GenreService))
-		private genreService: GenreService,
 	) {}
 
 	@Get()
@@ -43,43 +85,28 @@ export default class AlbumController {
 		handler: AlbumResponseBuilder,
 		type: ResponseType.Page
 	})
-	@ApiOperation({ summary: 'Get all albums' })
+	@ApiOperation({ summary: 'Get many albums' })
 	async getMany(
+		@Query() selector: Selector,
 		@PaginationQuery()
 		paginationParameters: PaginationParameters,
-		@SortingQuery(AlbumQueryParameters.SortingKeys)
-		sortingParameter: AlbumQueryParameters.SortingParameter,
 		@RelationIncludeQuery(AlbumQueryParameters.AvailableAtomicIncludes)
 		include: AlbumQueryParameters.RelationInclude,
-		@Query() filter: AlbumQueryParameters.AlbumFilterParameter,
 	) {
+		if (selector.query) {
+			return this.albumService.search(
+				selector.query,
+				selector,
+				paginationParameters,
+				include,
+				selector
+			);
+		}
 		return this.albumService.getMany(
-			{ type: filter.type }, paginationParameters, include, sortingParameter
-		);
-	}
-
-	@ApiOperation({
-		summary: 'Get all compilations albums'
-	})
-	@Response({
-		handler: AlbumResponseBuilder,
-		type: ResponseType.Page
-	})
-	@Get(`${compilationAlbumArtistKeyword}`)
-	async getCompilationsAlbums(
-		@PaginationQuery()
-		paginationParameters: PaginationParameters,
-		@SortingQuery(AlbumQueryParameters.SortingKeys)
-		sortingParameter: AlbumQueryParameters.SortingParameter,
-		@RelationIncludeQuery(AlbumQueryParameters.AvailableAtomicIncludes)
-		include: AlbumQueryParameters.RelationInclude,
-		@Query() filter: AlbumQueryParameters.AlbumFilterParameter,
-	) {
-		return this.albumService.getMany(
-			{ artist: { compilationArtist: true }, type: filter.type },
+			selector,
 			paginationParameters,
 			include,
-			sortingParameter
+			selector
 		);
 	}
 
@@ -118,108 +145,18 @@ export default class AlbumController {
 	}
 
 	@ApiOperation({
-		summary: 'Get all the releases of an album'
-	})
-	@Response({
-		handler: ReleaseResponseBuilder,
-		type: ResponseType.Page
-	})
-	@Get(':idOrSlug/releases')
-	async getAlbumReleases(
-		@PaginationQuery()
-		paginationParameters: PaginationParameters,
-		@RelationIncludeQuery(ReleaseQueryParameters.AvailableAtomicIncludes)
-		include: ReleaseQueryParameters.RelationInclude,
-		@SortingQuery(ReleaseQueryParameters.SortingKeys)
-		sortingParameter: ReleaseQueryParameters.SortingParameter,
-		@IdentifierParam(AlbumService)
-		where: AlbumQueryParameters.WhereInput,
-	) {
-		return this.releaseService.getAlbumReleases(
-			where,
-			paginationParameters,
-			include,
-			sortingParameter
-		);
-	}
-
-	@ApiOperation({
-		summary: 'Get all the genres of an album'
-	})
-	@Response({
-		returns: Genre,
-		type: ResponseType.Page
-	})
-	@Get(':idOrSlug/genres')
-	async getAlbumGenres(
-		@IdentifierParam(AlbumService)
-		where: AlbumQueryParameters.WhereInput,
-		@RelationIncludeQuery(GenreQueryParameters.AvailableAtomicIncludes)
-		include: GenreQueryParameters.RelationInclude,
-		@SortingQuery(GenreQueryParameters.SortingKeys)
-		sortingParameter: GenreQueryParameters.SortingParameter,
-		@PaginationQuery()
-		paginationParameters: PaginationParameters,
-	) {
-		return this.genreService.getAlbumGenres(
-			where,
-			include,
-			sortingParameter,
-			paginationParameters
-		);
-	}
-
-	@ApiOperation({
-		summary: 'Get all the video tracks from an album',
-		description: "Return all video tracks of songs in album, so it might include tracks that are not in the album's tracklist"
-	})
-	@Get(':idOrSlug/videos')
-	@Response({
-		handler: TrackResponseBuilder,
-		type: ResponseType.Array
-	})
-	async getAlbumVideos(
-		@RelationIncludeQuery(TrackQueryParameters.AvailableAtomicIncludes)
-		include: TrackQueryParameters.RelationInclude,
-		@IdentifierParam(AlbumService)
-		where: AlbumQueryParameters.WhereInput,
-	) {
-		const albumReleases = await this.releaseService.getAlbumReleases(
-			where,
-			{ },
-			{ tracks: true }
-		);
-
-		return Promise.all(albumReleases
-			.map((release) => release.tracks)
-			.flat()
-			.filter((track, index, array) => index == array.indexOf(track))
-			.sort((track1, track2) => {
-				if (track1.discIndex != track2.discIndex) {
-					return (track1.discIndex ?? 0) - (track2.discIndex ?? 0);
-				}
-				return (track1.trackIndex ?? 0) - (track2.trackIndex ?? 0);
-			})
-			.filter((track, index, array) => array.findIndex(
-				(otherTrack) => otherTrack.songId == track.songId
-			) == index)
-			.map((track) => this.trackService.getMany({
-				type: 'Video',
-				song: { id: track.songId },
-			}, { take: 1 }, include))).then((tracks) => tracks.flat());
-	}
-
-	@ApiOperation({
-		summary: 'Change the album\'s parent artist'
+		summary: 'Update the album'
 	})
 	@Admin()
 	@Response({ handler: AlbumResponseBuilder })
-	@Post('reassign')
+	@Post(':idOrSlug')
 	async reassignAlbum(
+		@IdentifierParam(AlbumService)
+		where: AlbumQueryParameters.WhereInput,
 		@Body() reassignmentDTO: ReassignAlbumDTO
 	) {
 		return this.albumService.reassign(
-			{ id: reassignmentDTO.albumId },
+			where,
 			reassignmentDTO.artistId == null
 				? { compilationArtist: true }
 				: { id: reassignmentDTO.artistId }

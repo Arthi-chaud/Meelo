@@ -10,18 +10,38 @@ import TrackQueryParameters from 'src/track/models/track.query-parameters';
 import AlbumService from 'src/album/album.service';
 import AlbumQueryParameters from 'src/album/models/album.query-parameters';
 import type { Response as ExpressResponse } from 'express';
-import { ApiOperation, ApiTags } from '@nestjs/swagger';
+import {
+	ApiOperation, ApiPropertyOptional, ApiTags, IntersectionType
+} from '@nestjs/swagger';
 import ReassignReleaseDTO from './models/reassign-release.dto';
 import { TrackResponseBuilder } from 'src/track/models/track.response';
 import { PaginationQuery } from 'src/pagination/pagination-query.decorator';
 import RelationIncludeQuery from 'src/relation-include/relation-include-query.decorator';
-import SortingQuery from 'src/sort/sort-query.decorator';
 import Admin from 'src/roles/admin.decorator';
 import IdentifierParam from 'src/identifier/identifier.pipe';
 import Response, { ResponseType } from 'src/response/response.decorator';
 import { ReleaseResponseBuilder } from './models/release.response';
 import { TracklistResponseBuilder } from 'src/track/models/tracklist.model';
-import { AlbumResponseBuilder } from 'src/album/models/album.response';
+import { IsOptional } from 'class-validator';
+import TransformIdentifier from 'src/identifier/identifier.transform';
+import LibraryService from 'src/library/library.service';
+import LibraryQueryParameters from 'src/library/models/library.query-parameters';
+
+class Selector extends IntersectionType(ReleaseQueryParameters.SortingParameter) {
+	@IsOptional()
+	@ApiPropertyOptional({
+		description: `Filter releases by albums`
+	})
+	@TransformIdentifier(AlbumService)
+	album?: AlbumQueryParameters.WhereInput;
+
+	@IsOptional()
+	@ApiPropertyOptional({
+		description: `Filter releases by library`
+	})
+	@TransformIdentifier(LibraryService)
+	library?: LibraryQueryParameters.WhereInput;
+}
 
 @ApiTags("Releases")
 @Controller('releases')
@@ -36,7 +56,7 @@ export default class ReleaseController {
 	) { }
 
 	@ApiOperation({
-		summary: 'Get all releases'
+		summary: 'Get many releases'
 	})
 	@Get()
 	@Response({
@@ -44,15 +64,14 @@ export default class ReleaseController {
 		type: ResponseType.Page
 	})
 	async getReleases(
+		@Query() selector: Selector,
 		@PaginationQuery()
 		paginationParameters: PaginationParameters,
 		@RelationIncludeQuery(ReleaseQueryParameters.AvailableAtomicIncludes)
-		include: ReleaseQueryParameters.RelationInclude,
-		@SortingQuery(ReleaseQueryParameters.SortingKeys)
-		sortingParameter: ReleaseQueryParameters.SortingParameter
+		include: ReleaseQueryParameters.RelationInclude
 	) {
 		return this.releaseService.getMany(
-			{}, paginationParameters, include, sortingParameter
+			selector, paginationParameters, include, selector
 		);
 	}
 
@@ -68,34 +87,6 @@ export default class ReleaseController {
 		include: ReleaseQueryParameters.RelationInclude,
 	) {
 		return this.releaseService.get(where, include);
-	}
-
-	@ApiOperation({
-		summary: 'Get all tracks from a release'
-	})
-	@Response({
-		handler: TrackResponseBuilder,
-		type: ResponseType.Page
-	})
-	@Get(':idOrSlug/tracks')
-	async getReleaseTracks(
-		@PaginationQuery()
-		paginationParameters: PaginationParameters,
-		@RelationIncludeQuery(TrackQueryParameters.AvailableAtomicIncludes)
-		include: TrackQueryParameters.RelationInclude,
-		@SortingQuery(TrackQueryParameters.SortingKeys)
-		sortingParameter: TrackQueryParameters.SortingParameter,
-		@IdentifierParam(ReleaseService)
-		where: ReleaseQueryParameters.WhereInput
-	) {
-		const tracks = await this.trackService.getMany(
-			{ release: where }, paginationParameters, include, sortingParameter
-		);
-
-		if (tracks.length == 0) {
-			await this.releaseService.throwIfNotFound(where);
-		}
-		return tracks;
 	}
 
 	@ApiOperation({
@@ -144,34 +135,18 @@ export default class ReleaseController {
 	}
 
 	@ApiOperation({
-		summary: 'Get the parent album of a release'
-	})
-	@Get(':idOrSlug/album')
-	@Response({ handler: AlbumResponseBuilder })
-	async getReleaseAlbum(
-		@IdentifierParam(ReleaseService)
-		where: ReleaseQueryParameters.WhereInput,
-		@RelationIncludeQuery(AlbumQueryParameters.AvailableAtomicIncludes)
-		include: AlbumQueryParameters.RelationInclude,
-	) {
-		const release = this.releaseService.get(where);
-
-		return this.albumService.get({
-			id: (await release).albumId
-		}, include);
-	}
-
-	@ApiOperation({
-		summary: 'Change the release\'s parent album'
+		summary: 'Update a release'
 	})
 	@Admin()
 	@Response({ handler: ReleaseResponseBuilder })
-	@Post('reassign')
-	async reassignRelease(
+	@Post(':idOrSlug')
+	async updateRelease(
+		@IdentifierParam(ReleaseService)
+		where: ReleaseQueryParameters.WhereInput,
 		@Body() reassignmentDTO: ReassignReleaseDTO
 	) {
 		return this.releaseService.reassign(
-			{ id: reassignmentDTO.releaseId },
+			where,
 			{ id: reassignmentDTO.albumId }
 		);
 	}

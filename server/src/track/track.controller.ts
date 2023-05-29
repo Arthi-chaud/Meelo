@@ -1,20 +1,77 @@
 import {
-	Body, Controller, Get, Inject, Post, Put, forwardRef
+	Body, Controller, Get, Inject, Post, Put, Query, forwardRef
 } from '@nestjs/common';
 import { PaginationParameters } from 'src/pagination/models/pagination-parameters';
 import TrackQueryParameters from './models/track.query-parameters';
 import TrackService from './track.service';
-import { ApiOperation, ApiTags } from '@nestjs/swagger';
+import {
+	ApiOperation, ApiPropertyOptional, ApiTags, IntersectionType
+} from '@nestjs/swagger';
 import { TrackType } from '@prisma/client';
 import ReassignTrackDTO from './models/reassign-track.dto';
 import { TrackResponseBuilder } from './models/track.response';
 import { PaginationQuery } from 'src/pagination/pagination-query.decorator';
 import RelationIncludeQuery from 'src/relation-include/relation-include-query.decorator';
-import SortingQuery from 'src/sort/sort-query.decorator';
 import Admin from 'src/roles/admin.decorator';
 import IdentifierParam from 'src/identifier/identifier.pipe';
 import Response, { ResponseType } from 'src/response/response.decorator';
 import SongService from 'src/song/song.service';
+import { IsEnum, IsOptional } from 'class-validator';
+import TransformIdentifier from 'src/identifier/identifier.transform';
+import LibraryService from 'src/library/library.service';
+import LibraryQueryParameters from 'src/library/models/library.query-parameters';
+import ReleaseQueryParameters from 'src/release/models/release.query-parameters';
+import ReleaseService from 'src/release/release.service';
+import SongQueryParameters from 'src/song/models/song.query-params';
+import ArtistQueryParameters from 'src/artist/models/artist.query-parameters';
+import ArtistService from 'src/artist/artist.service';
+import AlbumQueryParameters from 'src/album/models/album.query-parameters';
+import AlbumService from 'src/album/album.service';
+
+class Selector extends IntersectionType(TrackQueryParameters.SortingParameter) {
+	@IsOptional()
+	@ApiPropertyOptional({
+		description: 'Filter tracks by library'
+	})
+	@TransformIdentifier(LibraryService)
+	library?: LibraryQueryParameters.WhereInput;
+
+	@IsOptional()
+	@ApiPropertyOptional({
+		description: 'Filter tracks by release'
+	})
+	@TransformIdentifier(ReleaseService)
+	release?: ReleaseQueryParameters.WhereInput;
+
+	@IsOptional()
+	@ApiPropertyOptional({
+		description: 'Filter tracks by song'
+	})
+	@TransformIdentifier(SongService)
+	song?: SongQueryParameters.WhereInput;
+
+	@IsOptional()
+	@ApiPropertyOptional({
+		enum: TrackType,
+		description: 'Filter tracks by type'
+	})
+	@IsEnum(TrackType)
+	type?: TrackType;
+
+	@IsOptional()
+	@ApiPropertyOptional({
+		description: 'Filter tracks by artist'
+	})
+	@TransformIdentifier(ArtistService)
+	artist?: ArtistQueryParameters.WhereInput;
+
+	@IsOptional()
+	@ApiPropertyOptional({
+		description: 'Filter tracks by album'
+	})
+	@TransformIdentifier(AlbumService)
+	album?: AlbumQueryParameters.WhereInput;
+}
 
 @ApiTags("Tracks")
 @Controller('tracks')
@@ -27,7 +84,7 @@ export class TrackController {
 	) { }
 
 	@ApiOperation({
-		summary: 'Get all tracks'
+		summary: 'Get many tracks'
 	})
 	@Get()
 	@Response({
@@ -35,39 +92,15 @@ export class TrackController {
 		type: ResponseType.Page
 	})
 	async getMany(
+		@Query() selector: Selector,
 		@PaginationQuery()
 		paginationParameters: PaginationParameters,
 		@RelationIncludeQuery(TrackQueryParameters.AvailableAtomicIncludes)
-		include: TrackQueryParameters.RelationInclude,
-		@SortingQuery(TrackQueryParameters.SortingKeys)
-		sortingParameter: TrackQueryParameters.SortingParameter
+		include: TrackQueryParameters.RelationInclude
 	) {
 		return this.trackService.getMany(
-			{}, paginationParameters, include, sortingParameter
+			selector, paginationParameters, include, selector
 		);
-	}
-
-	@ApiOperation({
-		summary: 'Get all the video tracks'
-	})
-	@Response({
-		handler: TrackResponseBuilder,
-		type: ResponseType.Page
-	})
-	@Get('videos')
-	async getVideoTracks(
-		@PaginationQuery()
-		paginationParameters: PaginationParameters,
-		@RelationIncludeQuery(TrackQueryParameters.AvailableAtomicIncludes)
-		include: TrackQueryParameters.RelationInclude,
-		@SortingQuery(TrackQueryParameters.SortingKeys)
-		sortingParameter: TrackQueryParameters.SortingParameter
-	) {
-		const videoTracks = await this.trackService.getMany(
-			{ type: TrackType.Video }, paginationParameters, include, sortingParameter,
-		);
-
-		return videoTracks;
 	}
 
 	@ApiOperation({
@@ -101,16 +134,18 @@ export class TrackController {
 	}
 
 	@ApiOperation({
-		summary: 'Change the track\'s parent song'
+		summary: 'Update the track'
 	})
 	@Admin()
 	@Response({ handler: TrackResponseBuilder })
-	@Post('reassign')
+	@Post(':idOrSlug')
 	async reassignTrack(
+		@IdentifierParam(TrackService)
+		where: TrackQueryParameters.WhereInput,
 		@Body() reassignmentDTO: ReassignTrackDTO
 	) {
 		return this.trackService.reassign(
-			{ id: reassignmentDTO.trackId },
+			where,
 			{ id: reassignmentDTO.songId }
 		);
 	}

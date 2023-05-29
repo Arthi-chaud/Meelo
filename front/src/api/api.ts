@@ -13,7 +13,7 @@ import {
 import {
 	SongInclude, SongSortingKeys, SongWithRelations
 } from "../models/song";
-import { SongWithVideoWithRelations } from "../models/song-with-video";
+import { VideoWithRelations } from "../models/video";
 import {
 	TrackInclude, TrackSortingKeys, TrackWithRelations
 } from "../models/track";
@@ -452,10 +452,10 @@ export default class API {
 		return {
 			key: ['libraries', librarySlugOrId, 'artists', sort ?? {}],
 			exec: (pagination) => API.fetch({
-				route: `/libraries/${librarySlugOrId}/artists`,
+				route: `/artists`,
 				errorMessage: 'Library does not exist',
 				parameters: { pagination: pagination, sort },
-				otherParameters: { albumArtistOnly: true },
+				otherParameters: { albumArtistOnly: true, library: librarySlugOrId },
 				validator: PaginatedResponse(Artist)
 			})
 		};
@@ -475,10 +475,10 @@ export default class API {
 		return {
 			key: ['libraries', librarySlugOrId, 'albums', sort ?? {}, ...API.formatIncludeKeys(include), type ?? {}],
 			exec: (pagination) => API.fetch({
-				route: `/libraries/${librarySlugOrId}/albums`,
+				route: `/albums`,
 				errorMessage: 'Library does not exist',
 				parameters: { pagination: pagination, include, sort },
-				otherParameters: { type },
+				otherParameters: { type, library: librarySlugOrId },
 				validator: PaginatedResponse(AlbumWithRelations(include ?? []))
 			})
 		};
@@ -497,8 +497,9 @@ export default class API {
 		return {
 			key: ['libraries', librarySlugOrId, 'songs', sort ?? {}, ...API.formatIncludeKeys(include)],
 			exec: (pagination) => API.fetch({
-				route: `/libraries/${librarySlugOrId}/songs`,
+				route: `/songs`,
 				errorMessage: 'Library does not exist',
+				otherParameters: { library: librarySlugOrId },
 				parameters: { pagination: pagination, include, sort },
 				validator: PaginatedResponse(SongWithRelations(include ?? []))
 			})
@@ -514,14 +515,15 @@ export default class API {
 		librarySlugOrId: string | number,
 		sort?: SortingParameters<typeof SongSortingKeys>,
 		include?: I[]
-	): InfiniteQuery<SongWithVideoWithRelations<I>> {
+	): InfiniteQuery<VideoWithRelations<I>> {
 		return {
 			key: ['libraries', librarySlugOrId, 'videos', sort ?? {}, ...API.formatIncludeKeys(include)],
 			exec: (pagination) => API.fetch({
-				route: `/libraries/${librarySlugOrId}/videos`,
+				route: `/videos`,
 				errorMessage: 'Library does not exist',
+				otherParameters: { library: librarySlugOrId },
 				parameters: { pagination: pagination, include, sort },
-				validator: PaginatedResponse(SongWithVideoWithRelations(include ?? []))
+				validator: PaginatedResponse(VideoWithRelations(include ?? []))
 			})
 		};
 	}
@@ -552,14 +554,14 @@ export default class API {
 	static getAllVideos<I extends SongInclude>(
 		sort?: SortingParameters<typeof SongSortingKeys>,
 		include?: I[]
-	): InfiniteQuery<SongWithVideoWithRelations<I>> {
+	): InfiniteQuery<VideoWithRelations<I>> {
 		return {
 			key: ['videos', ...API.formatIncludeKeys(include), sort ?? {}],
 			exec: (pagination) => API.fetch({
-				route: `/songs/videos`,
-				errorMessage: 'Songs could not be loaded',
+				route: `/videos`,
+				errorMessage: 'Videos could not be loaded',
 				parameters: { pagination: pagination, include, sort },
-				validator: PaginatedResponse(SongWithVideoWithRelations(include ?? []))
+				validator: PaginatedResponse(VideoWithRelations(include ?? []))
 			})
 		};
 	}
@@ -577,10 +579,10 @@ export default class API {
 		return {
 			key: ['artist', artistSlugOrId, 'albums', sort ?? {}, ...API.formatIncludeKeys(include), type ?? {}],
 			exec: (pagination) => API.fetch({
-				route: `/artists/${artistSlugOrId}/albums`,
+				route: `/albums`,
 				errorMessage: `Artist '${artistSlugOrId}' not found`,
 				parameters: { pagination: pagination, include, sort },
-				otherParameters: { type },
+				otherParameters: { type, artist: artistSlugOrId },
 				validator: PaginatedResponse(AlbumWithRelations(include ?? []))
 			})
 		};
@@ -598,8 +600,9 @@ export default class API {
 		return {
 			key: ['artist', artistSlugOrId, 'songs', sort ?? {}, ...API.formatIncludeKeys(include)],
 			exec: (pagination) => API.fetch({
-				route: `/artists/${artistSlugOrId}/songs`,
+				route: `/songs`,
 				errorMessage: `Artist '${artistSlugOrId}' not found`,
+				otherParameters: { artist: artistSlugOrId },
 				parameters: { pagination: pagination, include, sort },
 				validator: PaginatedResponse(SongWithRelations(include ?? []))
 			})
@@ -808,7 +811,8 @@ export default class API {
 		return {
 			key: ['song', songSlugOrId, 'tracks', sort ?? {}, ...API.formatIncludeKeys(include)],
 			exec: (pagination) => API.fetch({
-				route: `/songs/${songSlugOrId}/tracks`,
+				route: `/tracks`,
+				otherParameters: { song: songSlugOrId },
 				parameters: { pagination: pagination, include, sort },
 				validator: PaginatedResponse(TrackWithRelations(include ?? []))
 			})
@@ -829,7 +833,8 @@ export default class API {
 		return {
 			key: ['song', songSlugOrId, 'videos', sort ?? {}, ...API.formatIncludeKeys(include)],
 			exec: (pagination) => API.fetch({
-				route: `/songs/${songSlugOrId}/videos`,
+				route: `/tracks`,
+				otherParameters: { type: 'Video', song: songSlugOrId },
 				parameters: { pagination: pagination, include, sort },
 				validator: PaginatedResponse(TrackWithRelations(include ?? []))
 			})
@@ -868,7 +873,8 @@ export default class API {
 		return {
 			key: ['song', songSlugOrId, 'genres'],
 			exec: (pagination) => API.fetch({
-				route: `/songs/${songSlugOrId}/genres`,
+				route: `/genres`,
+				otherParameters: { song: songSlugOrId },
 				parameters: { pagination: pagination, include: [] },
 				validator: PaginatedResponse(Genre)
 			})
@@ -886,7 +892,8 @@ export default class API {
 		return {
 			key: ['album', albumSlugOrId, 'genres'],
 			exec: (pagination) => API.fetch({
-				route: `/albums/${albumSlugOrId}/genres`,
+				route: `/genres`,
+				otherParameters: { album: albumSlugOrId },
 				parameters: { pagination, include: [] },
 				validator: PaginatedResponse(Genre)
 			})
@@ -901,13 +908,14 @@ export default class API {
 	static getAlbumVideos<I extends TrackInclude>(
 		albumSlugOrId: string | number,
 		include?: I[]
-	): Query<TrackWithRelations<I>[]> {
+	): InfiniteQuery<TrackWithRelations<I>> {
 		return {
 			key: ['album', albumSlugOrId, 'videos', ...API.formatIncludeKeys(include)],
-			exec: () => API.fetch({
-				route: `/albums/${albumSlugOrId}/videos`,
-				parameters: { include },
-				validator: yup.array(TrackWithRelations(include ?? []).required()).required()
+			exec: (pagination) => API.fetch({
+				route: `/tracks`,
+				otherParameters: { type: 'Video', album: albumSlugOrId },
+				parameters: { pagination, include },
+				validator: PaginatedResponse(TrackWithRelations(include ?? []))
 			})
 		};
 	}
@@ -921,13 +929,14 @@ export default class API {
 		artistSlugOrId: string | number,
 		include?: I[],
 		sort?: SortingParameters<typeof SongSortingKeys>,
-	): InfiniteQuery<SongWithVideoWithRelations<I>> {
+	): InfiniteQuery<VideoWithRelations<I>> {
 		return {
 			key: ['artist', artistSlugOrId, 'videos', sort ?? {}, ...API.formatIncludeKeys(include)],
 			exec: (pagination) => API.fetch({
-				route: `/artists/${artistSlugOrId}/videos`,
+				route: `/videos`,
+				otherParameters: { artist: artistSlugOrId },
 				parameters: { pagination: pagination, include, sort },
-				validator: PaginatedResponse(SongWithVideoWithRelations(include ?? []))
+				validator: PaginatedResponse(VideoWithRelations(include ?? []))
 			})
 		};
 	}
@@ -945,7 +954,8 @@ export default class API {
 		return {
 			key: ['album', albumSlugOrId, 'releases', sort ?? {}, ...API.formatIncludeKeys(include)],
 			exec: (pagination) => API.fetch({
-				route: `/albums/${albumSlugOrId}/releases`,
+				route: `/releases`,
+				otherParameters: { album: albumSlugOrId },
 				parameters: { include, pagination: pagination, sort },
 				validator: PaginatedResponse(ReleaseWithRelations(include ?? []))
 			})
@@ -1097,10 +1107,10 @@ export default class API {
 		return {
 			key: ['genre', idOrSlug, 'albums', sort ?? {}, type ?? {}],
 			exec: (pagination) => API.fetch({
-				route: `/genres/${idOrSlug}/albums`,
+				route: `/albums`,
 				errorMessage: 'Genre not found',
 				parameters: { pagination: pagination, include: ['artist'], sort },
-				otherParameters: { type },
+				otherParameters: { type, genre: idOrSlug },
 				validator: PaginatedResponse(AlbumWithRelations(['artist']))
 			})
 		};
@@ -1118,8 +1128,9 @@ export default class API {
 		return {
 			key: ['genre', idOrSlug, 'artists', sort ?? {}],
 			exec: (pagination) => API.fetch({
-				route: `/genres/${idOrSlug}/artists`,
+				route: `/artists`,
 				errorMessage: 'Genre not found',
+				otherParameters: { genre: idOrSlug },
 				parameters: { pagination: pagination, include: [], sort },
 				validator: PaginatedResponse(Artist)
 			})
@@ -1138,8 +1149,9 @@ export default class API {
 		return {
 			key: ['genre', idOrSlug, 'songs', sort ?? {}],
 			exec: (pagination) => API.fetch({
-				route: `/genres/${idOrSlug}/songs`,
+				route: `/songs`,
 				errorMessage: 'Genre not found',
+				otherParameters: { genre: idOrSlug },
 				parameters: { pagination: pagination, include: ['artist'], sort },
 				validator: PaginatedResponse(SongWithRelations(['artist']))
 			})
@@ -1158,8 +1170,9 @@ export default class API {
 		return {
 			key: ['search', 'artists', query, sort ?? {}],
 			exec: (pagination) => API.fetch({
-				route: `/search/artists/${query}`,
+				route: `/artists`,
 				errorMessage: 'Search failed',
+				otherParameters: { query },
 				parameters: { pagination: pagination, sort },
 				validator: PaginatedResponse(Artist)
 			})
@@ -1180,10 +1193,10 @@ export default class API {
 		return {
 			key: ['search', 'albums', query, sort ?? {}, type ?? {}, ...API.formatIncludeKeys(include)],
 			exec: (pagination) => API.fetch({
-				route: `/search/albums/${query}`,
+				route: `/albums`,
 				errorMessage: 'Search failed',
 				parameters: { pagination: pagination, include, sort },
-				otherParameters: { type },
+				otherParameters: { type, query },
 				validator: PaginatedResponse(AlbumWithRelations(include ?? []))
 			})
 		};
@@ -1202,8 +1215,9 @@ export default class API {
 		return {
 			key: ['search', 'songs', query, sort ?? {}, ...API.formatIncludeKeys(include)],
 			exec: (pagination) => API.fetch({
-				route: `/search/songs/${query}`,
+				route: `/songs`,
 				errorMessage: 'Search failed',
+				otherParameters: { query },
 				parameters: { pagination: pagination, include, sort },
 				validator: PaginatedResponse(SongWithRelations(include ?? []))
 			}),

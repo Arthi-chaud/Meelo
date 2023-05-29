@@ -8,7 +8,6 @@ import { LyricsModule } from "src/lyrics/lyrics.module";
 import PrismaModule from "src/prisma/prisma.module";
 import PrismaService from "src/prisma/prisma.service";
 import Slug from "src/slug/slug";
-import { SongNotFoundByIdException } from "src/song/song.exceptions";
 import SongService from "src/song/song.service";
 import TrackModule from "src/track/track.module";
 import { createTestingModule } from "test/test-module";
@@ -19,7 +18,6 @@ import GenreService from "./genre.service";
 import LibraryModule from "src/library/library.module";
 import MetadataModule from "src/metadata/metadata.module";
 import ArtistIllustrationService from "src/artist/artist-illustration.service";
-import { AlbumNotFoundFromIDException } from "src/album/album.exceptions";
 
 describe("Genre Service", () => {
 	let genreService: GenreService;
@@ -61,18 +59,10 @@ describe("Genre Service", () => {
 	});
 
 	describe("Get an album's genres", () => { 
-		it("should throw, as the album does not exist", async () => {
-			const test = () => genreService.getAlbumGenres(
-				{ id: -1 },
-				undefined, { order: 'desc', sortBy: 'name'}
-			);
-			expect(test()).rejects.toThrow(AlbumNotFoundFromIDException);
-			
-		});
 		it("should find and sort the genres", async () => {
-			const genres = await genreService.getAlbumGenres(
-				{ id: dummyRepository.albumA1.id },
-				undefined, { order: 'desc', sortBy: 'name'}
+			const genres = await genreService.getMany(
+				{ album: { id: dummyRepository.albumA1.id } },
+				undefined, {}, { order: 'desc', sortBy: 'name'}
 			);
 			expect(genres).toStrictEqual([
 				dummyRepository.genreB,
@@ -231,12 +221,8 @@ describe("Genre Service", () => {
 	});
 
 	describe("Get Song's genres", () => {
-		it("should throw, as the genre does not exist", () => {
-			const test = async () => await genreService.getSongGenres({ id: -1 });
-			expect(test()).rejects.toThrow(SongNotFoundByIdException);
-		});
 		it("should find the song's genres", async () => {
-			const genres = await genreService.getSongGenres({ id: dummyRepository.songC1.id });
+			const genres = await genreService.getMany({ song: { id: dummyRepository.songC1.id } });
 			expect(genres).toStrictEqual([dummyRepository.genreC]);
 		});
 	});

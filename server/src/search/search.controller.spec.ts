@@ -1,6 +1,5 @@
 import { INestApplication } from "@nestjs/common";
 import type { TestingModule } from "@nestjs/testing";
-import type { Artist, Album, Song } from "src/prisma/models";
 import AlbumModule from "src/album/album.module";
 import AlbumService from "src/album/album.service";
 import ArtistModule from "src/artist/artist.module";
@@ -63,14 +62,12 @@ describe('Search Controller', () => {
 	describe('Search All', () => {
 		it("Search All", () => {
 			return request(app.getHttpServer())
-				.get(`/search/all/l`)
+				.get(`/search/l`)
 				.expect(200)
 				.expect((res) => {
 					expect(res.body).toStrictEqual({
 						artists: [
-							expectedArtistResponse(dummyRepository.artistA),
 							expectedArtistResponse(dummyRepository.artistB),
-							expectedArtistResponse(dummyRepository.artistC)
 						],
 						albums: [
 							expectedAlbumResponse(dummyRepository.albumA1),
@@ -79,8 +76,6 @@ describe('Search Controller', () => {
 						],
 						songs: [
 							expectedSongResponse(dummyRepository.songA1),
-							expectedSongResponse(dummyRepository.songA2),
-							expectedSongResponse(dummyRepository.songB1),
 							expectedSongResponse(dummyRepository.songC1)
 						],
 						genres: [
@@ -89,84 +84,5 @@ describe('Search Controller', () => {
 					})
 				}) 
 		});
-	});
-
-	describe('Search Artists', () => {
-		it("Search artists", () => {
-			return request(app.getHttpServer())
-				.get(`/search/artists/a`)
-				.expect(200)
-				.expect((res) => {
-					const artists: Artist[] = res.body.items;
-					expect(artists.length).toBe(3);
-					expect(artists).toContainEqual(expectedArtistResponse(dummyRepository.artistA));
-					expect(artists).toContainEqual(expectedArtistResponse(dummyRepository.artistB));
-					expect(artists).toContainEqual(expectedArtistResponse(dummyRepository.artistC));
-				}) 
-		});
-
-		it("Search artists, w/ pagination", () => {
-			return request(app.getHttpServer())
-				.get(`/search/artists/a?skip=1`)
-				.expect(200)
-				.expect((res) => {
-					const artists: Artist[] = res.body.items;
-					expect(artists.length).toBe(2);
-					expect(artists).toContainEqual(expectedArtistResponse(dummyRepository.artistB));
-					expect(artists).toContainEqual(expectedArtistResponse(dummyRepository.artistC));
-				}) 
-		})
-	});
-
-	describe('Search Albums', () => {
-		it("Search albums", () => {
-			return request(app.getHttpServer())
-				.get(`/search/albums/es`)
-				.expect(200)
-				.expect((res) => {
-					const albums: Album[] = res.body.items;
-					expect(albums.length).toBe(2);
-					expect(albums).toContainEqual(expectedAlbumResponse(dummyRepository.albumB1));
-					expect(albums).toContainEqual(expectedAlbumResponse(dummyRepository.compilationAlbumA));
-				}) 
-		});
-
-		it("Search albums, w/ pagination", () => {
-			return request(app.getHttpServer())
-				.get(`/search/albums/a?take=1`)
-				.expect(200)
-				.expect((res) => {
-					const albums: Album[] = res.body.items;
-					expect(albums.length).toBe(1);
-					expect(albums).toContainEqual(expectedAlbumResponse(dummyRepository.albumA1));
-				}) 
-		})
-	});
-
-	describe('Search Songs', () => {
-		it("Search songs", () => {
-			return request(app.getHttpServer())
-				.get(`/search/songs/h`)
-				.expect(200)
-				.expect((res) => {
-					const songs: Song[] = res.body.items;
-					expect(songs.length).toBe(3);
-					expect(songs).toContainEqual(expectedSongResponse(dummyRepository.songA1));
-					expect(songs).toContainEqual(expectedSongResponse(dummyRepository.songC1));
-					expect(songs).toContainEqual(expectedSongResponse(dummyRepository.songB1));
-				}) 
-		});
-
-		it("Search songs, w/ pagination", () => {
-			return request(app.getHttpServer())
-				.get(`/search/songs/e?skip=1&take=2`)
-				.expect(200)
-				.expect((res) => {
-					const songs: Song[] = res.body.items;
-					expect(songs.length).toBe(2);
-					expect(songs).toContainEqual(expectedSongResponse(dummyRepository.songA2));
-					expect(songs).toContainEqual(expectedSongResponse(dummyRepository.songB1));
-				}) 
-		})
-	});
+	});	
 });
