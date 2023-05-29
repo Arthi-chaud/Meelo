@@ -40,13 +40,16 @@ class Selector extends IntersectionType(
 		message: () => `Album Type: Invalid value. Expected one of theses: ${Object.keys(AlbumType)}`
 	})
 	@IsOptional()
-	@ApiPropertyOptional({ enum: AlbumType })
+	@ApiPropertyOptional({
+		enum: AlbumType,
+		description: 'Filter the albums by type'
+	})
 	type?: AlbumType;
 
 	@IsOptional()
 	@ApiPropertyOptional({
 		type: String,
-		description: `The Identifier of the artist of the album. For compilation albums, use '${compilationAlbumArtistKeyword}'`
+		description: `Filter albums by (album) artist, using their identifier. <br/>For compilation albums, use '${compilationAlbumArtistKeyword}'`
 	})
 	@TransformIdentifier(ArtistService)
 	artist?: ArtistQueryParameters.WhereInput;
@@ -54,21 +57,21 @@ class Selector extends IntersectionType(
 	@IsOptional()
 	@ApiPropertyOptional({
 		type: String,
-		description: 'The Identifier of the genre of the album'
+		description: 'Filter albums by genre'
 	})
 	@TransformIdentifier(GenreService)
 	genre?: GenreQueryParameters.WhereInput;
 
 	@IsOptional()
 	@ApiPropertyOptional({
-		description: 'The Query for a string-based search'
+		description: 'Search albums using a string token'
 	})
 	query?: string;
 
 	@IsOptional()
 	@ApiPropertyOptional({
 		type: String,
-		description: 'The Identifier of the parent library'
+		description: 'Filter albums by library'
 	})
 	@TransformIdentifier(LibraryService)
 	library?: LibraryQueryParameters.WhereInput;
@@ -93,7 +96,7 @@ export default class AlbumController {
 		handler: AlbumResponseBuilder,
 		type: ResponseType.Page
 	})
-	@ApiOperation({ summary: 'Get all albums' })
+	@ApiOperation({ summary: 'Get many albums' })
 	async getMany(
 		@Query() selector: Selector,
 		@PaginationQuery()

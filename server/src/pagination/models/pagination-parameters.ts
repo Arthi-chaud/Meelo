@@ -7,14 +7,18 @@ import { IsOptional, IsPositive } from "class-validator";
 export const defaultPageSize = 20;
 
 export class PaginationParameters {
-	@ApiPropertyOptional()
+	@ApiPropertyOptional({
+		description: 'Number of items to skip',
+		default: 0
+	})
 	@IsPositive()
 	@IsOptional()
 	skip?: number;
 
 	@ApiProperty({
 		required: false,
-		description: `Implicit default value: ${defaultPageSize}`
+		description: `Specifies the number of elements to return`,
+		default: defaultPageSize
 	})
 	@IsPositive()
 	@IsOptional()

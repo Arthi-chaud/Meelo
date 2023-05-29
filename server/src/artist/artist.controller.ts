@@ -27,20 +27,20 @@ import GenreQueryParameters from 'src/genre/models/genre.query-parameters';
 class Selector extends IntersectionType(ArtistQueryParameters.SortingParameter) {
 	@IsOptional()
 	@ApiPropertyOptional({
-		description: 'The Query for a string-based search'
+		description: 'Search artists using a string token'
 	})
 	query?: string;
 
 	@IsOptional()
 	@ApiPropertyOptional({
-		description: 'Only return artists that have at least one album'
+		description: 'If true, only artists that have at least one album will be returned'
 	})
 	albumArtistOnly?: boolean;
 
 	@IsOptional()
 	@ApiPropertyOptional({
 		type: String,
-		description: 'The Identifier of the genre of the artist'
+		description: 'Filter artists by genre'
 	})
 	@TransformIdentifier(GenreService)
 	genre?: GenreQueryParameters.WhereInput;
@@ -48,7 +48,7 @@ class Selector extends IntersectionType(ArtistQueryParameters.SortingParameter) 
 	@IsOptional()
 	@ApiPropertyOptional({
 		type: String,
-		description: 'The Identifier of the parent library'
+		description: 'Filter artists by library'
 	})
 	@TransformIdentifier(LibraryService)
 	library?: LibraryQueryParameters.WhereInput;
@@ -65,7 +65,7 @@ export default class ArtistController {
 	) {}
 
 	@ApiOperation({
-		summary: 'Get all artists'
+		summary: 'Get many artists'
 	})
 	@Response({
 		handler: ArtistResponseBuilder,
