@@ -7,7 +7,9 @@ import { useRouter } from "next/router";
 import API from "../../api/api";
 import Illustration from "../../components/illustration";
 import formatDuration from '../../utils/formatDuration';
-import { useEffect, useState } from "react";
+import {
+	useEffect, useMemo, useState
+} from "react";
 import Tracklist from "../../models/tracklist";
 import Link from 'next/link';
 import PlayCircleIcon from '@mui/icons-material/PlayCircle';
@@ -91,8 +93,9 @@ const ReleasePage = (
 		.filter((track) => track.song.artistId != albumArtist.data?.id)
 		.map((track): Parameters<typeof useQuery<Artist, Parameters<typeof API.getArtist>>> =>
 			[API.getArtist, track.song.artistId]));
-	const albumVideos = useQuery((id) => API.getAlbumVideos(id, ['song']), release.data?.albumId);
+	const albumVideos = useInfiniteQuery((id) => API.getAlbumVideos(id, ['song']), release.data?.albumId);
 	const relatedReleases = useInfiniteQuery(API.getAlbumReleases, release.data?.albumId);
+	const videos = useMemo(() => albumVideos.data?.pages.at(0)?.items, [albumVideos]);
 
 	useEffect(() => {
 		if (tracklist.data) {
@@ -252,10 +255,10 @@ const ReleasePage = (
 				}/>
 			</RelatedContentSection>
 			<RelatedContentSection
-				display={albumVideos.data !== undefined && albumVideos.data.length != 0}
+				display={videos !== undefined && videos.length != 0}
 				title={<Translate translationKey="musicVideos"/>}
 			>
-				<TileRow tiles={albumVideos.data?.map((video, videoIndex) =>
+				<TileRow tiles={videos?.map((video, videoIndex) =>
 					<VideoTile key={videoIndex} video={video}/>) ?? []}
 				/>
 			</RelatedContentSection>
