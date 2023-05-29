@@ -225,7 +225,7 @@ describe('Track Controller', () => {
 	describe("Get Videos Tracks (GET /tracks/videos)", () => {
 		it("should return all the tracks", () => {
 			return request(app.getHttpServer())
-				.get(`/tracks/videos`)
+				.get(`/tracks?type=Video`)
 				.expect(200)
 				.expect((res) => {
 					const tracks: Track[] = res.body.items;
@@ -236,7 +236,7 @@ describe('Track Controller', () => {
 
 		it("should return some the tracks (w/ pagination)", () => {
 			return request(app.getHttpServer())
-				.get(`/tracks/videos?skip=1`)
+				.get(`/tracks?type=Video&skip=1`)
 				.expect(200)
 				.expect((res) => {
 					const tracks: Track[] = res.body.items;
@@ -275,12 +275,35 @@ describe('Track Controller', () => {
 		});
 	});
 
-	describe("Reassign the track (POST /tracks/reassign)", () => {
+	describe("Get Song Video Tracks", () => {
+		it("should return all video tracks (1 expected)", () => {
+			return request(app.getHttpServer())
+				.get(`/tracks?song=${dummyRepository.songA1.id}&type=Video`)
+				.expect(200)
+				.expect((res) => {
+					const tracks: Track[] = res.body.items;
+					expect(tracks.length).toBe(1);
+					expect(tracks[0]).toStrictEqual(expectedTrackResponse(dummyRepository.trackA1_2Video));
+				});
+		});
+
+		it("should return all video tracks (0 expected)", () => {
+			return request(app.getHttpServer())
+				.get(`/tracks?song=${dummyRepository.songB1.id}&type=Video`)
+				.expect(200)
+				.expect((res) => {
+					const tracks: Track[] = res.body.items;
+					expect(tracks.length).toBe(0);
+				});
+		});
+
+	});
+
+	describe("Reassign the track", () => {
 		it("should reassign the track", () => {
 			return request(app.getHttpServer())
-				.post(`/tracks/reassign`)
+				.post(`/tracks/${dummyRepository.trackC1_1.id}`)
 				.send(<ReassignTrackDTO>{
-					trackId: dummyRepository.trackC1_1.id,
 					songId: dummyRepository.songB1.id
 				})
 				.expect(201)

@@ -11,7 +11,6 @@ import SongService from './song.service';
 import {
 	ApiOperation, ApiPropertyOptional, ApiTags, IntersectionType
 } from '@nestjs/swagger';
-import { TrackType } from '@prisma/client';
 import { LyricsService } from 'src/lyrics/lyrics.service';
 import LyricsDto from 'src/lyrics/models/update-lyrics.dto';
 import { SongResponseBuilder } from './models/song.response';
@@ -208,37 +207,6 @@ export class SongController {
 		return this.songService.getSongVersions(
 			where, paginationParameters, include, sortingParameter
 		);
-	}
-
-	@ApiOperation({
-		summary: 'Get all the song\'s video tracks'
-	})
-	@Response({
-		handler: TrackResponseBuilder,
-		type: ResponseType.Page
-	})
-	@Get(':idOrSlug/videos')
-	async getSongVideos(
-		@PaginationQuery()
-		paginationParameters: PaginationParameters,
-		@RelationIncludeQuery(TrackQueryParameters.AvailableAtomicIncludes)
-		include: TrackQueryParameters.RelationInclude,
-		@SortingQuery(TrackQueryParameters.SortingKeys)
-		sortingParameter: TrackQueryParameters.SortingParameter,
-		@IdentifierParam(SongService)
-		where: SongQueryParameters.WhereInput
-	) {
-		const videoTracks = await this.trackService.getMany(
-			{ song: where, type: TrackType.Video },
-			paginationParameters,
-			include,
-			sortingParameter,
-		);
-
-		if (videoTracks.length == 0) {
-			await this.songService.throwIfNotFound(where);
-		}
-		return videoTracks;
 	}
 
 	@ApiOperation({

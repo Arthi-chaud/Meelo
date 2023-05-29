@@ -404,12 +404,11 @@ describe('Album Controller', () => {
 		});
 	});
 
-	describe("Reassign the album (POST /albums/reassign)", () => {
+	describe("Reassign the album", () => {
 		it("should reassign the compilation album to an artist", () => {
 			return request(app.getHttpServer())
-				.post(`/albums/reassign`)
+				.post(`/albums/${dummyRepository.compilationAlbumA.id}`)
 				.send(<ReassignAlbumDTO>{
-					albumId: dummyRepository.compilationAlbumA.id,
 					artistId: dummyRepository.artistB.id
 				})
 				.expect(201)
@@ -424,7 +423,7 @@ describe('Album Controller', () => {
 
 		it("should reassign the album as a compilation", () => {
 			return request(app.getHttpServer())
-				.post(`/albums/reassign`)
+				.post(`/albums/${dummyRepository.compilationAlbumA.id}`)
 				.send(<ReassignAlbumDTO>{
 					albumId: dummyRepository.compilationAlbumA.id,
 					artistId: null

@@ -110,7 +110,7 @@ export default class ArtistController {
 	}
 
 	@ApiOperation({
-		summary: 'Get all the video tracks from an artist'
+		summary: 'Get all song w/ a video from an artist'
 	})
 	@Response({
 		handler: SongWithVideoResponseBuilder,

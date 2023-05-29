@@ -6,7 +6,6 @@ import LibraryService from './library.service';
 import { Library } from 'src/prisma/models';
 import { PaginationParameters } from 'src/pagination/models/pagination-parameters';
 import SongQueryParameters from 'src/song/models/song.query-params';
-import SongService from 'src/song/song.service';
 import LibraryQueryParameters from './models/library.query-parameters';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import { PaginationQuery } from 'src/pagination/pagination-query.decorator';
@@ -18,6 +17,7 @@ import CreateLibraryDto from './models/create-library.dto';
 import IdentifierParam from 'src/identifier/identifier.pipe';
 import Response, { ResponseType } from 'src/response/response.decorator';
 import { SongWithVideoResponseBuilder } from 'src/song/models/song-with-video.response';
+import SongService from 'src/song/song.service';
 
 @ApiTags("Libraries")
 @Controller('libraries')
@@ -51,7 +51,7 @@ export default class LibraryController {
 	}
 
 	@ApiOperation({
-		summary: 'Update a new library'
+		summary: 'Update a library'
 	})
 	@Admin()
 	@Put(':idOrSlug')

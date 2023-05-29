@@ -537,30 +537,6 @@ describe('Song Controller', () => {
 		})
 	});
 
-	describe("Get Song Video Tracks (GET /songs/:id/videos)", () => {
-		it("should return all video tracks (1 expected)", () => {
-			return request(app.getHttpServer())
-				.get(`/songs/${dummyRepository.songA1.id}/videos`)
-				.expect(200)
-				.expect((res) => {
-					const tracks: Track[] = res.body.items;
-					expect(tracks.length).toBe(1);
-					expect(tracks[0]).toStrictEqual(expectedTrackResponse(dummyRepository.trackA1_2Video));
-				});
-		});
-
-		it("should return all video tracks (0 expected)", () => {
-			return request(app.getHttpServer())
-				.get(`/songs/${dummyRepository.songB1.id}/videos`)
-				.expect(200)
-				.expect((res) => {
-					const tracks: Track[] = res.body.items;
-					expect(tracks.length).toBe(0);
-				});
-		});
-
-	});
-
 	describe("Get Song Artist (GET /songs/:id/artist)", () => {
 		it("should return artist (by id)", () => {
 			return request(app.getHttpServer())

@@ -7,8 +7,6 @@ import ReleaseService from 'src/release/release.service';
 import compilationAlbumArtistKeyword from 'src/utils/compilation';
 import AlbumService from './album.service';
 import AlbumQueryParameters from './models/album.query-parameters';
-import TrackService from 'src/track/track.service';
-import TrackQueryParameters from 'src/track/models/track.query-parameters';
 import {
 	ApiOperation, ApiPropertyOptional, ApiTags, IntersectionType
 } from '@nestjs/swagger';
@@ -18,7 +16,6 @@ import { ReleaseResponseBuilder } from 'src/release/models/release.response';
 import { PaginationQuery } from 'src/pagination/pagination-query.decorator';
 import RelationIncludeQuery from 'src/relation-include/relation-include-query.decorator';
 import Admin from 'src/roles/admin.decorator';
-import { TrackResponseBuilder } from 'src/track/models/track.response';
 import IdentifierParam from 'src/identifier/identifier.pipe';
 import Response, { ResponseType } from 'src/response/response.decorator';
 import GenreService from 'src/genre/genre.service';
@@ -81,8 +78,6 @@ export default class AlbumController {
 		private releaseService: ReleaseService,
 		@Inject(forwardRef(() => AlbumService))
 		private albumService: AlbumService,
-		@Inject(forwardRef(() => TrackService))
-		private trackService: TrackService,
 	) {}
 
 	@Get()
@@ -150,56 +145,18 @@ export default class AlbumController {
 	}
 
 	@ApiOperation({
-		summary: 'Get all the video tracks from an album',
-		description: "Return all video tracks of songs in album, so it might include tracks that are not in the album's tracklist"
-	})
-	@Get(':idOrSlug/videos')
-	@Response({
-		handler: TrackResponseBuilder,
-		type: ResponseType.Array
-	})
-	async getAlbumVideos(
-		@RelationIncludeQuery(TrackQueryParameters.AvailableAtomicIncludes)
-		include: TrackQueryParameters.RelationInclude,
-		@IdentifierParam(AlbumService)
-		where: AlbumQueryParameters.WhereInput,
-	) {
-		const albumReleases = await this.releaseService.getAlbumReleases(
-			where,
-			{ },
-			{ tracks: true }
-		);
-
-		return Promise.all(albumReleases
-			.map((release) => release.tracks)
-			.flat()
-			.filter((track, index, array) => index == array.indexOf(track))
-			.sort((track1, track2) => {
-				if (track1.discIndex != track2.discIndex) {
-					return (track1.discIndex ?? 0) - (track2.discIndex ?? 0);
-				}
-				return (track1.trackIndex ?? 0) - (track2.trackIndex ?? 0);
-			})
-			.filter((track, index, array) => array.findIndex(
-				(otherTrack) => otherTrack.songId == track.songId
-			) == index)
-			.map((track) => this.trackService.getMany({
-				type: 'Video',
-				song: { id: track.songId },
-			}, { take: 1 }, include))).then((tracks) => tracks.flat());
-	}
-
-	@ApiOperation({
-		summary: 'Change the album\'s parent artist'
+		summary: 'Update the album'
 	})
 	@Admin()
 	@Response({ handler: AlbumResponseBuilder })
-	@Post('reassign')
+	@Post(':idOrSlug')
 	async reassignAlbum(
+		@IdentifierParam(AlbumService)
+		where: AlbumQueryParameters.WhereInput,
 		@Body() reassignmentDTO: ReassignAlbumDTO
 	) {
 		return this.albumService.reassign(
-			{ id: reassignmentDTO.albumId },
+			where,
 			reassignmentDTO.artistId == null
 				? { compilationArtist: true }
 				: { id: reassignmentDTO.artistId }

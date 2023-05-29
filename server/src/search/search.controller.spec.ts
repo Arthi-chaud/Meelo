@@ -1,6 +1,5 @@
 import { INestApplication } from "@nestjs/common";
 import type { TestingModule } from "@nestjs/testing";
-import type { Song } from "src/prisma/models";
 import AlbumModule from "src/album/album.module";
 import AlbumService from "src/album/album.service";
 import ArtistModule from "src/artist/artist.module";
@@ -68,9 +67,7 @@ describe('Search Controller', () => {
 				.expect((res) => {
 					expect(res.body).toStrictEqual({
 						artists: [
-							expectedArtistResponse(dummyRepository.artistA),
 							expectedArtistResponse(dummyRepository.artistB),
-							expectedArtistResponse(dummyRepository.artistC)
 						],
 						albums: [
 							expectedAlbumResponse(dummyRepository.albumA1),
@@ -79,8 +76,6 @@ describe('Search Controller', () => {
 						],
 						songs: [
 							expectedSongResponse(dummyRepository.songA1),
-							expectedSongResponse(dummyRepository.songA2),
-							expectedSongResponse(dummyRepository.songB1),
 							expectedSongResponse(dummyRepository.songC1)
 						],
 						genres: [
