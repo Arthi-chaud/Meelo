@@ -351,12 +351,11 @@ describe('Release Controller', () => {
 		});
 	});
 
-	describe("Reassign the release (POST /release/reassign)", () => {
+	describe("Update the release", () => {
 		it("should reassign the release", () => {
 			return request(app.getHttpServer())
-				.post(`/releases/reassign`)
+				.post(`/releases/${dummyRepository.releaseB1_1.id}`)
 				.send(<ReassignReleaseDTO>{
-					releaseId: dummyRepository.releaseB1_1.id,
 					albumId: dummyRepository.albumA1.id
 				})
 				.expect(201)

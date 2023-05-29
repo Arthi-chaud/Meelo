@@ -135,16 +135,18 @@ export default class ReleaseController {
 	}
 
 	@ApiOperation({
-		summary: 'Change the release\'s parent album'
+		summary: 'Update a release'
 	})
 	@Admin()
 	@Response({ handler: ReleaseResponseBuilder })
-	@Post('reassign')
-	async reassignRelease(
+	@Post(':idOrSlug')
+	async updateRelease(
+		@IdentifierParam(ReleaseService)
+		where: ReleaseQueryParameters.WhereInput,
 		@Body() reassignmentDTO: ReassignReleaseDTO
 	) {
 		return this.releaseService.reassign(
-			{ id: reassignmentDTO.releaseId },
+			where,
 			{ id: reassignmentDTO.albumId }
 		);
 	}
