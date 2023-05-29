@@ -6,12 +6,9 @@ import LibraryService from './library.service';
 import { Library } from 'src/prisma/models';
 import { PaginationParameters } from 'src/pagination/models/pagination-parameters';
 import SongQueryParameters from 'src/song/models/song.query-params';
-import TrackQueryParameters from 'src/track/models/track.query-parameters';
-import TrackService from 'src/track/track.service';
 import SongService from 'src/song/song.service';
 import LibraryQueryParameters from './models/library.query-parameters';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
-import { TrackResponseBuilder } from 'src/track/models/track.response';
 import { PaginationQuery } from 'src/pagination/pagination-query.decorator';
 import RelationIncludeQuery from 'src/relation-include/relation-include-query.decorator';
 import SortingQuery from 'src/sort/sort-query.decorator';
@@ -27,7 +24,6 @@ import { SongWithVideoResponseBuilder } from 'src/song/models/song-with-video.re
 export default class LibraryController {
 	constructor(
 		private libraryService: LibraryService,
-		private trackService: TrackService,
 		private songService: SongService,
 	) { }
 
@@ -127,33 +123,5 @@ export default class LibraryController {
 			await this.libraryService.throwIfNotFound(where);
 		}
 		return songs;
-	}
-
-	@ApiOperation({
-		summary: 'Get all tracks from a library'
-	})
-	@Response({
-		handler: TrackResponseBuilder,
-		type: ResponseType.Page
-	})
-	@Get(':idOrSlug/tracks')
-	async getTracksByLibrary(
-		@PaginationQuery()
-		paginationParameters: PaginationParameters,
-		@RelationIncludeQuery(TrackQueryParameters.AvailableAtomicIncludes)
-		include: TrackQueryParameters.RelationInclude,
-		@SortingQuery(TrackQueryParameters.SortingKeys)
-		sortingParameter: TrackQueryParameters.SortingParameter,
-		@IdentifierParam(LibraryService)
-		where: LibraryQueryParameters.WhereInput
-	) {
-		const tracks = await this.trackService.getMany(
-			{ library: where }, paginationParameters, include, sortingParameter
-		);
-
-		if (tracks.length == 0) {
-			await this.libraryService.throwIfNotFound(where);
-		}
-		return tracks;
 	}
 }

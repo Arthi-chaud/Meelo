@@ -95,6 +95,133 @@ describe('Track Controller', () => {
 		});
 	});
 
+	describe('Get Tracks by Library', () => {
+		it("should return every tracks, w/ song & parent release", () => {
+			return request(app.getHttpServer())
+				.get(`/tracks?library=${dummyRepository.library1.id}&with=song,release`)
+				.expect(200)
+				.expect((res) => {
+					const tracks: Track[] = res.body.items;
+					expect(tracks.length).toBe(4);
+					expect(tracks).toContainEqual({
+						...expectedTrackResponse(dummyRepository.trackA1_1),
+						release: expectedReleaseResponse(dummyRepository.releaseA1_1),
+						song: expectedSongResponse(dummyRepository.songA1)
+					});
+					expect(tracks).toContainEqual({
+						...expectedTrackResponse(dummyRepository.trackA1_2Video),
+						release: expectedReleaseResponse(dummyRepository.releaseA1_2),
+						song: expectedSongResponse(dummyRepository.songA1)
+					});
+					expect(tracks).toContainEqual({
+						...expectedTrackResponse(dummyRepository.trackA2_1),
+						release: expectedReleaseResponse(dummyRepository.releaseA1_2),
+						song: expectedSongResponse(dummyRepository.songA2)
+					});
+					expect(tracks).toContainEqual({
+						...expectedTrackResponse(dummyRepository.trackC1_1),
+						release: expectedReleaseResponse(dummyRepository.compilationReleaseA1),
+						song: expectedSongResponse(dummyRepository.songC1)
+					});
+				});
+		});
+	});
+
+	describe("Get Tracks by song", () => {
+		it("should return tracks", () => {
+			return request(app.getHttpServer())
+				.get(`/tracks?song=${dummyRepository.songA1.id}`)
+				.expect(200)
+				.expect((res) => {
+					const tracks: Track[] = res.body.items;
+					expect(tracks.length).toBe(2);
+					expect(tracks[0]).toStrictEqual(expectedTrackResponse(dummyRepository.trackA1_1));
+					expect(tracks[1]).toStrictEqual(expectedTrackResponse(dummyRepository.trackA1_2Video));
+				});
+		});
+		it("should return some tracks (w/ pagination)", () => {
+			return request(app.getHttpServer())
+				.get(`/tracks?song=${dummyRepository.songA1.id}&take=1`)
+				.expect(200)
+				.expect((res) => {
+					const tracks: Track[] = res.body.items;
+					expect(tracks.length).toBe(1);
+					expect(tracks[0]).toStrictEqual(expectedTrackResponse(dummyRepository.trackA1_1));
+				});
+		});
+		it("should return tracks w/ song", () => {
+			return request(app.getHttpServer())
+				.get(`/tracks?song=${dummyRepository.songB1.id}&with=song`)
+				.expect(200)
+				.expect((res) => {
+					const tracks: Track[] = res.body.items;
+					expect(tracks.length).toBe(1);
+					expect(tracks[0]).toStrictEqual({
+						...expectedTrackResponse(dummyRepository.trackB1_1),
+						song: expectedSongResponse(dummyRepository.songB1),
+					});
+				});
+		});
+	});
+
+	describe("Get Tracks by Release", () => {
+		it("should get all the tracks (2 expected)", () => {
+			return request(app.getHttpServer())
+				.get(`/tracks?release=${dummyRepository.releaseA1_2.id}`)
+				.expect(200)
+				.expect((res) => {
+					const tracks: Track[] = res.body.items;
+					expect(tracks.length).toBe(2);
+					expect(tracks).toContainEqual(expectedTrackResponse(dummyRepository.trackA1_2Video));
+					expect(tracks).toContainEqual(expectedTrackResponse(dummyRepository.trackA2_1));
+				});
+		});
+		it("should get all the tracks (1 expected)", () => {
+			return request(app.getHttpServer())
+				.get(`/tracks?release=${dummyRepository.releaseA1_1.id}`)
+				.expect(200)
+				.expect((res) => {
+					const tracks: Track[] = res.body.items;
+					expect(tracks.length).toBe(1);
+					expect(tracks).toContainEqual(expectedTrackResponse(dummyRepository.trackA1_1));
+				});
+		});
+		it("should get all the tracks, sorted by name", () => {
+			return request(app.getHttpServer())
+				.get(`/tracks?release=${dummyRepository.releaseA1_2.id}&sortBy=name`)
+				.expect(200)
+				.expect((res) => {
+					const tracks: Track[] = res.body.items;
+					expect(tracks.length).toBe(2);
+					expect(tracks[0]).toStrictEqual(expectedTrackResponse(dummyRepository.trackA2_1));
+					expect(tracks[1]).toStrictEqual(expectedTrackResponse(dummyRepository.trackA1_2Video));
+				});
+		});
+		it("should get some tracks (w/ pagination)", () => {
+			return request(app.getHttpServer())
+				.get(`/tracks?release=${dummyRepository.releaseA1_2.id}&skip=1&sortBy=name`)
+				.expect(200)
+				.expect((res) => {
+					const tracks: Track[] = res.body.items;
+					expect(tracks.length).toBe(1);
+					expect(tracks[0]).toStrictEqual(expectedTrackResponse(dummyRepository.trackA1_2Video));
+				});
+		});
+		it("should get tracks w/ related song", () => {
+			return request(app.getHttpServer())
+				.get(`/tracks?release=${dummyRepository.releaseA1_1.id}&with=song`)
+				.expect(200)
+				.expect((res) => {
+					const tracks: Track[] = res.body.items;
+					expect(tracks.length).toBe(1);
+					expect(tracks[0]).toStrictEqual({
+						...expectedTrackResponse(dummyRepository.trackA1_1),
+						song: expectedSongResponse(dummyRepository.songA1)
+					});
+				});
+		});
+	});
+
 	describe("Get Videos Tracks (GET /tracks/videos)", () => {
 		it("should return all the tracks", () => {
 			return request(app.getHttpServer())

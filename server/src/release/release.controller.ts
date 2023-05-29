@@ -17,7 +17,6 @@ import ReassignReleaseDTO from './models/reassign-release.dto';
 import { TrackResponseBuilder } from 'src/track/models/track.response';
 import { PaginationQuery } from 'src/pagination/pagination-query.decorator';
 import RelationIncludeQuery from 'src/relation-include/relation-include-query.decorator';
-import SortingQuery from 'src/sort/sort-query.decorator';
 import Admin from 'src/roles/admin.decorator';
 import IdentifierParam from 'src/identifier/identifier.pipe';
 import Response, { ResponseType } from 'src/response/response.decorator';
@@ -89,34 +88,6 @@ export default class ReleaseController {
 		include: ReleaseQueryParameters.RelationInclude,
 	) {
 		return this.releaseService.get(where, include);
-	}
-
-	@ApiOperation({
-		summary: 'Get all tracks from a release'
-	})
-	@Response({
-		handler: TrackResponseBuilder,
-		type: ResponseType.Page
-	})
-	@Get(':idOrSlug/tracks')
-	async getReleaseTracks(
-		@PaginationQuery()
-		paginationParameters: PaginationParameters,
-		@RelationIncludeQuery(TrackQueryParameters.AvailableAtomicIncludes)
-		include: TrackQueryParameters.RelationInclude,
-		@SortingQuery(TrackQueryParameters.SortingKeys)
-		sortingParameter: TrackQueryParameters.SortingParameter,
-		@IdentifierParam(ReleaseService)
-		where: ReleaseQueryParameters.WhereInput
-	) {
-		const tracks = await this.trackService.getMany(
-			{ release: where }, paginationParameters, include, sortingParameter
-		);
-
-		if (tracks.length == 0) {
-			await this.releaseService.throwIfNotFound(where);
-		}
-		return tracks;
 	}
 
 	@ApiOperation({

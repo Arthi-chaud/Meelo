@@ -188,34 +188,6 @@ export class SongController {
 	}
 
 	@ApiOperation({
-		summary: 'Get all the song\'s tracks'
-	})
-	@Get(':idOrSlug/tracks')
-	@Response({
-		handler: TrackResponseBuilder,
-		type: ResponseType.Page
-	})
-	async getSongTracks(
-		@PaginationQuery()
-		paginationParameters: PaginationParameters,
-		@RelationIncludeQuery(TrackQueryParameters.AvailableAtomicIncludes)
-		include: TrackQueryParameters.RelationInclude,
-		@SortingQuery(TrackQueryParameters.SortingKeys)
-		sortingParameter: TrackQueryParameters.SortingParameter,
-		@IdentifierParam(SongService)
-		where: SongQueryParameters.WhereInput
-	) {
-		const tracks = await this.trackService.getSongTracks(
-			where, paginationParameters, include, sortingParameter
-		);
-
-		if (tracks.length == 0) {
-			await this.songService.throwIfNotFound(where);
-		}
-		return tracks;
-	}
-
-	@ApiOperation({
 		summary: "Get a song's versions"
 	})
 	@Response({

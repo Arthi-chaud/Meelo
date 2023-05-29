@@ -271,69 +271,6 @@ describe('Release Controller', () => {
 		});
 	});
 
-	describe("Get Related Tracks", () => {
-		it("should get all the tracks (2 expected)", () => {
-			return request(app.getHttpServer())
-				.get(`/releases/${dummyRepository.releaseA1_2.id}/tracks`)
-				.expect(200)
-				.expect((res) => {
-					const tracks: Track[] = res.body.items;
-					expect(tracks.length).toBe(2);
-					expect(tracks).toContainEqual(expectedTrackResponse(dummyRepository.trackA1_2Video));
-					expect(tracks).toContainEqual(expectedTrackResponse(dummyRepository.trackA2_1));
-				});
-		});
-		it("should get all the tracks (1 expected)", () => {
-			return request(app.getHttpServer())
-				.get(`/releases/${dummyRepository.releaseA1_1.id}/tracks`)
-				.expect(200)
-				.expect((res) => {
-					const tracks: Track[] = res.body.items;
-					expect(tracks.length).toBe(1);
-					expect(tracks).toContainEqual(expectedTrackResponse(dummyRepository.trackA1_1));
-				});
-		});
-		it("should get all the tracks, sorted by name", () => {
-			return request(app.getHttpServer())
-				.get(`/releases/${dummyRepository.releaseA1_2.id}/tracks?sortBy=name`)
-				.expect(200)
-				.expect((res) => {
-					const tracks: Track[] = res.body.items;
-					expect(tracks.length).toBe(2);
-					expect(tracks[0]).toStrictEqual(expectedTrackResponse(dummyRepository.trackA2_1));
-					expect(tracks[1]).toStrictEqual(expectedTrackResponse(dummyRepository.trackA1_2Video));
-				});
-		});
-		it("should get some tracks (w/ pagination)", () => {
-			return request(app.getHttpServer())
-				.get(`/releases/${dummyRepository.releaseA1_2.id}/tracks?skip=1&sortBy=name`)
-				.expect(200)
-				.expect((res) => {
-					const tracks: Track[] = res.body.items;
-					expect(tracks.length).toBe(1);
-					expect(tracks[0]).toStrictEqual(expectedTrackResponse(dummyRepository.trackA1_2Video));
-				});
-		});
-		it("should get tracks w/ related song", () => {
-			return request(app.getHttpServer())
-				.get(`/releases/${dummyRepository.releaseA1_1.id}/tracks?with=song`)
-				.expect(200)
-				.expect((res) => {
-					const tracks: Track[] = res.body.items;
-					expect(tracks.length).toBe(1);
-					expect(tracks[0]).toStrictEqual({
-						...expectedTrackResponse(dummyRepository.trackA1_1),
-						song: expectedSongResponse(dummyRepository.songA1)
-					});
-				});
-		});
-		it("should throw, as the release does not exist", () => {
-			return request(app.getHttpServer())
-				.get(`/releases/${-1}/tracks`)
-				.expect(404);
-		});
-	});
-
 	describe("Get Tracklist", () => {
 		it("should get the tracklist", () => {
 			return request(app.getHttpServer())

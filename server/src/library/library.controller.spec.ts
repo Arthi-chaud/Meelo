@@ -11,7 +11,7 @@ import LibraryModule from "./library.module";
 import LibraryService from "./library.service";
 import IllustrationModule from "src/illustration/illustration.module";
 import request from 'supertest';
-import type { Library, Track } from "src/prisma/models";
+import type { Library } from "src/prisma/models";
 import AlbumModule from "src/album/album.module";
 import ArtistModule from "src/artist/artist.module";
 import ReleaseModule from "src/release/release.module";
@@ -23,7 +23,7 @@ import { LyricsModule } from "src/lyrics/lyrics.module";
 import TasksModule from "src/tasks/tasks.module";
 import SetupApp from "test/setup-app";
 import { SongWithVideoResponse } from "src/song/models/song-with-video.response";
-import { expectedSongResponse, expectedTrackResponse, expectedReleaseResponse } from "test/expected-responses";
+import { expectedSongResponse, expectedTrackResponse } from "test/expected-responses";
 describe('Library Controller', () => {
 	let app: INestApplication;
 	let dummyRepository: TestPrismaService;
@@ -202,43 +202,6 @@ describe('Library Controller', () => {
 					const videoSongs: SongWithVideoResponse[] = res.body.items;
 					expect(videoSongs.length).toBe(0);
 				});
-		});
-	});
-
-	describe('Get all Related Tracks (GET /libraries/:id/tracks)', () => {
-		it("should return every tracks, w/ song & parent release", () => {
-			return request(app.getHttpServer())
-				.get(`/libraries/${dummyRepository.library1.id}/tracks?with=song,release`)
-				.expect(200)
-				.expect((res) => {
-					const tracks: Track[] = res.body.items;
-					expect(tracks.length).toBe(4);
-					expect(tracks).toContainEqual({
-						...expectedTrackResponse(dummyRepository.trackA1_1),
-						release: expectedReleaseResponse(dummyRepository.releaseA1_1),
-						song: expectedSongResponse(dummyRepository.songA1)
-					});
-					expect(tracks).toContainEqual({
-						...expectedTrackResponse(dummyRepository.trackA1_2Video),
-						release: expectedReleaseResponse(dummyRepository.releaseA1_2),
-						song: expectedSongResponse(dummyRepository.songA1)
-					});
-					expect(tracks).toContainEqual({
-						...expectedTrackResponse(dummyRepository.trackA2_1),
-						release: expectedReleaseResponse(dummyRepository.releaseA1_2),
-						song: expectedSongResponse(dummyRepository.songA2)
-					});
-					expect(tracks).toContainEqual({
-						...expectedTrackResponse(dummyRepository.trackC1_1),
-						release: expectedReleaseResponse(dummyRepository.compilationReleaseA1),
-						song: expectedSongResponse(dummyRepository.songC1)
-					});
-				});
-		});
-		it("should return an error, as the library does not exist", () => {
-			return request(app.getHttpServer())
-				.get(`/libraries/-1/tracks`)
-				.expect(404);
 		});
 	});
 
