@@ -13,7 +13,6 @@ import {
 	ApiOperation, ApiPropertyOptional, ApiTags, IntersectionType
 } from '@nestjs/swagger';
 import ReassignAlbumDTO from './models/reassign-album.dto';
-import { Genre } from "src/prisma/models";
 import { AlbumResponseBuilder } from './models/album.response';
 import { ReleaseResponseBuilder } from 'src/release/models/release.response';
 import { PaginationQuery } from 'src/pagination/pagination-query.decorator';
@@ -48,15 +47,14 @@ class Selector extends IntersectionType(
 
 	@IsOptional()
 	@ApiPropertyOptional({
-		type: String,
-		description: `Filter albums by (album) artist, using their identifier. <br/>For compilation albums, use '${compilationAlbumArtistKeyword}'`
+		description: `Filter albums by (album) artist, using their identifier.<br/>
+		For compilation albums, use '${compilationAlbumArtistKeyword}'`
 	})
 	@TransformIdentifier(ArtistService)
 	artist?: ArtistQueryParameters.WhereInput;
 
 	@IsOptional()
 	@ApiPropertyOptional({
-		type: String,
 		description: 'Filter albums by genre'
 	})
 	@TransformIdentifier(GenreService)
@@ -70,7 +68,6 @@ class Selector extends IntersectionType(
 
 	@IsOptional()
 	@ApiPropertyOptional({
-		type: String,
 		description: 'Filter albums by library'
 	})
 	@TransformIdentifier(LibraryService)
@@ -87,8 +84,6 @@ export default class AlbumController {
 		private albumService: AlbumService,
 		@Inject(forwardRef(() => TrackService))
 		private trackService: TrackService,
-		@Inject(forwardRef(() => GenreService))
-		private genreService: GenreService,
 	) {}
 
 	@Get()
@@ -178,32 +173,6 @@ export default class AlbumController {
 			paginationParameters,
 			include,
 			sortingParameter
-		);
-	}
-
-	@ApiOperation({
-		summary: 'Get all the genres of an album'
-	})
-	@Response({
-		returns: Genre,
-		type: ResponseType.Page
-	})
-	@Get(':idOrSlug/genres')
-	async getAlbumGenres(
-		@IdentifierParam(AlbumService)
-		where: AlbumQueryParameters.WhereInput,
-		@RelationIncludeQuery(GenreQueryParameters.AvailableAtomicIncludes)
-		include: GenreQueryParameters.RelationInclude,
-		@SortingQuery(GenreQueryParameters.SortingKeys)
-		sortingParameter: GenreQueryParameters.SortingParameter,
-		@PaginationQuery()
-		paginationParameters: PaginationParameters,
-	) {
-		return this.genreService.getAlbumGenres(
-			where,
-			include,
-			sortingParameter,
-			paginationParameters
 		);
 	}
 

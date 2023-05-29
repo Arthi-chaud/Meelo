@@ -33,13 +33,6 @@ class Selector extends IntersectionType(ArtistQueryParameters.SortingParameter) 
 
 	@IsOptional()
 	@ApiPropertyOptional({
-		description: 'If true, only artists that have at least one album will be returned'
-	})
-	albumArtistOnly?: boolean;
-
-	@IsOptional()
-	@ApiPropertyOptional({
-		type: String,
 		description: 'Filter artists by genre'
 	})
 	@TransformIdentifier(GenreService)
@@ -47,7 +40,6 @@ class Selector extends IntersectionType(ArtistQueryParameters.SortingParameter) 
 
 	@IsOptional()
 	@ApiPropertyOptional({
-		type: String,
 		description: 'Filter artists by library'
 	})
 	@TransformIdentifier(LibraryService)

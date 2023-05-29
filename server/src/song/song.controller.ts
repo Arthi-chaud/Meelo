@@ -12,8 +12,6 @@ import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import { TrackType } from '@prisma/client';
 import { LyricsService } from 'src/lyrics/lyrics.service';
 import LyricsDto from 'src/lyrics/models/update-lyrics.dto';
-import GenreService from 'src/genre/genre.service';
-import GenreQueryParameters from 'src/genre/models/genre.query-parameters';
 import { SongResponseBuilder } from './models/song.response';
 import { TrackResponseBuilder } from 'src/track/models/track.response';
 import { PaginationQuery } from 'src/pagination/pagination-query.decorator';
@@ -23,7 +21,6 @@ import Admin from 'src/roles/admin.decorator';
 import IdentifierParam from 'src/identifier/identifier.pipe';
 import Response, { ResponseType } from 'src/response/response.decorator';
 import { ArtistResponseBuilder } from 'src/artist/models/artist.response';
-import { Genre } from 'src/prisma/models';
 import { LyricsResponseBuilder } from 'src/lyrics/models/lyrics.response';
 import { SongWithVideoResponseBuilder } from './models/song-with-video.response';
 
@@ -39,8 +36,6 @@ export class SongController {
 		private artistService: ArtistService,
 		@Inject(forwardRef(() => LyricsService))
 		private lyricsService: LyricsService,
-		@Inject(forwardRef(() => GenreService))
-		private genreService: GenreService
 	) { }
 
 	@ApiOperation({
@@ -224,32 +219,6 @@ export class SongController {
 			await this.songService.throwIfNotFound(where);
 		}
 		return videoTracks;
-	}
-
-	@ApiOperation({
-		summary: 'Get all the song\'s genres'
-	})
-	@Response({
-		returns: Genre,
-		type: ResponseType.Page
-	})
-	@Get(':idOrSlug/genres')
-	async getSongGenres(
-		@RelationIncludeQuery(GenreQueryParameters.AvailableAtomicIncludes)
-		include: GenreQueryParameters.RelationInclude,
-		@SortingQuery(GenreQueryParameters.SortingKeys)
-		sortingParameter: GenreQueryParameters.SortingParameter,
-		@IdentifierParam(SongService)
-		where: SongQueryParameters.WhereInput,
-		@PaginationQuery()
-		paginationParameters: PaginationParameters,
-	) {
-		return this.genreService.getSongGenres(
-			where,
-			include,
-			sortingParameter,
-			paginationParameters
-		);
 	}
 
 	@ApiOperation({

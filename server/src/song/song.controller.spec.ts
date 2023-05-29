@@ -1,6 +1,6 @@
 import { createTestingModule } from "test/test-module";
 import { TestingModule } from "@nestjs/testing";
-import type { Artist, Genre, Lyrics, Song, Track } from "src/prisma/models";
+import type { Artist, Lyrics, Song, Track } from "src/prisma/models";
 import PrismaService from "src/prisma/prisma.service";
 import request from "supertest";
 import { INestApplication } from "@nestjs/common";
@@ -347,26 +347,6 @@ describe('Song Controller', () => {
 				.get(`/songs/${dummyRepository.songC1.id}/lyrics`)
 				.expect(404);
 		})
-	});
-
-	describe("Get Song's genres (GET /songs/:id/genres)", () => {
-		it("should return the song's genres", () => {
-			return request(app.getHttpServer())
-				.get(`/songs/${dummyRepository.artistA.slug}+${dummyRepository.songA2.slug}/genres`)
-				.expect(200)
-				.expect((res) => {
-					const genres: Genre[] = res.body.items;
-					expect(genres).toStrictEqual([
-						dummyRepository.genreB
-					]);
-				});
-		});
-
-		it("should return an error, as the song does not exist", () => {
-			return request(app.getHttpServer())
-				.get(`/songs/${-1}/genres`)
-				.expect(404);
-		});
 	});
 
 	describe("Update Song's Lyrics (POST /songs/:id/lyrics)", () => {

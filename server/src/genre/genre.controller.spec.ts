@@ -106,6 +106,37 @@ describe("Genre Controller", () => {
 		});
 	});
 
+	describe("Get Genres of a song", () => {
+		it("should return the song's genres", () => {
+			return request(app.getHttpServer())
+				.get(`/genres?song=${dummyRepository.artistA.slug}+${dummyRepository.songA2.slug}`)
+				.expect(200)
+				.expect((res) => {
+					const genres: Genre[] = res.body.items;
+					expect(genres).toStrictEqual([
+						dummyRepository.genreB
+					]);
+				});
+		});
+	});
+
+
+	describe("Get Genres of an album", () => {
+
+		it("should return an array of genres", () => {
+			return request(app.getHttpServer())
+				.get(`/genres?album=${dummyRepository.albumA1.id}&sortBy=name`)
+				.expect(200)
+				.expect((res) => {
+					const genres: Genre[] = res.body.items;
+					expect(genres).toStrictEqual([
+						dummyRepository.genreA,
+						dummyRepository.genreB,
+					])
+				});
+		});
+	});
+
 
 	describe("Get Genre's songs", () => {
 		it("Should get all the songs", () => {

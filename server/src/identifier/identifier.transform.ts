@@ -1,6 +1,7 @@
 import { applyDecorators } from "@nestjs/common";
 import Identifier from "./models/identifier";
 import { Transform } from "class-transformer";
+import { ApiPropertyOptional } from "@nestjs/swagger";
 
 type ParsingService<WhereInput> = {
 	formatIdentifierToWhereInput: (identifier: Identifier) => WhereInput;
@@ -13,14 +14,17 @@ type ParsingService<WhereInput> = {
  */
 export default function TransformIdentifier<WhereInput, Service extends ParsingService<WhereInput>>(service: Service) {
 	return applyDecorators(
+		ApiPropertyOptional({ type: String }),
 		Transform(({ value }) => {
 			if (!value.length) {
 				return undefined;
 			}
-			if (isNaN(+value)) {
-				return service.formatIdentifierToWhereInput(value);
+			const stringValue = value as string;
+
+			if (isNaN(+stringValue)) {
+				return service.formatIdentifierToWhereInput(stringValue.replace(/\s+/, '+'));
 			}
-			return service.formatIdentifierToWhereInput(parseInt(value));
+			return service.formatIdentifierToWhereInput(parseInt(stringValue));
 		})
 	);
 }

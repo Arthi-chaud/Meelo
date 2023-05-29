@@ -2,7 +2,6 @@ import {
 	Controller, Get, Param
 } from '@nestjs/common';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
-import GenreQueryParameters from 'src/genre/models/genre.query-parameters';
 import { PaginationParameters } from 'src/pagination/models/pagination-parameters';
 import SongQueryParameters from 'src/song/models/song.query-params';
 import { SongResponseBuilder } from 'src/song/models/song.response';
@@ -10,7 +9,6 @@ import { PaginationQuery } from 'src/pagination/pagination-query.decorator';
 import RelationIncludeQuery from 'src/relation-include/relation-include-query.decorator';
 import SortingQuery from 'src/sort/sort-query.decorator';
 import Response, { ResponseType } from 'src/response/response.decorator';
-import { Genre } from 'src/prisma/models';
 import { SearchAllResponseBuilder } from './models/search-all.response';
 import AlbumService from 'src/album/album.service';
 import ArtistService from 'src/artist/artist.service';
@@ -64,29 +62,6 @@ export default class SearchController {
 	) {
 		return this.songService.search(
 			query, {}, paginationParameters, include, sortingParameter
-		);
-	}
-
-	@ApiOperation({
-		summary: 'Search genres by their names'
-	})
-	@Response({
-		returns: Genre,
-		type: ResponseType.Page
-	})
-	@Get('/genres/:query')
-	async searchGenres(
-		@Param('query')
-		query: string,
-		@PaginationQuery()
-		paginationParameters: PaginationParameters,
-		@RelationIncludeQuery(GenreQueryParameters.AvailableAtomicIncludes)
-		include: GenreQueryParameters.RelationInclude,
-		@SortingQuery(GenreQueryParameters.SortingKeys)
-		sortingParameter: GenreQueryParameters.SortingParameter
-	) {
-		return this.genreService.getMany(
-			{ slug: { contains: query } }, paginationParameters, include, sortingParameter
 		);
 	}
 }
