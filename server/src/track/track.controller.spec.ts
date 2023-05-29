@@ -222,7 +222,7 @@ describe('Track Controller', () => {
 		});
 	});
 
-	describe("Get Videos Tracks (GET /tracks/videos)", () => {
+	describe("Get Videos Tracks", () => {
 		it("should return all the tracks", () => {
 			return request(app.getHttpServer())
 				.get(`/tracks?type=Video`)

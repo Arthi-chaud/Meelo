@@ -23,7 +23,6 @@ import IdentifierParam from 'src/identifier/identifier.pipe';
 import Response, { ResponseType } from 'src/response/response.decorator';
 import { ArtistResponseBuilder } from 'src/artist/models/artist.response';
 import { LyricsResponseBuilder } from 'src/lyrics/models/lyrics.response';
-import { SongWithVideoResponseBuilder } from './models/song-with-video.response';
 import { IsOptional } from 'class-validator';
 import TransformIdentifier from 'src/identifier/identifier.transform';
 import LibraryQueryParameters from 'src/library/models/library.query-parameters';
@@ -31,7 +30,7 @@ import LibraryService from 'src/library/library.service';
 import GenreQueryParameters from 'src/genre/models/genre.query-parameters';
 import GenreService from 'src/genre/genre.service';
 
-class Selector extends IntersectionType(SongQueryParameters.SortingParameter) {
+export class Selector extends IntersectionType(SongQueryParameters.SortingParameter) {
 	@IsOptional()
 	@ApiPropertyOptional({
 		description: 'Filter songs by artist'
@@ -103,27 +102,6 @@ export class SongController {
 			paginationParameters,
 			include,
 			selector
-		);
-	}
-
-	@ApiOperation({
-		summary: 'Get all songs with at least one video.'
-	})
-	@Response({
-		handler: SongWithVideoResponseBuilder,
-		type: ResponseType.Page
-	})
-	@Get('/videos')
-	async getVideosByLibrary(
-		@PaginationQuery()
-		paginationParameters: PaginationParameters,
-		@RelationIncludeQuery(SongQueryParameters.AvailableAtomicIncludes)
-		include: SongQueryParameters.RelationInclude,
-		@SortingQuery(SongQueryParameters.SortingKeys)
-		sortingParameter: SongQueryParameters.SortingParameter,
-	) {
-		return this.songService.getSongsWithVideo(
-			{ }, paginationParameters, include, sortingParameter
 		);
 	}
 

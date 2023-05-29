@@ -22,8 +22,7 @@ import TestPrismaService from "test/test-prisma.service";
 import { LyricsModule } from "src/lyrics/lyrics.module";
 import TasksModule from "src/tasks/tasks.module";
 import SetupApp from "test/setup-app";
-import { SongWithVideoResponse } from "src/song/models/song-with-video.response";
-import { expectedSongResponse, expectedTrackResponse } from "test/expected-responses";
+
 describe('Library Controller', () => {
 	let app: INestApplication;
 	let dummyRepository: TestPrismaService;
@@ -167,40 +166,6 @@ describe('Library Controller', () => {
 				.expect((res) => {
 					const libraries: Library[] = res.body.items;
 					expect(libraries.length).toBe(0);
-				});
-		});
-	});
-
-	describe('Get all Related Videos (GET /libraries/:id/videos)', () => {
-		it("should return the songs With video", async () => {
-			return request(app.getHttpServer())
-				.get(`/libraries/${dummyRepository.library1.id}/videos`)
-				.expect(200)
-				.expect((res) => {
-					const videoSongs: SongWithVideoResponse[] = res.body.items;
-					expect(videoSongs.length).toBe(1);
-					expect(videoSongs[0]).toStrictEqual({
-						...expectedSongResponse(dummyRepository.songA1),
-						video: expectedTrackResponse(dummyRepository.trackA1_2Video)
-					});
-				});
-		});
-		it("should return the songs With video (empty page)", async () => {
-			return request(app.getHttpServer())
-				.get(`/libraries/${dummyRepository.library1.id}/videos?skip=1`)
-				.expect(200)
-				.expect((res) => {
-					const videoSongs: SongWithVideoResponse[] = res.body.items;
-					expect(videoSongs.length).toBe(0);
-				});
-		});
-		it("should return an empty list (no videos in library)", async () => {
-			return request(app.getHttpServer())
-				.get(`/libraries/${dummyRepository.library2.id}/videos`)
-				.expect(200)
-				.expect((res) => {
-					const videoSongs: SongWithVideoResponse[] = res.body.items;
-					expect(videoSongs.length).toBe(0);
 				});
 		});
 	});

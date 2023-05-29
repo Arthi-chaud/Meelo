@@ -364,48 +364,6 @@ export default class SongService extends RepositoryService<
 	}
 
 	/**
-	 * Get songs with at least one video track
-	 * The songs are returned with its first video track
-     * @param where the query parameters to find the songs
-	 * @param pagination the pagination parameters
-	 * @param include the relations to include with the returned songs
-	 */
-	async getSongsWithVideo<I extends Omit<SongQueryParameters.RelationInclude, 'tracks'>>(
-		where: SongQueryParameters.ManyWhereInput,
-		pagination?: PaginationParameters,
-		include?: I,
-		sort?: SongQueryParameters.SortingParameter
-	) {
-		return this.prismaService.song.findMany({
-			orderBy: sort ? this.formatSortingInput(sort) : undefined,
-			include: {
-				...RepositoryService.formatInclude(include),
-				tracks: {
-					where: {
-						type: 'Video'
-					},
-					orderBy: { id: 'asc' },
-					take: 1
-				}
-			},
-			...buildPaginationParameters(pagination),
-			where: {
-				...this.formatManyWhereInput(where),
-				AND: {
-					tracks: {
-						some: {
-							type: "Video"
-						}
-					}
-				}
-			}
-		}).then((songs) => songs.map(({ tracks, ...song }) => ({
-			...song,
-			video: tracks[0]
-		})));
-	}
-
-	/**
 	 * Search for songs using a token.
 	 * To match, the song's slug, or its artist's, or one of its track's releases must match the token
 	 */

@@ -2,8 +2,6 @@ import {
 	Controller, Get, Inject, Query, forwardRef
 } from '@nestjs/common';
 import { PaginationParameters } from 'src/pagination/models/pagination-parameters';
-import SongQueryParameters from 'src/song/models/song.query-params';
-import SongService from 'src/song/song.service';
 import ArtistService from './artist.service';
 import ArtistQueryParameters from './models/artist.query-parameters';
 import {
@@ -13,9 +11,7 @@ import { ArtistResponseBuilder } from './models/artist.response';
 import { PaginationQuery } from 'src/pagination/pagination-query.decorator';
 import IdentifierParam from 'src/identifier/identifier.pipe';
 import RelationIncludeQuery from 'src/relation-include/relation-include-query.decorator';
-import SortingQuery from 'src/sort/sort-query.decorator';
 import Response, { ResponseType } from 'src/response/response.decorator';
-import { SongWithVideoResponseBuilder } from 'src/song/models/song-with-video.response';
 import { IsOptional } from 'class-validator';
 import TransformIdentifier from 'src/identifier/identifier.transform';
 import GenreService from 'src/genre/genre.service';
@@ -57,8 +53,6 @@ export default class ArtistController {
 	constructor(
 		@Inject(forwardRef(() => ArtistService))
 		private artistService: ArtistService,
-		@Inject(forwardRef(() => SongService))
-		private songService: SongService
 	) {}
 
 	@ApiOperation({
@@ -107,36 +101,5 @@ export default class ArtistController {
 		where: ArtistQueryParameters.WhereInput,
 	) {
 		return this.artistService.get(where, include);
-	}
-
-	@ApiOperation({
-		summary: 'Get all song w/ a video from an artist'
-	})
-	@Response({
-		handler: SongWithVideoResponseBuilder,
-		type: ResponseType.Page
-	})
-	@Get(':idOrSlug/videos')
-	async getArtistVideos(
-		@PaginationQuery()
-		paginationParameters: PaginationParameters,
-		@RelationIncludeQuery(SongQueryParameters.AvailableAtomicIncludes)
-		include: SongQueryParameters.RelationInclude,
-		@SortingQuery(SongQueryParameters.SortingKeys)
-		sortingParameter: SongQueryParameters.SortingParameter,
-		@IdentifierParam(ArtistService)
-		where: ArtistQueryParameters.WhereInput
-	) {
-		const videoTracks = await this.songService.getSongsWithVideo(
-			{ artist: where },
-			paginationParameters,
-			include,
-			sortingParameter
-		);
-
-		if (videoTracks.length == 0) {
-			await this.artistService.throwIfNotFound(where);
-		}
-		return videoTracks;
 	}
 }

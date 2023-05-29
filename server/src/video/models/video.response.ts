@@ -4,21 +4,18 @@ import {
 import { ApiProperty, IntersectionType } from "@nestjs/swagger";
 import ResponseBuilderInterceptor from "src/response/interceptors/response.interceptor";
 import { TrackResponse, TrackResponseBuilder } from "src/track/models/track.response";
-import { SongResponse, SongResponseBuilder } from "./song.response";
+import { SongResponse, SongResponseBuilder } from "../../song/models/song.response";
 import { Song, Track } from "src/prisma/models";
 
-class VideoComponent {
+export class VideoResponse extends IntersectionType(
+	SongResponse
+) {
 	@ApiProperty()
-	video: TrackResponse;
+	track: TrackResponse;
 }
 
-export class SongWithVideoResponse extends IntersectionType(
-	SongResponse,
-	VideoComponent
-) {}
-
 @Injectable()
-export class SongWithVideoResponseBuilder extends ResponseBuilderInterceptor<Song & { video: Track }, SongWithVideoResponse> {
+export class VideoResponseBuilder extends ResponseBuilderInterceptor<Song & { track: Track }, VideoResponse> {
 	constructor(
 		private songResponseBuilder: SongResponseBuilder,
 		@Inject(forwardRef(() => TrackResponseBuilder))
@@ -27,12 +24,12 @@ export class SongWithVideoResponseBuilder extends ResponseBuilderInterceptor<Son
 		super();
 	}
 
-	returnType = SongWithVideoResponse;
+	returnType = VideoResponse;
 
-	async buildResponse(song: Song & { video: Track }): Promise<SongWithVideoResponse> {
+	async buildResponse(song: Song & { track: Track }): Promise<VideoResponse> {
 		return {
 			...await this.songResponseBuilder.buildResponse(song),
-			video: await this.trackResponseBuilder.buildResponse(song.video)
+			track: await this.trackResponseBuilder.buildResponse(song.track)
 		};
 	}
 }

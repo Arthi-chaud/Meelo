@@ -5,26 +5,21 @@ import {
 import LibraryService from './library.service';
 import { Library } from 'src/prisma/models';
 import { PaginationParameters } from 'src/pagination/models/pagination-parameters';
-import SongQueryParameters from 'src/song/models/song.query-params';
 import LibraryQueryParameters from './models/library.query-parameters';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import { PaginationQuery } from 'src/pagination/pagination-query.decorator';
-import RelationIncludeQuery from 'src/relation-include/relation-include-query.decorator';
 import SortingQuery from 'src/sort/sort-query.decorator';
 import Admin from 'src/roles/admin.decorator';
 import UpdateLibraryDto from './models/update-library.dto';
 import CreateLibraryDto from './models/create-library.dto';
 import IdentifierParam from 'src/identifier/identifier.pipe';
 import Response, { ResponseType } from 'src/response/response.decorator';
-import { SongWithVideoResponseBuilder } from 'src/song/models/song-with-video.response';
-import SongService from 'src/song/song.service';
 
 @ApiTags("Libraries")
 @Controller('libraries')
 export default class LibraryController {
 	constructor(
 		private libraryService: LibraryService,
-		private songService: SongService,
 	) { }
 
 	@ApiOperation({
@@ -95,33 +90,5 @@ export default class LibraryController {
 
 		this.libraryService.delete(where);
 		return library;
-	}
-
-	@ApiOperation({
-		summary: 'Get all songs with at least one video from a library.'
-	})
-	@Response({
-		handler: SongWithVideoResponseBuilder,
-		type: ResponseType.Page
-	})
-	@Get(':idOrSlug/videos')
-	async getVideosByLibrary(
-		@PaginationQuery()
-		paginationParameters: PaginationParameters,
-		@RelationIncludeQuery(SongQueryParameters.AvailableAtomicIncludes)
-		include: SongQueryParameters.RelationInclude,
-		@SortingQuery(SongQueryParameters.SortingKeys)
-		sortingParameter: SongQueryParameters.SortingParameter,
-		@IdentifierParam(LibraryService)
-		where: LibraryQueryParameters.WhereInput
-	) {
-		const songs = await this.songService.getSongsWithVideo(
-			{ library: where }, paginationParameters, include, sortingParameter
-		);
-
-		if (songs.length == 0) {
-			await this.libraryService.throwIfNotFound(where);
-		}
-		return songs;
 	}
 }

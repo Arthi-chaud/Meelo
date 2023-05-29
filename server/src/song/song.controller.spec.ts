@@ -8,7 +8,6 @@ import SongModule from "src/song/song.module";
 import TestPrismaService from "test/test-prisma.service";
 import SongService from "./song.service";
 import SetupApp from "test/setup-app";
-import { SongWithVideoResponse } from "./models/song-with-video.response";
 import { expectedSongResponse, expectedArtistResponse, expectedTrackResponse, expectedReleaseResponse } from "test/expected-responses";
 import ProviderService from "src/providers/provider.service";
 import SettingsService from "src/settings/settings.service";
@@ -104,47 +103,6 @@ describe('Song Controller', () => {
 					expect(songs[0]).toStrictEqual({
 						...expectedSongResponse(dummyRepository.songA1),
 						artist: expectedArtistResponse(dummyRepository.artistA)
-					});
-				});
-		});
-	});
-
-	describe("Get Songs With Videos", () => {
-		it("should return the songs With video", () => {
-			return request(app.getHttpServer())
-				.get(`/songs/videos`)
-				.expect(200)
-				.expect((res) => {
-					const videoSongs: SongWithVideoResponse[] = res.body.items;
-					expect(videoSongs.length).toBe(1);
-					expect(videoSongs[0]).toStrictEqual({
-						...expectedSongResponse(dummyRepository.songA1),
-						video: expectedTrackResponse(dummyRepository.trackA1_2Video)
-					});
-				});
-		});
-		it("should return an empty list (pagination)", () => {
-			return request(app.getHttpServer())
-				.get(`/songs/videos?skip=1`)
-				.expect(200)
-				.expect((res) => {
-					const videoSongs: SongWithVideoResponse[] = res.body.items;
-					expect(videoSongs.length).toBe(0);
-				});
-		});
-		it("should return songs with their lyrics", () => {
-			return request(app.getHttpServer())
-				.get(`/songs/videos?with=lyrics`)
-				.expect(200)
-				.expect((res) => {
-					const videoSongs: SongWithVideoResponse[] = res.body.items;
-					expect(videoSongs.length).toBe(1);
-					expect(videoSongs[0]).toStrictEqual({
-						...expectedSongResponse({
-							...dummyRepository.songA1,
-							lyrics: dummyRepository.lyricsA1
-						}),
-						video: expectedTrackResponse(dummyRepository.trackA1_2Video)
 					});
 				});
 		});
