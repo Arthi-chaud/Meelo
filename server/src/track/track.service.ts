@@ -136,8 +136,14 @@ export default class TrackService extends RepositoryService<
 		if (where.album) {
 			queryParameters = {
 				...queryParameters,
-				release: {
-					album: AlbumService.formatWhereInput(where.album!)
+				song: {
+					tracks: {
+						some: {
+							release: {
+								album: AlbumService.formatWhereInput(where.album!)
+							}
+						}
+					}
 				}
 			};
 		}
