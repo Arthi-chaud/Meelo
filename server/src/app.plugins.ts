@@ -48,6 +48,7 @@ const buildPipes = (_app: INestApplication) => [
 
 			return new InvalidRequestException(error[0].constraints![failedConstraint]);
 		},
+		whitelist: true,
 		transformOptions: {
 			enableImplicitConversion: true
 		},

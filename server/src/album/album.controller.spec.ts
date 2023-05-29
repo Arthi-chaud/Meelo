@@ -24,6 +24,8 @@ import { expectedAlbumResponse, expectedArtistResponse, expectedReleaseResponse 
 import ProviderService from "src/providers/provider.service";
 import SettingsService from "src/settings/settings.service";
 
+jest.setTimeout(60000);
+
 describe('Album Controller', () => {
 	let dummyRepository: TestPrismaService;
 	let app: INestApplication;

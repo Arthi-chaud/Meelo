@@ -1,5 +1,5 @@
 import { ApiProperty } from "@nestjs/swagger";
-import { IsNotEmpty } from "class-validator";
+import { IsNumber } from "class-validator";
 import { Album, Release } from "src/prisma/models";
 
 export default class ReassignReleaseDTO {
@@ -7,13 +7,13 @@ export default class ReassignReleaseDTO {
 		description: 'The ID of the release to reassign',
 		example: 123
 	})
-	@IsNotEmpty()
+	@IsNumber()
 	releaseId: Release['id'];
 
 	@ApiProperty({
 		description: 'The ID of the album to reassign the release to',
 		example: 124
 	})
-	@IsNotEmpty()
+	@IsNumber()
 	albumId: Album['id'];
 }
