@@ -17,7 +17,6 @@ import SetupApp from "test/setup-app";
 import IllustrationModule from "src/illustration/illustration.module";
 import GenreModule from "src/genre/genre.module";
 import TestPrismaService from "test/test-prisma.service";
-import type ReassignAlbumDTO from "./models/reassign-album.dto";
 import FileModule from "src/file/file.module";
 import AlbumService from "./album.service";
 import { expectedAlbumResponse, expectedArtistResponse, expectedReleaseResponse } from "test/expected-responses";
@@ -404,19 +403,21 @@ describe('Album Controller', () => {
 		});
 	});
 
-	describe("Reassign the album", () => {
-		it("should reassign the compilation album to an artist", () => {
+	describe("Update the album", () => {
+		it("should reassign the compilation album to an artist + change the type", () => {
 			return request(app.getHttpServer())
-				.post(`/albums/${dummyRepository.compilationAlbumA.id}`)
-				.send(<ReassignAlbumDTO>{
-					artistId: dummyRepository.artistB.id
+				.post(`/albums/compilations+${dummyRepository.compilationAlbumA.slug}`)
+				.send({
+					artistId: dummyRepository.artistB.id,
+					type: 'RemixAlbum'
 				})
 				.expect(201)
 				.expect((res) => {
 					const artist: Album = res.body;
 					expect(artist).toStrictEqual({
 						...expectedAlbumResponse(dummyRepository.compilationAlbumA),
-						artistId: dummyRepository.artistB.id
+						artistId: dummyRepository.artistB.id,
+						type: 'RemixAlbum'
 					});
 				});
 		});
@@ -424,8 +425,7 @@ describe('Album Controller', () => {
 		it("should reassign the album as a compilation", () => {
 			return request(app.getHttpServer())
 				.post(`/albums/${dummyRepository.compilationAlbumA.id}`)
-				.send(<ReassignAlbumDTO>{
-					albumId: dummyRepository.compilationAlbumA.id,
+				.send({
 					artistId: null
 				})
 				.expect(201)
@@ -433,7 +433,8 @@ describe('Album Controller', () => {
 					const artist: Album = res.body;
 					expect(artist).toStrictEqual({
 						...expectedAlbumResponse(dummyRepository.compilationAlbumA),
-						artistId: null
+						artistId: null,
+						type: 'RemixAlbum'
 					});
 				});
 		});

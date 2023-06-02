@@ -382,6 +382,23 @@ export default class API {
 	}
 
 	/**
+	 * Update Resourse Illustration
+	 */
+	static async updateAlbum(
+		albumSlugOrId: number | string,
+		newType: AlbumType
+	): Promise<unknown> {
+		return API.fetch({
+			route: `/albums/${albumSlugOrId}`,
+			errorMessage: "Update Album Failed",
+			method: 'POST',
+			parameters: {},
+			emptyResponse: true,
+			data: { type: newType }
+		});
+	}
+
+	/**
 	 * Fetch all album artists
 	 * @returns An InfiniteQuery of Artists
 	 */

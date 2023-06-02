@@ -54,6 +54,8 @@ const en = {
 	registrationDate: 'Registration Date',
 	noLyricsFound: 'No Lyrics Found',
 
+	changeAlbumType: 'Change Album Type',
+
 	libraryDeleted: 'Library deleted',
 	libraryDeletionFail: 'Deleting library failed',
 	libraryCreated: 'Library created',

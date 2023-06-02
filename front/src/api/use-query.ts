@@ -115,7 +115,7 @@ const useQueries = <ReturnType, Params extends any[][]>(
 	...queries: Parameters<typeof useQuery<ReturnType, Params[number]>>[]
 ) => {
 	return useReactQueries(
-		queries.map(([query, ...params]) => prepareMeeloQuery(query, ...params))
+		queries.map(([query, ...params]) => prepareMeeloQuery(query, ...params as Params[number]))
 	);
 };
 

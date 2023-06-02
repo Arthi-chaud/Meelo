@@ -13,6 +13,7 @@ import { useConfirm } from "material-ui-confirm";
 import { ReleaseWithRelations } from "../../models/release";
 import { UpdateReleaseIllustrationAction } from "../actions/update-illustration";
 import { translate } from "../../i18n/translate";
+import ChangeAlbumType from "../actions/album-type";
 
 type ReleaseContextualMenuProps = {
 	release: ReleaseWithRelations<'album'>;
@@ -59,6 +60,7 @@ const ReleaseContextualMenu = (props: ReleaseContextualMenuProps) => {
 				onClick: () => tracksMasterMutation.mutate()
 			},
 		],
+		[ChangeAlbumType(props.release.album, queryClient, confirm)],
 		[UpdateReleaseIllustrationAction(queryClient, props.release.id)],
 		[DownloadReleaseAction(confirm, props.release.id)],
 		[ShareReleaseAction(props.release.id)]
