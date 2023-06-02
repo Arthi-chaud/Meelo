@@ -98,6 +98,8 @@ const fr: TranslationMap = {
 	backToTop: 'Retour en haut',
 	changeLayout: 'Changer la disposition',
 
+	changeAlbumType: "Changer le Type de l'Album",
+
 	sortBy: 'Trier par',
 	order: 'Ordre',
 	asc: 'Asc',

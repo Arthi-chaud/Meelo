@@ -6,6 +6,7 @@ import { ShareAlbumAction } from "../actions/share";
 import ContextualMenu from "./contextual-menu";
 import { AlbumWithRelations } from "../../models/album";
 import { useQueryClient } from "../../api/use-query";
+import ChangeAlbumType from "../actions/album-type";
 
 type AlbumContextualMenuProps = {
 	album: AlbumWithRelations<'artist'>;
@@ -20,13 +21,16 @@ const AlbumContextualMenu = (props: AlbumContextualMenuProps) => {
 		[
 			...props.album.artist ? [GoToArtistAction(props.album.artist.slug)] : [],
 			GoToAlbumReleasesAction(albumSlug),
-		], [
+		],
+		[ChangeAlbumType(props.album, queryClient, confirm)],
+		[
 			DownloadReleaseAsyncAction(
 				confirm,
 				() => queryClient.fetchQuery(API.getMasterRelease(albumSlug))
 					.then((release) => release.id)
 			),
-		], [ShareAlbumAction(albumSlug)]
+		],
+		[ShareAlbumAction(albumSlug)]
 	]}/>;
 };
 
