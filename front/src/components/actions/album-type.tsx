@@ -4,12 +4,12 @@ import { translate } from "../../i18n/translate";
 import { useConfirm } from "material-ui-confirm";
 import Album, { AlbumType } from "../../models/album";
 import store from "../../state/store";
-import * as AlbumIcon from "@mui/icons-material/Album";
 import { Chip, Grid } from "@mui/material";
 import { useState } from "react";
 import toast from "react-hot-toast";
 import API from "../../api/api";
 import { useMutation } from "react-query";
+import { Edit } from "@mui/icons-material";
 
 const AlbumTypeForm = (props: {
 	defaultValue: AlbumType,
@@ -50,7 +50,7 @@ const ChangeAlbumType = (
 
 	return {
 		label: 'changeAlbumType',
-		icon: <AlbumIcon.default/>,
+		icon: <Edit/>,
 		disabled: store.getState().user.user?.admin !== true,
 		onClick: () => confirm({
 			title: translate('changeAlbumType'),
