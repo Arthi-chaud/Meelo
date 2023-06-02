@@ -314,6 +314,7 @@ export default class AlbumService extends RepositoryService<
 			? newArtist.albums
 			: await this.getMany({ artist: { compilationArtist: true } });
 
+		//Check if an album with the same name already exist for the new artist
 		if (artistAlbums.find((artistAlbum) => album.slug == artistAlbum.slug)) {
 			throw new AlbumAlreadyExistsException(albumSlug, newArtistSlug);
 		}

@@ -10,7 +10,7 @@ import AlbumQueryParameters from './models/album.query-parameters';
 import {
 	ApiOperation, ApiPropertyOptional, ApiTags, IntersectionType
 } from '@nestjs/swagger';
-import ReassignAlbumDTO from './models/reassign-album.dto';
+import UpdateAlbumDTO from './models/update-album.dto';
 import { AlbumResponseBuilder } from './models/album.response';
 import { ReleaseResponseBuilder } from 'src/release/models/release.response';
 import { PaginationQuery } from 'src/pagination/pagination-query.decorator';
@@ -150,16 +150,25 @@ export default class AlbumController {
 	@Admin()
 	@Response({ handler: AlbumResponseBuilder })
 	@Post(':idOrSlug')
-	async reassignAlbum(
+	async updateAlbum(
 		@IdentifierParam(AlbumService)
 		where: AlbumQueryParameters.WhereInput,
-		@Body() reassignmentDTO: ReassignAlbumDTO
+		@Body() updateDTO: UpdateAlbumDTO
 	) {
-		return this.albumService.reassign(
-			where,
-			reassignmentDTO.artistId == null
-				? { compilationArtist: true }
-				: { id: reassignmentDTO.artistId }
-		);
+		let album = await this.albumService.get(where);
+
+		if (updateDTO.artistId !== undefined) {
+			album = await this.albumService.reassign(
+				{ id: album.id },
+				updateDTO.artistId == null
+					? { compilationArtist: true }
+					: { id: updateDTO.artistId }
+			);
+			// If only the artistID is to be changed, no need to await an empty update
+			if (Object.values(updateDTO).length == 1) {
+				return album;
+			}
+		}
+		return this.albumService.update(updateDTO, { id: album.id });
 	}
 }
