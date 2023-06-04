@@ -18,6 +18,8 @@ import GenreService from 'src/genre/genre.service';
 import LibraryService from 'src/library/library.service';
 import LibraryQueryParameters from 'src/library/models/library.query-parameters';
 import GenreQueryParameters from 'src/genre/models/genre.query-parameters';
+import AlbumQueryParameters from 'src/album/models/album.query-parameters';
+import AlbumService from 'src/album/album.service';
 
 class Selector extends IntersectionType(ArtistQueryParameters.SortingParameter) {
 	@IsOptional()
@@ -45,6 +47,13 @@ class Selector extends IntersectionType(ArtistQueryParameters.SortingParameter) 
 	})
 	@TransformIdentifier(LibraryService)
 	library?: LibraryQueryParameters.WhereInput;
+
+	@IsOptional()
+	@ApiPropertyOptional({
+		description: 'Filter artists by albums they appear on'
+	})
+	@TransformIdentifier(AlbumService)
+	album?: AlbumQueryParameters.WhereInput;
 }
 
 @ApiTags("Artists")
