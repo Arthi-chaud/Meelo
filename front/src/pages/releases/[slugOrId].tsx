@@ -89,10 +89,7 @@ const ReleasePage = (
 	const albumArtist = useQuery(API.getArtist, artistId ?? undefined);
 	const albumGenres = useInfiniteQuery(API.getAlbumGenres, release.data?.albumId);
 	const hasGenres = (albumGenres.data?.pages.at(0)?.items.length ?? 0) > 0;
-	const otherArtistsQuery = useQueries(...tracks
-		.filter((track) => track.song.artistId != albumArtist.data?.id)
-		.map((track): Parameters<typeof useQuery<Artist, Parameters<typeof API.getArtist>>> =>
-			[API.getArtist, track.song.artistId]));
+	const otherArtists = useQuery(API.getArtistsOnAlbum, release.data?.albumId);
 	const albumVideos = useInfiniteQuery((id) => API.getAlbumVideos(id, ['song']), release.data?.albumId);
 	const relatedReleases = useInfiniteQuery(API.getAlbumReleases, release.data?.albumId);
 	const videos = useMemo(() => albumVideos.data?.pages.at(0)?.items, [albumVideos]);
@@ -151,13 +148,11 @@ const ReleasePage = (
 					{[() => <PlayCircleIcon fontSize="large"/>, () => <Shuffle fontSize="large"/>].map((icon, index) =>
 						<Grid item key={index}>
 							<IconButton onClick={() => {
-								if (tracks && !otherArtistsQuery.find((query) => !query.data)) {
-									const otherArtists = otherArtistsQuery
-										.map((query) => query.data!);
+								if (tracks && otherArtists.data != undefined) {
 									let playlist = tracks.map((track) => ({
 										track: track,
 										artist: getSongArtist(
-											track.song, albumArtist.data, otherArtists
+											track.song, albumArtist.data, otherArtists.data
 										),
 										release: release.data
 									}));
@@ -209,8 +204,7 @@ const ReleasePage = (
 					</Grid>
 				}
 				<Grid item md={hasGenres ? 9 : true} xs={12}>
-					{ albumGenres.data && trackList &&
-						otherArtistsQuery.findIndex((query) => query.data == undefined) == -1 &&
+					{ albumGenres.data && trackList && otherArtists.data &&
 						<Fade in><Box>
 							<ReleaseTrackList
 								mainArtist={albumArtist.data}
@@ -224,10 +218,10 @@ const ReleasePage = (
 												// eslint-disable-next-line max-len
 												artist: discTrack.song.artistId == albumArtist.data?.id
 													? albumArtist.data!
-													: otherArtistsQuery.find(
+													: otherArtists.data.find(
 														// eslint-disable-next-line max-len
-														(otherArtist) => otherArtist.data?.id == discTrack.song.artistId
-													)!.data!
+														(otherArtist) => otherArtist.id == discTrack.song.artistId
+													)!
 											}
 										}))
 									]))

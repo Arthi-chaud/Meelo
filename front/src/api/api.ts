@@ -726,6 +726,28 @@ export default class API {
 	}
 
 	/**
+	 * Get artist that appear on an album
+	 * @param albumSlugOrId the identifier of an album
+	 * @param include the fields to include in the fetched item
+	 * @returns a query for artists
+	 */
+	static getArtistsOnAlbum<I extends ArtistInclude>(
+		albumSlugOrId: string | number,
+		include?: I[]
+	): Query<ArtistWithRelations<I>[]> {
+		return {
+			key: ['album', albumSlugOrId, 'artists', ...API.formatIncludeKeys(include)],
+			exec: () => API.fetch({
+				route: `/artists`,
+				errorMessage: "Album not found",
+				parameters: { include, pagination: { pageSize: 1000 } },
+				otherParameters: { album: albumSlugOrId },
+				validator: PaginatedResponse(ArtistWithRelations(include ?? []))
+			}).then((data) => data.items)
+		};
+	}
+
+	/**
 	 * Get the User object of the authentified user
 	 * @returns A query to a User object
 	 */
