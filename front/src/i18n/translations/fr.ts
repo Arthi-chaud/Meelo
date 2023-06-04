@@ -99,6 +99,7 @@ const fr: TranslationMap = {
 	changeLayout: 'Changer la disposition',
 
 	changeAlbumType: "Changer le Type de l'Album",
+	onThisAlbum: 'Artistes Invités',
 
 	sortBy: 'Trier par',
 	order: 'Ordre',
