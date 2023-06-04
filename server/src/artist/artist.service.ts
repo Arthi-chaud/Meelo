@@ -130,7 +130,7 @@ export default class ArtistService extends RepositoryService<
 							? TrackService.formatManyWhereInput({ library: where.library })
 							: where.album
 								? { release: { album: AlbumService.formatWhereInput(where.album) } }
-								: {}
+								: undefined
 					} : undefined,
 				}
 			} : undefined,
