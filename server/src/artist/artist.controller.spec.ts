@@ -253,6 +253,19 @@ describe('Artist Controller', () => {
 		});
 	});
 
+	describe("Get Artists by Album", () => {
+		it("Should get all the artist in the compilation", () => {
+			return request(app.getHttpServer())
+				.get(`/artists?album=${dummyRepository.compilationAlbumA.id}`)
+				.expect(200)
+				.expect((res) => {
+					const artists: Artist[] = res.body.items;
+					expect(artists.length).toBe(1);
+					expect(artists).toContainEqual(expectedArtistResponse(dummyRepository.artistC));
+				});
+		});
+	});
+
 	describe('Search Artists', () => {
 		it("Search artists", () => {
 			return request(app.getHttpServer())

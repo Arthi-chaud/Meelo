@@ -34,6 +34,7 @@ import VideoTile from "../../components/tile/video-tile";
 import getYear from "../../utils/getYear";
 import ExternalIdBadge from "../../components/external-id-badge";
 import Translate from "../../i18n/translate";
+import ArtistTile from "../../components/tile/artist-tile";
 
 export const getServerSideProps = prepareSSR((context) => {
 	const releaseIdentifier = getSlugOrId(context.params);
@@ -62,13 +63,6 @@ const RelatedContentSection = (props: RelatedContentSectionProps) => {
 	);
 };
 
-const getSongArtist = (song: Song, albumArtist?: Artist, otherArtists: Artist[] = []): Artist => {
-	if (song.artistId == albumArtist?.id) {
-		return albumArtist;
-	}
-	return otherArtists.find((otherArtist) => otherArtist.id == song.artistId)!;
-};
-
 const ReleasePage = (
 	{ releaseIdentifier }: InferSSRProps<typeof getServerSideProps>
 ) => {
@@ -82,20 +76,24 @@ const ReleasePage = (
 	const [tracks, setTracks] = useState<TrackWithRelations<'song'>[]>([]);
 
 	const release = useQuery((id) => API.getRelease(id, ['album']), releaseIdentifier);
-	const artistId = release.data?.album?.artistId;
+	const artistId = useMemo(() => release.data?.album?.artistId, [release]);
 
 	const album = useQuery((id) => API.getAlbum(id, ['externalIds']), release.data?.albumId);
 	const tracklist = useQuery((id) => API.getReleaseTrackList(id, ['song']), releaseIdentifier);
-	const albumArtist = useQuery(API.getArtist, artistId ?? undefined);
 	const albumGenres = useInfiniteQuery(API.getAlbumGenres, release.data?.albumId);
 	const hasGenres = (albumGenres.data?.pages.at(0)?.items.length ?? 0) > 0;
-	const otherArtistsQuery = useQueries(...tracks
-		.filter((track) => track.song.artistId != albumArtist.data?.id)
-		.map((track): Parameters<typeof useQuery<Artist, Parameters<typeof API.getArtist>>> =>
-			[API.getArtist, track.song.artistId]));
+	const artists = useQuery(API.getArtistsOnAlbum, release.data?.albumId);
 	const albumVideos = useInfiniteQuery((id) => API.getAlbumVideos(id, ['song']), release.data?.albumId);
 	const relatedReleases = useInfiniteQuery(API.getAlbumReleases, release.data?.albumId);
 	const videos = useMemo(() => albumVideos.data?.pages.at(0)?.items, [albumVideos]);
+	const albumArtist = useMemo(
+		() => artists.data?.find((artist) => artist.id === artistId),
+		[artistId, artists]
+	);
+	const featurings = useMemo(
+		() => artists.data?.filter((artist) => artist.id !== artistId),
+		[artistId, artists]
+	);
 
 	useEffect(() => {
 		if (tracklist.data) {
@@ -110,7 +108,7 @@ const ReleasePage = (
 		}
 	}, [tracklist.data]);
 	// eslint-disable-next-line no-extra-parens
-	if (!release.data || !album.data || (artistId && !albumArtist.data) || !trackList) {
+	if (!release.data || !album.data || !artists.data || !trackList) {
 		return <LoadingPage/>;
 	}
 	return (
@@ -129,11 +127,11 @@ const ReleasePage = (
 					<Grid item sx={{ width: 'inherit' }}>
 						<Typography variant='h3' fontWeight='bold'>{release.data!.name}</Typography>
 					</Grid>
-					{albumArtist.data &&
+					{albumArtist &&
 						<Grid item>
-							<Link href={`/artists/${albumArtist.data.slug}`}>
+							<Link href={`/artists/${albumArtist.slug}`}>
 								<Button variant='text' sx={{ textTransform: 'none', position: 'relative', left: { xs: 0, sm: -8 } }}>
-									<Typography variant='h4'>{albumArtist.data.name}</Typography>
+									<Typography variant='h4'>{albumArtist.name}</Typography>
 								</Button>
 							</Link>
 						</Grid>
@@ -151,14 +149,12 @@ const ReleasePage = (
 					{[() => <PlayCircleIcon fontSize="large"/>, () => <Shuffle fontSize="large"/>].map((icon, index) =>
 						<Grid item key={index}>
 							<IconButton onClick={() => {
-								if (tracks && !otherArtistsQuery.find((query) => !query.data)) {
-									const otherArtists = otherArtistsQuery
-										.map((query) => query.data!);
+								if (tracks && artists.data != undefined) {
 									let playlist = tracks.map((track) => ({
 										track: track,
-										artist: getSongArtist(
-											track.song, albumArtist.data, otherArtists
-										),
+										artist: artists.data.find(
+											(artist) => artist.id == track.song.artistId
+										)!,
 										release: release.data
 									}));
 
@@ -209,11 +205,10 @@ const ReleasePage = (
 					</Grid>
 				}
 				<Grid item md={hasGenres ? 9 : true} xs={12}>
-					{ albumGenres.data && trackList &&
-						otherArtistsQuery.findIndex((query) => query.data == undefined) == -1 &&
+					{ albumGenres.data && trackList && artists.data &&
 						<Fade in><Box>
 							<ReleaseTrackList
-								mainArtist={albumArtist.data}
+								mainArtist={albumArtist}
 								tracklist={Object.fromEntries(Array.from(Object.entries(trackList))
 									.map(([discKey, discTracks]) => [
 										discKey,
@@ -221,13 +216,9 @@ const ReleasePage = (
 											...discTrack,
 											song: {
 												...discTrack.song,
-												// eslint-disable-next-line max-len
-												artist: discTrack.song.artistId == albumArtist.data?.id
-													? albumArtist.data!
-													: otherArtistsQuery.find(
-														// eslint-disable-next-line max-len
-														(otherArtist) => otherArtist.data?.id == discTrack.song.artistId
-													)!.data!
+												artist: artists.data.find(
+													(artist) => artist.id == discTrack.song.artistId
+												)!
 											}
 										}))
 									]))
@@ -247,7 +238,7 @@ const ReleasePage = (
 						(relatedRelease) => relatedRelease.id != release.data!.id
 					).map((otherRelease, otherReleaseIndex) =>
 						<Tile key={otherReleaseIndex}
-							href={`/releases/${albumArtist?.data?.slug ?? 'compilations'}+${release.data!.album.slug}+${otherRelease.slug}/`}
+							href={`/releases/${albumArtist?.slug ?? 'compilations'}+${release.data!.album.slug}+${otherRelease.slug}/`}
 							title={otherRelease.name}
 							subtitle={getYear(otherRelease.releaseDate)?.toString()}
 							illustration={<Illustration url={otherRelease.illustration}/>}
@@ -271,6 +262,14 @@ const ReleasePage = (
 						<ExternalIdBadge key={externalId.provider.name} externalId={externalId}/>)
 					}
 				</Stack>
+			</RelatedContentSection>
+			<RelatedContentSection
+				display={(featurings?.length ?? 0) != 0}
+				title={<Translate translationKey="onThisAlbum"/>}
+			>
+				<TileRow tiles={featurings?.map((artist) =>
+					<ArtistTile key={artist.id} artist={artist}/>)
+				?? []}/>
 			</RelatedContentSection>
 		</Container>
 	);

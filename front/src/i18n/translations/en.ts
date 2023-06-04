@@ -110,6 +110,8 @@ const en = {
 	RemixAlbum: 'Remix Album',
 	VideoAlbum: 'Video Album',
 
+	onThisAlbum: 'Featured Artists',
+
 	backToTop: 'Back To Top',
 	changeLayout: 'Change layout',
 

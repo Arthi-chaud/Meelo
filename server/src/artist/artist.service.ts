@@ -25,6 +25,7 @@ import Identifier from 'src/identifier/models/identifier';
 import Logger from 'src/logger/logger';
 import ArtistIllustrationService from './artist-illustration.service';
 import { PrismaError } from 'prisma-error-enum';
+import AlbumService from 'src/album/album.service';
 
 @Injectable()
 export default class ArtistService extends RepositoryService<
@@ -119,15 +120,18 @@ export default class ArtistService extends RepositoryService<
 					}
 				}
 			} : undefined,
-			songs: where.library || where.genre ? {
+			songs: where.library || where.genre || where.album ? {
 				some: {
 					genres: where.genre ? {
 						some: GenreService.formatWhereInput(where.genre)
 					} : undefined,
-					tracks: where.library ? {
-						some: TrackService
-							.formatManyWhereInput({ library: where.library })
-					} : undefined
+					tracks: where.library || where.album ? {
+						some: where.library
+							? TrackService.formatManyWhereInput({ library: where.library })
+							: where.album
+								? { release: { album: AlbumService.formatWhereInput(where.album) } }
+								: undefined
+					} : undefined,
 				}
 			} : undefined,
 			...(where.albumArtistOnly === true ? { NOT: { albums: { none: {} } } } : {})
