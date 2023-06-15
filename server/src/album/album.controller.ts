@@ -43,11 +43,18 @@ class Selector extends IntersectionType(
 
 	@IsOptional()
 	@ApiPropertyOptional({
-		description: `Filter albums by (album) artist, using their identifier.<br/>
+		description: `Filter albums by album artist, using their identifier.<br/>
 		For compilation albums, use '${compilationAlbumArtistKeyword}'`
 	})
 	@TransformIdentifier(ArtistService)
 	artist?: ArtistQueryParameters.WhereInput;
+
+	@IsOptional()
+	@ApiPropertyOptional({
+		description: `Get albums where an artist appear (i.e. is not their main artist), using their identifier.`
+	})
+	@TransformIdentifier(ArtistService)
+	appearance?: ArtistQueryParameters.WhereInput;
 
 	@IsOptional()
 	@ApiPropertyOptional({
