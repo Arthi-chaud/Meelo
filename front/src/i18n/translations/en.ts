@@ -181,6 +181,8 @@ const en = {
 	darkMode: 'Dark Mode',
 	autoMode: 'Auto Mode',
 	logout: 'Logout',
+
+	appearsOn: "Appears On"
 };
 
 export default en;

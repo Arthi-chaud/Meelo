@@ -606,6 +606,28 @@ export default class API {
 	}
 
 	/**
+	 * Fetch all albums with an appeearing an artist
+	 * @returns An Infinite Query of Albums
+	 */
+	static getAlbumsWithAppearingArtist<I extends AlbumInclude>(
+		artistSlugOrId: string | number,
+		type?: AlbumType,
+		sort?: SortingParameters<typeof AlbumSortingKeys>,
+		include?: I[]
+	): InfiniteQuery<AlbumWithRelations<I>> {
+		return {
+			key: ['artist', artistSlugOrId, 'appearances', sort ?? {}, ...API.formatIncludeKeys(include), type ?? {}],
+			exec: (pagination) => API.fetch({
+				route: `/albums`,
+				errorMessage: `Artist '${artistSlugOrId}' not found`,
+				parameters: { pagination: pagination, include, sort },
+				otherParameters: { type, appearance: artistSlugOrId },
+				validator: PaginatedResponse(AlbumWithRelations(include ?? []))
+			})
+		};
+	}
+
+	/**
 	 * Fetch all songs by an artist
 	 * @returns An Infinite Query of songs
 	 */

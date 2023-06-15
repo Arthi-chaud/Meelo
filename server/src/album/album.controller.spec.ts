@@ -317,6 +317,30 @@ describe('Album Controller', () => {
 				});
 		});
 
+		describe('Get Albums by Appearance', () => {
+			it("should return compilation album", () => {
+				return request(app.getHttpServer())
+					.get(`/albums?appearance=${dummyRepository.artistC.id}`)
+					.expect(200)
+					.expect((res) => {
+						const albums: Album[] = res.body.items;
+						expect(albums.length).toBe(1);
+						expect(albums[0]).toStrictEqual(
+							expectedAlbumResponse(dummyRepository.compilationAlbumA)
+						);
+					});
+			});
+			it("should return nothing", () => {
+				return request(app.getHttpServer())
+					.get(`/albums?appearance=${dummyRepository.artistB.id}`)
+					.expect(200)
+					.expect((res) => {
+						const albums: Album[] = res.body.items;
+						expect(albums.length).toBe(0);
+					});
+			});
+		});
+
 		it("should return every albums (from library's slug))", () => {
 			return request(app.getHttpServer())
 				.get(`/albums?library=${dummyRepository.library1.slug}`)
