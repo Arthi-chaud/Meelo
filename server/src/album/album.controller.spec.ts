@@ -330,6 +330,15 @@ describe('Album Controller', () => {
 						);
 					});
 			});
+			it("should return nothing", () => {
+				return request(app.getHttpServer())
+					.get(`/albums?appearance=${dummyRepository.artistB.id}`)
+					.expect(200)
+					.expect((res) => {
+						const albums: Album[] = res.body.items;
+						expect(albums.length).toBe(0);
+					});
+			});
 		});
 
 		it("should return every albums (from library's slug))", () => {
