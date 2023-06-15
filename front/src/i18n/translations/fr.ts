@@ -170,6 +170,8 @@ const fr: TranslationMap = {
 	darkMode: 'Thème Sombre',
 	autoMode: 'Thème Automatique',
 	logout: 'Se Déconnecter',
+
+	appearsOn: "Apparaît sur"
 };
 
 export default fr;

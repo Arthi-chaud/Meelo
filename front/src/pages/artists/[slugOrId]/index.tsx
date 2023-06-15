@@ -50,6 +50,10 @@ const artistQuery = (artistSlugOrId: string | number) => API.getArtist(
 	['externalIds']
 );
 
+const appearanceQuery = (artistSlugOrId: string | number) => API.getAlbumsWithAppearingArtist(
+	artistSlugOrId, undefined, { sortBy: 'releaseDate', order: 'desc' }, ['artist']
+);
+
 export const getServerSideProps = prepareSSR((context) => {
 	const artistIdentifier = getSlugOrId(context.params);
 
@@ -59,7 +63,8 @@ export const getServerSideProps = prepareSSR((context) => {
 		infiniteQueries: [
 			latestAlbumsQuery(artistIdentifier),
 			videosQuery(artistIdentifier),
-			topSongsQuery(artistIdentifier)
+			topSongsQuery(artistIdentifier),
+			appearanceQuery(artistIdentifier)
 		]
 	};
 });
@@ -74,6 +79,7 @@ const ArtistPage = (
 	const latestAlbums = useInfiniteQuery(latestAlbumsQuery, artistIdentifier);
 	const videos = useInfiniteQuery(videosQuery, artistIdentifier);
 	const topSongs = useInfiniteQuery(topSongsQuery, artistIdentifier);
+	const appearances = useInfiniteQuery(appearanceQuery, artistIdentifier);
 	const dispatch = useDispatch();
 	const queryClient = useQueryClient();
 
@@ -158,6 +164,21 @@ const ArtistPage = (
 							video={{ ...track, song }}
 							formatSubtitle={(item) => formatDuration(item.duration).toString()}
 						/>) ?? []
+					}/>
+				</Grid>
+			</>
+			}
+			{ (appearances.data?.pages?.at(0)?.items.length ?? 0) != 0 && <>
+				<Divider/>
+				<SectionHeader heading={<Translate translationKey="appearsOn"/>}/>
+				<Grid item sx={{ overflowX: 'clip', width: '100%' }}>
+					<TileRow tiles={
+						appearances.data?.pages?.at(0)?.items.map((album) =>
+							<AlbumTile
+								key={album.id}
+								album={album}
+							/>)
+						?? []
 					}/>
 				</Grid>
 			</>
