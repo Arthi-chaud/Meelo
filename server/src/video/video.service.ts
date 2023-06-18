@@ -33,7 +33,7 @@ export default class VideoService {
 					where: {
 						type: 'Video'
 					},
-					orderBy: { id: 'asc' },
+					orderBy: { bitrate: 'desc' },
 					take: 1
 				}
 			},
