@@ -8,6 +8,7 @@ import { ModelSortingParameter } from 'src/sort/models/sorting-parameter';
 import type GenreQueryParameters from "src/genre/models/genre.query-parameters";
 import { Artist, Song } from "src/prisma/models";
 import { filterAtomicRelationInclude } from "src/relation-include/atomic-relation-include.filter";
+import AlbumQueryParameters from "src/album/models/album.query-parameters";
 
 namespace SongQueryParameters {
 	/**
@@ -41,6 +42,7 @@ namespace SongQueryParameters {
 	 */
 	export type ManyWhereInput = Partial<RequireAtLeastOne<{
 		name: SearchStringInput,
+		album: AlbumQueryParameters.WhereInput,
 		artist?: ArtistQueryParameters.WhereInput,
 		library: LibraryQueryParameters.WhereInput,
 		genre: GenreQueryParameters.WhereInput,

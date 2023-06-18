@@ -28,6 +28,8 @@ import LibraryQueryParameters from 'src/library/models/library.query-parameters'
 import LibraryService from 'src/library/library.service';
 import GenreQueryParameters from 'src/genre/models/genre.query-parameters';
 import GenreService from 'src/genre/genre.service';
+import AlbumService from 'src/album/album.service';
+import AlbumQueryParameters from 'src/album/models/album.query-parameters';
 
 export class Selector extends IntersectionType(SongQueryParameters.SortingParameter) {
 	@IsOptional()
@@ -36,6 +38,13 @@ export class Selector extends IntersectionType(SongQueryParameters.SortingParame
 	})
 	@TransformIdentifier(ArtistService)
 	artist?: ArtistQueryParameters.WhereInput;
+
+	@IsOptional()
+	@ApiPropertyOptional({
+		description: 'Filter songs by album'
+	})
+	@TransformIdentifier(AlbumService)
+	album?: AlbumQueryParameters.WhereInput;
 
 	@IsOptional()
 	@ApiPropertyOptional({

@@ -135,6 +135,8 @@ export default class SongService extends RepositoryService<
 			},
 			tracks: where.library ? {
 				some: TrackService.formatManyWhereInput({ library: where.library })
+			} : where.album ? {
+				some: TrackService.formatManyWhereInput({ album: where.album })
 			} : undefined
 		};
 	}
