@@ -15,13 +15,9 @@ import Link from 'next/link';
 import PlayCircleIcon from '@mui/icons-material/PlayCircle';
 import { Shuffle } from "@mui/icons-material";
 import Tile from "../../components/tile/tile";
-import {
-	useInfiniteQuery, useQueries, useQuery
-} from "../../api/use-query";
+import { useInfiniteQuery, useQuery } from "../../api/use-query";
 import { useDispatch } from "react-redux";
 import { playTracks } from "../../state/playerSlice";
-import Song from "../../models/song";
-import Artist from "../../models/artist";
 import { shuffle } from 'd3-array';
 import getSlugOrId from "../../utils/getSlugOrId";
 import ReleaseTrackList from "../../components/release-tracklist";
@@ -83,7 +79,7 @@ const ReleasePage = (
 	const albumGenres = useInfiniteQuery(API.getAlbumGenres, release.data?.albumId);
 	const hasGenres = (albumGenres.data?.pages.at(0)?.items.length ?? 0) > 0;
 	const artists = useQuery(API.getArtistsOnAlbum, release.data?.albumId);
-	const albumVideos = useInfiniteQuery((id) => API.getAlbumVideos(id, ['song']), release.data?.albumId);
+	const albumVideos = useInfiniteQuery(API.getAlbumVideos, release.data?.albumId);
 	const relatedReleases = useInfiniteQuery(API.getAlbumReleases, release.data?.albumId);
 	const videos = useMemo(() => albumVideos.data?.pages.at(0)?.items, [albumVideos]);
 	const albumArtist = useMemo(
@@ -250,7 +246,7 @@ const ReleasePage = (
 				title={<Translate translationKey="musicVideos"/>}
 			>
 				<TileRow tiles={videos?.map((video, videoIndex) =>
-					<VideoTile key={videoIndex} video={video}/>) ?? []}
+					<VideoTile key={videoIndex} video={{ ...video.track, song: video }}/>) ?? []}
 				/>
 			</RelatedContentSection>
 			<RelatedContentSection

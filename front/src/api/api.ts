@@ -966,17 +966,17 @@ export default class API {
 	 * @param albumSlugOrId the id of the album
 	 * @returns A query for an array of tracks
 	 */
-	static getAlbumVideos<I extends TrackInclude>(
+	static getAlbumVideos<I extends SongInclude>(
 		albumSlugOrId: string | number,
 		include?: I[]
-	): InfiniteQuery<TrackWithRelations<I>> {
+	): InfiniteQuery<VideoWithRelations<I>> {
 		return {
 			key: ['album', albumSlugOrId, 'videos', ...API.formatIncludeKeys(include)],
 			exec: (pagination) => API.fetch({
-				route: `/tracks`,
-				otherParameters: { type: 'Video', album: albumSlugOrId },
+				route: `/videos`,
+				otherParameters: { album: albumSlugOrId },
 				parameters: { pagination, include },
-				validator: PaginatedResponse(TrackWithRelations(include ?? []))
+				validator: PaginatedResponse(VideoWithRelations(include ?? []))
 			})
 		};
 	}
