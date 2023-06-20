@@ -31,6 +31,7 @@ import getYear from "../../utils/getYear";
 import ExternalIdBadge from "../../components/external-id-badge";
 import Translate from "../../i18n/translate";
 import ArtistTile from "../../components/tile/artist-tile";
+import PlaylistTile from "../../components/tile/playlist-tile";
 
 export const getServerSideProps = prepareSSR((context) => {
 	const releaseIdentifier = getSlugOrId(context.params);
@@ -81,6 +82,7 @@ const ReleasePage = (
 	const artists = useQuery(API.getArtistsOnAlbum, release.data?.albumId);
 	const albumVideos = useInfiniteQuery(API.getAlbumVideos, release.data?.albumId);
 	const relatedReleases = useInfiniteQuery(API.getAlbumReleases, release.data?.albumId);
+	const relatedPlaylists = useInfiniteQuery(API.getAlbumPlaylists, release.data?.albumId);
 	const videos = useMemo(() => albumVideos.data?.pages.at(0)?.items, [albumVideos]);
 	const albumArtist = useMemo(
 		() => artists.data?.find((artist) => artist.id === artistId),
@@ -89,6 +91,10 @@ const ReleasePage = (
 	const featurings = useMemo(
 		() => artists.data?.filter((artist) => artist.id !== artistId),
 		[artistId, artists]
+	);
+	const playlists = useMemo(
+		() => relatedPlaylists.data?.pages.at(0)?.items,
+		[relatedPlaylists.data]
 	);
 
 	useEffect(() => {
@@ -265,6 +271,14 @@ const ReleasePage = (
 			>
 				<TileRow tiles={featurings?.map((artist) =>
 					<ArtistTile key={artist.id} artist={artist}/>)
+				?? []}/>
+			</RelatedContentSection>
+			<RelatedContentSection
+				display={(playlists?.length ?? 0) != 0}
+				title={<Translate translationKey="Featured on"/>}
+			>
+				<TileRow tiles={playlists?.map((playlist) =>
+					<PlaylistTile key={playlist.id} playlist={playlist}/>)
 				?? []}/>
 			</RelatedContentSection>
 		</Container>
