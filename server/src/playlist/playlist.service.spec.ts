@@ -106,7 +106,7 @@ describe('Playlist Service', () => {
 
 			expect(test()).rejects.toThrow(PlaylistAlreadyExistsException);
 		});
-	})
+	});
 
 	describe('Flatten', () => {
 		it("Should Flatten playlist", async () =>  {
@@ -140,5 +140,33 @@ describe('Playlist Service', () => {
 			const test = ()  => playlistService.create({ name: dummyRepository.playlist1.name });
 			expect(test()).rejects.toThrow(PlaylistAlreadyExistsException)
 		})
+	});
+
+	describe('Get Playlists by Album', () => {
+		it('Should Get One Playlist (Song appearing once)', async () => {
+			const playlists = await playlistService.getMany(
+				{ album: { id: dummyRepository.compilationAlbumA.id } },
+				{}, {}, { order: 'asc', sortBy: 'name' }
+			);
+
+			expect(playlists.length).toBe(1);
+		});
+		it('Should Get One Playlist (Song appearing twice)', async () => {
+			const playlists = await playlistService.getMany(
+				{ album: { id: dummyRepository.albumA1.id } },
+				{}, {}, { order: 'asc', sortBy: 'name' }
+			);
+
+			expect(playlists.length).toBe(1);
+		});
+
+		it('Should Get 0 Playlist', async () => {
+			const playlists = await playlistService.getMany(
+				{ album: { id: dummyRepository.albumB1.id } },
+				{}, {}, { order: 'asc', sortBy: 'name' }
+			);
+
+			expect(playlists.length).toBe(0);
+		});
 	})
 })

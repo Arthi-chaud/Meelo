@@ -1,8 +1,10 @@
 import {
 	Body,
-	Controller, Delete, Get, Param, ParseIntPipe, Post, Put
+	Controller, Delete, Get, Param, ParseIntPipe, Post, Put, Query
 } from '@nestjs/common';
-import { ApiOperation, ApiTags } from '@nestjs/swagger';
+import {
+	ApiOperation, ApiPropertyOptional, ApiTags, IntersectionType
+} from '@nestjs/swagger';
 import PlaylistService from './playlist.service';
 import PlaylistQueryParameters from './models/playlist.query-parameters';
 import IdentifierParam from 'src/identifier/identifier.pipe';
@@ -11,11 +13,23 @@ import { PlaylistResponseBuilder } from './models/playlist.response';
 import Response, { ResponseType } from 'src/response/response.decorator';
 import { PaginationParameters } from 'src/pagination/models/pagination-parameters';
 import { PaginationQuery } from 'src/pagination/pagination-query.decorator';
-import SortingQuery from 'src/sort/sort-query.decorator';
 import {
 	CreatePlaylistDTO, CreatePlaylistEntryDTO,
 	ReorderPlaylistDTO, UpdatePlaylistDTO
 } from './models/playlist.dto';
+import { IsOptional } from 'class-validator';
+import TransformIdentifier from 'src/identifier/identifier.transform';
+import AlbumService from 'src/album/album.service';
+import AlbumQueryParameters from 'src/album/models/album.query-parameters';
+
+export class Selector extends IntersectionType(PlaylistQueryParameters.SortingParameter) {
+	@IsOptional()
+	@ApiPropertyOptional({
+		description: 'Filter playlist by albums that entries belong to'
+	})
+	@TransformIdentifier(AlbumService)
+	album?: AlbumQueryParameters.WhereInput;
+}
 
 @Controller('playlists')
 @ApiTags('Playlists')
@@ -47,16 +61,15 @@ export default class PlaylistController {
 	@Get()
 	@Response({ handler: PlaylistResponseBuilder, type: ResponseType.Page })
 	async getMany(
+		@Query() selector: Selector,
 		@PaginationQuery()
 		paginationParameters: PaginationParameters,
-		@SortingQuery(PlaylistQueryParameters.SortingKeys)
-		sortingParameter: PlaylistQueryParameters.SortingParameter,
 	) {
 		return this.playlistService.getMany(
-			{},
+			selector,
 			paginationParameters,
 			{},
-			sortingParameter
+			selector
 		);
 	}
 
