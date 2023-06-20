@@ -20,6 +20,7 @@ import Identifier from 'src/identifier/models/identifier';
 import { parseIdentifierSlugs } from 'src/identifier/identifier.parse-slugs';
 // eslint-disable-next-line no-restricted-imports
 import { UnhandledORMErrorException } from 'src/exceptions/orm-exceptions';
+import AlbumService from 'src/album/album.service';
 
 @Injectable()
 export default class PlaylistService extends RepositoryService<
@@ -103,6 +104,18 @@ export default class PlaylistService extends RepositoryService<
 			entries: input.song ? {
 				some: {
 					song: SongService.formatWhereInput(input.song)
+				}
+			} : input.album ? {
+				some: {
+					song: {
+						tracks: {
+							some: {
+								release: {
+									album: AlbumService.formatWhereInput(input.album)
+								}
+							}
+						}
+					}
 				}
 			} : undefined
 		};

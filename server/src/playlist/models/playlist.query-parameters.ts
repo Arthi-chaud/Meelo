@@ -5,6 +5,7 @@ import SongQueryParameters from "src/song/models/song.query-params";
 import type { RequireAtLeastOne, RequireExactlyOne } from "type-fest";
 import type { RelationInclude as BaseRelationInclude } from "src/relation-include/models/relation-include";
 import { ModelSortingParameter } from "src/sort/models/sorting-parameter";
+import AlbumQueryParameters from "src/album/models/album.query-parameters";
 
 namespace PlaylistQueryParameters {
 	/**
@@ -24,7 +25,8 @@ namespace PlaylistQueryParameters {
 	 * Query parameters to find multiple playlist
 	 */
 	export type ManyWhereInput = Partial<RequireAtLeastOne<{
-		song: SongQueryParameters.WhereInput
+		song: SongQueryParameters.WhereInput,
+		album: AlbumQueryParameters.WhereInput
 	}>>;
 
 	/**
