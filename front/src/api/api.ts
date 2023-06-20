@@ -143,6 +143,26 @@ export default class API {
 		};
 	}
 
+	/**
+	 * Fetch all playlists related to an album
+	 * @returns An InfiniteQuery of playlists
+	 */
+	static getAlbumPlaylists(
+		albumSlugOrId: number | string,
+		sort?: SortingParameters<typeof PlaylistSortingKeys>
+	): InfiniteQuery<Playlist> {
+		return {
+			key: ['albums', 'albumSlugOrId', 'playlists', sort ?? {}],
+			exec: (pagination) => API.fetch({
+				route: `/playlists`,
+				errorMessage: "Playlists could not be loaded",
+				parameters: { pagination: pagination, include: [], sort },
+				otherParameters: { album: albumSlugOrId },
+				validator: PaginatedResponse(Playlist)
+			}),
+		};
+	}
+
 	static async createPlaylist(playlistName: string): Promise<Playlist> {
 		return API.fetch({
 			route: '/playlists/new',
