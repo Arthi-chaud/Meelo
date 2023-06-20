@@ -171,7 +171,8 @@ const fr: TranslationMap = {
 	autoMode: 'Thème Automatique',
 	logout: 'Se Déconnecter',
 
-	appearsOn: "Apparaît sur"
+	appearsOn: "Apparaît sur",
+	featuredOnPlaylists: "Apparaît dans"
 };
 
 export default fr;

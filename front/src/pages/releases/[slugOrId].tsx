@@ -275,7 +275,7 @@ const ReleasePage = (
 			</RelatedContentSection>
 			<RelatedContentSection
 				display={(playlists?.length ?? 0) != 0}
-				title={<Translate translationKey="Featured on"/>}
+				title={<Translate translationKey="featuredOnPlaylists"/>}
 			>
 				<TileRow tiles={playlists?.map((playlist) =>
 					<PlaylistTile key={playlist.id} playlist={playlist}/>)

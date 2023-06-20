@@ -182,7 +182,8 @@ const en = {
 	autoMode: 'Auto Mode',
 	logout: 'Logout',
 
-	appearsOn: "Appears On"
+	appearsOn: "Appears On",
+	featuredOnPlaylists: "Featured On"
 };
 
 export default en;
