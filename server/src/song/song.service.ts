@@ -357,7 +357,7 @@ export default class SongService extends RepositoryService<
 		return this.prismaService.song.findMany({
 			where: {
 				artistId: artistId,
-				name: { contains: baseSongName }
+				slug: { contains: new Slug(baseSongName).toString() }
 			},
 			orderBy: sort ? this.formatSortingInput(sort) : undefined,
 			include: RepositoryService.formatInclude(include),
