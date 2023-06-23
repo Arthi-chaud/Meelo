@@ -1,6 +1,6 @@
 import {
 	Box, Card, CardActionArea,
-	CardContent, CardMedia, Typography
+	CardContent, CardMedia, Fade, Typography
 } from "@mui/material";
 import Link from 'next/link';
 import { CSSProperties, useState } from "react";
@@ -37,13 +37,13 @@ const Tile = (props: TileProps) => {
 				flexDirection: 'column', alignItems: 'space-between'
 			}}>
 				{props.contextualMenu &&
-					<Box style={{ position: 'absolute', top: '0', right: '0', zIndex: 2 }}
+					<Fade in={isHovering} style={{ position: 'absolute', top: '0', right: '0', zIndex: 2 }}
 						hidden={!isHovering} onClick={(event) => event.preventDefault()}
 						onMouseOver={() => setIsHoveringCtxtMenu(true)}
 						onMouseLeave={() => setIsHoveringCtxtMenu(false)}
 					>
-						{props.contextualMenu}
-					</Box>
+						<Box>{props.contextualMenu}</Box>
+					</Fade>
 				}
 				<CardMedia sx={{ width: '100%' }}>
 					{props.illustration}
