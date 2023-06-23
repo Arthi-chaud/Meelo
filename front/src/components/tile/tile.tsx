@@ -31,14 +31,20 @@ const Tile = (props: TileProps) => {
 	const [isHoveringCtxtMenu, setIsHoveringCtxtMenu] = useState(false);
 
 	const component =
-		<Card sx={{ height: '100%' }} onMouseOver={() => setIsHovering(true)} onMouseLeave={() => setIsHovering(false)}>
+		<Card sx={{ height: '100%' }} onMouseOver={() => setIsHovering(true)} onMouseLeave={() => {
+			setIsHovering(false);
+			setIsHoveringCtxtMenu(false);
+		}}>
 			<CardActionArea onClick={props.onClick} disableRipple={isHoveringCtxtMenu} sx={{
 				height: '100%', display: 'flex',
 				flexDirection: 'column', alignItems: 'space-between'
 			}}>
 				{props.contextualMenu &&
 					<Fade in={isHovering} style={{ position: 'absolute', top: '0', right: '0', zIndex: 2 }}
-						hidden={!isHovering} onClick={(event) => event.preventDefault()}
+						hidden={!isHovering} onClick={(event) => {
+							event.preventDefault();
+							event.stopPropagation();
+						}}
 						onMouseOver={() => setIsHoveringCtxtMenu(true)}
 						onMouseLeave={() => setIsHoveringCtxtMenu(false)}
 					>
