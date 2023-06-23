@@ -29,6 +29,7 @@ const newlyAddedArtistsQuery = API.getAllArtists(
 
 const newlyAddedReleasesQuery = API.getAllReleases(
 	{ sortBy: 'addDate', order: 'desc' },
+	['album']
 );
 
 const mostListenedSongsQuery = API.getAllSongs(

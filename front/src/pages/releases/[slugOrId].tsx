@@ -14,7 +14,6 @@ import Tracklist from "../../models/tracklist";
 import Link from 'next/link';
 import PlayCircleIcon from '@mui/icons-material/PlayCircle';
 import { Shuffle } from "@mui/icons-material";
-import Tile from "../../components/tile/tile";
 import { useInfiniteQuery, useQuery } from "../../api/use-query";
 import { useDispatch } from "react-redux";
 import { playTracks } from "../../state/playerSlice";
@@ -27,11 +26,11 @@ import LoadingPage from "../../components/loading/loading-page";
 import TileRow from "../../components/tile-row";
 import { TrackWithRelations } from "../../models/track";
 import VideoTile from "../../components/tile/video-tile";
-import getYear from "../../utils/getYear";
 import ExternalIdBadge from "../../components/external-id-badge";
 import Translate from "../../i18n/translate";
 import ArtistTile from "../../components/tile/artist-tile";
 import PlaylistTile from "../../components/tile/playlist-tile";
+import ReleaseTile from "../../components/tile/release-tile";
 
 export const getServerSideProps = prepareSSR((context) => {
 	const releaseIdentifier = getSlugOrId(context.params);
@@ -239,11 +238,8 @@ const ReleasePage = (
 					relatedReleases.data?.pages.at(0)?.items?.filter(
 						(relatedRelease) => relatedRelease.id != release.data!.id
 					).map((otherRelease, otherReleaseIndex) =>
-						<Tile key={otherReleaseIndex}
-							href={`/releases/${albumArtist?.slug ?? 'compilations'}+${release.data!.album.slug}+${otherRelease.slug}/`}
-							title={otherRelease.name}
-							subtitle={getYear(otherRelease.releaseDate)?.toString()}
-							illustration={<Illustration url={otherRelease.illustration}/>}
+						<ReleaseTile key={otherReleaseIndex}
+							release={{ ...otherRelease, album: album.data }}
 						/>) ?? []
 				}/>
 			</RelatedContentSection>
