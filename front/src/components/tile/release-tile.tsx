@@ -1,13 +1,15 @@
 import Tile from "./tile";
 import Illustration from "../illustration";
-import Release from "../../models/release";
+import { ReleaseWithRelations } from "../../models/release";
 import getYear from "../../utils/getYear";
+import ReleaseContextualMenu from "../contextual-menu/release-contextual-menu";
 
-const ReleaseTile = <T extends Release>(props: {
-	release: T,
-	formatSubtitle?: (release: T) => string
+const ReleaseTile = (props: {
+	release: ReleaseWithRelations<'album'>,
+	formatSubtitle?: (release: ReleaseWithRelations<'album'>) => string
 }) => {
 	return <Tile
+		contextualMenu={<ReleaseContextualMenu release={props.release}/>}
 		title={props.release.name}
 		subtitle={props.formatSubtitle?.call(this, props.release)
 			?? getYear(props.release.releaseDate)?.toString()}

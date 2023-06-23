@@ -1,9 +1,9 @@
 import {
-	Card, CardActionArea, CardContent, CardMedia, Typography
+	Box, Card, CardActionArea,
+	CardContent, CardMedia, Typography
 } from "@mui/material";
-import { useTheme } from "@mui/system";
 import Link from 'next/link';
-import { CSSProperties } from "react";
+import { CSSProperties, useState } from "react";
 
 const titleStyle = {
 	display: '-webkit-box',
@@ -15,6 +15,7 @@ type TileProps = {
 	subtitle?: string
 	thirdTitle?: string,
 	illustration: JSX.Element,
+	contextualMenu?: JSX.Element
 	/**
 	 * URL to push on tile tap
 	 */
@@ -26,14 +27,24 @@ type TileProps = {
 }
 
 const Tile = (props: TileProps) => {
-	const theme = useTheme();
+	const [isHovering, setIsHovering] = useState(false);
+	const [isHoveringCtxtMenu, setIsHoveringCtxtMenu] = useState(false);
 
 	const component =
-		<Card sx={{ height: '100%' }}>
-			<CardActionArea onClick={props.onClick} sx={{
+		<Card sx={{ height: '100%' }} onMouseOver={() => setIsHovering(true)} onMouseLeave={() => setIsHovering(false)}>
+			<CardActionArea onClick={props.onClick} disableRipple={isHoveringCtxtMenu} sx={{
 				height: '100%', display: 'flex',
 				flexDirection: 'column', alignItems: 'space-between'
 			}}>
+				{props.contextualMenu &&
+					<Box style={{ position: 'absolute', top: '0', right: '0', zIndex: 2 }}
+						hidden={!isHovering} onClick={(event) => event.preventDefault()}
+						onMouseOver={() => setIsHoveringCtxtMenu(true)}
+						onMouseLeave={() => setIsHoveringCtxtMenu(false)}
+					>
+						{props.contextualMenu}
+					</Box>
+				}
 				<CardMedia sx={{ width: '100%' }}>
 					{props.illustration}
 				</CardMedia>
@@ -60,7 +71,7 @@ const Tile = (props: TileProps) => {
 		</Card>;
 
 	if (props.href) {
-		return <Link href={props.href}>{component}</Link>;
+		return <Link href={isHoveringCtxtMenu ? {} : props.href}>{component}</Link>;
 	}
 	return component;
 };

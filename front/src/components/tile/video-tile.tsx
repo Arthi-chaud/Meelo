@@ -6,6 +6,7 @@ import { useQueryClient } from "../../api/use-query";
 import API from "../../api/api";
 import { playTrack } from "../../state/playerSlice";
 import formatDuration from "../../utils/formatDuration";
+import TrackContextualMenu from "../contextual-menu/track-contextual-menu";
 
 type VideoTileProps = {
 	video: TrackWithRelations<'song'>;
@@ -17,6 +18,7 @@ const VideoTile = ({ video, formatSubtitle }: VideoTileProps) => {
 	const queryClient = useQueryClient();
 
 	return <Tile
+		contextualMenu={<TrackContextualMenu track={video}/>}
 		onClick={() => Promise.all([
 			queryClient.fetchQuery(API.getArtist(video.song.artistId)),
 			queryClient.fetchQuery(API.getRelease(video.releaseId))

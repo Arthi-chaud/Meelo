@@ -3,6 +3,7 @@ import { AlbumWithRelations } from "../../models/album";
 import Illustration from "../illustration";
 import { useMemo } from "react";
 import { translate, useLanguage } from "../../i18n/translate";
+import AlbumContextualMenu from "../contextual-menu/album-contextual-menu";
 
 const AlbumTile = (props: {
 	album: AlbumWithRelations<'artist'>,
@@ -13,6 +14,7 @@ const AlbumTile = (props: {
 	const compilationKeyword = useMemo(() => translate('compilation'), [language]);
 
 	return <Tile
+		contextualMenu={<AlbumContextualMenu album={props.album}/>}
 		title={props.album.name}
 		subtitle={props.formatSubtitle?.call(this, props.album)
 			?? props.album.artist?.name
