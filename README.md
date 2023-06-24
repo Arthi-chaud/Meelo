@@ -43,8 +43,16 @@ This project is made by and for music collectors. Its goal is to have a clean, o
 - Automated Lyrics download
 - Embedded and inline artwork file handling
 - Access, stream, and download songs from your server
+- Playlists
+- Multi-language support
+  - English
+  - French
+- External Metadata Providers (Optional)
+  - Genius
+  - MusicBrainz
+- User management
 
-Keep track of the incoming features with the [project's issues](https://github.com/Arthi-chaud/Meelo/issues)
+Keep track of the upcoming features with the [project's issues](https://github.com/Arthi-chaud/Meelo/issues)
 
 ## Why Meelo could be what you are looking for
 
@@ -59,14 +67,6 @@ To use Meelo, you'll need a 'clean' collection: either with embedded metadata or
 
 ## Screenshots
 
-![Album View](./assets/examples/album-view.png)
+![Album View](./assets/examples/album-page.png)
 
-![Player](./assets/examples/player.png)
-
-![Live Album View](./assets/examples/live-album-view.png)
-
-![Artist View](./assets/examples/artist-view.png)
-
-![Album Releases](./assets/examples/album-releases.png)
-
-![Song Versions](./assets/examples/song-versions.png)
+More screenshots [here](./assets/examples/)
