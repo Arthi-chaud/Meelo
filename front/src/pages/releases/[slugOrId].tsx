@@ -50,7 +50,7 @@ type RelatedContentSectionProps = {
 const RelatedContentSection = (props: RelatedContentSectionProps) => {
 	return (
 		<Fade in={props.display == true}>
-			<Box sx={{ margin: 3, display: props.display ? undefined : 'none' }}>
+			<Box sx={{ margin: 2, display: props.display ? undefined : 'none' }}>
 				<Divider/>
 				<Typography variant='h6' sx={{ paddingY: 3 }}>{props.title}</Typography>
 				{props.children}
