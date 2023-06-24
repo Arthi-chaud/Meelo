@@ -59,14 +59,7 @@ To use Meelo, you'll need a 'clean' collection: either with embedded metadata or
 
 ## Screenshots
 
-![Album View](./assets/examples/album-view.png)
+![Album View](./assets/examples/album-page.png)
 
-![Player](./assets/examples/player.png)
+More screenshots [here](./assets/examples/)
 
-![Live Album View](./assets/examples/live-album-view.png)
-
-![Artist View](./assets/examples/artist-view.png)
-
-![Album Releases](./assets/examples/album-releases.png)
-
-![Song Versions](./assets/examples/song-versions.png)
