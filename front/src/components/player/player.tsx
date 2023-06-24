@@ -12,6 +12,7 @@ import {
 import { RootState } from "../../state/store";
 import { ExpandedPlayerControls, MinimizedPlayerControls } from "./controls";
 import { DefaultWindowTitle } from "../../utils/constants";
+import { toast } from "react-hot-toast";
 
 const Player = () => {
 	const userIsAuthentified = useSelector(
@@ -112,7 +113,15 @@ const Player = () => {
 				player.current = videoPlayer.current;
 			}
 			player.current!.src = streamURL;
-			player.current!.play().then(() => setPlaying(true));
+			player.current!.play()
+				.then(() => setPlaying(true))
+				.catch((err) => {
+					setPlaying(false);
+					toast.error('Playback failed. Skipping...');
+					// eslint-disable-next-line no-console
+					console.error(err);
+					dispatch(skipTrack());
+				});
 			if (typeof navigator.mediaSession !== 'undefined') {
 				navigator.mediaSession.metadata = new MediaMetadata({
 					title: currentTrack.track.name,
