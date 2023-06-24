@@ -1,6 +1,6 @@
 import {
 	Button, Container, Divider, Fade, Grid, IconButton,
-	ListSubheader, Stack, Typography, useTheme
+	ListSubheader, Stack, Typography, useMediaQuery, useTheme
 } from "@mui/material";
 import { Box } from "@mui/system";
 import { useRouter } from "next/router";
@@ -50,7 +50,7 @@ type RelatedContentSectionProps = {
 const RelatedContentSection = (props: RelatedContentSectionProps) => {
 	return (
 		<Fade in={props.display == true}>
-			<Box sx={{ margin: 3, display: props.display ? undefined : 'none' }}>
+			<Box sx={{ margin: 2, display: props.display ? undefined : 'none' }}>
 				<Divider/>
 				<Typography variant='h6' sx={{ paddingY: 3 }}>{props.title}</Typography>
 				{props.children}
@@ -66,6 +66,7 @@ const ReleasePage = (
 
 	releaseIdentifier ??= getSlugOrId(router.query);
 	const theme = useTheme();
+	const viewIsInColumn = useMediaQuery(theme.breakpoints.down('md'));
 	const dispatch = useDispatch();
 	const [trackList, setTracklist] = useState<Tracklist<TrackWithRelations<'song'>>>();
 	const [totalDuration, setTotalDuration] = useState<number | null>(null);
@@ -113,7 +114,9 @@ const ReleasePage = (
 		return <LoadingPage/>;
 	}
 	return (
-		<Container maxWidth={false} sx={{ marginY: 3 }} >
+		<Container maxWidth={false} disableGutters={viewIsInColumn}
+			sx={{ marginY: 3, marginX: 0 }}
+		>
 			<Grid container spacing={4} sx={{ justifyContent: 'center' }}>
 				<Grid item md={3} sm={5} xs={8}>
 					<Illustration url={release.data!.illustration}/>
