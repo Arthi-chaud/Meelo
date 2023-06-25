@@ -7,7 +7,9 @@ import {
 	GoToArtistAction, GoToRelatedTracksAction,
 	GoToSongLyricsAction, GoToSongVersionAction
 } from "../actions/link";
-import { PlayAfterAction, PlayNextAction } from "../actions/playlist";
+import {
+	AddToPlaylistAction, PlayAfterAction, PlayNextAction
+} from "../actions/playlist";
 import { ShareSongAction } from "../actions/share";
 import { ShowTrackFileInfoAction } from "../actions/show-track-info";
 import { TrackWithRelations } from "../../models/track";
@@ -30,6 +32,7 @@ const ReleaseTrackContextualMenu = (props: ReleaseTrackContextualMenuProps) => {
 		[GoToArtistAction(props.artist.slug)],
 		[GoToSongLyricsAction(songSlug)],
 		[PlayNextAction(async () => props), PlayAfterAction(async () => props)],
+		[AddToPlaylistAction(props.track.song.id, queryClient)],
 		[GoToSongVersionAction(songSlug), GoToRelatedTracksAction(songSlug),],
 		[UpdateTrackIllustrationAction(queryClient, props.track.id)],
 		[ShowTrackFileInfoAction(confirm, props.track.id)],
