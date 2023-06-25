@@ -116,11 +116,30 @@ const Player = () => {
 			player.current!.play()
 				.then(() => setPlaying(true))
 				.catch((err) => {
-					setPlaying(false);
-					toast.error('Playback failed. Skipping...');
-					// eslint-disable-next-line no-console
-					console.error(err);
-					dispatch(skipTrack());
+					// Source: https://webidl.spec.whatwg.org/#notsupportederror
+					// Sometimes, an error can be caused by a track change while the `play` promise is being resolved
+					// But this does not seem to cause any malfunction
+					// That's why we do that filtering
+					const errcode = err['code'];
+
+					if (!errcode) {
+						return;
+					}
+					switch (errcode) {
+					case 9: // Format error
+						setPlaying(false);
+						toast.error("The track's format is not supported by this browser. Skipping...");
+						// eslint-disable-next-line no-console
+						console.error(err);
+						dispatch(skipTrack());
+						break;
+					case 19: // Network error
+						setPlaying(false);
+						toast.error('There seem to be some network issues...');
+						break;
+					default:
+						break;
+					}
 				});
 			if (typeof navigator.mediaSession !== 'undefined') {
 				navigator.mediaSession.metadata = new MediaMetadata({
