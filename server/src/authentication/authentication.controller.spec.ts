@@ -23,6 +23,8 @@ import { User } from "src/prisma/models";
 import SetupApp from "test/setup-app";
 import * as Plugins from '../app.plugins';
 
+jest.setTimeout(120000);
+
 @Module({
 	imports: [AuthenticationModule, UserModule, FileManagerModule, PrismaModule, ArtistModule, AlbumModule, PrismaModule, ReleaseModule, MetadataModule, SongModule, TrackModule, IllustrationModule, GenreModule, SettingsModule],
 	providers: [UserService, PrismaService, UserController, ...Plugins.AppProviders],

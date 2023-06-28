@@ -1,5 +1,5 @@
 import {
-	Body, Controller, Delete, Get, HttpStatus, Param, Post, Query, Response, StreamableFile
+	Body, Controller, Delete, Get, HttpStatus, Param, Post, Query, Response
 } from "@nestjs/common";
 import {
 	ApiOperation, ApiParam, ApiTags
@@ -22,7 +22,7 @@ import ReleaseIllustrationService from "src/release/release-illustration.service
 import TrackIllustrationService from "src/track/track-illustration.service";
 import { parse } from 'path';
 import Slug from "src/slug/slug";
-import { NoReleaseIllustrationException } from "./illustration.exceptions";
+import { NoReleaseIllustrationException, NoTrackIllustrationException } from "./illustration.exceptions";
 import SongService from "src/song/song.service";
 import SongQueryParameters from "src/song/models/song.query-params";
 import ProviderIllustrationService from "src/providers/provider-illustration.service";
@@ -137,7 +137,7 @@ export class IllustrationController {
 		where: ReleaseQueryParameters.WhereInput,
 		@Query() dimensions: IllustrationDimensionsDto,
 		@Response({ passthrough: true }) res: Response,
-	): Promise<StreamableFile> {
+	) {
 		const illustrationPath = await this.releaseIllustrationService
 			.getIllustrationPath(where);
 
@@ -188,16 +188,24 @@ export class IllustrationController {
 		@IdentifierParam(TrackService)
 		where: TrackQueryParameters.WhereInput,
 		@Response({ passthrough: true }) res: Response,
-	): Promise<StreamableFile> {
-		const identifiers = await this.trackIllustrationService
-			.formatWhereInputToIdentifiers(where);
-		const trackIllustrationPath = this.trackIllustrationService
-			.buildIllustrationPath(...identifiers);
-		const discIllustrationPath = this.trackIllustrationService
-			.buildDiscIllustrationPath(...identifiers);
+	) {
 		const track = await this.trackService.get(where, { song: true });
+		const [trackIdentifiers, releaseIdentifier] = await Promise.all([
+			this.trackIllustrationService
+				.formatWhereInputToIdentifiers(where),
+			this.releaseIllustrationService
+				.formatWhereInputToIdentifiers({ id: track.releaseId }),
+		]);
+		const trackIllustrationPath = this.trackIllustrationService
+			.buildIllustrationPath(...trackIdentifiers);
+		const discIllustrationPath = this.trackIllustrationService
+			.buildDiscIllustrationPath(...trackIdentifiers);
+		const releaseIllustrationPath = this.releaseIllustrationService
+			.buildIllustrationPath(...releaseIdentifier);
 
-		for(const illustrationPath of [trackIllustrationPath, discIllustrationPath]) {
+		for (const illustrationPath of
+			[trackIllustrationPath, discIllustrationPath, releaseIllustrationPath]
+		) {
 			if (this.trackIllustrationService.illustrationExists(illustrationPath)) {
 				return this.illustrationService.streamIllustration(
 					illustrationPath,
@@ -207,11 +215,7 @@ export class IllustrationController {
 				);
 			}
 		}
-		return this.getReleaseIllustration(
-			{ id: track.releaseId },
-			dimensions,
-			res
-		);
+		throw new NoTrackIllustrationException(track.id);
 	}
 
 	@ApiOperation({
