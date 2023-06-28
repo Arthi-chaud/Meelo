@@ -10,6 +10,7 @@ import SongModule from 'src/song/song.module';
 import TrackModule from 'src/track/track.module';
 import MetadataService from './metadata.service';
 import FfmpegModule from 'src/ffmpeg/ffmpeg.module';
+import ParserService from './parser.service';
 
 @Module({
 	imports: [
@@ -24,7 +25,7 @@ import FfmpegModule from 'src/ffmpeg/ffmpeg.module';
 		forwardRef(() => AlbumModule),
 		forwardRef(() => ArtistModule)
 	],
-	providers: [MetadataService],
+	providers: [MetadataService, ParserService],
 	exports: [MetadataService]
 })
 export default class MetadataModule { }
