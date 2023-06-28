@@ -149,8 +149,9 @@ export class IllustrationController {
 				res
 			);
 		}
-		const release = await this.releaseService.get(where, { album: true, tracks: true });
-		const firstTrack = release.tracks.at(0);
+		const release = await this.releaseService.get(where, { album: true });
+		const firstTrack = await this.trackService.getPlaylist(where)
+			.then((tracklist) => tracklist.at(0));
 
 		if (firstTrack) {
 			return this.getTrackIllustration(dimensions, { id: firstTrack.id }, res);

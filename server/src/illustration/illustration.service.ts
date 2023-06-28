@@ -26,6 +26,7 @@ import glob from 'glob';
 import Logger from 'src/logger/logger';
 import TrackIllustrationService from 'src/track/track-illustration.service';
 import { basename } from 'path';
+import ReleaseIllustrationService from 'src/release/release-illustration.service';
 
 type IllustrationExtractStatus = 'extracted' | 'error' | 'already-extracted' | 'different-illustration';
 
@@ -39,6 +40,8 @@ export default class IllustrationService {
 		@Inject(forwardRef(() => AlbumService))
 		private albumService: AlbumService,
 		private settingsService: SettingsService,
+		@Inject(forwardRef(() => ReleaseIllustrationService))
+		private releaseIllustrationService: ReleaseIllustrationService,
 		private fileManagerService: FileManagerService,
 		private trackIllustrationService: TrackIllustrationService
 	) {}
@@ -67,6 +70,11 @@ export default class IllustrationService {
 		const releaseSlug = new Slug(release.slug);
 		const artistSlug = album.artist ? new Slug(album.artist.slug) : undefined;
 		const albumSlug = new Slug(album.slug);
+		const releaseIllustrationPath = this.releaseIllustrationService.buildIllustrationPath(
+			artistSlug,
+			albumSlug,
+			releaseSlug
+		);
 		const discIllustrationPath = this.trackIllustrationService.buildDiscIllustrationPath(
 			artistSlug,
 			albumSlug,
@@ -74,7 +82,6 @@ export default class IllustrationService {
 			track.discIndex ?? undefined,
 			track.trackIndex ?? undefined
 		);
-
 		const trackIllustrationPath = this.trackIllustrationService.buildIllustrationPath(
 			artistSlug,
 			albumSlug,
@@ -97,7 +104,7 @@ export default class IllustrationService {
 		const illustrationBytes = await (await Jimp.read(illustration))
 			.getBufferAsync(Jimp.MIME_JPEG);
 
-		for (const path of [discIllustrationPath, trackIllustrationPath]) {
+		for (const path of [releaseIllustrationPath, discIllustrationPath, trackIllustrationPath]) {
 			const illustrationExtractionStatus = await this.saveIllustrationWithStatus(
 				illustrationBytes, path
 			);
