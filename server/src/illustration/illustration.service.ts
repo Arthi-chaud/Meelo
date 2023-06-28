@@ -75,6 +75,13 @@ export default class IllustrationService {
 			albumSlug,
 			releaseSlug,
 		);
+		const discIllustrationPath = this.trackIllustrationService.buildDiscIllustrationPath(
+			artistSlug,
+			albumSlug,
+			releaseSlug,
+			track.discIndex ?? undefined,
+			track.trackIndex ?? undefined
+		);
 		const trackIllustrationPath = this.trackIllustrationService.buildIllustrationPath(
 			artistSlug,
 			albumSlug,
@@ -97,7 +104,7 @@ export default class IllustrationService {
 		const illustrationBytes = await (await Jimp.read(illustration))
 			.getBufferAsync(Jimp.MIME_JPEG);
 
-		for (const path of [releaseIllustrationPath, trackIllustrationPath]) {
+		for (const path of [releaseIllustrationPath, discIllustrationPath, trackIllustrationPath]) {
 			const illustrationExtractionStatus = await this.saveIllustrationWithStatus(
 				illustrationBytes, path
 			);

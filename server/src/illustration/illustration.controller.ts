@@ -184,17 +184,23 @@ export class IllustrationController {
 		where: TrackQueryParameters.WhereInput,
 		@Response({ passthrough: true }) res: Response,
 	) {
-		const illustrationPath = await this.trackIllustrationService
-			.getIllustrationPath(where);
+		const identifiers = await this.trackIllustrationService
+			.formatWhereInputToIdentifiers(where);
+		const trackIllustrationPath = this.trackIllustrationService
+			.buildIllustrationPath(...identifiers);
+		const discIllustrationPath = this.trackIllustrationService
+			.buildDiscIllustrationPath(...identifiers);
 		const track = await this.trackService.get(where, { song: true });
 
-		if (this.trackIllustrationService.illustrationExists(illustrationPath)) {
-			return this.illustrationService.streamIllustration(
-				illustrationPath,
-				track.song.slug,
-				dimensions,
-				res
-			);
+		for(const illustrationPath of [discIllustrationPath, trackIllustrationPath]) {
+			if (this.trackIllustrationService.illustrationExists(illustrationPath)) {
+				return this.illustrationService.streamIllustration(
+					illustrationPath,
+					track.song.slug,
+					dimensions,
+					res
+				);
+			}
 		}
 		return this.getReleaseIllustration(
 			{ id: track.releaseId },
