@@ -1,5 +1,5 @@
 import {
-	Body, Controller, Delete, Get, HttpStatus, Param, Post, Query, Response
+	Body, Controller, Delete, Get, HttpStatus, Param, Post, Query, Response, StreamableFile
 } from "@nestjs/common";
 import {
 	ApiOperation, ApiParam, ApiTags
@@ -137,22 +137,26 @@ export class IllustrationController {
 		where: ReleaseQueryParameters.WhereInput,
 		@Query() dimensions: IllustrationDimensionsDto,
 		@Response({ passthrough: true }) res: Response,
-	) {
+	): Promise<StreamableFile> {
 		const illustrationPath = await this.releaseIllustrationService
 			.getIllustrationPath(where);
 
-		if (!this.releaseIllustrationService.illustrationExists(illustrationPath)) {
-			const release = await this.releaseService.get(where, { album: true });
-
-			throw new NoReleaseIllustrationException(
-				new Slug(release.album.slug), new Slug(release.slug)
+		if (this.releaseIllustrationService.illustrationExists(illustrationPath)) {
+			return this.illustrationService.streamIllustration(
+				illustrationPath,
+				parse(parse(illustrationPath).dir).name,
+				dimensions,
+				res
 			);
 		}
-		return this.illustrationService.streamIllustration(
-			illustrationPath,
-			parse(parse(illustrationPath).dir).name,
-			dimensions,
-			res
+		const release = await this.releaseService.get(where, { album: true, tracks: true });
+		const firstTrack = release.tracks.at(0);
+
+		if (firstTrack) {
+			return this.getTrackIllustration(dimensions, { id: firstTrack.id }, res);
+		}
+		throw new NoReleaseIllustrationException(
+			new Slug(release.album.slug), new Slug(release.slug)
 		);
 	}
 
@@ -183,7 +187,7 @@ export class IllustrationController {
 		@IdentifierParam(TrackService)
 		where: TrackQueryParameters.WhereInput,
 		@Response({ passthrough: true }) res: Response,
-	) {
+	): Promise<StreamableFile> {
 		const identifiers = await this.trackIllustrationService
 			.formatWhereInputToIdentifiers(where);
 		const trackIllustrationPath = this.trackIllustrationService
@@ -192,7 +196,7 @@ export class IllustrationController {
 			.buildDiscIllustrationPath(...identifiers);
 		const track = await this.trackService.get(where, { song: true });
 
-		for(const illustrationPath of [discIllustrationPath, trackIllustrationPath]) {
+		for(const illustrationPath of [trackIllustrationPath, discIllustrationPath]) {
 			if (this.trackIllustrationService.illustrationExists(illustrationPath)) {
 				return this.illustrationService.streamIllustration(
 					illustrationPath,

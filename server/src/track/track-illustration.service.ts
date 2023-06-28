@@ -41,7 +41,7 @@ export default class TrackIllustrationService extends RepositoryIllustrationServ
 			trackIndex
 		] = args;
 
-		return `${this.buildDiscIllustrationFolderPath(...args)}track-${trackIndex ?? 0 }`;
+		return `${this.buildDiscIllustrationFolderPath(...args)}/track-${trackIndex ?? 0 }`;
 	}
 
 	buildDiscIllustrationFolderPath(...args: ServiceArgs): string {
@@ -58,7 +58,7 @@ export default class TrackIllustrationService extends RepositoryIllustrationServ
 				releaseSlug,
 			);
 
-		return `${releaseIllustrationFolder}/${discIndex ? `disc-${discIndex}/` : ''}`;
+		return `${releaseIllustrationFolder}${discIndex ? `/disc-${discIndex}` : ''}`;
 	}
 
 	buildDiscIllustrationPath(...args: ServiceArgs): string {
