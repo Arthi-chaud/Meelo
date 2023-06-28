@@ -51,6 +51,12 @@ export class NoReleaseIllustrationException extends NoIllustrationException {
 	}
 }
 
+export class NoTrackIllustrationException extends NoIllustrationException {
+	constructor(trackId: number) {
+		super(`No illustration found for track  n°${trackId}`);
+	}
+}
+
 export class CantDownloadIllustrationException extends InvalidRequestException {
 	constructor(illustrationURL: string) {
 		super(`Illustration could not be downloaded from '${illustrationURL}'`);

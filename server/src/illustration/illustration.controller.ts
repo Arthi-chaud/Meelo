@@ -22,7 +22,7 @@ import ReleaseIllustrationService from "src/release/release-illustration.service
 import TrackIllustrationService from "src/track/track-illustration.service";
 import { parse } from 'path';
 import Slug from "src/slug/slug";
-import { NoReleaseIllustrationException } from "./illustration.exceptions";
+import { NoReleaseIllustrationException, NoTrackIllustrationException } from "./illustration.exceptions";
 import SongService from "src/song/song.service";
 import SongQueryParameters from "src/song/models/song.query-params";
 import ProviderIllustrationService from "src/providers/provider-illustration.service";
@@ -141,18 +141,23 @@ export class IllustrationController {
 		const illustrationPath = await this.releaseIllustrationService
 			.getIllustrationPath(where);
 
-		if (!this.releaseIllustrationService.illustrationExists(illustrationPath)) {
-			const release = await this.releaseService.get(where, { album: true });
-
-			throw new NoReleaseIllustrationException(
-				new Slug(release.album.slug), new Slug(release.slug)
+		if (this.releaseIllustrationService.illustrationExists(illustrationPath)) {
+			return this.illustrationService.streamIllustration(
+				illustrationPath,
+				parse(parse(illustrationPath).dir).name,
+				dimensions,
+				res
 			);
 		}
-		return this.illustrationService.streamIllustration(
-			illustrationPath,
-			parse(parse(illustrationPath).dir).name,
-			dimensions,
-			res
+		const release = await this.releaseService.get(where, { album: true });
+		const firstTrack = await this.trackService.getPlaylist(where)
+			.then((tracklist) => tracklist.at(0));
+
+		if (firstTrack) {
+			return this.getTrackIllustration(dimensions, { id: firstTrack.id }, res);
+		}
+		throw new NoReleaseIllustrationException(
+			new Slug(release.album.slug), new Slug(release.slug)
 		);
 	}
 
@@ -184,23 +189,33 @@ export class IllustrationController {
 		where: TrackQueryParameters.WhereInput,
 		@Response({ passthrough: true }) res: Response,
 	) {
-		const illustrationPath = await this.trackIllustrationService
-			.getIllustrationPath(where);
 		const track = await this.trackService.get(where, { song: true });
+		const [trackIdentifiers, releaseIdentifier] = await Promise.all([
+			this.trackIllustrationService
+				.formatWhereInputToIdentifiers(where),
+			this.releaseIllustrationService
+				.formatWhereInputToIdentifiers({ id: track.releaseId }),
+		]);
+		const trackIllustrationPath = this.trackIllustrationService
+			.buildIllustrationPath(...trackIdentifiers);
+		const discIllustrationPath = this.trackIllustrationService
+			.buildDiscIllustrationPath(...trackIdentifiers);
+		const releaseIllustrationPath = this.releaseIllustrationService
+			.buildIllustrationPath(...releaseIdentifier);
 
-		if (this.trackIllustrationService.illustrationExists(illustrationPath)) {
-			return this.illustrationService.streamIllustration(
-				illustrationPath,
-				track.song.slug,
-				dimensions,
-				res
-			);
+		for (const illustrationPath of
+			[trackIllustrationPath, discIllustrationPath, releaseIllustrationPath]
+		) {
+			if (this.trackIllustrationService.illustrationExists(illustrationPath)) {
+				return this.illustrationService.streamIllustration(
+					illustrationPath,
+					track.song.slug,
+					dimensions,
+					res
+				);
+			}
 		}
-		return this.getReleaseIllustration(
-			{ id: track.releaseId },
-			dimensions,
-			res
-		);
+		throw new NoTrackIllustrationException(track.id);
 	}
 
 	@ApiOperation({

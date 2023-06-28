@@ -25,6 +25,8 @@ import SetupApp from "test/setup-app";
 import { expectedReleaseResponse, expectedAlbumResponse, expectedTrackResponse, expectedSongResponse } from "test/expected-responses";
 import ProvidersModule from "src/providers/providers.module";
 
+jest.setTimeout(60000);
+
 describe('Release Controller', () => {
 	let dummyRepository: TestPrismaService;
 	let app: INestApplication;

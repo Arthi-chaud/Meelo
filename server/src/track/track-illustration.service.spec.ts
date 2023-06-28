@@ -41,24 +41,29 @@ describe('Track Illustration Service', () => {
 		it("should build Track Illustration Folder Path", () => {
 			expect(trackIllustrationService.buildIllustrationFolderPath(
 				new Slug('My Artist'), new Slug('My Album'), new Slug('My Album (Deluxe Edition)'), 1, 2
-			)).toBe(`${baseMetadataFolder}/my-artist/my-album/my-album-deluxe-edition/disc-1-track-2`);
+			)).toBe(`${baseMetadataFolder}/my-artist/my-album/my-album-deluxe-edition/disc-1/track-2`);
 		});
 		it("should build Track Illustration Folder Path, from compilation release", () => {
 			expect(trackIllustrationService.buildIllustrationFolderPath(
 				undefined, new Slug('My Album'), new Slug('My Album (Deluxe Edition)'), 10, 2
-			)).toBe(`${baseMetadataFolder}/compilations/my-album/my-album-deluxe-edition/disc-10-track-2`)
+			)).toBe(`${baseMetadataFolder}/compilations/my-album/my-album-deluxe-edition/disc-10/track-2`)
+		})
+		it("should build Track Illustration Folder Path, with unknown disc", () => {
+			expect(trackIllustrationService.buildIllustrationFolderPath(
+				undefined, new Slug('My Album'), new Slug('My Album (Deluxe Edition)'), undefined, 2
+			)).toBe(`${baseMetadataFolder}/compilations/my-album/my-album-deluxe-edition/track-2`)
 		})
 	})
 	describe('build Illustration Path', () => {
 		it("should build Track Illustration Path", () => {
 			expect(trackIllustrationService.buildIllustrationPath(
 				new Slug('My Artist'), new Slug('My Album'), new Slug('My Album (Deluxe Edition)'), 1, 2
-			)).toBe(`${baseMetadataFolder}/my-artist/my-album/my-album-deluxe-edition/disc-1-track-2/cover.jpg`);
+			)).toBe(`${baseMetadataFolder}/my-artist/my-album/my-album-deluxe-edition/disc-1/track-2/cover.jpg`);
 		})
 		it("should build Track Illustration Path,  from compilation release", () => {
 			expect(trackIllustrationService.buildIllustrationPath(
 				undefined, new Slug('My Album'), new Slug('My Album (Deluxe Edition)'), 10, 2
-			)).toBe(`${baseMetadataFolder}/compilations/my-album/my-album-deluxe-edition/disc-10-track-2/cover.jpg`)
+			)).toBe(`${baseMetadataFolder}/compilations/my-album/my-album-deluxe-edition/disc-10/track-2/cover.jpg`)
 		})
 	})
 	describe('Get Illustration Illustration', () => {

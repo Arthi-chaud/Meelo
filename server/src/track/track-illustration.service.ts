@@ -34,11 +34,22 @@ export default class TrackIllustrationService extends RepositoryIllustrationServ
 
 	buildIllustrationFolderPath(...args: ServiceArgs): string {
 		const [
+			_albumArtistSlug,
+			_albumSlug,
+			_releaseSlug,
+			_discIndex,
+			trackIndex
+		] = args;
+
+		return `${this.buildDiscIllustrationFolderPath(...args)}/track-${trackIndex ?? 0 }`;
+	}
+
+	buildDiscIllustrationFolderPath(...args: ServiceArgs): string {
+		const [
 			albumArtistSlug,
 			albumSlug,
 			releaseSlug,
 			discIndex,
-			trackIndex
 		] = args;
 		const releaseIllustrationFolder = this.releaseIllustrationService
 			.buildIllustrationFolderPath(
@@ -47,7 +58,11 @@ export default class TrackIllustrationService extends RepositoryIllustrationServ
 				releaseSlug,
 			);
 
-		return `${releaseIllustrationFolder}/${discIndex ? `disc-${discIndex}-` : ''}track-${trackIndex ?? 0 }`;
+		return `${releaseIllustrationFolder}${discIndex ? `/disc-${discIndex}` : ''}`;
+	}
+
+	buildDiscIllustrationPath(...args: ServiceArgs): string {
+		return `${this.buildDiscIllustrationFolderPath(...args)}/cover.jpg`;
 	}
 
 	buildIllustrationLink(identifier: Identifier): string {
