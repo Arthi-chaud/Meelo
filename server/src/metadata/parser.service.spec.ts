@@ -113,6 +113,86 @@ describe('Metadata Service', () => {
 			)
 			expect(res.name).toBe('Champion');
 			expect(res.featuring).toStrictEqual(['Nas', 'Drake', 'Young Jeezy', 'Someone']);
-		})
-	})
+		});
+	});
+
+	describe("Extract artists name from artist name", () => {
+		it('No Featuring', () => {
+			const res = parserService.extractFeaturedArtistsFromArtistName(
+				'Madonna'
+			)
+			expect(res.artist).toBe('Madonna');
+			expect(res.featuring).toStrictEqual([]);
+		});
+		it('No Featuring (Multiple words)', () => {
+			const res = parserService.extractFeaturedArtistsFromArtistName(
+				'Everything but the Girl'
+			)
+			expect(res.artist).toBe('Everything but the Girl');
+			expect(res.featuring).toStrictEqual([]);
+		});
+		it('Ambiguous', () => {
+			const res = parserService.extractFeaturedArtistsFromArtistName(
+				'Christine & The Queens'
+			)
+			expect(res.artist).toBe('Christine & The Queen');
+			expect(res.featuring).toStrictEqual([]);
+		});
+		it('2 Artists (&)', () => {
+			const res = parserService.extractFeaturedArtistsFromArtistName(
+				'Iggy Azalea & Tyga'
+			)
+			expect(res.artist).toBe('Iggy Azalea');
+			expect(res.featuring).toStrictEqual(['Tyga']);
+		});
+		it('2 Artists (feat.)', () => {
+			const res = parserService.extractFeaturedArtistsFromArtistName(
+				'Clean Bandit feat. Jess Glynne'
+			)
+			expect(res.artist).toBe('Clean Bandit');
+			expect(res.featuring).toStrictEqual(['Jess Glynne']);
+		});
+		it('2 Artists (Feat.)', () => {
+			const res = parserService.extractFeaturedArtistsFromArtistName(
+				'Clean Bandit Feat. Jess Glynne'
+			)
+			expect(res.artist).toBe('Clean Bandit');
+			expect(res.featuring).toStrictEqual(['Jess Glynne']);
+		});
+		it('2 Artists (Featuring)', () => {
+			const res = parserService.extractFeaturedArtistsFromArtistName(
+				'Clean Bandit Featuring Jess Glynne'
+			)
+			expect(res.artist).toBe('Clean Bandit');
+			expect(res.featuring).toStrictEqual(['Jess Glynne']);
+		});
+		it('2 Artists ((feat.))', () => {
+			const res = parserService.extractFeaturedArtistsFromArtistName(
+				'Clean Bandit (feat. Jess Glynne)'
+			)
+			expect(res.artist).toBe('Clean Bandit');
+			expect(res.featuring).toStrictEqual(['Jess Glynne']);
+		});
+		it('3 Artists', () => {
+			const res = parserService.extractFeaturedArtistsFromArtistName(
+				'Charli XCX, Caroline Polacheck & Christine'
+			)
+			expect(res.artist).toBe('Charli XCX');
+			expect(res.featuring).toStrictEqual(['Caroline Polacheck, Christine']);
+		});
+		it('3 Artists (Featuring)', () => {
+			const res = parserService.extractFeaturedArtistsFromArtistName(
+				'Clean Bandit Featuring Jess Glynne & BBBB'
+			)
+			expect(res.artist).toBe('Clean Bandit');
+			expect(res.featuring).toStrictEqual(['Jess Glynne', 'BBBB']);
+		});
+		it('4 Artists (Featuring)', () => {
+			const res = parserService.extractFeaturedArtistsFromArtistName(
+				'Clean Bandit Featuring Jess Glynne, BBBB & CCCC'
+			)
+			expect(res.artist).toBe('Clean Bandit');
+			expect(res.featuring).toStrictEqual(['Jess Glynne', 'BBBB', 'CCCC']);
+		});
+	});
 });
