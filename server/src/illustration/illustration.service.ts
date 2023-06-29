@@ -24,9 +24,9 @@ import type { IllustrationDimensionsDto } from './models/illustration-dimensions
 import SettingsService from 'src/settings/settings.service';
 import glob from 'glob';
 import Logger from 'src/logger/logger';
-import ReleaseIllustrationService from 'src/release/release-illustration.service';
 import TrackIllustrationService from 'src/track/track-illustration.service';
 import { basename } from 'path';
+import ReleaseIllustrationService from 'src/release/release-illustration.service';
 
 type IllustrationExtractStatus = 'extracted' | 'error' | 'already-extracted' | 'different-illustration';
 
@@ -40,9 +40,9 @@ export default class IllustrationService {
 		@Inject(forwardRef(() => AlbumService))
 		private albumService: AlbumService,
 		private settingsService: SettingsService,
-		private fileManagerService: FileManagerService,
 		@Inject(forwardRef(() => ReleaseIllustrationService))
 		private releaseIllustrationService: ReleaseIllustrationService,
+		private fileManagerService: FileManagerService,
 		private trackIllustrationService: TrackIllustrationService
 	) {}
 
@@ -73,7 +73,14 @@ export default class IllustrationService {
 		const releaseIllustrationPath = this.releaseIllustrationService.buildIllustrationPath(
 			artistSlug,
 			albumSlug,
+			releaseSlug
+		);
+		const discIllustrationPath = this.trackIllustrationService.buildDiscIllustrationPath(
+			artistSlug,
+			albumSlug,
 			releaseSlug,
+			track.discIndex ?? undefined,
+			track.trackIndex ?? undefined
 		);
 		const trackIllustrationPath = this.trackIllustrationService.buildIllustrationPath(
 			artistSlug,
@@ -97,7 +104,7 @@ export default class IllustrationService {
 		const illustrationBytes = await (await Jimp.read(illustration))
 			.getBufferAsync(Jimp.MIME_JPEG);
 
-		for (const path of [releaseIllustrationPath, trackIllustrationPath]) {
+		for (const path of [releaseIllustrationPath, discIllustrationPath, trackIllustrationPath]) {
 			const illustrationExtractionStatus = await this.saveIllustrationWithStatus(
 				illustrationBytes, path
 			);
