@@ -26,6 +26,6 @@ import ParserService from './parser.service';
 		forwardRef(() => ArtistModule)
 	],
 	providers: [MetadataService, ParserService],
-	exports: [MetadataService]
+	exports: [MetadataService, ParserService]
 })
 export default class MetadataModule { }
