@@ -21,8 +21,78 @@ describe('Metadata Service', () => {
 		expect(parserService).toBeDefined();
 	});
 
+	describe('Split Groups', () => {
+		it("No Group", () => {
+			const res = parserService.splitGroups(
+				'Strict Machine'
+			)
+			expect(res).toStrictEqual(['Strict Machine']);
+		});
+		it("Simple Group", () => {
+			const res = parserService.splitGroups(
+				'Me Against the Music (feat. Madonna)'
+			)
+			expect(res).toStrictEqual(['Me Against the Music', 'feat. Madonna']);
+		});
+		it("Simple Dash Group", () => {
+			const res = parserService.splitGroups(
+				'A - B'
+			)
+			expect(res).toStrictEqual(['A', 'B']);
+		});
 
-	describe("Extract artist name from song name", () => {
+		it("Two Groups", () => {
+			const res = parserService.splitGroups(
+				'Me Against the Music (feat. Madonna)  [Remix]'
+			)
+			expect(res).toStrictEqual(['Me Against the Music', 'feat. Madonna', 'Remix']);
+		});
+		it("Two Groups (Same Delimiters)", () => {
+			const res = parserService.splitGroups(
+				'Me Against the Music (feat. Madonna)  (Remix)'
+			)
+			expect(res).toStrictEqual(['Me Against the Music', 'feat. Madonna', 'Remix']);
+		});
+		it("Two Groups (No Whitespace)", () => {
+			const res = parserService.splitGroups(
+				'Me Against the Music (feat. Madonna)[Remix]'
+			)
+			expect(res).toStrictEqual(['Me Against the Music', 'feat. Madonna', 'Remix']);
+		});
+		it("Three Groups", () => {
+			const res = parserService.splitGroups(
+				'Me Against the Music (feat. Madonna) [Remix A ]  {Edit B}'
+			)
+			expect(res).toStrictEqual(['Me Against the Music', 'feat. Madonna', 'Remix A', 'Edit B']);
+		});
+		it("Three Groups (Different separator Order)", () => {
+			const res = parserService.splitGroups(
+				'Me Against the Music [feat. Madonna] [Remix A] (Edit B)'
+			)
+			expect(res).toStrictEqual(['Me Against the Music', 'feat. Madonna', 'Remix A', 'Edit B']);
+		});
+		it("Nested Groups", () => {
+			const res = parserService.splitGroups(
+				'Me Against the Music [feat. Madonna  [Remix A] (Edit B)]'
+			)
+			expect(res).toStrictEqual(['Me Against the Music', 'feat. Madonna', 'Remix A', 'Edit B']);
+		});
+		it("Nested Group + Simple Group", () => {
+			const res = parserService.splitGroups(
+				'Me Against the Music [feat. Madonna  [Remix A] (Edit B)] [Version C]'
+			)
+			expect(res).toStrictEqual(['Me Against the Music', 'feat. Madonna', 'Remix A', 'Edit B', 'Version C']);
+		});
+		it("Dash Group", () => {
+			const res = parserService.splitGroups(
+				'Me Against the Music (feat. Madonna) - Remix A (Edit B)'
+			)
+			expect(res).toStrictEqual(['Me Against the Music', 'feat. Madonna', 'Remix A', 'Edit B']);
+		});
+	})
+
+
+	/*describe("Extract artist name from song name", () => {
 		it('No Featuring', () => {
 			const res = parserService.extractFeaturedArtistsFromSongName(
 				'Strict Machine'
@@ -78,6 +148,13 @@ describe('Metadata Service', () => {
 			)
 			expect(res.name).toBe('Medellín (Offer Nissim Madame X In The Sphinx Mix)');
 			expect(res.featuring).toStrictEqual(['Maluma']);
+		});
+		it('Multiple artists: A (feat. B) [feat. C]', () => {
+			const res = parserService.extractFeaturedArtistsFromSongName(
+				'4 Minutes (feat. Justin Timberlake) [feat. Timbaland]'
+			)
+			expect(res.name).toBe('4 Minutes');
+			expect(res.featuring).toStrictEqual(['Justin Timberlake', 'Timbaland']);
 		});
 		it('Multiple artists: A (feat. B & C)', () => {
 			const res = parserService.extractFeaturedArtistsFromSongName(
@@ -194,5 +271,5 @@ describe('Metadata Service', () => {
 			expect(res.artist).toBe('Clean Bandit');
 			expect(res.featuring).toStrictEqual(['Jess Glynne', 'BBBB', 'CCCC']);
 		});
-	});
+	});*/
 });

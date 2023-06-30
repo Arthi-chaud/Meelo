@@ -21,6 +21,7 @@ import compilationAlbumArtistKeyword from 'src/utils/compilation';
 import GenreService from 'src/genre/genre.service';
 import { File, Track } from 'src/prisma/models';
 import { validate } from 'class-validator';
+import ParserService from './parser.service';
 
 @Injectable()
 export default class MetadataService {
@@ -365,11 +366,7 @@ export default class MetadataService {
 	 */
 	private extractExtensions(source: string, extensions: string[]): string[] {
 		let groupsFound: string[] = [];
-		const extensionDelimiters = [
-			['(', ')'],
-			['{', '}'],
-			['[', ']']
-		];
+		const extensionDelimiters = ParserService.separators;
 		const extensionsGroup = extensions.map((ext) => `(${ext})`).join('|');
 
 		for (const delimiter of extensionDelimiters) {
