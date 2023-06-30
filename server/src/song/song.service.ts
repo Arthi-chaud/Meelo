@@ -29,6 +29,7 @@ import {
 import AlbumService from 'src/album/album.service';
 import ReleaseQueryParameters from 'src/release/models/release.query-parameters';
 import ReleaseService from 'src/release/release.service';
+import ParserService from 'src/metadata/parser.service';
 
 @Injectable()
 export default class SongService extends RepositoryService<
@@ -485,11 +486,7 @@ export default class SongService extends RepositoryService<
 	 * @param songName the name of the song to strip
 	 */
 	private getBaseSongName(songName: string): string {
-		const extensionDelimiters = [
-			['(', ')'],
-			['{', '}'],
-			['[', ']']
-		];
+		const extensionDelimiters = ParserService.separators;
 		let strippedSongName = songName;
 
 		for (const delimiter of extensionDelimiters) {
