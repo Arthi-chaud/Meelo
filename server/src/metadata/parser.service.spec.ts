@@ -2,7 +2,7 @@ import { TestingModule } from "@nestjs/testing";
 import ParserService from "./parser.service";
 import { createTestingModule } from "test/test-module";
 
-describe('Metadata Service', () => {
+describe('Parser Service', () => {
 	let parserService: ParserService
 
 	let moduleRef: TestingModule;
@@ -85,9 +85,17 @@ describe('Metadata Service', () => {
 		});
 		it("Dash Group", () => {
 			const res = parserService.splitGroups(
-				'Me Against the Music (feat. Madonna) - Remix A (Edit B)'
+				'Me Against the Music (feat. Madonna) - Remix A (Edit B)',
 			)
 			expect(res).toStrictEqual(['Me Against the Music', 'feat. Madonna', 'Remix A', 'Edit B']);
+		});
+		it("Group before root (Simple)", () => {
+			const res = parserService.splitGroups('(A) B', { keepDelimiters: true })
+			expect(res).toStrictEqual(['(A)', 'B']);
+		});
+		it("Group before root (hard)", () => {
+			const res = parserService.splitGroups('(A) B - C [D]', { keepDelimiters: true })
+			expect(res).toStrictEqual(['(A)', 'B', '- C', '[D]']);
 		});
 	})
 

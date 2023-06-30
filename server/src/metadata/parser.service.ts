@@ -70,40 +70,57 @@ export default class ParserService {
 		return tokens;
 	}
 
-	private stripGroupDelimiters(group: string): string {
-		let strippedGroup = group;
+	public stripGroupDelimiters(group: string): [string, string, string] {
+		for (const [startDelim, endDelim] of ParserService.separators) {
+			const startReg = `^\\s*${startDelim.source}\\s*`;
+			const endReg = `\\s*${endDelim.source}\\s*$`;
+			const strippedStart = group.match(startReg)?.at(0)?.trimStart();
+			const strippedEnd = group.match(endReg)?.at(0)?.trim();
 
-		ParserService.separators
-			.forEach(([startDelim, endDelim]) => {
-				// We want to remove the end if the start was removed successfully
-				const strippedStart = strippedGroup
-					.replace(new RegExp(`^\\s*${startDelim.source}\\s*`), '');
+			if (strippedStart !== undefined && strippedEnd !== undefined) {
+				const strippedGroup = group
+					.replace(new RegExp(startReg), '')
+					.replace(new RegExp(endReg), '');
 
-				if (strippedStart != strippedGroup) {
-					strippedGroup = strippedStart.replace(new RegExp(`\\s*${endDelim.source}\\s*$`), '');
-				}
-			});
-		return strippedGroup;
+				return [strippedStart, strippedGroup.trim(), strippedEnd];
+			}
+		}
+		return ['', group, ''];
 	}
 
 	/**
 	 * @example 'My Album (a) [b] {c}'  => ['My Album', 'a', 'b', 'c']
 	 * @example 'My Song (feat. A) - B Remix' -> ['My Song', 'feat. A', 'B Remix']
 	 */
-	splitGroups(tokenString: string): string[] {
+	splitGroups(tokenString: string, opt?: { keepDelimiters: boolean }): string[] {
 		const tokens: string[] = [];
-		let strippedToken = tokenString;
-		const groups = this.getGroups(strippedToken);
+		const groups = this.getGroups(tokenString);
 
 		groups.forEach((group) => {
-			const strippedGroup = this.stripGroupDelimiters(group);
-
-			strippedToken = strippedToken.replace(new RegExp(`\\s*${escapeRegex(group)}`), '');
+			const offset = tokenString.indexOf(group);
+			const root = tokenString.slice(0, offset).trim(); // Anything before the group
+			const [gstart, strippedGroup, gend] = this.stripGroupDelimiters(group);
 			// We call recursively to handle nested groups
-			tokens.push(...this.splitGroups(strippedGroup));
-		});
+			const subGroups = this.splitGroups(strippedGroup, opt);
 
-		return [strippedToken.trim(), ...tokens];
+			if (root.length) { // A (B)
+				tokens.push(root);
+			}
+			if (opt?.keepDelimiters) {
+				// We do this because dashed groups will have trailing groups in `strippedGroup`
+				const first = gend == '' ? subGroups.at(0) : strippedGroup;
+
+				tokens.push(gstart + first + gend, ...subGroups.slice(1));
+			} else {
+				tokens.push(...subGroups);
+			}
+			tokenString = tokenString.slice(offset + group.length);
+		});
+		tokenString = tokenString.trim();
+		if (tokenString.length) {
+			tokens.push(tokenString);
+		}
+		return tokens;
 	}
 
 	/**
