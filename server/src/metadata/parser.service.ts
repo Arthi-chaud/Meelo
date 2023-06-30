@@ -7,7 +7,7 @@ import escapeRegex from "src/utils/escape-regex";
 export default class ParserService {
 	constructor() {}
 
-	public static separators = [
+	protected separators = [
 		[/\(/, /\)/],
 		[/\[/, /\]/],
 		[/\{/, /\}/],
@@ -44,7 +44,7 @@ export default class ParserService {
 	 * Returns the first group in the string, with its delimiters
 	 */
 	private getFirstGroup(tokenString: string): string | null {
-		const topLevelGroups = ParserService.separators
+		const topLevelGroups = this.separators
 			.map(([start, end]) => this._getFirstGroup(tokenString, start, end))
 			.filter((group): group is string => group !== null)
 			.map((group) => [group, tokenString.indexOf(group)] as const)
@@ -71,7 +71,7 @@ export default class ParserService {
 	}
 
 	public stripGroupDelimiters(group: string): [string, string, string] {
-		for (const [startDelim, endDelim] of ParserService.separators) {
+		for (const [startDelim, endDelim] of this.separators) {
 			const startReg = `^\\s*${startDelim.source}\\s*`;
 			const endReg = `\\s*${endDelim.source}\\s*$`;
 			const strippedStart = group.match(startReg)?.at(0)?.trimStart();

@@ -51,6 +51,8 @@ export default class SongService extends RepositoryService<
 		private trackService: TrackService,
 		@Inject(forwardRef(() => GenreService))
 		private genreService: GenreService,
+		@Inject(forwardRef(() => ParserService))
+		private parserService: ParserService,
 	) {
 		super(prismaService.song);
 	}
@@ -414,14 +416,10 @@ export default class SongService extends RepositoryService<
 	 * @param songName the name of the song to strip
 	 */
 	private getBaseSongName(songName: string): string {
-		const extensionDelimiters = ParserService.separators;
-		let strippedSongName = songName;
-
-		for (const delimiter of extensionDelimiters) {
-			strippedSongName.match(`\\s*\\${delimiter[0]}.+\\${delimiter[1]}\\s*`)?.forEach((matched) => {
-				strippedSongName = strippedSongName.replace(matched, '');
-			});
-		}
-		return strippedSongName.split(' - ')[0];
+		return this.parserService.splitGroups(songName, { keepDelimiters: true })
+			.filter((group) => this.parserService.stripGroupDelimiters(group)[1] == group)
+			.map((group) => group.trim())
+			.join(' ')
+			.trim();
 	}
 }

@@ -13,6 +13,7 @@ import ReleaseModule from "src/release/release.module";
 import SettingsModule from "src/settings/settings.module";
 import { createTestingModule } from "test/test-module";
 import TestPrismaService from "test/test-prisma.service";
+import MetadataModule from "src/metadata/metadata.module";
 
 describe('Song Illustration Service', () => {
 	let dummyRepository: TestPrismaService;
@@ -21,7 +22,7 @@ describe('Song Illustration Service', () => {
 	let module: TestingModule;
 	beforeAll(async () => {
 		module = await createTestingModule({
-			imports: [FileManagerModule, PrismaModule, ArtistModule, AlbumModule, SettingsModule, ReleaseModule, SongModule, TrackModule],
+			imports: [FileManagerModule, PrismaModule, ArtistModule, AlbumModule, SettingsModule, ReleaseModule, SongModule, TrackModule, MetadataModule],
 		}).overrideProvider(PrismaService).useClass(TestPrismaService).compile();
 		songIllustrationService = module.get(SongIllustrationService);
 		dummyRepository = module.get(PrismaService);
