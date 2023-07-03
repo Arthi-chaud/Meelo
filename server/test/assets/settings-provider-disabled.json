@@ -11,5 +11,8 @@
 	"providers": {
 		"musixmatch": {},
 		"musicbrainz": { "enabled": false }
+	},
+	"compilations": {
+		"useID3CompTag": true
 	}
 }

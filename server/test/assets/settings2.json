@@ -9,5 +9,8 @@
 	},
 	"providers": {
 		
+	},
+	"compilations": {
+		"useID3CompTag": true
 	}
 }
