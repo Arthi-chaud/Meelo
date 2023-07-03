@@ -100,7 +100,7 @@ describe('Parser Service', () => {
 	})
 
 
-	/*describe("Extract artist name from song name", () => {
+	describe("Extract artist name from song name", () => {
 		it('No Featuring', () => {
 			const res = parserService.extractFeaturedArtistsFromSongName(
 				'Strict Machine'
@@ -216,13 +216,6 @@ describe('Parser Service', () => {
 			expect(res.artist).toBe('Everything but the Girl');
 			expect(res.featuring).toStrictEqual([]);
 		});
-		it('Ambiguous', () => {
-			const res = parserService.extractFeaturedArtistsFromArtistName(
-				'Christine & The Queens'
-			)
-			expect(res.artist).toBe('Christine & The Queen');
-			expect(res.featuring).toStrictEqual([]);
-		});
 		it('2 Artists (&)', () => {
 			const res = parserService.extractFeaturedArtistsFromArtistName(
 				'Iggy Azalea & Tyga'
@@ -258,6 +251,13 @@ describe('Parser Service', () => {
 			expect(res.artist).toBe('Clean Bandit');
 			expect(res.featuring).toStrictEqual(['Jess Glynne']);
 		});
+		it('Ambiguous', () => {
+			const res = parserService.extractFeaturedArtistsFromArtistName(
+				'Christine & The Queens'
+			)
+			expect(res.artist).toBe('Christine & The Queens');
+			expect(res.featuring).toStrictEqual([]);
+		});
 		it('3 Artists', () => {
 			const res = parserService.extractFeaturedArtistsFromArtistName(
 				'Charli XCX, Caroline Polacheck & Christine'
@@ -279,5 +279,5 @@ describe('Parser Service', () => {
 			expect(res.artist).toBe('Clean Bandit');
 			expect(res.featuring).toStrictEqual(['Jess Glynne', 'BBBB', 'CCCC']);
 		});
-	});*/
+	});
 });
