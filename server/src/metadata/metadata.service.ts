@@ -177,10 +177,10 @@ export default class MetadataService {
 	 * @returns returns Metadata object with values from the capture groups of the regex in settings file
 	 */
 	public parseMetadataFromPath(filePath: string): Metadata {
-		const compArtists = this.settingsService.settingsValues.compilations
-			.artists
-			.map((artist) => artist.toLowerCase())
-			.concat(compilationAlbumArtistKeyword);
+		const compArtists = [compilationAlbumArtistKeyword.toLowerCase()]
+			.concat(...this.settingsService.settingsValues.compilations
+				.artists?.map((artist) => artist.toLowerCase())
+				.concat(compilationAlbumArtistKeyword) ?? []);
 
 		try {
 			const matchingRegex: RegExpMatchArray = this.settingsService.settingsValues.trackRegex
@@ -215,7 +215,7 @@ export default class MetadataService {
 		metadata.genres = rawMetadata.common.genre ?? [];
 		if (compSettings.useID3CompTag) {
 			metadata.compilation = rawMetadata.common.compilation ?? false;
-		} else if (metadata.albumArtist) {
+		} else if (metadata.albumArtist && compSettings.artists) {
 			metadata.compilation = compSettings.artists
 				.map((artist) => artist.toLowerCase())
 				.includes(metadata.albumArtist.toLowerCase());

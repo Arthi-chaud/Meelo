@@ -11,7 +11,6 @@
 		
 	},
 	"compilations": {
-		"useID3CompTag": true,
-		"artists": []
+		"useID3CompTag": true
 	}
 }

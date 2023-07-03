@@ -4,7 +4,7 @@ import {
 	ArrayNotEmpty,
 	IsBoolean,
 	IsDefined,
-	IsIn, IsNotEmpty, IsString, ValidateNested
+	IsIn, IsNotEmpty, IsOptional, IsString, ValidateNested
 } from "class-validator";
 import ProvidersSettings from "src/providers/models/providers.settings";
 
@@ -15,8 +15,8 @@ class CompilationSettings {
 	@ApiProperty()
 	@IsNotEmpty({ each: true })
 	@IsString({ each: true })
-	@IsDefined()
-	artists: string[];
+	@IsOptional()
+	artists?: string[];
 
 	@ApiProperty()
 	@IsDefined()
