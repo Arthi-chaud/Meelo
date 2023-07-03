@@ -15,6 +15,10 @@ In your `Meelo` folder create a `settings.json` file. It will look like this:
   "providers": {
     "genius": {},
     "musicbrainz": {}
+  },
+  "compilations": {
+    "useID3CompTag": true,
+    "artists": ["Various Artists"]
   }
 }
 ```
@@ -26,7 +30,7 @@ All fields are **required**
   - `AlbumArtist`: The artist of the parent album.
     - Special Case: If it equals `Compilations`, related album will be considered as compilation albums (with no main artist, like soundtrack albums)
   - `Artist`: The artist of the track. If it is not present, it will use the `AlbumArtist` field.
-  - `Release`: Usually no present in a standard file architecture; the name of the *release*. when it is not present, the `Album` field will be used.
+  - `Release`: Usually no present in a standard file architecture; the name of the *release*. When it is not present, the `Album` field will be used.
   - `Album`: The name of the album of the material. This field will then be parsed to group related album releases.
   - `Year`: The Year of the release of the material
   - `Disc`: The Index of the disc the track is on.
@@ -41,5 +45,8 @@ All fields are **required**
     - `only`: If a field is missing from the primary metadata source, will not use the other method to get it.
     - `preferred`: If a field is missing from the primary metadata source, will try to use the other method to get it.
 - `providers`: Please refer to [*Providers*](../providers)
+- `compilations`:
+  - `artists`: Optional field. If an album artist in this list, their albums will be considered to be compilation albums.
+  - `useID3CompTag`: If true, use iTunes' non-standard ID3 tags for compilations.
 
 *Note*: The provided Regular Expression uses the iTunes file architecture.
