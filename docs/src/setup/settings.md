@@ -26,7 +26,7 @@ In your `Meelo` folder create a `settings.json` file. It will look like this:
 All fields are **required**
 
 - `dataFolder`: This fields defines where the server will find the **libraries** **in the docker container**. Defining where your music is on the host machine will be done later. You can name it whatever you want.
-- `trackRegex`: Probably the most important setting for Meelo. This field takes an array of strings, each string being a Regular Expression string. The RegExp will be used to find the files to import, the path being **relative to the parent library, not the `dataFolder`**. As mentioned before, the path of the file can be used as a metadata source. Therefore, **the Regular Expression accepts groups to find metadata**:
+- `trackRegex`: Probably the most important setting for Meelo. This field takes an array of strings, each string being a Regular Expression string. The RegExp will be used to find the files to import (It will be matched against the **absolute path** of the file). As mentioned before, the path of the file can be used as a metadata source. Therefore, **the Regular Expression accepts groups to find metadata**:
   - `AlbumArtist`: The artist of the parent album.
     - Special Case: If it equals `Compilations`, related album will be considered as compilation albums (with no main artist, like soundtrack albums)
   - `Artist`: The artist of the track. If it is not present, it will use the `AlbumArtist` field.
