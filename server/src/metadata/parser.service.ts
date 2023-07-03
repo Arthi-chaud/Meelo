@@ -181,14 +181,15 @@ export default class ParserService {
 	 */
 	extractFeaturedArtistsFromArtistName(artistName: string): Pick<Metadata, 'artist' | 'featuring'> {
 		const [main, ...feats] = artistName
-			.split(', ')
-			.map((s) => s.split(' & '))
+			.split(/\s*,\s*/)
+			.map((s) => s.split(/\s*&\s*/))
 			.flat()
 			.map((s) => s.trim());
+		const { name, featuring } = this.extractFeaturedArtistsFromSongName(main);
 
 		return {
-			artist: main,
-			featuring: feats
+			artist: name,
+			featuring: featuring.concat(feats)
 		};
 	}
 }
