@@ -11,5 +11,9 @@
 	"providers": {
 		"genius": { "apiKey": "azerty" },
 		"musicbrainz": {}
+	},
+	"compilations": {
+		"useID3CompTag": true,
+		"artists": []
 	}
 }

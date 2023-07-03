@@ -65,7 +65,7 @@ export default class SettingsService {
 				);
 
 				if (error.value === undefined) {
-					throw new MissingSettingsException(validationError.property);
+					throw new MissingSettingsException(error.property);
 				} else if (error.value && undefinedChild) {
 					throw new MissingSettingsException(undefinedChild.property);
 				}
