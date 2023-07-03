@@ -258,12 +258,26 @@ describe('Parser Service', () => {
 			expect(res.artist).toBe('Christine & The Queens');
 			expect(res.featuring).toStrictEqual([]);
 		});
+		it('Custom', () => {
+			const res = parserService.extractFeaturedArtistsFromArtistName(
+				'Miss Kittin & The Hacker'
+			)
+			expect(res.artist).toBe('Miss Kittin & The Hacker');
+			expect(res.featuring).toStrictEqual([]);
+		});
+		it('2 artists (Ambiguous)', () => {
+			const res = parserService.extractFeaturedArtistsFromArtistName(
+				'Robin Schulz & Me & My Monkey'
+			)
+			expect(res.artist).toBe('Robin Schulz');
+			expect(res.featuring).toStrictEqual(['Me & My Monkey']);
+		});
 		it('3 Artists', () => {
 			const res = parserService.extractFeaturedArtistsFromArtistName(
 				'Charli XCX, Caroline Polacheck & Christine'
 			)
 			expect(res.artist).toBe('Charli XCX');
-			expect(res.featuring).toStrictEqual(['Caroline Polacheck, Christine']);
+			expect(res.featuring).toStrictEqual(['Caroline Polacheck', 'Christine']);
 		});
 		it('3 Artists (Featuring)', () => {
 			const res = parserService.extractFeaturedArtistsFromArtistName(
@@ -272,6 +286,7 @@ describe('Parser Service', () => {
 			expect(res.artist).toBe('Clean Bandit');
 			expect(res.featuring).toStrictEqual(['Jess Glynne', 'BBBB']);
 		});
+		
 		it('4 Artists (Featuring)', () => {
 			const res = parserService.extractFeaturedArtistsFromArtistName(
 				'Clean Bandit Featuring Jess Glynne, BBBB & CCCC'
