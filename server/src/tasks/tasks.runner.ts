@@ -318,7 +318,9 @@ export default class TaskRunner {
 		try {
 			const track = await this.metadataService.registerMetadata(fileMetadata, registeredFile);
 
-			this.illustrationRepository.registerTrackFileIllustration(track.id, fullFilePath)
+			this.illustrationRepository.registerTrackFileIllustration(
+				{ id: track.id }, fullFilePath
+			)
 				.catch(() => { })
 				.then(async () => {
 					if (track.type == 'Video') {

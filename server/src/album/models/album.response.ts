@@ -36,7 +36,7 @@ export class AlbumResponseBuilder extends ResponseBuilderInterceptor<AlbumWithRe
 	async buildResponse(album: AlbumWithRelations): Promise<AlbumResponse> {
 		const response = <AlbumResponse>{
 			...album,
-			illustration: this.illustrationRepository.getAlbumIllustrationPath(album.id)
+			illustration: await this.illustrationRepository.getAlbumIllustration({ id: album.id })
 		};
 
 		if (album.artist != undefined) {

@@ -17,7 +17,7 @@ import FileService from "src/file/file.service";
 import TrackService from "src/track/track.service";
 import { LyricsModule } from "src/lyrics/lyrics.module";
 import TasksModule from "src/tasks/tasks.module";
-import ArtistIllustrationService from "src/artist/artist-illustration.service";
+
 describe('Library Service', () => {
 	let libraryService: LibraryService;
 	let fileService: FileService;

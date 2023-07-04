@@ -203,7 +203,7 @@ model Release {
 	/// @description The date the release was registered
 	registeredAt		DateTime	@default(now())
 	/// @description The related Illustrations
-	// illustration		ReleaseIllustration[]
+	illustration		ReleaseIllustration[]
 	@@unique([albumId, slug])
 	@@map("releases")
 }
@@ -331,7 +331,7 @@ model Track {
 	/// @example 123
 	sourceFileId		Int		@unique
 	masterOf		Song?		@relation("Master")
-	// illustration	TrackIllustration?
+	illustration	TrackIllustration?
 	@@map("tracks")
 }
 
@@ -463,21 +463,38 @@ model ArtistIllustration {
 	@@map("artist_illustrations")
 }
 
-// model ReleaseIllustration {
-// 	id				Int		@id	@default(autoincrement())
-// 	releaseId		Int
-// 	release			Release	@relation(fields: [releaseId], references: [id], onDelete: Cascade)
-// 	disc			Int?
-// 	blurhash		String
-// 	colors			String[]
-// 	@@map("release_illustrations")
-// }
+model ReleaseIllustration {
+	/// @description Unique numeric identifier
+	/// @example 123
+	id				Int		@id	@default(autoincrement())
+	/// @description Related Release\'s Identifier
+	/// @example 123
+	releaseId		Int
+	release			Release	@relation(fields: [releaseId], references: [id], onDelete: Cascade)
+	/// @description The index of the disc. If null, the illustration is the 'main' one
+	disc			Int?
+	/// @description Blurhash value of the illustration. See https://github.com/woltapp/blurhash for more info.
+	/// @example LEHV6nWB2yk8pyo0adR*.7kCMdnj
+	blurhash		String
+	/// @description List of dominant colors in the image
+	/// @example ['#FFFFFF', '#123123', '#F0F0F0']
+	colors			String[]
+	@@map("release_illustrations")
+}
 
-// model TrackIllustration {
-// 	id				Int		@id	@default(autoincrement())
-// 	trackId			Int		@unique
-// 	track			Track	@relation(fields: [trackId], references: [id], onDelete: Cascade)
-// 	blurhash		String
-// 	colors			String[]
-// 	@@map("track_illustrations")
-// }
+model TrackIllustration {
+	/// @description Unique numeric identifier
+	/// @example 123
+	id				Int		@id	@default(autoincrement())
+	/// @description Related Track\'s Identifier
+	/// @example 123
+	trackId			Int		@unique
+	track			Track	@relation(fields: [trackId], references: [id], onDelete: Cascade)
+	/// @description Blurhash value of the illustration. See https://github.com/woltapp/blurhash for more info.
+	/// @example LEHV6nWB2yk8pyo0adR*.7kCMdnj
+	blurhash		String
+	/// @description List of dominant colors in the image
+	/// @example ['#FFFFFF', '#123123', '#F0F0F0']
+	colors			String[]
+	@@map("track_illustrations")
+}

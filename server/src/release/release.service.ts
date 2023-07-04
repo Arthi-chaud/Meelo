@@ -31,8 +31,8 @@ import compilationAlbumArtistKeyword from 'src/utils/compilation';
 import { parseIdentifierSlugs } from 'src/identifier/identifier.parse-slugs';
 import Identifier from 'src/identifier/models/identifier';
 import Logger from 'src/logger/logger';
-import ReleaseIllustrationService from './release-illustration.service';
 import { PrismaError } from 'prisma-error-enum';
+import IllustrationRepository from 'src/illustration/illustration.repository';
 
 @Injectable()
 export default class ReleaseService extends RepositoryService<
@@ -57,7 +57,7 @@ export default class ReleaseService extends RepositoryService<
 		private albumService: AlbumService,
 		@Inject(forwardRef(() => FileService))
 		private fileService: FileService,
-		private releaseIllustrationService: ReleaseIllustrationService,
+		private illustrationRepository: IllustrationRepository
 	) {
 		super(prismaService.release);
 	}
@@ -303,10 +303,7 @@ export default class ReleaseService extends RepositoryService<
 	 * @param where Query parameters to find the release to delete
 	 */
 	async delete(where: ReleaseQueryParameters.DeleteInput): Promise<Release> {
-		const illustrationFolder = await this.releaseIllustrationService
-			.getIllustrationFolderPath(where);
-
-		this.releaseIllustrationService.deleteIllustrationFolder(illustrationFolder);
+		await this.illustrationRepository.deleteReleaseIllustration(where);
 		return super.delete(where).then((deleted) => {
 			this.logger.warn(`Release '${deleted.slug}' deleted`);
 			return deleted;
@@ -396,7 +393,7 @@ export default class ReleaseService extends RepositoryService<
 		).then((paths) => paths.forEach((path) => {
 			archive.append(createReadStream(path), { name: basename(path) });
 		}));
-		if (this.releaseIllustrationService.illustrationExists(illustration)) {
+		if (this.ill.illustrationExists(illustration)) {
 			archive.append(createReadStream(illustration), { name: basename(illustration) });
 		}
 

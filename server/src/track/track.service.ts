@@ -26,6 +26,7 @@ import Identifier from 'src/identifier/models/identifier';
 import Logger from 'src/logger/logger';
 import { PrismaError } from 'prisma-error-enum';
 import { FileNotFoundFromIDException, FileNotFoundFromPathException } from 'src/file/file.exceptions';
+import IllustrationRepository from 'src/illustration/illustration.repository';
 
 @Injectable()
 export default class TrackService extends RepositoryService<
@@ -53,6 +54,7 @@ export default class TrackService extends RepositoryService<
 		private releaseService: ReleaseService,
 		@Inject(forwardRef(() => FileService))
 		private fileService: FileService,
+		private illustrationRepository: IllustrationRepository,
 		private prismaService: PrismaService
 	) {
 		super(prismaService.track);
@@ -343,11 +345,10 @@ export default class TrackService extends RepositoryService<
 	 * @param where Query parameters to find the track to delete
 	 */
 	async delete(where: TrackQueryParameters.DeleteInput): Promise<Track> {
-		const illustrationPath = await this.trackIllustrationService.getIllustrationFolderPath(
+		this.illustrationRepository.deleteTrackIllustration(
 			this.formatDeleteInputToWhereInput(where)
 		);
 
-		this.trackIllustrationService.deleteIllustrationFolder(illustrationPath);
 		return super.delete(where).then((deleted) => {
 			this.logger.warn(`Track '${deleted.name}' deleted`);
 			return deleted;

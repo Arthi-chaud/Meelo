@@ -129,6 +129,18 @@ export default class IllustrationService {
 	}
 
 	/**
+	 * Delete an illustration Folder
+	 * If it does not exist, fail silently
+	 */
+	deleteIllustrationFolder(path: IllustrationPath) {
+		try {
+			this.fileManagerService.deleteFolder(path);
+		} catch {
+			return;
+		}
+	}
+
+	/**
 	 *
 	 * @param sourceFilePath the file path to the illustration to stream
 	 * @param as the name of the send tile, without extension

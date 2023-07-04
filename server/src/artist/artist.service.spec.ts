@@ -15,7 +15,6 @@ import TestPrismaService from "test/test-prisma.service";
 import type { Artist } from "src/prisma/models";
 import { LyricsModule } from "src/lyrics/lyrics.module";
 import ReleaseModule from "src/release/release.module";
-import ArtistIllustrationService from "./artist-illustration.service";
 
 describe('Artist Service', () => {
 	let artistService: ArtistService;
@@ -30,7 +29,6 @@ describe('Artist Service', () => {
 		}).overrideProvider(PrismaService).useClass(TestPrismaService).compile();
 		dummyRepository =  module.get(PrismaService);
 		await dummyRepository.onModuleInit();
-		module.get(ArtistIllustrationService).onModuleInit()
 		artistService = module.get<ArtistService>(ArtistService);
 	});
 
