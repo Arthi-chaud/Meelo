@@ -26,7 +26,6 @@ import Identifier from 'src/identifier/models/identifier';
 import Logger from 'src/logger/logger';
 import { PrismaError } from 'prisma-error-enum';
 import { FileNotFoundFromIDException, FileNotFoundFromPathException } from 'src/file/file.exceptions';
-import TrackIllustrationService from './track-illustration.service';
 
 @Injectable()
 export default class TrackService extends RepositoryService<
@@ -54,9 +53,7 @@ export default class TrackService extends RepositoryService<
 		private releaseService: ReleaseService,
 		@Inject(forwardRef(() => FileService))
 		private fileService: FileService,
-		private prismaService: PrismaService,
-		@Inject(forwardRef(() => TrackIllustrationService))
-		private trackIllustrationService: TrackIllustrationService
+		private prismaService: PrismaService
 	) {
 		super(prismaService.track);
 	}

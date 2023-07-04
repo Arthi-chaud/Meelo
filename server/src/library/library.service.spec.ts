@@ -35,7 +35,7 @@ describe('Library Service', () => {
 		fileService = module.get(FileService);
 		trackService = module.get(TrackService);
 		dummyRepository = module.get(PrismaService);
-		module.get(ArtistIllustrationService).onModuleInit();
+		
 		await dummyRepository.onModuleInit();
 	});
 

@@ -9,9 +9,7 @@ import ExternalIdResponse, { ExternalIdResponseBuilder } from "src/providers/mod
 import IllustrationRepository from "src/illustration/illustration.repository";
 
 export class ArtistResponse extends IntersectionType(
-	IntersectionType(
-		Artist,
-	),
+	Artist,
 	class {
 		illustration: IllustrationResponse | null;
 		externalIds?: ExternalIdResponse[];

@@ -19,8 +19,6 @@ const fs = require('fs');
 import { INestApplication } from "@nestjs/common";
 import request from "supertest";
 import SetupApp from "test/setup-app";
-import TrackIllustrationService from "src/track/track-illustration.service";
-import ReleaseIllustrationService from "src/release/release-illustration.service";
 import ProvidersModule from "src/providers/providers.module";
 
 jest.setTimeout(60000);
@@ -29,8 +27,6 @@ describe('Illustration Controller', () => {
 	let app: INestApplication;
 	let dummyRepository: TestPrismaService;
 	let fileManagerService: FileManagerService;
-	let releaseIllustrationService: ReleaseIllustrationService;
-	let trackIllustrationService: TrackIllustrationService;
 	let module: TestingModule;
 	beforeAll(async () => {
 		module = await createTestingModule({
@@ -39,8 +35,6 @@ describe('Illustration Controller', () => {
 		app = await SetupApp(module);
 		fileManagerService = module.get<FileManagerService>(FileManagerService);
 		dummyRepository = module.get(PrismaService);
-		releaseIllustrationService = module.get(ReleaseIllustrationService);
-		trackIllustrationService = module.get(TrackIllustrationService);
 		await dummyRepository.onModuleInit();
 	});
 

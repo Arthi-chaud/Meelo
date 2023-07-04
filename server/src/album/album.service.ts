@@ -24,7 +24,6 @@ import compilationAlbumArtistKeyword from 'src/utils/compilation';
 import Identifier from 'src/identifier/models/identifier';
 import Logger from 'src/logger/logger';
 import ReleaseQueryParameters from 'src/release/models/release.query-parameters';
-import AlbumIllustrationService from './album-illustration.service';
 import { PrismaError } from 'prisma-error-enum';
 import { PaginationParameters, buildPaginationParameters } from 'src/pagination/models/pagination-parameters';
 
@@ -50,9 +49,7 @@ export default class AlbumService extends RepositoryService<
 		@Inject(forwardRef(() => ArtistService))
 		private artistServce: ArtistService,
 		@Inject(forwardRef(() => ReleaseService))
-		private releaseService: ReleaseService,
-		@Inject(forwardRef(() => AlbumIllustrationService))
-		private albumIllustrationService: AlbumIllustrationService,
+		private releaseService: ReleaseService
 	) {
 		super(prismaService.album);
 	}

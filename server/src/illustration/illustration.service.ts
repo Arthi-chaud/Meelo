@@ -1,15 +1,8 @@
 import sharp from 'sharp';
-import {
-	Inject, Injectable, StreamableFile, forwardRef
-} from '@nestjs/common';
+import { Injectable, StreamableFile } from '@nestjs/common';
 import FileManagerService from 'src/file-manager/file-manager.service';
-import type { Release, Track } from 'src/prisma/models';
-import ReleaseService from 'src/release/release.service';
-import Slug from 'src/slug/slug';
 import escapeRegex from 'src/utils/escape-regex';
-import {
-	CantDownloadIllustrationException, IllustrationNotExtracted, NoIllustrationException
-} from './illustration.exceptions';
+import { CantDownloadIllustrationException, NoIllustrationException } from './illustration.exceptions';
 import mm, { type IAudioMetadata } from 'music-metadata';
 // eslint-disable-next-line no-restricted-imports
 import * as fs from 'fs';
@@ -17,16 +10,11 @@ import { FileParsingException } from 'src/metadata/metadata.exceptions';
 import * as dir from 'path';
 import type { IllustrationPath } from './models/illustration-path.model';
 import Jimp from 'jimp';
-import AlbumService from 'src/album/album.service';
 import { FileDoesNotExistException } from 'src/file-manager/file-manager.exceptions';
 import { Readable } from 'stream';
 import type { IllustrationDimensionsDto } from './models/illustration-dimensions.dto';
-import SettingsService from 'src/settings/settings.service';
 import glob from 'glob';
 import Logger from 'src/logger/logger';
-import TrackIllustrationService from 'src/track/track-illustration.service';
-import { basename } from 'path';
-import ReleaseIllustrationService from 'src/release/release-illustration.service';
 import * as Blurhash from 'blurhash';
 import getColors from 'get-image-colors';
 
@@ -41,15 +29,7 @@ export default class IllustrationService {
 	private readonly logger = new Logger(IllustrationService.name);
 
 	constructor(
-		@Inject(forwardRef(() => ReleaseService))
-		private releaseService: ReleaseService,
-		@Inject(forwardRef(() => AlbumService))
-		private albumService: AlbumService,
-		private settingsService: SettingsService,
-		@Inject(forwardRef(() => ReleaseIllustrationService))
-		private releaseIllustrationService: ReleaseIllustrationService,
-		private fileManagerService: FileManagerService,
-		private trackIllustrationService: TrackIllustrationService
+		private fileManagerService: FileManagerService
 	) {}
 
 	/**
@@ -58,107 +38,10 @@ export default class IllustrationService {
 	public static SOURCE_ILLUSTRATON_FILE = '[Cc]over.*';
 
 	/**
-	 * Extracts the embedded illustration in a track file
-	 * If no illustration is embedded, returns null
-	 * If the embedded illustration is the same as the release's, nothing is done and return null
-	 * If there is no release illustration, extracts the track's illustration and return its path
-	 * Otherwise, if there is a release illustration, but the track's differs from it
-	 * extracts the track's illustration as a track-specific illustration, and return its path
-	 * @param track the track to extract the illustration from
-	 */
-	async extractTrackIllustration(
-		track: Track, fullTrackPath: string
-	): Promise<IllustrationPath | null> {
-		const release: Release = await this.releaseService.get({ id: track.releaseId });
-		const album = await this.albumService.get(
-			{ id: release.albumId },
-			{ artist: true }
-		);
-		const releaseSlug = new Slug(release.slug);
-		const artistSlug = album.artist ? new Slug(album.artist.slug) : undefined;
-		const albumSlug = new Slug(album.slug);
-		const releaseIllustrationPath = this.releaseIllustrationService.buildIllustrationPath(
-			artistSlug,
-			albumSlug,
-			releaseSlug
-		);
-		const discIllustrationPath = this.trackIllustrationService.buildDiscIllustrationPath(
-			artistSlug,
-			albumSlug,
-			releaseSlug,
-			track.discIndex ?? undefined,
-			track.trackIndex ?? undefined
-		);
-		const trackIllustrationPath = this.trackIllustrationService.buildIllustrationPath(
-			artistSlug,
-			albumSlug,
-			releaseSlug,
-			track.discIndex ?? undefined,
-			track.trackIndex ?? undefined
-		);
-
-		const embeddedIllustration = await this.extractIllustrationFromFile(fullTrackPath);
-		const inlineIllustration = await this.extractIllustrationInFileFolder(fullTrackPath);
-		const illustration: Buffer | null = (this.settingsService.settingsValues.metadata
-			.source == 'embedded' ? embeddedIllustration : inlineIllustration)
-			?? (this.settingsService.settingsValues.metadata.order == 'preferred'
-				? embeddedIllustration ?? inlineIllustration
-				: null);
-
-		if (illustration == null) {
-			return null;
-		}
-		const illustrationBytes = await (await Jimp.read(illustration))
-			.getBufferAsync(Jimp.MIME_JPEG);
-
-		for (const path of [releaseIllustrationPath, discIllustrationPath, trackIllustrationPath]) {
-			const illustrationExtractionStatus = await this.saveIllustrationWithStatus(
-				illustrationBytes, path
-			);
-			const fileName = basename(track.name);
-
-			if (illustrationExtractionStatus === 'error') {
-				throw new IllustrationNotExtracted(`Extracting illustration from '${fileName}' failed`);
-			}
-			if (illustrationExtractionStatus === 'already-extracted') {
-				this.logger.verbose(`Extracting illustration from '${fileName}' already done`);
-				return path;
-			}
-			if (illustrationExtractionStatus === 'extracted') {
-				this.logger.verbose(`Extracting illustration from '${fileName}' successful`);
-				return path;
-			}
-			if (illustrationExtractionStatus === 'different-illustration') {
-				continue;
-			}
-		}
-		return null;
-	}
-
-	private async saveIllustrationWithStatus(
-		illustrationBuffer: Buffer, outputPath: string
-	): Promise<IllustrationExtractStatus> {
-		if (this.fileManagerService.fileExists(outputPath)) {
-			const fileContent = this.fileManagerService.getFileContent(outputPath);
-
-			if (fileContent == illustrationBuffer.toString()) {
-				return 'already-extracted';
-			}
-			return 'different-illustration';
-		}
-		try {
-			this.saveIllustration(illustrationBuffer, outputPath);
-			return 'extracted';
-		} catch {
-			return 'error';
-		}
-	}
-
-	/**
 	 * Extracts the embedded illustration of a file
 	 * @param filePath the full path to the source file to scrap
 	 */
-	private async extractIllustrationFromFile(filePath: string): Promise<Buffer | null> {
+	async extractIllustrationFromFile(filePath: string): Promise<Buffer | null> {
 		if (!this.fileManagerService.fileExists(filePath)) {
 			throw new FileDoesNotExistException(filePath);
 		}
@@ -178,7 +61,7 @@ export default class IllustrationService {
 	 * @param filePath the full path to the source file to scrap
 	 * @example "./a.m4a" will try to parse "./cover.jpg"
 	 */
-	private async extractIllustrationInFileFolder(filePath: string): Promise<Buffer | null> {
+	async extractIllustrationInFileFolder(filePath: string): Promise<Buffer | null> {
 		const fileFolder = dir.dirname(filePath);
 		const illustrationCandidates = glob.sync(`${escapeRegex(fileFolder)}/${IllustrationService.SOURCE_ILLUSTRATON_FILE}`);
 
@@ -212,6 +95,25 @@ export default class IllustrationService {
 	saveIllustration(fileContent: Buffer, outPath: IllustrationPath) {
 		fs.mkdirSync(dir.dirname(outPath), { recursive: true });
 		fs.writeFileSync(outPath, fileContent);
+	}
+
+	async saveIllustrationWithStatus(
+		illustrationBuffer: Buffer, outputPath: string
+	): Promise<IllustrationExtractStatus> {
+		if (this.fileManagerService.fileExists(outputPath)) {
+			const fileContent = this.fileManagerService.getFileContent(outputPath);
+
+			if (fileContent == illustrationBuffer.toString()) {
+				return 'already-extracted';
+			}
+			return 'different-illustration';
+		}
+		try {
+			this.saveIllustration(illustrationBuffer, outputPath);
+			return 'extracted';
+		} catch {
+			return 'error';
+		}
 	}
 
 	/**

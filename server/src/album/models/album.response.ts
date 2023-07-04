@@ -3,18 +3,17 @@ import {
 } from "@nestjs/common";
 import { IntersectionType } from "@nestjs/swagger";
 import { ArtistResponse, ArtistResponseBuilder } from "src/artist/models/artist.response";
-import { IllustratedModel } from "src/illustration/models/illustration.response";
 import { Album, AlbumWithRelations } from "src/prisma/models";
 import ResponseBuilderInterceptor from "src/response/interceptors/response.interceptor";
-import AlbumIllustrationService from "../album-illustration.service";
 import ExternalIdResponse, { ExternalIdResponseBuilder } from "src/providers/models/external-id.response";
+import IllustrationResponse from "src/illustration/models/illustration.response";
+import IllustrationRepository from "src/illustration/illustration.repository";
 
 export class AlbumResponse extends IntersectionType(
-	IntersectionType(
-		Album, IllustratedModel
-	),
+	Album,
 	class {
 		artist?: ArtistResponse | null;
+		illustration: IllustrationResponse | null;
 		externalIds?: ExternalIdResponse[];
 	}
 ) {}
@@ -22,10 +21,10 @@ export class AlbumResponse extends IntersectionType(
 @Injectable()
 export class AlbumResponseBuilder extends ResponseBuilderInterceptor<AlbumWithRelations, AlbumResponse> {
 	constructor(
-		@Inject(forwardRef(() => AlbumIllustrationService))
-		private albumIllustrationService: AlbumIllustrationService,
 		@Inject(forwardRef(() => ArtistResponseBuilder))
 		private artistResponseBuilder: ArtistResponseBuilder,
+		@Inject(forwardRef(() => IllustrationRepository))
+		private illustrationRepository: IllustrationRepository,
 		@Inject(forwardRef(() => ExternalIdResponseBuilder))
 		private externalIdResponseBuilder: ExternalIdResponseBuilder
 	) {
@@ -37,7 +36,7 @@ export class AlbumResponseBuilder extends ResponseBuilderInterceptor<AlbumWithRe
 	async buildResponse(album: AlbumWithRelations): Promise<AlbumResponse> {
 		const response = <AlbumResponse>{
 			...album,
-			illustration: this.albumIllustrationService.buildIllustrationLink(album.id)
+			illustration: this.illustrationRepository.getAlbumIllustrationPath(album.id)
 		};
 
 		if (album.artist != undefined) {

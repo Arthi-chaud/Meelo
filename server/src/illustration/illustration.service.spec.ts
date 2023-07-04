@@ -37,7 +37,7 @@ describe('Illustration Service', () => {
 		releaseService = module.get<ReleaseService>(ReleaseService);
 		albumService = module.get<AlbumService>(AlbumService);
 		dummyRepository = module.get(PrismaService);
-		module.get(ArtistIllustrationService).onModuleInit();
+		
 		await dummyRepository.onModuleInit();
 	});
 
