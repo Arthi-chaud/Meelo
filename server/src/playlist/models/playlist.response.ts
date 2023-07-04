@@ -2,7 +2,7 @@ import {
 	Inject, Injectable, forwardRef
 } from "@nestjs/common";
 import { ApiProperty, IntersectionType } from "@nestjs/swagger";
-import { IllustratedModel } from "src/illustration/models/illustrated-model.response";
+import { IllustratedModel } from "src/illustration/models/illustration.response";
 import { Playlist, PlaylistWithRelations } from "src/prisma/models";
 import ResponseBuilderInterceptor from "src/response/interceptors/response.interceptor";
 import { SongResponse, SongResponseBuilder } from "src/song/models/song.response";

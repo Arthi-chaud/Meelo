@@ -27,9 +27,15 @@ import Logger from 'src/logger/logger';
 import TrackIllustrationService from 'src/track/track-illustration.service';
 import { basename } from 'path';
 import ReleaseIllustrationService from 'src/release/release-illustration.service';
+import * as Blurhash from 'blurhash';
+import getColors from 'get-image-colors';
 
 type IllustrationExtractStatus = 'extracted' | 'error' | 'already-extracted' | 'different-illustration';
 
+/**
+ * A service to handle illustration files (downloads, extractions, conversion & streaming)
+ * For anything related to Illustration models, see `Illustration Repository`
+ */
 @Injectable()
 export default class IllustrationService {
 	private readonly logger = new Logger(IllustrationService.name);
@@ -50,6 +56,7 @@ export default class IllustrationService {
 	 * Regular Expression to match source cover files
 	 */
 	public static SOURCE_ILLUSTRATON_FILE = '[Cc]over.*';
+
 	/**
 	 * Extracts the embedded illustration in a track file
 	 * If no illustration is embedded, returns null
@@ -169,6 +176,7 @@ export default class IllustrationService {
 	/**
 	 * Get a stream of the illustration file in the same folder as file
 	 * @param filePath the full path to the source file to scrap
+	 * @example "./a.m4a" will try to parse "./cover.jpg"
 	 */
 	private async extractIllustrationInFileFolder(filePath: string): Promise<Buffer | null> {
 		const fileFolder = dir.dirname(filePath);
@@ -181,44 +189,16 @@ export default class IllustrationService {
 	}
 
 	/**
-	 * Apply the illustration of a track on its source track
-	 */
-	/*async applyIllustrationOnFile(where: FileQueryParameters.WhereInput): Promise<void> {
-		const file = await this.fileService.get(where, { library: true, track: true });
-		const track: Track = file.track!;
-		const libraryPath = this.fileManagerService.getLibraryFullPath(file.library);
-		const fullFilePath = `${libraryPath}/${file.path}`;
-		const trackIllustrationPath = await this.trackIllustrationService.getIllustrationPath(
-			{ id: track.id }
-		);
-
-		if (this.trackIllustrationService.illustrationExists(trackIllustrationPath)) {
-			this.ffmpegService.applyIllustration(trackIllustrationPath, fullFilePath);
-			return;
-		}
-		const releaseIllustrationPath = await this.releaseIllustrationService.getIllustrationPath(
-			{ id: track.releaseId }
-		);
-
-		if (this.releaseIllustrationService.illustrationExists(releaseIllustrationPath)) {
-			this.ffmpegService.applyIllustration(releaseIllustrationPath, fullFilePath);
-		} else {
-			this.logger.warn(`No illustration was applied to ${fullFilePath}`);
-		}
-	}*/
-
-	/**
 	 * Downloads an illustration from a URL, and stores it in the illustration file system
 	 * using the provided slug
 	 * @param illustrationURL the full path to the source file to scrap
 	 * @param outPath path to the file to save the illustration as
 	 */
-	async downloadIllustration(illustrationURL: string, outPath: IllustrationPath) {
+	async downloadIllustration(illustrationURL: string) {
 		try {
 			const image = await Jimp.read(illustrationURL);
 
-			fs.mkdir(dir.dirname(outPath), { recursive: true }, function (_err) {});
-			image.write(outPath);
+			return image.getBufferAsync(image.getMIME());
 		} catch {
 			throw new CantDownloadIllustrationException(illustrationURL);
 		}
@@ -229,9 +209,21 @@ export default class IllustrationService {
 	 * @param fileContent raw binary content of the file to save
 	 * @param outPath path and name of the file to save the fileContent as
 	 */
-	private saveIllustration(fileContent: Buffer, outPath: IllustrationPath) {
+	saveIllustration(fileContent: Buffer, outPath: IllustrationPath) {
 		fs.mkdirSync(dir.dirname(outPath), { recursive: true });
 		fs.writeFileSync(outPath, fileContent);
+	}
+
+	/**
+	 * Delete an illustration File
+	 * If it does not exist, fail silently
+	 */
+	deleteIllustration(path: IllustrationPath) {
+		try {
+			this.fileManagerService.deleteFile(path);
+		} catch {
+			return;
+		}
 	}
 
 	/**
@@ -270,5 +262,28 @@ export default class IllustrationService {
 			}
 		}
 		return new StreamableFile(fs.createReadStream(sourceFilePath));
+	}
+
+	/**
+	 * @returns The blurhash of the image's buffer
+	 */
+	async getIllustrationBlurHash(buffer: Buffer): Promise<string> {
+		const image = await Jimp.read(buffer);
+
+		return Blurhash.encode(
+			new Uint8ClampedArray(buffer),
+			image.getWidth(),
+			image.getHeight(),
+			0,
+			0
+		);
+	}
+
+	/**
+	 * @returns The 5 dominant colors of the image
+	 */
+	async getIllustrationColors(buffer: Buffer): Promise<string[]> {
+		return getColors(buffer)
+			.then((colors) => colors.map((color) => color.hex()));
 	}
 }

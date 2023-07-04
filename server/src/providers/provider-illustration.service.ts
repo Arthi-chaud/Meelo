@@ -72,16 +72,22 @@ export default class ProvidersIllustrationService extends RepositoryIllustration
 			const iconPath = this.buildIconPath(provider.name);
 
 			if (!this.fileManagerService.fileExists(iconPath)) {
-				this.illustrationService.downloadIllustration(
-					provider.getProviderIconUrl(),
-					iconPath
-				).catch(() => {});
+				this.illustrationService.downloadIllustration(provider.getProviderIconUrl())
+					.catch(() => {})
+					.then((buffer) => {
+						if (buffer) {
+							this.illustrationService.saveIllustration(buffer, iconPath);
+						}
+					});
 			}
 			if (!this.fileManagerService.fileExists(bannerPath)) {
-				this.illustrationService.downloadIllustration(
-					provider.getProviderBannerUrl(),
-					bannerPath
-				).catch(() => {});
+				this.illustrationService.downloadIllustration(provider.getProviderBannerUrl())
+					.catch(() => {})
+					.then((buffer) => {
+						if (buffer) {
+							this.illustrationService.saveIllustration(buffer, bannerPath);
+						}
+					});
 			}
 		});
 	}

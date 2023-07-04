@@ -12,6 +12,7 @@ import FfmpegModule from 'src/ffmpeg/ffmpeg.module';
 import SongModule from 'src/song/song.module';
 import ProvidersModule from 'src/providers/providers.module';
 import PlaylistModule from 'src/playlist/playlist.module';
+import IllustrationRepository from './illustration.repository';
 
 @Module({
 	imports: [
@@ -28,7 +29,7 @@ import PlaylistModule from 'src/playlist/playlist.module';
 		FfmpegModule
 	],
 	controllers: [IllustrationController],
-	providers: [IllustrationService],
-	exports: [IllustrationService]
+	providers: [IllustrationService, IllustrationRepository],
+	exports: [IllustrationRepository]
 })
 export default class IllustrationModule { }

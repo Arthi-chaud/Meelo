@@ -2,7 +2,7 @@ import {
 	Inject, Injectable, forwardRef
 } from "@nestjs/common";
 import { IntersectionType } from "@nestjs/swagger";
-import { IllustratedModel } from "src/illustration/models/illustrated-model.response";
+import { IllustratedModel } from "src/illustration/models/illustration.response";
 import { Track, TrackWithRelations } from "src/prisma/models";
 import { ReleaseResponse, ReleaseResponseBuilder } from "src/release/models/release.response";
 import ResponseBuilderInterceptor from "src/response/interceptors/response.interceptor";

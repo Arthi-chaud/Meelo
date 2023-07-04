@@ -17,12 +17,11 @@ import IdentifierParam from "src/identifier/identifier.pipe";
 import ArtistQueryParameters from 'src/artist/models/artist.query-parameters';
 import TrackQueryParameters from 'src/track/models/track.query-parameters';
 import ReleaseQueryParameters from 'src/release/models/release.query-parameters';
-import ArtistIllustrationService from "src/artist/artist-illustration.service";
 import ReleaseIllustrationService from "src/release/release-illustration.service";
 import TrackIllustrationService from "src/track/track-illustration.service";
 import { parse } from 'path';
 import Slug from "src/slug/slug";
-import { NoReleaseIllustrationException, NoTrackIllustrationException } from "./illustration.exceptions";
+import { NoIllustrationException, NoReleaseIllustrationException, NoTrackIllustrationException } from "./illustration.exceptions";
 import SongService from "src/song/song.service";
 import SongQueryParameters from "src/song/models/song.query-params";
 import ProviderIllustrationService from "src/providers/provider-illustration.service";
@@ -33,6 +32,7 @@ import { MeeloException } from "src/exceptions/meelo-exception";
 import PlaylistService from "src/playlist/playlist.service";
 import PlaylistQueryParameters from "src/playlist/models/playlist.query-parameters";
 import PlaylistIllustrationService from "src/playlist/playlist-illustration.service";
+import IllustrationRepository from "./illustration.repository";
 
 @ApiTags("Illustrations")
 @Controller('illustrations')
@@ -41,10 +41,11 @@ export class IllustrationController {
 		private illustrationService: IllustrationService,
 		private releaseIllustrationService: ReleaseIllustrationService,
 		private trackIllustrationService: TrackIllustrationService,
-		private artistIllustrationService: ArtistIllustrationService,
 		private playlistIllustrationService: PlaylistIllustrationService,
 		private trackService: TrackService,
+		private artistService: ArtistService,
 		private releaseService: ReleaseService,
+		private illustrationRepository: IllustrationRepository,
 		private providerIllustrationService: ProviderIllustrationService,
 		private providerService: ProviderService
 	) {}
@@ -60,15 +61,20 @@ export class IllustrationController {
 		@Response({ passthrough: true })
 		res: Response,
 	) {
-		const artistIllustration = await this.artistIllustrationService
-			.getIllustrationPath(where);
+		const artist = await this.artistService.get(where);
+		const artistIllustration = this.illustrationRepository
+			.getArtistIllustrationPath(artist.slug);
 
 		return this.illustrationService.streamIllustration(
 			artistIllustration,
 			parse(parse(artistIllustration).dir).name,
 			dimensions,
 			res
-		);
+		).catch((err) => {
+			if (err instanceof NoIllustrationException) {
+				this.illustrationRepository.deleteArtistIllustration(where);
+			}
+		});
 	}
 
 	@ApiOperation({
@@ -81,13 +87,9 @@ export class IllustrationController {
 		where: ArtistQueryParameters.WhereInput,
 		@Body() illustrationDto: IllustrationDownloadDto
 	) {
-		const artistIllustration = await this.artistIllustrationService
-			.getIllustrationPath(where);
-
 		return this.illustrationService.downloadIllustration(
-			illustrationDto.url,
-			artistIllustration
-		);
+			illustrationDto.url
+		).then((buffer) => this.illustrationRepository.createArtistIllustration(buffer, where));
 	}
 
 	@ApiOperation({

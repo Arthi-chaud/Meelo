@@ -150,6 +150,7 @@ export default class TaskRunner {
 
 		const candidates = unfilteredCandidates
 			.filter((candidatePath) => {
+				// Removing cover.jpg files from candidates
 				return candidatePath.match(`/${IllustrationService.SOURCE_ILLUSTRATON_FILE}$`) == null;
 			})
 			.filter((candidatePath) => {

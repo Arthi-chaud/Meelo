@@ -132,6 +132,8 @@ model Artist {
 	registeredAt		DateTime	@default(now())
 	/// @description Array of external IDs
 	externalIds		ArtistExternalId[]
+	/// @description Related Illustration
+	illustration	ArtistIllustration?
 	@@map("artists")
 }
 
@@ -200,6 +202,8 @@ model Release {
 	masterOf		Album?		@relation("Master")
 	/// @description The date the release was registered
 	registeredAt		DateTime	@default(now())
+	/// @description The related Illustrations
+	// illustration		ReleaseIllustration[]
 	@@unique([albumId, slug])
 	@@map("releases")
 }
@@ -327,6 +331,7 @@ model Track {
 	/// @example 123
 	sourceFileId		Int		@unique
 	masterOf		Song?		@relation("Master")
+	// illustration	TrackIllustration?
 	@@map("tracks")
 }
 
@@ -440,3 +445,39 @@ model PlaylistEntry {
 	index			Int
 	@@map("playlist_entries")
 }
+
+model ArtistIllustration {
+	/// @description Unique numeric identifier
+	/// @example 123
+	id				Int		@id	@default(autoincrement())
+	/// @description Related Artist\'s Identifier
+	/// @example 123
+	artistId		Int		@unique
+	artist			Artist	@relation(fields: [artistId], references: [id], onDelete: Cascade)
+	/// @description Blurhash value of the illustration. See https://github.com/woltapp/blurhash for more info.
+	/// @example LEHV6nWB2yk8pyo0adR*.7kCMdnj
+	blurhash		String
+	/// @description List of dominant colors in the image
+	/// @example ['#FFFFFF', '#123123', '#F0F0F0']
+	colors			String[]
+	@@map("artist_illustrations")
+}
+
+// model ReleaseIllustration {
+// 	id				Int		@id	@default(autoincrement())
+// 	releaseId		Int
+// 	release			Release	@relation(fields: [releaseId], references: [id], onDelete: Cascade)
+// 	disc			Int?
+// 	blurhash		String
+// 	colors			String[]
+// 	@@map("release_illustrations")
+// }
+
+// model TrackIllustration {
+// 	id				Int		@id	@default(autoincrement())
+// 	trackId			Int		@unique
+// 	track			Track	@relation(fields: [trackId], references: [id], onDelete: Cascade)
+// 	blurhash		String
+// 	colors			String[]
+// 	@@map("track_illustrations")
+// }

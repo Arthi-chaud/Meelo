@@ -3,7 +3,7 @@ import {
 } from "@nestjs/common";
 import { IntersectionType } from "@nestjs/swagger";
 import { AlbumResponse, AlbumResponseBuilder } from "src/album/models/album.response";
-import { IllustratedModel } from "src/illustration/models/illustrated-model.response";
+import { IllustratedModel } from "src/illustration/models/illustration.response";
 import { Release, ReleaseWithRelations } from "src/prisma/models";
 import ResponseBuilderInterceptor from "src/response/interceptors/response.interceptor";
 import ReleaseIllustrationService from "../release-illustration.service";
