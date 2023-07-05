@@ -370,12 +370,12 @@ export default class ReleaseService extends RepositoryService<
 			releaseWhere
 		);
 
-		this.releaseIllustrationService.reassignIllustrationFolder(
-			new Slug(release.slug),
-			new Slug(oldAlbum.slug),
-			new Slug(newParent.slug),
-			oldAlbum.artist ? new Slug(oldAlbum.artist.slug) : undefined,
-			newParent.artist ? new Slug(newParent.artist.slug) : undefined,
+		this.illustrationRepository.reassignReleaseIllustration(
+			release.slug,
+			oldAlbum.slug,
+			newParent.slug,
+			oldAlbum.artist?.slug ?? undefined,
+			newParent.artist?.slug ?? undefined,
 		);
 		return updatedRelease;
 	}
@@ -401,7 +401,19 @@ export default class ReleaseService extends RepositoryService<
 			archive.append(createReadStream(path), { name: basename(path) });
 		}));
 		if (illustration) {
-			//TODO: Resolve Illustration
+			const illustrationPath = illustration.disc == null
+				? this.illustrationRepository.getDiscIllustrationPath(
+					release.album.artist?.slug,
+					release.album.slug,
+					release.slug
+				)
+				: this.illustrationRepository.getDiscIllustrationPath(
+					release.album.artist?.slug,
+					release.album.slug,
+					release.slug,
+					illustration.disc
+				);
+
 			archive.append(
 				createReadStream(illustrationPath), { name: basename(illustrationPath) }
 			);

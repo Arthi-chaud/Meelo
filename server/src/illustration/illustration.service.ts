@@ -8,7 +8,7 @@ import mm, { type IAudioMetadata } from 'music-metadata';
 import * as fs from 'fs';
 import { FileParsingException } from 'src/metadata/metadata.exceptions';
 import * as dir from 'path';
-import type { IllustrationPath } from './models/illustration-path.model';
+import type { IllustrationFolderPath, IllustrationPath } from './models/illustration-path.model';
 import Jimp from 'jimp';
 import { FileDoesNotExistException } from 'src/file-manager/file-manager.exceptions';
 import { Readable } from 'stream';
@@ -178,26 +178,35 @@ export default class IllustrationService {
 		return new StreamableFile(fs.createReadStream(sourceFilePath));
 	}
 
-	/**
-	 * @returns The blurhash of the image's buffer
-	 */
-	async getIllustrationBlurHash(buffer: Buffer): Promise<string> {
+	async getIllustrationBlurHashAndColors(buffer: Buffer): Promise<[string, string[]]> {
 		const image = await Jimp.read(buffer);
 
-		return Blurhash.encode(
-			new Uint8ClampedArray(buffer),
-			image.getWidth(),
-			image.getHeight(),
-			0,
-			0
-		);
+		return Promise.all([
+			new Promise<string>((resolve) => {
+				const array = new Uint8ClampedArray(image.bitmap.data.length);
+
+				image.bitmap.data.map((char, index) => array[index] = char);
+				resolve(Blurhash.encode(
+					array,
+					image.getWidth(),
+					image.getHeight(),
+					// Represent the max number of colors on each axis
+					4,
+					4
+				));
+			}),
+			getColors(buffer, { type: image.getMIME() })
+				.then((colors) => colors.map((color) => color.hex()))
+		]);
 	}
 
-	/**
-	 * @returns The 5 dominant colors of the image
-	 */
-	async getIllustrationColors(buffer: Buffer): Promise<string[]> {
-		return getColors(buffer)
-			.then((colors) => colors.map((color) => color.hex()));
+	async moveIllustrationFolder(
+		oldPath: IllustrationFolderPath,
+		newPath: IllustrationFolderPath
+	) {
+		if (this.fileManagerService.folderExists(oldPath)) {
+			fs.mkdirSync(dir.dirname(newPath), { recursive: true });
+			this.fileManagerService.rename(oldPath, newPath);
+		}
 	}
 }

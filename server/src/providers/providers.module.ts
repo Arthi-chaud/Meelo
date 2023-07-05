@@ -11,7 +11,12 @@ import ProvidersIllustrationService from './provider-illustration.service';
 import IllustrationModule from 'src/illustration/illustration.module';
 
 @Module({
-	imports: [HttpModule, SettingsModule, PrismaModule, forwardRef(() => IllustrationModule)],
+	imports: [
+		HttpModule,
+		SettingsModule,
+		PrismaModule,
+		forwardRef(() => IllustrationModule)
+	],
 	providers: [
 		GeniusProvider,
 		MusicBrainzProvider,

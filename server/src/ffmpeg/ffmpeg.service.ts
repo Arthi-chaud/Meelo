@@ -7,7 +7,7 @@ import FileManagerService from 'src/file-manager/file-manager.service';
 import * as fs from 'fs';
 import * as dir from 'path';
 import Logger from 'src/logger/logger';
-import Metadata from 'src/metadata/models/metadata';
+import { IllustrationPath } from 'src/illustration/models/illustration-path.model';
 
 @Injectable()
 export default class FfmpegService {
@@ -22,7 +22,7 @@ export default class FfmpegService {
 	 * @param illustrationPath the full path of the illustration to apply
 	 * @param filePath the full path of the file to apply the illustration to
 	 */
-	applyIllustration(illustrationPath: string, filePath: string) {
+	/*applyIllustration(illustrationPath: string, filePath: string) {
 		if (!this.fileManagerService.fileExists(filePath)) {
 			throw new FileDoesNotExistException(filePath);
 		}
@@ -43,33 +43,31 @@ export default class FfmpegService {
 		} catch {
 			this.logger.error(`Applying illustration to '${filePath}' failed`);
 		}
-	}
+	}*/
 
 	/**
 	 * Takes a screenshot of a video file's content
 	 * @param videoPath the full path of a video file
 	 * @param outPath the path to the output illustration
 	 */
-	takeVideoScreenshot(videoPath: string): Promise<Buffer> {
+	takeVideoScreenshot(videoPath: string, outPath: IllustrationPath): Promise<void> {
 		return new Promise((resolve, reject) => {
 			if (!this.fileManagerService.fileExists(videoPath)) {
 				throw new FileDoesNotExistException(videoPath);
 			}
-			const buffer = Buffer.of();
-			const stream = fs.createWriteStream(buffer);
 
-			// fs.mkdir(dir.dirname(outPath), { recursive: true }, () => {});
+			fs.mkdir(dir.dirname(outPath), { recursive: true }, () => {});
 			Ffmpeg(videoPath).thumbnail({
 				count: 1,
-				// filename: dir.basename(outPath),
-				// folder: dir.dirname(outPath)
+				filename: dir.basename(outPath),
+				folder: dir.dirname(outPath)
 			}).on('error', () => {
 				reject();
 				this.logger.error(`Taking a screenshot of '${dir.basename(videoPath)}' failed`);
 			}).on('end', () => {
-				resolve(buffer);
+				resolve();
 				this.logger.log(`Taking a screenshot of '${dir.basename(videoPath)}' succeded`);
-			}).output(stream);
+			});
 		});
 	}
 
@@ -78,7 +76,7 @@ export default class FfmpegService {
 	 * @param filePath the full path of the file to apply the metadata to
 	 * @param metadata the metadata to apply
 	 */
-	applyMetadata(filePath: string, metadata: Metadata) {
+	/*applyMetadata(filePath: string, metadata: Metadata) {
 		if (!this.fileManagerService.fileExists(filePath)) {
 			throw new FileDoesNotExistException(filePath);
 		}
@@ -111,5 +109,5 @@ export default class FfmpegService {
 		} catch {
 			this.logger.error(`Applying metadata on file '${filePath}' failed`);
 		}
-	}
+	}*/
 }

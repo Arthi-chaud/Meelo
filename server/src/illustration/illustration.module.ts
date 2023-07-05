@@ -13,9 +13,11 @@ import SongModule from 'src/song/song.module';
 import ProvidersModule from 'src/providers/providers.module';
 import PlaylistModule from 'src/playlist/playlist.module';
 import IllustrationRepository from './illustration.repository';
+import PrismaModule from 'src/prisma/prisma.module';
 
 @Module({
 	imports: [
+		PrismaModule,
 		FileManagerModule,
 		forwardRef(() => ArtistModule),
 		forwardRef(() => AlbumModule),
@@ -30,6 +32,6 @@ import IllustrationRepository from './illustration.repository';
 	],
 	controllers: [IllustrationController],
 	providers: [IllustrationService, IllustrationRepository],
-	exports: [IllustrationRepository]
+	exports: [IllustrationService, IllustrationRepository]
 })
 export default class IllustrationModule { }

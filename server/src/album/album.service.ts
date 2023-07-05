@@ -329,8 +329,8 @@ export default class AlbumService extends RepositoryService<
 		}
 		const updatedAlbum = await this.update({ artistId: newArtist?.id ?? null }, albumWhere);
 
-		this.albumIllustrationService.reassignIllustrationFolder(
-			albumSlug, previousArtistSlug, newArtistSlug
+		this.illustrationRepository.reassignAlbumIllustration(
+			albumSlug.toString(), previousArtistSlug?.toString(), newArtistSlug?.toString()
 		);
 		return updatedAlbum;
 	}

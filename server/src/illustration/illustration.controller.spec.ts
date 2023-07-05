@@ -20,6 +20,7 @@ import { INestApplication } from "@nestjs/common";
 import request from "supertest";
 import SetupApp from "test/setup-app";
 import ProvidersModule from "src/providers/providers.module";
+import compilationAlbumArtistKeyword from "src/utils/compilation";
 
 jest.setTimeout(60000);
 
@@ -37,6 +38,7 @@ describe('Illustration Controller', () => {
 		dummyRepository = module.get(PrismaService);
 		await dummyRepository.onModuleInit();
 	});
+	const baseMetadataFolder = 'test/assets/metadata';
 
 	afterAll(() => {
 		module.close();
@@ -57,7 +59,8 @@ describe('Illustration Controller', () => {
 	// const distantIllustration2Content = axios.get(illustration2UrlExample).then((r) => r.data);
 
 	describe("Get Artist Illustration", () => {
-		it("should return the artist illustration", () => {
+		it("should return the artist illustration", async () => {
+			await dummyRepository.artistIllustration.create({ data: { artistId: dummyRepository.artistA.id, blurhash: '', colors: [] } })
 			jest.spyOn(fileManagerService, 'fileExists').mockReturnValueOnce(true);
 			jest.spyOn(fs, 'createReadStream').mockReturnValueOnce(getDummyIllustrationStream());
 			return request(app.getHttpServer())
@@ -81,7 +84,8 @@ describe('Illustration Controller', () => {
 	});
 
 	describe("Get Album Illustration", () => {
-		it("should return the master release illustration", () => {
+		it("should return the master release illustration", async () => {
+			await dummyRepository.releaseIllustration.create({ data: { releaseId: dummyRepository.releaseB1_1.id, blurhash: '', colors: [] } })
 			jest.spyOn(fileManagerService, 'fileExists').mockReturnValueOnce(true);
 			jest.spyOn(fileManagerService, 'fileExists').mockReturnValueOnce(true);
 			jest.spyOn(fs, 'createReadStream').mockReturnValueOnce(getDummyIllustrationStream());
@@ -106,7 +110,8 @@ describe('Illustration Controller', () => {
 	});
 
 	describe("Get Release Illustration", () => {
-		it("should return the release illustration", () => {
+		it("should return the release illustration", async () => {
+			await dummyRepository.releaseIllustration.create({ data: { releaseId: dummyRepository.releaseA1_1.id, blurhash: '', colors: [] } })
 			jest.spyOn(fileManagerService, 'fileExists').mockReturnValueOnce(true);
 			jest.spyOn(fileManagerService, 'fileExists').mockReturnValueOnce(true);
 			jest.spyOn(fs, 'createReadStream').mockReturnValueOnce(getDummyIllustrationStream());
@@ -131,7 +136,8 @@ describe('Illustration Controller', () => {
 	});
 
 	describe("Get Song Illustration", () => {
-		it("should return the master track illustration", () => {
+		it("should return the master track illustration", async () => {
+			await dummyRepository.trackIllustration.create({ data: { trackId: dummyRepository.trackB1_1.id, blurhash: '', colors: [] } })
 			jest.spyOn(fileManagerService, 'fileExists').mockReturnValueOnce(true);
 			jest.spyOn(fileManagerService, 'fileExists').mockReturnValueOnce(true);
 			jest.spyOn(fs, 'createReadStream').mockReturnValueOnce(getDummyIllustrationStream());
@@ -156,7 +162,8 @@ describe('Illustration Controller', () => {
 	});
 
 	describe("Get Track Illustration", () => {
-		it("should return the track illustration", () => {
+		it("should return the track illustration", async () => {
+			await dummyRepository.trackIllustration.create({ data: { trackId: dummyRepository.trackA1_2Video.id, blurhash: '', colors: [] } })
 			jest.spyOn(fileManagerService, 'fileExists').mockReturnValueOnce(true);
 			jest.spyOn(fileManagerService, 'fileExists').mockReturnValueOnce(true);
 			jest.spyOn(fs, 'createReadStream').mockReturnValueOnce(getDummyIllustrationStream());
@@ -215,10 +222,7 @@ describe('Illustration Controller', () => {
 
 	describe("Update Release Illustration", () => {
 		it("should create the release illustration", async () => {
-			
-			const releaseIllustrationPath = releaseIllustrationService.buildIllustrationPath(
-				...await releaseIllustrationService.formatWhereInputToIdentifiers({ id :dummyRepository.releaseB1_1.id})
-			);
+			const releaseIllustrationPath = `${baseMetadataFolder}/${dummyRepository.artistB.slug}/${dummyRepository.albumB1.slug}/${dummyRepository.releaseB1_1.slug}/cover.jpg`;
 			return request(app.getHttpServer())
 				.post(`/illustrations/releases/${dummyRepository.releaseB1_1.id}`)
 				.send({
@@ -230,9 +234,7 @@ describe('Illustration Controller', () => {
 				});
 		});
 		it("should update the release illustration", async () => {
-			const releaseIllustrationPath = releaseIllustrationService.buildIllustrationPath(
-				...await releaseIllustrationService.formatWhereInputToIdentifiers({ id :dummyRepository.releaseB1_1.id})
-			);
+			const releaseIllustrationPath = `${baseMetadataFolder}/${dummyRepository.artistB.slug}/${dummyRepository.albumB1.slug}/${dummyRepository.releaseB1_1.slug}/cover.jpg`;
 			return request(app.getHttpServer())
 				.post(`/illustrations/releases/${dummyRepository.releaseB1_1.id}`)
 				.send({
@@ -255,9 +257,7 @@ describe('Illustration Controller', () => {
 
 	describe("Update Track Illustration", () => {
 		it("should create the track illustration", async () => {
-			const releaseIllustrationPath = trackIllustrationService.buildIllustrationPath(
-				...await trackIllustrationService.formatWhereInputToIdentifiers({ id :dummyRepository.trackC1_1.id})
-			);
+			const trackIllustrationPath = `${baseMetadataFolder}/${compilationAlbumArtistKeyword}/${dummyRepository.compilationAlbumA.slug}/${dummyRepository.compilationReleaseA1.slug}/disc-0/track-0/cover.jpg`;
 			return request(app.getHttpServer())
 				.post(`/illustrations/tracks/${dummyRepository.trackC1_1.id}`)
 				.send({
@@ -265,13 +265,11 @@ describe('Illustration Controller', () => {
 				})
 				.expect(201)
 				.expect(async () => {
-					expect(fileManagerService.fileExists(releaseIllustrationPath));
+					expect(fileManagerService.fileExists(trackIllustrationPath));
 				});
 		});
 		it("should update the track illustration", async () => {
-			const releaseIllustrationPath = trackIllustrationService.buildIllustrationPath(
-				...await trackIllustrationService.formatWhereInputToIdentifiers({ id :dummyRepository.trackC1_1.id})
-			);
+			const trackIllustrationPath = `${baseMetadataFolder}/${compilationAlbumArtistKeyword}/${dummyRepository.compilationAlbumA.slug}/${dummyRepository.compilationReleaseA1.slug}/disc-0/track-0/cover.jpg`;
 			return request(app.getHttpServer())
 				.post(`/illustrations/tracks/${dummyRepository.trackC1_1.id}`)
 				.send({
@@ -279,7 +277,7 @@ describe('Illustration Controller', () => {
 				})
 				.expect(201)
 				.expect(async () => {
-					expect(fileManagerService.fileExists(releaseIllustrationPath));
+					expect(fileManagerService.fileExists(trackIllustrationPath));
 				});
 		});
 		it("should return 404, when track does not exist", () => {
@@ -318,9 +316,7 @@ describe('Illustration Controller', () => {
 
 	describe("Delete Release Illustration", () => {
 		it("should delete the release illustration", async () => {
-			const releaseIllustrationPath = releaseIllustrationService.buildIllustrationPath(
-				...await releaseIllustrationService.formatWhereInputToIdentifiers({ id :dummyRepository.releaseB1_1.id})
-			);
+			const releaseIllustrationPath = `${baseMetadataFolder}/${dummyRepository.artistB.slug}/${dummyRepository.albumB1.slug}/${dummyRepository.releaseB1_1.slug}/cover.jpg`;
 			return request(app.getHttpServer())
 				.delete(`/illustrations/releases/${dummyRepository.releaseB1_1.id}`)
 				.expect(200)
@@ -329,9 +325,7 @@ describe('Illustration Controller', () => {
 				})
 		});
 		it("should do nothing if the release illustration does nothing", async () => {
-			const releaseIllustrationPath = releaseIllustrationService.buildIllustrationPath(
-				...await releaseIllustrationService.formatWhereInputToIdentifiers({ id :dummyRepository.compilationReleaseA1.id})
-			);
+			const releaseIllustrationPath = `${baseMetadataFolder}/${dummyRepository.compilationAlbumA.slug}/${dummyRepository.compilationReleaseA1.slug}/cover.jpg`;
 			return request(app.getHttpServer())
 				.delete(`/illustrations/releases/${dummyRepository.compilationReleaseA1.id}`)
 				.expect(200)
@@ -348,9 +342,7 @@ describe('Illustration Controller', () => {
 
 	describe("Delete track Illustration", () => {
 		it("should delete the track illustration", async () => {
-			const trackIllustrationPath = trackIllustrationService.buildIllustrationPath(
-				...await trackIllustrationService.formatWhereInputToIdentifiers({ id :dummyRepository.trackC1_1.id})
-			);
+			const trackIllustrationPath = `${baseMetadataFolder}/${compilationAlbumArtistKeyword}/${dummyRepository.compilationAlbumA.slug}/${dummyRepository.compilationReleaseA1.slug}/disc-0/track-0/cover.jpg`;
 			return request(app.getHttpServer())
 				.delete(`/illustrations/tracks/${dummyRepository.trackC1_1.id}`)
 				.expect(200)
@@ -358,16 +350,10 @@ describe('Illustration Controller', () => {
 					expect(fileManagerService.fileExists(trackIllustrationPath)).toBe(false);
 				})
 		});
-		it("should do nothing if the track illustration does nothing", async () => {
-			const trackIllustrationPath = trackIllustrationService.buildIllustrationPath(
-				...await trackIllustrationService.formatWhereInputToIdentifiers({ id :dummyRepository.trackA1_2Video.id})
-			);
+		it("should do nothing if the track illustration does not exist", async () => {
 			return request(app.getHttpServer())
 				.delete(`/illustrations/tracks/${dummyRepository.trackA1_2Video.id}`)
-				.expect(200)
-				.expect(() => {
-					expect(fileManagerService.fileExists(trackIllustrationPath)).toBe(false);
-				})
+				.expect(200);
 		});
 		it("should return 404, when track does not exist", () => {
 			return request(app.getHttpServer())

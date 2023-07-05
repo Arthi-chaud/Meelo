@@ -6,9 +6,15 @@ import PlaylistIllustrationService from "./playlist-illustration.service";
 import SongModule from "src/song/song.module";
 import SettingsModule from "src/settings/settings.module";
 import { PlaylistResponseBuilder } from "./models/playlist.response";
+import IllustrationModule from "src/illustration/illustration.module";
 
 @Module({
-	imports: [PrismaModule, forwardRef(() => SongModule), SettingsModule],
+	imports: [
+		PrismaModule,
+		forwardRef(() => SongModule),
+		SettingsModule,
+		forwardRef(() => IllustrationModule)
+	],
 	providers: [PlaylistService, PlaylistIllustrationService, PlaylistResponseBuilder],
 	exports: [PlaylistService, PlaylistIllustrationService, PlaylistResponseBuilder],
 	controllers: [PlaylistController]
