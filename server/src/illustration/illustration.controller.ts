@@ -17,11 +17,11 @@ import IdentifierParam from "src/identifier/identifier.pipe";
 import ArtistQueryParameters from 'src/artist/models/artist.query-parameters';
 import TrackQueryParameters from 'src/track/models/track.query-parameters';
 import ReleaseQueryParameters from 'src/release/models/release.query-parameters';
-import ReleaseIllustrationService from "src/release/release-illustration.service";
-import TrackIllustrationService from "src/track/track-illustration.service";
 import { parse } from 'path';
 import Slug from "src/slug/slug";
-import { NoIllustrationException, NoReleaseIllustrationException, NoTrackIllustrationException } from "./illustration.exceptions";
+import {
+	NoIllustrationException, NoReleaseIllustrationException, NoTrackIllustrationException
+} from "./illustration.exceptions";
 import SongService from "src/song/song.service";
 import SongQueryParameters from "src/song/models/song.query-params";
 import ProviderIllustrationService from "src/providers/provider-illustration.service";
@@ -39,8 +39,6 @@ import IllustrationRepository from "./illustration.repository";
 export class IllustrationController {
 	constructor(
 		private illustrationService: IllustrationService,
-		private releaseIllustrationService: ReleaseIllustrationService,
-		private trackIllustrationService: TrackIllustrationService,
 		private playlistIllustrationService: PlaylistIllustrationService,
 		private trackService: TrackService,
 		private artistService: ArtistService,
@@ -61,18 +59,21 @@ export class IllustrationController {
 		@Response({ passthrough: true })
 		res: Response,
 	) {
-		const artist = await this.artistService.get(where);
-		const artistIllustration = this.illustrationRepository
+		const artist = await this.artistService.get(where, { illustration: true });
+		const artistIllustrationPath = this.illustrationRepository
 			.getArtistIllustrationPath(artist.slug);
 
+		if (!artist.illustration) {
+			throw new NoIllustrationException("No Illustration registered for artist " + artist.slug);
+		}
 		return this.illustrationService.streamIllustration(
-			artistIllustration,
-			parse(parse(artistIllustration).dir).name,
+			artistIllustrationPath,
+			parse(parse(artistIllustrationPath).dir).name,
 			dimensions,
 			res
 		).catch((err) => {
 			if (err instanceof NoIllustrationException) {
-				this.illustrationRepository.deleteArtistIllustration(where);
+				this.illustrationRepository.deleteArtistIllustration(where, { withFolder: false });
 			}
 		});
 	}

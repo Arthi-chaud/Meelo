@@ -16,7 +16,6 @@ import TestPrismaService from "test/test-prisma.service";
 import Jimp from 'jimp';
 import { FileDoesNotExistException } from "src/file-manager/file-manager.exceptions";
 import { FileParsingException } from "src/metadata/metadata.exceptions";
-import ArtistIllustrationService from "src/artist/artist-illustration.service";
 import ProvidersModule from "src/providers/providers.module";
 
 jest.setTimeout(120000);

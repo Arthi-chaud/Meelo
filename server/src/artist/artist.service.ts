@@ -1,6 +1,4 @@
-import {
-	Inject, Injectable, forwardRef
-} from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import Slug from 'src/slug/slug';
 import {
 	ArtistAlreadyExistsException,

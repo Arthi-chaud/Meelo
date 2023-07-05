@@ -50,19 +50,26 @@ export default class FfmpegService {
 	 * @param videoPath the full path of a video file
 	 * @param outPath the path to the output illustration
 	 */
-	takeVideoScreenshot(videoPath: string, outPath: string) {
-		if (!this.fileManagerService.fileExists(videoPath)) {
-			throw new FileDoesNotExistException(videoPath);
-		}
-		fs.mkdir(dir.dirname(outPath), { recursive: true }, () => {});
-		Ffmpeg(videoPath).thumbnail({
-			count: 1,
-			filename: dir.basename(outPath),
-			folder: dir.dirname(outPath)
-		}).on('error', () => {
-			this.logger.error(`Taking a screenshot of '${dir.basename(videoPath)}' failed`);
-		}).on('end', () => {
-			this.logger.log(`Taking a screenshot of '${dir.basename(videoPath)}' succeded`);
+	takeVideoScreenshot(videoPath: string): Promise<Buffer> {
+		return new Promise((resolve, reject) => {
+			if (!this.fileManagerService.fileExists(videoPath)) {
+				throw new FileDoesNotExistException(videoPath);
+			}
+			const buffer = Buffer.of();
+			const stream = fs.createWriteStream(buffer);
+
+			// fs.mkdir(dir.dirname(outPath), { recursive: true }, () => {});
+			Ffmpeg(videoPath).thumbnail({
+				count: 1,
+				// filename: dir.basename(outPath),
+				// folder: dir.dirname(outPath)
+			}).on('error', () => {
+				reject();
+				this.logger.error(`Taking a screenshot of '${dir.basename(videoPath)}' failed`);
+			}).on('end', () => {
+				resolve(buffer);
+				this.logger.log(`Taking a screenshot of '${dir.basename(videoPath)}' succeded`);
+			}).output(stream);
 		});
 	}
 

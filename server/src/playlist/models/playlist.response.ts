@@ -2,12 +2,12 @@ import {
 	Inject, Injectable, forwardRef
 } from "@nestjs/common";
 import { ApiProperty, IntersectionType } from "@nestjs/swagger";
-import { IllustratedModel } from "src/illustration/models/illustration.response";
 import { Playlist, PlaylistWithRelations } from "src/prisma/models";
 import ResponseBuilderInterceptor from "src/response/interceptors/response.interceptor";
 import { SongResponse, SongResponseBuilder } from "src/song/models/song.response";
-import PlaylistIllustrationService from "../playlist-illustration.service";
 import SongService from "src/song/song.service";
+import IllustrationResponse from "src/illustration/models/illustration.response";
+import IllustrationRepository from "src/illustration/illustration.repository";
 
 export class PlaylistEntryResponse extends SongResponse {
 	@ApiProperty({
@@ -17,10 +17,9 @@ export class PlaylistEntryResponse extends SongResponse {
 }
 
 export class PlaylistResponse extends IntersectionType(
-	IntersectionType(
-		Playlist, IllustratedModel,
-	),
+	Playlist,
 	class {
+		illustration: IllustrationResponse | null;
 		entries?: PlaylistEntryResponse[];
 	}
 ) {}
@@ -28,8 +27,8 @@ export class PlaylistResponse extends IntersectionType(
 @Injectable()
 export class PlaylistResponseBuilder extends ResponseBuilderInterceptor<PlaylistWithRelations, PlaylistResponse> {
 	constructor(
-		@Inject(forwardRef(() => PlaylistIllustrationService))
-		private playlistIllustrationService: PlaylistIllustrationService,
+		@Inject(forwardRef(() => IllustrationRepository))
+		private illustrationRepository: IllustrationRepository,
 		@Inject(forwardRef(() => SongResponseBuilder))
 		private songResponseBuilder: SongResponseBuilder,
 		@Inject(forwardRef(() => SongService))
@@ -43,7 +42,8 @@ export class PlaylistResponseBuilder extends ResponseBuilderInterceptor<Playlist
 	async buildResponse(playlist: PlaylistWithRelations): Promise<PlaylistResponse> {
 		const response = <PlaylistResponse>{
 			...playlist,
-			illustration: this.playlistIllustrationService.buildIllustrationLink(playlist.slug)
+			illustration: await this.illustrationRepository
+				.getPlaylistIllustration({ id: playlist.id })
 		};
 
 		if (playlist.entries !== undefined) {

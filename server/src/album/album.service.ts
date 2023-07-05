@@ -26,6 +26,7 @@ import Logger from 'src/logger/logger';
 import ReleaseQueryParameters from 'src/release/models/release.query-parameters';
 import { PrismaError } from 'prisma-error-enum';
 import { PaginationParameters, buildPaginationParameters } from 'src/pagination/models/pagination-parameters';
+import IllustrationRepository from 'src/illustration/illustration.repository';
 
 @Injectable()
 export default class AlbumService extends RepositoryService<
@@ -49,7 +50,8 @@ export default class AlbumService extends RepositoryService<
 		@Inject(forwardRef(() => ArtistService))
 		private artistServce: ArtistService,
 		@Inject(forwardRef(() => ReleaseService))
-		private releaseService: ReleaseService
+		private releaseService: ReleaseService,
+		private illustrationRepository: IllustrationRepository
 	) {
 		super(prismaService.album);
 	}
@@ -229,12 +231,9 @@ export default class AlbumService extends RepositoryService<
 	 * @param where the query parameter
 	 */
 	async delete(where: AlbumQueryParameters.DeleteInput): Promise<Album> {
-		const illustrationFolder = await this.albumIllustrationService.getIllustrationFolderPath(
-			where
-		);
+		await this.illustrationRepository.deleteAlbumIllustrations(where);
 		const album = await super.delete(where);
 
-		this.albumIllustrationService.deleteIllustrationFolder(illustrationFolder);
 		this.logger.warn(`Album '${album.slug}' deleted`);
 		return album;
 	}

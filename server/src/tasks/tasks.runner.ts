@@ -17,7 +17,6 @@ import IllustrationService from 'src/illustration/illustration.service';
 import LibraryService from 'src/library/library.service';
 import Logger from 'src/logger/logger';
 import SettingsService from 'src/settings/settings.service';
-import FfmpegService from 'src/ffmpeg/ffmpeg.service';
 import { MeeloException, NotFoundException } from 'src/exceptions/meelo-exception';
 import SongService from 'src/song/song.service';
 import ReleaseService from 'src/release/release.service';
@@ -47,7 +46,6 @@ export default class TaskRunner {
 		private libraryService: LibraryService,
 		@Inject(forwardRef(() => IllustrationRepository))
 		private illustrationRepository: IllustrationRepository,
-		private ffmpegService: FfmpegService,
 		@Inject(forwardRef(() => SongService))
 		private songService: SongService,
 		@Inject(forwardRef(() => ReleaseService))
@@ -290,8 +288,8 @@ export default class TaskRunner {
 	/**
 	 * Fetch Missing External Illustrations from providers
 	 */
-	private async fetchExternalIllustrations(): Promise<void> {
-		await this.artistIllustrationService.downloadMissingIllustrations();
+	private fetchExternalIllustrations(): Promise<void> {
+		return this.illustrationRepository.downloadMissingArtistIllustrations();
 	}
 
 	/**
@@ -321,12 +319,12 @@ export default class TaskRunner {
 			this.illustrationRepository.registerTrackFileIllustration(
 				{ id: track.id }, fullFilePath
 			)
-				.catch(() => { })
-				.then(async () => {
+				.catch(() => {})
+				.then(() => {
 					if (track.type == 'Video') {
-						this.ffmpegService.takeVideoScreenshot(
-							fullFilePath, illustrationPath
-						);
+						this.illustrationRepository
+							.registerVideoTrackScreenshot({ id: track.id }, fullFilePath)
+							.catch(() => {});
 					}
 				});
 		} catch (err) {

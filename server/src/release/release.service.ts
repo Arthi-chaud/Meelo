@@ -303,7 +303,7 @@ export default class ReleaseService extends RepositoryService<
 	 * @param where Query parameters to find the release to delete
 	 */
 	async delete(where: ReleaseQueryParameters.DeleteInput): Promise<Release> {
-		await this.illustrationRepository.deleteReleaseIllustration(where);
+		await this.illustrationRepository.deleteReleaseIllustration(where, { withFolder: true });
 		return super.delete(where).then((deleted) => {
 			this.logger.warn(`Release '${deleted.slug}' deleted`);
 			return deleted;
@@ -381,8 +381,15 @@ export default class ReleaseService extends RepositoryService<
 	}
 
 	async pipeArchive(where: ReleaseQueryParameters.WhereInput, res: Response) {
-		const release = await this.get(where, { tracks: true });
-		const illustration = await this.releaseIllustrationService.getIllustrationPath(where);
+		const release = await this.prismaService.release
+			.findFirstOrThrow({
+				where: this.formatWhereInput(where),
+				include: { tracks: true, album: { include: { artist: true } } }
+			})
+			.catch(async (err) => {
+				throw await this.onNotFound(err, where);
+			});
+		const illustration = await this.illustrationRepository.getReleaseIllustration(where);
 		const archive = archiver('zip');
 		const outputName = `${release.slug}.zip`;
 
@@ -393,8 +400,11 @@ export default class ReleaseService extends RepositoryService<
 		).then((paths) => paths.forEach((path) => {
 			archive.append(createReadStream(path), { name: basename(path) });
 		}));
-		if (this.ill.illustrationExists(illustration)) {
-			archive.append(createReadStream(illustration), { name: basename(illustration) });
+		if (illustration) {
+			//TODO: Resolve Illustration
+			archive.append(
+				createReadStream(illustrationPath), { name: basename(illustrationPath) }
+			);
 		}
 
 		res.set({
