@@ -6,13 +6,13 @@ import { ArtistResponse, ArtistResponseBuilder } from "src/artist/models/artist.
 import { Song, SongWithRelations } from "src/prisma/models";
 import ResponseBuilderInterceptor from "src/response/interceptors/response.interceptor";
 import ExternalIdResponse, { ExternalIdResponseBuilder } from "src/providers/models/external-id.response";
-import IllustrationResponse from "src/illustration/models/illustration.response";
+import { IllustratedResponse } from "src/illustration/models/illustration.response";
 import IllustrationRepository from "src/illustration/illustration.repository";
 
 export class SongResponse extends IntersectionType(
 	Song,
+	IllustratedResponse,
 	class {
-		illustration: IllustrationResponse | null;
 		artist?: ArtistResponse;
 		externalIds?: ExternalIdResponse[];
 	}

@@ -2,7 +2,7 @@ import {
 	Inject, Injectable, forwardRef
 } from "@nestjs/common";
 import { IntersectionType } from "@nestjs/swagger";
-import IllustrationResponse from "src/illustration/models/illustration.response";
+import { IllustratedResponse } from "src/illustration/models/illustration.response";
 import { Artist, ArtistWithRelations } from "src/prisma/models";
 import ResponseBuilderInterceptor from "src/response/interceptors/response.interceptor";
 import ExternalIdResponse, { ExternalIdResponseBuilder } from "src/providers/models/external-id.response";
@@ -10,8 +10,8 @@ import IllustrationRepository from "src/illustration/illustration.repository";
 
 export class ArtistResponse extends IntersectionType(
 	Artist,
+	IllustratedResponse,
 	class {
-		illustration: IllustrationResponse | null;
 		externalIds?: ExternalIdResponse[];
 	}
 ) {}

@@ -15,7 +15,7 @@ import {
 import compilationAlbumArtistKeyword from "src/utils/compilation";
 import { IllustrationNotExtracted } from "./illustration.exceptions";
 import Logger from "src/logger/logger";
-import IllustrationResponse from "./models/illustration.response";
+import { IllustrationResponse } from "./models/illustration.response";
 import TrackQueryParameters from "src/track/models/track.query-parameters";
 import TrackService from "src/track/track.service";
 import { IllustrationPath } from "./models/illustration-path.model";

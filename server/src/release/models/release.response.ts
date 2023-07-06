@@ -4,14 +4,14 @@ import {
 import { IntersectionType } from "@nestjs/swagger";
 import { AlbumResponse, AlbumResponseBuilder } from "src/album/models/album.response";
 import IllustrationRepository from "src/illustration/illustration.repository";
-import IllustrationResponse from "src/illustration/models/illustration.response";
+import { IllustratedResponse } from "src/illustration/models/illustration.response";
 import { Release, ReleaseWithRelations } from "src/prisma/models";
 import ResponseBuilderInterceptor from "src/response/interceptors/response.interceptor";
 
 export class ReleaseResponse extends IntersectionType(
 	Release,
+	IllustratedResponse,
 	class {
-		illustration: IllustrationResponse | null;
 		album?: AlbumResponse;
 	}
 ) {}

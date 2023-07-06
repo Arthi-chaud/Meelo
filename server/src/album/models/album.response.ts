@@ -6,14 +6,14 @@ import { ArtistResponse, ArtistResponseBuilder } from "src/artist/models/artist.
 import { Album, AlbumWithRelations } from "src/prisma/models";
 import ResponseBuilderInterceptor from "src/response/interceptors/response.interceptor";
 import ExternalIdResponse, { ExternalIdResponseBuilder } from "src/providers/models/external-id.response";
-import IllustrationResponse from "src/illustration/models/illustration.response";
+import { IllustratedResponse } from "src/illustration/models/illustration.response";
 import IllustrationRepository from "src/illustration/illustration.repository";
 
 export class AlbumResponse extends IntersectionType(
 	Album,
+	IllustratedResponse,
 	class {
 		artist?: ArtistResponse | null;
-		illustration: IllustrationResponse | null;
 		externalIds?: ExternalIdResponse[];
 	}
 ) {}

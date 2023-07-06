@@ -6,7 +6,7 @@ import { Playlist, PlaylistWithRelations } from "src/prisma/models";
 import ResponseBuilderInterceptor from "src/response/interceptors/response.interceptor";
 import { SongResponse, SongResponseBuilder } from "src/song/models/song.response";
 import SongService from "src/song/song.service";
-import IllustrationResponse from "src/illustration/models/illustration.response";
+import { IllustratedResponse } from "src/illustration/models/illustration.response";
 import IllustrationRepository from "src/illustration/illustration.repository";
 
 export class PlaylistEntryResponse extends SongResponse {
@@ -18,8 +18,8 @@ export class PlaylistEntryResponse extends SongResponse {
 
 export class PlaylistResponse extends IntersectionType(
 	Playlist,
+	IllustratedResponse,
 	class {
-		illustration: IllustrationResponse | null;
 		entries?: PlaylistEntryResponse[];
 	}
 ) {}
