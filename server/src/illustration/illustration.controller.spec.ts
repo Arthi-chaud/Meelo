@@ -363,7 +363,10 @@ describe('Illustration Controller', () => {
 	});
 
 	describe("Get Playlist Illustration", () => {
-		it("should return the playlist illustration", () => {
+		it("should return the playlist illustration", async () => {
+			await dummyRepository.playlistIllustration.create(
+				{ data: { playlistId: dummyRepository.playlist1.id, colors: [], blurhash: '' } }
+			)
 			jest.spyOn(fileManagerService, 'fileExists').mockReturnValueOnce(true);
 			jest.spyOn(fs, 'createReadStream').mockReturnValueOnce(getDummyIllustrationStream());
 			return request(app.getHttpServer())

@@ -217,7 +217,12 @@ export class IllustrationController {
 					track.song.slug,
 					dimensions,
 					res
-				);
+				).catch(() => {
+					this.illustrationRepository.deleteReleaseIllustration(
+						{ id: track.releaseId }, { withFolder: false }, track.discIndex
+					);
+					throw new NoIllustrationException("No Illustration registered for this track.");
+				});
 			}
 		}
 		return this.getReleaseIllustration({ id: track.releaseId }, dimensions, res);
@@ -338,7 +343,7 @@ export class IllustrationController {
 			.getPlaylistIllustration(where);
 
 		if (!playlistIllustration) {
-			return;
+			throw new NoIllustrationException("No Illustration registered for this playlist.");
 		}
 		const playlist = await this.playlistService.get(where);
 		const playlistIllustrationPath = this.illustrationRepository
@@ -349,7 +354,10 @@ export class IllustrationController {
 			parse(parse(playlistIllustrationPath).dir).name,
 			dimensions,
 			res
-		);
+		).catch(() => {
+			this.illustrationRepository.deletePlaylistIllustration(where);
+			throw new NoIllustrationException("No Illustration registered for this playlist.");
+		});
 	}
 
 	@ApiOperation({

@@ -11,7 +11,6 @@ import IllustrationService from "./illustration.service";
 import IllustrationModule from "./illustration.module";
 import * as fs from 'fs';
 import TestPrismaService from "test/test-prisma.service";
-import Jimp from 'jimp';
 import { FileDoesNotExistException } from "src/file-manager/file-manager.exceptions";
 import { FileParsingException } from "src/metadata/metadata.exceptions";
 import ProvidersModule from "src/providers/providers.module";
@@ -69,8 +68,7 @@ describe('Illustration Repository', () => {
 
 		let releaseIllustrationPath: string;
 		it("should extract illustration to release folder, mocking the illustration bytes", async () => {
-			jest.spyOn(IllustrationService.prototype as any, 'extractIllustrationFromFile').mockImplementation(() => 'aaaaa' );
-			jest.spyOn(Jimp, 'read').mockImplementation(() => <any>({ getBufferAsync: (_: any) => Buffer.from('ABCDE') }));
+			jest.spyOn(IllustrationService.prototype as any, 'extractIllustrationFromFile').mockImplementation(() => 'ABCDE' );
 			jest.spyOn(IllustrationService.prototype, 'getIllustrationBlurHashAndColors').mockImplementation(async () => ['', []]);
 			releaseIllustrationPath = (await illustrationRepository.registerTrackFileIllustration(dummyRepository.trackA1_1, 'test/assets/dreams.m4a'))!;
 			expect(releaseIllustrationPath).toBe('test/assets/metadata/my-artist/my-album/my-album-1/cover.jpg');
@@ -79,8 +77,7 @@ describe('Illustration Repository', () => {
 		});
 		let discIllustrationPath: string;
 		it("should extract illustration to disc folder, mocking the illustration bytes", async () => {
-			jest.spyOn(IllustrationService.prototype as any, 'extractIllustrationFromFile').mockImplementation(() => Buffer.from('aaaaa') );
-			jest.spyOn(Jimp, 'read').mockImplementation(() => <any>({ getBufferAsync: (_: any) => Buffer.from('ABCDEF') }));
+			jest.spyOn(IllustrationService.prototype as any, 'extractIllustrationFromFile').mockImplementation(() => Buffer.from('ABCDEF') );
 			discIllustrationPath = (await illustrationRepository.registerTrackFileIllustration(dummyRepository.trackA1_1, 'test/assets/dreams.m4a'))!;
 			expect(discIllustrationPath).toBe('test/assets/metadata/my-artist/my-album/my-album-1/disc-1/cover.jpg');
 			expect(fs.existsSync(discIllustrationPath)).toBe(true);
@@ -91,8 +88,7 @@ describe('Illustration Repository', () => {
 		});
 		let trackIllustrationPath: string;
 		it("should extract illustration to track folder, mocking the illustration bytes", async () => {
-			jest.spyOn(IllustrationService.prototype as any, 'extractIllustrationFromFile').mockImplementation(() => 'aaaaa' );
-			jest.spyOn(Jimp, 'read').mockImplementation(() => <any>({ getBufferAsync: (_: any) => Buffer.from('ABCDEFG') }));
+			jest.spyOn(IllustrationService.prototype as any, 'extractIllustrationFromFile').mockImplementation(() => 'ABCDEFG' );
 			trackIllustrationPath = (await illustrationRepository.registerTrackFileIllustration(dummyRepository.trackA1_1, 'test/assets/dreams.m4a'))!;
 			expect(trackIllustrationPath).toBe('test/assets/metadata/my-artist/my-album/my-album-1/disc-1/track-2/cover.jpg');
 			expect(fs.existsSync(trackIllustrationPath)).toBe(true);

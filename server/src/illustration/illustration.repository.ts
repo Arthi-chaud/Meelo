@@ -46,6 +46,7 @@ export default class IllustrationRepository {
 		private releaseService: ReleaseService,
 		@Inject(forwardRef(() => TrackService))
 		private trackService: TrackService,
+		@Inject(forwardRef(() => PlaylistService))
 		private playlistService: PlaylistService,
 		private settingsService: SettingsService,
 		@Inject(forwardRef(() => ProviderService))
@@ -236,7 +237,8 @@ export default class IllustrationRepository {
 		where: SongQueryParameters.WhereInput
 	) {
 		return this.trackService.getMasterTrack(where)
-			.then((track) => this.getTrackIllustration({ id: track.id }));
+			.then((track) => this.getTrackIllustration({ id: track.id }))
+			.catch(() => null);
 	}
 
 	async getAlbumIllustration(

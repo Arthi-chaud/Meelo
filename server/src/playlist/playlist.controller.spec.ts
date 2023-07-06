@@ -10,6 +10,7 @@ import { Playlist } from "@prisma/client";
 import { expectedPlaylistEntryResponse, expectedPlaylistResponse } from "test/expected-responses";
 import request from "supertest";
 import PlaylistService from "./playlist.service";
+import IllustrationModule from "src/illustration/illustration.module";
 
 describe('Playlist Controller', () => {
 	let app: INestApplication;
@@ -20,7 +21,7 @@ describe('Playlist Controller', () => {
 
 	beforeAll(async () => {
 		module = await createTestingModule({
-			imports: [PlaylistModule, PrismaModule]
+			imports: [IllustrationModule, PlaylistModule, PrismaModule]
 		}).overrideProvider(PrismaService).useClass(TestPrismaService).compile();
 		dummyRepository = module.get(PrismaService);
 		playlistService = module.get(PlaylistService)
