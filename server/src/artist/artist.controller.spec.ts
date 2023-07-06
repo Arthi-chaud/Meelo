@@ -292,4 +292,25 @@ describe('Artist Controller', () => {
 				}) 
 		})
 	});
+	describe("Artist Illustration", () => {
+		it("Should return the illustration", async () => {
+			const illustration = await dummyRepository.artistIllustration.create({
+				data: { artistId: dummyRepository.artistB.id, blurhash: 'A', colors: ['B'] }
+			});
+			return request(app.getHttpServer())
+				.get(`/artists/${dummyRepository.artistB.id}`)
+				.expect(200)
+				.expect((res) => {
+					const artist: Artist = res.body;
+					expect(artist).toStrictEqual({
+						...artist,
+						illustration: {
+							...illustration,
+							url: '/illustrations/artists/' + dummyRepository.artistB.slug
+						}
+					});
+				});
+
+		});
+	})
 })

@@ -172,12 +172,20 @@ export default class IllustrationRepository {
 		if (where.compilationArtist == true) {
 			return null;
 		}
-		return this.prismaService.artistIllustration.findFirst({
-			where: { artist: ArtistService.formatWhereInput(where) }
-		}).then((value) => value && ({
+		const illustration = await this.prismaService.artistIllustration.findFirst({
+			where: { artist: ArtistService.formatWhereInput(where) },
+			include: { artist: true }
+		});
+
+		if (!illustration) {
+			return null;
+		}
+		const { artist, ...value } = illustration;
+
+		return {
 			...value,
-			url: '/illustrations/artists/' + where.slug ?? where.id
-		}));
+			url: '/illustrations/artists/' + artist.slug
+		};
 	}
 
 	async getPlaylistIllustration(

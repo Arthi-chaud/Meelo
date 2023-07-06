@@ -175,7 +175,7 @@ export default class TestPrismaService extends PrismaService {
 			data: { path: 'e', md5Checksum: '', registerDate: new Date(), libraryId: this.library1.id }
 		});
 		this.trackC1_1 = await this.track.create({
-			data: { ...this.baseTrack, name: "My C Song 1", songId: this.songC1.id,
+			data: { ...this.baseTrack, name: "My C Song 1", songId: this.songC1.id, discIndex: 3,
 				releaseId: this.compilationReleaseA1.id, type: TrackType.Audio, sourceFileId: this.fileC1_1.id
 			}
 		});

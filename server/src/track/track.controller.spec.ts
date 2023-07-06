@@ -330,4 +330,26 @@ describe('Track Controller', () => {
 				});
 		});
 	});
+
+	describe("Track Illustration", () => {
+		it("Should return the track illustration", async () => {
+			const illustration = await dummyRepository.trackIllustration.create({
+				data: { trackId: dummyRepository.trackC1_1.id, blurhash: 'A', colors: ['B'] }
+			});
+			return request(app.getHttpServer())
+				.get(`/tracks/${dummyRepository.trackC1_1.id}`)
+				.expect(200)
+				.expect((res) => {
+					const track: Track = res.body;
+					expect(track).toStrictEqual({
+						...track,
+						illustration: {
+							...illustration,
+							url: '/illustrations/tracks/' + dummyRepository.trackC1_1.id
+						}
+					});
+				});
+
+		});
+	})
 });

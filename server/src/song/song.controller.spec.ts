@@ -515,4 +515,26 @@ describe('Song Controller', () => {
 				.expect(404);
 		});
 	});
+
+	describe("Song Illustration", () => {
+		it("Should return the Song illustration", async () => {
+			const illustration = await dummyRepository.trackIllustration.create({
+				data: { trackId: dummyRepository.trackC1_1.id, blurhash: 'A', colors: ['B'] }
+			});
+			return request(app.getHttpServer())
+				.get(`/songs/${dummyRepository.songC1.id}`)
+				.expect(200)
+				.expect((res) => {
+					const song: Song = res.body;
+					expect(song).toStrictEqual({
+						...song,
+						illustration: {
+							...illustration,
+							url: '/illustrations/tracks/' + dummyRepository.trackC1_1.id
+						}
+					});
+				});
+
+		});
+	})
 });
