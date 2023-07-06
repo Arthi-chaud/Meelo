@@ -322,4 +322,26 @@ describe('Playlist Controller', () => {
 				.expect(404)
 		});
 	});
+
+	describe("Playlist Illustration", () => {
+		it("Should return the illustration", async () => {
+			const illustration = await dummyRepository.playlistIllustration.create({
+				data: { playlistId: dummyRepository.playlist3.id, blurhash: 'A', colors: ['B'] }
+			});
+			return request(app.getHttpServer())
+				.get(`/playlists/${dummyRepository.playlist3.id}`)
+				.expect(200)
+				.expect((res) => {
+					const playlist: Playlist = res.body;
+					expect(playlist).toStrictEqual({
+						...playlist,
+						illustration: {
+							...illustration,
+							url: '/illustrations/playlists/' + dummyRepository.playlist3.slug
+						}
+					});
+				});
+
+		});
+	})
 })

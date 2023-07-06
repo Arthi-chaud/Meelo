@@ -191,12 +191,20 @@ export default class IllustrationRepository {
 	async getPlaylistIllustration(
 		where: PlaylistQueryParameters.WhereInput
 	): Promise<(PlaylistIllustration & IllustrationResponse) | null> {
-		return this.prismaService.playlistIllustration.findFirst({
-			where: { playlist: this.playlistService.formatWhereInput(where) }
-		}).then((value) => value && ({
+		const illustration = await this.prismaService.playlistIllustration.findFirst({
+			where: { playlist: this.playlistService.formatWhereInput(where) },
+			include: { playlist: true }
+		});
+
+		if (!illustration) {
+			return null;
+		}
+		const { playlist, ...value } = illustration;
+
+		return {
 			...value,
-			url: '/illustrations/playlists/' + where.slug ?? where.id
-		}));
+			url: '/illustrations/playlists/' + playlist.slug
+		};
 	}
 
 	async getReleaseIllustration(
