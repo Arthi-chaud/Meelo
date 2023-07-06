@@ -243,10 +243,10 @@ const ReleasePage = (
 						</Box></Fade>
 					}
 				</Grid>
-				<Grid item xs sx={{ marginTop: 2 }}>
-					<ColorChips colors={mainIllustrationColors} />
-				</Grid>
 			</Grid>
+			<Box sx={{ padding: 2 }}>
+				<ColorChips colors={mainIllustrationColors} />
+			</Box>
 			<RelatedContentSection
 				display={(relatedReleases.data?.pages.at(0)?.items?.length ?? 0) > 1}
 				title={<Translate translationKey="otherAlbumReleases"/>}
