@@ -17,6 +17,7 @@ import glob from 'glob';
 import Logger from 'src/logger/logger';
 import * as Blurhash from 'blurhash';
 import getColors from 'get-image-colors';
+import mime from 'mime';
 
 type IllustrationExtractStatus = 'extracted' | 'error' | 'already-extracted' | 'different-illustration';
 
@@ -175,7 +176,10 @@ export default class IllustrationService {
 				this.logger.error(`Streaming of illustration ${sourceFilePath} failed.`);
 			}
 		}
-		return new StreamableFile(fs.createReadStream(sourceFilePath));
+		return new StreamableFile(
+			fs.createReadStream(sourceFilePath),
+			{ type: mime.getType(sourceFilePath)?.toString() }
+		);
 	}
 
 	async getIllustrationBlurHashAndColors(buffer: Buffer): Promise<[string, string[]]> {
@@ -191,8 +195,8 @@ export default class IllustrationService {
 					image.getWidth(),
 					image.getHeight(),
 					// Represent the max number of colors on each axis
-					4,
-					4
+					6,
+					6
 				));
 			}),
 			getColors(buffer, { type: image.getMIME() })
