@@ -337,20 +337,31 @@ export default class IllustrationRepository {
 		buffer: Buffer,
 		where: ReleaseQueryParameters.WhereInput
 	): Promise<ReleaseIllustration> {
-		const release = await this.releaseService.get(where);
-		const releaseIllustrationPath = this.getPlaylistIllustrationPath(release.slug);
+		const release = await this.releaseService.get(where, { album: true });
+		const artist = release.album.artistId
+			? await this.artistService.get({ id: release.album.artistId })
+			: null;
+		const releaseIllustrationPath = this.getReleaseIllustrationPath(
+			artist?.slug,
+			release.album.slug,
+			release.slug
+		);
 		const [blurhash, colors] = await this.illustrationService
 			.getIllustrationBlurHashAndColors(buffer);
 		const previousMainIllustration = await this.getReleaseIllustration(where);
 
 		this.illustrationService.saveIllustration(buffer, releaseIllustrationPath);
-		return this.prismaService.releaseIllustration.upsert({
-			create: {
+		if (previousMainIllustration) {
+			return this.prismaService.releaseIllustration.update({
+				where: { id: previousMainIllustration.id },
+				data: { blurhash, colors }
+			});
+		}
+		return this.prismaService.releaseIllustration.create({
+			data: {
 				blurhash, colors,
 				releaseId: release.id
-			},
-			where: { id: previousMainIllustration?.id },
-			update: { blurhash, colors }
+			}
 		});
 	}
 
