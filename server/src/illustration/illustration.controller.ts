@@ -2,7 +2,7 @@ import {
 	Body, Controller, Delete, Get, HttpStatus, Param, Post, Query, Response
 } from "@nestjs/common";
 import {
-	ApiOperation, ApiParam, ApiTags
+	ApiOperation, ApiParam, ApiPropertyOptional, ApiTags
 } from "@nestjs/swagger";
 import ArtistService from "src/artist/artist.service";
 import ReleaseService from "src/release/release.service";
@@ -34,6 +34,9 @@ import { IsNumber, IsOptional } from "class-validator";
 class DiscDto {
 	@IsNumber()
 	@IsOptional()
+	@ApiPropertyOptional({
+		description: 'If specified, get the disc-specific illustration.'
+	})
 	disc?: number;
 }
 
