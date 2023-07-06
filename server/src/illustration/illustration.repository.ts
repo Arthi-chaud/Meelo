@@ -210,7 +210,7 @@ export default class IllustrationRepository {
 			.then((res) => res.at(0) ?? null)
 			.then((value) => value && ({
 				...value,
-				url: '/illustrations/releases/' + value.releaseId
+				url: '/illustrations/releases/' + value.releaseId + (discIndex ? '/' + discIndex : '')
 			}));
 	}
 

@@ -29,6 +29,13 @@ import PlaylistQueryParameters from "src/playlist/models/playlist.query-paramete
 import IllustrationRepository from "./illustration.repository";
 import SongService from "src/song/song.service";
 import SongQueryParameters from "src/song/models/song.query-params";
+import { IsNumber, IsOptional } from "class-validator";
+
+class DiscDto {
+	@IsNumber()
+	@IsOptional()
+	disc?: number;
+}
 
 @ApiTags("Illustrations")
 @Controller('illustrations')
@@ -124,21 +131,28 @@ export class IllustrationController {
 		return this.getTrackIllustration(
 			dimensions,
 			{ id: master.id },
-			res
+			res,
 		);
 	}
 
 	@ApiOperation({
 		summary: "Get a release's illustration"
 	})
-	@Get('releases/:idOrSlug')
+	@ApiParam({
+		name: 'disc',
+		required: false
+	})
+	@Get('releases/:idOrSlug/:disc?')
 	async getReleaseIllustration(
 		@IdentifierParam(ReleaseService)
 		where: ReleaseQueryParameters.WhereInput,
 		@Query() dimensions: IllustrationDimensionsDto,
 		@Response({ passthrough: true }) res: Response,
+		@Param() disc?: DiscDto
 	) {
-		const illustration = await this.illustrationRepository.getReleaseIllustration(where);
+		const illustration = await this.illustrationRepository.getReleaseIllustration(
+			where, disc?.disc
+		);
 
 		if (!illustration) {
 			throw new NoIllustrationException("No Illustration registered for this release.");
