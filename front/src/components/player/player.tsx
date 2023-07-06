@@ -101,8 +101,8 @@ const Player = () => {
 		if (currentTrack) {
 			notification?.close();
 			document.title = `${currentTrack.track.name} - ${DefaultWindowTitle}`;
-			const newIllustrationURL = currentTrack.track.illustration
-				?? currentTrack.release.illustration;
+			const newIllustrationURL = currentTrack.track.illustration?.url
+				?? currentTrack.release.illustration?.url;
 
 			setIllustrationURL(newIllustrationURL);
 			const streamURL = API.getStreamURL(currentTrack.track.stream);

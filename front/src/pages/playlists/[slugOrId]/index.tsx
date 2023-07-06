@@ -102,7 +102,7 @@ type PlaylistEntryItemProps = {
 
 const PlaylistEntryItem = ({ entry, onClick }: PlaylistEntryItemProps) => (
 	<ListItem
-		icon={<Illustration url={entry.illustration} fallback={<Audiotrack/>}/>}
+		icon={<Illustration illustration={entry.illustration} fallback={<Audiotrack/>}/>}
 		title={entry.name}
 		onClick={onClick}
 		trailing={<SongContextualMenu song={entry} entryId={entry.entryId}/>}
@@ -175,7 +175,7 @@ const PlaylistPage = (
 
 	return <>
 		<RelationPageHeader
-			illustration={<Illustration url={playlist.data.illustration}/>}
+			illustration={<Illustration illustration={playlist.data.illustration}/>}
 			title={playlist.data.name}
 			trailing={<PlaylistContextualMenu playlist={playlist.data}/>}
 		/>

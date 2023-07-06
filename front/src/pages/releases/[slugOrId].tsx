@@ -119,7 +119,7 @@ const ReleasePage = (
 		>
 			<Grid container spacing={4} sx={{ justifyContent: 'center' }}>
 				<Grid item md={3} sm={5} xs={8}>
-					<Illustration url={release.data!.illustration}/>
+					<Illustration illustration={release.data!.illustration}/>
 				</Grid>
 				<Grid item container
 					sx={{
