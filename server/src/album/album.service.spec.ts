@@ -15,7 +15,6 @@ import IllustrationModule from "src/illustration/illustration.module";
 import GenreModule from "src/genre/genre.module";
 import TestPrismaService from "test/test-prisma.service";
 import { Album } from "src/prisma/models";
-import ArtistIllustrationService from "src/artist/artist-illustration.service";
 
 describe('Album Service', () => {
 	let albumService: AlbumService;
@@ -31,7 +30,7 @@ describe('Album Service', () => {
 		}).overrideProvider(PrismaService).useClass(TestPrismaService).compile();
 		dummyRepository = module.get(PrismaService);
 		await dummyRepository.onModuleInit();
-		module.get(ArtistIllustrationService).onModuleInit();
+		
 		artistService = module.get<ArtistService>(ArtistService);
 		albumService = module.get<AlbumService>(AlbumService);
 	})

@@ -93,7 +93,7 @@ const ArtistPage = (
 				sx={{ justifyContent: 'flex-start' }}>
 				<Grid item xs={5} sm={3}
 					lg={2}>
-					<Illustration url={artist.data!.illustration} style={{ objectFit: "cover" }} />
+					<Illustration illustration={artist.data?.illustration} style={{ objectFit: "cover" }} />
 				</Grid>
 				<Grid item xs sx={{ display: 'flex', alignItems: 'center', overflow: 'hidden' }}>
 					<Typography variant='h3' fontWeight='bold'>{artist.data!.name}</Typography>

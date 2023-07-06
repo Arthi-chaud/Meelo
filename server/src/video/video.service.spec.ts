@@ -11,7 +11,6 @@ import IllustrationModule from "src/illustration/illustration.module";
 import GenreModule from "src/genre/genre.module";
 import TestPrismaService from "test/test-prisma.service";
 import { LyricsModule } from "src/lyrics/lyrics.module";
-import ArtistIllustrationService from "src/artist/artist-illustration.service";
 import VideoService from "./video.service";
 import VideoModule from "./video.module";
 
@@ -27,7 +26,7 @@ describe('Song Service', () => {
 		}).overrideProvider(PrismaService).useClass(TestPrismaService).compile();
 		dummyRepository = module.get(PrismaService);
 		videoService = module.get(VideoService);
-		module.get(ArtistIllustrationService).onModuleInit();
+		
 		await dummyRepository.onModuleInit();
 	});
 

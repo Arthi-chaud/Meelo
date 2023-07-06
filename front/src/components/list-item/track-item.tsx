@@ -27,7 +27,7 @@ const TrackItem = ({ track }: TrackItemProps) => {
 
 	return (
 		<ListItem
-			icon={<Illustration url={track.illustration} fallback={<AudiotrackIcon/>}/>}
+			icon={<Illustration illustration={track.illustration} fallback={<AudiotrackIcon/>}/>}
 			onClick={() => queryClient
 				.fetchQuery(API.getSong(track.songId, ["artist"]))
 				.then((song) => {

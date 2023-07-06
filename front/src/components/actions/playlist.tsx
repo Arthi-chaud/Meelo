@@ -180,7 +180,10 @@ const SelectPlaylistForm = (props: SelectPlaylistFormProps) => {
 				query={props.playlistQuery}
 				render={(item: Playlist) => <ListItem
 					title={item.name}
-					icon={<Illustration url={item.illustration} fallback={<QueueMusic />} />}
+					icon={<Illustration
+						illustration={item.illustration}
+						fallback={<QueueMusic />}
+					/>}
 					onClick={() => {
 						props.onSubmit(item.id);
 						props.onClose();

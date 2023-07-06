@@ -16,7 +16,7 @@ type PlaylistItemProps = {
 const PlaylistItem = ({ playlist }: PlaylistItemProps) => {
 	return <ListItem
 		icon={<Illustration
-			url={playlist.illustration}
+			illustration={playlist.illustration}
 			style={{ objectFit: "cover" }}
 			fallback={<QueueMusic />} />
 		}

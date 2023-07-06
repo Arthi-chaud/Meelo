@@ -31,8 +31,8 @@ import compilationAlbumArtistKeyword from 'src/utils/compilation';
 import { parseIdentifierSlugs } from 'src/identifier/identifier.parse-slugs';
 import Identifier from 'src/identifier/models/identifier';
 import Logger from 'src/logger/logger';
-import ReleaseIllustrationService from './release-illustration.service';
 import { PrismaError } from 'prisma-error-enum';
+import IllustrationRepository from 'src/illustration/illustration.repository';
 
 @Injectable()
 export default class ReleaseService extends RepositoryService<
@@ -57,7 +57,7 @@ export default class ReleaseService extends RepositoryService<
 		private albumService: AlbumService,
 		@Inject(forwardRef(() => FileService))
 		private fileService: FileService,
-		private releaseIllustrationService: ReleaseIllustrationService,
+		private illustrationRepository: IllustrationRepository
 	) {
 		super(prismaService.release);
 	}
@@ -303,10 +303,7 @@ export default class ReleaseService extends RepositoryService<
 	 * @param where Query parameters to find the release to delete
 	 */
 	async delete(where: ReleaseQueryParameters.DeleteInput): Promise<Release> {
-		const illustrationFolder = await this.releaseIllustrationService
-			.getIllustrationFolderPath(where);
-
-		this.releaseIllustrationService.deleteIllustrationFolder(illustrationFolder);
+		await this.illustrationRepository.deleteReleaseIllustration(where, { withFolder: true });
 		return super.delete(where).then((deleted) => {
 			this.logger.warn(`Release '${deleted.slug}' deleted`);
 			return deleted;
@@ -373,19 +370,26 @@ export default class ReleaseService extends RepositoryService<
 			releaseWhere
 		);
 
-		this.releaseIllustrationService.reassignIllustrationFolder(
-			new Slug(release.slug),
-			new Slug(oldAlbum.slug),
-			new Slug(newParent.slug),
-			oldAlbum.artist ? new Slug(oldAlbum.artist.slug) : undefined,
-			newParent.artist ? new Slug(newParent.artist.slug) : undefined,
+		this.illustrationRepository.reassignReleaseIllustration(
+			release.slug,
+			oldAlbum.slug,
+			newParent.slug,
+			oldAlbum.artist?.slug ?? undefined,
+			newParent.artist?.slug ?? undefined,
 		);
 		return updatedRelease;
 	}
 
 	async pipeArchive(where: ReleaseQueryParameters.WhereInput, res: Response) {
-		const release = await this.get(where, { tracks: true });
-		const illustration = await this.releaseIllustrationService.getIllustrationPath(where);
+		const release = await this.prismaService.release
+			.findFirstOrThrow({
+				where: this.formatWhereInput(where),
+				include: { tracks: true, album: { include: { artist: true } } }
+			})
+			.catch(async (err) => {
+				throw await this.onNotFound(err, where);
+			});
+		const illustration = await this.illustrationRepository.getReleaseIllustration(where);
 		const archive = archiver('zip');
 		const outputName = `${release.slug}.zip`;
 
@@ -396,8 +400,23 @@ export default class ReleaseService extends RepositoryService<
 		).then((paths) => paths.forEach((path) => {
 			archive.append(createReadStream(path), { name: basename(path) });
 		}));
-		if (this.releaseIllustrationService.illustrationExists(illustration)) {
-			archive.append(createReadStream(illustration), { name: basename(illustration) });
+		if (illustration) {
+			const illustrationPath = illustration.disc == null
+				? this.illustrationRepository.getDiscIllustrationPath(
+					release.album.artist?.slug,
+					release.album.slug,
+					release.slug
+				)
+				: this.illustrationRepository.getDiscIllustrationPath(
+					release.album.artist?.slug,
+					release.album.slug,
+					release.slug,
+					illustration.disc
+				);
+
+			archive.append(
+				createReadStream(illustrationPath), { name: basename(illustrationPath) }
+			);
 		}
 
 		res.set({

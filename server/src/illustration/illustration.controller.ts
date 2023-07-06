@@ -2,7 +2,7 @@ import {
 	Body, Controller, Delete, Get, HttpStatus, Param, Post, Query, Response
 } from "@nestjs/common";
 import {
-	ApiOperation, ApiParam, ApiTags
+	ApiOperation, ApiParam, ApiPropertyOptional, ApiTags
 } from "@nestjs/swagger";
 import ArtistService from "src/artist/artist.service";
 import ReleaseService from "src/release/release.service";
@@ -17,14 +17,8 @@ import IdentifierParam from "src/identifier/identifier.pipe";
 import ArtistQueryParameters from 'src/artist/models/artist.query-parameters';
 import TrackQueryParameters from 'src/track/models/track.query-parameters';
 import ReleaseQueryParameters from 'src/release/models/release.query-parameters';
-import ArtistIllustrationService from "src/artist/artist-illustration.service";
-import ReleaseIllustrationService from "src/release/release-illustration.service";
-import TrackIllustrationService from "src/track/track-illustration.service";
 import { parse } from 'path';
-import Slug from "src/slug/slug";
-import { NoReleaseIllustrationException, NoTrackIllustrationException } from "./illustration.exceptions";
-import SongService from "src/song/song.service";
-import SongQueryParameters from "src/song/models/song.query-params";
+import { NoIllustrationException } from "./illustration.exceptions";
 import ProviderIllustrationService from "src/providers/provider-illustration.service";
 import ProviderService from "src/providers/provider.service";
 import ProvidersSettings from "src/providers/models/providers.settings";
@@ -32,19 +26,30 @@ import { UnknownProviderError } from "src/providers/provider.exception";
 import { MeeloException } from "src/exceptions/meelo-exception";
 import PlaylistService from "src/playlist/playlist.service";
 import PlaylistQueryParameters from "src/playlist/models/playlist.query-parameters";
-import PlaylistIllustrationService from "src/playlist/playlist-illustration.service";
+import IllustrationRepository from "./illustration.repository";
+import SongService from "src/song/song.service";
+import SongQueryParameters from "src/song/models/song.query-params";
+import { IsNumber, IsOptional } from "class-validator";
+
+class DiscDto {
+	@IsNumber()
+	@IsOptional()
+	@ApiPropertyOptional({
+		description: 'If specified, get the disc-specific illustration.'
+	})
+	disc?: number;
+}
 
 @ApiTags("Illustrations")
 @Controller('illustrations')
 export class IllustrationController {
 	constructor(
 		private illustrationService: IllustrationService,
-		private releaseIllustrationService: ReleaseIllustrationService,
-		private trackIllustrationService: TrackIllustrationService,
-		private artistIllustrationService: ArtistIllustrationService,
-		private playlistIllustrationService: PlaylistIllustrationService,
-		private trackService: TrackService,
+		private artistService: ArtistService,
 		private releaseService: ReleaseService,
+		private trackService: TrackService,
+		private playlistService: PlaylistService,
+		private illustrationRepository: IllustrationRepository,
 		private providerIllustrationService: ProviderIllustrationService,
 		private providerService: ProviderService
 	) {}
@@ -60,15 +65,24 @@ export class IllustrationController {
 		@Response({ passthrough: true })
 		res: Response,
 	) {
-		const artistIllustration = await this.artistIllustrationService
-			.getIllustrationPath(where);
+		const artist = await this.artistService.get(where, { illustration: true });
+		const artistIllustrationPath = this.illustrationRepository
+			.getArtistIllustrationPath(artist.slug);
 
+		if (!artist.illustration) {
+			throw new NoIllustrationException("No Illustration registered for artist " + artist.slug);
+		}
 		return this.illustrationService.streamIllustration(
-			artistIllustration,
-			parse(parse(artistIllustration).dir).name,
+			artistIllustrationPath,
+			parse(parse(artistIllustrationPath).dir).name,
 			dimensions,
 			res
-		);
+		).catch((err) => {
+			if (err instanceof NoIllustrationException) {
+				this.illustrationRepository.deleteArtistIllustration(where, { withFolder: false });
+			}
+			throw new NoIllustrationException("No Illustration registered for artist " + artist.slug);
+		});
 	}
 
 	@ApiOperation({
@@ -81,13 +95,9 @@ export class IllustrationController {
 		where: ArtistQueryParameters.WhereInput,
 		@Body() illustrationDto: IllustrationDownloadDto
 	) {
-		const artistIllustration = await this.artistIllustrationService
-			.getIllustrationPath(where);
-
 		return this.illustrationService.downloadIllustration(
-			illustrationDto.url,
-			artistIllustration
-		);
+			illustrationDto.url
+		).then((buffer) => this.illustrationRepository.createArtistIllustration(buffer, where));
 	}
 
 	@ApiOperation({
@@ -124,41 +134,46 @@ export class IllustrationController {
 		return this.getTrackIllustration(
 			dimensions,
 			{ id: master.id },
-			res
+			res,
 		);
 	}
 
 	@ApiOperation({
 		summary: "Get a release's illustration"
 	})
-	@Get('releases/:idOrSlug')
+	@ApiParam({
+		name: 'disc',
+		required: false
+	})
+	@Get('releases/:idOrSlug/:disc?')
 	async getReleaseIllustration(
 		@IdentifierParam(ReleaseService)
 		where: ReleaseQueryParameters.WhereInput,
 		@Query() dimensions: IllustrationDimensionsDto,
 		@Response({ passthrough: true }) res: Response,
+		@Param() disc?: DiscDto
 	) {
-		const illustrationPath = await this.releaseIllustrationService
-			.getIllustrationPath(where);
-
-		if (this.releaseIllustrationService.illustrationExists(illustrationPath)) {
-			return this.illustrationService.streamIllustration(
-				illustrationPath,
-				parse(parse(illustrationPath).dir).name,
-				dimensions,
-				res
-			);
-		}
-		const release = await this.releaseService.get(where, { album: true });
-		const firstTrack = await this.trackService.getPlaylist(where)
-			.then((tracklist) => tracklist.at(0));
-
-		if (firstTrack) {
-			return this.getTrackIllustration(dimensions, { id: firstTrack.id }, res);
-		}
-		throw new NoReleaseIllustrationException(
-			new Slug(release.album.slug), new Slug(release.slug)
+		const illustration = await this.illustrationRepository.getReleaseIllustration(
+			where, disc?.disc
 		);
+
+		if (!illustration) {
+			throw new NoIllustrationException("No Illustration registered for this release.");
+		}
+		const illustrationPath = await this.illustrationRepository
+			.resolveReleaseIllustrationPath(illustration);
+
+		return this.illustrationService.streamIllustration(
+			illustrationPath,
+			parse(parse(illustrationPath).dir).name,
+			dimensions,
+			res
+		).catch(() => {
+			this.illustrationRepository.deleteReleaseIllustration(
+				where, { withFolder: false }, illustration.disc
+			);
+			throw new NoIllustrationException("No Illustration registered for this release.");
+		});
 	}
 
 	@ApiOperation({
@@ -171,12 +186,9 @@ export class IllustrationController {
 		where: ReleaseQueryParameters.WhereInput,
 		@Body()	illustrationDto: IllustrationDownloadDto
 	) {
-		const path = await this.releaseIllustrationService.getIllustrationPath(where);
+		const buffer = await this.illustrationService.downloadIllustration(illustrationDto.url);
 
-		return this.illustrationService.downloadIllustration(
-			illustrationDto.url,
-			path
-		);
+		await this.illustrationRepository.createReleaseIllustration(buffer, where);
 	}
 
 	@ApiOperation({
@@ -190,32 +202,47 @@ export class IllustrationController {
 		@Response({ passthrough: true }) res: Response,
 	) {
 		const track = await this.trackService.get(where, { song: true });
-		const [trackIdentifiers, releaseIdentifier] = await Promise.all([
-			this.trackIllustrationService
-				.formatWhereInputToIdentifiers(where),
-			this.releaseIllustrationService
-				.formatWhereInputToIdentifiers({ id: track.releaseId }),
-		]);
-		const trackIllustrationPath = this.trackIllustrationService
-			.buildIllustrationPath(...trackIdentifiers);
-		const discIllustrationPath = this.trackIllustrationService
-			.buildDiscIllustrationPath(...trackIdentifiers);
-		const releaseIllustrationPath = this.releaseIllustrationService
-			.buildIllustrationPath(...releaseIdentifier);
+		const [
+			__,
+			___,
+			discIllustrationPath,
+			trackIllustrationPath
+		] = await this.illustrationRepository.getTrackIllustrationPaths(where);
+		const illustration = await this.illustrationRepository.getTrackIllustration(where);
 
-		for (const illustrationPath of
-			[trackIllustrationPath, discIllustrationPath, releaseIllustrationPath]
-		) {
-			if (this.trackIllustrationService.illustrationExists(illustrationPath)) {
+		if (!illustration) {
+			throw new NoIllustrationException("No Illustration registered for this track.");
+		}
+		if (illustration.url.includes('/tracks/')) { // Cheap trick to know if track or release illustration
+			return this.illustrationService.streamIllustration(
+				trackIllustrationPath,
+				track.song.slug,
+				dimensions,
+				res
+			).catch(() => {
+				this.illustrationRepository.deleteTrackIllustration(where);
+				throw new NoIllustrationException("No Illustration registered for this track.");
+			});
+		} else if (track.discIndex !== null) {
+			const discIllustration = await this.illustrationRepository.getReleaseIllustration(
+				{ id: track.releaseId }, track.discIndex
+			);
+
+			if (discIllustration) {
 				return this.illustrationService.streamIllustration(
-					illustrationPath,
+					discIllustrationPath,
 					track.song.slug,
 					dimensions,
 					res
-				);
+				).catch(() => {
+					this.illustrationRepository.deleteReleaseIllustration(
+						{ id: track.releaseId }, { withFolder: false }, track.discIndex
+					);
+					throw new NoIllustrationException("No Illustration registered for this track.");
+				});
 			}
 		}
-		throw new NoTrackIllustrationException(track.id);
+		return this.getReleaseIllustration({ id: track.releaseId }, dimensions, res);
 	}
 
 	@ApiOperation({
@@ -228,12 +255,11 @@ export class IllustrationController {
 		@IdentifierParam(TrackService)
 		where: TrackQueryParameters.WhereInput
 	) {
-		const trackIllustrationPath = await this.trackIllustrationService
-			.getIllustrationPath(where);
+		const buffer = await this.illustrationService.downloadIllustration(illustrationDto.url);
 
-		return this.illustrationService.downloadIllustration(
-			illustrationDto.url,
-			trackIllustrationPath
+		return this.illustrationRepository.createTrackIllustration(
+			buffer,
+			where
 		);
 	}
 
@@ -246,10 +272,9 @@ export class IllustrationController {
 		@IdentifierParam(TrackService)
 		where: TrackQueryParameters.WhereInput,
 	) {
-		const trackIllustrationPath = await this.trackIllustrationService
-			.getIllustrationFolderPath(where);
-
-		this.trackIllustrationService.deleteIllustrationFolder(trackIllustrationPath);
+		await this.illustrationRepository.deleteTrackIllustration(
+			where
+		);
 	}
 
 	@ApiOperation({
@@ -261,10 +286,9 @@ export class IllustrationController {
 		@IdentifierParam(ReleaseService)
 		where: ReleaseQueryParameters.WhereInput,
 	) {
-		const releaseIllustrationPath = await this.releaseIllustrationService
-			.getIllustrationFolderPath(where);
-
-		this.trackIllustrationService.deleteIllustrationFolder(releaseIllustrationPath);
+		await this.illustrationRepository.deleteReleaseIllustration(
+			where, { withFolder: false }
+		);
 	}
 
 	@ApiOperation({
@@ -276,10 +300,9 @@ export class IllustrationController {
 		@IdentifierParam(ArtistService)
 		where: ArtistQueryParameters.WhereInput,
 	) {
-		const artistIllustration = await this.artistIllustrationService
-			.getIllustrationFolderPath(where);
-
-		this.artistIllustrationService.deleteIllustrationFolder(artistIllustration);
+		await this.illustrationRepository.deleteArtistIllustration(
+			where, { withFolder: false }
+		);
 	}
 
 	@ApiOperation({
@@ -333,15 +356,25 @@ export class IllustrationController {
 		@Response({ passthrough: true })
 		res: Response,
 	) {
-		const playlistIllustration = await this.playlistIllustrationService
-			.getIllustrationPath(where);
+		const playlistIllustration = await this.illustrationRepository
+			.getPlaylistIllustration(where);
+
+		if (!playlistIllustration) {
+			throw new NoIllustrationException("No Illustration registered for this playlist.");
+		}
+		const playlist = await this.playlistService.get(where);
+		const playlistIllustrationPath = this.illustrationRepository
+			.getPlaylistIllustrationPath(playlist.slug);
 
 		return this.illustrationService.streamIllustration(
-			playlistIllustration,
-			parse(parse(playlistIllustration).dir).name,
+			playlistIllustrationPath,
+			parse(parse(playlistIllustrationPath).dir).name,
 			dimensions,
 			res
-		);
+		).catch(() => {
+			this.illustrationRepository.deletePlaylistIllustration(where);
+			throw new NoIllustrationException("No Illustration registered for this playlist.");
+		});
 	}
 
 	@ApiOperation({
@@ -354,11 +387,11 @@ export class IllustrationController {
 		where: PlaylistQueryParameters.WhereInput,
 		@Body()	illustrationDto: IllustrationDownloadDto
 	) {
-		const path = await this.playlistIllustrationService.getIllustrationPath(where);
+		const buffer = await this.illustrationService.downloadIllustration(illustrationDto.url);
 
-		return this.illustrationService.downloadIllustration(
-			illustrationDto.url,
-			path
+		return this.illustrationRepository.createPlaylistIllustration(
+			buffer,
+			where
 		);
 	}
 }

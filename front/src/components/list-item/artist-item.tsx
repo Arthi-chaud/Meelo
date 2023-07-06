@@ -17,7 +17,7 @@ const ArtistItem = ({ artist }: ArtistItemProps) => {
 	return (
 		<ListItem
 			icon={<Illustration
-				url={artist.illustration}
+				illustration={artist.illustration}
 				style={{ objectFit: "cover" }}
 				fallback={<AccountCircle/>}/>
 			}

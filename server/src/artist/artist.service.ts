@@ -1,6 +1,4 @@
-import {
-	Inject, Injectable, forwardRef
-} from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import Slug from 'src/slug/slug';
 import {
 	ArtistAlreadyExistsException,
@@ -23,9 +21,9 @@ import compilationAlbumArtistKeyword from 'src/utils/compilation';
 import { parseIdentifierSlugs } from 'src/identifier/identifier.parse-slugs';
 import Identifier from 'src/identifier/models/identifier';
 import Logger from 'src/logger/logger';
-import ArtistIllustrationService from './artist-illustration.service';
 import { PrismaError } from 'prisma-error-enum';
 import AlbumService from 'src/album/album.service';
+import IllustrationRepository from 'src/illustration/illustration.repository';
 
 @Injectable()
 export default class ArtistService extends RepositoryService<
@@ -46,8 +44,7 @@ export default class ArtistService extends RepositoryService<
 	private readonly logger = new Logger(ArtistService.name);
 	constructor(
 		private prismaService: PrismaService,
-		@Inject(forwardRef(() => ArtistIllustrationService))
-		private artistIllustrationService: ArtistIllustrationService,
+		private illustrationRepository: IllustrationRepository,
 	) {
 		super(prismaService.artist);
 	}
@@ -194,12 +191,11 @@ export default class ArtistService extends RepositoryService<
 	 * @param where the query parameters to find the album to delete
 	 */
 	async delete(where: ArtistQueryParameters.DeleteInput): Promise<Artist> {
-		const deletedArtist = await super.delete(where);
-		const illustrationPath = this.artistIllustrationService.buildIllustrationFolderPath(
-			new Slug(deletedArtist.slug)
+		await this.illustrationRepository.deleteArtistIllustration(
+			where, { withFolder: true }
 		);
+		const deletedArtist = await super.delete(where);
 
-		this.artistIllustrationService.deleteIllustrationFolder(illustrationPath);
 		this.logger.warn(`Artist '${deletedArtist.slug}' deleted`);
 		return deletedArtist;
 	}

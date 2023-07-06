@@ -14,7 +14,7 @@ const ReleaseTile = (props: {
 		subtitle={props.formatSubtitle?.call(this, props.release)
 			?? getYear(props.release.releaseDate)?.toString()}
 		href={`/releases/${props.release.id}`}
-		illustration={<Illustration url={props.release.illustration}/>}
+		illustration={<Illustration illustration={props.release.illustration}/>}
 	/>;
 };
 

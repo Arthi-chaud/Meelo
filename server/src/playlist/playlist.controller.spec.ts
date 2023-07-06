@@ -10,6 +10,7 @@ import { Playlist } from "@prisma/client";
 import { expectedPlaylistEntryResponse, expectedPlaylistResponse } from "test/expected-responses";
 import request from "supertest";
 import PlaylistService from "./playlist.service";
+import IllustrationModule from "src/illustration/illustration.module";
 
 describe('Playlist Controller', () => {
 	let app: INestApplication;
@@ -20,7 +21,7 @@ describe('Playlist Controller', () => {
 
 	beforeAll(async () => {
 		module = await createTestingModule({
-			imports: [PlaylistModule, PrismaModule]
+			imports: [IllustrationModule, PlaylistModule, PrismaModule]
 		}).overrideProvider(PrismaService).useClass(TestPrismaService).compile();
 		dummyRepository = module.get(PrismaService);
 		playlistService = module.get(PlaylistService)
@@ -321,4 +322,26 @@ describe('Playlist Controller', () => {
 				.expect(404)
 		});
 	});
+
+	describe("Playlist Illustration", () => {
+		it("Should return the illustration", async () => {
+			const illustration = await dummyRepository.playlistIllustration.create({
+				data: { playlistId: dummyRepository.playlist3.id, blurhash: 'A', colors: ['B'] }
+			});
+			return request(app.getHttpServer())
+				.get(`/playlists/${dummyRepository.playlist3.id}`)
+				.expect(200)
+				.expect((res) => {
+					const playlist: Playlist = res.body;
+					expect(playlist).toStrictEqual({
+						...playlist,
+						illustration: {
+							...illustration,
+							url: '/illustrations/playlists/' + dummyRepository.playlist3.slug
+						}
+					});
+				});
+
+		});
+	})
 })

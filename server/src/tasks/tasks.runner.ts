@@ -17,8 +17,6 @@ import IllustrationService from 'src/illustration/illustration.service';
 import LibraryService from 'src/library/library.service';
 import Logger from 'src/logger/logger';
 import SettingsService from 'src/settings/settings.service';
-import TrackIllustrationService from 'src/track/track-illustration.service';
-import FfmpegService from 'src/ffmpeg/ffmpeg.service';
 import { MeeloException, NotFoundException } from 'src/exceptions/meelo-exception';
 import SongService from 'src/song/song.service';
 import ReleaseService from 'src/release/release.service';
@@ -27,8 +25,8 @@ import ArtistService from 'src/artist/artist.service';
 import GenreService from 'src/genre/genre.service';
 import ExternalIdService from 'src/providers/external-id.provider';
 import { LyricsService } from 'src/lyrics/lyrics.service';
-import ArtistIllustrationService from 'src/artist/artist-illustration.service';
 import PlaylistService from 'src/playlist/playlist.service';
+import IllustrationRepository from 'src/illustration/illustration.repository';
 
 export const TaskQueue = 'task-queue';
 
@@ -42,14 +40,12 @@ export default class TaskRunner {
 		private fileService: FileService,
 		@Inject(forwardRef(() => TrackService))
 		private trackService: TrackService,
-		private trackIllustrationService: TrackIllustrationService,
 		@Inject(forwardRef(() => MetadataService))
 		private metadataService: MetadataService,
 		@Inject(forwardRef(() => LibraryService))
 		private libraryService: LibraryService,
-		@Inject(forwardRef(() => IllustrationService))
-		private illustrationService: IllustrationService,
-		private ffmpegService: FfmpegService,
+		@Inject(forwardRef(() => IllustrationRepository))
+		private illustrationRepository: IllustrationRepository,
 		@Inject(forwardRef(() => SongService))
 		private songService: SongService,
 		@Inject(forwardRef(() => ReleaseService))
@@ -63,9 +59,7 @@ export default class TaskRunner {
 		private externalIdService: ExternalIdService,
 		private lyricsService: LyricsService,
 		@Inject(forwardRef(() => PlaylistService))
-		private playlistService: PlaylistService,
-		@Inject(forwardRef(() => ArtistIllustrationService))
-		private artistIllustrationService: ArtistIllustrationService,
+		private playlistService: PlaylistService
 	) { }
 
 	@OnQueueError()
@@ -150,6 +144,7 @@ export default class TaskRunner {
 
 		const candidates = unfilteredCandidates
 			.filter((candidatePath) => {
+				// Removing cover.jpg files from candidates
 				return candidatePath.match(`/${IllustrationService.SOURCE_ILLUSTRATON_FILE}$`) == null;
 			})
 			.filter((candidatePath) => {
@@ -293,8 +288,8 @@ export default class TaskRunner {
 	/**
 	 * Fetch Missing External Illustrations from providers
 	 */
-	private async fetchExternalIllustrations(): Promise<void> {
-		await this.artistIllustrationService.downloadMissingIllustrations();
+	private fetchExternalIllustrations(): Promise<void> {
+		return this.illustrationRepository.downloadMissingArtistIllustrations();
 	}
 
 	/**
@@ -321,20 +316,15 @@ export default class TaskRunner {
 		try {
 			const track = await this.metadataService.registerMetadata(fileMetadata, registeredFile);
 
-			this.illustrationService.extractTrackIllustration(track, fullFilePath)
-				.catch(() => { })
-				.then(async () => {
+			this.illustrationRepository.registerTrackFileIllustration(
+				{ id: track.id }, fullFilePath
+			)
+				.catch(() => {})
+				.then(() => {
 					if (track.type == 'Video') {
-						const illustrationPath = await this.trackIllustrationService
-							.getIllustrationPath(
-								{ id: track.id }
-							);
-
-						if (!this.trackIllustrationService.illustrationExists(illustrationPath)) {
-							this.ffmpegService.takeVideoScreenshot(
-								fullFilePath, illustrationPath
-							);
-						}
+						this.illustrationRepository
+							.registerVideoTrackScreenshot({ id: track.id }, fullFilePath)
+							.catch(() => {});
 					}
 				});
 		} catch (err) {

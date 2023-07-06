@@ -13,10 +13,6 @@ import IllustrationService from "./illustration.service";
 import IllustrationModule from "./illustration.module";
 import * as fs from 'fs';
 import TestPrismaService from "test/test-prisma.service";
-import Jimp from 'jimp';
-import { FileDoesNotExistException } from "src/file-manager/file-manager.exceptions";
-import { FileParsingException } from "src/metadata/metadata.exceptions";
-import ArtistIllustrationService from "src/artist/artist-illustration.service";
 import ProvidersModule from "src/providers/providers.module";
 
 jest.setTimeout(120000);
@@ -30,6 +26,7 @@ describe('Illustration Service', () => {
 
 	let module: TestingModule;
 	beforeAll(async () => {
+		fs.rm('test/assets/metadata', { recursive: true, force: true }, () => {})
 		module = await createTestingModule({
 			imports: [HttpModule, FileManagerModule, IllustrationModule, PrismaModule, ArtistModule, MetadataModule, SettingsModule, ProvidersModule],
 		}).overrideProvider(PrismaService).useClass(TestPrismaService).compile();
@@ -37,7 +34,7 @@ describe('Illustration Service', () => {
 		releaseService = module.get<ReleaseService>(ReleaseService);
 		albumService = module.get<AlbumService>(AlbumService);
 		dummyRepository = module.get(PrismaService);
-		module.get(ArtistIllustrationService).onModuleInit();
+		
 		await dummyRepository.onModuleInit();
 	});
 
@@ -90,70 +87,6 @@ describe('Illustration Service', () => {
 				expect(fs.readFileSync(outPath)).toStrictEqual(Buffer.from('ABC'));
 				expect(status).toBe('different-illustration');
 			});
-
-			it("should not extract illustration to matching folder, as the source file does not exist", async () => {
-				const test = () => illustrationService.extractTrackIllustration(dummyRepository.trackA1_1, 'trololol');
-				expect(test()).rejects.toThrow(FileDoesNotExistException);
-			});
-
-			it("should not extract illustration to matching folder, as the source file is not valid", async () => {
-				const test = () => illustrationService.extractTrackIllustration(dummyRepository.trackA1_1, 'test/assets/settings.json');
-				expect(test()).rejects.toThrow(FileParsingException);
-			});
-
-
-			it("should not extract illustration to matching folder, as illustration already exists", async () => {
-				const path = await illustrationService.extractTrackIllustration(dummyRepository.trackA1_1, 'test/assets/dreams.m4a');
-				expect(fs.existsSync(outPath)).toBe(true);
-				expect(fs.readFileSync(outPath)).toStrictEqual(Buffer.from('ABC'));
-				expect(path).toBe(null);
-			});
-
-			it("should not extract illustration to matching folder, as their is no embedded illustration", async () => {
-				fs.rmSync(outPath);
-				const path = await illustrationService.extractTrackIllustration(dummyRepository.trackA1_1, 'test/assets/dreams.m4a');
-				expect(fs.existsSync(outPath)).toBe(false);
-				expect(path).toBe(null);
-			});
-
-			let releaseIllustrationPath: string;
-			it("should extract illustration to release folder, mocking the illustration bytes", async () => {
-				jest.spyOn(IllustrationService.prototype as any, 'extractIllustrationFromFile').mockImplementationOnce(() => 'aaaaa' );
-				jest.spyOn(Jimp, 'read').mockImplementationOnce(() => <any>({ getBufferAsync: (_: any) => Buffer.from('ABCDE') }));
-				releaseIllustrationPath = (await illustrationService.extractTrackIllustration(dummyRepository.trackA1_1, 'test/assets/dreams.m4a'))!;
-				expect(releaseIllustrationPath).toBe('test/assets/metadata/my-artist/my-album/my-album-1/cover.jpg');
-				expect(fs.existsSync(releaseIllustrationPath)).toBe(true);
-				expect(fs.readFileSync(releaseIllustrationPath)).toStrictEqual(Buffer.from('ABCDE'));
-			});
-			let discIllustrationPath: string;
-			it("should extract illustration to disc folder, mocking the illustration bytes", async () => {
-				jest.spyOn(IllustrationService.prototype as any, 'extractIllustrationFromFile').mockImplementationOnce(() => 'aaaaa' );
-				jest.spyOn(Jimp, 'read').mockImplementationOnce(() => <any>({ getBufferAsync: (_: any) => Buffer.from('ABCDEF') }));
-				discIllustrationPath = (await illustrationService.extractTrackIllustration(dummyRepository.trackA1_1, 'test/assets/dreams.m4a'))!;
-				expect(discIllustrationPath).toBe('test/assets/metadata/my-artist/my-album/my-album-1/disc-1/cover.jpg');
-				expect(fs.existsSync(discIllustrationPath)).toBe(true);
-				expect(fs.readFileSync(discIllustrationPath)).toStrictEqual(Buffer.from('ABCDEF'));
-				expect(fs.existsSync(releaseIllustrationPath)).toBe(true);
-				expect(fs.readFileSync(releaseIllustrationPath)).toStrictEqual(Buffer.from('ABCDE'));
-				
-			});
-			let trackIllustrationPath: string;
-			it("should extract illustration to track folder, mocking the illustration bytes", async () => {
-				jest.spyOn(IllustrationService.prototype as any, 'extractIllustrationFromFile').mockImplementationOnce(() => 'aaaaa' );
-				jest.spyOn(Jimp, 'read').mockImplementationOnce(() => <any>({ getBufferAsync: (_: any) => Buffer.from('ABCDEFG') }));
-				trackIllustrationPath = (await illustrationService.extractTrackIllustration(dummyRepository.trackA1_1, 'test/assets/dreams.m4a'))!;
-				expect(trackIllustrationPath).toBe('test/assets/metadata/my-artist/my-album/my-album-1/disc-1/track-2/cover.jpg');
-				expect(fs.existsSync(trackIllustrationPath)).toBe(true);
-				expect(fs.readFileSync(trackIllustrationPath)).toStrictEqual(Buffer.from('ABCDEFG'));
-				expect(fs.existsSync(discIllustrationPath)).toBe(true);
-				expect(fs.readFileSync(discIllustrationPath)).toStrictEqual(Buffer.from('ABCDEF'));
-				expect(fs.existsSync(releaseIllustrationPath)).toBe(true);
-				expect(fs.readFileSync(releaseIllustrationPath)).toStrictEqual(Buffer.from('ABCDE'));
-				fs.rmSync(releaseIllustrationPath);
-				fs.rmSync(discIllustrationPath);
-				fs.rmSync(trackIllustrationPath);	
-			});
-
 		});
 	});
 });

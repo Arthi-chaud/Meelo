@@ -1,5 +1,5 @@
 import {
-	Button, Container, Divider, Fade, Grid, IconButton,
+	Button, Chip, Container, Divider, Fade, Grid, IconButton,
 	ListSubheader, Stack, Typography, useMediaQuery, useTheme
 } from "@mui/material";
 import { Box } from "@mui/system";
@@ -59,6 +59,16 @@ const RelatedContentSection = (props: RelatedContentSectionProps) => {
 	);
 };
 
+const ColorChips = (props: { colors: string[] }) => {
+	return <Grid container spacing={2} width="100%" justifyContent="center" wrap="nowrap">
+		{props.colors.map((color) => (
+			<Grid item key={`color-chid-${color}`}>
+				<Chip label="&nbsp;&nbsp;" size="small" style={{ backgroundColor: color }} />
+			</Grid>
+		))}
+	</Grid>;
+};
+
 const ReleasePage = (
 	{ releaseIdentifier }: InferSSRProps<typeof getServerSideProps>
 ) => {
@@ -75,6 +85,7 @@ const ReleasePage = (
 	const release = useQuery((id) => API.getRelease(id, ['album']), releaseIdentifier);
 	const artistId = useMemo(() => release.data?.album?.artistId, [release]);
 
+	const mainIllustrationColors = release.data?.illustration?.colors ?? [];
 	const album = useQuery((id) => API.getAlbum(id, ['externalIds']), release.data?.albumId);
 	const tracklist = useQuery((id) => API.getReleaseTrackList(id, ['song']), releaseIdentifier);
 	const albumGenres = useInfiniteQuery(API.getAlbumGenres, release.data?.albumId);
@@ -119,7 +130,7 @@ const ReleasePage = (
 		>
 			<Grid container spacing={4} sx={{ justifyContent: 'center' }}>
 				<Grid item md={3} sm={5} xs={8}>
-					<Illustration url={release.data!.illustration}/>
+					<Illustration illustration={release.data!.illustration}/>
 				</Grid>
 				<Grid item container
 					sx={{
@@ -231,6 +242,9 @@ const ReleasePage = (
 							/>
 						</Box></Fade>
 					}
+				</Grid>
+				<Grid item xs sx={{ marginTop: 2 }}>
+					<ColorChips colors={mainIllustrationColors} />
 				</Grid>
 			</Grid>
 			<RelatedContentSection

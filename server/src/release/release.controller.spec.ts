@@ -385,5 +385,27 @@ describe('Release Controller', () => {
 		});
 	});
 
+	describe("Release Illustration", () => {
+		it("Should return the illustration", async () => {
+			const illustration = await dummyRepository.releaseIllustration.create({
+				data: { releaseId: dummyRepository.releaseA1_2.id, blurhash: 'A', colors: ['B'] }
+			});
+			return request(app.getHttpServer())
+				.get(`/releases/${dummyRepository.releaseA1_2.id}`)
+				.expect(200)
+				.expect((res) => {
+					const release: Release = res.body;
+					expect(release).toStrictEqual({
+						...release,
+						illustration: {
+							...illustration,
+							url: '/illustrations/releases/' + dummyRepository.releaseA1_2.id
+						}
+					});
+				});
+
+		});
+	});
+
 	
 });
