@@ -25,6 +25,7 @@ describe('Illustration Repository', () => {
 
 	let module: TestingModule;
 	beforeAll(async () => {
+		fs.rm('test/assets/metadata', { recursive: true, force: true }, () => {})
 		module = await createTestingModule({
 			imports: [HttpModule, FileManagerModule, IllustrationModule, PrismaModule, ArtistModule, MetadataModule, SettingsModule, ProvidersModule],
 		}).overrideProvider(PrismaService).useClass(TestPrismaService).compile();
