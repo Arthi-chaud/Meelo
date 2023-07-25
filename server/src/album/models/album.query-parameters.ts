@@ -47,7 +47,8 @@ namespace AlbumQueryParameters {
 		library: LibraryQueryParameters.WhereInput,
 		releaseDate: SearchDateInput,
 		genre: GenreQueryParameters.WhereInput,
-		type: AlbumType
+		type: AlbumType,
+		related: AlbumQueryParameters.WhereInput
 	}>>;
 
 	/**
