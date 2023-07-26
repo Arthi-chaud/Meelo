@@ -33,6 +33,7 @@ import PlaylistTile from "../../components/tile/playlist-tile";
 import ReleaseTile from "../../components/tile/release-tile";
 import SongGrid from "../../components/song-grid";
 import AlbumTile from "../../components/tile/album-tile";
+import getYear from "../../utils/getYear";
 
 export const getServerSideProps = prepareSSR((context) => {
 	const releaseIdentifier = getSlugOrId(context.params);
@@ -287,6 +288,7 @@ const ReleasePage = (
 						(otherAlbum, otherAlbumIndex) =>
 							<AlbumTile key={otherAlbumIndex}
 								album={otherAlbum}
+								formatSubtitle={(albumItem) => getYear(albumItem.releaseDate)?.toString() ?? ''}
 							/>
 					) ?? []
 				}/>
