@@ -172,7 +172,8 @@ const fr: TranslationMap = {
 	logout: 'Se Déconnecter',
 
 	appearsOn: "Apparaît sur",
-	featuredOnPlaylists: "Apparaît dans"
+	featuredOnPlaylists: "Apparaît dans",
+	bonusTracks: "Pistes Bonus"
 };
 
 export default fr;

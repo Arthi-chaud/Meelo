@@ -768,6 +768,25 @@ export default class API {
 	}
 
 	/**
+	 * Get B-Sides of a release
+	 */
+	static getReleaseBSides<I extends SongInclude>(
+		releaseSlugOrId: string | number,
+		include?: I[]
+	): InfiniteQuery<SongWithRelations<I>> {
+		return {
+			key: ['release', releaseSlugOrId, 'bsides', ...API.formatIncludeKeys(include)],
+			exec: () => API.fetch({
+				route: `/songs`,
+				errorMessage: "Release not found",
+				parameters: { include },
+				otherParameters: { bsides: releaseSlugOrId },
+				validator: PaginatedResponse(SongWithRelations(include ?? []))
+			})
+		};
+	}
+
+	/**
 	 * Get artist that appear on an album
 	 * @param albumSlugOrId the identifier of an album
 	 * @param include the fields to include in the fetched item

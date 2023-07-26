@@ -31,6 +31,7 @@ import Translate from "../../i18n/translate";
 import ArtistTile from "../../components/tile/artist-tile";
 import PlaylistTile from "../../components/tile/playlist-tile";
 import ReleaseTile from "../../components/tile/release-tile";
+import SongGrid from "../../components/song-grid";
 
 export const getServerSideProps = prepareSSR((context) => {
 	const releaseIdentifier = getSlugOrId(context.params);
@@ -92,6 +93,7 @@ const ReleasePage = (
 	const hasGenres = (albumGenres.data?.pages.at(0)?.items.length ?? 0) > 0;
 	const artists = useQuery(API.getArtistsOnAlbum, release.data?.albumId);
 	const albumVideos = useInfiniteQuery(API.getAlbumVideos, release.data?.albumId);
+	const bSides = useInfiniteQuery((id) => API.getReleaseBSides(id, ['artist']), release.data?.id);
 	const relatedReleases = useInfiniteQuery(API.getAlbumReleases, release.data?.albumId);
 	const relatedPlaylists = useInfiniteQuery(API.getAlbumPlaylists, release.data?.albumId);
 	const videos = useMemo(() => albumVideos.data?.pages.at(0)?.items, [albumVideos]);
@@ -247,6 +249,12 @@ const ReleasePage = (
 			<Box sx={{ padding: 2 }}>
 				<ColorChips colors={mainIllustrationColors} />
 			</Box>
+			<RelatedContentSection
+				display={(bSides.data?.pages.at(0)?.items?.length ?? 0) > 0}
+				title={<Translate translationKey="bonusTracks"/>}
+			>
+				<SongGrid songs={bSides.data?.pages.at(0)?.items ?? []} hideArtistName/>
+			</RelatedContentSection>
 			<RelatedContentSection
 				display={(relatedReleases.data?.pages.at(0)?.items?.length ?? 0) > 1}
 				title={<Translate translationKey="otherAlbumReleases"/>}

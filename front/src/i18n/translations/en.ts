@@ -183,7 +183,8 @@ const en = {
 	logout: 'Logout',
 
 	appearsOn: "Appears On",
-	featuredOnPlaylists: "Featured On"
+	featuredOnPlaylists: "Featured On",
+	bonusTracks: "Bonus Tracks"
 };
 
 export default en;
