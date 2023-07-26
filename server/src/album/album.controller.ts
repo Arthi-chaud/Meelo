@@ -75,6 +75,13 @@ class Selector extends IntersectionType(
 	})
 	@TransformIdentifier(LibraryService)
 	library?: LibraryQueryParameters.WhereInput;
+
+	@IsOptional()
+	@ApiPropertyOptional({
+		description: 'Get related albums (i.e. from the same album artist & have at least one song in common)'
+	})
+	@TransformIdentifier(AlbumService)
+	related?: AlbumQueryParameters.WhereInput;
 }
 
 @ApiTags("Albums")

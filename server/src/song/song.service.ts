@@ -3,7 +3,9 @@ import {
 } from '@nestjs/common';
 import ArtistService from 'src/artist/artist.service';
 import Slug from 'src/slug/slug';
-import { Prisma } from '@prisma/client';
+import {
+	AlbumType, Prisma, TrackType
+} from '@prisma/client';
 import PrismaService from 'src/prisma/prisma.service';
 import type SongQueryParameters from './models/song.query-params';
 import TrackService from 'src/track/track.service';
@@ -24,6 +26,9 @@ import {
 	SongNotFoundByIdException,
 	SongNotFoundException
 } from './song.exceptions';
+import AlbumService from 'src/album/album.service';
+import ReleaseQueryParameters from 'src/release/models/release.query-parameters';
+import ReleaseService from 'src/release/release.service';
 
 @Injectable()
 export default class SongService extends RepositoryService<
@@ -46,6 +51,8 @@ export default class SongService extends RepositoryService<
 		private prismaService: PrismaService,
 		@Inject(forwardRef(() => ArtistService))
 		private artistService: ArtistService,
+		@Inject(forwardRef(() => ReleaseService))
+		private releaseService: ReleaseService,
 		@Inject(forwardRef(() => TrackService))
 		private trackService: TrackService,
 		@Inject(forwardRef(() => GenreService))
@@ -358,6 +365,56 @@ export default class SongService extends RepositoryService<
 			where: {
 				artistId: artistId,
 				slug: { contains: new Slug(baseSongName).toString() }
+			},
+			orderBy: sort ? this.formatSortingInput(sort) : undefined,
+			include: RepositoryService.formatInclude(include),
+			...buildPaginationParameters(pagination)
+		});
+	}
+
+	/**
+	 * Get B-Sides songs of a release
+	 * @requires The release must be a StudioRecording Otherwise, returns an empty list
+	 */
+	async getReleaseBSides<I extends SongQueryParameters.RelationInclude>(
+		where: ReleaseQueryParameters.WhereInput,
+		pagination?: PaginationParameters,
+		include?: I,
+		sort?: SongQueryParameters.SortingParameter
+	) {
+		const { album, ...release } = await this.releaseService.get(where, { album: true });
+
+		if (album.type != AlbumType.StudioRecording) {
+			return [];
+		}
+		const relatedAlbums = await this.prismaService.album.findMany({
+			where: {
+				...AlbumService.formatManyWhereInput({ related: { id: release.albumId } }),
+				type: { in: [AlbumType.Single, AlbumType.StudioRecording] }
+			}
+		});
+
+		return this.prismaService.song.findMany({
+			where: {
+				tracks: { some: { release: { album: {
+					id: { in: relatedAlbums.map(({ id }) => id).concat(album.id) }
+				} } } },
+				AND: [
+					{ tracks: { none: {
+						release: { id: release.id }
+					} } },
+					{ tracks: { some: { type: TrackType.Audio } } },
+					{ slug: { not: { contains: '-mix' } } },
+					{ slug: { not: { contains: '-remix' } } },
+					{ slug: { not: { contains: '-edit' } } },
+					{ slug: { not: { contains: '-dub' } } },
+					{ slug: { not: { contains: '-version' } } },
+					{ slug: { not: { contains: '-bonus-beats' } } },
+					{ slug: { not: { contains: '-instrumental' } } },
+					{ slug: { not: { contains: '-vocal' } } },
+					{ slug: { not: { endsWith: '-live' } } },
+					{ slug: { not: { contains: '-live-' } } },
+				]
 			},
 			orderBy: sort ? this.formatSortingInput(sort) : undefined,
 			include: RepositoryService.formatInclude(include),

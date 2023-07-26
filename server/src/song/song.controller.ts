@@ -30,6 +30,8 @@ import GenreQueryParameters from 'src/genre/models/genre.query-parameters';
 import GenreService from 'src/genre/genre.service';
 import AlbumService from 'src/album/album.service';
 import AlbumQueryParameters from 'src/album/models/album.query-parameters';
+import ReleaseQueryParameters from 'src/release/models/release.query-parameters';
+import ReleaseService from 'src/release/release.service';
 
 export class Selector extends IntersectionType(SongQueryParameters.SortingParameter) {
 	@IsOptional()
@@ -65,6 +67,13 @@ export class Selector extends IntersectionType(SongQueryParameters.SortingParame
 		description: 'Search songs using a string token'
 	})
 	query?: string;
+
+	@IsOptional()
+	@ApiPropertyOptional({
+		description: 'Filter songs that are B-Sides of a release.\nThe release must be a studio recording, otherwise returns an  emtpy list'
+	})
+	@TransformIdentifier(ReleaseService)
+	bsides: ReleaseQueryParameters.WhereInput;
 }
 
 @ApiTags("Songs")
@@ -98,6 +107,13 @@ export class SongController {
 			return this.songService.search(
 				selector.query,
 				selector,
+				paginationParameters,
+				include,
+				selector
+			);
+		} else if (selector.bsides) {
+			return this.songService.getReleaseBSides(
+				selector.bsides,
 				paginationParameters,
 				include,
 				selector

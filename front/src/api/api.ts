@@ -768,6 +768,46 @@ export default class API {
 	}
 
 	/**
+	 * Get B-Sides of a release
+	 */
+	static getReleaseBSides<I extends SongInclude>(
+		releaseSlugOrId: string | number,
+		sort?: SortingParameters<typeof SongSortingKeys>,
+		include?: I[]
+	): InfiniteQuery<SongWithRelations<I>> {
+		return {
+			key: ['release', releaseSlugOrId, 'bsides', ...API.formatIncludeKeys(include)],
+			exec: () => API.fetch({
+				route: `/songs`,
+				errorMessage: "Release not found",
+				parameters: { include, sort },
+				otherParameters: { bsides: releaseSlugOrId },
+				validator: PaginatedResponse(SongWithRelations(include ?? []))
+			})
+		};
+	}
+
+	/**
+	 * Get B-Sides of a release
+	 */
+	static getRelatedAlbums<I extends AlbumInclude>(
+		albumSlugOrId: string | number,
+		sort?: SortingParameters<typeof AlbumSortingKeys>,
+		include?: I[]
+	): InfiniteQuery<AlbumWithRelations<I>> {
+		return {
+			key: ['album', albumSlugOrId, 'related', ...API.formatIncludeKeys(include)],
+			exec: () => API.fetch({
+				route: `/albums`,
+				errorMessage: "Album not found",
+				parameters: { include, sort },
+				otherParameters: { related: albumSlugOrId },
+				validator: PaginatedResponse(AlbumWithRelations(include ?? []))
+			})
+		};
+	}
+
+	/**
 	 * Get artist that appear on an album
 	 * @param albumSlugOrId the identifier of an album
 	 * @param include the fields to include in the fetched item

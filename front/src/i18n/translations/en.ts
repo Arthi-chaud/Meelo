@@ -183,7 +183,9 @@ const en = {
 	logout: 'Logout',
 
 	appearsOn: "Appears On",
-	featuredOnPlaylists: "Featured On"
+	featuredOnPlaylists: "Featured On",
+	bonusTracks: "Bonus Tracks",
+	relatedAlbums: "Related Albums"
 };
 
 export default en;

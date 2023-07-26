@@ -47,7 +47,9 @@ namespace AlbumQueryParameters {
 		library: LibraryQueryParameters.WhereInput,
 		releaseDate: SearchDateInput,
 		genre: GenreQueryParameters.WhereInput,
-		type: AlbumType
+		type: AlbumType,
+		// Get albums with a song in common. Does not include the given album
+		related: AlbumQueryParameters.WhereInput
 	}>>;
 
 	/**

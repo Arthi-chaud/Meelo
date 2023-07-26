@@ -19,6 +19,7 @@ import type SongQueryParameters from "./models/song.query-params";
 import { LyricsModule } from "src/lyrics/lyrics.module";
 import { LyricsService } from "src/lyrics/lyrics.service";
 import { LyricsNotFoundByIDException } from "src/lyrics/lyrics.exceptions";
+import ReleaseModule from "src/release/release.module";
 
 describe('Song Service', () => {
 	let songService: SongService;
@@ -30,7 +31,7 @@ describe('Song Service', () => {
 	let module: TestingModule;
 	beforeAll(async () => {
 		module = await createTestingModule({
-			imports: [PrismaModule, ArtistModule, TrackModule, AlbumModule, IllustrationModule, GenreModule, LyricsModule],
+			imports: [PrismaModule, ArtistModule, TrackModule, AlbumModule, IllustrationModule, GenreModule, LyricsModule, ReleaseModule],
 			providers: [SongService, ArtistService, PrismaService],
 		}).overrideProvider(PrismaService).useClass(TestPrismaService).compile();
 		dummyRepository = module.get(PrismaService);

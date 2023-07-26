@@ -128,6 +128,7 @@ export default class AlbumService extends RepositoryService<
 
 	static formatManyWhereInput(where: AlbumQueryParameters.ManyWhereInput) {
 		return {
+			NOT: where.related ? this.formatWhereInput(where.related) : undefined,
 			type: where.type,
 			artist: {
 				is: where.artist
@@ -140,7 +141,7 @@ export default class AlbumService extends RepositoryService<
 					: undefined
 			},
 			name: buildStringSearchParameters(where.name),
-			releases: where.library || where.genre || where.appearance ? {
+			releases: where.library || where.genre || where.appearance || where.related ? {
 				some: where.library
 					? ReleaseService.formatManyWhereInput({ library: where.library })
 					: where.genre
@@ -159,7 +160,24 @@ export default class AlbumService extends RepositoryService<
 									}
 								} }
 							}
-							: undefined
+							: where.related
+								? {
+									tracks: {
+										some: {
+											song: {
+												tracks: {
+													some: {
+														release: {
+															album:
+																this.formatWhereInput(where.related)
+														}
+													}
+
+												}
+											}
+										}
+									}
+								} : undefined
 			} : undefined
 		};
 	}
