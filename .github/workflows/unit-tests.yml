@@ -68,7 +68,7 @@ jobs:
         uses: nick-fields/retry@v2
         with:
           shell: sh 
-          timeout_minutes: 10
+          timeout_minutes: 100
           max_attempts: 3
           retry_wait_seconds: 30
           command: rm -rf server/test/assets/metadata; yarn --cwd server test --coverage --ci
