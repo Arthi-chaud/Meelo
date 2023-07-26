@@ -32,6 +32,7 @@ import ArtistTile from "../../components/tile/artist-tile";
 import PlaylistTile from "../../components/tile/playlist-tile";
 import ReleaseTile from "../../components/tile/release-tile";
 import SongGrid from "../../components/song-grid";
+import AlbumTile from "../../components/tile/album-tile";
 
 export const getServerSideProps = prepareSSR((context) => {
 	const releaseIdentifier = getSlugOrId(context.params);
@@ -93,7 +94,8 @@ const ReleasePage = (
 	const hasGenres = (albumGenres.data?.pages.at(0)?.items.length ?? 0) > 0;
 	const artists = useQuery(API.getArtistsOnAlbum, release.data?.albumId);
 	const albumVideos = useInfiniteQuery(API.getAlbumVideos, release.data?.albumId);
-	const bSides = useInfiniteQuery((id) => API.getReleaseBSides(id, ['artist']), release.data?.id);
+	const bSides = useInfiniteQuery((id) => API.getReleaseBSides(id, { sortBy: 'name' }, ['artist']), release.data?.id);
+	const relatedAlbums = useInfiniteQuery((id) => API.getRelatedAlbums(id, { sortBy: 'releaseDate' }, ['artist']), release.data?.albumId);
 	const relatedReleases = useInfiniteQuery(API.getAlbumReleases, release.data?.albumId);
 	const relatedPlaylists = useInfiniteQuery(API.getAlbumPlaylists, release.data?.albumId);
 	const videos = useMemo(() => albumVideos.data?.pages.at(0)?.items, [albumVideos]);
@@ -277,14 +279,17 @@ const ReleasePage = (
 				/>
 			</RelatedContentSection>
 			<RelatedContentSection
-				display={album.data.externalIds.length != 0}
-				title={<Translate translationKey="externalLinks"/>}
+				display={(relatedAlbums.data?.pages.at(0)?.items?.length ?? 0) > 0}
+				title={<Translate translationKey="relatedAlbums"/>}
 			>
-				<Stack spacing={2}>
-					{album.data.externalIds.map((externalId) =>
-						<ExternalIdBadge key={externalId.provider.name} externalId={externalId}/>)
-					}
-				</Stack>
+				<TileRow tiles={
+					relatedAlbums.data?.pages.at(0)?.items?.map(
+						(otherAlbum, otherAlbumIndex) =>
+							<AlbumTile key={otherAlbumIndex}
+								album={otherAlbum}
+							/>
+					) ?? []
+				}/>
 			</RelatedContentSection>
 			<RelatedContentSection
 				display={(featurings?.length ?? 0) != 0}
@@ -301,6 +306,16 @@ const ReleasePage = (
 				<TileRow tiles={playlists?.map((playlist) =>
 					<PlaylistTile key={playlist.id} playlist={playlist}/>)
 				?? []}/>
+			</RelatedContentSection>
+			<RelatedContentSection
+				display={album.data.externalIds.length != 0}
+				title={<Translate translationKey="externalLinks"/>}
+			>
+				<Stack spacing={2}>
+					{album.data.externalIds.map((externalId) =>
+						<ExternalIdBadge key={externalId.provider.name} externalId={externalId}/>)
+					}
+				</Stack>
 			</RelatedContentSection>
 		</Container>
 	);

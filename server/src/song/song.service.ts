@@ -397,7 +397,7 @@ export default class SongService extends RepositoryService<
 		return this.prismaService.song.findMany({
 			where: {
 				tracks: { some: { release: { album: {
-					id: { in: relatedAlbums.map(({ id }) => id) }
+					id: { in: relatedAlbums.map(({ id }) => id).concat(album.id) }
 				} } } },
 				AND: [
 					{ tracks: { none: {

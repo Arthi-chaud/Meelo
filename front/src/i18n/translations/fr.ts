@@ -173,7 +173,8 @@ const fr: TranslationMap = {
 
 	appearsOn: "Apparaît sur",
 	featuredOnPlaylists: "Apparaît dans",
-	bonusTracks: "Pistes Bonus"
+	bonusTracks: "Pistes Bonus",
+	relatedAlbums: "Albums Associés"
 };
 
 export default fr;

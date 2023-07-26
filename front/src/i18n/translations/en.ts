@@ -184,7 +184,8 @@ const en = {
 
 	appearsOn: "Appears On",
 	featuredOnPlaylists: "Featured On",
-	bonusTracks: "Bonus Tracks"
+	bonusTracks: "Bonus Tracks",
+	relatedAlbums: "Related Albums"
 };
 
 export default en;
