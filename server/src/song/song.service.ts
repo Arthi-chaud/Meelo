@@ -410,6 +410,10 @@ export default class SongService extends RepositoryService<
 					{ slug: { not: { contains: '-dub' } } },
 					{ slug: { not: { contains: '-version' } } },
 					{ slug: { not: { contains: '-bonus-beats' } } },
+					{ slug: { not: { contains: '-instrumental' } } },
+					{ slug: { not: { contains: '-vocal' } } },
+					{ slug: { not: { endsWith: '-live' } } },
+					{ slug: { not: { contains: '-live-' } } },
 				]
 			},
 			orderBy: sort ? this.formatSortingInput(sort) : undefined,
