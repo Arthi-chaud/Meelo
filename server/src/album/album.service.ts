@@ -128,7 +128,6 @@ export default class AlbumService extends RepositoryService<
 
 	static formatManyWhereInput(where: AlbumQueryParameters.ManyWhereInput) {
 		return {
-			NOT: where.related ? this.formatWhereInput(where.related) : undefined,
 			type: where.type,
 			artist: {
 				is: where.artist
