@@ -97,5 +97,27 @@ describe('Parser Service', () => {
 			const res = parserService.splitGroups('(A) B - C [D]', { keepDelimiters: true })
 			expect(res).toStrictEqual(['(A)', 'B', '- C', '[D]']);
 		});
+		it('Remove Root: Simple', () => {
+			const res = parserService.splitGroups('A (B)', { removeRoot: true })
+			expect(res).toStrictEqual(['B']);
+		})
+		it('Remove Root: Group Before Root', () => {
+			const res = parserService.splitGroups('(A) B', { removeRoot: true })
+			expect(res).toStrictEqual(['A']);
+		})
+		it("Remove Root: Two Groups", () => {
+			const res = parserService.splitGroups(
+				'Me Against the Music (feat. Madonna)[Remix]',
+				{ removeRoot: true }
+			)
+			expect(res).toStrictEqual(['feat. Madonna', 'Remix']);
+		});
+		it("Remove Root: Nested Group + Simple Group", () => {
+			const res = parserService.splitGroups(
+				'Me Against the Music [feat. Madonna  [Remix A] (Edit B)] [Version C]',
+				{ removeRoot: true }
+			)
+			expect(res).toStrictEqual(['feat. Madonna', 'Remix A', 'Edit B', 'Version C']);
+		});
 	})
 });

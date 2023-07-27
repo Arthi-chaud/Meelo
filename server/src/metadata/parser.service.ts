@@ -91,7 +91,10 @@ export default class ParserService {
 	 * @example 'My Album (a) [b] {c}'  => ['My Album', 'a', 'b', 'c']
 	 * @example 'My Song (feat. A) - B Remix' -> ['My Song', 'feat. A', 'B Remix']
 	 */
-	splitGroups(tokenString: string, opt?: { keepDelimiters: boolean }): string[] {
+	splitGroups(
+		tokenString: string,
+		opt?: { keepDelimiters?: boolean, removeRoot?: boolean }
+	): string[] {
 		const tokens: string[] = [];
 		const groups = this.getGroups(tokenString);
 
@@ -100,9 +103,11 @@ export default class ParserService {
 			const root = tokenString.slice(0, offset).trim(); // Anything before the group
 			const [gstart, strippedGroup, gend] = this.stripGroupDelimiters(group);
 			// We call recursively to handle nested groups
-			const subGroups = this.splitGroups(strippedGroup, opt);
+			const subGroups = this.splitGroups(
+				strippedGroup, { keepDelimiters: opt?.keepDelimiters }
+			);
 
-			if (root.length) { // A (B)
+			if (root.length && !opt?.removeRoot) { // A (B)
 				tokens.push(root);
 			}
 			if (opt?.keepDelimiters) {
@@ -116,7 +121,7 @@ export default class ParserService {
 			tokenString = tokenString.slice(offset + group.length);
 		});
 		tokenString = tokenString.trim();
-		if (tokenString.length) {
+		if (tokenString.length && !opt?.removeRoot) {
 			tokens.push(tokenString);
 		}
 		return tokens;
