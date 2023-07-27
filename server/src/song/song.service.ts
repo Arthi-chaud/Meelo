@@ -485,10 +485,50 @@ export default class SongService extends RepositoryService<
 	}
 
 	getSongType(songName: string): SongType {
-		const songExtensions = this.parserService.splitGroups(songName, { removeRoot: true });
+		const songExtensions = this.parserService
+			.splitGroups(songName, { removeRoot: true });
+		const extensionWords = songExtensions
+			.map((ext) => ext.toLowerCase())
+			.filter((ext) => !(ext.startsWith('feat ') || ext.startsWith('featuring ')))
+			.map((ext) => ext.split(' ')).flat();
+
+		const containsWord = (word: string) => extensionWords.includes(word);
 
 		if (songExtensions.length == 0) {
 			return SongType.Original;
+		}
+		if (containsWord('live')) {
+			return SongType.Live;
+		}
+		if (containsWord('acoustic')) {
+			return SongType.Acoustic;
+		}
+		if (containsWord('remix') || containsWord('dub') || containsWord('extended')) {
+			return SongType.Remix;
+		}
+		if (containsWord('demo')) {
+			return SongType.Demo;
+		}
+		if (containsWord('clean')) {
+			return SongType.Clean;
+		}
+		if (extensionWords.join(' ').includes('rough mix')) {
+			return SongType.Original;
+		}
+		if (containsWord('edit')) {
+			return SongType.Edit;
+		}
+		if (extensionWords.join(' ').includes('instrumental mix')) {
+			return SongType.Instrumental;
+		}
+		if (containsWord('mix')) {
+			return SongType.Remix;
+		}
+		if (containsWord('instrumental') || containsWord('instrumentale')) {
+			return SongType.Instrumental;
+		}
+		if (extensionWords.at(-1) == 'beats') {
+			return SongType.Remix;
 		}
 		return SongType.Original;
 	}

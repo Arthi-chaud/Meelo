@@ -182,11 +182,12 @@ describe('Song Service', () => {
 		it('Demo (First Demo)', () => {
 			expect(songService.getSongType('Fever (First Demo)')).toBe(SongType.Demo)
 		});
+
 		it('Demo (Rough Mix)', () => {
-			expect(songService.getSongType('Fever (Rough Mix)')).toBe(SongType.Demo)
+			expect(songService.getSongType('Fever (Rough Mix)')).toBe(SongType.Original)
 		});
 		it('Demo (Rough Mix Edit)', () => {
-			expect(songService.getSongType('Fever (Rough Mix Edit)')).toBe(SongType.Demo)
+			expect(songService.getSongType('Fever (Rough Mix Edit)')).toBe(SongType.Original)
 		});
 
 		it("Live (Simple)", () => {
