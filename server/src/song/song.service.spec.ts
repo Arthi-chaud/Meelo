@@ -21,6 +21,7 @@ import { LyricsService } from "src/lyrics/lyrics.service";
 import { LyricsNotFoundByIDException } from "src/lyrics/lyrics.exceptions";
 import ReleaseModule from "src/release/release.module";
 import { SongType } from "@prisma/client";
+import MetadataModule from "src/metadata/metadata.module";
 
 describe('Song Service', () => {
 	let songService: SongService;
@@ -32,7 +33,7 @@ describe('Song Service', () => {
 	let module: TestingModule;
 	beforeAll(async () => {
 		module = await createTestingModule({
-			imports: [PrismaModule, ArtistModule, TrackModule, AlbumModule, IllustrationModule, GenreModule, LyricsModule, ReleaseModule],
+			imports: [PrismaModule, ArtistModule, TrackModule, AlbumModule, IllustrationModule, GenreModule, LyricsModule, ReleaseModule, MetadataModule],
 			providers: [SongService, ArtistService, PrismaService],
 		}).overrideProvider(PrismaService).useClass(TestPrismaService).compile();
 		dummyRepository = module.get(PrismaService);
@@ -53,191 +54,191 @@ describe('Song Service', () => {
 
 	describe('Get Song Type', () => {
 		it("Original Version (No group)", () => {
-			expect(SongService.getSongType('My Song')).toBe(SongType.Original)
+			expect(songService.getSongType('My Song')).toBe(SongType.Original)
 		});
 		it("Original Version (Album Version)", () => {
-			expect(SongService.getSongType('My Song (Album Version)')).toBe(SongType.Original)
+			expect(songService.getSongType('My Song (Album Version)')).toBe(SongType.Original)
 		});
 		it("Original Version (Main Version)", () => {
-			expect(SongService.getSongType('My Song (Main Version)')).toBe(SongType.Original)
+			expect(songService.getSongType('My Song (Main Version)')).toBe(SongType.Original)
 		});
 		it("Original Version (Original Version)", () => {
-			expect(SongService.getSongType('My Song (Original Version)')).toBe(SongType.Original)
+			expect(songService.getSongType('My Song (Original Version)')).toBe(SongType.Original)
 		});
 		it("Original Version (Feat Group)", () => {
-			expect(SongService.getSongType('My Song (feat. A)')).toBe(SongType.Original)
+			expect(songService.getSongType('My Song (feat. A)')).toBe(SongType.Original)
 		});
 		it("Original Version (Tricky Name - Beats)", () => {
-			expect(SongService.getSongType('Heart Beats')).toBe(SongType.Original)
+			expect(songService.getSongType('Heart Beats')).toBe(SongType.Original)
 		});
 		it("Original Version (Tricky Name - Live)", () => {
-			expect(SongService.getSongType('Live')).toBe(SongType.Original)
+			expect(songService.getSongType('Live')).toBe(SongType.Original)
 		});
 		it("Original Version (Tricky Name - Clean)", () => {
-			expect(SongService.getSongType('Clean')).toBe(SongType.Original)
+			expect(songService.getSongType('Clean')).toBe(SongType.Original)
 		});
 		it("Original Version (Tricky Name - Credits)", () => {
-			expect(SongService.getSongType('Credits')).toBe(SongType.Original)
+			expect(songService.getSongType('Credits')).toBe(SongType.Original)
 		});
 
 		it("Acoustic Version", () => {
-			expect(SongService.getSongType('Live It Up (Acoustic Version)')).toBe(SongType.Acoustic)
+			expect(songService.getSongType('Live It Up (Acoustic Version)')).toBe(SongType.Acoustic)
 		});
 		it("Acoustic Version", () => {
-			expect(SongService.getSongType('Live It Up (Acoustic)')).toBe(SongType.Acoustic)
+			expect(songService.getSongType('Live It Up (Acoustic)')).toBe(SongType.Acoustic)
 		});
 		it("Acoustic Version (Acoustic Mix)", () => {
-			expect(SongService.getSongType('Live It Up (Acoustic Mix)')).toBe(SongType.Acoustic)
+			expect(songService.getSongType('Live It Up (Acoustic Mix)')).toBe(SongType.Acoustic)
 		});
 		it("Acoustic Version (Acoustic Remix)", () => {
-			expect(SongService.getSongType('Live It Up (Acoustic Remix)')).toBe(SongType.Acoustic)
+			expect(songService.getSongType('Live It Up (Acoustic Remix)')).toBe(SongType.Acoustic)
 		});
 	
 		it("Instrumental Version (Simple Group)", () => {
-			expect(SongService.getSongType('My Song (Instrumental)')).toBe(SongType.Instrumental)
+			expect(songService.getSongType('My Song (Instrumental)')).toBe(SongType.Instrumental)
 		});
 		it("Instrumental Version (Instrumental Version)", () => {
-			expect(SongService.getSongType('My Song (Instrumental Version)')).toBe(SongType.Instrumental)
+			expect(songService.getSongType('My Song (Instrumental Version)')).toBe(SongType.Instrumental)
 		});
 		it("Instrumental Version (Version Instrumentale)", () => {
-			expect(SongService.getSongType('My Song (Version Instrumentale)')).toBe(SongType.Instrumental)
+			expect(songService.getSongType('My Song (Version Instrumentale)')).toBe(SongType.Instrumental)
 		});
 		it("Instrumental Version (Instrumental Mix)", () => {
-			expect(SongService.getSongType('My Song (Instrumental Mix)')).toBe(SongType.Instrumental)
+			expect(songService.getSongType('My Song (Instrumental Mix)')).toBe(SongType.Instrumental)
 		});
 
 		it("Remix (Extended 12'')", () => {
-			expect(SongService.getSongType("Fever (Extended 12'')")).toBe(SongType.Remix)
+			expect(songService.getSongType("Fever (Extended 12'')")).toBe(SongType.Remix)
 		});
 		it('Remix (Extended 12")', () => {
-			expect(SongService.getSongType('Fever (Extended 12")')).toBe(SongType.Remix)
+			expect(songService.getSongType('Fever (Extended 12")')).toBe(SongType.Remix)
 		});
 		it("Remix (7'' Mix)", () => {
-			expect(SongService.getSongType("Fever (7'' Mix)")).toBe(SongType.Remix)
+			expect(songService.getSongType("Fever (7'' Mix)")).toBe(SongType.Remix)
 		});
 		it('Remix (7" Remix)', () => {
-			expect(SongService.getSongType('Fever (7" Remix)')).toBe(SongType.Remix)
+			expect(songService.getSongType('Fever (7" Remix)')).toBe(SongType.Remix)
 		});
 		it("Remix (Olliver Helden Remix)", () => {
-			expect(SongService.getSongType("Fever (Olliver Helden Remix)")).toBe(SongType.Remix)
+			expect(songService.getSongType("Fever (Olliver Helden Remix)")).toBe(SongType.Remix)
 		});
 		it('Remix (Extended Mix)', () => {
-			expect(SongService.getSongType('Fever (Extended Mix)')).toBe(SongType.Remix)
+			expect(songService.getSongType('Fever (Extended Mix)')).toBe(SongType.Remix)
 		});
 		it('Remix (Extended Remix)', () => {
-			expect(SongService.getSongType('Fever (Extended Mix)')).toBe(SongType.Remix)
+			expect(songService.getSongType('Fever (Extended Mix)')).toBe(SongType.Remix)
 		});
 		it('Remix (Extended Remix Edit)', () => {
-			expect(SongService.getSongType('Fever (Extended Mix Edit)')).toBe(SongType.Remix)
+			expect(songService.getSongType('Fever (Extended Mix Edit)')).toBe(SongType.Remix)
 		});
 		it('Remix (Ambiant Mix)', () => {
-			expect(SongService.getSongType('Fever (Ambiant Mix)')).toBe(SongType.Remix)
+			expect(songService.getSongType('Fever (Ambiant Mix)')).toBe(SongType.Remix)
 		});
 		it('Remix (Remix)[Radio Edit]', () => {
-			expect(SongService.getSongType('Fever (Remix)[Radio Edit]')).toBe(SongType.Remix)
+			expect(songService.getSongType('Fever (Remix)[Radio Edit]')).toBe(SongType.Remix)
 		});
 		it('Remix (Rock Mix)', () => {
-			expect(SongService.getSongType('Fever (Rock Mix)')).toBe(SongType.Remix)
+			expect(songService.getSongType('Fever (Rock Mix)')).toBe(SongType.Remix)
 		});
 		it('Remix (Remix Edit)', () => {
-			expect(SongService.getSongType('Fever (Remix Edit)')).toBe(SongType.Remix)
+			expect(songService.getSongType('Fever (Remix Edit)')).toBe(SongType.Remix)
 		});
 		it('Remix (Radio Mix)', () => {
-			expect(SongService.getSongType('Fever (Radio Mix)')).toBe(SongType.Remix)
+			expect(songService.getSongType('Fever (Radio Mix)')).toBe(SongType.Remix)
 		});
 		it('Remix (Instrumental Break Down Mix)', () => {
-			expect(SongService.getSongType('Fever (Instrumental Break Down Mix)')).toBe(SongType.Remix)
+			expect(songService.getSongType('Fever (Instrumental Break Down Mix)')).toBe(SongType.Remix)
 		});
 		it('Remix (Electro Bashment Instrumental Remix)', () => {
-			expect(SongService.getSongType('Fever (Electro Bashment Instrumental Remix)')).toBe(SongType.Remix)
+			expect(songService.getSongType('Fever (Electro Bashment Instrumental Remix)')).toBe(SongType.Remix)
 		});
 
 		it('Remix (Dub Mix)', () => {
-			expect(SongService.getSongType('Fever (Dub Mix)')).toBe(SongType.Remix)
+			expect(songService.getSongType('Fever (Dub Mix)')).toBe(SongType.Remix)
 		});
 		it('Remix (Dub)', () => {
-			expect(SongService.getSongType('Fever (Dub)')).toBe(SongType.Remix)
+			expect(songService.getSongType('Fever (Dub)')).toBe(SongType.Remix)
 		});
 		it('Remix (Extended Dub)', () => {
-			expect(SongService.getSongType('Fever (Extended Dub)')).toBe(SongType.Remix)
+			expect(songService.getSongType('Fever (Extended Dub)')).toBe(SongType.Remix)
 		});
 		it('Remix (Dub Edit)', () => {
-			expect(SongService.getSongType('Fever (Dub Edit)')).toBe(SongType.Remix)
+			expect(songService.getSongType('Fever (Dub Edit)')).toBe(SongType.Remix)
 		});
 
 		it('Remix (Beats)', () => {
-			expect(SongService.getSongType('Fever (Beats)')).toBe(SongType.Remix)
+			expect(songService.getSongType('Fever (Beats)')).toBe(SongType.Remix)
 		});
 		it('Remix (Jam Beats)', () => {
-			expect(SongService.getSongType('Fever (Jam Beats)')).toBe(SongType.Remix)
+			expect(songService.getSongType('Fever (Jam Beats)')).toBe(SongType.Remix)
 		});
 
 		it('Demo (Demo)', () => {
-			expect(SongService.getSongType('Fever (Demo)')).toBe(SongType.Demo)
+			expect(songService.getSongType('Fever (Demo)')).toBe(SongType.Demo)
 		});
 		it('Demo (Demo 1)', () => {
-			expect(SongService.getSongType('Fever (Demo 1)')).toBe(SongType.Demo)
+			expect(songService.getSongType('Fever (Demo 1)')).toBe(SongType.Demo)
 		});
 		it('Demo (First Demo)', () => {
-			expect(SongService.getSongType('Fever (First Demo)')).toBe(SongType.Demo)
+			expect(songService.getSongType('Fever (First Demo)')).toBe(SongType.Demo)
 		});
 		it('Demo (Rough Mix)', () => {
-			expect(SongService.getSongType('Fever (Rough Mix)')).toBe(SongType.Demo)
+			expect(songService.getSongType('Fever (Rough Mix)')).toBe(SongType.Demo)
 		});
 		it('Demo (Rough Mix Edit)', () => {
-			expect(SongService.getSongType('Fever (Rough Mix Edit)')).toBe(SongType.Demo)
+			expect(songService.getSongType('Fever (Rough Mix Edit)')).toBe(SongType.Demo)
 		});
 
 		it("Live (Simple)", () => {
-			expect(SongService.getSongType('Fever (Live)')).toBe(SongType.Live);
+			expect(songService.getSongType('Fever (Live)')).toBe(SongType.Live);
 		});
 		it("Live (Live from)", () => {
-			expect(SongService.getSongType('Fever (Live from X)')).toBe(SongType.Live);
+			expect(songService.getSongType('Fever (Live from X)')).toBe(SongType.Live);
 		})
 		it("Live (Live at)", () => {
-			expect(SongService.getSongType('Fever (Live at X)')).toBe(SongType.Live);
+			expect(songService.getSongType('Fever (Live at X)')).toBe(SongType.Live);
 		})
 		it("Live (Live in)", () => {
-			expect(SongService.getSongType('Fever (Live in X)')).toBe(SongType.Live);
+			expect(songService.getSongType('Fever (Live in X)')).toBe(SongType.Live);
 		})
 		it("Live (Live Version)", () => {
-			expect(SongService.getSongType('Fever (Live Version)')).toBe(SongType.Live);
+			expect(songService.getSongType('Fever (Live Version)')).toBe(SongType.Live);
 		})
 		it("Live (Version Live)", () => {
-			expect(SongService.getSongType('Fever (Version Live)')).toBe(SongType.Live);
+			expect(songService.getSongType('Fever (Version Live)')).toBe(SongType.Live);
 		})
 		it("Live (Remixed)", () => {
-			expect(SongService.getSongType('Fever (Remix) [Live]')).toBe(SongType.Live);
+			expect(songService.getSongType('Fever (Remix) [Live]')).toBe(SongType.Live);
 		});
 		it("Live (Live Edit)", () => {
-			expect(SongService.getSongType('Fever (Live Edit from X)')).toBe(SongType.Live);
+			expect(songService.getSongType('Fever (Live Edit from X)')).toBe(SongType.Live);
 		});
 
 
 		it("Clean (Clean)", () => {
-			expect(SongService.getSongType('Fever (Clean)')).toBe(SongType.Clean);
+			expect(songService.getSongType('Fever (Clean)')).toBe(SongType.Clean);
 		});
 		it("Clean (Clean Version)", () => {
-			expect(SongService.getSongType('Fever (Clean Version)')).toBe(SongType.Clean);
+			expect(songService.getSongType('Fever (Clean Version)')).toBe(SongType.Clean);
 		});
 		it("Clean (Clean Edit)", () => {
-			expect(SongService.getSongType('Fever (Clean Edit)')).toBe(SongType.Clean);
+			expect(songService.getSongType('Fever (Clean Edit)')).toBe(SongType.Clean);
 		});
 
 		it("Edit (Edit)", () => {
-			expect(SongService.getSongType('Fever (Edit)')).toBe(SongType.Edit);
+			expect(songService.getSongType('Fever (Edit)')).toBe(SongType.Edit);
 		});
 		it("Edit (7''Edit)", () => {
-			expect(SongService.getSongType("Fever (7'' Edit)")).toBe(SongType.Edit);
+			expect(songService.getSongType("Fever (7'' Edit)")).toBe(SongType.Edit);
 		});
 		it('Edit (7" Edit)', () => {
-			expect(SongService.getSongType('Fever (7" Edit)')).toBe(SongType.Edit);
+			expect(songService.getSongType('Fever (7" Edit)')).toBe(SongType.Edit);
 		});
 		it("Edit (Edit Version)", () => {
-			expect(SongService.getSongType('Fever (Edit Version)')).toBe(SongType.Edit);
+			expect(songService.getSongType('Fever (Edit Version)')).toBe(SongType.Edit);
 		});
 		it("Edit (Album Edit)", () => {
-			expect(SongService.getSongType('Fever (Album Edit)')).toBe(SongType.Edit);
+			expect(songService.getSongType('Fever (Album Edit)')).toBe(SongType.Edit);
 		});
 	})
 

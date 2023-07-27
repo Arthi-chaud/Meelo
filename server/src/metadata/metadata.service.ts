@@ -21,6 +21,7 @@ import compilationAlbumArtistKeyword from 'src/utils/compilation';
 import GenreService from 'src/genre/genre.service';
 import { File, Track } from 'src/prisma/models';
 import { validate } from 'class-validator';
+import ParserService from './parser.service';
 
 @Injectable()
 export default class MetadataService {
@@ -38,6 +39,7 @@ export default class MetadataService {
 		private settingsService: SettingsService,
 		@Inject(forwardRef(() => GenreService))
 		private genreService: GenreService,
+		private parserService: ParserService,
 		private fileManagerService: FileManagerService,
 	) {}
 
@@ -364,36 +366,18 @@ export default class MetadataService {
 	 * @returns the cleaned source
 	 */
 	private removeExtensions(source: string, extensions: string[]): string {
-		let output = source;
-
-		this.extractExtensions(source, extensions)
-			.forEach((extension) => output = output.replace(extension, '').trim());
-		return output;
-	}
-
-	/**
-	 * From an array of extension keyword, extract groups from the source
-	 * example: 'My Album (Deluxe) [Remaster]' => ['(Deluxe)', '[Remaster]']
-	 * @param source the string to extract the extensions from
-	 * @param extensions the aray of extensions to find
-	 */
-	private extractExtensions(source: string, extensions: string[]): string[] {
-		let groupsFound: string[] = [];
-		const extensionDelimiters = [
-			['(', ')'],
-			['{', '}'],
-			['[', ']']
-		];
 		const extensionsGroup = extensions.map((ext) => `(${ext})`).join('|');
 
-		for (const delimiter of extensionDelimiters) {
-			const regExp = new RegExp(`\\s+(?<extension>\\${delimiter[0]}.*(${extensionsGroup}).*\\${delimiter[1]})\\s*`, 'i');
-			const match = regExp.exec(source);
-
-			if (match) {
-				groupsFound = groupsFound.concat(match[1]);
-			}
-		}
-		return groupsFound;
+		return this.parserService.splitGroups(source, { keepDelimiters: true })
+			.filter((group) => {
+				// If root
+				if (group == this.parserService.stripGroupDelimiters(group)[1]) {
+					return true;
+				}
+				return new RegExp(`.*(${extensionsGroup}).*`, 'i').exec(group)?.at(0) == undefined;
+			})
+			.map((group) => group.trim())
+			.join(' ')
+			.trim();
 	}
 }

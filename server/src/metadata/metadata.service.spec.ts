@@ -154,6 +154,9 @@ describe('Metadata Service', () => {
 		it("should remove multiple extensions", () => {
 			expect(metadataService.removeReleaseExtension('My Album  (Deluxe)  [2022 Remaster] ')).toBe('My Album');
 		});
+		it("should remove w/ tricky name", () => {
+			expect(metadataService.removeReleaseExtension('Version 2.0 (20th Anniversary Deluxe Edition)')).toBe('Version 2.0');
+		});
 	});
 
 	describe('Extract Track name\'s extension', () => {

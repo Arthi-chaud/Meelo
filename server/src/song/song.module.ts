@@ -10,6 +10,7 @@ import IllustrationModule from 'src/illustration/illustration.module';
 import { SongResponseBuilder } from './models/song.response';
 import ReleaseModule from 'src/release/release.module';
 import ProvidersModule from 'src/providers/providers.module';
+import MetadataModule from 'src/metadata/metadata.module';
 
 @Module({
 	imports: [
@@ -20,7 +21,8 @@ import ProvidersModule from 'src/providers/providers.module';
 		forwardRef(() => TrackModule),
 		forwardRef(() => GenreModule),
 		forwardRef(() => ReleaseModule),
-		forwardRef(() => IllustrationModule)
+		forwardRef(() => IllustrationModule),
+		forwardRef(() => MetadataModule)
 	],
 	exports: [
 		SongService,

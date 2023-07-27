@@ -29,6 +29,7 @@ import {
 import AlbumService from 'src/album/album.service';
 import ReleaseQueryParameters from 'src/release/models/release.query-parameters';
 import ReleaseService from 'src/release/release.service';
+import ParserService from 'src/metadata/parser.service';
 
 @Injectable()
 export default class SongService extends RepositoryService<
@@ -57,6 +58,8 @@ export default class SongService extends RepositoryService<
 		private trackService: TrackService,
 		@Inject(forwardRef(() => GenreService))
 		private genreService: GenreService,
+		@Inject(forwardRef(() => ParserService))
+		private parserService: ParserService,
 	) {
 		super(prismaService.song);
 	}
@@ -360,7 +363,7 @@ export default class SongService extends RepositoryService<
 		sort?: SongQueryParameters.SortingParameter
 	) {
 		const { name, artistId } = await this.select(where, { name: true, artistId: true });
-		const baseSongName = SongService.getBaseSongName(name);
+		const baseSongName = this.getBaseSongName(name);
 
 		return this.prismaService.song.findMany({
 			where: {
@@ -390,7 +393,7 @@ export default class SongService extends RepositoryService<
 		}
 		const albumSongs = await this.getMany({ album: { id: album.id } });
 		const albumSongsBaseNames = albumSongs.map(
-			({ name }) => new Slug(SongService.getBaseSongName(name)).toString()
+			({ name }) => new Slug(this.getBaseSongName(name)).toString()
 		);
 		const relatedAlbums = await this.prismaService.album.findMany({
 			where: {
@@ -481,10 +484,10 @@ export default class SongService extends RepositoryService<
 		});
 	}
 
-	static getSongType(songName: string): SongType {
-		const songExtension = songName.replace(this.getBaseSongName(songName), '').trim();
+	getSongType(songName: string): SongType {
+		const songExtensions = this.parserService.splitGroups(songName, { removeRoot: true });
 
-		if (songExtension.length == 0) {
+		if (songExtensions.length == 0) {
 			return SongType.Original;
 		}
 		return SongType.Original;
@@ -495,19 +498,7 @@ export default class SongService extends RepositoryService<
 	 * An extension is a group of characters in brackets, parenthesis or curly brackets
 	 * @param songName the name of the song to strip
 	 */
-	private static getBaseSongName(songName: string): string {
-		const extensionDelimiters = [
-			['(', ')'],
-			['{', '}'],
-			['[', ']']
-		];
-		let strippedSongName = songName;
-
-		for (const delimiter of extensionDelimiters) {
-			strippedSongName.match(`\\s*\\${delimiter[0]}.+\\${delimiter[1]}\\s*`)?.forEach((matched) => {
-				strippedSongName = strippedSongName.replace(matched, '');
-			});
-		}
-		return strippedSongName.split(' - ')[0];
+	private getBaseSongName(songName: string): string {
+		return this.parserService.stripGroups(songName);
 	}
 }

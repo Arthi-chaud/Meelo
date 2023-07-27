@@ -23,6 +23,9 @@ export default class Metadata {
 	@IsDefined()
 	artist: string;
 
+	@IsString({ each: true })
+	featuring: string[] = [];
+
 	/**
 	 * Name of the artist of the parent album
 	 */
