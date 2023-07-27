@@ -4,7 +4,7 @@ import {
 import ArtistService from 'src/artist/artist.service';
 import Slug from 'src/slug/slug';
 import {
-	AlbumType, Prisma, TrackType
+	AlbumType, Prisma, SongType, TrackType
 } from '@prisma/client';
 import PrismaService from 'src/prisma/prisma.service';
 import type SongQueryParameters from './models/song.query-params';
@@ -83,6 +83,7 @@ export default class SongService extends RepositoryService<
 			},
 			registeredAt: song.registeredAt,
 			playCount: 0,
+			type: SongType.Original,
 			name: song.name,
 			slug: new Slug(song.name).toString()
 		};
@@ -359,7 +360,7 @@ export default class SongService extends RepositoryService<
 		sort?: SongQueryParameters.SortingParameter
 	) {
 		const { name, artistId } = await this.select(where, { name: true, artistId: true });
-		const baseSongName = this.getBaseSongName(name);
+		const baseSongName = SongService.getBaseSongName(name);
 
 		return this.prismaService.song.findMany({
 			where: {
@@ -389,7 +390,7 @@ export default class SongService extends RepositoryService<
 		}
 		const albumSongs = await this.getMany({ album: { id: album.id } });
 		const albumSongsBaseNames = albumSongs.map(
-			({ name }) => new Slug(this.getBaseSongName(name)).toString()
+			({ name }) => new Slug(SongService.getBaseSongName(name)).toString()
 		);
 		const relatedAlbums = await this.prismaService.album.findMany({
 			where: {
@@ -429,6 +430,7 @@ export default class SongService extends RepositoryService<
 					{ slug: { not: { contains: '-vocal' } } },
 					{ slug: { not: { endsWith: '-live' } } },
 					{ slug: { not: { contains: '-live-' } } },
+					{ name: { not: { endsWith: 'Beats)' }, mode: 'insensitive' } },
 				]
 			},
 			orderBy: sort ? this.formatSortingInput(sort) : undefined,
@@ -479,12 +481,21 @@ export default class SongService extends RepositoryService<
 		});
 	}
 
+	static getSongType(songName: string): SongType {
+		const songExtension = songName.replace(this.getBaseSongName(songName), '').trim();
+
+		if (songExtension.length == 0) {
+			return SongType.Original;
+		}
+		return SongType.Original;
+	}
+
 	/**
 	 * Removes all extensions for a song name
 	 * An extension is a group of characters in brackets, parenthesis or curly brackets
 	 * @param songName the name of the song to strip
 	 */
-	private getBaseSongName(songName: string): string {
+	private static getBaseSongName(songName: string): string {
 		const extensionDelimiters = [
 			['(', ')'],
 			['{', '}'],

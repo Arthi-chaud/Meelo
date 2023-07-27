@@ -14,7 +14,7 @@ namespace SongQueryParameters {
 	/**
 	 * The input required to save a song in the database
 	 */
-	export type CreateInput = Omit<Song, 'slug' | 'id' | 'playCount' | 'artist' | 'artistId' | 'tracks' | 'genres' | 'lyrics' | 'masterId' | 'registeredAt'>
+	export type CreateInput = Omit<Song, 'slug' | 'id' | 'playCount' | 'artist' | 'artistId' | 'tracks' | 'genres' | 'lyrics' | 'masterId' | 'registeredAt' | 'type'>
 		& {
 			artist: ArtistQueryParameters.WhereInput,
 			registeredAt?: Date,
