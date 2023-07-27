@@ -253,6 +253,12 @@ describe('Parser Service', () => {
 		it('Remix (Remix Edit)', () => {
 			expect(parserService.getSongType('Fever (Remix Edit)')).toBe(SongType.Remix)
 		});
+		it('Remix (Mix Edit)', () => {
+			expect(parserService.getSongType('Sing It Back (Can 7 Supermarket Mix Edit)')).toBe(SongType.Remix)
+		});
+		it('Remix (Vocal Edit)', () => {
+			expect(parserService.getSongType('Sing It Back (Can 7 Supermarket Vocal Edit)')).toBe(SongType.Remix)
+		});
 		it('Remix (Radio Mix)', () => {
 			expect(parserService.getSongType('Fever (Radio Mix)')).toBe(SongType.Remix)
 		});
@@ -338,6 +344,9 @@ describe('Parser Service', () => {
 
 		it("Edit (Edit)", () => {
 			expect(parserService.getSongType('Fever (Edit)')).toBe(SongType.Edit);
+		});
+		it("Edit (Single Version)", () => {
+			expect(parserService.getSongType('Fever (Single Version)')).toBe(SongType.Edit);
 		});
 		it("Edit (7''Edit)", () => {
 			expect(parserService.getSongType("Fever (7'' Edit)")).toBe(SongType.Edit);

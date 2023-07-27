@@ -156,7 +156,7 @@ export default class ParserService {
 		if (containsWord('acoustic')) {
 			return SongType.Acoustic;
 		}
-		if (containsWord('remix') || containsWord('dub') || containsWord('extended')) {
+		if (containsWord('remix') || containsWord('dub') || containsWord('extended') || containsWord('vocal')) {
 			return SongType.Remix;
 		}
 		if (containsWord('demo')) {
@@ -167,6 +167,9 @@ export default class ParserService {
 		}
 		if (extensionWords.join(' ').includes('rough mix')) {
 			return SongType.Original;
+		}
+		if (containsWord('mix') && containsWord('edit')) {
+			return SongType.Remix;
 		}
 		if (containsWord('edit')) {
 			return SongType.Edit;
@@ -179,6 +182,9 @@ export default class ParserService {
 		}
 		if (containsWord('instrumental') || containsWord('instrumentale')) {
 			return SongType.Instrumental;
+		}
+		if (containsWord('single')) {
+			return SongType.Edit;
 		}
 		if (extensionWords.at(-1) == 'beats') {
 			return SongType.Remix;

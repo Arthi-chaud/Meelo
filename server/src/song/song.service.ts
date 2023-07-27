@@ -4,7 +4,7 @@ import {
 import ArtistService from 'src/artist/artist.service';
 import Slug from 'src/slug/slug';
 import {
-	AlbumType, Prisma, TrackType
+	AlbumType, Prisma, SongType, TrackType
 } from '@prisma/client';
 import PrismaService from 'src/prisma/prisma.service';
 import type SongQueryParameters from './models/song.query-params';
@@ -392,9 +392,12 @@ export default class SongService extends RepositoryService<
 			return [];
 		}
 		const albumSongs = await this.getMany({ album: { id: album.id } });
-		const albumSongsBaseNames = albumSongs.map(
-			({ name }) => new Slug(this.getBaseSongName(name)).toString()
-		);
+		const albumSongsBaseNames = albumSongs
+			// Some albums have live songs from previous albums, we ignore them
+			.filter((song) => song.type != SongType.Live)
+			.map(
+				({ name }) => new Slug(this.getBaseSongName(name)).toString()
+			);
 		const relatedAlbums = await this.prismaService.album.findMany({
 			where: {
 				...AlbumService.formatManyWhereInput({ related: { id: release.albumId } }),
@@ -423,17 +426,7 @@ export default class SongService extends RepositoryService<
 					} } },
 					// We only want songs that have at least one audtio tracks
 					{ tracks: { some: { type: TrackType.Audio } } },
-					{ slug: { not: { contains: '-mix' } } },
-					{ slug: { not: { contains: '-remix' } } },
-					{ slug: { not: { contains: '-edit' } } },
-					{ slug: { not: { contains: '-dub' } } },
-					{ slug: { not: { contains: '-version' } } },
-					{ slug: { not: { contains: '-bonus-beats' } } },
-					{ slug: { not: { contains: '-instrumental' } } },
-					{ slug: { not: { contains: '-vocal' } } },
-					{ slug: { not: { endsWith: '-live' } } },
-					{ slug: { not: { contains: '-live-' } } },
-					{ name: { not: { endsWith: 'Beats)' }, mode: 'insensitive' } },
+					{ type: { in: [SongType.Original, SongType.Acoustic, SongType.Demo] } },
 				]
 			},
 			orderBy: sort ? this.formatSortingInput(sort) : undefined,
