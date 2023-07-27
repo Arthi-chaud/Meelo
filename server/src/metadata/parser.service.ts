@@ -126,4 +126,14 @@ export default class ParserService {
 		}
 		return tokens;
 	}
+
+	// Remove all groups from song name
+	stripGroups(songName: string): string {
+		const groups = this.splitGroups(songName, { removeRoot: true, keepDelimiters: true });
+
+		groups.forEach((group) => {
+			songName = songName.replace(group, '').trim();
+		});
+		return songName.trim();
+	}
 }

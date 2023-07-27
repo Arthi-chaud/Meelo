@@ -488,10 +488,6 @@ export default class SongService extends RepositoryService<
 	 * @param songName the name of the song to strip
 	 */
 	private getBaseSongName(songName: string): string {
-		return this.parserService.splitGroups(songName, { keepDelimiters: true })
-			.filter((group) => this.parserService.stripGroupDelimiters(group)[1] == group)
-			.map((group) => group.trim())
-			.join(' ')
-			.trim();
+		return this.parserService.stripGroups(songName);
 	}
 }

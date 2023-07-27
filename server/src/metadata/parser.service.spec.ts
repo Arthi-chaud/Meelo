@@ -21,6 +21,46 @@ describe('Parser Service', () => {
 		expect(parserService).toBeDefined();
 	});
 
+	describe('Strip Groups', () => {
+		it("No Group", () => {
+			const res = parserService.stripGroups(
+				'Strict Machine'
+			)
+			expect(res).toStrictEqual('Strict Machine');
+		});
+		it("Simple Group", () => {
+			const res = parserService.stripGroups(
+				'Me Against the Music (feat. Madonna)'
+			)
+			expect(res).toStrictEqual('Me Against the Music');
+		});
+		it("Simple Dash Group", () => {
+			const res = parserService.stripGroups(
+				'A - B'
+			)
+			expect(res).toStrictEqual('A');
+		});
+		it("Group before root (hard)", () => {
+			const res = parserService.stripGroups('(A) B - C [D]')
+			expect(res).toStrictEqual('B');
+		});
+		it('Simple', () => {
+			const res = parserService.stripGroups('A (B)')
+			expect(res).toStrictEqual('A');
+		})
+		it('Group Before Root', () => {
+			const res = parserService.stripGroups('(A) B')
+			expect(res).toStrictEqual('B');
+		})
+		it("Three Groups (Different separator Order)", () => {
+			const res = parserService.stripGroups(
+				'Me Against the Music    [feat. Madonna]  [Remix A]   (Edit B)'
+			)
+			expect(res).toStrictEqual('Me Against the Music');
+		});
+
+	})
+
 	describe('Split Groups', () => {
 		it("No Group", () => {
 			const res = parserService.splitGroups(
