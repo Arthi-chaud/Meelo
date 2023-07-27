@@ -1,6 +1,5 @@
 /* eslint-disable id-length */
 import { Injectable } from "@nestjs/common";
-import Metadata from "./models/metadata";
 import escapeRegex from "src/utils/escape-regex";
 
 @Injectable()
@@ -121,75 +120,5 @@ export default class ParserService {
 			tokens.push(tokenString);
 		}
 		return tokens;
-	}
-
-	/**
-	 * Extracts from the song name, and return the '(feat. ...)' segment
-	 * @param songName the name of the song, as from the source file's metadata
-	 * @example A (feat. B) => [A, [B]]
-	 */
-	extractFeaturedArtistsFromSongName(songName: string): Pick<Metadata, 'name' | 'featuring'> {
-		const groups = this.splitGroups(songName, { keepDelimiters: true });
-		const groupsWithoutFeaturings: string[] = [];
-		const featuringArtists: string[] = [];
-		const getRewrappers = () => {
-			switch (groupsWithoutFeaturings.length) {
-			case 0:
-			case 1:
-				return ['(', ')'] as const;
-			case 2:
-				return ['[', ']'] as const;
-			default:
-				return ['{', '}'] as const;
-			}
-		};
-
-		groups.forEach((group) => {
-			const rewrapper = getRewrappers(); // The delimiters to rewrap the group with
-			const [sstart, strippedGroup, ssend] = this.stripGroupDelimiters(group);
-			const featureSubGroup = strippedGroup.match(
-				/(feat(uring|\.)?|with)\s+(?<artists>.*)$/i
-			);
-
-			if (featureSubGroup == null) {
-				if (!sstart && !ssend) { // If the group has no wrappers
-					groupsWithoutFeaturings.push(group);
-				} else {
-					groupsWithoutFeaturings.push(rewrapper[0] + strippedGroup + rewrapper[1]);
-				}
-			} else {
-				const artistsInSubGroup = this.extractFeaturedArtistsFromArtistName(
-					featureSubGroup.at(3)!
-				);
-				const strippedGroupWithoutSub = strippedGroup.replace(featureSubGroup[0], '').trim();
-
-				if (strippedGroupWithoutSub) {
-					groupsWithoutFeaturings.push(strippedGroupWithoutSub);
-				}
-				featuringArtists.push(artistsInSubGroup.artist, ...artistsInSubGroup.featuring);
-			}
-		});
-		return {
-			name: groupsWithoutFeaturings.join(' '),
-			featuring: featuringArtists
-		};
-	}
-
-	/**
-	 * @example "A & B" => [A, B]
-	 * @param artistName the artist of the song, as from the source file's metadata
-	 */
-	extractFeaturedArtistsFromArtistName(artistName: string): Pick<Metadata, 'artist' | 'featuring'> {
-		const [main, ...feats] = artistName
-			.split(/\s*,\s*/)
-			.map((s) => s.split(/\s*&\s*/))
-			.flat()
-			.map((s) => s.trim());
-		const { name, featuring } = this.extractFeaturedArtistsFromSongName(main);
-
-		return {
-			artist: name,
-			featuring: featuring.concat(feats)
-		};
 	}
 }
