@@ -369,7 +369,13 @@ export default class MetadataService {
 		const extensionsGroup = extensions.map((ext) => `(${ext})`).join('|');
 
 		return this.parserService.splitGroups(source, { keepDelimiters: true })
-			.filter((group) => new RegExp(`.*(${extensionsGroup}).*`, 'i').exec(group)?.at(0) == undefined)
+			.filter((group) => {
+				// If root
+				if (group == this.parserService.stripGroupDelimiters(group)[1]) {
+					return true;
+				}
+				return new RegExp(`.*(${extensionsGroup}).*`, 'i').exec(group)?.at(0) == undefined;
+			})
 			.map((group) => group.trim())
 			.join(' ')
 			.trim();
