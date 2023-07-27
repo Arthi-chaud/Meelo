@@ -22,7 +22,7 @@ import Admin from 'src/roles/admin.decorator';
 import IdentifierParam from 'src/identifier/identifier.pipe';
 import Response, { ResponseType } from 'src/response/response.decorator';
 import { LyricsResponseBuilder } from 'src/lyrics/models/lyrics.response';
-import { IsOptional } from 'class-validator';
+import { IsEnum, IsOptional } from 'class-validator';
 import TransformIdentifier from 'src/identifier/identifier.transform';
 import LibraryQueryParameters from 'src/library/models/library.query-parameters';
 import LibraryService from 'src/library/library.service';
@@ -32,8 +32,17 @@ import AlbumService from 'src/album/album.service';
 import AlbumQueryParameters from 'src/album/models/album.query-parameters';
 import ReleaseQueryParameters from 'src/release/models/release.query-parameters';
 import ReleaseService from 'src/release/release.service';
+import { SongType } from '@prisma/client';
 
 export class Selector extends IntersectionType(SongQueryParameters.SortingParameter) {
+	@IsEnum(SongType)
+	@IsOptional()
+	@ApiPropertyOptional({
+		enum: SongType,
+		description: 'Filter the songs by type'
+	})
+	type?: SongType;
+
 	@IsOptional()
 	@ApiPropertyOptional({
 		description: 'Filter songs by artist'

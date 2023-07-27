@@ -9,6 +9,7 @@ import TrackModule from 'src/track/track.module';
 import GenreModule from "../genre/genre.module";
 import { AlbumResponseBuilder } from './models/album.response';
 import ProvidersModule from 'src/providers/providers.module';
+import MetadataModule from 'src/metadata/metadata.module';
 
 @Module({
 	imports: [
@@ -19,6 +20,7 @@ import ProvidersModule from 'src/providers/providers.module';
 		forwardRef(() => ReleaseModule),
 		forwardRef(() => TrackModule),
 		GenreModule,
+		forwardRef(() => MetadataModule),
 	],
 	exports: [AlbumService, AlbumResponseBuilder],
 	providers: [AlbumService, AlbumResponseBuilder],

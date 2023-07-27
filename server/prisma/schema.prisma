@@ -236,7 +236,7 @@ model Song {
 	/// @description The lyrics of the song
 	lyrics			Lyrics?
 	/// @description The type of the song
-	type			SongType
+	type			SongType		@default(Unknown)
 	/// @description The date the song was registered
 	registeredAt		DateTime	@default(now())
 	/// @description The genres of the song
@@ -267,6 +267,8 @@ enum SongType {
 	Clean
 	/// A demo of the song
 	Demo
+	/// Used for migrations
+	Unknown
 	@@map("song-types")
 }
 

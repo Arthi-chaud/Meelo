@@ -1,6 +1,6 @@
 /* eslint-disable id-length */
 import { Injectable } from "@nestjs/common";
-import { SongType } from "@prisma/client";
+import { AlbumType, SongType } from "@prisma/client";
 import escapeRegex from "src/utils/escape-regex";
 
 @Injectable()
@@ -184,5 +184,51 @@ export default class ParserService {
 			return SongType.Remix;
 		}
 		return SongType.Original;
+	}
+
+	getAlbumType(albumName: string): AlbumType {
+		albumName = albumName.toLowerCase();
+		if (albumName.includes('soundtrack') ||
+			albumName.includes('from the motion picture') ||
+			albumName.includes('bande originale') ||
+			albumName.includes('music from and inspired by the television series') ||
+			albumName.includes('music from and inspired by the motion picture')) {
+			return AlbumType.Soundtrack;
+		}
+		if (albumName.includes('music videos') ||
+			albumName.includes('the video') ||
+			albumName.includes('dvd')) {
+			return AlbumType.VideoAlbum;
+		}
+		if (albumName.search(/.+(live).*/g) != -1 ||
+			albumName.includes('unplugged') ||
+			albumName.includes(' tour') ||
+			albumName.includes('live from ') ||
+			albumName.includes('live at ') ||
+			albumName.includes('live à ')) {
+			return AlbumType.LiveRecording;
+		}
+		if (albumName.endsWith('- single') ||
+			albumName.endsWith('- ep') ||
+			albumName.endsWith('(remixes)')) {
+			return AlbumType.Single;
+		}
+		if (
+			albumName.includes('remix album') ||
+			albumName.includes(' the remixes') ||
+			albumName.includes('mixes') ||
+			albumName.includes('remixes') ||
+			albumName.includes('remixed') ||
+			albumName.includes('best mixes')) {
+			return AlbumType.RemixAlbum;
+		}
+		if (albumName.includes('best of') ||
+			albumName.includes('hits') ||
+			albumName.includes('greatest hits') ||
+			albumName.includes('singles') ||
+			albumName.includes('collection')) {
+			return AlbumType.Compilation;
+		}
+		return AlbumType.StudioRecording;
 	}
 }

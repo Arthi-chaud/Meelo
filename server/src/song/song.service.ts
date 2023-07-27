@@ -114,7 +114,6 @@ export default class SongService extends RepositoryService<
 	/**
 	 * Get
 	 */
-
 	static formatWhereInput(where: SongQueryParameters.WhereInput) {
 		return {
 			id: where.id,
@@ -144,6 +143,7 @@ export default class SongService extends RepositoryService<
 				gt: where.playCount?.moreThan,
 				lt: where.playCount?.below
 			},
+			type: where.type,
 			tracks: where.library ? {
 				some: TrackService.formatManyWhereInput({ library: where.library })
 			} : where.album ? {

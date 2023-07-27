@@ -1,7 +1,7 @@
 import { TestingModule } from "@nestjs/testing";
 import ParserService from "./parser.service";
 import { createTestingModule } from "test/test-module";
-import { SongType } from "@prisma/client";
+import { AlbumType, SongType } from "@prisma/client";
 
 describe('Parser Service', () => {
 	let parserService: ParserService
@@ -351,5 +351,67 @@ describe('Parser Service', () => {
 		it("Edit (Album Edit)", () => {
 			expect(parserService.getSongType('Fever (Album Edit)')).toBe(SongType.Edit);
 		});
-	})
+	});
+
+
+	describe('Detect Album Type', () => {
+
+		it('should identify title as studio album', () => {
+			expect(parserService.getAlbumType('Into the Skyline')).toBe(AlbumType.StudioRecording);
+			expect(parserService.getAlbumType('Celebration')).toBe(AlbumType.StudioRecording);
+			expect(parserService.getAlbumType('Living Room')).toBe(AlbumType.StudioRecording);
+		});
+
+		it('should identify title as live album', () => {
+			expect(parserService.getAlbumType('Intimate & Live')).toBe(AlbumType.LiveRecording);
+			expect(parserService.getAlbumType('Some Album (Live)')).toBe(AlbumType.LiveRecording);
+			expect(parserService.getAlbumType('11,000 Click (Live at Brixton)')).toBe(AlbumType.LiveRecording);
+			expect(parserService.getAlbumType('Unplugged')).toBe(AlbumType.LiveRecording);
+			expect(parserService.getAlbumType('Live À Paris')).toBe(AlbumType.LiveRecording);
+		});
+
+		it('should identify title as compilation album', () => {
+			expect(parserService.getAlbumType('Happy BusDay: Best of Superbus')).toBe(AlbumType.Compilation);
+			expect(parserService.getAlbumType('The Very Best of Moby')).toBe(AlbumType.Compilation);
+			expect(parserService.getAlbumType('The Singles Collection')).toBe(AlbumType.Compilation);
+			expect(parserService.getAlbumType('The Immaculate Collection')).toBe(AlbumType.Compilation);
+			expect(parserService.getAlbumType('Greatest Hits: My Prerogative')).toBe(AlbumType.Compilation);
+			expect(parserService.getAlbumType('A decade of Hits')).toBe(AlbumType.Compilation);
+		});
+
+		it("should identify title as video album", () => {
+			expect(parserService.getAlbumType('Britney: The Videos')).toBe(AlbumType.VideoAlbum);
+			expect(parserService.getAlbumType('Greatest Hits: My Prerogative - The Videos')).toBe(AlbumType.VideoAlbum);
+			expect(parserService.getAlbumType('Celebration - The Video Collection')).toBe(AlbumType.VideoAlbum);
+			expect(parserService.getAlbumType('The Video Collection 93:99')).toBe(AlbumType.VideoAlbum);
+			expect(parserService.getAlbumType('Music Videos')).toBe(AlbumType.VideoAlbum);
+			expect(parserService.getAlbumType('Music Videos II')).toBe(AlbumType.VideoAlbum);
+			expect(parserService.getAlbumType('In The Zone DVD')).toBe(AlbumType.VideoAlbum);
+		});
+		it("should identify title as remix album", () => {
+			expect(parserService.getAlbumType('B In The Mix: The Remixes')).toBe(AlbumType.RemixAlbum);
+			expect(parserService.getAlbumType('Rated R: Remixed')).toBe(AlbumType.RemixAlbum);
+			expect(parserService.getAlbumType('Move To This - Remix Album')).toBe(AlbumType.RemixAlbum);
+			expect(parserService.getAlbumType('Essential Mixes - 12" Masters')).toBe(AlbumType.RemixAlbum);
+			expect(parserService.getAlbumType('Everybody Move (To The Mixes)')).toBe(AlbumType.RemixAlbum);
+			expect(parserService.getAlbumType('Dance Remixes')).toBe(AlbumType.RemixAlbum);
+			expect(parserService.getAlbumType('The Best Mixes From The Album Debut')).toBe(AlbumType.RemixAlbum);
+			expect(parserService.getAlbumType('Mixes')).toBe(AlbumType.RemixAlbum);
+		});
+
+		it("should identify title as soundtrack album", () => {
+			expect(parserService.getAlbumType('Evita: The Complete Motion Picture Music Soundtrack')).toBe(AlbumType.Soundtrack);
+			expect(parserService.getAlbumType("Who's That Girl (Original Motion Picture Soundtrack)")).toBe(AlbumType.Soundtrack);
+			expect(parserService.getAlbumType("Berlin Calling (The Soundtrack)")).toBe(AlbumType.Soundtrack);
+			expect(parserService.getAlbumType('Desperate Housewives (Music From and Inspired By The Television Series)')).toBe(AlbumType.Soundtrack);
+			expect(parserService.getAlbumType("The Next Best Thing: Music From the Motion Picture")).toBe(AlbumType.Soundtrack);
+			expect(parserService.getAlbumType("8 femmes (Bande originale du film)")).toBe(AlbumType.Soundtrack);
+		});
+
+		it('should identify title as single', () => {
+			expect(parserService.getAlbumType('Twist - Single')).toBe(AlbumType.Single);
+			expect(parserService.getAlbumType('Twist - EP')).toBe(AlbumType.Single);
+			expect(parserService.getAlbumType('Falling (Remixes)')).toBe(AlbumType.Single);
+		});
+	});
 });
