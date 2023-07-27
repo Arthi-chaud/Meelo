@@ -387,22 +387,37 @@ export default class SongService extends RepositoryService<
 		if (album.type != AlbumType.StudioRecording) {
 			return [];
 		}
+		const albumSongs = await this.getMany({ album: { id: album.id } });
+		const albumSongsBaseNames = albumSongs.map(
+			({ name }) => new Slug(this.getBaseSongName(name)).toString()
+		);
 		const relatedAlbums = await this.prismaService.album.findMany({
 			where: {
 				...AlbumService.formatManyWhereInput({ related: { id: release.albumId } }),
-				type: { in: [AlbumType.Single, AlbumType.StudioRecording] }
+				type: AlbumType.Single
 			}
 		});
 
 		return this.prismaService.song.findMany({
 			where: {
 				tracks: { some: { release: { album: {
-					id: { in: relatedAlbums.map(({ id }) => id).concat(album.id) }
+					OR: [
+						// Get songs from related albums
+						{ id: { in: relatedAlbums.map(({ id }) => id).concat(album.id) } },
+						// Get songs from singles, based on their name
+						...albumSongsBaseNames.map((slug) => ({
+							slug: { startsWith: slug },
+							artistId: album.artistId,
+							type: AlbumType.Single
+						})),
+					]
 				} } } },
 				AND: [
+					// Exclude songs that are already on the release
 					{ tracks: { none: {
 						release: { id: release.id }
 					} } },
+					// We only want songs that have at least one audtio tracks
 					{ tracks: { some: { type: TrackType.Audio } } },
 					{ slug: { not: { contains: '-mix' } } },
 					{ slug: { not: { contains: '-remix' } } },

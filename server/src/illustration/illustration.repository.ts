@@ -536,6 +536,7 @@ export default class IllustrationRepository {
 				const [blurhash, colors] = await this.illustrationService
 					.getIllustrationBlurHashAndColors(illustrationBytes);
 
+				this.logger.verbose(`Extracting colors of illustration from '${fileName}' successful`);
 				if (path == releaseIllustrationPath || path == discIllustrationPath) {
 					await this.prismaService.releaseIllustration.create({
 						data: {
