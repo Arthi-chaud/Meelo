@@ -33,6 +33,7 @@ import AlbumQueryParameters from 'src/album/models/album.query-parameters';
 import ReleaseQueryParameters from 'src/release/models/release.query-parameters';
 import ReleaseService from 'src/release/release.service';
 import { SongType } from '@prisma/client';
+import UpdateSongDTO from './models/update-song.dto';
 
 export class Selector extends IntersectionType(SongQueryParameters.SortingParameter) {
 	@IsEnum(SongType)
@@ -148,6 +149,19 @@ export class SongController {
 		where: SongQueryParameters.WhereInput,
 	) {
 		return this.songService.get(where, include);
+	}
+
+	@ApiOperation({
+		summary: "Upate a song"
+	})
+	@Response({ handler: SongResponseBuilder })
+	@Post(':idOrSlug')
+	async updateSong(
+		@Body() updateDTO: UpdateSongDTO,
+		@IdentifierParam(SongService)
+		where: SongQueryParameters.WhereInput,
+	) {
+		return this.songService.update(updateDTO, where);
 	}
 
 	@ApiOperation({

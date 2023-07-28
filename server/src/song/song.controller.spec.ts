@@ -538,4 +538,22 @@ describe('Song Controller', () => {
 
 		});
 	})
+
+	describe('Update Song', () => {
+		it("Should update Song's Type", () => {
+			return request(app.getHttpServer())
+				.post(`/songs/${dummyRepository.songB1.id}`)
+				.send({
+					type: SongType.Remix
+				})
+				.expect(201)
+				.expect((res) => {
+					const song: Song = res.body;
+					expect(song).toStrictEqual({
+						...expectedSongResponse(dummyRepository.songB1),
+						type: SongType.Remix
+					});
+				});
+		})
+	})
 });
