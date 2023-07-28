@@ -185,7 +185,17 @@ const en = {
 	appearsOn: "Appears On",
 	featuredOnPlaylists: "Featured On",
 	bonusTracks: "Bonus Tracks",
-	relatedAlbums: "Related Albums"
+	relatedAlbums: "Related Albums",
+	changeSongType: "Change Song Type",
+	Original: 'Original',
+	Remix: 'Remix',
+	Live: 'Live',
+	Acoustic: 'Acoustic',
+	Instrumental: 'Instrumental',
+	Edit: 'Edit',
+	Clean: 'Clean',
+	Demo: 'Demo',
+	Unknown: 'Unknown'
 };
 
 export default en;
