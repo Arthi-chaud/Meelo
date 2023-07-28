@@ -360,6 +360,7 @@ export default class SongService extends RepositoryService<
 		where: SongQueryParameters.WhereInput,
 		pagination?: PaginationParameters,
 		include?: I,
+		type?: SongType,
 		sort?: SongQueryParameters.SortingParameter
 	) {
 		const { name, artistId } = await this.select(where, { name: true, artistId: true });
@@ -368,7 +369,8 @@ export default class SongService extends RepositoryService<
 		return this.prismaService.song.findMany({
 			where: {
 				artistId: artistId,
-				slug: { contains: new Slug(baseSongName).toString() }
+				slug: { contains: new Slug(baseSongName).toString() },
+				type: type
 			},
 			orderBy: sort ? this.formatSortingInput(sort) : undefined,
 			include: RepositoryService.formatInclude(include),

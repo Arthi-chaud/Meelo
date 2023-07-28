@@ -9,7 +9,7 @@ import TrackService from 'src/track/track.service';
 import SongQueryParameters from './models/song.query-params';
 import SongService from './song.service';
 import {
-	ApiOperation, ApiPropertyOptional, ApiTags, IntersectionType
+	ApiOperation, ApiPropertyOptional, ApiTags, IntersectionType, PickType
 } from '@nestjs/swagger';
 import { LyricsService } from 'src/lyrics/lyrics.service';
 import LyricsDto from 'src/lyrics/models/update-lyrics.dto';
@@ -85,6 +85,8 @@ export class Selector extends IntersectionType(SongQueryParameters.SortingParame
 	@TransformIdentifier(ReleaseService)
 	bsides: ReleaseQueryParameters.WhereInput;
 }
+
+class VersionsSelector extends PickType(Selector, ['type']) {}
 
 @ApiTags("Songs")
 @Controller('songs')
@@ -207,10 +209,12 @@ export class SongController {
 		@SortingQuery(SongQueryParameters.SortingKeys)
 		sortingParameter: SongQueryParameters.SortingParameter,
 		@IdentifierParam(SongService)
-		where: SongQueryParameters.WhereInput
+		where: SongQueryParameters.WhereInput,
+		@Query()
+		{ type }: VersionsSelector,
 	) {
 		return this.songService.getSongVersions(
-			where, paginationParameters, include, sortingParameter
+			where, paginationParameters, include, type, sortingParameter
 		);
 	}
 
