@@ -11,7 +11,7 @@ import {
 	ReleaseInclude, ReleaseSortingKeys, ReleaseWithRelations
 } from "../models/release";
 import {
-	SongInclude, SongSortingKeys, SongWithRelations
+	SongInclude, SongSortingKeys, SongType, SongWithRelations
 } from "../models/song";
 import { VideoWithRelations } from "../models/video";
 import {
@@ -529,14 +529,15 @@ export default class API {
 	static getAllSongsInLibrary<I extends SongInclude>(
 		librarySlugOrId: string | number,
 		sort?: SortingParameters<typeof SongSortingKeys>,
+		type?: SongType,
 		include?: I[]
 	): InfiniteQuery<SongWithRelations<I>> {
 		return {
-			key: ['libraries', librarySlugOrId, 'songs', sort ?? {}, ...API.formatIncludeKeys(include)],
+			key: ['libraries', librarySlugOrId, 'songs', sort ?? {}, ...API.formatIncludeKeys(include), type ?? {}],
 			exec: (pagination) => API.fetch({
 				route: `/songs`,
 				errorMessage: 'Library does not exist',
-				otherParameters: { library: librarySlugOrId },
+				otherParameters: { library: librarySlugOrId, type },
 				parameters: { pagination: pagination, include, sort },
 				validator: PaginatedResponse(SongWithRelations(include ?? []))
 			})
@@ -571,14 +572,16 @@ export default class API {
 	 */
 	static getAllSongs<I extends SongInclude>(
 		sort?: SortingParameters<typeof SongSortingKeys>,
+		type?: SongType,
 		include?: I[]
 	): InfiniteQuery<SongWithRelations<I>> {
 		return {
-			key: ['songs', ...API.formatIncludeKeys(include), sort ?? {}],
+			key: ['songs', ...API.formatIncludeKeys(include), sort ?? {}, type ?? {}],
 			exec: (pagination) => API.fetch({
 				route: `/songs`,
 				errorMessage: 'Songs could not be loaded',
 				parameters: { pagination: pagination, include, sort },
+				otherParameters: { type },
 				validator: PaginatedResponse(SongWithRelations(include ?? []))
 			})
 		};
@@ -654,14 +657,15 @@ export default class API {
 	static getArtistSongs<I extends SongInclude>(
 		artistSlugOrId: string | number,
 		sort?: SortingParameters<typeof SongSortingKeys>,
+		type?: SongType,
 		include?: I[]
 	): InfiniteQuery<SongWithRelations<I>> {
 		return {
-			key: ['artist', artistSlugOrId, 'songs', sort ?? {}, ...API.formatIncludeKeys(include)],
+			key: ['artist', artistSlugOrId, 'songs', sort ?? {}, ...API.formatIncludeKeys(include), type ?? {}],
 			exec: (pagination) => API.fetch({
 				route: `/songs`,
 				errorMessage: `Artist '${artistSlugOrId}' not found`,
-				otherParameters: { artist: artistSlugOrId },
+				otherParameters: { artist: artistSlugOrId, type },
 				parameters: { pagination: pagination, include, sort },
 				validator: PaginatedResponse(SongWithRelations(include ?? []))
 			})
@@ -971,13 +975,15 @@ export default class API {
 	static getSongVersions<I extends SongInclude>(
 		songSlugOrId: string | number,
 		sort?: SortingParameters<typeof SongSortingKeys>,
+		type?: SongType,
 		include?: I[]
 	): InfiniteQuery<SongWithRelations<I>> {
 		return {
-			key: ['song', songSlugOrId, 'versions', sort ?? {}, ...API.formatIncludeKeys(include)],
+			key: ['song', songSlugOrId, 'versions', sort ?? {}, ...API.formatIncludeKeys(include), type ?? {}],
 			exec: (pagination) => API.fetch({
 				route: `/songs/${songSlugOrId}/versions`,
 				parameters: { pagination: pagination, include, sort },
+				otherParameters: { type },
 				validator: PaginatedResponse(SongWithRelations(include ?? []))
 			})
 		};
@@ -1266,13 +1272,14 @@ export default class API {
 	static getGenreSongs(
 		idOrSlug: string | number,
 		sort?: SortingParameters<typeof SongSortingKeys>,
+		type?: SongType,
 	): InfiniteQuery<SongWithRelations<'artist'>> {
 		return {
-			key: ['genre', idOrSlug, 'songs', sort ?? {}],
+			key: ['genre', idOrSlug, 'songs', sort ?? {}, type ?? {}],
 			exec: (pagination) => API.fetch({
 				route: `/songs`,
 				errorMessage: 'Genre not found',
-				otherParameters: { genre: idOrSlug },
+				otherParameters: { genre: idOrSlug, type },
 				parameters: { pagination: pagination, include: ['artist'], sort },
 				validator: PaginatedResponse(SongWithRelations(['artist']))
 			})
@@ -1331,14 +1338,15 @@ export default class API {
 	static searchSongs<I extends SongInclude>(
 		query: string,
 		sort?: SortingParameters<typeof SongSortingKeys>,
+		type?: SongType,
 		include?: I[]
 	): InfiniteQuery<SongWithRelations<I>> {
 		return {
-			key: ['search', 'songs', query, sort ?? {}, ...API.formatIncludeKeys(include)],
+			key: ['search', 'songs', query, sort ?? {}, ...API.formatIncludeKeys(include), type ?? {}],
 			exec: (pagination) => API.fetch({
 				route: `/songs`,
 				errorMessage: 'Search failed',
-				otherParameters: { query },
+				otherParameters: { query, type },
 				parameters: { pagination: pagination, include, sort },
 				validator: PaginatedResponse(SongWithRelations(include ?? []))
 			}),

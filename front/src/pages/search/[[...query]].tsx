@@ -17,7 +17,7 @@ export const getServerSideProps = prepareSSR((context) => {
 		infiniteQueries: [
 			API.searchArtists(searchQuery),
 			API.searchAlbums(searchQuery, undefined, undefined, ['artist']),
-			API.searchSongs(searchQuery, undefined, ['artist'])
+			API.searchSongs(searchQuery, undefined, undefined, ['artist'])
 		]
 	};
 });
@@ -61,7 +61,7 @@ const SearchPage = (
 			albumQuery={(sort, selectedType) =>
 				API.searchAlbums(encodeURIComponent(query!), selectedType, sort, ['artist'])
 			}
-			songQuery={(sort) => API.searchSongs(encodeURIComponent(query!), sort, ['artist'])}
+			songQuery={(sort, selectedType) => API.searchSongs(encodeURIComponent(query!), sort, selectedType, ['artist'])}
 		/>
 	</Box>;
 };

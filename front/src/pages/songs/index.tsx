@@ -16,8 +16,8 @@ export const getServerSideProps = prepareSSR((context) => {
 		additionalProps: { librarySlug },
 		infiniteQueries: [
 			librarySlug
-				? API.getAllSongsInLibrary(librarySlug, { sortBy, order }, ['artist'])
-				: API.getAllSongs({ sortBy, order }, ['artist'])
+				? API.getAllSongsInLibrary(librarySlug, { sortBy, order }, undefined, ['artist'])
+				: API.getAllSongs({ sortBy, order }, undefined, ['artist'])
 		]
 	};
 });
@@ -29,9 +29,9 @@ const LibrarySongsPage = (
 
 	librarySlug ??= getLibrarySlug(router.asPath);
 	return <InfiniteSongView
-		query={(sort) => librarySlug
-			? API.getAllSongsInLibrary(librarySlug, sort, ['artist'])
-			: API.getAllSongs(sort, ['artist'])
+		query={(sort, type) => librarySlug
+			? API.getAllSongsInLibrary(librarySlug, sort, type, ['artist'])
+			: API.getAllSongs(sort, type, ['artist'])
 		}
 	/>;
 };

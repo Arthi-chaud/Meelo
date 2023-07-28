@@ -12,7 +12,7 @@ export const getServerSideProps = prepareSSR((context) => {
 
 	return {
 		additionalProps: { artistIdentifier },
-		infiniteQueries: [API.getArtistSongs(artistIdentifier, undefined, ['artist'])]
+		infiniteQueries: [API.getArtistSongs(artistIdentifier, undefined, undefined, ['artist'])]
 	};
 });
 
@@ -30,7 +30,7 @@ const ArtistSongPage = (
 	return <Box sx={{ width: '100%' }}>
 		<ArtistRelationPageHeader artistSlugOrId={artistIdentifier}/>
 		<InfiniteSongView
-			query={(sort) => API.getArtistSongs(artistIdentifier, sort, ['artist'])}
+			query={(sort, type) => API.getArtistSongs(artistIdentifier, sort, type, ['artist'])}
 			formatSubtitle={(song) => getSongMainAlbum(song.id).then((album) => album.name)}
 		/>
 	</Box>;

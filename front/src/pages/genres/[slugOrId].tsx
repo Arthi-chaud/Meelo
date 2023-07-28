@@ -40,7 +40,7 @@ const GenrePage = ({ genreIdentifier }: InferSSRProps<typeof getServerSideProps>
 			enabled={true}
 			artistQuery={(sort) => API.getGenreArtists(genreIdentifier, sort)}
 			albumQuery={(sort, type) => API.getGenreAlbums(genreIdentifier, sort, type)}
-			songQuery={(sort) => API.getGenreSongs(genreIdentifier, sort)}
+			songQuery={(sort, type) => API.getGenreSongs(genreIdentifier, sort, type)}
 		/>
 	</Box>;
 };
