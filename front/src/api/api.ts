@@ -402,7 +402,7 @@ export default class API {
 	}
 
 	/**
-	 * Update Resourse Illustration
+	 * Update Resourse Type
 	 */
 	static async updateAlbum(
 		albumSlugOrId: number | string,
@@ -411,6 +411,23 @@ export default class API {
 		return API.fetch({
 			route: `/albums/${albumSlugOrId}`,
 			errorMessage: "Update Album Failed",
+			method: 'POST',
+			parameters: {},
+			emptyResponse: true,
+			data: { type: newType }
+		});
+	}
+
+	/**
+	 * Update Resourse Type
+	 */
+	static async updateSong(
+		songSlugOrId: number | string,
+		newType: SongType
+	): Promise<unknown> {
+		return API.fetch({
+			route: `/songs/${songSlugOrId}`,
+			errorMessage: "Update Song Failed",
 			method: 'POST',
 			parameters: {},
 			emptyResponse: true,
