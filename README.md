@@ -41,6 +41,14 @@ This project is made by and for music collectors. Its goal is to have a clean, o
   - etc...
   - Look over [here](https://arthi-chaud.github.io/Meelo/album-types/) to know how it works
 - ... And allow filtering based on Album's types
+- Song Typing
+  - Original Version
+  - Demo Version
+  - Instrumental Version
+  - Remix
+  - Acoustic Version
+  - Edit
+  - Clean Version
 - Embedded and inline artwork file handling
 - External Metadata Providers (Optional)
   - Genius
