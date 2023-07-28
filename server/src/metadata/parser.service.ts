@@ -1,5 +1,6 @@
 /* eslint-disable id-length */
 import { Injectable } from "@nestjs/common";
+import { AlbumType, SongType } from "@prisma/client";
 import escapeRegex from "src/utils/escape-regex";
 
 @Injectable()
@@ -135,5 +136,105 @@ export default class ParserService {
 			songName = songName.replace(group, '').trim();
 		});
 		return songName.trim();
+	}
+
+	getSongType(songName: string): SongType {
+		const songExtensions = this.splitGroups(songName, { removeRoot: true });
+		const extensionWords = songExtensions
+			.map((ext) => ext.toLowerCase())
+			.filter((ext) => !(ext.startsWith('feat ') || ext.startsWith('featuring ')))
+			.map((ext) => ext.split(' ')).flat();
+
+		const containsWord = (word: string) => extensionWords.includes(word);
+
+		if (songExtensions.length == 0) {
+			return SongType.Original;
+		}
+		if (containsWord('live')) {
+			return SongType.Live;
+		}
+		if (containsWord('acoustic')) {
+			return SongType.Acoustic;
+		}
+		if (containsWord('remix') || containsWord('dub') || containsWord('extended') || containsWord('vocal')) {
+			return SongType.Remix;
+		}
+		if (containsWord('demo')) {
+			return SongType.Demo;
+		}
+		if (containsWord('clean')) {
+			return SongType.Clean;
+		}
+		if (extensionWords.join(' ').includes('rough mix')) {
+			return SongType.Original;
+		}
+		if (containsWord('mix') && containsWord('edit')) {
+			return SongType.Remix;
+		}
+		if (containsWord('edit')) {
+			return SongType.Edit;
+		}
+		if (extensionWords.join(' ').includes('instrumental mix')) {
+			return SongType.Instrumental;
+		}
+		if (containsWord('mix')) {
+			return SongType.Remix;
+		}
+		if (containsWord('instrumental') || containsWord('instrumentale')) {
+			return SongType.Instrumental;
+		}
+		if (containsWord('single')) {
+			return SongType.Edit;
+		}
+		if (extensionWords.at(-1) == 'beats') {
+			return SongType.Remix;
+		}
+		return SongType.Original;
+	}
+
+	getAlbumType(albumName: string): AlbumType {
+		albumName = albumName.toLowerCase();
+		if (albumName.includes('soundtrack') ||
+			albumName.includes('from the motion picture') ||
+			albumName.includes('bande originale') ||
+			albumName.includes('music from and inspired by the television series') ||
+			albumName.includes('music from and inspired by the motion picture')) {
+			return AlbumType.Soundtrack;
+		}
+		if (albumName.includes('music videos') ||
+			albumName.includes('the video') ||
+			albumName.includes('dvd')) {
+			return AlbumType.VideoAlbum;
+		}
+		if (albumName.search(/.+(live).*/g) != -1 ||
+			albumName.includes('unplugged') ||
+			albumName.includes(' tour') ||
+			albumName.includes('live from ') ||
+			albumName.includes('live at ') ||
+			albumName.includes('live à ')) {
+			return AlbumType.LiveRecording;
+		}
+		if (albumName.endsWith('- single') ||
+			albumName.endsWith('- ep') ||
+			albumName.endsWith('(remixes)')) {
+			return AlbumType.Single;
+		}
+		if (
+			albumName.includes('remix album') ||
+			albumName.includes(' the remixes') ||
+			albumName.includes('mixes') ||
+			albumName.includes('remixes') ||
+			albumName.includes('remixed') ||
+			albumName.includes('best mixes')) {
+			return AlbumType.RemixAlbum;
+		}
+		if (albumName.includes('best of') ||
+			albumName.includes('hits') ||
+			albumName.includes('greatest hits') ||
+			albumName.includes('singles') ||
+			albumName.includes('collection')) {
+			return AlbumType.Compilation;
+		}
+		return AlbumType.StudioRecording;
 	}
 }

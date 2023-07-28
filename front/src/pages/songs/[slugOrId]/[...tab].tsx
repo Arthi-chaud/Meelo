@@ -31,7 +31,7 @@ export const getServerSideProps = prepareSSR((context) => {
 			API.getSongLyrics(songIdentifier),
 		],
 		infiniteQueries: [
-			API.getSongVersions(songIdentifier, undefined, ['artist']),
+			API.getSongVersions(songIdentifier, undefined, undefined, ['artist']),
 			API.getSongTracks(songIdentifier)
 		]
 	};
@@ -114,7 +114,7 @@ const SongPage = (
 			)}
 			{ tab == 'versions' &&
 				<InfiniteSongView
-					query={(sort) => API.getSongVersions(songIdentifier, sort, ['artist'])}
+					query={(sort, type) => API.getSongVersions(songIdentifier, sort, type, ['artist'])}
 				/>
 			}
 			{ tab == 'tracks' &&

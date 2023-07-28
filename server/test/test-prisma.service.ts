@@ -1,5 +1,5 @@
 import { Injectable } from "@nestjs/common";
-import { Album, AlbumType, Artist, File, Genre, Library, Lyrics, PlaylistEntry, Release, Song, Track, TrackType } from "@prisma/client";
+import { Album, AlbumType, Artist, File, Genre, Library, Lyrics, PlaylistEntry, Release, Song, SongType, Track, TrackType } from "@prisma/client";
 import { Playlist } from "src/prisma/models";
 import PrismaService from "src/prisma/prisma.service";
 
@@ -95,7 +95,7 @@ export default class TestPrismaService extends PrismaService {
 		});
 		this.songA1 = await this.song.create({
 			data: { name: "My Song", slug: 'my-song', artistId: this.artistA.id, genres:
-				{ connect: [{ id: this.genreA.id }, { id: this.genreB.id }]}
+				{ connect: [{ id: this.genreA.id }, { id: this.genreB.id }]}, type: SongType.Original
 			}
 		});
 		this.lyricsA1 = await this.lyrics.create({
@@ -122,7 +122,7 @@ export default class TestPrismaService extends PrismaService {
 		});
 		this.songA2 = await this.song.create({
 			data: { name: "My Other Song", slug: 'my-other-song', artistId: this.artistA.id, genres:
-				{ connect: { id: this.genreB.id } }
+				{ connect: { id: this.genreB.id } }, type: SongType.Original
 			}
 		});
 		this.fileA2_1 = await this.file.create({
@@ -145,7 +145,7 @@ export default class TestPrismaService extends PrismaService {
 		});
 		this.songB1 = await this.song.create({
 			data: { name: "My Second Song", slug: 'my-second-song', artistId: this.artistB.id, genres:
-				{ connect: { id: this.genreB.id } }
+				{ connect: { id: this.genreB.id } }, type: SongType.Original
 			}
 		});
 		this.fileB1_1 = await this.file.create({
@@ -168,7 +168,7 @@ export default class TestPrismaService extends PrismaService {
 		});
 		this.songC1 = await this.song.create({
 			data: { name: "My C Song", slug: 'my-c-song', artistId: this.artistC.id, genres:
-				{ connect: { id: this.genreC.id } }
+				{ connect: { id: this.genreC.id } }, type: SongType.Original
 			}
 		});
 		this.fileC1_1 = await this.file.create({

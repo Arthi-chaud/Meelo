@@ -5,7 +5,7 @@ import ArtistService from "src/artist/artist.service";
 import ArtistModule from "src/artist/artist.module";
 import PrismaModule from "src/prisma/prisma.module";
 import PrismaService from "src/prisma/prisma.service";
-import type { Song } from "src/prisma/models";
+import { Song } from "src/prisma/models";
 import Slug from "src/slug/slug";
 import { SongAlreadyExistsException, SongNotEmptyException, SongNotFoundByIdException, SongNotFoundException } from "./song.exceptions";
 import { ArtistNotFoundByIDException, ArtistNotFoundException } from "src/artist/artist.exceptions";
@@ -20,6 +20,7 @@ import { LyricsModule } from "src/lyrics/lyrics.module";
 import { LyricsService } from "src/lyrics/lyrics.service";
 import { LyricsNotFoundByIDException } from "src/lyrics/lyrics.exceptions";
 import ReleaseModule from "src/release/release.module";
+import { SongType } from "@prisma/client";
 import MetadataModule from "src/metadata/metadata.module";
 
 describe('Song Service', () => {
@@ -67,6 +68,7 @@ describe('Song Service', () => {
 			expect(newSong.slug).toBe('my-song-3');
 			expect(newSong.registeredAt).toStrictEqual(registeredAt);
 			expect(newSong.playCount).toBe(0);
+			expect(newSong.type).toBe(SongType.Original);
 		});
 
 		it("should throw, as a song with the name name from the same artist exists", async () => {

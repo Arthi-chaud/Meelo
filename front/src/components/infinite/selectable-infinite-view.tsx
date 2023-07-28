@@ -10,7 +10,9 @@ import { MeeloInfiniteQueryFn } from "../../api/use-query";
 import InfiniteAlbumView from "./infinite-resource-view/infinite-album-view";
 import InfiniteArtistView from "./infinite-resource-view/infinite-artist-view";
 import InfiniteSongView from "./infinite-resource-view/infinite-song-view";
-import { SongSortingKeys, SongWithRelations } from "../../models/song";
+import {
+	SongSortingKeys, SongType, SongWithRelations
+} from "../../models/song";
 import { SortingParameters } from "../../utils/sorting";
 import Translate from "../../i18n/translate";
 
@@ -23,7 +25,7 @@ const itemTypes = [
 type SelectableInfiniteViewProps = {
 	albumQuery: MeeloInfiniteQueryFn<AlbumWithRelations<'artist'>, [sort: SortingParameters<typeof AlbumSortingKeys>, type: AlbumType | undefined]>;
 	artistQuery: MeeloInfiniteQueryFn<Artist, [sort: SortingParameters<typeof ArtistSortingKeys>]>;
-	songQuery: MeeloInfiniteQueryFn<SongWithRelations<'artist'>, [sort: SortingParameters<typeof SongSortingKeys>]>;
+	songQuery: MeeloInfiniteQueryFn<SongWithRelations<'artist'>, [sort: SortingParameters<typeof SongSortingKeys>, type: SongType | undefined]>;
 	default?: string | typeof itemTypes[number];
 	onTypeSelect?: (selectedType: SelectableInfiniteViewProps['default']) => void;
 	enabled: boolean;
@@ -57,7 +59,7 @@ const SelectableInfiniteView = (props: SelectableInfiniteViewProps) => {
 				/>
 				: selectedType == 'song' ?
 					<InfiniteSongView key={selectedType}
-						query={(sort) => props.songQuery(sort)}
+						query={(sort, type) => props.songQuery(sort, type)}
 					/> : <></>
 		)}
 	</Box>;

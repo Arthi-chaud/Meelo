@@ -235,6 +235,8 @@ model Song {
 	tracks			Track[]
 	/// @description The lyrics of the song
 	lyrics			Lyrics?
+	/// @description The type of the song
+	type			SongType		@default(Unknown)
 	/// @description The date the song was registered
 	registeredAt		DateTime	@default(now())
 	/// @description The genres of the song
@@ -245,6 +247,29 @@ model Song {
 	playlists PlaylistEntry[]
 	@@unique([slug, artistId])
 	@@map("songs")
+}
+
+/// A type of song
+enum SongType {
+	/// The original, album version of the song
+	Original
+	/// A live rendition of the song
+	Live
+	/// An acoustic rendition of the song
+	Acoustic
+	/// A Remix/Dub of the song 
+	Remix
+	/// The instrumental version of the song
+	Instrumental
+	/// The edit of the original version of the song
+	Edit
+	/// The clean version of the song
+	Clean
+	/// A demo of the song
+	Demo
+	/// Used for migrations
+	Unknown
+	@@map("song-types")
 }
 
 /// Enumeration of the different sources of a track rip

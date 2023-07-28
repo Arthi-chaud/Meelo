@@ -17,6 +17,7 @@ import { useQueryClient } from "../../api/use-query";
 import { Delete } from "@mui/icons-material";
 import { toast } from "react-hot-toast";
 import { translate } from "../../i18n/translate";
+import ChangeSongType from "../actions/song-type";
 
 type SongContextualMenuProps = {
 	song: SongWithRelations<'artist'>;
@@ -48,6 +49,7 @@ const SongContextualMenu = (props: SongContextualMenuProps) => {
 		[AddToPlaylistAction(props.song.id, queryClient)],
 		[GoToSongVersionAction(songSlug), GoToRelatedTracksAction(songSlug)],
 		[ShowMasterTrackFileInfoAction(confirm, queryClient, props.song.id)],
+		[ChangeSongType(props.song, queryClient, confirm)],
 		[
 			DownloadAsyncAction(
 				confirm,

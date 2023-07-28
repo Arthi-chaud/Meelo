@@ -4,7 +4,7 @@ import {
 import ArtistService from 'src/artist/artist.service';
 import Slug from 'src/slug/slug';
 import {
-	AlbumType, Prisma, TrackType
+	AlbumType, Prisma, SongType, TrackType
 } from '@prisma/client';
 import PrismaService from 'src/prisma/prisma.service';
 import type SongQueryParameters from './models/song.query-params';
@@ -86,6 +86,7 @@ export default class SongService extends RepositoryService<
 			},
 			registeredAt: song.registeredAt,
 			playCount: 0,
+			type: this.parserService.getSongType(song.name),
 			name: song.name,
 			slug: new Slug(song.name).toString()
 		};
@@ -113,7 +114,6 @@ export default class SongService extends RepositoryService<
 	/**
 	 * Get
 	 */
-
 	static formatWhereInput(where: SongQueryParameters.WhereInput) {
 		return {
 			id: where.id,
@@ -143,6 +143,7 @@ export default class SongService extends RepositoryService<
 				gt: where.playCount?.moreThan,
 				lt: where.playCount?.below
 			},
+			type: where.type,
 			tracks: where.library ? {
 				some: TrackService.formatManyWhereInput({ library: where.library })
 			} : where.album ? {
@@ -359,6 +360,7 @@ export default class SongService extends RepositoryService<
 		where: SongQueryParameters.WhereInput,
 		pagination?: PaginationParameters,
 		include?: I,
+		type?: SongType,
 		sort?: SongQueryParameters.SortingParameter
 	) {
 		const { name, artistId } = await this.select(where, { name: true, artistId: true });
@@ -367,7 +369,8 @@ export default class SongService extends RepositoryService<
 		return this.prismaService.song.findMany({
 			where: {
 				artistId: artistId,
-				slug: { contains: new Slug(baseSongName).toString() }
+				slug: { contains: new Slug(baseSongName).toString() },
+				type: type
 			},
 			orderBy: sort ? this.formatSortingInput(sort) : undefined,
 			include: RepositoryService.formatInclude(include),
@@ -391,9 +394,12 @@ export default class SongService extends RepositoryService<
 			return [];
 		}
 		const albumSongs = await this.getMany({ album: { id: album.id } });
-		const albumSongsBaseNames = albumSongs.map(
-			({ name }) => new Slug(this.getBaseSongName(name)).toString()
-		);
+		const albumSongsBaseNames = albumSongs
+			// Some albums have live songs from previous albums, we ignore them
+			.filter((song) => song.type != SongType.Live)
+			.map(
+				({ name }) => new Slug(this.getBaseSongName(name)).toString()
+			);
 		const relatedAlbums = await this.prismaService.album.findMany({
 			where: {
 				...AlbumService.formatManyWhereInput({ related: { id: release.albumId } }),
@@ -422,16 +428,7 @@ export default class SongService extends RepositoryService<
 					} } },
 					// We only want songs that have at least one audtio tracks
 					{ tracks: { some: { type: TrackType.Audio } } },
-					{ slug: { not: { contains: '-mix' } } },
-					{ slug: { not: { contains: '-remix' } } },
-					{ slug: { not: { contains: '-edit' } } },
-					{ slug: { not: { contains: '-dub' } } },
-					{ slug: { not: { contains: '-version' } } },
-					{ slug: { not: { contains: '-bonus-beats' } } },
-					{ slug: { not: { contains: '-instrumental' } } },
-					{ slug: { not: { contains: '-vocal' } } },
-					{ slug: { not: { endsWith: '-live' } } },
-					{ slug: { not: { contains: '-live-' } } },
+					{ type: { in: [SongType.Original, SongType.Acoustic, SongType.Demo] } },
 				]
 			},
 			orderBy: sort ? this.formatSortingInput(sort) : undefined,

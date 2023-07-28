@@ -9,12 +9,13 @@ import type GenreQueryParameters from "src/genre/models/genre.query-parameters";
 import { Artist, Song } from "src/prisma/models";
 import { filterAtomicRelationInclude } from "src/relation-include/atomic-relation-include.filter";
 import AlbumQueryParameters from "src/album/models/album.query-parameters";
+import { SongType } from "@prisma/client";
 
 namespace SongQueryParameters {
 	/**
 	 * The input required to save a song in the database
 	 */
-	export type CreateInput = Omit<Song, 'slug' | 'id' | 'playCount' | 'artist' | 'artistId' | 'tracks' | 'genres' | 'lyrics' | 'masterId' | 'registeredAt'>
+	export type CreateInput = Omit<Song, 'slug' | 'id' | 'playCount' | 'artist' | 'artistId' | 'tracks' | 'genres' | 'lyrics' | 'masterId' | 'registeredAt' | 'type'>
 		& {
 			artist: ArtistQueryParameters.WhereInput,
 			registeredAt?: Date,
@@ -46,13 +47,14 @@ namespace SongQueryParameters {
 		artist?: ArtistQueryParameters.WhereInput,
 		library: LibraryQueryParameters.WhereInput,
 		genre: GenreQueryParameters.WhereInput,
+		type?: SongType,
 		playCount: RequireExactlyOne<Record<'below' | 'exact' | 'moreThan', number>>,
 	}>>;
 
 	/**
 	 * The input required to update a song in the database
 	 */
-	export type UpdateInput = Partial<CreateInput & Pick<Song, 'playCount'>>;
+	export type UpdateInput = Partial<CreateInput & Pick<Song, 'playCount' | 'type'>>;
 	export type DeleteInput = {
 		id: Song['id']
 	};

@@ -9,7 +9,7 @@ import TrackService from 'src/track/track.service';
 import SongQueryParameters from './models/song.query-params';
 import SongService from './song.service';
 import {
-	ApiOperation, ApiPropertyOptional, ApiTags, IntersectionType
+	ApiOperation, ApiPropertyOptional, ApiTags, IntersectionType, PickType
 } from '@nestjs/swagger';
 import { LyricsService } from 'src/lyrics/lyrics.service';
 import LyricsDto from 'src/lyrics/models/update-lyrics.dto';
@@ -22,7 +22,7 @@ import Admin from 'src/roles/admin.decorator';
 import IdentifierParam from 'src/identifier/identifier.pipe';
 import Response, { ResponseType } from 'src/response/response.decorator';
 import { LyricsResponseBuilder } from 'src/lyrics/models/lyrics.response';
-import { IsOptional } from 'class-validator';
+import { IsEnum, IsOptional } from 'class-validator';
 import TransformIdentifier from 'src/identifier/identifier.transform';
 import LibraryQueryParameters from 'src/library/models/library.query-parameters';
 import LibraryService from 'src/library/library.service';
@@ -32,8 +32,18 @@ import AlbumService from 'src/album/album.service';
 import AlbumQueryParameters from 'src/album/models/album.query-parameters';
 import ReleaseQueryParameters from 'src/release/models/release.query-parameters';
 import ReleaseService from 'src/release/release.service';
+import { SongType } from '@prisma/client';
+import UpdateSongDTO from './models/update-song.dto';
 
 export class Selector extends IntersectionType(SongQueryParameters.SortingParameter) {
+	@IsEnum(SongType)
+	@IsOptional()
+	@ApiPropertyOptional({
+		enum: SongType,
+		description: 'Filter the songs by type'
+	})
+	type?: SongType;
+
 	@IsOptional()
 	@ApiPropertyOptional({
 		description: 'Filter songs by artist'
@@ -75,6 +85,8 @@ export class Selector extends IntersectionType(SongQueryParameters.SortingParame
 	@TransformIdentifier(ReleaseService)
 	bsides: ReleaseQueryParameters.WhereInput;
 }
+
+class VersionsSelector extends PickType(Selector, ['type']) {}
 
 @ApiTags("Songs")
 @Controller('songs')
@@ -142,6 +154,19 @@ export class SongController {
 	}
 
 	@ApiOperation({
+		summary: "Upate a song"
+	})
+	@Response({ handler: SongResponseBuilder })
+	@Post(':idOrSlug')
+	async updateSong(
+		@Body() updateDTO: UpdateSongDTO,
+		@IdentifierParam(SongService)
+		where: SongQueryParameters.WhereInput,
+	) {
+		return this.songService.update(updateDTO, where);
+	}
+
+	@ApiOperation({
 		summary: "Increment a song's play count"
 	})
 	@Response({ handler: SongResponseBuilder })
@@ -184,10 +209,12 @@ export class SongController {
 		@SortingQuery(SongQueryParameters.SortingKeys)
 		sortingParameter: SongQueryParameters.SortingParameter,
 		@IdentifierParam(SongService)
-		where: SongQueryParameters.WhereInput
+		where: SongQueryParameters.WhereInput,
+		@Query()
+		{ type }: VersionsSelector,
 	) {
 		return this.songService.getSongVersions(
-			where, paginationParameters, include, sortingParameter
+			where, paginationParameters, include, type, sortingParameter
 		);
 	}
 
