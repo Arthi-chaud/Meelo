@@ -26,9 +26,14 @@ import '../theme/styles.css';
 import ThemeProvider from "../theme/provider";
 import { PersistGate } from "redux-persist/integration/react";
 import { LightTheme } from "../theme/theme";
+import { DefaultMeeloQueryOptions } from "../api/use-query";
 
 function MyApp({ Component, pageProps: { session, ...pageProps } }: AppProps) {
-	const [queryClient] = useState(() => new QueryClient());
+	const [queryClient] = useState(() => new QueryClient({
+		defaultOptions: {
+			queries: DefaultMeeloQueryOptions
+		}
+	}));
 	const router = useRouter();
 	const [errorType, setError] = useState<'not-found' | 'error' | undefined>();
 

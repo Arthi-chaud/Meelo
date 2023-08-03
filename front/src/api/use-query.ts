@@ -35,9 +35,15 @@ export type MeeloInfiniteQueryFn<
 	Params extends any[] = any[]
 > = (...args: Params) => InfiniteQuery<QueryReturnType>
 
-const defaultMeeloQueryOptions = {
+export const DefaultMeeloQueryOptions = {
 	useErrorBoundary: true,
-	retry: 1
+	retry: 3,
+	staleTime: 5 * (60 * 1000),
+	cacheTime: 10 * (60 * 1000),
+	refetchOnMount: true,
+	// We want this in dev, not in prod to avoid useless refecthes.
+	refetchOnWindowFocus: process.env.NODE_ENV != 'production',
+	refetchOnReconnect: true
 };
 
 /**
@@ -57,7 +63,7 @@ const prepareMeeloQuery = <QueryReturnType = unknown, Params extends any[] = unk
 		queryKey: queryParams.key,
 		queryFn: queryParams.exec,
 		enabled: enabled,
-		...defaultMeeloQueryOptions
+		...DefaultMeeloQueryOptions
 	};
 };
 
@@ -94,7 +100,7 @@ const prepareMeeloInfiniteQuery = <QueryReturnType = unknown, Params extends any
 					end: result.metadata.next === null
 				})),
 		enabled: enabled,
-		...defaultMeeloQueryOptions
+		...DefaultMeeloQueryOptions
 	};
 };
 
