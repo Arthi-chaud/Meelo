@@ -3,6 +3,7 @@ import {
 } from "@mui/material";
 import Link from "next/link";
 import Translate from "../i18n/translate";
+import { useErrorBoundary } from "react-error-boundary";
 
 type ErrorPageProps = {
 	heading: string | JSX.Element;
@@ -12,6 +13,8 @@ type ErrorPageProps = {
  * Common skeleton for error pages (404, 500)
  */
 const ErrorPage = ({ heading }: ErrorPageProps) => {
+	const { resetBoundary } = useErrorBoundary();
+
 	return <Box
 		width='100%' display="flex" justifyContent="space-evenly"
 		alignItems="center" minHeight="100vh" flexDirection="column"
@@ -22,7 +25,7 @@ const ErrorPage = ({ heading }: ErrorPageProps) => {
 		}}>
 			{heading}
 		</Typography>
-		<Link href="/">
+		<Link href="/" onClick={() => resetBoundary()}>
 			<Button color='inherit' variant="outlined">
 				<Translate translationKey="goBackHome"/>
 			</Button>
