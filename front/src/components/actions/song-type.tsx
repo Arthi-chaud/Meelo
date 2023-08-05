@@ -43,7 +43,10 @@ const ChangeSongType = (
 	const mutation = useMutation((newType: SongType) => {
 		return API.updateSong(song.id, newType)
 			.then(() => {
+				toast.success('AAAA');
 				queryClient.client.invalidateQueries('songs');
+				queryClient.client.invalidateQueries('release');
+				queryClient.client.invalidateQueries('bsides');
 			})
 			.catch((error: Error) => toast.error(error.message));
 	});

@@ -424,7 +424,7 @@ export default class API {
 	static async updateSong(
 		songSlugOrId: number | string,
 		newType: SongType
-	): Promise<unknown> {
+	): Promise<void> {
 		return API.fetch({
 			route: `/songs/${songSlugOrId}`,
 			errorMessage: "Update Song Failed",
