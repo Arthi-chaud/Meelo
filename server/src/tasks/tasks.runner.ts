@@ -29,7 +29,7 @@ import PlaylistService from 'src/playlist/playlist.service';
 import IllustrationRepository from 'src/illustration/illustration.repository';
 import { SongType } from '@prisma/client';
 import ParserService from 'src/metadata/parser.service';
-import RefreshMetadataSelector from './models/refresh-metadata.selector';
+import type RefreshMetadataSelector from './models/refresh-metadata.selector';
 
 export const TaskQueue = 'task-queue';
 
@@ -212,12 +212,7 @@ export default class TaskRunner {
 		const tracks = await (where.track !== undefined ?
 			this.trackService.get(where.track, { sourceFile: true })
 				.then((track) => [track]) :
-			this.trackService.getMany({
-				album: where.album,
-				library: where.library,
-				release: where.release,
-				song: where.song
-			}, undefined, { sourceFile: true }));
+			this.trackService.getMany(where, undefined, { sourceFile: true }));
 		const updatedFiles: File[] = [];
 
 		await Promise.allSettled(
