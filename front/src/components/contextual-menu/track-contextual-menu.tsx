@@ -16,6 +16,7 @@ import { ShowTrackFileInfoAction } from "../actions/show-track-info";
 import { TrackWithRelations } from "../../models/track";
 import { UpdateTrackIllustrationAction } from "../actions/update-illustration";
 import { translate } from "../../i18n/translate";
+import { RefreshTrackMetadataAction } from "../actions/refresh-metadata";
 
 type TrackContextualMenuProps = {
 	track: TrackWithRelations<'song'>;
@@ -52,7 +53,10 @@ const TrackContextualMenu = (props: TrackContextualMenuProps) => {
 				onClick: () => masterMutation.mutate()
 			}
 		],
-		[UpdateTrackIllustrationAction(queryClient, props.track.id)],
+		[
+			UpdateTrackIllustrationAction(queryClient, props.track.id),
+			RefreshTrackMetadataAction(props.track.id)
+		],
 		[ShowTrackFileInfoAction(confirm, props.track.id)],
 		[DownloadAction(confirm, props.track.stream)]
 	]}/>;

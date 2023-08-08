@@ -185,7 +185,10 @@ const fr: TranslationMap = {
 	Edit: 'Version Courte',
 	Clean: 'Version Clean',
 	Demo: 'Maquette',
-	Unknown: 'Type Inconnu'
+	Unknown: 'Type Inconnu',
+
+	refreshMetadataStarted: "Mise à jour des métadonées... (Rechargez la page pour actualiser)",
+	refreshMetadataFailed: "Oups... La mise à jour des données a échoué."
 };
 
 export default fr;

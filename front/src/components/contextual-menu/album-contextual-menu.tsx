@@ -7,6 +7,7 @@ import ContextualMenu from "./contextual-menu";
 import { AlbumWithRelations } from "../../models/album";
 import { useQueryClient } from "../../api/use-query";
 import ChangeAlbumType from "../actions/album-type";
+import { RefreshAlbumMetadataAction } from "../actions/refresh-metadata";
 
 type AlbumContextualMenuProps = {
 	album: AlbumWithRelations<'artist'>;
@@ -22,7 +23,10 @@ const AlbumContextualMenu = (props: AlbumContextualMenuProps) => {
 			...props.album.artist ? [GoToArtistAction(props.album.artist.slug)] : [],
 			GoToAlbumReleasesAction(albumSlug),
 		],
-		[ChangeAlbumType(props.album, queryClient, confirm)],
+		[
+			ChangeAlbumType(props.album, queryClient, confirm),
+			RefreshAlbumMetadataAction(albumSlug)
+		],
 		[
 			DownloadReleaseAsyncAction(
 				confirm,

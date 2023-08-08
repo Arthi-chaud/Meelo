@@ -7,7 +7,7 @@ import {
 	HttpStatus, Inject, forwardRef
 } from '@nestjs/common';
 import type LibraryQueryParameters from 'src/library/models/library.query-parameters';
-import type { File, Library } from 'src/prisma/models';
+import type { File } from 'src/prisma/models';
 import FileManagerService from 'src/file-manager/file-manager.service';
 import type FileQueryParameters from 'src/file/models/file.query-parameters';
 import TrackService from 'src/track/track.service';
@@ -29,6 +29,7 @@ import PlaylistService from 'src/playlist/playlist.service';
 import IllustrationRepository from 'src/illustration/illustration.repository';
 import { SongType } from '@prisma/client';
 import ParserService from 'src/metadata/parser.service';
+import type RefreshMetadataSelector from './models/refresh-metadata.selector';
 
 export const TaskQueue = 'task-queue';
 
@@ -84,8 +85,9 @@ export default class TaskRunner {
 			return this.runTask(job, (where) => this.scanLibrary(where));
 		case Task.Housekeeping:
 			return this.runTask(job, () => this.housekeeping());
-		case Task.RefreshLibraryMetadata:
-			return this.runTask(job, (where) => this.refreshLibraryMetadata(where));
+		case Task.RefreshMetadata:
+			return this.runTask(job, (where: string) =>
+				this.refreshFilesMetadata(JSON.parse(where)));
 		case Task.FetchExternalMetadata:
 			return this.runTask(job, () => this.fetchExternalMetadata());
 		case Task.Clean:
@@ -94,9 +96,6 @@ export default class TaskRunner {
 		case Task.Scan:
 			job.name = Task.ScanLibrary;
 			return this.forEachLibrary(job, (where) => this.scanLibrary(where));
-		case Task.RefreshMetadata:
-			job.name = Task.RefreshLibraryMetadata;
-			return this.forEachLibrary(job, (where) => this.refreshLibraryMetadata(where));
 		}
 		await job.moveToFailed({ message: 'Unknown Task' });
 	}
@@ -172,7 +171,7 @@ export default class TaskRunner {
 
 		for (const candidate of candidates) {
 			try {
-				newlyRegistered.push(await this.registerFile(candidate, parentLibrary));
+				newlyRegistered.push(await this.registerFile(candidate, { id: parentLibrary.id }));
 			} catch (error) {
 				continue;
 			}
@@ -209,44 +208,31 @@ export default class TaskRunner {
 		}
 	}
 
-	/**
-	 * Re-register files who have been modified since their scan
-	 * Any file that has a different md5checksum that the one in the db will be re-registered
-	 * @param where
-	 */
-	private async refreshLibraryMetadata(where: LibraryQueryParameters.WhereInput): Promise<void> {
-		const library = await this.libraryService.get(where, { files: true });
-		const libraryFullPath = this.fileManagerService.getLibraryFullPath(library);
+	private async refreshFilesMetadata(where: RefreshMetadataSelector): Promise<void> {
+		const tracks = await (where.track !== undefined ?
+			this.trackService.get(where.track, { sourceFile: true })
+				.then((track) => [track]) :
+			this.trackService.getMany(where, undefined, { sourceFile: true }));
 		const updatedFiles: File[] = [];
 
-		this.logger.log(`'${library.slug}' library: Refresh files metadata`);
-		await Promise.all(
-			library.files.map(async (file) => {
-				const fullFilePath = `${libraryFullPath}/${file.path}`;
-				const fileStat = await this.fileManagerService.getFileStat(fullFilePath);
-
-				/**
-				 * If file has not been changed since, the md5checkum computation and rescan is canceled
-				 */
-				if (fileStat.mtime <= file.registerDate && fileStat.ctime <= file.registerDate) {
-					return;
-				}
-				const newMD5 = await this.fileManagerService
-					.getMd5Checksum(fullFilePath)
-					.catch(() => null);
-
-				if (newMD5 !== file.md5Checksum) {
-					updatedFiles.push(file);
-				}
-			})
+		await Promise.allSettled(
+			tracks.map((track) => this.sourceFileChanged(track.sourceFile)
+				.then((fileChanged) => {
+					if (fileChanged) {
+						updatedFiles.push(track.sourceFile);
+					}
+				}))
 		);
+
 		for (const file of updatedFiles) {
-			this.logger.log(`'${library.slug}' library: Refreshing '${file.path}' metadata`);
 			await this.unregisterFile({ id: file.id });
-			await this.registerFile(file.path, library, file.registerDate);
 		}
-		this.logger.log(`'${library.slug}' library: Refreshed ${updatedFiles.length} files metadata`);
 		await this.housekeeping();
+		for (const file of updatedFiles) {
+			this.logger.log(`Refreshing '${file.path} metadata`);
+			await this.registerFile(file.path, { id: file.libraryId }, file.registerDate);
+		}
+		this.logger.log(`Refreshed ${updatedFiles.length} files' metadata`);
 	}
 
 	private async fetchExternalMetadata(): Promise<void> {
@@ -305,8 +291,10 @@ export default class TaskRunner {
 	 * @returns a registered File entity
 	 */
 	private async registerFile(
-		filePath: string, parentLibrary: Library, registrationDate?: Date
+		filePath: string, libraryWhere: LibraryQueryParameters.WhereInput, registrationDate?: Date
 	): Promise<File> {
+		const parentLibrary = await this.libraryService.get(libraryWhere);
+
 		this.logger.log(`${parentLibrary.slug} library: Registration of ${filePath}`);
 		const fullFilePath = `${this.fileManagerService.getLibraryFullPath(parentLibrary)}/${filePath}`;
 		const fileMetadata = await this.metadataService.parseMetadata(fullFilePath).catch((err) => {
@@ -350,5 +338,31 @@ export default class TaskRunner {
 				{ id: song.id }
 			);
 		}));
+	}
+
+	/// Utils
+
+	/**
+	 * Determines whether souce file changed since its registration, based on its date and MD5 checksum
+	 */
+	private async sourceFileChanged(file: File): Promise<boolean> {
+		const parentLibrary = await this.libraryService.get({ id: file.libraryId });
+		const fullFilePath = `${this.fileManagerService.getLibraryFullPath(parentLibrary)}/${file.path}`;
+		const fileStat = await this.fileManagerService.getFileStat(fullFilePath);
+
+		/**
+		 * If file has not been changed since, the md5checkum computation and rescan is canceled
+		 */
+		if (fileStat.mtime <= file.registerDate && fileStat.ctime <= file.registerDate) {
+			return false;
+		}
+		const newMD5 = await this.fileManagerService
+			.getMd5Checksum(fullFilePath)
+			.catch(() => null);
+
+		if (newMD5 !== file.md5Checksum) {
+			return true;
+		}
+		return false;
 	}
 }

@@ -290,14 +290,16 @@ export default class API {
 	 * Calls for a task to refresh metadata of files in a library
 	 * @returns A object with the status of the task
 	 */
-	static async refreshMetadataInLibrary(
-		librarySlugOrId: number | string
-	): Promise<LibraryTaskResponse> {
+	static async refreshMetadata(
+		parentResourceType: 'library' | 'album' | 'song' | 'release' | 'track',
+		resourceSlugOrId: number | string
+	): Promise<void> {
 		return API.fetch({
-			route: `/tasks/refresh-metadata/${librarySlugOrId}`,
+			route: `/tasks/refresh-metadata`,
 			errorMessage: "Library refresh failed",
+			otherParameters: { [parentResourceType]: resourceSlugOrId },
 			parameters: { },
-			validator: LibraryTaskResponse
+			emptyResponse: true
 		});
 	}
 

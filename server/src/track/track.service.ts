@@ -139,7 +139,7 @@ export default class TrackService extends RepositoryService<
 					tracks: {
 						some: {
 							release: {
-								album: AlbumService.formatWhereInput(where.album!)
+								album: AlbumService.formatWhereInput(where.album)
 							}
 						}
 					}

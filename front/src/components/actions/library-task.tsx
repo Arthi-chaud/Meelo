@@ -1,6 +1,4 @@
-import {
-	AutoMode, CleaningServices, CloudSyncOutlined
-} from "@mui/icons-material";
+import { CleaningServices, CloudSyncOutlined } from "@mui/icons-material";
 import toast from "react-hot-toast";
 import API from "../../api/api";
 import LibraryTaskResponse from "../../models/library-task-response";
@@ -27,12 +25,6 @@ export const ScanLibraryAction = (librarySlugOrId: number | string): Action => (
 	label: 'scan',
 	icon: ScanAllLibrariesAction.icon,
 	onClick: () => handleTask(API.scanLibrary(librarySlugOrId))
-});
-
-export const RefreshMetadataLibraryAction = (librarySlugOrId: number | string): Action => ({
-	label: 'refreshMetadata',
-	icon: <AutoMode/>,
-	onClick: () => handleTask(API.refreshMetadataInLibrary(librarySlugOrId))
 });
 
 export const CleanAllLibrariesAction: Action = {

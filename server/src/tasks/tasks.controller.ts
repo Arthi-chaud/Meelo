@@ -1,4 +1,6 @@
-import { Controller, Get } from '@nestjs/common';
+import {
+	Controller, Get, Query
+} from '@nestjs/common';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import LibraryService from 'src/library/library.service';
 import { Timeout } from '@nestjs/schedule';
@@ -10,6 +12,9 @@ import { Queue } from 'bull';
 import Tasks, { TasksDescription } from './models/tasks';
 import { InjectQueue } from '@nestjs/bull';
 import { TaskQueueStatusResponse, TaskStatusResponse } from './models/task.response';
+import RefreshMetadataSelector from './models/refresh-metadata.selector';
+import { InvalidRequestException } from 'src/exceptions/meelo-exception';
+import Slug from 'src/slug/slug';
 
 @Admin()
 @ApiTags('Tasks')
@@ -29,7 +34,7 @@ export default class TasksController {
 	@ApiOperation({
 		summary: 'Get running and pending tasks'
 	})
-	@Get('status')
+	@Get()
 	async getTaskQueueStatus(): Promise<TaskQueueStatusResponse> {
 		const [activeJob, waitingJob] = await Promise.all([
 			this.tasksQueue.getActive(0, 1).then((jobs) => jobs.at(0)),
@@ -102,23 +107,25 @@ export default class TasksController {
 	}
 
 	@ApiOperation({
-		summary: "Refresh all libraries' files metadata"
+		summary: "Refresh files metadata, based on their relations"
 	})
 	@Get('refresh-metadata')
-	async refreshLibrariesFilesMetadata(): Promise<TaskStatusResponse> {
-		await this.tasksQueue.add(Tasks.RefreshMetadata);
-		return this.onTaskAdded();
-	}
-
-	@ApiOperation({
-		summary: "Refresh all library's files metadata"
-	})
-	@Get('refresh-metadata/:idOrSlug')
-	async refreshLibraryFilesMetadata(
-		@IdentifierParam(LibraryService)
-		where: LibraryQueryParameters.WhereInput
+	async refreshLibrariesFilesMetadata(
+		@Query() selector: RefreshMetadataSelector
 	): Promise<TaskStatusResponse> {
-		await this.tasksQueue.add(Tasks.RefreshLibraryMetadata, where);
+		if (Object.keys(selector).length == 0) {
+			// In the case where no valid selector is given, the request is invalid
+			throw new InvalidRequestException("No source file selector was given. See documentation for more info.");
+		}
+		await this.tasksQueue.add(
+			Tasks.RefreshMetadata,
+			JSON.stringify(selector, (__, value) => {
+				if (value instanceof Slug) {
+					return value.toString();
+				}
+				return value;
+			})
+		);
 		return this.onTaskAdded();
 	}
 
