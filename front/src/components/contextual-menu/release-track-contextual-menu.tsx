@@ -15,6 +15,7 @@ import { ShowTrackFileInfoAction } from "../actions/show-track-info";
 import { TrackWithRelations } from "../../models/track";
 import { UpdateTrackIllustrationAction } from "../actions/update-illustration";
 import { useQueryClient } from "../../api/use-query";
+import { RefreshTrackMetadataAction } from "../actions/refresh-metadata";
 
 type ReleaseTrackContextualMenuProps = {
 	track: TrackWithRelations<'song'>;
@@ -34,9 +35,12 @@ const ReleaseTrackContextualMenu = (props: ReleaseTrackContextualMenuProps) => {
 		[PlayNextAction(async () => props), PlayAfterAction(async () => props)],
 		[AddToPlaylistAction(props.track.song.id, queryClient)],
 		[GoToSongVersionAction(songSlug), GoToRelatedTracksAction(songSlug),],
-		[UpdateTrackIllustrationAction(queryClient, props.track.id)],
+		[
+			UpdateTrackIllustrationAction(queryClient, props.track.id),
+			RefreshTrackMetadataAction(props.track.id)
+		],
 		[ShowTrackFileInfoAction(confirm, props.track.id)],
-		[DownloadAction(confirm, props.track.stream), ShareSongAction(songSlug)]
+		[DownloadAction(confirm, props.track.stream), ShareSongAction(songSlug)],
 	]}/>;
 };
 

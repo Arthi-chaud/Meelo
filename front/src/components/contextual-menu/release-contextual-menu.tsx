@@ -14,6 +14,7 @@ import { ReleaseWithRelations } from "../../models/release";
 import { UpdateReleaseIllustrationAction } from "../actions/update-illustration";
 import { translate } from "../../i18n/translate";
 import ChangeAlbumType from "../actions/album-type";
+import { RefreshReleaseMetadataAction } from "../actions/refresh-metadata";
 
 type ReleaseContextualMenuProps = {
 	release: ReleaseWithRelations<'album'>;
@@ -60,8 +61,11 @@ const ReleaseContextualMenu = (props: ReleaseContextualMenuProps) => {
 				onClick: () => tracksMasterMutation.mutate()
 			},
 		],
-		[ChangeAlbumType(props.release.album, queryClient, confirm)],
-		[UpdateReleaseIllustrationAction(queryClient, props.release.id)],
+		[
+			ChangeAlbumType(props.release.album, queryClient, confirm),
+			UpdateReleaseIllustrationAction(queryClient, props.release.id),
+			RefreshReleaseMetadataAction(props.release.id)
+		],
 		[DownloadReleaseAction(confirm, props.release.id)],
 		[ShareReleaseAction(props.release.id)]
 	]}/>;
