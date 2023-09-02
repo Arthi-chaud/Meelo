@@ -60,26 +60,28 @@ const prepareSSR = <AdditionalProps>(
 		}
 		try {
 			await Promise.all([
-				parameters.infiniteQueries?.map(
+				...parameters.infiniteQueries?.map(
 					(query) => queryClient.prefetchInfiniteQuery(
 						prepareMeeloInfiniteQuery(() => query)
 					)
-				),
-				parameters.queries?.map(
+				) ?? [],
+				...parameters.queries?.map(
 					(query) => queryClient.prefetchQuery(
 						prepareMeeloQuery(() => query)
 					)
-				)
+				) ?? []
 			]);
 		} catch {
 			return {
 				notFound: true,
 			};
 		}
+		const dehydratedQueryClient = dehydrate(queryClient, { dehydrateQueries: true });
+
 		return {
 			props: {
 				additionalProps: parameters.additionalProps ?? null,
-				dehydratedState: JSON.parse(JSON.stringify(dehydrate(queryClient))),
+				dehydratedState: JSON.parse(JSON.stringify(dehydratedQueryClient))
 			}
 		};
 	};
