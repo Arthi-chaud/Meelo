@@ -30,6 +30,7 @@ import { RequireExactlyOne } from "type-fest";
 import Playlist, {
 	PlaylistInclude, PlaylistSortingKeys, PlaylistWithRelations
 } from "../models/playlist";
+import * as SSR from '../ssr';
 
 const AuthenticationResponse = yup.object({
 	access_token: yup.string().required()
@@ -70,7 +71,7 @@ export default class API {
 	/**
 	 * Utilitary functions
 	 */
-	private static isSSR = () => typeof window === 'undefined';
+	private static isSSR = SSR.isSSR;
 	private static isDev = () => process.env.NODE_ENV === 'development';
 
 	private static SSR_API_URL = process.env.ssrApiRoute!;
