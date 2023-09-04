@@ -20,12 +20,17 @@ export async function middleware(request: NextRequest) {
 	}
 	// eslint-disable-next-line @typescript-eslint/no-non-null-asserted-optional-chain, no-useless-escape
 	const albumId = pathname.match('\/albums\/(?<slug>[^\/]*)')?.at(1)!;
-	const album = await queryClient.fetchQuery(
-		prepareMeeloQuery((id) => API.getAlbum(id, ['artist']), albumId)
-	);
-	const master = await queryClient.fetchQuery(prepareMeeloQuery(API.getMasterRelease, album.id));
+	const master = await queryClient.fetchQuery(prepareMeeloQuery(API.getMasterRelease, albumId))
+		.catch(() => null);
 
-	return NextResponse.rewrite(`${origin}/releases/${album.artist?.slug ?? 'compilations'}+${album.slug}+${master.slug}`);
+	if (!master) {
+		// From https://github.com/vercel/next.js/discussions/30682#discussioncomment-3348330
+		const url = request.nextUrl.clone();
+
+		url.pathname = `/404`;
+		return NextResponse.rewrite(url);
+	}
+	return NextResponse.rewrite(`${origin}/releases/${master.id}`);
 }
 
 export const config = {
