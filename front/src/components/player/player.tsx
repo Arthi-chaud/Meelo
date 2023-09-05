@@ -24,7 +24,7 @@ const Player = () => {
 	const player = useRef<HTMLAudioElement | HTMLVideoElement>();
 	const audioPlayer = useRef<HTMLAudioElement>(typeof Audio !== "undefined" ? new Audio() : null);
 	const videoPlayer = useRef<HTMLVideoElement>();
-	const interval = useRef<NodeJS.Timer>();
+	const interval = useRef<ReturnType<typeof setInterval>>();
 	const dispatch = useDispatch();
 	const [progress, setProgress] = useState<number | undefined>();
 	const [playing, setPlaying] = useState<boolean>();
