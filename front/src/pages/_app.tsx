@@ -7,7 +7,7 @@ import {
 	Hydrate, QueryClient, QueryClientProvider
 } from "react-query";
 import { ReactQueryDevtools } from "react-query/devtools";
-import { Container } from "@mui/material";
+import { Container, NoSsr } from "@mui/material";
 import MeeloAppBar from "../components/appbar/appbar";
 import { ErrorBoundary } from 'react-error-boundary';
 import toast, { Toaster } from 'react-hot-toast';
@@ -27,8 +27,20 @@ import ThemeProvider from "../theme/provider";
 import { PersistGate } from "redux-persist/integration/react";
 import { LightTheme } from "../theme/theme";
 import { DefaultMeeloQueryOptions } from "../api/use-query";
+import { isSSR } from "../ssr";
+import createEmotionCache from "../utils/createEmotionCache";
+import { CacheProvider, EmotionCache } from "@emotion/react";
 
-function MyApp({ Component, pageProps: { session, ...pageProps } }: AppProps) {
+// Client-side cache, shared for the whole session of the user in the browser.
+const clientSideEmotionCache = createEmotionCache();
+
+export interface MyAppProps extends AppProps {
+	emotionCache?: EmotionCache;
+}
+
+function MyApp({
+	Component, pageProps: { session, ...pageProps }, emotionCache = clientSideEmotionCache
+}: MyAppProps) {
 	const [queryClient] = useState(() => new QueryClient({
 		defaultOptions: {
 			queries: DefaultMeeloQueryOptions
@@ -36,6 +48,7 @@ function MyApp({ Component, pageProps: { session, ...pageProps } }: AppProps) {
 	}));
 	const router = useRouter();
 	const [errorType, setError] = useState<'not-found' | 'error' | undefined>();
+	const SSRPersistGate = PersistGate;
 
 	useEffect(() => {
 		setError(undefined);
@@ -45,59 +58,57 @@ function MyApp({ Component, pageProps: { session, ...pageProps } }: AppProps) {
 			Notification.requestPermission();
 		}
 	}, []);
-	return <Provider store={store}>
-		<PersistGate loading={null} persistor={persistor}>
+	return <CacheProvider value={emotionCache}>
+		<Provider store={store}>
 			<ThemeProvider>
 				<Head>
+					{/* It is recommended to leave this here. The rest has been moved to `_document` */}
 					<title>{DefaultWindowTitle}</title>
 					<meta name="viewport" content="initial-scale=1.0, width=device-width" />
-					<meta name="apple-mobile-web-app-capable" content="yes" />
-					<meta name="apple-mobile-web-app-status-bar-style" content="black" />
-					<meta name="theme-color" content={LightTheme.background?.default}/>
-					<link rel="shortcut icon" href="/favicon.ico" />
-					<link rel="apple-touch-icon" href="/favicon.ico" />
 				</Head>
 				<QueryClientProvider client={queryClient}>
-					<AuthenticationWall>
-						<ConfirmProvider defaultOptions={{
+					<PersistGate loading={null} persistor={persistor}>
+						{() => (<ConfirmProvider defaultOptions={{
 							cancellationButtonProps: {
 								sx: { marginX: 2 }
 							},
 						}}>
-							<MeeloAppBar />
-							<ErrorBoundary
-								FallbackComponent={() => {
-									if (errorType == 'not-found') {
-										return <PageNotFound />;
-									}
-									return <InternalError />;
-								}}
-								onError={(error: Error) => {
-									if (errorType) {
-										toast.error(error.message);
-									}
-									if (error instanceof ResourceNotFound) {
-										setError('not-found');
-									} else {
-										setError('error');
-									}
-								}}
-							>
-								<Hydrate state={pageProps.dehydratedState}>
-									<Container maxWidth={false} sx={{ paddingY: 2 }}>
-										<Component {...pageProps} />
-									</Container>
-								</Hydrate>
-								<Player />
-							</ErrorBoundary>
-						</ConfirmProvider>
-					</AuthenticationWall>
+							<Hydrate state={pageProps.dehydratedState}>
+								<AuthenticationWall>
+									<MeeloAppBar />
+									<ErrorBoundary
+										FallbackComponent={() => {
+											if (errorType == 'not-found') {
+												return <PageNotFound />;
+											}
+											return <InternalError />;
+										}}
+										onError={(error: Error) => {
+											if (errorType) {
+												toast.error(error.message);
+											}
+											if (error instanceof ResourceNotFound) {
+												setError('not-found');
+											} else {
+												setError('error');
+											}
+										}}
+									>
+										<Container maxWidth={false} sx={{ paddingY: 2 }}>
+											<Component {...pageProps} />
+										</Container>
+										<Player />
+									</ErrorBoundary>
+								</AuthenticationWall>
+							</Hydrate>
+						</ConfirmProvider>) }
+					</PersistGate>
 					<Toaster toastOptions={{ duration: 2500 }} position='bottom-center' />
 					<ReactQueryDevtools initialIsOpen={false} />
 				</QueryClientProvider>
 			</ThemeProvider>
-		</PersistGate>
-	</Provider>;
+		</Provider>
+	</CacheProvider>;
 }
 
 export default MyApp;
