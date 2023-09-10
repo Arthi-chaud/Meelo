@@ -8,6 +8,10 @@ import {
 import store from "./state/store";
 import { setAccessToken } from "./state/userSlice";
 import UserAccessTokenCookieKey from "./utils/user-access-token-cookie-key";
+import API from "./api/api";
+import { setLanguage } from "./state/settingsSlice";
+import { Languages } from "./i18n/i18n";
+import ALParser from 'accept-language-parser';
 
 /**
  * Get the router + query client
@@ -58,8 +62,16 @@ const prepareSSR = <AdditionalProps>(
 			// Disable SSR if user is not authentified
 			return { props: {} };
 		}
+		// If SSR and no specific language is set, use request to determine the language.
+		if (store.getState().settings.language == 'system') {
+			store.dispatch(setLanguage(
+				ALParser.pick(Array.from(Languages), context.req.headers["accept-language"] ?? 'en', { loose: true }) ?? 'en'
+			));
+		}
 		try {
 			await Promise.all([
+				queryClient.prefetchQuery(prepareMeeloQuery(API.getCurrentUserStatus)),
+				queryClient.prefetchInfiniteQuery(prepareMeeloInfiniteQuery(API.getAllLibraries)),
 				...parameters.infiniteQueries?.map(
 					(query) => queryClient.prefetchInfiniteQuery(
 						prepareMeeloInfiniteQuery(() => query)
@@ -86,5 +98,9 @@ const prepareSSR = <AdditionalProps>(
 		};
 	};
 };
+
+export const isSSR = () => typeof window === 'undefined';
+
+export const isClientSideRendering = () => !isSSR();
 
 export default prepareSSR;

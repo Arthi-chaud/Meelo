@@ -11,7 +11,9 @@
     "test:cov": "jest -i --coverage"
   },
   "dependencies": {
+    "@emotion/cache": "^11.10.0",
     "@emotion/react": "^11.10.0",
+    "@emotion/server": "^11.11.0",
     "@emotion/styled": "^11.10.0",
     "@mui/icons-material": "^5.8.4",
     "@mui/joy": "^5.0.0-alpha.43",
@@ -22,6 +24,7 @@
     "@mui/x-date-pickers": "^5.0.8",
     "@reduxjs/toolkit": "^1.8.5",
     "@types/d3-array": "^3.0.3",
+    "accept-language-parser": "^1.5.0",
     "axios": "^0.27.2",
     "blurhash": "^2.0.5",
     "cookies-next": "^2.1.1",
@@ -54,6 +57,7 @@
   "devDependencies": {
     "@testing-library/jest-dom": "^5.16.5",
     "@testing-library/react": "^13.4.0",
+    "@types/accept-language-parser": "^1.5.3",
     "@types/node": "18.7.7",
     "@types/react": "18.0.17",
     "@types/react-beautiful-dnd": "^13.1.3",
