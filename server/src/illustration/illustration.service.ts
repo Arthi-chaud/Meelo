@@ -195,8 +195,8 @@ export default class IllustrationService {
 					image.getWidth(),
 					image.getHeight(),
 					// Represent the max number of colors on each axis
-					6,
-					6
+					4,
+					4
 				));
 			}),
 			getColors(buffer, { type: image.getMIME() })
