@@ -858,8 +858,10 @@ export default class API {
 	 * @returns A query to a User object
 	 */
 	static getCurrentUserStatus(): Query<User> {
+		const accessToken = store.getState().user.accessToken;
+
 		return {
-			key: ['user'],
+			key: ['user', accessToken ?? ''],
 			exec: () => API.fetch({
 				route: `/users/me`,
 				parameters: { },
