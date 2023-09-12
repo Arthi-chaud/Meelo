@@ -47,12 +47,12 @@ const ListItem = (props: ListItemProps) => {
 					secondaryTypographyProps={secondaryTextStyle}
 				/> :
 				<Grid container spacing={2} flexWrap='nowrap'>
-					<Grid item xs={props.secondTitle ? 8 : 10}>
+					<Grid item xs={props.secondTitle ? 6 : 10}>
 						<Typography sx={{ ...textStyle, ...primaryTextStyle }}>
 							{props.title}
 						</Typography>
 					</Grid>
-					<Grid item xs sx={{ overflow: 'hidden', textOverflow: 'ellipsis' }}>
+					<Grid item xs={6} sx={{ overflow: 'hidden', textOverflow: 'ellipsis' }}>
 						<Typography sx={{ ...textStyle, ...secondaryTextStyle }}>
 							{props.secondTitle}
 						</Typography>
