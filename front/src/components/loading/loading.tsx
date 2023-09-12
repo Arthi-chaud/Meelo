@@ -1,8 +1,7 @@
 import { useEffect, useState } from "react";
 import { Bars } from "react-loader-spinner";
-import {
-	Box, Fade, useTheme
-} from '@mui/material';
+import { Box, useTheme } from '@mui/material';
+import Fade from "../fade";
 
 /**
  * Base loading component

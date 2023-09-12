@@ -9,7 +9,7 @@ import illustrationFallback from '../../public/icon.png';
 import { RequireExactlyOne } from "type-fest";
 import IllustrationModel from "../models/illustration";
 import { Blurhash } from "react-blurhash";
-import { isClientSideRendering, isSSR } from "../ssr";
+import { isSSR } from "../ssr";
 import Fade from "./fade";
 
 type IllustrationProps = {
