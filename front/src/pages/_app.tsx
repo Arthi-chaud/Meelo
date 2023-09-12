@@ -7,12 +7,11 @@ import {
 	Hydrate, QueryClient, QueryClientProvider
 } from "react-query";
 import { ReactQueryDevtools } from "react-query/devtools";
-import { Container, NoSsr } from "@mui/material";
+import { Container } from "@mui/material";
 import MeeloAppBar from "../components/appbar/appbar";
 import { ErrorBoundary } from 'react-error-boundary';
 import toast, { Toaster } from 'react-hot-toast';
 import Head from "next/head";
-import store, { persistor } from '../state/store';
 import Player from "../components/player/player";
 import { Provider } from "react-redux";
 import AuthenticationWall from "../components/authentication/authentication-wall";
@@ -25,9 +24,8 @@ import 'core-js/actual';
 import '../theme/styles.css';
 import ThemeProvider from "../theme/provider";
 import { PersistGate } from "redux-persist/integration/react";
-import { LightTheme } from "../theme/theme";
+import store, { persistor } from "../state/store";
 import { DefaultMeeloQueryOptions } from "../api/use-query";
-import { isSSR } from "../ssr";
 import createEmotionCache from "../utils/createEmotionCache";
 import { CacheProvider, EmotionCache } from "@emotion/react";
 
@@ -48,7 +46,6 @@ function MyApp({
 	}));
 	const router = useRouter();
 	const [errorType, setError] = useState<'not-found' | 'error' | undefined>();
-	const SSRPersistGate = PersistGate;
 
 	useEffect(() => {
 		setError(undefined);
