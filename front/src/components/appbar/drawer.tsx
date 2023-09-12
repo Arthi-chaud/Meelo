@@ -1,7 +1,7 @@
 import ExpandLess from "@mui/icons-material/ExpandLess";
 import ExpandMore from "@mui/icons-material/ExpandMore";
 import {
-	Box, Collapse, Container, Divider, Drawer, Fade, Grid, List,
+	Box, Collapse, Container, Divider, Drawer, Grid, List,
 	ListItem, ListItemButton, ListItemIcon, ListItemText, ListSubheader
 } from "@mui/material";
 import Library from "../../models/library";
@@ -21,6 +21,7 @@ import Action from "../actions/action";
 import HomeIcon from '@mui/icons-material/Home';
 import { QueueMusic } from "@mui/icons-material";
 import Translate from "../../i18n/translate";
+import Fade from "../fade";
 
 interface DrawerProps {
 	availableLibraries: Library[] | null,
@@ -35,9 +36,10 @@ const MeeloAppBarDrawer = (
 	const [selectedLibrarySlug, setSelectedLibrary] = useState<string | null>(requestedLibrarySlug);
 	const colorSchemeSetting = useSelector((state: RootState) => state.settings.colorScheme);
 	const languageSetting = useSelector((state: RootState) => state.settings.language);
+	const user = useSelector((state: RootState) => state.user.user);
 	const actions = useMemo(
 		() => getAppBarActions(colorSchemeSetting, languageSetting),
-		[colorSchemeSetting, languageSetting]
+		[colorSchemeSetting, languageSetting, user]
 	);
 
 	useEffect(() => setSelectedLibrary(requestedLibrarySlug), [requestedLibrarySlug, isOpen]);
