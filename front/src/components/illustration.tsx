@@ -1,6 +1,6 @@
 /* eslint-disable react/jsx-indent-props */
 import {
-	Box, Fade, IconButton, useTheme
+	Box, IconButton, useTheme
 } from "@mui/material";
 import Image, { ImageProps } from "next/image";
 import { useState } from "react";
@@ -9,6 +9,8 @@ import illustrationFallback from '../../public/icon.png';
 import { RequireExactlyOne } from "type-fest";
 import IllustrationModel from "../models/illustration";
 import { Blurhash } from "react-blurhash";
+import { isClientSideRendering, isSSR } from "../ssr";
+import Fade from "./fade";
 
 type IllustrationProps = {
 	/**
@@ -55,8 +57,8 @@ const Illustration = (props: IllustrationProps) => {
 				</Box>
 			</Fade>
 		}
-		<Fade in={loadingCompleted || loadingFailed || !url}>
-			<Box>{ loadingFailed || !url
+		<Fade in={isSSR() || loadingCompleted || loadingFailed || !url}>
+			<Box>{loadingFailed || !url
 				? props.fallback
 					? <IconButton disabled sx={{ fontSize: 'large' }}>
 						{props.fallback}

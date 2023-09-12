@@ -4,6 +4,7 @@ import {
 import { useRouter } from "next/router";
 import CloseIcon from '@mui/icons-material/Close';
 import { useEffect, useState } from "react";
+import { isClientSideRendering } from "../ssr";
 
 type ModalPageProps = {
 	disposable?: boolean;
@@ -25,7 +26,7 @@ const ModalPage = (props: ModalPageProps) => {
 			document.body.style.overflow = 'unset';
 		};
 	}, [open]);
-	return <Slide direction="up" in={open} mountOnEnter unmountOnExit>
+	return <Slide direction="up" in={open} unmountOnExit appear={isClientSideRendering()}>
 		<Box sx={{
 			width: '100%', height: '100%', padding: 2, display: 'flex',
 			position: 'fixed', right: 0, bottom: 0, justifyContent: 'center',
