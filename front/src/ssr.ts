@@ -68,6 +68,7 @@ const prepareSSR = <AdditionalProps>(
 				ALParser.pick(Array.from(Languages), context.req.headers["accept-language"] ?? 'en', { loose: true }) ?? 'en'
 			));
 		}
+		console.log(parameters.infiniteQueries?.at(0)?.key);
 		try {
 			await Promise.all([
 				queryClient.prefetchQuery(prepareMeeloQuery(API.getCurrentUserStatus)),

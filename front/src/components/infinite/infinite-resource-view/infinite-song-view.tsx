@@ -39,7 +39,7 @@ const InfiniteSongView = (
 			defaultLayout={"list"}
 		/>
 		<InfiniteView
-			view={options?.view ?? 'grid'}
+			view={options?.view ?? 'list'}
 			query={() => props.query({
 				sortBy: options?.sortBy ?? 'name',
 				order: options?.order ?? 'asc',
