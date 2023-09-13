@@ -7,7 +7,7 @@ import Controls, { OptionState } from "../../controls/controls";
 import SongItem from "../../list-item/song-item";
 import InfiniteView from "../infinite-view";
 import InfiniteResourceViewProps from "./infinite-resource-view-props";
-import translate, { useLanguage } from "../../../i18n/translate";
+import { useLanguage } from "../../../i18n/translate";
 
 const InfiniteSongView = (
 	props: InfiniteResourceViewProps<

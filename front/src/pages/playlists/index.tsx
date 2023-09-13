@@ -1,21 +1,26 @@
 import InfinitePlaylistView from "../../components/infinite/infinite-resource-view/infinite-playlist-view";
 import API from "../../api/api";
 import { PlaylistSortingKeys } from "../../models/playlist";
-import prepareSSR from "../../ssr";
+import prepareSSR, { InferSSRProps } from "../../ssr";
 import { getOrderParams, getSortingFieldParams } from "../../utils/sorting";
+import { getLayoutParams } from "../../utils/layout";
 
 export const getServerSideProps = prepareSSR((context) => {
+	const defaultLayout = getLayoutParams(context.query.view) ?? 'list';
 	const order = getOrderParams(context.query.order);
 	const sortBy = getSortingFieldParams(context.query.sortBy, PlaylistSortingKeys);
 
 	return {
+		additionalProps: { defaultLayout, order, sortBy },
 		infiniteQueries: [API.getAllPlaylists({ sortBy, order })]
 	};
 });
 
-const PlaylistsPage = () => {
+const PlaylistsPage = (props: InferSSRProps<typeof getServerSideProps>) => {
 	return <InfinitePlaylistView
-		defaultLayout='list'
+		initialSortingField={props.additionalProps?.sortBy}
+		initialSortingOrder={props.additionalProps?.order}
+		defaultLayout={props.additionalProps?.defaultLayout}
 		query={(sort) => API.getAllPlaylists(sort)}
 	/>;
 };
