@@ -15,7 +15,7 @@ export const getServerSideProps = prepareSSR((context) => {
 	const librarySlug = getLibrarySlug(context.req.url!) ?? null;
 
 	return {
-		additionalProps: { librarySlug, defaultLayout },
+		additionalProps: { librarySlug, defaultLayout, sortBy, order },
 		infiniteQueries: [
 			librarySlug
 				? API.getAllArtistsInLibrary(librarySlug, { sortBy, order })
@@ -29,6 +29,8 @@ const LibraryArtistsPage = (props: InferSSRProps<typeof getServerSideProps>) => 
 	const librarySlug = props.additionalProps?.librarySlug ?? getLibrarySlug(router.asPath);
 
 	return <InfiniteArtistView
+		initialSortingField={props.additionalProps?.sortBy}
+		initialSortingOrder={props.additionalProps?.order}
 		defaultLayout={props.additionalProps?.defaultLayout}
 		query={(sort) => librarySlug
 			? API.getAllArtistsInLibrary(librarySlug, sort)
