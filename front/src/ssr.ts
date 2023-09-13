@@ -40,7 +40,7 @@ type SSRParameters<
 /**
  * Wrapper for *InferGetServerSidePropsType* provided by Next
  */
-export type InferSSRProps<T extends (args: any) => any> = NonNullable<InferGetServerSidePropsType<T>['additionalProps']>;
+export type InferSSRProps<T extends (args: any) => any> = NonNullable<InferGetServerSidePropsType<T>>;
 /**
  * Wrapper for Server-side rendering
  * @param context
