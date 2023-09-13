@@ -1,6 +1,7 @@
 // eslint-disable-next-line no-restricted-imports
 import { Fade as MUIFade } from '@mui/material';
 import { isClientSideRendering } from '../ssr';
+import React from 'react';
 /**
  * Wrapper around MUI's Fade.
  * Fade is the main animation used in the app.
@@ -11,7 +12,9 @@ import { isClientSideRendering } from '../ssr';
 type FadeProps = Parameters<typeof MUIFade>[0];
 
 const Fade = (props: FadeProps) => {
-	return <MUIFade {...props} appear={(props.appear ?? true) && isClientSideRendering()}/>;
+	return <MUIFade {...props} appear={(props.appear ?? true) && isClientSideRendering()}
+		suppressHydrationWarning
+	/>;
 };
 
 export default Fade;

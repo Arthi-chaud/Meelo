@@ -1,11 +1,10 @@
 import {
 	Box, Card, CardActionArea,
-	CardContent, CardMedia, Typography
+	CardContent, CardMedia, NoSsr, Typography
 } from "@mui/material";
 import Link from 'next/link';
 import { CSSProperties, useState } from "react";
 import Fade from "../fade";
-import { isClientSideRendering } from "../../ssr";
 
 const titleStyle = {
 	display: '-webkit-box',
@@ -41,18 +40,22 @@ const Tile = (props: TileProps) => {
 				height: '100%', display: 'flex',
 				flexDirection: 'column', alignItems: 'space-between'
 			}}>
-				{isClientSideRendering() && props.contextualMenu &&
-					<Fade in={isHovering} style={{ position: 'absolute', top: '0', right: '0', zIndex: 2 }}
-						hidden={!isHovering} onClick={(event) => {
-							event.preventDefault();
-							event.stopPropagation();
-						}}
-						onMouseOver={() => setIsHoveringCtxtMenu(true)}
-						onMouseLeave={() => setIsHoveringCtxtMenu(false)}
-					>
-						<Box>{props.contextualMenu}</Box>
-					</Fade>
-				}
+				<NoSsr>
+					{props.contextualMenu &&
+						<Fade in={isHovering} style={{ position: 'absolute', top: '0', right: '0', zIndex: 2 }}
+							hidden={!isHovering} onClick={(event) => {
+								event.preventDefault();
+								event.stopPropagation();
+							}}
+							onMouseOver={() => setIsHoveringCtxtMenu(true)}
+							onMouseLeave={() => setIsHoveringCtxtMenu(false)}
+							mountOnEnter
+							unmountOnExit
+						>
+							<Box>{props.contextualMenu}</Box>
+						</Fade>
+					}
+				</NoSsr>
 				<CardMedia sx={{ width: '100%' }}>
 					{props.illustration}
 				</CardMedia>

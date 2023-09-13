@@ -60,7 +60,7 @@ const Illustration = (props: IllustrationProps) => {
 		<Fade in={isSSR() || loadingCompleted || loadingFailed || !url}>
 			<Box>{loadingFailed || !url
 				? props.fallback
-					? <IconButton disabled sx={{ fontSize: 'large' }}>
+					? <IconButton disabled sx={{ fontSize: 'large' }} component='div'>
 						{props.fallback}
 					</IconButton>
 					: <Image
