@@ -19,24 +19,16 @@ import { useInfiniteQuery as useReactInfiniteQuery } from 'react-query';
 import { prepareMeeloInfiniteQuery } from '../../api/use-query';
 import toast from 'react-hot-toast';
 import ContextualMenu from '../contextual-menu/contextual-menu';
-import getAppBarActions from './actions';
 import { GoToSearchAction } from '../actions/link';
-import { useSelector } from 'react-redux';
-import { RootState } from '../../state/store';
 import useColorScheme from '../../theme/color-scheme';
 import Translate, { translate } from '../../i18n/translate';
 import Fade from '../fade';
+import useAppBarActions from '../../utils/useAppBarActions';
 
 const MeeloAppBar = () => {
 	const router = useRouter();
 	const [drawerOpen, setDrawerOpen] = useState(false);
-	const colorSchemeSetting = useSelector((state: RootState) => state.settings.colorScheme);
-	const languageSetting = useSelector((state: RootState) => state.settings.language);
-	const user = useSelector((state: RootState) => state.user.user);
-	const actions = useMemo(
-		() => getAppBarActions(colorSchemeSetting, languageSetting),
-		[colorSchemeSetting, languageSetting, user]
-	);
+	const actions = useAppBarActions();
 	const librariesQuery = useReactInfiniteQuery({
 		...prepareMeeloInfiniteQuery(API.getAllLibraries),
 		useErrorBoundary: false,

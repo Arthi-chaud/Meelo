@@ -1,5 +1,5 @@
 import Action from "../actions/action";
-import store, { RootState } from "../../state/store";
+import { RootState } from "../../state/store";
 import { ScanAllLibrariesAction } from "../actions/library-task";
 import { GoToSearchAction, GoToSettingsAction } from "../actions/link";
 import { LogoutAction } from "../actions/auth";
@@ -13,12 +13,13 @@ import ChangeLanguageAction from "../actions/language";
  */
 const getAppBarActions = (
 	selectedColorScheme: RootState['settings']['colorScheme'],
-	selectedLanguage: RootState['settings']['language']
+	selectedLanguage: RootState['settings']['language'],
+	isAdmin: boolean
 ): Action[] => [
 	GoToSearchAction,
 	{
 		...ScanAllLibrariesAction,
-		disabled: store.getState().user.user?.admin !== true
+		disabled: !isAdmin
 	},
 	selectedColorScheme == 'dark'
 		? SetLightColorSchemeAction
@@ -28,7 +29,7 @@ const getAppBarActions = (
 	ChangeLanguageAction(selectedLanguage),
 	{
 		...GoToSettingsAction,
-		disabled: store.getState().user.user?.admin !== true
+		disabled: !isAdmin
 	},
 	LogoutAction
 ];
