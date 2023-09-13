@@ -18,7 +18,11 @@ const InfiniteAlbumView = (
 	> & Pick<Parameters<typeof AlbumTile>[0], 'formatSubtitle'>
 ) => {
 	const router = useRouter();
-	const [options, setOptions] = useState<OptionState<typeof AlbumSortingKeys>>();
+	const [options, setOptions] = useState<OptionState<typeof AlbumSortingKeys>>({
+		order: props.initialSortingOrder ?? 'asc',
+		sortBy: props.initialSortingField ?? 'name',
+		view: props.defaultLayout ?? 'grid'
+	});
 	const language = useLanguage();
 
 	return <>

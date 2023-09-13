@@ -12,19 +12,19 @@ export const getServerSideProps = prepareSSR((context) => {
 
 	return {
 		additionalProps: { artistIdentifier },
-		infiniteQueries: [API.getArtistAlbums(artistIdentifier, undefined, undefined, ['artist'])]
+		queries: [API.getArtist(artistIdentifier)],
+		infiniteQueries: [API.getArtistAlbums(artistIdentifier, undefined, { sortBy: 'releaseDate', order: 'desc' }, ['artist'])]
 	};
 });
 
-const ArtistAlbumsPage = (
-	{ artistIdentifier }: InferSSRProps<typeof getServerSideProps>
-) => {
+const ArtistAlbumsPage = (props: InferSSRProps<typeof getServerSideProps>) => {
 	const router = useRouter();
+	const artistIdentifier = props.additionalProps?.artistIdentifier ?? getSlugOrId(router.query);
 
-	artistIdentifier ??= getSlugOrId(router.query);
 	return <Box sx={{ width: '100%' }}>
 		<ArtistRelationPageHeader artistSlugOrId={artistIdentifier}/>
 		<InfiniteAlbumView
+			defaultLayout="grid"
 			initialSortingField='releaseDate'
 			initialSortingOrder='desc'
 			formatSubtitle={(album) => getYear(album.releaseDate)?.toString() ?? ''}
