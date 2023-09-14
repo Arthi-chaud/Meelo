@@ -1429,7 +1429,7 @@ export default class API {
 			return validator.cast(validated);
 		} catch (err) {
 			// eslint-disable-next-line no-console
-			console.error(err);
+			console.error(jsonResponse, err);
 			throw new Error("Error: Invalid Response Type");
 		}
 		return jsonResponse;

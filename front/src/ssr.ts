@@ -55,7 +55,6 @@ const prepareSSR = <AdditionalProps>(
 ) => {
 	return async (context: GetServerSidePropsContext) => {
 		const queryClient = new QueryClient();
-		const parameters = await cook(context, queryClient);
 		const accessToken = context.req.cookies[UserAccessTokenCookieKey];
 
 		if (accessToken) {
@@ -64,6 +63,8 @@ const prepareSSR = <AdditionalProps>(
 			// Disable SSR if user is not authentified
 			return { props: {} };
 		}
+		const parameters = await cook(context, queryClient);
+
 		// If SSR and no specific language is set, use request to determine the language.
 		if (store.getState().settings.language == 'system') {
 			store.dispatch(setLanguage(
