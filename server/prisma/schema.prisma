@@ -261,6 +261,8 @@ enum SongType {
 	Remix
 	/// The instrumental version of the song
 	Instrumental
+	/// The acapella version of the song
+	Acapella
 	/// The edit of the original version of the song
 	Edit
 	/// The clean version of the song
