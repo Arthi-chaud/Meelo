@@ -6,30 +6,35 @@ import getSlugOrId from "../../../utils/getSlugOrId";
 import ArtistRelationPageHeader from "../../../components/relation-page-header/artist-relation-page-header";
 import prepareSSR, { InferSSRProps } from "../../../ssr";
 import { useQueryClient } from "../../../api/use-query";
+import { SongSortingKeys } from "../../../models/song";
+import { getOrderParams, getSortingFieldParams } from "../../../utils/sorting";
 
 export const getServerSideProps = prepareSSR((context) => {
 	const artistIdentifier = getSlugOrId(context.params);
+	const order = getOrderParams(context.query.order);
+	const sortBy = getSortingFieldParams(context.query.sortBy, SongSortingKeys);
 
 	return {
-		additionalProps: { artistIdentifier },
-		infiniteQueries: [API.getArtistSongs(artistIdentifier, undefined, undefined, ['artist'])]
+		additionalProps: { artistIdentifier, sortBy, order },
+		queries: [API.getArtist(artistIdentifier)],
+		infiniteQueries: [API.getArtistSongs(artistIdentifier, { sortBy, order }, undefined, ['artist'])]
 	};
 });
 
-const ArtistSongPage = (
-	{ artistIdentifier }: InferSSRProps<typeof getServerSideProps>
-) => {
+const ArtistSongPage = (props: InferSSRProps<typeof getServerSideProps>) => {
 	const router = useRouter();
 	const queryClient = useQueryClient();
 	const getSongMainAlbum = (songId: number) => queryClient
 		.fetchQuery(API.getMasterTrack(songId, ['release']))
 		.then((track) => queryClient
 			.fetchQuery(API.getAlbum(track.release.albumId)));
+	const artistIdentifier = props.additionalProps?.artistIdentifier ?? getSlugOrId(router.query);
 
-	artistIdentifier ??= getSlugOrId(router.query);
 	return <Box sx={{ width: '100%' }}>
 		<ArtistRelationPageHeader artistSlugOrId={artistIdentifier}/>
 		<InfiniteSongView
+			initialSortingField={props.additionalProps?.sortBy ?? 'name'}
+			initialSortingOrder={props.additionalProps?.order ?? 'asc'}
 			query={(sort, type) => API.getArtistSongs(artistIdentifier, sort, type, ['artist'])}
 			formatSubtitle={(song) => getSongMainAlbum(song.id).then((album) => album.name)}
 		/>

@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import API from './api/api';
 import store from './state/store';
 import { setAccessToken } from './state/userSlice';
-import UserAccessTokenCookieKey from './utils/user-access-token-cookie-key';
+import { UserAccessTokenCookieKey } from './utils/cookieKeys';
 // eslint-disable-next-line no-restricted-imports
 import { QueryClient } from 'react-query';
 import { prepareMeeloQuery } from './api/use-query';

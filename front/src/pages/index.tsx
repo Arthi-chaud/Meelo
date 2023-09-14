@@ -1,6 +1,4 @@
-import {
-	Box, Fade, Stack
-} from "@mui/material";
+import { Box, Stack } from "@mui/material";
 import API from "../api/api";
 import prepareSSR from "../ssr";
 import { useInfiniteQuery } from "../api/use-query";
@@ -12,6 +10,7 @@ import ArtistTile from "../components/tile/artist-tile";
 import SongGrid from "../components/song-grid";
 import ReleaseTile from "../components/tile/release-tile";
 import Translate from "../i18n/translate";
+import Fade from "../components/fade";
 
 const newlyAddedAlbumsQuery = API.getAllAlbums(
 	{ sortBy: 'addDate', order: 'desc' },

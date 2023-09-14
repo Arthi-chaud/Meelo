@@ -1,7 +1,8 @@
 import {
+	Box,
 	Grid, ListItemAvatar, ListItemButton,
 	ListItemText, ListItem as MUIListItem,
-	Typography, useMediaQuery, useTheme
+	Typography, useTheme
 } from '@mui/material';
 import { RequireExactlyOne } from 'type-fest';
 import Link from 'next/link';
@@ -30,7 +31,6 @@ const secondaryTextStyle = {
 
 const ListItem = (props: ListItemProps) => {
 	const theme = useTheme();
-	const viewPortIsSmall = useMediaQuery(theme.breakpoints.down('md'));
 
 	return <MUIListItem disablePadding secondaryAction={props.trailing}>
 		<ListItemButton {...{ onClick: props.onClick,
@@ -39,26 +39,26 @@ const ListItem = (props: ListItemProps) => {
 			<ListItemAvatar sx={{ marginRight: 2 }}>
 				{props.icon}
 			</ListItemAvatar>
-			{ viewPortIsSmall ?
+			<Box sx={{ display: { xs: 'grid', md: 'none' } }}>
 				<ListItemText
 					primary={props.title}
 					primaryTypographyProps={primaryTextStyle}
 					secondary={props.secondTitle}
 					secondaryTypographyProps={secondaryTextStyle}
-				/> :
-				<Grid container spacing={2} flexWrap='nowrap'>
-					<Grid item xs={props.secondTitle ? 8 : 10}>
-						<Typography sx={{ ...textStyle, ...primaryTextStyle }}>
-							{props.title}
-						</Typography>
-					</Grid>
-					<Grid item xs sx={{ overflow: 'hidden', textOverflow: 'ellipsis' }}>
-						<Typography sx={{ ...textStyle, ...secondaryTextStyle }}>
-							{props.secondTitle}
-						</Typography>
-					</Grid>
+				/>
+			</Box>
+			<Grid container spacing={2} flexWrap='nowrap' sx={{ display: { xs: 'none', md: 'flex' } }}>
+				<Grid item xs={props.secondTitle ? 6 : 10}>
+					<Typography sx={{ ...textStyle, ...primaryTextStyle }}>
+						{props.title}
+					</Typography>
 				</Grid>
-			}
+				<Grid item xs={6} sx={{ overflow: 'hidden', textOverflow: 'ellipsis' }}>
+					<Typography sx={{ ...textStyle, ...secondaryTextStyle }}>
+						{props.secondTitle}
+					</Typography>
+				</Grid>
+			</Grid>
 		</ListItemButton>
 	</MUIListItem>;
 };

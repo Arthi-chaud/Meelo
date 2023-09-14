@@ -7,6 +7,10 @@ import UsersSettings from "../../components/settings/users-settings";
 import prepareSSR, { InferSSRProps } from '../../ssr';
 import LibrariesSettings from '../../components/settings/libraries-settings';
 import Translate from '../../i18n/translate';
+import API from '../../api/api';
+
+// NOTE: Data Grid do not support SSR
+// https://github.com/mui/mui-x/issues/7599
 
 const AvailablePanels = ['libraries', 'users'] as const;
 
@@ -28,13 +32,18 @@ export const getServerSideProps = prepareSSR((context) => {
 	const panel = getPanelFromQuery(context.query.panel?.at(0));
 
 	return {
-		additionalProps: { panel }
+		additionalProps: { panel },
+		infiniteQueries: [
+			API.getUsers(),
+			API.getAllLibraries()
+		]
 	};
 });
 
 const SettingsPage = (props: InferSSRProps<typeof getServerSideProps>) => {
 	const router = useRouter();
-	const [panel, setPanel] = useState(props.panel ?? getPanelFromQuery(router.query.panel?.at(0)));
+	const [panel, setPanel] = useState(props.additionalProps?.panel
+		?? getPanelFromQuery(router.query.panel?.at(0)));
 
 	useEffect(() => {
 		router.push(`/settings/${panel}`, undefined, { shallow: true });

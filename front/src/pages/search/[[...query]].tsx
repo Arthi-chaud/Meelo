@@ -9,16 +9,17 @@ import prepareSSR, { InferSSRProps } from "../../ssr";
 import API from "../../api/api";
 
 export const getServerSideProps = prepareSSR((context) => {
-	const searchQuery = context.query.query as string ?? null;
+	const searchQuery = context.query.query?.at(0) ?? null;
 	const type = context.query.type as string ?? null;
+	const defaultQuerySortParams = { sortBy: 'name', order: 'asc' } as const;
 
 	return {
 		additionalProps: { searchQuery, type },
-		infiniteQueries: [
-			API.searchArtists(searchQuery),
-			API.searchAlbums(searchQuery, undefined, undefined, ['artist']),
-			API.searchSongs(searchQuery, undefined, undefined, ['artist'])
-		]
+		infiniteQueries: searchQuery ? [
+			API.searchArtists(searchQuery, defaultQuerySortParams),
+			API.searchAlbums(searchQuery, undefined, defaultQuerySortParams, ['artist']),
+			API.searchSongs(searchQuery, defaultQuerySortParams, undefined, ['artist'])
+		] : []
 	};
 });
 
@@ -27,14 +28,14 @@ const buildSearchUrl = (query: string | undefined, type: string | undefined) => 
 };
 
 const SearchPage = (
-	{ type, searchQuery }: InferSSRProps<typeof getServerSideProps>
+	props: InferSSRProps<typeof getServerSideProps>
 ) => {
 	const router = useRouter();
-
-	type ??= router.query.type as string;
-	const [query, setQuery] = useState<string | undefined>(Array.from(
-		searchQuery ?? router.query.query as string | undefined ?? []
-	).join(' ') || undefined);
+	const searchQuery = props.additionalProps?.searchQuery;
+	const type = props.additionalProps?.type ?? router.query.type as string;
+	const [query, setQuery] = useState<string | undefined>(
+		(searchQuery ?? Array.from(router.query.query ?? []).join(' ')) || undefined
+	);
 
 	return <Box sx={{ display: 'flex', justifyContent: 'center', paddingY: 3, flexDirection: 'column' }}>
 		<Box sx={{ display: 'flex', justifyContent: 'center', paddingY: 2 }}>

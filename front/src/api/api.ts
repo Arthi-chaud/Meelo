@@ -30,6 +30,7 @@ import { RequireExactlyOne } from "type-fest";
 import Playlist, {
 	PlaylistInclude, PlaylistSortingKeys, PlaylistWithRelations
 } from "../models/playlist";
+import * as SSR from '../ssr';
 
 const AuthenticationResponse = yup.object({
 	access_token: yup.string().required()
@@ -70,7 +71,7 @@ export default class API {
 	/**
 	 * Utilitary functions
 	 */
-	private static isSSR = () => typeof window === 'undefined';
+	private static isSSR = SSR.isSSR;
 	private static isDev = () => process.env.NODE_ENV === 'development';
 
 	private static SSR_API_URL = process.env.ssrApiRoute!;
@@ -857,8 +858,10 @@ export default class API {
 	 * @returns A query to a User object
 	 */
 	static getCurrentUserStatus(): Query<User> {
+		const accessToken = store.getState().user.accessToken;
+
 		return {
-			key: ['user'],
+			key: ['user', accessToken ?? ''],
 			exec: () => API.fetch({
 				route: `/users/me`,
 				parameters: { },
@@ -1426,7 +1429,7 @@ export default class API {
 			return validator.cast(validated);
 		} catch (err) {
 			// eslint-disable-next-line no-console
-			console.error(err);
+			console.error(jsonResponse, err);
 			throw new Error("Error: Invalid Response Type");
 		}
 		return jsonResponse;

@@ -11,7 +11,7 @@ services:
       db:
        condition: service_healthy
     volumes:
-      - ../meelo:/meelo
+      - ../data/config:/meelo
       - ../assets:/app/assets
       - ../front:/app/front
       - ../server:/app/server

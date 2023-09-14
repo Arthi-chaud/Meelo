@@ -2,6 +2,7 @@ import { useSelector } from "react-redux";
 import store, { RootState } from "../state/store";
 import { TranslationKey } from "./translations/type";
 import i18n, { Languages } from "./i18n";
+import { isSSR } from "../ssr";
 
 // Hook to Get current language
 const useLanguage = () => {
@@ -16,6 +17,10 @@ const useLanguage = () => {
 };
 
 const getSystemLanguage = () => {
+	if (isSSR()) {
+		// This should never happen, as we parse and dispatch the language based on the request's "accept-language"
+		return 'en';
+	}
 	return Languages.find((ln) => new RegExp(`/${ln}\b/`).test(navigator.language)) ?? 'en';
 };
 

@@ -5,6 +5,8 @@ datasource db {
 
 generator client {
   	provider 	= "prisma-client-js"
+	engineType = "binary"
+	binaryTargets = ["native"]
 	previewFeatures = ["orderByNulls", "filteredRelationCount", "fullTextSearch"]
 }
 

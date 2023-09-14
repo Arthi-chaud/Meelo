@@ -1,5 +1,5 @@
 import {
-	Box, Fab, Fade, Slide, Tooltip
+	Box, Fab, Slide, Tooltip
 } from "@mui/material";
 import StraightIcon from "@mui/icons-material/Straight";
 import { MeeloInfiniteQueryFn } from "../../api/use-query";
@@ -10,6 +10,7 @@ import InfiniteList from "./infinite-list";
 import { useEffect, useState } from 'react';
 import Resource from "../../models/resource";
 import Translate from "../../i18n/translate";
+import Fade from "../fade";
 
 export type InfiniteViewProps<ItemType> = {
 	view: 'list' | 'grid';
