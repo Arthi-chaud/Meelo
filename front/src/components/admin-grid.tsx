@@ -1,7 +1,9 @@
 import {
 	DataGrid, GridColDef, GridValidRowModel
 } from "@mui/x-data-grid";
-import { useEffect, useState } from "react";
+import {
+	useEffect, useMemo, useState
+} from "react";
 import API from "../api/api";
 import { MeeloInfiniteQueryFn, useInfiniteQuery } from "../api/use-query";
 
@@ -21,18 +23,14 @@ const AdminGrid = <DataType extends GridValidRowModel>(
 		fetchNextPage, fetchPreviousPage
 	} = useInfiniteQuery(infiniteQuery);
 	const [currentPage, setCurrentPage] = useState(0);
-	const [itemsCount, setItemsCount] = useState(0);
+	const itemsCount = useMemo(() => data?.pages
+		.map((page) => page.items.length)
+		.reduce((pageSize, sum) => pageSize + sum, 0) ?? 0, [data?.pages]);
 
 	useEffect(() => {
 		hasNextPage && fetchNextPage();
 	// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [hasNextPage]);
-	useEffect(() => {
-		setItemsCount(data?.pages
-			.map((page) => page.items.length)
-			.reduce((pageSize, sum) => pageSize + sum, 0) ?? 0);
-	// eslint-disable-next-line react-hooks/exhaustive-deps
-	}, [data?.pages]);
 	return <DataGrid
 		loading={data?.pages[currentPage] == undefined}
 		rows={data?.pages[currentPage]?.items ?? []}
