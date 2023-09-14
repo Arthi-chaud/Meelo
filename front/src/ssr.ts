@@ -12,6 +12,7 @@ import API from "./api/api";
 import { setLanguage } from "./state/settingsSlice";
 import { Languages } from "./i18n/i18n";
 import ALParser from 'accept-language-parser';
+import { Promisable } from "type-fest";
 
 /**
  * Get the router + query client
@@ -48,12 +49,13 @@ export type InferSSRProps<T extends (args: any) => any> = NonNullable<InferGetSe
  */
 const prepareSSR = <AdditionalProps>(
 	cook: (
-		routeParam: Pick<GetServerSidePropsContext, 'req' | 'query' | 'params'>
-	) => SSRParameters<AdditionalProps>
+		routeParam: Pick<GetServerSidePropsContext, 'req' | 'query' | 'params'>,
+		queryClient: QueryClient
+	) => Promisable<SSRParameters<AdditionalProps>>
 ) => {
 	return async (context: GetServerSidePropsContext) => {
 		const queryClient = new QueryClient();
-		const parameters = cook(context);
+		const parameters = await cook(context, queryClient);
 		const accessToken = context.req.cookies[UserAccessTokenCookieKey];
 
 		if (accessToken) {
