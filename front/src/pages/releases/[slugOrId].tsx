@@ -34,28 +34,38 @@ import AlbumTile from "../../components/tile/album-tile";
 import getYear from "../../utils/getYear";
 import Fade from "../../components/fade";
 
+const releaseQuery = (releaseIdentifier: string | number) => API.getRelease(releaseIdentifier, ['album']);
+const releaseTracklistQuery = (releaseIdentifier: string | number) => API.getReleaseTrackList(releaseIdentifier, ['song']);
+const albumQuery = (albumId: number) => API.getAlbum(albumId, ['externalIds']);
+const artistsOnAlbumQuery = (albumId: number) => API.getArtistsOnAlbum(albumId);
+
+const albumGenreQuery = (albumId: number) => API.getAlbumGenres(albumId);
+const releaseBSidesQuery = (releaseId: number) => API.getReleaseBSides(releaseId, { sortBy: 'name' }, ['artist']);
+const albumVideosQuery = (albumId: number) => API.getAlbumVideos(albumId);
+const relatedAlbumsQuery = (albumId: number) => API.getRelatedAlbums(albumId, { sortBy: 'releaseDate' }, ['artist']);
+const relatedReleasesQuery = (albumId: number) => API.getAlbumReleases(albumId);
+const relatedPlaylistsQuery = (albumId: number) => API.getAlbumPlaylists(albumId);
+
 export const getServerSideProps = prepareSSR(async (context, queryClient) => {
 	const releaseIdentifier = getSlugOrId(context.params);
 	const release = await queryClient.fetchQuery(
-		prepareMeeloQuery(() => API.getRelease(releaseIdentifier, ['album']))
+		prepareMeeloQuery(() => releaseQuery(releaseIdentifier))
 	);
-
-	// const relatedPlaylists = useInfiniteQuery(API.getAlbumPlaylists, release.data?.albumId);
 
 	return {
 		additionalProps: { releaseIdentifier },
 		queries: [
-			API.getReleaseTrackList(releaseIdentifier, ['song']),
-			API.getAlbum(release.albumId, ['externalIds']),
-			API.getArtistsOnAlbum(release.albumId)
+			releaseTracklistQuery(releaseIdentifier),
+			albumQuery(release.albumId),
+			artistsOnAlbumQuery(release.albumId)
 		],
 		infiniteQueries: [
-			API.getAlbumGenres(release.albumId),
-			API.getReleaseBSides(release.id, { sortBy: 'name' }, ['artist']),
-			API.getAlbumVideos(release.albumId),
-			API.getRelatedAlbums(release.albumId, { sortBy: 'releaseDate' }, ['artist']),
-			API.getAlbumReleases(release.albumId),
-			API.getAlbumPlaylists(release.albumId)
+			albumGenreQuery(release.albumId),
+			releaseBSidesQuery(release.id),
+			albumVideosQuery(release.albumId),
+			relatedAlbumsQuery(release.albumId),
+			relatedReleasesQuery(release.albumId),
+			relatedPlaylistsQuery(release.albumId)
 		]
 	};
 });
@@ -94,19 +104,19 @@ const ReleasePage = (props: InferSSRProps<typeof getServerSideProps>) => {
 	const theme = useTheme();
 	const viewIsInColumn = useMediaQuery(theme.breakpoints.down('md'));
 	const dispatch = useDispatch();
-	const release = useQuery((id) => API.getRelease(id, ['album']), releaseIdentifier);
+	const release = useQuery(releaseQuery, releaseIdentifier);
 	const artistId = useMemo(() => release.data?.album?.artistId, [release]);
 	const mainIllustrationColors = release.data?.illustration?.colors ?? [];
-	const album = useQuery((id) => API.getAlbum(id, ['externalIds']), release.data?.albumId);
-	const tracklistQuery = useQuery((id) => API.getReleaseTrackList(id, ['song']), releaseIdentifier);
-	const albumGenres = useInfiniteQuery(API.getAlbumGenres, release.data?.albumId);
+	const album = useQuery(albumQuery, release.data?.albumId);
+	const tracklistQuery = useQuery(releaseTracklistQuery, releaseIdentifier);
+	const albumGenres = useInfiniteQuery(albumGenreQuery, release.data?.albumId);
 	const hasGenres = (albumGenres.data?.pages.at(0)?.items.length ?? 0) > 0;
-	const artists = useQuery(API.getArtistsOnAlbum, release.data?.albumId);
-	const albumVideos = useInfiniteQuery(API.getAlbumVideos, release.data?.albumId);
-	const bSides = useInfiniteQuery((id) => API.getReleaseBSides(id, { sortBy: 'name' }, ['artist']), release.data?.id);
-	const relatedAlbums = useInfiniteQuery((id) => API.getRelatedAlbums(id, { sortBy: 'releaseDate' }, ['artist']), release.data?.albumId);
-	const relatedReleases = useInfiniteQuery(API.getAlbumReleases, release.data?.albumId);
-	const relatedPlaylists = useInfiniteQuery(API.getAlbumPlaylists, release.data?.albumId);
+	const artists = useQuery(artistsOnAlbumQuery, release.data?.albumId);
+	const albumVideos = useInfiniteQuery(albumVideosQuery, release.data?.albumId);
+	const bSides = useInfiniteQuery(releaseBSidesQuery, release.data?.id);
+	const relatedAlbums = useInfiniteQuery(relatedAlbumsQuery, release.data?.albumId);
+	const relatedReleases = useInfiniteQuery(relatedReleasesQuery, release.data?.albumId);
+	const relatedPlaylists = useInfiniteQuery(relatedPlaylistsQuery, release.data?.albumId);
 	const videos = useMemo(() => albumVideos.data?.pages.at(0)?.items, [albumVideos]);
 	const albumArtist = useMemo(
 		() => artists.data?.find((artist) => artist.id === artistId),
