@@ -189,6 +189,9 @@ export default class ParserService {
 		if (extensionWords.at(-1) == 'beats') {
 			return SongType.Remix;
 		}
+		if (containsWord('acapella')) {
+			return SongType.Acapella;
+		}
 		return SongType.Original;
 	}
 

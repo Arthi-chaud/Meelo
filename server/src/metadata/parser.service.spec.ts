@@ -360,6 +360,13 @@ describe('Parser Service', () => {
 		it("Edit (Album Edit)", () => {
 			expect(parserService.getSongType('Fever (Album Edit)')).toBe(SongType.Edit);
 		});
+
+		it("Acapella (Acapella)", () => {
+			expect(parserService.getSongType("Don't Give It Up (Acapella)")).toBe(SongType.Acapella);
+		});
+		it("Acapella (Remix Acapella)", () => {
+			expect(parserService.getSongType("Don't Give It Up (Remix Acapella)")).toBe(SongType.Remix);
+		});
 	});
 
 
