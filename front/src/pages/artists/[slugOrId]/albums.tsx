@@ -6,14 +6,21 @@ import getSlugOrId from "../../../utils/getSlugOrId";
 import ArtistRelationPageHeader from "../../../components/relation-page-header/artist-relation-page-header";
 import prepareSSR, { InferSSRProps } from "../../../ssr";
 import getYear from "../../../utils/getYear";
+import { getLayoutParams } from "../../../utils/layout";
+
+const defaultSort = {
+	sortBy: 'releaseDate',
+	order: 'desc'
+} as const;
 
 export const getServerSideProps = prepareSSR((context) => {
 	const artistIdentifier = getSlugOrId(context.params);
+	const defaultLayout = getLayoutParams(context.query.view) ?? 'grid';
 
 	return {
-		additionalProps: { artistIdentifier },
+		additionalProps: { artistIdentifier, defaultLayout },
 		queries: [API.getArtist(artistIdentifier)],
-		infiniteQueries: [API.getArtistAlbums(artistIdentifier, undefined, { sortBy: 'releaseDate', order: 'desc' }, ['artist'])]
+		infiniteQueries: [API.getArtistAlbums(artistIdentifier, undefined, defaultSort, ['artist'])]
 	};
 });
 
@@ -24,9 +31,9 @@ const ArtistAlbumsPage = (props: InferSSRProps<typeof getServerSideProps>) => {
 	return <Box sx={{ width: '100%' }}>
 		<ArtistRelationPageHeader artistSlugOrId={artistIdentifier}/>
 		<InfiniteAlbumView
-			defaultLayout="grid"
-			initialSortingField='releaseDate'
-			initialSortingOrder='desc'
+			defaultLayout={props.additionalProps?.defaultLayout}
+			initialSortingField={defaultSort.sortBy}
+			initialSortingOrder={defaultSort.order}
 			formatSubtitle={(album) => getYear(album.releaseDate)?.toString() ?? ''}
 			query={(sort, type) => API.getArtistAlbums(artistIdentifier, type, sort, ['artist'])}
 		/>
