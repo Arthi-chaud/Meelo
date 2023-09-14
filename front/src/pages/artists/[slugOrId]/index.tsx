@@ -69,12 +69,10 @@ export const getServerSideProps = prepareSSR((context) => {
 	};
 });
 
-const ArtistPage = (
-	{ artistIdentifier }: InferSSRProps<typeof getServerSideProps>
-) => {
+const ArtistPage = (props: InferSSRProps<typeof getServerSideProps>) => {
 	const router = useRouter();
-
-	artistIdentifier ??= getSlugOrId(router.query);
+	const artistIdentifier = props.additionalProps?.artistIdentifier
+		?? getSlugOrId(router.query);
 	const artist = useQuery(artistQuery, artistIdentifier);
 	const latestAlbums = useInfiniteQuery(latestAlbumsQuery, artistIdentifier);
 	const videos = useInfiniteQuery(videosQuery, artistIdentifier);

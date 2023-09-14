@@ -4,7 +4,7 @@ import {
 	deleteCookie, getCookie, setCookie
 } from "cookies-next";
 import User from "../models/user";
-import UserAccessTokenCookieKey from "../utils/user-access-token-cookie-key";
+import { UserAccessTokenCookieKey } from '../utils/cookieKeys';
 
 type UserState = Partial<{
 	user: User,

@@ -7,9 +7,13 @@ import {
 } from "./api/use-query";
 import store from "./state/store";
 import { setAccessToken } from "./state/userSlice";
-import UserAccessTokenCookieKey from "./utils/user-access-token-cookie-key";
+import {
+	LanguageCookieKey, ThemeCookieKey, UserAccessTokenCookieKey
+} from './utils/cookieKeys';
 import API from "./api/api";
-import { setLanguage } from "./state/settingsSlice";
+import {
+	ColorSchemes, setColorScheme, setLanguage
+} from "./state/settingsSlice";
 import { Languages } from "./i18n/i18n";
 import ALParser from 'accept-language-parser';
 import { Promisable } from "type-fest";
@@ -56,6 +60,8 @@ const prepareSSR = <AdditionalProps>(
 	return async (context: GetServerSidePropsContext) => {
 		const queryClient = new QueryClient();
 		const accessToken = context.req.cookies[UserAccessTokenCookieKey];
+		const theme = ColorSchemes.find((th) => th === context.req.cookies[ThemeCookieKey]);
+		const language = Languages.find((lang) => lang === context.req.cookies[LanguageCookieKey]);
 
 		if (accessToken) {
 			store.dispatch(setAccessToken(accessToken));
@@ -63,14 +69,19 @@ const prepareSSR = <AdditionalProps>(
 			// Disable SSR if user is not authentified
 			return { props: {} };
 		}
-		const parameters = await cook(context, queryClient);
-
-		// If SSR and no specific language is set, use request to determine the language.
-		if (store.getState().settings.language == 'system') {
+		if (theme) {
+			store.dispatch(setColorScheme(theme));
+		}
+		if (language) {
+			store.dispatch(setLanguage(language));
+		} else {
+			// If SSR and no specific language is set, use request to determine the language.
 			store.dispatch(setLanguage(
 				ALParser.pick(Array.from(Languages), context.req.headers["accept-language"] ?? 'en', { loose: true }) ?? 'en'
 			));
 		}
+		const parameters = await cook(context, queryClient);
+
 		try {
 			await Promise.all([
 				queryClient.prefetchQuery(prepareMeeloQuery(API.getCurrentUserStatus)),
