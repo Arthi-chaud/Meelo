@@ -196,6 +196,7 @@ const en = {
 	Clean: 'Clean',
 	Demo: 'Demo',
 	Unknown: 'Unknown',
+	Acapella: 'Acapella',
 
 	refreshMetadataStarted: "Refreshing Metadata... (You might need to refresh the page)",
 	refreshMetadataFailed: "Oops... Refreshing Metadata Failed"

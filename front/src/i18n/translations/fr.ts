@@ -186,6 +186,7 @@ const fr: TranslationMap = {
 	Clean: 'Version Clean',
 	Demo: 'Maquette',
 	Unknown: 'Type Inconnu',
+	Acapella: 'Acapella',
 
 	refreshMetadataStarted: "Mise à jour des métadonées... (Rechargez la page pour actualiser)",
 	refreshMetadataFailed: "Oups... La mise à jour des données a échoué."
