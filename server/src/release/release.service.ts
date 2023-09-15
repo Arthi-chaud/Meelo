@@ -402,7 +402,7 @@ export default class ReleaseService extends RepositoryService<
 		}));
 		if (illustration) {
 			const illustrationPath = illustration.disc == null
-				? this.illustrationRepository.getDiscIllustrationPath(
+				? this.illustrationRepository.getReleaseIllustrationPath(
 					release.album.artist?.slug,
 					release.album.slug,
 					release.slug
