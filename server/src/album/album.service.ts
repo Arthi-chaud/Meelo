@@ -238,6 +238,7 @@ export default class AlbumService extends RepositoryService<
 	async updateAlbumDate(where: AlbumQueryParameters.WhereInput) {
 		const album = await this.get(where, { releases: true });
 
+		album.releaseDate = album.releases?.at(0)?.releaseDate ?? null;
 		for (const release of album.releases) {
 			if (album.releaseDate == null ||
 				release.releaseDate && release.releaseDate < album.releaseDate) {
