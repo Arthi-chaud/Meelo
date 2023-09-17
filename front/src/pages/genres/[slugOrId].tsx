@@ -9,22 +9,22 @@ import API from "../../api/api";
 
 export const getServerSideProps = prepareSSR((context) => {
 	const genreIdentifier = getSlugOrId(context.params);
+	const defaultQuerySortParams = { sortBy: 'name', order: 'asc' } as const;
 
 	return {
 		additionalProps: { genreIdentifier },
 		queries: [API.getGenre(genreIdentifier)],
 		infiniteQueries: [
-			API.getGenreAlbums(genreIdentifier),
-			API.getGenreArtists(genreIdentifier),
-			API.getGenreSongs(genreIdentifier)
+			API.getGenreAlbums(genreIdentifier, defaultQuerySortParams),
+			API.getGenreArtists(genreIdentifier, defaultQuerySortParams),
+			API.getGenreSongs(genreIdentifier, defaultQuerySortParams)
 		]
 	};
 });
 
-const GenrePage = ({ genreIdentifier }: InferSSRProps<typeof getServerSideProps>) => {
+const GenrePage = (props: InferSSRProps<typeof getServerSideProps>) => {
 	const router = useRouter();
-
-	genreIdentifier ??= getSlugOrId(router.query);
+	const genreIdentifier = props.additionalProps?.genreIdentifier ?? getSlugOrId(router.query);
 	const genre = useQuery(API.getGenre, genreIdentifier);
 
 	if (!genre.data) {
@@ -40,7 +40,7 @@ const GenrePage = ({ genreIdentifier }: InferSSRProps<typeof getServerSideProps>
 			enabled={true}
 			artistQuery={(sort) => API.getGenreArtists(genreIdentifier, sort)}
 			albumQuery={(sort, type) => API.getGenreAlbums(genreIdentifier, sort, type)}
-			songQuery={(sort) => API.getGenreSongs(genreIdentifier, sort)}
+			songQuery={(sort, type) => API.getGenreSongs(genreIdentifier, sort, type)}
 		/>
 	</Box>;
 };

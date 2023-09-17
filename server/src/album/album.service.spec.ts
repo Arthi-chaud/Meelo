@@ -15,7 +15,6 @@ import IllustrationModule from "src/illustration/illustration.module";
 import GenreModule from "src/genre/genre.module";
 import TestPrismaService from "test/test-prisma.service";
 import { Album } from "src/prisma/models";
-import ArtistIllustrationService from "src/artist/artist-illustration.service";
 
 describe('Album Service', () => {
 	let albumService: AlbumService;
@@ -31,7 +30,7 @@ describe('Album Service', () => {
 		}).overrideProvider(PrismaService).useClass(TestPrismaService).compile();
 		dummyRepository = module.get(PrismaService);
 		await dummyRepository.onModuleInit();
-		module.get(ArtistIllustrationService).onModuleInit();
+		
 		artistService = module.get<ArtistService>(ArtistService);
 		albumService = module.get<AlbumService>(AlbumService);
 	})
@@ -43,67 +42,6 @@ describe('Album Service', () => {
 	it('should be defined', () => {
 		expect(artistService).toBeDefined();
 		expect(albumService).toBeDefined();
-	});
-
-	describe('Detect Album Type', () => {
-
-		it('should identify title as studio album', () => {
-			expect(AlbumService.getAlbumTypeFromName('Into the Skyline')).toBe(AlbumType.StudioRecording);
-			expect(AlbumService.getAlbumTypeFromName('Celebration')).toBe(AlbumType.StudioRecording);
-			expect(AlbumService.getAlbumTypeFromName('Living Room')).toBe(AlbumType.StudioRecording);
-		});
-
-		it('should identify title as live album', () => {
-			expect(AlbumService.getAlbumTypeFromName('Intimate & Live')).toBe(AlbumType.LiveRecording);
-			expect(AlbumService.getAlbumTypeFromName('Some Album (Live)')).toBe(AlbumType.LiveRecording);
-			expect(AlbumService.getAlbumTypeFromName('11,000 Click (Live at Brixton)')).toBe(AlbumType.LiveRecording);
-			expect(AlbumService.getAlbumTypeFromName('Unplugged')).toBe(AlbumType.LiveRecording);
-			expect(AlbumService.getAlbumTypeFromName('Live À Paris')).toBe(AlbumType.LiveRecording);
-		});
-
-		it('should identify title as compilation album', () => {
-			expect(AlbumService.getAlbumTypeFromName('Happy BusDay: Best of Superbus')).toBe(AlbumType.Compilation);
-			expect(AlbumService.getAlbumTypeFromName('The Very Best of Moby')).toBe(AlbumType.Compilation);
-			expect(AlbumService.getAlbumTypeFromName('The Singles Collection')).toBe(AlbumType.Compilation);
-			expect(AlbumService.getAlbumTypeFromName('The Immaculate Collection')).toBe(AlbumType.Compilation);
-			expect(AlbumService.getAlbumTypeFromName('Greatest Hits: My Prerogative')).toBe(AlbumType.Compilation);
-			expect(AlbumService.getAlbumTypeFromName('A decade of Hits')).toBe(AlbumType.Compilation);
-		});
-
-		it("should identify title as video album", () => {
-			expect(AlbumService.getAlbumTypeFromName('Britney: The Videos')).toBe(AlbumType.VideoAlbum);
-			expect(AlbumService.getAlbumTypeFromName('Greatest Hits: My Prerogative - The Videos')).toBe(AlbumType.VideoAlbum);
-			expect(AlbumService.getAlbumTypeFromName('Celebration - The Video Collection')).toBe(AlbumType.VideoAlbum);
-			expect(AlbumService.getAlbumTypeFromName('The Video Collection 93:99')).toBe(AlbumType.VideoAlbum);
-			expect(AlbumService.getAlbumTypeFromName('Music Videos')).toBe(AlbumType.VideoAlbum);
-			expect(AlbumService.getAlbumTypeFromName('Music Videos II')).toBe(AlbumType.VideoAlbum);
-			expect(AlbumService.getAlbumTypeFromName('In The Zone DVD')).toBe(AlbumType.VideoAlbum);
-		});
-		it("should identify title as remix album", () => {
-			expect(AlbumService.getAlbumTypeFromName('B In The Mix: The Remixes')).toBe(AlbumType.RemixAlbum);
-			expect(AlbumService.getAlbumTypeFromName('Rated R: Remixed')).toBe(AlbumType.RemixAlbum);
-			expect(AlbumService.getAlbumTypeFromName('Move To This - Remix Album')).toBe(AlbumType.RemixAlbum);
-			expect(AlbumService.getAlbumTypeFromName('Essential Mixes - 12" Masters')).toBe(AlbumType.RemixAlbum);
-			expect(AlbumService.getAlbumTypeFromName('Everybody Move (To The Mixes)')).toBe(AlbumType.RemixAlbum);
-			expect(AlbumService.getAlbumTypeFromName('Dance Remixes')).toBe(AlbumType.RemixAlbum);
-			expect(AlbumService.getAlbumTypeFromName('The Best Mixes From The Album Debut')).toBe(AlbumType.RemixAlbum);
-			expect(AlbumService.getAlbumTypeFromName('Mixes')).toBe(AlbumType.RemixAlbum);
-		});
-
-		it("should identify title as soundtrack album", () => {
-			expect(AlbumService.getAlbumTypeFromName('Evita: The Complete Motion Picture Music Soundtrack')).toBe(AlbumType.Soundtrack);
-			expect(AlbumService.getAlbumTypeFromName("Who's That Girl (Original Motion Picture Soundtrack)")).toBe(AlbumType.Soundtrack);
-			expect(AlbumService.getAlbumTypeFromName("Berlin Calling (The Soundtrack)")).toBe(AlbumType.Soundtrack);
-			expect(AlbumService.getAlbumTypeFromName('Desperate Housewives (Music From and Inspired By The Television Series)')).toBe(AlbumType.Soundtrack);
-			expect(AlbumService.getAlbumTypeFromName("The Next Best Thing: Music From the Motion Picture")).toBe(AlbumType.Soundtrack);
-			expect(AlbumService.getAlbumTypeFromName("8 femmes (Bande originale du film)")).toBe(AlbumType.Soundtrack);
-		});
-
-		it('should identify title as single', () => {
-			expect(AlbumService.getAlbumTypeFromName('Twist - Single')).toBe(AlbumType.Single);
-			expect(AlbumService.getAlbumTypeFromName('Twist - EP')).toBe(AlbumType.Single);
-			expect(AlbumService.getAlbumTypeFromName('Falling (Remixes)')).toBe(AlbumType.Single);
-		});
 	});
 
 	describe('Create an album', () => {

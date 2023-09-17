@@ -23,11 +23,12 @@ export const getServerSideProps = prepareSSR((context) => {
 });
 
 const LibraryVideosPage = (
-	{ librarySlug }: InferSSRProps<typeof getServerSideProps>
+	props: InferSSRProps<typeof getServerSideProps>
 ) => {
 	const router = useRouter();
+	const librarySlug = props.additionalProps?.librarySlug
+		?? getLibrarySlug(router.asPath);
 
-	librarySlug ??= getLibrarySlug(router.asPath);
 	return <InfiniteVideoView
 		query={(sort) => librarySlug
 			? API.getAllVideosInLibrary(librarySlug, sort, ['artist'])

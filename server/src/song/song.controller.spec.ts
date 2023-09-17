@@ -11,6 +11,7 @@ import SetupApp from "test/setup-app";
 import { expectedSongResponse, expectedArtistResponse, expectedTrackResponse, expectedReleaseResponse } from "test/expected-responses";
 import ProviderService from "src/providers/provider.service";
 import SettingsService from "src/settings/settings.service";
+import { SongType } from "@prisma/client";
 
 jest.setTimeout(60000);
 
@@ -504,7 +505,7 @@ describe('Song Controller', () => {
 				.expect((res) => {
 					const fetchedSongs : Song[] = res.body.items
 					expect(fetchedSongs).toStrictEqual([
-						expectedSongResponse(version),
+						{ ...expectedSongResponse(version), type: SongType.Remix },
 						expectedSongResponse(dummyRepository.songA2),
 					]);
 				});
@@ -515,4 +516,44 @@ describe('Song Controller', () => {
 				.expect(404);
 		});
 	});
+
+	describe("Song Illustration", () => {
+		it("Should return the Song illustration", async () => {
+			const illustration = await dummyRepository.trackIllustration.create({
+				data: { trackId: dummyRepository.trackC1_1.id, blurhash: 'A', colors: ['B'] }
+			});
+			return request(app.getHttpServer())
+				.get(`/songs/${dummyRepository.songC1.id}`)
+				.expect(200)
+				.expect((res) => {
+					const song: Song = res.body;
+					expect(song).toStrictEqual({
+						...song,
+						illustration: {
+							...illustration,
+							url: '/illustrations/tracks/' + dummyRepository.trackC1_1.id
+						}
+					});
+				});
+
+		});
+	})
+
+	describe('Update Song', () => {
+		it("Should update Song's Type", () => {
+			return request(app.getHttpServer())
+				.post(`/songs/${dummyRepository.songB1.id}`)
+				.send({
+					type: SongType.Remix
+				})
+				.expect(201)
+				.expect((res) => {
+					const song: Song = res.body;
+					expect(song).toStrictEqual({
+						...expectedSongResponse(dummyRepository.songB1),
+						type: SongType.Remix
+					});
+				});
+		})
+	})
 });

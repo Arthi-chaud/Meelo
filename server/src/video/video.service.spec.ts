@@ -11,9 +11,9 @@ import IllustrationModule from "src/illustration/illustration.module";
 import GenreModule from "src/genre/genre.module";
 import TestPrismaService from "test/test-prisma.service";
 import { LyricsModule } from "src/lyrics/lyrics.module";
-import ArtistIllustrationService from "src/artist/artist-illustration.service";
 import VideoService from "./video.service";
 import VideoModule from "./video.module";
+import ReleaseModule from "src/release/release.module";
 import MetadataModule from "src/metadata/metadata.module";
 
 describe('Video Service', () => {
@@ -23,12 +23,12 @@ describe('Video Service', () => {
 	let module: TestingModule;
 	beforeAll(async () => {
 		module = await createTestingModule({
-			imports: [PrismaModule, ArtistModule, TrackModule, AlbumModule, IllustrationModule, GenreModule, LyricsModule, VideoModule, MetadataModule],
+			imports: [PrismaModule, ArtistModule, TrackModule, AlbumModule, IllustrationModule, GenreModule, LyricsModule, VideoModule, ReleaseModule, MetadataModule],
 			providers: [SongService, ArtistService, PrismaService],
 		}).overrideProvider(PrismaService).useClass(TestPrismaService).compile();
 		dummyRepository = module.get(PrismaService);
 		videoService = module.get(VideoService);
-		module.get(ArtistIllustrationService).onModuleInit();
+		
 		await dummyRepository.onModuleInit();
 	});
 

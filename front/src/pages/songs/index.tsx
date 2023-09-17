@@ -13,25 +13,25 @@ export const getServerSideProps = prepareSSR((context) => {
 	const sortBy = getSortingFieldParams(context.query.sortBy, SongSortingKeys);
 
 	return {
-		additionalProps: { librarySlug },
+		additionalProps: { librarySlug, order, sortBy },
 		infiniteQueries: [
 			librarySlug
-				? API.getAllSongsInLibrary(librarySlug, { sortBy, order }, ['artist'])
-				: API.getAllSongs({ sortBy, order }, ['artist'])
+				? API.getAllSongsInLibrary(librarySlug, { sortBy, order }, undefined, ['artist'])
+				: API.getAllSongs({ sortBy, order }, undefined, ['artist'])
 		]
 	};
 });
 
-const LibrarySongsPage = (
-	{ librarySlug }: InferSSRProps<typeof getServerSideProps>
-) => {
+const LibrarySongsPage = (props: InferSSRProps<typeof getServerSideProps>) => {
 	const router = useRouter();
+	const librarySlug = props.additionalProps?.librarySlug ?? getLibrarySlug(router.asPath);
 
-	librarySlug ??= getLibrarySlug(router.asPath);
 	return <InfiniteSongView
-		query={(sort) => librarySlug
-			? API.getAllSongsInLibrary(librarySlug, sort, ['artist'])
-			: API.getAllSongs(sort, ['artist'])
+		initialSortingField={props.additionalProps?.sortBy}
+		initialSortingOrder={props.additionalProps?.order}
+		query={(sort, type) => librarySlug
+			? API.getAllSongsInLibrary(librarySlug, sort, type, ['artist'])
+			: API.getAllSongs(sort, type, ['artist'])
 		}
 	/>;
 };

@@ -1,4 +1,4 @@
-import { useQuery } from "../../api/use-query";
+import { prepareMeeloQuery } from "../../api/use-query";
 import ModalPage from "../modal-page";
 import AuthenticationForm from "./authentication-form";
 import { Grid } from "@mui/material";
@@ -8,22 +8,20 @@ import API from "../../api/api";
 import { RootState } from "../../state/store";
 import { useDispatch, useSelector } from "react-redux";
 import { setUserProfile } from "../../state/userSlice";
-
-const statusQuery = (accessToken?: string) => ({
-	key: [
-		'user',
-		'status',
-		accessToken ?? {}
-	],
-	exec: () => API.getCurrentUserStatus().exec().catch(() => null)
-});
+import { useQuery as useReactQuery } from "react-query";
 
 const AuthenticationWall = (props: { children: any }) => {
 	const accessToken = useSelector((store: RootState) => store.user.accessToken);
-	const status = useQuery(statusQuery, accessToken?.valueOf());
+	const status = useReactQuery({
+		...prepareMeeloQuery(API.getCurrentUserStatus),
+		useErrorBoundary: false,
+	});
 	const dispatch = useDispatch();
-	const [authentified, setAuthenticationStatus] = useState(false);
+	const [authentified, setAuthenticationStatus] = useState(status.data?.id !== undefined);
 
+	useEffect(() => {
+		status.refetch();
+	}, [accessToken]);
 	useEffect(() => {
 		if (accessToken && status.data?.id && !status.error) {
 			setAuthenticationStatus(true);
@@ -36,15 +34,15 @@ const AuthenticationWall = (props: { children: any }) => {
 		status,
 		authentified
 	]);
-
 	useEffect(() => {
-		if (status.data && !status.error) {
+		if (accessToken && status.data && !status.error) {
 			dispatch(setUserProfile(status.data));
 		}
-	}, [status, dispatch]);
-
+	}, [accessToken, status, dispatch]);
 	if (!authentified || !status.data?.id) {
-		return <ModalPage open={!(accessToken && !status.data && status.isLoading)}>
+		return <ModalPage open={!(accessToken && !status.data && status.isLoading) ||
+			(accessToken !== undefined && status.error != null)}
+		>
 			<Grid container direction='column' sx={{
 				width: '100%', height: '100%', display: 'flex', flexWrap: 'nowrap',
 				justifyContent: 'center', alignItems: 'center'

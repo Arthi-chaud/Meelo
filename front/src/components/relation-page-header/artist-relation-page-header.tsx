@@ -24,7 +24,7 @@ const ArtistRelationPageHeader = (props: ArtistRelationPageHeaderProps) => {
 	}
 	return <RelationPageHeader
 		illustration={<Illustration style={{ objectFit: "cover" }}
-			url={artist.data.illustration}
+			illustration={artist.data.illustration}
 			fallback={<AccountCircle/>}/>
 		}
 		title={artist.data.name}

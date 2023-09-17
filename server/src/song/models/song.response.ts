@@ -3,16 +3,15 @@ import {
 } from "@nestjs/common";
 import { IntersectionType } from "@nestjs/swagger";
 import { ArtistResponse, ArtistResponseBuilder } from "src/artist/models/artist.response";
-import { IllustratedModel } from "src/illustration/models/illustrated-model.response";
 import { Song, SongWithRelations } from "src/prisma/models";
 import ResponseBuilderInterceptor from "src/response/interceptors/response.interceptor";
-import SongIllustrationService from "../song-illustration.service";
 import ExternalIdResponse, { ExternalIdResponseBuilder } from "src/providers/models/external-id.response";
+import { IllustratedResponse } from "src/illustration/models/illustration.response";
+import IllustrationRepository from "src/illustration/illustration.repository";
 
 export class SongResponse extends IntersectionType(
-	IntersectionType(
-		Song, IllustratedModel
-	),
+	Song,
+	IllustratedResponse,
 	class {
 		artist?: ArtistResponse;
 		externalIds?: ExternalIdResponse[];
@@ -22,8 +21,8 @@ export class SongResponse extends IntersectionType(
 @Injectable()
 export class SongResponseBuilder extends ResponseBuilderInterceptor<SongWithRelations, SongResponse> {
 	constructor(
-		@Inject(forwardRef(() => SongIllustrationService))
-		private songIllustrationService: SongIllustrationService,
+		@Inject(forwardRef(() => IllustrationRepository))
+		private illustrationRepository: IllustrationRepository,
 		@Inject(forwardRef(() => ArtistResponseBuilder))
 		private artistResponseBuilder: ArtistResponseBuilder,
 		@Inject(forwardRef(() => ExternalIdResponseBuilder))
@@ -37,7 +36,7 @@ export class SongResponseBuilder extends ResponseBuilderInterceptor<SongWithRela
 	async buildResponse(song: SongWithRelations): Promise<SongResponse> {
 		const response = <SongResponse>{
 			...song,
-			illustration: this.songIllustrationService.buildIllustrationLink(song.id)
+			illustration: await this.illustrationRepository.getSongIllustration({ id: song.id })
 		};
 
 		if (song.artist !== undefined) {

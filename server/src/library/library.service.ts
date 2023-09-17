@@ -163,21 +163,4 @@ export default class LibraryService extends RepositoryService<
 	}
 
 	async housekeeping(): Promise<void> {}
-
-	/*async applyMetadataOnFiles(parentLibrary: Library): Promise<void> {
-		this.logger.log(`'${parentLibrary.slug}' library: Applying metadata started`);
-		const files = await this.fileService.getMany({ library: { id: parentLibrary.id } });
-		const libraryPath = this.fileManagerService.getLibraryFullPath(parentLibrary);
-		const updatedFilesCount = (await Promise.allSettled(
-			files.map(async (file) => {
-				await this.metadataService.applyMetadataOnFile({ id: file.id });
-				await this.illustrationService.applyIllustrationOnFile({ id: file.id });
-				const newMd5 = await this.fileManagerService.getMd5Checksum(`${libraryPath}/${file.path}`);
-
-				await this.fileService.update({ md5Checksum: newMd5 }, { id: file.id });
-			})
-		)).length;
-
-		this.logger.log(`${parentLibrary.slug} library: ${updatedFilesCount} files updated`);
-	}*/
 }

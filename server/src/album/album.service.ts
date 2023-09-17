@@ -10,7 +10,7 @@ import {
 	AlbumNotFoundException,
 	AlbumNotFoundFromIDException
 } from './album.exceptions';
-import { AlbumType, Prisma } from '@prisma/client';
+import { Prisma } from '@prisma/client';
 import PrismaService from 'src/prisma/prisma.service';
 import AlbumQueryParameters from './models/album.query-parameters';
 import type ArtistQueryParameters from 'src/artist/models/artist.query-parameters';
@@ -24,9 +24,10 @@ import compilationAlbumArtistKeyword from 'src/utils/compilation';
 import Identifier from 'src/identifier/models/identifier';
 import Logger from 'src/logger/logger';
 import ReleaseQueryParameters from 'src/release/models/release.query-parameters';
-import AlbumIllustrationService from './album-illustration.service';
 import { PrismaError } from 'prisma-error-enum';
 import { PaginationParameters, buildPaginationParameters } from 'src/pagination/models/pagination-parameters';
+import IllustrationRepository from 'src/illustration/illustration.repository';
+import ParserService from 'src/metadata/parser.service';
 
 @Injectable()
 export default class AlbumService extends RepositoryService<
@@ -51,8 +52,9 @@ export default class AlbumService extends RepositoryService<
 		private artistServce: ArtistService,
 		@Inject(forwardRef(() => ReleaseService))
 		private releaseService: ReleaseService,
-		@Inject(forwardRef(() => AlbumIllustrationService))
-		private albumIllustrationService: AlbumIllustrationService,
+		@Inject(forwardRef(() => ParserService))
+		private parserService: ParserService,
+		private illustrationRepository: IllustrationRepository
 	) {
 		super(prismaService.album);
 	}
@@ -83,7 +85,7 @@ export default class AlbumService extends RepositoryService<
 			slug: new Slug(input.name).toString(),
 			releaseDate: input.releaseDate,
 			registeredAt: input.registeredAt,
-			type: AlbumService.getAlbumTypeFromName(input.name)
+			type: this.parserService.getAlbumType(input.name)
 		};
 	}
 
@@ -129,6 +131,7 @@ export default class AlbumService extends RepositoryService<
 
 	static formatManyWhereInput(where: AlbumQueryParameters.ManyWhereInput) {
 		return {
+			NOT: where.related ? this.formatWhereInput(where.related) : undefined,
 			type: where.type,
 			artist: {
 				is: where.artist
@@ -141,7 +144,7 @@ export default class AlbumService extends RepositoryService<
 					: undefined
 			},
 			name: buildStringSearchParameters(where.name),
-			releases: where.library || where.genre || where.appearance ? {
+			releases: where.library || where.genre || where.appearance || where.related ? {
 				some: where.library
 					? ReleaseService.formatManyWhereInput({ library: where.library })
 					: where.genre
@@ -160,7 +163,24 @@ export default class AlbumService extends RepositoryService<
 									}
 								} }
 							}
-							: undefined
+							: where.related
+								? {
+									tracks: {
+										some: {
+											song: {
+												tracks: {
+													some: {
+														release: {
+															album:
+																this.formatWhereInput(where.related)
+														}
+													}
+
+												}
+											}
+										}
+									}
+								} : undefined
 			} : undefined
 		};
 	}
@@ -218,6 +238,7 @@ export default class AlbumService extends RepositoryService<
 	async updateAlbumDate(where: AlbumQueryParameters.WhereInput) {
 		const album = await this.get(where, { releases: true });
 
+		album.releaseDate = album.releases?.at(0)?.releaseDate ?? null;
 		for (const release of album.releases) {
 			if (album.releaseDate == null ||
 				release.releaseDate && release.releaseDate < album.releaseDate) {
@@ -232,12 +253,9 @@ export default class AlbumService extends RepositoryService<
 	 * @param where the query parameter
 	 */
 	async delete(where: AlbumQueryParameters.DeleteInput): Promise<Album> {
-		const illustrationFolder = await this.albumIllustrationService.getIllustrationFolderPath(
-			where
-		);
+		await this.illustrationRepository.deleteAlbumIllustrations(where);
 		const album = await super.delete(where);
 
-		this.albumIllustrationService.deleteIllustrationFolder(illustrationFolder);
 		this.logger.warn(`Album '${album.slug}' deleted`);
 		return album;
 	}
@@ -333,8 +351,8 @@ export default class AlbumService extends RepositoryService<
 		}
 		const updatedAlbum = await this.update({ artistId: newArtist?.id ?? null }, albumWhere);
 
-		this.albumIllustrationService.reassignIllustrationFolder(
-			albumSlug, previousArtistSlug, newArtistSlug
+		this.illustrationRepository.reassignAlbumIllustration(
+			albumSlug.toString(), previousArtistSlug?.toString(), newArtistSlug?.toString()
 		);
 		return updatedAlbum;
 	}
@@ -393,51 +411,5 @@ export default class AlbumService extends RepositoryService<
 				]
 			}
 		});
-	}
-
-	static getAlbumTypeFromName(albumName: string): AlbumType {
-		albumName = albumName.toLowerCase();
-		if (albumName.includes('soundtrack') ||
-			albumName.includes('from the motion picture') ||
-			albumName.includes('bande originale') ||
-			albumName.includes('music from and inspired by the television series') ||
-			albumName.includes('music from and inspired by the motion picture')) {
-			return AlbumType.Soundtrack;
-		}
-		if (albumName.includes('music videos') ||
-			albumName.includes('the video') ||
-			albumName.includes('dvd')) {
-			return AlbumType.VideoAlbum;
-		}
-		if (albumName.search(/.+(live).*/g) != -1 ||
-			albumName.includes('unplugged') ||
-			albumName.includes(' tour') ||
-			albumName.includes('live from ') ||
-			albumName.includes('live at ') ||
-			albumName.includes('live à ')) {
-			return AlbumType.LiveRecording;
-		}
-		if (albumName.endsWith('- single') ||
-			albumName.endsWith('- ep') ||
-			albumName.endsWith('(remixes)')) {
-			return AlbumType.Single;
-		}
-		if (
-			albumName.includes('remix album') ||
-			albumName.includes(' the remixes') ||
-			albumName.includes('mixes') ||
-			albumName.includes('remixes') ||
-			albumName.includes('remixed') ||
-			albumName.includes('best mixes')) {
-			return AlbumType.RemixAlbum;
-		}
-		if (albumName.includes('best of') ||
-			albumName.includes('hits') ||
-			albumName.includes('greatest hits') ||
-			albumName.includes('singles') ||
-			albumName.includes('collection')) {
-			return AlbumType.Compilation;
-		}
-		return AlbumType.StudioRecording;
 	}
 }

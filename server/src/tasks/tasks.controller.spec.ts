@@ -94,21 +94,6 @@ describe('Task Controller', () => {
 		expect(spy).toBeCalled();
 	})
 
-	it('should refresh metadata', async () => {
-		const spy = jest.spyOn(TaskRunner.prototype as any, 'refreshLibraryMetadata');
-		spy.mockImplementationOnce(async () => {});
-		jest.spyOn(dummyRepository.library, 'findMany')
-			.mockResolvedValueOnce([dummyRepository.library1]);
-
-
-		const res = await request(app.getHttpServer())
-			.get(`/tasks/refresh-metadata`)
-		expect(res.statusCode).toBe(200);
-		expect(res.body).toStrictEqual(expectedTaskResponse);
-		await delay(2000);
-		expect(spy).toBeCalled();
-	})
-
 	it('should run scan on library', async () => {
 		const spy = jest.spyOn(TaskRunner.prototype as any, 'scanLibrary');
 		spy.mockImplementationOnce(async () => {});
@@ -134,11 +119,11 @@ describe('Task Controller', () => {
 	});
 
 	it('should refresh metadata on library', async () => {
-		const spy = jest.spyOn(TaskRunner.prototype as any, 'refreshLibraryMetadata');
+		const spy = jest.spyOn(TaskRunner.prototype as any, 'refreshFilesMetadata');
 		spy.mockImplementationOnce(async () => {});
 
 		const res = await request(app.getHttpServer())
-			.get(`/tasks/refresh-metadata/1`)
+			.get(`/tasks/refresh-metadata?library=${dummyRepository.library1.id}`)
 		expect(res.statusCode).toBe(200);
 		expect(res.body).toStrictEqual(expectedTaskResponse);
 		await delay(2000);
@@ -154,8 +139,8 @@ describe('Task Controller', () => {
 		await request(app.getHttpServer()).get(`/tasks/scan/${dummyRepository.library1.id}`);
 		await request(app.getHttpServer()).get(`/tasks/housekeeping`);
 		await request(app.getHttpServer()).get(`/tasks/clean/1`);
-		await request(app.getHttpServer()).get(`/tasks/refresh-metadata`);
-		const res = await request(app.getHttpServer()).get(`/tasks/status`);
+		await request(app.getHttpServer()).get(`/tasks/refresh-metadata?library=${dummyRepository.library2.id}`);
+		const res = await request(app.getHttpServer()).get(`/tasks`);
 		expect(res.body).toStrictEqual({
 			active: {
 				name: 'scanLibrary',

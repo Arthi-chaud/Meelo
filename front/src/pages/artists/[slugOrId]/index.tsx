@@ -69,12 +69,10 @@ export const getServerSideProps = prepareSSR((context) => {
 	};
 });
 
-const ArtistPage = (
-	{ artistIdentifier }: InferSSRProps<typeof getServerSideProps>
-) => {
+const ArtistPage = (props: InferSSRProps<typeof getServerSideProps>) => {
 	const router = useRouter();
-
-	artistIdentifier ??= getSlugOrId(router.query);
+	const artistIdentifier = props.additionalProps?.artistIdentifier
+		?? getSlugOrId(router.query);
 	const artist = useQuery(artistQuery, artistIdentifier);
 	const latestAlbums = useInfiniteQuery(latestAlbumsQuery, artistIdentifier);
 	const videos = useInfiniteQuery(videosQuery, artistIdentifier);
@@ -93,7 +91,7 @@ const ArtistPage = (
 				sx={{ justifyContent: 'flex-start' }}>
 				<Grid item xs={5} sm={3}
 					lg={2}>
-					<Illustration url={artist.data!.illustration} style={{ objectFit: "cover" }} />
+					<Illustration illustration={artist.data?.illustration} style={{ objectFit: "cover" }} />
 				</Grid>
 				<Grid item xs sx={{ display: 'flex', alignItems: 'center', overflow: 'hidden' }}>
 					<Typography variant='h3' fontWeight='bold'>{artist.data!.name}</Typography>

@@ -183,7 +183,23 @@ const en = {
 	logout: 'Logout',
 
 	appearsOn: "Appears On",
-	featuredOnPlaylists: "Featured On"
+	featuredOnPlaylists: "Featured On",
+	bonusTracks: "Bonus Tracks",
+	relatedAlbums: "Related Albums",
+	changeSongType: "Change Song Type",
+	Original: 'Original',
+	Remix: 'Remix',
+	Live: 'Live',
+	Acoustic: 'Acoustic',
+	Instrumental: 'Instrumental',
+	Edit: 'Edit',
+	Clean: 'Clean',
+	Demo: 'Demo',
+	Unknown: 'Unknown',
+	Acapella: 'Acapella',
+
+	refreshMetadataStarted: "Refreshing Metadata... (You might need to refresh the page)",
+	refreshMetadataFailed: "Oops... Refreshing Metadata Failed"
 };
 
 export default en;

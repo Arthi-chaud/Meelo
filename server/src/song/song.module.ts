@@ -9,7 +9,6 @@ import { LyricsModule } from 'src/lyrics/lyrics.module';
 import IllustrationModule from 'src/illustration/illustration.module';
 import { SongResponseBuilder } from './models/song.response';
 import ReleaseModule from 'src/release/release.module';
-import SongIllustrationService from './song-illustration.service';
 import ProvidersModule from 'src/providers/providers.module';
 import MetadataModule from 'src/metadata/metadata.module';
 
@@ -27,13 +26,11 @@ import MetadataModule from 'src/metadata/metadata.module';
 	],
 	exports: [
 		SongService,
-		SongResponseBuilder,
-		SongIllustrationService,
+		SongResponseBuilder
 	],
 	providers: [
 		SongService,
-		SongResponseBuilder,
-		SongIllustrationService,
+		SongResponseBuilder
 	],
 	controllers: [SongController]
 })

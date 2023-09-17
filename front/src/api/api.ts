@@ -11,7 +11,7 @@ import {
 	ReleaseInclude, ReleaseSortingKeys, ReleaseWithRelations
 } from "../models/release";
 import {
-	SongInclude, SongSortingKeys, SongWithRelations
+	SongInclude, SongSortingKeys, SongType, SongWithRelations
 } from "../models/song";
 import { VideoWithRelations } from "../models/video";
 import {
@@ -30,6 +30,7 @@ import { RequireExactlyOne } from "type-fest";
 import Playlist, {
 	PlaylistInclude, PlaylistSortingKeys, PlaylistWithRelations
 } from "../models/playlist";
+import * as SSR from '../ssr';
 
 const AuthenticationResponse = yup.object({
 	access_token: yup.string().required()
@@ -70,7 +71,7 @@ export default class API {
 	/**
 	 * Utilitary functions
 	 */
-	private static isSSR = () => typeof window === 'undefined';
+	private static isSSR = SSR.isSSR;
 	private static isDev = () => process.env.NODE_ENV === 'development';
 
 	private static SSR_API_URL = process.env.ssrApiRoute!;
@@ -290,14 +291,16 @@ export default class API {
 	 * Calls for a task to refresh metadata of files in a library
 	 * @returns A object with the status of the task
 	 */
-	static async refreshMetadataInLibrary(
-		librarySlugOrId: number | string
-	): Promise<LibraryTaskResponse> {
+	static async refreshMetadata(
+		parentResourceType: 'library' | 'album' | 'song' | 'release' | 'track',
+		resourceSlugOrId: number | string
+	): Promise<void> {
 		return API.fetch({
-			route: `/tasks/refresh-metadata/${librarySlugOrId}`,
+			route: `/tasks/refresh-metadata`,
 			errorMessage: "Library refresh failed",
+			otherParameters: { [parentResourceType]: resourceSlugOrId },
 			parameters: { },
-			validator: LibraryTaskResponse
+			emptyResponse: true
 		});
 	}
 
@@ -402,7 +405,7 @@ export default class API {
 	}
 
 	/**
-	 * Update Resourse Illustration
+	 * Update Resourse Type
 	 */
 	static async updateAlbum(
 		albumSlugOrId: number | string,
@@ -411,6 +414,23 @@ export default class API {
 		return API.fetch({
 			route: `/albums/${albumSlugOrId}`,
 			errorMessage: "Update Album Failed",
+			method: 'POST',
+			parameters: {},
+			emptyResponse: true,
+			data: { type: newType }
+		});
+	}
+
+	/**
+	 * Update Resourse Type
+	 */
+	static async updateSong(
+		songSlugOrId: number | string,
+		newType: SongType
+	): Promise<void> {
+		return API.fetch({
+			route: `/songs/${songSlugOrId}`,
+			errorMessage: "Update Song Failed",
 			method: 'POST',
 			parameters: {},
 			emptyResponse: true,
@@ -529,14 +549,15 @@ export default class API {
 	static getAllSongsInLibrary<I extends SongInclude>(
 		librarySlugOrId: string | number,
 		sort?: SortingParameters<typeof SongSortingKeys>,
+		type?: SongType,
 		include?: I[]
 	): InfiniteQuery<SongWithRelations<I>> {
 		return {
-			key: ['libraries', librarySlugOrId, 'songs', sort ?? {}, ...API.formatIncludeKeys(include)],
+			key: ['libraries', librarySlugOrId, 'songs', sort ?? {}, ...API.formatIncludeKeys(include), type ?? {}],
 			exec: (pagination) => API.fetch({
 				route: `/songs`,
 				errorMessage: 'Library does not exist',
-				otherParameters: { library: librarySlugOrId },
+				otherParameters: { library: librarySlugOrId, type },
 				parameters: { pagination: pagination, include, sort },
 				validator: PaginatedResponse(SongWithRelations(include ?? []))
 			})
@@ -571,14 +592,16 @@ export default class API {
 	 */
 	static getAllSongs<I extends SongInclude>(
 		sort?: SortingParameters<typeof SongSortingKeys>,
+		type?: SongType,
 		include?: I[]
 	): InfiniteQuery<SongWithRelations<I>> {
 		return {
-			key: ['songs', ...API.formatIncludeKeys(include), sort ?? {}],
+			key: ['songs', ...API.formatIncludeKeys(include), sort ?? {}, type ?? {}],
 			exec: (pagination) => API.fetch({
 				route: `/songs`,
 				errorMessage: 'Songs could not be loaded',
 				parameters: { pagination: pagination, include, sort },
+				otherParameters: { type },
 				validator: PaginatedResponse(SongWithRelations(include ?? []))
 			})
 		};
@@ -654,14 +677,15 @@ export default class API {
 	static getArtistSongs<I extends SongInclude>(
 		artistSlugOrId: string | number,
 		sort?: SortingParameters<typeof SongSortingKeys>,
+		type?: SongType,
 		include?: I[]
 	): InfiniteQuery<SongWithRelations<I>> {
 		return {
-			key: ['artist', artistSlugOrId, 'songs', sort ?? {}, ...API.formatIncludeKeys(include)],
+			key: ['artist', artistSlugOrId, 'songs', sort ?? {}, ...API.formatIncludeKeys(include), type ?? {}],
 			exec: (pagination) => API.fetch({
 				route: `/songs`,
 				errorMessage: `Artist '${artistSlugOrId}' not found`,
-				otherParameters: { artist: artistSlugOrId },
+				otherParameters: { artist: artistSlugOrId, type },
 				parameters: { pagination: pagination, include, sort },
 				validator: PaginatedResponse(SongWithRelations(include ?? []))
 			})
@@ -768,6 +792,46 @@ export default class API {
 	}
 
 	/**
+	 * Get B-Sides of a release
+	 */
+	static getReleaseBSides<I extends SongInclude>(
+		releaseSlugOrId: string | number,
+		sort?: SortingParameters<typeof SongSortingKeys>,
+		include?: I[]
+	): InfiniteQuery<SongWithRelations<I>> {
+		return {
+			key: ['release', releaseSlugOrId, 'bsides', ...API.formatIncludeKeys(include)],
+			exec: () => API.fetch({
+				route: `/songs`,
+				errorMessage: "Release not found",
+				parameters: { include, sort },
+				otherParameters: { bsides: releaseSlugOrId },
+				validator: PaginatedResponse(SongWithRelations(include ?? []))
+			})
+		};
+	}
+
+	/**
+	 * Get B-Sides of a release
+	 */
+	static getRelatedAlbums<I extends AlbumInclude>(
+		albumSlugOrId: string | number,
+		sort?: SortingParameters<typeof AlbumSortingKeys>,
+		include?: I[]
+	): InfiniteQuery<AlbumWithRelations<I>> {
+		return {
+			key: ['album', albumSlugOrId, 'related', ...API.formatIncludeKeys(include)],
+			exec: () => API.fetch({
+				route: `/albums`,
+				errorMessage: "Album not found",
+				parameters: { include, sort },
+				otherParameters: { related: albumSlugOrId },
+				validator: PaginatedResponse(AlbumWithRelations(include ?? []))
+			})
+		};
+	}
+
+	/**
 	 * Get artist that appear on an album
 	 * @param albumSlugOrId the identifier of an album
 	 * @param include the fields to include in the fetched item
@@ -794,8 +858,10 @@ export default class API {
 	 * @returns A query to a User object
 	 */
 	static getCurrentUserStatus(): Query<User> {
+		const accessToken = store.getState().user.accessToken;
+
 		return {
-			key: ['user'],
+			key: ['user', accessToken ?? ''],
 			exec: () => API.fetch({
 				route: `/users/me`,
 				parameters: { },
@@ -931,13 +997,15 @@ export default class API {
 	static getSongVersions<I extends SongInclude>(
 		songSlugOrId: string | number,
 		sort?: SortingParameters<typeof SongSortingKeys>,
+		type?: SongType,
 		include?: I[]
 	): InfiniteQuery<SongWithRelations<I>> {
 		return {
-			key: ['song', songSlugOrId, 'versions', sort ?? {}, ...API.formatIncludeKeys(include)],
+			key: ['song', songSlugOrId, 'versions', sort ?? {}, ...API.formatIncludeKeys(include), type ?? {}],
 			exec: (pagination) => API.fetch({
 				route: `/songs/${songSlugOrId}/versions`,
 				parameters: { pagination: pagination, include, sort },
+				otherParameters: { type },
 				validator: PaginatedResponse(SongWithRelations(include ?? []))
 			})
 		};
@@ -1226,13 +1294,14 @@ export default class API {
 	static getGenreSongs(
 		idOrSlug: string | number,
 		sort?: SortingParameters<typeof SongSortingKeys>,
+		type?: SongType,
 	): InfiniteQuery<SongWithRelations<'artist'>> {
 		return {
-			key: ['genre', idOrSlug, 'songs', sort ?? {}],
+			key: ['genre', idOrSlug, 'songs', sort ?? {}, type ?? {}],
 			exec: (pagination) => API.fetch({
 				route: `/songs`,
 				errorMessage: 'Genre not found',
-				otherParameters: { genre: idOrSlug },
+				otherParameters: { genre: idOrSlug, type },
 				parameters: { pagination: pagination, include: ['artist'], sort },
 				validator: PaginatedResponse(SongWithRelations(['artist']))
 			})
@@ -1291,14 +1360,15 @@ export default class API {
 	static searchSongs<I extends SongInclude>(
 		query: string,
 		sort?: SortingParameters<typeof SongSortingKeys>,
+		type?: SongType,
 		include?: I[]
 	): InfiniteQuery<SongWithRelations<I>> {
 		return {
-			key: ['search', 'songs', query, sort ?? {}, ...API.formatIncludeKeys(include)],
+			key: ['search', 'songs', query, sort ?? {}, ...API.formatIncludeKeys(include), type ?? {}],
 			exec: (pagination) => API.fetch({
 				route: `/songs`,
 				errorMessage: 'Search failed',
-				otherParameters: { query },
+				otherParameters: { query, type },
 				parameters: { pagination: pagination, include, sort },
 				validator: PaginatedResponse(SongWithRelations(include ?? []))
 			}),
@@ -1359,7 +1429,7 @@ export default class API {
 			return validator.cast(validated);
 		} catch (err) {
 			// eslint-disable-next-line no-console
-			console.error(err);
+			console.error(jsonResponse, err);
 			throw new Error("Error: Invalid Response Type");
 		}
 		return jsonResponse;

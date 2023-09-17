@@ -3,15 +3,14 @@ import {
 } from "@nestjs/common";
 import { IntersectionType } from "@nestjs/swagger";
 import { AlbumResponse, AlbumResponseBuilder } from "src/album/models/album.response";
-import { IllustratedModel } from "src/illustration/models/illustrated-model.response";
+import IllustrationRepository from "src/illustration/illustration.repository";
+import { IllustratedResponse } from "src/illustration/models/illustration.response";
 import { Release, ReleaseWithRelations } from "src/prisma/models";
 import ResponseBuilderInterceptor from "src/response/interceptors/response.interceptor";
-import ReleaseIllustrationService from "../release-illustration.service";
 
 export class ReleaseResponse extends IntersectionType(
-	IntersectionType(
-		Release, IllustratedModel
-	),
+	Release,
+	IllustratedResponse,
 	class {
 		album?: AlbumResponse;
 	}
@@ -20,8 +19,8 @@ export class ReleaseResponse extends IntersectionType(
 @Injectable()
 export class ReleaseResponseBuilder extends ResponseBuilderInterceptor<ReleaseWithRelations, ReleaseResponse> {
 	constructor(
-		@Inject(forwardRef(() => ReleaseIllustrationService))
-		private releaseIllustrationService: ReleaseIllustrationService,
+		@Inject(forwardRef(() => IllustrationRepository))
+		private illustrationRepository: IllustrationRepository,
 		@Inject(forwardRef(() => AlbumResponseBuilder))
 		private albumResponseBuilder: AlbumResponseBuilder
 	) {
@@ -33,7 +32,8 @@ export class ReleaseResponseBuilder extends ResponseBuilderInterceptor<ReleaseWi
 	async buildResponse(release: ReleaseWithRelations): Promise<ReleaseResponse> {
 		const response = <ReleaseResponse>{
 			...release,
-			illustration: this.releaseIllustrationService.buildIllustrationLink(release.id)
+			illustration: await this.illustrationRepository
+				.getReleaseIllustration({ id: release.id })
 		};
 
 		if (release.album !== undefined) {

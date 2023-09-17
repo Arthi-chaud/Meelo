@@ -1,7 +1,6 @@
 import {
 	Inject, Injectable, OnModuleInit, forwardRef
 } from '@nestjs/common';
-import RepositoryIllustrationService from 'src/repository/repository-illustration.service';
 import FileManagerService from 'src/file-manager/file-manager.service';
 import SettingsService from 'src/settings/settings.service';
 import { join } from 'path';
@@ -11,12 +10,9 @@ import ProvidersSettings from './models/providers.settings';
 import Slug from 'src/slug/slug';
 
 type ProviderName = keyof ProvidersSettings;
-type ServiceArgs = [providerName: ProviderName];
 
 @Injectable()
-export default class ProvidersIllustrationService extends RepositoryIllustrationService<
-	ServiceArgs, ServiceArgs
-> implements OnModuleInit {
+export default class ProvidersIllustrationService implements OnModuleInit {
 	private baseIllustrationFolderPath: string;
 	constructor(
 		private settingsService: SettingsService,
@@ -24,10 +20,8 @@ export default class ProvidersIllustrationService extends RepositoryIllustration
 		private providerService: ProviderService,
 		@Inject(forwardRef(() => IllustrationService))
 		private illustrationService: IllustrationService,
-		fileManagerService: FileManagerService,
-	) {
-		super(fileManagerService);
-	}
+		private fileManagerService: FileManagerService,
+	) { }
 
 	onModuleInit() {
 		this.baseIllustrationFolderPath = join(
@@ -58,30 +52,28 @@ export default class ProvidersIllustrationService extends RepositoryIllustration
 		);
 	}
 
-	buildIllustrationLink(identifier: ProviderName): string {
-		return `${this.IllustrationControllerPath}/providers/${identifier}`;
-	}
-
-	formatWhereInputToIdentifiers(_where: ServiceArgs): Promise<ServiceArgs> {
-		throw new Error('Method not implemented.');
-	}
-
 	downloadMissingProviderImages() {
 		this.providerService.collectActions(async (provider) => {
 			const bannerPath = this.buildBannerPath(provider.name);
 			const iconPath = this.buildIconPath(provider.name);
 
 			if (!this.fileManagerService.fileExists(iconPath)) {
-				this.illustrationService.downloadIllustration(
-					provider.getProviderIconUrl(),
-					iconPath
-				).catch(() => {});
+				this.illustrationService.downloadIllustration(provider.getProviderIconUrl())
+					.catch(() => {})
+					.then((buffer) => {
+						if (buffer) {
+							this.illustrationService.saveIllustration(buffer, iconPath);
+						}
+					});
 			}
 			if (!this.fileManagerService.fileExists(bannerPath)) {
-				this.illustrationService.downloadIllustration(
-					provider.getProviderBannerUrl(),
-					bannerPath
-				).catch(() => {});
+				this.illustrationService.downloadIllustration(provider.getProviderBannerUrl())
+					.catch(() => {})
+					.then((buffer) => {
+						if (buffer) {
+							this.illustrationService.saveIllustration(buffer, bannerPath);
+						}
+					});
 			}
 		});
 	}

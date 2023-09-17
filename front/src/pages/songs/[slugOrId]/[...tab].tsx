@@ -31,17 +31,16 @@ export const getServerSideProps = prepareSSR((context) => {
 			API.getSongLyrics(songIdentifier),
 		],
 		infiniteQueries: [
-			API.getSongVersions(songIdentifier, undefined, ['artist']),
-			API.getSongTracks(songIdentifier)
+			API.getSongGenres(songIdentifier),
+			API.getSongVersions(songIdentifier, { sortBy: 'name', order: 'asc' }, undefined, ['artist']),
+			API.getSongTracks(songIdentifier, { sortBy: 'name', order: 'asc' }, ['release', 'song'])
 		]
 	};
 });
 
 const tabs = ['lyrics', 'versions', 'tracks'] as const;
 
-const SongPage = (
-	{ songIdentifier }: InferSSRProps<typeof getServerSideProps>
-) => {
+const SongPage = (props: InferSSRProps<typeof getServerSideProps>) => {
 	/**
 	 * Parses the query to find the requested tab, fallback on tabs[0]
 	 */
@@ -51,10 +50,9 @@ const SongPage = (
 	const router = useRouter();
 	const [tab, setTabs] = useState<typeof tabs[number]>(getTabFromQuery());
 	const queryClient = useQueryClient();
-
-	songIdentifier ??= getSlugOrId(router.query);
+	const songIdentifier = props.additionalProps?.songIdentifier ?? getSlugOrId(router.query);
 	const lyrics = useQuery(API.getSongLyrics, songIdentifier);
-	const song = useQuery((id) => API.getSong(id, ['artist', 'externalIds']), songIdentifier);
+	const song = useQuery(() => API.getSong(songIdentifier, ['artist', 'externalIds']));
 	const genres = useInfiniteQuery(API.getSongGenres, songIdentifier);
 	const dispatch = useDispatch();
 
@@ -114,7 +112,7 @@ const SongPage = (
 			)}
 			{ tab == 'versions' &&
 				<InfiniteSongView
-					query={(sort) => API.getSongVersions(songIdentifier, sort, ['artist'])}
+					query={(sort, type) => API.getSongVersions(songIdentifier, sort, type, ['artist'])}
 				/>
 			}
 			{ tab == 'tracks' &&

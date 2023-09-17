@@ -14,7 +14,7 @@ const ReleaseItem = ({ release }: ReleaseItemProps) => {
 	const isMaster = release.id == release.album.masterId;
 
 	return <ListItem key={release.id}
-		icon={<Illustration url={release.illustration}/>}
+		icon={<Illustration illustration={release.illustration}/>}
 		href={`/releases/${release.id}`}
 		title={release.name}
 		secondTitle={getYear(release.releaseDate)?.toString()}

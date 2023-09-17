@@ -4,6 +4,7 @@ import RelationPageHeader from "../../../components/relation-page-header/relatio
 import prepareSSR, { InferSSRProps } from "../../../ssr";
 import getSlugOrId from "../../../utils/getSlugOrId";
 import {
+	prepareMeeloQuery,
 	useQueries, useQuery, useQueryClient
 } from "../../../api/use-query";
 import PlaylistContextualMenu from "../../../components/contextual-menu/playlist-contextual-menu";
@@ -38,12 +39,18 @@ import Translate, { translate } from "../../../i18n/translate";
 const playlistQuery = (idOrSlug: number | string) => API.getPlaylist(idOrSlug, ['entries']);
 const masterTrackQuery = (songId: number | string) => API.getMasterTrack(songId, ['release']);
 
-export const getServerSideProps = prepareSSR((context) => {
+export const getServerSideProps = prepareSSR(async (context, queryClient) => {
 	const playlistIdentifier = getSlugOrId(context.params);
+	const playlist = await queryClient.fetchQuery(
+		prepareMeeloQuery(() => playlistQuery(playlistIdentifier))
+	);
 
 	return {
 		additionalProps: { playlistIdentifier },
-		queries: [playlistQuery(playlistIdentifier)]
+		queries: [
+			...playlist.entries.map((entry) => masterTrackQuery(entry.id)),
+			...playlist.entries.map((entry) => API.getArtist(entry.artistId))
+		]
 	};
 });
 
@@ -102,7 +109,7 @@ type PlaylistEntryItemProps = {
 
 const PlaylistEntryItem = ({ entry, onClick }: PlaylistEntryItemProps) => (
 	<ListItem
-		icon={<Illustration url={entry.illustration} fallback={<Audiotrack/>}/>}
+		icon={<Illustration illustration={entry.illustration} fallback={<Audiotrack/>}/>}
 		title={entry.name}
 		onClick={onClick}
 		trailing={<SongContextualMenu song={entry} entryId={entry.entryId}/>}
@@ -110,17 +117,15 @@ const PlaylistEntryItem = ({ entry, onClick }: PlaylistEntryItemProps) => (
 	/>
 );
 
-const PlaylistPage = (
-	{ playlistIdentifier }: InferSSRProps<typeof getServerSideProps>
-) => {
+const PlaylistPage = (props: InferSSRProps<typeof getServerSideProps>) => {
 	const router = useRouter();
 	const dispatch = useDispatch();
 	const confirm = useConfirm();
 	const queryClient = useQueryClient();
 	const [editState, setEditState] = useState(false);
 	const [tempPlaylistEdit, setTempEdit] = useState<(PlaylistEntry & SongWithRelations<'artist'>)[]>([]);
-
-	playlistIdentifier ??= getSlugOrId(router.query);
+	const playlistIdentifier = props.additionalProps?.playlistIdentifier
+		?? getSlugOrId(router.query);
 	const deleteAction = DeletePlaylistAction(confirm, queryClient, playlistIdentifier, () => router.push('/playlists'));
 	const playlist = useQuery(playlistQuery, playlistIdentifier);
 	const artistsQueries = useQueries(
@@ -175,7 +180,7 @@ const PlaylistPage = (
 
 	return <>
 		<RelationPageHeader
-			illustration={<Illustration url={playlist.data.illustration}/>}
+			illustration={<Illustration illustration={playlist.data.illustration}/>}
 			title={playlist.data.name}
 			trailing={<PlaylistContextualMenu playlist={playlist.data}/>}
 		/>

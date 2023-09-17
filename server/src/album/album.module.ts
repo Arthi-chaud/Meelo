@@ -8,8 +8,8 @@ import IllustrationModule from 'src/illustration/illustration.module';
 import TrackModule from 'src/track/track.module';
 import GenreModule from "../genre/genre.module";
 import { AlbumResponseBuilder } from './models/album.response';
-import AlbumIllustrationService from './album-illustration.service';
 import ProvidersModule from 'src/providers/providers.module';
+import MetadataModule from 'src/metadata/metadata.module';
 
 @Module({
 	imports: [
@@ -20,9 +20,10 @@ import ProvidersModule from 'src/providers/providers.module';
 		forwardRef(() => ReleaseModule),
 		forwardRef(() => TrackModule),
 		GenreModule,
+		forwardRef(() => MetadataModule),
 	],
-	exports: [AlbumService, AlbumResponseBuilder, AlbumIllustrationService],
-	providers: [AlbumService, AlbumResponseBuilder, AlbumIllustrationService],
+	exports: [AlbumService, AlbumResponseBuilder],
+	providers: [AlbumService, AlbumResponseBuilder],
 	controllers: [AlbumController]
 })
 export default class AlbumModule {}

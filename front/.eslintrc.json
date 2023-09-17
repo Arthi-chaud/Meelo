@@ -17,6 +17,7 @@
 		"react/jsx-indent-props": ["warn", "tab"],
 		"react/jsx-curly-spacing": ["warn", { "when": "never", "children": false }],
 		"react/jsx-indent": ["warn", "tab"],
+		"unused-imports/no-unused-imports": "error",
 		"no-restricted-imports": ["error", {
 			"name": "react-query",
 			"importNames": ["useQueryClient", "useQuery", "useInfiniteQuery", "useQueries"],
@@ -37,7 +38,7 @@
 			"name": "@mui/material",
 			"importNames": ["ThemeProvider"],
 			"message": "Use wrapper from theme/provider"
-		},{
+		}, {
 			"name": "next",
 			"importNames": ["GetServerSidePropsContext", "InferGetServerSidePropsType"],
 			"message": "Use wrapper functions provided by src/ssr"
@@ -47,6 +48,10 @@
 		}, {
 			"name": "format-duration",
 			"message": "Use wrapper"
+		}, {
+			"name": "@mui/material",
+			"importNames": ["Fade"],
+			"message": "Use wrapper from 'components/fade'"
 		}]
 	}
 }

@@ -1,14 +1,12 @@
 /* eslint-disable react/jsx-indent */
 import {
-	AppBar, Box, Button, Divider, Fade, Grid, IconButton,
+	AppBar, Box, Button, Divider, Grid, IconButton,
 	MenuItem, Select, Toolbar, Typography, useTheme
 } from '@mui/material';
 import Image from 'next/image';
 import { useRouter } from 'next/router';
 import MenuIcon from '@mui/icons-material/Menu';
-import {
-	useEffect, useMemo, useState
-} from 'react';
+import { useMemo, useState } from 'react';
 import API from '../../api/api';
 import LoadingComponent from '../loading/loading';
 import { itemType } from './item-types';
@@ -19,57 +17,42 @@ import Link from 'next/link';
 // eslint-disable-next-line no-restricted-imports
 import { useInfiniteQuery as useReactInfiniteQuery } from 'react-query';
 import { prepareMeeloInfiniteQuery } from '../../api/use-query';
-import Library from '../../models/library';
 import toast from 'react-hot-toast';
 import ContextualMenu from '../contextual-menu/contextual-menu';
-import getAppBarActions from './actions';
 import { GoToSearchAction } from '../actions/link';
-import { useSelector } from 'react-redux';
-import { RootState } from '../../state/store';
 import useColorScheme from '../../theme/color-scheme';
 import Translate, { translate } from '../../i18n/translate';
+import Fade from '../fade';
+import useAppBarActions from '../../utils/useAppBarActions';
 
 const MeeloAppBar = () => {
 	const router = useRouter();
-	const [requestedLibrary, setRequestedLibrary] = useState(globalLibrary);
-	const [availableLibraries, setAvailableLibraries] = useState<Library[] | null>(null);
-	const colorSchemeSetting = useSelector((state: RootState) => state.settings.colorScheme);
-	const languageSetting = useSelector((state: RootState) => state.settings.language);
-	const actions = useMemo(
-		() => getAppBarActions(colorSchemeSetting, languageSetting),
-		[colorSchemeSetting, languageSetting]
-	);
+	const [drawerOpen, setDrawerOpen] = useState(false);
+	const actions = useAppBarActions();
 	const librariesQuery = useReactInfiniteQuery({
 		...prepareMeeloInfiniteQuery(API.getAllLibraries),
-		useErrorBoundary: false
+		useErrorBoundary: false,
+		onError: () => {
+			toast.error(translate('librariesLoadFail'));
+		}
 	});
 	const colorScheme = useColorScheme();
 	const theme = useTheme();
-
-	useEffect(() => {
-		if (librariesQuery.error) {
-			if (availableLibraries == null) {
-				toast.error(translate('librariesLoadFail'));
-			}
-			setAvailableLibraries([]);
-		} else if (librariesQuery.data) {
+	const requestedLibrary = useMemo(
+		() => {
 			let requestedlibrarySlug = globalLibrary.slug;
 
 			if (router.asPath.startsWith('/libraries')) {
 				requestedlibrarySlug = router.asPath.split('/')[2];
 			}
-			setRequestedLibrary(librariesQuery.data?.pages.at(0)?.items.find(
+			return librariesQuery.data?.pages.at(0)?.items.find(
 				(library) => library.slug === requestedlibrarySlug
-			) ?? globalLibrary);
-			setAvailableLibraries(librariesQuery.data.pages.at(0)?.items ?? []);
-		}
-	}, [
-		router.asPath,
-		librariesQuery.data,
-		librariesQuery.error,
-		availableLibraries
-	]);
-	const [drawerOpen, setDrawerOpen] = useState(false);
+			) ?? globalLibrary;
+		}, [librariesQuery]
+	);
+	const availableLibraries = useMemo(
+		() => librariesQuery.data?.pages.at(0)?.items ?? null, [librariesQuery]
+	);
 
 	return (
 		<>

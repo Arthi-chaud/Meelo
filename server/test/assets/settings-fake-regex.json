@@ -8,5 +8,9 @@
 		"source": "embedded",
 		"order": "only"
 	},
-	"providers": {}
+	"providers": {},
+	"compilations": {
+		"useID3CompTag": true,
+		"artists": []
+	}
 }

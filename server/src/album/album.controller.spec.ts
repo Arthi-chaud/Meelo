@@ -463,4 +463,26 @@ describe('Album Controller', () => {
 				});
 		});
 	});
+
+	describe("Album Illustration", () => {
+		it("Should return the illustration", async () => {
+			const illustration = await dummyRepository.releaseIllustration.create({
+				data: { releaseId: dummyRepository.releaseA1_1.id, blurhash: 'A', colors: ['B'] }
+			});
+			return request(app.getHttpServer())
+				.get(`/albums/${dummyRepository.albumA1.id}`)
+				.expect(200)
+				.expect((res) => {
+					const album: Album = res.body;
+					expect(album).toStrictEqual({
+						...album,
+						illustration: {
+							...illustration,
+							url: '/illustrations/releases/' + dummyRepository.releaseA1_1.id
+						}
+					});
+				});
+
+		});
+	})
 });

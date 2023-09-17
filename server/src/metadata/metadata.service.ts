@@ -179,13 +179,18 @@ export default class MetadataService {
 	 * @returns returns Metadata object with values from the capture groups of the regex in settings file
 	 */
 	public parseMetadataFromPath(filePath: string): Metadata {
+		const compArtists = [compilationAlbumArtistKeyword.toLowerCase()]
+			.concat(...this.settingsService.settingsValues.compilations
+				.artists?.map((artist) => artist.toLowerCase())
+				.concat(compilationAlbumArtistKeyword) ?? []);
+
 		try {
 			const matchingRegex: RegExpMatchArray = this.settingsService.settingsValues.trackRegex
 				.map((regex) => filePath.match(regex))
 				.find((regexMatch) => regexMatch != null)!;
 			const groups = matchingRegex.groups!;
-			const isCompilation = groups['AlbumArtist']?.toLocaleLowerCase() === compilationAlbumArtistKeyword ||
-			groups['Artist']?.toLocaleLowerCase() === compilationAlbumArtistKeyword;
+			const isCompilation = compArtists.includes(groups['AlbumArtist']?.toLocaleLowerCase()) ||
+			compArtists.includes(groups['Artist']?.toLocaleLowerCase());
 			const metadata = new Metadata();
 
 			metadata.compilation = isCompilation,
@@ -207,11 +212,20 @@ export default class MetadataService {
 	private buildMetadataFromRaw(rawMetadata: IAudioMetadata): Metadata {
 		const isVideo: boolean = rawMetadata.format.trackInfo.length > 1;
 		const metadata = new Metadata();
+		const compSettings = this.settingsService.settingsValues.compilations;
 
 		metadata.genres = rawMetadata.common.genre ?? [];
-		metadata.compilation = rawMetadata.common.compilation ?? false;
+		if (compSettings.useID3CompTag) {
+			metadata.compilation = rawMetadata.common.compilation ?? false;
+		} else if (metadata.albumArtist && compSettings.artists) {
+			metadata.compilation = compSettings.artists
+				.map((artist) => artist.toLowerCase())
+				.includes(metadata.albumArtist.toLowerCase());
+		} else {
+			metadata.compilation = false;
+		}
 		metadata.artist = rawMetadata.common.artist!;
-		metadata.albumArtist = rawMetadata.common.compilation
+		metadata.albumArtist = metadata.compilation
 			? undefined
 			: rawMetadata.common.albumartist;
 		metadata.album = rawMetadata.common.album!;
@@ -355,7 +369,13 @@ export default class MetadataService {
 		const extensionsGroup = extensions.map((ext) => `(${ext})`).join('|');
 
 		return this.parserService.splitGroups(source, { keepDelimiters: true })
-			.filter((group) => new RegExp(`.*(${extensionsGroup}).*`, 'i').exec(group)?.at(0) == undefined)
+			.filter((group) => {
+				// If root
+				if (group == this.parserService.stripGroupDelimiters(group)[1]) {
+					return true;
+				}
+				return new RegExp(`.*(${extensionsGroup}).*`, 'i').exec(group)?.at(0) == undefined;
+			})
 			.map((group) => group.trim())
 			.join(' ')
 			.trim();

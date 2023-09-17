@@ -14,7 +14,6 @@ import AdminGrid from "../admin-grid";
 import {
 	CleanAllLibrariesAction, CleanLibraryAction,
 	FetchExternalMetadata,
-	RefreshMetadataLibraryAction,
 	ScanAllLibrariesAction, ScanLibraryAction
 } from "../actions/library-task";
 import { useConfirm } from "material-ui-confirm";
@@ -22,6 +21,7 @@ import Action from "../actions/action";
 import { useMemo, useState } from "react";
 import LibraryForm from "../library-form";
 import Translate, { translate, useLanguage } from "../../i18n/translate";
+import { RefreshLibraryMetadataAction } from "../actions/refresh-metadata";
 
 const actionButtonStyle = {
 	overflow: 'hidden',
@@ -82,7 +82,7 @@ const LibrariesSettings = () => {
 		{ field: 'scan', headerName: translate('scan'), flex: 3, renderCell: ({ row: library }) =>
 			<RunTaskButton variant='contained' {...ScanLibraryAction(library.id)}/> },
 		{ field: 'refresh', headerName: translate('refreshMetadata'), flex: 3, renderCell: ({ row: library }) =>
-			<RunTaskButton variant='outlined' {...RefreshMetadataLibraryAction(library.id)} label='refresh'/> },
+			<RunTaskButton variant='outlined' {...RefreshLibraryMetadataAction(library.id)} label='refresh'/> },
 		{ field: 'edit', headerName: translate('edit'), flex: 1, renderCell: ({ row: library }) => {
 			return <IconButton onClick={() => setLibraryEdit(library)}>
 				<Edit/>

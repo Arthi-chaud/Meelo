@@ -1,5 +1,5 @@
 import {
-	Button, Container, Divider, Fade, Grid, IconButton,
+	Button, Chip, Container, Divider, Grid, IconButton,
 	ListSubheader, Stack, Typography, useMediaQuery, useTheme
 } from "@mui/material";
 import { Box } from "@mui/system";
@@ -7,14 +7,13 @@ import { useRouter } from "next/router";
 import API from "../../api/api";
 import Illustration from "../../components/illustration";
 import formatDuration from '../../utils/formatDuration';
-import {
-	useEffect, useMemo, useState
-} from "react";
-import Tracklist from "../../models/tracklist";
+import { useMemo } from "react";
 import Link from 'next/link';
 import PlayCircleIcon from '@mui/icons-material/PlayCircle';
 import { Shuffle } from "@mui/icons-material";
-import { useInfiniteQuery, useQuery } from "../../api/use-query";
+import {
+	prepareMeeloQuery, useInfiniteQuery, useQuery
+} from "../../api/use-query";
 import { useDispatch } from "react-redux";
 import { playTracks } from "../../state/playerSlice";
 import { shuffle } from 'd3-array';
@@ -24,20 +23,50 @@ import prepareSSR, { InferSSRProps } from "../../ssr";
 import ReleaseContextualMenu from "../../components/contextual-menu/release-contextual-menu";
 import LoadingPage from "../../components/loading/loading-page";
 import TileRow from "../../components/tile-row";
-import { TrackWithRelations } from "../../models/track";
 import VideoTile from "../../components/tile/video-tile";
 import ExternalIdBadge from "../../components/external-id-badge";
 import Translate from "../../i18n/translate";
 import ArtistTile from "../../components/tile/artist-tile";
 import PlaylistTile from "../../components/tile/playlist-tile";
 import ReleaseTile from "../../components/tile/release-tile";
+import SongGrid from "../../components/song-grid";
+import AlbumTile from "../../components/tile/album-tile";
+import getYear from "../../utils/getYear";
+import Fade from "../../components/fade";
 
-export const getServerSideProps = prepareSSR((context) => {
+const releaseQuery = (releaseIdentifier: string | number) => API.getRelease(releaseIdentifier, ['album']);
+const releaseTracklistQuery = (releaseIdentifier: string | number) => API.getReleaseTrackList(releaseIdentifier, ['song']);
+const albumQuery = (albumId: number) => API.getAlbum(albumId, ['externalIds']);
+const artistsOnAlbumQuery = (albumId: number) => API.getArtistsOnAlbum(albumId);
+
+const albumGenreQuery = (albumId: number) => API.getAlbumGenres(albumId);
+const releaseBSidesQuery = (releaseId: number) => API.getReleaseBSides(releaseId, { sortBy: 'name' }, ['artist']);
+const albumVideosQuery = (albumId: number) => API.getAlbumVideos(albumId);
+const relatedAlbumsQuery = (albumId: number) => API.getRelatedAlbums(albumId, { sortBy: 'releaseDate' }, ['artist']);
+const relatedReleasesQuery = (albumId: number) => API.getAlbumReleases(albumId);
+const relatedPlaylistsQuery = (albumId: number) => API.getAlbumPlaylists(albumId);
+
+export const getServerSideProps = prepareSSR(async (context, queryClient) => {
 	const releaseIdentifier = getSlugOrId(context.params);
+	const release = await queryClient.fetchQuery(
+		prepareMeeloQuery(() => releaseQuery(releaseIdentifier))
+	);
 
 	return {
 		additionalProps: { releaseIdentifier },
-		queries: [API.getRelease(releaseIdentifier), API.getReleaseTrackList(releaseIdentifier)]
+		queries: [
+			releaseTracklistQuery(releaseIdentifier),
+			albumQuery(release.albumId),
+			artistsOnAlbumQuery(release.albumId)
+		],
+		infiniteQueries: [
+			albumGenreQuery(release.albumId),
+			releaseBSidesQuery(release.id),
+			albumVideosQuery(release.albumId),
+			relatedAlbumsQuery(release.albumId),
+			relatedReleasesQuery(release.albumId),
+			relatedPlaylistsQuery(release.albumId)
+		]
 	};
 });
 
@@ -59,30 +88,35 @@ const RelatedContentSection = (props: RelatedContentSectionProps) => {
 	);
 };
 
-const ReleasePage = (
-	{ releaseIdentifier }: InferSSRProps<typeof getServerSideProps>
-) => {
-	const router = useRouter();
+const ColorChips = (props: { colors: string[] }) => {
+	return <Grid container spacing={2} width="100%" justifyContent="center" wrap="nowrap">
+		{props.colors.map((color) => (
+			<Grid item key={`color-chid-${color}`}>
+				<Chip label="&nbsp;&nbsp;" size="small" style={{ backgroundColor: color }} />
+			</Grid>
+		))}
+	</Grid>;
+};
 
-	releaseIdentifier ??= getSlugOrId(router.query);
+const ReleasePage = (props: InferSSRProps<typeof getServerSideProps>) => {
+	const router = useRouter();
+	const releaseIdentifier = props.additionalProps?.releaseIdentifier ?? getSlugOrId(router.query);
 	const theme = useTheme();
 	const viewIsInColumn = useMediaQuery(theme.breakpoints.down('md'));
 	const dispatch = useDispatch();
-	const [trackList, setTracklist] = useState<Tracklist<TrackWithRelations<'song'>>>();
-	const [totalDuration, setTotalDuration] = useState<number | null>(null);
-	const [tracks, setTracks] = useState<TrackWithRelations<'song'>[]>([]);
-
-	const release = useQuery((id) => API.getRelease(id, ['album']), releaseIdentifier);
+	const release = useQuery(releaseQuery, releaseIdentifier);
 	const artistId = useMemo(() => release.data?.album?.artistId, [release]);
-
-	const album = useQuery((id) => API.getAlbum(id, ['externalIds']), release.data?.albumId);
-	const tracklist = useQuery((id) => API.getReleaseTrackList(id, ['song']), releaseIdentifier);
-	const albumGenres = useInfiniteQuery(API.getAlbumGenres, release.data?.albumId);
+	const mainIllustrationColors = release.data?.illustration?.colors ?? [];
+	const album = useQuery(albumQuery, release.data?.albumId);
+	const tracklistQuery = useQuery(releaseTracklistQuery, releaseIdentifier);
+	const albumGenres = useInfiniteQuery(albumGenreQuery, release.data?.albumId);
 	const hasGenres = (albumGenres.data?.pages.at(0)?.items.length ?? 0) > 0;
-	const artists = useQuery(API.getArtistsOnAlbum, release.data?.albumId);
-	const albumVideos = useInfiniteQuery(API.getAlbumVideos, release.data?.albumId);
-	const relatedReleases = useInfiniteQuery(API.getAlbumReleases, release.data?.albumId);
-	const relatedPlaylists = useInfiniteQuery(API.getAlbumPlaylists, release.data?.albumId);
+	const artists = useQuery(artistsOnAlbumQuery, release.data?.albumId);
+	const albumVideos = useInfiniteQuery(albumVideosQuery, release.data?.albumId);
+	const bSides = useInfiniteQuery(releaseBSidesQuery, release.data?.id);
+	const relatedAlbums = useInfiniteQuery(relatedAlbumsQuery, release.data?.albumId);
+	const relatedReleases = useInfiniteQuery(relatedReleasesQuery, release.data?.albumId);
+	const relatedPlaylists = useInfiniteQuery(relatedPlaylistsQuery, release.data?.albumId);
 	const videos = useMemo(() => albumVideos.data?.pages.at(0)?.items, [albumVideos]);
 	const albumArtist = useMemo(
 		() => artists.data?.find((artist) => artist.id === artistId),
@@ -96,19 +130,20 @@ const ReleasePage = (
 		() => relatedPlaylists.data?.pages.at(0)?.items,
 		[relatedPlaylists.data]
 	);
-
-	useEffect(() => {
-		if (tracklist.data) {
-			const discMap = tracklist.data;
+	const [tracks, totalDuration, trackList] = useMemo(() => {
+		if (tracklistQuery.data) {
+			const discMap = tracklistQuery.data;
 			const flatTracks = Array.from(Object.values(discMap)).flat();
 
-			setTracks(flatTracks);
-			setTotalDuration(
-				flatTracks.reduce((prevDuration, track) => prevDuration + track.duration, 0)
-			);
-			setTracklist(discMap);
+			return [
+				flatTracks,
+				flatTracks.reduce((prevDuration, track) => prevDuration + track.duration, 0),
+				discMap
+			];
 		}
-	}, [tracklist.data]);
+		return [[], null, undefined];
+	}, [tracklistQuery.data]);
+
 	// eslint-disable-next-line no-extra-parens
 	if (!release.data || !album.data || !artists.data || !trackList) {
 		return <LoadingPage/>;
@@ -119,7 +154,7 @@ const ReleasePage = (
 		>
 			<Grid container spacing={4} sx={{ justifyContent: 'center' }}>
 				<Grid item md={3} sm={5} xs={8}>
-					<Illustration url={release.data!.illustration}/>
+					<Illustration illustration={release.data!.illustration}/>
 				</Grid>
 				<Grid item container
 					sx={{
@@ -233,6 +268,15 @@ const ReleasePage = (
 					}
 				</Grid>
 			</Grid>
+			<Box sx={{ padding: 2 }}>
+				<ColorChips colors={mainIllustrationColors} />
+			</Box>
+			<RelatedContentSection
+				display={(bSides.data?.pages.at(0)?.items?.length ?? 0) > 0}
+				title={<Translate translationKey="bonusTracks"/>}
+			>
+				<SongGrid songs={bSides.data?.pages.at(0)?.items ?? []} hideArtistName/>
+			</RelatedContentSection>
 			<RelatedContentSection
 				display={(relatedReleases.data?.pages.at(0)?.items?.length ?? 0) > 1}
 				title={<Translate translationKey="otherAlbumReleases"/>}
@@ -255,14 +299,18 @@ const ReleasePage = (
 				/>
 			</RelatedContentSection>
 			<RelatedContentSection
-				display={album.data.externalIds.length != 0}
-				title={<Translate translationKey="externalLinks"/>}
+				display={(relatedAlbums.data?.pages.at(0)?.items?.length ?? 0) > 0}
+				title={<Translate translationKey="relatedAlbums"/>}
 			>
-				<Stack spacing={2}>
-					{album.data.externalIds.map((externalId) =>
-						<ExternalIdBadge key={externalId.provider.name} externalId={externalId}/>)
-					}
-				</Stack>
+				<TileRow tiles={
+					relatedAlbums.data?.pages.at(0)?.items?.map(
+						(otherAlbum, otherAlbumIndex) =>
+							<AlbumTile key={otherAlbumIndex}
+								album={otherAlbum}
+								formatSubtitle={(albumItem) => getYear(albumItem.releaseDate)?.toString() ?? ''}
+							/>
+					) ?? []
+				}/>
 			</RelatedContentSection>
 			<RelatedContentSection
 				display={(featurings?.length ?? 0) != 0}
@@ -279,6 +327,16 @@ const ReleasePage = (
 				<TileRow tiles={playlists?.map((playlist) =>
 					<PlaylistTile key={playlist.id} playlist={playlist}/>)
 				?? []}/>
+			</RelatedContentSection>
+			<RelatedContentSection
+				display={album.data.externalIds.length != 0}
+				title={<Translate translationKey="externalLinks"/>}
+			>
+				<Stack spacing={2}>
+					{album.data.externalIds.map((externalId) =>
+						<ExternalIdBadge key={externalId.provider.name} externalId={externalId}/>)
+					}
+				</Stack>
 			</RelatedContentSection>
 		</Container>
 	);

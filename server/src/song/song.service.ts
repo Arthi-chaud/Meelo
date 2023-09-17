@@ -3,7 +3,9 @@ import {
 } from '@nestjs/common';
 import ArtistService from 'src/artist/artist.service';
 import Slug from 'src/slug/slug';
-import { Prisma } from '@prisma/client';
+import {
+	AlbumType, Prisma, SongType, TrackType
+} from '@prisma/client';
 import PrismaService from 'src/prisma/prisma.service';
 import type SongQueryParameters from './models/song.query-params';
 import TrackService from 'src/track/track.service';
@@ -24,6 +26,9 @@ import {
 	SongNotFoundByIdException,
 	SongNotFoundException
 } from './song.exceptions';
+import AlbumService from 'src/album/album.service';
+import ReleaseQueryParameters from 'src/release/models/release.query-parameters';
+import ReleaseService from 'src/release/release.service';
 import ParserService from 'src/metadata/parser.service';
 
 @Injectable()
@@ -47,6 +52,8 @@ export default class SongService extends RepositoryService<
 		private prismaService: PrismaService,
 		@Inject(forwardRef(() => ArtistService))
 		private artistService: ArtistService,
+		@Inject(forwardRef(() => ReleaseService))
+		private releaseService: ReleaseService,
 		@Inject(forwardRef(() => TrackService))
 		private trackService: TrackService,
 		@Inject(forwardRef(() => GenreService))
@@ -79,6 +86,7 @@ export default class SongService extends RepositoryService<
 			},
 			registeredAt: song.registeredAt,
 			playCount: 0,
+			type: this.parserService.getSongType(song.name),
 			name: song.name,
 			slug: new Slug(song.name).toString()
 		};
@@ -106,7 +114,6 @@ export default class SongService extends RepositoryService<
 	/**
 	 * Get
 	 */
-
 	static formatWhereInput(where: SongQueryParameters.WhereInput) {
 		return {
 			id: where.id,
@@ -136,6 +143,7 @@ export default class SongService extends RepositoryService<
 				gt: where.playCount?.moreThan,
 				lt: where.playCount?.below
 			},
+			type: where.type,
 			tracks: where.library ? {
 				some: TrackService.formatManyWhereInput({ library: where.library })
 			} : where.album ? {
@@ -352,6 +360,7 @@ export default class SongService extends RepositoryService<
 		where: SongQueryParameters.WhereInput,
 		pagination?: PaginationParameters,
 		include?: I,
+		type?: SongType,
 		sort?: SongQueryParameters.SortingParameter
 	) {
 		const { name, artistId } = await this.select(where, { name: true, artistId: true });
@@ -360,7 +369,67 @@ export default class SongService extends RepositoryService<
 		return this.prismaService.song.findMany({
 			where: {
 				artistId: artistId,
-				slug: { contains: new Slug(baseSongName).toString() }
+				slug: { contains: new Slug(baseSongName).toString() },
+				type: type
+			},
+			orderBy: sort ? this.formatSortingInput(sort) : undefined,
+			include: RepositoryService.formatInclude(include),
+			...buildPaginationParameters(pagination)
+		});
+	}
+
+	/**
+	 * Get B-Sides songs of a release
+	 * @requires The release must be a StudioRecording Otherwise, returns an empty list
+	 */
+	async getReleaseBSides<I extends SongQueryParameters.RelationInclude>(
+		where: ReleaseQueryParameters.WhereInput,
+		pagination?: PaginationParameters,
+		include?: I,
+		sort?: SongQueryParameters.SortingParameter
+	) {
+		const { album, ...release } = await this.releaseService.get(where, { album: true });
+
+		if (album.type != AlbumType.StudioRecording) {
+			return [];
+		}
+		const albumSongs = await this.getMany({ album: { id: album.id } });
+		const albumSongsBaseNames = albumSongs
+			// Some albums have live songs from previous albums, we ignore them
+			.filter((song) => song.type != SongType.Live)
+			.map(
+				({ name }) => new Slug(this.getBaseSongName(name)).toString()
+			);
+		const relatedAlbums = await this.prismaService.album.findMany({
+			where: {
+				...AlbumService.formatManyWhereInput({ related: { id: release.albumId } }),
+				type: AlbumType.Single
+			}
+		});
+
+		return this.prismaService.song.findMany({
+			where: {
+				tracks: { some: { release: { album: {
+					OR: [
+						// Get songs from related albums
+						{ id: { in: relatedAlbums.map(({ id }) => id).concat(album.id) } },
+						// Get songs from singles, based on their name
+						...albumSongsBaseNames.map((slug) => ({
+							slug: { startsWith: slug },
+							artistId: album.artistId,
+							type: AlbumType.Single
+						})),
+					]
+				} } } },
+				AND: [
+					// Exclude songs that are already on the release
+					{ tracks: { none: {
+						release: { id: release.id }
+					} } },
+					// We only want songs that have at least one audtio tracks
+					{ tracks: { some: { type: TrackType.Audio } } },
+					{ type: { in: [SongType.Original, SongType.Acoustic, SongType.Demo] } },
+				]
 			},
 			orderBy: sort ? this.formatSortingInput(sort) : undefined,
 			include: RepositoryService.formatInclude(include),
@@ -416,10 +485,6 @@ export default class SongService extends RepositoryService<
 	 * @param songName the name of the song to strip
 	 */
 	private getBaseSongName(songName: string): string {
-		return this.parserService.splitGroups(songName, { keepDelimiters: true })
-			.filter((group) => this.parserService.stripGroupDelimiters(group)[1] == group)
-			.map((group) => group.trim())
-			.join(' ')
-			.trim();
+		return this.parserService.stripGroups(songName);
 	}
 }

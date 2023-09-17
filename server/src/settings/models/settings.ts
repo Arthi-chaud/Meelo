@@ -2,13 +2,27 @@ import { ApiProperty } from "@nestjs/swagger";
 import { Type } from "class-transformer";
 import {
 	ArrayNotEmpty,
+	IsBoolean,
 	IsDefined,
-	IsIn, IsString, ValidateNested
+	IsIn, IsNotEmpty, IsOptional, IsString, ValidateNested
 } from "class-validator";
 import ProvidersSettings from "src/providers/models/providers.settings";
 
 export const metadataSourceValue = ["path", "embedded"] as const;
 export const metadataOrderValue = ["only", "preferred"] as const;
+
+class CompilationSettings {
+	@ApiProperty()
+	@IsNotEmpty({ each: true })
+	@IsString({ each: true })
+	@IsOptional()
+	artists?: string[];
+
+	@ApiProperty()
+	@IsDefined()
+	@IsBoolean()
+	useID3CompTag: boolean;
+}
 
 class MetadataSettings {
 	/**
@@ -72,4 +86,13 @@ export default class Settings {
 	@ValidateNested()
 	@IsDefined()
 	providers: ProvidersSettings;
+
+	@ApiProperty({
+		type: CompilationSettings
+	})
+	@Type(() => CompilationSettings)
+	@ValidateNested()
+	@IsDefined()
+	compilations: CompilationSettings;
 }
+

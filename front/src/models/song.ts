@@ -5,6 +5,9 @@ import Lyrics from "./lyrics";
 import Resource from "./resource";
 import ExternalId from './external-id';
 
+export const SongType = ['Original', 'Remix', 'Live', 'Acoustic', 'Instrumental', 'Edit', 'Clean', 'Demo', 'Unknown', 'Acapella'] as const;
+export type SongType = typeof SongType[number];
+
 /**
  * Abstract data model, instanciated by tracks
  */
@@ -30,7 +33,11 @@ const Song = Resource.concat(Illustration).concat(yup.object({
 	/**
 	 * The ID of the master track
 	 */
-	masterId: yup.number().required().nullable()
+	masterId: yup.number().required().nullable(),
+	/**
+	 * Type of song
+	 */
+	type: yup.mixed<SongType>().oneOf(SongType).required(),
 }));
 
 type Song = yup.InferType<typeof Song>;

@@ -93,7 +93,7 @@ const MinimizedPlayerControls = (props: PlayerControlsProps) => {
 			<Grid item xs={1.5} sm={1}
 				md={0.8} lg={0.6} xl={0.5}>
 				{ props.track ? <Illustration
-					url={props.track?.illustration ?? null}
+					illustration={props.track?.illustration ?? null}
 					fallback={<AudiotrackIcon />}
 				/> : <Box sx={{ height: '100%', display: 'flex', alignItems: 'center' }}>
 					<AudiotrackIcon />

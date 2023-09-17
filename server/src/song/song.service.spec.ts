@@ -5,7 +5,7 @@ import ArtistService from "src/artist/artist.service";
 import ArtistModule from "src/artist/artist.module";
 import PrismaModule from "src/prisma/prisma.module";
 import PrismaService from "src/prisma/prisma.service";
-import type { Song } from "src/prisma/models";
+import { Song } from "src/prisma/models";
 import Slug from "src/slug/slug";
 import { SongAlreadyExistsException, SongNotEmptyException, SongNotFoundByIdException, SongNotFoundException } from "./song.exceptions";
 import { ArtistNotFoundByIDException, ArtistNotFoundException } from "src/artist/artist.exceptions";
@@ -17,9 +17,10 @@ import { GenreNotFoundByIdException } from "src/genre/genre.exceptions";
 import TestPrismaService from "test/test-prisma.service";
 import type SongQueryParameters from "./models/song.query-params";
 import { LyricsModule } from "src/lyrics/lyrics.module";
-import ArtistIllustrationService from "src/artist/artist-illustration.service";
 import { LyricsService } from "src/lyrics/lyrics.service";
 import { LyricsNotFoundByIDException } from "src/lyrics/lyrics.exceptions";
+import ReleaseModule from "src/release/release.module";
+import { SongType } from "@prisma/client";
 import MetadataModule from "src/metadata/metadata.module";
 
 describe('Song Service', () => {
@@ -32,13 +33,13 @@ describe('Song Service', () => {
 	let module: TestingModule;
 	beforeAll(async () => {
 		module = await createTestingModule({
-			imports: [PrismaModule, ArtistModule, TrackModule, AlbumModule, IllustrationModule, GenreModule, LyricsModule, MetadataModule],
+			imports: [PrismaModule, ArtistModule, TrackModule, AlbumModule, IllustrationModule, GenreModule, LyricsModule, ReleaseModule, MetadataModule],
 			providers: [SongService, ArtistService, PrismaService],
 		}).overrideProvider(PrismaService).useClass(TestPrismaService).compile();
 		dummyRepository = module.get(PrismaService);
 		songService = module.get(SongService);
 		lyricsService = module.get(LyricsService);
-		module.get(ArtistIllustrationService).onModuleInit();
+		
 		await dummyRepository.onModuleInit();
 	});
 
@@ -67,6 +68,7 @@ describe('Song Service', () => {
 			expect(newSong.slug).toBe('my-song-3');
 			expect(newSong.registeredAt).toStrictEqual(registeredAt);
 			expect(newSong.playCount).toBe(0);
+			expect(newSong.type).toBe(SongType.Original);
 		});
 
 		it("should throw, as a song with the name name from the same artist exists", async () => {

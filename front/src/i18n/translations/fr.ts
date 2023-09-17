@@ -172,7 +172,24 @@ const fr: TranslationMap = {
 	logout: 'Se Déconnecter',
 
 	appearsOn: "Apparaît sur",
-	featuredOnPlaylists: "Apparaît dans"
+	featuredOnPlaylists: "Apparaît dans",
+	bonusTracks: "Pistes Bonus",
+	relatedAlbums: "Albums Associés",
+	changeSongType: "Changer le type",
+
+	Original: 'Version Originale',
+	Remix: 'Remix',
+	Live: 'Version Live',
+	Acoustic: 'Version Acoustique',
+	Instrumental: 'Version Instrumentale',
+	Edit: 'Version Courte',
+	Clean: 'Version Clean',
+	Demo: 'Maquette',
+	Unknown: 'Type Inconnu',
+	Acapella: 'Acapella',
+
+	refreshMetadataStarted: "Mise à jour des métadonées... (Rechargez la page pour actualiser)",
+	refreshMetadataFailed: "Oups... La mise à jour des données a échoué."
 };
 
 export default fr;

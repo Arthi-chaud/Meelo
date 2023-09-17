@@ -9,6 +9,7 @@ import {
 } from 'redux-persist';
 import { CurriedGetDefaultMiddleware } from '@reduxjs/toolkit/dist/getDefaultMiddleware';
 import { PersistPartial } from 'redux-persist/es/persistReducer';
+import { isSSR } from '../ssr';
 
 const createNoopStorage = () => {
 	return {
@@ -25,7 +26,7 @@ const createNoopStorage = () => {
 };
 
 // Get storage type, depending of SSR or client side
-const getStorage = () => typeof window === 'undefined'
+const getStorage = () => isSSR()
 	? createNoopStorage() // For SSR
 	: storage;
 

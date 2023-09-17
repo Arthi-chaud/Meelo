@@ -24,7 +24,7 @@ const Player = () => {
 	const player = useRef<HTMLAudioElement | HTMLVideoElement>();
 	const audioPlayer = useRef<HTMLAudioElement>(typeof Audio !== "undefined" ? new Audio() : null);
 	const videoPlayer = useRef<HTMLVideoElement>();
-	const interval = useRef<NodeJS.Timer>();
+	const interval = useRef<ReturnType<typeof setInterval>>();
 	const dispatch = useDispatch();
 	const [progress, setProgress] = useState<number | undefined>();
 	const [playing, setPlaying] = useState<boolean>();
@@ -101,8 +101,8 @@ const Player = () => {
 		if (currentTrack) {
 			notification?.close();
 			document.title = `${currentTrack.track.name} - ${DefaultWindowTitle}`;
-			const newIllustrationURL = currentTrack.track.illustration
-				?? currentTrack.release.illustration;
+			const newIllustrationURL = currentTrack.track.illustration?.url
+				?? currentTrack.release.illustration?.url;
 
 			setIllustrationURL(newIllustrationURL);
 			const streamURL = API.getStreamURL(currentTrack.track.stream);

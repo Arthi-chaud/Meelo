@@ -8,7 +8,6 @@ import ReleaseController from './release.controller';
 import ReleaseService from './release.service';
 import { ReleaseResponseBuilder } from './models/release.response';
 import ArtistModule from 'src/artist/artist.module';
-import ReleaseIllustrationService from './release-illustration.service';
 import ProvidersModule from 'src/providers/providers.module';
 
 @Module({
@@ -22,7 +21,7 @@ import ProvidersModule from 'src/providers/providers.module';
 		forwardRef(() => FileModule)
 	],
 	controllers: [ReleaseController],
-	providers: [ReleaseService, ReleaseResponseBuilder, ReleaseIllustrationService],
-	exports: [ReleaseService, ReleaseResponseBuilder, ReleaseIllustrationService]
+	providers: [ReleaseService, ReleaseResponseBuilder],
+	exports: [ReleaseService, ReleaseResponseBuilder]
 })
 export default class ReleaseModule {}

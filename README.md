@@ -24,13 +24,14 @@ This project is made by and for music collectors. Its goal is to have a clean, o
   - Songs
     - Tracks
     - Versions
-  - With the possibility to select the *main* item.
-- Support for Music Videos
+- Access, stream, and download songs from your server
+- Music Videos
+- B-Sides
+- Playlists
 - Metadata scan using:
   - Embedded tags (including bitrate)
   - Path of file, using [customizable Regular Expressions](https://arthi-chaud.github.io/Meelo/setting-up/#prepare-your-settings)
   - Either using one of the two, or the two combined
-- Configurable external metadata providers
 - Album Typing
   - Studio Recording
   - Single
@@ -40,17 +41,23 @@ This project is made by and for music collectors. Its goal is to have a clean, o
   - etc...
   - Look over [here](https://arthi-chaud.github.io/Meelo/album-types/) to know how it works
 - ... And allow filtering based on Album's types
-- Automated Lyrics download
+- Song Typing
+  - Original Version
+  - Demo Version
+  - Instrumental Version
+  - Remix
+  - Acoustic Version
+  - Edit
+  - Clean Version
 - Embedded and inline artwork file handling
-- Access, stream, and download songs from your server
-- Playlists
-- Multi-language support
-  - English
-  - French
 - External Metadata Providers (Optional)
   - Genius
   - MusicBrainz
+- Automated Lyrics download
 - User management
+- Multi-language support
+  - English
+  - French
 
 Keep track of the upcoming features with the [project's issues](https://github.com/Arthi-chaud/Meelo/issues)
 
