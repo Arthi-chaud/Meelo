@@ -19,6 +19,8 @@ import GenreModule from "src/genre/genre.module";
 import TestPrismaService from "test/test-prisma.service";
 import FileModule from "src/file/file.module";
 import TrackService from "src/track/track.service";
+import ProvidersModule from "src/providers/providers.module";
+import ProviderService from "src/providers/provider.service";
 
 describe('Release Service', () => {
 	let releaseService: ReleaseService;
@@ -33,15 +35,15 @@ describe('Release Service', () => {
 	let module: TestingModule;
 	beforeAll(async () => {
 		module = await createTestingModule({
-			imports: [PrismaModule, AlbumModule, ArtistModule, TrackModule, IllustrationModule, SongModule, MetadataModule, GenreModule, FileModule],
+			imports: [PrismaModule, AlbumModule, ArtistModule, TrackModule, IllustrationModule, SongModule, MetadataModule, GenreModule, FileModule, ProvidersModule],
 			providers: [ReleaseService, AlbumService, ArtistService],
 		}).overrideProvider(PrismaService).useClass(TestPrismaService).compile();
 		releaseService = module.get<ReleaseService>(ReleaseService);
 		albumService = module.get<AlbumService>(AlbumService);
 		trackService = module.get(TrackService);
 		dummyRepository = module.get(PrismaService);
-		
 		await dummyRepository.onModuleInit();
+		await module.get(ProviderService).onModuleInit();
 	})
 
 	afterAll(() => {
