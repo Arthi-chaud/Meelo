@@ -34,7 +34,7 @@ import AlbumTile from "../../components/tile/album-tile";
 import getYear from "../../utils/getYear";
 import Fade from "../../components/fade";
 
-const releaseQuery = (releaseIdentifier: string | number) => API.getRelease(releaseIdentifier, ['album']);
+const releaseQuery = (releaseIdentifier: string | number) => API.getRelease(releaseIdentifier, ['album', 'externalIds']);
 const releaseTracklistQuery = (releaseIdentifier: string | number) => API.getReleaseTrackList(releaseIdentifier, ['song']);
 const albumQuery = (albumId: number) => API.getAlbum(albumId, ['externalIds']);
 const artistsOnAlbumQuery = (albumId: number) => API.getArtistsOnAlbum(albumId);
@@ -329,11 +329,11 @@ const ReleasePage = (props: InferSSRProps<typeof getServerSideProps>) => {
 				?? []}/>
 			</RelatedContentSection>
 			<RelatedContentSection
-				display={album.data.externalIds.length != 0}
+				display={[...album.data.externalIds, ...release.data.externalIds].length != 0}
 				title={<Translate translationKey="externalLinks"/>}
 			>
 				<Stack spacing={2}>
-					{album.data.externalIds.map((externalId) =>
+					{[...album.data.externalIds, ...release.data.externalIds].map((externalId) =>
 						<ExternalIdBadge key={externalId.provider.name} externalId={externalId}/>)
 					}
 				</Stack>
