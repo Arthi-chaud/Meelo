@@ -48,6 +48,8 @@ export class ExternalIdResponseBuilder extends ResponseBuilderInterceptor<Extern
 				url = provider.getAlbumURL(externalId.value);
 			} else if ('songId' in externalId) {
 				url = provider.getSongURL(externalId.value);
+			} else if ('releaseId' in externalId) {
+				url = provider.getReleaseURL(externalId.value);
 			}
 		} catch {
 			url = null;

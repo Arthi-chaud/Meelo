@@ -11,6 +11,7 @@ import PrismaService from "src/prisma/prisma.service";
 import Slug from "src/slug/slug";
 import { Provider } from "src/prisma/models";
 import ProvidersIllustrationService from "./provider-illustration.service";
+import DiscogsProvider from "./discogs/discogs.provider";
 
 /**
  * Orchestrates of Providers
@@ -25,12 +26,13 @@ export default class ProviderService implements OnModuleInit {
 	constructor(
 		geniusProvider: GeniusProvider,
 		musicbrainzProvider: MusicBrainzProvider,
+		discogsProvider: DiscogsProvider,
 		private prismaService: PrismaService,
 		private settingsService: SettingsService,
 		@Inject(forwardRef(() => ProvidersIllustrationService))
 		private providerIllustrationService: ProvidersIllustrationService,
 	) {
-		this._providerCatalogue = [geniusProvider, musicbrainzProvider];
+		this._providerCatalogue = [geniusProvider, musicbrainzProvider, discogsProvider];
 	}
 
 	getProviderById(id: number) {

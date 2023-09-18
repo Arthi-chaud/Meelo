@@ -92,6 +92,16 @@ export default abstract class IProvider<SettingsType, IdentifierType = string> i
 	}
 
 	/**
+	 * @returns the provider's Identifer of the release.
+	 * @param releaseIdentifier The ID of the release
+	 */
+	getReleaseURL(
+		_releaseIdentifier: IdentifierType
+	): string {
+		throw new ProviderMethodNotAvailableError(this.name);
+	}
+
+	/**
 	 * @returns the type of an album.
 	 * @param albumIdentifer The identifer of the album
 	 */

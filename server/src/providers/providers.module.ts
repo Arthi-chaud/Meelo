@@ -9,6 +9,7 @@ import { ExternalIdResponseBuilder } from './models/external-id.response';
 import ExternalIdService from './external-id.provider';
 import ProvidersIllustrationService from './provider-illustration.service';
 import IllustrationModule from 'src/illustration/illustration.module';
+import DiscogsProvider from './discogs/discogs.provider';
 
 @Module({
 	imports: [
@@ -20,12 +21,14 @@ import IllustrationModule from 'src/illustration/illustration.module';
 	providers: [
 		GeniusProvider,
 		MusicBrainzProvider,
+		DiscogsProvider,
 		ProviderService,
 		ProvidersIllustrationService,
 		ExternalIdService,
 		ExternalIdResponseBuilder
 	],
 	exports: [
+		DiscogsProvider,
 		ProviderService,
 		ProvidersIllustrationService,
 		ExternalIdService,

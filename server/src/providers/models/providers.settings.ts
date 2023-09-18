@@ -3,23 +3,12 @@ import { ApiProperty } from "@nestjs/swagger";
 import { Type } from "class-transformer";
 import GeniusSettings from "../genius/genius.settings";
 import MusicBrainzSettings from "../musicbrainz/musicbrainz.settings";
+import DiscogsSettings from "../discogs/discogs.settings";
 
 /**
  * Settings for the Providers
  */
 export default class ProvidersSettings {
-	/**
-	 * Settings for the MusixMatch provider
-	 */
-	/*@ApiProperty({
-		type: MusixMatchSettings,
-		required: false
-	})
-	@Type(() => MusixMatchSettings)
-	@ValidateNested()
-	@IsOptional()
-	musixmatch: MusixMatchSettings;*/
-
 	/**
 	 * Settings for the Genius provider
 	 */
@@ -43,4 +32,16 @@ export default class ProvidersSettings {
 	@ValidateNested()
 	@IsOptional()
 	musicbrainz: MusicBrainzSettings;
+
+	/**
+	 * Settings for the Discogs provider
+	 */
+	@ApiProperty({
+		type: DiscogsSettings,
+		required: false
+	})
+	@Type(() => DiscogsSettings)
+	@ValidateNested()
+	@IsOptional()
+	discogs: DiscogsSettings;
 }

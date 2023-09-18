@@ -59,7 +59,8 @@ describe('Release Service', () => {
 				registeredAt,
 				name: 'My Album (Deluxe Edition)',
 				album: { id: dummyRepository.albumA1.id },
-				releaseDate: new Date('2023')
+				releaseDate: new Date('2023'),
+				discogsId: '12345'
 			});
 			expect(newRelease.albumId).toBe(dummyRepository.albumA1.id);
 			expect(newRelease.releaseDate).toStrictEqual(new Date('2023'));
