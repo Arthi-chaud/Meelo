@@ -6,7 +6,7 @@ In your `Meelo` folder create a `settings.json` file. It will look like this:
 {
   "dataFolder": "/data",
   "trackRegex": [
-    "^([\\/\\\\]+.*)*[\\/\\\\]+(?<Artist>.+)[\\/\\\\]+(?<Album>.+)(\\s*\\((?<Year>\\d{4})\\))?[\\/\\\\]+((?<Disc>[0-9]+)-)?(?<Index>[0-9]+)\\s+(?<Track>.*)\\..*$"
+    "[\\/\\\\]?(?<Artist>.+)[\\/\\\\]+(?<Album>.+?)(\\s*\\((?<Year>\\d+)\\))?(\\s*\\[(?<DiscogsId>\\d+)\\])?[\\/\\\\]+((?<Disc>[0-9]+)-)?(?<Index>[0-9]+)\\s+(?<Track>.*)\\..*$"
   ],
   "metadata": {
     "source": "embedded",
@@ -37,6 +37,7 @@ All fields are **required**
   - `Index`: The index of the track in a playlist/on a disc.
   - `Track`: The name of the track
   - `Genre`: The genre of the material
+  - `DiscogsID`: The Discogs ID of the parent release. A Discogs ID should take the form of a digit-only string. This ID can be found in the URL of the release's Discogs page or in the top-right corner of that page (displayed as `[rXXXXXXXX]`)
 - `metadata`: Configuration of the **metadata extraction** system:
   - `source`: The **primary metadata source** to use:
     - `embedded`: Using the embedded tags

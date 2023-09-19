@@ -133,12 +133,10 @@ export default class AlbumService extends RepositoryService<
 		return {
 			NOT: where.related ? this.formatWhereInput(where.related) : undefined,
 			type: where.type,
-			artist: {
+			artist: where.artist?.compilationArtist ? null : {
 				is: where.artist
-					? where.artist.compilationArtist
-						? null
-						: ArtistService.formatWhereInput(where.artist)
-					: where.artist,
+					? ArtistService.formatWhereInput(where.artist)
+					: undefined,
 				isNot: where.appearance
 					? ArtistService.formatWhereInput(where.appearance)
 					: undefined

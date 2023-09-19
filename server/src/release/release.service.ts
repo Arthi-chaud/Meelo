@@ -33,6 +33,7 @@ import Identifier from 'src/identifier/models/identifier';
 import Logger from 'src/logger/logger';
 import { PrismaError } from 'prisma-error-enum';
 import IllustrationRepository from 'src/illustration/illustration.repository';
+import DiscogsProvider from 'src/providers/discogs/discogs.provider';
 
 @Injectable()
 export default class ReleaseService extends RepositoryService<
@@ -57,7 +58,8 @@ export default class ReleaseService extends RepositoryService<
 		private albumService: AlbumService,
 		@Inject(forwardRef(() => FileService))
 		private fileService: FileService,
-		private illustrationRepository: IllustrationRepository
+		private illustrationRepository: IllustrationRepository,
+		private discogsProvider: DiscogsProvider,
 	) {
 		super(prismaService.release);
 	}
@@ -74,7 +76,7 @@ export default class ReleaseService extends RepositoryService<
 		return release;
 	}
 
-	formatCreateInput(release: ReleaseQueryParameters.CreateInput) {
+	formatCreateInput(release: ReleaseQueryParameters.CreateInput): Prisma.ReleaseCreateInput {
 		return {
 			name: release.name,
 			registeredAt: release.registeredAt,
@@ -82,6 +84,12 @@ export default class ReleaseService extends RepositoryService<
 			album: {
 				connect: AlbumService.formatWhereInput(release.album),
 			},
+			externalIds: release.discogsId ? {
+				create: {
+					provider: { connect: { name: this.discogsProvider.name } },
+					value: release.discogsId
+				}
+			} : undefined,
 			slug: new Slug(release.name).toString()
 		};
 	}

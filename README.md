@@ -30,7 +30,7 @@ This project is made by and for music collectors. Its goal is to have a clean, o
 - Playlists
 - Metadata scan using:
   - Embedded tags (including bitrate)
-  - Path of file, using [customizable Regular Expressions](https://arthi-chaud.github.io/Meelo/setting-up/#prepare-your-settings)
+  - Path of file, using [customizable Regular Expressions](https://arthi-chaud.github.io/Meelo/setup/settings)
   - Either using one of the two, or the two combined
 - Album Typing
   - Studio Recording
@@ -53,6 +53,7 @@ This project is made by and for music collectors. Its goal is to have a clean, o
 - External Metadata Providers (Optional)
   - Genius
   - MusicBrainz
+- Match Releases with Discogs
 - Automated Lyrics download
 - User management
 - Multi-language support

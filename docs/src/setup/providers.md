@@ -31,3 +31,7 @@ This provider does not need any settings. Therefore, to enable it, your settings
   //...
 }
 ```
+
+## Discogs
+
+This provider does not need any settings. You do not need to enable it to parse Discogs ID from file's paths.

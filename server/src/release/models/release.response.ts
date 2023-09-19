@@ -6,6 +6,7 @@ import { AlbumResponse, AlbumResponseBuilder } from "src/album/models/album.resp
 import IllustrationRepository from "src/illustration/illustration.repository";
 import { IllustratedResponse } from "src/illustration/models/illustration.response";
 import { Release, ReleaseWithRelations } from "src/prisma/models";
+import ExternalIdResponse, { ExternalIdResponseBuilder } from "src/providers/models/external-id.response";
 import ResponseBuilderInterceptor from "src/response/interceptors/response.interceptor";
 
 export class ReleaseResponse extends IntersectionType(
@@ -13,6 +14,7 @@ export class ReleaseResponse extends IntersectionType(
 	IllustratedResponse,
 	class {
 		album?: AlbumResponse;
+		externalIds?: ExternalIdResponse[];
 	}
 ) {}
 
@@ -22,7 +24,9 @@ export class ReleaseResponseBuilder extends ResponseBuilderInterceptor<ReleaseWi
 		@Inject(forwardRef(() => IllustrationRepository))
 		private illustrationRepository: IllustrationRepository,
 		@Inject(forwardRef(() => AlbumResponseBuilder))
-		private albumResponseBuilder: AlbumResponseBuilder
+		private albumResponseBuilder: AlbumResponseBuilder,
+		@Inject(forwardRef(() => ExternalIdResponseBuilder))
+		private externalIdResponseBuilder: ExternalIdResponseBuilder
 	) {
 		super();
 	}
@@ -38,6 +42,13 @@ export class ReleaseResponseBuilder extends ResponseBuilderInterceptor<ReleaseWi
 
 		if (release.album !== undefined) {
 			response.album = await this.albumResponseBuilder.buildResponse(release.album);
+		}
+		if (release.externalIds !== undefined) {
+			response.externalIds = await Promise.all(
+				release.externalIds?.map(
+					(id) => this.externalIdResponseBuilder.buildResponse(id)
+				) ?? []
+			);
 		}
 		return response;
 	}

@@ -40,7 +40,7 @@ export default class MetadataService {
 		@Inject(forwardRef(() => GenreService))
 		private genreService: GenreService,
 		private parserService: ParserService,
-		private fileManagerService: FileManagerService,
+		private fileManagerService: FileManagerService
 	) {}
 
 	/**
@@ -87,7 +87,8 @@ export default class MetadataService {
 			name: metadata.release,
 			releaseDate: metadata.releaseDate,
 			album: { id: album.id },
-			registeredAt: file.registerDate
+			registeredAt: file.registerDate,
+			discogsId: metadata.discogsId
 		}, { album: true });
 		const track: TrackQueryParameters.CreateInput = {
 			name: metadata.name,
@@ -203,6 +204,7 @@ export default class MetadataService {
 			metadata.index = groups['Index'] ? parseInt(groups['Index']) : undefined;
 			metadata.name = groups['Track'];
 			metadata.genres = groups['Genre'] ? [groups['Genre']] : [];
+			metadata.discogsId = groups['DiscogsId'];
 			return metadata;
 		} catch {
 			throw new PathParsingException(filePath);
@@ -268,6 +270,7 @@ export default class MetadataService {
 		mergedMetadata.bitrate ??= metadata2.bitrate;
 		mergedMetadata.duration ??= metadata2.duration;
 		mergedMetadata.type ??= metadata2.type;
+		mergedMetadata.discogsId ??= metadata2.discogsId;
 		return mergedMetadata;
 	}
 

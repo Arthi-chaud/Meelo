@@ -45,9 +45,10 @@ describe("Provider Service", () => {
 			const providers = await prismaService.provider.findMany();
 			const providersSlugs = providers.map(({ slug }) => slug);
 
-			expect(providers.length).toBe(2);
+			expect(providers.length).toBe(3);
 			expect(providersSlugs).toContain('musicbrainz');
 			expect(providersSlugs).toContain('genius');
+			expect(providersSlugs).toContain('discogs');
 		})
 	});
 
