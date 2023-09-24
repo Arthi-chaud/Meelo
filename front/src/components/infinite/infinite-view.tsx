@@ -56,7 +56,7 @@ const InfiniteView = <ItemType extends Resource, >(
 				query={props.query}
 				render={(item: ItemType) =>
 					<Fade in>
-						<Box>
+						<Box key={item.id}>
 							{ props.renderListItem(item) }
 						</Box>
 					</Fade>
