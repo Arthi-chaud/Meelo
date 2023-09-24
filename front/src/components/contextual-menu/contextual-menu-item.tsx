@@ -7,7 +7,7 @@ import Action from "../actions/action";
 import { useState } from "react";
 import Translate from "../../i18n/translate";
 
-const ContextualMenuItem = (props: Action) => {
+const ContextualMenuItem = (props: Action & { onDialogClose: () => void }) => {
 	const [modalOpen, setModalOpen] = useState(false);
 	const onClick = () => {
 		if (props.disabled === true) {
@@ -18,7 +18,10 @@ const ContextualMenuItem = (props: Action) => {
 			setModalOpen(true);
 		}
 	};
-	const closeModal = () => setModalOpen(false);
+	const closeModal = () => {
+		setModalOpen(false);
+		props.onDialogClose();
+	};
 	const item = <MenuItem disabled={props.disabled} onClick={onClick} sx={{ borderRadius: '0' }}>
 		{ props.icon && <ListItemIcon>{props.icon}</ListItemIcon> }
 		<ListItemText><Translate translationKey={props.label}/></ListItemText>
@@ -29,7 +32,9 @@ const ContextualMenuItem = (props: Action) => {
 	}
 	return <>
 		{item}
-		{props.dialog && <Dialog open={modalOpen} onClose={closeModal} fullWidth>
+		{props.dialog && <Dialog open={modalOpen} onClose={closeModal}
+			fullWidth sx={{ zIndex: 999999 }}
+		>
 			{props.dialog({ close: closeModal })}
 		</Dialog>}
 	</>;

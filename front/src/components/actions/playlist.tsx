@@ -179,6 +179,7 @@ const SelectPlaylistForm = (props: SelectPlaylistFormProps) => {
 				loader={() => <WideLoadingComponent/>}
 				query={props.playlistQuery}
 				render={(item: Playlist) => <ListItem
+					key={item.id}
 					title={item.name}
 					icon={<Illustration
 						illustration={item.illustration}
