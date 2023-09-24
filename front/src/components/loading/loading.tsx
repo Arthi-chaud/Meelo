@@ -21,7 +21,7 @@ const LoadingComponent = () => {
 			clearTimeout(timeId);
 		};
 	}, []);
-	return <Fade in={displayLoad} timeout={500}>
+	return <Fade in={displayLoad} timeout={500} mountOnEnter unmountOnExit>
 		<Box>
 			<Bars
 				height="40"

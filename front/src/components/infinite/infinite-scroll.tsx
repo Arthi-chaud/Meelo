@@ -71,6 +71,7 @@ const InfiniteScroll = <T extends Resource>(props: InfiniteScrollProps<T>) => {
 				}
 			}}
 			hasMore={hasNextPage}
+			threshold={500}
 		>
 			{ data && props.render(data.pages.map((page) => page.items).flat()) }
 			{ isFetchingNextPage && props.loader() }
