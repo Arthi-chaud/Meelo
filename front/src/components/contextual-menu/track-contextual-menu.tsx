@@ -1,4 +1,4 @@
-import { Star } from "@mui/icons-material";
+import { MasterIcon } from "../icons";
 import { toast } from "react-hot-toast";
 import { useMutation } from "react-query";
 import { useQueryClient } from "../../api/use-query";
@@ -49,7 +49,7 @@ const TrackContextualMenu = (props: TrackContextualMenuProps) => {
 			{
 				label: 'setAsMaster',
 				disabled: isMaster || !userIsAdmin,
-				icon: <Star/>,
+				icon: <MasterIcon/>,
 				onClick: () => masterMutation.mutate()
 			}
 		],

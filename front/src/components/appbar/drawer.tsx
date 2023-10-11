@@ -1,5 +1,8 @@
-import ExpandLess from "@mui/icons-material/ExpandLess";
-import ExpandMore from "@mui/icons-material/ExpandMore";
+import {
+	ExpandLessIcon,
+	ExpandMoreIcon,
+	HomeIcon, LibraryIcon, PlaylistIcon
+} from "../icons";
 import {
 	Box, Collapse, Container, Divider, Drawer, Grid, List,
 	ListItem, ListItemButton, ListItemIcon, ListItemText, ListSubheader
@@ -7,14 +10,11 @@ import {
 import Library from "../../models/library";
 import LoadingComponent from "../loading/loading";
 import { getTypeIcon, itemType } from "./item-types";
-import LibraryMusicIcon from '@mui/icons-material/LibraryMusic';
 import globalLibrary from './global-library';
 import { useEffect, useState } from "react";
 import buildLink from "./build-link";
 import Link from 'next/link';
 import Action from "../actions/action";
-import HomeIcon from '@mui/icons-material/Home';
-import { QueueMusic } from "@mui/icons-material";
 import Translate from "../../i18n/translate";
 import Fade from "../fade";
 import useAppBarActions from "../../utils/useAppBarActions";
@@ -56,7 +56,7 @@ const MeeloAppBarDrawer = (
 				<Link href='/playlists'>
 					<ListItem disableGutters>
 						<ListItemButton sx={{ borderRadius: '0' }} onClick={onClose}>
-							<ListItemIcon><QueueMusic/></ListItemIcon>
+							<ListItemIcon><PlaylistIcon/></ListItemIcon>
 							<ListItemText>
 								<Translate translationKey="playlists"/>
 							</ListItemText>
@@ -69,7 +69,7 @@ const MeeloAppBarDrawer = (
 					<Grid container columnSpacing={2}
 						sx={{ flexDirection: 'row', alignItems: 'center' }}
 					>
-						<Grid item sx={{ paddingTop: 1.6 }}><LibraryMusicIcon /></Grid>
+						<Grid item sx={{ paddingTop: 1.6 }}><LibraryIcon /></Grid>
 						<Grid item>
 							<Translate translationKey="libraries"/>
 						</Grid>
@@ -89,7 +89,7 @@ const MeeloAppBarDrawer = (
 										setSelectedLibrary(open ? null : library.slug)
 									}>
 										<ListItemText>{library.name}</ListItemText>
-										{open ? <ExpandLess /> : <ExpandMore />}
+										{open ? <ExpandLessIcon /> : <ExpandMoreIcon />}
 									</ListItemButton>
 								</ListItem>
 								<Collapse in={open} unmountOnExit>

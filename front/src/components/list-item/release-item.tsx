@@ -1,10 +1,10 @@
-import { Star } from "@mui/icons-material";
 import { Grid } from "@mui/material";
 import { ReleaseWithRelations } from "../../models/release";
 import ReleaseContextualMenu from "../contextual-menu/release-contextual-menu";
 import Illustration from "../illustration";
 import ListItem from "./item";
 import getYear from "../../utils/getYear";
+import { Star } from "iconsax-react";
 
 type ReleaseItemProps = {
 	release: ReleaseWithRelations<'album'>;

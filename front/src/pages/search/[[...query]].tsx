@@ -1,4 +1,4 @@
-import { Search } from "@mui/icons-material";
+import { SearchIcon } from "../../components/icons";
 import {
 	Box, InputAdornment, TextField
 } from "@mui/material";
@@ -43,7 +43,7 @@ const SearchPage = (
 				autoFocus InputProps={{
 					value: query,
 					startAdornment: <InputAdornment position="start">
-						<Search />
+						<SearchIcon />
 					</InputAdornment>
 					,
 				}} onChange={(error) => {

@@ -1,4 +1,4 @@
-import { MoreVert } from "@mui/icons-material";
+import { ContextualMenuIcon } from "../icons";
 import {
 	Box, Divider, IconButton, Menu
 } from "@mui/material";
@@ -28,7 +28,7 @@ const ContextualMenu = (props: ContextualMenuProps) => {
 			onClick={handleClick}
 			color='inherit'
 		>
-			{props.buttonIcon ?? <MoreVert/>}
+			{props.buttonIcon ?? <ContextualMenuIcon/>}
 		</IconButton>
 		<Menu
 			anchorEl={anchorEl}

@@ -1,6 +1,6 @@
 import {
-	Add, Delete, Edit
-} from "@mui/icons-material";
+	AddIcon, DeleteIcon, EditIcon
+} from '../icons';
 import {
 	Box, Button, Dialog, Grid, Hidden, IconButton, useMediaQuery, useTheme
 } from "@mui/material";
@@ -85,7 +85,7 @@ const LibrariesSettings = () => {
 			<RunTaskButton variant='outlined' {...RefreshLibraryMetadataAction(library.id)} label='refresh'/> },
 		{ field: 'edit', headerName: translate('edit'), flex: 1, renderCell: ({ row: library }) => {
 			return <IconButton onClick={() => setLibraryEdit(library)}>
-				<Edit/>
+				<EditIcon/>
 			</IconButton>;
 		} },
 		{ field: 'delete', headerName: translate('delete'), flex: 1, renderCell: ({ row: library }) => {
@@ -99,7 +99,7 @@ const LibrariesSettings = () => {
 					onClickCapture: () => deletionMutation.mutate(library.id)
 				}
 			})}>
-				<Delete/>
+				<DeleteIcon/>
 			</IconButton>;
 		} }
 	], [language]);
@@ -107,7 +107,7 @@ const LibrariesSettings = () => {
 	return <Box>
 		<Grid container sx={{ justifyContent: { xs: 'space-evenly', md: 'flex-end' }, paddingY: 2 }} spacing={{ xs: 1, md: 2 }}>
 			<Grid item>
-				<Button variant='contained' startIcon={<Add/>} onClick={() => setCreateModalOpen(true)}>
+				<Button variant='contained' startIcon={<AddIcon/>} onClick={() => setCreateModalOpen(true)}>
 					<Translate translationKey="createLibrary"/>
 				</Button>
 			</Grid>

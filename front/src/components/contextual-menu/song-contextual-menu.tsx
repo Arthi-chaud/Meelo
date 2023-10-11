@@ -14,11 +14,11 @@ import { ShareSongAction } from "../actions/share";
 import { ShowMasterTrackFileInfoAction } from "../actions/show-track-info";
 import { SongWithRelations } from "../../models/song";
 import { useQueryClient } from "../../api/use-query";
-import { Delete } from "@mui/icons-material";
 import { toast } from "react-hot-toast";
 import { translate } from "../../i18n/translate";
 import ChangeSongType from "../actions/song-type";
 import { RefreshSongMetadataAction } from "../actions/refresh-metadata";
+import { DeleteIcon } from "../icons";
 
 type SongContextualMenuProps = {
 	song: SongWithRelations<'artist'>;
@@ -65,7 +65,7 @@ const SongContextualMenu = (props: SongContextualMenuProps) => {
 		[
 			{
 				label: 'deleteFromPlaylist',
-				icon: <Delete/>,
+				icon: <DeleteIcon/>,
 				onClick: () => API.deletePlaylistEntry(props.entryId!)
 					.then(() => {
 						toast.success(translate('playlistItemDeletionSuccess'));

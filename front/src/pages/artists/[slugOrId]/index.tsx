@@ -7,7 +7,6 @@ import Illustration from "../../../components/illustration";
 import {
 	useInfiniteQuery, useQuery, useQueryClient
 } from "../../../api/use-query";
-import ArrowRight from '@mui/icons-material/ArrowRight';
 import AlbumTile from "../../../components/tile/album-tile";
 import Link from "next/link";
 import { useDispatch } from "react-redux";
@@ -22,6 +21,7 @@ import formatDuration from "../../../utils/formatDuration";
 import ExternalIdBadge from "../../../components/external-id-badge";
 import SongGrid from "../../../components/song-grid";
 import Translate from "../../../i18n/translate";
+import { MoreIcon } from "../../../components/icons";
 
 // Number of Song item in the 'Top Song' section
 const songListSize = 6;
@@ -102,7 +102,7 @@ const ArtistPage = (props: InferSSRProps<typeof getServerSideProps>) => {
 					heading={<Translate translationKey="topSongs"/>}
 					trailing={(topSongs.data?.pages.at(0)?.items.length ?? 0) > songListSize ?
 						<Link href={`/artists/${artistIdentifier}/songs`}>
-							<Button variant='contained' color='secondary' endIcon={<ArrowRight/>}
+							<Button variant='contained' color='secondary' endIcon={<MoreIcon/>}
 								sx={{ textTransform: 'none', fontWeight: 'bold' }}><Translate translationKey="seeAll"/></Button>
 						</Link> : undefined
 					}
@@ -123,7 +123,7 @@ const ArtistPage = (props: InferSSRProps<typeof getServerSideProps>) => {
 					heading={<Translate translationKey="albums"/>}
 					trailing={(latestAlbums.data?.pages.at(0)?.items.length ?? 0) > albumListSize ?
 						<Link href={`/artists/${artistIdentifier}/albums`}>
-							<Button variant='contained' color='secondary' endIcon={<ArrowRight/>}
+							<Button variant='contained' color='secondary' endIcon={<MoreIcon/>}
 								sx={{ textTransform: 'none', fontWeight: 'bold' }}>
 								<Translate translationKey="seeAll"/>
 							</Button>
@@ -148,7 +148,7 @@ const ArtistPage = (props: InferSSRProps<typeof getServerSideProps>) => {
 					heading={<Translate translationKey="topVideos"/>}
 					trailing={(videos.data.pages.at(0)?.items.length ?? 0) > albumListSize ?
 						<Link href={`/artists/${artistIdentifier}/videos`}>
-							<Button variant='contained' color='secondary' endIcon={<ArrowRight/>}
+							<Button variant='contained' color='secondary' endIcon={<MoreIcon/>}
 								sx={{ textTransform: 'none', fontWeight: 'bold' }}>
 								<Translate translationKey="seeAll"/>
 							</Button>
