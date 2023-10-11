@@ -1,5 +1,4 @@
 // eslint-disable-next-line no-restricted-imports
-import * as MuiIcons from "@mui/icons-material";
 import * as Iconsax from 'iconsax-react';
 
 type IconProps = Iconsax.IconProps;
@@ -13,7 +12,7 @@ export const SongIcon = Iconsax.Musicnote;
 export const TrackIcon = Iconsax.Musicnote;
 export const LyricsIcon = Iconsax.MessageText;
 export const VideoIcon = Iconsax.VideoSquare;
-export const RelatedTracksIcon = Iconsax.MusicSquare;
+export const RelatedTracksIcon = Iconsax.Category;
 export const CloseIcon = Iconsax.CloseCircle;
 export const EditIcon = Iconsax.Edit2;
 export const LogoutIcon = Iconsax.Logout;
@@ -33,7 +32,7 @@ export const InfoIcon = Iconsax.InfoCircle;
 export const AddToPlaylistIcon = Iconsax.MusicSquareAdd;
 export const AddItemToPlaylistIcon = Iconsax.MusicSquareAdd;
 export const PlayNextIcon = Iconsax.MusicSquareAdd;
-export const PlayAfterIcon = MuiIcons.PlaylistAdd;
+export const PlayAfterIcon = Iconsax.MusicSquareAdd;
 export const HomeIcon = Iconsax.Home2;
 export const ExpandLessIcon = Iconsax.ArrowUp2;
 export const ExpandMoreIcon = Iconsax.ArrowDown2;

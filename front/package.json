@@ -15,7 +15,6 @@
     "@emotion/react": "^11.10.0",
     "@emotion/server": "^11.11.0",
     "@emotion/styled": "^11.10.0",
-    "@mui/icons-material": "^5.8.4",
     "@mui/joy": "^5.0.0-alpha.43",
     "@mui/material": "^5.10.1",
     "@mui/styles": "^5.10.2",
