@@ -45,7 +45,7 @@ const ModalPage = (props: ModalPageProps) => {
 						setOpen(false);
 						router.back();
 					}}>
-						<CloseIcon sx={{ display: props.disposable == true ? undefined : 'none' }} />
+						<CloseIcon style={{ display: props.disposable == true ? undefined : 'none' }} />
 					</IconButton>
 				</Box>
 				{props.children}
