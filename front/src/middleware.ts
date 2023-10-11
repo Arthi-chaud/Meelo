@@ -9,7 +9,7 @@ import { prepareMeeloQuery } from './api/use-query';
 
 export async function middleware(request: NextRequest) {
 	const { pathname, origin } = request.nextUrl;
-	const accessToken = request.cookies.get(UserAccessTokenCookieKey);
+	const accessToken = request.cookies.get(UserAccessTokenCookieKey)?.value;
 	const queryClient = new QueryClient();
 
 	if (accessToken) {
