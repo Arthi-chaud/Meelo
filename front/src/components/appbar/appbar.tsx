@@ -5,7 +5,6 @@ import {
 } from '@mui/material';
 import Image from 'next/image';
 import { useRouter } from 'next/router';
-import MenuIcon from '@mui/icons-material/Menu';
 import { useMemo, useState } from 'react';
 import API from '../../api/api';
 import LoadingComponent from '../loading/loading';
@@ -24,6 +23,7 @@ import useColorScheme from '../../theme/color-scheme';
 import Translate, { translate } from '../../i18n/translate';
 import Fade from '../fade';
 import useAppBarActions from '../../utils/useAppBarActions';
+import { BurgerIcon } from '../icons';
 
 const MeeloAppBar = () => {
 	const router = useRouter();
@@ -64,7 +64,7 @@ const MeeloAppBar = () => {
 						onClick={() => setDrawerOpen(true)}
 						sx={{ mr: 2, display: { md: 'none' } }}
 					>
-						<MenuIcon />
+						<BurgerIcon />
 					</IconButton>
 					<Box style={{ paddingRight: 25 }}>
 						<Link href="/" style={{ cursor: 'pointer' }}>

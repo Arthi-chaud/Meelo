@@ -22,7 +22,7 @@ const textStyle = {
 };
 
 const primaryTextStyle = {
-	fontWeight: 'bold'
+	fontWeight: 'medium'
 };
 
 const secondaryTextStyle = {

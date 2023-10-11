@@ -15,11 +15,11 @@ import { useState } from "react";
 import InfiniteSongView from "../../../components/infinite/infinite-resource-view/infinite-song-view";
 import InfiniteTrackView from "../../../components/infinite/infinite-resource-view/infinite-track-view";
 import Link from "next/link";
-import { PlayArrow } from "@mui/icons-material";
 import { useDispatch } from "react-redux";
 import { playTrack } from "../../../state/playerSlice";
 import ExternalIdBadge from "../../../components/external-id-badge";
 import Translate from "../../../i18n/translate";
+import { PlayIcon } from "../../../components/icons";
 
 export const getServerSideProps = prepareSSR((context) => {
 	const songIdentifier = getSlugOrId(context.params);
@@ -79,7 +79,7 @@ const SongPage = (props: InferSSRProps<typeof getServerSideProps>) => {
 				</Stack>}
 			</Grid>
 			<Grid item>
-				<Button variant="contained" sx={{ width: '100%' }} endIcon={<PlayArrow />}
+				<Button variant="contained" sx={{ width: '100%' }} endIcon={<PlayIcon />}
 					onClick={() => queryClient.fetchQuery(API.getMasterTrack(songIdentifier, ['release']))
 						.then((master) => dispatch(playTrack({
 							track: master,

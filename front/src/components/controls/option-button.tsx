@@ -1,4 +1,4 @@
-import { Check } from '@mui/icons-material';
+import { CheckIcon } from '../icons';
 import {
 	Button, Divider, ListItemIcon, Menu, MenuItem
 } from '@mui/material';
@@ -56,7 +56,7 @@ const OptionButton = <
 						}}
 					>
 						<ListItemIcon>
-							{ option.currentValue == value && <Check />}
+							{ option.currentValue == value && <CheckIcon />}
 						</ListItemIcon>
 						{/* If value is not a Translation Key, will fall through */}
 						<Translate translationKey={value as TranslationKey}/>

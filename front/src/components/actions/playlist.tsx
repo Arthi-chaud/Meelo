@@ -1,7 +1,8 @@
-import {
-	Add, Delete, Edit, PlaylistAdd, PlaylistPlay, QueueMusic
-} from "@mui/icons-material";
 import Action from "./action";
+import {
+	AddItemToPlaylistIcon, AddToPlaylistIcon, DeleteIcon,
+	PlayAfterIcon, PlayNextIcon
+} from "../icons";
 import toast from "react-hot-toast";
 import { playAfter, playNext } from "../../state/playerSlice";
 import store from "../../state/store";
@@ -20,6 +21,7 @@ import ListItem from "../list-item/item";
 import Illustration from "../illustration";
 import { useConfirm } from "material-ui-confirm";
 import Translate from "../../i18n/translate";
+import { Add, Edit } from "iconsax-react";
 
 export const PlayNextAction = (
 	getTrack: () => PromiseLike<Parameters<typeof playNext>[0]>
@@ -29,7 +31,7 @@ export const PlayNextAction = (
 		toast.success(`'${track.track.name}' will play next!`);
 	}),
 	label: 'playNext',
-	icon: <PlaylistPlay/>
+	icon: <PlayNextIcon/>
 });
 
 export const PlayAfterAction = (
@@ -40,7 +42,7 @@ export const PlayAfterAction = (
 		toast.success(`'${track.track.name}' will play after!`);
 	}),
 	label: 'playAfter',
-	icon: <PlaylistAdd/>
+	icon: <PlayAfterIcon/>
 });
 
 type CreateOrUpdatePlaylistFormProps = {
@@ -144,7 +146,7 @@ export const DeletePlaylistAction = (
 	onDeleted: () => void
 ): Action => ({
 	label: 'delete',
-	icon: <Delete/>,
+	icon: <DeleteIcon/>,
 	onClick: () => confirm({
 		title: 'Delete Playlist',
 		description: 'You are about to delete a playlist. This can not be undone.',
@@ -183,7 +185,7 @@ const SelectPlaylistForm = (props: SelectPlaylistFormProps) => {
 					title={item.name}
 					icon={<Illustration
 						illustration={item.illustration}
-						fallback={<QueueMusic />}
+						fallback={<AddItemToPlaylistIcon />}
 					/>}
 					onClick={() => {
 						props.onSubmit(item.id);
@@ -204,7 +206,7 @@ export const AddToPlaylistAction = (
 	songId: number,
 	queryClient: QueryClient
 ): Action => ({
-	icon: <PlaylistAdd/>,
+	icon: <AddToPlaylistIcon/>,
 	label: 'addToPlaylist',
 	dialog: ({ close }) => {
 		// eslint-disable-next-line react-hooks/rules-of-hooks

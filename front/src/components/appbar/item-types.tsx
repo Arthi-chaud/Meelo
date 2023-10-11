@@ -1,7 +1,6 @@
-import AccountCircleIcon from '@mui/icons-material/AccountCircle';
-import AudiotrackIcon from '@mui/icons-material/Audiotrack';
-import AlbumIcon from '@mui/icons-material/Album';
-import { MusicVideo } from '@mui/icons-material';
+import {
+	AlbumIcon, ArtistIcon, SongIcon, VideoIcon
+} from '../icons';
 /**
  * Array of possible item types
  */
@@ -16,11 +15,11 @@ const getTypeIcon = (type: typeof itemType[number]) => {
 	case 'albums':
 		return <AlbumIcon/>;
 	case 'artists':
-		return <AccountCircleIcon/>;
+		return <ArtistIcon/>;
 	case 'songs':
-		return <AudiotrackIcon/>;
+		return <SongIcon/>;
 	case 'videos':
-		return <MusicVideo/>;
+		return <VideoIcon/>;
 	}
 };
 

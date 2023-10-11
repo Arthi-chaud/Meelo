@@ -1,81 +1,80 @@
 import {
-	AlbumOutlined, Difference, Lyrics, Search, Settings
-} from "@mui/icons-material";
-import AccountCircle from "@mui/icons-material/AccountCircle";
-import Album from "@mui/icons-material/Album";
-import Audiotrack from '@mui/icons-material/Audiotrack';
+	AlbumIcon, ArtistIcon, LyricsIcon,
+	RelatedTracksIcon, ReleaseIcon, SearchIcon,
+	SettingsIcon, SongIcon
+} from "../icons";
 import { NextRouter } from "next/router";
 import Action from "./action";
 
 export const GoToSongLyricsAction = (songIdentifier: string | number): Action => ({
 	href: `/songs/${songIdentifier}/lyrics`,
 	label: 'seeLyrics',
-	icon: <Lyrics/>
+	icon: <LyricsIcon/>
 });
 
 export const GoToArtistAction = (artistIdentifier: string | number): Action => ({
 	href: `/artists/${artistIdentifier}`,
 	label: 'goToArtist',
-	icon: <AccountCircle/>
+	icon: <ArtistIcon/>
 });
 
 export const GoToArtistAlbumsAction = (artistIdentifier: string | number): Action => ({
 	href: `/artists/${artistIdentifier}/albums`,
 	label: 'seeAlbums',
-	icon: <Album/>
+	icon: <AlbumIcon/>
 });
 
 export const GoToArtistSongsAction = (artistIdentifier: string | number): Action => ({
 	href: `/artists/${artistIdentifier}/songs`,
 	label: 'seeSongs',
-	icon: <Audiotrack/>
+	icon: <SongIcon/>
 });
 
 export const GoToAlbumAction = (albumIdentifier: string | number): Action => ({
 	href: `/albums/${albumIdentifier}`,
 	label: 'goToAlbum',
-	icon: <Album/>
+	icon: <AlbumIcon/>
 });
 
 export const GoToReleaseAction = (releaseIdentifier: string | number): Action => ({
 	href: `/releases/${releaseIdentifier}`,
 	label: 'goToAlbum',
-	icon: <Album/>
+	icon: <AlbumIcon/>
 });
 
 export const GoToReleaseAsyncAction = (router: NextRouter, albumIdentifier: () => PromiseLike<number | string>): Action => ({
 	onClick: () => albumIdentifier().then((id) => router.push(`/releases/${id}`)),
 	label: 'goToAlbum',
-	icon: <Album/>
+	icon: <AlbumIcon/>
 });
 
 export const GoToAlbumReleasesAction = (albumIdentifier: string | number): Action => ({
 	href: `/albums/${albumIdentifier}/releases`,
 	label: 'seeReleases',
-	icon: <AlbumOutlined/>
+	icon: <ReleaseIcon/>
 });
 
 export const GoToSongVersionAction = (songIdentifier: string | number): Action => ({
 	href: `/songs/${songIdentifier}/versions`,
 	label: 'seeOtherVersions',
-	icon: <Audiotrack/>
+	icon: <AlbumIcon/>
 });
 
 export const GoToRelatedTracksAction = (songIdentifier: string | number): Action => ({
 	href: `/songs/${songIdentifier}/tracks`,
 	label: 'seeRelatedTracks',
-	icon: <Difference/>
+	icon: <RelatedTracksIcon/>
 });
 
 export const GoToSearchAction = {
 	label: 'search',
-	icon: <Search/>,
+	icon: <SearchIcon/>,
 	href: '/search',
 } as const;
 
 export const GoToSettingsAction: Action = {
 	label: 'settings',
-	icon: <Settings/>,
+	icon: <SettingsIcon/>,
 	href: '/settings',
 };
 

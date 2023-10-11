@@ -64,7 +64,7 @@ const Tile = (props: TileProps) => {
 					alignContent: 'center', justifyContent: 'center'
 				}}>
 					<Typography
-						sx={{ fontWeight: 'bold', textAlign: 'center' }}
+						sx={{ fontWeight: 'medium', textAlign: 'center' }}
 						style={{ ...titleStyle, overflowWrap: 'anywhere', WebkitLineClamp: 2 }}
 					>
 						{props.title}
