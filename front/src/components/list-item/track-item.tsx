@@ -2,13 +2,12 @@ import API from "../../api/api";
 import { TrackWithRelations } from "../../models/track";
 import Illustration from '../illustration';
 import ListItem from "./item";
-import AudiotrackIcon from '@mui/icons-material/Audiotrack';
 import { useDispatch } from "react-redux";
 import { playTrack } from "../../state/playerSlice";
-import StarIcon from "@mui/icons-material/Star";
 import TrackContextualMenu from "../contextual-menu/track-contextual-menu";
 import { Grid } from "@mui/material";
 import { useQueryClient } from "../../api/use-query";
+import { MasterIcon, TrackIcon } from "../icons";
 
 type TrackItemProps = {
 	track: TrackWithRelations<'release' | 'song'>
@@ -27,7 +26,7 @@ const TrackItem = ({ track }: TrackItemProps) => {
 
 	return (
 		<ListItem
-			icon={<Illustration illustration={track.illustration} fallback={<AudiotrackIcon/>}/>}
+			icon={<Illustration illustration={track.illustration} fallback={<TrackIcon/>}/>}
 			onClick={() => queryClient
 				.fetchQuery(API.getSong(track.songId, ["artist"]))
 				.then((song) => {
@@ -38,7 +37,7 @@ const TrackItem = ({ track }: TrackItemProps) => {
 			secondTitle={release.name}
 			trailing={<Grid container spacing={1} sx={{ justifyContent: 'flex-end', flexWrap: 'nowrap' }}>
 				<Grid item sx={{ display: 'flex', alignItems: 'center' }}>
-					{isMaster ? <StarIcon/> : undefined }
+					{isMaster ? <MasterIcon/> : undefined }
 				</Grid>
 				<Grid item>
 					{<TrackContextualMenu track={track}/>}

@@ -1,7 +1,7 @@
 import {
 	Box, Fab, Slide, Tooltip
 } from "@mui/material";
-import StraightIcon from "@mui/icons-material/Straight";
+import { GoBackTopIcon } from "../icons";
 import { MeeloInfiniteQueryFn } from "../../api/use-query";
 import { WideLoadingComponent } from "../loading/loading";
 import LoadingPage from "../loading/loading-page";
@@ -45,7 +45,7 @@ const InfiniteView = <ItemType extends Resource, >(
 					sx={{ zIndex: "tooltip", position: 'fixed', bottom: 16, right: 16 }}
 					onClick={() => window.scrollTo({ top: 0, left: 0, behavior: "smooth" })}
 				>
-					<StraightIcon/>
+					<GoBackTopIcon/>
 				</Fab>
 			</Tooltip>
 		</Slide>

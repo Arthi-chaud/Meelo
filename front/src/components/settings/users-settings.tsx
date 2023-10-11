@@ -5,7 +5,6 @@ import {
 } from "@mui/material";
 import API from "../../api/api";
 import User from "../../models/user";
-import DeleteIcon from '@mui/icons-material/Delete';
 import { useSelector } from "react-redux";
 import { RootState } from "../../state/store";
 import { useMutation } from "react-query";
@@ -16,6 +15,7 @@ import { GridColDef } from '@mui/x-data-grid';
 import AdminGrid from "../admin-grid";
 import Translate, { translate, useLanguage } from "../../i18n/translate";
 import { useMemo } from "react";
+import { DeleteIcon } from "../icons";
 
 const DeleteButton = ({ userId, disabled }: { userId: number, disabled: boolean }) => {
 	const queryClient = useQueryClient();

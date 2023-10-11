@@ -1,15 +1,13 @@
 import {
-	FastForward, FastRewind, Fullscreen, MoreVert, Pause
-	, PlayArrow
-} from "@mui/icons-material";
+	CloseIcon, ContextualMenuIcon, DragHandleIcon,
+	ForwardIcon, FullscreenIcon, PauseIcon, PlayIcon, RewindIcon, TrackIcon
+} from "../icons";
 import {
 	Box, Button, ButtonBase, Container, Divider, Grid,
 	IconButton, Stack, Tab, Tabs, Typography
 } from "@mui/material";
 import Illustration from "../illustration";
 import { WideLoadingComponent } from "../loading/loading";
-import AudiotrackIcon from '@mui/icons-material/Audiotrack';
-import CloseIcon from '@mui/icons-material/Close';
 import { LegacyRef, useState } from "react";
 import PlayerSlider from "./controls/slider";
 import API from '../../api/api';
@@ -29,7 +27,6 @@ import {
 	Draggable,
 	Droppable
 } from 'react-beautiful-dnd';
-import DragHandleIcon from '@mui/icons-material/DragHandle';
 import formatDuration from "../../utils/formatDuration";
 import Translate from "../../i18n/translate";
 
@@ -68,17 +65,17 @@ const ControlButton = (props: ControlButtonProps) =>
 
 const PlayButton = (props: { isPlaying: boolean, onPause: () => void, onPlay: () => void }) =>
 	<ControlButton
-		icon={props.isPlaying ? <Pause/> : <PlayArrow/>}
+		icon={props.isPlaying ? <PauseIcon/> : <PlayIcon/>}
 		onClick={props.isPlaying ? props.onPause : props.onPlay}
 	/>
 ;
 
 const SkipButton = (props: Omit<ControlButtonProps, 'icon'>) =>
-	<ControlButton {...props} icon={<FastForward/>} />
+	<ControlButton {...props} icon={<ForwardIcon/>} />
 ;
 
 const PreviousButton = (props: Omit<ControlButtonProps, 'icon'>) =>
-	<ControlButton {...props} icon={<FastRewind/>} />
+	<ControlButton {...props} icon={<RewindIcon/>} />
 ;
 
 const MinimizedPlayerControls = (props: PlayerControlsProps) => {
@@ -94,9 +91,9 @@ const MinimizedPlayerControls = (props: PlayerControlsProps) => {
 				md={0.8} lg={0.6} xl={0.5}>
 				{ props.track ? <Illustration
 					illustration={props.track?.illustration ?? null}
-					fallback={<AudiotrackIcon />}
+					fallback={<TrackIcon />}
 				/> : <Box sx={{ height: '100%', display: 'flex', alignItems: 'center' }}>
-					<AudiotrackIcon />
+					<TrackIcon />
 				</Box> }
 			</Grid>
 			<Grid item container xs
@@ -205,7 +202,7 @@ const ExpandedPlayerControls = (
 						/>
 						: <Illustration
 							url={props.illustration ?? null}
-							fallback={<AudiotrackIcon />}
+							fallback={<TrackIcon />}
 						/>
 					}
 				</Grid>
@@ -218,7 +215,7 @@ const ExpandedPlayerControls = (
 							<Grid item xs={1} sx={{ display: 'flex', justifyContent: 'end' }}>
 								{props.track?.type == 'Video' &&
 									<IconButton onClick={requestFullscreen}>
-										<Fullscreen/>
+										<FullscreenIcon/>
 									</IconButton>
 								}
 							</Grid>
@@ -245,7 +242,7 @@ const ExpandedPlayerControls = (
 										track={{ ...props.track, song: parentSong.data }}
 										onSelect={() => props.onExpand(false)}
 									/> :
-									<IconButton><MoreVert/></IconButton>
+									<IconButton><ContextualMenuIcon/></IconButton>
 									// To avoid slight shift on loaded
 								}
 							</Grid>

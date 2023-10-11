@@ -1,6 +1,6 @@
 import {
-	BrightnessAuto, DarkMode, LightMode
-} from "@mui/icons-material";
+	AutoMode, DarkMode, LightMode
+} from "../icons";
 import { setColorScheme } from "../../state/settingsSlice";
 import store from "../../state/store";
 import Action from './action';
@@ -19,6 +19,6 @@ export const SetDarkColorSchemeAction: Action = {
 
 export const SetSystemColorSchemeAction: Action = {
 	label: 'autoMode',
-	icon: <BrightnessAuto/>,
+	icon: <AutoMode/>,
 	onClick: () => store.dispatch(setColorScheme('system'))
 };

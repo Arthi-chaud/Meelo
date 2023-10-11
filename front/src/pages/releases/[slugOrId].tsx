@@ -9,8 +9,7 @@ import Illustration from "../../components/illustration";
 import formatDuration from '../../utils/formatDuration';
 import { useMemo } from "react";
 import Link from 'next/link';
-import PlayCircleIcon from '@mui/icons-material/PlayCircle';
-import { Shuffle } from "@mui/icons-material";
+import { PlayCircledIcon, ShuffleIcon } from "../../components/icons";
 import {
 	prepareMeeloQuery, useInfiniteQuery, useQuery
 } from "../../api/use-query";
@@ -185,7 +184,7 @@ const ReleasePage = (props: InferSSRProps<typeof getServerSideProps>) => {
 				</Grid>
 				<Grid item container md={3}
 					xs={12} sx={{ spacing: 5, alignItems: 'center', justifyContent: 'space-evenly', display: 'flex' }}>
-					{[() => <PlayCircleIcon fontSize="large"/>, () => <Shuffle fontSize="large"/>].map((icon, index) =>
+					{[() => <PlayCircledIcon fontSize="large"/>, () => <ShuffleIcon fontSize="large"/>].map((icon, index) =>
 						<Grid item key={index}>
 							<IconButton onClick={() => {
 								if (tracks && artists.data != undefined) {

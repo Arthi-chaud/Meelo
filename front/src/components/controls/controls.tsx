@@ -1,6 +1,6 @@
 import {
-	Apps, North, South, ViewList
-} from "@mui/icons-material";
+	AscIcon, DescIcon, GridIcon, ListIcon
+} from "../icons";
 import {
 	Box, Button, ButtonGroup, Dialog, Tooltip
 } from "@mui/material";
@@ -116,7 +116,7 @@ const Controls = <
 			<OptionButton
 				optionGroup={{
 					name: `${translate('sortBy')} ${translate(optionsState.sortBy as TranslationKey)}`,
-					icon: optionsState.order == 'desc' ? <South/> : <North/>,
+					icon: optionsState.order == 'desc' ? <DescIcon/> : <AscIcon/>,
 					options: [
 						{
 							name: 'sortBy',
@@ -152,7 +152,7 @@ const Controls = <
 					<Button onClick={() => updateOptionState(
 						{ name: 'view', value: optionsState.view == 'grid' ? 'list' : 'grid' }
 					)}>
-						{ optionsState.view == 'grid' ? <ViewList/> : <Apps/> }
+						{ optionsState.view == 'grid' ? <ListIcon/> : <GridIcon/> }
 					</Button>
 				</Tooltip>
 			}
