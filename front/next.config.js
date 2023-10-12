@@ -13,11 +13,6 @@ module.exports = {
   async redirects() {
     return [
       {
-        source: '/libraries/:slug',
-        destination: '/libraries/:slug/albums',
-        permanent: true,
-      },
-      {
         source: '/songs/:slug',
         destination: '/songs/:slug/lyrics',
         permanent: true,
@@ -25,11 +20,6 @@ module.exports = {
     ]
   },
   async rewrites() {
-    return [
-      {
-        source: '/libraries/:slug/:itemType(albums|artists|songs|videos)',
-        destination: '/:itemType',
-      },
-    ]
+    return []
   },
 }

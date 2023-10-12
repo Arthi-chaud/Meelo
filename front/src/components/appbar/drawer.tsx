@@ -1,38 +1,24 @@
+import { HomeIcon } from "../icons";
 import {
-	ExpandLessIcon,
-	ExpandMoreIcon,
-	HomeIcon, LibraryIcon, PlaylistIcon
-} from "../icons";
-import {
-	Box, Collapse, Container, Divider, Drawer, Grid, List,
-	ListItem, ListItemButton, ListItemIcon, ListItemText, ListSubheader
+	Divider, Drawer, List,
+	ListItem, ListItemButton, ListItemIcon, ListItemText
 } from "@mui/material";
-import Library from "../../models/library";
-import LoadingComponent from "../loading/loading";
 import { getTypeIcon, itemType } from "./item-types";
-import globalLibrary from './global-library';
-import { useEffect, useState } from "react";
-import buildLink from "./build-link";
 import Link from 'next/link';
 import Action from "../actions/action";
 import Translate from "../../i18n/translate";
-import Fade from "../fade";
 import useAppBarActions from "../../utils/useAppBarActions";
 
 interface DrawerProps {
-	availableLibraries: Library[] | null,
-	requestedLibrarySlug: string,
 	isOpen: boolean,
 	onClose: () => void
 }
 
 const MeeloAppBarDrawer = (
-	{ availableLibraries, requestedLibrarySlug, isOpen, onClose }: DrawerProps
+	{ isOpen, onClose }: DrawerProps
 ) => {
-	const [selectedLibrarySlug, setSelectedLibrary] = useState<string | null>(requestedLibrarySlug);
 	const actions = useAppBarActions();
 
-	useEffect(() => setSelectedLibrary(requestedLibrarySlug), [requestedLibrarySlug, isOpen]);
 	return (
 		<Drawer
 			elevation={8}
@@ -53,64 +39,20 @@ const MeeloAppBarDrawer = (
 						</ListItemButton>
 					</ListItem>
 				</Link>
-				<Link href='/playlists'>
-					<ListItem disableGutters>
-						<ListItemButton sx={{ borderRadius: '0' }} onClick={onClose}>
-							<ListItemIcon><PlaylistIcon/></ListItemIcon>
-							<ListItemText>
-								<Translate translationKey="playlists"/>
-							</ListItemText>
-						</ListItemButton>
-					</ListItem>
-				</Link>
 			</List>
-			<List subheader={
-				<ListSubheader disableSticky={false} sx={{ backgroundColor: 'inherit' }}>
-					<Grid container columnSpacing={2}
-						sx={{ flexDirection: 'row', alignItems: 'center' }}
-					>
-						<Grid item sx={{ paddingTop: 1.6 }}><LibraryIcon /></Grid>
-						<Grid item>
-							<Translate translationKey="libraries"/>
-						</Grid>
-						<Grid item sx={{ flexGrow: 1 }} />
-						{ availableLibraries == null && <Grid item><LoadingComponent /></Grid>}
-					</Grid>
-				</ListSubheader>
-			}>
-				<Fade in={availableLibraries != null}>
-					<Box>{
-						[globalLibrary, ...availableLibraries ?? []].map((library) => {
-							const open = selectedLibrarySlug === library.slug;
-
-							return <Container key={library.slug}>
-								<ListItem>
-									<ListItemButton onClick={() =>
-										setSelectedLibrary(open ? null : library.slug)
-									}>
-										<ListItemText>{library.name}</ListItemText>
-										{open ? <ExpandLessIcon /> : <ExpandMoreIcon />}
-									</ListItemButton>
-								</ListItem>
-								<Collapse in={open} unmountOnExit>
-									<List sx={{ pl: 4 }}>
-										{itemType.map((item, index) =>
-											<Link key={item} href={buildLink(item, library.slug)}>
-												<ListItemButton key={item} onClick={onClose}>
-													<ListItemIcon>
-														{ getTypeIcon(item) }
-													</ListItemIcon>
-													<ListItemText
-														primary={<Translate translationKey={item}/>}
-													/>
-												</ListItemButton>
-											</Link>)}
-									</List>
-								</Collapse>
-							</Container>;
-						})
-					}</Box>
-				</Fade>
+			<Divider/>
+			<List>
+				{itemType.map((item, index) =>
+					<Link key={item} href={`/${item}`}>
+						<ListItemButton key={item} onClick={onClose} style={{ borderRadius: 0 }}>
+							<ListItemIcon>
+								{ getTypeIcon(item) }
+							</ListItemIcon>
+							<ListItemText
+								primary={<Translate translationKey={item}/>}
+							/>
+						</ListItemButton>
+					</Link>)}
 			</List>
 			<Divider />
 			<List>
