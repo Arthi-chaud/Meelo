@@ -133,7 +133,7 @@ const en = {
 	trackIndex: 'Track Index',
 	discIndex: 'Disc Index',
 
-	allLibraries: 'All',
+	allLibraries: 'All Libraries',
 
 	// Actions
 	setAsMaster: 'Set as Master',
