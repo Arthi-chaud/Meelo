@@ -1,16 +1,15 @@
 import { MeeloInfiniteQueryFn } from '../../../api/use-query';
 import Resource from '../../../models/resource';
 import { LayoutOption } from '../../../utils/layout';
-import { Order, SortingParameters } from '../../../utils/sorting';
+import { Order } from '../../../utils/sorting';
+import { OptionState } from '../../controls/controls';
 
 type InfiniteResourceViewProps<
 	ResourceType extends Resource,
-	SortingKeys extends readonly string[],
-	AdditionalQueryParams extends any[]= []
+	SortingKeys extends readonly string[]
 > = {
 	query: (
-		sort: SortingParameters<SortingKeys>,
-		...params: AdditionalQueryParams
+		options: OptionState<SortingKeys>
 	) => ReturnType<MeeloInfiniteQueryFn<ResourceType>>,
 	light?: boolean;
 	defaultLayout?: LayoutOption;
