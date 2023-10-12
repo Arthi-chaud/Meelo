@@ -28,6 +28,8 @@ const InfiniteVideoView = (
 		<InfiniteView
 			view={options?.view ?? 'grid'}
 			query={() => props.query({
+				view: options?.view ?? 'grid',
+				library: options?.library ?? null,
 				sortBy: options?.sortBy ?? 'name',
 				order: options?.order ?? 'asc',
 			})}
