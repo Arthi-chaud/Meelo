@@ -36,6 +36,10 @@ const AuthenticationResponse = yup.object({
 	access_token: yup.string().required()
 });
 
+type Identifier = number | string;
+
+type NullableIdentifier = Identifier | null;
+
 type AuthenticationResponse = yup.InferType<typeof AuthenticationResponse>;
 
 type QueryParameters<Keys extends readonly string[]> = {
@@ -564,28 +568,6 @@ export default class API {
 	}
 
 	/**
-	 * Fetch all video songs in a library
-	 * @param librarySlugOrId the identifier of the library
-	 * @returns An InfiniteQuery of Song
-	 */
-	static getAllVideosInLibrary<I extends SongInclude>(
-		librarySlugOrId: string | number,
-		sort?: SortingParameters<typeof SongSortingKeys>,
-		include?: I[]
-	): InfiniteQuery<VideoWithRelations<I>> {
-		return {
-			key: ['libraries', librarySlugOrId, 'videos', sort ?? {}, ...API.formatIncludeKeys(include)],
-			exec: (pagination) => API.fetch({
-				route: `/videos`,
-				errorMessage: 'Library does not exist',
-				otherParameters: { library: librarySlugOrId },
-				parameters: { pagination: pagination, include, sort },
-				validator: PaginatedResponse(VideoWithRelations(include ?? []))
-			})
-		};
-	}
-
-	/**
 	 * Fetch all songs
 	 * @returns An InfiniteQuery of Songs
 	 */
@@ -610,16 +592,18 @@ export default class API {
 	 * Fetch all songs
 	 * @returns An InfiniteQuery of Songs
 	 */
-	static getAllVideos<I extends SongInclude>(
+	static getVideos<I extends SongInclude>(
+		filter: { library?: Identifier },
 		sort?: SortingParameters<typeof SongSortingKeys>,
 		include?: I[]
 	): InfiniteQuery<VideoWithRelations<I>> {
 		return {
-			key: ['videos', ...API.formatIncludeKeys(include), sort ?? {}],
+			key: ['videos', filter, ...API.formatIncludeKeys(include), sort ?? {}],
 			exec: (pagination) => API.fetch({
 				route: `/videos`,
 				errorMessage: 'Videos could not be loaded',
 				parameters: { pagination: pagination, include, sort },
+				otherParameters: filter,
 				validator: PaginatedResponse(VideoWithRelations(include ?? []))
 			})
 		};
