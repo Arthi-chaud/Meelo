@@ -1,26 +1,19 @@
 /* eslint-disable react/jsx-indent */
 import {
 	AppBar, Box, Button, Divider, Grid, IconButton,
-	MenuItem, Select, Toolbar, Typography, useTheme
+	Toolbar, Typography, useTheme
 } from '@mui/material';
 import Image from 'next/image';
 import { useRouter } from 'next/router';
-import { useMemo, useState } from 'react';
-import API from '../../api/api';
-import LoadingComponent from '../loading/loading';
+import { useState } from 'react';
 import { itemType } from './item-types';
-import globalLibrary from './global-library';
 import MeeloAppBarDrawer from './drawer';
-import buildLink from './build-link';
 import Link from 'next/link';
 // eslint-disable-next-line no-restricted-imports
-import { useInfiniteQuery as useReactInfiniteQuery } from 'react-query';
-import { prepareMeeloInfiniteQuery } from '../../api/use-query';
-import toast from 'react-hot-toast';
 import ContextualMenu from '../contextual-menu/contextual-menu';
 import { GoToSearchAction } from '../actions/link';
 import useColorScheme from '../../theme/color-scheme';
-import Translate, { translate } from '../../i18n/translate';
+import Translate from '../../i18n/translate';
 import Fade from '../fade';
 import useAppBarActions from '../../utils/useAppBarActions';
 import { BurgerIcon } from '../icons';
@@ -29,30 +22,8 @@ const MeeloAppBar = () => {
 	const router = useRouter();
 	const [drawerOpen, setDrawerOpen] = useState(false);
 	const actions = useAppBarActions();
-	const librariesQuery = useReactInfiniteQuery({
-		...prepareMeeloInfiniteQuery(API.getAllLibraries),
-		useErrorBoundary: false,
-		onError: () => {
-			toast.error(translate('librariesLoadFail'));
-		}
-	});
 	const colorScheme = useColorScheme();
 	const theme = useTheme();
-	const requestedLibrary = useMemo(
-		() => {
-			let requestedlibrarySlug = globalLibrary.slug;
-
-			if (router.asPath.startsWith('/libraries')) {
-				requestedlibrarySlug = router.asPath.split('/')[2];
-			}
-			return librariesQuery.data?.pages.at(0)?.items.find(
-				(library) => library.slug === requestedlibrarySlug
-			) ?? globalLibrary;
-		}, [librariesQuery]
-	);
-	const availableLibraries = useMemo(
-		() => librariesQuery.data?.pages.at(0)?.items ?? null, [librariesQuery]
-	);
 
 	return (
 		<>
@@ -72,93 +43,46 @@ const MeeloAppBar = () => {
 								priority height={50}/>
 						</Link>
 					</Box>
-					{
-						availableLibraries == null
-							? <LoadingComponent />
-							: <><Fade in>
-								<Box sx={{ display: { xs: 'none', md: 'flex' }, marginLeft: 1, alignItems: 'center' }} flexDirection='row'>
-									<Select
-										disableUnderline
-										variant='standard'
-										value={requestedLibrary.name}
-										sx={{ color: colorScheme == 'light'
-											? theme.palette.primary.contrastText
-											: theme.palette.primary.main }}
-										onChange={(item) => {
-											const targetLibaryName = item.target.value;
+					<Fade in>
+						<Box sx={{ display: { xs: 'none', md: 'flex' }, marginLeft: 1, alignItems: 'center' }} flexDirection='row'>
+							<Grid container spacing={3} flexDirection='row'
+								sx={{ flexWrap: 'nowrap' }}
+							>
+								{ itemType.map((type) => {
+									const isSelected = router.route == `/${type}`;
 
-											if (targetLibaryName === globalLibrary.name) {
-												router.push(`/albums`);
-											} else {
-												const targetLibrary = availableLibraries.find(
-													(library) => library.name === targetLibaryName
-												)!;
-
-												router.push(`/libraries/${targetLibrary.slug}/albums`);
-											}
-										}}
-									>
-										{[globalLibrary, ...availableLibraries].map((library) =>
-											<MenuItem key={library.slug} value={library.name} sx={{ borderRadius: '0' }}>
-												{globalLibrary.id == library.id
-													? <Translate translationKey={'allLibraries'} />
-													: library.name
-												}
-											</MenuItem>)}
-									</Select>
-									<Divider orientation='vertical' flexItem sx={{ marginX: 2 }} />
-									<Grid container spacing={3} flexDirection='row'
-										sx={{ flexWrap: 'nowrap' }}
-									>
-										{ itemType.map((type, index) => {
-											const isSelected = router.route == `/${type}`;
-
-											return <Grid item key={type}>
-												<Link href={buildLink(type, requestedLibrary.slug)}>
-													<Button variant="text" color='inherit'>
-														<Typography sx={{ fontWeight: isSelected ? 'bold' : 'normal' }}>
-															<Translate translationKey={type} />
-														</Typography>
-													</Button>
-												</Link>
-											</Grid>;
-										})}
-									</Grid>
-									<Divider orientation='vertical' flexItem sx={{ marginX: 2 }} />
-									<Grid item>
-										<Link href='/playlists'>
+									return <Grid item key={type}>
+										<Link href={`/${type}`}>
 											<Button variant="text" color='inherit'>
-												<Typography sx={{ fontWeight: router.route == `/playlists` ? 'bold' : 'normal' }}>
-													<Translate translationKey='playlists'/>
+												<Typography sx={{ fontWeight: isSelected ? 'bold' : 'normal' }}>
+													<Translate translationKey={type} />
 												</Typography>
 											</Button>
 										</Link>
-									</Grid>
-								</Box>
-							</Fade>
-							<Box sx={{ flexGrow: 1 }}/>
-							<Fade in>
-								<Box sx={{ display: { xs: 'none', sm: 'flex' } }}>
-									<Link href={GoToSearchAction.href}>
-										<IconButton color='inherit'>
-											{GoToSearchAction.icon}
-										</IconButton>
-									</Link>
-									<Divider orientation='vertical' flexItem sx={{ marginX: 1 }} />
-									<ContextualMenu actions={
-										[actions.filter((action) => action.label != 'search')]
-									}/>
-								</Box>
-							</Fade>
-							</>
-					}
+									</Grid>;
+								})}
+							</Grid>
+						</Box>
+					</Fade>
+					<Box sx={{ flexGrow: 1 }}/>
+					<Fade in>
+						<Box sx={{ display: { xs: 'none', sm: 'flex' } }}>
+							<Link href={GoToSearchAction.href}>
+								<IconButton color='inherit'>
+									{GoToSearchAction.icon}
+								</IconButton>
+							</Link>
+							<Divider orientation='vertical' flexItem sx={{ marginX: 1 }} />
+							<ContextualMenu actions={
+								[actions.filter((action) => action.label != 'search')]
+							}/>
+						</Box>
+					</Fade>
 				</Toolbar>
 			</AppBar>
 			<MeeloAppBarDrawer
-				availableLibraries={availableLibraries}
 				isOpen={drawerOpen}
 				onClose={() => setDrawerOpen(false)}
-				requestedLibrarySlug={requestedLibrary.slug}
 			/>
 		</>
 	);

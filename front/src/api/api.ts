@@ -30,7 +30,7 @@ import { RequireExactlyOne } from "type-fest";
 import Playlist, {
 	PlaylistInclude, PlaylistSortingKeys, PlaylistWithRelations
 } from "../models/playlist";
-import * as SSR from '../ssr';
+import { isSSR } from '../ssr';
 
 const AuthenticationResponse = yup.object({
 	access_token: yup.string().required()
@@ -71,7 +71,6 @@ export default class API {
 	/**
 	 * Utilitary functions
 	 */
-	private static isSSR = SSR.isSSR;
 	private static isDev = () => process.env.NODE_ENV === 'development';
 
 	private static SSR_API_URL = process.env.ssrApiRoute!;
@@ -1401,12 +1400,12 @@ export default class API {
 		switch (response.status) {
 		/// TODO SSR should be disabled if user is not authentified
 		case 401:
-			if (!this.isSSR()) {
+			if (!isSSR()) {
 				throw new Error(jsonResponse.message ?? errorMessage);
 			}
 			break;
 		case 403:
-			if (!this.isSSR()) {
+			if (!isSSR()) {
 				throw new Error(errorMessage ?? "Unauthorized: Only for admins");
 			}
 			break;
@@ -1557,7 +1556,7 @@ export default class API {
 	private static buildURL(
 		route: string, parameters: QueryParameters<any>, otherParameters?: any
 	): string {
-		const apiHost = API.isDev() || API.isSSR() ? this.SSR_API_URL : '/api';
+		const apiHost = API.isDev() || isSSR() ? this.SSR_API_URL : '/api';
 
 		return `${apiHost}${route}${this.formatQueryParameters(parameters, otherParameters)}`;
 	}

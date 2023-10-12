@@ -1,5 +1,5 @@
 import {
-	AlbumIcon, ArtistIcon, SongIcon, VideoIcon
+	AlbumIcon, ArtistIcon, PlaylistIcon, SongIcon, VideoIcon
 } from '../icons';
 /**
  * Array of possible item types
@@ -8,7 +8,8 @@ const itemType = [
 	'artists',
 	'albums',
 	'songs',
-	'videos'
+	'videos',
+	'playlists'
 ] as const;
 const getTypeIcon = (type: typeof itemType[number]) => {
 	switch (type) {
@@ -20,6 +21,8 @@ const getTypeIcon = (type: typeof itemType[number]) => {
 		return <SongIcon/>;
 	case 'videos':
 		return <VideoIcon/>;
+	case 'playlists':
+		return <PlaylistIcon/>;
 	}
 };
 
