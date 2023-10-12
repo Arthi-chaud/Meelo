@@ -445,16 +445,17 @@ export default class API {
 	 * Fetch all album artists
 	 * @returns An InfiniteQuery of Artists
 	 */
-	static getAllArtists(
+	static getArtists(
+		filter: { library?: Identifier },
 		sort?: SortingParameters<typeof ArtistSortingKeys>
 	): InfiniteQuery<Artist> {
 		return {
-			key: ['artists', sort ?? {}],
+			key: ['artists', filter, sort ?? {}],
 			exec: (pagination) => API.fetch({
 				route: `/artists`,
 				errorMessage: 'Artists could not be loaded',
 				parameters: { pagination: pagination, include: [], sort },
-				otherParameters: { albumArtistOnly: 'true' },
+				otherParameters: { albumArtistOnly: 'true', ...filter },
 				validator: PaginatedResponse(Artist)
 			}),
 		};
@@ -496,27 +497,6 @@ export default class API {
 				errorMessage: 'Releases could not be loaded',
 				parameters: { pagination: pagination, include, sort },
 				validator: PaginatedResponse(ReleaseWithRelations(include ?? []))
-			})
-		};
-	}
-
-	/**
-	 * Fetch all album artists in a library
-	 * @param librarySlugOrId the identifier of the library
-	 * @returns An InfiniteQuery of Artists
-	 */
-	static getAllArtistsInLibrary(
-		librarySlugOrId: string | number,
-		sort?: SortingParameters<typeof ArtistSortingKeys>,
-	): InfiniteQuery<Artist> {
-		return {
-			key: ['libraries', librarySlugOrId, 'artists', sort ?? {}],
-			exec: (pagination) => API.fetch({
-				route: `/artists`,
-				errorMessage: 'Library does not exist',
-				parameters: { pagination: pagination, sort },
-				otherParameters: { albumArtistOnly: true, library: librarySlugOrId },
-				validator: PaginatedResponse(Artist)
 			})
 		};
 	}

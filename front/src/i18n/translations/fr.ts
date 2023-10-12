@@ -127,7 +127,7 @@ const fr: TranslationMap = {
 	playlistItemDeletionSuccess: "Piste supprimée",
 	videos: "Vidéos",
 	trackSetAsMaster: "Piste devenue Principale",
-	allLibraries: "Tous",
+	allLibraries: "Toutes librairies",
 	setAsMaster: "Promouvoir",
 	setAllTracksAsMaster: "Promouvoir toutes les pistes",
 	deleteFromPlaylist: "Supprimer de la playlist",
