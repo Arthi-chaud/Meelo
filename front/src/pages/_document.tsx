@@ -12,6 +12,7 @@ import { AppType } from "next/app";
 import { LightTheme } from "../theme/theme";
 import createEmotionCache from "../utils/createEmotionCache";
 import { MyAppProps } from "./_app";
+import font from "../theme/font";
 
 interface MyDocumentProps extends DocumentProps {
 	emotionStyleTags: JSX.Element[];
@@ -19,7 +20,7 @@ interface MyDocumentProps extends DocumentProps {
 
 export default function MyDocument({ emotionStyleTags }: MyDocumentProps) {
 	return (
-		<Html>
+		<Html className={font.className}>
 			<Head>
 				<meta name="apple-mobile-web-app-capable" content="yes" />
 				<meta name="apple-mobile-web-app-status-bar-style" content="black" />
