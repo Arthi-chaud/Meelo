@@ -19,6 +19,7 @@ import {
 	GenreNotFoundException
 } from './genre.exceptions';
 import AlbumService from 'src/album/album.service';
+import deepmerge from 'deepmerge';
 
 @Injectable()
 export default class GenreService extends RepositoryService<
@@ -80,23 +81,33 @@ export default class GenreService extends RepositoryService<
 	formatWhereInput = GenreService.formatWhereInput;
 
 	static formatManyWhereInput(where: GenreQueryParameters.ManyWhereInput) {
-		return {
-			slug: where.slug
-				? buildStringSearchParameters(where.slug)
-				: undefined,
-			songs: where.song || where.artist || where.album ? {
-				some: where.song
-					? SongService.formatWhereInput(where.song)
-					: where.artist
-						? { artist: ArtistService.formatWhereInput(where.artist) }
-						: where.album ? {
-							tracks: { some: {
-								release: { album: AlbumService.formatWhereInput(where.album) }
-							} }
-						} : undefined
-			} : undefined,
+		let query: Prisma.GenreWhereInput = {};
 
-		};
+		if (where.slug) {
+			query = deepmerge(query, {
+				slug: buildStringSearchParameters(where.slug)
+			});
+		}
+		if (where.song) {
+			query = deepmerge(query, {
+				songs: { some: SongService.formatWhereInput(where.song) }
+			});
+		}
+		if (where.artist) {
+			query = deepmerge(query, {
+				songs: { some: { artist: ArtistService.formatWhereInput(where.artist) } }
+			});
+		}
+		if (where.album) {
+			query = deepmerge(query, {
+				songs: { some: {
+					tracks: { some: {
+						release: { album: AlbumService.formatWhereInput(where.album) }
+					} }
+				} }
+			});
+		}
+		return query;
 	}
 
 	formatManyWhereInput = GenreService.formatManyWhereInput;

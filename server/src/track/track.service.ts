@@ -27,6 +27,7 @@ import Logger from 'src/logger/logger';
 import { PrismaError } from 'prisma-error-enum';
 import { FileNotFoundFromIDException, FileNotFoundFromPathException } from 'src/file/file.exceptions';
 import IllustrationRepository from 'src/illustration/illustration.repository';
+import deepmerge from 'deepmerge';
 
 @Injectable()
 export default class TrackService extends RepositoryService<
@@ -119,22 +120,30 @@ export default class TrackService extends RepositoryService<
 		where: TrackQueryParameters.ManyWhereInput
 	): Prisma.TrackWhereInput {
 		let queryParameters: Prisma.TrackWhereInput = {
-			type: where.type,
-			song: where.song ? SongService.formatWhereInput(where.song) : undefined,
-			sourceFile: where.library ? {
-				library: LibraryService.formatWhereInput(where.library)
-			} : undefined,
+			type: where.type
 		};
 
+		if (where.song) {
+			queryParameters = deepmerge(queryParameters, {
+				song: SongService.formatWhereInput(where.song)
+			});
+		}
+
+		if (where.library) {
+			queryParameters = deepmerge(queryParameters, {
+				sourceFile: {
+					library: LibraryService.formatWhereInput(where.library)
+				}
+			});
+		}
+
 		if (where.release) {
-			queryParameters = {
-				...queryParameters,
+			queryParameters = deepmerge(queryParameters, {
 				release: ReleaseService.formatWhereInput(where.release)
-			};
+			});
 		}
 		if (where.album) {
-			queryParameters = {
-				...queryParameters,
+			queryParameters = deepmerge(queryParameters, {
 				song: {
 					tracks: {
 						some: {
@@ -144,15 +153,14 @@ export default class TrackService extends RepositoryService<
 						}
 					}
 				}
-			};
+			});
 		}
 		if (where.artist) {
-			queryParameters = {
-				...queryParameters,
+			queryParameters = deepmerge(queryParameters, {
 				release: {
 					album: AlbumService.formatManyWhereInput({ artist: where.artist })
 				}
-			};
+			});
 		}
 		return queryParameters;
 	}

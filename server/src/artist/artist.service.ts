@@ -24,6 +24,7 @@ import Logger from 'src/logger/logger';
 import { PrismaError } from 'prisma-error-enum';
 import AlbumService from 'src/album/album.service';
 import IllustrationRepository from 'src/illustration/illustration.repository';
+import deepmerge from 'deepmerge';
 
 @Injectable()
 export default class ArtistService extends RepositoryService<
@@ -104,35 +105,59 @@ export default class ArtistService extends RepositoryService<
 	 * Get Artists
 	 */
 	static formatManyWhereInput(where: ArtistQueryParameters.ManyWhereInput) {
-		return {
-			id: where.ids ? {
-				in: where.ids.in
-			} : undefined,
+		let query: Prisma.ArtistWhereInput = {
 			name: buildStringSearchParameters(where.name),
-			albums: where.library ? {
-				some: {
-					releases: {
-						some: ReleaseService
-							.formatManyWhereInput({ library: where.library })
+		};
+
+		if (where.ids) {
+			query = deepmerge(query, { in: where.ids.in });
+		}
+		if (where.library) {
+			query = deepmerge(query, {
+				albums: {
+					some: {
+						releases: {
+							some: ReleaseService
+								.formatManyWhereInput({ library: where.library })
+						}
+					}
+				},
+				songs: {
+					some: {
+						tracks: {
+							songs: {
+								some: TrackService.formatManyWhereInput({ library: where.library })
+							}
+						}
 					}
 				}
-			} : undefined,
-			songs: where.library || where.genre || where.album ? {
-				some: {
-					genres: where.genre ? {
-						some: GenreService.formatWhereInput(where.genre)
-					} : undefined,
-					tracks: where.library || where.album ? {
-						some: where.library
-							? TrackService.formatManyWhereInput({ library: where.library })
-							: where.album
-								? { release: { album: AlbumService.formatWhereInput(where.album) } }
-								: undefined
-					} : undefined,
+			});
+		}
+		if (where.genre) {
+			query = deepmerge(query, {
+				songs: {
+					some: {
+						genre: { some: GenreService.formatWhereInput(where.genre) }
+					}
 				}
-			} : undefined,
-			...(where.albumArtistOnly === true ? { NOT: { albums: { none: {} } } } : {})
-		};
+			});
+		}
+		if (where.album) {
+			query = deepmerge(query, {
+				songs: {
+					tracks: { some: { release: {
+						album: AlbumService.formatWhereInput(where.album)
+					} } }
+				}
+			});
+		}
+		if (where.albumArtistOnly) {
+			query = deepmerge(query, {
+				NOT: { albums: { none: {} } }
+			});
+		}
+
+		return query;
 	}
 
 	formatManyWhereInput = ArtistService.formatManyWhereInput;
