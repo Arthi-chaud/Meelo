@@ -58,12 +58,19 @@ const SearchPage = (
 			onTypeSelect={(selectedType) =>
 				router.push(buildSearchUrl(query, selectedType), undefined, { shallow: true })}
 			enabled={query != undefined}
-			artistQuery={(sort) => API.getArtists({ query: encodeURIComponent(query!) }, sort)}
-			albumQuery={(sort, selectedType) =>
-				API.getAlbums({ query: encodeURIComponent(query!), type: selectedType }, sort, ['artist'])
-			}
-			songQuery={(sort, selectedType) => API.getSongs(
-				{ query: encodeURIComponent(query!), type: selectedType }, sort, ['artist']
+			artistQuery={({ library }, sort) => API.getArtists(
+				{ query: encodeURIComponent(query!), library: library ?? undefined },
+				sort
+			)}
+			albumQuery={({ library, type: newType }, sort) => API.getAlbums(
+				{ query: encodeURIComponent(query!), type: newType, library: library ?? undefined },
+				sort,
+				['artist']
+			)}
+			songQuery={({ library, type: newType }, sort) => API.getSongs(
+				{ query: encodeURIComponent(query!), type: newType, library: library ?? undefined },
+				sort,
+				['artist']
 			)}
 		/>
 	</Box>;

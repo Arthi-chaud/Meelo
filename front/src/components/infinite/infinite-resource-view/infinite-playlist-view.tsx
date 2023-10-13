@@ -20,6 +20,7 @@ const InfinitePlaylistView = (
 		<Controls
 			actions={[CreatePlaylistAction(queryClient)]}
 			onChange={setOptions}
+			disableLibrarySelector
 			sortingKeys={PlaylistSortingKeys}
 			defaultSortingOrder={props.initialSortingOrder}
 			defaultSortingKey={props.initialSortingField}
