@@ -9,9 +9,7 @@ import {
 	DarkTheme, GlobalTheme, LightTheme
 } from "./theme";
 import useColorScheme from "./color-scheme";
-import { Rubik } from 'next/font/google';
-
-const font = Rubik({ subsets: ['latin'] });
+import font from "./font";
 
 /**
  * Provides the Theme
