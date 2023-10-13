@@ -12,19 +12,20 @@ import ReleaseTile from "../components/tile/release-tile";
 import Translate from "../i18n/translate";
 import Fade from "../components/fade";
 
-const newlyAddedAlbumsQuery = API.getAllAlbums(
+const newlyAddedAlbumsQuery = API.getAlbums(
+	{ },
 	{ sortBy: 'addDate', order: 'desc' },
-	undefined,
 	['artist']
 );
 
-const newestAlbumsQuery = API.getAllAlbums(
+const newestAlbumsQuery = API.getAlbums(
+	{ },
 	{ sortBy: 'releaseDate', order: 'desc' },
-	undefined,
 	['artist']
 );
 
-const newlyAddedArtistsQuery = API.getAllArtists(
+const newlyAddedArtistsQuery = API.getArtists(
+	{ },
 	{ sortBy: 'addDate', order: 'desc' },
 );
 
