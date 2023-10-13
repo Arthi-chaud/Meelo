@@ -38,9 +38,17 @@ const GenrePage = (props: InferSSRProps<typeof getServerSideProps>) => {
 		</Box>
 		<SelectableInfiniteView
 			enabled={true}
-			artistQuery={(sort) => API.getArtists({ genre: genreIdentifier }, sort)}
-			albumQuery={(sort, type) => API.getAlbums({ genre: genreIdentifier, type }, sort)}
-			songQuery={(sort, type) => API.getSongs({ genre: genreIdentifier, type }, sort)}
+			artistQuery={({ library }, { sortBy, order }) => API.getArtists(
+				{ genre: genreIdentifier, library: library ?? undefined }, { sortBy, order }
+			)}
+			albumQuery={({ library, type }, { sortBy, order }) => API.getAlbums(
+				{ genre: genreIdentifier, type, library: library ?? undefined }, { sortBy, order }, ['artist']
+			)}
+			songQuery={({ library, type }, { sortBy, order }) => API.getSongs(
+				{ genre: genreIdentifier, type, library: library ?? undefined },
+				{ sortBy, order },
+				['artist']
+			)}
 		/>
 	</Box>;
 };

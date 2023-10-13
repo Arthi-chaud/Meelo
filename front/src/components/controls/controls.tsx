@@ -51,6 +51,7 @@ type ControllerProps<
 	 * If defined, will push changes as query parameters in router
 	 */
 	router?: NextRouter;
+	disableLibrarySelector?: true
 };
 
 const Controls = <
@@ -83,7 +84,7 @@ const Controls = <
 			order: getOrderParams(props.router?.query.order)
 				?? props.defaultSortingOrder
 				?? 'asc',
-			library: libraryQuery ?? null
+			library: props.disableLibrarySelector ? null : libraryQuery ?? null
 		};
 
 		props.options?.forEach((option) => {
@@ -128,7 +129,7 @@ const Controls = <
 	return <Fade in>
 		<Box sx={{ width: '100%', display: 'flex', justifyContent: 'center', marginBottom: 2 }}>
 			<ButtonGroup color='inherit'>
-				<OptionButton
+				{ props.disableLibrarySelector !== true && <OptionButton
 					optionGroup={{
 						name: optionsState.library ?? translate('allLibraries'),
 						options: [
@@ -152,7 +153,7 @@ const Controls = <
 							});
 						}
 					}}
-				/>
+				/>}
 				{ props.actions?.map((action, index) => (
 					<Button key={'action-' + action.label} startIcon={action.icon}
 						variant='contained'
