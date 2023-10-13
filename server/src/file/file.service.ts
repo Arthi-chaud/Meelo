@@ -27,6 +27,7 @@ import { Prisma } from '@prisma/client';
 import Slug from 'src/slug/slug';
 import Identifier from 'src/identifier/models/identifier';
 import { PrismaError } from 'prisma-error-enum';
+import deepmerge from 'deepmerge';
 
 @Injectable()
 export default class FileService extends RepositoryService<
@@ -100,20 +101,31 @@ export default class FileService extends RepositoryService<
 	formatWhereInput = FileService.formatWhereInput;
 
 	static formatManyWhereInput(where: FileQueryParameters.ManyWhereInput) {
-		return {
-			id: where.ids !== undefined ? {
+		let query: Prisma.FileWhereInput = {};
+
+		if (where.ids) {
+			query = deepmerge(query, {
 				in: where.ids
-			} : undefined,
-			library: where.library
-				? LibraryService.formatWhereInput(where.library)
-				: undefined,
-			path: where.paths !== undefined ? {
-				in: where.paths
-			} : undefined,
-			registerDate: where.registrationDate
-				? buildDateSearchParameters(where.registrationDate)
-				: undefined
-		};
+			});
+		}
+		if (where.library) {
+			query = deepmerge(query, {
+				library: LibraryService.formatWhereInput(where.library)
+			});
+		}
+		if (where.paths) {
+			query = deepmerge(query, {
+				path: {
+					in: where.paths
+				},
+			});
+		}
+		if (where.registrationDate) {
+			query = deepmerge(query, {
+				registerDate: buildDateSearchParameters(where.registrationDate),
+			});
+		}
+		return query;
 	}
 
 	formatManyWhereInput = FileService.formatManyWhereInput;
