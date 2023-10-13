@@ -73,7 +73,7 @@ export default class API {
 	private static formatIncludeKeys = (includes?: string[]) => includes?.map((include) => `include-${include}`) ?? [];
 	private static formatObject = (includes?: object) => includes
 		? Object.entries(includes)
-			.filter(([key, value]) => value !== null && value !== undefined)
+			.filter(([key, value]) => value !== null && value !== undefined && value !== 'view')
 			.map(([key, value]) => `params-${key}-${value}`)
 		: [];
 
