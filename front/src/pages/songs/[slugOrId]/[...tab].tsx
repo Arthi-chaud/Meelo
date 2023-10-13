@@ -32,7 +32,7 @@ export const getServerSideProps = prepareSSR((context) => {
 		],
 		infiniteQueries: [
 			API.getSongGenres(songIdentifier),
-			API.getSongVersions(songIdentifier, { sortBy: 'name', order: 'asc' }, undefined, ['artist']),
+			API.getSongVersions(songIdentifier, {}, { sortBy: 'name', order: 'asc' }, ['artist']),
 			API.getSongTracks(songIdentifier, { sortBy: 'name', order: 'asc' }, ['release', 'song'])
 		]
 	};
@@ -112,7 +112,12 @@ const SongPage = (props: InferSSRProps<typeof getServerSideProps>) => {
 			)}
 			{ tab == 'versions' &&
 				<InfiniteSongView
-					query={(sort, type) => API.getSongVersions(songIdentifier, sort, type, ['artist'])}
+					query={({ library, sortBy, order, type }) => API.getSongVersions(
+						song.data.id,
+						{ library: library ?? undefined, type },
+						{ sortBy, order },
+						['artist']
+					)}
 				/>
 			}
 			{ tab == 'tracks' &&

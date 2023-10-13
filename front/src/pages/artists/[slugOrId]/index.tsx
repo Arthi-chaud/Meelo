@@ -28,9 +28,8 @@ const songListSize = 6;
 // Number of Album item in the 'Latest albums' section
 const albumListSize = 10;
 
-const latestAlbumsQuery = (artistSlugOrId: string | number) => API.getArtistAlbums(
-	artistSlugOrId,
-	undefined,
+const latestAlbumsQuery = (artistSlugOrId: string | number) => API.getAlbums(
+	{ artist: artistSlugOrId },
 	{ sortBy: 'releaseDate', order: 'desc' },
 );
 
@@ -40,8 +39,8 @@ const videosQuery = (artistSlugOrId: string | number) => API.getArtistVideos(
 	{ sortBy: 'playCount', order: 'desc' },
 );
 
-const topSongsQuery = (artistSlugOrId: string | number) => API.getArtistSongs(
-	artistSlugOrId,
+const topSongsQuery = (artistSlugOrId: string | number) => API.getSongs(
+	{ artist: artistSlugOrId },
 	{ sortBy: 'playCount', order: 'desc' }
 );
 

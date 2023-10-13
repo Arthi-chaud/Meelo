@@ -29,8 +29,10 @@ const InfinitePlaylistView = (
 		<InfiniteView
 			view={options?.view ?? props.defaultLayout ?? "list"}
 			query={() => props.query({
+				library: null,
 				sortBy: options?.sortBy ?? 'name',
 				order: options?.order ?? 'asc',
+				view: "grid"
 			})}
 			renderListItem={(item: Playlist) => <PlaylistItem playlist={item} key={item.id} />}
 			renderGridItem={(item: Playlist) => <PlaylistTile playlist={item} key={item.id} />}
