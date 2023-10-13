@@ -1,6 +1,6 @@
 import {
 	Box, Divider, Icon, List, ListItem, ListItemButton, ListItemIcon,
-	ListItemText, ListSubheader, Typography
+	ListItemText, ListSubheader, Typography, useTheme
 } from "@mui/material";
 import { useDispatch } from "react-redux";
 import Release from "../models/release";
@@ -26,6 +26,7 @@ type ReleaseTracklistProps = {
 const ReleaseTrackList = (
 	{ tracklist, release, mainArtist }: ReleaseTracklistProps
 ) => {
+	const theme = useTheme();
 	const dispatch = useDispatch();
 	const flatTracklist = Array.from(Object.values(tracklist)).flat();
 
@@ -78,7 +79,7 @@ const ReleaseTrackList = (
 							/>
 							{currentTrack.type == 'Video' &&
 								<Icon sx={{ marginLeft: 2, display: 'flex', alignItems: 'center' }}>
-									<VideoIcon color='disabled' fontSize="small" />
+									<VideoIcon color={theme.palette.text.disabled} />
 								</Icon>
 							}
 							<Typography color='text.disabled' sx={{ marginLeft: 2, overflow: 'unset' }}>
