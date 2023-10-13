@@ -182,16 +182,16 @@ export default class AlbumService extends RepositoryService<
 		if (where.appearance) {
 			query = deepmerge(query, {
 				releases: {
-					tracks: { some: {
-						song: {
-							artist: ArtistService.formatWhereInput(where.appearance)
-						}
-					} }
-				},
-				artists: {
-					isNot: {
-						isNot: ArtistService.formatWhereInput(where.appearance)
+					some: {
+						tracks: { some: {
+							song: {
+								artist: ArtistService.formatWhereInput(where.appearance)
+							}
+						} }
 					}
+				},
+				artist: {
+					isNot: ArtistService.formatWhereInput(where.appearance)
 				}
 			});
 		}
