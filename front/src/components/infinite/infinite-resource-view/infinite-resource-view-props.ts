@@ -7,7 +7,7 @@ import { OptionState } from '../../controls/controls';
 type InfiniteResourceViewProps<
 	ResourceType extends Resource,
 	SortingKeys extends readonly string[],
-	AdditionalQueryParams extends {} = {}
+	AdditionalQueryParams extends object = object
 > = {
 	query: (
 		options: OptionState<SortingKeys> & AdditionalQueryParams

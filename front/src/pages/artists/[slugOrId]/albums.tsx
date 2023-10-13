@@ -20,7 +20,7 @@ export const getServerSideProps = prepareSSR((context) => {
 	return {
 		additionalProps: { artistIdentifier, defaultLayout },
 		queries: [API.getArtist(artistIdentifier)],
-		infiniteQueries: [API.getArtistAlbums(artistIdentifier, undefined, defaultSort, ['artist'])]
+		infiniteQueries: [API.getAlbums({ artist: artistIdentifier }, defaultSort, ['artist'])]
 	};
 });
 
@@ -35,7 +35,9 @@ const ArtistAlbumsPage = (props: InferSSRProps<typeof getServerSideProps>) => {
 			initialSortingField={defaultSort.sortBy}
 			initialSortingOrder={defaultSort.order}
 			formatSubtitle={(album) => getYear(album.releaseDate)?.toString() ?? ''}
-			query={(sort, type) => API.getArtistAlbums(artistIdentifier, type, sort, ['artist'])}
+			query={({ sortBy, order, library, type }) => API.getAlbums(
+				{ artist: artistIdentifier, type, library: library ?? undefined }, { sortBy, order }, ['artist']
+			)}
 		/>
 	</Box>;
 };

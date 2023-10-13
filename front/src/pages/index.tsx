@@ -29,14 +29,15 @@ const newlyAddedArtistsQuery = API.getArtists(
 	{ sortBy: 'addDate', order: 'desc' },
 );
 
-const newlyAddedReleasesQuery = API.getAllReleases(
+const newlyAddedReleasesQuery = API.getReleases(
+	{},
 	{ sortBy: 'addDate', order: 'desc' },
 	['album']
 );
 
-const mostListenedSongsQuery = API.getAllSongs(
+const mostListenedSongsQuery = API.getSongs(
+	{ },
 	{ sortBy: 'playCount', order: 'desc' },
-	undefined,
 	['artist']
 );
 
