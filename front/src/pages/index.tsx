@@ -25,7 +25,7 @@ const newestAlbumsQuery = API.getAlbums(
 );
 
 const newlyAddedArtistsQuery = API.getArtists(
-	{ },
+	{},
 	{ sortBy: 'addDate', order: 'desc' },
 );
 

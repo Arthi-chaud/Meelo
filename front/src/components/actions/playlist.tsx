@@ -223,7 +223,7 @@ export const AddToPlaylistAction = (
 		return <SelectPlaylistForm
 			onClose={close}
 			onSubmit={(playlistId) => mutation.mutate(playlistId)}
-			playlistQuery={API.getAllPlaylists}
+			playlistQuery={API.getPlaylists}
 		/>;
 	}
 });

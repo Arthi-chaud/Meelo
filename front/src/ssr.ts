@@ -85,7 +85,7 @@ const prepareSSR = <AdditionalProps>(
 		try {
 			await Promise.all([
 				queryClient.prefetchQuery(prepareMeeloQuery(API.getCurrentUserStatus)),
-				queryClient.prefetchInfiniteQuery(prepareMeeloInfiniteQuery(API.getAllLibraries)),
+				queryClient.prefetchInfiniteQuery(prepareMeeloInfiniteQuery(API.getLibraries)),
 				...parameters.infiniteQueries?.map(
 					(query) => queryClient.prefetchInfiniteQuery(
 						prepareMeeloInfiniteQuery(() => query)

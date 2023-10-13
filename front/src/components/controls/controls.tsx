@@ -59,7 +59,7 @@ const Controls = <
 	Values extends string[][],
 >(props: ControllerProps<SortingKeys, Options, Values>) => {
 	const librariesQuery = useReactInfiniteQuery({
-		...prepareMeeloInfiniteQuery(API.getAllLibraries),
+		...prepareMeeloInfiniteQuery(API.getLibraries),
 		useErrorBoundary: false,
 		onError: () => {
 			toast.error(translate('librariesLoadFail'));

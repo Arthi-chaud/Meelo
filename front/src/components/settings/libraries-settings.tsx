@@ -130,7 +130,7 @@ const LibrariesSettings = () => {
 			/>
 		</Dialog>
 		<AdminGrid
-			infiniteQuery={API.getAllLibraries}
+			infiniteQuery={API.getLibraries}
 			columns={columns.map((column) => ({
 				...column,
 				headerAlign: column.field == 'name' ? 'left' : 'center',
