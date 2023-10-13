@@ -1,6 +1,6 @@
 import {
 	AlbumIcon, ArtistIcon, LyricsIcon,
-	RelatedTracksIcon, ReleaseIcon, SearchIcon,
+	RelatedTracksIcon, SearchIcon,
 	SettingsIcon, SongIcon
 } from "../icons";
 import { NextRouter } from "next/router";
@@ -46,12 +46,6 @@ export const GoToReleaseAsyncAction = (router: NextRouter, albumIdentifier: () =
 	onClick: () => albumIdentifier().then((id) => router.push(`/releases/${id}`)),
 	label: 'goToAlbum',
 	icon: <AlbumIcon/>
-});
-
-export const GoToAlbumReleasesAction = (albumIdentifier: string | number): Action => ({
-	href: `/albums/${albumIdentifier}/releases`,
-	label: 'seeReleases',
-	icon: <ReleaseIcon/>
 });
 
 export const GoToSongVersionAction = (songIdentifier: string | number): Action => ({

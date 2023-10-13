@@ -26,12 +26,13 @@ import globalLibrary from "../../utils/global-library";
 
 export type OptionState<
 	SortingKeys extends readonly string[],
-> = Record<string, string | null> & {
+	AdditionalProps extends object = object
+> = {
 	view: LayoutOption,
 	order: Order,
 	sortBy: SortingKeys[number],
 	library: string | null
-}
+} & AdditionalProps
 
 type ControllerProps<
 	SortingKeys extends readonly string[],
@@ -86,6 +87,8 @@ const Controls = <
 		};
 
 		props.options?.forEach((option) => {
+			// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+			// @ts-ignore
 			baseOptions[option.name] = parseQueryParam(
 				props.router?.query[option.name], option.values
 			) ?? option.values[0];
@@ -199,7 +202,8 @@ const Controls = <
 							options: [
 								{
 									...option,
-									currentValue: optionsState[option.name] ?? undefined
+									// eslint-disable-next-line max-len
+									currentValue: optionsState[option.name as keyof typeof optionsState] ?? undefined
 								}
 							]
 						}}

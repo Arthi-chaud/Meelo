@@ -6,10 +6,11 @@ import { OptionState } from '../../controls/controls';
 
 type InfiniteResourceViewProps<
 	ResourceType extends Resource,
-	SortingKeys extends readonly string[]
+	SortingKeys extends readonly string[],
+	AdditionalQueryParams extends {} = {}
 > = {
 	query: (
-		options: OptionState<SortingKeys>
+		options: OptionState<SortingKeys> & AdditionalQueryParams
 	) => ReturnType<MeeloInfiniteQueryFn<ResourceType>>,
 	light?: boolean;
 	defaultLayout?: LayoutOption;
