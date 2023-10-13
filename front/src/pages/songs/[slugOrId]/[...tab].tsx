@@ -31,9 +31,9 @@ export const getServerSideProps = prepareSSR((context) => {
 			API.getSongLyrics(songIdentifier),
 		],
 		infiniteQueries: [
-			API.getSongGenres(songIdentifier),
+			API.getGenres({ song: songIdentifier }),
 			API.getSongVersions(songIdentifier, {}, { sortBy: 'name', order: 'asc' }, ['artist']),
-			API.getSongTracks(songIdentifier, { sortBy: 'name', order: 'asc' }, ['release', 'song'])
+			API.getTracks({ song: songIdentifier }, { sortBy: 'name', order: 'asc' }, ['release', 'song'])
 		]
 	};
 });
@@ -53,7 +53,7 @@ const SongPage = (props: InferSSRProps<typeof getServerSideProps>) => {
 	const songIdentifier = props.additionalProps?.songIdentifier ?? getSlugOrId(router.query);
 	const lyrics = useQuery(API.getSongLyrics, songIdentifier);
 	const song = useQuery(() => API.getSong(songIdentifier, ['artist', 'externalIds']));
-	const genres = useInfiniteQuery(API.getSongGenres, songIdentifier);
+	const genres = useInfiniteQuery(API.getGenres, { song: songIdentifier });
 	const dispatch = useDispatch();
 
 	if (!song.data || !genres.data) {
@@ -122,7 +122,7 @@ const SongPage = (props: InferSSRProps<typeof getServerSideProps>) => {
 			}
 			{ tab == 'tracks' &&
 				<InfiniteTrackView
-					query={(sort) => API.getSongTracks(songIdentifier, sort, ['release', 'song'])}
+					query={(sort) => API.getTracks({ song: songIdentifier }, sort, ['release', 'song'])}
 				/>
 			}
 		</Box>

@@ -9,7 +9,7 @@ import {
 import API from "./api";
 import { InfiniteFetchFn, Page } from "../components/infinite/infinite-scroll";
 
-type Key = string | number | Record<string, unknown>;
+type Key = string | number;
 
 //// Query types
 

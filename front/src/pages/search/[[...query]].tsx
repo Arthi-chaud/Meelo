@@ -16,9 +16,9 @@ export const getServerSideProps = prepareSSR((context) => {
 	return {
 		additionalProps: { searchQuery, type },
 		infiniteQueries: searchQuery ? [
-			API.searchArtists(searchQuery, defaultQuerySortParams),
-			API.searchAlbums(searchQuery, undefined, defaultQuerySortParams, ['artist']),
-			API.searchSongs(searchQuery, defaultQuerySortParams, undefined, ['artist'])
+			API.getArtists({ query: searchQuery }, defaultQuerySortParams),
+			API.getAlbums({ query: searchQuery }, defaultQuerySortParams, ['artist']),
+			API.getSongs({ query: searchQuery }, defaultQuerySortParams, ['artist'])
 		] : []
 	};
 });
@@ -58,11 +58,13 @@ const SearchPage = (
 			onTypeSelect={(selectedType) =>
 				router.push(buildSearchUrl(query, selectedType), undefined, { shallow: true })}
 			enabled={query != undefined}
-			artistQuery={(sort) => API.searchArtists(encodeURIComponent(query!), sort)}
+			artistQuery={(sort) => API.getArtists({ query: encodeURIComponent(query!) }, sort)}
 			albumQuery={(sort, selectedType) =>
-				API.searchAlbums(encodeURIComponent(query!), selectedType, sort, ['artist'])
+				API.getAlbums({ query: encodeURIComponent(query!), type: selectedType }, sort, ['artist'])
 			}
-			songQuery={(sort, selectedType) => API.searchSongs(encodeURIComponent(query!), sort, selectedType, ['artist'])}
+			songQuery={(sort, selectedType) => API.getSongs(
+				{ query: encodeURIComponent(query!), type: selectedType }, sort, ['artist']
+			)}
 		/>
 	</Box>;
 };
