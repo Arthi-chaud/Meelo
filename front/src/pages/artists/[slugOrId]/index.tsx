@@ -33,9 +33,8 @@ const latestAlbumsQuery = (artistSlugOrId: string | number) => API.getAlbums(
 	{ sortBy: 'releaseDate', order: 'desc' },
 );
 
-const videosQuery = (artistSlugOrId: string | number) => API.getArtistVideos(
-	artistSlugOrId,
-	undefined,
+const videosQuery = (artistSlugOrId: string | number) => API.getVideos(
+	{ artist: artistSlugOrId },
 	{ sortBy: 'playCount', order: 'desc' },
 );
 
@@ -49,8 +48,10 @@ const artistQuery = (artistSlugOrId: string | number) => API.getArtist(
 	['externalIds']
 );
 
-const appearanceQuery = (artistSlugOrId: string | number) => API.getAlbumsWithAppearingArtist(
-	artistSlugOrId, undefined, { sortBy: 'releaseDate', order: 'desc' }, ['artist']
+const appearanceQuery = (artistSlugOrId: string | number) => API.getAlbums(
+	{ appearance: artistSlugOrId },
+	{ sortBy: 'releaseDate', order: 'desc' },
+	['artist']
 );
 
 export const getServerSideProps = prepareSSR((context) => {

@@ -36,14 +36,22 @@ import Fade from "../../components/fade";
 const releaseQuery = (releaseIdentifier: string | number) => API.getRelease(releaseIdentifier, ['album', 'externalIds']);
 const releaseTracklistQuery = (releaseIdentifier: string | number) => API.getReleaseTrackList(releaseIdentifier, ['song']);
 const albumQuery = (albumId: number) => API.getAlbum(albumId, ['externalIds']);
-const artistsOnAlbumQuery = (albumId: number) => API.getArtistsOnAlbum(albumId);
+const artistsOnAlbumQuery = (albumId: number) => {
+	const query = API.getArtists({ album: albumId });
 
-const albumGenreQuery = (albumId: number) => API.getAlbumGenres(albumId);
-const releaseBSidesQuery = (releaseId: number) => API.getReleaseBSides(releaseId, { sortBy: 'name' }, ['artist']);
-const albumVideosQuery = (albumId: number) => API.getAlbumVideos(albumId);
-const relatedAlbumsQuery = (albumId: number) => API.getRelatedAlbums(albumId, { sortBy: 'releaseDate' }, ['artist']);
-const relatedReleasesQuery = (albumId: number) => API.getAlbumReleases(albumId);
-const relatedPlaylistsQuery = (albumId: number) => API.getAlbumPlaylists(albumId);
+	return {
+		key: query.key,
+		exec: () => query.exec({ pageSize: 1000 })
+			.then((res) => res.items)
+	};
+};
+
+const albumGenreQuery = (albumId: number) => API.getGenres({ album: albumId });
+const releaseBSidesQuery = (releaseId: number) => API.getSongs({ bsides: releaseId }, { sortBy: 'name' }, ['artist']);
+const albumVideosQuery = (albumId: number) => API.getVideos({ album: albumId });
+const relatedAlbumsQuery = (albumId: number) => API.getAlbums({ related: albumId }, { sortBy: 'releaseDate' }, ['artist']);
+const relatedReleasesQuery = (albumId: number) => API.getReleases({ album: albumId });
+const relatedPlaylistsQuery = (albumId: number) => API.getPlaylists({ album: albumId });
 
 export const getServerSideProps = prepareSSR(async (context, queryClient) => {
 	const releaseIdentifier = getSlugOrId(context.params);
@@ -187,7 +195,7 @@ const ReleasePage = (props: InferSSRProps<typeof getServerSideProps>) => {
 					{[() => <PlayCircledIcon fontSize="large"/>, () => <ShuffleIcon fontSize="large"/>].map((icon, index) =>
 						<Grid item key={index}>
 							<IconButton onClick={() => {
-								if (tracks && artists.data != undefined) {
+								if (tracks && artists.data !== undefined) {
 									let playlist = tracks.map((track) => ({
 										track: track,
 										artist: artists.data.find(

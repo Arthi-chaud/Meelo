@@ -35,7 +35,7 @@ export const getServerSideProps = prepareSSR((context) => {
 		additionalProps: { panel },
 		infiniteQueries: [
 			API.getUsers(),
-			API.getAllLibraries()
+			API.getLibraries()
 		]
 	};
 });
