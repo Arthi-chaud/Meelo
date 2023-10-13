@@ -124,15 +124,11 @@ export default class ArtistService extends RepositoryService<
 				},
 				songs: {
 					some: {
-						tracks: {
-							some: {
-								song: {
-									tracks: {
-										some: TrackService.formatManyWhereInput({ library: where.library })
-									}
-								}
-							}
-						}
+						tracks: { some: {
+							song: { tracks: {
+								some: TrackService.formatManyWhereInput({ library: where.library })
+							} }
+						} }
 					}
 				}
 			});
