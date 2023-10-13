@@ -131,9 +131,11 @@ const Controls = <
 						options: [
 							{
 								name: 'library',
-								values: [{ name: globalLibrary.name }, ...libraries]
+								values: [globalLibrary, ...libraries]
 									.map((library) => library.name),
-								currentValue: optionsState.library ?? globalLibrary.name,
+								currentValue: [globalLibrary, ...libraries]
+									.find(({ slug }) => slug == optionsState.library)?.name
+									?? globalLibrary.name,
 							},
 						]
 					}}
@@ -141,7 +143,10 @@ const Controls = <
 						if (value == globalLibrary.name) {
 							updateOptionState({ name, value: null });
 						} else {
-							updateOptionState({ name, value });
+							updateOptionState({
+								name,
+								value: libraries.find((lib) => lib.name == value)?.slug ?? null
+							});
 						}
 					}}
 				/>
