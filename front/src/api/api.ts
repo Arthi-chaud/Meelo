@@ -465,18 +465,18 @@ export default class API {
 	 * Fetch all albums
 	 * @returns An InfiniteQuery of Albums
 	 */
-	static getAllAlbums<I extends AlbumInclude>(
+	static getAlbums<I extends AlbumInclude>(
+		filter: { library?: Identifier, artist?: Identifier, type?: AlbumType },
 		sort?: SortingParameters<typeof AlbumSortingKeys>,
-		type?: AlbumType,
 		include?: I[]
 	): InfiniteQuery<AlbumWithRelations<I>> {
 		return {
-			key: ['albums', sort ?? {}, type ?? {}, ...API.formatIncludeKeys(include)],
+			key: ['albums', filter, sort ?? {}, ...API.formatIncludeKeys(include)],
 			exec: (pagination) => API.fetch({
 				route: `/albums`,
 				errorMessage: 'Albums could not be loaded',
 				parameters: { pagination: pagination, include, sort },
-				otherParameters: { type },
+				otherParameters: { ...filter },
 				validator: PaginatedResponse(AlbumWithRelations(include ?? []))
 			})
 		};
@@ -629,28 +629,6 @@ export default class API {
 				parameters: { pagination: pagination, include, sort },
 				otherParameters: { type, appearance: artistSlugOrId },
 				validator: PaginatedResponse(AlbumWithRelations(include ?? []))
-			})
-		};
-	}
-
-	/**
-	 * Fetch all songs by an artist
-	 * @returns An Infinite Query of songs
-	 */
-	static getArtistSongs<I extends SongInclude>(
-		artistSlugOrId: string | number,
-		sort?: SortingParameters<typeof SongSortingKeys>,
-		type?: SongType,
-		include?: I[]
-	): InfiniteQuery<SongWithRelations<I>> {
-		return {
-			key: ['artist', artistSlugOrId, 'songs', sort ?? {}, ...API.formatIncludeKeys(include), type ?? {}],
-			exec: (pagination) => API.fetch({
-				route: `/songs`,
-				errorMessage: `Artist '${artistSlugOrId}' not found`,
-				otherParameters: { artist: artistSlugOrId, type },
-				parameters: { pagination: pagination, include, sort },
-				validator: PaginatedResponse(SongWithRelations(include ?? []))
 			})
 		};
 	}
