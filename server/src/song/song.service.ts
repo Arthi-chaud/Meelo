@@ -143,7 +143,9 @@ export default class SongService extends RepositoryService<
 
 		if (where.genre) {
 			query = deepmerge(query, {
-				some: GenreService.formatWhereInput(where.genre)
+				genres: {
+					some: GenreService.formatWhereInput(where.genre)
+				}
 			});
 		}
 		if (where.artist?.slug) {

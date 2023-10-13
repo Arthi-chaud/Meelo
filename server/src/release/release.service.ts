@@ -138,7 +138,9 @@ export default class ReleaseService extends RepositoryService<
 
 		if (where.library) {
 			query = deepmerge(query, {
-				some: TrackService.formatManyWhereInput({ library: where.library })
+				tracks: {
+					some: TrackService.formatManyWhereInput({ library: where.library })
+				}
 			});
 		}
 		if (where.album) {

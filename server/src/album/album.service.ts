@@ -169,9 +169,11 @@ export default class AlbumService extends RepositoryService<
 		if (where.genre) {
 			query = deepmerge(query, {
 				releases: {
-					tracks: {
-						some: {
-							song: SongService.formatManyWhereInput({ genre: where.genre })
+					some: {
+						tracks: {
+							some: {
+								song: SongService.formatManyWhereInput({ genre: where.genre })
+							}
 						}
 					}
 				}
