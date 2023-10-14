@@ -85,7 +85,7 @@ const MinimizedPlayerControls = (props: PlayerControlsProps) => {
 	>
 		<Grid container spacing={1} sx={{
 			alignItems: 'center', display: 'flex',
-			justifyContent: 'center', paddingX: 1
+			justifyContent: 'center'
 		}}>
 			<Grid item xs={1.5} sm={1}
 				md={0.8} lg={0.6} xl={0.5}>
@@ -104,7 +104,7 @@ const MinimizedPlayerControls = (props: PlayerControlsProps) => {
 			>
 				<Grid item sx={{
 					width: '100%', display: 'flex', ...playerTextStyle,
-					justifyContent: { xs: 'left', md: 'center' }
+					justifyContent: 'left'
 				}}>
 					<Typography sx={{ fontWeight: 'bold', ...playerTextStyle }}>
 						{props.track?.name}
@@ -112,37 +112,20 @@ const MinimizedPlayerControls = (props: PlayerControlsProps) => {
 				</Grid>
 				<Grid item sx={{
 					display: 'flex', width: '100%', ...playerTextStyle,
-					justifyContent: { xs: 'left', md: 'center' }
+					justifyContent: 'left'
 				}}>
 					<Typography sx={{
 						color: 'text.disabled', ...playerTextStyle,
-						fontSize: { xs: 'medium' }
+						fontSize: 'medium'
 					}}>
 						{props.artist?.name}
 					</Typography>
-				</Grid>
-				<Grid
-					item
-					onClick={(event) => event.stopPropagation()}
-					sx={{
-						display: { xs: 'none', lg: 'flex' }, width: '90%',
-						justifyContent: 'center'
-					}}
-				>
-					<PlayerSlider
-						onSlide={props.onSlide}
-						duration={props.duration}
-						progress={props.progress}
-					/>
 				</Grid>
 			</Grid>
 			<Grid item container xs={3}
 				flexWrap='nowrap'
 				sm={2} onClick={(event) => event.stopPropagation()}
 			>
-				<Grid item xs sx={{ display: { xs: 'none', lg: 'block' } }}>
-					<PreviousButton onClick={props.onRewind}/>
-				</Grid>
 				<Grid item xs>
 					<PlayButton
 						onPause={props.onPause}
