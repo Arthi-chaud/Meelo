@@ -1,7 +1,7 @@
 import { useSelector } from "react-redux";
 import { RootState } from "../state/store";
 import { useMemo } from "react";
-import getAppBarActions from "../components/appbar/actions";
+import getAppBarActions from "../components/scaffold/actions";
 
 /**
  * A simple hook to get/build AppBar Actions using the redux store

@@ -8,7 +8,6 @@ import {
 } from "react-query";
 import { ReactQueryDevtools } from "react-query/devtools";
 import { Container } from "@mui/material";
-import MeeloAppBar from "../components/appbar/appbar";
 import { ErrorBoundary } from 'react-error-boundary';
 import toast, { Toaster } from 'react-hot-toast';
 import Head from "next/head";
@@ -72,7 +71,6 @@ function MyApp({
 						}}>
 							<Hydrate state={pageProps.dehydratedState}>
 								<AuthenticationWall>
-									<MeeloAppBar />
 									<ErrorBoundary
 										FallbackComponent={() => {
 											if (errorType == 'not-found') {
