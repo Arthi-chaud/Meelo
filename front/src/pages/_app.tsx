@@ -27,6 +27,7 @@ import store, { persistor } from "../state/store";
 import { DefaultMeeloQueryOptions } from "../api/use-query";
 import createEmotionCache from "../utils/createEmotionCache";
 import { CacheProvider, EmotionCache } from "@emotion/react";
+import Scaffold from "../components/scaffold/scaffold";
 
 // Client-side cache, shared for the whole session of the user in the browser.
 const clientSideEmotionCache = createEmotionCache();
@@ -89,10 +90,12 @@ function MyApp({
 											}
 										}}
 									>
-										<Container maxWidth={false} sx={{ paddingY: 2 }}>
-											<Component {...pageProps} />
-										</Container>
-										<Player />
+										<Scaffold>
+											<Container maxWidth={false} sx={{ paddingY: 2 }}>
+												<Component {...pageProps} />
+											</Container>
+											<Player />
+										</Scaffold>
 									</ErrorBoundary>
 								</AuthenticationWall>
 							</Hydrate>
