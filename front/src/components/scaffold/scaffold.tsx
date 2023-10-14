@@ -2,7 +2,7 @@ import {
 	Box,
 	Divider,
 	List, ListItem, ListItemButton, ListItemIcon,
-	ListItemText, Drawer as MUIDrawer
+	ListItemText, Drawer as MUIDrawer, Typography
 } from "@mui/material";
 import {
 	AlbumIcon, ArtistIcon, PlaylistIcon, SongIcon, VideoIcon
@@ -10,6 +10,9 @@ import {
 import Link from "next/link";
 import Translate from "../../i18n/translate";
 import Image from 'next/image';
+import Player from "../player/player";
+import { useRouter } from "next/router";
+import { IconProps } from "iconsax-react";
 
 /**
  * Array of possible item types
@@ -21,22 +24,24 @@ const itemType = [
 	'videos',
 	'playlists'
 ] as const;
-const getTypeIcon = (type: typeof itemType[number]) => {
+const getTypeIcon = (type: typeof itemType[number], props?: IconProps) => {
 	switch (type) {
 	case 'albums':
-		return <AlbumIcon/>;
+		return <AlbumIcon {...props}/>;
 	case 'artists':
-		return <ArtistIcon/>;
+		return <ArtistIcon {...props}/>;
 	case 'songs':
-		return <SongIcon/>;
+		return <SongIcon {...props}/>;
 	case 'videos':
-		return <VideoIcon/>;
+		return <VideoIcon {...props}/>;
 	case 'playlists':
-		return <PlaylistIcon/>;
+		return <PlaylistIcon {...props}/>;
 	}
 };
 
 const Drawer = () => {
+	const router = useRouter();
+
 	return <MUIDrawer
 		open
 		variant="permanent"
@@ -58,20 +63,26 @@ const Drawer = () => {
 		</Box>
 		<Divider/>
 		<List>
-			{itemType.map((item) => (
-				<ListItem key={item}>
-					<Link href={`/${item}`} style={{ width: '100%' }}>
+			{itemType.map((item) => {
+				const path = `/${item}`;
+				const isSelected = path == router.asPath;
+				const Icon = (props: IconProps) => getTypeIcon(item, props);
+
+				return <ListItem key={item}>
+					<Link href={path} style={{ width: '100%' }}>
 						<ListItemButton>
 							<ListItemIcon>
-								{getTypeIcon(item)}
+								<Icon variant={isSelected ? 'Bold' : 'Outline'}/>
 							</ListItemIcon>
 							<ListItemText>
-								<Translate translationKey={item}/>
+								<Typography sx={{ fontWeight: isSelected ? 'bold' : 'normal' }}>
+									<Translate translationKey={item}/>
+								</Typography>
 							</ListItemText>
 						</ListItemButton>
 					</Link>
 				</ListItem>
-			)) }
+			}) }
 		</List>
 	</MUIDrawer>;
 };
@@ -79,7 +90,11 @@ const Drawer = () => {
 const Scaffold = (props: { children: any }) => {
 	return <Box sx={{ display: 'flex' }}>
 		<Drawer/>
-		{props.children}
+		<Box sx={{ display: 'flex', flexDirection: 'column', width: '100%' }}>
+			{props.children}
+			<Box sx={{ height: '100%' }} />
+			<Player/>
+		</Box>
 	</Box>;
 };
 
