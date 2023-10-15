@@ -4,10 +4,11 @@ import {
 	Box,
 	Divider,
 	List, ListItem, ListItemButton, ListItemIcon,
-	ListItemText, BottomNavigation as MUIBottomNavigation, Drawer as MUIDrawer, Typography
+	ListItemText, BottomNavigation as MUIBottomNavigation,
+	Drawer as MUIDrawer, Typography, useMediaQuery, useTheme
 } from "@mui/material";
 import {
-	AlbumIcon, ArtistIcon, PlaylistIcon, SongIcon, VideoIcon
+	AlbumIcon, ArtistIcon, BurgerIcon, PlaylistIcon, SongIcon, VideoIcon
 } from "../icons";
 import Link from "next/link";
 import Translate from "../../i18n/translate";
@@ -15,7 +16,7 @@ import Image from 'next/image';
 import Player from "../player/player";
 import { useRouter } from "next/router";
 import { IconProps } from "iconsax-react";
-import { useRef, useState } from "react";
+import { useState } from "react";
 import { useScaffoldActions } from "./actions";
 import { DarkTheme } from "../../theme/theme";
 
@@ -46,23 +47,27 @@ const getPrimaryTypeIcon = (type: typeof primaryItems[number], props?: IconProps
 
 export const DrawerBreakpoint = 'md' as const;
 
-const Drawer = () => {
+const Drawer = (
+	{ openBottomDrawer, onClose }: { openBottomDrawer: boolean, onClose: () => void }
+) => {
 	const router = useRouter();
+	const theme = useTheme();
 	const persistentDrawerBreakpoint = DrawerBreakpoint;
 	const drawerWidth = { [persistentDrawerBreakpoint]: 240 };
-	const itemTextDisplay = { xs: 'none', [persistentDrawerBreakpoint]: 'initial' };
-	const [drawerIsOpen, openDrawer] = useState(false);
 	const actions = useScaffoldActions();
+	const drawerIsAtBottom = useMediaQuery(theme.breakpoints.down(persistentDrawerBreakpoint));
 
 	return <MUIDrawer
-		open={drawerIsOpen}
-		variant="permanent"
+		open={drawerIsAtBottom ? openBottomDrawer : true}
+		anchor={'left'}
+		variant={drawerIsAtBottom ? 'temporary' : 'permanent'}
 		// From the documentation
 		// keeps content from going under the drawer
+		onClose={onClose}
 		sx={{
-			display: { xs: 'none', [persistentDrawerBreakpoint]: 'initial' },
-			width: drawerWidth,
+			width: drawerIsAtBottom ? 'auto' : drawerWidth,
 			flexShrink: 0,
+			zIndex: 'tooltip',
 			'& .MuiDrawer-paper': {
 				width: drawerWidth,
 				boxSizing: 'border-box',
@@ -72,8 +77,8 @@ const Drawer = () => {
 		<Box sx={{
 			backgroundColor: DarkTheme.background?.paper,
 			justifyContent: 'center',
-			alignItems: 'center', padding: 2,
-			display: { xs: 'none', [persistentDrawerBreakpoint]: 'flex' }
+			display: 'flex',
+			alignItems: 'center', padding: 2
 		}}>
 			<Link href="/" style={{ cursor: 'pointer' }}>
 				<Image src="/banner.png" alt="icon" priority width={180} height={75}/>
@@ -92,7 +97,7 @@ const Drawer = () => {
 							<ListItemIcon>
 								<Icon variant={isSelected ? 'Bold' : 'Outline'}/>
 							</ListItemIcon>
-							<ListItemText sx={{ display: itemTextDisplay }}>
+							<ListItemText>
 								<Typography sx={{ fontWeight: isSelected ? 'bold' : 'normal' }}>
 									<Translate translationKey={item}/>
 								</Typography>
@@ -116,10 +121,13 @@ const Drawer = () => {
 							<ListItemIcon>
 								{action.icon}
 							</ListItemIcon>
-							<ListItemText sx={{ display: itemTextDisplay }}>
-								<Typography sx={{ fontWeight: isSelected ? 'bold' : 'normal' }}>
-									<Translate translationKey={action.label}/>
-								</Typography>
+							<ListItemText
+								primary={
+									<Typography sx={{ fontWeight: isSelected ? 'bold' : 'normal' }}>
+										<Translate translationKey={action.label}/>
+									</Typography>
+								}
+							>
 							</ListItemText>
 						</ListItemButton>
 					</Link>
@@ -129,29 +137,29 @@ const Drawer = () => {
 	</MUIDrawer>;
 };
 
-const BottomNavigation = () => {
+const BottomNavigation = (props: { onDrawerOpen: () => void }) => {
 	const router = useRouter();
-	const navbarRef = useRef<HTMLDivElement>(null);
 
 	return <MUIBottomNavigation
-		ref={navbarRef}
 		showLabels
 		value={router.asPath}
 		sx={{
+			boxShadow: 10,
 			zIndex: 'modal', width: '100%',
 			padding: 1,
 			position: 'sticky',
+			justifyContent: 'space-evenly',
 			bottom: 0,
 			display: { xs: 'flex', [DrawerBreakpoint]: 'none' }
 		}}
 	>
-		{primaryItems.map((item) => {
+		{primaryItems.slice(0, 3).map((item) => {
 			const path = `/${item}`;
 			const isSelected = path == router.asPath;
-			const Icon = (props: IconProps) => getPrimaryTypeIcon(item, props);
+			const Icon = (pr: IconProps) => getPrimaryTypeIcon(item, pr);
 
 			return (
-				<Link key={path} href={path} style={{ width: '100%', height: '100%' }}>
+				<Link key={path} href={path} style={{ flex: 1, display: 'flex', justifyContent: 'center' }}>
 					<BottomNavigationAction key={item}
 						showLabel
 						icon={<Icon variant={isSelected ? 'Bold' : 'Outline'}/>}
@@ -160,17 +168,28 @@ const BottomNavigation = () => {
 				</Link>
 			);
 		}) }
+		<BottomNavigationAction
+			showLabel
+			sx={{ flex: 1 }}
+			icon={<BurgerIcon/>}
+			onClick={props.onDrawerOpen}
+			label={<Translate translationKey={'more'}/>}
+		/>
 	</MUIBottomNavigation>;
 };
 
 const Scaffold = (props: { children: any }) => {
+	const [tempDrawerIsOpen, openDrawer] = useState(false);
+
 	return <Box sx={{ display: 'flex', width: '100%', height: '100vh' }}>
-		<Drawer/>
+		<Drawer openBottomDrawer={tempDrawerIsOpen} onClose={() => openDrawer(false)}/>
 		<Box sx={{ display: 'flex', flexDirection: 'column', overflowX: 'clip', width: '100%' }}>
 			{props.children}
 			<Box sx={{ height: '100%' }} />
 			<Player/>
-			<BottomNavigation/>
+			<BottomNavigation onDrawerOpen={() => {
+				openDrawer(!tempDrawerIsOpen);
+			}}/>
 		</Box>
 	</Box>;
 };
