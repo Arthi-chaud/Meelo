@@ -198,7 +198,7 @@ const Player = () => {
 	}, [expanded]);
 	return <>
 		<Slide
-			style={{ position: 'sticky', bottom: 0, left: 0 }}
+			style={{ position: 'sticky', bottom: bottomNavigationIsDisplayed ? '56px' : 0, left: 0 }}
 			direction="up"
 			mountOnEnter unmountOnExit
 			in={playlist.length != 0 || player.current != undefined}
@@ -207,7 +207,6 @@ const Player = () => {
 				<Paper
 					ref={playerComponentRef} elevation={20}
 					sx={{
-						marginBottom: bottomNavigationIsDisplayed ? '50px' : undefined,
 						borderRadius: '0.5', padding: { xs: 1, sm: 2 },
 						display: 'flex', width: '100%', height: 'fit-content'
 					}}

@@ -15,7 +15,7 @@ import Image from 'next/image';
 import Player from "../player/player";
 import { useRouter } from "next/router";
 import { IconProps } from "iconsax-react";
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { useScaffoldActions } from "./actions";
 import { DarkTheme } from "../../theme/theme";
 
@@ -131,14 +131,16 @@ const Drawer = () => {
 
 const BottomNavigation = () => {
 	const router = useRouter();
+	const navbarRef = useRef<HTMLDivElement>(null);
 
 	return <MUIBottomNavigation
+		ref={navbarRef}
 		showLabels
 		value={router.asPath}
 		sx={{
 			zIndex: 'modal', width: '100%',
 			padding: 1,
-			position: 'fixed',
+			position: 'sticky',
 			bottom: 0,
 			display: { xs: 'flex', [DrawerBreakpoint]: 'none' }
 		}}
@@ -164,11 +166,11 @@ const BottomNavigation = () => {
 const Scaffold = (props: { children: any }) => {
 	return <Box sx={{ display: 'flex', width: '100%', height: '100vh' }}>
 		<Drawer/>
-		<BottomNavigation/>
 		<Box sx={{ display: 'flex', flexDirection: 'column', overflowX: 'clip', width: '100%' }}>
 			{props.children}
 			<Box sx={{ height: '100%' }} />
 			<Player/>
+			<BottomNavigation/>
 		</Box>
 	</Box>;
 };
