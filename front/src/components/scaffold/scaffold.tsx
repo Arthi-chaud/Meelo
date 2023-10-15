@@ -16,6 +16,7 @@ import { useRouter } from "next/router";
 import { IconProps } from "iconsax-react";
 import { useState } from "react";
 import { useScaffoldActions } from "./actions";
+import { DarkTheme } from "../../theme/theme";
 
 /**
  * Array of possible item types
@@ -67,6 +68,7 @@ const Drawer = () => {
 		}}
 	>
 		<Box sx={{
+			backgroundColor: DarkTheme.background?.paper,
 			justifyContent: 'center',
 			alignItems: 'center', padding: 2,
 			display: { xs: 'none', [persistentDrawerBreakpoint]: 'flex' }
