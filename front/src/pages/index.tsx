@@ -82,8 +82,8 @@ const HomePage = () => {
 	const tileRowWindowSize = {
 		xs: 3,
 		sm: 5,
-		md: 7,
-		lg: 9,
+		md: 6,
+		lg: 7,
 		xl: 10
 	};
 

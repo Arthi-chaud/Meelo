@@ -11,7 +11,6 @@ import { Container } from "@mui/material";
 import { ErrorBoundary } from 'react-error-boundary';
 import toast, { Toaster } from 'react-hot-toast';
 import Head from "next/head";
-import Player from "../components/player/player";
 import { Provider } from "react-redux";
 import AuthenticationWall from "../components/authentication/authentication-wall";
 import { DefaultWindowTitle } from '../utils/constants';
@@ -94,7 +93,6 @@ function MyApp({
 											<Container maxWidth={false} sx={{ paddingY: 2 }}>
 												<Component {...pageProps} />
 											</Container>
-											<Player />
 										</Scaffold>
 									</ErrorBoundary>
 								</AuthenticationWall>

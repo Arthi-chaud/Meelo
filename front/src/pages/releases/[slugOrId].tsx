@@ -109,7 +109,7 @@ const ReleasePage = (props: InferSSRProps<typeof getServerSideProps>) => {
 	const router = useRouter();
 	const releaseIdentifier = props.additionalProps?.releaseIdentifier ?? getSlugOrId(router.query);
 	const theme = useTheme();
-	const viewIsInColumn = useMediaQuery(theme.breakpoints.down('md'));
+	const viewIsInColumn = useMediaQuery(theme.breakpoints.down('lg'));
 	const dispatch = useDispatch();
 	const release = useQuery(releaseQuery, releaseIdentifier);
 	const artistId = useMemo(() => release.data?.album?.artistId, [release]);
@@ -160,7 +160,7 @@ const ReleasePage = (props: InferSSRProps<typeof getServerSideProps>) => {
 			sx={{ marginY: 3, marginX: 0 }}
 		>
 			<Grid container spacing={4} sx={{ justifyContent: 'center' }}>
-				<Grid item md={3} sm={5} xs={8}>
+				<Grid item lg={3} sm={5} xs={8}>
 					<Illustration illustration={release.data!.illustration}/>
 				</Grid>
 				<Grid item container
@@ -168,7 +168,7 @@ const ReleasePage = (props: InferSSRProps<typeof getServerSideProps>) => {
 						width: '100%', display: 'flex', flexDirection: 'column', justifyContent: 'space-evenly',
 						alignItems: 'left', [theme.breakpoints.down('sm')]: { alignItems: 'center', textAlign: 'center' }
 					}}
-					md={6} sm={7} xs={12}
+					lg={6} sm={7} xs={12}
 				>
 					<Grid item sx={{ width: 'inherit' }}>
 						<Typography variant='h3' fontWeight='bold'>{release.data!.name}</Typography>
@@ -190,7 +190,7 @@ const ReleasePage = (props: InferSSRProps<typeof getServerSideProps>) => {
 						</Typography>
 					</Grid>
 				</Grid>
-				<Grid item container md={3}
+				<Grid item container lg={3}
 					xs={12} sx={{ spacing: 5, alignItems: 'center', justifyContent: 'space-evenly', display: 'flex' }}>
 					{[() => <PlayCircledIcon fontSize="large"/>, () => <ShuffleIcon fontSize="large"/>].map((icon, index) =>
 						<Grid item key={index}>
@@ -223,7 +223,7 @@ const ReleasePage = (props: InferSSRProps<typeof getServerSideProps>) => {
 			</Grid>
 			<Grid container spacing={1} sx={{ display: 'flex', paddingY: 2 }}>
 				{ hasGenres &&
-					<Grid item md={3} xs={12}>
+					<Grid item lg={3} xs={12}>
 						<Fade in={albumGenres.data != undefined}>
 							<Box>
 								<Grid container spacing={1} sx={{ alignItems: 'center' }}>
@@ -242,7 +242,7 @@ const ReleasePage = (props: InferSSRProps<typeof getServerSideProps>) => {
 								<Divider sx={{
 									paddingY: 1,
 									display: "none",
-									[theme.breakpoints.down('md')]: {
+									[theme.breakpoints.down('lg')]: {
 										display: 'block'
 									}
 								}} />
@@ -250,7 +250,7 @@ const ReleasePage = (props: InferSSRProps<typeof getServerSideProps>) => {
 						</Fade>
 					</Grid>
 				}
-				<Grid item md={hasGenres ? 9 : true} xs={12}>
+				<Grid item lg={hasGenres ? 9 : true} xs={12}>
 					{ albumGenres.data && trackList && artists.data &&
 						<Fade in><Box>
 							<ReleaseTrackList
