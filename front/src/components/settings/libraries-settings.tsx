@@ -105,7 +105,7 @@ const LibrariesSettings = () => {
 	], [language]);
 
 	return <Box>
-		<Grid container sx={{ justifyContent: { xs: 'space-evenly', md: 'flex-end' }, paddingY: 2 }} spacing={{ xs: 1, md: 2 }}>
+		<Grid container sx={{ justifyContent: { xs: 'space-evenly', lg: 'flex-end' }, paddingY: 2 }} spacing={{ xs: 1, lg: 2 }}>
 			<Grid item>
 				<Button variant='contained' startIcon={<AddIcon/>} onClick={() => setCreateModalOpen(true)}>
 					<Translate translationKey="createLibrary"/>

@@ -15,18 +15,19 @@ import Player from "../player/player";
 import { useRouter } from "next/router";
 import { IconProps } from "iconsax-react";
 import { useState } from "react";
+import { useScaffoldActions } from "./actions";
 
 /**
  * Array of possible item types
  */
-const itemType = [
+const primaryItems = [
 	'artists',
 	'albums',
 	'songs',
 	'videos',
 	'playlists'
 ] as const;
-const getTypeIcon = (type: typeof itemType[number], props?: IconProps) => {
+const getPrimaryTypeIcon = (type: typeof primaryItems[number], props?: IconProps) => {
 	switch (type) {
 	case 'albums':
 		return <AlbumIcon {...props}/>;
@@ -48,6 +49,7 @@ const Drawer = () => {
 	const drawerWidth = { [persistentDrawerBreakpoint]: 240 };
 	const itemTextDisplay = { xs: 'none', [persistentDrawerBreakpoint]: 'initial' };
 	const [drawerIsOpen, openDrawer] = useState(false);
+	const actions = useScaffoldActions();
 
 	return <MUIDrawer
 		open={drawerIsOpen}
@@ -73,12 +75,12 @@ const Drawer = () => {
 				<Image src="/banner.png" alt="icon" priority width={180} height={75}/>
 			</Link>
 		</Box>
-		<Divider/>
+		<Divider variant="middle"/>
 		<List>
-			{itemType.map((item) => {
+			{primaryItems.map((item) => {
 				const path = `/${item}`;
 				const isSelected = path == router.asPath;
-				const Icon = (props: IconProps) => getTypeIcon(item, props);
+				const Icon = (props: IconProps) => getPrimaryTypeIcon(item, props);
 
 				return <ListItem key={item} >
 					<Link href={path} style={{ width: '100%' }}>
@@ -95,6 +97,28 @@ const Drawer = () => {
 					</Link>
 				</ListItem>;
 			}) }
+		</List>
+		<Divider variant="middle" />
+		<List>
+			{actions.map((action) => {
+				const path = action.href;
+				const isSelected = path ? router.asPath.startsWith(path) : false;
+
+				return <ListItem key={action.label} >
+					<Link href={action.href ?? '#'} style={{ width: '100%' }}>
+						<ListItemButton onClick={action.onClick}>
+							<ListItemIcon>
+								{action.icon}
+							</ListItemIcon>
+							<ListItemText sx={{ display: itemTextDisplay }}>
+								<Typography sx={{ fontWeight: isSelected ? 'bold' : 'normal' }}>
+									<Translate translationKey={action.label}/>
+								</Typography>
+							</ListItemText>
+						</ListItemButton>
+					</Link>
+				</ListItem>;
+			})}
 		</List>
 	</MUIDrawer>;
 };
