@@ -203,11 +203,11 @@ const Player = () => {
 			mountOnEnter unmountOnExit
 			in={playlist.length != 0 || player.current != undefined}
 		>
-			<Box sx={{ padding: 2, zIndex: 'modal', width: '100%' }}>
+			<Box sx={{ padding: 1, zIndex: 'modal', width: '100%' }}>
 				<Paper
 					ref={playerComponentRef} elevation={20}
 					sx={{
-						borderRadius: '0.5', padding: { xs: 1, sm: 2 },
+						borderRadius: '0.5', padding: 1,
 						display: 'flex', width: '100%', height: 'fit-content'
 					}}
 				>
