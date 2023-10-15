@@ -90,7 +90,7 @@ function MyApp({
 										}}
 									>
 										<Scaffold>
-											<Container maxWidth={false} sx={{ paddingY: 2 }}>
+											<Container maxWidth={false} sx={{ paddingTop: 2 }}>
 												<Component {...pageProps} />
 											</Container>
 										</Scaffold>
