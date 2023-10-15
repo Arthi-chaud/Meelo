@@ -87,8 +87,7 @@ const MinimizedPlayerControls = (props: PlayerControlsProps) => {
 			alignItems: 'center', display: 'flex',
 			justifyContent: 'center'
 		}}>
-			<Grid item xs={1.5} sm={1}
-				md={0.8} lg={0.6} xl={0.5}>
+			<Grid item sx={{ minWidth: '60px' }}>
 				{ props.track ? <Illustration
 					illustration={props.track?.illustration ?? null}
 					fallback={<TrackIcon />}
@@ -122,9 +121,9 @@ const MinimizedPlayerControls = (props: PlayerControlsProps) => {
 					</Typography>
 				</Grid>
 			</Grid>
-			<Grid item container xs={3}
+			<Grid item container xs={2}
 				flexWrap='nowrap'
-				sm={2} onClick={(event) => event.stopPropagation()}
+				onClick={(event) => event.stopPropagation()}
 			>
 				<Grid item xs>
 					<PlayButton

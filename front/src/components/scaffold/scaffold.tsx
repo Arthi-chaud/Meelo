@@ -93,7 +93,7 @@ const Drawer = (
 
 				return <ListItem key={item} >
 					<Link href={path} style={{ width: '100%' }}>
-						<ListItemButton>
+						<ListItemButton onClick={onClose}>
 							<ListItemIcon>
 								<Icon variant={isSelected ? 'Bold' : 'Outline'}/>
 							</ListItemIcon>
@@ -117,7 +117,10 @@ const Drawer = (
 
 				return <ListItem key={action.label} >
 					<Link href={action.href ?? '#'} style={{ width: '100%' }}>
-						<ListItemButton onClick={action.onClick}>
+						<ListItemButton onClick={() => {
+							action.onClick && action.onClick();
+							onClose();
+						}}>
 							<ListItemIcon>
 								{action.icon}
 							</ListItemIcon>
