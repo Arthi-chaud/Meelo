@@ -1,8 +1,9 @@
+/* eslint-disable quote-props */
 import {
 	Box,
 	Divider,
 	List, ListItem, ListItemButton, ListItemIcon,
-	ListItemText, Drawer as MUIDrawer, Typography
+	ListItemText, Drawer as MUIDrawer, Typography, useTheme
 } from "@mui/material";
 import {
 	AlbumIcon, ArtistIcon, PlaylistIcon, SongIcon, VideoIcon
@@ -13,6 +14,7 @@ import Image from 'next/image';
 import Player from "../player/player";
 import { useRouter } from "next/router";
 import { IconProps } from "iconsax-react";
+import { useState } from "react";
 
 /**
  * Array of possible item types
@@ -41,22 +43,32 @@ const getTypeIcon = (type: typeof itemType[number], props?: IconProps) => {
 
 const Drawer = () => {
 	const router = useRouter();
+	const theme = useTheme();
+	const persistentDrawerBreakpoint = 'md' as const;
+	const drawerWidth = { [persistentDrawerBreakpoint]: 240 };
+	const itemTextDisplay = { xs: 'none', [persistentDrawerBreakpoint]: 'initial' };
+	const [drawerIsOpen, openDrawer] = useState(false);
 
 	return <MUIDrawer
-		open
+		open={drawerIsOpen}
 		variant="permanent"
 		// From the documentation
 		// keeps content from going under the drawer
 		sx={{
-			'width': 240,
-			'flexShrink': 0,
+			display: { xs: 'none', [persistentDrawerBreakpoint]: 'initial' },
+			width: drawerWidth,
+			flexShrink: 0,
 			'& .MuiDrawer-paper': {
-				width: 240,
+				width: drawerWidth,
 				boxSizing: 'border-box',
 			},
 		}}
 	>
-		<Box sx={{ justifyContent: 'center', display: 'flex', alignItems: 'center', padding: 2 }}>
+		<Box sx={{
+			justifyContent: 'center',
+			alignItems: 'center', padding: 2,
+			display: { xs: 'none', [persistentDrawerBreakpoint]: 'flex' }
+		}}>
 			<Link href="/" style={{ cursor: 'pointer' }}>
 				<Image src="/banner.png" alt="icon" priority width={180} height={75}/>
 			</Link>
@@ -68,29 +80,29 @@ const Drawer = () => {
 				const isSelected = path == router.asPath;
 				const Icon = (props: IconProps) => getTypeIcon(item, props);
 
-				return <ListItem key={item}>
+				return <ListItem key={item} >
 					<Link href={path} style={{ width: '100%' }}>
 						<ListItemButton>
 							<ListItemIcon>
 								<Icon variant={isSelected ? 'Bold' : 'Outline'}/>
 							</ListItemIcon>
-							<ListItemText>
+							<ListItemText sx={{ display: itemTextDisplay }}>
 								<Typography sx={{ fontWeight: isSelected ? 'bold' : 'normal' }}>
 									<Translate translationKey={item}/>
 								</Typography>
 							</ListItemText>
 						</ListItemButton>
 					</Link>
-				</ListItem>
+				</ListItem>;
 			}) }
 		</List>
 	</MUIDrawer>;
 };
 
 const Scaffold = (props: { children: any }) => {
-	return <Box sx={{ display: 'flex' }}>
+	return <Box sx={{ display: 'flex', width: '100%' }}>
 		<Drawer/>
-		<Box sx={{ display: 'flex', flexDirection: 'column', width: '100%' }}>
+		<Box sx={{ display: 'flex', flexDirection: 'column', overflowX: 'clip', width: '100%' }}>
 			{props.children}
 			<Box sx={{ height: '100%' }} />
 			<Player/>
