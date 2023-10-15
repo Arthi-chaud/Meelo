@@ -128,7 +128,7 @@ const Controls = <
 	}
 
 	return <Fade in>
-		<Box sx={{ zIndex: 1000, width: '100%', display: 'flex', justifyContent: 'center', marginBottom: 2, position: 'sticky', top: 16, left: 0 }}>
+		<Box sx={{ zIndex: 1000, width: '100%', display: 'flex', justifyContent: 'center', marginBottom: 1, position: 'sticky', top: 16, left: 0 }}>
 			<ButtonGroup variant="contained">
 				{ props.disableLibrarySelector !== true && <OptionButton
 					optionGroup={{
