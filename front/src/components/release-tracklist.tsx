@@ -33,7 +33,7 @@ const ReleaseTrackList = (
 	return <Box>
 		{Array.from(Object.entries(tracklist)).map((disc, __, discs) =>
 			<List key={disc[0]} subheader={discs.length !== 1 &&
-				<ListSubheader><Translate translationKey='disc'/> {disc[0]}</ListSubheader>
+				<ListSubheader disableSticky><Translate translationKey='disc'/> {disc[0]}</ListSubheader>
 			}>
 				{ disc[1].map((currentTrack) => <>
 					<ListItem key={currentTrack.id}
