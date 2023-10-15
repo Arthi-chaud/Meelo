@@ -102,7 +102,9 @@ const Drawer = () => {
 		<List>
 			{actions.map((action) => {
 				const path = action.href;
-				const isSelected = path ? router.asPath.startsWith(path) : false;
+				const isSelected = path
+					? path !== '/' ? router.asPath.startsWith(path) : false
+					: false;
 
 				return <ListItem key={action.label} >
 					<Link href={action.href ?? '#'} style={{ width: '100%' }}>
@@ -124,7 +126,7 @@ const Drawer = () => {
 };
 
 const Scaffold = (props: { children: any }) => {
-	return <Box sx={{ display: 'flex', width: '100%' }}>
+	return <Box sx={{ display: 'flex', width: '100%', height: '100vh' }}>
 		<Drawer/>
 		<Box sx={{ display: 'flex', flexDirection: 'column', overflowX: 'clip', width: '100%' }}>
 			{props.children}

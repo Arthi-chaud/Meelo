@@ -2,7 +2,7 @@ import {
 	AscIcon, DescIcon, GridIcon, ListIcon
 } from "../icons";
 import {
-	Box, Button, ButtonGroup, Dialog, Tooltip
+	Box, Button, ButtonGroup, Dialog, Tooltip, useTheme
 } from "@mui/material";
 import { NextRouter } from "next/router";
 import {
@@ -59,6 +59,7 @@ const Controls = <
 	Options extends Option<Values[number]>[],
 	Values extends string[][],
 >(props: ControllerProps<SortingKeys, Options, Values>) => {
+	const theme = useTheme();
 	const librariesQuery = useReactInfiniteQuery({
 		...prepareMeeloInfiniteQuery(API.getLibraries),
 		useErrorBoundary: false,
@@ -127,8 +128,8 @@ const Controls = <
 	}
 
 	return <Fade in>
-		<Box sx={{ width: '100%', display: 'flex', justifyContent: 'center', marginBottom: 2, position: 'sticky', top: 15, left: 0 }}>
-			<ButtonGroup color='inherit'>
+		<Box sx={{ zIndex: 1000, width: '100%', display: 'flex', justifyContent: 'center', marginBottom: 2, position: 'sticky', top: 16, left: 0 }}>
+			<ButtonGroup variant="contained">
 				{ props.disableLibrarySelector !== true && <OptionButton
 					optionGroup={{
 						name: optionsState.library ?? translate('allLibraries'),
@@ -157,7 +158,6 @@ const Controls = <
 				{ props.actions?.map((action, index) => (
 					<Button key={'action-' + action.label} startIcon={action.icon}
 						variant='contained'
-						color="primary"
 						onClickCapture={() => {
 							if (action.disabled === true) {
 								return;

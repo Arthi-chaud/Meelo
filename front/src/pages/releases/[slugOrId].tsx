@@ -157,7 +157,7 @@ const ReleasePage = (props: InferSSRProps<typeof getServerSideProps>) => {
 	}
 	return (
 		<Container maxWidth={false} disableGutters={viewIsInColumn}
-			sx={{ marginY: 3, marginX: 0 }}
+			sx={{ marginTop: 3, marginX: 0 }}
 		>
 			<Grid container spacing={4} sx={{ justifyContent: 'center' }}>
 				<Grid item lg={3} sm={5} xs={8}>
