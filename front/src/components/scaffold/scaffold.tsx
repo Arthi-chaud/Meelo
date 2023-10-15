@@ -1,9 +1,10 @@
 /* eslint-disable quote-props */
 import {
+	BottomNavigationAction,
 	Box,
 	Divider,
 	List, ListItem, ListItemButton, ListItemIcon,
-	ListItemText, Drawer as MUIDrawer, Typography, useTheme
+	ListItemText, BottomNavigation as MUIBottomNavigation, Drawer as MUIDrawer, Typography
 } from "@mui/material";
 import {
 	AlbumIcon, ArtistIcon, PlaylistIcon, SongIcon, VideoIcon
@@ -43,10 +44,11 @@ const getPrimaryTypeIcon = (type: typeof primaryItems[number], props?: IconProps
 	}
 };
 
+export const DrawerBreakpoint = 'md' as const;
+
 const Drawer = () => {
 	const router = useRouter();
-	const theme = useTheme();
-	const persistentDrawerBreakpoint = 'md' as const;
+	const persistentDrawerBreakpoint = DrawerBreakpoint;
 	const drawerWidth = { [persistentDrawerBreakpoint]: 240 };
 	const itemTextDisplay = { xs: 'none', [persistentDrawerBreakpoint]: 'initial' };
 	const [drawerIsOpen, openDrawer] = useState(false);
@@ -127,9 +129,42 @@ const Drawer = () => {
 	</MUIDrawer>;
 };
 
+const BottomNavigation = () => {
+	const router = useRouter();
+
+	return <MUIBottomNavigation
+		showLabels
+		value={router.asPath}
+		sx={{
+			zIndex: 'modal', width: '100%',
+			padding: 1,
+			position: 'fixed',
+			bottom: 0,
+			display: { xs: 'flex', [DrawerBreakpoint]: 'none' }
+		}}
+	>
+		{primaryItems.map((item) => {
+			const path = `/${item}`;
+			const isSelected = path == router.asPath;
+			const Icon = (props: IconProps) => getPrimaryTypeIcon(item, props);
+
+			return (
+				<Link key={path} href={path} style={{ width: '100%', height: '100%' }}>
+					<BottomNavigationAction key={item}
+						showLabel
+						icon={<Icon variant={isSelected ? 'Bold' : 'Outline'}/>}
+						label={<Translate translationKey={item}/>}
+					/>
+				</Link>
+			);
+		}) }
+	</MUIBottomNavigation>;
+};
+
 const Scaffold = (props: { children: any }) => {
 	return <Box sx={{ display: 'flex', width: '100%', height: '100vh' }}>
 		<Drawer/>
+		<BottomNavigation/>
 		<Box sx={{ display: 'flex', flexDirection: 'column', overflowX: 'clip', width: '100%' }}>
 			{props.children}
 			<Box sx={{ height: '100%' }} />
