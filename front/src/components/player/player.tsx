@@ -1,5 +1,5 @@
 import {
-	Box, Paper, Slide
+	Box, Paper, Slide, useMediaQuery, useTheme
 } from "@mui/material";
 import {
 	LegacyRef, useEffect, useRef, useState
@@ -13,8 +13,10 @@ import { RootState } from "../../state/store";
 import { ExpandedPlayerControls, MinimizedPlayerControls } from "./controls";
 import { DefaultWindowTitle } from "../../utils/constants";
 import { toast } from "react-hot-toast";
+import { DrawerBreakpoint } from "../scaffold/scaffold";
 
 const Player = () => {
+	const theme = useTheme();
 	const userIsAuthentified = useSelector(
 		(state: RootState) => state.user.user !== undefined
 	);
@@ -33,6 +35,7 @@ const Player = () => {
 	const [expanded, setExpanded] = useState(false);
 	const [windowFocused, setWindowFocused] = useState(true);
 	const [notification, setNotification] = useState<Notification>();
+	const bottomNavigationIsDisplayed = useMediaQuery(theme.breakpoints.down(DrawerBreakpoint));
 
 	const play = () => {
 		// Do nothing if empty playlist
@@ -204,6 +207,7 @@ const Player = () => {
 				<Paper
 					ref={playerComponentRef} elevation={20}
 					sx={{
+						marginBottom: bottomNavigationIsDisplayed ? '50px' : undefined,
 						borderRadius: '0.5', padding: { xs: 1, sm: 2 },
 						display: 'flex', width: '100%', height: 'fit-content'
 					}}
