@@ -205,7 +205,7 @@ const Player = () => {
 		>
 			<Box sx={{ padding: 1, zIndex: 'modal', width: '100%' }}>
 				<Paper
-					ref={playerComponentRef} elevation={20}
+					ref={playerComponentRef} elevation={5}
 					sx={{
 						borderRadius: '0.5', padding: 1,
 						display: 'flex', width: '100%', height: 'fit-content'
