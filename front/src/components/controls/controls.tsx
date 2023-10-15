@@ -127,7 +127,7 @@ const Controls = <
 	}
 
 	return <Fade in>
-		<Box sx={{ width: '100%', display: 'flex', justifyContent: 'center', marginBottom: 2 }}>
+		<Box sx={{ width: '100%', display: 'flex', justifyContent: 'center', marginBottom: 2, position: 'sticky', top: 15, left: 0 }}>
 			<ButtonGroup color='inherit'>
 				{ props.disableLibrarySelector !== true && <OptionButton
 					optionGroup={{
