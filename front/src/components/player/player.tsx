@@ -194,9 +194,8 @@ const Player = () => {
 		};
 	}, [expanded]);
 	return <>
-		<Box sx={{ height: playerComponentRef.current?.offsetHeight }}/>
 		<Slide
-			style={{ position: 'fixed', bottom: 0, left: 0 }}
+			style={{ position: 'sticky', bottom: 0, left: 0 }}
 			direction="up"
 			mountOnEnter unmountOnExit
 			in={playlist.length != 0 || player.current != undefined}
