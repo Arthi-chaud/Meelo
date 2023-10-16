@@ -186,7 +186,7 @@ const Scaffold = (props: { children: any }) => {
 
 	return <Box sx={{ display: 'flex', width: '100%', height: '100vh' }}>
 		<Drawer openBottomDrawer={tempDrawerIsOpen} onClose={() => openDrawer(false)}/>
-		<Box sx={{ display: 'flex', flexDirection: 'column', overflowX: 'clip', width: '100%' }}>
+		<Box sx={{ display: 'flex', flexDirection: 'column', overflowX: 'clip', overflowY: 'scroll', width: '100%' }}>
 			{props.children}
 			<Box sx={{ height: '100%' }} />
 			<Player/>

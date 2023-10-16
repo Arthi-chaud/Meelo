@@ -168,7 +168,7 @@ const ExpandedPlayerControls = (
 		}
 	};
 
-	return <Stack sx={{ width: '100%', height: '100%', display: 'flex', padding: 2, overflowY: { xs: 'auto', lg: 'clip' }, overflowX: 'clip' }} direction='column'>
+	return <Stack sx={{ width: '100%', height: '100%', display: 'flex', padding: 1, overflowY: { xs: 'auto', lg: 'clip' }, overflowX: 'clip' }} direction='column'>
 		<Box sx={{ alignSelf: 'flex-end', margin: 1 }}>
 			<IconButton onClick={() => props.onExpand(false)}>
 				<CloseIcon />
