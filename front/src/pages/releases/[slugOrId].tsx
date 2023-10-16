@@ -1,5 +1,6 @@
+import hexToRgba from 'hex-to-rgba';
 import {
-	Button, Chip, Container, Divider, Grid, IconButton,
+	Button, Container, Divider, Grid, IconButton,
 	ListSubheader, Stack, Typography, useMediaQuery, useTheme
 } from "@mui/material";
 import { Box } from "@mui/system";
@@ -32,6 +33,7 @@ import SongGrid from "../../components/song-grid";
 import AlbumTile from "../../components/tile/album-tile";
 import getYear from "../../utils/getYear";
 import Fade from "../../components/fade";
+import { Blurhash } from "react-blurhash";
 
 const releaseQuery = (releaseIdentifier: string | number) => API.getRelease(releaseIdentifier, ['album', 'externalIds']);
 const releaseTracklistQuery = (releaseIdentifier: string | number) => API.getReleaseTrackList(releaseIdentifier, ['song']);
@@ -41,7 +43,7 @@ const artistsOnAlbumQuery = (albumId: number) => {
 
 	return {
 		key: query.key,
-		exec: () => query.exec({ pageSize: 1000 })
+		exec: () => query.exec({ pageSize: 10000 })
 			.then((res) => res.items)
 	};
 };
@@ -95,16 +97,6 @@ const RelatedContentSection = (props: RelatedContentSectionProps) => {
 	);
 };
 
-const ColorChips = (props: { colors: string[] }) => {
-	return <Grid container spacing={2} width="100%" justifyContent="center" wrap="nowrap">
-		{props.colors.map((color) => (
-			<Grid item key={`color-chid-${color}`}>
-				<Chip label="&nbsp;&nbsp;" size="small" style={{ backgroundColor: color }} />
-			</Grid>
-		))}
-	</Grid>;
-};
-
 const ReleasePage = (props: InferSSRProps<typeof getServerSideProps>) => {
 	const router = useRouter();
 	const releaseIdentifier = props.additionalProps?.releaseIdentifier ?? getSlugOrId(router.query);
@@ -113,7 +105,6 @@ const ReleasePage = (props: InferSSRProps<typeof getServerSideProps>) => {
 	const dispatch = useDispatch();
 	const release = useQuery(releaseQuery, releaseIdentifier);
 	const artistId = useMemo(() => release.data?.album?.artistId, [release]);
-	const mainIllustrationColors = release.data?.illustration?.colors ?? [];
 	const album = useQuery(albumQuery, release.data?.albumId);
 	const tracklistQuery = useQuery(releaseTracklistQuery, releaseIdentifier);
 	const albumGenres = useInfiniteQuery(albumGenreQuery, release.data?.albumId);
@@ -150,15 +141,28 @@ const ReleasePage = (props: InferSSRProps<typeof getServerSideProps>) => {
 		}
 		return [[], null, undefined];
 	}, [tracklistQuery.data]);
+	const illustrationColors = useMemo(() => release.data?.illustration, [release]);
 
 	// eslint-disable-next-line no-extra-parens
 	if (!release.data || !album.data || !artists.data || !trackList) {
 		return <LoadingPage/>;
 	}
-	return (
+	return <>
 		<Container maxWidth={false} disableGutters={viewIsInColumn}
-			sx={{ marginTop: 3, marginX: 0 }}
+			sx={{ marginTop: 3, marginX: 0, position: 'relative' }}
 		>
+			<Box sx={{
+				position: 'fixed', top: 0, left: 0, zIndex: -10000, width: '100%', height: '100%',
+			}}>
+				<Blurhash
+					hash={illustrationColors!.blurhash}
+					style={{ width: '100vw', height: '100vh' }}
+				/>
+			</Box>
+			<Box sx={{
+				position: 'fixed', top: 0, left: 0, zIndex: -10000, width: '100%', height: '100%',
+				background: hexToRgba(theme.palette.background.default, 0.6),
+			}}/>
 			<Grid container spacing={4} sx={{ justifyContent: 'center' }}>
 				<Grid item lg={3} sm={5} xs={8}>
 					<Illustration illustration={release.data!.illustration}/>
@@ -228,7 +232,9 @@ const ReleasePage = (props: InferSSRProps<typeof getServerSideProps>) => {
 							<Box>
 								<Grid container spacing={1} sx={{ alignItems: 'center' }}>
 									<Grid item>
-										<ListSubheader><Translate translationKey="genres"/>:</ListSubheader>
+										<ListSubheader sx={{ backgroundColor: 'transparent' }}>
+											<Translate translationKey="genres"/>:
+										</ListSubheader>
 									</Grid>
 									{ albumGenres.data?.pages.at(0)?.items.map((genre) =>
 										<Grid item key={genre.id} sx={{ display: 'flex' }}>
@@ -275,9 +281,6 @@ const ReleasePage = (props: InferSSRProps<typeof getServerSideProps>) => {
 					}
 				</Grid>
 			</Grid>
-			<Box sx={{ padding: 2 }}>
-				<ColorChips colors={mainIllustrationColors} />
-			</Box>
 			<RelatedContentSection
 				display={(bSides.data?.pages.at(0)?.items?.length ?? 0) > 0}
 				title={<Translate translationKey="bonusTracks"/>}
@@ -346,7 +349,7 @@ const ReleasePage = (props: InferSSRProps<typeof getServerSideProps>) => {
 				</Stack>
 			</RelatedContentSection>
 		</Container>
-	);
+	</>;
 };
 
 export default ReleasePage;
