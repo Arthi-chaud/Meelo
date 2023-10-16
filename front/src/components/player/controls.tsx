@@ -4,7 +4,7 @@ import {
 } from "../icons";
 import {
 	Box, Button, ButtonBase, Container, Divider, Grid,
-	IconButton, Stack, Tab, Tabs, Typography
+	IconButton, Stack, Tab, Tabs, Typography, useTheme
 } from "@mui/material";
 import Illustration from "../illustration";
 import { WideLoadingComponent } from "../loading/loading";
@@ -145,6 +145,7 @@ const Panels = ['lyrics', 'playlist'] as const;
 const ExpandedPlayerControls = (
 	props: PlayerControlsProps & { videoRef: LegacyRef<HTMLVideoElement> }
 ) => {
+	const theme = useTheme();
 	const dispatch = useDispatch();
 	const parentSong = useQuery((id) => API.getSong(id, ['artist', 'lyrics']), props.track?.songId);
 	const [panel, setPanel] = useState<typeof Panels[number]>('lyrics');
@@ -169,8 +170,10 @@ const ExpandedPlayerControls = (
 	};
 
 	return <Stack sx={{ width: '100%', height: '100%', display: 'flex', padding: 1, overflowY: { xs: 'auto', lg: 'clip' }, overflowX: 'clip' }} direction='column'>
-		<Box sx={{ alignSelf: 'flex-end', margin: 1 }}>
-			<IconButton onClick={() => props.onExpand(false)}>
+		<Box sx={{ alignSelf: 'flex-end', margin: 1, position: 'sticky', top: 2, zIndex: 'modal' }}>
+			<IconButton onClick={() => props.onExpand(false)}
+				sx={{ backgroundColor: theme.palette.background.paper, boxShadow: '4' }}
+			>
 				<CloseIcon />
 			</IconButton>
 		</Box>
