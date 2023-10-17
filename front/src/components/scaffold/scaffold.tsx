@@ -158,6 +158,8 @@ const BottomNavigation = (props: { onDrawerOpen: () => void }) => {
 			position: 'fixed',
 			justifyContent: 'space-evenly',
 			bottom: 0,
+			backgroundColor: 'transparent',
+			backdropFilter: 'blur(40px)',
 			display: { xs: 'flex', [DrawerBreakpoint]: 'none' }
 		}}
 	>
