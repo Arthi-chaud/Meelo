@@ -20,6 +20,7 @@ import { IconProps } from "iconsax-react";
 import { useState } from "react";
 import { useScaffoldActions } from "./actions";
 import { DarkTheme } from "../../theme/theme";
+import useColorScheme from "../../theme/color-scheme";
 
 /**
  * Array of possible item types
@@ -57,6 +58,7 @@ const Drawer = (
 	const drawerWidth = { [persistentDrawerBreakpoint]: 240 };
 	const actions = useScaffoldActions();
 	const drawerIsAtBottom = useMediaQuery(theme.breakpoints.down(persistentDrawerBreakpoint));
+	const colorScheme = useColorScheme();
 
 	return <MUIDrawer
 		open={drawerIsAtBottom ? openBottomDrawer : true}
@@ -71,14 +73,14 @@ const Drawer = (
 			zIndex: 'tooltip',
 			'& .MuiDrawer-paper': {
 				width: drawerWidth,
-				backgroundColor: 'transparent',
-				backdropFilter: 'blur(20px)',
+				backgroundColor: colorScheme == 'dark' ? 'transparent' : undefined,
+				backdropFilter: 'blur(30px)',
 				boxSizing: 'border-box',
 			},
 		}}
 	>
 		<Box sx={{
-			backgroundColor: DarkTheme.background?.paper,
+			backgroundColor: colorScheme == 'light' ? DarkTheme.background?.paper : undefined,
 			justifyContent: 'center',
 			display: 'flex',
 			alignItems: 'center', padding: 2
