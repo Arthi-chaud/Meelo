@@ -7,6 +7,8 @@ import InfiniteVideoView from "../../../components/infinite/infinite-resource-vi
 import formatDuration from "../../../utils/formatDuration";
 import { SongSortingKeys } from "../../../models/song";
 import { getOrderParams, getSortingFieldParams } from "../../../utils/sorting";
+import { useQuery } from "../../../api/use-query";
+import BackgroundBlurhash from "../../../components/blurhash-background";
 
 export const getServerSideProps = prepareSSR((context) => {
 	const artistIdentifier = getSlugOrId(context.params);
@@ -25,8 +27,12 @@ const ArtistSongPage = (
 ) => {
 	const router = useRouter();
 	const artistIdentifier = props.additionalProps?.artistIdentifier ?? getSlugOrId(router.query);
+	const artist = useQuery(API.getArtist, props.additionalProps?.artistIdentifier);
 
 	return <>
+		{artist.data?.illustration &&
+			<BackgroundBlurhash blurhash={artist.data?.illustration?.blurhash} />
+		}
 		<ArtistRelationPageHeader artistSlugOrId={artistIdentifier}/>
 		<InfiniteVideoView
 			initialSortingField={props.additionalProps?.sortBy}

@@ -7,6 +7,8 @@ import ArtistRelationPageHeader from "../../../components/relation-page-header/a
 import prepareSSR, { InferSSRProps } from "../../../ssr";
 import getYear from "../../../utils/getYear";
 import { getLayoutParams } from "../../../utils/layout";
+import { useQuery } from "../../../api/use-query";
+import BackgroundBlurhash from "../../../components/blurhash-background";
 
 const defaultSort = {
 	sortBy: 'releaseDate',
@@ -26,9 +28,13 @@ export const getServerSideProps = prepareSSR((context) => {
 
 const ArtistAlbumsPage = (props: InferSSRProps<typeof getServerSideProps>) => {
 	const router = useRouter();
+	const artist = useQuery(API.getArtist, props.additionalProps?.artistIdentifier);
 	const artistIdentifier = props.additionalProps?.artistIdentifier ?? getSlugOrId(router.query);
 
 	return <Box sx={{ width: '100%' }}>
+		{artist.data?.illustration &&
+			<BackgroundBlurhash blurhash={artist.data?.illustration?.blurhash} />
+		}
 		<ArtistRelationPageHeader artistSlugOrId={artistIdentifier}/>
 		<InfiniteAlbumView
 			defaultLayout={props.additionalProps?.defaultLayout}
