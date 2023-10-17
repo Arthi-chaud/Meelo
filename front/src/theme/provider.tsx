@@ -9,6 +9,7 @@ import {
 	DarkTheme, GlobalTheme, LightTheme
 } from "./theme";
 import useColorScheme from "./color-scheme";
+import font from "./font";
 
 /**
  * Provides the Theme
@@ -21,6 +22,9 @@ const ThemeProvider = (props: { children: any }) => {
 				palette: {
 					mode: colorScheme,
 					...colorScheme == 'light' ? LightTheme : DarkTheme
+				},
+				typography: {
+					fontFamily: font.style.fontFamily,
 				},
 				...GlobalTheme
 			}));

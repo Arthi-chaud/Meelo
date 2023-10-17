@@ -1,11 +1,11 @@
-import { Share } from "@mui/icons-material";
 import copyLinkToClipboard from "../../utils/copy-link";
+import { ShareIcon } from "../icons";
 import Action from "./action";
 
 export const ShareAction = (url: string): Action => ({
 	onClick: () => copyLinkToClipboard(url),
 	label: 'share',
-	icon: <Share/>
+	icon: <ShareIcon/>
 });
 
 export const ShareArtistAction = (artistIdentifier: string | number): Action => ShareAction(`/artists/${artistIdentifier}`);

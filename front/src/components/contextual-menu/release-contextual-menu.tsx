@@ -1,4 +1,4 @@
-import { Star, SwitchAccessShortcut } from "@mui/icons-material";
+import { MasterIcon, UpgradeIcon } from "../icons";
 import { toast } from "react-hot-toast";
 import { useMutation } from "react-query";
 import { useQueryClient } from "../../api/use-query";
@@ -51,12 +51,12 @@ const ReleaseContextualMenu = (props: ReleaseContextualMenuProps) => {
 			{
 				label: 'setAsMaster',
 				disabled: props.release.id == props.release.album.masterId || !userIsAdmin,
-				icon: <Star/>,
+				icon: <MasterIcon/>,
 				onClick: () => masterMutation.mutate()
 			},
 			{
 				label: "setAllTracksAsMaster",
-				icon: <SwitchAccessShortcut/>,
+				icon: <UpgradeIcon/>,
 				disabled: !userIsAdmin,
 				onClick: () => tracksMasterMutation.mutate()
 			},

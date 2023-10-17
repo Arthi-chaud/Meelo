@@ -2,7 +2,7 @@ import {
 	Box, IconButton, Paper, Slide
 } from "@mui/material";
 import { useRouter } from "next/router";
-import CloseIcon from '@mui/icons-material/Close';
+import { CloseIcon } from './icons';
 import { useEffect, useState } from "react";
 import { isClientSideRendering } from "../ssr";
 
@@ -45,7 +45,7 @@ const ModalPage = (props: ModalPageProps) => {
 						setOpen(false);
 						router.back();
 					}}>
-						<CloseIcon sx={{ display: props.disposable == true ? undefined : 'none' }} />
+						<CloseIcon style={{ display: props.disposable == true ? undefined : 'none' }} />
 					</IconButton>
 				</Box>
 				{props.children}

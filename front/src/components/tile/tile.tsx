@@ -1,10 +1,11 @@
 import {
 	Box, Card, CardActionArea,
-	CardContent, CardMedia, NoSsr, Typography
+	CardContent, CardMedia, NoSsr, Typography, useTheme
 } from "@mui/material";
 import Link from 'next/link';
 import { CSSProperties, useState } from "react";
 import Fade from "../fade";
+import hexToRgba from "hex-to-rgba";
 
 const titleStyle = {
 	display: '-webkit-box',
@@ -30,9 +31,14 @@ type TileProps = {
 const Tile = (props: TileProps) => {
 	const [isHovering, setIsHovering] = useState(false);
 	const [isHoveringCtxtMenu, setIsHoveringCtxtMenu] = useState(false);
+	const theme = useTheme();
 
 	const component =
-		<Card sx={{ height: '100%' }} onMouseOver={() => setIsHovering(true)} onMouseLeave={() => {
+		<Card sx={{
+			height: '100%',
+			background: hexToRgba('#ffffff', 0.05),
+			backdropFilter: 'blur(10px)'
+		}} onMouseOver={() => setIsHovering(true)} onMouseLeave={() => {
 			setIsHovering(false);
 			setIsHoveringCtxtMenu(false);
 		}}>
@@ -64,7 +70,7 @@ const Tile = (props: TileProps) => {
 					alignContent: 'center', justifyContent: 'center'
 				}}>
 					<Typography
-						sx={{ fontWeight: 'bold', textAlign: 'center' }}
+						sx={{ fontWeight: 'medium', textAlign: 'center' }}
 						style={{ ...titleStyle, overflowWrap: 'anywhere', WebkitLineClamp: 2 }}
 					>
 						{props.title}

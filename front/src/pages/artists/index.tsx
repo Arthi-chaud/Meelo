@@ -1,7 +1,6 @@
 import React from 'react';
 import API from '../../api/api';
 import { ArtistSortingKeys } from '../../models/artist';
-import getLibrarySlug from '../../utils/getLibrarySlug';
 import { getOrderParams, getSortingFieldParams } from '../../utils/sorting';
 import prepareSSR, { InferSSRProps } from '../../ssr';
 import { useRouter } from 'next/router';
@@ -12,29 +11,23 @@ export const getServerSideProps = prepareSSR((context) => {
 	const order = getOrderParams(context.query.order);
 	const sortBy = getSortingFieldParams(context.query.sortBy, ArtistSortingKeys);
 	const defaultLayout = getLayoutParams(context.query.view) ?? 'list';
-	const librarySlug = getLibrarySlug(context.req.url!) ?? null;
 
 	return {
-		additionalProps: { librarySlug, defaultLayout, sortBy, order },
-		infiniteQueries: [
-			librarySlug
-				? API.getAllArtistsInLibrary(librarySlug, { sortBy, order })
-				: API.getAllArtists({ sortBy, order })
-		]
+		additionalProps: { defaultLayout, sortBy, order },
+		infiniteQueries: [API.getArtists({}, { sortBy, order })]
 	};
 });
 
 const LibraryArtistsPage = (props: InferSSRProps<typeof getServerSideProps>) => {
 	const router = useRouter();
-	const librarySlug = props.additionalProps?.librarySlug ?? getLibrarySlug(router.asPath);
 
 	return <InfiniteArtistView
 		initialSortingField={props.additionalProps?.sortBy}
 		initialSortingOrder={props.additionalProps?.order}
 		defaultLayout={props.additionalProps?.defaultLayout}
-		query={(sort) => librarySlug
-			? API.getAllArtistsInLibrary(librarySlug, sort)
-			: API.getAllArtists(sort)}
+		query={({ library, sortBy, order }) => API.getArtists(
+			{ library: library ?? undefined }, { sortBy, order }
+		)}
 	/>;
 };
 

@@ -12,30 +12,32 @@ import ReleaseTile from "../components/tile/release-tile";
 import Translate from "../i18n/translate";
 import Fade from "../components/fade";
 
-const newlyAddedAlbumsQuery = API.getAllAlbums(
+const newlyAddedAlbumsQuery = API.getAlbums(
+	{ },
 	{ sortBy: 'addDate', order: 'desc' },
-	undefined,
 	['artist']
 );
 
-const newestAlbumsQuery = API.getAllAlbums(
+const newestAlbumsQuery = API.getAlbums(
+	{ },
 	{ sortBy: 'releaseDate', order: 'desc' },
-	undefined,
 	['artist']
 );
 
-const newlyAddedArtistsQuery = API.getAllArtists(
+const newlyAddedArtistsQuery = API.getArtists(
+	{},
 	{ sortBy: 'addDate', order: 'desc' },
 );
 
-const newlyAddedReleasesQuery = API.getAllReleases(
+const newlyAddedReleasesQuery = API.getReleases(
+	{},
 	{ sortBy: 'addDate', order: 'desc' },
 	['album']
 );
 
-const mostListenedSongsQuery = API.getAllSongs(
+const mostListenedSongsQuery = API.getSongs(
+	{ },
 	{ sortBy: 'playCount', order: 'desc' },
-	undefined,
 	['artist']
 );
 
@@ -80,8 +82,8 @@ const HomePage = () => {
 	const tileRowWindowSize = {
 		xs: 3,
 		sm: 5,
-		md: 7,
-		lg: 9,
+		md: 6,
+		lg: 7,
 		xl: 10
 	};
 

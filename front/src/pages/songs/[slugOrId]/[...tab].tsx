@@ -15,11 +15,12 @@ import { useState } from "react";
 import InfiniteSongView from "../../../components/infinite/infinite-resource-view/infinite-song-view";
 import InfiniteTrackView from "../../../components/infinite/infinite-resource-view/infinite-track-view";
 import Link from "next/link";
-import { PlayArrow } from "@mui/icons-material";
 import { useDispatch } from "react-redux";
 import { playTrack } from "../../../state/playerSlice";
 import ExternalIdBadge from "../../../components/external-id-badge";
 import Translate from "../../../i18n/translate";
+import { PlayIcon } from "../../../components/icons";
+import BackgroundBlurhash from "../../../components/blurhash-background";
 
 export const getServerSideProps = prepareSSR((context) => {
 	const songIdentifier = getSlugOrId(context.params);
@@ -31,9 +32,9 @@ export const getServerSideProps = prepareSSR((context) => {
 			API.getSongLyrics(songIdentifier),
 		],
 		infiniteQueries: [
-			API.getSongGenres(songIdentifier),
-			API.getSongVersions(songIdentifier, { sortBy: 'name', order: 'asc' }, undefined, ['artist']),
-			API.getSongTracks(songIdentifier, { sortBy: 'name', order: 'asc' }, ['release', 'song'])
+			API.getGenres({ song: songIdentifier }),
+			API.getSongVersions(songIdentifier, {}, { sortBy: 'name', order: 'asc' }, ['artist']),
+			API.getTracks({ song: songIdentifier }, { sortBy: 'name', order: 'asc' }, ['release', 'song'])
 		]
 	};
 });
@@ -53,13 +54,16 @@ const SongPage = (props: InferSSRProps<typeof getServerSideProps>) => {
 	const songIdentifier = props.additionalProps?.songIdentifier ?? getSlugOrId(router.query);
 	const lyrics = useQuery(API.getSongLyrics, songIdentifier);
 	const song = useQuery(() => API.getSong(songIdentifier, ['artist', 'externalIds']));
-	const genres = useInfiniteQuery(API.getSongGenres, songIdentifier);
+	const genres = useInfiniteQuery(API.getGenres, { song: songIdentifier });
 	const dispatch = useDispatch();
 
 	if (!song.data || !genres.data) {
 		return <LoadingPage/>;
 	}
 	return <Box sx={{ width: '100%' }}>
+		{song.data.illustration &&
+			<BackgroundBlurhash blurhash={song.data.illustration.blurhash} />
+		}
 		<SongRelationPageHeader song={song.data}/>
 		<Grid container direction={{ xs: 'column', md: 'row' }} spacing={2}>
 			<Grid item xs>
@@ -79,7 +83,7 @@ const SongPage = (props: InferSSRProps<typeof getServerSideProps>) => {
 				</Stack>}
 			</Grid>
 			<Grid item>
-				<Button variant="contained" sx={{ width: '100%' }} endIcon={<PlayArrow />}
+				<Button variant="contained" sx={{ width: '100%' }} endIcon={<PlayIcon />}
 					onClick={() => queryClient.fetchQuery(API.getMasterTrack(songIdentifier, ['release']))
 						.then((master) => dispatch(playTrack({
 							track: master,
@@ -112,12 +116,17 @@ const SongPage = (props: InferSSRProps<typeof getServerSideProps>) => {
 			)}
 			{ tab == 'versions' &&
 				<InfiniteSongView
-					query={(sort, type) => API.getSongVersions(songIdentifier, sort, type, ['artist'])}
+					query={({ library, sortBy, order, type }) => API.getSongVersions(
+						song.data.id,
+						{ library: library ?? undefined, type },
+						{ sortBy, order },
+						['artist']
+					)}
 				/>
 			}
 			{ tab == 'tracks' &&
 				<InfiniteTrackView
-					query={(sort) => API.getSongTracks(songIdentifier, sort, ['release', 'song'])}
+					query={(sort) => API.getTracks({ song: songIdentifier }, sort, ['release', 'song'])}
 				/>
 			}
 		</Box>

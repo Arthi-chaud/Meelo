@@ -9,7 +9,7 @@ import { useState } from "react";
 import toast from "react-hot-toast";
 import API from "../../api/api";
 import { useMutation } from "react-query";
-import { Edit } from "@mui/icons-material";
+import { EditIcon } from "../icons";
 
 const AlbumTypeForm = (props: {
 	defaultValue: AlbumType,
@@ -50,7 +50,7 @@ const ChangeAlbumType = (
 
 	return {
 		label: 'changeAlbumType',
-		icon: <Edit/>,
+		icon: <EditIcon/>,
 		disabled: store.getState().user.user?.admin !== true,
 		onClick: () => confirm({
 			title: translate('changeAlbumType'),

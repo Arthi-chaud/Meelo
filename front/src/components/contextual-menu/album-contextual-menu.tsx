@@ -1,7 +1,7 @@
 import { useConfirm } from "material-ui-confirm";
 import API from "../../api/api";
 import { DownloadReleaseAsyncAction } from "../actions/download";
-import { GoToAlbumReleasesAction, GoToArtistAction } from "../actions/link";
+import { GoToArtistAction } from "../actions/link";
 import { ShareAlbumAction } from "../actions/share";
 import ContextualMenu from "./contextual-menu";
 import { AlbumWithRelations } from "../../models/album";
@@ -19,10 +19,7 @@ const AlbumContextualMenu = (props: AlbumContextualMenuProps) => {
 	const queryClient = useQueryClient();
 
 	return <ContextualMenu actions={[
-		[
-			...props.album.artist ? [GoToArtistAction(props.album.artist.slug)] : [],
-			GoToAlbumReleasesAction(albumSlug),
-		],
+		[...props.album.artist ? [GoToArtistAction(props.album.artist.slug)] : []],
 		[
 			ChangeAlbumType(props.album, queryClient, confirm),
 			RefreshAlbumMetadataAction(albumSlug)

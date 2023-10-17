@@ -9,15 +9,19 @@ import InfiniteView from "../infinite-view";
 import InfiniteResourceViewProps from "./infinite-resource-view-props";
 import { useLanguage } from "../../../i18n/translate";
 
+type AdditionalProps = {
+	type?: SongType
+}
+
 const InfiniteSongView = (
 	props: InfiniteResourceViewProps<
 		SongWithRelations<'artist'>,
 		typeof SongSortingKeys,
-		[type?: SongType]
+		AdditionalProps
 	> & Pick<Parameters<typeof SongItem>[0], 'formatSubtitle'>
 ) => {
 	const router = useRouter();
-	const [options, setOptions] = useState<OptionState<typeof SongSortingKeys>>();
+	const [options, setOptions] = useState<OptionState<typeof SongSortingKeys, AdditionalProps>>();
 	const language = useLanguage();
 
 	return <>
@@ -41,9 +45,14 @@ const InfiniteSongView = (
 		<InfiniteView
 			view={options?.view ?? 'list'}
 			query={() => props.query({
+				// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+				// @ts-ignore
+				type: (options?.type == 'All') ? undefined : options?.type as SongType,
 				sortBy: options?.sortBy ?? 'name',
 				order: options?.order ?? 'asc',
-			}, options?.type == 'All' ? undefined : options?.type as SongType | undefined)}
+				view: "grid",
+				library: options?.library ?? null
+			})}
 			renderListItem={(item: SongWithRelations<'artist'>) => <SongItem song={item} key={item.id} formatSubtitle={props.formatSubtitle} />}
 			renderGridItem={(item: SongWithRelations<'artist'>) => <></>}
 		/>

@@ -25,6 +25,8 @@ const InfiniteArtistView = (
 		<InfiniteView
 			view={options?.view ?? props.defaultLayout ?? "list"}
 			query={() => props.query({
+				library: options?.library ?? null,
+				view: options?.view ?? 'list',
 				sortBy: options?.sortBy ?? 'name',
 				order: options?.order ?? 'asc',
 			})}

@@ -1,6 +1,6 @@
 import {
 	Box, Divider, Icon, List, ListItem, ListItemButton, ListItemIcon,
-	ListItemText, ListSubheader, Typography
+	ListItemText, ListSubheader, Typography, useTheme
 } from "@mui/material";
 import { useDispatch } from "react-redux";
 import Release from "../models/release";
@@ -8,11 +8,11 @@ import Track from "../models/track";
 import Tracklist from "../models/tracklist";
 import { playTracks } from '../state/playerSlice';
 import Artist from "../models/artist";
-import { MusicVideo } from "@mui/icons-material";
 import formatDuration from "../utils/formatDuration";
 import ReleaseTrackContextualMenu from "./contextual-menu/release-track-contextual-menu";
 import { SongWithRelations } from "../models/song";
 import Translate from "../i18n/translate";
+import { VideoIcon } from "./icons";
 
 type ReleaseTracklistProps = {
 	mainArtist?: Artist;
@@ -26,13 +26,14 @@ type ReleaseTracklistProps = {
 const ReleaseTrackList = (
 	{ tracklist, release, mainArtist }: ReleaseTracklistProps
 ) => {
+	const theme = useTheme();
 	const dispatch = useDispatch();
 	const flatTracklist = Array.from(Object.values(tracklist)).flat();
 
 	return <Box>
 		{Array.from(Object.entries(tracklist)).map((disc, __, discs) =>
 			<List key={disc[0]} subheader={discs.length !== 1 &&
-				<ListSubheader><Translate translationKey='disc'/> {disc[0]}</ListSubheader>
+				<ListSubheader disableSticky><Translate translationKey='disc'/> {disc[0]}</ListSubheader>
 			}>
 				{ disc[1].map((currentTrack) => <>
 					<ListItem key={currentTrack.id}
@@ -78,7 +79,7 @@ const ReleaseTrackList = (
 							/>
 							{currentTrack.type == 'Video' &&
 								<Icon sx={{ marginLeft: 2, display: 'flex', alignItems: 'center' }}>
-									<MusicVideo color='disabled' fontSize="small" />
+									<VideoIcon color={theme.palette.text.disabled} />
 								</Icon>
 							}
 							<Typography color='text.disabled' sx={{ marginLeft: 2, overflow: 'unset' }}>

@@ -1,4 +1,4 @@
-import { Search } from "@mui/icons-material";
+import { SearchIcon } from "../../components/icons";
 import {
 	Box, InputAdornment, TextField
 } from "@mui/material";
@@ -16,9 +16,9 @@ export const getServerSideProps = prepareSSR((context) => {
 	return {
 		additionalProps: { searchQuery, type },
 		infiniteQueries: searchQuery ? [
-			API.searchArtists(searchQuery, defaultQuerySortParams),
-			API.searchAlbums(searchQuery, undefined, defaultQuerySortParams, ['artist']),
-			API.searchSongs(searchQuery, defaultQuerySortParams, undefined, ['artist'])
+			API.getArtists({ query: searchQuery }, defaultQuerySortParams),
+			API.getAlbums({ query: searchQuery }, defaultQuerySortParams, ['artist']),
+			API.getSongs({ query: searchQuery }, defaultQuerySortParams, ['artist'])
 		] : []
 	};
 });
@@ -43,7 +43,7 @@ const SearchPage = (
 				autoFocus InputProps={{
 					value: query,
 					startAdornment: <InputAdornment position="start">
-						<Search />
+						<SearchIcon />
 					</InputAdornment>
 					,
 				}} onChange={(error) => {
@@ -58,11 +58,20 @@ const SearchPage = (
 			onTypeSelect={(selectedType) =>
 				router.push(buildSearchUrl(query, selectedType), undefined, { shallow: true })}
 			enabled={query != undefined}
-			artistQuery={(sort) => API.searchArtists(encodeURIComponent(query!), sort)}
-			albumQuery={(sort, selectedType) =>
-				API.searchAlbums(encodeURIComponent(query!), selectedType, sort, ['artist'])
-			}
-			songQuery={(sort, selectedType) => API.searchSongs(encodeURIComponent(query!), sort, selectedType, ['artist'])}
+			artistQuery={({ library }, sort) => API.getArtists(
+				{ query: encodeURIComponent(query!), library: library ?? undefined },
+				sort
+			)}
+			albumQuery={({ library, type: newType }, sort) => API.getAlbums(
+				{ query: encodeURIComponent(query!), type: newType, library: library ?? undefined },
+				sort,
+				['artist']
+			)}
+			songQuery={({ library, type: newType }, sort) => API.getSongs(
+				{ query: encodeURIComponent(query!), type: newType, library: library ?? undefined },
+				sort,
+				['artist']
+			)}
 		/>
 	</Box>;
 };

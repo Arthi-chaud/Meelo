@@ -7,12 +7,9 @@ import {
 	Hydrate, QueryClient, QueryClientProvider
 } from "react-query";
 import { ReactQueryDevtools } from "react-query/devtools";
-import { Container } from "@mui/material";
-import MeeloAppBar from "../components/appbar/appbar";
 import { ErrorBoundary } from 'react-error-boundary';
 import toast, { Toaster } from 'react-hot-toast';
 import Head from "next/head";
-import Player from "../components/player/player";
 import { Provider } from "react-redux";
 import AuthenticationWall from "../components/authentication/authentication-wall";
 import { DefaultWindowTitle } from '../utils/constants';
@@ -28,6 +25,7 @@ import store, { persistor } from "../state/store";
 import { DefaultMeeloQueryOptions } from "../api/use-query";
 import createEmotionCache from "../utils/createEmotionCache";
 import { CacheProvider, EmotionCache } from "@emotion/react";
+import Scaffold from "../components/scaffold/scaffold";
 
 // Client-side cache, shared for the whole session of the user in the browser.
 const clientSideEmotionCache = createEmotionCache();
@@ -72,7 +70,6 @@ function MyApp({
 						}}>
 							<Hydrate state={pageProps.dehydratedState}>
 								<AuthenticationWall>
-									<MeeloAppBar />
 									<ErrorBoundary
 										FallbackComponent={() => {
 											if (errorType == 'not-found') {
@@ -91,10 +88,9 @@ function MyApp({
 											}
 										}}
 									>
-										<Container maxWidth={false} sx={{ paddingY: 2 }}>
+										<Scaffold>
 											<Component {...pageProps} />
-										</Container>
-										<Player />
+										</Scaffold>
 									</ErrorBoundary>
 								</AuthenticationWall>
 							</Hydrate>

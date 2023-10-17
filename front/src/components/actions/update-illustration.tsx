@@ -4,12 +4,12 @@ import {
 } from "@mui/material";
 import Action from "./action";
 import store from "../../state/store";
-import InsertPhotoIcon from '@mui/icons-material/InsertPhoto';
 import { toast } from "react-hot-toast";
 import API from "../../api/api";
 import { useMutation } from "react-query";
 import { HookTextField, useHookForm } from "mui-react-hook-form-plus";
 import Translate from "../../i18n/translate";
+import { UpdateIllustrationIcon } from "../icons";
 
 type IllustrationUpdateFormType = {
 	onSubmit: (newUrl: string) => void;
@@ -85,7 +85,7 @@ const UpdateIllustrationAction = (
 	return {
 		label: 'changeIllutration',
 		disabled: store.getState().user.user?.admin !== true,
-		icon: <InsertPhotoIcon />,
+		icon: <UpdateIllustrationIcon />,
 		dialog: (controls) => <IllustrationUpdateForm
 			onClose={controls.close}
 			onSubmit={(url) => mutation.mutate(url)}

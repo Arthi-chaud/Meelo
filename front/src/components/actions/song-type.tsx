@@ -8,7 +8,7 @@ import { useState } from "react";
 import toast from "react-hot-toast";
 import API from "../../api/api";
 import { useMutation } from "react-query";
-import { Edit } from "@mui/icons-material";
+import { EditIcon } from "../icons";
 import Song, { SongType } from "../../models/song";
 
 const SongTypeForm = (props: {
@@ -53,7 +53,7 @@ const ChangeSongType = (
 
 	return {
 		label: 'changeSongType',
-		icon: <Edit/>,
+		icon: <EditIcon/>,
 		disabled: store.getState().user.user?.admin !== true,
 		onClick: () => confirm({
 			title: translate('changeSongType'),

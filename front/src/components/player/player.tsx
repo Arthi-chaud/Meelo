@@ -1,5 +1,6 @@
+import hexToRgba from 'hex-to-rgba';
 import {
-	Box, Paper, Slide
+	Box, Paper, Slide, useMediaQuery, useTheme
 } from "@mui/material";
 import {
 	LegacyRef, useEffect, useRef, useState
@@ -13,8 +14,10 @@ import { RootState } from "../../state/store";
 import { ExpandedPlayerControls, MinimizedPlayerControls } from "./controls";
 import { DefaultWindowTitle } from "../../utils/constants";
 import { toast } from "react-hot-toast";
+import { DrawerBreakpoint } from "../scaffold/scaffold";
 
 const Player = () => {
+	const theme = useTheme();
 	const userIsAuthentified = useSelector(
 		(state: RootState) => state.user.user !== undefined
 	);
@@ -33,6 +36,7 @@ const Player = () => {
 	const [expanded, setExpanded] = useState(false);
 	const [windowFocused, setWindowFocused] = useState(true);
 	const [notification, setNotification] = useState<Notification>();
+	const bottomNavigationIsDisplayed = useMediaQuery(theme.breakpoints.down(DrawerBreakpoint));
 
 	const play = () => {
 		// Do nothing if empty playlist
@@ -193,20 +197,22 @@ const Player = () => {
 			document.body.style.overflow = 'unset';
 		};
 	}, [expanded]);
+
 	return <>
-		<Box sx={{ height: playerComponentRef.current?.offsetHeight }}/>
 		<Slide
-			style={{ position: 'fixed', bottom: 0, left: 0 }}
+			style={{ position: 'sticky', bottom: bottomNavigationIsDisplayed ? '56px' : 0, left: 0 }}
 			direction="up"
 			mountOnEnter unmountOnExit
 			in={playlist.length != 0 || player.current != undefined}
 		>
-			<Box sx={{ padding: 2, zIndex: 'modal', width: '100%' }}>
+			<Box sx={{ padding: 1, zIndex: 'modal', width: '100%' }}>
 				<Paper
-					ref={playerComponentRef} elevation={20}
+					ref={playerComponentRef} elevation={5}
 					sx={{
-						borderRadius: '0.5', padding: { xs: 1, sm: 2 },
-						display: 'flex', width: '100%', height: 'fit-content'
+						borderRadius: '0.5', padding: 1,
+						display: 'flex', width: '100%', height: 'fit-content',
+						background: hexToRgba(theme.palette.background.paper, 0.60),
+						backdropFilter: 'blur(20px)'
 					}}
 				>
 					<MinimizedPlayerControls
@@ -233,10 +239,12 @@ const Player = () => {
 			</Box>
 		</Slide>
 		<Slide in={expanded} style={{ position: 'fixed', bottom: 0, left: 0 }} direction="up">
-			<Box sx={{ padding: 2, zIndex: 'tooltip', width: '100%', height: '100%' }}>
-				<Paper elevation={20} sx={{
+			<Box sx={{ padding: 1, zIndex: 'tooltip', width: '100%', height: '100%' }}>
+				<Paper elevation={5} sx={{
 					borderRadius: '0.5', display: 'flex',
-					width: '100%', height: '100%', overflow: 'clip'
+					width: '100%', height: '100%', overflow: 'clip',
+					background: hexToRgba(theme.palette.background.paper, 0.75),
+					backdropFilter: 'blur(25px)'
 				}}>
 					<ExpandedPlayerControls
 						expanded={expanded}
