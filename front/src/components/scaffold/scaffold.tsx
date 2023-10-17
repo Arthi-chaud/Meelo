@@ -188,7 +188,7 @@ const Scaffold = (props: { children: any }) => {
 	return <Box sx={{ display: 'flex', width: '100%', height: '100vh' }}>
 		<Drawer openBottomDrawer={tempDrawerIsOpen} onClose={() => openDrawer(false)}/>
 		<Box sx={{ display: 'flex', flexDirection: 'column', flexWrap: 'nowrap', overflowX: 'clip', width: '100%' }}>
-			<Container maxWidth={false} sx={{ paddingTop: 2 }}>
+			<Container maxWidth={false} sx={{ paddingTop: 2, paddingBottom: { xs: '65px', [DrawerBreakpoint]: 2 } }}>
 				{props.children}
 			</Container>
 			<Box sx={{ height: '100%' }} />
