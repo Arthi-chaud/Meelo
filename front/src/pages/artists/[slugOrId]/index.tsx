@@ -22,6 +22,7 @@ import ExternalIdBadge from "../../../components/external-id-badge";
 import SongGrid from "../../../components/song-grid";
 import Translate from "../../../i18n/translate";
 import { MoreIcon } from "../../../components/icons";
+import BackgroundBlurhash from "../../../components/blurhash-background";
 
 // Number of Song item in the 'Top Song' section
 const songListSize = 6;
@@ -85,6 +86,9 @@ const ArtistPage = (props: InferSSRProps<typeof getServerSideProps>) => {
 		return <LoadingPage/>;
 	}
 	return <Box>
+		{artist.data.illustration &&
+			<BackgroundBlurhash blurhash={artist.data.illustration.blurhash} />
+		}
 		<Grid container direction="column" spacing={4}
 			sx={{ padding: 2, flex: 1, flexGrow: 1 }}>
 			<Grid item container spacing={4}

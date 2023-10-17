@@ -20,6 +20,7 @@ import { playTrack } from "../../../state/playerSlice";
 import ExternalIdBadge from "../../../components/external-id-badge";
 import Translate from "../../../i18n/translate";
 import { PlayIcon } from "../../../components/icons";
+import BackgroundBlurhash from "../../../components/blurhash-background";
 
 export const getServerSideProps = prepareSSR((context) => {
 	const songIdentifier = getSlugOrId(context.params);
@@ -60,6 +61,9 @@ const SongPage = (props: InferSSRProps<typeof getServerSideProps>) => {
 		return <LoadingPage/>;
 	}
 	return <Box sx={{ width: '100%' }}>
+		{song.data.illustration &&
+			<BackgroundBlurhash blurhash={song.data.illustration.blurhash} />
+		}
 		<SongRelationPageHeader song={song.data}/>
 		<Grid container direction={{ xs: 'column', md: 'row' }} spacing={2}>
 			<Grid item xs>

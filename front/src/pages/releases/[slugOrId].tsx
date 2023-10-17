@@ -1,4 +1,3 @@
-import hexToRgba from 'hex-to-rgba';
 import {
 	Button, Container, Divider, Grid, IconButton,
 	ListSubheader, Stack, Typography, useMediaQuery, useTheme
@@ -33,7 +32,7 @@ import SongGrid from "../../components/song-grid";
 import AlbumTile from "../../components/tile/album-tile";
 import getYear from "../../utils/getYear";
 import Fade from "../../components/fade";
-import { Blurhash } from "react-blurhash";
+import BackgroundBlurhash from '../../components/blurhash-background';
 
 const releaseQuery = (releaseIdentifier: string | number) => API.getRelease(releaseIdentifier, ['album', 'externalIds']);
 const releaseTracklistQuery = (releaseIdentifier: string | number) => API.getReleaseTrackList(releaseIdentifier, ['song']);
@@ -141,7 +140,7 @@ const ReleasePage = (props: InferSSRProps<typeof getServerSideProps>) => {
 		}
 		return [[], null, undefined];
 	}, [tracklistQuery.data]);
-	const illustrationColors = useMemo(() => release.data?.illustration, [release]);
+	const illustration = useMemo(() => release.data?.illustration, [release]);
 
 	// eslint-disable-next-line no-extra-parens
 	if (!release.data || !album.data || !artists.data || !trackList) {
@@ -151,18 +150,7 @@ const ReleasePage = (props: InferSSRProps<typeof getServerSideProps>) => {
 		<Container maxWidth={false} disableGutters={viewIsInColumn}
 			sx={{ marginTop: 3, marginX: 0, position: 'relative' }}
 		>
-			<Box sx={{
-				position: 'fixed', top: 0, left: 0, zIndex: -10000, width: '100%', height: '100%',
-			}}>
-				<Blurhash
-					hash={illustrationColors!.blurhash}
-					style={{ width: '100vw', height: '100vh' }}
-				/>
-			</Box>
-			<Box sx={{
-				position: 'fixed', top: 0, left: 0, zIndex: -10000, width: '100%', height: '100%',
-				background: hexToRgba(theme.palette.background.default, 0.6),
-			}}/>
+			{illustration && <BackgroundBlurhash blurhash={illustration.blurhash} /> }
 			<Grid container spacing={4} sx={{ justifyContent: 'center' }}>
 				<Grid item lg={3} sm={5} xs={8}>
 					<Illustration illustration={release.data!.illustration}/>

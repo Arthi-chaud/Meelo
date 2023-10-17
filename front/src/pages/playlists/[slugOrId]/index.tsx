@@ -36,6 +36,7 @@ import { shuffle } from "d3-array";
 import { DeletePlaylistAction } from "../../../components/actions/playlist";
 import { useConfirm } from "material-ui-confirm";
 import Translate, { translate } from "../../../i18n/translate";
+import BackgroundBlurhash from "../../../components/blurhash-background";
 
 const playlistQuery = (idOrSlug: number | string) => API.getPlaylist(idOrSlug, ['entries']);
 const masterTrackQuery = (songId: number | string) => API.getMasterTrack(songId, ['release']);
@@ -180,6 +181,9 @@ const PlaylistPage = (props: InferSSRProps<typeof getServerSideProps>) => {
 	}));
 
 	return <>
+		{playlist.data.illustration &&
+			<BackgroundBlurhash blurhash={playlist.data.illustration.blurhash} />
+		}
 		<RelationPageHeader
 			illustration={<Illustration illustration={playlist.data.illustration}/>}
 			title={playlist.data.name}
