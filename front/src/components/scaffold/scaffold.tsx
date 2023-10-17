@@ -72,7 +72,9 @@ const Drawer = (
 			zIndex: 'tooltip',
 			'& .MuiDrawer-paper': {
 				width: drawerWidth,
-				backgroundColor: colorScheme == 'dark' ? 'transparent' : undefined,
+				backgroundColor: (colorScheme == 'dark' || !drawerIsAtBottom)
+					? 'transparent'
+					: undefined,
 				backdropFilter: 'blur(30px)',
 				boxSizing: 'border-box',
 			},
