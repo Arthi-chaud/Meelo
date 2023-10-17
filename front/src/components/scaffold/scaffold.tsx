@@ -19,7 +19,6 @@ import { useRouter } from "next/router";
 import { IconProps } from "iconsax-react";
 import { useState } from "react";
 import { useScaffoldActions } from "./actions";
-import { DarkTheme } from "../../theme/theme";
 import useColorScheme from "../../theme/color-scheme";
 
 /**
@@ -80,13 +79,12 @@ const Drawer = (
 		}}
 	>
 		<Box sx={{
-			backgroundColor: colorScheme == 'light' ? DarkTheme.background?.paper : undefined,
 			justifyContent: 'center',
 			display: 'flex',
 			alignItems: 'center', padding: 2
 		}}>
 			<Link href="/" style={{ cursor: 'pointer' }}>
-				<Image src="/banner.png" alt="icon" priority width={180} height={75}/>
+				<Image src={colorScheme == 'dark' ? "/banner.png" : "/banner-black.png"} alt="icon" priority width={180} height={75}/>
 			</Link>
 		</Box>
 		<Divider variant="middle"/>

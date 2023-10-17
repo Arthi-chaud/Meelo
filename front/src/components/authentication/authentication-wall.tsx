@@ -9,6 +9,7 @@ import { RootState } from "../../state/store";
 import { useDispatch, useSelector } from "react-redux";
 import { setUserProfile } from "../../state/userSlice";
 import { useQuery as useReactQuery } from "react-query";
+import useColorScheme from "../../theme/color-scheme";
 
 const AuthenticationWall = (props: { children: any }) => {
 	const accessToken = useSelector((store: RootState) => store.user.accessToken);
@@ -16,6 +17,7 @@ const AuthenticationWall = (props: { children: any }) => {
 		...prepareMeeloQuery(API.getCurrentUserStatus),
 		useErrorBoundary: false,
 	});
+	const colorScheme = useColorScheme();
 	const dispatch = useDispatch();
 	const [authentified, setAuthenticationStatus] = useState(status.data?.id !== undefined);
 
@@ -48,7 +50,7 @@ const AuthenticationWall = (props: { children: any }) => {
 				justifyContent: 'center', alignItems: 'center'
 			}}>
 				<Grid xs={2} item sx={{ position: 'relative', width: '100%', display: 'flex', justifyContent: 'center' }}>
-					<Image src="/banner.png" alt="title" width={200} height={150} priority style={{ objectFit: 'contain' }}/>
+					<Image src={colorScheme == 'dark' ? "/banner.png" : "/banner-black.png"} alt="title" width={200} height={150} priority style={{ objectFit: 'contain' }}/>
 				</Grid>
 				<Grid item xs>
 					<AuthenticationForm/>
