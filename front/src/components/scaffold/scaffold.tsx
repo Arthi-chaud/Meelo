@@ -2,6 +2,7 @@
 import {
 	BottomNavigationAction,
 	Box,
+	Container,
 	Divider,
 	List, ListItem, ListItemButton, ListItemIcon,
 	ListItemText, BottomNavigation as MUIBottomNavigation,
@@ -150,7 +151,7 @@ const BottomNavigation = (props: { onDrawerOpen: () => void }) => {
 			boxShadow: 10,
 			zIndex: 'modal', width: '100%',
 			padding: 1,
-			position: 'sticky',
+			position: 'fixed',
 			justifyContent: 'space-evenly',
 			bottom: 0,
 			display: { xs: 'flex', [DrawerBreakpoint]: 'none' }
@@ -186,14 +187,16 @@ const Scaffold = (props: { children: any }) => {
 
 	return <Box sx={{ display: 'flex', width: '100%', height: '100vh' }}>
 		<Drawer openBottomDrawer={tempDrawerIsOpen} onClose={() => openDrawer(false)}/>
-		<Box sx={{ display: 'flex', flexDirection: 'column', overflowX: 'clip', overflowY: 'scroll', width: '100%' }}>
-			{props.children}
+		<Box sx={{ display: 'flex', flexDirection: 'column', flexWrap: 'nowrap', overflowX: 'clip', width: '100%' }}>
+			<Container maxWidth={false} sx={{ paddingTop: 2 }}>
+				{props.children}
+			</Container>
 			<Box sx={{ height: '100%' }} />
 			<Player/>
-			<BottomNavigation onDrawerOpen={() => {
-				openDrawer(!tempDrawerIsOpen);
-			}}/>
 		</Box>
+		<BottomNavigation onDrawerOpen={() => {
+			openDrawer(!tempDrawerIsOpen);
+		}}/>
 	</Box>;
 };
 

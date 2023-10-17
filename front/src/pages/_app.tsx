@@ -7,7 +7,6 @@ import {
 	Hydrate, QueryClient, QueryClientProvider
 } from "react-query";
 import { ReactQueryDevtools } from "react-query/devtools";
-import { Container } from "@mui/material";
 import { ErrorBoundary } from 'react-error-boundary';
 import toast, { Toaster } from 'react-hot-toast';
 import Head from "next/head";
@@ -90,9 +89,7 @@ function MyApp({
 										}}
 									>
 										<Scaffold>
-											<Container maxWidth={false} sx={{ paddingTop: 2 }}>
-												<Component {...pageProps} />
-											</Container>
+											<Component {...pageProps} />
 										</Scaffold>
 									</ErrorBoundary>
 								</AuthenticationWall>
