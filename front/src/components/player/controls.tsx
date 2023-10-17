@@ -121,7 +121,8 @@ const MinimizedPlayerControls = (props: PlayerControlsProps) => {
 					</Typography>
 				</Grid>
 			</Grid>
-			<Grid item container xs={2}
+			<Grid item container
+				xs={4} sm={3} md={2}
 				flexWrap='nowrap'
 				onClick={(event) => event.stopPropagation()}
 			>
