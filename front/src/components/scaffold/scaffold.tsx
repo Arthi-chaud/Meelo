@@ -143,26 +143,30 @@ const Drawer = (
 						const isSelected = path
 							? path !== '/' ? router.asPath.startsWith(path) : false
 							: false;
+						let item = <ListItemButton onClick={() => {
+							action.onClick && action.onClick();
+							onClose();
+						}}>
+							<ListItemIcon>
+								{action.icon}
+							</ListItemIcon>
+							<ListItemText
+								primary={
+									<Typography sx={{ fontWeight: isSelected ? 'bold' : 'normal' }}>
+										<Translate translationKey={action.label}/>
+									</Typography>
+								}
+							>
+							</ListItemText>
+						</ListItemButton>;
 
-						return <ListItem key={action.label} >
-							<Link href={action.href ?? '#'} style={{ width: '100%' }}>
-								<ListItemButton onClick={() => {
-									action.onClick && action.onClick();
-									onClose();
-								}}>
-									<ListItemIcon>
-										{action.icon}
-									</ListItemIcon>
-									<ListItemText
-										primary={
-											<Typography sx={{ fontWeight: isSelected ? 'bold' : 'normal' }}>
-												<Translate translationKey={action.label}/>
-											</Typography>
-										}
-									>
-									</ListItemText>
-								</ListItemButton>
-							</Link>
+						if (action.href) {
+							item = <Link href={action.href} style={{ width: '100%' }}>
+								{item}
+							</Link>;
+						}
+						return <ListItem key={action.label}>
+							{item}
 						</ListItem>;
 					})}
 				</List>
