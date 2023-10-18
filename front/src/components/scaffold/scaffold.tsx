@@ -6,8 +6,9 @@ import {
 	Divider,
 	List, ListItem, ListItemButton, ListItemIcon,
 	ListItemText, BottomNavigation as MUIBottomNavigation,
-	Drawer as MUIDrawer, Typography, useMediaQuery, useTheme
+	Drawer as MUIDrawer, Typography, useTheme
 } from "@mui/material";
+import { deepmerge } from '@mui/utils';
 import {
 	AlbumIcon, ArtistIcon, BurgerIcon, PlaylistIcon, SongIcon, VideoIcon
 } from "../icons";
@@ -56,93 +57,118 @@ const Drawer = (
 	const persistentDrawerBreakpoint = DrawerBreakpoint;
 	const drawerWidth = { [persistentDrawerBreakpoint]: 240 };
 	const actions = useScaffoldActions();
-	const drawerIsAtBottom = useMediaQuery(theme.breakpoints.down(persistentDrawerBreakpoint));
 	const colorScheme = useColorScheme();
-
-	return <MUIDrawer
-		open={drawerIsAtBottom ? openBottomDrawer : true}
-		anchor={'left'}
-		variant={drawerIsAtBottom ? 'temporary' : 'permanent'}
-		// From the documentation
-		// keeps content from going under the drawer
-		onClose={onClose}
-		sx={{
-			width: drawerIsAtBottom ? 'auto' : drawerWidth,
-			flexShrink: 0,
+	const commonDrawerProps = {
+		anchor: 'left',
+		onClose: onClose,
+		sx: {
 			zIndex: 'tooltip',
 			'& .MuiDrawer-paper': {
 				width: drawerWidth,
-				backgroundColor: (colorScheme == 'dark' || !drawerIsAtBottom)
-					? 'transparent'
-					: undefined,
 				backdropFilter: 'blur(30px)',
 				boxSizing: 'border-box',
 			},
-		}}
-	>
-		<Box sx={{
-			justifyContent: 'center',
-			display: 'flex',
-			alignItems: 'center', padding: 2
-		}}>
-			<Link href="/" style={{ cursor: 'pointer' }}>
-				<Image src={colorScheme == 'dark' ? "/banner.png" : "/banner-black.png"} alt="icon" priority width={180} height={75}/>
-			</Link>
-		</Box>
-		<Divider variant="middle"/>
-		<List>
-			{primaryItems.map((item) => {
-				const path = `/${item}`;
-				const isSelected = path == router.asPath;
-				const Icon = (props: IconProps) => getPrimaryTypeIcon(item, props);
+		}
+	} as const;
+	const persistentDrawerProps = {
+		open: true,
+		variant: 'permanent',
+		sx: {
+			display: {
+				xs: 'none',
+				[persistentDrawerBreakpoint]: 'block'
+			},
+			width: drawerWidth,
+			'& .MuiDrawer-paper': {
+				backgroundColor: 'transparent'
+			}
+		}
+	} as const;
+	const temporaryDrawerProps = {
+		open: openBottomDrawer,
+		variant: 'temporary',
+		sx: {
+			display: {
+				xs: 'block',
+				[persistentDrawerBreakpoint]: 'none'
+			},
+			width: 'auto',
+			'& .MuiDrawer-paper': {
+				backgroundColor: (colorScheme == 'dark')
+					? 'transparent'
+					: undefined,
+			},
+		}
+	} as const;
 
-				return <ListItem key={item} >
-					<Link href={path} style={{ width: '100%' }}>
-						<ListItemButton onClick={onClose}>
-							<ListItemIcon>
-								<Icon variant={isSelected ? 'Bold' : 'Outline'}/>
-							</ListItemIcon>
-							<ListItemText>
-								<Typography sx={{ fontWeight: isSelected ? 'bold' : 'normal' }}>
-									<Translate translationKey={item}/>
-								</Typography>
-							</ListItemText>
-						</ListItemButton>
+	return <>
+		{[persistentDrawerProps, temporaryDrawerProps].map((drawerProps, key) => (
+			<MUIDrawer key={`drawer-${drawerProps.variant}`} {...deepmerge(drawerProps, commonDrawerProps)}>
+				<Box sx={{
+					justifyContent: 'center',
+					display: 'flex',
+					alignItems: 'center', padding: 2
+				}}>
+					<Link href="/" style={{ cursor: 'pointer' }}>
+						<Image src={colorScheme == 'dark' ? "/banner.png" : "/banner-black.png"} alt="icon" priority width={180} height={75}/>
 					</Link>
-				</ListItem>;
-			}) }
-		</List>
-		<Divider variant="middle" />
-		<List>
-			{actions.map((action) => {
-				const path = action.href;
-				const isSelected = path
-					? path !== '/' ? router.asPath.startsWith(path) : false
-					: false;
+				</Box>
+				<Divider variant="middle"/>
+				<List>
+					{primaryItems.map((item) => {
+						const path = `/${item}`;
+						const isSelected = path == router.asPath;
+						const Icon = (props: IconProps) => getPrimaryTypeIcon(item, props);
 
-				return <ListItem key={action.label} >
-					<Link href={action.href ?? '#'} style={{ width: '100%' }}>
-						<ListItemButton onClick={() => {
-							action.onClick && action.onClick();
-							onClose();
-						}}>
-							<ListItemIcon>
-								{action.icon}
-							</ListItemIcon>
-							<ListItemText
-								primary={
-									<Typography sx={{ fontWeight: isSelected ? 'bold' : 'normal' }}>
-										<Translate translationKey={action.label}/>
-									</Typography>
-								}
-							>
-							</ListItemText>
-						</ListItemButton>
-					</Link>
-				</ListItem>;
-			})}
-		</List>
-	</MUIDrawer>;
+						return <ListItem key={item} >
+							<Link href={path} style={{ width: '100%' }}>
+								<ListItemButton onClick={onClose}>
+									<ListItemIcon>
+										<Icon variant={isSelected ? 'Bold' : 'Outline'}/>
+									</ListItemIcon>
+									<ListItemText>
+										<Typography sx={{ fontWeight: isSelected ? 'bold' : 'normal' }}>
+											<Translate translationKey={item}/>
+										</Typography>
+									</ListItemText>
+								</ListItemButton>
+							</Link>
+						</ListItem>;
+					}) }
+				</List>
+				<Divider variant="middle" />
+				<List>
+					{actions.map((action) => {
+						const path = action.href;
+						const isSelected = path
+							? path !== '/' ? router.asPath.startsWith(path) : false
+							: false;
+
+						return <ListItem key={action.label} >
+							<Link href={action.href ?? '#'} style={{ width: '100%' }}>
+								<ListItemButton onClick={() => {
+									action.onClick && action.onClick();
+									onClose();
+								}}>
+									<ListItemIcon>
+										{action.icon}
+									</ListItemIcon>
+									<ListItemText
+										primary={
+											<Typography sx={{ fontWeight: isSelected ? 'bold' : 'normal' }}>
+												<Translate translationKey={action.label}/>
+											</Typography>
+										}
+									>
+									</ListItemText>
+								</ListItemButton>
+							</Link>
+						</ListItem>;
+					})}
+				</List>
+			</MUIDrawer>
+		))}
+	</>;
 };
 
 const BottomNavigation = (props: { onDrawerOpen: () => void }) => {
