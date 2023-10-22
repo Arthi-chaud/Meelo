@@ -43,7 +43,7 @@ type IllustrationProps = {
 	 */
 	quality: ImageQuality;
 
-	imgProps?: Omit<ImageProps, 'src' | 'alt' | 'quality'>
+	imgProps?: ImageProps['style']
 } & RequireExactlyOne<{
 	/**
 	 * URL of the illustration to display
@@ -70,7 +70,7 @@ const Illustration = (props: IllustrationProps) => {
 		{blurhash &&
 			<Fade in={!loadingCompleted && !loadingFailed} unmountOnExit mountOnEnter>
 				<Box style={{ width: 'inherit', height: 'inherit',
-					borderRadius: theme.shape.borderRadius, overflow: 'hidden', ...props.imgProps?.style }}>
+					borderRadius: theme.shape.borderRadius, overflow: 'hidden', ...props.imgProps }}>
 					<Blurhash
 						hash={blurhash}
 						style={{ width: 'inherit', height: 'inherit' }}
@@ -103,12 +103,11 @@ const Illustration = (props: IllustrationProps) => {
 						}
 						: {})
 					}
-					{...props.imgProps}
 					unoptimized
 					style={{
-						...props.imgProps?.style,
 						borderRadius: theme.shape.borderRadius,
 						objectFit: "contain",
+						...props.imgProps,
 					}}
 					src={API.getIllustrationURL(url) + (props.quality == 'original'
 						? ''
