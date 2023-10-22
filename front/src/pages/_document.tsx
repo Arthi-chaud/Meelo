@@ -20,8 +20,9 @@ interface MyDocumentProps extends DocumentProps {
 
 export default function MyDocument({ emotionStyleTags }: MyDocumentProps) {
 	return (
-		<Html className={font.className}>
+		<Html className={font.className} lang="en">
 			<Head>
+				<meta name="description" content="Self-Hosted, Personal Music Server, designed for collectors and music maniacs."/>
 				<meta name="apple-mobile-web-app-capable" content="yes" />
 				<meta name="apple-mobile-web-app-status-bar-style" content="black" />
 				<meta name="theme-color" content={LightTheme.background?.default}/>
