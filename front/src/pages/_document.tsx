@@ -22,13 +22,17 @@ export default function MyDocument({ emotionStyleTags }: MyDocumentProps) {
 	return (
 		<Html className={font.className} lang="en">
 			<Head>
+				<meta charSet="utf-8"/>
+				<meta name="keywords" content="Music Server Self-Hosted Collection"/>
 				<meta name="description" content="Self-Hosted, Personal Music Server, designed for collectors and music maniacs."/>
+				<meta name="apple-mobile-web-app-title" content="Meelo"/>
 				<meta name="apple-mobile-web-app-capable" content="yes" />
-				<meta name="apple-mobile-web-app-status-bar-style" content="black" />
+				<meta name="apple-mobile-web-app-status-bar-style" content={LightTheme.background?.default} />
 				<meta name="theme-color" content={LightTheme.background?.default}/>
 				<link rel="shortcut icon" href="/favicon.ico" />
 				<link rel="apple-touch-icon" href="/favicon.ico" />
 				<meta name="emotion-insertion-point" content="" />
+				<meta name="viewport" content="viewport-fit=cover"/>
 				{emotionStyleTags}
 			</Head>
 			<body style={{ height: '100vh' }}>
