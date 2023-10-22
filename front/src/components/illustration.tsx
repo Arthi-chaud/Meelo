@@ -11,6 +11,7 @@ import IllustrationModel from "../models/illustration";
 import { Blurhash } from "react-blurhash";
 import { isSSR } from "../ssr";
 import Fade from "./fade";
+import { blurHashToDataURL } from "../utils/blurhashToDataUrl";
 
 type IllustrationProps = {
 	/**
@@ -77,8 +78,19 @@ const Illustration = (props: IllustrationProps) => {
 					fill
 					sizes="(max-width: 500px) 100vw, (max-width: 1000px) 50vw, 25vw"
 					alt={(url?.split('/').join('-') ?? 'missing-illustration')}
+					{...(blurhash && isSSR()
+						? {
+							blurDataURL: blurHashToDataURL(blurhash),
+							placeholder: 'blur'
+						}
+						: {})
+					}
 					{...props}
-					style={{ borderRadius: theme.shape.borderRadius, objectFit: "contain", ...props.style }}
+					style={{
+						borderRadius: theme.shape.borderRadius,
+						objectFit: "contain",
+						...props.style,
+					}}
 					src={API.getIllustrationURL(url)}
 				/>}
 			</Box>
