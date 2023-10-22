@@ -21,7 +21,7 @@ const AlbumTile = (props: {
 			?? compilationKeyword
 		}
 		href={`/albums/${props.album.artist?.slug ?? 'compilations'}+${props.album.slug}`}
-		illustration={<Illustration illustration={props.album.illustration}/>}
+		illustration={<Illustration illustration={props.album.illustration} quality="med"/>}
 	/>;
 };
 

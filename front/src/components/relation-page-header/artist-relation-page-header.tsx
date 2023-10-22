@@ -23,8 +23,9 @@ const ArtistRelationPageHeader = (props: ArtistRelationPageHeaderProps) => {
 		return <WideLoadingComponent/>;
 	}
 	return <RelationPageHeader
-		illustration={<Illustration style={{ objectFit: "cover" }}
+		illustration={<Illustration imgProps={{ objectFit: "cover" }}
 			illustration={artist.data.illustration}
+			quality="med"
 			fallback={<ArtistIcon/>}/>
 		}
 		title={artist.data.name}

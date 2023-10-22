@@ -153,7 +153,7 @@ const ReleasePage = (props: InferSSRProps<typeof getServerSideProps>) => {
 			{illustration && <BackgroundBlurhash blurhash={illustration.blurhash} /> }
 			<Grid container spacing={4} sx={{ justifyContent: 'center' }}>
 				<Grid item lg={3} sm={5} xs={8}>
-					<Illustration illustration={release.data!.illustration}/>
+					<Illustration illustration={release.data!.illustration} quality="original"/>
 				</Grid>
 				<Grid item container
 					sx={{

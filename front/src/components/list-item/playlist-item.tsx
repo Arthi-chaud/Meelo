@@ -17,7 +17,8 @@ const PlaylistItem = ({ playlist }: PlaylistItemProps) => {
 	return <ListItem
 		icon={<Illustration
 			illustration={playlist.illustration}
-			style={{ objectFit: "cover" }}
+			imgProps={{ objectFit: "cover" }}
+			quality="low"
 			fallback={<PlaylistIcon />} />
 		}
 		href={`/playlists/${playlist.slug}`}

@@ -111,7 +111,7 @@ type PlaylistEntryItemProps = {
 
 const PlaylistEntryItem = ({ entry, onClick }: PlaylistEntryItemProps) => (
 	<ListItem
-		icon={<Illustration illustration={entry.illustration} fallback={<SongIcon/>}/>}
+		icon={<Illustration quality="low" illustration={entry.illustration} fallback={<SongIcon/>}/>}
 		title={entry.name}
 		onClick={onClick}
 		trailing={<SongContextualMenu song={entry} entryId={entry.entryId}/>}
@@ -185,7 +185,7 @@ const PlaylistPage = (props: InferSSRProps<typeof getServerSideProps>) => {
 			<BackgroundBlurhash blurhash={playlist.data.illustration.blurhash} />
 		}
 		<RelationPageHeader
-			illustration={<Illustration illustration={playlist.data.illustration}/>}
+			illustration={<Illustration illustration={playlist.data.illustration} quality="original"/>}
 			title={playlist.data.name}
 			trailing={<PlaylistContextualMenu playlist={playlist.data}/>}
 		/>

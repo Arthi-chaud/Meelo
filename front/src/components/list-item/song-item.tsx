@@ -30,7 +30,7 @@ const SongItem = ({ song, formatSubtitle }: SongItemProps) => {
 	}
 	return (
 		<ListItem
-			icon={<Illustration illustration={song.illustration} fallback={<SongIcon/>}/>}
+			icon={<Illustration illustration={song.illustration} fallback={<SongIcon/>} quality="low"/>}
 			title={song.name}
 			onClick={() => queryClient
 				.fetchQuery(API.getMasterTrack(song.id, ['release']))

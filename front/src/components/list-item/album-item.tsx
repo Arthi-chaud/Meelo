@@ -23,7 +23,7 @@ const AlbumItem = ({ album, formatSubtitle }: AlbumItemProps) => {
 
 	return (
 		<ListItem
-			icon={<Illustration illustration={album.illustration}/>}
+			icon={<Illustration illustration={album.illustration} quality="low"/>}
 			href={`/albums/${artist?.slug ?? 'compilations'}+${album.slug}`}
 			title={album.name}
 			secondTitle={formatSubtitle?.call(this, album) ?? artist?.name ?? compilationKeyword}

@@ -18,7 +18,8 @@ const ArtistItem = ({ artist }: ArtistItemProps) => {
 		<ListItem
 			icon={<Illustration
 				illustration={artist.illustration}
-				style={{ objectFit: "cover" }}
+				imgProps={{ objectFit: "cover" }}
+				quality="low"
 				fallback={<ArtistIcon/>}/>
 			}
 			href={`/artists/${artist.slug}`}
