@@ -95,7 +95,7 @@ const ArtistPage = (props: InferSSRProps<typeof getServerSideProps>) => {
 				sx={{ justifyContent: 'flex-start' }}>
 				<Grid item xs={5} sm={3}
 					lg={2}>
-					<Illustration illustration={artist.data?.illustration} style={{ objectFit: "cover" }} />
+					<Illustration quality="original" illustration={artist.data?.illustration} imgProps={{ objectFit: "cover" }} />
 				</Grid>
 				<Grid item xs sx={{ display: 'flex', alignItems: 'center', overflow: 'hidden' }}>
 					<Typography variant='h3' fontWeight='bold'>{artist.data!.name}</Typography>

@@ -186,6 +186,7 @@ const SelectPlaylistForm = (props: SelectPlaylistFormProps) => {
 					icon={<Illustration
 						illustration={item.illustration}
 						fallback={<AddItemToPlaylistIcon />}
+						quality="low"
 					/>}
 					onClick={() => {
 						props.onSubmit(item.id);

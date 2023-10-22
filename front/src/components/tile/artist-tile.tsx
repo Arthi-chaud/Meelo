@@ -9,7 +9,12 @@ const ArtistTile = (props: { artist: Artist }) => {
 		contextualMenu={<ArtistContextualMenu artist={props.artist}/>}
 		title={props.artist.name}
 		href={`/artists/${props.artist.slug}`}
-		illustration={<Illustration illustration={props.artist.illustration} style={{ objectFit: "cover" }} fallback={<ArtistIcon />}/>}
+		illustration={<Illustration
+			illustration={props.artist.illustration}
+			imgProps={{ objectFit: "cover" }}
+			fallback={<ArtistIcon />}
+			quality="med"
+		/>}
 	/>;
 };
 

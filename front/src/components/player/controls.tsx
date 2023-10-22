@@ -90,6 +90,7 @@ const MinimizedPlayerControls = (props: PlayerControlsProps) => {
 			<Grid item sx={{ minWidth: '60px' }}>
 				{ props.track ? <Illustration
 					illustration={props.track?.illustration ?? null}
+					quality="low"
 					fallback={<TrackIcon />}
 				/> : <Box sx={{ height: '100%', display: 'flex', alignItems: 'center' }}>
 					<TrackIcon />
@@ -187,6 +188,7 @@ const ExpandedPlayerControls = (
 							width='100%' height='100%' onClick={requestFullscreen}
 						/>
 						: <Illustration
+							quality="original"
 							url={props.illustration ?? null}
 							fallback={<TrackIcon />}
 						/>

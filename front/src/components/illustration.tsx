@@ -13,6 +13,19 @@ import { isSSR } from "../ssr";
 import Fade from "./fade";
 import { blurHashToDataURL } from "../utils/blurhashToDataUrl";
 
+type ImageQuality = 'low' | 'med' | 'original';
+
+const getImageWidth = (quality: ImageQuality) => {
+	switch (quality) {
+	case 'low':
+		return 100;
+	case 'med':
+		return 350;
+	case 'original':
+		return undefined;
+	}
+};
+
 type IllustrationProps = {
 	/**
 	 * An icon to display when illustration rendering failed
@@ -24,7 +37,14 @@ type IllustrationProps = {
 	 * @default 1
 	 */
 	aspectRatio?: number;
-} & Omit<ImageProps, 'src' | 'alt'> & RequireExactlyOne<{
+
+	/**
+	 * Quality preset, in which to dl the image.
+	 */
+	quality: ImageQuality;
+
+	imgProps?: Omit<ImageProps, 'src' | 'alt' | 'quality'>
+} & RequireExactlyOne<{
 	/**
 	 * URL of the illustration to display
 	 * Must be an URL from an API response
@@ -50,7 +70,7 @@ const Illustration = (props: IllustrationProps) => {
 		{blurhash &&
 			<Fade in={!loadingCompleted && !loadingFailed} unmountOnExit mountOnEnter>
 				<Box style={{ width: 'inherit', height: 'inherit',
-					borderRadius: theme.shape.borderRadius, overflow: 'hidden', ...props.style }}>
+					borderRadius: theme.shape.borderRadius, overflow: 'hidden', ...props.imgProps?.style }}>
 					<Blurhash
 						hash={blurhash}
 						style={{ width: 'inherit', height: 'inherit' }}
@@ -74,9 +94,7 @@ const Illustration = (props: IllustrationProps) => {
 				: <Image
 					onError={() => setLoadingFailed(true)}
 					onLoadingComplete={() => setLoadingCompleted(true)}
-					loader={({ src, width }) => src + `?width=${width}`}
 					fill
-					sizes="(max-width: 500px) 100vw, (max-width: 1000px) 50vw, 25vw"
 					alt={(url?.split('/').join('-') ?? 'missing-illustration')}
 					{...(blurhash && isSSR()
 						? {
@@ -85,13 +103,16 @@ const Illustration = (props: IllustrationProps) => {
 						}
 						: {})
 					}
-					{...props}
+					{...props.imgProps}
+					unoptimized
 					style={{
+						...props.imgProps?.style,
 						borderRadius: theme.shape.borderRadius,
 						objectFit: "contain",
-						...props.style,
 					}}
-					src={API.getIllustrationURL(url)}
+					src={API.getIllustrationURL(url) + (props.quality == 'original'
+						? ''
+						: `?width=${getImageWidth(props.quality)}`)}
 				/>}
 			</Box>
 		</Fade>
