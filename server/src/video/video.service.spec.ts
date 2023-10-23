@@ -13,7 +13,7 @@ import TestPrismaService from "test/test-prisma.service";
 import { LyricsModule } from "src/lyrics/lyrics.module";
 import VideoService from "./video.service";
 import VideoModule from "./video.module";
-import Releasx from "src/release/release.module";
+import ReleaseModule from "src/release/release.module";
 import MetadataModule from "src/metadata/metadata.module";
 
 describe('Video Service', () => {
