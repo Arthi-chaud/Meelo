@@ -53,6 +53,8 @@ const Tile = (props: TileProps) => {
 								event.preventDefault();
 								event.stopPropagation();
 							}}
+							onTouchStart={() => setIsHoveringCtxtMenu(false)}
+							onTouchEnd={() => setIsHoveringCtxtMenu(false)}
 							onMouseOver={() => setIsHoveringCtxtMenu(true)}
 							onMouseLeave={() => setIsHoveringCtxtMenu(false)}
 							mountOnEnter
