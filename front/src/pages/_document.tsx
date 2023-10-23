@@ -32,7 +32,6 @@ export default function MyDocument({ emotionStyleTags }: MyDocumentProps) {
 				<link rel="shortcut icon" href="/favicon.ico" />
 				<link rel="apple-touch-icon" href="/favicon.ico" />
 				<meta name="emotion-insertion-point" content="" />
-				<meta name="viewport" content="viewport-fit=cover"/>
 				{emotionStyleTags}
 			</Head>
 			<body style={{ height: '100vh' }}>
