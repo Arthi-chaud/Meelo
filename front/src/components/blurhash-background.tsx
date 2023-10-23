@@ -7,7 +7,7 @@ const BackgroundBlurhash = (props: { blurhash: string }) => {
 	const theme = useTheme();
 
 	return <>
-		<Fade in mountOnEnter unmountOnExit>
+		<Fade in>
 			<Box sx={{
 				position: 'fixed', top: 0, left: 0, zIndex: -10000, width: '100%', height: '100%',
 			}}>
