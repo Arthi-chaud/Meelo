@@ -181,17 +181,19 @@ const ExpandedPlayerControls = (
 		</Box>
 		<Grid container>
 			<Grid item container xs={12} lg={7} sx={{ height: { xs: '80vh', lg: '90vh' }, flexWrap: 'nowrap', justifyContent: { lg: 'center' } }} direction='column'>
-				<Grid item xs={7} sx={{ padding: 3, overflow: 'hidden', aspectRatio: '1' }}>
+				<Grid item xs={7} sx={{ padding: 3, overflow: 'hidden', display: 'flex', justifyContent: 'center' }}>
 					{ props.track?.type == 'Video'
 						? <video playsInline id="videoPlayer" ref={props.videoRef}
 							disablePictureInPicture={false}
 							width='100%' height='100%' onClick={requestFullscreen}
 						/>
-						: <Illustration
-							quality="original"
-							url={props.illustration ?? null}
-							fallback={<TrackIcon />}
-						/>
+						: <Box sx={{ height: '100%', aspectRatio: '1', objectFit: 'contain', overflow: 'hidden' }}>
+							<Illustration
+								quality="original"
+								url={props.illustration ?? null}
+								fallback={<TrackIcon />}
+							/>
+						</Box>
 					}
 				</Grid>
 				<Grid item sx={{ width: '100%' }}>
