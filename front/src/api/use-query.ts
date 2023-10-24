@@ -83,10 +83,13 @@ const isEnabled = (args: any[]) => {
  * @param queryArgs the arguments to pass the the query function. If one of them is undefined, the query will not be enabled
  * @returns
  */
-const prepareMeeloInfiniteQuery = <QueryReturnType extends Resource = Resource, Params extends any[] = unknown[]>(
-	query: MeeloInfiniteQueryFn<QueryReturnType, Params>,
-	...queryArgs: Partial<Params>
-) => {
+const prepareMeeloInfiniteQuery = <
+	QueryReturnType extends Resource = Resource,
+	Params extends any[] = unknown[]
+	>(
+		query: MeeloInfiniteQueryFn<QueryReturnType, Params>,
+		...queryArgs: Partial<Params>
+	) => {
 	const enabled = isEnabled(queryArgs);
 	const queryParams = query(...queryArgs as Params);
 
