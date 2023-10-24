@@ -98,8 +98,8 @@ describe('Genius Provider', () => {
 				.toBe("https://images.genius.com/3ab61718877f5b1e7b119606361c92ad.522x522x1.jpg");
 		});
 		it("should get artist illustration", async () => {
-			expect(await geniusProvider.getArtistIllustrationUrl('Britney-spears'))
-				.toBe("https://images.genius.com/46f4e22f4dd38d21ca5e5edb9cd82331.900x900x1.jpg");
+			expect(await geniusProvider.getArtistIllustrationUrl('Holly-valance'))
+				.toBe("https://images.genius.com/64e96fa47d259435460506f726ec3fc5.552x552x1.jpg");
 		});
 		it("should fail, as the artist does not have an illustration", () => {
 			expect(() => geniusProvider.getArtistIllustrationUrl('Peplab'))
