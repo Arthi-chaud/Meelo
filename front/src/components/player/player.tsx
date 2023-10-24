@@ -3,7 +3,7 @@ import {
 	Box, Paper, Slide, useMediaQuery, useTheme
 } from "@mui/material";
 import {
-	LegacyRef, useEffect, useRef, useState
+	LegacyRef, useEffect, useMemo, useRef, useState
 } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import API from "../../api/api";
@@ -197,6 +197,15 @@ const Player = () => {
 			document.body.style.overflow = 'unset';
 		};
 	}, [expanded]);
+	const playerBgColor = useMemo(() => {
+		const themePaperColor = hexToRgba(theme.palette.background.paper, 0.75);
+		const artworkColor = currentTrack?.track.illustration?.colors.at(0);
+
+		if (artworkColor) {
+			return `color-mix(in srgb, ${artworkColor} 30%, ${themePaperColor})`;
+		}
+		return themePaperColor;
+	}, [theme, currentTrack]);
 
 	return <>
 		<Slide
@@ -211,8 +220,9 @@ const Player = () => {
 					sx={{
 						borderRadius: '0.5', padding: 1,
 						display: 'flex', width: '100%', height: 'fit-content',
-						background: hexToRgba(theme.palette.background.paper, 0.60),
-						backdropFilter: 'blur(20px)'
+						background: playerBgColor,
+						transition: 'background 0.2s ease',
+						backdropFilter: 'blur(15px)'
 					}}
 				>
 					<MinimizedPlayerControls
@@ -243,8 +253,9 @@ const Player = () => {
 				<Paper elevation={5} sx={{
 					borderRadius: '0.5', display: 'flex',
 					width: '100%', height: '100%', overflow: 'clip',
-					background: hexToRgba(theme.palette.background.paper, 0.75),
-					backdropFilter: 'blur(25px)'
+					background: playerBgColor,
+					transition: 'background 0.2s ease',
+					backdropFilter: 'blur(20px)'
 				}}>
 					<ExpandedPlayerControls
 						expanded={expanded}
