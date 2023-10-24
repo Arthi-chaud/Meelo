@@ -8,6 +8,7 @@ import {
 } from "react-query";
 import API from "./api";
 import { InfiniteFetchFn, Page } from "../components/infinite/infinite-scroll";
+import Resource from "../models/resource";
 
 type Key = string | number;
 
@@ -82,7 +83,7 @@ const isEnabled = (args: any[]) => {
  * @param queryArgs the arguments to pass the the query function. If one of them is undefined, the query will not be enabled
  * @returns
  */
-const prepareMeeloInfiniteQuery = <QueryReturnType = unknown, Params extends any[] = unknown[]>(
+const prepareMeeloInfiniteQuery = <QueryReturnType extends Resource = Resource, Params extends any[] = unknown[]>(
 	query: MeeloInfiniteQueryFn<QueryReturnType, Params>,
 	...queryArgs: Partial<Params>
 ) => {
@@ -96,7 +97,7 @@ const prepareMeeloInfiniteQuery = <QueryReturnType = unknown, Params extends any
 				.then((result): Page<QueryReturnType> => ({
 					pageSize: result.items.length,
 					items: result.items,
-					index: result.metadata.page ?? 0,
+					afterId: result.items.at(-1)?.id ?? null,
 					end: result.metadata.next === null
 				})),
 		enabled: enabled,
@@ -128,7 +129,7 @@ const useQueries = <ReturnType, Params extends any[][]>(
 /**
  * Wrapper for the react-query's *useInfiniteQuery*
  */
-const useInfiniteQuery = <ReturnType, Params extends any[]>(
+const useInfiniteQuery = <ReturnType extends Resource, Params extends any[]>(
 	query: MeeloInfiniteQueryFn<ReturnType, Params>,
 	...queryParams: Partial<Params>
 ) => {

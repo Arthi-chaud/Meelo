@@ -5,9 +5,9 @@ import * as yup from 'yup';
  */
 export type PaginationParameters = Partial<{
 	/**
-	 * The index of the page to fetch
+	 * The index of the last item of the previou page
 	 */
-	index: number;
+	afterId: number;
 	/**
 	 * The number of elements in a page
 	 */
