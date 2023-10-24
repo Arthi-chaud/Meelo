@@ -8,7 +8,6 @@ import {
 	ApiOperation, ApiPropertyOptional, ApiTags, IntersectionType
 } from '@nestjs/swagger';
 import { ArtistResponseBuilder } from './models/artist.response';
-import { PaginationQuery } from 'src/pagination/pagination-query.decorator';
 import IdentifierParam from 'src/identifier/identifier.pipe';
 import RelationIncludeQuery from 'src/relation-include/relation-include-query.decorator';
 import Response, { ResponseType } from 'src/response/response.decorator';
@@ -73,7 +72,7 @@ export default class ArtistController {
 	})
 	@Get()
 	async getMany(
-		@PaginationQuery()
+		@Query()
 		paginationParameters: PaginationParameters,
 		@Query() selector: Selector,
 		@RelationIncludeQuery(ArtistQueryParameters.AvailableAtomicIncludes)

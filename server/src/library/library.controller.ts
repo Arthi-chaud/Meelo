@@ -1,13 +1,12 @@
 import {
 	Body, Controller, Delete, Get,
-	Post, Put
+	Post, Put, Query
 } from '@nestjs/common';
 import LibraryService from './library.service';
 import { Library } from 'src/prisma/models';
 import { PaginationParameters } from 'src/pagination/models/pagination-parameters';
 import LibraryQueryParameters from './models/library.query-parameters';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
-import { PaginationQuery } from 'src/pagination/pagination-query.decorator';
 import SortingQuery from 'src/sort/sort-query.decorator';
 import Admin from 'src/roles/admin.decorator';
 import UpdateLibraryDto from './models/update-library.dto';
@@ -67,7 +66,7 @@ export default class LibraryController {
 		type: ResponseType.Page
 	})
 	async getLibraries(
-		@PaginationQuery()
+		@Query()
 		paginationParameters: PaginationParameters,
 		@SortingQuery(LibraryQueryParameters.SortingKeys)
 		sortingParameter: LibraryQueryParameters.SortingParameter,

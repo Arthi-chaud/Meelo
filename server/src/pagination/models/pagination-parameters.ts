@@ -37,7 +37,7 @@ export function buildPaginationParameters(parameters?: PaginationParameters) {
 	return {
 		take: parameters?.take,
 		skip: parameters?.afterId !== undefined
-			? 1
+			? 1 + (parameters?.skip ?? 0)
 			: parameters?.skip,
 		cursor: parameters?.afterId !== undefined ? {
 			id: parameters.afterId

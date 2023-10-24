@@ -98,7 +98,7 @@ describe('Album Controller', () => {
 		});
 		it("Should return some albums (w/ cursor)", () => {
 			return request(app.getHttpServer())
-				.get(`/albums?take=1&afterId=${dummyRepository.albumB1.id}&sortBy=id&order=asc`)
+				.get(`/albums?take=1&afterId=${dummyRepository.albumA1.id}&sortBy=id&order=asc`)
 				.expect(200)
 				.expect((res) => {
 					const albums: Album[] = res.body.items;
@@ -106,9 +106,9 @@ describe('Album Controller', () => {
 					expect(albums[0]).toStrictEqual(expectedAlbumResponse(dummyRepository.albumB1));
 				});
 		});
-		it("Should return some albums (ambiguous pagination and cursor)", () => {
+		it("Should return some albums (w/ pagination and cursor)", () => {
 			return request(app.getHttpServer())
-				.get(`/albums?skip=1&afterId=${dummyRepository.compilationAlbumA.id}&sortBy=id&order=asc`)
+				.get(`/albums?skip=1&afterId=${dummyRepository.albumA1.id}&sortBy=id&order=asc`)
 				.expect(200)
 				.expect((res) => {
 					const albums: Album[] = res.body.items;

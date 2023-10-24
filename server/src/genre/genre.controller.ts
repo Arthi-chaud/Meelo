@@ -9,7 +9,6 @@ import SongQueryParameters from "src/song/models/song.query-params";
 import SongService from "src/song/song.service";
 import GenreService from "./genre.service";
 import GenreQueryParameters from "./models/genre.query-parameters";
-import { PaginationQuery } from "src/pagination/pagination-query.decorator";
 import RelationIncludeQuery from "src/relation-include/relation-include-query.decorator";
 import IdentifierParam from "src/identifier/identifier.pipe";
 import Response, { ResponseType } from "src/response/response.decorator";
@@ -67,7 +66,7 @@ export class GenreController {
 	})
 	async getMany(
 		@Query() selector: Selector,
-		@PaginationQuery()
+		@Query()
 		paginationParameters: PaginationParameters,
 		@RelationIncludeQuery(GenreQueryParameters.AvailableAtomicIncludes)
 		include: GenreQueryParameters.RelationInclude,
