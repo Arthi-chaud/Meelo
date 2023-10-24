@@ -1,4 +1,4 @@
-import type { INestApplication } from "@nestjs/common";
+import { type INestApplication } from "@nestjs/common";
 import type { TestingModule } from "@nestjs/testing";
 import type { Album, Artist } from "src/prisma/models";
 import request from "supertest";
@@ -94,6 +94,26 @@ describe('Album Controller', () => {
 					const albums: Album[] = res.body.items;
 					expect(albums.length).toBe(1);
 					expect(albums[0]).toStrictEqual(expectedAlbumResponse(dummyRepository.albumB1));
+				});
+		});
+		it("Should return some albums (w/ cursor)", () => {
+			return request(app.getHttpServer())
+				.get(`/albums?take=1&afterId=${dummyRepository.albumB1.id}&sortBy=id&order=asc`)
+				.expect(200)
+				.expect((res) => {
+					const albums: Album[] = res.body.items;
+					expect(albums.length).toBe(1);
+					expect(albums[0]).toStrictEqual(expectedAlbumResponse(dummyRepository.albumB1));
+				});
+		});
+		it("Should return some albums (ambiguous pagination and cursor)", () => {
+			return request(app.getHttpServer())
+				.get(`/albums?skip=1&afterId=${dummyRepository.compilationAlbumA.id}&sortBy=id&order=asc`)
+				.expect(200)
+				.expect((res) => {
+					const albums: Album[] = res.body.items;
+					expect(albums.length).toBe(1);
+					expect(albums[0]).toStrictEqual(expectedAlbumResponse(dummyRepository.compilationAlbumA));
 				});
 		});
 		it("Should include related artist", () => {
