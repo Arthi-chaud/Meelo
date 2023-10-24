@@ -1137,10 +1137,10 @@ export default class API {
 	private static formatPagination(pagination: PaginationParameters): string {
 		const formattedParameters: string[] = [];
 		const pageSize = pagination.pageSize ?? this.defaultPageSize;
-		const pageIndex = pagination.index ?? 0;
+		const afterId = pagination.afterId;
 
-		if (pageIndex !== 0) {
-			formattedParameters.push(`skip=${pageSize * pageIndex}`);
+		if (afterId !== undefined) {
+			formattedParameters.push(`afterId=${afterId}`);
 		}
 		formattedParameters.push(`take=${pageSize}`);
 		return formattedParameters.join('&');

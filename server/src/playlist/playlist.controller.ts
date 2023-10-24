@@ -12,7 +12,6 @@ import RelationIncludeQuery from 'src/relation-include/relation-include-query.de
 import { PlaylistResponseBuilder } from './models/playlist.response';
 import Response, { ResponseType } from 'src/response/response.decorator';
 import { PaginationParameters } from 'src/pagination/models/pagination-parameters';
-import { PaginationQuery } from 'src/pagination/pagination-query.decorator';
 import {
 	CreatePlaylistDTO, CreatePlaylistEntryDTO,
 	ReorderPlaylistDTO, UpdatePlaylistDTO
@@ -62,7 +61,7 @@ export default class PlaylistController {
 	@Response({ handler: PlaylistResponseBuilder, type: ResponseType.Page })
 	async getMany(
 		@Query() selector: Selector,
-		@PaginationQuery()
+		@Query()
 		paginationParameters: PaginationParameters,
 	) {
 		return this.playlistService.getMany(

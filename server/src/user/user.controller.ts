@@ -1,5 +1,5 @@
 import {
-	Body, Controller, Delete, Get, Post, Put, Req, Request
+	Body, Controller, Delete, Get, Post, Put, Query, Req, Request
 } from "@nestjs/common";
 import { User } from "@prisma/client";
 import UserService from "./user.service";
@@ -7,7 +7,6 @@ import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import UserCreateDTO from "./models/create-user.dto";
 import Admin from "src/roles/admin.decorator";
 import { PaginationParameters } from "src/pagination/models/pagination-parameters";
-import { PaginationQuery } from "src/pagination/pagination-query.decorator";
 import { UserResponseBuilder } from "./models/user.response";
 import SortingQuery from "src/sort/sort-query.decorator";
 import UserQueryParameters from "./models/user.query-params";
@@ -93,7 +92,7 @@ export default class UserController {
 	@Admin()
 	@Get()
 	async getUserAccounts(
-		@PaginationQuery()
+		@Query()
 		paginationParameters: PaginationParameters,
 		@SortingQuery(UserQueryParameters.SortingKeys)
 		sortingParameter: UserQueryParameters.SortingParameter
@@ -113,7 +112,7 @@ export default class UserController {
 	@Admin()
 	@Get('disabled')
 	async getDisabledUserAccounts(
-		@PaginationQuery()
+		@Query()
 		paginationParameters: PaginationParameters,
 		@SortingQuery(UserQueryParameters.SortingKeys)
 		sortingParameter: UserQueryParameters.SortingParameter
@@ -136,7 +135,7 @@ export default class UserController {
 	@Admin()
 	@Get('admins')
 	async getAdminUserAccounts(
-		@PaginationQuery()
+		@Query()
 		paginationParameters: PaginationParameters,
 		@SortingQuery(UserQueryParameters.SortingKeys)
 		sortingParameter: UserQueryParameters.SortingParameter

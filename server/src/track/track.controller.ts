@@ -10,7 +10,6 @@ import {
 import { TrackType } from '@prisma/client';
 import ReassignTrackDTO from './models/reassign-track.dto';
 import { TrackResponseBuilder } from './models/track.response';
-import { PaginationQuery } from 'src/pagination/pagination-query.decorator';
 import RelationIncludeQuery from 'src/relation-include/relation-include-query.decorator';
 import Admin from 'src/roles/admin.decorator';
 import IdentifierParam from 'src/identifier/identifier.pipe';
@@ -93,7 +92,7 @@ export class TrackController {
 	})
 	async getMany(
 		@Query() selector: Selector,
-		@PaginationQuery()
+		@Query()
 		paginationParameters: PaginationParameters,
 		@RelationIncludeQuery(TrackQueryParameters.AvailableAtomicIncludes)
 		include: TrackQueryParameters.RelationInclude

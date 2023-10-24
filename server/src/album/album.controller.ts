@@ -13,7 +13,6 @@ import {
 import UpdateAlbumDTO from './models/update-album.dto';
 import { AlbumResponseBuilder } from './models/album.response';
 import { ReleaseResponseBuilder } from 'src/release/models/release.response';
-import { PaginationQuery } from 'src/pagination/pagination-query.decorator';
 import RelationIncludeQuery from 'src/relation-include/relation-include-query.decorator';
 import Admin from 'src/roles/admin.decorator';
 import IdentifierParam from 'src/identifier/identifier.pipe';
@@ -102,7 +101,7 @@ export default class AlbumController {
 	@ApiOperation({ summary: 'Get many albums' })
 	async getMany(
 		@Query() selector: Selector,
-		@PaginationQuery()
+		@Query()
 		paginationParameters: PaginationParameters,
 		@RelationIncludeQuery(AlbumQueryParameters.AvailableAtomicIncludes)
 		include: AlbumQueryParameters.RelationInclude,
