@@ -1,13 +1,12 @@
-import {
-	DataGrid, GridColDef, GridValidRowModel
-} from "@mui/x-data-grid";
+import { DataGrid, GridColDef } from "@mui/x-data-grid";
 import {
 	useEffect, useMemo, useState
 } from "react";
 import API from "../api/api";
 import { MeeloInfiniteQueryFn, useInfiniteQuery } from "../api/use-query";
+import Resource from "../models/resource";
 
-type AdminGridProps<DataType extends GridValidRowModel> = {
+type AdminGridProps<DataType extends Resource> = {
 	infiniteQuery: MeeloInfiniteQueryFn<DataType>;
 	columns: GridColDef<DataType>[];
 }
@@ -15,7 +14,7 @@ type AdminGridProps<DataType extends GridValidRowModel> = {
 /**
  * Wrapping if MUI's Data grid from administrative panels, like user and libraries management
  */
-const AdminGrid = <DataType extends GridValidRowModel>(
+const AdminGrid = <DataType extends Resource>(
 	{ infiniteQuery, columns }: AdminGridProps<DataType>
 ) => {
 	const {
