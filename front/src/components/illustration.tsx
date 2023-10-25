@@ -67,7 +67,7 @@ const Illustration = (props: IllustrationProps) => {
 		display: loadingFailed || !url ? 'flex' : 'block'
 	}}>
 		{blurhash &&
-			<Fade in={!loadingCompleted && !loadingFailed} unmountOnExit mountOnEnter>
+			<Fade in={!loadingCompleted && !loadingFailed} unmountOnExit>
 				<Box style={{ width: 'inherit', height: 'inherit',
 					borderRadius: theme.shape.borderRadius, overflow: 'hidden', ...props.imgProps }}>
 					<Blurhash
