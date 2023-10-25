@@ -150,7 +150,7 @@ const ReleasePage = (props: InferSSRProps<typeof getServerSideProps>) => {
 		<Container maxWidth={false} disableGutters={viewIsInColumn}
 			sx={{ marginTop: 3, marginX: 0, position: 'relative' }}
 		>
-			{illustration && <BackgroundBlurhash blurhash={illustration.blurhash} /> }
+			<BackgroundBlurhash blurhash={illustration?.blurhash} />
 			<Grid container spacing={4} sx={{ justifyContent: 'center' }}>
 				<Grid item lg={3} sm={5} xs={8}>
 					<Illustration illustration={release.data!.illustration} quality="original"/>

@@ -181,9 +181,7 @@ const PlaylistPage = (props: InferSSRProps<typeof getServerSideProps>) => {
 	}));
 
 	return <>
-		{playlist.data.illustration &&
-			<BackgroundBlurhash blurhash={playlist.data.illustration.blurhash} />
-		}
+		<BackgroundBlurhash blurhash={playlist.data.illustration?.blurhash} />
 		<RelationPageHeader
 			illustration={<Illustration illustration={playlist.data.illustration} quality="original"/>}
 			title={playlist.data.name}

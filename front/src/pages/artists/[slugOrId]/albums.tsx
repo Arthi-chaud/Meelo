@@ -32,9 +32,7 @@ const ArtistAlbumsPage = (props: InferSSRProps<typeof getServerSideProps>) => {
 	const artistIdentifier = props.additionalProps?.artistIdentifier ?? getSlugOrId(router.query);
 
 	return <Box sx={{ width: '100%' }}>
-		{artist.data?.illustration &&
-			<BackgroundBlurhash blurhash={artist.data?.illustration?.blurhash} />
-		}
+		<BackgroundBlurhash blurhash={artist.data?.illustration?.blurhash} />
 		<ArtistRelationPageHeader artistSlugOrId={artistIdentifier}/>
 		<InfiniteAlbumView
 			defaultLayout={props.additionalProps?.defaultLayout}

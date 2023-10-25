@@ -61,9 +61,7 @@ const SongPage = (props: InferSSRProps<typeof getServerSideProps>) => {
 		return <LoadingPage/>;
 	}
 	return <Box sx={{ width: '100%' }}>
-		{song.data.illustration &&
-			<BackgroundBlurhash blurhash={song.data.illustration.blurhash} />
-		}
+		<BackgroundBlurhash blurhash={song.data.illustration?.blurhash} />
 		<SongRelationPageHeader song={song.data}/>
 		<Grid container direction={{ xs: 'column', md: 'row' }} spacing={2}>
 			<Grid item xs>

@@ -30,9 +30,7 @@ const ArtistSongPage = (
 	const artist = useQuery(API.getArtist, props.additionalProps?.artistIdentifier);
 
 	return <>
-		{artist.data?.illustration &&
-			<BackgroundBlurhash blurhash={artist.data?.illustration?.blurhash} />
-		}
+		<BackgroundBlurhash blurhash={artist.data?.illustration?.blurhash} />
 		<ArtistRelationPageHeader artistSlugOrId={artistIdentifier}/>
 		<InfiniteVideoView
 			initialSortingField={props.additionalProps?.sortBy}

@@ -4,7 +4,7 @@ import { blurHashToDataURL } from "../utils/blurhashToDataUrl";
 import { isSSR } from "../ssr";
 
 type BlurhashProps = Parameters<typeof Box>['0'] & {
-	blurhash: string
+	blurhash?: string
 }
 
 const Blurhash = ({ blurhash, ...props }: BlurhashProps) => {
@@ -30,7 +30,6 @@ const Blurhash = ({ blurhash, ...props }: BlurhashProps) => {
 		backgroundImage: base64 ? `url(${base64})` : 'none',
 		backgroundRepeat: 'no-repeat',
 		backgroundSize: 'cover',
-		transition: 'background 3s',
 		...props.sx
 	}}/>;
 };

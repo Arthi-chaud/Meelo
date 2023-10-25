@@ -81,9 +81,7 @@ const ArtistPage = (props: InferSSRProps<typeof getServerSideProps>) => {
 		return <LoadingPage/>;
 	}
 	return <Box>
-		{artist.data.illustration &&
-			<BackgroundBlurhash blurhash={artist.data.illustration.blurhash} />
-		}
+		<BackgroundBlurhash blurhash={artist.data.illustration?.blurhash} />
 		<Grid container direction="column" spacing={4}
 			sx={{ padding: 2, flex: 1, flexGrow: 1 }}>
 			<Grid item container spacing={4}
