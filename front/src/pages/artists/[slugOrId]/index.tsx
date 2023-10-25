@@ -4,12 +4,9 @@ import {
 import { useRouter } from "next/router";
 import API from "../../../api/api";
 import Illustration from "../../../components/illustration";
-import {
-	useInfiniteQuery, useQuery, useQueryClient
-} from "../../../api/use-query";
+import { useInfiniteQuery, useQuery } from "../../../api/use-query";
 import AlbumTile from "../../../components/tile/album-tile";
 import Link from "next/link";
-import { useDispatch } from "react-redux";
 import getSlugOrId from "../../../utils/getSlugOrId";
 import prepareSSR, { InferSSRProps } from "../../../ssr";
 import LoadingPage from "../../../components/loading/loading-page";
@@ -79,8 +76,6 @@ const ArtistPage = (props: InferSSRProps<typeof getServerSideProps>) => {
 	const videos = useInfiniteQuery(videosQuery, artistIdentifier);
 	const topSongs = useInfiniteQuery(topSongsQuery, artistIdentifier);
 	const appearances = useInfiniteQuery(appearanceQuery, artistIdentifier);
-	const dispatch = useDispatch();
-	const queryClient = useQueryClient();
 
 	if (!artist.data || !latestAlbums.data || !topSongs.data || !videos.data) {
 		return <LoadingPage/>;

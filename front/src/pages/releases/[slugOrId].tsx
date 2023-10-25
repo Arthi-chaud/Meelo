@@ -32,7 +32,7 @@ import SongGrid from "../../components/song-grid";
 import AlbumTile from "../../components/tile/album-tile";
 import getYear from "../../utils/getYear";
 import Fade from "../../components/fade";
-import BackgroundBlurhash from '../../components/blurhash-background';
+import BackgroundBlurhash from "../../components/blurhash-background";
 
 const releaseQuery = (releaseIdentifier: string | number) => API.getRelease(releaseIdentifier, ['album', 'externalIds']);
 const releaseTracklistQuery = (releaseIdentifier: string | number) => API.getReleaseTrackList(releaseIdentifier, ['song']);
