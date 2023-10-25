@@ -21,6 +21,7 @@ import { IconProps } from "iconsax-react";
 import { useState } from "react";
 import { useScaffoldActions } from "./actions";
 import useColorScheme from "../../theme/color-scheme";
+import hexToRgba from "hex-to-rgba";
 
 /**
  * Array of possible item types
@@ -177,6 +178,7 @@ const Drawer = (
 
 const BottomNavigation = (props: { onDrawerOpen: () => void }) => {
 	const router = useRouter();
+	const theme = useTheme();
 
 	return <MUIBottomNavigation
 		showLabels
@@ -188,7 +190,7 @@ const BottomNavigation = (props: { onDrawerOpen: () => void }) => {
 			position: 'fixed',
 			justifyContent: 'space-evenly',
 			bottom: 0,
-			backgroundColor: 'transparent',
+			backgroundColor: hexToRgba(theme.palette.background.paper, 0.65),
 			backdropFilter: 'blur(40px)',
 			display: { xs: 'flex', [DrawerBreakpoint]: 'none' }
 		}}

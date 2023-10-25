@@ -206,6 +206,8 @@ const Player = () => {
 		}
 		return themePaperColor;
 	}, [theme, currentTrack]);
+	const transition = 'background 0.4s ease';
+	const blur = 'blur(20px)';
 
 	return <>
 		<Slide
@@ -221,8 +223,8 @@ const Player = () => {
 						borderRadius: '0.5', padding: 1,
 						display: 'flex', width: '100%', height: 'fit-content',
 						background: playerBgColor,
-						transition: 'background 0.2s ease',
-						backdropFilter: 'blur(15px)'
+						transition: transition,
+						backdropFilter: blur
 					}}
 				>
 					<MinimizedPlayerControls
@@ -254,8 +256,8 @@ const Player = () => {
 					borderRadius: '0.5', display: 'flex',
 					width: '100%', height: '100%', overflow: 'clip',
 					background: playerBgColor,
-					transition: 'background 0.2s ease',
-					backdropFilter: 'blur(20px)'
+					transition: transition,
+					backdropFilter: blur
 				}}>
 					<ExpandedPlayerControls
 						expanded={expanded}
