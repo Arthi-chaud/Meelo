@@ -1,4 +1,4 @@
-import { AccountCircle } from "@mui/icons-material";
+import { ArtistIcon } from "../icons";
 import { RequireExactlyOne } from "type-fest";
 import API from "../../api/api";
 import Artist from "../../models/artist";
@@ -23,9 +23,10 @@ const ArtistRelationPageHeader = (props: ArtistRelationPageHeaderProps) => {
 		return <WideLoadingComponent/>;
 	}
 	return <RelationPageHeader
-		illustration={<Illustration style={{ objectFit: "cover" }}
+		illustration={<Illustration imgProps={{ objectFit: "cover" }}
 			illustration={artist.data.illustration}
-			fallback={<AccountCircle/>}/>
+			quality="med"
+			fallback={<ArtistIcon/>}/>
 		}
 		title={artist.data.name}
 		trailing={<ArtistContextualMenu artist={artist.data}/>}

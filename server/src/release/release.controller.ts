@@ -15,7 +15,6 @@ import {
 } from '@nestjs/swagger';
 import ReassignReleaseDTO from './models/reassign-release.dto';
 import { TrackResponseBuilder } from 'src/track/models/track.response';
-import { PaginationQuery } from 'src/pagination/pagination-query.decorator';
 import RelationIncludeQuery from 'src/relation-include/relation-include-query.decorator';
 import Admin from 'src/roles/admin.decorator';
 import IdentifierParam from 'src/identifier/identifier.pipe';
@@ -65,7 +64,7 @@ export default class ReleaseController {
 	})
 	async getReleases(
 		@Query() selector: Selector,
-		@PaginationQuery()
+		@Query()
 		paginationParameters: PaginationParameters,
 		@RelationIncludeQuery(ReleaseQueryParameters.AvailableAtomicIncludes)
 		include: ReleaseQueryParameters.RelationInclude

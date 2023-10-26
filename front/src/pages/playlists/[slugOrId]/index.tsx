@@ -20,8 +20,9 @@ import { playTracks } from "../../../state/playerSlice";
 import { TrackWithRelations } from "../../../models/track";
 import { SongWithRelations } from "../../../models/song";
 import {
-	Audiotrack, Done, DragHandle, Edit, MoreVert, PlayArrow, Shuffle
-} from "@mui/icons-material";
+	ContextualMenuIcon, DoneIcon, DragHandleIcon,
+	EditIcon, PlayIcon, ShuffleIcon, SongIcon
+} from "../../../components/icons";
 import ListItem from "../../../components/list-item/item";
 import SongContextualMenu from "../../../components/contextual-menu/song-contextual-menu";
 import { PlaylistEntry } from "../../../models/playlist";
@@ -35,6 +36,7 @@ import { shuffle } from "d3-array";
 import { DeletePlaylistAction } from "../../../components/actions/playlist";
 import { useConfirm } from "material-ui-confirm";
 import Translate, { translate } from "../../../i18n/translate";
+import BackgroundBlurhash from "../../../components/blurhash-background";
 
 const playlistQuery = (idOrSlug: number | string) => API.getPlaylist(idOrSlug, ['entries']);
 const masterTrackQuery = (songId: number | string) => API.getMasterTrack(songId, ['release']);
@@ -88,10 +90,10 @@ const DragAndDropPlaylist = (props: DragAndDropPlaylistProps) => {
 								secondTitle={playlistItem.artist.name}
 								icon={<Box {...providedChild.dragHandleProps}
 									sx={{ aspectRatio: '1', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
-									<DragHandle/>
+									<DragHandleIcon/>
 								</Box>}
 								onClick={() => {}}
-								trailing={<IconButton disabled><MoreVert/></IconButton>}
+								trailing={<IconButton disabled><ContextualMenuIcon/></IconButton>}
 							/>
 						</div>
 						}
@@ -109,7 +111,7 @@ type PlaylistEntryItemProps = {
 
 const PlaylistEntryItem = ({ entry, onClick }: PlaylistEntryItemProps) => (
 	<ListItem
-		icon={<Illustration illustration={entry.illustration} fallback={<Audiotrack/>}/>}
+		icon={<Illustration quality="low" illustration={entry.illustration} fallback={<SongIcon/>}/>}
 		title={entry.name}
 		onClick={onClick}
 		trailing={<SongContextualMenu song={entry} entryId={entry.entryId}/>}
@@ -179,22 +181,23 @@ const PlaylistPage = (props: InferSSRProps<typeof getServerSideProps>) => {
 	}));
 
 	return <>
+		<BackgroundBlurhash blurhash={playlist.data.illustration?.blurhash} />
 		<RelationPageHeader
-			illustration={<Illustration illustration={playlist.data.illustration}/>}
+			illustration={<Illustration illustration={playlist.data.illustration} quality="original"/>}
 			title={playlist.data.name}
 			trailing={<PlaylistContextualMenu playlist={playlist.data}/>}
 		/>
 		{ entries.length > 1 && <>
 			<Grid container direction={{ xs: 'column', sm: 'row' }} spacing={1}>
 				<Grid item xs>
-					<Button variant="contained" color='primary' startIcon={<PlayArrow/>}
+					<Button variant="contained" color='primary' startIcon={<PlayIcon/>}
 						sx={{ width: '100%' }} onClick={() => playPlaylist(0)}
 					>
 						<Translate translationKey="play"/>
 					</Button>
 				</Grid>
 				<Grid item xs>
-					<Button variant="outlined" color='primary' startIcon={<Shuffle/>}
+					<Button variant="outlined" color='primary' startIcon={<ShuffleIcon/>}
 						sx={{ width: '100%' }} onClick={() => shufflePlaylist()}
 					>
 						<Translate translationKey="shuffle"/>
@@ -219,7 +222,7 @@ const PlaylistPage = (props: InferSSRProps<typeof getServerSideProps>) => {
 				<Button
 					variant={editState ? 'contained' : "outlined"}
 					color='primary'
-					startIcon={editState ? <Done/> : <Edit/>}
+					startIcon={editState ? <DoneIcon/> : <EditIcon/>}
 					sx={{ width: '100%' }}
 					onClick={() => {
 						if (editState) {

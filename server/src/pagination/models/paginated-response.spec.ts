@@ -1,7 +1,7 @@
 import InvalidPaginationParameterValue from "../pagination.exceptions";
 import PaginatedResponse from "./paginated-response"
 
-const fullItemsList = [...Array(99)].map((_,i) => i+1);
+const fullItemsList = [...Array(99)].map((_,i) => ({ id: i+1 }));
 const baseRequest = {
 	path: '/route'
 }
@@ -133,6 +133,25 @@ describe("Paginated Response", () => {
 			this: '/route?take=10&skip=10',
 			next: '/route?take=10&skip=20',
 			previous: '/route?take=10'
+		})
+	})
+
+	it("page size = 10, with afterId", () => {
+		const request = {
+			...baseRequest,
+			query: {
+				take: 10,
+				afterId: 10
+			}
+		}
+		const response = new PaginatedResponse(
+			fullItemsList.slice(10, 20), request
+		);
+		expect(response.metadata).toStrictEqual({
+			this: '/route?take=10&afterId=10',
+			next: '/route?take=10&afterId=20',
+			previous: null,
+			page: null
 		})
 	})
 

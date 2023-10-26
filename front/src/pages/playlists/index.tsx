@@ -12,7 +12,7 @@ export const getServerSideProps = prepareSSR((context) => {
 
 	return {
 		additionalProps: { defaultLayout, order, sortBy },
-		infiniteQueries: [API.getAllPlaylists({ sortBy, order })]
+		infiniteQueries: [API.getPlaylists({}, { sortBy, order })]
 	};
 });
 
@@ -21,7 +21,7 @@ const PlaylistsPage = (props: InferSSRProps<typeof getServerSideProps>) => {
 		initialSortingField={props.additionalProps?.sortBy}
 		initialSortingOrder={props.additionalProps?.order}
 		defaultLayout={props.additionalProps?.defaultLayout}
-		query={(sort) => API.getAllPlaylists(sort)}
+		query={(sort) => API.getPlaylists({}, sort)}
 	/>;
 };
 

@@ -1,5 +1,5 @@
 import {
-	Body, Controller, Delete, Get, HttpStatus, Param, Post, Query, Response
+	Body, Controller, Delete, Get, Header, HttpStatus, Param, Post, Query, Response
 } from "@nestjs/common";
 import {
 	ApiOperation, ApiParam, ApiPropertyOptional, ApiTags
@@ -40,6 +40,8 @@ class DiscDto {
 	disc?: number;
 }
 
+const Cached = () => Header('Cache-Control', `max-age=${3600 * 24}`);
+
 @ApiTags("Illustrations")
 @Controller('illustrations')
 export class IllustrationController {
@@ -57,6 +59,7 @@ export class IllustrationController {
 	@ApiOperation({
 		summary: "Get an artist's illustration"
 	})
+	@Cached()
 	@Get('artists/:idOrSlug')
 	async getArtistIllustration(
 		@Query() dimensions: IllustrationDimensionsDto,
@@ -103,6 +106,7 @@ export class IllustrationController {
 	@ApiOperation({
 		summary: "Get the album's illustration"
 	})
+	@Cached()
 	@Get('albums/:idOrSlug')
 	async getAlbumIllustration(
 		@Query() dimensions: IllustrationDimensionsDto,
@@ -122,6 +126,7 @@ export class IllustrationController {
 	@ApiOperation({
 		summary: "Get a song's illustration"
 	})
+	@Cached()
 	@Get('songs/:idOrSlug')
 	async getSongIllustration(
 		@Query() dimensions: IllustrationDimensionsDto,
@@ -145,6 +150,7 @@ export class IllustrationController {
 		name: 'disc',
 		required: false
 	})
+	@Cached()
 	@Get('releases/:idOrSlug/:disc?')
 	async getReleaseIllustration(
 		@IdentifierParam(ReleaseService)
@@ -194,6 +200,7 @@ export class IllustrationController {
 	@ApiOperation({
 		summary: "Get a track's illustration"
 	})
+	@Cached()
 	@Get('tracks/:idOrSlug')
 	async getTrackIllustration(
 		@Query() dimensions: IllustrationDimensionsDto,
@@ -312,6 +319,7 @@ export class IllustrationController {
 		name: 'type',
 		enum: ['icon', 'banner'],
 	})
+	@Cached()
 	@Get('providers/:name/:type')
 	async getProviderIillustration(
 		@Param('name') providerName: string,
@@ -348,6 +356,7 @@ export class IllustrationController {
 	@ApiOperation({
 		summary: "Get a playlist's illustration"
 	})
+	@Cached()
 	@Get('playlists/:idOrSlug')
 	async getPlaylistIllustration(
 		@Query() dimensions: IllustrationDimensionsDto,

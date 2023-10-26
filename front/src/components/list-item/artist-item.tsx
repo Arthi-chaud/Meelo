@@ -1,7 +1,7 @@
 import Artist from "../../models/artist";
 import Illustration from '../illustration';
 import ListItem from "./item";
-import AccountCircle from "@mui/icons-material/AccountCircle";
+import { ArtistIcon } from "../icons";
 import ArtistContextualMenu from "../contextual-menu/artist-contextual-menu";
 
 type ArtistItemProps = {
@@ -18,8 +18,9 @@ const ArtistItem = ({ artist }: ArtistItemProps) => {
 		<ListItem
 			icon={<Illustration
 				illustration={artist.illustration}
-				style={{ objectFit: "cover" }}
-				fallback={<AccountCircle/>}/>
+				imgProps={{ objectFit: "cover" }}
+				quality="low"
+				fallback={<ArtistIcon/>}/>
 			}
 			href={`/artists/${artist.slug}`}
 			title={artist.name}

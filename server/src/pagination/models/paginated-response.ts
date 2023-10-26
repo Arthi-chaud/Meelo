@@ -32,14 +32,14 @@ class PaginationMetadata {
 	page: number | null;
 }
 
-export default class PaginatedResponse<T> {
+export default class PaginatedResponse<T extends { id: number }> {
 	@ApiProperty()
 	metadata: PaginationMetadata;
 
 	@ApiProperty({ type: Array })
 	items: T[];
 
-	static async awaiting<P>(items: Promise<P>[], request: Request | any) {
+	static async awaiting<P extends { id: number }>(items: Promise<P>[], request: Request | any) {
 		return new PaginatedResponse<P>(
 			await Promise.all(items),
 			request
@@ -51,11 +51,27 @@ export default class PaginatedResponse<T> {
 		const route: string = request.path;
 		const itemsCount = items.length;
 		const take = Number(request.query['take'] ?? defaultPageSize).valueOf();
+		const afterId = Number(request.query['afterId']).valueOf();
 
 		if (take == 0) {
 			throw new InvalidPaginationParameterValue('take');
 		}
 		let skipped: number = Number(request.query['skip'] ?? 0).valueOf();
+
+		if (!isNaN(afterId)) {
+			this.metadata = {
+				this: this.buildUrl(route, request.query),
+				next: itemsCount >= take
+					? this.buildUrl(route, {
+						...request.query,
+						afterId: items.at(-1)?.id ?? null
+					})
+					: null,
+				previous: null,
+				page: null
+			};
+			return;
+		}
 		const currentPage = 1 + Math.floor(skipped / take);
 
 		if (skipped % take) {

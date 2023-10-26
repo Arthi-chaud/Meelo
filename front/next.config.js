@@ -6,17 +6,8 @@ module.exports = {
   env: {
     ssrApiRoute: 'http://localhost:4000'
   },
-  images: {
-    deviceSizes: [500, 720, 1280, 1920],
-    imageSizes: [50, 100, 250, 300, 500, 1000],
-  },
   async redirects() {
     return [
-      {
-        source: '/libraries/:slug',
-        destination: '/libraries/:slug/albums',
-        permanent: true,
-      },
       {
         source: '/songs/:slug',
         destination: '/songs/:slug/lyrics',
@@ -25,11 +16,6 @@ module.exports = {
     ]
   },
   async rewrites() {
-    return [
-      {
-        source: '/libraries/:slug/:itemType(albums|artists|songs|videos)',
-        destination: '/:itemType',
-      },
-    ]
+    return []
   },
 }

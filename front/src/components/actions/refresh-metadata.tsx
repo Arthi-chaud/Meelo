@@ -1,4 +1,4 @@
-import { AutoMode } from '@mui/icons-material';
+import { MetadataRefreshIcon } from '../icons';
 import API from '../../api/api';
 import Action from './action';
 import { translate } from '../../i18n/translate';
@@ -6,7 +6,7 @@ import toast from 'react-hot-toast';
 
 const RefreshMetadataAction = (...params: Parameters<typeof API.refreshMetadata>): Action => ({
 	label: 'refreshMetadata',
-	icon: <AutoMode/>,
+	icon: <MetadataRefreshIcon/>,
 	onClick: () => API.refreshMetadata(...params)
 		.then(() => toast.success(translate('refreshMetadataStarted')))
 		.catch(() => toast.error(translate('refreshMetadataFailed')))

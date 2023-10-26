@@ -1,4 +1,4 @@
-import { MoreVert } from "@mui/icons-material";
+import { ContextualMenuIcon } from "../icons";
 import {
 	Box, Divider, IconButton, Menu
 } from "@mui/material";
@@ -28,20 +28,23 @@ const ContextualMenu = (props: ContextualMenuProps) => {
 			onClick={handleClick}
 			color='inherit'
 		>
-			{props.buttonIcon ?? <MoreVert/>}
+			{props.buttonIcon ?? <ContextualMenuIcon/>}
 		</IconButton>
 		<Menu
 			anchorEl={anchorEl}
 			open={open}
 			onClose={handleClose}
-			keepMounted={props.actions.flat().find((action) => !action.dialog) !== undefined}
 			style={{ zIndex: 99999 }}
 		>
 			{props.actions.map((actions, actionGroupIndex, allActions) => [
 				actions.map((action, actionIndex) => <Box key={`${actionGroupIndex}/${actionIndex}`} onClick={() => {
-					handleClose();
+					// If the action is NOT a dialog, close and unmount the menu.
+					// If it is a dialog, we need to keep it mounted, so we have to keep it open
+					if (!action.dialog) {
+						handleClose();
+					}
 					props.onSelect && props.onSelect(action);
-				}}><ContextualMenuItem {...action}/></Box>)
+				}}><ContextualMenuItem {...action} onDialogClose={handleClose}/></Box>)
 			].concat(actionGroupIndex < allActions.length - 1
 				? [<Divider key={actionGroupIndex} sx={{ marginY: 0.5 }} variant='middle'/>]
 				: []))

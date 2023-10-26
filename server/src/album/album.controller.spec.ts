@@ -1,4 +1,4 @@
-import type { INestApplication } from "@nestjs/common";
+import { type INestApplication } from "@nestjs/common";
 import type { TestingModule } from "@nestjs/testing";
 import type { Album, Artist } from "src/prisma/models";
 import request from "supertest";
@@ -22,6 +22,7 @@ import AlbumService from "./album.service";
 import { expectedAlbumResponse, expectedArtistResponse, expectedReleaseResponse } from "test/expected-responses";
 import ProviderService from "src/providers/provider.service";
 import SettingsService from "src/settings/settings.service";
+import ProvidersModule from "src/providers/providers.module";
 
 jest.setTimeout(60000);
 
@@ -33,7 +34,7 @@ describe('Album Controller', () => {
 	let module: TestingModule;
 	beforeAll(async () => {
 		module = await createTestingModule({
-			imports: [ArtistModule, AlbumModule, PrismaModule, ReleaseModule, MetadataModule, SongModule, TrackModule, IllustrationModule, GenreModule, FileModule],
+			imports: [ArtistModule, AlbumModule, PrismaModule, ReleaseModule, MetadataModule, SongModule, TrackModule, IllustrationModule, GenreModule, FileModule, ProvidersModule],
 			providers: [ArtistService, ReleaseService],
 		}).overrideProvider(PrismaService).useClass(TestPrismaService).compile();
 		app = await SetupApp(module);
@@ -93,6 +94,26 @@ describe('Album Controller', () => {
 					const albums: Album[] = res.body.items;
 					expect(albums.length).toBe(1);
 					expect(albums[0]).toStrictEqual(expectedAlbumResponse(dummyRepository.albumB1));
+				});
+		});
+		it("Should return some albums (w/ cursor)", () => {
+			return request(app.getHttpServer())
+				.get(`/albums?take=1&afterId=${dummyRepository.albumA1.id}&sortBy=id&order=asc`)
+				.expect(200)
+				.expect((res) => {
+					const albums: Album[] = res.body.items;
+					expect(albums.length).toBe(1);
+					expect(albums[0]).toStrictEqual(expectedAlbumResponse(dummyRepository.albumB1));
+				});
+		});
+		it("Should return some albums (w/ pagination and cursor)", () => {
+			return request(app.getHttpServer())
+				.get(`/albums?skip=1&afterId=${dummyRepository.albumA1.id}&sortBy=id&order=asc`)
+				.expect(200)
+				.expect((res) => {
+					const albums: Album[] = res.body.items;
+					expect(albums.length).toBe(1);
+					expect(albums[0]).toStrictEqual(expectedAlbumResponse(dummyRepository.compilationAlbumA));
 				});
 		});
 		it("Should include related artist", () => {

@@ -25,6 +25,8 @@ const InfiniteTrackView = (
 		<InfiniteView
 			view={options?.view ?? 'list'}
 			query={() => props.query({
+				library: options?.library ?? null,
+				view: 'list',
 				sortBy: options?.sortBy ?? 'name',
 				order: options?.order ?? 'asc',
 			})}

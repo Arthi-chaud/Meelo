@@ -22,11 +22,11 @@ const textStyle = {
 };
 
 const primaryTextStyle = {
-	fontWeight: 'bold'
+	fontWeight: 'medium'
 };
 
 const secondaryTextStyle = {
-	color: "text.disabled",
+	color: "text.disabled"
 };
 
 const ListItem = (props: ListItemProps) => {
@@ -39,7 +39,7 @@ const ListItem = (props: ListItemProps) => {
 			<ListItemAvatar sx={{ marginRight: 2 }}>
 				{props.icon}
 			</ListItemAvatar>
-			<Box sx={{ display: { xs: 'grid', md: 'none' } }}>
+			<Box sx={{ display: { xs: 'grid', xl: 'none' } }}>
 				<ListItemText
 					primary={props.title}
 					primaryTypographyProps={primaryTextStyle}
@@ -47,7 +47,7 @@ const ListItem = (props: ListItemProps) => {
 					secondaryTypographyProps={secondaryTextStyle}
 				/>
 			</Box>
-			<Grid container spacing={2} flexWrap='nowrap' sx={{ display: { xs: 'none', md: 'flex' } }}>
+			<Grid paddingRight={8} container spacing={2} sx={{ display: { xs: 'none', xl: 'flex' }, width: '100%' }}>
 				<Grid item xs={props.secondTitle ? 6 : 10}>
 					<Typography sx={{ ...textStyle, ...primaryTextStyle }}>
 						{props.title}

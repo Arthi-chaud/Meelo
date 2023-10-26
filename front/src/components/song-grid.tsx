@@ -22,7 +22,7 @@ const SongGrid = ({ songs, hideArtistName }: SongGridProps) => {
 		{ songs.map((song) =>
 			<Grid key={song.id} item xs={12} sm={6} lg={4}>
 				<ListItem
-					icon={<Illustration illustration={song.illustration}/>}
+					icon={<Illustration illustration={song.illustration} quality="low"/>}
 					title={song.name}
 					secondTitle={hideArtistName == true ? undefined : song.artist.name}
 					trailing={<SongContextualMenu

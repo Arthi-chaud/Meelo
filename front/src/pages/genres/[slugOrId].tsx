@@ -15,9 +15,9 @@ export const getServerSideProps = prepareSSR((context) => {
 		additionalProps: { genreIdentifier },
 		queries: [API.getGenre(genreIdentifier)],
 		infiniteQueries: [
-			API.getGenreAlbums(genreIdentifier, defaultQuerySortParams),
-			API.getGenreArtists(genreIdentifier, defaultQuerySortParams),
-			API.getGenreSongs(genreIdentifier, defaultQuerySortParams)
+			API.getAlbums({ genre: genreIdentifier }, defaultQuerySortParams),
+			API.getArtists({ genre: genreIdentifier }, defaultQuerySortParams),
+			API.getSongs({ genre: genreIdentifier }, defaultQuerySortParams)
 		]
 	};
 });
@@ -38,9 +38,17 @@ const GenrePage = (props: InferSSRProps<typeof getServerSideProps>) => {
 		</Box>
 		<SelectableInfiniteView
 			enabled={true}
-			artistQuery={(sort) => API.getGenreArtists(genreIdentifier, sort)}
-			albumQuery={(sort, type) => API.getGenreAlbums(genreIdentifier, sort, type)}
-			songQuery={(sort, type) => API.getGenreSongs(genreIdentifier, sort, type)}
+			artistQuery={({ library }, { sortBy, order }) => API.getArtists(
+				{ genre: genreIdentifier, library: library ?? undefined }, { sortBy, order }
+			)}
+			albumQuery={({ library, type }, { sortBy, order }) => API.getAlbums(
+				{ genre: genreIdentifier, type, library: library ?? undefined }, { sortBy, order }, ['artist']
+			)}
+			songQuery={({ library, type }, { sortBy, order }) => API.getSongs(
+				{ genre: genreIdentifier, type, library: library ?? undefined },
+				{ sortBy, order },
+				['artist']
+			)}
 		/>
 	</Box>;
 };

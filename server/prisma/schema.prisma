@@ -206,6 +206,8 @@ model Release {
 	registeredAt		DateTime	@default(now())
 	/// @description The related Illustrations
 	illustration		ReleaseIllustration[]
+	/// @description Array of external IDs
+	externalIds		ReleaseExternalId[]
 	@@unique([albumId, slug])
 	@@map("releases")
 }
@@ -379,6 +381,8 @@ model Provider {
 	artistIds		ArtistExternalId[]
 	/// @description Identifiers of Albums
 	albumIds		AlbumExternalId[]
+	/// @description Identifiers of Releases
+	releaseIds		ReleaseExternalId[]
 	@@map("providers")
 }
 
@@ -437,6 +441,25 @@ model AlbumExternalId {
 	/// @description Actual Value of the external identifier
 	value			String
 	@@map("album_external_ids")
+}
+
+model ReleaseExternalId {
+	/// @description Unique numeric identifier
+	/// @example 123
+	id				Int		@id @default(autoincrement())
+	/// @description The release
+	release			Release @relation(fields: [releaseId], references: [id], onDelete: Cascade)
+	/// @description Unique numeric identifier of the related album
+	/// @example 123
+	releaseId			Int
+	/// @description The Provider
+	provider		Provider @relation(fields: [providerId], references: [id], onDelete: Cascade)
+	/// @description Unique numeric identifier of the provider
+	/// @example 123
+	providerId		Int
+	/// @description Actual Value of the external identifier
+	value			String
+	@@map("release_external_ids")
 }
 
 /// A Playlist connects songs together, in an ordered wa

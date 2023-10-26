@@ -127,7 +127,7 @@ const fr: TranslationMap = {
 	playlistItemDeletionSuccess: "Piste supprimée",
 	videos: "Vidéos",
 	trackSetAsMaster: "Piste devenue Principale",
-	allLibraries: "Tous",
+	allLibraries: "Toutes librairies",
 	setAsMaster: "Promouvoir",
 	setAllTracksAsMaster: "Promouvoir toutes les pistes",
 	deleteFromPlaylist: "Supprimer de la playlist",
@@ -189,7 +189,8 @@ const fr: TranslationMap = {
 	Acapella: 'Acapella',
 
 	refreshMetadataStarted: "Mise à jour des métadonées... (Rechargez la page pour actualiser)",
-	refreshMetadataFailed: "Oups... La mise à jour des données a échoué."
+	refreshMetadataFailed: "Oups... La mise à jour des données a échoué.",
+	more: 'Plus'
 };
 
 export default fr;

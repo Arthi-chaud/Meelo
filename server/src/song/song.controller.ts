@@ -15,7 +15,6 @@ import { LyricsService } from 'src/lyrics/lyrics.service';
 import LyricsDto from 'src/lyrics/models/update-lyrics.dto';
 import { SongResponseBuilder } from './models/song.response';
 import { TrackResponseBuilder } from 'src/track/models/track.response';
-import { PaginationQuery } from 'src/pagination/pagination-query.decorator';
 import RelationIncludeQuery from 'src/relation-include/relation-include-query.decorator';
 import SortingQuery from 'src/sort/sort-query.decorator';
 import Admin from 'src/roles/admin.decorator';
@@ -110,7 +109,7 @@ export class SongController {
 	@Get()
 	async getSongs(
 		@Query() selector: Selector,
-		@PaginationQuery()
+		@Query()
 		paginationParameters: PaginationParameters,
 		@RelationIncludeQuery(SongQueryParameters.AvailableAtomicIncludes)
 		include: SongQueryParameters.RelationInclude
@@ -202,7 +201,7 @@ export class SongController {
 	})
 	@Get(':idOrSlug/versions')
 	async getSongVersions(
-		@PaginationQuery()
+		@Query()
 		paginationParameters: PaginationParameters,
 		@RelationIncludeQuery(SongQueryParameters.AvailableAtomicIncludes)
 		include: SongQueryParameters.RelationInclude,

@@ -10,15 +10,18 @@ import { useState } from "react";
 import InfiniteResourceViewProps from "./infinite-resource-view-props";
 import { translate, useLanguage } from "../../../i18n/translate";
 
+type AdditionalProps = { type?: AlbumType };
+
 const InfiniteAlbumView = (
 	props: InfiniteResourceViewProps<
 		AlbumWithRelations<'artist'>,
 		typeof AlbumSortingKeys,
-		[type?: AlbumType]
+		AdditionalProps
 	> & Pick<Parameters<typeof AlbumTile>[0], 'formatSubtitle'>
 ) => {
 	const router = useRouter();
-	const [options, setOptions] = useState<OptionState<typeof AlbumSortingKeys>>({
+	const [options, setOptions] = useState<OptionState<typeof AlbumSortingKeys, AdditionalProps>>({
+		library: null,
 		order: props.initialSortingOrder ?? 'asc',
 		sortBy: props.initialSortingField ?? 'name',
 		view: props.defaultLayout ?? 'grid'
@@ -32,7 +35,7 @@ const InfiniteAlbumView = (
 					label: translate(options?.type as AlbumType ?? 'All'),
 					name: 'type',
 					values: ['All', ...AlbumType],
-					currentValue: options?.type,
+					currentValue: options?.type ?? undefined,
 				}
 			]}
 			onChange={setOptions}
@@ -45,9 +48,14 @@ const InfiniteAlbumView = (
 		<InfiniteView
 			view={options?.view ?? props.defaultLayout ?? "grid"}
 			query={() => props.query({
+				library: options?.library,
+				view: options?.view ?? props.defaultLayout ?? "grid",
+				// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+				// @ts-ignore
+				type: (options?.type == 'All') ? undefined : options?.type,
 				sortBy: options?.sortBy ?? AlbumSortingKeys[0],
 				order: options?.order ?? 'asc',
-			}, options?.type == 'All' ? undefined : options?.type as AlbumType | undefined)}
+			})}
 			renderListItem={(item: AlbumWithRelations<'artist'>) => <AlbumItem album={item} key={item.id} formatSubtitle={props.formatSubtitle}/>}
 			renderGridItem={(item: AlbumWithRelations<'artist'>) => <AlbumTile album={item} key={item.id} formatSubtitle={props.formatSubtitle}/>}
 		/>

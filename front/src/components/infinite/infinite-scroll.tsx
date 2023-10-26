@@ -34,9 +34,9 @@ export type Page<T> = {
 	 */
 	items: T[],
 	/**
-	 * The index of the page, usually the last page's + 1
+	 * The id of the last items in the previous page
 	 */
-	index: number,
+	afterId: number | null,
 	/**
 	 * True if the fetching should stop there
 	 */
@@ -71,6 +71,7 @@ const InfiniteScroll = <T extends Resource>(props: InfiniteScrollProps<T>) => {
 				}
 			}}
 			hasMore={hasNextPage}
+			threshold={500}
 		>
 			{ data && props.render(data.pages.map((page) => page.items).flat()) }
 			{ isFetchingNextPage && props.loader() }

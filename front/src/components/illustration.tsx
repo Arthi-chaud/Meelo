@@ -8,9 +8,22 @@ import API from "../api/api";
 import illustrationFallback from '../../public/icon.png';
 import { RequireExactlyOne } from "type-fest";
 import IllustrationModel from "../models/illustration";
-import { Blurhash } from "react-blurhash";
+import Blurhash from "./blurhash";
 import { isSSR } from "../ssr";
 import Fade from "./fade";
+
+type ImageQuality = 'low' | 'med' | 'original';
+
+const getImageWidth = (quality: ImageQuality) => {
+	switch (quality) {
+	case 'low':
+		return 100;
+	case 'med':
+		return 350;
+	case 'original':
+		return undefined;
+	}
+};
 
 type IllustrationProps = {
 	/**
@@ -23,7 +36,14 @@ type IllustrationProps = {
 	 * @default 1
 	 */
 	aspectRatio?: number;
-} & Omit<ImageProps, 'src' | 'alt'> & RequireExactlyOne<{
+
+	/**
+	 * Quality preset, in which to dl the image.
+	 */
+	quality: ImageQuality;
+
+	imgProps?: ImageProps['style']
+} & RequireExactlyOne<{
 	/**
 	 * URL of the illustration to display
 	 * Must be an URL from an API response
@@ -38,7 +58,7 @@ const Illustration = (props: IllustrationProps) => {
 	const [loadingFailed, setLoadingFailed] = useState(false);
 	const [loadingCompleted, setLoadingCompleted] = useState(false);
 	const url = props.url ?? props.illustration?.url;
-	const blurhash = props.illustration?.blurhash ?? null;
+	const blurhash = props.illustration?.blurhash;
 
 	return <Box key={'illustration-' + url} sx={{
 		width: '100%', height: '100%',
@@ -47,11 +67,11 @@ const Illustration = (props: IllustrationProps) => {
 		display: loadingFailed || !url ? 'flex' : 'block'
 	}}>
 		{blurhash &&
-			<Fade in={!loadingCompleted && !loadingFailed} unmountOnExit mountOnEnter>
+			<Fade in={!loadingCompleted && !loadingFailed} unmountOnExit>
 				<Box style={{ width: 'inherit', height: 'inherit',
-					borderRadius: theme.shape.borderRadius, overflow: 'hidden', ...props.style }}>
+					borderRadius: theme.shape.borderRadius, overflow: 'hidden', ...props.imgProps }}>
 					<Blurhash
-						hash={blurhash}
+						blurhash={blurhash}
 						style={{ width: 'inherit', height: 'inherit' }}
 					/>
 				</Box>
@@ -73,13 +93,17 @@ const Illustration = (props: IllustrationProps) => {
 				: <Image
 					onError={() => setLoadingFailed(true)}
 					onLoadingComplete={() => setLoadingCompleted(true)}
-					loader={({ src, width }) => src + `?width=${width}`}
 					fill
-					sizes="(max-width: 500px) 100vw, (max-width: 1000px) 50vw, 25vw"
 					alt={(url?.split('/').join('-') ?? 'missing-illustration')}
-					{...props}
-					style={{ borderRadius: theme.shape.borderRadius, objectFit: "contain", ...props.style }}
-					src={API.getIllustrationURL(url)}
+					unoptimized
+					style={{
+						borderRadius: theme.shape.borderRadius,
+						objectFit: "contain",
+						...props.imgProps,
+					}}
+					src={API.getIllustrationURL(url) + (props.quality == 'original'
+						? ''
+						: `?width=${getImageWidth(props.quality)}`)}
 				/>}
 			</Box>
 		</Fade>

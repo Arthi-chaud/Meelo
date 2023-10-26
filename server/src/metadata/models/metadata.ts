@@ -1,7 +1,7 @@
 import { TrackType } from "@prisma/client";
 import {
 	IsBoolean, IsDate, IsDefined, IsEnum,
-	IsNotEmpty, IsNumber, IsOptional, IsPositive, IsString
+	IsNotEmpty, IsNumber, IsOptional, IsPositive, IsString, Matches
 } from "class-validator";
 
 /**
@@ -111,4 +111,12 @@ export default class Metadata {
 	@IsString({ each: true })
 	@IsDefined()
 	genres: string[];
+
+	/**
+	 * Discogs ID of the parent release
+	 */
+	@IsString()
+	@Matches(/^\d+$/, { message: 'Discogs IDs should be at least one digit long' })
+	@IsOptional()
+	discogsId?: string;
 }

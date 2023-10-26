@@ -1,4 +1,4 @@
-import { QueueMusic } from "@mui/icons-material";
+import { PlaylistIcon } from "../icons";
 import Playlist from "../../models/playlist";
 import Illustration from "../illustration";
 import ListItem from "./item";
@@ -17,8 +17,9 @@ const PlaylistItem = ({ playlist }: PlaylistItemProps) => {
 	return <ListItem
 		icon={<Illustration
 			illustration={playlist.illustration}
-			style={{ objectFit: "cover" }}
-			fallback={<QueueMusic />} />
+			imgProps={{ objectFit: "cover" }}
+			quality="low"
+			fallback={<PlaylistIcon />} />
 		}
 		href={`/playlists/${playlist.slug}`}
 		title={playlist.name}

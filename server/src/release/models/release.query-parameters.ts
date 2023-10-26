@@ -12,11 +12,12 @@ namespace ReleaseQueryParameters {
 	/**
 	 * Parameters to create a release
 	 */
-	export type CreateInput = Omit<Release, 'releaseDate' | 'album' | 'albumId' | 'id' | 'slug' | 'tracks' | 'registeredAt'>
+	export type CreateInput = Omit<Release, 'releaseDate' | 'album' | 'albumId' | 'id' | 'slug' | 'tracks' | 'externalIds' | 'registeredAt'>
 		& {
 			releaseDate?: Date;
 			registeredAt?: Date;
-			album: AlbumQueryParameters.WhereInput
+			album: AlbumQueryParameters.WhereInput,
+			discogsId?: string
 		};
 
 	/**
@@ -62,8 +63,8 @@ namespace ReleaseQueryParameters {
 	/**
 	 * Defines what relations to include in query
 	 */
-	export const AvailableIncludes = ['album', 'tracks'] as const;
-	export const AvailableAtomicIncludes = filterAtomicRelationInclude(AvailableIncludes);
+	export const AvailableIncludes = ['album', 'tracks', 'externalIds'] as const;
+	export const AvailableAtomicIncludes = filterAtomicRelationInclude(AvailableIncludes, ['externalIds']);
 	export type RelationInclude = BaseRelationInclude<typeof AvailableIncludes>;
 
 	/**

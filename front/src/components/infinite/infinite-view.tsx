@@ -1,7 +1,7 @@
 import {
-	Box, Fab, Slide, Tooltip
+	Box, Button, Slide, Tooltip
 } from "@mui/material";
-import StraightIcon from "@mui/icons-material/Straight";
+import { GoBackTopIcon } from "../icons";
 import { MeeloInfiniteQueryFn } from "../../api/use-query";
 import { WideLoadingComponent } from "../loading/loading";
 import LoadingPage from "../loading/loading-page";
@@ -38,15 +38,16 @@ const InfiniteView = <ItemType extends Resource, >(
 		return () => window.removeEventListener('scroll', handleScroll);
 	}, []);
 	return <>
-		<Slide direction="up" in={backToTopVisible} mountOnEnter unmountOnExit>
+		<Slide direction="down" in={backToTopVisible} mountOnEnter unmountOnExit>
 			<Tooltip title={<Translate translationKey="backToTop"/>}>
-				<Fab
+				<Button
+					variant="contained"
 					color="secondary"
-					sx={{ zIndex: "tooltip", position: 'fixed', bottom: 16, right: 16 }}
+					sx={{ zIndex: "tooltip", position: 'fixed', top: 16, right: 16 }}
 					onClick={() => window.scrollTo({ top: 0, left: 0, behavior: "smooth" })}
 				>
-					<StraightIcon/>
-				</Fab>
+					<GoBackTopIcon/>
+				</Button>
 			</Tooltip>
 		</Slide>
 		{ props.view.toLowerCase() == 'list'
@@ -56,7 +57,7 @@ const InfiniteView = <ItemType extends Resource, >(
 				query={props.query}
 				render={(item: ItemType) =>
 					<Fade in>
-						<Box>
+						<Box key={item.id}>
 							{ props.renderListItem(item) }
 						</Box>
 					</Fade>

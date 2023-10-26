@@ -4,7 +4,6 @@ import {
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import Response, { ResponseType } from 'src/response/response.decorator';
 import { PaginationParameters } from 'src/pagination/models/pagination-parameters';
-import { PaginationQuery } from 'src/pagination/pagination-query.decorator';
 import RelationIncludeQuery from 'src/relation-include/relation-include-query.decorator';
 import SongQueryParameters from 'src/song/models/song.query-params';
 import { VideoResponseBuilder } from './models/video.response';
@@ -28,7 +27,7 @@ export class VideoController {
 	@Get()
 	async getVideosByLibrary(
 		@Query() selector: Selector,
-		@PaginationQuery()
+		@Query()
 		paginationParameters: PaginationParameters,
 		@RelationIncludeQuery(SongQueryParameters.AvailableAtomicIncludes)
 		include: SongQueryParameters.RelationInclude,

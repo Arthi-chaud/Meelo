@@ -2,12 +2,12 @@ import API from "../../api/api";
 import { SongWithRelations } from "../../models/song";
 import Illustration from '../illustration';
 import ListItem from "./item";
-import AudiotrackIcon from '@mui/icons-material/Audiotrack';
 import { useDispatch } from "react-redux";
 import { playTrack } from "../../state/playerSlice";
 import SongContextualMenu from "../contextual-menu/song-contextual-menu";
 import { useQueryClient } from "../../api/use-query";
 import { useState } from "react";
+import { SongIcon } from "../icons";
 
 type SongItemProps = {
 	song: SongWithRelations<'artist'>;
@@ -30,7 +30,7 @@ const SongItem = ({ song, formatSubtitle }: SongItemProps) => {
 	}
 	return (
 		<ListItem
-			icon={<Illustration illustration={song.illustration} fallback={<AudiotrackIcon/>}/>}
+			icon={<Illustration illustration={song.illustration} fallback={<SongIcon/>} quality="low"/>}
 			title={song.name}
 			onClick={() => queryClient
 				.fetchQuery(API.getMasterTrack(song.id, ['release']))
