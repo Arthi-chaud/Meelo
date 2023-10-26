@@ -1,12 +1,19 @@
 /* eslint-disable id-length */
-import { Injectable } from "@nestjs/common";
+import {
+	Inject, Injectable, forwardRef
+} from "@nestjs/common";
 import Metadata from "./models/metadata";
 import { AlbumType, SongType } from "@prisma/client";
 import escapeRegex from "src/utils/escape-regex";
+import ArtistService from "src/artist/artist.service";
+import Slug from "src/slug/slug";
 
 @Injectable()
 export default class ParserService {
-	constructor() {}
+	constructor(
+		@Inject(forwardRef(() => ArtistService))
+		private artistService: ArtistService
+	) {}
 
 	protected separators = [
 		[/\(/, /\)/],
@@ -134,7 +141,7 @@ export default class ParserService {
 	 * @param songName the name of the song, as from the source file's metadata
 	 * @example A (feat. B) => [A, [B]]
 	 */
-	extractFeaturedArtistsFromSongName(songName: string): Pick<Metadata, 'name' | 'featuring'> {
+	async extractFeaturedArtistsFromSongName(songName: string): Promise<Pick<Metadata, 'name' | 'featuring'>> {
 		const groups = this.splitGroups(songName, { keepDelimiters: true });
 		const groupsWithoutFeaturings: string[] = [];
 		const featuringArtists: string[] = [];
@@ -150,7 +157,7 @@ export default class ParserService {
 			}
 		};
 
-		groups.forEach((group) => {
+		for (const group of groups) {
 			const rewrapper = getRewrappers(); // The delimiters to rewrap the group with
 			const [sstart, strippedGroup, ssend] = this.stripGroupDelimiters(group);
 			const featureSubGroup = strippedGroup.match(
@@ -164,7 +171,7 @@ export default class ParserService {
 					groupsWithoutFeaturings.push(rewrapper[0] + strippedGroup + rewrapper[1]);
 				}
 			} else {
-				const artistsInSubGroup = this.extractFeaturedArtistsFromArtistName(
+				const artistsInSubGroup = await this.extractFeaturedArtistsFromArtistName(
 					featureSubGroup.at(3)!
 				);
 				const strippedGroupWithoutSub = strippedGroup.replace(featureSubGroup[0], '').trim();
@@ -174,7 +181,7 @@ export default class ParserService {
 				}
 				featuringArtists.push(artistsInSubGroup.artist, ...artistsInSubGroup.featuring);
 			}
-		});
+		}
 		return {
 			name: groupsWithoutFeaturings.join(' '),
 			featuring: featuringArtists
@@ -185,13 +192,16 @@ export default class ParserService {
 	 * @example "A & B" => [A, B]
 	 * @param artistName the artist of the song, as from the source file's metadata
 	 */
-	extractFeaturedArtistsFromArtistName(artistName: string): Pick<Metadata, 'artist' | 'featuring'> {
+	async extractFeaturedArtistsFromArtistName(artistName: string): Promise<Pick<Metadata, 'artist' | 'featuring'>> {
+		if (await this.artistService.exists({ slug: new Slug(artistName) })) {
+			return { artist: artistName, featuring: [] };
+		}
 		const [main, ...feats] = artistName
 			.split(/\s*,\s*/)
 			.map((s) => s.split(/\s*&\s*/))
 			.flat()
 			.map((s) => s.trim());
-		const { name, featuring } = this.extractFeaturedArtistsFromSongName(main);
+		const { name, featuring } = await this.extractFeaturedArtistsFromSongName(main);
 
 		return {
 			artist: name,
