@@ -107,7 +107,7 @@ const MinimizedPlayerControls = (props: PlayerControlsProps) => {
 					justifyContent: 'left'
 				}}>
 					<Typography sx={{ fontWeight: 'bold', ...playerTextStyle }}>
-						{props.track?.name}
+						{props.track?.name ?? <br/>}
 					</Typography>
 				</Grid>
 				<Grid item sx={{
@@ -118,7 +118,7 @@ const MinimizedPlayerControls = (props: PlayerControlsProps) => {
 						color: 'text.disabled', ...playerTextStyle,
 						fontSize: 'medium'
 					}}>
-						{props.artist?.name}
+						{props.artist?.name ?? <br/>}
 					</Typography>
 				</Grid>
 			</Grid>

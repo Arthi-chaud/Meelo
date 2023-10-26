@@ -1,22 +1,19 @@
 import { Box, useTheme } from "@mui/material";
 import hexToRgba from "hex-to-rgba";
-import { Blurhash } from "react-blurhash";
-import Fade from "./fade";
+import Blurhash from "./blurhash";
 
-const BackgroundBlurhash = (props: { blurhash: string }) => {
+const BackgroundBlurhash = (props: { blurhash?: string }) => {
 	const theme = useTheme();
 
 	return <>
-		<Fade in>
-			<Box sx={{
-				position: 'fixed', top: 0, left: 0, zIndex: -10000, width: '100%', height: '100%',
-			}}>
-				<Blurhash
-					hash={props.blurhash}
-					style={{ width: '100vw', height: '100vh' }}
-				/>
-			</Box>
-		</Fade>
+		<Blurhash
+			blurhash={props.blurhash}
+			sx={{
+				position: 'fixed', top: 0, left: 0, zIndex: -10000,
+				width: '100vw', height: '100vh',
+				transition: 'background 0.4s'
+			}}
+		/>
 		<Box sx={{
 			position: 'fixed', top: 0, left: 0, zIndex: -10000, width: '100%', height: '100%',
 			background: hexToRgba(theme.palette.background.default, 0.6),

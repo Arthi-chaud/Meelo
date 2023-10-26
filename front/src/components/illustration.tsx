@@ -8,10 +8,9 @@ import API from "../api/api";
 import illustrationFallback from '../../public/icon.png';
 import { RequireExactlyOne } from "type-fest";
 import IllustrationModel from "../models/illustration";
-import { Blurhash } from "react-blurhash";
+import Blurhash from "./blurhash";
 import { isSSR } from "../ssr";
 import Fade from "./fade";
-import { blurHashToDataURL } from "../utils/blurhashToDataUrl";
 
 type ImageQuality = 'low' | 'med' | 'original';
 
@@ -59,7 +58,7 @@ const Illustration = (props: IllustrationProps) => {
 	const [loadingFailed, setLoadingFailed] = useState(false);
 	const [loadingCompleted, setLoadingCompleted] = useState(false);
 	const url = props.url ?? props.illustration?.url;
-	const blurhash = props.illustration?.blurhash ?? null;
+	const blurhash = props.illustration?.blurhash;
 
 	return <Box key={'illustration-' + url} sx={{
 		width: '100%', height: '100%',
@@ -68,11 +67,11 @@ const Illustration = (props: IllustrationProps) => {
 		display: loadingFailed || !url ? 'flex' : 'block'
 	}}>
 		{blurhash &&
-			<Fade in={!loadingCompleted && !loadingFailed} unmountOnExit mountOnEnter>
+			<Fade in={!loadingCompleted && !loadingFailed} unmountOnExit>
 				<Box style={{ width: 'inherit', height: 'inherit',
 					borderRadius: theme.shape.borderRadius, overflow: 'hidden', ...props.imgProps }}>
 					<Blurhash
-						hash={blurhash}
+						blurhash={blurhash}
 						style={{ width: 'inherit', height: 'inherit' }}
 					/>
 				</Box>
@@ -96,13 +95,6 @@ const Illustration = (props: IllustrationProps) => {
 					onLoadingComplete={() => setLoadingCompleted(true)}
 					fill
 					alt={(url?.split('/').join('-') ?? 'missing-illustration')}
-					{...(blurhash && isSSR()
-						? {
-							blurDataURL: blurHashToDataURL(blurhash),
-							placeholder: 'blur'
-						}
-						: {})
-					}
 					unoptimized
 					style={{
 						borderRadius: theme.shape.borderRadius,

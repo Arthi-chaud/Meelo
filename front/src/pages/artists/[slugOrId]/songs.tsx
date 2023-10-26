@@ -33,9 +33,7 @@ const ArtistSongPage = (props: InferSSRProps<typeof getServerSideProps>) => {
 	const artist = useQuery(API.getArtist, props.additionalProps?.artistIdentifier);
 
 	return <Box sx={{ width: '100%' }}>
-		{artist.data?.illustration &&
-			<BackgroundBlurhash blurhash={artist.data?.illustration?.blurhash} />
-		}
+		<BackgroundBlurhash blurhash={artist.data?.illustration?.blurhash} />
 		<ArtistRelationPageHeader artistSlugOrId={artistIdentifier}/>
 		<InfiniteSongView
 			initialSortingField={props.additionalProps?.sortBy ?? 'name'}

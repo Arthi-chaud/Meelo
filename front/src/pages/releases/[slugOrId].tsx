@@ -32,7 +32,7 @@ import SongGrid from "../../components/song-grid";
 import AlbumTile from "../../components/tile/album-tile";
 import getYear from "../../utils/getYear";
 import Fade from "../../components/fade";
-import BackgroundBlurhash from '../../components/blurhash-background';
+import BackgroundBlurhash from "../../components/blurhash-background";
 
 const releaseQuery = (releaseIdentifier: string | number) => API.getRelease(releaseIdentifier, ['album', 'externalIds']);
 const releaseTracklistQuery = (releaseIdentifier: string | number) => API.getReleaseTrackList(releaseIdentifier, ['song']);
@@ -150,7 +150,7 @@ const ReleasePage = (props: InferSSRProps<typeof getServerSideProps>) => {
 		<Container maxWidth={false} disableGutters={viewIsInColumn}
 			sx={{ marginTop: 3, marginX: 0, position: 'relative' }}
 		>
-			{illustration && <BackgroundBlurhash blurhash={illustration.blurhash} /> }
+			<BackgroundBlurhash blurhash={illustration?.blurhash} />
 			<Grid container spacing={4} sx={{ justifyContent: 'center' }}>
 				<Grid item lg={3} sm={5} xs={8}>
 					<Illustration illustration={release.data!.illustration} quality="original"/>
