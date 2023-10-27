@@ -1,17 +1,16 @@
-import {
-	Box, NoSsr, useTheme
-} from "@mui/material";
+import { Box } from "@mui/material";
 import { blurHashToDataURL } from "../utils/blurhashToDataUrl";
-import { isSSR } from "../ssr";
 import { Blurhash as RBlurhash } from "react-blurhash";
+import {
+	useEffect, useMemo, useState
+} from "react";
 
 type BlurhashProps = Parameters<typeof Box>['0'] & {
 	blurhash?: string
 }
 
 const Blurhash = ({ blurhash, ...props }: BlurhashProps) => {
-	const theme = useTheme();
-
+	const [isSSR, setIsSSr] = useState(true);
 	const ssrProps = () => ({
 		...props,
 		sx: {
@@ -21,24 +20,25 @@ const Blurhash = ({ blurhash, ...props }: BlurhashProps) => {
 			...props.sx,
 		},
 	});
-	const csrProps = () => ({
-		...props,
-		sx: {
-			borderRadius: theme.shape.borderRadius,
-			...props.sx,
-		},
-	} as const);
+	const containerProps = useMemo(() => {
+		if (isSSR) {
+			return ssrProps();
+		}
+		return props;
+	}, [isSSR]);
+
+	useEffect(() => {
+		setIsSSr(false);
+	}, []);
 
 	return <Box
 		suppressHydrationWarning
-		{...(isSSR() ? ssrProps() : csrProps())}
+		{...containerProps}
 	>
-		<NoSsr>
-			{ blurhash && <RBlurhash
-				hash={blurhash}
-				style={{ width: '100%', height: '100%' }}
-			/> }
-		</NoSsr>
+		{ blurhash && <RBlurhash
+			hash={blurhash}
+			style={{ width: '100%', height: '100%' }}
+		/> }
 	</Box>;
 };
 
