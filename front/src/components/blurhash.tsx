@@ -1,37 +1,45 @@
 import { Box } from "@mui/material";
-import { useEffect, useState } from "react";
 import { blurHashToDataURL } from "../utils/blurhashToDataUrl";
-import { isSSR } from "../ssr";
+import { Blurhash as RBlurhash } from "react-blurhash";
+import {
+	useEffect, useMemo, useState
+} from "react";
 
 type BlurhashProps = Parameters<typeof Box>['0'] & {
 	blurhash?: string
 }
 
 const Blurhash = ({ blurhash, ...props }: BlurhashProps) => {
-	const [base64, setBase64] = useState<string | undefined>(
-		isSSR() ? blurHashToDataURL(blurhash) : undefined
-	);
+	const [isSSR, setIsSSr] = useState(true);
+	const ssrProps = () => ({
+		...props,
+		sx: {
+			backgroundImage: blurhash ? `url(${blurHashToDataURL(blurhash)})` : 'none',
+			backgroundRepeat: 'no-repeat',
+			backgroundSize: 'cover',
+			...props.sx,
+		},
+	});
+	const containerProps = useMemo(() => {
+		if (isSSR) {
+			return ssrProps();
+		}
+		return props;
+	}, [isSSR]);
 
 	useEffect(() => {
-		if (!blurhash) {
-			return;
-		}
-		const toBase64 = async () => {
-			return blurHashToDataURL(blurhash);
-		};
+		setIsSSr(false);
+	}, []);
 
-		toBase64().then((b64) => {
-			if (b64) {
-				setBase64(b64);
-			}
-		});
-	}, [blurhash]);
-	return <Box {...props} sx={{
-		backgroundImage: base64 ? `url(${base64})` : 'none',
-		backgroundRepeat: 'no-repeat',
-		backgroundSize: 'cover',
-		...props.sx
-	}}/>;
+	return <Box
+		suppressHydrationWarning
+		{...containerProps}
+	>
+		{ blurhash && <RBlurhash
+			hash={blurhash}
+			style={{ width: '100%', height: '100%' }}
+		/> }
+	</Box>;
 };
 
 export default Blurhash;
