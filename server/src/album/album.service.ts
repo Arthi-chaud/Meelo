@@ -421,7 +421,7 @@ export default class AlbumService extends RepositoryService<
 					sort: 'asc'
 				}
 			},
-			include: RepositoryService.formatInclude(include),
+			include: this.formatInclude(include),
 			where: {
 				...this.formatManyWhereInput(where),
 				OR: [

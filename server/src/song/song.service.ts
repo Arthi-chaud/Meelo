@@ -10,7 +10,7 @@ import PrismaService from 'src/prisma/prisma.service';
 import type SongQueryParameters from './models/song.query-params';
 import TrackService from 'src/track/track.service';
 import GenreService from 'src/genre/genre.service';
-import RepositoryService from 'src/repository/repository.service';
+import RepositoryService, { ModelSelector } from 'src/repository/repository.service';
 import { CompilationArtistException } from 'src/artist/artist.exceptions';
 import { buildStringSearchParameters } from 'src/utils/search-string-input';
 import { PaginationParameters, buildPaginationParameters } from 'src/pagination/models/pagination-parameters';
@@ -232,6 +232,9 @@ export default class SongService extends RepositoryService<
 			artist: what.artist ? {
 				connect: ArtistService.formatWhereInput(what.artist),
 			} : undefined,
+			featuring: what.featuring ? {
+				connect: what.featuring.map(ArtistService.formatWhereInput),
+			} : undefined,
 		};
 	}
 
@@ -393,7 +396,7 @@ export default class SongService extends RepositoryService<
 				type: type
 			},
 			orderBy: sort ? this.formatSortingInput(sort) : undefined,
-			include: RepositoryService.formatInclude(include),
+			include: this.formatInclude(include),
 			...buildPaginationParameters(pagination)
 		});
 	}
@@ -452,7 +455,7 @@ export default class SongService extends RepositoryService<
 				]
 			},
 			orderBy: sort ? this.formatSortingInput(sort) : undefined,
-			include: RepositoryService.formatInclude(include),
+			include: this.formatInclude(include),
 			...buildPaginationParameters(pagination)
 		});
 	}
@@ -485,7 +488,7 @@ export default class SongService extends RepositoryService<
 					sort: 'asc'
 				}
 			},
-			include: RepositoryService.formatInclude(include),
+			include: this.formatInclude(include),
 			where: {
 				...this.formatManyWhereInput(where),
 				OR: [
@@ -507,4 +510,12 @@ export default class SongService extends RepositoryService<
 	private getBaseSongName(songName: string): string {
 		return this.parserService.stripGroups(songName);
 	}
+
+	static formatInclude<I extends ModelSelector<SongWithRelations>>(include?: I) {
+		if (include) {
+			include.featuring = include.artist
+		}
+		return super.formatInclude(include);
+	};
+	formatInclude = SongService.formatInclude;
 }

@@ -18,6 +18,7 @@ namespace SongQueryParameters {
 	export type CreateInput = Omit<Song, 'slug' | 'id' | 'playCount' | 'artist' | 'artistId' | 'tracks' | 'genres' | 'lyrics' | 'masterId' | 'registeredAt' | 'type'>
 		& {
 			artist: ArtistQueryParameters.WhereInput,
+			featuring: ArtistQueryParameters.WhereInput[],
 			registeredAt?: Date,
 			genres: GenreQueryParameters.WhereInput[]
 		};
@@ -68,6 +69,7 @@ namespace SongQueryParameters {
 	export const AvailableIncludes = [
 		'tracks',
 		'artist',
+		'featuring',
 		'genres',
 		'lyrics',
 		'externalIds'

@@ -266,7 +266,7 @@ export default class ReleaseService extends RepositoryService<
 				}
 				return this.prismaService.release.findFirstOrThrow({
 					where: { album: AlbumService.formatWhereInput(where) },
-					include: RepositoryService.formatInclude(include),
+					include: this.formatInclude(include),
 					orderBy: { id: 'asc' },
 
 				}).catch(() => {

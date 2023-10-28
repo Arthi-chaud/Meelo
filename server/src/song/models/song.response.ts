@@ -14,6 +14,7 @@ export class SongResponse extends IntersectionType(
 	IllustratedResponse,
 	class {
 		artist?: ArtistResponse;
+		featuring?: ArtistResponse[];
 		externalIds?: ExternalIdResponse[];
 	}
 ) {}
@@ -41,6 +42,13 @@ export class SongResponseBuilder extends ResponseBuilderInterceptor<SongWithRela
 
 		if (song.artist !== undefined) {
 			response.artist = await this.artistResponseBuilder.buildResponse(song.artist);
+		}
+		if (song.featuring !== undefined) {
+			response.featuring = await Promise.all(
+				song.featuring.map(
+					(artist) => this.artistResponseBuilder.buildResponse(artist)
+				)
+			);
 		}
 		if (song.externalIds !== undefined) {
 			response.externalIds = await Promise.all(

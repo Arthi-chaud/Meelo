@@ -283,7 +283,7 @@ export default class ArtistService extends RepositoryService<
 					sort: 'asc'
 				}
 			},
-			include: RepositoryService.formatInclude(include),
+			include: this.formatInclude(include),
 			where: {
 				...this.formatManyWhereInput(where),
 				OR: [

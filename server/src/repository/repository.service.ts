@@ -9,7 +9,7 @@ import type { Primitive } from "type-fest";
 
 type AtomicModel = { id: number };
 
-type ModelSelector<T extends {}> = Partial<Record<keyof T, boolean>>;
+export type ModelSelector<T extends {}> = Partial<Record<keyof T, boolean>>;
 
 /**
  * Selects the fields to include, except relation fields
@@ -114,7 +114,7 @@ abstract class RepositoryService<
 		try {
 			const created = await this.repository.create({
 				data: this.formatCreateInput(input),
-				include: RepositoryService.formatInclude(include)
+				include: this.formatInclude(include)
 			}) as BaseModel & Select<Relations, I>;
 
 			this.onCreated(created);
@@ -158,7 +158,7 @@ abstract class RepositoryService<
 		try {
 			return await this.repository.findFirstOrThrow({
 				where: this.formatWhereInput(where),
-				include: RepositoryService.formatInclude(include)
+				include: this.formatInclude(include)
 			}) as BaseModel & Select<Relations, I>;
 		} catch (error) {
 			throw await this.onNotFound(error, where);
@@ -258,7 +258,7 @@ abstract class RepositoryService<
 	){
 		return this.repository.findMany({
 			where: this.formatManyWhereInput(where),
-			include: RepositoryService.formatInclude(include),
+			include: this.formatInclude(include),
 			orderBy: sort ? this.formatSortingInput(sort) : undefined,
 			...buildPaginationParameters(pagination)
 		}) as Promise<(BaseModel & Select<Relations, I>)[]>;
@@ -425,6 +425,7 @@ abstract class RepositoryService<
 		}
 		return include;
 	}
+	formatInclude = RepositoryService.formatInclude;
 
 	/**
 	 * Housekeeping function

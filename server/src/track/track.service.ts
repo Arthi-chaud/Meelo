@@ -251,7 +251,7 @@ export default class TrackService extends RepositoryService<
 				}
 				const tracks = await this.prismaService.track.findMany({
 					where: { song: SongService.formatWhereInput(where) },
-					include: RepositoryService.formatInclude(include),
+					include: this.formatInclude(include),
 					orderBy: { release: {
 						releaseDate: { sort: 'asc', nulls: 'last' }
 					} },
