@@ -149,8 +149,8 @@
   "compodoc": {
     "name": "Meelo Documentation",
     "output": "../docs/generated",
-    "customLogo": "../assets/banner.png",
-    "customFavicon": "../assets/icon.png",
+    "customLogo": "../front/assets/banner.png",
+    "customFavicon": "../front/assets/icon.png",
     "includes": "../docs/",
     "includesName": "User Documentation",
     "exclude": [

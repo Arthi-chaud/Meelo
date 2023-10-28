@@ -11,9 +11,6 @@ export default async function bootstrapSwagger(app: INestApplication) {
 
 	SwaggerModule.setup('/swagger', app, document, {
 		customSiteTitle: 'Swagger - Meelo',
-		customfavIcon: './assets/favicon.ico',
-		customCssUrl: './assets/swagger/styles.css',
-		customJs: './assets/swagger/script.js',
 		swaggerOptions: {
 			tagsSorter: 'alpha',
 			operationsSorter: 'alpha',

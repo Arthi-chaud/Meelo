@@ -3,6 +3,8 @@
 In your `Meelo` directory, create a `.env` file and fill out the following variables
 
 ```ini
+# Public URL to the backend
+PUBLIC_SERVER_URL=
 # Username to access database
 POSTGRES_USER=
 # Password to access database
