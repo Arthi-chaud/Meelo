@@ -14,18 +14,6 @@ RUN yarn run build
 RUN yarn install --production
 
 
-## Frontend
-FROM node:18-alpine AS front-builder
-WORKDIR /app/front
-COPY ./front/*.json ./
-COPY ./front/*.lock ./
-RUN yarn install --production
-COPY ./front/public ./public
-COPY ./front/src ./src
-COPY ./front/next.config.js .
-## To Provide static assets at build time
-COPY ./assets /app/assets
-RUN yarn build
 
 FROM squidfunk/mkdocs-material AS doc-builder
 WORKDIR /app/docs
@@ -41,11 +29,6 @@ COPY --from=server-builder /app/server/dist ./server/dist
 COPY --from=server-builder /app/server/node_modules ./server/node_modules
 COPY --from=server-builder /app/server/package.json ./server/package.json
 COPY --from=server-builder /app/server/prisma ./server/prisma
-COPY --from=front-builder /app/front/.next ./front/.next
-COPY --from=front-builder /app/front/node_modules ./front/node_modules
-COPY --from=front-builder /app/front/package.json ./front/
-COPY --from=front-builder /app/front/public ./front/public
-COPY --from=front-builder /app/front/next.config.js ./front/
 COPY --from=doc-builder /app/docs/site /app/docs
 COPY ./assets ./assets
 COPY ./nginx.conf /etc/nginx/nginx.conf
