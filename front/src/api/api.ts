@@ -77,12 +77,7 @@ export default class API {
 			.map(([key, value]) => `params-${key}-${value}`)
 		: [];
 
-	/**
-	 * Utilitary functions
-	 */
-	private static isDev = () => process.env.NODE_ENV === 'development';
-
-	private static SSR_API_URL = process.env.ssrApiRoute!;
+	private static API_URL = process.env.PUBLIC_SERVER_URL!;
 	static defaultPageSize = 35;
 
 	/**
@@ -980,10 +975,7 @@ export default class API {
 	 * @returns the correct, rerouted URL
 	 */
 	static getIllustrationURL(imageURL: string): string {
-		if (API.isDev()) {
-			return `${this.SSR_API_URL}${imageURL}`;
-		}
-		return `/api/${imageURL}`;
+		return `${this.API_URL}${imageURL}`;
 	}
 
 	/**
@@ -1096,7 +1088,7 @@ export default class API {
 	private static buildURL(
 		route: string, parameters: QueryParameters<any>, otherParameters?: any
 	): string {
-		const apiHost = API.isDev() || isSSR() ? this.SSR_API_URL : '/api';
+		const apiHost = this.API_URL;
 
 		return `${apiHost}${route}${this.formatQueryParameters(parameters, otherParameters)}`;
 	}
