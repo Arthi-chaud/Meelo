@@ -1,14 +1,29 @@
 services:
-  meelo:
+  server:
     build:
-      context: ./
-    ports:
-      - "5000:5000"
+      context: ./server
+    expose:
+      - 4000
+    restart: on-failure
     depends_on:
       - "db"
     volumes:
-      - ./meelo:/meelo
-      - ./data:/data
+      - config:/meelo
+      - data:/data
+    env_file:
+      - .env
+    healthcheck:
+      test: ["CMD-SHELL", "wget -qO- localhost:4000"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+  web:
+    build:
+      context: ./front
+    expose:
+      - 3000
+    depends_on:
+      - "server"
     env_file:
       - .env
   redis:
