@@ -4,9 +4,9 @@ FROM base AS builder
 WORKDIR /app
 COPY ./*.json ./
 COPY ./*.lock ./
-COPY ./next.config.js .
 RUN yarn install --production --frozen-lockfile
 
+COPY ./next.config.js .
 ## To Provide static assets at build time
 COPY ./public ./public
 COPY ./src ./src

@@ -1,3 +1,4 @@
+# This compose allows to build the whole project in a "production"-like environment 
 services:
   server:
     build:
@@ -26,9 +27,9 @@ services:
     depends_on:
       server:
         condition: service_healthy
-    environment: # We avoid loading the full .env file
+    environment:
       - PUBLIC_SERVER_URL=${PUBLIC_SERVER_URL}
-      - SSR_SERVER_URL=${SSR_SERVER_URL:-http://server:4000}
+      - SSR_SERVER_URL=http://server:4000
   redis:
     image: redis:7.0-alpine
     healthcheck:

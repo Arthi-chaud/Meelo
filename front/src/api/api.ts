@@ -77,7 +77,8 @@ export default class API {
 			.map(([key, value]) => `params-${key}-${value}`)
 		: [];
 
-	private static API_URL = process.env.PUBLIC_SERVER_URL!;
+	private static isDev = () => process.env.NODE_ENV === 'development';
+	private static SSR_API_URL = process.env.SSR_SERVER_URL ?? process.env.PUBLIC_SERVER_URL!;
 	static defaultPageSize = 35;
 
 	/**
@@ -970,12 +971,15 @@ export default class API {
 	}
 
 	/**
-	 * Builds the URL to get an illustration from an object returned by the API
+	 * Builds the URL to fetch an illustration, from the browser/client pov
 	 * @param imageURL
 	 * @returns the correct, rerouted URL
 	 */
 	static getIllustrationURL(imageURL: string): string {
-		return `${this.API_URL}${imageURL}`;
+		if (API.isDev() || isSSR()) {
+			return `${this.SSR_API_URL}${imageURL}`;
+		}
+		return `${process.env.PUBLIC_SERVER_URL ?? '/api'}${imageURL}`;
 	}
 
 	/**
@@ -1088,7 +1092,7 @@ export default class API {
 	private static buildURL(
 		route: string, parameters: QueryParameters<any>, otherParameters?: any
 	): string {
-		const apiHost = this.API_URL;
+		const apiHost = API.isDev() || isSSR() ? this.SSR_API_URL : '/api';
 
 		return `${apiHost}${route}${this.formatQueryParameters(parameters, otherParameters)}`;
 	}

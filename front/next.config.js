@@ -4,9 +4,6 @@ module.exports = {
   output: 'standalone',
   reactStrictMode: false,
   swcMinify: true,
-  env: {
-    ssrApiRoute: 'http://localhost:4000'
-  },
   async redirects() {
     return [
       {
