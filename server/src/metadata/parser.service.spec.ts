@@ -202,6 +202,13 @@ describe('Parser Service', () => {
 			expect(res.name).toBe('Me Against the Music');
 			expect(res.featuring).toStrictEqual(['Madonna']);
 		});
+		it('Tricky', async () => {
+			const res = await parserService.extractFeaturedArtistsFromSongName(
+				'Good Times With Bad People'
+			)
+			expect(res.name).toBe('Good Times With Bad People');
+			expect(res.featuring).toStrictEqual([]);
+		});
 		it('Basic: A (featuring B)', async () => {
 			const res = await parserService.extractFeaturedArtistsFromSongName(
 				'Me Against the Music (featuring Madonna)'
@@ -331,6 +338,7 @@ describe('Parser Service', () => {
 			expect(res.artist).toBe('Clean Bandit');
 			expect(res.featuring).toStrictEqual(['Jess Glynne']);
 		});
+	
 		it('Ambiguous', async () => {
 			const res = await parserService.extractFeaturedArtistsFromArtistName(
 				'Christine & The Queens'

@@ -61,18 +61,39 @@ export default class MetadataService {
 				registeredAt: file.registerDate
 			})
 			: undefined;
+		const { name: parsedSongName, featuring: parsedFeaturingArtists } = await this.parserService
+			.extractFeaturedArtistsFromSongName(metadata.name);
+		let parsedArtistName = metadata.artist;
+
+		if (metadata.artist !== albumArtist?.name) {
+			const { artist, featuring } = await this.parserService
+				.extractFeaturedArtistsFromArtistName(metadata.artist);
+
+			parsedArtistName = artist;
+			parsedFeaturingArtists.push(...featuring);
+		}
+		console.log(parsedArtistName, parsedFeaturingArtists);
 		const songArtist = await this.artistService.getOrCreate({
-			name: metadata.artist,
+			name: parsedArtistName,
 			registeredAt: file.registerDate
 		});
+		const featuringArtists = await Promise.all(
+			parsedFeaturingArtists.map((artist) =>
+				this.artistService.getOrCreate({
+					name: artist,
+					registeredAt: file.registerDate
+				}))
+		);
 		const song = await this.songService.getOrCreate({
-			name: this.removeTrackExtension(metadata.name!),
+			name: this.removeTrackExtension(parsedSongName),
 			artist: { id: songArtist.id },
+			featuring: featuringArtists.map(({ id }) => ({ id })),
 			genres: genres.map((genre) => ({ id: genre.id })),
 			registeredAt: file.registerDate
 		}, {
-			tracks: true, genres: true
+			tracks: true, genres: true, featuring: true
 		});
+		console.log(song.featuring);
 
 		await this.songService.update(
 			{ genres: song.genres.concat(genres).map((genre) => ({ id: genre.id })) },

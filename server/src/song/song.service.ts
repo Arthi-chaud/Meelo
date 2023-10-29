@@ -78,12 +78,16 @@ export default class SongService extends RepositoryService<
 	}
 
 	formatCreateInput(song: SongQueryParameters.CreateInput) {
+		console.log(song);
 		return {
 			genres: {
 				connect: song.genres.map((genre) => GenreService.formatWhereInput(genre))
 			},
 			artist: {
 				connect: ArtistService.formatWhereInput(song.artist)
+			},
+			featuring: {
+				connect: song.featuring.map(ArtistService.formatWhereInput)
 			},
 			registeredAt: song.registeredAt,
 			playCount: 0,
@@ -513,9 +517,10 @@ export default class SongService extends RepositoryService<
 
 	static formatInclude<I extends ModelSelector<SongWithRelations>>(include?: I) {
 		if (include) {
-			include.featuring = include.artist
+			include.featuring = include.artist;
 		}
 		return super.formatInclude(include);
-	};
+	}
+
 	formatInclude = SongService.formatInclude;
 }
