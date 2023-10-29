@@ -17,7 +17,9 @@ RUN yarn run prebuild	\
 FROM base as runner
 WORKDIR /app
 RUN apk add ffmpeg
-COPY --from=builder /app/dist ./dist
 COPY --from=builder /app/node_modules ./node_modules
+COPY --from=builder /app/package.json /app/yarn.lock ./
+COPY --from=builder /app/prisma ./prisma
+COPY --from=builder /app/dist ./dist
 
-CMD node dist/src/main
+CMD yarn run prisma migrate dev --skip-generate && yarn run start:prod
