@@ -37,7 +37,7 @@ services:
       - ./front/yarn.lock:/app/yarn.lock
     environment:
       # This can be commented out. see front/next.config.js
-      # - PUBLIC_SERVER_URL=http://localhost:4000
+      - PUBLIC_SERVER_URL=http://localhost:4000
       - SSR_SERVER_URL=http://server:4000
   redis:
     image: redis:7.0-alpine

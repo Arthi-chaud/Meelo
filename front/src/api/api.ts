@@ -770,7 +770,7 @@ export default class API {
 			exec: (pagination) => API.fetch({
 				route: `/songs/${songSlugOrId}/versions`,
 				parameters: { pagination: pagination, include, sort },
-				otherParameters: { filter },
+				otherParameters: filter,
 				validator: PaginatedResponse(SongWithRelations(include ?? []))
 			})
 		};
