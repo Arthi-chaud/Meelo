@@ -10,8 +10,7 @@ COPY ./*.lock ./
 COPY ./src ./src
 COPY ./prisma/ ./prisma
 RUN yarn install --frozen-lockfile
-RUN yarn run prebuild	\
-	&& yarn run build	\
+RUN yarn run build	\
 	&& yarn install --production --frozen-lockfile
 
 FROM base as runner

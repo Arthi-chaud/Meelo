@@ -1,21 +1,23 @@
 services:
-  meelo:
+  server:
     build:
-      context: ../
-      dockerfile: dev/Dockerfile
+      context: ./server
+      dockerfile: Dockerfile.dev
     ports:
-      - "5000:5000"
-      - "3000:3000"
       - "4000:4000"
     depends_on:
       db:
        condition: service_healthy
     volumes:
-      - ../data/config:/meelo
-      - ../assets:/app/assets
-      - ../front:/app/front
-      - ../server:/app/server
-      - ../data:/data
+      - ./server/src:/app/src
+      - ./server/prisma:/app/prisma
+      - ./server/test:/app/test
+      - ./server/package.json:/app/package.json
+      - ./server/tsconfig.json:/app/tsconfig.json
+      - ./server/tsconfig.build.json:/app/tsconfig.build.json
+      - ./server/yarn.lock:/app/yarn.lock
+      - ./data:/data
+      - ./data/config:/meelo
     env_file:
       - .env
   redis:
