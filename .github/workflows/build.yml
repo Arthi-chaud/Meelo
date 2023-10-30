@@ -31,6 +31,6 @@ jobs:
         uses: docker/build-push-action@v3
         with:
           context: ${{ matrix.pwd }}
-          push: ${{ github.ref == 'refs/heads/master' }}
+          push: ${{ github.ref == 'refs/heads/main' }}
           tags: arthichaud/meelo-${{ matrix.section }}:latest
           cache-from: type=registry,ref=arthichaud/meelo-${{ matrix.section }}:latest
