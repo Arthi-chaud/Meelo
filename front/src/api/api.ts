@@ -976,7 +976,10 @@ export default class API {
 	 * @returns the correct, rerouted URL
 	 */
 	static getIllustrationURL(imageURL: string): string {
-		if (API.isDev() || isSSR()) {
+		if (this.isDev()) {
+			return `${process.env.PUBLIC_SERVER_URL ?? '/api'}${imageURL}`;
+		}
+		if (isSSR()) {
 			return `${this.SSR_API_URL}${imageURL}`;
 		}
 		return `${process.env.PUBLIC_SERVER_URL ?? '/api'}${imageURL}`;
@@ -1092,7 +1095,7 @@ export default class API {
 	private static buildURL(
 		route: string, parameters: QueryParameters<any>, otherParameters?: any
 	): string {
-		const apiHost = API.isDev() || isSSR() ? this.SSR_API_URL : '/api';
+		const apiHost = isSSR() ? this.SSR_API_URL : '/api';
 
 		return `${apiHost}${route}${this.formatQueryParameters(parameters, otherParameters)}`;
 	}
