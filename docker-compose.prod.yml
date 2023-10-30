@@ -1,8 +1,7 @@
-# This compose allows to build the whole project in a "production"-like environment 
+# This compose allows to setup the whole project in the production environment 
 services:
   server:
-    build:
-      context: ./server
+    image: ghcr.io/arthi-chaud/meelo-server:latest
     expose:
       - 4000
     restart: on-failure
@@ -20,8 +19,7 @@ services:
       timeout: 5s
       retries: 5
   front:
-    build:
-      context: ./front
+    image: ghcr.io/arthi-chaud/meelo-front:latest
     expose:
       - 3000
     depends_on:

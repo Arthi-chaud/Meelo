@@ -8,11 +8,19 @@ on:
 
 jobs:
   push_to_registries:
-    name: Push Docker image to multiple registries
     runs-on: ubuntu-latest
     permissions:
       packages: write
       contents: read
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - section: 'server'
+            pwd: ./server
+          - section: 'front'
+            pwd: ./front
+    name: publish_${{ matrix.section }}
     steps:
       - name: Check out the repo
         uses: actions/checkout@v3
@@ -32,12 +40,12 @@ jobs:
         uses: docker/metadata-action@v4
         with:
           images: |
-            arthichaud/meelo
-            ghcr.io/${{ github.repository }}
+            arthichaud/meelo-${{ matrix.section }}
+            ghcr.io/${{ github.repository }}-${{ matrix.section }}
       - name: Build and push Docker images
         uses: docker/build-push-action@v3
         with:
-          context: .
+          context: ${{ matrix.pwd }}
           push: true
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}

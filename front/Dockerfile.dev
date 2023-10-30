@@ -1,0 +1,10 @@
+FROM node:18-alpine
+WORKDIR /app
+COPY ./*.json ./
+COPY ./*.lock ./
+RUN yarn install
+
+ENV PORT 3000
+ENV HOSTNAME "0.0.0.0"
+
+CMD yarn run start:dev
