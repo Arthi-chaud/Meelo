@@ -32,5 +32,5 @@ jobs:
         with:
           context: ${{ matrix.pwd }}
           push: ${{ github.ref == 'refs/heads/main' }}
-          tags: arthichaud/meelo-${{ matrix.section }}:latest
+          tags: arthichaud/meelo-${{ matrix.section }}:edge
           cache-from: type=registry,ref=arthichaud/meelo-${{ matrix.section }}:latest
