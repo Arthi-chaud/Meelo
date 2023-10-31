@@ -58,7 +58,7 @@ const LibrariesSettings = () => {
 		API.deleteLibrary(libraryId)
 			.then(() => {
 				toast.success(translate('libraryDeleted'));
-				queryClient.client.invalidateQueries();
+				queryClient.client.invalidateQueries(['libraries']);
 			})
 			.catch(() => toast.error(translate('libraryDeletionFail'))));
 	const createMutation = useMutation((createForm: { name: string, path: string}) =>
