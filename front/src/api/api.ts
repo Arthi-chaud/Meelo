@@ -77,12 +77,8 @@ export default class API {
 			.map(([key, value]) => `params-${key}-${value}`)
 		: [];
 
-	/**
-	 * Utilitary functions
-	 */
 	private static isDev = () => process.env.NODE_ENV === 'development';
-
-	private static SSR_API_URL = process.env.ssrApiRoute!;
+	private static SSR_API_URL = process.env.SSR_SERVER_URL ?? process.env.PUBLIC_SERVER_URL!;
 	static defaultPageSize = 35;
 
 	/**
@@ -774,7 +770,7 @@ export default class API {
 			exec: (pagination) => API.fetch({
 				route: `/songs/${songSlugOrId}/versions`,
 				parameters: { pagination: pagination, include, sort },
-				otherParameters: { filter },
+				otherParameters: filter,
 				validator: PaginatedResponse(SongWithRelations(include ?? []))
 			})
 		};
@@ -975,15 +971,18 @@ export default class API {
 	}
 
 	/**
-	 * Builds the URL to get an illustration from an object returned by the API
+	 * Builds the URL to fetch an illustration, from the browser/client pov
 	 * @param imageURL
 	 * @returns the correct, rerouted URL
 	 */
 	static getIllustrationURL(imageURL: string): string {
-		if (API.isDev()) {
+		if (this.isDev()) {
+			return `${process.env.PUBLIC_SERVER_URL ?? '/api'}${imageURL}`;
+		}
+		if (isSSR()) {
 			return `${this.SSR_API_URL}${imageURL}`;
 		}
-		return `/api/${imageURL}`;
+		return `${process.env.PUBLIC_SERVER_URL ?? '/api'}${imageURL}`;
 	}
 
 	/**
@@ -1096,7 +1095,7 @@ export default class API {
 	private static buildURL(
 		route: string, parameters: QueryParameters<any>, otherParameters?: any
 	): string {
-		const apiHost = API.isDev() || isSSR() ? this.SSR_API_URL : '/api';
+		const apiHost = isSSR() ? this.SSR_API_URL : '/api';
 
 		return `${apiHost}${route}${this.formatQueryParameters(parameters, otherParameters)}`;
 	}

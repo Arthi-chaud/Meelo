@@ -53,11 +53,11 @@ const ListItem = (props: ListItemProps) => {
 						{props.title}
 					</Typography>
 				</Grid>
-				<Grid item xs={6} sx={{ overflow: 'hidden', textOverflow: 'ellipsis' }}>
+				{ props.secondTitle && <Grid item xs={6} sx={{ overflow: 'hidden', textOverflow: 'ellipsis' }}>
 					<Typography sx={{ ...textStyle, ...secondaryTextStyle }}>
 						{props.secondTitle}
 					</Typography>
-				</Grid>
+				</Grid> }
 			</Grid>
 		</ListItemButton>
 	</MUIListItem>;

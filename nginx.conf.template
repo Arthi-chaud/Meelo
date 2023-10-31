@@ -1,0 +1,16 @@
+server {
+	listen ${PORT} default_server;
+	listen [::]:${PORT} default_server;
+	access_log off;
+	server_name _;
+
+	location = /api {
+	    return 302 /api/;
+	}
+	location /api/ {
+	    proxy_pass ${SERVER_URL}/;
+	}
+	location / {
+		proxy_pass ${FRONT_URL};
+	}
+}

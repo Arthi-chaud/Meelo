@@ -2,7 +2,7 @@ name: Generate and Deploy User Documentation
 on:
   push:
     branches:
-      - master
+      - main
 permissions:
   contents: write
 jobs:

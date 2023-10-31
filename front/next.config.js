@@ -1,11 +1,9 @@
 /** @type {import('next').NextConfig} */
 
-module.exports = {
+const config = {
+  output: 'standalone',
   reactStrictMode: false,
   swcMinify: true,
-  env: {
-    ssrApiRoute: 'http://localhost:4000'
-  },
   async redirects() {
     return [
       {
@@ -15,7 +13,17 @@ module.exports = {
       },
     ]
   },
-  async rewrites() {
-    return []
-  },
 }
+
+if (process.env.NODE_ENV !== "production") {
+	config.rewrites = async () => [
+		{
+			source: "/api/:path*",
+			destination: process.env.SSR_SERVER_URL
+				? `${process.env.SSR_SERVER_URL}/:path*`
+				: "/api/:path*",
+		},
+	];
+}
+
+module.exports = config;
