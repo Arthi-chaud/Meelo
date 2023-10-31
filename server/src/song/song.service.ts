@@ -78,7 +78,6 @@ export default class SongService extends RepositoryService<
 	}
 
 	formatCreateInput(song: SongQueryParameters.CreateInput) {
-		console.log(song);
 		return {
 			genres: {
 				connect: song.genres.map((genre) => GenreService.formatWhereInput(genre))
@@ -101,7 +100,11 @@ export default class SongService extends RepositoryService<
 		input: SongQueryParameters.CreateInput
 	): SongQueryParameters.WhereInput {
 		return {
-			bySlug: { slug: new Slug(input.name), artist: input.artist },
+			bySlug: {
+				slug: new Slug(input.name),
+				artist: input.artist,
+				featuring: input.featuring
+			},
 		};
 	}
 
@@ -125,6 +128,9 @@ export default class SongService extends RepositoryService<
 			slug: where.bySlug?.slug.toString(),
 			artist: where.bySlug
 				? ArtistService.formatWhereInput(where.bySlug.artist)
+				: undefined,
+			featuring: where.bySlug?.featuring
+				? { every: { OR: where.bySlug.featuring.map(ArtistService.formatWhereInput) } }
 				: undefined
 		};
 	}

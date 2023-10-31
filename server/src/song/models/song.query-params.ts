@@ -28,7 +28,7 @@ namespace SongQueryParameters {
 	 */
 	export type WhereInput = RequireExactlyOne<{
 		id: Song['id'],
-		bySlug: { slug: Slug, artist: ArtistQueryParameters.WhereInput }
+		bySlug: { slug: Slug, artist: ArtistQueryParameters.WhereInput, featuring?: ArtistQueryParameters.WhereInput[] }
 	}>;
 
 	/**

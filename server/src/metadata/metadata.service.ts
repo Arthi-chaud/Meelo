@@ -72,7 +72,6 @@ export default class MetadataService {
 			parsedArtistName = artist;
 			parsedFeaturingArtists.push(...featuring);
 		}
-		console.log(parsedArtistName, parsedFeaturingArtists);
 		const songArtist = await this.artistService.getOrCreate({
 			name: parsedArtistName,
 			registeredAt: file.registerDate
@@ -91,9 +90,8 @@ export default class MetadataService {
 			genres: genres.map((genre) => ({ id: genre.id })),
 			registeredAt: file.registerDate
 		}, {
-			tracks: true, genres: true, featuring: true
+			tracks: true, genres: true
 		});
-		console.log(song.featuring);
 
 		await this.songService.update(
 			{ genres: song.genres.concat(genres).map((genre) => ({ id: genre.id })) },
