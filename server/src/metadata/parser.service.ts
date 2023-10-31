@@ -160,9 +160,14 @@ export default class ParserService {
 		for (const group of groups) {
 			const rewrapper = getRewrappers(); // The delimiters to rewrap the group with
 			const [sstart, strippedGroup, ssend] = this.stripGroupDelimiters(group);
-			const featureSubGroup = strippedGroup.match(
+			let featureSubGroup = strippedGroup.match(
 				/(feat(uring|\.)?|with)\s+(?<artists>.*)$/i
 			);
+			if (!sstart && !ssend) { // If there is no delimiters
+				featureSubGroup = strippedGroup.match(
+					/(feat(uring|\.)?)\s+(?<artists>.*)$/i
+				);
+			}
 
 			if (featureSubGroup == null) {
 				if (!sstart && !ssend) { // If the group has no wrappers
