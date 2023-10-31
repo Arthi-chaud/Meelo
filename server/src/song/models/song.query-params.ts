@@ -17,6 +17,7 @@ namespace SongQueryParameters {
 	 */
 	export type CreateInput = Omit<Song, 'slug' | 'id' | 'playCount' | 'artist' | 'artistId' | 'tracks' | 'genres' | 'lyrics' | 'masterId' | 'registeredAt' | 'type' | 'featuring'>
 		& {
+			slug?: Slug,
 			artist: ArtistQueryParameters.WhereInput,
 			featuring: ArtistQueryParameters.WhereInput[],
 			registeredAt?: Date,
@@ -28,7 +29,11 @@ namespace SongQueryParameters {
 	 */
 	export type WhereInput = RequireExactlyOne<{
 		id: Song['id'],
-		bySlug: { slug: Slug, artist: ArtistQueryParameters.WhereInput, featuring?: ArtistQueryParameters.WhereInput[] }
+		bySlug: {
+			slug: Slug,
+			artist: ArtistQueryParameters.WhereInput,
+			featuring?: ArtistQueryParameters.WhereInput[]
+		}
 	}>;
 
 	/**

@@ -92,7 +92,7 @@ export default class SongService extends RepositoryService<
 			playCount: 0,
 			type: this.parserService.getSongType(song.name),
 			name: song.name,
-			slug: new Slug(song.name).toString()
+			slug: (song.slug ?? new Slug(song.name)).toString()
 		};
 	}
 
