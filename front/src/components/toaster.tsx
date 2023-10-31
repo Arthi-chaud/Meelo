@@ -1,6 +1,5 @@
 
 import { useMediaQuery, useTheme } from '@mui/material';
-import hexToRgba from 'hex-to-rgba';
 import { useEffect } from 'react';
 import * as Toasts from 'react-hot-toast';
 
@@ -9,7 +8,6 @@ const Toaster = () => {
 	const { toasts } = Toasts.useToasterStore();
 	const TOAST_LIMIT = 2;
 	const theme = useTheme();
-	const themePaperColor = hexToRgba(theme.palette.background.paper, 0.90);
 	const viewPortIsSmall = useMediaQuery(theme.breakpoints.down('md'));
 
 	useEffect(() => {
@@ -21,8 +19,9 @@ const Toaster = () => {
 	return <Toasts.Toaster
 		toastOptions={{ duration: 2500, style: {
 			borderRadius: theme.shape.borderRadius,
-			backgroundColor: themePaperColor,
+			backgroundColor: theme.palette.background.paper,
 			color: theme.palette.text.primary,
+			boxShadow: "0 3px 10px rgba(0, 0, 0, 0.4)"
 		} }}
 		position={viewPortIsSmall ? 'top-center' : 'top-right'}
 	/>;
