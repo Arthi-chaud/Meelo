@@ -15,6 +15,7 @@ import { ExpandedPlayerControls, MinimizedPlayerControls } from "./controls";
 import { DefaultWindowTitle } from "../../utils/constants";
 import { toast } from "react-hot-toast";
 import { DrawerBreakpoint } from "../scaffold/scaffold";
+import { translate } from '../../i18n/translate';
 
 const Player = () => {
 	const theme = useTheme();
@@ -132,14 +133,14 @@ const Player = () => {
 					switch (errcode) {
 					case 9: // Format error
 						setPlaying(false);
-						toast.error("The track's format is not supported by this browser. Skipping...");
+						toast.error(translate('playbackError'), { id: 'playbackError' });
 						// eslint-disable-next-line no-console
 						console.error(err);
 						dispatch(skipTrack());
 						break;
 					case 19: // Network error
 						setPlaying(false);
-						toast.error('There seem to be some network issues...');
+						toast.error(translate('networkError'), { id: 'networkError' });
 						break;
 					default:
 						break;

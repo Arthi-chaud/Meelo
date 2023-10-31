@@ -201,7 +201,9 @@ const en = {
 	refreshMetadataStarted: "Refreshing Metadata... (You might need to refresh the page)",
 	refreshMetadataFailed: "Oops... Refreshing Metadata Failed",
 
-	more: 'More'
+	more: 'More',
+	networkError: 'There seem to be some network issues...',
+	playbackError: "The track's format is not supported by this browser. Skipping..."
 };
 
 export default en;
