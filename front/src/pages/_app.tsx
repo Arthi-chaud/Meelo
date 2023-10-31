@@ -8,7 +8,8 @@ import {
 } from "react-query";
 import { ReactQueryDevtools } from "react-query/devtools";
 import { ErrorBoundary } from 'react-error-boundary';
-import toast, { Toaster } from 'react-hot-toast';
+import toast from 'react-hot-toast';
+import Toaster from "../components/toaster";
 import Head from "next/head";
 import { Provider } from "react-redux";
 import AuthenticationWall from "../components/authentication/authentication-wall";
@@ -96,7 +97,7 @@ function MyApp({
 							</Hydrate>
 						</ConfirmProvider>) }
 					</PersistGate>
-					<Toaster toastOptions={{ duration: 2500 }} position='bottom-center' />
+					<Toaster />
 					<ReactQueryDevtools initialIsOpen={false} />
 				</QueryClientProvider>
 			</ThemeProvider>
