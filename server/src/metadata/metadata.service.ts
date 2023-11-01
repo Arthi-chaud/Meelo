@@ -87,10 +87,7 @@ export default class MetadataService {
 		const song = await this.songService.getOrCreate({
 			name: this.removeTrackExtension(parsedSongName),
 			artist: { id: songArtist.id },
-			slug: new Slug(metadata.name, ...(featuringArtists
-				? ['feat', ...featuringArtists.map(({ name }) => name)]
-				: [])),
-			featuring: featuringArtists.map(({ id }) => ({ id })),
+			featuring: featuringArtists.map(({ slug }) => ({ slug: new Slug(slug) })),
 			genres: genres.map((genre) => ({ id: genre.id })),
 			registeredAt: file.registerDate
 		}, {

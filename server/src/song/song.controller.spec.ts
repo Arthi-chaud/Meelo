@@ -86,11 +86,13 @@ describe('Song Controller', () => {
 					expect(songs.length).toBe(2);
 					expect(songs[0]).toStrictEqual({
 						...expectedSongResponse(dummyRepository.songA1),
-						artist: expectedArtistResponse(dummyRepository.artistA)
+						artist: expectedArtistResponse(dummyRepository.artistA),
+						featuring: []
 					});
 					expect(songs[1]).toStrictEqual({
 						...expectedSongResponse(dummyRepository.songA2),
-						artist: expectedArtistResponse(dummyRepository.artistA)
+						artist: expectedArtistResponse(dummyRepository.artistA),
+						featuring: []
 					});
 				});
 		});
@@ -103,7 +105,8 @@ describe('Song Controller', () => {
 					expect(songs.length).toBe(1);
 					expect(songs[0]).toStrictEqual({
 						...expectedSongResponse(dummyRepository.songA1),
-						artist: expectedArtistResponse(dummyRepository.artistA)
+						artist: expectedArtistResponse(dummyRepository.artistA),
+						featuring: []
 					});
 				});
 		});
@@ -136,7 +139,8 @@ describe('Song Controller', () => {
 					const song: Song = res.body
 					expect(song).toStrictEqual({
 						...expectedSongResponse(dummyRepository.songA1),
-						artist: expectedArtistResponse(dummyRepository.artistA)
+						artist: expectedArtistResponse(dummyRepository.artistA),
+						featuring: []
 					});
 				});
 		});
@@ -248,11 +252,13 @@ describe('Song Controller', () => {
 					expect(songs.length).toBe(2);
 					expect(songs[0]).toStrictEqual({
 						...expectedSongResponse(dummyRepository.songA1),
-						artist: expectedArtistResponse(dummyRepository.artistA)
+						artist: expectedArtistResponse(dummyRepository.artistA),
+						featuring: []
 					});
 					expect(songs[1]).toStrictEqual({
 						...expectedSongResponse(dummyRepository.songA2),
-						artist: expectedArtistResponse(dummyRepository.artistA)
+						artist: expectedArtistResponse(dummyRepository.artistA),
+						featuring: []
 					});
 				});
 		});
@@ -317,7 +323,8 @@ describe('Song Controller', () => {
 					expect(songs.length).toBe(1);
 					expect(songs[0]).toStrictEqual({
 						...expectedSongResponse(dummyRepository.songA2),
-						artist: expectedArtistResponse(dummyRepository.artistA)
+						artist: expectedArtistResponse(dummyRepository.artistA),
+						featuring: []
 					});
 				});
 		});
@@ -359,14 +366,17 @@ describe('Song Controller', () => {
 					expect(songs).toContainEqual({
 						...expectedSongResponse(dummyRepository.songA1),
 						artist: expectedArtistResponse(dummyRepository.artistA),
+						featuring: []
 					});
 					expect(songs).toContainEqual({
 						...expectedSongResponse(dummyRepository.songA2),
 						artist: expectedArtistResponse(dummyRepository.artistA),
+						featuring: []
 					});
 					expect(songs).toContainEqual({
 						...expectedSongResponse(dummyRepository.songC1),
 						artist: expectedArtistResponse(dummyRepository.artistC),
+						featuring: []
 					});
 				});
 		});

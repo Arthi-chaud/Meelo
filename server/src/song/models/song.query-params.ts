@@ -19,7 +19,7 @@ namespace SongQueryParameters {
 		& {
 			slug?: Slug,
 			artist: ArtistQueryParameters.WhereInput,
-			featuring: ArtistQueryParameters.WhereInput[],
+			featuring?: RequireExactlyOne<Pick<ArtistQueryParameters.WhereInput, 'slug'>>[],
 			registeredAt?: Date,
 			genres: GenreQueryParameters.WhereInput[]
 		};

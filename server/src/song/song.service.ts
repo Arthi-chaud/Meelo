@@ -85,14 +85,14 @@ export default class SongService extends RepositoryService<
 			artist: {
 				connect: ArtistService.formatWhereInput(song.artist)
 			},
-			featuring: {
+			featuring: song.featuring ? {
 				connect: song.featuring.map(ArtistService.formatWhereInput)
-			},
+			} : undefined,
 			registeredAt: song.registeredAt,
 			playCount: 0,
 			type: this.parserService.getSongType(song.name),
 			name: song.name,
-			slug: (song.slug ?? new Slug(song.name)).toString()
+			slug: this._createSongSlug(song.name, song.featuring).toString()
 		};
 	}
 
@@ -101,11 +101,17 @@ export default class SongService extends RepositoryService<
 	): SongQueryParameters.WhereInput {
 		return {
 			bySlug: {
-				slug: new Slug(input.name),
+				slug: this._createSongSlug(input.name, input.featuring),
 				artist: input.artist,
-				featuring: input.featuring
 			},
 		};
+	}
+
+	private _createSongSlug(songName: string, featuring: SongQueryParameters.CreateInput['featuring']) {
+		if (featuring && featuring.length > 0) {
+			return new Slug(songName, 'feat', ...featuring.map((feat) => feat.slug.toString()));
+		}
+		return new Slug(songName);
 	}
 
 	protected async onCreationFailure(error: Error, input: SongQueryParameters.CreateInput) {
@@ -522,7 +528,7 @@ export default class SongService extends RepositoryService<
 	}
 
 	static formatInclude<I extends ModelSelector<SongWithRelations>>(include?: I) {
-		if (include) {
+		if (include && include.artist) {
 			include.featuring = include.artist;
 		}
 		return super.formatInclude(include);

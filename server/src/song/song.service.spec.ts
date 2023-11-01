@@ -20,13 +20,14 @@ import { LyricsModule } from "src/lyrics/lyrics.module";
 import { LyricsService } from "src/lyrics/lyrics.service";
 import { LyricsNotFoundByIDException } from "src/lyrics/lyrics.exceptions";
 import ReleaseModule from "src/release/release.module";
-import { SongType } from "@prisma/client";
+import { Artist, SongType } from "@prisma/client";
 import MetadataModule from "src/metadata/metadata.module";
 
 describe('Song Service', () => {
 	let songService: SongService;
 	let lyricsService: LyricsService;
 	let dummyRepository: TestPrismaService;
+	let artistService: ArtistService;
 
 	let newSong: Song;
 	
@@ -38,6 +39,7 @@ describe('Song Service', () => {
 		}).overrideProvider(PrismaService).useClass(TestPrismaService).compile();
 		dummyRepository = module.get(PrismaService);
 		songService = module.get(SongService);
+		artistService = module.get(ArtistService);
 		lyricsService = module.get(LyricsService);
 		
 		await dummyRepository.onModuleInit();
@@ -142,7 +144,8 @@ describe('Song Service', () => {
 				genres: [
 					dummyRepository.genreA, dummyRepository.genreC
 				],
-				artist: dummyRepository.artistA
+				artist: dummyRepository.artistA,
+				featuring: []
 			});
 		});
 
@@ -470,4 +473,36 @@ describe('Song Service', () => {
 			expect(testLyrics()).rejects.toThrow(LyricsNotFoundByIDException);
 		});
 	});
+
+	describe("Song with featuring", () => {
+		let mainArtist: Artist;
+		let featuredArtist: Artist;
+		let baseSong: Song;
+		let songWithFeaturing: Song;
+		it("should create a song without featuring", async () => {
+			mainArtist = await artistService.create({ name: "Katy Perry" });
+			baseSong = await songService.create({ name: "E.T.", artist: { id: mainArtist.id }, genres: [] });
+		});
+		it("should create a song with featuring", async () => {
+			featuredArtist = await artistService.create({ name: "Kanye West" });
+			songWithFeaturing = await songService.getOrCreate({ name: "E.T.", artist: { id: mainArtist.id }, genres: [], featuring: [{ slug: new Slug(featuredArtist.slug) }] });
+			expect(songWithFeaturing.id).not.toBe(baseSong.id);
+			expect(songWithFeaturing.slug).toBe("et-feat-kanye-west");
+		});
+
+		it("should get the base song", async () => {
+			let res = await songService.getOrCreate({ name: "E.T.", artist: { id: mainArtist.id }, genres: []});
+			expect(res).toStrictEqual(baseSong);
+		});
+
+		it("should get the featuring song", async () => {
+			let res = await songService.getOrCreate({ name: "E.T.", artist: { id: mainArtist.id }, genres: [], featuring: [{ slug: new Slug(featuredArtist.slug) }] });
+			expect(res).toStrictEqual(songWithFeaturing);
+		});
+
+		it("should get the featuring song, with featured artists", async () => {
+			let res = await songService.get({ id: songWithFeaturing.id }, { featuring: true });
+			expect(res.featuring).toStrictEqual([featuredArtist]);
+		});
+	})
 });
