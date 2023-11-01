@@ -111,7 +111,7 @@ export default class MetadataService {
 			discogsId: metadata.discogsId
 		}, { album: true });
 		const track: TrackQueryParameters.CreateInput = {
-			name: metadata.name,
+			name: parsedSongName,
 			discIndex: metadata.discIndex ?? null,
 			trackIndex: metadata.index ?? null,
 			type: metadata.type,
