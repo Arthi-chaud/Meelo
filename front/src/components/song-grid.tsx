@@ -7,13 +7,14 @@ import { SongWithRelations } from "../models/song";
 import { useQueryClient } from "../api/use-query";
 import { useDispatch } from "react-redux";
 import ListItem from "./list-item/item";
+import formatArtists from "../utils/formatArtists";
 
 type SongGridProps = {
-	songs: SongWithRelations<'artist'>[];
-	hideArtistName?: true,
+	songs: SongWithRelations<'artist' | 'featuring'>[];
+	parentArtistName?: string; // To tell wheter or not we display the artists' names
 }
 
-const SongGrid = ({ songs, hideArtistName }: SongGridProps) => {
+const SongGrid = ({ songs, parentArtistName }: SongGridProps) => {
 	const queryClient = useQueryClient();
 	const dispatch = useDispatch();
 
@@ -24,7 +25,9 @@ const SongGrid = ({ songs, hideArtistName }: SongGridProps) => {
 				<ListItem
 					icon={<Illustration illustration={song.illustration} quality="low"/>}
 					title={song.name}
-					secondTitle={hideArtistName == true ? undefined : song.artist.name}
+					secondTitle={parentArtistName === song.artist.name && song.featuring.length == 0
+						? undefined
+						: formatArtists(song.artist, song.featuring)}
 					trailing={<SongContextualMenu
 						song={{ ...song, artist: song.artist }}
 					/>}

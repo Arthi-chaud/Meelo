@@ -6,11 +6,12 @@ import { useDispatch } from "react-redux";
 import { playTrack } from "../../state/playerSlice";
 import SongContextualMenu from "../contextual-menu/song-contextual-menu";
 import { useQueryClient } from "../../api/use-query";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { SongIcon } from "../icons";
+import formatArtists from "../../utils/formatArtists";
 
 type SongItemProps = {
-	song: SongWithRelations<'artist'>;
+	song: SongWithRelations<'artist' | 'featuring'>;
 	formatSubtitle?: (song: SongWithRelations<'artist'>) => Promise<string>;
 }
 
@@ -23,11 +24,15 @@ const SongItem = ({ song, formatSubtitle }: SongItemProps) => {
 	const artist = song.artist;
 	const dispatch = useDispatch();
 	const queryClient = useQueryClient();
-	const [subtitle, setSubtitle] = useState(formatSubtitle ? '' : artist.name);
+	const [subtitle, setSubtitle] = useState(formatSubtitle
+		? ''
+		: formatArtists(song.artist, song.featuring));
 
-	if (formatSubtitle) {
-		formatSubtitle(song).then((newSub) => setSubtitle(newSub));
-	}
+	useEffect(() => {
+		if (formatSubtitle) {
+			formatSubtitle(song).then((newSub) => setSubtitle(newSub));
+		}
+	}, []);
 	return (
 		<ListItem
 			icon={<Illustration illustration={song.illustration} fallback={<SongIcon/>} quality="low"/>}

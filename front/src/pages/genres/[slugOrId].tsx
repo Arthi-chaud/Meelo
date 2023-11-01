@@ -15,9 +15,9 @@ export const getServerSideProps = prepareSSR((context) => {
 		additionalProps: { genreIdentifier },
 		queries: [API.getGenre(genreIdentifier)],
 		infiniteQueries: [
-			API.getAlbums({ genre: genreIdentifier }, defaultQuerySortParams),
+			API.getAlbums({ genre: genreIdentifier }, defaultQuerySortParams, ['artist']),
 			API.getArtists({ genre: genreIdentifier }, defaultQuerySortParams),
-			API.getSongs({ genre: genreIdentifier }, defaultQuerySortParams)
+			API.getSongs({ genre: genreIdentifier }, defaultQuerySortParams, ['artist', 'featuring'])
 		]
 	};
 });
@@ -47,7 +47,7 @@ const GenrePage = (props: InferSSRProps<typeof getServerSideProps>) => {
 			songQuery={({ library, type }, { sortBy, order }) => API.getSongs(
 				{ genre: genreIdentifier, type, library: library ?? undefined },
 				{ sortBy, order },
-				['artist']
+				['artist', 'featuring']
 			)}
 		/>
 	</Box>;

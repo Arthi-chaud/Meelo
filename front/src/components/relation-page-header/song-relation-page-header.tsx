@@ -6,14 +6,15 @@ import SongContextualMenu from "../contextual-menu/song-contextual-menu";
 import Illustration from "../illustration";
 import { WideLoadingComponent } from "../loading/loading";
 import RelationPageHeader from "./relation-page-header";
+import formatArtists from "../../utils/formatArtists";
 
 type SongRelationPageHeaderProps = RequireExactlyOne<{
 	songSlugOrId: number | string;
-	song: SongWithRelations<'artist'>
+	song: SongWithRelations<'artist' | 'featuring'>
 }>
 
 const SongRelationPageHeader = (props: SongRelationPageHeaderProps) => {
-	const song = useQuery((id) => API.getSong(id, ['artist']), props.songSlugOrId);
+	const song = useQuery((id) => API.getSong(id, ['artist', 'featuring']), props.songSlugOrId);
 
 	if (props.song) {
 		song.data = props.song;
@@ -24,7 +25,7 @@ const SongRelationPageHeader = (props: SongRelationPageHeaderProps) => {
 	return <RelationPageHeader
 		illustration={<Illustration illustration={song.data.illustration} quality="med"/>}
 		title={song.data.name}
-		secondTitle={song.data.artist.name}
+		secondTitle={formatArtists(song.data.artist, song.data.featuring)}
 		trailing={<SongContextualMenu song={song.data}/>}
 	/>;
 };

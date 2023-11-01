@@ -12,7 +12,7 @@ export const getServerSideProps = prepareSSR((context) => {
 
 	return {
 		additionalProps: {},
-		infiniteQueries: [API.getVideos({}, { sortBy, order }, ['artist'])]
+		infiniteQueries: [API.getVideos({}, { sortBy, order }, ['artist', 'featuring'])]
 	};
 });
 
@@ -21,7 +21,7 @@ const LibraryVideosPage = () => {
 
 	return <InfiniteVideoView
 		query={({ library, sortBy, order }) => API.getVideos(
-			{ library: library ?? undefined }, { sortBy, order }, ['artist']
+			{ library: library ?? undefined }, { sortBy, order }, ['artist', 'featuring']
 		)}
 		formatSubtitle={(video) => video.artist.name}
 	/>;

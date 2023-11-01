@@ -10,11 +10,11 @@ import PaginatedResponse, { PaginationParameters } from "../models/pagination";
 import {
 	ReleaseInclude, ReleaseSortingKeys, ReleaseWithRelations
 } from "../models/release";
-import {
-	SongInclude, SongSortingKeys, SongType, SongWithRelations
+import Song, {
+	SongInclude, SongRelations, SongSortingKeys, SongType, SongWithRelations
 } from "../models/song";
 import { VideoWithRelations } from "../models/video";
-import {
+import Track, {
 	TrackInclude, TrackSortingKeys, TrackWithRelations
 } from "../models/track";
 import Tracklist from "../models/tracklist";
@@ -801,7 +801,7 @@ export default class API {
 	 * @param slugOrId the id of the release
 	 * @returns A query for a Tracklist
 	 */
-	static getReleaseTrackList<I extends TrackInclude>(
+	static getReleaseTrackList<I extends SongInclude>(
 		slugOrId: string | number,
 		include?: I[]
 	) {
@@ -820,16 +820,20 @@ export default class API {
 	 * @param slugOrId the id of the release
 	 * @returns A query for an array of tracks
 	 */
-	static getReleasePlaylist<I extends TrackInclude>(
+	static getReleasePlaylist<I extends SongInclude>(
 		slugOrId: string | number,
 		include?: I[]
-	): Query<TrackWithRelations<I>[]> {
+	) {
 		return {
 			key: ['release', slugOrId, 'playlist', ...API.formatIncludeKeys(include)],
 			exec: () => API.fetch({
 				route: `/releases/${slugOrId.toString()}/playlist`,
 				parameters: { include },
-				validator: yup.array(TrackWithRelations(include ?? [])).required()
+				validator: yup.array(
+					Track.concat(yup.object({
+						song: Song.concat(SongRelations.pick(include ?? []))
+					})).required()
+				).required()
 			})
 		};
 	}

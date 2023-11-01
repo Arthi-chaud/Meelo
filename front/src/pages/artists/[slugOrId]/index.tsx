@@ -38,7 +38,8 @@ const videosQuery = (artistSlugOrId: string | number) => API.getVideos(
 
 const topSongsQuery = (artistSlugOrId: string | number) => API.getSongs(
 	{ artist: artistSlugOrId },
-	{ sortBy: 'playCount', order: 'desc' }
+	{ sortBy: 'playCount', order: 'desc' },
+	['artist', 'featuring']
 );
 
 const artistQuery = (artistSlugOrId: string | number) => API.getArtist(
@@ -106,10 +107,9 @@ const ArtistPage = (props: InferSSRProps<typeof getServerSideProps>) => {
 				/>
 				<Grid item container sx={{ display: 'block', flexGrow: 1 }}>
 					<SongGrid
-						hideArtistName={true}
+						parentArtistName={artist.data.name}
 						songs={topSongs.data.pages.at(0)?.items
-							.slice(0, songListSize)
-							.map((song) => ({ ...song, artist: artist.data })) ?? []
+							.slice(0, songListSize) ?? []
 						}
 					/>
 				</Grid>
@@ -164,7 +164,7 @@ const ArtistPage = (props: InferSSRProps<typeof getServerSideProps>) => {
 			</>
 			}
 			{ (appearances.data?.pages?.at(0)?.items.length ?? 0) != 0 && <>
-				<Divider/>
+				<Divider sx={{ paddingTop: 4 }}/>
 				<SectionHeader heading={<Translate translationKey="appearsOn"/>}/>
 				<Grid item sx={{ overflowX: 'clip', width: '100%' }}>
 					<TileRow tiles={

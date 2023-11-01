@@ -29,6 +29,9 @@ import {
 } from 'react-beautiful-dnd';
 import formatDuration from "../../utils/formatDuration";
 import Translate from "../../i18n/translate";
+import formatArtists from "../../utils/formatArtists";
+
+const parentSongQuery = (id: number) => API.getSong(id, ['artist', 'lyrics', 'featuring']);
 
 type PlayerButtonControlsProps = {
 	playing: boolean;
@@ -79,6 +82,8 @@ const PreviousButton = (props: Omit<ControlButtonProps, 'icon'>) =>
 ;
 
 const MinimizedPlayerControls = (props: PlayerControlsProps) => {
+	const parentSong = useQuery(parentSongQuery, props.track?.songId);
+
 	return <ButtonBase
 		onClick={() => props.onExpand(true)} disableTouchRipple
 		sx={{ width: '100%', height: '100%', padding: 0, margin: 0 }}
@@ -118,7 +123,13 @@ const MinimizedPlayerControls = (props: PlayerControlsProps) => {
 						color: 'text.disabled', ...playerTextStyle,
 						fontSize: 'medium'
 					}}>
-						{props.artist?.name ?? <br/>}
+						{ props.artist
+							? formatArtists(
+								props.artist,
+								parentSong.data?.featuring
+							)
+							: <br/>
+						}
 					</Typography>
 				</Grid>
 			</Grid>
@@ -149,7 +160,7 @@ const ExpandedPlayerControls = (
 ) => {
 	const theme = useTheme();
 	const dispatch = useDispatch();
-	const parentSong = useQuery((id) => API.getSong(id, ['artist', 'lyrics']), props.track?.songId);
+	const parentSong = useQuery(parentSongQuery, props.track?.songId);
 	const [panel, setPanel] = useState<typeof Panels[number]>('lyrics');
 	const playlist = useSelector((state: RootState) => state.player.playlist);
 	const cursor = useSelector((state: RootState) => state.player.cursor);
@@ -246,7 +257,10 @@ const ExpandedPlayerControls = (
 										textTransform: 'none', color: 'inherit', width: '100%'
 									}}>
 										<Typography sx={{ ...playerTextStyle }}>
-											{ props.artist?.name }
+											{ formatArtists(
+												props.artist,
+												parentSong.data?.featuring
+											) }
 										</Typography>
 									</Button>
 								</Link>
