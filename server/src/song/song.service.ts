@@ -78,7 +78,6 @@ export default class SongService extends RepositoryService<
 	}
 
 	formatCreateInput(song: SongQueryParameters.CreateInput) {
-		console.log(song);
 		return {
 			genres: {
 				connect: song.genres.map((genre) => GenreService.formatWhereInput(genre))
@@ -86,14 +85,14 @@ export default class SongService extends RepositoryService<
 			artist: {
 				connect: ArtistService.formatWhereInput(song.artist)
 			},
-			featuring: {
+			featuring: song.featuring ? {
 				connect: song.featuring.map(ArtistService.formatWhereInput)
-			},
+			} : undefined,
 			registeredAt: song.registeredAt,
 			playCount: 0,
 			type: this.parserService.getSongType(song.name),
 			name: song.name,
-			slug: new Slug(song.name).toString()
+			slug: this._createSongSlug(song.name, song.featuring).toString()
 		};
 	}
 
@@ -101,8 +100,18 @@ export default class SongService extends RepositoryService<
 		input: SongQueryParameters.CreateInput
 	): SongQueryParameters.WhereInput {
 		return {
-			bySlug: { slug: new Slug(input.name), artist: input.artist },
+			bySlug: {
+				slug: this._createSongSlug(input.name, input.featuring),
+				artist: input.artist,
+			},
 		};
+	}
+
+	private _createSongSlug(songName: string, featuring: SongQueryParameters.CreateInput['featuring']) {
+		if (featuring) {
+			return new Slug(songName, 'feat', ...featuring.map((feat) => feat.slug.toString()));
+		}
+		return new Slug(songName);
 	}
 
 	protected async onCreationFailure(error: Error, input: SongQueryParameters.CreateInput) {
@@ -125,7 +134,7 @@ export default class SongService extends RepositoryService<
 			slug: where.bySlug?.slug.toString(),
 			artist: where.bySlug
 				? ArtistService.formatWhereInput(where.bySlug.artist)
-				: undefined
+				: undefined,
 		};
 	}
 
