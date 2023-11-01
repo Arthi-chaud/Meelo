@@ -1,6 +1,6 @@
 import { Box, Stack } from "@mui/material";
 import API from "../api/api";
-import prepareSSR from "../ssr";
+import prepareSSR, { InferSSRProps } from "../ssr";
 import { useInfiniteQuery } from "../api/use-query";
 import LoadingPage from "../components/loading/loading-page";
 import SectionHeader from "../components/section-header";
@@ -11,6 +11,7 @@ import SongGrid from "../components/song-grid";
 import ReleaseTile from "../components/tile/release-tile";
 import Translate from "../i18n/translate";
 import Fade from "../components/fade";
+import BackgroundBlurhash from "../components/blurhash-background";
 
 const newlyAddedAlbumsQuery = API.getAlbums(
 	{ },
@@ -63,6 +64,7 @@ const HomePageSection = <T, >(
 
 export const getServerSideProps = prepareSSR(() => {
 	return {
+		additionalProps: { blurhashIndex: Math.random() },
 		infiniteQueries: [
 			newlyAddedArtistsQuery,
 			newestAlbumsQuery,
@@ -73,7 +75,7 @@ export const getServerSideProps = prepareSSR(() => {
 	};
 });
 
-const HomePage = () => {
+const HomePage = (props: InferSSRProps<typeof getServerSideProps>) => {
 	const newlyAddedAlbums = useInfiniteQuery(() => newlyAddedAlbumsQuery);
 	const newlyAddedArtists = useInfiniteQuery(() => newlyAddedArtistsQuery);
 	const newlyAddedReleases = useInfiniteQuery(() => newlyAddedReleasesQuery);
@@ -86,50 +88,66 @@ const HomePage = () => {
 		lg: 7,
 		xl: 10
 	};
+	const queries = [
+		newlyAddedAlbums,
+		newestAlbums,
+		newlyAddedArtists,
+		mostListenedSongs,
+		newlyAddedReleases
+	];
+	const illustrations = queries
+		.map((query) => query.data?.pages.at(0)?.items ?? [])
+		.flat()
+		.map(({ illustration }) => illustration)
+		.filter((illustration) => illustration !== null);
+	const selectedBlurhash = illustrations.at(
+		illustrations.length * (props.additionalProps?.blurhashIndex ?? Math.random())
+	)?.blurhash;
 
-	if ([newestAlbums, newlyAddedAlbums, newlyAddedArtists, mostListenedSongs, newlyAddedReleases]
-		.find((query) => query.isLoading)
-	) {
+	if (queries.find((query) => query.isLoading)) {
 		return <LoadingPage/>;
 	}
 
-	return <Fade in>
-		<Stack spacing={4} my={2}>
-			<HomePageSection
-				heading={<Translate translationKey='newlyAddedAlbums'/>}
-				queryData={newlyAddedAlbums}
-				render={(albums) => <TileRow tiles={
-					albums.map((album, index) => <AlbumTile key={index} album={album}/>)
-				} windowSize={tileRowWindowSize}/>}
-			/>
-			<HomePageSection
-				heading={<Translate translationKey='latestAlbums'/>}
-				queryData={newestAlbums}
-				render={(albums) => <TileRow tiles={
-					albums.map((album, index) => <AlbumTile key={index} album={album}/>)
-				} windowSize={tileRowWindowSize}/>}
-			/>
-			<HomePageSection
-				heading={<Translate translationKey='newlyAddedArtists'/>}
-				queryData={newlyAddedArtists}
-				render={(artists) => <TileRow tiles={
-					artists.map((artist, index) => <ArtistTile key={index} artist={artist}/>)
-				} windowSize={tileRowWindowSize}/>}
-			/>
-			<HomePageSection
-				heading={<Translate translationKey='newlyAddedReleases'/>}
-				queryData={newlyAddedReleases}
-				render={(releases) => <TileRow tiles={
-					releases.map((release, index) => <ReleaseTile key={index} release={release}/>)
-				} windowSize={tileRowWindowSize}/>}
-			/>
-			<HomePageSection
-				heading={<Translate translationKey='mostPlayedSongs'/>}
-				queryData={mostListenedSongs}
-				render={(songs) => <SongGrid songs={songs}/>}
-			/>
-		</Stack>
-	</Fade>;
+	return <>
+		<BackgroundBlurhash blurhash={selectedBlurhash}/>
+		<Fade in>
+			<Stack spacing={4} my={2}>
+				<HomePageSection
+					heading={<Translate translationKey='newlyAddedAlbums'/>}
+					queryData={newlyAddedAlbums}
+					render={(albums) => <TileRow tiles={
+						albums.map((album, index) => <AlbumTile key={index} album={album}/>)
+					} windowSize={tileRowWindowSize}/>}
+				/>
+				<HomePageSection
+					heading={<Translate translationKey='latestAlbums'/>}
+					queryData={newestAlbums}
+					render={(albums) => <TileRow tiles={
+						albums.map((album, index) => <AlbumTile key={index} album={album}/>)
+					} windowSize={tileRowWindowSize}/>}
+				/>
+				<HomePageSection
+					heading={<Translate translationKey='newlyAddedArtists'/>}
+					queryData={newlyAddedArtists}
+					render={(artists) => <TileRow tiles={
+						artists.map((artist, index) => <ArtistTile key={index} artist={artist}/>)
+					} windowSize={tileRowWindowSize}/>}
+				/>
+				<HomePageSection
+					heading={<Translate translationKey='newlyAddedReleases'/>}
+					queryData={newlyAddedReleases}
+					render={(releases) => <TileRow tiles={
+						releases.map((release, idx) => <ReleaseTile key={idx} release={release}/>)
+					} windowSize={tileRowWindowSize}/>}
+				/>
+				<HomePageSection
+					heading={<Translate translationKey='mostPlayedSongs'/>}
+					queryData={mostListenedSongs}
+					render={(songs) => <SongGrid songs={songs}/>}
+				/>
+			</Stack>
+		</Fade>
+	</>;
 };
 
 export default HomePage;
