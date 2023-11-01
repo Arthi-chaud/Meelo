@@ -275,12 +275,14 @@ export default class TrackService extends RepositoryService<
 	 */
 	async getTracklist(
 		where: ReleaseQueryParameters.WhereInput,
-		include?: TrackQueryParameters.RelationInclude,
+		include?: SongQueryParameters.RelationInclude,
 	): Promise<Tracklist> {
 		let tracklist: Tracklist = new Map();
-		const tracks = await this.getMany(
-			{ release: where }, {}, include, { sortBy: 'trackIndex', order: 'asc' }
-		);
+		const tracks = await this.prismaService.track.findMany({
+			where: this.formatManyWhereInput({ release: where }),
+			orderBy: { trackIndex: 'asc' },
+			include: { song: { include: SongService.formatInclude(include) } }
+		});
 
 		if (tracks.length == 0) {
 			await this.releaseService.throwIfNotFound(where);
@@ -303,7 +305,7 @@ export default class TrackService extends RepositoryService<
 	 */
 	async getPlaylist(
 		where: ReleaseQueryParameters.WhereInput,
-		include?: TrackQueryParameters.RelationInclude,
+		include?: SongQueryParameters.RelationInclude,
 		random = false
 	): Promise<Track[]> {
 		const tracklist = await this.getTracklist(where, include);
