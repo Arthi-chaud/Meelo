@@ -499,5 +499,10 @@ describe('Song Service', () => {
 			let res = await songService.getOrCreate({ name: "E.T.", artist: { id: mainArtist.id }, genres: [], featuring: [{ slug: new Slug(featuredArtist.slug) }] });
 			expect(res).toStrictEqual(songWithFeaturing);
 		});
+
+		it("should get the featuring song, with featured artists", async () => {
+			let res = await songService.get({ id: songWithFeaturing.id }, { featuring: true });
+			expect(res.featuring).toStrictEqual([featuredArtist]);
+		});
 	})
 });

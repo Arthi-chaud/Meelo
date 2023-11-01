@@ -525,7 +525,7 @@ export default class SongService extends RepositoryService<
 	}
 
 	static formatInclude<I extends ModelSelector<SongWithRelations>>(include?: I) {
-		if (include) {
+		if (include && include.artist) {
 			include.featuring = include.artist;
 		}
 		return super.formatInclude(include);
