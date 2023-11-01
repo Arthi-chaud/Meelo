@@ -243,11 +243,11 @@ export default class ArtistService extends RepositoryService<
 			select: {
 				id: true,
 				_count: {
-					select: { albums: true, songs: true },
+					select: { albums: true, songs: true, featuredOn: true },
 				},
 			},
 		}).then((artists) => artists.filter(
-			({ _count }) => !_count.albums && !_count.songs
+			({ _count }) => !_count.albums && !_count.songs && !_count.featuredOn
 		));
 
 		await Promise.all(
