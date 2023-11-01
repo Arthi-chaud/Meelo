@@ -10,7 +10,7 @@ import PrismaService from 'src/prisma/prisma.service';
 import type SongQueryParameters from './models/song.query-params';
 import TrackService from 'src/track/track.service';
 import GenreService from 'src/genre/genre.service';
-import RepositoryService, { ModelSelector } from 'src/repository/repository.service';
+import RepositoryService from 'src/repository/repository.service';
 import { CompilationArtistException } from 'src/artist/artist.exceptions';
 import { buildStringSearchParameters } from 'src/utils/search-string-input';
 import { PaginationParameters, buildPaginationParameters } from 'src/pagination/models/pagination-parameters';
@@ -166,9 +166,12 @@ export default class SongService extends RepositoryService<
 		}
 		if (where.artist?.slug) {
 			query = deepmerge(query, {
-				artist: {
-					slug: where.artist.slug.toString()
-				}
+				OR: [
+					{ artist: {
+						slug: where.artist.slug.toString()
+					} },
+					{ featuring: { some: { slug: where.artist.slug.toString() } } }
+				]
 			});
 		}
 		if (where.library) {
@@ -526,13 +529,4 @@ export default class SongService extends RepositoryService<
 	private getBaseSongName(songName: string): string {
 		return this.parserService.stripGroups(songName);
 	}
-
-	static formatInclude<I extends ModelSelector<SongWithRelations>>(include?: I) {
-		if (include && include.artist) {
-			include.featuring = include.artist;
-		}
-		return super.formatInclude(include);
-	}
-
-	formatInclude = SongService.formatInclude;
 }

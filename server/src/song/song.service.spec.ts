@@ -136,7 +136,7 @@ describe('Song Service', () => {
 
 		it("should retrieve the song (w/ include)", async () => {
 			const retrievedSong = await songService.get(
-				{ id: newSong.id }, { artist: true, genres: true }
+				{ id: newSong.id }, { artist: true, genres: true, featuring: true }
 			);
 
 			expect(retrievedSong).toStrictEqual({
@@ -409,6 +409,7 @@ describe('Song Service', () => {
 		it("should get the song", async () => {
 			const fetchedSong = await songService.getOrCreate({
 				...dummyRepository.songA1,
+				slug: new Slug(dummyRepository.songA1.slug),
 				artist: { id: dummyRepository.artistA.id },
 				genres: []
 			});

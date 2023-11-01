@@ -86,19 +86,17 @@ describe('Song Controller', () => {
 					expect(songs.length).toBe(2);
 					expect(songs[0]).toStrictEqual({
 						...expectedSongResponse(dummyRepository.songA1),
-						artist: expectedArtistResponse(dummyRepository.artistA),
-						featuring: []
+						artist: expectedArtistResponse(dummyRepository.artistA)
 					});
 					expect(songs[1]).toStrictEqual({
 						...expectedSongResponse(dummyRepository.songA2),
-						artist: expectedArtistResponse(dummyRepository.artistA),
-						featuring: []
+						artist: expectedArtistResponse(dummyRepository.artistA)
 					});
 				});
 		});
 		it("should return songs w/ artist", () => {
 			return request(app.getHttpServer())
-				.get(`/songs?take=1&with=artist`)
+				.get(`/songs?take=1&with=artist,featuring`)
 				.expect(200)
 				.expect((res) => {
 					const songs: Song[] = res.body.items
@@ -133,7 +131,7 @@ describe('Song Controller', () => {
 		});
 		it("should return song w/ artist", () => {
 			return request(app.getHttpServer())
-				.get(`/songs/${dummyRepository.songA1.id}?with=artist`)
+				.get(`/songs/${dummyRepository.songA1.id}?with=artist,featuring`)
 				.expect(200)
 				.expect((res) => {
 					const song: Song = res.body
@@ -245,7 +243,7 @@ describe('Song Controller', () => {
 		});
 		it("should get all songs, w/ artist", () => {
 			return request(app.getHttpServer())
-				.get(`/songs?artist=${dummyRepository.artistA.id}&with=artist`)
+				.get(`/songs?artist=${dummyRepository.artistA.id}&with=artist,featuring`)
 				.expect(200)
 				.expect((res) => {
 					const songs: Song[] = res.body.items;
@@ -323,8 +321,7 @@ describe('Song Controller', () => {
 					expect(songs.length).toBe(1);
 					expect(songs[0]).toStrictEqual({
 						...expectedSongResponse(dummyRepository.songA2),
-						artist: expectedArtistResponse(dummyRepository.artistA),
-						featuring: []
+						artist: expectedArtistResponse(dummyRepository.artistA)
 					});
 				});
 		});
@@ -358,7 +355,7 @@ describe('Song Controller', () => {
 	describe('Get Songs from library', () => {
 		it("should return every songs, w/ parent artist", () => {
 			return request(app.getHttpServer())
-				.get(`/songs?library=${dummyRepository.library1.id}&with=artist`)
+				.get(`/songs?library=${dummyRepository.library1.id}&with=artist,featuring`)
 				.expect(200)
 				.expect((res) => {
 					const songs: Song[] = res.body.items;
