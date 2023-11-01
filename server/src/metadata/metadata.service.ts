@@ -22,6 +22,7 @@ import GenreService from 'src/genre/genre.service';
 import { File, Track } from 'src/prisma/models';
 import { validate } from 'class-validator';
 import ParserService from './parser.service';
+import Slug from 'src/slug/slug';
 
 @Injectable()
 export default class MetadataService {
@@ -72,7 +73,6 @@ export default class MetadataService {
 			parsedArtistName = artist;
 			parsedFeaturingArtists.push(...featuring);
 		}
-		console.log(parsedArtistName, parsedFeaturingArtists);
 		const songArtist = await this.artistService.getOrCreate({
 			name: parsedArtistName,
 			registeredAt: file.registerDate
@@ -87,13 +87,12 @@ export default class MetadataService {
 		const song = await this.songService.getOrCreate({
 			name: this.removeTrackExtension(parsedSongName),
 			artist: { id: songArtist.id },
-			featuring: featuringArtists.map(({ id }) => ({ id })),
+			featuring: featuringArtists.map(({ slug }) => ({ slug: new Slug(slug) })),
 			genres: genres.map((genre) => ({ id: genre.id })),
 			registeredAt: file.registerDate
 		}, {
-			tracks: true, genres: true, featuring: true
+			tracks: true, genres: true
 		});
-		console.log(song.featuring);
 
 		await this.songService.update(
 			{ genres: song.genres.concat(genres).map((genre) => ({ id: genre.id })) },
