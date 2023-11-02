@@ -121,7 +121,7 @@ export default class ParserService {
 			}
 			if (opt?.keepDelimiters) {
 				// We do this because dashed groups will have trailing groups in `strippedGroup`
-				const first = gend == '' ? subGroups.at(0) : strippedGroup;
+				const first = subGroups.at(0);
 
 				tokens.push(gstart + first + gend, ...subGroups.slice(1));
 			} else {
