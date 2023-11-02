@@ -7,7 +7,7 @@ import prepareSSR from '../../ssr';
 import InfiniteVideoView from '../../components/infinite/infinite-resource-view/infinite-video-view';
 
 export const getServerSideProps = prepareSSR((context) => {
-	const order = getOrderParams(context.query.order);
+	const order = getOrderParams(context.query.order) ?? 'asc';
 	const sortBy = getSortingFieldParams(context.query.sortBy, SongSortingKeys);
 
 	return {

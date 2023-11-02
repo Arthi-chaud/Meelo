@@ -8,7 +8,7 @@ import prepareSSR, { InferSSRProps } from '../../ssr';
 import { getLayoutParams } from '../../utils/layout';
 
 export const getServerSideProps = prepareSSR((context) => {
-	const order = getOrderParams(context.query.order);
+	const order = getOrderParams(context.query.order) ?? 'asc';
 	const sortBy = getSortingFieldParams(context.query.sortBy, AlbumSortingKeys);
 	const defaultLayout = getLayoutParams(context.query.view) ?? 'grid';
 

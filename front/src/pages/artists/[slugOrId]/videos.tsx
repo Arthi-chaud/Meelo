@@ -12,7 +12,7 @@ import BackgroundBlurhash from "../../../components/blurhash-background";
 
 export const getServerSideProps = prepareSSR((context) => {
 	const artistIdentifier = getSlugOrId(context.params);
-	const order = getOrderParams(context.query.order);
+	const order = getOrderParams(context.query.order) ?? 'asc';
 	const sortBy = getSortingFieldParams(context.query.sortBy, SongSortingKeys);
 
 	return {

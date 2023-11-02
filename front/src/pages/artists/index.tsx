@@ -8,7 +8,7 @@ import InfiniteArtistView from '../../components/infinite/infinite-resource-view
 import { getLayoutParams } from '../../utils/layout';
 
 export const getServerSideProps = prepareSSR((context) => {
-	const order = getOrderParams(context.query.order);
+	const order = getOrderParams(context.query.order) ?? 'asc';
 	const sortBy = getSortingFieldParams(context.query.sortBy, ArtistSortingKeys);
 	const defaultLayout = getLayoutParams(context.query.view) ?? 'list';
 
