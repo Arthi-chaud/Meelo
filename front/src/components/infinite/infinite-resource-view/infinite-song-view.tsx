@@ -15,7 +15,7 @@ type AdditionalProps = {
 
 const InfiniteSongView = (
 	props: InfiniteResourceViewProps<
-		SongWithRelations<'artist'>,
+		SongWithRelations<'artist' | 'featuring'>,
 		typeof SongSortingKeys,
 		AdditionalProps
 	> & Pick<Parameters<typeof SongItem>[0], 'formatSubtitle'>
@@ -53,8 +53,8 @@ const InfiniteSongView = (
 				view: "grid",
 				library: options?.library ?? null
 			})}
-			renderListItem={(item: SongWithRelations<'artist'>) => <SongItem song={item} key={item.id} formatSubtitle={props.formatSubtitle} />}
-			renderGridItem={(item: SongWithRelations<'artist'>) => <></>}
+			renderListItem={(item: SongWithRelations<'artist' | 'featuring'>) => <SongItem song={item} key={item.id} formatSubtitle={props.formatSubtitle} />}
+			renderGridItem={(item: SongWithRelations<'artist' | 'featuring'>) => <></>}
 		/>
 	</>;
 };

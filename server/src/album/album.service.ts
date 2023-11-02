@@ -185,7 +185,12 @@ export default class AlbumService extends RepositoryService<
 					some: {
 						tracks: { some: {
 							song: {
-								artist: ArtistService.formatWhereInput(where.appearance)
+								OR: [
+									{ artist: ArtistService.formatWhereInput(where.appearance) },
+									{ featuring: {
+										some: ArtistService.formatWhereInput(where.appearance)
+									} }
+								]
 							}
 						} }
 					}
@@ -421,7 +426,7 @@ export default class AlbumService extends RepositoryService<
 					sort: 'asc'
 				}
 			},
-			include: RepositoryService.formatInclude(include),
+			include: this.formatInclude(include),
 			where: {
 				...this.formatManyWhereInput(where),
 				OR: [

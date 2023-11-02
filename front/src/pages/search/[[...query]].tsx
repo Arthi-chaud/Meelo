@@ -18,7 +18,7 @@ export const getServerSideProps = prepareSSR((context) => {
 		infiniteQueries: searchQuery ? [
 			API.getArtists({ query: searchQuery }, defaultQuerySortParams),
 			API.getAlbums({ query: searchQuery }, defaultQuerySortParams, ['artist']),
-			API.getSongs({ query: searchQuery }, defaultQuerySortParams, ['artist'])
+			API.getSongs({ query: searchQuery }, defaultQuerySortParams, ['artist', 'featuring'])
 		] : []
 	};
 });
@@ -70,7 +70,7 @@ const SearchPage = (
 			songQuery={({ library, type: newType }, sort) => API.getSongs(
 				{ query: encodeURIComponent(query!), type: newType, library: library ?? undefined },
 				sort,
-				['artist']
+				['artist', 'featuring']
 			)}
 		/>
 	</Box>;

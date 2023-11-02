@@ -144,13 +144,26 @@ export default class ArtistService extends RepositoryService<
 		}
 		if (where.album) {
 			query = deepmerge(query, {
-				songs: {
-					some: {
-						tracks: { some: { release: {
-							album: AlbumService.formatWhereInput(where.album)
-						} } }
+				OR: [
+					{
+						songs: {
+							some: {
+								tracks: { some: { release: {
+									album: AlbumService.formatWhereInput(where.album)
+								} } }
+							}
+						}
+					},
+					{
+						featuredOn: {
+							some: {
+								tracks: { some: { release: {
+									album: AlbumService.formatWhereInput(where.album)
+								} } }
+							}
+						}
 					}
-				}
+				]
 			});
 		}
 		if (where.albumArtistOnly) {
@@ -243,11 +256,11 @@ export default class ArtistService extends RepositoryService<
 			select: {
 				id: true,
 				_count: {
-					select: { albums: true, songs: true },
+					select: { albums: true, songs: true, featuredOn: true },
 				},
 			},
 		}).then((artists) => artists.filter(
-			({ _count }) => !_count.albums && !_count.songs
+			({ _count }) => !_count.albums && !_count.songs && !_count.featuredOn
 		));
 
 		await Promise.all(
@@ -283,7 +296,7 @@ export default class ArtistService extends RepositoryService<
 					sort: 'asc'
 				}
 			},
-			include: RepositoryService.formatInclude(include),
+			include: this.formatInclude(include),
 			where: {
 				...this.formatManyWhereInput(where),
 				OR: [

@@ -22,7 +22,7 @@ import TestPrismaService from "test/test-prisma.service";
 import type ReassignReleaseDTO from "./models/reassign-release.dto";
 import FileModule from "src/file/file.module";
 import SetupApp from "test/setup-app";
-import { expectedReleaseResponse, expectedAlbumResponse, expectedTrackResponse, expectedSongResponse } from "test/expected-responses";
+import { expectedReleaseResponse, expectedAlbumResponse, expectedTrackResponse, expectedSongResponse, expectedArtistResponse } from "test/expected-responses";
 import ProvidersModule from "src/providers/providers.module";
 import ProviderService from "src/providers/provider.service";
 
@@ -312,19 +312,6 @@ describe('Release Controller', () => {
 				.expect((res) => {
 					const tracklist: Tracklist = res.body;
 					expect(tracklist).toStrictEqual({
-						'1': [expectedTrackResponse(dummyRepository.trackA2_1)],
-						'2': [expectedTrackResponse(dummyRepository.trackA1_2Video)],
-					});
-				});
-		});
-
-		it("should get the tracklist, w/ related song", () => {
-			return request(app.getHttpServer())
-				.get(`/releases/${dummyRepository.releaseA1_2.id}/tracklist?with=song`)
-				.expect(200)
-				.expect((res) => {
-					const tracklist: Tracklist = res.body;
-					expect(tracklist).toStrictEqual({
 						'1': [{
 							...expectedTrackResponse(dummyRepository.trackA2_1),
 							song: expectedSongResponse(dummyRepository.songA2)
@@ -332,6 +319,31 @@ describe('Release Controller', () => {
 						'2': [{
 							...expectedTrackResponse(dummyRepository.trackA1_2Video),
 							song: expectedSongResponse(dummyRepository.songA1)
+						}],
+					});
+				});
+		});
+
+		it("should get the tracklist, w/ related song artist", () => {
+			return request(app.getHttpServer())
+				.get(`/releases/${dummyRepository.releaseA1_2.id}/tracklist?with=artist`)
+				.expect(200)
+				.expect((res) => {
+					const tracklist: Tracklist = res.body;
+					expect(tracklist).toStrictEqual({
+						'1': [{
+							...expectedTrackResponse(dummyRepository.trackA2_1),
+							song: {
+								...expectedSongResponse(dummyRepository.songA2),
+								artist: expectedArtistResponse(dummyRepository.artistA)
+							}
+						}],
+						'2': [{
+							...expectedTrackResponse(dummyRepository.trackA1_2Video),
+							song: {
+								...expectedSongResponse(dummyRepository.songA1),
+								artist: expectedArtistResponse(dummyRepository.artistA)
+							}
 						}],
 					});
 				});
@@ -352,19 +364,6 @@ describe('Release Controller', () => {
 				.expect((res) => {
 					const tracklist: Track[] = res.body;
 					expect(tracklist).toStrictEqual([
-						expectedTrackResponse(dummyRepository.trackA2_1),
-						expectedTrackResponse(dummyRepository.trackA1_2Video),
-					]);
-				});
-		});
-
-		it("should get the playlist, w/ related song", () => {
-			return request(app.getHttpServer())
-				.get(`/releases/${dummyRepository.releaseA1_2.id}/playlist?with=song`)
-				.expect(200)
-				.expect((res) => {
-					const tracklist: Track[] = res.body;
-					expect(tracklist).toStrictEqual([
 						{
 							...expectedTrackResponse(dummyRepository.trackA2_1),
 							song: expectedSongResponse(dummyRepository.songA2)
@@ -372,6 +371,31 @@ describe('Release Controller', () => {
 						{
 							...expectedTrackResponse(dummyRepository.trackA1_2Video),
 							song: expectedSongResponse(dummyRepository.songA1)
+						}
+					]);
+				});
+		});
+
+		it("should get the playlist, w/ related song artist", () => {
+			return request(app.getHttpServer())
+				.get(`/releases/${dummyRepository.releaseA1_2.id}/playlist?with=artist`)
+				.expect(200)
+				.expect((res) => {
+					const tracklist: Track[] = res.body;
+					expect(tracklist).toStrictEqual([
+						{
+							...expectedTrackResponse(dummyRepository.trackA2_1),
+							song: {
+								...expectedSongResponse(dummyRepository.songA2),
+								artist: expectedArtistResponse(dummyRepository.artistA)
+							}
+						},
+						{
+							...expectedTrackResponse(dummyRepository.trackA1_2Video),
+							song: {
+								...expectedSongResponse(dummyRepository.songA1),
+								artist: expectedArtistResponse(dummyRepository.artistA)
+							}
 						},
 					]);
 				});

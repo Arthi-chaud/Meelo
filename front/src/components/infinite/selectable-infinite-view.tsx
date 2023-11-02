@@ -26,7 +26,7 @@ type SelectableInfiniteViewProps = {
 	albumQuery: MeeloInfiniteQueryFn<AlbumWithRelations<'artist'>, [param: { type: AlbumType | undefined, library: string | number | null }, sort: SortingParameters<typeof AlbumSortingKeys>]>;
 	// eslint-disable-next-line max-len
 	artistQuery: MeeloInfiniteQueryFn<Artist, [param: { library: string | number | null }, sort: SortingParameters<typeof ArtistSortingKeys>]>;
-	songQuery: MeeloInfiniteQueryFn<SongWithRelations<'artist'>, [param: { type: SongType | undefined, library: string | number | null }, sort: SortingParameters<typeof SongSortingKeys>]>;
+	songQuery: MeeloInfiniteQueryFn<SongWithRelations<'artist' | 'featuring'>, [param: { type: SongType | undefined, library: string | number | null }, sort: SortingParameters<typeof SongSortingKeys>]>;
 	default?: string | typeof itemTypes[number];
 	onTypeSelect?: (selectedType: SelectableInfiniteViewProps['default']) => void;
 	enabled: boolean;

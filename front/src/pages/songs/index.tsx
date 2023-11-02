@@ -12,7 +12,7 @@ export const getServerSideProps = prepareSSR((context) => {
 
 	return {
 		additionalProps: { order, sortBy },
-		infiniteQueries: [API.getSongs({}, { sortBy, order }, ['artist'])]
+		infiniteQueries: [API.getSongs({}, { sortBy, order }, ['artist', 'featuring'])]
 	};
 });
 
@@ -25,7 +25,7 @@ const LibrarySongsPage = (props: InferSSRProps<typeof getServerSideProps>) => {
 		query={({ sortBy, order, type, library }) => API.getSongs(
 			{ type, library: library ?? undefined },
 			{ sortBy, order },
-			['artist']
+			['artist', 'featuring']
 		)}
 	/>;
 };

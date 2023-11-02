@@ -22,6 +22,7 @@ import GenreService from 'src/genre/genre.service';
 import { File, Track } from 'src/prisma/models';
 import { validate } from 'class-validator';
 import ParserService from './parser.service';
+import Slug from 'src/slug/slug';
 
 @Injectable()
 export default class MetadataService {
@@ -39,6 +40,7 @@ export default class MetadataService {
 		private settingsService: SettingsService,
 		@Inject(forwardRef(() => GenreService))
 		private genreService: GenreService,
+		@Inject(forwardRef(() => ParserService))
 		private parserService: ParserService,
 		private fileManagerService: FileManagerService
 	) {}
@@ -61,13 +63,32 @@ export default class MetadataService {
 				registeredAt: file.registerDate
 			})
 			: undefined;
+		const { name: parsedSongName, featuring: parsedFeaturingArtists } = await this.parserService
+			.extractFeaturedArtistsFromSongName(metadata.name);
+		let parsedArtistName = metadata.artist;
+
+		if (metadata.artist !== albumArtist?.name) {
+			const { artist, featuring } = await this.parserService
+				.extractFeaturedArtistsFromArtistName(metadata.artist);
+
+			parsedArtistName = artist;
+			parsedFeaturingArtists.push(...featuring);
+		}
 		const songArtist = await this.artistService.getOrCreate({
-			name: metadata.artist,
+			name: parsedArtistName,
 			registeredAt: file.registerDate
 		});
+		const featuringArtists = await Promise.all(
+			parsedFeaturingArtists.map((artist) =>
+				this.artistService.getOrCreate({
+					name: artist,
+					registeredAt: file.registerDate
+				}))
+		);
 		const song = await this.songService.getOrCreate({
-			name: this.removeTrackExtension(metadata.name!),
+			name: this.removeTrackExtension(parsedSongName),
 			artist: { id: songArtist.id },
+			featuring: featuringArtists.map(({ slug }) => ({ slug: new Slug(slug) })),
 			genres: genres.map((genre) => ({ id: genre.id })),
 			registeredAt: file.registerDate
 		}, {
@@ -91,7 +112,7 @@ export default class MetadataService {
 			discogsId: metadata.discogsId
 		}, { album: true });
 		const track: TrackQueryParameters.CreateInput = {
-			name: metadata.name,
+			name: parsedSongName,
 			discIndex: metadata.discIndex ?? null,
 			trackIndex: metadata.index ?? null,
 			type: metadata.type,

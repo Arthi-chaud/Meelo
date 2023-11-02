@@ -18,7 +18,7 @@ export const getServerSideProps = prepareSSR((context) => {
 	return {
 		additionalProps: { artistIdentifier, sortBy, order },
 		queries: [API.getArtist(artistIdentifier)],
-		infiniteQueries: [API.getSongs({ artist: artistIdentifier }, { sortBy, order }, ['artist'])]
+		infiniteQueries: [API.getSongs({ artist: artistIdentifier }, { sortBy, order }, ['artist', 'featuring'])]
 	};
 });
 
@@ -41,7 +41,7 @@ const ArtistSongPage = (props: InferSSRProps<typeof getServerSideProps>) => {
 			query={({ library, sortBy, order, type }) => API.getSongs(
 				{ artist: artistIdentifier, type, library: library ?? undefined },
 				{ sortBy, order },
-				['artist']
+				['artist', 'featuring']
 			)}
 			formatSubtitle={(song) => getSongMainAlbum(song.id).then((album) => album.name)}
 		/>

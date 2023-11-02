@@ -15,9 +15,11 @@ namespace SongQueryParameters {
 	/**
 	 * The input required to save a song in the database
 	 */
-	export type CreateInput = Omit<Song, 'slug' | 'id' | 'playCount' | 'artist' | 'artistId' | 'tracks' | 'genres' | 'lyrics' | 'masterId' | 'registeredAt' | 'type'>
+	export type CreateInput = Omit<Song, 'slug' | 'id' | 'playCount' | 'artist' | 'artistId' | 'tracks' | 'genres' | 'lyrics' | 'masterId' | 'registeredAt' | 'type' | 'featuring'>
 		& {
+			slug?: Slug,
 			artist: ArtistQueryParameters.WhereInput,
+			featuring?: RequireExactlyOne<Pick<ArtistQueryParameters.WhereInput, 'slug'>>[],
 			registeredAt?: Date,
 			genres: GenreQueryParameters.WhereInput[]
 		};
@@ -27,7 +29,11 @@ namespace SongQueryParameters {
 	 */
 	export type WhereInput = RequireExactlyOne<{
 		id: Song['id'],
-		bySlug: { slug: Slug, artist: ArtistQueryParameters.WhereInput }
+		bySlug: {
+			slug: Slug,
+			artist: ArtistQueryParameters.WhereInput,
+			featuring?: ArtistQueryParameters.WhereInput[]
+		}
 	}>;
 
 	/**
@@ -68,6 +74,7 @@ namespace SongQueryParameters {
 	export const AvailableIncludes = [
 		'tracks',
 		'artist',
+		'featuring',
 		'genres',
 		'lyrics',
 		'externalIds'

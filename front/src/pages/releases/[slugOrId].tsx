@@ -35,7 +35,7 @@ import Fade from "../../components/fade";
 import BackgroundBlurhash from "../../components/blurhash-background";
 
 const releaseQuery = (releaseIdentifier: string | number) => API.getRelease(releaseIdentifier, ['album', 'externalIds']);
-const releaseTracklistQuery = (releaseIdentifier: string | number) => API.getReleaseTrackList(releaseIdentifier, ['song']);
+const releaseTracklistQuery = (releaseIdentifier: string | number) => API.getReleaseTrackList(releaseIdentifier, ['artist', 'featuring']);
 const albumQuery = (albumId: number) => API.getAlbum(albumId, ['externalIds']);
 const artistsOnAlbumQuery = (albumId: number) => {
 	const query = API.getArtists({ album: albumId });
@@ -48,7 +48,7 @@ const artistsOnAlbumQuery = (albumId: number) => {
 };
 
 const albumGenreQuery = (albumId: number) => API.getGenres({ album: albumId });
-const releaseBSidesQuery = (releaseId: number) => API.getSongs({ bsides: releaseId }, { sortBy: 'name' }, ['artist']);
+const releaseBSidesQuery = (releaseId: number) => API.getSongs({ bsides: releaseId }, { sortBy: 'name' }, ['artist', 'featuring']);
 const albumVideosQuery = (albumId: number) => API.getVideos({ album: albumId });
 const relatedAlbumsQuery = (albumId: number) => API.getAlbums({ related: albumId }, { sortBy: 'releaseDate' }, ['artist']);
 const relatedReleasesQuery = (albumId: number) => API.getReleases({ album: albumId });
@@ -254,12 +254,7 @@ const ReleasePage = (props: InferSSRProps<typeof getServerSideProps>) => {
 										discKey,
 										discTracks.map((discTrack) => ({
 											...discTrack,
-											song: {
-												...discTrack.song,
-												artist: artists.data.find(
-													(artist) => artist.id == discTrack.song.artistId
-												)!
-											}
+											song: discTrack.song
 										}))
 									]))
 								}
@@ -273,7 +268,10 @@ const ReleasePage = (props: InferSSRProps<typeof getServerSideProps>) => {
 				display={(bSides.data?.pages.at(0)?.items?.length ?? 0) > 0}
 				title={<Translate translationKey="bonusTracks"/>}
 			>
-				<SongGrid songs={bSides.data?.pages.at(0)?.items ?? []} hideArtistName/>
+				<SongGrid
+					parentArtistName={albumArtist?.name}
+					songs={bSides.data?.pages.at(0)?.items ?? []}
+				/>
 			</RelatedContentSection>
 			<RelatedContentSection
 				display={(relatedReleases.data?.pages.at(0)?.items?.length ?? 0) > 1}

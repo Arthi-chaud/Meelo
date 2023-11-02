@@ -85,11 +85,14 @@ export default class SongService extends RepositoryService<
 			artist: {
 				connect: ArtistService.formatWhereInput(song.artist)
 			},
+			featuring: song.featuring ? {
+				connect: song.featuring.map(ArtistService.formatWhereInput)
+			} : undefined,
 			registeredAt: song.registeredAt,
 			playCount: 0,
 			type: this.parserService.getSongType(song.name),
 			name: song.name,
-			slug: new Slug(song.name).toString()
+			slug: this._createSongSlug(song.name, song.featuring).toString()
 		};
 	}
 
@@ -97,8 +100,18 @@ export default class SongService extends RepositoryService<
 		input: SongQueryParameters.CreateInput
 	): SongQueryParameters.WhereInput {
 		return {
-			bySlug: { slug: new Slug(input.name), artist: input.artist },
+			bySlug: {
+				slug: this._createSongSlug(input.name, input.featuring),
+				artist: input.artist,
+			},
 		};
+	}
+
+	private _createSongSlug(songName: string, featuring: SongQueryParameters.CreateInput['featuring']) {
+		if (featuring && featuring.length > 0) {
+			return new Slug(songName, 'feat', ...featuring.map((feat) => feat.slug.toString()));
+		}
+		return new Slug(songName);
 	}
 
 	protected async onCreationFailure(error: Error, input: SongQueryParameters.CreateInput) {
@@ -121,6 +134,9 @@ export default class SongService extends RepositoryService<
 			slug: where.bySlug?.slug.toString(),
 			artist: where.bySlug
 				? ArtistService.formatWhereInput(where.bySlug.artist)
+				: undefined,
+			featuring: where.bySlug?.featuring
+				? { every: { OR: where.bySlug.featuring.map(ArtistService.formatWhereInput) } }
 				: undefined
 		};
 	}
@@ -150,9 +166,12 @@ export default class SongService extends RepositoryService<
 		}
 		if (where.artist?.slug) {
 			query = deepmerge(query, {
-				artist: {
-					slug: where.artist.slug.toString()
-				}
+				OR: [
+					{ artist: {
+						slug: where.artist.slug.toString()
+					} },
+					{ featuring: { some: { slug: where.artist.slug.toString() } } }
+				]
 			});
 		}
 		if (where.library) {
@@ -231,6 +250,9 @@ export default class SongService extends RepositoryService<
 			} : undefined,
 			artist: what.artist ? {
 				connect: ArtistService.formatWhereInput(what.artist),
+			} : undefined,
+			featuring: what.featuring ? {
+				connect: what.featuring.map(ArtistService.formatWhereInput),
 			} : undefined,
 		};
 	}
@@ -393,7 +415,7 @@ export default class SongService extends RepositoryService<
 				type: type
 			},
 			orderBy: sort ? this.formatSortingInput(sort) : undefined,
-			include: RepositoryService.formatInclude(include),
+			include: this.formatInclude(include),
 			...buildPaginationParameters(pagination)
 		});
 	}
@@ -452,7 +474,7 @@ export default class SongService extends RepositoryService<
 				]
 			},
 			orderBy: sort ? this.formatSortingInput(sort) : undefined,
-			include: RepositoryService.formatInclude(include),
+			include: this.formatInclude(include),
 			...buildPaginationParameters(pagination)
 		});
 	}
@@ -485,7 +507,7 @@ export default class SongService extends RepositoryService<
 					sort: 'asc'
 				}
 			},
-			include: RepositoryService.formatInclude(include),
+			include: this.formatInclude(include),
 			where: {
 				...this.formatManyWhereInput(where),
 				OR: [

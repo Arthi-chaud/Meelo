@@ -18,7 +18,7 @@ export const getServerSideProps = prepareSSR((context) => {
 	return {
 		additionalProps: { artistIdentifier, order, sortBy },
 		queries: [API.getArtist(artistIdentifier)],
-		infiniteQueries: [API.getVideos({ artist: artistIdentifier }, { sortBy: 'name', order: 'asc' }, ['artist'])]
+		infiniteQueries: [API.getVideos({ artist: artistIdentifier }, { sortBy: 'name', order: 'asc' }, ['artist', 'featuring'])]
 	};
 });
 
@@ -35,7 +35,7 @@ const ArtistSongPage = (
 		<InfiniteVideoView
 			initialSortingField={props.additionalProps?.sortBy}
 			initialSortingOrder={props.additionalProps?.order}
-			query={(sort) => API.getVideos({ artist: artistIdentifier }, sort, ['artist'])}
+			query={(sort) => API.getVideos({ artist: artistIdentifier }, sort, ['artist', 'featuring'])}
 			formatSubtitle={(song) => formatDuration(song.track.duration)}
 		/>
 	</>;

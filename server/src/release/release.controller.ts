@@ -6,7 +6,6 @@ import { PaginationParameters } from 'src/pagination/models/pagination-parameter
 import ReleaseQueryParameters from './models/release.query-parameters';
 import ReleaseService from './release.service';
 import TrackService from 'src/track/track.service';
-import TrackQueryParameters from 'src/track/models/track.query-parameters';
 import AlbumService from 'src/album/album.service';
 import AlbumQueryParameters from 'src/album/models/album.query-parameters';
 import type { Response as ExpressResponse } from 'express';
@@ -25,6 +24,7 @@ import { IsOptional } from 'class-validator';
 import TransformIdentifier from 'src/identifier/identifier.transform';
 import LibraryService from 'src/library/library.service';
 import LibraryQueryParameters from 'src/library/models/library.query-parameters';
+import SongQueryParameters from 'src/song/models/song.query-params';
 
 class Selector extends IntersectionType(ReleaseQueryParameters.SortingParameter) {
 	@IsOptional()
@@ -94,8 +94,8 @@ export default class ReleaseController {
 	@Response({ handler: TracklistResponseBuilder })
 	@Get(':idOrSlug/tracklist')
 	async getReleaseTracklist(
-		@RelationIncludeQuery(TrackQueryParameters.AvailableAtomicIncludes)
-		include: TrackQueryParameters.RelationInclude,
+		@RelationIncludeQuery(SongQueryParameters.AvailableAtomicIncludes)
+		include: SongQueryParameters.RelationInclude,
 		@IdentifierParam(ReleaseService)
 		where: ReleaseQueryParameters.WhereInput,
 	) {
@@ -113,8 +113,8 @@ export default class ReleaseController {
 	async getReleasePlaylist(
 		@Query('random', new DefaultValuePipe(false), ParseBoolPipe)
 		random: boolean,
-		@RelationIncludeQuery(TrackQueryParameters.AvailableAtomicIncludes)
-		include: TrackQueryParameters.RelationInclude,
+		@RelationIncludeQuery(SongQueryParameters.AvailableAtomicIncludes)
+		include: SongQueryParameters.RelationInclude,
 		@IdentifierParam(ReleaseService)
 		where: ReleaseQueryParameters.WhereInput,
 	) {

@@ -13,10 +13,11 @@ import ReleaseTrackContextualMenu from "./contextual-menu/release-track-contextu
 import { SongWithRelations } from "../models/song";
 import Translate from "../i18n/translate";
 import { VideoIcon } from "./icons";
+import formatArtists from "../utils/formatArtists";
 
 type ReleaseTracklistProps = {
 	mainArtist?: Artist;
-	tracklist: Tracklist<Track & { song: SongWithRelations<'artist'> }>;
+	tracklist: Tracklist<Track & { song: SongWithRelations<'artist' | 'featuring'> }>;
 	release: Release;
 }
 
@@ -29,6 +30,12 @@ const ReleaseTrackList = (
 	const theme = useTheme();
 	const dispatch = useDispatch();
 	const flatTracklist = Array.from(Object.values(tracklist)).flat();
+	const formatTracksubtitle = (song: SongWithRelations<'artist' | 'featuring'>) => {
+		if (song.artistId === mainArtist?.id && song.featuring?.length === 0) {
+			return undefined;
+		}
+		return formatArtists(song.artist, song.featuring);
+	};
 
 	return <Box>
 		{Array.from(Object.entries(tracklist)).map((disc, __, discs) =>
@@ -67,11 +74,7 @@ const ReleaseTrackList = (
 								primaryTypographyProps={{
 									fontSize: 'medium',
 								}}
-								secondary={
-									currentTrack.song.artistId == mainArtist?.id
-										? undefined
-										: currentTrack.song.artist?.name
-								}
+								secondary={formatTracksubtitle(currentTrack.song)}
 								secondaryTypographyProps={{
 									fontSize: 'small',
 									color: 'text.disabled'

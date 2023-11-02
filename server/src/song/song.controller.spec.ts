@@ -96,14 +96,15 @@ describe('Song Controller', () => {
 		});
 		it("should return songs w/ artist", () => {
 			return request(app.getHttpServer())
-				.get(`/songs?take=1&with=artist`)
+				.get(`/songs?take=1&with=artist,featuring`)
 				.expect(200)
 				.expect((res) => {
 					const songs: Song[] = res.body.items
 					expect(songs.length).toBe(1);
 					expect(songs[0]).toStrictEqual({
 						...expectedSongResponse(dummyRepository.songA1),
-						artist: expectedArtistResponse(dummyRepository.artistA)
+						artist: expectedArtistResponse(dummyRepository.artistA),
+						featuring: []
 					});
 				});
 		});
@@ -130,13 +131,14 @@ describe('Song Controller', () => {
 		});
 		it("should return song w/ artist", () => {
 			return request(app.getHttpServer())
-				.get(`/songs/${dummyRepository.songA1.id}?with=artist`)
+				.get(`/songs/${dummyRepository.songA1.id}?with=artist,featuring`)
 				.expect(200)
 				.expect((res) => {
 					const song: Song = res.body
 					expect(song).toStrictEqual({
 						...expectedSongResponse(dummyRepository.songA1),
-						artist: expectedArtistResponse(dummyRepository.artistA)
+						artist: expectedArtistResponse(dummyRepository.artistA),
+						featuring: []
 					});
 				});
 		});
@@ -241,18 +243,20 @@ describe('Song Controller', () => {
 		});
 		it("should get all songs, w/ artist", () => {
 			return request(app.getHttpServer())
-				.get(`/songs?artist=${dummyRepository.artistA.id}&with=artist`)
+				.get(`/songs?artist=${dummyRepository.artistA.id}&with=artist,featuring`)
 				.expect(200)
 				.expect((res) => {
 					const songs: Song[] = res.body.items;
 					expect(songs.length).toBe(2);
 					expect(songs[0]).toStrictEqual({
 						...expectedSongResponse(dummyRepository.songA1),
-						artist: expectedArtistResponse(dummyRepository.artistA)
+						artist: expectedArtistResponse(dummyRepository.artistA),
+						featuring: []
 					});
 					expect(songs[1]).toStrictEqual({
 						...expectedSongResponse(dummyRepository.songA2),
-						artist: expectedArtistResponse(dummyRepository.artistA)
+						artist: expectedArtistResponse(dummyRepository.artistA),
+						featuring: []
 					});
 				});
 		});
@@ -351,7 +355,7 @@ describe('Song Controller', () => {
 	describe('Get Songs from library', () => {
 		it("should return every songs, w/ parent artist", () => {
 			return request(app.getHttpServer())
-				.get(`/songs?library=${dummyRepository.library1.id}&with=artist`)
+				.get(`/songs?library=${dummyRepository.library1.id}&with=artist,featuring`)
 				.expect(200)
 				.expect((res) => {
 					const songs: Song[] = res.body.items;
@@ -359,14 +363,17 @@ describe('Song Controller', () => {
 					expect(songs).toContainEqual({
 						...expectedSongResponse(dummyRepository.songA1),
 						artist: expectedArtistResponse(dummyRepository.artistA),
+						featuring: []
 					});
 					expect(songs).toContainEqual({
 						...expectedSongResponse(dummyRepository.songA2),
 						artist: expectedArtistResponse(dummyRepository.artistA),
+						featuring: []
 					});
 					expect(songs).toContainEqual({
 						...expectedSongResponse(dummyRepository.songC1),
 						artist: expectedArtistResponse(dummyRepository.artistC),
+						featuring: []
 					});
 				});
 		});

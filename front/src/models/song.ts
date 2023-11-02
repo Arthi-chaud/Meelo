@@ -42,10 +42,11 @@ const Song = Resource.concat(Illustration).concat(yup.object({
 
 type Song = yup.InferType<typeof Song>;
 
-type SongInclude = 'artist' | 'lyrics' | 'externalIds';
+type SongInclude = 'artist' | 'lyrics' | 'externalIds' | 'featuring';
 
 const SongRelations = yup.object({
 	artist: Artist.required(),
+	featuring: yup.array(Artist.required()).required(),
 	lyrics: Lyrics.required().nullable(),
 	externalIds: yup.array(ExternalId.required()).required()
 });
