@@ -177,6 +177,27 @@ describe('Parser Service', () => {
 			)
 			expect(res).toStrictEqual(['feat. Madonna', 'Remix A', 'Edit B', 'Version C']);
 		});
+		it("Dashed group in parenthesis (keeping root)", () => {
+			const res = parserService.splitGroups(
+				"Crooked Madam (Damn Mad - Shellfish Remix)",
+				{ removeRoot: false }
+			)
+			expect(res).toStrictEqual(['Crooked Madam', 'Damn Mad', 'Shellfish Remix']);
+		});
+		it("Dashed group in parenthesis (removing root)", () => {
+			const res = parserService.splitGroups(
+				"Crooked Madam (Damn Mad - Shellfish Remix)",
+				{ removeRoot: true }
+			)
+			expect(res).toStrictEqual(['Damn Mad', 'Shellfish Remix']);
+		});
+		it("Dashed group in parenthesis (keeping delimiters)", () => {
+			const res = parserService.splitGroups(
+				"Crooked Madam (Damn Mad - Shellfish Remix)",
+				{ keepDelimiters: true }
+			)
+			expect(res).toStrictEqual(['Crooked Madam', '(Damn Mad)', '- Shellfish Remix']);
+		});
 	})
 
 
@@ -306,6 +327,13 @@ describe('Parser Service', () => {
 			)
 			expect(res.name).toBe("You Lied To Me (Remix)");
 			expect(res.featuring).toStrictEqual(['Shep Pettibone']);
+		});
+		it('Handling nested groups', async () => {
+			const res = await parserService.extractFeaturedArtistsFromSongName(
+				"Crooked Madam (Damn Mad - Shellfish Remix)"
+			)
+			expect(res.name).toBe("Crooked Madam (Damn Mad) - Shellfish Remix");
+			expect(res.featuring).toStrictEqual([]);
 		});
 	});
 
