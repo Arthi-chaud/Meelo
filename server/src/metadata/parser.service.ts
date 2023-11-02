@@ -161,13 +161,15 @@ export default class ParserService {
 			const rewrapper = getRewrappers(); // The delimiters to rewrap the group with
 			const [sstart, strippedGroup, ssend] = this.stripGroupDelimiters(group);
 			let featureSubGroup = strippedGroup.match(
-				/(feat(uring|\.)?|with)\s+(?<artists>.*)$/i
+				/(^with|(feat(uring|\.)?))\s+(?<artists>.*)$/i
 			);
+			let artistGroupIndex = 4;
 
 			if (!sstart && !ssend) { // If there is no delimiters
 				featureSubGroup = strippedGroup.match(
 					/(feat(uring|\.)?)\s+(?<artists>.*)$/i
 				);
+				artistGroupIndex = 3;
 			}
 			if (featureSubGroup == null) {
 				if (!sstart && !ssend) { // If the group has no wrappers
@@ -177,12 +179,17 @@ export default class ParserService {
 				}
 			} else {
 				const artistsInSubGroup = await this.extractFeaturedArtistsFromArtistName(
-					featureSubGroup.at(3)!
+					featureSubGroup.at(artistGroupIndex)!
 				);
 				const strippedGroupWithoutSub = strippedGroup.replace(featureSubGroup[0], '').trim();
 
 				if (strippedGroupWithoutSub) {
-					groupsWithoutFeaturings.push(strippedGroupWithoutSub);
+					// eslint-disable-next-line max-depth
+					if (sstart && ssend) {
+						groupsWithoutFeaturings.push(sstart + strippedGroupWithoutSub + ssend);
+					} else {
+						groupsWithoutFeaturings.push(strippedGroupWithoutSub);
+					}
 				}
 				featuringArtists.push(artistsInSubGroup.artist, ...artistsInSubGroup.featuring);
 			}

@@ -286,6 +286,27 @@ describe('Parser Service', () => {
 			expect(res.name).toBe('Champion');
 			expect(res.featuring).toStrictEqual(['Nas', 'Drake', 'Young Jeezy', 'Someone']);
 		});
+		it('Using "with"', async () => {
+			const res = await parserService.extractFeaturedArtistsFromSongName(
+				'Champion (With A)'
+			)
+			expect(res.name).toBe('Champion');
+			expect(res.featuring).toStrictEqual(['A']);
+		});
+		it('Not a feature', async () => {
+			const res = await parserService.extractFeaturedArtistsFromSongName(
+				"You Lied To Me (Sprayed With Shep's Attitude)"
+			)
+			expect(res.name).toBe("You Lied To Me (Sprayed With Shep's Attitude)");
+			expect(res.featuring).toStrictEqual([]);
+		});
+		it('Remix and features in same group', async () => {
+			const res = await parserService.extractFeaturedArtistsFromSongName(
+				"You Lied To Me (Remix Feat. Shep Pettibone)"
+			)
+			expect(res.name).toBe("You Lied To Me (Remix)");
+			expect(res.featuring).toStrictEqual(['Shep Pettibone']);
+		});
 	});
 
 	describe("Extract artists name from artist name", () => {
