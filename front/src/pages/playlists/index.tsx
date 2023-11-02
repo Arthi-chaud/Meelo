@@ -7,7 +7,7 @@ import { getLayoutParams } from "../../utils/layout";
 
 export const getServerSideProps = prepareSSR((context) => {
 	const defaultLayout = getLayoutParams(context.query.view) ?? 'list';
-	const order = getOrderParams(context.query.order);
+	const order = getOrderParams(context.query.order) ?? 'asc';
 	const sortBy = getSortingFieldParams(context.query.sortBy, PlaylistSortingKeys);
 
 	return {

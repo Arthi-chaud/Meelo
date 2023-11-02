@@ -9,7 +9,7 @@ export type SortingParameters<Keys extends readonly string[]> = {
 	order?: Order;
 }
 
-const getOrderParams = (order: any) => parseQueryParam(order, Orders) ?? 'asc';
+const getOrderParams = (order: any) => parseQueryParam(order, Orders);
 
 const getSortingFieldParams = <
 	Keys extends readonly string[]
