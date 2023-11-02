@@ -254,12 +254,7 @@ const ReleasePage = (props: InferSSRProps<typeof getServerSideProps>) => {
 										discKey,
 										discTracks.map((discTrack) => ({
 											...discTrack,
-											song: {
-												...discTrack.song,
-												artist: artists.data.find(
-													(artist) => artist.id == discTrack.song.artistId
-												)!
-											}
+											song: discTrack.song
 										}))
 									]))
 								}
