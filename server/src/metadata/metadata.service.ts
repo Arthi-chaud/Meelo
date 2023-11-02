@@ -40,6 +40,7 @@ export default class MetadataService {
 		private settingsService: SettingsService,
 		@Inject(forwardRef(() => GenreService))
 		private genreService: GenreService,
+		@Inject(forwardRef(() => ParserService))
 		private parserService: ParserService,
 		private fileManagerService: FileManagerService
 	) {}

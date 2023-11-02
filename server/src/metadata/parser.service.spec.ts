@@ -24,9 +24,9 @@ describe('Parser Service', () => {
 			imports: [FileManagerModule, PrismaModule, ArtistModule, AlbumModule, ReleaseModule, MetadataModule, SongModule, TrackModule, IllustrationModule, GenreModule, SettingsModule],
 		}).compile();
 		const prismaService = moduleRef.get(PrismaService);
-		prismaService.artist.create({ data: { name: "Christine & The Queens", slug: "christine-the-queens" } });
-		prismaService.artist.create({ data: { name: "Me & My Monkey", slug: "me-my-monkey" } });
-		prismaService.artist.create({ data: { name: "Miss Kittin & The Hacker", slug: "miss-kittin-the-hacker" } });
+		await prismaService.artist.create({ data: { name: "Christine & The Queens", slug: "christine-the-queens" } });
+		await prismaService.artist.create({ data: { name: "Me & My Monkey", slug: "me-my-monkey" } });
+		await prismaService.artist.create({ data: { name: "Miss Kittin & The Hacker", slug: "miss-kittin-the-hacker" } });
 		parserService = moduleRef.get<ParserService>(ParserService);
 	});
 

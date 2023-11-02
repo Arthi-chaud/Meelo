@@ -201,9 +201,19 @@ export default class ParserService {
 		if (await this.artistService.exists({ slug: new Slug(artistName) })) {
 			return { artist: artistName, featuring: [] };
 		}
-		const [main, ...feats] = artistName
+		const [main, ...feats] = (await Promise.all(artistName
 			.split(/\s*,\s*/)
-			.map((s) => s.split(/\s*&\s*/))
+			.map(async (s) => {
+				const splitted = s.split(/\s+&\s+/);
+
+				if (splitted.length == 1) {
+					return splitted;
+				}
+				const [mainA, ...feat] = splitted;
+				const parsedFeat = await this.extractFeaturedArtistsFromArtistName(feat.join(' & '));
+
+				return [mainA, parsedFeat.artist, ...parsedFeat.featuring];
+			})))
 			.flat()
 			.map((s) => s.trim());
 		const { name, featuring } = await this.extractFeaturedArtistsFromSongName(main);
