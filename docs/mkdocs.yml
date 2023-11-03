@@ -13,6 +13,8 @@ nav:
     - Start: setup/startup.md
     - Create First Library: setup/create-library.md
   - Album Types: album-types.md
+  - Song Types: song-types.md
+  - Featuring Artists: featuring-artists.md
 theme:
   name: material
   language: en

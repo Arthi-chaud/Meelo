@@ -22,6 +22,7 @@ This project is made by and for music collectors. Its goal is to have a clean, o
   - Album
     - Releases
   - Songs
+    - Primary and seocndary artists
     - Tracks
     - Versions
 - Access, stream, and download songs from your server
