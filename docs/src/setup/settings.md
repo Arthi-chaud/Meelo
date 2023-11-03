@@ -1,27 +1,6 @@
 # Prepare your settings
 
-In your `Meelo` folder create a `settings.json` file. It will look like this:
-
-```json
-{
-  "dataFolder": "/data",
-  "trackRegex": [
-    "[\\/\\\\]?(?<Artist>.+)[\\/\\\\]+(?<Album>.+?)(\\s*\\((?<Year>\\d+)\\))?(\\s*\\[(?<DiscogsId>\\d+)\\])?[\\/\\\\]+((?<Disc>[0-9]+)-)?(?<Index>[0-9]+)\\s+(?<Track>.*)\\..*$"
-  ],
-  "metadata": {
-    "source": "embedded",
-    "order": "only"
-  },
-  "providers": {
-    "genius": {},
-    "musicbrainz": {}
-  },
-  "compilations": {
-    "useID3CompTag": true,
-    "artists": ["Various Artists"]
-  }
-}
-```
+In your `Meelo` folder, download and fill [this `settings.json` file](https://raw.githubusercontent.com/Arthi-chaud/Meelo/master/settings.json)
 
 All fields are **required**
 

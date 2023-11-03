@@ -3,6 +3,7 @@ docs_dir: './src'
 repo_url: https://github.com/Arthi-chaud/Meelo
 nav:
   - Setup:
+    - TLDR: setup/tldr.md
     - Requirements: setup/requirements.md
     - Prepare Music Library: setup/prepare-music-library.md
     - Create Configuration Folder: setup/create-conf-folder.md
@@ -13,6 +14,8 @@ nav:
     - Start: setup/startup.md
     - Create First Library: setup/create-library.md
   - Album Types: album-types.md
+  - Song Types: song-types.md
+  - Featuring Artists: featuring-artists.md
 theme:
   name: material
   language: en
