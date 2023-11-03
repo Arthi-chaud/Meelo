@@ -22,7 +22,7 @@ Meelo supports the following song types:
 
 Songs' type recognition is solely based on keywords present in their name. For example:
 
-- 'My song (Remix)' would be typed as 'Remix'
+- 'My Song (Remix)' would be typed as 'Remix'
 - 'My Song (Live)' would be recognised as a Live rendition
 - 'My Song (Rough Mix)' would be defined as 'Demo'
 - 'My Song (Instrumental Mix)' would be an 'Instrumental'

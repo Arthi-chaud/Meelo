@@ -2,7 +2,6 @@ site_name: Meelo - User Documentation
 docs_dir: './src'
 repo_url: https://github.com/Arthi-chaud/Meelo
 nav:
-  - TLDR: setup/tldr.md
   - Setup:
     - TLDR: setup/tldr.md
     - Requirements: setup/requirements.md

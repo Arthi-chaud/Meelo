@@ -9,9 +9,7 @@
 Meelo is a music server and application to enjoy your personal music files anywhere, anytime you want.
 This project is made by and for music collectors. Its goal is to have a clean, organized, easy and accessible way to store and serve files.
 
-## Getting Started
-
-- [Setup Instructions](https://arthi-chaud.github.io/Meelo/setup/requirements/)
+Get started! Look over [here](https://arthi-chaud.github.io/Meelo/) for setup instructions
 
 ## Features
 
@@ -22,7 +20,7 @@ This project is made by and for music collectors. Its goal is to have a clean, o
   - Album
     - Releases
   - Songs
-    - Primary and seocndary artists
+    - Primary and secondary artists (look over [here](https://arthi-chaud.github.io/Meelo/featuring-artists))
     - Tracks
     - Versions
 - Access, stream, and download songs from your server
@@ -50,6 +48,7 @@ This project is made by and for music collectors. Its goal is to have a clean, o
   - Acoustic Version
   - Edit
   - Clean Version
+  - More information [here](https://arthi-chaud.github.io/Meelo/song-types/)
 - Embedded and inline artwork file handling
 - External Metadata Providers (Optional)
   - Genius
