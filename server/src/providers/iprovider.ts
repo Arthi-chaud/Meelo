@@ -148,4 +148,12 @@ export default abstract class IProvider<SettingsType, IdentifierType = string> i
 	getSongGenres(_songIdentifier: IdentifierType): Promise<string[]> {
 		throw new ProviderMethodNotAvailableError(this.name);
 	}
+
+	/**
+	 * @returns the description of a song
+	 * @param songIdentifier the identifer of the song
+	 */
+	getSongDescription(_songIdentifier: IdentifierType): Promise<string> {
+		throw new ProviderMethodNotAvailableError(this.name);
+	}
 }

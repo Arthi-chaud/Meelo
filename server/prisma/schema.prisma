@@ -399,6 +399,8 @@ model SongExternalId {
 	/// @description Unique numeric identifier of the related song
 	/// @example 123
 	songId			Int
+	/// @description Short text about the related resource
+	description		String?
 	/// @description The Provider
 	provider		Provider @relation(fields: [providerId], references: [id], onDelete: Cascade)
 	/// @description Unique numeric identifier of the provider
@@ -418,6 +420,8 @@ model ArtistExternalId {
 	/// @description Unique numeric identifier of the related artist
 	/// @example 123
 	artistId		Int
+	/// @description Short text about the related resource
+	description		String?
 	/// @description The Provider
 	provider		Provider @relation(fields: [providerId], references: [id], onDelete: Cascade)
 	/// @description Unique numeric identifier of the provider
@@ -437,6 +441,8 @@ model AlbumExternalId {
 	/// @description Unique numeric identifier of the related album
 	/// @example 123
 	albumId			Int
+	/// @description Short text about the related resource
+	description		String?
 	/// @description The Provider
 	provider		Provider @relation(fields: [providerId], references: [id], onDelete: Cascade)
 	/// @description Unique numeric identifier of the provider
@@ -456,6 +462,8 @@ model ReleaseExternalId {
 	/// @description Unique numeric identifier of the related album
 	/// @example 123
 	releaseId			Int
+	/// @description Short text about the related resource
+	description		String?
 	/// @description The Provider
 	provider		Provider @relation(fields: [providerId], references: [id], onDelete: Cascade)
 	/// @description Unique numeric identifier of the provider
