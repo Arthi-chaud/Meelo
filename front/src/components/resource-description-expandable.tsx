@@ -1,6 +1,4 @@
-import {
-	Box, Container, Link
-} from "@mui/material";
+import { Box, Link } from "@mui/material";
 import ExternalId from "../models/external-id";
 import Translate from "../i18n/translate";
 import { useState } from "react";
@@ -21,19 +19,19 @@ const ResourceDescriptionExpandable = ({ externalDescription }: Props) => {
 	} as const;
 	const bigBoxStyle = {};
 
-	return <Container maxWidth={false}>
+	return (
 		<Box id="description" sx={isExpanded ? bigBoxStyle : smallBoxStyle}>
 			{externalDescription.description}
 			{isExpanded && <>
 				{" Source: "}<Link href={externalDescription.url} rel="noopener noreferrer" target="_blank">
 					{externalDescription.provider.name}
-				</Link>
+				</Link>{"."}
 			</>}
 			{" "}<Link href="#description" onClick={() => setIsExpanded(!isExpanded)}>
 				<Translate translationKey={isExpanded ? 'showLess' : 'showMore'}/>
 			</Link>
 		</Box>
-	</Container>;
+	);
 };
 
 export default ResourceDescriptionExpandable;

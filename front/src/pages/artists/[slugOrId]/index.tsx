@@ -1,5 +1,5 @@
 import {
-	Box, Button, Divider, Grid, Typography
+	Box, Button, Container, Divider, Grid, Typography
 } from "@mui/material";
 import { useRouter } from "next/router";
 import API from "../../../api/api";
@@ -184,9 +184,9 @@ const ArtistPage = (props: InferSSRProps<typeof getServerSideProps>) => {
 			{ externalIdWithDescription && <>
 				<Divider sx={{ paddingTop: 3 }}/>
 				<SectionHeader heading={<Translate translationKey="about"/>}/>
-				<Box sx={{ paddingBottom: 4, paddingTop: 3 }}>
+				<Container maxWidth={false} sx={{ paddingBottom: 4, paddingTop: 3 }}>
 					<ResourceDescriptionExpandable externalDescription={externalIdWithDescription}/>
-				</Box>
+				</Container>
 			</>}
 			{ artist.data.externalIds.length != 0 && <>
 				<Divider/>
