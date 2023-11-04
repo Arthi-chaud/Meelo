@@ -327,15 +327,13 @@ const ReleasePage = (props: InferSSRProps<typeof getServerSideProps>) => {
 					<PlaylistTile key={playlist.id} playlist={playlist}/>)
 				?? []}/>
 			</RelatedContentSection>
-			<RelatedContentSection
-				display={externalIdWithDescription !== undefined}
-				title={<Translate translationKey="about"/>}
+			{ externalIdWithDescription && <RelatedContentSection
+				display title={<Translate translationKey="about"/>}
 			>
-				{ externalIdWithDescription ?
+				<Box sx={{ paddingBottom: 2 }}>
 					<ResourceDescriptionExpandable externalDescription={externalIdWithDescription}/>
-					: <></>
-				}
-			</RelatedContentSection>
+				</Box>
+			</RelatedContentSection>}
 			<RelatedContentSection
 				display={[...album.data.externalIds, ...release.data.externalIds].length != 0}
 				title={<Translate translationKey="externalLinks"/>}
