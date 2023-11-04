@@ -11,6 +11,7 @@ import MusicBrainzSettings from "./musicbrainz.settings";
 import { ProviderActionFailedError } from "../provider.exception";
 import { HttpService } from "@nestjs/axios";
 import { AlbumType } from "@prisma/client";
+import ProviderActions from "../provider-actions";
 
 type MBID = string;
 
@@ -261,9 +262,18 @@ export default class MusicBrainzProvider extends IProvider<MusicBrainzSettings, 
 			}
 		).then(({ data }) => data);
 
-		return (Object
+		const stringifiedData = (Object
 			.entries(wikipediaResponse.query.pages)
 			.at(0)![1] as { extract: string })
 			.extract.trim();
+
+		if (stringifiedData.startsWith('Undefined may refer')) {
+			throw new ProviderActionFailedError(
+				this.name,
+				'getWikipediaDescription' as keyof ProviderActions<string>,
+				'No description found'
+			);
+		}
+		return stringifiedData;
 	}
 }
