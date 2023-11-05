@@ -31,6 +31,7 @@ import Playlist, {
 	PlaylistInclude, PlaylistSortingKeys, PlaylistWithRelations
 } from "../models/playlist";
 import { isSSR } from '../ssr';
+import { Task, ActiveTask } from "../models/task";
 
 const AuthenticationResponse = yup.object({
 	access_token: yup.string().required()
@@ -112,6 +113,25 @@ export default class API {
 			method: 'POST',
 			validator: User
 		});
+	}
+
+	/**
+	 * Fetch all libraries
+	 * @returns An InfiniteQuery of Libraries
+	 */
+	static getTasks() {
+		return {
+			key: ['tasks'],
+			exec: () => API.fetch({
+				route: `/tasks`,
+				errorMessage: "Tasks could not be loaded",
+				parameters: { },
+				validator: yup.object({
+					active: ActiveTask.required().nullable(),
+					pending: yup.array(Task).required()
+				})
+			}),
+		};
 	}
 
 	/**

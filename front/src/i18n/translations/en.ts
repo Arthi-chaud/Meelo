@@ -206,7 +206,11 @@ const en = {
 	playbackError: "The track's format is not supported by this browser. Skipping...",
 	about: "About",
 	showMore: "Show More",
-	showLess: "Show Less"
+	showLess: "Show Less",
+	tasks: "Tasks",
+	current: "Current",
+	pending: "Pending",
+	none: "None"
 };
 
 export default en;

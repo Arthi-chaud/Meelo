@@ -195,7 +195,11 @@ const fr: TranslationMap = {
 	playbackError: "Format non supporté par le navigateur. Piste ignorée.",
 	about: "A Propos",
 	showMore: "Afficher Plus",
-	showLess: "Afficher Moins"
+	showLess: "Afficher Moins",
+	tasks: "Tâches",
+	current: "En cours",
+	pending: "En attente",
+	none: "Aucune"
 };
 
 export default fr;
