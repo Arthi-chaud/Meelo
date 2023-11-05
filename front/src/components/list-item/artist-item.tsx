@@ -1,8 +1,7 @@
 import Artist from "../../models/artist";
-import Illustration from '../illustration';
 import ListItem from "./item";
-import { ArtistIcon } from "../icons";
 import ArtistContextualMenu from "../contextual-menu/artist-contextual-menu";
+import ArtistAvatar from "../artist-avatar";
 
 type ArtistItemProps = {
 	artist: Artist;
@@ -16,12 +15,7 @@ type ArtistItemProps = {
 const ArtistItem = ({ artist }: ArtistItemProps) => {
 	return (
 		<ListItem
-			icon={<Illustration
-				illustration={artist.illustration}
-				imgProps={{ objectFit: "cover" }}
-				quality="low"
-				fallback={<ArtistIcon/>}/>
-			}
+			icon={<ArtistAvatar artist={artist}/>}
 			href={`/artists/${artist.slug}`}
 			title={artist.name}
 			trailing={<ArtistContextualMenu artist={artist}/>}

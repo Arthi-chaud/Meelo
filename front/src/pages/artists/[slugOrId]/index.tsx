@@ -1,9 +1,8 @@
 import {
-	Box, Button, Container, Divider, Grid, Typography
+	Box, Button, Container, Divider, Grid
 } from "@mui/material";
 import { useRouter } from "next/router";
 import API from "../../../api/api";
-import Illustration from "../../../components/illustration";
 import { useInfiniteQuery, useQuery } from "../../../api/use-query";
 import AlbumTile from "../../../components/tile/album-tile";
 import Link from "next/link";
@@ -21,6 +20,7 @@ import Translate from "../../../i18n/translate";
 import { MoreIcon } from "../../../components/icons";
 import BackgroundBlurhash from "../../../components/blurhash-background";
 import ResourceDescriptionExpandable from "../../../components/resource-description-expandable";
+import ArtistRelationPageHeader from "../../../components/relation-page-header/artist-relation-page-header";
 
 // Number of Song item in the 'Top Song' section
 const songListSize = 6;
@@ -84,20 +84,11 @@ const ArtistPage = (props: InferSSRProps<typeof getServerSideProps>) => {
 	if (!artist.data || !latestAlbums.data || !topSongs.data || !videos.data) {
 		return <LoadingPage/>;
 	}
-	return <Box>
+	return <Box sx={{ width: '100%' }}>
 		<BackgroundBlurhash blurhash={artist.data.illustration?.blurhash} />
+		<ArtistRelationPageHeader artist={artist.data}/>
 		<Grid container direction="column" spacing={4}
 			sx={{ padding: 2, flex: 1, flexGrow: 1 }}>
-			<Grid item container spacing={4}
-				sx={{ justifyContent: 'flex-start' }}>
-				<Grid item xs={5} sm={3}
-					lg={2}>
-					<Illustration quality="original" illustration={artist.data?.illustration} imgProps={{ objectFit: "cover" }} />
-				</Grid>
-				<Grid item xs sx={{ display: 'flex', alignItems: 'center', overflow: 'hidden' }}>
-					<Typography variant='h3' fontWeight='bold'>{artist.data!.name}</Typography>
-				</Grid>
-			</Grid>
 			{ topSongs.data?.pages.at(0)?.items.length != 0 && <>
 				<SectionHeader
 					heading={<Translate translationKey="topSongs"/>}

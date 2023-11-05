@@ -26,22 +26,27 @@ type TileProps = {
 	 * Callback on tile tap
 	 */
 	onClick?: () => void;
+	/* Additional props to customize card */
+	cardProps?: Parameters<typeof Card>[0]
 }
 
 const Tile = (props: TileProps) => {
 	const [isHovering, setIsHovering] = useState(false);
 	const [isHoveringCtxtMenu, setIsHoveringCtxtMenu] = useState(false);
 	const theme = useTheme();
-
 	const component =
-		<Card sx={{
-			height: '100%',
-			background: hexToRgba('#ffffff', 0.05),
-			backdropFilter: 'blur(10px)'
-		}} onMouseOver={() => setIsHovering(true)} onMouseLeave={() => {
-			setIsHovering(false);
-			setIsHoveringCtxtMenu(false);
-		}}>
+		<Card {...props.cardProps}
+			sx={{
+				height: '100%',
+				background: hexToRgba('#ffffff', 0.05),
+				backdropFilter: 'blur(10px)',
+				...props.cardProps?.sx
+			}}
+			onMouseOver={() => setIsHovering(true)} onMouseLeave={() => {
+				setIsHovering(false);
+				setIsHoveringCtxtMenu(false);
+			}}
+		>
 			<CardActionArea onClick={props.onClick} disableRipple={isHoveringCtxtMenu} sx={{
 				height: '100%', display: 'flex',
 				flexDirection: 'column', alignItems: 'space-between'

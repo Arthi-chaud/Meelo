@@ -1,12 +1,11 @@
-import { ArtistIcon } from "../icons";
 import { RequireExactlyOne } from "type-fest";
 import API from "../../api/api";
 import Artist from "../../models/artist";
 import { useQuery } from "../../api/use-query";
 import ArtistContextualMenu from "../contextual-menu/artist-contextual-menu";
-import Illustration from "../illustration";
 import { WideLoadingComponent } from "../loading/loading";
 import RelationPageHeader from "./relation-page-header";
+import ArtistAvatar from "../artist-avatar";
 
 type ArtistRelationPageHeaderProps = RequireExactlyOne<{
 	artistSlugOrId: number | string;
@@ -14,22 +13,16 @@ type ArtistRelationPageHeaderProps = RequireExactlyOne<{
 }>
 
 const ArtistRelationPageHeader = (props: ArtistRelationPageHeaderProps) => {
-	const artist = useQuery((id) => API.getArtist(id, []), props.artistSlugOrId);
+	const artist = useQuery((id) => API.getArtist(id), props.artistSlugOrId);
+	const artistData = props.artist ?? artist.data;
 
-	if (props.artist) {
-		artist.data = props.artist;
-	}
-	if (!artist.data) {
+	if (!artistData) {
 		return <WideLoadingComponent/>;
 	}
 	return <RelationPageHeader
-		illustration={<Illustration imgProps={{ objectFit: "cover" }}
-			illustration={artist.data.illustration}
-			quality="med"
-			fallback={<ArtistIcon/>}/>
-		}
-		title={artist.data.name}
-		trailing={<ArtistContextualMenu artist={artist.data}/>}
+		illustration={<ArtistAvatar artist={artistData}/>}
+		title={artistData.name}
+		trailing={<ArtistContextualMenu artist={artistData}/>}
 	/>;
 };
 
