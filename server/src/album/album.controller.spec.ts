@@ -254,6 +254,7 @@ describe('Album Controller', () => {
 				data: {
 					albumId: dummyRepository.albumA1.id,
 					providerId: provider.id,
+					description: 'Album blah blah blah',
 					value: '1234'
 				}
 			})
@@ -271,6 +272,7 @@ describe('Album Controller', () => {
 								banner: `/illustrations/providers/${provider.name}/banner`,
 								icon: `/illustrations/providers/${provider.name}/icon`,
 							},
+							description: 'Album blah blah blah',
 							value: '1234',
 							url: providerService.getProviderById(provider.id).getAlbumURL('1234')
 						}]

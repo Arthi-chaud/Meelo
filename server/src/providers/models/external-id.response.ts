@@ -20,6 +20,12 @@ export default class ExternalIdResponse {
 	value: string;
 
 	@ApiProperty({
+		nullable: true,
+		description: 'Description of the resource, from the provider'
+	})
+	description: string | null;
+
+	@ApiProperty({
 		description: "Provider's URL to the resource",
 		nullable: true
 	})
@@ -63,6 +69,7 @@ export class ExternalIdResponseBuilder extends ResponseBuilderInterceptor<Extern
 				icon: `/illustrations/providers/${provider.name}/icon`,
 			},
 			value: externalId.value,
+			description: externalId.description,
 			url: url
 		};
 	}

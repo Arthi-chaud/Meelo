@@ -148,6 +148,7 @@ describe('Song Controller', () => {
 				data: {
 					songId: dummyRepository.songA1.id,
 					providerId: provider.id,
+					description: 'Hey',
 					value: '1234'
 				}
 			})
@@ -165,6 +166,7 @@ describe('Song Controller', () => {
 								banner: `/illustrations/providers/${provider.name}/banner`,
 								icon: `/illustrations/providers/${provider.name}/icon`,
 							},
+							description: 'Hey',
 							value: '1234',
 							url: providerService.getProviderById(provider.id).getSongURL('1234')
 						}]
