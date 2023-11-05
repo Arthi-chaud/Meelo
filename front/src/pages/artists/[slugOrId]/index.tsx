@@ -1,5 +1,5 @@
 import {
-	Box, Button, Divider, Grid, Typography
+	Box, Button, Container, Divider, Grid, Typography
 } from "@mui/material";
 import { useRouter } from "next/router";
 import API from "../../../api/api";
@@ -20,6 +20,7 @@ import SongGrid from "../../../components/song-grid";
 import Translate from "../../../i18n/translate";
 import { MoreIcon } from "../../../components/icons";
 import BackgroundBlurhash from "../../../components/blurhash-background";
+import ResourceDescriptionExpandable from "../../../components/resource-description-expandable";
 
 // Number of Song item in the 'Top Song' section
 const songListSize = 6;
@@ -77,6 +78,8 @@ const ArtistPage = (props: InferSSRProps<typeof getServerSideProps>) => {
 	const videos = useInfiniteQuery(videosQuery, artistIdentifier);
 	const topSongs = useInfiniteQuery(topSongsQuery, artistIdentifier);
 	const appearances = useInfiniteQuery(appearanceQuery, artistIdentifier);
+	const externalIdWithDescription = artist.data?.externalIds
+		.find(({ description }) => description !== null);
 
 	if (!artist.data || !latestAlbums.data || !topSongs.data || !videos.data) {
 		return <LoadingPage/>;
@@ -178,6 +181,13 @@ const ArtistPage = (props: InferSSRProps<typeof getServerSideProps>) => {
 				</Grid>
 			</>
 			}
+			{ externalIdWithDescription && <>
+				<Divider sx={{ paddingTop: 3 }}/>
+				<SectionHeader heading={<Translate translationKey="about"/>}/>
+				<Container maxWidth={false} sx={{ paddingBottom: 4, paddingTop: 3 }}>
+					<ResourceDescriptionExpandable externalDescription={externalIdWithDescription}/>
+				</Container>
+			</>}
 			{ artist.data.externalIds.length != 0 && <>
 				<Divider/>
 				<Grid container item spacing={1} sx={{ alignItems: 'center' }}>

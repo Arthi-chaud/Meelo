@@ -133,6 +133,7 @@ describe('Release Controller', () => {
 				data: {
 					provider: { connect: { name: 'discogs' } },
 					value: '1234567',
+					description: 'ABCDE',
 					release: { connect: { id: dummyRepository.releaseA1_1.id} }
 				}
 			})
@@ -149,9 +150,10 @@ describe('Release Controller', () => {
 								homepage: "https://www.discogs.com",
 								banner: "/illustrations/providers/discogs/banner",
 								icon: "/illustrations/providers/discogs/icon"
-							  },
-							  value: "1234567",
-							  url: "https://www.discogs.com/release/1234567"
+							},
+							description: 'ABCDE',
+							value: "1234567",
+							url: "https://www.discogs.com/release/1234567"
 						}]
 					});
 				});

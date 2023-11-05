@@ -44,12 +44,14 @@ describe('External ID Response', () => {
 			id: 0,
 			providerId: provider.id,
 			artistId: 0,
+			description: 'A',
 			value: 'P-nk',
 		})
 		expect(response.value).toBe('P-nk');
 		expect(response.url).toBe('https://musicbrainz.org/artist/P-nk');
 		expect(response.provider).toBeDefined();
 		expect(response.provider.name).toBe(provider.name);
+		expect(response.description).toBe('A');
 	});
 	it("Should format Album External ID", async () => {
 		const provider = await prismaService.provider.findUniqueOrThrow({ where: { name: musicbrainzService.name } });
@@ -57,12 +59,14 @@ describe('External ID Response', () => {
 			id: 0,
 			providerId: provider.id,
 			albumId: 0,
+			description: 'B',
 			value: 'P-nk',
 		})
 		expect(response.value).toBe('P-nk');
 		expect(response.url).toBe('https://musicbrainz.org/release-group/P-nk');
 		expect(response.provider).toBeDefined();
 		expect(response.provider.name).toBe(provider.name);
+		expect(response.description).toBe('B');
 	});
 	it("Should format Song External ID", async () => {
 		const provider = await prismaService.provider.findUniqueOrThrow({ where: { name: musicbrainzService.name } });
@@ -70,11 +74,13 @@ describe('External ID Response', () => {
 			id: 0,
 			providerId: provider.id,
 			songId: 0,
+			description: 'C',
 			value: 'P-nk',
 		})
 		expect(response.value).toBe('P-nk');
 		expect(response.url).toBe('https://musicbrainz.org/work/P-nk');
 		expect(response.provider).toBeDefined();
 		expect(response.provider.name).toBe(provider.name);
+		expect(response.description).toBe('C');
 	});
 })

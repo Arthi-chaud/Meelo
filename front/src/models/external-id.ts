@@ -27,6 +27,10 @@ const ExternalId = yup.object({
 	 */
 	value: yup.string().required(),
 	/**
+	 * Description of the resource, from the External Identifier
+	 */
+	description: yup.string().required().nullable(),
+	/**
 	 * URL to the related resource
 	 */
 	url: yup.string().required(),

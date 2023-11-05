@@ -72,12 +72,21 @@ export default class ExternalIdService {
 
 		await this.fetchMissingResourceExternalId(
 			artists,
-			async (artist, provider) => ({
-				providerName: provider.name,
-				providerId: this.providerService.getProviderId(provider.name),
-				artistId: artist.id,
-				value: (await provider.getArtistIdentifier(artist.name) as string).toString()
-			}),
+			async (artist, provider) => {
+				const identifier = (await provider.getArtistIdentifier(artist.name)
+					.then((value) => (value as string).toString()));
+				const description = (await provider.getArtistDescription(identifier)
+					.then((value) => (value as string).toString())
+					.catch(() => null));
+
+				return {
+					providerName: provider.name,
+					providerId: this.providerService.getProviderId(provider.name),
+					artistId: artist.id,
+					description: description,
+					value: identifier
+				};
+			},
 			async (artist, res) => {
 				res.forEach(({ providerName }) =>
 					this.logger.verbose(`External ID from ${providerName} found for artist '${artist.name}'`));
@@ -114,11 +123,15 @@ export default class ExternalIdService {
 					}))?.value : undefined;
 				const albumExternalId = await provider
 					.getAlbumIdentifier(album.name, artistExternalId);
+				const description = (await provider.getAlbumDescription(albumExternalId)
+					.then((value) => (value as string).toString())
+					.catch(() => null));
 
 				return {
 					providerName: provider.name,
 					providerId: this.providerService.getProviderId(provider.name),
 					albumId: album.id,
+					description: description,
 					value: (albumExternalId as string).toString()
 				};
 			},
@@ -161,11 +174,15 @@ export default class ExternalIdService {
 				}
 				const songExternalId = await provider
 					.getSongIdentifier(song.name, artistExternalId);
+				const description = (await provider.getSongDescription(songExternalId)
+					.then((value) => (value as string).toString())
+					.catch(() => null));
 
 				return {
 					providerName: provider.name,
 					providerId: this.providerService.getProviderId(provider.name),
 					songId: song.id,
+					description: description,
 					value: (songExternalId as string).toString()
 				};
 			},

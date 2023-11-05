@@ -76,7 +76,6 @@
     "jpeg-js": "^0.4.4"
   },
   "devDependencies": {
-    "@compodoc/compodoc": "^1.1.19",
     "@nestjs/cli": "^8.2.6",
     "@nestjs/schematics": "^8.0.0",
     "@nestjs/testing": "^9.3.9",
@@ -145,17 +144,5 @@
   },
   "prisma": {
     "schema": "prisma/schema.prisma"
-  },
-  "compodoc": {
-    "name": "Meelo Documentation",
-    "output": "../docs/generated",
-    "customLogo": "../front/assets/banner.png",
-    "customFavicon": "../front/assets/icon.png",
-    "includes": "../docs/",
-    "includesName": "User Documentation",
-    "exclude": [
-      "test/",
-      "node_modules/"
-    ]
   }
 }

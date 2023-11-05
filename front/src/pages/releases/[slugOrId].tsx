@@ -33,6 +33,7 @@ import AlbumTile from "../../components/tile/album-tile";
 import getYear from "../../utils/getYear";
 import Fade from "../../components/fade";
 import BackgroundBlurhash from "../../components/blurhash-background";
+import ResourceDescriptionExpandable from "../../components/resource-description-expandable";
 
 const releaseQuery = (releaseIdentifier: string | number) => API.getRelease(releaseIdentifier, ['album', 'externalIds']);
 const releaseTracklistQuery = (releaseIdentifier: string | number) => API.getReleaseTrackList(releaseIdentifier, ['artist', 'featuring']);
@@ -141,6 +142,8 @@ const ReleasePage = (props: InferSSRProps<typeof getServerSideProps>) => {
 		return [[], null, undefined];
 	}, [tracklistQuery.data]);
 	const illustration = useMemo(() => release.data?.illustration, [release]);
+	const externalIdWithDescription = album.data?.externalIds
+		.find(({ description }) => description !== null);
 
 	// eslint-disable-next-line no-extra-parens
 	if (!release.data || !album.data || !artists.data || !trackList) {
@@ -324,11 +327,18 @@ const ReleasePage = (props: InferSSRProps<typeof getServerSideProps>) => {
 					<PlaylistTile key={playlist.id} playlist={playlist}/>)
 				?? []}/>
 			</RelatedContentSection>
+			{ externalIdWithDescription && <RelatedContentSection
+				display title={<Translate translationKey="about"/>}
+			>
+				<Box sx={{ paddingBottom: 2 }}>
+					<ResourceDescriptionExpandable externalDescription={externalIdWithDescription}/>
+				</Box>
+			</RelatedContentSection>}
 			<RelatedContentSection
 				display={[...album.data.externalIds, ...release.data.externalIds].length != 0}
 				title={<Translate translationKey="externalLinks"/>}
 			>
-				<Stack spacing={2}>
+				<Stack direction={'row'} spacing={2}>
 					{[...album.data.externalIds, ...release.data.externalIds].map((externalId) =>
 						<ExternalIdBadge key={externalId.provider.name} externalId={externalId}/>)
 					}

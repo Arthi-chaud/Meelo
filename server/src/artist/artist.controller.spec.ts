@@ -129,6 +129,7 @@ describe('Artist Controller', () => {
 				data: {
 					artistId: dummyRepository.artistA.id,
 					providerId: provider.id,
+					description: 'Artist Desc.',
 					value: '1234'
 				}
 			})
@@ -146,6 +147,7 @@ describe('Artist Controller', () => {
 								banner: `/illustrations/providers/${provider.name}/banner`,
 								icon: `/illustrations/providers/${provider.name}/icon`,
 							},
+							description: 'Artist Desc.',
 							value: '1234',
 							url: providerService.getProviderById(provider.id).getArtistURL('1234')
 						}]
