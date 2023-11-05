@@ -2,12 +2,13 @@ import {
 	AddIcon, DeleteIcon, EditIcon
 } from '../icons';
 import {
-	Box, Button, Dialog, Grid, Hidden, IconButton, useMediaQuery, useTheme
+	Box, Button, Dialog, Grid, Hidden, IconButton, List,
+	ListItem, ListItemText, useMediaQuery, useTheme
 } from "@mui/material";
 import { GridColDef } from "@mui/x-data-grid";
 import toast from "react-hot-toast";
 import { useMutation } from "react-query";
-import { useQueryClient } from "../../api/use-query";
+import { useQuery, useQueryClient } from "../../api/use-query";
 import API from "../../api/api";
 import Library from "../../models/library";
 import AdminGrid from "../admin-grid";
@@ -22,32 +23,55 @@ import { useMemo, useState } from "react";
 import LibraryForm from "../library-form";
 import Translate, { translate, useLanguage } from "../../i18n/translate";
 import { RefreshLibraryMetadataAction } from "../actions/refresh-metadata";
+import SectionHeader from '../section-header';
+import { capitalCase } from "change-case";
 
 const actionButtonStyle = {
 	overflow: 'hidden',
 	textOverflow: 'ellipsis'
 };
 
-const RunTaskButton = (
-	{ icon, label, onClick, variant }: Action & Pick<Parameters<typeof Button>[0], 'variant'>
-) => {
-	const theme = useTheme();
-	const viewPortIsSmall = useMediaQuery(theme.breakpoints.up('sm'));
-
-	return <Button variant={variant} size='small'
-		startIcon={viewPortIsSmall && icon}
-		onClick={onClick} sx={actionButtonStyle}
-	>
-		<Hidden smUp>{icon}</Hidden>
-		<Hidden smDown><Translate translationKey={label}/></Hidden>
-	</Button>;
-};
-
 const LibrariesSettings = () => {
+	const tasks = useQuery(API.getTasks);
+	const RunTaskButton = (
+		{ icon, label, onClick, variant }: Action & Pick<Parameters<typeof Button>[0], 'variant'>
+	) => {
+		const theme = useTheme();
+		const viewPortIsSmall = useMediaQuery(theme.breakpoints.up('sm'));
+
+		return <Button variant={variant} size='small'
+			startIcon={viewPortIsSmall && icon}
+			onClick={() => {
+				tasks.refetch();
+				onClick?.();
+			}} sx={actionButtonStyle}
+		>
+			<Hidden smUp>{icon}</Hidden>
+			<Hidden smDown><Translate translationKey={label}/></Hidden>
+		</Button>;
+	};
 	const queryClient = useQueryClient();
-	const scanAllLibaries = ScanAllLibrariesAction;
-	const cleanAllLibaries = CleanAllLibrariesAction;
-	const fetchMetadata = FetchExternalMetadata;
+	const scanAllLibaries = {
+		...ScanAllLibrariesAction,
+		onClick: () => {
+			tasks.refetch();
+			ScanAllLibrariesAction.onClick?.();
+		}
+	};
+	const cleanAllLibaries = {
+		...CleanAllLibrariesAction,
+		onClick: () => {
+			tasks.refetch();
+			CleanAllLibrariesAction.onClick?.();
+		}
+	};
+	const fetchMetadata = {
+		...FetchExternalMetadata,
+		onClick: () => {
+			tasks.refetch();
+			FetchExternalMetadata.onClick?.();
+		}
+	};
 	const confirm = useConfirm();
 	const language = useLanguage();
 	const [createModalOpen, setCreateModalOpen] = useState(false);
@@ -137,6 +161,33 @@ const LibrariesSettings = () => {
 				align: column.field == 'name' ? 'left' : 'center',
 			}))}
 		/>
+		<Box sx={{ paddingY: 2 }} />
+		<SectionHeader
+			heading={<Translate translationKey='tasks'/>}
+			trailing={<Button onClick={() => tasks.refetch()} variant='contained'>
+				<Translate translationKey='refresh'/>
+			</Button>}
+		/>
+		{ tasks.data && <List>
+			<ListItem>
+				<ListItemText
+					primary={<Translate translationKey='current'
+						format={(tr) => tr + ': ' + (capitalCase(tasks.data.active?.name ?? translate('none'))) }/>
+					}
+					secondary={tasks.data.active?.description}
+				/>
+			</ListItem>
+			<ListItem>
+				<ListItemText
+					primary={<Translate translationKey='pending'
+						format={(tr) => tr + ': ' + (tasks.data.pending.length || translate('none')) }/>
+					}
+				/>
+			</ListItem>
+			{tasks.data.pending.map((task, index) => <ListItem key={'task-' + index}>
+				<ListItemText inset primary={capitalCase(task.name)} secondary={task.description}/>
+			</ListItem>)}
+		</List> }
 	</Box>;
 };
 

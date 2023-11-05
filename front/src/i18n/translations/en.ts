@@ -203,7 +203,14 @@ const en = {
 
 	more: 'More',
 	networkError: 'There seem to be some network issues...',
-	playbackError: "The track's format is not supported by this browser. Skipping..."
+	playbackError: "The track's format is not supported by this browser. Skipping...",
+	about: "About",
+	showMore: "Show More",
+	showLess: "Show Less",
+	tasks: "Tasks",
+	current: "Current",
+	pending: "Pending",
+	none: "None"
 };
 
 export default en;

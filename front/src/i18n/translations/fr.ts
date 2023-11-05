@@ -192,7 +192,14 @@ const fr: TranslationMap = {
 	refreshMetadataFailed: "Oups... La mise à jour des données a échoué.",
 	more: 'Plus',
 	networkError: 'La connexion au serveur a échoué...',
-	playbackError: "Format non supporté par le navigateur. Piste ignorée."
+	playbackError: "Format non supporté par le navigateur. Piste ignorée.",
+	about: "A Propos",
+	showMore: "Afficher Plus",
+	showLess: "Afficher Moins",
+	tasks: "Tâches",
+	current: "En cours",
+	pending: "En attente",
+	none: "Aucune"
 };
 
 export default fr;
