@@ -11,7 +11,7 @@ const ArtistTile = (props: { artist: Artist }) => {
 		title={props.artist.name}
 		href={`/artists/${props.artist.slug}`}
 		illustration={<Box sx={{ padding: 1 }}>
-			<ArtistAvatar artist={props.artist}/>
+			<ArtistAvatar artist={props.artist} quality="med"/>
 		</Box>}
 	/>;
 };

@@ -20,7 +20,7 @@ const ArtistRelationPageHeader = (props: ArtistRelationPageHeaderProps) => {
 		return <WideLoadingComponent/>;
 	}
 	return <RelationPageHeader
-		illustration={<ArtistAvatar artist={artistData}/>}
+		illustration={<ArtistAvatar artist={artistData} quality="med"/>}
 		title={artistData.name}
 		trailing={<ArtistContextualMenu artist={artistData}/>}
 	/>;
