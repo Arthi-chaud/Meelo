@@ -13,7 +13,7 @@ type ArtistRelationPageHeaderProps = RequireExactlyOne<{
 }>
 
 const ArtistRelationPageHeader = (props: ArtistRelationPageHeaderProps) => {
-	const artist = useQuery((id) => API.getArtist(id), props.artistSlugOrId);
+	const artist = useQuery((id) => API.getArtist(id, []), props.artistSlugOrId);
 	const artistData = props.artist ?? artist.data;
 
 	if (!artistData) {
