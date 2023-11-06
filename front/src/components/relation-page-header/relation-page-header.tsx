@@ -8,7 +8,7 @@ type RelationHeaderProps = {
 }
 const RelationPageHeader = (props: RelationHeaderProps) => {
 	return <>
-		<Grid container spacing={4} sx={{ width: 'inherit', height: 'auto' }}>
+		<Grid container spacing={4} flexWrap={'nowrap'} sx={{ width: 'inherit', height: 'auto' }}>
 			<Grid item xs={4} sm={3}
 				md={2} xl={1} sx={{ margin: 2 }}>
 				{props.illustration}
