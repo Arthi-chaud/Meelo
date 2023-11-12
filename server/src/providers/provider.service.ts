@@ -12,15 +12,16 @@ import Slug from "src/slug/slug";
 import { Provider } from "src/prisma/models";
 import ProvidersIllustrationService from "./provider-illustration.service";
 import DiscogsProvider from "./discogs/discogs.provider";
+import { isFulfilled } from "src/utils/is-fulfilled";
 
 /**
  * Orchestrates of Providers
  */
 @Injectable()
 export default class ProviderService implements OnModuleInit {
-	private readonly _enabledProviders: IProvider<unknown, unknown>[] = [];
+	private readonly _enabledProviders: IProvider[] = [];
 	private readonly logger = new Logger(ProviderService.name);
-	private readonly _providerCatalogue: IProvider<unknown, unknown>[] = [];
+	private readonly _providerCatalogue: IProvider[] = [];
 	private readonly _providerRows: Provider[] = [];
 
 	constructor(
@@ -43,16 +44,16 @@ export default class ProviderService implements OnModuleInit {
 		)!;
 	}
 
-	getProviderId(providerName: typeof IProvider<unknown, unknown>['prototype']['name']) {
+	getProviderId(providerName: typeof IProvider['prototype']['name']) {
 		return this._providerRows.find((provider) => provider.name == providerName)!.id;
 	}
 
 	get enabledProviders() {
-		return this._enabledProviders.map((provider) => provider.name);
+		return this._enabledProviders;
 	}
 
 	get providerCatalogue() {
-		return this._providerCatalogue.map((provider) => provider.name);
+		return this._providerCatalogue;
 	}
 
 	async onModuleInit() {
@@ -93,7 +94,7 @@ export default class ProviderService implements OnModuleInit {
 	 * If all fails, rejects
 	 */
 	async runAction<Returns>(
-		action: (provider: IProvider<unknown, unknown>) => Promise<Returns>
+		action: (provider: IProvider) => Promise<Returns>
 	): Promise<Returns> {
 		for (const provider of this._enabledProviders) {
 			try {
@@ -109,14 +110,11 @@ export default class ProviderService implements OnModuleInit {
 	 * Calls action method on each enabled provider, and returns all successes
 	 */
 	async collectActions<Returns>(
-		action: (provider: IProvider<unknown, unknown>) => Promise<Returns>
+		action: (provider: IProvider) => Promise<Returns>
 	): Promise<Returns[]> {
-		const promiseResultsFilter = (result: PromiseSettledResult<Returns>):
-			result is PromiseFulfilledResult<Awaited<Returns>> => result.status == 'fulfilled';
-
 		return Promise.allSettled(this._enabledProviders.map(action))
 			.then((results) => results
-				.filter(promiseResultsFilter)
+				.filter(isFulfilled)
 				.map((result) => result.value));
 	}
 }

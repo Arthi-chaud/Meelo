@@ -11,7 +11,7 @@ import { HttpService } from "@nestjs/axios";
 const { getLyrics } = require('genius-lyrics-api');
 
 @Injectable()
-export default class GeniusProvider extends IProvider<GeniusSettings, string> implements OnModuleInit {
+export default class GeniusProvider extends IProvider<GeniusSettings> implements OnModuleInit {
 	constructor(
 		private httpService: HttpService,
 		private settingsService: SettingsService
@@ -19,7 +19,7 @@ export default class GeniusProvider extends IProvider<GeniusSettings, string> im
 		super("genius");
 	}
 
-	private fetchAPI(route: string) {
+	private async fetchAPI(route: string) {
 		return this._fetch(route, 'https://api.genius.com')
 			.then((res) => res.response);
 	}

@@ -3,7 +3,7 @@ import IProvider from "../iprovider";
 import DiscogsSettings from "./discogs.settings";
 
 @Injectable()
-export default class DiscogsProvider extends IProvider<DiscogsSettings, string> implements OnModuleInit {
+export default class DiscogsProvider extends IProvider<DiscogsSettings> implements OnModuleInit {
 	constructor() {
 		super('discogs');
 	}

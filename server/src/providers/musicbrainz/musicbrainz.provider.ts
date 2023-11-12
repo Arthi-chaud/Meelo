@@ -11,12 +11,11 @@ import MusicBrainzSettings from "./musicbrainz.settings";
 import { ProviderActionFailedError } from "../provider.exception";
 import { HttpService } from "@nestjs/axios";
 import { AlbumType } from "@prisma/client";
-import ProviderActions from "../provider-actions";
 
 type MBID = string;
 
 @Injectable()
-export default class MusicBrainzProvider extends IProvider<MusicBrainzSettings, MBID> implements OnModuleInit {
+export default class MusicBrainzProvider extends IProvider<MusicBrainzSettings> implements OnModuleInit {
 	private mbClient: mb.MusicBrainzApi;
 	private readonly compilationArtistID = "89ad4ac3-39f7-470e-963a-56509c546377";
 
@@ -47,6 +46,27 @@ export default class MusicBrainzProvider extends IProvider<MusicBrainzSettings, 
 
 	getProviderIconUrl(): string {
 		return "https://s3-us-west-1.amazonaws.com/coppertino/vox-blog/artwork-musicbrainz.png";
+	}
+
+	/**
+	 * Looks up an artist, and returns the entity, along with its relations URLs
+	 */
+	async getArtistEntry(artistIdentifier: MBID) {
+		return this.mbClient.lookupArtist(artistIdentifier, ['url-rels']);
+	}
+
+	/**
+	 * Looks up an album, and returns the entity, along with its relations URLs
+	 */
+	async getAlbumEntry(albumIdentifer: MBID) {
+		return this.mbClient.lookupReleaseGroup(albumIdentifer, ['url-rels']);
+	}
+
+	/**
+	 * Looks up a song, and returns the entity, along with its relations URLs
+	 */
+	async getSongEntry(songIdentifier: MBID) {
+		return this.mbClient.lookupWork(songIdentifier, ['url-rels']);
 	}
 
 	async getArtistIdentifier(artistName: string, _songName?: string): Promise<MBID> {
@@ -214,7 +234,7 @@ export default class MusicBrainzProvider extends IProvider<MusicBrainzSettings, 
 	async getArtistDescription(artistIdentifier: MBID): Promise<string> {
 		try {
 			const artist = await this.mbClient.lookupArtist(artistIdentifier, ['url-rels']);
-			const externalUrls = (artist as mb.IArtist & mb.IRelationList).relations;
+			const externalUrls = artist.relations ?? [];
 			const wikipediaId = externalUrls
 				.map((relation) => relation.url?.resource)
 				.find((url) => url?.includes('wikipedia'))!.split('/').pop()!;
@@ -270,7 +290,7 @@ export default class MusicBrainzProvider extends IProvider<MusicBrainzSettings, 
 		if (stringifiedData.startsWith('Undefined may refer')) {
 			throw new ProviderActionFailedError(
 				this.name,
-				'getWikipediaDescription' as keyof ProviderActions<string>,
+				'getWikipediaDescription',
 				'No description found'
 			);
 		}
