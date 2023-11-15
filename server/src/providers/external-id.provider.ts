@@ -160,6 +160,7 @@ export default class ExternalIdService {
 		if (musicbrainzProvider && musicbrainzId) { // If MB is enabled
 			try {
 				resourceMBID ??= await getResourceMetadataByName(musicbrainzProvider);
+				newIdentifiers.push(formatResourceMetadata(resourceMBID, musicbrainzId));
 				const resourceEntry = await getResourceMusicBrainzEntry(
 					musicbrainzProvider, resourceMBID.value
 				);
@@ -191,7 +192,8 @@ export default class ExternalIdService {
 								.filter((toReach) => toReach.name !== provider.name);
 							return formatResourceMetadata(await getResourceMetadataByIdentifier(
 								provider,
-								resourceIdentifiers[providerProperyIdentifier]['value']['content']
+								resourceIdentifiers[providerProperyIdentifier].at(0)?.value?.content
+									.toString()
 							), providerId);
 						})
 					);
@@ -225,7 +227,7 @@ export default class ExternalIdService {
 			.filter(isDefined));
 		newIdentifiers.forEach((identifier) => {
 			this.logger.verbose(`External ID from ${
-				this.providerService.getProviderById(identifier.providerId)
+				this.providerService.getProviderById(identifier.providerId).name
 			} found for ${resource.name}.`);
 		});
 		return saveExternalIds(newIdentifiers);

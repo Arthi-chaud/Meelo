@@ -90,7 +90,7 @@ export default class GeniusProvider extends IProvider<GeniusSettings> implements
 			const desc = this.parseDescriptionAnnotation(descAnnotation);
 
 			return {
-				value: artistSearchResult.id,
+				value: artist.url.split('/').pop(),
 				description: desc.length ? desc : null
 			};
 		} catch (err) {
