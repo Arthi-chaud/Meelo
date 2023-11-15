@@ -26,27 +26,32 @@ describe('Genius Provider', () => {
 
 	describe('Get Artist Identifier', () => {
 		it("should get simple artist Identifier", async () => {
-			expect(await geniusProvider.getArtistIdentifier('Britney Spears'))
-				.toBe('Britney-spears');
+			const metadata = await geniusProvider.getArtistMetadataByName('Britney Spears');
+			expect(metadata.value).toBe('Britney-spears');
+			expect(metadata.description).toBeNull();
 		});
 		it("should get simple artist Identifier (2)", async () => {
-			expect(await geniusProvider.getArtistIdentifier('Moloko'))
-				.toBe('Moloko');
+			const metadata = await geniusProvider.getArtistMetadataByName('Moloko');
+			expect(metadata.value).toBe('Moloko');
+			expect(metadata.description).toBeNull();
 		});
 		it("should get simple artist Identifier (3)", async () => {
-			expect(await geniusProvider.getArtistIdentifier('Peplab'))
-				.toBe('Peplab');
+			const metadata = await geniusProvider.getArtistMetadataByName('Peplab');
+			expect(metadata.value).toBe('Peplab');
+			expect(metadata.description).toBeNull();
 		});
 		it("should get artist with special character Identifier", async () => {
-			expect(await geniusProvider.getArtistIdentifier('P!nk'))
-				.toBe('P-nk');
+			const metadata = await geniusProvider.getArtistMetadataByName('P!nk');
+			expect(metadata.value).toBe('P-nk');
+			expect(metadata.description).toBeNull();
 		});
 		it("should get artist with special character Identifier (1)", async () => {
-			expect(await geniusProvider.getArtistIdentifier('Björk'))
-				.toBe('Bjork');
+			const metadata = await geniusProvider.getArtistMetadataByName('Björk');
+			expect(metadata.value).toBe('Bjork');
+			expect(metadata.description).toBeNull();
 		});
 		it("should fail, as the artist does not exist", () => {
-			expect(() => geniusProvider.getArtistIdentifier("azertyuiop"))
+			expect(() => geniusProvider.getArtistMetadataByName("azertyuiop"))
 				.rejects.toThrow(ProviderActionFailedError);
 		});
 	});
@@ -60,27 +65,31 @@ describe('Genius Provider', () => {
 
 	describe('Get Song Identifier', () => {
 		it("should get simple song Identifier", async () => {
-			expect(await geniusProvider.getSongIdentifier("Work B**ch", 'Britney-spears'))
-				.toBe('Britney-spears-work-bch-clean-version');
+			const metadata = await geniusProvider.getSongMetadataByName("Work B**ch", 'Britney-spears');
+			expect(metadata.value).toBe('Britney-spears-work-bch-clean-version');
+			expect(metadata.description).toBeNull();
 		});
 		it("should get simple song Identifier (2)", async () => {
-			expect(await geniusProvider.getSongIdentifier("Work Bitch", 'Britney-spears'))
-				.toBe('Britney-spears-work-bitch');
+			const metadata = await geniusProvider.getSongMetadataByName("Work Bitch", 'Britney-spears');
+			expect(metadata.value).toBe('Britney-spears-work-bitch');
+			expect(metadata.description).toBeNull();
 		});
 		it("should get simple song Identifier (2)", async () => {
-			expect(await geniusProvider.getSongIdentifier('Fun For Me', 'Moloko'))
-				.toBe('Moloko-fun-for-me');
+			const metadata = await geniusProvider.getSongMetadataByName("Fun For Me", 'Moloko');
+			expect(metadata.value).toBe('Moloko-fun-for-me');
+			expect(metadata.description).toBeNull();
 		});
 		it("should get song with special character Identifier", async () => {
-			expect(await geniusProvider.getSongIdentifier('M!ssundaztood', 'P-nk'))
-				.toBe('P-nk-m-ssundaztood');
+			const metadata = await geniusProvider.getSongMetadataByName('M!ssundaztood', 'P-nk');
+			expect(metadata.value).toBe('P-nk-m-ssundaztood');
+			expect(metadata.description).toBeNull();
 		});
 		it("should fail, as the song does not exist", () => {
-			expect(() => geniusProvider.getSongIdentifier("azertyuiop", 'azryu'))
+			expect(() => geniusProvider.getSongMetadataByName("azertyuiop", 'azryu'))
 			.rejects.toThrow(ProviderActionFailedError);
 		});
 		it("should throw as the song does not exist (1)", async () => {
-			expect(() => geniusProvider.getSongIdentifier('Drive', 'Peplab'))
+			expect(() => geniusProvider.getSongMetadataByName('Drive', 'Peplab'))
 				.rejects.toThrow(ProviderActionFailedError);
 		});
 	});
@@ -127,41 +136,6 @@ describe('Genius Provider', () => {
 		});
 	});
 
-	/*describe('Get Album Identifier', () => {
-		//Skipping this tes tin CI as Action runner has been flagged as robot by Genius
-		if (process.env.GITHUB_ACTIONS != 'true') {
-			it("should get album's Identifier (1)", async () => {
-				expect(await geniusProvider.getAlbumIdentifier("Ray of Light - Single", 'Madonna'))
-					.toBe('Madonna/Ray-of-light-single-remixes')
-			});
-			it("should get album's Identifier (2)", async () => {
-				expect(await geniusProvider.getAlbumIdentifier("Pink Friday: Roman Reloaded", 'Nicki-minaj'))
-					.toBe('Nicki-minaj/Pink-friday-roman-reloaded')
-			});
-			it("should throw as the album does not exist", async () => {
-				expect(() => geniusProvider.getAlbumIdentifier("AZERTYUIOP", 'azert'))
-					.rejects.toThrow(ProviderActionFailedError);
-			});
-		}
-	});*/
-
-	/*describe('Get Album Description', () => {
-		if (process.env.GITHUB_ACTIONS != 'true') {
-			it("should get album's description (1)", async () => {
-				const description = await geniusProvider.getAlbumDescription('Nicki-minaj/Pink-friday-roman-reloaded');
-
-				expect(description.startsWith("Pink Friday: Roman Reloaded was released April 2, 2012, and is Nicki’s second LP. It made it to number 1 on the Billboard charts, ")).toBeTruthy();
-				expect(description.endsWith("blatantly stated that this is a “rap album,” her pop sensibilities are also on full display.")).toBeTruthy();
-			});
-			it("should get album's description (2)", async () => {
-				const description = await geniusProvider.getAlbumDescription('P-nk/m-ssundaztood');
-
-				expect(description.startsWith("Missundaztood is the second studio album by P!nk. The album was a success worldwide and with critics, selling thirteen million copies")).toBeTruthy();
-				expect(description.endsWith('“Get the Party Started”, “Don’t Let Me Get Me”, “Just like a Pill”, and “Family Portrait”. The album is P!nk’s best-selling album to date and rose her into international stardom.')).toBeTruthy();
-			});
-		}
-	});*/
-
 	describe('Get Album URL', () => {
 		it("Should format the URL for the Album", () => {
 			expect(geniusProvider.getAlbumURL('Madonna/Ray-of-light'))
@@ -171,10 +145,11 @@ describe('Genius Provider', () => {
 
 	describe('Get Artist Description', () => {
 		it("should get artist's description", async () => {
-			const description = await geniusProvider.getArtistDescription('Madonna');
+			const { description } = await geniusProvider.getArtistMetadataByIdentifier('Madonna');
 
-			expect(description.startsWith("With more than 335 million copies of her albums sold, Madonna is the most successful female artist of all time.")).toBeTruthy();
-			expect(description.endsWith("female empowerment and the search for fame.")).toBeTruthy();
+			expect(description).not.toBeNull();
+			expect(description!.startsWith("With more than 335 million copies of her albums sold, Madonna is the most successful female artist of all time.")).toBeTruthy();
+			expect(description!.endsWith("female empowerment and the search for fame.")).toBeTruthy();
 		});
 	});
 })

@@ -55,16 +55,10 @@ export default class MusicBrainzProvider extends IProvider<MusicBrainzSettings> 
 	}
 
 	async getArtistMetadataByIdentifier(artistIdentifier: string): Promise<ArtistMetadata> {
-		try {
-			const artist = await this.mbClient.lookupArtist(artistIdentifier, ['url-rels']);
-
-			return {
-				description: null,
-				value: artist.id
-			};
-		} catch (err) {
-			throw new ProviderActionFailedError(this.name, 'getArtistDescription', err.message);
-		}
+		return {
+			description: null,
+			value: artistIdentifier
+		};
 	}
 
 	async getArtistMetadataByName(artistName: string): Promise<ArtistMetadata> {
@@ -113,13 +107,7 @@ export default class MusicBrainzProvider extends IProvider<MusicBrainzSettings> 
 	}
 
 	async getAlbumMetadataByIdentifier(albumIdentifer: MBID): Promise<AlbumMetadata> {
-		try {
-			const album = await this.mbClient.lookupReleaseGroup(albumIdentifer, ['url-rels']);
-
-			return { description: null, value: album.id };
-		} catch (err) {
-			throw new ProviderActionFailedError(this.name, 'getAlbumDescription', err.message);
-		}
+		return { description: null, value: albumIdentifer };
 	}
 
 	getAlbumURL(albumIdentifier: MBID): string {
@@ -158,16 +146,10 @@ export default class MusicBrainzProvider extends IProvider<MusicBrainzSettings> 
 	}
 
 	async getSongMetadataByIdentifier(songIdentifier: string): Promise<SongMetadata> {
-		try {
-			const song = await this.mbClient.lookupWork(songIdentifier, ['url-rels']);
-
-			return {
-				description: null,
-				value: song.id
-			};
-		} catch (err) {
-			throw new ProviderActionFailedError(this.name, 'getSongDescription', err.message);
-		}
+		return {
+			description: null,
+			value: songIdentifier
+		};
 	}
 
 	getSongURL(artistIdentifier: MBID): string {
