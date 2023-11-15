@@ -13,7 +13,6 @@ import { isDefined } from "src/utils/is-undefined";
 import { HttpService } from "@nestjs/axios";
 import { Album, Song } from "@prisma/client";
 import { IEntity, IRelation } from "musicbrainz-api";
-import { MissingExternalIdError } from "./provider.exception";
 
 type ExternalIds = { externalIds: ExternalId[] }
 
@@ -43,7 +42,6 @@ export default class ExternalIdService {
 	private async fetchArtistExternalIds(artist: Artist & { externalIds: ExternalId[] }) {
 		return this.fetchResourceExternalIds(
 			artist,
-			(provider) => provider.getArtistIdentifier(artist.name),
 			(provider, mbid) => provider.getArtistMetadataByIdentifier(mbid),
 			(provider) => provider.getArtistMetadataByName(artist.name),
 			(provider, mbid) => provider.getArtistEntry(mbid),
@@ -75,16 +73,6 @@ export default class ExternalIdService {
 	) {
 		return this.fetchResourceExternalIds(
 			album,
-			async (provider, providerId) => {
-				const artistId = album.artist
-					? this.getResourceExternalIdByProviderId(album.artist, providerId)
-					: null;
-
-				if (artistId) {
-					return provider.getAlbumIdentifier(album.name, artistId);
-				}
-				throw new MissingExternalIdError(provider.name, 'album', album.name);
-			},
 			(provider, mbid) => provider.getAlbumMetadataByIdentifier(mbid),
 			(provider) => provider.getAlbumMetadataByName(album.artist?.name ?? '', album.name),
 			(provider, mbid) => provider.getAlbumEntry(mbid),
@@ -116,14 +104,6 @@ export default class ExternalIdService {
 	) {
 		return this.fetchResourceExternalIds(
 			song,
-			async (provider, providerId) => {
-				const artistId = this.getResourceExternalIdByProviderId(song.artist, providerId);
-
-				if (artistId) {
-					return provider.getSongIdentifier(song.name, artistId);
-				}
-				throw new MissingExternalIdError(provider.name, 'song', song.name);
-			},
 			(provider, mbid) => provider.getSongMetadataByIdentifier(mbid),
 			(provider) => provider.getSongMetadataByName(song.artist?.name, song.name),
 			(provider, mbid) => provider.getSongEntry(mbid),
@@ -140,7 +120,6 @@ export default class ExternalIdService {
 	/**
 	 * Core function of the metadata fetching flow
 	 * @param resource the resource which we should fetch the metadata of
-	 * @param getMusicBrainzIdentifierByName a function which takes the name of the resource, and returns the Musicbrainz identifier
 	 * @param getResourceMetadataByIdentifier a function which a provider and an identifier, and returns the related metadata
 	 * @param getResourceMetadataByName  a function which a provider and the resource's namme, and returns the related metadata
 	 * @param getResourceMusicBrainzEntry a function that returns the Musicbrainz resource's entry
@@ -153,13 +132,9 @@ export default class ExternalIdService {
 		Resource extends { id: number, name: string },
 		MBIDEntry extends IEntity & { relations?: IRelation[] },
 		ExternalID extends Omit<ExternalId, 'id'>,
-		ResourceKey extends keyof ExternalID,
-		Metadata extends Omit<ExternalID, 'id' | 'providerId' | ResourceKey>
+		Metadata extends Omit<ExternalID, 'providerId'>
 	>(
 		resource: Resource & ExternalIds,
-		getMusicBrainzIdentifierByName: (
-			provider: MusicBrainzProvider, providerId: number
-		) => Promise<string>,
 		getResourceMetadataByIdentifier: (provider: IProvider, id: string) => Promise<Metadata>,
 		getResourceMetadataByName: (provider: IProvider) => Promise<Metadata>,
 		getResourceMusicBrainzEntry: (
@@ -179,16 +154,14 @@ export default class ExternalIdService {
 			? this.providerService.getProviderId(musicbrainzProvider.name)
 			: null;
 		let resourceMBID = resource.externalIds
-			.find(({ providerId }) => providerId == musicbrainzId)?.value;
+			.find(({ providerId }) => providerId == musicbrainzId) as Metadata | undefined;
 		const newIdentifiers: ExternalID[] = [];
 
-		if (musicbrainzProvider && musicbrainzId) {
+		if (musicbrainzProvider && musicbrainzId) { // If MB is enabled
 			try {
-				resourceMBID ??= await getMusicBrainzIdentifierByName(
-					musicbrainzProvider, musicbrainzId
-				);
+				resourceMBID ??= await getResourceMetadataByName(musicbrainzProvider);
 				const resourceEntry = await getResourceMusicBrainzEntry(
-					musicbrainzProvider, resourceMBID
+					musicbrainzProvider, resourceMBID.value
 				);
 				const wikiDataId = resourceEntry
 					.relations?.map(({ url }) => url?.resource?.match(
@@ -256,15 +229,5 @@ export default class ExternalIdService {
 			} found for ${resource.name}.`);
 		});
 		return saveExternalIds(newIdentifiers);
-	}
-
-	/**
-	 * Util function.
-	 * From a resource, with its external IDs, find the external id from a provider, using its ID
-	 */
-	private getResourceExternalIdByProviderId<T extends { id: number }>(
-		resource: T & ExternalIds, providerId: number
-	) {
-		return resource.externalIds.find((id) => id.providerId === providerId)?.value;
 	}
 }

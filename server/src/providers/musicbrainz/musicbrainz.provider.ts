@@ -1,7 +1,9 @@
 import {
 	Inject, Injectable, OnModuleInit, forwardRef
 } from "@nestjs/common";
-import IProvider from "../iprovider";
+import IProvider, {
+	AlbumMetadata, ArtistMetadata, SongMetadata
+} from "../iprovider";
 import * as mb from "musicbrainz-api";
 import {
 	name as AppName, version as AppVersion, homepage as Homepage
@@ -9,8 +11,6 @@ import {
 import SettingsService from "src/settings/settings.service";
 import MusicBrainzSettings from "./musicbrainz.settings";
 import { ProviderActionFailedError } from "../provider.exception";
-import { HttpService } from "@nestjs/axios";
-import { AlbumType } from "@prisma/client";
 
 type MBID = string;
 
@@ -21,8 +21,7 @@ export default class MusicBrainzProvider extends IProvider<MusicBrainzSettings> 
 
 	constructor(
 		@Inject(forwardRef(() => SettingsService))
-		private settingsSettings: SettingsService,
-		private readonly httpService: HttpService
+		private settingsSettings: SettingsService
 	) {
 		super('musicbrainz');
 	}
@@ -55,6 +54,30 @@ export default class MusicBrainzProvider extends IProvider<MusicBrainzSettings> 
 		return this.mbClient.lookupArtist(artistIdentifier, ['url-rels']);
 	}
 
+	async getArtistMetadataByIdentifier(artistIdentifier: string): Promise<ArtistMetadata> {
+		try {
+			const artist = await this.mbClient.lookupArtist(artistIdentifier, ['url-rels']);
+
+			return {
+				description: null,
+				value: artist.id
+			};
+		} catch (err) {
+			throw new ProviderActionFailedError(this.name, 'getArtistDescription', err.message);
+		}
+	}
+
+	async getArtistMetadataByName(artistName: string): Promise<ArtistMetadata> {
+		// Note: It's not possible to get url-rels using search. So we can not do everything in one query.
+		try {
+			const artist = (await this.mbClient.searchArtist({ query: artistName })).artists.at(0)!;
+
+			return this.getArtistMetadataByIdentifier(artist.id);
+		} catch (err) {
+			throw new ProviderActionFailedError(this.name, 'getArtistDescription', err.message);
+		}
+	}
+
 	/**
 	 * Looks up an album, and returns the entity, along with its relations URLs
 	 */
@@ -69,21 +92,13 @@ export default class MusicBrainzProvider extends IProvider<MusicBrainzSettings> 
 		return this.mbClient.lookupWork(songIdentifier, ['url-rels']);
 	}
 
-	async getArtistIdentifier(artistName: string, _songName?: string): Promise<MBID> {
-		try {
-			const searchResult = await this.mbClient.searchArtist({ query: artistName });
-
-			return searchResult.artists.at(0)!.id;
-		} catch (err) {
-			throw new ProviderActionFailedError(this.name, 'getArtistIdentifier', err.message);
-		}
-	}
-
 	getArtistURL(artistIdentifier: MBID): string {
 		return `${this.getProviderHomepage()}/artist/${artistIdentifier}`;
 	}
 
-	async getAlbumIdentifier(albumName: string, artistIdentifier?: string): Promise<MBID> {
+	async getAlbumMetadataByName(
+		albumName: string, artistIdentifier?: string
+	): Promise<AlbumMetadata> {
 		try {
 			const searchResult = await this.mbClient.searchRelease({
 				query: `query="${albumName}" AND arid:${artistIdentifier ?? this.compilationArtistID}`
@@ -91,17 +106,27 @@ export default class MusicBrainzProvider extends IProvider<MusicBrainzSettings> 
 				.filter((release) => release["artist-credit"]?.find((artist) =>
 					artist.artist.id == (artistIdentifier ?? this.compilationArtistID))));
 
-			return searchResult.at(0)!["release-group"]!.id;
+			return this.getAlbumMetadataByIdentifier(searchResult.at(0)!["release-group"]!.id);
 		} catch (err) {
 			throw new ProviderActionFailedError(this.name, 'getAlbumIdentifier', err.message);
 		}
 	}
 
-	getAlbumURL(artistIdentifier: MBID): string {
-		return `${this.getProviderHomepage()}/release-group/${artistIdentifier}`;
+	async getAlbumMetadataByIdentifier(albumIdentifer: MBID): Promise<AlbumMetadata> {
+		try {
+			const album = await this.mbClient.lookupReleaseGroup(albumIdentifer, ['url-rels']);
+
+			return { description: null, value: album.id };
+		} catch (err) {
+			throw new ProviderActionFailedError(this.name, 'getAlbumDescription', err.message);
+		}
 	}
 
-	async getSongIdentifier(songName: string, artistIdentifier: string): Promise<string> {
+	getAlbumURL(albumIdentifier: MBID): string {
+		return `${this.getProviderHomepage()}/release-group/${albumIdentifier}`;
+	}
+
+	async getSongMetadataByName(songName: string, artistIdentifier: string): Promise<SongMetadata> {
 		try {
 			const results = await this.mbClient.search<mb.IIsrcSearchResult>(
 				'recording',
@@ -121,7 +146,9 @@ export default class MusicBrainzProvider extends IProvider<MusicBrainzSettings> 
 				}).find((value) => value);
 
 				if (workId) {
-					return workId;
+					return this
+						.getSongMetadataByIdentifier(workId)
+						.catch(() => ({ value: workId, description: null }));
 				}
 			}
 		} catch (err) {
@@ -130,170 +157,158 @@ export default class MusicBrainzProvider extends IProvider<MusicBrainzSettings> 
 		throw new ProviderActionFailedError(this.name, 'getSongIdentifier', 'Song not found');
 	}
 
+	async getSongMetadataByIdentifier(songIdentifier: string): Promise<SongMetadata> {
+		try {
+			const song = await this.mbClient.lookupWork(songIdentifier, ['url-rels']);
+
+			return {
+				description: null,
+				value: song.id
+			};
+		} catch (err) {
+			throw new ProviderActionFailedError(this.name, 'getSongDescription', err.message);
+		}
+	}
+
 	getSongURL(artistIdentifier: MBID): string {
 		return `${this.getProviderHomepage()}/work/${artistIdentifier}`;
 	}
 
-	async getSongGenres(songIdentifier: MBID): Promise<string[]> {
-		try {
-			const recordings = await this.mbClient
-				.browseEntity<{ recordings: mb.IRecording & { genres: { name: string }[] }[]}>('recording', {
-					work: songIdentifier,
-					inc: 'genres'
-				}).then((res) => res.recordings);
-			const genres = recordings.map((recording) => recording.genres).flat();
+	// async getSongGenres(songIdentifier: MBID): Promise<string[]> {
+	// 	try {
+	// 		const recordings = await this.mbClient
+	// 			.browseEntity<{ recordings: mb.IRecording & { genres: { name: string }[] }[]}>('recording', {
+	// 				work: songIdentifier,
+	// 				inc: 'genres'
+	// 			}).then((res) => res.recordings);
+	// 		const genres = recordings.map((recording) => recording.genres).flat();
 
-			// Stripping other members
-			return genres.map(({ name }) => name);
-		} catch (err) {
-			throw new ProviderActionFailedError(this.name, 'getSongGenres', err.message);
-		}
+	// 		// Stripping other members
+	// 		return genres.map(({ name }) => name);
+	// 	} catch (err) {
+	// 		throw new ProviderActionFailedError(this.name, 'getSongGenres', err.message);
+	// 	}
+	// }
+
+	// async getAlbumType(albumIdentifer: MBID): Promise<AlbumType> {
+	// 	try {
+	// 		const album = await this.mbClient.lookupReleaseGroup(albumIdentifer);
+	// 		const primaryType: string | undefined = album['primary-type'];
+	// 		const secondaryTypes: string[] = (album as any)['secondary-types'] ?? [];
+
+	// 		if (secondaryTypes.length == 0) {
+	// 			switch (primaryType) {
+	// 			case "Album":
+	// 				return AlbumType.StudioRecording;
+	// 			case "EP":
+	// 			case "Single":
+	// 				return AlbumType.Single;
+	// 			case "Broadcast":
+	// 				return AlbumType.LiveRecording;
+	// 			default:
+	// 				break;
+	// 			}
+	// 		}
+	// 		// https://musicbrainz.org/release-group/ce018797-8764-34f8-aee4-10089fc7393d
+	// 		if (!primaryType && secondaryTypes.includes("Remix")) {
+	// 			return AlbumType.RemixAlbum;
+	// 		}
+	// 		if (primaryType == "Album") {
+	// 			// https://musicbrainz.org/release-group/a1b16f9c-7b93-3351-9453-0f3545a5f989
+	// 			if (secondaryTypes.includes("Remix")) {
+	// 				return AlbumType.RemixAlbum;
+	// 			}
+	// 			// https://musicbrainz.org/release-group/ce018797-8764-34f8-aee4-10089fc7393d
+	// 			if (secondaryTypes.includes("DJ-mix")) {
+	// 				return AlbumType.RemixAlbum;
+	// 			}
+	// 			// https://musicbrainz.org/release-group/35f4c727-8b32-3457-a2e7-42a697dd39c2
+	// 			if (secondaryTypes.includes("Compilation")) {
+	// 				return AlbumType.Compilation;
+	// 			}
+	// 			if (secondaryTypes.includes("Live")) {
+	// 				return AlbumType.LiveRecording;
+	// 			}
+	// 			if (secondaryTypes.includes("Soundtrack")) {
+	// 				return AlbumType.Soundtrack;
+	// 			}
+	// 		}
+	// 		if (primaryType == "Single") {
+	// 			return AlbumType.Single;
+	// 		}
+	// 		if (primaryType == "EP") {
+	// 			if (secondaryTypes.includes("Compilation")) {
+	// 				return AlbumType.Compilation;
+	// 			}
+	// 			return AlbumType.Single;
+	// 		}
+	// 	} catch (err) {
+	// 		throw new ProviderActionFailedError(this.name, 'getAlbumDescription', err.message);
+	// 	}
+	// 	throw new ProviderActionFailedError(this.name, 'getAlbumDescription', "Album Type unknown");
+	// }
+
+	// private async getWikipediaArticleName(wikidataId: string): Promise<string> {
+	// 	const wikidataResponse = await this.httpService.axiosRef.get(
+	// 		'/w/api.php',
+	// 		{
+	// 			baseURL: 'https://www.wikidata.org',
+	// 			params: {
+	// 				action: 'wbgetentities',
+	// 				props: 'sitelinks',
+	// 				ids: wikidataId,
+	// 				sitefilter: 'enwiki',
+	// 				format: 'json'
+	// 			}
+	// 		}
+	// 	).then(({ data }) => data);
+
+	// 	return (Object.entries(wikidataResponse.entities)
+	// 		.at(0)![1] as any)
+	// 		.sitelinks.enwiki.title;
+	// }
+
+	// private async getWikipediaDescription(resourceId: string): Promise<string> {
+	// 	const wikipediaResponse = await this.httpService.axiosRef.get(
+	// 		'/w/api.php',
+	// 		{
+	// 			baseURL: 'https://en.wikipedia.org',
+	// 			params: {
+	// 				format: 'json',
+	// 				action: 'query',
+	// 				prop: 'extracts',
+	// 				exintro: true,
+	// 				explaintext: true,
+	// 				redirects: 1,
+	// 				titles: decodeURIComponent(resourceId)
+	// 			}
+	// 		}
+	// 	).then(({ data }) => data);
+
+	// 	const stringifiedData = (Object
+	// 		.entries(wikipediaResponse.query.pages)
+	// 		.at(0)![1] as { extract: string })
+	// 		.extract.trim();
+
+	// 	if (stringifiedData.startsWith('Undefined may refer')) {
+	// 		throw new ProviderActionFailedError(
+	// 			this.name,
+	// 			'getWikipediaDescription',
+	// 			'No description found'
+	// 		);
+	// 	}
+	// 	return stringifiedData;
+	// }
+
+	getArtistWikidataIdentifierProperty() {
+		return "P434";
 	}
 
-	async getAlbumDescription(albumIdentifer: MBID): Promise<string> {
-		try {
-			const album = await this.mbClient.lookupReleaseGroup(albumIdentifer, ['url-rels']);
-			const externalUrls = (album as mb.IReleaseGroup & mb.IRelationList).relations;
-			const wikipediaId = externalUrls
-				.find((resource) => resource.type == 'wikipedia')?.url
-				?.resource
-				?.split('/').pop();
-			const wikidataId = externalUrls
-				.find((resource) => resource.type == 'wikidata')?.url
-				?.resource
-				?.split('/').pop();
-
-			return await this.getWikipediaDescription(
-				wikidataId && !wikipediaId
-					? await this.getWikipediaArticleName(wikidataId)
-					: wikipediaId!
-			);
-		} catch (err) {
-			throw new ProviderActionFailedError(this.name, 'getAlbumDescription', err.message);
-		}
+	getAlbumWikidataIdentifierProperty() {
+		return "P436";
 	}
 
-	async getAlbumType(albumIdentifer: MBID): Promise<AlbumType> {
-		try {
-			const album = await this.mbClient.lookupReleaseGroup(albumIdentifer);
-			const primaryType: string | undefined = album['primary-type'];
-			const secondaryTypes: string[] = (album as any)['secondary-types'] ?? [];
-
-			if (secondaryTypes.length == 0) {
-				switch (primaryType) {
-				case "Album":
-					return AlbumType.StudioRecording;
-				case "EP":
-				case "Single":
-					return AlbumType.Single;
-				case "Broadcast":
-					return AlbumType.LiveRecording;
-				default:
-					break;
-				}
-			}
-			// https://musicbrainz.org/release-group/ce018797-8764-34f8-aee4-10089fc7393d
-			if (!primaryType && secondaryTypes.includes("Remix")) {
-				return AlbumType.RemixAlbum;
-			}
-			if (primaryType == "Album") {
-				// https://musicbrainz.org/release-group/a1b16f9c-7b93-3351-9453-0f3545a5f989
-				if (secondaryTypes.includes("Remix")) {
-					return AlbumType.RemixAlbum;
-				}
-				// https://musicbrainz.org/release-group/ce018797-8764-34f8-aee4-10089fc7393d
-				if (secondaryTypes.includes("DJ-mix")) {
-					return AlbumType.RemixAlbum;
-				}
-				// https://musicbrainz.org/release-group/35f4c727-8b32-3457-a2e7-42a697dd39c2
-				if (secondaryTypes.includes("Compilation")) {
-					return AlbumType.Compilation;
-				}
-				if (secondaryTypes.includes("Live")) {
-					return AlbumType.LiveRecording;
-				}
-				if (secondaryTypes.includes("Soundtrack")) {
-					return AlbumType.Soundtrack;
-				}
-			}
-			if (primaryType == "Single") {
-				return AlbumType.Single;
-			}
-			if (primaryType == "EP") {
-				if (secondaryTypes.includes("Compilation")) {
-					return AlbumType.Compilation;
-				}
-				return AlbumType.Single;
-			}
-		} catch (err) {
-			throw new ProviderActionFailedError(this.name, 'getAlbumDescription', err.message);
-		}
-		throw new ProviderActionFailedError(this.name, 'getAlbumDescription', "Album Type unknown");
-	}
-
-	async getArtistDescription(artistIdentifier: MBID): Promise<string> {
-		try {
-			const artist = await this.mbClient.lookupArtist(artistIdentifier, ['url-rels']);
-			const externalUrls = artist.relations ?? [];
-			const wikipediaId = externalUrls
-				.map((relation) => relation.url?.resource)
-				.find((url) => url?.includes('wikipedia'))!.split('/').pop()!;
-
-			return await this.getWikipediaDescription(wikipediaId);
-		} catch (err) {
-			throw new ProviderActionFailedError(this.name, 'getArtistDescription', err.message);
-		}
-	}
-
-	private async getWikipediaArticleName(wikidataId: string): Promise<string> {
-		const wikidataResponse = await this.httpService.axiosRef.get(
-			'/w/api.php',
-			{
-				baseURL: 'https://www.wikidata.org',
-				params: {
-					action: 'wbgetentities',
-					props: 'sitelinks',
-					ids: wikidataId,
-					sitefilter: 'enwiki',
-					format: 'json'
-				}
-			}
-		).then(({ data }) => data);
-
-		return (Object.entries(wikidataResponse.entities)
-			.at(0)![1] as any)
-			.sitelinks.enwiki.title;
-	}
-
-	private async getWikipediaDescription(resourceId: string): Promise<string> {
-		const wikipediaResponse = await this.httpService.axiosRef.get(
-			'/w/api.php',
-			{
-				baseURL: 'https://en.wikipedia.org',
-				params: {
-					format: 'json',
-					action: 'query',
-					prop: 'extracts',
-					exintro: true,
-					explaintext: true,
-					redirects: 1,
-					titles: decodeURIComponent(resourceId)
-				}
-			}
-		).then(({ data }) => data);
-
-		const stringifiedData = (Object
-			.entries(wikipediaResponse.query.pages)
-			.at(0)![1] as { extract: string })
-			.extract.trim();
-
-		if (stringifiedData.startsWith('Undefined may refer')) {
-			throw new ProviderActionFailedError(
-				this.name,
-				'getWikipediaDescription',
-				'No description found'
-			);
-		}
-		return stringifiedData;
+	getSongWikidataIdentifierProperty() {
+		return "P435";
 	}
 }

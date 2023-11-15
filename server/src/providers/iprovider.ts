@@ -1,5 +1,5 @@
 import {
-	AlbumExternalId, AlbumType, ArtistExternalId,
+	AlbumExternalId, ArtistExternalId,
 	ReleaseExternalId, SongExternalId
 } from "@prisma/client";
 import { ProviderMethodNotAvailableError } from "./provider.exception";
@@ -125,26 +125,10 @@ export default abstract class IProvider<SettingsType = unknown> {
 	}
 
 	/**
-	 * @returns the type of an album.
-	 * @param albumIdentifer The identifer of the album
-	 */
-	protected getAlbumType(_albumIdentifer: IdentifierType): Promise<AlbumType> {
-		throw new ProviderMethodNotAvailableError(this.name);
-	}
-
-	/**
 	 * @returns the lyrics of a song
 	 * @param songIdentifier the identifer of the song
 	 */
 	getSongLyrics(_songIdentifier: IdentifierType): Promise<string> {
-		throw new ProviderMethodNotAvailableError(this.name);
-	}
-
-	/**
-	 * @returns the genres of a song
-	 * @param songIdentifier the identifer of the song
-	 */
-	protected getSongGenres(_songIdentifier: IdentifierType): Promise<string[]> {
 		throw new ProviderMethodNotAvailableError(this.name);
 	}
 }
