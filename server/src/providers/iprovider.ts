@@ -57,7 +57,7 @@ export default abstract class IProvider<SettingsType = unknown> {
 		throw new ProviderMethodNotAvailableError(this.name);
 	}
 
-	getAlbumMetadataByName(_artistName: string, _albumName: string): Promise<AlbumMetadata> {
+	getAlbumMetadataByName(_albumName: string, _artistName?: string): Promise<AlbumMetadata> {
 		throw new ProviderMethodNotAvailableError(this.name);
 	}
 
@@ -65,7 +65,7 @@ export default abstract class IProvider<SettingsType = unknown> {
 		throw new ProviderMethodNotAvailableError(this.name);
 	}
 
-	getSongMetadataByName(_artistName: string, _songName: string): Promise<SongMetadata> {
+	getSongMetadataByName(_songName: string, _artistIdentifier: string): Promise<SongMetadata> {
 		throw new ProviderMethodNotAvailableError(this.name);
 	}
 
@@ -73,7 +73,7 @@ export default abstract class IProvider<SettingsType = unknown> {
 		throw new ProviderMethodNotAvailableError(this.name);
 	}
 
-	getReleaseMetadataByName(_artistName: string, _releaseName: string): Promise<ReleaseMetadata> {
+	getReleaseMetadataByName(_releaseName: string, _artistName: string): Promise<ReleaseMetadata> {
 		throw new ProviderMethodNotAvailableError(this.name);
 	}
 

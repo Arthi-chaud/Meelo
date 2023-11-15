@@ -74,7 +74,15 @@ export default class ExternalIdService {
 		return this.fetchResourceExternalIds(
 			album,
 			(provider, mbid) => provider.getAlbumMetadataByIdentifier(mbid),
-			(provider) => provider.getAlbumMetadataByName(album.artist?.name ?? '', album.name),
+			(provider, providerId) => {
+				if (!album.artist) {
+					return provider.getAlbumMetadataByName(album.name);
+				}
+				const parentArtistIdentifier = album.artist.externalIds
+					.find((externalId) => externalId.providerId == providerId)!.value;
+
+				return provider.getAlbumMetadataByName(album.name, parentArtistIdentifier);
+			},
 			(provider, mbid) => provider.getAlbumEntry(mbid),
 			(provider) => provider.getAlbumWikidataIdentifierProperty(),
 			({ value, description }, providerId) =>
@@ -105,7 +113,12 @@ export default class ExternalIdService {
 		return this.fetchResourceExternalIds(
 			song,
 			(provider, mbid) => provider.getSongMetadataByIdentifier(mbid),
-			(provider) => provider.getSongMetadataByName(song.artist?.name, song.name),
+			(provider, providerId) => {
+				const parentArtistIdentifier = song.artist.externalIds
+					.find((externalId) => externalId.providerId == providerId)!.value;
+
+				return provider.getSongMetadataByName(song.name, parentArtistIdentifier);
+			},
 			(provider, mbid) => provider.getSongEntry(mbid),
 			(provider) => provider.getSongWikidataIdentifierProperty(),
 			({ value, description }, providerId) =>
@@ -136,7 +149,7 @@ export default class ExternalIdService {
 	>(
 		resource: Resource & ExternalIds,
 		getResourceMetadataByIdentifier: (provider: IProvider, id: string) => Promise<Metadata>,
-		getResourceMetadataByName: (provider: IProvider) => Promise<Metadata>,
+		getResourceMetadataByName: (provider: IProvider, providerId: number) => Promise<Metadata>,
 		getResourceMusicBrainzEntry: (
 			provider: MusicBrainzProvider, id: string
 		) => Promise<MBIDEntry>,
@@ -159,8 +172,12 @@ export default class ExternalIdService {
 
 		if (musicbrainzProvider && musicbrainzId) { // If MB is enabled
 			try {
-				resourceMBID ??= await getResourceMetadataByName(musicbrainzProvider);
-				newIdentifiers.push(formatResourceMetadata(resourceMBID, musicbrainzId));
+				if (!resourceMBID) {
+					resourceMBID = await getResourceMetadataByName(
+						musicbrainzProvider, musicbrainzId
+					);
+					newIdentifiers.push(formatResourceMetadata(resourceMBID, musicbrainzId));
+				}
 				const resourceEntry = await getResourceMusicBrainzEntry(
 					musicbrainzProvider, resourceMBID.value
 				);
@@ -216,7 +233,7 @@ export default class ExternalIdService {
 					return;
 				}
 				return formatResourceMetadata(
-					await getResourceMetadataByName(provider), providerId
+					await getResourceMetadataByName(provider, providerId), providerId
 				);
 			})
 		);
