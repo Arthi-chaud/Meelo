@@ -6,7 +6,7 @@ export class ProviderMethodNotAvailableError extends InvalidRequestException {
 	}
 }
 
-export class UnknownProviderError extends InvalidRequestException {
+export class UnknownProviderError extends NotFoundException {
 	constructor(providerName: string) {
 		super(`Provider ${providerName}: Provider is unknown`);
 	}

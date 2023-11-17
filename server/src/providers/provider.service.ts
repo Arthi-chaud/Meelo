@@ -13,6 +13,7 @@ import { Provider } from "src/prisma/models";
 import ProvidersIllustrationService from "./provider-illustration.service";
 import DiscogsProvider from "./discogs/discogs.provider";
 import { isFulfilled } from "src/utils/is-fulfilled";
+import WikipediaProvider from "./wikipedia/wikipedia.provider";
 
 /**
  * Orchestrates of Providers
@@ -28,12 +29,18 @@ export default class ProviderService implements OnModuleInit {
 		geniusProvider: GeniusProvider,
 		musicbrainzProvider: MusicBrainzProvider,
 		discogsProvider: DiscogsProvider,
+		wikipediaProvider: WikipediaProvider,
 		private prismaService: PrismaService,
 		private settingsService: SettingsService,
 		@Inject(forwardRef(() => ProvidersIllustrationService))
 		private providerIllustrationService: ProvidersIllustrationService,
 	) {
-		this._providerCatalogue = [geniusProvider, musicbrainzProvider, discogsProvider];
+		this._providerCatalogue = [
+			geniusProvider,
+			musicbrainzProvider,
+			discogsProvider,
+			wikipediaProvider
+		];
 	}
 
 	getProviderById(id: number) {

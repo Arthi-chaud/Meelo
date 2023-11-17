@@ -68,7 +68,7 @@ export default class MusicBrainzProvider extends IProvider<MusicBrainzSettings> 
 
 			return this.getArtistMetadataByIdentifier(artist.id);
 		} catch (err) {
-			throw new ProviderActionFailedError(this.name, 'getArtistDescription', err.message);
+			throw new ProviderActionFailedError(this.name, 'getArtistMetadataByName', err.message);
 		}
 	}
 
@@ -228,58 +228,6 @@ export default class MusicBrainzProvider extends IProvider<MusicBrainzSettings> 
 	// 		throw new ProviderActionFailedError(this.name, 'getAlbumDescription', err.message);
 	// 	}
 	// 	throw new ProviderActionFailedError(this.name, 'getAlbumDescription', "Album Type unknown");
-	// }
-
-	// private async getWikipediaArticleName(wikidataId: string): Promise<string> {
-	// 	const wikidataResponse = await this.httpService.axiosRef.get(
-	// 		'/w/api.php',
-	// 		{
-	// 			baseURL: 'https://www.wikidata.org',
-	// 			params: {
-	// 				action: 'wbgetentities',
-	// 				props: 'sitelinks',
-	// 				ids: wikidataId,
-	// 				sitefilter: 'enwiki',
-	// 				format: 'json'
-	// 			}
-	// 		}
-	// 	).then(({ data }) => data);
-
-	// 	return (Object.entries(wikidataResponse.entities)
-	// 		.at(0)![1] as any)
-	// 		.sitelinks.enwiki.title;
-	// }
-
-	// private async getWikipediaDescription(resourceId: string): Promise<string> {
-	// 	const wikipediaResponse = await this.httpService.axiosRef.get(
-	// 		'/w/api.php',
-	// 		{
-	// 			baseURL: 'https://en.wikipedia.org',
-	// 			params: {
-	// 				format: 'json',
-	// 				action: 'query',
-	// 				prop: 'extracts',
-	// 				exintro: true,
-	// 				explaintext: true,
-	// 				redirects: 1,
-	// 				titles: decodeURIComponent(resourceId)
-	// 			}
-	// 		}
-	// 	).then(({ data }) => data);
-
-	// 	const stringifiedData = (Object
-	// 		.entries(wikipediaResponse.query.pages)
-	// 		.at(0)![1] as { extract: string })
-	// 		.extract.trim();
-
-	// 	if (stringifiedData.startsWith('Undefined may refer')) {
-	// 		throw new ProviderActionFailedError(
-	// 			this.name,
-	// 			'getWikipediaDescription',
-	// 			'No description found'
-	// 		);
-	// 	}
-	// 	return stringifiedData;
 	// }
 
 	getArtistWikidataIdentifierProperty() {
