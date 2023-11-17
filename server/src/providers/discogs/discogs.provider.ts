@@ -19,7 +19,7 @@ export default class DiscogsProvider extends IProvider<DiscogsSettings> implemen
 	}
 
 	getProviderIconUrl(): string {
-		return 'https://upload.wikimedia.org/wikipedia/commons/thumb/6/69/Discogs_record_icon.svg/240px-Discogs_record_icon.svg.png';
+		return 'https://upload.wikimedia.org/wikipedia/commons/thumb/6/69/Discogs_record_icon.svg/256px-Discogs_record_icon.svg.png';
 	}
 
 	getReleaseURL(releaseIdentifier: string): string {
