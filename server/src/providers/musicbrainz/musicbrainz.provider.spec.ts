@@ -103,33 +103,6 @@ describe('MusicBrainz Provider', () => {
 		});
 	});
 
-	/*describe('Get Album Description', () => {
-		it("should get album description", async () => {
-			const description = await musicBrainzProvider.getAlbumDescription("b59f1cf2-b3f7-341c-963f-acd0c19d5e96");
-
-			expect(description.startsWith('Do You Like My Tight Sweater? is the first album by the electronic/dance duo Moloko, ')).toBeTruthy();
-			expect(description.includes('("Where Is the What If the What Is in Why?", "Party Weirdo", and "Ho Humm")')).toBeTruthy();
-			expect(description.endsWith('Industry in July 2013, for UK sales exceeding 60,000 copies.')).toBeTruthy();
-		});
-		it("should throw, as the album does not exist", () => {
-			expect(() => musicBrainzProvider.getAlbumDescription("AZERTY"))
-				.rejects.toThrow(ProviderActionFailedError);
-		});
-	})
-
-	describe('Get Artist Description', () => {
-		it("should get Artist description", async () => {
-			const description = await musicBrainzProvider.getArtistDescription("3bdf5095-d3a7-4652-aedc-313132174f44");
-
-			expect(description.startsWith('Siobhán Emma Donaghy (born 14 June 1984) is an English singer and songwriter. ')).toBeTruthy();
-			expect(description.endsWith('rights to the Sugababes name again in 2019.')).toBeTruthy();
-		});
-		it("should throw, as the Artist does not exist", () => {
-			expect(() => musicBrainzProvider.getArtistDescription("AZERTY"))
-				.rejects.toThrow(ProviderActionFailedError);
-		});
-	});*/
-
 	/*describe('Get Album Type', () => {
 		describe('Simple', () => {
 			it("should return Studio Recording", async () => {
