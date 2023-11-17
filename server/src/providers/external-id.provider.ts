@@ -13,6 +13,7 @@ import { isDefined } from "src/utils/is-undefined";
 import { HttpService } from "@nestjs/axios";
 import { Album, Song } from "@prisma/client";
 import { IEntity, IRelation } from "musicbrainz-api";
+import WikipediaProvider from "./wikipedia/wikipedia.provider";
 
 type ExternalIds = { externalIds: ExternalId[] }
 
@@ -160,14 +161,23 @@ export default class ExternalIdService {
 		const enabledProviders = this.providerService.enabledProviders;
 		const musicbrainzProvider = enabledProviders
 			.find(({ name }) => name == 'musicbrainz') as MusicBrainzProvider | undefined;
+		const wikipediaProvider = enabledProviders
+			.find(({ name }) => name == 'wikipedia') as WikipediaProvider | undefined;
 		const otherProviders = enabledProviders
-			.filter((provider) => provider.name !== musicbrainzProvider?.name);
+			.filter((provider) =>
+				provider.name !== musicbrainzProvider?.name &&
+				provider.name !== wikipediaProvider?.name);
 		let providersToReach = otherProviders;
 		const musicbrainzId = musicbrainzProvider
 			? this.providerService.getProviderId(musicbrainzProvider.name)
 			: null;
+		const wikipediaProviderId = wikipediaProvider
+			? this.providerService.getProviderId(wikipediaProvider.name)
+			: null;
 		let resourceMBID = resource.externalIds
 			.find(({ providerId }) => providerId == musicbrainzId) as Metadata | undefined;
+		const resourceWikipediaId = resource.externalIds
+			.find(({ providerId }) => providerId == wikipediaProviderId);
 		const newIdentifiers: ExternalID[] = [];
 
 		if (musicbrainzProvider && musicbrainzId) { // If MB is enabled
@@ -193,8 +203,17 @@ export default class ExternalIdService {
 						'/w/rest.php/wikibase/v0/entities/items/' + wikiDataId,
 						{ baseURL: 'https://wikidata.org' }
 					).then(({ data }) => data['statements']).catch(() => null);
-					const identifiers = await Promise.allSettled(
-						otherProviders.map(async (provider) => {
+					const identifiers = await Promise.allSettled([
+						...((wikipediaProviderId && !resourceWikipediaId)
+							? [
+								wikipediaProvider
+									?.getResourceMetadataByWikidataId(wikiDataId)
+									?.then((metadata) => formatResourceMetadata(
+										metadata as Metadata, wikipediaProviderId
+									))
+							]
+							: []),
+						...otherProviders.map(async (provider) => {
 							const providerId = this.providerService.getProviderId(provider.name);
 							const externalId = resource.externalIds
 								.find((id) => id.providerId == providerId);
@@ -213,7 +232,7 @@ export default class ExternalIdService {
 									.toString()
 							), providerId);
 						})
-					);
+					]);
 
 					newIdentifiers.push(...identifiers
 						.filter(isFulfilled)

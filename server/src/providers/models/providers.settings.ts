@@ -4,6 +4,7 @@ import { Type } from "class-transformer";
 import GeniusSettings from "../genius/genius.settings";
 import MusicBrainzSettings from "../musicbrainz/musicbrainz.settings";
 import DiscogsSettings from "../discogs/discogs.settings";
+import WikipediaSettings from "../wikipedia/wikipedia.settings";
 
 /**
  * Settings for the Providers
@@ -44,4 +45,16 @@ export default class ProvidersSettings {
 	@ValidateNested()
 	@IsOptional()
 	discogs: DiscogsSettings;
+
+	/**
+	 * Settings for the Discogs provider
+	 */
+	@ApiProperty({
+		type: WikipediaSettings,
+		required: false
+	})
+	@Type(() => WikipediaSettings)
+	@ValidateNested()
+	@IsOptional()
+	wikipedia: WikipediaSettings;
 }
