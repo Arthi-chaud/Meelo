@@ -2,6 +2,7 @@ import { Box, Link } from "@mui/material";
 import ExternalId from "../models/external-id";
 import Translate from "../i18n/translate";
 import { useState } from "react";
+import { capitalCase } from "change-case";
 
 type Props = {
 	externalDescription: ExternalId
@@ -23,8 +24,8 @@ const ResourceDescriptionExpandable = ({ externalDescription }: Props) => {
 		<Box id="description" sx={isExpanded ? bigBoxStyle : smallBoxStyle}>
 			{externalDescription.description}
 			{isExpanded && <>
-				{" Source: "}<Link href={externalDescription.url} rel="noopener noreferrer" target="_blank">
-					{externalDescription.provider.name}
+				{" Source: "}<Link href={externalDescription.url ?? undefined} rel="noopener noreferrer" target="_blank">
+					{capitalCase(externalDescription.provider.name)}
 				</Link>{"."}
 			</>}
 			{" "}<Link href="#description" onClick={() => setIsExpanded(!isExpanded)}>

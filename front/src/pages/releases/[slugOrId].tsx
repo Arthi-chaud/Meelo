@@ -339,8 +339,12 @@ const ReleasePage = (props: InferSSRProps<typeof getServerSideProps>) => {
 				title={<Translate translationKey="externalLinks"/>}
 			>
 				<Stack direction={'row'} spacing={2}>
-					{[...album.data.externalIds, ...release.data.externalIds].map((externalId) =>
-						<ExternalIdBadge key={externalId.provider.name} externalId={externalId}/>)
+					{[...album.data.externalIds, ...release.data.externalIds]
+						.filter(({ url }) => url !== null)
+						.map((externalId) =>
+							<ExternalIdBadge
+								key={externalId.provider.name}
+								externalId={externalId}/>)
 					}
 				</Stack>
 			</RelatedContentSection>

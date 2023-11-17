@@ -75,7 +75,7 @@ const SongPage = (props: InferSSRProps<typeof getServerSideProps>) => {
 				</Stack>}
 				{ song.data.externalIds.length != 0 && <Stack direction='row' sx={{ overflowY: 'scroll', alignItems: 'center', paddingTop: 2 }} spacing={2}>
 					<Typography sx={{ overflow: 'unset' }}><Translate translationKey="externalLinks"/>:</Typography>
-					{ song.data.externalIds.map((externalId) =>
+					{ song.data.externalIds.filter(({ url }) => url !== null).map((externalId) =>
 						<ExternalIdBadge key={externalId.provider.name} externalId={externalId}/>)
 					}
 				</Stack>}

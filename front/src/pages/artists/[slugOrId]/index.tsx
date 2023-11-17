@@ -185,10 +185,12 @@ const ArtistPage = (props: InferSSRProps<typeof getServerSideProps>) => {
 					<Grid item sx={{ paddingRight: 3 }}>
 						<SectionHeader heading={<Translate translationKey="externalLinks"/>}/>
 					</Grid>
-					{ artist.data.externalIds.map((externalId) =>
-						<Grid item key={externalId.provider.name}>
-							<ExternalIdBadge externalId={externalId}/>
-						</Grid>) ?? []}
+					{ artist.data.externalIds
+						.filter(({ url }) => url !== null)
+						.map((externalId) =>
+							<Grid item key={externalId.provider.name}>
+								<ExternalIdBadge externalId={externalId}/>
+							</Grid>) ?? []}
 				</Grid>
 			</>
 			}
