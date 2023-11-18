@@ -102,8 +102,8 @@ export default class DiscogsProvider extends IProvider<DiscogsSettings> implemen
 		try {
 			return this.httpService.axiosRef.get(route, {
 				baseURL: 'https://api.discogs.com',
+				params: { token: accessToken },
 				headers: {
-					"Authorization": "Bearer " + accessToken,
 					"Accept": "application/vnd.discogs.v2.plaintext+json",
 					"User-Agent": `${name}/${version} +${homepage}`
 				}
