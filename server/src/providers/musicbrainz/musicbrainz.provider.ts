@@ -107,7 +107,7 @@ export default class MusicBrainzProvider extends IProvider<MusicBrainzSettings> 
 	}
 
 	async getAlbumMetadataByIdentifier(albumIdentifer: MBID): Promise<AlbumMetadata> {
-		return { description: null, value: albumIdentifer };
+		return { description: null, value: albumIdentifer, rating: null };
 	}
 
 	getAlbumURL(albumIdentifier: MBID): string {

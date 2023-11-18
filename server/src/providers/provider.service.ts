@@ -14,6 +14,7 @@ import ProvidersIllustrationService from "./provider-illustration.service";
 import DiscogsProvider from "./discogs/discogs.provider";
 import { isFulfilled } from "src/utils/is-fulfilled";
 import WikipediaProvider from "./wikipedia/wikipedia.provider";
+import MetacriticProvider from "./metacritic/metacritic.provider";
 
 /**
  * Orchestrates of Providers
@@ -30,6 +31,7 @@ export default class ProviderService implements OnModuleInit {
 		musicbrainzProvider: MusicBrainzProvider,
 		discogsProvider: DiscogsProvider,
 		wikipediaProvider: WikipediaProvider,
+		metacriticProvider: MetacriticProvider,
 		private prismaService: PrismaService,
 		private settingsService: SettingsService,
 		@Inject(forwardRef(() => ProvidersIllustrationService))
@@ -39,7 +41,8 @@ export default class ProviderService implements OnModuleInit {
 			geniusProvider,
 			musicbrainzProvider,
 			discogsProvider,
-			wikipediaProvider
+			wikipediaProvider,
+			metacriticProvider
 		];
 	}
 

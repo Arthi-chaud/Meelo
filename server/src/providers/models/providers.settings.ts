@@ -5,6 +5,7 @@ import GeniusSettings from "../genius/genius.settings";
 import MusicBrainzSettings from "../musicbrainz/musicbrainz.settings";
 import DiscogsSettings from "../discogs/discogs.settings";
 import WikipediaSettings from "../wikipedia/wikipedia.settings";
+import MetacriticSettings from "../metacritic/metacritic.settings";
 
 /**
  * Settings for the Providers
@@ -47,7 +48,7 @@ export default class ProvidersSettings {
 	discogs: DiscogsSettings;
 
 	/**
-	 * Settings for the Discogs provider
+	 * Settings for the Wikipedia provider
 	 */
 	@ApiProperty({
 		type: WikipediaSettings,
@@ -57,4 +58,16 @@ export default class ProvidersSettings {
 	@ValidateNested()
 	@IsOptional()
 	wikipedia: WikipediaSettings;
+
+	/**
+	 * Settings for the Metacritic provider
+	 */
+	@ApiProperty({
+		type: MetacriticSettings,
+		required: false
+	})
+	@Type(() => MetacriticSettings)
+	@ValidateNested()
+	@IsOptional()
+	metacritic: MetacriticSettings;
 }

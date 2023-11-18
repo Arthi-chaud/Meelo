@@ -443,6 +443,8 @@ model AlbumExternalId {
 	albumId			Int
 	/// @description Short text about the related resource
 	description		String?
+	/// @description A number, between 0 and 100
+	rating			Int?
 	/// @description The Provider
 	provider		Provider @relation(fields: [providerId], references: [id], onDelete: Cascade)
 	/// @description Unique numeric identifier of the provider

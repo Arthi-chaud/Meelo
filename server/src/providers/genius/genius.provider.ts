@@ -157,6 +157,7 @@ export default class GeniusProvider extends IProvider<GeniusSettings> implements
 	async getAlbumMetadataByIdentifier(albumIdentifier: string): Promise<AlbumMetadata> {
 		return {
 			description: null,
+			rating: null,
 			value: albumIdentifier
 		};
 	}

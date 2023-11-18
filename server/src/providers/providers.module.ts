@@ -11,6 +11,7 @@ import ProvidersIllustrationService from './provider-illustration.service';
 import IllustrationModule from 'src/illustration/illustration.module';
 import DiscogsProvider from './discogs/discogs.provider';
 import WikipediaProvider from './wikipedia/wikipedia.provider';
+import MetacriticProvider from './metacritic/metacritic.provider';
 
 @Module({
 	imports: [
@@ -24,13 +25,13 @@ import WikipediaProvider from './wikipedia/wikipedia.provider';
 		GeniusProvider,
 		MusicBrainzProvider,
 		DiscogsProvider,
+		MetacriticProvider,
 		ProviderService,
 		ProvidersIllustrationService,
 		ExternalIdService,
 		ExternalIdResponseBuilder
 	],
 	exports: [
-		WikipediaProvider,
 		DiscogsProvider,
 		ProviderService,
 		ProvidersIllustrationService,

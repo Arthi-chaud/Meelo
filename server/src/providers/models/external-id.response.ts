@@ -32,6 +32,14 @@ export default class ExternalIdResponse {
 	url: string | null;
 }
 
+export class AlbumExternalIdResponse extends ExternalIdResponse {
+	@ApiProperty({
+		description: "Rating of the resource, from the provider",
+		nullable: true
+	})
+	rating: number | null;
+}
+
 @Injectable()
 export class ExternalIdResponseBuilder extends ResponseBuilderInterceptor<ExternalId, ExternalIdResponse> {
 	constructor(
@@ -61,7 +69,7 @@ export class ExternalIdResponseBuilder extends ResponseBuilderInterceptor<Extern
 			url = null;
 		}
 
-		return {
+		const response = {
 			provider: {
 				name: provider.name,
 				homepage: provider.getProviderHomepage(),
@@ -72,5 +80,10 @@ export class ExternalIdResponseBuilder extends ResponseBuilderInterceptor<Extern
 			description: externalId.description,
 			url: url
 		};
+
+		if ('albumId' in externalId) {
+			(response as AlbumExternalIdResponse).rating = externalId.rating;
+		}
+		return response;
 	}
 }

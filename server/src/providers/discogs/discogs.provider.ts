@@ -1,5 +1,7 @@
 import { Injectable, OnModuleInit } from "@nestjs/common";
-import IProvider, { ArtistMetadata } from "../iprovider";
+import IProvider, {
+	AlbumMetadata, ArtistMetadata, ReleaseMetadata
+} from "../iprovider";
 import DiscogsSettings from "./discogs.settings";
 import { HttpService } from "@nestjs/axios";
 import { ProviderActionFailedError } from "../provider.exception";
@@ -62,13 +64,14 @@ export default class DiscogsProvider extends IProvider<DiscogsSettings> implemen
 		}
 	}
 
-	async getAlbumMetadataByIdentifier(masterIdentifier: string): Promise<ArtistMetadata> {
+	async getAlbumMetadataByIdentifier(masterIdentifier: string): Promise<AlbumMetadata> {
 		try {
 			const album = await this.fetch(`/masters/${masterIdentifier}`);
 
 			if (isNumber(album.id) && isString(album.notes_plaintext)) {
 				return {
 					value: album.id.toString(),
+					rating: null,
 					description: album.notes_plaintext
 				};
 			}
@@ -78,7 +81,7 @@ export default class DiscogsProvider extends IProvider<DiscogsSettings> implemen
 		}
 	}
 
-	async getReleaseMetadataByIdentifier(releaseIdentifier: string): Promise<ArtistMetadata> {
+	async getReleaseMetadataByIdentifier(releaseIdentifier: string): Promise<ReleaseMetadata> {
 		try {
 			const release = await this.fetch(`/releases/${releaseIdentifier}`);
 

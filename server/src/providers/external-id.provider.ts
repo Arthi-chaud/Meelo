@@ -86,8 +86,8 @@ export default class ExternalIdService {
 			},
 			(provider, mbid) => provider.getAlbumEntry(mbid),
 			(provider) => provider.getAlbumWikidataIdentifierProperty(),
-			({ value, description }, providerId) =>
-				({ value, description, albumId: album.id, providerId }),
+			({ value, description, rating }, providerId) =>
+				({ value, description, rating, albumId: album.id, providerId }),
 			(ids) => this.prismaService.albumExternalId.createMany({
 				data: ids,
 				skipDuplicates: true
