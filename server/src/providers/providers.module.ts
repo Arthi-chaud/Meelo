@@ -12,6 +12,7 @@ import IllustrationModule from 'src/illustration/illustration.module';
 import DiscogsProvider from './discogs/discogs.provider';
 import WikipediaProvider from './wikipedia/wikipedia.provider';
 import MetacriticProvider from './metacritic/metacritic.provider';
+import AllMusicProvider from './allmusic/allmusic.provider';
 
 @Module({
 	imports: [
@@ -26,6 +27,7 @@ import MetacriticProvider from './metacritic/metacritic.provider';
 		MusicBrainzProvider,
 		DiscogsProvider,
 		MetacriticProvider,
+		AllMusicProvider,
 		ProviderService,
 		ProvidersIllustrationService,
 		ExternalIdService,

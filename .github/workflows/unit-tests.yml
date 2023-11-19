@@ -65,13 +65,7 @@ jobs:
       - name: Migrate DB Schema
         run: yarn run prisma migrate dev
       - name: Run unit tests with coverage
-        uses: nick-fields/retry@v2
-        with:
-          shell: sh 
-          timeout_minutes: 100
-          max_attempts: 3
-          retry_wait_seconds: 30
-          command: rm -rf server/test/assets/metadata; yarn --cwd server test --coverage --ci --forceExit
+        run: rm -rf server/test/assets/metadata; yarn --cwd server test --coverage --ci --no-cache --forceExit
       - name: Upload Unit Tests artifact
         if: ${{ always() }}
         uses: actions/upload-artifact@v3

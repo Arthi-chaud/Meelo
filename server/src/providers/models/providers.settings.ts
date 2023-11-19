@@ -6,6 +6,7 @@ import MusicBrainzSettings from "../musicbrainz/musicbrainz.settings";
 import DiscogsSettings from "../discogs/discogs.settings";
 import WikipediaSettings from "../wikipedia/wikipedia.settings";
 import MetacriticSettings from "../metacritic/metacritic.settings";
+import AllMusicSettings from "../allmusic/allmusic.settings";
 
 /**
  * Settings for the Providers
@@ -70,4 +71,16 @@ export default class ProvidersSettings {
 	@ValidateNested()
 	@IsOptional()
 	metacritic: MetacriticSettings;
+
+	/**
+	 * Settings for the AllMusic provider
+	 */
+	@ApiProperty({
+		type: AllMusicSettings,
+		required: false
+	})
+	@Type(() => AllMusicSettings)
+	@ValidateNested()
+	@IsOptional()
+	allMusic: AllMusicSettings;
 }
