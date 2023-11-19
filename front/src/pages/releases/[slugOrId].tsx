@@ -145,7 +145,10 @@ const ReleasePage = (props: InferSSRProps<typeof getServerSideProps>) => {
 	const illustration = useMemo(() => release.data?.illustration, [release]);
 	const externalIdWithDescription = album.data?.externalIds
 		.find(({ description }) => description !== null);
-	const albumRating = album.data?.externalIds.find(({ rating }) => rating !== null)?.rating;
+	const albumRating = album.data?.externalIds
+		.map(({ rating }) => rating)
+		.filter((rating) => rating !== null)
+		.sort().at(-1) ?? null;
 
 	// eslint-disable-next-line no-extra-parens
 	if (!release.data || !album.data || !artists.data || !trackList) {
@@ -185,16 +188,16 @@ const ReleasePage = (props: InferSSRProps<typeof getServerSideProps>) => {
 								`${new Date(release.data.releaseDate ?? release.data.album.releaseDate!).getFullYear()} - `}
 							{formatDuration(totalDuration ?? undefined)}
 						</Typography>
-						{albumRating && <Rating
+						{/* Let's not tell our user that they listen to shitty stuff <3 */}
+						{albumRating && albumRating >= 50 && <Rating
 							sx={{ paddingLeft: 1.5 }}
 							readOnly
 							value={albumRating / 20}
-							precision={0.5}
 							icon={<Star1 size={18} style={{ marginTop: -3 }} color={
-								(release.data.illustration ?? album.data.illustration)?.colors.at(4)
+								illustration?.colors.sort().at(4)
 							} />}
 							emptyIcon={<Star1 size={18} style={{ marginTop: -3 }}
-								color={theme.palette.text.disabled}
+								color={theme.palette.text.disabled} opacity={0.2}
 							/>}
 						/>}
 					</Grid>
