@@ -188,8 +188,7 @@ const ReleasePage = (props: InferSSRProps<typeof getServerSideProps>) => {
 								`${new Date(release.data.releaseDate ?? release.data.album.releaseDate!).getFullYear()} - `}
 							{formatDuration(totalDuration ?? undefined)}
 						</Typography>
-						{/* Let's not tell our user that they listen to shitty stuff <3 */}
-						{albumRating && albumRating >= 50 && <Rating
+						{albumRating && <Rating
 							sx={{ paddingLeft: 1.5 }}
 							readOnly
 							value={albumRating / 20}
