@@ -32,6 +32,13 @@ describe('All Music Provider', () => {
 			expect(metadata.rating).toBe(70);
 			expect(metadata.description).toBeNull();
 		})
+		it("Should Get Null Rating", async () => {
+			const metadata = await allMusicProvider.getAlbumMetadataByIdentifier('mw0000770491')
+			
+			expect(metadata.value).toBe('mw0000770491');
+			expect(metadata.rating).toBeNull();
+			expect(metadata.description).toBeNull();
+		})
 		it("Should throw, as the page does not exist", async () => {
 			expect(allMusicProvider.getAlbumMetadataByIdentifier('zzz'))
 				.rejects.toThrow(ProviderActionFailedError);

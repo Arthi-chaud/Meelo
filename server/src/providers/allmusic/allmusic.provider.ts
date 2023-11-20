@@ -47,12 +47,16 @@ export default class AllMusicProvider extends IProvider<AllMusicSettings> implem
 				.then((res) => res.data);
 			const pageSkeleton = cheerio.load(albumPage);
 			const ratingDiv = pageSkeleton('div[title="AllMusic Rating"]').first();
-			const score = (parseInt(ratingDiv.attr('class')?.match(/\d/)?.[0] ?? '') + 1) * 10;
+			const scoreOutTen = parseInt(ratingDiv.attr('class')?.match(/\d/)?.[0] ?? '');
 			const description = null; // Can't get description, the page uses JS to get it
 
 			return {
 				value: albumIdentifier,
-				rating: isNumber(score) ? score : null,
+				rating: isNumber(scoreOutTen)
+					? scoreOutTen > 0
+						? (scoreOutTen + 1) * 10
+						: null
+					: null,
 				description: description
 			};
 		} catch (err) {
