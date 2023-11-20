@@ -23,7 +23,7 @@ describe('External ID Response', () => {
 	let module: TestingModule;
 	beforeAll(async () => {
 		module = await createTestingModule({
-			imports: [HttpModule, SettingsModule, forwardRef(() => ProvidersModule), PrismaModule, FileManagerModule, forwardRef(() => IllustrationModule)],
+			imports: [HttpModule, SettingsModule, ProvidersModule, PrismaModule, FileManagerModule, forwardRef(() => IllustrationModule)],
 			providers: [GeniusProvider, MusicBrainzProvider, ProviderService, PrismaService],
 		}).overrideProvider(PrismaService).useClass(TestPrismaService).compile();
 		providerService = module.get(ProviderService);

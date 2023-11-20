@@ -34,6 +34,9 @@ import AllMusicProvider from './allmusic/allmusic.provider';
 		ExternalIdResponseBuilder
 	],
 	exports: [
+		WikipediaProvider,
+		MetacriticProvider,
+		AllMusicProvider,
 		DiscogsProvider,
 		ProviderService,
 		ProvidersIllustrationService,
