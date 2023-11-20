@@ -1,12 +1,21 @@
-import { AlbumType } from "@prisma/client";
+import {
+	AlbumExternalId, ArtistExternalId,
+	ReleaseExternalId, SongExternalId
+} from "@prisma/client";
 import { ProviderMethodNotAvailableError } from "./provider.exception";
-import ProviderActions from "./provider-actions";
 import ProvidersSettings from "./models/providers.settings";
+
+export type ArtistMetadata = Omit<ArtistExternalId, 'id' | 'providerId' | 'artistId'>
+export type AlbumMetadata = Omit<AlbumExternalId, 'id' | 'providerId' | 'albumId'>
+export type SongMetadata = Omit<SongExternalId, 'id' | 'providerId' | 'songId'>
+export type ReleaseMetadata = Omit<ReleaseExternalId, 'id' | 'providerId' | 'releaseId'>
+
+type IdentifierType = string;
 
 /**
  * Abstraction of External Metadata Provider
  */
-export default abstract class IProvider<SettingsType, IdentifierType = string> implements ProviderActions<IdentifierType> {
+export default abstract class IProvider<SettingsType = unknown> {
 	constructor(
 		/**
 		 * Name of the Provider, used to identify it in the database and the settings
@@ -36,85 +45,75 @@ export default abstract class IProvider<SettingsType, IdentifierType = string> i
 	abstract getProviderHomepage(): string;
 
 	/**
-	 * @returns the provider's Identifer of the artist.
-	 * @param artistName Name of the artist
-	 * @param songName can be used to differentiate artists with same name
+	 * Retrives all the wanted metadata in one go
 	 */
-	getArtistIdentifier(_artistName: string, _songName?: string): Promise<IdentifierType> {
+	getArtistMetadataByName(_artistName: string): Promise<ArtistMetadata> {
 		throw new ProviderMethodNotAvailableError(this.name);
 	}
 
-	/**
-	 * @returns The URL to the provider's web page of the artist
-	 * @param artistIdentifier provider's identifier for the artist
-	 */
-	getArtistURL(_artistIdentifier: IdentifierType): string {
-		throw new ProviderMethodNotAvailableError(this.name);
-	}
-
-	/**
-	 * @returns the provider's Identifer of the song.
-	 * @param songName The name of the song
-	 * @param _artistIdentifier Identifier of the artist
-	 */
-	getSongIdentifier(
-		_songName: string,
+	getArtistMetadataByIdentifier(
 		_artistIdentifier: IdentifierType
-	): Promise<IdentifierType> {
+	): Promise<ArtistMetadata> {
+		throw new ProviderMethodNotAvailableError(this.name);
+	}
+
+	getAlbumMetadataByName(_albumName: string, _artistName?: string): Promise<AlbumMetadata> {
+		throw new ProviderMethodNotAvailableError(this.name);
+	}
+
+	getAlbumMetadataByIdentifier(_albumIdentifier: IdentifierType): Promise<AlbumMetadata> {
+		throw new ProviderMethodNotAvailableError(this.name);
+	}
+
+	getSongMetadataByName(_songName: string, _artistIdentifier: string): Promise<SongMetadata> {
+		throw new ProviderMethodNotAvailableError(this.name);
+	}
+
+	getSongMetadataByIdentifier(_songIdentifier: IdentifierType): Promise<SongMetadata> {
+		throw new ProviderMethodNotAvailableError(this.name);
+	}
+
+	getReleaseMetadataByName(_releaseName: string, _artistName: string): Promise<ReleaseMetadata> {
+		throw new ProviderMethodNotAvailableError(this.name);
+	}
+
+	getReleaseMetadataByIdentifier(_releaseIdentifier: IdentifierType): Promise<ReleaseMetadata> {
 		throw new ProviderMethodNotAvailableError(this.name);
 	}
 
 	/**
-	 * @returns The URL to the provider's web page of the song
-	 * @param songIdentifier provider's identifier for the song
+	 * @returns The URL to the provider's web page of the resource
 	 */
-	getSongURL(_songIdentifier: IdentifierType): string {
-		throw new ProviderMethodNotAvailableError(this.name);
+	getArtistURL(_artistIdentifier: IdentifierType): string | null {
+		return null;
+	}
+
+	getAlbumURL(_albumIdentifer: IdentifierType): string | null {
+		return null;
+	}
+
+	getSongURL(_songIdentifer: IdentifierType): string | null {
+		return null;
+	}
+
+	getReleaseURL(_releaseIdentifier: IdentifierType): string | null {
+		return null;
 	}
 
 	/**
-	 * @returns the provider's Identifer of the album.
-	 * @param albumName The name of the album
-	 * @param artistIdentifier Name of the artist, if there is one
+	 * Indicates what is the wikidata's property ID for the provider
+	 * @example A Genius' Artist ID would be property `P2373` (see https://www.wikidata.org/wiki/Q452449)
 	 */
-	getAlbumIdentifier(
-		_albumName: string, _artistIdentifier?: IdentifierType
-	): Promise<IdentifierType> {
-		throw new ProviderMethodNotAvailableError(this.name);
+	getArtistWikidataIdentifierProperty(): string | null {
+		return null;
 	}
 
-	/**
-	 * @returns The URL to the provider's web page of the album
-	 * @param albumIdentifier provider's identifier for the album
-	 */
-	getAlbumURL(_albumIdentifier: IdentifierType): string {
-		throw new ProviderMethodNotAvailableError(this.name);
+	getAlbumWikidataIdentifierProperty(): string | null {
+		return null;
 	}
 
-	/**
-	 * @returns the provider's Identifer of the release.
-	 * @param releaseIdentifier The ID of the release
-	 */
-	getReleaseURL(
-		_releaseIdentifier: IdentifierType
-	): string {
-		throw new ProviderMethodNotAvailableError(this.name);
-	}
-
-	/**
-	 * @returns the type of an album.
-	 * @param albumIdentifer The identifer of the album
-	 */
-	getAlbumType(_albumIdentifer: IdentifierType): Promise<AlbumType> {
-		throw new ProviderMethodNotAvailableError(this.name);
-	}
-
-	/**
-	 * @returns A short description of the album
-	 * @param albumIdentifer The identifier of the album
-	 */
-	getAlbumDescription(_albumIdentifer: IdentifierType): Promise<string> {
-		throw new ProviderMethodNotAvailableError(this.name);
+	getSongWikidataIdentifierProperty(): string | null {
+		return null;
 	}
 
 	/**
@@ -126,34 +125,10 @@ export default abstract class IProvider<SettingsType, IdentifierType = string> i
 	}
 
 	/**
-	 * @returns A short description of the artist
-	 * @param artistIdentifer The identifier of the artist
-	 */
-	getArtistDescription(_artistIdentifer: IdentifierType): Promise<string> {
-		throw new ProviderMethodNotAvailableError(this.name);
-	}
-
-	/**
 	 * @returns the lyrics of a song
 	 * @param songIdentifier the identifer of the song
 	 */
 	getSongLyrics(_songIdentifier: IdentifierType): Promise<string> {
-		throw new ProviderMethodNotAvailableError(this.name);
-	}
-
-	/**
-	 * @returns the genres of a song
-	 * @param songIdentifier the identifer of the song
-	 */
-	getSongGenres(_songIdentifier: IdentifierType): Promise<string[]> {
-		throw new ProviderMethodNotAvailableError(this.name);
-	}
-
-	/**
-	 * @returns the description of a song
-	 * @param songIdentifier the identifer of the song
-	 */
-	getSongDescription(_songIdentifier: IdentifierType): Promise<string> {
 		throw new ProviderMethodNotAvailableError(this.name);
 	}
 }

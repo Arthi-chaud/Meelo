@@ -10,6 +10,9 @@ import ExternalIdService from './external-id.provider';
 import ProvidersIllustrationService from './provider-illustration.service';
 import IllustrationModule from 'src/illustration/illustration.module';
 import DiscogsProvider from './discogs/discogs.provider';
+import WikipediaProvider from './wikipedia/wikipedia.provider';
+import MetacriticProvider from './metacritic/metacritic.provider';
+import AllMusicProvider from './allmusic/allmusic.provider';
 
 @Module({
 	imports: [
@@ -19,15 +22,21 @@ import DiscogsProvider from './discogs/discogs.provider';
 		forwardRef(() => IllustrationModule)
 	],
 	providers: [
+		WikipediaProvider,
 		GeniusProvider,
 		MusicBrainzProvider,
 		DiscogsProvider,
+		MetacriticProvider,
+		AllMusicProvider,
 		ProviderService,
 		ProvidersIllustrationService,
 		ExternalIdService,
 		ExternalIdResponseBuilder
 	],
 	exports: [
+		WikipediaProvider,
+		MetacriticProvider,
+		AllMusicProvider,
 		DiscogsProvider,
 		ProviderService,
 		ProvidersIllustrationService,

@@ -58,7 +58,9 @@ const AlbumWithRelations = <Selection extends AlbumInclude | never = never>(
 	relation: Selection[]
 ) => Album.concat(yup.object({
 		artist: Artist.required().nullable(),
-		externalIds: yup.array(ExternalId.required()).required()
+		externalIds: yup.array(ExternalId.required().concat(yup.object({
+			rating: yup.number().required().nullable()
+		}))).required()
 	}).pick(relation));
 
 type AlbumWithRelations<Selection extends AlbumInclude | never = never> =

@@ -45,10 +45,13 @@ describe("Provider Service", () => {
 			const providers = await prismaService.provider.findMany();
 			const providersSlugs = providers.map(({ slug }) => slug);
 
-			expect(providers.length).toBe(3);
+			expect(providers.length).toBe(6);
 			expect(providersSlugs).toContain('musicbrainz');
 			expect(providersSlugs).toContain('genius');
 			expect(providersSlugs).toContain('discogs');
+			expect(providersSlugs).toContain('allmusic');
+			expect(providersSlugs).toContain('metacritic');
+			expect(providersSlugs).toContain('wikipedia');
 		})
 	});
 
@@ -65,8 +68,8 @@ describe("Provider Service", () => {
 			settingsService.loadFromFile();
 			await providerService.onModuleInit();
 			expect(providerService.enabledProviders.length).toBe(2);
-			expect(providerService.enabledProviders).toContain('genius');
-			expect(providerService.enabledProviders).toContain('musicbrainz');
+			expect(providerService.enabledProviders.map((p) => p.name)).toContain('genius');
+			expect(providerService.enabledProviders.map((p) => p.name)).toContain('musicbrainz');
 		})
 	});
 })

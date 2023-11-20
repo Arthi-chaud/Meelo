@@ -328,7 +328,7 @@ export class IllustrationController {
 		@Response({ passthrough: true }) res: Response
 	) {
 		const pNameIsValid = (str: string): str is keyof ProvidersSettings =>
-			this.providerService.enabledProviders.includes(str as any);
+			this.providerService.providerCatalogue.find(({ name }) => name == str) !== undefined;
 		let illustrationPath = '';
 
 		if (!pNameIsValid(providerName)) {

@@ -5,7 +5,7 @@ import { IntersectionType } from "@nestjs/swagger";
 import { ArtistResponse, ArtistResponseBuilder } from "src/artist/models/artist.response";
 import { Album, AlbumWithRelations } from "src/prisma/models";
 import ResponseBuilderInterceptor from "src/response/interceptors/response.interceptor";
-import ExternalIdResponse, { ExternalIdResponseBuilder } from "src/providers/models/external-id.response";
+import { AlbumExternalIdResponse, ExternalIdResponseBuilder } from "src/providers/models/external-id.response";
 import { IllustratedResponse } from "src/illustration/models/illustration.response";
 import IllustrationRepository from "src/illustration/illustration.repository";
 
@@ -14,7 +14,7 @@ export class AlbumResponse extends IntersectionType(
 	IllustratedResponse,
 	class {
 		artist?: ArtistResponse | null;
-		externalIds?: ExternalIdResponse[];
+		externalIds?: AlbumExternalIdResponse[];
 	}
 ) {}
 
@@ -47,7 +47,7 @@ export class AlbumResponseBuilder extends ResponseBuilderInterceptor<AlbumWithRe
 				album.externalIds?.map(
 					(id) => this.externalIdResponseBuilder.buildResponse(id)
 				) ?? []
-			);
+			) as AlbumExternalIdResponse[];
 		}
 		return response;
 	}

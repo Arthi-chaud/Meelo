@@ -5,195 +5,267 @@ import PrismaService from "src/prisma/prisma.service";
 import ProviderService from "./provider.service";
 import Logger from "src/logger/logger";
 import IProvider from "./iprovider";
-import { Provider } from "src/prisma/models";
+import { Artist } from "src/prisma/models";
+import ExternalId from "./models/external-id";
+import MusicBrainzProvider from "./musicbrainz/musicbrainz.provider";
+import { isFulfilled } from "src/utils/is-fulfilled";
+import { isDefined } from "src/utils/is-undefined";
+import { HttpService } from "@nestjs/axios";
+import { Album, Song } from "@prisma/client";
+import { IEntity, IRelation } from "musicbrainz-api";
+import WikipediaProvider from "./wikipedia/wikipedia.provider";
+
+type ExternalIds = { externalIds: ExternalId[] }
 
 @Injectable()
 export default class ExternalIdService {
 	private readonly logger: Logger = new Logger(ExternalIdService.name);
 	constructor(
 		private prismaService: PrismaService,
+		private readonly httpService: HttpService,
 		@Inject(forwardRef(() => ProviderService))
 		private providerService: ProviderService
 	) {}
 
 	/**
-	 * Builds Prisma Query to fetchesources that miss an external id
+	 * Fetch & registers missing External IDs for artists
 	 */
-	private buildQueryForMissingProviderId() {
-		const providerIdFilter = {
-			provider: {
-				name: {
-					notIn: this.providerService.enabledProviders
-				}
-			}
-		};
+	public async fetchArtistsExternalIds() {
+		const artists = await this.prismaService.artist.findMany({
+			include: { externalIds: true }
+		});
 
-		return {
-			where: {
-				OR: [
-					{ externalIds: { some: providerIdFilter } },
-					{ externalIds: { none: providerIdFilter } }
-				]
-			},
-			include: { externalIds: { include: { provider: true } } }
-		};
-	}
-
-	private async fetchMissingResourceExternalId<R, ActionReturn, IDType>(
-		resources: (R & { externalIds: (IDType & { provider: Provider } []) })[],
-		action: (resource: R, provider: IProvider<unknown, unknown>) =>
-			Promise<ActionReturn | undefined>,
-		onActionGroupSuccess: (resource: R, res: ActionReturn[]) => Promise<void>,
-	) {
-		for (const resource of resources) {
-			const externalIds = resource.externalIds;
-			const missingProviders = this.providerService.enabledProviders
-				.filter((providerName) => externalIds
-					.map((id) => id.provider.name)
-					.includes(providerName) == false);
-			const newIds = (await this.providerService.collectActions(async (provider) => {
-				if (missingProviders.includes(provider.name) == false) {
-					return undefined;
-				}
-				return action(resource, provider);
-			})).filter((id): id is Exclude<typeof id, undefined> => id !== undefined);
-
-			await onActionGroupSuccess(resource, newIds);
+		for (const artist of artists) {
+			await this.fetchArtistExternalIds(artist).catch(() => {});
 		}
 	}
 
-	/**
-	 * Fetch & registers missing External IDs for artists
-	 */
-	async fetchMissingArtistExternalIDs() {
-		const artists = await this.prismaService.artist.findMany(
-			this.buildQueryForMissingProviderId()
-		);
-
-		await this.fetchMissingResourceExternalId(
-			artists,
-			async (artist, provider) => {
-				const identifier = (await provider.getArtistIdentifier(artist.name)
-					.then((value) => (value as string).toString()));
-				const description = (await provider.getArtistDescription(identifier)
-					.then((value) => (value as string).toString())
-					.catch(() => null));
-
-				return {
-					providerName: provider.name,
-					providerId: this.providerService.getProviderId(provider.name),
-					artistId: artist.id,
-					description: description,
-					value: identifier
-				};
-			},
-			async (artist, res) => {
-				res.forEach(({ providerName }) =>
-					this.logger.verbose(`External ID from ${providerName} found for artist '${artist.name}'`));
-				await this.prismaService.artistExternalId.createMany({
-					data: res.map(({ providerName, ...id }) => id),
-					skipDuplicates: true
-				});
-			}
+	private async fetchArtistExternalIds(artist: Artist & { externalIds: ExternalId[] }) {
+		return this.fetchResourceExternalIds(
+			artist,
+			(provider, mbid) => provider.getArtistMetadataByIdentifier(mbid),
+			(provider) => provider.getArtistMetadataByName(artist.name),
+			(provider, mbid) => provider.getArtistEntry(mbid),
+			(provider) => provider.getArtistWikidataIdentifierProperty(),
+			({ value, description }, providerId) =>
+				({ value, description, artistId: artist.id, providerId }),
+			(ids) => this.prismaService.artistExternalId.createMany({
+				data: ids,
+				skipDuplicates: true
+			})
 		);
 	}
 
 	/**
 	 * Fetch & registers missing External IDs for albums
 	 */
-	async fetchMissingAlbumExternalIDs() {
-		const query = this.buildQueryForMissingProviderId();
+	public async fetchAlbumsExternalIds() {
 		const albums = await this.prismaService.album.findMany({
-			...query,
-			include: {
-				artist: true,
-				...query.include
-			}
+			include: { externalIds: true, artist: { include: { externalIds: true } } }
 		});
 
-		await this.fetchMissingResourceExternalId(
-			albums,
-			async (album, provider) => {
-				const artistExternalId = album.artistId ?
-					(await this.prismaService.artistExternalId.findFirst({
-						where: {
-							artistId: album.artistId,
-							provider: { name: provider.name }
-						}
-					}))?.value : undefined;
-				const albumExternalId = await provider
-					.getAlbumIdentifier(album.name, artistExternalId);
-				const description = (await provider.getAlbumDescription(albumExternalId)
-					.then((value) => (value as string).toString())
-					.catch(() => null));
+		for (const album of albums) {
+			await this.fetchAlbumExternalIds(album).catch(() => {});
+		}
+	}
 
-				return {
-					providerName: provider.name,
-					providerId: this.providerService.getProviderId(provider.name),
-					albumId: album.id,
-					description: description,
-					value: (albumExternalId as string).toString()
-				};
+	private async fetchAlbumExternalIds(
+		album: Album & { artist?: Artist & ExternalIds | null } & ExternalIds
+	) {
+		return this.fetchResourceExternalIds(
+			album,
+			(provider, mbid) => provider.getAlbumMetadataByIdentifier(mbid),
+			(provider, providerId) => {
+				if (!album.artist) {
+					return provider.getAlbumMetadataByName(album.name);
+				}
+				const parentArtistIdentifier = album.artist.externalIds
+					.find((externalId) => externalId.providerId == providerId)!.value;
+
+				return provider.getAlbumMetadataByName(album.name, parentArtistIdentifier);
 			},
-			async (album, res) => {
-				res.forEach(({ providerName }) =>
-					this.logger.verbose(`External ID from ${providerName} found for album '${album.name}'`));
-				await this.prismaService.albumExternalId.createMany({
-					data: res.map(({ providerName, ...id }) => id),
-					skipDuplicates: true
-				});
-			}
+			(provider, mbid) => provider.getAlbumEntry(mbid),
+			(provider) => provider.getAlbumWikidataIdentifierProperty(),
+			({ value, description, rating }, providerId) =>
+				({ value, description, rating, albumId: album.id, providerId }),
+			(ids) => this.prismaService.albumExternalId.createMany({
+				data: ids,
+				skipDuplicates: true
+			})
 		);
 	}
 
 	/**
 	 * Fetch & registers missing External IDs for songs
 	 */
-	async fetchMissingSongExternalIDs() {
-		const query = this.buildQueryForMissingProviderId();
+	public async fetchSongsExternalIds() {
 		const songs = await this.prismaService.song.findMany({
-			...query,
-			include: {
-				artist: true,
-				...query.include
-			}
+			include: { externalIds: true, artist: { include: { externalIds: true } } }
 		});
 
-		await this.fetchMissingResourceExternalId(
-			songs,
-			async (song, provider) => {
-				const artistExternalId = (await this.prismaService.artistExternalId.findFirst({
-					where: {
-						artistId: song.artistId,
-						provider: { name: provider.name }
-					}
-				}))?.value;
+		for (const song of songs) {
+			await this.fetchSongExternalIds(song).catch(() => {});
+		}
+	}
 
-				if (!artistExternalId) {
-					return undefined;
-				}
-				const songExternalId = await provider
-					.getSongIdentifier(song.name, artistExternalId);
-				const description = (await provider.getSongDescription(songExternalId)
-					.then((value) => (value as string).toString())
-					.catch(() => null));
+	private async fetchSongExternalIds(
+		song: Song & { artist: Artist & ExternalIds } & ExternalIds
+	) {
+		return this.fetchResourceExternalIds(
+			song,
+			(provider, mbid) => provider.getSongMetadataByIdentifier(mbid),
+			(provider, providerId) => {
+				const parentArtistIdentifier = song.artist.externalIds
+					.find((externalId) => externalId.providerId == providerId)!.value;
 
-				return {
-					providerName: provider.name,
-					providerId: this.providerService.getProviderId(provider.name),
-					songId: song.id,
-					description: description,
-					value: (songExternalId as string).toString()
-				};
+				return provider.getSongMetadataByName(song.name, parentArtistIdentifier);
 			},
-			async (song, res) => {
-				res.forEach(({ providerName }) =>
-					this.logger.verbose(`External ID from ${providerName} found for song '${song.name}'`));
-				await this.prismaService.songExternalId.createMany({
-					data: res.map(({ providerName, ...id }) => id),
-					skipDuplicates: true
-				});
-			}
+			(provider, mbid) => provider.getSongEntry(mbid),
+			(provider) => provider.getSongWikidataIdentifierProperty(),
+			({ value, description }, providerId) =>
+				({ value, description, songId: song.id, providerId }),
+			(ids) => this.prismaService.songExternalId.createMany({
+				data: ids,
+				skipDuplicates: true
+			})
 		);
+	}
+
+	/**
+	 * Core function of the metadata fetching flow
+	 * @param resource the resource which we should fetch the metadata of
+	 * @param getResourceMetadataByIdentifier a function which a provider and an identifier, and returns the related metadata
+	 * @param getResourceMetadataByName  a function which a provider and the resource's namme, and returns the related metadata
+	 * @param getResourceMusicBrainzEntry a function that returns the Musicbrainz resource's entry
+	 * @param getResourceWikidataIdentifierProperty a function that returns the identifier of the related wikidata property (e.g. `P1234`)
+	 * @param formatResourceMetadata takes a identifier, a description the provider's ID, and returns everything that is needed to create a row in the database
+	 * @param saveExternalIds a functions which should persist the array of external IDs passed by parameters
+	 * @returns an empty promise
+	 */
+	private async fetchResourceExternalIds<
+		Resource extends { id: number, name: string },
+		MBIDEntry extends IEntity & { relations?: IRelation[] },
+		ExternalID extends Omit<ExternalId, 'id'>,
+		Metadata extends Omit<ExternalID, 'providerId'>
+	>(
+		resource: Resource & ExternalIds,
+		getResourceMetadataByIdentifier: (provider: IProvider, id: string) => Promise<Metadata>,
+		getResourceMetadataByName: (provider: IProvider, providerId: number) => Promise<Metadata>,
+		getResourceMusicBrainzEntry: (
+			provider: MusicBrainzProvider, id: string
+		) => Promise<MBIDEntry>,
+		getResourceWikidataIdentifierProperty: (provider: IProvider) => string | null,
+		formatResourceMetadata: (metadata: Metadata, providerId: number) => ExternalID,
+		saveExternalIds: (externalIds: ExternalID[]) => Promise<unknown>,
+	) {
+		const enabledProviders = this.providerService.enabledProviders;
+		const musicbrainzProvider = enabledProviders
+			.find(({ name }) => name == 'musicbrainz') as MusicBrainzProvider | undefined;
+		const wikipediaProvider = enabledProviders
+			.find(({ name }) => name == 'wikipedia') as WikipediaProvider | undefined;
+		const otherProviders = enabledProviders
+			.filter((provider) =>
+				provider.name !== musicbrainzProvider?.name &&
+				provider.name !== wikipediaProvider?.name);
+		let providersToReach = otherProviders;
+		const musicbrainzId = musicbrainzProvider
+			? this.providerService.getProviderId(musicbrainzProvider.name)
+			: null;
+		const wikipediaProviderId = wikipediaProvider
+			? this.providerService.getProviderId(wikipediaProvider.name)
+			: null;
+		let resourceMBID = resource.externalIds
+			.find(({ providerId }) => providerId == musicbrainzId) as Metadata | undefined;
+		const resourceWikipediaId = resource.externalIds
+			.find(({ providerId }) => providerId == wikipediaProviderId);
+		const newIdentifiers: ExternalID[] = [];
+
+		if (musicbrainzProvider && musicbrainzId) { // If MB is enabled
+			try {
+				if (!resourceMBID) {
+					resourceMBID = await getResourceMetadataByName(
+						musicbrainzProvider, musicbrainzId
+					);
+					newIdentifiers.push(formatResourceMetadata(resourceMBID, musicbrainzId));
+				}
+				const resourceEntry = await getResourceMusicBrainzEntry(
+					musicbrainzProvider, resourceMBID.value
+				);
+				const wikiDataId = resourceEntry
+					.relations?.map(({ url }) => url?.resource?.match(
+						/(https:\/\/www\.)?wikidata\.org\/wiki\/(?<ID>Q\d+)/
+					)?.groups?.['ID'])
+					.filter((match) => match !== undefined)
+					.at(0);
+
+				if (wikiDataId) {
+					const resourceIdentifiers = await this.httpService.axiosRef.get(
+						'/w/rest.php/wikibase/v0/entities/items/' + wikiDataId,
+						{ baseURL: 'https://wikidata.org' }
+					).then(({ data }) => data['statements']).catch(() => null);
+					const identifiers = await Promise.allSettled([
+						...((wikipediaProviderId && !resourceWikipediaId)
+							? [
+								wikipediaProvider
+									?.getResourceMetadataByWikidataId(wikiDataId)
+									?.then((metadata) => formatResourceMetadata(
+										metadata as Metadata, wikipediaProviderId
+									))
+							]
+							: []),
+						...otherProviders.map(async (provider) => {
+							const providerId = this.providerService.getProviderId(provider.name);
+							const externalId = resource.externalIds
+								.find((id) => id.providerId == providerId);
+							const providerProperyIdentifier = getResourceWikidataIdentifierProperty(
+								provider
+							);
+
+							if (externalId || !providerProperyIdentifier) {
+								return;
+							}
+							providersToReach = providersToReach
+								.filter((toReach) => toReach.name !== provider.name);
+							return formatResourceMetadata(await getResourceMetadataByIdentifier(
+								provider,
+								resourceIdentifiers[providerProperyIdentifier].at(0)?.value?.content
+									.toString()
+							), providerId);
+						})
+					]);
+
+					newIdentifiers.push(...identifiers
+						.filter(isFulfilled)
+						.map(({ value }) => value)
+						.filter(isDefined));
+				}
+			} catch {
+				// Fallback, nothing to do
+			}
+		}
+		const fetchedIdentifiers = await Promise.allSettled(
+			providersToReach.map(async (provider) => {
+				const providerId = this.providerService.getProviderId(provider.name);
+				const externalId = resource.externalIds.find((id) => id.providerId == providerId);
+
+				if (externalId) {
+					return;
+				}
+				return formatResourceMetadata(
+					await getResourceMetadataByName(provider, providerId), providerId
+				);
+			})
+		);
+
+		newIdentifiers.push(...fetchedIdentifiers
+			.filter(isFulfilled)
+			.map(({ value }) => value)
+			.filter(isDefined));
+		newIdentifiers.forEach((identifier) => {
+			this.logger.verbose(`External ID from ${
+				this.providerService.getProviderById(identifier.providerId).name
+			} found for ${resource.name}.`);
+		});
+		return saveExternalIds(newIdentifiers);
 	}
 }

@@ -33,7 +33,7 @@ const ExternalId = yup.object({
 	/**
 	 * URL to the related resource
 	 */
-	url: yup.string().required(),
+	url: yup.string().required().nullable(),
 });
 
 type ExternalId = yup.InferType<typeof ExternalId>;

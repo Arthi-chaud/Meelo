@@ -271,9 +271,13 @@ export default class TaskRunner {
 	 * Fetch Missing External IDs for artists, songs and albums
 	 */
 	private async fetchExternalIds(): Promise<void> {
-		await this.externalIdService.fetchMissingArtistExternalIDs();
-		await this.externalIdService.fetchMissingAlbumExternalIDs();
-		await this.externalIdService.fetchMissingSongExternalIDs();
+		this.logger.log(`Fetching external identifiers for artists started.`);
+		await this.externalIdService.fetchArtistsExternalIds();
+		this.logger.log(`Fetching external identifiers for albums started.`);
+		await this.externalIdService.fetchAlbumsExternalIds();
+		this.logger.log(`Fetching external identifiers for songs started.`);
+		await this.externalIdService.fetchSongsExternalIds();
+		this.logger.log(`Fetching external identifiers for finished.`);
 	}
 
 	/**

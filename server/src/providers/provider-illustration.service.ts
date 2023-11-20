@@ -8,12 +8,14 @@ import ProviderService from 'src/providers/provider.service';
 import IllustrationService from 'src/illustration/illustration.service';
 import ProvidersSettings from './models/providers.settings';
 import Slug from 'src/slug/slug';
+import Logger from 'src/logger/logger';
 
 type ProviderName = keyof ProvidersSettings;
 
 @Injectable()
 export default class ProvidersIllustrationService implements OnModuleInit {
 	private baseIllustrationFolderPath: string;
+	private readonly logger: Logger = new Logger(ProvidersIllustrationService.name);
 	constructor(
 		private settingsService: SettingsService,
 		@Inject(forwardRef(() => ProviderService))
@@ -59,7 +61,7 @@ export default class ProvidersIllustrationService implements OnModuleInit {
 
 			if (!this.fileManagerService.fileExists(iconPath)) {
 				this.illustrationService.downloadIllustration(provider.getProviderIconUrl())
-					.catch(() => {})
+					.catch(() => this.logger.error(`Could not download ${provider.name}'s icon`))
 					.then((buffer) => {
 						if (buffer) {
 							this.illustrationService.saveIllustration(buffer, iconPath);
@@ -68,7 +70,7 @@ export default class ProvidersIllustrationService implements OnModuleInit {
 			}
 			if (!this.fileManagerService.fileExists(bannerPath)) {
 				this.illustrationService.downloadIllustration(provider.getProviderBannerUrl())
-					.catch(() => {})
+					.catch(() => this.logger.error(`Could not download ${provider.name}'s banner`))
 					.then((buffer) => {
 						if (buffer) {
 							this.illustrationService.saveIllustration(buffer, bannerPath);

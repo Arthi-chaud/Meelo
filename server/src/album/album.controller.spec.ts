@@ -274,6 +274,7 @@ describe('Album Controller', () => {
 							},
 							description: 'Album blah blah blah',
 							value: '1234',
+							rating: null,
 							url: providerService.getProviderById(provider.id).getAlbumURL('1234')
 						}]
 					});
