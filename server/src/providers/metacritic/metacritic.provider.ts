@@ -37,7 +37,7 @@ export default class MetacriticProvider extends IProvider<MetacriticSettings> im
 	}
 
 	getAlbumURL(albumIdentifier: string): string {
-		return `${this.getProviderHomepage()}/master/${albumIdentifier}`;
+		return `${this.getProviderHomepage()}/${albumIdentifier}`;
 	}
 
 	async getAlbumMetadataByIdentifier(albumIdentifier: string): Promise<AlbumMetadata> {
