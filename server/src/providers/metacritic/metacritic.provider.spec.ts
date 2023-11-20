@@ -24,6 +24,13 @@ describe('Metacritic Provider', () => {
 		module.close();
 	});
 
+	describe('Get Resources URLs', () => {
+		it("Should format the URL for the album", () => {
+			expect(metacriticProvider.getAlbumURL('music/midnights/taylor-swift'))
+				.toBe("https://www.metacritic.com/music/midnights/taylor-swift");
+		})
+	});
+
 	describe('Get Resource URLs', () => {
 		it("Should Get Rating and description", async () => {
 			const metadata = await metacriticProvider.getAlbumMetadataByIdentifier('music/confessions-on-a-dance-floor/madonna')
