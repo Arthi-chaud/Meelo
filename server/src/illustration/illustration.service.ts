@@ -79,13 +79,16 @@ export default class IllustrationService {
 	 * @param outPath path to the file to save the illustration as
 	 */
 	async downloadIllustration(illustrationURL: string) {
-		try {
-			const image = await Jimp.read(illustrationURL);
+		for (let iteration = 0; iteration < 100; iteration++) {
+			try {
+				const image = await Jimp.read(illustrationURL);
 
-			return image.getBufferAsync(image.getMIME());
-		} catch {
-			throw new CantDownloadIllustrationException(illustrationURL);
+				return image.getBufferAsync(image.getMIME());
+			} catch {
+				throw new CantDownloadIllustrationException(illustrationURL);
+			}
 		}
+		throw new CantDownloadIllustrationException(illustrationURL);
 	}
 
 	/**
