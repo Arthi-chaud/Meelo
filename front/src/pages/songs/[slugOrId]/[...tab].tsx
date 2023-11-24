@@ -7,7 +7,7 @@ import {
 } from "../../../api/use-query";
 import LoadingPage from "../../../components/loading/loading-page";
 import {
-	Box, Button, Divider, Grid, Stack, Tab, Tabs, Typography
+	Box, Button, Divider, Stack, Tab, Tabs, Typography
 } from "@mui/material";
 import LyricsBox from "../../../components/lyrics";
 import SongRelationPageHeader from "../../../components/relation-page-header/song-relation-page-header";
@@ -39,7 +39,7 @@ export const getServerSideProps = prepareSSR((context) => {
 	};
 });
 
-const tabs = ['lyrics', 'versions', 'tracks'] as const;
+const tabs = ['lyrics', 'versions', 'tracks', 'more'] as const;
 
 const SongPage = (props: InferSSRProps<typeof getServerSideProps>) => {
 	/**
@@ -63,36 +63,16 @@ const SongPage = (props: InferSSRProps<typeof getServerSideProps>) => {
 	return <Box sx={{ width: '100%' }}>
 		<BackgroundBlurhash blurhash={song.data.illustration?.blurhash} />
 		<SongRelationPageHeader song={song.data}/>
-		<Grid container direction={{ xs: 'column', md: 'row' }} spacing={2}>
-			<Grid item xs>
-				{ (genres.data.pages.at(0)?.items.length ?? 0) != 0 && <Stack direction='row' sx={{ overflowY: 'scroll', alignItems: 'center' }} spacing={2}>
-					<Typography sx={{ overflow: 'unset' }}><Translate translationKey="genres"/>:</Typography>
-					{ genres.data.pages.at(0)?.items.map((genre) => <Link key={genre.slug} href={`/genres/${genre.slug}`}>
-						<Button variant="outlined">
-							{genre.name}
-						</Button>
-					</Link>)}
-				</Stack>}
-				{ song.data.externalIds.length != 0 && <Stack direction='row' sx={{ overflowY: 'scroll', alignItems: 'center', paddingTop: 2 }} spacing={2}>
-					<Typography sx={{ overflow: 'unset' }}><Translate translationKey="externalLinks"/>:</Typography>
-					{ song.data.externalIds.filter(({ url }) => url !== null).map((externalId) =>
-						<ExternalIdBadge key={externalId.provider.name} externalId={externalId}/>)
-					}
-				</Stack>}
-			</Grid>
-			<Grid item>
-				<Button variant="contained" sx={{ width: '100%' }} endIcon={<PlayIcon />}
-					onClick={() => queryClient.fetchQuery(API.getMasterTrack(songIdentifier, ['release']))
-						.then((master) => dispatch(playTrack({
-							track: master,
-							artist: song.data.artist,
-							release: master.release
-						})))
-					}>
-					<Translate translationKey="play"/>
-				</Button>
-			</Grid>
-		</Grid>
+		<Button variant="contained" sx={{ width: '100%', marginTop: 1 }} endIcon={<PlayIcon />}
+			onClick={() => queryClient.fetchQuery(API.getMasterTrack(songIdentifier, ['release']))
+				.then((master) => dispatch(playTrack({
+					track: master,
+					artist: song.data.artist,
+					release: master.release
+				})))
+			}>
+			<Translate translationKey="play"/>
+		</Button>
 		<Divider sx={{ paddingY: 1 }}/>
 		<Tabs
 			value={tab}
@@ -100,13 +80,38 @@ const SongPage = (props: InferSSRProps<typeof getServerSideProps>) => {
 				setTabs(tabName);
 				router.push(`/songs/${songIdentifier}/${tabName}`, undefined, { shallow: true });
 			}}
-			variant="fullWidth"
+			variant="scrollable"
 		>
 			{tabs.map((value, index) => (
-				<Tab key={index} value={value} label={<Translate translationKey={value}/>}/>
+				<Tab key={index} value={value} sx={{ minWidth: "fit-content", flex: 1 }} label={<Translate translationKey={value}/>}/>
 			))}
 		</Tabs>
 		<Box sx={{ paddingY: 2 }}>
+			{ tab == 'more' && <>
+				{ (genres.data.pages.at(0)?.items.length ?? 0) != 0 && <Stack direction='row' sx={{ overflowX: 'scroll', alignItems: 'center' }} spacing={2}>
+					<Typography sx={{ overflow: 'unset' }}><Translate translationKey="genres"/>:</Typography>
+					{ genres.data.pages.at(0)?.items.map((genre) => <Link key={genre.slug} href={`/genres/${genre.slug}`}>
+						<Button variant="outlined">
+							{genre.name}
+						</Button>
+					</Link>)}
+				</Stack>}
+				{ song.data.externalIds.length != 0 && <Stack direction='row' sx={{ overflowX: 'scroll', alignItems: 'center', paddingTop: 2 }} spacing={2}>
+					<Typography sx={{ overflow: 'unset' }}><Translate translationKey="externalLinks"/>:</Typography>
+					{ song.data.externalIds
+						.filter(({ url }) => url !== null)
+						.map((externalId) => <ExternalIdBadge
+							key={externalId.provider.name} externalId={externalId}
+						/>)
+					}
+				</Stack>}
+				<Typography variant='body1' sx={{ paddingTop: 2 }}>
+					{song.data.externalIds
+						.map(({ description }) => description)
+						.filter((desc) => desc !== null).at(0)
+					}
+				</Typography>
+			</>}
 			{ tab == 'lyrics' && (
 				lyrics.isLoading
 					? <LoadingPage/>

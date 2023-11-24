@@ -16,7 +16,7 @@ const RelationPageHeader = (props: RelationHeaderProps) => {
 			<Grid item container direction='column'
 				xs sx={{ justifyContent: 'space-evenly' }}>
 				<Grid item>
-					<Typography variant='h3' sx={{ fontWeight: 'bold' }}>
+					<Typography variant='h3' sx={{ fontWeight: 'bold', WebkitLineClamp: 2, display: '-webkit-box', WebkitBoxOrient: 'vertical' }}>
 						{props.title}
 					</Typography>
 				</Grid>
