@@ -1,6 +1,6 @@
 import {
 	Button, Container, Divider, Grid, IconButton,
-	ListSubheader, Rating, Stack, Typography, useMediaQuery, useTheme
+	ListSubheader, Typography, useMediaQuery, useTheme
 } from "@mui/material";
 import { Box } from "@mui/system";
 import { useRouter } from "next/router";
@@ -34,7 +34,6 @@ import getYear from "../../utils/getYear";
 import Fade from "../../components/fade";
 import BackgroundBlurhash from "../../components/blurhash-background";
 import ResourceDescriptionExpandable from "../../components/resource-description-expandable";
-import { Star1 } from "iconsax-react";
 
 const releaseQuery = (releaseIdentifier: string | number) => API.getRelease(releaseIdentifier, ['album', 'externalIds']);
 const releaseTracklistQuery = (releaseIdentifier: string | number) => API.getReleaseTrackList(releaseIdentifier, ['artist', 'featuring']);
@@ -145,10 +144,6 @@ const ReleasePage = (props: InferSSRProps<typeof getServerSideProps>) => {
 	const illustration = useMemo(() => release.data?.illustration, [release]);
 	const externalIdWithDescription = album.data?.externalIds
 		.find(({ description }) => description !== null);
-	const albumRating = album.data?.externalIds
-		.map(({ rating }) => rating)
-		.filter((rating) => rating !== null)
-		.sort().at(-1) ?? null;
 
 	// eslint-disable-next-line no-extra-parens
 	if (!release.data || !album.data || !artists.data || !trackList) {
@@ -182,23 +177,12 @@ const ReleasePage = (props: InferSSRProps<typeof getServerSideProps>) => {
 							</Link>
 						</Grid>
 					}
-					<Grid item style={{ alignItems: 'center', display: 'inline-flex' }}>
-						<Typography sx={{ color: 'text.disabled' }} component={'span'}>
+					<Grid item>
+						<Typography sx={{ color: 'text.disabled' }}>
 							{(release.data.releaseDate || release.data.album.releaseDate) &&
 								`${new Date(release.data.releaseDate ?? release.data.album.releaseDate!).getFullYear()} - `}
 							{formatDuration(totalDuration ?? undefined)}
 						</Typography>
-						{albumRating && <Rating
-							sx={{ paddingLeft: 1.5 }}
-							readOnly
-							value={albumRating / 20}
-							icon={<Star1 size={18} style={{ marginTop: -3 }} color={
-								illustration?.colors.sort().at(4)
-							} />}
-							emptyIcon={<Star1 size={18} style={{ marginTop: -3 }}
-								color={theme.palette.text.disabled} opacity={0.2}
-							/>}
-						/>}
 					</Grid>
 				</Grid>
 				<Grid item container lg={3}
@@ -354,15 +338,14 @@ const ReleasePage = (props: InferSSRProps<typeof getServerSideProps>) => {
 				display={[...album.data.externalIds, ...release.data.externalIds].length != 0}
 				title={<Translate translationKey="externalLinks"/>}
 			>
-				<Stack direction={'row'} spacing={2}>
+				<Grid container spacing={1}>
 					{[...album.data.externalIds, ...release.data.externalIds]
 						.filter(({ url }) => url !== null)
-						.map((externalId) =>
-							<ExternalIdBadge
-								key={externalId.provider.name}
-								externalId={externalId}/>)
+						.map((externalId) => <Grid item key={externalId.provider.name}>
+							<ExternalIdBadge externalId={externalId}/>
+						</Grid>)
 					}
-				</Stack>
+				</Grid>
 			</RelatedContentSection>
 		</Container>
 	</>;
