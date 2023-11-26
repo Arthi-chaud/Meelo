@@ -104,7 +104,7 @@ describe('Genius Provider', () => {
 	describe('Get Artist Illustration', () => {
 		it("should get artist illustration", async () => {
 			expect(await geniusProvider.getArtistIllustrationUrl('P-nk'))
-				.toBe("https://images.genius.com/3ab61718877f5b1e7b119606361c92ad.522x522x1.jpg");
+				.toBe("https://images.genius.com/8e9d7b2c7e977c8009872f1b28d369c0.474x474x1.jpg");
 		});
 		it("should get artist illustration", async () => {
 			expect(await geniusProvider.getArtistIllustrationUrl('Holly-valance'))
