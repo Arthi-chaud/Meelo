@@ -1,21 +1,20 @@
 import {
-	Box, Card, CardActionArea,
-	CardContent, CardMedia, NoSsr, Typography, useTheme
+	Box, Card, CardActionArea, CardContent,
+	CardMedia, Grid, Link as MUILink, NoSsr, Typography, useTheme
 } from "@mui/material";
 import Link from 'next/link';
-import { CSSProperties, useState } from "react";
+import { useState } from "react";
 import Fade from "../fade";
-import hexToRgba from "hex-to-rgba";
+import { RequireAllOrNone } from "type-fest";
 
 const titleStyle = {
-	display: '-webkit-box',
-	WebkitBoxOrient: 'vertical' as CSSProperties['WebkitBoxOrient']
-};
+	textOverflow: 'ellipsis',
+	whiteSpace: 'nowrap',
+	overflow: 'hidden'
+} as const;
 
 type TileProps = {
 	title: string,
-	subtitle?: string
-	thirdTitle?: string,
 	illustration: JSX.Element,
 	contextualMenu?: JSX.Element
 	/**
@@ -28,75 +27,118 @@ type TileProps = {
 	onClick?: () => void;
 	/* Additional props to customize card */
 	cardProps?: Parameters<typeof Card>[0]
-}
+} & RequireAllOrNone<{
+	subtitle?: string
+	/**
+	 * URL to push on secondary tile tap
+	 */
+	secondaryHref?: string;
+}>
 
 const Tile = (props: TileProps) => {
 	const [isHovering, setIsHovering] = useState(false);
 	const [isHoveringCtxtMenu, setIsHoveringCtxtMenu] = useState(false);
 	const theme = useTheme();
+	const contextualMenu = <NoSsr>
+		{props.contextualMenu &&
+			<Fade in={isHovering} style={{ zIndex: 2 }}
+				hidden={!isHovering}
+				onClick={(event) => {
+					event.preventDefault();
+					event.stopPropagation();
+				}}
+				onTouchStart={() => setIsHoveringCtxtMenu(false)}
+				onTouchEnd={() => setIsHoveringCtxtMenu(false)}
+				onMouseOver={() => setIsHoveringCtxtMenu(true)}
+				onMouseLeave={() => setIsHoveringCtxtMenu(false)}
+				mountOnEnter
+				unmountOnExit
+			>
+				<Box>{props.contextualMenu}</Box>
+			</Fade>
+		}
+	</NoSsr>;
 	const component =
 		<Card {...props.cardProps}
 			sx={{
-				height: '100%',
-				background: hexToRgba('#ffffff', 0.05),
+				boxShadow: 'none',
+				background: 'none',
 				backdropFilter: 'blur(10px)',
 				...props.cardProps?.sx
 			}}
-			onMouseOver={() => setIsHovering(true)} onMouseLeave={() => {
-				setIsHovering(false);
-				setIsHoveringCtxtMenu(false);
-			}}
 		>
 			<CardActionArea onClick={props.onClick} disableRipple={isHoveringCtxtMenu} sx={{
-				height: '100%', display: 'flex',
-				flexDirection: 'column', alignItems: 'space-between'
+				height: '100%', width: '100%', display: 'flex',
 			}}>
-				<NoSsr>
-					{props.contextualMenu &&
-						<Fade in={isHovering} style={{ position: 'absolute', top: '0', right: '0', zIndex: 2 }}
-							hidden={!isHovering} onClick={(event) => {
-								event.preventDefault();
-								event.stopPropagation();
-							}}
-							onTouchStart={() => setIsHoveringCtxtMenu(false)}
-							onTouchEnd={() => setIsHoveringCtxtMenu(false)}
-							onMouseOver={() => setIsHoveringCtxtMenu(true)}
-							onMouseLeave={() => setIsHoveringCtxtMenu(false)}
-							mountOnEnter
-							unmountOnExit
-						>
-							<Box>{props.contextualMenu}</Box>
-						</Fade>
-					}
-				</NoSsr>
 				<CardMedia sx={{ width: '100%' }}>
-					{props.illustration}
-				</CardMedia>
-				<CardContent style={{
-					flexDirection: 'column', display: 'flex', height: '100%',
-					alignContent: 'center', justifyContent: 'center'
-				}}>
-					<Typography
-						sx={{ fontWeight: 'medium', textAlign: 'center' }}
-						style={{ ...titleStyle, overflowWrap: 'anywhere', WebkitLineClamp: 2 }}
-					>
-						{props.title}
-					</Typography>
-					{ props.subtitle &&
-					<Typography
-						sx={{ color: "text.disabled", textAlign: 'center' }}
-						style={{ ...titleStyle, overflowWrap: 'anywhere', WebkitLineClamp: 1 }}
-					>
-						{props.subtitle}
-					</Typography>
+					{ props.href
+						? <Link href={props.href}>{props.illustration}</Link>
+						: props.illustration
 					}
-				</CardContent>
+				</CardMedia>
 			</CardActionArea>
+			<CardContent
+				onMouseOver={() => setIsHovering(true)}
+				onMouseLeave={() => setIsHovering(false)}
+				sx={{
+					height: '100%', width: '100%',
+					padding: 1,
+				}}
+			>
+				<Grid container sx={{ justifyContent: 'space-between' }}>
+					<Grid item xs={isHovering ? 10 : undefined} sx={{ width: '100%' }}>
+						<Box sx={{
+							display: 'flex',
+							flexDirection: 'column',
+							width: '100%',
+						}}>
+							<Typography
+								onClick={props.onClick}
+								variant='body1'
+								sx={{
+									transition: 'width .3s',
+									width: isHovering ? '90%' : '100%',
+									fontWeight: 'medium',
+									textAlign: props.subtitle ? 'left' : 'center',
+									// To prevent shift caused by ctxt menu
+									paddingY: props.subtitle ? 0 : 1,
+									cursor: props.onClick ? 'pointer' : undefined
+								}}
+								style={{ ...titleStyle }}
+							>
+								{ props.href
+									? <MUILink component={Link} underline="hover" href={props.href}>
+										{props.title}
+									</MUILink>
+									: props.title
+								}
+							</Typography>
+							{props.subtitle &&
+							<Typography
+								variant='body2'
+								sx={{ color: "text.disabled", textAlign: 'left' }}
+								style={titleStyle}
+							>
+								{ props.secondaryHref
+									? <MUILink component={Link} underline="hover" color={'inherit'} href={props.secondaryHref}>
+										{props.subtitle}
+									</MUILink>
+									: props.subtitle
+								}
+							</Typography>}
+						</Box>
+					</Grid>
+					<Grid item xs={isHovering ? 2 : 0} sx={{
+						display: 'flex',
+						alignItems: 'center',
+						justifyContent: 'end'
+					}}>
+						{contextualMenu}
+					</Grid>
+				</Grid>
+			</CardContent>
 		</Card>;
 
-	if (props.href) {
-		return <Link href={isHoveringCtxtMenu ? {} : props.href}>{component}</Link>;
-	}
 	return component;
 };
 

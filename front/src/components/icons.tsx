@@ -46,7 +46,7 @@ export const MasterIcon = Iconsax.Star1;
 export const ShareIcon = Iconsax.Share;
 export const CheckIcon = Iconsax.TickCircle;
 export const ContextualMenuIcon = (props: IconProps) =>
-	<Iconsax.More {...props} style={{ rotate: '90deg' }} />;
+	<Iconsax.More {...props} style={{ rotate: '90deg' }} size={18} />;
 export const UpgradeIcon = Iconsax.Star;
 export const GridIcon = Iconsax.Category;
 export const ListIcon = Iconsax.TextalignJustifycenter;
