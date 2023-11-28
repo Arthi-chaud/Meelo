@@ -21,7 +21,9 @@ const AlbumTile = (props: {
 			?? compilationKeyword
 		}
 		href={`/albums/${props.album.artist?.slug ?? 'compilations'}+${props.album.slug}`}
-		secondaryHref={props.album.artist?.slug ? `/artists/${props.album.artist.slug}` : undefined}
+		secondaryHref={!props.formatSubtitle
+			? props.album.artist?.slug ? `/artists/${props.album.artist.slug}` : undefined
+			: undefined}
 		illustration={<Illustration illustration={props.album.illustration} quality="med"/>}
 	/>;
 };

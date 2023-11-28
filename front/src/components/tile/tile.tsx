@@ -89,9 +89,10 @@ const Tile = (props: TileProps) => {
 				flexDirection: 'column', alignItems: 'space-between'
 			}}>
 				<CardMedia sx={{ width: '100%' }}>
-					<Link href={props.href ?? {}}>
-						{props.illustration}
-					</Link>
+					{ props.href
+						? <Link href={props.href}>{props.illustration}</Link>
+						: props.illustration
+					}
 				</CardMedia>
 				<CardContent
 					onMouseOver={() => setIsHovering(true)}
@@ -102,7 +103,7 @@ const Tile = (props: TileProps) => {
 					}}
 				>
 					<Grid container sx={{ justifyContent: 'space-between' }}>
-						<Grid item xs={isHovering ? 9 : undefined} sx={{ width: '100%' }}>
+						<Grid item xs={isHovering ? 10 : undefined} sx={{ width: '100%' }}>
 							<Box sx={{
 								display: 'flex',
 								flexDirection: 'column',
@@ -110,25 +111,35 @@ const Tile = (props: TileProps) => {
 							}}>
 								<Typography
 									variant='body1'
-									sx={{ fontWeight: 'medium', textAlign: 'left' }}
+									sx={{
+										transition: 'width .3s',
+										width: isHovering ? '90%' : '100%',
+										fontWeight: 'medium',
+										textAlign: props.subtitle ? 'left' : 'center',
+										// To prevent shift caused by ctxt menu
+										paddingY: props.subtitle ? 0 : 1
+									}}
 									style={{ ...titleStyle }}
 								>
-									<Link href={props.href ?? {}}>
-										{props.title}
-									</Link>
+									{ props.href
+										? <Link href={props.href}>{props.title}</Link>
+										: props.title
+									}
 								</Typography>
+								{props.subtitle &&
 								<Typography
 									variant='body2'
 									sx={{ color: "text.disabled", textAlign: 'left' }}
 									style={titleStyle}
 								>
-									<Link href={props.secondaryHref ?? {}}>
-										{props.subtitle}
-									</Link>
-								</Typography>
+									{ props.secondaryHref
+										? <Link href={props.secondaryHref}>{props.subtitle}</Link>
+										: props.subtitle
+									}
+								</Typography>}
 							</Box>
 						</Grid>
-						<Grid item xs={isHovering ? 3 : 0} sx={{
+						<Grid item xs={isHovering ? 2 : 0} sx={{
 							display: 'flex',
 							alignItems: 'center',
 							justifyContent: 'end'
