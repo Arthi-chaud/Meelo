@@ -70,6 +70,7 @@ export default class DiscogsProvider extends IProvider<DiscogsSettings> implemen
 
 			if (isNumber(album.id) && isString(album.notes_plaintext)) {
 				return {
+					genres: album.genres,
 					value: album.id.toString(),
 					rating: null,
 					description: album.notes_plaintext

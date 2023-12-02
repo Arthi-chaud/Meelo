@@ -14,6 +14,8 @@ import { HttpService } from "@nestjs/axios";
 import { Album, Song } from "@prisma/client";
 import { IEntity, IRelation } from "musicbrainz-api";
 import WikipediaProvider from "./wikipedia/wikipedia.provider";
+import SettingsService from "src/settings/settings.service";
+import GenreService from "src/genre/genre.service";
 
 type ExternalIds = { externalIds: ExternalId[] }
 
@@ -22,6 +24,8 @@ export default class ExternalIdService {
 	private readonly logger: Logger = new Logger(ExternalIdService.name);
 	constructor(
 		private prismaService: PrismaService,
+		private settingsService: SettingsService,
+		private genreService: GenreService,
 		private readonly httpService: HttpService,
 		@Inject(forwardRef(() => ProviderService))
 		private providerService: ProviderService
@@ -86,12 +90,36 @@ export default class ExternalIdService {
 			},
 			(provider, mbid) => provider.getAlbumEntry(mbid),
 			(provider) => provider.getAlbumWikidataIdentifierProperty(),
-			({ value, description, rating }, providerId) =>
-				({ value, description, rating, albumId: album.id, providerId }),
-			(ids) => this.prismaService.albumExternalId.createMany({
-				data: ids,
-				skipDuplicates: true
-			})
+			({ value, description, rating, genres }, providerId) =>
+				({ value, description, rating, genres, albumId: album.id, providerId }),
+			async (ids) => {
+				const newGenres = ids
+					.map(({ genres }) => genres)
+					.filter((genres) => genres != undefined)
+					.flat()
+					.map((genre) => this.genreService.formatCreateInput({ name: genre! }));
+
+				this.logger.error(ids);
+				if (this.settingsService.settingsValues.metadata.useExternalProviderGenres
+					&& newGenres.length > 0
+				) {
+					await this.prismaService.album.update({
+						where: { id: album.id },
+						data: {
+							genres: {
+								connectOrCreate: newGenres.map((genre) => ({
+									where: { slug: genre.slug },
+									create: genre
+								}))
+							}
+						}
+					});
+				}
+				return this.prismaService.albumExternalId.createMany({
+					data: ids.map(({ genres, ...id }) => id),
+					skipDuplicates: true
+				});
+			}
 		);
 	}
 

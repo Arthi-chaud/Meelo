@@ -99,15 +99,26 @@ export default class MusicBrainzProvider extends IProvider<MusicBrainzSettings> 
 			}).then((result) => result.releases
 				.filter((release) => release["artist-credit"]?.find((artist) =>
 					artist.artist.id == (artistIdentifier ?? this.compilationArtistID))));
+			const releaseGroupId = searchResult.at(0)!["release-group"]!.id;
 
-			return this.getAlbumMetadataByIdentifier(searchResult.at(0)!["release-group"]!.id);
+			return this.getAlbumMetadataByIdentifier(releaseGroupId);
 		} catch (err) {
 			throw new ProviderActionFailedError(this.name, 'getAlbumIdentifier', err.message);
 		}
 	}
 
 	async getAlbumMetadataByIdentifier(albumIdentifer: MBID): Promise<AlbumMetadata> {
-		return { description: null, value: albumIdentifer, rating: null };
+		const releaseGroup = await this.mbClient.lookupReleaseGroup(
+			albumIdentifer, ['genres']
+		);
+
+		return {
+			genres: (releaseGroup as unknown as { genres: { name: string }[] })?.genres
+				.map(({ name: tag }) => tag.charAt(0).toUpperCase() + tag.slice(1)),
+			description: null,
+			value: releaseGroup.id,
+			rating: null
+		};
 	}
 
 	getAlbumURL(albumIdentifier: MBID): string {
@@ -134,9 +145,10 @@ export default class MusicBrainzProvider extends IProvider<MusicBrainzSettings> 
 				}).find((value) => value);
 
 				if (workId) {
-					return this
-						.getSongMetadataByIdentifier(workId)
-						.catch(() => ({ value: workId, description: null }));
+					return {
+						description: null,
+						value: workId
+					};
 				}
 			}
 		} catch (err) {
@@ -152,8 +164,8 @@ export default class MusicBrainzProvider extends IProvider<MusicBrainzSettings> 
 		};
 	}
 
-	getSongURL(artistIdentifier: MBID): string {
-		return `${this.getProviderHomepage()}/work/${artistIdentifier}`;
+	getSongURL(songIdentifier: MBID): string {
+		return `${this.getProviderHomepage()}/work/${songIdentifier}`;
 	}
 
 	// async getSongGenres(songIdentifier: MBID): Promise<string[]> {

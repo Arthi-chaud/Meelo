@@ -60,6 +60,8 @@ model Genre {
 	slug			String	@unique
 	/// @description The songs from this genre
 	songs			Song[]
+	/// @description The albums from this genre
+	albums			Album[]
 	@@map("genres")
 }
 
@@ -111,6 +113,8 @@ model Album {
 	artistId		Int?
 	/// @description Array of external IDs
 	externalIds		AlbumExternalId[]
+	/// @description The genres of the album
+	genres Genre[]
 	@@unique([slug, artistId])
 	@@map("albums")
 }
