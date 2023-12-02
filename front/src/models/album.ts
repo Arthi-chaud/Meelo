@@ -3,6 +3,7 @@ import Artist from "./artist";
 import Illustration from "./illustration";
 import Resource from "./resource";
 import ExternalId from './external-id';
+import Genre from './genre';
 
 export const AlbumType = [
 	'StudioRecording',
@@ -52,12 +53,13 @@ type Album = yup.InferType<typeof Album>;
 
 export default Album;
 
-export type AlbumInclude = 'artist' | 'externalIds';
+export type AlbumInclude = 'artist' | 'externalIds' | 'genres';
 
 const AlbumWithRelations = <Selection extends AlbumInclude | never = never>(
 	relation: Selection[]
 ) => Album.concat(yup.object({
 		artist: Artist.required().nullable(),
+		genres: yup.array(Genre.required()).required(),
 		externalIds: yup.array(ExternalId.required().concat(yup.object({
 			rating: yup.number().required().nullable()
 		}))).required()

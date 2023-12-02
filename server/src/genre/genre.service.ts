@@ -100,11 +100,16 @@ export default class GenreService extends RepositoryService<
 		}
 		if (where.album) {
 			query = deepmerge(query, {
-				songs: { some: {
-					tracks: { some: {
-						release: { album: AlbumService.formatWhereInput(where.album) }
-					} }
-				} }
+				OR: [
+					{
+						songs: { some: {
+							tracks: { some: {
+								release: { album: AlbumService.formatWhereInput(where.album) }
+							} }
+						} }
+					},
+					{ albums: { some: AlbumService.formatWhereInput(where.album) } }
+				]
 			});
 		}
 		return query;

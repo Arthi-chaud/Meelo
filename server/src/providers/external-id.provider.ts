@@ -99,7 +99,6 @@ export default class ExternalIdService {
 					.flat()
 					.map((genre) => this.genreService.formatCreateInput({ name: genre! }));
 
-				this.logger.error(ids);
 				if (this.settingsService.settingsValues.metadata.useExternalProviderGenres
 					&& newGenres.length > 0
 				) {
