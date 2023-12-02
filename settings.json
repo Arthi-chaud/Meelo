@@ -5,7 +5,8 @@
 	],
 	"metadata": {
 		"source": "embedded",
-		"order": "only"
+		"order": "only",
+		"useExternalProviderGenres": true
 	},
 	"providers": {
 		"genius": {},

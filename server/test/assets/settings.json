@@ -6,7 +6,8 @@
 	],
 	"metadata": {
 		"source": "embedded",
-		"order": "only"
+		"order": "only",
+		"useExternalProviderGenres": false
 	},
 	"providers": {
 		"genius": { "apiKey": "azerty" },

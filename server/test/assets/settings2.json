@@ -5,7 +5,8 @@
 	],
 	"metadata": {
 		"source": "path",
-		"order": "preferred"
+		"order": "preferred",
+		"useExternalProviderGenres": true
 	},
 	"providers": {
 		

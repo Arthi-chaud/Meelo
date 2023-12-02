@@ -24,6 +24,7 @@ All fields are **required**
   - `order`: Define the missing metadata fallback behaviour. *Note*: if this method is enabled, it will consider 'cover.*' file in the same directory as the media file as an illustration candidate.
     - `only`: If a field is missing from the primary metadata source, will not use the other method to get it.
     - `preferred`: If a field is missing from the primary metadata source, will try to use the other method to get it.
+  - `useExternalProviderGenres`: Set to `true` if you want genres from external metadata providers to be used. These genres will be used alongside with embedded genres (if parsing embedded metadata is enabled)
 - `providers`: Please refer to [*Providers*](../providers)
 - `compilations`:
   - `artists`: Optional field. If an album artist in this list, their albums will be considered to be compilation albums.
