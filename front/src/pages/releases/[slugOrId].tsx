@@ -150,6 +150,7 @@ const ReleasePage = (props: InferSSRProps<typeof getServerSideProps>) => {
 		.map(({ rating }) => rating)
 		.filter((rating) => rating !== null)
 		.sort().at(-1) ?? null;
+	const colors = Array.of(...illustration?.colors ?? []).sort();
 
 	// eslint-disable-next-line no-extra-parens
 	if (!release.data || !album.data || !artists.data || !trackList) {
@@ -193,9 +194,7 @@ const ReleasePage = (props: InferSSRProps<typeof getServerSideProps>) => {
 							sx={{ paddingLeft: 1.5 }}
 							readOnly
 							value={albumRating / 20}
-							icon={<Star1 size={18} style={{ marginTop: -3 }} color={
-								Array.of(...illustration?.colors ?? []).sort().at(4)
-							} />}
+							icon={<Star1 size={18} style={{ marginTop: -3 }} color={colors.at(4)}/>}
 							emptyIcon={<Star1 size={18} style={{ marginTop: -3 }}
 								color={theme.palette.text.disabled} opacity={0.2}
 							/>}
@@ -246,7 +245,7 @@ const ReleasePage = (props: InferSSRProps<typeof getServerSideProps>) => {
 									</Grid>
 									{ albumGenres.data?.pages.at(0)?.items.map((genre) =>
 										<Grid item key={genre.id} sx={{ display: 'flex' }}>
-											<GenreButton genre={genre}/>
+											<GenreButton genre={genre} color={colors.at(4)}/>
 										</Grid>) ?? []}
 								</Grid>
 								<Divider sx={{
