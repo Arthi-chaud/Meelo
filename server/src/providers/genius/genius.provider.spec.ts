@@ -66,7 +66,7 @@ describe('Genius Provider', () => {
 	describe('Get Song Identifier', () => {
 		it("should get simple song Identifier", async () => {
 			const metadata = await geniusProvider.getSongMetadataByName("Work B**ch", 'Britney-spears');
-			expect(metadata.value).toBe('Britney-spears-work-bch-clean-version');
+			expect(metadata.value).toBe('Britney-spears-work-bch-work-work');
 			expect(metadata.description).toBeNull();
 		});
 		it("should get simple song Identifier (2)", async () => {

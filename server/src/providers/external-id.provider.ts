@@ -25,6 +25,7 @@ export default class ExternalIdService {
 	constructor(
 		private prismaService: PrismaService,
 		private settingsService: SettingsService,
+		@Inject(forwardRef(() => GenreService))
 		private genreService: GenreService,
 		private readonly httpService: HttpService,
 		@Inject(forwardRef(() => ProviderService))

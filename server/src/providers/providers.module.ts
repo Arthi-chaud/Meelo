@@ -20,7 +20,7 @@ import GenreModule from 'src/genre/genre.module';
 		HttpModule,
 		SettingsModule,
 		PrismaModule,
-		GenreModule,
+		forwardRef(() => GenreModule),
 		forwardRef(() => IllustrationModule)
 	],
 	providers: [
