@@ -14,13 +14,13 @@ import SongRelationPageHeader from "../../../components/relation-page-header/son
 import { useState } from "react";
 import InfiniteSongView from "../../../components/infinite/infinite-resource-view/infinite-song-view";
 import InfiniteTrackView from "../../../components/infinite/infinite-resource-view/infinite-track-view";
-import Link from "next/link";
 import { useDispatch } from "react-redux";
 import { playTrack } from "../../../state/playerSlice";
 import ExternalIdBadge from "../../../components/external-id-badge";
 import Translate from "../../../i18n/translate";
 import { PlayIcon } from "../../../components/icons";
 import BackgroundBlurhash from "../../../components/blurhash-background";
+import GenreButton from "../../../components/genre-button";
 
 export const getServerSideProps = prepareSSR((context) => {
 	const songIdentifier = getSlugOrId(context.params);
@@ -90,11 +90,9 @@ const SongPage = (props: InferSSRProps<typeof getServerSideProps>) => {
 			{ tab == 'more' && <>
 				{ (genres.data.pages.at(0)?.items.length ?? 0) != 0 && <Stack direction='row' sx={{ overflowX: 'scroll', alignItems: 'center' }} spacing={2}>
 					<Typography sx={{ overflow: 'unset' }}><Translate translationKey="genres"/>:</Typography>
-					{ genres.data.pages.at(0)?.items.map((genre) => <Link key={genre.slug} href={`/genres/${genre.slug}`}>
-						<Button variant="outlined">
-							{genre.name}
-						</Button>
-					</Link>)}
+					{ genres.data.pages.at(0)?.items.map((genre) =>
+						<GenreButton key={genre.slug} genre={genre}/>)
+					}
 				</Stack>}
 				{ song.data.externalIds.length != 0 && <Stack direction='row' sx={{ overflowX: 'scroll', alignItems: 'center', paddingTop: 2 }} spacing={2}>
 					<Typography sx={{ overflow: 'unset' }}><Translate translationKey="externalLinks"/>:</Typography>

@@ -35,6 +35,7 @@ import Fade from "../../components/fade";
 import BackgroundBlurhash from "../../components/blurhash-background";
 import ResourceDescriptionExpandable from "../../components/resource-description-expandable";
 import { Star1 } from "iconsax-react";
+import GenreButton from "../../components/genre-button";
 
 const releaseQuery = (releaseIdentifier: string | number) => API.getRelease(releaseIdentifier, ['album', 'externalIds']);
 const releaseTracklistQuery = (releaseIdentifier: string | number) => API.getReleaseTrackList(releaseIdentifier, ['artist', 'featuring']);
@@ -149,6 +150,7 @@ const ReleasePage = (props: InferSSRProps<typeof getServerSideProps>) => {
 		.map(({ rating }) => rating)
 		.filter((rating) => rating !== null)
 		.sort().at(-1) ?? null;
+	const colors = Array.of(...illustration?.colors ?? []).sort();
 
 	// eslint-disable-next-line no-extra-parens
 	if (!release.data || !album.data || !artists.data || !trackList) {
@@ -192,9 +194,7 @@ const ReleasePage = (props: InferSSRProps<typeof getServerSideProps>) => {
 							sx={{ paddingLeft: 1.5 }}
 							readOnly
 							value={albumRating / 20}
-							icon={<Star1 size={18} style={{ marginTop: -3 }} color={
-								Array.of(...illustration?.colors ?? []).sort().at(4)
-							} />}
+							icon={<Star1 size={18} style={{ marginTop: -3 }} color={colors.at(4)}/>}
 							emptyIcon={<Star1 size={18} style={{ marginTop: -3 }}
 								color={theme.palette.text.disabled} opacity={0.2}
 							/>}
@@ -234,22 +234,18 @@ const ReleasePage = (props: InferSSRProps<typeof getServerSideProps>) => {
 			</Grid>
 			<Grid container spacing={1} sx={{ display: 'flex', paddingY: 2 }}>
 				{ hasGenres &&
-					<Grid item lg={3} xs={12}>
+					<Grid item lg={3} xs={12} marginTop={1}>
 						<Fade in={albumGenres.data != undefined}>
 							<Box>
-								<Grid container spacing={1} sx={{ alignItems: 'center' }}>
+								<Grid container rowSpacing={1.5} spacing={1} sx={{ alignItems: 'center' }}>
 									<Grid item>
-										<ListSubheader sx={{ backgroundColor: 'transparent' }}>
+										<ListSubheader sx={{ backgroundColor: 'transparent', lineHeight: 'normal' }}>
 											<Translate translationKey="genres"/>:
 										</ListSubheader>
 									</Grid>
 									{ albumGenres.data?.pages.at(0)?.items.map((genre) =>
 										<Grid item key={genre.id} sx={{ display: 'flex' }}>
-											<Link href={`/genres/${genre.slug}`}>
-												<Button variant="outlined">
-													{ genre.name }
-												</Button>
-											</Link>
+											<GenreButton genre={genre} color={colors.at(4)}/>
 										</Grid>) ?? []}
 								</Grid>
 								<Divider sx={{
