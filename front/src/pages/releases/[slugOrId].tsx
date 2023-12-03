@@ -35,6 +35,7 @@ import Fade from "../../components/fade";
 import BackgroundBlurhash from "../../components/blurhash-background";
 import ResourceDescriptionExpandable from "../../components/resource-description-expandable";
 import { Star1 } from "iconsax-react";
+import GenreButton from "../../components/genre-button";
 
 const releaseQuery = (releaseIdentifier: string | number) => API.getRelease(releaseIdentifier, ['album', 'externalIds']);
 const releaseTracklistQuery = (releaseIdentifier: string | number) => API.getReleaseTrackList(releaseIdentifier, ['artist', 'featuring']);
@@ -234,22 +235,18 @@ const ReleasePage = (props: InferSSRProps<typeof getServerSideProps>) => {
 			</Grid>
 			<Grid container spacing={1} sx={{ display: 'flex', paddingY: 2 }}>
 				{ hasGenres &&
-					<Grid item lg={3} xs={12}>
+					<Grid item lg={3} xs={12} marginTop={1}>
 						<Fade in={albumGenres.data != undefined}>
 							<Box>
-								<Grid container spacing={1} sx={{ alignItems: 'center' }}>
+								<Grid container rowSpacing={1.5} spacing={1} sx={{ alignItems: 'center' }}>
 									<Grid item>
-										<ListSubheader sx={{ backgroundColor: 'transparent' }}>
+										<ListSubheader sx={{ backgroundColor: 'transparent', lineHeight: 'normal' }}>
 											<Translate translationKey="genres"/>:
 										</ListSubheader>
 									</Grid>
 									{ albumGenres.data?.pages.at(0)?.items.map((genre) =>
 										<Grid item key={genre.id} sx={{ display: 'flex' }}>
-											<Link href={`/genres/${genre.slug}`}>
-												<Button variant="outlined">
-													{ genre.name }
-												</Button>
-											</Link>
+											<GenreButton genre={genre}/>
 										</Grid>) ?? []}
 								</Grid>
 								<Divider sx={{
