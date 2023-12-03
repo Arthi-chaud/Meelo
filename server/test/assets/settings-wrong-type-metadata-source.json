@@ -5,6 +5,7 @@
 	],
 	"metadata": {
 		"source": "lastfm",
-		"order": "only"
+		"order": "only",
+		"useExternalProviderGenres": false
 	}
 }

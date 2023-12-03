@@ -29,6 +29,7 @@ import { PaginationParameters, buildPaginationParameters } from 'src/pagination/
 import IllustrationRepository from 'src/illustration/illustration.repository';
 import ParserService from 'src/metadata/parser.service';
 import deepmerge from 'deepmerge';
+import GenreService from 'src/genre/genre.service';
 
 @Injectable()
 export default class AlbumService extends RepositoryService<
@@ -168,15 +169,24 @@ export default class AlbumService extends RepositoryService<
 		}
 		if (where.genre) {
 			query = deepmerge(query, {
-				releases: {
-					some: {
-						tracks: {
+				OR: [
+					{
+						releases: {
 							some: {
-								song: SongService.formatManyWhereInput({ genre: where.genre })
+								tracks: {
+									some: {
+										song: SongService
+											.formatManyWhereInput({ genre: where.genre })
+									}
+								}
 							}
+						},
+					}, {
+						genres: {
+							some: GenreService.formatWhereInput(where.genre)
 						}
 					}
-				}
+				]
 			});
 		}
 		if (where.appearance) {

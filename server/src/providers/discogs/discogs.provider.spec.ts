@@ -57,6 +57,8 @@ describe('Discogs Provider', () => {
 			const metadata = await discogsProvider.getAlbumMetadataByIdentifier('24744')
 			expect(metadata.value).toBe('24744')
 			expect(metadata.description).not.toBeNull()
+			expect(metadata.genres).toContain('Electronic')
+			expect(metadata.genres).toContain('Rock')
 			expect(metadata!.description).toContain('Exciter is the tenth studio album by English electronic music band Depeche Mode')
 		})
 		it("Should throw, as the album does not exist", () => {

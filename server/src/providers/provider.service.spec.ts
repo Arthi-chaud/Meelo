@@ -15,6 +15,7 @@ import FileManagerModule from "src/file-manager/file-manager.module";
 import IllustrationModule from "src/illustration/illustration.module";
 import { forwardRef } from "@nestjs/common";
 import ProvidersModule from "./providers.module";
+import GenreModule from "src/genre/genre.module";
 
 describe("Provider Service", () => {
 	let providerService: ProviderService;
@@ -25,7 +26,7 @@ describe("Provider Service", () => {
 	let module: TestingModule;
 	beforeAll(async () => {
 		module = await createTestingModule({
-			imports: [HttpModule, ProvidersModule, SettingsModule, PrismaModule, FileManagerModule, forwardRef(() => IllustrationModule)],
+			imports: [HttpModule, ProvidersModule, SettingsModule, PrismaModule, FileManagerModule, forwardRef(() => IllustrationModule), forwardRef(() => GenreModule)],
 			providers: [GeniusProvider, MusicBrainzProvider, ProviderService, PrismaService],
 		}).overrideProvider(PrismaService).useClass(TestPrismaService).compile();
 		providerService = module.get(ProviderService);

@@ -6,7 +6,7 @@ import { ProviderMethodNotAvailableError } from "./provider.exception";
 import ProvidersSettings from "./models/providers.settings";
 
 export type ArtistMetadata = Omit<ArtistExternalId, 'id' | 'providerId' | 'artistId'>
-export type AlbumMetadata = Omit<AlbumExternalId, 'id' | 'providerId' | 'albumId'>
+export type AlbumMetadata = Omit<AlbumExternalId, 'id' | 'providerId' | 'albumId'> & { genres?: string[] }
 export type SongMetadata = Omit<SongExternalId, 'id' | 'providerId' | 'songId'>
 export type ReleaseMetadata = Omit<ReleaseExternalId, 'id' | 'providerId' | 'releaseId'>
 

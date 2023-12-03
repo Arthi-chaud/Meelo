@@ -13,12 +13,14 @@ import DiscogsProvider from './discogs/discogs.provider';
 import WikipediaProvider from './wikipedia/wikipedia.provider';
 import MetacriticProvider from './metacritic/metacritic.provider';
 import AllMusicProvider from './allmusic/allmusic.provider';
+import GenreModule from 'src/genre/genre.module';
 
 @Module({
 	imports: [
 		HttpModule,
 		SettingsModule,
 		PrismaModule,
+		forwardRef(() => GenreModule),
 		forwardRef(() => IllustrationModule)
 	],
 	providers: [

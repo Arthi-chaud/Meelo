@@ -31,7 +31,7 @@ import Playlist, {
 	PlaylistInclude, PlaylistSortingKeys, PlaylistWithRelations
 } from "../models/playlist";
 import { isSSR } from '../ssr';
-import { Task, ActiveTask } from "../models/task";
+import { ActiveTask, Task } from "../models/task";
 
 const AuthenticationResponse = yup.object({
 	access_token: yup.string().required()

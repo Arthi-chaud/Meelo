@@ -38,7 +38,7 @@ import { Star1 } from "iconsax-react";
 
 const releaseQuery = (releaseIdentifier: string | number) => API.getRelease(releaseIdentifier, ['album', 'externalIds']);
 const releaseTracklistQuery = (releaseIdentifier: string | number) => API.getReleaseTrackList(releaseIdentifier, ['artist', 'featuring']);
-const albumQuery = (albumId: number) => API.getAlbum(albumId, ['externalIds']);
+const albumQuery = (albumId: number) => API.getAlbum(albumId, ['externalIds', 'genres']);
 const artistsOnAlbumQuery = (albumId: number) => {
 	const query = API.getArtists({ album: albumId });
 

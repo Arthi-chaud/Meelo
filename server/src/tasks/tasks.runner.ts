@@ -59,6 +59,7 @@ export default class TaskRunner {
 		private artistService: ArtistService,
 		@Inject(forwardRef(() => GenreService))
 		private genresService: GenreService,
+		@Inject(forwardRef(() => ExternalIdService))
 		private externalIdService: ExternalIdService,
 		private lyricsService: LyricsService,
 		@Inject(forwardRef(() => PlaylistService))

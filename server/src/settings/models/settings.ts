@@ -38,6 +38,13 @@ class MetadataSettings {
 	@ApiProperty({ enum: metadataOrderValue })
 	@IsIn(metadataOrderValue)
 	order: typeof metadataOrderValue[number];
+
+	/**
+	 * Enable the use of genres from (enabled) external providers
+	 */
+	@ApiProperty()
+	@IsBoolean()
+	useExternalProviderGenres: boolean;
 }
 /**
  * Global settings of the Meelo server

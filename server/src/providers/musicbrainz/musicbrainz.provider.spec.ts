@@ -87,11 +87,15 @@ describe('MusicBrainz Provider', () => {
 			const id = await musicBrainzProvider.getAlbumMetadataByName("Blackout", "45a663b5-b1cb-4a91-bff6-2bef7bbfdd76");
 			expect(id.value).toBe("0b8e14e1-d44d-3770-8617-5c6137a444a8");
 			expect(id.description).toBeNull();
+			expect(id.genres).toContain('Pop')
+			expect(id.genres).toContain('Electronic')
+			expect(id.genres).toContain('Dance-pop')
 		});
 		it("should get compilation album Identifier", async () => {
 			const id = await musicBrainzProvider.getAlbumMetadataByName("Nova Tunes 01");
 			expect(id.value).toBe("a6875c2b-3fc2-34b2-9eb6-3b73578a8ea8");
 			expect(id.description).toBeNull();
+			expect(id.genres).toStrictEqual(['Deep house', 'Downtempo', 'Electronic', 'Trip hop'])
 		});
 		it("should throw, as the album does not exist", () => {
 			expect(() => musicBrainzProvider.getAlbumMetadataByName("AZERTY", "45a663b5-b1cb-4a91-bff6-2bef7bbfdd76"))

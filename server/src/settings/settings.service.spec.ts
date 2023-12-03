@@ -52,7 +52,8 @@ describe('Settings Service', () => {
 				trackRegex: ['regex1', 'regex2'],
 				metadata: {
 					source: "embedded",
-					order: "only"
+					order: "only",
+					useExternalProviderGenres: true
 				}
 			})
 		});
