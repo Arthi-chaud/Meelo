@@ -8,9 +8,9 @@ import SettingsModule from "src/settings/settings.module";
 import SongModule from "src/song/song.module";
 import TrackModule from "src/track/track.module";
 import { createTestingModule } from "test/test-module";
-import { PathParsingException } from "./metadata.exceptions";
-import MetadataModule from "./metadata.module";
-import MetadataService from "./metadata.service";
+import { PathParsingException } from "./scanner.exceptions";
+import ScannerModule from "./scanner.module";
+import MetadataService from "./scanner.service";
 import IllustrationModule from "src/illustration/illustration.module";
 import PrismaModule from "src/prisma/prisma.module";
 import type Metadata from "./models/metadata";
@@ -22,7 +22,7 @@ describe('Metadata Service', () => {
 	let moduleRef: TestingModule;
 	beforeAll(async () => {
 		moduleRef = await createTestingModule({
-			imports: [FileManagerModule, PrismaModule, ArtistModule, AlbumModule, ReleaseModule, MetadataModule, SongModule, TrackModule, IllustrationModule, GenreModule, SettingsModule],
+			imports: [FileManagerModule, PrismaModule, ArtistModule, AlbumModule, ReleaseModule, ScannerModule, SongModule, TrackModule, IllustrationModule, GenreModule, SettingsModule],
 		}).compile();
 		metadataService = moduleRef.get<MetadataService>(MetadataService);
 	});

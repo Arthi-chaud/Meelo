@@ -10,7 +10,7 @@ import SettingsModule from './settings/settings.module';
 import LibraryModule from './library/library.module';
 import IllustrationModule from './illustration/illustration.module';
 import FileManagerModule from './file-manager/file-manager.module';
-import MetadataModule from './metadata/metadata.module';
+import ScannerModule from './scanner/scanner.module';
 import PrismaModule from './prisma/prisma.module';
 import { LyricsModule } from './lyrics/lyrics.module';
 import SearchModule from './search/search.module';
@@ -21,7 +21,6 @@ import { ScheduleModule } from '@nestjs/schedule';
 import AuthenticationModule from './authentication/authentication.module';
 import UserModule from './user/user.module';
 import ProvidersModule from './providers/providers.module';
-import FfmpegModule from './ffmpeg/ffmpeg.module';
 import LoggerModule from './logger/logger.module';
 import * as Plugins from './app.plugins';
 import { BullModule } from '@nestjs/bull';
@@ -50,7 +49,7 @@ import PlaylistModule from './playlist/playlist.module';
 		TrackModule,
 		ReleaseModule,
 		IllustrationModule,
-		MetadataModule,
+		ScannerModule,
 		PrismaModule,
 		FileModule,
 		SettingsModule,
@@ -62,10 +61,10 @@ import PlaylistModule from './playlist/playlist.module';
 		AuthenticationModule,
 		UserModule,
 		LoggerModule,
-		FfmpegModule,
 		ProvidersModule,
 		PlaylistModule,
-		VideoModule
+		VideoModule,
+		ScannerModule
 	],
 	controllers: [AppController],
 	providers: Plugins.AppProviders

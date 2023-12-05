@@ -3,7 +3,7 @@ import { createTestingModule } from "test/test-module";
 import type { TestingModule } from "@nestjs/testing";
 import FileManagerModule from "src/file-manager/file-manager.module";
 import FileModule from "src/file/file.module";
-import MetadataModule from "src/metadata/metadata.module";
+import ScannerModule from "src/scanner/scanner.module";
 import PrismaModule from "src/prisma/prisma.module";
 import PrismaService from "src/prisma/prisma.service";
 import LibraryController from "./library.controller";
@@ -31,7 +31,7 @@ describe('Library Controller', () => {
 	let module: TestingModule;
 	beforeAll(async () => {
 		module = await createTestingModule({
-			imports: [LibraryModule, FileManagerModule, PrismaModule, FileModule, MetadataModule, FileManagerModule, IllustrationModule, ArtistModule, AlbumModule, SongModule, ReleaseModule, TrackModule, GenreModule, LyricsModule, TasksModule],
+			imports: [LibraryModule, FileManagerModule, PrismaModule, FileModule, ScannerModule, FileManagerModule, IllustrationModule, ArtistModule, AlbumModule, SongModule, ReleaseModule, TrackModule, GenreModule, LyricsModule, TasksModule],
 			providers: [LibraryController, LibraryService, PrismaService],
 		}).overrideProvider(PrismaService).useClass(TestPrismaService).compile();
 		app = await SetupApp(module);

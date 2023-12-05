@@ -8,7 +8,7 @@ import LibraryModule from "./library.module";
 import PrismaModule from "src/prisma/prisma.module";
 import FileManagerModule from "src/file-manager/file-manager.module";
 import FileModule from "src/file/file.module";
-import MetadataModule from "src/metadata/metadata.module";
+import ScannerModule from "src/scanner/scanner.module";
 import IllustrationModule from "src/illustration/illustration.module";
 import TrackModule from "src/track/track.module";
 import TestPrismaService from "test/test-prisma.service";
@@ -28,7 +28,7 @@ describe('Library Service', () => {
 	let module: TestingModule;
 	beforeAll(async () => {
 		module = await createTestingModule({
-			imports: [LibraryModule, PrismaModule, FileModule, MetadataModule, FileManagerModule, IllustrationModule, TrackModule, LyricsModule, TasksModule],
+			imports: [LibraryModule, PrismaModule, FileModule, ScannerModule, FileManagerModule, IllustrationModule, TrackModule, LyricsModule, TasksModule],
 			providers: [LibraryService],
 		}).overrideProvider(PrismaService).useClass(TestPrismaService).compile();
 		libraryService = module.get<LibraryService>(LibraryService);

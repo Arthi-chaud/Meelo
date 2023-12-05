@@ -11,7 +11,7 @@ import { FileNotFoundFromIDException } from "src/file/file.exceptions";
 import FileModule from "src/file/file.module";
 import FileService from "src/file/file.service";
 import IllustrationModule from "src/illustration/illustration.module";
-import MetadataModule from "src/metadata/metadata.module";
+import ScannerModule from "src/scanner/scanner.module";
 import PrismaModule from "src/prisma/prisma.module";
 import PrismaService from "src/prisma/prisma.service";
 import { ReleaseNotFoundFromIDException } from "src/release/release.exceptions";
@@ -49,7 +49,7 @@ describe('Track Service', () => {
 	let module: TestingModule;
 	beforeAll(async () => {
 		module = await createTestingModule({
-			imports: [PrismaModule, FileModule, MetadataModule, IllustrationModule,TrackModule, ArtistModule, SongModule, AlbumModule, ReleaseModule, FileManagerModule, SettingsModule, GenreModule, LyricsModule, LibraryModule, ProvidersModule],
+			imports: [PrismaModule, FileModule, ScannerModule, IllustrationModule,TrackModule, ArtistModule, SongModule, AlbumModule, ReleaseModule, FileManagerModule, SettingsModule, GenreModule, LyricsModule, LibraryModule, ProvidersModule],
 			providers: [PrismaService,TrackService, ArtistService, SongService, AlbumService, ReleaseService, FileService, FileManagerService, SettingsService],
 		}).overrideProvider(PrismaService).useClass(TestPrismaService).compile();
 		await module.get<PrismaService>(PrismaService).onModuleInit();

@@ -27,7 +27,7 @@ import ReleaseQueryParameters from 'src/release/models/release.query-parameters'
 import { PrismaError } from 'prisma-error-enum';
 import { PaginationParameters, buildPaginationParameters } from 'src/pagination/models/pagination-parameters';
 import IllustrationRepository from 'src/illustration/illustration.repository';
-import ParserService from 'src/metadata/parser.service';
+import ParserService from 'src/scanner/parser.service';
 import deepmerge from 'deepmerge';
 import GenreService from 'src/genre/genre.service';
 

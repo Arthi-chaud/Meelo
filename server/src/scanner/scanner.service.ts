@@ -8,7 +8,7 @@ import { FileDoesNotExistException, FileNotReadableException } from 'src/file-ma
 import {
 	BadMetadataException,
 	FileParsingException, PathParsingException
-} from './metadata.exceptions';
+} from './scanner.exceptions';
 import SettingsService from 'src/settings/settings.service';
 import TrackService from 'src/track/track.service';
 import SongService from 'src/song/song.service';

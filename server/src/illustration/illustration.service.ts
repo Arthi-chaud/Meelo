@@ -6,7 +6,7 @@ import { CantDownloadIllustrationException, NoIllustrationException } from './il
 import mm, { type IAudioMetadata } from 'music-metadata';
 // eslint-disable-next-line no-restricted-imports
 import * as fs from 'fs';
-import { FileParsingException } from 'src/metadata/metadata.exceptions';
+import { FileParsingException } from 'src/scanner/scanner.exceptions';
 import * as dir from 'path';
 import type { IllustrationFolderPath, IllustrationPath } from './models/illustration-path.model';
 import Jimp from 'jimp';

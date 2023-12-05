@@ -12,7 +12,7 @@ import FileManagerService from 'src/file-manager/file-manager.service';
 import type FileQueryParameters from 'src/file/models/file.query-parameters';
 import TrackService from 'src/track/track.service';
 import FileService from 'src/file/file.service';
-import MetadataService from 'src/metadata/metadata.service';
+import MetadataService from 'src/scanner/scanner.service';
 import IllustrationService from 'src/illustration/illustration.service';
 import LibraryService from 'src/library/library.service';
 import Logger from 'src/logger/logger';
@@ -28,7 +28,7 @@ import { LyricsService } from 'src/lyrics/lyrics.service';
 import PlaylistService from 'src/playlist/playlist.service';
 import IllustrationRepository from 'src/illustration/illustration.repository';
 import { SongType } from '@prisma/client';
-import ParserService from 'src/metadata/parser.service';
+import ParserService from 'src/scanner/parser.service';
 import type RefreshMetadataSelector from './models/refresh-metadata.selector';
 
 export const TaskQueue = 'task-queue';

@@ -24,7 +24,7 @@ import ReleaseService from "src/release/release.service";
 import SongQueryParameters from "src/song/models/song.query-params";
 import AlbumQueryParameters from "src/album/models/album.query-parameters";
 import ProviderService from "src/providers/provider.service";
-import FfmpegService from "src/ffmpeg/ffmpeg.service";
+import FfmpegService from "src/scanner/ffmpeg.service";
 import PlaylistQueryParameters from "src/playlist/models/playlist.query-parameters";
 import PlaylistService from "src/playlist/playlist.service";
 import FileManagerService from "src/file-manager/file-manager.service";

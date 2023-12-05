@@ -3,7 +3,7 @@ import { createTestingModule } from "test/test-module";
 import type { TestingModule } from "@nestjs/testing";
 import ArtistModule from "src/artist/artist.module";
 import FileManagerModule from "src/file-manager/file-manager.module";
-import MetadataModule from "src/metadata/metadata.module";
+import ScannerModule from "src/scanner/scanner.module";
 import PrismaModule from "src/prisma/prisma.module";
 import PrismaService from "src/prisma/prisma.service";
 import SettingsModule from "src/settings/settings.module";
@@ -12,7 +12,7 @@ import IllustrationModule from "./illustration.module";
 import * as fs from 'fs';
 import TestPrismaService from "test/test-prisma.service";
 import { FileDoesNotExistException } from "src/file-manager/file-manager.exceptions";
-import { FileParsingException } from "src/metadata/metadata.exceptions";
+import { FileParsingException } from "src/scanner/scanner.exceptions";
 import ProvidersModule from "src/providers/providers.module";
 import IllustrationRepository from "./illustration.repository";
 
@@ -27,7 +27,7 @@ describe('Illustration Repository', () => {
 	beforeAll(async () => {
 		fs.rm('test/assets/metadata', { recursive: true, force: true }, () => {})
 		module = await createTestingModule({
-			imports: [HttpModule, FileManagerModule, IllustrationModule, PrismaModule, ArtistModule, MetadataModule, SettingsModule, ProvidersModule],
+			imports: [HttpModule, FileManagerModule, IllustrationModule, PrismaModule, ArtistModule, ScannerModule, SettingsModule, ProvidersModule],
 		}).overrideProvider(PrismaService).useClass(TestPrismaService).compile();
 		illustrationRepository = module.get(IllustrationRepository);
 		dummyRepository = module.get(PrismaService);

@@ -10,7 +10,7 @@ import IllustrationModule from 'src/illustration/illustration.module';
 import { SongResponseBuilder } from './models/song.response';
 import ReleaseModule from 'src/release/release.module';
 import ProvidersModule from 'src/providers/providers.module';
-import MetadataModule from 'src/metadata/metadata.module';
+import ScannerModule from 'src/scanner/scanner.module';
 
 @Module({
 	imports: [
@@ -22,7 +22,7 @@ import MetadataModule from 'src/metadata/metadata.module';
 		forwardRef(() => GenreModule),
 		forwardRef(() => ReleaseModule),
 		forwardRef(() => IllustrationModule),
-		forwardRef(() => MetadataModule)
+		forwardRef(() => ScannerModule)
 	],
 	exports: [
 		SongService,

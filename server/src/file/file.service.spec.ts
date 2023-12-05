@@ -6,7 +6,7 @@ import FileManagerModule from "src/file-manager/file-manager.module";
 import GenreModule from "src/genre/genre.module";
 import IllustrationModule from "src/illustration/illustration.module";
 import { LyricsModule } from "src/lyrics/lyrics.module";
-import MetadataModule from "src/metadata/metadata.module";
+import ScannerModule from "src/scanner/scanner.module";
 import PrismaModule from "src/prisma/prisma.module";
 import PrismaService from "src/prisma/prisma.service";
 import ReleaseModule from "src/release/release.module";
@@ -29,7 +29,7 @@ describe('File Service', () => {
 	let module: TestingModule;
 	beforeAll(async () => {
 		module = await createTestingModule({
-			imports: [FileModule, PrismaModule, MetadataModule, FileManagerModule, IllustrationModule, ArtistModule, AlbumModule, SongModule, ReleaseModule, TrackModule, SettingsModule, GenreModule, LyricsModule, LibraryModule],
+			imports: [FileModule, PrismaModule, ScannerModule, FileManagerModule, IllustrationModule, ArtistModule, AlbumModule, SongModule, ReleaseModule, TrackModule, SettingsModule, GenreModule, LyricsModule, LibraryModule],
 			providers: [FileService],
 		}).overrideProvider(PrismaService).useClass(TestPrismaService).compile();
 		dummyRepository = module.get(PrismaService)

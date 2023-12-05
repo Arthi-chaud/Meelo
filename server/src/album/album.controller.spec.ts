@@ -10,7 +10,7 @@ import ReleaseModule from "src/release/release.module";
 import ReleaseService from "src/release/release.service";
 import { createTestingModule } from "test/test-module";
 import AlbumModule from "./album.module";
-import MetadataModule from "src/metadata/metadata.module";
+import ScannerModule from "src/scanner/scanner.module";
 import SongModule from "src/song/song.module";
 import TrackModule from "src/track/track.module";
 import SetupApp from "test/setup-app";
@@ -34,7 +34,7 @@ describe('Album Controller', () => {
 	let module: TestingModule;
 	beforeAll(async () => {
 		module = await createTestingModule({
-			imports: [ArtistModule, AlbumModule, PrismaModule, ReleaseModule, MetadataModule, SongModule, TrackModule, IllustrationModule, GenreModule, FileModule, ProvidersModule],
+			imports: [ArtistModule, AlbumModule, PrismaModule, ReleaseModule, ScannerModule, SongModule, TrackModule, IllustrationModule, GenreModule, FileModule, ProvidersModule],
 			providers: [ArtistService, ReleaseService],
 		}).overrideProvider(PrismaService).useClass(TestPrismaService).compile();
 		app = await SetupApp(module);

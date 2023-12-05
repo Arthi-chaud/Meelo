@@ -10,7 +10,7 @@ import { INestApplication } from "@nestjs/common";
 import TrackModule from "src/track/track.module";
 import IllustrationModule from "src/illustration/illustration.module";
 import SongModule from "src/song/song.module";
-import MetadataModule from "src/metadata/metadata.module";
+import ScannerModule from "src/scanner/scanner.module";
 import ReleaseModule from "src/release/release.module";
 import GenreModule from "src/genre/genre.module";
 import TestPrismaService from "test/test-prisma.service";
@@ -27,7 +27,7 @@ describe('Track Controller', () => {
 	let module: TestingModule;
 	beforeAll(async () => {
 		module = await createTestingModule({
-			imports: [PrismaModule, AlbumModule, ArtistModule, ReleaseModule, TrackModule, IllustrationModule, SongModule, MetadataModule, GenreModule, LyricsModule, LibraryModule],
+			imports: [PrismaModule, AlbumModule, ArtistModule, ReleaseModule, TrackModule, IllustrationModule, SongModule, ScannerModule, GenreModule, LyricsModule, LibraryModule],
 		}).overrideProvider(PrismaService).useClass(TestPrismaService).compile();
 		app = await SetupApp(module);
 		dummyRepository = module.get(PrismaService);

@@ -8,15 +8,14 @@ import ReleaseModule from 'src/release/release.module';
 import SettingsModule from 'src/settings/settings.module';
 import SongModule from 'src/song/song.module';
 import TrackModule from 'src/track/track.module';
-import MetadataService from './metadata.service';
-import FfmpegModule from 'src/ffmpeg/ffmpeg.module';
+import MetadataService from './scanner.service';
 import ParserService from './parser.service';
+import FfmpegService from './ffmpeg.service';
 
 @Module({
 	imports: [
 		SettingsModule,
 		FileManagerModule,
-		FfmpegModule,
 		forwardRef(() => TrackModule),
 		forwardRef(() => SongModule),
 		forwardRef(() => ReleaseModule),
@@ -25,7 +24,7 @@ import ParserService from './parser.service';
 		forwardRef(() => AlbumModule),
 		forwardRef(() => ArtistModule)
 	],
-	providers: [MetadataService, ParserService],
-	exports: [MetadataService, ParserService]
+	providers: [MetadataService, ParserService, FfmpegService],
+	exports: [MetadataService, ParserService, FfmpegService]
 })
-export default class MetadataModule { }
+export default class ScannerModule { }

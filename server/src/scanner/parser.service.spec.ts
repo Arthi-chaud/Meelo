@@ -12,7 +12,7 @@ import ReleaseModule from "src/release/release.module";
 import SettingsModule from "src/settings/settings.module";
 import SongModule from "src/song/song.module";
 import TrackModule from "src/track/track.module";
-import MetadataModule from "./metadata.module";
+import ScannerModule from "./scanner.module";
 import PrismaService from "src/prisma/prisma.service";
 
 describe('Parser Service', () => {
@@ -21,7 +21,7 @@ describe('Parser Service', () => {
 	let moduleRef: TestingModule;
 	beforeAll(async () => {
 		moduleRef = await createTestingModule({
-			imports: [FileManagerModule, PrismaModule, ArtistModule, AlbumModule, ReleaseModule, MetadataModule, SongModule, TrackModule, IllustrationModule, GenreModule, SettingsModule],
+			imports: [FileManagerModule, PrismaModule, ArtistModule, AlbumModule, ReleaseModule, ScannerModule, SongModule, TrackModule, IllustrationModule, GenreModule, SettingsModule],
 		}).compile();
 		const prismaService = moduleRef.get(PrismaService);
 		await prismaService.artist.create({ data: { name: "Christine & The Queens", slug: "christine-the-queens" } });
