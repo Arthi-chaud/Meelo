@@ -16,7 +16,7 @@ import TrackModule from "src/track/track.module";
 import ReleaseModule from "src/release/release.module";
 import MetadataModule from "src/metadata/metadata.module";
 import ReleaseService from "src/release/release.service";
-import compilationAlbumArtistKeyword from "src/utils/compilation";
+import compilationAlbumArtistKeyword from "src/constants/compilation";
 import IllustrationModule from "src/illustration/illustration.module";
 import GenreModule from "src/genre/genre.module";
 import TestPrismaService from "test/test-prisma.service";

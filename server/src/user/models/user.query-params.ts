@@ -1,6 +1,6 @@
 import { User } from 'src/prisma/models';
-import RequireOnlyOne from 'src/utils/require-only-one';
 import { ModelSortingParameter } from 'src/sort/models/sorting-parameter';
+import { RequireExactlyOne } from 'type-fest';
 
 namespace UserQueryParameters {
 
@@ -12,7 +12,7 @@ namespace UserQueryParameters {
 	/**
 	 * Parameters to find one users
 	 */
-	export type WhereInput = RequireOnlyOne<{
+	export type WhereInput = RequireExactlyOne<{
 		id: User['id'];
 		byCredentials: Pick<User, 'name' | 'password' >;
 		name: User['name'];
@@ -31,7 +31,7 @@ namespace UserQueryParameters {
 	/**
 	 * Query parameters to delete one user
 	 */
-	export type DeleteInput = RequireOnlyOne<Pick<User, 'id' | 'name'>>;
+	export type DeleteInput = RequireExactlyOne<Pick<User, 'id' | 'name'>>;
 
 	/**
 	 * Defines how to sort fetched entries

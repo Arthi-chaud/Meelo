@@ -12,7 +12,7 @@ import SettingsService from "src/settings/settings.service";
 import {
 	basename, dirname, join
 } from 'path';
-import compilationAlbumArtistKeyword from "src/utils/compilation";
+import compilationAlbumArtistKeyword from "src/constants/compilation";
 import { IllustrationNotExtracted } from "./illustration.exceptions";
 import Logger from "src/logger/logger";
 import { IllustrationResponse } from "./models/illustration.response";

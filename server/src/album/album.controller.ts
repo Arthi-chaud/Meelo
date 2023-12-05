@@ -4,7 +4,7 @@ import {
 import { PaginationParameters } from 'src/pagination/models/pagination-parameters';
 import ReleaseQueryParameters from 'src/release/models/release.query-parameters';
 import ReleaseService from 'src/release/release.service';
-import compilationAlbumArtistKeyword from 'src/utils/compilation';
+import compilationAlbumArtistKeyword from 'src/constants/compilation';
 import AlbumService from './album.service';
 import AlbumQueryParameters from './models/album.query-parameters';
 import {

@@ -17,7 +17,7 @@ import GenreService from 'src/genre/genre.service';
 import ReleaseService from 'src/release/release.service';
 import TrackService from 'src/track/track.service';
 import type { Artist, ArtistWithRelations } from 'src/prisma/models';
-import compilationAlbumArtistKeyword from 'src/utils/compilation';
+import compilationAlbumArtistKeyword from 'src/constants/compilation';
 import { parseIdentifierSlugs } from 'src/identifier/identifier.parse-slugs';
 import Identifier from 'src/identifier/models/identifier';
 import Logger from 'src/logger/logger';

@@ -20,7 +20,7 @@ import { INestApplication } from "@nestjs/common";
 import request from "supertest";
 import SetupApp from "test/setup-app";
 import ProvidersModule from "src/providers/providers.module";
-import compilationAlbumArtistKeyword from "src/utils/compilation";
+import compilationAlbumArtistKeyword from "src/constants/compilation";
 
 jest.setTimeout(60000);
 

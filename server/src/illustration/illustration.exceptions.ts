@@ -1,7 +1,7 @@
 import { HttpStatus } from "@nestjs/common";
 import { InvalidRequestException, MeeloException } from "src/exceptions/meelo-exception";
 import type Slug from "src/slug/slug";
-import compilationAlbumArtistKeyword from "src/utils/compilation";
+import compilationAlbumArtistKeyword from "src/constants/compilation";
 
 class NoIllustrationFolderException extends MeeloException {
 	constructor(message: string) {

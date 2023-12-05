@@ -27,7 +27,7 @@ import archiver from 'archiver';
 import { createReadStream } from 'fs';
 import { Response } from 'express';
 import mime from 'mime';
-import compilationAlbumArtistKeyword from 'src/utils/compilation';
+import compilationAlbumArtistKeyword from 'src/constants/compilation';
 import { parseIdentifierSlugs } from 'src/identifier/identifier.parse-slugs';
 import Identifier from 'src/identifier/models/identifier';
 import Logger from 'src/logger/logger';

@@ -2,7 +2,7 @@ import {
 	CallHandler, ExecutionContext, Global, Inject, Injectable, NestInterceptor, Type
 } from "@nestjs/common";
 import { from, mergeMap } from "rxjs";
-import Constructor from "src/utils/constructor";
+import { Constructor } from 'type-fest';
 import ResponseBuilderInterceptor from "./response.interceptor";
 
 export default function ArrayResponseBuilderInterceptor<

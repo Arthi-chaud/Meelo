@@ -1,7 +1,7 @@
 import { Prisma } from "@prisma/client";
-import type RequireOnlyOne from "./require-only-one";
+import { RequireExactlyOne } from "type-fest";
 
-export type SearchStringInput = RequireOnlyOne<{ startsWith: string, endsWith: string, contains: string, is: string }>;
+export type SearchStringInput = RequireExactlyOne<{ startsWith: string, endsWith: string, contains: string, is: string }>;
 
 export function buildStringSearchParameters(where?: SearchStringInput) {
 	return {

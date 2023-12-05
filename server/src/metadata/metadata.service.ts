@@ -17,7 +17,7 @@ import ReleaseService from 'src/release/release.service';
 import AlbumService from 'src/album/album.service';
 import ArtistService from 'src/artist/artist.service';
 import type TrackQueryParameters from 'src/track/models/track.query-parameters';
-import compilationAlbumArtistKeyword from 'src/utils/compilation';
+import compilationAlbumArtistKeyword from 'src/constants/compilation';
 import GenreService from 'src/genre/genre.service';
 import { File, Track } from 'src/prisma/models';
 import { validate } from 'class-validator';
