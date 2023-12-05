@@ -4,7 +4,7 @@ import {
 import type Settings from './models/settings';
 import SettingsService from './settings.service';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
-import Admin from 'src/roles/admin.decorator';
+import Admin from 'src/authentication/roles/admin.decorator';
 
 @Admin()
 @ApiTags("Settings")

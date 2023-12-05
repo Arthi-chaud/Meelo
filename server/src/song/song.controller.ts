@@ -17,7 +17,7 @@ import { SongResponseBuilder } from './models/song.response';
 import { TrackResponseBuilder } from 'src/track/models/track.response';
 import RelationIncludeQuery from 'src/relation-include/relation-include-query.decorator';
 import SortingQuery from 'src/sort/sort-query.decorator';
-import Admin from 'src/roles/admin.decorator';
+import Admin from 'src/authentication/roles/admin.decorator';
 import IdentifierParam from 'src/identifier/identifier.pipe';
 import Response, { ResponseType } from 'src/response/response.decorator';
 import { LyricsResponseBuilder } from 'src/lyrics/models/lyrics.response';

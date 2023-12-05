@@ -11,7 +11,7 @@ import { TrackType } from '@prisma/client';
 import ReassignTrackDTO from './models/reassign-track.dto';
 import { TrackResponseBuilder } from './models/track.response';
 import RelationIncludeQuery from 'src/relation-include/relation-include-query.decorator';
-import Admin from 'src/roles/admin.decorator';
+import Admin from 'src/authentication/roles/admin.decorator';
 import IdentifierParam from 'src/identifier/identifier.pipe';
 import Response, { ResponseType } from 'src/response/response.decorator';
 import SongService from 'src/song/song.service';

@@ -1,5 +1,5 @@
 import Roles from './roles.decorator';
-import Role from './models/roles';
+import Role from './roles.enum';
 /**
  * Controller / Route decorator to allow only admin users to use it
  */

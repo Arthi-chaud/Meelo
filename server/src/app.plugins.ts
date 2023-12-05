@@ -20,7 +20,7 @@ import cookieParser from "cookie-parser";
 import helmet from "helmet";
 import { JwtCookieMiddleware } from "./authentication/jwt/jwt-middleware";
 import JwtAuthGuard from "./authentication/jwt/jwt-auth.guard";
-import RolesGuard from "./roles/roles.guard";
+import RolesGuard from "./authentication/roles/roles.guard";
 
 // To call before application bootstrap/launch
 const presetup = () => {
