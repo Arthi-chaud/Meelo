@@ -8,12 +8,12 @@ import FileModule from 'src/file/file.module';
 import { IllustrationController } from './illustration.controller';
 import ArtistModule from 'src/artist/artist.module';
 import SettingsModule from 'src/settings/settings.module';
-import FfmpegModule from 'src/ffmpeg/ffmpeg.module';
 import SongModule from 'src/song/song.module';
 import ProvidersModule from 'src/providers/providers.module';
 import PlaylistModule from 'src/playlist/playlist.module';
 import IllustrationRepository from './illustration.repository';
 import PrismaModule from 'src/prisma/prisma.module';
+import ScannerModule from 'src/scanner/scanner.module';
 
 @Module({
 	imports: [
@@ -28,7 +28,7 @@ import PrismaModule from 'src/prisma/prisma.module';
 		forwardRef(() => ProvidersModule),
 		forwardRef(() => PlaylistModule),
 		SettingsModule,
-		FfmpegModule
+		forwardRef(() => ScannerModule),
 	],
 	controllers: [IllustrationController],
 	providers: [IllustrationService, IllustrationRepository],

@@ -8,7 +8,7 @@ import ReleaseModule from 'src/release/release.module';
 import SettingsModule from 'src/settings/settings.module';
 import SongModule from 'src/song/song.module';
 import TrackModule from 'src/track/track.module';
-import MetadataService from './scanner.service';
+import ScannerService from './scanner.service';
 import ParserService from './parser.service';
 import FfmpegService from './ffmpeg.service';
 
@@ -24,7 +24,7 @@ import FfmpegService from './ffmpeg.service';
 		forwardRef(() => AlbumModule),
 		forwardRef(() => ArtistModule)
 	],
-	providers: [MetadataService, ParserService, FfmpegService],
-	exports: [MetadataService, ParserService, FfmpegService]
+	providers: [ScannerService, ParserService, FfmpegService],
+	exports: [ScannerService, ParserService, FfmpegService]
 })
 export default class ScannerModule { }

@@ -343,4 +343,65 @@ export default class ParserService {
 		}
 		return AlbumType.StudioRecording;
 	}
+
+	/**
+	 * Removes an extension from a release's name
+	 * For example, if the release Name is 'My Album (Deluxe Edition)', the parent
+	 * album name would be 'My Album'
+	 */
+	removeReleaseExtension(releaseName: string): string {
+		const extensionKeywords = [
+			'Edition',
+			'Version',
+			'Reissue',
+			'Deluxe',
+			'Standard',
+			'Edited',
+			'Explicit',
+			'Remaster',
+			'Remastered'
+		];
+
+		return this.removeExtensions(releaseName, extensionKeywords);
+	}
+
+	/**
+	 * Removes an extension from a track's name
+	 * For example, if the release Name is 'My Song (Music Video)', the parent
+	 * song name would be 'My Song'
+	 * It will remove the video and the remaster extension
+	 */
+	removeTrackExtension(trackName: string): string {
+		const extensionKeywords = [
+			'Video',
+			'Remaster',
+			'Remastered',
+			'Album Version',
+			'Main Version'
+		];
+
+		return this.removeExtensions(trackName, extensionKeywords);
+	}
+
+	/**
+	 * Removes the extensions in a string found by 'extractExtensions'
+	 * @param source the string t ofind the extensions in
+	 * @param extensions the extensions to find
+	 * @returns the cleaned source
+	 */
+	private removeExtensions(source: string, extensions: string[]): string {
+		const extensionsGroup = extensions.map((ext) => `(${ext})`).join('|');
+
+		return this.splitGroups(source, { keepDelimiters: true })
+			.filter((group) => {
+				// If root
+				if (group == this.stripGroupDelimiters(group)[1]) {
+					return true;
+				}
+				return new RegExp(`.*(${extensionsGroup}).*`, 'i').exec(group)?.at(0) == undefined;
+			})
+			.map((group) => group.trim())
+			.join(' ')
+			.trim();
+	}
 }

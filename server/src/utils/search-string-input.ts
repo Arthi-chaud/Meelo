@@ -1,5 +1,5 @@
 import { Prisma } from "@prisma/client";
-import { RequireExactlyOne } from "type-fest";
+import type { RequireExactlyOne } from "type-fest";
 
 export type SearchStringInput = RequireExactlyOne<{ startsWith: string, endsWith: string, contains: string, is: string }>;
 

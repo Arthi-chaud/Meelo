@@ -1,6 +1,6 @@
 import { User } from 'src/prisma/models';
 import { ModelSortingParameter } from 'src/sort/models/sorting-parameter';
-import { RequireExactlyOne } from 'type-fest';
+import type { RequireExactlyOne } from 'type-fest';
 
 namespace UserQueryParameters {
 

@@ -10,21 +10,21 @@ import TrackModule from "src/track/track.module";
 import { createTestingModule } from "test/test-module";
 import { PathParsingException } from "./scanner.exceptions";
 import ScannerModule from "./scanner.module";
-import MetadataService from "./scanner.service";
+import ScannerService from "./scanner.service";
 import IllustrationModule from "src/illustration/illustration.module";
 import PrismaModule from "src/prisma/prisma.module";
 import type Metadata from "./models/metadata";
 import { TestingModule } from "@nestjs/testing";
 
 describe('Metadata Service', () => {
-	let metadataService: MetadataService
+	let scannerService: ScannerService
 
 	let moduleRef: TestingModule;
 	beforeAll(async () => {
 		moduleRef = await createTestingModule({
 			imports: [FileManagerModule, PrismaModule, ArtistModule, AlbumModule, ReleaseModule, ScannerModule, SongModule, TrackModule, IllustrationModule, GenreModule, SettingsModule],
 		}).compile();
-		metadataService = moduleRef.get<MetadataService>(MetadataService);
+		scannerService = moduleRef.get<ScannerService>(ScannerService);
 	});
 
 	afterAll(() => {
@@ -32,19 +32,19 @@ describe('Metadata Service', () => {
 	});
 
 	it('should be defined', () => {
-		expect(metadataService).toBeDefined();
+		expect(scannerService).toBeDefined();
 	});
 
 	describe('Parse Metadata from path', () => {
 		it("should throw, as the path does not math any regexes", () => {
 			const test = () => {
-				metadataService.parseMetadataFromPath('trololol');
+				scannerService.parseMetadataFromPath('trololol');
 			}
 			expect(test).toThrow(PathParsingException);
 		});
 
 		it("should extract the metadata values from the path", () => {
-			const parsedValues: Metadata = metadataService.parseMetadataFromPath(
+			const parsedValues: Metadata = scannerService.parseMetadataFromPath(
 				'/data/My Album Artist/My Album (2006)/1-02 My Track (My Artist).m4a'
 			);
 			
@@ -63,7 +63,7 @@ describe('Metadata Service', () => {
 		});
 
 		it("should extract the metadata values from the path (compilation)", () => {
-			const parsedValues: Metadata = metadataService.parseMetadataFromPath(
+			const parsedValues: Metadata = scannerService.parseMetadataFromPath(
 				'/data/Compilations/My Album (2006)/1-02 My Track.m4a'
 			);
 			
@@ -84,7 +84,7 @@ describe('Metadata Service', () => {
 
 	describe('Parse Metadata from embedded metadata', () => {
 		it("should extract the metadata values from the file's tags", async () => {
-			const parsedValues: Metadata = await metadataService.parseMetadataFromFile(
+			const parsedValues: Metadata = await scannerService.parseMetadataFromFile(
 				'test/assets/dreams.m4a'
 			);
 			
@@ -105,90 +105,4 @@ describe('Metadata Service', () => {
 			});
 		});
 	});
-
-	describe('Extract Release name\'s extension', () => {
-		it("should build the album name from a basic release name", () => {
-			expect(metadataService.removeReleaseExtension('My Album')).toBe('My Album');
-			expect(metadataService.removeReleaseExtension("My New Album")).toBe('My New Album');
-		});
-
-		it("should build the album name from a release name with a basic extension", () => {
-			expect(metadataService.removeReleaseExtension('My Album (Deluxe Edition)')).toBe('My Album');
-			expect(metadataService.removeReleaseExtension("My New Album (Edited Special Edition)")).toBe('My New Album');
-		});
-
-		it("should build the album name from a release name with a medium extension", () => {
-			expect(metadataService.removeReleaseExtension('Garbage (20th Anniversary Deluxe Edition)')).toBe('Garbage');
-		});
-
-		it("should build the album name from a release name with a suffix ", () => {
-			expect(metadataService.removeReleaseExtension('My Album (Right Now)')).toBe('My Album (Right Now)');
-		});
-
-		it("should build the album name from a release name with a prefix ", () => {
-			expect(metadataService.removeReleaseExtension('(Right Now) My Album')).toBe('(Right Now) My Album');
-		});
-
-		it("should build the album name from a release name with a basic extension and a suffix ", () => {
-			expect(metadataService.removeReleaseExtension('My Album (Right Now) [Deluxe Edition]')).toBe('My Album (Right Now)');
-		});
-
-		it("should build the album name from a release name with a basic extension and a prefix ", () => {
-			expect(metadataService.removeReleaseExtension('(Right Now) My Album [Deluxe Edition]')).toBe('(Right Now) My Album');
-		});
-		it("should remove the 'Remaster' extension", () => {
-			expect(metadataService.removeReleaseExtension('My Album [2022 Remaster]')).toBe('My Album');
-		});
-		it("should remove the 'remastered' extension", () => {
-			expect(metadataService.removeReleaseExtension('My Album [2022 Remastered]')).toBe('My Album');
-		});
-
-		it("should remove the 'remastered version' extension", () => {
-			expect(metadataService.removeReleaseExtension('My Album [2022 Remastered version]')).toBe('My Album');
-		});
-
-		it("should remove the 'remaster' extension, lowercase", () => {
-			expect(metadataService.removeReleaseExtension('My Album [2022 Remaster]')).toBe('My Album');
-		});
-
-		it("should remove multiple extensions", () => {
-			expect(metadataService.removeReleaseExtension('My Album  (Deluxe)  [2022 Remaster] ')).toBe('My Album');
-		});
-		it("should remove w/ tricky name", () => {
-			expect(metadataService.removeReleaseExtension('Version 2.0 (20th Anniversary Deluxe Edition)')).toBe('Version 2.0');
-		});
-	});
-
-	describe('Extract Track name\'s extension', () => {
-		it("should build the song name from a track name with a basic extension", () => {
-			expect(metadataService.removeTrackExtension('My Song (Music Video)')).toBe('My Song');
-		});
-
-		it("should build the song name from a track name with an even more basic extension", () => {
-			expect(metadataService.removeTrackExtension('My Song (Video)')).toBe('My Song');
-		});
-
-		it("should build the song name from a track name with a normal extension", () => {
-			expect(metadataService.removeTrackExtension('My Song (Official Music Video)')).toBe('My Song');
-		})
-
-		it("should remove 'remaster' extension", () => {
-			expect(metadataService.removeTrackExtension('My Song  (remastered)')).toBe('My Song');
-		});
-		it("should remove 'Album Version' extension", () => {
-			expect(metadataService.removeTrackExtension('My Song  (Album Version)')).toBe('My Song');
-		});
-
-		it("should remove 'Main Version' extension", () => {
-			expect(metadataService.removeTrackExtension('My Song  (Main Version)')).toBe('My Song');
-		});
-
-		it("should remove multiple extensions", () => {
-			expect(metadataService.removeTrackExtension('My Song  {Music Video}  (Remaster)')).toBe('My Song');
-		});
-
-		it("should not remove extension", () => {
-			expect(metadataService.removeTrackExtension('My Song (Yeah)')).toBe('My Song (Yeah)');
-		});
-	})
 })

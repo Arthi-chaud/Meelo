@@ -1,4 +1,4 @@
-import { RequireExactlyOne } from "type-fest";
+import type { RequireExactlyOne } from "type-fest";
 
 export type SearchDateInput = RequireExactlyOne<{ before: Date, onDay: Date, inYear: Date, after: Date }>;
 

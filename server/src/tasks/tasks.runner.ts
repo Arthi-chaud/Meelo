@@ -12,8 +12,7 @@ import FileManagerService from 'src/file-manager/file-manager.service';
 import type FileQueryParameters from 'src/file/models/file.query-parameters';
 import TrackService from 'src/track/track.service';
 import FileService from 'src/file/file.service';
-import MetadataService from 'src/scanner/scanner.service';
-import IllustrationService from 'src/illustration/illustration.service';
+import ScannerService from 'src/scanner/scanner.service';
 import LibraryService from 'src/library/library.service';
 import Logger from 'src/logger/logger';
 import SettingsService from 'src/settings/settings.service';
@@ -43,8 +42,8 @@ export default class TaskRunner {
 		private fileService: FileService,
 		@Inject(forwardRef(() => TrackService))
 		private trackService: TrackService,
-		@Inject(forwardRef(() => MetadataService))
-		private metadataService: MetadataService,
+		@Inject(forwardRef(() => ScannerService))
+		private metadataService: ScannerService,
 		@Inject(forwardRef(() => LibraryService))
 		private libraryService: LibraryService,
 		@Inject(forwardRef(() => IllustrationRepository))
@@ -149,7 +148,7 @@ export default class TaskRunner {
 		const candidates = unfilteredCandidates
 			.filter((candidatePath) => {
 				// Removing cover.jpg files from candidates
-				return candidatePath.match(`/${IllustrationService.SOURCE_ILLUSTRATON_FILE}$`) == null;
+				return candidatePath.match(`/${ScannerService.SOURCE_ILLUSTRATON_FILE}$`) == null;
 			})
 			.filter((candidatePath) => {
 				return alreadyRegistrered.findIndex(
