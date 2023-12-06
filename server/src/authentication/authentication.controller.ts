@@ -9,7 +9,7 @@ import {
 } from '@nestjs/swagger';
 import { User } from 'src/prisma/models';
 import LoginDTO from './models/login.dto';
-import { Public } from '../roles/public.decorator';
+import { Public } from './roles/public.decorator';
 
 @ApiTags('Authentication')
 @Controller('auth')

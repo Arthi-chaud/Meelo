@@ -3,11 +3,10 @@ import { Type, UseInterceptors } from "@nestjs/common";
 import { ApiPaginatedResponse } from "../pagination/paginated-response.decorator";
 import { ApiOkResponse } from "@nestjs/swagger";
 import ResponseType from "./response-type.enum";
-import Constructor from "src/utils/constructor";
 import ArrayResponseBuilderInterceptor from "./interceptors/array-response.interceptor";
 import PaginatedResponseBuilderInterceptor from "./interceptors/page-response.interceptor";
 import ResponseBuilderInterceptor from "./interceptors/response.interceptor";
-import type { RequireExactlyOne } from "type-fest";
+import type { Constructor, RequireExactlyOne } from "type-fest";
 
 type ResponseDecoratorParam<ToType extends Type<{ id: number }>, FromType = unknown> = {
 	/**

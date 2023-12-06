@@ -1,6 +1,6 @@
-import type RequireOnlyOne from "./require-only-one";
+import type { RequireExactlyOne } from "type-fest";
 
-export type SearchDateInput = RequireOnlyOne<{ before: Date, onDay: Date, inYear: Date, after: Date }>;
+export type SearchDateInput = RequireExactlyOne<{ before: Date, onDay: Date, inYear: Date, after: Date }>;
 
 export function buildDateSearchParameters(where: SearchDateInput) {
 	if (where.onDay !== undefined) {

@@ -4,7 +4,7 @@ import {
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import LibraryService from 'src/library/library.service';
 import { Timeout } from '@nestjs/schedule';
-import Admin from 'src/roles/admin.decorator';
+import Admin from 'src/authentication/roles/admin.decorator';
 import IdentifierParam from 'src/identifier/identifier.pipe';
 import LibraryQueryParameters from 'src/library/models/library.query-parameters';
 import { TaskQueue } from './tasks.runner';

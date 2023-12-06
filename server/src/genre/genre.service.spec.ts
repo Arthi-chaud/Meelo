@@ -16,7 +16,7 @@ import { GenreAlreadyExistsException, GenreNotEmptyException, GenreNotFoundByIdE
 import GenreModule from "./genre.module";
 import GenreService from "./genre.service";
 import LibraryModule from "src/library/library.module";
-import MetadataModule from "src/metadata/metadata.module";
+import ScannerModule from "src/scanner/scanner.module";
 import ReleaseModule from "src/release/release.module";
 
 describe("Genre Service", () => {
@@ -29,7 +29,7 @@ describe("Genre Service", () => {
 	let module: TestingModule;
 	beforeAll(async () => {
 		module = await createTestingModule({
-			imports: [PrismaModule, LibraryModule, IllustrationModule, MetadataModule, ArtistModule, TrackModule, AlbumModule, GenreModule, LyricsModule, ReleaseModule],
+			imports: [PrismaModule, LibraryModule, IllustrationModule, ScannerModule, ArtistModule, TrackModule, AlbumModule, GenreModule, LyricsModule, ReleaseModule],
 			providers: [SongService, ArtistService, PrismaService],
 		}).overrideProvider(PrismaService).useClass(TestPrismaService).compile();
 		songService = module.get<SongService>(SongService);

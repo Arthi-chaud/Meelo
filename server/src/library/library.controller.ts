@@ -8,7 +8,7 @@ import { PaginationParameters } from 'src/pagination/models/pagination-parameter
 import LibraryQueryParameters from './models/library.query-parameters';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import SortingQuery from 'src/sort/sort-query.decorator';
-import Admin from 'src/roles/admin.decorator';
+import Admin from 'src/authentication/roles/admin.decorator';
 import UpdateLibraryDto from './models/update-library.dto';
 import CreateLibraryDto from './models/create-library.dto';
 import IdentifierParam from 'src/identifier/identifier.pipe';

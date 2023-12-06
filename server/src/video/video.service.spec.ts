@@ -14,7 +14,7 @@ import { LyricsModule } from "src/lyrics/lyrics.module";
 import VideoService from "./video.service";
 import VideoModule from "./video.module";
 import ReleaseModule from "src/release/release.module";
-import MetadataModule from "src/metadata/metadata.module";
+import ScannerModule from "src/scanner/scanner.module";
 
 describe('Video Service', () => {
 	let videoService: VideoService;
@@ -23,7 +23,7 @@ describe('Video Service', () => {
 	let module: TestingModule;
 	beforeAll(async () => {
 		module = await createTestingModule({
-			imports: [PrismaModule, ArtistModule, TrackModule, AlbumModule, IllustrationModule, GenreModule, LyricsModule, VideoModule, ReleaseModule, MetadataModule],
+			imports: [PrismaModule, ArtistModule, TrackModule, AlbumModule, IllustrationModule, GenreModule, LyricsModule, VideoModule, ReleaseModule, ScannerModule],
 			providers: [SongService, ArtistService, PrismaService],
 		}).overrideProvider(PrismaService).useClass(TestPrismaService).compile();
 		dummyRepository = module.get(PrismaService);

@@ -20,14 +20,14 @@ import { buildStringSearchParameters } from 'src/utils/search-string-input';
 import SongService from 'src/song/song.service';
 import { Album, AlbumWithRelations } from "src/prisma/models";
 import { parseIdentifierSlugs } from 'src/identifier/identifier.parse-slugs';
-import compilationAlbumArtistKeyword from 'src/utils/compilation';
+import compilationAlbumArtistKeyword from 'src/constants/compilation';
 import Identifier from 'src/identifier/models/identifier';
 import Logger from 'src/logger/logger';
 import ReleaseQueryParameters from 'src/release/models/release.query-parameters';
 import { PrismaError } from 'prisma-error-enum';
 import { PaginationParameters, buildPaginationParameters } from 'src/pagination/models/pagination-parameters';
 import IllustrationRepository from 'src/illustration/illustration.repository';
-import ParserService from 'src/metadata/parser.service';
+import ParserService from 'src/scanner/parser.service';
 import deepmerge from 'deepmerge';
 import GenreService from 'src/genre/genre.service';
 

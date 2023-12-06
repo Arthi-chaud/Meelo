@@ -5,7 +5,7 @@ import ArtistModule from "src/artist/artist.module";
 import FileManagerModule from "src/file-manager/file-manager.module";
 import GenreModule from "src/genre/genre.module";
 import IllustrationModule from "src/illustration/illustration.module";
-import MetadataModule from "src/metadata/metadata.module";
+import ScannerModule from "src/scanner/scanner.module";
 import PrismaModule from "src/prisma/prisma.module";
 import PrismaService from "src/prisma/prisma.service";
 import ReleaseModule from "src/release/release.module";
@@ -26,7 +26,7 @@ import * as Plugins from '../app.plugins';
 jest.setTimeout(120000);
 
 @Module({
-	imports: [AuthenticationModule, UserModule, FileManagerModule, PrismaModule, ArtistModule, AlbumModule, PrismaModule, ReleaseModule, MetadataModule, SongModule, TrackModule, IllustrationModule, GenreModule, SettingsModule],
+	imports: [AuthenticationModule, UserModule, FileManagerModule, PrismaModule, ArtistModule, AlbumModule, PrismaModule, ReleaseModule, ScannerModule, SongModule, TrackModule, IllustrationModule, GenreModule, SettingsModule],
 	providers: [UserService, PrismaService, UserController, ...Plugins.AppProviders],
 })
 class TestAuthenticationModule {

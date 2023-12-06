@@ -6,7 +6,7 @@ import PrismaModule from "src/prisma/prisma.module";
 import TestPrismaService from "test/test-prisma.service";
 import ArtistModule from "src/artist/artist.module";
 import FileManagerModule from "src/file-manager/file-manager.module";
-import MetadataModule from "src/metadata/metadata.module";
+import ScannerModule from "src/scanner/scanner.module";
 import AlbumModule from "src/album/album.module";
 import FileModule from "src/file/file.module";
 import GenreModule from "src/genre/genre.module";
@@ -20,7 +20,7 @@ import { INestApplication } from "@nestjs/common";
 import request from "supertest";
 import SetupApp from "test/setup-app";
 import ProvidersModule from "src/providers/providers.module";
-import compilationAlbumArtistKeyword from "src/utils/compilation";
+import compilationAlbumArtistKeyword from "src/constants/compilation";
 
 jest.setTimeout(60000);
 
@@ -31,7 +31,7 @@ describe('Illustration Controller', () => {
 	let module: TestingModule;
 	beforeAll(async () => {
 		module = await createTestingModule({
-			imports: [FileManagerModule, PrismaModule, FileModule, MetadataModule, FileModule, ArtistModule, AlbumModule, SongModule, ReleaseModule, TrackModule, GenreModule, LyricsModule, ProvidersModule],
+			imports: [FileManagerModule, PrismaModule, FileModule, ScannerModule, FileModule, ArtistModule, AlbumModule, SongModule, ReleaseModule, TrackModule, GenreModule, LyricsModule, ProvidersModule],
 		}).overrideProvider(PrismaService).useClass(TestPrismaService).compile();
 		app = await SetupApp(module);
 		fileManagerService = module.get<FileManagerService>(FileManagerService);

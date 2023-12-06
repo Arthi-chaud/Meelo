@@ -6,9 +6,8 @@ import FileManagerModule from 'src/file-manager/file-manager.module';
 import FileModule from 'src/file/file.module';
 import IllustrationModule from 'src/illustration/illustration.module';
 import { LyricsModule } from 'src/lyrics/lyrics.module';
-import MetadataModule from 'src/metadata/metadata.module';
+import ScannerModule from 'src/scanner/scanner.module';
 import SettingsModule from 'src/settings/settings.module';
-import FfmpegModule from 'src/ffmpeg/ffmpeg.module';
 import SongModule from 'src/song/song.module';
 import ReleaseModule from 'src/release/release.module';
 import AlbumModule from 'src/album/album.module';
@@ -28,10 +27,9 @@ import PlaylistModule from 'src/playlist/playlist.module';
 		FileManagerModule,
 		forwardRef(() => FileModule),
 		forwardRef(() => TrackModule),
-		forwardRef(() => MetadataModule),
+		forwardRef(() => ScannerModule),
 		LyricsModule,
 		SettingsModule,
-		FfmpegModule,
 		forwardRef(() => ProvidersModule),
 		forwardRef(() => SongModule),
 		forwardRef(() => ReleaseModule),

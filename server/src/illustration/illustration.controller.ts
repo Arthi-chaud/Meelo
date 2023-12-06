@@ -10,7 +10,7 @@ import TrackService from "src/track/track.service";
 import IllustrationService from "./illustration.service";
 import { IllustrationDownloadDto } from "./models/illustration-dl.dto";
 import { IllustrationDimensionsDto } from "./models/illustration-dimensions.dto";
-import Admin from "src/roles/admin.decorator";
+import Admin from "src/authentication/roles/admin.decorator";
 import AlbumService from "src/album/album.service";
 import AlbumQueryParameters from "src/album/models/album.query-parameters";
 import IdentifierParam from "src/identifier/identifier.pipe";

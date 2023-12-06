@@ -12,7 +12,7 @@ import ReleaseModule from "src/release/release.module";
 import SettingsModule from "src/settings/settings.module";
 import SongModule from "src/song/song.module";
 import TrackModule from "src/track/track.module";
-import MetadataModule from "./metadata.module";
+import ScannerModule from "./scanner.module";
 import PrismaService from "src/prisma/prisma.service";
 
 describe('Parser Service', () => {
@@ -21,7 +21,7 @@ describe('Parser Service', () => {
 	let moduleRef: TestingModule;
 	beforeAll(async () => {
 		moduleRef = await createTestingModule({
-			imports: [FileManagerModule, PrismaModule, ArtistModule, AlbumModule, ReleaseModule, MetadataModule, SongModule, TrackModule, IllustrationModule, GenreModule, SettingsModule],
+			imports: [FileManagerModule, PrismaModule, ArtistModule, AlbumModule, ReleaseModule, ScannerModule, SongModule, TrackModule, IllustrationModule, GenreModule, SettingsModule],
 		}).compile();
 		const prismaService = moduleRef.get(PrismaService);
 		await prismaService.artist.create({ data: { name: "Christine & The Queens", slug: "christine-the-queens" } });
@@ -701,4 +701,91 @@ describe('Parser Service', () => {
 			expect(parserService.getAlbumType('Falling (Remixes)')).toBe(AlbumType.Single);
 		});
 	});
+
+
+	describe('Extract Release name\'s extension', () => {
+		it("should build the album name from a basic release name", () => {
+			expect(parserService.removeReleaseExtension('My Album')).toBe('My Album');
+			expect(parserService.removeReleaseExtension("My New Album")).toBe('My New Album');
+		});
+
+		it("should build the album name from a release name with a basic extension", () => {
+			expect(parserService.removeReleaseExtension('My Album (Deluxe Edition)')).toBe('My Album');
+			expect(parserService.removeReleaseExtension("My New Album (Edited Special Edition)")).toBe('My New Album');
+		});
+
+		it("should build the album name from a release name with a medium extension", () => {
+			expect(parserService.removeReleaseExtension('Garbage (20th Anniversary Deluxe Edition)')).toBe('Garbage');
+		});
+
+		it("should build the album name from a release name with a suffix ", () => {
+			expect(parserService.removeReleaseExtension('My Album (Right Now)')).toBe('My Album (Right Now)');
+		});
+
+		it("should build the album name from a release name with a prefix ", () => {
+			expect(parserService.removeReleaseExtension('(Right Now) My Album')).toBe('(Right Now) My Album');
+		});
+
+		it("should build the album name from a release name with a basic extension and a suffix ", () => {
+			expect(parserService.removeReleaseExtension('My Album (Right Now) [Deluxe Edition]')).toBe('My Album (Right Now)');
+		});
+
+		it("should build the album name from a release name with a basic extension and a prefix ", () => {
+			expect(parserService.removeReleaseExtension('(Right Now) My Album [Deluxe Edition]')).toBe('(Right Now) My Album');
+		});
+		it("should remove the 'Remaster' extension", () => {
+			expect(parserService.removeReleaseExtension('My Album [2022 Remaster]')).toBe('My Album');
+		});
+		it("should remove the 'remastered' extension", () => {
+			expect(parserService.removeReleaseExtension('My Album [2022 Remastered]')).toBe('My Album');
+		});
+
+		it("should remove the 'remastered version' extension", () => {
+			expect(parserService.removeReleaseExtension('My Album [2022 Remastered version]')).toBe('My Album');
+		});
+
+		it("should remove the 'remaster' extension, lowercase", () => {
+			expect(parserService.removeReleaseExtension('My Album [2022 Remaster]')).toBe('My Album');
+		});
+
+		it("should remove multiple extensions", () => {
+			expect(parserService.removeReleaseExtension('My Album  (Deluxe)  [2022 Remaster] ')).toBe('My Album');
+		});
+		it("should remove w/ tricky name", () => {
+			expect(parserService.removeReleaseExtension('Version 2.0 (20th Anniversary Deluxe Edition)')).toBe('Version 2.0');
+		});
+	});
+
+	describe('Extract Track name\'s extension', () => {
+		it("should build the song name from a track name with a basic extension", () => {
+			expect(parserService.removeTrackExtension('My Song (Music Video)')).toBe('My Song');
+		});
+
+		it("should build the song name from a track name with an even more basic extension", () => {
+			expect(parserService.removeTrackExtension('My Song (Video)')).toBe('My Song');
+		});
+
+		it("should build the song name from a track name with a normal extension", () => {
+			expect(parserService.removeTrackExtension('My Song (Official Music Video)')).toBe('My Song');
+		})
+
+		it("should remove 'remaster' extension", () => {
+			expect(parserService.removeTrackExtension('My Song  (remastered)')).toBe('My Song');
+		});
+		it("should remove 'Album Version' extension", () => {
+			expect(parserService.removeTrackExtension('My Song  (Album Version)')).toBe('My Song');
+		});
+
+		it("should remove 'Main Version' extension", () => {
+			expect(parserService.removeTrackExtension('My Song  (Main Version)')).toBe('My Song');
+		});
+
+		it("should remove multiple extensions", () => {
+			expect(parserService.removeTrackExtension('My Song  {Music Video}  (Remaster)')).toBe('My Song');
+		});
+
+		it("should not remove extension", () => {
+			expect(parserService.removeTrackExtension('My Song (Yeah)')).toBe('My Song (Yeah)');
+		});
+	})
 });

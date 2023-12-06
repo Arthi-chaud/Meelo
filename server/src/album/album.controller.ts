@@ -4,7 +4,7 @@ import {
 import { PaginationParameters } from 'src/pagination/models/pagination-parameters';
 import ReleaseQueryParameters from 'src/release/models/release.query-parameters';
 import ReleaseService from 'src/release/release.service';
-import compilationAlbumArtistKeyword from 'src/utils/compilation';
+import compilationAlbumArtistKeyword from 'src/constants/compilation';
 import AlbumService from './album.service';
 import AlbumQueryParameters from './models/album.query-parameters';
 import {
@@ -14,7 +14,7 @@ import UpdateAlbumDTO from './models/update-album.dto';
 import { AlbumResponseBuilder } from './models/album.response';
 import { ReleaseResponseBuilder } from 'src/release/models/release.response';
 import RelationIncludeQuery from 'src/relation-include/relation-include-query.decorator';
-import Admin from 'src/roles/admin.decorator';
+import Admin from 'src/authentication/roles/admin.decorator';
 import IdentifierParam from 'src/identifier/identifier.pipe';
 import Response, { ResponseType } from 'src/response/response.decorator';
 import GenreService from 'src/genre/genre.service';

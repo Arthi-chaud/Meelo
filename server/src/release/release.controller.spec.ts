@@ -15,7 +15,7 @@ import ReleaseModule from "./release.module";
 import TrackModule from "src/track/track.module";
 import IllustrationModule from "src/illustration/illustration.module";
 import SongModule from "src/song/song.module";
-import MetadataModule from "src/metadata/metadata.module";
+import ScannerModule from "src/scanner/scanner.module";
 import type Tracklist from "src/track/models/tracklist.model";
 import GenreModule from "src/genre/genre.module";
 import TestPrismaService from "test/test-prisma.service";
@@ -35,7 +35,7 @@ describe('Release Controller', () => {
 	let module: TestingModule;
 	beforeAll(async () => {
 		module = await createTestingModule({
-			imports: [PrismaModule, AlbumModule, ArtistModule, ReleaseModule, TrackModule, IllustrationModule, SongModule, FileModule, MetadataModule, GenreModule, ProvidersModule],
+			imports: [PrismaModule, AlbumModule, ArtistModule, ReleaseModule, TrackModule, IllustrationModule, SongModule, FileModule, ScannerModule, GenreModule, ProvidersModule],
 			providers: [ReleaseService, AlbumService, ArtistService, ReleaseController],
 		}).overrideProvider(PrismaService).useClass(TestPrismaService).compile();
 		app = await SetupApp(module);

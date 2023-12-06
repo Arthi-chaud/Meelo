@@ -29,7 +29,7 @@ import {
 import AlbumService from 'src/album/album.service';
 import ReleaseQueryParameters from 'src/release/models/release.query-parameters';
 import ReleaseService from 'src/release/release.service';
-import ParserService from 'src/metadata/parser.service';
+import ParserService from 'src/scanner/parser.service';
 import deepmerge from 'deepmerge';
 
 @Injectable()

@@ -4,7 +4,7 @@ import type { TestingModule } from "@nestjs/testing";
 import AlbumService from "src/album/album.service";
 import ArtistModule from "src/artist/artist.module";
 import FileManagerModule from "src/file-manager/file-manager.module";
-import MetadataModule from "src/metadata/metadata.module";
+import ScannerModule from "src/scanner/scanner.module";
 import PrismaModule from "src/prisma/prisma.module";
 import PrismaService from "src/prisma/prisma.service";
 import ReleaseService from "src/release/release.service";
@@ -28,7 +28,7 @@ describe('Illustration Service', () => {
 	beforeAll(async () => {
 		fs.rm('test/assets/metadata', { recursive: true, force: true }, () => {})
 		module = await createTestingModule({
-			imports: [HttpModule, FileManagerModule, IllustrationModule, PrismaModule, ArtistModule, MetadataModule, SettingsModule, ProvidersModule],
+			imports: [HttpModule, FileManagerModule, IllustrationModule, PrismaModule, ArtistModule, ScannerModule, SettingsModule, ProvidersModule],
 		}).overrideProvider(PrismaService).useClass(TestPrismaService).compile();
 		illustrationService = module.get<IllustrationService>(IllustrationService);
 		releaseService = module.get<ReleaseService>(ReleaseService);

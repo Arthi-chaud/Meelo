@@ -1,19 +1,14 @@
 import sharp from 'sharp';
 import { Injectable, StreamableFile } from '@nestjs/common';
 import FileManagerService from 'src/file-manager/file-manager.service';
-import escapeRegex from 'src/utils/escape-regex';
 import { CantDownloadIllustrationException, NoIllustrationException } from './illustration.exceptions';
-import mm, { type IAudioMetadata } from 'music-metadata';
 // eslint-disable-next-line no-restricted-imports
 import * as fs from 'fs';
-import { FileParsingException } from 'src/metadata/metadata.exceptions';
 import * as dir from 'path';
 import type { IllustrationFolderPath, IllustrationPath } from './models/illustration-path.model';
 import Jimp from 'jimp';
-import { FileDoesNotExistException } from 'src/file-manager/file-manager.exceptions';
 import { Readable } from 'stream';
 import type { IllustrationDimensionsDto } from './models/illustration-dimensions.dto';
-import glob from 'glob';
 import Logger from 'src/logger/logger';
 import * as Blurhash from 'blurhash';
 import getColors from 'get-image-colors';
@@ -32,45 +27,6 @@ export default class IllustrationService {
 	constructor(
 		private fileManagerService: FileManagerService
 	) {}
-
-	/**
-	 * Regular Expression to match source cover files
-	 */
-	public static SOURCE_ILLUSTRATON_FILE = '[Cc]over.*';
-
-	/**
-	 * Extracts the embedded illustration of a file
-	 * @param filePath the full path to the source file to scrap
-	 */
-	async extractIllustrationFromFile(filePath: string): Promise<Buffer | null> {
-		if (!this.fileManagerService.fileExists(filePath)) {
-			throw new FileDoesNotExistException(filePath);
-		}
-		try {
-			const rawMetadata: IAudioMetadata = await mm.parseFile(filePath, {
-				skipCovers: false,
-			});
-
-			return mm.selectCover(rawMetadata.common.picture)?.data ?? null;
-		} catch {
-			throw new FileParsingException(filePath);
-		}
-	}
-
-	/**
-	 * Get a stream of the illustration file in the same folder as file
-	 * @param filePath the full path to the source file to scrap
-	 * @example "./a.m4a" will try to parse "./cover.jpg"
-	 */
-	async extractIllustrationInFileFolder(filePath: string): Promise<Buffer | null> {
-		const fileFolder = dir.dirname(filePath);
-		const illustrationCandidates = glob.sync(`${escapeRegex(fileFolder)}/${IllustrationService.SOURCE_ILLUSTRATON_FILE}`);
-
-		if (illustrationCandidates.length == 0) {
-			return null;
-		}
-		return this.fileManagerService.getFileBuffer(illustrationCandidates[0]);
-	}
 
 	/**
 	 * Downloads an illustration from a URL, and stores it in the illustration file system

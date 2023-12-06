@@ -8,7 +8,7 @@ import { FileDoesNotExistException, FileNotReadableException } from 'src/file-ma
 import {
 	BadMetadataException,
 	FileParsingException, PathParsingException
-} from './metadata.exceptions';
+} from './scanner.exceptions';
 import SettingsService from 'src/settings/settings.service';
 import TrackService from 'src/track/track.service';
 import SongService from 'src/song/song.service';
@@ -17,15 +17,18 @@ import ReleaseService from 'src/release/release.service';
 import AlbumService from 'src/album/album.service';
 import ArtistService from 'src/artist/artist.service';
 import type TrackQueryParameters from 'src/track/models/track.query-parameters';
-import compilationAlbumArtistKeyword from 'src/utils/compilation';
+import compilationAlbumArtistKeyword from 'src/constants/compilation';
 import GenreService from 'src/genre/genre.service';
 import { File, Track } from 'src/prisma/models';
 import { validate } from 'class-validator';
 import ParserService from './parser.service';
 import Slug from 'src/slug/slug';
+import escapeRegex from 'src/utils/escape-regex';
+import glob from 'glob';
+import * as dir from 'path';
 
 @Injectable()
-export default class MetadataService {
+export default class ScannerService {
 	constructor(
 		@Inject(forwardRef(() => TrackService))
 		private trackService: TrackService,
@@ -86,7 +89,7 @@ export default class MetadataService {
 				}))
 		);
 		const song = await this.songService.getOrCreate({
-			name: this.removeTrackExtension(parsedSongName),
+			name: this.parserService.removeTrackExtension(parsedSongName),
 			artist: { id: songArtist.id },
 			featuring: featuringArtists.map(({ slug }) => ({ slug: new Slug(slug) })),
 			genres: genres.map((genre) => ({ id: genre.id })),
@@ -100,7 +103,7 @@ export default class MetadataService {
 			{ id: song.id }
 		);
 		const album = await this.albumService.getOrCreate({
-			name: this.removeReleaseExtension(metadata.album),
+			name: this.parserService.removeReleaseExtension(metadata.album),
 			artist: albumArtist ? { id: albumArtist?.id } : undefined,
 			registeredAt: file.registerDate
 		}, { releases: true });
@@ -313,95 +316,43 @@ export default class MetadataService {
 	}
 
 	/**
-	 * Apply metadata on a file found in the database
+	 * Regular Expression to match source cover files
 	 */
-	/*async applyMetadataOnFile(where: FileQueryParameters.WhereInput): Promise<void> {
-		const file = await this.fileService.get(where, { library: true });
-		const track = await this.trackService.get({ sourceFile: where });
-		const song = await this.songService.get({ id: track.songId }, { genres: true });
-		const release = await this.releaseService.get(
-			{ id: track.releaseId }, { album: true }
-		);
-		const album = await this.albumService.get(
-			{ id: release.albumId }, { artist: true }
-		);
-		const artist = await this.artistService.get({ id: song.artistId });
-		const libraryPath = this.fileManagerService.getLibraryFullPath(file.library);
-		const fullFilePath = `${libraryPath}/${file.path}`;
-		const metadata: Metadata = {
-			compilation: false,
-			artist: artist.name,
-			albumArtist: album.artist?.name,
-			album: album.name,
-			release: release.name,
-			name: song.name,
-			releaseDate: release.releaseDate ?? undefined,
-			index: track.trackIndex ?? undefined,
-			discIndex: track.discIndex ?? undefined,
-			genres: song.genres!.map((genre) => genre.name)
-		};
-
-		this.ffmpegService.applyMetadata(fullFilePath, metadata);
-	}*/
+	public static SOURCE_ILLUSTRATON_FILE = '[Cc]over.*';
 
 	/**
-	 * Removes an extension from a release's name
-	 * For example, if the release Name is 'My Album (Deluxe Edition)', the parent
-	 * album name would be 'My Album'
+	 * Extracts the embedded illustration of a file
+	 * @param filePath the full path to the source file to scrap
 	 */
-	removeReleaseExtension(releaseName: string): string {
-		const extensionKeywords = [
-			'Edition',
-			'Version',
-			'Reissue',
-			'Deluxe',
-			'Standard',
-			'Edited',
-			'Explicit',
-			'Remaster',
-			'Remastered'
-		];
+	async extractIllustrationFromFile(filePath: string): Promise<Buffer | null> {
+		if (!this.fileManagerService.fileExists(filePath)) {
+			throw new FileDoesNotExistException(filePath);
+		}
+		try {
+			const rawMetadata: IAudioMetadata = await mm.parseFile(filePath, {
+				skipCovers: false,
+			});
 
-		return this.removeExtensions(releaseName, extensionKeywords);
+			return mm.selectCover(rawMetadata.common.picture)?.data ?? null;
+		} catch {
+			throw new FileParsingException(filePath);
+		}
 	}
 
 	/**
-	 * Removes an extension from a track's name
-	 * For example, if the release Name is 'My Song (Music Video)', the parent
-	 * song name would be 'My Song'
-	 * It will remove the video and the remaster extension
+	 * Get a stream of the illustration file in the same folder as file
+	 * @param filePath the full path to the source file to scrap
+	 * @example "./a.m4a" will try to parse "./cover.jpg"
 	 */
-	removeTrackExtension(trackName: string): string {
-		const extensionKeywords = [
-			'Video',
-			'Remaster',
-			'Remastered',
-			'Album Version',
-			'Main Version'
-		];
+	async extractIllustrationInFileFolder(filePath: string): Promise<Buffer | null> {
+		const fileFolder = dir.dirname(filePath);
+		const illustrationCandidates = glob.sync(
+			`${escapeRegex(fileFolder)}/${ScannerService.SOURCE_ILLUSTRATON_FILE}`
+		);
 
-		return this.removeExtensions(trackName, extensionKeywords);
-	}
-
-	/**
-	 * Removes the extensions in a string found by 'extractExtensions'
-	 * @param source the string t ofind the extensions in
-	 * @param extensions the extensions to find
-	 * @returns the cleaned source
-	 */
-	private removeExtensions(source: string, extensions: string[]): string {
-		const extensionsGroup = extensions.map((ext) => `(${ext})`).join('|');
-
-		return this.parserService.splitGroups(source, { keepDelimiters: true })
-			.filter((group) => {
-				// If root
-				if (group == this.parserService.stripGroupDelimiters(group)[1]) {
-					return true;
-				}
-				return new RegExp(`.*(${extensionsGroup}).*`, 'i').exec(group)?.at(0) == undefined;
-			})
-			.map((group) => group.trim())
-			.join(' ')
-			.trim();
+		if (illustrationCandidates.length == 0) {
+			return null;
+		}
+		return this.fileManagerService.getFileBuffer(illustrationCandidates[0]);
 	}
 }

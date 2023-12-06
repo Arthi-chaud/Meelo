@@ -4,9 +4,9 @@ import {
 } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
 import { InsufficientPermissionsException } from 'src/authentication/authentication.exception';
-import { IS_PUBLIC_KEY } from 'src/roles/public.decorator';
+import { IS_PUBLIC_KEY } from 'src/authentication/roles/public.decorator';
 import UserService from 'src/user/user.service';
-import RoleEnum from './models/roles';
+import RoleEnum from './roles.enum';
 import { ROLES_KEY } from './roles.decorator';
 
 @Injectable()

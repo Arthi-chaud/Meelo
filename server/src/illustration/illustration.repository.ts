@@ -12,7 +12,7 @@ import SettingsService from "src/settings/settings.service";
 import {
 	basename, dirname, join
 } from 'path';
-import compilationAlbumArtistKeyword from "src/utils/compilation";
+import compilationAlbumArtistKeyword from "src/constants/compilation";
 import { IllustrationNotExtracted } from "./illustration.exceptions";
 import Logger from "src/logger/logger";
 import { IllustrationResponse } from "./models/illustration.response";
@@ -24,10 +24,11 @@ import ReleaseService from "src/release/release.service";
 import SongQueryParameters from "src/song/models/song.query-params";
 import AlbumQueryParameters from "src/album/models/album.query-parameters";
 import ProviderService from "src/providers/provider.service";
-import FfmpegService from "src/ffmpeg/ffmpeg.service";
+import FfmpegService from "src/scanner/ffmpeg.service";
 import PlaylistQueryParameters from "src/playlist/models/playlist.query-parameters";
 import PlaylistService from "src/playlist/playlist.service";
 import FileManagerService from "src/file-manager/file-manager.service";
+import ScannerService from "src/scanner/scanner.service";
 
 /**
  * This service handles the paths to illustrations files and the related tables in the DB
@@ -52,6 +53,7 @@ export default class IllustrationRepository {
 		@Inject(forwardRef(() => ProviderService))
 		private providerService: ProviderService,
 		private ffmpegService: FfmpegService,
+		private scannerService: ScannerService,
 		private fileManagerService: FileManagerService
 	) {
 		this.baseIllustrationFolderPath = join(
@@ -502,8 +504,8 @@ export default class IllustrationRepository {
 			trackIllustrationPath
 		] = await this.getTrackIllustrationPaths(where);
 		const [embeddedIllustration, inlineIllustration] = await Promise.all([
-			this.illustrationService.extractIllustrationFromFile(sourceFilePath),
-			this.illustrationService.extractIllustrationInFileFolder(sourceFilePath),
+			this.scannerService.extractIllustrationFromFile(sourceFilePath),
+			this.scannerService.extractIllustrationInFileFolder(sourceFilePath),
 		]);
 		const illustration = (this.settingsService.settingsValues.metadata
 			.source == 'embedded' ? embeddedIllustration : inlineIllustration)

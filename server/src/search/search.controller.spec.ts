@@ -16,7 +16,7 @@ import { createTestingModule } from "test/test-module";
 import TestPrismaService from "test/test-prisma.service";
 import SearchModule from "./search.module";
 import request from "supertest";
-import MetadataModule from "src/metadata/metadata.module";
+import ScannerModule from "src/scanner/scanner.module";
 import GenreService from "src/genre/genre.service";
 import SetupApp from "test/setup-app";
 import { expectedArtistResponse, expectedAlbumResponse, expectedSongResponse } from "test/expected-responses";
@@ -27,7 +27,7 @@ describe('Search Controller', () => {
 	let module: TestingModule;
 	beforeAll(async () => {
 		module = await createTestingModule({
-			imports: [PrismaModule, ArtistModule, TrackModule, AlbumModule, ReleaseModule, GenreModule, IllustrationModule, SearchModule, MetadataModule],
+			imports: [PrismaModule, ArtistModule, TrackModule, AlbumModule, ReleaseModule, GenreModule, IllustrationModule, SearchModule, ScannerModule],
 		}).overrideProvider(PrismaService).useClass(TestPrismaService).compile();
 		dummyRepository = module.get(PrismaService);
 		app = await SetupApp(module);

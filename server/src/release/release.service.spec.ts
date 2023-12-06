@@ -12,7 +12,7 @@ import Slug from "src/slug/slug";
 import { MasterReleaseNotFoundException, ReleaseNotEmptyException, ReleaseNotFoundException, ReleaseNotFoundFromIDException } from "./release.exceptions";
 import ReleaseService from "./release.service";
 import IllustrationModule from "src/illustration/illustration.module";
-import MetadataModule from "src/metadata/metadata.module";
+import ScannerModule from "src/scanner/scanner.module";
 import SongModule from "src/song/song.module";
 import TrackModule from "src/track/track.module";
 import GenreModule from "src/genre/genre.module";
@@ -35,7 +35,7 @@ describe('Release Service', () => {
 	let module: TestingModule;
 	beforeAll(async () => {
 		module = await createTestingModule({
-			imports: [PrismaModule, AlbumModule, ArtistModule, TrackModule, IllustrationModule, SongModule, MetadataModule, GenreModule, FileModule, ProvidersModule],
+			imports: [PrismaModule, AlbumModule, ArtistModule, TrackModule, IllustrationModule, SongModule, ScannerModule, GenreModule, FileModule, ProvidersModule],
 			providers: [ReleaseService, AlbumService, ArtistService],
 		}).overrideProvider(PrismaService).useClass(TestPrismaService).compile();
 		releaseService = module.get<ReleaseService>(ReleaseService);
