@@ -366,6 +366,15 @@ export default class ParserService {
 	}
 
 	/**
+	 * Removes the 'bonus' extension from a track's name
+	 */
+	removeBonusTrackExtension(trackName: string): string {
+		const extensionKeywords = ['Bonus Track'];
+
+		return this.removeExtensions(trackName, extensionKeywords);
+	}
+
+	/**
 	 * Removes an extension from a track's name
 	 * For example, if the release Name is 'My Song (Music Video)', the parent
 	 * song name would be 'My Song'
