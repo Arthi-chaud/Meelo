@@ -80,6 +80,11 @@ const ReleaseTrackList = (
 									color: 'text.disabled'
 								}}
 							/>
+							{currentTrack.isBonus &&
+								<Typography color={theme.palette.text.disabled}>
+									<Translate translationKey="bonusTrack" />
+								</Typography>
+							}
 							{currentTrack.type == 'Video' &&
 								<Icon sx={{ marginLeft: 2, display: 'flex', alignItems: 'center' }}>
 									<VideoIcon color={theme.palette.text.disabled} />

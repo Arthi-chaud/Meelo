@@ -199,7 +199,8 @@ const fr: TranslationMap = {
 	tasks: "Tâches",
 	current: "En cours",
 	pending: "En attente",
-	none: "Aucune"
+	none: "Aucune",
+	bonusTrack: 'Piste Bonus'
 };
 
 export default fr;

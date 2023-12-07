@@ -210,7 +210,8 @@ const en = {
 	tasks: "Tasks",
 	current: "Current",
 	pending: "Pending",
-	none: "None"
+	none: "None",
+	bonusTrack: 'Bonus Track'
 };
 
 export default en;
