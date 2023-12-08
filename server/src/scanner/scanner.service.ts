@@ -88,10 +88,9 @@ export default class ScannerService {
 					registeredAt: file.registerDate
 				}))
 		);
+		const parsedTrackName = this.parserService.parseTrackExtensions(parsedSongName);
 		const song = await this.songService.getOrCreate({
-			name: this.parserService.removeBonusTrackExtension(
-				this.parserService.removeTrackExtension(parsedSongName)
-			),
+			name: parsedTrackName.parsedName,
 			artist: { id: songArtist.id },
 			featuring: featuringArtists.map(({ slug }) => ({ slug: new Slug(slug) })),
 			genres: genres.map((genre) => ({ id: genre.id })),
@@ -116,10 +115,9 @@ export default class ScannerService {
 			registeredAt: file.registerDate,
 			discogsId: metadata.discogsId
 		}, { album: true });
-		const parsedTrackName = this.parserService.removeBonusTrackExtension(parsedSongName);
 		const track: TrackQueryParameters.CreateInput = {
-			name: parsedTrackName,
-			isBonus: parsedTrackName != parsedSongName,
+			name: parsedTrackName.parsedName,
+			isBonus: parsedTrackName['Bonus Track'],
 			discIndex: metadata.discIndex ?? null,
 			trackIndex: metadata.index ?? null,
 			type: metadata.type,
