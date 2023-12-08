@@ -113,16 +113,16 @@ export default class Metadata {
 	 */
 	@IsPositive()
 	@IsNumber()
-	@IsDefined()
-	bitrate: number;
+	@IsOptional()
+	bitrate?: number;
 
 	/**
 	 * Duration in seconds of the track
 	 */
 	@IsPositive()
 	@IsNumber()
-	@IsDefined()
-	duration: number;
+	@IsOptional()
+	duration?: number;
 
 	/**
 	 * Type of the track
