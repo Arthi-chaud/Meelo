@@ -295,6 +295,24 @@ export default class ParserService {
 		if (containsWord('acapella')) {
 			return SongType.Acapella;
 		}
+		if (containsWord('interview')) {
+			return SongType.NonMusic;
+		}
+		if (containsWord('documentaire') || containsWord('documentary')) {
+			return SongType.NonMusic;
+		}
+		if (containsWord('photo gallery')) {
+			return SongType.NonMusic;
+		}
+		if (containsWord('photo shoot') || containsWord('photoshoot')) {
+			return SongType.NonMusic;
+		}
+		if (containsWord('behind the scenes') || containsWord('behind-the-scenes')) {
+			return SongType.NonMusic;
+		}
+		if (containsWord('making of')) {
+			return SongType.NonMusic;
+		}
 		return SongType.Original;
 	}
 
