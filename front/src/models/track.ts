@@ -52,6 +52,10 @@ const Track = Resource.concat(Illustration).concat(yup.object({
 	 * ID of the source file
 	 */
 	sourceFileId: yup.number().required(),
+	/**
+	 * If the Track is a bonus track
+	 */
+	isBonus: yup.boolean().required(),
 }));
 
 type Track = yup.InferType<typeof Track>;

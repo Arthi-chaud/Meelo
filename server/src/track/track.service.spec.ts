@@ -110,6 +110,7 @@ describe('Track Service', () => {
 		it("should create a track", async () => {
 			newTrack = await trackService.create({
 				...trackData,
+				isBonus: false,
 				name: 'My Song 3',
 				song: { id: dummyRepository.songA1.id },
 				release: { id: dummyRepository.releaseA1_2.id },
@@ -132,6 +133,7 @@ describe('Track Service', () => {
 		it("should create a second track", async () => {
 			newTrack2 = await trackService.create({
 				...trackData,
+				isBonus: false,
 				type: TrackType.Video,
 				name: 'My Song 4',
 				song: { id: dummyRepository.songA1.id },
@@ -155,6 +157,7 @@ describe('Track Service', () => {
 		it("should throw, as the source file does not exist", async () => {
 			const test = async () => await trackService.create({
 				...trackData,
+				isBonus: false,
 				song: { id: dummyRepository.songA1.id },
 				release: { id: dummyRepository.releaseA1_1.id },
 				sourceFile: { id: -1 },
@@ -166,6 +169,7 @@ describe('Track Service', () => {
 			const test = async () => await trackService.create({
 				...trackData,
 				song: { id: -1 },
+				isBonus: false,
 				release: { id: dummyRepository.releaseA1_1.id },
 				sourceFile: { id: file.id },
 			});
@@ -175,6 +179,7 @@ describe('Track Service', () => {
 		it("should throw, as the parent release does not exist", async () => {
 			const test = async () => await trackService.create({
 				...trackData,
+				isBonus: false,
 				song: { id: dummyRepository.songA1.id },
 				release: { id: -1 },
 				sourceFile: { id: file.id },
@@ -185,6 +190,7 @@ describe('Track Service', () => {
 		it("should throw, as the track already exists", async () => {
 			const test = async () => await trackService.create({
 				...trackData,
+				isBonus: false,
 				song: { id: dummyRepository.songA1.id },
 				release: { id: dummyRepository.releaseA1_1.id },
 				sourceFile: { id: file.id },
@@ -335,6 +341,7 @@ describe('Track Service', () => {
 			})
 			const tmpTrack = await trackService.create({
 				type: TrackType.Video,
+				isBonus: false,
 				name: '',
 				discIndex: 1,
 				trackIndex: 2,
