@@ -349,20 +349,18 @@ export default class ParserService {
 	 * For example, if the release Name is 'My Album (Deluxe Edition)', the parent
 	 * album name would be 'My Album'
 	 */
-	removeReleaseExtension(releaseName: string): string {
-		const extensionKeywords = [
-			'Edition',
-			'Version',
+	parseReleaseExtension(releaseName: string) {
+		return this.parseExtensions(releaseName, [
 			'Reissue',
 			'Deluxe',
 			'Standard',
 			'Edited',
 			'Explicit',
+			'Remastered',
 			'Remaster',
-			'Remastered'
-		];
-
-		return this.removeExtensions(releaseName, extensionKeywords);
+			'Edition',
+			'Version',
+		]);
 	}
 
 	/**
@@ -372,16 +370,20 @@ export default class ParserService {
 	 * It will remove the video and the remaster extension
 	 */
 	parseTrackExtensions(trackName: string) {
-		const extensionKeywords = [
+		return this.parseExtensions(trackName, [
 			'Bonus Track',
 			'Video',
-			'Remaster',
 			'Remastered',
+			'Remaster',
 			'Album Version',
 			'Main Version'
-		] as const;
+		] as const);
+	}
 
-		return extensionKeywords
+	private parseExtensions<Keyword extends string>(
+		source: string, extension: readonly Keyword[]
+	) {
+		return extension
 			.reduce((reduced, currentKeyword) => {
 				const stripped = this.removeExtensions(reduced.parsedName, [currentKeyword]);
 
@@ -390,8 +392,8 @@ export default class ParserService {
 					parsedName: stripped,
 					[currentKeyword]: stripped != reduced.parsedName
 				} as const;
-			}, { parsedName: trackName } as
-				{ parsedName: string } & Record<typeof extensionKeywords[number], boolean>);
+			}, { parsedName: source } as
+				{ parsedName: string } & Record<Keyword, boolean>);
 	}
 
 	/**

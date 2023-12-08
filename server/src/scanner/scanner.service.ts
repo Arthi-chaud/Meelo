@@ -104,7 +104,7 @@ export default class ScannerService {
 			{ id: song.id }
 		);
 		const album = await this.albumService.getOrCreate({
-			name: this.parserService.removeReleaseExtension(metadata.album),
+			name: this.parserService.parseReleaseExtension(metadata.album).parsedName,
 			artist: albumArtist ? { id: albumArtist?.id } : undefined,
 			registeredAt: file.registerDate
 		}, { releases: true });
