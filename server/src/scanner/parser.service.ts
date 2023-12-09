@@ -255,6 +255,9 @@ export default class ParserService {
 		if (titleContainsWord('interview')) {
 			return SongType.NonMusic;
 		}
+		if (titleContainsWord('advert')) {
+			return SongType.NonMusic;
+		}
 		if (titleContainsWord('documentaire') || titleContainsWord('documentary')) {
 			return SongType.NonMusic;
 		}

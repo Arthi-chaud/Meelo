@@ -686,6 +686,9 @@ describe('Parser Service', () => {
 		it('Non-Music (Voice Memo)', () => {
 			expect(parserService.getSongType('Blank Space (Guitar / Vocal Voice Memo)')).toBe(SongType.NonMusic);
 		})
+		it('Non-Music (Advert)', () => {
+			expect(parserService.getSongType('Sound of the Udnerground (Album Advert)')).toBe(SongType.NonMusic);
+		})
 	});
 
 
