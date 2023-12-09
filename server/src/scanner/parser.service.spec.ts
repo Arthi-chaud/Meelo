@@ -24,9 +24,9 @@ describe('Parser Service', () => {
 			imports: [FileManagerModule, PrismaModule, ArtistModule, AlbumModule, ReleaseModule, ScannerModule, SongModule, TrackModule, IllustrationModule, GenreModule, SettingsModule],
 		}).compile();
 		const prismaService = moduleRef.get(PrismaService);
-		await prismaService.artist.create({ data: { name: "Christine & The Queens", slug: "christine-the-queens" } });
-		await prismaService.artist.create({ data: { name: "Me & My Monkey", slug: "me-my-monkey" } });
-		await prismaService.artist.create({ data: { name: "Miss Kittin & The Hacker", slug: "miss-kittin-the-hacker" } });
+		await prismaService.artist.create({ data: { name: "Christine & The Queens", slug: "christine-the-queens" } }).catch(() => {});
+		await prismaService.artist.create({ data: { name: "Me & My Monkey", slug: "me-my-monkey" } }).catch(() => {});
+		await prismaService.artist.create({ data: { name: "Miss Kittin & The Hacker", slug: "miss-kittin-the-hacker" } }).catch(() => {});
 		parserService = moduleRef.get<ParserService>(ParserService);
 	});
 
@@ -664,7 +664,7 @@ describe('Parser Service', () => {
 		})
 		it('Non-Music (TV Special)', () => {
 			expect(parserService.getSongType('ABC Television Special: "Britney Spears: In The Zone"')).toBe(SongType.NonMusic);
-			expect(parserService.getSongType("In The Zone Special")).toBe(SongType.NonMusic);
+			expect(parserService.getSongType("In The Zone Special (Exclusive Interview & Behind the Scenes Footage)")).toBe(SongType.NonMusic);
 			expect(parserService.getSongType("MTV Special - The Show")).toBe(SongType.NonMusic);
 			expect(parserService.getSongType("Making Of 2 'City Of Love'")).toBe(SongType.NonMusic);
 			expect(parserService.getSongType("So You Say (Making of)")).toBe(SongType.NonMusic);

@@ -243,13 +243,42 @@ export default class ParserService {
 
 	getSongType(songName: string): SongType {
 		const songExtensions = this.splitGroups(songName, { removeRoot: true });
+		const lowercaseSongName = songName.toLowerCase();
 		const extensionWords = songExtensions
 			.map((ext) => ext.toLowerCase())
 			.filter((ext) => !(ext.startsWith('feat ') || ext.startsWith('featuring ')))
 			.map((ext) => ext.split(' ')).flat();
 
 		const containsWord = (word: string) => extensionWords.includes(word);
+		const titleContainsWord = (word: string) => lowercaseSongName.includes(word);
 
+		if (titleContainsWord('interview')) {
+			return SongType.NonMusic;
+		}
+		if (titleContainsWord('documentaire') || titleContainsWord('documentary')) {
+			return SongType.NonMusic;
+		}
+		if (titleContainsWord('photo gallery')) {
+			return SongType.NonMusic;
+		}
+		if (titleContainsWord('photo shoot') || titleContainsWord('photoshoot')) {
+			return SongType.NonMusic;
+		}
+		if (titleContainsWord('behind the scene')
+			|| titleContainsWord('behind-the-scene')
+			|| titleContainsWord('behind the music video')
+			|| titleContainsWord('behind the video')) {
+			return SongType.NonMusic;
+		}
+		if (titleContainsWord('making of') || titleContainsWord('making the video')) {
+			return SongType.NonMusic;
+		}
+		if (titleContainsWord('television special') || titleContainsWord('mtv special')) {
+			return SongType.NonMusic;
+		}
+		if (titleContainsWord('voice memo')) {
+			return SongType.NonMusic;
+		}
 		if (songExtensions.length == 0) {
 			return SongType.Original;
 		}
@@ -294,27 +323,6 @@ export default class ParserService {
 		}
 		if (containsWord('acapella')) {
 			return SongType.Acapella;
-		}
-		if (containsWord('interview')) {
-			return SongType.NonMusic;
-		}
-		if (containsWord('documentaire') || containsWord('documentary')) {
-			return SongType.NonMusic;
-		}
-		if (containsWord('photo gallery')) {
-			return SongType.NonMusic;
-		}
-		if (containsWord('photo shoot') || containsWord('photoshoot')) {
-			return SongType.NonMusic;
-		}
-		if (containsWord('behind the scenes') || containsWord('behind-the-scenes')) {
-			return SongType.NonMusic;
-		}
-		if (containsWord('making of')) {
-			return SongType.NonMusic;
-		}
-		if (containsWord('voice memo')) {
-			return SongType.NonMusic;
 		}
 		return SongType.Original;
 	}
