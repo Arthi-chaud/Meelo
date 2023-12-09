@@ -846,6 +846,7 @@ describe('Parser Service', () => {
 
 		it("should not remove extension", () => {
 			expect(parserService.parseTrackExtensions('My Song (Yeah)').parsedName).toBe('My Song (Yeah)');
+			expect(parserService.parseTrackExtensions("I'm A Slave 4 U (Live from 2001 MTV Video Music Awards)").parsedName).toBe("I'm A Slave 4 U (Live from 2001 MTV Video Music Awards)");
 		});
 	})
 });

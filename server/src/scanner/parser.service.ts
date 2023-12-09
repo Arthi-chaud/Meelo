@@ -406,15 +406,18 @@ export default class ParserService {
 			'Remaster',
 			'Album Version',
 			'Main Version'
-		] as const);
+		] as const, ['Live']);
 	}
 
 	private parseExtensions<Keyword extends string>(
-		source: string, extension: readonly Keyword[]
+		source: string, extension: readonly Keyword[],
+		ignore: string[] = []
 	) {
 		return extension
 			.reduce((reduced, currentKeyword) => {
-				const stripped = this.removeExtensions(reduced.parsedName, [currentKeyword]);
+				const stripped = this.removeExtensions(
+					reduced.parsedName, [currentKeyword], ignore
+				);
 
 				return {
 					...reduced,
@@ -427,17 +430,21 @@ export default class ParserService {
 
 	/**
 	 * Removes the extensions in a string found by 'extractExtensions'
-	 * @param source the string t ofind the extensions in
+	 * @param source the string to find the extensions in
 	 * @param extensions the extensions to find
 	 * @returns the cleaned source
 	 */
-	private removeExtensions(source: string, extensions: string[]): string {
+	private removeExtensions(source: string, extensions: string[], ignore: string[]): string {
 		const extensionsGroup = extensions.map((ext) => `(${ext})`).join('|');
+		const ignoreGroup = ignore.map((ext) => `(${ext})`).join('|');
 
 		return this.splitGroups(source, { keepDelimiters: true })
 			.filter((group) => {
 				// If root
 				if (group == this.stripGroupDelimiters(group)[1]) {
+					return true;
+				}
+				if (ignore.length && new RegExp(`.*(${ignoreGroup}).*`, 'i').exec(group)?.at(0) != undefined) {
 					return true;
 				}
 				return new RegExp(`.*(${extensionsGroup}).*`, 'i').exec(group)?.at(0) == undefined;
