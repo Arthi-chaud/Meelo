@@ -313,6 +313,9 @@ export default class ParserService {
 		if (containsWord('making of')) {
 			return SongType.NonMusic;
 		}
+		if (containsWord('voice memo')) {
+			return SongType.NonMusic;
+		}
 		return SongType.Original;
 	}
 

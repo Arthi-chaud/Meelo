@@ -638,6 +638,54 @@ describe('Parser Service', () => {
 		it("Acapella (Remix Acapella)", () => {
 			expect(parserService.getSongType("Don't Give It Up (Remix Acapella)")).toBe(SongType.Remix);
 		});
+		it('Non-Music (Photo Shoot/Gallery)', () => {
+			expect(parserService.getSongType("Photo Gallery")).toBe(SongType.NonMusic);
+			expect(parserService.getSongType("Photo Shoot")).toBe(SongType.NonMusic);
+			expect(parserService.getSongType("The Truth About Love Photoshoot (Behind The Scenes)")).toBe(SongType.NonMusic);
+			expect(parserService.getSongType("Girl On Film - Behind The Scenes At The Photo Shoot")).toBe(SongType.NonMusic);
+		})
+		it('Non-Music (Documentary)', () => {
+			expect(parserService.getSongType("Little Bits Of Goldfrapp - Documentary")).toBe(SongType.NonMusic);
+			expect(parserService.getSongType("Thanks For Your Uhh, Support (Documentary)")).toBe(SongType.NonMusic);
+			expect(parserService.getSongType("Documentaire Exclusif")).toBe(SongType.NonMusic);
+			expect(parserService.getSongType("Documentaire Inedit")).toBe(SongType.NonMusic);
+		})
+		it('Non-Music (Interview)', () => {
+			expect(parserService.getSongType("The After Show Interview")).toBe(SongType.NonMusic);
+			expect(parserService.getSongType("Interview")).toBe(SongType.NonMusic);
+			expect(parserService.getSongType("Exclusive Interview With Girls Aloud")).toBe(SongType.NonMusic);
+		})
+		it('Non-Music (Making Of)', () => {
+			expect(parserService.getSongType("The Making Of Goodbye Lullaby")).toBe(SongType.NonMusic);
+			expect(parserService.getSongType("MTV's Making The Video: Toxic")).toBe(SongType.NonMusic);
+			expect(parserService.getSongType("The Show (Making Of)")).toBe(SongType.NonMusic);
+			expect(parserService.getSongType("Making Of 2 'City Of Love'")).toBe(SongType.NonMusic);
+			expect(parserService.getSongType("So You Say (Making of)")).toBe(SongType.NonMusic);
+		})
+		it('Non-Music (TV Special)', () => {
+			expect(parserService.getSongType('ABC Television Special: "Britney Spears: In The Zone"')).toBe(SongType.NonMusic);
+			expect(parserService.getSongType("In The Zone Special")).toBe(SongType.NonMusic);
+			expect(parserService.getSongType("MTV Special - The Show")).toBe(SongType.NonMusic);
+			expect(parserService.getSongType("Making Of 2 'City Of Love'")).toBe(SongType.NonMusic);
+			expect(parserService.getSongType("So You Say (Making of)")).toBe(SongType.NonMusic);
+		})
+		it('Non-Music (Behind the Scenes)', () => {
+			expect(parserService.getSongType('Smile (Behind The Scene)')).toBe(SongType.NonMusic);
+			expect(parserService.getSongType("Walk This Way (Behind The Scenes)")).toBe(SongType.NonMusic);
+			expect(parserService.getSongType("Triumph Of A Heart - Stories Behind The Music Video")).toBe(SongType.NonMusic);
+			expect(parserService.getSongType("Behind The Scenes")).toBe(SongType.NonMusic);
+			expect(parserService.getSongType("Exclusive Behind-The-Scenes Footage")).toBe(SongType.NonMusic);
+		})
+		it('Non-Music (Photo Shoot)', () => {
+			expect(parserService.getSongType('Smile (Behind The Scene)')).toBe(SongType.NonMusic);
+			expect(parserService.getSongType("Walk This Way (Behind The Scenes)")).toBe(SongType.NonMusic);
+			expect(parserService.getSongType("Triumph Of A Heart - Stories Behind The Music Video")).toBe(SongType.NonMusic);
+			expect(parserService.getSongType("Behind The Scenes")).toBe(SongType.NonMusic);
+			expect(parserService.getSongType("Exclusive Behind-The-Scenes Footage")).toBe(SongType.NonMusic);
+		})
+		it('Non-Music (Voice Memo)', () => {
+			expect(parserService.getSongType('Blank Space (Guitar / Vocal Voice Memo)')).toBe(SongType.NonMusic);
+		})
 	});
 
 
