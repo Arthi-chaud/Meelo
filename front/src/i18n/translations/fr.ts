@@ -201,7 +201,8 @@ const fr: TranslationMap = {
 	pending: "En attente",
 	none: "Aucune",
 	bonusTrack: 'Piste Bonus',
-	extras: "Extras"
+	extras: "Extras",
+	NonMusic: "Non Musical"
 };
 
 export default fr;

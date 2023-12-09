@@ -212,7 +212,8 @@ const en = {
 	pending: "Pending",
 	none: "None",
 	bonusTrack: 'Bonus Track',
-	extras: "Extras"
+	extras: "Extras",
+	NonMusic: "Non-Music"
 };
 
 export default en;
