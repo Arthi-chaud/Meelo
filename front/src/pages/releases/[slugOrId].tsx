@@ -36,6 +36,9 @@ import BackgroundBlurhash from "../../components/blurhash-background";
 import ResourceDescriptionExpandable from "../../components/resource-description-expandable";
 import { Star1 } from "iconsax-react";
 import GenreButton from "../../components/genre-button";
+import { SongWithRelations } from "../../models/song";
+import Video from "../../models/video";
+import useColorScheme from "../../theme/color-scheme";
 
 const releaseQuery = (releaseIdentifier: string | number) => API.getRelease(releaseIdentifier, ['album', 'externalIds']);
 const releaseTracklistQuery = (releaseIdentifier: string | number) => API.getReleaseTrackList(releaseIdentifier, ['artist', 'featuring']);
@@ -84,7 +87,7 @@ export const getServerSideProps = prepareSSR(async (context, queryClient) => {
 type RelatedContentSectionProps = {
 	display: boolean,
 	title: string | JSX.Element,
-	children: JSX.Element;
+	children: JSX.Element[] | JSX.Element;
 }
 
 const RelatedContentSection = (props: RelatedContentSectionProps) => {
@@ -101,6 +104,7 @@ const RelatedContentSection = (props: RelatedContentSectionProps) => {
 
 const ReleasePage = (props: InferSSRProps<typeof getServerSideProps>) => {
 	const router = useRouter();
+	const colorScheme = useColorScheme();
 	const releaseIdentifier = props.additionalProps?.releaseIdentifier ?? getSlugOrId(router.query);
 	const theme = useTheme();
 	const viewIsInColumn = useMediaQuery(theme.breakpoints.down('lg'));
@@ -113,11 +117,10 @@ const ReleasePage = (props: InferSSRProps<typeof getServerSideProps>) => {
 	const hasGenres = (albumGenres.data?.pages.at(0)?.items.length ?? 0) > 0;
 	const artists = useQuery(artistsOnAlbumQuery, release.data?.albumId);
 	const albumVideos = useInfiniteQuery(albumVideosQuery, release.data?.albumId);
-	const bSides = useInfiniteQuery(releaseBSidesQuery, release.data?.id);
+	const bSidesQuery = useInfiniteQuery(releaseBSidesQuery, release.data?.id);
 	const relatedAlbums = useInfiniteQuery(relatedAlbumsQuery, release.data?.albumId);
 	const relatedReleases = useInfiniteQuery(relatedReleasesQuery, release.data?.albumId);
 	const relatedPlaylists = useInfiniteQuery(relatedPlaylistsQuery, release.data?.albumId);
-	const videos = useMemo(() => albumVideos.data?.pages.at(0)?.items, [albumVideos]);
 	const albumArtist = useMemo(
 		() => artists.data?.find((artist) => artist.id === artistId),
 		[artistId, artists]
@@ -130,6 +133,22 @@ const ReleasePage = (props: InferSSRProps<typeof getServerSideProps>) => {
 		() => relatedPlaylists.data?.pages.at(0)?.items,
 		[relatedPlaylists.data]
 	);
+	const { bSides, extras } = (bSidesQuery.data?.pages.at(0)?.items ?? []).reduce((
+		(prev, current) => {
+			if (current.type === 'NonMusic') {
+				return { bSides: prev.bSides, extras: prev.extras.concat(current) };
+			}
+			return { bSides: prev.bSides.concat(current), extras: prev.extras };
+		}),
+		{ bSides: [], extras: [] } as Record<'bSides' | 'extras', SongWithRelations<'artist' | 'featuring'>[]>);
+	const { videos, videoExtras } = (albumVideos.data?.pages.at(0)?.items ?? []).reduce((
+		(prev, current) => {
+			if (current.type === 'NonMusic') {
+				return { videos: prev.videos, videoExtras: prev.videoExtras.concat(current) };
+			}
+			return { videos: prev.videos.concat(current), videoExtras: prev.videoExtras };
+		}),
+		{ videos: [], videoExtras: [] } as Record<'videos' | 'videoExtras', Video[]>);
 	const [tracks, totalDuration, trackList] = useMemo(() => {
 		if (tracklistQuery.data) {
 			const discMap = tracklistQuery.data;
@@ -150,7 +169,14 @@ const ReleasePage = (props: InferSSRProps<typeof getServerSideProps>) => {
 		.map(({ rating }) => rating)
 		.filter((rating) => rating !== null)
 		.sort().at(-1) ?? null;
-	const colors = Array.of(...illustration?.colors ?? []).sort();
+	const colors = useMemo(() => {
+		const sortedList = Array.of(...illustration?.colors ?? []).sort();
+
+		if (colorScheme == 'light') {
+			return sortedList.reverse();
+		}
+		return sortedList;
+	}, [illustration, colorScheme]);
 
 	// eslint-disable-next-line no-extra-parens
 	if (!release.data || !album.data || !artists.data || !trackList) {
@@ -280,12 +306,12 @@ const ReleasePage = (props: InferSSRProps<typeof getServerSideProps>) => {
 				</Grid>
 			</Grid>
 			<RelatedContentSection
-				display={(bSides.data?.pages.at(0)?.items?.length ?? 0) > 0}
+				display={(bSides.length ?? 0) > 0}
 				title={<Translate translationKey="bonusTracks"/>}
 			>
 				<SongGrid
 					parentArtistName={albumArtist?.name}
-					songs={bSides.data?.pages.at(0)?.items ?? []}
+					songs={bSides ?? []}
 				/>
 			</RelatedContentSection>
 			<RelatedContentSection
@@ -308,6 +334,18 @@ const ReleasePage = (props: InferSSRProps<typeof getServerSideProps>) => {
 				<TileRow tiles={videos?.map((video, videoIndex) =>
 					<VideoTile key={videoIndex} video={{ ...video.track, song: video }}/>) ?? []}
 				/>
+			</RelatedContentSection>
+			<RelatedContentSection
+				display={extras.length > 0 || videoExtras.length > 0}
+				title={<Translate translationKey="extras"/>}
+			>
+				{extras.length > 0 ? <SongGrid
+					parentArtistName={albumArtist?.name}
+					songs={extras}
+				/> : <></>}
+				{videoExtras.length > 0 ? <TileRow tiles={videoExtras.map((video, videoIndex) =>
+					<VideoTile key={videoIndex} video={{ ...video.track, song: video }}/>)}
+				/> : <></>}
 			</RelatedContentSection>
 			<RelatedContentSection
 				display={(relatedAlbums.data?.pages.at(0)?.items?.length ?? 0) > 0}

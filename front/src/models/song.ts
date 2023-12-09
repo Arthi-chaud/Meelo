@@ -5,7 +5,7 @@ import Lyrics from "./lyrics";
 import Resource from "./resource";
 import ExternalId from './external-id';
 
-export const SongType = ['Original', 'Remix', 'Live', 'Acoustic', 'Instrumental', 'Edit', 'Clean', 'Demo', 'Unknown', 'Acapella'] as const;
+export const SongType = ['Original', 'Remix', 'Live', 'Acoustic', 'Instrumental', 'Edit', 'Clean', 'Demo', 'Unknown', 'Acapella', 'NonMusic'] as const;
 export type SongType = typeof SongType[number];
 
 /**

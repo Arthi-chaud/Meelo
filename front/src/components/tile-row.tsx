@@ -17,7 +17,7 @@ const TileRow = (props: TileRowProps) => {
 	const width = Object.entries(windowSize)
 		.reduce((prev, [key, size]) => ({ ...prev, [key]: 100/size + '%' }), {});
 
-	return <Stack sx={{ overflowX: 'scroll', paddingBottom: 1, width: '100%' }} direction='row'>
+	return <Stack sx={{ overflowX: 'scroll', paddingBottom: 0, width: '100%' }} direction='row'>
 		{props.tiles.map((tile, tileIndex) =>
 			<Box key={tileIndex} sx={{ paddingX: 1, minWidth: width, maxWidth: width }}>
 				{tile}

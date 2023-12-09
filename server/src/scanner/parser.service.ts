@@ -243,13 +243,45 @@ export default class ParserService {
 
 	getSongType(songName: string): SongType {
 		const songExtensions = this.splitGroups(songName, { removeRoot: true });
+		const lowercaseSongName = songName.toLowerCase();
 		const extensionWords = songExtensions
 			.map((ext) => ext.toLowerCase())
 			.filter((ext) => !(ext.startsWith('feat ') || ext.startsWith('featuring ')))
 			.map((ext) => ext.split(' ')).flat();
 
 		const containsWord = (word: string) => extensionWords.includes(word);
+		const titleContainsWord = (word: string) => lowercaseSongName.includes(word);
 
+		if (titleContainsWord('interview')) {
+			return SongType.NonMusic;
+		}
+		if (titleContainsWord('advert')) {
+			return SongType.NonMusic;
+		}
+		if (titleContainsWord('documentaire') || titleContainsWord('documentary')) {
+			return SongType.NonMusic;
+		}
+		if (titleContainsWord('photo gallery')) {
+			return SongType.NonMusic;
+		}
+		if (titleContainsWord('photo shoot') || titleContainsWord('photoshoot')) {
+			return SongType.NonMusic;
+		}
+		if (titleContainsWord('behind the scene')
+			|| titleContainsWord('behind-the-scene')
+			|| titleContainsWord('behind the music video')
+			|| titleContainsWord('behind the video')) {
+			return SongType.NonMusic;
+		}
+		if (titleContainsWord('making of') || titleContainsWord('making the video')) {
+			return SongType.NonMusic;
+		}
+		if (titleContainsWord('television special') || titleContainsWord('mtv special')) {
+			return SongType.NonMusic;
+		}
+		if (titleContainsWord('voice memo')) {
+			return SongType.NonMusic;
+		}
 		if (songExtensions.length == 0) {
 			return SongType.Original;
 		}
@@ -377,15 +409,18 @@ export default class ParserService {
 			'Remaster',
 			'Album Version',
 			'Main Version'
-		] as const);
+		] as const, ['Live']);
 	}
 
 	private parseExtensions<Keyword extends string>(
-		source: string, extension: readonly Keyword[]
+		source: string, extension: readonly Keyword[],
+		ignore: string[] = []
 	) {
 		return extension
 			.reduce((reduced, currentKeyword) => {
-				const stripped = this.removeExtensions(reduced.parsedName, [currentKeyword]);
+				const stripped = this.removeExtensions(
+					reduced.parsedName, [currentKeyword], ignore
+				);
 
 				return {
 					...reduced,
@@ -398,17 +433,21 @@ export default class ParserService {
 
 	/**
 	 * Removes the extensions in a string found by 'extractExtensions'
-	 * @param source the string t ofind the extensions in
+	 * @param source the string to find the extensions in
 	 * @param extensions the extensions to find
 	 * @returns the cleaned source
 	 */
-	private removeExtensions(source: string, extensions: string[]): string {
+	private removeExtensions(source: string, extensions: string[], ignore: string[]): string {
 		const extensionsGroup = extensions.map((ext) => `(${ext})`).join('|');
+		const ignoreGroup = ignore.map((ext) => `(${ext})`).join('|');
 
 		return this.splitGroups(source, { keepDelimiters: true })
 			.filter((group) => {
 				// If root
 				if (group == this.stripGroupDelimiters(group)[1]) {
+					return true;
+				}
+				if (ignore.length && new RegExp(`.*(${ignoreGroup}).*`, 'i').exec(group)?.at(0) != undefined) {
 					return true;
 				}
 				return new RegExp(`.*(${extensionsGroup}).*`, 'i').exec(group)?.at(0) == undefined;
