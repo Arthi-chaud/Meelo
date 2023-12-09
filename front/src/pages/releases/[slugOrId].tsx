@@ -38,6 +38,7 @@ import { Star1 } from "iconsax-react";
 import GenreButton from "../../components/genre-button";
 import { SongWithRelations } from "../../models/song";
 import Video from "../../models/video";
+import useColorScheme from "../../theme/color-scheme";
 
 const releaseQuery = (releaseIdentifier: string | number) => API.getRelease(releaseIdentifier, ['album', 'externalIds']);
 const releaseTracklistQuery = (releaseIdentifier: string | number) => API.getReleaseTrackList(releaseIdentifier, ['artist', 'featuring']);
@@ -103,6 +104,7 @@ const RelatedContentSection = (props: RelatedContentSectionProps) => {
 
 const ReleasePage = (props: InferSSRProps<typeof getServerSideProps>) => {
 	const router = useRouter();
+	const colorScheme = useColorScheme();
 	const releaseIdentifier = props.additionalProps?.releaseIdentifier ?? getSlugOrId(router.query);
 	const theme = useTheme();
 	const viewIsInColumn = useMediaQuery(theme.breakpoints.down('lg'));
@@ -167,7 +169,14 @@ const ReleasePage = (props: InferSSRProps<typeof getServerSideProps>) => {
 		.map(({ rating }) => rating)
 		.filter((rating) => rating !== null)
 		.sort().at(-1) ?? null;
-	const colors = Array.of(...illustration?.colors ?? []).sort();
+	const colors = useMemo(() => {
+		const sortedList = Array.of(...illustration?.colors ?? []).sort();
+
+		if (colorScheme == 'light') {
+			return sortedList.reverse();
+		}
+		return sortedList;
+	}, [illustration, colorScheme]);
 
 	// eslint-disable-next-line no-extra-parens
 	if (!release.data || !album.data || !artists.data || !trackList) {
