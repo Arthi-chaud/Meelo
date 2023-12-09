@@ -470,7 +470,12 @@ export default class SongService extends RepositoryService<
 					} } },
 					// We only want songs that have at least one audtio tracks
 					{ tracks: { some: { type: TrackType.Audio } } },
-					{ type: { in: [SongType.Original, SongType.Acoustic, SongType.Demo] } },
+					{ type: { in: [
+						SongType.Original,
+						SongType.Acoustic,
+						SongType.Demo,
+						SongType.NonMusic
+					] } },
 				]
 			},
 			orderBy: sort ? this.formatSortingInput(sort) : undefined,
