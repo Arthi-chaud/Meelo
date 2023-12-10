@@ -8,6 +8,7 @@ const en = {
 	delete: 'Delete',
 	libraries: 'Libraries',
 	users: 'Users',
+	interface: 'Interface',
 	home: 'Home',
 	search: 'Search',
 	settings: 'Settings',

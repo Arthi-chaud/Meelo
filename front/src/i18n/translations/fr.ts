@@ -10,6 +10,7 @@ const fr: TranslationMap = {
 	delete: 'Supprimer',
 	shuffle: 'Aléatoire',
 	libraries: 'Bibliothèques',
+	interface: 'Interface',
 	home: 'Accueil',
 	create: 'Créer',
 	playlists: en.playlists,
