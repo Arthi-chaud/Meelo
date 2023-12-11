@@ -220,6 +220,9 @@ const en = {
 	useDarkTheme: "Use Dark Theme",
 	language: "Language",
 	useSystemeLanguage: "Use System Language",
+	notifications: 'Notifications',
+	permissions: 'Permissions',
+	notifyOnTrackChange: 'Notify On Track Change',
 
 	en: "English",
 	fr: 'French'

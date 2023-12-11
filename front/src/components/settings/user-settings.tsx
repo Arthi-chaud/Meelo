@@ -1,5 +1,6 @@
 import {
-	Checkbox, Grid, MenuItem, Select
+	Button,
+	Checkbox, Grid, MenuItem, NoSsr, Select
 } from "@mui/material";
 import Translate, { useLanguage } from "../../i18n/translate";
 import SectionHeader from "../section-header";
@@ -7,9 +8,12 @@ import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../../state/store";
 import useColorScheme from "../../theme/color-scheme";
 import {
+	allowNotifications,
+	disableNotifications,
 	resetLanguage, setColorScheme, setLanguage
 } from "../../state/settingsSlice";
 import { Language, Languages } from "../../i18n/i18n";
+import { useState } from "react";
 
 const SettingGroupStyle = {
 	paddingTop: 1, paddingBottom: 2,
@@ -19,11 +23,17 @@ const SettingGroupStyle = {
 const InputContainerStyle = { justifyContent: 'flex-end', display: 'flex' } as const;
 
 const UserSettings = () => {
+	const notificationPreference = useSelector(
+		(state: RootState) => state.settings.allowNotifications
+	);
 	const colorSchemePreference = useSelector((state: RootState) => state.settings.colorScheme);
 	const actualColorScheme = useColorScheme();
 	const languagePreference = useSelector((state: RootState) => state.settings.language);
 	const dispatch = useDispatch();
 	const actualLanguage = useLanguage();
+	const notificationsAPIAvailable = typeof Notification !== 'undefined';
+	const [notificationsEnabled, setNotificationsEnabled] = useState(() =>
+		notificationsAPIAvailable && Notification.permission == 'granted');
 
 	return <>
 		<SectionHeader
@@ -97,6 +107,55 @@ const UserSettings = () => {
 				</Select>
 			</Grid>
 		</Grid>
+		<SectionHeader
+			heading={<Translate translationKey='notifications'/>}
+		/>
+		<NoSsr>
+			<Grid container sx={SettingGroupStyle}>
+				<Grid item xs={10}>
+					<Translate translationKey="permissions"/>
+				</Grid>
+				<Grid item xs={2} sx={InputContainerStyle}>
+					<Button
+						variant='contained'
+						onClick={() => {
+							if (!notificationsAPIAvailable) {
+								return;
+							}
+							if (notificationsEnabled) {
+								new Notification('Meelo says hello!', { body: '👋', silent: true });
+							} else {
+								Notification
+									.requestPermission()
+									.then(
+										(value) => value === 'granted' && setNotificationsEnabled(true)
+									);
+							}
+						}}
+						disabled={!notificationsAPIAvailable}
+					>
+						{!notificationsAPIAvailable
+							? 'unavailable'
+							: notificationsEnabled
+								? 'test'
+								: 'ask'}
+					</Button>
+				</Grid>
+				<Grid item xs={10}>
+					<Translate translationKey="notifyOnTrackChange"/>
+				</Grid>
+				<Grid item xs={2} sx={InputContainerStyle}>
+					<Checkbox
+						onChange={(event, isChecked) =>
+							dispatch(isChecked
+								? allowNotifications()
+								: disableNotifications())
+						}
+						checked={notificationPreference}
+					/>
+				</Grid>
+			</Grid>
+		</NoSsr>
 	</>;
 };
 

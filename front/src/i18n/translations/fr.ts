@@ -209,6 +209,9 @@ const fr: TranslationMap = {
 	useDarkTheme: "Utiliser le mode sombre",
 	language: "Langue",
 	useSystemeLanguage: "Utiliser la langue du système",
+	notifications: 'Notifications',
+	permissions: 'Permissions',
+	notifyOnTrackChange: 'Notifier quand le morceau change',
 
 	en: "Anglais",
 	fr: 'Français'
