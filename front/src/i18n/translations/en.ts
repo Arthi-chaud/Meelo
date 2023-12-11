@@ -214,7 +214,15 @@ const en = {
 	none: "None",
 	bonusTrack: 'Bonus Track',
 	extras: "Extras",
-	NonMusic: "Non-Music"
+	NonMusic: "Non-Music",
+	colorScheme: "Theme",
+	useSystemeTheme: "Use System Theme",
+	useDarkTheme: "Use Dark Theme",
+	language: "Language",
+	useSystemeLanguage: "Use System Language",
+
+	en: "English",
+	fr: 'French'
 };
 
 export default en;

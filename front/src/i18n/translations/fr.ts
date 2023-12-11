@@ -203,7 +203,15 @@ const fr: TranslationMap = {
 	none: "Aucune",
 	bonusTrack: 'Piste Bonus',
 	extras: "Extras",
-	NonMusic: "Non Musical"
+	NonMusic: "Non Musical",
+	colorScheme: "Thème",
+	useSystemeTheme: "Utiliser le thème système",
+	useDarkTheme: "Utiliser le mode sombre",
+	language: "Langue",
+	useSystemeLanguage: "Utiliser la langue du système",
+
+	en: "Anglais",
+	fr: 'Français'
 };
 
 export default fr;
