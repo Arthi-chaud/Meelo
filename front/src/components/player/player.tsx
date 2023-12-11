@@ -38,7 +38,7 @@ const Player = () => {
 	const [windowFocused, setWindowFocused] = useState(true);
 	const [notification, setNotification] = useState<Notification>();
 	const bottomNavigationIsDisplayed = useMediaQuery(theme.breakpoints.down(DrawerBreakpoint));
-
+	const allowNotifications = useSelector((state: RootState) => state.settings.allowNotifications);
 	const play = () => {
 		// Do nothing if empty playlist
 		if (playlist.length == 0) {
@@ -169,10 +169,11 @@ const Player = () => {
 					setProgress(player.current?.currentTime);
 				}
 			}, 100);
-			if (typeof Notification !== 'undefined' && !windowFocused && Notification.permission == 'granted') {
+			if (typeof Notification !== 'undefined' && !windowFocused && Notification.permission == 'granted' && allowNotifications) {
 				try {
-					setNotification(new Notification(`${currentTrack.track.name} - ${currentTrack.artist.name}`, {
-						icon: newIllustrationURL ? API.getIllustrationURL(newIllustrationURL) : '/icon.png'
+					setNotification(new Notification(currentTrack.track.name, {
+						icon: newIllustrationURL ? API.getIllustrationURL(newIllustrationURL) : '/icon.png',
+						body: `${currentTrack.artist.name} - ${currentTrack.release.name}`
 					}));
 				// eslint-disable-next-line no-empty
 				} catch {}

@@ -10,6 +10,7 @@ const fr: TranslationMap = {
 	delete: 'Supprimer',
 	shuffle: 'Aléatoire',
 	libraries: 'Bibliothèques',
+	interface: 'Interface',
 	home: 'Accueil',
 	create: 'Créer',
 	playlists: en.playlists,
@@ -202,7 +203,18 @@ const fr: TranslationMap = {
 	none: "Aucune",
 	bonusTrack: 'Piste Bonus',
 	extras: "Extras",
-	NonMusic: "Non Musical"
+	NonMusic: "Non Musical",
+	colorScheme: "Thème",
+	useSystemeTheme: "Utiliser le thème système",
+	useDarkTheme: "Utiliser le mode sombre",
+	language: "Langue",
+	useSystemeLanguage: "Utiliser la langue du système",
+	notifications: 'Notifications',
+	permissions: 'Permissions',
+	notifyOnTrackChange: 'Notifier quand le morceau change',
+
+	en: "Anglais",
+	fr: 'Français'
 };
 
 export default fr;

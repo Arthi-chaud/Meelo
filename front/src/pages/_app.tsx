@@ -49,11 +49,6 @@ function MyApp({
 	useEffect(() => {
 		setError(undefined);
 	}, [router]);
-	useEffect(() => {
-		if (typeof Notification !== 'undefined' && Notification.permission != 'granted') {
-			Notification.requestPermission();
-		}
-	}, []);
 	return <CacheProvider value={emotionCache}>
 		<Provider store={store}>
 			<ThemeProvider>

@@ -8,15 +8,19 @@ import prepareSSR, { InferSSRProps } from '../../ssr';
 import LibrariesSettings from '../../components/settings/libraries-settings';
 import Translate from '../../i18n/translate';
 import API from '../../api/api';
+import { useQuery } from '../../api/use-query';
+import LoadingPage from '../../components/loading/loading-page';
+import UserSettings from '../../components/settings/user-settings';
 
 // NOTE: Data Grid do not support SSR
 // https://github.com/mui/mui-x/issues/7599
 
-const AvailablePanels = ['libraries', 'users'] as const;
+const AvailablePanels = ['interface', 'libraries', 'users'] as const;
 
 type PanelName = typeof AvailablePanels[number];
 
 const Panels: Record<PanelName, JSX.Element> = {
+	interface: <UserSettings/>,
 	libraries: <LibrariesSettings/>,
 	users: <UsersSettings/>
 };
@@ -44,11 +48,21 @@ const SettingsPage = (props: InferSSRProps<typeof getServerSideProps>) => {
 	const router = useRouter();
 	const [panel, setPanel] = useState(props.additionalProps?.panel
 		?? getPanelFromQuery(router.query.panel?.at(0)));
+	const userQuery = useQuery(API.getCurrentUserStatus);
 
 	useEffect(() => {
-		router.push(`/settings/${panel}`, undefined, { shallow: true });
+		if (userQuery.data?.admin === true) {
+			router.push(`/settings/${panel}`, undefined, { shallow: true });
+		}
 	// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [panel]);
+
+	if (!userQuery.data) {
+		return <LoadingPage/>;
+	}
+	if (userQuery.data.admin === false) {
+		return <UserSettings/>;
+	}
 	return <>
 		<Tabs
 			value={panel}

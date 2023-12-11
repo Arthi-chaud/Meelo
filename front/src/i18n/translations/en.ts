@@ -8,6 +8,7 @@ const en = {
 	delete: 'Delete',
 	libraries: 'Libraries',
 	users: 'Users',
+	interface: 'Interface',
 	home: 'Home',
 	search: 'Search',
 	settings: 'Settings',
@@ -213,7 +214,18 @@ const en = {
 	none: "None",
 	bonusTrack: 'Bonus Track',
 	extras: "Extras",
-	NonMusic: "Non-Music"
+	NonMusic: "Non-Music",
+	colorScheme: "Theme",
+	useSystemeTheme: "Use System Theme",
+	useDarkTheme: "Use Dark Theme",
+	language: "Language",
+	useSystemeLanguage: "Use System Language",
+	notifications: 'Notifications',
+	permissions: 'Permissions',
+	notifyOnTrackChange: 'Notify On Track Change',
+
+	en: "English",
+	fr: 'French'
 };
 
 export default en;

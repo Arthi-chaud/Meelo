@@ -19,7 +19,7 @@ import Player from "../player/player";
 import { useRouter } from "next/router";
 import { IconProps } from "iconsax-react";
 import { useState } from "react";
-import { useScaffoldActions } from "./actions";
+import scaffoldActions from "./actions";
 import useColorScheme from "../../theme/color-scheme";
 import hexToRgba from "hex-to-rgba";
 
@@ -57,7 +57,7 @@ const Drawer = (
 	const theme = useTheme();
 	const persistentDrawerBreakpoint = DrawerBreakpoint;
 	const drawerWidth = { [persistentDrawerBreakpoint]: 240 };
-	const actions = useScaffoldActions();
+	const actions = scaffoldActions;
 	const colorScheme = useColorScheme();
 	const commonDrawerProps = {
 		anchor: 'left',

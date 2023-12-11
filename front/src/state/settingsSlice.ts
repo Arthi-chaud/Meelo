@@ -10,7 +10,8 @@ type ColorScheme = typeof ColorSchemes[number];
 
 type SettingsState = {
 	colorScheme: ColorScheme;
-	language: Language | 'system'
+	language: Language | 'system',
+	allowNotifications: boolean,
 }
 
 export const settingsSlice = createSlice({
@@ -18,6 +19,7 @@ export const settingsSlice = createSlice({
 	initialState: <SettingsState>{
 		colorScheme: 'dark',
 		language: 'system',
+		allowNotifications: false,
 	},
 	reducers: {
 		setColorScheme: (state, action: PayloadAction<ColorScheme>) => {
@@ -48,10 +50,16 @@ export const settingsSlice = createSlice({
 		},
 		resetLanguage: (state) => {
 			state.language = 'system';
+		},
+		allowNotifications: (state) => {
+			state.allowNotifications = true;
+		},
+		disableNotifications: (state) => {
+			state.allowNotifications = false;
 		}
 	},
 });
 
-export const { setColorScheme, setLanguage, resetLanguage } = settingsSlice.actions;
+export const { setColorScheme, setLanguage, resetLanguage, allowNotifications, disableNotifications } = settingsSlice.actions;
 
 export default settingsSlice.reducer;
