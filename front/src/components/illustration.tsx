@@ -5,12 +5,14 @@ import {
 import Image, { ImageProps } from "next/image";
 import { useState } from "react";
 import API from "../api/api";
-import illustrationFallback from '../../public/icon.png';
+import whiteIllustrationFallback from '../../public/icon.png';
+import blackIllustrationFallback from '../../public/icon-black.png';
 import { RequireExactlyOne } from "type-fest";
 import IllustrationModel from "../models/illustration";
 import Blurhash from "./blurhash";
 import { isSSR } from "../ssr";
 import Fade from "./fade";
+import useColorScheme from "../theme/color-scheme";
 
 type ImageQuality = 'low' | 'med' | 'original';
 
@@ -59,6 +61,7 @@ const Illustration = (props: IllustrationProps) => {
 	const [loadingCompleted, setLoadingCompleted] = useState(false);
 	const url = props.url ?? props.illustration?.url;
 	const blurhash = props.illustration?.blurhash;
+	const colorScheme = useColorScheme();
 
 	return <Box key={'illustration-' + url} sx={{
 		width: '100%', height: '100%',
@@ -84,7 +87,10 @@ const Illustration = (props: IllustrationProps) => {
 						{props.fallback}
 					</IconButton>
 					: <Image
-						src={illustrationFallback}
+						src={colorScheme == 'dark'
+							? whiteIllustrationFallback
+							: blackIllustrationFallback
+						}
 						fill
 						alt='missing-illustration'
 						loading='eager'
