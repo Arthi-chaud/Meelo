@@ -19,7 +19,9 @@ import IdentifierParam from 'src/identifier/identifier.pipe';
 import Response, { ResponseType } from 'src/response/response.decorator';
 import GenreService from 'src/genre/genre.service';
 import GenreQueryParameters from 'src/genre/models/genre.query-parameters';
-import { IsEnum, IsOptional } from 'class-validator';
+import {
+	IsEnum, IsNumber, IsOptional, IsPositive
+} from 'class-validator';
 import { AlbumType } from '@prisma/client';
 import ArtistQueryParameters from 'src/artist/models/artist.query-parameters';
 import TransformIdentifier from 'src/identifier/identifier.transform';
@@ -81,6 +83,14 @@ class Selector extends IntersectionType(
 	})
 	@TransformIdentifier(AlbumService)
 	related?: AlbumQueryParameters.WhereInput;
+
+	@IsOptional()
+	@ApiPropertyOptional({
+		description: 'The Seed to Sort the items'
+	})
+	@IsNumber()
+	@IsPositive()
+	random?: number;
 }
 
 @ApiTags("Albums")
@@ -113,6 +123,13 @@ export default class AlbumController {
 				paginationParameters,
 				include,
 				selector
+			);
+		} else if (selector.random) {
+			return this.albumService.getManyRandom(
+				selector.random,
+				selector,
+				paginationParameters,
+				include
 			);
 		}
 		return this.albumService.getMany(
