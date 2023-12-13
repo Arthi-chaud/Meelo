@@ -114,7 +114,7 @@ export default class ArtistService extends RepositoryService<
 		};
 
 		if (where.id) {
-			query = deepmerge(query, { in: where.id.in });
+			query = deepmerge(query, { id: where.id });
 		}
 		if (where.library) {
 			query = deepmerge(query, {

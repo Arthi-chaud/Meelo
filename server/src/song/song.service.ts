@@ -162,7 +162,7 @@ export default class SongService extends RepositoryService<
 		};
 
 		if (where.id) {
-			query = deepmerge(query, { in: where.id.in });
+			query = deepmerge(query, { id: where.id });
 		}
 		if (where.genre) {
 			query = deepmerge(query, {

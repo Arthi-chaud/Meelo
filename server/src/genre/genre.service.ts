@@ -88,7 +88,7 @@ export default class GenreService extends RepositoryService<
 		let query: Prisma.GenreWhereInput = {};
 
 		if (where.id) {
-			query = deepmerge(query, { in: where.id.in });
+			query = deepmerge(query, { id: where.id });
 		}
 		if (where.slug) {
 			query = deepmerge(query, {

@@ -142,7 +142,7 @@ export default class AlbumService extends RepositoryService<
 		};
 
 		if (where.id) {
-			query = deepmerge(query, { in: where.id.in });
+			query = deepmerge(query, { id: where.id });
 		}
 		if (where.related) {
 			query = deepmerge(query, {

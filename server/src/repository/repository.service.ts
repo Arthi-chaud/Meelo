@@ -279,7 +279,12 @@ abstract class RepositoryService<
 	): Promise<(BaseModel & Select<Relations, I>)[]>{
 		if (typeof sortOrSeed === 'number') {
 			const seed = sortOrSeed as number;
-			const res: { id: number }[] = await this.prismaHandle.$queryRaw`SELECT id FROM ${this.getTableName()} ORDER BY MD5(${seed.toString()} || id::text)`;
+			const limit = pagination?.take ? `LIMIT ${pagination.take}` : '';
+			// TODO USE AfterID
+			const skip = pagination?.skip ? `OFFSET ${pagination.skip}` : '';
+			const res: { id: number }[] = await this.prismaHandle.$queryRawUnsafe(
+				`SELECT id FROM ${this.getTableName()} ORDER BY MD5(${seed.toString()} || id::text) ${limit} ${skip}`
+			);
 			const ids = res.map(({ id }) => id);
 
 			return this.getMany(

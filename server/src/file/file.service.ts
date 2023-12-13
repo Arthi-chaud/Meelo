@@ -108,7 +108,7 @@ export default class FileService extends RepositoryService<
 		let query: Prisma.FileWhereInput = {};
 
 		if (where.id) {
-			query = deepmerge(query, { in: where.id.in });
+			query = deepmerge(query, { id: where.id });
 		}
 		if (where.library) {
 			query = deepmerge(query, {

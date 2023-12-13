@@ -21,7 +21,9 @@ import Admin from 'src/authentication/roles/admin.decorator';
 import IdentifierParam from 'src/identifier/identifier.pipe';
 import Response, { ResponseType } from 'src/response/response.decorator';
 import { LyricsResponseBuilder } from 'src/lyrics/models/lyrics.response';
-import { IsEnum, IsOptional } from 'class-validator';
+import {
+	IsEnum, IsNumber, IsOptional, IsPositive
+} from 'class-validator';
 import TransformIdentifier from 'src/identifier/identifier.transform';
 import LibraryQueryParameters from 'src/library/models/library.query-parameters';
 import LibraryService from 'src/library/library.service';
@@ -83,6 +85,14 @@ export class Selector extends IntersectionType(SongQueryParameters.SortingParame
 	})
 	@TransformIdentifier(ReleaseService)
 	bsides: ReleaseQueryParameters.WhereInput;
+
+	@IsOptional()
+	@ApiPropertyOptional({
+		description: 'The Seed to Sort the items'
+	})
+	@IsNumber()
+	@IsPositive()
+	random?: number;
 }
 
 class VersionsSelector extends PickType(Selector, ['type']) {}
@@ -134,7 +144,7 @@ export class SongController {
 			selector,
 			paginationParameters,
 			include,
-			selector
+			selector.random || selector
 		);
 	}
 

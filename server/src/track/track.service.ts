@@ -129,7 +129,7 @@ export default class TrackService extends RepositoryService<
 		};
 
 		if (where.id) {
-			queryParameters = deepmerge(queryParameters, { in: where.id.in });
+			queryParameters = deepmerge(queryParameters, { id: where.id });
 		}
 		if (where.song) {
 			queryParameters = deepmerge(queryParameters, {
