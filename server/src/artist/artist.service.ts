@@ -113,8 +113,8 @@ export default class ArtistService extends RepositoryService<
 			name: buildStringSearchParameters(where.name),
 		};
 
-		if (where.ids) {
-			query = deepmerge(query, { in: where.ids.in });
+		if (where.id) {
+			query = deepmerge(query, { in: where.id.in });
 		}
 		if (where.library) {
 			query = deepmerge(query, {

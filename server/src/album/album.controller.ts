@@ -124,19 +124,12 @@ export default class AlbumController {
 				include,
 				selector
 			);
-		} else if (selector.random) {
-			return this.albumService.getManyRandom(
-				selector.random,
-				selector,
-				paginationParameters,
-				include
-			);
 		}
 		return this.albumService.getMany(
 			selector,
 			paginationParameters,
 			include,
-			selector
+			selector.random || selector
 		);
 	}
 

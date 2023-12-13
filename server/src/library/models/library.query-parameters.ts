@@ -25,7 +25,8 @@ namespace LibraryQueryParameters {
 	 * The Query parameters to get multiple libraries
 	 */
 	export type ManyWhereInput = Partial<RequireExactlyOne<{
-		name: SearchStringInput
+		name: SearchStringInput,
+		id: { in: number[] }
 	}>>;
 
 	/**

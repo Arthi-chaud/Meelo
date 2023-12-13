@@ -34,7 +34,8 @@ namespace ReleaseQueryParameters {
 	export type ManyWhereInput = Partial<{
 		name: SearchStringInput,
 		album: AlbumQueryParameters.WhereInput,
-		library: LibraryQueryParameters.WhereInput
+		library: LibraryQueryParameters.WhereInput,
+		id: { in: number[] }
 	}>;
 
 	/**

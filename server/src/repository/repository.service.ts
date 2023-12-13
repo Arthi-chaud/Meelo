@@ -1,14 +1,13 @@
 /* eslint-disable @typescript-eslint/ban-types */
-import { Prisma, PrismaClient } from "@prisma/client";
+import { PrismaClient } from "@prisma/client";
 import deepmerge from "deepmerge";
 import { InvalidRequestException } from "src/exceptions/meelo-exception";
 // eslint-disable-next-line no-restricted-imports
 import { UnhandledORMErrorException } from "src/exceptions/orm-exceptions";
 import Identifier from "src/identifier/models/identifier";
 import { PaginationParameters, buildPaginationParameters } from "src/pagination/models/pagination-parameters";
-import PrismaService from "src/prisma/prisma.service";
 import SortingParameter from "src/sort/models/sorting-parameter";
-import type { Primitive, Simplify } from "type-fest";
+import type { Primitive } from "type-fest";
 
 type AtomicModel = { id: number };
 
@@ -83,7 +82,7 @@ abstract class RepositoryService<
 	Model extends AtomicModel,
 	CreateInput,
 	WhereInput,
-	ManyWhereInput,
+	ManyWhereInput extends Partial<{ id: { in: number[] } }>,
 	UpdateInput,
 	DeleteInput,
 	SortingKeys extends readonly string[],
@@ -284,8 +283,7 @@ abstract class RepositoryService<
 			const ids = res.map(({ id }) => id);
 
 			return this.getMany(
-				where,
-				// deepmerge(where, { ids: ids }),
+				deepmerge(where, { id: { in: ids } }) as ManyWhereInput,
 				pagination,
 				include,
 			).then(

@@ -87,7 +87,8 @@ export default class LibraryService extends RepositoryService<
 
 	static formatManyWhereInput(input: LibraryQueryParameters.ManyWhereInput) {
 		return {
-			name: input.name ? buildStringSearchParameters(input.name) : undefined
+			name: input.name ? buildStringSearchParameters(input.name) : undefined,
+			id: input.id
 		};
 	}
 

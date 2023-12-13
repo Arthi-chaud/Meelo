@@ -105,6 +105,7 @@ export default class PlaylistService extends RepositoryService<
 
 	formatManyWhereInput(input: PlaylistQueryParameters.ManyWhereInput): Prisma.PlaylistWhereInput {
 		return {
+			id: input.id,
 			entries: input.song ? {
 				some: {
 					song: SongService.formatWhereInput(input.song)

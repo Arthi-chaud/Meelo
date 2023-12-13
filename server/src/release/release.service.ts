@@ -140,6 +140,9 @@ export default class ReleaseService extends RepositoryService<
 			name: buildStringSearchParameters(where.name)
 		};
 
+		if (where.id) {
+			query = deepmerge(query, { in: where.id.in });
+		}
 		if (where.library) {
 			query = deepmerge(query, {
 				tracks: {

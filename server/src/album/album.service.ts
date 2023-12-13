@@ -141,6 +141,9 @@ export default class AlbumService extends RepositoryService<
 			name: buildStringSearchParameters(where.name),
 		};
 
+		if (where.id) {
+			query = deepmerge(query, { in: where.id.in });
+		}
 		if (where.related) {
 			query = deepmerge(query, {
 				NOT: this.formatWhereInput(where.related),

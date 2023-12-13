@@ -26,7 +26,8 @@ namespace PlaylistQueryParameters {
 	 */
 	export type ManyWhereInput = Partial<RequireAtLeastOne<{
 		song: SongQueryParameters.WhereInput,
-		album: AlbumQueryParameters.WhereInput
+		album: AlbumQueryParameters.WhereInput,
+		id: { in: number[] }
 	}>>;
 
 	/**

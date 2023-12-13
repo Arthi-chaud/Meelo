@@ -21,7 +21,9 @@ namespace UserQueryParameters {
 	/**
 	 * Parameters to find multiple users
 	 */
-	export type ManyWhereInput = Partial<Pick<User, 'admin' | 'enabled'>>;
+	export type ManyWhereInput = Partial<
+		Pick<User, 'admin' | 'enabled'> & { id: { in: number[] } }
+	>;
 
 	/**
 	 * Parameters to update a user

@@ -128,6 +128,9 @@ export default class TrackService extends RepositoryService<
 			type: where.type
 		};
 
+		if (where.id) {
+			queryParameters = deepmerge(queryParameters, { in: where.id.in });
+		}
 		if (where.song) {
 			queryParameters = deepmerge(queryParameters, {
 				song: SongService.formatWhereInput(where.song)

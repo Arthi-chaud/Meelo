@@ -34,6 +34,7 @@ namespace TrackQueryParameters {
 	 */
 	export type ManyWhereInput = Partial<RequireAtLeastOne<{
 		type: TrackType,
+		id: { in: number[] }
 		song: SongQueryParameters.WhereInput,
 		library: LibraryQueryParameters.WhereInput,
 	} & RequireExactlyOne<{
