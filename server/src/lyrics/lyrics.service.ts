@@ -42,7 +42,11 @@ export class LyricsService extends RepositoryService<
 		@Inject(forwardRef(() => ProviderService))
 		private providerService: ProviderService
 	) {
-		super(prismaService.lyrics);
+		super(prismaService, 'lyrics');
+	}
+
+	getTableName() {
+		return 'lyrics';
 	}
 
 	/**

@@ -44,7 +44,11 @@ export default class PlaylistService extends RepositoryService<
 		private songService: SongService,
 		private prismaService: PrismaService
 	) {
-		super(prismaService.playlist);
+		super(prismaService, 'playlist');
+	}
+
+	getTableName() {
+		return 'playlists';
 	}
 
 	protected onCreationFailure(

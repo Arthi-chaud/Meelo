@@ -1,11 +1,14 @@
 /* eslint-disable @typescript-eslint/ban-types */
+import { Prisma, PrismaClient } from "@prisma/client";
+import deepmerge from "deepmerge";
 import { InvalidRequestException } from "src/exceptions/meelo-exception";
 // eslint-disable-next-line no-restricted-imports
 import { UnhandledORMErrorException } from "src/exceptions/orm-exceptions";
 import Identifier from "src/identifier/models/identifier";
 import { PaginationParameters, buildPaginationParameters } from "src/pagination/models/pagination-parameters";
+import PrismaService from "src/prisma/prisma.service";
 import SortingParameter from "src/sort/models/sorting-parameter";
-import type { Primitive } from "type-fest";
+import type { Primitive, Simplify } from "type-fest";
 
 type AtomicModel = { id: number };
 
@@ -91,9 +94,8 @@ abstract class RepositoryService<
 	RepositoryDeleteInput,
 	RepositorySortingInput,
 	BaseModel extends AtomicModel = Base<Model>,
-	Relations extends ModelRelations<Model> = ModelRelations<Model>
-> {
-	constructor(protected repository: {
+	Relations extends ModelRelations<Model> = ModelRelations<Model>,
+	Delegate extends {
 		create: ORMGetterMethod<BaseModel, Relations, { data: RepositoryCreateInput }>,
 		findFirstOrThrow: ORMGetterMethod<BaseModel, Relations, { where: RepositoryWhereInput }>
 		findMany: ORMManyGetterMethod<BaseModel, Relations, { where: RepositoryManyWhereInput }>
@@ -102,7 +104,27 @@ abstract class RepositoryService<
 			where: RepositoryWhereInput, data: RepositoryUpdateInput
 		}) => Promise<BaseModel>
 		count: (args: { where: RepositoryManyWhereInput }) => Promise<number>,
-	}) {}
+	} = {
+		create: ORMGetterMethod<BaseModel, Relations, { data: RepositoryCreateInput }>,
+		findFirstOrThrow: ORMGetterMethod<BaseModel, Relations, { where: RepositoryWhereInput }>
+		findMany: ORMManyGetterMethod<BaseModel, Relations, { where: RepositoryManyWhereInput }>
+		delete: (args: { where: RepositoryDeleteInput }) => Promise<BaseModel>,
+		update: (args: {
+			where: RepositoryWhereInput, data: RepositoryUpdateInput
+		}) => Promise<BaseModel>
+		count: (args: { where: RepositoryManyWhereInput }) => Promise<number>,
+	},
+	RepoKey extends keyof PrismaClient = keyof PrismaClient,
+	PrismaHandle extends PrismaClient = PrismaClient,
+> {
+	protected readonly repository: Delegate;
+
+	constructor(
+		protected prismaHandle: PrismaHandle,
+		prismaDelegateKey: RepoKey
+	) {
+		this.repository = this.prismaHandle[prismaDelegateKey] as unknown as Delegate;
+	}
 
 	/**
 	 * Creates an entity in the database
@@ -254,8 +276,27 @@ abstract class RepositoryService<
 		where: ManyWhereInput,
 		pagination?: PaginationParameters,
 		include?: I,
-		sort?: SortingParameter<SortingKeys>
-	){
+		sortOrSeed?: SortingParameter<SortingKeys> | number
+	): Promise<(BaseModel & Select<Relations, I>)[]>{
+		if (typeof sortOrSeed === 'number') {
+			const seed = sortOrSeed as number;
+			const res: { id: number }[] = await this.prismaHandle.$queryRaw`SELECT id FROM ${this.getTableName()} ORDER BY MD5(${seed.toString()} || id::text)`;
+			const ids = res.map(({ id }) => id);
+
+			return this.getMany(
+				where,
+				// deepmerge(where, { ids: ids }),
+				pagination,
+				include,
+			).then(
+				(items) => items
+					.map((item) => ({ item, index: ids.indexOf(item.id) }))
+					.sort((item1, item2) => item1.index - item2.index)
+					.map(({ item }) => item)
+			);
+		}
+		const sort = sortOrSeed as SortingParameter<SortingKeys>;
+
 		return this.repository.findMany({
 			where: this.formatManyWhereInput(where),
 			include: this.formatInclude(include),
@@ -433,6 +474,11 @@ abstract class RepositoryService<
 	 * Should 'clean' the repository, remove 'empty' items, etc.
 	 */
 	abstract housekeeping(): Promise<void>;
+
+	/**
+	 * Get the name of the table
+	 */
+	protected abstract getTableName(): string;
 }
 
 export default RepositoryService;

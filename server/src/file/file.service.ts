@@ -51,7 +51,11 @@ export default class FileService extends RepositoryService<
 		@Inject(forwardRef(() => LibraryService))
 		private libraryService: LibraryService
 	) {
-		super(prismaService.file);
+		super(prismaService, 'file');
+	}
+
+	getTableName() {
+		return 'files';
 	}
 
 	/**

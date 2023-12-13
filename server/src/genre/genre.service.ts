@@ -41,7 +41,11 @@ export default class GenreService extends RepositoryService<
 	constructor(
 		private prismaService: PrismaService,
 	) {
-		super(prismaService.genre);
+		super(prismaService, 'genre');
+	}
+
+	getTableName() {
+		return 'genres';
 	}
 
 	/**

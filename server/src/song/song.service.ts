@@ -62,7 +62,11 @@ export default class SongService extends RepositoryService<
 		@Inject(forwardRef(() => ParserService))
 		private parserService: ParserService,
 	) {
-		super(prismaService.song);
+		super(prismaService, 'song');
+	}
+
+	getTableName() {
+		return 'songs';
 	}
 
 	/**

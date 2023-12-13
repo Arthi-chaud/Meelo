@@ -42,7 +42,11 @@ export default class LibraryService extends RepositoryService<
 		private tasksService: TasksRunner,
 		prismaService: PrismaService,
 	) {
-		super(prismaService.library);
+		super(prismaService, 'library');
+	}
+
+	getTableName() {
+		return 'libraries';
 	}
 
 	/**

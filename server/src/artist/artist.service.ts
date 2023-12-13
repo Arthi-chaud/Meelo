@@ -47,7 +47,11 @@ export default class ArtistService extends RepositoryService<
 		private prismaService: PrismaService,
 		private illustrationRepository: IllustrationRepository,
 	) {
-		super(prismaService.artist);
+		super(prismaService, 'artist');
+	}
+
+	getTableName() {
+		return 'artists';
 	}
 
 	/**

@@ -58,7 +58,11 @@ export default class AlbumService extends RepositoryService<
 		private parserService: ParserService,
 		private illustrationRepository: IllustrationRepository
 	) {
-		super(prismaService.album);
+		super(prismaService, 'album');
+	}
+
+	getTableName() {
+		return 'albums';
 	}
 
 	/**
@@ -448,23 +452,5 @@ export default class AlbumService extends RepositoryService<
 				]
 			}
 		});
-	}
-
-	public async getManyRandom<I extends AlbumQueryParameters.RelationInclude>(
-		seed: number,
-		where: AlbumQueryParameters.ManyWhereInput,
-		pagination?: PaginationParameters,
-		include?: I
-	) {
-		const res: { id: number }[] = await this.prismaService.$queryRaw`SELECT id FROM albums ORDER BY MD5(${seed.toString()} || id::text)`;
-		const ids = res.map(({ id }) => id);
-
-		return this.getMany(
-			deepmerge(where, { ids: ids }),
-			pagination,
-			include,
-		).then(
-			(items) => items.sort((item1, item2) => ids.indexOf(item1.id) - ids.indexOf(item2.id))
-		);
 	}
 }

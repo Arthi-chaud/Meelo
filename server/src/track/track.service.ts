@@ -59,7 +59,11 @@ export default class TrackService extends RepositoryService<
 		private illustrationRepository: IllustrationRepository,
 		private prismaService: PrismaService
 	) {
-		super(prismaService.track);
+		super(prismaService, 'track');
+	}
+
+	getTableName() {
+		return 'tracks';
 	}
 
 	/**

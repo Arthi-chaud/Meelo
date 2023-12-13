@@ -62,7 +62,11 @@ export default class ReleaseService extends RepositoryService<
 		private illustrationRepository: IllustrationRepository,
 		private discogsProvider: DiscogsProvider,
 	) {
-		super(prismaService.release);
+		super(prismaService, 'release');
+	}
+
+	getTableName() {
+		return 'releases';
 	}
 
 	/**
