@@ -124,6 +124,13 @@ describe('Album Service', () => {
 			expect(albums).toContainEqual(newAlbum);
 			expect(albums).toContainEqual(newCompilationAlbum);
 		});
+		it("should shuffle albums", async () => {
+			const sort1 = await albumService.getMany({ }, { take: 10 }, {}, 123);
+			const sort2 = await albumService.getMany({ }, { take: 10 }, {}, 1234);
+			expect(sort1.length).toBe(sort2.length);
+			expect(sort1).toContainEqual(dummyRepository.albumB1);
+			expect(sort1.map(({ id }) => id)).not.toBe(sort2.map(({ id }) => id));
+		});
 
 		it("should find some albums w/ pagination", async () => {
 			const albums = await albumService.getMany({}, { take: 2, skip: 2 });

@@ -114,6 +114,13 @@ describe('Release Service', () => {
 			expect(releases).toContainEqual(dummyRepository.releaseB1_1);
 			expect(releases).toContainEqual(dummyRepository.compilationReleaseA1);
 		});
+		it("should shuffle release", async () => {
+			const sort1 = await releaseService.getMany({ }, { take: 10 }, {}, 123);
+			const sort2 = await releaseService.getMany({ }, { take: 10 }, {}, 1234);
+			expect(sort1.length).toBe(sort2.length);
+			expect(sort1).toContainEqual(dummyRepository.releaseB1_1);
+			expect(sort1.map(({ id }) => id)).not.toBe(sort2.map(({ id }) => id));
+		});
 		it("should get the releases, sorted by name", async () => {
 			const releases = await releaseService.getMany({}, {}, {}, { sortBy: 'name', order: 'asc' });
 			expect(releases.length).toBe(6);

@@ -123,6 +123,14 @@ describe('Library Service', () => {
 			expect(libraries).toContainEqual(newLibrary);
 		});
 
+		it("should shuffle libraries", async () => {
+			const sort1 = await libraryService.getMany({ }, { take: 10 }, {}, 123);
+			const sort2 = await libraryService.getMany({ }, { take: 10 }, {}, 1234);
+			expect(sort1.length).toBe(sort2.length);
+			expect(sort1).toContainEqual(dummyRepository.library2);
+			expect(sort1.map(({ id }) => id)).not.toBe(sort2.map(({ id }) => id));
+		});
+
 		it('should get every libraries, sorted by name', async () => {
 			const libraries = await libraryService.getMany({}, {}, {}, { sortBy: 'name', order: 'desc' });
 

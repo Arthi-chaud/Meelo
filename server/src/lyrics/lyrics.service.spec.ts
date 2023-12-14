@@ -103,15 +103,23 @@ describe('Lyrics Service', () => {
 	});
 
 	describe('Get many lyrics', () => {
-		it("should throw, as the method is not implemented", async () => {
+		it("should get all lyrics", async () => {
 			const allLyrics = await lyricsService.getMany({});
 			expect(allLyrics.length).toBe(2);
 			expect(allLyrics).toContainEqual(dummyRepository.lyricsA1);
 			expect(allLyrics).toContainEqual(lyricsB1);
 		});
+
+		it("should shuffle lyrics", async () => {
+			const sort1 = await lyricsService.getMany({ }, { take: 10 }, {}, 123);
+			const sort2 = await lyricsService.getMany({ }, { take: 10 }, {}, 1234);
+			expect(sort1.length).toBe(sort2.length);
+			expect(sort1).toContainEqual(dummyRepository.lyricsA1);
+			expect(sort1.map(({ id }) => id)).not.toBe(sort2.map(({ id }) => id));
+		});
 	});
 	describe('Count lyrics', () => {
-		it("should throw, as the method is not implemented", async () => {
+		it("should count", async () => {
 			const lyricsCount = await lyricsService.count({});
 			expect(lyricsCount).toBe(2);
 		});
