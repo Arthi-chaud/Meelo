@@ -475,7 +475,7 @@ export default class API {
 		filter: {
 			library?: Identifier, artist?: Identifier, genre?: Identifier
 			type?: AlbumType, related?: Identifier, appearance?: Identifier,
-			query?: Identifier
+			query?: Identifier, random?: number
 		},
 		sort?: SortingParameters<typeof AlbumSortingKeys>,
 		include?: I[]
@@ -520,7 +520,8 @@ export default class API {
 	static getSongs<I extends SongInclude>(
 		filter: {
 			library?: Identifier, type?: SongType, genre?: Identifier,
-			artist?: Identifier, query?: string, bsides?: Identifier
+			artist?: Identifier, query?: string, bsides?: Identifier,
+			random?: number
 		},
 		sort?: SortingParameters<typeof SongSortingKeys>,
 		include?: I[]

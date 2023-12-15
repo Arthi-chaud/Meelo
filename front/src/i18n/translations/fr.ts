@@ -214,7 +214,8 @@ const fr: TranslationMap = {
 	notifyOnTrackChange: 'Notifier quand le morceau change',
 
 	en: "Anglais",
-	fr: 'Français'
+	fr: 'Français',
+	featuredAlbums: 'En Vedette'
 };
 
 export default fr;

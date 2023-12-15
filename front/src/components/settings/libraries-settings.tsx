@@ -172,7 +172,7 @@ const LibrariesSettings = () => {
 			<ListItem>
 				<ListItemText
 					primary={<Translate translationKey='current'
-						format={(tr) => tr + ': ' + (capitalCase(tasks.data.active?.name ?? translate('none'))) }/>
+						format={(tr) => tr + ': ' + (capitalCase(tasks.data.active?.name ?? translate('none')))}/>
 					}
 					secondary={tasks.data.active?.description}
 				/>

@@ -225,7 +225,8 @@ const en = {
 	notifyOnTrackChange: 'Notify On Track Change',
 
 	en: "English",
-	fr: 'French'
+	fr: 'French',
+	featuredAlbums: 'Featured Albums'
 };
 
 export default en;
