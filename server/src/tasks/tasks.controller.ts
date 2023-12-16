@@ -43,14 +43,13 @@ export default class TasksController {
 		]);
 		const response = new TaskQueueStatusResponse();
 
-		response.active =
-			activeJob ?
-				{
+		response.active = activeJob
+			? {
 					name: activeJob.name,
 					data: activeJob.data ?? null,
 					description: TasksDescription[activeJob.name as Tasks],
-				}
-			:	null;
+			  }
+			: null;
 		response.pending = waitingJob.map((job) => ({
 			name: job.name,
 			description: TasksDescription[job.name as Tasks],

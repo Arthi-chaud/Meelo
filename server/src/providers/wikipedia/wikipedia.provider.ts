@@ -37,8 +37,9 @@ export default class WikipediaProvider
 
 	async getResourceMetadataByWikidataId(resourceWikidataId: string) {
 		try {
-			const wikidataArticleName =
-				await this.getWikipediaArticleName(resourceWikidataId);
+			const wikidataArticleName = await this.getWikipediaArticleName(
+				resourceWikidataId,
+			);
 			const description = await this.getWikipediaDescription(
 				wikidataArticleName,
 			).catch(() => null);

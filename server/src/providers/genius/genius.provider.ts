@@ -38,9 +38,9 @@ export default class GeniusProvider
 
 	private _fetch(route: string, baseURL: string) {
 		const accessToken =
-			process.env.NODE_ENV == "test" ?
-				process.env.GENIUS_ACCESS_TOKEN
-			:	this._settings.apiKey;
+			process.env.NODE_ENV == "test"
+				? process.env.GENIUS_ACCESS_TOKEN
+				: this._settings.apiKey;
 
 		return this.httpService.axiosRef
 			.get(route, {
@@ -96,8 +96,9 @@ export default class GeniusProvider
 		artistIdentifier: string,
 	): Promise<ArtistMetadata> {
 		try {
-			const artistSearchResult =
-				await this.getArtistBySlug(artistIdentifier);
+			const artistSearchResult = await this.getArtistBySlug(
+				artistIdentifier,
+			);
 			const artist = await this.fetchAPI(
 				"/artists/" + artistSearchResult.id,
 			).then((res) => res.artist);
@@ -147,10 +148,9 @@ export default class GeniusProvider
 				.then((res) => res.artist)
 				.catch(() => null);
 			const descAnnotation = artist?.description_annotation;
-			const desc =
-				descAnnotation ?
-					this.parseDescriptionAnnotation(descAnnotation)
-				:	null;
+			const desc = descAnnotation
+				? this.parseDescriptionAnnotation(descAnnotation)
+				: null;
 
 			return {
 				description: desc?.length ? desc : null,

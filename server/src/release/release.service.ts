@@ -90,17 +90,16 @@ export default class ReleaseService extends RepositoryService<
 			album: {
 				connect: AlbumService.formatWhereInput(release.album),
 			},
-			externalIds:
-				release.discogsId ?
-					{
+			externalIds: release.discogsId
+				? {
 						create: {
 							provider: {
 								connect: { name: this.discogsProvider.name },
 							},
 							value: release.discogsId,
 						},
-					}
-				:	undefined,
+				  }
+				: undefined,
 			slug: new Slug(release.name).toString(),
 		};
 	}
@@ -123,9 +122,9 @@ export default class ReleaseService extends RepositoryService<
 			if (error.code == PrismaError.UniqueConstraintViolation) {
 				return new ReleaseAlreadyExists(
 					new Slug(input.name),
-					parentAlbum.artist ?
-						new Slug(parentAlbum.artist!.slug)
-					:	undefined,
+					parentAlbum.artist
+						? new Slug(parentAlbum.artist!.slug)
+						: undefined,
 				);
 			}
 		}
@@ -139,10 +138,9 @@ export default class ReleaseService extends RepositoryService<
 		return {
 			id: where.id,
 			slug: where.bySlug?.slug.toString(),
-			album:
-				where.bySlug ?
-					AlbumService.formatWhereInput(where.bySlug.album)
-				:	undefined,
+			album: where.bySlug
+				? AlbumService.formatWhereInput(where.bySlug.album)
+				: undefined,
 		};
 	}
 
@@ -169,14 +167,13 @@ export default class ReleaseService extends RepositoryService<
 				album: {
 					id: where.album.id,
 					slug: where.album.bySlug?.slug.toString(),
-					artist:
-						where.album.bySlug ?
-							where.album.bySlug?.artist ?
-								ArtistService.formatWhereInput(
+					artist: where.album.bySlug
+						? where.album.bySlug?.artist
+							? ArtistService.formatWhereInput(
 									where.album.bySlug.artist,
-								)
-							:	null
-						:	undefined,
+							  )
+							: null
+						: undefined,
 				},
 			});
 		}
@@ -200,12 +197,10 @@ export default class ReleaseService extends RepositoryService<
 							bySlug: {
 								slug: slugs[1],
 								artist:
-									(
-										slugs[0].toString() ==
-										compilationAlbumArtistKeyword
-									) ?
-										undefined
-									:	{ slug: slugs[0] },
+									slugs[0].toString() ==
+									compilationAlbumArtistKeyword
+										? undefined
+										: { slug: slugs[0] },
 							},
 						},
 					},
@@ -255,10 +250,9 @@ export default class ReleaseService extends RepositoryService<
 				{ artist: true },
 			);
 			const releaseSlug: Slug = where.bySlug!.slug;
-			const parentArtistSlug =
-				parentAlbum.artist?.slug ?
-					new Slug(parentAlbum.artist.slug)
-				:	undefined;
+			const parentArtistSlug = parentAlbum.artist?.slug
+				? new Slug(parentAlbum.artist.slug)
+				: undefined;
 
 			return new ReleaseNotFoundException(
 				releaseSlug,
@@ -331,12 +325,11 @@ export default class ReleaseService extends RepositoryService<
 	): Prisma.ReleaseUpdateInput {
 		return {
 			...what,
-			album:
-				what.album ?
-					{
+			album: what.album
+				? {
 						connect: AlbumService.formatWhereInput(what.album),
-					}
-				:	undefined,
+				  }
+				: undefined,
 			slug: what.name ? new Slug(what.name).toString() : undefined,
 		};
 	}
@@ -488,18 +481,18 @@ export default class ReleaseService extends RepositoryService<
 		);
 		if (illustration) {
 			const illustrationPath =
-				illustration.disc == null ?
-					this.illustrationRepository.getReleaseIllustrationPath(
-						release.album.artist?.slug,
-						release.album.slug,
-						release.slug,
-					)
-				:	this.illustrationRepository.getDiscIllustrationPath(
-						release.album.artist?.slug,
-						release.album.slug,
-						release.slug,
-						illustration.disc,
-					);
+				illustration.disc == null
+					? this.illustrationRepository.getReleaseIllustrationPath(
+							release.album.artist?.slug,
+							release.album.slug,
+							release.slug,
+					  )
+					: this.illustrationRepository.getDiscIllustrationPath(
+							release.album.artist?.slug,
+							release.album.slug,
+							release.slug,
+							illustration.disc,
+					  );
 
 			archive.append(createReadStream(illustrationPath), {
 				name: basename(illustrationPath),

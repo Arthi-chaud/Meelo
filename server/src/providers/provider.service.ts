@@ -55,7 +55,7 @@ export default class ProviderService implements OnModuleInit {
 		)!;
 	}
 
-	getProviderId(providerName: (typeof IProvider)["prototype"]["name"]) {
+	getProviderId(providerName: typeof IProvider["prototype"]["name"]) {
 		return this._providerRows.find(
 			(provider) => provider.name == providerName,
 		)!.id;

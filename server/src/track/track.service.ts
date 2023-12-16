@@ -119,10 +119,9 @@ export default class TrackService extends RepositoryService<
 	static formatWhereInput(where: TrackQueryParameters.WhereInput) {
 		return {
 			id: where.id,
-			sourceFile:
-				where.sourceFile ?
-					FileService.formatWhereInput(where.sourceFile)
-				:	undefined,
+			sourceFile: where.sourceFile
+				? FileService.formatWhereInput(where.sourceFile)
+				: undefined,
 		};
 	}
 
@@ -366,24 +365,21 @@ export default class TrackService extends RepositoryService<
 	): Prisma.TrackUpdateInput {
 		return {
 			...what,
-			song:
-				what.song ?
-					{
+			song: what.song
+				? {
 						connect: SongService.formatWhereInput(what.song),
-					}
-				:	undefined,
-			release:
-				what.release ?
-					{
+				  }
+				: undefined,
+			release: what.release
+				? {
 						connect: ReleaseService.formatWhereInput(what.release),
-					}
-				:	undefined,
-			sourceFile:
-				what.sourceFile ?
-					{
+				  }
+				: undefined,
+			sourceFile: what.sourceFile
+				? {
 						connect: FileService.formatWhereInput(what.sourceFile),
-					}
-				:	undefined,
+				  }
+				: undefined,
 		};
 	}
 

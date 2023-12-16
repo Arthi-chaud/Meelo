@@ -256,11 +256,13 @@ export default class TaskRunner {
 	private async refreshFilesMetadata(
 		where: RefreshMetadataSelector,
 	): Promise<void> {
-		const tracks = await (where.track !== undefined ?
-			this.trackService
-				.get(where.track, { sourceFile: true })
-				.then((track) => [track])
-		:	this.trackService.getMany(where, undefined, { sourceFile: true }));
+		const tracks = await (where.track !== undefined
+			? this.trackService
+					.get(where.track, { sourceFile: true })
+					.then((track) => [track])
+			: this.trackService.getMany(where, undefined, {
+					sourceFile: true,
+			  }));
 		const updatedFiles: File[] = [];
 
 		await Promise.allSettled(
@@ -437,8 +439,9 @@ export default class TaskRunner {
 		const fullFilePath = `${this.fileManagerService.getLibraryFullPath(
 			parentLibrary,
 		)}/${file.path}`;
-		const fileStat =
-			await this.fileManagerService.getFileStat(fullFilePath);
+		const fileStat = await this.fileManagerService.getFileStat(
+			fullFilePath,
+		);
 
 		/**
 		 * If file has not been changed since, the md5checkum computation and rescan is canceled

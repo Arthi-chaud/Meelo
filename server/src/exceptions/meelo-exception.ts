@@ -1,10 +1,7 @@
 import { HttpStatus } from "@nestjs/common";
 
 export class MeeloException extends Error {
-	constructor(
-		protected readonly errorStatus: HttpStatus,
-		message: string,
-	) {
+	constructor(protected readonly errorStatus: HttpStatus, message: string) {
 		super(message);
 	}
 

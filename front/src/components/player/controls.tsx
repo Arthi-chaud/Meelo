@@ -403,6 +403,7 @@ const ExpandedPlayerControls = (
 												<ContextualMenuIcon />
 											</IconButton>
 
+
 										// To avoid slight shift on loaded
 									}
 								</Grid>

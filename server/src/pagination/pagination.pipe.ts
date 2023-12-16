@@ -12,13 +12,13 @@ class ParsePaginationParameterPipe implements PipeTransform {
 	): Promise<PaginationParameters> {
 		const skip = value.skip !== undefined ? parseInt(value.skip, 10) : 0;
 		const afterId =
-			value.afterId !== undefined ?
-				parseInt(value.afterId, 10)
-			:	undefined;
+			value.afterId !== undefined
+				? parseInt(value.afterId, 10)
+				: undefined;
 		const take =
-			value.take !== undefined ?
-				parseInt(value.take, 10)
-			:	defaultPageSize;
+			value.take !== undefined
+				? parseInt(value.take, 10)
+				: defaultPageSize;
 
 		if (isNaN(skip) || skip < 0) {
 			throw new InvalidPaginationParameterValue("skip");

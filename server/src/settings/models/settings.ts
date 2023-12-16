@@ -34,14 +34,14 @@ class MetadataSettings {
 	 */
 	@ApiProperty({ enum: metadataSourceValue })
 	@IsIn(metadataSourceValue)
-	source: (typeof metadataSourceValue)[number];
+	source: typeof metadataSourceValue[number];
 
 	/**
 	 * Exclude the other source, or use is as a fallback
 	 */
 	@ApiProperty({ enum: metadataOrderValue })
 	@IsIn(metadataOrderValue)
-	order: (typeof metadataOrderValue)[number];
+	order: typeof metadataOrderValue[number];
 
 	/**
 	 * Enable the use of genres from (enabled) external providers

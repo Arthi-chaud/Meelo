@@ -7,8 +7,9 @@ import { from, mergeMap } from "rxjs";
 export default abstract class ResponseBuilderInterceptor<
 	FromType,
 	ToClass extends InstanceType<any>,
-	ToType extends ToClass extends InstanceType<infer T> ? T
-	:	never = ToClass extends InstanceType<infer T> ? T : never,
+	ToType extends ToClass extends InstanceType<infer T>
+		? T
+		: never = ToClass extends InstanceType<infer T> ? T : never,
 > implements NestInterceptor<FromType, ToType>
 {
 	constructor() {}

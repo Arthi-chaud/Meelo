@@ -117,14 +117,12 @@ export default class MusicBrainzProvider
 					}`,
 				})
 				.then((result) =>
-					result.releases.filter(
-						(release) =>
-							release["artist-credit"]?.find(
-								(artist) =>
-									artist.artist.id ==
-									(artistIdentifier ??
-										this.compilationArtistID),
-							),
+					result.releases.filter((release) =>
+						release["artist-credit"]?.find(
+							(artist) =>
+								artist.artist.id ==
+								(artistIdentifier ?? this.compilationArtistID),
+						),
 					),
 				);
 			const releaseGroupId = searchResult.at(0)!["release-group"]!.id;
@@ -173,12 +171,10 @@ export default class MusicBrainzProvider
 					query: `query="${songName}" AND arid:${artistIdentifier}`,
 				})
 				.then((result) =>
-					result.recordings.filter(
-						(recording) =>
-							recording["artist-credit"]?.find(
-								(artist) =>
-									artist.artist.id == artistIdentifier,
-							),
+					result.recordings.filter((recording) =>
+						recording["artist-credit"]?.find(
+							(artist) => artist.artist.id == artistIdentifier,
+						),
 					),
 				);
 

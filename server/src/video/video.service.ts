@@ -32,10 +32,9 @@ export default class VideoService {
 	) {
 		return this.prismaService.song
 			.findMany({
-				orderBy:
-					sort ?
-						this.songService.formatSortingInput(sort)
-					:	undefined,
+				orderBy: sort
+					? this.songService.formatSortingInput(sort)
+					: undefined,
 				include: {
 					...RepositoryService.formatInclude(include),
 					tracks: {

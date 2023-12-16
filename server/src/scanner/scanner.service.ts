@@ -61,13 +61,12 @@ export default class ScannerService {
 				this.genreService.getOrCreate({ name: genre }),
 			),
 		);
-		const albumArtist =
-			!metadata.compilation ?
-				await this.artistService.getOrCreate({
+		const albumArtist = !metadata.compilation
+			? await this.artistService.getOrCreate({
 					name: metadata.albumArtist ?? metadata.artist!,
 					registeredAt: file.registerDate,
-				})
-			:	undefined;
+			  })
+			: undefined;
 		const { name: parsedSongName, featuring: parsedFeaturingArtists } =
 			await this.parserService.extractFeaturedArtistsFromSongName(
 				metadata.name,
@@ -181,8 +180,9 @@ export default class ScannerService {
 	 * @returns a Metadata object
 	 */
 	async parseMetadata(filePath: string): Promise<Metadata> {
-		const fileMetadata: Metadata =
-			await this.parseMetadataFromFile(filePath);
+		const fileMetadata: Metadata = await this.parseMetadataFromFile(
+			filePath,
+		);
 		const pathMetadata: Metadata = this.parseMetadataFromPath(filePath);
 		const settings = this.settingsService.settingsValues;
 		// eslint-disable-next-line init-declarations
@@ -260,17 +260,21 @@ export default class ScannerService {
 			const metadata = new Metadata();
 
 			(metadata.compilation = isCompilation),
-				(metadata.albumArtist =
-					isCompilation ? undefined : groups["AlbumArtist"]);
+				(metadata.albumArtist = isCompilation
+					? undefined
+					: groups["AlbumArtist"]);
 			metadata.artist = groups["Artist"];
 			metadata.release = groups["Release"];
 			metadata.album = groups["Album"];
-			metadata.releaseDate =
-				groups["Year"] ? new Date(groups["Year"]) : undefined;
-			metadata.discIndex =
-				groups["Disc"] ? parseInt(groups["Disc"]) : undefined;
-			metadata.index =
-				groups["Index"] ? parseInt(groups["Index"]) : undefined;
+			metadata.releaseDate = groups["Year"]
+				? new Date(groups["Year"])
+				: undefined;
+			metadata.discIndex = groups["Disc"]
+				? parseInt(groups["Disc"])
+				: undefined;
+			metadata.index = groups["Index"]
+				? parseInt(groups["Index"])
+				: undefined;
 			metadata.name = groups["Track"];
 			metadata.genres = groups["Genre"] ? [groups["Genre"]] : [];
 			metadata.discogsId = groups["DiscogsId"];
@@ -296,25 +300,23 @@ export default class ScannerService {
 			metadata.compilation = false;
 		}
 		metadata.artist = rawMetadata.common.artist!;
-		metadata.albumArtist =
-			metadata.compilation ? undefined : rawMetadata.common.albumartist;
+		metadata.albumArtist = metadata.compilation
+			? undefined
+			: rawMetadata.common.albumartist;
 		metadata.album = rawMetadata.common.album!;
 		metadata.release = rawMetadata.common.album!;
 		metadata.name = rawMetadata.common.title!;
 		metadata.index = rawMetadata.common.track.no ?? undefined;
 		metadata.discIndex = rawMetadata.common.disk.no ?? undefined;
-		metadata.bitrate =
-			rawMetadata.format.bitrate ?
-				Math.floor(rawMetadata.format.bitrate / 1000)
-			:	undefined!;
-		metadata.duration =
-			rawMetadata.format.duration ?
-				Math.floor(rawMetadata.format.duration)
-			:	undefined!;
-		metadata.releaseDate =
-			rawMetadata.common.date ?
-				new Date(rawMetadata.common.date)
-			:	undefined;
+		metadata.bitrate = rawMetadata.format.bitrate
+			? Math.floor(rawMetadata.format.bitrate / 1000)
+			: undefined!;
+		metadata.duration = rawMetadata.format.duration
+			? Math.floor(rawMetadata.format.duration)
+			: undefined!;
+		metadata.releaseDate = rawMetadata.common.date
+			? new Date(rawMetadata.common.date)
+			: undefined;
 		metadata.type = isVideo ? TrackType.Video : TrackType.Audio;
 		return metadata;
 	}

@@ -61,9 +61,9 @@ const buildPipes = (_app: INestApplication) => [
 const buildHttpPlugs = (_app: INestApplication) => [
 	helmet({
 		crossOriginResourcePolicy:
-			process.env.NODE_ENV === "development" ?
-				{ policy: "cross-origin" }
-			:	true,
+			process.env.NODE_ENV === "development"
+				? { policy: "cross-origin" }
+				: true,
 	}),
 	cookieParser(),
 ];

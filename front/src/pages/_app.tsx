@@ -1,13 +1,8 @@
-/* eslint-disable id-length */
 import { ConfirmProvider } from "material-ui-confirm";
 import { useEffect, useState } from "react";
 import type { AppProps } from "next/app";
-import {
-	// eslint-disable-next-line no-restricted-imports
-	Hydrate,
-	QueryClient,
-	QueryClientProvider,
-} from "react-query";
+// eslint-disable-next-line no-restricted-imports
+import { Hydrate, QueryClient, QueryClientProvider } from "react-query";
 import { ReactQueryDevtools } from "react-query/devtools";
 import { ErrorBoundary } from "react-error-boundary";
 import toast from "react-hot-toast";

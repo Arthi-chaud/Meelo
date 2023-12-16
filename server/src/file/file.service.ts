@@ -97,17 +97,15 @@ export default class FileService extends RepositoryService<
 	static formatWhereInput(where: FileQueryParameters.WhereInput) {
 		return {
 			id: where.id,
-			track:
-				where.trackId ?
-					{
+			track: where.trackId
+				? {
 						id: where.trackId,
-					}
-				:	undefined,
+				  }
+				: undefined,
 			path: where.byPath?.path,
-			library:
-				where.byPath ?
-					LibraryService.formatWhereInput(where.byPath.library)
-				:	undefined,
+			library: where.byPath
+				? LibraryService.formatWhereInput(where.byPath.library)
+				: undefined,
 		};
 	}
 
@@ -235,8 +233,9 @@ export default class FileService extends RepositoryService<
 
 		return this.create({
 			path: filePath,
-			md5Checksum:
-				await this.fileManagerService.getMd5Checksum(fullFilePath),
+			md5Checksum: await this.fileManagerService.getMd5Checksum(
+				fullFilePath,
+			),
 			registerDate: registrationDate ?? new Date(),
 			libraryId: parentLibrary.id,
 		});

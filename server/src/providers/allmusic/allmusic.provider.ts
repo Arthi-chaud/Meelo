@@ -63,12 +63,11 @@ export default class AllMusicProvider
 
 			return {
 				value: albumIdentifier,
-				rating:
-					isNumber(scoreOutTen) ?
-						scoreOutTen > 0 ?
-							(scoreOutTen + 1) * 10
-						:	null
-					:	null,
+				rating: isNumber(scoreOutTen)
+					? scoreOutTen > 0
+						? (scoreOutTen + 1) * 10
+						: null
+					: null,
 				description: description,
 			};
 		} catch (err) {

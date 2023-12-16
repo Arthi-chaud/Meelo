@@ -122,15 +122,14 @@ export default class PlaylistService extends RepositoryService<
 	): Prisma.PlaylistWhereInput {
 		return {
 			id: input.id,
-			entries:
-				input.song ?
-					{
+			entries: input.song
+				? {
 						some: {
 							song: SongService.formatWhereInput(input.song),
 						},
-					}
-				: input.album ?
-					{
+				  }
+				: input.album
+				? {
 						some: {
 							song: {
 								tracks: {
@@ -144,8 +143,8 @@ export default class PlaylistService extends RepositoryService<
 								},
 							},
 						},
-					}
-				:	undefined,
+				  }
+				: undefined,
 		};
 	}
 

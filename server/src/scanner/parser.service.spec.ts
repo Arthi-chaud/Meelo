@@ -283,10 +283,9 @@ describe("Parser Service", () => {
 
 	describe("Extract artist name from song name", () => {
 		it("No Featuring", async () => {
-			const res =
-				await parserService.extractFeaturedArtistsFromSongName(
-					"Strict Machine",
-				);
+			const res = await parserService.extractFeaturedArtistsFromSongName(
+				"Strict Machine",
+			);
 			expect(res.name).toBe("Strict Machine");
 			expect(res.featuring).toStrictEqual([]);
 		});
@@ -414,10 +413,9 @@ describe("Parser Service", () => {
 			]);
 		});
 		it('Using "with"', async () => {
-			const res =
-				await parserService.extractFeaturedArtistsFromSongName(
-					"Champion (With A)",
-				);
+			const res = await parserService.extractFeaturedArtistsFromSongName(
+				"Champion (With A)",
+			);
 			expect(res.name).toBe("Champion");
 			expect(res.featuring).toStrictEqual(["A"]);
 		});

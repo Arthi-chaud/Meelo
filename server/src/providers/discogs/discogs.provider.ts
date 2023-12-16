@@ -133,9 +133,9 @@ export default class DiscogsProvider
 
 	async fetch(route: string): Promise<any> {
 		const accessToken =
-			process.env.NODE_ENV == "test" ?
-				process.env.DISCOGS_ACCESS_TOKEN
-			:	this.settings.apiKey;
+			process.env.NODE_ENV == "test"
+				? process.env.DISCOGS_ACCESS_TOKEN
+				: this.settings.apiKey;
 
 		try {
 			return this.httpService.axiosRef

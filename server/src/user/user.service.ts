@@ -128,18 +128,17 @@ export default class UserService extends RepositoryService<
 		return {
 			id: input.id,
 			name: input.name ?? input.byCredentials?.name,
-			password:
-				input.byCredentials ?
-					this.encryptPassword(input.byCredentials.password)
-				:	undefined,
+			password: input.byCredentials
+				? this.encryptPassword(input.byCredentials.password)
+				: undefined,
 		};
 	}
 
 	async get(input: UserQueryParameters.WhereInput): Promise<User> {
 		const user = await super.get(
-			input.id != undefined ?
-				{ id: input.id }
-			:	{ name: input.name ?? input.byCredentials.name },
+			input.id != undefined
+				? { id: input.id }
+				: { name: input.name ?? input.byCredentials.name },
 		);
 
 		if (
@@ -207,8 +206,9 @@ export default class UserService extends RepositoryService<
 		}
 		return {
 			...what,
-			password:
-				what.password ? this.encryptPassword(what.password) : undefined,
+			password: what.password
+				? this.encryptPassword(what.password)
+				: undefined,
 		};
 	}
 

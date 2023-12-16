@@ -64,8 +64,9 @@ describe("Discogs Provider", () => {
 
 	describe("Get Album Metadata", () => {
 		it("Should Get album Metadata by Identifier", async () => {
-			const metadata =
-				await discogsProvider.getAlbumMetadataByIdentifier("24744");
+			const metadata = await discogsProvider.getAlbumMetadataByIdentifier(
+				"24744",
+			);
 			expect(metadata.value).toBe("24744");
 			expect(metadata.description).not.toBeNull();
 			expect(metadata.genres).toContain("Electronic");

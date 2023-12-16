@@ -62,12 +62,12 @@ export default class PaginatedResponse<T extends { id: number }> {
 			this.metadata = {
 				this: this.buildUrl(route, request.query),
 				next:
-					itemsCount >= take ?
-						this.buildUrl(route, {
-							...request.query,
-							afterId: items.at(-1)?.id ?? null,
-						})
-					:	null,
+					itemsCount >= take
+						? this.buildUrl(route, {
+								...request.query,
+								afterId: items.at(-1)?.id ?? null,
+						  })
+						: null,
 				previous: null,
 				page: null,
 			};
@@ -81,19 +81,18 @@ export default class PaginatedResponse<T extends { id: number }> {
 		this.metadata = {
 			this: this.buildUrl(route, request.query),
 			next:
-				itemsCount >= take ?
-					this.buildUrl(route, {
-						...request.query,
-						skip: skipped + take,
-					})
-				:	null,
-			previous:
-				skipped ?
-					this.buildUrl(route, {
+				itemsCount >= take
+					? this.buildUrl(route, {
+							...request.query,
+							skip: skipped + take,
+					  })
+					: null,
+			previous: skipped
+				? this.buildUrl(route, {
 						...request.query,
 						skip: Math.max(0, skipped - take),
-					})
-				:	null,
+				  })
+				: null,
 			page: itemsCount ? currentPage : null,
 		};
 	}

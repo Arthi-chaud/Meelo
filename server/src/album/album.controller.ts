@@ -186,9 +186,9 @@ export default class AlbumController {
 		if (updateDTO.artistId !== undefined) {
 			album = await this.albumService.reassign(
 				{ id: album.id },
-				updateDTO.artistId == null ?
-					{ compilationArtist: true }
-				:	{ id: updateDTO.artistId },
+				updateDTO.artistId == null
+					? { compilationArtist: true }
+					: { id: updateDTO.artistId },
 			);
 			// If only the artistID is to be changed, no need to await an empty update
 			if (Object.values(updateDTO).length == 1) {

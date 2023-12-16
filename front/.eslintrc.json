@@ -1,10 +1,15 @@
 {
 	"extends": [
 		"next/core-web-vitals",
+		"plugin:prettier/recommended",
 		"plugin:react/recommended",
-		"../server/.eslintrc.json"
+		"../.eslintrc.json"
 	],
-	"plugins": ["react"],
+	"parser": "@typescript-eslint/parser",
+	"parserOptions": {
+		"project": ["./tsconfig.json"]
+	},
+	"plugins": ["react", "@typescript-eslint", "unused-imports", "import"],
 	"ignorePatterns": ["node_modules/", "jest.config.js", "__tests__"],
 	"rules": {
 		"react/react-in-jsx-scope": "off",

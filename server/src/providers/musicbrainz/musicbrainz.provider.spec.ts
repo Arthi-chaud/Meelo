@@ -45,28 +45,30 @@ describe("MusicBrainz Provider", () => {
 	});
 	describe("Get Artist Identifier", () => {
 		it("should get simple artist Identifier", async () => {
-			const id =
-				await musicBrainzProvider.getArtistMetadataByName(
-					"Britney Spears",
-				);
+			const id = await musicBrainzProvider.getArtistMetadataByName(
+				"Britney Spears",
+			);
 			expect(id.value).toBe("45a663b5-b1cb-4a91-bff6-2bef7bbfdd76");
 			expect(id.description).toBeNull();
 		});
 		it("should get simple artist Identifier", async () => {
-			const id =
-				await musicBrainzProvider.getArtistMetadataByName("Adele");
+			const id = await musicBrainzProvider.getArtistMetadataByName(
+				"Adele",
+			);
 			expect(id.value).toBe("cc2c9c3c-b7bc-4b8b-84d8-4fbd8779e493");
 			expect(id.description).toBeNull();
 		});
 		it("should get simple artist identifier", async () => {
-			const id =
-				await musicBrainzProvider.getArtistMetadataByName("Moloko");
+			const id = await musicBrainzProvider.getArtistMetadataByName(
+				"Moloko",
+			);
 			expect(id.value).toBe("2f94016a-3880-4d8c-9af9-0e197ee77189");
 			expect(id.description).toBeNull();
 		});
 		it("should get artist with special character Identifier", async () => {
-			const id =
-				await musicBrainzProvider.getArtistMetadataByName("P!nk");
+			const id = await musicBrainzProvider.getArtistMetadataByName(
+				"P!nk",
+			);
 			expect(id.value).toBe("f4d5cc07-3bc9-4836-9b15-88a08359bc63");
 			expect(id.description).toBeNull();
 		});
@@ -125,10 +127,9 @@ describe("MusicBrainz Provider", () => {
 			expect(id.genres).toContain("Dance-pop");
 		});
 		it("should get compilation album Identifier", async () => {
-			const id =
-				await musicBrainzProvider.getAlbumMetadataByName(
-					"Nova Tunes 01",
-				);
+			const id = await musicBrainzProvider.getAlbumMetadataByName(
+				"Nova Tunes 01",
+			);
 			expect(id.value).toBe("a6875c2b-3fc2-34b2-9eb6-3b73578a8ea8");
 			expect(id.description).toBeNull();
 			expect(id.genres).toStrictEqual([

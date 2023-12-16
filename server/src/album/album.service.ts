@@ -89,12 +89,11 @@ export default class AlbumService extends RepositoryService<
 	formatCreateInput(input: AlbumQueryParameters.CreateInput) {
 		return {
 			name: input.name,
-			artist:
-				input.artist ?
-					{
+			artist: input.artist
+				? {
 						connect: ArtistService.formatWhereInput(input.artist),
-					}
-				:	undefined,
+				  }
+				: undefined,
 			slug: new Slug(input.name).toString(),
 			releaseDate: input.releaseDate,
 			registeredAt: input.registeredAt,
@@ -143,12 +142,11 @@ export default class AlbumService extends RepositoryService<
 		return {
 			id: where.id,
 			slug: where.bySlug?.slug.toString(),
-			artist:
-				where.bySlug ?
-					where.bySlug.artist ?
-						ArtistService.formatWhereInput(where.bySlug.artist)
-					:	null
-				:	undefined,
+			artist: where.bySlug
+				? where.bySlug.artist
+					? ArtistService.formatWhereInput(where.bySlug.artist)
+					: null
+				: undefined,
 		};
 	}
 
@@ -277,12 +275,9 @@ export default class AlbumService extends RepositoryService<
 					bySlug: {
 						slug: slugs[1],
 						artist:
-							(
-								slugs[0].toString() ==
-								compilationAlbumArtistKeyword
-							) ?
-								undefined
-							:	{ slug: slugs[0] },
+							slugs[0].toString() == compilationAlbumArtistKeyword
+								? undefined
+								: { slug: slugs[0] },
 					},
 				};
 			},
@@ -439,18 +434,17 @@ export default class AlbumService extends RepositoryService<
 		artistWhere: ArtistQueryParameters.WhereInput,
 	): Promise<Album> {
 		const album = await this.get(albumWhere, { artist: true });
-		const previousArtistSlug =
-			album.artist ? new Slug(album.artist.slug) : undefined;
+		const previousArtistSlug = album.artist
+			? new Slug(album.artist.slug)
+			: undefined;
 		const albumSlug = new Slug(album.slug);
-		const newArtist =
-			artistWhere.compilationArtist ? null : (
-				await this.artistServce.get(artistWhere, { albums: true })
-			);
+		const newArtist = artistWhere.compilationArtist
+			? null
+			: await this.artistServce.get(artistWhere, { albums: true });
 		const newArtistSlug = newArtist ? new Slug(newArtist.slug) : undefined;
-		const artistAlbums =
-			newArtist ?
-				newArtist.albums
-			:	await this.getMany({ artist: { compilationArtist: true } });
+		const artistAlbums = newArtist
+			? newArtist.albums
+			: await this.getMany({ artist: { compilationArtist: true } });
 
 		//Check if an album with the same name already exist for the new artist
 		if (
@@ -513,16 +507,15 @@ export default class AlbumService extends RepositoryService<
 
 		return this.prismaService.album.findMany({
 			...buildPaginationParameters(pagination),
-			orderBy:
-				sort ?
-					this.formatSortingInput(sort)
-				:	{
+			orderBy: sort
+				? this.formatSortingInput(sort)
+				: {
 						_relevance: {
 							fields: ["slug"],
 							search: slug,
 							sort: "asc",
 						},
-					},
+				  },
 			include: this.formatInclude(include),
 			where: {
 				...this.formatManyWhereInput(where),

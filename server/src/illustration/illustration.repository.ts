@@ -166,10 +166,9 @@ export default class IllustrationRepository {
 				throw this.trackService.onNotFound(err, where);
 			});
 		const releaseSlug = track.release.slug;
-		const artistSlug =
-			track.release.album.artist ?
-				track.release.album.artist.slug
-			:	undefined;
+		const artistSlug = track.release.album.artist
+			? track.release.album.artist.slug
+			: undefined;
 		const albumSlug = track.release.album.slug;
 		const releaseIllustrationPath = this.getReleaseIllustrationPath(
 			artistSlug,
@@ -413,10 +412,9 @@ export default class IllustrationRepository {
 		where: ReleaseQueryParameters.WhereInput,
 	): Promise<ReleaseIllustration> {
 		const release = await this.releaseService.get(where, { album: true });
-		const artist =
-			release.album.artistId ?
-				await this.artistService.get({ id: release.album.artistId })
-			:	null;
+		const artist = release.album.artistId
+			? await this.artistService.get({ id: release.album.artistId })
+			: null;
 		const releaseIllustrationPath = this.getReleaseIllustrationPath(
 			artist?.slug,
 			release.album.slug,
@@ -426,8 +424,9 @@ export default class IllustrationRepository {
 			await this.illustrationService.getIllustrationBlurHashAndColors(
 				buffer,
 			);
-		const previousMainIllustration =
-			await this.getReleaseIllustration(where);
+		const previousMainIllustration = await this.getReleaseIllustration(
+			where,
+		);
 
 		this.illustrationService.saveIllustration(
 			buffer,
@@ -556,21 +555,20 @@ export default class IllustrationRepository {
 			.catch(async (err) => {
 				throw await this.releaseService.onNotFound(err, where);
 			});
-		const illustrationPath =
-			discNumber ?
-				// If disc is specified, we target its directory
-				this.getDiscIllustrationPath(
+		const illustrationPath = discNumber
+			? // If disc is specified, we target its directory
+			  this.getDiscIllustrationPath(
 					release.album.artist?.slug,
 					release.album.slug,
 					release.slug,
 					discNumber,
 					// Else, we get the release's folder
-				)
-			:	this.getReleaseIllustrationPath(
+			  )
+			: this.getReleaseIllustrationPath(
 					release.album.artist?.slug,
 					release.album.slug,
 					release.slug,
-				);
+			  );
 
 		if (opt.withFolder) {
 			this.illustrationService.deleteIllustrationFolder(
@@ -629,12 +627,12 @@ export default class IllustrationRepository {
 			this.scannerService.extractIllustrationInFileFolder(sourceFilePath),
 		]);
 		const illustration =
-			(this.settingsService.settingsValues.metadata.source == "embedded" ?
-				embeddedIllustration
-			:	inlineIllustration) ??
-			(this.settingsService.settingsValues.metadata.order == "preferred" ?
-				embeddedIllustration ?? inlineIllustration
-			:	null);
+			(this.settingsService.settingsValues.metadata.source == "embedded"
+				? embeddedIllustration
+				: inlineIllustration) ??
+			(this.settingsService.settingsValues.metadata.order == "preferred"
+				? embeddedIllustration ?? inlineIllustration
+				: null);
 
 		if (illustration == null) {
 			return null;
@@ -689,9 +687,9 @@ export default class IllustrationRepository {
 							blurhash,
 							releaseId: track.releaseId,
 							disc:
-								path == discIllustrationPath ?
-									track.discIndex
-								:	null,
+								path == discIllustrationPath
+									? track.discIndex
+									: null,
 						},
 					});
 				} else if (path == trackIllustrationPath) {
@@ -709,8 +707,9 @@ export default class IllustrationRepository {
 		where: TrackQueryParameters.WhereInput,
 		sourceFilePath: string,
 	): Promise<TrackIllustration | null> {
-		const [track, __, ___, outPath] =
-			await this.getTrackIllustrationPaths(where);
+		const [track, __, ___, outPath] = await this.getTrackIllustrationPaths(
+			where,
+		);
 
 		if (track.type != "Video") {
 			return null;

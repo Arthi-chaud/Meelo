@@ -245,14 +245,12 @@ export default class ExternalIdService {
 				provider.name !== wikipediaProvider?.name,
 		);
 		let providersToReach = otherProviders;
-		const musicbrainzId =
-			musicbrainzProvider ?
-				this.providerService.getProviderId(musicbrainzProvider.name)
-			:	null;
-		const wikipediaProviderId =
-			wikipediaProvider ?
-				this.providerService.getProviderId(wikipediaProvider.name)
-			:	null;
+		const musicbrainzId = musicbrainzProvider
+			? this.providerService.getProviderId(musicbrainzProvider.name)
+			: null;
+		const wikipediaProviderId = wikipediaProvider
+			? this.providerService.getProviderId(wikipediaProvider.name)
+			: null;
 		let resourceMBID = resource.externalIds.find(
 			({ providerId }) => providerId == musicbrainzId,
 		) as Metadata | undefined;
@@ -297,20 +295,20 @@ export default class ExternalIdService {
 						.then(({ data }) => data["statements"])
 						.catch(() => null);
 					const identifiers = await Promise.allSettled([
-						...(wikipediaProviderId && !resourceWikipediaId ?
-							[
-								wikipediaProvider
-									?.getResourceMetadataByWikidataId(
-										wikiDataId,
-									)
-									?.then((metadata) =>
-										formatResourceMetadata(
-											metadata as Metadata,
-											wikipediaProviderId,
+						...(wikipediaProviderId && !resourceWikipediaId
+							? [
+									wikipediaProvider
+										?.getResourceMetadataByWikidataId(
+											wikiDataId,
+										)
+										?.then((metadata) =>
+											formatResourceMetadata(
+												metadata as Metadata,
+												wikipediaProviderId,
+											),
 										),
-									),
-							]
-						:	[]),
+							  ]
+							: []),
 						...otherProviders.map(async (provider) => {
 							const providerId =
 								this.providerService.getProviderId(

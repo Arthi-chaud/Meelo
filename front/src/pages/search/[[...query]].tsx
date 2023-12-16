@@ -81,7 +81,9 @@ const SearchPage = (props: InferSSRProps<typeof getServerSideProps>) => {
 						router.push(
 							buildSearchUrl(error.target.value, type),
 							undefined,
-							{ shallow: true },
+							{
+								shallow: true,
+							},
 						);
 					}}
 				/>
@@ -92,7 +94,9 @@ const SearchPage = (props: InferSSRProps<typeof getServerSideProps>) => {
 					router.push(
 						buildSearchUrl(query, selectedType),
 						undefined,
-						{ shallow: true },
+						{
+							shallow: true,
+						},
 					)
 				}
 				enabled={query != undefined}

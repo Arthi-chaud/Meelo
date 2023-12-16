@@ -85,10 +85,9 @@ export class LyricsService extends RepositoryService<
 	static formatWhereInput(input: LyricsQueryParameters.WhereInput) {
 		return {
 			id: input.id,
-			song:
-				input.song ?
-					SongService.formatWhereInput(input.song)
-				:	undefined,
+			song: input.song
+				? SongService.formatWhereInput(input.song)
+				: undefined,
 		};
 	}
 
@@ -96,10 +95,9 @@ export class LyricsService extends RepositoryService<
 
 	static formatManyWhereInput(input: LyricsQueryParameters.ManyWhereInput) {
 		return {
-			song:
-				input.songs ?
-					SongService.formatManyWhereInput(input.songs)
-				:	undefined,
+			song: input.songs
+				? SongService.formatManyWhereInput(input.songs)
+				: undefined,
 			id: input.id,
 		};
 	}

@@ -344,16 +344,15 @@ export default class ArtistService extends RepositoryService<
 
 		return this.prismaService.artist.findMany({
 			...buildPaginationParameters(pagination),
-			orderBy:
-				sort ?
-					this.formatSortingInput(sort)
-				:	{
+			orderBy: sort
+				? this.formatSortingInput(sort)
+				: {
 						_relevance: {
 							fields: ["slug"],
 							search: slug,
 							sort: "asc",
 						},
-					},
+				  },
 			include: this.formatInclude(include),
 			where: {
 				...this.formatManyWhereInput(where),

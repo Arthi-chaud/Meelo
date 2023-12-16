@@ -93,14 +93,13 @@ export default class SongService extends RepositoryService<
 			artist: {
 				connect: ArtistService.formatWhereInput(song.artist),
 			},
-			featuring:
-				song.featuring ?
-					{
+			featuring: song.featuring
+				? {
 						connect: song.featuring.map(
 							ArtistService.formatWhereInput,
 						),
-					}
-				:	undefined,
+				  }
+				: undefined,
 			registeredAt: song.registeredAt,
 			playCount: 0,
 			type: this.parserService.getSongType(song.name),
@@ -158,20 +157,18 @@ export default class SongService extends RepositoryService<
 		return {
 			id: where.id,
 			slug: where.bySlug?.slug.toString(),
-			artist:
-				where.bySlug ?
-					ArtistService.formatWhereInput(where.bySlug.artist)
-				:	undefined,
-			featuring:
-				where.bySlug?.featuring ?
-					{
+			artist: where.bySlug
+				? ArtistService.formatWhereInput(where.bySlug.artist)
+				: undefined,
+			featuring: where.bySlug?.featuring
+				? {
 						every: {
 							OR: where.bySlug.featuring.map(
 								ArtistService.formatWhereInput,
 							),
 						},
-					}
-				:	undefined,
+				  }
+				: undefined,
 		};
 	}
 
@@ -307,28 +304,25 @@ export default class SongService extends RepositoryService<
 		return {
 			...what,
 			slug: what.name ? new Slug(what.name).toString() : undefined,
-			genres:
-				what.genres ?
-					{
+			genres: what.genres
+				? {
 						connect: what.genres.map((genre) =>
 							GenreService.formatWhereInput(genre),
 						),
-					}
-				:	undefined,
-			artist:
-				what.artist ?
-					{
+				  }
+				: undefined,
+			artist: what.artist
+				? {
 						connect: ArtistService.formatWhereInput(what.artist),
-					}
-				:	undefined,
-			featuring:
-				what.featuring ?
-					{
+				  }
+				: undefined,
+			featuring: what.featuring
+				? {
 						connect: what.featuring.map(
 							ArtistService.formatWhereInput,
 						),
-					}
-				:	undefined,
+				  }
+				: undefined,
 		};
 	}
 
@@ -609,16 +603,15 @@ export default class SongService extends RepositoryService<
 
 		return this.prismaService.song.findMany({
 			...buildPaginationParameters(pagination),
-			orderBy:
-				sort ?
-					this.formatSortingInput(sort)
-				:	{
+			orderBy: sort
+				? this.formatSortingInput(sort)
+				: {
 						_relevance: {
 							fields: ["slug"],
 							search: slug,
 							sort: "asc",
 						},
-					},
+				  },
 			include: this.formatInclude(include),
 			where: {
 				...this.formatManyWhereInput(where),

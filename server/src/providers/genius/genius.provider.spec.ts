@@ -29,32 +29,37 @@ describe("Genius Provider", () => {
 
 	describe("Get Artist Identifier", () => {
 		it("should get simple artist Identifier", async () => {
-			const metadata =
-				await geniusProvider.getArtistMetadataByName("Britney Spears");
+			const metadata = await geniusProvider.getArtistMetadataByName(
+				"Britney Spears",
+			);
 			expect(metadata.value).toBe("Britney-spears");
 			expect(metadata.description).toBeNull();
 		});
 		it("should get simple artist Identifier (2)", async () => {
-			const metadata =
-				await geniusProvider.getArtistMetadataByName("Moloko");
+			const metadata = await geniusProvider.getArtistMetadataByName(
+				"Moloko",
+			);
 			expect(metadata.value).toBe("Moloko");
 			expect(metadata.description).toBeNull();
 		});
 		it("should get simple artist Identifier (3)", async () => {
-			const metadata =
-				await geniusProvider.getArtistMetadataByName("Peplab");
+			const metadata = await geniusProvider.getArtistMetadataByName(
+				"Peplab",
+			);
 			expect(metadata.value).toBe("Peplab");
 			expect(metadata.description).toBeNull();
 		});
 		it("should get artist with special character Identifier", async () => {
-			const metadata =
-				await geniusProvider.getArtistMetadataByName("P!nk");
+			const metadata = await geniusProvider.getArtistMetadataByName(
+				"P!nk",
+			);
 			expect(metadata.value).toBe("P-nk");
 			expect(metadata.description).toBeNull();
 		});
 		it("should get artist with special character Identifier (1)", async () => {
-			const metadata =
-				await geniusProvider.getArtistMetadataByName("Björk");
+			const metadata = await geniusProvider.getArtistMetadataByName(
+				"Björk",
+			);
 			expect(metadata.value).toBe("Bjork");
 			expect(metadata.description).toBeNull();
 		});
@@ -155,8 +160,9 @@ describe("Genius Provider", () => {
 		//Skipping this tes tin CI as Action runner has been flagged as robot by Genius
 		if (process.env.GITHUB_ACTIONS != "true") {
 			it("should get song's lyrics", async () => {
-				const lyrics =
-					await geniusProvider.getSongLyrics("P-nk-m-ssundaztood");
+				const lyrics = await geniusProvider.getSongLyrics(
+					"P-nk-m-ssundaztood",
+				);
 
 				expect(
 					lyrics.startsWith(

@@ -116,7 +116,9 @@ const SongPage = (props: InferSSRProps<typeof getServerSideProps>) => {
 					router.push(
 						`/songs/${songIdentifier}/${tabName}`,
 						undefined,
-						{ shallow: true },
+						{
+							shallow: true,
+						},
 					);
 				}}
 				variant="scrollable"

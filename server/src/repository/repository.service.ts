@@ -22,11 +22,11 @@ export type ModelSelector<T extends {}> = Partial<Record<keyof T, boolean>>;
 type Select<T extends {}, Selector extends ModelSelector<T>> = Pick<
 	T,
 	keyof {
-		[key in keyof T as key extends keyof Selector ?
-			Selector[key] extends true ?
-				key
-			:	never
-		:	never]: T[key];
+		[key in keyof T as key extends keyof Selector
+			? Selector[key] extends true
+				? key
+				: never
+			: never]: T[key];
 	}
 >;
 
@@ -37,8 +37,9 @@ type ModelRelations<T extends AtomicModel> = Required<
 	Omit<
 		T,
 		keyof {
-			[key in keyof T as T[key] extends Primitive | Date ? key
-			:	never]: key;
+			[key in keyof T as T[key] extends Primitive | Date
+				? key
+				: never]: key;
 		}
 	>
 >;
@@ -60,13 +61,13 @@ type ORMGetterMethod<
 	AdditionalParams extends {},
 > = <
 	Params extends AdditionalParams,
-	ReturnType extends Model = Params extends (
-		{ include: infer RelationSelection }
-	) ?
-		RelationSelection extends ModelSelector<Relations> ?
-			Model & Select<Relations, RelationSelection>
-		:	Model
-	:	Model,
+	ReturnType extends Model = Params extends {
+		include: infer RelationSelection;
+	}
+		? RelationSelection extends ModelSelector<Relations>
+			? Model & Select<Relations, RelationSelection>
+			: Model
+		: Model,
 >(
 	args: Params,
 ) => Promise<Model | ReturnType>;
@@ -80,13 +81,13 @@ type ORMManyGetterMethod<
 	AdditionalParams extends {},
 > = <
 	Params extends AdditionalParams & { take?: number; skip?: number },
-	ReturnType extends Model = Params extends (
-		{ include: infer RelationSelection }
-	) ?
-		RelationSelection extends ModelSelector<Relations> ?
-			Model & Select<Relations, RelationSelection>
-		:	Model
-	:	Model,
+	ReturnType extends Model = Params extends {
+		include: infer RelationSelection;
+	}
+		? RelationSelection extends ModelSelector<Relations>
+			? Model & Select<Relations, RelationSelection>
+			: Model
+		: Model,
 >(
 	args: Params,
 ) => Promise<(Model | ReturnType)[]>;
