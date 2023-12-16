@@ -97,6 +97,14 @@ describe('Artist Service', () => {
 			expect(artists).toContainEqual(newArtist);
 		});
 
+		it("should shuffle artists", async () => {
+			const sort1 = await artistService.getMany({ }, { take: 10 }, {}, 123);
+			const sort2 = await artistService.getMany({ }, { take: 10 }, {}, 1234);
+			expect(sort1.length).toBe(sort2.length);
+			expect(sort1).toContainEqual(dummyRepository.artistA);
+			expect(sort1.map(({ id }) => id)).not.toBe(sort2.map(({ id }) => id));
+		});
+
 		it(('should return all artists, sorted by name'), async () => {
 			const artists = await artistService.getMany({}, {}, {}, { sortBy: 'name', order: 'asc' });
 			expect(artists.length).toBe(4);

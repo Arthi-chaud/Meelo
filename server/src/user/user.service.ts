@@ -36,7 +36,11 @@ export default class UserService extends RepositoryService<
 	constructor(
 		protected prismaService: PrismaService
 	) {
-		super(prismaService.user);
+		super(prismaService, 'user');
+	}
+
+	getTableName() {
+		return 'users';
 	}
 
 	private encryptPassword(plainTextPassword: string): string {

@@ -125,6 +125,15 @@ describe("Genre Service", () => {
 			expect(fetchedGenres[2]).toStrictEqual(dummyRepository.genreB);
 			expect(fetchedGenres[3]).toStrictEqual(dummyRepository.genreA);
 		});
+
+		it("should shuffle genres", async () => {
+			const sort1 = await genreService.getMany({ }, { take: 10 }, {}, 123);
+			const sort2 = await genreService.getMany({ }, { take: 10 }, {}, 1234);
+			expect(sort1.length).toBe(sort2.length);
+			expect(sort1).toContainEqual(dummyRepository.genreB);
+			expect(sort1.map(({ id }) => id)).not.toBe(sort2.map(({ id }) => id));
+		});
+
 		it("should get the genres by their names (starts with)", async () => {
 			const fetchedGenres = await genreService.getMany({
 				slug: { startsWith: 'my-genre' }

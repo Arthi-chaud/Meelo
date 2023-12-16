@@ -73,6 +73,16 @@ describe('File Service', () => {
 		});
 	});
 
+	describe('Get Files', () => {
+		it("should shuffle files", async () => {
+			const sort1 = await fileService.getMany({ }, { take: 10 }, {}, 123);
+			const sort2 = await fileService.getMany({ }, { take: 10 }, {}, 1234);
+			expect(sort1.length).toBe(sort2.length);
+			expect(sort1).toContainEqual(dummyRepository.fileB1_1);
+			expect(sort1.map(({ id }) => id)).not.toBe(sort2.map(({ id }) => id));
+		});
+	})
+
 	describe('Delete File', () => {
 		it('should delete a file (from id)', async () => {
 			await fileService.delete({ id: newFile.id });

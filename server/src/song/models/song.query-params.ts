@@ -54,6 +54,7 @@ namespace SongQueryParameters {
 		library: LibraryQueryParameters.WhereInput,
 		genre: GenreQueryParameters.WhereInput,
 		type?: SongType,
+		id: { in: number[] },
 		playCount: RequireExactlyOne<Record<'below' | 'exact' | 'moreThan', number>>,
 	}>>;
 

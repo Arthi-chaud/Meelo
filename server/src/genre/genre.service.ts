@@ -41,7 +41,11 @@ export default class GenreService extends RepositoryService<
 	constructor(
 		private prismaService: PrismaService,
 	) {
-		super(prismaService.genre);
+		super(prismaService, 'genre');
+	}
+
+	getTableName() {
+		return 'genres';
 	}
 
 	/**
@@ -83,6 +87,9 @@ export default class GenreService extends RepositoryService<
 	static formatManyWhereInput(where: GenreQueryParameters.ManyWhereInput) {
 		let query: Prisma.GenreWhereInput = {};
 
+		if (where.id) {
+			query = deepmerge(query, { id: where.id });
+		}
 		if (where.slug) {
 			query = deepmerge(query, {
 				slug: buildStringSearchParameters(where.slug)

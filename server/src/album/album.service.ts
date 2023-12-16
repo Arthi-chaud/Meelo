@@ -58,7 +58,11 @@ export default class AlbumService extends RepositoryService<
 		private parserService: ParserService,
 		private illustrationRepository: IllustrationRepository
 	) {
-		super(prismaService.album);
+		super(prismaService, 'album');
+	}
+
+	getTableName() {
+		return 'albums';
 	}
 
 	/**
@@ -137,6 +141,9 @@ export default class AlbumService extends RepositoryService<
 			name: buildStringSearchParameters(where.name),
 		};
 
+		if (where.id) {
+			query = deepmerge(query, { id: where.id });
+		}
 		if (where.related) {
 			query = deepmerge(query, {
 				NOT: this.formatWhereInput(where.related),

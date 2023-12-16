@@ -51,7 +51,11 @@ export default class FileService extends RepositoryService<
 		@Inject(forwardRef(() => LibraryService))
 		private libraryService: LibraryService
 	) {
-		super(prismaService.file);
+		super(prismaService, 'file');
+	}
+
+	getTableName() {
+		return 'files';
 	}
 
 	/**
@@ -103,10 +107,8 @@ export default class FileService extends RepositoryService<
 	static formatManyWhereInput(where: FileQueryParameters.ManyWhereInput) {
 		let query: Prisma.FileWhereInput = {};
 
-		if (where.ids) {
-			query = deepmerge(query, {
-				in: where.ids
-			});
+		if (where.id) {
+			query = deepmerge(query, { id: where.id });
 		}
 		if (where.library) {
 			query = deepmerge(query, {

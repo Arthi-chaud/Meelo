@@ -254,6 +254,13 @@ describe('Track Service', () => {
 			expect(tracks).toContainEqual(dummyRepository.trackC1_1);
 			expect(tracks.length).toBe(7);
 		});
+		it("should shuffle tracks", async () => {
+			const sort1 = await trackService.getMany({ }, { take: 10 }, {}, 123);
+			const sort2 = await trackService.getMany({ }, { take: 10 }, {}, 1234);
+			expect(sort1.length).toBe(sort2.length);
+			expect(sort1).toContainEqual(dummyRepository.trackA2_1);
+			expect(sort1.map(({ id }) => id)).not.toBe(sort2.map(({ id }) => id));
+		});
 		it('should retrieve all video tracks', async () => {
 			const tracks = await trackService.getMany({ type: TrackType.Video }, {}, {});
 

@@ -62,7 +62,11 @@ export default class ReleaseService extends RepositoryService<
 		private illustrationRepository: IllustrationRepository,
 		private discogsProvider: DiscogsProvider,
 	) {
-		super(prismaService.release);
+		super(prismaService, 'release');
+	}
+
+	getTableName() {
+		return 'releases';
 	}
 
 	/**
@@ -136,6 +140,9 @@ export default class ReleaseService extends RepositoryService<
 			name: buildStringSearchParameters(where.name)
 		};
 
+		if (where.id) {
+			query = deepmerge(query, { id: where.id });
+		}
 		if (where.library) {
 			query = deepmerge(query, {
 				tracks: {

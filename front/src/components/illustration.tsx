@@ -67,7 +67,7 @@ const Illustration = (props: IllustrationProps) => {
 		width: '100%', height: '100%',
 		position: 'relative', aspectRatio: props.aspectRatio?.toString() ?? '1',
 		justifyContent: 'center', alignItems: 'center',
-		display: loadingFailed || !url ? 'flex' : 'block'
+		display: loadingFailed || !url ? 'flex' : 'block',
 	}}>
 		{blurhash &&
 			<Fade in={!loadingCompleted && !loadingFailed} unmountOnExit>

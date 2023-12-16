@@ -62,7 +62,11 @@ export default class SongService extends RepositoryService<
 		@Inject(forwardRef(() => ParserService))
 		private parserService: ParserService,
 	) {
-		super(prismaService.song);
+		super(prismaService, 'song');
+	}
+
+	getTableName() {
+		return 'songs';
 	}
 
 	/**
@@ -157,6 +161,9 @@ export default class SongService extends RepositoryService<
 			type: where.type,
 		};
 
+		if (where.id) {
+			query = deepmerge(query, { id: where.id });
+		}
 		if (where.genre) {
 			query = deepmerge(query, {
 				genres: {

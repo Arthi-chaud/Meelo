@@ -47,7 +47,11 @@ export default class ArtistService extends RepositoryService<
 		private prismaService: PrismaService,
 		private illustrationRepository: IllustrationRepository,
 	) {
-		super(prismaService.artist);
+		super(prismaService, 'artist');
+	}
+
+	getTableName() {
+		return 'artists';
 	}
 
 	/**
@@ -109,8 +113,8 @@ export default class ArtistService extends RepositoryService<
 			name: buildStringSearchParameters(where.name),
 		};
 
-		if (where.ids) {
-			query = deepmerge(query, { in: where.ids.in });
+		if (where.id) {
+			query = deepmerge(query, { id: where.id });
 		}
 		if (where.library) {
 			query = deepmerge(query, {

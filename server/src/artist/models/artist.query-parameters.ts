@@ -32,7 +32,7 @@ namespace ArtistQueryParameters {
 	export type ManyWhereInput = Partial<RequireAtLeastOne<{
 		library: LibraryQueryParameters.WhereInput,
 		name: SearchStringInput,
-		ids: { in: Artist['id'][] },
+		id: { in: Artist['id'][] },
 		genre: GenreQueryParameters.WhereInput,
 		albumArtistOnly: boolean
 		album: AlbumQueryParameters.WhereInput

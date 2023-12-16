@@ -59,7 +59,11 @@ export default class TrackService extends RepositoryService<
 		private illustrationRepository: IllustrationRepository,
 		private prismaService: PrismaService
 	) {
-		super(prismaService.track);
+		super(prismaService, 'track');
+	}
+
+	getTableName() {
+		return 'tracks';
 	}
 
 	/**
@@ -124,6 +128,9 @@ export default class TrackService extends RepositoryService<
 			type: where.type
 		};
 
+		if (where.id) {
+			queryParameters = deepmerge(queryParameters, { id: where.id });
+		}
 		if (where.song) {
 			queryParameters = deepmerge(queryParameters, {
 				song: SongService.formatWhereInput(where.song)

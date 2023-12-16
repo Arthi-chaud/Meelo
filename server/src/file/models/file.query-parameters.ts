@@ -25,7 +25,7 @@ namespace FileQueryParameters {
 	 */
 	export type ManyWhereInput = Partial<RequireAtLeastOne<{
 		library: LibraryQueryParameters.WhereInput,
-		ids: File['id'][],
+		id: { in: File['id'][] },
 		paths: File['path'][],
 		registrationDate: SearchDateInput
 	}>>;

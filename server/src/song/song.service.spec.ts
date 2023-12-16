@@ -188,6 +188,13 @@ describe('Song Service', () => {
 	});
 
 	describe('Get Multiple Songs', () => {
+		it("should shuffle songs", async () => {
+			const sort1 = await songService.getMany({ }, { take: 10 }, {}, 123);
+			const sort2 = await songService.getMany({ }, { take: 10 }, {}, 1234);
+			expect(sort1.length).toBe(sort2.length);
+			expect(sort1).toContainEqual(dummyRepository.songB1);
+			expect(sort1.map(({ id }) => id)).not.toBe(sort2.map(({ id }) => id));
+		});
 		it('should get all the songs', async () => {
 			const songs = await songService.getMany({ });
 

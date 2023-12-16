@@ -42,7 +42,11 @@ export class LyricsService extends RepositoryService<
 		@Inject(forwardRef(() => ProviderService))
 		private providerService: ProviderService
 	) {
-		super(prismaService.lyrics);
+		super(prismaService, 'lyrics');
+	}
+
+	getTableName() {
+		return 'lyrics';
 	}
 
 	/**
@@ -86,7 +90,8 @@ export class LyricsService extends RepositoryService<
 
 	static formatManyWhereInput(input: LyricsQueryParameters.ManyWhereInput) {
 		return {
-			song: input.songs ? SongService.formatManyWhereInput(input.songs) : undefined
+			song: input.songs ? SongService.formatManyWhereInput(input.songs) : undefined,
+			id: input.id
 		};
 	}
 

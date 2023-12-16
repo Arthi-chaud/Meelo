@@ -44,7 +44,11 @@ export default class PlaylistService extends RepositoryService<
 		private songService: SongService,
 		private prismaService: PrismaService
 	) {
-		super(prismaService.playlist);
+		super(prismaService, 'playlist');
+	}
+
+	getTableName() {
+		return 'playlists';
 	}
 
 	protected onCreationFailure(
@@ -101,6 +105,7 @@ export default class PlaylistService extends RepositoryService<
 
 	formatManyWhereInput(input: PlaylistQueryParameters.ManyWhereInput): Prisma.PlaylistWhereInput {
 		return {
+			id: input.id,
 			entries: input.song ? {
 				some: {
 					song: SongService.formatWhereInput(input.song)

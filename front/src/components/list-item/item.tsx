@@ -34,6 +34,7 @@ const ListItem = (props: ListItemProps) => {
 
 	return <MUIListItem disablePadding secondaryAction={props.trailing}>
 		<ListItemButton {...{ onClick: props.onClick,
+			sx: { paddingX: 1 },
 			component: props.href ? Link : undefined, href: props.href }
 		}>
 			<ListItemAvatar sx={{ marginRight: 2 }}>

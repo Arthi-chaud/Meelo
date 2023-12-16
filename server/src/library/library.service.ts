@@ -42,7 +42,11 @@ export default class LibraryService extends RepositoryService<
 		private tasksService: TasksRunner,
 		prismaService: PrismaService,
 	) {
-		super(prismaService.library);
+		super(prismaService, 'library');
+	}
+
+	getTableName() {
+		return 'libraries';
 	}
 
 	/**
@@ -83,7 +87,8 @@ export default class LibraryService extends RepositoryService<
 
 	static formatManyWhereInput(input: LibraryQueryParameters.ManyWhereInput) {
 		return {
-			name: input.name ? buildStringSearchParameters(input.name) : undefined
+			name: input.name ? buildStringSearchParameters(input.name) : undefined,
+			id: input.id
 		};
 	}
 

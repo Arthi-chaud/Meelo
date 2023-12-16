@@ -1,4 +1,6 @@
-import { Box, Stack } from "@mui/material";
+import {
+	Box, Grid, Stack
+} from "@mui/material";
 import API from "../api/api";
 import prepareSSR, { InferSSRProps } from "../ssr";
 import { useInfiniteQuery } from "../api/use-query";
@@ -12,6 +14,7 @@ import ReleaseTile from "../components/tile/release-tile";
 import Translate from "../i18n/translate";
 import Fade from "../components/fade";
 import BackgroundBlurhash from "../components/blurhash-background";
+import AlbumHighlightCard from "../components/highlight-card/album-highlight-card";
 
 const newlyAddedAlbumsQuery = API.getAlbums(
 	{ },
@@ -42,6 +45,12 @@ const mostListenedSongsQuery = API.getSongs(
 	['artist', 'featuring']
 );
 
+const albumRecommendations = (seed: number) => API.getAlbums(
+	{ random: seed, type: 'StudioRecording' },
+	undefined,
+	['artist', 'genres', 'externalIds']
+);
+
 const HomePageSection = <T, >(
 	props: {
 		heading: string | JSX.Element,
@@ -63,14 +72,20 @@ const HomePageSection = <T, >(
 };
 
 export const getServerSideProps = prepareSSR(() => {
+	const seed = Math.floor(Math.random() * 10000000);
+
 	return {
-		additionalProps: { blurhashIndex: Math.random() },
+		additionalProps: {
+			blurhashIndex: Math.random(),
+			recommendationSeed: seed
+		},
 		infiniteQueries: [
 			newlyAddedArtistsQuery,
 			newestAlbumsQuery,
 			newlyAddedAlbumsQuery,
 			newlyAddedReleasesQuery,
-			mostListenedSongsQuery
+			mostListenedSongsQuery,
+			albumRecommendations(seed),
 		]
 	};
 });
@@ -81,6 +96,10 @@ const HomePage = (props: InferSSRProps<typeof getServerSideProps>) => {
 	const newlyAddedReleases = useInfiniteQuery(() => newlyAddedReleasesQuery);
 	const mostListenedSongs = useInfiniteQuery(() => mostListenedSongsQuery);
 	const newestAlbums = useInfiniteQuery(() => newestAlbumsQuery);
+	const featuredAlbums = useInfiniteQuery(
+		albumRecommendations,
+		props.additionalProps?.recommendationSeed ?? Math.floor(Math.random() * 10000000)
+	);
 	const tileRowWindowSize = {
 		xs: 3,
 		sm: 5,
@@ -120,17 +139,28 @@ const HomePage = (props: InferSSRProps<typeof getServerSideProps>) => {
 					} windowSize={tileRowWindowSize}/>}
 				/>
 				<HomePageSection
-					heading={<Translate translationKey='latestAlbums'/>}
-					queryData={newestAlbums}
-					render={(albums) => <TileRow tiles={
-						albums.map((album, index) => <AlbumTile key={index} album={album}/>)
-					} windowSize={tileRowWindowSize}/>}
-				/>
-				<HomePageSection
 					heading={<Translate translationKey='newlyAddedArtists'/>}
 					queryData={newlyAddedArtists}
 					render={(artists) => <TileRow tiles={
 						artists.map((artist, index) => <ArtistTile key={index} artist={artist}/>)
+					} windowSize={tileRowWindowSize}/>}
+				/>
+				<HomePageSection
+					heading={<Translate translationKey='featuredAlbums'/>}
+					queryData={featuredAlbums}
+					render={(albums) => <Grid container spacing={3}>
+						{albums.slice(0, 6).map((album, index) => (
+							<Grid item xs={12} md={6} xl={4} key={index}>
+								<AlbumHighlightCard album={album} />
+							</Grid>
+						))}
+					</Grid>}
+				/>
+				<HomePageSection
+					heading={<Translate translationKey='latestAlbums'/>}
+					queryData={newestAlbums}
+					render={(albums) => <TileRow tiles={
+						albums.map((album, index) => <AlbumTile key={index} album={album}/>)
 					} windowSize={tileRowWindowSize}/>}
 				/>
 				<HomePageSection

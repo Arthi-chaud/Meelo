@@ -58,6 +58,13 @@ describe('Playlist Service', () => {
 	});
 
 	describe('Get Many Playlists', () => {
+		it("should shuffle playlists", async () => {
+			const sort1 = await playlistService.getMany({ }, { take: 10 }, {}, 123);
+			const sort2 = await playlistService.getMany({ }, { take: 10 }, {}, 1234);
+			expect(sort1.length).toBe(sort2.length);
+			expect(sort1).toContainEqual(dummyRepository.playlist3);
+			expect(sort1.map(({ id }) => id)).not.toBe(sort2.map(({ id }) => id));
+		});
 		it('Should sort playlists by name', async () => {
 			const playlists = await playlistService.getMany({ }, {}, {}, { order: 'asc', sortBy: 'name' });
 

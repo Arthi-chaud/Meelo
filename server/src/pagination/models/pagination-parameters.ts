@@ -17,7 +17,6 @@ export class PaginationParameters {
 
 	@ApiPropertyOptional({
 		description: 'Number of items to skip',
-		default: 0
 	})
 	@IsPositive()
 	@IsOptional()
