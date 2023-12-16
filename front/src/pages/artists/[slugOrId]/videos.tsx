@@ -12,33 +12,50 @@ import BackgroundBlurhash from "../../../components/blurhash-background";
 
 export const getServerSideProps = prepareSSR((context) => {
 	const artistIdentifier = getSlugOrId(context.params);
-	const order = getOrderParams(context.query.order) ?? 'asc';
+	const order = getOrderParams(context.query.order) ?? "asc";
 	const sortBy = getSortingFieldParams(context.query.sortBy, SongSortingKeys);
 
 	return {
 		additionalProps: { artistIdentifier, order, sortBy },
 		queries: [API.getArtist(artistIdentifier)],
-		infiniteQueries: [API.getVideos({ artist: artistIdentifier }, { sortBy: 'name', order: 'asc' }, ['artist', 'featuring'])]
+		infiniteQueries: [
+			API.getVideos(
+				{ artist: artistIdentifier },
+				{ sortBy: "name", order: "asc" },
+				["artist", "featuring"],
+			),
+		],
 	};
 });
 
-const ArtistSongPage = (
-	props: InferSSRProps<typeof getServerSideProps>
-) => {
+const ArtistSongPage = (props: InferSSRProps<typeof getServerSideProps>) => {
 	const router = useRouter();
-	const artistIdentifier = props.additionalProps?.artistIdentifier ?? getSlugOrId(router.query);
-	const artist = useQuery(API.getArtist, props.additionalProps?.artistIdentifier);
+	const artistIdentifier =
+		props.additionalProps?.artistIdentifier ?? getSlugOrId(router.query);
+	const artist = useQuery(
+		API.getArtist,
+		props.additionalProps?.artistIdentifier,
+	);
 
-	return <>
-		<BackgroundBlurhash blurhash={artist.data?.illustration?.blurhash} />
-		<ArtistRelationPageHeader artistSlugOrId={artistIdentifier}/>
-		<InfiniteVideoView
-			initialSortingField={props.additionalProps?.sortBy}
-			initialSortingOrder={props.additionalProps?.order}
-			query={(sort) => API.getVideos({ artist: artistIdentifier }, sort, ['artist', 'featuring'])}
-			formatSubtitle={(song) => formatDuration(song.track.duration)}
-		/>
-	</>;
+	return (
+		<>
+			<BackgroundBlurhash
+				blurhash={artist.data?.illustration?.blurhash}
+			/>
+			<ArtistRelationPageHeader artistSlugOrId={artistIdentifier} />
+			<InfiniteVideoView
+				initialSortingField={props.additionalProps?.sortBy}
+				initialSortingOrder={props.additionalProps?.order}
+				query={(sort) =>
+					API.getVideos({ artist: artistIdentifier }, sort, [
+						"artist",
+						"featuring",
+					])
+				}
+				formatSubtitle={(song) => formatDuration(song.track.duration)}
+			/>
+		</>
+	);
 };
 
 export default ArtistSongPage;

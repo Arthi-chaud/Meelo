@@ -1,5 +1,9 @@
 import {
-	ArgumentsHost, Catch, ExceptionFilter, HttpStatus, NotFoundException
+	ArgumentsHost,
+	Catch,
+	ExceptionFilter,
+	HttpStatus,
+	NotFoundException,
 } from "@nestjs/common";
 
 @Catch(NotFoundException)
@@ -8,11 +12,9 @@ export default class NotFoundExceptionFilter implements ExceptionFilter {
 		const ctx = host.switchToHttp();
 		const response = ctx.getResponse();
 
-		response
-			.status(HttpStatus.NOT_FOUND)
-			.json({
-				statusCode: HttpStatus.NOT_FOUND,
-				message: "Route not found."
-			});
+		response.status(HttpStatus.NOT_FOUND).json({
+			statusCode: HttpStatus.NOT_FOUND,
+			message: "Route not found.",
+		});
 	}
 }

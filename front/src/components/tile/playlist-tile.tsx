@@ -5,17 +5,23 @@ import PlaylistContextualMenu from "../contextual-menu/playlist-contextual-menu"
 import { PlaylistIcon } from "../icons";
 
 const PlaylistTile = (props: { playlist: Playlist }) => {
-	return <Tile
-		contextualMenu={<PlaylistContextualMenu playlist={props.playlist}/>}
-		title={props.playlist.name}
-		href={`/playlists/${props.playlist.slug}`}
-		illustration={<Illustration
-			illustration={props.playlist.illustration}
-			imgProps={{ objectFit: "cover" }}
-			quality="med"
-			fallback={<PlaylistIcon />}/>
-		}
-	/>;
+	return (
+		<Tile
+			contextualMenu={
+				<PlaylistContextualMenu playlist={props.playlist} />
+			}
+			title={props.playlist.name}
+			href={`/playlists/${props.playlist.slug}`}
+			illustration={
+				<Illustration
+					illustration={props.playlist.illustration}
+					imgProps={{ objectFit: "cover" }}
+					quality="med"
+					fallback={<PlaylistIcon />}
+				/>
+			}
+		/>
+	);
 };
 
 export default PlaylistTile;

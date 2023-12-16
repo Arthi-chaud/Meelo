@@ -1,24 +1,32 @@
-import { Injectable } from '@nestjs/common';
-import { JwtService } from '@nestjs/jwt';
-import { User } from 'src/prisma/models';
-import UserService from 'src/user/user.service';
-import { DisabledUserAccountException, UnknownUserException } from './authentication.exception';
-import JwtPayload from './models/jwt.payload';
-import JwtResponse from './models/jwt.response';
+import { Injectable } from "@nestjs/common";
+import { JwtService } from "@nestjs/jwt";
+import { User } from "src/prisma/models";
+import UserService from "src/user/user.service";
+import {
+	DisabledUserAccountException,
+	UnknownUserException,
+} from "./authentication.exception";
+import JwtPayload from "./models/jwt.payload";
+import JwtResponse from "./models/jwt.response";
 
 @Injectable()
 export default class AuthenticationService {
 	constructor(
 		private userService: UserService,
-		private jwtService: JwtService
-	) { }
+		private jwtService: JwtService,
+	) {}
 
-	async validateUser(username: string, plainTextPassword: string): Promise<User> {
+	async validateUser(
+		username: string,
+		plainTextPassword: string,
+	): Promise<User> {
 		try {
-			const requestedUser = await this.userService.get({ byCredentials: {
-				name: username,
-				password: plainTextPassword
-			} });
+			const requestedUser = await this.userService.get({
+				byCredentials: {
+					name: username,
+					password: plainTextPassword,
+				},
+			});
 
 			if (!requestedUser.enabled) {
 				throw new DisabledUserAccountException();
@@ -36,7 +44,7 @@ export default class AuthenticationService {
 		const payload: JwtPayload = { name: user.name, id: user.id };
 
 		return {
-			access_token: this.jwtService.sign(payload)
+			access_token: this.jwtService.sign(payload),
 		};
 	}
 }

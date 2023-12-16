@@ -12,58 +12,65 @@ import { EditIcon } from "../icons";
 import Song, { SongType } from "../../models/song";
 
 const SongTypeForm = (props: {
-	defaultValue: SongType,
-	onSelect: (type: SongType) => void
+	defaultValue: SongType;
+	onSelect: (type: SongType) => void;
 }) => {
 	const [currentType, setType] = useState(props.defaultValue);
 
-	return <>
-		<Grid container spacing={2} justifyContent='center'>
-			{SongType.filter((type) => type != 'Unknown').map((type) => (
-				<Grid item key={type}>
-					<Chip
-						label={translate(type)}
-						variant={type == currentType ? "filled" : "outlined"}
-						onClick={() => {
-							setType(type);
-							props.onSelect(type);
-						}}
-					/>
-				</Grid>
-			))}
-		</Grid>
-	</>;
+	return (
+		<>
+			<Grid container spacing={2} justifyContent="center">
+				{SongType.filter((type) => type != "Unknown").map((type) => (
+					<Grid item key={type}>
+						<Chip
+							label={translate(type)}
+							variant={
+								type == currentType ? "filled" : "outlined"
+							}
+							onClick={() => {
+								setType(type);
+								props.onSelect(type);
+							}}
+						/>
+					</Grid>
+				))}
+			</Grid>
+		</>
+	);
 };
 
 const ChangeSongType = (
 	song: Song,
 	queryClient: QueryClient,
-	confirm: ReturnType<typeof useConfirm>
+	confirm: ReturnType<typeof useConfirm>,
 ): Action => {
 	const mutation = useMutation((newType: SongType) => {
 		return API.updateSong(song.id, newType)
 			.then(() => {
-				toast.success('Update successful!');
-				queryClient.client.invalidateQueries('songs');
-				queryClient.client.invalidateQueries('release');
-				queryClient.client.invalidateQueries('bsides');
+				toast.success("Update successful!");
+				queryClient.client.invalidateQueries("songs");
+				queryClient.client.invalidateQueries("release");
+				queryClient.client.invalidateQueries("bsides");
 			})
 			.catch((error: Error) => toast.error(error.message));
 	});
 
 	return {
-		label: 'changeSongType',
-		icon: <EditIcon/>,
+		label: "changeSongType",
+		icon: <EditIcon />,
 		disabled: store.getState().user.user?.admin !== true,
-		onClick: () => confirm({
-			title: translate('changeSongType'),
-			description: <SongTypeForm
-				defaultValue={song.type}
-				onSelect={(type) => mutation.mutate(type)}
-			/>,
-			cancellationButtonProps: { sx: { display: 'none' } },
-			confirmationText: translate('done'),
-		})
+		onClick: () =>
+			confirm({
+				title: translate("changeSongType"),
+				description: (
+					<SongTypeForm
+						defaultValue={song.type}
+						onSelect={(type) => mutation.mutate(type)}
+					/>
+				),
+				cancellationButtonProps: { sx: { display: "none" } },
+				confirmationText: translate("done"),
+			}),
 	};
 };
 

@@ -1,6 +1,6 @@
-export const LayoutOptions = ['grid', 'list'] as const;
+export const LayoutOptions = ["grid", "list"] as const;
 
-export type LayoutOption = typeof LayoutOptions[number];
+export type LayoutOption = (typeof LayoutOptions)[number];
 
 export const getLayoutParams = (input: any) => {
 	if (Array.isArray(input)) {

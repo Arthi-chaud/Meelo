@@ -4,8 +4,13 @@
  * @param toKeep the keys to keep anyway
  * @returns the filtered keys
  */
-export function filterAtomicRelationInclude<Key extends string>(keys: readonly Key[], toKeep?: Key[]) {
+export function filterAtomicRelationInclude<Key extends string>(
+	keys: readonly Key[],
+	toKeep?: Key[],
+) {
 	const keysCopy = Array.from(keys);
 
-	return keysCopy.filter((key) => toKeep?.includes(key) || !key.endsWith('s'));
+	return keysCopy.filter(
+		(key) => toKeep?.includes(key) || !key.endsWith("s"),
+	);
 }

@@ -17,7 +17,7 @@ export default class ProvidersSettings {
 	 */
 	@ApiProperty({
 		type: GeniusSettings,
-		required: false
+		required: false,
 	})
 	@Type(() => GeniusSettings)
 	@ValidateNested()
@@ -29,7 +29,7 @@ export default class ProvidersSettings {
 	 */
 	@ApiProperty({
 		type: MusicBrainzSettings,
-		required: false
+		required: false,
 	})
 	@Type(() => MusicBrainzSettings)
 	@ValidateNested()
@@ -41,7 +41,7 @@ export default class ProvidersSettings {
 	 */
 	@ApiProperty({
 		type: DiscogsSettings,
-		required: false
+		required: false,
 	})
 	@Type(() => DiscogsSettings)
 	@ValidateNested()
@@ -53,7 +53,7 @@ export default class ProvidersSettings {
 	 */
 	@ApiProperty({
 		type: WikipediaSettings,
-		required: false
+		required: false,
 	})
 	@Type(() => WikipediaSettings)
 	@ValidateNested()
@@ -65,7 +65,7 @@ export default class ProvidersSettings {
 	 */
 	@ApiProperty({
 		type: MetacriticSettings,
-		required: false
+		required: false,
 	})
 	@Type(() => MetacriticSettings)
 	@ValidateNested()
@@ -77,7 +77,7 @@ export default class ProvidersSettings {
 	 */
 	@ApiProperty({
 		type: AllMusicSettings,
-		required: false
+		required: false,
 	})
 	@Type(() => AllMusicSettings)
 	@ValidateNested()

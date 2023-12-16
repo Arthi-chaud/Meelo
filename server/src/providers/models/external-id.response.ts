@@ -1,33 +1,31 @@
 import { ApiProperty } from "@nestjs/swagger";
 import ResponseBuilderInterceptor from "src/response/interceptors/response.interceptor";
 import ProviderService from "../provider.service";
-import {
-	Inject, Injectable, forwardRef
-} from "@nestjs/common";
+import { Inject, Injectable, forwardRef } from "@nestjs/common";
 import ProviderResponse from "./provider.response";
 import ExternalId from "./external-id";
 
 export default class ExternalIdResponse {
 	@ApiProperty({
 		type: ProviderResponse,
-		description: 'External Provider'
+		description: "External Provider",
 	})
 	provider: ProviderResponse;
 
 	@ApiProperty({
-		description: 'Actual ID of the resource from the provider'
+		description: "Actual ID of the resource from the provider",
 	})
 	value: string;
 
 	@ApiProperty({
 		nullable: true,
-		description: 'Description of the resource, from the provider'
+		description: "Description of the resource, from the provider",
 	})
 	description: string | null;
 
 	@ApiProperty({
 		description: "Provider's URL to the resource",
-		nullable: true
+		nullable: true,
 	})
 	url: string | null;
 }
@@ -35,16 +33,19 @@ export default class ExternalIdResponse {
 export class AlbumExternalIdResponse extends ExternalIdResponse {
 	@ApiProperty({
 		description: "Rating of the resource, from the provider",
-		nullable: true
+		nullable: true,
 	})
 	rating: number | null;
 }
 
 @Injectable()
-export class ExternalIdResponseBuilder extends ResponseBuilderInterceptor<ExternalId, ExternalIdResponse> {
+export class ExternalIdResponseBuilder extends ResponseBuilderInterceptor<
+	ExternalId,
+	ExternalIdResponse
+> {
 	constructor(
 		@Inject(forwardRef(() => ProviderService))
-		private providerService: ProviderService
+		private providerService: ProviderService,
 	) {
 		super();
 	}
@@ -52,17 +53,19 @@ export class ExternalIdResponseBuilder extends ResponseBuilderInterceptor<Extern
 	returnType = ExternalIdResponse;
 
 	async buildResponse(externalId: ExternalId): Promise<ExternalIdResponse> {
-		const provider = this.providerService.getProviderById(externalId.providerId);
+		const provider = this.providerService.getProviderById(
+			externalId.providerId,
+		);
 		let url: string | null = null;
 
 		try {
-			if ('artistId' in externalId) {
+			if ("artistId" in externalId) {
 				url = provider.getArtistURL(externalId.value);
-			} else if ('albumId' in externalId) {
+			} else if ("albumId" in externalId) {
 				url = provider.getAlbumURL(externalId.value);
-			} else if ('songId' in externalId) {
+			} else if ("songId" in externalId) {
 				url = provider.getSongURL(externalId.value);
-			} else if ('releaseId' in externalId) {
+			} else if ("releaseId" in externalId) {
 				url = provider.getReleaseURL(externalId.value);
 			}
 		} catch {
@@ -78,10 +81,10 @@ export class ExternalIdResponseBuilder extends ResponseBuilderInterceptor<Extern
 			},
 			value: externalId.value,
 			description: externalId.description,
-			url: url
+			url: url,
 		};
 
-		if ('albumId' in externalId) {
+		if ("albumId" in externalId) {
 			(response as AlbumExternalIdResponse).rating = externalId.rating;
 		}
 		return response;

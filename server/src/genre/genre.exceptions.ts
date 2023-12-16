@@ -1,4 +1,7 @@
-import { InvalidRequestException, NotFoundException } from "src/exceptions/meelo-exception";
+import {
+	InvalidRequestException,
+	NotFoundException,
+} from "src/exceptions/meelo-exception";
 import type Slug from "src/slug/slug";
 
 export class GenreNotFoundException extends NotFoundException {

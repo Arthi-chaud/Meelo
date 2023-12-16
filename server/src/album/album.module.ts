@@ -1,15 +1,15 @@
-import { Module, forwardRef } from '@nestjs/common';
-import AlbumService from './album.service';
-import ArtistModule from 'src/artist/artist.module';
-import PrismaModule from 'src/prisma/prisma.module';
-import AlbumController from './album.controller';
-import ReleaseModule from 'src/release/release.module';
-import IllustrationModule from 'src/illustration/illustration.module';
-import TrackModule from 'src/track/track.module';
+import { Module, forwardRef } from "@nestjs/common";
+import AlbumService from "./album.service";
+import ArtistModule from "src/artist/artist.module";
+import PrismaModule from "src/prisma/prisma.module";
+import AlbumController from "./album.controller";
+import ReleaseModule from "src/release/release.module";
+import IllustrationModule from "src/illustration/illustration.module";
+import TrackModule from "src/track/track.module";
 import GenreModule from "../genre/genre.module";
-import { AlbumResponseBuilder } from './models/album.response';
-import ProvidersModule from 'src/providers/providers.module';
-import ScannerModule from 'src/scanner/scanner.module';
+import { AlbumResponseBuilder } from "./models/album.response";
+import ProvidersModule from "src/providers/providers.module";
+import ScannerModule from "src/scanner/scanner.module";
 
 @Module({
 	imports: [
@@ -24,6 +24,6 @@ import ScannerModule from 'src/scanner/scanner.module';
 	],
 	exports: [AlbumService, AlbumResponseBuilder],
 	providers: [AlbumService, AlbumResponseBuilder],
-	controllers: [AlbumController]
+	controllers: [AlbumController],
 })
 export default class AlbumModule {}

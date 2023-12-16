@@ -11,39 +11,61 @@ import { useQuery } from "../../../api/use-query";
 import BackgroundBlurhash from "../../../components/blurhash-background";
 
 const defaultSort = {
-	sortBy: 'releaseDate',
-	order: 'desc'
+	sortBy: "releaseDate",
+	order: "desc",
 } as const;
 
 export const getServerSideProps = prepareSSR((context) => {
 	const artistIdentifier = getSlugOrId(context.params);
-	const defaultLayout = getLayoutParams(context.query.view) ?? 'grid';
+	const defaultLayout = getLayoutParams(context.query.view) ?? "grid";
 
 	return {
 		additionalProps: { artistIdentifier, defaultLayout },
 		queries: [API.getArtist(artistIdentifier)],
-		infiniteQueries: [API.getAlbums({ artist: artistIdentifier }, defaultSort, ['artist'])]
+		infiniteQueries: [
+			API.getAlbums({ artist: artistIdentifier }, defaultSort, [
+				"artist",
+			]),
+		],
 	};
 });
 
 const ArtistAlbumsPage = (props: InferSSRProps<typeof getServerSideProps>) => {
 	const router = useRouter();
-	const artist = useQuery(API.getArtist, props.additionalProps?.artistIdentifier);
-	const artistIdentifier = props.additionalProps?.artistIdentifier ?? getSlugOrId(router.query);
+	const artist = useQuery(
+		API.getArtist,
+		props.additionalProps?.artistIdentifier,
+	);
+	const artistIdentifier =
+		props.additionalProps?.artistIdentifier ?? getSlugOrId(router.query);
 
-	return <Box sx={{ width: '100%' }}>
-		<BackgroundBlurhash blurhash={artist.data?.illustration?.blurhash} />
-		<ArtistRelationPageHeader artistSlugOrId={artistIdentifier}/>
-		<InfiniteAlbumView
-			defaultLayout={props.additionalProps?.defaultLayout}
-			initialSortingField={defaultSort.sortBy}
-			initialSortingOrder={defaultSort.order}
-			formatSubtitle={(album) => getYear(album.releaseDate)?.toString() ?? ''}
-			query={({ sortBy, order, library, type }) => API.getAlbums(
-				{ artist: artistIdentifier, type, library: library ?? undefined }, { sortBy, order }, ['artist']
-			)}
-		/>
-	</Box>;
+	return (
+		<Box sx={{ width: "100%" }}>
+			<BackgroundBlurhash
+				blurhash={artist.data?.illustration?.blurhash}
+			/>
+			<ArtistRelationPageHeader artistSlugOrId={artistIdentifier} />
+			<InfiniteAlbumView
+				defaultLayout={props.additionalProps?.defaultLayout}
+				initialSortingField={defaultSort.sortBy}
+				initialSortingOrder={defaultSort.order}
+				formatSubtitle={(album) =>
+					getYear(album.releaseDate)?.toString() ?? ""
+				}
+				query={({ sortBy, order, library, type }) =>
+					API.getAlbums(
+						{
+							artist: artistIdentifier,
+							type,
+							library: library ?? undefined,
+						},
+						{ sortBy, order },
+						["artist"],
+					)
+				}
+			/>
+		</Box>
+	);
 };
 
 export default ArtistAlbumsPage;

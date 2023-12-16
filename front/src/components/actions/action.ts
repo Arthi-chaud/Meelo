@@ -9,9 +9,11 @@ type Action = {
 	onClick?: () => void;
 	label: TranslationKey;
 	icon?: JSX.Element;
-} & Partial<RequireExactlyOne<{
-	href: string;
-	dialog: (controls: { close: () => void }) => JSX.Element;
-}>>
+} & Partial<
+	RequireExactlyOne<{
+		href: string;
+		dialog: (controls: { close: () => void }) => JSX.Element;
+	}>
+>;
 
 export default Action;

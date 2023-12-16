@@ -11,81 +11,122 @@ import ReleaseService from "src/release/release.service";
 import SettingsModule from "src/settings/settings.module";
 import IllustrationService from "./illustration.service";
 import IllustrationModule from "./illustration.module";
-import * as fs from 'fs';
+import * as fs from "fs";
 import TestPrismaService from "test/test-prisma.service";
 import ProvidersModule from "src/providers/providers.module";
 
 jest.setTimeout(120000);
 
-describe('Illustration Service', () => {
+describe("Illustration Service", () => {
 	let illustrationService: IllustrationService;
 	let releaseService: ReleaseService;
 	let albumService: AlbumService;
-	const baseMetadataFolder = 'test/assets/metadata';
+	const baseMetadataFolder = "test/assets/metadata";
 	let dummyRepository: TestPrismaService;
 
 	let module: TestingModule;
 	beforeAll(async () => {
-		fs.rm('test/assets/metadata', { recursive: true, force: true }, () => {})
+		fs.rm(
+			"test/assets/metadata",
+			{ recursive: true, force: true },
+			() => {},
+		);
 		module = await createTestingModule({
-			imports: [HttpModule, FileManagerModule, IllustrationModule, PrismaModule, ArtistModule, ScannerModule, SettingsModule, ProvidersModule],
-		}).overrideProvider(PrismaService).useClass(TestPrismaService).compile();
-		illustrationService = module.get<IllustrationService>(IllustrationService);
+			imports: [
+				HttpModule,
+				FileManagerModule,
+				IllustrationModule,
+				PrismaModule,
+				ArtistModule,
+				ScannerModule,
+				SettingsModule,
+				ProvidersModule,
+			],
+		})
+			.overrideProvider(PrismaService)
+			.useClass(TestPrismaService)
+			.compile();
+		illustrationService =
+			module.get<IllustrationService>(IllustrationService);
 		releaseService = module.get<ReleaseService>(ReleaseService);
 		albumService = module.get<AlbumService>(AlbumService);
 		dummyRepository = module.get(PrismaService);
-		
+
 		await dummyRepository.onModuleInit();
 	});
 
 	afterAll(() => {
 		module.close();
-		fs.rm('test/assets/metadata', { recursive: true, force: true }, () => {})
+		fs.rm(
+			"test/assets/metadata",
+			{ recursive: true, force: true },
+			() => {},
+		);
 	});
 
-	it('should be defined', () => {
+	it("should be defined", () => {
 		expect(albumService).toBeDefined();
 		expect(illustrationService).toBeDefined();
 		expect(releaseService).toBeDefined();
 	});
 
-	describe('Build Illustration paths', () => {
-
-		describe('Illustration extraction', () => {
+	describe("Build Illustration paths", () => {
+		describe("Illustration extraction", () => {
 			const outPath = `${baseMetadataFolder}/illustration.jpg`;
 			it("should write data to file", async () => {
-				if (fs.existsSync(outPath))
-					fs.rmSync(outPath);
-				illustrationService['saveIllustration'](Buffer.from('ABC'), outPath);
+				if (fs.existsSync(outPath)) fs.rmSync(outPath);
+				illustrationService["saveIllustration"](
+					Buffer.from("ABC"),
+					outPath,
+				);
 				expect(fs.existsSync(outPath)).toBe(true);
-				expect(fs.readFileSync(outPath)).toStrictEqual(Buffer.from('ABC'));
+				expect(fs.readFileSync(outPath)).toStrictEqual(
+					Buffer.from("ABC"),
+				);
 			});
 			it("should re-write data to file", async () => {
-				illustrationService['saveIllustration'](Buffer.from('ABCDE'), outPath);
+				illustrationService["saveIllustration"](
+					Buffer.from("ABCDE"),
+					outPath,
+				);
 				expect(fs.existsSync(outPath)).toBe(true);
-				expect(fs.readFileSync(outPath)).toStrictEqual(Buffer.from('ABCDE'));
+				expect(fs.readFileSync(outPath)).toStrictEqual(
+					Buffer.from("ABCDE"),
+				);
 			});
 
 			it("should extract the illustration to the file, with success status", async () => {
 				fs.rmSync(outPath);
-				const status = await illustrationService['saveIllustrationWithStatus'](Buffer.from('ABC'), outPath);
+				const status = await illustrationService[
+					"saveIllustrationWithStatus"
+				](Buffer.from("ABC"), outPath);
 				expect(fs.existsSync(outPath)).toBe(true);
-				expect(fs.readFileSync(outPath)).toStrictEqual(Buffer.from('ABC'));
-				expect(status).toBe('extracted');
+				expect(fs.readFileSync(outPath)).toStrictEqual(
+					Buffer.from("ABC"),
+				);
+				expect(status).toBe("extracted");
 			});
 
 			it("should not extract the illustration to the file, with 'already-extracted' status", async () => {
-				const status = await illustrationService['saveIllustrationWithStatus'](Buffer.from('ABC'), outPath);
+				const status = await illustrationService[
+					"saveIllustrationWithStatus"
+				](Buffer.from("ABC"), outPath);
 				expect(fs.existsSync(outPath)).toBe(true);
-				expect(fs.readFileSync(outPath)).toStrictEqual(Buffer.from('ABC'));
-				expect(status).toBe('already-extracted');
+				expect(fs.readFileSync(outPath)).toStrictEqual(
+					Buffer.from("ABC"),
+				);
+				expect(status).toBe("already-extracted");
 			});
 
 			it("should not extract the illustration to the file, with 'different-illustration' status", async () => {
-				const status = await illustrationService['saveIllustrationWithStatus'](Buffer.from('ABCD'), outPath);
+				const status = await illustrationService[
+					"saveIllustrationWithStatus"
+				](Buffer.from("ABCD"), outPath);
 				expect(fs.existsSync(outPath)).toBe(true);
-				expect(fs.readFileSync(outPath)).toStrictEqual(Buffer.from('ABC'));
-				expect(status).toBe('different-illustration');
+				expect(fs.readFileSync(outPath)).toStrictEqual(
+					Buffer.from("ABC"),
+				);
+				expect(status).toBe("different-illustration");
 			});
 		});
 	});

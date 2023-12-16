@@ -1,6 +1,6 @@
 import API from "../../api/api";
 import { TrackWithRelations } from "../../models/track";
-import Illustration from '../illustration';
+import Illustration from "../illustration";
 import ListItem from "./item";
 import { useDispatch } from "react-redux";
 import { playTrack } from "../../state/playerSlice";
@@ -10,8 +10,8 @@ import { useQueryClient } from "../../api/use-query";
 import { MasterIcon, TrackIcon } from "../icons";
 
 type TrackItemProps = {
-	track: TrackWithRelations<'release' | 'song'>
-}
+	track: TrackWithRelations<"release" | "song">;
+};
 
 /**
  * Item for a list of tracks
@@ -26,23 +26,38 @@ const TrackItem = ({ track }: TrackItemProps) => {
 
 	return (
 		<ListItem
-			icon={<Illustration illustration={track.illustration} fallback={<TrackIcon/>} quality="low"/>}
-			onClick={() => queryClient
-				.fetchQuery(API.getSong(track.songId, ["artist"]))
-				.then((song) => {
-					dispatch(playTrack({ artist: song.artist, track, release }));
-				})
+			icon={
+				<Illustration
+					illustration={track.illustration}
+					fallback={<TrackIcon />}
+					quality="low"
+				/>
+			}
+			onClick={() =>
+				queryClient
+					.fetchQuery(API.getSong(track.songId, ["artist"]))
+					.then((song) => {
+						dispatch(
+							playTrack({ artist: song.artist, track, release }),
+						);
+					})
 			}
 			title={track.name}
 			secondTitle={release.name}
-			trailing={<Grid container spacing={1} sx={{ justifyContent: 'flex-end', flexWrap: 'nowrap' }}>
-				<Grid item sx={{ display: 'flex', alignItems: 'center' }}>
-					{isMaster ? <MasterIcon/> : undefined }
+			trailing={
+				<Grid
+					container
+					spacing={1}
+					sx={{ justifyContent: "flex-end", flexWrap: "nowrap" }}
+				>
+					<Grid item sx={{ display: "flex", alignItems: "center" }}>
+						{isMaster ?
+							<MasterIcon />
+						:	undefined}
+					</Grid>
+					<Grid item>{<TrackContextualMenu track={track} />}</Grid>
 				</Grid>
-				<Grid item>
-					{<TrackContextualMenu track={track}/>}
-				</Grid>
-			</Grid>}
+			}
 		/>
 	);
 };

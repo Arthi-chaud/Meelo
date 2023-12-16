@@ -9,14 +9,14 @@ export const defaultPageSize = 20;
 export class PaginationParameters {
 	@ApiProperty({
 		required: false,
-		description: `The ID of the last item in the previous 'page'`
+		description: `The ID of the last item in the previous 'page'`,
 	})
 	@IsPositive()
 	@IsOptional()
 	afterId?: number;
 
 	@ApiPropertyOptional({
-		description: 'Number of items to skip',
+		description: "Number of items to skip",
 	})
 	@IsPositive()
 	@IsOptional()
@@ -25,7 +25,7 @@ export class PaginationParameters {
 	@ApiProperty({
 		required: false,
 		description: `Specifies the number of elements to return`,
-		default: defaultPageSize
+		default: defaultPageSize,
 	})
 	@IsPositive()
 	@IsOptional()
@@ -35,11 +35,15 @@ export class PaginationParameters {
 export function buildPaginationParameters(parameters?: PaginationParameters) {
 	return {
 		take: parameters?.take,
-		skip: parameters?.afterId !== undefined
-			? 1 + (parameters?.skip ?? 0)
-			: parameters?.skip,
-		cursor: parameters?.afterId !== undefined ? {
-			id: parameters.afterId
-		} : undefined
+		skip:
+			parameters?.afterId !== undefined ?
+				1 + (parameters?.skip ?? 0)
+			:	parameters?.skip,
+		cursor:
+			parameters?.afterId !== undefined ?
+				{
+					id: parameters.afterId,
+				}
+			:	undefined,
 	};
 }

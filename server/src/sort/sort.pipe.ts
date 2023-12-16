@@ -2,18 +2,24 @@ import type { ArgumentMetadata, PipeTransform } from "@nestjs/common";
 import SortingOrder, { availableSortingOrders } from "./models/sorting-order";
 import type SortingParameter from "./models/sorting-parameter";
 import {
-	InvalidSortingFieldException, InvalidSortingOrderException, MissingSortingFieldException
+	InvalidSortingFieldException,
+	InvalidSortingOrderException,
+	MissingSortingFieldException,
 } from "./sort.exceptions";
 
-export default class ParseSortParameterPipe<Keys extends readonly string[], T extends SortingParameter<Keys>> implements PipeTransform {
-	constructor(private readonly keys: Keys) { }
+export default class ParseSortParameterPipe<
+	Keys extends readonly string[],
+	T extends SortingParameter<Keys>,
+> implements PipeTransform
+{
+	constructor(private readonly keys: Keys) {}
 	transform(value: any, _metadata: ArgumentMetadata): T {
 		const sortingParameters: T = <T>{};
 
 		if (value.sortBy == undefined && value.order == undefined) {
 			return sortingParameters;
 		}
-		const requestedOrder: SortingOrder = value.order ?? 'asc';
+		const requestedOrder: SortingOrder = value.order ?? "asc";
 		const requestSortField: string = value.sortBy;
 
 		if (requestSortField == undefined || requestSortField.length == 0) {

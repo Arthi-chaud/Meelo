@@ -27,6 +27,8 @@ export class BadMetadataException extends ParsingException {
 
 export class PathParsingException extends ParsingException {
 	constructor(filePath: string) {
-		super(`Aborting parsing of '${filePath}' file: It doesn't match any of the regex, or catch groups are missing`);
+		super(
+			`Aborting parsing of '${filePath}' file: It doesn't match any of the regex, or catch groups are missing`,
+		);
 	}
 }

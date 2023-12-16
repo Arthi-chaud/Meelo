@@ -1,4 +1,3 @@
-
 import { Type, UseInterceptors } from "@nestjs/common";
 import { ApiPaginatedResponse } from "../pagination/paginated-response.decorator";
 import { ApiOkResponse } from "@nestjs/swagger";
@@ -8,7 +7,10 @@ import PaginatedResponseBuilderInterceptor from "./interceptors/page-response.in
 import ResponseBuilderInterceptor from "./interceptors/response.interceptor";
 import type { Constructor, RequireExactlyOne } from "type-fest";
 
-type ResponseDecoratorParam<ToType extends Type<{ id: number }>, FromType = unknown> = {
+type ResponseDecoratorParam<
+	ToType extends Type<{ id: number }>,
+	FromType = unknown,
+> = {
 	/**
 	 * Tells if the response is a single item, an array, or a page
 	 * @default SINGLE
@@ -17,7 +19,7 @@ type ResponseDecoratorParam<ToType extends Type<{ id: number }>, FromType = unkn
 } & RequireExactlyOne<{
 	handler: Constructor<ResponseBuilderInterceptor<FromType, ToType>>;
 	returns: ToType;
-}>
+}>;
 
 /**
  * Controller method decorator to:
@@ -26,34 +28,46 @@ type ResponseDecoratorParam<ToType extends Type<{ id: number }>, FromType = unkn
  * - Format pagination, if the response is a page
  */
 const Response = <ToType extends Type<{ id: number }>>(
-	params: ResponseDecoratorParam<ToType>
+	params: ResponseDecoratorParam<ToType>,
 ): MethodDecorator => {
 	return function (target: any, propertyKey: string, descriptor: any) {
 		const interceptors = [];
 		const openApiDecorators = [];
-		const returnType = params.returns ?? Reflect.construct(params.handler!, []).returnType;
+		const returnType =
+			params.returns ?? Reflect.construct(params.handler!, []).returnType;
 
 		if (params.type == ResponseType.Page) {
 			openApiDecorators.push(ApiPaginatedResponse(returnType));
 			interceptors.push(PaginatedResponseBuilderInterceptor);
 		} else {
-			openApiDecorators.push(ApiOkResponse({
-				type: returnType,
-				isArray: params.type == ResponseType.Array
-			}));
+			openApiDecorators.push(
+				ApiOkResponse({
+					type: returnType,
+					isArray: params.type == ResponseType.Array,
+				}),
+			);
 		}
 		if (params.handler) {
-			if (params.type == ResponseType.Array || params.type == ResponseType.Page) {
-				interceptors.push(ArrayResponseBuilderInterceptor(params.handler));
+			if (
+				params.type == ResponseType.Array ||
+				params.type == ResponseType.Page
+			) {
+				interceptors.push(
+					ArrayResponseBuilderInterceptor(params.handler),
+				);
 			} else {
-				openApiDecorators.push(ApiOkResponse({
-					type: returnType
-				}));
+				openApiDecorators.push(
+					ApiOkResponse({
+						type: returnType,
+					}),
+				);
 				interceptors.push(params.handler);
 			}
 		}
 		UseInterceptors(...interceptors)(target, propertyKey, descriptor);
-		openApiDecorators.forEach((decorator) => decorator(target, propertyKey, descriptor));
+		openApiDecorators.forEach((decorator) =>
+			decorator(target, propertyKey, descriptor),
+		);
 		return descriptor;
 	};
 };

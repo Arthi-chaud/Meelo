@@ -5,7 +5,10 @@ import { InvalidRequestException } from "src/exceptions/meelo-exception";
 // eslint-disable-next-line no-restricted-imports
 import { UnhandledORMErrorException } from "src/exceptions/orm-exceptions";
 import Identifier from "src/identifier/models/identifier";
-import { PaginationParameters, buildPaginationParameters } from "src/pagination/models/pagination-parameters";
+import {
+	PaginationParameters,
+	buildPaginationParameters,
+} from "src/pagination/models/pagination-parameters";
 import SortingParameter from "src/sort/models/sorting-parameter";
 import type { Primitive } from "type-fest";
 
@@ -19,27 +22,32 @@ export type ModelSelector<T extends {}> = Partial<Record<keyof T, boolean>>;
 type Select<T extends {}, Selector extends ModelSelector<T>> = Pick<
 	T,
 	keyof {
-		[key in keyof T as key extends keyof Selector
-			? Selector[key] extends true ? key : never
-			: never
-		]: T[key]
+		[key in keyof T as key extends keyof Selector ?
+			Selector[key] extends true ?
+				key
+			:	never
+		:	never]: T[key];
 	}
->
+>;
 
 /**
  * Extract Relation fields from an entity object
  */
-type ModelRelations<T extends AtomicModel> = Required<Omit<
-	T,
-	keyof {
-		[key in keyof T as T[key] extends Primitive | Date ? key : never]: key
-	}
->>
+type ModelRelations<T extends AtomicModel> = Required<
+	Omit<
+		T,
+		keyof {
+			[key in keyof T as T[key] extends Primitive | Date ? key
+			:	never]: key;
+		}
+	>
+>;
 
 /**
  * Extract Base fields from an entity object
  */
-type Base<T extends AtomicModel> = AtomicModel & Omit<T, keyof ModelRelations<T>>
+type Base<T extends AtomicModel> = AtomicModel &
+	Omit<T, keyof ModelRelations<T>>;
 
 /**
  * Type definition of a method that returns only one item
@@ -49,15 +57,19 @@ type Base<T extends AtomicModel> = AtomicModel & Omit<T, keyof ModelRelations<T>
 type ORMGetterMethod<
 	Model extends AtomicModel,
 	Relations extends {},
-	AdditionalParams extends {}
+	AdditionalParams extends {},
 > = <
 	Params extends AdditionalParams,
-	ReturnType extends Model = Params extends { include: infer RelationSelection }
-		? RelationSelection extends ModelSelector<Relations>
-			? Model & Select<Relations, RelationSelection>
-			: Model
-		: Model
->(args: Params) => Promise<Model | ReturnType>;
+	ReturnType extends Model = Params extends (
+		{ include: infer RelationSelection }
+	) ?
+		RelationSelection extends ModelSelector<Relations> ?
+			Model & Select<Relations, RelationSelection>
+		:	Model
+	:	Model,
+>(
+	args: Params,
+) => Promise<Model | ReturnType>;
 
 /**
  * Type definition of a method that returns multiple item items
@@ -65,15 +77,19 @@ type ORMGetterMethod<
 type ORMManyGetterMethod<
 	Model extends AtomicModel,
 	Relations extends {},
-	AdditionalParams extends {}
+	AdditionalParams extends {},
 > = <
-	Params extends AdditionalParams & { take?: number, skip?: number },
-	ReturnType extends Model = Params extends { include: infer RelationSelection }
-		? RelationSelection extends ModelSelector<Relations>
-			? Model & Select<Relations, RelationSelection>
-			: Model
-		: Model
->(args: Params) => Promise<(Model | ReturnType)[]>;
+	Params extends AdditionalParams & { take?: number; skip?: number },
+	ReturnType extends Model = Params extends (
+		{ include: infer RelationSelection }
+	) ?
+		RelationSelection extends ModelSelector<Relations> ?
+			Model & Select<Relations, RelationSelection>
+		:	Model
+	:	Model,
+>(
+	args: Params,
+) => Promise<(Model | ReturnType)[]>;
 
 /**
  * Base Repository Service Definition
@@ -95,23 +111,49 @@ abstract class RepositoryService<
 	BaseModel extends AtomicModel = Base<Model>,
 	Relations extends ModelRelations<Model> = ModelRelations<Model>,
 	Delegate extends {
-		create: ORMGetterMethod<BaseModel, Relations, { data: RepositoryCreateInput }>,
-		findFirstOrThrow: ORMGetterMethod<BaseModel, Relations, { where: RepositoryWhereInput }>
-		findMany: ORMManyGetterMethod<BaseModel, Relations, { where: RepositoryManyWhereInput }>
-		delete: (args: { where: RepositoryDeleteInput }) => Promise<BaseModel>,
+		create: ORMGetterMethod<
+			BaseModel,
+			Relations,
+			{ data: RepositoryCreateInput }
+		>;
+		findFirstOrThrow: ORMGetterMethod<
+			BaseModel,
+			Relations,
+			{ where: RepositoryWhereInput }
+		>;
+		findMany: ORMManyGetterMethod<
+			BaseModel,
+			Relations,
+			{ where: RepositoryManyWhereInput }
+		>;
+		delete: (args: { where: RepositoryDeleteInput }) => Promise<BaseModel>;
 		update: (args: {
-			where: RepositoryWhereInput, data: RepositoryUpdateInput
-		}) => Promise<BaseModel>
-		count: (args: { where: RepositoryManyWhereInput }) => Promise<number>,
+			where: RepositoryWhereInput;
+			data: RepositoryUpdateInput;
+		}) => Promise<BaseModel>;
+		count: (args: { where: RepositoryManyWhereInput }) => Promise<number>;
 	} = {
-		create: ORMGetterMethod<BaseModel, Relations, { data: RepositoryCreateInput }>,
-		findFirstOrThrow: ORMGetterMethod<BaseModel, Relations, { where: RepositoryWhereInput }>
-		findMany: ORMManyGetterMethod<BaseModel, Relations, { where: RepositoryManyWhereInput }>
-		delete: (args: { where: RepositoryDeleteInput }) => Promise<BaseModel>,
+		create: ORMGetterMethod<
+			BaseModel,
+			Relations,
+			{ data: RepositoryCreateInput }
+		>;
+		findFirstOrThrow: ORMGetterMethod<
+			BaseModel,
+			Relations,
+			{ where: RepositoryWhereInput }
+		>;
+		findMany: ORMManyGetterMethod<
+			BaseModel,
+			Relations,
+			{ where: RepositoryManyWhereInput }
+		>;
+		delete: (args: { where: RepositoryDeleteInput }) => Promise<BaseModel>;
 		update: (args: {
-			where: RepositoryWhereInput, data: RepositoryUpdateInput
-		}) => Promise<BaseModel>
-		count: (args: { where: RepositoryManyWhereInput }) => Promise<number>,
+			where: RepositoryWhereInput;
+			data: RepositoryUpdateInput;
+		}) => Promise<BaseModel>;
+		count: (args: { where: RepositoryManyWhereInput }) => Promise<number>;
 	},
 	RepoKey extends keyof PrismaClient = keyof PrismaClient,
 	PrismaHandle extends PrismaClient = PrismaClient,
@@ -120,9 +162,11 @@ abstract class RepositoryService<
 
 	constructor(
 		protected prismaHandle: PrismaHandle,
-		prismaDelegateKey: RepoKey
+		prismaDelegateKey: RepoKey,
 	) {
-		this.repository = this.prismaHandle[prismaDelegateKey] as unknown as Delegate;
+		this.repository = this.prismaHandle[
+			prismaDelegateKey
+		] as unknown as Delegate;
 	}
 
 	/**
@@ -131,12 +175,15 @@ abstract class RepositoryService<
 	 * @param include the relations to include with the returned entity
 	 * @returns the newly-created entity
 	 */
-	async create<I extends ModelSelector<Relations>>(input: CreateInput, include?: I) {
+	async create<I extends ModelSelector<Relations>>(
+		input: CreateInput,
+		include?: I,
+	) {
 		try {
-			const created = await this.repository.create({
+			const created = (await this.repository.create({
 				data: this.formatCreateInput(input),
-				include: this.formatInclude(include)
-			}) as BaseModel & Select<Relations, I>;
+				include: this.formatInclude(include),
+			})) as BaseModel & Select<Relations, I>;
 
 			this.onCreated(created);
 			return created;
@@ -161,12 +208,17 @@ abstract class RepositoryService<
 	 * @param error The error thrown by the ORM
 	 * @param input The creation method input
 	 */
-	protected abstract onCreationFailure(error: Error, input: CreateInput): Error | Promise<Error>;
+	protected abstract onCreationFailure(
+		error: Error,
+		input: CreateInput,
+	): Error | Promise<Error>;
 
 	/**
 	 * Transform CreationInput into WhereInput
 	 */
-	protected abstract formatCreateInputToWhereInput(input: CreateInput): WhereInput;
+	protected abstract formatCreateInputToWhereInput(
+		input: CreateInput,
+	): WhereInput;
 
 	/**
 	 * Find an entity in the database
@@ -174,13 +226,16 @@ abstract class RepositoryService<
 	 * @param include the relation fields to include with the returned entity
 	 * @returns The entity matching the query parameters
 	 */
-	async get<I extends ModelSelector<Relations>>(where: WhereInput, include?: I) {
+	async get<I extends ModelSelector<Relations>>(
+		where: WhereInput,
+		include?: I,
+	) {
 		this.checkWhereInputIntegrity(where);
 		try {
-			return await this.repository.findFirstOrThrow({
+			return (await this.repository.findFirstOrThrow({
 				where: this.formatWhereInput(where),
-				include: this.formatInclude(include)
-			}) as BaseModel & Select<Relations, I>;
+				include: this.formatInclude(include),
+			})) as BaseModel & Select<Relations, I>;
 		} catch (error) {
 			throw await this.onNotFound(error, where);
 		}
@@ -196,13 +251,15 @@ abstract class RepositoryService<
 	protected static formatIdentifier<RepoWhereInput>(
 		identifier: Identifier,
 		stringToWhereInput: (id: string) => RepoWhereInput,
-		numberToWhereInput?: (id: number) => RepoWhereInput
+		numberToWhereInput?: (id: number) => RepoWhereInput,
 	): RepoWhereInput {
-		if (typeof identifier == 'number') {
+		if (typeof identifier == "number") {
 			if (numberToWhereInput) {
 				return numberToWhereInput(identifier);
 			}
-			return RepositoryService.formatNumberIdentifierToWhereInput(identifier);
+			return RepositoryService.formatNumberIdentifierToWhereInput(
+				identifier,
+			);
 		}
 		return stringToWhereInput(identifier);
 	}
@@ -211,7 +268,7 @@ abstract class RepositoryService<
 	 * Format numberic identifier into WhereInput
 	 */
 	static formatNumberIdentifierToWhereInput<RepoWhereInput>(
-		identifier: number
+		identifier: number,
 	): RepoWhereInput {
 		return <RepoWhereInput>{ id: identifier };
 	}
@@ -219,8 +276,12 @@ abstract class RepositoryService<
 	/**
 	 * Fallback method to assign to `formatIdentifierToWhereInput` if no handling of string identifier is possible
 	 */
-	protected static UnexpectedStringIdentifier = (identifier: string): never => {
-		throw new InvalidRequestException(`Identifier: expected a number, got ${identifier}`);
+	protected static UnexpectedStringIdentifier = (
+		identifier: string,
+	): never => {
+		throw new InvalidRequestException(
+			`Identifier: expected a number, got ${identifier}`,
+		);
 	};
 
 	/**
@@ -241,7 +302,10 @@ abstract class RepositoryService<
 	 * @param error The error thrown by the ORM
 	 * @param where: the find method input
 	 */
-	abstract onNotFound(error: Error, where: WhereInput): Error | Promise<Error>;
+	abstract onNotFound(
+		error: Error,
+		where: WhereInput,
+	): Error | Promise<Error>;
 
 	/**
 	 * Find an entity in the database, and select fields
@@ -250,13 +314,14 @@ abstract class RepositoryService<
 	 * @returns The entity matching the query parameters
 	 */
 	async select<S extends ModelSelector<BaseModel>>(
-		where: WhereInput, select: S
+		where: WhereInput,
+		select: S,
 	): Promise<Select<BaseModel, S>> {
 		this.checkWhereInputIntegrity(where);
 		try {
 			return await this.repository.findFirstOrThrow({
 				where: this.formatWhereInput(where),
-				select: { ...select, id: true }
+				select: { ...select, id: true },
 			});
 		} catch (error) {
 			throw await this.onNotFound(error, where);
@@ -275,27 +340,28 @@ abstract class RepositoryService<
 		where: ManyWhereInput,
 		pagination?: PaginationParameters,
 		include?: I,
-		sortOrSeed?: SortingParameter<SortingKeys> | number
-	): Promise<(BaseModel & Select<Relations, I>)[]>{
-		if (typeof sortOrSeed === 'number') {
+		sortOrSeed?: SortingParameter<SortingKeys> | number,
+	): Promise<(BaseModel & Select<Relations, I>)[]> {
+		if (typeof sortOrSeed === "number") {
 			const seed = sortOrSeed as number;
-			const limit = pagination?.take ? `LIMIT ${pagination.take}` : '';
+			const limit = pagination?.take ? `LIMIT ${pagination.take}` : "";
 			// TODO USE AfterID
-			const skip = pagination?.skip ? `OFFSET ${pagination.skip}` : '';
-			const res: { id: number }[] = await this.prismaHandle.$queryRawUnsafe(
-				`SELECT id FROM ${this.getTableName()} ORDER BY MD5(${seed.toString()} || id::text) ${limit} ${skip}`
-			);
+			const skip = pagination?.skip ? `OFFSET ${pagination.skip}` : "";
+			const res: { id: number }[] =
+				await this.prismaHandle.$queryRawUnsafe(
+					`SELECT id FROM ${this.getTableName()} ORDER BY MD5(${seed.toString()} || id::text) ${limit} ${skip}`,
+				);
 			const ids = res.map(({ id }) => id);
 
 			return this.getMany(
 				deepmerge(where, { id: { in: ids } }) as ManyWhereInput,
 				pagination,
 				include,
-			).then(
-				(items) => items
+			).then((items) =>
+				items
 					.map((item) => ({ item, index: ids.indexOf(item.id) }))
 					.sort((item1, item2) => item1.index - item2.index)
-					.map(({ item }) => item)
+					.map(({ item }) => item),
 			);
 		}
 		const sort = sortOrSeed as SortingParameter<SortingKeys>;
@@ -304,7 +370,7 @@ abstract class RepositoryService<
 			where: this.formatManyWhereInput(where),
 			include: this.formatInclude(include),
 			orderBy: sort ? this.formatSortingInput(sort) : undefined,
-			...buildPaginationParameters(pagination)
+			...buildPaginationParameters(pagination),
 		}) as Promise<(BaseModel & Select<Relations, I>)[]>;
 	}
 
@@ -312,14 +378,16 @@ abstract class RepositoryService<
 	 * Formats input into ORM-compatible parameter
 	 * @param input the ceation parameter passed to `getMany`
 	 */
-	abstract formatManyWhereInput(input: ManyWhereInput): RepositoryManyWhereInput;
+	abstract formatManyWhereInput(
+		input: ManyWhereInput,
+	): RepositoryManyWhereInput;
 
 	/**
 	 * Format input into ORM-compatible parameter
 	 */
 	abstract formatSortingInput(
-		sortingParameter: SortingParameter<SortingKeys>
-	): RepositorySortingInput
+		sortingParameter: SortingParameter<SortingKeys>,
+	): RepositorySortingInput;
 
 	/**
 	 * Count entities matching the query parameters
@@ -328,7 +396,7 @@ abstract class RepositoryService<
 	 */
 	async count(where: ManyWhereInput): Promise<number> {
 		return this.repository.count({
-			where: this.formatManyWhereInput(where)
+			where: this.formatManyWhereInput(where),
 		});
 	}
 
@@ -341,13 +409,15 @@ abstract class RepositoryService<
 	async update(what: UpdateInput, where: WhereInput): Promise<BaseModel> {
 		this.checkWhereInputIntegrity(where);
 		try {
-			return await this.repository.update({
-				data: this.formatUpdateInput(what),
-				where: this.formatWhereInput(where)
-			}).then((updated) => {
-				this.onUpdated(updated);
-				return updated;
-			});
+			return await this.repository
+				.update({
+					data: this.formatUpdateInput(what),
+					where: this.formatWhereInput(where),
+				})
+				.then((updated) => {
+					this.onUpdated(updated);
+					return updated;
+				});
 		} catch (error) {
 			throw await this.onUpdateFailure(error, what, where);
 		}
@@ -370,7 +440,11 @@ abstract class RepositoryService<
 	 * @param what the input of the update method
 	 * @param where the input of the update method
 	 */
-	onUpdateFailure(error: Error, _what: UpdateInput, where: WhereInput): Error | Promise<Error> {
+	onUpdateFailure(
+		error: Error,
+		_what: UpdateInput,
+		where: WhereInput,
+	): Error | Promise<Error> {
 		return this.onNotFound(error, where);
 	}
 
@@ -381,12 +455,14 @@ abstract class RepositoryService<
 	 */
 	async delete(where: DeleteInput): Promise<BaseModel> {
 		try {
-			return await this.repository.delete({
-				where: this.formatDeleteInput(where)
-			}).then((deleted) => {
-				this.onDeleted(deleted);
-				return deleted;
-			});
+			return await this.repository
+				.delete({
+					where: this.formatDeleteInput(where),
+				})
+				.then((deleted) => {
+					this.onDeleted(deleted);
+					return deleted;
+				});
 		} catch (error) {
 			throw await this.onDeletionFailure(error, where);
 		}
@@ -406,14 +482,22 @@ abstract class RepositoryService<
 	/**
 	 * Transform CreationInput into WhereInput
 	 */
-	protected abstract formatDeleteInputToWhereInput(input: DeleteInput): WhereInput;
+	protected abstract formatDeleteInputToWhereInput(
+		input: DeleteInput,
+	): WhereInput;
 	/**
 	 * @return The error to throw on deletion error
 	 * @param error The error thrown by the ORM
 	 * @param input The delete method input
 	 */
-	onDeletionFailure(error: Error, input: DeleteInput): Error | Promise<Error> {
-		return this.onNotFound(error, this.formatDeleteInputToWhereInput(input));
+	onDeletionFailure(
+		error: Error,
+		input: DeleteInput,
+	): Error | Promise<Error> {
+		return this.onNotFound(
+			error,
+			this.formatDeleteInputToWhereInput(input),
+		);
 	}
 
 	/**
@@ -422,9 +506,15 @@ abstract class RepositoryService<
 	 * @param include the relation fields to include with the returned entity
 	 * @returns the matching entity
 	 */
-	async getOrCreate<I extends ModelSelector<Relations>>(input: CreateInput, include?: I) {
+	async getOrCreate<I extends ModelSelector<Relations>>(
+		input: CreateInput,
+		include?: I,
+	) {
 		try {
-			return await this.get(this.formatCreateInputToWhereInput(input), include);
+			return await this.get(
+				this.formatCreateInputToWhereInput(input),
+				include,
+			);
 		} catch {
 			return this.create(input, include);
 		}
@@ -437,7 +527,7 @@ abstract class RepositoryService<
 	 */
 	async exists(where: WhereInput): Promise<boolean> {
 		try {
-			await this.select(where, { });
+			await this.select(where, {});
 			return true;
 		} catch {
 			return false;
@@ -457,10 +547,13 @@ abstract class RepositoryService<
 	 * @param where the query parameters to find the entity
 	 */
 	async throwIfNotFound(where: WhereInput): Promise<void> {
-		await this.select(where, { });
+		await this.select(where, {});
 	}
 
-	static formatInclude<I extends ModelSelector<Relation>, Relation extends {}>(include?: I) {
+	static formatInclude<
+		I extends ModelSelector<Relation>,
+		Relation extends {},
+	>(include?: I) {
 		if (include === undefined) {
 			return include;
 		}

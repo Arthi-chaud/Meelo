@@ -1,13 +1,19 @@
 import Action from "./action";
 import {
-	AddItemToPlaylistIcon, AddToPlaylistIcon, DeleteIcon,
-	PlayAfterIcon, PlayNextIcon
+	AddItemToPlaylistIcon,
+	AddToPlaylistIcon,
+	DeleteIcon,
+	PlayAfterIcon,
+	PlayNextIcon,
 } from "../icons";
 import toast from "react-hot-toast";
 import { playAfter, playNext } from "../../state/playerSlice";
 import store from "../../state/store";
 import {
-	Button, DialogActions, DialogContent, DialogTitle
+	Button,
+	DialogActions,
+	DialogContent,
+	DialogTitle,
 } from "@mui/material";
 import { HookTextField, useHookForm } from "mui-react-hook-form-plus";
 import { MeeloInfiniteQueryFn, QueryClient } from "../../api/use-query";
@@ -24,35 +30,37 @@ import Translate from "../../i18n/translate";
 import { Add, Edit } from "iconsax-react";
 
 export const PlayNextAction = (
-	getTrack: () => PromiseLike<Parameters<typeof playNext>[0]>
+	getTrack: () => PromiseLike<Parameters<typeof playNext>[0]>,
 ): Action => ({
-	onClick: () => getTrack().then((track) => {
-		store.dispatch(playNext(track));
-		toast.success(`'${track.track.name}' will play next!`);
-	}),
-	label: 'playNext',
-	icon: <PlayNextIcon/>
+	onClick: () =>
+		getTrack().then((track) => {
+			store.dispatch(playNext(track));
+			toast.success(`'${track.track.name}' will play next!`);
+		}),
+	label: "playNext",
+	icon: <PlayNextIcon />,
 });
 
 export const PlayAfterAction = (
-	getTrack: () => PromiseLike<Parameters<typeof playAfter>[0]>
+	getTrack: () => PromiseLike<Parameters<typeof playAfter>[0]>,
 ): Action => ({
-	onClick: () => getTrack().then((track) => {
-		store.dispatch(playAfter(track));
-		toast.success(`'${track.track.name}' will play after!`);
-	}),
-	label: 'playAfter',
-	icon: <PlayAfterIcon/>
+	onClick: () =>
+		getTrack().then((track) => {
+			store.dispatch(playAfter(track));
+			toast.success(`'${track.track.name}' will play after!`);
+		}),
+	label: "playAfter",
+	icon: <PlayAfterIcon />,
 });
 
 type CreateOrUpdatePlaylistFormProps = {
 	onSubmit: (newUrl: string) => void;
 	onClose: () => void;
-	defaultValue?: string
-}
+	defaultValue?: string;
+};
 
 const CreateOrUpdatePlaylistForm = (props: CreateOrUpdatePlaylistFormProps) => {
-	const defaultValues = { name: props.defaultValue ?? '' };
+	const defaultValues = { name: props.defaultValue ?? "" };
 	const { registerState, handleSubmit } = useHookForm({
 		defaultValues,
 	});
@@ -61,170 +69,193 @@ const CreateOrUpdatePlaylistForm = (props: CreateOrUpdatePlaylistFormProps) => {
 		props.onClose();
 	};
 
-	return <>
-		<DialogTitle>{props.defaultValue ? 'Update' : 'Create'} Playlist</DialogTitle>
-		<form onSubmit={handleSubmit(onSubmit)} style={{ width: '100%', height: '100%' }}>
-			<DialogContent>
-				<HookTextField
-					{...registerState('name')}
-					textFieldProps={{
-						autoFocus: true,
-						fullWidth: true,
-						label: 'Enter name of the playlist',
-					}}
-					gridProps={{}}
-					rules={{
-						required: {
-							value: true,
-							message: 'Name is required',
-						},
-					}}
-				/>
-			</DialogContent>
-			<DialogActions>
-				<Button onClick={props.onClose}>
-					<Translate translationKey="cancel"/>
-				</Button>
-				<Button type='submit' color='primary' variant="contained">
-					{props.defaultValue ? 'Update' : 'Create'}
-				</Button>
-			</DialogActions>
-		</form>
-	</>;
+	return (
+		<>
+			<DialogTitle>
+				{props.defaultValue ? "Update" : "Create"} Playlist
+			</DialogTitle>
+			<form
+				onSubmit={handleSubmit(onSubmit)}
+				style={{ width: "100%", height: "100%" }}
+			>
+				<DialogContent>
+					<HookTextField
+						{...registerState("name")}
+						textFieldProps={{
+							autoFocus: true,
+							fullWidth: true,
+							label: "Enter name of the playlist",
+						}}
+						gridProps={{}}
+						rules={{
+							required: {
+								value: true,
+								message: "Name is required",
+							},
+						}}
+					/>
+				</DialogContent>
+				<DialogActions>
+					<Button onClick={props.onClose}>
+						<Translate translationKey="cancel" />
+					</Button>
+					<Button type="submit" color="primary" variant="contained">
+						{props.defaultValue ? "Update" : "Create"}
+					</Button>
+				</DialogActions>
+			</form>
+		</>
+	);
 };
 
-export const CreatePlaylistAction = (
-	queryClient: QueryClient
-): Action => ({
-	label: 'new',
-	icon: <Add/>,
+export const CreatePlaylistAction = (queryClient: QueryClient): Action => ({
+	label: "new",
+	icon: <Add />,
 	dialog: ({ close }) => {
 		// eslint-disable-next-line react-hooks/rules-of-hooks
 		const mutation = useMutation((playlistName: string) => {
 			return API.createPlaylist(playlistName)
 				.then(() => {
 					toast.success("Playlist created!");
-					queryClient.client.invalidateQueries('playlists');
+					queryClient.client.invalidateQueries("playlists");
 				})
 				.catch((error: Error) => toast.error(error.message));
 		});
 
-		return <CreateOrUpdatePlaylistForm
-			onClose={close} onSubmit={(name) => mutation.mutate(name)}
-		/>;
-	}
+		return (
+			<CreateOrUpdatePlaylistForm
+				onClose={close}
+				onSubmit={(name) => mutation.mutate(name)}
+			/>
+		);
+	},
 });
 
 export const UpdatePlaylistAction = (
 	playlist: Playlist,
-	queryClient: QueryClient
+	queryClient: QueryClient,
 ): Action => ({
-	label: 'update',
-	icon: <Edit/>,
+	label: "update",
+	icon: <Edit />,
 	dialog: ({ close }) => {
 		// eslint-disable-next-line react-hooks/rules-of-hooks
 		const mutation = useMutation((playlistName: string) => {
 			return API.updatePlaylist(playlistName, playlist.slug)
 				.then(() => {
 					toast.success("Playlist updated!");
-					queryClient.client.invalidateQueries('playlists');
-					queryClient.client.invalidateQueries('playlist');
+					queryClient.client.invalidateQueries("playlists");
+					queryClient.client.invalidateQueries("playlist");
 				})
 				.catch((error: Error) => toast.error(error.message));
 		});
 
-		return <CreateOrUpdatePlaylistForm
-			onClose={close} onSubmit={(name) => mutation.mutate(name)} defaultValue={playlist.name}
-		/>;
-	}
+		return (
+			<CreateOrUpdatePlaylistForm
+				onClose={close}
+				onSubmit={(name) => mutation.mutate(name)}
+				defaultValue={playlist.name}
+			/>
+		);
+	},
 });
 
 export const DeletePlaylistAction = (
 	confirm: ReturnType<typeof useConfirm>,
 	queryClient: QueryClient,
 	librarySlugOrId: number | string,
-	onDeleted: () => void
+	onDeleted: () => void,
 ): Action => ({
-	label: 'delete',
-	icon: <DeleteIcon/>,
-	onClick: () => confirm({
-		title: 'Delete Playlist',
-		description: 'You are about to delete a playlist. This can not be undone.',
-		confirmationText: 'Delete Playlist',
-		confirmationButtonProps: {
-			variant: 'outlined',
-			color: 'error',
-			onClickCapture: () => API.deletePlaylist(librarySlugOrId)
-				.then(() => {
-					onDeleted();
-					queryClient.client.invalidateQueries('playlist');
-					queryClient.client.invalidateQueries('playlists');
-					toast.success('Playlist deleted');
-				})
-				.catch(() => toast.error('Playlist deletion failed'))
-		}
-	})
+	label: "delete",
+	icon: <DeleteIcon />,
+	onClick: () =>
+		confirm({
+			title: "Delete Playlist",
+			description:
+				"You are about to delete a playlist. This can not be undone.",
+			confirmationText: "Delete Playlist",
+			confirmationButtonProps: {
+				variant: "outlined",
+				color: "error",
+				onClickCapture: () =>
+					API.deletePlaylist(librarySlugOrId)
+						.then(() => {
+							onDeleted();
+							queryClient.client.invalidateQueries("playlist");
+							queryClient.client.invalidateQueries("playlists");
+							toast.success("Playlist deleted");
+						})
+						.catch(() => toast.error("Playlist deletion failed")),
+			},
+		}),
 });
 
 type SelectPlaylistFormProps = {
-	playlistQuery: MeeloInfiniteQueryFn<Playlist>,
+	playlistQuery: MeeloInfiniteQueryFn<Playlist>;
 	onSubmit: (playlistId: number) => void;
 	onClose: () => void;
-}
+};
 
 const SelectPlaylistForm = (props: SelectPlaylistFormProps) => {
-	return <>
-		<DialogTitle>Select a playlist</DialogTitle>
-		<DialogContent>
-			<InfiniteList
-				firstLoader={() => <LoadingPage/>}
-				loader={() => <WideLoadingComponent/>}
-				query={props.playlistQuery}
-				render={(item: Playlist) => <ListItem
-					key={item.id}
-					title={item.name}
-					icon={<Illustration
-						illustration={item.illustration}
-						fallback={<AddItemToPlaylistIcon />}
-						quality="low"
-					/>}
-					onClick={() => {
-						props.onSubmit(item.id);
-						props.onClose();
-					}}
-				/>}
-			/>
-		</DialogContent>
-		<DialogActions>
-			<Button onClick={props.onClose} variant='outlined'>
-				<Translate translationKey="cancel"/>
-			</Button>
-		</DialogActions>
-	</>;
+	return (
+		<>
+			<DialogTitle>Select a playlist</DialogTitle>
+			<DialogContent>
+				<InfiniteList
+					firstLoader={() => <LoadingPage />}
+					loader={() => <WideLoadingComponent />}
+					query={props.playlistQuery}
+					render={(item: Playlist) => (
+						<ListItem
+							key={item.id}
+							title={item.name}
+							icon={
+								<Illustration
+									illustration={item.illustration}
+									fallback={<AddItemToPlaylistIcon />}
+									quality="low"
+								/>
+							}
+							onClick={() => {
+								props.onSubmit(item.id);
+								props.onClose();
+							}}
+						/>
+					)}
+				/>
+			</DialogContent>
+			<DialogActions>
+				<Button onClick={props.onClose} variant="outlined">
+					<Translate translationKey="cancel" />
+				</Button>
+			</DialogActions>
+		</>
+	);
 };
 
 export const AddToPlaylistAction = (
 	songId: number,
-	queryClient: QueryClient
+	queryClient: QueryClient,
 ): Action => ({
-	icon: <AddToPlaylistIcon/>,
-	label: 'addToPlaylist',
+	icon: <AddToPlaylistIcon />,
+	label: "addToPlaylist",
 	dialog: ({ close }) => {
 		// eslint-disable-next-line react-hooks/rules-of-hooks
 		const mutation = useMutation((playlistId: number) => {
 			return API.addSongToPlaylist(songId, playlistId)
 				.then(() => {
 					toast.success("Song added to Playlist");
-					queryClient.client.invalidateQueries('playlists');
-					queryClient.client.invalidateQueries('playlist');
+					queryClient.client.invalidateQueries("playlists");
+					queryClient.client.invalidateQueries("playlist");
 				})
 				.catch((error: Error) => toast.error(error.message));
 		});
 
-		return <SelectPlaylistForm
-			onClose={close}
-			onSubmit={(playlistId) => mutation.mutate(playlistId)}
-			playlistQuery={API.getPlaylists}
-		/>;
-	}
+		return (
+			<SelectPlaylistForm
+				onClose={close}
+				onSubmit={(playlistId) => mutation.mutate(playlistId)}
+				playlistQuery={API.getPlaylists}
+			/>
+		);
+	},
 });

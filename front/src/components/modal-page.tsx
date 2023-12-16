@@ -1,8 +1,6 @@
-import {
-	Box, IconButton, Paper, Slide
-} from "@mui/material";
+import { Box, IconButton, Paper, Slide } from "@mui/material";
 import { useRouter } from "next/router";
-import { CloseIcon } from './icons';
+import { CloseIcon } from "./icons";
 import { useEffect, useState } from "react";
 import { isClientSideRendering } from "../ssr";
 
@@ -10,7 +8,7 @@ type ModalPageProps = {
 	disposable?: boolean;
 	children: JSX.Element;
 	open?: boolean;
-}
+};
 
 const ModalPage = (props: ModalPageProps) => {
 	const router = useRouter();
@@ -18,40 +16,76 @@ const ModalPage = (props: ModalPageProps) => {
 
 	useEffect(() => {
 		if (open) {
-			document.body.style.overflow = 'hidden';
+			document.body.style.overflow = "hidden";
 		} else {
-			document.body.style.overflow = 'unset';
+			document.body.style.overflow = "unset";
 		}
 		return () => {
-			document.body.style.overflow = 'unset';
+			document.body.style.overflow = "unset";
 		};
 	}, [open]);
-	return <Slide direction="up" in={open} unmountOnExit appear={isClientSideRendering()}>
-		<Box sx={{
-			width: '100%', height: '100%', padding: 2, display: 'flex',
-			position: 'fixed', right: 0, bottom: 0, justifyContent: 'center',
-			alignItems: 'center', zIndex: 'modal'
-		}}>
-			<Paper sx={{
-				borderRadius: '0.5rem', display: 'flex', width: '100%',
-				height: '100%', overflowY: 'scroll', overflowX: 'clip',
-				paddingX: 3, paddingTop: 2, flexDirection: 'column'
-			}}>
-				<Box sx={{
-					width: '100%', display: 'flex',
-					justifyContent: 'flex-end'
-				}}>
-					<IconButton onClick={() => {
-						setOpen(false);
-						router.back();
-					}}>
-						<CloseIcon style={{ display: props.disposable == true ? undefined : 'none' }} />
-					</IconButton>
-				</Box>
-				{props.children}
-			</Paper>
-		</Box>
-	</Slide>;
+	return (
+		<Slide
+			direction="up"
+			in={open}
+			unmountOnExit
+			appear={isClientSideRendering()}
+		>
+			<Box
+				sx={{
+					width: "100%",
+					height: "100%",
+					padding: 2,
+					display: "flex",
+					position: "fixed",
+					right: 0,
+					bottom: 0,
+					justifyContent: "center",
+					alignItems: "center",
+					zIndex: "modal",
+				}}
+			>
+				<Paper
+					sx={{
+						borderRadius: "0.5rem",
+						display: "flex",
+						width: "100%",
+						height: "100%",
+						overflowY: "scroll",
+						overflowX: "clip",
+						paddingX: 3,
+						paddingTop: 2,
+						flexDirection: "column",
+					}}
+				>
+					<Box
+						sx={{
+							width: "100%",
+							display: "flex",
+							justifyContent: "flex-end",
+						}}
+					>
+						<IconButton
+							onClick={() => {
+								setOpen(false);
+								router.back();
+							}}
+						>
+							<CloseIcon
+								style={{
+									display:
+										props.disposable == true ?
+											undefined
+										:	"none",
+								}}
+							/>
+						</IconButton>
+					</Box>
+					{props.children}
+				</Paper>
+			</Box>
+		</Slide>
+	);
 };
 
 export default ModalPage;

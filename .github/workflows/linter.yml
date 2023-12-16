@@ -13,7 +13,7 @@ jobs:
             pwd: ./server
           - section: 'front'
             pwd: ./front
-    container: node:18
+    container: node:18-alpine3.18
     name: Run linter (${{ matrix.section }})
     runs-on: ubuntu-latest
     steps:
@@ -21,10 +21,7 @@ jobs:
         uses: actions/checkout@v3
       - name: Install dependencies
         run: yarn --cwd "${{ matrix.pwd }}" install
-      - name: Install root dependencies
-        ## Necessary, as front's linter config extends server's
-        if: ${{ matrix.section }} == "front"
-        ## Should use matrix.
-        run: yarn --cwd "server" install
-      - name: Run linters
+      - name: Run linter
         run: yarn --cwd "${{ matrix.pwd }}" lint
+      - name: Run prettier
+        run: yarn --cwd "${{ matrix.pwd }}" prettier --check .

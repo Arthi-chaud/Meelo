@@ -4,11 +4,15 @@ import ContextualMenu from "./contextual-menu";
 import { useConfirm } from "material-ui-confirm";
 import { DownloadAction } from "../actions/download";
 import {
-	GoToArtistAction, GoToRelatedTracksAction,
-	GoToSongLyricsAction, GoToSongVersionAction
+	GoToArtistAction,
+	GoToRelatedTracksAction,
+	GoToSongLyricsAction,
+	GoToSongVersionAction,
 } from "../actions/link";
 import {
-	AddToPlaylistAction, PlayAfterAction, PlayNextAction
+	AddToPlaylistAction,
+	PlayAfterAction,
+	PlayNextAction,
 } from "../actions/playlist";
 import { ShareSongAction } from "../actions/share";
 import { ShowTrackFileInfoAction } from "../actions/show-track-info";
@@ -18,30 +22,44 @@ import { useQueryClient } from "../../api/use-query";
 import { RefreshTrackMetadataAction } from "../actions/refresh-metadata";
 
 type ReleaseTrackContextualMenuProps = {
-	track: TrackWithRelations<'song'>;
+	track: TrackWithRelations<"song">;
 	artist: Artist;
 	release: Release;
 	onSelect?: () => void;
-}
+};
 
 const ReleaseTrackContextualMenu = (props: ReleaseTrackContextualMenuProps) => {
 	const songSlug = `${props.artist.slug}+${props.track.song.slug}`;
 	const confirm = useConfirm();
 	const queryClient = useQueryClient();
 
-	return <ContextualMenu onSelect={props.onSelect} actions={[
-		[GoToArtistAction(props.artist.slug)],
-		[GoToSongLyricsAction(songSlug)],
-		[PlayNextAction(async () => props), PlayAfterAction(async () => props)],
-		[AddToPlaylistAction(props.track.song.id, queryClient)],
-		[GoToSongVersionAction(songSlug), GoToRelatedTracksAction(songSlug),],
-		[
-			UpdateTrackIllustrationAction(queryClient, props.track.id),
-			RefreshTrackMetadataAction(props.track.id)
-		],
-		[ShowTrackFileInfoAction(confirm, props.track.id)],
-		[DownloadAction(confirm, props.track.stream), ShareSongAction(songSlug)],
-	]}/>;
+	return (
+		<ContextualMenu
+			onSelect={props.onSelect}
+			actions={[
+				[GoToArtistAction(props.artist.slug)],
+				[GoToSongLyricsAction(songSlug)],
+				[
+					PlayNextAction(async () => props),
+					PlayAfterAction(async () => props),
+				],
+				[AddToPlaylistAction(props.track.song.id, queryClient)],
+				[
+					GoToSongVersionAction(songSlug),
+					GoToRelatedTracksAction(songSlug),
+				],
+				[
+					UpdateTrackIllustrationAction(queryClient, props.track.id),
+					RefreshTrackMetadataAction(props.track.id),
+				],
+				[ShowTrackFileInfoAction(confirm, props.track.id)],
+				[
+					DownloadAction(confirm, props.track.stream),
+					ShareSongAction(songSlug),
+				],
+			]}
+		/>
+	);
 };
 
 export default ReleaseTrackContextualMenu;

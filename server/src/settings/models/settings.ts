@@ -4,7 +4,11 @@ import {
 	ArrayNotEmpty,
 	IsBoolean,
 	IsDefined,
-	IsIn, IsNotEmpty, IsOptional, IsString, ValidateNested
+	IsIn,
+	IsNotEmpty,
+	IsOptional,
+	IsString,
+	ValidateNested,
 } from "class-validator";
 import ProvidersSettings from "src/providers/models/providers.settings";
 
@@ -30,14 +34,14 @@ class MetadataSettings {
 	 */
 	@ApiProperty({ enum: metadataSourceValue })
 	@IsIn(metadataSourceValue)
-	source: typeof metadataSourceValue[number];
+	source: (typeof metadataSourceValue)[number];
 
 	/**
 	 * Exclude the other source, or use is as a fallback
 	 */
 	@ApiProperty({ enum: metadataOrderValue })
 	@IsIn(metadataOrderValue)
-	order: typeof metadataOrderValue[number];
+	order: (typeof metadataOrderValue)[number];
 
 	/**
 	 * Enable the use of genres from (enabled) external providers
@@ -76,7 +80,7 @@ export default class Settings {
 	 * Defines the metadata parsing policy
 	 */
 	@ApiProperty({
-		type: MetadataSettings
+		type: MetadataSettings,
 	})
 	@Type(() => MetadataSettings)
 	@ValidateNested()
@@ -87,7 +91,7 @@ export default class Settings {
 	 * Settings for the providers
 	 */
 	@ApiProperty({
-		type: ProvidersSettings
+		type: ProvidersSettings,
 	})
 	@Type(() => ProvidersSettings)
 	@ValidateNested()
@@ -95,11 +99,10 @@ export default class Settings {
 	providers: ProvidersSettings;
 
 	@ApiProperty({
-		type: CompilationSettings
+		type: CompilationSettings,
 	})
 	@Type(() => CompilationSettings)
 	@ValidateNested()
 	@IsDefined()
 	compilations: CompilationSettings;
 }
-

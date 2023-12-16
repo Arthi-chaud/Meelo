@@ -1,4 +1,7 @@
-import { AlreadyExistsException, NotFoundException } from "src/exceptions/meelo-exception";
+import {
+	AlreadyExistsException,
+	NotFoundException,
+} from "src/exceptions/meelo-exception";
 
 export class FileNotFoundFromPathException extends NotFoundException {
 	constructor(filePath: string) {
@@ -26,6 +29,8 @@ export class FileNotFoundFromTrackIDException extends NotFoundException {
 
 export class FileAlreadyExistsException extends AlreadyExistsException {
 	constructor(filePath: string, libraryId: number) {
-		super(`File '${filePath}' has already been registered for library n°'${libraryId}'`);
+		super(
+			`File '${filePath}' has already been registered for library n°'${libraryId}'`,
+		);
 	}
 }

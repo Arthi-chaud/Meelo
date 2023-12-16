@@ -1,5 +1,12 @@
 import { SongType } from "@prisma/client";
-import { Release, Track, Artist, Album, SongWithRelations, Playlist } from "src/prisma/models";
+import {
+	Release,
+	Track,
+	Artist,
+	Album,
+	SongWithRelations,
+	Playlist,
+} from "src/prisma/models";
 
 export const expectedArtistResponse = (artist: Artist) => ({
 	...artist,
@@ -31,7 +38,7 @@ export const expectedReleaseResponse = (release: Release) => ({
 export const expectedTrackResponse = (track: Track) => ({
 	...track,
 	illustration: null,
-	stream: `/files/${track.sourceFileId}/stream`
+	stream: `/files/${track.sourceFileId}/stream`,
 });
 
 export const expectedPlaylistResponse = (playlist: Playlist) => ({
@@ -40,7 +47,10 @@ export const expectedPlaylistResponse = (playlist: Playlist) => ({
 	illustration: null,
 });
 
-export const expectedPlaylistEntryResponse = (song: SongWithRelations, id: number) => ({
+export const expectedPlaylistEntryResponse = (
+	song: SongWithRelations,
+	id: number,
+) => ({
 	...expectedSongResponse(song),
-	entryId: id
+	entryId: id,
 });

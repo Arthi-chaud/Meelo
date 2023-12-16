@@ -1,13 +1,15 @@
-import {
-	Inject, Injectable, OnModuleInit, forwardRef
-} from "@nestjs/common";
+import { Inject, Injectable, OnModuleInit, forwardRef } from "@nestjs/common";
 import IProvider, {
-	AlbumMetadata, ArtistMetadata, SongMetadata
+	AlbumMetadata,
+	ArtistMetadata,
+	SongMetadata,
 } from "../iprovider";
 import * as mb from "musicbrainz-api";
 import {
-	name as AppName, version as AppVersion, homepage as Homepage
-} from 'package.json';
+	name as AppName,
+	version as AppVersion,
+	homepage as Homepage,
+} from "package.json";
 import SettingsService from "src/settings/settings.service";
 import MusicBrainzSettings from "./musicbrainz.settings";
 import { ProviderActionFailedError } from "../provider.exception";
@@ -15,28 +17,33 @@ import { ProviderActionFailedError } from "../provider.exception";
 type MBID = string;
 
 @Injectable()
-export default class MusicBrainzProvider extends IProvider<MusicBrainzSettings> implements OnModuleInit {
+export default class MusicBrainzProvider
+	extends IProvider<MusicBrainzSettings>
+	implements OnModuleInit
+{
 	private mbClient: mb.MusicBrainzApi;
-	private readonly compilationArtistID = "89ad4ac3-39f7-470e-963a-56509c546377";
+	private readonly compilationArtistID =
+		"89ad4ac3-39f7-470e-963a-56509c546377";
 
 	constructor(
 		@Inject(forwardRef(() => SettingsService))
-		private settingsSettings: SettingsService
+		private settingsSettings: SettingsService,
 	) {
-		super('musicbrainz');
+		super("musicbrainz");
 	}
 
 	onModuleInit() {
-		this._settings = this.settingsSettings.settingsValues.providers.musicbrainz;
+		this._settings =
+			this.settingsSettings.settingsValues.providers.musicbrainz;
 		this.mbClient = new mb.MusicBrainzApi({
 			appName: AppName,
 			appVersion: AppVersion,
-			appContactInfo: Homepage
+			appContactInfo: Homepage,
 		});
 	}
 
 	getProviderHomepage(): string {
-		return 'https://musicbrainz.org';
+		return "https://musicbrainz.org";
 	}
 
 	getProviderBannerUrl(): string {
@@ -51,24 +58,32 @@ export default class MusicBrainzProvider extends IProvider<MusicBrainzSettings> 
 	 * Looks up an artist, and returns the entity, along with its relations URLs
 	 */
 	async getArtistEntry(artistIdentifier: MBID) {
-		return this.mbClient.lookupArtist(artistIdentifier, ['url-rels']);
+		return this.mbClient.lookupArtist(artistIdentifier, ["url-rels"]);
 	}
 
-	async getArtistMetadataByIdentifier(artistIdentifier: string): Promise<ArtistMetadata> {
+	async getArtistMetadataByIdentifier(
+		artistIdentifier: string,
+	): Promise<ArtistMetadata> {
 		return {
 			description: null,
-			value: artistIdentifier
+			value: artistIdentifier,
 		};
 	}
 
 	async getArtistMetadataByName(artistName: string): Promise<ArtistMetadata> {
 		// Note: It's not possible to get url-rels using search. So we can not do everything in one query.
 		try {
-			const artist = (await this.mbClient.searchArtist({ query: artistName })).artists.at(0)!;
+			const artist = (
+				await this.mbClient.searchArtist({ query: artistName })
+			).artists.at(0)!;
 
 			return this.getArtistMetadataByIdentifier(artist.id);
 		} catch (err) {
-			throw new ProviderActionFailedError(this.name, 'getArtistMetadataByName', err.message);
+			throw new ProviderActionFailedError(
+				this.name,
+				"getArtistMetadataByName",
+				err.message,
+			);
 		}
 	}
 
@@ -76,14 +91,14 @@ export default class MusicBrainzProvider extends IProvider<MusicBrainzSettings> 
 	 * Looks up an album, and returns the entity, along with its relations URLs
 	 */
 	async getAlbumEntry(albumIdentifer: MBID) {
-		return this.mbClient.lookupReleaseGroup(albumIdentifer, ['url-rels']);
+		return this.mbClient.lookupReleaseGroup(albumIdentifer, ["url-rels"]);
 	}
 
 	/**
 	 * Looks up a song, and returns the entity, along with its relations URLs
 	 */
 	async getSongEntry(songIdentifier: MBID) {
-		return this.mbClient.lookupWork(songIdentifier, ['url-rels']);
+		return this.mbClient.lookupWork(songIdentifier, ["url-rels"]);
 	}
 
 	getArtistURL(artistIdentifier: MBID): string {
@@ -91,33 +106,56 @@ export default class MusicBrainzProvider extends IProvider<MusicBrainzSettings> 
 	}
 
 	async getAlbumMetadataByName(
-		albumName: string, artistIdentifier?: string
+		albumName: string,
+		artistIdentifier?: string,
 	): Promise<AlbumMetadata> {
 		try {
-			const searchResult = await this.mbClient.searchRelease({
-				query: `query="${albumName}" AND arid:${artistIdentifier ?? this.compilationArtistID}`
-			}).then((result) => result.releases
-				.filter((release) => release["artist-credit"]?.find((artist) =>
-					artist.artist.id == (artistIdentifier ?? this.compilationArtistID))));
+			const searchResult = await this.mbClient
+				.searchRelease({
+					query: `query="${albumName}" AND arid:${
+						artistIdentifier ?? this.compilationArtistID
+					}`,
+				})
+				.then((result) =>
+					result.releases.filter(
+						(release) =>
+							release["artist-credit"]?.find(
+								(artist) =>
+									artist.artist.id ==
+									(artistIdentifier ??
+										this.compilationArtistID),
+							),
+					),
+				);
 			const releaseGroupId = searchResult.at(0)!["release-group"]!.id;
 
 			return this.getAlbumMetadataByIdentifier(releaseGroupId);
 		} catch (err) {
-			throw new ProviderActionFailedError(this.name, 'getAlbumIdentifier', err.message);
+			throw new ProviderActionFailedError(
+				this.name,
+				"getAlbumIdentifier",
+				err.message,
+			);
 		}
 	}
 
-	async getAlbumMetadataByIdentifier(albumIdentifer: MBID): Promise<AlbumMetadata> {
+	async getAlbumMetadataByIdentifier(
+		albumIdentifer: MBID,
+	): Promise<AlbumMetadata> {
 		const releaseGroup = await this.mbClient.lookupReleaseGroup(
-			albumIdentifer, ['genres']
+			albumIdentifer,
+			["genres"],
 		);
 
 		return {
-			genres: (releaseGroup as unknown as { genres: { name: string }[] })?.genres
-				.map(({ name: tag }) => tag.charAt(0).toUpperCase() + tag.slice(1)),
+			genres: (
+				releaseGroup as unknown as { genres: { name: string }[] }
+			)?.genres.map(
+				({ name: tag }) => tag.charAt(0).toUpperCase() + tag.slice(1),
+			),
 			description: null,
 			value: releaseGroup.id,
-			rating: null
+			rating: null,
 		};
 	}
 
@@ -125,42 +163,67 @@ export default class MusicBrainzProvider extends IProvider<MusicBrainzSettings> 
 		return `${this.getProviderHomepage()}/release-group/${albumIdentifier}`;
 	}
 
-	async getSongMetadataByName(songName: string, artistIdentifier: string): Promise<SongMetadata> {
+	async getSongMetadataByName(
+		songName: string,
+		artistIdentifier: string,
+	): Promise<SongMetadata> {
 		try {
-			const results = await this.mbClient.search<mb.IIsrcSearchResult>(
-				'recording',
-				{ query: `query="${songName}" AND arid:${artistIdentifier}` }
-			).then((result) => result.recordings
-				.filter((recording) => recording["artist-credit"]
-					?.find((artist) => artist.artist.id == artistIdentifier)));
+			const results = await this.mbClient
+				.search<mb.IIsrcSearchResult>("recording", {
+					query: `query="${songName}" AND arid:${artistIdentifier}`,
+				})
+				.then((result) =>
+					result.recordings.filter(
+						(recording) =>
+							recording["artist-credit"]?.find(
+								(artist) =>
+									artist.artist.id == artistIdentifier,
+							),
+					),
+				);
 
 			for (const recordingId of results.map(({ id }) => id)) {
-				const recording = await this.mbClient.lookupRecording(recordingId, ['work-rels']);
+				const recording = await this.mbClient.lookupRecording(
+					recordingId,
+					["work-rels"],
+				);
 
-				const workId = recording.relations?.map((relation) => {
-					if ('work' in relation) {
-						return (relation['work'] as { id: MBID }).id;
-					}
-					return undefined;
-				}).find((value) => value);
+				const workId = recording.relations
+					?.map((relation) => {
+						if ("work" in relation) {
+							return (relation["work"] as { id: MBID }).id;
+						}
+						return undefined;
+					})
+					.find((value) => value);
 
 				if (workId) {
 					return {
 						description: null,
-						value: workId
+						value: workId,
 					};
 				}
 			}
 		} catch (err) {
-			throw new ProviderActionFailedError(this.name, 'getSongIdentifier', err.message);
+			throw new ProviderActionFailedError(
+				this.name,
+				"getSongIdentifier",
+				err.message,
+			);
 		}
-		throw new ProviderActionFailedError(this.name, 'getSongIdentifier', 'Song not found');
+		throw new ProviderActionFailedError(
+			this.name,
+			"getSongIdentifier",
+			"Song not found",
+		);
 	}
 
-	async getSongMetadataByIdentifier(songIdentifier: string): Promise<SongMetadata> {
+	async getSongMetadataByIdentifier(
+		songIdentifier: string,
+	): Promise<SongMetadata> {
 		return {
 			description: null,
-			value: songIdentifier
+			value: songIdentifier,
 		};
 	}
 

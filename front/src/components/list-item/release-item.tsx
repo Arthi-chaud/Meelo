@@ -7,26 +7,42 @@ import getYear from "../../utils/getYear";
 import { Star } from "iconsax-react";
 
 type ReleaseItemProps = {
-	release: ReleaseWithRelations<'album'>;
-}
+	release: ReleaseWithRelations<"album">;
+};
 
 const ReleaseItem = ({ release }: ReleaseItemProps) => {
 	const isMaster = release.id == release.album.masterId;
 
-	return <ListItem key={release.id}
-		icon={<Illustration illustration={release.illustration} quality="low"/>}
-		href={`/releases/${release.id}`}
-		title={release.name}
-		secondTitle={getYear(release.releaseDate)?.toString()}
-		trailing={<Grid container spacing={1} sx={{ justifyContent: 'flex-end', flexWrap: 'nowrap' }}>
-			<Grid item sx={{ display: 'flex', alignItems: 'center' }}>
-				{isMaster ? <Star/> : undefined }
-			</Grid>
-			<Grid item>
-				{<ReleaseContextualMenu release={release}/>}
-			</Grid>
-		</Grid>}
-	/>;
+	return (
+		<ListItem
+			key={release.id}
+			icon={
+				<Illustration
+					illustration={release.illustration}
+					quality="low"
+				/>
+			}
+			href={`/releases/${release.id}`}
+			title={release.name}
+			secondTitle={getYear(release.releaseDate)?.toString()}
+			trailing={
+				<Grid
+					container
+					spacing={1}
+					sx={{ justifyContent: "flex-end", flexWrap: "nowrap" }}
+				>
+					<Grid item sx={{ display: "flex", alignItems: "center" }}>
+						{isMaster ?
+							<Star />
+						:	undefined}
+					</Grid>
+					<Grid item>
+						{<ReleaseContextualMenu release={release} />}
+					</Grid>
+				</Grid>
+			}
+		/>
+	);
 };
 
 export default ReleaseItem;

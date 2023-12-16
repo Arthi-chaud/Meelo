@@ -1,8 +1,9 @@
+import { Controller, Get, Query } from "@nestjs/common";
 import {
-	Controller, Get, Query
-} from "@nestjs/common";
-import {
-	ApiOperation, ApiPropertyOptional, ApiTags, IntersectionType
+	ApiOperation,
+	ApiPropertyOptional,
+	ApiTags,
+	IntersectionType,
 } from "@nestjs/swagger";
 import { PaginationParameters } from "src/pagination/models/pagination-parameters";
 import SongQueryParameters from "src/song/models/song.query-params";
@@ -23,46 +24,44 @@ import ArtistService from "src/artist/artist.service";
 class Selector extends IntersectionType(GenreQueryParameters.SortingParameter) {
 	@IsOptional()
 	@ApiPropertyOptional({
-		description: 'Search genres using a string token'
+		description: "Search genres using a string token",
 	})
 	query?: string;
 
 	@IsOptional()
 	@ApiPropertyOptional({
-		description: 'Filter genres by album'
+		description: "Filter genres by album",
 	})
 	@TransformIdentifier(AlbumService)
 	album?: AlbumQueryParameters.WhereInput;
 
 	@IsOptional()
 	@ApiPropertyOptional({
-		description: 'Filter genres by artist'
+		description: "Filter genres by artist",
 	})
 	@TransformIdentifier(ArtistService)
 	artist?: ArtistQueryParameters.WhereInput;
 
 	@IsOptional()
 	@ApiPropertyOptional({
-		description: 'Filter genres by song'
+		description: "Filter genres by song",
 	})
 	@TransformIdentifier(SongService)
 	song?: SongQueryParameters.WhereInput;
 }
 
 @ApiTags("Genres")
-@Controller('genres')
+@Controller("genres")
 export class GenreController {
-	constructor(
-		private genreService: GenreService
-	) {}
+	constructor(private genreService: GenreService) {}
 
 	@ApiOperation({
-		summary: 'Get many genres'
+		summary: "Get many genres",
 	})
 	@Get()
 	@Response({
 		returns: Genre,
-		type: ResponseType.Page
+		type: ResponseType.Page,
 	})
 	async getMany(
 		@Query() selector: Selector,
@@ -76,27 +75,27 @@ export class GenreController {
 				{ ...selector, slug: { contains: selector.query } },
 				paginationParameters,
 				include,
-				selector
+				selector,
 			);
 		}
 		return this.genreService.getMany(
 			selector,
 			paginationParameters,
 			include,
-			selector
+			selector,
 		);
 	}
 
 	@ApiOperation({
-		summary: 'Get a genre'
+		summary: "Get a genre",
 	})
 	@Response({ returns: Genre })
-	@Get(':idOrSlug')
+	@Get(":idOrSlug")
 	async get(
 		@RelationIncludeQuery(GenreQueryParameters.AvailableAtomicIncludes)
 		include: GenreQueryParameters.RelationInclude,
 		@IdentifierParam(GenreService)
-		where: GenreQueryParameters.WhereInput
+		where: GenreQueryParameters.WhereInput,
 	) {
 		return this.genreService.get(where, include);
 	}

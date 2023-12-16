@@ -1,7 +1,5 @@
-import { Injectable, NestMiddleware } from '@nestjs/common';
-import {
-	NextFunction, Request, Response
-} from 'express';
+import { Injectable, NestMiddleware } from "@nestjs/common";
+import { NextFunction, Request, Response } from "express";
 
 /**
  * JWT Middleware to pass the access_token cookie to the Authorieation header
@@ -10,8 +8,8 @@ import {
 @Injectable()
 export class JwtCookieMiddleware implements NestMiddleware {
 	use(req: Request, _res: Response, next: NextFunction) {
-		if (req.cookies && req.cookies['access_token'] !== undefined) {
-			req.headers.authorization ??= `Bearer ${req.cookies['access_token']}`;
+		if (req.cookies && req.cookies["access_token"] !== undefined) {
+			req.headers.authorization ??= `Bearer ${req.cookies["access_token"]}`;
 		}
 		next();
 	}

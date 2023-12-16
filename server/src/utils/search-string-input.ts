@@ -1,7 +1,12 @@
 import { Prisma } from "@prisma/client";
 import type { RequireExactlyOne } from "type-fest";
 
-export type SearchStringInput = RequireExactlyOne<{ startsWith: string, endsWith: string, contains: string, is: string }>;
+export type SearchStringInput = RequireExactlyOne<{
+	startsWith: string;
+	endsWith: string;
+	contains: string;
+	is: string;
+}>;
 
 export function buildStringSearchParameters(where?: SearchStringInput) {
 	return {
@@ -9,6 +14,6 @@ export function buildStringSearchParameters(where?: SearchStringInput) {
 		endsWith: where?.endsWith,
 		contains: where?.contains,
 		equals: where?.is,
-		mode: Prisma.QueryMode.insensitive
+		mode: Prisma.QueryMode.insensitive,
 	};
 }

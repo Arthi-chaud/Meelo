@@ -5,22 +5,22 @@ import { ApiProperty } from "@nestjs/swagger";
  */
 export default class ProviderResponse {
 	@ApiProperty({
-		description: 'Name of the Provider'
+		description: "Name of the Provider",
 	})
 	name: string;
 
 	@ApiProperty({
-		description: 'Homepage of the provider'
+		description: "Homepage of the provider",
 	})
 	homepage: string;
 
 	@ApiProperty({
-		description: "Local URL to the provider's banner"
+		description: "Local URL to the provider's banner",
 	})
 	banner: string;
 
 	@ApiProperty({
-		description: "Local URL to the provider's icon"
+		description: "Local URL to the provider's icon",
 	})
 	icon: string;
 }

@@ -15,12 +15,15 @@ import SongModule from "src/song/song.module";
 import TrackModule from "src/track/track.module";
 import { createTestingModule } from "test/test-module";
 import TestPrismaService from "test/test-prisma.service";
-import { FileAlreadyExistsException, FileNotFoundFromIDException } from "./file.exceptions";
+import {
+	FileAlreadyExistsException,
+	FileNotFoundFromIDException,
+} from "./file.exceptions";
 import FileModule from "./file.module";
 import FileService from "./file.service";
 import LibraryModule from "src/library/library.module";
 
-describe('File Service', () => {
+describe("File Service", () => {
 	let fileService: FileService;
 	let dummyRepository: TestPrismaService;
 
@@ -29,10 +32,28 @@ describe('File Service', () => {
 	let module: TestingModule;
 	beforeAll(async () => {
 		module = await createTestingModule({
-			imports: [FileModule, PrismaModule, ScannerModule, FileManagerModule, IllustrationModule, ArtistModule, AlbumModule, SongModule, ReleaseModule, TrackModule, SettingsModule, GenreModule, LyricsModule, LibraryModule],
+			imports: [
+				FileModule,
+				PrismaModule,
+				ScannerModule,
+				FileManagerModule,
+				IllustrationModule,
+				ArtistModule,
+				AlbumModule,
+				SongModule,
+				ReleaseModule,
+				TrackModule,
+				SettingsModule,
+				GenreModule,
+				LyricsModule,
+				LibraryModule,
+			],
 			providers: [FileService],
-		}).overrideProvider(PrismaService).useClass(TestPrismaService).compile();
-		dummyRepository = module.get(PrismaService)
+		})
+			.overrideProvider(PrismaService)
+			.useClass(TestPrismaService)
+			.compile();
+		dummyRepository = module.get(PrismaService);
 		await dummyRepository.onModuleInit();
 		fileService = module.get<FileService>(FileService);
 	});
@@ -41,18 +62,18 @@ describe('File Service', () => {
 		module.close();
 	});
 
-	it('should be defined', () => {
+	it("should be defined", () => {
 		expect(fileService).toBeDefined();
 	});
 
 	const now = new Date();
-	describe('Create File', () => {
-		it('should create a file', async () => {
+	describe("Create File", () => {
+		it("should create a file", async () => {
 			newFile = await fileService.create({
-				path: 'Me',
+				path: "Me",
 				libraryId: dummyRepository.library1.id,
 				md5Checksum: "Sum",
-				registerDate: now
+				registerDate: now,
 			});
 			expect(newFile.id).toBeDefined();
 			expect(newFile.libraryId).toBe(dummyRepository.library1.id);
@@ -61,36 +82,39 @@ describe('File Service', () => {
 			expect(newFile.registerDate).toStrictEqual(now);
 		});
 
-		it('should throw, as the file in the library already exists', async () => {
+		it("should throw, as the file in the library already exists", async () => {
 			const now = new Date();
-			const test = async () => await fileService.create({
-				path: 'Me',
-				libraryId: dummyRepository.library1.id,
-				md5Checksum: "Sum",
-				registerDate: now
-			});
-			expect(test()).rejects.toThrow(FileAlreadyExistsException)
+			const test = async () =>
+				await fileService.create({
+					path: "Me",
+					libraryId: dummyRepository.library1.id,
+					md5Checksum: "Sum",
+					registerDate: now,
+				});
+			expect(test()).rejects.toThrow(FileAlreadyExistsException);
 		});
 	});
 
-	describe('Get Files', () => {
+	describe("Get Files", () => {
 		it("should shuffle files", async () => {
-			const sort1 = await fileService.getMany({ }, { take: 10 }, {}, 123);
-			const sort2 = await fileService.getMany({ }, { take: 10 }, {}, 1234);
+			const sort1 = await fileService.getMany({}, { take: 10 }, {}, 123);
+			const sort2 = await fileService.getMany({}, { take: 10 }, {}, 1234);
 			expect(sort1.length).toBe(sort2.length);
 			expect(sort1).toContainEqual(dummyRepository.fileB1_1);
-			expect(sort1.map(({ id }) => id)).not.toBe(sort2.map(({ id }) => id));
+			expect(sort1.map(({ id }) => id)).not.toBe(
+				sort2.map(({ id }) => id),
+			);
 		});
-	})
+	});
 
-	describe('Delete File', () => {
-		it('should delete a file (from id)', async () => {
+	describe("Delete File", () => {
+		it("should delete a file (from id)", async () => {
 			await fileService.delete({ id: newFile.id });
 			const test = async () => fileService.get({ id: newFile.id });
 			expect(test()).rejects.toThrow(FileNotFoundFromIDException);
 		});
 
-		it('should throw, as the file does not exist (from id)', () => {
+		it("should throw, as the file does not exist (from id)", () => {
 			const test = async () => fileService.delete({ id: -1 });
 			expect(test()).rejects.toThrow(FileNotFoundFromIDException);
 		});

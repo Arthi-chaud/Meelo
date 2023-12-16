@@ -1,1 +1,1 @@
-export const DefaultWindowTitle = 'Meelo';
+export const DefaultWindowTitle = "Meelo";

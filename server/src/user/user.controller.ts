@@ -1,9 +1,17 @@
 import {
-	Body, Controller, Delete, Get, Post, Put, Query, Req, Request
+	Body,
+	Controller,
+	Delete,
+	Get,
+	Post,
+	Put,
+	Query,
+	Req,
+	Request,
 } from "@nestjs/common";
 import { User } from "@prisma/client";
 import UserService from "./user.service";
-import { ApiOperation, ApiTags } from '@nestjs/swagger';
+import { ApiOperation, ApiTags } from "@nestjs/swagger";
 import UserCreateDTO from "./models/create-user.dto";
 import Admin from "src/authentication/roles/admin.decorator";
 import { PaginationParameters } from "src/pagination/models/pagination-parameters";
@@ -19,14 +27,12 @@ import Response, { ResponseType } from "src/response/response.decorator";
 @ApiTags("Users")
 @Controller("users")
 export default class UserController {
-	constructor(
-		private userService: UserService
-	) {}
+	constructor(private userService: UserService) {}
 
 	@ApiOperation({
-		summary: 'Get info about the currently authentified user'
+		summary: "Get info about the currently authentified user",
 	})
-	@Get('me')
+	@Get("me")
 	@Response({ handler: UserResponseBuilder })
 	async getAuthenticatedUserProfile(@Request() request: Express.Request) {
 		// Required to return a proper build response
@@ -35,23 +41,21 @@ export default class UserController {
 	}
 
 	@ApiOperation({
-		summary: 'Create a new user account'
+		summary: "Create a new user account",
 	})
 	@Public()
 	@Response({ handler: UserResponseBuilder })
-	@Post('new')
-	async createUserAccount(
-		@Body() userDTO: UserCreateDTO
-	) {
+	@Post("new")
+	async createUserAccount(@Body() userDTO: UserCreateDTO) {
 		return this.userService.create(userDTO);
 	}
 
 	@ApiOperation({
-		summary: 'Update a user'
+		summary: "Update a user",
 	})
 	@Admin()
 	@Response({ handler: UserResponseBuilder })
-	@Put(':idOrSlug')
+	@Put(":idOrSlug")
 	async updateUserAccounts(
 		@IdentifierParam(UserService)
 		where: UserQueryParameters.WhereInput,
@@ -61,33 +65,33 @@ export default class UserController {
 	}
 
 	@ApiOperation({
-		summary: 'Delete a user'
+		summary: "Delete a user",
 	})
 	@Admin()
 	@Response({ handler: UserResponseBuilder })
-	@Delete(':idOrSlug')
+	@Delete(":idOrSlug")
 	async deleteUserAccounts(
 		@IdentifierParam(UserService)
 		where: UserQueryParameters.WhereInput,
-		@Req() request: Express.Request
+		@Req() request: Express.Request,
 	) {
 		const user = await this.userService.get(where);
 		const authenticatedUser = request.user as User;
 
 		if (authenticatedUser.id == user.id) {
-			throw new InvalidRequestException('Users can not delete themselves');
+			throw new InvalidRequestException(
+				"Users can not delete themselves",
+			);
 		}
-		return this.userService.delete(
-			{ id: user.id }
-		);
+		return this.userService.delete({ id: user.id });
 	}
 
 	@ApiOperation({
-		summary: 'Get all user accounts'
+		summary: "Get all user accounts",
 	})
 	@Response({
 		handler: UserResponseBuilder,
-		type: ResponseType.Page
+		type: ResponseType.Page,
 	})
 	@Admin()
 	@Get()
@@ -95,56 +99,59 @@ export default class UserController {
 		@Query()
 		paginationParameters: PaginationParameters,
 		@SortingQuery(UserQueryParameters.SortingKeys)
-		sortingParameter: UserQueryParameters.SortingParameter
+		sortingParameter: UserQueryParameters.SortingParameter,
 	) {
 		return this.userService.getMany(
-			{}, paginationParameters, {}, sortingParameter
+			{},
+			paginationParameters,
+			{},
+			sortingParameter,
 		);
 	}
 
 	@ApiOperation({
-		summary: 'Get disabled user accounts'
+		summary: "Get disabled user accounts",
 	})
 	@Response({
 		handler: UserResponseBuilder,
-		type: ResponseType.Page
+		type: ResponseType.Page,
 	})
 	@Admin()
-	@Get('disabled')
+	@Get("disabled")
 	async getDisabledUserAccounts(
 		@Query()
 		paginationParameters: PaginationParameters,
 		@SortingQuery(UserQueryParameters.SortingKeys)
-		sortingParameter: UserQueryParameters.SortingParameter
+		sortingParameter: UserQueryParameters.SortingParameter,
 	) {
 		return this.userService.getMany(
 			{ enabled: false },
 			paginationParameters,
 			{},
-			sortingParameter
+			sortingParameter,
 		);
 	}
 
 	@ApiOperation({
-		summary: 'Get enabled admin user accounts'
+		summary: "Get enabled admin user accounts",
 	})
 	@Response({
 		handler: UserResponseBuilder,
-		type: ResponseType.Page
+		type: ResponseType.Page,
 	})
 	@Admin()
-	@Get('admins')
+	@Get("admins")
 	async getAdminUserAccounts(
 		@Query()
 		paginationParameters: PaginationParameters,
 		@SortingQuery(UserQueryParameters.SortingKeys)
-		sortingParameter: UserQueryParameters.SortingParameter
+		sortingParameter: UserQueryParameters.SortingParameter,
 	) {
 		return this.userService.getMany(
 			{ admin: true, enabled: true },
 			paginationParameters,
 			{},
-			sortingParameter
+			sortingParameter,
 		);
 	}
 }

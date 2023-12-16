@@ -9,48 +9,83 @@ import API from "../../api/api";
 
 export const getServerSideProps = prepareSSR((context) => {
 	const genreIdentifier = getSlugOrId(context.params);
-	const defaultQuerySortParams = { sortBy: 'name', order: 'asc' } as const;
+	const defaultQuerySortParams = { sortBy: "name", order: "asc" } as const;
 
 	return {
 		additionalProps: { genreIdentifier },
 		queries: [API.getGenre(genreIdentifier)],
 		infiniteQueries: [
-			API.getAlbums({ genre: genreIdentifier }, defaultQuerySortParams, ['artist']),
+			API.getAlbums({ genre: genreIdentifier }, defaultQuerySortParams, [
+				"artist",
+			]),
 			API.getArtists({ genre: genreIdentifier }, defaultQuerySortParams),
-			API.getSongs({ genre: genreIdentifier }, defaultQuerySortParams, ['artist', 'featuring'])
-		]
+			API.getSongs({ genre: genreIdentifier }, defaultQuerySortParams, [
+				"artist",
+				"featuring",
+			]),
+		],
 	};
 });
 
 const GenrePage = (props: InferSSRProps<typeof getServerSideProps>) => {
 	const router = useRouter();
-	const genreIdentifier = props.additionalProps?.genreIdentifier ?? getSlugOrId(router.query);
+	const genreIdentifier =
+		props.additionalProps?.genreIdentifier ?? getSlugOrId(router.query);
 	const genre = useQuery(API.getGenre, genreIdentifier);
 
 	if (!genre.data) {
-		return <LoadingPage/>;
+		return <LoadingPage />;
 	}
-	return <Box sx={{ width: '100%' }}>
-		<Box sx={{ width: '100%', justifyContent: "center", textAlign: 'center', marginY: 5 }}>
-			<Typography variant='h5' sx={{ fontWeight: 'bold' }}>
-				{genre.data.name}
-			</Typography>
+	return (
+		<Box sx={{ width: "100%" }}>
+			<Box
+				sx={{
+					width: "100%",
+					justifyContent: "center",
+					textAlign: "center",
+					marginY: 5,
+				}}
+			>
+				<Typography variant="h5" sx={{ fontWeight: "bold" }}>
+					{genre.data.name}
+				</Typography>
+			</Box>
+			<SelectableInfiniteView
+				enabled={true}
+				artistQuery={({ library }, { sortBy, order }) =>
+					API.getArtists(
+						{
+							genre: genreIdentifier,
+							library: library ?? undefined,
+						},
+						{ sortBy, order },
+					)
+				}
+				albumQuery={({ library, type }, { sortBy, order }) =>
+					API.getAlbums(
+						{
+							genre: genreIdentifier,
+							type,
+							library: library ?? undefined,
+						},
+						{ sortBy, order },
+						["artist"],
+					)
+				}
+				songQuery={({ library, type }, { sortBy, order }) =>
+					API.getSongs(
+						{
+							genre: genreIdentifier,
+							type,
+							library: library ?? undefined,
+						},
+						{ sortBy, order },
+						["artist", "featuring"],
+					)
+				}
+			/>
 		</Box>
-		<SelectableInfiniteView
-			enabled={true}
-			artistQuery={({ library }, { sortBy, order }) => API.getArtists(
-				{ genre: genreIdentifier, library: library ?? undefined }, { sortBy, order }
-			)}
-			albumQuery={({ library, type }, { sortBy, order }) => API.getAlbums(
-				{ genre: genreIdentifier, type, library: library ?? undefined }, { sortBy, order }, ['artist']
-			)}
-			songQuery={({ library, type }, { sortBy, order }) => API.getSongs(
-				{ genre: genreIdentifier, type, library: library ?? undefined },
-				{ sortBy, order },
-				['artist', 'featuring']
-			)}
-		/>
-	</Box>;
+	);
 };
 
 export default GenrePage;

@@ -5,31 +5,44 @@ import { useState } from "react";
 import { capitalCase } from "change-case";
 
 type Props = {
-	externalDescription: ExternalId
-}
+	externalDescription: ExternalId;
+};
 
 const ResourceDescriptionExpandable = ({ externalDescription }: Props) => {
 	const [isExpanded, setIsExpanded] = useState(false);
 	const maxLine = 5;
 	const smallBoxStyle = {
-		overflow: 'hidden',
-		display: '-webkit-box',
+		overflow: "hidden",
+		display: "-webkit-box",
 		WebkitLineClamp: maxLine,
 		lineClamp: maxLine,
-		WebkitBoxOrient: 'vertical'
+		WebkitBoxOrient: "vertical",
 	} as const;
 	const bigBoxStyle = {};
 
 	return (
 		<Box id="description" sx={isExpanded ? bigBoxStyle : smallBoxStyle}>
 			{externalDescription.description}
-			{isExpanded && <>
-				{" Source: "}<Link href={externalDescription.url ?? undefined} rel="noopener noreferrer" target="_blank">
-					{capitalCase(externalDescription.provider.name)}
-				</Link>{"."}
-			</>}
-			{" "}<Link href="#description" onClick={() => setIsExpanded(!isExpanded)}>
-				<Translate translationKey={isExpanded ? 'showLess' : 'showMore'}/>
+			{isExpanded && (
+				<>
+					{" Source: "}
+					<Link
+						href={externalDescription.url ?? undefined}
+						rel="noopener noreferrer"
+						target="_blank"
+					>
+						{capitalCase(externalDescription.provider.name)}
+					</Link>
+					{"."}
+				</>
+			)}{" "}
+			<Link
+				href="#description"
+				onClick={() => setIsExpanded(!isExpanded)}
+			>
+				<Translate
+					translationKey={isExpanded ? "showLess" : "showMore"}
+				/>
 			</Link>
 		</Box>
 	);

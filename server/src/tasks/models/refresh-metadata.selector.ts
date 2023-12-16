@@ -18,7 +18,7 @@ import TrackService from "src/track/track.service";
 export default class RefreshMetadataSelector {
 	@IsOptional()
 	@ApiPropertyOptional({
-		description: `Refresh based on the library`
+		description: `Refresh based on the library`,
 	})
 	@TransformIdentifier(LibraryService)
 	library?: LibraryQueryParameters.WhereInput;
@@ -27,28 +27,28 @@ export default class RefreshMetadataSelector {
 
 	@IsOptional()
 	@ApiPropertyOptional({
-		description: `Refresh based on the album`
+		description: `Refresh based on the album`,
 	})
 	@TransformIdentifier(AlbumService)
 	album?: AlbumQueryParameters.WhereInput;
 
 	@IsOptional()
 	@ApiPropertyOptional({
-		description: `Refresh based on the release`
+		description: `Refresh based on the release`,
 	})
 	@TransformIdentifier(ReleaseService)
 	release?: ReleaseQueryParameters.WhereInput;
 
 	@IsOptional()
 	@ApiPropertyOptional({
-		description: `Refresh based on the song`
+		description: `Refresh based on the song`,
 	})
 	@TransformIdentifier(SongService)
 	song?: SongQueryParameters.WhereInput;
 
 	@IsOptional()
 	@ApiPropertyOptional({
-		description: `Refresh based on the track`
+		description: `Refresh based on the track`,
 	})
 	@TransformIdentifier(TrackService)
 	track?: TrackQueryParameters.WhereInput;

@@ -4,24 +4,27 @@ import AllMusicSettings from "./allmusic.settings";
 import { HttpService } from "@nestjs/axios";
 import { ProviderActionFailedError } from "../provider.exception";
 import { isNumber } from "class-validator";
-import * as cheerio from 'cheerio';
+import * as cheerio from "cheerio";
 import SettingsService from "src/settings/settings.service";
 
 @Injectable()
-export default class AllMusicProvider extends IProvider<AllMusicSettings> implements OnModuleInit {
+export default class AllMusicProvider
+	extends IProvider<AllMusicSettings>
+	implements OnModuleInit
+{
 	constructor(
 		private readonly httpService: HttpService,
-		private settingsService: SettingsService
+		private settingsService: SettingsService,
 	) {
-		super('allMusic');
+		super("allMusic");
 	}
 
 	getProviderBannerUrl(): string {
-		return 'https://d39w11zmd7f11d.cloudfront.net/wp-content/uploads/2020/09/AllMusic-inline.jpg';
+		return "https://d39w11zmd7f11d.cloudfront.net/wp-content/uploads/2020/09/AllMusic-inline.jpg";
 	}
 
 	getProviderIconUrl(): string {
-		return 'https://cdn-gce.allmusic.com/images/allmusic_facebook_share.png';
+		return "https://cdn-gce.allmusic.com/images/allmusic_facebook_share.png";
 	}
 
 	onModuleInit() {
@@ -29,7 +32,7 @@ export default class AllMusicProvider extends IProvider<AllMusicSettings> implem
 	}
 
 	getProviderHomepage(): string {
-		return 'https://www.allmusic.com';
+		return "https://www.allmusic.com";
 	}
 
 	getAlbumWikidataIdentifierProperty() {
@@ -40,27 +43,40 @@ export default class AllMusicProvider extends IProvider<AllMusicSettings> implem
 		return `${this.getProviderHomepage()}/album/${albumIdentifier}`;
 	}
 
-	async getAlbumMetadataByIdentifier(albumIdentifier: string): Promise<AlbumMetadata> {
+	async getAlbumMetadataByIdentifier(
+		albumIdentifier: string,
+	): Promise<AlbumMetadata> {
 		try {
 			const albumPage = await this.httpService.axiosRef
-				.get(`/album/${albumIdentifier}`, { baseURL: this.getProviderHomepage() })
+				.get(`/album/${albumIdentifier}`, {
+					baseURL: this.getProviderHomepage(),
+				})
 				.then((res) => res.data);
 			const pageSkeleton = cheerio.load(albumPage);
-			const ratingDiv = pageSkeleton('div[title="AllMusic Rating"]').first();
-			const scoreOutTen = parseInt(ratingDiv.attr('class')?.match(/\d/)?.[0] ?? '');
+			const ratingDiv = pageSkeleton(
+				'div[title="AllMusic Rating"]',
+			).first();
+			const scoreOutTen = parseInt(
+				ratingDiv.attr("class")?.match(/\d/)?.[0] ?? "",
+			);
 			const description = null; // Can't get description, the page uses JS to get it
 
 			return {
 				value: albumIdentifier,
-				rating: isNumber(scoreOutTen)
-					? scoreOutTen > 0
-						? (scoreOutTen + 1) * 10
-						: null
-					: null,
-				description: description
+				rating:
+					isNumber(scoreOutTen) ?
+						scoreOutTen > 0 ?
+							(scoreOutTen + 1) * 10
+						:	null
+					:	null,
+				description: description,
 			};
 		} catch (err) {
-			throw new ProviderActionFailedError(this.name, 'getAlbumMetadataByIdentifier', err.message);
+			throw new ProviderActionFailedError(
+				this.name,
+				"getAlbumMetadataByIdentifier",
+				err.message,
+			);
 		}
 	}
 }

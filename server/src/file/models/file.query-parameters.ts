@@ -10,25 +10,30 @@ namespace FileQueryParameters {
 	/**
 	 * Parameters to create a File
 	 */
-	export type CreateInput = Omit<File, 'library' | 'id' | 'track'>;
+	export type CreateInput = Omit<File, "library" | "id" | "track">;
 	/**
 	 * Query parameters to find one file
 	 */
 	export type WhereInput = RequireExactlyOne<{
-		trackId: Track['id'],
-		id: File['id'],
-		byPath: { path: File['path'], library: LibraryQueryParameters.WhereInput }
+		trackId: Track["id"];
+		id: File["id"];
+		byPath: {
+			path: File["path"];
+			library: LibraryQueryParameters.WhereInput;
+		};
 	}>;
 
 	/**
 	 * Query parameters to find multiple files
 	 */
-	export type ManyWhereInput = Partial<RequireAtLeastOne<{
-		library: LibraryQueryParameters.WhereInput,
-		id: { in: File['id'][] },
-		paths: File['path'][],
-		registrationDate: SearchDateInput
-	}>>;
+	export type ManyWhereInput = Partial<
+		RequireAtLeastOne<{
+			library: LibraryQueryParameters.WhereInput;
+			id: { in: File["id"][] };
+			paths: File["path"][];
+			registrationDate: SearchDateInput;
+		}>
+	>;
 
 	/**
 	 * The parameters needed to update a File
@@ -38,13 +43,13 @@ namespace FileQueryParameters {
 	/**
 	 * Query parameters to delete one file
 	 */
-	export type DeleteInput = Required<Pick<WhereInput, 'id'>>;
+	export type DeleteInput = Required<Pick<WhereInput, "id">>;
 
 	export const SortingKeys = [
-		'id',
-		'trackName',
-		'trackArtist',
-		'addDate'
+		"id",
+		"trackName",
+		"trackArtist",
+		"addDate",
 	] as const;
 	export type SortingKeys = typeof SortingKeys;
 	export class SortingParameter extends ModelSortingParameter(SortingKeys) {}
@@ -52,10 +57,10 @@ namespace FileQueryParameters {
 	/**
 	 * Relations to include in returned File object
 	 */
-	export const AvailableIncludes = ['track', 'library'] as const;
-	export const AvailableAtomicIncludes = filterAtomicRelationInclude(AvailableIncludes);
+	export const AvailableIncludes = ["track", "library"] as const;
+	export const AvailableAtomicIncludes =
+		filterAtomicRelationInclude(AvailableIncludes);
 	export type RelationInclude = BaseRelationInclude<typeof AvailableIncludes>;
-
 }
 
 export default FileQueryParameters;

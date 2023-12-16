@@ -1,5 +1,7 @@
 import {
-	AlreadyExistsException, InvalidRequestException, NotFoundException
+	AlreadyExistsException,
+	InvalidRequestException,
+	NotFoundException,
 } from "src/exceptions/meelo-exception";
 import Slug from "src/slug/slug";
 
@@ -35,12 +37,12 @@ export class PlaylistEntryNotFoundException extends NotFoundException {
 
 export class InvalidPlaylistEntryIndexException extends InvalidRequestException {
 	constructor() {
-		super('Invalid Playlist entry Index');
+		super("Invalid Playlist entry Index");
 	}
 }
 
 export class PlaylistReorderInvalidArrayException extends InvalidRequestException {
 	constructor() {
-		super('Invalid Playlist Reoder array');
+		super("Invalid Playlist Reoder array");
 	}
 }

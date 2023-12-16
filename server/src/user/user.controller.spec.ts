@@ -11,18 +11,21 @@ import UserService from "./user.service";
 import request from "supertest";
 import SetupApp from "test/setup-app";
 
-describe('User Controller', () => {
+describe("User Controller", () => {
 	let app: INestApplication;
 	let dummyRepository: TestPrismaService;
 	let adminUser: User;
 	let user: User;
-	
+
 	let module: TestingModule;
 	beforeAll(async () => {
 		module = await createTestingModule({
 			imports: [PrismaModule, FileModule, UserModule],
 			providers: [PrismaService, UserService],
-		}).overrideProvider(PrismaService).useClass(TestPrismaService).compile();
+		})
+			.overrideProvider(PrismaService)
+			.useClass(TestPrismaService)
+			.compile();
 		app = await SetupApp(module);
 		dummyRepository = module.get(PrismaService);
 		await dummyRepository.onModuleInit();
@@ -41,14 +44,14 @@ describe('User Controller', () => {
 			return request(app.getHttpServer())
 				.post(`/users/new`)
 				.send({
-					name: 'admin',
-					password: 'admin1234'
+					name: "admin",
+					password: "admin1234",
 				})
 				.expect(201)
 				.expect((res) => {
 					adminUser = res.body;
 					expect(adminUser.admin).toBe(true);
-					expect(adminUser.name).toBe('admin');
+					expect(adminUser.name).toBe("admin");
 					expect(adminUser.enabled).toBe(true);
 					expect(adminUser.id).toBeDefined();
 				});
@@ -58,14 +61,14 @@ describe('User Controller', () => {
 			return request(app.getHttpServer())
 				.post(`/users/new`)
 				.send({
-					name: 'user',
-					password: 'user1234'
+					name: "user",
+					password: "user1234",
 				})
 				.expect(201)
 				.expect((res) => {
 					user = res.body;
 					expect(user.admin).toBe(false);
-					expect(user.name).toBe('user');
+					expect(user.name).toBe("user");
 					expect(user.enabled).toBe(false);
 					expect(user.id).toBeDefined();
 				});
@@ -75,33 +78,33 @@ describe('User Controller', () => {
 			return request(app.getHttpServer())
 				.post(`/users/new`)
 				.send({
-					name: 'user',
-					password: 'user123456'
+					name: "user",
+					password: "user123456",
 				})
-				.expect(409)
+				.expect(409);
 		});
 
 		it("Should return an error, as username is not long enough", () => {
 			return request(app.getHttpServer())
 				.post(`/users/new`)
 				.send({
-					name: 'use',
-					password: 'user123456'
+					name: "use",
+					password: "user123456",
 				})
-				.expect(400)
+				.expect(400);
 		});
 
 		it("Should return an error, as password is badly formed", () => {
 			return request(app.getHttpServer())
 				.post(`/users/new`)
 				.send({
-					name: 'admi',
-					password: 'user'
+					name: "admi",
+					password: "user",
 				})
-				.expect(400)
+				.expect(400);
 		});
 	});
-	
+
 	describe("Get all user accounts", () => {
 		it("Should get all the user account", () => {
 			return request(app.getHttpServer())
@@ -126,7 +129,7 @@ describe('User Controller', () => {
 				});
 		});
 	});
-	
+
 	describe("Get all disabled user accounts", () => {
 		it("Should get all the user account", () => {
 			return request(app.getHttpServer())
@@ -158,29 +161,29 @@ describe('User Controller', () => {
 			return request(app.getHttpServer())
 				.put(`/users/${user.id}`)
 				.send({
-					enabled: true
+					enabled: true,
 				})
-				
+
 				.expect((res) => {
 					const updatedUser: User = res.body;
-					expect(updatedUser).toStrictEqual({ ...user, enabled: true });
+					expect(updatedUser).toStrictEqual({
+						...user,
+						enabled: true,
+					});
 				});
 		});
 
 		it("Should return an error, as id is not known", () => {
-			return request(app.getHttpServer())
-				.put(`/users/-1`)
-				.expect(404)
+			return request(app.getHttpServer()).put(`/users/-1`).expect(404);
 		});
 
 		it("Should return an error, as username is not valid", () => {
 			return request(app.getHttpServer())
 				.put(`/users/${user.id}`)
 				.send({
-					name: 'use'
+					name: "use",
 				})
 				.expect(400);
 		});
 	});
-
 });

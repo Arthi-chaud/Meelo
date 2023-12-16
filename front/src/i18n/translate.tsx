@@ -9,7 +9,7 @@ const useLanguage = () => {
 	return useSelector((state: RootState) => {
 		const currentLanguage = state.settings.language;
 
-		if (currentLanguage == 'system') {
+		if (currentLanguage == "system") {
 			return getSystemLanguage();
 		}
 		return currentLanguage;
@@ -19,9 +19,13 @@ const useLanguage = () => {
 const getSystemLanguage = () => {
 	if (isSSR()) {
 		// This should never happen, as we parse and dispatch the language based on the request's "accept-language"
-		return 'en';
+		return "en";
 	}
-	return Languages.find((ln) => new RegExp(`/${ln}\b/`).test(navigator.language)) ?? 'en';
+	return (
+		Languages.find((ln) =>
+			new RegExp(`/${ln}\b/`).test(navigator.language),
+		) ?? "en"
+	);
 };
 
 // Translate text according to store
@@ -29,16 +33,14 @@ const translate = (key: TranslationKey) => {
 	const language = store.getState().settings.language;
 
 	return i18n.t(key, {
-		lng: language == 'system'
-			? getSystemLanguage()
-			: language
+		lng: language == "system" ? getSystemLanguage() : language,
 	});
 };
 
 type TranslateProps = {
 	translationKey: TranslationKey;
 	format?: (s: string) => string;
-}
+};
 
 /**
  * JSX component that returns the translation of the key

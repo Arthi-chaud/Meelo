@@ -4,6 +4,6 @@ import Logger from "./logger";
 @Module({
 	imports: [],
 	providers: [Logger],
-	exports: [Logger]
+	exports: [Logger],
 })
 export default class LoggerModule {}

@@ -1,6 +1,4 @@
-import {
-	Inject, Injectable, OnModuleInit, forwardRef
-} from "@nestjs/common";
+import { Inject, Injectable, OnModuleInit, forwardRef } from "@nestjs/common";
 import IProvider from "./iprovider";
 import SettingsService from "src/settings/settings.service";
 import { AllProvidersFailedError } from "./provider.exception";
@@ -45,20 +43,22 @@ export default class ProviderService implements OnModuleInit {
 			discogsProvider,
 			wikipediaProvider,
 			metacriticProvider,
-			allMusicProvider
+			allMusicProvider,
 		];
 	}
 
 	getProviderById(id: number) {
 		return this._providerCatalogue.find(
-			({ name }) => this._providerRows.find(
-				(provider) => provider.id == id
-			)?.name == name
+			({ name }) =>
+				this._providerRows.find((provider) => provider.id == id)
+					?.name == name,
 		)!;
 	}
 
-	getProviderId(providerName: typeof IProvider['prototype']['name']) {
-		return this._providerRows.find((provider) => provider.name == providerName)!.id;
+	getProviderId(providerName: (typeof IProvider)["prototype"]["name"]) {
+		return this._providerRows.find(
+			(provider) => provider.name == providerName,
+		)!.id;
 	}
 
 	get enabledProviders() {
@@ -85,20 +85,22 @@ export default class ProviderService implements OnModuleInit {
 				this.logger.warn(`Provider '${provider.name}' disabled`);
 			}
 		});
-		this._providerRows.push(...await this.prismaService.$transaction(
-			this._providerCatalogue.map((provider) => {
-				const providerSlug = new Slug(provider.name).toString();
+		this._providerRows.push(
+			...(await this.prismaService.$transaction(
+				this._providerCatalogue.map((provider) => {
+					const providerSlug = new Slug(provider.name).toString();
 
-				return this.prismaService.provider.upsert({
-					create: {
-						name: provider.name,
-						slug: providerSlug
-					},
-					where: { slug: providerSlug },
-					update: {}
-				});
-			})
-		));
+					return this.prismaService.provider.upsert({
+						create: {
+							name: provider.name,
+							slug: providerSlug,
+						},
+						where: { slug: providerSlug },
+						update: {},
+					});
+				}),
+			)),
+		);
 		this.providerIllustrationService.downloadMissingProviderImages();
 	}
 
@@ -107,7 +109,7 @@ export default class ProviderService implements OnModuleInit {
 	 * If all fails, rejects
 	 */
 	async runAction<Returns>(
-		action: (provider: IProvider) => Promise<Returns>
+		action: (provider: IProvider) => Promise<Returns>,
 	): Promise<Returns> {
 		for (const provider of this._enabledProviders) {
 			try {
@@ -123,11 +125,11 @@ export default class ProviderService implements OnModuleInit {
 	 * Calls action method on each enabled provider, and returns all successes
 	 */
 	async collectActions<Returns>(
-		action: (provider: IProvider) => Promise<Returns>
+		action: (provider: IProvider) => Promise<Returns>,
 	): Promise<Returns[]> {
-		return Promise.allSettled(this._enabledProviders.map(action))
-			.then((results) => results
-				.filter(isFulfilled)
-				.map((result) => result.value));
+		return Promise.allSettled(this._enabledProviders.map(action)).then(
+			(results) =>
+				results.filter(isFulfilled).map((result) => result.value),
+		);
 	}
 }

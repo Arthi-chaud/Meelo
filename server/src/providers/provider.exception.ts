@@ -1,4 +1,7 @@
-import { InvalidRequestException, NotFoundException } from "src/exceptions/meelo-exception";
+import {
+	InvalidRequestException,
+	NotFoundException,
+} from "src/exceptions/meelo-exception";
 
 export class ProviderMethodNotAvailableError extends InvalidRequestException {
 	constructor(providerName: string) {
@@ -19,8 +22,14 @@ export class ProviderActionFailedError extends NotFoundException {
 }
 
 export class MissingExternalIdError extends NotFoundException {
-	constructor(providerName: string, resourceType: string, resourceName: string) {
-		super(`Could not find External Id from ${providerName} not found for ${resourceType} '${resourceName}'.`);
+	constructor(
+		providerName: string,
+		resourceType: string,
+		resourceName: string,
+	) {
+		super(
+			`Could not find External Id from ${providerName} not found for ${resourceType} '${resourceName}'.`,
+		);
 	}
 }
 

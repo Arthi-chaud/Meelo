@@ -1,5 +1,7 @@
 import {
-	AlreadyExistsException, InvalidRequestException, NotFoundException
+	AlreadyExistsException,
+	InvalidRequestException,
+	NotFoundException,
 } from "src/exceptions/meelo-exception";
 import type Slug from "src/slug/slug";
 
@@ -11,7 +13,9 @@ export class ArtistNotFoundException extends NotFoundException {
 
 export class CompilationArtistException extends InvalidRequestException {
 	constructor(resourceName: string) {
-		super(`The '${resourceName}' resource can not be accessed for the 'Compilation' artist`);
+		super(
+			`The '${resourceName}' resource can not be accessed for the 'Compilation' artist`,
+		);
 	}
 }
 
@@ -29,6 +33,8 @@ export class ArtistAlreadyExistsException extends AlreadyExistsException {
 
 export class ArtistNotEmptyException extends InvalidRequestException {
 	constructor(artistSlugOrId: Slug | number) {
-		super(`Artist '${artistSlugOrId.toString()}' can not be deleted: it has related songs and/or albums`);
+		super(
+			`Artist '${artistSlugOrId.toString()}' can not be deleted: it has related songs and/or albums`,
+		);
 	}
 }

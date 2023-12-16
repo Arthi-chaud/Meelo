@@ -1,13 +1,17 @@
 import {
 	AlreadyExistsException,
 	InvalidRequestException,
-	NotFoundException
+	NotFoundException,
 } from "src/exceptions/meelo-exception";
 import type Slug from "src/slug/slug";
 
 export class AlbumNotFoundException extends NotFoundException {
 	constructor(albumSlug: Slug, artistSlug?: Slug) {
-		super(`${albumSlug.toString()} ${artistSlug ? `by ${artistSlug.toString()}`: ''}: No such album`);
+		super(
+			`${albumSlug.toString()} ${
+				artistSlug ? `by ${artistSlug.toString()}` : ""
+			}: No such album`,
+		);
 	}
 }
 
@@ -19,7 +23,11 @@ export class AlbumNotFoundFromIDException extends NotFoundException {
 
 export class AlbumAlreadyExistsException extends AlreadyExistsException {
 	constructor(albumSlug: Slug, artistSlug?: Slug) {
-		super(`${albumSlug.toString()} ${artistSlug ? `by ${artistSlug.toString()}`: ''} already exists`);
+		super(
+			`${albumSlug.toString()} ${
+				artistSlug ? `by ${artistSlug.toString()}` : ""
+			} already exists`,
+		);
 	}
 }
 
@@ -31,6 +39,8 @@ export class AlbumAlreadyExistsWithArtistIDException extends AlreadyExistsExcept
 
 export class AlbumNotEmptyException extends InvalidRequestException {
 	constructor(albumId: number) {
-		super(`Album n°${albumId} could not be deleted: It has related releases`);
+		super(
+			`Album n°${albumId} could not be deleted: It has related releases`,
+		);
 	}
 }

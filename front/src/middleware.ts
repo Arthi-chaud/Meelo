@@ -1,11 +1,11 @@
-import { NextRequest, NextResponse } from 'next/server';
-import API from './api/api';
-import store from './state/store';
-import { setAccessToken } from './state/userSlice';
-import { UserAccessTokenCookieKey } from './utils/cookieKeys';
+import { NextRequest, NextResponse } from "next/server";
+import API from "./api/api";
+import store from "./state/store";
+import { setAccessToken } from "./state/userSlice";
+import { UserAccessTokenCookieKey } from "./utils/cookieKeys";
 // eslint-disable-next-line no-restricted-imports
-import { QueryClient } from 'react-query';
-import { prepareMeeloQuery } from './api/use-query';
+import { QueryClient } from "react-query";
+import { prepareMeeloQuery } from "./api/use-query";
 
 export async function middleware(request: NextRequest) {
 	const { pathname, origin } = request.nextUrl;
@@ -19,8 +19,9 @@ export async function middleware(request: NextRequest) {
 		return NextResponse.redirect(`${origin}/`);
 	}
 	// eslint-disable-next-line @typescript-eslint/no-non-null-asserted-optional-chain, no-useless-escape
-	const albumId = pathname.match('\/albums\/(?<slug>[^\/]*)')?.at(1)!;
-	const master = await queryClient.fetchQuery(prepareMeeloQuery(API.getMasterRelease, albumId))
+	const albumId = pathname.match("/albums/(?<slug>[^/]*)")?.at(1)!;
+	const master = await queryClient
+		.fetchQuery(prepareMeeloQuery(API.getMasterRelease, albumId))
 		.catch(() => null);
 
 	if (!master) {
@@ -34,5 +35,5 @@ export async function middleware(request: NextRequest) {
 }
 
 export const config = {
-	matcher: '/albums/:slugOrId/',
+	matcher: "/albums/:slugOrId/",
 };

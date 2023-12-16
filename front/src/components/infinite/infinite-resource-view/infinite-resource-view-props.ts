@@ -1,17 +1,17 @@
-import { MeeloInfiniteQueryFn } from '../../../api/use-query';
-import Resource from '../../../models/resource';
-import { LayoutOption } from '../../../utils/layout';
-import { Order } from '../../../utils/sorting';
-import { OptionState } from '../../controls/controls';
+import { MeeloInfiniteQueryFn } from "../../../api/use-query";
+import Resource from "../../../models/resource";
+import { LayoutOption } from "../../../utils/layout";
+import { Order } from "../../../utils/sorting";
+import { OptionState } from "../../controls/controls";
 
 type InfiniteResourceViewProps<
 	ResourceType extends Resource,
 	SortingKeys extends readonly string[],
-	AdditionalQueryParams extends object = object
+	AdditionalQueryParams extends object = object,
 > = {
 	query: (
-		options: OptionState<SortingKeys> & AdditionalQueryParams
-	) => ReturnType<MeeloInfiniteQueryFn<ResourceType>>,
+		options: OptionState<SortingKeys> & AdditionalQueryParams,
+	) => ReturnType<MeeloInfiniteQueryFn<ResourceType>>;
 	light?: boolean;
 	defaultLayout?: LayoutOption;
 	initialSortingOrder?: Order;

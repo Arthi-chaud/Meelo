@@ -1,33 +1,34 @@
-import {
-	Inject, Injectable, forwardRef
-} from '@nestjs/common';
-import PrismaService from 'src/prisma/prisma.service';
-import { Prisma } from '@prisma/client';
-import SongService from 'src/song/song.service';
+import { Inject, Injectable, forwardRef } from "@nestjs/common";
+import PrismaService from "src/prisma/prisma.service";
+import { Prisma } from "@prisma/client";
+import SongService from "src/song/song.service";
 import {
 	MasterTrackNotFoundException,
 	TrackAlreadyExistsException,
-	TrackNotFoundByIdException
-} from './track.exceptions';
-import ReleaseService from 'src/release/release.service';
-import type TrackQueryParameters from './models/track.query-parameters';
-import type ReleaseQueryParameters from 'src/release/models/release.query-parameters';
-import type SongQueryParameters from 'src/song/models/song.query-params';
-import FileService from 'src/file/file.service';
-import Slug from 'src/slug/slug';
-import type { PaginationParameters } from 'src/pagination/models/pagination-parameters';
-import Tracklist, { UnknownDiscIndexKey } from './models/tracklist.model';
-import RepositoryService from 'src/repository/repository.service';
-import { shuffle } from '@taumechanica/stout';
-import AlbumService from 'src/album/album.service';
-import LibraryService from 'src/library/library.service';
-import { Track, TrackWithRelations } from 'src/prisma/models';
-import Identifier from 'src/identifier/models/identifier';
-import Logger from 'src/logger/logger';
-import { PrismaError } from 'prisma-error-enum';
-import { FileNotFoundFromIDException, FileNotFoundFromPathException } from 'src/file/file.exceptions';
-import IllustrationRepository from 'src/illustration/illustration.repository';
-import deepmerge from 'deepmerge';
+	TrackNotFoundByIdException,
+} from "./track.exceptions";
+import ReleaseService from "src/release/release.service";
+import type TrackQueryParameters from "./models/track.query-parameters";
+import type ReleaseQueryParameters from "src/release/models/release.query-parameters";
+import type SongQueryParameters from "src/song/models/song.query-params";
+import FileService from "src/file/file.service";
+import Slug from "src/slug/slug";
+import type { PaginationParameters } from "src/pagination/models/pagination-parameters";
+import Tracklist, { UnknownDiscIndexKey } from "./models/tracklist.model";
+import RepositoryService from "src/repository/repository.service";
+import { shuffle } from "@taumechanica/stout";
+import AlbumService from "src/album/album.service";
+import LibraryService from "src/library/library.service";
+import { Track, TrackWithRelations } from "src/prisma/models";
+import Identifier from "src/identifier/models/identifier";
+import Logger from "src/logger/logger";
+import { PrismaError } from "prisma-error-enum";
+import {
+	FileNotFoundFromIDException,
+	FileNotFoundFromPathException,
+} from "src/file/file.exceptions";
+import IllustrationRepository from "src/illustration/illustration.repository";
+import deepmerge from "deepmerge";
 
 @Injectable()
 export default class TrackService extends RepositoryService<
@@ -44,7 +45,7 @@ export default class TrackService extends RepositoryService<
 	Prisma.TrackUpdateInput,
 	Prisma.TrackWhereUniqueInput,
 	Prisma.TrackOrderByWithRelationAndSearchRelevanceInput
->{
+> {
 	private readonly logger = new Logger(TrackService.name);
 	constructor(
 		@Inject(forwardRef(() => SongService))
@@ -57,13 +58,13 @@ export default class TrackService extends RepositoryService<
 		private fileService: FileService,
 		@Inject(forwardRef(() => IllustrationRepository))
 		private illustrationRepository: IllustrationRepository,
-		private prismaService: PrismaService
+		private prismaService: PrismaService,
 	) {
-		super(prismaService, 'track');
+		super(prismaService, "track");
 	}
 
 	getTableName() {
-		return 'tracks';
+		return "tracks";
 	}
 
 	/**
@@ -73,20 +74,25 @@ export default class TrackService extends RepositoryService<
 		return {
 			...input,
 			song: {
-				connect: SongService.formatWhereInput(input.song)
+				connect: SongService.formatWhereInput(input.song),
 			},
 			release: {
-				connect: ReleaseService.formatWhereInput(input.release)
+				connect: ReleaseService.formatWhereInput(input.release),
 			},
 			sourceFile: {
-				connect: FileService.formatWhereInput(input.sourceFile)
-			}
+				connect: FileService.formatWhereInput(input.sourceFile),
+			},
 		};
 	}
 
-	protected async onCreationFailure(error: Error, input: TrackQueryParameters.CreateInput) {
+	protected async onCreationFailure(
+		error: Error,
+		input: TrackQueryParameters.CreateInput,
+	) {
 		if (error instanceof Prisma.PrismaClientKnownRequestError) {
-			const parentSong = await this.songService.get(input.song, { artist: true });
+			const parentSong = await this.songService.get(input.song, {
+				artist: true,
+			});
 			const parentRelease = await this.releaseService.get(input.release);
 
 			await this.fileService.throwIfNotFound(input.sourceFile);
@@ -94,7 +100,7 @@ export default class TrackService extends RepositoryService<
 				return new TrackAlreadyExistsException(
 					input.name,
 					new Slug(parentRelease.slug),
-					new Slug(parentSong.artist.slug)
+					new Slug(parentSong.artist.slug),
 				);
 			}
 		}
@@ -102,7 +108,7 @@ export default class TrackService extends RepositoryService<
 	}
 
 	protected formatCreateInputToWhereInput(
-		input: TrackQueryParameters.CreateInput
+		input: TrackQueryParameters.CreateInput,
 	): TrackQueryParameters.WhereInput {
 		return input;
 	}
@@ -113,19 +119,20 @@ export default class TrackService extends RepositoryService<
 	static formatWhereInput(where: TrackQueryParameters.WhereInput) {
 		return {
 			id: where.id,
-			sourceFile: where.sourceFile ?
-				FileService.formatWhereInput(where.sourceFile)
-				: undefined
+			sourceFile:
+				where.sourceFile ?
+					FileService.formatWhereInput(where.sourceFile)
+				:	undefined,
 		};
 	}
 
 	formatWhereInput = TrackService.formatWhereInput;
 
 	static formatManyWhereInput(
-		where: TrackQueryParameters.ManyWhereInput
+		where: TrackQueryParameters.ManyWhereInput,
 	): Prisma.TrackWhereInput {
 		let queryParameters: Prisma.TrackWhereInput = {
-			type: where.type
+			type: where.type,
 		};
 
 		if (where.id) {
@@ -133,21 +140,21 @@ export default class TrackService extends RepositoryService<
 		}
 		if (where.song) {
 			queryParameters = deepmerge(queryParameters, {
-				song: SongService.formatWhereInput(where.song)
+				song: SongService.formatWhereInput(where.song),
 			});
 		}
 
 		if (where.library) {
 			queryParameters = deepmerge(queryParameters, {
 				sourceFile: {
-					library: LibraryService.formatWhereInput(where.library)
-				}
+					library: LibraryService.formatWhereInput(where.library),
+				},
 			});
 		}
 
 		if (where.release) {
 			queryParameters = deepmerge(queryParameters, {
-				release: ReleaseService.formatWhereInput(where.release)
+				release: ReleaseService.formatWhereInput(where.release),
 			});
 		}
 		if (where.album) {
@@ -156,18 +163,22 @@ export default class TrackService extends RepositoryService<
 					tracks: {
 						some: {
 							release: {
-								album: AlbumService.formatWhereInput(where.album)
-							}
-						}
-					}
-				}
+								album: AlbumService.formatWhereInput(
+									where.album,
+								),
+							},
+						},
+					},
+				},
 			});
 		}
 		if (where.artist) {
 			queryParameters = deepmerge(queryParameters, {
 				release: {
-					album: AlbumService.formatManyWhereInput({ artist: where.artist })
-				}
+					album: AlbumService.formatManyWhereInput({
+						artist: where.artist,
+					}),
+				},
 			});
 		}
 		return queryParameters;
@@ -175,25 +186,36 @@ export default class TrackService extends RepositoryService<
 
 	formatManyWhereInput = TrackService.formatManyWhereInput;
 
-	static formatIdentifierToWhereInput(identifier: Identifier): TrackQueryParameters.WhereInput {
+	static formatIdentifierToWhereInput(
+		identifier: Identifier,
+	): TrackQueryParameters.WhereInput {
 		return RepositoryService.formatIdentifier(
 			identifier,
-			RepositoryService.UnexpectedStringIdentifier
+			RepositoryService.UnexpectedStringIdentifier,
 		);
 	}
 
 	formatSortingInput(
-		sortingParameter: TrackQueryParameters.SortingParameter
+		sortingParameter: TrackQueryParameters.SortingParameter,
 	): Prisma.TrackOrderByWithRelationAndSearchRelevanceInput {
 		switch (sortingParameter.sortBy) {
-		case 'releaseName':
-			return { release: { name: sortingParameter.order } };
-		case 'releaseDate':
-			return { release: { releaseDate: { sort: sortingParameter.order, nulls: 'last' } } };
-		case 'addDate':
-			return { sourceFile: { registerDate: sortingParameter.order } };
-		default:
-			return { [sortingParameter.sortBy ?? 'id']: sortingParameter.order };
+			case "releaseName":
+				return { release: { name: sortingParameter.order } };
+			case "releaseDate":
+				return {
+					release: {
+						releaseDate: {
+							sort: sortingParameter.order,
+							nulls: "last",
+						},
+					},
+				};
+			case "addDate":
+				return { sourceFile: { registerDate: sortingParameter.order } };
+			default:
+				return {
+					[sortingParameter.sortBy ?? "id"]: sortingParameter.order,
+				};
 		}
 	}
 
@@ -202,15 +224,19 @@ export default class TrackService extends RepositoryService<
 	 * @param where the query parameters that failed to get the release
 	 */
 	onNotFound(error: Error, where: TrackQueryParameters.WhereInput) {
-		if (error instanceof Prisma.PrismaClientKnownRequestError &&
-			error.code == PrismaError.RecordsNotFound) {
+		if (
+			error instanceof Prisma.PrismaClientKnownRequestError &&
+			error.code == PrismaError.RecordsNotFound
+		) {
 			if (where.id !== undefined) {
 				return new TrackNotFoundByIdException(where.id);
 			}
 			if (where.sourceFile.id !== undefined) {
 				return new FileNotFoundFromIDException(where.sourceFile.id);
 			}
-			return new FileNotFoundFromPathException(where.sourceFile.byPath!.path);
+			return new FileNotFoundFromPathException(
+				where.sourceFile.byPath!.path,
+			);
 		}
 		return this.onUnknownError(error, where);
 	}
@@ -227,13 +253,13 @@ export default class TrackService extends RepositoryService<
 		where: SongQueryParameters.WhereInput,
 		pagination?: PaginationParameters,
 		include?: I,
-		sort?: TrackQueryParameters.SortingParameter
+		sort?: TrackQueryParameters.SortingParameter,
 	) {
 		const tracks = await this.getMany(
 			{ song: where },
 			pagination,
 			include,
-			sort
+			sort,
 		);
 
 		if (tracks.length == 0) {
@@ -250,9 +276,10 @@ export default class TrackService extends RepositoryService<
 	 */
 	async getMasterTrack(
 		where: SongQueryParameters.WhereInput,
-		include?: TrackQueryParameters.RelationInclude
+		include?: TrackQueryParameters.RelationInclude,
 	) {
-		return this.songService.get(where, { artist: true })
+		return this.songService
+			.get(where, { artist: true })
 			.then(async (song) => {
 				if (song.masterId != null) {
 					return this.get({ id: song.masterId }, include);
@@ -260,16 +287,20 @@ export default class TrackService extends RepositoryService<
 				const tracks = await this.prismaService.track.findMany({
 					where: { song: SongService.formatWhereInput(where) },
 					include: this.formatInclude(include),
-					orderBy: { release: {
-						releaseDate: { sort: 'asc', nulls: 'last' }
-					} },
+					orderBy: {
+						release: {
+							releaseDate: { sort: "asc", nulls: "last" },
+						},
+					},
 				});
-				const master = tracks.find((track) => track.type == 'Audio')
-					?? tracks.at(0);
+				const master =
+					tracks.find((track) => track.type == "Audio") ??
+					tracks.at(0);
 
 				if (!master) {
 					throw new MasterTrackNotFoundException(
-						new Slug(song.slug), new Slug(song.artist.slug)
+						new Slug(song.slug),
+						new Slug(song.artist.slug),
 					);
 				}
 				return master;
@@ -288,20 +319,21 @@ export default class TrackService extends RepositoryService<
 		let tracklist: Tracklist = new Map();
 		const tracks = await this.prismaService.track.findMany({
 			where: this.formatManyWhereInput({ release: where }),
-			orderBy: { trackIndex: 'asc' },
-			include: { song: { include: SongService.formatInclude(include) } }
+			orderBy: { trackIndex: "asc" },
+			include: { song: { include: SongService.formatInclude(include) } },
 		});
 
 		if (tracks.length == 0) {
 			await this.releaseService.throwIfNotFound(where);
 		}
 		tracks.forEach((track) => {
-			const indexToString = track.discIndex?.toString() ?? UnknownDiscIndexKey;
+			const indexToString =
+				track.discIndex?.toString() ?? UnknownDiscIndexKey;
 
-			tracklist = tracklist.set(
-				indexToString,
-				[...tracklist.get(indexToString) ?? [], track]
-			);
+			tracklist = tracklist.set(indexToString, [
+				...(tracklist.get(indexToString) ?? []),
+				track,
+			]);
 		});
 		return new Map([...tracklist].sort());
 	}
@@ -314,12 +346,12 @@ export default class TrackService extends RepositoryService<
 	async getPlaylist(
 		where: ReleaseQueryParameters.WhereInput,
 		include?: SongQueryParameters.RelationInclude,
-		random = false
+		random = false,
 	): Promise<Track[]> {
 		const tracklist = await this.getTracklist(where, include);
 		let playlist: Track[] = [];
 
-		tracklist.forEach((disc) => playlist = playlist.concat(disc));
+		tracklist.forEach((disc) => (playlist = playlist.concat(disc)));
 		if (random) {
 			shuffle(playlist);
 		}
@@ -329,18 +361,29 @@ export default class TrackService extends RepositoryService<
 	/**
 	 * Update
 	 */
-	formatUpdateInput(what: Partial<TrackQueryParameters.CreateInput>): Prisma.TrackUpdateInput {
+	formatUpdateInput(
+		what: Partial<TrackQueryParameters.CreateInput>,
+	): Prisma.TrackUpdateInput {
 		return {
 			...what,
-			song: what.song ? {
-				connect: SongService.formatWhereInput(what.song)
-			} : undefined,
-			release: what.release ? {
-				connect: ReleaseService.formatWhereInput(what.release)
-			} : undefined,
-			sourceFile: what.sourceFile ? {
-				connect: FileService.formatWhereInput(what.sourceFile)
-			} : undefined
+			song:
+				what.song ?
+					{
+						connect: SongService.formatWhereInput(what.song),
+					}
+				:	undefined,
+			release:
+				what.release ?
+					{
+						connect: ReleaseService.formatWhereInput(what.release),
+					}
+				:	undefined,
+			sourceFile:
+				what.sourceFile ?
+					{
+						connect: FileService.formatWhereInput(what.sourceFile),
+					}
+				:	undefined,
 		};
 	}
 
@@ -351,7 +394,9 @@ export default class TrackService extends RepositoryService<
 		return where;
 	}
 
-	protected formatDeleteInputToWhereInput(input: TrackQueryParameters.DeleteInput) {
+	protected formatDeleteInputToWhereInput(
+		input: TrackQueryParameters.DeleteInput,
+	) {
 		if (input.id) {
 			return { id: input.id };
 		}
@@ -364,7 +409,7 @@ export default class TrackService extends RepositoryService<
 	 */
 	async delete(where: TrackQueryParameters.DeleteInput): Promise<Track> {
 		await this.illustrationRepository.deleteTrackIllustration(
-			this.formatDeleteInputToWhereInput(where)
+			this.formatDeleteInputToWhereInput(where),
 		);
 
 		return super.delete(where).then((deleted) => {
@@ -386,7 +431,7 @@ export default class TrackService extends RepositoryService<
 	 */
 	async reassign(
 		trackWhere: TrackQueryParameters.WhereInput,
-		newParentWhere: SongQueryParameters.WhereInput
+		newParentWhere: SongQueryParameters.WhereInput,
 	): Promise<Track> {
 		const track = await this.get(trackWhere, { song: true });
 		const newParent = await this.songService.get(newParentWhere);

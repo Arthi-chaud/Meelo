@@ -10,24 +10,34 @@ import formatArtists from "../../utils/formatArtists";
 
 type SongRelationPageHeaderProps = RequireExactlyOne<{
 	songSlugOrId: number | string;
-	song: SongWithRelations<'artist' | 'featuring'>
-}>
+	song: SongWithRelations<"artist" | "featuring">;
+}>;
 
 const SongRelationPageHeader = (props: SongRelationPageHeaderProps) => {
-	const song = useQuery((id) => API.getSong(id, ['artist', 'featuring']), props.songSlugOrId);
+	const song = useQuery(
+		(id) => API.getSong(id, ["artist", "featuring"]),
+		props.songSlugOrId,
+	);
 
 	if (props.song) {
 		song.data = props.song;
 	}
 	if (!song.data) {
-		return <WideLoadingComponent/>;
+		return <WideLoadingComponent />;
 	}
-	return <RelationPageHeader
-		illustration={<Illustration illustration={song.data.illustration} quality="med"/>}
-		title={song.data.name}
-		secondTitle={formatArtists(song.data.artist, song.data.featuring)}
-		trailing={<SongContextualMenu song={song.data}/>}
-	/>;
+	return (
+		<RelationPageHeader
+			illustration={
+				<Illustration
+					illustration={song.data.illustration}
+					quality="med"
+				/>
+			}
+			title={song.data.name}
+			secondTitle={formatArtists(song.data.artist, song.data.featuring)}
+			trailing={<SongContextualMenu song={song.data} />}
+		/>
+	);
 };
 
 export default SongRelationPageHeader;

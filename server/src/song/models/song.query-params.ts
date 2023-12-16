@@ -4,7 +4,7 @@ import type { RequireAtLeastOne, RequireExactlyOne } from "type-fest";
 import type { SearchStringInput } from "src/utils/search-string-input";
 import type { RelationInclude as BaseRelationInclude } from "src/relation-include/models/relation-include";
 import type LibraryQueryParameters from "src/library/models/library.query-parameters";
-import { ModelSortingParameter } from 'src/sort/models/sorting-parameter';
+import { ModelSortingParameter } from "src/sort/models/sorting-parameter";
 import type GenreQueryParameters from "src/genre/models/genre.query-parameters";
 import { Artist, Song } from "src/prisma/models";
 import { filterAtomicRelationInclude } from "src/relation-include/atomic-relation-include.filter";
@@ -15,55 +15,76 @@ namespace SongQueryParameters {
 	/**
 	 * The input required to save a song in the database
 	 */
-	export type CreateInput = Omit<Song, 'slug' | 'id' | 'playCount' | 'artist' | 'artistId' | 'tracks' | 'genres' | 'lyrics' | 'masterId' | 'registeredAt' | 'type' | 'featuring'>
-		& {
-			slug?: Slug,
-			artist: ArtistQueryParameters.WhereInput,
-			featuring?: RequireExactlyOne<Pick<ArtistQueryParameters.WhereInput, 'slug'>>[],
-			registeredAt?: Date,
-			genres: GenreQueryParameters.WhereInput[]
-		};
+	export type CreateInput = Omit<
+		Song,
+		| "slug"
+		| "id"
+		| "playCount"
+		| "artist"
+		| "artistId"
+		| "tracks"
+		| "genres"
+		| "lyrics"
+		| "masterId"
+		| "registeredAt"
+		| "type"
+		| "featuring"
+	> & {
+		slug?: Slug;
+		artist: ArtistQueryParameters.WhereInput;
+		featuring?: RequireExactlyOne<
+			Pick<ArtistQueryParameters.WhereInput, "slug">
+		>[];
+		registeredAt?: Date;
+		genres: GenreQueryParameters.WhereInput[];
+	};
 
 	/**
 	 * Query paraeters to find a song
 	 */
 	export type WhereInput = RequireExactlyOne<{
-		id: Song['id'],
+		id: Song["id"];
 		bySlug: {
-			slug: Slug,
-			artist: ArtistQueryParameters.WhereInput,
-			featuring?: ArtistQueryParameters.WhereInput[]
-		}
+			slug: Slug;
+			artist: ArtistQueryParameters.WhereInput;
+			featuring?: ArtistQueryParameters.WhereInput[];
+		};
 	}>;
 
 	/**
 	 * Query paraeters to find a song to update
 	 */
 	export type UpdateWhereInput = RequireExactlyOne<{
-		id: Song['id'],
-		bySlug: { slug: Slug, artistId: Artist['id'] }
+		id: Song["id"];
+		bySlug: { slug: Slug; artistId: Artist["id"] };
 	}>;
 
 	/**
 	 * Query params to find multiple songs
 	 */
-	export type ManyWhereInput = Partial<RequireAtLeastOne<{
-		name: SearchStringInput,
-		album: AlbumQueryParameters.WhereInput,
-		artist?: ArtistQueryParameters.WhereInput,
-		library: LibraryQueryParameters.WhereInput,
-		genre: GenreQueryParameters.WhereInput,
-		type?: SongType,
-		id: { in: number[] },
-		playCount: RequireExactlyOne<Record<'below' | 'exact' | 'moreThan', number>>,
-	}>>;
+	export type ManyWhereInput = Partial<
+		RequireAtLeastOne<{
+			name: SearchStringInput;
+			album: AlbumQueryParameters.WhereInput;
+			artist?: ArtistQueryParameters.WhereInput;
+			library: LibraryQueryParameters.WhereInput;
+			genre: GenreQueryParameters.WhereInput;
+			type?: SongType;
+			id: { in: number[] };
+			playCount: RequireExactlyOne<
+				Record<"below" | "exact" | "moreThan", number>
+			>;
+		}>
+	>;
 
 	/**
 	 * The input required to update a song in the database
 	 */
-	export type UpdateInput = Partial<CreateInput & Pick<Song, 'playCount' | 'type'>>;
+	export type UpdateInput = Partial<
+		CreateInput & Pick<Song, "playCount" | "type">
+	>;
 	export type DeleteInput = {
-		id: Song['id']
+		id: Song["id"];
 	};
 	/**
 	 * The input to find or create a song
@@ -73,29 +94,31 @@ namespace SongQueryParameters {
 	 * Defines what relations to include in query
 	 */
 	export const AvailableIncludes = [
-		'tracks',
-		'artist',
-		'featuring',
-		'genres',
-		'lyrics',
-		'externalIds'
+		"tracks",
+		"artist",
+		"featuring",
+		"genres",
+		"lyrics",
+		"externalIds",
 	] as const;
-	export const AvailableAtomicIncludes = filterAtomicRelationInclude(AvailableIncludes, ['lyrics', 'externalIds']);
+	export const AvailableAtomicIncludes = filterAtomicRelationInclude(
+		AvailableIncludes,
+		["lyrics", "externalIds"],
+	);
 	export type RelationInclude = BaseRelationInclude<typeof AvailableIncludes>;
 
 	/**
 	 * Defines how to sort fetched entries
 	 */
 	export const SortingKeys = [
-		'id',
-		'name',
-		'playCount',
-		'artistName',
-		'addDate'
+		"id",
+		"name",
+		"playCount",
+		"artistName",
+		"addDate",
 	] as const;
 	export type SortingKeys = typeof SortingKeys;
 	export class SortingParameter extends ModelSortingParameter(SortingKeys) {}
-
 }
 
 export default SongQueryParameters;

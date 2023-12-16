@@ -7,14 +7,16 @@ import { RootState } from "../state/store";
  * Needs the store
  */
 const useColorScheme = () => {
-	const colorSetting = useSelector((state: RootState) => state.settings.colorScheme);
-	const systemPrefersDarkMode = useMediaQuery('(prefers-color-scheme: dark)');
+	const colorSetting = useSelector(
+		(state: RootState) => state.settings.colorScheme,
+	);
+	const systemPrefersDarkMode = useMediaQuery("(prefers-color-scheme: dark)");
 
-	if (colorSetting == 'system') {
+	if (colorSetting == "system") {
 		if (systemPrefersDarkMode) {
-			return 'dark';
+			return "dark";
 		}
-		return 'light';
+		return "light";
 	}
 	return colorSetting;
 };

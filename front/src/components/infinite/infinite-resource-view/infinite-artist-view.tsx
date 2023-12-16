@@ -8,32 +8,41 @@ import InfiniteView from "../infinite-view";
 import InfiniteResourceViewProps from "./infinite-resource-view-props";
 
 const InfiniteArtistView = (
-	props: InfiniteResourceViewProps<Artist, typeof ArtistSortingKeys>
+	props: InfiniteResourceViewProps<Artist, typeof ArtistSortingKeys>,
 ) => {
 	const router = useRouter();
-	const [options, setOptions] = useState<OptionState<typeof ArtistSortingKeys>>();
+	const [options, setOptions] =
+		useState<OptionState<typeof ArtistSortingKeys>>();
 
-	return <>
-		<Controls
-			onChange={setOptions}
-			sortingKeys={ArtistSortingKeys}
-			defaultSortingOrder={props.initialSortingOrder}
-			defaultSortingKey={props.initialSortingField}
-			router={props.light == true ? undefined : router}
-			defaultLayout={props.defaultLayout ?? "list"}
-		/>
-		<InfiniteView
-			view={options?.view ?? props.defaultLayout ?? "list"}
-			query={() => props.query({
-				library: options?.library ?? null,
-				view: options?.view ?? 'list',
-				sortBy: options?.sortBy ?? 'name',
-				order: options?.order ?? 'asc',
-			})}
-			renderListItem={(item: Artist) => <ArtistItem artist={item} key={item.id} />}
-			renderGridItem={(item: Artist) => <ArtistTile artist={item} key={item.id} />}
-		/>
-	</>;
+	return (
+		<>
+			<Controls
+				onChange={setOptions}
+				sortingKeys={ArtistSortingKeys}
+				defaultSortingOrder={props.initialSortingOrder}
+				defaultSortingKey={props.initialSortingField}
+				router={props.light == true ? undefined : router}
+				defaultLayout={props.defaultLayout ?? "list"}
+			/>
+			<InfiniteView
+				view={options?.view ?? props.defaultLayout ?? "list"}
+				query={() =>
+					props.query({
+						library: options?.library ?? null,
+						view: options?.view ?? "list",
+						sortBy: options?.sortBy ?? "name",
+						order: options?.order ?? "asc",
+					})
+				}
+				renderListItem={(item: Artist) => (
+					<ArtistItem artist={item} key={item.id} />
+				)}
+				renderGridItem={(item: Artist) => (
+					<ArtistTile artist={item} key={item.id} />
+				)}
+			/>
+		</>
+	);
 };
 
 export default InfiniteArtistView;

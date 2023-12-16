@@ -7,9 +7,21 @@ import { Prisma } from "@prisma/client";
 export class UnhandledORMErrorException extends Error {
 	constructor(error: Error, ...inputs: any[]) {
 		if (error instanceof Prisma.PrismaClientKnownRequestError) {
-			super(`Unhandled ORM Error '${error.name}' (${error.code}): ${error.message}. Received Input: ${inputs.map((input) => JSON.stringify(input)).join(', ')}.\n${error.stack}`);
+			super(
+				`Unhandled ORM Error '${error.name}' (${error.code}): ${
+					error.message
+				}. Received Input: ${inputs
+					.map((input) => JSON.stringify(input))
+					.join(", ")}.\n${error.stack}`,
+			);
 		} else {
-			super(`Unhandled ORM Error: '${error.name}' - ${error.message}. Received Input: ${inputs.map((input) => JSON.stringify(input)).join(', ')}.\n${error.stack}`);
+			super(
+				`Unhandled ORM Error: '${error.name}' - ${
+					error.message
+				}. Received Input: ${inputs
+					.map((input) => JSON.stringify(input))
+					.join(", ")}.\n${error.stack}`,
+			);
 		}
 	}
 }

@@ -1,31 +1,30 @@
-
-import {
-	CanActivate, ExecutionContext, Injectable
-} from '@nestjs/common';
-import { Reflector } from '@nestjs/core';
-import { InsufficientPermissionsException } from 'src/authentication/authentication.exception';
-import { IS_PUBLIC_KEY } from 'src/authentication/roles/public.decorator';
-import UserService from 'src/user/user.service';
-import RoleEnum from './roles.enum';
-import { ROLES_KEY } from './roles.decorator';
+import { CanActivate, ExecutionContext, Injectable } from "@nestjs/common";
+import { Reflector } from "@nestjs/core";
+import { InsufficientPermissionsException } from "src/authentication/authentication.exception";
+import { IS_PUBLIC_KEY } from "src/authentication/roles/public.decorator";
+import UserService from "src/user/user.service";
+import RoleEnum from "./roles.enum";
+import { ROLES_KEY } from "./roles.decorator";
 
 @Injectable()
 export default class RolesGuard implements CanActivate {
 	constructor(
 		private reflector: Reflector,
-		private userService: UserService
-	) { }
+		private userService: UserService,
+	) {}
 
 	async canActivate(context: ExecutionContext): Promise<boolean> {
 		const isPublic = this.reflector.getAllAndOverride<RoleEnum[]>(
-			IS_PUBLIC_KEY, [context.getHandler(), context.getClass()]
+			IS_PUBLIC_KEY,
+			[context.getHandler(), context.getClass()],
 		);
 
 		if (isPublic) {
 			return true;
 		}
 		const requiredRoles = this.reflector.getAllAndOverride<RoleEnum[]>(
-			ROLES_KEY, [context.getHandler(), context.getClass()]
+			ROLES_KEY,
+			[context.getHandler(), context.getClass()],
 		);
 
 		if (!requiredRoles) {

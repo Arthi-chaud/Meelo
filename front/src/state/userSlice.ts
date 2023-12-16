@@ -1,21 +1,19 @@
 import { PayloadAction, createSlice } from "@reduxjs/toolkit";
 // eslint-disable-next-line no-restricted-imports
-import {
-	deleteCookie, getCookie, setCookie
-} from "cookies-next";
+import { deleteCookie, getCookie, setCookie } from "cookies-next";
 import User from "../models/user";
-import { UserAccessTokenCookieKey } from '../utils/cookieKeys';
+import { UserAccessTokenCookieKey } from "../utils/cookieKeys";
 
 type UserState = Partial<{
-	user: User,
-	accessToken: string
-}>
+	user: User;
+	accessToken: string;
+}>;
 
 export const userSlice = createSlice({
-	name: 'context',
+	name: "context",
 	initialState: <UserState>{
 		user: undefined,
-		accessToken: getCookie(UserAccessTokenCookieKey)
+		accessToken: getCookie(UserAccessTokenCookieKey),
 	},
 	reducers: {
 		setUserProfile: (state, action: PayloadAction<User>) => {
@@ -30,16 +28,17 @@ export const userSlice = createSlice({
 				UserAccessTokenCookieKey,
 				state.accessToken,
 				// Sets cookie for a month
-				{ expires }
+				{ expires },
 			);
 		},
 		unsetAccessToken: (state) => {
 			state.accessToken = undefined;
 			deleteCookie(UserAccessTokenCookieKey);
 		},
-	}
+	},
 });
 
-export const { setAccessToken, setUserProfile, unsetAccessToken } = userSlice.actions;
+export const { setAccessToken, setUserProfile, unsetAccessToken } =
+	userSlice.actions;
 
 export default userSlice.reducer;

@@ -4,9 +4,9 @@ import { Song } from "src/prisma/models";
 
 export default class ReassignTrackDTO {
 	@ApiProperty({
-		description: 'The ID of the song to reassign the track to',
-		example: 2
+		description: "The ID of the song to reassign the track to",
+		example: 2,
 	})
 	@IsNumber()
-	songId: Song['id'];
+	songId: Song["id"];
 }

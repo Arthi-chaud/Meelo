@@ -1,24 +1,24 @@
-import { PayloadAction, createSlice } from '@reduxjs/toolkit';
-import { Language } from '../i18n/i18n';
-import { LanguageCookieKey, ThemeCookieKey } from '../utils/cookieKeys';
+import { PayloadAction, createSlice } from "@reduxjs/toolkit";
+import { Language } from "../i18n/i18n";
+import { LanguageCookieKey, ThemeCookieKey } from "../utils/cookieKeys";
 // eslint-disable-next-line no-restricted-imports
-import { setCookie } from 'cookies-next';
+import { setCookie } from "cookies-next";
 
-export const ColorSchemes = ['light', 'dark', 'system'] as const;
+export const ColorSchemes = ["light", "dark", "system"] as const;
 
-type ColorScheme = typeof ColorSchemes[number];
+type ColorScheme = (typeof ColorSchemes)[number];
 
 type SettingsState = {
 	colorScheme: ColorScheme;
-	language: Language | 'system',
-	allowNotifications: boolean,
-}
+	language: Language | "system";
+	allowNotifications: boolean;
+};
 
 export const settingsSlice = createSlice({
-	name: 'settings',
+	name: "settings",
 	initialState: <SettingsState>{
-		colorScheme: 'dark',
-		language: 'system',
+		colorScheme: "dark",
+		language: "system",
 		allowNotifications: false,
 	},
 	reducers: {
@@ -32,7 +32,7 @@ export const settingsSlice = createSlice({
 				ThemeCookieKey,
 				state.colorScheme,
 				// Sets cookie for a month
-				{ expires }
+				{ expires },
 			);
 		},
 		setLanguage: (state, action: PayloadAction<Language>) => {
@@ -45,21 +45,27 @@ export const settingsSlice = createSlice({
 				LanguageCookieKey,
 				state.language,
 				// Sets cookie for a month
-				{ expires }
+				{ expires },
 			);
 		},
 		resetLanguage: (state) => {
-			state.language = 'system';
+			state.language = "system";
 		},
 		allowNotifications: (state) => {
 			state.allowNotifications = true;
 		},
 		disableNotifications: (state) => {
 			state.allowNotifications = false;
-		}
+		},
 	},
 });
 
-export const { setColorScheme, setLanguage, resetLanguage, allowNotifications, disableNotifications } = settingsSlice.actions;
+export const {
+	setColorScheme,
+	setLanguage,
+	resetLanguage,
+	allowNotifications,
+	disableNotifications,
+} = settingsSlice.actions;
 
 export default settingsSlice.reducer;

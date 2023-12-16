@@ -1,5 +1,8 @@
 import { NotFoundException } from "@nestjs/common";
-import { AlreadyExistsException, InvalidRequestException } from "src/exceptions/meelo-exception";
+import {
+	AlreadyExistsException,
+	InvalidRequestException,
+} from "src/exceptions/meelo-exception";
 import type Slug from "src/slug/slug";
 
 /**

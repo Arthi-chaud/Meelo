@@ -1,4 +1,4 @@
-import slug from 'slug';
+import slug from "slug";
 
 /**
  * A Slug is a character string which identifies a resource
@@ -10,7 +10,7 @@ export default class Slug {
 	/**
 	 * Separator of 'words' in a Slug
 	 */
-	static readonly separator = '-';
+	static readonly separator = "-";
 
 	/**
 	 * @return true is the string is already a slug
@@ -31,18 +31,24 @@ export default class Slug {
 	private buildSlug(...args: string[]): string {
 		args.forEach((arg, index) => {
 			if (arg.length < 1) {
-				throw new Error(`Argument ${index}: building a slug requires at non-empty argument`);
+				throw new Error(
+					`Argument ${index}: building a slug requires at non-empty argument`,
+				);
 			}
 		});
 		switch (args.length) {
-		case 0:
-			throw new Error('Building a slug requires at least one argument');
-		case 1:
-			return this.buildSingleSlug(args[0]);
-		default:
-			return this.buildSingleSlug(args.map(
-				(arg) => this.buildSingleSlug(arg)
-			).join(Slug.separator));
+			case 0:
+				throw new Error(
+					"Building a slug requires at least one argument",
+				);
+			case 1:
+				return this.buildSingleSlug(args[0]);
+			default:
+				return this.buildSingleSlug(
+					args
+						.map((arg) => this.buildSingleSlug(arg))
+						.join(Slug.separator),
+				);
 		}
 	}
 
@@ -50,7 +56,7 @@ export default class Slug {
 		let formatted = slug(arg.replace(/‐/g, Slug.separator));
 
 		if (isNaN(Number(formatted)) == false) {
-			formatted += '!';
+			formatted += "!";
 		}
 		return formatted;
 	}

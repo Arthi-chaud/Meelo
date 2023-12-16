@@ -17,58 +17,76 @@ import ChangeAlbumType from "../actions/album-type";
 import { RefreshReleaseMetadataAction } from "../actions/refresh-metadata";
 
 type ReleaseContextualMenuProps = {
-	release: ReleaseWithRelations<'album'>;
-}
+	release: ReleaseWithRelations<"album">;
+};
 
 const ReleaseContextualMenu = (props: ReleaseContextualMenuProps) => {
-	const userIsAdmin = useSelector((state: RootState) => state.user.user?.admin == true);
+	const userIsAdmin = useSelector(
+		(state: RootState) => state.user.user?.admin == true,
+	);
 	const queryClient = useQueryClient();
 	const confirm = useConfirm();
 	const masterMutation = useMutation(async () => {
 		return API.setReleaseAsMaster(props.release.id)
 			.then(() => {
-				toast.success(translate('releaseSetAsMaster'));
+				toast.success(translate("releaseSetAsMaster"));
 				queryClient.client.invalidateQueries();
 			})
 			.catch((error: Error) => toast.error(error.message));
 	});
 	const tracksMasterMutation = useMutation(async () => {
-		return queryClient.fetchQuery(API.getReleasePlaylist(props.release.id))
+		return queryClient
+			.fetchQuery(API.getReleasePlaylist(props.release.id))
 			.then((tracks) => {
 				Promise.allSettled(
-					tracks.reverse().map((track) =>	API.setTrackAsMaster(track.id))
-				).then(() => {
-					toast.success(translate('tracksUpdated'));
-					queryClient.client.invalidateQueries();
-				}).catch((error) => toast.error(error.message));
+					tracks
+						.reverse()
+						.map((track) => API.setTrackAsMaster(track.id)),
+				)
+					.then(() => {
+						toast.success(translate("tracksUpdated"));
+						queryClient.client.invalidateQueries();
+					})
+					.catch((error) => toast.error(error.message));
 			});
 	});
 
-	return <ContextualMenu actions={[
-		[
-			...props.release.album.artistId ? [GoToArtistAction(props.release.album.artistId)] : [],
-			GoToAlbumAction(props.release.album.id),
-			{
-				label: 'setAsMaster',
-				disabled: props.release.id == props.release.album.masterId || !userIsAdmin,
-				icon: <MasterIcon/>,
-				onClick: () => masterMutation.mutate()
-			},
-			{
-				label: "setAllTracksAsMaster",
-				icon: <UpgradeIcon/>,
-				disabled: !userIsAdmin,
-				onClick: () => tracksMasterMutation.mutate()
-			},
-		],
-		[
-			ChangeAlbumType(props.release.album, queryClient, confirm),
-			UpdateReleaseIllustrationAction(queryClient, props.release.id),
-			RefreshReleaseMetadataAction(props.release.id)
-		],
-		[DownloadReleaseAction(confirm, props.release.id)],
-		[ShareReleaseAction(props.release.id)]
-	]}/>;
+	return (
+		<ContextualMenu
+			actions={[
+				[
+					...(props.release.album.artistId ?
+						[GoToArtistAction(props.release.album.artistId)]
+					:	[]),
+					GoToAlbumAction(props.release.album.id),
+					{
+						label: "setAsMaster",
+						disabled:
+							props.release.id == props.release.album.masterId ||
+							!userIsAdmin,
+						icon: <MasterIcon />,
+						onClick: () => masterMutation.mutate(),
+					},
+					{
+						label: "setAllTracksAsMaster",
+						icon: <UpgradeIcon />,
+						disabled: !userIsAdmin,
+						onClick: () => tracksMasterMutation.mutate(),
+					},
+				],
+				[
+					ChangeAlbumType(props.release.album, queryClient, confirm),
+					UpdateReleaseIllustrationAction(
+						queryClient,
+						props.release.id,
+					),
+					RefreshReleaseMetadataAction(props.release.id),
+				],
+				[DownloadReleaseAction(confirm, props.release.id)],
+				[ShareReleaseAction(props.release.id)],
+			]}
+		/>
+	);
 };
 
 export default ReleaseContextualMenu;

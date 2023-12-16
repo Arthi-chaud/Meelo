@@ -1,16 +1,14 @@
-import {
-	Controller, Get, Param
-} from '@nestjs/common';
-import { ApiOperation, ApiTags } from '@nestjs/swagger';
-import Response from 'src/response/response.decorator';
-import { SearchAllResponseBuilder } from './models/search-all.response';
-import AlbumService from 'src/album/album.service';
-import ArtistService from 'src/artist/artist.service';
-import GenreService from 'src/genre/genre.service';
-import SongService from 'src/song/song.service';
+import { Controller, Get, Param } from "@nestjs/common";
+import { ApiOperation, ApiTags } from "@nestjs/swagger";
+import Response from "src/response/response.decorator";
+import { SearchAllResponseBuilder } from "./models/search-all.response";
+import AlbumService from "src/album/album.service";
+import ArtistService from "src/artist/artist.service";
+import GenreService from "src/genre/genre.service";
+import SongService from "src/song/song.service";
 
 @ApiTags("Search")
-@Controller('search')
+@Controller("search")
 export default class SearchController {
 	constructor(
 		private artistService: ArtistService,
@@ -20,19 +18,21 @@ export default class SearchController {
 	) {}
 
 	@ApiOperation({
-		summary: 'Search items by their names'
+		summary: "Search items by their names",
 	})
 	@Response({ handler: SearchAllResponseBuilder })
-	@Get(':query')
+	@Get(":query")
 	async searchItems(
-		@Param('query')
+		@Param("query")
 		query: string,
 	) {
 		return {
 			artists: await this.artistService.search(query, {}),
 			albums: await this.albumService.search(query, {}),
 			songs: await this.songService.search(query, {}),
-			genres: await this.genreService.getMany({ slug: { contains: query } })
+			genres: await this.genreService.getMany({
+				slug: { contains: query },
+			}),
 		};
 	}
 }

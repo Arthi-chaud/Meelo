@@ -4,8 +4,8 @@ import { IsEnum, IsOptional } from "class-validator";
 
 export default class UpdateSongDTO {
 	@ApiProperty({
-		description: 'The type of the song',
-		enum: SongType
+		description: "The type of the song",
+		enum: SongType,
 	})
 	@IsEnum(SongType)
 	@IsOptional()

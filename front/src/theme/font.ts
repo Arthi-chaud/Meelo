@@ -1,10 +1,10 @@
-import { Rubik } from 'next/font/google';
+import { Rubik } from "next/font/google";
 
 const font = Rubik({
-	subsets: ['latin'],
+	subsets: ["latin"],
 	preload: true,
-	display: 'swap',
-	fallback: ["Rubik", 'Helvetica', 'Arial', 'sans-serif'],
+	display: "swap",
+	fallback: ["Rubik", "Helvetica", "Arial", "sans-serif"],
 });
 
 export default font;

@@ -1,13 +1,13 @@
-import { PayloadAction, createSlice } from '@reduxjs/toolkit';
-import Artist from '../models/artist';
-import Release from '../models/release';
-import Track from '../models/track';
+import { PayloadAction, createSlice } from "@reduxjs/toolkit";
+import Artist from "../models/artist";
+import Release from "../models/release";
+import Track from "../models/track";
 
 type TrackState = {
 	track: Track;
 	artist: Artist;
 	release: Release;
-}
+};
 
 interface PlayerState {
 	/**
@@ -23,7 +23,7 @@ interface PlayerState {
 }
 
 export const playerSlice = createSlice({
-	name: 'player',
+	name: "player",
 	initialState: <PlayerState>{
 		playlist: [],
 		cursor: -1,
@@ -39,7 +39,10 @@ export const playerSlice = createSlice({
 		playAfter: (state, action: PayloadAction<TrackState>) => {
 			state.playlist.push(action.payload);
 		},
-		playTracks: (state, action: PayloadAction<{ tracks: TrackState[], cursor?: number }>) => {
+		playTracks: (
+			state,
+			action: PayloadAction<{ tracks: TrackState[]; cursor?: number }>,
+		) => {
 			state.playlist = action.payload.tracks;
 			state.cursor = action.payload.cursor ?? 0;
 		},
@@ -54,14 +57,25 @@ export const playerSlice = createSlice({
 				state.cursor--;
 			}
 		},
-		reorder: (state, action: PayloadAction<Record<'from' | 'to', number>>) => {
+		reorder: (
+			state,
+			action: PayloadAction<Record<"from" | "to", number>>,
+		) => {
 			const [removed] = state.playlist.splice(action.payload.from, 1);
 
 			state.playlist.splice(action.payload.to, 0, removed);
-		}
+		},
 	},
 });
 
-export const { playTrack, playTracks, playNext, playAfter, skipTrack, playPreviousTrack, reorder } = playerSlice.actions;
+export const {
+	playTrack,
+	playTracks,
+	playNext,
+	playAfter,
+	skipTrack,
+	playPreviousTrack,
+	reorder,
+} = playerSlice.actions;
 
 export default playerSlice.reducer;

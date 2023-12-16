@@ -1,29 +1,35 @@
 import { Injectable, OnModuleInit } from "@nestjs/common";
 import IProvider, {
-	AlbumMetadata, ArtistMetadata, SongMetadata
+	AlbumMetadata,
+	ArtistMetadata,
+	SongMetadata,
 } from "../iprovider";
 import GeniusSettings from "./genius.settings";
 import SettingsService from "src/settings/settings.service";
 import Slug from "src/slug/slug";
 import levenshtein from "damerau-levenshtein";
 import { ProviderActionFailedError } from "../provider.exception";
-import { name, version } from 'package.json';
+import { name, version } from "package.json";
 import { HttpService } from "@nestjs/axios";
 // eslint-disable-next-line @typescript-eslint/no-var-requires
-const { getLyrics } = require('genius-lyrics-api');
+const { getLyrics } = require("genius-lyrics-api");
 
 @Injectable()
-export default class GeniusProvider extends IProvider<GeniusSettings> implements OnModuleInit {
+export default class GeniusProvider
+	extends IProvider<GeniusSettings>
+	implements OnModuleInit
+{
 	constructor(
 		private httpService: HttpService,
-		private settingsService: SettingsService
+		private settingsService: SettingsService,
 	) {
 		super("genius");
 	}
 
 	private async fetchAPI(route: string) {
-		return this._fetch(route, 'https://api.genius.com')
-			.then((res) => res.response);
+		return this._fetch(route, "https://api.genius.com").then(
+			(res) => res.response,
+		);
 	}
 
 	/*private fetchWebPage(route: string) {
@@ -31,16 +37,20 @@ export default class GeniusProvider extends IProvider<GeniusSettings> implements
 	}*/
 
 	private _fetch(route: string, baseURL: string) {
-		const accessToken = process.env.NODE_ENV == 'test'
-			? process.env.GENIUS_ACCESS_TOKEN
-			: this._settings.apiKey;
+		const accessToken =
+			process.env.NODE_ENV == "test" ?
+				process.env.GENIUS_ACCESS_TOKEN
+			:	this._settings.apiKey;
 
-		return this.httpService.axiosRef.get(route, {
-			baseURL, headers: {
-				"Authorization": "Bearer " + accessToken,
-				"User-Agent": `${name}, ${version}`
-			}
-		}).then((res) => res.data);
+		return this.httpService.axiosRef
+			.get(route, {
+				baseURL,
+				headers: {
+					Authorization: "Bearer " + accessToken,
+					"User-Agent": `${name}, ${version}`,
+				},
+			})
+			.then((res) => res.data);
 	}
 
 	// Thanks to https://github.com/farshed/genius-lyrics-api/blob/9634a6e99b8b0f96cf82a53e8f1ff13d2d604b8e/lib/utils/index.js#L11
@@ -59,7 +69,7 @@ export default class GeniusProvider extends IProvider<GeniusSettings> implements
 	}
 
 	getProviderHomepage(): string {
-		return 'https://genius.com';
+		return "https://genius.com";
 	}
 
 	getProviderBannerUrl(): string {
@@ -82,61 +92,96 @@ export default class GeniusProvider extends IProvider<GeniusSettings> implements
 		return "P6218";
 	}
 
-	async getArtistMetadataByIdentifier(artistIdentifier: string): Promise<ArtistMetadata> {
+	async getArtistMetadataByIdentifier(
+		artistIdentifier: string,
+	): Promise<ArtistMetadata> {
 		try {
-			const artistSearchResult = await this.getArtistBySlug(artistIdentifier);
-			const artist = await this.fetchAPI('/artists/' + artistSearchResult.id).then((res) => res.artist);
+			const artistSearchResult =
+				await this.getArtistBySlug(artistIdentifier);
+			const artist = await this.fetchAPI(
+				"/artists/" + artistSearchResult.id,
+			).then((res) => res.artist);
 			const descAnnotation = artist.description_annotation;
 			const desc = this.parseDescriptionAnnotation(descAnnotation);
 
 			return {
-				value: artist.url.split('/').pop(),
-				description: desc.length ? desc : null
+				value: artist.url.split("/").pop(),
+				description: desc.length ? desc : null,
 			};
 		} catch (err) {
-			throw new ProviderActionFailedError(this.name, 'getArtistMetadataByIdentifier', err.message);
+			throw new ProviderActionFailedError(
+				this.name,
+				"getArtistMetadataByIdentifier",
+				err.message,
+			);
 		}
 	}
 
-	async getArtistMetadataByName(artistName: string, songName?: string): Promise<ArtistMetadata> {
+	async getArtistMetadataByName(
+		artistName: string,
+		songName?: string,
+	): Promise<ArtistMetadata> {
 		try {
 			const sluggedArtistName = new Slug(artistName).toString();
-			const searchResults = await this.fetchAPI('/search?q=' + encodeURIComponent(this.sanitizeQuery(`${artistName} ${songName ?? ''}`)))
-				.then((res) => res.hits.map((hit: any) => hit.result));
+			const searchResults = await this.fetchAPI(
+				"/search?q=" +
+					encodeURIComponent(
+						this.sanitizeQuery(`${artistName} ${songName ?? ""}`),
+					),
+			).then((res) => res.hits.map((hit: any) => hit.result));
 
 			const { url, id } = searchResults
 				.map((song: any) => ({
 					similarity: levenshtein(
 						new Slug(song.primary_artist.name).toString(),
-						sluggedArtistName
+						sluggedArtistName,
 					).similarity,
-					url: song.primary_artist.url
+					url: song.primary_artist.url,
 				}))
-				.sort((artistA: any, artistB: any) => artistB.similarity - artistA.similarity)
+				.sort(
+					(artistA: any, artistB: any) =>
+						artistB.similarity - artistA.similarity,
+				)
 				.at(0)!;
-			const artist = await this.fetchAPI('/artists/' + id).then((res) => res.artist).catch(() => null);
+			const artist = await this.fetchAPI("/artists/" + id)
+				.then((res) => res.artist)
+				.catch(() => null);
 			const descAnnotation = artist?.description_annotation;
-			const desc = descAnnotation ? this.parseDescriptionAnnotation(descAnnotation) : null;
+			const desc =
+				descAnnotation ?
+					this.parseDescriptionAnnotation(descAnnotation)
+				:	null;
 
 			return {
 				description: desc?.length ? desc : null,
-				value: url.split('/').pop() // Retrieves last past of URL
+				value: url.split("/").pop(), // Retrieves last past of URL
 			};
 		} catch (err) {
-			throw new ProviderActionFailedError(this.name, 'getArtistIdentifier', err.message);
+			throw new ProviderActionFailedError(
+				this.name,
+				"getArtistIdentifier",
+				err.message,
+			);
 		}
 	}
 
 	private async getArtistBySlug(artistIdentifer: string): Promise<any> {
-		const searchResults = await this.fetchAPI('/search?q=' + artistIdentifer)
-			.then((res) => res.hits.map((hit: any) => hit.result));
+		const searchResults = await this.fetchAPI(
+			"/search?q=" + artistIdentifer,
+		).then((res) => res.hits.map((hit: any) => hit.result));
 
 		const res = searchResults
 			.map((song: any) => song.primary_artist)
-			.find((artist: any) => artist.url.split('/').pop() == artistIdentifer);
+			.find(
+				(artist: any) => artist.url.split("/").pop() == artistIdentifer,
+			);
 
 		if (!res) {
-			throw new ProviderActionFailedError(this.name, 'getArtistIdentifier', 'Invalid Value');
+			throw new ProviderActionFailedError(
+				this.name,
+				"getArtistIdentifier",
+				"Invalid Value",
+			);
 		}
 		return res;
 	}
@@ -149,49 +194,73 @@ export default class GeniusProvider extends IProvider<GeniusSettings> implements
 		const artist = await this.getArtistBySlug(artistIdentifer);
 
 		if (artist.image_url.includes("default_avatar")) {
-			throw new ProviderActionFailedError(this.name, 'getArtistIllustrationUrl', "No Image");
+			throw new ProviderActionFailedError(
+				this.name,
+				"getArtistIllustrationUrl",
+				"No Image",
+			);
 		}
 		return artist.image_url;
 	}
 
-	async getAlbumMetadataByIdentifier(albumIdentifier: string): Promise<AlbumMetadata> {
+	async getAlbumMetadataByIdentifier(
+		albumIdentifier: string,
+	): Promise<AlbumMetadata> {
 		return {
 			description: null,
 			rating: null,
-			value: albumIdentifier
+			value: albumIdentifier,
 		};
 	}
 
-	async getSongMetadataByIdentifier(songIdentifer: string): Promise<SongMetadata> {
+	async getSongMetadataByIdentifier(
+		songIdentifer: string,
+	): Promise<SongMetadata> {
 		return {
 			description: null,
-			value: songIdentifer
+			value: songIdentifer,
 		};
 	}
 
-	async getSongMetadataByName(songName: string, artistIdentifer: string): Promise<SongMetadata> {
+	async getSongMetadataByName(
+		songName: string,
+		artistIdentifer: string,
+	): Promise<SongMetadata> {
 		try {
 			const sluggedSongName = new Slug(songName).toString();
-			const searchResults = await this.fetchAPI(`/search?q=${this.sanitizeQuery(songName)}`)
-				.then((res) => res.hits.map((hit: any) => hit.result));
+			const searchResults = await this.fetchAPI(
+				`/search?q=${this.sanitizeQuery(songName)}`,
+			).then((res) => res.hits.map((hit: any) => hit.result));
 			const id = searchResults
-				.filter((song: any) => song.primary_artist.url.endsWith('/' + artistIdentifer))
+				.filter((song: any) =>
+					song.primary_artist.url.endsWith("/" + artistIdentifer),
+				)
 				.map((song: any) => ({
 					similarity: levenshtein(
 						new Slug(song.title).toString(),
-						sluggedSongName
+						sluggedSongName,
 					).similarity,
-					url: song.url
+					url: song.url,
 				}))
-				.sort((songA: any, songB: any) => songB.similarity - songA.similarity)
-				.at(0)!.url.split('/').pop().replace('-lyrics', ''); // Retrieves last past of URL
+				.sort(
+					(songA: any, songB: any) =>
+						songB.similarity - songA.similarity,
+				)
+				.at(0)!
+				.url.split("/")
+				.pop()
+				.replace("-lyrics", ""); // Retrieves last past of URL
 
 			return {
 				description: null,
-				value: id
+				value: id,
 			};
 		} catch (err) {
-			throw new ProviderActionFailedError(this.name, 'getSongIdentifier', err.message);
+			throw new ProviderActionFailedError(
+				this.name,
+				"getSongIdentifier",
+				err.message,
+			);
 		}
 	}
 
@@ -200,13 +269,22 @@ export default class GeniusProvider extends IProvider<GeniusSettings> implements
 	}
 
 	async getSongLyrics(songIdentifier: string): Promise<string> {
-		const lyrics = await getLyrics(this.getSongURL(songIdentifier))
-			.catch((error: any) => {
-				throw new ProviderActionFailedError(this.name, 'getSongLyrics', error.message);
-			});
+		const lyrics = await getLyrics(this.getSongURL(songIdentifier)).catch(
+			(error: any) => {
+				throw new ProviderActionFailedError(
+					this.name,
+					"getSongLyrics",
+					error.message,
+				);
+			},
+		);
 
 		if (lyrics == null) {
-			throw new ProviderActionFailedError(this.name, 'getSongLyrics', "No Lyrics Found");
+			throw new ProviderActionFailedError(
+				this.name,
+				"getSongLyrics",
+				"No Lyrics Found",
+			);
 		}
 		return lyrics;
 	}
@@ -219,17 +297,21 @@ export default class GeniusProvider extends IProvider<GeniusSettings> implements
 		return descriptionAnnotation.annotations
 			.map((annotation: any) => {
 				const parser = (child: any): string => {
-					if (typeof child == 'string') {
+					if (typeof child == "string") {
 						return child;
 					}
 					if (child.children) {
-						return child.children.map(parser).join(' ').replaceAll('  ', ' ');
+						return child.children
+							.map(parser)
+							.join(" ")
+							.replaceAll("  ", " ");
 					}
 					return "";
 				};
 
 				return parser(annotation.body.dom);
 			})
-			.join('\n').replaceAll('\n\n', '\n');
+			.join("\n")
+			.replaceAll("\n\n", "\n");
 	}
 }

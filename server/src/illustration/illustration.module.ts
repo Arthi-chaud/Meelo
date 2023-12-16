@@ -1,19 +1,19 @@
-import { Module, forwardRef } from '@nestjs/common';
-import IllustrationService from './illustration.service';
-import FileManagerModule from 'src/file-manager/file-manager.module';
-import ReleaseModule from 'src/release/release.module';
-import AlbumModule from 'src/album/album.module';
-import TrackModule from 'src/track/track.module';
-import FileModule from 'src/file/file.module';
-import { IllustrationController } from './illustration.controller';
-import ArtistModule from 'src/artist/artist.module';
-import SettingsModule from 'src/settings/settings.module';
-import SongModule from 'src/song/song.module';
-import ProvidersModule from 'src/providers/providers.module';
-import PlaylistModule from 'src/playlist/playlist.module';
-import IllustrationRepository from './illustration.repository';
-import PrismaModule from 'src/prisma/prisma.module';
-import ScannerModule from 'src/scanner/scanner.module';
+import { Module, forwardRef } from "@nestjs/common";
+import IllustrationService from "./illustration.service";
+import FileManagerModule from "src/file-manager/file-manager.module";
+import ReleaseModule from "src/release/release.module";
+import AlbumModule from "src/album/album.module";
+import TrackModule from "src/track/track.module";
+import FileModule from "src/file/file.module";
+import { IllustrationController } from "./illustration.controller";
+import ArtistModule from "src/artist/artist.module";
+import SettingsModule from "src/settings/settings.module";
+import SongModule from "src/song/song.module";
+import ProvidersModule from "src/providers/providers.module";
+import PlaylistModule from "src/playlist/playlist.module";
+import IllustrationRepository from "./illustration.repository";
+import PrismaModule from "src/prisma/prisma.module";
+import ScannerModule from "src/scanner/scanner.module";
 
 @Module({
 	imports: [
@@ -32,6 +32,6 @@ import ScannerModule from 'src/scanner/scanner.module';
 	],
 	controllers: [IllustrationController],
 	providers: [IllustrationService, IllustrationRepository],
-	exports: [IllustrationService, IllustrationRepository]
+	exports: [IllustrationService, IllustrationRepository],
 })
-export default class IllustrationModule { }
+export default class IllustrationModule {}

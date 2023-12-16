@@ -8,7 +8,7 @@ import { LogoutAction } from "../actions/auth";
 const scaffoldActions: Action[] = [
 	GoToSearchAction,
 	GoToSettingsAction,
-	LogoutAction
+	LogoutAction,
 ];
 
 export default scaffoldActions;

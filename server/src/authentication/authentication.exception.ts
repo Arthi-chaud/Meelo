@@ -14,7 +14,9 @@ export class UnknownUserException extends UnauthorizedRequestException {
 
 export class DisabledUserAccountException extends UnauthorizedRequestException {
 	constructor() {
-		super("User accound is not enabled, please contact server's administrator");
+		super(
+			"User accound is not enabled, please contact server's administrator",
+		);
 	}
 }
 

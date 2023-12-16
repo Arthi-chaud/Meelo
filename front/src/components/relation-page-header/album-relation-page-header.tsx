@@ -9,24 +9,34 @@ import { AlbumWithRelations } from "../../models/album";
 
 type AlbumRelationPageHeaderProps = RequireExactlyOne<{
 	albumSlugOrId: number | string;
-	album: AlbumWithRelations<'artist'>;
-}>
+	album: AlbumWithRelations<"artist">;
+}>;
 
 const AlbumRelationPageHeader = (props: AlbumRelationPageHeaderProps) => {
-	const album = useQuery((id) => API.getAlbum(id, ['artist']), props.albumSlugOrId);
+	const album = useQuery(
+		(id) => API.getAlbum(id, ["artist"]),
+		props.albumSlugOrId,
+	);
 
 	if (props.album) {
 		album.data = props.album;
 	}
 	if (!album.data) {
-		return <WideLoadingComponent/>;
+		return <WideLoadingComponent />;
 	}
-	return <RelationPageHeader
-		illustration={<Illustration illustration={album.data.illustration} quality="med"/>}
-		title={album.data.name}
-		secondTitle={album.data.artist?.name}
-		trailing={<AlbumContextualMenu album={album.data}/>}
-	/>;
+	return (
+		<RelationPageHeader
+			illustration={
+				<Illustration
+					illustration={album.data.illustration}
+					quality="med"
+				/>
+			}
+			title={album.data.name}
+			secondTitle={album.data.artist?.name}
+			trailing={<AlbumContextualMenu album={album.data} />}
+		/>
+	);
 };
 
 export default AlbumRelationPageHeader;

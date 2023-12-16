@@ -1,5 +1,8 @@
 import { HttpStatus } from "@nestjs/common";
-import { InvalidRequestException, MeeloException } from "src/exceptions/meelo-exception";
+import {
+	InvalidRequestException,
+	MeeloException,
+} from "src/exceptions/meelo-exception";
 import type Slug from "src/slug/slug";
 import compilationAlbumArtistKeyword from "src/constants/compilation";
 
@@ -11,19 +14,25 @@ class NoIllustrationFolderException extends MeeloException {
 
 export class NoArtistFolderIllustrationException extends NoIllustrationFolderException {
 	constructor(artistSlug: Slug) {
-		super(`No illustration folder found for artist '${artistSlug.toString()}'`);
+		super(
+			`No illustration folder found for artist '${artistSlug.toString()}'`,
+		);
 	}
 }
 
 export class NoAlbumFolderIllustrationException extends NoIllustrationFolderException {
 	constructor(albumSlug: Slug) {
-		super(`No illustration folder found for album '${albumSlug.toString()}'`);
+		super(
+			`No illustration folder found for album '${albumSlug.toString()}'`,
+		);
 	}
 }
 
 export class NoReleaseFolderIllustrationException extends NoIllustrationFolderException {
 	constructor(albumSlug: Slug, releaseSlug: Slug) {
-		super(`No illustration folder found for release '${releaseSlug.toString()}' of ${albumSlug.toString()}`);
+		super(
+			`No illustration folder found for release '${releaseSlug.toString()}' of ${albumSlug.toString()}`,
+		);
 	}
 }
 
@@ -35,7 +44,11 @@ export class NoIllustrationException extends MeeloException {
 
 export class NoArtistIllustrationException extends NoIllustrationException {
 	constructor(artistSlug?: Slug) {
-		super(`No illustration found for artist '${artistSlug?.toString() ?? compilationAlbumArtistKeyword}'`);
+		super(
+			`No illustration found for artist '${
+				artistSlug?.toString() ?? compilationAlbumArtistKeyword
+			}'`,
+		);
 	}
 }
 
@@ -47,7 +60,9 @@ export class NoAlbumIllustrationException extends NoIllustrationException {
 
 export class NoReleaseIllustrationException extends NoIllustrationException {
 	constructor(albumSlug: Slug, releaseSlug: Slug) {
-		super(`No illustration found for release '${releaseSlug.toString()}' of ${albumSlug.toString()}`);
+		super(
+			`No illustration found for release '${releaseSlug.toString()}' of ${albumSlug.toString()}`,
+		);
 	}
 }
 
@@ -65,6 +80,8 @@ export class CantDownloadIllustrationException extends InvalidRequestException {
 
 export class IllustrationNotExtracted extends InvalidRequestException {
 	constructor(trackSourceFileName: string) {
-		super(`Illustration from file '${trackSourceFileName}' could not be extracted`);
+		super(
+			`Illustration from file '${trackSourceFileName}' could not be extracted`,
+		);
 	}
 }

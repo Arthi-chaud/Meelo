@@ -9,21 +9,26 @@ import ArtistAvatar from "../artist-avatar";
 
 type ArtistRelationPageHeaderProps = RequireExactlyOne<{
 	artistSlugOrId: number | string;
-	artist: Artist
-}>
+	artist: Artist;
+}>;
 
 const ArtistRelationPageHeader = (props: ArtistRelationPageHeaderProps) => {
-	const artist = useQuery((id) => API.getArtist(id, []), props.artistSlugOrId);
+	const artist = useQuery(
+		(id) => API.getArtist(id, []),
+		props.artistSlugOrId,
+	);
 	const artistData = props.artist ?? artist.data;
 
 	if (!artistData) {
-		return <WideLoadingComponent/>;
+		return <WideLoadingComponent />;
 	}
-	return <RelationPageHeader
-		illustration={<ArtistAvatar artist={artistData} quality="med"/>}
-		title={artistData.name}
-		trailing={<ArtistContextualMenu artist={artistData}/>}
-	/>;
+	return (
+		<RelationPageHeader
+			illustration={<ArtistAvatar artist={artistData} quality="med" />}
+			title={artistData.name}
+			trailing={<ArtistContextualMenu artist={artistData} />}
+		/>
+	);
 };
 
 export default ArtistRelationPageHeader;

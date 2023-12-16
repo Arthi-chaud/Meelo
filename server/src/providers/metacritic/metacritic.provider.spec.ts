@@ -7,7 +7,7 @@ import SettingsModule from "src/settings/settings.module";
 import MetacriticProvider from "./metacritic.provider";
 import { ProviderActionFailedError } from "../provider.exception";
 
-describe('Metacritic Provider', () => {
+describe("Metacritic Provider", () => {
 	let metacriticProvider: MetacriticProvider;
 
 	let module: TestingModule;
@@ -15,7 +15,10 @@ describe('Metacritic Provider', () => {
 		module = await createTestingModule({
 			imports: [HttpModule, SettingsModule],
 			providers: [MetacriticProvider],
-		}).overrideProvider(PrismaService).useClass(TestPrismaService).compile();
+		})
+			.overrideProvider(PrismaService)
+			.useClass(TestPrismaService)
+			.compile();
 		metacriticProvider = module.get(MetacriticProvider);
 		metacriticProvider.onModuleInit();
 	});
@@ -24,24 +27,33 @@ describe('Metacritic Provider', () => {
 		module.close();
 	});
 
-	describe('Get Resources URLs', () => {
+	describe("Get Resources URLs", () => {
 		it("Should format the URL for the album", () => {
-			expect(metacriticProvider.getAlbumURL('music/midnights/taylor-swift'))
-				.toBe("https://www.metacritic.com/music/midnights/taylor-swift");
-		})
+			expect(
+				metacriticProvider.getAlbumURL("music/midnights/taylor-swift"),
+			).toBe("https://www.metacritic.com/music/midnights/taylor-swift");
+		});
 	});
 
-	describe('Get Resource URLs', () => {
+	describe("Get Resource URLs", () => {
 		it("Should Get Rating and description", async () => {
-			const metadata = await metacriticProvider.getAlbumMetadataByIdentifier('music/confessions-on-a-dance-floor/madonna')
-			
-			expect(metadata.value).toBe('music/confessions-on-a-dance-floor/madonna');
+			const metadata =
+				await metacriticProvider.getAlbumMetadataByIdentifier(
+					"music/confessions-on-a-dance-floor/madonna",
+				);
+
+			expect(metadata.value).toBe(
+				"music/confessions-on-a-dance-floor/madonna",
+			);
 			expect(metadata.rating).toBe(80);
-			expect(metadata.description).toBe("Stuart Price co-produced the 47-year-old Anglophile's latest dance-oriented effort.");
-		})
+			expect(metadata.description).toBe(
+				"Stuart Price co-produced the 47-year-old Anglophile's latest dance-oriented effort.",
+			);
+		});
 		it("Should throw, as the page does not exist", async () => {
-			expect(metacriticProvider.getAlbumMetadataByIdentifier('zzz'))
-				.rejects.toThrow(ProviderActionFailedError);
-		})
+			expect(
+				metacriticProvider.getAlbumMetadataByIdentifier("zzz"),
+			).rejects.toThrow(ProviderActionFailedError);
+		});
 	});
-})
+});

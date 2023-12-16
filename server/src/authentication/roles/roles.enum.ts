@@ -3,7 +3,7 @@ enum Roles {
 	Admin,
 	User,
 	DisabledUser,
-	Anonymous
+	Anonymous,
 }
 
 export default Roles;

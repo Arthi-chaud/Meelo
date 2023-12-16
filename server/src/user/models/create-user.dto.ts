@@ -2,10 +2,14 @@ import { ApiProperty, PickType } from "@nestjs/swagger";
 import { IsNotEmpty, IsString } from "class-validator";
 import { User } from "src/prisma/models";
 
-export default class UserCreateDTO extends PickType(User, ['name', 'password']) {
+export default class UserCreateDTO extends PickType(User, [
+	"name",
+	"password",
+]) {
 	@ApiProperty({
 		required: true,
-		description: "The user's username. Must be at least 4 characters long, composed of letters, digits, dash and underscore"
+		description:
+			"The user's username. Must be at least 4 characters long, composed of letters, digits, dash and underscore",
 	})
 	@IsString()
 	@IsNotEmpty()
@@ -13,7 +17,8 @@ export default class UserCreateDTO extends PickType(User, ['name', 'password']) 
 
 	@ApiProperty({
 		required: true,
-		description: "The plain password of the user. Must be at least 6 characters long"
+		description:
+			"The plain password of the user. Must be at least 6 characters long",
 	})
 	@IsString()
 	@IsNotEmpty()

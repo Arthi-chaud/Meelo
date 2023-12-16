@@ -6,26 +6,43 @@ import { translate, useLanguage } from "../../i18n/translate";
 import AlbumContextualMenu from "../contextual-menu/album-contextual-menu";
 
 const AlbumTile = (props: {
-	album: AlbumWithRelations<'artist'>,
-	formatSubtitle?: (album: AlbumWithRelations<'artist'>) => string
+	album: AlbumWithRelations<"artist">;
+	formatSubtitle?: (album: AlbumWithRelations<"artist">) => string;
 }) => {
 	const language = useLanguage();
 	// eslint-disable-next-line react-hooks/exhaustive-deps
-	const compilationKeyword = useMemo(() => translate('compilation'), [language]);
+	const compilationKeyword = useMemo(
+		() => translate("compilation"),
+		[language],
+	);
 
-	return <Tile
-		contextualMenu={<AlbumContextualMenu album={props.album}/>}
-		title={props.album.name}
-		subtitle={props.formatSubtitle?.call(this, props.album)
-			?? props.album.artist?.name
-			?? compilationKeyword
-		}
-		href={`/albums/${props.album.artist?.slug ?? 'compilations'}+${props.album.slug}`}
-		secondaryHref={!props.formatSubtitle
-			? props.album.artist?.slug ? `/artists/${props.album.artist.slug}` : undefined
-			: undefined}
-		illustration={<Illustration illustration={props.album.illustration} quality="med"/>}
-	/>;
+	return (
+		<Tile
+			contextualMenu={<AlbumContextualMenu album={props.album} />}
+			title={props.album.name}
+			subtitle={
+				props.formatSubtitle?.call(this, props.album) ??
+				props.album.artist?.name ??
+				compilationKeyword
+			}
+			href={`/albums/${props.album.artist?.slug ?? "compilations"}+${
+				props.album.slug
+			}`}
+			secondaryHref={
+				!props.formatSubtitle ?
+					props.album.artist?.slug ?
+						`/artists/${props.album.artist.slug}`
+					:	undefined
+				:	undefined
+			}
+			illustration={
+				<Illustration
+					illustration={props.album.illustration}
+					quality="med"
+				/>
+			}
+		/>
+	);
 };
 
 export default AlbumTile;

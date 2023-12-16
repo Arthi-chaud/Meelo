@@ -5,7 +5,7 @@ import ArtistAvatar from "../artist-avatar";
 
 type ArtistItemProps = {
 	artist: Artist;
-}
+};
 
 /**
  * Item for a list of albums
@@ -15,10 +15,10 @@ type ArtistItemProps = {
 const ArtistItem = ({ artist }: ArtistItemProps) => {
 	return (
 		<ListItem
-			icon={<ArtistAvatar artist={artist} quality="low"/>}
+			icon={<ArtistAvatar artist={artist} quality="low" />}
 			href={`/artists/${artist.slug}`}
 			title={artist.name}
-			trailing={<ArtistContextualMenu artist={artist}/>}
+			trailing={<ArtistContextualMenu artist={artist} />}
 		/>
 	);
 };

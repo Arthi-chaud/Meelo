@@ -1,20 +1,20 @@
 import { PaletteOptions, ThemeOptions } from "@mui/material";
 
-const LightTheme: Omit<PaletteOptions, 'mode'> = {
+const LightTheme: Omit<PaletteOptions, "mode"> = {
 	primary: {
-		main: '#242120',
+		main: "#242120",
 	},
 	secondary: {
-		main: '#242120',
+		main: "#242120",
 	},
 };
 
-const DarkTheme: Omit<PaletteOptions, 'mode'> = {
+const DarkTheme: Omit<PaletteOptions, "mode"> = {
 	primary: {
 		main: "#ffffff",
 	},
 	secondary: {
-		main: "#ffffff"
+		main: "#ffffff",
 	},
 	background: {
 		default: "#242120",
@@ -22,66 +22,66 @@ const DarkTheme: Omit<PaletteOptions, 'mode'> = {
 	},
 	text: {
 		primary: "#FFFFFF",
-		secondary: '#FFFFFF'
+		secondary: "#FFFFFF",
 	},
 };
 
-const GlobalTheme: Omit<ThemeOptions, 'palette'> = {
+const GlobalTheme: Omit<ThemeOptions, "palette"> = {
 	shape: {
-		borderRadius: 8
+		borderRadius: 8,
 	},
 	components: {
 		MuiTypography: {
 			styleOverrides: {
 				root: {
-					overflow: 'hidden',
-					textOverflow: 'ellipsis'
-				}
-			}
+					overflow: "hidden",
+					textOverflow: "ellipsis",
+				},
+			},
 		},
 		MuiListItemText: {
 			styleOverrides: {
 				root: {
-					whiteSpace: 'nowrap'
-				}
-			}
+					whiteSpace: "nowrap",
+				},
+			},
 		},
 		MuiListSubheader: {
 			styleOverrides: {
 				root: {
-					zIndex: 0
-				}
-			}
+					zIndex: 0,
+				},
+			},
 		},
 		MuiButtonBase: {
 			styleOverrides: {
 				root: {
-					borderRadius: 8
-				}
-			}
+					borderRadius: 8,
+				},
+			},
 		},
 		MuiDivider: {
 			styleOverrides: {
 				root: {
-					borderRadius: '0'
-				}
-			}
+					borderRadius: "0",
+				},
+			},
 		},
 		MuiTab: {
 			styleOverrides: {
 				root: {
-					borderRadius: '0'
-				}
-			}
+					borderRadius: "0",
+				},
+			},
 		},
 		MuiSelect: {
 			styleOverrides: {
 				icon: {
-					color: 'inherit'
-				}
-			}
-		}
-	}
+					color: "inherit",
+				},
+			},
+		},
+	},
 };
 
 export { LightTheme, DarkTheme, GlobalTheme };

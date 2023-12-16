@@ -1,16 +1,16 @@
-import { Module, forwardRef } from '@nestjs/common';
-import AlbumModule from 'src/album/album.module';
-import ArtistModule from 'src/artist/artist.module';
-import FileManagerModule from 'src/file-manager/file-manager.module';
-import FileModule from 'src/file/file.module';
-import GenresModule from 'src/genre/genre.module';
-import ReleaseModule from 'src/release/release.module';
-import SettingsModule from 'src/settings/settings.module';
-import SongModule from 'src/song/song.module';
-import TrackModule from 'src/track/track.module';
-import ScannerService from './scanner.service';
-import ParserService from './parser.service';
-import FfmpegService from './ffmpeg.service';
+import { Module, forwardRef } from "@nestjs/common";
+import AlbumModule from "src/album/album.module";
+import ArtistModule from "src/artist/artist.module";
+import FileManagerModule from "src/file-manager/file-manager.module";
+import FileModule from "src/file/file.module";
+import GenresModule from "src/genre/genre.module";
+import ReleaseModule from "src/release/release.module";
+import SettingsModule from "src/settings/settings.module";
+import SongModule from "src/song/song.module";
+import TrackModule from "src/track/track.module";
+import ScannerService from "./scanner.service";
+import ParserService from "./parser.service";
+import FfmpegService from "./ffmpeg.service";
 
 @Module({
 	imports: [
@@ -22,9 +22,9 @@ import FfmpegService from './ffmpeg.service';
 		forwardRef(() => GenresModule),
 		forwardRef(() => FileModule),
 		forwardRef(() => AlbumModule),
-		forwardRef(() => ArtistModule)
+		forwardRef(() => ArtistModule),
 	],
 	providers: [ScannerService, ParserService, FfmpegService],
-	exports: [ScannerService, ParserService, FfmpegService]
+	exports: [ScannerService, ParserService, FfmpegService],
 })
-export default class ScannerModule { }
+export default class ScannerModule {}

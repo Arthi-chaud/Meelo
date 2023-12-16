@@ -1,7 +1,5 @@
 /* eslint-disable id-length */
-import {
-	Inject, Injectable, forwardRef
-} from "@nestjs/common";
+import { Inject, Injectable, forwardRef } from "@nestjs/common";
 import Metadata from "./models/metadata";
 import { AlbumType, SongType } from "@prisma/client";
 import escapeRegex from "src/utils/escape-regex";
@@ -12,14 +10,14 @@ import Slug from "src/slug/slug";
 export default class ParserService {
 	constructor(
 		@Inject(forwardRef(() => ArtistService))
-		private artistService: ArtistService
+		private artistService: ArtistService,
 	) {}
 
 	protected separators = [
 		[/\(/, /\)/],
 		[/\[/, /\]/],
 		[/\{/, /\}/],
-		[/\s+-\s+/, /$/]
+		[/\s+-\s+/, /$/],
 	] as const;
 
 	private _getFirstGroup(token: string, start: RegExp, end: RegExp) {
@@ -36,7 +34,7 @@ export default class ParserService {
 			if (istart !== null && startMatch) {
 				const nestedGroup = this._getFirstGroup(slice, start, end);
 
-				i += ((nestedGroup?.length) ?? 1) + 1;
+				i += (nestedGroup?.length ?? 1) + 1;
 				continue;
 			} else if (istart == null && startMatch) {
 				istart = i;
@@ -72,7 +70,9 @@ export default class ParserService {
 
 		while (nextGroup) {
 			tokens.push(nextGroup);
-			strippedToken = strippedToken.replace(new RegExp(`\\s*${escapeRegex(nextGroup)}`), '').trim();
+			strippedToken = strippedToken
+				.replace(new RegExp(`\\s*${escapeRegex(nextGroup)}`), "")
+				.trim();
 			nextGroup = this.getFirstGroup(strippedToken);
 		}
 		return tokens;
@@ -87,13 +87,13 @@ export default class ParserService {
 
 			if (strippedStart !== undefined && strippedEnd !== undefined) {
 				const strippedGroup = group
-					.replace(new RegExp(startReg), '')
-					.replace(new RegExp(endReg), '');
+					.replace(new RegExp(startReg), "")
+					.replace(new RegExp(endReg), "");
 
 				return [strippedStart, strippedGroup.trim(), strippedEnd];
 			}
 		}
-		return ['', group, ''];
+		return ["", group, ""];
 	}
 
 	/**
@@ -102,7 +102,7 @@ export default class ParserService {
 	 */
 	splitGroups(
 		tokenString: string,
-		opt?: { keepDelimiters?: boolean, removeRoot?: boolean }
+		opt?: { keepDelimiters?: boolean; removeRoot?: boolean },
 	): string[] {
 		const tokens: string[] = [];
 		const groups = this.getGroups(tokenString);
@@ -110,13 +110,15 @@ export default class ParserService {
 		groups.forEach((group) => {
 			const offset = tokenString.indexOf(group);
 			const root = tokenString.slice(0, offset).trim(); // Anything before the group
-			const [gstart, strippedGroup, gend] = this.stripGroupDelimiters(group);
+			const [gstart, strippedGroup, gend] =
+				this.stripGroupDelimiters(group);
 			// We call recursively to handle nested groups
-			const subGroups = this.splitGroups(
-				strippedGroup, { keepDelimiters: opt?.keepDelimiters }
-			);
+			const subGroups = this.splitGroups(strippedGroup, {
+				keepDelimiters: opt?.keepDelimiters,
+			});
 
-			if (root.length && !opt?.removeRoot) { // A (B)
+			if (root.length && !opt?.removeRoot) {
+				// A (B)
 				tokens.push(root);
 			}
 			if (opt?.keepDelimiters) {
@@ -141,62 +143,77 @@ export default class ParserService {
 	 * @param songName the name of the song, as from the source file's metadata
 	 * @example A (feat. B) => [A, [B]]
 	 */
-	async extractFeaturedArtistsFromSongName(songName: string): Promise<Pick<Metadata, 'name' | 'featuring'>> {
+	async extractFeaturedArtistsFromSongName(
+		songName: string,
+	): Promise<Pick<Metadata, "name" | "featuring">> {
 		const groups = this.splitGroups(songName, { keepDelimiters: true });
 		const groupsWithoutFeaturings: string[] = [];
 		const featuringArtists: string[] = [];
 		const getRewrappers = () => {
 			switch (groupsWithoutFeaturings.length) {
-			case 0:
-			case 1:
-				return ['(', ')'] as const;
-			case 2:
-				return ['[', ']'] as const;
-			default:
-				return ['{', '}'] as const;
+				case 0:
+				case 1:
+					return ["(", ")"] as const;
+				case 2:
+					return ["[", "]"] as const;
+				default:
+					return ["{", "}"] as const;
 			}
 		};
 
 		for (const group of groups) {
 			const rewrapper = getRewrappers(); // The delimiters to rewrap the group with
-			const [sstart, strippedGroup, ssend] = this.stripGroupDelimiters(group);
+			const [sstart, strippedGroup, ssend] =
+				this.stripGroupDelimiters(group);
 			let featureSubGroup = strippedGroup.match(
-				/(^with|(feat(uring|\.)?))\s+(?<artists>.*)$/i
+				/(^with|(feat(uring|\.)?))\s+(?<artists>.*)$/i,
 			);
 			let artistGroupIndex = 4;
 
-			if (!sstart && !ssend) { // If there is no delimiters
+			if (!sstart && !ssend) {
+				// If there is no delimiters
 				featureSubGroup = strippedGroup.match(
-					/(feat(uring|\.)?)\s+(?<artists>.*)$/i
+					/(feat(uring|\.)?)\s+(?<artists>.*)$/i,
 				);
 				artistGroupIndex = 3;
 			}
 			if (featureSubGroup == null) {
-				if (!sstart && !ssend) { // If the group has no wrappers
+				if (!sstart && !ssend) {
+					// If the group has no wrappers
 					groupsWithoutFeaturings.push(group);
 				} else {
-					groupsWithoutFeaturings.push(rewrapper[0] + strippedGroup + rewrapper[1]);
+					groupsWithoutFeaturings.push(
+						rewrapper[0] + strippedGroup + rewrapper[1],
+					);
 				}
 			} else {
-				const artistsInSubGroup = await this.extractFeaturedArtistsFromArtistName(
-					featureSubGroup.at(artistGroupIndex)!
-				);
-				const strippedGroupWithoutSub = strippedGroup.replace(featureSubGroup[0], '').trim();
+				const artistsInSubGroup =
+					await this.extractFeaturedArtistsFromArtistName(
+						featureSubGroup.at(artistGroupIndex)!,
+					);
+				const strippedGroupWithoutSub = strippedGroup
+					.replace(featureSubGroup[0], "")
+					.trim();
 
 				if (strippedGroupWithoutSub) {
 					// eslint-disable-next-line max-depth
 					if (sstart && ssend) {
-						groupsWithoutFeaturings.push(sstart + strippedGroupWithoutSub + ssend);
+						groupsWithoutFeaturings.push(
+							sstart + strippedGroupWithoutSub + ssend,
+						);
 					} else {
 						groupsWithoutFeaturings.push(strippedGroupWithoutSub);
 					}
 				}
-				featuringArtists.push(artistsInSubGroup.artist, ...artistsInSubGroup.featuring);
+				featuringArtists.push(
+					artistsInSubGroup.artist,
+					...artistsInSubGroup.featuring,
+				);
 			}
 		}
 		return {
-			name: groupsWithoutFeaturings.join(' '),
-			featuring: featuringArtists
+			name: groupsWithoutFeaturings.join(" "),
+			featuring: featuringArtists,
 		};
 	}
 
@@ -204,39 +221,50 @@ export default class ParserService {
 	 * @example "A & B" => [A, B]
 	 * @param artistName the artist of the song, as from the source file's metadata
 	 */
-	async extractFeaturedArtistsFromArtistName(artistName: string): Promise<Pick<Metadata, 'artist' | 'featuring'>> {
+	async extractFeaturedArtistsFromArtistName(
+		artistName: string,
+	): Promise<Pick<Metadata, "artist" | "featuring">> {
 		if (await this.artistService.exists({ slug: new Slug(artistName) })) {
 			return { artist: artistName, featuring: [] };
 		}
-		const [main, ...feats] = (await Promise.all(artistName
-			.split(/\s*,\s*/)
-			.map(async (s) => {
-				const splitted = s.split(/\s+&\s+/);
+		const [main, ...feats] = (
+			await Promise.all(
+				artistName.split(/\s*,\s*/).map(async (s) => {
+					const splitted = s.split(/\s+&\s+/);
 
-				if (splitted.length == 1) {
-					return splitted;
-				}
-				const [mainA, ...feat] = splitted;
-				const parsedFeat = await this.extractFeaturedArtistsFromArtistName(feat.join(' & '));
+					if (splitted.length == 1) {
+						return splitted;
+					}
+					const [mainA, ...feat] = splitted;
+					const parsedFeat =
+						await this.extractFeaturedArtistsFromArtistName(
+							feat.join(" & "),
+						);
 
-				return [mainA, parsedFeat.artist, ...parsedFeat.featuring];
-			})))
+					return [mainA, parsedFeat.artist, ...parsedFeat.featuring];
+				}),
+			)
+		)
 			.flat()
 			.map((s) => s.trim());
-		const { name, featuring } = await this.extractFeaturedArtistsFromSongName(main);
+		const { name, featuring } =
+			await this.extractFeaturedArtistsFromSongName(main);
 
 		return {
 			artist: name,
-			featuring: featuring.concat(feats)
+			featuring: featuring.concat(feats),
 		};
 	}
 
 	// Remove all groups from song name
 	stripGroups(songName: string): string {
-		const groups = this.splitGroups(songName, { removeRoot: true, keepDelimiters: true });
+		const groups = this.splitGroups(songName, {
+			removeRoot: true,
+			keepDelimiters: true,
+		});
 
 		groups.forEach((group) => {
-			songName = songName.replace(group, '').trim();
+			songName = songName.replace(group, "").trim();
 		});
 		return songName.trim();
 	}
@@ -246,85 +274,109 @@ export default class ParserService {
 		const lowercaseSongName = songName.toLowerCase();
 		const extensionWords = songExtensions
 			.map((ext) => ext.toLowerCase())
-			.filter((ext) => !(ext.startsWith('feat ') || ext.startsWith('featuring ')))
-			.map((ext) => ext.split(' ')).flat();
+			.filter(
+				(ext) =>
+					!(ext.startsWith("feat ") || ext.startsWith("featuring ")),
+			)
+			.map((ext) => ext.split(" "))
+			.flat();
 
 		const containsWord = (word: string) => extensionWords.includes(word);
-		const titleContainsWord = (word: string) => lowercaseSongName.includes(word);
+		const titleContainsWord = (word: string) =>
+			lowercaseSongName.includes(word);
 
-		if (titleContainsWord('interview')) {
+		if (titleContainsWord("interview")) {
 			return SongType.NonMusic;
 		}
-		if (titleContainsWord('advert')) {
+		if (titleContainsWord("advert")) {
 			return SongType.NonMusic;
 		}
-		if (titleContainsWord('documentaire') || titleContainsWord('documentary')) {
+		if (
+			titleContainsWord("documentaire") ||
+			titleContainsWord("documentary")
+		) {
 			return SongType.NonMusic;
 		}
-		if (titleContainsWord('photo gallery')) {
+		if (titleContainsWord("photo gallery")) {
 			return SongType.NonMusic;
 		}
-		if (titleContainsWord('photo shoot') || titleContainsWord('photoshoot')) {
+		if (
+			titleContainsWord("photo shoot") ||
+			titleContainsWord("photoshoot")
+		) {
 			return SongType.NonMusic;
 		}
-		if (titleContainsWord('behind the scene')
-			|| titleContainsWord('behind-the-scene')
-			|| titleContainsWord('behind the music video')
-			|| titleContainsWord('behind the video')) {
+		if (
+			titleContainsWord("behind the scene") ||
+			titleContainsWord("behind-the-scene") ||
+			titleContainsWord("behind the music video") ||
+			titleContainsWord("behind the video")
+		) {
 			return SongType.NonMusic;
 		}
-		if (titleContainsWord('making of') || titleContainsWord('making the video')) {
+		if (
+			titleContainsWord("making of") ||
+			titleContainsWord("making the video")
+		) {
 			return SongType.NonMusic;
 		}
-		if (titleContainsWord('television special') || titleContainsWord('mtv special')) {
+		if (
+			titleContainsWord("television special") ||
+			titleContainsWord("mtv special")
+		) {
 			return SongType.NonMusic;
 		}
-		if (titleContainsWord('voice memo')) {
+		if (titleContainsWord("voice memo")) {
 			return SongType.NonMusic;
 		}
 		if (songExtensions.length == 0) {
 			return SongType.Original;
 		}
-		if (containsWord('live')) {
+		if (containsWord("live")) {
 			return SongType.Live;
 		}
-		if (containsWord('acoustic')) {
+		if (containsWord("acoustic")) {
 			return SongType.Acoustic;
 		}
-		if (containsWord('remix') || containsWord('dub') || containsWord('extended') || containsWord('vocal')) {
+		if (
+			containsWord("remix") ||
+			containsWord("dub") ||
+			containsWord("extended") ||
+			containsWord("vocal")
+		) {
 			return SongType.Remix;
 		}
-		if (containsWord('demo')) {
+		if (containsWord("demo")) {
 			return SongType.Demo;
 		}
-		if (containsWord('clean')) {
+		if (containsWord("clean")) {
 			return SongType.Clean;
 		}
-		if (extensionWords.join(' ').includes('rough mix')) {
+		if (extensionWords.join(" ").includes("rough mix")) {
 			return SongType.Original;
 		}
-		if (containsWord('mix') && containsWord('edit')) {
+		if (containsWord("mix") && containsWord("edit")) {
 			return SongType.Remix;
 		}
-		if (containsWord('edit')) {
+		if (containsWord("edit")) {
 			return SongType.Edit;
 		}
-		if (extensionWords.join(' ').includes('instrumental mix')) {
+		if (extensionWords.join(" ").includes("instrumental mix")) {
 			return SongType.Instrumental;
 		}
-		if (containsWord('mix')) {
+		if (containsWord("mix")) {
 			return SongType.Remix;
 		}
-		if (containsWord('instrumental') || containsWord('instrumentale')) {
+		if (containsWord("instrumental") || containsWord("instrumentale")) {
 			return SongType.Instrumental;
 		}
-		if (containsWord('single')) {
+		if (containsWord("single")) {
 			return SongType.Edit;
 		}
-		if (extensionWords.at(-1) == 'beats') {
+		if (extensionWords.at(-1) == "beats") {
 			return SongType.Remix;
 		}
-		if (containsWord('acapella')) {
+		if (containsWord("acapella")) {
 			return SongType.Acapella;
 		}
 		return SongType.Original;
@@ -332,45 +384,58 @@ export default class ParserService {
 
 	getAlbumType(albumName: string): AlbumType {
 		albumName = albumName.toLowerCase();
-		if (albumName.includes('soundtrack') ||
-			albumName.includes('from the motion picture') ||
-			albumName.includes('bande originale') ||
-			albumName.includes('music from and inspired by the television series') ||
-			albumName.includes('music from and inspired by the motion picture')) {
+		if (
+			albumName.includes("soundtrack") ||
+			albumName.includes("from the motion picture") ||
+			albumName.includes("bande originale") ||
+			albumName.includes(
+				"music from and inspired by the television series",
+			) ||
+			albumName.includes("music from and inspired by the motion picture")
+		) {
 			return AlbumType.Soundtrack;
 		}
-		if (albumName.includes('music videos') ||
-			albumName.includes('the video') ||
-			albumName.includes('dvd')) {
+		if (
+			albumName.includes("music videos") ||
+			albumName.includes("the video") ||
+			albumName.includes("dvd")
+		) {
 			return AlbumType.VideoAlbum;
 		}
-		if (albumName.search(/.+(live).*/g) != -1 ||
-			albumName.includes('unplugged') ||
-			albumName.includes(' tour') ||
-			albumName.includes('live from ') ||
-			albumName.includes('live at ') ||
-			albumName.includes('live à ')) {
+		if (
+			albumName.search(/.+(live).*/g) != -1 ||
+			albumName.includes("unplugged") ||
+			albumName.includes(" tour") ||
+			albumName.includes("live from ") ||
+			albumName.includes("live at ") ||
+			albumName.includes("live à ")
+		) {
 			return AlbumType.LiveRecording;
 		}
-		if (albumName.endsWith('- single') ||
-			albumName.endsWith('- ep') ||
-			albumName.endsWith('(remixes)')) {
+		if (
+			albumName.endsWith("- single") ||
+			albumName.endsWith("- ep") ||
+			albumName.endsWith("(remixes)")
+		) {
 			return AlbumType.Single;
 		}
 		if (
-			albumName.includes('remix album') ||
-			albumName.includes(' the remixes') ||
-			albumName.includes('mixes') ||
-			albumName.includes('remixes') ||
-			albumName.includes('remixed') ||
-			albumName.includes('best mixes')) {
+			albumName.includes("remix album") ||
+			albumName.includes(" the remixes") ||
+			albumName.includes("mixes") ||
+			albumName.includes("remixes") ||
+			albumName.includes("remixed") ||
+			albumName.includes("best mixes")
+		) {
 			return AlbumType.RemixAlbum;
 		}
-		if (albumName.includes('best of') ||
-			albumName.includes('hits') ||
-			albumName.includes('greatest hits') ||
-			albumName.includes('singles') ||
-			albumName.includes('collection')) {
+		if (
+			albumName.includes("best of") ||
+			albumName.includes("hits") ||
+			albumName.includes("greatest hits") ||
+			albumName.includes("singles") ||
+			albumName.includes("collection")
+		) {
 			return AlbumType.Compilation;
 		}
 		return AlbumType.StudioRecording;
@@ -383,15 +448,15 @@ export default class ParserService {
 	 */
 	parseReleaseExtension(releaseName: string) {
 		return this.parseExtensions(releaseName, [
-			'Reissue',
-			'Deluxe',
-			'Standard',
-			'Edited',
-			'Explicit',
-			'Remastered',
-			'Remaster',
-			'Edition',
-			'Version',
+			"Reissue",
+			"Deluxe",
+			"Standard",
+			"Edited",
+			"Explicit",
+			"Remastered",
+			"Remaster",
+			"Edition",
+			"Version",
 		]);
 	}
 
@@ -402,33 +467,44 @@ export default class ParserService {
 	 * It will remove the video and the remaster extension
 	 */
 	parseTrackExtensions(trackName: string) {
-		return this.parseExtensions(trackName, [
-			'Bonus Track',
-			'Video',
-			'Remastered',
-			'Remaster',
-			'Album Version',
-			'Main Version'
-		] as const, ['Live']);
+		return this.parseExtensions(
+			trackName,
+			[
+				"Bonus Track",
+				"Video",
+				"Remastered",
+				"Remaster",
+				"Album Version",
+				"Main Version",
+			] as const,
+			["Live"],
+		);
 	}
 
 	private parseExtensions<Keyword extends string>(
-		source: string, extension: readonly Keyword[],
-		ignore: string[] = []
+		source: string,
+		extension: readonly Keyword[],
+		ignore: string[] = [],
 	) {
-		return extension
-			.reduce((reduced, currentKeyword) => {
+		return extension.reduce(
+			(reduced, currentKeyword) => {
 				const stripped = this.removeExtensions(
-					reduced.parsedName, [currentKeyword], ignore
+					reduced.parsedName,
+					[currentKeyword],
+					ignore,
 				);
 
 				return {
 					...reduced,
 					parsedName: stripped,
-					[currentKeyword]: stripped != reduced.parsedName
+					[currentKeyword]: stripped != reduced.parsedName,
 				} as const;
-			}, { parsedName: source } as
-				{ parsedName: string } & Record<Keyword, boolean>);
+			},
+			{ parsedName: source } as { parsedName: string } & Record<
+				Keyword,
+				boolean
+			>,
+		);
 	}
 
 	/**
@@ -437,9 +513,13 @@ export default class ParserService {
 	 * @param extensions the extensions to find
 	 * @returns the cleaned source
 	 */
-	private removeExtensions(source: string, extensions: string[], ignore: string[]): string {
-		const extensionsGroup = extensions.map((ext) => `(${ext})`).join('|');
-		const ignoreGroup = ignore.map((ext) => `(${ext})`).join('|');
+	private removeExtensions(
+		source: string,
+		extensions: string[],
+		ignore: string[],
+	): string {
+		const extensionsGroup = extensions.map((ext) => `(${ext})`).join("|");
+		const ignoreGroup = ignore.map((ext) => `(${ext})`).join("|");
 
 		return this.splitGroups(source, { keepDelimiters: true })
 			.filter((group) => {
@@ -447,13 +527,22 @@ export default class ParserService {
 				if (group == this.stripGroupDelimiters(group)[1]) {
 					return true;
 				}
-				if (ignore.length && new RegExp(`.*(${ignoreGroup}).*`, 'i').exec(group)?.at(0) != undefined) {
+				if (
+					ignore.length &&
+					new RegExp(`.*(${ignoreGroup}).*`, "i")
+						.exec(group)
+						?.at(0) != undefined
+				) {
 					return true;
 				}
-				return new RegExp(`.*(${extensionsGroup}).*`, 'i').exec(group)?.at(0) == undefined;
+				return (
+					new RegExp(`.*(${extensionsGroup}).*`, "i")
+						.exec(group)
+						?.at(0) == undefined
+				);
 			})
 			.map((group) => group.trim())
-			.join(' ')
+			.join(" ")
 			.trim();
 	}
 }
