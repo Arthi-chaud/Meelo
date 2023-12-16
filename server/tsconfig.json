@@ -24,7 +24,7 @@
 		"noUnusedParameters": true,
 		"noUnusedLocals": true,
 		"noImplicitThis": true,
-		"verbatimModuleSyntax": true,
+		"importsNotUsedAsValues": "preserve",
 		"allowJs": true,
 		"plugins": [{ "name": "typescript-plugin-css-modules" }]
 	},
