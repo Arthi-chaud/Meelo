@@ -68,6 +68,8 @@ const ChangeSongType = (
 				toast.success("Update successful!");
 				queryClient.client.invalidateQueries("songs");
 				queryClient.client.invalidateQueries("release");
+				queryClient.client.invalidateQueries("tracks");
+				queryClient.client.invalidateQueries("videos");
 				queryClient.client.invalidateQueries("bsides");
 			})
 			.catch((error: Error) => toast.error(error.message));

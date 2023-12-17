@@ -38,6 +38,7 @@ import { TrackWithRelations } from "../../models/track";
 import { UpdateTrackIllustrationAction } from "../actions/update-illustration";
 import { useQueryClient } from "../../api/use-query";
 import { RefreshTrackMetadataAction } from "../actions/refresh-metadata";
+import ChangeSongType from "../actions/song-type";
 
 type ReleaseTrackContextualMenuProps = {
 	track: TrackWithRelations<"song">;
@@ -67,6 +68,7 @@ const ReleaseTrackContextualMenu = (props: ReleaseTrackContextualMenuProps) => {
 					GoToRelatedTracksAction(songSlug),
 				],
 				[
+					ChangeSongType(props.track.song, queryClient, confirm),
 					UpdateTrackIllustrationAction(queryClient, props.track.id),
 					RefreshTrackMetadataAction(props.track.id),
 				],

@@ -199,6 +199,7 @@ const ArtistPage = (props: InferSSRProps<typeof getServerSideProps>) => {
 					.map(({ type, items }) => (
 						<>
 							<SectionHeader
+								key={artist.data.id + type}
 								heading={
 									<Translate
 										translationKey={`plural${type}`}
@@ -226,6 +227,7 @@ const ArtistPage = (props: InferSSRProps<typeof getServerSideProps>) => {
 							/>
 							<Grid
 								item
+								key={artist.data.id + "-albums"}
 								sx={{ overflowX: "clip", width: "100%" }}
 							>
 								<TileRow
