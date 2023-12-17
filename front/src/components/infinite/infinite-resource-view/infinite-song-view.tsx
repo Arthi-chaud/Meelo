@@ -73,8 +73,8 @@ const InfiniteSongView = (
 				query={() =>
 					props.query({
 						// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-						// @ts-ignore
 						type:
+							// @ts-ignore
 							options?.type == "All"
 								? undefined
 								: (options?.type as SongType),

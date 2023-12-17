@@ -76,8 +76,8 @@ const InfiniteAlbumView = (
 						library: options?.library,
 						view: options?.view ?? props.defaultLayout ?? "grid",
 						// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-						// @ts-ignore
 						type:
+							// @ts-ignore
 							options?.type == "All" ? undefined : options?.type,
 						sortBy: options?.sortBy ?? AlbumSortingKeys[0],
 						order: options?.order ?? "asc",
