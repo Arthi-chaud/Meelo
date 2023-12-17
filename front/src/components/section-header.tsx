@@ -16,7 +16,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { Grid, Typography } from "@mui/material";
+import { Box, Typography } from "@mui/material";
 
 type SectionHeaderProps<T> = {
 	heading: string | JSX.Element;
@@ -28,8 +28,7 @@ type SectionHeaderProps<T> = {
  */
 const SectionHeader = <T,>(props: SectionHeaderProps<T>) => {
 	return (
-		<Grid
-			item
+		<Box
 			sx={{
 				display: "flex",
 				flexGrow: 1,
@@ -41,7 +40,7 @@ const SectionHeader = <T,>(props: SectionHeaderProps<T>) => {
 				{props.heading}
 			</Typography>
 			{props.trailing}
-		</Grid>
+		</Box>
 	);
 };
 

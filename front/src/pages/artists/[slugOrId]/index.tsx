@@ -109,6 +109,7 @@ export const getServerSideProps = prepareSSR((context) => {
 });
 
 const ArtistPage = (props: InferSSRProps<typeof getServerSideProps>) => {
+	const sectionPadding = 4;
 	const router = useRouter();
 	const artistIdentifier =
 		props.additionalProps?.artistIdentifier ?? getSlugOrId(router.query);
@@ -143,8 +144,8 @@ const ArtistPage = (props: InferSSRProps<typeof getServerSideProps>) => {
 			<Grid
 				container
 				direction="column"
-				spacing={4}
-				sx={{ padding: 2, flex: 1, flexGrow: 1 }}
+				rowSpacing={sectionPadding}
+				sx={{ padding: 2, flex: 1, flexGrow: 1, paddingTop: 8 }}
 			>
 				{topSongs.data?.pages.at(0)?.items.length != 0 && (
 					<>
@@ -174,7 +175,11 @@ const ArtistPage = (props: InferSSRProps<typeof getServerSideProps>) => {
 						<Grid
 							item
 							container
-							sx={{ display: "block", flexGrow: 1 }}
+							sx={{
+								display: "block",
+								flexGrow: 1,
+								paddingBottom: sectionPadding,
+							}}
 						>
 							<SongGrid
 								parentArtistName={artist.data.name}
@@ -316,6 +321,7 @@ const ArtistPage = (props: InferSSRProps<typeof getServerSideProps>) => {
 				{externalIdWithDescription && (
 					<>
 						<Divider sx={{ paddingTop: 3 }} />
+						<Box sx={{ paddingBottom: sectionPadding }} />
 						<SectionHeader
 							heading={<Translate translationKey="about" />}
 						/>
