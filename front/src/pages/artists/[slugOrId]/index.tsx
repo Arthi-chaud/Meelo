@@ -199,7 +199,11 @@ const ArtistPage = (props: InferSSRProps<typeof getServerSideProps>) => {
 					.map(({ type, items }) => (
 						<>
 							<SectionHeader
-								heading={<Translate translationKey={type} />}
+								heading={
+									<Translate
+										translationKey={`plural${type}`}
+									/>
+								}
 								trailing={
 									items.length > albumListSize ? (
 										<Link
