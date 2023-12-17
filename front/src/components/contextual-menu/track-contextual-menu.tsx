@@ -37,6 +37,7 @@ import { TrackWithRelations } from "../../models/track";
 import { UpdateTrackIllustrationAction } from "../actions/update-illustration";
 import { translate } from "../../i18n/translate";
 import { RefreshTrackMetadataAction } from "../actions/refresh-metadata";
+import ChangeSongType from "../actions/song-type";
 
 type TrackContextualMenuProps = {
 	track: TrackWithRelations<"song">;
@@ -87,6 +88,7 @@ const TrackContextualMenu = (props: TrackContextualMenuProps) => {
 					},
 				],
 				[
+					ChangeSongType(props.track.song, queryClient, confirm),
 					UpdateTrackIllustrationAction(queryClient, props.track.id),
 					RefreshTrackMetadataAction(props.track.id),
 				],
