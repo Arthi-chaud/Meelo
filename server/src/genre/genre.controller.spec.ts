@@ -25,9 +25,22 @@ describe("Genre Controller", () => {
 	let module: TestingModule;
 	beforeAll(async () => {
 		module = await createTestingModule({
-			imports: [PrismaModule, ArtistModule, TrackModule, AlbumModule, IllustrationModule, GenreModule, LyricsModule, ScannerModule, ReleaseModule],
+			imports: [
+				PrismaModule,
+				ArtistModule,
+				TrackModule,
+				AlbumModule,
+				IllustrationModule,
+				GenreModule,
+				LyricsModule,
+				ScannerModule,
+				ReleaseModule,
+			],
 			providers: [SongService, ArtistService, PrismaService],
-		}).overrideProvider(PrismaService).useClass(TestPrismaService).compile();
+		})
+			.overrideProvider(PrismaService)
+			.useClass(TestPrismaService)
+			.compile();
 		app = await SetupApp(module);
 		dummyRepository = module.get(PrismaService);
 		await dummyRepository.onModuleInit();
@@ -45,7 +58,7 @@ describe("Genre Controller", () => {
 				.expect(200)
 				.expect((res) => {
 					const fetchedGenre: Genre = res.body;
-					expect(fetchedGenre).toStrictEqual(dummyRepository.genreA)
+					expect(fetchedGenre).toStrictEqual(dummyRepository.genreA);
 				});
 		});
 
@@ -55,7 +68,7 @@ describe("Genre Controller", () => {
 				.expect(200)
 				.expect((res) => {
 					const fetchedGenre: Genre = res.body;
-					expect(fetchedGenre).toStrictEqual(dummyRepository.genreB)
+					expect(fetchedGenre).toStrictEqual(dummyRepository.genreB);
 				});
 		});
 
@@ -109,20 +122,18 @@ describe("Genre Controller", () => {
 	describe("Get Genres of a song", () => {
 		it("should return the song's genres", () => {
 			return request(app.getHttpServer())
-				.get(`/genres?song=${dummyRepository.artistA.slug}+${dummyRepository.songA2.slug}`)
+				.get(
+					`/genres?song=${dummyRepository.artistA.slug}+${dummyRepository.songA2.slug}`,
+				)
 				.expect(200)
 				.expect((res) => {
 					const genres: Genre[] = res.body.items;
-					expect(genres).toStrictEqual([
-						dummyRepository.genreB
-					]);
+					expect(genres).toStrictEqual([dummyRepository.genreB]);
 				});
 		});
 	});
 
-
 	describe("Get Genres of an album", () => {
-
 		it("should return an array of genres", () => {
 			return request(app.getHttpServer())
 				.get(`/genres?album=${dummyRepository.albumA1.id}&sortBy=name`)
@@ -132,7 +143,7 @@ describe("Genre Controller", () => {
 					expect(genres).toStrictEqual([
 						dummyRepository.genreA,
 						dummyRepository.genreB,
-					])
+					]);
 				});
 		});
 	});

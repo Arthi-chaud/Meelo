@@ -1,42 +1,56 @@
-import {
-	Controller, Get, Req, Response
-} from "@nestjs/common";
+/*
+ * Meelo is a music server and application to enjoy your personal music files anywhere, anytime you want.
+ * Copyright (C) 2023
+ *
+ * Meelo is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * Meelo is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
+import { Controller, Get, Req, Response } from "@nestjs/common";
 import type { File } from "src/prisma/models";
 import FileService from "./file.service";
 import FileQueryParameters from "./models/file.query-parameters";
-import { ApiOperation, ApiTags } from '@nestjs/swagger';
+import { ApiOperation, ApiTags } from "@nestjs/swagger";
 import RelationIncludeQuery from "src/relation-include/relation-include-query.decorator";
-import IdentifierParam from 'src/identifier/identifier.pipe';
+import IdentifierParam from "src/identifier/identifier.pipe";
 
 @ApiTags("Files")
-@Controller('files')
+@Controller("files")
 export default class FileController {
-	constructor(
-		private fileService: FileService
-	) {}
+	constructor(private fileService: FileService) {}
 
 	@ApiOperation({
-		summary: 'Get one \'File\''
+		summary: "Get one 'File'",
 	})
-	@Get(':idOrSlug')
+	@Get(":idOrSlug")
 	get(
 		@RelationIncludeQuery(FileQueryParameters.AvailableAtomicIncludes)
 		include: FileQueryParameters.RelationInclude,
 		@IdentifierParam(FileService)
-		where: FileQueryParameters.WhereInput
+		where: FileQueryParameters.WhereInput,
 	): Promise<File> {
 		return this.fileService.get(where, include);
 	}
 
 	@ApiOperation({
-		summary: "Get one File's content"
+		summary: "Get one File's content",
 	})
-	@Get(':idOrSlug/stream')
+	@Get(":idOrSlug/stream")
 	async streamFile(
 		@IdentifierParam(FileService)
 		where: FileQueryParameters.WhereInput,
 		@Response({ passthrough: true }) res: Response,
-		@Req() req: any
+		@Req() req: any,
 	) {
 		return this.fileService.streamFile(where, res, req);
 	}

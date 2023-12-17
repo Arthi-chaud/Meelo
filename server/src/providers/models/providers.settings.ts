@@ -1,3 +1,21 @@
+/*
+ * Meelo is a music server and application to enjoy your personal music files anywhere, anytime you want.
+ * Copyright (C) 2023
+ *
+ * Meelo is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * Meelo is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
 import { IsOptional, ValidateNested } from "class-validator";
 import { ApiProperty } from "@nestjs/swagger";
 import { Type } from "class-transformer";
@@ -17,7 +35,7 @@ export default class ProvidersSettings {
 	 */
 	@ApiProperty({
 		type: GeniusSettings,
-		required: false
+		required: false,
 	})
 	@Type(() => GeniusSettings)
 	@ValidateNested()
@@ -29,7 +47,7 @@ export default class ProvidersSettings {
 	 */
 	@ApiProperty({
 		type: MusicBrainzSettings,
-		required: false
+		required: false,
 	})
 	@Type(() => MusicBrainzSettings)
 	@ValidateNested()
@@ -41,7 +59,7 @@ export default class ProvidersSettings {
 	 */
 	@ApiProperty({
 		type: DiscogsSettings,
-		required: false
+		required: false,
 	})
 	@Type(() => DiscogsSettings)
 	@ValidateNested()
@@ -53,7 +71,7 @@ export default class ProvidersSettings {
 	 */
 	@ApiProperty({
 		type: WikipediaSettings,
-		required: false
+		required: false,
 	})
 	@Type(() => WikipediaSettings)
 	@ValidateNested()
@@ -65,7 +83,7 @@ export default class ProvidersSettings {
 	 */
 	@ApiProperty({
 		type: MetacriticSettings,
-		required: false
+		required: false,
 	})
 	@Type(() => MetacriticSettings)
 	@ValidateNested()
@@ -77,7 +95,7 @@ export default class ProvidersSettings {
 	 */
 	@ApiProperty({
 		type: AllMusicSettings,
-		required: false
+		required: false,
 	})
 	@Type(() => AllMusicSettings)
 	@ValidateNested()

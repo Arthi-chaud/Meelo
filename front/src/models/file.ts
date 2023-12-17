@@ -1,24 +1,44 @@
-import * as yup from 'yup';
+/*
+ * Meelo is a music server and application to enjoy your personal music files anywhere, anytime you want.
+ * Copyright (C) 2023
+ *
+ * Meelo is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * Meelo is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
+import * as yup from "yup";
 import Resource from "./resource";
 
-const File = Resource.concat(yup.object({
-	/**
-	 * Path of the track, relative to the parent library
-	 */
-	path: yup.string().required(),
-	/**
-	 * MD5 checksum of the file
-	 */
-	md5Checksum: yup.string().required(),
-	/**
-	 * Date of the file registration
-	 */
-	registerDate: yup.date().required(),
-	/**
-	 * ID of the library
-	 */
-	libraryId: yup.number().required(),
-}));
+const File = Resource.concat(
+	yup.object({
+		/**
+		 * Path of the track, relative to the parent library
+		 */
+		path: yup.string().required(),
+		/**
+		 * MD5 checksum of the file
+		 */
+		md5Checksum: yup.string().required(),
+		/**
+		 * Date of the file registration
+		 */
+		registerDate: yup.date().required(),
+		/**
+		 * ID of the library
+		 */
+		libraryId: yup.number().required(),
+	}),
+);
 
 type File = yup.InferType<typeof File>;
 

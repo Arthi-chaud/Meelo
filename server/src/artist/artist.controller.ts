@@ -1,62 +1,84 @@
-import {
-	Controller, Get, Inject, Query, forwardRef
-} from '@nestjs/common';
-import { PaginationParameters } from 'src/pagination/models/pagination-parameters';
-import ArtistService from './artist.service';
-import ArtistQueryParameters from './models/artist.query-parameters';
-import {
-	ApiOperation, ApiPropertyOptional, ApiTags, IntersectionType
-} from '@nestjs/swagger';
-import { ArtistResponseBuilder } from './models/artist.response';
-import IdentifierParam from 'src/identifier/identifier.pipe';
-import RelationIncludeQuery from 'src/relation-include/relation-include-query.decorator';
-import Response, { ResponseType } from 'src/response/response.decorator';
-import { IsOptional } from 'class-validator';
-import TransformIdentifier from 'src/identifier/identifier.transform';
-import GenreService from 'src/genre/genre.service';
-import LibraryService from 'src/library/library.service';
-import LibraryQueryParameters from 'src/library/models/library.query-parameters';
-import GenreQueryParameters from 'src/genre/models/genre.query-parameters';
-import AlbumQueryParameters from 'src/album/models/album.query-parameters';
-import AlbumService from 'src/album/album.service';
+/*
+ * Meelo is a music server and application to enjoy your personal music files anywhere, anytime you want.
+ * Copyright (C) 2023
+ *
+ * Meelo is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * Meelo is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
 
-class Selector extends IntersectionType(ArtistQueryParameters.SortingParameter) {
+import { Controller, Get, Inject, Query, forwardRef } from "@nestjs/common";
+import { PaginationParameters } from "src/pagination/models/pagination-parameters";
+import ArtistService from "./artist.service";
+import ArtistQueryParameters from "./models/artist.query-parameters";
+import {
+	ApiOperation,
+	ApiPropertyOptional,
+	ApiTags,
+	IntersectionType,
+} from "@nestjs/swagger";
+import { ArtistResponseBuilder } from "./models/artist.response";
+import IdentifierParam from "src/identifier/identifier.pipe";
+import RelationIncludeQuery from "src/relation-include/relation-include-query.decorator";
+import Response, { ResponseType } from "src/response/response.decorator";
+import { IsOptional } from "class-validator";
+import TransformIdentifier from "src/identifier/identifier.transform";
+import GenreService from "src/genre/genre.service";
+import LibraryService from "src/library/library.service";
+import LibraryQueryParameters from "src/library/models/library.query-parameters";
+import GenreQueryParameters from "src/genre/models/genre.query-parameters";
+import AlbumQueryParameters from "src/album/models/album.query-parameters";
+import AlbumService from "src/album/album.service";
+
+class Selector extends IntersectionType(
+	ArtistQueryParameters.SortingParameter,
+) {
 	@IsOptional()
 	@ApiPropertyOptional({
-		description: 'Search artists using a string token'
+		description: "Search artists using a string token",
 	})
 	query?: string;
 
 	@IsOptional()
 	@ApiPropertyOptional({
-		description: 'If true, only artists that have at least one album will be returned'
+		description:
+			"If true, only artists that have at least one album will be returned",
 	})
 	albumArtistOnly?: boolean;
 
 	@IsOptional()
 	@ApiPropertyOptional({
-		description: 'Filter artists by genre'
+		description: "Filter artists by genre",
 	})
 	@TransformIdentifier(GenreService)
 	genre?: GenreQueryParameters.WhereInput;
 
 	@IsOptional()
 	@ApiPropertyOptional({
-		description: 'Filter artists by library'
+		description: "Filter artists by library",
 	})
 	@TransformIdentifier(LibraryService)
 	library?: LibraryQueryParameters.WhereInput;
 
 	@IsOptional()
 	@ApiPropertyOptional({
-		description: 'Filter artists by albums they appear on'
+		description: "Filter artists by albums they appear on",
 	})
 	@TransformIdentifier(AlbumService)
 	album?: AlbumQueryParameters.WhereInput;
 }
 
 @ApiTags("Artists")
-@Controller('artists')
+@Controller("artists")
 export default class ArtistController {
 	constructor(
 		@Inject(forwardRef(() => ArtistService))
@@ -64,7 +86,7 @@ export default class ArtistController {
 	) {}
 
 	@ApiOperation({
-		summary: 'Get many artists'
+		summary: "Get many artists",
 	})
 	@Response({
 		handler: ArtistResponseBuilder,
@@ -84,24 +106,24 @@ export default class ArtistController {
 				selector,
 				paginationParameters,
 				include,
-				selector
+				selector,
 			);
 		}
 		return this.artistService.getMany(
 			selector,
 			paginationParameters,
 			include,
-			selector
+			selector,
 		);
 	}
 
 	@ApiOperation({
-		summary: 'Get one artist'
+		summary: "Get one artist",
 	})
 	@Response({
-		handler: ArtistResponseBuilder
+		handler: ArtistResponseBuilder,
 	})
-	@Get(':idOrSlug')
+	@Get(":idOrSlug")
 	async get(
 		@RelationIncludeQuery(ArtistQueryParameters.AvailableAtomicIncludes)
 		include: ArtistQueryParameters.RelationInclude,

@@ -1,10 +1,27 @@
-/* eslint-disable no-restricted-imports */
+/*
+ * Meelo is a music server and application to enjoy your personal music files anywhere, anytime you want.
+ * Copyright (C) 2023
+ *
+ * Meelo is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * Meelo is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
 import {
 	QueryFunctionContext,
 	useInfiniteQuery as useReactInfiniteQuery,
 	useQueries as useReactQueries,
 	useQuery as useReactQuery,
-	useQueryClient as useReactQueryClient
+	useQueryClient as useReactQueryClient,
 } from "react-query";
 import API from "./api";
 import { InfiniteFetchFn, Page } from "../components/infinite/infinite-scroll";
@@ -15,26 +32,26 @@ type Key = string | number;
 //// Query types
 
 export type Query<Type> = {
-	key: Key[],
+	key: Key[];
 	// @warning If you call this method 'by hand', please consider using a query client instead
-	exec: () => Promise<Type>
+	exec: () => Promise<Type>;
 };
 
 export type InfiniteQuery<Type> = {
-	key: Key[],
-	exec: InfiniteFetchFn<Type>
-}
+	key: Key[];
+	exec: InfiniteFetchFn<Type>;
+};
 //// Query functions
 
 export type MeeloQueryFn<
 	QueryReturnType = unknown,
-	Params extends any[] = any[]
-> = (...args: Params) => Query<QueryReturnType>
+	Params extends any[] = any[],
+> = (...args: Params) => Query<QueryReturnType>;
 
 export type MeeloInfiniteQueryFn<
 	QueryReturnType = unknown,
-	Params extends any[] = any[]
-> = (...args: Params) => InfiniteQuery<QueryReturnType>
+	Params extends any[] = any[],
+> = (...args: Params) => InfiniteQuery<QueryReturnType>;
 
 export const DefaultMeeloQueryOptions = {
 	useErrorBoundary: true,
@@ -43,8 +60,8 @@ export const DefaultMeeloQueryOptions = {
 	cacheTime: 10 * (60 * 1000),
 	refetchOnMount: true,
 	// We want this in dev, not in prod to avoid useless refecthes.
-	refetchOnWindowFocus: process.env.NODE_ENV != 'production',
-	refetchOnReconnect: true
+	refetchOnWindowFocus: process.env.NODE_ENV != "production",
+	refetchOnReconnect: true,
 };
 
 /**
@@ -53,18 +70,21 @@ export const DefaultMeeloQueryOptions = {
  * @param queryArgs the arguments to pass the the query function. If one of them is undefined, the query will not be enabled
  * @returns
  */
-const prepareMeeloQuery = <QueryReturnType = unknown, Params extends any[] = unknown[]>(
+const prepareMeeloQuery = <
+	QueryReturnType = unknown,
+	Params extends any[] = unknown[],
+>(
 	query: MeeloQueryFn<QueryReturnType, Params>,
 	...queryArgs: Partial<Params>
 ) => {
 	const enabled = isEnabled(queryArgs);
-	const queryParams = query(...queryArgs as Parameters<typeof query>);
+	const queryParams = query(...(queryArgs as Parameters<typeof query>));
 
 	return {
 		queryKey: queryParams.key,
 		queryFn: queryParams.exec,
 		enabled: enabled,
-		...DefaultMeeloQueryOptions
+		...DefaultMeeloQueryOptions,
 	};
 };
 
@@ -85,26 +105,34 @@ const isEnabled = (args: any[]) => {
  */
 const prepareMeeloInfiniteQuery = <
 	QueryReturnType extends Resource = Resource,
-	Params extends any[] = unknown[]
-	>(
-		query: MeeloInfiniteQueryFn<QueryReturnType, Params>,
-		...queryArgs: Partial<Params>
-	) => {
+	Params extends any[] = unknown[],
+>(
+	query: MeeloInfiniteQueryFn<QueryReturnType, Params>,
+	...queryArgs: Partial<Params>
+) => {
 	const enabled = isEnabled(queryArgs);
-	const queryParams = query(...queryArgs as Params);
+	const queryParams = query(...(queryArgs as Params));
 
 	return {
 		queryKey: queryParams.key,
 		queryFn: (context: QueryFunctionContext) =>
-			queryParams.exec(context.pageParam ?? { index: 0, pageSize: API.defaultPageSize })
-				.then((result): Page<QueryReturnType> => ({
-					pageSize: result.items.length,
-					items: result.items,
-					afterId: result.items.at(-1)?.id ?? null,
-					end: result.metadata.next === null
-				})),
+			queryParams
+				.exec(
+					context.pageParam ?? {
+						index: 0,
+						pageSize: API.defaultPageSize,
+					},
+				)
+				.then(
+					(result): Page<QueryReturnType> => ({
+						pageSize: result.items.length,
+						items: result.items,
+						afterId: result.items.at(-1)?.id ?? null,
+						end: result.metadata.next === null,
+					}),
+				),
 		enabled: enabled,
-		...DefaultMeeloQueryOptions
+		...DefaultMeeloQueryOptions,
 	};
 };
 
@@ -125,7 +153,9 @@ const useQueries = <ReturnType, Params extends any[][]>(
 	...queries: Parameters<typeof useQuery<ReturnType, Params[number]>>[]
 ) => {
 	return useReactQueries(
-		queries.map(([query, ...params]) => prepareMeeloQuery(query, ...params as Params[number]))
+		queries.map(([query, ...params]) =>
+			prepareMeeloQuery(query, ...(params as Params[number])),
+		),
 	);
 };
 
@@ -140,7 +170,9 @@ const useInfiniteQuery = <ReturnType extends Resource, Params extends any[]>(
 
 	return useReactInfiniteQuery({
 		...prepareMeeloInfiniteQuery(query, ...queryParams),
-		getNextPageParam: (lastPage: Page<ReturnType>): Page<ReturnType> | undefined => {
+		getNextPageParam: (
+			lastPage: Page<ReturnType>,
+		): Page<ReturnType> | undefined => {
 			if (lastPage.end || lastPage.items.length < pageSize) {
 				return undefined;
 			}
@@ -158,11 +190,18 @@ const useQueryClient = () => {
 	return {
 		client: queryClient,
 		fetchQuery: <R, Params extends any[]>(
-			query: ReturnType<MeeloQueryFn<R, Params>>
-		) => queryClient.fetchQuery(prepareMeeloQuery(() => query))
+			query: ReturnType<MeeloQueryFn<R, Params>>,
+		) => queryClient.fetchQuery(prepareMeeloQuery(() => query)),
 	};
 };
 
 export type QueryClient = ReturnType<typeof useQueryClient>;
 
-export { useQuery, useQueries, useInfiniteQuery, useQueryClient, prepareMeeloQuery, prepareMeeloInfiniteQuery };
+export {
+	useQuery,
+	useQueries,
+	useInfiniteQuery,
+	useQueryClient,
+	prepareMeeloQuery,
+	prepareMeeloInfiniteQuery,
+};

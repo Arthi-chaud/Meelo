@@ -1,20 +1,48 @@
-import sharp from 'sharp';
-import { Injectable, StreamableFile } from '@nestjs/common';
-import FileManagerService from 'src/file-manager/file-manager.service';
-import { CantDownloadIllustrationException, NoIllustrationException } from './illustration.exceptions';
-// eslint-disable-next-line no-restricted-imports
-import * as fs from 'fs';
-import * as dir from 'path';
-import type { IllustrationFolderPath, IllustrationPath } from './models/illustration-path.model';
-import Jimp from 'jimp';
-import { Readable } from 'stream';
-import type { IllustrationDimensionsDto } from './models/illustration-dimensions.dto';
-import Logger from 'src/logger/logger';
-import * as Blurhash from 'blurhash';
-import getColors from 'get-image-colors';
-import mime from 'mime';
+/*
+ * Meelo is a music server and application to enjoy your personal music files anywhere, anytime you want.
+ * Copyright (C) 2023
+ *
+ * Meelo is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * Meelo is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
 
-type IllustrationExtractStatus = 'extracted' | 'error' | 'already-extracted' | 'different-illustration';
+import sharp from "sharp";
+import { Injectable, StreamableFile } from "@nestjs/common";
+import FileManagerService from "src/file-manager/file-manager.service";
+import {
+	CantDownloadIllustrationException,
+	NoIllustrationException,
+} from "./illustration.exceptions";
+// eslint-disable-next-line no-restricted-imports
+import * as fs from "fs";
+import * as dir from "path";
+import type {
+	IllustrationFolderPath,
+	IllustrationPath,
+} from "./models/illustration-path.model";
+import Jimp from "jimp";
+import { Readable } from "stream";
+import type { IllustrationDimensionsDto } from "./models/illustration-dimensions.dto";
+import Logger from "src/logger/logger";
+import * as Blurhash from "blurhash";
+import getColors from "get-image-colors";
+import mime from "mime";
+
+type IllustrationExtractStatus =
+	| "extracted"
+	| "error"
+	| "already-extracted"
+	| "different-illustration";
 
 /**
  * A service to handle illustration files (downloads, extractions, conversion & streaming)
@@ -24,9 +52,7 @@ type IllustrationExtractStatus = 'extracted' | 'error' | 'already-extracted' | '
 export default class IllustrationService {
 	private readonly logger = new Logger(IllustrationService.name);
 
-	constructor(
-		private fileManagerService: FileManagerService
-	) {}
+	constructor(private fileManagerService: FileManagerService) {}
 
 	/**
 	 * Downloads an illustration from a URL, and stores it in the illustration file system
@@ -58,21 +84,23 @@ export default class IllustrationService {
 	}
 
 	async saveIllustrationWithStatus(
-		illustrationBuffer: Buffer, outputPath: string
+		illustrationBuffer: Buffer,
+		outputPath: string,
 	): Promise<IllustrationExtractStatus> {
 		if (this.fileManagerService.fileExists(outputPath)) {
-			const fileContent = this.fileManagerService.getFileContent(outputPath);
+			const fileContent =
+				this.fileManagerService.getFileContent(outputPath);
 
 			if (fileContent == illustrationBuffer.toString()) {
-				return 'already-extracted';
+				return "already-extracted";
 			}
-			return 'different-illustration';
+			return "different-illustration";
 		}
 		try {
 			this.saveIllustration(illustrationBuffer, outputPath);
-			return 'extracted';
+			return "extracted";
 		} catch {
-			return 'error';
+			return "error";
 		}
 	}
 
@@ -108,64 +136,77 @@ export default class IllustrationService {
 	 * @returns a StreamableFile of the illustration
 	 */
 	async streamIllustration(
-		sourceFilePath: string, as: string,
-		dimensions: IllustrationDimensionsDto, res: any, ext = '.jpg'
+		sourceFilePath: string,
+		as: string,
+		dimensions: IllustrationDimensionsDto,
+		res: any,
+		ext = ".jpg",
 	): Promise<StreamableFile> {
 		if (!this.fileManagerService.fileExists(sourceFilePath)) {
 			throw new NoIllustrationException("Illustration file not found");
 		}
 
 		res.set({
-			'Content-Disposition': `attachment; filename="${as}${ext}"`,
+			"Content-Disposition": `attachment; filename="${as}${ext}"`,
 		});
 		if (dimensions.width || dimensions.height) {
 			try {
 				const sharpImage = sharp(sourceFilePath);
 
 				if (dimensions.width && dimensions.height) {
-					sharpImage.resize(dimensions.width, dimensions.height, { fit: 'fill' });
+					sharpImage.resize(dimensions.width, dimensions.height, {
+						fit: "fill",
+					});
 				} else {
 					sharpImage.resize(dimensions.width || dimensions.height);
 				}
 				return sharpImage
 					.jpeg({ quality: dimensions.quality })
 					.toBuffer()
-					.then((buffer) => new StreamableFile(Readable.from(buffer)));
+					.then(
+						(buffer) => new StreamableFile(Readable.from(buffer)),
+					);
 			} catch (error) {
-				this.logger.error(`Streaming of illustration ${sourceFilePath} failed.`);
+				this.logger.error(
+					`Streaming of illustration ${sourceFilePath} failed.`,
+				);
 			}
 		}
-		return new StreamableFile(
-			fs.createReadStream(sourceFilePath),
-			{ type: mime.getType(sourceFilePath)?.toString() }
-		);
+		return new StreamableFile(fs.createReadStream(sourceFilePath), {
+			type: mime.getType(sourceFilePath)?.toString(),
+		});
 	}
 
-	async getIllustrationBlurHashAndColors(buffer: Buffer): Promise<[string, string[]]> {
+	async getIllustrationBlurHashAndColors(
+		buffer: Buffer,
+	): Promise<[string, string[]]> {
 		const image = await Jimp.read(buffer);
 
 		return Promise.all([
 			new Promise<string>((resolve) => {
 				const array = new Uint8ClampedArray(image.bitmap.data.length);
 
-				image.bitmap.data.map((char, index) => array[index] = char);
-				resolve(Blurhash.encode(
-					array,
-					image.getWidth(),
-					image.getHeight(),
-					// Represent the max number of colors on each axis
-					4,
-					4
-				));
+				image.bitmap.data.map((char, index) => (array[index] = char));
+				resolve(
+					Blurhash.encode(
+						array,
+						image.getWidth(),
+						image.getHeight(),
+						// Represent the max number of colors on each axis
+						4,
+						4,
+					),
+				);
 			}),
-			getColors(buffer, { type: image.getMIME() })
-				.then((colors) => colors.map((color) => color.hex()))
+			getColors(buffer, { type: image.getMIME() }).then((colors) =>
+				colors.map((color) => color.hex()),
+			),
 		]);
 	}
 
 	async moveIllustrationFolder(
 		oldPath: IllustrationFolderPath,
-		newPath: IllustrationFolderPath
+		newPath: IllustrationFolderPath,
 	) {
 		if (this.fileManagerService.folderExists(oldPath)) {
 			fs.mkdirSync(dir.dirname(newPath), { recursive: true });

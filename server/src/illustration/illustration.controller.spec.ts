@@ -15,7 +15,7 @@ import ReleaseModule from "src/release/release.module";
 import SongModule from "src/song/song.module";
 import TrackModule from "src/track/track.module";
 // Import as a require to mock
-const fs = require('fs');
+const fs = require("fs");
 import { INestApplication } from "@nestjs/common";
 import request from "supertest";
 import SetupApp from "test/setup-app";
@@ -24,21 +24,38 @@ import compilationAlbumArtistKeyword from "src/constants/compilation";
 
 jest.setTimeout(60000);
 
-describe('Illustration Controller', () => {
+describe("Illustration Controller", () => {
 	let app: INestApplication;
 	let dummyRepository: TestPrismaService;
 	let fileManagerService: FileManagerService;
 	let module: TestingModule;
 	beforeAll(async () => {
 		module = await createTestingModule({
-			imports: [FileManagerModule, PrismaModule, FileModule, ScannerModule, FileModule, ArtistModule, AlbumModule, SongModule, ReleaseModule, TrackModule, GenreModule, LyricsModule, ProvidersModule],
-		}).overrideProvider(PrismaService).useClass(TestPrismaService).compile();
+			imports: [
+				FileManagerModule,
+				PrismaModule,
+				FileModule,
+				ScannerModule,
+				FileModule,
+				ArtistModule,
+				AlbumModule,
+				SongModule,
+				ReleaseModule,
+				TrackModule,
+				GenreModule,
+				LyricsModule,
+				ProvidersModule,
+			],
+		})
+			.overrideProvider(PrismaService)
+			.useClass(TestPrismaService)
+			.compile();
 		app = await SetupApp(module);
 		fileManagerService = module.get<FileManagerService>(FileManagerService);
 		dummyRepository = module.get(PrismaService);
 		await dummyRepository.onModuleInit();
 	});
-	const baseMetadataFolder = 'test/assets/metadata';
+	const baseMetadataFolder = "test/assets/metadata";
 
 	afterAll(() => {
 		module.close();
@@ -46,23 +63,38 @@ describe('Illustration Controller', () => {
 	});
 
 	const expectedFileName = (headers: any, expected: string) => {
-		expect(headers['content-disposition']).toStrictEqual(`attachment; filename="${expected}.jpg"`);
-	}
+		expect(headers["content-disposition"]).toStrictEqual(
+			`attachment; filename="${expected}.jpg"`,
+		);
+	};
 
-	const getDummyIllustrationStream = () => fs.createReadStream('test/assets/settings.json');
-	const dummyIllustrationBytes = fs.readFileSync('test/assets/settings.json');
+	const getDummyIllustrationStream = () =>
+		fs.createReadStream("test/assets/settings.json");
+	const dummyIllustrationBytes = fs.readFileSync("test/assets/settings.json");
 
-	const illustrationUrlExample = 'https://i.discogs.com/VEV-yWsS3J9SfeTVaY8Q_3Bw3dWqHHgf2WLDL5mGqxo/rs:fit/g:sm/q:90/h:600/w:600/czM6Ly9kaXNjb2dz/LWRhdGFiYXNlLWlt/YWdlcy9SLTY2Ny0x/NjY1NDkzNDk3LTQ2/MDYuanBlZw.jpeg'
+	const illustrationUrlExample =
+		"https://i.discogs.com/VEV-yWsS3J9SfeTVaY8Q_3Bw3dWqHHgf2WLDL5mGqxo/rs:fit/g:sm/q:90/h:600/w:600/czM6Ly9kaXNjb2dz/LWRhdGFiYXNlLWlt/YWdlcy9SLTY2Ny0x/NjY1NDkzNDk3LTQ2/MDYuanBlZw.jpeg";
 	// const distantIllustrationContent = axios.get(illustrationUrlExample).then((r) => r.data);
 
-	const illustration2UrlExample = 'https://i.discogs.com/OoRFxbWuLADDqiPFOUU_7t9k5P1Zui3V__PsTXd_LYo/rs:fit/g:sm/q:90/h:600/w:600/czM6Ly9kaXNjb2dz/LWRhdGFiYXNlLWlt/YWdlcy9SLTY2Ny0x/NjY2NTM3ODUxLTIz/NzQuanBlZw.jpeg';
+	const illustration2UrlExample =
+		"https://i.discogs.com/OoRFxbWuLADDqiPFOUU_7t9k5P1Zui3V__PsTXd_LYo/rs:fit/g:sm/q:90/h:600/w:600/czM6Ly9kaXNjb2dz/LWRhdGFiYXNlLWlt/YWdlcy9SLTY2Ny0x/NjY2NTM3ODUxLTIz/NzQuanBlZw.jpeg";
 	// const distantIllustration2Content = axios.get(illustration2UrlExample).then((r) => r.data);
 
 	describe("Get Artist Illustration", () => {
 		it("should return the artist illustration", async () => {
-			await dummyRepository.artistIllustration.create({ data: { artistId: dummyRepository.artistA.id, blurhash: '', colors: [] } })
-			jest.spyOn(fileManagerService, 'fileExists').mockReturnValueOnce(true);
-			jest.spyOn(fs, 'createReadStream').mockReturnValueOnce(getDummyIllustrationStream());
+			await dummyRepository.artistIllustration.create({
+				data: {
+					artistId: dummyRepository.artistA.id,
+					blurhash: "",
+					colors: [],
+				},
+			});
+			jest.spyOn(fileManagerService, "fileExists").mockReturnValueOnce(
+				true,
+			);
+			jest.spyOn(fs, "createReadStream").mockReturnValueOnce(
+				getDummyIllustrationStream(),
+			);
 			return request(app.getHttpServer())
 				.get(`/illustrations/artists/${dummyRepository.artistA.id}`)
 				.expect(200)
@@ -75,7 +107,7 @@ describe('Illustration Controller', () => {
 			return request(app.getHttpServer())
 				.get(`/illustrations/artists/-1`)
 				.expect(404);
-		})
+		});
 		it("should return 404, when artist illustration does not exist", () => {
 			return request(app.getHttpServer())
 				.get(`/illustrations/artists/${dummyRepository.artistA.id}`)
@@ -85,15 +117,30 @@ describe('Illustration Controller', () => {
 
 	describe("Get Album Illustration", () => {
 		it("should return the master release illustration", async () => {
-			await dummyRepository.releaseIllustration.create({ data: { releaseId: dummyRepository.releaseB1_1.id, blurhash: '', colors: [] } })
-			jest.spyOn(fileManagerService, 'fileExists').mockReturnValueOnce(true);
-			jest.spyOn(fileManagerService, 'fileExists').mockReturnValueOnce(true);
-			jest.spyOn(fs, 'createReadStream').mockReturnValueOnce(getDummyIllustrationStream());
+			await dummyRepository.releaseIllustration.create({
+				data: {
+					releaseId: dummyRepository.releaseB1_1.id,
+					blurhash: "",
+					colors: [],
+				},
+			});
+			jest.spyOn(fileManagerService, "fileExists").mockReturnValueOnce(
+				true,
+			);
+			jest.spyOn(fileManagerService, "fileExists").mockReturnValueOnce(
+				true,
+			);
+			jest.spyOn(fs, "createReadStream").mockReturnValueOnce(
+				getDummyIllustrationStream(),
+			);
 			return request(app.getHttpServer())
 				.get(`/illustrations/albums/${dummyRepository.albumB1.id}`)
 				.expect(200)
 				.expect((res) => {
-					expectedFileName(res.headers, dummyRepository.releaseB1_1.slug);
+					expectedFileName(
+						res.headers,
+						dummyRepository.releaseB1_1.slug,
+					);
 					expect(res.body).toStrictEqual(dummyIllustrationBytes);
 				});
 		});
@@ -101,46 +148,77 @@ describe('Illustration Controller', () => {
 			return request(app.getHttpServer())
 				.get(`/illustrations/artists/-1`)
 				.expect(404);
-		})
+		});
 		it("should return 404, when album illustration does not exist", () => {
 			return request(app.getHttpServer())
 				.get(`/illustrations/albums/${dummyRepository.albumA1.id}`)
-				.expect(404)
+				.expect(404);
 		});
 	});
 
 	describe("Get Release Illustration", () => {
 		it("should return the release illustration", async () => {
-			await dummyRepository.releaseIllustration.create({ data: { releaseId: dummyRepository.releaseA1_1.id, blurhash: '', colors: [] } })
-			jest.spyOn(fileManagerService, 'fileExists').mockReturnValueOnce(true);
-			jest.spyOn(fileManagerService, 'fileExists').mockReturnValueOnce(true);
-			jest.spyOn(fs, 'createReadStream').mockReturnValueOnce(getDummyIllustrationStream());
+			await dummyRepository.releaseIllustration.create({
+				data: {
+					releaseId: dummyRepository.releaseA1_1.id,
+					blurhash: "",
+					colors: [],
+				},
+			});
+			jest.spyOn(fileManagerService, "fileExists").mockReturnValueOnce(
+				true,
+			);
+			jest.spyOn(fileManagerService, "fileExists").mockReturnValueOnce(
+				true,
+			);
+			jest.spyOn(fs, "createReadStream").mockReturnValueOnce(
+				getDummyIllustrationStream(),
+			);
 			return request(app.getHttpServer())
-				.get(`/illustrations/releases/${dummyRepository.releaseA1_1.id}`)
+				.get(
+					`/illustrations/releases/${dummyRepository.releaseA1_1.id}`,
+				)
 				.expect(200)
 				.expect((res) => {
-					expectedFileName(res.headers, dummyRepository.releaseA1_1.slug);
+					expectedFileName(
+						res.headers,
+						dummyRepository.releaseA1_1.slug,
+					);
 					expect(res.body).toStrictEqual(dummyIllustrationBytes);
 				});
 		});
 		it("should return 404, when release does not exist", () => {
 			return request(app.getHttpServer())
 				.get(`/illustrations/releases/-1`)
-				.expect(404)
-		})
+				.expect(404);
+		});
 		it("should return 404, when release illustration does not exist", () => {
 			return request(app.getHttpServer())
-				.get(`/illustrations/releases/${dummyRepository.releaseA1_2.id}`)
-				.expect(404)
+				.get(
+					`/illustrations/releases/${dummyRepository.releaseA1_2.id}`,
+				)
+				.expect(404);
 		});
 	});
 
 	describe("Get Song Illustration", () => {
 		it("should return the master track illustration", async () => {
-			await dummyRepository.trackIllustration.create({ data: { trackId: dummyRepository.trackB1_1.id, blurhash: '', colors: [] } })
-			jest.spyOn(fileManagerService, 'fileExists').mockReturnValueOnce(true);
-			jest.spyOn(fileManagerService, 'fileExists').mockReturnValueOnce(true);
-			jest.spyOn(fs, 'createReadStream').mockReturnValueOnce(getDummyIllustrationStream());
+			await dummyRepository.trackIllustration.create({
+				data: {
+					trackId: dummyRepository.trackB1_1.id,
+					blurhash: "",
+					colors: [],
+				},
+			});
+			jest.spyOn(fileManagerService, "fileExists").mockReturnValueOnce(
+				true,
+			);
+			jest.spyOn(fileManagerService, "fileExists").mockReturnValueOnce(
+				true,
+			);
+			jest.spyOn(fs, "createReadStream").mockReturnValueOnce(
+				getDummyIllustrationStream(),
+			);
 			return request(app.getHttpServer())
 				.get(`/illustrations/songs/${dummyRepository.songB1.id}`)
 				.expect(200)
@@ -152,23 +230,37 @@ describe('Illustration Controller', () => {
 		it("should return 404, when song does not exist", () => {
 			return request(app.getHttpServer())
 				.get(`/illustrations/songs/-1`)
-				.expect(404)
-		})
+				.expect(404);
+		});
 		it("should return 404, when song illustration does not exist", () => {
 			return request(app.getHttpServer())
 				.get(`/illustrations/songs/${dummyRepository.songA2.id}`)
-				.expect(404)
+				.expect(404);
 		});
 	});
 
 	describe("Get Track Illustration", () => {
 		it("should return the track illustration", async () => {
-			await dummyRepository.trackIllustration.create({ data: { trackId: dummyRepository.trackA1_2Video.id, blurhash: '', colors: [] } })
-			jest.spyOn(fileManagerService, 'fileExists').mockReturnValueOnce(true);
-			jest.spyOn(fileManagerService, 'fileExists').mockReturnValueOnce(true);
-			jest.spyOn(fs, 'createReadStream').mockReturnValueOnce(getDummyIllustrationStream());
+			await dummyRepository.trackIllustration.create({
+				data: {
+					trackId: dummyRepository.trackA1_2Video.id,
+					blurhash: "",
+					colors: [],
+				},
+			});
+			jest.spyOn(fileManagerService, "fileExists").mockReturnValueOnce(
+				true,
+			);
+			jest.spyOn(fileManagerService, "fileExists").mockReturnValueOnce(
+				true,
+			);
+			jest.spyOn(fs, "createReadStream").mockReturnValueOnce(
+				getDummyIllustrationStream(),
+			);
 			return request(app.getHttpServer())
-				.get(`/illustrations/tracks/${dummyRepository.trackA1_2Video.id}`)
+				.get(
+					`/illustrations/tracks/${dummyRepository.trackA1_2Video.id}`,
+				)
 				.expect(200)
 				.expect((res) => {
 					expectedFileName(res.headers, dummyRepository.songA1.slug);
@@ -178,12 +270,12 @@ describe('Illustration Controller', () => {
 		it("should return 404, when track does not exist", () => {
 			return request(app.getHttpServer())
 				.get(`/illustrations/tracks/-1`)
-				.expect(404)
-		})
+				.expect(404);
+		});
 		it("should return 404, when track illustration does not exist", () => {
 			return request(app.getHttpServer())
 				.get(`/illustrations/tracks/${dummyRepository.trackA2_1.id}`)
-				.expect(404)
+				.expect(404);
 		});
 	});
 
@@ -192,29 +284,37 @@ describe('Illustration Controller', () => {
 			return request(app.getHttpServer())
 				.post(`/illustrations/artists/${dummyRepository.artistB.id}`)
 				.send({
-					url: illustrationUrlExample
+					url: illustrationUrlExample,
 				})
 				.expect(201)
 				.expect(async () => {
-					expect(fileManagerService.fileExists(`test/assets/metadata/${dummyRepository.artistB.slug}/cover.jpg`));
+					expect(
+						fileManagerService.fileExists(
+							`test/assets/metadata/${dummyRepository.artistB.slug}/cover.jpg`,
+						),
+					);
 				});
 		});
 		it("should update the artist illustration", () => {
 			return request(app.getHttpServer())
 				.post(`/illustrations/artists/${dummyRepository.artistB.id}`)
 				.send({
-					url: illustration2UrlExample
+					url: illustration2UrlExample,
 				})
 				.expect(201)
 				.expect(async () => {
-					expect(fileManagerService.fileExists(`test/assets/metadata/${dummyRepository.artistB.slug}/cover.jpg`));
-				})
+					expect(
+						fileManagerService.fileExists(
+							`test/assets/metadata/${dummyRepository.artistB.slug}/cover.jpg`,
+						),
+					);
+				});
 		});
 		it("should return 404, when artist does not exist", () => {
 			return request(app.getHttpServer())
 				.post(`/illustrations/artists/-1`)
 				.send({
-					url: illustrationUrlExample
+					url: illustrationUrlExample,
 				})
 				.expect(404);
 		});
@@ -224,32 +324,40 @@ describe('Illustration Controller', () => {
 		it("should create the release illustration", async () => {
 			const releaseIllustrationPath = `${baseMetadataFolder}/${dummyRepository.artistB.slug}/${dummyRepository.albumB1.slug}/${dummyRepository.releaseB1_1.slug}/cover.jpg`;
 			return request(app.getHttpServer())
-				.post(`/illustrations/releases/${dummyRepository.releaseB1_1.id}`)
+				.post(
+					`/illustrations/releases/${dummyRepository.releaseB1_1.id}`,
+				)
 				.send({
-					url: illustrationUrlExample
+					url: illustrationUrlExample,
 				})
 				.expect(201)
 				.expect(async () => {
-					expect(fileManagerService.fileExists(releaseIllustrationPath));
+					expect(
+						fileManagerService.fileExists(releaseIllustrationPath),
+					);
 				});
 		});
 		it("should update the release illustration", async () => {
 			const releaseIllustrationPath = `${baseMetadataFolder}/${dummyRepository.artistB.slug}/${dummyRepository.albumB1.slug}/${dummyRepository.releaseB1_1.slug}/cover.jpg`;
 			return request(app.getHttpServer())
-				.post(`/illustrations/releases/${dummyRepository.releaseB1_1.id}`)
+				.post(
+					`/illustrations/releases/${dummyRepository.releaseB1_1.id}`,
+				)
 				.send({
-					url: illustration2UrlExample
+					url: illustration2UrlExample,
 				})
 				.expect(201)
 				.expect(async () => {
-					expect(fileManagerService.fileExists(releaseIllustrationPath));
+					expect(
+						fileManagerService.fileExists(releaseIllustrationPath),
+					);
 				});
 		});
 		it("should return 404, when release does not exist", () => {
 			return request(app.getHttpServer())
 				.put(`/illustrations/releases/-1`)
 				.send({
-					url: illustrationUrlExample
+					url: illustrationUrlExample,
 				})
 				.expect(404);
 		});
@@ -261,11 +369,13 @@ describe('Illustration Controller', () => {
 			return request(app.getHttpServer())
 				.post(`/illustrations/tracks/${dummyRepository.trackC1_1.id}`)
 				.send({
-					url: illustrationUrlExample
+					url: illustrationUrlExample,
 				})
 				.expect(201)
 				.expect(async () => {
-					expect(fileManagerService.fileExists(trackIllustrationPath));
+					expect(
+						fileManagerService.fileExists(trackIllustrationPath),
+					);
 				});
 		});
 		it("should update the track illustration", async () => {
@@ -273,18 +383,20 @@ describe('Illustration Controller', () => {
 			return request(app.getHttpServer())
 				.post(`/illustrations/tracks/${dummyRepository.trackC1_1.id}`)
 				.send({
-					url: illustrationUrlExample
+					url: illustrationUrlExample,
 				})
 				.expect(201)
 				.expect(async () => {
-					expect(fileManagerService.fileExists(trackIllustrationPath));
+					expect(
+						fileManagerService.fileExists(trackIllustrationPath),
+					);
 				});
 		});
 		it("should return 404, when track does not exist", () => {
 			return request(app.getHttpServer())
 				.put(`/illustrations/tracks/-1`)
 				.send({
-					url: illustrationUrlExample
+					url: illustrationUrlExample,
 				})
 				.expect(404);
 		});
@@ -296,16 +408,24 @@ describe('Illustration Controller', () => {
 				.delete(`/illustrations/artists/${dummyRepository.artistB.id}`)
 				.expect(200)
 				.expect(() => {
-					expect(fileManagerService.fileExists(`test/assets/metadata/${dummyRepository.artistB.slug}/cover.jpg`)).toBe(false);
-				})
+					expect(
+						fileManagerService.fileExists(
+							`test/assets/metadata/${dummyRepository.artistB.slug}/cover.jpg`,
+						),
+					).toBe(false);
+				});
 		});
 		it("should do nothing if the artist illustration does nothing", () => {
 			return request(app.getHttpServer())
 				.delete(`/illustrations/artists/${dummyRepository.artistC.id}`)
 				.expect(200)
 				.expect(() => {
-					expect(fileManagerService.fileExists(`test/assets/metadata/${dummyRepository.artistC.slug}/cover.jpg`)).toBe(false);
-				})
+					expect(
+						fileManagerService.fileExists(
+							`test/assets/metadata/${dummyRepository.artistC.slug}/cover.jpg`,
+						),
+					).toBe(false);
+				});
 		});
 		it("should return 404, when artist does not exist", () => {
 			return request(app.getHttpServer())
@@ -318,20 +438,28 @@ describe('Illustration Controller', () => {
 		it("should delete the release illustration", async () => {
 			const releaseIllustrationPath = `${baseMetadataFolder}/${dummyRepository.artistB.slug}/${dummyRepository.albumB1.slug}/${dummyRepository.releaseB1_1.slug}/cover.jpg`;
 			return request(app.getHttpServer())
-				.delete(`/illustrations/releases/${dummyRepository.releaseB1_1.id}`)
+				.delete(
+					`/illustrations/releases/${dummyRepository.releaseB1_1.id}`,
+				)
 				.expect(200)
 				.expect(() => {
-					expect(fileManagerService.fileExists(releaseIllustrationPath)).toBe(false);
-				})
+					expect(
+						fileManagerService.fileExists(releaseIllustrationPath),
+					).toBe(false);
+				});
 		});
 		it("should do nothing if the release illustration does nothing", async () => {
 			const releaseIllustrationPath = `${baseMetadataFolder}/${dummyRepository.compilationAlbumA.slug}/${dummyRepository.compilationReleaseA1.slug}/cover.jpg`;
 			return request(app.getHttpServer())
-				.delete(`/illustrations/releases/${dummyRepository.compilationReleaseA1.id}`)
+				.delete(
+					`/illustrations/releases/${dummyRepository.compilationReleaseA1.id}`,
+				)
 				.expect(200)
 				.expect(() => {
-					expect(fileManagerService.fileExists(releaseIllustrationPath)).toBe(false);
-				})
+					expect(
+						fileManagerService.fileExists(releaseIllustrationPath),
+					).toBe(false);
+				});
 		});
 		it("should return 404, when release does not exist", () => {
 			return request(app.getHttpServer())
@@ -347,12 +475,16 @@ describe('Illustration Controller', () => {
 				.delete(`/illustrations/tracks/${dummyRepository.trackC1_1.id}`)
 				.expect(200)
 				.expect(() => {
-					expect(fileManagerService.fileExists(trackIllustrationPath)).toBe(false);
-				})
+					expect(
+						fileManagerService.fileExists(trackIllustrationPath),
+					).toBe(false);
+				});
 		});
 		it("should do nothing if the track illustration does not exist", async () => {
 			return request(app.getHttpServer())
-				.delete(`/illustrations/tracks/${dummyRepository.trackA1_2Video.id}`)
+				.delete(
+					`/illustrations/tracks/${dummyRepository.trackA1_2Video.id}`,
+				)
 				.expect(200);
 		});
 		it("should return 404, when track does not exist", () => {
@@ -364,16 +496,27 @@ describe('Illustration Controller', () => {
 
 	describe("Get Playlist Illustration", () => {
 		it("should return the playlist illustration", async () => {
-			await dummyRepository.playlistIllustration.create(
-				{ data: { playlistId: dummyRepository.playlist1.id, colors: [], blurhash: '' } }
-			)
-			jest.spyOn(fileManagerService, 'fileExists').mockReturnValueOnce(true);
-			jest.spyOn(fs, 'createReadStream').mockReturnValueOnce(getDummyIllustrationStream());
+			await dummyRepository.playlistIllustration.create({
+				data: {
+					playlistId: dummyRepository.playlist1.id,
+					colors: [],
+					blurhash: "",
+				},
+			});
+			jest.spyOn(fileManagerService, "fileExists").mockReturnValueOnce(
+				true,
+			);
+			jest.spyOn(fs, "createReadStream").mockReturnValueOnce(
+				getDummyIllustrationStream(),
+			);
 			return request(app.getHttpServer())
 				.get(`/illustrations/playlists/${dummyRepository.playlist1.id}`)
 				.expect(200)
 				.expect((res) => {
-					expectedFileName(res.headers, dummyRepository.playlist1.slug);
+					expectedFileName(
+						res.headers,
+						dummyRepository.playlist1.slug,
+					);
 					expect(res.body).toStrictEqual(dummyIllustrationBytes);
 				});
 		});
@@ -381,7 +524,7 @@ describe('Illustration Controller', () => {
 			return request(app.getHttpServer())
 				.get(`/illustrations/playlists/-1`)
 				.expect(404);
-		})
+		});
 		it("should return 404, when artist illustration does not exist", () => {
 			return request(app.getHttpServer())
 				.get(`/illustrations/playlists/${dummyRepository.playlist2.id}`)
@@ -392,31 +535,43 @@ describe('Illustration Controller', () => {
 	describe("Update Playlist Illustration", () => {
 		it("should create the Playlist illustration", () => {
 			return request(app.getHttpServer())
-				.post(`/illustrations/playlists/${dummyRepository.playlist1.id}`)
+				.post(
+					`/illustrations/playlists/${dummyRepository.playlist1.id}`,
+				)
 				.send({
-					url: illustrationUrlExample
+					url: illustrationUrlExample,
 				})
 				.expect(201)
 				.expect(async () => {
-					expect(fileManagerService.fileExists(`test/assets/metadata/_playlists/${dummyRepository.playlist1.slug}/cover.jpg`));
+					expect(
+						fileManagerService.fileExists(
+							`test/assets/metadata/_playlists/${dummyRepository.playlist1.slug}/cover.jpg`,
+						),
+					);
 				});
 		});
 		it("should update the artist illustration", () => {
 			return request(app.getHttpServer())
-				.post(`/illustrations/playlists/${dummyRepository.playlist1.id}`)
+				.post(
+					`/illustrations/playlists/${dummyRepository.playlist1.id}`,
+				)
 				.send({
-					url: illustration2UrlExample
+					url: illustration2UrlExample,
 				})
 				.expect(201)
 				.expect(async () => {
-					expect(fileManagerService.fileExists(`test/assets/metadata/_playlists/${dummyRepository.playlist1.slug}/cover.jpg`));
-				})
+					expect(
+						fileManagerService.fileExists(
+							`test/assets/metadata/_playlists/${dummyRepository.playlist1.slug}/cover.jpg`,
+						),
+					);
+				});
 		});
 		it("should return 404, when artist does not exist", () => {
 			return request(app.getHttpServer())
 				.post(`/illustrations/playlists/-1`)
 				.send({
-					url: illustrationUrlExample
+					url: illustrationUrlExample,
 				})
 				.expect(404);
 		});

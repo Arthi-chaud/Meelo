@@ -1,3 +1,21 @@
+/*
+ * Meelo is a music server and application to enjoy your personal music files anywhere, anytime you want.
+ * Copyright (C) 2023
+ *
+ * Meelo is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * Meelo is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
 import type { File, Track } from "src/prisma/models";
 import type LibraryQueryParameters from "src/library/models/library.query-parameters";
 import type { RequireAtLeastOne, RequireExactlyOne } from "type-fest";
@@ -10,25 +28,30 @@ namespace FileQueryParameters {
 	/**
 	 * Parameters to create a File
 	 */
-	export type CreateInput = Omit<File, 'library' | 'id' | 'track'>;
+	export type CreateInput = Omit<File, "library" | "id" | "track">;
 	/**
 	 * Query parameters to find one file
 	 */
 	export type WhereInput = RequireExactlyOne<{
-		trackId: Track['id'],
-		id: File['id'],
-		byPath: { path: File['path'], library: LibraryQueryParameters.WhereInput }
+		trackId: Track["id"];
+		id: File["id"];
+		byPath: {
+			path: File["path"];
+			library: LibraryQueryParameters.WhereInput;
+		};
 	}>;
 
 	/**
 	 * Query parameters to find multiple files
 	 */
-	export type ManyWhereInput = Partial<RequireAtLeastOne<{
-		library: LibraryQueryParameters.WhereInput,
-		id: { in: File['id'][] },
-		paths: File['path'][],
-		registrationDate: SearchDateInput
-	}>>;
+	export type ManyWhereInput = Partial<
+		RequireAtLeastOne<{
+			library: LibraryQueryParameters.WhereInput;
+			id: { in: File["id"][] };
+			paths: File["path"][];
+			registrationDate: SearchDateInput;
+		}>
+	>;
 
 	/**
 	 * The parameters needed to update a File
@@ -38,13 +61,13 @@ namespace FileQueryParameters {
 	/**
 	 * Query parameters to delete one file
 	 */
-	export type DeleteInput = Required<Pick<WhereInput, 'id'>>;
+	export type DeleteInput = Required<Pick<WhereInput, "id">>;
 
 	export const SortingKeys = [
-		'id',
-		'trackName',
-		'trackArtist',
-		'addDate'
+		"id",
+		"trackName",
+		"trackArtist",
+		"addDate",
 	] as const;
 	export type SortingKeys = typeof SortingKeys;
 	export class SortingParameter extends ModelSortingParameter(SortingKeys) {}
@@ -52,10 +75,10 @@ namespace FileQueryParameters {
 	/**
 	 * Relations to include in returned File object
 	 */
-	export const AvailableIncludes = ['track', 'library'] as const;
-	export const AvailableAtomicIncludes = filterAtomicRelationInclude(AvailableIncludes);
+	export const AvailableIncludes = ["track", "library"] as const;
+	export const AvailableAtomicIncludes =
+		filterAtomicRelationInclude(AvailableIncludes);
 	export type RelationInclude = BaseRelationInclude<typeof AvailableIncludes>;
-
 }
 
 export default FileQueryParameters;

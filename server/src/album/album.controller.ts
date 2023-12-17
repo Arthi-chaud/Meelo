@@ -1,92 +1,119 @@
-import {
-	Body, Controller, Get, Inject, Post, Query, forwardRef
-} from '@nestjs/common';
-import { PaginationParameters } from 'src/pagination/models/pagination-parameters';
-import ReleaseQueryParameters from 'src/release/models/release.query-parameters';
-import ReleaseService from 'src/release/release.service';
-import compilationAlbumArtistKeyword from 'src/constants/compilation';
-import AlbumService from './album.service';
-import AlbumQueryParameters from './models/album.query-parameters';
-import {
-	ApiOperation, ApiPropertyOptional, ApiTags, IntersectionType
-} from '@nestjs/swagger';
-import UpdateAlbumDTO from './models/update-album.dto';
-import { AlbumResponseBuilder } from './models/album.response';
-import { ReleaseResponseBuilder } from 'src/release/models/release.response';
-import RelationIncludeQuery from 'src/relation-include/relation-include-query.decorator';
-import Admin from 'src/authentication/roles/admin.decorator';
-import IdentifierParam from 'src/identifier/identifier.pipe';
-import Response, { ResponseType } from 'src/response/response.decorator';
-import GenreService from 'src/genre/genre.service';
-import GenreQueryParameters from 'src/genre/models/genre.query-parameters';
-import {
-	IsEnum, IsNumber, IsOptional, IsPositive
-} from 'class-validator';
-import { AlbumType } from '@prisma/client';
-import ArtistQueryParameters from 'src/artist/models/artist.query-parameters';
-import TransformIdentifier from 'src/identifier/identifier.transform';
-import ArtistService from 'src/artist/artist.service';
-import LibraryQueryParameters from 'src/library/models/library.query-parameters';
-import LibraryService from 'src/library/library.service';
+/*
+ * Meelo is a music server and application to enjoy your personal music files anywhere, anytime you want.
+ * Copyright (C) 2023
+ *
+ * Meelo is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * Meelo is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
 
-class Selector extends IntersectionType(
-	AlbumQueryParameters.SortingParameter
-) {
+import {
+	Body,
+	Controller,
+	Get,
+	Inject,
+	Post,
+	Query,
+	forwardRef,
+} from "@nestjs/common";
+import { PaginationParameters } from "src/pagination/models/pagination-parameters";
+import ReleaseQueryParameters from "src/release/models/release.query-parameters";
+import ReleaseService from "src/release/release.service";
+import compilationAlbumArtistKeyword from "src/constants/compilation";
+import AlbumService from "./album.service";
+import AlbumQueryParameters from "./models/album.query-parameters";
+import {
+	ApiOperation,
+	ApiPropertyOptional,
+	ApiTags,
+	IntersectionType,
+} from "@nestjs/swagger";
+import UpdateAlbumDTO from "./models/update-album.dto";
+import { AlbumResponseBuilder } from "./models/album.response";
+import { ReleaseResponseBuilder } from "src/release/models/release.response";
+import RelationIncludeQuery from "src/relation-include/relation-include-query.decorator";
+import Admin from "src/authentication/roles/admin.decorator";
+import IdentifierParam from "src/identifier/identifier.pipe";
+import Response, { ResponseType } from "src/response/response.decorator";
+import GenreService from "src/genre/genre.service";
+import GenreQueryParameters from "src/genre/models/genre.query-parameters";
+import { IsEnum, IsNumber, IsOptional, IsPositive } from "class-validator";
+import { AlbumType } from "@prisma/client";
+import ArtistQueryParameters from "src/artist/models/artist.query-parameters";
+import TransformIdentifier from "src/identifier/identifier.transform";
+import ArtistService from "src/artist/artist.service";
+import LibraryQueryParameters from "src/library/models/library.query-parameters";
+import LibraryService from "src/library/library.service";
+
+class Selector extends IntersectionType(AlbumQueryParameters.SortingParameter) {
 	@IsEnum(AlbumType, {
-		message: () => `Album Type: Invalid value. Expected one of theses: ${Object.keys(AlbumType)}`
+		message: () =>
+			`Album Type: Invalid value. Expected one of theses: ${Object.keys(
+				AlbumType,
+			)}`,
 	})
 	@IsOptional()
 	@ApiPropertyOptional({
 		enum: AlbumType,
-		description: 'Filter the albums by type'
+		description: "Filter the albums by type",
 	})
 	type?: AlbumType;
 
 	@IsOptional()
 	@ApiPropertyOptional({
 		description: `Filter albums by album artist, using their identifier.<br/>
-		For compilation albums, use '${compilationAlbumArtistKeyword}'`
+		For compilation albums, use '${compilationAlbumArtistKeyword}'`,
 	})
 	@TransformIdentifier(ArtistService)
 	artist?: ArtistQueryParameters.WhereInput;
 
 	@IsOptional()
 	@ApiPropertyOptional({
-		description: `Get albums where an artist appear (i.e. is not their main artist), using their identifier.`
+		description: `Get albums where an artist appear (i.e. is not their main artist), using their identifier.`,
 	})
 	@TransformIdentifier(ArtistService)
 	appearance?: ArtistQueryParameters.WhereInput;
 
 	@IsOptional()
 	@ApiPropertyOptional({
-		description: 'Filter albums by genre'
+		description: "Filter albums by genre",
 	})
 	@TransformIdentifier(GenreService)
 	genre?: GenreQueryParameters.WhereInput;
 
 	@IsOptional()
 	@ApiPropertyOptional({
-		description: 'Search albums using a string token'
+		description: "Search albums using a string token",
 	})
 	query?: string;
 
 	@IsOptional()
 	@ApiPropertyOptional({
-		description: 'Filter albums by library'
+		description: "Filter albums by library",
 	})
 	@TransformIdentifier(LibraryService)
 	library?: LibraryQueryParameters.WhereInput;
 
 	@IsOptional()
 	@ApiPropertyOptional({
-		description: 'Get related albums (i.e. from the same album artist & have at least one song in common)'
+		description:
+			"Get related albums (i.e. from the same album artist & have at least one song in common)",
 	})
 	@TransformIdentifier(AlbumService)
 	related?: AlbumQueryParameters.WhereInput;
 
 	@IsOptional()
 	@ApiPropertyOptional({
-		description: 'The Seed to Sort the items'
+		description: "The Seed to Sort the items",
 	})
 	@IsNumber()
 	@IsPositive()
@@ -94,7 +121,7 @@ class Selector extends IntersectionType(
 }
 
 @ApiTags("Albums")
-@Controller('albums')
+@Controller("albums")
 export default class AlbumController {
 	constructor(
 		@Inject(forwardRef(() => ReleaseService))
@@ -106,9 +133,9 @@ export default class AlbumController {
 	@Get()
 	@Response({
 		handler: AlbumResponseBuilder,
-		type: ResponseType.Page
+		type: ResponseType.Page,
 	})
-	@ApiOperation({ summary: 'Get many albums' })
+	@ApiOperation({ summary: "Get many albums" })
 	async getMany(
 		@Query() selector: Selector,
 		@Query()
@@ -122,21 +149,21 @@ export default class AlbumController {
 				selector,
 				paginationParameters,
 				include,
-				selector
+				selector,
 			);
 		}
 		return this.albumService.getMany(
 			selector,
 			paginationParameters,
 			include,
-			selector.random || selector
+			selector.random || selector,
 		);
 	}
 
 	@ApiOperation({
-		summary: 'Get one album'
+		summary: "Get one album",
 	})
-	@Get(':idOrSlug')
+	@Get(":idOrSlug")
 	@Response({ handler: AlbumResponseBuilder })
 	async get(
 		@RelationIncludeQuery(AlbumQueryParameters.AvailableAtomicIncludes)
@@ -144,39 +171,33 @@ export default class AlbumController {
 		@IdentifierParam(AlbumService)
 		where: AlbumQueryParameters.WhereInput,
 	) {
-		return this.albumService.get(
-			where,
-			include
-		);
+		return this.albumService.get(where, include);
 	}
 
 	@ApiOperation({
-		summary: 'Get the master release of an album'
+		summary: "Get the master release of an album",
 	})
 	@Response({ handler: ReleaseResponseBuilder })
-	@Get(':idOrSlug/master')
+	@Get(":idOrSlug/master")
 	async getAlbumMaster(
 		@RelationIncludeQuery(ReleaseQueryParameters.AvailableAtomicIncludes)
 		include: ReleaseQueryParameters.RelationInclude,
 		@IdentifierParam(AlbumService)
 		where: AlbumQueryParameters.WhereInput,
 	) {
-		return this.releaseService.getMasterRelease(
-			where,
-			include
-		);
+		return this.releaseService.getMasterRelease(where, include);
 	}
 
 	@ApiOperation({
-		summary: 'Update the album'
+		summary: "Update the album",
 	})
 	@Admin()
 	@Response({ handler: AlbumResponseBuilder })
-	@Post(':idOrSlug')
+	@Post(":idOrSlug")
 	async updateAlbum(
 		@IdentifierParam(AlbumService)
 		where: AlbumQueryParameters.WhereInput,
-		@Body() updateDTO: UpdateAlbumDTO
+		@Body() updateDTO: UpdateAlbumDTO,
 	) {
 		let album = await this.albumService.get(where);
 
@@ -185,7 +206,7 @@ export default class AlbumController {
 				{ id: album.id },
 				updateDTO.artistId == null
 					? { compilationArtist: true }
-					: { id: updateDTO.artistId }
+					: { id: updateDTO.artistId },
 			);
 			// If only the artistID is to be changed, no need to await an empty update
 			if (Object.values(updateDTO).length == 1) {

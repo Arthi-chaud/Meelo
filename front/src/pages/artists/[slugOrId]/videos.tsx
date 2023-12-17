@@ -1,3 +1,21 @@
+/*
+ * Meelo is a music server and application to enjoy your personal music files anywhere, anytime you want.
+ * Copyright (C) 2023
+ *
+ * Meelo is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * Meelo is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
 import { useRouter } from "next/router";
 import API from "../../../api/api";
 import getSlugOrId from "../../../utils/getSlugOrId";
@@ -12,33 +30,50 @@ import BackgroundBlurhash from "../../../components/blurhash-background";
 
 export const getServerSideProps = prepareSSR((context) => {
 	const artistIdentifier = getSlugOrId(context.params);
-	const order = getOrderParams(context.query.order) ?? 'asc';
+	const order = getOrderParams(context.query.order) ?? "asc";
 	const sortBy = getSortingFieldParams(context.query.sortBy, SongSortingKeys);
 
 	return {
 		additionalProps: { artistIdentifier, order, sortBy },
 		queries: [API.getArtist(artistIdentifier)],
-		infiniteQueries: [API.getVideos({ artist: artistIdentifier }, { sortBy: 'name', order: 'asc' }, ['artist', 'featuring'])]
+		infiniteQueries: [
+			API.getVideos(
+				{ artist: artistIdentifier },
+				{ sortBy: "name", order: "asc" },
+				["artist", "featuring"],
+			),
+		],
 	};
 });
 
-const ArtistSongPage = (
-	props: InferSSRProps<typeof getServerSideProps>
-) => {
+const ArtistSongPage = (props: InferSSRProps<typeof getServerSideProps>) => {
 	const router = useRouter();
-	const artistIdentifier = props.additionalProps?.artistIdentifier ?? getSlugOrId(router.query);
-	const artist = useQuery(API.getArtist, props.additionalProps?.artistIdentifier);
+	const artistIdentifier =
+		props.additionalProps?.artistIdentifier ?? getSlugOrId(router.query);
+	const artist = useQuery(
+		API.getArtist,
+		props.additionalProps?.artistIdentifier,
+	);
 
-	return <>
-		<BackgroundBlurhash blurhash={artist.data?.illustration?.blurhash} />
-		<ArtistRelationPageHeader artistSlugOrId={artistIdentifier}/>
-		<InfiniteVideoView
-			initialSortingField={props.additionalProps?.sortBy}
-			initialSortingOrder={props.additionalProps?.order}
-			query={(sort) => API.getVideos({ artist: artistIdentifier }, sort, ['artist', 'featuring'])}
-			formatSubtitle={(song) => formatDuration(song.track.duration)}
-		/>
-	</>;
+	return (
+		<>
+			<BackgroundBlurhash
+				blurhash={artist.data?.illustration?.blurhash}
+			/>
+			<ArtistRelationPageHeader artistSlugOrId={artistIdentifier} />
+			<InfiniteVideoView
+				initialSortingField={props.additionalProps?.sortBy}
+				initialSortingOrder={props.additionalProps?.order}
+				query={(sort) =>
+					API.getVideos({ artist: artistIdentifier }, sort, [
+						"artist",
+						"featuring",
+					])
+				}
+				formatSubtitle={(song) => formatDuration(song.track.duration)}
+			/>
+		</>
+	);
 };
 
 export default ArtistSongPage;

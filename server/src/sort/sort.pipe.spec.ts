@@ -1,28 +1,36 @@
 import type { ArgumentMetadata } from "@nestjs/common";
 import AlbumQueryParameters from "src/album/models/album.query-parameters";
-import { InvalidSortingFieldException, InvalidSortingOrderException, MissingSortingFieldException } from "./sort.exceptions";
+import {
+	InvalidSortingFieldException,
+	InvalidSortingOrderException,
+	MissingSortingFieldException,
+} from "./sort.exceptions";
 import ParseSortParameterPipe from "./sort.pipe";
 
 describe("Parse Sorting Parameter Pipe", () => {
 	const pipe = new ParseSortParameterPipe(AlbumQueryParameters.SortingKeys);
-	const metadata: ArgumentMetadata = { type: 'custom' };
+	const metadata: ArgumentMetadata = { type: "custom" };
 	it("should parse the sorting parameter", () => {
-		const request = { sortBy: 'name', order: 'desc' };
+		const request = { sortBy: "name", order: "desc" };
 		expect(pipe.transform(request, metadata)).toStrictEqual({
-			sortBy: 'name', order: 'desc'
+			sortBy: "name",
+			order: "desc",
 		});
 	});
 
 	it("should parse the sorting parameter (implicit order)", () => {
-		const request = { sortBy: 'id' };
+		const request = { sortBy: "id" };
 		expect(pipe.transform(request, metadata)).toStrictEqual({
-			sortBy: 'id', order: 'asc'
+			sortBy: "id",
+			order: "asc",
 		});
 	});
 
 	it("should throw, as the 'sortBy' value was not given, but the order was", () => {
-		const request = { order: 'desc'};
-		expect(() => pipe.transform(request, metadata)).toThrow(MissingSortingFieldException);
+		const request = { order: "desc" };
+		expect(() => pipe.transform(request, metadata)).toThrow(
+			MissingSortingFieldException,
+		);
 	});
 
 	it("should return empty sorting parameters", () => {
@@ -31,12 +39,16 @@ describe("Parse Sorting Parameter Pipe", () => {
 	});
 
 	it("should return an error, as the value of 'sortBy' is not correct", () => {
-		const request = { sortBy: 'sortBy', order: 'desc' };
-		expect(() => pipe.transform(request, metadata)).toThrow(InvalidSortingFieldException);
+		const request = { sortBy: "sortBy", order: "desc" };
+		expect(() => pipe.transform(request, metadata)).toThrow(
+			InvalidSortingFieldException,
+		);
 	});
 
 	it("should return an error, as the value of 'order' is not correct", () => {
-		const request = { sortBy: 'name', order: 'troll' };
-		expect(() => pipe.transform(request, metadata)).toThrow(InvalidSortingOrderException);
+		const request = { sortBy: "name", order: "troll" };
+		expect(() => pipe.transform(request, metadata)).toThrow(
+			InvalidSortingOrderException,
+		);
 	});
-})
+});

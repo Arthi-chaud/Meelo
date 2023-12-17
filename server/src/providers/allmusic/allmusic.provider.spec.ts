@@ -7,7 +7,7 @@ import SettingsModule from "src/settings/settings.module";
 import { ProviderActionFailedError } from "../provider.exception";
 import AllMusicProvider from "./allmusic.provider";
 
-describe('All Music Provider', () => {
+describe("All Music Provider", () => {
 	let allMusicProvider: AllMusicProvider;
 
 	let module: TestingModule;
@@ -15,7 +15,10 @@ describe('All Music Provider', () => {
 		module = await createTestingModule({
 			imports: [HttpModule, SettingsModule],
 			providers: [AllMusicProvider],
-		}).overrideProvider(PrismaService).useClass(TestPrismaService).compile();
+		})
+			.overrideProvider(PrismaService)
+			.useClass(TestPrismaService)
+			.compile();
 		allMusicProvider = module.get(AllMusicProvider);
 		allMusicProvider.onModuleInit();
 	});
@@ -24,24 +27,31 @@ describe('All Music Provider', () => {
 		module.close();
 	});
 
-	describe('Get Resource URLs', () => {
+	describe("Get Resource URLs", () => {
 		it("Should Get Rating", async () => {
-			const metadata = await allMusicProvider.getAlbumMetadataByIdentifier('mw0000356345')
-			
-			expect(metadata.value).toBe('mw0000356345');
+			const metadata =
+				await allMusicProvider.getAlbumMetadataByIdentifier(
+					"mw0000356345",
+				);
+
+			expect(metadata.value).toBe("mw0000356345");
 			expect(metadata.rating).toBe(70);
 			expect(metadata.description).toBeNull();
-		})
+		});
 		it("Should Get Null Rating", async () => {
-			const metadata = await allMusicProvider.getAlbumMetadataByIdentifier('mw0000770491')
-			
-			expect(metadata.value).toBe('mw0000770491');
+			const metadata =
+				await allMusicProvider.getAlbumMetadataByIdentifier(
+					"mw0000770491",
+				);
+
+			expect(metadata.value).toBe("mw0000770491");
 			expect(metadata.rating).toBeNull();
 			expect(metadata.description).toBeNull();
-		})
+		});
 		it("Should throw, as the page does not exist", async () => {
-			expect(allMusicProvider.getAlbumMetadataByIdentifier('zzz'))
-				.rejects.toThrow(ProviderActionFailedError);
-		})
+			expect(
+				allMusicProvider.getAlbumMetadataByIdentifier("zzz"),
+			).rejects.toThrow(ProviderActionFailedError);
+		});
 	});
-})
+});

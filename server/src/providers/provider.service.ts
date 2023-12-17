@@ -1,6 +1,22 @@
-import {
-	Inject, Injectable, OnModuleInit, forwardRef
-} from "@nestjs/common";
+/*
+ * Meelo is a music server and application to enjoy your personal music files anywhere, anytime you want.
+ * Copyright (C) 2023
+ *
+ * Meelo is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * Meelo is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
+import { Inject, Injectable, OnModuleInit, forwardRef } from "@nestjs/common";
 import IProvider from "./iprovider";
 import SettingsService from "src/settings/settings.service";
 import { AllProvidersFailedError } from "./provider.exception";
@@ -45,20 +61,22 @@ export default class ProviderService implements OnModuleInit {
 			discogsProvider,
 			wikipediaProvider,
 			metacriticProvider,
-			allMusicProvider
+			allMusicProvider,
 		];
 	}
 
 	getProviderById(id: number) {
 		return this._providerCatalogue.find(
-			({ name }) => this._providerRows.find(
-				(provider) => provider.id == id
-			)?.name == name
+			({ name }) =>
+				this._providerRows.find((provider) => provider.id == id)
+					?.name == name,
 		)!;
 	}
 
-	getProviderId(providerName: typeof IProvider['prototype']['name']) {
-		return this._providerRows.find((provider) => provider.name == providerName)!.id;
+	getProviderId(providerName: typeof IProvider["prototype"]["name"]) {
+		return this._providerRows.find(
+			(provider) => provider.name == providerName,
+		)!.id;
 	}
 
 	get enabledProviders() {
@@ -85,20 +103,22 @@ export default class ProviderService implements OnModuleInit {
 				this.logger.warn(`Provider '${provider.name}' disabled`);
 			}
 		});
-		this._providerRows.push(...await this.prismaService.$transaction(
-			this._providerCatalogue.map((provider) => {
-				const providerSlug = new Slug(provider.name).toString();
+		this._providerRows.push(
+			...(await this.prismaService.$transaction(
+				this._providerCatalogue.map((provider) => {
+					const providerSlug = new Slug(provider.name).toString();
 
-				return this.prismaService.provider.upsert({
-					create: {
-						name: provider.name,
-						slug: providerSlug
-					},
-					where: { slug: providerSlug },
-					update: {}
-				});
-			})
-		));
+					return this.prismaService.provider.upsert({
+						create: {
+							name: provider.name,
+							slug: providerSlug,
+						},
+						where: { slug: providerSlug },
+						update: {},
+					});
+				}),
+			)),
+		);
 		this.providerIllustrationService.downloadMissingProviderImages();
 	}
 
@@ -107,7 +127,7 @@ export default class ProviderService implements OnModuleInit {
 	 * If all fails, rejects
 	 */
 	async runAction<Returns>(
-		action: (provider: IProvider) => Promise<Returns>
+		action: (provider: IProvider) => Promise<Returns>,
 	): Promise<Returns> {
 		for (const provider of this._enabledProviders) {
 			try {
@@ -123,11 +143,11 @@ export default class ProviderService implements OnModuleInit {
 	 * Calls action method on each enabled provider, and returns all successes
 	 */
 	async collectActions<Returns>(
-		action: (provider: IProvider) => Promise<Returns>
+		action: (provider: IProvider) => Promise<Returns>,
 	): Promise<Returns[]> {
-		return Promise.allSettled(this._enabledProviders.map(action))
-			.then((results) => results
-				.filter(isFulfilled)
-				.map((result) => result.value));
+		return Promise.allSettled(this._enabledProviders.map(action)).then(
+			(results) =>
+				results.filter(isFulfilled).map((result) => result.value),
+		);
 	}
 }

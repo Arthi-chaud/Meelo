@@ -16,19 +16,33 @@ import VideoModule from "./video.module";
 import ReleaseModule from "src/release/release.module";
 import ScannerModule from "src/scanner/scanner.module";
 
-describe('Video Service', () => {
+describe("Video Service", () => {
 	let videoService: VideoService;
 	let dummyRepository: TestPrismaService;
-	
+
 	let module: TestingModule;
 	beforeAll(async () => {
 		module = await createTestingModule({
-			imports: [PrismaModule, ArtistModule, TrackModule, AlbumModule, IllustrationModule, GenreModule, LyricsModule, VideoModule, ReleaseModule, ScannerModule],
+			imports: [
+				PrismaModule,
+				ArtistModule,
+				TrackModule,
+				AlbumModule,
+				IllustrationModule,
+				GenreModule,
+				LyricsModule,
+				VideoModule,
+				ReleaseModule,
+				ScannerModule,
+			],
 			providers: [SongService, ArtistService, PrismaService],
-		}).overrideProvider(PrismaService).useClass(TestPrismaService).compile();
+		})
+			.overrideProvider(PrismaService)
+			.useClass(TestPrismaService)
+			.compile();
 		dummyRepository = module.get(PrismaService);
 		videoService = module.get(VideoService);
-		
+
 		await dummyRepository.onModuleInit();
 	});
 
@@ -36,7 +50,7 @@ describe('Video Service', () => {
 		module.close();
 	});
 
-	it('should be defined', () => {
+	it("should be defined", () => {
 		expect(videoService).toBeDefined();
 		expect(dummyRepository).toBeDefined();
 	});
@@ -47,7 +61,7 @@ describe('Video Service', () => {
 			expect(videoSongs.length).toBe(1);
 			expect(videoSongs[0]).toStrictEqual({
 				...dummyRepository.songA1,
-				track: dummyRepository.trackA1_2Video
+				track: dummyRepository.trackA1_2Video,
 			});
 		});
 		it("should return an empty list (pagination)", async () => {
@@ -55,14 +69,17 @@ describe('Video Service', () => {
 			expect(videoSongs.length).toBe(0);
 		});
 		it("should return songs with their artist", async () => {
-			const videoSongs = await videoService.getVideos({}, {}, { artist: true });
+			const videoSongs = await videoService.getVideos(
+				{},
+				{},
+				{ artist: true },
+			);
 			expect(videoSongs.length).toBe(1);
 			expect(videoSongs[0]).toStrictEqual({
 				...dummyRepository.songA1,
 				artist: dummyRepository.artistA,
-				track: dummyRepository.trackA1_2Video
+				track: dummyRepository.trackA1_2Video,
 			});
 		});
 	});
-
 });

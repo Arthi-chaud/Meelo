@@ -16,13 +16,25 @@ import PrismaModule from "src/prisma/prisma.module";
 import type Metadata from "./models/metadata";
 import { TestingModule } from "@nestjs/testing";
 
-describe('Metadata Service', () => {
-	let scannerService: ScannerService
+describe("Metadata Service", () => {
+	let scannerService: ScannerService;
 
 	let moduleRef: TestingModule;
 	beforeAll(async () => {
 		moduleRef = await createTestingModule({
-			imports: [FileManagerModule, PrismaModule, ArtistModule, AlbumModule, ReleaseModule, ScannerModule, SongModule, TrackModule, IllustrationModule, GenreModule, SettingsModule],
+			imports: [
+				FileManagerModule,
+				PrismaModule,
+				ArtistModule,
+				AlbumModule,
+				ReleaseModule,
+				ScannerModule,
+				SongModule,
+				TrackModule,
+				IllustrationModule,
+				GenreModule,
+				SettingsModule,
+			],
 		}).compile();
 		scannerService = moduleRef.get<ScannerService>(ScannerService);
 	});
@@ -31,78 +43,79 @@ describe('Metadata Service', () => {
 		moduleRef.close();
 	});
 
-	it('should be defined', () => {
+	it("should be defined", () => {
 		expect(scannerService).toBeDefined();
 	});
 
-	describe('Parse Metadata from path', () => {
+	describe("Parse Metadata from path", () => {
 		it("should throw, as the path does not math any regexes", () => {
 			const test = () => {
-				scannerService.parseMetadataFromPath('trololol');
-			}
+				scannerService.parseMetadataFromPath("trololol");
+			};
 			expect(test).toThrow(PathParsingException);
 		});
 
 		it("should extract the metadata values from the path", () => {
 			const parsedValues: Metadata = scannerService.parseMetadataFromPath(
-				'/data/My Album Artist/My Album (2006)/1-02 My Track (My Artist).m4a'
+				"/data/My Album Artist/My Album (2006)/1-02 My Track (My Artist).m4a",
 			);
-			
+
 			expect(parsedValues).toMatchObject({
-				albumArtist: 'My Album Artist',
-				artist: 'My Artist',
+				albumArtist: "My Album Artist",
+				artist: "My Artist",
 				compilation: false,
-				album: 'My Album',
+				album: "My Album",
 				release: undefined,
-				releaseDate: new Date('2006'),
+				releaseDate: new Date("2006"),
 				discIndex: 1,
 				index: 2,
 				genres: [],
-				name: 'My Track'
+				name: "My Track",
 			});
 		});
 
 		it("should extract the metadata values from the path (compilation)", () => {
 			const parsedValues: Metadata = scannerService.parseMetadataFromPath(
-				'/data/Compilations/My Album (2006)/1-02 My Track.m4a'
+				"/data/Compilations/My Album (2006)/1-02 My Track.m4a",
 			);
-			
+
 			expect(parsedValues).toMatchObject({
 				artist: undefined,
 				albumArtist: undefined,
 				compilation: true,
-				album: 'My Album',
+				album: "My Album",
 				release: undefined,
-				releaseDate: new Date('2006'),
+				releaseDate: new Date("2006"),
 				discIndex: 1,
 				index: 2,
 				genres: [],
-				name: 'My Track'
+				name: "My Track",
 			});
 		});
 	});
 
-	describe('Parse Metadata from embedded metadata', () => {
+	describe("Parse Metadata from embedded metadata", () => {
 		it("should extract the metadata values from the file's tags", async () => {
-			const parsedValues: Metadata = await scannerService.parseMetadataFromFile(
-				'test/assets/dreams.m4a'
-			);
-			
+			const parsedValues: Metadata =
+				await scannerService.parseMetadataFromFile(
+					"test/assets/dreams.m4a",
+				);
+
 			expect(parsedValues).toMatchObject({
 				compilation: false,
-				artist: 'My Artist',
-				albumArtist: 'My Album Artist',
-				album: 'My Album',
-				release: 'My Album',
-				name: 'Dreams',
-				releaseDate: new Date('2007'),
+				artist: "My Artist",
+				albumArtist: "My Album Artist",
+				album: "My Album",
+				release: "My Album",
+				name: "Dreams",
+				releaseDate: new Date("2007"),
 				index: 3,
 				discIndex: 2,
 				bitrate: 133,
 				duration: 210,
-				genres: [ "Pop" ],
+				genres: ["Pop"],
 				type: TrackType.Audio,
 			});
 		});
 	});
-})
+});

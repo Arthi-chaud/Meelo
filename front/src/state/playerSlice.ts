@@ -1,13 +1,31 @@
-import { PayloadAction, createSlice } from '@reduxjs/toolkit';
-import Artist from '../models/artist';
-import Release from '../models/release';
-import Track from '../models/track';
+/*
+ * Meelo is a music server and application to enjoy your personal music files anywhere, anytime you want.
+ * Copyright (C) 2023
+ *
+ * Meelo is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * Meelo is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
+import { PayloadAction, createSlice } from "@reduxjs/toolkit";
+import Artist from "../models/artist";
+import Release from "../models/release";
+import Track from "../models/track";
 
 type TrackState = {
 	track: Track;
 	artist: Artist;
 	release: Release;
-}
+};
 
 interface PlayerState {
 	/**
@@ -23,7 +41,7 @@ interface PlayerState {
 }
 
 export const playerSlice = createSlice({
-	name: 'player',
+	name: "player",
 	initialState: <PlayerState>{
 		playlist: [],
 		cursor: -1,
@@ -39,7 +57,10 @@ export const playerSlice = createSlice({
 		playAfter: (state, action: PayloadAction<TrackState>) => {
 			state.playlist.push(action.payload);
 		},
-		playTracks: (state, action: PayloadAction<{ tracks: TrackState[], cursor?: number }>) => {
+		playTracks: (
+			state,
+			action: PayloadAction<{ tracks: TrackState[]; cursor?: number }>,
+		) => {
 			state.playlist = action.payload.tracks;
 			state.cursor = action.payload.cursor ?? 0;
 		},
@@ -54,14 +75,25 @@ export const playerSlice = createSlice({
 				state.cursor--;
 			}
 		},
-		reorder: (state, action: PayloadAction<Record<'from' | 'to', number>>) => {
+		reorder: (
+			state,
+			action: PayloadAction<Record<"from" | "to", number>>,
+		) => {
 			const [removed] = state.playlist.splice(action.payload.from, 1);
 
 			state.playlist.splice(action.payload.to, 0, removed);
-		}
+		},
 	},
 });
 
-export const { playTrack, playTracks, playNext, playAfter, skipTrack, playPreviousTrack, reorder } = playerSlice.actions;
+export const {
+	playTrack,
+	playTracks,
+	playNext,
+	playAfter,
+	skipTrack,
+	playPreviousTrack,
+	reorder,
+} = playerSlice.actions;
 
 export default playerSlice.reducer;

@@ -1,14 +1,43 @@
+/*
+ * Meelo is a music server and application to enjoy your personal music files anywhere, anytime you want.
+ * Copyright (C) 2023
+ *
+ * Meelo is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * Meelo is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
 import {
-	AlbumExternalId, ArtistExternalId,
-	ReleaseExternalId, SongExternalId
+	AlbumExternalId,
+	ArtistExternalId,
+	ReleaseExternalId,
+	SongExternalId,
 } from "@prisma/client";
 import { ProviderMethodNotAvailableError } from "./provider.exception";
 import ProvidersSettings from "./models/providers.settings";
 
-export type ArtistMetadata = Omit<ArtistExternalId, 'id' | 'providerId' | 'artistId'>
-export type AlbumMetadata = Omit<AlbumExternalId, 'id' | 'providerId' | 'albumId'> & { genres?: string[] }
-export type SongMetadata = Omit<SongExternalId, 'id' | 'providerId' | 'songId'>
-export type ReleaseMetadata = Omit<ReleaseExternalId, 'id' | 'providerId' | 'releaseId'>
+export type ArtistMetadata = Omit<
+	ArtistExternalId,
+	"id" | "providerId" | "artistId"
+>;
+export type AlbumMetadata = Omit<
+	AlbumExternalId,
+	"id" | "providerId" | "albumId"
+> & { genres?: string[] };
+export type SongMetadata = Omit<SongExternalId, "id" | "providerId" | "songId">;
+export type ReleaseMetadata = Omit<
+	ReleaseExternalId,
+	"id" | "providerId" | "releaseId"
+>;
 
 type IdentifierType = string;
 
@@ -20,8 +49,8 @@ export default abstract class IProvider<SettingsType = unknown> {
 		/**
 		 * Name of the Provider, used to identify it in the database and the settings
 		 */
-		public readonly name: keyof ProvidersSettings
-	) { }
+		public readonly name: keyof ProvidersSettings,
+	) {}
 
 	protected _settings: SettingsType;
 
@@ -52,32 +81,47 @@ export default abstract class IProvider<SettingsType = unknown> {
 	}
 
 	getArtistMetadataByIdentifier(
-		_artistIdentifier: IdentifierType
+		_artistIdentifier: IdentifierType,
 	): Promise<ArtistMetadata> {
 		throw new ProviderMethodNotAvailableError(this.name);
 	}
 
-	getAlbumMetadataByName(_albumName: string, _artistName?: string): Promise<AlbumMetadata> {
+	getAlbumMetadataByName(
+		_albumName: string,
+		_artistName?: string,
+	): Promise<AlbumMetadata> {
 		throw new ProviderMethodNotAvailableError(this.name);
 	}
 
-	getAlbumMetadataByIdentifier(_albumIdentifier: IdentifierType): Promise<AlbumMetadata> {
+	getAlbumMetadataByIdentifier(
+		_albumIdentifier: IdentifierType,
+	): Promise<AlbumMetadata> {
 		throw new ProviderMethodNotAvailableError(this.name);
 	}
 
-	getSongMetadataByName(_songName: string, _artistIdentifier: string): Promise<SongMetadata> {
+	getSongMetadataByName(
+		_songName: string,
+		_artistIdentifier: string,
+	): Promise<SongMetadata> {
 		throw new ProviderMethodNotAvailableError(this.name);
 	}
 
-	getSongMetadataByIdentifier(_songIdentifier: IdentifierType): Promise<SongMetadata> {
+	getSongMetadataByIdentifier(
+		_songIdentifier: IdentifierType,
+	): Promise<SongMetadata> {
 		throw new ProviderMethodNotAvailableError(this.name);
 	}
 
-	getReleaseMetadataByName(_releaseName: string, _artistName: string): Promise<ReleaseMetadata> {
+	getReleaseMetadataByName(
+		_releaseName: string,
+		_artistName: string,
+	): Promise<ReleaseMetadata> {
 		throw new ProviderMethodNotAvailableError(this.name);
 	}
 
-	getReleaseMetadataByIdentifier(_releaseIdentifier: IdentifierType): Promise<ReleaseMetadata> {
+	getReleaseMetadataByIdentifier(
+		_releaseIdentifier: IdentifierType,
+	): Promise<ReleaseMetadata> {
 		throw new ProviderMethodNotAvailableError(this.name);
 	}
 
@@ -120,7 +164,9 @@ export default abstract class IProvider<SettingsType = unknown> {
 	 * @returns the URL from the Provider of the artist's illustration
 	 * @param artistIdentifer The identifier provided by `getArtistIdentifier`
 	 */
-	getArtistIllustrationUrl(_artistIdentifer: IdentifierType): Promise<string> {
+	getArtistIllustrationUrl(
+		_artistIdentifer: IdentifierType,
+	): Promise<string> {
 		throw new ProviderMethodNotAvailableError(this.name);
 	}
 

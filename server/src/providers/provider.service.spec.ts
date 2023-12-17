@@ -10,7 +10,7 @@ import GeniusProvider from "./genius/genius.provider";
 import MusicBrainzProvider from "./musicbrainz/musicbrainz.provider";
 import SettingsService from "src/settings/settings.service";
 import FileManagerService from "src/file-manager/file-manager.service";
-import * as fs from 'fs';
+import * as fs from "fs";
 import FileManagerModule from "src/file-manager/file-manager.module";
 import IllustrationModule from "src/illustration/illustration.module";
 import { forwardRef } from "@nestjs/common";
@@ -26,9 +26,25 @@ describe("Provider Service", () => {
 	let module: TestingModule;
 	beforeAll(async () => {
 		module = await createTestingModule({
-			imports: [HttpModule, ProvidersModule, SettingsModule, PrismaModule, FileManagerModule, forwardRef(() => IllustrationModule), forwardRef(() => GenreModule)],
-			providers: [GeniusProvider, MusicBrainzProvider, ProviderService, PrismaService],
-		}).overrideProvider(PrismaService).useClass(TestPrismaService).compile();
+			imports: [
+				HttpModule,
+				ProvidersModule,
+				SettingsModule,
+				PrismaModule,
+				FileManagerModule,
+				forwardRef(() => IllustrationModule),
+				forwardRef(() => GenreModule),
+			],
+			providers: [
+				GeniusProvider,
+				MusicBrainzProvider,
+				ProviderService,
+				PrismaService,
+			],
+		})
+			.overrideProvider(PrismaService)
+			.useClass(TestPrismaService)
+			.compile();
 		providerService = module.get(ProviderService);
 		prismaService = module.get(PrismaService);
 		settingsService = module.get(SettingsService);
@@ -41,25 +57,30 @@ describe("Provider Service", () => {
 		module.close();
 	});
 
-	describe('Push Providers to DB', () => {
+	describe("Push Providers to DB", () => {
 		it("Should have pushed the providers to the database", async () => {
 			const providers = await prismaService.provider.findMany();
 			const providersSlugs = providers.map(({ slug }) => slug);
 
 			expect(providers.length).toBe(6);
-			expect(providersSlugs).toContain('musicbrainz');
-			expect(providersSlugs).toContain('genius');
-			expect(providersSlugs).toContain('discogs');
-			expect(providersSlugs).toContain('allmusic');
-			expect(providersSlugs).toContain('metacritic');
-			expect(providersSlugs).toContain('wikipedia');
-		})
+			expect(providersSlugs).toContain("musicbrainz");
+			expect(providersSlugs).toContain("genius");
+			expect(providersSlugs).toContain("discogs");
+			expect(providersSlugs).toContain("allmusic");
+			expect(providersSlugs).toContain("metacritic");
+			expect(providersSlugs).toContain("wikipedia");
+		});
 	});
 
-	describe('Check Provider Enabling', () => {
+	describe("Check Provider Enabling", () => {
 		it("should have disabled one explicitly, one implicitly", async () => {
-			jest.spyOn(fileManagerService, 'getFileContent').mockImplementationOnce(
-				() => fs.readFileSync('test/assets/settings-provider-disabled.json').toString()
+			jest.spyOn(
+				fileManagerService,
+				"getFileContent",
+			).mockImplementationOnce(() =>
+				fs
+					.readFileSync("test/assets/settings-provider-disabled.json")
+					.toString(),
 			);
 			settingsService.loadFromFile();
 			await providerService.onModuleInit();
@@ -69,8 +90,12 @@ describe("Provider Service", () => {
 			settingsService.loadFromFile();
 			await providerService.onModuleInit();
 			expect(providerService.enabledProviders.length).toBe(2);
-			expect(providerService.enabledProviders.map((p) => p.name)).toContain('genius');
-			expect(providerService.enabledProviders.map((p) => p.name)).toContain('musicbrainz');
-		})
+			expect(
+				providerService.enabledProviders.map((p) => p.name),
+			).toContain("genius");
+			expect(
+				providerService.enabledProviders.map((p) => p.name),
+			).toContain("musicbrainz");
+		});
 	});
-})
+});

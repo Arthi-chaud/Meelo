@@ -1,24 +1,40 @@
-import {
-	Inject, Injectable, forwardRef
-} from '@nestjs/common';
-import FileService from 'src/file/file.service';
-import Slug from 'src/slug/slug';
-import { Prisma } from '@prisma/client';
-import PrismaService from 'src/prisma/prisma.service';
-import type LibraryQueryParameters from './models/library.query-parameters';
-import normalize from 'normalize-path';
-import RepositoryService from 'src/repository/repository.service';
-import { buildStringSearchParameters } from 'src/utils/search-string-input';
-import TasksRunner from 'src/tasks/tasks.runner';
-import { Library, LibraryWithRelations } from 'src/prisma/models';
-import { parseIdentifierSlugs } from 'src/identifier/identifier.parse-slugs';
-import Identifier from 'src/identifier/models/identifier';
-import { PrismaError } from 'prisma-error-enum';
+/*
+ * Meelo is a music server and application to enjoy your personal music files anywhere, anytime you want.
+ * Copyright (C) 2023
+ *
+ * Meelo is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * Meelo is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
+import { Inject, Injectable, forwardRef } from "@nestjs/common";
+import FileService from "src/file/file.service";
+import Slug from "src/slug/slug";
+import { Prisma } from "@prisma/client";
+import PrismaService from "src/prisma/prisma.service";
+import type LibraryQueryParameters from "./models/library.query-parameters";
+import normalize from "normalize-path";
+import RepositoryService from "src/repository/repository.service";
+import { buildStringSearchParameters } from "src/utils/search-string-input";
+import TasksRunner from "src/tasks/tasks.runner";
+import { Library, LibraryWithRelations } from "src/prisma/models";
+import { parseIdentifierSlugs } from "src/identifier/identifier.parse-slugs";
+import Identifier from "src/identifier/models/identifier";
+import { PrismaError } from "prisma-error-enum";
 import {
 	LibraryAlreadyExistsException,
 	LibraryNotFoundException,
-	LibraryNotFoundFromIDException
-} from './library.exceptions';
+	LibraryNotFoundFromIDException,
+} from "./library.exceptions";
 
 @Injectable()
 export default class LibraryService extends RepositoryService<
@@ -42,11 +58,11 @@ export default class LibraryService extends RepositoryService<
 		private tasksService: TasksRunner,
 		prismaService: PrismaService,
 	) {
-		super(prismaService, 'library');
+		super(prismaService, "library");
 	}
 
 	getTableName() {
-		return 'libraries';
+		return "libraries";
 	}
 
 	/**
@@ -61,14 +77,24 @@ export default class LibraryService extends RepositoryService<
 		};
 	}
 
-	protected formatCreateInputToWhereInput(input: LibraryQueryParameters.CreateInput) {
+	protected formatCreateInputToWhereInput(
+		input: LibraryQueryParameters.CreateInput,
+	) {
 		return { slug: new Slug(input.name) };
 	}
 
-	protected onCreationFailure(error: Error, input: LibraryQueryParameters.CreateInput) {
-		if (error instanceof Prisma.PrismaClientKnownRequestError
-			&& error.code == PrismaError.UniqueConstraintViolation) {
-			return new LibraryAlreadyExistsException(new Slug(input.name), input.path);
+	protected onCreationFailure(
+		error: Error,
+		input: LibraryQueryParameters.CreateInput,
+	) {
+		if (
+			error instanceof Prisma.PrismaClientKnownRequestError &&
+			error.code == PrismaError.UniqueConstraintViolation
+		) {
+			return new LibraryAlreadyExistsException(
+				new Slug(input.name),
+				input.path,
+			);
 		}
 		return this.onUnknownError(error, input);
 	}
@@ -79,7 +105,7 @@ export default class LibraryService extends RepositoryService<
 	static formatWhereInput(input: LibraryQueryParameters.WhereInput) {
 		return {
 			id: input.id,
-			slug: input.slug?.toString()
+			slug: input.slug?.toString(),
 		};
 	}
 
@@ -87,41 +113,50 @@ export default class LibraryService extends RepositoryService<
 
 	static formatManyWhereInput(input: LibraryQueryParameters.ManyWhereInput) {
 		return {
-			name: input.name ? buildStringSearchParameters(input.name) : undefined,
-			id: input.id
+			name: input.name
+				? buildStringSearchParameters(input.name)
+				: undefined,
+			id: input.id,
 		};
 	}
 
 	formatManyWhereInput = LibraryService.formatManyWhereInput;
 
-	static formatIdentifierToWhereInput(identifier: Identifier): LibraryQueryParameters.WhereInput {
-		return RepositoryService.formatIdentifier(identifier, (stringIdentifier) => {
-			const [slug] = parseIdentifierSlugs(stringIdentifier, 1);
+	static formatIdentifierToWhereInput(
+		identifier: Identifier,
+	): LibraryQueryParameters.WhereInput {
+		return RepositoryService.formatIdentifier(
+			identifier,
+			(stringIdentifier) => {
+				const [slug] = parseIdentifierSlugs(stringIdentifier, 1);
 
-			return { slug };
-		});
+				return { slug };
+			},
+		);
 	}
 
 	formatSortingInput(
-		sortingParameter: LibraryQueryParameters.SortingParameter
+		sortingParameter: LibraryQueryParameters.SortingParameter,
 	): Prisma.LibraryOrderByWithRelationAndSearchRelevanceInput {
 		switch (sortingParameter.sortBy) {
-		case 'name':
-			return { slug: sortingParameter.order };
-		case 'fileCount':
-			return { files: { _count: sortingParameter.order } };
-		case 'addDate':
-			return { id: sortingParameter.order };
-		case undefined:
-			return { id: sortingParameter.order };
-		default:
-			return { [sortingParameter.sortBy]: sortingParameter.order };
+			case "name":
+				return { slug: sortingParameter.order };
+			case "fileCount":
+				return { files: { _count: sortingParameter.order } };
+			case "addDate":
+				return { id: sortingParameter.order };
+			case undefined:
+				return { id: sortingParameter.order };
+			default:
+				return { [sortingParameter.sortBy]: sortingParameter.order };
 		}
 	}
 
 	onNotFound(error: Error, where: LibraryQueryParameters.WhereInput) {
-		if (error instanceof Prisma.PrismaClientKnownRequestError &&
-			error.code == PrismaError.RecordsNotFound) {
+		if (
+			error instanceof Prisma.PrismaClientKnownRequestError &&
+			error.code == PrismaError.RecordsNotFound
+		) {
 			if (where.id !== undefined) {
 				return new LibraryNotFoundFromIDException(where.id);
 			}
@@ -137,7 +172,7 @@ export default class LibraryService extends RepositoryService<
 		return {
 			...input,
 			path: input.path ? normalize(input.path, true) : undefined,
-			slug: input.name ? new Slug(input.name).toString() : undefined
+			slug: input.name ? new Slug(input.name).toString() : undefined,
 		};
 	}
 
@@ -148,7 +183,9 @@ export default class LibraryService extends RepositoryService<
 		return this.formatWhereInput(where);
 	}
 
-	protected formatDeleteInputToWhereInput(input: LibraryQueryParameters.WhereInput) {
+	protected formatDeleteInputToWhereInput(
+		input: LibraryQueryParameters.WhereInput,
+	) {
 		return input;
 	}
 
@@ -161,7 +198,9 @@ export default class LibraryService extends RepositoryService<
 		const relatedFiles = await this.fileService.getMany({ library: where });
 
 		await Promise.all(
-			relatedFiles.map((file) => this.tasksService.unregisterFile({ id: file.id }))
+			relatedFiles.map((file) =>
+				this.tasksService.unregisterFile({ id: file.id }),
+			),
 		);
 		await this.tasksService.housekeeping();
 		return super.delete(where);

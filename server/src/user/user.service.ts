@@ -1,19 +1,38 @@
-import { Injectable } from '@nestjs/common';
-import RepositoryService from 'src/repository/repository.service';
-import type { User } from 'src/prisma/models';
-import { Prisma } from '@prisma/client';
-import type UserQueryParameters from './models/user.query-params';
-import PrismaService from 'src/prisma/prisma.service';
-import bcrypt from 'bcrypt';
+/*
+ * Meelo is a music server and application to enjoy your personal music files anywhere, anytime you want.
+ * Copyright (C) 2023
+ *
+ * Meelo is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * Meelo is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
+import { Injectable } from "@nestjs/common";
+import RepositoryService from "src/repository/repository.service";
+import type { User } from "src/prisma/models";
+import { Prisma } from "@prisma/client";
+import type UserQueryParameters from "./models/user.query-params";
+import PrismaService from "src/prisma/prisma.service";
+import bcrypt from "bcrypt";
 import {
-	InvalidPasswordException, InvalidUserCredentialsException,
+	InvalidPasswordException,
+	InvalidUserCredentialsException,
 	InvalidUsernameException,
 	UserAlreadyExistsException,
 	UserNotFoundException,
-	UserNotFoundFromIDException
-} from './user.exceptions';
-import Identifier from 'src/identifier/models/identifier';
-import { PrismaError } from 'prisma-error-enum';
+	UserNotFoundFromIDException,
+} from "./user.exceptions";
+import Identifier from "src/identifier/models/identifier";
+import { PrismaError } from "prisma-error-enum";
 
 @Injectable()
 export default class UserService extends RepositoryService<
@@ -33,14 +52,12 @@ export default class UserService extends RepositoryService<
 > {
 	private readonly passwordHashSaltRound = 9;
 
-	constructor(
-		protected prismaService: PrismaService
-	) {
-		super(prismaService, 'user');
+	constructor(protected prismaService: PrismaService) {
+		super(prismaService, "user");
 	}
 
 	getTableName() {
-		return 'users';
+		return "users";
 	}
 
 	private encryptPassword(plainTextPassword: string): string {
@@ -53,7 +70,7 @@ export default class UserService extends RepositoryService<
 	 */
 	usernameIsValid(usernameCandidate: string): boolean {
 		// eslint-disable-next-line no-useless-escape
-		return usernameCandidate.match('^[a-zA-Z0-9\-\_]{4,}$') != null;
+		return usernameCandidate.match("^[a-zA-Z0-9-_]{4,}$") != null;
 	}
 
 	/**
@@ -61,18 +78,23 @@ export default class UserService extends RepositoryService<
 	 * @returns true if password is valid
 	 */
 	passwordIsValid(passwordCandidate: string): boolean {
-		return passwordCandidate.match('^\\S{6,}$') != null;
+		return passwordCandidate.match("^\\S{6,}$") != null;
 	}
 
 	/**
 	 * Throws is credentials candidate do not respect the policy
 	 * @param credentials the username and password
 	 */
-	checkCredentialsAreValid(credentials: Partial<Pick<User, 'name' | 'password'>>) {
+	checkCredentialsAreValid(
+		credentials: Partial<Pick<User, "name" | "password">>,
+	) {
 		if (credentials.name && !this.usernameIsValid(credentials.name)) {
 			throw new InvalidUsernameException();
 		}
-		if (credentials.password && !this.passwordIsValid(credentials.password)) {
+		if (
+			credentials.password &&
+			!this.passwordIsValid(credentials.password)
+		) {
 			throw new InvalidPasswordException();
 		}
 	}
@@ -82,64 +104,79 @@ export default class UserService extends RepositoryService<
 			name: input.name,
 			password: this.encryptPassword(input.password),
 			enabled: input.enabled ?? false,
-			admin: input.admin
+			admin: input.admin,
 		};
 	}
 
 	async create(input: UserQueryParameters.CreateInput): Promise<User> {
 		this.checkCredentialsAreValid(input);
-		const isFirstUser = await this.count({}) == 0;
+		const isFirstUser = (await this.count({})) == 0;
 
 		return super.create({
 			...input,
 			admin: isFirstUser,
-			enabled: isFirstUser || input.enabled
+			enabled: isFirstUser || input.enabled,
 		});
 	}
 
-	protected onCreationFailure(error: Error, input: UserQueryParameters.CreateInput) {
-		if (error instanceof Prisma.PrismaClientKnownRequestError &&
-			error.code == PrismaError.UniqueConstraintViolation) {
+	protected onCreationFailure(
+		error: Error,
+		input: UserQueryParameters.CreateInput,
+	) {
+		if (
+			error instanceof Prisma.PrismaClientKnownRequestError &&
+			error.code == PrismaError.UniqueConstraintViolation
+		) {
 			return new UserAlreadyExistsException(input.name);
 		}
 		return this.onUnknownError(error, input);
 	}
 
 	protected formatCreateInputToWhereInput(
-		input: UserQueryParameters.CreateInput
+		input: UserQueryParameters.CreateInput,
 	): UserQueryParameters.WhereInput {
 		return {
-			name: input.name
+			name: input.name,
 		};
 	}
 
-	formatWhereInput(input: UserQueryParameters.WhereInput): Prisma.UserWhereInput {
+	formatWhereInput(
+		input: UserQueryParameters.WhereInput,
+	): Prisma.UserWhereInput {
 		return {
 			id: input.id,
 			name: input.name ?? input.byCredentials?.name,
 			password: input.byCredentials
 				? this.encryptPassword(input.byCredentials.password)
-				: undefined
+				: undefined,
 		};
 	}
 
 	async get(input: UserQueryParameters.WhereInput): Promise<User> {
-		const user = await super.get(input.id != undefined
-			? { id: input.id }
-			: { name: input.name ?? input.byCredentials.name });
+		const user = await super.get(
+			input.id != undefined
+				? { id: input.id }
+				: { name: input.name ?? input.byCredentials.name },
+		);
 
-		if (input.byCredentials &&
-			!bcrypt.compareSync(input.byCredentials.password, user.password)) {
+		if (
+			input.byCredentials &&
+			!bcrypt.compareSync(input.byCredentials.password, user.password)
+		) {
 			throw new InvalidUserCredentialsException(input.byCredentials.name);
 		}
 		return user;
 	}
 
 	onNotFound(error: Error, where: UserQueryParameters.WhereInput) {
-		if (error instanceof Prisma.PrismaClientKnownRequestError &&
-			error.code === PrismaError.RecordsNotFound) {
+		if (
+			error instanceof Prisma.PrismaClientKnownRequestError &&
+			error.code === PrismaError.RecordsNotFound
+		) {
 			if (where.byCredentials) {
-				throw new InvalidUserCredentialsException(where.byCredentials.name);
+				throw new InvalidUserCredentialsException(
+					where.byCredentials.name,
+				);
 			} else if (where.id !== undefined) {
 				throw new UserNotFoundFromIDException(where.id);
 			} else {
@@ -150,14 +187,18 @@ export default class UserService extends RepositoryService<
 		return this.onUnknownError(error, where);
 	}
 
-	formatManyWhereInput(input: UserQueryParameters.ManyWhereInput): Prisma.UserWhereInput {
+	formatManyWhereInput(
+		input: UserQueryParameters.ManyWhereInput,
+	): Prisma.UserWhereInput {
 		return input;
 	}
 
-	static formatIdentifierToWhereInput(identifier: Identifier): UserQueryParameters.WhereInput {
+	static formatIdentifierToWhereInput(
+		identifier: Identifier,
+	): UserQueryParameters.WhereInput {
 		return RepositoryService.formatIdentifier(
 			identifier,
-			RepositoryService.UnexpectedStringIdentifier
+			RepositoryService.UnexpectedStringIdentifier,
 		);
 	}
 
@@ -166,7 +207,8 @@ export default class UserService extends RepositoryService<
 	}
 
 	async update(
-		what: UserQueryParameters.UpdateInput, where: UserQueryParameters.WhereInput
+		what: UserQueryParameters.UpdateInput,
+		where: UserQueryParameters.WhereInput,
 	): Promise<User> {
 		const formattedInput = this.formatUpdateInput(what);
 
@@ -182,19 +224,23 @@ export default class UserService extends RepositoryService<
 		}
 		return {
 			...what,
-			password: what.password ? this.encryptPassword(what.password) : undefined
+			password: what.password
+				? this.encryptPassword(what.password)
+				: undefined,
 		};
 	}
 
-	formatDeleteInput(where: UserQueryParameters.DeleteInput): Prisma.UserWhereUniqueInput {
+	formatDeleteInput(
+		where: UserQueryParameters.DeleteInput,
+	): Prisma.UserWhereUniqueInput {
 		return {
 			id: where.id,
-			name: where.name
+			name: where.name,
 		};
 	}
 
 	protected formatDeleteInputToWhereInput(
-		input: UserQueryParameters.DeleteInput
+		input: UserQueryParameters.DeleteInput,
 	): UserQueryParameters.WhereInput {
 		if (input.id) {
 			return { id: input.id };

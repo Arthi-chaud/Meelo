@@ -22,22 +22,48 @@ import TestPrismaService from "test/test-prisma.service";
 import type ReassignReleaseDTO from "./models/reassign-release.dto";
 import FileModule from "src/file/file.module";
 import SetupApp from "test/setup-app";
-import { expectedReleaseResponse, expectedAlbumResponse, expectedTrackResponse, expectedSongResponse, expectedArtistResponse } from "test/expected-responses";
+import {
+	expectedReleaseResponse,
+	expectedAlbumResponse,
+	expectedTrackResponse,
+	expectedSongResponse,
+	expectedArtistResponse,
+} from "test/expected-responses";
 import ProvidersModule from "src/providers/providers.module";
 import ProviderService from "src/providers/provider.service";
 
 jest.setTimeout(60000);
 
-describe('Release Controller', () => {
+describe("Release Controller", () => {
 	let dummyRepository: TestPrismaService;
 	let app: INestApplication;
 
 	let module: TestingModule;
 	beforeAll(async () => {
 		module = await createTestingModule({
-			imports: [PrismaModule, AlbumModule, ArtistModule, ReleaseModule, TrackModule, IllustrationModule, SongModule, FileModule, ScannerModule, GenreModule, ProvidersModule],
-			providers: [ReleaseService, AlbumService, ArtistService, ReleaseController],
-		}).overrideProvider(PrismaService).useClass(TestPrismaService).compile();
+			imports: [
+				PrismaModule,
+				AlbumModule,
+				ArtistModule,
+				ReleaseModule,
+				TrackModule,
+				IllustrationModule,
+				SongModule,
+				FileModule,
+				ScannerModule,
+				GenreModule,
+				ProvidersModule,
+			],
+			providers: [
+				ReleaseService,
+				AlbumService,
+				ArtistService,
+				ReleaseController,
+			],
+		})
+			.overrideProvider(PrismaService)
+			.useClass(TestPrismaService)
+			.compile();
 		app = await SetupApp(module);
 		dummyRepository = module.get(PrismaService);
 		await dummyRepository.onModuleInit();
@@ -49,69 +75,95 @@ describe('Release Controller', () => {
 		app.close();
 	});
 
-	describe('Get Releases (GET /releases)', () => {
-
+	describe("Get Releases (GET /releases)", () => {
 		it("should return every releases", () => {
 			return request(app.getHttpServer())
-				.get('/releases')
+				.get("/releases")
 				.expect(200)
 				.expect((res) => {
 					const releases: Release[] = res.body.items;
 					expect(releases.length).toBe(4);
-					expect(releases[0]).toStrictEqual(expectedReleaseResponse(dummyRepository.releaseA1_1));
-					expect(releases[1]).toStrictEqual(expectedReleaseResponse(dummyRepository.releaseA1_2));
-					expect(releases[2]).toStrictEqual(expectedReleaseResponse(dummyRepository.releaseB1_1));
-					expect(releases[3]).toStrictEqual(expectedReleaseResponse(dummyRepository.compilationReleaseA1));
+					expect(releases[0]).toStrictEqual(
+						expectedReleaseResponse(dummyRepository.releaseA1_1),
+					);
+					expect(releases[1]).toStrictEqual(
+						expectedReleaseResponse(dummyRepository.releaseA1_2),
+					);
+					expect(releases[2]).toStrictEqual(
+						expectedReleaseResponse(dummyRepository.releaseB1_1),
+					);
+					expect(releases[3]).toStrictEqual(
+						expectedReleaseResponse(
+							dummyRepository.compilationReleaseA1,
+						),
+					);
 				});
 		});
 
 		it("should return every releases, sorted by name", () => {
 			return request(app.getHttpServer())
-				.get('/releases?sortBy=name')
+				.get("/releases?sortBy=name")
 				.expect(200)
 				.expect((res) => {
 					const releases: Release[] = res.body.items;
 					expect(releases.length).toBe(4);
-					expect(releases[0]).toStrictEqual(expectedReleaseResponse(dummyRepository.releaseA1_1));
-					expect(releases[1]).toStrictEqual(expectedReleaseResponse(dummyRepository.releaseA1_2));
-					expect(releases[2]).toStrictEqual(expectedReleaseResponse(dummyRepository.compilationReleaseA1));
-					expect(releases[3]).toStrictEqual(expectedReleaseResponse(dummyRepository.releaseB1_1));
+					expect(releases[0]).toStrictEqual(
+						expectedReleaseResponse(dummyRepository.releaseA1_1),
+					);
+					expect(releases[1]).toStrictEqual(
+						expectedReleaseResponse(dummyRepository.releaseA1_2),
+					);
+					expect(releases[2]).toStrictEqual(
+						expectedReleaseResponse(
+							dummyRepository.compilationReleaseA1,
+						),
+					);
+					expect(releases[3]).toStrictEqual(
+						expectedReleaseResponse(dummyRepository.releaseB1_1),
+					);
 				});
 		});
 
 		it("should return some releases (w/ pagination)", () => {
 			return request(app.getHttpServer())
-				.get('/releases?take=1&skip=2')
+				.get("/releases?take=1&skip=2")
 				.expect(200)
 				.expect((res) => {
 					const releases: Release[] = res.body.items;
 					expect(releases.length).toBe(1);
-					expect(releases[0]).toStrictEqual(expectedReleaseResponse(dummyRepository.releaseB1_1));
+					expect(releases[0]).toStrictEqual(
+						expectedReleaseResponse(dummyRepository.releaseB1_1),
+					);
 				});
 		});
 
 		it("should return releases w/ related albums", () => {
 			return request(app.getHttpServer())
-				.get('/releases?with=album')
+				.get("/releases?with=album")
 				.expect(200)
 				.expect((res) => {
-					const releases: (Release & { album: Album }) [] = res.body.items;
+					const releases: (Release & { album: Album })[] =
+						res.body.items;
 					expect(releases.length).toBe(4);
 					expect(releases[0]).toStrictEqual({
 						...expectedReleaseResponse(dummyRepository.releaseA1_1),
-						album: expectedAlbumResponse(dummyRepository.albumA1)
+						album: expectedAlbumResponse(dummyRepository.albumA1),
 					});
 					expect(releases[1]).toStrictEqual({
 						...expectedReleaseResponse(dummyRepository.releaseA1_2),
-						album: expectedAlbumResponse(dummyRepository.albumA1)
+						album: expectedAlbumResponse(dummyRepository.albumA1),
 					});
 					expect(releases[2]).toStrictEqual({
 						...expectedReleaseResponse(dummyRepository.releaseB1_1),
-						album: expectedAlbumResponse(dummyRepository.albumB1)
+						album: expectedAlbumResponse(dummyRepository.albumB1),
 					});
 					expect(releases[3]).toStrictEqual({
-						...expectedReleaseResponse(dummyRepository.compilationReleaseA1),
-						album: expectedAlbumResponse(dummyRepository.compilationAlbumA)
+						...expectedReleaseResponse(
+							dummyRepository.compilationReleaseA1,
+						),
+						album: expectedAlbumResponse(
+							dummyRepository.compilationAlbumA,
+						),
 					});
 				});
 		});
@@ -123,66 +175,82 @@ describe('Release Controller', () => {
 				.get(`/releases/${dummyRepository.releaseA1_1.id}`)
 				.expect(200)
 				.expect((res) => {
-					const release: Release = res.body
-					expect(release).toStrictEqual(expectedReleaseResponse(dummyRepository.releaseA1_1));
+					const release: Release = res.body;
+					expect(release).toStrictEqual(
+						expectedReleaseResponse(dummyRepository.releaseA1_1),
+					);
 				});
 		});
 
 		it("should return the release w/ discogs ID", async () => {
 			await module.get(PrismaService).releaseExternalId.create({
 				data: {
-					provider: { connect: { name: 'discogs' } },
-					value: '1234567',
-					description: 'ABCDE',
-					release: { connect: { id: dummyRepository.releaseA1_1.id} }
-				}
-			})
+					provider: { connect: { name: "discogs" } },
+					value: "1234567",
+					description: "ABCDE",
+					release: {
+						connect: { id: dummyRepository.releaseA1_1.id },
+					},
+				},
+			});
 			return request(app.getHttpServer())
-				.get(`/releases/${dummyRepository.releaseA1_1.id}?with=externalIds`)
+				.get(
+					`/releases/${dummyRepository.releaseA1_1.id}?with=externalIds`,
+				)
 				.expect(200)
 				.expect((res) => {
-					const release: Release = res.body
+					const release: Release = res.body;
 					expect(release).toStrictEqual({
 						...expectedReleaseResponse(dummyRepository.releaseA1_1),
-						externalIds: [{
-							provider: {
-								name: "discogs",
-								homepage: "https://www.discogs.com",
-								banner: "/illustrations/providers/discogs/banner",
-								icon: "/illustrations/providers/discogs/icon"
+						externalIds: [
+							{
+								provider: {
+									name: "discogs",
+									homepage: "https://www.discogs.com",
+									banner: "/illustrations/providers/discogs/banner",
+									icon: "/illustrations/providers/discogs/icon",
+								},
+								description: "ABCDE",
+								value: "1234567",
+								url: "https://www.discogs.com/release/1234567",
 							},
-							description: 'ABCDE',
-							value: "1234567",
-							url: "https://www.discogs.com/release/1234567"
-						}]
+						],
 					});
 				});
 		});
 
 		it("should return the compilation release from slug", () => {
 			return request(app.getHttpServer())
-				.get(`/releases/compilations+${dummyRepository.compilationAlbumA.slug}+${dummyRepository.compilationReleaseA1.slug}`)
+				.get(
+					`/releases/compilations+${dummyRepository.compilationAlbumA.slug}+${dummyRepository.compilationReleaseA1.slug}`,
+				)
 				.expect(200)
 				.expect((res) => {
-					const release: Release = res.body
-					expect(release).toStrictEqual(expectedReleaseResponse(dummyRepository.compilationReleaseA1));
+					const release: Release = res.body;
+					expect(release).toStrictEqual(
+						expectedReleaseResponse(
+							dummyRepository.compilationReleaseA1,
+						),
+					);
 				});
 		});
 
 		it("should return the release from slug", () => {
 			return request(app.getHttpServer())
-				.get(`/releases/${dummyRepository.artistA.slug}+${dummyRepository.albumA1.slug}+${dummyRepository.releaseA1_2.slug}`)
+				.get(
+					`/releases/${dummyRepository.artistA.slug}+${dummyRepository.albumA1.slug}+${dummyRepository.releaseA1_2.slug}`,
+				)
 				.expect(200)
 				.expect((res) => {
-					const release: Release = res.body
-					expect(release).toStrictEqual(expectedReleaseResponse(dummyRepository.releaseA1_2));
+					const release: Release = res.body;
+					expect(release).toStrictEqual(
+						expectedReleaseResponse(dummyRepository.releaseA1_2),
+					);
 				});
 		});
 
 		it("should throw, as the release does not exist", () => {
-			return request(app.getHttpServer())
-				.get(`/releases/-1`)
-				.expect(404);
+			return request(app.getHttpServer()).get(`/releases/-1`).expect(404);
 		});
 
 		it("should return an error, as the string is badly formed", () => {
@@ -196,9 +264,12 @@ describe('Release Controller', () => {
 				.get(`/releases/${dummyRepository.releaseA1_2.id}?with=album`)
 				.expect(200)
 				.expect((res) => {
-					const release: Release & { album: Album, tracks: Track[] } = res.body
+					const release: Release & { album: Album; tracks: Track[] } =
+						res.body;
 					expect(release.id).toBe(dummyRepository.releaseA1_2.id);
-					expect(release.album).toStrictEqual(expectedAlbumResponse(dummyRepository.albumA1));
+					expect(release.album).toStrictEqual(
+						expectedAlbumResponse(dummyRepository.albumA1),
+					);
 				});
 		});
 	});
@@ -211,29 +282,43 @@ describe('Release Controller', () => {
 				.expect((res) => {
 					const releases: Release[] = res.body.items;
 					expect(releases.length).toBe(2);
-					expect(releases[0]).toStrictEqual(expectedReleaseResponse(dummyRepository.releaseA1_1));
-					expect(releases[1]).toStrictEqual(expectedReleaseResponse(dummyRepository.releaseA1_2));
+					expect(releases[0]).toStrictEqual(
+						expectedReleaseResponse(dummyRepository.releaseA1_1),
+					);
+					expect(releases[1]).toStrictEqual(
+						expectedReleaseResponse(dummyRepository.releaseA1_2),
+					);
 				});
 		});
 		it("Should return all album's releases, sorted by id, desc", () => {
 			return request(app.getHttpServer())
-				.get(`/releases?album=${dummyRepository.albumA1.id}&sortBy=id&order=desc`)
+				.get(
+					`/releases?album=${dummyRepository.albumA1.id}&sortBy=id&order=desc`,
+				)
 				.expect(200)
 				.expect((res) => {
 					const releases: Release[] = res.body.items;
 					expect(releases.length).toBe(2);
-					expect(releases[0]).toStrictEqual(expectedReleaseResponse(dummyRepository.releaseA1_2));
-					expect(releases[1]).toStrictEqual(expectedReleaseResponse(dummyRepository.releaseA1_1));
+					expect(releases[0]).toStrictEqual(
+						expectedReleaseResponse(dummyRepository.releaseA1_2),
+					);
+					expect(releases[1]).toStrictEqual(
+						expectedReleaseResponse(dummyRepository.releaseA1_1),
+					);
 				});
 		});
 		it("Should return all album's releases (by slug)", () => {
 			return request(app.getHttpServer())
-				.get(`/releases?album=${dummyRepository.artistB.slug}+${dummyRepository.albumB1.slug}`)
+				.get(
+					`/releases?album=${dummyRepository.artistB.slug}+${dummyRepository.albumB1.slug}`,
+				)
 				.expect(200)
 				.expect((res) => {
 					const releases: Release[] = res.body.items;
 					expect(releases.length).toBe(1);
-					expect(releases[0]).toStrictEqual(expectedReleaseResponse(dummyRepository.releaseB1_1));
+					expect(releases[0]).toStrictEqual(
+						expectedReleaseResponse(dummyRepository.releaseB1_1),
+					);
 				});
 		});
 		it("Should return some album's releases (w/ pagination)", () => {
@@ -243,64 +328,84 @@ describe('Release Controller', () => {
 				.expect((res) => {
 					const releases: Release[] = res.body.items;
 					expect(releases.length).toBe(1);
-					expect(releases[0]).toStrictEqual(expectedReleaseResponse(dummyRepository.releaseA1_1));
+					expect(releases[0]).toStrictEqual(
+						expectedReleaseResponse(dummyRepository.releaseA1_1),
+					);
 				});
 		});
 		it("Should include parent album", () => {
 			return request(app.getHttpServer())
-				.get(`/releases?album=${dummyRepository.compilationAlbumA.id}&with=album`)
+				.get(
+					`/releases?album=${dummyRepository.compilationAlbumA.id}&with=album`,
+				)
 				.expect(200)
 				.expect((res) => {
 					const releases: Release[] = res.body.items;
 					expect(releases.length).toBe(1);
 					expect(releases[0]).toStrictEqual({
-						...expectedReleaseResponse(dummyRepository.compilationReleaseA1),
-						album: expectedAlbumResponse(dummyRepository.compilationAlbumA)
+						...expectedReleaseResponse(
+							dummyRepository.compilationReleaseA1,
+						),
+						album: expectedAlbumResponse(
+							dummyRepository.compilationAlbumA,
+						),
 					});
 				});
 		});
 	});
 
-	describe('Get Releases by library', () => {
+	describe("Get Releases by library", () => {
 		it("should return every releases, w/ tracks & parent album", () => {
 			return request(app.getHttpServer())
-				.get(`/releases?library=${dummyRepository.library1.id}&with=album`)
+				.get(
+					`/releases?library=${dummyRepository.library1.id}&with=album`,
+				)
 				.expect(200)
 				.expect((res) => {
 					const releases: Release[] = res.body.items;
 					expect(releases.length).toBe(3);
 					expect(releases).toContainEqual({
 						...expectedReleaseResponse(dummyRepository.releaseA1_1),
-						album: expectedAlbumResponse(dummyRepository.albumA1)
+						album: expectedAlbumResponse(dummyRepository.albumA1),
 					});
 					expect(releases).toContainEqual({
 						...expectedReleaseResponse(dummyRepository.releaseA1_2),
-						album: expectedAlbumResponse(dummyRepository.albumA1)
+						album: expectedAlbumResponse(dummyRepository.albumA1),
 					});
 					expect(releases).toContainEqual({
-						...expectedReleaseResponse(dummyRepository.compilationReleaseA1),
-						album: expectedAlbumResponse(dummyRepository.compilationAlbumA)
+						...expectedReleaseResponse(
+							dummyRepository.compilationReleaseA1,
+						),
+						album: expectedAlbumResponse(
+							dummyRepository.compilationAlbumA,
+						),
 					});
 				});
 		});
 		it("should return every releases, sorted by name", () => {
 			return request(app.getHttpServer())
-				.get(`/releases?library=${dummyRepository.library1.id}&sortBy=name&order=desc&with=album`)
+				.get(
+					`/releases?library=${dummyRepository.library1.id}&sortBy=name&order=desc&with=album`,
+				)
 				.expect(200)
 				.expect((res) => {
 					const releases: Release[] = res.body.items;
 					expect(releases.length).toBe(3);
 					expect(releases[0]).toStrictEqual({
-						...expectedReleaseResponse(dummyRepository.compilationReleaseA1),
-						album: expectedAlbumResponse(dummyRepository.compilationAlbumA)
+						...expectedReleaseResponse(
+							dummyRepository.compilationReleaseA1,
+						),
+						album: expectedAlbumResponse(
+							dummyRepository.compilationAlbumA,
+						),
 					});
 					expect(releases[1]).toStrictEqual({
 						...expectedReleaseResponse(dummyRepository.releaseA1_2),
-						album: expectedAlbumResponse(dummyRepository.albumA1)
+						album: expectedAlbumResponse(dummyRepository.albumA1),
 					});
 					expect(releases[2]).toStrictEqual({
 						...expectedReleaseResponse(dummyRepository.releaseA1_1),
-						album: expectedAlbumResponse(dummyRepository.albumA1)
+						album: expectedAlbumResponse(dummyRepository.albumA1),
 					});
 				});
 		});
@@ -314,39 +419,69 @@ describe('Release Controller', () => {
 				.expect((res) => {
 					const tracklist: Tracklist = res.body;
 					expect(tracklist).toStrictEqual({
-						'1': [{
-							...expectedTrackResponse(dummyRepository.trackA2_1),
-							song: expectedSongResponse(dummyRepository.songA2)
-						}],
-						'2': [{
-							...expectedTrackResponse(dummyRepository.trackA1_2Video),
-							song: expectedSongResponse(dummyRepository.songA1)
-						}],
+						"1": [
+							{
+								...expectedTrackResponse(
+									dummyRepository.trackA2_1,
+								),
+								song: expectedSongResponse(
+									dummyRepository.songA2,
+								),
+							},
+						],
+						"2": [
+							{
+								...expectedTrackResponse(
+									dummyRepository.trackA1_2Video,
+								),
+								song: expectedSongResponse(
+									dummyRepository.songA1,
+								),
+							},
+						],
 					});
 				});
 		});
 
 		it("should get the tracklist, w/ related song artist", () => {
 			return request(app.getHttpServer())
-				.get(`/releases/${dummyRepository.releaseA1_2.id}/tracklist?with=artist`)
+				.get(
+					`/releases/${dummyRepository.releaseA1_2.id}/tracklist?with=artist`,
+				)
 				.expect(200)
 				.expect((res) => {
 					const tracklist: Tracklist = res.body;
 					expect(tracklist).toStrictEqual({
-						'1': [{
-							...expectedTrackResponse(dummyRepository.trackA2_1),
-							song: {
-								...expectedSongResponse(dummyRepository.songA2),
-								artist: expectedArtistResponse(dummyRepository.artistA)
-							}
-						}],
-						'2': [{
-							...expectedTrackResponse(dummyRepository.trackA1_2Video),
-							song: {
-								...expectedSongResponse(dummyRepository.songA1),
-								artist: expectedArtistResponse(dummyRepository.artistA)
-							}
-						}],
+						"1": [
+							{
+								...expectedTrackResponse(
+									dummyRepository.trackA2_1,
+								),
+								song: {
+									...expectedSongResponse(
+										dummyRepository.songA2,
+									),
+									artist: expectedArtistResponse(
+										dummyRepository.artistA,
+									),
+								},
+							},
+						],
+						"2": [
+							{
+								...expectedTrackResponse(
+									dummyRepository.trackA1_2Video,
+								),
+								song: {
+									...expectedSongResponse(
+										dummyRepository.songA1,
+									),
+									artist: expectedArtistResponse(
+										dummyRepository.artistA,
+									),
+								},
+							},
+						],
 					});
 				});
 		});
@@ -368,19 +503,23 @@ describe('Release Controller', () => {
 					expect(tracklist).toStrictEqual([
 						{
 							...expectedTrackResponse(dummyRepository.trackA2_1),
-							song: expectedSongResponse(dummyRepository.songA2)
+							song: expectedSongResponse(dummyRepository.songA2),
 						},
 						{
-							...expectedTrackResponse(dummyRepository.trackA1_2Video),
-							song: expectedSongResponse(dummyRepository.songA1)
-						}
+							...expectedTrackResponse(
+								dummyRepository.trackA1_2Video,
+							),
+							song: expectedSongResponse(dummyRepository.songA1),
+						},
 					]);
 				});
 		});
 
 		it("should get the playlist, w/ related song artist", () => {
 			return request(app.getHttpServer())
-				.get(`/releases/${dummyRepository.releaseA1_2.id}/playlist?with=artist`)
+				.get(
+					`/releases/${dummyRepository.releaseA1_2.id}/playlist?with=artist`,
+				)
 				.expect(200)
 				.expect((res) => {
 					const tracklist: Track[] = res.body;
@@ -389,15 +528,21 @@ describe('Release Controller', () => {
 							...expectedTrackResponse(dummyRepository.trackA2_1),
 							song: {
 								...expectedSongResponse(dummyRepository.songA2),
-								artist: expectedArtistResponse(dummyRepository.artistA)
-							}
+								artist: expectedArtistResponse(
+									dummyRepository.artistA,
+								),
+							},
 						},
 						{
-							...expectedTrackResponse(dummyRepository.trackA1_2Video),
+							...expectedTrackResponse(
+								dummyRepository.trackA1_2Video,
+							),
 							song: {
 								...expectedSongResponse(dummyRepository.songA1),
-								artist: expectedArtistResponse(dummyRepository.artistA)
-							}
+								artist: expectedArtistResponse(
+									dummyRepository.artistA,
+								),
+							},
 						},
 					]);
 				});
@@ -415,14 +560,14 @@ describe('Release Controller', () => {
 			return request(app.getHttpServer())
 				.post(`/releases/${dummyRepository.releaseB1_1.id}`)
 				.send(<ReassignReleaseDTO>{
-					albumId: dummyRepository.albumA1.id
+					albumId: dummyRepository.albumA1.id,
 				})
 				.expect(201)
 				.expect((res) => {
 					const release: Release = res.body;
 					expect(release).toStrictEqual({
 						...expectedReleaseResponse(dummyRepository.releaseB1_1),
-						albumId: dummyRepository.albumA1.id
+						albumId: dummyRepository.albumA1.id,
 					});
 				});
 		});
@@ -444,9 +589,14 @@ describe('Release Controller', () => {
 
 	describe("Release Illustration", () => {
 		it("Should return the illustration", async () => {
-			const illustration = await dummyRepository.releaseIllustration.create({
-				data: { releaseId: dummyRepository.releaseA1_2.id, blurhash: 'A', colors: ['B'] }
-			});
+			const illustration =
+				await dummyRepository.releaseIllustration.create({
+					data: {
+						releaseId: dummyRepository.releaseA1_2.id,
+						blurhash: "A",
+						colors: ["B"],
+					},
+				});
 			return request(app.getHttpServer())
 				.get(`/releases/${dummyRepository.releaseA1_2.id}`)
 				.expect(200)
@@ -456,13 +606,12 @@ describe('Release Controller', () => {
 						...release,
 						illustration: {
 							...illustration,
-							url: '/illustrations/releases/' + dummyRepository.releaseA1_2.id
-						}
+							url:
+								"/illustrations/releases/" +
+								dummyRepository.releaseA1_2.id,
+						},
 					});
 				});
-
 		});
 	});
-
-	
 });

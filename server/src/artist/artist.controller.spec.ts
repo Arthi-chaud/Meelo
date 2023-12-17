@@ -9,7 +9,7 @@ import SetupApp from "test/setup-app";
 import { createTestingModule } from "test/test-module";
 import ArtistModule from "./artist.module";
 import ArtistService from "./artist.service";
-import request from 'supertest';
+import request from "supertest";
 import SongService from "src/song/song.service";
 import AlbumService from "src/album/album.service";
 import TrackModule from "src/track/track.module";
@@ -28,7 +28,7 @@ import SettingsModule from "src/settings/settings.module";
 import SettingsService from "src/settings/settings.service";
 import ProviderService from "src/providers/provider.service";
 
-describe('Artist Controller', () => {
+describe("Artist Controller", () => {
 	let dummyRepository: TestPrismaService;
 	let app: INestApplication;
 	let providerService: ProviderService;
@@ -36,24 +36,45 @@ describe('Artist Controller', () => {
 	let module: TestingModule;
 	beforeAll(async () => {
 		module = await createTestingModule({
-			imports: [ReleaseModule, PrismaModule, ArtistModule, SongModule, AlbumModule, TrackModule, ScannerModule, IllustrationModule, GenreModule, LyricsModule, FileModule, ProvidersModule, SettingsModule],
-			providers: [ArtistService, SongService, AlbumService, ReleaseService],
-		}).overrideProvider(PrismaService).useClass(TestPrismaService).compile();
+			imports: [
+				ReleaseModule,
+				PrismaModule,
+				ArtistModule,
+				SongModule,
+				AlbumModule,
+				TrackModule,
+				ScannerModule,
+				IllustrationModule,
+				GenreModule,
+				LyricsModule,
+				FileModule,
+				ProvidersModule,
+				SettingsModule,
+			],
+			providers: [
+				ArtistService,
+				SongService,
+				AlbumService,
+				ReleaseService,
+			],
+		})
+			.overrideProvider(PrismaService)
+			.useClass(TestPrismaService)
+			.compile();
 		app = await SetupApp(module);
 		dummyRepository = module.get(PrismaService);
 		await dummyRepository.onModuleInit();
 		providerService = module.get(ProviderService);
 		module.get(SettingsService).loadFromFile();
 		await providerService.onModuleInit();
-
 	});
 
 	afterAll(() => {
 		module.close();
 		app.close();
 	});
-	
-	describe('Get Artists (GET /artists)', () => {
+
+	describe("Get Artists (GET /artists)", () => {
 		it("should get all the artists", () => {
 			return request(app.getHttpServer())
 				.get(`/artists`)
@@ -61,9 +82,15 @@ describe('Artist Controller', () => {
 				.expect((res) => {
 					const artists: Artist[] = res.body.items;
 					expect(artists.length).toBe(3);
-					expect(artists).toContainEqual(expectedArtistResponse(dummyRepository.artistA));
-					expect(artists).toContainEqual(expectedArtistResponse(dummyRepository.artistB));
-					expect(artists).toContainEqual(expectedArtistResponse(dummyRepository.artistC));
+					expect(artists).toContainEqual(
+						expectedArtistResponse(dummyRepository.artistA),
+					);
+					expect(artists).toContainEqual(
+						expectedArtistResponse(dummyRepository.artistB),
+					);
+					expect(artists).toContainEqual(
+						expectedArtistResponse(dummyRepository.artistC),
+					);
 				});
 		});
 
@@ -74,9 +101,15 @@ describe('Artist Controller', () => {
 				.expect((res) => {
 					const artists: Artist[] = res.body.items;
 					expect(artists.length).toBe(3);
-					expect(artists[0]).toStrictEqual(expectedArtistResponse(dummyRepository.artistC));
-					expect(artists[1]).toStrictEqual(expectedArtistResponse(dummyRepository.artistB));
-					expect(artists[2]).toStrictEqual(expectedArtistResponse(dummyRepository.artistA));
+					expect(artists[0]).toStrictEqual(
+						expectedArtistResponse(dummyRepository.artistC),
+					);
+					expect(artists[1]).toStrictEqual(
+						expectedArtistResponse(dummyRepository.artistB),
+					);
+					expect(artists[2]).toStrictEqual(
+						expectedArtistResponse(dummyRepository.artistA),
+					);
 				});
 		});
 		it("should get only the album artists", () => {
@@ -86,8 +119,12 @@ describe('Artist Controller', () => {
 				.expect((res) => {
 					const artists: Artist[] = res.body.items;
 					expect(artists.length).toBe(2);
-					expect(artists).toContainEqual(expectedArtistResponse(dummyRepository.artistA));
-					expect(artists).toContainEqual(expectedArtistResponse(dummyRepository.artistB));
+					expect(artists).toContainEqual(
+						expectedArtistResponse(dummyRepository.artistA),
+					);
+					expect(artists).toContainEqual(
+						expectedArtistResponse(dummyRepository.artistB),
+					);
 				});
 		});
 		it("should get some artists (w/ pagination)", () => {
@@ -97,20 +134,24 @@ describe('Artist Controller', () => {
 				.expect((res) => {
 					const artists: Artist[] = res.body.items;
 					expect(artists.length).toBe(1);
-					expect(artists[0]).toStrictEqual(expectedArtistResponse(dummyRepository.artistB));
-			});
+					expect(artists[0]).toStrictEqual(
+						expectedArtistResponse(dummyRepository.artistB),
+					);
+				});
 		});
 	});
 
-	describe('Get Artist (GET /artists/:id)', () => {
+	describe("Get Artist (GET /artists/:id)", () => {
 		it("should get the artist (by id)", () => {
 			return request(app.getHttpServer())
 				.get(`/artists/${dummyRepository.artistA.id}`)
 				.expect(200)
 				.expect((res) => {
 					const artist: Artist = res.body;
-					expect(artist).toStrictEqual(expectedArtistResponse(dummyRepository.artistA));
-			});
+					expect(artist).toStrictEqual(
+						expectedArtistResponse(dummyRepository.artistA),
+					);
+				});
 		});
 
 		it("should get the artist (w/ slug)", () => {
@@ -119,8 +160,10 @@ describe('Artist Controller', () => {
 				.expect(200)
 				.expect((res) => {
 					const artist: Artist = res.body;
-					expect(artist).toStrictEqual(expectedArtistResponse(dummyRepository.artistB));
-			});
+					expect(artist).toStrictEqual(
+						expectedArtistResponse(dummyRepository.artistB),
+					);
+				});
 		});
 
 		it("should return artist w/ external ID", async () => {
@@ -129,28 +172,34 @@ describe('Artist Controller', () => {
 				data: {
 					artistId: dummyRepository.artistA.id,
 					providerId: provider.id,
-					description: 'Artist Desc.',
-					value: '1234'
-				}
-			})
+					description: "Artist Desc.",
+					value: "1234",
+				},
+			});
 			return request(app.getHttpServer())
 				.get(`/artists/${dummyRepository.artistA.id}?with=externalIds`)
 				.expect(200)
 				.expect((res) => {
-					const artist: Artist = res.body
+					const artist: Artist = res.body;
 					expect(artist).toStrictEqual({
 						...expectedArtistResponse(dummyRepository.artistA),
-						externalIds: [{
-							provider: {
-								name: provider.name,
-								homepage: providerService.getProviderById(provider.id).getProviderHomepage(),
-								banner: `/illustrations/providers/${provider.name}/banner`,
-								icon: `/illustrations/providers/${provider.name}/icon`,
+						externalIds: [
+							{
+								provider: {
+									name: provider.name,
+									homepage: providerService
+										.getProviderById(provider.id)
+										.getProviderHomepage(),
+									banner: `/illustrations/providers/${provider.name}/banner`,
+									icon: `/illustrations/providers/${provider.name}/icon`,
+								},
+								description: "Artist Desc.",
+								value: "1234",
+								url: providerService
+									.getProviderById(provider.id)
+									.getArtistURL("1234"),
 							},
-							description: 'Artist Desc.',
-							value: '1234',
-							url: providerService.getProviderById(provider.id).getArtistURL('1234')
-						}]
+						],
 					});
 				});
 		});
@@ -168,41 +217,49 @@ describe('Artist Controller', () => {
 		});
 	});
 
-	describe('Get all album Artists from library', () => {
+	describe("Get all album Artists from library", () => {
 		it("should return every artists (1 expected)", () => {
 			return request(app.getHttpServer())
-				.get(`/artists?albumArtistOnly=true&library=${dummyRepository.library1.id}`)
+				.get(
+					`/artists?albumArtistOnly=true&library=${dummyRepository.library1.id}`,
+				)
 				.expect(200)
 				.expect((res) => {
 					const artists: Artist[] = res.body.items;
 					expect(artists.length).toBe(1);
 					expect(artists[0]).toStrictEqual(
-						expectedArtistResponse(dummyRepository.artistA)
+						expectedArtistResponse(dummyRepository.artistA),
 					);
 				});
 		});
 
 		it("should return every artists (1 expected)", () => {
 			return request(app.getHttpServer())
-				.get(`/artists?albumArtistOnly=true&library=${dummyRepository.library2.id}`)
+				.get(
+					`/artists?albumArtistOnly=true&library=${dummyRepository.library2.id}`,
+				)
 				.expect(200)
 				.expect((res) => {
 					const artists: Artist[] = res.body.items;
 					expect(artists.length).toBe(1);
 					expect(artists[0]).toStrictEqual(
-						expectedArtistResponse(dummyRepository.artistB)
+						expectedArtistResponse(dummyRepository.artistB),
 					);
 				});
 		});
 
 		it("should return every artists (from library's slug)", () => {
 			return request(app.getHttpServer())
-				.get(`/artists?albumArtistOnly=true&library=${dummyRepository.library1.slug}`)
+				.get(
+					`/artists?albumArtistOnly=true&library=${dummyRepository.library1.slug}`,
+				)
 				.expect(200)
 				.expect((res) => {
 					const artists: Artist[] = res.body.items;
 					expect(artists.length).toBe(1);
-					expect(artists[0]).toStrictEqual(expectedArtistResponse(dummyRepository.artistA));
+					expect(artists[0]).toStrictEqual(
+						expectedArtistResponse(dummyRepository.artistA),
+					);
 				});
 		});
 	});
@@ -215,8 +272,12 @@ describe('Artist Controller', () => {
 				.expect((res) => {
 					const artists: Artist[] = res.body.items;
 					expect(artists.length).toBe(2);
-					expect(artists).toContainEqual(expectedArtistResponse(dummyRepository.artistA));
-					expect(artists).toContainEqual(expectedArtistResponse(dummyRepository.artistB));
+					expect(artists).toContainEqual(
+						expectedArtistResponse(dummyRepository.artistA),
+					);
+					expect(artists).toContainEqual(
+						expectedArtistResponse(dummyRepository.artistB),
+					);
 				});
 		});
 
@@ -227,30 +288,42 @@ describe('Artist Controller', () => {
 				.expect((res) => {
 					const artists: Artist[] = res.body.items;
 					expect(artists.length).toBe(1);
-					expect(artists).toContainEqual(expectedArtistResponse(dummyRepository.artistC));
+					expect(artists).toContainEqual(
+						expectedArtistResponse(dummyRepository.artistC),
+					);
 				});
 		});
 
 		it("Should get some artists (w/ pagination)", () => {
 			return request(app.getHttpServer())
-				.get(`/artists?genre=${dummyRepository.genreB.id}&skip=1&sortBy=name`)
+				.get(
+					`/artists?genre=${dummyRepository.genreB.id}&skip=1&sortBy=name`,
+				)
 				.expect(200)
 				.expect((res) => {
 					const artists: Artist[] = res.body.items;
 					expect(artists.length).toBe(1);
-					expect(artists[0]).toStrictEqual(expectedArtistResponse(dummyRepository.artistB));
+					expect(artists[0]).toStrictEqual(
+						expectedArtistResponse(dummyRepository.artistB),
+					);
 				});
 		});
 
 		it("Should get all artists, sorted", () => {
 			return request(app.getHttpServer())
-				.get(`/artists?genre=${dummyRepository.genreB.id}&sortBy=name&order=desc`)
+				.get(
+					`/artists?genre=${dummyRepository.genreB.id}&sortBy=name&order=desc`,
+				)
 				.expect(200)
 				.expect((res) => {
 					const artists: Artist[] = res.body.items;
 					expect(artists.length).toBe(2);
-					expect(artists[0]).toStrictEqual(expectedArtistResponse(dummyRepository.artistB));
-					expect(artists[1]).toStrictEqual(expectedArtistResponse(dummyRepository.artistA));
+					expect(artists[0]).toStrictEqual(
+						expectedArtistResponse(dummyRepository.artistB),
+					);
+					expect(artists[1]).toStrictEqual(
+						expectedArtistResponse(dummyRepository.artistA),
+					);
 				});
 		});
 	});
@@ -263,12 +336,14 @@ describe('Artist Controller', () => {
 				.expect((res) => {
 					const artists: Artist[] = res.body.items;
 					expect(artists.length).toBe(1);
-					expect(artists).toContainEqual(expectedArtistResponse(dummyRepository.artistC));
+					expect(artists).toContainEqual(
+						expectedArtistResponse(dummyRepository.artistC),
+					);
 				});
 		});
 	});
 
-	describe('Search Artists', () => {
+	describe("Search Artists", () => {
 		it("Search artists", () => {
 			return request(app.getHttpServer())
 				.get(`/artists?query=a`)
@@ -276,10 +351,16 @@ describe('Artist Controller', () => {
 				.expect((res) => {
 					const artists: Artist[] = res.body.items;
 					expect(artists.length).toBe(3);
-					expect(artists).toContainEqual(expectedArtistResponse(dummyRepository.artistA));
-					expect(artists).toContainEqual(expectedArtistResponse(dummyRepository.artistB));
-					expect(artists).toContainEqual(expectedArtistResponse(dummyRepository.artistC));
-				}) 
+					expect(artists).toContainEqual(
+						expectedArtistResponse(dummyRepository.artistA),
+					);
+					expect(artists).toContainEqual(
+						expectedArtistResponse(dummyRepository.artistB),
+					);
+					expect(artists).toContainEqual(
+						expectedArtistResponse(dummyRepository.artistC),
+					);
+				});
 		});
 
 		it("Search artists, w/ pagination", () => {
@@ -289,16 +370,25 @@ describe('Artist Controller', () => {
 				.expect((res) => {
 					const artists: Artist[] = res.body.items;
 					expect(artists.length).toBe(2);
-					expect(artists).toContainEqual(expectedArtistResponse(dummyRepository.artistB));
-					expect(artists).toContainEqual(expectedArtistResponse(dummyRepository.artistC));
-				}) 
-		})
+					expect(artists).toContainEqual(
+						expectedArtistResponse(dummyRepository.artistB),
+					);
+					expect(artists).toContainEqual(
+						expectedArtistResponse(dummyRepository.artistC),
+					);
+				});
+		});
 	});
 	describe("Artist Illustration", () => {
 		it("Should return the illustration", async () => {
-			const illustration = await dummyRepository.artistIllustration.create({
-				data: { artistId: dummyRepository.artistB.id, blurhash: 'A', colors: ['B'] }
-			});
+			const illustration =
+				await dummyRepository.artistIllustration.create({
+					data: {
+						artistId: dummyRepository.artistB.id,
+						blurhash: "A",
+						colors: ["B"],
+					},
+				});
 			return request(app.getHttpServer())
 				.get(`/artists/${dummyRepository.artistB.id}`)
 				.expect(200)
@@ -308,11 +398,12 @@ describe('Artist Controller', () => {
 						...artist,
 						illustration: {
 							...illustration,
-							url: '/illustrations/artists/' + dummyRepository.artistB.slug
-						}
+							url:
+								"/illustrations/artists/" +
+								dummyRepository.artistB.slug,
+						},
 					});
 				});
-
 		});
-	})
-})
+	});
+});

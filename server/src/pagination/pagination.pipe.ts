@@ -1,23 +1,51 @@
+/*
+ * Meelo is a music server and application to enjoy your personal music files anywhere, anytime you want.
+ * Copyright (C) 2023
+ *
+ * Meelo is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * Meelo is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
 import type { ArgumentMetadata, PipeTransform } from "@nestjs/common";
-import { PaginationParameters, defaultPageSize } from "./models/pagination-parameters";
+import {
+	PaginationParameters,
+	defaultPageSize,
+} from "./models/pagination-parameters";
 import InvalidPaginationParameterValue from "./pagination.exceptions";
 
 class ParsePaginationParameterPipe implements PipeTransform {
 	async transform(
-		value: Record<keyof PaginationParameters, any>, _metadata: ArgumentMetadata
+		value: Record<keyof PaginationParameters, any>,
+		_metadata: ArgumentMetadata,
 	): Promise<PaginationParameters> {
 		const skip = value.skip !== undefined ? parseInt(value.skip, 10) : 0;
-		const afterId = value.afterId !== undefined ? parseInt(value.afterId, 10) : undefined;
-		const take = value.take !== undefined ? parseInt(value.take, 10) : defaultPageSize;
+		const afterId =
+			value.afterId !== undefined
+				? parseInt(value.afterId, 10)
+				: undefined;
+		const take =
+			value.take !== undefined
+				? parseInt(value.take, 10)
+				: defaultPageSize;
 
 		if (isNaN(skip) || skip < 0) {
-			throw new InvalidPaginationParameterValue('skip');
+			throw new InvalidPaginationParameterValue("skip");
 		}
 		if (isNaN(take) || take < 0) {
-			throw new InvalidPaginationParameterValue('take');
+			throw new InvalidPaginationParameterValue("take");
 		}
 		if (afterId !== undefined && (isNaN(afterId) || afterId < 0)) {
-			throw new InvalidPaginationParameterValue('afterId');
+			throw new InvalidPaginationParameterValue("afterId");
 		}
 		return { skip, take, afterId };
 	}

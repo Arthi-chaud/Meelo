@@ -1,7 +1,7 @@
 import formatDuration from "../../src/utils/formatDuration";
 
-describe('Format Duration', () => {
-	it('Should format duration correctly', () => {
+describe("Format Duration", () => {
+	it("Should format duration correctly", () => {
 		const duration = 61;
 		const formatted = formatDuration(duration);
 

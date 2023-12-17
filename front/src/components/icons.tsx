@@ -1,5 +1,22 @@
-// eslint-disable-next-line no-restricted-imports
-import * as Iconsax from 'iconsax-react';
+/*
+ * Meelo is a music server and application to enjoy your personal music files anywhere, anytime you want.
+ * Copyright (C) 2023
+ *
+ * Meelo is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * Meelo is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
+import * as Iconsax from "iconsax-react";
 
 type IconProps = Iconsax.IconProps;
 
@@ -17,8 +34,9 @@ export const CloseIcon = Iconsax.CloseCircle;
 export const EditIcon = Iconsax.Edit2;
 export const LogoutIcon = Iconsax.Logout;
 export const DarkMode = Iconsax.Sun1;
-export const LightMode = (props: IconProps) =>
-	<Iconsax.Sun1 variant='Bold' {...props}/>;
+export const LightMode = (props: IconProps) => (
+	<Iconsax.Sun1 variant="Bold" {...props} />
+);
 export const AutoMode = Iconsax.Autobrightness;
 export const TranslateIcon = Iconsax.Translate;
 export const SettingsIcon = Iconsax.Setting2;
@@ -45,8 +63,9 @@ export const MoreIcon = Iconsax.ArrowRight2;
 export const MasterIcon = Iconsax.Star1;
 export const ShareIcon = Iconsax.Share;
 export const CheckIcon = Iconsax.TickCircle;
-export const ContextualMenuIcon = (props: IconProps) =>
-	<Iconsax.More {...props} style={{ rotate: '90deg' }} size={18} />;
+export const ContextualMenuIcon = (props: IconProps) => (
+	<Iconsax.More {...props} style={{ rotate: "90deg" }} size={18} />
+);
 export const UpgradeIcon = Iconsax.Star;
 export const GridIcon = Iconsax.Category;
 export const ListIcon = Iconsax.TextalignJustifycenter;
@@ -56,8 +75,9 @@ export const GoBackTopIcon = Iconsax.ArrowUp;
 export const DragHandleIcon = Iconsax.HambergerMenu;
 
 export const PlayIcon = Iconsax.ArrowRight3;
-export const PlayCircledIcon = (props: IconProps) =>
-	<Iconsax.PlayCircle {...props} variant="Bold" />;
+export const PlayCircledIcon = (props: IconProps) => (
+	<Iconsax.PlayCircle {...props} variant="Bold" />
+);
 export const PauseIcon = Iconsax.Pause;
 export const RewindIcon = Iconsax.Previous;
 export const ForwardIcon = Iconsax.Next;

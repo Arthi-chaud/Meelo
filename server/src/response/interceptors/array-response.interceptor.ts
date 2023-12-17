@@ -1,16 +1,39 @@
+/*
+ * Meelo is a music server and application to enjoy your personal music files anywhere, anytime you want.
+ * Copyright (C) 2023
+ *
+ * Meelo is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * Meelo is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
 import {
-	CallHandler, ExecutionContext, Global, Inject, Injectable, NestInterceptor, Type
+	CallHandler,
+	ExecutionContext,
+	Global,
+	Inject,
+	Injectable,
+	NestInterceptor,
+	Type,
 } from "@nestjs/common";
 import { from, mergeMap } from "rxjs";
-import type { Constructor } from 'type-fest';
+import type { Constructor } from "type-fest";
 import ResponseBuilderInterceptor from "./response.interceptor";
 
 export default function ArrayResponseBuilderInterceptor<
-	FormData, ToType extends InstanceType<Type<unknown>>,
-	ResponseBuilder extends ResponseBuilderInterceptor<FormData, ToType>
->(
-	responseBuilder: Constructor<ResponseBuilder>
-) {
+	FormData,
+	ToType extends InstanceType<Type<unknown>>,
+	ResponseBuilder extends ResponseBuilderInterceptor<FormData, ToType>,
+>(responseBuilder: Constructor<ResponseBuilder>) {
 	@Global()
 	@Injectable()
 	class ArrayInterceptor implements NestInterceptor {
@@ -19,19 +42,23 @@ export default function ArrayResponseBuilderInterceptor<
 			 * Settings the property to public is a limitation of exported abstract classes
 			 */
 			@Inject(responseBuilder)
-			public builder: ResponseBuilder
+			public builder: ResponseBuilder,
 		) {}
 
 		intercept(_context: ExecutionContext, next: CallHandler<any>) {
 			return next
 				.handle()
-				.pipe(mergeMap(
-					(items: FormData[]) => from(Promise.all(
-						items.map(
-							(item: FormData) => this.builder.buildResponse(item)
-						)
-					)).pipe((data) => data)
-				));
+				.pipe(
+					mergeMap((items: FormData[]) =>
+						from(
+							Promise.all(
+								items.map((item: FormData) =>
+									this.builder.buildResponse(item),
+								),
+							),
+						).pipe((data) => data),
+					),
+				);
 		}
 	}
 

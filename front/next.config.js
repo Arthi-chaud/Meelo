@@ -1,19 +1,19 @@
 /** @type {import('next').NextConfig} */
 
 const config = {
-  output: 'standalone',
-  reactStrictMode: false,
-  swcMinify: true,
-  async redirects() {
-    return [
-      {
-        source: '/songs/:slug',
-        destination: '/songs/:slug/lyrics',
-        permanent: true,
-      },
-    ]
-  },
-}
+	output: "standalone",
+	reactStrictMode: false,
+	swcMinify: true,
+	async redirects() {
+		return [
+			{
+				source: "/songs/:slug",
+				destination: "/songs/:slug/lyrics",
+				permanent: true,
+			},
+		];
+	},
+};
 
 if (process.env.NODE_ENV !== "production") {
 	config.rewrites = async () => [

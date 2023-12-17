@@ -2,117 +2,55 @@
 	"root": true,
 	"extends": [
 		"eslint:recommended",
-		"plugin:@typescript-eslint/recommended"
+		"plugin:prettier/recommended",
+		"plugin:@typescript-eslint/recommended",
+		"../.eslintrc.json"
 	],
 	"parser": "@typescript-eslint/parser",
 	"parserOptions": {
-		"project": [
-			"./tsconfig.json"
-		]
+		"project": ["./tsconfig.json"]
 	},
-	"plugins": [
-		"@typescript-eslint",
-		"unused-imports",
-		"import"
+	"plugins": ["@typescript-eslint", "unused-imports", "import"],
+	"ignorePatterns": [
+		"node_modules/",
+		"test/",
+		"src/**/*.spec.ts",
+		"src/prisma/models"
 	],
-	"ignorePatterns": ["node_modules/", "test/", "src/**/*.spec.ts", "src/prisma/models"],
 	"rules": {
-		"unused-imports/no-unused-imports": "warn",
-		"import/first": "error",
-		"import/newline-after-import": "error",
-		"import/no-duplicates": "error",
-		"@typescript-eslint/no-empty-function": "off",
-		"@typescript-eslint/switch-exhaustiveness-check": "error",
-		"@typescript-eslint/no-namespace": "off",
-		"@typescript-eslint/no-explicit-any": "off",
-		"@typescript-eslint/no-unused-vars": "off",
-		"@typescript-eslint/no-non-null-assertion": "off",
-		"no-duplicate-imports": "error",
-		"id-length": "error",
-		"init-declarations": "error",
-		"no-else-return": "error",
-		"curly": ["error", "all"],
-		"one-var": ["error", "never"],
-		"brace-style": ["error", "1tbs"],
-		"sort-imports": ["warn", { "ignoreDeclarationSort": true }],
-		"vars-on-top": "warn",
-		"default-case-last": "warn",
-		"linebreak-style": ["error", "unix"],
-		"max-statements-per-line": ["error", { "max": 1 }],
-		"no-unused-private-class-members": "error",
-		"max-depth": ["error", { "max": 3 }],
-		"consistent-this": "error",
-		"no-console": "error",
-		"no-eval": "error",
-		"indent": ["error", "tab", {
-            "MemberExpression": 1,
-            "ignoredNodes": [
-                "FunctionExpression > .params[decorators.length > 0]",
-                "FunctionExpression > .params > :matches(Decorator, :not(:first-child))",
-                "ClassBody.body > PropertyDefinition[decorators.length > 0] > .key"
-            ]
-        }],
-		"no-multiple-empty-lines": ["warn", { "max": 1 }],
-		"no-trailing-spaces": "error",
-		"no-whitespace-before-property": "error",
-		"padded-blocks": ["error", "never"],
-		"padding-line-between-statements": [
+		"no-restricted-imports": [
 			"error",
-			{ "blankLine": "always", "prev": ["const", "let", "var"], "next": "*"},
-			{ "blankLine": "any",    "prev": ["const", "let", "var"], "next": ["const", "let", "var"]},
-			{ "blankLine": "never",  "prev": "import", "next": "import"}
-		],
-		"array-bracket-spacing": ["warn", "never"],
-		"arrow-spacing": ["warn", { "before": true, "after": true }],
-		"comma-spacing": ["warn", { "before": false, "after": true }],
-		"comma-style": ["warn", "last"],
-		"dot-location": ["warn", "property"],
-		"eol-last": ["error", "always"],
-		"func-call-spacing": ["warn", "never"],
-		"function-call-argument-newline": ["warn", "consistent"],
-		"no-return-await": "error",
-		"max-len": ["error", { "code": 100, "ignorePattern": "(^import)|(export\\s)", "ignoreTemplateLiterals": true, "ignoreComments": true, "ignoreStrings": true }],
-		"quote-props": ["error", "consistent-as-needed"],
-		"key-spacing": ["error", { "beforeColon": false, "afterColon": true, "mode": "strict" }],
-		"semi-spacing": ["error", {"before": false, "after": true}],
-		"space-before-function-paren": ["error", { "asyncArrow": "always", "named": "never", "anonymous": "always" }],
-		"space-in-parens": ["warn", "never"],
-		"lines-between-class-members": ["warn", "always", { "exceptAfterSingleLine": true }],
-		"no-unneeded-ternary": ["error"],
-		"object-curly-newline": ["error", {
-			"ImportDeclaration": { "multiline": true, "minProperties": 3 }
-		}],
-		"object-curly-spacing": ["error", "always"],
-		"array-element-newline": ["error", "consistent"],
-		"array-bracket-newline": ["error", { "multiline": true }],
-		"no-shadow": "error",
-		"no-multi-spaces": "warn",
-		"semi": "warn",
-		"function-paren-newline": ["error", "consistent"],
-		"no-restricted-imports": ["error", {
-			"name": "@nestjs/common",
-			"importNames": ["Logger"],
-			"message": "Use Custom Logger to inject from 'src/logger/logger'"
-		}, {
-			"name": "src/exceptions/orm-exceptions",
-			"importNames": ["UnhandledORMErrorException"],
-			"message": "If used in a RepositoryService, use 'onUnknownError' instead. Otherwise ignore"
-		}, {
-			"name": "fluent-ffmpeg",
-			"message": "Use Ffmpeg Service"
-		}, {
-			"name": "@nestjs/event-emitter",
-			"importNames": ["OnEvent"],
-			"message": "Use wrapped event handlers decorator from 'src/events/event.decorator.ts'"
-		}, {
-			"name": "fs",
-			"message": "Use FileManager Service"
-		}, {
-			"name": "src/pagination/paginated-response.decorator",
-			"message": "Do not use the decorator directly. Use 'Response' decorator from 'src/response/response.decorator.ts'"
-		}, {
-			"name": "src/pagination/models/paginated-response",
-			"message": "Do not use the class directly. Use 'Response' decorator from 'src/response/response.decorator.ts'"
-		}]
+			{
+				"name": "@nestjs/common",
+				"importNames": ["Logger"],
+				"message": "Use Custom Logger to inject from 'src/logger/logger'"
+			},
+			{
+				"name": "src/exceptions/orm-exceptions",
+				"importNames": ["UnhandledORMErrorException"],
+				"message": "If used in a RepositoryService, use 'onUnknownError' instead. Otherwise ignore"
+			},
+			{
+				"name": "fluent-ffmpeg",
+				"message": "Use Ffmpeg Service"
+			},
+			{
+				"name": "@nestjs/event-emitter",
+				"importNames": ["OnEvent"],
+				"message": "Use wrapped event handlers decorator from 'src/events/event.decorator.ts'"
+			},
+			{
+				"name": "fs",
+				"message": "Use FileManager Service"
+			},
+			{
+				"name": "src/pagination/paginated-response.decorator",
+				"message": "Do not use the decorator directly. Use 'Response' decorator from 'src/response/response.decorator.ts'"
+			},
+			{
+				"name": "src/pagination/models/paginated-response",
+				"message": "Do not use the class directly. Use 'Response' decorator from 'src/response/response.decorator.ts'"
+			}
+		]
 	}
 }

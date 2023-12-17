@@ -1,19 +1,38 @@
-import {
-	Inject, Injectable, forwardRef
-} from '@nestjs/common';
-import SettingsService from 'src/settings/settings.service';
-import md5File from 'md5-file';
+/*
+ * Meelo is a music server and application to enjoy your personal music files anywhere, anytime you want.
+ * Copyright (C) 2023
+ *
+ * Meelo is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * Meelo is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
+import { Inject, Injectable, forwardRef } from "@nestjs/common";
+import SettingsService from "src/settings/settings.service";
+import md5File from "md5-file";
 // eslint-disable-next-line no-restricted-imports
-import * as fs from 'fs';
-import type { Library } from 'src/prisma/models';
-import { FileDoesNotExistException, FolderDoesNotExistException } from './file-manager.exceptions';
-import { join, parse } from 'path';
+import * as fs from "fs";
+import type { Library } from "src/prisma/models";
+import {
+	FileDoesNotExistException,
+	FolderDoesNotExistException,
+} from "./file-manager.exceptions";
+import { join, parse } from "path";
 
 @Injectable()
 export default class FileManagerService {
 	constructor(
 		@Inject(forwardRef(() => SettingsService))
-		private settingsService: SettingsService
+		private settingsService: SettingsService,
 	) {}
 
 	folderExists(folderPath: string): boolean {
@@ -38,7 +57,7 @@ export default class FileManagerService {
 	}
 
 	getFileContent(filePath: string): string {
-		return fs.readFileSync(filePath, 'utf8');
+		return fs.readFileSync(filePath, "utf8");
 	}
 
 	getFileStat(filePath: string) {
@@ -46,7 +65,8 @@ export default class FileManagerService {
 	}
 
 	async getFileBuffer(filePath: string): Promise<Buffer> {
-		return fs.promises.readFile(filePath)
+		return fs.promises
+			.readFile(filePath)
 			.then((content) => Buffer.from(content));
 	}
 
@@ -92,7 +112,7 @@ export default class FileManagerService {
 	/**
 	 * @returns Library's full path
 	 */
-	getLibraryFullPath(library: Library):string {
+	getLibraryFullPath(library: Library): string {
 		return `${this.settingsService.settingsValues.dataFolder}/${library.path}`;
 	}
 
@@ -102,9 +122,12 @@ export default class FileManagerService {
 	 */
 	getDirectoriesInFolder(folderPath: string): string[] {
 		try {
-			const directoryContent = fs.readdirSync(folderPath, { withFileTypes: true });
+			const directoryContent = fs.readdirSync(folderPath, {
+				withFileTypes: true,
+			});
 
-			return directoryContent.filter((entry) => entry.isDirectory())
+			return directoryContent
+				.filter((entry) => entry.isDirectory())
 				.map((entry) => join(folderPath, entry.name));
 		} catch {
 			throw new FolderDoesNotExistException(folderPath);
@@ -117,7 +140,9 @@ export default class FileManagerService {
 	 */
 	getFilesInFolder(folderPath: string, recursive = false): string[] {
 		try {
-			const directoryContent = fs.readdirSync(folderPath, { withFileTypes: true });
+			const directoryContent = fs.readdirSync(folderPath, {
+				withFileTypes: true,
+			});
 			const files = directoryContent
 				.filter((entry) => entry.isFile())
 				.map((entry) => join(folderPath, entry.name));
@@ -125,9 +150,13 @@ export default class FileManagerService {
 			if (recursive) {
 				const directories = this.getDirectoriesInFolder(folderPath);
 
-				files.push(...directories
-					.map((directory) => this.getFilesInFolder(directory, true))
-					.flat());
+				files.push(
+					...directories
+						.map((directory) =>
+							this.getFilesInFolder(directory, true),
+						)
+						.flat(),
+				);
 			}
 			return files;
 		} catch {

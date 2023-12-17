@@ -1,20 +1,37 @@
-import {
-	ArgumentMetadata, Param, PipeTransform
-} from "@nestjs/common";
+/*
+ * Meelo is a music server and application to enjoy your personal music files anywhere, anytime you want.
+ * Copyright (C) 2023
+ *
+ * Meelo is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * Meelo is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
+import { ArgumentMetadata, Param, PipeTransform } from "@nestjs/common";
 import Identifier from "./models/identifier";
 import { ApiParam } from "@nestjs/swagger";
 
 type ParsingService<WhereInput> = {
 	formatIdentifierToWhereInput: (identifier: Identifier) => WhereInput;
-}
+};
 
 /**
  * Controller method decorator to describe 'idOrSlug' route parameter
  */
 export function ApiIdentifierRoute() {
 	return ApiParam({
-		name: 'idOrSlug',
-		description: "Identifier of the resource to fetch. Can be a number or a slug <br><br>\
+		name: "idOrSlug",
+		description:
+			"Identifier of the resource to fetch. Can be a number or a slug <br><br>\
 		Examples: 123, 'artist-slug', 'artist-slug+album-slug', 'artist-slug+album-slug+release-slug'",
 	});
 }
@@ -24,7 +41,10 @@ export function ApiIdentifierRoute() {
  * Pipes an 'idOrSlug' into a WhereInput
  * @param service the servce that has a static method to parse identifier
  */
-export default function IdentifierParam<WhereInput, Service extends ParsingService<WhereInput>>(service: Service) {
+export default function IdentifierParam<
+	WhereInput,
+	Service extends ParsingService<WhereInput>,
+>(service: Service) {
 	/**
 	 * Creates anonymous class here to avoid having to handle types
 	 */
@@ -37,10 +57,21 @@ export default function IdentifierParam<WhereInput, Service extends ParsingServi
 		}
 	}
 
-	return function (target: any, functionName: string, parameterIndex: number) {
-		const descriptor = Reflect.getOwnPropertyDescriptor(target, functionName)!;
+	return function (
+		target: any,
+		functionName: string,
+		parameterIndex: number,
+	) {
+		const descriptor = Reflect.getOwnPropertyDescriptor(
+			target,
+			functionName,
+		)!;
 
 		ApiIdentifierRoute()(target, functionName, descriptor);
-		return Param('idOrSlug', new IdentifierPipe())(target, functionName, parameterIndex);
+		return Param("idOrSlug", new IdentifierPipe())(
+			target,
+			functionName,
+			parameterIndex,
+		);
 	};
 }

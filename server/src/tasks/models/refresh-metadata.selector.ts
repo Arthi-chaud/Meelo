@@ -1,3 +1,21 @@
+/*
+ * Meelo is a music server and application to enjoy your personal music files anywhere, anytime you want.
+ * Copyright (C) 2023
+ *
+ * Meelo is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * Meelo is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
 import { ApiPropertyOptional } from "@nestjs/swagger";
 import { IsOptional } from "class-validator";
 import AlbumService from "src/album/album.service";
@@ -18,7 +36,7 @@ import TrackService from "src/track/track.service";
 export default class RefreshMetadataSelector {
 	@IsOptional()
 	@ApiPropertyOptional({
-		description: `Refresh based on the library`
+		description: `Refresh based on the library`,
 	})
 	@TransformIdentifier(LibraryService)
 	library?: LibraryQueryParameters.WhereInput;
@@ -27,28 +45,28 @@ export default class RefreshMetadataSelector {
 
 	@IsOptional()
 	@ApiPropertyOptional({
-		description: `Refresh based on the album`
+		description: `Refresh based on the album`,
 	})
 	@TransformIdentifier(AlbumService)
 	album?: AlbumQueryParameters.WhereInput;
 
 	@IsOptional()
 	@ApiPropertyOptional({
-		description: `Refresh based on the release`
+		description: `Refresh based on the release`,
 	})
 	@TransformIdentifier(ReleaseService)
 	release?: ReleaseQueryParameters.WhereInput;
 
 	@IsOptional()
 	@ApiPropertyOptional({
-		description: `Refresh based on the song`
+		description: `Refresh based on the song`,
 	})
 	@TransformIdentifier(SongService)
 	song?: SongQueryParameters.WhereInput;
 
 	@IsOptional()
 	@ApiPropertyOptional({
-		description: `Refresh based on the track`
+		description: `Refresh based on the track`,
 	})
 	@TransformIdentifier(TrackService)
 	track?: TrackQueryParameters.WhereInput;

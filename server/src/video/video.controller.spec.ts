@@ -7,23 +7,29 @@ import SongModule from "src/song/song.module";
 import TestPrismaService from "test/test-prisma.service";
 import SetupApp from "test/setup-app";
 import { VideoResponse } from "./models/video.response";
-import { expectedSongResponse, expectedTrackResponse } from "test/expected-responses";
+import {
+	expectedSongResponse,
+	expectedTrackResponse,
+} from "test/expected-responses";
 import ProviderService from "src/providers/provider.service";
 import SettingsService from "src/settings/settings.service";
 import VideoModule from "./video.module";
 
 jest.setTimeout(60000);
 
-describe('Song Controller', () => {
+describe("Song Controller", () => {
 	let dummyRepository: TestPrismaService;
 	let app: INestApplication;
 	let providerService: ProviderService;
-	
+
 	let module: TestingModule;
 	beforeAll(async () => {
 		module = await createTestingModule({
 			imports: [SongModule, VideoModule],
-		}).overrideProvider(PrismaService).useClass(TestPrismaService).compile();
+		})
+			.overrideProvider(PrismaService)
+			.useClass(TestPrismaService)
+			.compile();
 		app = await SetupApp(module);
 		dummyRepository = module.get(PrismaService);
 		providerService = module.get(ProviderService);
@@ -46,7 +52,9 @@ describe('Song Controller', () => {
 					expect(videoSongs.length).toBe(1);
 					expect(videoSongs[0]).toStrictEqual({
 						...expectedSongResponse(dummyRepository.songA1),
-						track: expectedTrackResponse(dummyRepository.trackA1_2Video)
+						track: expectedTrackResponse(
+							dummyRepository.trackA1_2Video,
+						),
 					});
 				});
 		});
@@ -69,15 +77,17 @@ describe('Song Controller', () => {
 					expect(videoSongs[0]).toStrictEqual({
 						...expectedSongResponse({
 							...dummyRepository.songA1,
-							lyrics: dummyRepository.lyricsA1
+							lyrics: dummyRepository.lyricsA1,
 						}),
-						track: expectedTrackResponse(dummyRepository.trackA1_2Video)
+						track: expectedTrackResponse(
+							dummyRepository.trackA1_2Video,
+						),
 					});
 				});
 		});
 	});
 
-	describe('Get Artist\'s Videos', () => {
+	describe("Get Artist's Videos", () => {
 		it("should get all the artist's videos", () => {
 			return request(app.getHttpServer())
 				.get(`/videos?artist=${dummyRepository.artistA.id}`)
@@ -87,7 +97,9 @@ describe('Song Controller', () => {
 					expect(songs.length).toBe(1);
 					expect(songs[0]).toStrictEqual({
 						...expectedSongResponse(dummyRepository.songA1),
-						track: expectedTrackResponse(dummyRepository.trackA1_2Video)
+						track: expectedTrackResponse(
+							dummyRepository.trackA1_2Video,
+						),
 					});
 				});
 		});
@@ -102,7 +114,7 @@ describe('Song Controller', () => {
 		});
 	});
 
-	describe('Get Videos from library', () => {
+	describe("Get Videos from library", () => {
 		it("should return the songs With video", async () => {
 			return request(app.getHttpServer())
 				.get(`/videos?library=${dummyRepository.library1.id}`)
@@ -112,7 +124,9 @@ describe('Song Controller', () => {
 					expect(videoSongs.length).toBe(1);
 					expect(videoSongs[0]).toStrictEqual({
 						...expectedSongResponse(dummyRepository.songA1),
-						track: expectedTrackResponse(dummyRepository.trackA1_2Video)
+						track: expectedTrackResponse(
+							dummyRepository.trackA1_2Video,
+						),
 					});
 				});
 		});
@@ -135,5 +149,4 @@ describe('Song Controller', () => {
 				});
 		});
 	});
-
 });

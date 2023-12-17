@@ -1,12 +1,31 @@
-/* eslint-disable no-shadow */
+/*
+ * Meelo is a music server and application to enjoy your personal music files anywhere, anytime you want.
+ * Copyright (C) 2023
+ *
+ * Meelo is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * Meelo is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
 /* eslint-disable max-len */
-/* eslint-disable id-length */
+/* eslint-disable no-shadow */
 /* eslint-disable init-declarations */
 // From https://gist.github.com/mattiaz9/53cb67040fa135cb395b1d015a200aff.
 // Thanks to the author
 import { decode } from "blurhash";
 
-export function blurHashToDataURL(hash: string | undefined): string | undefined {
+export function blurHashToDataURL(
+	hash: string | undefined,
+): string | undefined {
 	if (!hash) {
 		return undefined;
 	}
@@ -18,11 +37,14 @@ export function blurHashToDataURL(hash: string | undefined): string | undefined 
 
 // thanks to https://github.com/wheany/js-png-encoder
 function parsePixels(pixels: Uint8ClampedArray, width: number, height: number) {
-	const pixelsString = Array.from(pixels).map(byte => String.fromCharCode(byte)).join("");
+	const pixelsString = Array.from(pixels)
+		.map((byte) => String.fromCharCode(byte))
+		.join("");
 	const pngString = generatePng(width, height, pixelsString);
-	const dataURL = typeof Buffer !== "undefined"
-		? Buffer.from(getPngArray(pngString)).toString("base64")
-		: btoa(pngString);
+	const dataURL =
+		typeof Buffer !== "undefined"
+			? Buffer.from(getPngArray(pngString)).toString("base64")
+			: btoa(pngString);
 
 	return "data:image/png;base64," + dataURL;
 }
@@ -77,8 +99,16 @@ function generatePng(width: number, height: number, rgbaString: string) {
 				blockType = String.fromCharCode(0x00);
 			}
 			// little-endian
-			storeBuffer += blockType + String.fromCharCode((remaining & 0xFF), (remaining & 0xFF00) >>> 8);
-			storeBuffer += String.fromCharCode(((~remaining) & 0xFF), ((~remaining) & 0xFF00) >>> 8);
+			storeBuffer +=
+				blockType +
+				String.fromCharCode(
+					remaining & 0xff,
+					(remaining & 0xff00) >>> 8,
+				);
+			storeBuffer += String.fromCharCode(
+				~remaining & 0xff,
+				(~remaining & 0xff00) >>> 8,
+			);
 
 			storeBuffer += data.substring(i, i + remaining);
 		}
@@ -116,17 +146,17 @@ function generatePng(width: number, height: number, rgbaString: string) {
 
 	function dwordAsString(dword: number) {
 		return String.fromCharCode(
-			(dword & 0xFF000000) >>> 24, (dword & 0x00FF0000) >>> 16, (dword & 0x0000FF00) >>> 8, (dword & 0x000000FF)
+			(dword & 0xff000000) >>> 24,
+			(dword & 0x00ff0000) >>> 16,
+			(dword & 0x0000ff00) >>> 8,
+			dword & 0x000000ff,
 		);
 	}
 
 	function createChunk(length: number, type: string, data: string) {
 		const CRC = crc(type + data);
 
-		return dwordAsString(length) +
-			type +
-			data +
-			dwordAsString(CRC);
+		return dwordAsString(length) + type + data + dwordAsString(CRC);
 	}
 
 	function createIHDR(width: number, height: number) {
@@ -167,8 +197,15 @@ function generatePng(width: number, height: number, rgbaString: string) {
 		scanlines += scanline;
 	}
 
-	const compressedScanlines = DEFLATE_METHOD + inflateStore(scanlines) + dwordAsString(adler32(scanlines));
-	const IDAT = createChunk(compressedScanlines.length, "IDAT", compressedScanlines);
+	const compressedScanlines =
+		DEFLATE_METHOD +
+		inflateStore(scanlines) +
+		dwordAsString(adler32(scanlines));
+	const IDAT = createChunk(
+		compressedScanlines.length,
+		"IDAT",
+		compressedScanlines,
+	);
 	const pngString = SIGNATURE + IHDR + IDAT + IEND;
 
 	return pngString;

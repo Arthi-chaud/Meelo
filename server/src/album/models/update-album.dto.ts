@@ -1,22 +1,38 @@
+/*
+ * Meelo is a music server and application to enjoy your personal music files anywhere, anytime you want.
+ * Copyright (C) 2023
+ *
+ * Meelo is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * Meelo is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
 import { ApiProperty } from "@nestjs/swagger";
 import { AlbumType } from "@prisma/client";
-import {
-	IsEnum, IsNumber, IsOptional
-} from "class-validator";
+import { IsEnum, IsNumber, IsOptional } from "class-validator";
 import { Artist } from "src/prisma/models";
 
 export default class UpdateAlbumDTO {
 	@ApiProperty({
-		description: 'The ID of the artist to reassign the album to',
-		example: 123
+		description: "The ID of the artist to reassign the album to",
+		example: 123,
 	})
 	@IsNumber()
 	@IsOptional()
-	artistId?: Artist['id'] | null;
+	artistId?: Artist["id"] | null;
 
 	@ApiProperty({
-		description: 'The type of the album',
-		enum: AlbumType
+		description: "The type of the album",
+		enum: AlbumType,
 	})
 	@IsEnum(AlbumType)
 	@IsOptional()

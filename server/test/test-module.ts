@@ -6,15 +6,15 @@ export function createTestingModule(metadata: ModuleMetadata) {
 	return Test.createTestingModule({
 		imports: metadata.imports?.concat(
 			BullModule.forRoot({
-				url: `redis://${process.env.REDIS_HOST ?? 'localhost'}:6379`,
+				url: `redis://${process.env.REDIS_HOST ?? "localhost"}:6379`,
 				defaultJobOptions: {
 					attempts: 1,
 					removeOnComplete: true,
-					removeOnFail: true
-				}
+					removeOnFail: true,
+				},
 			}),
 		),
 		exports: metadata.exports,
-		providers: metadata.providers
+		providers: metadata.providers,
 	});
 }

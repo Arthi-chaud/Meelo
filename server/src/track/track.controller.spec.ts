@@ -18,21 +18,39 @@ import type ReassignTrackDTO from "./models/reassign-track.dto";
 import { LyricsModule } from "src/lyrics/lyrics.module";
 import LibraryModule from "src/library/library.module";
 import SetupApp from "test/setup-app";
-import { expectedTrackResponse, expectedSongResponse, expectedReleaseResponse } from "test/expected-responses";
+import {
+	expectedTrackResponse,
+	expectedSongResponse,
+	expectedReleaseResponse,
+} from "test/expected-responses";
 
-describe('Track Controller', () => {
+describe("Track Controller", () => {
 	let app: INestApplication;
 	let dummyRepository: TestPrismaService;
-	
+
 	let module: TestingModule;
 	beforeAll(async () => {
 		module = await createTestingModule({
-			imports: [PrismaModule, AlbumModule, ArtistModule, ReleaseModule, TrackModule, IllustrationModule, SongModule, ScannerModule, GenreModule, LyricsModule, LibraryModule],
-		}).overrideProvider(PrismaService).useClass(TestPrismaService).compile();
+			imports: [
+				PrismaModule,
+				AlbumModule,
+				ArtistModule,
+				ReleaseModule,
+				TrackModule,
+				IllustrationModule,
+				SongModule,
+				ScannerModule,
+				GenreModule,
+				LyricsModule,
+				LibraryModule,
+			],
+		})
+			.overrideProvider(PrismaService)
+			.useClass(TestPrismaService)
+			.compile();
 		app = await SetupApp(module);
 		dummyRepository = module.get(PrismaService);
 		await dummyRepository.onModuleInit();
-
 	});
 
 	afterAll(() => {
@@ -48,11 +66,21 @@ describe('Track Controller', () => {
 				.expect((res) => {
 					const tracks: Track[] = res.body.items;
 					expect(tracks.length).toBe(5);
-					expect(tracks).toContainEqual(expectedTrackResponse(dummyRepository.trackA1_1));
-					expect(tracks).toContainEqual(expectedTrackResponse(dummyRepository.trackA1_2Video));
-					expect(tracks).toContainEqual(expectedTrackResponse(dummyRepository.trackA2_1));
-					expect(tracks).toContainEqual(expectedTrackResponse(dummyRepository.trackB1_1));
-					expect(tracks).toContainEqual(expectedTrackResponse(dummyRepository.trackC1_1));
+					expect(tracks).toContainEqual(
+						expectedTrackResponse(dummyRepository.trackA1_1),
+					);
+					expect(tracks).toContainEqual(
+						expectedTrackResponse(dummyRepository.trackA1_2Video),
+					);
+					expect(tracks).toContainEqual(
+						expectedTrackResponse(dummyRepository.trackA2_1),
+					);
+					expect(tracks).toContainEqual(
+						expectedTrackResponse(dummyRepository.trackB1_1),
+					);
+					expect(tracks).toContainEqual(
+						expectedTrackResponse(dummyRepository.trackC1_1),
+					);
 				});
 		});
 		it("should return all the tracks, sorted by name", () => {
@@ -62,11 +90,21 @@ describe('Track Controller', () => {
 				.expect((res) => {
 					const tracks: Track[] = res.body.items;
 					expect(tracks.length).toBe(5);
-					expect(tracks[0]).toStrictEqual(expectedTrackResponse(dummyRepository.trackC1_1));
-					expect(tracks[1]).toStrictEqual(expectedTrackResponse(dummyRepository.trackA2_1));
-					expect(tracks[2]).toStrictEqual(expectedTrackResponse(dummyRepository.trackB1_1));
-					expect(tracks[3]).toStrictEqual(expectedTrackResponse(dummyRepository.trackA1_1));
-					expect(tracks[4]).toStrictEqual(expectedTrackResponse(dummyRepository.trackA1_2Video));
+					expect(tracks[0]).toStrictEqual(
+						expectedTrackResponse(dummyRepository.trackC1_1),
+					);
+					expect(tracks[1]).toStrictEqual(
+						expectedTrackResponse(dummyRepository.trackA2_1),
+					);
+					expect(tracks[2]).toStrictEqual(
+						expectedTrackResponse(dummyRepository.trackB1_1),
+					);
+					expect(tracks[3]).toStrictEqual(
+						expectedTrackResponse(dummyRepository.trackA1_1),
+					);
+					expect(tracks[4]).toStrictEqual(
+						expectedTrackResponse(dummyRepository.trackA1_2Video),
+					);
 				});
 		});
 		it("should return some tracks (w/ pagination)", () => {
@@ -76,8 +114,12 @@ describe('Track Controller', () => {
 				.expect((res) => {
 					const tracks: Track[] = res.body.items;
 					expect(tracks.length).toBe(2);
-					expect(tracks[0]).toStrictEqual(expectedTrackResponse(dummyRepository.trackA2_1));
-					expect(tracks[1]).toStrictEqual(expectedTrackResponse(dummyRepository.trackB1_1));
+					expect(tracks[0]).toStrictEqual(
+						expectedTrackResponse(dummyRepository.trackA2_1),
+					);
+					expect(tracks[1]).toStrictEqual(
+						expectedTrackResponse(dummyRepository.trackB1_1),
+					);
 				});
 		});
 		it("should return tracks w/ related song", () => {
@@ -95,33 +137,45 @@ describe('Track Controller', () => {
 		});
 	});
 
-	describe('Get Tracks by Library', () => {
+	describe("Get Tracks by Library", () => {
 		it("should return every tracks, w/ song & parent release", () => {
 			return request(app.getHttpServer())
-				.get(`/tracks?library=${dummyRepository.library1.id}&with=song,release`)
+				.get(
+					`/tracks?library=${dummyRepository.library1.id}&with=song,release`,
+				)
 				.expect(200)
 				.expect((res) => {
 					const tracks: Track[] = res.body.items;
 					expect(tracks.length).toBe(4);
 					expect(tracks).toContainEqual({
 						...expectedTrackResponse(dummyRepository.trackA1_1),
-						release: expectedReleaseResponse(dummyRepository.releaseA1_1),
-						song: expectedSongResponse(dummyRepository.songA1)
+						release: expectedReleaseResponse(
+							dummyRepository.releaseA1_1,
+						),
+						song: expectedSongResponse(dummyRepository.songA1),
 					});
 					expect(tracks).toContainEqual({
-						...expectedTrackResponse(dummyRepository.trackA1_2Video),
-						release: expectedReleaseResponse(dummyRepository.releaseA1_2),
-						song: expectedSongResponse(dummyRepository.songA1)
+						...expectedTrackResponse(
+							dummyRepository.trackA1_2Video,
+						),
+						release: expectedReleaseResponse(
+							dummyRepository.releaseA1_2,
+						),
+						song: expectedSongResponse(dummyRepository.songA1),
 					});
 					expect(tracks).toContainEqual({
 						...expectedTrackResponse(dummyRepository.trackA2_1),
-						release: expectedReleaseResponse(dummyRepository.releaseA1_2),
-						song: expectedSongResponse(dummyRepository.songA2)
+						release: expectedReleaseResponse(
+							dummyRepository.releaseA1_2,
+						),
+						song: expectedSongResponse(dummyRepository.songA2),
 					});
 					expect(tracks).toContainEqual({
 						...expectedTrackResponse(dummyRepository.trackC1_1),
-						release: expectedReleaseResponse(dummyRepository.compilationReleaseA1),
-						song: expectedSongResponse(dummyRepository.songC1)
+						release: expectedReleaseResponse(
+							dummyRepository.compilationReleaseA1,
+						),
+						song: expectedSongResponse(dummyRepository.songC1),
 					});
 				});
 		});
@@ -135,8 +189,12 @@ describe('Track Controller', () => {
 				.expect((res) => {
 					const tracks: Track[] = res.body.items;
 					expect(tracks.length).toBe(2);
-					expect(tracks[0]).toStrictEqual(expectedTrackResponse(dummyRepository.trackA1_1));
-					expect(tracks[1]).toStrictEqual(expectedTrackResponse(dummyRepository.trackA1_2Video));
+					expect(tracks[0]).toStrictEqual(
+						expectedTrackResponse(dummyRepository.trackA1_1),
+					);
+					expect(tracks[1]).toStrictEqual(
+						expectedTrackResponse(dummyRepository.trackA1_2Video),
+					);
 				});
 		});
 		it("should return some tracks (w/ pagination)", () => {
@@ -146,7 +204,9 @@ describe('Track Controller', () => {
 				.expect((res) => {
 					const tracks: Track[] = res.body.items;
 					expect(tracks.length).toBe(1);
-					expect(tracks[0]).toStrictEqual(expectedTrackResponse(dummyRepository.trackA1_1));
+					expect(tracks[0]).toStrictEqual(
+						expectedTrackResponse(dummyRepository.trackA1_1),
+					);
 				});
 		});
 		it("should return tracks w/ song", () => {
@@ -172,8 +232,12 @@ describe('Track Controller', () => {
 				.expect((res) => {
 					const tracks: Track[] = res.body.items;
 					expect(tracks.length).toBe(2);
-					expect(tracks).toContainEqual(expectedTrackResponse(dummyRepository.trackA1_2Video));
-					expect(tracks).toContainEqual(expectedTrackResponse(dummyRepository.trackA2_1));
+					expect(tracks).toContainEqual(
+						expectedTrackResponse(dummyRepository.trackA1_2Video),
+					);
+					expect(tracks).toContainEqual(
+						expectedTrackResponse(dummyRepository.trackA2_1),
+					);
 				});
 		});
 		it("should get all the tracks (1 expected)", () => {
@@ -183,40 +247,54 @@ describe('Track Controller', () => {
 				.expect((res) => {
 					const tracks: Track[] = res.body.items;
 					expect(tracks.length).toBe(1);
-					expect(tracks).toContainEqual(expectedTrackResponse(dummyRepository.trackA1_1));
+					expect(tracks).toContainEqual(
+						expectedTrackResponse(dummyRepository.trackA1_1),
+					);
 				});
 		});
 		it("should get all the tracks, sorted by name", () => {
 			return request(app.getHttpServer())
-				.get(`/tracks?release=${dummyRepository.releaseA1_2.id}&sortBy=name`)
+				.get(
+					`/tracks?release=${dummyRepository.releaseA1_2.id}&sortBy=name`,
+				)
 				.expect(200)
 				.expect((res) => {
 					const tracks: Track[] = res.body.items;
 					expect(tracks.length).toBe(2);
-					expect(tracks[0]).toStrictEqual(expectedTrackResponse(dummyRepository.trackA2_1));
-					expect(tracks[1]).toStrictEqual(expectedTrackResponse(dummyRepository.trackA1_2Video));
+					expect(tracks[0]).toStrictEqual(
+						expectedTrackResponse(dummyRepository.trackA2_1),
+					);
+					expect(tracks[1]).toStrictEqual(
+						expectedTrackResponse(dummyRepository.trackA1_2Video),
+					);
 				});
 		});
 		it("should get some tracks (w/ pagination)", () => {
 			return request(app.getHttpServer())
-				.get(`/tracks?release=${dummyRepository.releaseA1_2.id}&skip=1&sortBy=name`)
+				.get(
+					`/tracks?release=${dummyRepository.releaseA1_2.id}&skip=1&sortBy=name`,
+				)
 				.expect(200)
 				.expect((res) => {
 					const tracks: Track[] = res.body.items;
 					expect(tracks.length).toBe(1);
-					expect(tracks[0]).toStrictEqual(expectedTrackResponse(dummyRepository.trackA1_2Video));
+					expect(tracks[0]).toStrictEqual(
+						expectedTrackResponse(dummyRepository.trackA1_2Video),
+					);
 				});
 		});
 		it("should get tracks w/ related song", () => {
 			return request(app.getHttpServer())
-				.get(`/tracks?release=${dummyRepository.releaseA1_1.id}&with=song`)
+				.get(
+					`/tracks?release=${dummyRepository.releaseA1_1.id}&with=song`,
+				)
 				.expect(200)
 				.expect((res) => {
 					const tracks: Track[] = res.body.items;
 					expect(tracks.length).toBe(1);
 					expect(tracks[0]).toStrictEqual({
 						...expectedTrackResponse(dummyRepository.trackA1_1),
-						song: expectedSongResponse(dummyRepository.songA1)
+						song: expectedSongResponse(dummyRepository.songA1),
 					});
 				});
 		});
@@ -230,7 +308,9 @@ describe('Track Controller', () => {
 				.expect((res) => {
 					const tracks: Track[] = res.body.items;
 					expect(tracks.length).toBe(1);
-					expect(tracks[0]).toStrictEqual(expectedTrackResponse(dummyRepository.trackA1_2Video));
+					expect(tracks[0]).toStrictEqual(
+						expectedTrackResponse(dummyRepository.trackA1_2Video),
+					);
 				});
 		});
 
@@ -252,26 +332,30 @@ describe('Track Controller', () => {
 				.expect(200)
 				.expect((res) => {
 					const track: Track = res.body;
-					expect(track).toStrictEqual(expectedTrackResponse(dummyRepository.trackA1_1));
+					expect(track).toStrictEqual(
+						expectedTrackResponse(dummyRepository.trackA1_1),
+					);
 				});
 		});
 		it("should return track w/ related release & song", () => {
 			return request(app.getHttpServer())
-				.get(`/tracks/${dummyRepository.trackA2_1.id}?with=song,release`)
+				.get(
+					`/tracks/${dummyRepository.trackA2_1.id}?with=song,release`,
+				)
 				.expect(200)
 				.expect((res) => {
 					const track: Track = res.body;
 					expect(track).toStrictEqual({
 						...expectedTrackResponse(dummyRepository.trackA2_1),
 						song: expectedSongResponse(dummyRepository.songA2),
-						release: expectedReleaseResponse(dummyRepository.releaseA1_2)
-					})
+						release: expectedReleaseResponse(
+							dummyRepository.releaseA1_2,
+						),
+					});
 				});
 		});
 		it("should return an error, as the track does not exist", () => {
-			return request(app.getHttpServer())
-				.get(`/tracks/-1`)
-				.expect(404);
+			return request(app.getHttpServer()).get(`/tracks/-1`).expect(404);
 		});
 	});
 
@@ -283,7 +367,9 @@ describe('Track Controller', () => {
 				.expect((res) => {
 					const tracks: Track[] = res.body.items;
 					expect(tracks.length).toBe(1);
-					expect(tracks[0]).toStrictEqual(expectedTrackResponse(dummyRepository.trackA1_2Video));
+					expect(tracks[0]).toStrictEqual(
+						expectedTrackResponse(dummyRepository.trackA1_2Video),
+					);
 				});
 		});
 
@@ -296,7 +382,6 @@ describe('Track Controller', () => {
 					expect(tracks.length).toBe(0);
 				});
 		});
-
 	});
 
 	describe("Reassign the track", () => {
@@ -304,14 +389,14 @@ describe('Track Controller', () => {
 			return request(app.getHttpServer())
 				.post(`/tracks/${dummyRepository.trackC1_1.id}`)
 				.send(<ReassignTrackDTO>{
-					songId: dummyRepository.songB1.id
+					songId: dummyRepository.songB1.id,
 				})
 				.expect(201)
 				.expect((res) => {
 					const track: Track = res.body;
 					expect(track).toStrictEqual({
 						...expectedTrackResponse(dummyRepository.trackC1_1),
-						songId: dummyRepository.songB1.id
+						songId: dummyRepository.songB1.id,
 					});
 				});
 		});
@@ -325,7 +410,9 @@ describe('Track Controller', () => {
 				.expect((res) => {
 					const track: Track = res.body;
 					expect(track).toStrictEqual({
-						...expectedTrackResponse(dummyRepository.trackA1_2Video),
+						...expectedTrackResponse(
+							dummyRepository.trackA1_2Video,
+						),
 					});
 				});
 		});
@@ -333,9 +420,15 @@ describe('Track Controller', () => {
 
 	describe("Track Illustration", () => {
 		it("Should return the track illustration", async () => {
-			const illustration = await dummyRepository.trackIllustration.create({
-				data: { trackId: dummyRepository.trackC1_1.id, blurhash: 'A', colors: ['B'] }
-			});
+			const illustration = await dummyRepository.trackIllustration.create(
+				{
+					data: {
+						trackId: dummyRepository.trackC1_1.id,
+						blurhash: "A",
+						colors: ["B"],
+					},
+				},
+			);
 			return request(app.getHttpServer())
 				.get(`/tracks/${dummyRepository.trackC1_1.id}`)
 				.expect(200)
@@ -345,11 +438,12 @@ describe('Track Controller', () => {
 						...track,
 						illustration: {
 							...illustration,
-							url: '/illustrations/tracks/' + dummyRepository.trackC1_1.id
-						}
+							url:
+								"/illustrations/tracks/" +
+								dummyRepository.trackC1_1.id,
+						},
 					});
 				});
-
 		});
-	})
+	});
 });

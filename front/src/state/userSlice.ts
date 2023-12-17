@@ -1,21 +1,37 @@
+/*
+ * Meelo is a music server and application to enjoy your personal music files anywhere, anytime you want.
+ * Copyright (C) 2023
+ *
+ * Meelo is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * Meelo is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
 import { PayloadAction, createSlice } from "@reduxjs/toolkit";
 // eslint-disable-next-line no-restricted-imports
-import {
-	deleteCookie, getCookie, setCookie
-} from "cookies-next";
+import { deleteCookie, getCookie, setCookie } from "cookies-next";
 import User from "../models/user";
-import { UserAccessTokenCookieKey } from '../utils/cookieKeys';
+import { UserAccessTokenCookieKey } from "../utils/cookieKeys";
 
 type UserState = Partial<{
-	user: User,
-	accessToken: string
-}>
+	user: User;
+	accessToken: string;
+}>;
 
 export const userSlice = createSlice({
-	name: 'context',
+	name: "context",
 	initialState: <UserState>{
 		user: undefined,
-		accessToken: getCookie(UserAccessTokenCookieKey)
+		accessToken: getCookie(UserAccessTokenCookieKey),
 	},
 	reducers: {
 		setUserProfile: (state, action: PayloadAction<User>) => {
@@ -30,16 +46,17 @@ export const userSlice = createSlice({
 				UserAccessTokenCookieKey,
 				state.accessToken,
 				// Sets cookie for a month
-				{ expires }
+				{ expires },
 			);
 		},
 		unsetAccessToken: (state) => {
 			state.accessToken = undefined;
 			deleteCookie(UserAccessTokenCookieKey);
 		},
-	}
+	},
 });
 
-export const { setAccessToken, setUserProfile, unsetAccessToken } = userSlice.actions;
+export const { setAccessToken, setUserProfile, unsetAccessToken } =
+	userSlice.actions;
 
 export default userSlice.reducer;

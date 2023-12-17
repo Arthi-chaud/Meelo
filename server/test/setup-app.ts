@@ -1,8 +1,10 @@
 import { INestApplication } from "@nestjs/common";
 import type { TestingModule } from "@nestjs/testing";
-import * as Plugins from '../src/app.plugins';
+import * as Plugins from "../src/app.plugins";
 
-export default async function SetupApp(module: TestingModule): Promise<INestApplication> {
+export default async function SetupApp(
+	module: TestingModule,
+): Promise<INestApplication> {
 	const app = module.createNestApplication();
 
 	app.useGlobalFilters(...Plugins.buildExceptionFilters(app))

@@ -1,6 +1,22 @@
-import {
-	Box, Grid, Stack
-} from "@mui/material";
+/*
+ * Meelo is a music server and application to enjoy your personal music files anywhere, anytime you want.
+ * Copyright (C) 2023
+ *
+ * Meelo is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * Meelo is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
+import { Box, Grid, Stack } from "@mui/material";
 import API from "../api/api";
 import prepareSSR, { InferSSRProps } from "../ssr";
 import { useInfiniteQuery } from "../api/use-query";
@@ -17,58 +33,59 @@ import BackgroundBlurhash from "../components/blurhash-background";
 import AlbumHighlightCard from "../components/highlight-card/album-highlight-card";
 
 const newlyAddedAlbumsQuery = API.getAlbums(
-	{ },
-	{ sortBy: 'addDate', order: 'desc' },
-	['artist']
+	{},
+	{ sortBy: "addDate", order: "desc" },
+	["artist"],
 );
 
 const newestAlbumsQuery = API.getAlbums(
-	{ },
-	{ sortBy: 'releaseDate', order: 'desc' },
-	['artist']
+	{},
+	{ sortBy: "releaseDate", order: "desc" },
+	["artist"],
 );
 
 const newlyAddedArtistsQuery = API.getArtists(
 	{},
-	{ sortBy: 'addDate', order: 'desc' },
+	{ sortBy: "addDate", order: "desc" },
 );
 
 const newlyAddedReleasesQuery = API.getReleases(
 	{},
-	{ sortBy: 'addDate', order: 'desc' },
-	['album']
+	{ sortBy: "addDate", order: "desc" },
+	["album"],
 );
 
 const mostListenedSongsQuery = API.getSongs(
-	{ },
-	{ sortBy: 'playCount', order: 'desc' },
-	['artist', 'featuring']
+	{},
+	{ sortBy: "playCount", order: "desc" },
+	["artist", "featuring"],
 );
 
-const albumRecommendations = (seed: number) => API.getAlbums(
-	{ random: seed, type: 'StudioRecording' },
-	undefined,
-	['artist', 'genres', 'externalIds']
-);
+const albumRecommendations = (seed: number) =>
+	API.getAlbums({ random: seed, type: "StudioRecording" }, undefined, [
+		"artist",
+		"genres",
+		"externalIds",
+	]);
 
-const HomePageSection = <T, >(
-	props: {
-		heading: string | JSX.Element,
-		queryData: { data?: { pages?: { items?: T[] }[] } },
-		render: (items: T[]) => JSX.Element
-	}
-) => {
+const HomePageSection = <T,>(props: {
+	heading: string | JSX.Element;
+	queryData: { data?: { pages?: { items?: T[] }[] } };
+	render: (items: T[]) => JSX.Element;
+}) => {
 	const items = props.queryData.data?.pages?.at(0)?.items;
 
 	if (!items || items.length == 0) {
 		return <></>;
 	}
-	return <Stack spacing={3}>
-		<SectionHeader heading={props.heading}/>
-		<Box sx={{ maxHeight: '20%' }}>
-			{props.render(items.slice(0, 12))}
-		</Box>
-	</Stack>;
+	return (
+		<Stack spacing={3}>
+			<SectionHeader heading={props.heading} />
+			<Box sx={{ maxHeight: "20%" }}>
+				{props.render(items.slice(0, 12))}
+			</Box>
+		</Stack>
+	);
 };
 
 export const getServerSideProps = prepareSSR(() => {
@@ -77,7 +94,7 @@ export const getServerSideProps = prepareSSR(() => {
 	return {
 		additionalProps: {
 			blurhashIndex: Math.random(),
-			recommendationSeed: seed
+			recommendationSeed: seed,
 		},
 		infiniteQueries: [
 			newlyAddedArtistsQuery,
@@ -86,7 +103,7 @@ export const getServerSideProps = prepareSSR(() => {
 			newlyAddedReleasesQuery,
 			mostListenedSongsQuery,
 			albumRecommendations(seed),
-		]
+		],
 	};
 });
 
@@ -98,21 +115,22 @@ const HomePage = (props: InferSSRProps<typeof getServerSideProps>) => {
 	const newestAlbums = useInfiniteQuery(() => newestAlbumsQuery);
 	const featuredAlbums = useInfiniteQuery(
 		albumRecommendations,
-		props.additionalProps?.recommendationSeed ?? Math.floor(Math.random() * 10000000)
+		props.additionalProps?.recommendationSeed ??
+			Math.floor(Math.random() * 10000000),
 	);
 	const tileRowWindowSize = {
 		xs: 3,
 		sm: 5,
 		md: 6,
 		lg: 7,
-		xl: 10
+		xl: 10,
 	};
 	const queries = [
 		newlyAddedAlbums,
 		newestAlbums,
 		newlyAddedArtists,
 		mostListenedSongs,
-		newlyAddedReleases
+		newlyAddedReleases,
 	];
 	const illustrations = queries
 		.map((query) => query.data?.pages.at(0)?.items ?? [])
@@ -120,64 +138,101 @@ const HomePage = (props: InferSSRProps<typeof getServerSideProps>) => {
 		.map(({ illustration }) => illustration)
 		.filter((illustration) => illustration !== null);
 	const selectedBlurhash = illustrations.at(
-		illustrations.length * (props.additionalProps?.blurhashIndex ?? Math.random())
+		illustrations.length *
+			(props.additionalProps?.blurhashIndex ?? Math.random()),
 	)?.blurhash;
 
 	if (queries.find((query) => query.isLoading)) {
-		return <LoadingPage/>;
+		return <LoadingPage />;
 	}
 
-	return <>
-		<BackgroundBlurhash blurhash={selectedBlurhash}/>
-		<Fade in>
-			<Stack spacing={4} my={2}>
-				<HomePageSection
-					heading={<Translate translationKey='newlyAddedAlbums'/>}
-					queryData={newlyAddedAlbums}
-					render={(albums) => <TileRow tiles={
-						albums.map((album, index) => <AlbumTile key={index} album={album}/>)
-					} windowSize={tileRowWindowSize}/>}
-				/>
-				<HomePageSection
-					heading={<Translate translationKey='newlyAddedArtists'/>}
-					queryData={newlyAddedArtists}
-					render={(artists) => <TileRow tiles={
-						artists.map((artist, index) => <ArtistTile key={index} artist={artist}/>)
-					} windowSize={tileRowWindowSize}/>}
-				/>
-				<HomePageSection
-					heading={<Translate translationKey='featuredAlbums'/>}
-					queryData={featuredAlbums}
-					render={(albums) => <Grid container spacing={3}>
-						{albums.slice(0, 6).map((album, index) => (
-							<Grid item xs={12} md={6} xl={4} key={index}>
-								<AlbumHighlightCard album={album} />
+	return (
+		<>
+			<BackgroundBlurhash blurhash={selectedBlurhash} />
+			<Fade in>
+				<Stack spacing={4} my={2}>
+					<HomePageSection
+						heading={
+							<Translate translationKey="newlyAddedAlbums" />
+						}
+						queryData={newlyAddedAlbums}
+						render={(albums) => (
+							<TileRow
+								tiles={albums.map((album, index) => (
+									<AlbumTile key={index} album={album} />
+								))}
+								windowSize={tileRowWindowSize}
+							/>
+						)}
+					/>
+					<HomePageSection
+						heading={
+							<Translate translationKey="newlyAddedArtists" />
+						}
+						queryData={newlyAddedArtists}
+						render={(artists) => (
+							<TileRow
+								tiles={artists.map((artist, index) => (
+									<ArtistTile key={index} artist={artist} />
+								))}
+								windowSize={tileRowWindowSize}
+							/>
+						)}
+					/>
+					<HomePageSection
+						heading={<Translate translationKey="featuredAlbums" />}
+						queryData={featuredAlbums}
+						render={(albums) => (
+							<Grid container spacing={3}>
+								{albums.slice(0, 6).map((album, index) => (
+									<Grid
+										item
+										xs={12}
+										md={6}
+										xl={4}
+										key={index}
+									>
+										<AlbumHighlightCard album={album} />
+									</Grid>
+								))}
 							</Grid>
-						))}
-					</Grid>}
-				/>
-				<HomePageSection
-					heading={<Translate translationKey='latestAlbums'/>}
-					queryData={newestAlbums}
-					render={(albums) => <TileRow tiles={
-						albums.map((album, index) => <AlbumTile key={index} album={album}/>)
-					} windowSize={tileRowWindowSize}/>}
-				/>
-				<HomePageSection
-					heading={<Translate translationKey='newlyAddedReleases'/>}
-					queryData={newlyAddedReleases}
-					render={(releases) => <TileRow tiles={
-						releases.map((release, idx) => <ReleaseTile key={idx} release={release}/>)
-					} windowSize={tileRowWindowSize}/>}
-				/>
-				<HomePageSection
-					heading={<Translate translationKey='mostPlayedSongs'/>}
-					queryData={mostListenedSongs}
-					render={(songs) => <SongGrid songs={songs}/>}
-				/>
-			</Stack>
-		</Fade>
-	</>;
+						)}
+					/>
+					<HomePageSection
+						heading={<Translate translationKey="latestAlbums" />}
+						queryData={newestAlbums}
+						render={(albums) => (
+							<TileRow
+								tiles={albums.map((album, index) => (
+									<AlbumTile key={index} album={album} />
+								))}
+								windowSize={tileRowWindowSize}
+							/>
+						)}
+					/>
+					<HomePageSection
+						heading={
+							<Translate translationKey="newlyAddedReleases" />
+						}
+						queryData={newlyAddedReleases}
+						render={(releases) => (
+							<TileRow
+								tiles={releases.map((release, idx) => (
+									<ReleaseTile key={idx} release={release} />
+								))}
+								windowSize={tileRowWindowSize}
+							/>
+						)}
+					/>
+					<HomePageSection
+						heading={<Translate translationKey="mostPlayedSongs" />}
+						queryData={mostListenedSongs}
+						render={(songs) => <SongGrid songs={songs} />}
+					/>
+				</Stack>
+			</Fade>
+		</>
+	);
 };
 
 export default HomePage;
