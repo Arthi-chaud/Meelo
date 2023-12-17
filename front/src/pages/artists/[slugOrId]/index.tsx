@@ -303,6 +303,7 @@ const ArtistPage = (props: InferSSRProps<typeof getServerSideProps>) => {
 				{(appearances.data?.pages?.at(0)?.items.length ?? 0) != 0 && (
 					<>
 						<Divider sx={{ paddingTop: 4 }} />
+						<Box sx={{ paddingBottom: sectionPadding }} />
 						<SectionHeader
 							heading={<Translate translationKey="appearsOn" />}
 						/>
