@@ -43,6 +43,7 @@ import BackgroundBlurhash from "../../../components/blurhash-background";
 import ResourceDescriptionExpandable from "../../../components/resource-description-expandable";
 import ArtistRelationPageHeader from "../../../components/relation-page-header/artist-relation-page-header";
 import Album, { AlbumType } from "../../../models/album";
+import { useMemo } from "react";
 
 // Number of Song item in the 'Top Song' section
 const songListSize = 6;
@@ -128,6 +129,15 @@ const ArtistPage = (props: InferSSRProps<typeof getServerSideProps>) => {
 	const externalIdWithDescription = artist.data?.externalIds.find(
 		({ description }) => description !== null,
 	);
+	const { musicVideos, extras } = useMemo(() => {
+		const firstPage = videos.data?.pages.at(0)?.items;
+		return {
+			musicVideos:
+				firstPage?.filter((video) => video.type != "NonMusic") ?? [],
+			extras:
+				firstPage?.filter((video) => video.type == "NonMusic") ?? [],
+		};
+	}, [videos]);
 
 	if (
 		!artist.data ||
@@ -255,52 +265,66 @@ const ArtistPage = (props: InferSSRProps<typeof getServerSideProps>) => {
 							</Grid>
 						</>
 					))}
-				{videos.data.pages.at(0)?.items.length != 0 && (
-					<>
-						<SectionHeader
-							heading={<Translate translationKey="topVideos" />}
-							trailing={
-								(videos.data.pages.at(0)?.items.length ?? 0) >
-								albumListSize ? (
-									<Link
-										href={`/artists/${artistIdentifier}/videos`}
-									>
-										<Button
-											variant="contained"
-											color="secondary"
-											endIcon={<MoreIcon />}
-											sx={{
-												textTransform: "none",
-												fontWeight: "bold",
-											}}
-										>
-											<Translate translationKey="seeAll" />
-										</Button>
-									</Link>
-								) : undefined
-							}
-						/>
-						<Grid item sx={{ overflowX: "clip", width: "100%" }}>
-							<TileRow
-								tiles={
-									videos.data.pages
-										.at(0)
-										?.items.slice(0, albumListSize)
-										.map(({ track, ...song }) => (
-											<VideoTile
-												key={track.id}
-												video={{ ...track, song }}
-												formatSubtitle={(item) =>
-													formatDuration(
-														item.duration,
-													).toString()
-												}
-											/>
-										)) ?? []
-								}
-							/>
-						</Grid>
-					</>
+				{[
+					{ label: "topVideos", items: musicVideos } as const,
+					{ label: "extras", items: extras } as const,
+				].map(
+					({ label, items }) =>
+						items.length != 0 && (
+							<>
+								<SectionHeader
+									heading={
+										<Translate translationKey={label} />
+									}
+									trailing={
+										(items.length ?? 0) > albumListSize ? (
+											<Link
+												href={`/artists/${artistIdentifier}/videos`}
+											>
+												<Button
+													variant="contained"
+													color="secondary"
+													endIcon={<MoreIcon />}
+													sx={{
+														textTransform: "none",
+														fontWeight: "bold",
+													}}
+												>
+													<Translate translationKey="seeAll" />
+												</Button>
+											</Link>
+										) : undefined
+									}
+								/>
+								<Grid
+									item
+									sx={{ overflowX: "clip", width: "100%" }}
+								>
+									<TileRow
+										tiles={
+											items
+												.slice(0, albumListSize)
+												.map(({ track, ...song }) => (
+													<VideoTile
+														key={track.id}
+														video={{
+															...track,
+															song,
+														}}
+														formatSubtitle={(
+															item,
+														) =>
+															formatDuration(
+																item.duration,
+															).toString()
+														}
+													/>
+												)) ?? []
+										}
+									/>
+								</Grid>
+							</>
+						),
 				)}
 				{(appearances.data?.pages?.at(0)?.items.length ?? 0) != 0 && (
 					<>
