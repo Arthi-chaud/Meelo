@@ -125,7 +125,7 @@ const HighlightCard = (props: HighlightCardProps) => {
 							{props.body}
 						</Typography>
 					</Grid>
-					{props.tags && (
+					{props.tags.length > 0 && (
 						<Grid
 							item
 							container
