@@ -79,7 +79,7 @@ const HighlightCard = (props: HighlightCardProps) => {
 				}}
 				style={{ borderRadius: theme.shape.borderRadius }}
 			>
-				<Grid item xs sx={{ aspectRatio: "1", width: "100%" }}>
+				<Grid item sx={{ aspectRatio: "1", height: "100%" }}>
 					<Illustration
 						illustration={props.illustration ?? null}
 						imgProps={{ borderRadius: 0 }}
@@ -89,7 +89,6 @@ const HighlightCard = (props: HighlightCardProps) => {
 				<Grid
 					item
 					container
-					xs={8}
 					sx={{ width: "100%", overflow: "hidden" }}
 					direction="column"
 					padding={2}
