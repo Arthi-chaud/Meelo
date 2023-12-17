@@ -133,13 +133,14 @@ const MinimizedPlayerControls = (props: PlayerControlsProps) => {
 				}}
 			>
 				<Grid item sx={{ minWidth: "60px" }}>
-					{props.track ?
+					{props.track ? (
 						<Illustration
 							illustration={props.track?.illustration ?? null}
 							quality="low"
 							fallback={<TrackIcon />}
 						/>
-					:	<Box
+					) : (
+						<Box
 							sx={{
 								height: "100%",
 								display: "flex",
@@ -148,7 +149,7 @@ const MinimizedPlayerControls = (props: PlayerControlsProps) => {
 						>
 							<TrackIcon />
 						</Box>
-					}
+					)}
 				</Grid>
 				<Grid
 					item
@@ -193,12 +194,14 @@ const MinimizedPlayerControls = (props: PlayerControlsProps) => {
 								fontSize: "medium",
 							}}
 						>
-							{props.artist ?
+							{props.artist ? (
 								formatArtists(
 									props.artist,
 									parentSong.data?.featuring,
 								)
-							:	<br />}
+							) : (
+								<br />
+							)}
 						</Typography>
 					</Grid>
 				</Grid>
@@ -304,7 +307,7 @@ const ExpandedPlayerControls = (
 							justifyContent: "center",
 						}}
 					>
-						{props.track?.type == "Video" ?
+						{props.track?.type == "Video" ? (
 							<video
 								playsInline
 								id="videoPlayer"
@@ -314,7 +317,8 @@ const ExpandedPlayerControls = (
 								height="100%"
 								onClick={requestFullscreen}
 							/>
-						:	<Box
+						) : (
+							<Box
 								sx={{
 									height: "100%",
 									aspectRatio: "1",
@@ -328,7 +332,7 @@ const ExpandedPlayerControls = (
 									fallback={<TrackIcon />}
 								/>
 							</Box>
-						}
+						)}
 					</Grid>
 					<Grid item sx={{ width: "100%" }}>
 						<Stack
@@ -400,12 +404,10 @@ const ExpandedPlayerControls = (
 								</Grid>
 								<Grid item xs={1}>
 									{
-										(
-											props.track &&
-											parentSong.data &&
-											props.artist &&
-											props.release
-										) ?
+										props.track &&
+										parentSong.data &&
+										props.artist &&
+										props.release ? (
 											<ReleaseTrackContextualMenu
 												artist={props.artist}
 												release={props.release}
@@ -417,10 +419,11 @@ const ExpandedPlayerControls = (
 													props.onExpand(false)
 												}
 											/>
-										:	<IconButton>
+										) : (
+											<IconButton>
 												<ContextualMenuIcon />
 											</IconButton>
-
+										)
 
 										// To avoid slight shift on loaded
 									}
@@ -514,14 +517,16 @@ const ExpandedPlayerControls = (
 						>
 							{panel == "lyrics" &&
 								props.track &&
-								(!parentSong.data ?
+								(!parentSong.data ? (
 									<WideLoadingComponent />
-								:	<LyricsBox
+								) : (
+									<LyricsBox
 										lyrics={parentSong.data.lyrics?.content.split(
 											"\n",
 										)}
 										songName={props.track.name}
-									/>)}
+									/>
+								))}
 							{panel == "playlist" && (
 								<DragDropContext
 									onDragEnd={(result) => {

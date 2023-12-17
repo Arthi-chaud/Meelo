@@ -313,12 +313,13 @@ const PlaylistPage = (props: InferSSRProps<typeof getServerSideProps>) => {
 					<Divider sx={{ marginY: 2 }} />
 				</>
 			)}
-			{editState ?
+			{editState ? (
 				<DragAndDropPlaylist
 					entries={tempPlaylistEdit}
 					onDropped={setTempEdit}
 				/>
-			:	<Stack spacing={1}>
+			) : (
+				<Stack spacing={1}>
 					{entries.map((entry, index) => (
 						<PlaylistEntryItem
 							key={entry.entryId}
@@ -327,7 +328,7 @@ const PlaylistPage = (props: InferSSRProps<typeof getServerSideProps>) => {
 						/>
 					))}
 				</Stack>
-			}
+			)}
 			<Divider sx={{ marginY: 2 }} />
 			<Grid
 				container

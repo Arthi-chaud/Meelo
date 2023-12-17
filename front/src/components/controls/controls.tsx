@@ -94,10 +94,9 @@ const Controls = <
 	);
 	const [optionsState, setOptionState] = useState<OptionState<SortingKeys>>(
 		() => {
-			const libraryQuery =
-				Array.isArray(props.router?.query.library) ?
-					props.router?.query.library?.at(0)
-				:	props.router?.query.library;
+			const libraryQuery = Array.isArray(props.router?.query.library)
+				? props.router?.query.library?.at(0)
+				: props.router?.query.library;
 			const baseOptions: OptionState<SortingKeys> = {
 				view:
 					((props.disableLayoutToggle !== true &&
@@ -115,8 +114,9 @@ const Controls = <
 					getOrderParams(props.router?.query.order) ??
 					props.defaultSortingOrder ??
 					"asc",
-				library:
-					props.disableLibrarySelector ? null : libraryQuery ?? null,
+				library: props.disableLibrarySelector
+					? null
+					: libraryQuery ?? null,
 			};
 
 			props.options?.forEach((option) => {
@@ -255,9 +255,11 @@ const Controls = <
 								optionsState.sortBy as TranslationKey,
 							)}`,
 							icon:
-								optionsState.order == "desc" ?
+								optionsState.order == "desc" ? (
 									<DescIcon />
-								:	<AscIcon />,
+								) : (
+									<AscIcon />
+								),
 							options: [
 								{
 									name: "sortBy",
@@ -304,15 +306,17 @@ const Controls = <
 									updateOptionState({
 										name: "view",
 										value:
-											optionsState.view == "grid" ?
-												"list"
-											:	"grid",
+											optionsState.view == "grid"
+												? "list"
+												: "grid",
 									})
 								}
 							>
-								{optionsState.view == "grid" ?
+								{optionsState.view == "grid" ? (
 									<ListIcon />
-								:	<GridIcon />}
+								) : (
+									<GridIcon />
+								)}
 							</Button>
 						</Tooltip>
 					)}

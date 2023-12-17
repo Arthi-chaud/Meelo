@@ -111,8 +111,8 @@ const Illustration = (props: IllustrationProps) => {
 			)}
 			<Fade in={isSSR() || loadingCompleted || loadingFailed || !url}>
 				<Box>
-					{loadingFailed || !url ?
-						props.fallback ?
+					{loadingFailed || !url ? (
+						props.fallback ? (
 							<IconButton
 								disabled
 								sx={{ fontSize: "large" }}
@@ -120,19 +120,21 @@ const Illustration = (props: IllustrationProps) => {
 							>
 								{props.fallback}
 							</IconButton>
-						:	<Image
+						) : (
+							<Image
 								src={
-									colorScheme == "dark" ?
-										whiteIllustrationFallback
-									:	blackIllustrationFallback
+									colorScheme == "dark"
+										? whiteIllustrationFallback
+										: blackIllustrationFallback
 								}
 								fill
 								alt="missing-illustration"
 								loading="eager"
 								style={{ padding: "15%" }}
 							/>
-
-					:	<Image
+						)
+					) : (
+						<Image
 							onError={() => setLoadingFailed(true)}
 							onLoadingComplete={() => setLoadingCompleted(true)}
 							fill
@@ -148,12 +150,12 @@ const Illustration = (props: IllustrationProps) => {
 							}}
 							src={
 								API.getIllustrationURL(url) +
-								(props.quality == "original" ?
-									""
-								:	`?width=${getImageWidth(props.quality)}`)
+								(props.quality == "original"
+									? ""
+									: `?width=${getImageWidth(props.quality)}`)
 							}
 						/>
-					}
+					)}
 				</Box>
 			</Fade>
 		</Box>

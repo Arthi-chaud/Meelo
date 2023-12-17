@@ -73,9 +73,9 @@ const ReleaseContextualMenu = (props: ReleaseContextualMenuProps) => {
 		<ContextualMenu
 			actions={[
 				[
-					...(props.release.album.artistId ?
-						[GoToArtistAction(props.release.album.artistId)]
-					:	[]),
+					...(props.release.album.artistId
+						? [GoToArtistAction(props.release.album.artistId)]
+						: []),
 					GoToAlbumAction(props.release.album.id),
 					{
 						label: "setAsMaster",

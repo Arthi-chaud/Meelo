@@ -69,9 +69,7 @@ const TrackItem = ({ track }: TrackItemProps) => {
 					sx={{ justifyContent: "flex-end", flexWrap: "nowrap" }}
 				>
 					<Grid item sx={{ display: "flex", alignItems: "center" }}>
-						{isMaster ?
-							<MasterIcon />
-						:	undefined}
+						{isMaster ? <MasterIcon /> : undefined}
 					</Grid>
 					<Grid item>{<TrackContextualMenu track={track} />}</Grid>
 				</Grid>

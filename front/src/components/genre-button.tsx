@@ -33,9 +33,9 @@ const GenreButton = (props: GenreButtonProps) => {
 				clickable
 				label={props.genre.name}
 				sx={
-					props.color ?
-						{ borderColor: props.color }
-					:	{ color: "primary" }
+					props.color
+						? { borderColor: props.color }
+						: { color: "primary" }
 				}
 			/>
 		</Link>

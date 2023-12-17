@@ -50,9 +50,7 @@ const ReleaseItem = ({ release }: ReleaseItemProps) => {
 					sx={{ justifyContent: "flex-end", flexWrap: "nowrap" }}
 				>
 					<Grid item sx={{ display: "flex", alignItems: "center" }}>
-						{isMaster ?
-							<Star />
-						:	undefined}
+						{isMaster ? <Star /> : undefined}
 					</Grid>
 					<Grid item>
 						{<ReleaseContextualMenu release={release} />}

@@ -83,7 +83,7 @@ const InfiniteView = <ItemType extends Resource>(
 					</Button>
 				</Tooltip>
 			</Slide>
-			{props.view.toLowerCase() == "list" ?
+			{props.view.toLowerCase() == "list" ? (
 				<InfiniteList
 					firstLoader={() => <LoadingPage />}
 					loader={() => <WideLoadingComponent />}
@@ -96,7 +96,8 @@ const InfiniteView = <ItemType extends Resource>(
 						</Fade>
 					)}
 				/>
-			:	<InfiniteGrid
+			) : (
+				<InfiniteGrid
 					query={props.query}
 					firstLoader={() => <LoadingPage />}
 					loader={() => <WideLoadingComponent />}
@@ -108,7 +109,7 @@ const InfiniteView = <ItemType extends Resource>(
 						</Fade>
 					)}
 				/>
-			}
+			)}
 		</>
 	);
 };

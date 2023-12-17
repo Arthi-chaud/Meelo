@@ -19,10 +19,9 @@ if (process.env.NODE_ENV !== "production") {
 	config.rewrites = async () => [
 		{
 			source: "/api/:path*",
-			destination:
-				process.env.SSR_SERVER_URL ?
-					`${process.env.SSR_SERVER_URL}/:path*`
-				:	"/api/:path*",
+			destination: process.env.SSR_SERVER_URL
+				? `${process.env.SSR_SERVER_URL}/:path*`
+				: "/api/:path*",
 		},
 	];
 }

@@ -155,8 +155,9 @@ const Drawer = ({
 							<Link href="/" style={{ cursor: "pointer" }}>
 								<Image
 									src={
-										colorScheme == "dark" ? "/banner.png"
-										:	"/banner-black.png"
+										colorScheme == "dark"
+											? "/banner.png"
+											: "/banner-black.png"
 									}
 									alt="icon"
 									priority
@@ -183,8 +184,9 @@ const Drawer = ({
 												<ListItemIcon>
 													<Icon
 														variant={
-															isSelected ? "Bold"
-															:	"Outline"
+															isSelected
+																? "Bold"
+																: "Outline"
 														}
 													/>
 												</ListItemIcon>
@@ -192,9 +194,9 @@ const Drawer = ({
 													<Typography
 														sx={{
 															fontWeight:
-																isSelected ?
-																	"bold"
-																:	"normal",
+																isSelected
+																	? "bold"
+																	: "normal",
 														}}
 													>
 														<Translate
@@ -214,12 +216,11 @@ const Drawer = ({
 						<List>
 							{actions.map((action) => {
 								const path = action.href;
-								const isSelected =
-									path ?
-										path !== "/" ?
-											router.asPath.startsWith(path)
-										:	false
-									:	false;
+								const isSelected = path
+									? path !== "/"
+										? router.asPath.startsWith(path)
+										: false
+									: false;
 								let item = (
 									<ListItemButton
 										onClick={() => {
@@ -234,9 +235,9 @@ const Drawer = ({
 											primary={
 												<Typography
 													sx={{
-														fontWeight:
-															isSelected ? "bold"
-															:	"normal",
+														fontWeight: isSelected
+															? "bold"
+															: "normal",
 													}}
 												>
 													<Translate

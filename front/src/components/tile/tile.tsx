@@ -108,9 +108,11 @@ const Tile = (props: TileProps) => {
 				}}
 			>
 				<CardMedia sx={{ width: "100%" }}>
-					{props.href ?
+					{props.href ? (
 						<Link href={props.href}>{props.illustration}</Link>
-					:	props.illustration}
+					) : (
+						props.illustration
+					)}
 				</CardMedia>
 			</CardActionArea>
 			<CardContent
@@ -142,16 +144,18 @@ const Tile = (props: TileProps) => {
 									transition: "width .3s",
 									width: isHovering ? "90%" : "100%",
 									fontWeight: "medium",
-									textAlign:
-										props.subtitle ? "left" : "center",
+									textAlign: props.subtitle
+										? "left"
+										: "center",
 									// To prevent shift caused by ctxt menu
 									paddingY: props.subtitle ? 0 : 1,
-									cursor:
-										props.onClick ? "pointer" : undefined,
+									cursor: props.onClick
+										? "pointer"
+										: undefined,
 								}}
 								style={{ ...titleStyle }}
 							>
-								{props.href ?
+								{props.href ? (
 									<MUILink
 										component={Link}
 										underline="hover"
@@ -159,7 +163,9 @@ const Tile = (props: TileProps) => {
 									>
 										{props.title}
 									</MUILink>
-								:	props.title}
+								) : (
+									props.title
+								)}
 							</Typography>
 							{props.subtitle && (
 								<Typography
@@ -170,7 +176,7 @@ const Tile = (props: TileProps) => {
 									}}
 									style={titleStyle}
 								>
-									{props.secondaryHref ?
+									{props.secondaryHref ? (
 										<MUILink
 											component={Link}
 											underline="hover"
@@ -179,7 +185,9 @@ const Tile = (props: TileProps) => {
 										>
 											{props.subtitle}
 										</MUILink>
-									:	props.subtitle}
+									) : (
+										props.subtitle
+									)}
 								</Typography>
 							)}
 						</Box>

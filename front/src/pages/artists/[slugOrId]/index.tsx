@@ -118,10 +118,8 @@ const ArtistPage = (props: InferSSRProps<typeof getServerSideProps>) => {
 						<SectionHeader
 							heading={<Translate translationKey="topSongs" />}
 							trailing={
-								(
-									(topSongs.data?.pages.at(0)?.items.length ??
-										0) > songListSize
-								) ?
+								(topSongs.data?.pages.at(0)?.items.length ??
+									0) > songListSize ? (
 									<Link
 										href={`/artists/${artistIdentifier}/songs`}
 									>
@@ -137,7 +135,7 @@ const ArtistPage = (props: InferSSRProps<typeof getServerSideProps>) => {
 											<Translate translationKey="seeAll" />
 										</Button>
 									</Link>
-								:	undefined
+								) : undefined
 							}
 						/>
 						<Grid
@@ -161,10 +159,8 @@ const ArtistPage = (props: InferSSRProps<typeof getServerSideProps>) => {
 						<SectionHeader
 							heading={<Translate translationKey="albums" />}
 							trailing={
-								(
-									(latestAlbums.data?.pages.at(0)?.items
-										.length ?? 0) > albumListSize
-								) ?
+								(latestAlbums.data?.pages.at(0)?.items.length ??
+									0) > albumListSize ? (
 									<Link
 										href={`/artists/${artistIdentifier}/albums`}
 									>
@@ -180,7 +176,7 @@ const ArtistPage = (props: InferSSRProps<typeof getServerSideProps>) => {
 											<Translate translationKey="seeAll" />
 										</Button>
 									</Link>
-								:	undefined
+								) : undefined
 							}
 						/>
 						<Grid item sx={{ overflowX: "clip", width: "100%" }}>
@@ -213,10 +209,8 @@ const ArtistPage = (props: InferSSRProps<typeof getServerSideProps>) => {
 						<SectionHeader
 							heading={<Translate translationKey="topVideos" />}
 							trailing={
-								(
-									(videos.data.pages.at(0)?.items.length ??
-										0) > albumListSize
-								) ?
+								(videos.data.pages.at(0)?.items.length ?? 0) >
+								albumListSize ? (
 									<Link
 										href={`/artists/${artistIdentifier}/videos`}
 									>
@@ -232,7 +226,7 @@ const ArtistPage = (props: InferSSRProps<typeof getServerSideProps>) => {
 											<Translate translationKey="seeAll" />
 										</Button>
 									</Link>
-								:	undefined
+								) : undefined
 							}
 						/>
 						<Grid item sx={{ overflowX: "clip", width: "100%" }}>

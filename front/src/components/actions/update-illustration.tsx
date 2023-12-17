@@ -92,10 +92,13 @@ const UpdateIllustrationAction = (
 	const textFieldId = `update-illustration-${resourceType}-${resourceId}`;
 	const mutation = useMutation(async (newUrl: string) => {
 		const updator =
-			resourceType == "artist" ? API.updateArtistIllustration
-			: resourceType == "release" ? API.updateReleaseIllustration
-			: resourceType == "playlist" ? API.updatePlaylistIllustration
-			: API.updateTrackIllustration;
+			resourceType == "artist"
+				? API.updateArtistIllustration
+				: resourceType == "release"
+					? API.updateReleaseIllustration
+					: resourceType == "playlist"
+						? API.updatePlaylistIllustration
+						: API.updateTrackIllustration;
 
 		return updator(resourceId, newUrl)
 			.then(() => {

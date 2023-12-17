@@ -51,9 +51,9 @@ const createNoopStorage = () => {
 
 // Get storage type, depending of SSR or client side
 const getStorage = () =>
-	isSSR() ?
-		createNoopStorage() // For SSR
-	:	storage;
+	isSSR()
+		? createNoopStorage() // For SSR
+		: storage;
 
 const Reducers = {
 	player: playlerSlice,

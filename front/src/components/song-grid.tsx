@@ -49,12 +49,10 @@ const SongGrid = ({ songs, parentArtistName }: SongGridProps) => {
 						}
 						title={song.name}
 						secondTitle={
-							(
-								parentArtistName === song.artist.name &&
-								song.featuring.length == 0
-							) ?
-								undefined
-							:	formatArtists(song.artist, song.featuring)
+							parentArtistName === song.artist.name &&
+							song.featuring.length == 0
+								? undefined
+								: formatArtists(song.artist, song.featuring)
 						}
 						trailing={
 							<SongContextualMenu

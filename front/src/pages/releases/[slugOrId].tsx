@@ -559,13 +559,15 @@ const ReleasePage = (props: InferSSRProps<typeof getServerSideProps>) => {
 					display={extras.length > 0 || videoExtras.length > 0}
 					title={<Translate translationKey="extras" />}
 				>
-					{extras.length > 0 ?
+					{extras.length > 0 ? (
 						<SongGrid
 							parentArtistName={albumArtist?.name}
 							songs={extras}
 						/>
-					:	<></>}
-					{videoExtras.length > 0 ?
+					) : (
+						<></>
+					)}
+					{videoExtras.length > 0 ? (
 						<TileRow
 							tiles={videoExtras.map((video, videoIndex) => (
 								<VideoTile
@@ -574,7 +576,9 @@ const ReleasePage = (props: InferSSRProps<typeof getServerSideProps>) => {
 								/>
 							))}
 						/>
-					:	<></>}
+					) : (
+						<></>
+					)}
 				</RelatedContentSection>
 				<RelatedContentSection
 					display={

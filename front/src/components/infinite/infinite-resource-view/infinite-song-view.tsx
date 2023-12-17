@@ -75,9 +75,9 @@ const InfiniteSongView = (
 						// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 						// @ts-ignore
 						type:
-							options?.type == "All" ?
-								undefined
-							:	(options?.type as SongType),
+							options?.type == "All"
+								? undefined
+								: (options?.type as SongType),
 						sortBy: options?.sortBy ?? "name",
 						order: options?.order ?? "asc",
 						view: "grid",

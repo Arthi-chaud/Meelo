@@ -154,9 +154,9 @@ const AuthenticationForm = () => {
 					>
 						<Translate
 							translationKey={
-								formType == "login" ? "signupButton" : (
-									"signinButton"
-								)
+								formType == "login"
+									? "signupButton"
+									: "signinButton"
 							}
 						/>
 					</Button>

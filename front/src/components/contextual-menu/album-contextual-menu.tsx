@@ -42,9 +42,9 @@ const AlbumContextualMenu = (props: AlbumContextualMenuProps) => {
 		<ContextualMenu
 			actions={[
 				[
-					...(props.album.artist ?
-						[GoToArtistAction(props.album.artist.slug)]
-					:	[]),
+					...(props.album.artist
+						? [GoToArtistAction(props.album.artist.slug)]
+						: []),
 				],
 				[
 					ChangeAlbumType(props.album, queryClient, confirm),

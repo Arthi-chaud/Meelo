@@ -208,12 +208,14 @@ const SongPage = (props: InferSSRProps<typeof getServerSideProps>) => {
 					</>
 				)}
 				{tab == "lyrics" &&
-					(lyrics.isLoading ?
+					(lyrics.isLoading ? (
 						<LoadingPage />
-					:	<LyricsBox
+					) : (
+						<LyricsBox
 							songName={song.data.name}
 							lyrics={lyrics.data}
-						/>)}
+						/>
+					))}
 				{tab == "versions" && (
 					<InfiniteSongView
 						query={({ library, sortBy, order, type }) =>

@@ -76,12 +76,10 @@ type SelectableInfiniteViewProps = {
 
 const SelectableInfiniteView = (props: SelectableInfiniteViewProps) => {
 	const [selectedType, selectItemType] = useState<(typeof itemTypes)[number]>(
-		(
-			props.default &&
-				itemTypes.includes(props.default as (typeof itemTypes)[number])
-		) ?
-			(props.default as (typeof itemTypes)[number])
-		:	"album",
+		props.default &&
+			itemTypes.includes(props.default as (typeof itemTypes)[number])
+			? (props.default as (typeof itemTypes)[number])
+			: "album",
 	);
 
 	return (
@@ -114,13 +112,13 @@ const SelectableInfiniteView = (props: SelectableInfiniteViewProps) => {
 				))}
 			</Grid>
 			{props.enabled &&
-				(selectedType == "artist" ?
+				(selectedType == "artist" ? (
 					<InfiniteArtistView
 						query={({ library, sortBy, order }) =>
 							props.artistQuery({ library }, { sortBy, order })
 						}
 					/>
-				: selectedType == "album" ?
+				) : selectedType == "album" ? (
 					<InfiniteAlbumView
 						key={selectedType}
 						defaultLayout="list"
@@ -131,7 +129,7 @@ const SelectableInfiniteView = (props: SelectableInfiniteViewProps) => {
 							)
 						}
 					/>
-				: selectedType == "song" ?
+				) : selectedType == "song" ? (
 					<InfiniteSongView
 						key={selectedType}
 						query={({ sortBy, order, type, library }) =>
@@ -141,7 +139,9 @@ const SelectableInfiniteView = (props: SelectableInfiniteViewProps) => {
 							)
 						}
 					/>
-				:	<></>)}
+				) : (
+					<></>
+				))}
 		</Box>
 	);
 };

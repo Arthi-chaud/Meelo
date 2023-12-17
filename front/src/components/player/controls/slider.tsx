@@ -56,12 +56,12 @@ const PlayerSlider = (props: PlayerSliderProps) => {
 						}
 					}}
 					value={
-						props.duration && props.progress !== undefined ?
-							(props.progress * 100) /
-							(props.duration == 0 ?
-								props.progress
-							:	props.duration)
-						:	0
+						props.duration && props.progress !== undefined
+							? (props.progress * 100) /
+								(props.duration == 0
+									? props.progress
+									: props.duration)
+							: 0
 					}
 				/>
 			</Grid>

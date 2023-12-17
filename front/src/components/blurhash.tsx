@@ -30,8 +30,9 @@ const Blurhash = ({ blurhash, ...props }: BlurhashProps) => {
 	const ssrProps = () => ({
 		...props,
 		sx: {
-			backgroundImage:
-				blurhash ? `url(${blurHashToDataURL(blurhash)})` : "none",
+			backgroundImage: blurhash
+				? `url(${blurHashToDataURL(blurhash)})`
+				: "none",
 			backgroundRepeat: "no-repeat",
 			backgroundSize: "cover",
 			...props.sx,

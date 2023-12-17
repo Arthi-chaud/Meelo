@@ -66,14 +66,14 @@ const InfiniteVideoView = (
 							song: item,
 						}}
 						formatSubtitle={
-							props.formatSubtitle ?
-								() =>
-									(
-										props.formatSubtitle as Required<
-											typeof props
-										>["formatSubtitle"]
-									)(item)
-							:	undefined
+							props.formatSubtitle
+								? () =>
+										(
+											props.formatSubtitle as Required<
+												typeof props
+											>["formatSubtitle"]
+										)(item)
+								: undefined
 						}
 					/>
 				)}

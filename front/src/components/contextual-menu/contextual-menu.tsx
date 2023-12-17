@@ -74,15 +74,15 @@ const ContextualMenu = (props: ContextualMenuProps) => {
 							</Box>
 						)),
 					].concat(
-						actionGroupIndex < allActions.length - 1 ?
-							[
-								<Divider
-									key={actionGroupIndex}
-									sx={{ marginY: 0.5 }}
-									variant="middle"
-								/>,
-							]
-						:	[],
+						actionGroupIndex < allActions.length - 1
+							? [
+									<Divider
+										key={actionGroupIndex}
+										sx={{ marginY: 0.5 }}
+										variant="middle"
+									/>,
+								]
+							: [],
 					),
 				)}
 			</Menu>

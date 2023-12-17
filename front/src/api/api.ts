@@ -107,16 +107,16 @@ export default class API {
 	private static formatIncludeKeys = (includes?: string[]) =>
 		includes?.map((include) => `include-${include}`) ?? [];
 	private static formatObject = (includes?: object) =>
-		includes ?
-			Object.entries(includes)
-				.filter(
-					([key, value]) =>
-						value !== null &&
-						value !== undefined &&
-						value !== "view",
-				)
-				.map(([key, value]) => `params-${key}-${value}`)
-		:	[];
+		includes
+			? Object.entries(includes)
+					.filter(
+						([key, value]) =>
+							value !== null &&
+							value !== undefined &&
+							value !== "view",
+					)
+					.map(([key, value]) => `params-${key}-${value}`)
+			: [];
 
 	private static isDev = () => process.env.NODE_ENV === "development";
 	private static SSR_API_URL =
@@ -1141,21 +1141,19 @@ export default class API {
 			{
 				method: method ?? "GET",
 				body: data ? JSON.stringify(data) : undefined,
-				headers:
-					accessToken ?
-						{
+				headers: accessToken
+					? {
 							...header,
 							Authorization: `Bearer ${accessToken}`,
 						}
-					:	header,
+					: header,
 			},
 		);
-		const jsonResponse =
-			emptyResponse ? undefined : (
-				await response.json().catch(() => {
+		const jsonResponse = emptyResponse
+			? undefined
+			: await response.json().catch(() => {
 					throw new Error("Error while parsing Server's response");
-				})
-			);
+				});
 
 		switch (response.status) {
 			/// TODO SSR should be disabled if user is not authentified

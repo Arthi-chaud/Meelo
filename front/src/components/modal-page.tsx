@@ -92,9 +92,9 @@ const ModalPage = (props: ModalPageProps) => {
 							<CloseIcon
 								style={{
 									display:
-										props.disposable == true ?
-											undefined
-										:	"none",
+										props.disposable == true
+											? undefined
+											: "none",
 								}}
 							/>
 						</IconButton>

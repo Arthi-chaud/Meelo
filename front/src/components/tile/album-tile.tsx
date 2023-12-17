@@ -47,11 +47,11 @@ const AlbumTile = (props: {
 				props.album.slug
 			}`}
 			secondaryHref={
-				!props.formatSubtitle ?
-					props.album.artist?.slug ?
-						`/artists/${props.album.artist.slug}`
-					:	undefined
-				:	undefined
+				!props.formatSubtitle
+					? props.album.artist?.slug
+						? `/artists/${props.album.artist.slug}`
+						: undefined
+					: undefined
 			}
 			illustration={
 				<Illustration

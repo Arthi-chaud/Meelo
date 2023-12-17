@@ -91,9 +91,9 @@ const AuthenticationWall = (props: { children: any }) => {
 					>
 						<Image
 							src={
-								colorScheme == "dark" ? "/banner.png" : (
-									"/banner-black.png"
-								)
+								colorScheme == "dark"
+									? "/banner.png"
+									: "/banner-black.png"
 							}
 							alt="title"
 							width={200}

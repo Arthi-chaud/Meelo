@@ -103,32 +103,32 @@ const SongContextualMenu = (props: SongContextualMenuProps) => {
 					ShareSongAction(songSlug),
 				],
 			].concat(
-				props.entryId !== undefined ?
-					[
-						[
-							{
-								label: "deleteFromPlaylist",
-								icon: <DeleteIcon />,
-								onClick: () =>
-									API.deletePlaylistEntry(props.entryId!)
-										.then(() => {
-											toast.success(
-												translate(
-													"playlistItemDeletionSuccess",
-												),
-											);
-											queryClient.client.invalidateQueries(
-												"playlist",
-											);
-											queryClient.client.invalidateQueries(
-												"playlists",
-											);
-										})
-										.catch(() => {}),
-							},
-						],
-					]
-				:	[],
+				props.entryId !== undefined
+					? [
+							[
+								{
+									label: "deleteFromPlaylist",
+									icon: <DeleteIcon />,
+									onClick: () =>
+										API.deletePlaylistEntry(props.entryId!)
+											.then(() => {
+												toast.success(
+													translate(
+														"playlistItemDeletionSuccess",
+													),
+												);
+												queryClient.client.invalidateQueries(
+													"playlist",
+												);
+												queryClient.client.invalidateQueries(
+													"playlists",
+												);
+											})
+											.catch(() => {}),
+								},
+							],
+						]
+					: [],
 			)}
 		/>
 	);

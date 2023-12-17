@@ -24,4 +24,4 @@ jobs:
       - name: Run linter
         run: yarn --cwd "${{ matrix.pwd }}" lint
       - name: Run prettier
-        run: yarn --cwd "${{ matrix.pwd }}" prettier --check .
+        run: yarn --cwd "${{ matrix.pwd }}" prettier --check src

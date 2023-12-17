@@ -106,9 +106,9 @@ const UserSettings = () => {
 					<Checkbox
 						onChange={(event, isChecked) =>
 							dispatch(
-								isChecked ? resetLanguage() : (
-									setLanguage(actualLanguage)
-								),
+								isChecked
+									? resetLanguage()
+									: setLanguage(actualLanguage),
 							)
 						}
 						checked={languagePreference == "system"}
@@ -170,11 +170,11 @@ const UserSettings = () => {
 							}}
 							disabled={!notificationsAPIAvailable}
 						>
-							{!notificationsAPIAvailable ?
-								"unavailable"
-							: notificationsEnabled ?
-								"test"
-							:	"ask"}
+							{!notificationsAPIAvailable
+								? "unavailable"
+								: notificationsEnabled
+									? "test"
+									: "ask"}
 						</Button>
 					</Grid>
 					<Grid item xs={10}>
@@ -184,9 +184,9 @@ const UserSettings = () => {
 						<Checkbox
 							onChange={(event, isChecked) =>
 								dispatch(
-									isChecked ? allowNotifications() : (
-										disableNotifications()
-									),
+									isChecked
+										? allowNotifications()
+										: disableNotifications(),
 								)
 							}
 							checked={notificationPreference}

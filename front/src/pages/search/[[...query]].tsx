@@ -31,9 +31,8 @@ export const getServerSideProps = prepareSSR((context) => {
 
 	return {
 		additionalProps: { searchQuery, type },
-		infiniteQueries:
-			searchQuery ?
-				[
+		infiniteQueries: searchQuery
+			? [
 					API.getArtists(
 						{ query: searchQuery },
 						defaultQuerySortParams,
@@ -49,7 +48,7 @@ export const getServerSideProps = prepareSSR((context) => {
 						["artist", "featuring"],
 					),
 				]
-			:	[],
+			: [],
 	};
 });
 

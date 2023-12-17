@@ -42,9 +42,9 @@ function parsePixels(pixels: Uint8ClampedArray, width: number, height: number) {
 		.join("");
 	const pngString = generatePng(width, height, pixelsString);
 	const dataURL =
-		typeof Buffer !== "undefined" ?
-			Buffer.from(getPngArray(pngString)).toString("base64")
-		:	btoa(pngString);
+		typeof Buffer !== "undefined"
+			? Buffer.from(getPngArray(pngString)).toString("base64")
+			: btoa(pngString);
 
 	return "data:image/png;base64," + dataURL;
 }

@@ -88,9 +88,9 @@ const OptionButton = <
 							</MenuItem>
 						))
 						.concat(
-							index + 1 != array.length ?
-								[<Divider key={index} />]
-							:	[],
+							index + 1 != array.length
+								? [<Divider key={index} />]
+								: [],
 						),
 				)}
 			</Menu>

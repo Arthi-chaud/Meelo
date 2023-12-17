@@ -181,16 +181,15 @@ const Player = () => {
 					title: currentTrack.track.name,
 					artist: currentTrack.artist.name,
 					album: currentTrack.release.name,
-					artwork:
-						newIllustrationURL ?
-							[
+					artwork: newIllustrationURL
+						? [
 								{
 									src: API.getIllustrationURL(
 										newIllustrationURL,
 									),
 								},
 							]
-						:	undefined,
+						: undefined,
 				});
 			}
 			interval.current = setInterval(() => {
@@ -215,10 +214,9 @@ const Player = () => {
 				try {
 					setNotification(
 						new Notification(currentTrack.track.name, {
-							icon:
-								newIllustrationURL ?
-									API.getIllustrationURL(newIllustrationURL)
-								:	"/icon.png",
+							icon: newIllustrationURL
+								? API.getIllustrationURL(newIllustrationURL)
+								: "/icon.png",
 							body: `${currentTrack.artist.name} - ${currentTrack.release.name}`,
 						}),
 					);
