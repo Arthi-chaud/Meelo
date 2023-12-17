@@ -132,6 +132,14 @@ const en = {
 	RemixAlbum: "Remix Album",
 	VideoAlbum: "Video Album",
 
+	pluralStudioRecording: "Studio Albums",
+	pluralSingle: "Singles",
+	pluralLiveRecording: "Live Albums",
+	pluralCompilation: "Compilations",
+	pluralSoundtrack: "Soundtrack Albums",
+	pluralRemixAlbum: "Remixes",
+	pluralVideoAlbum: "Video Albums",
+
 	onThisAlbum: "Featured Artists",
 
 	backToTop: "Back To Top",

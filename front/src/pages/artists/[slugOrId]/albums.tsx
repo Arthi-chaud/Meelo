@@ -27,6 +27,7 @@ import getYear from "../../../utils/getYear";
 import { getLayoutParams } from "../../../utils/layout";
 import { useQuery } from "../../../api/use-query";
 import BackgroundBlurhash from "../../../components/blurhash-background";
+import { getAlbumTypeParam } from "../../../utils/album-type";
 
 const defaultSort = {
 	sortBy: "releaseDate",
@@ -36,14 +37,21 @@ const defaultSort = {
 export const getServerSideProps = prepareSSR((context) => {
 	const artistIdentifier = getSlugOrId(context.params);
 	const defaultLayout = getLayoutParams(context.query.view) ?? "grid";
+	const type = getAlbumTypeParam(context.query.type);
 
 	return {
-		additionalProps: { artistIdentifier, defaultLayout },
+		additionalProps: {
+			artistIdentifier,
+			defaultLayout,
+			type: type ?? null,
+		},
 		queries: [API.getArtist(artistIdentifier)],
 		infiniteQueries: [
-			API.getAlbums({ artist: artistIdentifier }, defaultSort, [
-				"artist",
-			]),
+			API.getAlbums(
+				{ artist: artistIdentifier, type: type },
+				defaultSort,
+				["artist"],
+			),
 		],
 	};
 });
@@ -54,6 +62,7 @@ const ArtistAlbumsPage = (props: InferSSRProps<typeof getServerSideProps>) => {
 		API.getArtist,
 		props.additionalProps?.artistIdentifier,
 	);
+	const defaultType = props.additionalProps?.type ?? null;
 	const artistIdentifier =
 		props.additionalProps?.artistIdentifier ?? getSlugOrId(router.query);
 
@@ -65,6 +74,7 @@ const ArtistAlbumsPage = (props: InferSSRProps<typeof getServerSideProps>) => {
 			<ArtistRelationPageHeader artistSlugOrId={artistIdentifier} />
 			<InfiniteAlbumView
 				defaultLayout={props.additionalProps?.defaultLayout}
+				defaultAlbumType={defaultType}
 				initialSortingField={defaultSort.sortBy}
 				initialSortingOrder={defaultSort.order}
 				formatSubtitle={(album) =>

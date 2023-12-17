@@ -19,7 +19,12 @@
 import { Box, Button, Container, Divider, Grid } from "@mui/material";
 import { useRouter } from "next/router";
 import API from "../../../api/api";
-import { useInfiniteQuery, useQuery } from "../../../api/use-query";
+import {
+	MeeloQueryFn,
+	useInfiniteQuery,
+	useQueries,
+	useQuery,
+} from "../../../api/use-query";
 import AlbumTile from "../../../components/tile/album-tile";
 import Link from "next/link";
 import getSlugOrId from "../../../utils/getSlugOrId";
@@ -37,17 +42,31 @@ import { MoreIcon } from "../../../components/icons";
 import BackgroundBlurhash from "../../../components/blurhash-background";
 import ResourceDescriptionExpandable from "../../../components/resource-description-expandable";
 import ArtistRelationPageHeader from "../../../components/relation-page-header/artist-relation-page-header";
+import Album, { AlbumType } from "../../../models/album";
 
 // Number of Song item in the 'Top Song' section
 const songListSize = 6;
 // Number of Album item in the 'Latest albums' section
 const albumListSize = 10;
 
-const latestAlbumsQuery = (artistSlugOrId: string | number) =>
-	API.getAlbums(
-		{ artist: artistSlugOrId },
-		{ sortBy: "releaseDate", order: "desc" },
-	);
+type AlbumsWithType = {
+	type: AlbumType;
+	items: Album[];
+};
+
+const latestAlbumsQuery = AlbumType.map(
+	(type) => (artistSlugOrId: string | number) => {
+		const query = API.getAlbums(
+			{ artist: artistSlugOrId, type: type },
+			{ sortBy: "releaseDate", order: "desc" },
+		);
+		return {
+			key: query.key,
+			exec: () =>
+				query.exec({}).then((res) => ({ type, items: res.items })),
+		};
+	},
+);
 
 const videosQuery = (artistSlugOrId: string | number) =>
 	API.getVideos(
@@ -77,9 +96,11 @@ export const getServerSideProps = prepareSSR((context) => {
 
 	return {
 		additionalProps: { artistIdentifier },
-		queries: [artistQuery(artistIdentifier)],
+		queries: [
+			artistQuery(artistIdentifier),
+			...latestAlbumsQuery.map((q) => q(artistIdentifier)),
+		],
 		infiniteQueries: [
-			latestAlbumsQuery(artistIdentifier),
 			videosQuery(artistIdentifier),
 			topSongsQuery(artistIdentifier),
 			appearanceQuery(artistIdentifier),
@@ -88,11 +109,19 @@ export const getServerSideProps = prepareSSR((context) => {
 });
 
 const ArtistPage = (props: InferSSRProps<typeof getServerSideProps>) => {
+	const sectionPadding = 4;
 	const router = useRouter();
 	const artistIdentifier =
 		props.additionalProps?.artistIdentifier ?? getSlugOrId(router.query);
 	const artist = useQuery(artistQuery, artistIdentifier);
-	const latestAlbums = useInfiniteQuery(latestAlbumsQuery, artistIdentifier);
+	const albums = useQueries(
+		...latestAlbumsQuery.map(
+			(q): [MeeloQueryFn<AlbumsWithType>, string] => [
+				q,
+				artistIdentifier,
+			],
+		),
+	);
 	const videos = useInfiniteQuery(videosQuery, artistIdentifier);
 	const topSongs = useInfiniteQuery(topSongsQuery, artistIdentifier);
 	const appearances = useInfiniteQuery(appearanceQuery, artistIdentifier);
@@ -100,7 +129,12 @@ const ArtistPage = (props: InferSSRProps<typeof getServerSideProps>) => {
 		({ description }) => description !== null,
 	);
 
-	if (!artist.data || !latestAlbums.data || !topSongs.data || !videos.data) {
+	if (
+		!artist.data ||
+		albums.find((q) => !q.data) ||
+		!topSongs.data ||
+		!videos.data
+	) {
 		return <LoadingPage />;
 	}
 	return (
@@ -110,8 +144,8 @@ const ArtistPage = (props: InferSSRProps<typeof getServerSideProps>) => {
 			<Grid
 				container
 				direction="column"
-				spacing={4}
-				sx={{ padding: 2, flex: 1, flexGrow: 1 }}
+				rowSpacing={sectionPadding}
+				sx={{ padding: 2, flex: 1, flexGrow: 1, paddingTop: 8 }}
 			>
 				{topSongs.data?.pages.at(0)?.items.length != 0 && (
 					<>
@@ -141,7 +175,11 @@ const ArtistPage = (props: InferSSRProps<typeof getServerSideProps>) => {
 						<Grid
 							item
 							container
-							sx={{ display: "block", flexGrow: 1 }}
+							sx={{
+								display: "block",
+								flexGrow: 1,
+								paddingBottom: sectionPadding,
+							}}
 						>
 							<SongGrid
 								parentArtistName={artist.data.name}
@@ -154,56 +192,67 @@ const ArtistPage = (props: InferSSRProps<typeof getServerSideProps>) => {
 						</Grid>
 					</>
 				)}
-				{latestAlbums.data?.pages.at(0)?.items.length != 0 && (
-					<>
-						<SectionHeader
-							heading={<Translate translationKey="albums" />}
-							trailing={
-								(latestAlbums.data?.pages.at(0)?.items.length ??
-									0) > albumListSize ? (
-									<Link
-										href={`/artists/${artistIdentifier}/albums`}
-									>
-										<Button
-											variant="contained"
-											color="secondary"
-											endIcon={<MoreIcon />}
-											sx={{
-												textTransform: "none",
-												fontWeight: "bold",
-											}}
+				{albums
+					.map(({ data }) => data)
+					.filter((data): data is AlbumsWithType => data != undefined)
+					.filter((data) => data.items.length > 0)
+					.map(({ type, items }) => (
+						<>
+							<SectionHeader
+								heading={
+									<Translate
+										translationKey={`plural${type}`}
+									/>
+								}
+								trailing={
+									items.length > albumListSize ? (
+										<Link
+											href={`/artists/${artistIdentifier}/albums?type=${type}`}
 										>
-											<Translate translationKey="seeAll" />
-										</Button>
-									</Link>
-								) : undefined
-							}
-						/>
-						<Grid item sx={{ overflowX: "clip", width: "100%" }}>
-							<TileRow
-								tiles={
-									latestAlbums.data.pages
-										.at(0)
-										?.items.slice(0, albumListSize)
-										.map((album) => (
-											<AlbumTile
-												key={album.id}
-												album={{
-													...album,
-													artist: artist.data,
+											<Button
+												variant="contained"
+												color="secondary"
+												endIcon={<MoreIcon />}
+												sx={{
+													textTransform: "none",
+													fontWeight: "bold",
 												}}
-												formatSubtitle={(albumItem) =>
-													getYear(
-														albumItem.releaseDate,
-													)?.toString() ?? ""
-												}
-											/>
-										)) ?? []
+											>
+												<Translate translationKey="seeAll" />
+											</Button>
+										</Link>
+									) : undefined
 								}
 							/>
-						</Grid>
-					</>
-				)}
+							<Grid
+								item
+								sx={{ overflowX: "clip", width: "100%" }}
+							>
+								<TileRow
+									tiles={
+										items
+											.slice(0, albumListSize)
+											.map((album) => (
+												<AlbumTile
+													key={album.id}
+													album={{
+														...album,
+														artist: artist.data,
+													}}
+													formatSubtitle={(
+														albumItem,
+													) =>
+														getYear(
+															albumItem.releaseDate,
+														)?.toString() ?? ""
+													}
+												/>
+											)) ?? []
+									}
+								/>
+							</Grid>
+						</>
+					))}
 				{videos.data.pages.at(0)?.items.length != 0 && (
 					<>
 						<SectionHeader
@@ -276,6 +325,7 @@ const ArtistPage = (props: InferSSRProps<typeof getServerSideProps>) => {
 				{externalIdWithDescription && (
 					<>
 						<Divider sx={{ paddingTop: 3 }} />
+						<Box sx={{ paddingBottom: sectionPadding }} />
 						<SectionHeader
 							heading={<Translate translationKey="about" />}
 						/>

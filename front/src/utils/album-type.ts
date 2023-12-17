@@ -16,32 +16,16 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { Box, Typography } from "@mui/material";
+import { AlbumType } from "../models/album";
 
-type SectionHeaderProps<T> = {
-	heading: string | JSX.Element;
-	trailing?: JSX.Element;
+export const getAlbumTypeParam = (input: any) => {
+	if (Array.isArray(input)) {
+		input = input[0];
+	}
+	for (const type of AlbumType) {
+		if (input?.toLowerCase() === type.toLowerCase()) {
+			return type;
+		}
+	}
+	return undefined;
 };
-
-/**
- * A scrollable row (possibly of tiles) with a header with a 'more' button
- */
-const SectionHeader = <T,>(props: SectionHeaderProps<T>) => {
-	return (
-		<Box
-			sx={{
-				display: "flex",
-				flexGrow: 1,
-				justifyContent: "space-between",
-				alignItems: "center",
-			}}
-		>
-			<Typography variant="h5" fontWeight="bold">
-				{props.heading}
-			</Typography>
-			{props.trailing}
-		</Box>
-	);
-};
-
-export default SectionHeader;

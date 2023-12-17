@@ -116,6 +116,13 @@ const fr: TranslationMap = {
 	Soundtrack: "Bande Originale",
 	RemixAlbum: "Album de Remixes",
 	VideoAlbum: "Collection de Vidéos",
+	pluralStudioRecording: "Albums",
+	pluralSingle: "Singles",
+	pluralLiveRecording: "Albums Live",
+	pluralCompilation: "Compilations",
+	pluralSoundtrack: "Bandes Originales",
+	pluralRemixAlbum: "Remixes",
+	pluralVideoAlbum: "Albums Vidéos",
 
 	backToTop: "Retour en haut",
 	changeLayout: "Changer la disposition",
