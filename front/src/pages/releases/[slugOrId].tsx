@@ -66,7 +66,7 @@ import { Star1 } from "iconsax-react";
 import GenreButton from "../../components/genre-button";
 import { SongWithRelations } from "../../models/song";
 import Video from "../../models/video";
-import useColorScheme from "../../theme/color-scheme";
+import { useAccentColor } from "../../utils/accent-color";
 
 const releaseQuery = (releaseIdentifier: string | number) =>
 	API.getRelease(releaseIdentifier, ["album", "externalIds"]);
@@ -145,7 +145,6 @@ const RelatedContentSection = (props: RelatedContentSectionProps) => {
 
 const ReleasePage = (props: InferSSRProps<typeof getServerSideProps>) => {
 	const router = useRouter();
-	const colorScheme = useColorScheme();
 	const releaseIdentifier =
 		props.additionalProps?.releaseIdentifier ?? getSlugOrId(router.query);
 	const theme = useTheme();
@@ -253,14 +252,7 @@ const ReleasePage = (props: InferSSRProps<typeof getServerSideProps>) => {
 			.filter((rating) => rating !== null)
 			.sort()
 			.at(-1) ?? null;
-	const colors = useMemo(() => {
-		const sortedList = Array.of(...(illustration?.colors ?? [])).sort();
-
-		if (colorScheme == "light") {
-			return sortedList.reverse();
-		}
-		return sortedList;
-	}, [illustration, colorScheme]);
+	const accentColor = useAccentColor(illustration);
 
 	// eslint-disable-next-line no-extra-parens
 	if (!release.data || !album.data || !artists.data || !trackList) {
@@ -350,7 +342,7 @@ const ReleasePage = (props: InferSSRProps<typeof getServerSideProps>) => {
 										<Star1
 											size={18}
 											style={{ marginTop: -3 }}
-											color={colors.at(4)}
+											color={accentColor}
 										/>
 									}
 									emptyIcon={
@@ -462,7 +454,7 @@ const ReleasePage = (props: InferSSRProps<typeof getServerSideProps>) => {
 												>
 													<GenreButton
 														genre={genre}
-														color={colors.at(4)}
+														color={accentColor}
 													/>
 												</Grid>
 											)) ?? []}
