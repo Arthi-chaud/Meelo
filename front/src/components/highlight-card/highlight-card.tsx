@@ -22,7 +22,7 @@ import hexToRgba from "hex-to-rgba";
 import IllustrationModel from "../../models/illustration";
 import Illustration from "../illustration";
 import { useMemo } from "react";
-import useColorScheme from "../../theme/color-scheme";
+import { useAccentColor } from "../../utils/accent-color";
 
 type HighlightCardProps = {
 	title: string;
@@ -35,23 +35,15 @@ type HighlightCardProps = {
 
 const HighlightCard = (props: HighlightCardProps) => {
 	const theme = useTheme();
-	const colorScheme = useColorScheme();
+	const accentColor = useAccentColor(props.illustration);
 	const cardColor = useMemo(() => {
 		const themePaperColor = hexToRgba(theme.palette.background.paper, 0.75);
-		const sortedColors = Array.of(
-			...(props.illustration?.colors ?? []),
-		).sort();
 
-		if (colorScheme == "light") {
-			sortedColors.reverse();
-		}
-		const color = sortedColors.at(3);
-
-		if (color) {
-			return `color-mix(in srgb, ${color} 20%, ${themePaperColor})`;
+		if (accentColor) {
+			return `color-mix(in srgb, ${accentColor} 40%, ${themePaperColor})`;
 		}
 		return themePaperColor;
-	}, [props, theme, colorScheme]);
+	}, [accentColor, theme]);
 	const style = {
 		backgroundColor: cardColor,
 		boxShadow: "none",
