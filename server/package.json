@@ -142,7 +142,8 @@
 		"coverageReporters": [
 			"lcov"
 		],
-		"testEnvironment": "node"
+		"testEnvironment": "node",
+		"testSequencer": "<rootDir>/test/sequencer.ts"
 	},
 	"prisma": {
 		"schema": "prisma/schema.prisma"
