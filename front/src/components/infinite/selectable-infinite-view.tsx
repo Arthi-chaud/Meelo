@@ -121,6 +121,7 @@ const SelectableInfiniteView = (props: SelectableInfiniteViewProps) => {
 				) : selectedType == "album" ? (
 					<InfiniteAlbumView
 						key={selectedType}
+						defaultAlbumType={null}
 						defaultLayout="list"
 						query={({ sortBy, order, type, library }) =>
 							props.albumQuery(

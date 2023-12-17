@@ -38,12 +38,15 @@ const InfiniteAlbumView = (
 		typeof AlbumSortingKeys,
 		AdditionalProps
 	> &
-		Pick<Parameters<typeof AlbumTile>[0], "formatSubtitle">,
+		Pick<Parameters<typeof AlbumTile>[0], "formatSubtitle"> & {
+			defaultAlbumType: AlbumType | null;
+		},
 ) => {
 	const router = useRouter();
 	const [options, setOptions] = useState<
 		OptionState<typeof AlbumSortingKeys, AdditionalProps>
 	>({
+		type: props.defaultAlbumType ?? undefined,
 		library: null,
 		order: props.initialSortingOrder ?? "asc",
 		sortBy: props.initialSortingField ?? "name",
