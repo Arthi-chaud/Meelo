@@ -120,9 +120,9 @@ const HomePage = (props: InferSSRProps<typeof getServerSideProps>) => {
 	);
 	const tileRowWindowSize = {
 		xs: 3,
-		sm: 5,
-		md: 6,
-		lg: 7,
+		sm: 4,
+		md: 5,
+		lg: 6,
 		xl: 10,
 	};
 	const queries = [
@@ -188,7 +188,7 @@ const HomePage = (props: InferSSRProps<typeof getServerSideProps>) => {
 									<Grid
 										item
 										xs={12}
-										md={6}
+										lg={6}
 										xl={4}
 										key={index}
 									>
