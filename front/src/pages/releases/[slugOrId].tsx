@@ -267,7 +267,7 @@ const ReleasePage = (props: InferSSRProps<typeof getServerSideProps>) => {
 			>
 				<BackgroundBlurhash blurhash={illustration?.blurhash} />
 				<Grid container spacing={4} sx={{ justifyContent: "center" }}>
-					<Grid item lg={3} sm={5} xs={8}>
+					<Grid item xl={2} lg={3} sm={5} xs={8}>
 						<Illustration
 							illustration={release.data!.illustration}
 							quality="original"
@@ -287,9 +287,10 @@ const ReleasePage = (props: InferSSRProps<typeof getServerSideProps>) => {
 								textAlign: "center",
 							},
 						}}
-						lg={6}
-						sm={7}
 						xs={12}
+						sm={7}
+						lg={6}
+						xl
 					>
 						<Grid item sx={{ width: "inherit" }}>
 							<Typography variant="h3" fontWeight="bold">
@@ -423,7 +424,7 @@ const ReleasePage = (props: InferSSRProps<typeof getServerSideProps>) => {
 					sx={{ display: "flex", paddingY: 2 }}
 				>
 					{hasGenres && (
-						<Grid item lg={3} xs={12} marginTop={1}>
+						<Grid item xl={2} lg={3} xs={12} marginTop={1}>
 							<Fade in={albumGenres.data != undefined}>
 								<Box>
 									<Grid
@@ -472,7 +473,7 @@ const ReleasePage = (props: InferSSRProps<typeof getServerSideProps>) => {
 							</Fade>
 						</Grid>
 					)}
-					<Grid item lg={hasGenres ? 9 : true} xs={12}>
+					<Grid item xl lg={hasGenres ? 9 : true} xs={12}>
 						{albumGenres.data && trackList && artists.data && (
 							<Fade in>
 								<Box>
