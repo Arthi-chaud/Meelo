@@ -29,8 +29,8 @@ import SongGrid from "../components/song-grid";
 import ReleaseTile from "../components/tile/release-tile";
 import Translate from "../i18n/translate";
 import Fade from "../components/fade";
-import BackgroundBlurhash from "../components/blurhash-background";
 import AlbumHighlightCard from "../components/highlight-card/album-highlight-card";
+import GradientBackground from "../components/gradient-background";
 
 const newlyAddedAlbumsQuery = API.getAlbums(
 	{},
@@ -140,7 +140,7 @@ const HomePage = (props: InferSSRProps<typeof getServerSideProps>) => {
 	const selectedBlurhash = illustrations.at(
 		illustrations.length *
 			(props.additionalProps?.blurhashIndex ?? Math.random()),
-	)?.blurhash;
+	)?.colors;
 
 	if (queries.find((query) => query.isLoading)) {
 		return <LoadingPage />;
@@ -148,7 +148,10 @@ const HomePage = (props: InferSSRProps<typeof getServerSideProps>) => {
 
 	return (
 		<>
-			<BackgroundBlurhash blurhash={selectedBlurhash} />
+			{/* <BackgroundBlurhash blurhash={selectedBlurhash} /> */}
+			{selectedBlurhash && (
+				<GradientBackground colors={selectedBlurhash} />
+			)}
 			<Fade in>
 				<Stack spacing={4} my={2}>
 					<HomePageSection

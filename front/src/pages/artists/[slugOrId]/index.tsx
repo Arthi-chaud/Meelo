@@ -39,11 +39,11 @@ import ExternalIdBadge from "../../../components/external-id-badge";
 import SongGrid from "../../../components/song-grid";
 import Translate from "../../../i18n/translate";
 import { MoreIcon } from "../../../components/icons";
-import BackgroundBlurhash from "../../../components/blurhash-background";
 import ResourceDescriptionExpandable from "../../../components/resource-description-expandable";
 import ArtistRelationPageHeader from "../../../components/relation-page-header/artist-relation-page-header";
 import Album, { AlbumType } from "../../../models/album";
 import { useMemo } from "react";
+import GradientBackground from "../../../components/gradient-background";
 
 // Number of Song item in the 'Top Song' section
 const songListSize = 6;
@@ -149,7 +149,9 @@ const ArtistPage = (props: InferSSRProps<typeof getServerSideProps>) => {
 	}
 	return (
 		<Box sx={{ width: "100%" }}>
-			<BackgroundBlurhash blurhash={artist.data.illustration?.blurhash} />
+			{artist.data?.illustration && (
+				<GradientBackground colors={artist.data.illustration.colors} />
+			)}
 			<ArtistRelationPageHeader artist={artist.data} />
 			<Grid
 				container

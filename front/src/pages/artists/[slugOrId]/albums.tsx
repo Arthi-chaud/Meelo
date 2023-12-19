@@ -26,8 +26,8 @@ import prepareSSR, { InferSSRProps } from "../../../ssr";
 import getYear from "../../../utils/getYear";
 import { getLayoutParams } from "../../../utils/layout";
 import { useQuery } from "../../../api/use-query";
-import BackgroundBlurhash from "../../../components/blurhash-background";
 import { getAlbumTypeParam } from "../../../utils/album-type";
+import GradientBackground from "../../../components/gradient-background";
 
 const defaultSort = {
 	sortBy: "releaseDate",
@@ -68,9 +68,9 @@ const ArtistAlbumsPage = (props: InferSSRProps<typeof getServerSideProps>) => {
 
 	return (
 		<Box sx={{ width: "100%" }}>
-			<BackgroundBlurhash
-				blurhash={artist.data?.illustration?.blurhash}
-			/>
+			{artist.data?.illustration && (
+				<GradientBackground colors={artist.data.illustration.colors} />
+			)}
 			<ArtistRelationPageHeader artistSlugOrId={artistIdentifier} />
 			<InfiniteAlbumView
 				defaultLayout={props.additionalProps?.defaultLayout}

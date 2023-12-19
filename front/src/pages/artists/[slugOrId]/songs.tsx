@@ -26,7 +26,7 @@ import prepareSSR, { InferSSRProps } from "../../../ssr";
 import { useQuery, useQueryClient } from "../../../api/use-query";
 import { SongSortingKeys } from "../../../models/song";
 import { getOrderParams, getSortingFieldParams } from "../../../utils/sorting";
-import BackgroundBlurhash from "../../../components/blurhash-background";
+import GradientBackground from "../../../components/gradient-background";
 
 export const getServerSideProps = prepareSSR((context) => {
 	const artistIdentifier = getSlugOrId(context.params);
@@ -63,9 +63,9 @@ const ArtistSongPage = (props: InferSSRProps<typeof getServerSideProps>) => {
 
 	return (
 		<Box sx={{ width: "100%" }}>
-			<BackgroundBlurhash
-				blurhash={artist.data?.illustration?.blurhash}
-			/>
+			{artist.data?.illustration && (
+				<GradientBackground colors={artist.data?.illustration.colors} />
+			)}
 			<ArtistRelationPageHeader artistSlugOrId={artistIdentifier} />
 			<InfiniteSongView
 				initialSortingField={props.additionalProps?.sortBy ?? "name"}
