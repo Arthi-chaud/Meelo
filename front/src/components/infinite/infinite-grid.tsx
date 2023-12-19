@@ -48,7 +48,7 @@ const InfiniteGrid = <T extends Resource>(props: InfiniteGridProps<T>) => {
 							sm={3}
 							md={12 / 5}
 							lg={2}
-							xl={1.5}
+							xl={1.2}
 							key={item.id}
 						>
 							{props.render(item)}

@@ -26,7 +26,7 @@ import formatDuration from "../../../utils/formatDuration";
 import { SongSortingKeys } from "../../../models/song";
 import { getOrderParams, getSortingFieldParams } from "../../../utils/sorting";
 import { useQuery } from "../../../api/use-query";
-import BackgroundBlurhash from "../../../components/blurhash-background";
+import GradientBackground from "../../../components/gradient-background";
 
 export const getServerSideProps = prepareSSR((context) => {
 	const artistIdentifier = getSlugOrId(context.params);
@@ -57,9 +57,9 @@ const ArtistSongPage = (props: InferSSRProps<typeof getServerSideProps>) => {
 
 	return (
 		<>
-			<BackgroundBlurhash
-				blurhash={artist.data?.illustration?.blurhash}
-			/>
+			{artist.data?.illustration && (
+				<GradientBackground colors={artist.data.illustration.colors} />
+			)}
 			<ArtistRelationPageHeader artistSlugOrId={artistIdentifier} />
 			<InfiniteVideoView
 				initialSortingField={props.additionalProps?.sortBy}

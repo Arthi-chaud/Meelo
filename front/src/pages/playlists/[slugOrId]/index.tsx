@@ -56,7 +56,7 @@ import { shuffle } from "d3-array";
 import { DeletePlaylistAction } from "../../../components/actions/playlist";
 import { useConfirm } from "material-ui-confirm";
 import Translate, { translate } from "../../../i18n/translate";
-import BackgroundBlurhash from "../../../components/blurhash-background";
+import GradientBackground from "../../../components/gradient-background";
 
 const playlistQuery = (idOrSlug: number | string) =>
 	API.getPlaylist(idOrSlug, ["entries"]);
@@ -267,9 +267,14 @@ const PlaylistPage = (props: InferSSRProps<typeof getServerSideProps>) => {
 
 	return (
 		<>
-			<BackgroundBlurhash
+			{/* <BackgroundBlurhash
 				blurhash={playlist.data.illustration?.blurhash}
-			/>
+			/> */}
+			{playlist.data?.illustration && (
+				<GradientBackground
+					colors={playlist.data.illustration.colors}
+				/>
+			)}
 			<RelationPageHeader
 				illustration={
 					<Illustration

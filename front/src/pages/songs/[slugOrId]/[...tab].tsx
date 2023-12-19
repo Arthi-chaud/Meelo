@@ -45,8 +45,8 @@ import { playTrack } from "../../../state/playerSlice";
 import ExternalIdBadge from "../../../components/external-id-badge";
 import Translate from "../../../i18n/translate";
 import { PlayIcon } from "../../../components/icons";
-import BackgroundBlurhash from "../../../components/blurhash-background";
 import GenreButton from "../../../components/genre-button";
+import GradientBackground from "../../../components/gradient-background";
 
 export const getServerSideProps = prepareSSR((context) => {
 	const songIdentifier = getSlugOrId(context.params);
@@ -102,7 +102,10 @@ const SongPage = (props: InferSSRProps<typeof getServerSideProps>) => {
 	}
 	return (
 		<Box sx={{ width: "100%" }}>
-			<BackgroundBlurhash blurhash={song.data.illustration?.blurhash} />
+			{/* <BackgroundBlurhash blurhash={song.data.illustration?.blurhash} /> */}
+			{song.data?.illustration && (
+				<GradientBackground colors={song.data?.illustration.colors} />
+			)}
 			<SongRelationPageHeader song={song.data} />
 			<Button
 				variant="contained"

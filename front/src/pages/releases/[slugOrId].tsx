@@ -60,13 +60,13 @@ import SongGrid from "../../components/song-grid";
 import AlbumTile from "../../components/tile/album-tile";
 import getYear from "../../utils/getYear";
 import Fade from "../../components/fade";
-import BackgroundBlurhash from "../../components/blurhash-background";
 import ResourceDescriptionExpandable from "../../components/resource-description-expandable";
 import { Star1 } from "iconsax-react";
 import GenreButton from "../../components/genre-button";
 import { SongWithRelations } from "../../models/song";
 import Video from "../../models/video";
 import { useAccentColor } from "../../utils/accent-color";
+import GradientBackground from "../../components/gradient-background";
 
 const releaseQuery = (releaseIdentifier: string | number) =>
 	API.getRelease(releaseIdentifier, ["album", "externalIds"]);
@@ -265,7 +265,10 @@ const ReleasePage = (props: InferSSRProps<typeof getServerSideProps>) => {
 				disableGutters={viewIsInColumn}
 				sx={{ marginTop: 3, marginX: 0, position: "relative" }}
 			>
-				<BackgroundBlurhash blurhash={illustration?.blurhash} />
+				{/* <BackgroundBlurhash blurhash={illustration?.blurhash} /> */}
+				{illustration && (
+					<GradientBackground colors={illustration.colors} />
+				)}
 				<Grid container spacing={4} sx={{ justifyContent: "center" }}>
 					<Grid item xl={2} lg={3} sm={5} xs={8}>
 						<Illustration

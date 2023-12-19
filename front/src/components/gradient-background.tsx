@@ -18,30 +18,39 @@
 
 import { Box, useTheme } from "@mui/material";
 import hexToRgba from "hex-to-rgba";
-import Blurhash from "./blurhash";
+import useColorScheme from "../theme/color-scheme";
 
-const BackgroundBlurhash = (props: { blurhash?: string }) => {
+type GradientBackgroundProps = {
+	colors: string[];
+};
+
+const GradientBackground = ({ colors }: GradientBackgroundProps) => {
 	const theme = useTheme();
-	const fadeIn = {
-		opacity: 1,
-		animation: `fadeIn 0.${theme.transitions.duration.enteringScreen}ms ${theme.transitions.easing.easeIn} 0ms`,
-		"@keyframes fadeIn": { "0%": { opacity: 0 } },
-	};
+	const colorScheme = useColorScheme();
+	const [color1, color2, color3, color4, color5] = Array.of(...colors).sort();
+	const gradientCSS = `
+		radial-gradient(ellipse at 10% 90%, ${color1} 0%, transparent 55%),
+		radial-gradient(ellipse at 90% 90%, ${color2} 0%, transparent 55%),
+		radial-gradient(ellipse at 90% 10%, ${color3} 0%, transparent 55%),
+		radial-gradient(ellipse at 10% 10%, ${color4} 0%, transparent 55%),
+		radial-gradient(ellipse at 0% 100%, ${color5} 0%, transparent 55%);
+	`;
 
 	return (
 		<>
-			<Blurhash
-				blurhash={props.blurhash}
-				sx={{
-					position: "fixed",
-					top: 0,
-					left: 0,
-					zIndex: -10000,
-					width: "100vw",
-					height: "100vh",
-					...fadeIn,
-				}}
-			/>
+			{colors.length >= 5 && (
+				<Box
+					sx={{
+						position: "fixed",
+						top: 0,
+						left: 0,
+						zIndex: -10000,
+						width: "100vw",
+						height: "100vh",
+						background: gradientCSS,
+					}}
+				/>
+			)}
 			<Box
 				sx={{
 					position: "fixed",
@@ -52,7 +61,7 @@ const BackgroundBlurhash = (props: { blurhash?: string }) => {
 					height: "100vh",
 					background: hexToRgba(
 						theme.palette.background.default,
-						0.6,
+						colorScheme == "dark" ? 0.4 : 0.6,
 					),
 				}}
 			/>
@@ -60,4 +69,4 @@ const BackgroundBlurhash = (props: { blurhash?: string }) => {
 	);
 };
 
-export default BackgroundBlurhash;
+export default GradientBackground;
