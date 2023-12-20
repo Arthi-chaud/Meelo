@@ -31,6 +31,7 @@ import Translate from "../i18n/translate";
 import Fade from "../components/fade";
 import AlbumHighlightCard from "../components/highlight-card/album-highlight-card";
 import GradientBackground from "../components/gradient-background";
+import { useMemo } from "react";
 
 const newlyAddedAlbumsQuery = API.getAlbums(
 	{},
@@ -137,10 +138,11 @@ const HomePage = (props: InferSSRProps<typeof getServerSideProps>) => {
 		.flat()
 		.map(({ illustration }) => illustration)
 		.filter((illustration) => illustration !== null);
-	const selectedBlurhash = illustrations.at(
-		illustrations.length *
-			(props.additionalProps?.blurhashIndex ?? Math.random()),
-	)?.colors;
+	const selectedBlurhash = useMemo(() => {
+		return illustrations.at(
+			illustrations.length * (props.additionalProps?.blurhashIndex ?? 0),
+		)?.colors;
+	}, [illustrations, props.additionalProps]);
 
 	if (queries.find((query) => query.isLoading)) {
 		return <LoadingPage />;
@@ -148,7 +150,6 @@ const HomePage = (props: InferSSRProps<typeof getServerSideProps>) => {
 
 	return (
 		<>
-			{/* <BackgroundBlurhash blurhash={selectedBlurhash} /> */}
 			{selectedBlurhash && (
 				<GradientBackground colors={selectedBlurhash} />
 			)}
