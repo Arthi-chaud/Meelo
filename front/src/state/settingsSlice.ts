@@ -35,7 +35,7 @@ type SettingsState = {
 export const settingsSlice = createSlice({
 	name: "settings",
 	initialState: <SettingsState>{
-		colorScheme: "dark",
+		colorScheme: "system",
 		language: "system",
 		allowNotifications: false,
 	},
