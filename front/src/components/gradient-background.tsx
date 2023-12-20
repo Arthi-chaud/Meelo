@@ -61,7 +61,7 @@ const GradientBackground = ({ colors }: GradientBackgroundProps) => {
 					height: "100vh",
 					background: hexToRgba(
 						theme.palette.background.default,
-						colorScheme == "dark" ? 0.4 : 0.6,
+						colorScheme == "dark" ? 0.4 : 0.5,
 					),
 				}}
 			/>
