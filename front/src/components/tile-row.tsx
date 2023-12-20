@@ -39,13 +39,23 @@ const TileRow = (props: TileRowProps) => {
 
 	return (
 		<Stack
-			sx={{ overflowX: "scroll", paddingBottom: 0, width: "100%" }}
+			sx={{
+				overflowX: "scroll",
+				paddingBottom: 0,
+				width: "100%",
+				scrollSnapType: "x",
+			}}
 			direction="row"
 		>
 			{props.tiles.map((tile, tileIndex) => (
 				<Box
 					key={tileIndex}
-					sx={{ paddingX: 1, minWidth: width, maxWidth: width }}
+					sx={{
+						paddingX: 1,
+						minWidth: width,
+						maxWidth: width,
+						scrollSnapAlign: "start",
+					}}
 				>
 					{tile}
 				</Box>
