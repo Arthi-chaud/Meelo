@@ -1,7 +1,7 @@
 {
 	"dataFolder": "/data",
 	"trackRegex": [
-		"[\\/\\\\]?(?<Artist>.+)[\\/\\\\]+(?<Album>.+?)(\\s*\\((?<Year>\\d+)\\))?(\\s*\\[(?<DiscogsId>\\d+)\\])?[\\/\\\\]+((?<Disc>[0-9]+)-)?(?<Index>[0-9]+)\\s+(?<Track>.*)\\..*$"
+		"(.+[\\/\\\\]+)*(?<Artist>.+)[\\/\\\\]+(?<Album>.+?)(\\s*\\((?<Year>\\d+)\\))?(\\s*\\[(?<DiscogsId>\\d+)\\])?[\\/\\\\]+((?<Disc>[0-9]+)-)?(?<Index>[0-9]+)\\s+(?<Track>.*)\\..*$"
 	],
 	"metadata": {
 		"source": "embedded",

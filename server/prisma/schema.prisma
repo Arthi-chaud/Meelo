@@ -360,12 +360,12 @@ model Track {
 	type			TrackType
 	/// @description Bitrate, in kbps
 	/// @example 320
-	bitrate			Int
+	bitrate			Int?
 	/// @description The type of source the track is ripped from
 	ripSource		RipSource?
 	/// @description The duration in seconds of the track
 	/// @example 120
-	duration		Int
+	duration		Int?
 	/// @description If it is a "Bonus" track
 	/// @example false
 	isBonus		Boolean @default(false)

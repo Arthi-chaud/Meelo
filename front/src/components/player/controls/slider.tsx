@@ -37,7 +37,7 @@ const PlayerSlider = (props: PlayerSliderProps) => {
 			}}
 		>
 			<Grid item xs="auto">
-				<DurationComponent time={props.progress} />
+				<DurationComponent time={props.progress ?? undefined} />
 			</Grid>
 			<Grid item xs>
 				<Slider
@@ -66,7 +66,7 @@ const PlayerSlider = (props: PlayerSliderProps) => {
 				/>
 			</Grid>
 			<Grid item xs="auto">
-				<DurationComponent time={props.duration} />
+				<DurationComponent time={props.duration ?? undefined} />
 			</Grid>
 		</Grid>
 	);

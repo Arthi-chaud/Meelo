@@ -46,6 +46,7 @@ import Slug from "src/slug/slug";
 import escapeRegex from "src/utils/escape-regex";
 import glob from "glob";
 import * as dir from "path";
+import mime from "mime";
 
 @Injectable()
 export default class ScannerService {
@@ -163,9 +164,15 @@ export default class ScannerService {
 			discIndex: metadata.discIndex ?? null,
 			trackIndex: metadata.index ?? null,
 			type: metadata.type,
-			bitrate: Math.floor(metadata.bitrate),
+			bitrate:
+				metadata.bitrate !== undefined
+					? Math.floor(metadata.bitrate)
+					: null,
 			ripSource: null,
-			duration: Math.floor(metadata.duration),
+			duration:
+				metadata.duration !== undefined
+					? Math.floor(metadata.duration)
+					: null,
 			sourceFile: { id: file.id },
 			release: { id: release.id },
 			song: { id: song.id },
@@ -198,24 +205,21 @@ export default class ScannerService {
 	 * @returns a Metadata object
 	 */
 	async parseMetadata(filePath: string): Promise<Metadata> {
-		const fileMetadata: Metadata = await this.parseMetadataFromFile(
-			filePath,
-		);
-		const pathMetadata: Metadata = this.parseMetadataFromPath(filePath);
 		const settings = this.settingsService.settingsValues;
 		// eslint-disable-next-line init-declarations
 		let metadata: Metadata;
 
-		pathMetadata.duration = fileMetadata.duration;
-		pathMetadata.type = fileMetadata.type;
-		pathMetadata.bitrate = fileMetadata.bitrate;
 		if (settings.metadata.order == "only") {
 			if (settings.metadata.source == "path") {
-				metadata = pathMetadata;
+				metadata = this.parseMetadataFromPath(filePath);
 			} else {
-				metadata = fileMetadata;
+				metadata = await this.parseMetadataFromFile(filePath);
 			}
 		} else {
+			const fileMetadata: Metadata = await this.parseMetadataFromFile(
+				filePath,
+			);
+			const pathMetadata: Metadata = this.parseMetadataFromPath(filePath);
 			if (settings.metadata.source == "path") {
 				metadata = this.mergeMetadata(pathMetadata, fileMetadata);
 			} else {
@@ -264,6 +268,14 @@ export default class ScannerService {
 				.concat(compilationAlbumArtistKeyword) ?? []),
 		);
 
+		const mimeType = mime.getType(filePath);
+
+		if (mimeType == undefined) {
+			throw new PathParsingException("Unknown MIME type");
+		}
+		if (!mimeType.startsWith("video/") && !mimeType.startsWith("audio/")) {
+			throw new PathParsingException("Invalid MIME type");
+		}
 		try {
 			const matchingRegex: RegExpMatchArray =
 				this.settingsService.settingsValues.trackRegex
@@ -275,28 +287,30 @@ export default class ScannerService {
 					groups["AlbumArtist"]?.toLocaleLowerCase(),
 				) ||
 				compArtists.includes(groups["Artist"]?.toLocaleLowerCase());
-			const metadata = new Metadata();
 
-			(metadata.compilation = isCompilation),
-				(metadata.albumArtist = isCompilation
-					? undefined
-					: groups["AlbumArtist"]);
-			metadata.artist = groups["Artist"];
-			metadata.release = groups["Release"];
-			metadata.album = groups["Album"];
-			metadata.releaseDate = groups["Year"]
-				? new Date(groups["Year"])
-				: undefined;
-			metadata.discIndex = groups["Disc"]
-				? parseInt(groups["Disc"])
-				: undefined;
-			metadata.index = groups["Index"]
-				? parseInt(groups["Index"])
-				: undefined;
-			metadata.name = groups["Track"];
-			metadata.genres = groups["Genre"] ? [groups["Genre"]] : [];
-			metadata.discogsId = groups["DiscogsId"];
-			return metadata;
+			return {
+				compilation: isCompilation,
+				albumArtist: isCompilation ? undefined : groups["AlbumArtist"],
+				artist: groups["Artist"],
+				release: groups["Release"],
+				album: groups["Album"],
+				releaseDate: groups["Year"]
+					? new Date(groups["Year"])
+					: undefined,
+				discIndex: groups["Disc"]
+					? parseInt(groups["Disc"])
+					: undefined,
+				featuring: [],
+				index: groups["Index"] ? parseInt(groups["Index"]) : undefined,
+				name: groups["Track"],
+				genres: groups["Genre"] ? [groups["Genre"]] : [],
+				discogsId: groups["DiscogsId"],
+				duration: undefined,
+				bitrate: undefined,
+				type: mimeType.startsWith("video/")
+					? TrackType.Video
+					: TrackType.Audio,
+			};
 		} catch {
 			throw new PathParsingException(filePath);
 		}
