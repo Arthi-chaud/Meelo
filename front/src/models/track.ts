@@ -58,11 +58,11 @@ const Track = Resource.concat(Illustration).concat(
 		 * Bit rate of the track's audio.
 		 * In kbits/s
 		 */
-		bitrate: yup.number().required(),
+		bitrate: yup.number().required().nullable(),
 		/**
 		 * Duration in seconds of the track
 		 */
-		duration: yup.number().required(),
+		duration: yup.number().required().nullable(),
 		/**
 		 * URL to stream track
 		 */

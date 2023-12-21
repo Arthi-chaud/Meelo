@@ -294,7 +294,7 @@ const Player = () => {
 							onPause={pause}
 							onPlay={play}
 							onExpand={(expand) => setExpanded(expand)}
-							duration={currentTrack?.track.duration}
+							duration={currentTrack?.track.duration ?? undefined}
 							progress={progress}
 							onSkipTrack={onSkipTrack}
 							onRewind={onRewind}
@@ -343,7 +343,7 @@ const Player = () => {
 							onPause={pause}
 							onPlay={play}
 							onExpand={(expand) => setExpanded(expand)}
-							duration={currentTrack?.track.duration}
+							duration={currentTrack?.track.duration ?? undefined}
 							progress={progress}
 							onSkipTrack={onSkipTrack}
 							onRewind={onRewind}

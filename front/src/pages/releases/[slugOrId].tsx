@@ -234,7 +234,8 @@ const ReleasePage = (props: InferSSRProps<typeof getServerSideProps>) => {
 			return [
 				flatTracks,
 				flatTracks.reduce(
-					(prevDuration, track) => prevDuration + track.duration,
+					(prevDuration, track) =>
+						prevDuration + (track.duration ?? 0),
 					0,
 				),
 				discMap,
