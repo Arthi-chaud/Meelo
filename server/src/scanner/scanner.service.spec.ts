@@ -65,6 +65,9 @@ describe("Metadata Service", () => {
 				artist: "My Artist",
 				compilation: false,
 				album: "My Album",
+				type: "Audio",
+				bitrate: undefined,
+				duration: undefined,
 				release: undefined,
 				releaseDate: new Date("2006"),
 				discIndex: 1,
@@ -74,9 +77,9 @@ describe("Metadata Service", () => {
 			});
 		});
 
-		it("should extract the metadata values from the path (compilation)", () => {
+		it("should extract the metadata values from the path (compilation + video)", () => {
 			const parsedValues: Metadata = scannerService.parseMetadataFromPath(
-				"/data/Compilations/My Album (2006)/1-02 My Track.m4a",
+				"/data/Compilations/My Album (2006)/1-02 My Track.m4v",
 			);
 
 			expect(parsedValues).toMatchObject({
@@ -89,6 +92,9 @@ describe("Metadata Service", () => {
 				discIndex: 1,
 				index: 2,
 				genres: [],
+				type: "Video",
+				bitrate: undefined,
+				duration: undefined,
 				name: "My Track",
 			});
 		});
