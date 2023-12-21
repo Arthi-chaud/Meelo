@@ -46,6 +46,7 @@ import Slug from "src/slug/slug";
 import escapeRegex from "src/utils/escape-regex";
 import glob from "glob";
 import * as dir from "path";
+import mime from "mime";
 
 @Injectable()
 export default class ScannerService {
@@ -163,9 +164,15 @@ export default class ScannerService {
 			discIndex: metadata.discIndex ?? null,
 			trackIndex: metadata.index ?? null,
 			type: metadata.type,
-			bitrate: Math.floor(metadata.bitrate),
+			bitrate:
+				metadata.bitrate !== undefined
+					? Math.floor(metadata.bitrate)
+					: null,
 			ripSource: null,
-			duration: Math.floor(metadata.duration),
+			duration:
+				metadata.duration !== undefined
+					? Math.floor(metadata.duration)
+					: null,
 			sourceFile: { id: file.id },
 			release: { id: release.id },
 			song: { id: song.id },
@@ -198,21 +205,21 @@ export default class ScannerService {
 	 * @returns a Metadata object
 	 */
 	async parseMetadata(filePath: string): Promise<Metadata> {
-		const fileMetadata: Metadata = await this.parseMetadataFromFile(
-			filePath,
-		);
-		const pathMetadata: Metadata = this.parseMetadataFromPath(filePath);
 		const settings = this.settingsService.settingsValues;
 		// eslint-disable-next-line init-declarations
 		let metadata: Metadata;
 
 		if (settings.metadata.order == "only") {
 			if (settings.metadata.source == "path") {
-				metadata = pathMetadata;
+				metadata = this.parseMetadataFromPath(filePath);
 			} else {
-				metadata = fileMetadata;
+				metadata = await this.parseMetadataFromFile(filePath);
 			}
 		} else {
+			const fileMetadata: Metadata = await this.parseMetadataFromFile(
+				filePath,
+			);
+			const pathMetadata: Metadata = this.parseMetadataFromPath(filePath);
 			if (settings.metadata.source == "path") {
 				metadata = this.mergeMetadata(pathMetadata, fileMetadata);
 			} else {
@@ -293,6 +300,7 @@ export default class ScannerService {
 				discIndex: groups["Disc"]
 					? parseInt(groups["Disc"])
 					: undefined,
+				featuring: [],
 				index: groups["Index"] ? parseInt(groups["Index"]) : undefined,
 				name: groups["Track"],
 				genres: groups["Genre"] ? [groups["Genre"]] : [],
