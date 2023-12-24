@@ -90,11 +90,12 @@ const GenrePage = (props: InferSSRProps<typeof getServerSideProps>) => {
 						["artist"],
 					)
 				}
-				songQuery={({ library, type }, { sortBy, order }) =>
+				songQuery={({ library, type, random }, { sortBy, order }) =>
 					API.getSongs(
 						{
 							genre: genreIdentifier,
 							type,
+							random,
 							library: library ?? undefined,
 						},
 						{ sortBy, order },

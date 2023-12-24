@@ -223,32 +223,6 @@ const Controls = <
 							}}
 						/>
 					)}
-					{props.actions?.map((action, index) => (
-						<Button
-							key={"action-" + action.label}
-							startIcon={action.icon}
-							variant="contained"
-							onClickCapture={() => {
-								if (action.disabled === true) {
-									return;
-								}
-								action.onClick && action.onClick();
-								action.dialog &&
-									setOpenActionModal(action.label);
-							}}
-						>
-							<Translate translationKey={action.label} />
-							{action.dialog && (
-								<Dialog
-									open={openActionModal === action.label}
-									onClose={closeModal}
-									fullWidth
-								>
-									{action.dialog({ close: closeModal })}
-								</Dialog>
-							)}
-						</Button>
-					)) ?? []}
 					<OptionButton
 						optionGroup={{
 							name: `${translate("sortBy")} ${translate(
@@ -320,6 +294,32 @@ const Controls = <
 							</Button>
 						</Tooltip>
 					)}
+					{props.actions?.map((action, index) => (
+						<Button
+							key={"action-" + action.label}
+							startIcon={action.icon}
+							variant="contained"
+							onClickCapture={() => {
+								if (action.disabled === true) {
+									return;
+								}
+								action.onClick && action.onClick();
+								action.dialog &&
+									setOpenActionModal(action.label);
+							}}
+						>
+							<Translate translationKey={action.label} />
+							{action.dialog && (
+								<Dialog
+									open={openActionModal === action.label}
+									onClose={closeModal}
+									fullWidth
+								>
+									{action.dialog({ close: closeModal })}
+								</Dialog>
+							)}
+						</Button>
+					)) ?? []}
 				</ButtonGroup>
 			</Box>
 		</Fade>

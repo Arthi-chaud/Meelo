@@ -28,9 +28,18 @@ import SongItem from "../../list-item/song-item";
 import InfiniteView from "../infinite-view";
 import InfiniteResourceViewProps from "./infinite-resource-view-props";
 import { useLanguage } from "../../../i18n/translate";
+import { ShuffleIcon } from "../../icons";
+import {
+	prepareMeeloInfiniteQuery,
+	useQueryClient,
+} from "../../../api/use-query";
+import { useDispatch } from "react-redux";
+import { emptyPlaylist, playNext } from "../../../state/playerSlice";
+import API from "../../../api/api";
 
 type AdditionalProps = {
 	type?: SongType;
+	random?: number;
 };
 
 const InfiniteSongView = (
@@ -39,12 +48,25 @@ const InfiniteSongView = (
 		typeof SongSortingKeys,
 		AdditionalProps
 	> &
-		Pick<Parameters<typeof SongItem>[0], "formatSubtitle">,
+		Pick<Parameters<typeof SongItem>[0], "formatSubtitle"> & {
+			disableShuffle?: boolean;
+		},
 ) => {
 	const router = useRouter();
 	const [options, setOptions] =
 		useState<OptionState<typeof SongSortingKeys, AdditionalProps>>();
 	const language = useLanguage();
+	const queryClient = useQueryClient();
+	const dispatch = useDispatch();
+	const query = {
+		type:
+			// @ts-ignore
+			options?.type == "All" ? undefined : (options?.type as SongType),
+		sortBy: options?.sortBy ?? "name",
+		order: options?.order ?? "asc",
+		view: "grid",
+		library: options?.library ?? null,
+	} as const;
 
 	return (
 		<>
@@ -60,6 +82,62 @@ const InfiniteSongView = (
 						currentValue: options?.type,
 					},
 				]}
+				actions={
+					props.disableShuffle !== true
+						? [
+								{
+									label: "shuffle",
+									icon: <ShuffleIcon />,
+									onClick: () => {
+										dispatch(emptyPlaylist());
+										queryClient.client
+											.fetchInfiniteQuery(
+												prepareMeeloInfiniteQuery(
+													props.query,
+													{
+														...query,
+														random: Math.floor(
+															Math.random() *
+																1000,
+														),
+													},
+												),
+											)
+											.then((res) => {
+												return res.pages
+													.flatMap(
+														({ items }) => items,
+													)
+													.map((song) =>
+														queryClient
+															.fetchQuery(
+																API.getMasterTrack(
+																	song.id,
+																	["release"],
+																),
+															)
+															.then(
+																({
+																	release,
+																	...track
+																}) =>
+																	dispatch(
+																		playNext(
+																			{
+																				release,
+																				track,
+																				artist: song.artist,
+																			},
+																		),
+																	),
+															),
+													);
+											});
+									},
+								},
+							]
+						: undefined
+				}
 				onChange={setOptions}
 				sortingKeys={SongSortingKeys}
 				defaultSortingOrder={props.initialSortingOrder}
@@ -70,20 +148,7 @@ const InfiniteSongView = (
 			/>
 			<InfiniteView
 				view={options?.view ?? "list"}
-				query={() =>
-					props.query({
-						// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-						type:
-							// @ts-ignore
-							options?.type == "All"
-								? undefined
-								: (options?.type as SongType),
-						sortBy: options?.sortBy ?? "name",
-						order: options?.order ?? "asc",
-						view: "grid",
-						library: options?.library ?? null,
-					})
-				}
+				query={() => props.query(query)}
 				renderListItem={(
 					item: SongWithRelations<"artist" | "featuring">,
 				) => (

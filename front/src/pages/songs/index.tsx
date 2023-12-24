@@ -43,9 +43,9 @@ const LibrarySongsPage = (props: InferSSRProps<typeof getServerSideProps>) => {
 		<InfiniteSongView
 			initialSortingField={props.additionalProps?.sortBy}
 			initialSortingOrder={props.additionalProps?.order}
-			query={({ sortBy, order, type, library }) =>
+			query={({ sortBy, order, type, library, random }) =>
 				API.getSongs(
-					{ type, library: library ?? undefined },
+					{ type, library: library ?? undefined, random },
 					{ sortBy, order },
 					["artist", "featuring"],
 				)

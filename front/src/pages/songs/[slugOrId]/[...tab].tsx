@@ -221,6 +221,7 @@ const SongPage = (props: InferSSRProps<typeof getServerSideProps>) => {
 					))}
 				{tab == "versions" && (
 					<InfiniteSongView
+						disableShuffle
 						query={({ library, sortBy, order, type }) =>
 							API.getSongVersions(
 								song.data.id,
