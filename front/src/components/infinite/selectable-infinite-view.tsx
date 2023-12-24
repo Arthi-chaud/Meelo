@@ -62,6 +62,7 @@ type SelectableInfiniteViewProps = {
 		[
 			param: {
 				type: SongType | undefined;
+				random?: number;
 				library: string | number | null;
 			},
 			sort: SortingParameters<typeof SongSortingKeys>,
@@ -132,6 +133,7 @@ const SelectableInfiniteView = (props: SelectableInfiniteViewProps) => {
 					/>
 				) : selectedType == "song" ? (
 					<InfiniteSongView
+						disableShuffle
 						key={selectedType}
 						query={({ sortBy, order, type, library }) =>
 							props.songQuery(

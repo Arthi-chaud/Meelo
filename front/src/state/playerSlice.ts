@@ -83,6 +83,10 @@ export const playerSlice = createSlice({
 
 			state.playlist.splice(action.payload.to, 0, removed);
 		},
+		emptyPlaylist: (state, action: PayloadAction<void>) => {
+			state.playlist = [];
+			state.cursor = 0;
+		},
 	},
 });
 
@@ -94,6 +98,7 @@ export const {
 	skipTrack,
 	playPreviousTrack,
 	reorder,
+	emptyPlaylist,
 } = playerSlice.actions;
 
 export default playerSlice.reducer;

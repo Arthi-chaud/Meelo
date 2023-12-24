@@ -20,6 +20,7 @@ const en = {
 	cancel: "Cancel",
 	update: "Update",
 	play: "Play",
+	playAll: "Play All",
 	shuffle: "Shuffle",
 	done: "Done",
 	edit: "Edit",

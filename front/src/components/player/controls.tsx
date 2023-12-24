@@ -144,6 +144,7 @@ const MinimizedPlayerControls = (props: PlayerControlsProps) => {
 							sx={{
 								height: "100%",
 								display: "flex",
+								marginX: 2,
 								alignItems: "center",
 							}}
 						>
