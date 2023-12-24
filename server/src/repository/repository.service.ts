@@ -365,18 +365,20 @@ abstract class RepositoryService<
 			// const limit = pagination?.take ? `LIMIT ${pagination.take}` : "";
 			// TODO USE AfterID
 			// const skip = pagination?.skip ? `OFFSET ${pagination.skip}` : "";
-			const res: { id: number }[] =
-				await this.prismaHandle.$queryRawUnsafe(
-					`SELECT id FROM ${this.getTableName()} ORDER BY MD5(${seed.toString()} || id::text)`,
-				);
-			const ids = res.map(({ id }) => id);
+			return this.prismaHandle.$transaction(async (prisma) => {
+				const res: { id: number }[] =
+					await this.prismaHandle.$queryRawUnsafe(
+						`SELECT id FROM ${this.getTableName()} ORDER BY MD5(${seed.toString()} || id::text)`,
+					);
+				const ids = res.map(({ id }) => id);
 
-			return this.getMany(where, pagination, include).then((items) =>
-				items
-					.map((item) => ({ item, index: ids.indexOf(item.id) }))
-					.sort((item1, item2) => item1.index - item2.index)
-					.map(({ item }) => item),
-			);
+				return this.getMany(where, pagination, include).then((items) =>
+					items
+						.map((item) => ({ item, index: ids.indexOf(item.id) }))
+						.sort((item1, item2) => item1.index - item2.index)
+						.map(({ item }) => item),
+				);
+			});
 		}
 		const sort = sortOrSeed as SortingParameter<SortingKeys>;
 
