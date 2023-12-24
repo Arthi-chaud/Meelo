@@ -18,10 +18,10 @@
 
 import { AscIcon, DescIcon, GridIcon, ListIcon } from "../icons";
 import {
-	Box,
 	Button,
 	ButtonGroup,
 	Dialog,
+	Grid,
 	Tooltip,
 	useTheme,
 } from "@mui/material";
@@ -173,7 +173,9 @@ const Controls = <
 
 	return (
 		<Fade in>
-			<Box
+			<Grid
+				container
+				gap={1}
 				sx={{
 					zIndex: 1000,
 					width: "100%",
@@ -185,143 +187,157 @@ const Controls = <
 					left: 0,
 				}}
 			>
-				<ButtonGroup variant="contained">
-					{props.disableLibrarySelector !== true && (
-						<OptionButton
-							optionGroup={{
-								name:
-									optionsState.library ??
-									translate("allLibraries"),
-								options: [
-									{
-										name: "library",
-										values: [
-											globalLibrary,
-											...libraries,
-										].map((library) => library.name),
-										currentValue:
-											[globalLibrary, ...libraries].find(
-												({ slug }) =>
-													slug ==
-													optionsState.library,
-											)?.name ?? globalLibrary.name,
-									},
-								],
-							}}
-							onSelect={({ name, value }) => {
-								if (value == globalLibrary.name) {
-									updateOptionState({ name, value: null });
-								} else {
-									updateOptionState({
-										name,
-										value:
-											libraries.find(
-												(lib) => lib.name == value,
-											)?.slug ?? null,
-									});
-								}
-							}}
-						/>
-					)}
-					<OptionButton
-						optionGroup={{
-							name: `${translate("sortBy")} ${translate(
-								optionsState.sortBy as TranslationKey,
-							)}`,
-							icon:
-								optionsState.order == "desc" ? (
-									<DescIcon />
-								) : (
-									<AscIcon />
-								),
-							options: [
-								{
-									name: "sortBy",
-									values: props.sortingKeys,
-									currentValue: optionsState.sortBy,
-								},
-								{
-									name: "order",
-									values: ["asc", "desc"],
-									currentValue: optionsState.order,
-								},
-							],
-						}}
-						onSelect={updateOptionState}
-					/>
-					{props.options?.map((option) => {
-						return (
+				<Grid item>
+					<ButtonGroup variant="contained">
+						{props.disableLibrarySelector !== true && (
 							<OptionButton
-								key={option.name}
 								optionGroup={{
-									name: option.label ?? option.name,
-									icon: option.icon,
+									name:
+										optionsState.library ??
+										translate("allLibraries"),
 									options: [
 										{
-											...option,
-											// eslint-disable-next-line max-len
+											name: "library",
+											values: [
+												globalLibrary,
+												...libraries,
+											].map((library) => library.name),
 											currentValue:
-												optionsState[
-													option.name as keyof typeof optionsState
-												] ?? undefined,
+												[
+													globalLibrary,
+													...libraries,
+												].find(
+													({ slug }) =>
+														slug ==
+														optionsState.library,
+												)?.name ?? globalLibrary.name,
 										},
 									],
 								}}
-								onSelect={updateOptionState}
+								onSelect={({ name, value }) => {
+									if (value == globalLibrary.name) {
+										updateOptionState({
+											name,
+											value: null,
+										});
+									} else {
+										updateOptionState({
+											name,
+											value:
+												libraries.find(
+													(lib) => lib.name == value,
+												)?.slug ?? null,
+										});
+									}
+								}}
 							/>
-						);
-					})}
-					{props.disableLayoutToggle !== true && (
-						<Tooltip
-							title={<Translate translationKey="changeLayout" />}
-						>
-							<Button
-								onClick={() =>
-									updateOptionState({
-										name: "view",
-										value:
-											optionsState.view == "grid"
-												? "list"
-												: "grid",
-									})
+						)}
+						<OptionButton
+							optionGroup={{
+								name: `${translate("sortBy")} ${translate(
+									optionsState.sortBy as TranslationKey,
+								)}`,
+								icon:
+									optionsState.order == "desc" ? (
+										<DescIcon />
+									) : (
+										<AscIcon />
+									),
+								options: [
+									{
+										name: "sortBy",
+										values: props.sortingKeys,
+										currentValue: optionsState.sortBy,
+									},
+									{
+										name: "order",
+										values: ["asc", "desc"],
+										currentValue: optionsState.order,
+									},
+								],
+							}}
+							onSelect={updateOptionState}
+						/>
+						{props.options?.map((option) => {
+							return (
+								<OptionButton
+									key={option.name}
+									optionGroup={{
+										name: option.label ?? option.name,
+										icon: option.icon,
+										options: [
+											{
+												...option,
+												// eslint-disable-next-line max-len
+												currentValue:
+													optionsState[
+														option.name as keyof typeof optionsState
+													] ?? undefined,
+											},
+										],
+									}}
+									onSelect={updateOptionState}
+								/>
+							);
+						})}
+						{props.disableLayoutToggle !== true && (
+							<Tooltip
+								title={
+									<Translate translationKey="changeLayout" />
 								}
 							>
-								{optionsState.view == "grid" ? (
-									<ListIcon />
-								) : (
-									<GridIcon />
+								<Button
+									onClick={() =>
+										updateOptionState({
+											name: "view",
+											value:
+												optionsState.view == "grid"
+													? "list"
+													: "grid",
+										})
+									}
+								>
+									{optionsState.view == "grid" ? (
+										<ListIcon />
+									) : (
+										<GridIcon />
+									)}
+								</Button>
+							</Tooltip>
+						)}
+					</ButtonGroup>
+				</Grid>
+				<Grid item>
+					<ButtonGroup>
+						{props.actions?.map((action, index) => (
+							<Button
+								key={"action-" + action.label}
+								startIcon={action.icon}
+								variant="contained"
+								onClickCapture={() => {
+									if (action.disabled === true) {
+										return;
+									}
+									action.onClick && action.onClick();
+									action.dialog &&
+										setOpenActionModal(action.label);
+								}}
+							>
+								<Translate translationKey={action.label} />
+								{action.dialog && (
+									<Dialog
+										open={openActionModal === action.label}
+										onClose={closeModal}
+										fullWidth
+									>
+										{action.dialog({ close: closeModal })}
+									</Dialog>
 								)}
 							</Button>
-						</Tooltip>
-					)}
-					{props.actions?.map((action, index) => (
-						<Button
-							key={"action-" + action.label}
-							startIcon={action.icon}
-							variant="contained"
-							onClickCapture={() => {
-								if (action.disabled === true) {
-									return;
-								}
-								action.onClick && action.onClick();
-								action.dialog &&
-									setOpenActionModal(action.label);
-							}}
-						>
-							<Translate translationKey={action.label} />
-							{action.dialog && (
-								<Dialog
-									open={openActionModal === action.label}
-									onClose={closeModal}
-									fullWidth
-								>
-									{action.dialog({ close: closeModal })}
-								</Dialog>
-							)}
-						</Button>
-					)) ?? []}
-				</ButtonGroup>
-			</Box>
+						)) ?? []}
+					</ButtonGroup>
+				</Grid>
+			</Grid>
 		</Fade>
 	);
 };
