@@ -21,8 +21,6 @@
 		"esModuleInterop": true,
 		"alwaysStrict": true,
 		"noImplicitReturns": true,
-		"noUnusedParameters": true,
-		"noUnusedLocals": true,
 		"noImplicitThis": true,
 		"importsNotUsedAsValues": "preserve",
 		"allowJs": true,

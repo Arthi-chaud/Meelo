@@ -18,7 +18,6 @@
 
 /* eslint-disable @typescript-eslint/ban-types */
 import { PrismaClient } from "@prisma/client";
-import deepmerge from "deepmerge";
 import { InvalidRequestException } from "src/exceptions/meelo-exception";
 // eslint-disable-next-line no-restricted-imports
 import { UnhandledORMErrorException } from "src/exceptions/orm-exceptions";
@@ -363,20 +362,16 @@ abstract class RepositoryService<
 	): Promise<(BaseModel & Select<Relations, I>)[]> {
 		if (typeof sortOrSeed === "number") {
 			const seed = sortOrSeed as number;
-			const limit = pagination?.take ? `LIMIT ${pagination.take}` : "";
+			// const limit = pagination?.take ? `LIMIT ${pagination.take}` : "";
 			// TODO USE AfterID
-			const skip = pagination?.skip ? `OFFSET ${pagination.skip}` : "";
+			// const skip = pagination?.skip ? `OFFSET ${pagination.skip}` : "";
 			const res: { id: number }[] =
 				await this.prismaHandle.$queryRawUnsafe(
-					`SELECT id FROM ${this.getTableName()} ORDER BY MD5(${seed.toString()} || id::text) ${limit} ${skip}`,
+					`SELECT id FROM ${this.getTableName()} ORDER BY MD5(${seed.toString()} || id::text)`,
 				);
 			const ids = res.map(({ id }) => id);
 
-			return this.getMany(
-				deepmerge(where, { id: { in: ids } }) as ManyWhereInput,
-				pagination,
-				include,
-			).then((items) =>
+			return this.getMany(where, pagination, include).then((items) =>
 				items
 					.map((item) => ({ item, index: ids.indexOf(item.id) }))
 					.sort((item1, item2) => item1.index - item2.index)
