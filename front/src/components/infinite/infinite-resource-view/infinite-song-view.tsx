@@ -104,7 +104,7 @@ const InfiniteSongView = (
 		},
 	} as const;
 	const playAction = {
-		label: "play",
+		label: "playAll",
 		icon: <PlayIcon />,
 		onClick: () => {
 			playSongsAction(dispatch, queryClient, () => props.query(query));

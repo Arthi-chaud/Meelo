@@ -23,6 +23,7 @@ const fr: TranslationMap = {
 	cancel: "Annuler",
 	update: "Mettre à jour",
 	play: "Écouter",
+	playAll: "Tout Jouer",
 	done: "OK",
 	edit: "Changer",
 	delete: "Supprimer",
