@@ -28,18 +28,42 @@ import SongItem from "../../list-item/song-item";
 import InfiniteView from "../infinite-view";
 import InfiniteResourceViewProps from "./infinite-resource-view-props";
 import { useLanguage } from "../../../i18n/translate";
-import { ShuffleIcon } from "../../icons";
+import { PlayIcon, ShuffleIcon } from "../../icons";
 import {
+	InfiniteQuery,
+	QueryClient,
 	prepareMeeloInfiniteQuery,
 	useQueryClient,
 } from "../../../api/use-query";
 import { useDispatch } from "react-redux";
-import { emptyPlaylist, playNext } from "../../../state/playerSlice";
+import { emptyPlaylist, playAfter } from "../../../state/playerSlice";
 import API from "../../../api/api";
+import { Dispatch } from "@reduxjs/toolkit";
 
 type AdditionalProps = {
 	type?: SongType;
 	random?: number;
+};
+
+const playSongsAction = (
+	dispatch: Dispatch,
+	queryClient: QueryClient,
+	query: () => InfiniteQuery<SongWithRelations<"artist" | "featuring">>,
+) => {
+	dispatch(emptyPlaylist());
+	queryClient.client
+		.fetchInfiniteQuery(prepareMeeloInfiniteQuery(query))
+		.then(async (res) => {
+			const songs = res.pages.flatMap(({ items }) => items);
+
+			for (const song of songs) {
+				const { release, ...track } = await queryClient.fetchQuery(
+					API.getMasterTrack(song.id, ["release"]),
+				);
+
+				dispatch(playAfter({ release, track, artist: song.artist }));
+			}
+		});
 };
 
 const InfiniteSongView = (
@@ -67,6 +91,25 @@ const InfiniteSongView = (
 		view: "grid",
 		library: options?.library ?? null,
 	} as const;
+	const shuffleAction = {
+		label: "shuffle",
+		icon: <ShuffleIcon />,
+		onClick: () => {
+			playSongsAction(dispatch, queryClient, () =>
+				props.query({
+					...query,
+					random: Math.floor(Math.random() * 10000),
+				}),
+			);
+		},
+	} as const;
+	const playAction = {
+		label: "play",
+		icon: <PlayIcon />,
+		onClick: () => {
+			playSongsAction(dispatch, queryClient, () => props.query(query));
+		},
+	} as const;
 
 	return (
 		<>
@@ -82,62 +125,10 @@ const InfiniteSongView = (
 						currentValue: options?.type,
 					},
 				]}
-				actions={
-					props.disableShuffle !== true
-						? [
-								{
-									label: "shuffle",
-									icon: <ShuffleIcon />,
-									onClick: () => {
-										dispatch(emptyPlaylist());
-										queryClient.client
-											.fetchInfiniteQuery(
-												prepareMeeloInfiniteQuery(
-													props.query,
-													{
-														...query,
-														random: Math.floor(
-															Math.random() *
-																1000,
-														),
-													},
-												),
-											)
-											.then((res) => {
-												return res.pages
-													.flatMap(
-														({ items }) => items,
-													)
-													.map((song) =>
-														queryClient
-															.fetchQuery(
-																API.getMasterTrack(
-																	song.id,
-																	["release"],
-																),
-															)
-															.then(
-																({
-																	release,
-																	...track
-																}) =>
-																	dispatch(
-																		playNext(
-																			{
-																				release,
-																				track,
-																				artist: song.artist,
-																			},
-																		),
-																	),
-															),
-													);
-											});
-									},
-								},
-							]
-						: undefined
-				}
+				actions={[
+					playAction,
+					...(props.disableShuffle !== true ? [shuffleAction] : []),
+				]}
 				onChange={setOptions}
 				sortingKeys={SongSortingKeys}
 				defaultSortingOrder={props.initialSortingOrder}
