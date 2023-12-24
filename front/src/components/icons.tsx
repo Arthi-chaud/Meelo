@@ -75,9 +75,6 @@ export const GoBackTopIcon = Iconsax.ArrowUp;
 export const DragHandleIcon = Iconsax.HambergerMenu;
 
 export const PlayIcon = Iconsax.ArrowRight3;
-export const PlayCircledIcon = (props: IconProps) => (
-	<Iconsax.PlayCircle {...props} variant="Bold" />
-);
 export const PauseIcon = Iconsax.Pause;
 export const RewindIcon = Iconsax.Previous;
 export const ForwardIcon = Iconsax.Next;

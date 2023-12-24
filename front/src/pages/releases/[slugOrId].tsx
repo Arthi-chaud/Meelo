@@ -35,7 +35,7 @@ import Illustration from "../../components/illustration";
 import formatDuration from "../../utils/formatDuration";
 import { useMemo } from "react";
 import Link from "next/link";
-import { PlayCircledIcon, ShuffleIcon } from "../../components/icons";
+import { PlayIcon, ShuffleIcon } from "../../components/icons";
 import {
 	prepareMeeloQuery,
 	useInfiniteQuery,
@@ -375,7 +375,7 @@ const ReleasePage = (props: InferSSRProps<typeof getServerSideProps>) => {
 						}}
 					>
 						{[
-							() => <PlayCircledIcon fontSize="large" />,
+							() => <PlayIcon fontSize="large" />,
 							() => <ShuffleIcon fontSize="large" />,
 						].map((icon, index) => (
 							<Grid item key={index}>
