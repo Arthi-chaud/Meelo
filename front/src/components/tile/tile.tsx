@@ -19,7 +19,6 @@
 import {
 	Box,
 	Card,
-	CardActionArea,
 	CardContent,
 	CardMedia,
 	Grid,
@@ -63,7 +62,6 @@ type TileProps = {
 
 const Tile = (props: TileProps) => {
 	const [isHovering, setIsHovering] = useState(false);
-	const [isHoveringCtxtMenu, setIsHoveringCtxtMenu] = useState(false);
 	const theme = useTheme();
 	const contextualMenu = (
 		<NoSsr>
@@ -76,12 +74,6 @@ const Tile = (props: TileProps) => {
 						event.preventDefault();
 						event.stopPropagation();
 					}}
-					onTouchStart={() => setIsHoveringCtxtMenu(false)}
-					onTouchEnd={() => setIsHoveringCtxtMenu(false)}
-					onMouseOver={() => setIsHoveringCtxtMenu(true)}
-					onMouseLeave={() => setIsHoveringCtxtMenu(false)}
-					mountOnEnter
-					unmountOnExit
 				>
 					<Box>{props.contextualMenu}</Box>
 				</Fade>
@@ -92,29 +84,26 @@ const Tile = (props: TileProps) => {
 		<Card
 			{...props.cardProps}
 			sx={{
+				overflow: "visible",
 				boxShadow: "none",
 				background: "none",
-				backdropFilter: "blur(10px)",
 				...props.cardProps?.sx,
 			}}
 		>
-			<CardActionArea
+			<CardMedia
 				onClick={props.onClick}
-				disableRipple={isHoveringCtxtMenu}
 				sx={{
-					height: "100%",
 					width: "100%",
-					display: "flex",
+					":hover": { transform: "scale(1.05)" },
+					transition: "transform 0.2s",
 				}}
 			>
-				<CardMedia sx={{ width: "100%" }}>
-					{props.href ? (
-						<Link href={props.href}>{props.illustration}</Link>
-					) : (
-						props.illustration
-					)}
-				</CardMedia>
-			</CardActionArea>
+				{props.href ? (
+					<Link href={props.href}>{props.illustration}</Link>
+				) : (
+					props.illustration
+				)}
+			</CardMedia>
 			<CardContent
 				onMouseOver={() => setIsHovering(true)}
 				onMouseLeave={() => setIsHovering(false)}
