@@ -110,6 +110,7 @@ const Tile = (props: TileProps) => {
 				onClick={props.onClick}
 				sx={{
 					width: "100%",
+					cursor: "pointer",
 					":hover": { transform: "scale(1.04)" },
 					transition: "transform 0.2s",
 				}}
@@ -144,6 +145,7 @@ const Tile = (props: TileProps) => {
 							transition: "width .3s",
 							width: "100%",
 							fontWeight: "medium",
+							":hover": { textDecoration: "underline" },
 							textAlign: props.subtitle ? "left" : "center",
 							// To prevent shift caused by ctxt menu
 							paddingY: props.subtitle ? 0 : 1,
