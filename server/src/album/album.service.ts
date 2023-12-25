@@ -189,6 +189,8 @@ export default class AlbumService extends RepositoryService<
 								song: {
 									tracks: {
 										some: {
+											// We want to find albums only if they have Audio tracks in common.
+											type: "Audio",
 											release: {
 												album: this.formatWhereInput(
 													where.related,
