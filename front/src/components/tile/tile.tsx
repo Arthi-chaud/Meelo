@@ -22,13 +22,48 @@ import {
 	CardContent,
 	CardMedia,
 	Link as MUILink,
-	NoSsr,
 	Typography,
 	useTheme,
 } from "@mui/material";
-import { makeStyles } from "@mui/styles";
+import { styled } from "@mui/material/styles";
 import Link from "next/link";
 import { RequireAllOrNone } from "type-fest";
+
+const PREFIX = "Tile";
+
+const classes = {
+	parent: `${PREFIX}-parent`,
+	textDiv: `${PREFIX}-textDiv`,
+	primaryText: `${PREFIX}-primaryText`,
+	ctxtMenuContainer: `${PREFIX}-ctxtMenuContainer`,
+};
+
+const StyledCard = styled(Card)({
+	[`& .${classes.parent}`]: {
+		display: "flex",
+		"&:hover": {
+			[`& .${classes.textDiv}`]: {
+				width: "80%",
+			},
+			[`& .${classes.primaryText}`]: {
+				width: "90%",
+			},
+			[`& .${classes.ctxtMenuContainer}`]: {
+				display: "flex",
+			},
+		},
+	},
+	[`& .${classes.textDiv}`]: {
+		width: "100%",
+	},
+	[`& .${classes.primaryText}`]: {
+		width: "100%",
+	},
+	[`& .${classes.ctxtMenuContainer}`]: {
+		width: "20%",
+		display: "none",
+	},
+});
 
 const titleStyle = {
 	textOverflow: "ellipsis",
@@ -58,38 +93,11 @@ type TileProps = {
 	secondaryHref?: string;
 }>;
 
-const useStyles = makeStyles(() => ({
-	parent: {
-		"&:hover": {
-			"& $textDiv": {
-				width: "80%",
-			},
-			"& $primaryText": {
-				width: "90%",
-			},
-			"& $ctxtMenuContainer": {
-				display: "unset",
-			},
-		},
-	},
-	textDiv: {
-		width: "100%",
-	},
-	primaryText: {
-		width: "100%",
-	},
-	ctxtMenuContainer: {
-		width: "20%",
-		display: "none",
-	},
-}));
-
 const Tile = (props: TileProps) => {
-	const classes = useStyles();
 	const theme = useTheme();
-	const contextualMenu = <NoSsr>{props.contextualMenu}</NoSsr>;
+	const contextualMenu = props.contextualMenu;
 	const component = (
-		<Card
+		<StyledCard
 			{...props.cardProps}
 			sx={{
 				overflow: "visible",
@@ -117,83 +125,79 @@ const Tile = (props: TileProps) => {
 					height: "100%",
 					width: "100%",
 					padding: 1,
+					justifyContent: "space-between",
 				}}
+				className={classes.parent}
 			>
 				<Box
-					className={classes.parent}
-					sx={{ justifyContent: "space-between", display: "flex" }}
+					className={classes.textDiv}
+					sx={{
+						display: "flex",
+						flexDirection: "column",
+					}}
 				>
-					<Box
-						className={classes.textDiv}
+					<Typography
+						onClick={props.onClick}
+						variant="body1"
+						className={classes.primaryText}
 						sx={{
-							display: "flex",
-							flexDirection: "column",
+							transition: "width .3s",
+							width: "100%",
+							fontWeight: "medium",
+							textAlign: props.subtitle ? "left" : "center",
+							// To prevent shift caused by ctxt menu
+							paddingY: props.subtitle ? 0 : 1,
+							cursor: props.onClick ? "pointer" : undefined,
 						}}
+						style={{ ...titleStyle }}
 					>
+						{props.href ? (
+							<MUILink
+								component={Link}
+								underline="hover"
+								href={props.href}
+							>
+								{props.title}
+							</MUILink>
+						) : (
+							props.title
+						)}
+					</Typography>
+					{props.subtitle && (
 						<Typography
-							onClick={props.onClick}
-							variant="body1"
-							className={classes.primaryText}
+							variant="body2"
 							sx={{
-								transition: "width .3s",
-								width: "100%",
-								fontWeight: "medium",
-								textAlign: props.subtitle ? "left" : "center",
-								// To prevent shift caused by ctxt menu
-								paddingY: props.subtitle ? 0 : 1,
-								cursor: props.onClick ? "pointer" : undefined,
+								color: "text.disabled",
+								textAlign: "left",
 							}}
-							style={{ ...titleStyle }}
+							style={titleStyle}
 						>
-							{props.href ? (
+							{props.secondaryHref ? (
 								<MUILink
 									component={Link}
 									underline="hover"
-									href={props.href}
+									color={"inherit"}
+									href={props.secondaryHref}
 								>
-									{props.title}
+									{props.subtitle}
 								</MUILink>
 							) : (
-								props.title
+								props.subtitle
 							)}
 						</Typography>
-						{props.subtitle && (
-							<Typography
-								variant="body2"
-								sx={{
-									color: "text.disabled",
-									textAlign: "left",
-								}}
-								style={titleStyle}
-							>
-								{props.secondaryHref ? (
-									<MUILink
-										component={Link}
-										underline="hover"
-										color={"inherit"}
-										href={props.secondaryHref}
-									>
-										{props.subtitle}
-									</MUILink>
-								) : (
-									props.subtitle
-								)}
-							</Typography>
-						)}
-					</Box>
-					<Box
-						className={classes.ctxtMenuContainer}
-						sx={{
-							display: "flex",
-							alignItems: "center",
-							justifyContent: "end",
-						}}
-					>
-						{contextualMenu}
-					</Box>
+					)}
+				</Box>
+				<Box
+					className={classes.ctxtMenuContainer}
+					sx={{
+						alignItems: "center",
+						justifyContent: "end",
+					}}
+				>
+					{contextualMenu}
 				</Box>
 			</CardContent>
-		</Card>
+		</StyledCard>
 	);
 
 	return component;
