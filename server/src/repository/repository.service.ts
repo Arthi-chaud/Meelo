@@ -362,9 +362,6 @@ abstract class RepositoryService<
 	): Promise<(BaseModel & Select<Relations, I>)[]> {
 		if (typeof sortOrSeed === "number") {
 			const seed = sortOrSeed as number;
-			// const limit = pagination?.take ? `LIMIT ${pagination.take}` : "";
-			// TODO USE AfterID
-			// const skip = pagination?.skip ? `OFFSET ${pagination.skip}` : "";
 			return this.prismaHandle.$transaction(async (prisma) => {
 				const res: { id: number }[] =
 					await this.prismaHandle.$queryRawUnsafe(
@@ -372,11 +369,19 @@ abstract class RepositoryService<
 					);
 				const ids = res.map(({ id }) => id);
 
-				return this.getMany(where, pagination, include).then((items) =>
+				return this.getMany(
+					where,
+					{ afterId: pagination?.afterId },
+					include,
+				).then((items) =>
 					items
 						.map((item) => ({ item, index: ids.indexOf(item.id) }))
 						.sort((item1, item2) => item1.index - item2.index)
-						.map(({ item }) => item),
+						.map(({ item }) => item)
+						.slice(
+							pagination?.skip ?? 0,
+							pagination?.take ?? items.length,
+						),
 				);
 			});
 		}
