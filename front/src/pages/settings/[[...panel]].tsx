@@ -53,7 +53,8 @@ export const getServerSideProps = prepareSSR((context) => {
 
 	return {
 		additionalProps: { panel },
-		infiniteQueries: [API.getUsers(), API.getLibraries()],
+		// Disabling Prefetch of queries, as some are admin-only
+		infiniteQueries: [],
 	};
 });
 
