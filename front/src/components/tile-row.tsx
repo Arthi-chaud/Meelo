@@ -44,6 +44,7 @@ const TileRow = (props: TileRowProps) => {
 				paddingBottom: 0,
 				width: "100%",
 				scrollSnapType: "x",
+				paddingTop: 1,
 			}}
 			direction="row"
 		>

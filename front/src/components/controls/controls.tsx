@@ -308,7 +308,7 @@ const Controls = <
 					</ButtonGroup>
 				</Grid>
 				<Grid item>
-					<ButtonGroup>
+					<ButtonGroup variant="contained">
 						{props.actions?.map((action, index) => (
 							<Button
 								key={"action-" + action.label}
