@@ -138,6 +138,7 @@ const MinimizedPlayerControls = (props: PlayerControlsProps) => {
 							illustration={props.track?.illustration ?? null}
 							quality="low"
 							fallback={<TrackIcon />}
+							imgProps={{ borderRadius: 4 }}
 						/>
 					) : (
 						<Box

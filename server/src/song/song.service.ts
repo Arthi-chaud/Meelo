@@ -529,11 +529,25 @@ export default class SongService extends RepositoryService<
 		if (album.type != AlbumType.StudioRecording) {
 			return [];
 		}
-		const albumSongs = await this.getMany({ album: { id: album.id } });
+		const albumSongs = await this.getMany(
+			{ album: { id: album.id } },
+			undefined,
+			{ tracks: true },
+		);
 		const albumSongsBaseNames = albumSongs
 			// Some albums have live songs from previous albums, we ignore them
 			.filter((song) => song.type != SongType.Live)
+			// We remove songs that are present only on video in the release
+			.filter(
+				(song) =>
+					song.tracks.find(
+						(track) =>
+							track.type == "Audio" &&
+							track.releaseId == release.id,
+					) != undefined,
+			)
 			.map(({ name }) => new Slug(this.getBaseSongName(name)).toString());
+
 		const relatedAlbums = await this.prismaService.album.findMany({
 			where: {
 				...AlbumService.formatManyWhereInput({

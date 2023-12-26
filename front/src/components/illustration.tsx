@@ -144,7 +144,10 @@ const Illustration = (props: IllustrationProps) => {
 							}
 							unoptimized
 							style={{
-								borderRadius: theme.shape.borderRadius,
+								borderRadius:
+									props.quality == "low"
+										? 6
+										: theme.shape.borderRadius,
 								objectFit: "contain",
 								...props.imgProps,
 							}}
