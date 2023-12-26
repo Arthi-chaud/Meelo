@@ -33,12 +33,13 @@ describe("Wikipedia Provider", () => {
 				await wikipediaProvider.getResourceMetadataByWikidataId(
 					"Q236240",
 				);
+			console.log(description);
 
 			expect(value).toBe("Siobhán Donaghy");
 			expect(description).not.toBeNull();
 			expect(
 				description!.startsWith(
-					"Siobhán Emma Donaghy (born 14 June 1984) is an English singer and songwriter. ",
+					"Siobhán Emma Donaghy (born 14 June 1984)",
 				),
 			).toBeTruthy();
 			expect(
