@@ -37,6 +37,7 @@ import SongQueryParameters from "src/song/models/song.query-params";
 import TrackService from "src/track/track.service";
 import TrackQueryParameters from "src/track/models/track.query-parameters";
 import LibraryService from "src/library/library.service";
+import Identifier from "src/identifier/models/identifier";
 
 @Injectable()
 export default class SongVersionService extends RepositoryService<
@@ -326,5 +327,14 @@ export default class SongVersionService extends RepositoryService<
 			where: SongVersionService.formatWhereInput(songVersionWhere),
 			data: { masterId: null },
 		});
+	}
+
+	static formatIdentifierToWhereInput(
+		identifier: Identifier,
+	): SongVersionQueryParameters.WhereInput {
+		return RepositoryService.formatIdentifier(
+			identifier,
+			RepositoryService.UnexpectedStringIdentifier,
+		);
 	}
 }

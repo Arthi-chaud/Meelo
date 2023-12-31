@@ -1,5 +1,5 @@
 import { TestingModule } from "@nestjs/testing";
-import { Song, Artist } from "@prisma/client";
+import { Song, Artist, SongVersion } from "@prisma/client";
 import AlbumModule from "src/album/album.module";
 import ArtistModule from "src/artist/artist.module";
 import ArtistService from "src/artist/artist.service";
@@ -16,14 +16,15 @@ import TrackModule from "src/track/track.module";
 import { createTestingModule } from "test/test-module";
 import TestPrismaService from "test/test-prisma.service";
 import SongVersionModule from "./song-version.module";
+import SongVersionService from "./song-version.service";
+import Slug from "src/slug/slug";
 
 describe("Song Service", () => {
+	let songVersionService: SongVersionService;
 	let songService: SongService;
-	let lyricsService: LyricsService;
 	let dummyRepository: TestPrismaService;
 	let artistService: ArtistService;
 
-	let newSong: Song;
 
 	let module: TestingModule;
 	beforeAll(async () => {
@@ -47,8 +48,8 @@ describe("Song Service", () => {
 			.compile();
 		dummyRepository = module.get(PrismaService);
 		songService = module.get(SongService);
+		songVersionService = module.get(SongVersionService);
 		artistService = module.get(ArtistService);
-		lyricsService = module.get(LyricsService);
 
 		await dummyRepository.onModuleInit();
 	});
@@ -60,7 +61,7 @@ describe("Song Service", () => {
 		let mainArtist: Artist;
 		let featuredArtist: Artist;
 		let baseSong: Song;
-		let songWithFeaturing: Song;
+		let songVersionWithFeaturing: SongVersion;
 		it("should create a song without featuring", async () => {
 			mainArtist = await artistService.create({ name: "Katy Perry" });
 			baseSong = await songService.create({
@@ -71,38 +72,29 @@ describe("Song Service", () => {
 		});
 		it("should create a song with featuring", async () => {
 			featuredArtist = await artistService.create({ name: "Kanye West" });
-			songWithFeaturing = await songService.getOrCreate({
+			songVersionWithFeaturing = await songVersionService.getOrCreate({
 				name: "E.T.",
-				artist: { id: mainArtist.id },
-				genres: [],
+				song: { id: baseSong.id },
 				featuring: [{ slug: new Slug(featuredArtist.slug) }],
+				type: "Original"
 			});
-			expect(songWithFeaturing.id).not.toBe(baseSong.id);
-			expect(songWithFeaturing.slug).toBe("et-feat-kanye-west");
-		});
-
-		it("should get the base song", async () => {
-			let res = await songService.getOrCreate({
-				name: "E.T.",
-				artist: { id: mainArtist.id },
-				genres: [],
-			});
-			expect(res).toStrictEqual(baseSong);
+			expect(songVersionWithFeaturing.songId).toBe(baseSong.id);
+			expect(songVersionWithFeaturing.slug).toBe("et-feat-kanye-west");
 		});
 
 		it("should get the featuring song", async () => {
-			let res = await songService.getOrCreate({
+			let res = await songVersionService.getOrCreate({
 				name: "E.T.",
-				artist: { id: mainArtist.id },
-				genres: [],
+				song: { id: baseSong.id },
+				type: 'Original',
 				featuring: [{ slug: new Slug(featuredArtist.slug) }],
 			});
-			expect(res).toStrictEqual(songWithFeaturing);
+			expect(res).toStrictEqual(songVersionWithFeaturing);
 		});
 
 		it("should get the featuring song, with featured artists", async () => {
-			let res = await songService.get(
-				{ id: songWithFeaturing.id },
+			let res = await songVersionService.get(
+				{ id: songVersionWithFeaturing.id },
 				{ featuring: true },
 			);
 			expect(res.featuring).toStrictEqual([featuredArtist]);

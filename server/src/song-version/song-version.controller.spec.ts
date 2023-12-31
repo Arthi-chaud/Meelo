@@ -1,6 +1,6 @@
 import { createTestingModule } from "test/test-module";
 import { TestingModule } from "@nestjs/testing";
-import type { Lyrics, Song, Track } from "src/prisma/models";
+import type { Lyrics, Song, SongVersion, Track } from "src/prisma/models";
 import PrismaService from "src/prisma/prisma.service";
 import request from "supertest";
 import { INestApplication } from "@nestjs/common";
@@ -12,6 +12,7 @@ import {
 	expectedArtistResponse,
 	expectedTrackResponse,
 	expectedReleaseResponse,
+	expectedSongVersionResponse,
 } from "test/expected-responses";
 import ProviderService from "src/providers/provider.service";
 import SettingsService from "src/settings/settings.service";
@@ -44,31 +45,62 @@ describe("Song Version Controller", () => {
 	afterAll(() => {
 		app.close();
 	});
-	describe("Get Song's Versions (GET /songs/:id/versions)", () => {
+	describe("Get Song's Versions (GET/versions)", () => {
 		it("should return the song's versions", async () => {
 			return request(app.getHttpServer())
 				.get(
-					`/songs/${dummyRepository.songA2.id}/versions?sortBy=id&order=desc`,
+					`/versions?song=${dummyRepository.songA2.id}&sortBy=id&order=desc`,
 				)
 				.expect(200)
 				.expect((res) => {
 					const fetchedSongs: Song[] = res.body.items;
 					expect(fetchedSongs).toStrictEqual([
-						
+						expectedSongVersionResponse(dummyRepository.songVersionA2)
 					]);
 				});
 		});
-		it("should return an error, as the song does not exist", () => {
+	});
+
+	describe("Get Song's Main Version", () => {
+		it("should return the song's main version", async () => {
 			return request(app.getHttpServer())
-				.get(`/songs/${-1}/versions`)
-				.expect(404);
+				.get(
+					`/versions/main/${dummyRepository.songC1.id}`,
+				)
+				.expect(200)
+				.expect((res) => {
+					const main: SongVersion = res.body;
+					expect(main).toStrictEqual(
+						expectedSongVersionResponse(dummyRepository.songVersionC1)
+					);
+				});
+		});
+	});
+
+	describe("Set Song's Main Version", () => {
+		it("should set the song's main version", async () => {
+			return request(app.getHttpServer())
+				.put(
+					`/versions/${dummyRepository.songVersionA1.id}/main`,
+				)
+				.expect(200)
+				.expect(() => {
+					return request(app.getHttpServer())
+						.get(
+							`/versions/main/${dummyRepository.songA1.id}`,
+						)
+						.expect(200)
+						.expect((res) => {
+							expect(res.body).toStrictEqual(expectedSongVersionResponse(dummyRepository.songVersionA1))
+						})
+				})
 		});
 	});
 
 	describe("Update Song", () => {
 		it("Should update Song's Type", () => {
 			return request(app.getHttpServer())
-				.post(`/songs/${dummyRepository.songB1.id}`)
+				.post(`/versions/${dummyRepository.songVersionB1.id}`)
 				.send({
 					type: SongType.Remix,
 				})
@@ -76,7 +108,7 @@ describe("Song Version Controller", () => {
 				.expect((res) => {
 					const song: Song = res.body;
 					expect(song).toStrictEqual({
-						...expectedSongResponse(dummyRepository.songB1),
+						...expectedSongVersionResponse(dummyRepository.songVersionB1),
 						type: SongType.Remix,
 					});
 				});

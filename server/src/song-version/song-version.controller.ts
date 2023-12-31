@@ -24,6 +24,7 @@ import {
 	Param,
 	ParseIntPipe,
 	Post,
+	Put,
 	Query,
 	forwardRef,
 } from "@nestjs/common";
@@ -53,6 +54,9 @@ import LibraryService from "src/library/library.service";
 import LibraryQueryParameters from "src/library/models/library.query-parameters";
 import ArtistService from "src/artist/artist.service";
 import ArtistQueryParameters from "src/artist/models/artist.query-parameters";
+import Admin from "src/authentication/roles/admin.decorator";
+import TrackQueryParameters from "src/track/models/track.query-parameters";
+import TrackService from "src/track/track.service";
 
 export class Selector extends IntersectionType(
 	SongVersionQueryParameters.SortingParameter,
@@ -142,16 +146,16 @@ export class SongVersionController {
 		summary: "Get a song version",
 	})
 	@Response({ handler: SongVersionResponseBuilder })
-	@Get(":id")
+	@Get(":idOrSlug")
 	async getSongVersion(
-		@Param("id", ParseIntPipe)
-		versionId: number,
+		@IdentifierParam(SongVersionService)
+		where: SongVersionQueryParameters.WhereInput,
 		@RelationIncludeQuery(
 			SongVersionQueryParameters.AvailableAtomicIncludes,
 		)
 		include: SongVersionQueryParameters.RelationInclude,
 	) {
-		return this.songVersionService.get({ id: versionId }, include);
+		return this.songVersionService.get(where, include);
 	}
 
 	@ApiOperation({
@@ -171,15 +175,31 @@ export class SongVersionController {
 	}
 
 	@ApiOperation({
+		summary: "Set a version as main version",
+	})
+	@Admin()
+	@Response({ handler: SongVersionResponseBuilder })
+	@Put(":idOrSlug/main")
+	async setAsMaster(
+		@IdentifierParam(SongVersionService)
+		where: SongVersionQueryParameters.WhereInput,
+	) {
+		const version = await this.songVersionService.get(where);
+
+		await this.songService.setMasterVersion(where);
+		return version;
+	}
+
+	@ApiOperation({
 		summary: "Update a song version",
 	})
 	@Response({ handler: SongVersionResponseBuilder })
-	@Post(":id")
+	@Post(":idOrSlug")
 	async updateSongVersion(
 		@Body() updateDTO: UpdateSongVersionDTO,
-		@Param("id", ParseIntPipe)
-		versionId: number,
+		@IdentifierParam(SongVersionService)
+		where: SongVersionQueryParameters.WhereInput,
 	) {
-		return this.songVersionService.update(updateDTO, { id: versionId });
+		return this.songVersionService.update(updateDTO, where);
 	}
 }
