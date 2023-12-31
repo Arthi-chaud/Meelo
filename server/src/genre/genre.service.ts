@@ -149,8 +149,8 @@ export default class GenreService extends RepositoryService<
 												},
 											},
 										},
-									}
-								}
+									},
+								},
 							},
 						},
 					},

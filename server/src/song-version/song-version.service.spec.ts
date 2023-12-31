@@ -25,7 +25,6 @@ describe("Song Service", () => {
 	let dummyRepository: TestPrismaService;
 	let artistService: ArtistService;
 
-
 	let module: TestingModule;
 	beforeAll(async () => {
 		module = await createTestingModule({
@@ -76,7 +75,7 @@ describe("Song Service", () => {
 				name: "E.T.",
 				song: { id: baseSong.id },
 				featuring: [{ slug: new Slug(featuredArtist.slug) }],
-				type: "Original"
+				type: "Original",
 			});
 			expect(songVersionWithFeaturing.songId).toBe(baseSong.id);
 			expect(songVersionWithFeaturing.slug).toBe("et-feat-kanye-west");
@@ -86,7 +85,7 @@ describe("Song Service", () => {
 			let res = await songVersionService.getOrCreate({
 				name: "E.T.",
 				song: { id: baseSong.id },
-				type: 'Original',
+				type: "Original",
 				featuring: [{ slug: new Slug(featuredArtist.slug) }],
 			});
 			expect(res).toStrictEqual(songVersionWithFeaturing);

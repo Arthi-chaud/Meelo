@@ -34,7 +34,7 @@ export default class VideoService {
 		private prismaService: PrismaService,
 		private songVersionService: SongVersionService,
 		private songService: SongService,
-	) { }
+	) {}
 
 	/**
 	 * Get songs with at least one video track
@@ -66,7 +66,7 @@ export default class VideoService {
 					},
 					song: {
 						include: RepositoryService.formatInclude(include),
-					}
+					},
 				},
 				...buildPaginationParameters(pagination),
 				where: {
@@ -84,9 +84,8 @@ export default class VideoService {
 				songs.map(({ tracks, ...song }) => ({
 					...song,
 					track: tracks
-						.sort(
-							(v1, v2) => (v2.bitrate ?? 0) - (v1.bitrate ?? 0),
-						).at(0),
+						.sort((v1, v2) => (v2.bitrate ?? 0) - (v1.bitrate ?? 0))
+						.at(0),
 				})),
 			);
 	}

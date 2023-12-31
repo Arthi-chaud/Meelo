@@ -557,7 +557,9 @@ describe("Release Controller", () => {
 							songVersion: expectedSongVersionResponse({
 								...dummyRepository.songVersionA2,
 								song: {
-									...expectedSongResponse(dummyRepository.songA2),
+									...expectedSongResponse(
+										dummyRepository.songA2,
+									),
 									artist: expectedArtistResponse(
 										dummyRepository.artistA,
 									),
@@ -571,7 +573,9 @@ describe("Release Controller", () => {
 							songVersion: expectedSongVersionResponse({
 								...dummyRepository.songVersionA1,
 								song: {
-									...expectedSongResponse(dummyRepository.songA1),
+									...expectedSongResponse(
+										dummyRepository.songA1,
+									),
 									artist: expectedArtistResponse(
 										dummyRepository.artistA,
 									),

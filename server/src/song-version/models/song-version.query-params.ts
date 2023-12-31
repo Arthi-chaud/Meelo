@@ -68,7 +68,7 @@ namespace SongVersionQueryParameters {
 			id: { in: number[] };
 			type: SongType;
 			library: LibraryQueryParameters.WhereInput;
-			artist: ArtistQueryParameters.WhereInput
+			artist: ArtistQueryParameters.WhereInput;
 		}>
 	>;
 

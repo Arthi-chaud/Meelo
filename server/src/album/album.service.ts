@@ -109,8 +109,8 @@ export default class AlbumService extends RepositoryService<
 			name: input.name,
 			artist: input.artist
 				? {
-					connect: ArtistService.formatWhereInput(input.artist),
-				}
+						connect: ArtistService.formatWhereInput(input.artist),
+				  }
 				: undefined,
 			slug: new Slug(input.name).toString(),
 			releaseDate: input.releaseDate,
@@ -227,10 +227,12 @@ export default class AlbumService extends RepositoryService<
 								tracks: {
 									some: {
 										songVersion: {
-											song: SongService.formatManyWhereInput({
-												genre: where.genre,
-											}),
-										}
+											song: SongService.formatManyWhereInput(
+												{
+													genre: where.genre,
+												},
+											),
+										},
 									},
 								},
 							},
@@ -257,18 +259,17 @@ export default class AlbumService extends RepositoryService<
 												artist: ArtistService.formatWhereInput(
 													where.appearance,
 												),
-											}
+											},
 										},
 										{
 											featuring: {
 												some: ArtistService.formatWhereInput(
 													where.appearance,
 												),
-											}
-										}
-
-									]
-								}
+											},
+										},
+									],
+								},
 							},
 						},
 					},
@@ -539,12 +540,12 @@ export default class AlbumService extends RepositoryService<
 			orderBy: sort
 				? this.formatSortingInput(sort)
 				: {
-					_relevance: {
-						fields: ["slug"],
-						search: slug,
-						sort: "asc",
-					},
-				},
+						_relevance: {
+							fields: ["slug"],
+							search: slug,
+							sort: "asc",
+						},
+				  },
 			include: this.formatInclude(include),
 			where: {
 				...this.formatManyWhereInput(where),

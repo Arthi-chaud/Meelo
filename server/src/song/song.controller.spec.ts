@@ -164,9 +164,7 @@ describe("Song Controller", () => {
 		});
 		it("should return song w/ artist", () => {
 			return request(app.getHttpServer())
-				.get(
-					`/songs/${dummyRepository.songA1.id}?with=artist`,
-				)
+				.get(`/songs/${dummyRepository.songA1.id}?with=artist`)
 				.expect(200)
 				.expect((res) => {
 					const song: Song = res.body;
@@ -263,9 +261,7 @@ describe("Song Controller", () => {
 		});
 		it("should get all songs, w/ artist", () => {
 			return request(app.getHttpServer())
-				.get(
-					`/songs?artist=${dummyRepository.artistA.id}&with=artist`,
-				)
+				.get(`/songs?artist=${dummyRepository.artistA.id}&with=artist`)
 				.expect(200)
 				.expect((res) => {
 					const songs: Song[] = res.body.items;

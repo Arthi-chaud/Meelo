@@ -132,7 +132,9 @@ describe("Track Controller", () => {
 					expect(tracks.length).toBe(1);
 					expect(tracks[0]).toStrictEqual({
 						...expectedTrackResponse(dummyRepository.trackA2_1),
-						songVersion: expectedSongVersionResponse(dummyRepository.songVersionA2),
+						songVersion: expectedSongVersionResponse(
+							dummyRepository.songVersionA2,
+						),
 					});
 				});
 		});
@@ -153,7 +155,9 @@ describe("Track Controller", () => {
 						release: expectedReleaseResponse(
 							dummyRepository.releaseA1_1,
 						),
-						songVersion: expectedSongVersionResponse(dummyRepository.songVersionA1),
+						songVersion: expectedSongVersionResponse(
+							dummyRepository.songVersionA1,
+						),
 					});
 					expect(tracks).toContainEqual({
 						...expectedTrackResponse(
@@ -162,21 +166,27 @@ describe("Track Controller", () => {
 						release: expectedReleaseResponse(
 							dummyRepository.releaseA1_2,
 						),
-						songVersion: expectedSongVersionResponse(dummyRepository.songVersionA1),
+						songVersion: expectedSongVersionResponse(
+							dummyRepository.songVersionA1,
+						),
 					});
 					expect(tracks).toContainEqual({
 						...expectedTrackResponse(dummyRepository.trackA2_1),
 						release: expectedReleaseResponse(
 							dummyRepository.releaseA1_2,
 						),
-						songVersion: expectedSongVersionResponse(dummyRepository.songVersionA2),
+						songVersion: expectedSongVersionResponse(
+							dummyRepository.songVersionA2,
+						),
 					});
 					expect(tracks).toContainEqual({
 						...expectedTrackResponse(dummyRepository.trackC1_1),
 						release: expectedReleaseResponse(
 							dummyRepository.compilationReleaseA1,
 						),
-						songVersion: expectedSongVersionResponse(dummyRepository.songVersionC1),
+						songVersion: expectedSongVersionResponse(
+							dummyRepository.songVersionC1,
+						),
 					});
 				});
 		});
@@ -212,14 +222,18 @@ describe("Track Controller", () => {
 		});
 		it("should return tracks w/ song", () => {
 			return request(app.getHttpServer())
-				.get(`/tracks?song=${dummyRepository.songB1.id}&with=songVersion`)
+				.get(
+					`/tracks?song=${dummyRepository.songB1.id}&with=songVersion`,
+				)
 				.expect(200)
 				.expect((res) => {
 					const tracks: Track[] = res.body.items;
 					expect(tracks.length).toBe(1);
 					expect(tracks[0]).toStrictEqual({
 						...expectedTrackResponse(dummyRepository.trackB1_1),
-						songVersion: expectedSongVersionResponse(dummyRepository.songVersionB1),
+						songVersion: expectedSongVersionResponse(
+							dummyRepository.songVersionB1,
+						),
 					});
 				});
 		});
@@ -295,7 +309,9 @@ describe("Track Controller", () => {
 					expect(tracks.length).toBe(1);
 					expect(tracks[0]).toStrictEqual({
 						...expectedTrackResponse(dummyRepository.trackA1_1),
-						songVersion: expectedSongVersionResponse(dummyRepository.songVersionA1),
+						songVersion: expectedSongVersionResponse(
+							dummyRepository.songVersionA1,
+						),
 					});
 				});
 		});
@@ -323,7 +339,9 @@ describe("Track Controller", () => {
 					const track: Track = res.body;
 					expect(track).toStrictEqual({
 						...expectedTrackResponse(dummyRepository.trackA1_1),
-						songVersion: expectedSongVersionResponse(dummyRepository.songVersionA1),
+						songVersion: expectedSongVersionResponse(
+							dummyRepository.songVersionA1,
+						),
 						release: expectedReleaseResponse(
 							dummyRepository.releaseA1_1,
 						),
@@ -384,7 +402,9 @@ describe("Track Controller", () => {
 					const track: Track = res.body;
 					expect(track).toStrictEqual({
 						...expectedTrackResponse(dummyRepository.trackA2_1),
-						songVersion: expectedSongVersionResponse(dummyRepository.songVersionA2),
+						songVersion: expectedSongVersionResponse(
+							dummyRepository.songVersionA2,
+						),
 						release: expectedReleaseResponse(
 							dummyRepository.releaseA1_2,
 						),

@@ -223,7 +223,9 @@ describe("Playlist Controller", () => {
 			expect(entries.at(3)!.index).toBe(
 				dummyRepository.playlistEntry2.index + 1,
 			);
-			expect(entries.at(3)!.songVersionId).toBe(dummyRepository.songVersionB1.id);
+			expect(entries.at(3)!.songVersionId).toBe(
+				dummyRepository.songVersionB1.id,
+			);
 			await dummyRepository.playlistEntry.delete({
 				where: { id: entries.at(3)!.id },
 			});

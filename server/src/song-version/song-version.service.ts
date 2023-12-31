@@ -191,9 +191,11 @@ export default class SongVersionService extends RepositoryService<
 				tracks: {
 					some: {
 						sourceFile: {
-							library: LibraryService.formatWhereInput(input.library)
-						}
-					}
+							library: LibraryService.formatWhereInput(
+								input.library,
+							),
+						},
+					},
 				},
 			});
 		}
@@ -201,7 +203,7 @@ export default class SongVersionService extends RepositoryService<
 			query = deepmerge(query, {
 				song: {
 					artist: ArtistService.formatWhereInput(input.artist),
-				}
+				},
 			});
 		}
 		return query;
@@ -322,7 +324,9 @@ export default class SongVersionService extends RepositoryService<
 	 * @param song the query parameters of the song
 	 * @returns the updated song
 	 */
-	async unsetMasterTrack(songVersionWhere: SongVersionQueryParameters.WhereInput) {
+	async unsetMasterTrack(
+		songVersionWhere: SongVersionQueryParameters.WhereInput,
+	) {
 		return this.prismaService.songVersion.update({
 			where: SongVersionService.formatWhereInput(songVersionWhere),
 			data: { masterId: null },

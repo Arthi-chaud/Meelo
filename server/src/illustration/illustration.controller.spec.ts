@@ -223,7 +223,10 @@ describe("Illustration Controller", () => {
 				.get(`/illustrations/songs/${dummyRepository.songB1.id}`)
 				.expect(200)
 				.expect((res) => {
-					expectedFileName(res.headers, dummyRepository.songVersionB1.slug);
+					expectedFileName(
+						res.headers,
+						dummyRepository.songVersionB1.slug,
+					);
 					expect(res.body).toStrictEqual(dummyIllustrationBytes);
 				});
 		});
@@ -263,7 +266,10 @@ describe("Illustration Controller", () => {
 				)
 				.expect(200)
 				.expect((res) => {
-					expectedFileName(res.headers, dummyRepository.songVersionA1.slug);
+					expectedFileName(
+						res.headers,
+						dummyRepository.songVersionA1.slug,
+					);
 					expect(res.body).toStrictEqual(dummyIllustrationBytes);
 				});
 		});

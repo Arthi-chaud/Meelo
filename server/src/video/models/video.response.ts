@@ -28,18 +28,21 @@ import {
 	SongResponseBuilder,
 } from "../../song/models/song.response";
 import { Song, SongVersion, Track } from "src/prisma/models";
-import { SongVersionResponse, SongVersionResponseBuilder } from "src/song-version/models/song-version.response";
+import {
+	SongVersionResponse,
+	SongVersionResponseBuilder,
+} from "src/song-version/models/song-version.response";
 
 export class VideoResponse extends IntersectionType(SongVersionResponse) {
 	@ApiProperty()
 	track: TrackResponse;
 	@ApiProperty()
-	song: SongResponse
+	song: SongResponse;
 }
 
 @Injectable()
 export class VideoResponseBuilder extends ResponseBuilderInterceptor<
-	SongVersion & { track: Track, song: Song },
+	SongVersion & { track: Track; song: Song },
 	VideoResponse
 > {
 	constructor(
@@ -54,7 +57,9 @@ export class VideoResponseBuilder extends ResponseBuilderInterceptor<
 
 	returnType = VideoResponse;
 
-	async buildResponse(song: SongVersion & { track: Track, song: Song }): Promise<VideoResponse> {
+	async buildResponse(
+		song: SongVersion & { track: Track; song: Song },
+	): Promise<VideoResponse> {
 		return {
 			...(await this.songVersionResponseBuilder.buildResponse(song)),
 			// Song will alaways be defined, see definition of Video

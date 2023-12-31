@@ -73,7 +73,7 @@ describe("Track Service", () => {
 				LyricsModule,
 				LibraryModule,
 				ProvidersModule,
-				SongVersionModule
+				SongVersionModule,
 			],
 			providers: [
 				PrismaService,
@@ -85,7 +85,7 @@ describe("Track Service", () => {
 				FileService,
 				FileManagerService,
 				SettingsService,
-				SongVersionModule
+				SongVersionModule,
 			],
 		})
 			.overrideProvider(PrismaService)
@@ -162,7 +162,9 @@ describe("Track Service", () => {
 			expect(newTrack.trackIndex).toBe(2);
 			expect(newTrack.bitrate).toBe(320);
 			expect(newTrack.duration).toBe(180);
-			expect(newTrack.songVersionId).toBe(dummyRepository.songVersionA1.id);
+			expect(newTrack.songVersionId).toBe(
+				dummyRepository.songVersionA1.id,
+			);
 			expect(newTrack.releaseId).toBe(dummyRepository.releaseA1_2.id);
 			expect(newTrack.sourceFileId).toBe(file.id);
 		});
@@ -185,7 +187,9 @@ describe("Track Service", () => {
 			expect(newTrack2.trackIndex).toBe(2);
 			expect(newTrack2.bitrate).toBe(320);
 			expect(newTrack2.duration).toBe(180);
-			expect(newTrack2.songVersionId).toBe(dummyRepository.songVersionA1.id);
+			expect(newTrack2.songVersionId).toBe(
+				dummyRepository.songVersionA1.id,
+			);
 			expect(newTrack2.releaseId).toBe(dummyRepository.releaseA1_2.id);
 			expect(newTrack2.sourceFileId).toBe(file2.id);
 		});
@@ -211,7 +215,9 @@ describe("Track Service", () => {
 					release: { id: dummyRepository.releaseA1_1.id },
 					sourceFile: { id: tmpFile.id },
 				});
-			return expect(test()).rejects.toThrow(SongVersionNotFoundByIdException);
+			return expect(test()).rejects.toThrow(
+				SongVersionNotFoundByIdException,
+			);
 		});
 
 		it("should throw, as the parent release does not exist", async () => {
@@ -398,7 +404,7 @@ describe("Track Service", () => {
 			const tracks = await trackService.getMany({
 				song: {
 					id: dummyRepository.songA1.id,
-				}
+				},
 			});
 
 			expect(tracks.length).toBe(4);
@@ -412,7 +418,7 @@ describe("Track Service", () => {
 			const tracks = await trackService.getMany({
 				songVersion: {
 					id: dummyRepository.songVersionC1.id,
-				}
+				},
 			});
 
 			expect(tracks.length).toBe(1);
@@ -420,7 +426,9 @@ describe("Track Service", () => {
 		});
 
 		it("should return an empty list, as the parent song does not exist", async () => {
-			expect(await trackService.getMany({ song: { id: -1 }})).toStrictEqual([]);
+			expect(
+				await trackService.getMany({ song: { id: -1 } }),
+			).toStrictEqual([]);
 		});
 	});
 
@@ -464,10 +472,12 @@ describe("Track Service", () => {
 			const tmpSong = await songVersionService.create({
 				name: "A",
 				song: { id: dummyRepository.songC1.id },
-				type: 'Instrumental'
+				type: "Instrumental",
 			});
 			const test = async () =>
-				await trackService.getSongVersionMasterTrack({ id: tmpSong.id });
+				await trackService.getSongVersionMasterTrack({
+					id: tmpSong.id,
+				});
 			expect(test()).rejects.toThrow(MasterTrackNotFoundException);
 		});
 	});
@@ -550,7 +560,9 @@ describe("Track Service", () => {
 			const updatedTrack = await trackService.get({
 				id: dummyRepository.trackC1_1.id,
 			});
-			expect(updatedTrack.songVersionId).toBe(dummyRepository.songVersionA2.id);
+			expect(updatedTrack.songVersionId).toBe(
+				dummyRepository.songVersionA2.id,
+			);
 		});
 
 		it("should reassign the master track", async () => {
@@ -561,7 +573,9 @@ describe("Track Service", () => {
 			const updatedTrack = await trackService.get({
 				id: dummyRepository.trackB1_1.id,
 			});
-			expect(updatedTrack.songVersionId).toBe(dummyRepository.songVersionA1.id);
+			expect(updatedTrack.songVersionId).toBe(
+				dummyRepository.songVersionA1.id,
+			);
 
 			/// teardown
 			trackService.delete({ id: dummyRepository.trackB1_1.id });

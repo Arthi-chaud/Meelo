@@ -564,5 +564,4 @@ describe("Song Service", () => {
 			expect(testLyrics()).rejects.toThrow(LyricsNotFoundByIDException);
 		});
 	});
-
 });

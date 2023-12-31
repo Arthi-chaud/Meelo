@@ -217,8 +217,8 @@ export default class SongService extends RepositoryService<
 								library: where.library,
 							}),
 						},
-					}
-				}
+					},
+				},
 			} satisfies Prisma.SongWhereInput);
 		}
 		if (where.album) {
@@ -287,7 +287,7 @@ export default class SongService extends RepositoryService<
 			if (where.id != undefined) {
 				return new SongNotFoundByIdException(where.id);
 			} else if (where.version) {
-				return await this.songVersionService.onNotFound(error, where.version);
+				return this.songVersionService.onNotFound(error, where.version);
 			}
 			const artist = await this.artistService.get(where.bySlug.artist);
 

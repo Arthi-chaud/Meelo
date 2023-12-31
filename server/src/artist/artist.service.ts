@@ -164,13 +164,13 @@ export default class ArtistService extends RepositoryService<
 						versions: {
 							some: {
 								tracks: {
-									some: TrackService.formatManyWhereInput(
-										{ library: where.library },
-									),
+									some: TrackService.formatManyWhereInput({
+										library: where.library,
+									}),
 								},
 							},
-						}
-					}
+						},
+					},
 				},
 			});
 		}
@@ -202,8 +202,8 @@ export default class ArtistService extends RepositoryService<
 												},
 											},
 										},
-									}
-								}
+									},
+								},
 							},
 						},
 					},
@@ -338,7 +338,9 @@ export default class ArtistService extends RepositoryService<
 				),
 			);
 
-		await Promise.allSettled(emptyArtists.map(({ id }) => this.delete({ id })));
+		await Promise.allSettled(
+			emptyArtists.map(({ id }) => this.delete({ id })),
+		);
 	}
 
 	/**
@@ -367,12 +369,12 @@ export default class ArtistService extends RepositoryService<
 			orderBy: sort
 				? this.formatSortingInput(sort)
 				: {
-					_relevance: {
-						fields: ["slug"],
-						search: slug,
-						sort: "asc",
-					},
-				},
+						_relevance: {
+							fields: ["slug"],
+							search: slug,
+							sort: "asc",
+						},
+				  },
 			include: this.formatInclude(include),
 			where: {
 				...this.formatManyWhereInput(where),

@@ -21,8 +21,6 @@ import {
 	Controller,
 	Get,
 	Inject,
-	Param,
-	ParseIntPipe,
 	Post,
 	Put,
 	Query,
@@ -55,8 +53,6 @@ import LibraryQueryParameters from "src/library/models/library.query-parameters"
 import ArtistService from "src/artist/artist.service";
 import ArtistQueryParameters from "src/artist/models/artist.query-parameters";
 import Admin from "src/authentication/roles/admin.decorator";
-import TrackQueryParameters from "src/track/models/track.query-parameters";
-import TrackService from "src/track/track.service";
 
 export class Selector extends IntersectionType(
 	SongVersionQueryParameters.SortingParameter,
@@ -70,15 +66,13 @@ export class Selector extends IntersectionType(
 	type?: SongType;
 	@IsOptional()
 	@ApiPropertyOptional({
-		description:
-			"Filter song versions using the parent library",
+		description: "Filter song versions using the parent library",
 	})
 	@TransformIdentifier(LibraryService)
 	library: LibraryQueryParameters.WhereInput;
 	@IsOptional()
 	@ApiPropertyOptional({
-		description:
-			"Filter song versions using the parent artist",
+		description: "Filter song versions using the parent artist",
 	})
 	@TransformIdentifier(ArtistService)
 	artist: ArtistQueryParameters.WhereInput;

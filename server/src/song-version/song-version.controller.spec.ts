@@ -55,7 +55,9 @@ describe("Song Version Controller", () => {
 				.expect((res) => {
 					const fetchedSongs: Song[] = res.body.items;
 					expect(fetchedSongs).toStrictEqual([
-						expectedSongVersionResponse(dummyRepository.songVersionA2)
+						expectedSongVersionResponse(
+							dummyRepository.songVersionA2,
+						),
 					]);
 				});
 		});
@@ -64,14 +66,14 @@ describe("Song Version Controller", () => {
 	describe("Get Song's Main Version", () => {
 		it("should return the song's main version", async () => {
 			return request(app.getHttpServer())
-				.get(
-					`/versions/main/${dummyRepository.songC1.id}`,
-				)
+				.get(`/versions/main/${dummyRepository.songC1.id}`)
 				.expect(200)
 				.expect((res) => {
 					const main: SongVersion = res.body;
 					expect(main).toStrictEqual(
-						expectedSongVersionResponse(dummyRepository.songVersionC1)
+						expectedSongVersionResponse(
+							dummyRepository.songVersionC1,
+						),
 					);
 				});
 		});
@@ -80,20 +82,20 @@ describe("Song Version Controller", () => {
 	describe("Set Song's Main Version", () => {
 		it("should set the song's main version", async () => {
 			return request(app.getHttpServer())
-				.put(
-					`/versions/${dummyRepository.songVersionA1.id}/main`,
-				)
+				.put(`/versions/${dummyRepository.songVersionA1.id}/main`)
 				.expect(200)
 				.expect(() => {
 					return request(app.getHttpServer())
-						.get(
-							`/versions/main/${dummyRepository.songA1.id}`,
-						)
+						.get(`/versions/main/${dummyRepository.songA1.id}`)
 						.expect(200)
 						.expect((res) => {
-							expect(res.body).toStrictEqual(expectedSongVersionResponse(dummyRepository.songVersionA1))
-						})
-				})
+							expect(res.body).toStrictEqual(
+								expectedSongVersionResponse(
+									dummyRepository.songVersionA1,
+								),
+							);
+						});
+				});
 		});
 	});
 
@@ -108,7 +110,9 @@ describe("Song Version Controller", () => {
 				.expect((res) => {
 					const song: Song = res.body;
 					expect(song).toStrictEqual({
-						...expectedSongVersionResponse(dummyRepository.songVersionB1),
+						...expectedSongVersionResponse(
+							dummyRepository.songVersionB1,
+						),
 						type: SongType.Remix,
 					});
 				});

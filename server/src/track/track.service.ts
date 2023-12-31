@@ -395,20 +395,20 @@ export default class TrackService extends RepositoryService<
 			...what,
 			songVersion: what.songVersion
 				? {
-					connect: SongVersionService.formatWhereInput(
-						what.songVersion,
-					),
-				}
+						connect: SongVersionService.formatWhereInput(
+							what.songVersion,
+						),
+				  }
 				: undefined,
 			release: what.release
 				? {
-					connect: ReleaseService.formatWhereInput(what.release),
-				}
+						connect: ReleaseService.formatWhereInput(what.release),
+				  }
 				: undefined,
 			sourceFile: what.sourceFile
 				? {
-					connect: FileService.formatWhereInput(what.sourceFile),
-				}
+						connect: FileService.formatWhereInput(what.sourceFile),
+				  }
 				: undefined,
 		};
 	}
@@ -447,7 +447,7 @@ export default class TrackService extends RepositoryService<
 	/**
 	 * Does nothing, nothing to housekeep.
 	 */
-	async housekeeping(): Promise<void> { }
+	async housekeeping(): Promise<void> {}
 
 	/**
 	 * Change the track's parent song version

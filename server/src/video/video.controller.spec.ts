@@ -53,10 +53,10 @@ describe("Video Controller", () => {
 					const videoSongs: VideoResponse[] = res.body.items;
 					expect(videoSongs.length).toBe(1);
 					expect(videoSongs[0]).toStrictEqual({
-						...expectedSongVersionResponse(dummyRepository.songVersionA1),
-						song: expectedSongResponse(
-							dummyRepository.songA1,
+						...expectedSongVersionResponse(
+							dummyRepository.songVersionA1,
 						),
+						song: expectedSongResponse(dummyRepository.songA1),
 						track: expectedTrackResponse(
 							dummyRepository.trackA1_2Video,
 						),
@@ -80,7 +80,9 @@ describe("Video Controller", () => {
 					const videoSongs: VideoResponse[] = res.body.items;
 					expect(videoSongs.length).toBe(1);
 					expect(videoSongs[0]).toStrictEqual({
-						...expectedSongVersionResponse(dummyRepository.songVersionA1),
+						...expectedSongVersionResponse(
+							dummyRepository.songVersionA1,
+						),
 						song: expectedSongResponse({
 							...dummyRepository.songA1,
 							lyrics: dummyRepository.lyricsA1,
@@ -102,7 +104,9 @@ describe("Video Controller", () => {
 					const songs: VideoResponse[] = res.body.items;
 					expect(songs.length).toBe(1);
 					expect(songs[0]).toStrictEqual({
-						...expectedSongVersionResponse(dummyRepository.songVersionA1),
+						...expectedSongVersionResponse(
+							dummyRepository.songVersionA1,
+						),
 						song: expectedSongResponse(dummyRepository.songA1),
 						track: expectedTrackResponse(
 							dummyRepository.trackA1_2Video,
@@ -130,7 +134,9 @@ describe("Video Controller", () => {
 					const videoSongs: VideoResponse[] = res.body.items;
 					expect(videoSongs.length).toBe(1);
 					expect(videoSongs[0]).toStrictEqual({
-						...expectedSongVersionResponse(dummyRepository.songVersionA1),
+						...expectedSongVersionResponse(
+							dummyRepository.songVersionA1,
+						),
 						song: expectedSongResponse(dummyRepository.songA1),
 						track: expectedTrackResponse(
 							dummyRepository.trackA1_2Video,
