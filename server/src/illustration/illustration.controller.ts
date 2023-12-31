@@ -176,7 +176,7 @@ export class IllustrationController {
 		where: SongQueryParameters.WhereInput,
 		@Response({ passthrough: true }) res: Response,
 	) {
-		const master = await this.trackService.getMasterTrack(where);
+		const master = await this.trackService.getSongMasterTrack(where);
 
 		return this.getTrackIllustration(dimensions, { id: master.id }, res);
 	}
@@ -263,7 +263,7 @@ export class IllustrationController {
 		where: TrackQueryParameters.WhereInput,
 		@Response({ passthrough: true }) res: Response,
 	) {
-		const track = await this.trackService.get(where, { song: true });
+		const track = await this.trackService.get(where, { songVersion: true });
 		const [__, ___, discIllustrationPath, trackIllustrationPath] =
 			await this.illustrationRepository.getTrackIllustrationPaths(where);
 		const illustration =
@@ -279,7 +279,7 @@ export class IllustrationController {
 			return this.illustrationService
 				.streamIllustration(
 					trackIllustrationPath,
-					track.song.slug,
+					track.songVersion.slug,
 					dimensions,
 					res,
 				)
@@ -300,7 +300,7 @@ export class IllustrationController {
 				return this.illustrationService
 					.streamIllustration(
 						discIllustrationPath,
-						track.song.slug,
+						track.songVersion.slug,
 						dimensions,
 						res,
 					)

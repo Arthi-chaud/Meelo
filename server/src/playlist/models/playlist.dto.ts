@@ -32,10 +32,10 @@ export class CreatePlaylistEntryDTO {
 	playlistId: number;
 
 	@ApiProperty({
-		description: "The ID of the song",
+		description: "The ID of the song version",
 	})
 	@IsNumber()
-	songId: number;
+	songVersionId: number;
 }
 
 export class ReorderPlaylistDTO {

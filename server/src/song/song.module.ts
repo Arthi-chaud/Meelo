@@ -29,11 +29,13 @@ import { SongResponseBuilder } from "./models/song.response";
 import ReleaseModule from "src/release/release.module";
 import ProvidersModule from "src/providers/providers.module";
 import ScannerModule from "src/scanner/scanner.module";
+import SongVersionModule from "src/song-version/song-version.module";
 
 @Module({
 	imports: [
 		PrismaModule,
 		forwardRef(() => ProvidersModule),
+		forwardRef(() => SongVersionModule),
 		forwardRef(() => LyricsModule),
 		forwardRef(() => ArtistModule),
 		forwardRef(() => TrackModule),

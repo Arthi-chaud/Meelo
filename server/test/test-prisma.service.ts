@@ -11,6 +11,7 @@ import {
 	Release,
 	Song,
 	SongType,
+	SongVersion,
 	Track,
 	TrackType,
 } from "@prisma/client";
@@ -33,6 +34,10 @@ export default class TestPrismaService extends PrismaService {
 	public songA2: Song;
 	public songB1: Song;
 	public songC1: Song;
+	public songVersionA1: SongVersion;
+	public songVersionA2: SongVersion;
+	public songVersionB1: SongVersion;
+	public songVersionC1: SongVersion;
 	public albumA1: Album;
 	public albumB1: Album;
 	public releaseA1_1: Release;
@@ -62,7 +67,6 @@ export default class TestPrismaService extends PrismaService {
 
 	private baseTrack = {
 		bitrate: 0,
-		ripSource: null,
 		duration: 0,
 	};
 
@@ -101,6 +105,7 @@ export default class TestPrismaService extends PrismaService {
 				slug: "my-album",
 				artistId: this.artistA.id,
 				releaseDate: new Date("2022"),
+				type: 'StudioRecording'
 			},
 		});
 		this.releaseA1_1 = await this.release.create({
@@ -126,7 +131,6 @@ export default class TestPrismaService extends PrismaService {
 				genres: {
 					connect: [{ id: this.genreA.id }, { id: this.genreB.id }],
 				},
-				type: SongType.Original,
 			},
 		});
 		this.lyricsA1 = await this.lyrics.create({
@@ -143,11 +147,19 @@ export default class TestPrismaService extends PrismaService {
 				libraryId: this.library1.id,
 			},
 		});
+		this.songVersionA1 = await this.songVersion.create({
+			data: {
+				name: 'My Song 1',
+				slug: 'my-song-1',
+				songId: this.songA1.id,
+				type: SongType.Original,
+			}
+		})
 		this.trackA1_1 = await this.track.create({
 			data: {
 				name: "My Song 1",
 				...this.baseTrack,
-				songId: this.songA1.id,
+				songVersionId: this.songVersionA1.id,
 				releaseId: this.releaseA1_1.id,
 				type: TrackType.Audio,
 				sourceFileId: this.fileA1_1.id,
@@ -167,7 +179,7 @@ export default class TestPrismaService extends PrismaService {
 			data: {
 				...this.baseTrack,
 				name: "My Song 2 (Video)",
-				songId: this.songA1.id,
+				songVersionId: this.songVersionA1.id,
 				discIndex: 2,
 				releaseId: this.releaseA1_2.id,
 				type: TrackType.Video,
@@ -180,7 +192,6 @@ export default class TestPrismaService extends PrismaService {
 				slug: "my-other-song",
 				artistId: this.artistA.id,
 				genres: { connect: { id: this.genreB.id } },
-				type: SongType.Original,
 			},
 		});
 		this.fileA2_1 = await this.file.create({
@@ -191,11 +202,19 @@ export default class TestPrismaService extends PrismaService {
 				libraryId: this.library1.id,
 			},
 		});
+		this.songVersionA2 = await this.songVersion.create({
+			data: {
+				name: 'My Song 2',
+				slug: 'my-song-2',
+				songId: this.songA2.id,
+				type: SongType.Original,
+			}
+		})
 		this.trackA2_1 = await this.track.create({
 			data: {
 				...this.baseTrack,
 				name: "My Other Song 1",
-				songId: this.songA2.id,
+				songVersionId: this.songVersionA2.id,
 				discIndex: 1,
 				releaseId: this.releaseA1_2.id,
 				type: TrackType.Audio,
@@ -211,6 +230,7 @@ export default class TestPrismaService extends PrismaService {
 				name: "My Second Album",
 				slug: "my-second-album",
 				artistId: this.artistB.id,
+				type: 'StudioRecording'
 			},
 		});
 		this.releaseB1_1 = await this.release.create({
@@ -226,7 +246,6 @@ export default class TestPrismaService extends PrismaService {
 				slug: "my-second-song",
 				artistId: this.artistB.id,
 				genres: { connect: { id: this.genreB.id } },
-				type: SongType.Original,
 			},
 		});
 		this.fileB1_1 = await this.file.create({
@@ -237,11 +256,19 @@ export default class TestPrismaService extends PrismaService {
 				libraryId: this.library2.id,
 			},
 		});
+		this.songVersionB1 = await this.songVersion.create({
+			data: {
+				name: 'My Second Song 1',
+				slug: 'my-second-song-1',
+				songId: this.songB1.id,
+				type: SongType.Original,
+			}
+		})
 		this.trackB1_1 = await this.track.create({
 			data: {
 				...this.baseTrack,
 				name: "My Second Song 1",
-				songId: this.songB1.id,
+				songVersionId: this.songVersionB1.id,
 				releaseId: this.releaseB1_1.id,
 				type: TrackType.Audio,
 				sourceFileId: this.fileB1_1.id,
@@ -273,7 +300,6 @@ export default class TestPrismaService extends PrismaService {
 				slug: "my-c-song",
 				artistId: this.artistC.id,
 				genres: { connect: { id: this.genreC.id } },
-				type: SongType.Original,
 			},
 		});
 		this.fileC1_1 = await this.file.create({
@@ -284,11 +310,19 @@ export default class TestPrismaService extends PrismaService {
 				libraryId: this.library1.id,
 			},
 		});
+		this.songVersionC1 = await this.songVersion.create({
+			data: {
+				name: 'My C Song 1',
+				slug: 'my-c-song-1',
+				songId: this.songC1.id,
+				type: SongType.Original,
+			}
+		})
 		this.trackC1_1 = await this.track.create({
 			data: {
 				...this.baseTrack,
 				name: "My C Song 1",
-				songId: this.songC1.id,
+				songVersionId: this.songVersionC1.id,
 				discIndex: 3,
 				releaseId: this.compilationReleaseA1.id,
 				type: TrackType.Audio,
@@ -316,21 +350,21 @@ export default class TestPrismaService extends PrismaService {
 		this.playlistEntry2 = await this.playlistEntry.create({
 			data: {
 				playlistId: this.playlist1.id,
-				songId: this.songA1.id,
+				songVersionId: this.songVersionA1.id,
 				index: 2,
 			},
 		});
 		this.playlistEntry1 = await this.playlistEntry.create({
 			data: {
 				playlistId: this.playlist1.id,
-				songId: this.songA2.id,
+				songVersionId: this.songVersionA2.id,
 				index: 1,
 			},
 		});
 		this.playlistEntry3 = await this.playlistEntry.create({
 			data: {
 				playlistId: this.playlist1.id,
-				songId: this.songC1.id,
+				songVersionId: this.songVersionC1.id,
 				index: 0,
 			},
 		});

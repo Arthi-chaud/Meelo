@@ -97,3 +97,15 @@ ALTER TABLE "_song_version_featuring" ADD CONSTRAINT "_song_version_featuring_A_
 
 -- AddForeignKey
 ALTER TABLE "_song_version_featuring" ADD CONSTRAINT "_song_version_featuring_B_fkey" FOREIGN KEY ("B") REFERENCES "song_versions"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+CREATE UNIQUE INDEX "song_versions_songId_slug_key" ON "song_versions"("songId", "slug");
+
+-- DropForeignKey
+ALTER TABLE "playlist_entries" DROP CONSTRAINT "playlist_entries_songId_fkey";
+
+-- AlterTable
+ALTER TABLE "playlist_entries" DROP COLUMN "songId",
+ADD COLUMN     "songVersionId" INTEGER NOT NULL;
+
+-- AddForeignKey
+ALTER TABLE "playlist_entries" ADD CONSTRAINT "playlist_entries_songVersionId_fkey" FOREIGN KEY ("songVersionId") REFERENCES "song_versions"("id") ON DELETE CASCADE ON UPDATE CASCADE;

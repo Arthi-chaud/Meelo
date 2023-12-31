@@ -23,6 +23,8 @@ import {
 } from "src/pagination/models/pagination-parameters";
 import PrismaService from "src/prisma/prisma.service";
 import RepositoryService from "src/repository/repository.service";
+import SongVersionQueryParameters from "src/song-version/models/song-version.query-params";
+import SongVersionService from "src/song-version/song-version.service";
 import SongQueryParameters from "src/song/models/song.query-params";
 import SongService from "src/song/song.service";
 
@@ -30,8 +32,9 @@ import SongService from "src/song/song.service";
 export default class VideoService {
 	constructor(
 		private prismaService: PrismaService,
+		private songVersionService: SongVersionService,
 		private songService: SongService,
-	) {}
+	) { }
 
 	/**
 	 * Get songs with at least one video track
@@ -43,18 +46,17 @@ export default class VideoService {
 	async getVideos<
 		I extends Omit<SongQueryParameters.RelationInclude, "tracks">,
 	>(
-		where: SongQueryParameters.ManyWhereInput,
+		where: SongVersionQueryParameters.ManyWhereInput,
 		pagination?: PaginationParameters,
 		include?: I,
-		sort?: SongQueryParameters.SortingParameter,
+		sort?: SongVersionQueryParameters.SortingParameter,
 	) {
-		return this.prismaService.song
+		return this.prismaService.songVersion
 			.findMany({
 				orderBy: sort
-					? this.songService.formatSortingInput(sort)
+					? this.songVersionService.formatSortingInput(sort)
 					: undefined,
 				include: {
-					...RepositoryService.formatInclude(include),
 					tracks: {
 						where: {
 							type: "Video",
@@ -62,10 +64,13 @@ export default class VideoService {
 						orderBy: { bitrate: "desc" },
 						take: 1,
 					},
+					song: {
+						include: RepositoryService.formatInclude(include),
+					}
 				},
 				...buildPaginationParameters(pagination),
 				where: {
-					...SongService.formatManyWhereInput(where),
+					...this.songVersionService.formatManyWhereInput(where),
 					AND: {
 						tracks: {
 							some: {
@@ -78,7 +83,10 @@ export default class VideoService {
 			.then((songs) =>
 				songs.map(({ tracks, ...song }) => ({
 					...song,
-					track: tracks[0],
+					track: tracks
+						.sort(
+							(v1, v2) => (v2.bitrate ?? 0) - (v1.bitrate ?? 0),
+						).at(0),
 				})),
 			);
 	}

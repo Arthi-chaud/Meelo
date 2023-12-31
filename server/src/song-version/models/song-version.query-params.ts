@@ -16,77 +16,90 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { PickType } from "@nestjs/swagger";
-import { Playlist } from "src/prisma/models";
-import Slug from "src/slug/slug";
+import type ArtistQueryParameters from "src/artist/models/artist.query-parameters";
 import type { RequireAtLeastOne, RequireExactlyOne } from "type-fest";
 import type { RelationInclude as BaseRelationInclude } from "src/relation-include/models/relation-include";
 import { ModelSortingParameter } from "src/sort/models/sorting-parameter";
-import AlbumQueryParameters from "src/album/models/album.query-parameters";
-import SongVersionQueryParameters from "src/song-version/models/song-version.query-params";
+import { Song, SongVersion } from "src/prisma/models";
+import { filterAtomicRelationInclude } from "src/relation-include/atomic-relation-include.filter";
 import SongQueryParameters from "src/song/models/song.query-params";
-import ArtistQueryParameters from "src/artist/models/artist.query-parameters";
+import Slug from "src/slug/slug";
+import { SongType } from "@prisma/client";
+import LibraryQueryParameters from "src/library/models/library.query-parameters";
 
-namespace PlaylistQueryParameters {
+namespace SongVersionQueryParameters {
 	/**
-	 * The input required to save a playlist in the database
+	 * The input required to save a song version in the database
 	 */
-	export class CreateInput extends PickType(Playlist, ["name"] as const) {}
+	export type CreateInput = Omit<
+		SongVersion,
+		"slug" | "id" | "masterId" | "songId"
+	> & {
+		song: { id: number };
+		featuring?: RequireExactlyOne<
+			Pick<ArtistQueryParameters.WhereInput, "slug">
+		>[];
+	};
 
 	/**
-	 * Query parameters to find one playlist
+	 * Query paraeters to find a song version
 	 */
 	export type WhereInput = RequireExactlyOne<{
-		id: Playlist["id"];
-		slug: Slug;
+		id: SongVersion["id"];
+		bySlug: {
+			slug: Slug;
+			song: { id: number };
+		};
 	}>;
 
 	/**
-	 * Query parameters to find multiple playlist
+	 * Query paraeters to find a song version to update
+	 */
+	export type UpdateWhereInput = RequireExactlyOne<{
+		id: SongVersion["id"];
+	}>;
+
+	/**
+	 * Query params to find multiple song versions
 	 */
 	export type ManyWhereInput = Partial<
 		RequireAtLeastOne<{
 			song: SongQueryParameters.WhereInput;
-			version: SongVersionQueryParameters.WhereInput;
-			album: AlbumQueryParameters.WhereInput;
-			artist: ArtistQueryParameters.WhereInput;
 			id: { in: number[] };
+			type: SongType;
+			library: LibraryQueryParameters.WhereInput;
+			artist: ArtistQueryParameters.WhereInput
 		}>
 	>;
 
 	/**
-	 * The input required to update an album in the database
+	 * The input required to update a song version in the database
 	 */
-	export type UpdateInput = CreateInput;
+	export type UpdateInput = Partial<CreateInput>;
 
+	export type DeleteInput = {
+		id: Song["id"];
+	};
 	/**
-	 * The input to find or create an album
+	 * The input to find or create a song version
 	 */
 	export type GetOrCreateInput = CreateInput;
-
-	/**
-	 * Query parameters to delete one album
-	 */
-	export type DeleteInput = WhereInput;
-
 	/**
 	 * Defines what relations to include in query
 	 */
-	export const AvailableIncludes = ["entries"] as const;
-	export const AvailableAtomicIncludes = AvailableIncludes;
+	export const AvailableIncludes = ["song", "tracks", "featuring"] as const;
+	export const AvailableAtomicIncludes = filterAtomicRelationInclude(
+		AvailableIncludes,
+		["tracks", "externalIds"],
+	);
 	export type RelationInclude = BaseRelationInclude<typeof AvailableIncludes>;
 
 	/**
 	 * Defines how to sort fetched entries
 	 */
-	export const SortingKeys = [
-		"id",
-		"name",
-		"entryCount",
-		"creationDate",
-	] as const;
+	export const SortingKeys = ["id", "name", "slug"] as const;
 	export type SortingKeys = typeof SortingKeys;
 	export class SortingParameter extends ModelSortingParameter(SortingKeys) {}
 }
 
-export default PlaylistQueryParameters;
+export default SongVersionQueryParameters;

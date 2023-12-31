@@ -33,9 +33,9 @@ export class TrackNotFoundException extends NotFoundException {
 }
 
 export class MasterTrackNotFoundException extends NotFoundException {
-	constructor(songSlug: Slug, artistSlug: Slug) {
+	constructor(songVersionSlug: Slug, artistSlug: Slug) {
 		super(
-			`Master Track of '${songSlug.toString()}' by ${artistSlug.toString()} not found`,
+			`Master Track of '${songVersionSlug.toString()}' by ${artistSlug.toString()} not found`,
 		);
 	}
 }

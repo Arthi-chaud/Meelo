@@ -29,13 +29,17 @@ import ExternalIdResponse, {
 } from "src/providers/models/external-id.response";
 import { IllustratedResponse } from "src/illustration/models/illustration.response";
 import IllustrationRepository from "src/illustration/illustration.repository";
+import {
+	SongVersionResponse,
+	SongVersionResponseBuilder,
+} from "src/song-version/models/song-version.response";
 
 export class SongResponse extends IntersectionType(
 	Song,
 	IllustratedResponse,
 	class {
 		artist?: ArtistResponse;
-		featuring?: ArtistResponse[];
+		versions?: SongVersionResponse[];
 		externalIds?: ExternalIdResponse[];
 	},
 ) {}
@@ -50,6 +54,8 @@ export class SongResponseBuilder extends ResponseBuilderInterceptor<
 		private illustrationRepository: IllustrationRepository,
 		@Inject(forwardRef(() => ArtistResponseBuilder))
 		private artistResponseBuilder: ArtistResponseBuilder,
+		@Inject(forwardRef(() => SongVersionResponseBuilder))
+		private songVersionResponseBuilder: SongVersionResponseBuilder,
 		@Inject(forwardRef(() => ExternalIdResponseBuilder))
 		private externalIdResponseBuilder: ExternalIdResponseBuilder,
 	) {
@@ -71,10 +77,10 @@ export class SongResponseBuilder extends ResponseBuilderInterceptor<
 				song.artist,
 			);
 		}
-		if (song.featuring !== undefined) {
-			response.featuring = await Promise.all(
-				song.featuring.map((artist) =>
-					this.artistResponseBuilder.buildResponse(artist),
+		if (song.versions !== undefined) {
+			response.versions = await Promise.all(
+				song.versions.map((version) =>
+					this.songVersionResponseBuilder.buildResponse(version),
 				),
 			);
 		}

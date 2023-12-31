@@ -47,6 +47,7 @@ import escapeRegex from "src/utils/escape-regex";
 import glob from "glob";
 import * as dir from "path";
 import mime from "mime";
+import SongVersionService from "src/song-version/song-version.service";
 
 @Injectable()
 export default class ScannerService {
@@ -55,6 +56,8 @@ export default class ScannerService {
 		private trackService: TrackService,
 		@Inject(forwardRef(() => SongService))
 		private songService: SongService,
+		@Inject(forwardRef(() => SongVersionService))
+		private songVersionService: SongVersionService,
 		@Inject(forwardRef(() => AlbumService))
 		private albumService: AlbumService,
 		@Inject(forwardRef(() => ArtistService))
@@ -117,16 +120,14 @@ export default class ScannerService {
 			this.parserService.parseTrackExtensions(parsedSongName);
 		const song = await this.songService.getOrCreate(
 			{
-				name: parsedTrackName.parsedName,
+				name: this.parserService.getSongBaseName(
+					parsedTrackName.parsedName,
+				),
 				artist: { id: songArtist.id },
-				featuring: featuringArtists.map(({ slug }) => ({
-					slug: new Slug(slug),
-				})),
 				genres: genres.map((genre) => ({ id: genre.id })),
 				registeredAt: file.registerDate,
 			},
 			{
-				tracks: true,
 				genres: true,
 			},
 		);
@@ -139,15 +140,12 @@ export default class ScannerService {
 			},
 			{ id: song.id },
 		);
-		const album = await this.albumService.getOrCreate(
-			{
-				name: this.parserService.parseReleaseExtension(metadata.album)
-					.parsedName,
-				artist: albumArtist ? { id: albumArtist?.id } : undefined,
-				registeredAt: file.registerDate,
-			},
-			{ releases: true },
-		);
+		const album = await this.albumService.getOrCreate({
+			name: this.parserService.parseReleaseExtension(metadata.album)
+				.parsedName,
+			artist: albumArtist ? { id: albumArtist?.id } : undefined,
+			registeredAt: file.registerDate,
+		});
 		const release = await this.releaseService.getOrCreate(
 			{
 				name: metadata.release,
@@ -158,6 +156,14 @@ export default class ScannerService {
 			},
 			{ album: true },
 		);
+		const version = await this.songVersionService.getOrCreate({
+			song: { id: song.id },
+			name: parsedTrackName.parsedName,
+			featuring: featuringArtists.map(({ slug }) => ({
+				slug: new Slug(slug),
+			})),
+			type: this.parserService.getSongType(parsedTrackName.parsedName),
+		});
 		const track: TrackQueryParameters.CreateInput = {
 			name: parsedTrackName.parsedName,
 			isBonus: parsedTrackName["Bonus Track"],
@@ -168,14 +174,13 @@ export default class ScannerService {
 				metadata.bitrate !== undefined
 					? Math.floor(metadata.bitrate)
 					: null,
-			ripSource: null,
 			duration:
 				metadata.duration !== undefined
 					? Math.floor(metadata.duration)
 					: null,
 			sourceFile: { id: file.id },
 			release: { id: release.id },
-			song: { id: song.id },
+			songVersion: { id: version.id },
 		};
 
 		if (

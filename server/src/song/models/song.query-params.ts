@@ -27,7 +27,7 @@ import type GenreQueryParameters from "src/genre/models/genre.query-parameters";
 import { Artist, Song } from "src/prisma/models";
 import { filterAtomicRelationInclude } from "src/relation-include/atomic-relation-include.filter";
 import AlbumQueryParameters from "src/album/models/album.query-parameters";
-import { SongType } from "@prisma/client";
+import SongVersionQueryParameters from "src/song-version/models/song-version.query-params";
 
 namespace SongQueryParameters {
 	/**
@@ -46,13 +46,10 @@ namespace SongQueryParameters {
 		| "masterId"
 		| "registeredAt"
 		| "type"
-		| "featuring"
+		| "mainVersionId"
 	> & {
 		slug?: Slug;
 		artist: ArtistQueryParameters.WhereInput;
-		featuring?: RequireExactlyOne<
-			Pick<ArtistQueryParameters.WhereInput, "slug">
-		>[];
 		registeredAt?: Date;
 		genres: GenreQueryParameters.WhereInput[];
 	};
@@ -62,10 +59,10 @@ namespace SongQueryParameters {
 	 */
 	export type WhereInput = RequireExactlyOne<{
 		id: Song["id"];
+		version: SongVersionQueryParameters.WhereInput;
 		bySlug: {
 			slug: Slug;
 			artist: ArtistQueryParameters.WhereInput;
-			featuring?: ArtistQueryParameters.WhereInput[];
 		};
 	}>;
 
@@ -87,7 +84,6 @@ namespace SongQueryParameters {
 			artist?: ArtistQueryParameters.WhereInput;
 			library: LibraryQueryParameters.WhereInput;
 			genre: GenreQueryParameters.WhereInput;
-			type?: SongType;
 			id: { in: number[] };
 			playCount: RequireExactlyOne<
 				Record<"below" | "exact" | "moreThan", number>
@@ -98,9 +94,7 @@ namespace SongQueryParameters {
 	/**
 	 * The input required to update a song in the database
 	 */
-	export type UpdateInput = Partial<
-		CreateInput & Pick<Song, "playCount" | "type">
-	>;
+	export type UpdateInput = Partial<CreateInput & Pick<Song, "playCount">>;
 	export type DeleteInput = {
 		id: Song["id"];
 	};
@@ -112,9 +106,8 @@ namespace SongQueryParameters {
 	 * Defines what relations to include in query
 	 */
 	export const AvailableIncludes = [
-		"tracks",
+		"versions",
 		"artist",
-		"featuring",
 		"genres",
 		"lyrics",
 		"externalIds",

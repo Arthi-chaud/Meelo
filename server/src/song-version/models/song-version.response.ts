@@ -18,67 +18,68 @@
 
 import { Inject, Injectable, forwardRef } from "@nestjs/common";
 import { IntersectionType } from "@nestjs/swagger";
-import { Track, TrackWithRelations } from "src/prisma/models";
 import {
-	ReleaseResponse,
-	ReleaseResponseBuilder,
-} from "src/release/models/release.response";
+	ArtistResponse,
+	ArtistResponseBuilder,
+} from "src/artist/models/artist.response";
+import { SongVersion, SongVersionWithRelations } from "src/prisma/models";
 import ResponseBuilderInterceptor from "src/response/interceptors/response.interceptor";
-
 import { IllustratedResponse } from "src/illustration/models/illustration.response";
 import IllustrationRepository from "src/illustration/illustration.repository";
 import {
-	SongVersionResponse,
-	SongVersionResponseBuilder,
-} from "src/song-version/models/song-version.response";
+	SongResponse,
+	SongResponseBuilder,
+} from "src/song/models/song.response";
 
-export class TrackResponse extends IntersectionType(
-	Track,
+export class SongVersionResponse extends IntersectionType(
+	SongVersion,
 	IllustratedResponse,
 	class {
-		songVersion?: SongVersionResponse;
-		release?: ReleaseResponse;
+		song?: SongResponse;
+		featuring?: ArtistResponse[];
 	},
 ) {}
 
 @Injectable()
-export class TrackResponseBuilder extends ResponseBuilderInterceptor<
-	TrackWithRelations,
-	TrackResponse
+export class SongVersionResponseBuilder extends ResponseBuilderInterceptor<
+	SongVersionWithRelations,
+	SongVersionResponse
 > {
 	constructor(
 		@Inject(forwardRef(() => IllustrationRepository))
 		private illustrationRepository: IllustrationRepository,
-		@Inject(forwardRef(() => ReleaseResponseBuilder))
-		private releaseResponseBuilder: ReleaseResponseBuilder,
-		@Inject(forwardRef(() => SongVersionResponseBuilder))
-		private songVersionResponseBuilder: SongVersionResponseBuilder,
+		@Inject(forwardRef(() => SongResponseBuilder))
+		private songResponseBuilder: SongResponseBuilder,
+		@Inject(forwardRef(() => ArtistResponseBuilder))
+		private artistResponseBuilder: ArtistResponseBuilder,
 	) {
 		super();
 	}
 
-	returnType = TrackResponse;
+	returnType = SongVersionResponse;
 
-	async buildResponse(track: TrackWithRelations): Promise<TrackResponse> {
-		const response = <TrackResponse>{
-			...track,
+	async buildResponse(
+		version: SongVersionWithRelations,
+	): Promise<SongVersionResponse> {
+		const response = <SongVersionResponse>{
+			...version,
 			illustration:
-				await this.illustrationRepository.getTrackIllustration({
-					id: track.id,
+				await this.illustrationRepository.getSongVersionIllustration({
+					id: version.id,
 				}),
-			stream: `/files/${track.sourceFileId}/stream`,
 		};
 
-		if (track.release !== undefined) {
-			response.release = await this.releaseResponseBuilder.buildResponse(
-				track.release,
+		if (version.song !== undefined) {
+			response.song = await this.songResponseBuilder.buildResponse(
+				version.song,
 			);
 		}
-		if (track.songVersion != undefined) {
-			response.songVersion =
-				await this.songVersionResponseBuilder.buildResponse(
-					track.songVersion,
-				);
+		if (version.featuring !== undefined) {
+			response.featuring = await Promise.all(
+				version.featuring.map((artist) =>
+					this.artistResponseBuilder.buildResponse(artist),
+				),
+			);
 		}
 		return response;
 	}

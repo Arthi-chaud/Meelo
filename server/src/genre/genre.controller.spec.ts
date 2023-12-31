@@ -17,6 +17,7 @@ import { LyricsModule } from "src/lyrics/lyrics.module";
 import ScannerModule from "src/scanner/scanner.module";
 import SetupApp from "test/setup-app";
 import ReleaseModule from "src/release/release.module";
+import SongVersionModule from "src/song-version/song-version.module";
 
 describe("Genre Controller", () => {
 	let app: INestApplication;
@@ -31,6 +32,7 @@ describe("Genre Controller", () => {
 				TrackModule,
 				AlbumModule,
 				IllustrationModule,
+				SongVersionModule,
 				GenreModule,
 				LyricsModule,
 				ScannerModule,

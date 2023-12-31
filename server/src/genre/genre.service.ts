@@ -138,15 +138,19 @@ export default class GenreService extends RepositoryService<
 					{
 						songs: {
 							some: {
-								tracks: {
+								versions: {
 									some: {
-										release: {
-											album: AlbumService.formatWhereInput(
-												where.album,
-											),
+										tracks: {
+											some: {
+												release: {
+													album: AlbumService.formatWhereInput(
+														where.album,
+													),
+												},
+											},
 										},
-									},
-								},
+									}
+								}
 							},
 						},
 					},

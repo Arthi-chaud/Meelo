@@ -1,4 +1,4 @@
-import { SongType } from "@prisma/client";
+import { SongType, SongVersion } from "@prisma/client";
 import {
 	Release,
 	Track,
@@ -6,6 +6,7 @@ import {
 	Album,
 	SongWithRelations,
 	Playlist,
+	SongVersionWithRelations,
 } from "src/prisma/models";
 
 export const expectedArtistResponse = (artist: Artist) => ({
@@ -24,6 +25,11 @@ export const expectedAlbumResponse = (album: Album) => ({
 export const expectedSongResponse = (song: SongWithRelations) => ({
 	...song,
 	registeredAt: song.registeredAt.toISOString(),
+	illustration: null,
+});
+
+export const expectedSongVersionResponse = (song: SongVersion) => ({
+	...song,
 	type: SongType.Original,
 	illustration: null,
 });
@@ -48,9 +54,9 @@ export const expectedPlaylistResponse = (playlist: Playlist) => ({
 });
 
 export const expectedPlaylistEntryResponse = (
-	song: SongWithRelations,
+	song: SongVersionWithRelations,
 	id: number,
 ) => ({
-	...expectedSongResponse(song),
+	...expectedSongVersionResponse(song),
 	entryId: id,
 });

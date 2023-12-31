@@ -15,6 +15,7 @@ import VideoService from "./video.service";
 import VideoModule from "./video.module";
 import ReleaseModule from "src/release/release.module";
 import ScannerModule from "src/scanner/scanner.module";
+import SongVersionModule from "src/song-version/song-version.module";
 
 describe("Video Service", () => {
 	let videoService: VideoService;
@@ -34,6 +35,7 @@ describe("Video Service", () => {
 				VideoModule,
 				ReleaseModule,
 				ScannerModule,
+				SongVersionModule,
 			],
 			providers: [SongService, ArtistService, PrismaService],
 		})
@@ -60,7 +62,8 @@ describe("Video Service", () => {
 			const videoSongs = await videoService.getVideos({});
 			expect(videoSongs.length).toBe(1);
 			expect(videoSongs[0]).toStrictEqual({
-				...dummyRepository.songA1,
+				...dummyRepository.songVersionA1,
+				song: dummyRepository.songA1,
 				track: dummyRepository.trackA1_2Video,
 			});
 		});
@@ -76,8 +79,11 @@ describe("Video Service", () => {
 			);
 			expect(videoSongs.length).toBe(1);
 			expect(videoSongs[0]).toStrictEqual({
-				...dummyRepository.songA1,
-				artist: dummyRepository.artistA,
+				...dummyRepository.songVersionA1,
+				song: {
+					...dummyRepository.songA1,
+					artist: dummyRepository.artistA,
+				},
 				track: dummyRepository.trackA1_2Video,
 			});
 		});

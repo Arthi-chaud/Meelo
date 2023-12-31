@@ -20,15 +20,16 @@ import { Inject, Injectable, forwardRef } from "@nestjs/common";
 import { ApiProperty, IntersectionType } from "@nestjs/swagger";
 import { Playlist, PlaylistWithRelations } from "src/prisma/models";
 import ResponseBuilderInterceptor from "src/response/interceptors/response.interceptor";
-import {
-	SongResponse,
-	SongResponseBuilder,
-} from "src/song/models/song.response";
-import SongService from "src/song/song.service";
+
 import { IllustratedResponse } from "src/illustration/models/illustration.response";
 import IllustrationRepository from "src/illustration/illustration.repository";
+import SongVersionService from "src/song-version/song-version.service";
+import {
+	SongVersionResponse,
+	SongVersionResponseBuilder,
+} from "src/song-version/models/song-version.response";
 
-export class PlaylistEntryResponse extends SongResponse {
+export class PlaylistEntryResponse extends SongVersionResponse {
 	@ApiProperty({
 		description: "Unique ID of the entry in the playlist",
 	})
@@ -51,10 +52,10 @@ export class PlaylistResponseBuilder extends ResponseBuilderInterceptor<
 	constructor(
 		@Inject(forwardRef(() => IllustrationRepository))
 		private illustrationRepository: IllustrationRepository,
-		@Inject(forwardRef(() => SongResponseBuilder))
-		private songResponseBuilder: SongResponseBuilder,
-		@Inject(forwardRef(() => SongService))
-		private songService: SongService,
+		@Inject(forwardRef(() => SongVersionResponseBuilder))
+		private songVersionResponseBuilder: SongVersionResponseBuilder,
+		@Inject(forwardRef(() => SongVersionService))
+		private songVersionService: SongVersionService,
 	) {
 		super();
 	}
@@ -77,10 +78,12 @@ export class PlaylistResponseBuilder extends ResponseBuilderInterceptor<
 				playlist.entries
 					.sort((entryA, entryB) => entryA.index - entryB.index)
 					.map((entry) =>
-						this.songService
-							.get({ id: entry.songId })
+						this.songVersionService
+							.get({ id: entry.songVersionId })
 							.then((song) =>
-								this.songResponseBuilder.buildResponse(song),
+								this.songVersionResponseBuilder.buildResponse(
+									song,
+								),
 							)
 							.then((songResponse) => ({
 								entryId: entry.id,

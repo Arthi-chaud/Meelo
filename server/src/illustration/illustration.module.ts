@@ -32,6 +32,7 @@ import PlaylistModule from "src/playlist/playlist.module";
 import IllustrationRepository from "./illustration.repository";
 import PrismaModule from "src/prisma/prisma.module";
 import ScannerModule from "src/scanner/scanner.module";
+import SongVersionModule from "src/song-version/song-version.module";
 
 @Module({
 	imports: [
@@ -47,6 +48,7 @@ import ScannerModule from "src/scanner/scanner.module";
 		forwardRef(() => PlaylistModule),
 		SettingsModule,
 		forwardRef(() => ScannerModule),
+		forwardRef(() => SongVersionModule),
 	],
 	controllers: [IllustrationController],
 	providers: [IllustrationService, IllustrationRepository],

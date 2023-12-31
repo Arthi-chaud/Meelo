@@ -100,6 +100,26 @@ describe("Parser Service", () => {
 			expect(res).toStrictEqual("Me Against the Music");
 		});
 	});
+	describe("Get song Base Name Groups", () => {
+		it("No Group", () => {
+			const res = parserService.getSongBaseName("Strict Machine");
+			expect(res).toStrictEqual("Strict Machine");
+		});
+		it("Simple Group", () => {
+			const res = parserService.getSongBaseName(
+				"Me Against the Music (feat. Madonna)",
+			);
+			expect(res).toStrictEqual("Me Against the Music");
+		});
+		it("Simple Dash Group", () => {
+			const res = parserService.getSongBaseName("A - B");
+			expect(res).toStrictEqual("A");
+		});
+		it("Group before root (hard)", () => {
+			const res = parserService.getSongBaseName("(A) B - C [D]");
+			expect(res).toStrictEqual("(A) B");
+		});
+	});
 
 	describe("Split Groups", () => {
 		it("No Group", () => {
@@ -1371,6 +1391,20 @@ describe("Parser Service", () => {
 					"I'm A Slave 4 U (Live from 2001 MTV Video Music Awards)",
 				).parsedName,
 			).toBe("I'm A Slave 4 U (Live from 2001 MTV Video Music Awards)");
+		});
+		it("should not remove extension", () => {
+			expect(
+				parserService.parseTrackExtensions(
+					"Me Against The Music (Video Mix Instrumental)",
+				).parsedName,
+			).toBe("Me Against The Music (Video Mix Instrumental)");
+		});
+		it("should not remove extension", () => {
+			expect(
+				parserService.parseTrackExtensions(
+					"Me Against The Music (Album Version Instrumental)",
+				).parsedName,
+			).toBe("Me Against The Music (Album Version Instrumental)");
 		});
 	});
 });

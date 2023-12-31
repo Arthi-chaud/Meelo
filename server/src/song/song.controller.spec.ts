@@ -124,7 +124,7 @@ describe("Song Controller", () => {
 		});
 		it("should return songs w/ artist", () => {
 			return request(app.getHttpServer())
-				.get(`/songs?take=1&with=artist,featuring`)
+				.get(`/songs?take=1&with=artist`)
 				.expect(200)
 				.expect((res) => {
 					const songs: Song[] = res.body.items;
@@ -132,7 +132,6 @@ describe("Song Controller", () => {
 					expect(songs[0]).toStrictEqual({
 						...expectedSongResponse(dummyRepository.songA1),
 						artist: expectedArtistResponse(dummyRepository.artistA),
-						featuring: [],
 					});
 				});
 		});
@@ -166,7 +165,7 @@ describe("Song Controller", () => {
 		it("should return song w/ artist", () => {
 			return request(app.getHttpServer())
 				.get(
-					`/songs/${dummyRepository.songA1.id}?with=artist,featuring`,
+					`/songs/${dummyRepository.songA1.id}?with=artist`,
 				)
 				.expect(200)
 				.expect((res) => {
@@ -174,7 +173,6 @@ describe("Song Controller", () => {
 					expect(song).toStrictEqual({
 						...expectedSongResponse(dummyRepository.songA1),
 						artist: expectedArtistResponse(dummyRepository.artistA),
-						featuring: [],
 					});
 				});
 		});
@@ -217,42 +215,6 @@ describe("Song Controller", () => {
 		});
 		it("should return an error, as the song does not exist", () => {
 			return request(app.getHttpServer()).get(`/songs/${-1}`).expect(404);
-		});
-	});
-
-	describe("Get Song Master (GET /songs/:id/master)", () => {
-		it("should return master tracks", () => {
-			return request(app.getHttpServer())
-				.get(`/songs/${dummyRepository.songB1.id}/master`)
-				.expect(200)
-				.expect((res) => {
-					const track: Track = res.body;
-					expect(track).toStrictEqual(
-						expectedTrackResponse(dummyRepository.trackB1_1),
-					);
-				});
-		});
-		it("should return master track w/ song & release", () => {
-			return request(app.getHttpServer())
-				.get(
-					`/songs/${dummyRepository.songA1.id}/master?with=song,release`,
-				)
-				.expect(200)
-				.expect((res) => {
-					const track: Track = res.body;
-					expect(track).toStrictEqual({
-						...expectedTrackResponse(dummyRepository.trackA1_1),
-						song: expectedSongResponse(dummyRepository.songA1),
-						release: expectedReleaseResponse(
-							dummyRepository.releaseA1_1,
-						),
-					});
-				});
-		});
-		it("should return an error, as the song does not exist", () => {
-			return request(app.getHttpServer())
-				.get(`/songs/${-1}/master`)
-				.expect(404);
 		});
 	});
 
@@ -302,7 +264,7 @@ describe("Song Controller", () => {
 		it("should get all songs, w/ artist", () => {
 			return request(app.getHttpServer())
 				.get(
-					`/songs?artist=${dummyRepository.artistA.id}&with=artist,featuring`,
+					`/songs?artist=${dummyRepository.artistA.id}&with=artist`,
 				)
 				.expect(200)
 				.expect((res) => {
@@ -311,12 +273,10 @@ describe("Song Controller", () => {
 					expect(songs[0]).toStrictEqual({
 						...expectedSongResponse(dummyRepository.songA1),
 						artist: expectedArtistResponse(dummyRepository.artistA),
-						featuring: [],
 					});
 					expect(songs[1]).toStrictEqual({
 						...expectedSongResponse(dummyRepository.songA2),
 						artist: expectedArtistResponse(dummyRepository.artistA),
-						featuring: [],
 					});
 				});
 		});
@@ -441,7 +401,7 @@ describe("Song Controller", () => {
 		it("should return every songs, w/ parent artist", () => {
 			return request(app.getHttpServer())
 				.get(
-					`/songs?library=${dummyRepository.library1.id}&with=artist,featuring`,
+					`/songs?library=${dummyRepository.library1.id}&with=artist`,
 				)
 				.expect(200)
 				.expect((res) => {
@@ -450,17 +410,14 @@ describe("Song Controller", () => {
 					expect(songs).toContainEqual({
 						...expectedSongResponse(dummyRepository.songA1),
 						artist: expectedArtistResponse(dummyRepository.artistA),
-						featuring: [],
 					});
 					expect(songs).toContainEqual({
 						...expectedSongResponse(dummyRepository.songA2),
 						artist: expectedArtistResponse(dummyRepository.artistA),
-						featuring: [],
 					});
 					expect(songs).toContainEqual({
 						...expectedSongResponse(dummyRepository.songC1),
 						artist: expectedArtistResponse(dummyRepository.artistC),
-						featuring: [],
 					});
 				});
 		});
@@ -605,36 +562,6 @@ describe("Song Controller", () => {
 		});
 	});
 
-	describe("Get Song's Versions (GET /songs/:id/versions)", () => {
-		it("should return the song's versions", async () => {
-			const version = await songService.create({
-				name: "My Other Song (Remix)",
-				artist: { id: dummyRepository.artistA.id },
-				genres: [],
-			});
-			return request(app.getHttpServer())
-				.get(
-					`/songs/${dummyRepository.songA2.id}/versions?sortBy=id&order=desc`,
-				)
-				.expect(200)
-				.expect((res) => {
-					const fetchedSongs: Song[] = res.body.items;
-					expect(fetchedSongs).toStrictEqual([
-						{
-							...expectedSongResponse(version),
-							type: SongType.Remix,
-						},
-						expectedSongResponse(dummyRepository.songA2),
-					]);
-				});
-		});
-		it("should return an error, as the song does not exist", () => {
-			return request(app.getHttpServer())
-				.get(`/songs/${-1}/versions`)
-				.expect(404);
-		});
-	});
-
 	describe("Song Illustration", () => {
 		it("Should return the Song illustration", async () => {
 			const illustration = await dummyRepository.trackIllustration.create(
@@ -659,24 +586,6 @@ describe("Song Controller", () => {
 								"/illustrations/tracks/" +
 								dummyRepository.trackC1_1.id,
 						},
-					});
-				});
-		});
-	});
-
-	describe("Update Song", () => {
-		it("Should update Song's Type", () => {
-			return request(app.getHttpServer())
-				.post(`/songs/${dummyRepository.songB1.id}`)
-				.send({
-					type: SongType.Remix,
-				})
-				.expect(201)
-				.expect((res) => {
-					const song: Song = res.body;
-					expect(song).toStrictEqual({
-						...expectedSongResponse(dummyRepository.songB1),
-						type: SongType.Remix,
 					});
 				});
 		});

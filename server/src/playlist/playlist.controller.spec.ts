@@ -80,15 +80,15 @@ describe("Playlist Controller", () => {
 						...expectedPlaylistResponse(dummyRepository.playlist1),
 						entries: [
 							expectedPlaylistEntryResponse(
-								dummyRepository.songC1,
+								dummyRepository.songVersionC1,
 								dummyRepository.playlistEntry3.id,
 							),
 							expectedPlaylistEntryResponse(
-								dummyRepository.songA2,
+								dummyRepository.songVersionA2,
 								dummyRepository.playlistEntry1.id,
 							),
 							expectedPlaylistEntryResponse(
-								dummyRepository.songA1,
+								dummyRepository.songVersionA1,
 								dummyRepository.playlistEntry2.id,
 							),
 						],
@@ -212,7 +212,7 @@ describe("Playlist Controller", () => {
 				.post(`/playlists/entries/new`)
 				.send({
 					playlistId: dummyRepository.playlist1.id,
-					songId: dummyRepository.songB1.id,
+					songVersionId: dummyRepository.songVersionB1.id,
 				})
 				.expect(201);
 			const { entries } = await playlistService.get(
@@ -223,7 +223,7 @@ describe("Playlist Controller", () => {
 			expect(entries.at(3)!.index).toBe(
 				dummyRepository.playlistEntry2.index + 1,
 			);
-			expect(entries.at(3)!.songId).toBe(dummyRepository.songB1.id);
+			expect(entries.at(3)!.songVersionId).toBe(dummyRepository.songVersionB1.id);
 			await dummyRepository.playlistEntry.delete({
 				where: { id: entries.at(3)!.id },
 			});
@@ -234,7 +234,7 @@ describe("Playlist Controller", () => {
 				.post(`/playlists/entries/new`)
 				.send({
 					playlistId: dummyRepository.playlist1.id,
-					songId: -1,
+					songVersionId: -1,
 				})
 				.expect(404);
 		});
@@ -244,7 +244,7 @@ describe("Playlist Controller", () => {
 				.post(`/playlists/entries/new`)
 				.send({
 					playlistId: -1,
-					songId: dummyRepository.songB1.id,
+					songVersionId: dummyRepository.songB1.id,
 				})
 				.expect(404);
 		});
@@ -321,15 +321,15 @@ describe("Playlist Controller", () => {
 						...expectedPlaylistResponse(dummyRepository.playlist1),
 						entries: [
 							expectedPlaylistEntryResponse(
-								dummyRepository.songA2,
+								dummyRepository.songVersionA2,
 								dummyRepository.playlistEntry1.id,
 							),
 							expectedPlaylistEntryResponse(
-								dummyRepository.songA1,
+								dummyRepository.songVersionA1,
 								dummyRepository.playlistEntry2.id,
 							),
 							expectedPlaylistEntryResponse(
-								dummyRepository.songC1,
+								dummyRepository.songVersionC1,
 								dummyRepository.playlistEntry3.id,
 							),
 						],

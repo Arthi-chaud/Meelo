@@ -47,6 +47,8 @@ import PlaylistQueryParameters from "src/playlist/models/playlist.query-paramete
 import PlaylistService from "src/playlist/playlist.service";
 import FileManagerService from "src/file-manager/file-manager.service";
 import ScannerService from "src/scanner/scanner.service";
+import SongVersionQueryParameters from "src/song-version/models/song-version.query-params";
+import SongVersionService from "src/song-version/song-version.service";
 
 /**
  * This service handles the paths to illustrations files and the related tables in the DB
@@ -65,6 +67,8 @@ export default class IllustrationRepository {
 		private releaseService: ReleaseService,
 		@Inject(forwardRef(() => TrackService))
 		private trackService: TrackService,
+		@Inject(forwardRef(() => SongVersionService))
+		private songVersionService: SongVersionService,
 		@Inject(forwardRef(() => PlaylistService))
 		private playlistService: PlaylistService,
 		private settingsService: SettingsService,
@@ -323,7 +327,16 @@ export default class IllustrationRepository {
 
 	async getSongIllustration(where: SongQueryParameters.WhereInput) {
 		return this.trackService
-			.getMasterTrack(where)
+			.getSongMasterTrack(where)
+			.then((track) => this.getTrackIllustration({ id: track.id }))
+			.catch(() => null);
+	}
+
+	async getSongVersionIllustration(
+		where: SongVersionQueryParameters.WhereInput,
+	) {
+		return this.trackService
+			.getSongVersionMasterTrack(where)
 			.then((track) => this.getTrackIllustration({ id: track.id }))
 			.catch(() => null);
 	}

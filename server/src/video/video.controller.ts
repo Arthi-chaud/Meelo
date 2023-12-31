@@ -23,7 +23,7 @@ import { PaginationParameters } from "src/pagination/models/pagination-parameter
 import RelationIncludeQuery from "src/relation-include/relation-include-query.decorator";
 import SongQueryParameters from "src/song/models/song.query-params";
 import { VideoResponseBuilder } from "./models/video.response";
-import { Selector } from "src/song/song.controller";
+import { Selector } from "src/song-version/song-version.controller";
 import VideoService from "./video.service";
 
 @ApiTags("Videos")
@@ -32,14 +32,14 @@ export class VideoController {
 	constructor(private videoService: VideoService) {}
 
 	@ApiOperation({
-		summary: "Get many Videos (Song with video track)",
+		summary: "Get many Videos (Song Version with video track)",
 	})
 	@Response({
 		handler: VideoResponseBuilder,
 		type: ResponseType.Page,
 	})
 	@Get()
-	async getVideosByLibrary(
+	async getVideos(
 		@Query() selector: Selector,
 		@Query()
 		paginationParameters: PaginationParameters,

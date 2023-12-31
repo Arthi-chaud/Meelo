@@ -9,15 +9,17 @@ import SetupApp from "test/setup-app";
 import { VideoResponse } from "./models/video.response";
 import {
 	expectedSongResponse,
+	expectedSongVersionResponse,
 	expectedTrackResponse,
 } from "test/expected-responses";
 import ProviderService from "src/providers/provider.service";
 import SettingsService from "src/settings/settings.service";
 import VideoModule from "./video.module";
+import SongVersionModule from "src/song-version/song-version.module";
 
 jest.setTimeout(60000);
 
-describe("Song Controller", () => {
+describe("Video Controller", () => {
 	let dummyRepository: TestPrismaService;
 	let app: INestApplication;
 	let providerService: ProviderService;
@@ -25,7 +27,7 @@ describe("Song Controller", () => {
 	let module: TestingModule;
 	beforeAll(async () => {
 		module = await createTestingModule({
-			imports: [SongModule, VideoModule],
+			imports: [SongModule, VideoModule, SongVersionModule],
 		})
 			.overrideProvider(PrismaService)
 			.useClass(TestPrismaService)
@@ -51,7 +53,10 @@ describe("Song Controller", () => {
 					const videoSongs: VideoResponse[] = res.body.items;
 					expect(videoSongs.length).toBe(1);
 					expect(videoSongs[0]).toStrictEqual({
-						...expectedSongResponse(dummyRepository.songA1),
+						...expectedSongVersionResponse(dummyRepository.songVersionA1),
+						song: expectedSongResponse(
+							dummyRepository.songA1,
+						),
 						track: expectedTrackResponse(
 							dummyRepository.trackA1_2Video,
 						),
@@ -75,7 +80,8 @@ describe("Song Controller", () => {
 					const videoSongs: VideoResponse[] = res.body.items;
 					expect(videoSongs.length).toBe(1);
 					expect(videoSongs[0]).toStrictEqual({
-						...expectedSongResponse({
+						...expectedSongVersionResponse(dummyRepository.songVersionA1),
+						song: expectedSongResponse({
 							...dummyRepository.songA1,
 							lyrics: dummyRepository.lyricsA1,
 						}),
@@ -96,7 +102,8 @@ describe("Song Controller", () => {
 					const songs: VideoResponse[] = res.body.items;
 					expect(songs.length).toBe(1);
 					expect(songs[0]).toStrictEqual({
-						...expectedSongResponse(dummyRepository.songA1),
+						...expectedSongVersionResponse(dummyRepository.songVersionA1),
+						song: expectedSongResponse(dummyRepository.songA1),
 						track: expectedTrackResponse(
 							dummyRepository.trackA1_2Video,
 						),
@@ -123,7 +130,8 @@ describe("Song Controller", () => {
 					const videoSongs: VideoResponse[] = res.body.items;
 					expect(videoSongs.length).toBe(1);
 					expect(videoSongs[0]).toStrictEqual({
-						...expectedSongResponse(dummyRepository.songA1),
+						...expectedSongVersionResponse(dummyRepository.songVersionA1),
+						song: expectedSongResponse(dummyRepository.songA1),
 						track: expectedTrackResponse(
 							dummyRepository.trackA1_2Video,
 						),

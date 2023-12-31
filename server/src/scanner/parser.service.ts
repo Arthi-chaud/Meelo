@@ -286,6 +286,20 @@ export default class ParserService {
 		return songName.trim();
 	}
 
+	getSongBaseName(songName: string) {
+		const groups = this.splitGroups(songName, {
+			removeRoot: true,
+			keepDelimiters: true,
+		});
+
+		groups.forEach((group) => {
+			if (songName.indexOf(group) > 0) {
+				songName = songName.replace(group, "").trim();
+			}
+		});
+		return songName.trim();
+	}
+
 	getSongType(songName: string): SongType {
 		const songExtensions = this.splitGroups(songName, { removeRoot: true });
 		const lowercaseSongName = songName.toLowerCase();
@@ -494,7 +508,7 @@ export default class ParserService {
 				"Album Version",
 				"Main Version",
 			] as const,
-			["Live"],
+			["Live", "Video Mix", "Instrumental"],
 		);
 	}
 

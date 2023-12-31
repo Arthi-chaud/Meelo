@@ -42,6 +42,7 @@ import ProvidersModule from "./providers/providers.module";
 import LoggerModule from "./logger/logger.module";
 import * as Plugins from "./app.plugins";
 import { BullModule } from "@nestjs/bull";
+import SongVersionModule from "./song-version/song-version.module";
 import VideoModule from "./video/video.module";
 import PlaylistModule from "./playlist/playlist.module";
 
@@ -83,6 +84,7 @@ import PlaylistModule from "./playlist/playlist.module";
 		PlaylistModule,
 		VideoModule,
 		ScannerModule,
+		SongVersionModule,
 	],
 	controllers: [AppController],
 	providers: Plugins.AppProviders,

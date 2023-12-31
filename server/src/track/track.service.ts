@@ -31,7 +31,6 @@ import type ReleaseQueryParameters from "src/release/models/release.query-parame
 import type SongQueryParameters from "src/song/models/song.query-params";
 import FileService from "src/file/file.service";
 import Slug from "src/slug/slug";
-import type { PaginationParameters } from "src/pagination/models/pagination-parameters";
 import Tracklist, { UnknownDiscIndexKey } from "./models/tracklist.model";
 import RepositoryService from "src/repository/repository.service";
 import { shuffle } from "@taumechanica/stout";
@@ -47,6 +46,8 @@ import {
 } from "src/file/file.exceptions";
 import IllustrationRepository from "src/illustration/illustration.repository";
 import deepmerge from "deepmerge";
+import SongVersionService from "src/song-version/song-version.service";
+import SongVersionQueryParameters from "src/song-version/models/song-version.query-params";
 
 @Injectable()
 export default class TrackService extends RepositoryService<
@@ -68,6 +69,8 @@ export default class TrackService extends RepositoryService<
 	constructor(
 		@Inject(forwardRef(() => SongService))
 		private songService: SongService,
+		@Inject(forwardRef(() => SongVersionService))
+		private songVersionService: SongVersionService,
 		@Inject(forwardRef(() => AlbumService))
 		private albumService: AlbumService,
 		@Inject(forwardRef(() => ReleaseService))
@@ -91,8 +94,8 @@ export default class TrackService extends RepositoryService<
 	formatCreateInput(input: TrackQueryParameters.CreateInput) {
 		return {
 			...input,
-			song: {
-				connect: SongService.formatWhereInput(input.song),
+			songVersion: {
+				connect: SongVersionService.formatWhereInput(input.songVersion),
 			},
 			release: {
 				connect: ReleaseService.formatWhereInput(input.release),
@@ -108,9 +111,14 @@ export default class TrackService extends RepositoryService<
 		input: TrackQueryParameters.CreateInput,
 	) {
 		if (error instanceof Prisma.PrismaClientKnownRequestError) {
-			const parentSong = await this.songService.get(input.song, {
-				artist: true,
-			});
+			const parentSong = await this.songService.get(
+				{
+					version: input.songVersion,
+				},
+				{
+					artist: true,
+				},
+			);
 			const parentRelease = await this.releaseService.get(input.release);
 
 			await this.fileService.throwIfNotFound(input.sourceFile);
@@ -157,7 +165,14 @@ export default class TrackService extends RepositoryService<
 		}
 		if (where.song) {
 			queryParameters = deepmerge(queryParameters, {
-				song: SongService.formatWhereInput(where.song),
+				songVersion: { song: SongService.formatWhereInput(where.song) },
+			});
+		}
+		if (where.songVersion) {
+			queryParameters = deepmerge(queryParameters, {
+				songVersion: SongVersionService.formatWhereInput(
+					where.songVersion,
+				),
 			});
 		}
 
@@ -176,7 +191,7 @@ export default class TrackService extends RepositoryService<
 		}
 		if (where.album) {
 			queryParameters = deepmerge(queryParameters, {
-				song: {
+				songVersion: {
 					tracks: {
 						some: {
 							release: {
@@ -259,30 +274,17 @@ export default class TrackService extends RepositoryService<
 	}
 
 	/**
-	 * Fetch the tracks from a song
-	 * Returns an empty array if the song does not exist
+	 * Fetch the master tracks of a song
 	 * @param where the parameters to find the parent song
-	 * @param pagination the pagniation parameters
-	 * @param include the relation to include in the returned objects
-	 * @returns the list of tracks related to the song
+	 * @param include the relation to include in the returned object
+	 * @returns the master track of the song
 	 */
-	async getSongTracks<I extends TrackQueryParameters.RelationInclude>(
+	async getSongMasterTrack(
 		where: SongQueryParameters.WhereInput,
-		pagination?: PaginationParameters,
-		include?: I,
-		sort?: TrackQueryParameters.SortingParameter,
+		include?: TrackQueryParameters.RelationInclude,
 	) {
-		const tracks = await this.getMany(
-			{ song: where },
-			pagination,
-			include,
-			sort,
-		);
-
-		if (tracks.length == 0) {
-			await this.songService.throwIfNotFound(where);
-		}
-		return tracks;
+		const mainVersion = await this.songVersionService.getMainVersion(where);
+		return this.getSongVersionMasterTrack(mainVersion, include);
 	}
 
 	/**
@@ -291,37 +293,39 @@ export default class TrackService extends RepositoryService<
 	 * @param include the relation to include in the returned object
 	 * @returns the master track of the song
 	 */
-	async getMasterTrack(
-		where: SongQueryParameters.WhereInput,
+	async getSongVersionMasterTrack(
+		where: SongVersionQueryParameters.WhereInput,
 		include?: TrackQueryParameters.RelationInclude,
 	) {
-		return this.songService
-			.get(where, { artist: true })
-			.then(async (song) => {
-				if (song.masterId != null) {
-					return this.get({ id: song.masterId }, include);
-				}
-				const tracks = await this.prismaService.track.findMany({
-					where: { song: SongService.formatWhereInput(where) },
-					include: this.formatInclude(include),
-					orderBy: {
-						release: {
-							releaseDate: { sort: "asc", nulls: "last" },
-						},
-					},
-				});
-				const master =
-					tracks.find((track) => track.type == "Audio") ??
-					tracks.at(0);
+		const tracks = await this.prismaService.track.findMany({
+			where: {
+				songVersion: SongVersionService.formatWhereInput(where),
+			},
+			include: this.formatInclude(include),
+			orderBy: {
+				release: {
+					releaseDate: { sort: "asc", nulls: "last" },
+				},
+			},
+		});
+		const master =
+			tracks.find((track) => track.type == "Audio") ?? tracks.at(0);
 
-				if (!master) {
-					throw new MasterTrackNotFoundException(
-						new Slug(song.slug),
-						new Slug(song.artist.slug),
-					);
-				}
-				return master;
-			});
+		if (!master) {
+			const parentSong = await this.songService.get(
+				{
+					version: where,
+				},
+				{
+					artist: true,
+				},
+			);
+			throw new MasterTrackNotFoundException(
+				new Slug(parentSong.slug),
+				new Slug(parentSong.artist.slug),
+			);
+		}
+		return master;
 	}
 
 	/**
@@ -337,7 +341,13 @@ export default class TrackService extends RepositoryService<
 		const tracks = await this.prismaService.track.findMany({
 			where: this.formatManyWhereInput({ release: where }),
 			orderBy: { trackIndex: "asc" },
-			include: { song: { include: SongService.formatInclude(include) } },
+			include: {
+				songVersion: {
+					include: {
+						song: { include: SongService.formatInclude(include) },
+					},
+				},
+			},
 		});
 
 		if (tracks.length == 0) {
@@ -383,20 +393,22 @@ export default class TrackService extends RepositoryService<
 	): Prisma.TrackUpdateInput {
 		return {
 			...what,
-			song: what.song
+			songVersion: what.songVersion
 				? {
-						connect: SongService.formatWhereInput(what.song),
-				  }
+					connect: SongVersionService.formatWhereInput(
+						what.songVersion,
+					),
+				}
 				: undefined,
 			release: what.release
 				? {
-						connect: ReleaseService.formatWhereInput(what.release),
-				  }
+					connect: ReleaseService.formatWhereInput(what.release),
+				}
 				: undefined,
 			sourceFile: what.sourceFile
 				? {
-						connect: FileService.formatWhereInput(what.sourceFile),
-				  }
+					connect: FileService.formatWhereInput(what.sourceFile),
+				}
 				: undefined,
 		};
 	}
@@ -435,24 +447,26 @@ export default class TrackService extends RepositoryService<
 	/**
 	 * Does nothing, nothing to housekeep.
 	 */
-	async housekeeping(): Promise<void> {}
+	async housekeeping(): Promise<void> { }
 
 	/**
-	 * Change the track's parent song
+	 * Change the track's parent song version
 	 * If the previous parent is empty, it will be deleted
 	 * @param trackWhere the query parameters to find the track to reassign
-	 * @param newParentWhere the query parameters to find the song to reassign the track to
+	 * @param newParentWhere the query parameters to find the song version to reassign the track to
 	 */
 	async reassign(
 		trackWhere: TrackQueryParameters.WhereInput,
-		newParentWhere: SongQueryParameters.WhereInput,
+		newParentWhere: SongVersionQueryParameters.WhereInput,
 	): Promise<Track> {
-		const track = await this.get(trackWhere, { song: true });
-		const newParent = await this.songService.get(newParentWhere);
+		const track = await this.get(trackWhere, { songVersion: true });
+		const newParent = await this.songVersionService.get(newParentWhere);
 
-		if (track.id == track.song.masterId) {
-			await this.albumService.unsetMasterRelease({ id: track.songId });
+		if (track.id == track.songVersion.masterId) {
+			await this.albumService.unsetMasterRelease({
+				id: track.songVersionId,
+			});
 		}
-		return this.update({ song: { id: newParent.id } }, trackWhere);
+		return this.update({ songVersion: { id: newParent.id } }, trackWhere);
 	}
 }

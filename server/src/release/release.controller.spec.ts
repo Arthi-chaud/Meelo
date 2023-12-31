@@ -28,9 +28,11 @@ import {
 	expectedTrackResponse,
 	expectedSongResponse,
 	expectedArtistResponse,
+	expectedSongVersionResponse,
 } from "test/expected-responses";
 import ProvidersModule from "src/providers/providers.module";
 import ProviderService from "src/providers/provider.service";
+import { SongVersion } from "@prisma/client";
 
 jest.setTimeout(60000);
 
@@ -424,9 +426,12 @@ describe("Release Controller", () => {
 								...expectedTrackResponse(
 									dummyRepository.trackA2_1,
 								),
-								song: expectedSongResponse(
-									dummyRepository.songA2,
-								),
+								songVersion: expectedSongVersionResponse({
+									...dummyRepository.songVersionA2,
+									song: expectedSongResponse(
+										dummyRepository.songA2,
+									),
+								} as SongVersion),
 							},
 						],
 						"2": [
@@ -434,9 +439,12 @@ describe("Release Controller", () => {
 								...expectedTrackResponse(
 									dummyRepository.trackA1_2Video,
 								),
-								song: expectedSongResponse(
-									dummyRepository.songA1,
-								),
+								songVersion: expectedSongVersionResponse({
+									...dummyRepository.songVersionA1,
+									song: expectedSongResponse(
+										dummyRepository.songA1,
+									),
+								} as SongVersion),
 							},
 						],
 					});
@@ -457,14 +465,17 @@ describe("Release Controller", () => {
 								...expectedTrackResponse(
 									dummyRepository.trackA2_1,
 								),
-								song: {
-									...expectedSongResponse(
-										dummyRepository.songA2,
-									),
-									artist: expectedArtistResponse(
-										dummyRepository.artistA,
-									),
-								},
+								songVersion: expectedSongVersionResponse({
+									...dummyRepository.songVersionA2,
+									song: {
+										...expectedSongResponse(
+											dummyRepository.songA2,
+										),
+										artist: expectedArtistResponse(
+											dummyRepository.artistA,
+										),
+									},
+								} as SongVersion),
 							},
 						],
 						"2": [
@@ -472,14 +483,17 @@ describe("Release Controller", () => {
 								...expectedTrackResponse(
 									dummyRepository.trackA1_2Video,
 								),
-								song: {
-									...expectedSongResponse(
-										dummyRepository.songA1,
-									),
-									artist: expectedArtistResponse(
-										dummyRepository.artistA,
-									),
-								},
+								songVersion: expectedSongVersionResponse({
+									...dummyRepository.songVersionA1,
+									song: {
+										...expectedSongResponse(
+											dummyRepository.songA1,
+										),
+										artist: expectedArtistResponse(
+											dummyRepository.artistA,
+										),
+									},
+								} as SongVersion),
 							},
 						],
 					});
@@ -503,13 +517,27 @@ describe("Release Controller", () => {
 					expect(tracklist).toStrictEqual([
 						{
 							...expectedTrackResponse(dummyRepository.trackA2_1),
-							song: expectedSongResponse(dummyRepository.songA2),
+							songVersion: expectedSongVersionResponse({
+								...dummyRepository.songVersionA2,
+								song: {
+									...expectedSongResponse(
+										dummyRepository.songA2,
+									),
+								},
+							} as SongVersion),
 						},
 						{
 							...expectedTrackResponse(
 								dummyRepository.trackA1_2Video,
 							),
-							song: expectedSongResponse(dummyRepository.songA1),
+							songVersion: expectedSongVersionResponse({
+								...dummyRepository.songVersionA1,
+								song: {
+									...expectedSongResponse(
+										dummyRepository.songA1,
+									),
+								},
+							} as SongVersion),
 						},
 					]);
 				});
@@ -526,23 +554,29 @@ describe("Release Controller", () => {
 					expect(tracklist).toStrictEqual([
 						{
 							...expectedTrackResponse(dummyRepository.trackA2_1),
-							song: {
-								...expectedSongResponse(dummyRepository.songA2),
-								artist: expectedArtistResponse(
-									dummyRepository.artistA,
-								),
-							},
+							songVersion: expectedSongVersionResponse({
+								...dummyRepository.songVersionA2,
+								song: {
+									...expectedSongResponse(dummyRepository.songA2),
+									artist: expectedArtistResponse(
+										dummyRepository.artistA,
+									),
+								},
+							} as SongVersion),
 						},
 						{
 							...expectedTrackResponse(
 								dummyRepository.trackA1_2Video,
 							),
-							song: {
-								...expectedSongResponse(dummyRepository.songA1),
-								artist: expectedArtistResponse(
-									dummyRepository.artistA,
-								),
-							},
+							songVersion: expectedSongVersionResponse({
+								...dummyRepository.songVersionA1,
+								song: {
+									...expectedSongResponse(dummyRepository.songA1),
+									artist: expectedArtistResponse(
+										dummyRepository.artistA,
+									),
+								},
+							} as SongVersion),
 						},
 					]);
 				});

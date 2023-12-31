@@ -27,6 +27,7 @@ import ProvidersModule from "src/providers/providers.module";
 import SettingsModule from "src/settings/settings.module";
 import SettingsService from "src/settings/settings.service";
 import ProviderService from "src/providers/provider.service";
+import SongVersionModule from "src/song-version/song-version.module";
 
 describe("Artist Controller", () => {
 	let dummyRepository: TestPrismaService;
@@ -50,6 +51,7 @@ describe("Artist Controller", () => {
 				FileModule,
 				ProvidersModule,
 				SettingsModule,
+				SongVersionModule,
 			],
 			providers: [
 				ArtistService,

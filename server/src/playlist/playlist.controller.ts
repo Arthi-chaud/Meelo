@@ -145,7 +145,7 @@ export default class PlaylistController {
 		playlistEntryDTO: CreatePlaylistEntryDTO,
 	) {
 		await this.playlistService.addSong(
-			{ id: playlistEntryDTO.songId },
+			{ id: playlistEntryDTO.songVersionId },
 			{ id: playlistEntryDTO.playlistId },
 		);
 	}

@@ -173,9 +173,15 @@ export default class FileService extends RepositoryService<
 			case "addDate":
 				return { registerDate: sort.order };
 			case "trackArtist":
-				return { track: { song: { artist: { slug: sort.order } } } };
+				return {
+					track: {
+						songVersion: { song: { artist: { slug: sort.order } } },
+					},
+				};
 			case "trackName":
-				return { track: { song: { slug: sort.order } } };
+				return {
+					track: { songVersion: { song: { slug: sort.order } } },
+				};
 			default:
 				return { [sort.sortBy ?? "id"]: sort.order };
 		}

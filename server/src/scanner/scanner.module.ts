@@ -29,6 +29,7 @@ import TrackModule from "src/track/track.module";
 import ScannerService from "./scanner.service";
 import ParserService from "./parser.service";
 import FfmpegService from "./ffmpeg.service";
+import SongVersionModule from "src/song-version/song-version.module";
 
 @Module({
 	imports: [
@@ -41,6 +42,7 @@ import FfmpegService from "./ffmpeg.service";
 		forwardRef(() => FileModule),
 		forwardRef(() => AlbumModule),
 		forwardRef(() => ArtistModule),
+		forwardRef(() => SongVersionModule),
 	],
 	providers: [ScannerService, ParserService, FfmpegService],
 	exports: [ScannerService, ParserService, FfmpegService],

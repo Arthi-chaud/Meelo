@@ -27,6 +27,7 @@ import IllustrationModule from "src/illustration/illustration.module";
 import AlbumModule from "src/album/album.module";
 import { TrackResponseBuilder } from "./models/track.response";
 import { TracklistResponseBuilder } from "./models/tracklist.model";
+import SongVersionModule from "src/song-version/song-version.module";
 
 @Module({
 	imports: [
@@ -36,6 +37,7 @@ import { TracklistResponseBuilder } from "./models/tracklist.model";
 		forwardRef(() => AlbumModule),
 		forwardRef(() => IllustrationModule),
 		forwardRef(() => FileModule),
+		forwardRef(() => SongVersionModule),
 	],
 	exports: [TrackService, TrackResponseBuilder, TracklistResponseBuilder],
 	providers: [TrackService, TrackResponseBuilder, TracklistResponseBuilder],

@@ -33,13 +33,14 @@ import {
 	PlaylistReorderInvalidArrayException,
 } from "./playlist.exceptions";
 import PrismaService from "src/prisma/prisma.service";
-import SongQueryParameters from "src/song/models/song.query-params";
 import Logger from "src/logger/logger";
 import Identifier from "src/identifier/models/identifier";
 import { parseIdentifierSlugs } from "src/identifier/identifier.parse-slugs";
 // eslint-disable-next-line no-restricted-imports
 import { UnhandledORMErrorException } from "src/exceptions/orm-exceptions";
 import AlbumService from "src/album/album.service";
+import SongVersionService from "src/song-version/song-version.service";
+import SongVersionQueryParameters from "src/song-version/models/song-version.query-params";
 
 @Injectable()
 export default class PlaylistService extends RepositoryService<
@@ -59,8 +60,8 @@ export default class PlaylistService extends RepositoryService<
 > {
 	private readonly logger = new Logger(PlaylistService.name);
 	constructor(
-		@Inject(forwardRef(() => SongService))
-		private songService: SongService,
+		@Inject(forwardRef(() => SongVersionService))
+		private songVersionService: SongVersionService,
 		private prismaService: PrismaService,
 	) {
 		super(prismaService, "playlist");
@@ -143,13 +144,23 @@ export default class PlaylistService extends RepositoryService<
 			entries: input.song
 				? {
 						some: {
-							song: SongService.formatWhereInput(input.song),
+							songVersion: {
+								song: SongService.formatWhereInput(input.song),
+							},
+						},
+				  }
+				: input.version
+				? {
+						some: {
+							songVersion: SongVersionService.formatWhereInput(
+								input.version,
+							),
 						},
 				  }
 				: input.album
 				? {
 						some: {
-							song: {
+							songVersion: {
 								tracks: {
 									some: {
 										release: {
@@ -274,11 +285,11 @@ export default class PlaylistService extends RepositoryService<
 	 * @param playlist the query parameters to find the playlist
 	 */
 	async addSong(
-		song: SongQueryParameters.WhereInput,
+		songVersion: SongVersionQueryParameters.WhereInput,
 		playlist: PlaylistQueryParameters.WhereInput,
 	) {
 		await Promise.all([
-			this.songService.throwIfNotFound(song),
+			this.songVersionService.throwIfNotFound(songVersion),
 			this.throwIfNotFound(playlist),
 		]);
 
@@ -294,7 +305,10 @@ export default class PlaylistService extends RepositoryService<
 			await this.prismaService.playlistEntry.create({
 				data: {
 					playlist: { connect: this.formatWhereInput(playlist) },
-					song: { connect: SongService.formatWhereInput(song) },
+					songVersion: {
+						connect:
+							SongVersionService.formatWhereInput(songVersion),
+					},
 					index: (lastEntry?.index ?? -1) + 1,
 				},
 			});

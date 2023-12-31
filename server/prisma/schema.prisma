@@ -128,25 +128,26 @@ model Album {
 model Artist {
     /// @description Unique numeric Artist identifier
     /// @example 123
-    id            Int                 @id @default(autoincrement())
+    id           Int                 @id @default(autoincrement())
     /// @description The name of the artist
     /// @example My Artist
-    name          String              @db.Citext()
+    name         String              @db.Citext()
     /// @description Unique string identifer
     /// @example my-artist
-    slug          String              @unique
+    slug         String              @unique
     /// @description Albums that have the artist as the main one 
-    albums        Album[]
+    albums       Album[]
     /// @description Songs by the artist
-    songs         Song[]              @relation("main_song_artist")
+    songs        Song[]              @relation("main_song_artist")
     /// @description Songs where the artist features in
-    featuredOn    SongVersion[]       @relation("song_version_featuring")
+    featuredOn   SongVersion[]       @relation("song_version_featuring")
     /// @description The date the artist was registered
-    registeredAt  DateTime            @default(now())
+    registeredAt DateTime            @default(now())
     /// @description External IDs
-    externalIds   ArtistExternalId[]
+    externalIds  ArtistExternalId[]
     /// @description Related Illustration
-    illustration  ArtistIllustration?
+    illustration ArtistIllustration?
+
     @@map("artists")
 }
 
@@ -283,11 +284,11 @@ model SongVersion {
     /// @description Unique numeric identifier of the parent song
     /// @example 123
     songId    Int
-	/// @description The main/most used track of the version. By default, it is the first one
-    master   Track?     @relation("master_track", fields: [masterId], references: [id], onDelete: SetNull)
+    /// @description The main/most used track of the version. By default, it is the first one
+    master    Track?          @relation("master_track", fields: [masterId], references: [id], onDelete: SetNull)
     /// @description Unique numeric identifier of the main track, if there is one
     /// @example 123
-    masterId Int?             @unique
+    masterId  Int?            @unique
     /// @description The type of the song
     type      SongType        @default(Unknown)
     /// @description The related tracks
@@ -295,7 +296,9 @@ model SongVersion {
     /// @description List of relations to playlists
     playlists PlaylistEntry[]
     masterOf  Song?           @relation("master_version")
-	@@map("song_versions")
+
+    @@unique([songId, slug], name: "songUniqueVersion")
+    @@map("song_versions")
 }
 
 /// A type of song
@@ -536,16 +539,16 @@ model Playlist {
 model PlaylistEntry {
     /// @description Unique numeric identifier
     /// @example 123
-    id         Int         @id @default(autoincrement())
+    id            Int         @id @default(autoincrement())
     /// @description The Identifier of the song
-    songId     Int
-    song       SongVersion @relation(fields: [songId], references: [id], onDelete: Cascade)
+    songVersionId Int
+    songVersion   SongVersion @relation(fields: [songVersionId], references: [id], onDelete: Cascade)
     /// @description The Identifier of the parent playlist 
-    playlistId Int
-    playlist   Playlist    @relation(fields: [playlistId], references: [id], onDelete: Cascade)
+    playlistId    Int
+    playlist      Playlist    @relation(fields: [playlistId], references: [id], onDelete: Cascade)
     /// @minimum 0
     /// @description The index of the entry in the playlist, starting at 0
-    index      Int
+    index         Int
 
     @@map("playlist_entries")
 }

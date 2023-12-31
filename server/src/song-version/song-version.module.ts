@@ -17,23 +17,25 @@
  */
 
 import { Module, forwardRef } from "@nestjs/common";
-import PlaylistController from "./playlist.controller";
-import PlaylistService from "./playlist.service";
+import SongVersionService from "./song-version.service";
+import SongModule from "src/song/song.module";
+import { SongVersionResponseBuilder } from "./models/song-version.response";
 import PrismaModule from "src/prisma/prisma.module";
-import SettingsModule from "src/settings/settings.module";
-import { PlaylistResponseBuilder } from "./models/playlist.response";
+import TrackModule from "src/track/track.module";
 import IllustrationModule from "src/illustration/illustration.module";
-import SongVersionModule from "src/song-version/song-version.module";
+import ArtistModule from "src/artist/artist.module";
+import { SongVersionController } from "./song-version.controller";
 
 @Module({
 	imports: [
 		PrismaModule,
-		forwardRef(() => SongVersionModule),
-		SettingsModule,
+		forwardRef(() => SongModule),
+		forwardRef(() => TrackModule),
 		forwardRef(() => IllustrationModule),
+		forwardRef(() => ArtistModule),
 	],
-	providers: [PlaylistService, PlaylistResponseBuilder],
-	exports: [PlaylistService, PlaylistResponseBuilder],
-	controllers: [PlaylistController],
+	controllers: [SongVersionController],
+	exports: [SongVersionService, SongVersionResponseBuilder],
+	providers: [SongVersionService, SongVersionResponseBuilder],
 })
-export default class PlaylistModule {}
+export default class SongVersionModule {}

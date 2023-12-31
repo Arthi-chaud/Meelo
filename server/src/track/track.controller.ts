@@ -54,6 +54,8 @@ import ArtistQueryParameters from "src/artist/models/artist.query-parameters";
 import ArtistService from "src/artist/artist.service";
 import AlbumQueryParameters from "src/album/models/album.query-parameters";
 import AlbumService from "src/album/album.service";
+import SongVersionQueryParameters from "src/song-version/models/song-version.query-params";
+import SongVersionService from "src/song-version/song-version.service";
 
 class Selector extends IntersectionType(TrackQueryParameters.SortingParameter) {
 	@IsOptional()
@@ -76,6 +78,13 @@ class Selector extends IntersectionType(TrackQueryParameters.SortingParameter) {
 	})
 	@TransformIdentifier(SongService)
 	song?: SongQueryParameters.WhereInput;
+
+	@IsOptional()
+	@ApiPropertyOptional({
+		description: "Filter tracks by song version",
+	})
+	@TransformIdentifier(SongService)
+	songVersion?: SongVersionQueryParameters.WhereInput;
 
 	@IsOptional()
 	@ApiPropertyOptional({
@@ -106,8 +115,8 @@ export class TrackController {
 	constructor(
 		@Inject(forwardRef(() => TrackService))
 		private trackService: TrackService,
-		@Inject(forwardRef(() => SongService))
-		private songService: SongService,
+		@Inject(forwardRef(() => SongVersionService))
+		private songVersionService: SongVersionService,
 	) {}
 
 	@ApiOperation({
@@ -131,6 +140,20 @@ export class TrackController {
 			include,
 			selector,
 		);
+	}
+
+	@ApiOperation({
+		summary: "Get a song's master track",
+	})
+	@Response({ handler: TrackResponseBuilder })
+	@Get("master/:idOrSlug")
+	async getSongMaster(
+		@RelationIncludeQuery(TrackQueryParameters.AvailableAtomicIncludes)
+		include: TrackQueryParameters.RelationInclude,
+		@IdentifierParam(SongService)
+		where: SongQueryParameters.WhereInput,
+	) {
+		return this.trackService.getSongMasterTrack(where, include);
 	}
 
 	@ApiOperation({
@@ -159,7 +182,7 @@ export class TrackController {
 	) {
 		const track = await this.trackService.get(where);
 
-		await this.songService.setMasterTrack(where);
+		await this.songVersionService.setMasterTrack(where);
 		return track;
 	}
 
@@ -175,7 +198,7 @@ export class TrackController {
 		@Body() reassignmentDTO: ReassignTrackDTO,
 	) {
 		return this.trackService.reassign(where, {
-			id: reassignmentDTO.songId,
+			id: reassignmentDTO.songVersionId,
 		});
 	}
 }

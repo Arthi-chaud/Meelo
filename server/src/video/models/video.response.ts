@@ -27,32 +27,38 @@ import {
 	SongResponse,
 	SongResponseBuilder,
 } from "../../song/models/song.response";
-import { Song, Track } from "src/prisma/models";
+import { Song, SongVersion, Track } from "src/prisma/models";
+import { SongVersionResponse, SongVersionResponseBuilder } from "src/song-version/models/song-version.response";
 
-export class VideoResponse extends IntersectionType(SongResponse) {
+export class VideoResponse extends IntersectionType(SongVersionResponse) {
 	@ApiProperty()
 	track: TrackResponse;
+	@ApiProperty()
+	song: SongResponse
 }
 
 @Injectable()
 export class VideoResponseBuilder extends ResponseBuilderInterceptor<
-	Song & { track: Track },
+	SongVersion & { track: Track, song: Song },
 	VideoResponse
 > {
 	constructor(
 		private songResponseBuilder: SongResponseBuilder,
 		@Inject(forwardRef(() => TrackResponseBuilder))
 		private trackResponseBuilder: TrackResponseBuilder,
+		@Inject(forwardRef(() => SongVersionResponseBuilder))
+		private songVersionResponseBuilder: SongVersionResponseBuilder,
 	) {
 		super();
 	}
 
 	returnType = VideoResponse;
 
-	async buildResponse(song: Song & { track: Track }): Promise<VideoResponse> {
+	async buildResponse(song: SongVersion & { track: Track, song: Song }): Promise<VideoResponse> {
 		return {
-			...(await this.songResponseBuilder.buildResponse(song)),
+			...(await this.songVersionResponseBuilder.buildResponse(song)),
+			// Song will alaways be defined, see definition of Video
 			track: await this.trackResponseBuilder.buildResponse(song.track),
-		};
+		} as VideoResponse;
 	}
 }

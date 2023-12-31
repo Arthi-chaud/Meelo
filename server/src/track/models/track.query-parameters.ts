@@ -28,6 +28,7 @@ import { ModelSortingParameter } from "src/sort/models/sorting-parameter";
 import type AlbumQueryParameters from "src/album/models/album.query-parameters";
 import type ArtistQueryParameters from "src/artist/models/artist.query-parameters";
 import { filterAtomicRelationInclude } from "src/relation-include/atomic-relation-include.filter";
+import SongVersionQueryParameters from "src/song-version/models/song-version.query-params";
 
 namespace TrackQueryParameters {
 	/**
@@ -40,11 +41,11 @@ namespace TrackQueryParameters {
 		| "sourceFileId"
 		| "release"
 		| "releaseId"
-		| "song"
-		| "songId"
+		| "songVersion"
+		| "songVersionId"
 	> & { sourceFile: FileQueryParameters.WhereInput } & {
 		release: ReleaseQueryParameters.WhereInput;
-	} & { song: SongQueryParameters.WhereInput };
+	} & { songVersion: SongVersionQueryParameters.WhereInput };
 
 	/**
 	 * Query parameters to find one track
@@ -63,6 +64,7 @@ namespace TrackQueryParameters {
 				type: TrackType;
 				id: { in: number[] };
 				song: SongQueryParameters.WhereInput;
+				songVersion: SongVersionQueryParameters.WhereInput;
 				library: LibraryQueryParameters.WhereInput;
 			} & RequireExactlyOne<{
 				artist: ArtistQueryParameters.WhereInput;
@@ -100,7 +102,7 @@ namespace TrackQueryParameters {
 	/**
 	 * Defines what relations to include in query
 	 */
-	export const AvailableIncludes = ["song", "release"] as const;
+	export const AvailableIncludes = ["songVersion", "release"] as const;
 	export const AvailableAtomicIncludes =
 		filterAtomicRelationInclude(AvailableIncludes);
 	export type RelationInclude = BaseRelationInclude<typeof AvailableIncludes>;

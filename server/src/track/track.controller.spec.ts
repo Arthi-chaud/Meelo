@@ -22,6 +22,7 @@ import {
 	expectedTrackResponse,
 	expectedSongResponse,
 	expectedReleaseResponse,
+	expectedSongVersionResponse,
 } from "test/expected-responses";
 
 describe("Track Controller", () => {
@@ -124,14 +125,14 @@ describe("Track Controller", () => {
 		});
 		it("should return tracks w/ related song", () => {
 			return request(app.getHttpServer())
-				.get(`/tracks?take=1&skip=1&with=song&sortBy=name`)
+				.get(`/tracks?take=1&skip=1&with=songVersion&sortBy=name`)
 				.expect(200)
 				.expect((res) => {
 					const tracks: Track[] = res.body.items;
 					expect(tracks.length).toBe(1);
 					expect(tracks[0]).toStrictEqual({
 						...expectedTrackResponse(dummyRepository.trackA2_1),
-						song: expectedSongResponse(dummyRepository.songA2),
+						songVersion: expectedSongVersionResponse(dummyRepository.songVersionA2),
 					});
 				});
 		});
@@ -141,7 +142,7 @@ describe("Track Controller", () => {
 		it("should return every tracks, w/ song & parent release", () => {
 			return request(app.getHttpServer())
 				.get(
-					`/tracks?library=${dummyRepository.library1.id}&with=song,release`,
+					`/tracks?library=${dummyRepository.library1.id}&with=songVersion,release`,
 				)
 				.expect(200)
 				.expect((res) => {
@@ -152,7 +153,7 @@ describe("Track Controller", () => {
 						release: expectedReleaseResponse(
 							dummyRepository.releaseA1_1,
 						),
-						song: expectedSongResponse(dummyRepository.songA1),
+						songVersion: expectedSongVersionResponse(dummyRepository.songVersionA1),
 					});
 					expect(tracks).toContainEqual({
 						...expectedTrackResponse(
@@ -161,21 +162,21 @@ describe("Track Controller", () => {
 						release: expectedReleaseResponse(
 							dummyRepository.releaseA1_2,
 						),
-						song: expectedSongResponse(dummyRepository.songA1),
+						songVersion: expectedSongVersionResponse(dummyRepository.songVersionA1),
 					});
 					expect(tracks).toContainEqual({
 						...expectedTrackResponse(dummyRepository.trackA2_1),
 						release: expectedReleaseResponse(
 							dummyRepository.releaseA1_2,
 						),
-						song: expectedSongResponse(dummyRepository.songA2),
+						songVersion: expectedSongVersionResponse(dummyRepository.songVersionA2),
 					});
 					expect(tracks).toContainEqual({
 						...expectedTrackResponse(dummyRepository.trackC1_1),
 						release: expectedReleaseResponse(
 							dummyRepository.compilationReleaseA1,
 						),
-						song: expectedSongResponse(dummyRepository.songC1),
+						songVersion: expectedSongVersionResponse(dummyRepository.songVersionC1),
 					});
 				});
 		});
@@ -211,14 +212,14 @@ describe("Track Controller", () => {
 		});
 		it("should return tracks w/ song", () => {
 			return request(app.getHttpServer())
-				.get(`/tracks?song=${dummyRepository.songB1.id}&with=song`)
+				.get(`/tracks?song=${dummyRepository.songB1.id}&with=songVersion`)
 				.expect(200)
 				.expect((res) => {
 					const tracks: Track[] = res.body.items;
 					expect(tracks.length).toBe(1);
 					expect(tracks[0]).toStrictEqual({
 						...expectedTrackResponse(dummyRepository.trackB1_1),
-						song: expectedSongResponse(dummyRepository.songB1),
+						songVersion: expectedSongVersionResponse(dummyRepository.songVersionB1),
 					});
 				});
 		});
@@ -286,7 +287,7 @@ describe("Track Controller", () => {
 		it("should get tracks w/ related song", () => {
 			return request(app.getHttpServer())
 				.get(
-					`/tracks?release=${dummyRepository.releaseA1_1.id}&with=song`,
+					`/tracks?release=${dummyRepository.releaseA1_1.id}&with=songVersion`,
 				)
 				.expect(200)
 				.expect((res) => {
@@ -294,9 +295,45 @@ describe("Track Controller", () => {
 					expect(tracks.length).toBe(1);
 					expect(tracks[0]).toStrictEqual({
 						...expectedTrackResponse(dummyRepository.trackA1_1),
-						song: expectedSongResponse(dummyRepository.songA1),
+						songVersion: expectedSongVersionResponse(dummyRepository.songVersionA1),
 					});
 				});
+		});
+	});
+
+	describe("Get Song Master (GET /songs/:id/master)", () => {
+		it("should return master tracks", () => {
+			return request(app.getHttpServer())
+				.get(`/tracks/master/${dummyRepository.songB1.id}`)
+				.expect(200)
+				.expect((res) => {
+					const track: Track = res.body;
+					expect(track).toStrictEqual(
+						expectedTrackResponse(dummyRepository.trackB1_1),
+					);
+				});
+		});
+		it("should return master track w/ song & release", () => {
+			return request(app.getHttpServer())
+				.get(
+					`/tracks/master/${dummyRepository.songA1.id}?with=songVersion,release`,
+				)
+				.expect(200)
+				.expect((res) => {
+					const track: Track = res.body;
+					expect(track).toStrictEqual({
+						...expectedTrackResponse(dummyRepository.trackA1_1),
+						songVersion: expectedSongVersionResponse(dummyRepository.songVersionA1),
+						release: expectedReleaseResponse(
+							dummyRepository.releaseA1_1,
+						),
+					});
+				});
+		});
+		it("should return an error, as the song does not exist", () => {
+			return request(app.getHttpServer())
+				.get(`/tracks/master/-1`)
+				.expect(404);
 		});
 	});
 
@@ -340,14 +377,14 @@ describe("Track Controller", () => {
 		it("should return track w/ related release & song", () => {
 			return request(app.getHttpServer())
 				.get(
-					`/tracks/${dummyRepository.trackA2_1.id}?with=song,release`,
+					`/tracks/${dummyRepository.trackA2_1.id}?with=songVersion,release`,
 				)
 				.expect(200)
 				.expect((res) => {
 					const track: Track = res.body;
 					expect(track).toStrictEqual({
 						...expectedTrackResponse(dummyRepository.trackA2_1),
-						song: expectedSongResponse(dummyRepository.songA2),
+						songVersion: expectedSongVersionResponse(dummyRepository.songVersionA2),
 						release: expectedReleaseResponse(
 							dummyRepository.releaseA1_2,
 						),
@@ -389,14 +426,14 @@ describe("Track Controller", () => {
 			return request(app.getHttpServer())
 				.post(`/tracks/${dummyRepository.trackC1_1.id}`)
 				.send(<ReassignTrackDTO>{
-					songId: dummyRepository.songB1.id,
+					songVersionId: dummyRepository.songVersionB1.id,
 				})
 				.expect(201)
 				.expect((res) => {
 					const track: Track = res.body;
 					expect(track).toStrictEqual({
 						...expectedTrackResponse(dummyRepository.trackC1_1),
-						songId: dummyRepository.songB1.id,
+						songVersionId: dummyRepository.songVersionB1.id,
 					});
 				});
 		});

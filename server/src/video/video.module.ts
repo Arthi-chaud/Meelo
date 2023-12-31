@@ -23,9 +23,10 @@ import { VideoResponseBuilder } from "./models/video.response";
 import VideoService from "./video.service";
 import TrackModule from "src/track/track.module";
 import PrismaModule from "src/prisma/prisma.module";
+import SongVersionModule from "src/song-version/song-version.module";
 
 @Module({
-	imports: [SongModule, TrackModule, PrismaModule],
+	imports: [SongModule, SongVersionModule, TrackModule, PrismaModule],
 	controllers: [VideoController],
 	exports: [VideoResponseBuilder],
 	providers: [VideoResponseBuilder, VideoService],
