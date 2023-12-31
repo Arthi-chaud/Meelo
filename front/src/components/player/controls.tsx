@@ -52,7 +52,6 @@ import Track from "../../models/track";
 import Artist from "../../models/artist";
 import Link from "next/link";
 import ReleaseTrackContextualMenu from "../contextual-menu/release-track-contextual-menu";
-import Release from "../../models/release";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../../state/store";
 import ListItem from "../list-item/item";
@@ -80,7 +79,6 @@ type PlayerControlsProps = Parameters<typeof PlayerSlider>[number] &
 		onExpand: (expand: boolean) => void;
 		artist?: Artist;
 		track?: Track;
-		release?: Release;
 	};
 
 const playerTextStyle = {
@@ -407,11 +405,9 @@ const ExpandedPlayerControls = (
 									{
 										props.track &&
 										parentSong.data &&
-										props.artist &&
-										props.release ? (
+										props.artist ? (
 											<ReleaseTrackContextualMenu
 												artist={props.artist}
-												release={props.release}
 												track={{
 													...props.track,
 													song: parentSong.data,

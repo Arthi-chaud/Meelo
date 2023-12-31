@@ -113,15 +113,12 @@ const SongPage = (props: InferSSRProps<typeof getServerSideProps>) => {
 				endIcon={<PlayIcon />}
 				onClick={() =>
 					queryClient
-						.fetchQuery(
-							API.getMasterTrack(songIdentifier, ["release"]),
-						)
+						.fetchQuery(API.getMasterTrack(songIdentifier))
 						.then((master) =>
 							dispatch(
 								playTrack({
 									track: master,
 									artist: song.data.artist,
-									release: master.release,
 								}),
 							),
 						)

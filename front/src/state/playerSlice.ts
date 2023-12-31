@@ -18,13 +18,11 @@
 
 import { PayloadAction, createSlice } from "@reduxjs/toolkit";
 import Artist from "../models/artist";
-import Release from "../models/release";
 import Track from "../models/track";
 
 type TrackState = {
 	track: Track;
 	artist: Artist;
-	release: Release;
 };
 
 interface PlayerState {

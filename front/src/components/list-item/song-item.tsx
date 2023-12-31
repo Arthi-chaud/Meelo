@@ -63,13 +63,12 @@ const SongItem = ({ song, formatSubtitle }: SongItemProps) => {
 			title={song.name}
 			onClick={() =>
 				queryClient
-					.fetchQuery(API.getMasterTrack(song.id, ["release"]))
+					.fetchQuery(API.getMasterTrack(song.id))
 					.then((track) => {
 						dispatch(
 							playTrack({
 								artist,
 								track,
-								release: track.release,
 							}),
 						);
 					})

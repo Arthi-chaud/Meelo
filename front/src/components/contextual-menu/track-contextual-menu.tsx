@@ -52,14 +52,12 @@ const TrackContextualMenu = (props: TrackContextualMenuProps) => {
 	const confirm = useConfirm();
 	const isMaster = props.track.song.masterId == props.track.id;
 	const getPlayNextProps = () =>
-		Promise.all([
-			queryClient.fetchQuery(API.getArtist(props.track.song.artistId)),
-			queryClient.fetchQuery(API.getRelease(props.track.releaseId)),
-		]).then(([artist, release]) => ({
-			track: props.track,
-			artist,
-			release,
-		}));
+		queryClient
+			.fetchQuery(API.getArtist(props.track.song.artistId))
+			.then((artist) => ({
+				track: props.track,
+				artist,
+			}));
 	const masterMutation = useMutation(async () => {
 		return API.setTrackAsMaster(props.track.id)
 			.then(() => {

@@ -61,15 +61,12 @@ const SongGrid = ({ songs, parentArtistName }: SongGridProps) => {
 						}
 						onClick={() =>
 							queryClient
-								.fetchQuery(
-									API.getMasterTrack(song.id, ["release"]),
-								)
+								.fetchQuery(API.getMasterTrack(song.id))
 								.then((track) => {
 									dispatch(
 										playTrack({
 											artist: song.artist,
 											track,
-											release: track.release,
 										}),
 									);
 								})

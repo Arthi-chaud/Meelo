@@ -494,7 +494,6 @@ const ReleasePage = (props: InferSSRProps<typeof getServerSideProps>) => {
 												})),
 											]),
 										)}
-										release={release.data}
 									/>
 								</Box>
 							</Fade>

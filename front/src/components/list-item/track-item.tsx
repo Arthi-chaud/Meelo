@@ -55,9 +55,7 @@ const TrackItem = ({ track }: TrackItemProps) => {
 				queryClient
 					.fetchQuery(API.getSong(track.songId, ["artist"]))
 					.then((song) => {
-						dispatch(
-							playTrack({ artist: song.artist, track, release }),
-						);
+						dispatch(playTrack({ artist: song.artist, track }));
 					})
 			}
 			title={track.name}

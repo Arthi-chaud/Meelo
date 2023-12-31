@@ -57,11 +57,11 @@ const playSongsAction = (
 			const songs = res.pages.flatMap(({ items }) => items);
 
 			for (const song of songs) {
-				const { release, ...track } = await queryClient.fetchQuery(
-					API.getMasterTrack(song.id, ["release"]),
+				const track = await queryClient.fetchQuery(
+					API.getMasterTrack(song.id),
 				);
 
-				dispatch(playAfter({ release, track, artist: song.artist }));
+				dispatch(playAfter({ track, artist: song.artist }));
 			}
 		});
 };

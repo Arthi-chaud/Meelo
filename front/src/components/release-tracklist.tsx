@@ -30,7 +30,6 @@ import {
 	useTheme,
 } from "@mui/material";
 import { useDispatch } from "react-redux";
-import Release from "../models/release";
 import Track from "../models/track";
 import Tracklist from "../models/tracklist";
 import { playTracks } from "../state/playerSlice";
@@ -47,17 +46,12 @@ type ReleaseTracklistProps = {
 	tracklist: Tracklist<
 		Track & { song: SongWithRelations<"artist" | "featuring"> }
 	>;
-	release: Release;
 };
 
 /**
  * Interactive tracklist for a release
  */
-const ReleaseTrackList = ({
-	tracklist,
-	release,
-	mainArtist,
-}: ReleaseTracklistProps) => {
+const ReleaseTrackList = ({ tracklist, mainArtist }: ReleaseTracklistProps) => {
 	const theme = useTheme();
 	const dispatch = useDispatch();
 	const flatTracklist = Array.from(Object.values(tracklist)).flat();
@@ -96,7 +90,6 @@ const ReleaseTrackList = ({
 									<ReleaseTrackContextualMenu
 										track={currentTrack}
 										artist={currentTrack.song.artist}
-										release={release}
 									/>
 								}
 							>
@@ -107,7 +100,6 @@ const ReleaseTrackList = ({
 												tracks: flatTracklist.map(
 													(flatTrack) => ({
 														track: flatTrack,
-														release,
 														artist: flatTrack.song
 															.artist,
 													}),

@@ -130,9 +130,7 @@ const Player = () => {
 		if (currentTrack) {
 			notification?.close();
 			document.title = `${currentTrack.track.name} - ${DefaultWindowTitle}`;
-			const newIllustrationURL =
-				currentTrack.track.illustration?.url ??
-				currentTrack.release.illustration?.url;
+			const newIllustrationURL = currentTrack.track.illustration?.url;
 
 			setIllustrationURL(newIllustrationURL);
 			const streamURL = API.getStreamURL(currentTrack.track.stream);
@@ -180,7 +178,6 @@ const Player = () => {
 				navigator.mediaSession.metadata = new MediaMetadata({
 					title: currentTrack.track.name,
 					artist: currentTrack.artist.name,
-					album: currentTrack.release.name,
 					artwork: newIllustrationURL
 						? [
 								{
@@ -217,7 +214,7 @@ const Player = () => {
 							icon: newIllustrationURL
 								? API.getIllustrationURL(newIllustrationURL)
 								: "/icon.png",
-							body: `${currentTrack.artist.name} - ${currentTrack.release.name}`,
+							body: currentTrack.artist.name,
 						}),
 					);
 					// eslint-disable-next-line no-empty
@@ -255,6 +252,26 @@ const Player = () => {
 	}, [theme, currentTrack]);
 	const transition = "background 0.4s ease";
 	const blur = "blur(20px)";
+	const playerProps = {
+		expanded: expanded,
+		illustration: illustrationURL,
+		track: currentTrack?.track,
+		artist: currentTrack?.artist,
+		playing: playing ?? false,
+		onPause: pause,
+		onPlay: play,
+		onExpand: (expand: boolean) => setExpanded(expand),
+		duration: currentTrack?.track.duration ?? undefined,
+		progress: progress,
+		onSkipTrack: onSkipTrack,
+		onRewind: onRewind,
+		videoRef: videoPlayer as unknown as LegacyRef<HTMLVideoElement>,
+		onSlide: (newProgress: number) => {
+			if (player.current !== undefined) {
+				player.current.currentTime = newProgress;
+			}
+		},
+	};
 
 	return (
 		<>
@@ -284,26 +301,7 @@ const Player = () => {
 							backdropFilter: blur,
 						}}
 					>
-						<MinimizedPlayerControls
-							expanded={expanded}
-							illustration={illustrationURL}
-							track={currentTrack?.track}
-							artist={currentTrack?.artist}
-							release={currentTrack?.release}
-							playing={playing ?? false}
-							onPause={pause}
-							onPlay={play}
-							onExpand={(expand) => setExpanded(expand)}
-							duration={currentTrack?.track.duration ?? undefined}
-							progress={progress}
-							onSkipTrack={onSkipTrack}
-							onRewind={onRewind}
-							onSlide={(newProgress) => {
-								if (player.current !== undefined) {
-									player.current.currentTime = newProgress;
-								}
-							}}
-						/>
+						<MinimizedPlayerControls {...playerProps} />
 					</Paper>
 				</Box>
 			</Slide>
@@ -333,29 +331,7 @@ const Player = () => {
 							backdropFilter: blur,
 						}}
 					>
-						<ExpandedPlayerControls
-							expanded={expanded}
-							illustration={illustrationURL}
-							track={currentTrack?.track}
-							artist={currentTrack?.artist}
-							release={currentTrack?.release}
-							playing={playing ?? false}
-							onPause={pause}
-							onPlay={play}
-							onExpand={(expand) => setExpanded(expand)}
-							duration={currentTrack?.track.duration ?? undefined}
-							progress={progress}
-							onSkipTrack={onSkipTrack}
-							onRewind={onRewind}
-							videoRef={
-								videoPlayer as unknown as LegacyRef<HTMLVideoElement>
-							}
-							onSlide={(newProgress) => {
-								if (player.current !== undefined) {
-									player.current.currentTime = newProgress;
-								}
-							}}
-						/>
+						<ExpandedPlayerControls {...playerProps} />
 					</Paper>
 				</Box>
 			</Slide>

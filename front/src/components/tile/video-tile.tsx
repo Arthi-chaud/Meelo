@@ -41,12 +41,10 @@ const VideoTile = ({ video, formatSubtitle }: VideoTileProps) => {
 			onClick={() =>
 				Promise.all([
 					queryClient.fetchQuery(API.getArtist(video.song.artistId)),
-					queryClient.fetchQuery(API.getRelease(video.releaseId)),
-				]).then(([artist, release]) =>
+				]).then(([artist]) =>
 					dispatch(
 						playTrack({
 							track: video,
-							release: release,
 							artist: artist,
 						}),
 					),
