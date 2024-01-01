@@ -38,6 +38,7 @@ import TrackService from "src/track/track.service";
 import TrackQueryParameters from "src/track/models/track.query-parameters";
 import LibraryService from "src/library/library.service";
 import Identifier from "src/identifier/models/identifier";
+import AlbumService from "src/album/album.service";
 
 @Injectable()
 export default class SongVersionService extends RepositoryService<
@@ -205,6 +206,17 @@ export default class SongVersionService extends RepositoryService<
 					artist: ArtistService.formatWhereInput(input.artist),
 				},
 			});
+		}
+		if (input.album) {
+			query = deepmerge(query, {
+				tracks: {
+					some: {
+						release: {
+							album: AlbumService.formatWhereInput(input.album),
+						},
+					},
+				},
+			} satisfies Prisma.SongVersionWhereInput);
 		}
 		return query;
 	}

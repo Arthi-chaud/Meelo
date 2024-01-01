@@ -40,7 +40,7 @@ import { RefreshTrackMetadataAction } from "../actions/refresh-metadata";
 import ChangeSongType from "../actions/song-type";
 
 type TrackContextualMenuProps = {
-	track: TrackWithRelations<"song">;
+	track: TrackWithRelations<"songVersion">;
 	onSelect?: () => void;
 };
 
@@ -50,11 +50,11 @@ const TrackContextualMenu = (props: TrackContextualMenuProps) => {
 	);
 	const queryClient = useQueryClient();
 	const confirm = useConfirm();
-	const isMaster = props.track.song.masterId == props.track.id;
+	const isMaster = props.track.songVersion.masterId == props.track.id;
 	const getPlayNextProps = () =>
 		queryClient
-			.fetchQuery(API.getArtist(props.track.song.artistId))
-			.then((artist) => ({
+			.fetchQuery(API.getSong(props.track.songVersion.songId, ["artist"]))
+			.then(({ artist }) => ({
 				track: props.track,
 				artist,
 			}));
@@ -76,7 +76,7 @@ const TrackContextualMenu = (props: TrackContextualMenuProps) => {
 					PlayNextAction(getPlayNextProps),
 					PlayAfterAction(getPlayNextProps),
 				],
-				[AddToPlaylistAction(props.track.songId, queryClient)],
+				[AddToPlaylistAction(props.track.songVersionId, queryClient)],
 				[
 					{
 						label: "setAsMaster",
@@ -86,7 +86,11 @@ const TrackContextualMenu = (props: TrackContextualMenuProps) => {
 					},
 				],
 				[
-					ChangeSongType(props.track.song, queryClient, confirm),
+					ChangeSongType(
+						props.track.songVersion,
+						queryClient,
+						confirm,
+					),
 					UpdateTrackIllustrationAction(queryClient, props.track.id),
 					RefreshTrackMetadataAction(props.track.id),
 				],

@@ -39,7 +39,6 @@ import Song, {
 	SongInclude,
 	SongRelations,
 	SongSortingKeys,
-	SongType,
 	SongWithRelations,
 } from "../models/song";
 import { VideoWithRelations } from "../models/video";
@@ -65,6 +64,12 @@ import Playlist, {
 } from "../models/playlist";
 import { isSSR } from "../ssr";
 import { ActiveTask, Task } from "../models/task";
+import {
+	SongVersionInclude,
+	SongVersionSortingKeys,
+	SongVersionType,
+	SongVersionWithRelations,
+} from "../models/song-version";
 
 const AuthenticationResponse = yup.object({
 	access_token: yup.string().required(),
@@ -504,12 +509,12 @@ export default class API {
 	/**
 	 * Update Resourse Type
 	 */
-	static async updateSong(
-		songSlugOrId: number | string,
-		newType: SongType,
+	static async updateSongVersion(
+		songVersionSlugOrId: number | string,
+		newType: SongVersionType,
 	): Promise<void> {
 		return API.fetch({
-			route: `/songs/${songSlugOrId}`,
+			route: `/versions/${songVersionSlugOrId}`,
 			errorMessage: "Update Song Failed",
 			method: "POST",
 			parameters: {},
@@ -625,11 +630,9 @@ export default class API {
 	static getSongs<I extends SongInclude | never = never>(
 		filter: {
 			library?: Identifier;
-			type?: SongType;
 			genre?: Identifier;
 			artist?: Identifier;
 			query?: string;
-			bsides?: Identifier;
 			random?: number;
 		},
 		sort?: SortingParameters<typeof SongSortingKeys>,
@@ -666,7 +669,7 @@ export default class API {
 			album?: Identifier;
 			song?: Identifier;
 		},
-		sort?: SortingParameters<typeof SongSortingKeys>,
+		sort?: SortingParameters<typeof SongVersionSortingKeys>,
 		include?: I[],
 	): InfiniteQuery<VideoWithRelations<I>> {
 		return {
@@ -728,9 +731,35 @@ export default class API {
 			],
 			exec: () =>
 				API.fetch({
-					route: `/songs/${songSlugOrId}/master`,
+					route: `/tracks/master/${songSlugOrId}`,
 					parameters: { include },
 					validator: TrackWithRelations(include ?? []),
+				}),
+		};
+	}
+
+	/**
+	 * Get the main version of a song
+	 * @param songSlugOrId the identifier of a song
+	 * @param include the fields to include in the fetched item
+	 * @returns a Query for a SongVersion
+	 */
+	static getMainVersion<I extends SongVersionInclude | never = never>(
+		songSlugOrId: string | number,
+		include?: I[],
+	): Query<SongVersionWithRelations<I>> {
+		return {
+			key: [
+				"song",
+				songSlugOrId,
+				"main",
+				...API.formatIncludeKeys(include),
+			],
+			exec: () =>
+				API.fetch({
+					route: `/versions/master/${songSlugOrId}`,
+					parameters: { include },
+					validator: SongVersionWithRelations(include ?? []),
 				}),
 		};
 	}
@@ -886,7 +915,7 @@ export default class API {
 			],
 			exec: () =>
 				API.fetch({
-					route: `/albums/${albumSlugOrId}/master`,
+					route: `/release/master/${albumSlugOrId}`,
 					parameters: { include },
 					validator: ReleaseWithRelations(include ?? []),
 				}),
@@ -900,7 +929,7 @@ export default class API {
 	 * @returns an Infinite Query of tracks
 	 */
 	static getTracks<I extends TrackInclude | never = never>(
-		filter: { song?: string | number },
+		filter: { song?: string | number; songVersion?: string | number },
 		sort?: SortingParameters<typeof TrackSortingKeys>,
 		include?: I[],
 	): InfiniteQuery<TrackWithRelations<I>> {
@@ -929,28 +958,29 @@ export default class API {
 	 * @param include the relation to include
 	 * @returns An Infinite query of Tracks
 	 */
-	static getSongVersions<I extends SongInclude | never = never>(
-		songSlugOrId: string | number,
-		filter: Parameters<typeof API.getSongs>[0],
-		sort?: SortingParameters<typeof SongSortingKeys>,
+	static getSongVersions<I extends SongVersionInclude | never = never>(
+		filter: {
+			song?: string | number;
+			type?: SongVersionType;
+			bsides?: number | string;
+		},
+		sort?: SortingParameters<typeof TrackSortingKeys>,
 		include?: I[],
-	): InfiniteQuery<SongWithRelations<I>> {
+	): InfiniteQuery<SongVersionWithRelations<I>> {
 		return {
 			key: [
-				"song",
-				songSlugOrId,
-				"versions",
+				"song-versions",
 				...API.formatObject(filter),
 				...API.formatObject(sort),
 				...API.formatIncludeKeys(include),
 			],
 			exec: (pagination) =>
 				API.fetch({
-					route: `/songs/${songSlugOrId}/versions`,
+					route: `/versions`,
 					parameters: { pagination: pagination, include, sort },
 					otherParameters: filter,
 					validator: PaginatedResponse(
-						SongWithRelations(include ?? []),
+						SongVersionWithRelations(include ?? []),
 					),
 				}),
 		};
@@ -1288,7 +1318,7 @@ export default class API {
 	 * @returns
 	 */
 	static async setSongAsPlayed(
-		songSlugOrId: string | number,
+		songSlugOrId: never, // TODO check Correct ID is sent
 	): Promise<unknown> {
 		return API.fetch({
 			route: `/songs/${songSlugOrId}/played`,
@@ -1327,6 +1357,23 @@ export default class API {
 		return API.fetch({
 			route: `/tracks/${trackSlugOrId}/master`,
 			errorMessage: "Track update failed",
+			parameters: {},
+			method: "PUT",
+			validator: yup.mixed(),
+		});
+	}
+
+	/**
+	 * Mark a track as master
+	 * @param trackSlugOrId
+	 * @returns
+	 */
+	static async setVersionAsMaster(
+		versionSlugOrId: string | number,
+	): Promise<unknown> {
+		return API.fetch({
+			route: `/versions/${versionSlugOrId}/main`,
+			errorMessage: "Version update failed",
 			parameters: {},
 			method: "PUT",
 			validator: yup.mixed(),

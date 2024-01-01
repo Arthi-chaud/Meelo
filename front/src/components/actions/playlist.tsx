@@ -251,7 +251,7 @@ const SelectPlaylistForm = (props: SelectPlaylistFormProps) => {
 };
 
 export const AddToPlaylistAction = (
-	songId: number,
+	songVersionId: number,
 	queryClient: QueryClient,
 ): Action => ({
 	icon: <AddToPlaylistIcon />,
@@ -259,7 +259,7 @@ export const AddToPlaylistAction = (
 	dialog: ({ close }) => {
 		// eslint-disable-next-line react-hooks/rules-of-hooks
 		const mutation = useMutation((playlistId: number) => {
-			return API.addSongToPlaylist(songId, playlistId)
+			return API.addSongToPlaylist(songVersionId, playlistId)
 				.then(() => {
 					toast.success("Song added to Playlist");
 					queryClient.client.invalidateQueries("playlists");

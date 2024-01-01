@@ -185,6 +185,20 @@ export default class ReleaseController {
 	}
 
 	@ApiOperation({
+		summary: "Get the master release of an album",
+	})
+	@Response({ handler: ReleaseResponseBuilder })
+	@Get("master/:idOrSlug")
+	async getAlbumMaster(
+		@RelationIncludeQuery(ReleaseQueryParameters.AvailableAtomicIncludes)
+		include: ReleaseQueryParameters.RelationInclude,
+		@IdentifierParam(AlbumService)
+		where: AlbumQueryParameters.WhereInput,
+	) {
+		return this.releaseService.getMasterRelease(where, include);
+	}
+
+	@ApiOperation({
 		summary: "Set a release as master release",
 	})
 	@Admin()

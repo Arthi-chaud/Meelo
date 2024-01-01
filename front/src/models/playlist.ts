@@ -19,9 +19,9 @@
 import Illustration from "./illustration";
 import Resource from "./resource";
 import * as yup from "yup";
-import Song from "./song";
+import SongVersion from "./song-version";
 
-const PlaylistEntry = Song.concat(
+const PlaylistEntry = SongVersion.concat(
 	yup.object({
 		/**
 		 * The identifier of the entry

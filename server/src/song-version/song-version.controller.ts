@@ -53,6 +53,8 @@ import LibraryQueryParameters from "src/library/models/library.query-parameters"
 import ArtistService from "src/artist/artist.service";
 import ArtistQueryParameters from "src/artist/models/artist.query-parameters";
 import Admin from "src/authentication/roles/admin.decorator";
+import AlbumQueryParameters from "src/album/models/album.query-parameters";
+import AlbumService from "src/album/album.service";
 
 export class Selector extends IntersectionType(
 	SongVersionQueryParameters.SortingParameter,
@@ -70,6 +72,12 @@ export class Selector extends IntersectionType(
 	})
 	@TransformIdentifier(LibraryService)
 	library: LibraryQueryParameters.WhereInput;
+	@IsOptional()
+	@ApiPropertyOptional({
+		description: "Filter song versions using the parent album",
+	})
+	@TransformIdentifier(AlbumService)
+	album: AlbumQueryParameters.WhereInput;
 	@IsOptional()
 	@ApiPropertyOptional({
 		description: "Filter song versions using the parent artist",

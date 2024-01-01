@@ -35,23 +35,22 @@ import {
 } from "../actions/playlist";
 import { ShareSongAction } from "../actions/share";
 import { ShowMasterTrackFileInfoAction } from "../actions/show-track-info";
-import { SongWithRelations } from "../../models/song";
-import { useQuery, useQueryClient } from "../../api/use-query";
+import { useQueryClient } from "../../api/use-query";
 import { toast } from "react-hot-toast";
 import { translate } from "../../i18n/translate";
-import ChangeSongType from "../actions/song-type";
 import { RefreshSongMetadataAction } from "../actions/refresh-metadata";
 import { DeleteIcon } from "../icons";
+import { SongVersionWithRelations } from "../../models/song-version";
+import ChangeSongType from "../actions/song-type";
 
-type SongContextualMenuProps = {
-	song: SongWithRelations<"artist">;
+type SongVersionContextualMenuProps = {
+	songVersion: SongVersionWithRelations<"featuring">;
 	onSelect?: () => void;
 	// Should be set if song is from a playlist
 	entryId?: number;
 };
 
-const SongContextualMenu = (props: SongContextualMenuProps) => {
-	const songSlug = `${props.song.artist.slug}+${props.song.slug}`;
+const SongVersionContextualMenu = (props: SongVersionContextualMenuProps) => {
 	const queryClient = useQueryClient();
 	const getMasterTrack = () =>
 		queryClient.fetchQuery(API.getMasterTrack(songSlug));
@@ -68,23 +67,25 @@ const SongContextualMenu = (props: SongContextualMenuProps) => {
 			onSelect={props.onSelect}
 			actions={[
 				[
-					GoToArtistAction(props.song.artist.slug),
 					GoToReleaseAsyncAction(
 						router,
 						async () => (await getMasterTrack()).releaseId,
 					),
 				],
-				[GoToSongLyricsAction(songSlug)],
+				[GoToSongLyricsAction(props.songVersion.songId)],
 				[
 					PlayNextAction(getPlayNextProps),
 					PlayAfterAction(getPlayNextProps),
 				],
-				[AddToPlaylistAction(mainVersion.data?.id, queryClient)],
+				[AddToPlaylistAction(props.songVersion.id, queryClient)],
 				[
-					GoToSongVersionAction(songSlug),
-					GoToRelatedTracksAction(songSlug),
+					GoToSongVersionAction(props.songVersion.song.id),
+					GoToRelatedTracksAction(undefined),
 				],
-				[RefreshSongMetadataAction(props.song.id)],
+				[
+					ChangeSongType(props.song.id),
+					RefreshSongMetadataAction(props.song.id)
+				],
 				[
 					ShowMasterTrackFileInfoAction(
 						confirm,

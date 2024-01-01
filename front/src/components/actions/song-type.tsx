@@ -27,7 +27,7 @@ import toast from "react-hot-toast";
 import API from "../../api/api";
 import { useMutation } from "react-query";
 import { EditIcon } from "../icons";
-import Song, { SongType } from "../../models/song";
+import SongVersion, { SongVersionType } from "../../models/song-version";
 
 const SongTypeForm = (props: {
 	defaultValue: SongType;
@@ -38,7 +38,7 @@ const SongTypeForm = (props: {
 	return (
 		<>
 			<Grid container spacing={2} justifyContent="center">
-				{SongType.filter((type) => type != "Unknown").map((type) => (
+				{SongVersionType.map((type) => (
 					<Grid item key={type}>
 						<Chip
 							label={translate(type)}
@@ -58,12 +58,12 @@ const SongTypeForm = (props: {
 };
 
 const ChangeSongType = (
-	song: Song,
+	songVersion: SongVersion,
 	queryClient: QueryClient,
 	confirm: ReturnType<typeof useConfirm>,
 ): Action => {
-	const mutation = useMutation((newType: SongType) => {
-		return API.updateSong(song.id, newType)
+	const mutation = useMutation((newType: SongVersionType) => {
+		return API.updateSongVersion(songVersion.id, newType)
 			.then(() => {
 				toast.success("Update successful!");
 				queryClient.client.invalidateQueries("songs");
@@ -84,7 +84,7 @@ const ChangeSongType = (
 				title: translate("changeSongType"),
 				description: (
 					<SongTypeForm
-						defaultValue={song.type}
+						defaultValue={songVersion.type}
 						onSelect={(type) => mutation.mutate(type)}
 					/>
 				),

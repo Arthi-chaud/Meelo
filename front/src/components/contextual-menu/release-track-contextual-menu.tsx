@@ -40,13 +40,13 @@ import { RefreshTrackMetadataAction } from "../actions/refresh-metadata";
 import ChangeSongType from "../actions/song-type";
 
 type ReleaseTrackContextualMenuProps = {
-	track: TrackWithRelations<"song">;
+	track: TrackWithRelations<"songVersion">;
 	artist: Artist;
 	onSelect?: () => void;
 };
 
 const ReleaseTrackContextualMenu = (props: ReleaseTrackContextualMenuProps) => {
-	const songSlug = `${props.artist.slug}+${props.track.song.slug}`;
+	const parentSongId = props.track.songVersion.songId;
 	const confirm = useConfirm();
 	const queryClient = useQueryClient();
 
@@ -55,25 +55,29 @@ const ReleaseTrackContextualMenu = (props: ReleaseTrackContextualMenuProps) => {
 			onSelect={props.onSelect}
 			actions={[
 				[GoToArtistAction(props.artist.slug)],
-				[GoToSongLyricsAction(songSlug)],
+				[GoToSongLyricsAction(parentSongId)],
 				[
 					PlayNextAction(async () => props),
 					PlayAfterAction(async () => props),
 				],
-				[AddToPlaylistAction(props.track.song.id, queryClient)],
+				[AddToPlaylistAction(props.track.songVersionId, queryClient)],
 				[
-					GoToSongVersionAction(songSlug),
-					GoToRelatedTracksAction(songSlug),
+					GoToSongVersionAction(parentSongId),
+					GoToRelatedTracksAction(parentSongId),
 				],
 				[
-					ChangeSongType(props.track.song, queryClient, confirm),
+					ChangeSongType(
+						props.track.songVersion,
+						queryClient,
+						confirm,
+					),
 					UpdateTrackIllustrationAction(queryClient, props.track.id),
 					RefreshTrackMetadataAction(props.track.id),
 				],
 				[ShowTrackFileInfoAction(confirm, props.track.id)],
 				[
 					DownloadAction(confirm, props.track.stream),
-					ShareSongAction(songSlug),
+					ShareSongAction(parentSongId),
 				],
 			]}
 		/>

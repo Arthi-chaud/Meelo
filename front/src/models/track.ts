@@ -20,7 +20,7 @@ import * as yup from "yup";
 import Illustration from "./illustration";
 import Release from "./release";
 import Resource from "./resource";
-import Song from "./song";
+import SongVersion from "./song-version";
 
 export const TrackType = ["Audio", "Video"] as const;
 export type TrackType = (typeof TrackType)[number];
@@ -33,7 +33,7 @@ const Track = Resource.concat(Illustration).concat(
 		/**
 		 * Unique identifier of the parent song
 		 */
-		songId: yup.number().required(),
+		songVersionId: yup.number().required(),
 		/**
 		 * Unique identifier of the parent release
 		 */
@@ -82,10 +82,10 @@ type Track = yup.InferType<typeof Track>;
 
 export default Track;
 
-export type TrackInclude = "song" | "release";
+export type TrackInclude = "songVersion" | "release";
 
 const TrackRelations = yup.object({
-	song: Song.required(),
+	songVersion: SongVersion.required(),
 	release: Release.required(),
 });
 

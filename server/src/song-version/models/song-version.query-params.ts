@@ -26,6 +26,7 @@ import SongQueryParameters from "src/song/models/song.query-params";
 import Slug from "src/slug/slug";
 import { SongType } from "@prisma/client";
 import LibraryQueryParameters from "src/library/models/library.query-parameters";
+import AlbumQueryParameters from "src/album/models/album.query-parameters";
 
 namespace SongVersionQueryParameters {
 	/**
@@ -69,6 +70,7 @@ namespace SongVersionQueryParameters {
 			type: SongType;
 			library: LibraryQueryParameters.WhereInput;
 			artist: ArtistQueryParameters.WhereInput;
+			album: AlbumQueryParameters.WhereInput;
 		}>
 	>;
 

@@ -16,13 +16,15 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import Song, { SongInclude, SongRelations } from "./song";
+import Song, { SongInclude, SongWithRelations } from "./song";
+import SongVersion from "./song-version";
 import Track from "./track";
 import * as yup from "yup";
 
-const Video = Song.concat(
+const Video = SongVersion.concat(
 	yup.object({
 		track: Track.required(),
+		song: Song.required(),
 	}),
 );
 
@@ -30,7 +32,12 @@ type Video = yup.InferType<typeof Video>;
 
 const VideoWithRelations = <Selection extends SongInclude | never = never>(
 	relation: Selection[],
-) => Video.concat(SongRelations.pick(relation));
+) =>
+	Video.omit(["song"]).concat(
+		yup.object({
+			song: SongWithRelations(relation),
+		}),
+	);
 
 type VideoWithRelations<Selection extends SongInclude | never = never> =
 	yup.InferType<ReturnType<typeof VideoWithRelations<Selection>>>;

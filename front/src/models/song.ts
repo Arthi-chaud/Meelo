@@ -23,21 +23,6 @@ import Lyrics from "./lyrics";
 import Resource from "./resource";
 import ExternalId from "./external-id";
 
-export const SongType = [
-	"Original",
-	"Remix",
-	"Live",
-	"Acoustic",
-	"Instrumental",
-	"Edit",
-	"Clean",
-	"Demo",
-	"Unknown",
-	"Acapella",
-	"NonMusic",
-] as const;
-export type SongType = (typeof SongType)[number];
-
 /**
  * Abstract data model, instanciated by tracks
  */
@@ -48,7 +33,7 @@ const Song = Resource.concat(Illustration).concat(
 		 */
 		name: yup.string().required(),
 		/*
-		 * The slug of the release
+		 * The slug of the song
 		 * To be used with the parent's artist's slug:
 		 * ${artistSlug}+${songSlug}
 		 */
@@ -64,11 +49,7 @@ const Song = Resource.concat(Illustration).concat(
 		/**
 		 * The ID of the master track
 		 */
-		masterId: yup.number().required().nullable(),
-		/**
-		 * Type of song
-		 */
-		type: yup.mixed<SongType>().oneOf(SongType).required(),
+		mainVersionId: yup.number().required().nullable(),
 	}),
 );
 
