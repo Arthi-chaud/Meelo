@@ -29,12 +29,18 @@ import ExternalIdResponse, {
 } from "src/providers/models/external-id.response";
 import { IllustratedResponse } from "src/illustration/models/illustration.response";
 import IllustrationRepository from "src/illustration/illustration.repository";
+import {
+	TrackResponse,
+	TrackResponseBuilder,
+} from "src/track/models/track.response";
+import TrackService from "src/track/track.service";
 
 export class SongResponse extends IntersectionType(
 	Song,
 	IllustratedResponse,
 	class {
 		artist?: ArtistResponse;
+		master?: TrackResponse;
 		featuring?: ArtistResponse[];
 		externalIds?: ExternalIdResponse[];
 	},
@@ -50,6 +56,10 @@ export class SongResponseBuilder extends ResponseBuilderInterceptor<
 		private illustrationRepository: IllustrationRepository,
 		@Inject(forwardRef(() => ArtistResponseBuilder))
 		private artistResponseBuilder: ArtistResponseBuilder,
+		@Inject(forwardRef(() => TrackResponseBuilder))
+		private trackResponseBuilder: TrackResponseBuilder,
+		@Inject(forwardRef(() => TrackService))
+		private trackService: TrackService,
 		@Inject(forwardRef(() => ExternalIdResponseBuilder))
 		private externalIdResponseBuilder: ExternalIdResponseBuilder,
 	) {
@@ -69,6 +79,16 @@ export class SongResponseBuilder extends ResponseBuilderInterceptor<
 		if (song.artist !== undefined) {
 			response.artist = await this.artistResponseBuilder.buildResponse(
 				song.artist,
+			);
+		}
+		if (song.master === null) {
+			song.master = await this.trackService.getMasterTrack({
+				id: song.id,
+			});
+		}
+		if (song.master !== undefined) {
+			response.master = await this.trackResponseBuilder.buildResponse(
+				song.master,
 			);
 		}
 		if (song.featuring !== undefined) {

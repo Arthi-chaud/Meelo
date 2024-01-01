@@ -163,10 +163,10 @@ describe("Song Controller", () => {
 					);
 				});
 		});
-		it("should return song w/ artist", () => {
+		it("should return song w/ artist and master track", () => {
 			return request(app.getHttpServer())
 				.get(
-					`/songs/${dummyRepository.songA1.id}?with=artist,featuring`,
+					`/songs/${dummyRepository.songA1.id}?with=artist,featuring,master`,
 				)
 				.expect(200)
 				.expect((res) => {
@@ -174,6 +174,7 @@ describe("Song Controller", () => {
 					expect(song).toStrictEqual({
 						...expectedSongResponse(dummyRepository.songA1),
 						artist: expectedArtistResponse(dummyRepository.artistA),
+						master: expectedTrackResponse(dummyRepository.trackA1_1),
 						featuring: [],
 					});
 				});
