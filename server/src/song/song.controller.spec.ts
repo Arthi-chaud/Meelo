@@ -174,7 +174,9 @@ describe("Song Controller", () => {
 					expect(song).toStrictEqual({
 						...expectedSongResponse(dummyRepository.songA1),
 						artist: expectedArtistResponse(dummyRepository.artistA),
-						master: expectedTrackResponse(dummyRepository.trackA1_1),
+						master: expectedTrackResponse(
+							dummyRepository.trackA1_1,
+						),
 						featuring: [],
 					});
 				});

@@ -99,6 +99,7 @@ namespace AlbumQueryParameters {
 		"releases",
 		"artist",
 		"externalIds",
+		"master",
 		"genres",
 	] as const;
 	export const AvailableAtomicIncludes = filterAtomicRelationInclude(

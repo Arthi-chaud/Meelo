@@ -555,7 +555,6 @@ describe("Release Controller", () => {
 		});
 	});
 
-
 	describe("Get Albums's Master (GET /releases/master/:id)", () => {
 		it("Should return album's master", () => {
 			return request(app.getHttpServer())
@@ -590,14 +589,18 @@ describe("Release Controller", () => {
 				.expect(400);
 		});
 		it("Should throw, as the album does not have releases", async () => {
-			const tmpAlbum = await module.get(AlbumService).create({ name: "A" });
+			const tmpAlbum = await module
+				.get(AlbumService)
+				.create({ name: "A" });
 			return request(app.getHttpServer())
 				.get(`/releases/master/${tmpAlbum.id}`)
 				.expect(404);
 		});
 		it("Should include related album", () => {
 			return request(app.getHttpServer())
-				.get(`/albums/${dummyRepository.albumB1.id}/master?with=album`)
+				.get(
+					`/releases/master/${dummyRepository.albumB1.id}?with=album`,
+				)
 				.expect(200)
 				.expect((res) => {
 					expect(res.body).toStrictEqual({
