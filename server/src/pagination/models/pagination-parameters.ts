@@ -47,7 +47,7 @@ export class PaginationParameters {
 	})
 	@IsPositive()
 	@IsOptional()
-	take?: number;
+	take?: number = defaultPageSize;
 }
 
 export function buildPaginationParameters(parameters?: PaginationParameters) {
