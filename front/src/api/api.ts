@@ -886,7 +886,7 @@ export default class API {
 			],
 			exec: () =>
 				API.fetch({
-					route: `/albums/${albumSlugOrId}/master`,
+					route: `/releases/master/${albumSlugOrId}`,
 					parameters: { include },
 					validator: ReleaseWithRelations(include ?? []),
 				}),

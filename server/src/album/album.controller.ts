@@ -26,7 +26,6 @@ import {
 	forwardRef,
 } from "@nestjs/common";
 import { PaginationParameters } from "src/pagination/models/pagination-parameters";
-import ReleaseQueryParameters from "src/release/models/release.query-parameters";
 import ReleaseService from "src/release/release.service";
 import compilationAlbumArtistKeyword from "src/constants/compilation";
 import AlbumService from "./album.service";
@@ -39,7 +38,6 @@ import {
 } from "@nestjs/swagger";
 import UpdateAlbumDTO from "./models/update-album.dto";
 import { AlbumResponseBuilder } from "./models/album.response";
-import { ReleaseResponseBuilder } from "src/release/models/release.response";
 import RelationIncludeQuery from "src/relation-include/relation-include-query.decorator";
 import Admin from "src/authentication/roles/admin.decorator";
 import IdentifierParam from "src/identifier/identifier.pipe";
@@ -172,20 +170,6 @@ export default class AlbumController {
 		where: AlbumQueryParameters.WhereInput,
 	) {
 		return this.albumService.get(where, include);
-	}
-
-	@ApiOperation({
-		summary: "Get the master release of an album",
-	})
-	@Response({ handler: ReleaseResponseBuilder })
-	@Get(":idOrSlug/master")
-	async getAlbumMaster(
-		@RelationIncludeQuery(ReleaseQueryParameters.AvailableAtomicIncludes)
-		include: ReleaseQueryParameters.RelationInclude,
-		@IdentifierParam(AlbumService)
-		where: AlbumQueryParameters.WhereInput,
-	) {
-		return this.releaseService.getMasterRelease(where, include);
 	}
 
 	@ApiOperation({

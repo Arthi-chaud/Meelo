@@ -555,6 +555,59 @@ describe("Release Controller", () => {
 		});
 	});
 
+
+	describe("Get Albums's Master (GET /releases/master/:id)", () => {
+		it("Should return album's master", () => {
+			return request(app.getHttpServer())
+				.get(`/releases/master/${dummyRepository.albumA1.id}`)
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).toStrictEqual(
+						expectedReleaseResponse(dummyRepository.releaseA1_1),
+					);
+				});
+		});
+		it("Should return album's master (by slug)", () => {
+			return request(app.getHttpServer())
+				.get(
+					`/releases/master/${dummyRepository.artistA.slug}+${dummyRepository.albumA1.slug}`,
+				)
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).toStrictEqual(
+						expectedReleaseResponse(dummyRepository.releaseA1_1),
+					);
+				});
+		});
+		it("Should return an error, as the album does not exist", () => {
+			return request(app.getHttpServer())
+				.get(`/releases/master/-1`)
+				.expect(404);
+		});
+		it("Should return an error, as the id is not valid", () => {
+			return request(app.getHttpServer())
+				.get(`/releases/master/plop`)
+				.expect(400);
+		});
+		it("Should throw, as the album does not have releases", async () => {
+			const tmpAlbum = await module.get(AlbumService).create({ name: "A" });
+			return request(app.getHttpServer())
+				.get(`/releases/master/${tmpAlbum.id}`)
+				.expect(404);
+		});
+		it("Should include related album", () => {
+			return request(app.getHttpServer())
+				.get(`/albums/${dummyRepository.albumB1.id}/master?with=album`)
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).toStrictEqual({
+						...expectedReleaseResponse(dummyRepository.releaseB1_1),
+						album: expectedAlbumResponse(dummyRepository.albumB1),
+					});
+				});
+		});
+	});
+
 	describe("Update the release", () => {
 		it("should reassign the release", () => {
 			return request(app.getHttpServer())
