@@ -220,42 +220,6 @@ describe("Song Controller", () => {
 		});
 	});
 
-	describe("Get Song Master (GET /songs/:id/master)", () => {
-		it("should return master tracks", () => {
-			return request(app.getHttpServer())
-				.get(`/songs/${dummyRepository.songB1.id}/master`)
-				.expect(200)
-				.expect((res) => {
-					const track: Track = res.body;
-					expect(track).toStrictEqual(
-						expectedTrackResponse(dummyRepository.trackB1_1),
-					);
-				});
-		});
-		it("should return master track w/ song & release", () => {
-			return request(app.getHttpServer())
-				.get(
-					`/songs/${dummyRepository.songA1.id}/master?with=song,release`,
-				)
-				.expect(200)
-				.expect((res) => {
-					const track: Track = res.body;
-					expect(track).toStrictEqual({
-						...expectedTrackResponse(dummyRepository.trackA1_1),
-						song: expectedSongResponse(dummyRepository.songA1),
-						release: expectedReleaseResponse(
-							dummyRepository.releaseA1_1,
-						),
-					});
-				});
-		});
-		it("should return an error, as the song does not exist", () => {
-			return request(app.getHttpServer())
-				.get(`/songs/${-1}/master`)
-				.expect(404);
-		});
-	});
-
 	describe("Get Artist's Songs", () => {
 		it("should get all the artist's songs", () => {
 			return request(app.getHttpServer())

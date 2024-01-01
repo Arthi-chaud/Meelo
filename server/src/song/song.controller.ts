@@ -30,7 +30,6 @@ import {
 import ArtistService from "src/artist/artist.service";
 import ArtistQueryParameters from "src/artist/models/artist.query-parameters";
 import { PaginationParameters } from "src/pagination/models/pagination-parameters";
-import TrackQueryParameters from "src/track/models/track.query-parameters";
 import TrackService from "src/track/track.service";
 import SongQueryParameters from "./models/song.query-params";
 import SongService from "./song.service";
@@ -44,7 +43,6 @@ import {
 import { LyricsService } from "src/lyrics/lyrics.service";
 import LyricsDto from "src/lyrics/models/update-lyrics.dto";
 import { SongResponseBuilder } from "./models/song.response";
-import { TrackResponseBuilder } from "src/track/models/track.response";
 import RelationIncludeQuery from "src/relation-include/relation-include-query.decorator";
 import SortingQuery from "src/sort/sort-query.decorator";
 import Admin from "src/authentication/roles/admin.decorator";
@@ -217,20 +215,6 @@ export class SongController {
 	) {
 		await this.songService.incrementPlayCount(where);
 		return this.songService.get(where);
-	}
-
-	@ApiOperation({
-		summary: "Get a song's master track",
-	})
-	@Response({ handler: TrackResponseBuilder })
-	@Get(":idOrSlug/master")
-	async getSongMaster(
-		@RelationIncludeQuery(TrackQueryParameters.AvailableAtomicIncludes)
-		include: TrackQueryParameters.RelationInclude,
-		@IdentifierParam(SongService)
-		where: SongQueryParameters.WhereInput,
-	) {
-		return this.trackService.getMasterTrack(where, include);
 	}
 
 	@ApiOperation({

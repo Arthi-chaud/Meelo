@@ -728,7 +728,7 @@ export default class API {
 			],
 			exec: () =>
 				API.fetch({
-					route: `/songs/${songSlugOrId}/master`,
+					route: `/tracks/master/${songSlugOrId}`,
 					parameters: { include },
 					validator: TrackWithRelations(include ?? []),
 				}),
