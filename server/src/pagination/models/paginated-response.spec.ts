@@ -1,3 +1,4 @@
+import { count } from "rxjs";
 import InvalidPaginationParameterValue from "../pagination.exceptions";
 import PaginatedResponse from "./paginated-response";
 
@@ -11,10 +12,14 @@ describe("Paginated Response", () => {
 			...baseRequest,
 			query: {},
 		};
-		const response = new PaginatedResponse(fullItemsList, request);
-		expect(response.items).toStrictEqual(fullItemsList);
+		const response = new PaginatedResponse(
+			fullItemsList.slice(0, 20),
+			request,
+		);
+		expect(response.items.length).toStrictEqual(20);
 		expect(response.metadata).toStrictEqual({
 			page: 1,
+			count: 20,
 			this: "/route",
 			next: "/route?skip=20",
 			previous: null,
@@ -35,6 +40,7 @@ describe("Paginated Response", () => {
 		expect(response.items.length).toStrictEqual(20);
 		expect(response.metadata).toStrictEqual({
 			page: 2,
+			count: 20,
 			this: "/route?skip=20",
 			next: "/route?skip=40",
 			previous: "/route",
@@ -55,6 +61,7 @@ describe("Paginated Response", () => {
 		expect(response.items.length).toStrictEqual(20);
 		expect(response.metadata).toStrictEqual({
 			page: 3,
+			count: 20,
 			this: "/route?skip=40",
 			next: "/route?skip=60",
 			previous: "/route?skip=20",
@@ -75,6 +82,7 @@ describe("Paginated Response", () => {
 		expect(response.items.length).toStrictEqual(19);
 		expect(response.metadata).toStrictEqual({
 			page: 5,
+			count: 19,
 			this: "/route?skip=80",
 			next: null,
 			previous: "/route?skip=60",
@@ -95,6 +103,7 @@ describe("Paginated Response", () => {
 		expect(response.items.length).toStrictEqual(1);
 		expect(response.metadata).toStrictEqual({
 			page: 5,
+			count: 1,
 			this: "/route?skip=98",
 			next: null,
 			previous: "/route?skip=80",
@@ -114,6 +123,7 @@ describe("Paginated Response", () => {
 		);
 		expect(response.metadata).toStrictEqual({
 			page: 1,
+			count: 10,
 			this: "/route?take=10",
 			next: "/route?take=10&skip=10",
 			previous: null,
@@ -134,6 +144,7 @@ describe("Paginated Response", () => {
 		);
 		expect(response.metadata).toStrictEqual({
 			page: 2,
+			count: 10,
 			this: "/route?take=10&skip=10",
 			next: "/route?take=10&skip=20",
 			previous: "/route?take=10",
@@ -153,6 +164,7 @@ describe("Paginated Response", () => {
 			request,
 		);
 		expect(response.metadata).toStrictEqual({
+			count: 10,
 			this: "/route?take=10&afterId=10",
 			next: "/route?take=10&afterId=20",
 			previous: null,
