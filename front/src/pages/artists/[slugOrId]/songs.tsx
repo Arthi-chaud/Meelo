@@ -23,37 +23,51 @@ import InfiniteSongView from "../../../components/infinite/infinite-resource-vie
 import getSlugOrId from "../../../utils/getSlugOrId";
 import ArtistRelationPageHeader from "../../../components/relation-page-header/artist-relation-page-header";
 import prepareSSR, { InferSSRProps } from "../../../ssr";
-import { useQuery, useQueryClient } from "../../../api/use-query";
+import {
+	prepareMeeloInfiniteQuery,
+	useQuery,
+	useQueryClient,
+} from "../../../api/use-query";
 import { SongSortingKeys } from "../../../models/song";
 import { getOrderParams, getSortingFieldParams } from "../../../utils/sorting";
 import GradientBackground from "../../../components/gradient-background";
+import Track from "../../../models/track";
 
-export const getServerSideProps = prepareSSR((context) => {
+export const getServerSideProps = prepareSSR(async (context, queryClient) => {
 	const artistIdentifier = getSlugOrId(context.params);
 	const order = getOrderParams(context.query.order) ?? "asc";
 	const sortBy = getSortingFieldParams(context.query.sortBy, SongSortingKeys);
-
-	return {
-		additionalProps: { artistIdentifier, sortBy, order },
-		queries: [API.getArtist(artistIdentifier)],
-		infiniteQueries: [
+	const songs = await queryClient.fetchInfiniteQuery(
+		prepareMeeloInfiniteQuery(() =>
 			API.getSongs({ artist: artistIdentifier }, { sortBy, order }, [
 				"artist",
 				"featuring",
+				"master",
 			]),
+		),
+	);
+
+	return {
+		additionalProps: { artistIdentifier, sortBy, order },
+		queries: [
+			API.getArtist(artistIdentifier),
+			...songs.pages
+				.flatMap(({ items }) => items)
+				.map(({ master }) =>
+					API.getRelease(master.releaseId, ["album"]),
+				),
 		],
+		infiniteQueries: [],
 	};
 });
 
 const ArtistSongPage = (props: InferSSRProps<typeof getServerSideProps>) => {
 	const router = useRouter();
 	const queryClient = useQueryClient();
-	const getSongMainAlbum = (songId: number) =>
+	const getTrackMainAlbum = (track: Track) =>
 		queryClient
-			.fetchQuery(API.getMasterTrack(songId, ["release"]))
-			.then((track) =>
-				queryClient.fetchQuery(API.getAlbum(track.release.albumId)),
-			);
+			.fetchQuery(API.getRelease(track.releaseId, ["album"]))
+			.then(({ album }) => album);
 	const artistIdentifier =
 		props.additionalProps?.artistIdentifier ?? getSlugOrId(router.query);
 	const artist = useQuery(
@@ -79,11 +93,11 @@ const ArtistSongPage = (props: InferSSRProps<typeof getServerSideProps>) => {
 							library: library ?? undefined,
 						},
 						{ sortBy, order },
-						["artist", "featuring"],
+						["artist", "featuring", "master"],
 					)
 				}
 				formatSubtitle={(song) =>
-					getSongMainAlbum(song.id).then((album) => album.name)
+					getTrackMainAlbum(song.master).then((album) => album.name)
 				}
 			/>
 		</Box>

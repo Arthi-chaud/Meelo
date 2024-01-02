@@ -148,6 +148,20 @@ export class TrackController {
 	}
 
 	@ApiOperation({
+		summary: "Get a song's master track",
+	})
+	@Response({ handler: TrackResponseBuilder })
+	@Get("master/:idOrSlug")
+	async getSongMaster(
+		@RelationIncludeQuery(TrackQueryParameters.AvailableAtomicIncludes)
+		include: TrackQueryParameters.RelationInclude,
+		@IdentifierParam(SongService)
+		where: SongQueryParameters.WhereInput,
+	) {
+		return this.trackService.getMasterTrack(where, include);
+	}
+
+	@ApiOperation({
 		summary: "Set a track as master track",
 	})
 	@Admin()

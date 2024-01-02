@@ -30,12 +30,18 @@ import {
 } from "src/providers/models/external-id.response";
 import { IllustratedResponse } from "src/illustration/models/illustration.response";
 import IllustrationRepository from "src/illustration/illustration.repository";
+import {
+	ReleaseResponse,
+	ReleaseResponseBuilder,
+} from "src/release/models/release.response";
+import ReleaseService from "src/release/release.service";
 
 export class AlbumResponse extends IntersectionType(
 	Album,
 	IllustratedResponse,
 	class {
 		artist?: ArtistResponse | null;
+		master?: ReleaseResponse;
 		externalIds?: AlbumExternalIdResponse[];
 		genres?: Genre[];
 	},
@@ -53,6 +59,10 @@ export class AlbumResponseBuilder extends ResponseBuilderInterceptor<
 		private illustrationRepository: IllustrationRepository,
 		@Inject(forwardRef(() => ExternalIdResponseBuilder))
 		private externalIdResponseBuilder: ExternalIdResponseBuilder,
+		@Inject(forwardRef(() => ReleaseResponseBuilder))
+		private releaseResponseBuilder: ReleaseResponseBuilder,
+		@Inject(forwardRef(() => ReleaseService))
+		private releaseService: ReleaseService,
 	) {
 		super();
 	}
@@ -71,6 +81,16 @@ export class AlbumResponseBuilder extends ResponseBuilderInterceptor<
 		if (album.artist != undefined) {
 			response.artist = await this.artistResponseBuilder.buildResponse(
 				album.artist,
+			);
+		}
+		if (album.master === null) {
+			album.master = await this.releaseService.getMasterRelease({
+				id: album.id,
+			});
+		}
+		if (album.master !== undefined) {
+			response.master = await this.releaseResponseBuilder.buildResponse(
+				album.master,
 			);
 		}
 		if (album.externalIds !== undefined) {

@@ -116,6 +116,7 @@ namespace SongQueryParameters {
 		"artist",
 		"featuring",
 		"genres",
+		"master",
 		"lyrics",
 		"externalIds",
 	] as const;

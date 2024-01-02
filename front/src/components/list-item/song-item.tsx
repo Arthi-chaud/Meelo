@@ -28,9 +28,9 @@ import { useEffect, useState } from "react";
 import { SongIcon } from "../icons";
 import formatArtists from "../../utils/formatArtists";
 
-type SongItemProps = {
-	song: SongWithRelations<"artist" | "featuring">;
-	formatSubtitle?: (song: SongWithRelations<"artist">) => Promise<string>;
+type SongItemProps<T extends SongWithRelations<"artist" | "featuring">> = {
+	song: T;
+	formatSubtitle?: (song: T) => Promise<string>;
 };
 
 /**
@@ -38,12 +38,17 @@ type SongItemProps = {
  * @param props
  * @returns
  */
-const SongItem = ({ song, formatSubtitle }: SongItemProps) => {
+const SongItem = <T extends SongWithRelations<"artist" | "featuring">>({
+	song,
+	formatSubtitle,
+}: SongItemProps<T>) => {
 	const artist = song.artist;
 	const dispatch = useDispatch();
 	const queryClient = useQueryClient();
 	const [subtitle, setSubtitle] = useState(
-		formatSubtitle ? "" : formatArtists(song.artist, song.featuring),
+		formatSubtitle
+			? ((<br />) as unknown as string)
+			: formatArtists(song.artist, song.featuring),
 	);
 
 	useEffect(() => {

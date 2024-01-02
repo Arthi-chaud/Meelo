@@ -261,7 +261,7 @@ export default class API {
 	 * Fetch one playlist
 	 * @returns An query for a playlist
 	 */
-	static getPlaylist<I extends PlaylistInclude>(
+	static getPlaylist<I extends PlaylistInclude | never = never>(
 		playlistSlugOrId: string | number,
 		include?: I[],
 	): Query<PlaylistWithRelations<I>> {
@@ -555,7 +555,7 @@ export default class API {
 	 * Fetch all albums
 	 * @returns An InfiniteQuery of Albums
 	 */
-	static getAlbums<I extends AlbumInclude>(
+	static getAlbums<I extends AlbumInclude | never = never>(
 		filter: {
 			library?: Identifier;
 			artist?: Identifier;
@@ -593,7 +593,7 @@ export default class API {
 	 * Fetch all releases
 	 * @returns An InfiniteQuery of releases
 	 */
-	static getReleases<I extends ReleaseInclude>(
+	static getReleases<I extends ReleaseInclude | never = never>(
 		filter: { album?: Identifier },
 		sort?: SortingParameters<typeof ReleaseSortingKeys>,
 		include?: I[],
@@ -622,7 +622,7 @@ export default class API {
 	 * Fetch all songs
 	 * @returns An InfiniteQuery of Songs
 	 */
-	static getSongs<I extends SongInclude>(
+	static getSongs<I extends SongInclude | never = never>(
 		filter: {
 			library?: Identifier;
 			type?: SongType;
@@ -659,7 +659,7 @@ export default class API {
 	 * Fetch all songs
 	 * @returns An InfiniteQuery of Songs
 	 */
-	static getVideos<I extends SongInclude>(
+	static getVideos<I extends SongInclude | never = never>(
 		filter: {
 			library?: Identifier;
 			artist?: Identifier;
@@ -694,7 +694,7 @@ export default class API {
 	 * @param songSlugOrId the identifier of a song
 	 * @returns a Query for a Song
 	 */
-	static getSong<I extends SongInclude>(
+	static getSong<I extends SongInclude | never = never>(
 		songSlugOrId: string | number,
 		include?: I[],
 	): Query<SongWithRelations<I>> {
@@ -715,7 +715,7 @@ export default class API {
 	 * @param include the fields to include in the fetched item
 	 * @returns a Query for a Track
 	 */
-	static getMasterTrack<I extends TrackInclude>(
+	static getMasterTrack<I extends TrackInclude | never = never>(
 		songSlugOrId: string | number,
 		include?: I[],
 	): Query<TrackWithRelations<I>> {
@@ -728,7 +728,7 @@ export default class API {
 			],
 			exec: () =>
 				API.fetch({
-					route: `/songs/${songSlugOrId}/master`,
+					route: `/tracks/master/${songSlugOrId}`,
 					parameters: { include },
 					validator: TrackWithRelations(include ?? []),
 				}),
@@ -741,7 +741,7 @@ export default class API {
 	 * @param include the fields to include in the fetched item
 	 * @returns a Query for a Track
 	 */
-	static getTrack<I extends TrackInclude>(
+	static getTrack<I extends TrackInclude | never = never>(
 		trackId: string | number,
 		include?: I[],
 	): Query<TrackWithRelations<I>> {
@@ -780,7 +780,7 @@ export default class API {
 	 * @param include the fields to include in the fetched item
 	 * @returns a query for an albums
 	 */
-	static getAlbum<I extends AlbumInclude>(
+	static getAlbum<I extends AlbumInclude | never = never>(
 		albumSlugOrId: string | number,
 		include?: I[],
 	): Query<AlbumWithRelations<I>> {
@@ -873,7 +873,7 @@ export default class API {
 	 * @param include the fields to include in the fetched item
 	 * @returns a query for a release
 	 */
-	static getMasterRelease<I extends ReleaseInclude>(
+	static getMasterRelease<I extends ReleaseInclude | never = never>(
 		albumSlugOrId: string | number,
 		include?: I[],
 	): Query<ReleaseWithRelations<I>> {
@@ -886,7 +886,7 @@ export default class API {
 			],
 			exec: () =>
 				API.fetch({
-					route: `/albums/${albumSlugOrId}/master`,
+					route: `/releases/master/${albumSlugOrId}`,
 					parameters: { include },
 					validator: ReleaseWithRelations(include ?? []),
 				}),
@@ -899,7 +899,7 @@ export default class API {
 	 * @param include the relation to include
 	 * @returns an Infinite Query of tracks
 	 */
-	static getTracks<I extends TrackInclude>(
+	static getTracks<I extends TrackInclude | never = never>(
 		filter: { song?: string | number },
 		sort?: SortingParameters<typeof TrackSortingKeys>,
 		include?: I[],
@@ -929,7 +929,7 @@ export default class API {
 	 * @param include the relation to include
 	 * @returns An Infinite query of Tracks
 	 */
-	static getSongVersions<I extends SongInclude>(
+	static getSongVersions<I extends SongInclude | never = never>(
 		songSlugOrId: string | number,
 		filter: Parameters<typeof API.getSongs>[0],
 		sort?: SortingParameters<typeof SongSortingKeys>,
@@ -961,7 +961,7 @@ export default class API {
 	 * @param slugOrId the id of the release
 	 * @returns A query for a Release
 	 */
-	static getRelease<I extends ReleaseInclude | never>(
+	static getRelease<I extends ReleaseInclude | never = never>(
 		slugOrId: string | number,
 		include?: I[],
 	): Query<ReleaseWithRelations<I>> {
@@ -982,7 +982,7 @@ export default class API {
 	 * @param slugOrId the id of the release
 	 * @returns A query for a Tracklist
 	 */
-	static getReleaseTrackList<I extends SongInclude>(
+	static getReleaseTrackList<I extends SongInclude | never = never>(
 		slugOrId: string | number,
 		include?: I[],
 	) {
@@ -1007,7 +1007,7 @@ export default class API {
 	 * @param slugOrId the id of the release
 	 * @returns A query for an array of tracks
 	 */
-	static getReleasePlaylist<I extends SongInclude>(
+	static getReleasePlaylist<I extends SongInclude | never = never>(
 		slugOrId: string | number,
 		include?: I[],
 	) {
@@ -1061,7 +1061,7 @@ export default class API {
 	 * @param slugOrId the id of the artist
 	 * @returns A query for an Artist
 	 */
-	static getArtist<I extends ArtistInclude>(
+	static getArtist<I extends ArtistInclude | never = never>(
 		slugOrId: string | number,
 		include: I[] = [],
 	): Query<ArtistWithRelations<I>> {

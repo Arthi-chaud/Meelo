@@ -137,6 +137,42 @@ describe("Track Controller", () => {
 		});
 	});
 
+	describe("Get Song Master (GET /tracks/master/:id)", () => {
+		it("should return master track", () => {
+			return request(app.getHttpServer())
+				.get(`/tracks/master/${dummyRepository.songB1.id}`)
+				.expect(200)
+				.expect((res) => {
+					const track: Track = res.body;
+					expect(track).toStrictEqual(
+						expectedTrackResponse(dummyRepository.trackB1_1),
+					);
+				});
+		});
+		it("should return master track w/ song & release", () => {
+			return request(app.getHttpServer())
+				.get(
+					`/tracks/master/${dummyRepository.songA1.id}?with=song,release`,
+				)
+				.expect(200)
+				.expect((res) => {
+					const track: Track = res.body;
+					expect(track).toStrictEqual({
+						...expectedTrackResponse(dummyRepository.trackA1_1),
+						song: expectedSongResponse(dummyRepository.songA1),
+						release: expectedReleaseResponse(
+							dummyRepository.releaseA1_1,
+						),
+					});
+				});
+		});
+		it("should return an error, as the song does not exist", () => {
+			return request(app.getHttpServer())
+				.get(`/tracks/master/${-1}`)
+				.expect(404);
+		});
+	});
+
 	describe("Get Tracks by Library", () => {
 		it("should return every tracks, w/ song & parent release", () => {
 			return request(app.getHttpServer())

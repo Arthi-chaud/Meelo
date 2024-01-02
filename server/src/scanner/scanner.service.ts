@@ -187,6 +187,9 @@ export default class ScannerService {
 				{ id: release.albumId },
 			);
 		}
+		if (album.masterId === null) {
+			this.albumService.setMasterRelease({ id: release.id });
+		}
 		if (
 			!release.releaseDate ||
 			(metadata.releaseDate && release.releaseDate < metadata.releaseDate)
@@ -196,7 +199,12 @@ export default class ScannerService {
 				{ id: release.id },
 			);
 		}
-		return this.trackService.create(track);
+		return this.trackService.create(track).then((res) => {
+			if (song.masterId === null && track.type === "Audio") {
+				this.songService.setMasterTrack({ id: res.id });
+			}
+			return res;
+		});
 	}
 
 	/**

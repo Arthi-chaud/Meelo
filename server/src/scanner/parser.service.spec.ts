@@ -1362,15 +1362,34 @@ describe("Parser Service", () => {
 			).toBe("My Song");
 		});
 
-		it("should not remove extension", () => {
+		it("should not remove extension (Non-specfic trailing group)", () => {
 			expect(
 				parserService.parseTrackExtensions("My Song (Yeah)").parsedName,
 			).toBe("My Song (Yeah)");
+		});
+
+		it("should not remove extension ('Live from Music Video Award')", () => {
 			expect(
 				parserService.parseTrackExtensions(
 					"I'm A Slave 4 U (Live from 2001 MTV Video Music Awards)",
 				).parsedName,
 			).toBe("I'm A Slave 4 U (Live from 2001 MTV Video Music Awards)");
+		});
+
+		it("should not remove extension ('Extended Album Version')", () => {
+			expect(
+				parserService.parseTrackExtensions(
+					"Jump (Extended Album Version)",
+				).parsedName,
+			).toBe("Jump (Extended Album Version)");
+		});
+
+		it("should not remove extension ('Video Mix Instrumental')", () => {
+			expect(
+				parserService.parseTrackExtensions(
+					"Me Against the Music (Video Mix Instrumental)",
+				).parsedName,
+			).toBe("Me Against the Music (Video Mix Instrumental)");
 		});
 	});
 });

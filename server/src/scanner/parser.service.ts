@@ -494,7 +494,7 @@ export default class ParserService {
 				"Album Version",
 				"Main Version",
 			] as const,
-			["Live"],
+			["Live", "Extended", "Instrumental"],
 		);
 	}
 

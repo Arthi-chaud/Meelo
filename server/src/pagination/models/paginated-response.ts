@@ -23,6 +23,10 @@ import { defaultPageSize } from "./pagination-parameters";
 
 class PaginationMetadata {
 	@ApiProperty({
+		description: "The number of returned items",
+	})
+	count: number;
+	@ApiProperty({
 		description: "The current URL",
 	})
 	this: string;
@@ -78,6 +82,7 @@ export default class PaginatedResponse<T extends { id: number }> {
 
 		if (!isNaN(afterId)) {
 			this.metadata = {
+				count: this.items.length,
 				this: this.buildUrl(route, request.query),
 				next:
 					itemsCount >= take
@@ -97,6 +102,7 @@ export default class PaginatedResponse<T extends { id: number }> {
 			skipped += take - (skipped % take);
 		}
 		this.metadata = {
+			count: this.items.length,
 			this: this.buildUrl(route, request.query),
 			next:
 				itemsCount >= take
