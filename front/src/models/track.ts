@@ -85,7 +85,7 @@ export default Track;
 export type TrackInclude = "song" | "release";
 
 const TrackRelations = yup.object({
-	song: Song.required(),
+	song: yup.lazy(() => Song.required()),
 	release: Release.required(),
 });
 

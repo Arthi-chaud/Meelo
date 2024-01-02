@@ -22,6 +22,7 @@ import Illustration from "./illustration";
 import Lyrics from "./lyrics";
 import Resource from "./resource";
 import ExternalId from "./external-id";
+import Track from "./track";
 
 export const SongType = [
 	"Original",
@@ -74,10 +75,11 @@ const Song = Resource.concat(Illustration).concat(
 
 type Song = yup.InferType<typeof Song>;
 
-type SongInclude = "artist" | "lyrics" | "externalIds" | "featuring";
+type SongInclude = "artist" | "lyrics" | "externalIds" | "featuring" | "master";
 
 const SongRelations = yup.object({
 	artist: Artist.required(),
+	master: yup.lazy(() => Track.required()),
 	featuring: yup.array(Artist.required()).required(),
 	lyrics: Lyrics.required().nullable(),
 	externalIds: yup.array(ExternalId.required()).required(),

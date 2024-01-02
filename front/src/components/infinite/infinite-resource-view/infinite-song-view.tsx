@@ -66,13 +66,13 @@ const playSongsAction = (
 		});
 };
 
-const InfiniteSongView = (
+const InfiniteSongView = <T extends SongWithRelations<"artist" | "featuring">>(
 	props: InfiniteResourceViewProps<
-		SongWithRelations<"artist" | "featuring">,
+		T,
 		typeof SongSortingKeys,
 		AdditionalProps
 	> &
-		Pick<Parameters<typeof SongItem>[0], "formatSubtitle"> & {
+		Pick<Parameters<typeof SongItem<T>>[0], "formatSubtitle"> & {
 			disableShuffle?: boolean;
 		},
 ) => {
@@ -140,9 +140,7 @@ const InfiniteSongView = (
 			<InfiniteView
 				view={options?.view ?? "list"}
 				query={() => props.query(query)}
-				renderListItem={(
-					item: SongWithRelations<"artist" | "featuring">,
-				) => (
+				renderListItem={(item: T) => (
 					<SongItem
 						song={item}
 						key={item.id}
