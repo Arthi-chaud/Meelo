@@ -30,6 +30,7 @@ import { LyricsNotFoundByIDException } from "src/lyrics/lyrics.exceptions";
 import ReleaseModule from "src/release/release.module";
 import { Artist, SongType } from "@prisma/client";
 import ScannerModule from "src/scanner/scanner.module";
+import SongModule from "./song.module";
 
 describe("Song Service", () => {
 	let songService: SongService;
@@ -51,6 +52,7 @@ describe("Song Service", () => {
 				GenreModule,
 				LyricsModule,
 				ReleaseModule,
+				SongModule,
 				ScannerModule,
 			],
 			providers: [SongService, ArtistService, PrismaService],
@@ -135,7 +137,10 @@ describe("Song Service", () => {
 					artist: { id: dummyRepository.artistC.id },
 					genres: [{ id: -1 }],
 					group: {
-						slug: new Slug(dummyRepository.artistC.name, "my-other-song"),
+						slug: new Slug(
+							dummyRepository.artistC.name,
+							"my-other-song",
+						),
 					},
 				});
 
@@ -468,11 +473,14 @@ describe("Song Service", () => {
 				artist: { id: dummyRepository.artistA.id },
 				genres: [],
 				group: {
-					slug: new Slug(dummyRepository.artistA.name, "my-other-song"),
+					slug: new Slug(
+						dummyRepository.artistA.name,
+						"my-other-song",
+					),
 				},
 			});
 			const versions = await songService.getMany({
-				versionsOf:{ id: dummyRepository.songA2.id },
+				versionsOf: { id: dummyRepository.songA2.id },
 			});
 			expect(versions).toStrictEqual([dummyRepository.songA2, version]);
 			await songService.delete({ id: version.id });
@@ -519,7 +527,10 @@ describe("Song Service", () => {
 				artist: { id: dummyRepository.artistA.id },
 				genres: [],
 				group: {
-					slug: new Slug(dummyRepository.artistA.name, dummyRepository.songA1.slug),
+					slug: new Slug(
+						dummyRepository.artistA.name,
+						dummyRepository.songA1.slug,
+					),
 				},
 			});
 			expect(fetchedSong.id).toStrictEqual(dummyRepository.songA1.id);
@@ -547,7 +558,10 @@ describe("Song Service", () => {
 					artist: { slug: new Slug("My Slug") },
 					genres: [],
 					group: {
-						slug: new Slug(dummyRepository.artistB.name, "my-song-3"),
+						slug: new Slug(
+							dummyRepository.artistB.name,
+							"my-song-3",
+						),
 					},
 				});
 			expect(test()).rejects.toThrow(ArtistNotFoundException);

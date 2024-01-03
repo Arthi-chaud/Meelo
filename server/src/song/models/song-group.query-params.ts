@@ -23,7 +23,6 @@ import { ModelSortingParameter } from "src/sort/models/sorting-parameter";
 import { filterAtomicRelationInclude } from "src/relation-include/atomic-relation-include.filter";
 import { SongGroup } from "@prisma/client";
 import SongQueryParameters from "./song.query-params";
-import { SongVersion } from "src/prisma/models/songVersion.dto";
 
 namespace SongGroupQueryParameters {
 	/**
@@ -50,14 +49,14 @@ namespace SongGroupQueryParameters {
 	/**
 	 * Query params to find multiple songs
 	 */
-	export type ManyWhereInput = {};
+	export type ManyWhereInput = Record<string, never>;
 
 	/**
 	 * The input required to update a song in the database
 	 */
-	export type UpdateInput = {};
+	export type UpdateInput = Record<string, never>;
 	export type DeleteInput = {
-		id: SongVersion["id"];
+		id: SongGroup["id"];
 	};
 	/**
 	 * The input to find or create a song group

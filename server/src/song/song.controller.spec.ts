@@ -579,7 +579,10 @@ describe("Song Controller", () => {
 				name: "My Other Song (Remix)",
 				artist: { id: dummyRepository.artistA.id },
 				group: {
-					slug: new Slug(dummyRepository.artistA.name, "my-other-song"),
+					slug: new Slug(
+						dummyRepository.artistA.name,
+						"my-other-song",
+					),
 				},
 				genres: [],
 			});

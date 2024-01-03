@@ -43,7 +43,7 @@ import SongGroupService from "./song-group.service";
 		forwardRef(() => IllustrationModule),
 		forwardRef(() => ScannerModule),
 	],
-	exports: [SongService, SongResponseBuilder],
+	exports: [SongService, SongResponseBuilder, SongGroupService],
 	providers: [SongService, SongResponseBuilder, SongGroupService],
 	controllers: [SongController],
 })

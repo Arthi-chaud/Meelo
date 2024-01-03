@@ -33,7 +33,6 @@ describe("Wikipedia Provider", () => {
 				await wikipediaProvider.getResourceMetadataByWikidataId(
 					"Q236240",
 				);
-			console.log(description);
 
 			expect(value).toBe("Siobhán Donaghy");
 			expect(description).not.toBeNull();

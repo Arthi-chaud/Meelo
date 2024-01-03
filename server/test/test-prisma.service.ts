@@ -130,7 +130,7 @@ export default class TestPrismaService extends PrismaService {
 				type: SongType.Original,
 				group: {
 					create: {
-						slug: new Slug(this.songA1.name, "my-song").toString(),
+						slug: new Slug(this.artistA.name, "my-song").toString(),
 					},
 				},
 			},
