@@ -186,12 +186,14 @@ export default class AlbumService extends RepositoryService<
 					some: {
 						tracks: {
 							some: {
+								type: "Audio",
 								song: {
 									group: {
 										versions: {
 											some: {
 												tracks: {
 													some: {
+														type: "Audio",
 														release: {
 															album: this.formatWhereInput(
 																where.related,
