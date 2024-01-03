@@ -628,6 +628,7 @@ export default class API {
 			type?: SongType;
 			genre?: Identifier;
 			artist?: Identifier;
+			versionsOf?: Identifier;
 			query?: string;
 			bsides?: Identifier;
 			random?: number;
@@ -918,39 +919,6 @@ export default class API {
 					parameters: { pagination: pagination, include, sort },
 					validator: PaginatedResponse(
 						TrackWithRelations(include ?? []),
-					),
-				}),
-		};
-	}
-
-	/**
-	 * Get versions of a song
-	 * @param songSlugOrId the id of the  song
-	 * @param include the relation to include
-	 * @returns An Infinite query of Tracks
-	 */
-	static getSongVersions<I extends SongInclude | never = never>(
-		songSlugOrId: string | number,
-		filter: Parameters<typeof API.getSongs>[0],
-		sort?: SortingParameters<typeof SongSortingKeys>,
-		include?: I[],
-	): InfiniteQuery<SongWithRelations<I>> {
-		return {
-			key: [
-				"song",
-				songSlugOrId,
-				"versions",
-				...API.formatObject(filter),
-				...API.formatObject(sort),
-				...API.formatIncludeKeys(include),
-			],
-			exec: (pagination) =>
-				API.fetch({
-					route: `/songs/${songSlugOrId}/versions`,
-					parameters: { pagination: pagination, include, sort },
-					otherParameters: filter,
-					validator: PaginatedResponse(
-						SongWithRelations(include ?? []),
 					),
 				}),
 		};

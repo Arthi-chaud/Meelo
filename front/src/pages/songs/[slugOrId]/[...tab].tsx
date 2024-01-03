@@ -59,9 +59,8 @@ export const getServerSideProps = prepareSSR((context) => {
 		],
 		infiniteQueries: [
 			API.getGenres({ song: songIdentifier }),
-			API.getSongVersions(
-				songIdentifier,
-				{},
+			API.getSongs(
+				{ versionsOf: songIdentifier },
 				{ sortBy: "name", order: "asc" },
 				["artist", "featuring"],
 			),
@@ -223,9 +222,12 @@ const SongPage = (props: InferSSRProps<typeof getServerSideProps>) => {
 					<InfiniteSongView
 						disableShuffle
 						query={({ library, sortBy, order, type }) =>
-							API.getSongVersions(
-								song.data.id,
-								{ library: library ?? undefined, type },
+							API.getSongs(
+								{
+									library: library ?? undefined,
+									type,
+									versionsOf: song.data.id,
+								},
 								{ sortBy, order },
 								["artist", "featuring"],
 							)
