@@ -28,6 +28,7 @@ import { Artist, Song } from "src/prisma/models";
 import { filterAtomicRelationInclude } from "src/relation-include/atomic-relation-include.filter";
 import AlbumQueryParameters from "src/album/models/album.query-parameters";
 import { SongType } from "@prisma/client";
+import SongGroupQueryParameters from "./song-group.query-params";
 
 namespace SongQueryParameters {
 	/**
@@ -47,9 +48,11 @@ namespace SongQueryParameters {
 		| "registeredAt"
 		| "type"
 		| "featuring"
+		| "groupId"
 	> & {
 		slug?: Slug;
 		artist: ArtistQueryParameters.WhereInput;
+		group: SongGroupQueryParameters.GetOrCreateInput;
 		featuring?: RequireExactlyOne<
 			Pick<ArtistQueryParameters.WhereInput, "slug">
 		>[];
@@ -87,6 +90,8 @@ namespace SongQueryParameters {
 			artist?: ArtistQueryParameters.WhereInput;
 			library: LibraryQueryParameters.WhereInput;
 			genre: GenreQueryParameters.WhereInput;
+			group: SongGroupQueryParameters.WhereInput;
+			versionsOf: SongQueryParameters.WhereInput;
 			type?: SongType;
 			id: { in: number[] };
 			playCount: RequireExactlyOne<

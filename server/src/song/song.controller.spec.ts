@@ -17,6 +17,7 @@ import {
 import ProviderService from "src/providers/provider.service";
 import SettingsService from "src/settings/settings.service";
 import { SongType } from "@prisma/client";
+import Slug from "src/slug/slug";
 
 jest.setTimeout(60000);
 
@@ -577,11 +578,14 @@ describe("Song Controller", () => {
 			const version = await songService.create({
 				name: "My Other Song (Remix)",
 				artist: { id: dummyRepository.artistA.id },
+				group: {
+					slug: new Slug(dummyRepository.artistA.name, "my-other-song"),
+				},
 				genres: [],
 			});
 			return request(app.getHttpServer())
 				.get(
-					`/songs/${dummyRepository.songA2.id}/versions?sortBy=id&order=desc`,
+					`/songs?versionsOf=${dummyRepository.songA2.id}&sortBy=id&order=desc`,
 				)
 				.expect(200)
 				.expect((res) => {

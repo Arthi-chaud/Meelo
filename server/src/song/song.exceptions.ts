@@ -31,9 +31,21 @@ export class SongNotFoundException extends NotFoundException {
 	}
 }
 
+export class SongGroupNotFoundException extends NotFoundException {
+	constructor(songGroupSlug: Slug) {
+		super(`Song Group not found '${songGroupSlug.toString()}'`);
+	}
+}
+
 export class SongNotFoundByIdException extends NotFoundException {
 	constructor(songId: number) {
 		super(`No song with id '${songId}' found`);
+	}
+}
+
+export class SongGroupNotFoundByIdException extends NotFoundException {
+	constructor(songGroupId: number) {
+		super(`No song group with id '${songGroupId}' found`);
 	}
 }
 
@@ -42,6 +54,12 @@ export class SongAlreadyExistsException extends AlreadyExistsException {
 		super(
 			`'${songSlug.toString()}' from '${artistSlug.toString()}': Song already exists`,
 		);
+	}
+}
+
+export class SongGroupAlreadyExistsException extends AlreadyExistsException {
+	constructor(songGroupSlug: Slug) {
+		super(`Song Group already exists '${songGroupSlug.toString()}'`);
 	}
 }
 

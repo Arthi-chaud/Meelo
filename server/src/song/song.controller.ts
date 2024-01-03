@@ -44,7 +44,6 @@ import { LyricsService } from "src/lyrics/lyrics.service";
 import LyricsDto from "src/lyrics/models/update-lyrics.dto";
 import { SongResponseBuilder } from "./models/song.response";
 import RelationIncludeQuery from "src/relation-include/relation-include-query.decorator";
-import SortingQuery from "src/sort/sort-query.decorator";
 import Admin from "src/authentication/roles/admin.decorator";
 import IdentifierParam from "src/identifier/identifier.pipe";
 import Response, { ResponseType } from "src/response/response.decorator";
@@ -61,6 +60,8 @@ import ReleaseQueryParameters from "src/release/models/release.query-parameters"
 import ReleaseService from "src/release/release.service";
 import { SongType } from "@prisma/client";
 import UpdateSongDTO from "./models/update-song.dto";
+import SongGroupQueryParameters from "./models/song-group.query-params";
+import SongGroupService from "./song-group.service";
 
 export class Selector extends IntersectionType(
 	SongQueryParameters.SortingParameter,
@@ -93,6 +94,20 @@ export class Selector extends IntersectionType(
 	})
 	@TransformIdentifier(LibraryService)
 	library?: LibraryQueryParameters.WhereInput;
+
+	@IsOptional()
+	@ApiPropertyOptional({
+		description: "Get related songs ",
+	})
+	@TransformIdentifier(SongService)
+	versionsOf?: SongQueryParameters.WhereInput;
+
+	@IsOptional()
+	@ApiPropertyOptional({
+		description: "Get related songs ",
+	})
+	@TransformIdentifier(SongGroupService)
+	group?: SongGroupQueryParameters.WhereInput;
 
 	@IsOptional()
 	@ApiPropertyOptional({
@@ -215,35 +230,6 @@ export class SongController {
 	) {
 		await this.songService.incrementPlayCount(where);
 		return this.songService.get(where);
-	}
-
-	@ApiOperation({
-		summary: "Get a song's versions",
-	})
-	@Response({
-		handler: SongResponseBuilder,
-		type: ResponseType.Page,
-	})
-	@Get(":idOrSlug/versions")
-	async getSongVersions(
-		@Query()
-		paginationParameters: PaginationParameters,
-		@RelationIncludeQuery(SongQueryParameters.AvailableAtomicIncludes)
-		include: SongQueryParameters.RelationInclude,
-		@SortingQuery(SongQueryParameters.SortingKeys)
-		sortingParameter: SongQueryParameters.SortingParameter,
-		@IdentifierParam(SongService)
-		where: SongQueryParameters.WhereInput,
-		@Query()
-		{ type }: VersionsSelector,
-	) {
-		return this.songService.getSongVersions(
-			where,
-			paginationParameters,
-			include,
-			type,
-			sortingParameter,
-		);
 	}
 
 	@ApiOperation({
