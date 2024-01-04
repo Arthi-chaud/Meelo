@@ -149,7 +149,9 @@ export default class SongGroupService extends RepositoryService<
 	async housekeeping(): Promise<void> {
 		await this.prismaHandle.songGroup.deleteMany({
 			where: {
-				NOT: { versions: { none: {} } },
+				versions: {
+					none: {},
+				},
 			},
 		});
 	}
