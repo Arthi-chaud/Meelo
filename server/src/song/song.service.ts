@@ -517,10 +517,6 @@ export default class SongService extends RepositoryService<
 		await Promise.all(emptySongs.map(({ id }) => this.delete({ id })));
 	}
 
-	/**
-	 * Get B-Sides songs of a release
-	 * @requires The release must be a StudioRecording Otherwise, returns an empty list
-	 */
 	async getReleaseBSides<I extends SongQueryParameters.RelationInclude>(
 		where: ReleaseQueryParameters.WhereInput,
 		pagination?: PaginationParameters,
@@ -537,9 +533,9 @@ export default class SongService extends RepositoryService<
 		const albumSongs = await this.getMany(
 			{ album: { id: album.id } },
 			undefined,
-			{ tracks: true, group: true },
+			{ tracks: true },
 		);
-		const groups = albumSongs
+		const albumSongsBaseNames = albumSongs
 			// Some albums have live songs from previous albums, we ignore them
 			.filter((song) => song.type != SongType.Live)
 			// We remove songs that are present only on video in the release
@@ -551,7 +547,7 @@ export default class SongService extends RepositoryService<
 							track.releaseId == release.id,
 					) != undefined,
 			)
-			.map(({ group }) => group.slug);
+			.map(({ name }) => new Slug(this.getBaseSongName(name)).toString());
 
 		return this.prismaService.song.findMany({
 			where: {
@@ -559,44 +555,42 @@ export default class SongService extends RepositoryService<
 					some: {
 						release: {
 							album: {
-								AND: [
-									// Get songs from related albums
+								OR: [
 									{
-										...AlbumService.formatManyWhereInput({
-											related: { id: release.albumId },
-										}),
-										type: AlbumType.Single,
-									},
-									// Get albums that have a version of a song in the current album
-									{
-										releases: {
-											some: {
-												tracks: {
-													some: {
-														song: {
-															type: {
-																in: [
-																	"Original",
-																	"Edit",
-																],
-															},
-															group: {
-																slug: {
-																	in: groups,
-																},
-															},
+										AND: [
+											// Get songs from singles...
+											{
+												...AlbumService.formatManyWhereInput(
+													{
+														related: {
+															id: release.albumId,
 														},
 													},
-												},
+												),
+												type: AlbumType.Single,
 											},
-										},
+											//... that are relates to the current tracklist
+											{
+												OR: [
+													...albumSongsBaseNames.map(
+														(slug) => ({
+															slug: {
+																startsWith:
+																	slug,
+															},
+															artistId:
+																album.artistId,
+															type: AlbumType.Single,
+														}),
+													),
+												],
+											},
+										],
 									},
-									// // Get songs from singles, based on their name
-									// ...albumSongsBaseNames.map((slug) => ({
-									// 	group: { slug: { startsWith: slug } },
-									// 	artistId: album.artistId,
-									// 	type: AlbumType.Single,
-									// }) as const),
+									// Get tracks songs from other releases of the parent album
+									{
+										id: release.albumId,
+									},
 								],
 							},
 						},

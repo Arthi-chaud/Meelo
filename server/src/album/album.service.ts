@@ -180,6 +180,8 @@ export default class AlbumService extends RepositoryService<
 			query = deepmerge(query, { id: where.id });
 		}
 		if (where.related) {
+			// Related albums have at least one song group in common
+			// Such song must have at least one audio track
 			query = deepmerge(query, {
 				NOT: this.formatWhereInput(where.related),
 				releases: {
