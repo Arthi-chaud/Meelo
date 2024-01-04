@@ -16,6 +16,7 @@ import {
 } from "@prisma/client";
 import { Playlist } from "src/prisma/models";
 import PrismaService from "src/prisma/prisma.service";
+import Slug from "src/slug/slug";
 
 @Injectable()
 export default class TestPrismaService extends PrismaService {
@@ -122,11 +123,16 @@ export default class TestPrismaService extends PrismaService {
 			data: {
 				name: "My Song",
 				slug: "my-song",
-				artistId: this.artistA.id,
+				artist: { connect: { id: this.artistA.id } },
 				genres: {
 					connect: [{ id: this.genreA.id }, { id: this.genreB.id }],
 				},
 				type: SongType.Original,
+				group: {
+					create: {
+						slug: new Slug(this.artistA.name, "my-song").toString(),
+					},
+				},
 			},
 		});
 		this.lyricsA1 = await this.lyrics.create({
@@ -178,7 +184,12 @@ export default class TestPrismaService extends PrismaService {
 			data: {
 				name: "My Other Song",
 				slug: "my-other-song",
-				artistId: this.artistA.id,
+				artist: { connect: { id: this.artistA.id } },
+				group: {
+					create: {
+						slug: new Slug(this.artistA.name, "my-other-song").toString(),
+					},
+				},
 				genres: { connect: { id: this.genreB.id } },
 				type: SongType.Original,
 			},
@@ -224,7 +235,12 @@ export default class TestPrismaService extends PrismaService {
 			data: {
 				name: "My Second Song",
 				slug: "my-second-song",
-				artistId: this.artistB.id,
+				artist: { connect: { id: this.artistB.id } },
+				group: {
+					create: {
+						slug: new Slug(this.artistB.name, "my-second-song").toString(),
+					},
+				},
 				genres: { connect: { id: this.genreB.id } },
 				type: SongType.Original,
 			},
@@ -271,7 +287,12 @@ export default class TestPrismaService extends PrismaService {
 			data: {
 				name: "My C Song",
 				slug: "my-c-song",
-				artistId: this.artistC.id,
+				artist: { connect: { id: this.artistC.id } },
+				group: {
+					create: {
+						slug: new Slug(this.artistC.name, "my-c-song").toString(),
+					},
+				},
 				genres: { connect: { id: this.genreC.id } },
 				type: SongType.Original,
 			},

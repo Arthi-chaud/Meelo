@@ -35,6 +35,7 @@ import { LyricsModule } from "src/lyrics/lyrics.module";
 import LibraryModule from "src/library/library.module";
 import FileManagerService from "src/file-manager/file-manager.service";
 import ProvidersModule from "src/providers/providers.module";
+import Slug from "src/slug/slug";
 
 describe("Track Service", () => {
 	let trackService: TrackService;
@@ -451,6 +452,9 @@ describe("Track Service", () => {
 				name: "A",
 				artist: { id: dummyRepository.artistB.id },
 				genres: [],
+				group: {
+					slug: new Slug(dummyRepository.artistB.name, "a"),
+				},
 			});
 			const test = async () =>
 				await trackService.getMasterTrack({ id: tmpSong.id });

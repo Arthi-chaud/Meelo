@@ -46,6 +46,7 @@ import IllustrationRepository from "src/illustration/illustration.repository";
 import { SongType } from "@prisma/client";
 import ParserService from "src/scanner/parser.service";
 import type RefreshMetadataSelector from "./models/refresh-metadata.selector";
+import SongGroupService from "src/song/song-group.service";
 
 export const TaskQueue = "task-queue";
 
@@ -82,6 +83,8 @@ export default class TaskRunner {
 		private playlistService: PlaylistService,
 		@Inject(forwardRef(() => ParserService))
 		private parserService: ParserService,
+		@Inject(forwardRef(() => SongGroupService))
+		private songGroupService: SongGroupService,
 	) {}
 
 	@OnQueueError()
@@ -319,6 +322,7 @@ export default class TaskRunner {
 	 */
 	async housekeeping(): Promise<void> {
 		await this.songService.housekeeping();
+		await this.songGroupService.housekeeping();
 		await this.releaseService.housekeeping();
 		await this.albumService.housekeeping();
 		await this.artistService.housekeeping();

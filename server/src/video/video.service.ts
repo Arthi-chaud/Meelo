@@ -65,7 +65,18 @@ export default class VideoService {
 				},
 				...buildPaginationParameters(pagination),
 				where: {
-					...SongService.formatManyWhereInput(where),
+					OR: [
+						SongService.formatManyWhereInput(where),
+						{
+							group: {
+								versions: {
+									some: SongService.formatManyWhereInput(
+										where,
+									),
+								},
+							},
+						},
+					],
 					AND: {
 						tracks: {
 							some: {

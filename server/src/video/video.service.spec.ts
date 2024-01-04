@@ -15,6 +15,7 @@ import VideoService from "./video.service";
 import VideoModule from "./video.module";
 import ReleaseModule from "src/release/release.module";
 import ScannerModule from "src/scanner/scanner.module";
+import SongModule from "src/song/song.module";
 
 describe("Video Service", () => {
 	let videoService: VideoService;
@@ -32,6 +33,7 @@ describe("Video Service", () => {
 				GenreModule,
 				LyricsModule,
 				VideoModule,
+				SongModule,
 				ReleaseModule,
 				ScannerModule,
 			],

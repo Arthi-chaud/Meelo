@@ -118,6 +118,14 @@ export default class ScannerService {
 		const song = await this.songService.getOrCreate(
 			{
 				name: parsedTrackName.parsedName,
+				group: {
+					slug: new Slug(
+						songArtist.name,
+						this.parserService.stripGroups(
+							parsedTrackName.parsedName,
+						),
+					),
+				},
 				artist: { id: songArtist.id },
 				featuring: featuringArtists.map(({ slug }) => ({
 					slug: new Slug(slug),

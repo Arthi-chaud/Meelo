@@ -30,6 +30,7 @@ import { LyricsNotFoundByIDException } from "src/lyrics/lyrics.exceptions";
 import ReleaseModule from "src/release/release.module";
 import { Artist, SongType } from "@prisma/client";
 import ScannerModule from "src/scanner/scanner.module";
+import SongModule from "./song.module";
 
 describe("Song Service", () => {
 	let songService: SongService;
@@ -51,6 +52,7 @@ describe("Song Service", () => {
 				GenreModule,
 				LyricsModule,
 				ReleaseModule,
+				SongModule,
 				ScannerModule,
 			],
 			providers: [SongService, ArtistService, PrismaService],
@@ -86,6 +88,9 @@ describe("Song Service", () => {
 					{ id: dummyRepository.genreA.id },
 					{ id: dummyRepository.genreC.id },
 				],
+				group: {
+					slug: new Slug(dummyRepository.artistA.name, "my-song-3"),
+				},
 			});
 
 			expect(newSong.id).toBeDefined();
@@ -103,6 +108,9 @@ describe("Song Service", () => {
 					name: "My Song",
 					artist: { slug: new Slug(dummyRepository.artistA.name) },
 					genres: [],
+					group: {
+						slug: new Slug(dummyRepository.artistA.name, "my-song"),
+					},
 				});
 
 			expect(test()).rejects.toThrow(SongAlreadyExistsException);
@@ -114,6 +122,9 @@ describe("Song Service", () => {
 					name: "My Song",
 					artist: { id: -1 },
 					genres: [],
+					group: {
+						slug: new Slug((-1).toString(), "my-song"),
+					},
 				});
 
 			expect(test()).rejects.toThrow(ArtistNotFoundByIDException);
@@ -125,6 +136,12 @@ describe("Song Service", () => {
 					name: "My Other Song",
 					artist: { id: dummyRepository.artistC.id },
 					genres: [{ id: -1 }],
+					group: {
+						slug: new Slug(
+							dummyRepository.artistC.name,
+							"my-other-song",
+						),
+					},
 				});
 
 			expect(test()).rejects.toThrow(GenreNotFoundByIdException);
@@ -136,6 +153,9 @@ describe("Song Service", () => {
 					name: "My Song",
 					artist: { slug: new Slug("trololol") },
 					genres: [],
+					group: {
+						slug: new Slug("trololol", "my-song"),
+					},
 				});
 
 			expect(test()).rejects.toThrow(ArtistNotFoundException);
@@ -452,17 +472,18 @@ describe("Song Service", () => {
 				name: "My Other Song (Remix)",
 				artist: { id: dummyRepository.artistA.id },
 				genres: [],
+				group: {
+					slug: new Slug(
+						dummyRepository.artistA.name,
+						"my-other-song",
+					),
+				},
 			});
-			const versions = await songService.getSongVersions({
-				id: dummyRepository.songA2.id,
+			const versions = await songService.getMany({
+				versionsOf: { id: dummyRepository.songA2.id },
 			});
 			expect(versions).toStrictEqual([dummyRepository.songA2, version]);
 			await songService.delete({ id: version.id });
-		});
-		it("should throw, as the song song does not exist", async () => {
-			const test = async () =>
-				await songService.getSongVersions({ id: -1 });
-			expect(test()).rejects.toThrow(SongNotFoundByIdException);
 		});
 	});
 
@@ -505,6 +526,12 @@ describe("Song Service", () => {
 				slug: new Slug(dummyRepository.songA1.slug),
 				artist: { id: dummyRepository.artistA.id },
 				genres: [],
+				group: {
+					slug: new Slug(
+						dummyRepository.artistA.name,
+						dummyRepository.songA1.slug,
+					),
+				},
 			});
 			expect(fetchedSong.id).toStrictEqual(dummyRepository.songA1.id);
 			expect(fetchedSong.slug).toStrictEqual(dummyRepository.songA1.slug);
@@ -516,6 +543,9 @@ describe("Song Service", () => {
 				name: "My Song 4",
 				artist: { id: dummyRepository.artistB.id },
 				genres: [],
+				group: {
+					slug: new Slug(dummyRepository.artistB.name, "my-song-4"),
+				},
 			});
 			expect(createdSong.name).toBe("My Song 4");
 			expect(createdSong.artistId).toBe(dummyRepository.artistB.id);
@@ -527,6 +557,12 @@ describe("Song Service", () => {
 					name: "My Song 3",
 					artist: { slug: new Slug("My Slug") },
 					genres: [],
+					group: {
+						slug: new Slug(
+							dummyRepository.artistB.name,
+							"my-song-3",
+						),
+					},
 				});
 			expect(test()).rejects.toThrow(ArtistNotFoundException);
 		});
@@ -570,6 +606,9 @@ describe("Song Service", () => {
 				name: "1234",
 				artist: { id: dummyRepository.artistA.id },
 				genres: [],
+				group: {
+					slug: new Slug(dummyRepository.artistA.name, "1234"),
+				},
 			});
 			const tmpLyrics = await lyricsService.create({
 				content: "1234",
@@ -594,6 +633,9 @@ describe("Song Service", () => {
 			baseSong = await songService.create({
 				name: "E.T.",
 				artist: { id: mainArtist.id },
+				group: {
+					slug: new Slug(mainArtist.name, "e-t"),
+				},
 				genres: [],
 			});
 		});
@@ -602,6 +644,9 @@ describe("Song Service", () => {
 			songWithFeaturing = await songService.getOrCreate({
 				name: "E.T.",
 				artist: { id: mainArtist.id },
+				group: {
+					slug: new Slug(mainArtist.name, "e-t"),
+				},
 				genres: [],
 				featuring: [{ slug: new Slug(featuredArtist.slug) }],
 			});
@@ -613,6 +658,9 @@ describe("Song Service", () => {
 			let res = await songService.getOrCreate({
 				name: "E.T.",
 				artist: { id: mainArtist.id },
+				group: {
+					slug: new Slug(mainArtist.name, "e-t"),
+				},
 				genres: [],
 			});
 			expect(res).toStrictEqual(baseSong);
@@ -622,6 +670,9 @@ describe("Song Service", () => {
 			let res = await songService.getOrCreate({
 				name: "E.T.",
 				artist: { id: mainArtist.id },
+				group: {
+					slug: new Slug(mainArtist.name, "e-t"),
+				},
 				genres: [],
 				featuring: [{ slug: new Slug(featuredArtist.slug) }],
 			});

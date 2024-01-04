@@ -23,6 +23,7 @@ import GenreService from "./genre.service";
 import LibraryModule from "src/library/library.module";
 import ScannerModule from "src/scanner/scanner.module";
 import ReleaseModule from "src/release/release.module";
+import SongModule from "src/song/song.module";
 
 describe("Genre Service", () => {
 	let genreService: GenreService;
@@ -42,6 +43,7 @@ describe("Genre Service", () => {
 				ArtistModule,
 				TrackModule,
 				AlbumModule,
+				SongModule,
 				GenreModule,
 				LyricsModule,
 				ReleaseModule,

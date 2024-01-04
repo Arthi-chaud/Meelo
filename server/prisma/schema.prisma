@@ -251,6 +251,10 @@ model Song {
 	type			SongType		@default(Unknown)
 	/// @description The date the song was registered
 	registeredAt		DateTime	@default(now())
+	/// @description The ID of the Group the song belongs to
+	groupId 		Int
+	/// @description The Group the song belongs to
+	group 			SongGroup @relation(fields: [groupId], references: [id])
 	/// @description The genres of the song
 	genres Genre[]
 	/// @description Array of external IDs
@@ -259,6 +263,18 @@ model Song {
 	playlists PlaylistEntry[]
 	@@unique([slug, artistId])
 	@@map("songs")
+}
+
+model SongGroup {
+	/// @description Unique numeric Song identifier
+	/// @example 123
+	id				Int		@id @default(autoincrement())
+	/// @description String notation of the group
+	/// @example kylie-minogue-all-the-lovers
+	slug			String	@unique
+	/// @description Song that belong to this group
+	versions		Song[]
+	@@map("song_groups")
 }
 
 /// A type of song

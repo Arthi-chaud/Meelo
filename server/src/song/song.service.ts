@@ -21,7 +21,7 @@ import ArtistService from "src/artist/artist.service";
 import Slug from "src/slug/slug";
 import { AlbumType, Prisma, SongType, TrackType } from "@prisma/client";
 import PrismaService from "src/prisma/prisma.service";
-import type SongQueryParameters from "./models/song.query-params";
+import SongQueryParameters from "./models/song.query-params";
 import TrackService from "src/track/track.service";
 import GenreService from "src/genre/genre.service";
 import RepositoryService from "src/repository/repository.service";
@@ -48,6 +48,7 @@ import ReleaseQueryParameters from "src/release/models/release.query-parameters"
 import ReleaseService from "src/release/release.service";
 import ParserService from "src/scanner/parser.service";
 import deepmerge from "deepmerge";
+import SongGroupService from "./song-group.service";
 
 @Injectable()
 export default class SongService extends RepositoryService<
@@ -68,6 +69,8 @@ export default class SongService extends RepositoryService<
 	private readonly logger = new Logger(SongService.name);
 	constructor(
 		private prismaService: PrismaService,
+		@Inject(forwardRef(() => SongGroupService))
+		private songGroupService: SongGroupService,
 		@Inject(forwardRef(() => ArtistService))
 		private artistService: ArtistService,
 		@Inject(forwardRef(() => ReleaseService))
@@ -101,12 +104,20 @@ export default class SongService extends RepositoryService<
 		return super.create(input, include);
 	}
 
-	formatCreateInput(song: SongQueryParameters.CreateInput) {
+	formatCreateInput(
+		song: SongQueryParameters.CreateInput,
+	): Prisma.SongCreateInput {
 		return {
 			genres: {
 				connect: song.genres.map((genre) =>
 					GenreService.formatWhereInput(genre),
 				),
+			},
+			group: {
+				connectOrCreate: {
+					create: this.songGroupService.formatCreateInput(song.group),
+					where: this.songGroupService.formatWhereInput(song.group),
+				},
 			},
 			artist: {
 				connect: ArtistService.formatWhereInput(song.artist),
@@ -250,6 +261,20 @@ export default class SongService extends RepositoryService<
 				},
 			});
 		}
+		if (where.group) {
+			query = deepmerge(query, {
+				group: SongGroupService.formatWhereInput(where.group),
+			} satisfies Prisma.SongWhereInput);
+		}
+		if (where.versionsOf) {
+			query = deepmerge(query, {
+				group: {
+					versions: {
+						some: SongService.formatWhereInput(where.versionsOf),
+					},
+				},
+			} satisfies Prisma.SongWhereInput);
+		}
 		return query;
 	}
 
@@ -332,6 +357,18 @@ export default class SongService extends RepositoryService<
 			artist: what.artist
 				? {
 						connect: ArtistService.formatWhereInput(what.artist),
+				  }
+				: undefined,
+			group: what.group
+				? {
+						connectOrCreate: {
+							create: this.songGroupService.formatCreateInput(
+								what.group,
+							),
+							where: this.songGroupService.formatWhereInput(
+								what.group,
+							),
+						},
 				  }
 				: undefined,
 			featuring: what.featuring
@@ -478,38 +515,6 @@ export default class SongService extends RepositoryService<
 			.then((genres) => genres.filter((genre) => !genre._count.tracks));
 
 		await Promise.all(emptySongs.map(({ id }) => this.delete({ id })));
-	}
-
-	/**
-	 * Get songs from the sma eartist that have the same base name
-	 * @param where the query parameters to find the song
-	 * @param pagination the pagination parameters
-	 * @param include the relations to include with the returned songs
-	 * @returns the matching songs
-	 */
-	async getSongVersions<I extends SongQueryParameters.RelationInclude>(
-		where: SongQueryParameters.WhereInput,
-		pagination?: PaginationParameters,
-		include?: I,
-		type?: SongType,
-		sort?: SongQueryParameters.SortingParameter,
-	) {
-		const { name, artistId } = await this.select(where, {
-			name: true,
-			artistId: true,
-		});
-		const baseSongName = this.getBaseSongName(name);
-
-		return this.prismaService.song.findMany({
-			where: {
-				artistId: artistId,
-				slug: { contains: new Slug(baseSongName).toString() },
-				type: type,
-			},
-			orderBy: sort ? this.formatSortingInput(sort) : undefined,
-			include: this.formatInclude(include),
-			...buildPaginationParameters(pagination),
-		});
 	}
 
 	/**
