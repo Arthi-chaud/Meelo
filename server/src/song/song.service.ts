@@ -537,9 +537,9 @@ export default class SongService extends RepositoryService<
 		const albumSongs = await this.getMany(
 			{ album: { id: album.id } },
 			undefined,
-			{ tracks: true },
+			{ tracks: true, group: true },
 		);
-		const albumSongsBaseNames = albumSongs
+		const groups = albumSongs
 			// Some albums have live songs from previous albums, we ignore them
 			.filter((song) => song.type != SongType.Live)
 			// We remove songs that are present only on video in the release
@@ -551,16 +551,7 @@ export default class SongService extends RepositoryService<
 							track.releaseId == release.id,
 					) != undefined,
 			)
-			.map(({ name }) => new Slug(this.getBaseSongName(name)).toString());
-
-		const relatedAlbums = await this.prismaService.album.findMany({
-			where: {
-				...AlbumService.formatManyWhereInput({
-					related: { id: release.albumId },
-				}),
-				type: AlbumType.Single,
-			},
-		});
+			.map(({ group }) => group.slug);
 
 		return this.prismaService.song.findMany({
 			where: {
@@ -568,21 +559,44 @@ export default class SongService extends RepositoryService<
 					some: {
 						release: {
 							album: {
-								OR: [
+								AND: [
 									// Get songs from related albums
 									{
-										id: {
-											in: relatedAlbums
-												.map(({ id }) => id)
-												.concat(album.id),
+										...AlbumService.formatManyWhereInput({
+											related: { id: release.albumId },
+										}),
+										type: AlbumType.Single,
+									},
+									// Get albums that have a version of a song in the current album
+									{
+										releases: {
+											some: {
+												tracks: {
+													some: {
+														song: {
+															type: {
+																in: [
+																	"Original",
+																	"Edit",
+																],
+															},
+															group: {
+																slug: {
+																	in: groups,
+																},
+															},
+														},
+													},
+												},
+											},
 										},
 									},
-									// Get songs from singles, based on their name
-									...albumSongsBaseNames.map((slug) => ({
-										slug: { startsWith: slug },
-										artistId: album.artistId,
-										type: AlbumType.Single,
-									})),
+									// // Get songs from singles, based on their name
+									// ...albumSongsBaseNames.map((slug) => ({
+									// 	group: { slug: { startsWith: slug } },
+									// 	artistId: album.artistId,
+									// 	type: AlbumType.Single,
+									// }) as const),
 								],
 							},
 						},
