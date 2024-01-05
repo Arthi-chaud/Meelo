@@ -289,14 +289,14 @@ export default class ParserService {
 	getSongType(songName: string): SongType {
 		const songExtensions = this.splitGroups(songName, { removeRoot: true });
 		const lowercaseSongName = songName.toLowerCase();
-		const extensionWords = songExtensions
+		const jointExtensionWords = songExtensions
 			.map((ext) => ext.toLowerCase())
 			.filter(
 				(ext) =>
 					!(ext.startsWith("feat ") || ext.startsWith("featuring ")),
 			)
-			.map((ext) => ext.split(" "))
-			.flat();
+			.join(" ");
+		const extensionWords = jointExtensionWords.split(" ").flat();
 
 		const containsWord = (word: string) => extensionWords.includes(word);
 		const titleContainsWord = (word: string) =>
@@ -366,10 +366,16 @@ export default class ParserService {
 		if (containsWord("demo")) {
 			return SongType.Demo;
 		}
+		if (
+			jointExtensionWords.includes("alternative mix") ||
+			jointExtensionWords.includes("alternative version")
+		) {
+			return SongType.Demo;
+		}
 		if (containsWord("clean")) {
 			return SongType.Clean;
 		}
-		if (extensionWords.join(" ").includes("rough mix")) {
+		if (jointExtensionWords.includes("rough mix")) {
 			return SongType.Original;
 		}
 		if (containsWord("mix") && containsWord("edit")) {
@@ -378,16 +384,24 @@ export default class ParserService {
 		if (containsWord("edit")) {
 			return SongType.Edit;
 		}
-		if (extensionWords.join(" ").includes("instrumental mix")) {
+		if (jointExtensionWords.includes("instrumental mix")) {
 			return SongType.Instrumental;
 		}
-		if (containsWord("mix")) {
+		if (
+			jointExtensionWords.includes("mix") ||
+			jointExtensionWords.includes("-mix") ||
+			jointExtensionWords.includes("-mix-")
+		) {
 			return SongType.Remix;
 		}
-		if (containsWord("instrumental") || containsWord("instrumentale")) {
+		if (
+			containsWord("instrumental") ||
+			containsWord("instrumentale") ||
+			containsWord("deepstrumental")
+		) {
 			return SongType.Instrumental;
 		}
-		if (containsWord("single")) {
+		if (containsWord("single") || containsWord("radio")) {
 			return SongType.Edit;
 		}
 		if (extensionWords.at(-1) == "beats") {
@@ -395,6 +409,26 @@ export default class ParserService {
 		}
 		if (containsWord("acapella")) {
 			return SongType.Acapella;
+		}
+		if (
+			containsWord('12"') ||
+			containsWord("12''") ||
+			containsWord('7"') ||
+			containsWord("7''")
+		) {
+			return SongType.Remix;
+		}
+		if (containsWord("re-edit") || containsWord("re-mix")) {
+			return SongType.Remix;
+		}
+		if (
+			jointExtensionWords.includes("album version") ||
+			jointExtensionWords.includes("main version") ||
+			jointExtensionWords.includes("original version")
+		) {
+			return SongType.Original;
+		} else if (containsWord("version")) {
+			return SongType.Remix;
 		}
 		return SongType.Original;
 	}
