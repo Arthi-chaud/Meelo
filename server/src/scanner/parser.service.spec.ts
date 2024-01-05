@@ -644,6 +644,13 @@ describe("Parser Service", () => {
 				parserService.getSongType("My Song (Instrumental Mix)"),
 			).toBe(SongType.Instrumental);
 		});
+		it("Instrumental Version (Deepstrumental)", () => {
+			expect(
+				parserService.getSongType(
+					"Deeper And Deeper (Shep's Deepstrumental)",
+				),
+			).toBe(SongType.Instrumental);
+		});
 
 		it("Remix (Extended 12'')", () => {
 			expect(parserService.getSongType("Fever (Extended 12'')")).toBe(
@@ -654,6 +661,41 @@ describe("Parser Service", () => {
 			expect(parserService.getSongType('Fever (Extended 12")')).toBe(
 				SongType.Remix,
 			);
+		});
+		it("Remix (Extended Album Version)", () => {
+			expect(
+				parserService.getSongType("Jump (Extended Album Vetsion)"),
+			).toBe(SongType.Remix);
+		});
+		it('Remix (12")', () => {
+			expect(
+				parserService.getSongType(
+					"Deeper And Deeper (Shep's Classic 12'')",
+				),
+			).toBe(SongType.Remix);
+			expect(
+				parserService.getSongType(
+					"Deeper And Deeper (Shep's Classic 12\")",
+				),
+			).toBe(SongType.Remix);
+		});
+		it("Remix (That Version)", () => {
+			expect(
+				parserService.getSongType("Freak Like Me (BRITS 2003 Version)"),
+			).toBe(SongType.Remix);
+			expect(
+				parserService.getSongType(
+					"Too Lost In You (Love Actually Version)",
+				),
+			).toBe(SongType.Remix);
+		});
+		it("Remix (-Mix)", () => {
+			expect(parserService.getSongType("Sorry (PSB Maxi-Mix)")).toBe(
+				SongType.Remix,
+			);
+			expect(
+				parserService.getSongType("Optimistique-Moi (Opti-Mix-tic)"),
+			).toBe(SongType.Remix);
 		});
 		it("Remix (7'' Mix)", () => {
 			expect(parserService.getSongType("Fever (7'' Mix)")).toBe(
@@ -738,6 +780,23 @@ describe("Parser Service", () => {
 				),
 			).toBe(SongType.Remix);
 		});
+		it("Remix (Re-Edit)", () => {
+			expect(
+				parserService.getSongType("Ooh La La (Phones Re-Edit)"),
+			).toBe(SongType.Remix);
+			expect(
+				parserService.getSongType(
+					"Ride A White Horse (Serge Santiágo Re-Edit)",
+				),
+			).toBe(SongType.Remix);
+		});
+		it("Remix (Re-Mix)", () => {
+			expect(
+				parserService.getSongType(
+					"Express Yourself (Shep's 'Spressin' Himself Re-Mix)",
+				),
+			).toBe(SongType.Remix);
+		});
 
 		it("Remix (Dub Mix)", () => {
 			expect(parserService.getSongType("Fever (Dub Mix)")).toBe(
@@ -773,6 +832,12 @@ describe("Parser Service", () => {
 
 		it("Demo (Demo)", () => {
 			expect(parserService.getSongType("Fever (Demo)")).toBe(
+				SongType.Demo,
+			);
+		});
+		it("Demo (Alternative Mix)", () => {
+			// In the UK, this is usually used to name a Demo version
+			expect(parserService.getSongType("Fever (Alternative Mix)")).toBe(
 				SongType.Demo,
 			);
 		});
@@ -862,6 +927,11 @@ describe("Parser Service", () => {
 		});
 		it("Edit (Single Version)", () => {
 			expect(parserService.getSongType("Fever (Single Version)")).toBe(
+				SongType.Edit,
+			);
+		});
+		it("Edit (Radio Version)", () => {
+			expect(parserService.getSongType("Fever (Radio Version)")).toBe(
 				SongType.Edit,
 			);
 		});
