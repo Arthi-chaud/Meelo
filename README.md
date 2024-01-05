@@ -20,7 +20,7 @@ Get started! Look over [here](https://arthi-chaud.github.io/Meelo/) for setup in
   - Album
     - Releases
   - Songs
-    - Primary and secondary artists (look over [here](https://arthi-chaud.github.io/Meelo/featuring-artists))
+    - Primary and secondary artists
     - Tracks
     - Versions
 - Access, stream, and download songs from your server
@@ -29,31 +29,16 @@ Get started! Look over [here](https://arthi-chaud.github.io/Meelo/) for setup in
 - Playlists
 - Metadata scan using:
   - Embedded tags (including bitrate)
-  - Path of file, using [customizable Regular Expressions](https://arthi-chaud.github.io/Meelo/setup/settings)
+  - Path of file, using customizable Regular Expressions
   - Either using one of the two, or the two combined
 - Album Typing
-  - Studio Recording
-  - Single
-  - Live Album
-  - Video Album
-  - Soundtrack Album
-  - etc...
-  - Look over [here](https://arthi-chaud.github.io/Meelo/album-types/) to know how it works
-- ... And allow filtering based on Album's types
+  - Studio Recording, Single, Live Album, Video Album, Soundtrack Album, ...
 - Song Typing
-  - Original Version
-  - Demo Version
-  - Instrumental Version
-  - Remix
-  - Acoustic Version
-  - Edit
-  - Clean Version
-  - More information [here](https://arthi-chaud.github.io/Meelo/song-types/)
+  - Original Version, Demo, Instrumental, Remix, Acoustic, Edit, Clean, ...
+- ... And allow filtering based on items' types
 - Embedded and inline artwork file handling
 - External Metadata Providers (Optional)
-  - Genius
-  - MusicBrainz
-- Match Releases with Discogs
+  - Genius, MusicBrainz, Wikipedia, Discogs, Metacritic, Allmusic
 - Automated Lyrics download
 - User management
 - Multi-language support
@@ -71,7 +56,7 @@ Keep track of the upcoming features with the [project's issues](https://github.c
 The idea behind Meelo is to have a pleasant way to browse and enjoy your collection and making it the *best* one possible.
 
 The *best* music collection is a collection that is fully useable in any music server (like one mentioned above). The only way to reach this goal is to make the music collection independent metadata-wise, i.e. having all the metadata embedded in the files themselves.
-To use Meelo, you'll need a 'clean' collection: either with embedded metadata or standard file/folder architecture. Using iTunes is a great way to start.
+To use Meelo, you'll need a 'clean' collection: either with embedded metadata or standard file/folder architecture. Using iTunes or Beets is a great way to start.
 
 ## Screenshots
 
