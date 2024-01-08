@@ -123,9 +123,8 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       - name: Downlad Coverage artifact
-        uses: dawidd6/action-download-artifact@v2
+        uses: actions/download-artifact@v3
         with:
-          workflow: front.yml
           name: coverage-report-front
           path: ./front/coverage
       - name: Run SonarCloud Scan

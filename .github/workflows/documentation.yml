@@ -21,6 +21,7 @@ jobs:
             docs:
               - 'docs/**'
               - '.github/workflows/documentation.yml'
+              - 'assets/**'
   Build:
     name: Deploy
     runs-on: ubuntu-latest
