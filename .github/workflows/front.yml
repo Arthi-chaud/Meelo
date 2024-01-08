@@ -1,4 +1,4 @@
-name: "Server"
+name: "Front"
 on:
   pull_request:
     branches: [ main ]
@@ -7,7 +7,7 @@ on:
 
 defaults:
   run:
-    working-directory: ./server
+    working-directory: ./front
 
 jobs:
   Changes:
@@ -15,31 +15,31 @@ jobs:
     permissions:
       pull-requests: read
     outputs:
-      server: ${{ steps.filter.outputs.server }}
+      front: ${{ steps.filter.outputs.front }}
     steps:
       - uses: dorny/paths-filter@v2
         id: filter
         with:
           filters: |
-            server:
-              - 'server/**'
-              - '.github/workflows/server.yml'
+            front:
+              - 'front/**'
+              - '.github/workflows/front.yml'
   Build:
     needs: changes
-    if: ${{ needs.changes.outputs.server == 'true' && github.event_name == 'pull_request' }}
+    if: ${{ needs.changes.outputs.front == 'true' && github.event_name == 'pull_request' }}
     container: node:18-alpine3.18
     runs-on: ubuntu-latest
     steps:
       - name: Check out the repo
         uses: actions/checkout@v3
       - name: Restore Dependencies
-        uses: ./.github/actions/cache-server
+        uses: ./.github/actions/cache-front
       - name: Install Dependencies
         run: yarn install
       - name: Build
         run: yarn build
   Lint:
-    if: ${{ needs.changes.outputs.server == 'true' && github.event_name == 'pull_request' }}
+    if: ${{ needs.changes.outputs.front == 'true' && github.event_name == 'pull_request' }}
     container: node:18-alpine3.18
     runs-on: ubuntu-latest
     needs: [ Build ]
@@ -47,13 +47,13 @@ jobs:
       - name: Check out the repo
         uses: actions/checkout@v3
       - name: Restore Dependencies
-        uses: ./.github/actions/cache-server
+        uses: ./.github/actions/cache-front
       - name: Install Dependencies
         run: yarn install
       - name: Run Linter
         run: yarn lint
   Format:
-    if: ${{ needs.changes.outputs.server == 'true' && github.event_name == 'pull_request' }}
+    if: ${{ needs.changes.outputs.front == 'true' && github.event_name == 'pull_request' }}
     container: node:18-alpine3.18
     runs-on: ubuntu-latest
     needs: [ Build ]
@@ -61,7 +61,7 @@ jobs:
       - name: Check out the repo
         uses: actions/checkout@v3
       - name: Restore Dependencies
-        uses: ./.github/actions/cache-server
+        uses: ./.github/actions/cache-front
       - name: Install Dependencies
         run: yarn install
       - name: Check Format
@@ -70,7 +70,7 @@ jobs:
     runs-on: ubuntu-latest
     container: node:19-alpine
     needs: [ Build ]
-    if: ${{ needs.changes.outputs.server == 'true' && github.event_name == 'pull_request' }}
+    if: ${{ needs.changes.outputs.front == 'true' && github.event_name == 'pull_request' }}
     env:
       NODE_OPTIONS: "--max_old_space_size=4096"
       REDIS_HOST: "redis"
@@ -104,41 +104,39 @@ jobs:
       - name: Check out the repo
         uses: actions/checkout@v3
       - name: Restore Dependencies
-        uses: ./.github/actions/cache-server
+        uses: ./.github/actions/cache-front
       - name: Install Dependencies
         run: yarn install
-      - name: Migrate DB Schema
-        run: yarn run prisma migrate dev
       - name: Run unit tests with coverage
-        run: yarn --cwd server test --coverage --ci --no-cache --maxConcurrency=1 --forceExit
+        run: yarn test --coverage
       - name: Upload Unit Tests artifact
         if: ${{ always() }}
         uses: actions/upload-artifact@v3
         with:
-          name: coverage-report-back
-          path: ./server/coverage
+          name: coverage-report-front
+          path: ./front/coverage
   Analysis:
     needs: [ Tests ]
     name: "Static Analysis"
     runs-on: ubuntu-latest
-    if: ${{ needs.changes.outputs.server == 'true' && github.event_name == 'pull_request' }}
+    if: ${{ needs.changes.outputs.front == 'true' && github.event_name == 'pull_request' }}
     steps:
       - uses: actions/checkout@v3
       - name: Downlad Coverage artifact
         uses: dawidd6/action-download-artifact@v2
         with:
-          workflow: server.yml
-          name: coverage-report-server
-          path: ./server/coverage
+          workflow: front.yml
+          name: coverage-report-front
+          path: ./front/coverage
       - name: Run SonarCloud Scan
         uses: SonarSource/sonarcloud-github-action@master
         with:
-          projectBaseDir: ./server
+          projectBaseDir: ./front
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN_BACK }}
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN_FRONT }}
   Dockerize:
-    if: ${{ needs.changes.outputs.server == 'true' && github.event_name == 'pull_request' }}
+    if: ${{ needs.changes.outputs.front == 'true' && github.event_name == 'pull_request' }}
     needs: [ Build ]
     runs-on: ubuntu-latest
     permissions:
@@ -161,11 +159,11 @@ jobs:
       - name: Build Docker
         uses: docker/build-push-action@v3
         with:
-          context: ./server
+          context: ./front
           push: false
   Publish:
     runs-on: ubuntu-latest
-    if: ${{ needs.changes.outputs.server == 'true' && github.event_name == 'push' && github.ref == 'refs/heads/main' }}
+    if: ${{ needs.changes.outputs.front == 'true' && github.event_name == 'push' && github.ref == 'refs/heads/main' }}
     permissions:
       packages: write
       contents: read
@@ -188,12 +186,12 @@ jobs:
         uses: docker/metadata-action@v4
         with:
           images: |
-            arthichaud/meelo-server
-            ghcr.io/${{ github.repository }}-server
+            arthichaud/meelo-front
+            ghcr.io/${{ github.repository }}-front
       - name: Build and push Docker images
         uses: docker/build-push-action@v3
         with:
-          context: ./server
+          context: ./front
           push: true
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
