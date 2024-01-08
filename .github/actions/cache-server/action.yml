@@ -1,0 +1,16 @@
+name: 'Cache (Server)'
+description: 'Cache for Server'
+runs:
+  using: "composite"
+  steps:
+    - name: Add build dependencies to container
+      shell: sh
+      run: apk add --update --no-progress tar
+    - name: Cache
+      uses: actions/cache@v3
+      with:
+          path: |
+            ./server/node_modules
+            ./server/dist
+          key: server
+          restore-keys: server

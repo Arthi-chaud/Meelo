@@ -1,0 +1,199 @@
+name: "Server"
+on:
+  pull_request:
+    branches: [ main ]
+  push:
+    branches: [ main ]
+
+defaults:
+  run:
+    working-directory: ./server
+
+jobs:
+  Changes:
+    runs-on: ubuntu-latest
+    permissions:
+      pull-requests: read
+    outputs:
+      server: ${{ steps.filter.outputs.server }}
+    steps:
+      - uses: dorny/paths-filter@v2
+        id: filter
+        with:
+          filters: |
+            server:
+              - 'server/**'
+              - '.github/workflows/server.yml'
+  Build:
+    needs: changes
+    if: ${{ needs.changes.outputs.server == 'true' && github.event_name == 'pull_request' }}
+    container: node:18-alpine3.18
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out the repo
+        uses: actions/checkout@v3
+      - name: Restore Dependencies
+        uses: ./.github/actions/cache-server
+      - name: Install Dependencies
+        run: yarn install
+      - name: Build
+        run: yarn build
+  Lint:
+    if: ${{ needs.changes.outputs.server == 'true' && github.event_name == 'pull_request' }}
+    container: node:18-alpine3.18
+    runs-on: ubuntu-latest
+    needs: [ Build ]
+    steps:
+      - name: Check out the repo
+        uses: actions/checkout@v3
+      - name: Restore Dependencies
+        uses: ./.github/actions/cache-server
+      - name: Install Dependencies
+        run: yarn install
+      - name: Build
+        run: yarn lint
+  Format:
+    if: ${{ needs.changes.outputs.server == 'true' && github.event_name == 'pull_request' }}
+    container: node:18-alpine3.18
+    runs-on: ubuntu-latest
+    needs: [ Build ]
+    steps:
+      - name: Check out the repo
+        uses: actions/checkout@v3
+      - name: Restore Dependencies
+        uses: ./.github/actions/cache-server
+      - name: Install Dependencies
+        run: yarn install
+      - name: Build
+        run: yarn prettier --check src
+  Tests:
+    runs-on: ubuntu-latest
+    container: node:19-alpine
+    needs: [ Build ]
+    if: ${{ needs.changes.outputs.server == 'true' && github.event_name == 'pull_request' }}
+    env:
+      NODE_OPTIONS: "--max_old_space_size=4096"
+      REDIS_HOST: "redis"
+      DATABASE_URL: "postgresql://test:test@postgres:5432/test?schema=public"
+      JWT_SIGNATURE: "12345"
+      GENIUS_ACCESS_TOKEN: "${{ secrets.GENIUS_ACCESS_TOKEN }}"
+    services:
+      postgres:
+        image: postgres:alpine3.16
+        env:
+          POSTGRES_USER: test
+          POSTGRES_PASSWORD: test
+          POSTGRES_DB: test
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+      redis:
+        image: redis:7.0-alpine
+        ports:
+          - 6379:6379
+        options: >-
+          --health-cmd "redis-cli ping"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+    steps:
+      - name: Check out the repo
+        uses: actions/checkout@v3
+      - name: Restore Dependencies
+        uses: ./.github/actions/cache-server
+      - name: Install Dependencies
+        run: yarn install
+      - name: Migrate DB Schema
+        run: yarn run prisma migrate dev
+      - name: Run unit tests with coverage
+        run: yarn --cwd server test --coverage --ci --no-cache --maxConcurrency=1 --forceExit
+      - name: Upload Unit Tests artifact
+        if: ${{ always() }}
+        uses: actions/upload-artifact@v3
+        with:
+          name: coverage-report-back
+          path: ./server/coverage
+  Analysis:
+    needs: [ Tests ]
+    name: "Static Analysis"
+    runs-on: ubuntu-latest
+    if: ${{ needs.changes.outputs.server == 'true' && github.event_name == 'pull_request' }}
+    steps:
+      - uses: actions/checkout@v3
+      - name: Downlad Coverage artifact
+        uses: dawidd6/action-download-artifact@v2
+        with:
+          workflow: unit-tests.yml
+          name: coverage-report-back
+          path: ./server/coverage
+      - name: Run SonarCloud Scan
+        uses: SonarSource/sonarcloud-github-action@master
+        with:
+          projectBaseDir: ./server
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN_BACK }}
+  Dockerize:
+    if: ${{ needs.changes.outputs.server == 'true' && github.event_name == 'pull_request' }}
+    needs: [ Build ]
+    runs-on: ubuntu-latest
+    permissions:
+      packages: read
+      contents: read
+    steps:
+      - name: Check out the repo
+        uses: actions/checkout@v3
+      - name: Log in to Docker Hub
+        uses: docker/login-action@v2
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+      - name: Log in to the GitHub Container registry
+        uses: docker/login-action@v2
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      - name: Build Docker
+        uses: docker/build-push-action@v3
+        with:
+          context: ./server
+          push: false
+  Publish:
+    runs-on: ubuntu-latest
+    if: ${{ needs.changes.outputs.server == 'true' && github.event_name == 'push' && github.ref == 'refs/heads/main' }}
+    permissions:
+      packages: write
+      contents: read
+    steps:
+      - name: Check out the repo
+        uses: actions/checkout@v3
+      - name: Log in to Docker Hub
+        uses: docker/login-action@v2
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+      - name: Log in to the GitHub Container registry
+        uses: docker/login-action@v2
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      - name: Extract metadata (tags, labels) for Docker
+        id: meta
+        uses: docker/metadata-action@v4
+        with:
+          images: |
+            arthichaud/meelo-server
+            ghcr.io/${{ github.repository }}-server
+      - name: Build and push Docker images
+        uses: docker/build-push-action@v3
+        with:
+          context: ./server
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}

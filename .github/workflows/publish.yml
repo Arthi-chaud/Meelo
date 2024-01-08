@@ -16,8 +16,6 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - section: 'server'
-            pwd: ./server
           - section: 'front'
             pwd: ./front
     name: publish_${{ matrix.section }}
