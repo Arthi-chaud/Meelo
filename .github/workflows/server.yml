@@ -115,7 +115,7 @@ jobs:
         if: ${{ always() }}
         uses: actions/upload-artifact@v3
         with:
-          name: coverage-report-back
+          name: coverage-report-server
           path: ./server/coverage
   Analysis:
     needs: [ Tests ]
