@@ -1,13 +1,28 @@
-name: Generate and Deploy User Documentation
+name: Documentation
 on:
   push:
-    branches:
-      - main
+    branches: [ main ]
+
 permissions:
   contents: write
+
 jobs:
-  build:
-    name: Deploy docs
+  Changes:
+    runs-on: ubuntu-latest
+    permissions:
+      pull-requests: read
+    outputs:
+      docs: ${{ steps.filter.outputs.docs }}
+    steps:
+      - uses: dorny/paths-filter@v2
+        id: filter
+        with:
+          filters: |
+            docs:
+              - 'docs/**'
+              - '.github/workflows/documentation.yml'
+  Build:
+    name: Deploy
     runs-on: ubuntu-latest
     steps:
       - name: Checkout main
