@@ -70,7 +70,7 @@ jobs:
     runs-on: ubuntu-latest
     container: node:19-alpine
     needs: [ Build ]
-    if: ${{ needs.changes.outputs.server == 'true' && github.event_name == 'pull_request' }}
+    if: ${{ needs.changes.outputs.server == 'true' && always() }}
     env:
       NODE_OPTIONS: "--max_old_space_size=4096"
       REDIS_HOST: "redis"
@@ -121,7 +121,7 @@ jobs:
     needs: [ Tests ]
     name: "Static Analysis"
     runs-on: ubuntu-latest
-    if: ${{ needs.changes.outputs.server == 'true' && github.event_name == 'pull_request' }}
+    if: ${{ needs.changes.outputs.server == 'true' }}
     steps:
       - uses: actions/checkout@v3
       - name: Downlad Coverage artifact
