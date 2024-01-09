@@ -125,7 +125,7 @@ jobs:
     needs: [ Tests ]
     name: "Static Analysis"
     runs-on: ubuntu-latest
-    if: ${{ needs.changes.outputs.server == 'true' }}
+    if: ${{ needs.changes.outputs.server == 'true' && always() }}
     steps:
       - uses: actions/checkout@v3
       - name: Downlad Coverage artifact
@@ -167,6 +167,7 @@ jobs:
           context: ./server
           push: false
   Publish:
+    needs: changes
     runs-on: ubuntu-latest
     if: ${{ github.event_name == 'release' || (needs.changes.outputs.server == 'true' && github.event_name == 'push' && github.ref == 'refs/heads/main') }}
     permissions:

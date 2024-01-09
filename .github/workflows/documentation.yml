@@ -25,6 +25,7 @@ jobs:
               - '.github/workflows/documentation.yml'
               - 'assets/**'
   Build:
+    needs: changes
     name: Deploy
     runs-on: ubuntu-latest
     if: ${{ needs.changes.outputs.docs == 'true' }}
