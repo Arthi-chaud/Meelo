@@ -110,7 +110,7 @@ jobs:
       - name: Migrate DB Schema
         run: yarn run prisma migrate dev
       - name: Run unit tests with coverage
-        run: yarn --cwd server test --coverage --ci --no-cache --maxConcurrency=1 --forceExit
+        run: yarn --cwd server test --coverage --ci --no-cache --maxConcurrency=1
       - name: Upload Unit Tests artifact
         if: ${{ always() }}
         uses: actions/upload-artifact@v3
