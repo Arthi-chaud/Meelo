@@ -556,7 +556,7 @@ describe("Track Service", () => {
 			expect(updatedTrack.songId).toBe(dummyRepository.songA2.id);
 
 			/// teardown
-			trackService.delete({ id: dummyRepository.trackB1_1.id });
+			await trackService.delete({ id: dummyRepository.trackB1_1.id });
 		});
 	});
 
