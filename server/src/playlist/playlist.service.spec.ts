@@ -33,8 +33,8 @@ describe("Playlist Service", () => {
 		await dummyRepository.onModuleInit();
 	});
 
-	afterAll(() => {
-		module.close();
+	afterAll(async () => {
+		await module.close();
 	});
 
 	it("should be defined", () => {
@@ -56,11 +56,13 @@ describe("Playlist Service", () => {
 		});
 		it("Should throw, as the playlist does not exist (ID)", async () => {
 			const test = () => playlistService.get({ id: -1 });
-			expect(test()).rejects.toThrow(PlaylistNotFoundFromIDException);
+			return expect(test()).rejects.toThrow(
+				PlaylistNotFoundFromIDException,
+			);
 		});
 		it("Should throw, as the playlist does not exist (Slug)", async () => {
 			const test = () => playlistService.get({ slug: new Slug("12345") });
-			expect(test()).rejects.toThrow(PlaylistNotFoundException);
+			return expect(test()).rejects.toThrow(PlaylistNotFoundException);
 		});
 	});
 
@@ -147,7 +149,9 @@ describe("Playlist Service", () => {
 					{ id: dummyRepository.playlist2.id },
 				);
 
-			expect(test()).rejects.toThrow(PlaylistAlreadyExistsException);
+			return expect(test()).rejects.toThrow(
+				PlaylistAlreadyExistsException,
+			);
 		});
 	});
 
@@ -202,7 +206,9 @@ describe("Playlist Service", () => {
 				playlistService.create({
 					name: dummyRepository.playlist1.name,
 				});
-			expect(test()).rejects.toThrow(PlaylistAlreadyExistsException);
+			return expect(test()).rejects.toThrow(
+				PlaylistAlreadyExistsException,
+			);
 		});
 	});
 

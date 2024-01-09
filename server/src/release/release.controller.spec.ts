@@ -70,9 +70,9 @@ describe("Release Controller", () => {
 		await module.get(ProviderService).onModuleInit();
 	});
 
-	afterAll(() => {
-		module.close();
-		app.close();
+	afterAll(async () => {
+		await app.close();
+		await module.close();
 	});
 
 	describe("Get Releases (GET /releases)", () => {

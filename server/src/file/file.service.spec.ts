@@ -58,8 +58,8 @@ describe("File Service", () => {
 		fileService = module.get<FileService>(FileService);
 	});
 
-	afterAll(() => {
-		module.close();
+	afterAll(async () => {
+		await module.close();
 	});
 
 	it("should be defined", () => {
@@ -91,7 +91,7 @@ describe("File Service", () => {
 					md5Checksum: "Sum",
 					registerDate: now,
 				});
-			expect(test()).rejects.toThrow(FileAlreadyExistsException);
+			return expect(test()).rejects.toThrow(FileAlreadyExistsException);
 		});
 	});
 
@@ -111,12 +111,12 @@ describe("File Service", () => {
 		it("should delete a file (from id)", async () => {
 			await fileService.delete({ id: newFile.id });
 			const test = async () => fileService.get({ id: newFile.id });
-			expect(test()).rejects.toThrow(FileNotFoundFromIDException);
+			return expect(test()).rejects.toThrow(FileNotFoundFromIDException);
 		});
 
 		it("should throw, as the file does not exist (from id)", () => {
 			const test = async () => fileService.delete({ id: -1 });
-			expect(test()).rejects.toThrow(FileNotFoundFromIDException);
+			return expect(test()).rejects.toThrow(FileNotFoundFromIDException);
 		});
 	});
 });

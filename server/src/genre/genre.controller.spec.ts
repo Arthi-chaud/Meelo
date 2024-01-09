@@ -48,9 +48,9 @@ describe("Genre Controller", () => {
 		await dummyRepository.onModuleInit();
 	});
 
-	afterAll(() => {
-		module.close();
-		app.close();
+	afterAll(async () => {
+		await app.close();
+		await module.close();
 	});
 
 	describe("Get Genre", () => {

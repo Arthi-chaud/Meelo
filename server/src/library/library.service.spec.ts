@@ -56,8 +56,8 @@ describe("Library Service", () => {
 		await dummyRepository.onModuleInit();
 	});
 
-	afterAll(() => {
-		module.close();
+	afterAll(async () => {
+		await module.close();
 	});
 
 	it("should be defined", () => {
@@ -84,7 +84,9 @@ describe("Library Service", () => {
 					path: "Already here",
 				});
 			};
-			expect(test()).rejects.toThrow(LibraryAlreadyExistsException);
+			return expect(test()).rejects.toThrow(
+				LibraryAlreadyExistsException,
+			);
 		});
 
 		it("should throw as library already exists (path already used)", async () => {
@@ -94,7 +96,9 @@ describe("Library Service", () => {
 					path: dummyRepository.library1.path,
 				});
 			};
-			expect(test()).rejects.toThrow(LibraryAlreadyExistsException);
+			return expect(test()).rejects.toThrow(
+				LibraryAlreadyExistsException,
+			);
 		});
 	});
 
@@ -130,7 +134,7 @@ describe("Library Service", () => {
 			const test = async () => {
 				await libraryService.get({ slug: new Slug("trolololol") });
 			};
-			expect(test()).rejects.toThrow(LibraryNotFoundException);
+			return expect(test()).rejects.toThrow(LibraryNotFoundException);
 		});
 	});
 
@@ -220,7 +224,7 @@ describe("Library Service", () => {
 
 	describe("Delete Library", () => {
 		it("should throw, as the library does not exists", async () => {
-			expect(async () =>
+			return expect(async () =>
 				libraryService.delete({ slug: new Slug("trolololol") }),
 			).rejects.toThrow(LibraryNotFoundException);
 		});
@@ -229,7 +233,7 @@ describe("Library Service", () => {
 				slug: new Slug(dummyRepository.library2.slug),
 			});
 
-			expect(async () =>
+			return expect(async () =>
 				libraryService.get({ id: dummyRepository.library2.id }),
 			).rejects.toThrow(LibraryNotFoundFromIDException);
 		});

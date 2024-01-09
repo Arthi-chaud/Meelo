@@ -50,8 +50,8 @@ describe("Artist Service", () => {
 		artistService = module.get<ArtistService>(ArtistService);
 	});
 
-	afterAll(() => {
-		module.close();
+	afterAll(async () => {
+		await module.close();
 	});
 
 	it("should be defined", () => {
@@ -77,7 +77,7 @@ describe("Artist Service", () => {
 					name: dummyRepository.artistA.name,
 				});
 			};
-			expect(test()).rejects.toThrow(ArtistAlreadyExistsException);
+			return expect(test()).rejects.toThrow(ArtistAlreadyExistsException);
 		});
 	});
 
@@ -106,7 +106,7 @@ describe("Artist Service", () => {
 					{ slug: new Slug("z") },
 					{ slug: true, id: true },
 				);
-			expect(test()).rejects.toThrow(ArtistNotFoundException);
+			return expect(test()).rejects.toThrow(ArtistNotFoundException);
 		});
 
 		it("should return an existing artist, with relations", async () => {
@@ -238,13 +238,13 @@ describe("Artist Service", () => {
 	describe("Delete Artist", () => {
 		it("should throw, as the artist does not exist (by id)", () => {
 			const test = async () => artistService.delete({ id: -1 });
-			expect(test()).rejects.toThrow(ArtistNotFoundByIDException);
+			return expect(test()).rejects.toThrow(ArtistNotFoundByIDException);
 		});
 
 		it("should throw, as the artist does not exist (by slug)", () => {
 			const test = async () =>
 				artistService.delete({ slug: new Slug("Trololol") });
-			expect(test()).rejects.toThrow(ArtistNotFoundException);
+			return expect(test()).rejects.toThrow(ArtistNotFoundException);
 		});
 
 		it("should delete the artist", async () => {
@@ -254,7 +254,7 @@ describe("Artist Service", () => {
 			};
 			await artistService.delete(artistQueryParameters);
 			const test = async () => artistService.get(artistQueryParameters);
-			expect(test()).rejects.toThrow(ArtistNotFoundException);
+			return expect(test()).rejects.toThrow(ArtistNotFoundException);
 		});
 		it("should not delete the artist, as it is not empty", async () => {
 			const artistQueryParameters = {
@@ -262,7 +262,7 @@ describe("Artist Service", () => {
 			};
 			const test = async () =>
 				artistService.delete(artistQueryParameters);
-			expect(test()).rejects.toThrow(ArtistNotEmptyException);
+			return expect(test()).rejects.toThrow(ArtistNotEmptyException);
 		});
 	});
 });

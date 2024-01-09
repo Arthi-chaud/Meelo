@@ -23,8 +23,8 @@ describe("Genius Provider", () => {
 		geniusProvider.onModuleInit();
 	});
 
-	afterAll(() => {
-		module.close();
+	afterAll(async () => {
+		await module.close();
 	});
 
 	describe("Get Artist Identifier", () => {
@@ -64,7 +64,7 @@ describe("Genius Provider", () => {
 			expect(metadata.description).toBeNull();
 		});
 		it("should fail, as the artist does not exist", () => {
-			expect(() =>
+			return expect(() =>
 				geniusProvider.getArtistMetadataByName("azertyuiop"),
 			).rejects.toThrow(ProviderActionFailedError);
 		});
@@ -112,12 +112,12 @@ describe("Genius Provider", () => {
 			expect(metadata.description).toBeNull();
 		});
 		it("should fail, as the song does not exist", () => {
-			expect(() =>
+			return expect(() =>
 				geniusProvider.getSongMetadataByName("azertyuiop", "azryu"),
 			).rejects.toThrow(ProviderActionFailedError);
 		});
 		it("should throw as the song does not exist (1)", async () => {
-			expect(() =>
+			return expect(() =>
 				geniusProvider.getSongMetadataByName("Drive", "Peplab"),
 			).rejects.toThrow(ProviderActionFailedError);
 		});
@@ -145,12 +145,12 @@ describe("Genius Provider", () => {
 			);
 		});
 		it("should fail, as the artist does not have an illustration", () => {
-			expect(() =>
+			return expect(() =>
 				geniusProvider.getArtistIllustrationUrl("Peplab"),
 			).rejects.toThrow(ProviderActionFailedError);
 		});
 		it("should fail, as the artist does not exist", () => {
-			expect(() =>
+			return expect(() =>
 				geniusProvider.getArtistIllustrationUrl("azertyugfdzaqsdbn"),
 			).rejects.toThrow(ProviderActionFailedError);
 		});
@@ -175,7 +175,7 @@ describe("Genius Provider", () => {
 			});
 		}
 		it("should fail, as the song does not exist", () => {
-			expect(() =>
+			return expect(() =>
 				geniusProvider.getSongLyrics("azertyuiopazertyui"),
 			).rejects.toThrow(ProviderActionFailedError);
 		});

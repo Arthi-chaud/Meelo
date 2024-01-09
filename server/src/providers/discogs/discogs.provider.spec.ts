@@ -23,8 +23,8 @@ describe("Discogs Provider", () => {
 		discogsProvider.onModuleInit();
 	});
 
-	afterAll(() => {
-		module.close();
+	afterAll(async () => {
+		await module.close();
 	});
 
 	describe("Get Resources URLs", () => {
@@ -56,7 +56,7 @@ describe("Discogs Provider", () => {
 			);
 		});
 		it("Should throw, as the artist does not exist", () => {
-			expect(
+			return expect(
 				discogsProvider.getArtistMetadataByIdentifier("-1"),
 			).rejects.toThrow(ProviderActionFailedError);
 		});
@@ -76,7 +76,7 @@ describe("Discogs Provider", () => {
 			);
 		});
 		it("Should throw, as the album does not exist", () => {
-			expect(
+			return expect(
 				discogsProvider.getAlbumMetadataByIdentifier("-1"),
 			).rejects.toThrow(ProviderActionFailedError);
 		});
@@ -93,7 +93,7 @@ describe("Discogs Provider", () => {
 			);
 		});
 		it("Should throw, as the Release does not exist", () => {
-			expect(
+			return expect(
 				discogsProvider.getReleaseMetadataByIdentifier("-1"),
 			).rejects.toThrow(ProviderActionFailedError);
 		});

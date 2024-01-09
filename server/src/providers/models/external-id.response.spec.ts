@@ -49,8 +49,8 @@ describe("External ID Response", () => {
 		await providerService.onModuleInit();
 	});
 
-	afterAll(() => {
-		module.close();
+	afterAll(async () => {
+		await module.close();
 	});
 
 	it("Should format Artist External ID", async () => {

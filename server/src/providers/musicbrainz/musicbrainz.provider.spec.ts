@@ -23,8 +23,8 @@ describe("MusicBrainz Provider", () => {
 		musicBrainzProvider.onModuleInit();
 	});
 
-	afterAll(() => {
-		module.close();
+	afterAll(async () => {
+		await module.close();
 	});
 	describe("Get Provider's Wikidata Keys", () => {
 		it("Should Get the correct Artist Metadata Key", () => {
@@ -73,7 +73,7 @@ describe("MusicBrainz Provider", () => {
 			expect(id.description).toBeNull();
 		});
 		it("should fail, as the artist does not exist", () => {
-			expect(() =>
+			return expect(() =>
 				musicBrainzProvider.getArtistMetadataByName("azertyuiop"),
 			).rejects.toThrow(ProviderActionFailedError);
 		});
@@ -97,7 +97,7 @@ describe("MusicBrainz Provider", () => {
 			expect(id.description).toBeNull();
 		});
 		it("should throw, as the artist does not exist", async () => {
-			expect(() =>
+			return expect(() =>
 				musicBrainzProvider.getSongMetadataByName(
 					"aerty",
 					"Britney Spears",
@@ -105,7 +105,7 @@ describe("MusicBrainz Provider", () => {
 			).rejects.toThrow(ProviderActionFailedError);
 		});
 		it("should throw, as the song does not exist", async () => {
-			expect(() =>
+			return expect(() =>
 				musicBrainzProvider.getSongMetadataByName(
 					"AZERTY",
 					"45a663b5-b1cb-4a91-bff6-2bef7bbfdd76",
@@ -140,7 +140,7 @@ describe("MusicBrainz Provider", () => {
 			]);
 		});
 		it("should throw, as the album does not exist", () => {
-			expect(() =>
+			return expect(() =>
 				musicBrainzProvider.getAlbumMetadataByName(
 					"AZERTY",
 					"45a663b5-b1cb-4a91-bff6-2bef7bbfdd76",
@@ -148,7 +148,7 @@ describe("MusicBrainz Provider", () => {
 			).rejects.toThrow(ProviderActionFailedError);
 		});
 		it("should throw, as the artist does not exist", () => {
-			expect(() =>
+			return expect(() =>
 				musicBrainzProvider.getAlbumMetadataByName(
 					"aerty",
 					"Britney Spears",
@@ -220,7 +220,7 @@ describe("MusicBrainz Provider", () => {
 			})
 		});
 		it("should throw, as the album does not exist", () => {
-			expect(() => musicBrainzProvider.getAlbumType("AZERTY"))
+			return expect(() => musicBrainzProvider.getAlbumType("AZERTY"))
 				.rejects.toThrow(ProviderActionFailedError);
 		});
 	});*/
