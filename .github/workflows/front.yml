@@ -4,6 +4,8 @@ on:
     branches: [ main ]
   push:
     branches: [ main ]
+  release:
+    types: [ published ]
 
 defaults:
   run:
@@ -162,7 +164,7 @@ jobs:
           push: false
   Publish:
     runs-on: ubuntu-latest
-    if: ${{ needs.changes.outputs.front == 'true' && github.event_name == 'push' && github.ref == 'refs/heads/main' }}
+    if: ${{ github.event_name == 'release' || (needs.changes.outputs.front == 'true' && github.event_name == 'push' && github.ref == 'refs/heads/main') }}
     permissions:
       packages: write
       contents: read
