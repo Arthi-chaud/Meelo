@@ -58,8 +58,8 @@ describe("Parser Service", () => {
 		parserService = moduleRef.get<ParserService>(ParserService);
 	});
 
-	afterAll(() => {
-		moduleRef.close();
+	afterAll(async () => {
+		await moduleRef.close();
 	});
 
 	it("should be defined", () => {

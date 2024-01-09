@@ -35,9 +35,9 @@ describe("Playlist Controller", () => {
 		await dummyRepository.onModuleInit();
 	});
 
-	afterAll(() => {
-		app.close();
-		module.close();
+	afterAll(async () => {
+		await app.close();
+		await module.close();
 	});
 
 	describe("Get Playlist", () => {

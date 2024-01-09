@@ -68,8 +68,8 @@ describe("Song Service", () => {
 		await dummyRepository.onModuleInit();
 	});
 
-	afterAll(() => {
-		module.close();
+	afterAll(async () => {
+		await module.close();
 	});
 
 	it("should be defined", () => {
@@ -113,7 +113,7 @@ describe("Song Service", () => {
 					},
 				});
 
-			expect(test()).rejects.toThrow(SongAlreadyExistsException);
+			return expect(test()).rejects.toThrow(SongAlreadyExistsException);
 		});
 
 		it("should throw, as the parent artist does not exist (by Id)", async () => {
@@ -127,7 +127,7 @@ describe("Song Service", () => {
 					},
 				});
 
-			expect(test()).rejects.toThrow(ArtistNotFoundByIDException);
+			return expect(test()).rejects.toThrow(ArtistNotFoundByIDException);
 		});
 
 		it("should throw, as the genre does not exist a new song", async () => {
@@ -144,7 +144,7 @@ describe("Song Service", () => {
 					},
 				});
 
-			expect(test()).rejects.toThrow(GenreNotFoundByIdException);
+			return expect(test()).rejects.toThrow(GenreNotFoundByIdException);
 		});
 
 		it("should throw, as the parent artist does not exist (by slug)", async () => {
@@ -158,7 +158,7 @@ describe("Song Service", () => {
 					},
 				});
 
-			expect(test()).rejects.toThrow(ArtistNotFoundException);
+			return expect(test()).rejects.toThrow(ArtistNotFoundException);
 		});
 	});
 
@@ -216,7 +216,7 @@ describe("Song Service", () => {
 					{ id: true },
 				);
 
-			expect(test()).rejects.toThrow(SongNotFoundByIdException);
+			return expect(test()).rejects.toThrow(SongNotFoundByIdException);
 		});
 
 		it("should throw, as the song does not exist (by Id)", async () => {
@@ -225,7 +225,7 @@ describe("Song Service", () => {
 					id: -1,
 				});
 
-			expect(test()).rejects.toThrow(SongNotFoundByIdException);
+			return expect(test()).rejects.toThrow(SongNotFoundByIdException);
 		});
 
 		it("should throw, as the song does not exist (by Slug)", async () => {
@@ -237,7 +237,7 @@ describe("Song Service", () => {
 					},
 				});
 
-			expect(test()).rejects.toThrow(SongNotFoundException);
+			return expect(test()).rejects.toThrow(SongNotFoundException);
 		});
 
 		it("should throw, as the parent artist does not exist", async () => {
@@ -246,7 +246,7 @@ describe("Song Service", () => {
 					bySlug: { slug: new Slug("My Slug"), artist: { id: -1 } },
 				});
 
-			expect(test()).rejects.toThrow(ArtistNotFoundByIDException);
+			return expect(test()).rejects.toThrow(ArtistNotFoundByIDException);
 		});
 	});
 
@@ -420,7 +420,7 @@ describe("Song Service", () => {
 		it("should throw as the song does not exist (by Id)", async () => {
 			const test = async () =>
 				await songService.update({ name: "Tralala" }, { id: -1 });
-			expect(test()).rejects.toThrow(SongNotFoundByIdException);
+			return expect(test()).rejects.toThrow(SongNotFoundByIdException);
 		});
 
 		it("should throw as the song does not exist (unknown artist)", async () => {
@@ -434,7 +434,7 @@ describe("Song Service", () => {
 						},
 					},
 				);
-			expect(test()).rejects.toThrow(ArtistNotFoundByIDException);
+			return expect(test()).rejects.toThrow(ArtistNotFoundByIDException);
 		});
 
 		it("should throw as the song does not exist", async () => {
@@ -448,7 +448,7 @@ describe("Song Service", () => {
 						},
 					},
 				);
-			expect(test()).rejects.toThrow(SongNotFoundException);
+			return expect(test()).rejects.toThrow(SongNotFoundException);
 		});
 
 		it("should throw as the genre does not exist", async () => {
@@ -462,7 +462,7 @@ describe("Song Service", () => {
 						},
 					},
 				);
-			expect(test()).rejects.toThrow(GenreNotFoundByIdException);
+			return expect(test()).rejects.toThrow(GenreNotFoundByIdException);
 		});
 	});
 
@@ -491,7 +491,7 @@ describe("Song Service", () => {
 		it("should throw, as the song does not exist", () => {
 			const test = async () =>
 				await songService.incrementPlayCount({ id: -1 });
-			expect(test()).rejects.toThrow(SongNotFoundByIdException);
+			return expect(test()).rejects.toThrow(SongNotFoundByIdException);
 		});
 		it("should increment the song's play count (by id)", async () => {
 			const queryParemeters = { id: dummyRepository.songA2.id };
@@ -564,7 +564,7 @@ describe("Song Service", () => {
 						),
 					},
 				});
-			expect(test()).rejects.toThrow(ArtistNotFoundException);
+			return expect(test()).rejects.toThrow(ArtistNotFoundException);
 		});
 	});
 
@@ -593,13 +593,13 @@ describe("Song Service", () => {
 	describe("Delete Song", () => {
 		it("should throw, as the song does not exist", async () => {
 			const test = async () => await songService.delete({ id: -1 });
-			expect(test()).rejects.toThrow(SongNotFoundByIdException);
+			return expect(test()).rejects.toThrow(SongNotFoundByIdException);
 		});
 
 		it("should throw, as the song is not empty", async () => {
 			const test = async () =>
 				await songService.delete({ id: dummyRepository.songA1.id });
-			expect(test()).rejects.toThrow(SongNotEmptyException);
+			return expect(test()).rejects.toThrow(SongNotEmptyException);
 		});
 		it("should delete the song", async () => {
 			const tmpSong = await songService.create({
@@ -616,10 +616,12 @@ describe("Song Service", () => {
 			});
 			await songService.delete({ id: tmpSong.id });
 			const test = async () => await songService.get({ id: tmpSong.id });
-			expect(test()).rejects.toThrow(SongNotFoundByIdException);
+			await expect(test()).rejects.toThrow(SongNotFoundByIdException);
 			const testLyrics = async () =>
 				await lyricsService.get({ id: tmpLyrics.id });
-			expect(testLyrics()).rejects.toThrow(LyricsNotFoundByIDException);
+			return expect(testLyrics()).rejects.toThrow(
+				LyricsNotFoundByIDException,
+			);
 		});
 	});
 

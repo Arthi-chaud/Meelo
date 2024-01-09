@@ -31,12 +31,12 @@ describe("User Controller", () => {
 		await dummyRepository.onModuleInit();
 	});
 
-	afterAll(() => {
-		module.close();
+	afterAll(async () => {
+		await module.close();
 	});
 
-	afterAll(() => {
-		app.close();
+	afterAll(async () => {
+		await app.close();
 	});
 
 	describe("Create a user account", () => {

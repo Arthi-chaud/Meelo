@@ -14,6 +14,7 @@ import {
 	Track,
 	TrackType,
 } from "@prisma/client";
+import Logger from "src/logger/logger";
 import { Playlist } from "src/prisma/models";
 import PrismaService from "src/prisma/prisma.service";
 import Slug from "src/slug/slug";
@@ -66,6 +67,27 @@ export default class TestPrismaService extends PrismaService {
 		ripSource: null,
 		duration: 0,
 	};
+
+	private readonly logger = new Logger(PrismaService.name);
+
+	protected async flushDatabase() {
+		this.logger.warn("Flushing database");
+		const tablenames = await this.$queryRaw<
+			Array<{ tablename: string }>
+		>`SELECT tablename FROM pg_tables WHERE schemaname='public'`;
+
+		for (const { tablename } of tablenames) {
+			if (tablename !== "_prisma_migrations") {
+				try {
+					await this.$executeRawUnsafe(
+						`TRUNCATE TABLE "public"."${tablename}" CASCADE;`,
+					);
+				} catch (error) {
+					this.logger.error(`Flushing table '${tablename}' failed`);
+				}
+			}
+		}
+	}
 
 	/**
 	 * Creates dummy data and pushes it to the database using the repository service.

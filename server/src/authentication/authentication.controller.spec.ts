@@ -91,9 +91,9 @@ describe("Authentication Controller & Role Management", () => {
 		});
 	});
 
-	afterAll(() => {
-		module.close();
-		app.close();
+	afterAll(async () => {
+		await app.close();
+		await module.close();
 	});
 
 	describe("Login", () => {

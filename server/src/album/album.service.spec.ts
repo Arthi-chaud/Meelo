@@ -53,8 +53,8 @@ describe("Album Service", () => {
 		albumService = module.get<AlbumService>(AlbumService);
 	});
 
-	afterAll(() => {
-		module.close();
+	afterAll(async () => {
+		await module.close();
 	});
 
 	it("should be defined", () => {
@@ -91,7 +91,9 @@ describe("Album Service", () => {
 						name: dummyRepository.compilationAlbumA.name,
 					});
 				};
-				expect(test()).rejects.toThrow(AlbumAlreadyExistsException);
+				return expect(test()).rejects.toThrow(
+					AlbumAlreadyExistsException,
+				);
 			});
 
 			it("should throw, as an album with the same name exists (w/ artist)", () => {
@@ -101,7 +103,7 @@ describe("Album Service", () => {
 						artist: { id: dummyRepository.artistA.id },
 					});
 				};
-				expect(test()).rejects.toThrow(
+				return expect(test()).rejects.toThrow(
 					AlbumAlreadyExistsWithArtistIDException,
 				);
 			});
@@ -132,7 +134,7 @@ describe("Album Service", () => {
 						artist: { id: dummyRepository.artistA.id },
 					});
 				};
-				expect(test()).rejects.toThrow(
+				return expect(test()).rejects.toThrow(
 					AlbumAlreadyExistsWithArtistIDException,
 				);
 			});
@@ -144,7 +146,7 @@ describe("Album Service", () => {
 						artist: { slug: new Slug("I do not exists") },
 					});
 				};
-				expect(test()).rejects.toThrow(ArtistNotFoundException);
+				return expect(test()).rejects.toThrow(ArtistNotFoundException);
 			});
 		});
 	});
@@ -254,7 +256,7 @@ describe("Album Service", () => {
 		it("should throw, as the album does not exist ", async () => {
 			const test = () =>
 				albumService.select({ id: -1 }, { slug: true, id: true });
-			expect(test()).rejects.toThrow(AlbumNotFoundFromIDException);
+			return expect(test()).rejects.toThrow(AlbumNotFoundFromIDException);
 		});
 	});
 
@@ -333,7 +335,7 @@ describe("Album Service", () => {
 					{ id: -1 },
 					{ id: dummyRepository.artistA.id },
 				);
-			expect(test()).rejects.toThrow(AlbumNotFoundFromIDException);
+			return expect(test()).rejects.toThrow(AlbumNotFoundFromIDException);
 		});
 
 		it("should throw as the new artist does not exist", async () => {
@@ -342,14 +344,14 @@ describe("Album Service", () => {
 					{ id: dummyRepository.albumA1.id },
 					{ id: -1 },
 				);
-			expect(test()).rejects.toThrow(ArtistNotFoundByIDException);
+			return expect(test()).rejects.toThrow(ArtistNotFoundByIDException);
 		});
 	});
 
 	describe("Delete Album", () => {
 		it("should throw, as the album does not exist (by id)", () => {
 			const test = async () => albumService.delete({ id: -1 });
-			expect(test()).rejects.toThrow(AlbumNotFoundFromIDException);
+			return expect(test()).rejects.toThrow(AlbumNotFoundFromIDException);
 		});
 
 		it("should not delete the album, as it has releases", async () => {
@@ -359,14 +361,14 @@ describe("Album Service", () => {
 
 			const test = async () =>
 				await albumService.delete(albumQueryParameters);
-			expect(test()).rejects.toThrow(AlbumNotEmptyException);
+			return expect(test()).rejects.toThrow(AlbumNotEmptyException);
 		});
 
 		it("should delete the album", async () => {
 			const tmpAlbum = await albumService.create({ name: "1234" });
 			await albumService.delete({ id: tmpAlbum.id });
 			const test = async () => albumService.get({ id: tmpAlbum.id });
-			expect(test()).rejects.toThrow(AlbumNotFoundFromIDException);
+			return expect(test()).rejects.toThrow(AlbumNotFoundFromIDException);
 		});
 	});
 });

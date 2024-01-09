@@ -57,9 +57,9 @@ describe("Illustration Controller", () => {
 	});
 	const baseMetadataFolder = "test/assets/metadata";
 
-	afterAll(() => {
-		module.close();
-		app.close();
+	afterAll(async () => {
+		await app.close();
+		await module.close();
 	});
 
 	const expectedFileName = (headers: any, expected: string) => {

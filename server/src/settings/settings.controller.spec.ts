@@ -30,9 +30,9 @@ describe("Settings Controller", () => {
 		controller.reload();
 	});
 
-	afterAll(() => {
-		module.close();
-		app.close();
+	afterAll(async () => {
+		await app.close();
+		await module.close();
 	});
 
 	it("should be defined", () => {

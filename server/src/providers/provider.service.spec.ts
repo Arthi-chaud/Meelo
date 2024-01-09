@@ -53,8 +53,8 @@ describe("Provider Service", () => {
 		await providerService.onModuleInit();
 	});
 
-	afterAll(() => {
-		module.close();
+	afterAll(async () => {
+		await module.close();
 	});
 
 	describe("Push Providers to DB", () => {

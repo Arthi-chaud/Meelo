@@ -32,8 +32,8 @@ describe("User Service", () => {
 		userService = module.get<UserService>(UserService);
 	});
 
-	afterAll(() => {
-		module.close();
+	afterAll(async () => {
+		await module.close();
 	});
 
 	describe("Create user", () => {
@@ -77,7 +77,7 @@ describe("User Service", () => {
 					password: "user12345",
 					admin: false,
 				});
-			expect(test()).rejects.toThrow(UserAlreadyExistsException);
+			return expect(test()).rejects.toThrow(UserAlreadyExistsException);
 		});
 	});
 
@@ -98,19 +98,21 @@ describe("User Service", () => {
 		});
 		it("Should throw, as id is not used", () => {
 			const test = () => userService.get({ id: -1 });
-			expect(test()).rejects.toThrow(UserNotFoundFromIDException);
+			return expect(test()).rejects.toThrow(UserNotFoundFromIDException);
 		});
 
 		it("Should throw, as name is not used", () => {
 			const test = () => userService.get({ name: "user1" });
-			expect(test()).rejects.toThrow(UserNotFoundException);
+			return expect(test()).rejects.toThrow(UserNotFoundException);
 		});
 		it("Should throw, as password is incorrect", () => {
 			const test = () =>
 				userService.get({
 					byCredentials: { name: user.name, password: "12345" },
 				});
-			expect(test()).rejects.toThrow(InvalidUserCredentialsException);
+			return expect(test()).rejects.toThrow(
+				InvalidUserCredentialsException,
+			);
 		});
 	});
 

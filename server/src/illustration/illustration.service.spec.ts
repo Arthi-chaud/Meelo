@@ -55,8 +55,8 @@ describe("Illustration Service", () => {
 		await dummyRepository.onModuleInit();
 	});
 
-	afterAll(() => {
-		module.close();
+	afterAll(async () => {
+		await module.close();
 		fs.rm(
 			"test/assets/metadata",
 			{ recursive: true, force: true },

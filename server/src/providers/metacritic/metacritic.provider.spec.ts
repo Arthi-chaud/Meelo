@@ -23,8 +23,8 @@ describe("Metacritic Provider", () => {
 		metacriticProvider.onModuleInit();
 	});
 
-	afterAll(() => {
-		module.close();
+	afterAll(async () => {
+		await module.close();
 	});
 
 	describe("Get Resources URLs", () => {
@@ -51,7 +51,7 @@ describe("Metacritic Provider", () => {
 			);
 		});
 		it("Should throw, as the page does not exist", async () => {
-			expect(
+			return expect(
 				metacriticProvider.getAlbumMetadataByIdentifier("zzz"),
 			).rejects.toThrow(ProviderActionFailedError);
 		});

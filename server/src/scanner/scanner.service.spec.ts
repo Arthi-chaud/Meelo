@@ -39,8 +39,8 @@ describe("Metadata Service", () => {
 		scannerService = moduleRef.get<ScannerService>(ScannerService);
 	});
 
-	afterAll(() => {
-		moduleRef.close();
+	afterAll(async () => {
+		await moduleRef.close();
 	});
 
 	it("should be defined", () => {

@@ -23,8 +23,8 @@ describe("Wikipedia Provider", () => {
 		wikipediaProvider.onModuleInit();
 	});
 
-	afterAll(() => {
-		module.close();
+	afterAll(async () => {
+		await module.close();
 	});
 
 	describe("Get Artist Metadata", () => {
@@ -48,7 +48,7 @@ describe("Wikipedia Provider", () => {
 			).toBeTruthy();
 		});
 		it("should throw, as the Artist does not exist", () => {
-			expect(() =>
+			return expect(() =>
 				wikipediaProvider.getResourceMetadataByWikidataId("AZERTY"),
 			).rejects.toThrow(ProviderActionFailedError);
 		});
@@ -80,7 +80,7 @@ describe("Wikipedia Provider", () => {
 			).toBeTruthy();
 		});
 		it("should throw, as the album does not exist", () => {
-			expect(() =>
+			return expect(() =>
 				wikipediaProvider.getResourceMetadataByWikidataId("AZERTY"),
 			).rejects.toThrow(ProviderActionFailedError);
 		});

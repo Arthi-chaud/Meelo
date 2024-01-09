@@ -121,8 +121,8 @@ describe("Track Service", () => {
 		});
 	});
 
-	afterAll(() => {
-		module.close();
+	afterAll(async () => {
+		await module.close();
 	});
 
 	it("should be defined", () => {
@@ -196,7 +196,7 @@ describe("Track Service", () => {
 					release: { id: dummyRepository.releaseA1_1.id },
 					sourceFile: { id: -1 },
 				});
-			expect(test()).rejects.toThrow(FileNotFoundFromIDException);
+			return expect(test()).rejects.toThrow(FileNotFoundFromIDException);
 		});
 
 		it("should throw, as the parent song does not exist", async () => {
@@ -208,7 +208,7 @@ describe("Track Service", () => {
 					release: { id: dummyRepository.releaseA1_1.id },
 					sourceFile: { id: file.id },
 				});
-			expect(test()).rejects.toThrow(SongNotFoundByIdException);
+			return expect(test()).rejects.toThrow(SongNotFoundByIdException);
 		});
 
 		it("should throw, as the parent release does not exist", async () => {
@@ -220,7 +220,9 @@ describe("Track Service", () => {
 					release: { id: -1 },
 					sourceFile: { id: file.id },
 				});
-			expect(test()).rejects.toThrow(ReleaseNotFoundFromIDException);
+			return expect(test()).rejects.toThrow(
+				ReleaseNotFoundFromIDException,
+			);
 		});
 
 		it("should throw, as the track already exists", async () => {
@@ -233,7 +235,7 @@ describe("Track Service", () => {
 					sourceFile: { id: file.id },
 				});
 
-			expect(test()).rejects.toThrow(TrackAlreadyExistsException);
+			return expect(test()).rejects.toThrow(TrackAlreadyExistsException);
 		});
 	});
 
@@ -269,13 +271,13 @@ describe("Track Service", () => {
 			const test = async () =>
 				await trackService.select({ id: -1 }, { id: true });
 
-			expect(test()).rejects.toThrow(TrackNotFoundByIdException);
+			return expect(test()).rejects.toThrow(TrackNotFoundByIdException);
 		});
 
 		it("should throw, as the track does not exist (by id)", async () => {
 			const test = async () => await trackService.get({ id: -1 });
 
-			expect(test()).rejects.toThrow(TrackNotFoundByIdException);
+			return expect(test()).rejects.toThrow(TrackNotFoundByIdException);
 		});
 
 		it("should throw, as the file does not exist", async () => {
@@ -284,7 +286,7 @@ describe("Track Service", () => {
 					sourceFile: { id: -1 },
 				});
 
-			expect(test()).rejects.toThrow(FileNotFoundFromIDException);
+			return expect(test()).rejects.toThrow(FileNotFoundFromIDException);
 		});
 	});
 
@@ -406,7 +408,7 @@ describe("Track Service", () => {
 		it("should throw, as the parent song does not exist", async () => {
 			const test = async () =>
 				await trackService.getSongTracks({ id: -1 });
-			expect(test()).rejects.toThrow(SongNotFoundByIdException);
+			return expect(test()).rejects.toThrow(SongNotFoundByIdException);
 		});
 	});
 
@@ -445,7 +447,7 @@ describe("Track Service", () => {
 		it("should throw, as the parent song does not exist", async () => {
 			const test = async () =>
 				await trackService.getMasterTrack({ id: -1 });
-			expect(test()).rejects.toThrow(SongNotFoundByIdException);
+			return expect(test()).rejects.toThrow(SongNotFoundByIdException);
 		});
 		it("should throw, as the parent song does not have tracks", async () => {
 			const tmpSong = await songService.create({
@@ -458,7 +460,7 @@ describe("Track Service", () => {
 			});
 			const test = async () =>
 				await trackService.getMasterTrack({ id: tmpSong.id });
-			expect(test()).rejects.toThrow(MasterTrackNotFoundException);
+			return expect(test()).rejects.toThrow(MasterTrackNotFoundException);
 		});
 	});
 
@@ -527,7 +529,7 @@ describe("Track Service", () => {
 
 		it("should throw, as the track does not exist", async () => {
 			const test = async () => await trackService.update({}, { id: -1 });
-			expect(test()).rejects.toThrow(TrackNotFoundByIdException);
+			return expect(test()).rejects.toThrow(TrackNotFoundByIdException);
 		});
 	});
 
@@ -567,7 +569,7 @@ describe("Track Service", () => {
 
 			const test = async () =>
 				await trackService.get({ id: dummyRepository.trackA1_1.id });
-			expect(test()).rejects.toThrow(TrackNotFoundByIdException);
+			return expect(test()).rejects.toThrow(TrackNotFoundByIdException);
 		});
 
 		it("should have unset of the song", async () => {
@@ -579,7 +581,7 @@ describe("Track Service", () => {
 
 		it("should throw, as the track does not exists", async () => {
 			const test = async () => await trackService.get({ id: -1 });
-			expect(test()).rejects.toThrow(TrackNotFoundByIdException);
+			return expect(test()).rejects.toThrow(TrackNotFoundByIdException);
 		});
 	});
 });

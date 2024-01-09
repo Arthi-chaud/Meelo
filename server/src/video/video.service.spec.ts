@@ -48,8 +48,8 @@ describe("Video Service", () => {
 		await dummyRepository.onModuleInit();
 	});
 
-	afterAll(() => {
-		module.close();
+	afterAll(async () => {
+		await module.close();
 	});
 
 	it("should be defined", () => {

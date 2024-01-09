@@ -65,8 +65,8 @@ describe("Release Service", () => {
 		await module.get(ProviderService).onModuleInit();
 	});
 
-	afterAll(() => {
-		module.close();
+	afterAll(async () => {
+		await module.close();
 	});
 
 	it("should be defined", () => {
@@ -237,7 +237,9 @@ describe("Release Service", () => {
 		it("should throw, as the release does not exist", async () => {
 			const test = () =>
 				releaseService.select({ id: -1 }, { slug: true, id: true });
-			expect(test()).rejects.toThrow(ReleaseNotFoundFromIDException);
+			return expect(test()).rejects.toThrow(
+				ReleaseNotFoundFromIDException,
+			);
 		});
 
 		it("should throw, as the release does not exists", async () => {
@@ -254,7 +256,7 @@ describe("Release Service", () => {
 					},
 				});
 			};
-			expect(test()).rejects.toThrow(ReleaseNotFoundException);
+			return expect(test()).rejects.toThrow(ReleaseNotFoundException);
 		});
 
 		it("should throw, as the release's album does not exists", async () => {
@@ -270,7 +272,7 @@ describe("Release Service", () => {
 					},
 				});
 			};
-			expect(test()).rejects.toThrow(AlbumNotFoundException);
+			return expect(test()).rejects.toThrow(AlbumNotFoundException);
 		});
 
 		it("should get the release from its id", async () => {
@@ -284,7 +286,9 @@ describe("Release Service", () => {
 			const test = async () => {
 				return releaseService.get({ id: -1 });
 			};
-			expect(test()).rejects.toThrow(ReleaseNotFoundFromIDException);
+			return expect(test()).rejects.toThrow(
+				ReleaseNotFoundFromIDException,
+			);
 		});
 	});
 
@@ -315,7 +319,9 @@ describe("Release Service", () => {
 			const test = () =>
 				releaseService.getMasterRelease({ id: tmpAlbum.id });
 
-			expect(test()).rejects.toThrow(MasterReleaseNotFoundException);
+			return expect(test()).rejects.toThrow(
+				MasterReleaseNotFoundException,
+			);
 		});
 	});
 
@@ -409,7 +415,7 @@ describe("Release Service", () => {
 		it("should throw, as the release does not exist", async () => {
 			const testRelease = async () =>
 				await releaseService.get({ id: -1 });
-			expect(testRelease()).rejects.toThrow(
+			return expect(testRelease()).rejects.toThrow(
 				ReleaseNotFoundFromIDException,
 			);
 		});
@@ -418,7 +424,9 @@ describe("Release Service", () => {
 				await releaseService.delete({
 					id: dummyRepository.releaseB1_1.id,
 				});
-			expect(testRelease()).rejects.toThrow(ReleaseNotEmptyException);
+			return expect(testRelease()).rejects.toThrow(
+				ReleaseNotEmptyException,
+			);
 		});
 		it("should delete the master release", async () => {
 			await trackService.delete({ id: dummyRepository.trackB1_1.id });
@@ -430,7 +438,7 @@ describe("Release Service", () => {
 				await releaseService.get({
 					id: dummyRepository.releaseB1_1.id,
 				});
-			expect(testRelease()).rejects.toThrow(
+			return expect(testRelease()).rejects.toThrow(
 				ReleaseNotFoundFromIDException,
 			);
 		});

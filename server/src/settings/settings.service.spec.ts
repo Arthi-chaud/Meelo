@@ -46,8 +46,8 @@ describe("Settings Service", () => {
 		settingsService = moduleRef.get<SettingsService>(SettingsService);
 	});
 
-	afterAll(() => {
-		moduleRef.close();
+	afterAll(async () => {
+		await moduleRef.close();
 	});
 
 	describe("loadFromFile", () => {

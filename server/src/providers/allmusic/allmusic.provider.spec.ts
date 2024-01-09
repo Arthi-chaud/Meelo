@@ -23,8 +23,8 @@ describe("All Music Provider", () => {
 		allMusicProvider.onModuleInit();
 	});
 
-	afterAll(() => {
-		module.close();
+	afterAll(async () => {
+		await module.close();
 	});
 
 	describe("Get Resource URLs", () => {
@@ -49,7 +49,7 @@ describe("All Music Provider", () => {
 			expect(metadata.description).toBeNull();
 		});
 		it("Should throw, as the page does not exist", async () => {
-			expect(
+			return expect(
 				allMusicProvider.getAlbumMetadataByIdentifier("zzz"),
 			).rejects.toThrow(ProviderActionFailedError);
 		});

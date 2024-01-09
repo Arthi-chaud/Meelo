@@ -52,8 +52,8 @@ describe("Illustration Repository", () => {
 		await dummyRepository.onModuleInit();
 	});
 
-	afterAll(() => {
-		module.close();
+	afterAll(async () => {
+		await module.close();
 		fs.rm(
 			"test/assets/metadata",
 			{ recursive: true, force: true },
@@ -69,7 +69,7 @@ describe("Illustration Repository", () => {
 					dummyRepository.trackA1_1,
 					"trololol",
 				);
-			expect(test()).rejects.toThrow(FileDoesNotExistException);
+			return expect(test()).rejects.toThrow(FileDoesNotExistException);
 		});
 
 		it("should not extract illustration to matching folder, as the source file is not valid", async () => {
@@ -78,7 +78,7 @@ describe("Illustration Repository", () => {
 					dummyRepository.trackA1_1,
 					"test/assets/settings.json",
 				);
-			expect(test()).rejects.toThrow(FileParsingException);
+			return expect(test()).rejects.toThrow(FileParsingException);
 		});
 
 		it("should not extract illustration to matching folder, as illustration already exists", async () => {
