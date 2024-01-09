@@ -14,6 +14,8 @@ jobs:
     outputs:
       docs: ${{ steps.filter.outputs.docs }}
     steps:
+      - name: Check out the repo
+        uses: actions/checkout@v3
       - uses: dorny/paths-filter@v2
         id: filter
         with:
@@ -25,6 +27,7 @@ jobs:
   Build:
     name: Deploy
     runs-on: ubuntu-latest
+    if: ${{ needs.changes.outputs.docs == 'true' }}
     steps:
       - name: Checkout main
         uses: actions/checkout@v3

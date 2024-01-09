@@ -19,6 +19,8 @@ jobs:
     outputs:
       front: ${{ steps.filter.outputs.front }}
     steps:
+      - name: Check out the repo
+        uses: actions/checkout@v3
       - uses: dorny/paths-filter@v2
         id: filter
         with:
