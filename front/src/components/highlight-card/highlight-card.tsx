@@ -75,7 +75,7 @@ const HighlightCard = (props: HighlightCardProps) => {
 					<Illustration
 						illustration={props.illustration ?? null}
 						imgProps={{ borderRadius: 0 }}
-						quality="med"
+						quality="medium"
 					/>
 				</Grid>
 				<Grid

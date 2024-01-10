@@ -56,7 +56,7 @@ const AlbumTile = (props: {
 			illustration={
 				<Illustration
 					illustration={props.album.illustration}
-					quality="med"
+					quality="medium"
 				/>
 			}
 		/>

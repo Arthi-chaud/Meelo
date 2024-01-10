@@ -42,7 +42,7 @@ const ArtistRelationPageHeader = (props: ArtistRelationPageHeaderProps) => {
 	}
 	return (
 		<RelationPageHeader
-			illustration={<ArtistAvatar artist={artistData} quality="med" />}
+			illustration={<ArtistAvatar artist={artistData} quality="medium" />}
 			title={artistData.name}
 			trailing={<ArtistContextualMenu artist={artistData} />}
 		/>

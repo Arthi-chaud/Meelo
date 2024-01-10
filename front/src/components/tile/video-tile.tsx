@@ -59,7 +59,7 @@ const VideoTile = ({ video, formatSubtitle }: VideoTileProps) => {
 			}
 			illustration={
 				<Illustration
-					quality="med"
+					quality="medium"
 					aspectRatio={16 / 9}
 					illustration={video.illustration}
 					imgProps={{ objectFit: "cover" }}
