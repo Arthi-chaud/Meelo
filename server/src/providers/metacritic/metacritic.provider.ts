@@ -47,7 +47,7 @@ export default class MetacriticProvider
 	}
 
 	getProviderBannerUrl(): string {
-		return "https://upload.wikimedia.org/wikipedia/commons/4/48/Metacritic_logo.svg";
+		return "https://upload.wikimedia.org/wikipedia/commons/thumb/4/48/Metacritic_logo.svg/640px-Metacritic_logo.svg.png";
 	}
 
 	getProviderIconUrl(): string {

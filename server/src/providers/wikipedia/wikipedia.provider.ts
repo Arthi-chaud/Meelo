@@ -42,11 +42,11 @@ export default class WikipediaProvider
 	}
 
 	getProviderBannerUrl(): string {
-		return "https://upload.wikimedia.org/wikipedia/commons/thumb/b/bb/Wikipedia_wordmark.svg/2880px-Wikipedia_wordmark.svg.png";
+		return "https://upload.wikimedia.org/wikipedia/commons/thumb/b/bb/Wikipedia_wordmark.svg/640px-Wikipedia_wordmark.svg.png";
 	}
 
 	getProviderIconUrl(): string {
-		return "https://upload.wikimedia.org/wikipedia/commons/5/52/Wp_globe_VIG_13.png";
+		return "https://upload.wikimedia.org/wikipedia/commons/thumb/9/97/Wikipedia-logo_thue.png/240px-Wikipedia-logo_thue.png";
 	}
 
 	getProviderHomepage(): string {

@@ -42,7 +42,7 @@ export default class AllMusicProvider
 	}
 
 	getProviderIconUrl(): string {
-		return "https://cdn-gce.allmusic.com/images/allmusic_facebook_share.png";
+		return "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a0/AllMusic_Logo.svg/187px-AllMusic_Logo.svg.png";
 	}
 
 	onModuleInit() {
