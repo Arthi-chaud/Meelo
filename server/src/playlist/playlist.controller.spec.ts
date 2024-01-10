@@ -378,6 +378,7 @@ describe("Playlist Controller", () => {
 				await dummyRepository.playlistIllustration.create({
 					data: {
 						playlistId: dummyRepository.playlist3.id,
+						aspectRatio: 1,
 						blurhash: "A",
 						colors: ["B"],
 					},

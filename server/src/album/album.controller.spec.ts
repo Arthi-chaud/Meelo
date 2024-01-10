@@ -561,6 +561,7 @@ describe("Album Controller", () => {
 					data: {
 						releaseId: dummyRepository.releaseA1_1.id,
 						blurhash: "A",
+						aspectRatio: 1,
 						colors: ["B"],
 					},
 				});

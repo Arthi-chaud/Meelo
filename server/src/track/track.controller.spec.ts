@@ -460,6 +460,7 @@ describe("Track Controller", () => {
 				{
 					data: {
 						trackId: dummyRepository.trackC1_1.id,
+						aspectRatio: 1,
 						blurhash: "A",
 						colors: ["B"],
 					},

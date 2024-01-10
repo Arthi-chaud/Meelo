@@ -84,6 +84,7 @@ describe("Illustration Controller", () => {
 		it("should return the artist illustration", async () => {
 			await dummyRepository.artistIllustration.create({
 				data: {
+					aspectRatio: 1,
 					artistId: dummyRepository.artistA.id,
 					blurhash: "",
 					colors: [],
@@ -120,6 +121,7 @@ describe("Illustration Controller", () => {
 			await dummyRepository.releaseIllustration.create({
 				data: {
 					releaseId: dummyRepository.releaseB1_1.id,
+					aspectRatio: 1,
 					blurhash: "",
 					colors: [],
 				},
@@ -161,6 +163,7 @@ describe("Illustration Controller", () => {
 			await dummyRepository.releaseIllustration.create({
 				data: {
 					releaseId: dummyRepository.releaseA1_1.id,
+					aspectRatio: 1,
 					blurhash: "",
 					colors: [],
 				},
@@ -206,6 +209,7 @@ describe("Illustration Controller", () => {
 			await dummyRepository.trackIllustration.create({
 				data: {
 					trackId: dummyRepository.trackB1_1.id,
+					aspectRatio: 1,
 					blurhash: "",
 					colors: [],
 				},
@@ -244,6 +248,7 @@ describe("Illustration Controller", () => {
 			await dummyRepository.trackIllustration.create({
 				data: {
 					trackId: dummyRepository.trackA1_2Video.id,
+					aspectRatio: 1,
 					blurhash: "",
 					colors: [],
 				},
@@ -499,6 +504,7 @@ describe("Illustration Controller", () => {
 			await dummyRepository.playlistIllustration.create({
 				data: {
 					playlistId: dummyRepository.playlist1.id,
+					aspectRatio: 1,
 					colors: [],
 					blurhash: "",
 				},

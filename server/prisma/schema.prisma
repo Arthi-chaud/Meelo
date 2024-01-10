@@ -553,6 +553,9 @@ model ArtistIllustration {
 	/// @description List of dominant colors in the image
 	/// @example ['#FFFFFF', '#123123', '#F0F0F0']
 	colors			String[]
+	/// @description Aspect Ratio of the image
+	/// @example 0.33
+	aspectRatio		Float	@default(1)
 	@@map("artist_illustrations")
 }
 
@@ -570,6 +573,9 @@ model PlaylistIllustration {
 	/// @description List of dominant colors in the image
 	/// @example ['#FFFFFF', '#123123', '#F0F0F0']
 	colors			String[]
+	/// @description Aspect Ratio of the image
+	/// @example 0.33
+	aspectRatio		Float	@default(1)
 	@@map("playlist_illustrations")
 }
 
@@ -589,6 +595,9 @@ model ReleaseIllustration {
 	/// @description List of dominant colors in the image
 	/// @example ['#FFFFFF', '#123123', '#F0F0F0']
 	colors			String[]
+	/// @description Aspect Ratio of the image
+	/// @example 0.33
+	aspectRatio		Float	@default(1)
 	@@map("release_illustrations")
 }
 
@@ -606,5 +615,8 @@ model TrackIllustration {
 	/// @description List of dominant colors in the image
 	/// @example ['#FFFFFF', '#123123', '#F0F0F0']
 	colors			String[]
+	/// @description Aspect Ratio of the image
+	/// @example 0.33
+	aspectRatio		Float	@default(1)
 	@@map("track_illustrations")
 }

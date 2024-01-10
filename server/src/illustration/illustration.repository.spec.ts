@@ -125,8 +125,8 @@ describe("Illustration Repository", () => {
 			).mockImplementation(() => "ABCDE");
 			jest.spyOn(
 				IllustrationService.prototype,
-				"getIllustrationBlurHashAndColors",
-			).mockImplementation(async () => ["", []]);
+				"getIllustrationBlurHashColorsAndRatio",
+			).mockImplementation(async () => ["", [], 0]);
 			releaseIllustrationPath =
 				(await illustrationRepository.registerTrackFileIllustration(
 					dummyRepository.trackA1_1,

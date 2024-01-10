@@ -377,8 +377,8 @@ export default class IllustrationRepository {
 		const artistIllustrationPath = this.getArtistIllustrationPath(
 			artist.slug,
 		);
-		const [blurhash, colors] =
-			await this.illustrationService.getIllustrationBlurHashAndColors(
+		const [blurhash, colors, ratio] =
+			await this.illustrationService.getIllustrationBlurHashColorsAndRatio(
 				buffer,
 			);
 
@@ -390,6 +390,7 @@ export default class IllustrationRepository {
 			create: {
 				blurhash,
 				colors,
+				aspectRatio: ratio,
 				artistId: artist.id,
 			},
 			where: { artistId: artist.id },
@@ -405,8 +406,8 @@ export default class IllustrationRepository {
 		const playlistIllustrationPath = this.getPlaylistIllustrationPath(
 			playlist.slug,
 		);
-		const [blurhash, colors] =
-			await this.illustrationService.getIllustrationBlurHashAndColors(
+		const [blurhash, colors, ratio] =
+			await this.illustrationService.getIllustrationBlurHashColorsAndRatio(
 				buffer,
 			);
 
@@ -418,6 +419,7 @@ export default class IllustrationRepository {
 			create: {
 				blurhash,
 				colors,
+				aspectRatio: ratio,
 				playlistId: playlist.id,
 			},
 			where: { playlistId: playlist.id },
@@ -438,8 +440,8 @@ export default class IllustrationRepository {
 			release.album.slug,
 			release.slug,
 		);
-		const [blurhash, colors] =
-			await this.illustrationService.getIllustrationBlurHashAndColors(
+		const [blurhash, colors, ratio] =
+			await this.illustrationService.getIllustrationBlurHashColorsAndRatio(
 				buffer,
 			);
 		const previousMainIllustration = await this.getReleaseIllustration(
@@ -452,7 +454,7 @@ export default class IllustrationRepository {
 		);
 		if (previousMainIllustration) {
 			return this.prismaService.releaseIllustration.update({
-				where: { id: previousMainIllustration.id },
+				where: { id: previousMainIllustration.id, aspectRatio: ratio },
 				data: { blurhash, colors },
 			});
 		}
@@ -460,6 +462,7 @@ export default class IllustrationRepository {
 			data: {
 				blurhash,
 				colors,
+				aspectRatio: ratio,
 				releaseId: release.id,
 			},
 		});
@@ -471,8 +474,8 @@ export default class IllustrationRepository {
 	): Promise<TrackIllustration> {
 		const [track, __, ___, trackIllustrationPath] =
 			await this.getTrackIllustrationPaths(where);
-		const [blurhash, colors] =
-			await this.illustrationService.getIllustrationBlurHashAndColors(
+		const [blurhash, colors, ratio] =
+			await this.illustrationService.getIllustrationBlurHashColorsAndRatio(
 				buffer,
 			);
 
@@ -484,6 +487,7 @@ export default class IllustrationRepository {
 			create: {
 				blurhash,
 				colors,
+				aspectRatio: ratio,
 				trackId: track.id,
 			},
 			where: { trackId: track.id },
@@ -687,8 +691,8 @@ export default class IllustrationRepository {
 				this.logger.verbose(
 					`Extracting illustration from '${fileName}' successful`,
 				);
-				const [blurhash, colors] =
-					await this.illustrationService.getIllustrationBlurHashAndColors(
+				const [blurhash, colors, ratio] =
+					await this.illustrationService.getIllustrationBlurHashColorsAndRatio(
 						illustrationBytes,
 					);
 
@@ -703,6 +707,7 @@ export default class IllustrationRepository {
 						data: {
 							colors,
 							blurhash,
+							aspectRatio: ratio,
 							releaseId: track.releaseId,
 							disc:
 								path == discIllustrationPath
@@ -712,7 +717,12 @@ export default class IllustrationRepository {
 					});
 				} else if (path == trackIllustrationPath) {
 					await this.prismaService.trackIllustration.create({
-						data: { colors, blurhash, trackId: track.id },
+						data: {
+							colors,
+							blurhash,
+							trackId: track.id,
+							aspectRatio: ratio,
+						},
 					});
 				}
 				return path;
