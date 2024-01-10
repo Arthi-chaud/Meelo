@@ -29,18 +29,7 @@ import { isSSR } from "../ssr";
 import Fade from "./fade";
 import useColorScheme from "../theme/color-scheme";
 
-type ImageQuality = "low" | "med" | "original";
-
-const getImageWidth = (quality: ImageQuality) => {
-	switch (quality) {
-		case "low":
-			return 100;
-		case "med":
-			return 350;
-		case "original":
-			return undefined;
-	}
-};
+type ImageQuality = "low" | "medium" | "high" | "original";
 
 type IllustrationProps = {
 	/**
@@ -155,7 +144,7 @@ const Illustration = (props: IllustrationProps) => {
 								API.getIllustrationURL(url) +
 								(props.quality == "original"
 									? ""
-									: `?width=${getImageWidth(props.quality)}`)
+									: `?quality=${props.quality}`)
 							}
 						/>
 					)}

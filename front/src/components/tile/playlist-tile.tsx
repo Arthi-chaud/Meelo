@@ -34,7 +34,7 @@ const PlaylistTile = (props: { playlist: Playlist }) => {
 				<Illustration
 					illustration={props.playlist.illustration}
 					imgProps={{ objectFit: "cover" }}
-					quality="med"
+					quality="medium"
 					fallback={<PlaylistIcon />}
 				/>
 			}

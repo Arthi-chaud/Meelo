@@ -48,7 +48,7 @@ const SongRelationPageHeader = (props: SongRelationPageHeaderProps) => {
 			illustration={
 				<Illustration
 					illustration={song.data.illustration}
-					quality="med"
+					quality="medium"
 				/>
 			}
 			title={song.data.name}

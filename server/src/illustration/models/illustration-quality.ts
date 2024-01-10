@@ -16,32 +16,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { IsEnum, IsOptional, IsPositive } from "class-validator";
-import { ImageQuality } from "./illustration-quality";
-import { ApiProperty } from "@nestjs/swagger";
+export const ImageQuality = ["low", "medium", "high"] as const;
 
-/**
- * A DTO to request an illustration with special dimensions
- */
-export class IllustrationDimensionsDto {
-	@IsPositive({
-		message: () =>
-			"Illustration's width: Expected a strictly positive number",
-	})
-	@IsOptional()
-	width?: number;
-
-	@IsPositive({
-		message: () =>
-			"Illustration's height: Expected a strictly positive number",
-	})
-	@IsOptional()
-	height?: number;
-
-	@IsEnum(ImageQuality)
-	@IsOptional()
-	@ApiProperty({
-		enum: ImageQuality,
-	})
-	quality?: ImageQuality;
-}
+export type ImageQuality = typeof ImageQuality[number];

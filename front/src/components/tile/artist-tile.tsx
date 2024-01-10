@@ -31,7 +31,7 @@ const ArtistTile = (props: { artist: Artist }) => {
 			href={`/artists/${props.artist.slug}`}
 			illustration={
 				<Box sx={{ padding: 1 }}>
-					<ArtistAvatar artist={props.artist} quality="med" />
+					<ArtistAvatar artist={props.artist} quality="medium" />
 				</Box>
 			}
 		/>

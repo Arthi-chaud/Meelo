@@ -38,7 +38,7 @@ const ReleaseTile = (props: {
 			illustration={
 				<Illustration
 					illustration={props.release.illustration}
-					quality="med"
+					quality="medium"
 				/>
 			}
 		/>

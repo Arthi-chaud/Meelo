@@ -16,7 +16,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import sharp from "sharp";
 import { Injectable, StreamableFile } from "@nestjs/common";
 import FileManagerService from "src/file-manager/file-manager.service";
 import {
@@ -37,6 +36,7 @@ import Logger from "src/logger/logger";
 import * as Blurhash from "blurhash";
 import getColors from "get-image-colors";
 import mime from "mime";
+import { InvalidRequestException } from "src/exceptions/meelo-exception";
 
 type IllustrationExtractStatus =
 	| "extracted"
@@ -145,24 +145,60 @@ export default class IllustrationService {
 		if (!this.fileManagerService.fileExists(sourceFilePath)) {
 			throw new NoIllustrationException("Illustration file not found");
 		}
+		if ((dimensions.height || dimensions.width) && dimensions.quality) {
+			throw new InvalidRequestException(
+				"Expected Quality or Dimensions, not both.",
+			);
+		}
 
 		res.set({
 			"Content-Disposition": `attachment; filename="${as}${ext}"`,
 		});
-		if (dimensions.width || dimensions.height) {
+		if (dimensions.quality) {
+			const quality = dimensions.quality;
+			const pathOfFile = dir.join(
+				dir.dirname(sourceFilePath),
+				quality + ext,
+			);
+			if (!this.fileManagerService.fileExists(pathOfFile)) {
+				const image = await Jimp.read(sourceFilePath);
+				switch (quality) {
+					case "low":
+						image.resize(100, Jimp.AUTO);
+						break;
+					case "medium":
+						image.resize(300, Jimp.AUTO);
+						break;
+					case "high":
+						image.resize(500, Jimp.AUTO);
+						break;
+				}
+				await image.writeAsync(pathOfFile);
+			}
+			return new StreamableFile(fs.createReadStream(pathOfFile), {
+				type: mime.getType(pathOfFile)?.toString(),
+			});
+		} else if (dimensions.width || dimensions.height) {
 			try {
-				const sharpImage = sharp(sourceFilePath);
+				const image = await Jimp.read(sourceFilePath);
 
 				if (dimensions.width && dimensions.height) {
-					sharpImage.resize(dimensions.width, dimensions.height, {
-						fit: "fill",
-					});
+					image.cover(dimensions.width, dimensions.height);
 				} else {
-					sharpImage.resize(dimensions.width || dimensions.height);
+					const [originalWidth, originalHeight] = [
+						image.getWidth(),
+						image.getHeight(),
+					];
+					const ratio = dimensions.height
+						? dimensions.height / originalHeight
+						: dimensions.width! / originalWidth;
+					image.cover(
+						dimensions.width ?? originalWidth * ratio,
+						dimensions.height ?? originalHeight * ratio,
+					);
 				}
-				return sharpImage
-					.jpeg({ quality: dimensions.quality })
-					.toBuffer()
+				return image
+					.getBufferAsync(Jimp.MIME_JPEG)
 					.then(
 						(buffer) => new StreamableFile(Readable.from(buffer)),
 					);

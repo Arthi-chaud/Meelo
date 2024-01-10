@@ -47,7 +47,7 @@ const AlbumRelationPageHeader = (props: AlbumRelationPageHeaderProps) => {
 			illustration={
 				<Illustration
 					illustration={album.data.illustration}
-					quality="med"
+					quality="medium"
 				/>
 			}
 			title={album.data.name}
