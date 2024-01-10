@@ -167,10 +167,10 @@ export default class IllustrationService {
 						image.resize(100, Jimp.AUTO);
 						break;
 					case "medium":
-						image.resize(350, Jimp.AUTO);
+						image.resize(300, Jimp.AUTO);
 						break;
 					case "high":
-						image.resize(600, Jimp.AUTO);
+						image.resize(500, Jimp.AUTO);
 						break;
 				}
 				await image.writeAsync(pathOfFile);
