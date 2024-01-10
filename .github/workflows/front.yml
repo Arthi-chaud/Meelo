@@ -197,5 +197,5 @@ jobs:
         with:
           context: ./front
           push: true
-          tags: ${{ steps.meta.outputs.tags }}
+          tags: ${{ github.event_name == 'release' && steps.meta.outputs.tags || 'arthichaud/meelo-front:edge' }}
           labels: ${{ steps.meta.outputs.labels }}

@@ -199,5 +199,5 @@ jobs:
         with:
           context: ./server
           push: true
-          tags: ${{ steps.meta.outputs.tags }}
+          tags: ${{ github.event_name == 'release' && steps.meta.outputs.tags || 'arthichaud/meelo-server:edge' }}
           labels: ${{ steps.meta.outputs.labels }}
