@@ -66,6 +66,8 @@ const Illustration = (props: IllustrationProps) => {
 	const url = props.url ?? props.illustration?.url;
 	const blurhash = props.illustration?.blurhash;
 	const colorScheme = useColorScheme();
+	const aspectRatio =
+		props.aspectRatio ?? props.illustration?.aspectRatio ?? 1;
 	const dimensionsFromAspectRatio = {
 		width: (props.illustration?.aspectRatio ?? 1) >= 1 ? "100%" : undefined,
 		height:
@@ -92,11 +94,9 @@ const Illustration = (props: IllustrationProps) => {
 							position: "absolute",
 							borderRadius: theme.shape.borderRadius,
 							overflow: "hidden",
-							aspectRatio:
-								props.illustration?.aspectRatio.toString(),
+							aspectRatio: aspectRatio.toString(),
 							...props.imgProps,
 							...dimensionsFromAspectRatio,
-							//TODO: ADD ASPECT RATIO HERE
 						}}
 					>
 						<Blurhash
@@ -110,7 +110,7 @@ const Illustration = (props: IllustrationProps) => {
 				<Box
 					style={{
 						position: "relative",
-						aspectRatio: props.illustration?.aspectRatio.toString(),
+						aspectRatio: aspectRatio.toString(),
 						overflow: "hidden",
 						display: "block",
 						...dimensionsFromAspectRatio,
