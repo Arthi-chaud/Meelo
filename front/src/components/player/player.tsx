@@ -286,7 +286,6 @@ const Player = () => {
 					>
 						<MinimizedPlayerControls
 							expanded={expanded}
-							illustration={illustrationURL}
 							track={currentTrack?.track}
 							artist={currentTrack?.artist}
 							release={currentTrack?.release}
@@ -335,7 +334,6 @@ const Player = () => {
 					>
 						<ExpandedPlayerControls
 							expanded={expanded}
-							illustration={illustrationURL}
 							track={currentTrack?.track}
 							artist={currentTrack?.artist}
 							release={currentTrack?.release}

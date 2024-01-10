@@ -76,7 +76,6 @@ type PlayerButtonControlsProps = {
 type PlayerControlsProps = Parameters<typeof PlayerSlider>[number] &
 	PlayerButtonControlsProps & {
 		expanded: boolean;
-		illustration?: string | null;
 		onExpand: (expand: boolean) => void;
 		artist?: Artist;
 		track?: Track;
@@ -315,8 +314,9 @@ const ExpandedPlayerControls = (
 								id="videoPlayer"
 								ref={props.videoRef}
 								disablePictureInPicture={false}
-								width="100%"
-								height="100%"
+								style={{
+									borderRadius: theme.shape.borderRadius,
+								}}
 								onClick={requestFullscreen}
 							/>
 						) : (
@@ -330,7 +330,9 @@ const ExpandedPlayerControls = (
 							>
 								<Illustration
 									quality="original"
-									url={props.illustration ?? null}
+									illustration={
+										props.track?.illustration ?? null
+									}
 									fallback={<TrackIcon />}
 								/>
 							</Box>

@@ -213,9 +213,9 @@ export default class IllustrationService {
 		});
 	}
 
-	async getIllustrationBlurHashAndColors(
+	async getIllustrationBlurHashColorsAndRatio(
 		buffer: Buffer,
-	): Promise<[string, string[]]> {
+	): Promise<[string, string[], number]> {
 		const image = await Jimp.read(buffer);
 
 		return Promise.all([
@@ -237,6 +237,7 @@ export default class IllustrationService {
 			getColors(buffer, { type: image.getMIME() }).then((colors) =>
 				colors.map((color) => color.hex()),
 			),
+			image.getWidth() / image.getHeight(),
 		]);
 	}
 
