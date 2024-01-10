@@ -27,6 +27,10 @@ const Illustration = yup.object({
 			 * Blurhash value of the illustration
 			 */
 			blurhash: yup.string().required(),
+			/**
+			 * Aspect Ratio of The Image
+			 */
+			aspectRatio: yup.number().required(),
 			colors: yup.array(yup.string().required()).required(),
 		})
 		.required()

@@ -66,6 +66,11 @@ const Illustration = (props: IllustrationProps) => {
 	const url = props.url ?? props.illustration?.url;
 	const blurhash = props.illustration?.blurhash;
 	const colorScheme = useColorScheme();
+	const dimensionsFromAspectRatio = {
+		width: (props.illustration?.aspectRatio ?? 1) >= 1 ? "100%" : undefined,
+		height:
+			(props.illustration?.aspectRatio ?? 1) <= 1 ? "100%" : undefined,
+	};
 
 	return (
 		<Box
@@ -77,29 +82,40 @@ const Illustration = (props: IllustrationProps) => {
 				aspectRatio: props.aspectRatio?.toString() ?? "1",
 				justifyContent: "center",
 				alignItems: "center",
-				display: loadingFailed || !url ? "flex" : "block",
+				display: "flex",
 			}}
 		>
 			{blurhash && (
 				<Fade in={!loadingCompleted && !loadingFailed} unmountOnExit>
 					<Box
 						style={{
-							width: "inherit",
-							height: "inherit",
+							position: "absolute",
 							borderRadius: theme.shape.borderRadius,
 							overflow: "hidden",
+							aspectRatio:
+								props.illustration?.aspectRatio.toString(),
 							...props.imgProps,
+							...dimensionsFromAspectRatio,
+							//TODO: ADD ASPECT RATIO HERE
 						}}
 					>
 						<Blurhash
 							blurhash={blurhash}
-							style={{ width: "inherit", height: "inherit" }}
+							style={{ width: "100%", height: "100%" }}
 						/>
 					</Box>
 				</Fade>
 			)}
 			<Fade in={isSSR() || loadingCompleted || loadingFailed || !url}>
-				<Box>
+				<Box
+					style={{
+						position: "relative",
+						aspectRatio: props.illustration?.aspectRatio.toString(),
+						overflow: "hidden",
+						display: "block",
+						...dimensionsFromAspectRatio,
+					}}
+				>
 					{loadingFailed || !url ? (
 						props.fallback ? (
 							<IconButton
