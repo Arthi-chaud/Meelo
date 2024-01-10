@@ -386,7 +386,7 @@ describe("Artist Controller", () => {
 					data: {
 						artistId: dummyRepository.artistB.id,
 						blurhash: "A",
-						aspectRatio: 16/9,
+						aspectRatio: 2,
 						colors: ["B"],
 					},
 				});
@@ -399,7 +399,7 @@ describe("Artist Controller", () => {
 						...artist,
 						illustration: {
 							...illustration,
-							aspectRatio: 16/9,
+							aspectRatio: 2,
 							url:
 								"/illustrations/artists/" +
 								dummyRepository.artistB.slug,
