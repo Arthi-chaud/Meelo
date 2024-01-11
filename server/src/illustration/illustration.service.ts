@@ -37,6 +37,7 @@ import * as Blurhash from "blurhash";
 import getColors from "get-image-colors";
 import mime from "mime";
 import { InvalidRequestException } from "src/exceptions/meelo-exception";
+import { ImageQuality } from "./models/illustration-quality";
 
 type IllustrationExtractStatus =
 	| "extracted"
@@ -79,6 +80,7 @@ export default class IllustrationService {
 	 * @param outPath path and name of the file to save the fileContent as
 	 */
 	saveIllustration(fileContent: Buffer, outPath: IllustrationPath) {
+		this.deleteIllustration(outPath);
 		fs.mkdirSync(dir.dirname(outPath), { recursive: true });
 		fs.writeFileSync(outPath, fileContent);
 	}
@@ -107,13 +109,25 @@ export default class IllustrationService {
 	/**
 	 * Delete an illustration File
 	 * If it does not exist, fail silently
+	 * Will also delete the related converted images
 	 */
 	deleteIllustration(path: IllustrationPath) {
 		try {
 			this.fileManagerService.deleteFile(path);
 		} catch {
-			return;
+			/* empty */
 		}
+		ImageQuality.map((quality) => {
+			try {
+				const pathOfFile = dir.join(
+					dir.dirname(path),
+					dir.parse(path).name + "-" + quality + dir.extname(path),
+				);
+				this.fileManagerService.deleteFile(pathOfFile);
+			} catch {
+				/* empty */
+			}
+		});
 	}
 
 	/**
@@ -158,7 +172,7 @@ export default class IllustrationService {
 			const quality = dimensions.quality;
 			const pathOfFile = dir.join(
 				dir.dirname(sourceFilePath),
-				quality + ext,
+				dir.parse(sourceFilePath).name + "-" + quality + ext,
 			);
 			if (!this.fileManagerService.fileExists(pathOfFile)) {
 				const image = await Jimp.read(sourceFilePath);
