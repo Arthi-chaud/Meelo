@@ -227,9 +227,12 @@ export default class IllustrationService {
 		});
 	}
 
-	async getIllustrationBlurHashColorsAndRatio(
-		buffer: Buffer,
-	): Promise<[string, string[], number]> {
+	async getImageStats(buffer: Buffer): Promise<{
+		blurhash: string;
+		colors: string[];
+		aspectRatio: number;
+		hash: string;
+	}> {
 		const image = await Jimp.read(buffer);
 
 		return Promise.all([
@@ -251,8 +254,14 @@ export default class IllustrationService {
 			getColors(buffer, { type: image.getMIME() }).then((colors) =>
 				colors.map((color) => color.hex()),
 			),
-			image.getWidth() / image.getHeight(),
-		]);
+			(async () => image.getWidth() / image.getHeight())(),
+			(async () => image.hash())(),
+		]).then(([blurhash, colors, aspectRatio, hash]) => ({
+			blurhash,
+			colors,
+			aspectRatio,
+			hash,
+		}));
 	}
 
 	async moveIllustrationFolder(
