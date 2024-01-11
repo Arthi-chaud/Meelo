@@ -631,8 +631,8 @@ describe("Song Controller", () => {
 						illustration: {
 							...illustration,
 							url:
-								"/illustrations/tracks/" +
-								dummyRepository.trackC1_1.id,
+								"/illustrations/releases/" +
+								dummyRepository.compilationReleaseA1.id,
 						},
 					});
 				});

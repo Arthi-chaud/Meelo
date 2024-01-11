@@ -323,13 +323,21 @@ export default class IllustrationRepository {
 				},
 				orderBy: { disc: { nulls: "last", sort: "asc" } },
 			})
-			.then(
-				(value) =>
-					value && {
+			.then((value) => {
+				if (!value) {
+					return null;
+				}
+				if (value.track || value.disc) {
+					return {
 						...value,
 						url: "/illustrations/tracks/" + track.id,
-					},
-			);
+					};
+				}
+				return {
+					...value,
+					url: "/illustrations/releases/" + track.releaseId,
+				};
+			});
 	}
 
 	async createArtistIllustration(
