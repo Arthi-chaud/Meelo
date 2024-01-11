@@ -648,6 +648,7 @@ describe("Release Controller", () => {
 			const illustration =
 				await dummyRepository.releaseIllustration.create({
 					data: {
+						hash: "a",
 						releaseId: dummyRepository.releaseA1_2.id,
 						aspectRatio: 1,
 						blurhash: "A",

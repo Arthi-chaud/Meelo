@@ -602,4 +602,5 @@ model ReleaseIllustration {
 	/// @example 0.33
 	aspectRatio		Float	@default(1)
 	@@map("release_illustrations")
+	@@unique([releaseId, disc, track])
 }

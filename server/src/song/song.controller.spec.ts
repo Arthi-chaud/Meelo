@@ -611,16 +611,16 @@ describe("Song Controller", () => {
 
 	describe("Song Illustration", () => {
 		it("Should return the Song illustration", async () => {
-			const illustration = await dummyRepository.trackIllustration.create(
-				{
+			const illustration =
+				await dummyRepository.releaseIllustration.create({
 					data: {
-						trackId: dummyRepository.trackC1_1.id,
+						hash: "c",
+						releaseId: dummyRepository.compilationReleaseA1.id,
 						aspectRatio: 1,
 						blurhash: "A",
 						colors: ["B"],
 					},
-				},
-			);
+				});
 			return request(app.getHttpServer())
 				.get(`/songs/${dummyRepository.songC1.id}`)
 				.expect(200)

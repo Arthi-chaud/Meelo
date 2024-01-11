@@ -11,6 +11,8 @@ ALTER TABLE "track_illustrations" DROP CONSTRAINT "track_illustrations_trackId_f
 -- AlterTable
 ALTER TABLE "release_illustrations" ADD COLUMN     "hash" TEXT NOT NULL;
 ALTER TABLE "release_illustrations" ADD COLUMN     "track" INTEGER;
+CREATE UNIQUE INDEX "release_illustrations_releaseId_disc_track_key" ON "release_illustrations"("releaseId", "disc", "track");
+
 
 -- DropTable
 DROP TABLE "track_illustrations";

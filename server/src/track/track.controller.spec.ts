@@ -456,16 +456,16 @@ describe("Track Controller", () => {
 
 	describe("Track Illustration", () => {
 		it("Should return the track illustration", async () => {
-			const illustration = await dummyRepository.trackIllustration.create(
-				{
+			const illustration =
+				await dummyRepository.releaseIllustration.create({
 					data: {
-						trackId: dummyRepository.trackC1_1.id,
+						hash: "n",
+						releaseId: dummyRepository.compilationReleaseA1.id,
 						aspectRatio: 1,
 						blurhash: "A",
 						colors: ["B"],
 					},
-				},
-			);
+				});
 			return request(app.getHttpServer())
 				.get(`/tracks/${dummyRepository.trackC1_1.id}`)
 				.expect(200)

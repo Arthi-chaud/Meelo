@@ -38,6 +38,7 @@ import getColors from "get-image-colors";
 import mime from "mime";
 import { InvalidRequestException } from "src/exceptions/meelo-exception";
 import { ImageQuality } from "./models/illustration-quality";
+import md5 from "md5";
 
 type IllustrationExtractStatus =
 	| "extracted"
@@ -255,7 +256,7 @@ export default class IllustrationService {
 				colors.map((color) => color.hex()),
 			),
 			(async () => image.getWidth() / image.getHeight())(),
-			(async () => image.hash())(),
+			(async () => md5(buffer))(),
 		]).then(([blurhash, colors, aspectRatio, hash]) => ({
 			blurhash,
 			colors,

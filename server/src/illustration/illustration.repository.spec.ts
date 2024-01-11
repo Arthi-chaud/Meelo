@@ -88,7 +88,7 @@ describe("Illustration Repository", () => {
 			);
 			expect(fs.existsSync(outPath)).toBe(false);
 			expect(
-				await illustrationRepository.getReleaseIllustration({
+				await illustrationRepository.getReleaseIllustrationResponse({
 					id: dummyRepository.releaseA1_1.id,
 				}),
 			).toBe(null);
@@ -106,7 +106,7 @@ describe("Illustration Repository", () => {
 			);
 			expect(fs.existsSync(outPath)).toBe(false);
 			expect(
-				await illustrationRepository.getReleaseIllustration({
+				await illustrationRepository.getReleaseIllustrationResponse({
 					id: dummyRepository.releaseA1_1.id,
 				}),
 			).toBe(null);
@@ -122,45 +122,52 @@ describe("Illustration Repository", () => {
 			jest.spyOn(
 				ScannerService.prototype as any,
 				"extractIllustrationFromFile",
-			).mockImplementation(() => "ABCDE");
+			).mockImplementation(() =>
+				fs.readFileSync("test/assets/cover.jpg"),
+			);
 			jest.spyOn(
 				IllustrationService.prototype,
-				"getIllustrationBlurHashColorsAndRatio",
-			).mockImplementation(async () => ["", [], 0]);
-			releaseIllustrationPath =
-				(await illustrationRepository.registerTrackFileIllustration(
-					dummyRepository.trackA1_1,
-					"test/assets/dreams.m4a",
-				))!;
-			expect(releaseIllustrationPath).toBe(
-				"test/assets/metadata/my-artist/my-album/my-album-1/cover.jpg",
+				"getImageStats",
+			).mockImplementation(async () => ({
+				blurhash: "",
+				colors: [],
+				hash: "",
+				aspectRatio: 0,
+			}));
+
+			await illustrationRepository.registerTrackFileIllustration(
+				dummyRepository.trackA1_1,
+				"test/assets/dreams.m4a",
 			);
+			releaseIllustrationPath =
+				"test/assets/metadata/my-artist/my-album/my-album-1/cover.jpg";
 			expect(fs.existsSync(releaseIllustrationPath)).toBe(true);
 			expect(fs.readFileSync(releaseIllustrationPath)).toStrictEqual(
-				Buffer.from("ABCDE"),
+				fs.readFileSync("test/assets/cover.jpg"),
 			);
 		});
+
 		let discIllustrationPath: string;
 		it("should extract illustration to disc folder, mocking the illustration bytes", async () => {
 			jest.spyOn(
 				ScannerService.prototype as any,
 				"extractIllustrationFromFile",
-			).mockImplementation(() => Buffer.from("ABCDEF"));
-			discIllustrationPath =
-				(await illustrationRepository.registerTrackFileIllustration(
-					dummyRepository.trackA1_1,
-					"test/assets/dreams.m4a",
-				))!;
-			expect(discIllustrationPath).toBe(
-				"test/assets/metadata/my-artist/my-album/my-album-1/disc-1/cover.jpg",
+			).mockImplementation(() =>
+				fs.readFileSync("test/assets/cover1.jpg"),
 			);
+			await illustrationRepository.registerTrackFileIllustration(
+				dummyRepository.trackA1_1,
+				"test/assets/dreams.m4a",
+			);
+			discIllustrationPath =
+				"test/assets/metadata/my-artist/my-album/my-album-1/disc-1/cover.jpg";
 			expect(fs.existsSync(discIllustrationPath)).toBe(true);
 			expect(fs.readFileSync(discIllustrationPath)).toStrictEqual(
-				Buffer.from("ABCDEF"),
+				fs.readFileSync("test/assets/cover1.jpg"),
 			);
 			expect(fs.existsSync(releaseIllustrationPath)).toBe(true);
 			expect(fs.readFileSync(releaseIllustrationPath)).toStrictEqual(
-				Buffer.from("ABCDE"),
+				fs.readFileSync("test/assets/cover.jpg"),
 			);
 		});
 		let trackIllustrationPath: string;
@@ -168,30 +175,27 @@ describe("Illustration Repository", () => {
 			jest.spyOn(
 				ScannerService.prototype as any,
 				"extractIllustrationFromFile",
-			).mockImplementation(() => "ABCDEFG");
-			trackIllustrationPath =
-				(await illustrationRepository.registerTrackFileIllustration(
-					dummyRepository.trackA1_1,
-					"test/assets/dreams.m4a",
-				))!;
-			expect(trackIllustrationPath).toBe(
-				"test/assets/metadata/my-artist/my-album/my-album-1/disc-1/track-2/cover.jpg",
+			).mockImplementation(() =>
+				fs.readFileSync("test/assets/cover2.jpg"),
 			);
+			await illustrationRepository.registerTrackFileIllustration(
+				dummyRepository.trackA1_1,
+				"test/assets/dreams.m4a",
+			);
+			trackIllustrationPath =
+				"test/assets/metadata/my-artist/my-album/my-album-1/disc-1/track-2/cover.jpg";
 			expect(fs.existsSync(trackIllustrationPath)).toBe(true);
 			expect(fs.readFileSync(trackIllustrationPath)).toStrictEqual(
-				Buffer.from("ABCDEFG"),
-			);
-			expect(fs.existsSync(discIllustrationPath)).toBe(true);
-			expect(fs.readFileSync(discIllustrationPath)).toStrictEqual(
-				Buffer.from("ABCDEF"),
+				fs.readFileSync("test/assets/cover2.jpg"),
 			);
 			expect(fs.existsSync(releaseIllustrationPath)).toBe(true);
 			expect(fs.readFileSync(releaseIllustrationPath)).toStrictEqual(
-				Buffer.from("ABCDE"),
+				fs.readFileSync("test/assets/cover.jpg"),
 			);
-			fs.rmSync(releaseIllustrationPath);
-			fs.rmSync(discIllustrationPath);
-			fs.rmSync(trackIllustrationPath);
+			expect(fs.existsSync(discIllustrationPath)).toBe(true);
+			expect(fs.readFileSync(discIllustrationPath)).toStrictEqual(
+				fs.readFileSync("test/assets/cover1.jpg"),
+			);
 		});
 	});
 });
