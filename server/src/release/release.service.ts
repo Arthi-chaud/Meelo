@@ -482,7 +482,9 @@ export default class ReleaseService extends RepositoryService<
 				throw await this.onNotFound(err, where);
 			});
 		const illustration =
-			await this.illustrationRepository.getReleaseIllustration(where);
+			await this.illustrationRepository.getReleaseIllustrationResponse(
+				where,
+			);
 		const archive = archiver("zip");
 		const outputName = `${release.slug}.zip`;
 
@@ -499,18 +501,9 @@ export default class ReleaseService extends RepositoryService<
 		);
 		if (illustration) {
 			const illustrationPath =
-				illustration.disc == null
-					? this.illustrationRepository.getReleaseIllustrationPath(
-							release.album.artist?.slug,
-							release.album.slug,
-							release.slug,
-					  )
-					: this.illustrationRepository.getDiscIllustrationPath(
-							release.album.artist?.slug,
-							release.album.slug,
-							release.slug,
-							illustration.disc,
-					  );
+				await this.illustrationRepository.resolveReleaseIllustrationPath(
+					illustration.id,
+				);
 
 			archive.append(createReadStream(illustrationPath), {
 				name: basename(illustrationPath),

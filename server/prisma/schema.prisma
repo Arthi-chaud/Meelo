@@ -391,7 +391,6 @@ model Track {
 	/// @example 123
 	sourceFileId		Int		@unique
 	masterOf		Song?		@relation("Master")
-	illustration	TrackIllustration?
 	@@map("tracks")
 }
 
@@ -589,34 +588,19 @@ model ReleaseIllustration {
 	release			Release	@relation(fields: [releaseId], references: [id], onDelete: Cascade)
 	/// @description The index of the disc. If null, the illustration is the \'main\' one
 	disc			Int?
+	/// @description The index of the track.
+	track			Int?
 	/// @description Blurhash value of the illustration. See https://github.com/woltapp/blurhash for more info.
 	/// @example LEHV6nWB2yk8pyo0adR*.7kCMdnj
 	blurhash		String
 	/// @description List of dominant colors in the image
 	/// @example ['#FFFFFF', '#123123', '#F0F0F0']
 	colors			String[]
+	/// @description MD5 Hash of The File
+	hash			String
 	/// @description Aspect Ratio of the image
 	/// @example 0.33
 	aspectRatio		Float	@default(1)
 	@@map("release_illustrations")
-}
-
-model TrackIllustration {
-	/// @description Unique numeric identifier
-	/// @example 123
-	id				Int		@id	@default(autoincrement())
-	/// @description Related Track\'s Identifier
-	/// @example 123
-	trackId			Int		@unique
-	track			Track	@relation(fields: [trackId], references: [id], onDelete: Cascade)
-	/// @description Blurhash value of the illustration. See https://github.com/woltapp/blurhash for more info.
-	/// @example LEHV6nWB2yk8pyo0adR*.7kCMdnj
-	blurhash		String
-	/// @description List of dominant colors in the image
-	/// @example ['#FFFFFF', '#123123', '#F0F0F0']
-	colors			String[]
-	/// @description Aspect Ratio of the image
-	/// @example 0.33
-	aspectRatio		Float	@default(1)
-	@@map("track_illustrations")
+	@@unique([releaseId, disc, track])
 }

@@ -38,6 +38,7 @@ import getColors from "get-image-colors";
 import mime from "mime";
 import { InvalidRequestException } from "src/exceptions/meelo-exception";
 import { ImageQuality } from "./models/illustration-quality";
+import md5 from "md5";
 
 type IllustrationExtractStatus =
 	| "extracted"
@@ -227,9 +228,12 @@ export default class IllustrationService {
 		});
 	}
 
-	async getIllustrationBlurHashColorsAndRatio(
-		buffer: Buffer,
-	): Promise<[string, string[], number]> {
+	async getImageStats(buffer: Buffer): Promise<{
+		blurhash: string;
+		colors: string[];
+		aspectRatio: number;
+		hash: string;
+	}> {
 		const image = await Jimp.read(buffer);
 
 		return Promise.all([
@@ -251,8 +255,14 @@ export default class IllustrationService {
 			getColors(buffer, { type: image.getMIME() }).then((colors) =>
 				colors.map((color) => color.hex()),
 			),
-			image.getWidth() / image.getHeight(),
-		]);
+			(async () => image.getWidth() / image.getHeight())(),
+			(async () => md5(buffer))(),
+		]).then(([blurhash, colors, aspectRatio, hash]) => ({
+			blurhash,
+			colors,
+			aspectRatio,
+			hash,
+		}));
 	}
 
 	async moveIllustrationFolder(

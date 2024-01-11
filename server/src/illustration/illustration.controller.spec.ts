@@ -122,6 +122,7 @@ describe("Illustration Controller", () => {
 				data: {
 					releaseId: dummyRepository.releaseB1_1.id,
 					aspectRatio: 1,
+					hash: "AAA",
 					blurhash: "",
 					colors: [],
 				},
@@ -162,6 +163,7 @@ describe("Illustration Controller", () => {
 		it("should return the release illustration", async () => {
 			await dummyRepository.releaseIllustration.create({
 				data: {
+					hash: "E",
 					releaseId: dummyRepository.releaseA1_1.id,
 					aspectRatio: 1,
 					blurhash: "",
@@ -206,9 +208,10 @@ describe("Illustration Controller", () => {
 
 	describe("Get Song Illustration", () => {
 		it("should return the master track illustration", async () => {
-			await dummyRepository.trackIllustration.create({
+			await dummyRepository.releaseIllustration.create({
 				data: {
-					trackId: dummyRepository.trackB1_1.id,
+					hash: "L",
+					releaseId: dummyRepository.releaseB1_1.id,
 					aspectRatio: 1,
 					blurhash: "",
 					colors: [],
@@ -227,7 +230,12 @@ describe("Illustration Controller", () => {
 				.get(`/illustrations/songs/${dummyRepository.songB1.id}`)
 				.expect(200)
 				.expect((res) => {
-					expectedFileName(res.headers, dummyRepository.songB1.slug);
+					expectedFileName(
+						res.headers,
+						`release-${dummyRepository.releaseB1_1.id}-disc-${
+							dummyRepository.trackB1_1.discIndex ?? 0
+						}-track-${dummyRepository.trackB1_1.trackIndex ?? 0}`,
+					);
 					expect(res.body).toStrictEqual(dummyIllustrationBytes);
 				});
 		});
@@ -244,10 +252,12 @@ describe("Illustration Controller", () => {
 	});
 
 	describe("Get Track Illustration", () => {
-		it("should return the track illustration", async () => {
-			await dummyRepository.trackIllustration.create({
+		it("should return the disc illustration", async () => {
+			await dummyRepository.releaseIllustration.create({
 				data: {
-					trackId: dummyRepository.trackA1_2Video.id,
+					hash: "L",
+					releaseId: dummyRepository.releaseA1_2.id,
+					disc: dummyRepository.trackA1_2Video.discIndex,
 					aspectRatio: 1,
 					blurhash: "",
 					colors: [],
@@ -268,7 +278,48 @@ describe("Illustration Controller", () => {
 				)
 				.expect(200)
 				.expect((res) => {
-					expectedFileName(res.headers, dummyRepository.songA1.slug);
+					expectedFileName(
+						res.headers,
+						`release-${dummyRepository.releaseA1_2.id}-disc-${dummyRepository.trackA1_2Video.discIndex}-track-0`,
+					);
+					expect(res.body).toStrictEqual(dummyIllustrationBytes);
+				});
+		});
+		it("should return the track illustration", async () => {
+			await dummyRepository.releaseIllustration.create({
+				data: {
+					hash: "L",
+					releaseId: dummyRepository.releaseA1_2.id,
+					disc: dummyRepository.trackA1_2Video.discIndex,
+					track: dummyRepository.trackA1_2Video.trackIndex,
+					aspectRatio: 1,
+					blurhash: "",
+					colors: [],
+				},
+			});
+			jest.spyOn(fileManagerService, "fileExists").mockReturnValueOnce(
+				true,
+			);
+			jest.spyOn(fileManagerService, "fileExists").mockReturnValueOnce(
+				true,
+			);
+			jest.spyOn(fs, "createReadStream").mockReturnValueOnce(
+				getDummyIllustrationStream(),
+			);
+			return request(app.getHttpServer())
+				.get(
+					`/illustrations/tracks/${dummyRepository.trackA1_2Video.id}`,
+				)
+				.expect(200)
+				.expect((res) => {
+					expectedFileName(
+						res.headers,
+						`release-${dummyRepository.releaseA1_2.id}-disc-${
+							dummyRepository.trackA1_2Video.discIndex ?? 0
+						}-track-${
+							dummyRepository.trackA1_2Video.trackIndex ?? 0
+						}`,
+					);
 					expect(res.body).toStrictEqual(dummyIllustrationBytes);
 				});
 		});
