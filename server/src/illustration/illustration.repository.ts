@@ -454,8 +454,8 @@ export default class IllustrationRepository {
 		);
 		if (previousMainIllustration) {
 			return this.prismaService.releaseIllustration.update({
-				where: { id: previousMainIllustration.id, aspectRatio: ratio },
-				data: { blurhash, colors },
+				where: { id: previousMainIllustration.id },
+				data: { blurhash, colors, aspectRatio: ratio },
 			});
 		}
 		return this.prismaService.releaseIllustration.create({
