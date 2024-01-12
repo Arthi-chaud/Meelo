@@ -44,11 +44,16 @@ import * as Plugins from "./app.plugins";
 import { BullModule } from "@nestjs/bull";
 import VideoModule from "./video/video.module";
 import PlaylistModule from "./playlist/playlist.module";
+import { MeiliSearchModule } from "nestjs-meilisearch";
 
 @Module({
 	imports: [
 		ScheduleModule.forRoot(),
 		ConfigModule.forRoot(),
+		MeiliSearchModule.forRoot({
+			host: process.env.MEILI_HOST!,
+			apiKey: process.env.MEILI_MASTER_KEY,
+		}),
 		BullModule.forRoot({
 			redis: {
 				host: process.env.REDIS_HOST,

@@ -28,10 +28,7 @@ import {
 import { Prisma } from "@prisma/client";
 import PrismaService from "src/prisma/prisma.service";
 import type ArtistQueryParameters from "./models/artist.query-parameters";
-import {
-	type PaginationParameters,
-	buildPaginationParameters,
-} from "src/pagination/models/pagination-parameters";
+import { type PaginationParameters } from "src/pagination/models/pagination-parameters";
 import RepositoryService from "src/repository/repository.service";
 import { buildStringSearchParameters } from "src/utils/search-string-input";
 import GenreService from "src/genre/genre.service";
@@ -46,6 +43,8 @@ import { PrismaError } from "prisma-error-enum";
 import AlbumService from "src/album/album.service";
 import IllustrationRepository from "src/illustration/illustration.repository";
 import deepmerge from "deepmerge";
+import MeiliSearch from "meilisearch";
+import { InjectMeiliSearch } from "nestjs-meilisearch";
 
 @Injectable()
 export default class ArtistService extends RepositoryService<
@@ -65,10 +64,14 @@ export default class ArtistService extends RepositoryService<
 > {
 	private readonly logger = new Logger(ArtistService.name);
 	constructor(
+		@InjectMeiliSearch() private readonly meiliSearch: MeiliSearch,
 		private prismaService: PrismaService,
 		private illustrationRepository: IllustrationRepository,
 	) {
 		super(prismaService, "artist");
+		this.meiliSearch.createIndex(this.getTableName(), {
+			primaryKey: "id",
+		});
 	}
 
 	getTableName() {
@@ -92,6 +95,16 @@ export default class ArtistService extends RepositoryService<
 		input: ArtistQueryParameters.CreateInput,
 	) {
 		return { slug: new Slug(input.name) };
+	}
+
+	protected onCreated(created: Artist) {
+		this.meiliSearch.index(this.getTableName()).addDocuments([
+			{
+				id: created.id,
+				slug: created.slug,
+				name: created.name,
+			},
+		]);
 	}
 
 	protected onCreationFailure(
@@ -302,6 +315,10 @@ export default class ArtistService extends RepositoryService<
 		});
 		const deletedArtist = await super.delete(where);
 
+		this.meiliSearch
+			.index(this.getTableName())
+			.deleteDocument(deletedArtist.id);
+
 		this.logger.warn(`Artist '${deletedArtist.slug}' deleted`);
 		return deletedArtist;
 	}
@@ -340,8 +357,7 @@ export default class ArtistService extends RepositoryService<
 	}
 
 	/**
-	 * Search for artists
-	 * The token is used to look through an artist's name, or their songs or album
+	 * Search for albums using a token.
 	 */
 	public async search<I extends ArtistQueryParameters.RelationInclude>(
 		token: string,
@@ -350,38 +366,26 @@ export default class ArtistService extends RepositoryService<
 		include?: I,
 		sort?: ArtistQueryParameters.SortingParameter,
 	) {
-		if (token.length == 0) {
-			return [];
+		const matches = await this.meiliSearch
+			.index(this.getTableName())
+			.search(
+				token,
+				!sort
+					? {
+							limit: pagination?.take,
+							offset: pagination?.skip,
+					  }
+					: {},
+			)
+			.then((res) => res.hits.map((hit) => hit.id as number));
+		if (sort) {
+			return this.getMany(
+				{ ...where, id: { in: matches } },
+				pagination,
+				include,
+				sort,
+			);
 		}
-		// Transforms the toke into a slug, and remove trailing excl. mark if token is numeric
-		const slug = new Slug(token).toString().replace("!", "");
-		const ormSearchToken = slug.split(Slug.separator);
-		const ormSearchFilter = ormSearchToken.map((subToken: string) => ({
-			contains: subToken,
-		}));
-
-		return this.prismaService.artist.findMany({
-			...buildPaginationParameters(pagination),
-			orderBy: sort
-				? this.formatSortingInput(sort)
-				: {
-						_relevance: {
-							fields: ["slug"],
-							search: slug,
-							sort: "asc",
-						},
-				  },
-			include: this.formatInclude(include),
-			where: {
-				...this.formatManyWhereInput(where),
-				OR: [
-					...ormSearchFilter.map((filter) => ({ slug: filter })),
-					// ...ormSearchFilter.map((filter) => ({ songs: { some: { slug: filter } } })),
-					// ...ormSearchFilter.map((filter) => ({
-					// 	albums: { some: { releases: { some: { slug: filter } } } }
-					// }))
-				],
-			},
-		});
+		return this.getByIdList(matches, where, pagination, include);
 	}
 }

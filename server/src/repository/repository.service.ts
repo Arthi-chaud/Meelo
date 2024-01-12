@@ -346,6 +346,27 @@ abstract class RepositoryService<
 		}
 	}
 
+	async getByIdList<I extends ModelSelector<Relations>>(
+		ids: number[],
+		where?: ManyWhereInput,
+		pagination?: PaginationParameters,
+		include?: I,
+	) {
+		return this.getMany(
+			{
+				id: { in: ids },
+				...(where ?? {}),
+			} as unknown as ManyWhereInput,
+			{ afterId: pagination?.afterId },
+			include,
+		).then((items) =>
+			items
+				.map((item) => ({ item, index: ids.indexOf(item.id) }))
+				.sort((item1, item2) => item1.index - item2.index)
+				.map(({ item }) => item),
+		);
+	}
+
 	/**
 	 * Find multiple entities
 	 * @param where the query parameters to find entities
@@ -367,22 +388,11 @@ abstract class RepositoryService<
 					await this.prismaHandle.$queryRawUnsafe(
 						`SELECT id FROM ${this.getTableName()} ORDER BY MD5(${seed.toString()} || id::text)`,
 					);
-				const ids = res.map(({ id }) => id);
+				const ids = res
+					.map(({ id }) => id)
+					.slice(pagination?.skip ?? 0, pagination?.take);
 
-				return this.getMany(
-					where,
-					{ afterId: pagination?.afterId },
-					include,
-				).then((items) =>
-					items
-						.map((item) => ({ item, index: ids.indexOf(item.id) }))
-						.sort((item1, item2) => item1.index - item2.index)
-						.map(({ item }) => item)
-						.slice(
-							pagination?.skip ?? 0,
-							pagination?.take ?? items.length,
-						),
-				);
+				return this.getByIdList(ids, undefined, pagination, include);
 			});
 		}
 		const sort = sortOrSeed as SortingParameter<SortingKeys>;

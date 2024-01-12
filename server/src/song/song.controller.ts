@@ -170,7 +170,7 @@ export class SongController {
 	) {
 		if (selector.query) {
 			return this.songService.search(
-				selector.query,
+				decodeURI(selector.query),
 				selector,
 				paginationParameters,
 				include,

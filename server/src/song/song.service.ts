@@ -49,6 +49,8 @@ import ReleaseService from "src/release/release.service";
 import ParserService from "src/scanner/parser.service";
 import deepmerge from "deepmerge";
 import SongGroupService from "./song-group.service";
+import MeiliSearch from "meilisearch";
+import { InjectMeiliSearch } from "nestjs-meilisearch";
 
 @Injectable()
 export default class SongService extends RepositoryService<
@@ -68,6 +70,7 @@ export default class SongService extends RepositoryService<
 > {
 	private readonly logger = new Logger(SongService.name);
 	constructor(
+		@InjectMeiliSearch() private readonly meiliSearch: MeiliSearch,
 		private prismaService: PrismaService,
 		@Inject(forwardRef(() => SongGroupService))
 		private songGroupService: SongGroupService,
@@ -83,6 +86,9 @@ export default class SongService extends RepositoryService<
 		private parserService: ParserService,
 	) {
 		super(prismaService, "song");
+		this.meiliSearch.createIndex(this.getTableName(), {
+			primaryKey: "id",
+		});
 	}
 
 	getTableName() {
@@ -146,6 +152,17 @@ export default class SongService extends RepositoryService<
 				artist: input.artist,
 			},
 		};
+	}
+
+	protected onCreated(created: Song) {
+		this.meiliSearch.index(this.getTableName()).addDocuments([
+			{
+				id: created.id,
+				slug: created.slug,
+				name: created.name,
+				type: created.type,
+			},
+		]);
 	}
 
 	private _createSongSlug(
@@ -485,6 +502,9 @@ export default class SongService extends RepositoryService<
 	async delete(where: SongQueryParameters.DeleteInput): Promise<Song> {
 		return super.delete(where).then((deleted) => {
 			this.logger.warn(`Song '${deleted.slug}' deleted`);
+			this.meiliSearch
+				.index(this.getTableName())
+				.deleteDocument(where.id);
 			return deleted;
 		});
 	}
@@ -626,8 +646,7 @@ export default class SongService extends RepositoryService<
 	}
 
 	/**
-	 * Search for songs using a token.
-	 * To match, the song's slug, or its artist's, or one of its track's releases must match the token
+	 * Search for albums using a token.
 	 */
 	public async search<I extends SongQueryParameters.RelationInclude>(
 		token: string,
@@ -636,39 +655,27 @@ export default class SongService extends RepositoryService<
 		include?: I,
 		sort?: SongQueryParameters.SortingParameter,
 	) {
-		if (token.length == 0) {
-			return [];
+		const matches = await this.meiliSearch
+			.index(this.getTableName())
+			.search(
+				token,
+				!sort
+					? {
+							limit: pagination?.take,
+							offset: pagination?.skip,
+					  }
+					: {},
+			)
+			.then((res) => res.hits.map((hit) => hit.id as number));
+		if (sort) {
+			return this.getMany(
+				{ ...where, id: { in: matches } },
+				pagination,
+				include,
+				sort,
+			);
 		}
-		// Transforms the toke into a slug, and remove trailing excl. mark if token is numeric
-		const slug = new Slug(token).toString().replace("!", "");
-		const ormSearchToken = slug.split(Slug.separator);
-		const ormSearchFilter = ormSearchToken.map((subToken: string) => ({
-			contains: subToken,
-		}));
-
-		return this.prismaService.song.findMany({
-			...buildPaginationParameters(pagination),
-			orderBy: sort
-				? this.formatSortingInput(sort)
-				: {
-						_relevance: {
-							fields: ["slug"],
-							search: slug,
-							sort: "asc",
-						},
-				  },
-			include: this.formatInclude(include),
-			where: {
-				...this.formatManyWhereInput(where),
-				OR: [
-					...ormSearchFilter.map((filter) => ({ slug: filter })),
-					// ...ormSearchFilter.map((filter) => ({ artist: { slug: filter } })),
-					// ...ormSearchFilter.map((filter) => ({
-					// 	tracks: { some: { release: { slug: filter } } }
-					// }))
-				],
-			},
-		});
+		return this.getByIdList(matches, where, pagination, include);
 	}
 
 	/**
