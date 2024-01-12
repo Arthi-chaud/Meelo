@@ -107,9 +107,9 @@ describe("Artist Controller", () => {
 					const artists: Artist[] = res.body.items;
 					expect(artists.length).toBe(0);
 				});
-			await artistService.delete({ id: artist1.id});
-			await artistService.delete({ id: artist2.id});
-			await artistService.delete({ id: artist3.id});
+			await artistService.delete({ id: artist1.id });
+			await artistService.delete({ id: artist2.id });
+			await artistService.delete({ id: artist3.id });
 		});
 	});
 
