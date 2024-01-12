@@ -18,6 +18,7 @@
 
 /* eslint-disable @typescript-eslint/ban-types */
 import { PrismaClient } from "@prisma/client";
+import MeiliSearch from "meilisearch";
 import { InvalidRequestException } from "src/exceptions/meelo-exception";
 // eslint-disable-next-line no-restricted-imports
 import { UnhandledORMErrorException } from "src/exceptions/orm-exceptions";
@@ -346,6 +347,27 @@ abstract class RepositoryService<
 		}
 	}
 
+	async getByIdList<I extends ModelSelector<Relations>>(
+		ids: number[],
+		where?: ManyWhereInput,
+		pagination?: PaginationParameters,
+		include?: I,
+	) {
+		return this.getMany(
+			{
+				id: { in: ids },
+				...(where ?? {}),
+			} as unknown as ManyWhereInput,
+			{ afterId: pagination?.afterId },
+			include,
+		).then((items) =>
+			items
+				.map((item) => ({ item, index: ids.indexOf(item.id) }))
+				.sort((item1, item2) => item1.index - item2.index)
+				.map(({ item }) => item),
+		);
+	}
+
 	/**
 	 * Find multiple entities
 	 * @param where the query parameters to find entities
@@ -367,22 +389,11 @@ abstract class RepositoryService<
 					await this.prismaHandle.$queryRawUnsafe(
 						`SELECT id FROM ${this.getTableName()} ORDER BY MD5(${seed.toString()} || id::text)`,
 					);
-				const ids = res.map(({ id }) => id);
+				const ids = res
+					.map(({ id }) => id)
+					.slice(pagination?.skip ?? 0, pagination?.take);
 
-				return this.getMany(
-					where,
-					{ afterId: pagination?.afterId },
-					include,
-				).then((items) =>
-					items
-						.map((item) => ({ item, index: ids.indexOf(item.id) }))
-						.sort((item1, item2) => item1.index - item2.index)
-						.map(({ item }) => item)
-						.slice(
-							pagination?.skip ?? 0,
-							pagination?.take ?? items.length,
-						),
-				);
+				return this.getByIdList(ids, undefined, pagination, include);
 			});
 		}
 		const sort = sortOrSeed as SortingParameter<SortingKeys>;
@@ -599,3 +610,176 @@ abstract class RepositoryService<
 }
 
 export default RepositoryService;
+
+/**
+ * Base Repository Service Definition
+ */
+export abstract class SearchableRepositoryService<
+	Model extends AtomicModel,
+	CreateInput,
+	WhereInput,
+	ManyWhereInput extends Partial<{ id: { in: number[] } }>,
+	UpdateInput,
+	DeleteInput,
+	SortingKeys extends readonly string[],
+	RepositoryCreateInput,
+	RepositoryWhereInput,
+	RepositoryManyWhereInput,
+	RepositoryUpdateInput,
+	RepositoryDeleteInput,
+	RepositorySortingInput,
+	BaseModel extends AtomicModel = Base<Model>,
+	Relations extends ModelRelations<Model> = ModelRelations<Model>,
+	Delegate extends {
+		create: ORMGetterMethod<
+			BaseModel,
+			Relations,
+			{ data: RepositoryCreateInput }
+		>;
+		findFirstOrThrow: ORMGetterMethod<
+			BaseModel,
+			Relations,
+			{ where: RepositoryWhereInput }
+		>;
+		findMany: ORMManyGetterMethod<
+			BaseModel,
+			Relations,
+			{ where: RepositoryManyWhereInput }
+		>;
+		delete: (args: { where: RepositoryDeleteInput }) => Promise<BaseModel>;
+		update: (args: {
+			where: RepositoryWhereInput;
+			data: RepositoryUpdateInput;
+		}) => Promise<BaseModel>;
+		count: (args: { where: RepositoryManyWhereInput }) => Promise<number>;
+	} = {
+		create: ORMGetterMethod<
+			BaseModel,
+			Relations,
+			{ data: RepositoryCreateInput }
+		>;
+		findFirstOrThrow: ORMGetterMethod<
+			BaseModel,
+			Relations,
+			{ where: RepositoryWhereInput }
+		>;
+		findMany: ORMManyGetterMethod<
+			BaseModel,
+			Relations,
+			{ where: RepositoryManyWhereInput }
+		>;
+		delete: (args: { where: RepositoryDeleteInput }) => Promise<BaseModel>;
+		update: (args: {
+			where: RepositoryWhereInput;
+			data: RepositoryUpdateInput;
+		}) => Promise<BaseModel>;
+		count: (args: { where: RepositoryManyWhereInput }) => Promise<number>;
+	},
+	RepoKey extends keyof PrismaClient = keyof PrismaClient,
+	PrismaHandle extends PrismaClient = PrismaClient,
+> extends RepositoryService<
+	Model,
+	CreateInput,
+	WhereInput,
+	ManyWhereInput,
+	UpdateInput,
+	DeleteInput,
+	SortingKeys,
+	RepositoryCreateInput,
+	RepositoryWhereInput,
+	RepositoryManyWhereInput,
+	RepositoryUpdateInput,
+	RepositoryDeleteInput,
+	RepositorySortingInput,
+	BaseModel,
+	Relations,
+	Delegate
+> {
+	constructor(
+		protected prismaHandle: PrismaHandle,
+		prismaDelegateKey: RepoKey,
+		searchableKeys: string[],
+		protected readonly meiliSearch: MeiliSearch,
+	) {
+		super(prismaHandle, prismaDelegateKey);
+		this.meiliSearch
+			.createIndex(this.getTableName(), {
+				primaryKey: "id",
+			})
+			.then(async (task) => {
+				await this.meiliSearch.waitForTask(task.taskUid);
+				this.meiliSearch
+					.index(this.getTableName())
+					.updateSearchableAttributes(searchableKeys);
+				this.meiliSearch
+					.index(this.getTableName())
+					.updateDisplayedAttributes(["id"]);
+				this.meiliSearch
+					.index(this.getTableName())
+					.getDocuments()
+					.then((documents) => {
+						if (documents.total == 0) {
+							this.getMany({} as unknown as ManyWhereInput).then(
+								(items) =>
+									this.meiliSearch
+										.index(this.getTableName())
+										.addDocuments(
+											items.map((item) =>
+												this.formatSearchableEntries(
+													item,
+												),
+											),
+										),
+							);
+						}
+					});
+			});
+	}
+
+	protected onCreated(created: BaseModel) {
+		super.onCreated(created);
+		this.meiliSearch
+			.index(this.getTableName())
+			.addDocuments([this.formatSearchableEntries(created)]);
+	}
+
+	abstract formatSearchableEntries(item: BaseModel): object;
+
+	protected onDeleted(deleted: BaseModel) {
+		super.onDeleted(deleted);
+		this.meiliSearch.index(this.getTableName()).deleteDocument(deleted.id);
+	}
+
+	/**
+	 * Search for albums using a token.
+	 */
+	public async search<I extends ModelSelector<Relations>>(
+		token: string,
+		where: ManyWhereInput,
+		pagination?: PaginationParameters,
+		include?: I,
+		sort?: SortingParameter<SortingKeys>,
+	) {
+		const matches = await this.meiliSearch
+			.index(this.getTableName())
+			.search(
+				token,
+				!sort
+					? {
+							limit: pagination?.take,
+							offset: pagination?.skip,
+					  }
+					: {},
+			)
+			.then((res) => res.hits.map((hit) => hit.id as number));
+		if (sort) {
+			return this.getMany(
+				{ ...where, id: { in: matches } },
+				pagination,
+				include,
+				sort,
+			);
+		}
+		return this.getByIdList(matches, where, pagination, include);
+	}
+}

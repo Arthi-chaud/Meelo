@@ -8,6 +8,8 @@ services:
     depends_on:
       db:
         condition: service_healthy
+      meilisearch:
+        condition: service_healthy
     volumes:
       - config:/meelo
       - data:/data
@@ -46,6 +48,21 @@ services:
       - .env
     volumes:
       - db:/var/lib/postgresql/data
+  meilisearch:
+    image: getmeili/meilisearch:v1.5
+    restart: on-failure
+    expose:
+      - 7700
+    volumes:
+      - search:/meili_data
+    environment:
+      - MEILI_ENV=production
+      - MEILI_MASTER_KEY=${MEILI_MASTER_KEY}
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--spider", "http://localhost:7700/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
   nginx:
     restart: on-failure
     image: nginx:1.24.0-alpine

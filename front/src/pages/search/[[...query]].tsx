@@ -106,6 +106,7 @@ const SearchPage = (props: InferSSRProps<typeof getServerSideProps>) => {
 				/>
 			</Box>
 			<SelectableInfiniteView
+				disableSorting
 				default={type}
 				onTypeSelect={(selectedType) =>
 					router.push(
@@ -117,34 +118,31 @@ const SearchPage = (props: InferSSRProps<typeof getServerSideProps>) => {
 					)
 				}
 				enabled={query != undefined}
-				artistQuery={({ library }, sort) =>
-					API.getArtists(
-						{
-							query: encodeURIComponent(query!),
-							library: library ?? undefined,
-						},
-						sort,
-					)
+				artistQuery={({ library }) =>
+					API.getArtists({
+						query: encodeURIComponent(query!),
+						library: library ?? undefined,
+					})
 				}
-				albumQuery={({ library, type: newType }, sort) =>
+				albumQuery={({ library, type: newType }) =>
 					API.getAlbums(
 						{
 							query: encodeURIComponent(query!),
 							type: newType,
 							library: library ?? undefined,
 						},
-						sort,
+						undefined,
 						["artist"],
 					)
 				}
-				songQuery={({ library, type: newType }, sort) =>
+				songQuery={({ library, type: newType }) =>
 					API.getSongs(
 						{
 							query: encodeURIComponent(query!),
 							type: newType,
 							library: library ?? undefined,
 						},
-						sort,
+						undefined,
 						["artist", "featuring"],
 					)
 				}

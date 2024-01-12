@@ -43,7 +43,6 @@ import ExternalIdService from "src/providers/external-id.provider";
 import { LyricsService } from "src/lyrics/lyrics.service";
 import PlaylistService from "src/playlist/playlist.service";
 import IllustrationRepository from "src/illustration/illustration.repository";
-import { SongType } from "@prisma/client";
 import ParserService from "src/scanner/parser.service";
 import type RefreshMetadataSelector from "./models/refresh-metadata.selector";
 import SongGroupService from "src/song/song-group.service";
@@ -226,7 +225,6 @@ export default class TaskRunner {
 		this.logger.log(
 			`${parentLibrary.slug} library: ${newlyRegistered.length} new files registered`,
 		);
-		await this.findSongTypes();
 	}
 
 	/**
@@ -432,21 +430,6 @@ export default class TaskRunner {
 			throw err;
 		}
 		return registeredFile;
-	}
-
-	private async findSongTypes() {
-		const songs = await this.songService.getMany({
-			type: SongType.Unknown,
-		});
-
-		await Promise.allSettled(
-			songs.map((song) => {
-				this.songService.update(
-					{ type: this.parserService.getSongType(song.name) },
-					{ id: song.id },
-				);
-			}),
-		);
 	}
 
 	/// Utils

@@ -102,7 +102,7 @@ export default class ArtistController {
 	) {
 		if (selector.query) {
 			return this.artistService.search(
-				selector.query,
+				decodeURI(selector.query),
 				selector,
 				paginationParameters,
 				include,

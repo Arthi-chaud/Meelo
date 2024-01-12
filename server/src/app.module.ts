@@ -31,7 +31,6 @@ import FileManagerModule from "./file-manager/file-manager.module";
 import ScannerModule from "./scanner/scanner.module";
 import PrismaModule from "./prisma/prisma.module";
 import { LyricsModule } from "./lyrics/lyrics.module";
-import SearchModule from "./search/search.module";
 import GenreModule from "./genre/genre.module";
 import AppController from "./app.controller";
 import TasksModule from "./tasks/tasks.module";
@@ -44,11 +43,16 @@ import * as Plugins from "./app.plugins";
 import { BullModule } from "@nestjs/bull";
 import VideoModule from "./video/video.module";
 import PlaylistModule from "./playlist/playlist.module";
+import { MeiliSearchModule } from "nestjs-meilisearch";
 
 @Module({
 	imports: [
 		ScheduleModule.forRoot(),
 		ConfigModule.forRoot(),
+		MeiliSearchModule.forRoot({
+			host: process.env.MEILI_HOST!,
+			apiKey: process.env.MEILI_MASTER_KEY,
+		}),
 		BullModule.forRoot({
 			redis: {
 				host: process.env.REDIS_HOST,
@@ -73,7 +77,6 @@ import PlaylistModule from "./playlist/playlist.module";
 		SettingsModule,
 		FileManagerModule,
 		GenreModule,
-		SearchModule,
 		LyricsModule,
 		TasksModule,
 		AuthenticationModule,

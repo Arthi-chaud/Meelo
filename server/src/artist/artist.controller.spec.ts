@@ -27,6 +27,7 @@ import ProvidersModule from "src/providers/providers.module";
 import SettingsModule from "src/settings/settings.module";
 import SettingsService from "src/settings/settings.service";
 import ProviderService from "src/providers/provider.service";
+import { Meilisearch } from "meilisearch";
 
 describe("Artist Controller", () => {
 	let dummyRepository: TestPrismaService;
@@ -343,42 +344,6 @@ describe("Artist Controller", () => {
 		});
 	});
 
-	describe("Search Artists", () => {
-		it("Search artists", () => {
-			return request(app.getHttpServer())
-				.get(`/artists?query=a`)
-				.expect(200)
-				.expect((res) => {
-					const artists: Artist[] = res.body.items;
-					expect(artists.length).toBe(3);
-					expect(artists).toContainEqual(
-						expectedArtistResponse(dummyRepository.artistA),
-					);
-					expect(artists).toContainEqual(
-						expectedArtistResponse(dummyRepository.artistB),
-					);
-					expect(artists).toContainEqual(
-						expectedArtistResponse(dummyRepository.artistC),
-					);
-				});
-		});
-
-		it("Search artists, w/ pagination", () => {
-			return request(app.getHttpServer())
-				.get(`/artists?query=a&skip=1`)
-				.expect(200)
-				.expect((res) => {
-					const artists: Artist[] = res.body.items;
-					expect(artists.length).toBe(2);
-					expect(artists).toContainEqual(
-						expectedArtistResponse(dummyRepository.artistB),
-					);
-					expect(artists).toContainEqual(
-						expectedArtistResponse(dummyRepository.artistC),
-					);
-				});
-		});
-	});
 	describe("Artist Illustration", () => {
 		it("Should return the illustration", async () => {
 			const illustration =

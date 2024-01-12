@@ -31,6 +31,7 @@ type InfiniteResourceViewProps<
 		options: OptionState<SortingKeys> & AdditionalQueryParams,
 	) => ReturnType<MeeloInfiniteQueryFn<ResourceType>>;
 	light?: boolean;
+	disableSorting?: true;
 	defaultLayout?: LayoutOption;
 	initialSortingOrder?: Order;
 	initialSortingField?: SortingKeys[number];

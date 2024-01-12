@@ -81,6 +81,8 @@ jobs:
       DATABASE_URL: "postgresql://test:test@postgres:5432/test?schema=public"
       JWT_SIGNATURE: "12345"
       GENIUS_ACCESS_TOKEN: "${{ secrets.GENIUS_ACCESS_TOKEN }}"
+      MEILI_MASTER_KEY: 1234
+      MEILI_HOST: http://meilisearch:7700
     services:
       postgres:
         image: postgres:alpine3.16
@@ -104,6 +106,12 @@ jobs:
           --health-interval 10s
           --health-timeout 5s
           --health-retries 5
+      meilisearch:
+        image: getmeili/meilisearch:v1.5
+        ports:
+          - 7700:7700
+        env:
+          MEILI_MASTER_KEY: 1234
     steps:
       - name: Check out the repo
         uses: actions/checkout@v3

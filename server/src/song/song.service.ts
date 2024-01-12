@@ -24,7 +24,9 @@ import PrismaService from "src/prisma/prisma.service";
 import SongQueryParameters from "./models/song.query-params";
 import TrackService from "src/track/track.service";
 import GenreService from "src/genre/genre.service";
-import RepositoryService from "src/repository/repository.service";
+import RepositoryService, {
+	SearchableRepositoryService,
+} from "src/repository/repository.service";
 import { CompilationArtistException } from "src/artist/artist.exceptions";
 import { buildStringSearchParameters } from "src/utils/search-string-input";
 import {
@@ -49,9 +51,11 @@ import ReleaseService from "src/release/release.service";
 import ParserService from "src/scanner/parser.service";
 import deepmerge from "deepmerge";
 import SongGroupService from "./song-group.service";
+import MeiliSearch from "meilisearch";
+import { InjectMeiliSearch } from "nestjs-meilisearch";
 
 @Injectable()
-export default class SongService extends RepositoryService<
+export default class SongService extends SearchableRepositoryService<
 	SongWithRelations,
 	SongQueryParameters.CreateInput,
 	SongQueryParameters.WhereInput,
@@ -68,6 +72,7 @@ export default class SongService extends RepositoryService<
 > {
 	private readonly logger = new Logger(SongService.name);
 	constructor(
+		@InjectMeiliSearch() protected readonly meiliSearch: MeiliSearch,
 		private prismaService: PrismaService,
 		@Inject(forwardRef(() => SongGroupService))
 		private songGroupService: SongGroupService,
@@ -82,7 +87,7 @@ export default class SongService extends RepositoryService<
 		@Inject(forwardRef(() => ParserService))
 		private parserService: ParserService,
 	) {
-		super(prismaService, "song");
+		super(prismaService, "song", ["name", "slug", "lyrics"], meiliSearch);
 	}
 
 	getTableName() {
@@ -145,6 +150,15 @@ export default class SongService extends RepositoryService<
 				slug: this._createSongSlug(input.name, input.featuring),
 				artist: input.artist,
 			},
+		};
+	}
+
+	formatSearchableEntries(created: Song) {
+		return {
+			id: created.id,
+			slug: created.slug,
+			name: created.name,
+			type: created.type,
 		};
 	}
 
@@ -622,52 +636,6 @@ export default class SongService extends RepositoryService<
 			orderBy: sort ? this.formatSortingInput(sort) : undefined,
 			include: this.formatInclude(include),
 			...buildPaginationParameters(pagination),
-		});
-	}
-
-	/**
-	 * Search for songs using a token.
-	 * To match, the song's slug, or its artist's, or one of its track's releases must match the token
-	 */
-	public async search<I extends SongQueryParameters.RelationInclude>(
-		token: string,
-		where: SongQueryParameters.ManyWhereInput,
-		pagination?: PaginationParameters,
-		include?: I,
-		sort?: SongQueryParameters.SortingParameter,
-	) {
-		if (token.length == 0) {
-			return [];
-		}
-		// Transforms the toke into a slug, and remove trailing excl. mark if token is numeric
-		const slug = new Slug(token).toString().replace("!", "");
-		const ormSearchToken = slug.split(Slug.separator);
-		const ormSearchFilter = ormSearchToken.map((subToken: string) => ({
-			contains: subToken,
-		}));
-
-		return this.prismaService.song.findMany({
-			...buildPaginationParameters(pagination),
-			orderBy: sort
-				? this.formatSortingInput(sort)
-				: {
-						_relevance: {
-							fields: ["slug"],
-							search: slug,
-							sort: "asc",
-						},
-				  },
-			include: this.formatInclude(include),
-			where: {
-				...this.formatManyWhereInput(where),
-				OR: [
-					...ormSearchFilter.map((filter) => ({ slug: filter })),
-					// ...ormSearchFilter.map((filter) => ({ artist: { slug: filter } })),
-					// ...ormSearchFilter.map((filter) => ({
-					// 	tracks: { some: { release: { slug: filter } } }
-					// }))
-				],
-			},
 		});
 	}
 

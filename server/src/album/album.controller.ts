@@ -143,7 +143,7 @@ export default class AlbumController {
 	) {
 		if (selector.query) {
 			return this.albumService.search(
-				selector.query,
+				decodeURI(selector.query),
 				selector,
 				paginationParameters,
 				include,

@@ -31,7 +31,9 @@ import PrismaService from "src/prisma/prisma.service";
 import AlbumQueryParameters from "./models/album.query-parameters";
 import type ArtistQueryParameters from "src/artist/models/artist.query-parameters";
 import ReleaseService from "src/release/release.service";
-import RepositoryService from "src/repository/repository.service";
+import RepositoryService, {
+	SearchableRepositoryService,
+} from "src/repository/repository.service";
 import { buildStringSearchParameters } from "src/utils/search-string-input";
 import SongService from "src/song/song.service";
 import { Album, AlbumWithRelations } from "src/prisma/models";
@@ -41,17 +43,15 @@ import Identifier from "src/identifier/models/identifier";
 import Logger from "src/logger/logger";
 import ReleaseQueryParameters from "src/release/models/release.query-parameters";
 import { PrismaError } from "prisma-error-enum";
-import {
-	PaginationParameters,
-	buildPaginationParameters,
-} from "src/pagination/models/pagination-parameters";
 import IllustrationRepository from "src/illustration/illustration.repository";
 import ParserService from "src/scanner/parser.service";
 import deepmerge from "deepmerge";
 import GenreService from "src/genre/genre.service";
+import MeiliSearch from "meilisearch";
+import { InjectMeiliSearch } from "nestjs-meilisearch";
 
 @Injectable()
-export default class AlbumService extends RepositoryService<
+export default class AlbumService extends SearchableRepositoryService<
 	AlbumWithRelations,
 	AlbumQueryParameters.CreateInput,
 	AlbumQueryParameters.WhereInput,
@@ -76,8 +76,10 @@ export default class AlbumService extends RepositoryService<
 		@Inject(forwardRef(() => ParserService))
 		private parserService: ParserService,
 		private illustrationRepository: IllustrationRepository,
+		@InjectMeiliSearch()
+		protected readonly meiliSearch: MeiliSearch,
 	) {
-		super(prismaService, "album");
+		super(prismaService, "album", ["name", "slug"], meiliSearch);
 	}
 
 	getTableName() {
@@ -102,6 +104,15 @@ export default class AlbumService extends RepositoryService<
 			}
 		}
 		return super.create(album, include);
+	}
+
+	formatSearchableEntries(created: Album) {
+		return {
+			id: created.id,
+			slug: created.slug,
+			name: created.name,
+			type: created.type,
+		};
 	}
 
 	formatCreateInput(input: AlbumQueryParameters.CreateInput) {
@@ -510,51 +521,5 @@ export default class AlbumService extends RepositoryService<
 			);
 		}
 		return this.onUnknownError(error, where);
-	}
-
-	/**
-	 * Search for albums using a token.
-	 * To match, the albums's slug, or its artist's, or one of its releases's song must match the token
-	 */
-	public async search<I extends AlbumQueryParameters.RelationInclude>(
-		token: string,
-		where: AlbumQueryParameters.ManyWhereInput,
-		pagination?: PaginationParameters,
-		include?: I,
-		sort?: AlbumQueryParameters.SortingParameter,
-	) {
-		if (token.length == 0) {
-			return [];
-		}
-		// Transforms the toke into a slug, and remove trailing excl. mark if token is numeric
-		const slug = new Slug(token).toString().replace("!", "");
-		const ormSearchToken = slug.split(Slug.separator);
-		const ormSearchFilter = ormSearchToken.map((subToken: string) => ({
-			contains: subToken,
-		}));
-
-		return this.prismaService.album.findMany({
-			...buildPaginationParameters(pagination),
-			orderBy: sort
-				? this.formatSortingInput(sort)
-				: {
-						_relevance: {
-							fields: ["slug"],
-							search: slug,
-							sort: "asc",
-						},
-				  },
-			include: this.formatInclude(include),
-			where: {
-				...this.formatManyWhereInput(where),
-				OR: [
-					...ormSearchFilter.map((filter) => ({ slug: filter })),
-					// ...ormSearchFilter.map((filter) => ({ artist: { slug: filter } })),
-					// ...ormSearchFilter.map((filter) => ({
-					// 	releases: { some: { tracks: { some: { song: { slug: filter } } } } }
-					// }))
-				],
-			},
-		});
 	}
 }
