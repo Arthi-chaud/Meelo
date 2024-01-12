@@ -702,15 +702,38 @@ export abstract class SearchableRepositoryService<
 		protected readonly meiliSearch: MeiliSearch,
 	) {
 		super(prismaHandle, prismaDelegateKey);
-		this.meiliSearch.createIndex(this.getTableName(), {
-			primaryKey: "id",
-		});
 		this.meiliSearch
-			.index(this.getTableName())
-			.updateSearchableAttributes(searchableKeys);
-		this.meiliSearch
-			.index(this.getTableName())
-			.updateDisplayedAttributes(["id"]);
+			.createIndex(this.getTableName(), {
+				primaryKey: "id",
+			})
+			.then(async (task) => {
+				await this.meiliSearch.waitForTask(task.taskUid);
+				this.meiliSearch
+					.index(this.getTableName())
+					.updateSearchableAttributes(searchableKeys);
+				this.meiliSearch
+					.index(this.getTableName())
+					.updateDisplayedAttributes(["id"]);
+				this.meiliSearch
+					.index(this.getTableName())
+					.getDocuments()
+					.then((documents) => {
+						if (documents.total == 0) {
+							this.getMany({} as unknown as ManyWhereInput).then(
+								(items) =>
+									this.meiliSearch
+										.index(this.getTableName())
+										.addDocuments(
+											items.map((item) =>
+												this.formatSearchableEntries(
+													item,
+												),
+											),
+										),
+							);
+						}
+					});
+			});
 	}
 
 	protected onCreated(created: BaseModel) {
