@@ -72,6 +72,12 @@ export default class ArtistService extends RepositoryService<
 		this.meiliSearch.createIndex(this.getTableName(), {
 			primaryKey: "id",
 		});
+		this.meiliSearch
+			.index(this.getTableName())
+			.updateSearchableAttributes(["name", "slug"]);
+		this.meiliSearch
+			.index(this.getTableName())
+			.updateDisplayedAttributes(["id"]);
 	}
 
 	getTableName() {

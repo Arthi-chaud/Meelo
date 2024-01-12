@@ -89,6 +89,12 @@ export default class SongService extends RepositoryService<
 		this.meiliSearch.createIndex(this.getTableName(), {
 			primaryKey: "id",
 		});
+		this.meiliSearch
+			.index(this.getTableName())
+			.updateSearchableAttributes(["name", "slug", "lyrics"]);
+		this.meiliSearch
+			.index(this.getTableName())
+			.updateDisplayedAttributes(["id"]);
 	}
 
 	getTableName() {

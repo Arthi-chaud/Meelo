@@ -27,12 +27,14 @@ import {
 	LyricsNotFoundBySongException,
 } from "./lyrics.exceptions";
 import type LyricsQueryParameters from "./models/lyrics.query-parameters";
-import { Prisma } from "@prisma/client";
+import { Lyrics, Prisma } from "@prisma/client";
 import Identifier from "src/identifier/models/identifier";
 import { PrismaError } from "prisma-error-enum";
 import Slug from "src/slug/slug";
 import ProviderService from "src/providers/provider.service";
 import Logger from "src/logger/logger";
+import MeiliSearch from "meilisearch";
+import { InjectMeiliSearch } from "nestjs-meilisearch";
 
 @Injectable()
 export class LyricsService extends RepositoryService<
@@ -52,6 +54,7 @@ export class LyricsService extends RepositoryService<
 > {
 	private readonly logger = new Logger(LyricsService.name);
 	constructor(
+		@InjectMeiliSearch() private readonly meiliSearch: MeiliSearch,
 		protected prismaService: PrismaService,
 		@Inject(forwardRef(() => SongService))
 		private songService: SongService,
@@ -79,6 +82,22 @@ export class LyricsService extends RepositoryService<
 		input: LyricsQueryParameters.CreateInput,
 	) {
 		return { song: { id: input.songId } };
+	}
+
+	protected onCreated(lyrics: Lyrics) {
+		this.meiliSearch
+			.index(this.songService.getTableName())
+			.updateDocuments([{ id: lyrics.songId, lyrics: lyrics.content }], {
+				primaryKey: "id",
+			});
+	}
+
+	protected onDeleted(lyrics: Lyrics) {
+		this.meiliSearch
+			.index(this.songService.getTableName())
+			.updateDocuments([{ id: lyrics.songId, lyrics: null }], {
+				primaryKey: "id",
+			});
 	}
 
 	protected async onCreationFailure(
