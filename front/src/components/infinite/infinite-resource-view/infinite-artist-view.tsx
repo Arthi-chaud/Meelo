@@ -37,6 +37,7 @@ const InfiniteArtistView = (
 			<Controls
 				onChange={setOptions}
 				sortingKeys={ArtistSortingKeys}
+				disableSorting={props.disableSorting}
 				defaultSortingOrder={props.initialSortingOrder}
 				defaultSortingKey={props.initialSortingField}
 				router={props.light == true ? undefined : router}

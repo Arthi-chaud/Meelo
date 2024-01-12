@@ -67,6 +67,7 @@ const InfiniteAlbumView = (
 				]}
 				onChange={setOptions}
 				sortingKeys={AlbumSortingKeys}
+				disableSorting={props.disableSorting}
 				defaultSortingOrder={props.initialSortingOrder}
 				defaultSortingKey={props.initialSortingField}
 				router={props.light == true ? undefined : router}

@@ -68,6 +68,7 @@ type SelectableInfiniteViewProps = {
 			sort: SortingParameters<typeof SongSortingKeys>,
 		]
 	>;
+	disableSorting?: true;
 	default?: string | (typeof itemTypes)[number];
 	onTypeSelect?: (
 		selectedType: SelectableInfiniteViewProps["default"],
@@ -115,12 +116,14 @@ const SelectableInfiniteView = (props: SelectableInfiniteViewProps) => {
 			{props.enabled &&
 				(selectedType == "artist" ? (
 					<InfiniteArtistView
+						disableSorting={props.disableSorting}
 						query={({ library, sortBy, order }) =>
 							props.artistQuery({ library }, { sortBy, order })
 						}
 					/>
 				) : selectedType == "album" ? (
 					<InfiniteAlbumView
+						disableSorting={props.disableSorting}
 						key={selectedType}
 						defaultAlbumType={null}
 						defaultLayout="list"
@@ -133,6 +136,7 @@ const SelectableInfiniteView = (props: SelectableInfiniteViewProps) => {
 					/>
 				) : selectedType == "song" ? (
 					<InfiniteSongView
+						disableSorting={props.disableSorting}
 						disableShuffle
 						key={selectedType}
 						query={({ sortBy, order, type, library }) =>

@@ -129,6 +129,7 @@ const InfiniteSongView = <T extends SongWithRelations<"artist" | "featuring">>(
 					playAction,
 					...(props.disableShuffle !== true ? [shuffleAction] : []),
 				]}
+				disableSorting={props.disableSorting}
 				onChange={setOptions}
 				sortingKeys={SongSortingKeys}
 				defaultSortingOrder={props.initialSortingOrder}

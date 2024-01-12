@@ -60,6 +60,7 @@ type ControllerProps<
 > = {
 	options?: Options;
 	actions?: Action[];
+	disableSorting?: true;
 	sortingKeys: SortingKeys;
 	defaultSortingKey?: SortingKeys[number];
 	defaultSortingOrder?: Order;
@@ -232,32 +233,34 @@ const Controls = <
 								}}
 							/>
 						)}
-						<OptionButton
-							optionGroup={{
-								name: `${translate("sortBy")} ${translate(
-									optionsState.sortBy as TranslationKey,
-								)}`,
-								icon:
-									optionsState.order == "desc" ? (
-										<DescIcon />
-									) : (
-										<AscIcon />
-									),
-								options: [
-									{
-										name: "sortBy",
-										values: props.sortingKeys,
-										currentValue: optionsState.sortBy,
-									},
-									{
-										name: "order",
-										values: ["asc", "desc"],
-										currentValue: optionsState.order,
-									},
-								],
-							}}
-							onSelect={updateOptionState}
-						/>
+						{!props.disableSorting && (
+							<OptionButton
+								optionGroup={{
+									name: `${translate("sortBy")} ${translate(
+										optionsState.sortBy as TranslationKey,
+									)}`,
+									icon:
+										optionsState.order == "desc" ? (
+											<DescIcon />
+										) : (
+											<AscIcon />
+										),
+									options: [
+										{
+											name: "sortBy",
+											values: props.sortingKeys,
+											currentValue: optionsState.sortBy,
+										},
+										{
+											name: "order",
+											values: ["asc", "desc"],
+											currentValue: optionsState.order,
+										},
+									],
+								}}
+								onSelect={updateOptionState}
+							/>
+						)}
 						{props.options?.map((option) => {
 							return (
 								<OptionButton
