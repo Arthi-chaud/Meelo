@@ -83,3 +83,4 @@ volumes:
   db:
   config:
   data:
+  search:
