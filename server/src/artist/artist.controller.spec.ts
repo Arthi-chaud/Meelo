@@ -33,10 +33,6 @@ describe("Artist Controller", () => {
 	let dummyRepository: TestPrismaService;
 	let app: INestApplication;
 	let providerService: ProviderService;
-	let artistService: ArtistService;
-	let artist1: Artist;
-	let artist2: Artist;
-	let artist3: Artist;
 
 	let module: TestingModule;
 	beforeAll(async () => {
@@ -72,45 +68,11 @@ describe("Artist Controller", () => {
 		providerService = module.get(ProviderService);
 		module.get(SettingsService).loadFromFile();
 		await providerService.onModuleInit();
-		artistService = module.get(ArtistService);
-		[artist1, artist2, artist3] = await Promise.all([
-			artistService.create({ name: "Kosheen" }),
-			artistService.create({ name: "Portishead" }),
-			artistService.create({ name: "Massive Attack" }),
-		]);
 	});
 
 	afterAll(async () => {
 		await app.close();
 		await module.close();
-	});
-
-	describe("Search Artists", () => {
-		it("Search artists", async () => {
-			return request(app.getHttpServer())
-				.get(`/artists?query=Mass`)
-				.expect(200)
-				.expect((res) => {
-					const artists: Artist[] = res.body.items;
-					expect(artists.length).toBe(1);
-					expect(artists).toContainEqual(
-						expectedArtistResponse(artist3),
-					);
-				});
-		});
-
-		it("Search artists, w/ pagination", async () => {
-			await request(app.getHttpServer())
-				.get(`/artists?query=Mass&skip=1`)
-				.expect(200)
-				.expect((res) => {
-					const artists: Artist[] = res.body.items;
-					expect(artists.length).toBe(0);
-				});
-			await artistService.delete({ id: artist1.id });
-			await artistService.delete({ id: artist2.id });
-			await artistService.delete({ id: artist3.id });
-		});
 	});
 
 	describe("Get Artists (GET /artists)", () => {

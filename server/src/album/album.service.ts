@@ -31,7 +31,9 @@ import PrismaService from "src/prisma/prisma.service";
 import AlbumQueryParameters from "./models/album.query-parameters";
 import type ArtistQueryParameters from "src/artist/models/artist.query-parameters";
 import ReleaseService from "src/release/release.service";
-import RepositoryService from "src/repository/repository.service";
+import RepositoryService, {
+	SearchableRepositoryService,
+} from "src/repository/repository.service";
 import { buildStringSearchParameters } from "src/utils/search-string-input";
 import SongService from "src/song/song.service";
 import { Album, AlbumWithRelations } from "src/prisma/models";
@@ -41,7 +43,6 @@ import Identifier from "src/identifier/models/identifier";
 import Logger from "src/logger/logger";
 import ReleaseQueryParameters from "src/release/models/release.query-parameters";
 import { PrismaError } from "prisma-error-enum";
-import { PaginationParameters } from "src/pagination/models/pagination-parameters";
 import IllustrationRepository from "src/illustration/illustration.repository";
 import ParserService from "src/scanner/parser.service";
 import deepmerge from "deepmerge";
@@ -50,7 +51,7 @@ import MeiliSearch from "meilisearch";
 import { InjectMeiliSearch } from "nestjs-meilisearch";
 
 @Injectable()
-export default class AlbumService extends RepositoryService<
+export default class AlbumService extends SearchableRepositoryService<
 	AlbumWithRelations,
 	AlbumQueryParameters.CreateInput,
 	AlbumQueryParameters.WhereInput,
@@ -67,7 +68,6 @@ export default class AlbumService extends RepositoryService<
 > {
 	private readonly logger = new Logger(AlbumService.name);
 	constructor(
-		@InjectMeiliSearch() private readonly meiliSearch: MeiliSearch,
 		private prismaService: PrismaService,
 		@Inject(forwardRef(() => ArtistService))
 		private artistServce: ArtistService,
@@ -76,17 +76,10 @@ export default class AlbumService extends RepositoryService<
 		@Inject(forwardRef(() => ParserService))
 		private parserService: ParserService,
 		private illustrationRepository: IllustrationRepository,
+		@InjectMeiliSearch()
+		protected readonly meiliSearch: MeiliSearch,
 	) {
-		super(prismaService, "album");
-		this.meiliSearch.createIndex(this.getTableName(), {
-			primaryKey: "id",
-		});
-		this.meiliSearch
-			.index(this.getTableName())
-			.updateSearchableAttributes(["name", "slug"]);
-		this.meiliSearch
-			.index(this.getTableName())
-			.updateDisplayedAttributes(["id"]);
+		super(prismaService, "album", ["name", "slug"], meiliSearch);
 	}
 
 	getTableName() {
@@ -113,15 +106,13 @@ export default class AlbumService extends RepositoryService<
 		return super.create(album, include);
 	}
 
-	protected onCreated(created: Album) {
-		this.meiliSearch.index(this.getTableName()).addDocuments([
-			{
-				id: created.id,
-				slug: created.slug,
-				name: created.name,
-				type: created.type,
-			},
-		]);
+	formatSearchableEntries(created: Album) {
+		return {
+			id: created.id,
+			slug: created.slug,
+			name: created.name,
+			type: created.type,
+		};
 	}
 
 	formatCreateInput(input: AlbumQueryParameters.CreateInput) {
@@ -401,8 +392,6 @@ export default class AlbumService extends RepositoryService<
 		await this.illustrationRepository.deleteAlbumIllustrations(where);
 		const album = await super.delete(where);
 
-		this.meiliSearch.index(this.getTableName()).deleteDocument(album.id);
-
 		this.logger.warn(`Album '${album.slug}' deleted`);
 		return album;
 	}
@@ -532,38 +521,5 @@ export default class AlbumService extends RepositoryService<
 			);
 		}
 		return this.onUnknownError(error, where);
-	}
-
-	/**
-	 * Search for albums using a token.
-	 */
-	public async search<I extends AlbumQueryParameters.RelationInclude>(
-		token: string,
-		where: AlbumQueryParameters.ManyWhereInput,
-		pagination?: PaginationParameters,
-		include?: I,
-		sort?: AlbumQueryParameters.SortingParameter,
-	) {
-		const matches = await this.meiliSearch
-			.index(this.getTableName())
-			.search(
-				token,
-				!sort
-					? {
-							limit: pagination?.take,
-							offset: pagination?.skip,
-					  }
-					: {},
-			)
-			.then((res) => res.hits.map((hit) => hit.id as number));
-		if (sort) {
-			return this.getMany(
-				{ ...where, id: { in: matches } },
-				pagination,
-				include,
-				sort,
-			);
-		}
-		return this.getByIdList(matches, where, pagination, include);
 	}
 }

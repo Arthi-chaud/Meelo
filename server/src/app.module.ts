@@ -31,7 +31,6 @@ import FileManagerModule from "./file-manager/file-manager.module";
 import ScannerModule from "./scanner/scanner.module";
 import PrismaModule from "./prisma/prisma.module";
 import { LyricsModule } from "./lyrics/lyrics.module";
-import SearchModule from "./search/search.module";
 import GenreModule from "./genre/genre.module";
 import AppController from "./app.controller";
 import TasksModule from "./tasks/tasks.module";
@@ -78,7 +77,6 @@ import { MeiliSearchModule } from "nestjs-meilisearch";
 		SettingsModule,
 		FileManagerModule,
 		GenreModule,
-		SearchModule,
 		LyricsModule,
 		TasksModule,
 		AuthenticationModule,

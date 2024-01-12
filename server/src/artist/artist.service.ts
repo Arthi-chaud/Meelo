@@ -28,8 +28,9 @@ import {
 import { Prisma } from "@prisma/client";
 import PrismaService from "src/prisma/prisma.service";
 import type ArtistQueryParameters from "./models/artist.query-parameters";
-import { type PaginationParameters } from "src/pagination/models/pagination-parameters";
-import RepositoryService from "src/repository/repository.service";
+import RepositoryService, {
+	SearchableRepositoryService,
+} from "src/repository/repository.service";
 import { buildStringSearchParameters } from "src/utils/search-string-input";
 import GenreService from "src/genre/genre.service";
 import ReleaseService from "src/release/release.service";
@@ -47,7 +48,7 @@ import MeiliSearch from "meilisearch";
 import { InjectMeiliSearch } from "nestjs-meilisearch";
 
 @Injectable()
-export default class ArtistService extends RepositoryService<
+export default class ArtistService extends SearchableRepositoryService<
 	ArtistWithRelations,
 	ArtistQueryParameters.CreateInput,
 	ArtistQueryParameters.WhereInput,
@@ -64,20 +65,11 @@ export default class ArtistService extends RepositoryService<
 > {
 	private readonly logger = new Logger(ArtistService.name);
 	constructor(
-		@InjectMeiliSearch() private readonly meiliSearch: MeiliSearch,
+		@InjectMeiliSearch() protected readonly meiliSearch: MeiliSearch,
 		private prismaService: PrismaService,
 		private illustrationRepository: IllustrationRepository,
 	) {
-		super(prismaService, "artist");
-		this.meiliSearch.createIndex(this.getTableName(), {
-			primaryKey: "id",
-		});
-		this.meiliSearch
-			.index(this.getTableName())
-			.updateSearchableAttributes(["name", "slug"]);
-		this.meiliSearch
-			.index(this.getTableName())
-			.updateDisplayedAttributes(["id"]);
+		super(prismaService, "artist", ["name", "slug"], meiliSearch);
 	}
 
 	getTableName() {
@@ -103,14 +95,12 @@ export default class ArtistService extends RepositoryService<
 		return { slug: new Slug(input.name) };
 	}
 
-	protected onCreated(created: Artist) {
-		this.meiliSearch.index(this.getTableName()).addDocuments([
-			{
-				id: created.id,
-				slug: created.slug,
-				name: created.name,
-			},
-		]);
+	formatSearchableEntries(created: Artist) {
+		return {
+			id: created.id,
+			slug: created.slug,
+			name: created.name,
+		};
 	}
 
 	protected onCreationFailure(
@@ -321,10 +311,6 @@ export default class ArtistService extends RepositoryService<
 		});
 		const deletedArtist = await super.delete(where);
 
-		this.meiliSearch
-			.index(this.getTableName())
-			.deleteDocument(deletedArtist.id);
-
 		this.logger.warn(`Artist '${deletedArtist.slug}' deleted`);
 		return deletedArtist;
 	}
@@ -360,38 +346,5 @@ export default class ArtistService extends RepositoryService<
 			);
 
 		await Promise.all(emptyArtists.map(({ id }) => this.delete({ id })));
-	}
-
-	/**
-	 * Search for albums using a token.
-	 */
-	public async search<I extends ArtistQueryParameters.RelationInclude>(
-		token: string,
-		where: ArtistQueryParameters.ManyWhereInput,
-		pagination?: PaginationParameters,
-		include?: I,
-		sort?: ArtistQueryParameters.SortingParameter,
-	) {
-		const matches = await this.meiliSearch
-			.index(this.getTableName())
-			.search(
-				token,
-				!sort
-					? {
-							limit: pagination?.take,
-							offset: pagination?.skip,
-					  }
-					: {},
-			)
-			.then((res) => res.hits.map((hit) => hit.id as number));
-		if (sort) {
-			return this.getMany(
-				{ ...where, id: { in: matches } },
-				pagination,
-				include,
-				sort,
-			);
-		}
-		return this.getByIdList(matches, where, pagination, include);
 	}
 }
