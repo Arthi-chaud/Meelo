@@ -27,11 +27,16 @@ import ProvidersModule from "src/providers/providers.module";
 import SettingsModule from "src/settings/settings.module";
 import SettingsService from "src/settings/settings.service";
 import ProviderService from "src/providers/provider.service";
+import { Meilisearch } from "meilisearch";
 
 describe("Artist Controller", () => {
 	let dummyRepository: TestPrismaService;
 	let app: INestApplication;
 	let providerService: ProviderService;
+	let artistService: ArtistService;
+	let artist1: Artist;
+	let artist2: Artist;
+	let artist3: Artist;
 
 	let module: TestingModule;
 	beforeAll(async () => {
@@ -67,11 +72,45 @@ describe("Artist Controller", () => {
 		providerService = module.get(ProviderService);
 		module.get(SettingsService).loadFromFile();
 		await providerService.onModuleInit();
+		artistService = module.get(ArtistService);
+		[artist1, artist2, artist3] = await Promise.all([
+			artistService.create({ name: "Kosheen" }),
+			artistService.create({ name: "Portishead" }),
+			artistService.create({ name: "Massive Attack" }),
+		]);
 	});
 
 	afterAll(async () => {
 		await app.close();
 		await module.close();
+	});
+
+	describe("Search Artists", () => {
+		it("Search artists", async () => {
+			return request(app.getHttpServer())
+				.get(`/artists?query=Mass`)
+				.expect(200)
+				.expect((res) => {
+					const artists: Artist[] = res.body.items;
+					expect(artists.length).toBe(1);
+					expect(artists).toContainEqual(
+						expectedArtistResponse(artist3),
+					);
+				});
+		});
+
+		it("Search artists, w/ pagination", async () => {
+			await request(app.getHttpServer())
+				.get(`/artists?query=Mass&skip=1`)
+				.expect(200)
+				.expect((res) => {
+					const artists: Artist[] = res.body.items;
+					expect(artists.length).toBe(0);
+				});
+			await artistService.delete({ id: artist1.id});
+			await artistService.delete({ id: artist2.id});
+			await artistService.delete({ id: artist3.id});
+		});
 	});
 
 	describe("Get Artists (GET /artists)", () => {
@@ -343,42 +382,6 @@ describe("Artist Controller", () => {
 		});
 	});
 
-	describe("Search Artists", () => {
-		it("Search artists", () => {
-			return request(app.getHttpServer())
-				.get(`/artists?query=a`)
-				.expect(200)
-				.expect((res) => {
-					const artists: Artist[] = res.body.items;
-					expect(artists.length).toBe(3);
-					expect(artists).toContainEqual(
-						expectedArtistResponse(dummyRepository.artistA),
-					);
-					expect(artists).toContainEqual(
-						expectedArtistResponse(dummyRepository.artistB),
-					);
-					expect(artists).toContainEqual(
-						expectedArtistResponse(dummyRepository.artistC),
-					);
-				});
-		});
-
-		it("Search artists, w/ pagination", () => {
-			return request(app.getHttpServer())
-				.get(`/artists?query=a&skip=1`)
-				.expect(200)
-				.expect((res) => {
-					const artists: Artist[] = res.body.items;
-					expect(artists.length).toBe(2);
-					expect(artists).toContainEqual(
-						expectedArtistResponse(dummyRepository.artistB),
-					);
-					expect(artists).toContainEqual(
-						expectedArtistResponse(dummyRepository.artistC),
-					);
-				});
-		});
-	});
 	describe("Artist Illustration", () => {
 		it("Should return the illustration", async () => {
 			const illustration =

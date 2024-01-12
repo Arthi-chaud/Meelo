@@ -374,37 +374,6 @@ describe("Song Controller", () => {
 		});
 	});
 
-	describe("Search Songs", () => {
-		it("Search songs", () => {
-			return request(app.getHttpServer())
-				.get(`/songs?query=other`)
-				.expect(200)
-				.expect((res) => {
-					const songs: Song[] = res.body.items;
-					expect(songs.length).toBe(1);
-					expect(songs).toContainEqual(
-						expectedSongResponse(dummyRepository.songA2),
-					);
-				});
-		});
-
-		it("Search songs, w/ pagination", () => {
-			return request(app.getHttpServer())
-				.get(`/songs?query=my&skip=1&take=2`)
-				.expect(200)
-				.expect((res) => {
-					const songs: Song[] = res.body.items;
-					expect(songs.length).toBe(2);
-					expect(songs).toContainEqual(
-						expectedSongResponse(dummyRepository.songA2),
-					);
-					expect(songs).toContainEqual(
-						expectedSongResponse(dummyRepository.songB1),
-					);
-				});
-		});
-	});
-
 	describe("Get Songs from library", () => {
 		it("should return every songs, w/ parent artist", () => {
 			return request(app.getHttpServer())

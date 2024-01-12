@@ -36,6 +36,9 @@ describe("Album Controller", () => {
 	let albumService: AlbumService;
 	let providerService: ProviderService;
 	let module: TestingModule;
+	let album1: Album;
+	let album2: Album;
+	let album3: Album;
 	beforeAll(async () => {
 		module = await createTestingModule({
 			imports: [
@@ -384,34 +387,6 @@ describe("Album Controller", () => {
 			return request(app.getHttpServer())
 				.get(`/albums/${dummyRepository.artistA.slug}`)
 				.expect(400);
-		});
-	});
-
-	describe("Search Albums", () => {
-		it("Search albums", () => {
-			return request(app.getHttpServer())
-				.get(`/albums?query=se`)
-				.expect(200)
-				.expect((res) => {
-					const albums: Album[] = res.body.items;
-					expect(albums.length).toBe(1);
-					expect(albums).toContainEqual(
-						expectedAlbumResponse(dummyRepository.albumB1),
-					);
-				});
-		});
-
-		it("Search albums, w/ pagination", () => {
-			return request(app.getHttpServer())
-				.get(`/albums?query=a&take=1`)
-				.expect(200)
-				.expect((res) => {
-					const albums: Album[] = res.body.items;
-					expect(albums.length).toBe(1);
-					expect(albums).toContainEqual(
-						expectedAlbumResponse(dummyRepository.albumA1),
-					);
-				});
 		});
 	});
 

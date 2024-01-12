@@ -1,6 +1,7 @@
 import { BullModule } from "@nestjs/bull";
 import type { ModuleMetadata } from "@nestjs/common";
 import { Test } from "@nestjs/testing";
+import { MeiliSearchModule } from "nestjs-meilisearch";
 
 export function createTestingModule(metadata: ModuleMetadata) {
 	return Test.createTestingModule({
@@ -12,6 +13,10 @@ export function createTestingModule(metadata: ModuleMetadata) {
 					removeOnComplete: true,
 					removeOnFail: true,
 				},
+			}),
+			MeiliSearchModule.forRoot({
+				host: process.env.MEILI_HOST ?? "localhost:7700",
+				apiKey: process.env.MEILI_MASTER_KEY,
 			}),
 		),
 		exports: metadata.exports,
