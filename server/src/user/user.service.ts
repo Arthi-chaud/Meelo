@@ -30,6 +30,7 @@ import {
 	UserAlreadyExistsException,
 	UserNotFoundException,
 	UserNotFoundFromIDException,
+	UserNotFoundFromJwtPayload,
 } from "./user.exceptions";
 import Identifier from "src/identifier/models/identifier";
 import { PrismaError } from "prisma-error-enum";
@@ -144,8 +145,11 @@ export default class UserService extends RepositoryService<
 		input: UserQueryParameters.WhereInput,
 	): Prisma.UserWhereInput {
 		return {
-			id: input.id,
-			name: input.name ?? input.byCredentials?.name,
+			id: input.id ?? input.byJwtPayload?.id,
+			name:
+				input.name ??
+				input.byCredentials?.name ??
+				input.byJwtPayload?.name,
 			password: input.byCredentials
 				? this.encryptPassword(input.byCredentials.password)
 				: undefined,
@@ -154,9 +158,7 @@ export default class UserService extends RepositoryService<
 
 	async get(input: UserQueryParameters.WhereInput): Promise<User> {
 		const user = await super.get(
-			input.id != undefined
-				? { id: input.id }
-				: { name: input.name ?? input.byCredentials.name },
+			input.byCredentials ? { name: input.byCredentials.name } : input,
 		);
 
 		if (
@@ -179,8 +181,13 @@ export default class UserService extends RepositoryService<
 				);
 			} else if (where.id !== undefined) {
 				throw new UserNotFoundFromIDException(where.id);
-			} else {
+			} else if (where.name !== undefined) {
 				throw new UserNotFoundException(where.name);
+			} else {
+				throw new UserNotFoundFromJwtPayload(
+					where.byJwtPayload.name,
+					where.byJwtPayload.id,
+				);
 			}
 		}
 

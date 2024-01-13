@@ -20,10 +20,12 @@ import { ExtractJwt, Strategy } from "passport-jwt";
 import { PassportStrategy } from "@nestjs/passport";
 import { Injectable } from "@nestjs/common";
 import JwtPayload from "../models/jwt.payload";
+import UserService from "src/user/user.service";
+import { UnknownUserFromAccessTokenException } from "../authentication.exception";
 
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy) {
-	constructor() {
+	constructor(private userService: UserService) {
 		super({
 			jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
 			ignoreExpiration: false,
@@ -32,6 +34,13 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
 	}
 
 	async validate(payload: JwtPayload): Promise<JwtPayload> {
+		await this.userService
+			.throwIfNotFound({
+				byJwtPayload: { id: payload.id, name: payload.name },
+			})
+			.catch(() => {
+				throw new UnknownUserFromAccessTokenException();
+			});
 		return payload;
 	}
 }

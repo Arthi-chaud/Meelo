@@ -33,6 +33,7 @@ namespace UserQueryParameters {
 	export type WhereInput = RequireExactlyOne<{
 		id: User["id"];
 		byCredentials: Pick<User, "name" | "password">;
+		byJwtPayload: Pick<User, "name" | "id">;
 		name: User["name"];
 	}>;
 

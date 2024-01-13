@@ -24,6 +24,12 @@ export class UnauthorizedAnonymousRequestException extends UnauthorizedRequestEx
 	}
 }
 
+export class UnknownUserFromAccessTokenException extends UnauthorizedRequestException {
+	constructor() {
+		super("Token is not valid");
+	}
+}
+
 export class UnknownUserException extends UnauthorizedRequestException {
 	constructor() {
 		super("Username or password is incorrect");
