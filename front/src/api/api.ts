@@ -1124,19 +1124,12 @@ export default class API {
 				});
 
 		switch (response.status) {
-			/// TODO SSR should be disabled if user is not authentified
 			case 401:
-				if (!isSSR()) {
-					throw new Error(jsonResponse.message ?? errorMessage);
-				}
-				break;
+				throw new Error(jsonResponse.message ?? errorMessage);
 			case 403:
-				if (!isSSR()) {
-					throw new Error(
-						errorMessage ?? "Unauthorized: Only for admins",
-					);
-				}
-				break;
+				throw new Error(
+					errorMessage ?? "Unauthorized: Only for admins",
+				);
 			case 404:
 				throw new ResourceNotFound(
 					errorMessage ?? jsonResponse.message ?? response.statusText,
