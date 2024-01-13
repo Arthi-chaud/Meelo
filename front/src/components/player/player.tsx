@@ -16,7 +16,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import hexToRgba from "hex-to-rgba";
 import { Box, Paper, Slide, useMediaQuery, useTheme } from "@mui/material";
 import { LegacyRef, useEffect, useMemo, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
@@ -245,7 +244,7 @@ const Player = () => {
 		};
 	}, [expanded]);
 	const playerBgColor = useMemo(() => {
-		const themePaperColor = hexToRgba(theme.palette.background.paper, 0.75);
+		const themePaperColor = `rgba(var(${theme.palette.background.paper}), 0.75)`;
 		const artworkColor = currentTrack?.track.illustration?.colors.at(0);
 
 		if (artworkColor) {

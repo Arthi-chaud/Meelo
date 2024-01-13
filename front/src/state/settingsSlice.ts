@@ -18,16 +18,11 @@
 
 import { PayloadAction, createSlice } from "@reduxjs/toolkit";
 import { Language } from "../i18n/i18n";
-import { LanguageCookieKey, ThemeCookieKey } from "../utils/cookieKeys";
+import { LanguageCookieKey } from "../utils/cookieKeys";
 // eslint-disable-next-line no-restricted-imports
 import { setCookie } from "cookies-next";
 
-export const ColorSchemes = ["light", "dark", "system"] as const;
-
-type ColorScheme = (typeof ColorSchemes)[number];
-
 type SettingsState = {
-	colorScheme: ColorScheme;
 	language: Language | "system";
 	allowNotifications: boolean;
 };
@@ -35,24 +30,10 @@ type SettingsState = {
 export const settingsSlice = createSlice({
 	name: "settings",
 	initialState: <SettingsState>{
-		colorScheme: "system",
 		language: "system",
 		allowNotifications: false,
 	},
 	reducers: {
-		setColorScheme: (state, action: PayloadAction<ColorScheme>) => {
-			const expires = new Date();
-
-			state.colorScheme = action.payload;
-
-			expires.setMonth(expires.getMonth() + 1);
-			setCookie(
-				ThemeCookieKey,
-				state.colorScheme,
-				// Sets cookie for a month
-				{ expires },
-			);
-		},
 		setLanguage: (state, action: PayloadAction<Language>) => {
 			const expires = new Date();
 
@@ -79,7 +60,6 @@ export const settingsSlice = createSlice({
 });
 
 export const {
-	setColorScheme,
 	setLanguage,
 	resetLanguage,
 	allowNotifications,

@@ -22,7 +22,7 @@ import { Chip } from "@mui/material";
 
 type GenreButtonProps = {
 	genre: Pick<Genre, "name" | "slug">;
-	color?: string;
+	sx: Parameters<typeof Chip>[0]["sx"];
 };
 
 const GenreButton = (props: GenreButtonProps) => {
@@ -32,11 +32,7 @@ const GenreButton = (props: GenreButtonProps) => {
 				variant="outlined"
 				clickable
 				label={props.genre.name}
-				sx={
-					props.color
-						? { borderColor: props.color }
-						: { color: "primary" }
-				}
+				sx={props.sx ?? { color: "primary" }}
 			/>
 		</Link>
 	);

@@ -346,8 +346,10 @@ const ReleasePage = (props: InferSSRProps<typeof getServerSideProps>) => {
 									icon={
 										<Star1
 											size={18}
-											style={{ marginTop: -3 }}
-											color={accentColor}
+											style={{
+												marginTop: -3,
+												...accentColor,
+											}}
 										/>
 									}
 									emptyIcon={
@@ -459,7 +461,20 @@ const ReleasePage = (props: InferSSRProps<typeof getServerSideProps>) => {
 												>
 													<GenreButton
 														genre={genre}
-														color={accentColor}
+														sx={{
+															[theme.getColorSchemeSelector(
+																"dark",
+															)]: {
+																borderColor:
+																	accentColor?.dark,
+															},
+															[theme.getColorSchemeSelector(
+																"light",
+															)]: {
+																borderColor:
+																	accentColor?.light,
+															},
+														}}
 													/>
 												</Grid>
 											)) ?? []}

@@ -21,12 +21,11 @@ import Translate, { useLanguage } from "../../i18n/translate";
 import SectionHeader from "../section-header";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../../state/store";
-import useColorScheme from "../../theme/color-scheme";
+import { useColorScheme } from "@mui/material/styles";
 import {
 	allowNotifications,
 	disableNotifications,
 	resetLanguage,
-	setColorScheme,
 	setLanguage,
 } from "../../state/settingsSlice";
 import { Language, Languages } from "../../i18n/i18n";
@@ -44,13 +43,10 @@ const InputContainerStyle = {
 } as const;
 
 const UserSettings = () => {
+	const colorScheme = useColorScheme();
 	const notificationPreference = useSelector(
 		(state: RootState) => state.settings.allowNotifications,
 	);
-	const colorSchemePreference = useSelector(
-		(state: RootState) => state.settings.colorScheme,
-	);
-	const actualColorScheme = useColorScheme();
 	const languagePreference = useSelector(
 		(state: RootState) => state.settings.language,
 	);
@@ -62,7 +58,7 @@ const UserSettings = () => {
 	);
 
 	return (
-		<>
+		<NoSsr>
 			<SectionHeader
 				heading={<Translate translationKey="colorScheme" />}
 			/>
@@ -73,13 +69,13 @@ const UserSettings = () => {
 				<Grid item xs={1} sx={InputContainerStyle}>
 					<Checkbox
 						onChange={(event, isChecked) =>
-							dispatch(
-								setColorScheme(
-									isChecked ? "system" : actualColorScheme,
-								),
+							colorScheme.setMode(
+								isChecked
+									? "system"
+									: colorScheme.systemMode ?? "light",
 							)
 						}
-						checked={colorSchemePreference == "system"}
+						checked={colorScheme.mode == "system"}
 					/>
 				</Grid>
 				<Grid item xs={11}>
@@ -88,12 +84,13 @@ const UserSettings = () => {
 				<Grid item xs={1} sx={InputContainerStyle}>
 					<Checkbox
 						onChange={(event, isChecked) =>
-							dispatch(
-								setColorScheme(isChecked ? "dark" : "light"),
-							)
+							colorScheme.setMode(isChecked ? "dark" : "light")
 						}
-						disabled={colorSchemePreference === "system"}
-						checked={actualColorScheme === "dark"}
+						disabled={colorScheme.mode === "system"}
+						checked={
+							colorScheme.mode === "dark" ||
+							colorScheme.systemMode === "dark"
+						}
 					/>
 				</Grid>
 			</Grid>
@@ -143,58 +140,56 @@ const UserSettings = () => {
 			<SectionHeader
 				heading={<Translate translationKey="notifications" />}
 			/>
-			<NoSsr>
-				<Grid container sx={SettingGroupStyle}>
-					<Grid item xs={10}>
-						<Translate translationKey="permissions" />
-					</Grid>
-					<Grid item xs={2} sx={InputContainerStyle}>
-						<Button
-							variant="contained"
-							onClick={() => {
-								if (!notificationsAPIAvailable) {
-									return;
-								}
-								if (notificationsEnabled) {
-									new Notification("Meelo says hello!", {
-										body: "👋",
-										silent: true,
-									});
-								} else {
-									Notification.requestPermission().then(
-										(value) =>
-											value === "granted" &&
-											setNotificationsEnabled(true),
-									);
-								}
-							}}
-							disabled={!notificationsAPIAvailable}
-						>
-							{!notificationsAPIAvailable
-								? "unavailable"
-								: notificationsEnabled
-									? "test"
-									: "ask"}
-						</Button>
-					</Grid>
-					<Grid item xs={10}>
-						<Translate translationKey="notifyOnTrackChange" />
-					</Grid>
-					<Grid item xs={2} sx={InputContainerStyle}>
-						<Checkbox
-							onChange={(event, isChecked) =>
-								dispatch(
-									isChecked
-										? allowNotifications()
-										: disableNotifications(),
-								)
-							}
-							checked={notificationPreference}
-						/>
-					</Grid>
+			<Grid container sx={SettingGroupStyle}>
+				<Grid item xs={10}>
+					<Translate translationKey="permissions" />
 				</Grid>
-			</NoSsr>
-		</>
+				<Grid item xs={2} sx={InputContainerStyle}>
+					<Button
+						variant="contained"
+						onClick={() => {
+							if (!notificationsAPIAvailable) {
+								return;
+							}
+							if (notificationsEnabled) {
+								new Notification("Meelo says hello!", {
+									body: "👋",
+									silent: true,
+								});
+							} else {
+								Notification.requestPermission().then(
+									(value) =>
+										value === "granted" &&
+										setNotificationsEnabled(true),
+								);
+							}
+						}}
+						disabled={!notificationsAPIAvailable}
+					>
+						{!notificationsAPIAvailable
+							? "unavailable"
+							: notificationsEnabled
+								? "test"
+								: "ask"}
+					</Button>
+				</Grid>
+				<Grid item xs={10}>
+					<Translate translationKey="notifyOnTrackChange" />
+				</Grid>
+				<Grid item xs={2} sx={InputContainerStyle}>
+					<Checkbox
+						onChange={(event, isChecked) =>
+							dispatch(
+								isChecked
+									? allowNotifications()
+									: disableNotifications(),
+							)
+						}
+						checked={notificationPreference}
+					/>
+				</Grid>
+			</Grid>
+		</NoSsr>
 	);
 };
 

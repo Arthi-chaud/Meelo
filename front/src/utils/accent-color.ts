@@ -17,14 +17,17 @@
  */
 
 import Illustration from "../models/illustration";
-import useColorScheme from "../theme/color-scheme";
 
 export const useAccentColor = (illustration?: Illustration | null) => {
-	const colorScheme = useColorScheme();
 	const sortedColors = Array.of(...(illustration?.colors ?? [])).sort();
 
-	if (colorScheme == "light") {
-		sortedColors.reverse();
+	if (sortedColors.length < 3) {
+		return null;
 	}
-	return sortedColors.at(3);
+	return {
+		light: Array.of(...sortedColors)
+			.reverse()
+			.at(3)!,
+		dark: sortedColors.at(3)!,
+	};
 };

@@ -16,19 +16,36 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { DarkMode, LightMode } from "../icons";
-import { setColorScheme } from "../../state/settingsSlice";
-import store from "../../state/store";
-import Action from "./action";
+import { Box, useTheme } from "@mui/material";
+import { StaticImport } from "next/dist/shared/lib/get-img-props";
+import Image from "next/image";
 
-export const SetLightColorSchemeAction: Action = {
-	label: "lightMode",
-	icon: <LightMode />,
-	onClick: () => store.dispatch(setColorScheme("light")),
+type ThemedImageProps = Record<"light" | "dark", string | StaticImport> &
+	Omit<Parameters<typeof Image>[0], "src">;
+const ThemedImage = (props: ThemedImageProps) => {
+	const theme = useTheme();
+	return (
+		<>
+			{(
+				[
+					["light", props.dark],
+					["dark", props.light],
+				] as const
+			).map(([themeToHideImage, url]) => (
+				<Box
+					key={"image-" + themeToHideImage}
+					sx={{
+						display: "block",
+						[theme.getColorSchemeSelector(themeToHideImage)]: {
+							display: "none",
+						},
+					}}
+				>
+					<Image src={url} {...props} />
+				</Box>
+			))}
+		</>
+	);
 };
 
-export const SetDarkColorSchemeAction: Action = {
-	label: "darkMode",
-	icon: <DarkMode />,
-	onClick: () => store.dispatch(setColorScheme("dark")),
-};
+export default ThemedImage;

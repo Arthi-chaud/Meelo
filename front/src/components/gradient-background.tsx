@@ -16,9 +16,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { Box, useTheme } from "@mui/material";
-import hexToRgba from "hex-to-rgba";
-import useColorScheme from "../theme/color-scheme";
+import { Box, Paper, useTheme } from "@mui/material";
 
 type GradientBackgroundProps = {
 	colors: string[];
@@ -26,7 +24,6 @@ type GradientBackgroundProps = {
 
 const GradientBackground = ({ colors }: GradientBackgroundProps) => {
 	const theme = useTheme();
-	const colorScheme = useColorScheme();
 	const [color1, color2, color3, color4, color5] = Array.of(...colors).sort();
 	const gradientCSS = `
 		radial-gradient(ellipse at 10% 90%, ${color1} 0%, transparent 55%),
@@ -51,7 +48,7 @@ const GradientBackground = ({ colors }: GradientBackgroundProps) => {
 					}}
 				/>
 			)}
-			<Box
+			<Paper
 				sx={{
 					position: "fixed",
 					top: 0,
@@ -59,10 +56,10 @@ const GradientBackground = ({ colors }: GradientBackgroundProps) => {
 					zIndex: -10000,
 					width: "100vw",
 					height: "100vh",
-					background: hexToRgba(
-						theme.palette.background.default,
-						colorScheme == "dark" ? 0.4 : 0.5,
-					),
+					opacity: 0.4,
+					[theme.getColorSchemeSelector("dark")]: {
+						opacity: 0.5,
+					},
 				}}
 			/>
 		</>
