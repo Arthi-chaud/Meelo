@@ -16,34 +16,38 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+/* eslint-disable jsx-a11y/alt-text */
+
 import { Box, useTheme } from "@mui/material";
 import { StaticImport } from "next/dist/shared/lib/get-img-props";
 import Image from "next/image";
 
 type ThemedImageProps = Record<"light" | "dark", string | StaticImport> &
 	Omit<Parameters<typeof Image>[0], "src">;
-const ThemedImage = (props: ThemedImageProps) => {
+const ThemedImage = ({ light, dark, ...props }: ThemedImageProps) => {
 	const theme = useTheme();
 	return (
 		<>
-			{(
-				[
-					["light", props.dark],
-					["dark", props.light],
-				] as const
-			).map(([themeToHideImage, url]) => (
-				<Box
-					key={"image-" + themeToHideImage}
-					sx={{
+			<Box
+				sx={{
+					display: "block",
+					[theme.getColorSchemeSelector("dark")]: {
+						display: "none",
+					},
+				}}
+			>
+				<Image src={light} {...props} />
+			</Box>
+			<Box
+				sx={{
+					display: "none",
+					[theme.getColorSchemeSelector("dark")]: {
 						display: "block",
-						[theme.getColorSchemeSelector(themeToHideImage)]: {
-							display: "none",
-						},
-					}}
-				>
-					<Image src={url} {...props} />
-				</Box>
-			))}
+					},
+				}}
+			>
+				<Image src={dark} {...props} />
+			</Box>
 		</>
 	);
 };

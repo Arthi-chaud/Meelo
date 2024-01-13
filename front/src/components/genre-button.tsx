@@ -22,7 +22,7 @@ import { Chip } from "@mui/material";
 
 type GenreButtonProps = {
 	genre: Pick<Genre, "name" | "slug">;
-	sx: Parameters<typeof Chip>[0]["sx"];
+	sx?: Parameters<typeof Chip>[0]["sx"];
 };
 
 const GenreButton = (props: GenreButtonProps) => {
