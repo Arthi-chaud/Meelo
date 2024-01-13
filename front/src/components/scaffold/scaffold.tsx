@@ -42,14 +42,13 @@ import {
 } from "../icons";
 import Link from "next/link";
 import Translate from "../../i18n/translate";
-import Image from "next/image";
 import Player from "../player/player";
 import { useRouter } from "next/router";
 import { IconProps } from "iconsax-react";
 import { useState } from "react";
 import scaffoldActions from "./actions";
-import useColorScheme from "../../theme/color-scheme";
-import hexToRgba from "hex-to-rgba";
+import type {} from "@mui/material/themeCssVarsAugmentation";
+import ThemedImage from "../../utils/themed-image";
 
 /**
  * Array of possible item types
@@ -93,7 +92,6 @@ const Drawer = ({
 	const persistentDrawerBreakpoint = DrawerBreakpoint;
 	const drawerWidth = { [persistentDrawerBreakpoint]: 240 };
 	const actions = scaffoldActions;
-	const colorScheme = useColorScheme();
 	const commonDrawerProps = {
 		anchor: "left",
 		onClose: onClose,
@@ -130,8 +128,9 @@ const Drawer = ({
 			},
 			width: "auto",
 			"& .MuiDrawer-paper": {
-				backgroundColor:
-					colorScheme == "dark" ? "transparent" : undefined,
+				[theme.getColorSchemeSelector("dark")]: {
+					backgroundColor: "transparent",
+				},
 			},
 		},
 	} as const;
@@ -139,7 +138,7 @@ const Drawer = ({
 	return (
 		<>
 			{[persistentDrawerProps, temporaryDrawerProps].map(
-				(drawerProps, key) => (
+				(drawerProps) => (
 					<MUIDrawer
 						key={`drawer-${drawerProps.variant}`}
 						{...deepmerge(drawerProps, commonDrawerProps)}
@@ -153,12 +152,9 @@ const Drawer = ({
 							}}
 						>
 							<Link href="/" style={{ cursor: "pointer" }}>
-								<Image
-									src={
-										colorScheme == "dark"
-											? "/banner.png"
-											: "/banner-black.png"
-									}
+								<ThemedImage
+									light={"/banner-black.png"}
+									dark={"/banner.png"}
 									alt="icon"
 									priority
 									width={180}
@@ -291,10 +287,9 @@ const BottomNavigation = (props: { onDrawerOpen: () => void }) => {
 				position: "fixed",
 				justifyContent: "space-evenly",
 				bottom: 0,
-				backgroundColor: hexToRgba(
-					theme.palette.background.paper,
-					0.65,
-				),
+				// TODO, always light
+				backgroundColor: `rgba(
+					${theme.vars.palette.background.paper}, 0.65)`,
 				backdropFilter: "blur(40px)",
 				display: { xs: "flex", [DrawerBreakpoint]: "none" },
 			}}
