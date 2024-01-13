@@ -61,12 +61,7 @@ const AuthenticationWall = (props: { children: any }) => {
 	}, [accessToken, status, dispatch]);
 	if (!authentified || !status.data?.id) {
 		return (
-			<ModalPage
-				open={
-					!(accessToken && !status.data && status.isLoading) ||
-					(accessToken !== undefined && status.error != null)
-				}
-			>
+			<ModalPage open>
 				<Grid
 					container
 					direction="column"

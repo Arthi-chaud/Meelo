@@ -117,27 +117,31 @@ const prepareSSR = <AdditionalProps>(
 		}
 		const parameters = await cook(context, queryClient);
 
-		try {
-			await Promise.all([
-				queryClient.prefetchQuery(
-					prepareMeeloQuery(API.getCurrentUserStatus),
-				),
-				queryClient.prefetchInfiniteQuery(
-					prepareMeeloInfiniteQuery(API.getLibraries),
-				),
-				...(parameters.infiniteQueries?.map((query) =>
+		const userQueryResult = await queryClient
+			.fetchQuery(prepareMeeloQuery(API.getCurrentUserStatus))
+			.catch(() => null);
+		if (userQueryResult != null) {
+			try {
+				await Promise.all([
 					queryClient.prefetchInfiniteQuery(
-						prepareMeeloInfiniteQuery(() => query),
+						prepareMeeloInfiniteQuery(API.getLibraries),
 					),
-				) ?? []),
-				...(parameters.queries?.map((query) =>
-					queryClient.prefetchQuery(prepareMeeloQuery(() => query)),
-				) ?? []),
-			]);
-		} catch {
-			return {
-				notFound: true,
-			};
+					...(parameters.infiniteQueries?.map((query) =>
+						queryClient.prefetchInfiniteQuery(
+							prepareMeeloInfiniteQuery(() => query),
+						),
+					) ?? []),
+					...(parameters.queries?.map((query) =>
+						queryClient.prefetchQuery(
+							prepareMeeloQuery(() => query),
+						),
+					) ?? []),
+				]);
+			} catch {
+				return {
+					notFound: true,
+				};
+			}
 		}
 		const dehydratedQueryClient = dehydrate(queryClient, {
 			dehydrateQueries: true,
