@@ -22,7 +22,6 @@ import IllustrationModel from "../../models/illustration";
 import Illustration from "../illustration";
 import { useMemo } from "react";
 import { useAccentColor } from "../../utils/accent-color";
-import hexToRgba from "hex-to-rgba";
 
 type HighlightCardProps = {
 	title: string;
@@ -38,7 +37,7 @@ const HighlightCard = (props: HighlightCardProps) => {
 	const accentColor = useAccentColor(props.illustration);
 
 	const cardColor = useMemo(() => {
-		const themePaperColor = hexToRgba(theme.palette.background.paper, 0.75);
+		const themePaperColor = `rgba(${theme.vars.palette.background.defaultChannel} / 0.75)`;
 		if (accentColor) {
 			return {
 				[theme.getColorSchemeSelector("light")]: {

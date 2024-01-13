@@ -244,7 +244,7 @@ const Player = () => {
 		};
 	}, [expanded]);
 	const playerBgColor = useMemo(() => {
-		const themePaperColor = `rgba(var(${theme.palette.background.paper}), 0.75)`;
+		const themePaperColor = `rgba(${theme.vars.palette.background.defaultChannel} / 0.75)`;
 		const artworkColor = currentTrack?.track.illustration?.colors.at(0);
 
 		if (artworkColor) {
