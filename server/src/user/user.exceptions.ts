@@ -35,6 +35,12 @@ export class UserNotFoundFromCredentialsException extends NotFoundException {
 	}
 }
 
+export class UserNotFoundFromJwtPayload extends NotFoundException {
+	constructor(username: string, id: number) {
+		super(`User ${id} named '${username}' does not exist.`);
+	}
+}
+
 export class InvalidUserCredentialsException extends ForbiddenException {
 	constructor(username: string) {
 		super(`Invalid Password for user '${username}'.`);
