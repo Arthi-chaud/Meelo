@@ -31,6 +31,7 @@ import { LightTheme } from "../theme/theme";
 import createEmotionCache from "../utils/createEmotionCache";
 import { MyAppProps } from "./_app";
 import font from "../theme/font";
+import { getInitColorSchemeScript } from "@mui/material/styles";
 
 interface MyDocumentProps extends DocumentProps {
 	emotionStyleTags: JSX.Element[];
@@ -38,7 +39,7 @@ interface MyDocumentProps extends DocumentProps {
 
 export default function MyDocument({ emotionStyleTags }: MyDocumentProps) {
 	return (
-		<Html className={font.className} lang="en">
+		<Html className={font.className} lang="en" data-color-scheme="system">
 			<Head>
 				<meta charSet="utf-8" />
 				<meta
@@ -65,6 +66,7 @@ export default function MyDocument({ emotionStyleTags }: MyDocumentProps) {
 				{emotionStyleTags}
 			</Head>
 			<body style={{ height: "100lvh" }}>
+				{getInitColorSchemeScript({ defaultMode: "system" })}
 				<Main />
 				<NextScript />
 			</body>
