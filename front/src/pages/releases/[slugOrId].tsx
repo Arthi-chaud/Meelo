@@ -340,23 +340,30 @@ const ReleasePage = (props: InferSSRProps<typeof getServerSideProps>) => {
 							</Typography>
 							{albumRating && (
 								<Rating
-									sx={{ paddingLeft: 1.5 }}
+									sx={{
+										paddingLeft: 1.5,
+										color: accentColor?.light,
+										[theme.getColorSchemeSelector("dark")]:
+											{
+												color: accentColor?.dark,
+											},
+									}}
 									readOnly
 									value={albumRating / 20}
 									icon={
 										<Star1
 											size={18}
-											style={{
-												marginTop: -3,
-												...accentColor,
-											}}
+											style={{ marginTop: -3 }}
 										/>
 									}
 									emptyIcon={
 										<Star1
 											size={18}
-											style={{ marginTop: -3 }}
-											color={theme.palette.text.disabled}
+											style={{
+												marginTop: -3,
+												color: theme.vars.palette.text
+													.disabled,
+											}}
 											opacity={0.2}
 										/>
 									}
