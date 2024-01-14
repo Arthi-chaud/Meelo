@@ -20,14 +20,13 @@ import { prepareMeeloQuery } from "../../api/use-query";
 import ModalPage from "../modal-page";
 import AuthenticationForm from "./authentication-form";
 import { Grid } from "@mui/material";
-import Image from "next/image";
 import { useEffect, useState } from "react";
 import API from "../../api/api";
 import { RootState } from "../../state/store";
 import { useDispatch, useSelector } from "react-redux";
 import { setUserProfile } from "../../state/userSlice";
 import { useQuery as useReactQuery } from "react-query";
-import useColorScheme from "../../theme/color-scheme";
+import ThemedImage from "../../utils/themed-image";
 
 const AuthenticationWall = (props: { children: any }) => {
 	const accessToken = useSelector(
@@ -37,7 +36,6 @@ const AuthenticationWall = (props: { children: any }) => {
 		...prepareMeeloQuery(API.getCurrentUserStatus),
 		useErrorBoundary: false,
 	});
-	const colorScheme = useColorScheme();
 	const dispatch = useDispatch();
 	const [authentified, setAuthenticationStatus] = useState(
 		status.data?.id !== undefined,
@@ -84,12 +82,9 @@ const AuthenticationWall = (props: { children: any }) => {
 							justifyContent: "center",
 						}}
 					>
-						<Image
-							src={
-								colorScheme == "dark"
-									? "/banner.png"
-									: "/banner-black.png"
-							}
+						<ThemedImage
+							light={"/banner-black.png"}
+							dark={"/banner.png"}
 							alt="title"
 							width={200}
 							height={150}

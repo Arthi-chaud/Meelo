@@ -18,7 +18,6 @@
 
 import { Chip, Grid, Typography, useTheme } from "@mui/material";
 import Link from "next/link";
-import hexToRgba from "hex-to-rgba";
 import IllustrationModel from "../../models/illustration";
 import Illustration from "../illustration";
 import { useMemo } from "react";
@@ -36,16 +35,25 @@ type HighlightCardProps = {
 const HighlightCard = (props: HighlightCardProps) => {
 	const theme = useTheme();
 	const accentColor = useAccentColor(props.illustration);
-	const cardColor = useMemo(() => {
-		const themePaperColor = hexToRgba(theme.palette.background.paper, 0.75);
 
+	const cardColor = useMemo(() => {
+		const themePaperColor = `rgba(${theme.vars.palette.background.defaultChannel} / 0.75)`;
 		if (accentColor) {
-			return `color-mix(in srgb, ${accentColor} 40%, ${themePaperColor})`;
+			return {
+				[theme.getColorSchemeSelector("light")]: {
+					backgroundColor: `color-mix(in srgb, ${accentColor?.light} 40%, ${themePaperColor})`,
+				},
+				[theme.getColorSchemeSelector("dark")]: {
+					backgroundColor: `color-mix(in srgb, ${accentColor?.dark} 40%, ${themePaperColor})`,
+				},
+			};
 		}
-		return themePaperColor;
+		return {
+			backgroundColor: themePaperColor,
+		};
 	}, [accentColor, theme]);
 	const style = {
-		backgroundColor: cardColor,
+		...cardColor,
 		boxShadow: "none",
 		transform: "scale(1)",
 		transition: "transform 0.2s",

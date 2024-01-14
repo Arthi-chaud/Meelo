@@ -27,7 +27,7 @@ import IllustrationModel from "../models/illustration";
 import Blurhash from "./blurhash";
 import { isSSR } from "../ssr";
 import Fade from "./fade";
-import useColorScheme from "../theme/color-scheme";
+import ThemedImage from "../utils/themed-image";
 
 type ImageQuality = "low" | "medium" | "high" | "original";
 
@@ -65,7 +65,6 @@ const Illustration = (props: IllustrationProps) => {
 	const [loadingCompleted, setLoadingCompleted] = useState(false);
 	const url = props.url ?? props.illustration?.url;
 	const blurhash = props.illustration?.blurhash;
-	const colorScheme = useColorScheme();
 	const aspectRatio =
 		props.aspectRatio ?? props.illustration?.aspectRatio ?? 1;
 	const dimensionsFromAspectRatio = {
@@ -126,12 +125,9 @@ const Illustration = (props: IllustrationProps) => {
 								{props.fallback}
 							</IconButton>
 						) : (
-							<Image
-								src={
-									colorScheme == "dark"
-										? whiteIllustrationFallback
-										: blackIllustrationFallback
-								}
+							<ThemedImage
+								dark={whiteIllustrationFallback}
+								light={blackIllustrationFallback}
 								fill
 								alt="missing-illustration"
 								loading="eager"

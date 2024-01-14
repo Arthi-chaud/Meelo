@@ -20,42 +20,36 @@ import {
 	// eslint-disable-next-line no-restricted-imports
 	CssBaseline,
 	GlobalStyles,
-	ThemeProvider as MUIThemeProvider,
-	createTheme,
-	responsiveFontSizes,
 } from "@mui/material";
 import Styles from "./style";
-import { useMemo } from "react";
 import { DarkTheme, GlobalTheme, LightTheme } from "./theme";
-import useColorScheme from "./color-scheme";
 import font from "./font";
+import {
+	Experimental_CssVarsProvider as CssVarsProvider,
+	experimental_extendTheme as extendTheme,
+} from "@mui/material/styles";
 
 /**
  * Provides the Theme
  */
 const ThemeProvider = (props: { children: any }) => {
-	const colorScheme = useColorScheme();
-	const theme = useMemo(() => {
-		return responsiveFontSizes(
-			createTheme({
-				palette: {
-					mode: colorScheme,
-					...(colorScheme == "light" ? LightTheme : DarkTheme),
-				},
-				typography: {
-					fontFamily: font.style.fontFamily,
-				},
-				...GlobalTheme,
-			}),
-		);
-	}, [colorScheme]);
-
+	//TODO: ResponsiveFontSizes
+	const theme = extendTheme({
+		colorSchemes: {
+			light: { palette: LightTheme },
+			dark: { palette: DarkTheme },
+		},
+		typography: {
+			fontFamily: font.style.fontFamily,
+		},
+		...GlobalTheme,
+	});
 	return (
-		<MUIThemeProvider theme={theme}>
+		<CssVarsProvider defaultMode="system" theme={theme}>
 			<CssBaseline />
 			<GlobalStyles styles={Styles} />
 			{props.children}
-		</MUIThemeProvider>
+		</CssVarsProvider>
 	);
 };
 

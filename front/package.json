@@ -32,7 +32,6 @@
 		"core-js": "^3.26.1",
 		"d3-array": "^3.2.0",
 		"format-duration": "^2.0.0",
-		"hex-to-rgba": "^2.0.1",
 		"i18next": "^22.4.15",
 		"iconsax-react": "^0.0.8",
 		"material-ui-confirm": "^3.0.7",

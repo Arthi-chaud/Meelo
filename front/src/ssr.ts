@@ -30,15 +30,10 @@ import store from "./state/store";
 import { setAccessToken } from "./state/userSlice";
 import {
 	LanguageCookieKey,
-	ThemeCookieKey,
 	UserAccessTokenCookieKey,
 } from "./utils/cookieKeys";
 import API from "./api/api";
-import {
-	ColorSchemes,
-	setColorScheme,
-	setLanguage,
-} from "./state/settingsSlice";
+import { setLanguage } from "./state/settingsSlice";
 import { Languages } from "./i18n/i18n";
 import ALParser from "accept-language-parser";
 import { Promisable } from "type-fest";
@@ -85,9 +80,6 @@ const prepareSSR = <AdditionalProps>(
 	return async (context: GetServerSidePropsContext) => {
 		const queryClient = new QueryClient();
 		const accessToken = context.req.cookies[UserAccessTokenCookieKey];
-		const theme = ColorSchemes.find(
-			(th) => th === context.req.cookies[ThemeCookieKey],
-		);
 		const language = Languages.find(
 			(lang) => lang === context.req.cookies[LanguageCookieKey],
 		);
@@ -97,9 +89,6 @@ const prepareSSR = <AdditionalProps>(
 		} else {
 			// Disable SSR if user is not authentified
 			return { props: {} };
-		}
-		if (theme) {
-			store.dispatch(setColorScheme(theme));
 		}
 		if (language) {
 			store.dispatch(setLanguage(language));
