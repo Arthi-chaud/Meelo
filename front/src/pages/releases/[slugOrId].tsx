@@ -462,17 +462,13 @@ const ReleasePage = (props: InferSSRProps<typeof getServerSideProps>) => {
 													<GenreButton
 														genre={genre}
 														sx={{
+															borderColor:
+																accentColor?.light,
 															[theme.getColorSchemeSelector(
 																"dark",
 															)]: {
 																borderColor:
 																	accentColor?.dark,
-															},
-															[theme.getColorSchemeSelector(
-																"light",
-															)]: {
-																borderColor:
-																	accentColor?.light,
 															},
 														}}
 													/>

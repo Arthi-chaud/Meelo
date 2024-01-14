@@ -57,9 +57,9 @@ const GradientBackground = ({ colors }: GradientBackgroundProps) => {
 					zIndex: -10000,
 					width: "100vw",
 					height: "100vh",
-					opacity: 0.4,
+					opacity: 0.5,
 					[theme.getColorSchemeSelector("dark")]: {
-						opacity: 0.5,
+						opacity: 0.4,
 					},
 				}}
 			/>

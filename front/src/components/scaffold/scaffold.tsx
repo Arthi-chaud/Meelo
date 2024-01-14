@@ -288,7 +288,7 @@ const BottomNavigation = (props: { onDrawerOpen: () => void }) => {
 				justifyContent: "space-evenly",
 				bottom: 0,
 				backgroundColor: `rgba(
-					${theme.vars.palette.background.paper}, 0.65)`,
+					${theme.vars.palette.background.defaultChannel} / 0.65)`,
 				backdropFilter: "blur(40px)",
 				display: { xs: "flex", [DrawerBreakpoint]: "none" },
 			}}
