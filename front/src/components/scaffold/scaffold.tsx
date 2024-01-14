@@ -287,7 +287,6 @@ const BottomNavigation = (props: { onDrawerOpen: () => void }) => {
 				position: "fixed",
 				justifyContent: "space-evenly",
 				bottom: 0,
-				// TODO, always light
 				backgroundColor: `rgba(
 					${theme.vars.palette.background.paper}, 0.65)`,
 				backdropFilter: "blur(40px)",

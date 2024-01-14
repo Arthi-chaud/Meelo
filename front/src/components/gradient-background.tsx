@@ -50,6 +50,7 @@ const GradientBackground = ({ colors }: GradientBackgroundProps) => {
 			)}
 			<Paper
 				sx={{
+					borderRadius: 0,
 					position: "fixed",
 					top: 0,
 					left: 0,
