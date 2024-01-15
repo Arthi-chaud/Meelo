@@ -22,11 +22,11 @@ import { useRouter } from "next/router";
 import UsersSettings from "../../components/settings/users-settings";
 import prepareSSR, { InferSSRProps } from "../../ssr";
 import LibrariesSettings from "../../components/settings/libraries-settings";
-import Translate from "../../i18n/translate";
 import API from "../../api/api";
 import { useQuery } from "../../api/use-query";
 import LoadingPage from "../../components/loading/loading-page";
 import UserSettings from "../../components/settings/user-settings";
+import { useTranslation } from "react-i18next";
 
 // NOTE: Data Grid do not support SSR
 // https://github.com/mui/mui-x/issues/7599
@@ -60,6 +60,7 @@ export const getServerSideProps = prepareSSR((context) => {
 
 const SettingsPage = (props: InferSSRProps<typeof getServerSideProps>) => {
 	const router = useRouter();
+	const { t } = useTranslation();
 	const [panel, setPanel] = useState(
 		props.additionalProps?.panel ??
 			getPanelFromQuery(router.query.panel?.at(0)),
@@ -87,11 +88,7 @@ const SettingsPage = (props: InferSSRProps<typeof getServerSideProps>) => {
 				centered
 			>
 				{AvailablePanels.map((panelName, index) => (
-					<Tab
-						key={index}
-						value={panelName}
-						label={<Translate translationKey={panelName} />}
-					/>
+					<Tab key={index} value={panelName} label={t(panelName)} />
 				))}
 			</Tabs>
 			{AvailablePanels.map(

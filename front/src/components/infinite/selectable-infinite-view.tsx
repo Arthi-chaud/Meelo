@@ -34,7 +34,7 @@ import {
 	SongWithRelations,
 } from "../../models/song";
 import { SortingParameters } from "../../utils/sorting";
-import Translate from "../../i18n/translate";
+import { useTranslation } from "react-i18next";
 
 const itemTypes = ["artist", "album", "song"] as const;
 
@@ -83,6 +83,7 @@ const SelectableInfiniteView = (props: SelectableInfiniteViewProps) => {
 			? (props.default as (typeof itemTypes)[number])
 			: "album",
 	);
+	const { t } = useTranslation();
 
 	return (
 		<Box
@@ -101,7 +102,7 @@ const SelectableInfiniteView = (props: SelectableInfiniteViewProps) => {
 				{itemTypes.map((item) => (
 					<Grid item key={item}>
 						<Chip
-							label={<Translate translationKey={item} />}
+							label={t(item)}
 							variant={
 								selectedType == item ? "filled" : "outlined"
 							}

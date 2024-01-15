@@ -20,8 +20,7 @@ import Illustration from "../illustration";
 import ListItem from "./item";
 import AlbumContextualMenu from "../contextual-menu/album-contextual-menu";
 import { AlbumWithRelations } from "../../models/album";
-import { useMemo } from "react";
-import { translate, useLanguage } from "../../i18n/translate";
+import { useTranslation } from "react-i18next";
 
 type AlbumItemProps = {
 	album: AlbumWithRelations<"artist">;
@@ -35,12 +34,7 @@ type AlbumItemProps = {
  */
 const AlbumItem = ({ album, formatSubtitle }: AlbumItemProps) => {
 	const artist = album.artist;
-	const language = useLanguage();
-	// eslint-disable-next-line react-hooks/exhaustive-deps
-	const compilationKeyword = useMemo(
-		() => translate("compilation"),
-		[language],
-	);
+	const { t } = useTranslation();
 
 	return (
 		<ListItem
@@ -52,7 +46,7 @@ const AlbumItem = ({ album, formatSubtitle }: AlbumItemProps) => {
 			secondTitle={
 				formatSubtitle?.call(this, album) ??
 				artist?.name ??
-				compilationKeyword
+				t("compilation")
 			}
 			trailing={<AlbumContextualMenu album={album} />}
 		/>

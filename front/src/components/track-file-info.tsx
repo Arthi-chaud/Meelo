@@ -28,14 +28,15 @@ import API from "../api/api";
 import { useQuery } from "../api/use-query";
 import formatDuration from "../utils/formatDuration";
 import { WideLoadingComponent } from "./loading/loading";
-import Translate, { translate } from "../i18n/translate";
-import { TranslationKey } from "../i18n/translations/type";
+import { TranslationKey } from "../i18n/i18n";
+import { useTranslation } from "react-i18next";
 
 /**
  * Table component, listing info of track and its source file
  * @param trackId the id of the track to fetch
  */
 const TrackFileInfo = ({ trackId }: { trackId: number }) => {
+	const { t } = useTranslation();
 	const track = useQuery((id) => API.getTrack(id, ["song"]), trackId);
 	const sourceFile = useQuery(API.getSourceFile, track.data?.sourceFileId);
 
@@ -64,9 +65,7 @@ const TrackFileInfo = ({ trackId }: { trackId: number }) => {
 					<TableRow key={index}>
 						<TableCell>
 							<Typography fontWeight="bold">
-								<Translate
-									translationKey={key as TranslationKey}
-								/>
+								{t(key as TranslationKey)}
 							</Typography>
 						</TableCell>
 						<TableCell>{value}</TableCell>
@@ -82,7 +81,7 @@ const openTrackFileInfoModal = (
 	trackId: number,
 ) =>
 	confirm({
-		title: translate("trackInformation"),
+		title: "",
 		description: <TrackFileInfo trackId={trackId} />,
 		cancellationButtonProps: { sx: { display: "none" } },
 	});

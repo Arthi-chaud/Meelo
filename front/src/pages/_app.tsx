@@ -42,6 +42,7 @@ import { DefaultMeeloQueryOptions } from "../api/use-query";
 import createEmotionCache from "../utils/createEmotionCache";
 import { CacheProvider, EmotionCache } from "@emotion/react";
 import Scaffold from "../components/scaffold/scaffold";
+import "../i18n/i18n";
 
 // Client-side cache, shared for the whole session of the user in the browser.
 const clientSideEmotionCache = createEmotionCache();

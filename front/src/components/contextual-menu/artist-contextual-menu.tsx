@@ -26,6 +26,7 @@ import {
 import { ShareArtistAction } from "../actions/share";
 import { UpdateArtistIllustrationAction } from "../actions/update-illustration";
 import { useQueryClient } from "../../api/use-query";
+import { useTranslation } from "react-i18next";
 
 type ArtistContextualMenuProps = {
 	artist: Artist;
@@ -34,6 +35,7 @@ type ArtistContextualMenuProps = {
 const ArtistContextualMenu = (props: ArtistContextualMenuProps) => {
 	const artistSlug = props.artist.slug;
 	const queryClient = useQueryClient();
+	const { t } = useTranslation();
 
 	return (
 		<ContextualMenu
@@ -44,7 +46,7 @@ const ArtistContextualMenu = (props: ArtistContextualMenuProps) => {
 					GoToArtistSongsAction(artistSlug),
 				],
 				[UpdateArtistIllustrationAction(queryClient, props.artist.id)],
-				[ShareArtistAction(artistSlug)],
+				[ShareArtistAction(artistSlug, t)],
 			]}
 		/>
 	);

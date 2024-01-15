@@ -30,9 +30,10 @@ import { ExpandedPlayerControls, MinimizedPlayerControls } from "./controls";
 import { DefaultWindowTitle } from "../../utils/constants";
 import { toast } from "react-hot-toast";
 import { DrawerBreakpoint } from "../scaffold/scaffold";
-import { translate } from "../../i18n/translate";
+import { useTranslation } from "react-i18next";
 
 const Player = () => {
+	const { t } = useTranslation();
 	const theme = useTheme();
 	const userIsAuthentified = useSelector(
 		(state: RootState) => state.user.user !== undefined,
@@ -158,7 +159,7 @@ const Player = () => {
 					switch (errcode) {
 						case 9: // Format error
 							setPlaying(false);
-							toast.error(translate("playbackError"), {
+							toast.error(t("playbackError"), {
 								id: "playbackError",
 							});
 							// eslint-disable-next-line no-console
@@ -167,7 +168,7 @@ const Player = () => {
 							break;
 						case 19: // Network error
 							setPlaying(false);
-							toast.error(translate("networkError"), {
+							toast.error(t("networkError"), {
 								id: "networkError",
 							});
 							break;

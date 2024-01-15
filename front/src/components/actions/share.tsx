@@ -16,28 +16,38 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+import { Translator } from "../../i18n/i18n";
 import copyLinkToClipboard from "../../utils/copy-link";
 import { ShareIcon } from "../icons";
 import Action from "./action";
 
-export const ShareAction = (url: string): Action => ({
-	onClick: () => copyLinkToClipboard(url),
+export const ShareAction = (url: string, t: Translator): Action => ({
+	onClick: () => copyLinkToClipboard(url, t),
 	label: "share",
 	icon: <ShareIcon />,
 });
 
-export const ShareArtistAction = (artistIdentifier: string | number): Action =>
-	ShareAction(`/artists/${artistIdentifier}`);
+export const ShareArtistAction = (
+	artistIdentifier: string | number,
+	t: Translator,
+): Action => ShareAction(`/artists/${artistIdentifier}`, t);
 
-export const ShareAlbumAction = (albumIdentifier: string | number): Action =>
-	ShareAction(`/albums/${albumIdentifier}`);
+export const ShareAlbumAction = (
+	albumIdentifier: string | number,
+	t: Translator,
+): Action => ShareAction(`/albums/${albumIdentifier}`, t);
 
 export const ShareReleaseAction = (
 	releaseIdentifier: string | number,
-): Action => ShareAction(`/releases/${releaseIdentifier}`);
+	t: Translator,
+): Action => ShareAction(`/releases/${releaseIdentifier}`, t);
 
-export const ShareSongAction = (songSlug: string | number): Action =>
-	ShareAction(`/songs/${songSlug}`);
+export const ShareSongAction = (
+	songSlug: string | number,
+	t: Translator,
+): Action => ShareAction(`/songs/${songSlug}`, t);
 
-export const SharePlaylistAction = (playlistSlug: string | number): Action =>
-	ShareAction(`/playlists/${playlistSlug}`);
+export const SharePlaylistAction = (
+	playlistSlug: string | number,
+	t: Translator,
+): Action => ShareAction(`/playlists/${playlistSlug}`, t);

@@ -59,8 +59,8 @@ import ListItem from "../list-item/item";
 import { reorder, skipTrack } from "../../state/playerSlice";
 import { DragDropContext, Draggable, Droppable } from "react-beautiful-dnd";
 import formatDuration from "../../utils/formatDuration";
-import Translate from "../../i18n/translate";
 import formatArtists from "../../utils/formatArtists";
+import { useTranslation } from "react-i18next";
 
 const parentSongQuery = (id: number) =>
 	API.getSong(id, ["artist", "lyrics", "featuring"]);
@@ -237,6 +237,7 @@ const ExpandedPlayerControls = (
 	props: PlayerControlsProps & { videoRef: LegacyRef<HTMLVideoElement> },
 ) => {
 	const theme = useTheme();
+	const { t } = useTranslation();
 	const dispatch = useDispatch();
 	const parentSong = useQuery(parentSongQuery, props.track?.songId);
 	const [panel, setPanel] = useState<(typeof Panels)[number]>("lyrics");
@@ -506,9 +507,7 @@ const ExpandedPlayerControls = (
 								<Tab
 									key={index}
 									value={tabName}
-									label={
-										<Translate translationKey={tabName} />
-									}
+									label={t(tabName)}
 								/>
 							))}
 						</Tabs>

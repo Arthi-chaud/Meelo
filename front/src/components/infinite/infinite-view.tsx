@@ -25,8 +25,8 @@ import InfiniteGrid from "./infinite-grid";
 import InfiniteList from "./infinite-list";
 import { useEffect, useState } from "react";
 import Resource from "../../models/resource";
-import Translate from "../../i18n/translate";
 import Fade from "../fade";
+import { useTranslation } from "react-i18next";
 
 export type InfiniteViewProps<ItemType> = {
 	view: "list" | "grid";
@@ -42,6 +42,7 @@ export type InfiniteViewProps<ItemType> = {
 const InfiniteView = <ItemType extends Resource>(
 	props: InfiniteViewProps<ItemType>,
 ) => {
+	const { t } = useTranslation();
 	const [backToTopVisible, setBackToTopVisible] = useState(false);
 	const handleScroll = () => {
 		const position = window.scrollY;
@@ -61,7 +62,7 @@ const InfiniteView = <ItemType extends Resource>(
 				mountOnEnter
 				unmountOnExit
 			>
-				<Tooltip title={<Translate translationKey="backToTop" />}>
+				<Tooltip title={t("backToTop")}>
 					<Button
 						variant="contained"
 						color="secondary"

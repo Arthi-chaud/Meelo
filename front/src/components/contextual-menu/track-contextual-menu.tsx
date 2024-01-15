@@ -35,9 +35,9 @@ import {
 import { ShowTrackFileInfoAction } from "../actions/show-track-info";
 import { TrackWithRelations } from "../../models/track";
 import { UpdateTrackIllustrationAction } from "../actions/update-illustration";
-import { translate } from "../../i18n/translate";
 import { RefreshTrackMetadataAction } from "../actions/refresh-metadata";
 import ChangeSongType from "../actions/song-type";
+import { useTranslation } from "react-i18next";
 
 type TrackContextualMenuProps = {
 	track: TrackWithRelations<"song">;
@@ -60,10 +60,11 @@ const TrackContextualMenu = (props: TrackContextualMenuProps) => {
 			artist,
 			release,
 		}));
+	const { t } = useTranslation();
 	const masterMutation = useMutation(async () => {
 		return API.setTrackAsMaster(props.track.id)
 			.then(() => {
-				toast.success(translate("trackSetAsMaster"));
+				toast.success(t("trackSetAsMaster"));
 				queryClient.client.invalidateQueries();
 			})
 			.catch((error: Error) => toast.error(error.message));
@@ -90,10 +91,10 @@ const TrackContextualMenu = (props: TrackContextualMenuProps) => {
 				[
 					ChangeSongType(props.track.song, queryClient, confirm),
 					UpdateTrackIllustrationAction(queryClient, props.track.id),
-					RefreshTrackMetadataAction(props.track.id),
+					RefreshTrackMetadataAction(props.track.id, t),
 				],
 				[ShowTrackFileInfoAction(confirm, props.track.id)],
-				[DownloadAction(confirm, props.track.stream)],
+				[DownloadAction(confirm, props.track.stream, t)],
 			]}
 		/>
 	);

@@ -23,7 +23,7 @@ import { toast } from "react-hot-toast";
 import { useDispatch } from "react-redux";
 import API from "../../api/api";
 import { setAccessToken } from "../../state/userSlice";
-import Translate, { translate, useLanguage } from "../../i18n/translate";
+import { useTranslation } from "react-i18next";
 
 /**
  * Authentication form
@@ -37,7 +37,7 @@ const AuthenticationForm = () => {
 	const { registerState, handleSubmit } = useHookForm({
 		defaultValues,
 	});
-	const language = useLanguage();
+	const { t } = useTranslation();
 
 	const onSubmit = async (values: typeof defaultValues) => {
 		try {
@@ -46,7 +46,7 @@ const AuthenticationForm = () => {
 
 				if (!createdUser.enabled) {
 					setFormType("login");
-					toast.success(translate("accountCreated"));
+					toast.success(t("accountCreated"));
 					return;
 				}
 			}
@@ -77,24 +77,24 @@ const AuthenticationForm = () => {
 				<HookTextField
 					{...registerState("username")}
 					textFieldProps={{
-						label: <Translate translationKey="username" />,
+						label: t("username"),
 					}}
 					gridProps={{}}
 					rules={{
 						required: {
 							value: true,
-							message: translate("usernameIsRequired"),
+							message: t("usernameIsRequired"),
 						},
 						minLength: {
 							value: 4,
-							message: translate("usernameTooShort"),
+							message: t("usernameTooShort"),
 						},
 					}}
 				/>
 				<HookTextField
 					{...registerState("password")}
 					textFieldProps={{
-						label: <Translate translationKey="password" />,
+						label: t("password"),
 						type: "password",
 						onChange: (event) => setPassword(event.target.value),
 					}}
@@ -102,11 +102,11 @@ const AuthenticationForm = () => {
 					rules={{
 						required: {
 							value: true,
-							message: translate("passwordIsRequired"),
+							message: t("passwordIsRequired"),
 						},
 						minLength: {
 							value: 6,
-							message: translate("passwordTooShort"),
+							message: t("passwordTooShort"),
 						},
 					}}
 				/>
@@ -114,20 +114,18 @@ const AuthenticationForm = () => {
 					<HookTextField
 						{...registerState("confirm")}
 						textFieldProps={{
-							label: (
-								<Translate translationKey="confirmPassword" />
-							),
+							label: t("confirmPassword"),
 							type: "password",
 						}}
 						gridProps={{}}
 						rules={{
 							required: {
 								value: true,
-								message: translate("pleaseConfirm"),
+								message: t("pleaseConfirm"),
 							},
 							validate: (confirmValue) => {
 								if (confirmValue !== password) {
-									return translate("passwordsAreDifferent");
+									return t("passwordsAreDifferent");
 								}
 							},
 						}}
@@ -152,13 +150,11 @@ const AuthenticationForm = () => {
 							)
 						}
 					>
-						<Translate
-							translationKey={
-								formType == "login"
-									? "signupButton"
-									: "signinButton"
-							}
-						/>
+						{t(
+							formType == "login"
+								? "signupButton"
+								: "signinButton",
+						)}
 					</Button>
 				</Grid>
 			</Grid>

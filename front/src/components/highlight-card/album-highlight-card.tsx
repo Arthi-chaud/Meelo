@@ -16,7 +16,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { translate } from "../../i18n/translate";
+import { useTranslation } from "react-i18next";
 import { AlbumWithRelations } from "../../models/album";
 import getYear from "../../utils/getYear";
 import HighlightCard from "./highlight-card";
@@ -25,6 +25,7 @@ type AlbumHighlightCardProps = {
 	album: AlbumWithRelations<"artist" | "externalIds" | "genres">;
 };
 const AlbumHighlightCard = ({ album }: AlbumHighlightCardProps) => {
+	const { t } = useTranslation();
 	return (
 		<HighlightCard
 			title={album.name}
@@ -36,7 +37,7 @@ const AlbumHighlightCard = ({ album }: AlbumHighlightCardProps) => {
 					.sort((descA, descB) => descA.length - descB.length)
 					.at(0) ||
 				[
-					album.artist?.name ?? translate("compilation"),
+					album.artist?.name ?? t("compilation"),
 					getYear(album.releaseDate),
 				]
 					.filter((elem) => elem != null)

@@ -27,6 +27,7 @@ import {
 } from "../actions/playlist";
 import { useConfirm } from "material-ui-confirm";
 import { useRouter } from "next/router";
+import { useTranslation } from "react-i18next";
 
 type PlaylistContextualMenuProps = {
 	playlist: Playlist;
@@ -37,6 +38,7 @@ const PlaylistContextualMenu = (props: PlaylistContextualMenuProps) => {
 	const queryClient = useQueryClient();
 	const confirm = useConfirm();
 	const router = useRouter();
+	const { t } = useTranslation();
 
 	return (
 		<ContextualMenu
@@ -49,7 +51,7 @@ const PlaylistContextualMenu = (props: PlaylistContextualMenuProps) => {
 						props.playlist.slug,
 					),
 				],
-				[SharePlaylistAction(props.playlist.slug)],
+				[SharePlaylistAction(props.playlist.slug, t)],
 				[
 					DeletePlaylistAction(
 						confirm,

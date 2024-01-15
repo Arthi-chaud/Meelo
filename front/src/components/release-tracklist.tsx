@@ -38,9 +38,9 @@ import Artist from "../models/artist";
 import formatDuration from "../utils/formatDuration";
 import ReleaseTrackContextualMenu from "./contextual-menu/release-track-contextual-menu";
 import { SongWithRelations } from "../models/song";
-import Translate from "../i18n/translate";
 import { VideoIcon } from "./icons";
 import formatArtists from "../utils/formatArtists";
+import { useTranslation } from "react-i18next";
 
 type ReleaseTracklistProps = {
 	mainArtist?: Artist;
@@ -58,6 +58,7 @@ const ReleaseTrackList = ({
 	release,
 	mainArtist,
 }: ReleaseTracklistProps) => {
+	const { t } = useTranslation();
 	const theme = useTheme();
 	const dispatch = useDispatch();
 	const flatTracklist = Array.from(Object.values(tracklist)).flat();
@@ -78,7 +79,7 @@ const ReleaseTrackList = ({
 					subheader={
 						discs.length !== 1 && (
 							<ListSubheader disableSticky>
-								<Translate translationKey="disc" /> {disc[0]}
+								{`${t("disc")} ${disc[0]}`}
 							</ListSubheader>
 						)
 					}
@@ -147,7 +148,7 @@ const ReleaseTrackList = ({
 										<Typography
 											color={theme.palette.text.disabled}
 										>
-											<Translate translationKey="bonusTrack" />
+											{t("bonusTrack")}
 										</Typography>
 									)}
 									{currentTrack.type == "Video" && (

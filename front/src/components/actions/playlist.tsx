@@ -44,8 +44,8 @@ import LoadingPage from "../loading/loading-page";
 import ListItem from "../list-item/item";
 import Illustration from "../illustration";
 import { useConfirm } from "material-ui-confirm";
-import Translate from "../../i18n/translate";
 import { Add, Edit } from "iconsax-react";
+import { useTranslation } from "react-i18next";
 
 export const PlayNextAction = (
 	getTrack: () => PromiseLike<Parameters<typeof playNext>[0]>,
@@ -82,6 +82,7 @@ const CreateOrUpdatePlaylistForm = (props: CreateOrUpdatePlaylistFormProps) => {
 	const { registerState, handleSubmit } = useHookForm({
 		defaultValues,
 	});
+	const { t } = useTranslation();
 	const onSubmit = (values: typeof defaultValues) => {
 		props.onSubmit(values.name);
 		props.onClose();
@@ -114,9 +115,7 @@ const CreateOrUpdatePlaylistForm = (props: CreateOrUpdatePlaylistFormProps) => {
 					/>
 				</DialogContent>
 				<DialogActions>
-					<Button onClick={props.onClose}>
-						<Translate translationKey="cancel" />
-					</Button>
+					<Button onClick={props.onClose}>{t("cancel")}</Button>
 					<Button type="submit" color="primary" variant="contained">
 						{props.defaultValue ? "Update" : "Create"}
 					</Button>
@@ -214,6 +213,8 @@ type SelectPlaylistFormProps = {
 };
 
 const SelectPlaylistForm = (props: SelectPlaylistFormProps) => {
+	const { t } = useTranslation();
+
 	return (
 		<>
 			<DialogTitle>Select a playlist</DialogTitle>
@@ -243,7 +244,7 @@ const SelectPlaylistForm = (props: SelectPlaylistFormProps) => {
 			</DialogContent>
 			<DialogActions>
 				<Button onClick={props.onClose} variant="outlined">
-					<Translate translationKey="cancel" />
+					{t("cancel")}
 				</Button>
 			</DialogActions>
 		</>

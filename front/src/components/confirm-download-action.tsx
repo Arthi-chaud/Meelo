@@ -17,16 +17,17 @@
  */
 
 import { useConfirm } from "material-ui-confirm";
-import { translate } from "../i18n/translate";
+import { Translator } from "../i18n/i18n";
 
 const confirmDownloadAction = (
 	confirm: ReturnType<typeof useConfirm>,
 	downloadUrl: string,
+	t: Translator,
 ) => {
 	confirm({
-		title: translate("warning"),
-		description: translate("downloadWarning"),
-		confirmationText: translate("download"),
+		title: t("warning"),
+		description: t("downloadWarning"),
+		confirmationText: t("download"),
 		confirmationButtonProps: {
 			color: "error",
 			variant: "outlined",

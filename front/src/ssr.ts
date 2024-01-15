@@ -90,7 +90,7 @@ const prepareSSR = <AdditionalProps>(
 			// Disable SSR if user is not authentified
 			return { props: {} };
 		}
-		i18n.changeLanguage(
+		await i18n.changeLanguage(
 			language ??
 				ALParser.pick(
 					Array.from(Languages),

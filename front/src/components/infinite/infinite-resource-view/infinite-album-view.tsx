@@ -28,7 +28,7 @@ import InfiniteView from "../infinite-view";
 import { useRouter } from "next/router";
 import { useState } from "react";
 import InfiniteResourceViewProps from "./infinite-resource-view-props";
-import { translate, useLanguage } from "../../../i18n/translate";
+import { useTranslation } from "react-i18next";
 
 type AdditionalProps = { type?: AlbumType };
 
@@ -43,6 +43,7 @@ const InfiniteAlbumView = (
 		},
 ) => {
 	const router = useRouter();
+	const { t } = useTranslation();
 	const [options, setOptions] = useState<
 		OptionState<typeof AlbumSortingKeys, AdditionalProps>
 	>({
@@ -52,14 +53,13 @@ const InfiniteAlbumView = (
 		sortBy: props.initialSortingField ?? "name",
 		view: props.defaultLayout ?? "grid",
 	});
-	const language = useLanguage();
 
 	return (
 		<>
 			<Controls
 				options={[
 					{
-						label: translate((options?.type as AlbumType) ?? "All"),
+						label: t((options?.type as AlbumType) ?? "All"),
 						name: "type",
 						values: ["All", ...AlbumType],
 						currentValue: options?.type ?? undefined,

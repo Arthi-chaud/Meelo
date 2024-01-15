@@ -30,9 +30,9 @@ import { DownloadReleaseAction } from "../actions/download";
 import { useConfirm } from "material-ui-confirm";
 import { ReleaseWithRelations } from "../../models/release";
 import { UpdateReleaseIllustrationAction } from "../actions/update-illustration";
-import { translate } from "../../i18n/translate";
 import ChangeAlbumType from "../actions/album-type";
 import { RefreshReleaseMetadataAction } from "../actions/refresh-metadata";
+import { useTranslation } from "react-i18next";
 
 type ReleaseContextualMenuProps = {
 	release: ReleaseWithRelations<"album">;
@@ -44,10 +44,11 @@ const ReleaseContextualMenu = (props: ReleaseContextualMenuProps) => {
 	);
 	const queryClient = useQueryClient();
 	const confirm = useConfirm();
+	const { t } = useTranslation();
 	const masterMutation = useMutation(async () => {
 		return API.setReleaseAsMaster(props.release.id)
 			.then(() => {
-				toast.success(translate("releaseSetAsMaster"));
+				toast.success(t("releaseSetAsMaster"));
 				queryClient.client.invalidateQueries();
 			})
 			.catch((error: Error) => toast.error(error.message));
@@ -62,7 +63,7 @@ const ReleaseContextualMenu = (props: ReleaseContextualMenuProps) => {
 						.map((track) => API.setTrackAsMaster(track.id)),
 				)
 					.then(() => {
-						toast.success(translate("tracksUpdated"));
+						toast.success(t("tracksUpdated"));
 						queryClient.client.invalidateQueries();
 					})
 					.catch((error) => toast.error(error.message));
@@ -98,10 +99,10 @@ const ReleaseContextualMenu = (props: ReleaseContextualMenuProps) => {
 						queryClient,
 						props.release.id,
 					),
-					RefreshReleaseMetadataAction(props.release.id),
+					RefreshReleaseMetadataAction(props.release.id, t),
 				],
-				[DownloadReleaseAction(confirm, props.release.id)],
-				[ShareReleaseAction(props.release.id)],
+				[DownloadReleaseAction(confirm, props.release.id, t)],
+				[ShareReleaseAction(props.release.id, t)],
 			]}
 		/>
 	);

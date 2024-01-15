@@ -18,8 +18,8 @@
 
 import { Box, Button, Typography } from "@mui/material";
 import Link from "next/link";
-import Translate from "../i18n/translate";
 import { useErrorBoundary } from "react-error-boundary";
+import { useTranslation } from "react-i18next";
 
 type ErrorPageProps = {
 	heading: string | JSX.Element;
@@ -30,6 +30,7 @@ type ErrorPageProps = {
  */
 const ErrorPage = ({ heading }: ErrorPageProps) => {
 	const { resetBoundary } = useErrorBoundary();
+	const { t } = useTranslation();
 
 	return (
 		<Box
@@ -53,7 +54,7 @@ const ErrorPage = ({ heading }: ErrorPageProps) => {
 			</Typography>
 			<Link href="/" onClick={() => resetBoundary()}>
 				<Button color="inherit" variant="outlined">
-					<Translate translationKey="goBackHome" />
+					{t("goBackHome")}
 				</Button>
 			</Link>
 		</Box>

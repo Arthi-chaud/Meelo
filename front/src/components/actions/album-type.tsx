@@ -18,7 +18,6 @@
 
 import { QueryClient } from "../../api/use-query";
 import Action from "../actions/action";
-import { translate } from "../../i18n/translate";
 import { useConfirm } from "material-ui-confirm";
 import Album, { AlbumType } from "../../models/album";
 import store from "../../state/store";
@@ -28,12 +27,14 @@ import toast from "react-hot-toast";
 import API from "../../api/api";
 import { useMutation } from "react-query";
 import { EditIcon } from "../icons";
+import { useTranslation } from "react-i18next";
 
 const AlbumTypeForm = (props: {
 	defaultValue: AlbumType;
 	onSelect: (type: AlbumType) => void;
 }) => {
 	const [currentType, setType] = useState(props.defaultValue);
+	const { t } = useTranslation();
 
 	return (
 		<>
@@ -41,7 +42,7 @@ const AlbumTypeForm = (props: {
 				{AlbumType.map((type) => (
 					<Grid item key={type}>
 						<Chip
-							label={translate(type)}
+							label={t(type)}
 							variant={
 								type == currentType ? "filled" : "outlined"
 							}
@@ -62,6 +63,7 @@ const ChangeAlbumType = (
 	queryClient: QueryClient,
 	confirm: ReturnType<typeof useConfirm>,
 ): Action => {
+	const { t } = useTranslation();
 	const mutation = useMutation((newType: AlbumType) => {
 		return API.updateAlbum(album.id, newType)
 			.then(() => {
@@ -76,7 +78,7 @@ const ChangeAlbumType = (
 		disabled: store.getState().user.user?.admin !== true,
 		onClick: () =>
 			confirm({
-				title: translate("changeAlbumType"),
+				title: t("changeAlbumType"),
 				description: (
 					<AlbumTypeForm
 						defaultValue={album.type}
@@ -84,7 +86,7 @@ const ChangeAlbumType = (
 					/>
 				),
 				cancellationButtonProps: { sx: { display: "none" } },
-				confirmationText: translate("done"),
+				confirmationText: t("done"),
 			}),
 	};
 };

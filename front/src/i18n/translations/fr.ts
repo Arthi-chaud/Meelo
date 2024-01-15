@@ -17,7 +17,7 @@
  */
 
 import en from "./en";
-import { TranslationMap } from "./type";
+import { TranslationMap } from "../i18n";
 
 const fr: TranslationMap = {
 	cancel: "Annuler",

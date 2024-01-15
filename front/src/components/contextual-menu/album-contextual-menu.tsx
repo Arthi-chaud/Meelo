@@ -26,6 +26,7 @@ import { AlbumWithRelations } from "../../models/album";
 import { useQueryClient } from "../../api/use-query";
 import ChangeAlbumType from "../actions/album-type";
 import { RefreshAlbumMetadataAction } from "../actions/refresh-metadata";
+import { useTranslation } from "react-i18next";
 
 type AlbumContextualMenuProps = {
 	album: AlbumWithRelations<"artist">;
@@ -37,6 +38,7 @@ const AlbumContextualMenu = (props: AlbumContextualMenuProps) => {
 	}`;
 	const confirm = useConfirm();
 	const queryClient = useQueryClient();
+	const { t } = useTranslation();
 
 	return (
 		<ContextualMenu
@@ -48,16 +50,19 @@ const AlbumContextualMenu = (props: AlbumContextualMenuProps) => {
 				],
 				[
 					ChangeAlbumType(props.album, queryClient, confirm),
-					RefreshAlbumMetadataAction(albumSlug),
+					RefreshAlbumMetadataAction(albumSlug, t),
 				],
 				[
-					DownloadReleaseAsyncAction(confirm, () =>
-						queryClient
-							.fetchQuery(API.getMasterRelease(albumSlug))
-							.then((release) => release.id),
+					DownloadReleaseAsyncAction(
+						confirm,
+						() =>
+							queryClient
+								.fetchQuery(API.getMasterRelease(albumSlug))
+								.then((release) => release.id),
+						t,
 					),
 				],
-				[ShareAlbumAction(albumSlug)],
+				[ShareAlbumAction(albumSlug, t)],
 			]}
 		/>
 	);

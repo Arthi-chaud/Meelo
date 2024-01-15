@@ -52,7 +52,6 @@ import LoadingPage from "../../components/loading/loading-page";
 import TileRow from "../../components/tile-row";
 import VideoTile from "../../components/tile/video-tile";
 import ExternalIdBadge from "../../components/external-id-badge";
-import Translate from "../../i18n/translate";
 import ArtistTile from "../../components/tile/artist-tile";
 import PlaylistTile from "../../components/tile/playlist-tile";
 import ReleaseTile from "../../components/tile/release-tile";
@@ -67,6 +66,7 @@ import { SongWithRelations } from "../../models/song";
 import Video from "../../models/video";
 import { useAccentColor } from "../../utils/accent-color";
 import GradientBackground from "../../components/gradient-background";
+import { useTranslation } from "react-i18next";
 
 const releaseQuery = (releaseIdentifier: string | number) =>
 	API.getRelease(releaseIdentifier, ["album", "externalIds"]);
@@ -145,6 +145,7 @@ const RelatedContentSection = (props: RelatedContentSectionProps) => {
 
 const ReleasePage = (props: InferSSRProps<typeof getServerSideProps>) => {
 	const router = useRouter();
+	const { t } = useTranslation();
 	const releaseIdentifier =
 		props.additionalProps?.releaseIdentifier ?? getSlugOrId(router.query);
 	const theme = useTheme();
@@ -454,8 +455,7 @@ const ReleasePage = (props: InferSSRProps<typeof getServerSideProps>) => {
 													lineHeight: "normal",
 												}}
 											>
-												<Translate translationKey="genres" />
-												:
+												{`${t("genres")}: `}
 											</ListSubheader>
 										</Grid>
 										{albumGenres.data?.pages
@@ -521,7 +521,7 @@ const ReleasePage = (props: InferSSRProps<typeof getServerSideProps>) => {
 				</Grid>
 				<RelatedContentSection
 					display={(bSides.length ?? 0) > 0}
-					title={<Translate translationKey="bonusTracks" />}
+					title={t("bonusTracks")}
 				>
 					<SongGrid
 						parentArtistName={albumArtist?.name}
@@ -533,7 +533,7 @@ const ReleasePage = (props: InferSSRProps<typeof getServerSideProps>) => {
 						(relatedReleases.data?.pages.at(0)?.items?.length ??
 							0) > 1
 					}
-					title={<Translate translationKey="otherAlbumReleases" />}
+					title={t("otherAlbumReleases")}
 				>
 					<TileRow
 						tiles={
@@ -557,7 +557,7 @@ const ReleasePage = (props: InferSSRProps<typeof getServerSideProps>) => {
 				</RelatedContentSection>
 				<RelatedContentSection
 					display={videos !== undefined && videos.length != 0}
-					title={<Translate translationKey="musicVideos" />}
+					title={t("musicVideos")}
 				>
 					<TileRow
 						tiles={
@@ -572,7 +572,7 @@ const ReleasePage = (props: InferSSRProps<typeof getServerSideProps>) => {
 				</RelatedContentSection>
 				<RelatedContentSection
 					display={extras.length > 0 || videoExtras.length > 0}
-					title={<Translate translationKey="extras" />}
+					title={t("extras")}
 				>
 					{extras.length > 0 ? (
 						<SongGrid
@@ -600,7 +600,7 @@ const ReleasePage = (props: InferSSRProps<typeof getServerSideProps>) => {
 						(relatedAlbums.data?.pages.at(0)?.items?.length ?? 0) >
 						0
 					}
-					title={<Translate translationKey="relatedAlbums" />}
+					title={t("relatedAlbums")}
 				>
 					<TileRow
 						tiles={
@@ -622,7 +622,7 @@ const ReleasePage = (props: InferSSRProps<typeof getServerSideProps>) => {
 				</RelatedContentSection>
 				<RelatedContentSection
 					display={(featurings?.length ?? 0) != 0}
-					title={<Translate translationKey="onThisAlbum" />}
+					title={t("onThisAlbum")}
 				>
 					<TileRow
 						tiles={
@@ -634,7 +634,7 @@ const ReleasePage = (props: InferSSRProps<typeof getServerSideProps>) => {
 				</RelatedContentSection>
 				<RelatedContentSection
 					display={(playlists?.length ?? 0) != 0}
-					title={<Translate translationKey="featuredOnPlaylists" />}
+					title={t("featuredOnPlaylists")}
 				>
 					<TileRow
 						tiles={
@@ -648,10 +648,7 @@ const ReleasePage = (props: InferSSRProps<typeof getServerSideProps>) => {
 					/>
 				</RelatedContentSection>
 				{externalIdWithDescription && (
-					<RelatedContentSection
-						display
-						title={<Translate translationKey="about" />}
-					>
+					<RelatedContentSection display title={t("about")}>
 						<Box sx={{ paddingBottom: 2 }}>
 							<ResourceDescriptionExpandable
 								externalDescription={externalIdWithDescription}
@@ -664,7 +661,7 @@ const ReleasePage = (props: InferSSRProps<typeof getServerSideProps>) => {
 						[...album.data.externalIds, ...release.data.externalIds]
 							.length != 0
 					}
-					title={<Translate translationKey="externalLinks" />}
+					title={t("externalLinks")}
 				>
 					<Grid container spacing={1}>
 						{[

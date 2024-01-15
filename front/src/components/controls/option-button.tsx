@@ -20,8 +20,8 @@ import { CheckIcon } from "../icons";
 import { Button, Divider, ListItemIcon, Menu, MenuItem } from "@mui/material";
 import Option, { OptionGroup } from "./option";
 import { useState } from "react";
-import Translate from "../../i18n/translate";
-import { TranslationKey } from "../../i18n/translations/type";
+import { TranslationKey } from "../../i18n/i18n";
+import { useTranslation } from "react-i18next";
 
 type OptionButtonProps<
 	Options extends Option<OptionsKeys[number]>[],
@@ -45,6 +45,7 @@ const OptionButton = <
 >(
 	props: OptionButtonProps<Options, OptionsKeys>,
 ) => {
+	const { t } = useTranslation();
 	const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
 	const menuOpen = Boolean(anchorEl);
 	const handleMenuOpen = (event: React.MouseEvent<HTMLButtonElement>) =>
@@ -54,9 +55,7 @@ const OptionButton = <
 	return (
 		<>
 			<Button onClick={handleMenuOpen} endIcon={props.optionGroup.icon}>
-				<Translate
-					translationKey={props.optionGroup.name as TranslationKey}
-				/>
+				{t(props.optionGroup.name as TranslationKey)}
 			</Button>
 			<Menu anchorEl={anchorEl} open={menuOpen} onClose={handleMenuClose}>
 				{props.optionGroup.options.map((option, index, array) =>
@@ -82,9 +81,7 @@ const OptionButton = <
 									)}
 								</ListItemIcon>
 								{/* If value is not a Translation Key, will fall through */}
-								<Translate
-									translationKey={value as TranslationKey}
-								/>
+								{t(value as TranslationKey)}
 							</MenuItem>
 						))
 						.concat(

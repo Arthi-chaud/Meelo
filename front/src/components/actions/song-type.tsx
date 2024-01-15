@@ -18,7 +18,6 @@
 
 import { QueryClient } from "../../api/use-query";
 import Action from "./action";
-import { translate } from "../../i18n/translate";
 import { useConfirm } from "material-ui-confirm";
 import store from "../../state/store";
 import { Chip, Grid } from "@mui/material";
@@ -28,12 +27,14 @@ import API from "../../api/api";
 import { useMutation } from "react-query";
 import { EditIcon } from "../icons";
 import Song, { SongType } from "../../models/song";
+import { useTranslation } from "react-i18next";
 
 const SongTypeForm = (props: {
 	defaultValue: SongType;
 	onSelect: (type: SongType) => void;
 }) => {
 	const [currentType, setType] = useState(props.defaultValue);
+	const { t } = useTranslation();
 
 	return (
 		<>
@@ -41,7 +42,7 @@ const SongTypeForm = (props: {
 				{SongType.filter((type) => type != "Unknown").map((type) => (
 					<Grid item key={type}>
 						<Chip
-							label={translate(type)}
+							label={t(type)}
 							variant={
 								type == currentType ? "filled" : "outlined"
 							}
@@ -62,6 +63,7 @@ const ChangeSongType = (
 	queryClient: QueryClient,
 	confirm: ReturnType<typeof useConfirm>,
 ): Action => {
+	const { t } = useTranslation();
 	const mutation = useMutation((newType: SongType) => {
 		return API.updateSong(song.id, newType)
 			.then(() => {
@@ -81,7 +83,7 @@ const ChangeSongType = (
 		disabled: store.getState().user.user?.admin !== true,
 		onClick: () =>
 			confirm({
-				title: translate("changeSongType"),
+				title: t("changeSongType"),
 				description: (
 					<SongTypeForm
 						defaultValue={song.type}
@@ -89,7 +91,7 @@ const ChangeSongType = (
 					/>
 				),
 				cancellationButtonProps: { sx: { display: "none" } },
-				confirmationText: translate("done"),
+				confirmationText: t("done"),
 			}),
 	};
 };

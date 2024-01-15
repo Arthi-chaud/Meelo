@@ -38,10 +38,10 @@ import { ShowMasterTrackFileInfoAction } from "../actions/show-track-info";
 import { SongWithRelations } from "../../models/song";
 import { useQueryClient } from "../../api/use-query";
 import { toast } from "react-hot-toast";
-import { translate } from "../../i18n/translate";
 import ChangeSongType from "../actions/song-type";
 import { RefreshSongMetadataAction } from "../actions/refresh-metadata";
 import { DeleteIcon } from "../icons";
+import { useTranslation } from "react-i18next";
 
 type SongContextualMenuProps = {
 	song: SongWithRelations<"artist">;
@@ -53,6 +53,7 @@ type SongContextualMenuProps = {
 const SongContextualMenu = (props: SongContextualMenuProps) => {
 	const songSlug = `${props.song.artist.slug}+${props.song.slug}`;
 	const queryClient = useQueryClient();
+	const { t } = useTranslation();
 	const getMasterTrack = () =>
 		queryClient.fetchQuery(API.getMasterTrack(songSlug, ["release"]));
 	const router = useRouter();
@@ -87,7 +88,7 @@ const SongContextualMenu = (props: SongContextualMenuProps) => {
 				],
 				[
 					ChangeSongType(props.song, queryClient, confirm),
-					RefreshSongMetadataAction(props.song.id),
+					RefreshSongMetadataAction(props.song.id, t),
 				],
 				[
 					ShowMasterTrackFileInfoAction(
@@ -97,10 +98,12 @@ const SongContextualMenu = (props: SongContextualMenuProps) => {
 					),
 				],
 				[
-					DownloadAsyncAction(confirm, () =>
-						getMasterTrack().then((master) => master.stream),
+					DownloadAsyncAction(
+						confirm,
+						() => getMasterTrack().then((master) => master.stream),
+						t,
 					),
-					ShareSongAction(songSlug),
+					ShareSongAction(songSlug, t),
 				],
 			].concat(
 				props.entryId !== undefined
@@ -113,7 +116,7 @@ const SongContextualMenu = (props: SongContextualMenuProps) => {
 										API.deletePlaylistEntry(props.entryId!)
 											.then(() => {
 												toast.success(
-													translate(
+													t(
 														"playlistItemDeletionSuccess",
 													),
 												);

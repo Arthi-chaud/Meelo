@@ -20,9 +20,10 @@ import { Dialog, ListItemIcon, ListItemText, MenuItem } from "@mui/material";
 import Link from "next/link";
 import Action from "../actions/action";
 import { useState } from "react";
-import Translate from "../../i18n/translate";
+import { useTranslation } from "react-i18next";
 
 const ContextualMenuItem = (props: Action & { onDialogClose: () => void }) => {
+	const { t } = useTranslation();
 	const [modalOpen, setModalOpen] = useState(false);
 	const onClick = () => {
 		if (props.disabled === true) {
@@ -44,9 +45,7 @@ const ContextualMenuItem = (props: Action & { onDialogClose: () => void }) => {
 			sx={{ borderRadius: "0" }}
 		>
 			{props.icon && <ListItemIcon>{props.icon}</ListItemIcon>}
-			<ListItemText>
-				<Translate translationKey={props.label} />
-			</ListItemText>
+			<ListItemText>{t(props.label)}</ListItemText>
 		</MenuItem>
 	);
 
