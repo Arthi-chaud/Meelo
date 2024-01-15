@@ -20,6 +20,8 @@ import i18n from "i18next";
 import { initReactI18next } from "react-i18next";
 import en from "./translations/en";
 import fr from "./translations/fr";
+import { setCookie } from "cookies-next";
+import { LanguageCookieKey } from "../utils/cookieKeys";
 
 const Languages = ["en", "fr"] as const;
 const Resources = { en, fr };
@@ -30,10 +32,23 @@ i18n.use(initReactI18next) // passes i18n down to react-i18next
 			en: { translation: en },
 			fr: { translation: fr },
 		},
+		fallbackLng: "en",
 		interpolation: {
 			escapeValue: false,
 		},
 	});
+
+export const persistLanguage = (language: Language) => {
+	const expires = new Date();
+
+	expires.setMonth(expires.getMonth() + 1);
+	setCookie(
+		LanguageCookieKey,
+		language,
+		// Sets cookie for a month
+		{ expires },
+	);
+};
 
 export type Language = keyof typeof Resources;
 export { Languages };

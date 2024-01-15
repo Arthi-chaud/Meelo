@@ -17,7 +17,6 @@
  */
 
 import { Button, Checkbox, Grid, MenuItem, NoSsr, Select } from "@mui/material";
-import Translate, { useLanguage } from "../../i18n/translate";
 import SectionHeader from "../section-header";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../../state/store";
@@ -25,11 +24,10 @@ import { useColorScheme } from "@mui/material/styles";
 import {
 	allowNotifications,
 	disableNotifications,
-	resetLanguage,
-	setLanguage,
 } from "../../state/settingsSlice";
-import { Language, Languages } from "../../i18n/i18n";
+import { Language, Languages, persistLanguage } from "../../i18n/i18n";
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 
 const SettingGroupStyle = {
 	paddingTop: 1,
@@ -43,28 +41,22 @@ const InputContainerStyle = {
 } as const;
 
 const UserSettings = () => {
+	const { t, i18n } = useTranslation();
 	const colorScheme = useColorScheme();
 	const notificationPreference = useSelector(
 		(state: RootState) => state.settings.allowNotifications,
 	);
-	const languagePreference = useSelector(
-		(state: RootState) => state.settings.language,
-	);
 	const dispatch = useDispatch();
-	const actualLanguage = useLanguage();
 	const notificationsAPIAvailable = typeof Notification !== "undefined";
 	const [notificationsEnabled, setNotificationsEnabled] = useState(
 		() => notificationsAPIAvailable && Notification.permission == "granted",
 	);
-
 	return (
 		<NoSsr>
-			<SectionHeader
-				heading={<Translate translationKey="colorScheme" />}
-			/>
+			<SectionHeader heading={t("colorScheme")} />
 			<Grid container sx={SettingGroupStyle}>
 				<Grid item xs={11}>
-					<Translate translationKey="useSystemeTheme" />
+					{t("useSystemeTheme")}
 				</Grid>
 				<Grid item xs={1} sx={InputContainerStyle}>
 					<Checkbox
@@ -79,7 +71,7 @@ const UserSettings = () => {
 					/>
 				</Grid>
 				<Grid item xs={11}>
-					<Translate translationKey="useDarkTheme" />
+					{t("useDarkTheme")}
 				</Grid>
 				<Grid item xs={1} sx={InputContainerStyle}>
 					<Checkbox
@@ -94,35 +86,18 @@ const UserSettings = () => {
 					/>
 				</Grid>
 			</Grid>
-			<SectionHeader heading={<Translate translationKey="language" />} />
+			<SectionHeader heading={t("language")} />
 			<Grid container sx={SettingGroupStyle}>
-				<Grid item xs={11}>
-					<Translate translationKey="useSystemeLanguage" />
-				</Grid>
-				<Grid item xs={1} sx={InputContainerStyle}>
-					<Checkbox
-						onChange={(event, isChecked) =>
-							dispatch(
-								isChecked
-									? resetLanguage()
-									: setLanguage(actualLanguage),
-							)
-						}
-						checked={languagePreference == "system"}
-					/>
-				</Grid>
 				<Grid item xs={10}>
-					<Translate translationKey="language" />
+					{t("language")}
 				</Grid>
 				<Grid item xs={2} sx={InputContainerStyle}>
 					<Select
-						disabled={languagePreference == "system"}
 						size="small"
-						value={actualLanguage}
+						value={i18n.language}
 						onChange={(event) => {
-							dispatch(
-								setLanguage(event.target.value as Language),
-							);
+							i18n.changeLanguage(event.target.value);
+							persistLanguage(event.target.value as Language);
 						}}
 					>
 						{Languages.map((language, languageIndex) => (
@@ -131,18 +106,16 @@ const UserSettings = () => {
 								value={language}
 								style={{ borderRadius: 0 }}
 							>
-								<Translate translationKey={language} />
+								{t(language)}
 							</MenuItem>
 						))}
 					</Select>
 				</Grid>
 			</Grid>
-			<SectionHeader
-				heading={<Translate translationKey="notifications" />}
-			/>
+			<SectionHeader heading={t("notifications")} />
 			<Grid container sx={SettingGroupStyle}>
 				<Grid item xs={10}>
-					<Translate translationKey="permissions" />
+					{t("permissions")}
 				</Grid>
 				<Grid item xs={2} sx={InputContainerStyle}>
 					<Button
@@ -174,7 +147,7 @@ const UserSettings = () => {
 					</Button>
 				</Grid>
 				<Grid item xs={10}>
-					<Translate translationKey="notifyOnTrackChange" />
+					{t("notifyOnTrackChange")}
 				</Grid>
 				<Grid item xs={2} sx={InputContainerStyle}>
 					<Checkbox

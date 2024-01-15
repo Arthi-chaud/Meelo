@@ -33,10 +33,10 @@ import {
 	UserAccessTokenCookieKey,
 } from "./utils/cookieKeys";
 import API from "./api/api";
-import { setLanguage } from "./state/settingsSlice";
 import { Languages } from "./i18n/i18n";
 import ALParser from "accept-language-parser";
 import { Promisable } from "type-fest";
+import i18n from "i18next";
 
 /**
  * Get the router + query client
@@ -90,20 +90,15 @@ const prepareSSR = <AdditionalProps>(
 			// Disable SSR if user is not authentified
 			return { props: {} };
 		}
-		if (language) {
-			store.dispatch(setLanguage(language));
-		} else {
-			// If SSR and no specific language is set, use request to determine the language.
-			store.dispatch(
-				setLanguage(
-					ALParser.pick(
-						Array.from(Languages),
-						context.req.headers["accept-language"] ?? "en",
-						{ loose: true },
-					) ?? "en",
-				),
-			);
-		}
+		i18n.changeLanguage(
+			language ??
+				ALParser.pick(
+					Array.from(Languages),
+					context.req.headers["accept-language"] ?? "en",
+					{ loose: true },
+				) ??
+				"en",
+		);
 		const parameters = await cook(context, queryClient);
 
 		const userQueryResult = await queryClient
