@@ -17,11 +17,8 @@
  */
 
 import { createSlice } from "@reduxjs/toolkit";
-import { Language } from "../i18n/i18n";
-// eslint-disable-next-line no-restricted-imports
 
 type SettingsState = {
-	language: Language | "system";
 	allowNotifications: boolean;
 };
 
