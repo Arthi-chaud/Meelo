@@ -22,6 +22,8 @@ import fr from "../i18n/translations/fr";
 declare module "i18next" {
 	interface CustomTypeOptions {
 		defaultNS: "translation";
-		resources: typeof en | typeof fr;
+		resources: {
+			translation: typeof en | typeof fr;
+		};
 	}
 }
