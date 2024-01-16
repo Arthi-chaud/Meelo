@@ -20,7 +20,7 @@ import { Box, IconButton, Paper, Slide } from "@mui/material";
 import { useRouter } from "next/router";
 import { CloseIcon } from "./icons";
 import { useEffect, useState } from "react";
-import { isClientSideRendering } from "../ssr";
+import { isClientSideRendering } from "../utils/is-ssr";
 
 type ModalPageProps = {
 	disposable?: boolean;

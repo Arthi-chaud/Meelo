@@ -33,7 +33,7 @@ import {
 } from "redux-persist";
 import { CurriedGetDefaultMiddleware } from "@reduxjs/toolkit/dist/getDefaultMiddleware";
 import { PersistPartial } from "redux-persist/es/persistReducer";
-import { isSSR } from "../ssr";
+import { isSSR } from "../utils/is-ssr";
 
 const createNoopStorage = () => {
 	return {

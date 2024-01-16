@@ -111,7 +111,7 @@ export const getServerSideProps = prepareSSR((context) => {
 
 const ArtistPage = (props: InferSSRProps<typeof getServerSideProps>) => {
 	const sectionPadding = 4;
-	const { t } = useTranslation();
+	const { t, i18n } = useTranslation();
 	const router = useRouter();
 	const artistIdentifier =
 		props.additionalProps?.artistIdentifier ?? getSlugOrId(router.query);

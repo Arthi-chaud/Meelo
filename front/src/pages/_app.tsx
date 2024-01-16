@@ -42,7 +42,7 @@ import { DefaultMeeloQueryOptions } from "../api/use-query";
 import createEmotionCache from "../utils/createEmotionCache";
 import { CacheProvider, EmotionCache } from "@emotion/react";
 import Scaffold from "../components/scaffold/scaffold";
-import "../i18n/i18n";
+import { withTranslations } from "../i18n/i18n";
 
 // Client-side cache, shared for the whole session of the user in the browser.
 const clientSideEmotionCache = createEmotionCache();
@@ -53,7 +53,7 @@ export interface MyAppProps extends AppProps {
 
 function MyApp({
 	Component,
-	pageProps: { session, ...pageProps },
+	pageProps: { session, lng, ...pageProps },
 	emotionCache = clientSideEmotionCache,
 }: MyAppProps) {
 	const [queryClient] = useState(
@@ -66,7 +66,6 @@ function MyApp({
 	);
 	const router = useRouter();
 	const [errorType, setError] = useState<"not-found" | "error" | undefined>();
-
 	useEffect(() => {
 		setError(undefined);
 	}, [router]);
@@ -137,4 +136,4 @@ function MyApp({
 	);
 }
 
-export default MyApp;
+export default withTranslations(MyApp);

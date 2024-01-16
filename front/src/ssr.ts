@@ -28,15 +28,9 @@ import {
 } from "./api/use-query";
 import store from "./state/store";
 import { setAccessToken } from "./state/userSlice";
-import {
-	LanguageCookieKey,
-	UserAccessTokenCookieKey,
-} from "./utils/cookieKeys";
+import { UserAccessTokenCookieKey } from "./utils/cookieKeys";
 import API from "./api/api";
-import { Languages } from "./i18n/i18n";
-import ALParser from "accept-language-parser";
 import { Promisable } from "type-fest";
-import i18n from "i18next";
 
 /**
  * Get the router + query client
@@ -80,9 +74,6 @@ const prepareSSR = <AdditionalProps>(
 	return async (context: GetServerSidePropsContext) => {
 		const queryClient = new QueryClient();
 		const accessToken = context.req.cookies[UserAccessTokenCookieKey];
-		const language = Languages.find(
-			(lang) => lang === context.req.cookies[LanguageCookieKey],
-		);
 
 		if (accessToken) {
 			store.dispatch(setAccessToken(accessToken));
@@ -90,15 +81,6 @@ const prepareSSR = <AdditionalProps>(
 			// Disable SSR if user is not authentified
 			return { props: {} };
 		}
-		await i18n.changeLanguage(
-			language ??
-				ALParser.pick(
-					Array.from(Languages),
-					context.req.headers["accept-language"] ?? "en",
-					{ loose: true },
-				) ??
-				"en",
-		);
 		const parameters = await cook(context, queryClient);
 
 		const userQueryResult = await queryClient
@@ -141,9 +123,5 @@ const prepareSSR = <AdditionalProps>(
 		};
 	};
 };
-
-export const isSSR = () => typeof window === "undefined";
-
-export const isClientSideRendering = () => !isSSR();
 
 export default prepareSSR;

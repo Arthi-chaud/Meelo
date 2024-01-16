@@ -63,7 +63,7 @@ import Playlist, {
 	PlaylistSortingKeys,
 	PlaylistWithRelations,
 } from "../models/playlist";
-import { isSSR } from "../ssr";
+import { isSSR } from "../utils/is-ssr";
 import { ActiveTask, Task } from "../models/task";
 
 const AuthenticationResponse = yup.object({
