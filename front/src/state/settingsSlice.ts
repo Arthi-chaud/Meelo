@@ -16,14 +16,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { PayloadAction, createSlice } from "@reduxjs/toolkit";
-import { Language } from "../i18n/i18n";
-import { LanguageCookieKey } from "../utils/cookieKeys";
-// eslint-disable-next-line no-restricted-imports
-import { setCookie } from "cookies-next";
+import { createSlice } from "@reduxjs/toolkit";
 
 type SettingsState = {
-	language: Language | "system";
 	allowNotifications: boolean;
 };
 
@@ -34,22 +29,6 @@ export const settingsSlice = createSlice({
 		allowNotifications: false,
 	},
 	reducers: {
-		setLanguage: (state, action: PayloadAction<Language>) => {
-			const expires = new Date();
-
-			state.language = action.payload;
-
-			expires.setMonth(expires.getMonth() + 1);
-			setCookie(
-				LanguageCookieKey,
-				state.language,
-				// Sets cookie for a month
-				{ expires },
-			);
-		},
-		resetLanguage: (state) => {
-			state.language = "system";
-		},
 		allowNotifications: (state) => {
 			state.allowNotifications = true;
 		},
@@ -59,11 +38,7 @@ export const settingsSlice = createSlice({
 	},
 });
 
-export const {
-	setLanguage,
-	resetLanguage,
-	allowNotifications,
-	disableNotifications,
-} = settingsSlice.actions;
+export const { allowNotifications, disableNotifications } =
+	settingsSlice.actions;
 
 export default settingsSlice.reducer;

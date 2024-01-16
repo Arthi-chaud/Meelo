@@ -43,10 +43,10 @@ import InfiniteTrackView from "../../../components/infinite/infinite-resource-vi
 import { useDispatch } from "react-redux";
 import { playTrack } from "../../../state/playerSlice";
 import ExternalIdBadge from "../../../components/external-id-badge";
-import Translate from "../../../i18n/translate";
 import { PlayIcon } from "../../../components/icons";
 import GenreButton from "../../../components/genre-button";
 import GradientBackground from "../../../components/gradient-background";
+import { useTranslation } from "react-i18next";
 
 export const getServerSideProps = prepareSSR((context) => {
 	const songIdentifier = getSlugOrId(context.params);
@@ -84,6 +84,7 @@ const SongPage = (props: InferSSRProps<typeof getServerSideProps>) => {
 			(availableTab) =>
 				availableTab == router.query.tab?.toString().toLowerCase(),
 		) ?? tabs[0];
+	const { t } = useTranslation();
 	const router = useRouter();
 	const [tab, setTabs] = useState<(typeof tabs)[number]>(getTabFromQuery());
 	const queryClient = useQueryClient();
@@ -101,7 +102,6 @@ const SongPage = (props: InferSSRProps<typeof getServerSideProps>) => {
 	}
 	return (
 		<Box sx={{ width: "100%" }}>
-			{/* <BackgroundBlurhash blurhash={song.data.illustration?.blurhash} /> */}
 			{song.data?.illustration && (
 				<GradientBackground colors={song.data?.illustration.colors} />
 			)}
@@ -126,7 +126,7 @@ const SongPage = (props: InferSSRProps<typeof getServerSideProps>) => {
 						)
 				}
 			>
-				<Translate translationKey="play" />
+				{t("play")}
 			</Button>
 			<Divider sx={{ paddingY: 1 }} />
 			<Tabs
@@ -148,7 +148,7 @@ const SongPage = (props: InferSSRProps<typeof getServerSideProps>) => {
 						key={index}
 						value={value}
 						sx={{ minWidth: "fit-content", flex: 1 }}
-						label={<Translate translationKey={value} />}
+						label={t(value)}
 					/>
 				))}
 			</Tabs>
@@ -165,7 +165,7 @@ const SongPage = (props: InferSSRProps<typeof getServerSideProps>) => {
 								spacing={2}
 							>
 								<Typography sx={{ overflow: "unset" }}>
-									<Translate translationKey="genres" />:
+									{`${t("genres")}: `}
 								</Typography>
 								{genres.data.pages
 									.at(0)
@@ -188,8 +188,7 @@ const SongPage = (props: InferSSRProps<typeof getServerSideProps>) => {
 								spacing={2}
 							>
 								<Typography sx={{ overflow: "unset" }}>
-									<Translate translationKey="externalLinks" />
-									:
+									{`${t("externalLinks")}: `}
 								</Typography>
 								{song.data.externalIds
 									.filter(({ url }) => url !== null)

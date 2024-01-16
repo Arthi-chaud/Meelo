@@ -4,6 +4,10 @@ const config = {
 	output: "standalone",
 	reactStrictMode: false,
 	swcMinify: true,
+	i18n: {
+		locales: ['en', 'fr'],
+		defaultLocale: 'en'
+	},
 	async redirects() {
 		return [
 			{

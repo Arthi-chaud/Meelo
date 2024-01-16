@@ -18,9 +18,9 @@
 
 import { Box, Link } from "@mui/material";
 import ExternalId from "../models/external-id";
-import Translate from "../i18n/translate";
 import { useState } from "react";
 import { capitalCase } from "change-case";
+import { useTranslation } from "react-i18next";
 
 type Props = {
 	externalDescription: ExternalId;
@@ -37,6 +37,7 @@ const ResourceDescriptionExpandable = ({ externalDescription }: Props) => {
 		WebkitBoxOrient: "vertical",
 	} as const;
 	const bigBoxStyle = {};
+	const { t } = useTranslation();
 
 	return (
 		<Box id="description" sx={isExpanded ? bigBoxStyle : smallBoxStyle}>
@@ -58,9 +59,7 @@ const ResourceDescriptionExpandable = ({ externalDescription }: Props) => {
 				href="#description"
 				onClick={() => setIsExpanded(!isExpanded)}
 			>
-				<Translate
-					translationKey={isExpanded ? "showLess" : "showMore"}
-				/>
+				{t(isExpanded ? "showLess" : "showMore")}
 			</Link>
 		</Box>
 	);

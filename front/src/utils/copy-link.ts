@@ -17,15 +17,15 @@
  */
 
 import toast from "react-hot-toast";
-import { translate } from "../i18n/translate";
+import { Translator } from "../i18n/i18n";
 
 /**
  * Copy meelo url to clipboard, with hostname
  * @param route the route to copy to clipboard
  */
-export default function copyLinkToClipboard(route: string) {
+export default function copyLinkToClipboard(route: string, t: Translator) {
 	navigator.clipboard.writeText(
 		location.protocol + "//" + location.host + route,
 	);
-	toast.success(translate("linkCopied"));
+	toast.success(t("linkCopied"));
 }

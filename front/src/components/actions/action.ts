@@ -17,7 +17,7 @@
  */
 
 import { RequireExactlyOne } from "type-fest";
-import { TranslationKey } from "../../i18n/translations/type";
+import { TranslationKey } from "../../i18n/i18n";
 
 /**
  * Props for a generic component to run an action/go to page

@@ -41,7 +41,6 @@ import {
 	VideoIcon,
 } from "../icons";
 import Link from "next/link";
-import Translate from "../../i18n/translate";
 import Player from "../player/player";
 import { useRouter } from "next/router";
 import { IconProps } from "iconsax-react";
@@ -49,6 +48,7 @@ import { useState } from "react";
 import scaffoldActions from "./actions";
 import type {} from "@mui/material/themeCssVarsAugmentation";
 import ThemedImage from "../../utils/themed-image";
+import { useTranslation } from "react-i18next";
 
 /**
  * Array of possible item types
@@ -87,6 +87,7 @@ const Drawer = ({
 	openBottomDrawer: boolean;
 	onClose: () => void;
 }) => {
+	const { t } = useTranslation();
 	const router = useRouter();
 	const theme = useTheme();
 	const persistentDrawerBreakpoint = DrawerBreakpoint;
@@ -195,11 +196,7 @@ const Drawer = ({
 																	: "normal",
 														}}
 													>
-														<Translate
-															translationKey={
-																item
-															}
-														/>
+														{t(item)}
 													</Typography>
 												</ListItemText>
 											</ListItemButton>
@@ -236,11 +233,7 @@ const Drawer = ({
 															: "normal",
 													}}
 												>
-													<Translate
-														translationKey={
-															action.label
-														}
-													/>
+													{t(action.label)}
 												</Typography>
 											}
 										></ListItemText>
@@ -274,6 +267,7 @@ const Drawer = ({
 const BottomNavigation = (props: { onDrawerOpen: () => void }) => {
 	const router = useRouter();
 	const theme = useTheme();
+	const { t } = useTranslation();
 
 	return (
 		<MUIBottomNavigation
@@ -316,7 +310,7 @@ const BottomNavigation = (props: { onDrawerOpen: () => void }) => {
 									variant={isSelected ? "Bold" : "Outline"}
 								/>
 							}
-							label={<Translate translationKey={item} />}
+							label={t(item)}
 						/>
 					</Link>
 				);
@@ -326,7 +320,7 @@ const BottomNavigation = (props: { onDrawerOpen: () => void }) => {
 				sx={{ flex: 1 }}
 				icon={<BurgerIcon />}
 				onClick={props.onDrawerOpen}
-				label={<Translate translationKey={"more"} />}
+				label={t("more")}
 			/>
 		</MUIBottomNavigation>
 	);

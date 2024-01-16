@@ -25,8 +25,7 @@ import {
 } from "@mui/material";
 import Library from "../models/library";
 import { HookTextField, useHookForm } from "mui-react-hook-form-plus";
-import Translate, { translate, useLanguage } from "../i18n/translate";
-import { useMemo } from "react";
+import { useTranslation } from "react-i18next";
 
 type LibraryFormFields = Pick<Library, "name" | "path">;
 
@@ -41,16 +40,11 @@ const LibraryForm = (props: LibraryFormProps) => {
 	const { registerState, handleSubmit } = useHookForm({
 		defaultValues,
 	});
-	const language = useLanguage();
+	const { t } = useTranslation();
 	const onSubmit = (values: typeof defaultValues) => {
 		props.onSubmit(values);
 		props.onClose();
 	};
-	const [nameIsRequired, pathIsRequired] = useMemo(
-		() => [translate("nameIsRequired"), translate("pathIsRequired")],
-		// eslint-disable-next-line react-hooks/exhaustive-deps
-		[language],
-	);
 
 	return (
 		<>
@@ -68,15 +62,13 @@ const LibraryForm = (props: LibraryFormProps) => {
 							textFieldProps={{
 								autoFocus: true,
 								fullWidth: true,
-								label: (
-									<Translate translationKey="nameOfLibrary" />
-								),
+								label: t("nameOfLibrary"),
 							}}
 							gridProps={{}}
 							rules={{
 								required: {
 									value: true,
-									message: nameIsRequired,
+									message: t("nameIsRequired"),
 								},
 							}}
 						/>
@@ -84,30 +76,22 @@ const LibraryForm = (props: LibraryFormProps) => {
 							{...registerState("path")}
 							textFieldProps={{
 								fullWidth: true,
-								label: (
-									<Translate translationKey="pathOfLibrary" />
-								),
+								label: t("pathOfLibrary"),
 							}}
 							gridProps={{}}
 							rules={{
 								required: {
 									value: true,
-									message: pathIsRequired,
+									message: t("pathIsRequired"),
 								},
 							}}
 						/>
 					</Grid>
 				</DialogContent>
 				<DialogActions>
-					<Button onClick={props.onClose}>
-						<Translate translationKey="cancel" />
-					</Button>
+					<Button onClick={props.onClose}>{t("cancel")}</Button>
 					<Button type="submit" color="primary" variant="contained">
-						<Translate
-							translationKey={
-								props.defaultValues ? "update" : "create"
-							}
-						/>
+						{t(props.defaultValues ? "update" : "create")}
 					</Button>
 				</DialogActions>
 			</form>

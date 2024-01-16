@@ -48,10 +48,10 @@ import { useConfirm } from "material-ui-confirm";
 import Action from "../actions/action";
 import { useMemo, useState } from "react";
 import LibraryForm from "../library-form";
-import Translate, { translate, useLanguage } from "../../i18n/translate";
 import { RefreshLibraryMetadataAction } from "../actions/refresh-metadata";
 import SectionHeader from "../section-header";
 import { capitalCase } from "change-case";
+import { useTranslation } from "react-i18next";
 
 const actionButtonStyle = {
 	overflow: "hidden",
@@ -60,6 +60,7 @@ const actionButtonStyle = {
 
 const LibrariesSettings = () => {
 	const tasks = useQuery(API.getTasks);
+	const { t, i18n } = useTranslation();
 	const RunTaskButton = ({
 		icon,
 		label,
@@ -81,9 +82,7 @@ const LibrariesSettings = () => {
 				sx={actionButtonStyle}
 			>
 				<Hidden smUp>{icon}</Hidden>
-				<Hidden smDown>
-					<Translate translationKey={label} />
-				</Hidden>
+				<Hidden smDown>{t(label)}</Hidden>
 			</Button>
 		);
 	};
@@ -110,7 +109,6 @@ const LibrariesSettings = () => {
 		},
 	};
 	const confirm = useConfirm();
-	const language = useLanguage();
 	const [createModalOpen, setCreateModalOpen] = useState(false);
 	const [libraryEdit, setLibraryEdit] = useState<Library | undefined>(); // If set, open modal to edit library
 	const closeEditModal = () => setLibraryEdit(undefined);
@@ -118,16 +116,16 @@ const LibrariesSettings = () => {
 	const deletionMutation = useMutation((libraryId: number) =>
 		API.deleteLibrary(libraryId)
 			.then(() => {
-				toast.success(translate("libraryDeleted"));
+				toast.success(t("libraryDeleted"));
 				queryClient.client.invalidateQueries(["libraries"]);
 			})
-			.catch(() => toast.error(translate("libraryDeletionFail"))),
+			.catch(() => toast.error(t("libraryDeletionFail"))),
 	);
 	const createMutation = useMutation(
 		(createForm: { name: string; path: string }) =>
 			API.createLibrary(createForm.name, createForm.path)
 				.then(() => {
-					toast.success(translate("libraryCreated"));
+					toast.success(t("libraryCreated"));
 					queryClient.client.invalidateQueries(["libraries"]);
 				})
 				.catch((err) => toast.error(err.message)),
@@ -140,17 +138,17 @@ const LibrariesSettings = () => {
 				updatedLibrary.path,
 			)
 				.then(() => {
-					toast.success(translate("libraryUpdated"));
+					toast.success(t("libraryUpdated"));
 					queryClient.client.invalidateQueries(["libraries"]);
 				})
 				.catch((err) => toast.error(err.message)),
 	);
 	const columns: GridColDef<Library>[] = useMemo(
 		() => [
-			{ field: "name", headerName: translate("name"), flex: 5 },
+			{ field: "name", headerName: t("name"), flex: 5 },
 			{
 				field: "clean",
-				headerName: translate("clean"),
+				headerName: t("clean"),
 				flex: 3,
 				renderCell: ({ row: library }) => (
 					<RunTaskButton
@@ -161,7 +159,7 @@ const LibrariesSettings = () => {
 			},
 			{
 				field: "scan",
-				headerName: translate("scan"),
+				headerName: t("scan"),
 				flex: 3,
 				renderCell: ({ row: library }) => (
 					<RunTaskButton
@@ -172,19 +170,19 @@ const LibrariesSettings = () => {
 			},
 			{
 				field: "refresh",
-				headerName: translate("refreshMetadata"),
+				headerName: t("refreshMetadata"),
 				flex: 3,
 				renderCell: ({ row: library }) => (
 					<RunTaskButton
 						variant="outlined"
-						{...RefreshLibraryMetadataAction(library.id)}
+						{...RefreshLibraryMetadataAction(library.id, t)}
 						label="refresh"
 					/>
 				),
 			},
 			{
 				field: "edit",
-				headerName: translate("edit"),
+				headerName: t("edit"),
 				flex: 1,
 				renderCell: ({ row: library }) => {
 					return (
@@ -196,7 +194,7 @@ const LibrariesSettings = () => {
 			},
 			{
 				field: "delete",
-				headerName: translate("delete"),
+				headerName: t("delete"),
 				flex: 1,
 				renderCell: ({ row: library }) => {
 					return (
@@ -204,15 +202,9 @@ const LibrariesSettings = () => {
 							color="error"
 							onClick={() =>
 								confirm({
-									title: (
-										<Translate translationKey="deleteLibraryAction" />
-									),
-									description: (
-										<Translate translationKey="deleteLibraryWarning" />
-									),
-									confirmationText: (
-										<Translate translationKey="deleteLibrary" />
-									),
+									title: t("deleteLibraryAction"),
+									description: t("deleteLibraryWarning"),
+									confirmationText: t("deleteLibrary"),
 									confirmationButtonProps: {
 										variant: "outlined",
 										color: "error",
@@ -228,7 +220,7 @@ const LibrariesSettings = () => {
 				},
 			},
 		],
-		[language],
+		[i18n.language],
 	);
 
 	return (
@@ -247,7 +239,7 @@ const LibrariesSettings = () => {
 						startIcon={<AddIcon />}
 						onClick={() => setCreateModalOpen(true)}
 					>
-						<Translate translationKey="createLibrary" />
+						{t("createLibrary")}
 					</Button>
 				</Grid>
 				{[cleanAllLibaries, scanAllLibaries, fetchMetadata].map(
@@ -258,7 +250,7 @@ const LibrariesSettings = () => {
 								startIcon={action.icon}
 								onClick={action.onClick}
 							>
-								<Translate translationKey={action.label} />
+								{t(action.label)}
 							</Button>
 						</Grid>
 					),
@@ -293,10 +285,10 @@ const LibrariesSettings = () => {
 			/>
 			<Box sx={{ paddingY: 2 }} />
 			<SectionHeader
-				heading={<Translate translationKey="tasks" />}
+				heading={t("tasks")}
 				trailing={
 					<Button onClick={() => tasks.refetch()} variant="contained">
-						<Translate translationKey="refresh" />
+						{t("refresh")}
 					</Button>
 				}
 			/>
@@ -304,35 +296,17 @@ const LibrariesSettings = () => {
 				<List>
 					<ListItem>
 						<ListItemText
-							primary={
-								<Translate
-									translationKey="current"
-									format={(tr) =>
-										tr +
-										": " +
-										capitalCase(
-											tasks.data.active?.name ??
-												translate("none"),
-										)
-									}
-								/>
-							}
+							primary={`${t("current")}: ${capitalCase(
+								tasks.data.active?.name ?? t("none"),
+							)}`}
 							secondary={tasks.data.active?.description}
 						/>
 					</ListItem>
 					<ListItem>
 						<ListItemText
-							primary={
-								<Translate
-									translationKey="pending"
-									format={(tr) =>
-										tr +
-										": " +
-										(tasks.data.pending.length ||
-											translate("none"))
-									}
-								/>
-							}
+							primary={`${t("pending")}: ${
+								tasks.data.pending.length || t("none")
+							}`}
 						/>
 					</ListItem>
 					{tasks.data.pending.map((task, index) => (

@@ -25,7 +25,7 @@ import blackIllustrationFallback from "../../public/icon-black.png";
 import { RequireExactlyOne } from "type-fest";
 import IllustrationModel from "../models/illustration";
 import Blurhash from "./blurhash";
-import { isSSR } from "../ssr";
+import { isSSR } from "../utils/is-ssr";
 import Fade from "./fade";
 import ThemedImage from "../utils/themed-image";
 

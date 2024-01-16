@@ -27,11 +27,11 @@ import AlbumTile from "../components/tile/album-tile";
 import ArtistTile from "../components/tile/artist-tile";
 import SongGrid from "../components/song-grid";
 import ReleaseTile from "../components/tile/release-tile";
-import Translate from "../i18n/translate";
 import Fade from "../components/fade";
 import AlbumHighlightCard from "../components/highlight-card/album-highlight-card";
 import GradientBackground from "../components/gradient-background";
 import { useMemo } from "react";
+import { useTranslation } from "react-i18next";
 
 const newlyAddedAlbumsQuery = API.getAlbums(
 	{},
@@ -114,6 +114,7 @@ const HomePage = (props: InferSSRProps<typeof getServerSideProps>) => {
 	const newlyAddedReleases = useInfiniteQuery(() => newlyAddedReleasesQuery);
 	const mostListenedSongs = useInfiniteQuery(() => mostListenedSongsQuery);
 	const newestAlbums = useInfiniteQuery(() => newestAlbumsQuery);
+	const { t } = useTranslation();
 	const featuredAlbums = useInfiniteQuery(
 		albumRecommendations,
 		props.additionalProps?.recommendationSeed ??
@@ -156,9 +157,7 @@ const HomePage = (props: InferSSRProps<typeof getServerSideProps>) => {
 			<Fade in>
 				<Stack spacing={4} my={2}>
 					<HomePageSection
-						heading={
-							<Translate translationKey="newlyAddedAlbums" />
-						}
+						heading={t("newlyAddedAlbums")}
 						queryData={newlyAddedAlbums}
 						render={(albums) => (
 							<TileRow
@@ -170,9 +169,7 @@ const HomePage = (props: InferSSRProps<typeof getServerSideProps>) => {
 						)}
 					/>
 					<HomePageSection
-						heading={
-							<Translate translationKey="newlyAddedArtists" />
-						}
+						heading={t("newlyAddedArtists")}
 						queryData={newlyAddedArtists}
 						render={(artists) => (
 							<TileRow
@@ -184,7 +181,7 @@ const HomePage = (props: InferSSRProps<typeof getServerSideProps>) => {
 						)}
 					/>
 					<HomePageSection
-						heading={<Translate translationKey="featuredAlbums" />}
+						heading={t("featuredAlbums")}
 						queryData={featuredAlbums}
 						render={(albums) => (
 							<Grid container spacing={3}>
@@ -203,7 +200,7 @@ const HomePage = (props: InferSSRProps<typeof getServerSideProps>) => {
 						)}
 					/>
 					<HomePageSection
-						heading={<Translate translationKey="latestAlbums" />}
+						heading={t("latestAlbums")}
 						queryData={newestAlbums}
 						render={(albums) => (
 							<TileRow
@@ -215,9 +212,7 @@ const HomePage = (props: InferSSRProps<typeof getServerSideProps>) => {
 						)}
 					/>
 					<HomePageSection
-						heading={
-							<Translate translationKey="newlyAddedReleases" />
-						}
+						heading={t("newlyAddedReleases")}
 						queryData={newlyAddedReleases}
 						render={(releases) => (
 							<TileRow
@@ -229,7 +224,7 @@ const HomePage = (props: InferSSRProps<typeof getServerSideProps>) => {
 						)}
 					/>
 					<HomePageSection
-						heading={<Translate translationKey="mostPlayedSongs" />}
+						heading={t("mostPlayedSongs")}
 						queryData={mostListenedSongs}
 						render={(songs) => <SongGrid songs={songs} />}
 					/>

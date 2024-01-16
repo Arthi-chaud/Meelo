@@ -27,7 +27,6 @@ import Controls, { OptionState } from "../../controls/controls";
 import SongItem from "../../list-item/song-item";
 import InfiniteView from "../infinite-view";
 import InfiniteResourceViewProps from "./infinite-resource-view-props";
-import { useLanguage } from "../../../i18n/translate";
 import { PlayIcon, ShuffleIcon } from "../../icons";
 import {
 	InfiniteQuery,
@@ -79,7 +78,6 @@ const InfiniteSongView = <T extends SongWithRelations<"artist" | "featuring">>(
 	const router = useRouter();
 	const [options, setOptions] =
 		useState<OptionState<typeof SongSortingKeys, AdditionalProps>>();
-	const language = useLanguage();
 	const queryClient = useQueryClient();
 	const dispatch = useDispatch();
 	const query = {

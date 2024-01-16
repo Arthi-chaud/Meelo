@@ -16,25 +16,17 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import i18n from "i18next";
-import { initReactI18next } from "react-i18next";
-import en from "./translations/en";
-import fr from "./translations/fr";
+import en from "../i18n/translations/en.json";
+import fr from "../i18n/translations/fr.json";
+import "i18next";
 
-const Languages = ["en", "fr"] as const;
-const Resources = { en, fr };
-
-i18n.use(initReactI18next) // passes i18n down to react-i18next
-	.init({
+declare module "i18next" {
+	interface CustomTypeOptions {
+		defaultNS: "translation";
+		returnNull: false;
+		returnObjects: false;
 		resources: {
-			en: { translation: en },
-			fr: { translation: fr },
-		},
-		interpolation: {
-			escapeValue: false,
-		},
-	});
-
-export type Language = keyof typeof Resources;
-export { Languages };
-export default i18n;
+			translation: typeof en | typeof fr;
+		};
+	}
+}

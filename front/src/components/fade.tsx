@@ -18,7 +18,7 @@
 
 // eslint-disable-next-line no-restricted-imports
 import { Fade as MUIFade } from "@mui/material";
-import { isClientSideRendering } from "../ssr";
+import { isClientSideRendering } from "../utils/is-ssr";
 import React from "react";
 /**
  * Wrapper around MUI's Fade.

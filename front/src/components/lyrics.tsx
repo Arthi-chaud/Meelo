@@ -17,17 +17,19 @@
  */
 
 import { Box, Typography } from "@mui/material";
-import Translate from "../i18n/translate";
+import { useTranslation } from "react-i18next";
 
 type LyricsProps = {
 	lyrics?: string[] | null;
 	songName: string;
 };
 const LyricsBox = (props: LyricsProps) => {
+	const { t } = useTranslation();
+
 	if (!props.lyrics) {
 		return (
 			<Typography sx={{ fontStyle: "italic" }}>
-				<Translate translationKey="noLyricsFound" />
+				{t("noLyricsFound")}
 			</Typography>
 		);
 	}

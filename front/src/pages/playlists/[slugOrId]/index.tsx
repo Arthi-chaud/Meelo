@@ -55,8 +55,8 @@ import { useMutation } from "react-query";
 import { shuffle } from "d3-array";
 import { DeletePlaylistAction } from "../../../components/actions/playlist";
 import { useConfirm } from "material-ui-confirm";
-import Translate, { translate } from "../../../i18n/translate";
 import GradientBackground from "../../../components/gradient-background";
+import { useTranslation } from "react-i18next";
 
 const playlistQuery = (idOrSlug: number | string) =>
 	API.getPlaylist(idOrSlug, ["entries"]);
@@ -179,6 +179,7 @@ const PlaylistEntryItem = ({ entry, onClick }: PlaylistEntryItemProps) => (
 );
 
 const PlaylistPage = (props: InferSSRProps<typeof getServerSideProps>) => {
+	const { t } = useTranslation();
 	const router = useRouter();
 	const dispatch = useDispatch();
 	const confirm = useConfirm();
@@ -220,10 +221,10 @@ const PlaylistPage = (props: InferSSRProps<typeof getServerSideProps>) => {
 	const reorderMutation = useMutation((reorderedEntries: number[]) => {
 		return API.reorderPlaylist(playlistIdentifier, reorderedEntries)
 			.then(() => {
-				toast.success(translate("playlistReorderSuccess"));
+				toast.success(t("playlistReorderSuccess"));
 				return playlist.refetch();
 			})
-			.catch(() => toast.error(translate("playlistReorderFail")));
+			.catch(() => toast.error(t("playlistReorderFail")));
 	});
 
 	if (
@@ -300,7 +301,7 @@ const PlaylistPage = (props: InferSSRProps<typeof getServerSideProps>) => {
 								sx={{ width: "100%" }}
 								onClick={() => playPlaylist(0)}
 							>
-								<Translate translationKey="play" />
+								{t("play")}
 							</Button>
 						</Grid>
 						<Grid item xs>
@@ -311,7 +312,7 @@ const PlaylistPage = (props: InferSSRProps<typeof getServerSideProps>) => {
 								sx={{ width: "100%" }}
 								onClick={() => shufflePlaylist()}
 							>
-								<Translate translationKey="shuffle" />
+								{t("shuffle")}
 							</Button>
 						</Grid>
 					</Grid>
@@ -380,9 +381,7 @@ const PlaylistPage = (props: InferSSRProps<typeof getServerSideProps>) => {
 							}
 						}}
 					>
-						<Translate
-							translationKey={editState ? "done" : "edit"}
-						/>
+						{t(editState ? "done" : "edit")}
 					</Button>
 				</Grid>
 				<Grid item>
@@ -393,7 +392,7 @@ const PlaylistPage = (props: InferSSRProps<typeof getServerSideProps>) => {
 						sx={{ width: "100%" }}
 						onClick={deleteAction.onClick}
 					>
-						<Translate translationKey={deleteAction.label} />
+						{t(deleteAction.label)}
 					</Button>
 				</Grid>
 			</Grid>

@@ -33,8 +33,7 @@ import { LayoutOption, getLayoutParams } from "../../utils/layout";
 import { Order, getOrderParams } from "../../utils/sorting";
 import parseQueryParam from "../../utils/parse-query-param";
 import Action from "../actions/action";
-import Translate, { translate, useLanguage } from "../../i18n/translate";
-import { TranslationKey } from "../../i18n/translations/type";
+import { TranslationKey } from "../../i18n/i18n";
 import toast from "react-hot-toast";
 import API from "../../api/api";
 import { prepareMeeloInfiniteQuery } from "../../api/use-query";
@@ -42,6 +41,7 @@ import { prepareMeeloInfiniteQuery } from "../../api/use-query";
 import { useInfiniteQuery as useReactInfiniteQuery } from "react-query";
 import Fade from "../fade";
 import globalLibrary from "../../utils/global-library";
+import { useTranslation } from "react-i18next";
 
 export type OptionState<
 	SortingKeys extends readonly string[],
@@ -82,11 +82,12 @@ const Controls = <
 	props: ControllerProps<SortingKeys, Options, Values>,
 ) => {
 	const theme = useTheme();
+	const { t } = useTranslation();
 	const librariesQuery = useReactInfiniteQuery({
 		...prepareMeeloInfiniteQuery(API.getLibraries),
 		useErrorBoundary: false,
 		onError: () => {
-			toast.error(translate("librariesLoadFail"));
+			toast.error(t("librariesLoadFail"));
 		},
 	});
 	const libraries = useMemo(
@@ -132,7 +133,6 @@ const Controls = <
 			return baseOptions;
 		},
 	);
-	const language = useLanguage();
 	const [openActionModal, setOpenActionModal] = useState<string | null>(null);
 	const closeModal = () => setOpenActionModal(null);
 
@@ -195,7 +195,7 @@ const Controls = <
 								optionGroup={{
 									name:
 										optionsState.library ??
-										translate("allLibraries"),
+										t("allLibraries"),
 									options: [
 										{
 											name: "library",
@@ -236,7 +236,7 @@ const Controls = <
 						{!props.disableSorting && (
 							<OptionButton
 								optionGroup={{
-									name: `${translate("sortBy")} ${translate(
+									name: `${t("sortBy")} ${t(
 										optionsState.sortBy as TranslationKey,
 									)}`,
 									icon:
@@ -284,11 +284,7 @@ const Controls = <
 							);
 						})}
 						{props.disableLayoutToggle !== true && (
-							<Tooltip
-								title={
-									<Translate translationKey="changeLayout" />
-								}
-							>
+							<Tooltip title={t("changeLayout")}>
 								<Button
 									onClick={() =>
 										updateOptionState({
@@ -326,7 +322,7 @@ const Controls = <
 										setOpenActionModal(action.label);
 								}}
 							>
-								<Translate translationKey={action.label} />
+								{t(action.label)}
 								{action.dialog && (
 									<Dialog
 										open={openActionModal === action.label}

@@ -39,6 +39,7 @@ import { UpdateTrackIllustrationAction } from "../actions/update-illustration";
 import { useQueryClient } from "../../api/use-query";
 import { RefreshTrackMetadataAction } from "../actions/refresh-metadata";
 import ChangeSongType from "../actions/song-type";
+import { useTranslation } from "react-i18next";
 
 type ReleaseTrackContextualMenuProps = {
 	track: TrackWithRelations<"song">;
@@ -51,6 +52,7 @@ const ReleaseTrackContextualMenu = (props: ReleaseTrackContextualMenuProps) => {
 	const songSlug = `${props.artist.slug}+${props.track.song.slug}`;
 	const confirm = useConfirm();
 	const queryClient = useQueryClient();
+	const { t } = useTranslation();
 
 	return (
 		<ContextualMenu
@@ -70,12 +72,12 @@ const ReleaseTrackContextualMenu = (props: ReleaseTrackContextualMenuProps) => {
 				[
 					ChangeSongType(props.track.song, queryClient, confirm),
 					UpdateTrackIllustrationAction(queryClient, props.track.id),
-					RefreshTrackMetadataAction(props.track.id),
+					RefreshTrackMetadataAction(props.track.id, t),
 				],
 				[ShowTrackFileInfoAction(confirm, props.track.id)],
 				[
-					DownloadAction(confirm, props.track.stream),
-					ShareSongAction(songSlug),
+					DownloadAction(confirm, props.track.stream, t),
+					ShareSongAction(songSlug, t),
 				],
 			]}
 		/>

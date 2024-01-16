@@ -16,7 +16,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import en from "./en";
+export const isSSR = () => typeof window === "undefined";
 
-export type TranslationMap = typeof en;
-export type TranslationKey = keyof TranslationMap;
+export const isClientSideRendering = () => !isSSR();

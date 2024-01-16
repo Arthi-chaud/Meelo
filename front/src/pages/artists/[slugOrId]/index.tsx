@@ -37,13 +37,13 @@ import VideoTile from "../../../components/tile/video-tile";
 import formatDuration from "../../../utils/formatDuration";
 import ExternalIdBadge from "../../../components/external-id-badge";
 import SongGrid from "../../../components/song-grid";
-import Translate from "../../../i18n/translate";
 import { MoreIcon } from "../../../components/icons";
 import ResourceDescriptionExpandable from "../../../components/resource-description-expandable";
 import ArtistRelationPageHeader from "../../../components/relation-page-header/artist-relation-page-header";
 import Album, { AlbumType } from "../../../models/album";
 import { useMemo } from "react";
 import GradientBackground from "../../../components/gradient-background";
+import { useTranslation } from "react-i18next";
 
 // Number of Song item in the 'Top Song' section
 const songListSize = 6;
@@ -111,6 +111,7 @@ export const getServerSideProps = prepareSSR((context) => {
 
 const ArtistPage = (props: InferSSRProps<typeof getServerSideProps>) => {
 	const sectionPadding = 4;
+	const { t, i18n } = useTranslation();
 	const router = useRouter();
 	const artistIdentifier =
 		props.additionalProps?.artistIdentifier ?? getSlugOrId(router.query);
@@ -162,7 +163,7 @@ const ArtistPage = (props: InferSSRProps<typeof getServerSideProps>) => {
 				{topSongs.data?.pages.at(0)?.items.length != 0 && (
 					<>
 						<SectionHeader
-							heading={<Translate translationKey="topSongs" />}
+							heading={t("topSongs")}
 							trailing={
 								(topSongs.data?.pages.at(0)?.items.length ??
 									0) > songListSize ? (
@@ -178,7 +179,7 @@ const ArtistPage = (props: InferSSRProps<typeof getServerSideProps>) => {
 												fontWeight: "bold",
 											}}
 										>
-											<Translate translationKey="seeAll" />
+											{t("seeAll")}
 										</Button>
 									</Link>
 								) : undefined
@@ -212,11 +213,7 @@ const ArtistPage = (props: InferSSRProps<typeof getServerSideProps>) => {
 						<>
 							<SectionHeader
 								key={artist.data.id + type}
-								heading={
-									<Translate
-										translationKey={`plural${type}`}
-									/>
-								}
+								heading={t(`plural${type}`)}
 								trailing={
 									items.length > albumListSize ? (
 										<Link
@@ -231,7 +228,7 @@ const ArtistPage = (props: InferSSRProps<typeof getServerSideProps>) => {
 													fontWeight: "bold",
 												}}
 											>
-												<Translate translationKey="seeAll" />
+												{t("seeAll")}
 											</Button>
 										</Link>
 									) : undefined
@@ -275,9 +272,7 @@ const ArtistPage = (props: InferSSRProps<typeof getServerSideProps>) => {
 						items.length != 0 && (
 							<>
 								<SectionHeader
-									heading={
-										<Translate translationKey={label} />
-									}
+									heading={t(label)}
 									trailing={
 										(items.length ?? 0) > albumListSize ? (
 											<Link
@@ -292,7 +287,7 @@ const ArtistPage = (props: InferSSRProps<typeof getServerSideProps>) => {
 														fontWeight: "bold",
 													}}
 												>
-													<Translate translationKey="seeAll" />
+													{t("seeAll")}
 												</Button>
 											</Link>
 										) : undefined
@@ -332,9 +327,7 @@ const ArtistPage = (props: InferSSRProps<typeof getServerSideProps>) => {
 					<>
 						<Divider sx={{ paddingTop: 4 }} />
 						<Box sx={{ paddingBottom: sectionPadding }} />
-						<SectionHeader
-							heading={<Translate translationKey="appearsOn" />}
-						/>
+						<SectionHeader heading={t("appearsOn")} />
 						<Grid item sx={{ overflowX: "clip", width: "100%" }}>
 							<TileRow
 								tiles={
@@ -355,9 +348,7 @@ const ArtistPage = (props: InferSSRProps<typeof getServerSideProps>) => {
 					<>
 						<Divider sx={{ paddingTop: 3 }} />
 						<Box sx={{ paddingBottom: sectionPadding }} />
-						<SectionHeader
-							heading={<Translate translationKey="about" />}
-						/>
+						<SectionHeader heading={t("about")} />
 						<Container
 							maxWidth={false}
 							sx={{ paddingBottom: 4, paddingTop: 3 }}
@@ -378,11 +369,7 @@ const ArtistPage = (props: InferSSRProps<typeof getServerSideProps>) => {
 							sx={{ alignItems: "center" }}
 						>
 							<Grid item sx={{ paddingRight: 3 }}>
-								<SectionHeader
-									heading={
-										<Translate translationKey="externalLinks" />
-									}
-								/>
+								<SectionHeader heading={t("externalLinks")} />
 							</Grid>
 							{artist.data.externalIds
 								.filter(({ url }) => url !== null)

@@ -16,11 +16,13 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+import { useTranslation } from "react-i18next";
 import ErrorPage from "../components/error-page";
-import Translate from "../i18n/translate";
 
 const InternalError = () => {
-	return <ErrorPage heading={<Translate translationKey="errorOccured" />} />;
+	const { t } = useTranslation();
+
+	return <ErrorPage heading={t("errorOccured")} />;
 };
 
 export default InternalError;

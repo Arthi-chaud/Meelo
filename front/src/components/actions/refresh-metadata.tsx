@@ -19,33 +19,42 @@
 import { MetadataRefreshIcon } from "../icons";
 import API from "../../api/api";
 import Action from "./action";
-import { translate } from "../../i18n/translate";
 import toast from "react-hot-toast";
+import { Translator } from "../../i18n/i18n";
 
 const RefreshMetadataAction = (
+	t: Translator,
 	...params: Parameters<typeof API.refreshMetadata>
 ): Action => ({
 	label: "refreshMetadata",
 	icon: <MetadataRefreshIcon />,
 	onClick: () =>
 		API.refreshMetadata(...params)
-			.then(() => toast.success(translate("refreshMetadataStarted")))
-			.catch(() => toast.error(translate("refreshMetadataFailed"))),
+			.then(() => toast.success(t("refreshMetadataStarted")))
+			.catch(() => toast.error(t("refreshMetadataFailed"))),
 });
 
 export const RefreshLibraryMetadataAction = (
 	librarySlugOrId: number | string,
-) => RefreshMetadataAction("library", librarySlugOrId);
+	t: Translator,
+) => RefreshMetadataAction(t, "library", librarySlugOrId);
 
-export const RefreshAlbumMetadataAction = (albumSlugOrId: number | string) =>
-	RefreshMetadataAction("album", albumSlugOrId);
+export const RefreshAlbumMetadataAction = (
+	albumSlugOrId: number | string,
+	t: Translator,
+) => RefreshMetadataAction(t, "album", albumSlugOrId);
 
 export const RefreshReleaseMetadataAction = (
 	releaseSlugOrId: number | string,
-) => RefreshMetadataAction("release", releaseSlugOrId);
+	t: Translator,
+) => RefreshMetadataAction(t, "release", releaseSlugOrId);
 
-export const RefreshSongMetadataAction = (songSlugOrId: number | string) =>
-	RefreshMetadataAction("song", songSlugOrId);
+export const RefreshSongMetadataAction = (
+	songSlugOrId: number | string,
+	t: Translator,
+) => RefreshMetadataAction(t, "song", songSlugOrId);
 
-export const RefreshTrackMetadataAction = (trackSlugOrId: number | string) =>
-	RefreshMetadataAction("track", trackSlugOrId);
+export const RefreshTrackMetadataAction = (
+	trackSlugOrId: number | string,
+	t: Translator,
+) => RefreshMetadataAction(t, "track", trackSlugOrId);
