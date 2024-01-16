@@ -18,10 +18,13 @@
 
 import en from "../i18n/translations/en";
 import fr from "../i18n/translations/fr";
+import "i18next";
 
 declare module "i18next" {
 	interface CustomTypeOptions {
 		defaultNS: "translation";
+		returnNull: false;
+		returnObjects: false;
 		resources: {
 			translation: typeof en | typeof fr;
 		};
