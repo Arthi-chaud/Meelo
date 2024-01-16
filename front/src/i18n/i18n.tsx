@@ -16,10 +16,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import i18next, { InitOptions } from "i18next";
+import i18next, { InitOptions, KeysBuilderWithoutReturnObjects } from "i18next";
 import { I18nextProvider } from "react-i18next";
-import en from "./translations/en";
-import fr from "./translations/fr";
+import en from "./translations/en.json";
+import fr from "./translations/fr.json";
 import { setCookie } from "cookies-next";
 import { LanguageCookieKey } from "../utils/cookieKeys";
 import { ComponentType, useMemo } from "react";
@@ -105,7 +105,7 @@ export const withTranslations = (
 };
 
 export type Translator = (key: TranslationKey) => string;
-export type TranslationMap = typeof en;
-export type TranslationKey = keyof TranslationMap;
+// https://github.com/i18next/i18next/blob/master/typescript/t.d.ts
+export type TranslationKey = KeysBuilderWithoutReturnObjects<typeof en>;
 export type Language = keyof typeof Resources;
 export { Languages };
