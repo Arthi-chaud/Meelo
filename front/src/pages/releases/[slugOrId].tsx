@@ -25,7 +25,6 @@ import {
 	ListSubheader,
 	Rating,
 	Typography,
-	useMediaQuery,
 	useTheme,
 } from "@mui/material";
 import { Box } from "@mui/system";
@@ -149,7 +148,6 @@ const ReleasePage = (props: InferSSRProps<typeof getServerSideProps>) => {
 	const releaseIdentifier =
 		props.additionalProps?.releaseIdentifier ?? getSlugOrId(router.query);
 	const theme = useTheme();
-	const viewIsInColumn = useMediaQuery(theme.breakpoints.down("lg"));
 	const dispatch = useDispatch();
 	const release = useQuery(releaseQuery, releaseIdentifier);
 	const artistId = useMemo(() => release.data?.album?.artistId, [release]);
@@ -264,8 +262,14 @@ const ReleasePage = (props: InferSSRProps<typeof getServerSideProps>) => {
 		<>
 			<Container
 				maxWidth={false}
-				disableGutters={viewIsInColumn}
-				sx={{ marginTop: 3, marginX: 0, position: "relative" }}
+				sx={{
+					marginTop: 3,
+					marginX: 0,
+					position: "relative",
+					[theme.breakpoints.down("lg")]: {
+						padding: 0,
+					},
+				}}
 			>
 				{/* <BackgroundBlurhash blurhash={illustration?.blurhash} /> */}
 				{illustration && (
