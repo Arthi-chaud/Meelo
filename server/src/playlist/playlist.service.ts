@@ -169,6 +169,7 @@ export default class PlaylistService extends RepositoryService<
 	formatSortingInput(
 		sortingParameter: PlaylistQueryParameters.SortingParameter,
 	) {
+		sortingParameter.order ??= "asc";
 		switch (sortingParameter.sortBy) {
 			case "name":
 				return { slug: sortingParameter.order };

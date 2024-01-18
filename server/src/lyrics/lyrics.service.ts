@@ -153,7 +153,7 @@ export class LyricsService extends RepositoryService<
 	formatSortingInput<S extends LyricsQueryParameters.SortingParameter>(
 		sortingParameter: S,
 	) {
-		return { id: sortingParameter.order };
+		return { id: sortingParameter.order ?? "asc" };
 	}
 
 	/**

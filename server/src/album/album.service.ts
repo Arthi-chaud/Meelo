@@ -326,6 +326,7 @@ export default class AlbumService extends SearchableRepositoryService<
 	formatSortingInput(
 		sortingParameter: AlbumQueryParameters.SortingParameter,
 	): Prisma.AlbumOrderByWithRelationAndSearchRelevanceInput {
+		sortingParameter.order ??= "asc";
 		switch (sortingParameter.sortBy) {
 			case "name":
 				return { slug: sortingParameter.order };
@@ -341,7 +342,7 @@ export default class AlbumService extends SearchableRepositoryService<
 			case "releaseDate":
 				return {
 					releaseDate: {
-						sort: sortingParameter.order ?? "asc",
+						sort: sortingParameter.order,
 						nulls: "last",
 					},
 				};
