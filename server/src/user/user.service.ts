@@ -210,7 +210,7 @@ export default class UserService extends RepositoryService<
 	}
 
 	formatSortingInput(sortingParameter: UserQueryParameters.SortingParameter) {
-		return { [sortingParameter.sortBy]: sortingParameter.order };
+		return { [sortingParameter.sortBy ?? "id"]: sortingParameter.order };
 	}
 
 	async update(

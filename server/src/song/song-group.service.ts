@@ -139,6 +139,7 @@ export default class SongGroupService extends RepositoryService<
 			case "name":
 				return { slug: input.order };
 			case "id":
+			case undefined:
 				return { id: input.order };
 		}
 	}

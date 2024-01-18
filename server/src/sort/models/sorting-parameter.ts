@@ -26,13 +26,13 @@ class SortingParameter<Keys extends readonly string[]> {
 		default: "id",
 	})
 	@IsOptional()
-	sortBy: Keys[number];
+	sortBy?: Keys[number];
 
 	@ApiPropertyOptional({
 		enum: availableSortingOrders,
 		default: "asc",
 	})
-	order: SortingOrder;
+	order?: SortingOrder;
 }
 export default SortingParameter;
 
@@ -54,7 +54,7 @@ const ModelSortingParameter = <SortingKeys extends readonly string[]>(
 		})
 		@IsOptional()
 		@IsIn(sortingKeys)
-		sortBy: SortingKeys[number] = "id";
+		sortBy?: SortingKeys[number];
 
 		@ApiPropertyOptional({
 			description: "The Order of the results",
@@ -63,7 +63,7 @@ const ModelSortingParameter = <SortingKeys extends readonly string[]>(
 		})
 		@IsIn(availableSortingOrders)
 		@IsOptional()
-		order: SortingOrder = "asc";
+		order?: SortingOrder;
 	}
 	return CustomSortingParameter;
 };

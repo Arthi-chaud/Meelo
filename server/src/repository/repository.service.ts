@@ -772,7 +772,7 @@ export abstract class SearchableRepositoryService<
 					: {},
 			)
 			.then((res) => res.hits.map((hit) => hit.id as number));
-		if (sort) {
+		if (sort?.order || sort?.sortBy) {
 			return this.getMany(
 				{ ...where, id: { in: matches } },
 				pagination,

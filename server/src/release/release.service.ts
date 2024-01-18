@@ -240,7 +240,7 @@ export default class ReleaseService extends RepositoryService<
 			case "releaseDate":
 				return {
 					releaseDate: {
-						sort: sortingParameter.order,
+						sort: sortingParameter.order ?? "asc",
 						nulls: "last",
 					},
 				};

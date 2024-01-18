@@ -222,7 +222,7 @@ export default class TrackService extends RepositoryService<
 				return {
 					release: {
 						releaseDate: {
-							sort: sortingParameter.order,
+							sort: sortingParameter.order ?? "asc",
 							nulls: "last",
 						},
 					},
