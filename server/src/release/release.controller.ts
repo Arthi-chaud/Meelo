@@ -36,12 +36,7 @@ import TrackService from "src/track/track.service";
 import AlbumService from "src/album/album.service";
 import AlbumQueryParameters from "src/album/models/album.query-parameters";
 import type { Response as ExpressResponse } from "express";
-import {
-	ApiOperation,
-	ApiPropertyOptional,
-	ApiTags,
-	IntersectionType,
-} from "@nestjs/swagger";
+import { ApiOperation, ApiPropertyOptional, ApiTags } from "@nestjs/swagger";
 import ReassignReleaseDTO from "./models/reassign-release.dto";
 import { TrackResponseBuilder } from "src/track/models/track.response";
 import RelationIncludeQuery from "src/relation-include/relation-include-query.decorator";
@@ -56,9 +51,7 @@ import LibraryService from "src/library/library.service";
 import LibraryQueryParameters from "src/library/models/library.query-parameters";
 import SongQueryParameters from "src/song/models/song.query-params";
 
-class Selector extends IntersectionType(
-	ReleaseQueryParameters.SortingParameter,
-) {
+class Selector {
 	@IsOptional()
 	@ApiPropertyOptional({
 		description: `Filter releases by albums`,
@@ -96,6 +89,7 @@ export default class ReleaseController {
 	})
 	async getReleases(
 		@Query() selector: Selector,
+		@Query() sort: ReleaseQueryParameters.SortingParameter,
 		@Query()
 		paginationParameters: PaginationParameters,
 		@RelationIncludeQuery(ReleaseQueryParameters.AvailableAtomicIncludes)
@@ -105,7 +99,7 @@ export default class ReleaseController {
 			selector,
 			paginationParameters,
 			include,
-			selector,
+			sort,
 		);
 	}
 

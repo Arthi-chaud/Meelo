@@ -20,12 +20,7 @@ import { Controller, Get, Inject, Query, forwardRef } from "@nestjs/common";
 import { PaginationParameters } from "src/pagination/models/pagination-parameters";
 import ArtistService from "./artist.service";
 import ArtistQueryParameters from "./models/artist.query-parameters";
-import {
-	ApiOperation,
-	ApiPropertyOptional,
-	ApiTags,
-	IntersectionType,
-} from "@nestjs/swagger";
+import { ApiOperation, ApiPropertyOptional, ApiTags } from "@nestjs/swagger";
 import { ArtistResponseBuilder } from "./models/artist.response";
 import IdentifierParam from "src/identifier/identifier.pipe";
 import RelationIncludeQuery from "src/relation-include/relation-include-query.decorator";
@@ -39,9 +34,7 @@ import GenreQueryParameters from "src/genre/models/genre.query-parameters";
 import AlbumQueryParameters from "src/album/models/album.query-parameters";
 import AlbumService from "src/album/album.service";
 
-class Selector extends IntersectionType(
-	ArtistQueryParameters.SortingParameter,
-) {
+class Selector {
 	@IsOptional()
 	@ApiPropertyOptional({
 		description: "Search artists using a string token",
@@ -97,6 +90,7 @@ export default class ArtistController {
 		@Query()
 		paginationParameters: PaginationParameters,
 		@Query() selector: Selector,
+		@Query() sort: ArtistQueryParameters.SortingParameter,
 		@RelationIncludeQuery(ArtistQueryParameters.AvailableAtomicIncludes)
 		include: ArtistQueryParameters.RelationInclude,
 	) {
@@ -106,14 +100,14 @@ export default class ArtistController {
 				selector,
 				paginationParameters,
 				include,
-				selector,
+				sort,
 			);
 		}
 		return this.artistService.getMany(
 			selector,
 			paginationParameters,
 			include,
-			selector,
+			sort,
 		);
 	}
 

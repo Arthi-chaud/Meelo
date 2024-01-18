@@ -27,12 +27,7 @@ import {
 	Put,
 	Query,
 } from "@nestjs/common";
-import {
-	ApiOperation,
-	ApiPropertyOptional,
-	ApiTags,
-	IntersectionType,
-} from "@nestjs/swagger";
+import { ApiOperation, ApiPropertyOptional, ApiTags } from "@nestjs/swagger";
 import PlaylistService from "./playlist.service";
 import PlaylistQueryParameters from "./models/playlist.query-parameters";
 import IdentifierParam from "src/identifier/identifier.pipe";
@@ -51,9 +46,7 @@ import TransformIdentifier from "src/identifier/identifier.transform";
 import AlbumService from "src/album/album.service";
 import AlbumQueryParameters from "src/album/models/album.query-parameters";
 
-export class Selector extends IntersectionType(
-	PlaylistQueryParameters.SortingParameter,
-) {
+export class Selector {
 	@IsOptional()
 	@ApiPropertyOptional({
 		description: "Filter playlist by albums that entries belong to",
@@ -88,6 +81,7 @@ export default class PlaylistController {
 	@Response({ handler: PlaylistResponseBuilder, type: ResponseType.Page })
 	async getMany(
 		@Query() selector: Selector,
+		@Query() sort: PlaylistQueryParameters.SortingParameter,
 		@Query()
 		paginationParameters: PaginationParameters,
 	) {
@@ -95,7 +89,7 @@ export default class PlaylistController {
 			selector,
 			paginationParameters,
 			{},
-			selector,
+			sort,
 		);
 	}
 

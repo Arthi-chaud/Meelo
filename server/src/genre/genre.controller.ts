@@ -17,12 +17,7 @@
  */
 
 import { Controller, Get, Query } from "@nestjs/common";
-import {
-	ApiOperation,
-	ApiPropertyOptional,
-	ApiTags,
-	IntersectionType,
-} from "@nestjs/swagger";
+import { ApiOperation, ApiPropertyOptional, ApiTags } from "@nestjs/swagger";
 import { PaginationParameters } from "src/pagination/models/pagination-parameters";
 import SongQueryParameters from "src/song/models/song.query-params";
 import SongService from "src/song/song.service";
@@ -39,7 +34,7 @@ import TransformIdentifier from "src/identifier/identifier.transform";
 import ArtistQueryParameters from "src/artist/models/artist.query-parameters";
 import ArtistService from "src/artist/artist.service";
 
-class Selector extends IntersectionType(GenreQueryParameters.SortingParameter) {
+class Selector {
 	@IsOptional()
 	@ApiPropertyOptional({
 		description: "Search genres using a string token",
@@ -83,6 +78,7 @@ export class GenreController {
 	})
 	async getMany(
 		@Query() selector: Selector,
+		@Query() sort: GenreQueryParameters.SortingParameter,
 		@Query()
 		paginationParameters: PaginationParameters,
 		@RelationIncludeQuery(GenreQueryParameters.AvailableAtomicIncludes)
@@ -93,14 +89,14 @@ export class GenreController {
 				{ ...selector, slug: { contains: selector.query } },
 				paginationParameters,
 				include,
-				selector,
+				sort,
 			);
 		}
 		return this.genreService.getMany(
 			selector,
 			paginationParameters,
 			include,
-			selector,
+			sort,
 		);
 	}
 

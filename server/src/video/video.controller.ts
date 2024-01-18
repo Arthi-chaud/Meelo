@@ -41,6 +41,7 @@ export class VideoController {
 	@Get()
 	async getVideosByLibrary(
 		@Query() selector: Selector,
+		@Query() sort: SongQueryParameters.SortingParameter,
 		@Query()
 		paginationParameters: PaginationParameters,
 		@RelationIncludeQuery(SongQueryParameters.AvailableAtomicIncludes)
@@ -50,7 +51,7 @@ export class VideoController {
 			selector,
 			paginationParameters,
 			include,
-			selector,
+			sort,
 		);
 	}
 }

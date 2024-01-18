@@ -37,7 +37,6 @@ import {
 	ApiOperation,
 	ApiPropertyOptional,
 	ApiTags,
-	IntersectionType,
 	PickType,
 } from "@nestjs/swagger";
 import { LyricsService } from "src/lyrics/lyrics.service";
@@ -63,9 +62,7 @@ import UpdateSongDTO from "./models/update-song.dto";
 import SongGroupQueryParameters from "./models/song-group.query-params";
 import SongGroupService from "./song-group.service";
 
-export class Selector extends IntersectionType(
-	SongQueryParameters.SortingParameter,
-) {
+export class Selector {
 	@IsEnum(SongType)
 	@IsOptional()
 	@ApiPropertyOptional({
@@ -163,6 +160,7 @@ export class SongController {
 	@Get()
 	async getSongs(
 		@Query() selector: Selector,
+		@Query() sort: SongQueryParameters.SortingParameter,
 		@Query()
 		paginationParameters: PaginationParameters,
 		@RelationIncludeQuery(SongQueryParameters.AvailableAtomicIncludes)
@@ -174,21 +172,21 @@ export class SongController {
 				selector,
 				paginationParameters,
 				include,
-				selector,
+				sort,
 			);
 		} else if (selector.bsides) {
 			return this.songService.getReleaseBSides(
 				selector.bsides,
 				paginationParameters,
 				include,
-				selector,
+				sort,
 			);
 		}
 		return this.songService.getMany(
 			selector,
 			paginationParameters,
 			include,
-			selector.random || selector,
+			selector.random || sort,
 		);
 	}
 
