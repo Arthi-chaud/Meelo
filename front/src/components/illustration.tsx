@@ -117,13 +117,23 @@ const Illustration = (props: IllustrationProps) => {
 				>
 					{loadingFailed || !url ? (
 						props.fallback ? (
-							<IconButton
-								disabled
-								sx={{ fontSize: "large" }}
-								component="div"
+							<Box
+								sx={{
+									width: "100%",
+									height: "100%",
+									display: "flex",
+									justifyContent: "center",
+									alignItems: "center",
+								}}
 							>
-								{props.fallback}
-							</IconButton>
+								<IconButton
+									disabled
+									sx={{ fontSize: "large" }}
+									component="div"
+								>
+									{props.fallback}
+								</IconButton>
+							</Box>
 						) : (
 							<ThemedImage
 								dark={whiteIllustrationFallback}
