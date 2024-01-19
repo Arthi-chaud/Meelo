@@ -129,7 +129,7 @@ export default class AlbumController {
 	async getMany(
 		@Query() selector: Selector,
 		@Query() sort: AlbumQueryParameters.SortingParameter,
-		paginationParameters: PaginationParameters,
+		@Query() paginationParameters: PaginationParameters,
 		@RelationIncludeQuery(AlbumQueryParameters.AvailableAtomicIncludes)
 		include: AlbumQueryParameters.RelationInclude,
 	) {
