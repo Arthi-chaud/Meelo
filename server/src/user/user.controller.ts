@@ -34,7 +34,6 @@ import UserCreateDTO from "./models/create-user.dto";
 import Admin from "src/authentication/roles/admin.decorator";
 import { PaginationParameters } from "src/pagination/models/pagination-parameters";
 import { UserResponseBuilder } from "./models/user.response";
-import SortingQuery from "src/sort/sort-query.decorator";
 import UserQueryParameters from "./models/user.query-params";
 import UpdateUserDTO from "./models/update-user.dto";
 import { Public } from "src/authentication/roles/public.decorator";
@@ -116,7 +115,7 @@ export default class UserController {
 	async getUserAccounts(
 		@Query()
 		paginationParameters: PaginationParameters,
-		@SortingQuery(UserQueryParameters.SortingKeys)
+		@Query()
 		sortingParameter: UserQueryParameters.SortingParameter,
 	) {
 		return this.userService.getMany(
@@ -139,7 +138,7 @@ export default class UserController {
 	async getDisabledUserAccounts(
 		@Query()
 		paginationParameters: PaginationParameters,
-		@SortingQuery(UserQueryParameters.SortingKeys)
+		@Query()
 		sortingParameter: UserQueryParameters.SortingParameter,
 	) {
 		return this.userService.getMany(
@@ -162,7 +161,7 @@ export default class UserController {
 	async getAdminUserAccounts(
 		@Query()
 		paginationParameters: PaginationParameters,
-		@SortingQuery(UserQueryParameters.SortingKeys)
+		@Query()
 		sortingParameter: UserQueryParameters.SortingParameter,
 	) {
 		return this.userService.getMany(

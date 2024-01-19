@@ -26,7 +26,6 @@ import {
 	forwardRef,
 } from "@nestjs/common";
 import { PaginationParameters } from "src/pagination/models/pagination-parameters";
-import ReleaseService from "src/release/release.service";
 import compilationAlbumArtistKeyword from "src/constants/compilation";
 import AlbumService from "./album.service";
 import AlbumQueryParameters from "./models/album.query-parameters";
@@ -117,8 +116,6 @@ class Selector {
 @Controller("albums")
 export default class AlbumController {
 	constructor(
-		@Inject(forwardRef(() => ReleaseService))
-		private releaseService: ReleaseService,
 		@Inject(forwardRef(() => AlbumService))
 		private albumService: AlbumService,
 	) {}
