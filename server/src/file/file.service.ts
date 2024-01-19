@@ -169,6 +169,7 @@ export default class FileService extends RepositoryService<
 	formatSortingInput(
 		sort: FileQueryParameters.SortingParameter,
 	): Prisma.FileOrderByWithRelationAndSearchRelevanceInput {
+		sort.order ??= "asc";
 		switch (sort.sortBy) {
 			case "addDate":
 				return { registerDate: sort.order };

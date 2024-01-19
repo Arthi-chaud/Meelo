@@ -215,6 +215,7 @@ export default class TrackService extends RepositoryService<
 	formatSortingInput(
 		sortingParameter: TrackQueryParameters.SortingParameter,
 	): Prisma.TrackOrderByWithRelationAndSearchRelevanceInput {
+		sortingParameter.order ??= "asc";
 		switch (sortingParameter.sortBy) {
 			case "releaseName":
 				return { release: { name: sortingParameter.order } };

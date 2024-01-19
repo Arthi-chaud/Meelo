@@ -138,6 +138,7 @@ export default class LibraryService extends RepositoryService<
 	formatSortingInput(
 		sortingParameter: LibraryQueryParameters.SortingParameter,
 	): Prisma.LibraryOrderByWithRelationAndSearchRelevanceInput {
+		sortingParameter.order ??= "asc";
 		switch (sortingParameter.sortBy) {
 			case "name":
 				return { slug: sortingParameter.order };
@@ -148,7 +149,9 @@ export default class LibraryService extends RepositoryService<
 			case undefined:
 				return { id: sortingParameter.order };
 			default:
-				return { [sortingParameter.sortBy]: sortingParameter.order };
+				return {
+					[sortingParameter.sortBy ?? "id"]: sortingParameter.order,
+				};
 		}
 	}
 

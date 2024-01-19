@@ -262,6 +262,7 @@ export default class ArtistService extends SearchableRepositoryService<
 	formatSortingInput(
 		sortingParameter: ArtistQueryParameters.SortingParameter,
 	): Prisma.ArtistOrderByWithRelationAndSearchRelevanceInput {
+		sortingParameter.order ??= "asc";
 		switch (sortingParameter.sortBy) {
 			case "name":
 				return { slug: sortingParameter.order };

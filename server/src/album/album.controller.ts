@@ -26,16 +26,10 @@ import {
 	forwardRef,
 } from "@nestjs/common";
 import { PaginationParameters } from "src/pagination/models/pagination-parameters";
-import ReleaseService from "src/release/release.service";
 import compilationAlbumArtistKeyword from "src/constants/compilation";
 import AlbumService from "./album.service";
 import AlbumQueryParameters from "./models/album.query-parameters";
-import {
-	ApiOperation,
-	ApiPropertyOptional,
-	ApiTags,
-	IntersectionType,
-} from "@nestjs/swagger";
+import { ApiOperation, ApiPropertyOptional, ApiTags } from "@nestjs/swagger";
 import UpdateAlbumDTO from "./models/update-album.dto";
 import { AlbumResponseBuilder } from "./models/album.response";
 import RelationIncludeQuery from "src/relation-include/relation-include-query.decorator";
@@ -52,7 +46,7 @@ import ArtistService from "src/artist/artist.service";
 import LibraryQueryParameters from "src/library/models/library.query-parameters";
 import LibraryService from "src/library/library.service";
 
-class Selector extends IntersectionType(AlbumQueryParameters.SortingParameter) {
+class Selector {
 	@IsEnum(AlbumType, {
 		message: () =>
 			`Album Type: Invalid value. Expected one of theses: ${Object.keys(
@@ -122,8 +116,6 @@ class Selector extends IntersectionType(AlbumQueryParameters.SortingParameter) {
 @Controller("albums")
 export default class AlbumController {
 	constructor(
-		@Inject(forwardRef(() => ReleaseService))
-		private releaseService: ReleaseService,
 		@Inject(forwardRef(() => AlbumService))
 		private albumService: AlbumService,
 	) {}
@@ -136,8 +128,8 @@ export default class AlbumController {
 	@ApiOperation({ summary: "Get many albums" })
 	async getMany(
 		@Query() selector: Selector,
-		@Query()
-		paginationParameters: PaginationParameters,
+		@Query() sort: AlbumQueryParameters.SortingParameter,
+		@Query() paginationParameters: PaginationParameters,
 		@RelationIncludeQuery(AlbumQueryParameters.AvailableAtomicIncludes)
 		include: AlbumQueryParameters.RelationInclude,
 	) {
@@ -147,14 +139,14 @@ export default class AlbumController {
 				selector,
 				paginationParameters,
 				include,
-				selector,
+				sort,
 			);
 		}
 		return this.albumService.getMany(
 			selector,
 			paginationParameters,
 			include,
-			selector.random || selector,
+			selector.random || sort,
 		);
 	}
 

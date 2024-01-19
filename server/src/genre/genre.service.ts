@@ -179,6 +179,7 @@ export default class GenreService extends RepositoryService<
 	formatSortingInput(
 		sortingParameter: GenreQueryParameters.SortingParameter,
 	) {
+		sortingParameter.order ??= "asc";
 		switch (sortingParameter.sortBy) {
 			case "name":
 				return { slug: sortingParameter.order };

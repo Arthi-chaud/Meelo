@@ -135,10 +135,12 @@ export default class SongGroupService extends RepositoryService<
 	}
 
 	formatSortingInput(input: SongGroupQueryParameters.SortingParameter) {
+		input.order ??= "asc";
 		switch (input.sortBy) {
 			case "name":
 				return { slug: input.order };
 			case "id":
+			case undefined:
 				return { id: input.order };
 		}
 	}

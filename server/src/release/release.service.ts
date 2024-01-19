@@ -230,6 +230,7 @@ export default class ReleaseService extends RepositoryService<
 	formatSortingInput(
 		sortingParameter: ReleaseQueryParameters.SortingParameter,
 	): Prisma.ReleaseOrderByWithRelationAndSearchRelevanceInput {
+		sortingParameter.order ??= "asc";
 		switch (sortingParameter.sortBy) {
 			case "name":
 				return { slug: sortingParameter.order };

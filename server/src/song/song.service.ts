@@ -315,6 +315,7 @@ export default class SongService extends SearchableRepositoryService<
 	formatSortingInput(
 		sortingParameter: SongQueryParameters.SortingParameter,
 	): Prisma.SongOrderByWithRelationAndSearchRelevanceInput {
+		sortingParameter.order ??= "asc";
 		switch (sortingParameter.sortBy) {
 			case "name":
 				return { slug: sortingParameter.order };

@@ -29,12 +29,7 @@ import {
 import { PaginationParameters } from "src/pagination/models/pagination-parameters";
 import TrackQueryParameters from "./models/track.query-parameters";
 import TrackService from "./track.service";
-import {
-	ApiOperation,
-	ApiPropertyOptional,
-	ApiTags,
-	IntersectionType,
-} from "@nestjs/swagger";
+import { ApiOperation, ApiPropertyOptional, ApiTags } from "@nestjs/swagger";
 import { TrackType } from "@prisma/client";
 import ReassignTrackDTO from "./models/reassign-track.dto";
 import { TrackResponseBuilder } from "./models/track.response";
@@ -55,7 +50,7 @@ import ArtistService from "src/artist/artist.service";
 import AlbumQueryParameters from "src/album/models/album.query-parameters";
 import AlbumService from "src/album/album.service";
 
-class Selector extends IntersectionType(TrackQueryParameters.SortingParameter) {
+class Selector {
 	@IsOptional()
 	@ApiPropertyOptional({
 		description: "Filter tracks by library",
@@ -120,6 +115,7 @@ export class TrackController {
 	})
 	async getMany(
 		@Query() selector: Selector,
+		@Query() sort: TrackQueryParameters.SortingParameter,
 		@Query()
 		paginationParameters: PaginationParameters,
 		@RelationIncludeQuery(TrackQueryParameters.AvailableAtomicIncludes)
@@ -129,7 +125,7 @@ export class TrackController {
 			selector,
 			paginationParameters,
 			include,
-			selector,
+			sort,
 		);
 	}
 
