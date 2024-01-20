@@ -151,6 +151,13 @@ const ReleaseTrackList = ({
 											{t("bonusTrack")}
 										</Typography>
 									)}
+									{currentTrack.isRemastered && (
+										<Typography
+											color={theme.palette.text.disabled}
+										>
+											{t("remastered")}
+										</Typography>
+									)}
 									{currentTrack.type == "Video" && (
 										<Icon
 											sx={{
