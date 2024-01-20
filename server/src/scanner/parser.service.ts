@@ -449,7 +449,8 @@ export default class ParserService {
 		if (
 			albumName.includes("music videos") ||
 			albumName.includes("the video") ||
-			albumName.includes("dvd")
+			albumName.includes("dvd") ||
+			albumName.includes("videos")
 		) {
 			return AlbumType.VideoAlbum;
 		}

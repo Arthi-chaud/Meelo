@@ -105,12 +105,10 @@ describe("Release Service", () => {
 			expect(newCompilationRelease.releaseDate).toStrictEqual(
 				new Date("2005"),
 			);
-			expect(newCompilationRelease.name).toBe(
-				"My Compilation",
-			);
-			expect(newCompilationRelease.extensions).toStrictEqual(
-				["Expanded Edition"]
-			);
+			expect(newCompilationRelease.name).toBe("My Compilation");
+			expect(newCompilationRelease.extensions).toStrictEqual([
+				"Expanded Edition",
+			]);
 			expect(
 				newCompilationRelease.registeredAt.getUTCDate(),
 			).toStrictEqual(new Date(Date.now()).getUTCDate());

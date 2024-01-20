@@ -1341,7 +1341,9 @@ describe("Parser Service", () => {
 				"My Album [2022 Remastered version]",
 			);
 			expect(parsed.parsedName).toBe("My Album");
-			expect(parsed.extensions).toBe(["2022 Remastered version"]);
+			expect(parsed.extensions).toStrictEqual([
+				"2022 Remastered version",
+			]);
 		});
 
 		it("should remove the 'remaster' extension, lowercase", () => {
