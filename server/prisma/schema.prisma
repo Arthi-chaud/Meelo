@@ -385,6 +385,9 @@ model Track {
 	/// @description If it is a "Bonus" track
 	/// @example false
 	isBonus		Boolean @default(false)
+	/// @description If the track has been remastered
+	/// @example false
+	isRemastered		Boolean @default(false)
 	/// @description The track from the file
 	sourceFile			File	@relation(fields: [sourceFileId], references: [id])
 	/// @description Unique numeric identifier of the source file

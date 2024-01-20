@@ -518,7 +518,7 @@ export default class ParserService {
 	 * It will remove the video and the remaster extension
 	 */
 	parseTrackExtensions(trackName: string) {
-		return this.parseExtensions(
+		const { parsedName, ...ext } = this.parseExtensions(
 			trackName,
 			[
 				"Bonus Track",
@@ -526,10 +526,19 @@ export default class ParserService {
 				"Remastered",
 				"Remaster",
 				"Album Version",
+				"Album Mix",
 				"Main Version",
 			] as const,
 			["Live", "Extended", "Instrumental"],
 		);
+		return {
+			parsedName,
+			remastered: ext.Remaster || ext.Remastered,
+			bonus: ext["Bonus Track"],
+			main:
+				ext["Album Version"] || ext["Main Version"] || ext["Album Mix"],
+			video: ext.Video,
+		};
 	}
 
 	private parseExtensions<Keyword extends string>(
