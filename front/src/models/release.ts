@@ -32,6 +32,10 @@ const Release = Resource.concat(Illustration).concat(
 		 */
 		name: yup.string().required(),
 		/**
+		 * The Extensions from the release's name
+		 */
+		extensions: yup.array(yup.string().required()).required(),
+		/**
 		 * The unique ID of the release
 		 */
 		id: yup.number().required(),

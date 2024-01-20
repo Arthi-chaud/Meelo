@@ -146,6 +146,12 @@ const ReleaseTrackList = ({
 									/>
 									{currentTrack.isBonus && (
 										<Typography
+											sx={{
+												display: {
+													xs: "none",
+													sm: "block",
+												},
+											}}
 											color={theme.palette.text.disabled}
 										>
 											{t("bonusTrack")}
@@ -153,6 +159,12 @@ const ReleaseTrackList = ({
 									)}
 									{currentTrack.isRemastered && (
 										<Typography
+											sx={{
+												display: {
+													xs: "none",
+													sm: "block",
+												},
+											}}
 											color={theme.palette.text.disabled}
 										>
 											{t("remastered")}

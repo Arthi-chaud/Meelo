@@ -26,13 +26,16 @@ const ReleaseTile = (props: {
 	release: ReleaseWithRelations<"album">;
 	formatSubtitle?: (release: ReleaseWithRelations<"album">) => string;
 }) => {
+	const yearFormat = getYear(props.release.releaseDate)?.toString();
 	return (
 		<Tile
 			contextualMenu={<ReleaseContextualMenu release={props.release} />}
 			title={props.release.name}
 			subtitle={
 				props.formatSubtitle?.call(this, props.release) ??
-				getYear(props.release.releaseDate)?.toString()
+				props.release.extensions.at(0)
+					? `${props.release.extensions.at(0)} - ${yearFormat}`
+					: yearFormat
 			}
 			href={`/releases/${props.release.id}`}
 			illustration={
