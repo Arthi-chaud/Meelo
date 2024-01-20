@@ -305,6 +305,9 @@ const ReleasePage = (props: InferSSRProps<typeof getServerSideProps>) => {
 							<Typography variant="h3" fontWeight="bold">
 								{release.data!.name}
 							</Typography>
+							{/* <Typography sx={{ color: "text.disabled" }}>
+								{release.data.extensions.join(" - ")}
+							</Typography> */}
 						</Grid>
 						{albumArtist && (
 							<Grid item>
@@ -324,6 +327,17 @@ const ReleasePage = (props: InferSSRProps<typeof getServerSideProps>) => {
 								</Link>
 							</Grid>
 						)}
+						<Grid
+							item
+							style={{
+								alignItems: "center",
+								display: "inline-flex",
+							}}
+						>
+							<Typography sx={{ color: "text.disabled" }}>
+								{release.data.extensions.join(" - ")}
+							</Typography>
+						</Grid>
 						<Grid
 							item
 							style={{

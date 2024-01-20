@@ -156,9 +156,13 @@ export default class ScannerService {
 			},
 			{ releases: true },
 		);
+		const parsedReleaseName = this.parserService.parseReleaseExtension(
+			metadata.release,
+		);
 		const release = await this.releaseService.getOrCreate(
 			{
-				name: metadata.release,
+				name: parsedReleaseName.parsedName,
+				extensions: parsedReleaseName.extensions,
 				releaseDate: metadata.releaseDate,
 				album: { id: album.id },
 				registeredAt: file.registerDate,

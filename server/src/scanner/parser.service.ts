@@ -449,7 +449,8 @@ export default class ParserService {
 		if (
 			albumName.includes("music videos") ||
 			albumName.includes("the video") ||
-			albumName.includes("dvd")
+			albumName.includes("dvd") ||
+			albumName.includes("videos")
 		) {
 			return AlbumType.VideoAlbum;
 		}
@@ -498,7 +499,7 @@ export default class ParserService {
 	 * album name would be 'My Album'
 	 */
 	parseReleaseExtension(releaseName: string) {
-		return this.parseExtensions(releaseName, [
+		const extensionKeywords = [
 			"Reissue",
 			"Deluxe",
 			"Standard",
@@ -508,7 +509,20 @@ export default class ParserService {
 			"Remaster",
 			"Edition",
 			"Version",
-		]);
+		] as const;
+		const { parsedName } = this.parseExtensions(
+			releaseName,
+			extensionKeywords,
+		);
+		const extensions = this.splitGroups(releaseName, {
+			keepDelimiters: false,
+			removeRoot: true,
+		}).filter((group) =>
+			extensionKeywords.find((keyword) =>
+				group.toLocaleLowerCase().includes(keyword.toLocaleLowerCase()),
+			),
+		);
+		return { parsedName, extensions };
 	}
 
 	/**

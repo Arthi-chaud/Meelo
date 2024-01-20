@@ -78,21 +78,24 @@ describe("Release Service", () => {
 			const registeredAt = new Date("2005");
 			newRelease = await releaseService.create({
 				registeredAt,
-				name: "My Album (Deluxe Edition)",
+				name: "My Album",
+				extensions: ["Deluxe Edition"],
 				album: { id: dummyRepository.albumA1.id },
 				releaseDate: new Date("2023"),
 				discogsId: "12345",
 			});
 			expect(newRelease.albumId).toBe(dummyRepository.albumA1.id);
 			expect(newRelease.releaseDate).toStrictEqual(new Date("2023"));
-			expect(newRelease.name).toBe("My Album (Deluxe Edition)");
+			expect(newRelease.name).toBe("My Album");
+			expect(newRelease.extensions).toStrictEqual(["Deluxe Edition"]);
 			expect(newRelease.registeredAt).toStrictEqual(registeredAt);
 			expect(newRelease.slug).toBe("my-album-deluxe-edition");
 		});
 
 		it("should create the album's second release (compilation)", async () => {
 			newCompilationRelease = await releaseService.create({
-				name: "My Compilation (Expanded Edition)",
+				name: "My Compilation",
+				extensions: ["Expanded Edition"],
 				album: { id: dummyRepository.compilationAlbumA.id },
 				releaseDate: new Date("2005"),
 			});
@@ -102,9 +105,10 @@ describe("Release Service", () => {
 			expect(newCompilationRelease.releaseDate).toStrictEqual(
 				new Date("2005"),
 			);
-			expect(newCompilationRelease.name).toBe(
-				"My Compilation (Expanded Edition)",
-			);
+			expect(newCompilationRelease.name).toBe("My Compilation");
+			expect(newCompilationRelease.extensions).toStrictEqual([
+				"Expanded Edition",
+			]);
 			expect(
 				newCompilationRelease.registeredAt.getUTCDate(),
 			).toStrictEqual(new Date(Date.now()).getUTCDate());
@@ -115,7 +119,8 @@ describe("Release Service", () => {
 
 		it("should update set as master and the parent album year", async () => {
 			const newRelease2 = await releaseService.create({
-				name: "My Album (TMD Edition)",
+				name: "My Album",
+				extensions: ["TMD Edition"],
 				album: { id: dummyRepository.albumA1.id },
 				releaseDate: new Date("2006"),
 			});
@@ -392,6 +397,7 @@ describe("Release Service", () => {
 		it("should retrieve the existing release", async () => {
 			const fetchedRelease: Release = await releaseService.getOrCreate({
 				name: newRelease.name,
+				extensions: [],
 				album: { id: dummyRepository.albumA1.id },
 				releaseDate: new Date("2008"),
 			});
@@ -400,13 +406,14 @@ describe("Release Service", () => {
 
 		it("should create a new release", async () => {
 			newRelease2 = await releaseService.getOrCreate({
-				name: "My Album (Edited Version)",
+				name: "My Album",
+				extensions: ["Edited Version"],
 				album: { id: dummyRepository.albumA1.id },
 				releaseDate: new Date("2007"),
 			});
 			expect(newRelease2.albumId).toBe(dummyRepository.albumA1.id);
 			expect(newRelease2.releaseDate).toStrictEqual(new Date("2007"));
-			expect(newRelease2.name).toBe("My Album (Edited Version)");
+			expect(newRelease2.name).toBe("My Album");
 			expect(newRelease2.slug).toBe("my-album-edited-version");
 		});
 	});

@@ -32,7 +32,6 @@ import { basename } from "path";
 import PrismaService from "src/prisma/prisma.service";
 import type ReleaseQueryParameters from "./models/release.query-parameters";
 import type AlbumQueryParameters from "src/album/models/album.query-parameters";
-import type { PaginationParameters } from "src/pagination/models/pagination-parameters";
 import TrackService from "src/track/track.service";
 import RepositoryService from "src/repository/repository.service";
 import { buildStringSearchParameters } from "src/utils/search-string-input";
@@ -105,6 +104,7 @@ export default class ReleaseService extends RepositoryService<
 			name: release.name,
 			registeredAt: release.registeredAt,
 			releaseDate: release.releaseDate,
+			extensions: release.extensions,
 			album: {
 				connect: AlbumService.formatWhereInput(release.album),
 			},
@@ -118,14 +118,19 @@ export default class ReleaseService extends RepositoryService<
 						},
 				  }
 				: undefined,
-			slug: new Slug(release.name).toString(),
+			slug: new Slug(release.name, ...release.extensions).toString(),
 		};
 	}
 
 	protected formatCreateInputToWhereInput(
 		input: ReleaseQueryParameters.CreateInput,
 	): ReleaseQueryParameters.WhereInput {
-		return { bySlug: { slug: new Slug(input.name), album: input.album } };
+		return {
+			bySlug: {
+				slug: new Slug(input.name, ...input.extensions),
+				album: input.album,
+			},
+		};
 	}
 
 	protected async onCreationFailure(
@@ -280,32 +285,6 @@ export default class ReleaseService extends RepositoryService<
 			);
 		}
 		return this.onUnknownError(error, where);
-	}
-
-	/**
-	 * Fetch the releases from an album
-	 * @param where the parameters to find the parent album
-	 * @param pagination the pagniation parameters
-	 * @param include the relation to include in the returned objects
-	 * @returns
-	 */
-	async getAlbumReleases<I extends ReleaseQueryParameters.RelationInclude>(
-		where: AlbumQueryParameters.WhereInput,
-		pagination?: PaginationParameters,
-		include?: I,
-		sort?: ReleaseQueryParameters.SortingParameter,
-	) {
-		const releases = await super.getMany(
-			{ album: where },
-			pagination,
-			include,
-			sort,
-		);
-
-		if (releases.length == 0) {
-			await this.albumService.throwIfNotFound(where);
-		}
-		return releases;
 	}
 
 	/**
