@@ -218,6 +218,7 @@
 	"pending": "Pending",
 	"none": "None",
 	"bonusTrack": "Bonus Track",
+	"remastered": "Remastered",
 	"extras": "Extras",
 	"NonMusic": "Non-Music",
 	"colorScheme": "Theme",
@@ -231,5 +232,7 @@
 
 	"en": "English",
 	"fr": "French",
+	"yes": "Yes",
+	"no": "No",
 	"featuredAlbums": "Featured Albums"
 }

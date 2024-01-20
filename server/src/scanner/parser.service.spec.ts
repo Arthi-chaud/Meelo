@@ -1391,24 +1391,25 @@ describe("Parser Service", () => {
 		});
 
 		it("should remove 'remaster' extension", () => {
-			expect(
-				parserService.parseTrackExtensions("My Song  (remastered)")
-					.parsedName,
-			).toBe("My Song");
+			const parsed = parserService.parseTrackExtensions(
+				"My Song  (remastered)",
+			);
+			expect(parsed.parsedName).toBe("My Song");
+			expect(parsed.remastered).toBe(true);
 		});
 		it("should remove 'bonus track' extension", () => {
 			const parsed = parserService.parseTrackExtensions(
 				"My Song  (Bonus Track)",
 			);
 			expect(parsed.parsedName).toBe("My Song");
-			expect(parsed["Bonus Track"]).toBe(true);
+			expect(parsed.bonus).toBe(true);
 		});
 		it("should remove 'bonus track' extension (lowercase)", () => {
 			const parsed = parserService.parseTrackExtensions(
 				"my song (bonus track)",
 			);
 			expect(parsed.parsedName).toBe("my song");
-			expect(parsed["Bonus Track"]).toBe(true);
+			expect(parsed.bonus).toBe(true);
 		});
 		it("should remove 'Album Version' extension", () => {
 			expect(

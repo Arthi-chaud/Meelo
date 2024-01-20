@@ -168,7 +168,8 @@ export default class ScannerService {
 		);
 		const track: TrackQueryParameters.CreateInput = {
 			name: parsedTrackName.parsedName,
-			isBonus: parsedTrackName["Bonus Track"],
+			isBonus: parsedTrackName.bonus,
+			isRemastered: parsedTrackName.remastered,
 			discIndex: metadata.discIndex ?? null,
 			trackIndex: metadata.index ?? null,
 			type: metadata.type,

@@ -75,6 +75,10 @@ const Track = Resource.concat(Illustration).concat(
 		 * If the Track is a bonus track
 		 */
 		isBonus: yup.boolean().required(),
+		/**
+		 * If the Track is a bonus track
+		 */
+		isRemastered: yup.boolean().required(),
 	}),
 );
 
