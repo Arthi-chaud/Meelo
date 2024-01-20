@@ -424,6 +424,7 @@ describe("Track Service", () => {
 				album: {
 					id: dummyRepository.albumA1.id,
 				},
+				extensions: [],
 				name: "tmp",
 				releaseDate: new Date("2001"),
 			});

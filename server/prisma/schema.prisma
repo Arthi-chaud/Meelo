@@ -193,8 +193,11 @@ model Release {
 	/// @example 123
 	id				Int		@id @default(autoincrement())
 	/// @description The title of the release
-	/// @example My Album (Deluxe Edition)
+	/// @example My Album
 	name			String	@db.Citext()
+	/// @description The Extensions of the release
+	/// @example ["Deluxe Edition"]
+	extensions		String[]
 	/// @description String identifier of the release
 	/// @example my-album-deluxe-edition
 	slug			String

@@ -423,9 +423,9 @@ export default class TrackService extends RepositoryService<
 	 * @param where Query parameters to find the track to delete
 	 */
 	async delete(where: TrackQueryParameters.DeleteInput): Promise<Track> {
-		await this.illustrationRepository.deleteTrackIllustration(
-			this.formatDeleteInputToWhereInput(where),
-		);
+		await this.illustrationRepository
+			.deleteTrackIllustration(this.formatDeleteInputToWhereInput(where))
+			.catch(() => {});
 
 		return super.delete(where).then((deleted) => {
 			this.logger.warn(`Track '${deleted.name}' deleted`);

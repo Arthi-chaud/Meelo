@@ -55,7 +55,7 @@ type ModelRelations<T extends AtomicModel> = Required<
 	Omit<
 		T,
 		keyof {
-			[key in keyof T as T[key] extends Primitive | Date
+			[key in keyof T as T[key] extends Primitive | string[] | Date
 				? key
 				: never]: key;
 		}
