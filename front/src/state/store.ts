@@ -19,7 +19,6 @@
 import { StateFromReducersMapObject, configureStore } from "@reduxjs/toolkit";
 import userSlice from "./userSlice";
 import playlerSlice from "./playerSlice";
-import settingsSlice from "./settingsSlice";
 import storage from "redux-persist/lib/storage";
 import {
 	FLUSH,
@@ -58,13 +57,12 @@ const getStorage = () =>
 const Reducers = {
 	player: playlerSlice,
 	user: userSlice,
-	settings: settingsSlice,
 };
 
 const PersistConfig = {
 	key: "root",
 	storage: getStorage(),
-	whitelist: ["settings"], // Keys of reducers to persist
+	whitelist: [], // Keys of reducers to persist
 };
 
 type State = StateFromReducersMapObject<typeof Reducers>;

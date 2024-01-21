@@ -31,6 +31,7 @@ import { DefaultWindowTitle } from "../../utils/constants";
 import { toast } from "react-hot-toast";
 import { DrawerBreakpoint } from "../scaffold/scaffold";
 import { useTranslation } from "react-i18next";
+import { useReadLocalStorage } from "usehooks-ts";
 
 const Player = () => {
 	const { t } = useTranslation();
@@ -60,9 +61,8 @@ const Player = () => {
 	const bottomNavigationIsDisplayed = useMediaQuery(
 		theme.breakpoints.down(DrawerBreakpoint),
 	);
-	const allowNotifications = useSelector(
-		(state: RootState) => state.settings.allowNotifications,
-	);
+	const allowNotifications: boolean | null =
+		useReadLocalStorage("allow_notifs");
 	const play = () => {
 		// Do nothing if empty playlist
 		if (playlist.length == 0) {
