@@ -112,7 +112,9 @@ const Illustration = (props: IllustrationProps) => {
 						aspectRatio: aspectRatio.toString(),
 						overflow: "hidden",
 						display: "block",
-						...dimensionsFromAspectRatio,
+						...(props.imgProps?.objectFit == "cover"
+							? { width: "100%", height: "100%" }
+							: dimensionsFromAspectRatio),
 					}}
 				>
 					{loadingFailed || !url ? (
