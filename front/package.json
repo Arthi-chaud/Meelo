@@ -53,6 +53,7 @@
 		"redux-persist": "^6.0.0",
 		"sharp": "^0.31.1",
 		"type-fest": "^2.19.0",
+		"usehooks-ts": "^2.9.5",
 		"yup": "^1.0.0"
 	},
 	"devDependencies": {

@@ -18,16 +18,11 @@
 
 import { Button, Checkbox, Grid, MenuItem, NoSsr, Select } from "@mui/material";
 import SectionHeader from "../section-header";
-import { useDispatch, useSelector } from "react-redux";
-import { RootState } from "../../state/store";
 import { useColorScheme } from "@mui/material/styles";
-import {
-	allowNotifications,
-	disableNotifications,
-} from "../../state/settingsSlice";
 import { Language, Languages, persistLanguage } from "../../i18n/i18n";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
+import { useLocalStorage } from "usehooks-ts";
 
 const SettingGroupStyle = {
 	paddingTop: 1,
@@ -43,10 +38,10 @@ const InputContainerStyle = {
 const UserSettings = () => {
 	const { t, i18n } = useTranslation();
 	const colorScheme = useColorScheme();
-	const notificationPreference = useSelector(
-		(state: RootState) => state.settings.allowNotifications,
+	const [prefersNotifs, setPrefersNotif] = useLocalStorage(
+		"allow_notifs",
+		false,
 	);
-	const dispatch = useDispatch();
 	const notificationsAPIAvailable = typeof Notification !== "undefined";
 	const [notificationsEnabled, setNotificationsEnabled] = useState(
 		() => notificationsAPIAvailable && Notification.permission == "granted",
@@ -151,14 +146,10 @@ const UserSettings = () => {
 				</Grid>
 				<Grid item xs={2} sx={InputContainerStyle}>
 					<Checkbox
-						onChange={(event, isChecked) =>
-							dispatch(
-								isChecked
-									? allowNotifications()
-									: disableNotifications(),
-							)
-						}
-						checked={notificationPreference}
+						onChange={(_, isChecked) => {
+							setPrefersNotif(isChecked);
+						}}
+						checked={prefersNotifs == true}
 					/>
 				</Grid>
 			</Grid>
