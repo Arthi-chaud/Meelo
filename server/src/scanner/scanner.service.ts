@@ -124,7 +124,7 @@ export default class ScannerService {
 						this.parserService.stripGroups(
 							parsedTrackName.parsedName,
 						) || parsedTrackName.parsedName,
-						// If there is no root (e.g. `(Exchange)`), `stringGroup` will return an empty string.
+						// If there is no root (e.g. `(Exchange)`), `stripGroups` will return an empty string.
 						// If it does, let's just pass the entirer song name
 					),
 				},

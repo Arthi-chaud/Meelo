@@ -152,20 +152,20 @@ const ReleaseTrackList = ({
 													sm: "block",
 												},
 											}}
-											color={theme.palette.text.disabled}
+											color="text.disabled"
 										>
 											{t("bonusTrack")}
 										</Typography>
 									)}
 									{currentTrack.isRemastered && (
 										<Typography
+											color="text.disabled"
 											sx={{
 												display: {
 													xs: "none",
 													sm: "block",
 												},
 											}}
-											color={theme.palette.text.disabled}
 										>
 											{t("remastered")}
 										</Typography>
