@@ -123,7 +123,9 @@ export default class ScannerService {
 						songArtist.name,
 						this.parserService.stripGroups(
 							parsedTrackName.parsedName,
-						),
+						) || parsedTrackName.parsedName,
+						// If there is no root (e.g. `(Exchange)`), `stringGroup` will return an empty string.
+						// If it does, let's just pass the entirer song name
 					),
 				},
 				artist: { id: songArtist.id },
