@@ -358,7 +358,7 @@ abstract class RepositoryService<
 				id: { in: ids },
 				...(where ?? {}),
 			} as unknown as ManyWhereInput,
-			{ afterId: pagination?.afterId },
+			pagination,
 			include,
 		).then((items) =>
 			items
@@ -389,11 +389,13 @@ abstract class RepositoryService<
 					await this.prismaHandle.$queryRawUnsafe(
 						`SELECT id FROM ${this.getTableName()} ORDER BY MD5(${seed.toString()} || id::text)`,
 					);
-				const ids = res
-					.map(({ id }) => id)
-					.slice(pagination?.skip ?? 0, pagination?.take);
 
-				return this.getByIdList(ids, undefined, pagination, include);
+				return this.getByIdList(
+					res.map(({ id }) => id),
+					where,
+					pagination,
+					include,
+				);
 			});
 		}
 		const sort = sortOrSeed as SortingParameter<SortingKeys>;
