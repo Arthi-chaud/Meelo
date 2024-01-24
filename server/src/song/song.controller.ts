@@ -33,12 +33,7 @@ import { PaginationParameters } from "src/pagination/models/pagination-parameter
 import TrackService from "src/track/track.service";
 import SongQueryParameters from "./models/song.query-params";
 import SongService from "./song.service";
-import {
-	ApiOperation,
-	ApiPropertyOptional,
-	ApiTags,
-	PickType,
-} from "@nestjs/swagger";
+import { ApiOperation, ApiPropertyOptional, ApiTags } from "@nestjs/swagger";
 import { LyricsService } from "src/lyrics/lyrics.service";
 import LyricsDto from "src/lyrics/models/update-lyrics.dto";
 import { SongResponseBuilder } from "./models/song.response";
@@ -135,8 +130,6 @@ export class Selector {
 	@IsPositive()
 	random?: number;
 }
-
-class VersionsSelector extends PickType(Selector, ["type"]) {}
 
 @ApiTags("Songs")
 @Controller("songs")
