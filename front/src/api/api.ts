@@ -1168,7 +1168,7 @@ export default class API {
 	 */
 	static getIllustrationURL(imageURL: string): string {
 		if (this.isDev()) {
-			return `${process.env.PUBLIC_SERVER_URL ?? "/api"}${imageURL}`;
+			return `${"/api"}${imageURL}`;
 		}
 		if (isSSR()) {
 			return `${this.SSR_API_URL}${imageURL}`;
