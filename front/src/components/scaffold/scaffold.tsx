@@ -79,6 +79,7 @@ const getPrimaryTypeIcon = (
 };
 
 export const DrawerBreakpoint = "md" as const;
+export const DrawerWidth = 240 as const;
 
 const Drawer = ({
 	openBottomDrawer,
@@ -91,7 +92,7 @@ const Drawer = ({
 	const router = useRouter();
 	const theme = useTheme();
 	const persistentDrawerBreakpoint = DrawerBreakpoint;
-	const drawerWidth = { [persistentDrawerBreakpoint]: 240 };
+	const drawerWidth = { [persistentDrawerBreakpoint]: DrawerWidth };
 	const actions = scaffoldActions;
 	const commonDrawerProps = {
 		anchor: "left",
@@ -341,12 +342,16 @@ const Scaffold = (props: { children: any }) => {
 					flexDirection: "column",
 					flexWrap: "nowrap",
 					overflowX: "clip",
-					width: "100%",
+					width: {
+						xs: "100%",
+						md: `calc(100% - ${DrawerWidth}px)`,
+					},
 				}}
 			>
 				<Container
 					disableGutters
 					sx={{
+						width: "100%",
 						paddingTop: 2,
 						paddingBottom: { xs: "65px", [DrawerBreakpoint]: 2 },
 					}}
