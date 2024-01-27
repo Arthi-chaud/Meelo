@@ -19,6 +19,7 @@
 import { Divider, List } from "@mui/material";
 import Resource from "../../models/resource";
 import InfiniteScroll from "./infinite-scroll";
+import { Fragment } from "react";
 
 type TypedList<T extends Resource> = typeof InfiniteScroll<T>;
 type InfiniteListProps<T extends Resource> = Omit<
@@ -38,12 +39,12 @@ const InfiniteList = <T extends Resource>(props: InfiniteListProps<T>) => {
 			render={(items: T[]) => (
 				<List>
 					{items.map((item: T, index) => (
-						<>
+						<Fragment key={`item-id-${index}-${item.id}`}>
 							{props.render(item)}
 							{index == items.length - 1 || (
 								<Divider variant="middle" />
 							)}
-						</>
+						</Fragment>
 					))}
 				</List>
 			)}
