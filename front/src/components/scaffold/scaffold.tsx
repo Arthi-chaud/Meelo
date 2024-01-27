@@ -345,7 +345,7 @@ const Scaffold = (props: { children: any }) => {
 				}}
 			>
 				<Container
-					maxWidth={false}
+					disableGutters
 					sx={{
 						paddingTop: 2,
 						paddingBottom: { xs: "65px", [DrawerBreakpoint]: 2 },
