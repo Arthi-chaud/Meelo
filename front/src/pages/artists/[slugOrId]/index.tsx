@@ -41,7 +41,7 @@ import { MoreIcon } from "../../../components/icons";
 import ResourceDescriptionExpandable from "../../../components/resource-description-expandable";
 import ArtistRelationPageHeader from "../../../components/relation-page-header/artist-relation-page-header";
 import Album, { AlbumType } from "../../../models/album";
-import { useMemo } from "react";
+import { Fragment, useMemo } from "react";
 import GradientBackground from "../../../components/gradient-background";
 import { useTranslation } from "react-i18next";
 
@@ -210,7 +210,7 @@ const ArtistPage = (props: InferSSRProps<typeof getServerSideProps>) => {
 					.filter((data): data is AlbumsWithType => data != undefined)
 					.filter((data) => data.items.length > 0)
 					.map(({ type, items }) => (
-						<>
+						<Fragment key={`section-${type}`}>
 							<SectionHeader
 								key={artist.data.id + type}
 								heading={t(`plural${type}`)}
@@ -262,7 +262,7 @@ const ArtistPage = (props: InferSSRProps<typeof getServerSideProps>) => {
 									}
 								/>
 							</Grid>
-						</>
+						</Fragment>
 					))}
 				{[
 					{ label: "topVideos", items: musicVideos } as const,

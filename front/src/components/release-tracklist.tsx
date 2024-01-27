@@ -41,6 +41,7 @@ import { SongWithRelations } from "../models/song";
 import { VideoIcon } from "./icons";
 import formatArtists from "../utils/formatArtists";
 import { useTranslation } from "react-i18next";
+import { Fragment } from "react";
 
 type ReleaseTracklistProps = {
 	mainArtist?: Artist;
@@ -85,7 +86,7 @@ const ReleaseTrackList = ({
 					}
 				>
 					{disc[1].map((currentTrack) => (
-						<>
+						<Fragment key={`t-${currentTrack.id}`}>
 							<ListItem
 								key={currentTrack.id}
 								dense={
@@ -197,7 +198,7 @@ const ReleaseTrackList = ({
 								</ListItemButton>
 							</ListItem>
 							<Divider variant="inset" />
-						</>
+						</Fragment>
 					))}
 				</List>
 			))}
