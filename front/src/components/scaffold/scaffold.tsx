@@ -349,7 +349,7 @@ const Scaffold = (props: { children: any }) => {
 				}}
 			>
 				<Container
-					disableGutters
+					maxWidth={false}
 					sx={{
 						width: "100%",
 						paddingTop: 2,
