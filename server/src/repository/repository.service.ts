@@ -358,13 +358,15 @@ abstract class RepositoryService<
 				id: { in: ids },
 				...(where ?? {}),
 			} as unknown as ManyWhereInput,
-			pagination,
+			{ afterId: pagination?.afterId },
 			include,
 		).then((items) =>
 			items
 				.map((item) => ({ item, index: ids.indexOf(item.id) }))
 				.sort((item1, item2) => item1.index - item2.index)
-				.map(({ item }) => item),
+				.map(({ item }) => item)
+				// Note, we cannot use ORM to paginate, since it will sort items by ID (default). We do not want that
+				.slice(pagination?.skip, pagination?.take),
 		);
 	}
 
