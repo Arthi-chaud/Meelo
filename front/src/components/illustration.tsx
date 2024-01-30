@@ -27,6 +27,7 @@ import IllustrationModel from "../models/illustration";
 import Blurhash from "./blurhash";
 import Fade from "./fade";
 import ThemedImage from "../utils/themed-image";
+import { isSSR } from "../utils/is-ssr";
 
 type ImageQuality = "low" | "medium" | "high" | "original";
 
@@ -60,8 +61,9 @@ type IllustrationProps = {
 
 const Illustration = (props: IllustrationProps) => {
 	const theme = useTheme();
-	const [loadingFailed, setLoadingFailed] = useState(false);
-	const [loadingCompleted, setLoadingCompleted] = useState(false);
+	const [loadingState, setLoadingState] = useState<
+		"loading" | "errored" | "finished"
+	>(isSSR() ? "finished" : "loading");
 	const url = props.url ?? props.illustration?.url;
 	const blurhash = props.illustration?.blurhash;
 	const aspectRatio =
@@ -86,7 +88,7 @@ const Illustration = (props: IllustrationProps) => {
 			}}
 		>
 			{blurhash && (
-				<Fade in={!loadingFailed} unmountOnExit>
+				<Fade in={loadingState !== "errored"} unmountOnExit>
 					<Box
 						style={{
 							position: "absolute",
@@ -104,7 +106,6 @@ const Illustration = (props: IllustrationProps) => {
 					</Box>
 				</Fade>
 			)}
-			{/* <Fade in={isSSR() || loadingCompleted || loadingFailed || !url}> */}
 			<Box
 				style={{
 					position: "relative",
@@ -116,7 +117,7 @@ const Illustration = (props: IllustrationProps) => {
 						: dimensionsFromAspectRatio),
 				}}
 			>
-				{loadingFailed || !url ? (
+				{loadingState === "errored" || !url ? (
 					props.fallback ? (
 						<Box
 							sx={{
@@ -147,8 +148,8 @@ const Illustration = (props: IllustrationProps) => {
 					)
 				) : (
 					<Image
-						onError={() => setLoadingFailed(true)}
-						onLoadingComplete={() => setLoadingCompleted(true)}
+						onError={() => setLoadingState("errored")}
+						onLoadingComplete={() => setLoadingState("finished")}
 						fill
 						alt={
 							url?.split("/").join("-") ?? "missing-illustration"
@@ -160,7 +161,7 @@ const Illustration = (props: IllustrationProps) => {
 									? 6
 									: theme.shape.borderRadius,
 							objectFit: "contain",
-							opacity: loadingCompleted ? 1 : 0,
+							opacity: loadingState == "loading" ? 0 : 1,
 							transition: `opacity ${theme.transitions.duration.enteringScreen}ms ${theme.transitions.easing.easeIn}`,
 							...props.imgProps,
 						}}
@@ -173,7 +174,6 @@ const Illustration = (props: IllustrationProps) => {
 					/>
 				)}
 			</Box>
-			{/* </Fade> */}
 		</Box>
 	);
 };
