@@ -25,9 +25,9 @@ import blackIllustrationFallback from "../../public/icon-black.png";
 import { RequireExactlyOne } from "type-fest";
 import IllustrationModel from "../models/illustration";
 import Blurhash from "./blurhash";
-import { isSSR } from "../utils/is-ssr";
 import Fade from "./fade";
 import ThemedImage from "../utils/themed-image";
+import { isSSR } from "../utils/is-ssr";
 
 type ImageQuality = "low" | "medium" | "high" | "original";
 
@@ -61,8 +61,9 @@ type IllustrationProps = {
 
 const Illustration = (props: IllustrationProps) => {
 	const theme = useTheme();
-	const [loadingFailed, setLoadingFailed] = useState(false);
-	const [loadingCompleted, setLoadingCompleted] = useState(false);
+	const [loadingState, setLoadingState] = useState<
+		"loading" | "errored" | "finished"
+	>(isSSR() ? "finished" : "loading");
 	const url = props.url ?? props.illustration?.url;
 	const blurhash = props.illustration?.blurhash;
 	const aspectRatio =
@@ -87,7 +88,7 @@ const Illustration = (props: IllustrationProps) => {
 			}}
 		>
 			{blurhash && (
-				<Fade in={!loadingCompleted && !loadingFailed} unmountOnExit>
+				<Fade in={loadingState !== "errored"} unmountOnExit>
 					<Box
 						style={{
 							position: "absolute",
@@ -105,75 +106,74 @@ const Illustration = (props: IllustrationProps) => {
 					</Box>
 				</Fade>
 			)}
-			<Fade in={isSSR() || loadingCompleted || loadingFailed || !url}>
-				<Box
-					style={{
-						position: "relative",
-						aspectRatio: aspectRatio.toString(),
-						overflow: "hidden",
-						display: "block",
-						...(props.imgProps?.objectFit == "cover"
-							? { width: "100%", height: "100%" }
-							: dimensionsFromAspectRatio),
-					}}
-				>
-					{loadingFailed || !url ? (
-						props.fallback ? (
-							<Box
-								sx={{
-									width: "100%",
-									height: "100%",
-									display: "flex",
-									justifyContent: "center",
-									alignItems: "center",
-								}}
-							>
-								<IconButton
-									disabled
-									sx={{ fontSize: "large" }}
-									component="div"
-								>
-									{props.fallback}
-								</IconButton>
-							</Box>
-						) : (
-							<ThemedImage
-								dark={whiteIllustrationFallback}
-								light={blackIllustrationFallback}
-								fill
-								alt="missing-illustration"
-								loading="eager"
-								style={{ padding: "15%" }}
-							/>
-						)
-					) : (
-						<Image
-							onError={() => setLoadingFailed(true)}
-							onLoadingComplete={() => setLoadingCompleted(true)}
-							fill
-							alt={
-								url?.split("/").join("-") ??
-								"missing-illustration"
-							}
-							unoptimized
-							style={{
-								borderRadius:
-									props.quality == "low"
-										? 6
-										: theme.shape.borderRadius,
-								objectFit: "contain",
-								...props.imgProps,
+			<Box
+				style={{
+					position: "relative",
+					aspectRatio: aspectRatio.toString(),
+					overflow: "hidden",
+					display: "block",
+					...(props.imgProps?.objectFit == "cover"
+						? { width: "100%", height: "100%" }
+						: dimensionsFromAspectRatio),
+				}}
+			>
+				{loadingState === "errored" || !url ? (
+					props.fallback ? (
+						<Box
+							sx={{
+								width: "100%",
+								height: "100%",
+								display: "flex",
+								justifyContent: "center",
+								alignItems: "center",
 							}}
-							src={
-								API.getIllustrationURL(url) +
-								(props.quality == "original"
-									? ""
-									: `?quality=${props.quality}`)
-							}
+						>
+							<IconButton
+								disabled
+								sx={{ fontSize: "large" }}
+								component="div"
+							>
+								{props.fallback}
+							</IconButton>
+						</Box>
+					) : (
+						<ThemedImage
+							dark={whiteIllustrationFallback}
+							light={blackIllustrationFallback}
+							fill
+							alt="missing-illustration"
+							loading="eager"
+							style={{ padding: "15%" }}
 						/>
-					)}
-				</Box>
-			</Fade>
+					)
+				) : (
+					<Image
+						onError={() => setLoadingState("errored")}
+						onLoadingComplete={() => setLoadingState("finished")}
+						fill
+						alt={
+							url?.split("/").join("-") ?? "missing-illustration"
+						}
+						unoptimized
+						style={{
+							borderRadius:
+								props.quality == "low"
+									? 6
+									: theme.shape.borderRadius,
+							objectFit: "contain",
+							opacity: loadingState == "loading" ? 0 : 1,
+							transition: `opacity ${theme.transitions.duration.enteringScreen}ms ${theme.transitions.easing.easeIn}`,
+							...props.imgProps,
+						}}
+						src={
+							API.getIllustrationURL(url) +
+							(props.quality == "original"
+								? ""
+								: `?quality=${props.quality}`)
+						}
+					/>
+				)}
+			</Box>
 		</Box>
 	);
 };
