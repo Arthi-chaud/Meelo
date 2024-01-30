@@ -27,23 +27,25 @@ import font from "./font";
 import {
 	Experimental_CssVarsProvider as CssVarsProvider,
 	experimental_extendTheme as extendTheme,
+	responsiveFontSizes,
 } from "@mui/material/styles";
 
 /**
  * Provides the Theme
  */
 const ThemeProvider = (props: { children: any }) => {
-	//TODO: ResponsiveFontSizes
-	const theme = extendTheme({
-		colorSchemes: {
-			light: { palette: LightTheme },
-			dark: { palette: DarkTheme },
-		},
-		typography: {
-			fontFamily: font.style.fontFamily,
-		},
-		...GlobalTheme,
-	});
+	const theme = responsiveFontSizes(
+		extendTheme({
+			colorSchemes: {
+				light: { palette: LightTheme },
+				dark: { palette: DarkTheme },
+			},
+			typography: {
+				fontFamily: font.style.fontFamily,
+			},
+			...GlobalTheme,
+		}),
+	);
 	return (
 		<CssVarsProvider defaultMode="system" theme={theme}>
 			<CssBaseline />

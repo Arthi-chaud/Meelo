@@ -270,7 +270,7 @@ const ArtistPage = (props: InferSSRProps<typeof getServerSideProps>) => {
 				].map(
 					({ label, items }) =>
 						items.length != 0 && (
-							<>
+							<Fragment key={`videos-${label}`}>
 								<SectionHeader
 									heading={t(label)}
 									trailing={
@@ -320,7 +320,7 @@ const ArtistPage = (props: InferSSRProps<typeof getServerSideProps>) => {
 										}
 									/>
 								</Grid>
-							</>
+							</Fragment>
 						),
 				)}
 				{(appearances.data?.pages?.at(0)?.items.length ?? 0) != 0 && (
