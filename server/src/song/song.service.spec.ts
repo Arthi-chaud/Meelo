@@ -98,7 +98,6 @@ describe("Song Service", () => {
 			expect(newSong.name).toBe("My Song 3");
 			expect(newSong.slug).toBe("my-song-3");
 			expect(newSong.registeredAt).toStrictEqual(registeredAt);
-			expect(newSong.playCount).toBe(0);
 			expect(newSong.type).toBe(SongType.Original);
 		});
 

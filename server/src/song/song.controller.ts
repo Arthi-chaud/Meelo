@@ -25,6 +25,7 @@ import {
 	Post,
 	Put,
 	Query,
+	Req,
 	forwardRef,
 } from "@nestjs/common";
 import ArtistService from "src/artist/artist.service";
@@ -52,7 +53,7 @@ import AlbumService from "src/album/album.service";
 import AlbumQueryParameters from "src/album/models/album.query-parameters";
 import ReleaseQueryParameters from "src/release/models/release.query-parameters";
 import ReleaseService from "src/release/release.service";
-import { SongType } from "@prisma/client";
+import { SongType, User } from "@prisma/client";
 import UpdateSongDTO from "./models/update-song.dto";
 import SongGroupQueryParameters from "./models/song-group.query-params";
 import SongGroupService from "./song-group.service";
@@ -158,6 +159,7 @@ export class SongController {
 		paginationParameters: PaginationParameters,
 		@RelationIncludeQuery(SongQueryParameters.AvailableAtomicIncludes)
 		include: SongQueryParameters.RelationInclude,
+		@Req() request: Express.Request,
 	) {
 		if (selector.query) {
 			return this.songService.search(
@@ -166,6 +168,14 @@ export class SongController {
 				paginationParameters,
 				include,
 				sort,
+			);
+		} else if (sort.sortBy == "userPlayCount") {
+			return this.songService.getManyByPlayCount(
+				(request.user as User).id,
+				selector,
+				paginationParameters,
+				include,
+				sort.order,
 			);
 		} else if (selector.bsides) {
 			return this.songService.getReleaseBSides(
@@ -218,8 +228,12 @@ export class SongController {
 	async incrementSongPlayCount(
 		@IdentifierParam(SongService)
 		where: SongQueryParameters.WhereInput,
+		@Req() request: Express.Request,
 	) {
-		await this.songService.incrementPlayCount(where);
+		await this.songService.incrementPlayCount(
+			(request.user as User).id,
+			where,
+		);
 		return this.songService.get(where);
 	}
 
