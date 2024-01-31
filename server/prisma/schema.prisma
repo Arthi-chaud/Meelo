@@ -45,6 +45,8 @@ model User {
 	enabled			Boolean @default(false)
 	/// @description Indicates if the user is an admin or not
 	admin			Boolean @default(false)
+	/// @description the history of song played
+	playHistory PlayHistory[]
 	@@map("users")
 }
 
@@ -238,9 +240,6 @@ model Song {
 	artistId		Int
 	/// @description The main artist of the song
 	featuring		Artist[]	@relation("ArtistToSong")
-	/// @description The number of times, the song was played
-	/// @example 3
-	playCount		Int		@default(0)
 	/// @description The main/most used track of the song, by default the first one
 	master			Track?	@relation("Master", fields: [masterId], references: [id], onDelete: SetNull)
 	/// @description Unique numeric identifier of the main release, if there is one
@@ -264,6 +263,8 @@ model Song {
 	externalIds		SongExternalId[]
 	/// @description List of relations to playlists
 	playlists PlaylistEntry[]
+	/// @description the history of play
+	playHistory PlayHistory[]
 	@@unique([slug, artistId])
 	@@map("songs")
 }
@@ -609,4 +610,22 @@ model ReleaseIllustration {
 	aspectRatio		Float	@default(1)
 	@@map("release_illustrations")
 	@@unique([releaseId, disc, track])
+}
+
+
+model PlayHistory {
+	/// @description Unique numeric identifier
+	/// @example 123
+	id				Int		@id	@default(autoincrement())
+	/// @description The date the song was played
+	playedAt		DateTime	@default(now())
+	/// @description The User that listened to a song
+	/// @example 123
+	userId		Int
+	user		User	@relation(fields: [userId], references: [id], onDelete: Cascade)
+	/// @description The Song that was played
+	/// @example 123
+	songId		Int
+	song		Song	@relation(fields: [songId], references: [id], onDelete: Cascade)
+	@@map("play_history")
 }

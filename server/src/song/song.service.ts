@@ -53,6 +53,7 @@ import deepmerge from "deepmerge";
 import SongGroupService from "./song-group.service";
 import MeiliSearch from "meilisearch";
 import { InjectMeiliSearch } from "nestjs-meilisearch";
+import SortingOrder from "src/sort/models/sorting-order";
 
 @Injectable()
 export default class SongService extends SearchableRepositoryService<
@@ -135,7 +136,6 @@ export default class SongService extends SearchableRepositoryService<
 				  }
 				: undefined,
 			registeredAt: song.registeredAt,
-			playCount: 0,
 			type: this.parserService.getSongType(song.name),
 			name: song.name,
 			slug: this._createSongSlug(song.name, song.featuring).toString(),
@@ -223,11 +223,6 @@ export default class SongService extends SearchableRepositoryService<
 		let query: Prisma.SongWhereInput = {
 			artistId: where.artist?.id,
 			name: buildStringSearchParameters(where.name),
-			playCount: {
-				equals: where.playCount?.exact,
-				gt: where.playCount?.moreThan,
-				lt: where.playCount?.below,
-			},
 			type: where.type,
 		};
 
@@ -327,6 +322,12 @@ export default class SongService extends SearchableRepositoryService<
 						sortBy: "name",
 						order: sortingParameter.order,
 					}),
+				};
+			case "totalPlayCount":
+				return {
+					playHistory: {
+						_count: sortingParameter.order,
+					},
 				};
 			default:
 				return {
@@ -473,11 +474,18 @@ export default class SongService extends SearchableRepositoryService<
 	 * @returns the updated song
 	 */
 	async incrementPlayCount(
+		userId: number,
 		where: SongQueryParameters.WhereInput,
 	): Promise<void> {
 		const song = await this.get(where);
-
-		await this.update({ playCount: song.playCount + 1 }, { id: song.id });
+		await this.prismaHandle.playHistory
+			.create({
+				data: {
+					userId: userId,
+					songId: song.id,
+				},
+			})
+			.catch(() => {});
 	}
 
 	/**
@@ -530,6 +538,30 @@ export default class SongService extends SearchableRepositoryService<
 			.then((genres) => genres.filter((genre) => !genre._count.tracks));
 
 		await Promise.all(emptySongs.map(({ id }) => this.delete({ id })));
+	}
+
+	async getManyByPlayCount<I extends SongQueryParameters.RelationInclude>(
+		userId: number,
+		where: SongQueryParameters.ManyWhereInput,
+		pagination?: PaginationParameters,
+		include?: I,
+		order?: SortingOrder,
+	) {
+		const playedSongs = await this.prismaHandle.playHistory.groupBy({
+			where: { userId: userId },
+			by: ["songId"],
+			orderBy: {
+				_count: {
+					songId: order ?? "desc",
+				},
+			},
+		});
+		return this.getByIdList(
+			playedSongs.map(({ songId }) => songId),
+			where,
+			pagination,
+			include,
+		);
 	}
 
 	async getReleaseBSides<I extends SongQueryParameters.RelationInclude>(

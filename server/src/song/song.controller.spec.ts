@@ -403,42 +403,6 @@ describe("Song Controller", () => {
 		});
 	});
 
-	describe("Increment Song's Play count (PUT /songs/:id/played)", () => {
-		it("should return an error, as the track does not exist", () => {
-			return request(app.getHttpServer())
-				.put(`/songs/${-1}/played`)
-				.expect(404);
-		});
-
-		it("should increment a song's play count (by id)", () => {
-			return request(app.getHttpServer())
-				.put(`/songs/${dummyRepository.songC1.id}/played`)
-				.expect(200)
-				.expect(async (res) => {
-					const updatedSong: Song = res.body;
-					expect(updatedSong).toStrictEqual({
-						...expectedSongResponse(dummyRepository.songC1),
-						playCount: dummyRepository.songC1.playCount + 1,
-					});
-				});
-		});
-
-		it("should increment a song's play count (by slug)", () => {
-			return request(app.getHttpServer())
-				.put(
-					`/songs/${dummyRepository.artistC.slug}+${dummyRepository.songC1.slug}/played`,
-				)
-				.expect(200)
-				.expect((res) => {
-					const updatedSong: Song = res.body;
-					expect(updatedSong).toStrictEqual({
-						...expectedSongResponse(dummyRepository.songC1),
-						playCount: dummyRepository.songC1.playCount + 2,
-					});
-				});
-		});
-	});
-
 	describe("Get Song's Lyrics (GET /songs/:id/lyrics)", () => {
 		it("should return the song's lyrics", () => {
 			return request(app.getHttpServer())

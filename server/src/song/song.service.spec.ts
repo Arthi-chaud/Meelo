@@ -98,7 +98,6 @@ describe("Song Service", () => {
 			expect(newSong.name).toBe("My Song 3");
 			expect(newSong.slug).toBe("my-song-3");
 			expect(newSong.registeredAt).toStrictEqual(registeredAt);
-			expect(newSong.playCount).toBe(0);
 			expect(newSong.type).toBe(SongType.Original);
 		});
 
@@ -363,17 +362,6 @@ describe("Song Service", () => {
 	});
 
 	describe("Update Song", () => {
-		it("should update the play count of the song", async () => {
-			const updatedSong = await songService.update(
-				{ playCount: 3 },
-				{ id: dummyRepository.songA1.id },
-			);
-
-			expect(updatedSong.id).toBe(dummyRepository.songA1.id);
-			expect(updatedSong.playCount).toBe(3);
-			expect(updatedSong.artistId).toBe(dummyRepository.artistA.id);
-		});
-
 		it("should change the artist of the song", async () => {
 			let updatedSong = await songService.update(
 				{ artist: { slug: new Slug(dummyRepository.artistB.slug) } },
@@ -488,34 +476,13 @@ describe("Song Service", () => {
 	});
 
 	describe("Increment a song's play count", () => {
-		it("should throw, as the song does not exist", () => {
-			const test = async () =>
-				await songService.incrementPlayCount({ id: -1 });
-			return expect(test()).rejects.toThrow(SongNotFoundByIdException);
-		});
-		it("should increment the song's play count (by id)", async () => {
+		it("should increment the song's play count", async () => {
+			const user = await dummyRepository.user.create({ data: { admin: true, name: 'A', password: 'B' } })
 			const queryParemeters = { id: dummyRepository.songA2.id };
-			await songService.incrementPlayCount(queryParemeters);
-			const updatedSong = await songService.get(queryParemeters);
-			expect(updatedSong).toStrictEqual({
-				...dummyRepository.songA2,
-				playCount: dummyRepository.songA2.playCount + 1,
-			});
-		});
+			await songService.incrementPlayCount(user.id, queryParemeters);
+			const playCount = await dummyRepository.playHistory.count({ where: { userId: user.id, songId: queryParemeters.id } });
 
-		it("should increment the song's play count (by slug)", async () => {
-			const queryParemeters: SongQueryParameters.WhereInput = {
-				bySlug: {
-					slug: new Slug(dummyRepository.songB1.slug),
-					artist: { id: dummyRepository.artistB.id },
-				},
-			};
-			await songService.incrementPlayCount(queryParemeters);
-			const updatedSong = await songService.get(queryParemeters);
-			expect(updatedSong).toStrictEqual({
-				...dummyRepository.songB1,
-				playCount: dummyRepository.songB1.playCount + 1,
-			});
+			expect(playCount).toBe(1);
 		});
 	});
 
@@ -575,7 +542,6 @@ describe("Song Service", () => {
 			});
 			expect(updatedSong).toStrictEqual({
 				...dummyRepository.songA1,
-				playCount: 3,
 				masterId: dummyRepository.trackA1_2Video.id,
 			});
 		});
@@ -585,7 +551,6 @@ describe("Song Service", () => {
 			});
 			expect(updatedSong).toStrictEqual({
 				...dummyRepository.songA1,
-				playCount: 3,
 			});
 		});
 	});

@@ -59,10 +59,6 @@ const Song = Resource.concat(Illustration).concat(
 		 */
 		artistId: yup.number().required(),
 		/**
-		 * Number of times the song has been played
-		 */
-		playCount: yup.number().required(),
-		/**
 		 * The ID of the master track
 		 */
 		masterId: yup.number().required().nullable(),
@@ -95,7 +91,8 @@ type SongWithRelations<Selection extends SongInclude | never = never> =
 export default Song;
 export const SongSortingKeys = [
 	"name",
-	"playCount",
+	"userPlayCount",
+	"totalPlayCount",
 	"artistName",
 	"addDate",
 ] as const;

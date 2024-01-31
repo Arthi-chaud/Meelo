@@ -46,7 +46,6 @@ const TrackFileInfo = ({ trackId }: { trackId: number }) => {
 	const tableContent: Partial<Record<TranslationKey, string | number>> = {
 		name: track.data.name,
 		remastered: t(track.data.isRemastered ? "yes" : "no"),
-		playCount: track.data.song.playCount,
 		duration: formatDuration(track.data.duration),
 		bitRate: `${track.data.bitrate} kbps`,
 		type: track.data.type,

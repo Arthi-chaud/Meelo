@@ -129,7 +129,9 @@ const InfiniteSongView = <T extends SongWithRelations<"artist" | "featuring">>(
 				]}
 				disableSorting={props.disableSorting}
 				onChange={setOptions}
-				sortingKeys={SongSortingKeys}
+				sortingKeys={SongSortingKeys.filter(
+					(key) => key !== "userPlayCount",
+				)}
 				defaultSortingOrder={props.initialSortingOrder}
 				defaultSortingKey={props.initialSortingField}
 				router={props.light == true ? undefined : router}

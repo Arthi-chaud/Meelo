@@ -94,18 +94,13 @@ namespace SongQueryParameters {
 			versionsOf: SongQueryParameters.WhereInput;
 			type?: SongType;
 			id: { in: number[] };
-			playCount: RequireExactlyOne<
-				Record<"below" | "exact" | "moreThan", number>
-			>;
 		}>
 	>;
 
 	/**
 	 * The input required to update a song in the database
 	 */
-	export type UpdateInput = Partial<
-		CreateInput & Pick<Song, "playCount" | "type">
-	>;
+	export type UpdateInput = Partial<CreateInput & Pick<Song, "type">>;
 	export type DeleteInput = {
 		id: Song["id"];
 	};
@@ -137,7 +132,8 @@ namespace SongQueryParameters {
 	export const SortingKeys = [
 		"id",
 		"name",
-		"playCount",
+		"totalPlayCount",
+		"userPlayCount",
 		"artistName",
 		"addDate",
 	] as const;
