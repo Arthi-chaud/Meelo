@@ -48,6 +48,7 @@
 	"trackInformation": "Track Information",
 	"name": "Name",
 	"playCount": "Play Count",
+	"totalPlayCount": "Play Count",
 	"duration": "Duration",
 	"bitRate": "Bit Rate",
 	"type": "Type",

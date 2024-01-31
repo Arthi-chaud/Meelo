@@ -72,13 +72,13 @@ const latestAlbumsQuery = AlbumType.map(
 const videosQuery = (artistSlugOrId: string | number) =>
 	API.getVideos(
 		{ artist: artistSlugOrId },
-		{ sortBy: "playCount", order: "desc" },
+		{ sortBy: "totalPlayCount", order: "desc" },
 	);
 
 const topSongsQuery = (artistSlugOrId: string | number) =>
 	API.getSongs(
 		{ artist: artistSlugOrId },
-		{ sortBy: "playCount", order: "desc" },
+		{ sortBy: "totalPlayCount", order: "desc" },
 		["artist", "featuring"],
 	);
 

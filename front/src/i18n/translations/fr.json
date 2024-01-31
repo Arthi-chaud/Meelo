@@ -39,6 +39,7 @@
 	"trackInformation": "Données de la piste",
 	"name": "Nom",
 	"playCount": "Nombre de lectures",
+	"totalPlayCount": "Play Count",
 	"duration": "Durée",
 	"bitRate": "Bitrate",
 	"type": "Type",

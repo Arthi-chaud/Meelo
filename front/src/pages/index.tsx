@@ -58,7 +58,7 @@ const newlyAddedReleasesQuery = API.getReleases(
 
 const mostListenedSongsQuery = API.getSongs(
 	{},
-	{ sortBy: "playCount", order: "desc" },
+	{ sortBy: "userPlayCount", order: "desc" },
 	["artist", "featuring"],
 );
 
