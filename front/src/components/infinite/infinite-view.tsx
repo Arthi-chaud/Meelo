@@ -20,7 +20,6 @@ import { Box, Button, Slide, Tooltip } from "@mui/material";
 import { GoBackTopIcon } from "../icons";
 import { MeeloInfiniteQueryFn } from "../../api/use-query";
 import { WideLoadingComponent } from "../loading/loading";
-import LoadingPage from "../loading/loading-page";
 import InfiniteGrid from "./infinite-grid";
 import InfiniteList from "./infinite-list";
 import { useEffect, useState } from "react";
@@ -31,8 +30,8 @@ import { useTranslation } from "react-i18next";
 export type InfiniteViewProps<ItemType> = {
 	view: "list" | "grid";
 	query: MeeloInfiniteQueryFn<ItemType>;
-	renderListItem: (item: ItemType) => JSX.Element;
-	renderGridItem: (item: ItemType) => JSX.Element;
+	renderListItem: (item: ItemType | undefined) => JSX.Element;
+	renderGridItem: (item: ItemType | undefined) => JSX.Element;
 };
 
 /**
@@ -86,12 +85,11 @@ const InfiniteView = <ItemType extends Resource>(
 			</Slide>
 			{props.view.toLowerCase() == "list" ? (
 				<InfiniteList
-					firstLoader={() => <LoadingPage />}
 					loader={() => <WideLoadingComponent />}
 					query={props.query}
-					render={(item: ItemType) => (
+					render={(item, index) => (
 						<Fade in>
-							<Box key={item.id}>
+							<Box key={item?.id ?? `skeleton-${index}`}>
 								{props.renderListItem(item)}
 							</Box>
 						</Fade>
@@ -100,9 +98,8 @@ const InfiniteView = <ItemType extends Resource>(
 			) : (
 				<InfiniteGrid
 					query={props.query}
-					firstLoader={() => <LoadingPage />}
 					loader={() => <WideLoadingComponent />}
-					render={(item: ItemType) => (
+					render={(item) => (
 						<Fade in>
 							<Box sx={{ height: "100%" }}>
 								{props.renderGridItem(item)}

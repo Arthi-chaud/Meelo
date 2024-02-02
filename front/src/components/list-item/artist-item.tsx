@@ -33,7 +33,13 @@ type ArtistItemProps = {
 const ArtistItem = ({ artist }: ArtistItemProps) => {
 	return (
 		<ListItem
-			icon={<ArtistAvatar artist={artist} quality="low" />}
+			icon={
+				<ArtistAvatar
+					illustration={artist?.illustration}
+					quality="low"
+				/>
+			}
+			secondTitle={null}
 			href={`/artists/${artist.slug}`}
 			title={artist.name}
 			trailing={<ArtistContextualMenu artist={artist} />}

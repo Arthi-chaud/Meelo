@@ -74,19 +74,6 @@ const Illustration = (props: IllustrationProps) => {
 			(props.illustration?.aspectRatio ?? 1) <= 1 ? "100%" : undefined,
 	};
 
-	if (props.illustration === undefined) {
-		return (
-			<Skeleton
-				variant="rounded"
-				sx={{
-					width: "100%",
-					height: "100%",
-					aspectRatio: "1",
-				}}
-			/>
-		);
-	}
-
 	return (
 		<Box
 			key={"illustration-" + url}
@@ -100,6 +87,16 @@ const Illustration = (props: IllustrationProps) => {
 				display: "flex",
 			}}
 		>
+			<Fade in={props.illustration === undefined} unmountOnExit>
+				<Skeleton
+					variant="rounded"
+					sx={{
+						width: "100%",
+						height: "100%",
+						aspectRatio: props.aspectRatio?.toString() ?? "1",
+					}}
+				/>
+			</Fade>
 			{blurhash && (
 				<Fade in={loadingState !== "errored"} unmountOnExit>
 					<Box
