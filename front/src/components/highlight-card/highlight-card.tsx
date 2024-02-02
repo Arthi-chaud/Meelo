@@ -16,7 +16,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { Chip, Grid, Typography, useTheme } from "@mui/material";
+import { Chip, Grid, Skeleton, Typography, useTheme } from "@mui/material";
 import Link from "next/link";
 import IllustrationModel from "../../models/illustration";
 import Illustration from "../illustration";
@@ -24,11 +24,11 @@ import { useMemo } from "react";
 import { useAccentColor } from "../../utils/accent-color";
 
 type HighlightCardProps = {
-	title: string;
-	illustration?: IllustrationModel;
-	headline: string;
-	body: string | JSX.Element;
-	href: string;
+	title: string | undefined;
+	illustration: IllustrationModel | undefined;
+	headline: string | undefined;
+	body: string | JSX.Element | undefined;
+	href: string | undefined;
 	tags: { label: string; href: string }[];
 };
 
@@ -37,8 +37,9 @@ const HighlightCard = (props: HighlightCardProps) => {
 	const accentColor = useAccentColor(props.illustration);
 
 	const cardColor = useMemo(() => {
-		const themePaperColor = `rgba(${theme.vars.palette.background.defaultChannel} / 0.75)`;
+		//TODO Try 40%
 		if (accentColor) {
+			const themePaperColor = `rgba(${theme.vars.palette.background.defaultChannel} / 0.75)`;
 			return {
 				[theme.getColorSchemeSelector("light")]: {
 					backgroundColor: `color-mix(in srgb, ${accentColor?.light} 40%, ${themePaperColor})`,
@@ -49,7 +50,7 @@ const HighlightCard = (props: HighlightCardProps) => {
 			};
 		}
 		return {
-			backgroundColor: themePaperColor,
+			backgroundColor: `rgba(${theme.vars.palette.background.defaultChannel} / 0.40)`,
 		};
 	}, [accentColor, theme]);
 	const style = {
@@ -65,7 +66,7 @@ const HighlightCard = (props: HighlightCardProps) => {
 	} as const;
 
 	return (
-		<Link href={props.href} passHref legacyBehavior>
+		<Link href={props.href ?? {}} passHref legacyBehavior>
 			<Grid
 				container
 				sx={{
@@ -81,7 +82,7 @@ const HighlightCard = (props: HighlightCardProps) => {
 			>
 				<Grid item sx={{ aspectRatio: "1", height: "100%" }}>
 					<Illustration
-						illustration={props.illustration ?? null}
+						illustration={props.illustration}
 						imgProps={{ borderRadius: 0 }}
 						quality="medium"
 					/>
@@ -104,7 +105,7 @@ const HighlightCard = (props: HighlightCardProps) => {
 								paddingRight: 1,
 							}}
 						>
-							{props.headline}
+							{props.headline ?? <Skeleton variant="text" />}
 						</Typography>
 					</Grid>
 					<Grid
@@ -122,7 +123,7 @@ const HighlightCard = (props: HighlightCardProps) => {
 							color="text.disabled"
 							lineHeight={1.5}
 						>
-							{props.body}
+							{props.body ?? <Skeleton variant="text" />}
 						</Typography>
 					</Grid>
 					{props.tags.length > 0 && (

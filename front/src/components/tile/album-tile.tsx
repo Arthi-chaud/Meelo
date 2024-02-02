@@ -23,33 +23,43 @@ import AlbumContextualMenu from "../contextual-menu/album-contextual-menu";
 import { useTranslation } from "react-i18next";
 
 const AlbumTile = (props: {
-	album: AlbumWithRelations<"artist">;
+	album: AlbumWithRelations<"artist"> | undefined;
 	formatSubtitle?: (album: AlbumWithRelations<"artist">) => string;
 }) => {
 	const { t } = useTranslation();
 
 	return (
 		<Tile
-			contextualMenu={<AlbumContextualMenu album={props.album} />}
-			title={props.album.name}
-			subtitle={
-				props.formatSubtitle?.call(this, props.album) ??
-				props.album.artist?.name ??
-				t("compilation")
+			contextualMenu={
+				props.album && <AlbumContextualMenu album={props.album} />
 			}
-			href={`/albums/${props.album.artist?.slug ?? "compilations"}+${
-				props.album.slug
-			}`}
+			title={props.album?.name}
+			subtitle={
+				props.album === undefined
+					? undefined
+					: props.formatSubtitle?.call(this, props.album) ??
+						props.album?.artist?.name ??
+						t("compilation")
+			}
+			href={
+				props.album
+					? `/albums/${props.album.artist?.slug ?? "compilations"}+${
+							props.album.slug
+						}`
+					: undefined
+			}
 			secondaryHref={
-				!props.formatSubtitle
-					? props.album.artist?.slug
-						? `/artists/${props.album.artist.slug}`
+				props.album
+					? !props.formatSubtitle
+						? props.album.artist?.slug
+							? `/artists/${props.album.artist.slug}`
+							: undefined
 						: undefined
 					: undefined
 			}
 			illustration={
 				<Illustration
-					illustration={props.album.illustration}
+					illustration={props.album?.illustration}
 					quality="medium"
 				/>
 			}

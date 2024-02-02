@@ -23,6 +23,7 @@ import {
 	ListItemButton,
 	ListItemText,
 	ListItem as MUIListItem,
+	Skeleton,
 	Typography,
 	useTheme,
 } from "@mui/material";
@@ -31,12 +32,12 @@ import Link from "next/link";
 
 type ListItemProps = {
 	icon?: JSX.Element;
-	title: string;
-	secondTitle?: string;
+	title: string | undefined;
+	secondTitle: string | undefined | null;
 	trailing?: JSX.Element;
 } & RequireExactlyOne<{
-	href: string;
-	onClick: () => void;
+	href: string | undefined;
+	onClick: (() => void) | undefined;
 }>;
 
 const textStyle = {
@@ -68,11 +69,22 @@ const ListItem = (props: ListItemProps) => {
 				<ListItemAvatar sx={{ marginRight: 2 }}>
 					{props.icon}
 				</ListItemAvatar>
-				<Box sx={{ display: { xs: "grid", xl: "none" } }}>
+				<Box
+					sx={{
+						display: { xs: "grid", xl: "none" },
+						width: props.title === undefined ? "100%" : undefined,
+					}}
+				>
 					<ListItemText
-						primary={props.title}
+						primary={props.title ?? <Skeleton />}
 						primaryTypographyProps={primaryTextStyle}
-						secondary={props.secondTitle}
+						secondary={
+							props.secondTitle === undefined ? (
+								<Skeleton width={"70%"} />
+							) : (
+								props.secondTitle
+							)
+						}
 						secondaryTypographyProps={secondaryTextStyle}
 					/>
 				</Box>
@@ -84,10 +96,10 @@ const ListItem = (props: ListItemProps) => {
 				>
 					<Grid item xs={props.secondTitle ? 6 : 10}>
 						<Typography sx={{ ...textStyle, ...primaryTextStyle }}>
-							{props.title}
+							{props.title ?? <Skeleton />}
 						</Typography>
 					</Grid>
-					{props.secondTitle && (
+					{props.secondTitle === null ? undefined : (
 						<Grid
 							item
 							xs={6}
@@ -99,7 +111,9 @@ const ListItem = (props: ListItemProps) => {
 							<Typography
 								sx={{ ...textStyle, ...secondaryTextStyle }}
 							>
-								{props.secondTitle}
+								{props.secondTitle ?? (
+									<Skeleton width={"70%"} />
+								)}
 							</Typography>
 						</Grid>
 					)}

@@ -16,7 +16,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { Box, IconButton, useTheme } from "@mui/material";
+import { Box, IconButton, Skeleton, useTheme } from "@mui/material";
 import Image, { ImageProps } from "next/image";
 import { useState } from "react";
 import API from "../api/api";
@@ -56,7 +56,7 @@ type IllustrationProps = {
 	 */
 	url: string | null;
 
-	illustration: IllustrationModel | null;
+	illustration: IllustrationModel | null | undefined;
 }>;
 
 const Illustration = (props: IllustrationProps) => {
@@ -73,6 +73,19 @@ const Illustration = (props: IllustrationProps) => {
 		height:
 			(props.illustration?.aspectRatio ?? 1) <= 1 ? "100%" : undefined,
 	};
+
+	if (props.illustration === undefined) {
+		return (
+			<Skeleton
+				variant="rounded"
+				sx={{
+					width: "100%",
+					height: "100%",
+					aspectRatio: "1",
+				}}
+			/>
+		);
+	}
 
 	return (
 		<Box
