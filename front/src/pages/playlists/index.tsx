@@ -43,7 +43,7 @@ const PlaylistsPage = (props: InferSSRProps<typeof getServerSideProps>) => {
 			initialSortingField={props.additionalProps?.sortBy}
 			initialSortingOrder={props.additionalProps?.order}
 			defaultLayout={props.additionalProps?.defaultLayout}
-			query={(sort) => API.getPlaylists({}, sort)}
+			query={({ view, library, ...sort }) => API.getPlaylists({}, sort)}
 		/>
 	);
 };

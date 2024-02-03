@@ -22,17 +22,18 @@ import Illustration from "../illustration";
 import PlaylistContextualMenu from "../contextual-menu/playlist-contextual-menu";
 import { PlaylistIcon } from "../icons";
 
-const PlaylistTile = (props: { playlist: Playlist }) => {
+const PlaylistTile = ({ playlist }: { playlist: Playlist | undefined }) => {
 	return (
 		<Tile
 			contextualMenu={
-				<PlaylistContextualMenu playlist={props.playlist} />
+				playlist && <PlaylistContextualMenu playlist={playlist} />
 			}
-			title={props.playlist.name}
-			href={`/playlists/${props.playlist.slug}`}
+			title={playlist?.name}
+			subtitle={null}
+			href={playlist ? `/playlists/${playlist.slug}` : undefined}
 			illustration={
 				<Illustration
-					illustration={props.playlist.illustration}
+					illustration={playlist?.illustration}
 					imgProps={{ objectFit: "cover" }}
 					quality="medium"
 					fallback={<PlaylistIcon />}
