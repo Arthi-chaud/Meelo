@@ -53,12 +53,8 @@ const InfiniteArtistView = (
 						order: options?.order ?? "asc",
 					})
 				}
-				renderListItem={(item: Artist) => (
-					<ArtistItem artist={item} key={item.id} />
-				)}
-				renderGridItem={(item: Artist) => (
-					<ArtistTile artist={item} key={item.id} />
-				)}
+				renderListItem={(item) => <ArtistItem artist={item} />}
+				renderGridItem={(item) => <ArtistTile artist={item} />}
 			/>
 		</>
 	);

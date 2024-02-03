@@ -22,7 +22,7 @@ import ArtistContextualMenu from "../contextual-menu/artist-contextual-menu";
 import ArtistAvatar from "../artist-avatar";
 
 type ArtistItemProps = {
-	artist: Artist;
+	artist: Artist | undefined;
 };
 
 /**
@@ -40,9 +40,9 @@ const ArtistItem = ({ artist }: ArtistItemProps) => {
 				/>
 			}
 			secondTitle={null}
-			href={`/artists/${artist.slug}`}
-			title={artist.name}
-			trailing={<ArtistContextualMenu artist={artist} />}
+			href={artist ? `/artists/${artist.slug}` : undefined}
+			title={artist?.name}
+			trailing={artist && <ArtistContextualMenu artist={artist} />}
 		/>
 	);
 };
