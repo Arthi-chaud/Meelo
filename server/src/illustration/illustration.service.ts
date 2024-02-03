@@ -165,10 +165,6 @@ export default class IllustrationService {
 				"Expected Quality or Dimensions, not both.",
 			);
 		}
-
-		res.set({
-			"Content-Disposition": `attachment; filename="${as}${ext}"`,
-		});
 		if (dimensions.quality) {
 			const quality = dimensions.quality;
 			const pathOfFile = dir.join(
