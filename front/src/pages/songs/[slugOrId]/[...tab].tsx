@@ -106,9 +106,7 @@ const SongPage = (props: InferSSRProps<typeof getServerSideProps>) => {
 
 	return (
 		<Box sx={{ width: "100%" }}>
-			{song.data?.illustration && (
-				<GradientBackground colors={song.data?.illustration.colors} />
-			)}
+			<GradientBackground colors={song.data?.illustration?.colors} />
 			<SongRelationPageHeader song={song.data} />
 			<Button
 				variant="contained"

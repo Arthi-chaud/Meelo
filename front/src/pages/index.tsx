@@ -139,7 +139,7 @@ const HomePage = (props: InferSSRProps<typeof getServerSideProps>) => {
 		.flat()
 		.map(({ illustration }) => illustration)
 		.filter((illustration) => illustration !== null);
-	const selectedBlurhash = useMemo(() => {
+	const selectedIllustrationColor = useMemo(() => {
 		return illustrations.at(
 			illustrations.length * (props.additionalProps?.blurhashIndex ?? 0),
 		)?.colors;
@@ -147,9 +147,7 @@ const HomePage = (props: InferSSRProps<typeof getServerSideProps>) => {
 
 	return (
 		<>
-			{selectedBlurhash && (
-				<GradientBackground colors={selectedBlurhash} />
-			)}
+			<GradientBackground colors={selectedIllustrationColor} />
 			<Fade in>
 				<Stack spacing={4} my={2}>
 					<HomePageSection

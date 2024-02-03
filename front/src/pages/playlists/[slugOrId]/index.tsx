@@ -271,11 +271,7 @@ const PlaylistPage = (props: InferSSRProps<typeof getServerSideProps>) => {
 			{/* <BackgroundBlurhash
 				blurhash={playlist.data.illustration?.blurhash}
 			/> */}
-			{playlist.data?.illustration && (
-				<GradientBackground
-					colors={playlist.data.illustration.colors}
-				/>
-			)}
+			<GradientBackground colors={playlist.data?.illustration?.colors} />
 			<RelationPageHeader
 				illustration={
 					<Illustration

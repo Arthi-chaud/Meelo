@@ -122,9 +122,7 @@ const ArtistPage = (props: InferSSRProps<typeof getServerSideProps>) => {
 
 	return (
 		<Box sx={{ width: "100%" }}>
-			{artist.data?.illustration && (
-				<GradientBackground colors={artist.data.illustration.colors} />
-			)}
+			<GradientBackground colors={artist.data?.illustration?.colors} />
 			<ArtistRelationPageHeader artist={artist.data} />
 			<Grid
 				container
@@ -213,7 +211,9 @@ const ArtistPage = (props: InferSSRProps<typeof getServerSideProps>) => {
 												{t("seeAll")}
 											</Button>
 										</Link>
-									) : undefined
+									) : (
+										<Box sx={{ padding: 1.2 }} />
+									)
 								}
 							/>
 							<Grid

@@ -53,7 +53,7 @@ const RelationPageHeader = (props: RelationHeaderProps) => {
 								WebkitBoxOrient: "vertical",
 							}}
 						>
-							{props.title ?? <Skeleton />}
+							{props.title ?? <Skeleton width={"50%"} />}
 						</Typography>
 					</Grid>
 					{props.secondTitle !== null && (

@@ -57,9 +57,7 @@ const ArtistSongPage = (props: InferSSRProps<typeof getServerSideProps>) => {
 
 	return (
 		<>
-			{artist.data?.illustration && (
-				<GradientBackground colors={artist.data.illustration.colors} />
-			)}
+			<GradientBackground colors={artist.data?.illustration?.colors} />
 			<ArtistRelationPageHeader artistSlugOrId={artistIdentifier} />
 			<InfiniteVideoView
 				initialSortingField={props.additionalProps?.sortBy}

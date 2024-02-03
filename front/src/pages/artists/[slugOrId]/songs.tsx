@@ -84,9 +84,7 @@ const ArtistSongPage = (props: InferSSRProps<typeof getServerSideProps>) => {
 
 	return (
 		<Box sx={{ width: "100%" }}>
-			{artist.data?.illustration && (
-				<GradientBackground colors={artist.data?.illustration.colors} />
-			)}
+			<GradientBackground colors={artist.data?.illustration?.colors} />
 			<ArtistRelationPageHeader artistSlugOrId={artistIdentifier} />
 			<View
 				initialSortingField={props.additionalProps?.sortBy ?? "name"}

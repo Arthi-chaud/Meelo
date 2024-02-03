@@ -68,9 +68,7 @@ const ArtistAlbumsPage = (props: InferSSRProps<typeof getServerSideProps>) => {
 
 	return (
 		<Box sx={{ width: "100%" }}>
-			{artist.data?.illustration && (
-				<GradientBackground colors={artist.data.illustration.colors} />
-			)}
+			<GradientBackground colors={artist.data?.illustration?.colors} />
 			<ArtistRelationPageHeader artistSlugOrId={artistIdentifier} />
 			<InfiniteAlbumView
 				defaultLayout={props.additionalProps?.defaultLayout}
