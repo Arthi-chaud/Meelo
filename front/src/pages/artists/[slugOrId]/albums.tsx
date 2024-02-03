@@ -58,18 +58,15 @@ export const getServerSideProps = prepareSSR((context) => {
 
 const ArtistAlbumsPage = (props: InferSSRProps<typeof getServerSideProps>) => {
 	const router = useRouter();
-	const artist = useQuery(
-		API.getArtist,
-		props.additionalProps?.artistIdentifier,
-	);
-	const defaultType = props.additionalProps?.type ?? null;
 	const artistIdentifier =
 		props.additionalProps?.artistIdentifier ?? getSlugOrId(router.query);
+	const artist = useQuery(API.getArtist, artistIdentifier);
+	const defaultType = props.additionalProps?.type ?? null;
 
 	return (
 		<Box sx={{ width: "100%" }}>
 			<GradientBackground colors={artist.data?.illustration?.colors} />
-			<ArtistRelationPageHeader artistSlugOrId={artistIdentifier} />
+			<ArtistRelationPageHeader artist={artist.data} />
 			<InfiniteAlbumView
 				defaultLayout={props.additionalProps?.defaultLayout}
 				defaultAlbumType={defaultType}
