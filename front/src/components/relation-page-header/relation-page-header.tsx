@@ -22,7 +22,7 @@ type RelationHeaderProps = {
 	illustration: JSX.Element;
 	title: string | undefined;
 	secondTitle: string | null | undefined;
-	trailing: JSX.Element;
+	trailing?: JSX.Element;
 };
 const RelationPageHeader = (props: RelationHeaderProps) => {
 	return (

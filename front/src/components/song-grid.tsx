@@ -58,7 +58,7 @@ const SongGrid = ({ songs, parentArtistName }: SongGridProps) => {
 							song
 								? parentArtistName === song.artist.name &&
 									song.featuring.length == 0
-									? undefined
+									? null
 									: formatArtists(song.artist, song.featuring)
 								: undefined
 						}
