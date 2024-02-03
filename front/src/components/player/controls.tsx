@@ -35,6 +35,7 @@ import {
 	Divider,
 	Grid,
 	IconButton,
+	Skeleton,
 	Stack,
 	Tab,
 	Tabs,
@@ -377,7 +378,7 @@ const ExpandedPlayerControls = (
 										justifyContent: "center",
 									}}
 								>
-									{props.artist && props.track && (
+									{props.artist && props.track ? (
 										<Link
 											href={`/releases/${props.track.releaseId}`}
 											style={{
@@ -405,6 +406,11 @@ const ExpandedPlayerControls = (
 												</Typography>
 											</Button>
 										</Link>
+									) : (
+										<Skeleton
+											animation={false}
+											width={"70%"}
+										/>
 									)}
 								</Grid>
 								<Grid item xs={1}>
@@ -440,7 +446,7 @@ const ExpandedPlayerControls = (
 									justifyContent: "center",
 								}}
 							>
-								{props.track && props.artist && (
+								{props.track && props.artist ? (
 									<Link
 										href={`/artists/${props.artist.slug}`}
 										style={{
@@ -468,6 +474,12 @@ const ExpandedPlayerControls = (
 											</Typography>
 										</Button>
 									</Link>
+								) : (
+									<Skeleton
+										animation={false}
+										sx={{ margin: 1 }}
+										width={"50%"}
+									/>
 								)}
 							</Box>
 							<Stack
