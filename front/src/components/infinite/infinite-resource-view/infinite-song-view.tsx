@@ -141,16 +141,13 @@ const InfiniteSongView = <T extends SongWithRelations<"artist" | "featuring">>(
 			<InfiniteView
 				view={options?.view ?? "list"}
 				query={() => props.query(query)}
-				renderListItem={(item: T) => (
+				renderListItem={(item) => (
 					<SongItem
 						song={item}
-						key={item.id}
 						formatSubtitle={props.formatSubtitle}
 					/>
 				)}
-				renderGridItem={(
-					item: SongWithRelations<"artist" | "featuring">,
-				) => <></>}
+				renderGridItem={(item) => <></>}
 			/>
 		</>
 	);

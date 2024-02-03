@@ -54,7 +54,7 @@ type IllustrationProps = {
 	 * URL of the illustration to display
 	 * Must be an URL from an API response
 	 */
-	url: string | null;
+	url: string | null | undefined;
 
 	illustration: IllustrationModel | null | undefined;
 }>;
@@ -87,7 +87,10 @@ const Illustration = (props: IllustrationProps) => {
 				display: "flex",
 			}}
 		>
-			<Fade in={props.illustration === undefined} unmountOnExit>
+			<Fade
+				in={props.illustration === undefined && props.url === undefined}
+				unmountOnExit
+			>
 				<Skeleton
 					variant="rounded"
 					sx={{

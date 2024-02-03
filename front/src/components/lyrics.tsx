@@ -21,7 +21,7 @@ import { useTranslation } from "react-i18next";
 
 type LyricsProps = {
 	lyrics: string[] | null | undefined;
-	songName: string;
+	songName: string | undefined;
 };
 const LyricsBox = (props: LyricsProps) => {
 	const { t } = useTranslation();
@@ -40,9 +40,12 @@ const LyricsBox = (props: LyricsProps) => {
 						if (lyric.length == 0) {
 							return <br key={index} />;
 						}
-						const hasTitle = lyric
-							.toLowerCase()
-							.includes(props.songName.toLowerCase());
+						const hasTitle =
+							props.songName === undefined
+								? false
+								: lyric
+										.toLowerCase()
+										.includes(props.songName.toLowerCase());
 						const isSection =
 							lyric.trim().startsWith("[") &&
 							lyric.trim().endsWith("]");

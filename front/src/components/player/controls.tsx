@@ -529,7 +529,7 @@ const ExpandedPlayerControls = (
 								overflowY: "scroll",
 							}}
 						>
-							{panel == "lyrics" && props.track && (
+							{panel == "lyrics" && (
 								<LyricsBox
 									lyrics={
 										parentSong.data
@@ -538,7 +538,7 @@ const ExpandedPlayerControls = (
 												) ?? null
 											: undefined
 									}
-									songName={props.track.name}
+									songName={props.track?.name}
 								/>
 							)}
 							{panel == "playlist" && (

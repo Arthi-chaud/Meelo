@@ -16,12 +16,12 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { Grid, Typography } from "@mui/material";
+import { Grid, Skeleton, Typography } from "@mui/material";
 
 type RelationHeaderProps = {
 	illustration: JSX.Element;
-	title: string;
-	secondTitle?: string;
+	title: string | undefined;
+	secondTitle: string | null | undefined;
 	trailing: JSX.Element;
 };
 const RelationPageHeader = (props: RelationHeaderProps) => {
@@ -53,12 +53,14 @@ const RelationPageHeader = (props: RelationHeaderProps) => {
 								WebkitBoxOrient: "vertical",
 							}}
 						>
-							{props.title}
+							{props.title ?? <Skeleton />}
 						</Typography>
 					</Grid>
-					{props.secondTitle && (
+					{props.secondTitle !== null && (
 						<Grid item>
-							<Typography>{props.secondTitle}</Typography>
+							<Typography>
+								{props.secondTitle ?? <Skeleton />}
+							</Typography>
 						</Grid>
 					)}
 				</Grid>

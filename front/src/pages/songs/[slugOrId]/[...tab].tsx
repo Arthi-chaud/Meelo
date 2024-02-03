@@ -25,7 +25,6 @@ import {
 	useQuery,
 	useQueryClient,
 } from "../../../api/use-query";
-import LoadingPage from "../../../components/loading/loading-page";
 import {
 	Box,
 	Button,
@@ -105,9 +104,6 @@ const SongPage = (props: InferSSRProps<typeof getServerSideProps>) => {
 	const genres = useInfiniteQuery(API.getGenres, { song: songIdentifier });
 	const dispatch = useDispatch();
 
-	if (!song.data || !genres.data) {
-		return <LoadingPage />;
-	}
 	return (
 		<Box sx={{ width: "100%" }}>
 			{song.data?.illustration && (
@@ -118,20 +114,22 @@ const SongPage = (props: InferSSRProps<typeof getServerSideProps>) => {
 				variant="contained"
 				sx={{ width: "100%", marginTop: 1 }}
 				endIcon={<PlayIcon />}
-				onClick={() =>
-					queryClient
-						.fetchQuery(
-							API.getMasterTrack(songIdentifier, ["release"]),
-						)
-						.then((master) =>
-							dispatch(
-								playTrack({
-									track: master,
-									artist: song.data.artist,
-									release: master.release,
-								}),
-							),
-						)
+				onClick={
+					song.data &&
+					(() =>
+						queryClient
+							.fetchQuery(
+								API.getMasterTrack(songIdentifier, ["release"]),
+							)
+							.then((master) =>
+								dispatch(
+									playTrack({
+										track: master,
+										artist: song.data.artist,
+										release: master.release,
+									}),
+								),
+							))
 				}
 			>
 				{t("play")}
@@ -163,7 +161,9 @@ const SongPage = (props: InferSSRProps<typeof getServerSideProps>) => {
 			<Box sx={{ paddingY: 2 }}>
 				{tab == "more" && (
 					<>
-						{(genres.data.pages.at(0)?.items.length ?? 0) != 0 && (
+						{(!genres.data ||
+							(genres.data.pages.at(0)?.items.length ?? 0) !=
+								0) && (
 							<Stack
 								direction="row"
 								sx={{
@@ -175,17 +175,15 @@ const SongPage = (props: InferSSRProps<typeof getServerSideProps>) => {
 								<Typography sx={{ overflow: "unset" }}>
 									{`${t("genres")}: `}
 								</Typography>
-								{genres.data.pages
-									.at(0)
-									?.items.map((genre) => (
-										<GenreButton
-											key={genre.slug}
-											genre={genre}
-										/>
-									))}
+								{(
+									genres.data?.pages.at(0)?.items ??
+									Array(2).fill(undefined)
+								).map((genre, index) => (
+									<GenreButton key={index} genre={genre} />
+								))}
 							</Stack>
 						)}
-						{song.data.externalIds.length != 0 && (
+						{(!song.data || song.data.externalIds.length != 0) && (
 							<Stack
 								direction="row"
 								sx={{
@@ -198,18 +196,20 @@ const SongPage = (props: InferSSRProps<typeof getServerSideProps>) => {
 								<Typography sx={{ overflow: "unset" }}>
 									{`${t("externalLinks")}: `}
 								</Typography>
-								{song.data.externalIds
-									.filter(({ url }) => url !== null)
-									.map((externalId) => (
-										<ExternalIdBadge
-											key={externalId.provider.name}
-											externalId={externalId}
-										/>
-									))}
+								{(
+									song.data?.externalIds.filter(
+										({ url }) => url !== null,
+									) ?? Array(2).fill(undefined)
+								).map((externalId, index) => (
+									<ExternalIdBadge
+										key={index}
+										externalId={externalId}
+									/>
+								))}
 							</Stack>
 						)}
 						<Typography variant="body1" sx={{ paddingTop: 2 }}>
-							{song.data.externalIds
+							{song.data?.externalIds
 								.map(({ description }) => description)
 								.filter((desc) => desc !== null)
 								.at(0)}
@@ -218,7 +218,7 @@ const SongPage = (props: InferSSRProps<typeof getServerSideProps>) => {
 				)}
 				{tab == "lyrics" && (
 					<LyricsBox
-						songName={song.data.name}
+						songName={song.data?.name}
 						lyrics={
 							song.data
 								? song.data.lyrics?.content.split("\n") ?? null
@@ -234,7 +234,7 @@ const SongPage = (props: InferSSRProps<typeof getServerSideProps>) => {
 								{
 									library: library ?? undefined,
 									type,
-									versionsOf: song.data.id,
+									versionsOf: songIdentifier,
 								},
 								{ sortBy, order },
 								["artist", "featuring"],
