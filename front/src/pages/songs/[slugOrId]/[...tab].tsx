@@ -54,8 +54,12 @@ export const getServerSideProps = prepareSSR((context) => {
 	return {
 		additionalProps: { songIdentifier },
 		queries: [
-			API.getSong(songIdentifier, ["artist", "externalIds", "featuring"]),
-			API.getSongLyrics(songIdentifier),
+			API.getSong(songIdentifier, [
+				"artist",
+				"externalIds",
+				"featuring",
+				"lyrics",
+			]),
 		],
 		infiniteQueries: [
 			API.getGenres({ song: songIdentifier }),
@@ -90,9 +94,13 @@ const SongPage = (props: InferSSRProps<typeof getServerSideProps>) => {
 	const queryClient = useQueryClient();
 	const songIdentifier =
 		props.additionalProps?.songIdentifier ?? getSlugOrId(router.query);
-	const lyrics = useQuery(API.getSongLyrics, songIdentifier);
 	const song = useQuery(() =>
-		API.getSong(songIdentifier, ["artist", "externalIds", "featuring"]),
+		API.getSong(songIdentifier, [
+			"artist",
+			"externalIds",
+			"featuring",
+			"lyrics",
+		]),
 	);
 	const genres = useInfiniteQuery(API.getGenres, { song: songIdentifier });
 	const dispatch = useDispatch();
@@ -208,15 +216,16 @@ const SongPage = (props: InferSSRProps<typeof getServerSideProps>) => {
 						</Typography>
 					</>
 				)}
-				{tab == "lyrics" &&
-					(lyrics.isLoading ? (
-						<LoadingPage />
-					) : (
-						<LyricsBox
-							songName={song.data.name}
-							lyrics={lyrics.data}
-						/>
-					))}
+				{tab == "lyrics" && (
+					<LyricsBox
+						songName={song.data.name}
+						lyrics={
+							song.data
+								? song.data.lyrics?.content.split("\n") ?? null
+								: undefined
+						}
+					/>
+				)}
 				{tab == "versions" && (
 					<InfiniteSongView
 						disableShuffle
