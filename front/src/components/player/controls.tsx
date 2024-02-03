@@ -43,7 +43,6 @@ import {
 	useTheme,
 } from "@mui/material";
 import Illustration from "../illustration";
-import { WideLoadingComponent } from "../loading/loading";
 import { LegacyRef, useState } from "react";
 import PlayerSlider from "./controls/slider";
 import API from "../../api/api";
@@ -530,18 +529,18 @@ const ExpandedPlayerControls = (
 								overflowY: "scroll",
 							}}
 						>
-							{panel == "lyrics" &&
-								props.track &&
-								(!parentSong.data ? (
-									<WideLoadingComponent />
-								) : (
-									<LyricsBox
-										lyrics={parentSong.data.lyrics?.content.split(
-											"\n",
-										)}
-										songName={props.track.name}
-									/>
-								))}
+							{panel == "lyrics" && props.track && (
+								<LyricsBox
+									lyrics={
+										parentSong.data
+											? parentSong.data.lyrics?.content.split(
+													"\n",
+												) ?? null
+											: undefined
+									}
+									songName={props.track.name}
+								/>
+							)}
 							{panel == "playlist" && (
 								<DragDropContext
 									onDragEnd={(result) => {

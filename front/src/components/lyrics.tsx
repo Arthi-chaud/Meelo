@@ -16,17 +16,17 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { Box, Typography } from "@mui/material";
+import { Box, Skeleton, Typography } from "@mui/material";
 import { useTranslation } from "react-i18next";
 
 type LyricsProps = {
-	lyrics?: string[] | null;
+	lyrics: string[] | null | undefined;
 	songName: string;
 };
 const LyricsBox = (props: LyricsProps) => {
 	const { t } = useTranslation();
 
-	if (!props.lyrics) {
+	if (props.lyrics === null) {
 		return (
 			<Typography sx={{ fontStyle: "italic" }}>
 				{t("noLyricsFound")}
@@ -35,26 +35,42 @@ const LyricsBox = (props: LyricsProps) => {
 	}
 	return (
 		<Box flexDirection="column">
-			{props.lyrics.map((lyric, index) => {
-				if (lyric.length == 0) {
-					return <br key={index} />;
-				}
-				const hasTitle = lyric
-					.toLowerCase()
-					.includes(props.songName.toLowerCase());
-				const isSection =
-					lyric.trim().startsWith("[") && lyric.trim().endsWith("]");
+			{props.lyrics !== undefined
+				? props.lyrics.map((lyric, index) => {
+						if (lyric.length == 0) {
+							return <br key={index} />;
+						}
+						const hasTitle = lyric
+							.toLowerCase()
+							.includes(props.songName.toLowerCase());
+						const isSection =
+							lyric.trim().startsWith("[") &&
+							lyric.trim().endsWith("]");
 
-				return (
-					<Typography
-						key={index}
-						variant={isSection ? "caption" : "body1"}
-						style={{ fontWeight: hasTitle ? "bold" : undefined }}
-					>
-						{lyric}
-					</Typography>
-				);
-			})}
+						return (
+							<Typography
+								key={index}
+								variant={isSection ? "caption" : "body1"}
+								style={{
+									fontWeight: hasTitle ? "bold" : undefined,
+								}}
+							>
+								{lyric}
+							</Typography>
+						);
+					})
+				: Array(35)
+						.fill(undefined)
+						.map((_, index) =>
+							index % 5 == 0 ? (
+								<br key={index} />
+							) : (
+								<Skeleton
+									key={index}
+									width={`${4 + (index % 5)}0%`}
+								/>
+							),
+						)}
 		</Box>
 	);
 };
