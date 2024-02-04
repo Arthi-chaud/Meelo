@@ -26,6 +26,7 @@ import {
 	ListItemIcon,
 	ListItemText,
 	ListSubheader,
+	Skeleton,
 	Typography,
 	useTheme,
 } from "@mui/material";
@@ -42,13 +43,14 @@ import { VideoIcon } from "./icons";
 import formatArtists from "../utils/formatArtists";
 import { useTranslation } from "react-i18next";
 import { Fragment } from "react";
+import { generateArray } from "../utils/gen-list";
 
 type ReleaseTracklistProps = {
-	mainArtist?: Artist;
-	tracklist: Tracklist<
-		Track & { song: SongWithRelations<"artist" | "featuring"> }
-	>;
-	release: Release;
+	mainArtist: Artist | undefined | null;
+	tracklist:
+		| Tracklist<Track & { song: SongWithRelations<"artist" | "featuring"> }>
+		| undefined;
+	release: Release | undefined;
 };
 
 /**
@@ -62,7 +64,9 @@ const ReleaseTrackList = ({
 	const { t } = useTranslation();
 	const theme = useTheme();
 	const dispatch = useDispatch();
-	const flatTracklist = Array.from(Object.values(tracklist)).flat();
+	const flatTracklist = tracklist
+		? Array.from(Object.values(tracklist)).flat()
+		: undefined;
 	const formatTracksubtitle = (
 		song: SongWithRelations<"artist" | "featuring">,
 	) => {
@@ -74,7 +78,14 @@ const ReleaseTrackList = ({
 
 	return (
 		<Box>
-			{Array.from(Object.entries(tracklist)).map((disc, __, discs) => (
+			{Array.from(
+				Object.entries(
+					tracklist ??
+						({
+							"": generateArray(12),
+						} as Tracklist<undefined>),
+				),
+			).map((disc, __, discs) => (
 				<List
 					key={disc[0]}
 					subheader={
@@ -85,42 +96,60 @@ const ReleaseTrackList = ({
 						)
 					}
 				>
-					{disc[1].map((currentTrack) => (
-						<Fragment key={`t-${currentTrack.id}`}>
+					{(
+						disc[1] as (
+							| (Track & {
+									song: SongWithRelations<
+										"artist" | "featuring"
+									>;
+							  })
+							| undefined
+						)[]
+					).map((currentTrack, index) => (
+						<Fragment key={index}>
 							<ListItem
-								key={currentTrack.id}
 								dense={
-									currentTrack.song.artistId != mainArtist?.id
+									currentTrack
+										? currentTrack.song.artistId !=
+											mainArtist?.id
+										: false
 								}
 								disablePadding
 								disableGutters
 								secondaryAction={
-									<ReleaseTrackContextualMenu
-										track={currentTrack}
-										artist={currentTrack.song.artist}
-										release={release}
-									/>
+									currentTrack &&
+									release && (
+										<ReleaseTrackContextualMenu
+											track={currentTrack}
+											artist={currentTrack.song.artist}
+											release={release}
+										/>
+									)
 								}
 							>
 								<ListItemButton
-									onClick={() =>
-										dispatch(
-											playTracks({
-												tracks: flatTracklist.map(
-													(flatTrack) => ({
-														track: flatTrack,
-														release,
-														artist: flatTrack.song
-															.artist,
-													}),
-												),
-												cursor: flatTracklist.findIndex(
-													(flatTrack) =>
-														flatTrack.id ==
-														currentTrack.id,
-												),
-											}),
-										)
+									onClick={
+										flatTracklist &&
+										currentTrack &&
+										release &&
+										(() =>
+											dispatch(
+												playTracks({
+													tracks: flatTracklist.map(
+														(flatTrack) => ({
+															track: flatTrack,
+															release,
+															artist: flatTrack
+																.song.artist,
+														}),
+													),
+													cursor: flatTracklist.findIndex(
+														(flatTrack) =>
+															flatTrack.id ==
+															currentTrack.id,
+													),
+												}),
+											))
 									}
 									sx={{
 										borderTopRightRadius: 0,
@@ -129,23 +158,33 @@ const ReleaseTrackList = ({
 								>
 									<ListItemIcon>
 										<Typography color="text.disabled">
-											{currentTrack.trackIndex}
+											{currentTrack?.trackIndex ?? (
+												<Skeleton width="30px" />
+											)}
 										</Typography>
 									</ListItemIcon>
 									<ListItemText
-										primary={currentTrack.name}
+										primary={
+											currentTrack?.name ?? (
+												<Skeleton width="100%" />
+											)
+										}
 										primaryTypographyProps={{
 											fontSize: "medium",
 										}}
-										secondary={formatTracksubtitle(
-											currentTrack.song,
-										)}
+										secondary={
+											currentTrack
+												? formatTracksubtitle(
+														currentTrack.song,
+													)
+												: undefined
+										}
 										secondaryTypographyProps={{
 											fontSize: "small",
 											color: "text.disabled",
 										}}
 									/>
-									{currentTrack.isBonus && (
+									{currentTrack?.isBonus && (
 										<Typography
 											sx={{
 												display: {
@@ -158,7 +197,7 @@ const ReleaseTrackList = ({
 											{t("bonusTrack")}
 										</Typography>
 									)}
-									{currentTrack.isRemastered && (
+									{currentTrack?.isRemastered && (
 										<Typography
 											color="text.disabled"
 											sx={{
@@ -171,7 +210,7 @@ const ReleaseTrackList = ({
 											{t("remastered")}
 										</Typography>
 									)}
-									{currentTrack.type == "Video" && (
+									{currentTrack?.type == "Video" && (
 										<Icon
 											sx={{
 												marginLeft: 2,
@@ -193,7 +232,13 @@ const ReleaseTrackList = ({
 											overflow: "unset",
 										}}
 									>
-										{formatDuration(currentTrack.duration)}
+										{currentTrack ? (
+											formatDuration(
+												currentTrack.duration,
+											)
+										) : (
+											<Skeleton width="30px" />
+										)}
 									</Typography>
 								</ListItemButton>
 							</ListItem>

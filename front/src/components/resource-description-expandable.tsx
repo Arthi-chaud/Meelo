@@ -21,6 +21,7 @@ import ExternalId from "../models/external-id";
 import { useState } from "react";
 import { capitalCase } from "change-case";
 import { useTranslation } from "react-i18next";
+import { generateArray } from "../utils/gen-list";
 
 type Props = {
 	externalDescription: ExternalId | undefined;
@@ -43,9 +44,7 @@ const ResourceDescriptionExpandable = ({ externalDescription }: Props) => {
 		<Box id="description" sx={isExpanded ? bigBoxStyle : smallBoxStyle}>
 			{externalDescription
 				? externalDescription.description
-				: Array(5)
-						.fill(undefined)
-						.map((_, index) => <Skeleton key={index} />)}
+				: generateArray(5).map((_, index) => <Skeleton key={index} />)}
 			{isExpanded && (
 				<>
 					{" Source: "}

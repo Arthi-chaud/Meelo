@@ -31,6 +31,7 @@ import AlbumHighlightCard from "../components/highlight-card/album-highlight-car
 import GradientBackground from "../components/gradient-background";
 import { useMemo } from "react";
 import { useTranslation } from "react-i18next";
+import { generateArray } from "../utils/gen-list";
 
 const newlyAddedAlbumsQuery = API.getAlbums(
 	{},
@@ -83,7 +84,7 @@ const HomePageSection = <T,>(props: {
 		<Stack spacing={3}>
 			<SectionHeader heading={props.heading} />
 			<Box sx={{ maxHeight: "20%" }}>
-				{props.render(items?.slice(0, 12) ?? Array(6).fill(undefined))}
+				{props.render(items?.slice(0, 12) ?? generateArray(6))}
 			</Box>
 		</Stack>
 	);

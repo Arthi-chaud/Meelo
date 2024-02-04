@@ -22,6 +22,7 @@ import PaginatedResponse, {
 	PaginationParameters,
 } from "../../models/pagination";
 import { MeeloInfiniteQueryFn, useInfiniteQuery } from "../../api/use-query";
+import { generateArray } from "../../utils/gen-list";
 
 export type InfiniteFetchFn<T> = (
 	pagination: PaginationParameters,
@@ -88,7 +89,7 @@ const InfiniteScroll = <T extends Resource>(props: InfiniteScrollProps<T>) => {
 			>
 				{props.render(
 					data?.pages.map((page) => page.items).flat() ??
-						Array(35).fill(undefined),
+						generateArray(35),
 				)}
 				{isFetchingNextPage && props.loader()}
 			</IScroll.default>

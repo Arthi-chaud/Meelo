@@ -38,6 +38,7 @@ import { AlbumType } from "../../../models/album";
 import { Fragment, useMemo } from "react";
 import GradientBackground from "../../../components/gradient-background";
 import { useTranslation } from "react-i18next";
+import { generateArray } from "../../../utils/gen-list";
 
 // Number of Song item in the 'Top Song' section
 const songListSize = 6;
@@ -172,7 +173,7 @@ const ArtistPage = (props: InferSSRProps<typeof getServerSideProps>) => {
 									topSongs.data?.pages
 										.at(0)
 										?.items.slice(0, songListSize) ??
-									Array(songListSize).fill(undefined)
+									generateArray(songListSize)
 								}
 							/>
 						</Grid>
@@ -226,7 +227,7 @@ const ArtistPage = (props: InferSSRProps<typeof getServerSideProps>) => {
 											queryData?.slice(
 												0,
 												albumListSize,
-											) ?? Array(6).fill(undefined)
+											) ?? generateArray(6)
 										).map((album, index) => (
 											<AlbumTile
 												key={index}
@@ -356,7 +357,7 @@ const ArtistPage = (props: InferSSRProps<typeof getServerSideProps>) => {
 							{(
 								artist.data?.externalIds.filter(
 									({ url }) => url !== null,
-								) ?? Array(2).fill(undefined)
+								) ?? generateArray(2)
 							).map((externalId, index) => (
 								<Grid item key={index}>
 									<ExternalIdBadge externalId={externalId} />

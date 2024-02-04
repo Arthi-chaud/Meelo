@@ -56,6 +56,7 @@ import { DeletePlaylistAction } from "../../../components/actions/playlist";
 import { useConfirm } from "material-ui-confirm";
 import GradientBackground from "../../../components/gradient-background";
 import { useTranslation } from "react-i18next";
+import { generateArray } from "../../../utils/gen-list";
 
 const playlistQuery = (idOrSlug: number | string) =>
 	API.getPlaylist(idOrSlug, ["entries"]);
@@ -334,15 +335,13 @@ const PlaylistPage = (props: InferSSRProps<typeof getServerSideProps>) => {
 				/>
 			) : (
 				<Stack spacing={1}>
-					{(entries ?? Array(6).fill(undefined)).map(
-						(entry, index) => (
-							<PlaylistEntryItem
-								key={index}
-								entry={entry}
-								onClick={() => playPlaylist(index)}
-							/>
-						),
-					)}
+					{(entries ?? generateArray(6)).map((entry, index) => (
+						<PlaylistEntryItem
+							key={index}
+							entry={entry}
+							onClick={() => playPlaylist(index)}
+						/>
+					))}
 				</Stack>
 			)}
 			<Divider sx={{ marginY: 2 }} />

@@ -46,6 +46,7 @@ import { PlayIcon } from "../../../components/icons";
 import GenreButton from "../../../components/genre-button";
 import GradientBackground from "../../../components/gradient-background";
 import { useTranslation } from "react-i18next";
+import { generateArray } from "../../../utils/gen-list";
 
 export const getServerSideProps = prepareSSR((context) => {
 	const songIdentifier = getSlugOrId(context.params);
@@ -175,7 +176,7 @@ const SongPage = (props: InferSSRProps<typeof getServerSideProps>) => {
 								</Typography>
 								{(
 									genres.data?.pages.at(0)?.items ??
-									Array(2).fill(undefined)
+									generateArray(2)
 								).map((genre, index) => (
 									<GenreButton key={index} genre={genre} />
 								))}
@@ -197,7 +198,7 @@ const SongPage = (props: InferSSRProps<typeof getServerSideProps>) => {
 								{(
 									song.data?.externalIds.filter(
 										({ url }) => url !== null,
-									) ?? Array(2).fill(undefined)
+									) ?? generateArray(2)
 								).map((externalId, index) => (
 									<ExternalIdBadge
 										key={index}
