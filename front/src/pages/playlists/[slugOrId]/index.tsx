@@ -28,7 +28,6 @@ import {
 	useQueryClient,
 } from "../../../api/use-query";
 import PlaylistContextualMenu from "../../../components/contextual-menu/playlist-contextual-menu";
-import LoadingPage from "../../../components/loading/loading-page";
 import Illustration from "../../../components/illustration";
 import { Box, Button, Divider, Grid, IconButton, Stack } from "@mui/material";
 import Artist from "../../../models/artist";
@@ -48,7 +47,7 @@ import {
 import ListItem from "../../../components/list-item/item";
 import SongContextualMenu from "../../../components/contextual-menu/song-contextual-menu";
 import { PlaylistEntry } from "../../../models/playlist";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { DragDropContext, Draggable, Droppable } from "react-beautiful-dnd";
 import toast from "react-hot-toast";
 import { useMutation } from "react-query";
@@ -159,7 +158,7 @@ const DragAndDropPlaylist = (props: DragAndDropPlaylistProps) => {
 
 type PlaylistEntryItemProps = {
 	onClick: () => void;
-	entry: PlaylistEntry & SongWithRelations<"artist">;
+	entry: (PlaylistEntry & SongWithRelations<"artist">) | undefined;
 };
 
 const PlaylistEntryItem = ({ entry, onClick }: PlaylistEntryItemProps) => (
@@ -167,14 +166,16 @@ const PlaylistEntryItem = ({ entry, onClick }: PlaylistEntryItemProps) => (
 		icon={
 			<Illustration
 				quality="low"
-				illustration={entry.illustration}
+				illustration={entry?.illustration}
 				fallback={<SongIcon />}
 			/>
 		}
-		title={entry.name}
+		title={entry?.name}
 		onClick={onClick}
-		trailing={<SongContextualMenu song={entry} entryId={entry.entryId} />}
-		secondTitle={entry.artist.name}
+		trailing={
+			entry && <SongContextualMenu song={entry} entryId={entry.entryId} />
+		}
+		secondTitle={entry?.artist.name}
 	/>
 );
 
@@ -227,21 +228,29 @@ const PlaylistPage = (props: InferSSRProps<typeof getServerSideProps>) => {
 			.catch(() => toast.error(t("playlistReorderFail")));
 	});
 
-	if (
-		!playlist.data ||
-		artistsQueries.find((query) => !query.data) ||
-		masterTracksQueries.find((query) => !query.data)
-	) {
-		return <LoadingPage />;
-	}
-	const artists = artistsQueries.map((query) => query.data!);
-	const masterTracks = masterTracksQueries.map((query) => query.data!);
-	const entries = playlist.data.entries.map((entry) => ({
-		...entry,
-		track: masterTracks.find((master) => master.songId == entry.id)!,
-		artist: artists.find((artist) => artist.id == entry.artistId)!,
-	}));
+	const entries = useMemo(() => {
+		const artists = artistsQueries.map((query) => query.data);
+		const masterTracks = masterTracksQueries.map((query) => query.data);
+		const resolvedTracks = masterTracks.filter(
+			(data) => data !== undefined,
+		);
+		const resolvedArtists = artists.filter((data) => data !== undefined);
+
+		if (
+			resolvedTracks.length !== masterTracks.length ||
+			resolvedArtists.length !== artists.length
+		) {
+			return undefined;
+		}
+
+		return playlist.data?.entries.map((entry) => ({
+			...entry,
+			track: masterTracks.find((master) => master!.songId == entry.id)!,
+			artist: artists.find((artist) => artist!.id == entry.artistId)!,
+		}));
+	}, [artistsQueries, masterTracksQueries, playlist.data]);
 	const playPlaylist = (fromIndex: number) =>
+		entries &&
 		dispatch(
 			playTracks({
 				tracks: entries.map((entry) => ({
@@ -253,6 +262,7 @@ const PlaylistPage = (props: InferSSRProps<typeof getServerSideProps>) => {
 			}),
 		);
 	const shufflePlaylist = () =>
+		entries &&
 		dispatch(
 			playTracks({
 				tracks: shuffle(
@@ -268,53 +278,55 @@ const PlaylistPage = (props: InferSSRProps<typeof getServerSideProps>) => {
 
 	return (
 		<>
-			{/* <BackgroundBlurhash
-				blurhash={playlist.data.illustration?.blurhash}
-			/> */}
 			<GradientBackground colors={playlist.data?.illustration?.colors} />
 			<RelationPageHeader
 				illustration={
 					<Illustration
-						illustration={playlist.data.illustration}
+						illustration={playlist.data?.illustration}
 						quality="original"
 					/>
 				}
-				title={playlist.data.name}
-				trailing={<PlaylistContextualMenu playlist={playlist.data} />}
+				title={playlist.data?.name}
+				secondTitle={null}
+				trailing={
+					playlist.data ? (
+						<PlaylistContextualMenu playlist={playlist.data} />
+					) : undefined
+				}
 			/>
-			{entries.length > 1 && (
-				<>
-					<Grid
-						container
-						direction={{ xs: "column", sm: "row" }}
-						spacing={1}
-					>
-						<Grid item xs>
-							<Button
-								variant="contained"
-								color="primary"
-								startIcon={<PlayIcon />}
-								sx={{ width: "100%" }}
-								onClick={() => playPlaylist(0)}
-							>
-								{t("play")}
-							</Button>
-						</Grid>
-						<Grid item xs>
-							<Button
-								variant="outlined"
-								color="primary"
-								startIcon={<ShuffleIcon />}
-								sx={{ width: "100%" }}
-								onClick={() => shufflePlaylist()}
-							>
-								{t("shuffle")}
-							</Button>
-						</Grid>
+
+			<Grid container direction={{ xs: "column", sm: "row" }} spacing={1}>
+				{(
+					[
+						[
+							"play",
+							() => <PlayIcon />,
+							"contained",
+							() => playPlaylist(0),
+						],
+						[
+							"shuffle",
+							() => <ShuffleIcon />,
+							"outlined",
+							() => shufflePlaylist,
+						],
+					] as const
+				).map(([label, Icon, variant, callback], index) => (
+					<Grid item xs key={index}>
+						<Button
+							variant={variant}
+							color="primary"
+							startIcon={<Icon />}
+							sx={{ width: "100%" }}
+							onClick={callback}
+							disabled={entries === undefined}
+						>
+							{t(label)}
+						</Button>
 					</Grid>
-					<Divider sx={{ marginY: 2 }} />
-				</>
-			)}
+				))}
+			</Grid>
+			<Divider sx={{ marginY: 2 }} />
 			{editState ? (
 				<DragAndDropPlaylist
 					entries={tempPlaylistEdit}
@@ -322,13 +334,15 @@ const PlaylistPage = (props: InferSSRProps<typeof getServerSideProps>) => {
 				/>
 			) : (
 				<Stack spacing={1}>
-					{entries.map((entry, index) => (
-						<PlaylistEntryItem
-							key={entry.entryId}
-							entry={entry}
-							onClick={() => playPlaylist(index)}
-						/>
-					))}
+					{(entries ?? Array(6).fill(undefined)).map(
+						(entry, index) => (
+							<PlaylistEntryItem
+								key={index}
+								entry={entry}
+								onClick={() => playPlaylist(index)}
+							/>
+						),
+					)}
 				</Stack>
 			)}
 			<Divider sx={{ marginY: 2 }} />
@@ -344,38 +358,43 @@ const PlaylistPage = (props: InferSSRProps<typeof getServerSideProps>) => {
 						color="primary"
 						startIcon={editState ? <DoneIcon /> : <EditIcon />}
 						sx={{ width: "100%" }}
-						onClick={() => {
-							if (editState) {
-								const editComparison = entries.map(
-									(entry, index) => ({
-										oldEntryId: entry.entryId,
-										newEntryId:
-											tempPlaylistEdit.at(index)!.entryId,
-										index,
-									}),
-								);
-								const changes = editComparison.filter(
-									({ oldEntryId, newEntryId }) =>
-										newEntryId !== oldEntryId,
-								);
+						disabled={entries === undefined}
+						onClick={
+							entries &&
+							(() => {
+								if (editState) {
+									const editComparison = entries.map(
+										(entry, index) => ({
+											oldEntryId: entry.entryId,
+											newEntryId:
+												tempPlaylistEdit.at(index)!
+													.entryId,
+											index,
+										}),
+									);
+									const changes = editComparison.filter(
+										({ oldEntryId, newEntryId }) =>
+											newEntryId !== oldEntryId,
+									);
 
-								if (changes.length != 0) {
-									reorderMutation
-										.mutateAsync(
-											tempPlaylistEdit.map(
-												({ entryId }) => entryId,
-											),
-										)
-										.finally(() => setEditState(false));
+									if (changes.length != 0) {
+										reorderMutation
+											.mutateAsync(
+												tempPlaylistEdit.map(
+													({ entryId }) => entryId,
+												),
+											)
+											.finally(() => setEditState(false));
+									} else {
+										setEditState(false);
+									}
 								} else {
-									setEditState(false);
+									setEditState(true);
+									// To set the state before passing it to the dragndrop list
+									setTempEdit(entries);
 								}
-							} else {
-								setEditState(true);
-								// To set the state before passing it to the dragndrop list
-								setTempEdit(entries);
-							}
-						}}
+							})
+						}
 					>
 						{t(editState ? "done" : "edit")}
 					</Button>
@@ -384,6 +403,7 @@ const PlaylistPage = (props: InferSSRProps<typeof getServerSideProps>) => {
 					<Button
 						variant="outlined"
 						color="error"
+						disabled={entries === undefined}
 						startIcon={deleteAction.icon}
 						sx={{ width: "100%" }}
 						onClick={deleteAction.onClick}
