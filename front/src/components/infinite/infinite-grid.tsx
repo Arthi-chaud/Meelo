@@ -24,7 +24,7 @@ type TypedList<T extends Resource> = typeof InfiniteScroll<T>;
 type InfiniteGridProps<T extends Resource> = Omit<
 	Parameters<TypedList<T>>[0],
 	"render"
-> & { render: (item: T) => JSX.Element };
+> & { render: (item: T | undefined) => JSX.Element };
 
 /**
  * Infinite Scrolling List
@@ -35,13 +35,13 @@ const InfiniteGrid = <T extends Resource>(props: InfiniteGridProps<T>) => {
 	return (
 		<InfiniteScroll
 			{...props}
-			render={(items: T[]) => (
+			render={(items) => (
 				<Grid
 					columnSpacing={2}
 					container
 					sx={{ alignItems: "stretch", display: "flex" }}
 				>
-					{items.map((item: T) => (
+					{items.map((item, index) => (
 						<Grid
 							item
 							xs={6}
@@ -49,7 +49,7 @@ const InfiniteGrid = <T extends Resource>(props: InfiniteGridProps<T>) => {
 							md={12 / 5}
 							lg={2}
 							xl={1.2}
-							key={item.id}
+							key={`item-${index}`}
 						>
 							{props.render(item)}
 						</Grid>

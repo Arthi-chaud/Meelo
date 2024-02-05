@@ -27,6 +27,7 @@ import {
 	List,
 	ListItem,
 	ListItemText,
+	Skeleton,
 	useMediaQuery,
 	useTheme,
 } from "@mui/material";
@@ -292,34 +293,50 @@ const LibrariesSettings = () => {
 					</Button>
 				}
 			/>
-			{tasks.data && (
-				<List>
-					<ListItem>
+			<List>
+				<ListItem>
+					<ListItemText
+						primary={
+							tasks.data ? (
+								`${t("current")}: ${capitalCase(
+									tasks.data.active?.name ?? t("none"),
+								)}`
+							) : (
+								<Skeleton />
+							)
+						}
+						secondary={
+							tasks.data ? (
+								tasks.data.active?.description
+							) : (
+								<Skeleton />
+							)
+						}
+					/>
+				</ListItem>
+				<ListItem>
+					<ListItemText
+						primary={
+							tasks.data ? (
+								`${t("pending")}: ${
+									tasks.data.pending.length || t("none")
+								}`
+							) : (
+								<Skeleton />
+							)
+						}
+					/>
+				</ListItem>
+				{tasks.data?.pending.map((task, index) => (
+					<ListItem key={"task-" + index}>
 						<ListItemText
-							primary={`${t("current")}: ${capitalCase(
-								tasks.data.active?.name ?? t("none"),
-							)}`}
-							secondary={tasks.data.active?.description}
+							inset
+							primary={capitalCase(task.name)}
+							secondary={task.description}
 						/>
 					</ListItem>
-					<ListItem>
-						<ListItemText
-							primary={`${t("pending")}: ${
-								tasks.data.pending.length || t("none")
-							}`}
-						/>
-					</ListItem>
-					{tasks.data.pending.map((task, index) => (
-						<ListItem key={"task-" + index}>
-							<ListItemText
-								inset
-								primary={capitalCase(task.name)}
-								secondary={task.description}
-							/>
-						</ListItem>
-					))}
-				</List>
-			)}
+				))}
+			</List>
 		</Box>
 	);
 };

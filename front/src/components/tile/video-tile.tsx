@@ -27,7 +27,7 @@ import formatDuration from "../../utils/formatDuration";
 import TrackContextualMenu from "../contextual-menu/track-contextual-menu";
 
 type VideoTileProps = {
-	video: TrackWithRelations<"song">;
+	video: TrackWithRelations<"song"> | undefined;
 	formatSubtitle?: (video: TrackWithRelations<"song">) => string;
 };
 
@@ -37,31 +37,40 @@ const VideoTile = ({ video, formatSubtitle }: VideoTileProps) => {
 
 	return (
 		<Tile
-			contextualMenu={<TrackContextualMenu track={video} />}
-			onClick={() =>
-				Promise.all([
-					queryClient.fetchQuery(API.getArtist(video.song.artistId)),
-					queryClient.fetchQuery(API.getRelease(video.releaseId)),
-				]).then(([artist, release]) =>
-					dispatch(
-						playTrack({
-							track: video,
-							release: release,
-							artist: artist,
-						}),
-					),
-				)
+			contextualMenu={video && <TrackContextualMenu track={video} />}
+			onClick={
+				video
+					? () =>
+							Promise.all([
+								queryClient.fetchQuery(
+									API.getArtist(video.song.artistId),
+								),
+								queryClient.fetchQuery(
+									API.getRelease(video.releaseId),
+								),
+							]).then(([artist, release]) =>
+								dispatch(
+									playTrack({
+										track: video,
+										release: release,
+										artist: artist,
+									}),
+								),
+							)
+					: undefined
 			}
-			title={video.name}
+			title={video?.name}
 			subtitle={
-				formatSubtitle?.call(this, video) ??
-				formatDuration(video.duration)
+				video
+					? formatSubtitle?.call(this, video) ??
+						formatDuration(video.duration)
+					: undefined
 			}
 			illustration={
 				<Illustration
 					quality="medium"
 					aspectRatio={16 / 9}
-					illustration={video.illustration}
+					illustration={video?.illustration}
 					imgProps={{ objectFit: "cover" }}
 				/>
 			}

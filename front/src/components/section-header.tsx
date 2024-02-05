@@ -16,10 +16,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { Box, Typography } from "@mui/material";
+import { Box, Skeleton, Typography } from "@mui/material";
 
 type SectionHeaderProps<T> = {
-	heading: string | JSX.Element;
+	heading: string | JSX.Element | undefined;
 	trailing?: JSX.Element;
 };
 
@@ -37,7 +37,7 @@ const SectionHeader = <T,>(props: SectionHeaderProps<T>) => {
 			}}
 		>
 			<Typography variant="h5" fontWeight="bold">
-				{props.heading}
+				{props.heading ?? <Skeleton width={"200px"} />}
 			</Typography>
 			{props.trailing}
 		</Box>

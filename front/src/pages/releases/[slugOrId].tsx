@@ -24,6 +24,7 @@ import {
 	IconButton,
 	ListSubheader,
 	Rating,
+	Skeleton,
 	Typography,
 	useTheme,
 } from "@mui/material";
@@ -47,7 +48,6 @@ import getSlugOrId from "../../utils/getSlugOrId";
 import ReleaseTrackList from "../../components/release-tracklist";
 import prepareSSR, { InferSSRProps } from "../../ssr";
 import ReleaseContextualMenu from "../../components/contextual-menu/release-contextual-menu";
-import LoadingPage from "../../components/loading/loading-page";
 import TileRow from "../../components/tile-row";
 import VideoTile from "../../components/tile/video-tile";
 import ExternalIdBadge from "../../components/external-id-badge";
@@ -66,6 +66,7 @@ import Video from "../../models/video";
 import { useAccentColor } from "../../utils/accent-color";
 import GradientBackground from "../../components/gradient-background";
 import { useTranslation } from "react-i18next";
+import { generateArray } from "../../utils/gen-list";
 
 const releaseQuery = (releaseIdentifier: string | number) =>
 	API.getRelease(releaseIdentifier, ["album", "externalIds"]);
@@ -157,7 +158,7 @@ const ReleasePage = (props: InferSSRProps<typeof getServerSideProps>) => {
 		albumGenreQuery,
 		release.data?.albumId,
 	);
-	const hasGenres = (albumGenres.data?.pages.at(0)?.items.length ?? 0) > 0;
+	const hasGenres = (albumGenres.data?.pages.at(0)?.items.length ?? 1) > 0;
 	const artists = useQuery(artistsOnAlbumQuery, release.data?.albumId);
 	const albumVideos = useInfiniteQuery(
 		albumVideosQuery,
@@ -177,8 +178,13 @@ const ReleasePage = (props: InferSSRProps<typeof getServerSideProps>) => {
 		release.data?.albumId,
 	);
 	const albumArtist = useMemo(
-		() => artists.data?.find((artist) => artist.id === artistId),
-		[artistId, artists],
+		() =>
+			album.data?.artistId === null
+				? null
+				: artists.data
+					? artists.data.find((artist) => artist.id === artistId)
+					: undefined,
+		[artistId, artists, album.data],
 	);
 	const featurings = useMemo(
 		() => artists.data?.filter((artist) => artist.id !== artistId),
@@ -188,42 +194,49 @@ const ReleasePage = (props: InferSSRProps<typeof getServerSideProps>) => {
 		() => relatedPlaylists.data?.pages.at(0)?.items,
 		[relatedPlaylists.data],
 	);
-	const { bSides, extras } = (
-		bSidesQuery.data?.pages.at(0)?.items ?? []
-	).reduce(
-		(prev, current) => {
-			if (current.type === "NonMusic") {
-				return {
-					bSides: prev.bSides,
-					extras: prev.extras.concat(current),
-				};
-			}
-			return { bSides: prev.bSides.concat(current), extras: prev.extras };
-		},
-		{ bSides: [], extras: [] } as Record<
-			"bSides" | "extras",
-			SongWithRelations<"artist" | "featuring">[]
-		>,
+	const { bSides, extras } = useMemo(
+		() =>
+			(bSidesQuery.data?.pages.at(0)?.items ?? []).reduce(
+				(prev, current) => {
+					if (current.type === "NonMusic") {
+						return {
+							bSides: prev.bSides,
+							extras: prev.extras.concat(current),
+						};
+					}
+					return {
+						bSides: prev.bSides.concat(current),
+						extras: prev.extras,
+					};
+				},
+				{ bSides: [], extras: [] } as Record<
+					"bSides" | "extras",
+					SongWithRelations<"artist" | "featuring">[]
+				>,
+			),
+		[bSidesQuery.data],
 	);
-	const { videos, videoExtras } = (
-		albumVideos.data?.pages.at(0)?.items ?? []
-	).reduce(
-		(prev, current) => {
-			if (current.type === "NonMusic") {
-				return {
-					videos: prev.videos,
-					videoExtras: prev.videoExtras.concat(current),
-				};
-			}
-			return {
-				videos: prev.videos.concat(current),
-				videoExtras: prev.videoExtras,
-			};
-		},
-		{ videos: [], videoExtras: [] } as Record<
-			"videos" | "videoExtras",
-			Video[]
-		>,
+	const { videos, videoExtras } = useMemo(
+		() =>
+			(albumVideos.data?.pages.at(0)?.items ?? []).reduce(
+				(prev, current) => {
+					if (current.type === "NonMusic") {
+						return {
+							videos: prev.videos,
+							videoExtras: prev.videoExtras.concat(current),
+						};
+					}
+					return {
+						videos: prev.videos.concat(current),
+						videoExtras: prev.videoExtras,
+					};
+				},
+				{ videos: [], videoExtras: [] } as Record<
+					"videos" | "videoExtras",
+					Video[]
+				>,
+			),
+		[albumVideos.data],
 	);
 	const [tracks, totalDuration, trackList] = useMemo(() => {
 		if (tracklistQuery.data) {
@@ -240,24 +253,37 @@ const ReleasePage = (props: InferSSRProps<typeof getServerSideProps>) => {
 				discMap,
 			];
 		}
-		return [[], null, undefined];
+		return [[], undefined, undefined];
 	}, [tracklistQuery.data]);
-	const illustration = useMemo(() => release.data?.illustration, [release]);
-	const externalIdWithDescription = album.data?.externalIds.find(
-		({ description }) => description !== null,
+	const illustration = useMemo(
+		() => release.data?.illustration,
+		[release.data],
 	);
-	const albumRating =
-		album.data?.externalIds
-			.map(({ rating }) => rating)
-			.filter((rating) => rating !== null)
-			.sort()
-			.at(-1) ?? null;
+	const externalIdWithDescription = useMemo(
+		() =>
+			album.data?.externalIds.find(
+				({ description }) => description !== null,
+			),
+		[album.data],
+	);
+	const externalIds = useMemo(() => {
+		if (album.data === undefined || release.data === undefined) {
+			return undefined;
+		}
+		return [...album.data.externalIds, ...release.data.externalIds];
+	}, [album.data, release.data]);
+
+	const albumRating = useMemo(() => {
+		return album.data
+			? album.data.externalIds
+					.map(({ rating }) => rating)
+					.filter((rating) => rating !== null)
+					.sort()
+					.at(-1) ?? null
+			: undefined;
+	}, [album.data]);
 	const accentColor = useAccentColor(illustration);
 
-	// eslint-disable-next-line no-extra-parens
-	if (!release.data || !album.data || !artists.data || !trackList) {
-		return <LoadingPage />;
-	}
 	return (
 		<>
 			<Container
@@ -271,14 +297,11 @@ const ReleasePage = (props: InferSSRProps<typeof getServerSideProps>) => {
 					},
 				}}
 			>
-				{/* <BackgroundBlurhash blurhash={illustration?.blurhash} /> */}
-				{illustration && (
-					<GradientBackground colors={illustration.colors} />
-				)}
+				<GradientBackground colors={illustration?.colors} />
 				<Grid container spacing={4} sx={{ justifyContent: "center" }}>
 					<Grid item xl={2} lg={3} sm={5} xs={8}>
 						<Illustration
-							illustration={release.data!.illustration}
+							illustration={illustration}
 							quality="original"
 						/>
 					</Grid>
@@ -303,15 +326,23 @@ const ReleasePage = (props: InferSSRProps<typeof getServerSideProps>) => {
 					>
 						<Grid item sx={{ width: "inherit" }}>
 							<Typography variant="h3" fontWeight="bold">
-								{release.data!.name}
+								{release.data?.name ?? (
+									<>
+										<Skeleton />
+										<Skeleton />
+									</>
+								)}
 							</Typography>
-							{/* <Typography sx={{ color: "text.disabled" }}>
-								{release.data.extensions.join(" - ")}
-							</Typography> */}
 						</Grid>
-						{albumArtist && (
+						{albumArtist !== null && (
 							<Grid item>
-								<Link href={`/artists/${albumArtist.slug}`}>
+								<Link
+									href={
+										albumArtist
+											? `/artists/${albumArtist.slug}`
+											: {}
+									}
+								>
 									<Button
 										variant="text"
 										sx={{
@@ -321,7 +352,9 @@ const ReleasePage = (props: InferSSRProps<typeof getServerSideProps>) => {
 										}}
 									>
 										<Typography variant="h4">
-											{albumArtist.name}
+											{albumArtist?.name ?? (
+												<Skeleton width={"200px"} />
+											)}
 										</Typography>
 									</Button>
 								</Link>
@@ -335,7 +368,7 @@ const ReleasePage = (props: InferSSRProps<typeof getServerSideProps>) => {
 							}}
 						>
 							<Typography sx={{ color: "text.disabled" }}>
-								{release.data.extensions.join(" - ")}
+								{release.data?.extensions.join(" - ") ?? <br />}
 							</Typography>
 						</Grid>
 						<Grid
@@ -349,13 +382,17 @@ const ReleasePage = (props: InferSSRProps<typeof getServerSideProps>) => {
 								sx={{ color: "text.disabled" }}
 								component={"span"}
 							>
-								{(release.data.releaseDate ||
-									release.data.album.releaseDate) &&
+								{(release.data?.releaseDate ||
+									release.data?.album.releaseDate) &&
 									`${new Date(
 										release.data.releaseDate ??
 											release.data.album.releaseDate!,
 									).getFullYear()} - `}
-								{formatDuration(totalDuration ?? undefined)}
+								{totalDuration !== undefined ? (
+									formatDuration(totalDuration)
+								) : (
+									<Skeleton width={"100px"} />
+								)}
 							</Typography>
 							{albumRating && (
 								<Rating
@@ -411,6 +448,7 @@ const ReleasePage = (props: InferSSRProps<typeof getServerSideProps>) => {
 									onClick={() => {
 										if (
 											tracks &&
+											release.data &&
 											artists.data !== undefined
 										) {
 											let playlist = tracks.map(
@@ -441,12 +479,9 @@ const ReleasePage = (props: InferSSRProps<typeof getServerSideProps>) => {
 							</Grid>
 						))}
 						<Grid item>
-							<ReleaseContextualMenu
-								release={{
-									...release.data,
-									album: release.data.album,
-								}}
-							/>
+							{release.data && (
+								<ReleaseContextualMenu release={release.data} />
+							)}
 						</Grid>
 					</Grid>
 				</Grid>
@@ -457,7 +492,7 @@ const ReleasePage = (props: InferSSRProps<typeof getServerSideProps>) => {
 				>
 					{hasGenres && (
 						<Grid item xl={2} lg={3} xs={12} marginTop={1}>
-							<Fade in={albumGenres.data != undefined}>
+							<Fade in>
 								<Box>
 									<Grid
 										container
@@ -476,29 +511,30 @@ const ReleasePage = (props: InferSSRProps<typeof getServerSideProps>) => {
 												{`${t("genres")}: `}
 											</ListSubheader>
 										</Grid>
-										{albumGenres.data?.pages
-											.at(0)
-											?.items.map((genre) => (
-												<Grid
-													item
-													key={genre.id}
-													sx={{ display: "flex" }}
-												>
-													<GenreButton
-														genre={genre}
-														sx={{
+										{(
+											albumGenres.data?.pages.at(0)
+												?.items ?? generateArray(3)
+										).map((genre, index) => (
+											<Grid
+												item
+												key={index}
+												sx={{ display: "flex" }}
+											>
+												<GenreButton
+													genre={genre}
+													sx={{
+														borderColor:
+															accentColor?.light,
+														[theme.getColorSchemeSelector(
+															"dark",
+														)]: {
 															borderColor:
-																accentColor?.light,
-															[theme.getColorSchemeSelector(
-																"dark",
-															)]: {
-																borderColor:
-																	accentColor?.dark,
-															},
-														}}
-													/>
-												</Grid>
-											)) ?? []}
+																accentColor?.dark,
+														},
+													}}
+												/>
+											</Grid>
+										)) ?? []}
 									</Grid>
 									<Divider
 										sx={{
@@ -514,12 +550,11 @@ const ReleasePage = (props: InferSSRProps<typeof getServerSideProps>) => {
 						</Grid>
 					)}
 					<Grid item xl lg={hasGenres ? 9 : true} xs={12}>
-						{albumGenres.data && trackList && artists.data && (
-							<Fade in>
-								<Box>
-									<ReleaseTrackList
-										mainArtist={albumArtist}
-										tracklist={Object.fromEntries(
+						<ReleaseTrackList
+							mainArtist={albumArtist}
+							tracklist={
+								trackList
+									? Object.fromEntries(
 											Array.from(
 												Object.entries(trackList),
 											).map(([discKey, discTracks]) => [
@@ -529,12 +564,11 @@ const ReleasePage = (props: InferSSRProps<typeof getServerSideProps>) => {
 													song: discTrack.song,
 												})),
 											]),
-										)}
-										release={release.data}
-									/>
-								</Box>
-							</Fade>
-						)}
+										)
+									: undefined
+							}
+							release={release.data}
+						/>
 					</Grid>
 				</Grid>
 				<RelatedContentSection
@@ -564,10 +598,14 @@ const ReleasePage = (props: InferSSRProps<typeof getServerSideProps>) => {
 								.map((otherRelease, otherReleaseIndex) => (
 									<ReleaseTile
 										key={otherReleaseIndex}
-										release={{
-											...otherRelease,
-											album: album.data,
-										}}
+										release={
+											album.data
+												? {
+														...otherRelease,
+														album: album.data,
+													}
+												: undefined
+										}
 									/>
 								)) ?? []
 						}
@@ -676,22 +714,19 @@ const ReleasePage = (props: InferSSRProps<typeof getServerSideProps>) => {
 				)}
 				<RelatedContentSection
 					display={
-						[...album.data.externalIds, ...release.data.externalIds]
-							.length != 0
+						externalIds === undefined || externalIds.length > 0
 					}
 					title={t("externalLinks")}
 				>
 					<Grid container spacing={1}>
-						{[
-							...album.data.externalIds,
-							...release.data.externalIds,
-						]
-							.filter(({ url }) => url !== null)
-							.map((externalId) => (
-								<Grid item key={externalId.provider.name}>
-									<ExternalIdBadge externalId={externalId} />
-								</Grid>
-							))}
+						{(
+							externalIds?.filter(({ url }) => url !== null) ??
+							generateArray(2)
+						).map((externalId, index) => (
+							<Grid item key={index}>
+								<ExternalIdBadge externalId={externalId} />
+							</Grid>
+						))}
 					</Grid>
 				</RelatedContentSection>
 			</Container>

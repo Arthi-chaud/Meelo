@@ -22,6 +22,7 @@ import PaginatedResponse, {
 	PaginationParameters,
 } from "../../models/pagination";
 import { MeeloInfiniteQueryFn, useInfiniteQuery } from "../../api/use-query";
+import { generateArray } from "../../utils/gen-list";
 
 export type InfiniteFetchFn<T> = (
 	pagination: PaginationParameters,
@@ -31,15 +32,11 @@ type InfiniteScrollProps<T extends Resource> = {
 	/**
 	 * The method to render all items
 	 */
-	render: (items: T[]) => JSX.Element;
+	render: (items: (T | undefined)[]) => JSX.Element;
 	/**
 	 * Query to use
 	 */
 	query: MeeloInfiniteQueryFn<T>;
-	/**
-	 * Component to display on first load
-	 */
-	firstLoader: () => JSX.Element;
 	/**
 	 * Component to display on page fetching (except first)
 	 */
@@ -80,7 +77,6 @@ const InfiniteScroll = <T extends Resource>(props: InfiniteScrollProps<T>) => {
 
 	return (
 		<>
-			{isFetching && !data && props.firstLoader()}
 			<IScroll.default
 				pageStart={0}
 				loadMore={() => {
@@ -91,8 +87,10 @@ const InfiniteScroll = <T extends Resource>(props: InfiniteScrollProps<T>) => {
 				hasMore={hasNextPage}
 				threshold={500}
 			>
-				{data &&
-					props.render(data.pages.map((page) => page.items).flat())}
+				{props.render(
+					data?.pages.map((page) => page.items).flat() ??
+						generateArray(35),
+				)}
 				{isFetchingNextPage && props.loader()}
 			</IScroll.default>
 		</>

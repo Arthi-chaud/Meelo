@@ -16,17 +16,19 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { Box, Typography } from "@mui/material";
+import { Box, Skeleton, Typography } from "@mui/material";
 import { useTranslation } from "react-i18next";
+import { generateArray } from "../utils/gen-list";
+import Fade from "./fade";
 
 type LyricsProps = {
-	lyrics?: string[] | null;
-	songName: string;
+	lyrics: string[] | null | undefined;
+	songName: string | undefined;
 };
 const LyricsBox = (props: LyricsProps) => {
 	const { t } = useTranslation();
 
-	if (!props.lyrics) {
+	if (props.lyrics === null) {
 		return (
 			<Typography sx={{ fontStyle: "italic" }}>
 				{t("noLyricsFound")}
@@ -34,28 +36,51 @@ const LyricsBox = (props: LyricsProps) => {
 		);
 	}
 	return (
-		<Box flexDirection="column">
-			{props.lyrics.map((lyric, index) => {
-				if (lyric.length == 0) {
-					return <br key={index} />;
-				}
-				const hasTitle = lyric
-					.toLowerCase()
-					.includes(props.songName.toLowerCase());
-				const isSection =
-					lyric.trim().startsWith("[") && lyric.trim().endsWith("]");
+		<Fade in>
+			<Box flexDirection="column">
+				{props.lyrics !== undefined
+					? props.lyrics.map((lyric, index) => {
+							if (lyric.length == 0) {
+								return <br key={index} />;
+							}
+							const hasTitle =
+								props.songName === undefined
+									? false
+									: lyric
+											.toLowerCase()
+											.includes(
+												props.songName.toLowerCase(),
+											);
+							const isSection =
+								lyric.trim().startsWith("[") &&
+								lyric.trim().endsWith("]");
 
-				return (
-					<Typography
-						key={index}
-						variant={isSection ? "caption" : "body1"}
-						style={{ fontWeight: hasTitle ? "bold" : undefined }}
-					>
-						{lyric}
-					</Typography>
-				);
-			})}
-		</Box>
+							return (
+								<Typography
+									key={index}
+									variant={isSection ? "caption" : "body1"}
+									style={{
+										fontWeight: hasTitle
+											? "bold"
+											: undefined,
+									}}
+								>
+									{lyric}
+								</Typography>
+							);
+						})
+					: generateArray(20).map((_, index) =>
+							index % 5 == 0 ? (
+								<br key={index} />
+							) : (
+								<Skeleton
+									key={index}
+									width={`${4 + (index % 5)}0%`}
+								/>
+							),
+						)}
+			</Box>
+		</Fade>
 	);
 };
 

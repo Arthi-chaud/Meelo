@@ -17,14 +17,17 @@
  */
 
 import { Box, Paper, useTheme } from "@mui/material";
+import { generateArray } from "../utils/gen-list";
 
 type GradientBackgroundProps = {
-	colors: string[];
+	colors: string[] | undefined;
 };
 
 const GradientBackground = ({ colors }: GradientBackgroundProps) => {
 	const theme = useTheme();
-	const [color1, color2, color3, color4, color5] = Array.of(...colors).sort();
+	const [color1, color2, color3, color4, color5] = Array.of(
+		...(colors ?? generateArray(5)),
+	).sort();
 	const gradientCSS = `
 		radial-gradient(ellipse at 10% 90%, ${color1} 0%, transparent 55%),
 		radial-gradient(ellipse at 90% 90%, ${color2} 0%, transparent 55%),
@@ -35,7 +38,7 @@ const GradientBackground = ({ colors }: GradientBackgroundProps) => {
 
 	return (
 		<>
-			{colors.length >= 5 && (
+			{colors && colors.length >= 5 && (
 				<Box
 					sx={{
 						position: "fixed",

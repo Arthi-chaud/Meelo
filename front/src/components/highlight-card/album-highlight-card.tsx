@@ -22,35 +22,41 @@ import getYear from "../../utils/getYear";
 import HighlightCard from "./highlight-card";
 
 type AlbumHighlightCardProps = {
-	album: AlbumWithRelations<"artist" | "externalIds" | "genres">;
+	album: AlbumWithRelations<"artist" | "externalIds" | "genres"> | undefined;
 };
 const AlbumHighlightCard = ({ album }: AlbumHighlightCardProps) => {
 	const { t } = useTranslation();
 	return (
 		<HighlightCard
-			title={album.name}
-			headline={album.name}
+			title={album?.name}
+			headline={album?.name}
 			body={
-				album.externalIds
+				album?.externalIds
 					.map((id) => id.description)
 					.filter((desc): desc is string => desc !== null)
 					.sort((descA, descB) => descA.length - descB.length)
 					.at(0) ||
 				[
-					album.artist?.name ?? t("compilation"),
-					getYear(album.releaseDate),
+					album ? album.artist?.name ?? t("compilation") : undefined,
+					album ? getYear(album.releaseDate) : undefined,
 				]
 					.filter((elem) => elem != null)
 					.join(" - ")
 			}
-			tags={album.genres.map(({ name, slug }) => ({
-				label: name,
-				href: `/genres/${slug}`,
-			}))}
-			illustration={album.illustration}
-			href={`/albums/${album.artist?.slug ?? "compilations"}+${
-				album.slug
-			}`}
+			tags={
+				album?.genres.map(({ name, slug }) => ({
+					label: name,
+					href: `/genres/${slug}`,
+				})) ?? []
+			}
+			illustration={album?.illustration}
+			href={
+				album
+					? `/albums/${album.artist?.slug ?? "compilations"}+${
+							album.slug
+						}`
+					: undefined
+			}
 		/>
 	);
 };

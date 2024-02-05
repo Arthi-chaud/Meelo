@@ -23,7 +23,7 @@ import { AlbumWithRelations } from "../../models/album";
 import { useTranslation } from "react-i18next";
 
 type AlbumItemProps = {
-	album: AlbumWithRelations<"artist">;
+	album: AlbumWithRelations<"artist"> | undefined;
 	formatSubtitle?: (album: AlbumWithRelations<"artist">) => string;
 };
 
@@ -33,22 +33,31 @@ type AlbumItemProps = {
  * @returns
  */
 const AlbumItem = ({ album, formatSubtitle }: AlbumItemProps) => {
-	const artist = album.artist;
+	const artist = album?.artist;
 	const { t } = useTranslation();
 
 	return (
 		<ListItem
 			icon={
-				<Illustration illustration={album.illustration} quality="low" />
+				<Illustration
+					illustration={album?.illustration}
+					quality="low"
+				/>
 			}
-			href={`/albums/${artist?.slug ?? "compilations"}+${album.slug}`}
-			title={album.name}
+			href={
+				album
+					? `/albums/${artist?.slug ?? "compilations"}+${album.slug}`
+					: undefined
+			}
+			title={album?.name}
 			secondTitle={
-				formatSubtitle?.call(this, album) ??
-				artist?.name ??
-				t("compilation")
+				album
+					? formatSubtitle?.call(this, album) ??
+						artist?.name ??
+						t("compilation")
+					: undefined
 			}
-			trailing={<AlbumContextualMenu album={album} />}
+			trailing={album && <AlbumContextualMenu album={album} />}
 		/>
 	);
 };

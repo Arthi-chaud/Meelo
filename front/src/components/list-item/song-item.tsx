@@ -29,7 +29,7 @@ import { SongIcon } from "../icons";
 import formatArtists from "../../utils/formatArtists";
 
 type SongItemProps<T extends SongWithRelations<"artist" | "featuring">> = {
-	song: T;
+	song: T | undefined;
 	formatSubtitle?: (song: T) => Promise<string>;
 };
 
@@ -42,17 +42,19 @@ const SongItem = <T extends SongWithRelations<"artist" | "featuring">>({
 	song,
 	formatSubtitle,
 }: SongItemProps<T>) => {
-	const artist = song.artist;
+	const artist = song?.artist;
 	const dispatch = useDispatch();
 	const queryClient = useQueryClient();
 	const [subtitle, setSubtitle] = useState(
 		formatSubtitle
 			? ((<br />) as unknown as string)
-			: formatArtists(song.artist, song.featuring),
+			: song
+				? formatArtists(song.artist, song.featuring)
+				: undefined,
 	);
 
 	useEffect(() => {
-		if (formatSubtitle) {
+		if (formatSubtitle && song) {
 			formatSubtitle(song).then((newSub) => setSubtitle(newSub));
 		}
 	}, []);
@@ -60,27 +62,30 @@ const SongItem = <T extends SongWithRelations<"artist" | "featuring">>({
 		<ListItem
 			icon={
 				<Illustration
-					illustration={song.illustration}
+					illustration={song?.illustration}
 					fallback={<SongIcon />}
 					quality="low"
 				/>
 			}
-			title={song.name}
-			onClick={() =>
-				queryClient
-					.fetchQuery(API.getMasterTrack(song.id, ["release"]))
-					.then((track) => {
-						dispatch(
-							playTrack({
-								artist,
-								track,
-								release: track.release,
-							}),
-						);
-					})
+			title={song?.name}
+			onClick={
+				song &&
+				artist &&
+				(() =>
+					queryClient
+						.fetchQuery(API.getMasterTrack(song.id, ["release"]))
+						.then((track) => {
+							dispatch(
+								playTrack({
+									artist,
+									track,
+									release: track.release,
+								}),
+							);
+						}))
 			}
 			secondTitle={subtitle}
-			trailing={<SongContextualMenu song={song} />}
+			trailing={song && <SongContextualMenu song={song} />}
 		/>
 	);
 };

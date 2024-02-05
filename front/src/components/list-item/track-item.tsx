@@ -28,7 +28,7 @@ import { useQueryClient } from "../../api/use-query";
 import { MasterIcon, TrackIcon } from "../icons";
 
 type TrackItemProps = {
-	track: TrackWithRelations<"release" | "song">;
+	track: TrackWithRelations<"release" | "song"> | undefined;
 };
 
 /**
@@ -37,31 +37,38 @@ type TrackItemProps = {
  * @returns
  */
 const TrackItem = ({ track }: TrackItemProps) => {
-	const release = track.release;
+	const release = track?.release;
 	const dispatch = useDispatch();
-	const isMaster = track.song.masterId == track.id;
+	const isMaster = track ? track.song.masterId == track.id : false;
 	const queryClient = useQueryClient();
 
 	return (
 		<ListItem
 			icon={
 				<Illustration
-					illustration={track.illustration}
+					illustration={track?.illustration}
 					fallback={<TrackIcon />}
 					quality="low"
 				/>
 			}
-			onClick={() =>
-				queryClient
-					.fetchQuery(API.getSong(track.songId, ["artist"]))
-					.then((song) => {
-						dispatch(
-							playTrack({ artist: song.artist, track, release }),
-						);
-					})
+			onClick={
+				track &&
+				release &&
+				(() =>
+					queryClient
+						.fetchQuery(API.getSong(track.songId, ["artist"]))
+						.then((song) => {
+							dispatch(
+								playTrack({
+									artist: song.artist,
+									track,
+									release,
+								}),
+							);
+						}))
 			}
-			title={track.name}
-			secondTitle={release.name}
+			title={track?.name}
+			secondTitle={release?.name}
 			trailing={
 				<Grid
 					container
@@ -71,7 +78,9 @@ const TrackItem = ({ track }: TrackItemProps) => {
 					<Grid item sx={{ display: "flex", alignItems: "center" }}>
 						{isMaster ? <MasterIcon /> : undefined}
 					</Grid>
-					<Grid item>{<TrackContextualMenu track={track} />}</Grid>
+					<Grid item>
+						{track && <TrackContextualMenu track={track} />}
+					</Grid>
 				</Grid>
 			}
 		/>

@@ -40,7 +40,6 @@ import API from "../../api/api";
 import Playlist from "../../models/playlist";
 import InfiniteList from "../infinite/infinite-list";
 import { WideLoadingComponent } from "../loading/loading";
-import LoadingPage from "../loading/loading-page";
 import ListItem from "../list-item/item";
 import Illustration from "../illustration";
 import { useConfirm } from "material-ui-confirm";
@@ -220,24 +219,27 @@ const SelectPlaylistForm = (props: SelectPlaylistFormProps) => {
 			<DialogTitle>Select a playlist</DialogTitle>
 			<DialogContent>
 				<InfiniteList
-					firstLoader={() => <LoadingPage />}
 					loader={() => <WideLoadingComponent />}
 					query={props.playlistQuery}
-					render={(item: Playlist) => (
+					render={(item, index) => (
 						<ListItem
-							key={item.id}
-							title={item.name}
+							key={index}
+							title={item?.name}
 							icon={
 								<Illustration
-									illustration={item.illustration}
+									illustration={item?.illustration}
 									fallback={<AddItemToPlaylistIcon />}
 									quality="low"
 								/>
 							}
-							onClick={() => {
-								props.onSubmit(item.id);
-								props.onClose();
-							}}
+							secondTitle={null}
+							onClick={
+								item &&
+								(() => {
+									props.onSubmit(item.id);
+									props.onClose();
+								})
+							}
 						/>
 					)}
 				/>

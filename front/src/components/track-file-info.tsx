@@ -17,6 +17,7 @@
  */
 
 import {
+	Skeleton,
 	Table,
 	TableBody,
 	TableCell,
@@ -27,7 +28,6 @@ import { useConfirm } from "material-ui-confirm";
 import API from "../api/api";
 import { useQuery } from "../api/use-query";
 import formatDuration from "../utils/formatDuration";
-import { WideLoadingComponent } from "./loading/loading";
 import { TranslationKey } from "../i18n/i18n";
 import { useTranslation } from "react-i18next";
 
@@ -40,22 +40,26 @@ const TrackFileInfo = ({ trackId }: { trackId: number }) => {
 	const track = useQuery((id) => API.getTrack(id, ["song"]), trackId);
 	const sourceFile = useQuery(API.getSourceFile, track.data?.sourceFileId);
 
-	if (!track.data || !sourceFile.data) {
-		return <WideLoadingComponent />;
-	}
-	const tableContent: Partial<Record<TranslationKey, string | number>> = {
-		name: track.data.name,
-		remastered: t(track.data.isRemastered ? "yes" : "no"),
-		duration: formatDuration(track.data.duration),
-		bitRate: `${track.data.bitrate} kbps`,
-		type: track.data.type,
-		extension:
-			sourceFile.data.path.split(".").reverse()[0].toLocaleUpperCase() ??
-			"Unknown",
-		path: sourceFile.data.path,
-		registrationDate: new Date(
-			sourceFile.data.registerDate,
-		).toLocaleString(),
+	const tableContent: Partial<
+		Record<TranslationKey, string | number | undefined>
+	> = {
+		name: track.data?.name,
+		remastered: track.data
+			? t(track.data.isRemastered ? "yes" : "no")
+			: undefined,
+		duration: track.data ? formatDuration(track.data.duration) : undefined,
+		bitRate: track.data ? `${track.data.bitrate} kbps` : undefined,
+		type: track.data?.type,
+		extension: sourceFile.data
+			? sourceFile.data.path
+					.split(".")
+					.reverse()[0]
+					.toLocaleUpperCase() ?? "Unknown"
+			: undefined,
+		path: sourceFile.data?.path,
+		registrationDate: sourceFile.data
+			? new Date(sourceFile.data.registerDate).toLocaleString()
+			: undefined,
 	};
 
 	return (
@@ -68,7 +72,7 @@ const TrackFileInfo = ({ trackId }: { trackId: number }) => {
 								{t(key as TranslationKey)}
 							</Typography>
 						</TableCell>
-						<TableCell>{value}</TableCell>
+						<TableCell>{value ?? <Skeleton />}</TableCell>
 					</TableRow>
 				))}
 			</TableBody>

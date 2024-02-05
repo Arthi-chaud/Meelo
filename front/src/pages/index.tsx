@@ -20,7 +20,6 @@ import { Box, Grid, Stack } from "@mui/material";
 import API from "../api/api";
 import prepareSSR, { InferSSRProps } from "../ssr";
 import { useInfiniteQuery } from "../api/use-query";
-import LoadingPage from "../components/loading/loading-page";
 import SectionHeader from "../components/section-header";
 import TileRow from "../components/tile-row";
 import AlbumTile from "../components/tile/album-tile";
@@ -32,6 +31,7 @@ import AlbumHighlightCard from "../components/highlight-card/album-highlight-car
 import GradientBackground from "../components/gradient-background";
 import { useMemo } from "react";
 import { useTranslation } from "react-i18next";
+import { generateArray } from "../utils/gen-list";
 
 const newlyAddedAlbumsQuery = API.getAlbums(
 	{},
@@ -72,18 +72,19 @@ const albumRecommendations = (seed: number) =>
 const HomePageSection = <T,>(props: {
 	heading: string | JSX.Element;
 	queryData: { data?: { pages?: { items?: T[] }[] } };
-	render: (items: T[]) => JSX.Element;
+	render: (items: (T | undefined)[]) => JSX.Element;
 }) => {
 	const items = props.queryData.data?.pages?.at(0)?.items;
 
-	if (!items || items.length == 0) {
+	// Remove the section if its content is empty
+	if (items !== undefined && items.length == 0) {
 		return <></>;
 	}
 	return (
 		<Stack spacing={3}>
 			<SectionHeader heading={props.heading} />
 			<Box sx={{ maxHeight: "20%" }}>
-				{props.render(items.slice(0, 12))}
+				{props.render(items?.slice(0, 12) ?? generateArray(6))}
 			</Box>
 		</Stack>
 	);
@@ -139,21 +140,15 @@ const HomePage = (props: InferSSRProps<typeof getServerSideProps>) => {
 		.flat()
 		.map(({ illustration }) => illustration)
 		.filter((illustration) => illustration !== null);
-	const selectedBlurhash = useMemo(() => {
+	const selectedIllustrationColor = useMemo(() => {
 		return illustrations.at(
 			illustrations.length * (props.additionalProps?.blurhashIndex ?? 0),
 		)?.colors;
 	}, [illustrations, props.additionalProps]);
 
-	if (queries.find((query) => query.isLoading)) {
-		return <LoadingPage />;
-	}
-
 	return (
 		<>
-			{selectedBlurhash && (
-				<GradientBackground colors={selectedBlurhash} />
-			)}
+			<GradientBackground colors={selectedIllustrationColor} />
 			<Fade in>
 				<Stack spacing={4} my={2}>
 					<HomePageSection

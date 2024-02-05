@@ -16,13 +16,13 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { Box, Button } from "@mui/material";
+import { Box, Button, Skeleton } from "@mui/material";
 import ExternalId from "../models/external-id";
 import Illustration from "./illustration";
 import Link from "next/link";
 
 type ExternalIdBadgeProps = {
-	externalId: ExternalId;
+	externalId: ExternalId | undefined;
 };
 
 const ExternalIdBadge = ({ externalId }: ExternalIdBadgeProps) => {
@@ -32,17 +32,17 @@ const ExternalIdBadge = ({ externalId }: ExternalIdBadgeProps) => {
 			startIcon={
 				<Box sx={{ width: 30 }}>
 					<Illustration
-						url={externalId.provider.icon}
+						url={externalId?.provider.icon ?? undefined}
 						quality="original"
 					/>
 				</Box>
 			}
 		>
-			{externalId.provider.name}
+			{externalId?.provider.name ?? <Skeleton width="50px" />}
 		</Button>
 	);
 
-	if (externalId.url) {
+	if (externalId?.url) {
 		return (
 			<Link
 				href={externalId.url ?? undefined}

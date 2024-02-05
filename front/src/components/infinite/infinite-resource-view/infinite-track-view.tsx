@@ -55,12 +55,8 @@ const InfiniteTrackView = (
 						order: options?.order ?? "asc",
 					})
 				}
-				renderListItem={(
-					item: TrackWithRelations<"song" | "release">,
-				) => <TrackItem track={item} key={item.id} />}
-				renderGridItem={(
-					item: TrackWithRelations<"song" | "release">,
-				) => <></>}
+				renderListItem={(item) => <TrackItem track={item} />}
+				renderGridItem={(item) => <></>}
 			/>
 		</>
 	);

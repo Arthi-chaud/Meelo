@@ -50,17 +50,12 @@ const ArtistSongPage = (props: InferSSRProps<typeof getServerSideProps>) => {
 	const router = useRouter();
 	const artistIdentifier =
 		props.additionalProps?.artistIdentifier ?? getSlugOrId(router.query);
-	const artist = useQuery(
-		API.getArtist,
-		props.additionalProps?.artistIdentifier,
-	);
+	const artist = useQuery(API.getArtist, artistIdentifier);
 
 	return (
 		<>
-			{artist.data?.illustration && (
-				<GradientBackground colors={artist.data.illustration.colors} />
-			)}
-			<ArtistRelationPageHeader artistSlugOrId={artistIdentifier} />
+			<GradientBackground colors={artist.data?.illustration?.colors} />
+			<ArtistRelationPageHeader artist={artist.data} />
 			<InfiniteVideoView
 				initialSortingField={props.additionalProps?.sortBy}
 				initialSortingOrder={props.additionalProps?.order}

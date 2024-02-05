@@ -28,7 +28,7 @@ import {
 	useQuery,
 	useQueryClient,
 } from "../../../api/use-query";
-import { SongSortingKeys, SongWithRelations } from "../../../models/song";
+import { SongSortingKeys } from "../../../models/song";
 import { getOrderParams, getSortingFieldParams } from "../../../utils/sorting";
 import GradientBackground from "../../../components/gradient-background";
 import Track from "../../../models/track";
@@ -70,25 +70,13 @@ const ArtistSongPage = (props: InferSSRProps<typeof getServerSideProps>) => {
 			.then(({ album }) => album);
 	const artistIdentifier =
 		props.additionalProps?.artistIdentifier ?? getSlugOrId(router.query);
-	const artist = useQuery(
-		API.getArtist,
-		props.additionalProps?.artistIdentifier,
-	);
-	const View = (
-		p: Parameters<
-			typeof InfiniteSongView<
-				SongWithRelations<"artist" | "featuring" | "master">
-			>
-		>[0],
-	) => InfiniteSongView(p);
+	const artist = useQuery(API.getArtist, artistIdentifier);
 
 	return (
 		<Box sx={{ width: "100%" }}>
-			{artist.data?.illustration && (
-				<GradientBackground colors={artist.data?.illustration.colors} />
-			)}
-			<ArtistRelationPageHeader artistSlugOrId={artistIdentifier} />
-			<View
+			<GradientBackground colors={artist.data?.illustration?.colors} />
+			<ArtistRelationPageHeader artist={artist.data} />
+			<InfiniteSongView
 				initialSortingField={props.additionalProps?.sortBy ?? "name"}
 				initialSortingOrder={props.additionalProps?.order ?? "asc"}
 				query={({ library, sortBy, order, type, random }) =>

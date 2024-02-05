@@ -35,6 +35,7 @@ import {
 	Divider,
 	Grid,
 	IconButton,
+	Skeleton,
 	Stack,
 	Tab,
 	Tabs,
@@ -42,7 +43,6 @@ import {
 	useTheme,
 } from "@mui/material";
 import Illustration from "../illustration";
-import { WideLoadingComponent } from "../loading/loading";
 import { LegacyRef, useState } from "react";
 import PlayerSlider from "./controls/slider";
 import API from "../../api/api";
@@ -377,7 +377,7 @@ const ExpandedPlayerControls = (
 										justifyContent: "center",
 									}}
 								>
-									{props.artist && props.track && (
+									{props.artist && props.track ? (
 										<Link
 											href={`/releases/${props.track.releaseId}`}
 											style={{
@@ -405,6 +405,11 @@ const ExpandedPlayerControls = (
 												</Typography>
 											</Button>
 										</Link>
+									) : (
+										<Skeleton
+											animation={false}
+											width={"70%"}
+										/>
 									)}
 								</Grid>
 								<Grid item xs={1}>
@@ -440,7 +445,7 @@ const ExpandedPlayerControls = (
 									justifyContent: "center",
 								}}
 							>
-								{props.track && props.artist && (
+								{props.track && props.artist ? (
 									<Link
 										href={`/artists/${props.artist.slug}`}
 										style={{
@@ -468,6 +473,12 @@ const ExpandedPlayerControls = (
 											</Typography>
 										</Button>
 									</Link>
+								) : (
+									<Skeleton
+										animation={false}
+										sx={{ margin: 1 }}
+										width={"50%"}
+									/>
 								)}
 							</Box>
 							<Stack
@@ -518,18 +529,18 @@ const ExpandedPlayerControls = (
 								overflowY: "scroll",
 							}}
 						>
-							{panel == "lyrics" &&
-								props.track &&
-								(!parentSong.data ? (
-									<WideLoadingComponent />
-								) : (
-									<LyricsBox
-										lyrics={parentSong.data.lyrics?.content.split(
-											"\n",
-										)}
-										songName={props.track.name}
-									/>
-								))}
+							{panel == "lyrics" && (
+								<LyricsBox
+									lyrics={
+										parentSong.data
+											? parentSong.data.lyrics?.content.split(
+													"\n",
+												) ?? null
+											: undefined
+									}
+									songName={props.track?.name}
+								/>
+							)}
 							{panel == "playlist" && (
 								<DragDropContext
 									onDragEnd={(result) => {

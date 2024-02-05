@@ -25,7 +25,7 @@ type TypedList<T extends Resource> = typeof InfiniteScroll<T>;
 type InfiniteListProps<T extends Resource> = Omit<
 	Parameters<TypedList<T>>[0],
 	"render"
-> & { render: (item: T) => JSX.Element };
+> & { render: (item: T | undefined, index: number) => JSX.Element };
 
 /**
  * Similar to InfiniteGrid, but rendered as a list
@@ -36,11 +36,11 @@ const InfiniteList = <T extends Resource>(props: InfiniteListProps<T>) => {
 	return (
 		<InfiniteScroll
 			{...props}
-			render={(items: T[]) => (
+			render={(items: (T | undefined)[]) => (
 				<List>
-					{items.map((item: T, index) => (
-						<Fragment key={`item-id-${index}-${item.id}`}>
-							{props.render(item)}
+					{items.map((item, index) => (
+						<Fragment key={`item-${index}`}>
+							{props.render(item, index)}
 							{index == items.length - 1 || (
 								<Divider variant="middle" />
 							)}
