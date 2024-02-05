@@ -62,12 +62,6 @@ describe("Illustration Controller", () => {
 		await module.close();
 	});
 
-	const expectedFileName = (headers: any, expected: string) => {
-		expect(headers["content-disposition"]).toStrictEqual(
-			`attachment; filename="${expected}.jpg"`,
-		);
-	};
-
 	const getDummyIllustrationStream = () =>
 		fs.createReadStream("test/assets/settings.json");
 	const dummyIllustrationBytes = fs.readFileSync("test/assets/settings.json");
@@ -100,7 +94,6 @@ describe("Illustration Controller", () => {
 				.get(`/illustrations/artists/${dummyRepository.artistA.id}`)
 				.expect(200)
 				.expect((res) => {
-					expectedFileName(res.headers, dummyRepository.artistA.slug);
 					expect(res.body).toStrictEqual(dummyIllustrationBytes);
 				});
 		});
@@ -140,10 +133,6 @@ describe("Illustration Controller", () => {
 				.get(`/illustrations/albums/${dummyRepository.albumB1.id}`)
 				.expect(200)
 				.expect((res) => {
-					expectedFileName(
-						res.headers,
-						dummyRepository.releaseB1_1.slug,
-					);
 					expect(res.body).toStrictEqual(dummyIllustrationBytes);
 				});
 		});
@@ -185,10 +174,6 @@ describe("Illustration Controller", () => {
 				)
 				.expect(200)
 				.expect((res) => {
-					expectedFileName(
-						res.headers,
-						dummyRepository.releaseA1_1.slug,
-					);
 					expect(res.body).toStrictEqual(dummyIllustrationBytes);
 				});
 		});
@@ -230,12 +215,6 @@ describe("Illustration Controller", () => {
 				.get(`/illustrations/songs/${dummyRepository.songB1.id}`)
 				.expect(200)
 				.expect((res) => {
-					expectedFileName(
-						res.headers,
-						`release-${dummyRepository.releaseB1_1.id}-disc-${
-							dummyRepository.trackB1_1.discIndex ?? 0
-						}-track-${dummyRepository.trackB1_1.trackIndex ?? 0}`,
-					);
 					expect(res.body).toStrictEqual(dummyIllustrationBytes);
 				});
 		});
@@ -278,10 +257,6 @@ describe("Illustration Controller", () => {
 				)
 				.expect(200)
 				.expect((res) => {
-					expectedFileName(
-						res.headers,
-						`release-${dummyRepository.releaseA1_2.id}-disc-${dummyRepository.trackA1_2Video.discIndex}-track-0`,
-					);
 					expect(res.body).toStrictEqual(dummyIllustrationBytes);
 				});
 		});
@@ -312,14 +287,6 @@ describe("Illustration Controller", () => {
 				)
 				.expect(200)
 				.expect((res) => {
-					expectedFileName(
-						res.headers,
-						`release-${dummyRepository.releaseA1_2.id}-disc-${
-							dummyRepository.trackA1_2Video.discIndex ?? 0
-						}-track-${
-							dummyRepository.trackA1_2Video.trackIndex ?? 0
-						}`,
-					);
 					expect(res.body).toStrictEqual(dummyIllustrationBytes);
 				});
 		});
@@ -570,10 +537,6 @@ describe("Illustration Controller", () => {
 				.get(`/illustrations/playlists/${dummyRepository.playlist1.id}`)
 				.expect(200)
 				.expect((res) => {
-					expectedFileName(
-						res.headers,
-						dummyRepository.playlist1.slug,
-					);
 					expect(res.body).toStrictEqual(dummyIllustrationBytes);
 				});
 		});

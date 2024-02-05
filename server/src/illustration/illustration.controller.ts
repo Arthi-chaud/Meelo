@@ -28,7 +28,12 @@ import {
 	Query,
 	Response,
 } from "@nestjs/common";
-import { ApiOperation, ApiParam, ApiTags } from "@nestjs/swagger";
+import {
+	ApiOperation,
+	ApiParam,
+	ApiPropertyOptional,
+	ApiTags,
+} from "@nestjs/swagger";
 import ArtistService from "src/artist/artist.service";
 import ReleaseService from "src/release/release.service";
 import TrackService from "src/track/track.service";
@@ -54,8 +59,18 @@ import PlaylistQueryParameters from "src/playlist/models/playlist.query-paramete
 import IllustrationRepository from "./illustration.repository";
 import SongService from "src/song/song.service";
 import SongQueryParameters from "src/song/models/song.query-params";
+import { IsNumber, IsOptional } from "class-validator";
 
 const Cached = () => Header("Cache-Control", `max-age=${3600 * 24}`);
+
+class DiscQuery {
+	@ApiPropertyOptional({
+		description: "If Specified, will get the disc-specific illustration",
+	})
+	@IsOptional()
+	@IsNumber()
+	disc: number;
+}
 
 @ApiTags("Illustrations")
 @Controller("illustrations")
@@ -171,10 +186,6 @@ export class IllustrationController {
 	@ApiOperation({
 		summary: "Get a release's illustration",
 	})
-	@ApiParam({
-		name: "disc",
-		required: false,
-	})
 	@Cached()
 	@Get("releases/:idOrSlug")
 	async getReleaseIllustration(
@@ -182,15 +193,19 @@ export class IllustrationController {
 		where: ReleaseQueryParameters.WhereInput,
 		@Query() dimensions: IllustrationDimensionsDto,
 		@Response({ passthrough: true }) res: Response,
+		@Query() discQuery?: DiscQuery,
 	) {
 		const illustration =
 			await this.illustrationRepository.getReleaseIllustrationResponse(
 				where,
+				discQuery?.disc,
 			);
 
 		if (!illustration) {
 			throw new NoIllustrationException(
-				"No Illustration registered for this release.",
+				`No Illustration registered for this ${
+					discQuery?.disc ? "disc" : "release"
+				}.`,
 			);
 		}
 		const illustrationPath =

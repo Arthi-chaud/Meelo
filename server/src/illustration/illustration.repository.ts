@@ -214,8 +214,9 @@ export default class IllustrationRepository {
 
 	async getReleaseIllustrationResponse(
 		where: ReleaseQueryParameters.WhereInput,
+		disc?: number,
 	) {
-		return this.getReleaseIllustration(where);
+		return this.getReleaseIllustration(where, disc);
 	}
 
 	private async getReleaseIllustration(
@@ -223,20 +224,23 @@ export default class IllustrationRepository {
 		disc?: number, // This is only used internally
 	): Promise<(ReleaseIllustration & IllustrationResponse) | null> {
 		return this.prismaService.releaseIllustration
-			.findMany({
+			.findFirst({
 				where: {
 					release: ReleaseService.formatWhereInput(where),
 					track: null, // We want to avoid track-specific illustrations
-					disc: disc,
+					...(disc === 1
+						? { OR: [{ disc: null }, { disc: 1 }] }
+						: { disc }),
 				},
 				orderBy: { disc: { nulls: "first", sort: "asc" } },
 			})
-			.then((res) => res.at(0) ?? null)
 			.then(
 				(value) =>
 					value && {
 						...value,
-						url: "/illustrations/releases/" + value.releaseId,
+						url:
+							`/illustrations/releases/${value.releaseId}` +
+							(disc && disc != 1 ? `?disc=${disc}` : ""),
 					},
 			);
 	}
@@ -327,7 +331,7 @@ export default class IllustrationRepository {
 				if (!value) {
 					return null;
 				}
-				if (value.track || value.disc) {
+				if (value.track) {
 					return {
 						...value,
 						url: "/illustrations/tracks/" + track.id,
@@ -335,7 +339,11 @@ export default class IllustrationRepository {
 				}
 				return {
 					...value,
-					url: "/illustrations/releases/" + track.releaseId,
+					url:
+						`/illustrations/releases/${track.releaseId}` +
+						(value.disc && value.disc != 1
+							? `?disc=${value.disc}`
+							: ""),
 				};
 			});
 	}
