@@ -182,7 +182,9 @@ const Illustration = (props: IllustrationProps) => {
 							API.getIllustrationURL(url) +
 							(props.quality == "original"
 								? ""
-								: `?quality=${props.quality}`)
+								: `${url.includes("?") ? "&" : "?"}quality=${
+										props.quality
+									}`)
 						}
 					/>
 				)}
