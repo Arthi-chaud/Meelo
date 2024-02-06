@@ -34,6 +34,8 @@ const PlayerSlider = (props: PlayerSliderProps) => {
 				display: "flex",
 				justifyContent: "space-between",
 				alignItems: "center",
+				color:
+					props.duration === undefined ? "text.disabled" : undefined,
 			}}
 		>
 			<Grid item xs="auto">

@@ -17,43 +17,30 @@
  */
 
 import { RequireExactlyOne } from "type-fest";
-import API from "../../api/api";
 import { SongWithRelations } from "../../models/song";
-import { useQuery } from "../../api/use-query";
 import SongContextualMenu from "../contextual-menu/song-contextual-menu";
 import Illustration from "../illustration";
-import { WideLoadingComponent } from "../loading/loading";
 import RelationPageHeader from "./relation-page-header";
 import formatArtists from "../../utils/formatArtists";
 
 type SongRelationPageHeaderProps = RequireExactlyOne<{
-	songSlugOrId: number | string;
-	song: SongWithRelations<"artist" | "featuring">;
+	song: SongWithRelations<"artist" | "featuring"> | undefined;
 }>;
 
-const SongRelationPageHeader = (props: SongRelationPageHeaderProps) => {
-	const song = useQuery(
-		(id) => API.getSong(id, ["artist", "featuring"]),
-		props.songSlugOrId,
-	);
-
-	if (props.song) {
-		song.data = props.song;
-	}
-	if (!song.data) {
-		return <WideLoadingComponent />;
-	}
+const SongRelationPageHeader = ({ song }: SongRelationPageHeaderProps) => {
 	return (
 		<RelationPageHeader
 			illustration={
 				<Illustration
-					illustration={song.data.illustration}
+					illustration={song ? song.illustration : undefined}
 					quality="medium"
 				/>
 			}
-			title={song.data.name}
-			secondTitle={formatArtists(song.data.artist, song.data.featuring)}
-			trailing={<SongContextualMenu song={song.data} />}
+			title={song?.name}
+			secondTitle={
+				song ? formatArtists(song.artist, song.featuring) : undefined
+			}
+			trailing={song ? <SongContextualMenu song={song} /> : <></>}
 		/>
 	);
 };

@@ -27,26 +27,19 @@ import API from "../../api/api";
 export const getServerSideProps = prepareSSR((context) => {
 	const searchQuery = context.query.query?.at(0) ?? null;
 	const type = (context.query.type as string) ?? null;
-	const defaultQuerySortParams = { sortBy: "name", order: "asc" } as const;
 
 	return {
 		additionalProps: { searchQuery, type },
 		infiniteQueries: searchQuery
 			? [
-					API.getArtists(
-						{ query: searchQuery },
-						defaultQuerySortParams,
-					),
-					API.getAlbums(
-						{ query: searchQuery },
-						defaultQuerySortParams,
-						["artist"],
-					),
-					API.getSongs(
-						{ query: searchQuery },
-						defaultQuerySortParams,
-						["artist", "featuring"],
-					),
+					API.getArtists({ query: searchQuery }),
+					API.getAlbums({ query: searchQuery }, undefined, [
+						"artist",
+					]),
+					API.getSongs({ query: searchQuery }, undefined, [
+						"artist",
+						"featuring",
+					]),
 				]
 			: [],
 	};

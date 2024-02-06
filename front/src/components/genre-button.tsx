@@ -18,20 +18,20 @@
 
 import Link from "next/link";
 import Genre from "../models/genre";
-import { Chip } from "@mui/material";
+import { Chip, Skeleton } from "@mui/material";
 
 type GenreButtonProps = {
-	genre: Pick<Genre, "name" | "slug">;
+	genre: Pick<Genre, "name" | "slug"> | undefined;
 	sx?: Parameters<typeof Chip>[0]["sx"];
 };
 
 const GenreButton = (props: GenreButtonProps) => {
 	return (
-		<Link href={`/genres/${props.genre.slug}`}>
+		<Link href={props.genre ? `/genres/${props.genre.slug}` : {}}>
 			<Chip
 				variant="outlined"
 				clickable
-				label={props.genre.name}
+				label={props.genre?.name ?? <Skeleton width={"50px"} />}
 				sx={props.sx ?? { color: "primary" }}
 			/>
 		</Link>

@@ -87,17 +87,15 @@ const InfiniteAlbumView = (
 						order: options?.order ?? "asc",
 					})
 				}
-				renderListItem={(item: AlbumWithRelations<"artist">) => (
+				renderListItem={(item) => (
 					<AlbumItem
 						album={item}
-						key={item.id}
 						formatSubtitle={props.formatSubtitle}
 					/>
 				)}
-				renderGridItem={(item: AlbumWithRelations<"artist">) => (
+				renderGridItem={(item) => (
 					<AlbumTile
 						album={item}
-						key={item.id}
 						formatSubtitle={props.formatSubtitle}
 					/>
 				)}

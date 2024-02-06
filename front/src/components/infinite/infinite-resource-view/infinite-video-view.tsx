@@ -58,15 +58,19 @@ const InfiniteVideoView = (
 						order: options?.order ?? "asc",
 					})
 				}
-				renderListItem={(item: VideoWithRelations<"artist">) => <></>}
-				renderGridItem={(item: VideoWithRelations<"artist">) => (
+				renderListItem={(item) => <></>}
+				renderGridItem={(item) => (
 					<VideoTile
-						video={{
-							...item.track,
-							song: item,
-						}}
+						video={
+							item
+								? {
+										...item.track,
+										song: item,
+									}
+								: undefined
+						}
 						formatSubtitle={
-							props.formatSubtitle
+							item && props.formatSubtitle
 								? () =>
 										(
 											props.formatSubtitle as Required<

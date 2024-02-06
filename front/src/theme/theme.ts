@@ -99,6 +99,14 @@ const GlobalTheme: Omit<ThemeOptions, "palette"> = {
 				},
 			},
 		},
+		MuiSkeleton: {
+			styleOverrides: {
+				root: {
+					variant: "text",
+					width: "100%",
+				},
+			},
+		},
 	},
 };
 

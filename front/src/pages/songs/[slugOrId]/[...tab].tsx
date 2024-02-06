@@ -25,7 +25,6 @@ import {
 	useQuery,
 	useQueryClient,
 } from "../../../api/use-query";
-import LoadingPage from "../../../components/loading/loading-page";
 import {
 	Box,
 	Button,
@@ -47,6 +46,7 @@ import { PlayIcon } from "../../../components/icons";
 import GenreButton from "../../../components/genre-button";
 import GradientBackground from "../../../components/gradient-background";
 import { useTranslation } from "react-i18next";
+import { generateArray } from "../../../utils/gen-list";
 
 export const getServerSideProps = prepareSSR((context) => {
 	const songIdentifier = getSlugOrId(context.params);
@@ -54,8 +54,12 @@ export const getServerSideProps = prepareSSR((context) => {
 	return {
 		additionalProps: { songIdentifier },
 		queries: [
-			API.getSong(songIdentifier, ["artist", "externalIds", "featuring"]),
-			API.getSongLyrics(songIdentifier),
+			API.getSong(songIdentifier, [
+				"artist",
+				"externalIds",
+				"featuring",
+				"lyrics",
+			]),
 		],
 		infiniteQueries: [
 			API.getGenres({ song: songIdentifier }),
@@ -90,40 +94,41 @@ const SongPage = (props: InferSSRProps<typeof getServerSideProps>) => {
 	const queryClient = useQueryClient();
 	const songIdentifier =
 		props.additionalProps?.songIdentifier ?? getSlugOrId(router.query);
-	const lyrics = useQuery(API.getSongLyrics, songIdentifier);
 	const song = useQuery(() =>
-		API.getSong(songIdentifier, ["artist", "externalIds", "featuring"]),
+		API.getSong(songIdentifier, [
+			"artist",
+			"externalIds",
+			"featuring",
+			"lyrics",
+		]),
 	);
 	const genres = useInfiniteQuery(API.getGenres, { song: songIdentifier });
 	const dispatch = useDispatch();
 
-	if (!song.data || !genres.data) {
-		return <LoadingPage />;
-	}
 	return (
 		<Box sx={{ width: "100%" }}>
-			{song.data?.illustration && (
-				<GradientBackground colors={song.data?.illustration.colors} />
-			)}
+			<GradientBackground colors={song.data?.illustration?.colors} />
 			<SongRelationPageHeader song={song.data} />
 			<Button
 				variant="contained"
 				sx={{ width: "100%", marginTop: 1 }}
 				endIcon={<PlayIcon />}
-				onClick={() =>
-					queryClient
-						.fetchQuery(
-							API.getMasterTrack(songIdentifier, ["release"]),
-						)
-						.then((master) =>
-							dispatch(
-								playTrack({
-									track: master,
-									artist: song.data.artist,
-									release: master.release,
-								}),
-							),
-						)
+				onClick={
+					song.data &&
+					(() =>
+						queryClient
+							.fetchQuery(
+								API.getMasterTrack(songIdentifier, ["release"]),
+							)
+							.then((master) =>
+								dispatch(
+									playTrack({
+										track: master,
+										artist: song.data.artist,
+										release: master.release,
+									}),
+								),
+							))
 				}
 			>
 				{t("play")}
@@ -155,7 +160,9 @@ const SongPage = (props: InferSSRProps<typeof getServerSideProps>) => {
 			<Box sx={{ paddingY: 2 }}>
 				{tab == "more" && (
 					<>
-						{(genres.data.pages.at(0)?.items.length ?? 0) != 0 && (
+						{(!genres.data ||
+							(genres.data.pages.at(0)?.items.length ?? 0) !=
+								0) && (
 							<Stack
 								direction="row"
 								sx={{
@@ -167,17 +174,15 @@ const SongPage = (props: InferSSRProps<typeof getServerSideProps>) => {
 								<Typography sx={{ overflow: "unset" }}>
 									{`${t("genres")}: `}
 								</Typography>
-								{genres.data.pages
-									.at(0)
-									?.items.map((genre) => (
-										<GenreButton
-											key={genre.slug}
-											genre={genre}
-										/>
-									))}
+								{(
+									genres.data?.pages.at(0)?.items ??
+									generateArray(2)
+								).map((genre, index) => (
+									<GenreButton key={index} genre={genre} />
+								))}
 							</Stack>
 						)}
-						{song.data.externalIds.length != 0 && (
+						{(!song.data || song.data.externalIds.length != 0) && (
 							<Stack
 								direction="row"
 								sx={{
@@ -190,33 +195,36 @@ const SongPage = (props: InferSSRProps<typeof getServerSideProps>) => {
 								<Typography sx={{ overflow: "unset" }}>
 									{`${t("externalLinks")}: `}
 								</Typography>
-								{song.data.externalIds
-									.filter(({ url }) => url !== null)
-									.map((externalId) => (
-										<ExternalIdBadge
-											key={externalId.provider.name}
-											externalId={externalId}
-										/>
-									))}
+								{(
+									song.data?.externalIds.filter(
+										({ url }) => url !== null,
+									) ?? generateArray(2)
+								).map((externalId, index) => (
+									<ExternalIdBadge
+										key={index}
+										externalId={externalId}
+									/>
+								))}
 							</Stack>
 						)}
 						<Typography variant="body1" sx={{ paddingTop: 2 }}>
-							{song.data.externalIds
+							{song.data?.externalIds
 								.map(({ description }) => description)
 								.filter((desc) => desc !== null)
 								.at(0)}
 						</Typography>
 					</>
 				)}
-				{tab == "lyrics" &&
-					(lyrics.isLoading ? (
-						<LoadingPage />
-					) : (
-						<LyricsBox
-							songName={song.data.name}
-							lyrics={lyrics.data}
-						/>
-					))}
+				{tab == "lyrics" && (
+					<LyricsBox
+						songName={song.data?.name}
+						lyrics={
+							song.data
+								? song.data.lyrics?.content.split("\n") ?? null
+								: undefined
+						}
+					/>
+				)}
 				{tab == "versions" && (
 					<InfiniteSongView
 						disableShuffle
@@ -225,7 +233,7 @@ const SongPage = (props: InferSSRProps<typeof getServerSideProps>) => {
 								{
 									library: library ?? undefined,
 									type,
-									versionsOf: song.data.id,
+									versionsOf: songIdentifier,
 								},
 								{ sortBy, order },
 								["artist", "featuring"],

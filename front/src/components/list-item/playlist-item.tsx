@@ -23,7 +23,7 @@ import ListItem from "./item";
 import PlaylistContextualMenu from "../contextual-menu/playlist-contextual-menu";
 
 type PlaylistItemProps = {
-	playlist: Playlist;
+	playlist: Playlist | undefined;
 };
 
 /**
@@ -36,15 +36,18 @@ const PlaylistItem = ({ playlist }: PlaylistItemProps) => {
 		<ListItem
 			icon={
 				<Illustration
-					illustration={playlist.illustration}
+					illustration={playlist?.illustration}
 					imgProps={{ objectFit: "cover" }}
 					quality="low"
 					fallback={<PlaylistIcon />}
 				/>
 			}
-			href={`/playlists/${playlist.slug}`}
-			title={playlist.name}
-			trailing={<PlaylistContextualMenu playlist={playlist} />}
+			secondTitle={null}
+			href={playlist ? `/playlists/${playlist.slug}` : undefined}
+			title={playlist?.name}
+			trailing={
+				playlist && <PlaylistContextualMenu playlist={playlist} />
+			}
 		/>
 	);
 };

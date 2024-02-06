@@ -17,16 +17,16 @@
  */
 
 import { Avatar } from "@mui/material";
-import Artist from "../models/artist";
 import Illustration from "./illustration";
+import IllustrationModel from "../models/illustration";
 
 const ArtistAvatar = (props: {
-	artist: Artist;
+	illustration: IllustrationModel | undefined;
 	quality: Parameters<typeof Illustration>[0]["quality"];
 }) => {
 	return (
 		<Avatar
-			alt={props.artist.slug}
+			alt={props.illustration?.url}
 			sx={{
 				width: "100%",
 				height: "100%",
@@ -36,7 +36,7 @@ const ArtistAvatar = (props: {
 		>
 			<Illustration
 				imgProps={{ objectFit: "cover" }}
-				illustration={props.artist.illustration}
+				illustration={props.illustration}
 				quality={props.quality}
 			/>
 		</Avatar>

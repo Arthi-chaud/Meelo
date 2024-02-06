@@ -477,10 +477,14 @@ describe("Song Service", () => {
 
 	describe("Increment a song's play count", () => {
 		it("should increment the song's play count", async () => {
-			const user = await dummyRepository.user.create({ data: { admin: true, name: 'A', password: 'B' } })
+			const user = await dummyRepository.user.create({
+				data: { admin: true, name: "A", password: "B" },
+			});
 			const queryParemeters = { id: dummyRepository.songA2.id };
 			await songService.incrementPlayCount(user.id, queryParemeters);
-			const playCount = await dummyRepository.playHistory.count({ where: { userId: user.id, songId: queryParemeters.id } });
+			const playCount = await dummyRepository.playHistory.count({
+				where: { userId: user.id, songId: queryParemeters.id },
+			});
 
 			expect(playCount).toBe(1);
 		});

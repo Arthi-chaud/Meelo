@@ -16,7 +16,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { Box, IconButton, useTheme } from "@mui/material";
+import { Box, IconButton, Skeleton, useTheme } from "@mui/material";
 import Image, { ImageProps } from "next/image";
 import { useState } from "react";
 import API from "../api/api";
@@ -54,9 +54,9 @@ type IllustrationProps = {
 	 * URL of the illustration to display
 	 * Must be an URL from an API response
 	 */
-	url: string | null;
+	url: string | null | undefined;
 
-	illustration: IllustrationModel | null;
+	illustration: IllustrationModel | null | undefined;
 }>;
 
 const Illustration = (props: IllustrationProps) => {
@@ -87,6 +87,19 @@ const Illustration = (props: IllustrationProps) => {
 				display: "flex",
 			}}
 		>
+			<Fade
+				in={props.illustration === undefined && props.url === undefined}
+				unmountOnExit
+			>
+				<Skeleton
+					variant="rounded"
+					sx={{
+						width: "100%",
+						height: "100%",
+						aspectRatio: props.aspectRatio?.toString() ?? "1",
+					}}
+				/>
+			</Fade>
 			{blurhash && (
 				<Fade in={loadingState !== "errored"} unmountOnExit>
 					<Box
@@ -169,7 +182,9 @@ const Illustration = (props: IllustrationProps) => {
 							API.getIllustrationURL(url) +
 							(props.quality == "original"
 								? ""
-								: `?quality=${props.quality}`)
+								: `${url.includes("?") ? "&" : "?"}quality=${
+										props.quality
+									}`)
 						}
 					/>
 				)}

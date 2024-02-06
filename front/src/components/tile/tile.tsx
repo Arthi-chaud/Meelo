@@ -22,6 +22,7 @@ import {
 	CardContent,
 	CardMedia,
 	Link as MUILink,
+	Skeleton,
 	Typography,
 	useTheme,
 } from "@mui/material";
@@ -72,7 +73,7 @@ const titleStyle = {
 } as const;
 
 type TileProps = {
-	title: string;
+	title: string | undefined;
 	illustration: JSX.Element;
 	contextualMenu?: JSX.Element;
 	/**
@@ -86,7 +87,7 @@ type TileProps = {
 	/* Additional props to customize card */
 	cardProps?: Parameters<typeof Card>[0];
 } & RequireAllOrNone<{
-	subtitle?: string;
+	subtitle: string | undefined | null;
 	/**
 	 * URL to push on secondary tile tap
 	 */
@@ -96,8 +97,10 @@ type TileProps = {
 const Tile = (props: TileProps) => {
 	const theme = useTheme();
 	const contextualMenu = props.contextualMenu;
+	// If the title is not loaded, we remove the hovering effect on the title
+	const CardComponent = props.title === undefined ? Card : StyledCard;
 	const component = (
-		<StyledCard
+		<CardComponent
 			{...props.cardProps}
 			sx={{
 				overflow: "visible",
@@ -145,15 +148,25 @@ const Tile = (props: TileProps) => {
 							transition: "width .3s",
 							width: "100%",
 							fontWeight: "medium",
-							":hover": { textDecoration: "underline" },
-							textAlign: props.subtitle ? "left" : "center",
+							":hover": {
+								// Disable Underline When Title is not loaded
+								textDecoration:
+									props.title === undefined
+										? undefined
+										: "underline",
+							},
+							// If Null, no subtitle is needed
+							textAlign:
+								props.subtitle !== null ? "left" : "center",
 							// To prevent shift caused by ctxt menu
-							paddingY: props.subtitle ? 0 : 1,
+							paddingY: props.subtitle !== null ? 0 : 1,
 							cursor: props.onClick ? "pointer" : undefined,
 						}}
 						style={{ ...titleStyle }}
 					>
-						{props.href ? (
+						{props.title === undefined ? (
+							<Skeleton />
+						) : props.href ? (
 							<MUILink
 								component={Link}
 								underline="hover"
@@ -165,7 +178,7 @@ const Tile = (props: TileProps) => {
 							props.title
 						)}
 					</Typography>
-					{props.subtitle && (
+					{props.subtitle !== null && (
 						<Typography
 							variant="body2"
 							sx={{
@@ -181,10 +194,10 @@ const Tile = (props: TileProps) => {
 									color={"inherit"}
 									href={props.secondaryHref}
 								>
-									{props.subtitle}
+									{props.subtitle ?? <Skeleton width="70%" />}
 								</MUILink>
 							) : (
-								props.subtitle
+								props.subtitle ?? <Skeleton width="70%" />
 							)}
 						</Typography>
 					)}
@@ -199,7 +212,7 @@ const Tile = (props: TileProps) => {
 					{contextualMenu}
 				</Box>
 			</CardContent>
-		</StyledCard>
+		</CardComponent>
 	);
 
 	return component;

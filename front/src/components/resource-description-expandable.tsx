@@ -16,14 +16,15 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { Box, Link } from "@mui/material";
+import { Box, Link, Skeleton } from "@mui/material";
 import ExternalId from "../models/external-id";
 import { useState } from "react";
 import { capitalCase } from "change-case";
 import { useTranslation } from "react-i18next";
+import { generateArray } from "../utils/gen-list";
 
 type Props = {
-	externalDescription: ExternalId;
+	externalDescription: ExternalId | undefined;
 };
 
 const ResourceDescriptionExpandable = ({ externalDescription }: Props) => {
@@ -41,26 +42,34 @@ const ResourceDescriptionExpandable = ({ externalDescription }: Props) => {
 
 	return (
 		<Box id="description" sx={isExpanded ? bigBoxStyle : smallBoxStyle}>
-			{externalDescription.description}
+			{externalDescription
+				? externalDescription.description
+				: generateArray(5).map((_, index) => <Skeleton key={index} />)}
 			{isExpanded && (
 				<>
 					{" Source: "}
 					<Link
-						href={externalDescription.url ?? undefined}
+						href={externalDescription?.url ?? undefined}
 						rel="noopener noreferrer"
 						target="_blank"
 					>
-						{capitalCase(externalDescription.provider.name)}
+						{externalDescription ? (
+							capitalCase(externalDescription?.provider.name)
+						) : (
+							<Skeleton width={50} />
+						)}
 					</Link>
 					{"."}
 				</>
 			)}{" "}
-			<Link
-				href="#description"
-				onClick={() => setIsExpanded(!isExpanded)}
-			>
-				{t(isExpanded ? "showLess" : "showMore")}
-			</Link>
+			{externalDescription && (
+				<Link
+					href="#description"
+					onClick={() => setIsExpanded(!isExpanded)}
+				>
+					{t(isExpanded ? "showLess" : "showMore")}
+				</Link>
+			)}
 		</Box>
 	);
 };
