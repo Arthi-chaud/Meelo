@@ -49,10 +49,6 @@ export default class DiscogsProvider
 		return "https://www.discogs.com";
 	}
 
-	getProviderBannerUrl(): string {
-		return "https://st.discogs.com/7790e868083f99e9f3293cb4a33581347374b4c6/images/discogs-primary-logo.png";
-	}
-
 	getProviderIconUrl(): string {
 		return "https://upload.wikimedia.org/wikipedia/commons/thumb/6/69/Discogs_record_icon.svg/240px-Discogs_record_icon.svg.png";
 	}

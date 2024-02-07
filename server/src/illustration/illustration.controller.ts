@@ -22,18 +22,12 @@ import {
 	Delete,
 	Get,
 	Header,
-	HttpStatus,
 	Param,
 	Post,
 	Query,
 	Response,
 } from "@nestjs/common";
-import {
-	ApiOperation,
-	ApiParam,
-	ApiPropertyOptional,
-	ApiTags,
-} from "@nestjs/swagger";
+import { ApiOperation, ApiPropertyOptional, ApiTags } from "@nestjs/swagger";
 import ArtistService from "src/artist/artist.service";
 import ReleaseService from "src/release/release.service";
 import TrackService from "src/track/track.service";
@@ -53,7 +47,6 @@ import ProviderIllustrationService from "src/providers/provider-illustration.ser
 import ProviderService from "src/providers/provider.service";
 import ProvidersSettings from "src/providers/models/providers.settings";
 import { UnknownProviderError } from "src/providers/provider.exception";
-import { MeeloException } from "src/exceptions/meelo-exception";
 import PlaylistService from "src/playlist/playlist.service";
 import PlaylistQueryParameters from "src/playlist/models/playlist.query-parameters";
 import IllustrationRepository from "./illustration.repository";
@@ -354,17 +347,12 @@ export class IllustrationController {
 	}
 
 	@ApiOperation({
-		summary: "Get a Provider's icon or banner",
-	})
-	@ApiParam({
-		name: "type",
-		enum: ["icon", "banner"],
+		summary: "Get a Provider's icon",
 	})
 	@Cached()
-	@Get("providers/:name/:type")
+	@Get("providers/:name/icon")
 	async getProviderIillustration(
 		@Param("name") providerName: string,
-		@Param("type") type: string,
 		@Query() dimensions: IllustrationDimensionsDto,
 		@Response({ passthrough: true }) res: Response,
 	) {
@@ -377,25 +365,8 @@ export class IllustrationController {
 		if (!pNameIsValid(providerName)) {
 			throw new UnknownProviderError(providerName);
 		}
-		switch (type) {
-			case "icon":
-				illustrationPath =
-					this.providerIllustrationService.buildIconPath(
-						providerName,
-					);
-				break;
-			case "banner":
-				illustrationPath =
-					this.providerIllustrationService.buildBannerPath(
-						providerName,
-					);
-				break;
-			default:
-				throw new MeeloException(
-					HttpStatus.BAD_REQUEST,
-					"Invalid Provider Illustration type",
-				);
-		}
+		illustrationPath =
+			this.providerIllustrationService.buildIconPath(providerName);
 		return this.illustrationService.streamIllustration(
 			illustrationPath,
 			`${providerName}-${parse(illustrationPath).name}`,

@@ -63,11 +63,6 @@ export default abstract class IProvider<SettingsType = unknown> {
 	}
 
 	/**
-	 * The URL to get the provider's Banner
-	 */
-	abstract getProviderBannerUrl(): string;
-
-	/**
 	 * The URL to get the provider's Icon
 	 */
 	abstract getProviderIconUrl(): string;

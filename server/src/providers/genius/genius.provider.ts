@@ -90,10 +90,6 @@ export default class GeniusProvider
 		return "https://genius.com";
 	}
 
-	getProviderBannerUrl(): string {
-		return "https://t2.genius.com/unsafe/440x440/https:%2F%2Fimages.genius.com%2F1d88f9c0c8623d60cf6d85ad3b38a6de.999x999x1.png";
-	}
-
 	getProviderIconUrl(): string {
 		return "https://images.genius.com/8ed669cadd956443e29c70361ec4f372.1000x1000x1.png";
 	}

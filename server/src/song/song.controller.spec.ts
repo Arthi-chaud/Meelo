@@ -206,7 +206,6 @@ describe("Song Controller", () => {
 									homepage: providerService
 										.getProviderById(provider.id)
 										.getProviderHomepage(),
-									banner: `/illustrations/providers/${provider.name}/banner`,
 									icon: `/illustrations/providers/${provider.name}/icon`,
 								},
 								description: "Hey",

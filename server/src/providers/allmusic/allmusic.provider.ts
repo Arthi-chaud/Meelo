@@ -37,10 +37,6 @@ export default class AllMusicProvider
 		super("allMusic");
 	}
 
-	getProviderBannerUrl(): string {
-		return "https://d39w11zmd7f11d.cloudfront.net/wp-content/uploads/2020/09/AllMusic-inline.jpg";
-	}
-
 	getProviderIconUrl(): string {
 		return "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a0/AllMusic_Logo.svg/187px-AllMusic_Logo.svg.png";
 	}

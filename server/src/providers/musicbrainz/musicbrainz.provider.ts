@@ -66,10 +66,6 @@ export default class MusicBrainzProvider
 		return "https://musicbrainz.org";
 	}
 
-	getProviderBannerUrl(): string {
-		return "https://wiki.musicbrainz.org/images/a/a9/MusicBrainz_Logo_Transparent.png";
-	}
-
 	getProviderIconUrl(): string {
 		return "https://s3-us-west-1.amazonaws.com/coppertino/vox-blog/artwork-musicbrainz.png";
 	}

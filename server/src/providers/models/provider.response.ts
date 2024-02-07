@@ -33,11 +33,6 @@ export default class ProviderResponse {
 	homepage: string;
 
 	@ApiProperty({
-		description: "Local URL to the provider's banner",
-	})
-	banner: string;
-
-	@ApiProperty({
 		description: "Local URL to the provider's icon",
 	})
 	icon: string;
