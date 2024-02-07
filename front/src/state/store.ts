@@ -18,7 +18,6 @@
 
 import { StateFromReducersMapObject, configureStore } from "@reduxjs/toolkit";
 import userSlice from "./userSlice";
-import playlerSlice from "./playerSlice";
 import storage from "redux-persist/lib/storage";
 import {
 	FLUSH,
@@ -55,7 +54,6 @@ const getStorage = () =>
 		: storage;
 
 const Reducers = {
-	player: playlerSlice,
 	user: userSlice,
 };
 

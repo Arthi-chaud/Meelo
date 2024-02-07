@@ -20,12 +20,11 @@ import API from "../../api/api";
 import { TrackWithRelations } from "../../models/track";
 import Illustration from "../illustration";
 import ListItem from "./item";
-import { useDispatch } from "react-redux";
-import { playTrack } from "../../state/playerSlice";
 import TrackContextualMenu from "../contextual-menu/track-contextual-menu";
 import { Grid } from "@mui/material";
 import { useQueryClient } from "../../api/use-query";
 import { MasterIcon, TrackIcon } from "../icons";
+import { usePlayerContext } from "../../contexts/player";
 
 type TrackItemProps = {
 	track: TrackWithRelations<"release" | "song"> | undefined;
@@ -38,7 +37,7 @@ type TrackItemProps = {
  */
 const TrackItem = ({ track }: TrackItemProps) => {
 	const release = track?.release;
-	const dispatch = useDispatch();
+	const { playTrack } = usePlayerContext();
 	const isMaster = track ? track.song.masterId == track.id : false;
 	const queryClient = useQueryClient();
 
@@ -58,13 +57,11 @@ const TrackItem = ({ track }: TrackItemProps) => {
 					queryClient
 						.fetchQuery(API.getSong(track.songId, ["artist"]))
 						.then((song) => {
-							dispatch(
-								playTrack({
-									artist: song.artist,
-									track,
-									release,
-								}),
-							);
+							playTrack({
+								artist: song.artist,
+								track,
+								release,
+							});
 						}))
 			}
 			title={track?.name}

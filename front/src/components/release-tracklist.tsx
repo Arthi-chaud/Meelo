@@ -30,11 +30,9 @@ import {
 	Typography,
 	useTheme,
 } from "@mui/material";
-import { useDispatch } from "react-redux";
 import Release from "../models/release";
 import Track from "../models/track";
 import Tracklist from "../models/tracklist";
-import { playTracks } from "../state/playerSlice";
 import Artist from "../models/artist";
 import formatDuration from "../utils/formatDuration";
 import ReleaseTrackContextualMenu from "./contextual-menu/release-track-contextual-menu";
@@ -42,8 +40,10 @@ import { SongWithRelations } from "../models/song";
 import { VideoIcon } from "./icons";
 import formatArtists from "../utils/formatArtists";
 import { useTranslation } from "react-i18next";
-import { Fragment } from "react";
+import { Fragment, useMemo } from "react";
 import { generateArray } from "../utils/gen-list";
+import { TrackState, usePlayerContext } from "../contexts/player";
+import { Audio } from "react-loader-spinner";
 
 type ReleaseTracklistProps = {
 	mainArtist: Artist | undefined | null;
@@ -63,7 +63,19 @@ const ReleaseTrackList = ({
 }: ReleaseTracklistProps) => {
 	const { t } = useTranslation();
 	const theme = useTheme();
-	const dispatch = useDispatch();
+	const PlayingIcon = () => (
+		<Audio
+			height="25"
+			width="20"
+			color={theme.palette.text.disabled}
+			ariaLabel="bars-loading"
+		/>
+	);
+	const { playTracks, playlist, cursor } = usePlayerContext();
+	const currentlyPlayingTrack = useMemo(
+		() => playlist[cursor] as TrackState | undefined,
+		[playlist, cursor],
+	);
 	const flatTracklist = tracklist
 		? Array.from(Object.values(tracklist)).flat()
 		: undefined;
@@ -133,23 +145,21 @@ const ReleaseTrackList = ({
 										currentTrack &&
 										release &&
 										(() =>
-											dispatch(
-												playTracks({
-													tracks: flatTracklist.map(
-														(flatTrack) => ({
-															track: flatTrack,
-															release,
-															artist: flatTrack
-																.song.artist,
-														}),
-													),
-													cursor: flatTracklist.findIndex(
-														(flatTrack) =>
-															flatTrack.id ==
-															currentTrack.id,
-													),
-												}),
-											))
+											playTracks({
+												tracks: flatTracklist.map(
+													(flatTrack) => ({
+														track: flatTrack,
+														release,
+														artist: flatTrack.song
+															.artist,
+													}),
+												),
+												cursor: flatTracklist.findIndex(
+													(flatTrack) =>
+														flatTrack.id ==
+														currentTrack.id,
+												),
+											}))
 									}
 									sx={{
 										borderTopRightRadius: 0,
@@ -157,11 +167,21 @@ const ReleaseTrackList = ({
 									}}
 								>
 									<ListItemIcon>
-										<Typography color="text.disabled">
-											{currentTrack?.trackIndex ?? (
-												<Skeleton width="30px" />
-											)}
-										</Typography>
+										{currentTrack ? (
+											currentTrack.id ===
+											currentlyPlayingTrack?.track.id ? (
+												<PlayingIcon />
+											) : (
+												<Typography color="text.disabled">
+													{currentTrack.trackIndex}
+												</Typography>
+											)
+										) : (
+											<Skeleton
+												width="30px"
+												sx={{ color: "text.disabled" }}
+											/>
+										)}
 									</ListItemIcon>
 									<ListItemText
 										primary={

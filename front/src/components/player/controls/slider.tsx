@@ -18,14 +18,23 @@
 
 import { Grid, Slider } from "@mui/material";
 import DurationComponent from "./duration";
+import { MutableRefObject, useEffect, useState } from "react";
 
 type PlayerSliderProps = {
 	onSlide: (newProgress: number) => void;
 	duration?: number;
-	progress?: number;
+	progress?: MutableRefObject<number | null>;
 };
 
 const PlayerSlider = (props: PlayerSliderProps) => {
+	const [progress, setProgress] = useState<null | number>(null);
+
+	useEffect(() => {
+		const interval = setInterval(() => {
+			setProgress(props.progress?.current ?? null);
+		}, 500);
+		return () => clearInterval(interval);
+	}, []);
 	return (
 		<Grid
 			container
@@ -39,29 +48,30 @@ const PlayerSlider = (props: PlayerSliderProps) => {
 			}}
 		>
 			<Grid item xs="auto">
-				<DurationComponent time={props.progress ?? undefined} />
+				<DurationComponent time={progress ?? undefined} />
 			</Grid>
 			<Grid item xs>
 				<Slider
 					style={{ paddingBottom: 0 }}
-					disabled={!props.duration || props.progress === undefined}
+					disabled={!props.duration || progress === null}
 					size="small"
 					color="secondary"
 					valueLabelDisplay="off"
 					onChange={(event) => {
 						if (props.duration !== undefined) {
 							const target: any = event.target;
+							const newProgress =
+								(target.value / 100) * props.duration;
 
-							props.onSlide(
-								(target.value / 100) * props.duration,
-							);
+							setProgress(newProgress);
+							props.onSlide(newProgress);
 						}
 					}}
 					value={
-						props.duration && props.progress !== undefined
-							? (props.progress * 100) /
+						props.duration && progress !== null
+							? (progress * 100) /
 								(props.duration == 0
-									? props.progress
+									? progress
 									: props.duration)
 							: 0
 					}

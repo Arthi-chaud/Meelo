@@ -39,14 +39,13 @@ import SongRelationPageHeader from "../../../components/relation-page-header/son
 import { useState } from "react";
 import InfiniteSongView from "../../../components/infinite/infinite-resource-view/infinite-song-view";
 import InfiniteTrackView from "../../../components/infinite/infinite-resource-view/infinite-track-view";
-import { useDispatch } from "react-redux";
-import { playTrack } from "../../../state/playerSlice";
 import ExternalIdBadge from "../../../components/external-id-badge";
 import { PlayIcon } from "../../../components/icons";
 import GenreButton from "../../../components/genre-button";
 import GradientBackground from "../../../components/gradient-background";
 import { useTranslation } from "react-i18next";
 import { generateArray } from "../../../utils/gen-list";
+import { usePlayerContext } from "../../../contexts/player";
 
 export const getServerSideProps = prepareSSR((context) => {
 	const songIdentifier = getSlugOrId(context.params);
@@ -92,6 +91,7 @@ const SongPage = (props: InferSSRProps<typeof getServerSideProps>) => {
 	const router = useRouter();
 	const [tab, setTabs] = useState<(typeof tabs)[number]>(getTabFromQuery());
 	const queryClient = useQueryClient();
+	const { playTrack } = usePlayerContext();
 	const songIdentifier =
 		props.additionalProps?.songIdentifier ?? getSlugOrId(router.query);
 	const song = useQuery(() =>
@@ -103,7 +103,6 @@ const SongPage = (props: InferSSRProps<typeof getServerSideProps>) => {
 		]),
 	);
 	const genres = useInfiniteQuery(API.getGenres, { song: songIdentifier });
-	const dispatch = useDispatch();
 
 	return (
 		<Box sx={{ width: "100%" }}>
@@ -121,13 +120,11 @@ const SongPage = (props: InferSSRProps<typeof getServerSideProps>) => {
 								API.getMasterTrack(songIdentifier, ["release"]),
 							)
 							.then((master) =>
-								dispatch(
-									playTrack({
-										track: master,
-										artist: song.data.artist,
-										release: master.release,
-									}),
-								),
+								playTrack({
+									track: master,
+									artist: song.data.artist,
+									release: master.release,
+								}),
 							))
 				}
 			>
