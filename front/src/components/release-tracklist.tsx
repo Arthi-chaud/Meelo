@@ -40,9 +40,10 @@ import { SongWithRelations } from "../models/song";
 import { VideoIcon } from "./icons";
 import formatArtists from "../utils/formatArtists";
 import { useTranslation } from "react-i18next";
-import { Fragment } from "react";
+import { Fragment, useMemo } from "react";
 import { generateArray } from "../utils/gen-list";
-import { usePlayerContext } from "../contexts/player";
+import { TrackState, usePlayerContext } from "../contexts/player";
+import { Audio } from "react-loader-spinner";
 
 type ReleaseTracklistProps = {
 	mainArtist: Artist | undefined | null;
@@ -62,7 +63,19 @@ const ReleaseTrackList = ({
 }: ReleaseTracklistProps) => {
 	const { t } = useTranslation();
 	const theme = useTheme();
-	const { playTracks } = usePlayerContext();
+	const PlayingIcon = () => (
+		<Audio
+			height="25"
+			width="20"
+			color={theme.palette.text.disabled}
+			ariaLabel="bars-loading"
+		/>
+	);
+	const { playTracks, playlist, cursor } = usePlayerContext();
+	const currentlyPlayingTrack = useMemo(
+		() => playlist[cursor] as TrackState | undefined,
+		[playlist, cursor],
+	);
 	const flatTracklist = tracklist
 		? Array.from(Object.values(tracklist)).flat()
 		: undefined;
@@ -154,11 +167,21 @@ const ReleaseTrackList = ({
 									}}
 								>
 									<ListItemIcon>
-										<Typography color="text.disabled">
-											{currentTrack?.trackIndex ?? (
-												<Skeleton width="30px" />
-											)}
-										</Typography>
+										{currentTrack ? (
+											currentTrack.id ===
+											currentlyPlayingTrack?.track.id ? (
+												<PlayingIcon />
+											) : (
+												<Typography color="text.disabled">
+													{currentTrack.trackIndex}
+												</Typography>
+											)
+										) : (
+											<Skeleton
+												width="30px"
+												sx={{ color: "text.disabled" }}
+											/>
+										)}
 									</ListItemIcon>
 									<ListItemText
 										primary={
