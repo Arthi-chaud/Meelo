@@ -453,6 +453,8 @@ model ArtistExternalId {
 	artistId		Int
 	/// @description Short text about the related resource
 	description		String?
+	/// @description URL to an image of the artist
+	illustration	String?
 	/// @description The Provider
 	provider		Provider @relation(fields: [providerId], references: [id], onDelete: Cascade)
 	/// @description Unique numeric identifier of the provider

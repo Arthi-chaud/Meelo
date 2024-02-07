@@ -62,48 +62,24 @@ export default class ProvidersIllustrationService implements OnModuleInit {
 		return join(this.buildIllustrationFolderPath(providerName), "icon.png");
 	}
 
-	buildBannerPath(providerName: ProviderName): string {
-		return join(
-			this.buildIllustrationFolderPath(providerName),
-			"banner.png",
-		);
-	}
-
 	downloadMissingProviderImages() {
 		this.providerService.collectActions(async (provider) => {
-			const bannerPath = this.buildBannerPath(provider.name);
 			const iconPath = this.buildIconPath(provider.name);
 
 			if (!this.fileManagerService.fileExists(iconPath)) {
 				this.illustrationService
 					.downloadIllustration(provider.getProviderIconUrl())
-					.catch(() =>
+					.catch((e) => {
+						this.logger.error(e);
 						this.logger.error(
 							`Could not download ${provider.name}'s icon`,
-						),
-					)
+						);
+					})
 					.then((buffer) => {
 						if (buffer) {
 							this.illustrationService.saveIllustration(
 								buffer,
 								iconPath,
-							);
-						}
-					});
-			}
-			if (!this.fileManagerService.fileExists(bannerPath)) {
-				this.illustrationService
-					.downloadIllustration(provider.getProviderBannerUrl())
-					.catch(() =>
-						this.logger.error(
-							`Could not download ${provider.name}'s banner`,
-						),
-					)
-					.then((buffer) => {
-						if (buffer) {
-							this.illustrationService.saveIllustration(
-								buffer,
-								bannerPath,
 							);
 						}
 					});

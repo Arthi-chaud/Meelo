@@ -58,10 +58,9 @@ export default abstract class IProvider<SettingsType = unknown> {
 		this._settings = settings;
 	}
 
-	/**
-	 * The URL to get the provider's Banner
-	 */
-	abstract getProviderBannerUrl(): string;
+	get settings() {
+		return this._settings;
+	}
 
 	/**
 	 * The URL to get the provider's Icon
@@ -160,14 +159,20 @@ export default abstract class IProvider<SettingsType = unknown> {
 		return null;
 	}
 
-	/**
-	 * @returns the URL from the Provider of the artist's illustration
-	 * @param artistIdentifer The identifier provided by `getArtistIdentifier`
-	 */
-	getArtistIllustrationUrl(
-		_artistIdentifer: IdentifierType,
-	): Promise<string> {
-		throw new ProviderMethodNotAvailableError(this.name);
+	getMusicBrainzRelationKey(): string | null {
+		return null;
+	}
+
+	parseArtistIdentifierFromUrl(url: string): string | null {
+		return null;
+	}
+
+	parseAlbumIdentifierFromUrl(url: string): string | null {
+		return null;
+	}
+
+	parseSongIdentifierFromUrl(url: string): string | null {
+		return null;
 	}
 
 	/**

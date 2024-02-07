@@ -41,10 +41,6 @@ export default class WikipediaProvider
 			this.settingsSettings.settingsValues.providers.wikipedia;
 	}
 
-	getProviderBannerUrl(): string {
-		return "https://upload.wikimedia.org/wikipedia/commons/thumb/b/bb/Wikipedia_wordmark.svg/640px-Wikipedia_wordmark.svg.png";
-	}
-
 	getProviderIconUrl(): string {
 		return "https://upload.wikimedia.org/wikipedia/commons/thumb/9/97/Wikipedia-logo_thue.png/240px-Wikipedia-logo_thue.png";
 	}

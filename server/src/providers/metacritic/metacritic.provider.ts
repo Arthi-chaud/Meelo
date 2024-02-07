@@ -46,10 +46,6 @@ export default class MetacriticProvider
 		return "https://www.metacritic.com";
 	}
 
-	getProviderBannerUrl(): string {
-		return "https://upload.wikimedia.org/wikipedia/commons/thumb/4/48/Metacritic_logo.svg/640px-Metacritic_logo.svg.png";
-	}
-
 	getProviderIconUrl(): string {
 		return "https://iconape.com/wp-content/files/hk/120653/png/Metacritic_logo_original.png";
 	}

@@ -37,10 +37,6 @@ export default class AllMusicProvider
 		super("allMusic");
 	}
 
-	getProviderBannerUrl(): string {
-		return "https://d39w11zmd7f11d.cloudfront.net/wp-content/uploads/2020/09/AllMusic-inline.jpg";
-	}
-
 	getProviderIconUrl(): string {
 		return "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a0/AllMusic_Logo.svg/187px-AllMusic_Logo.svg.png";
 	}
@@ -55,6 +51,17 @@ export default class AllMusicProvider
 
 	getAlbumWikidataIdentifierProperty() {
 		return "P1729";
+	}
+
+	getMusicBrainzRelationKey(): string | null {
+		return "allmusic";
+	}
+
+	parseAlbumIdentifierFromUrl(url: string): string | null {
+		return (
+			url.match(/(https:\/\/www\.)?allmusic\.com\/album\/(?<ID>mw\d+)/i)
+				?.groups?.["ID"] ?? null
+		);
 	}
 
 	getAlbumURL(albumIdentifier: string): string {

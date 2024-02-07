@@ -207,7 +207,6 @@ describe("Release Controller", () => {
 								provider: {
 									name: "discogs",
 									homepage: "https://www.discogs.com",
-									banner: "/illustrations/providers/discogs/banner",
 									icon: "/illustrations/providers/discogs/icon",
 								},
 								description: "ABCDE",

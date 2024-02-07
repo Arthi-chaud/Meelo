@@ -90,10 +90,6 @@ export default class GeniusProvider
 		return "https://genius.com";
 	}
 
-	getProviderBannerUrl(): string {
-		return "https://t2.genius.com/unsafe/440x440/https:%2F%2Fimages.genius.com%2F1d88f9c0c8623d60cf6d85ad3b38a6de.999x999x1.png";
-	}
-
 	getProviderIconUrl(): string {
 		return "https://images.genius.com/8ed669cadd956443e29c70361ec4f372.1000x1000x1.png";
 	}
@@ -108,6 +104,10 @@ export default class GeniusProvider
 
 	getSongWikidataIdentifierProperty() {
 		return "P6218";
+	}
+
+	getMusicBrainzRelationKey(): string | null {
+		return "genius";
 	}
 
 	async getArtistMetadataByIdentifier(
@@ -125,6 +125,7 @@ export default class GeniusProvider
 
 			return {
 				value: artist.url.split("/").pop(),
+				illustration: artist.image_url ?? null,
 				description: desc.length ? desc : null,
 			};
 		} catch (err) {
@@ -155,6 +156,7 @@ export default class GeniusProvider
 						new Slug(song.primary_artist.name).toString(),
 						sluggedArtistName,
 					).similarity,
+					id: song.primary_artist.id,
 					url: song.primary_artist.url,
 				}))
 				.sort(
@@ -162,6 +164,13 @@ export default class GeniusProvider
 						artistB.similarity - artistA.similarity,
 				)
 				.at(0)!;
+			if (!id) {
+				throw new ProviderActionFailedError(
+					this.name,
+					"getArtistIdentifier",
+					"Artist Not found",
+				);
+			}
 			const artist = await this.fetchAPI("/artists/" + id)
 				.then((res) => res.artist)
 				.catch(() => null);
@@ -172,6 +181,7 @@ export default class GeniusProvider
 
 			return {
 				description: desc?.length ? desc : null,
+				illustration: artist.image_url ?? null,
 				value: url.split("/").pop(), // Retrieves last past of URL
 			};
 		} catch (err) {
@@ -206,19 +216,6 @@ export default class GeniusProvider
 
 	getArtistURL(artistIdentifier: string): string {
 		return `${this.getProviderHomepage()}/artists/${artistIdentifier}`;
-	}
-
-	async getArtistIllustrationUrl(artistIdentifer: string): Promise<string> {
-		const artist = await this.getArtistBySlug(artistIdentifer);
-
-		if (artist.image_url.includes("default_avatar")) {
-			throw new ProviderActionFailedError(
-				this.name,
-				"getArtistIllustrationUrl",
-				"No Image",
-			);
-		}
-		return artist.image_url;
 	}
 
 	async getAlbumMetadataByIdentifier(

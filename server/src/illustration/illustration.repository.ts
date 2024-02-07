@@ -790,41 +790,36 @@ export default class IllustrationRepository {
 	async downloadMissingArtistIllustrations() {
 		const artistsWithoutIllustrations =
 			await this.prismaService.artist.findMany({
-				where: { illustration: null },
-				include: { externalIds: true },
+				where: {
+					illustration: null,
+					externalIds: { some: { illustration: { not: null } } },
+				},
+				include: {
+					externalIds: { where: { illustration: { not: null } } },
+				},
 			});
 
 		await Promise.allSettled(
-			artistsWithoutIllustrations.map((artist) => {
-				return this.providerService.runAction(async (provider) => {
-					// We select the external id of the artist from the current provider
-					const externalIdProvider = artist.externalIds.find(
-						(id) =>
-							this.providerService.getProviderById(id.providerId)
-								.name == provider.name,
-					);
-
-					if (!externalIdProvider) {
+			artistsWithoutIllustrations.map(async (artist) => {
+				for (const url of artist.externalIds
+					.map(({ illustration }) => illustration)
+					.filter((illustration) => illustration !== null)) {
+					try {
+						const buffer =
+							await this.illustrationService.downloadIllustration(
+								url!,
+							);
+						await this.createArtistIllustration(buffer, {
+							id: artist.id,
+						});
+						this.logger.verbose(
+							`Illustration found for artist '${artist.name}'`,
+						);
 						return;
+					} catch {
+						continue;
 					}
-					const illustrationUrl =
-						await provider.getArtistIllustrationUrl(
-							externalIdProvider.value,
-						);
-
-					return this.illustrationService
-						.downloadIllustration(illustrationUrl)
-						.then((buffer) =>
-							this.createArtistIllustration(buffer, {
-								id: artist.id,
-							}),
-						)
-						.then(() =>
-							this.logger.verbose(
-								`Illustration found for artist '${artist.name}'`,
-							),
-						);
-				});
+				}
 			}),
 		);
 	}

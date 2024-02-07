@@ -33,14 +33,14 @@ describe("Genius Provider", () => {
 				"Britney Spears",
 			);
 			expect(metadata.value).toBe("Britney-spears");
-			expect(metadata.description).toBeNull();
+			expect(metadata.description).not.toBeNull();
 		});
 		it("should get simple artist Identifier (2)", async () => {
 			const metadata = await geniusProvider.getArtistMetadataByName(
 				"Moloko",
 			);
 			expect(metadata.value).toBe("Moloko");
-			expect(metadata.description).toBeNull();
+			expect(metadata.description).not.toBeNull();
 		});
 		it("should get simple artist Identifier (3)", async () => {
 			const metadata = await geniusProvider.getArtistMetadataByName(
@@ -54,14 +54,17 @@ describe("Genius Provider", () => {
 				"P!nk",
 			);
 			expect(metadata.value).toBe("P-nk");
-			expect(metadata.description).toBeNull();
+			expect(metadata.illustration).toBe(
+				"https://images.genius.com/8e9d7b2c7e977c8009872f1b28d369c0.474x474x1.jpg",
+			);
+			expect(metadata.description).not.toBeNull();
 		});
 		it("should get artist with special character Identifier (1)", async () => {
 			const metadata = await geniusProvider.getArtistMetadataByName(
 				"Björk",
 			);
 			expect(metadata.value).toBe("Bjork");
-			expect(metadata.description).toBeNull();
+			expect(metadata.description).not.toBeNull();
 		});
 		it("should fail, as the artist does not exist", () => {
 			return expect(() =>
@@ -128,31 +131,6 @@ describe("Genius Provider", () => {
 			expect(geniusProvider.getSongURL("Moloko-fun-for-me")).toBe(
 				"https://genius.com/Moloko-fun-for-me-lyrics",
 			);
-		});
-	});
-
-	describe("Get Artist Illustration", () => {
-		it("should get artist illustration", async () => {
-			expect(await geniusProvider.getArtistIllustrationUrl("P-nk")).toBe(
-				"https://images.genius.com/8e9d7b2c7e977c8009872f1b28d369c0.474x474x1.jpg",
-			);
-		});
-		it("should get artist illustration", async () => {
-			expect(
-				await geniusProvider.getArtistIllustrationUrl("Holly-valance"),
-			).toBe(
-				"https://images.genius.com/64e96fa47d259435460506f726ec3fc5.552x552x1.jpg",
-			);
-		});
-		it("should fail, as the artist does not have an illustration", () => {
-			return expect(() =>
-				geniusProvider.getArtistIllustrationUrl("Peplab"),
-			).rejects.toThrow(ProviderActionFailedError);
-		});
-		it("should fail, as the artist does not exist", () => {
-			return expect(() =>
-				geniusProvider.getArtistIllustrationUrl("azertyugfdzaqsdbn"),
-			).rejects.toThrow(ProviderActionFailedError);
 		});
 	});
 

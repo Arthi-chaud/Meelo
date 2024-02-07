@@ -33,10 +33,6 @@ const ExternalId = yup.object({
 			 */
 			homepage: yup.string().required(),
 			/**
-			 * API-relative route to the provider's banner
-			 */
-			banner: yup.string().required(),
-			/**
 			 * API-relative route to the provider's icon
 			 */
 			icon: yup.string().required(),

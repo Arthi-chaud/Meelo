@@ -94,7 +94,6 @@ export class ExternalIdResponseBuilder extends ResponseBuilderInterceptor<
 			provider: {
 				name: provider.name,
 				homepage: provider.getProviderHomepage(),
-				banner: `/illustrations/providers/${provider.name}/banner`,
 				icon: `/illustrations/providers/${provider.name}/icon`,
 			},
 			value: externalId.value,
