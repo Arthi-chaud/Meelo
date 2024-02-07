@@ -39,6 +39,7 @@ import mime from "mime";
 import { InvalidRequestException } from "src/exceptions/meelo-exception";
 import { ImageQuality } from "./models/illustration-quality";
 import md5 from "md5";
+import { HttpService } from "@nestjs/axios";
 
 type IllustrationExtractStatus =
 	| "extracted"
@@ -54,7 +55,10 @@ type IllustrationExtractStatus =
 export default class IllustrationService {
 	private readonly logger = new Logger(IllustrationService.name);
 
-	constructor(private fileManagerService: FileManagerService) {}
+	constructor(
+		private fileManagerService: FileManagerService,
+		private readonly httpService: HttpService,
+	) {}
 
 	/**
 	 * Downloads an illustration from a URL, and stores it in the illustration file system
@@ -63,16 +67,18 @@ export default class IllustrationService {
 	 * @param outPath path to the file to save the illustration as
 	 */
 	async downloadIllustration(illustrationURL: string) {
-		for (let iteration = 0; iteration < 100; iteration++) {
-			try {
-				const image = await Jimp.read(illustrationURL);
-
-				return image.getBufferAsync(image.getMIME());
-			} catch {
-				throw new CantDownloadIllustrationException(illustrationURL);
-			}
+		try {
+			return Buffer.from(
+				(
+					await this.httpService.axiosRef.get(illustrationURL, {
+						responseType: "arraybuffer",
+					})
+				).data,
+				"binary",
+			);
+		} catch {
+			throw new CantDownloadIllustrationException(illustrationURL);
 		}
-		throw new CantDownloadIllustrationException(illustrationURL);
 	}
 
 	/**

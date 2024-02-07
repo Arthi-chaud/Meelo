@@ -69,11 +69,12 @@ export default class ProvidersIllustrationService implements OnModuleInit {
 			if (!this.fileManagerService.fileExists(iconPath)) {
 				this.illustrationService
 					.downloadIllustration(provider.getProviderIconUrl())
-					.catch(() =>
+					.catch((e) => {
+						this.logger.error(e);
 						this.logger.error(
 							`Could not download ${provider.name}'s icon`,
-						),
-					)
+						);
+					})
 					.then((buffer) => {
 						if (buffer) {
 							this.illustrationService.saveIllustration(
