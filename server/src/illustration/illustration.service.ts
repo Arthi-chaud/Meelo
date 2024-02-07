@@ -40,6 +40,7 @@ import { InvalidRequestException } from "src/exceptions/meelo-exception";
 import { ImageQuality } from "./models/illustration-quality";
 import md5 from "md5";
 import { HttpService } from "@nestjs/axios";
+import { version } from "package.json";
 
 type IllustrationExtractStatus =
 	| "extracted"
@@ -72,6 +73,9 @@ export default class IllustrationService {
 				(
 					await this.httpService.axiosRef.get(illustrationURL, {
 						responseType: "arraybuffer",
+						headers: {
+							"User-Agent": "Meelo v" + version,
+						},
 					})
 				).data,
 				"binary",

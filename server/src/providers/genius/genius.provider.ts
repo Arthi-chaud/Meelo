@@ -156,6 +156,7 @@ export default class GeniusProvider
 						new Slug(song.primary_artist.name).toString(),
 						sluggedArtistName,
 					).similarity,
+					id: song.primary_artist.id,
 					url: song.primary_artist.url,
 				}))
 				.sort(
@@ -163,6 +164,13 @@ export default class GeniusProvider
 						artistB.similarity - artistA.similarity,
 				)
 				.at(0)!;
+			if (!id) {
+				throw new ProviderActionFailedError(
+					this.name,
+					"getArtistIdentifier",
+					"Artist Not found",
+				);
+			}
 			const artist = await this.fetchAPI("/artists/" + id)
 				.then((res) => res.artist)
 				.catch(() => null);
@@ -208,19 +216,6 @@ export default class GeniusProvider
 
 	getArtistURL(artistIdentifier: string): string {
 		return `${this.getProviderHomepage()}/artists/${artistIdentifier}`;
-	}
-
-	async getArtistIllustrationUrl(artistIdentifer: string): Promise<string> {
-		const artist = await this.getArtistBySlug(artistIdentifer);
-
-		if (artist.image_url.includes("default_avatar")) {
-			throw new ProviderActionFailedError(
-				this.name,
-				"getArtistIllustrationUrl",
-				"No Image",
-			);
-		}
-		return artist.image_url;
 	}
 
 	async getAlbumMetadataByIdentifier(

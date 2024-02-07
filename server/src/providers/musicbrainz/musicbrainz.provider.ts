@@ -198,7 +198,7 @@ export default class MusicBrainzProvider
 				}))
 				.sort((workA, workB) => workB.similarity - workA.similarity)
 				.at(0);
-			if (bestMatch && bestMatch.similarity < 2) {
+			if (bestMatch && bestMatch.similarity > 0.9) {
 				return {
 					description: null,
 					value: bestMatch.id,

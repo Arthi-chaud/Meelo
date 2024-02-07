@@ -176,16 +176,6 @@ export default abstract class IProvider<SettingsType = unknown> {
 	}
 
 	/**
-	 * @returns the URL from the Provider of the artist's illustration
-	 * @param artistIdentifer The identifier provided by `getArtistIdentifier`
-	 */
-	getArtistIllustrationUrl(
-		_artistIdentifer: IdentifierType,
-	): Promise<string> {
-		throw new ProviderMethodNotAvailableError(this.name);
-	}
-
-	/**
 	 * @returns the lyrics of a song
 	 * @param songIdentifier the identifer of the song
 	 */
