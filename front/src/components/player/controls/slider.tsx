@@ -31,11 +31,7 @@ const PlayerSlider = (props: PlayerSliderProps) => {
 
 	useEffect(() => {
 		const interval = setInterval(() => {
-			if (props.progress) {
-				setProgress(props.progress?.current ?? null);
-			} else {
-				setProgress(null);
-			}
+			setProgress(props.progress?.current ?? null);
 		}, 500);
 		return () => clearInterval(interval);
 	}, []);

@@ -63,7 +63,6 @@ const Player = () => {
 		if (currentTrack == undefined) {
 			skipTrack();
 		}
-		setPlaying(true);
 		player.current?.play();
 	};
 	const pause = () => {
@@ -120,6 +119,7 @@ const Player = () => {
 		if (currentTrack) {
 			progress.current = 0;
 			notification?.close();
+			setPlaying(true);
 			document.title = `${currentTrack.track.name} - ${DefaultWindowTitle}`;
 			const newIllustrationURL = currentTrack.track.illustration?.url;
 
@@ -134,7 +134,6 @@ const Player = () => {
 			player
 				.current!.play()
 				.then(() => {
-					setPlaying(true);
 					player.current!.ontimeupdate = () => {
 						progress.current = player.current!.currentTime;
 					};
