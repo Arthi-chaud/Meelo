@@ -37,16 +37,14 @@ const Player = () => {
 	);
 	const { playPreviousTrack, playTracks, skipTrack, cursor, playlist } =
 		usePlayerContext();
-	const currentTrack = useMemo(() => playlist.at(cursor), [cursor, playlist]);
+	const currentTrack = useMemo(() => playlist[cursor], [cursor, playlist]);
 	const player = useRef<HTMLAudioElement | HTMLVideoElement>();
 	const audioPlayer = useRef<HTMLAudioElement>(
 		typeof Audio !== "undefined" ? new Audio() : null,
 	);
 	const videoPlayer = useRef<HTMLVideoElement>();
-	const interval = useRef<ReturnType<typeof setInterval>>();
-	const [progress, setProgress] = useState<number | undefined>();
+	const progress = useRef<number | null>(null);
 	const [playing, setPlaying] = useState<boolean>();
-	const [illustrationURL, setIllustrationURL] = useState<string | null>();
 	const playerComponentRef = useRef<HTMLDivElement>(null);
 	const [expanded, setExpanded] = useState(false);
 	const [windowFocused, setWindowFocused] = useState(true);
@@ -80,7 +78,7 @@ const Player = () => {
 		skipTrack();
 	};
 	const onRewind = () => {
-		if (progress && progress > 5 && player.current) {
+		if (player.current && player.current.currentTime > 5) {
 			player.current.currentTime = 0;
 			return;
 		}
@@ -111,8 +109,7 @@ const Player = () => {
 	}, [userIsAuthentified]);
 	useEffect(() => {
 		player.current?.pause();
-		clearInterval(interval.current);
-		setProgress(0);
+		progress.current = null;
 		if (typeof navigator.mediaSession !== "undefined") {
 			navigator.mediaSession.metadata = null;
 			navigator.mediaSession.setActionHandler("play", play);
@@ -121,13 +118,11 @@ const Player = () => {
 			navigator.mediaSession.setActionHandler("nexttrack", onSkipTrack);
 		}
 		if (currentTrack) {
+			progress.current = 0;
 			notification?.close();
 			document.title = `${currentTrack.track.name} - ${DefaultWindowTitle}`;
-			const newIllustrationURL =
-				currentTrack.track.illustration?.url ??
-				currentTrack.release.illustration?.url;
+			const newIllustrationURL = currentTrack.track.illustration?.url;
 
-			setIllustrationURL(newIllustrationURL);
 			const streamURL = API.getStreamURL(currentTrack.track.stream);
 
 			if (currentTrack.track.type == "Audio") {
@@ -138,7 +133,25 @@ const Player = () => {
 			player.current!.src = streamURL;
 			player
 				.current!.play()
-				.then(() => setPlaying(true))
+				.then(() => {
+					setPlaying(true);
+					player.current!.ontimeupdate = () => {
+						progress.current = player.current!.currentTime;
+					};
+					player.current!.onended = () => {
+						API.setSongAsPlayed(currentTrack.track.songId);
+						progress.current = null;
+						skipTrack();
+					};
+					player.current!.onpause = () => {
+						if (player.current!.ended == false) {
+							setPlaying(false);
+						}
+					};
+					player.current!.onplay = () => {
+						setPlaying(true);
+					};
+				})
 				.catch((err) => {
 					// Source: https://webidl.spec.whatwg.org/#notsupportederror
 					// Sometimes, an error can be caused by a track change while the `play` promise is being resolved
@@ -185,19 +198,6 @@ const Player = () => {
 						: undefined,
 				});
 			}
-			interval.current = setInterval(() => {
-				if (player.current?.paused) {
-					setPlaying(false);
-				} else {
-					setPlaying(true);
-				}
-				if (player.current?.ended) {
-					API.setSongAsPlayed(currentTrack.track.songId);
-					skipTrack();
-				} else {
-					setProgress(player.current?.currentTime);
-				}
-			}, 100);
 			if (
 				typeof Notification !== "undefined" &&
 				!windowFocused &&
@@ -221,9 +221,7 @@ const Player = () => {
 			if (player.current) {
 				player.current.src = "";
 			}
-			setIllustrationURL(null);
 		}
-		return () => clearInterval(interval.current);
 		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [currentTrack]);
 	useEffect(() => {
@@ -248,6 +246,26 @@ const Player = () => {
 	}, [theme, currentTrack]);
 	const transition = "background 0.4s ease";
 	const blur = "blur(20px)";
+	const playerControlProps = {
+		expanded: expanded,
+		track: currentTrack?.track,
+		artist: currentTrack?.artist,
+		release: currentTrack?.release,
+		playing: playing ?? false,
+		onPause: pause,
+		onPlay: play,
+		onExpand: (expand: boolean) => setExpanded(expand),
+		duration: currentTrack?.track.duration ?? undefined,
+		progress: progress,
+		onSkipTrack: onSkipTrack,
+		onRewind: onRewind,
+		videoRef: videoPlayer as unknown as LegacyRef<HTMLVideoElement>,
+		onSlide: (newProgress: number) => {
+			if (player.current !== undefined) {
+				player.current.currentTime = newProgress;
+			}
+		},
+	};
 
 	return (
 		<>
@@ -277,25 +295,7 @@ const Player = () => {
 							backdropFilter: blur,
 						}}
 					>
-						<MinimizedPlayerControls
-							expanded={expanded}
-							track={currentTrack?.track}
-							artist={currentTrack?.artist}
-							release={currentTrack?.release}
-							playing={playing ?? false}
-							onPause={pause}
-							onPlay={play}
-							onExpand={(expand) => setExpanded(expand)}
-							duration={currentTrack?.track.duration ?? undefined}
-							progress={progress}
-							onSkipTrack={onSkipTrack}
-							onRewind={onRewind}
-							onSlide={(newProgress) => {
-								if (player.current !== undefined) {
-									player.current.currentTime = newProgress;
-								}
-							}}
-						/>
+						<MinimizedPlayerControls {...playerControlProps} />
 					</Paper>
 				</Box>
 			</Slide>
@@ -325,28 +325,7 @@ const Player = () => {
 							backdropFilter: blur,
 						}}
 					>
-						<ExpandedPlayerControls
-							expanded={expanded}
-							track={currentTrack?.track}
-							artist={currentTrack?.artist}
-							release={currentTrack?.release}
-							playing={playing ?? false}
-							onPause={pause}
-							onPlay={play}
-							onExpand={(expand) => setExpanded(expand)}
-							duration={currentTrack?.track.duration ?? undefined}
-							progress={progress}
-							onSkipTrack={onSkipTrack}
-							onRewind={onRewind}
-							videoRef={
-								videoPlayer as unknown as LegacyRef<HTMLVideoElement>
-							}
-							onSlide={(newProgress) => {
-								if (player.current !== undefined) {
-									player.current.currentTime = newProgress;
-								}
-							}}
-						/>
+						<ExpandedPlayerControls {...playerControlProps} />
 					</Paper>
 				</Box>
 			</Slide>
