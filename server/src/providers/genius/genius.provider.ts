@@ -110,6 +110,10 @@ export default class GeniusProvider
 		return "P6218";
 	}
 
+	getMusicBrainzRelationKey(): string | null {
+		return "genius";
+	}
+
 	async getArtistMetadataByIdentifier(
 		artistIdentifier: string,
 	): Promise<ArtistMetadata> {

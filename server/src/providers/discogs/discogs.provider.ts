@@ -42,7 +42,7 @@ export default class DiscogsProvider
 	}
 
 	onModuleInit() {
-		this._settings = this.settingsService.settingsValues.providers.discogs;
+		this.settings = this.settingsService.settingsValues.providers.discogs;
 	}
 
 	getProviderHomepage(): string {
@@ -86,7 +86,7 @@ export default class DiscogsProvider
 				"getArtistMetadataByIdentifier",
 				"Invalid Data Type",
 			);
-		} catch {
+		} catch (e) {
 			throw new ProviderActionFailedError(
 				this.name,
 				"getArtistMetadataByIdentifier",
@@ -147,6 +147,32 @@ export default class DiscogsProvider
 				"Release Not Found",
 			);
 		}
+	}
+
+	getArtistWikidataIdentifierProperty() {
+		return "P1953";
+	}
+
+	getAlbumWikidataIdentifierProperty() {
+		return "P1954";
+	}
+
+	getMusicBrainzRelationKey(): string | null {
+		return "discogs";
+	}
+
+	parseArtistIdentifierFromUrl(url: string): string | null {
+		return (
+			url.match(/(https:\/\/www\.)?discogs\.com\/artist\/(?<ID>\d+)/)
+				?.groups?.["ID"] ?? null
+		);
+	}
+
+	parseAlbumIdentifierFromUrl(url: string): string | null {
+		return (
+			url.match(/(https:\/\/www\.)?discogs\.com\/master\/(?<ID>\d+)/)
+				?.groups?.["ID"] ?? null
+		);
 	}
 
 	async fetch(route: string): Promise<any> {

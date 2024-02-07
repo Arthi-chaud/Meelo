@@ -57,6 +57,17 @@ export default class AllMusicProvider
 		return "P1729";
 	}
 
+	getMusicBrainzRelationKey(): string | null {
+		return "allmusic";
+	}
+
+	parseAlbumIdentifierFromUrl(url: string): string | null {
+		return (
+			url.match(/(https:\/\/www\.)?allmusic\.com\/album\/(?<ID>mw\d+)/i)
+				?.groups?.["ID"] ?? null
+		);
+	}
+
 	getAlbumURL(albumIdentifier: string): string {
 		return `${this.getProviderHomepage()}/album/${albumIdentifier}`;
 	}

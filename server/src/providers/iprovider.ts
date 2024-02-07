@@ -58,6 +58,10 @@ export default abstract class IProvider<SettingsType = unknown> {
 		this._settings = settings;
 	}
 
+	get settings() {
+		return this._settings;
+	}
+
 	/**
 	 * The URL to get the provider's Banner
 	 */
@@ -157,6 +161,22 @@ export default abstract class IProvider<SettingsType = unknown> {
 	}
 
 	getSongWikidataIdentifierProperty(): string | null {
+		return null;
+	}
+
+	getMusicBrainzRelationKey(): string | null {
+		return null;
+	}
+
+	parseArtistIdentifierFromUrl(url: string): string | null {
+		return null;
+	}
+
+	parseAlbumIdentifierFromUrl(url: string): string | null {
+		return null;
+	}
+
+	parseSongIdentifierFromUrl(url: string): string | null {
 		return null;
 	}
 

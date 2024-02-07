@@ -69,6 +69,7 @@ export default class ExternalIdService {
 			(provider, mbid) => provider.getArtistMetadataByIdentifier(mbid),
 			(provider) => provider.getArtistMetadataByName(artist.name),
 			(provider, mbid) => provider.getArtistEntry(mbid),
+			(url, provider) => provider.parseArtistIdentifierFromUrl(url),
 			(provider) => provider.getArtistWikidataIdentifierProperty(),
 			({ value, description }, providerId) => ({
 				value,
@@ -120,6 +121,7 @@ export default class ExternalIdService {
 				);
 			},
 			(provider, mbid) => provider.getAlbumEntry(mbid),
+			(url, provider) => provider.parseAlbumIdentifierFromUrl(url),
 			(provider) => provider.getAlbumWikidataIdentifierProperty(),
 			({ value, description, rating, genres }, providerId) => ({
 				value,
@@ -196,6 +198,7 @@ export default class ExternalIdService {
 				);
 			},
 			(provider, mbid) => provider.getSongEntry(mbid),
+			(url, provider) => provider.parseSongIdentifierFromUrl(url),
 			(provider) => provider.getSongWikidataIdentifierProperty(),
 			({ value, description }, providerId) => ({
 				value,
@@ -241,6 +244,10 @@ export default class ExternalIdService {
 			provider: MusicBrainzProvider,
 			id: string,
 		) => Promise<MBIDEntry>,
+		parseIdentifierFromUrl: (
+			url: string,
+			provider: IProvider,
+		) => string | null,
 		getResourceWikidataIdentifierProperty: (
 			provider: IProvider,
 		) => string | null,
@@ -293,6 +300,45 @@ export default class ExternalIdService {
 					musicbrainzProvider,
 					resourceMBID.value,
 				);
+
+				Array.of(...providersToReach).forEach(async (otherProvider) => {
+					const relation = resourceEntry.relations?.find(
+						(rel) =>
+							rel.type ==
+								otherProvider.getMusicBrainzRelationKey() &&
+							rel["source-credit"] === "",
+					);
+
+					if (relation?.url === undefined) {
+						return;
+					}
+					const identifier = parseIdentifierFromUrl(
+						relation.url.resource,
+						otherProvider,
+					);
+					if (identifier == null) {
+						return;
+					}
+					try {
+						const metadata = await getResourceMetadataByIdentifier(
+							otherProvider,
+							identifier,
+						);
+						const providerId = this.providerService.getProviderId(
+							otherProvider.name,
+						);
+
+						newIdentifiers.push(
+							formatResourceMetadata(metadata, providerId),
+						);
+						providersToReach = providersToReach.filter(
+							(toReach) => toReach.name !== otherProvider.name,
+						);
+					} catch {
+						return;
+					}
+				});
+
 				const wikiDataId = resourceEntry.relations
 					?.map(
 						({ url }) =>
@@ -327,7 +373,7 @@ export default class ExternalIdService {
 										),
 							  ]
 							: []),
-						...otherProviders.map(async (provider) => {
+						...providersToReach.map(async (provider) => {
 							const providerId =
 								this.providerService.getProviderId(
 									provider.name,

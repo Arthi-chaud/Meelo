@@ -31,6 +31,8 @@ import {
 import SettingsService from "src/settings/settings.service";
 import MusicBrainzSettings from "./musicbrainz.settings";
 import { ProviderActionFailedError } from "../provider.exception";
+import levenshtein from "damerau-levenshtein";
+import Slug from "src/slug/slug";
 
 type MBID = string;
 
@@ -184,39 +186,26 @@ export default class MusicBrainzProvider
 		artistIdentifier: string,
 	): Promise<SongMetadata> {
 		try {
-			const results = await this.mbClient
-				.search<mb.IIsrcSearchResult>("recording", {
-					query: `query="${songName}" AND arid:${artistIdentifier}`,
-				})
-				.then((result) =>
-					result.recordings.filter((recording) =>
-						recording["artist-credit"]?.find(
-							(artist) => artist.artist.id == artistIdentifier,
-						),
-					),
-				);
+			const results = await this.mbClient.browseWorks({
+				artist: artistIdentifier,
+				limit: 1000,
+			});
 
-			for (const recordingId of results.map(({ id }) => id)) {
-				const recording = await this.mbClient.lookupRecording(
-					recordingId,
-					["work-rels"],
-				);
-
-				const workId = recording.relations
-					?.map((relation) => {
-						if ("work" in relation) {
-							return (relation["work"] as { id: MBID }).id;
-						}
-						return undefined;
-					})
-					.find((value) => value);
-
-				if (workId) {
-					return {
-						description: null,
-						value: workId,
-					};
-				}
+			const bestMatch = (results.works as mb.IWork[])
+				.map((work) => ({
+					similarity: levenshtein(
+						new Slug(work.title).toString(),
+						new Slug(songName).toString(),
+					).similarity,
+					id: work.id,
+				}))
+				.sort((workA, workB) => workB.similarity - workA.similarity)
+				.at(0);
+			if (bestMatch && bestMatch.similarity < 2) {
+				return {
+					description: null,
+					value: bestMatch.id,
+				};
 			}
 		} catch (err) {
 			throw new ProviderActionFailedError(
