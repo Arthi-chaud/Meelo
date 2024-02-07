@@ -30,11 +30,9 @@ import {
 	Typography,
 	useTheme,
 } from "@mui/material";
-import { useDispatch } from "react-redux";
 import Release from "../models/release";
 import Track from "../models/track";
 import Tracklist from "../models/tracklist";
-import { playTracks } from "../state/playerSlice";
 import Artist from "../models/artist";
 import formatDuration from "../utils/formatDuration";
 import ReleaseTrackContextualMenu from "./contextual-menu/release-track-contextual-menu";
@@ -44,6 +42,7 @@ import formatArtists from "../utils/formatArtists";
 import { useTranslation } from "react-i18next";
 import { Fragment } from "react";
 import { generateArray } from "../utils/gen-list";
+import { usePlayerContext } from "../contexts/player";
 
 type ReleaseTracklistProps = {
 	mainArtist: Artist | undefined | null;
@@ -63,7 +62,7 @@ const ReleaseTrackList = ({
 }: ReleaseTracklistProps) => {
 	const { t } = useTranslation();
 	const theme = useTheme();
-	const dispatch = useDispatch();
+	const { playTracks } = usePlayerContext();
 	const flatTracklist = tracklist
 		? Array.from(Object.values(tracklist)).flat()
 		: undefined;
@@ -133,23 +132,21 @@ const ReleaseTrackList = ({
 										currentTrack &&
 										release &&
 										(() =>
-											dispatch(
-												playTracks({
-													tracks: flatTracklist.map(
-														(flatTrack) => ({
-															track: flatTrack,
-															release,
-															artist: flatTrack
-																.song.artist,
-														}),
-													),
-													cursor: flatTracklist.findIndex(
-														(flatTrack) =>
-															flatTrack.id ==
-															currentTrack.id,
-													),
-												}),
-											))
+											playTracks({
+												tracks: flatTracklist.map(
+													(flatTrack) => ({
+														track: flatTrack,
+														release,
+														artist: flatTrack.song
+															.artist,
+													}),
+												),
+												cursor: flatTracklist.findIndex(
+													(flatTrack) =>
+														flatTrack.id ==
+														currentTrack.id,
+												),
+											}))
 									}
 									sx={{
 										borderTopRightRadius: 0,

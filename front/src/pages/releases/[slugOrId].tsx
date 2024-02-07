@@ -41,8 +41,6 @@ import {
 	useInfiniteQuery,
 	useQuery,
 } from "../../api/use-query";
-import { useDispatch } from "react-redux";
-import { playTracks } from "../../state/playerSlice";
 import { shuffle } from "d3-array";
 import getSlugOrId from "../../utils/getSlugOrId";
 import ReleaseTrackList from "../../components/release-tracklist";
@@ -67,6 +65,7 @@ import { useAccentColor } from "../../utils/accent-color";
 import GradientBackground from "../../components/gradient-background";
 import { useTranslation } from "react-i18next";
 import { generateArray } from "../../utils/gen-list";
+import { usePlayerContext } from "../../contexts/player";
 
 const releaseQuery = (releaseIdentifier: string | number) =>
 	API.getRelease(releaseIdentifier, ["album", "externalIds"]);
@@ -149,7 +148,7 @@ const ReleasePage = (props: InferSSRProps<typeof getServerSideProps>) => {
 	const releaseIdentifier =
 		props.additionalProps?.releaseIdentifier ?? getSlugOrId(router.query);
 	const theme = useTheme();
-	const dispatch = useDispatch();
+	const { playTracks } = usePlayerContext();
 	const release = useQuery(releaseQuery, releaseIdentifier);
 	const artistId = useMemo(() => release.data?.album?.artistId, [release]);
 	const album = useQuery(albumQuery, release.data?.albumId);
@@ -466,11 +465,9 @@ const ReleasePage = (props: InferSSRProps<typeof getServerSideProps>) => {
 											if (index == 1) {
 												playlist = shuffle(playlist);
 											}
-											dispatch(
-												playTracks({
-													tracks: playlist,
-												}),
-											);
+											playTracks({
+												tracks: playlist,
+											});
 										}
 									}}
 								>

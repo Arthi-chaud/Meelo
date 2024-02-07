@@ -38,6 +38,7 @@ import { UpdateTrackIllustrationAction } from "../actions/update-illustration";
 import { RefreshTrackMetadataAction } from "../actions/refresh-metadata";
 import ChangeSongType from "../actions/song-type";
 import { useTranslation } from "react-i18next";
+import { usePlayerContext } from "../../contexts/player";
 
 type TrackContextualMenuProps = {
 	track: TrackWithRelations<"song">;
@@ -61,6 +62,7 @@ const TrackContextualMenu = (props: TrackContextualMenuProps) => {
 			release,
 		}));
 	const { t } = useTranslation();
+	const { playNext, playAfter } = usePlayerContext();
 	const masterMutation = useMutation(async () => {
 		return API.setTrackAsMaster(props.track.id)
 			.then(() => {
@@ -76,8 +78,8 @@ const TrackContextualMenu = (props: TrackContextualMenuProps) => {
 			actions={[
 				[GoToReleaseAction(props.track.releaseId)],
 				[
-					PlayNextAction(getPlayNextProps),
-					PlayAfterAction(getPlayNextProps),
+					PlayNextAction(getPlayNextProps, playNext),
+					PlayAfterAction(getPlayNextProps, playAfter),
 				],
 				[AddToPlaylistAction(props.track.songId, queryClient)],
 				[

@@ -42,6 +42,7 @@ import ChangeSongType from "../actions/song-type";
 import { RefreshSongMetadataAction } from "../actions/refresh-metadata";
 import { DeleteIcon } from "../icons";
 import { useTranslation } from "react-i18next";
+import { usePlayerContext } from "../../contexts/player";
 
 type SongContextualMenuProps = {
 	song: SongWithRelations<"artist">;
@@ -54,6 +55,7 @@ const SongContextualMenu = (props: SongContextualMenuProps) => {
 	const songSlug = `${props.song.artist.slug}+${props.song.slug}`;
 	const queryClient = useQueryClient();
 	const { t } = useTranslation();
+	const { playNext, playAfter } = usePlayerContext();
 	const getMasterTrack = () =>
 		queryClient.fetchQuery(API.getMasterTrack(songSlug, ["release"]));
 	const router = useRouter();
@@ -78,8 +80,8 @@ const SongContextualMenu = (props: SongContextualMenuProps) => {
 				],
 				[GoToSongLyricsAction(songSlug)],
 				[
-					PlayNextAction(getPlayNextProps),
-					PlayAfterAction(getPlayNextProps),
+					PlayNextAction(getPlayNextProps, playNext),
+					PlayAfterAction(getPlayNextProps, playAfter),
 				],
 				[AddToPlaylistAction(props.song.id, queryClient)],
 				[

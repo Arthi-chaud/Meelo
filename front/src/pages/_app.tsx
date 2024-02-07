@@ -43,6 +43,7 @@ import createEmotionCache from "../utils/createEmotionCache";
 import { CacheProvider, EmotionCache } from "@emotion/react";
 import Scaffold from "../components/scaffold/scaffold";
 import { withTranslations } from "../i18n/i18n";
+import { PlayerContextProvider } from "../contexts/player";
 
 // Client-side cache, shared for the whole session of the user in the browser.
 const clientSideEmotionCache = createEmotionCache();
@@ -118,9 +119,13 @@ function MyApp({
 													}
 												}}
 											>
-												<Scaffold>
-													<Component {...pageProps} />
-												</Scaffold>
+												<PlayerContextProvider>
+													<Scaffold>
+														<Component
+															{...pageProps}
+														/>
+													</Scaffold>
+												</PlayerContextProvider>
 											</ErrorBoundary>
 										</AuthenticationWall>
 									</Hydrate>

@@ -40,6 +40,7 @@ import { useQueryClient } from "../../api/use-query";
 import { RefreshTrackMetadataAction } from "../actions/refresh-metadata";
 import ChangeSongType from "../actions/song-type";
 import { useTranslation } from "react-i18next";
+import { usePlayerContext } from "../../contexts/player";
 
 type ReleaseTrackContextualMenuProps = {
 	track: TrackWithRelations<"song">;
@@ -53,6 +54,7 @@ const ReleaseTrackContextualMenu = (props: ReleaseTrackContextualMenuProps) => {
 	const confirm = useConfirm();
 	const queryClient = useQueryClient();
 	const { t } = useTranslation();
+	const { playNext, playAfter } = usePlayerContext();
 
 	return (
 		<ContextualMenu
@@ -61,8 +63,8 @@ const ReleaseTrackContextualMenu = (props: ReleaseTrackContextualMenuProps) => {
 				[GoToArtistAction(props.artist.slug)],
 				[GoToSongLyricsAction(songSlug)],
 				[
-					PlayNextAction(async () => props),
-					PlayAfterAction(async () => props),
+					PlayNextAction(async () => props, playNext),
+					PlayAfterAction(async () => props, playAfter),
 				],
 				[AddToPlaylistAction(props.track.song.id, queryClient)],
 				[

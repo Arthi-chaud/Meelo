@@ -18,14 +18,13 @@
 
 import { Grid } from "@mui/material";
 import API from "../api/api";
-import { playTrack } from "../state/playerSlice";
 import SongContextualMenu from "./contextual-menu/song-contextual-menu";
 import Illustration from "./illustration";
 import { SongWithRelations } from "../models/song";
 import { useQueryClient } from "../api/use-query";
-import { useDispatch } from "react-redux";
 import ListItem from "./list-item/item";
 import formatArtists from "../utils/formatArtists";
+import { usePlayerContext } from "../contexts/player";
 
 type SongGridProps = {
 	songs: (SongWithRelations<"artist" | "featuring"> | undefined)[];
@@ -34,7 +33,7 @@ type SongGridProps = {
 
 const SongGrid = ({ songs, parentArtistName }: SongGridProps) => {
 	const queryClient = useQueryClient();
-	const dispatch = useDispatch();
+	const { playTrack } = usePlayerContext();
 
 	return (
 		<Grid container spacing={2} sx={{ display: "flex", flexGrow: 1 }}>
@@ -79,13 +78,11 @@ const SongGrid = ({ songs, parentArtistName }: SongGridProps) => {
 												]),
 											)
 											.then((track) => {
-												dispatch(
-													playTrack({
-														artist: song.artist,
-														track,
-														release: track.release,
-													}),
-												);
+												playTrack({
+													artist: song.artist,
+													track,
+													release: track.release,
+												});
 											})
 								: undefined
 						}

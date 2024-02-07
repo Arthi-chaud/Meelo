@@ -18,13 +18,8 @@
 
 import { Box, Paper, Slide, useMediaQuery, useTheme } from "@mui/material";
 import { LegacyRef, useEffect, useMemo, useRef, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
+import { useSelector } from "react-redux";
 import API from "../../api/api";
-import {
-	playPreviousTrack,
-	playTracks,
-	skipTrack,
-} from "../../state/playerSlice";
 import { RootState } from "../../state/store";
 import { ExpandedPlayerControls, MinimizedPlayerControls } from "./controls";
 import { DefaultWindowTitle } from "../../utils/constants";
@@ -32,6 +27,7 @@ import { toast } from "react-hot-toast";
 import { DrawerBreakpoint } from "../scaffold/scaffold";
 import { useTranslation } from "react-i18next";
 import { useReadLocalStorage } from "usehooks-ts";
+import { usePlayerContext } from "../../contexts/player";
 
 const Player = () => {
 	const { t } = useTranslation();
@@ -39,18 +35,15 @@ const Player = () => {
 	const userIsAuthentified = useSelector(
 		(state: RootState) => state.user.user !== undefined,
 	);
-	const cursor = useSelector((state: RootState) => state.player.cursor);
-	const currentTrack = useSelector(
-		(state: RootState) => state.player.playlist[cursor],
-	);
-	const playlist = useSelector((state: RootState) => state.player.playlist);
+	const { playPreviousTrack, playTracks, skipTrack, cursor, playlist } =
+		usePlayerContext();
+	const currentTrack = useMemo(() => playlist.at(cursor), [cursor, playlist]);
 	const player = useRef<HTMLAudioElement | HTMLVideoElement>();
 	const audioPlayer = useRef<HTMLAudioElement>(
 		typeof Audio !== "undefined" ? new Audio() : null,
 	);
 	const videoPlayer = useRef<HTMLVideoElement>();
 	const interval = useRef<ReturnType<typeof setInterval>>();
-	const dispatch = useDispatch();
 	const [progress, setProgress] = useState<number | undefined>();
 	const [playing, setPlaying] = useState<boolean>();
 	const [illustrationURL, setIllustrationURL] = useState<string | null>();
@@ -70,7 +63,7 @@ const Player = () => {
 		}
 		// If playlist but cursor to -1
 		if (currentTrack == undefined) {
-			dispatch(skipTrack());
+			skipTrack();
 		}
 		setPlaying(true);
 		player.current?.play();
@@ -84,7 +77,7 @@ const Player = () => {
 		if (cursor >= playlist.length - 1) {
 			pause();
 		}
-		dispatch(skipTrack());
+		skipTrack();
 	};
 	const onRewind = () => {
 		if (progress && progress > 5 && player.current) {
@@ -95,7 +88,7 @@ const Player = () => {
 		if (cursor == 0) {
 			pause();
 		}
-		dispatch(playPreviousTrack());
+		playPreviousTrack();
 	};
 
 	useEffect(() => {
@@ -112,7 +105,7 @@ const Player = () => {
 	useEffect(() => {
 		if (!userIsAuthentified) {
 			pause();
-			dispatch(playTracks({ tracks: [] }));
+			playTracks({ tracks: [] });
 		}
 		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [userIsAuthentified]);
@@ -164,7 +157,7 @@ const Player = () => {
 							});
 							// eslint-disable-next-line no-console
 							console.error(err);
-							dispatch(skipTrack());
+							skipTrack();
 							break;
 						case 19: // Network error
 							setPlaying(false);
@@ -200,7 +193,7 @@ const Player = () => {
 				}
 				if (player.current?.ended) {
 					API.setSongAsPlayed(currentTrack.track.songId);
-					dispatch(skipTrack());
+					skipTrack();
 				} else {
 					setProgress(player.current?.currentTime);
 				}

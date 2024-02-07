@@ -16,15 +16,14 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { useDispatch } from "react-redux";
 import { TrackWithRelations } from "../../models/track";
 import Tile from "./tile";
 import Illustration from "../illustration";
 import { useQueryClient } from "../../api/use-query";
 import API from "../../api/api";
-import { playTrack } from "../../state/playerSlice";
 import formatDuration from "../../utils/formatDuration";
 import TrackContextualMenu from "../contextual-menu/track-contextual-menu";
+import { usePlayerContext } from "../../contexts/player";
 
 type VideoTileProps = {
 	video: TrackWithRelations<"song"> | undefined;
@@ -32,8 +31,8 @@ type VideoTileProps = {
 };
 
 const VideoTile = ({ video, formatSubtitle }: VideoTileProps) => {
-	const dispatch = useDispatch();
 	const queryClient = useQueryClient();
+	const { playTrack } = usePlayerContext();
 
 	return (
 		<Tile
@@ -49,13 +48,11 @@ const VideoTile = ({ video, formatSubtitle }: VideoTileProps) => {
 									API.getRelease(video.releaseId),
 								),
 							]).then(([artist, release]) =>
-								dispatch(
-									playTrack({
-										track: video,
-										release: release,
-										artist: artist,
-									}),
-								),
+								playTrack({
+									track: video,
+									release: release,
+									artist: artist,
+								}),
 							)
 					: undefined
 			}

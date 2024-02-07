@@ -25,8 +25,6 @@ import {
 	PlayNextIcon,
 } from "../icons";
 import toast from "react-hot-toast";
-import { playAfter, playNext } from "../../state/playerSlice";
-import store from "../../state/store";
 import {
 	Button,
 	DialogActions,
@@ -45,13 +43,15 @@ import Illustration from "../illustration";
 import { useConfirm } from "material-ui-confirm";
 import { Add, Edit } from "iconsax-react";
 import { useTranslation } from "react-i18next";
+import { PlayerActions, TrackState } from "../../contexts/player";
 
 export const PlayNextAction = (
-	getTrack: () => PromiseLike<Parameters<typeof playNext>[0]>,
+	getTrack: () => PromiseLike<TrackState>,
+	playNext: PlayerActions["playNext"],
 ): Action => ({
 	onClick: () =>
 		getTrack().then((track) => {
-			store.dispatch(playNext(track));
+			playNext(track);
 			toast.success(`'${track.track.name}' will play next!`);
 		}),
 	label: "playNext",
@@ -59,11 +59,12 @@ export const PlayNextAction = (
 });
 
 export const PlayAfterAction = (
-	getTrack: () => PromiseLike<Parameters<typeof playAfter>[0]>,
+	getTrack: () => PromiseLike<TrackState>,
+	playAfter: PlayerActions["playAfter"],
 ): Action => ({
 	onClick: () =>
 		getTrack().then((track) => {
-			store.dispatch(playAfter(track));
+			playAfter(track);
 			toast.success(`'${track.track.name}' will play after!`);
 		}),
 	label: "playAfter",

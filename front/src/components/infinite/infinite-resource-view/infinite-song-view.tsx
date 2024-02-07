@@ -34,10 +34,8 @@ import {
 	prepareMeeloInfiniteQuery,
 	useQueryClient,
 } from "../../../api/use-query";
-import { useDispatch } from "react-redux";
-import { emptyPlaylist, playAfter } from "../../../state/playerSlice";
 import API from "../../../api/api";
-import { Dispatch } from "@reduxjs/toolkit";
+import { PlayerActions, usePlayerContext } from "../../../contexts/player";
 
 type AdditionalProps = {
 	type?: SongType;
@@ -45,11 +43,12 @@ type AdditionalProps = {
 };
 
 const playSongsAction = (
-	dispatch: Dispatch,
+	emptyPlaylist: PlayerActions["emptyPlaylist"],
+	playAfter: PlayerActions["playAfter"],
 	queryClient: QueryClient,
 	query: () => InfiniteQuery<SongWithRelations<"artist" | "featuring">>,
 ) => {
-	dispatch(emptyPlaylist());
+	emptyPlaylist();
 	queryClient.client
 		.fetchInfiniteQuery(prepareMeeloInfiniteQuery(query))
 		.then(async (res) => {
@@ -60,7 +59,7 @@ const playSongsAction = (
 					API.getMasterTrack(song.id, ["release"]),
 				);
 
-				dispatch(playAfter({ release, track, artist: song.artist }));
+				playAfter({ release, track, artist: song.artist });
 			}
 		});
 };
@@ -79,7 +78,7 @@ const InfiniteSongView = <T extends SongWithRelations<"artist" | "featuring">>(
 	const [options, setOptions] =
 		useState<OptionState<typeof SongSortingKeys, AdditionalProps>>();
 	const queryClient = useQueryClient();
-	const dispatch = useDispatch();
+	const { emptyPlaylist, playAfter } = usePlayerContext();
 	const query = {
 		type:
 			// @ts-ignore
@@ -93,7 +92,7 @@ const InfiniteSongView = <T extends SongWithRelations<"artist" | "featuring">>(
 		label: "shuffle",
 		icon: <ShuffleIcon />,
 		onClick: () => {
-			playSongsAction(dispatch, queryClient, () =>
+			playSongsAction(emptyPlaylist, playAfter, queryClient, () =>
 				props.query({
 					...query,
 					random: Math.floor(Math.random() * 10000),
@@ -105,7 +104,9 @@ const InfiniteSongView = <T extends SongWithRelations<"artist" | "featuring">>(
 		label: "playAll",
 		icon: <PlayIcon />,
 		onClick: () => {
-			playSongsAction(dispatch, queryClient, () => props.query(query));
+			playSongsAction(emptyPlaylist, playAfter, queryClient, () =>
+				props.query(query),
+			);
 		},
 	} as const;
 
