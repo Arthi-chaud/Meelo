@@ -31,8 +31,6 @@ import PlaylistContextualMenu from "../../../components/contextual-menu/playlist
 import Illustration from "../../../components/illustration";
 import { Box, Button, Divider, Grid, IconButton, Stack } from "@mui/material";
 import Artist from "../../../models/artist";
-import { useDispatch } from "react-redux";
-import { playTracks } from "../../../state/playerSlice";
 import { TrackWithRelations } from "../../../models/track";
 import { SongWithRelations } from "../../../models/song";
 import {
@@ -57,6 +55,7 @@ import { useConfirm } from "material-ui-confirm";
 import GradientBackground from "../../../components/gradient-background";
 import { useTranslation } from "react-i18next";
 import { generateArray } from "../../../utils/gen-list";
+import { usePlayerContext } from "../../../contexts/player";
 
 const playlistQuery = (idOrSlug: number | string) =>
 	API.getPlaylist(idOrSlug, ["entries"]);
@@ -183,7 +182,7 @@ const PlaylistEntryItem = ({ entry, onClick }: PlaylistEntryItemProps) => (
 const PlaylistPage = (props: InferSSRProps<typeof getServerSideProps>) => {
 	const { t } = useTranslation();
 	const router = useRouter();
-	const dispatch = useDispatch();
+	const { playTracks } = usePlayerContext();
 	const confirm = useConfirm();
 	const queryClient = useQueryClient();
 	const [editState, setEditState] = useState(false);
@@ -252,30 +251,26 @@ const PlaylistPage = (props: InferSSRProps<typeof getServerSideProps>) => {
 	}, [artistsQueries, masterTracksQueries, playlist.data]);
 	const playPlaylist = (fromIndex: number) =>
 		entries &&
-		dispatch(
-			playTracks({
-				tracks: entries.map((entry) => ({
+		playTracks({
+			tracks: entries.map((entry) => ({
+				track: entry.track,
+				artist: entry.artist,
+				release: entry.track.release,
+			})),
+			cursor: fromIndex,
+		});
+	const shufflePlaylist = () =>
+		entries &&
+		playTracks({
+			tracks: shuffle(
+				entries.map((entry) => ({
 					track: entry.track,
 					artist: entry.artist,
 					release: entry.track.release,
 				})),
-				cursor: fromIndex,
-			}),
-		);
-	const shufflePlaylist = () =>
-		entries &&
-		dispatch(
-			playTracks({
-				tracks: shuffle(
-					entries.map((entry) => ({
-						track: entry.track,
-						artist: entry.artist,
-						release: entry.track.release,
-					})),
-				),
-				cursor: 0,
-			}),
-		);
+			),
+			cursor: 0,
+		});
 
 	return (
 		<>

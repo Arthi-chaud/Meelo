@@ -53,14 +53,12 @@ import Artist from "../../models/artist";
 import Link from "next/link";
 import ReleaseTrackContextualMenu from "../contextual-menu/release-track-contextual-menu";
 import Release from "../../models/release";
-import { useDispatch, useSelector } from "react-redux";
-import { RootState } from "../../state/store";
 import ListItem from "../list-item/item";
-import { reorder, skipTrack } from "../../state/playerSlice";
 import { DragDropContext, Draggable, Droppable } from "react-beautiful-dnd";
 import formatDuration from "../../utils/formatDuration";
 import formatArtists from "../../utils/formatArtists";
 import { useTranslation } from "react-i18next";
+import { usePlayerContext } from "../../contexts/player";
 
 const parentSongQuery = (id: number) =>
 	API.getSong(id, ["artist", "lyrics", "featuring"]);
@@ -238,11 +236,9 @@ const ExpandedPlayerControls = (
 ) => {
 	const theme = useTheme();
 	const { t } = useTranslation();
-	const dispatch = useDispatch();
 	const parentSong = useQuery(parentSongQuery, props.track?.songId);
 	const [panel, setPanel] = useState<(typeof Panels)[number]>("lyrics");
-	const playlist = useSelector((state: RootState) => state.player.playlist);
-	const cursor = useSelector((state: RootState) => state.player.cursor);
+	const { playlist, cursor, reorder, skipTrack } = usePlayerContext();
 	const requestFullscreen = () => {
 		const el: any = document.getElementById("videoPlayer");
 
@@ -545,19 +541,16 @@ const ExpandedPlayerControls = (
 								<DragDropContext
 									onDragEnd={(result) => {
 										if (result.destination) {
-											dispatch(
-												reorder({
-													from:
-														result.source.index +
-														cursor +
-														1,
-													to:
-														result.destination
-															.index +
-														cursor +
-														1,
-												}),
-											);
+											reorder({
+												from:
+													result.source.index +
+													cursor +
+													1,
+												to:
+													result.destination.index +
+													cursor +
+													1,
+											});
 										}
 									}}
 								>
@@ -632,9 +625,7 @@ const ExpandedPlayerControls = (
 																						toSkip >
 																						0
 																					) {
-																						dispatch(
-																							skipTrack(),
-																						);
+																						skipTrack();
 																						toSkip--;
 																					}
 																				}}

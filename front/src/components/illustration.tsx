@@ -162,7 +162,7 @@ const Illustration = (props: IllustrationProps) => {
 				) : (
 					<Image
 						onError={() => setLoadingState("errored")}
-						onLoadingComplete={() => setLoadingState("finished")}
+						onLoad={() => setLoadingState("finished")}
 						fill
 						alt={
 							url?.split("/").join("-") ?? "missing-illustration"
