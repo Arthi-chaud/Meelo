@@ -61,6 +61,7 @@ describe("External ID Response", () => {
 			id: 0,
 			providerId: provider.id,
 			artistId: 0,
+			illustration: null,
 			description: "A",
 			value: "P-nk",
 		});

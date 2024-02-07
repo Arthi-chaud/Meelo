@@ -125,6 +125,7 @@ export default class GeniusProvider
 
 			return {
 				value: artist.url.split("/").pop(),
+				illustration: artist.image_url ?? null,
 				description: desc.length ? desc : null,
 			};
 		} catch (err) {
@@ -172,6 +173,7 @@ export default class GeniusProvider
 
 			return {
 				description: desc?.length ? desc : null,
+				illustration: artist.image_url ?? null,
 				value: url.split("/").pop(), // Retrieves last past of URL
 			};
 		} catch (err) {

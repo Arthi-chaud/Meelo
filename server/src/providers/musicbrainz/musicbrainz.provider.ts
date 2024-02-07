@@ -82,6 +82,7 @@ export default class MusicBrainzProvider
 	): Promise<ArtistMetadata> {
 		return {
 			description: null,
+			illustration: null,
 			value: artistIdentifier,
 		};
 	}

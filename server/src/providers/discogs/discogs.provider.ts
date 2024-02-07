@@ -74,6 +74,7 @@ export default class DiscogsProvider
 			if (isNumber(artist.id) && isString(artist.profile_plaintext)) {
 				return {
 					value: artist.id.toString(),
+					illustration: artist.images.at(0)?.uri ?? null,
 					description: artist.profile_plaintext,
 				};
 			}

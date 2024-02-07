@@ -71,9 +71,10 @@ export default class ExternalIdService {
 			(provider, mbid) => provider.getArtistEntry(mbid),
 			(url, provider) => provider.parseArtistIdentifierFromUrl(url),
 			(provider) => provider.getArtistWikidataIdentifierProperty(),
-			({ value, description }, providerId) => ({
+			({ value, description, illustration }, providerId) => ({
 				value,
 				description,
+				illustration,
 				artistId: artist.id,
 				providerId,
 			}),
