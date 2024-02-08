@@ -16,6 +16,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+/* eslint-disable max-depth */
 import { Inject, Injectable, forwardRef } from "@nestjs/common";
 import PrismaService from "src/prisma/prisma.service";
 import ProviderService from "./provider.service";
@@ -301,8 +302,17 @@ export default class ExternalIdService {
 					musicbrainzProvider,
 					resourceMBID.value,
 				);
-
-				Array.of(...providersToReach).forEach(async (otherProvider) => {
+				for (const otherProvider of Array.of(...providersToReach)) {
+					const providerId = this.providerService.getProviderId(
+						otherProvider.name,
+					);
+					if (
+						resource.externalIds.find(
+							(id) => id.providerId == providerId,
+						)
+					) {
+						continue;
+					}
 					const relation = resourceEntry.relations?.find(
 						(rel) =>
 							rel.type ==
@@ -311,22 +321,19 @@ export default class ExternalIdService {
 					);
 
 					if (relation?.url === undefined) {
-						return;
+						continue;
 					}
 					const identifier = parseIdentifierFromUrl(
 						relation.url.resource,
 						otherProvider,
 					);
 					if (identifier == null) {
-						return;
+						continue;
 					}
 					try {
 						const metadata = await getResourceMetadataByIdentifier(
 							otherProvider,
 							identifier,
-						);
-						const providerId = this.providerService.getProviderId(
-							otherProvider.name,
 						);
 
 						newIdentifiers.push(
@@ -336,9 +343,9 @@ export default class ExternalIdService {
 							(toReach) => toReach.name !== otherProvider.name,
 						);
 					} catch {
-						return;
+						continue;
 					}
-				});
+				}
 
 				const wikiDataId = resourceEntry.relations
 					?.map(
