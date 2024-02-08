@@ -126,6 +126,30 @@ describe("MusicBrainz Provider", () => {
 			expect(id.genres).toContain("Electronic");
 			expect(id.genres).toContain("Dance-pop");
 		});
+		it("should get compilation (and not single) identifier", async () => {
+			const id = await musicBrainzProvider.getAlbumMetadataByName(
+				"Celebration",
+				"79239441-bfd5-4981-a70c-55c3f15c1287",
+				"Compilation",
+			);
+			expect(id.value).toBe("bd252c17-ff32-4369-8e73-4d0a65a316bd");
+		});
+		it("should get Single identifier", async () => {
+			const id = await musicBrainzProvider.getAlbumMetadataByName(
+				"Celebration - Single",
+				"79239441-bfd5-4981-a70c-55c3f15c1287",
+				"Single",
+			);
+			expect(id.value).toBe("8ab9625e-5e09-4e4b-afda-3e64189b624b");
+		});
+		it("should get album (and not single) identifier", async () => {
+			const id = await musicBrainzProvider.getAlbumMetadataByName(
+				"Protection",
+				"10adbe5e-a2c0-4bf3-8249-2b4cbf6e6ca8",
+				"StudioRecording"
+			);
+			expect(id.value).toBe("ded46e46-788d-3c1f-b21b-9f5e9c37b1bc");
+		});
 		it("should get compilation album Identifier", async () => {
 			const id = await musicBrainzProvider.getAlbumMetadataByName(
 				"Nova Tunes 01",

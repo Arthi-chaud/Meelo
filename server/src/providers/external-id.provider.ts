@@ -111,7 +111,11 @@ export default class ExternalIdService {
 			(provider, mbid) => provider.getAlbumMetadataByIdentifier(mbid),
 			(provider, providerId) => {
 				if (!album.artist) {
-					return provider.getAlbumMetadataByName(album.name);
+					return provider.getAlbumMetadataByName(
+						album.name,
+						undefined,
+						album.type,
+					);
 				}
 				const parentArtistIdentifier = album.artist.externalIds.find(
 					(externalId) => externalId.providerId == providerId,
@@ -120,6 +124,7 @@ export default class ExternalIdService {
 				return provider.getAlbumMetadataByName(
 					album.name,
 					parentArtistIdentifier,
+					album.type,
 				);
 			},
 			(provider, mbid) => provider.getAlbumEntry(mbid),
