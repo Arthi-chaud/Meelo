@@ -146,7 +146,7 @@ describe("MusicBrainz Provider", () => {
 			const id = await musicBrainzProvider.getAlbumMetadataByName(
 				"Protection",
 				"10adbe5e-a2c0-4bf3-8249-2b4cbf6e6ca8",
-				"StudioRecording"
+				"StudioRecording",
 			);
 			expect(id.value).toBe("ded46e46-788d-3c1f-b21b-9f5e9c37b1bc");
 		});
