@@ -240,11 +240,15 @@ export default class GenreService extends RepositoryService<
 				select: {
 					id: true,
 					_count: {
-						select: { songs: true },
+						select: { songs: true, albums: true },
 					},
 				},
 			})
-			.then((genres) => genres.filter((genre) => !genre._count.songs));
+			.then((genres) =>
+				genres.filter(
+					(genre) => !genre._count.songs && !genre._count.albums,
+				),
+			);
 
 		await Promise.all(emptyGenres.map(({ id }) => this.delete({ id })));
 	}

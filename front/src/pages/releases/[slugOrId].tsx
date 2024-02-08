@@ -260,9 +260,11 @@ const ReleasePage = (props: InferSSRProps<typeof getServerSideProps>) => {
 	);
 	const externalIdWithDescription = useMemo(
 		() =>
-			album.data?.externalIds.find(
-				({ description }) => description !== null,
-			),
+			album.data?.externalIds
+				.filter(
+					({ provider }) => provider.name.toLowerCase() !== "discogs",
+				)
+				.find(({ description }) => description !== null),
 		[album.data],
 	);
 	const externalIds = useMemo(() => {

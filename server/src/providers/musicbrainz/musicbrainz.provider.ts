@@ -33,6 +33,7 @@ import MusicBrainzSettings from "./musicbrainz.settings";
 import { ProviderActionFailedError } from "../provider.exception";
 import levenshtein from "damerau-levenshtein";
 import Slug from "src/slug/slug";
+import { AlbumType } from "@prisma/client";
 
 type MBID = string;
 
@@ -125,13 +126,19 @@ export default class MusicBrainzProvider
 	async getAlbumMetadataByName(
 		albumName: string,
 		artistIdentifier?: string,
+		albumType?: AlbumType,
 	): Promise<AlbumMetadata> {
 		try {
 			const searchResult = await this.mbClient
 				.searchRelease({
-					query: `query="${albumName}" AND arid:${
+					query: `query="${albumName.replace(
+						/\s*-\s*Single$/i,
+						"",
+					)}" AND arid:${
 						artistIdentifier ?? this.compilationArtistID
 					}`,
+					inc: ["release-groups"],
+					limit: 1000,
 				})
 				.then((result) =>
 					result.releases.filter((release) =>
@@ -141,6 +148,21 @@ export default class MusicBrainzProvider
 								(artistIdentifier ?? this.compilationArtistID),
 						),
 					),
+				)
+				.then((releases) =>
+					releases.filter((release) => {
+						const releaseIsSingle =
+							release["release-group"]?.["primary-type"] ==
+							"Single";
+						const albumIsSingle = albumType == "Single";
+						if (albumType === undefined) {
+							return true;
+						}
+						if (releaseIsSingle !== albumIsSingle) {
+							return false;
+						}
+						return true;
+					}),
 				);
 			const releaseGroupId = searchResult.at(0)!["release-group"]!.id;
 

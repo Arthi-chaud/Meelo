@@ -18,6 +18,7 @@
 
 import {
 	AlbumExternalId,
+	AlbumType,
 	ArtistExternalId,
 	ReleaseExternalId,
 	SongExternalId,
@@ -88,6 +89,7 @@ export default abstract class IProvider<SettingsType = unknown> {
 	getAlbumMetadataByName(
 		_albumName: string,
 		_artistName?: string,
+		_albumType?: AlbumType,
 	): Promise<AlbumMetadata> {
 		throw new ProviderMethodNotAvailableError(this.name);
 	}
