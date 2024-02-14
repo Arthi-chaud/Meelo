@@ -52,8 +52,14 @@ const InfinitePlaylistView = (
 				query={() =>
 					props.query({
 						library: null,
-						sortBy: options?.sortBy ?? "name",
-						order: options?.order ?? "asc",
+						sortBy:
+							options?.sortBy ??
+							props.initialSortingField ??
+							"name",
+						order:
+							options?.order ??
+							props.initialSortingOrder ??
+							"asc",
 						view: "grid",
 					})
 				}

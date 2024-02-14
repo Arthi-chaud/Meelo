@@ -23,7 +23,7 @@ import { useInfiniteQuery, useQuery } from "../../../api/use-query";
 import AlbumTile from "../../../components/tile/album-tile";
 import Link from "next/link";
 import getSlugOrId from "../../../utils/getSlugOrId";
-import prepareSSR, { InferSSRProps } from "../../../ssr";
+import { GetPropsTypesFrom, Page } from "../../../ssr";
 import TileRow from "../../../components/tile-row";
 import getYear from "../../../utils/getYear";
 import SectionHeader from "../../../components/section-header";
@@ -39,6 +39,7 @@ import { Fragment, useMemo } from "react";
 import GradientBackground from "../../../components/gradient-background";
 import { useTranslation } from "react-i18next";
 import { generateArray } from "../../../utils/gen-list";
+import { NextPageContext } from "next";
 
 // Number of Song item in the 'Top Song' section
 const songListSize = 6;
@@ -78,8 +79,8 @@ const appearanceQuery = (artistSlugOrId: string | number) =>
 		["artist"],
 	);
 
-export const getServerSideProps = prepareSSR((context) => {
-	const artistIdentifier = getSlugOrId(context.params);
+const prepareSSR = (context: NextPageContext) => {
+	const artistIdentifier = getSlugOrId(context.query);
 
 	return {
 		additionalProps: { artistIdentifier },
@@ -91,14 +92,14 @@ export const getServerSideProps = prepareSSR((context) => {
 			...latestAlbumsQuery.map(({ query }) => query(artistIdentifier)),
 		],
 	};
-});
+};
 
-const ArtistPage = (props: InferSSRProps<typeof getServerSideProps>) => {
+const ArtistPage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({ props }) => {
 	const sectionPadding = 4;
 	const { t, i18n } = useTranslation();
 	const router = useRouter();
 	const artistIdentifier =
-		props.additionalProps?.artistIdentifier ?? getSlugOrId(router.query);
+		props?.artistIdentifier ?? getSlugOrId(router.query);
 	const artist = useQuery(artistQuery, artistIdentifier);
 	const albums = latestAlbumsQuery.map(({ type, query }) => ({
 		type: type,
@@ -372,5 +373,7 @@ const ArtistPage = (props: InferSSRProps<typeof getServerSideProps>) => {
 		</Box>
 	);
 };
+
+ArtistPage.prepareSSR = prepareSSR;
 
 export default ArtistPage;

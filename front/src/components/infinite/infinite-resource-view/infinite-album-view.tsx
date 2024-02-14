@@ -83,8 +83,14 @@ const InfiniteAlbumView = (
 						type:
 							// @ts-ignore
 							options?.type == "All" ? undefined : options?.type,
-						sortBy: options?.sortBy ?? AlbumSortingKeys[0],
-						order: options?.order ?? "asc",
+						sortBy:
+							options?.sortBy ??
+							props.initialSortingField ??
+							AlbumSortingKeys[0],
+						order:
+							options?.order ??
+							props.initialSortingOrder ??
+							"asc",
 					})
 				}
 				renderListItem={(item) => (

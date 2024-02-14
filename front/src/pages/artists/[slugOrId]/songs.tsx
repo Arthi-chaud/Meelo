@@ -22,7 +22,7 @@ import API from "../../../api/api";
 import InfiniteSongView from "../../../components/infinite/infinite-resource-view/infinite-song-view";
 import getSlugOrId from "../../../utils/getSlugOrId";
 import ArtistRelationPageHeader from "../../../components/relation-page-header/artist-relation-page-header";
-import prepareSSR, { InferSSRProps } from "../../../ssr";
+import { GetPropsTypesFrom, Page } from "../../../ssr";
 import {
 	prepareMeeloInfiniteQuery,
 	useQuery,
@@ -32,9 +32,14 @@ import { SongSortingKeys } from "../../../models/song";
 import { getOrderParams, getSortingFieldParams } from "../../../utils/sorting";
 import GradientBackground from "../../../components/gradient-background";
 import Track from "../../../models/track";
+import { NextPageContext } from "next";
+import { QueryClient } from "react-query";
 
-export const getServerSideProps = prepareSSR(async (context, queryClient) => {
-	const artistIdentifier = getSlugOrId(context.params);
+const prepareSSR = async (
+	context: NextPageContext,
+	queryClient: QueryClient,
+) => {
+	const artistIdentifier = getSlugOrId(context.query);
 	const order = getOrderParams(context.query.order) ?? "asc";
 	const sortBy = getSortingFieldParams(context.query.sortBy, SongSortingKeys);
 	const songs = await queryClient.fetchInfiniteQuery(
@@ -59,9 +64,11 @@ export const getServerSideProps = prepareSSR(async (context, queryClient) => {
 		],
 		infiniteQueries: [],
 	};
-});
+};
 
-const ArtistSongPage = (props: InferSSRProps<typeof getServerSideProps>) => {
+const ArtistSongPage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({
+	props,
+}) => {
 	const router = useRouter();
 	const queryClient = useQueryClient();
 	const getTrackMainAlbum = (track: Track) =>
@@ -69,7 +76,7 @@ const ArtistSongPage = (props: InferSSRProps<typeof getServerSideProps>) => {
 			.fetchQuery(API.getRelease(track.releaseId, ["album"]))
 			.then(({ album }) => album);
 	const artistIdentifier =
-		props.additionalProps?.artistIdentifier ?? getSlugOrId(router.query);
+		props?.artistIdentifier ?? getSlugOrId(router.query);
 	const artist = useQuery(API.getArtist, artistIdentifier);
 
 	return (
@@ -77,8 +84,8 @@ const ArtistSongPage = (props: InferSSRProps<typeof getServerSideProps>) => {
 			<GradientBackground colors={artist.data?.illustration?.colors} />
 			<ArtistRelationPageHeader artist={artist.data} />
 			<InfiniteSongView
-				initialSortingField={props.additionalProps?.sortBy ?? "name"}
-				initialSortingOrder={props.additionalProps?.order ?? "asc"}
+				initialSortingField={props?.sortBy ?? "name"}
+				initialSortingOrder={props?.order ?? "asc"}
 				query={({ library, sortBy, order, type, random }) =>
 					API.getSongs(
 						{
@@ -98,5 +105,7 @@ const ArtistSongPage = (props: InferSSRProps<typeof getServerSideProps>) => {
 		</Box>
 	);
 };
+
+ArtistSongPage.prepareSSR = prepareSSR;
 
 export default ArtistSongPage;

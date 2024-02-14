@@ -18,7 +18,7 @@
 
 import { Box, Grid, Stack } from "@mui/material";
 import API from "../api/api";
-import prepareSSR, { InferSSRProps } from "../ssr";
+import { GetPropsTypesFrom, Page } from "../ssr";
 import { useInfiniteQuery } from "../api/use-query";
 import SectionHeader from "../components/section-header";
 import TileRow from "../components/tile-row";
@@ -29,9 +29,10 @@ import ReleaseTile from "../components/tile/release-tile";
 import Fade from "../components/fade";
 import AlbumHighlightCard from "../components/highlight-card/album-highlight-card";
 import GradientBackground from "../components/gradient-background";
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { generateArray } from "../utils/gen-list";
+import { getRandomNumber } from "../utils/random";
 
 const newlyAddedAlbumsQuery = API.getAlbums(
 	{},
@@ -90,7 +91,7 @@ const HomePageSection = <T,>(props: {
 	);
 };
 
-export const getServerSideProps = prepareSSR(() => {
+const prepareSSR = () => {
 	const seed = Math.floor(Math.random() * 10000000);
 
 	return {
@@ -107,20 +108,21 @@ export const getServerSideProps = prepareSSR(() => {
 			albumRecommendations(seed),
 		],
 	};
-});
+};
 
-const HomePage = (props: InferSSRProps<typeof getServerSideProps>) => {
+const HomePage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({ props }) => {
+	const [seed] = useState(Math.floor(Math.random() * 10000000));
+	const [blurhashIndex] = useState(getRandomNumber());
+	const featuredAlbums = useInfiniteQuery(
+		albumRecommendations,
+		props?.recommendationSeed ?? seed,
+	);
 	const newlyAddedAlbums = useInfiniteQuery(() => newlyAddedAlbumsQuery);
 	const newlyAddedArtists = useInfiniteQuery(() => newlyAddedArtistsQuery);
 	const newlyAddedReleases = useInfiniteQuery(() => newlyAddedReleasesQuery);
 	const mostListenedSongs = useInfiniteQuery(() => mostListenedSongsQuery);
 	const newestAlbums = useInfiniteQuery(() => newestAlbumsQuery);
 	const { t } = useTranslation();
-	const featuredAlbums = useInfiniteQuery(
-		albumRecommendations,
-		props.additionalProps?.recommendationSeed ??
-			Math.floor(Math.random() * 10000000),
-	);
 	const tileRowWindowSize = {
 		xs: 3,
 		sm: 4,
@@ -142,9 +144,9 @@ const HomePage = (props: InferSSRProps<typeof getServerSideProps>) => {
 		.filter((illustration) => illustration !== null);
 	const selectedIllustrationColor = useMemo(() => {
 		return illustrations.at(
-			illustrations.length * (props.additionalProps?.blurhashIndex ?? 0),
+			illustrations.length * (props?.blurhashIndex ?? blurhashIndex),
 		)?.colors;
-	}, [illustrations, props.additionalProps]);
+	}, [illustrations, props?.blurhashIndex]);
 
 	return (
 		<>
@@ -228,5 +230,7 @@ const HomePage = (props: InferSSRProps<typeof getServerSideProps>) => {
 		</>
 	);
 };
+
+HomePage.prepareSSR = prepareSSR;
 
 export default HomePage;

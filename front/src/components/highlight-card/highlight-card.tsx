@@ -38,14 +38,14 @@ const HighlightCard = (props: HighlightCardProps) => {
 
 	const cardColor = useMemo(() => {
 		//TODO Try 40%
-		if (accentColor) {
+		if (accentColor !== null) {
 			const themePaperColor = `rgba(${theme.vars.palette.background.defaultChannel} / 0.75)`;
 			return {
 				[theme.getColorSchemeSelector("light")]: {
-					backgroundColor: `color-mix(in srgb, ${accentColor?.light} 40%, ${themePaperColor})`,
+					backgroundColor: `color-mix(in srgb, ${accentColor.light} 40%, ${themePaperColor})`,
 				},
 				[theme.getColorSchemeSelector("dark")]: {
-					backgroundColor: `color-mix(in srgb, ${accentColor?.dark} 40%, ${themePaperColor})`,
+					backgroundColor: `color-mix(in srgb, ${accentColor.dark} 40%, ${themePaperColor})`,
 				},
 			};
 		}

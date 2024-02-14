@@ -21,10 +21,11 @@ import { useRouter } from "next/router";
 import { SongSortingKeys } from "../../models/song";
 import API from "../../api/api";
 import { getOrderParams, getSortingFieldParams } from "../../utils/sorting";
-import prepareSSR, { InferSSRProps } from "../../ssr";
+import { GetPropsTypesFrom, Page } from "../../ssr";
 import InfiniteSongView from "../../components/infinite/infinite-resource-view/infinite-song-view";
+import { NextPageContext } from "next";
 
-export const getServerSideProps = prepareSSR((context) => {
+const prepareSSR = (context: NextPageContext) => {
 	const order = getOrderParams(context.query.order) ?? "asc";
 	const sortBy = getSortingFieldParams(context.query.sortBy, SongSortingKeys);
 
@@ -34,15 +35,17 @@ export const getServerSideProps = prepareSSR((context) => {
 			API.getSongs({}, { sortBy, order }, ["artist", "featuring"]),
 		],
 	};
-});
+};
 
-const LibrarySongsPage = (props: InferSSRProps<typeof getServerSideProps>) => {
+const LibrarySongsPage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({
+	props,
+}) => {
 	const router = useRouter();
 
 	return (
 		<InfiniteSongView
-			initialSortingField={props.additionalProps?.sortBy}
-			initialSortingOrder={props.additionalProps?.order}
+			initialSortingField={props?.sortBy}
+			initialSortingOrder={props?.order}
 			query={({ sortBy, order, type, library, random }) =>
 				API.getSongs(
 					{ type, library: library ?? undefined, random },
@@ -53,5 +56,7 @@ const LibrarySongsPage = (props: InferSSRProps<typeof getServerSideProps>) => {
 		/>
 	);
 };
+
+LibrarySongsPage.prepareSSR = prepareSSR;
 
 export default LibrarySongsPage;

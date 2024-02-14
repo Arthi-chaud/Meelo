@@ -48,9 +48,15 @@ const InfiniteArtistView = (
 				query={() =>
 					props.query({
 						library: options?.library ?? null,
-						view: options?.view ?? "list",
-						sortBy: options?.sortBy ?? "name",
-						order: options?.order ?? "asc",
+						view: options?.view ?? props.defaultLayout ?? "list",
+						sortBy:
+							options?.sortBy ??
+							props.initialSortingField ??
+							"name",
+						order:
+							options?.order ??
+							props.initialSortingOrder ??
+							"asc",
 					})
 				}
 				renderListItem={(item) => <ArtistItem artist={item} />}
