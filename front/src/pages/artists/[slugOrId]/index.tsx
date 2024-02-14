@@ -334,14 +334,16 @@ const ArtistPage = (props: InferSSRProps<typeof getServerSideProps>) => {
 				<Divider sx={{ paddingTop: 3 }} />
 				<Box sx={{ paddingBottom: sectionPadding }} />
 				<SectionHeader heading={t("about")} />
-				<Container
-					maxWidth={false}
-					sx={{ paddingBottom: 4, paddingTop: 3 }}
-				>
-					<ResourceDescriptionExpandable
-						externalDescription={externalIdWithDescription}
-					/>
-				</Container>
+				{externalIdWithDescription && (
+					<Container
+						maxWidth={false}
+						sx={{ paddingBottom: 4, paddingTop: 3 }}
+					>
+						<ResourceDescriptionExpandable
+							externalDescription={externalIdWithDescription}
+						/>
+					</Container>
+				)}
 				{(!artist.data || artist.data.externalIds.length != 0) && (
 					<>
 						<Divider />
