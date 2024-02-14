@@ -108,9 +108,9 @@ const ArtistPage = (props: InferSSRProps<typeof getServerSideProps>) => {
 	const videos = useInfiniteQuery(videosQuery, artistIdentifier);
 	const topSongs = useInfiniteQuery(topSongsQuery, artistIdentifier);
 	const appearances = useInfiniteQuery(appearanceQuery, artistIdentifier);
-	const externalIdWithDescription = artist.data?.externalIds.find(
-		({ description }) => description !== null,
-	);
+	const externalIdWithDescription = artist.data?.externalIds
+		.filter(({ provider }) => provider.name.toLowerCase() !== "discogs")
+		.find(({ description }) => description !== null);
 	const { musicVideos, extras } = useMemo(() => {
 		const firstPage = videos.data?.pages.at(0)?.items;
 		return {
@@ -334,14 +334,16 @@ const ArtistPage = (props: InferSSRProps<typeof getServerSideProps>) => {
 				<Divider sx={{ paddingTop: 3 }} />
 				<Box sx={{ paddingBottom: sectionPadding }} />
 				<SectionHeader heading={t("about")} />
-				<Container
-					maxWidth={false}
-					sx={{ paddingBottom: 4, paddingTop: 3 }}
-				>
-					<ResourceDescriptionExpandable
-						externalDescription={externalIdWithDescription}
-					/>
-				</Container>
+				{externalIdWithDescription && (
+					<Container
+						maxWidth={false}
+						sx={{ paddingBottom: 4, paddingTop: 3 }}
+					>
+						<ResourceDescriptionExpandable
+							externalDescription={externalIdWithDescription}
+						/>
+					</Container>
+				)}
 				{(!artist.data || artist.data.externalIds.length != 0) && (
 					<>
 						<Divider />

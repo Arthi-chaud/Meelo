@@ -105,7 +105,7 @@ const SongPage = (props: InferSSRProps<typeof getServerSideProps>) => {
 	const genres = useInfiniteQuery(API.getGenres, { song: songIdentifier });
 
 	return (
-		<Box sx={{ width: "100%" }}>
+		<>
 			<GradientBackground colors={song.data?.illustration?.colors} />
 			<SongRelationPageHeader song={song.data} />
 			<Button
@@ -249,7 +249,7 @@ const SongPage = (props: InferSSRProps<typeof getServerSideProps>) => {
 					/>
 				)}
 			</Box>
-		</Box>
+		</>
 	);
 };
 

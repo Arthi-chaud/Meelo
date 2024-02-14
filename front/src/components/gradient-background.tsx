@@ -21,9 +21,10 @@ import { generateArray } from "../utils/gen-list";
 
 type GradientBackgroundProps = {
 	colors: string[] | undefined;
+	index?: number;
 };
 
-const GradientBackground = ({ colors }: GradientBackgroundProps) => {
+const GradientBackground = ({ colors, index }: GradientBackgroundProps) => {
 	const theme = useTheme();
 	const [color1, color2, color3, color4, color5] = Array.of(
 		...(colors ?? generateArray(5)),
@@ -38,26 +39,25 @@ const GradientBackground = ({ colors }: GradientBackgroundProps) => {
 
 	return (
 		<>
-			{colors && colors.length >= 5 && (
-				<Box
-					sx={{
-						position: "fixed",
-						top: 0,
-						left: 0,
-						zIndex: -10000,
-						width: "100vw",
-						height: "100vh",
-						background: gradientCSS,
-					}}
-				/>
-			)}
+			<Box
+				sx={{
+					position: "fixed",
+					top: 0,
+					left: 0,
+					zIndex: -10000 + (index ?? 0),
+					width: "100vw",
+					height: "100vh",
+					background:
+						colors && colors.length >= 5 ? gradientCSS : "none",
+				}}
+			/>
 			<Paper
 				sx={{
 					borderRadius: 0,
 					position: "fixed",
 					top: 0,
 					left: 0,
-					zIndex: -10000,
+					zIndex: -10000 + (index ?? 0),
 					width: "100vw",
 					height: "100vh",
 					opacity: 0.5,

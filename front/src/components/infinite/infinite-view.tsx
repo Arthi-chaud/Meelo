@@ -23,9 +23,9 @@ import { WideLoadingComponent } from "../loading/loading";
 import InfiniteGrid from "./infinite-grid";
 import InfiniteList from "./infinite-list";
 import { useEffect, useState } from "react";
-import Resource from "../../models/resource";
 import Fade from "../fade";
 import { useTranslation } from "react-i18next";
+import { IllustratedResource } from "../../models/illustration";
 
 export type InfiniteViewProps<ItemType> = {
 	view: "list" | "grid";
@@ -38,7 +38,7 @@ export type InfiniteViewProps<ItemType> = {
  * Infinite scrolling view, which lets the user decide which way the data is displayed
  * @returns
  */
-const InfiniteView = <ItemType extends Resource>(
+const InfiniteView = <ItemType extends IllustratedResource>(
 	props: InfiniteViewProps<ItemType>,
 ) => {
 	const { t } = useTranslation();

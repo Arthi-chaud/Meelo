@@ -94,7 +94,7 @@ const ListItem = (props: ListItemProps) => {
 					spacing={2}
 					sx={{ display: { xs: "none", xl: "flex" }, width: "100%" }}
 				>
-					<Grid item xs={props.secondTitle ? 6 : 10}>
+					<Grid item xs={props.secondTitle !== null ? 6 : 10}>
 						<Typography sx={{ ...textStyle, ...primaryTextStyle }}>
 							{props.title ?? <Skeleton />}
 						</Typography>

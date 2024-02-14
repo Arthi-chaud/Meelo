@@ -44,6 +44,7 @@ type AdditionalProps = {
 
 const playSongsAction = (
 	emptyPlaylist: PlayerActions["emptyPlaylist"],
+	playTrack: PlayerActions["playTrack"],
 	playAfter: PlayerActions["playAfter"],
 	queryClient: QueryClient,
 	query: () => InfiniteQuery<SongWithRelations<"artist" | "featuring">>,
@@ -53,13 +54,18 @@ const playSongsAction = (
 		.fetchInfiniteQuery(prepareMeeloInfiniteQuery(query))
 		.then(async (res) => {
 			const songs = res.pages.flatMap(({ items }) => items);
-
+			let i = 0;
 			for (const song of songs) {
 				const { release, ...track } = await queryClient.fetchQuery(
 					API.getMasterTrack(song.id, ["release"]),
 				);
 
-				playAfter({ release, track, artist: song.artist });
+				if (i == 0) {
+					playTrack({ release, track, artist: song.artist });
+				} else {
+					playAfter({ release, track, artist: song.artist });
+				}
+				i++;
 			}
 		});
 };
@@ -78,7 +84,7 @@ const InfiniteSongView = <T extends SongWithRelations<"artist" | "featuring">>(
 	const [options, setOptions] =
 		useState<OptionState<typeof SongSortingKeys, AdditionalProps>>();
 	const queryClient = useQueryClient();
-	const { emptyPlaylist, playAfter } = usePlayerContext();
+	const { emptyPlaylist, playAfter, playTrack } = usePlayerContext();
 	const query = {
 		type:
 			// @ts-ignore
@@ -92,11 +98,16 @@ const InfiniteSongView = <T extends SongWithRelations<"artist" | "featuring">>(
 		label: "shuffle",
 		icon: <ShuffleIcon />,
 		onClick: () => {
-			playSongsAction(emptyPlaylist, playAfter, queryClient, () =>
-				props.query({
-					...query,
-					random: Math.floor(Math.random() * 10000),
-				}),
+			playSongsAction(
+				emptyPlaylist,
+				playTrack,
+				playAfter,
+				queryClient,
+				() =>
+					props.query({
+						...query,
+						random: Math.floor(Math.random() * 10000),
+					}),
 			);
 		},
 	} as const;
@@ -104,8 +115,12 @@ const InfiniteSongView = <T extends SongWithRelations<"artist" | "featuring">>(
 		label: "playAll",
 		icon: <PlayIcon />,
 		onClick: () => {
-			playSongsAction(emptyPlaylist, playAfter, queryClient, () =>
-				props.query(query),
+			playSongsAction(
+				emptyPlaylist,
+				playTrack,
+				playAfter,
+				queryClient,
+				() => props.query(query),
 			);
 		},
 	} as const;
