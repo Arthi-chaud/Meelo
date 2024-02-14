@@ -20,13 +20,14 @@ import { Box, Tab, Tabs } from "@mui/material";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/router";
 import UsersSettings from "../../components/settings/users-settings";
-import prepareSSR, { InferSSRProps } from "../../ssr";
+import { GetPropsTypesFrom, Page } from "../../ssr";
 import LibrariesSettings from "../../components/settings/libraries-settings";
 import API from "../../api/api";
 import { useQuery } from "../../api/use-query";
 import LoadingPage from "../../components/loading/loading-page";
 import UserSettings from "../../components/settings/user-settings";
 import { useTranslation } from "react-i18next";
+import { NextPageContext } from "next";
 
 // NOTE: Data Grid do not support SSR
 // https://github.com/mui/mui-x/issues/7599
@@ -48,7 +49,7 @@ const getPanelFromQuery = (query?: string): PanelName => {
 	return query as PanelName;
 };
 
-export const getServerSideProps = prepareSSR((context) => {
+const prepareSSR = (context: NextPageContext) => {
 	const panel = getPanelFromQuery(context.query.panel?.at(0));
 
 	return {
@@ -56,14 +57,15 @@ export const getServerSideProps = prepareSSR((context) => {
 		// Disabling Prefetch of queries, as some are admin-only
 		infiniteQueries: [],
 	};
-});
+};
 
-const SettingsPage = (props: InferSSRProps<typeof getServerSideProps>) => {
+const SettingsPage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({
+	props,
+}) => {
 	const router = useRouter();
 	const { t } = useTranslation();
 	const [panel, setPanel] = useState(
-		props.additionalProps?.panel ??
-			getPanelFromQuery(router.query.panel?.at(0)),
+		props?.panel ?? getPanelFromQuery(router.query.panel?.at(0)),
 	);
 	const userQuery = useQuery(API.getCurrentUserStatus);
 
@@ -105,5 +107,7 @@ const SettingsPage = (props: InferSSRProps<typeof getServerSideProps>) => {
 		</>
 	);
 };
+
+SettingsPage.prepareSSR = prepareSSR;
 
 export default SettingsPage;

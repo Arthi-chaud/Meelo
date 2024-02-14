@@ -22,20 +22,21 @@ import API from "../../../api/api";
 import InfiniteAlbumView from "../../../components/infinite/infinite-resource-view/infinite-album-view";
 import getSlugOrId from "../../../utils/getSlugOrId";
 import ArtistRelationPageHeader from "../../../components/relation-page-header/artist-relation-page-header";
-import prepareSSR, { InferSSRProps } from "../../../ssr";
+import { GetPropsTypesFrom, Page } from "../../../ssr";
 import getYear from "../../../utils/getYear";
 import { getLayoutParams } from "../../../utils/layout";
 import { useQuery } from "../../../api/use-query";
 import { getAlbumTypeParam } from "../../../utils/album-type";
 import GradientBackground from "../../../components/gradient-background";
+import { NextPageContext } from "next";
 
 const defaultSort = {
 	sortBy: "releaseDate",
 	order: "desc",
 } as const;
 
-export const getServerSideProps = prepareSSR((context) => {
-	const artistIdentifier = getSlugOrId(context.params);
+const prepareSSR = (context: NextPageContext) => {
+	const artistIdentifier = getSlugOrId(context.query);
 	const defaultLayout = getLayoutParams(context.query.view) ?? "grid";
 	const type = getAlbumTypeParam(context.query.type);
 
@@ -54,21 +55,23 @@ export const getServerSideProps = prepareSSR((context) => {
 			),
 		],
 	};
-});
+};
 
-const ArtistAlbumsPage = (props: InferSSRProps<typeof getServerSideProps>) => {
+const ArtistAlbumsPage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({
+	props,
+}) => {
 	const router = useRouter();
 	const artistIdentifier =
-		props.additionalProps?.artistIdentifier ?? getSlugOrId(router.query);
+		props?.artistIdentifier ?? getSlugOrId(router.query);
 	const artist = useQuery(API.getArtist, artistIdentifier);
-	const defaultType = props.additionalProps?.type ?? null;
+	const defaultType = props?.type ?? null;
 
 	return (
 		<Box sx={{ width: "100%" }}>
 			<GradientBackground colors={artist.data?.illustration?.colors} />
 			<ArtistRelationPageHeader artist={artist.data} />
 			<InfiniteAlbumView
-				defaultLayout={props.additionalProps?.defaultLayout}
+				defaultLayout={props?.defaultLayout}
 				defaultAlbumType={defaultType}
 				initialSortingField={defaultSort.sortBy}
 				initialSortingOrder={defaultSort.order}
@@ -90,5 +93,7 @@ const ArtistAlbumsPage = (props: InferSSRProps<typeof getServerSideProps>) => {
 		</Box>
 	);
 };
+
+ArtistAlbumsPage.prepareSSR = prepareSSR;
 
 export default ArtistAlbumsPage;

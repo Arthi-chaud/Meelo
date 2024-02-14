@@ -22,11 +22,12 @@ import API from "../../api/api";
 import { AlbumSortingKeys } from "../../models/album";
 import { getOrderParams, getSortingFieldParams } from "../../utils/sorting";
 import InfiniteAlbumView from "../../components/infinite/infinite-resource-view/infinite-album-view";
-import prepareSSR, { InferSSRProps } from "../../ssr";
+import { GetPropsTypesFrom, Page } from "../../ssr";
 import { getLayoutParams } from "../../utils/layout";
 import { getAlbumTypeParam } from "../../utils/album-type";
+import { NextPageContext } from "next";
 
-export const getServerSideProps = prepareSSR((context) => {
+const prepareSSR = (context: NextPageContext) => {
 	const order = getOrderParams(context.query.order) ?? "asc";
 	const sortBy = getSortingFieldParams(
 		context.query.sortBy,
@@ -43,18 +44,20 @@ export const getServerSideProps = prepareSSR((context) => {
 			]),
 		],
 	};
-});
+};
 
-const LibraryAlbumsPage = (props: InferSSRProps<typeof getServerSideProps>) => {
+const LibraryAlbumsPage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({
+	props,
+}) => {
 	const router = useRouter();
-	const defaultType = props.additionalProps?.type ?? null;
+	const defaultType = props?.type ?? null;
 
 	return (
 		<InfiniteAlbumView
 			defaultAlbumType={defaultType}
-			initialSortingField={props.additionalProps?.sortBy}
-			initialSortingOrder={props.additionalProps?.order}
-			defaultLayout={props.additionalProps?.defaultLayout}
+			initialSortingField={props?.sortBy}
+			initialSortingOrder={props?.order}
+			defaultLayout={props?.defaultLayout}
 			query={({ sortBy, order, type, library }) =>
 				API.getAlbums(
 					{ type, library: library ?? undefined },
@@ -65,5 +68,7 @@ const LibraryAlbumsPage = (props: InferSSRProps<typeof getServerSideProps>) => {
 		/>
 	);
 };
+
+LibraryAlbumsPage.prepareSSR = prepareSSR;
 
 export default LibraryAlbumsPage;

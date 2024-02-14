@@ -17,111 +17,38 @@
  */
 
 // eslint-disable-next-line no-restricted-imports
-import { GetServerSidePropsContext, InferGetServerSidePropsType } from "next";
+import { NextPageContext } from "next";
 // eslint-disable-next-line no-restricted-imports
-import { QueryClient, dehydrate } from "react-query";
-import {
-	InfiniteQuery,
-	Query,
-	prepareMeeloInfiniteQuery,
-	prepareMeeloQuery,
-} from "./api/use-query";
-import store from "./state/store";
-import { setAccessToken } from "./state/userSlice";
-import { UserAccessTokenCookieKey } from "./utils/cookieKeys";
-import API from "./api/api";
-import { Promisable } from "type-fest";
+import { QueryClient } from "react-query";
+import { InfiniteQuery, Query } from "./api/use-query";
+import { ComponentType } from "react";
 
-/**
- * Get the router + query client
- * return queries to prefetch
- * return infinite queries to prefetch
- * return additional props
- */
+type PromiseOr<T> = T | Promise<T>;
 
-/**
- * Parameters needed for server-side rendering
- */
-type SSRParameters<AdditionalProps = Record<string, number | null | string>> = {
-	/**
-	 * Queries to prefetch
-	 */
-	queries?: Query<any>[];
-	/**
-	 * Infinite Queries to prefetch
-	 */
-	infiniteQueries?: InfiniteQuery<any>[];
-	additionalProps?: AdditionalProps;
-};
-
-/**
- * Wrapper for *InferGetServerSidePropsType* provided by Next
- */
-export type InferSSRProps<T extends (args: any) => any> = NonNullable<
-	InferGetServerSidePropsType<T>
->;
-/**
- * Wrapper for Server-side rendering
- * @param context
- * @returns
- */
-const prepareSSR = <AdditionalProps>(
-	cook: (
-		routeParam: Pick<GetServerSidePropsContext, "req" | "query" | "params">,
+export type Page<Props = unknown> = ComponentType<{
+	props: Props | undefined;
+}> & {
+	prepareSSR: (
+		ctxt: NextPageContext,
 		queryClient: QueryClient,
-	) => Promisable<SSRParameters<AdditionalProps>>,
-) => {
-	return async (context: GetServerSidePropsContext) => {
-		const queryClient = new QueryClient();
-		const accessToken = context.req.cookies[UserAccessTokenCookieKey];
-
-		if (accessToken) {
-			store.dispatch(setAccessToken(accessToken));
-		} else {
-			// Disable SSR if user is not authentified
-			return { props: {} };
-		}
-		const parameters = await cook(context, queryClient);
-
-		const userQueryResult = await queryClient
-			.fetchQuery(prepareMeeloQuery(API.getCurrentUserStatus))
-			.catch(() => null);
-		if (userQueryResult != null) {
-			try {
-				await Promise.all([
-					queryClient.prefetchInfiniteQuery(
-						prepareMeeloInfiniteQuery(API.getLibraries),
-					),
-					...(parameters.infiniteQueries?.map((query) =>
-						queryClient.prefetchInfiniteQuery(
-							prepareMeeloInfiniteQuery(() => query),
-						),
-					) ?? []),
-					...(parameters.queries?.map((query) =>
-						queryClient.prefetchQuery(
-							prepareMeeloQuery(() => query),
-						),
-					) ?? []),
-				]);
-			} catch {
-				return {
-					notFound: true,
-				};
-			}
-		}
-		const dehydratedQueryClient = dehydrate(queryClient, {
-			dehydrateQueries: true,
-		});
-
-		return {
-			props: {
-				additionalProps: parameters.additionalProps ?? null,
-				dehydratedState: JSON.parse(
-					JSON.stringify(dehydratedQueryClient),
-				),
-			},
-		};
-	};
+	) => PromiseOr<{
+		/**
+		 * Queries to prefetch
+		 */
+		queries?: Query<any>[];
+		/**
+		 * Infinite Queries to prefetch
+		 */
+		infiniteQueries?: InfiniteQuery<any>[];
+		additionalProps?: Props;
+	}>;
 };
 
-export default prepareSSR;
+export type GetPropsTypesFrom<T> = T extends (
+	ctxt: NextPageContext,
+	queryClient: QueryClient,
+) => infer P
+	? P extends PromiseOr<{ additionalProps: infer Q }>
+		? Q
+		: never
+	: never;

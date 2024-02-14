@@ -12,6 +12,7 @@
 	"plugins": ["react", "@typescript-eslint", "unused-imports", "import"],
 	"ignorePatterns": ["node_modules/", "jest.config.js", "__tests__"],
 	"rules": {
+		"react/prop-types": "off",
 		"react/react-in-jsx-scope": "off",
 		"react/sort-prop-types": "warn",
 		"react/jsx-props-no-multi-spaces": "warn",
@@ -42,11 +43,6 @@
 						"message": "Use wrapper functions provided by src/api/query"
 					},
 					{
-						"name": "react-query",
-						"importNames": ["QueryClient", "dehydrate"],
-						"message": "Use SSR wrapping function provided by src/ssr"
-					},
-					{
 						"name": "@mui/material",
 						"importNames": ["Link"],
 						"message": "Use Link from 'next/router"
@@ -60,14 +56,6 @@
 						"name": "@mui/material",
 						"importNames": ["ThemeProvider"],
 						"message": "Use wrapper from theme/provider"
-					},
-					{
-						"name": "next",
-						"importNames": [
-							"GetServerSidePropsContext",
-							"InferGetServerSidePropsType"
-						],
-						"message": "Use wrapper functions provided by src/ssr"
 					},
 					{
 						"name": "format-duration",

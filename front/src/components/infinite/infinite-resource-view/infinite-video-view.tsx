@@ -54,8 +54,14 @@ const InfiniteVideoView = (
 					props.query({
 						view: options?.view ?? "grid",
 						library: options?.library ?? null,
-						sortBy: options?.sortBy ?? "name",
-						order: options?.order ?? "asc",
+						sortBy:
+							options?.sortBy ??
+							props.initialSortingField ??
+							"name",
+						order:
+							options?.order ??
+							props.initialSortingOrder ??
+							"asc",
 					})
 				}
 				renderListItem={(item) => <></>}

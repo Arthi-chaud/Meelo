@@ -21,10 +21,11 @@ import { Box, InputAdornment, TextField } from "@mui/material";
 import { useState } from "react";
 import SelectableInfiniteView from "../../components/infinite/selectable-infinite-view";
 import { useRouter } from "next/router";
-import prepareSSR, { InferSSRProps } from "../../ssr";
+import { GetPropsTypesFrom, Page } from "../../ssr";
 import API from "../../api/api";
+import { NextPageContext } from "next";
 
-export const getServerSideProps = prepareSSR((context) => {
+const prepareSSR = (context: NextPageContext) => {
 	const searchQuery = context.query.query?.at(0) ?? null;
 	const type = (context.query.type as string) ?? null;
 
@@ -43,7 +44,7 @@ export const getServerSideProps = prepareSSR((context) => {
 				]
 			: [],
 	};
-});
+};
 
 const buildSearchUrl = (
 	query: string | undefined,
@@ -52,10 +53,10 @@ const buildSearchUrl = (
 	return "/search/" + (query ?? "") + (type ? `?type=${type}` : "");
 };
 
-const SearchPage = (props: InferSSRProps<typeof getServerSideProps>) => {
+const SearchPage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({ props }) => {
 	const router = useRouter();
-	const searchQuery = props.additionalProps?.searchQuery;
-	const type = props.additionalProps?.type ?? (router.query.type as string);
+	const searchQuery = props?.searchQuery;
+	const type = props?.type ?? (router.query.type as string);
 	const [query, setQuery] = useState<string | undefined>(
 		(searchQuery ?? Array.from(router.query.query ?? []).join(" ")) ||
 			undefined,
@@ -143,5 +144,7 @@ const SearchPage = (props: InferSSRProps<typeof getServerSideProps>) => {
 		</Box>
 	);
 };
+
+SearchPage.prepareSSR = prepareSSR;
 
 export default SearchPage;

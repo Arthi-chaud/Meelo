@@ -16,11 +16,16 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+/* eslint-disable no-restricted-imports */
 import { ConfirmProvider } from "material-ui-confirm";
 import { useEffect, useState } from "react";
-import type { AppProps } from "next/app";
-// eslint-disable-next-line no-restricted-imports
-import { Hydrate, QueryClient, QueryClientProvider } from "react-query";
+import NextApp, { AppContext, AppProps } from "next/app";
+import {
+	Hydrate,
+	QueryClient,
+	QueryClientProvider,
+	dehydrate,
+} from "react-query";
 import { ReactQueryDevtools } from "react-query/devtools";
 import { ErrorBoundary } from "react-error-boundary";
 import toast from "react-hot-toast";
@@ -38,12 +43,21 @@ import "../theme/styles.css";
 import ThemeProvider from "../theme/provider";
 import { PersistGate } from "redux-persist/integration/react";
 import store, { persistor } from "../state/store";
-import { DefaultMeeloQueryOptions } from "../api/use-query";
+import {
+	DefaultMeeloQueryOptions,
+	prepareMeeloInfiniteQuery,
+	prepareMeeloQuery,
+} from "../api/use-query";
 import createEmotionCache from "../utils/createEmotionCache";
 import { CacheProvider, EmotionCache } from "@emotion/react";
 import Scaffold from "../components/scaffold/scaffold";
 import { withTranslations } from "../i18n/i18n";
 import { PlayerContextProvider } from "../contexts/player";
+import { Page } from "../ssr";
+import { UserAccessTokenCookieKey } from "../utils/cookieKeys";
+import { setAccessToken } from "../state/userSlice";
+import API from "../api/api";
+import { deepmerge } from "@mui/utils";
 
 // Client-side cache, shared for the whole session of the user in the browser.
 const clientSideEmotionCache = createEmotionCache();
@@ -140,5 +154,63 @@ function MyApp({
 		</CacheProvider>
 	);
 }
+
+MyApp.getInitialProps = async (appContext: AppContext) => {
+	const { pageProps } = await NextApp.getInitialProps(appContext);
+	const Component = appContext.Component as unknown as Page;
+
+	const queryClient = new QueryClient({
+		defaultOptions: {
+			queries: DefaultMeeloQueryOptions,
+		},
+	});
+	const accessToken: string | undefined = (appContext.ctx.req as any)
+		?.cookies[UserAccessTokenCookieKey];
+
+	if (accessToken) {
+		store.dispatch(setAccessToken(accessToken));
+	} else {
+		// Disable SSR if user is not authentified
+		return { pageProps: {} };
+	}
+	const { queries, infiniteQueries, additionalProps } =
+		(await Component.prepareSSR?.(appContext.ctx, queryClient)) ?? {};
+
+	const userQueryResult = await queryClient
+		.fetchQuery(prepareMeeloQuery(API.getCurrentUserStatus))
+		.catch(() => null);
+	if (userQueryResult != null) {
+		try {
+			await Promise.all([
+				queryClient.prefetchInfiniteQuery(
+					prepareMeeloInfiniteQuery(API.getLibraries),
+				),
+				...(infiniteQueries?.map((query) =>
+					queryClient.prefetchInfiniteQuery(
+						prepareMeeloInfiniteQuery(() => query),
+					),
+				) ?? []),
+				...(queries?.map((query) =>
+					queryClient.prefetchQuery(prepareMeeloQuery(() => query)),
+				) ?? []),
+			]);
+		} catch {
+			return {
+				pageProps: {},
+				notFound: true,
+			};
+		}
+	}
+	const dehydratedQueryClient = dehydrate(queryClient, {
+		dehydrateQueries: true,
+	});
+
+	return {
+		pageProps: {
+			props: deepmerge(pageProps, additionalProps),
+			dehydratedState: JSON.parse(JSON.stringify(dehydratedQueryClient)),
+		},
+	};
+};
 
 export default withTranslations(MyApp);

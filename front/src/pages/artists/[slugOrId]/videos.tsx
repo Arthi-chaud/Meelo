@@ -20,16 +20,17 @@ import { useRouter } from "next/router";
 import API from "../../../api/api";
 import getSlugOrId from "../../../utils/getSlugOrId";
 import ArtistRelationPageHeader from "../../../components/relation-page-header/artist-relation-page-header";
-import prepareSSR, { InferSSRProps } from "../../../ssr";
+import { GetPropsTypesFrom, Page } from "../../../ssr";
 import InfiniteVideoView from "../../../components/infinite/infinite-resource-view/infinite-video-view";
 import formatDuration from "../../../utils/formatDuration";
 import { SongSortingKeys } from "../../../models/song";
 import { getOrderParams, getSortingFieldParams } from "../../../utils/sorting";
 import { useQuery } from "../../../api/use-query";
 import GradientBackground from "../../../components/gradient-background";
+import { NextPageContext } from "next";
 
-export const getServerSideProps = prepareSSR((context) => {
-	const artistIdentifier = getSlugOrId(context.params);
+const prepareSSR = (context: NextPageContext) => {
+	const artistIdentifier = getSlugOrId(context.query);
 	const order = getOrderParams(context.query.order) ?? "asc";
 	const sortBy = getSortingFieldParams(context.query.sortBy, SongSortingKeys);
 
@@ -39,17 +40,19 @@ export const getServerSideProps = prepareSSR((context) => {
 		infiniteQueries: [
 			API.getVideos(
 				{ artist: artistIdentifier },
-				{ sortBy: "name", order: "asc" },
+				{ sortBy: sortBy, order: order },
 				["artist", "featuring"],
 			),
 		],
 	};
-});
+};
 
-const ArtistSongPage = (props: InferSSRProps<typeof getServerSideProps>) => {
+const ArtistSongPage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({
+	props,
+}) => {
 	const router = useRouter();
 	const artistIdentifier =
-		props.additionalProps?.artistIdentifier ?? getSlugOrId(router.query);
+		props?.artistIdentifier ?? getSlugOrId(router.query);
 	const artist = useQuery(API.getArtist, artistIdentifier);
 
 	return (
@@ -57,18 +60,24 @@ const ArtistSongPage = (props: InferSSRProps<typeof getServerSideProps>) => {
 			<GradientBackground colors={artist.data?.illustration?.colors} />
 			<ArtistRelationPageHeader artist={artist.data} />
 			<InfiniteVideoView
-				initialSortingField={props.additionalProps?.sortBy}
-				initialSortingOrder={props.additionalProps?.order}
-				query={(sort) =>
-					API.getVideos({ artist: artistIdentifier }, sort, [
-						"artist",
-						"featuring",
-					])
+				initialSortingField={props?.sortBy}
+				initialSortingOrder={props?.order}
+				query={({ sortBy, order, library }) =>
+					API.getVideos(
+						{
+							artist: artistIdentifier,
+							library: library ?? undefined,
+						},
+						{ sortBy, order },
+						["artist", "featuring"],
+					)
 				}
 				formatSubtitle={(song) => formatDuration(song.track.duration)}
 			/>
 		</>
 	);
 };
+
+ArtistSongPage.prepareSSR = prepareSSR;
 
 export default ArtistSongPage;

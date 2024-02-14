@@ -89,8 +89,8 @@ const InfiniteSongView = <T extends SongWithRelations<"artist" | "featuring">>(
 		type:
 			// @ts-ignore
 			options?.type == "All" ? undefined : (options?.type as SongType),
-		sortBy: options?.sortBy ?? "name",
-		order: options?.order ?? "asc",
+		sortBy: options?.sortBy ?? props.initialSortingField ?? "name",
+		order: options?.order ?? props.initialSortingOrder ?? "asc",
 		view: "grid",
 		library: options?.library ?? null,
 	} as const;

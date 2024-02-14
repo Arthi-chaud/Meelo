@@ -19,7 +19,7 @@
 import { useRouter } from "next/router";
 import API from "../../../api/api";
 import RelationPageHeader from "../../../components/relation-page-header/relation-page-header";
-import prepareSSR, { InferSSRProps } from "../../../ssr";
+import { GetPropsTypesFrom, Page } from "../../../ssr";
 import getSlugOrId from "../../../utils/getSlugOrId";
 import {
 	prepareMeeloQuery,
@@ -48,7 +48,7 @@ import { PlaylistEntry } from "../../../models/playlist";
 import { useMemo, useState } from "react";
 import { DragDropContext, Draggable, Droppable } from "react-beautiful-dnd";
 import toast from "react-hot-toast";
-import { useMutation } from "react-query";
+import { QueryClient, useMutation } from "react-query";
 import { shuffle } from "d3-array";
 import { DeletePlaylistAction } from "../../../components/actions/playlist";
 import { useConfirm } from "material-ui-confirm";
@@ -56,14 +56,18 @@ import GradientBackground from "../../../components/gradient-background";
 import { useTranslation } from "react-i18next";
 import { generateArray } from "../../../utils/gen-list";
 import { usePlayerContext } from "../../../contexts/player";
+import { NextPageContext } from "next";
 
 const playlistQuery = (idOrSlug: number | string) =>
 	API.getPlaylist(idOrSlug, ["entries"]);
 const masterTrackQuery = (songId: number | string) =>
 	API.getMasterTrack(songId, ["release"]);
 
-export const getServerSideProps = prepareSSR(async (context, queryClient) => {
-	const playlistIdentifier = getSlugOrId(context.params);
+const prepareSSR = async (
+	context: NextPageContext,
+	queryClient: QueryClient,
+) => {
+	const playlistIdentifier = getSlugOrId(context.query);
 	const playlist = await queryClient.fetchQuery(
 		prepareMeeloQuery(() => playlistQuery(playlistIdentifier)),
 	);
@@ -75,7 +79,7 @@ export const getServerSideProps = prepareSSR(async (context, queryClient) => {
 			...playlist.entries.map((entry) => API.getArtist(entry.artistId)),
 		],
 	};
-});
+};
 
 type DragAndDropPlaylistProps = {
 	entries: (PlaylistEntry & SongWithRelations<"artist">)[];
@@ -179,7 +183,9 @@ const PlaylistEntryItem = ({ entry, onClick }: PlaylistEntryItemProps) => (
 	/>
 );
 
-const PlaylistPage = (props: InferSSRProps<typeof getServerSideProps>) => {
+const PlaylistPage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({
+	props,
+}) => {
 	const { t } = useTranslation();
 	const router = useRouter();
 	const { playTracks } = usePlayerContext();
@@ -190,7 +196,7 @@ const PlaylistPage = (props: InferSSRProps<typeof getServerSideProps>) => {
 		(PlaylistEntry & SongWithRelations<"artist">)[]
 	>([]);
 	const playlistIdentifier =
-		props.additionalProps?.playlistIdentifier ?? getSlugOrId(router.query);
+		props?.playlistIdentifier ?? getSlugOrId(router.query);
 	const deleteAction = DeletePlaylistAction(
 		confirm,
 		queryClient,
@@ -409,5 +415,7 @@ const PlaylistPage = (props: InferSSRProps<typeof getServerSideProps>) => {
 		</>
 	);
 };
+
+PlaylistPage.prepareSSR = prepareSSR;
 
 export default PlaylistPage;

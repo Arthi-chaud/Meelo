@@ -18,7 +18,7 @@
 
 import { useRouter } from "next/router";
 import API from "../../../api/api";
-import prepareSSR, { InferSSRProps } from "../../../ssr";
+import { GetPropsTypesFrom, Page } from "../../../ssr";
 import getSlugOrId from "../../../utils/getSlugOrId";
 import {
 	useInfiniteQuery,
@@ -46,9 +46,10 @@ import GradientBackground from "../../../components/gradient-background";
 import { useTranslation } from "react-i18next";
 import { generateArray } from "../../../utils/gen-list";
 import { usePlayerContext } from "../../../contexts/player";
+import { NextPageContext } from "next";
 
-export const getServerSideProps = prepareSSR((context) => {
-	const songIdentifier = getSlugOrId(context.params);
+const prepareSSR = (context: NextPageContext) => {
+	const songIdentifier = getSlugOrId(context.query);
 
 	return {
 		additionalProps: { songIdentifier },
@@ -74,11 +75,11 @@ export const getServerSideProps = prepareSSR((context) => {
 			),
 		],
 	};
-});
+};
 
 const tabs = ["lyrics", "versions", "tracks", "more"] as const;
 
-const SongPage = (props: InferSSRProps<typeof getServerSideProps>) => {
+const SongPage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({ props }) => {
 	/**
 	 * Parses the query to find the requested tab, fallback on tabs[0]
 	 */
@@ -92,8 +93,7 @@ const SongPage = (props: InferSSRProps<typeof getServerSideProps>) => {
 	const [tab, setTabs] = useState<(typeof tabs)[number]>(getTabFromQuery());
 	const queryClient = useQueryClient();
 	const { playTrack } = usePlayerContext();
-	const songIdentifier =
-		props.additionalProps?.songIdentifier ?? getSlugOrId(router.query);
+	const songIdentifier = props?.songIdentifier ?? getSlugOrId(router.query);
 	const song = useQuery(() =>
 		API.getSong(songIdentifier, [
 			"artist",
@@ -240,11 +240,12 @@ const SongPage = (props: InferSSRProps<typeof getServerSideProps>) => {
 				)}
 				{tab == "tracks" && (
 					<InfiniteTrackView
-						query={(sort) =>
-							API.getTracks({ song: songIdentifier }, sort, [
-								"release",
-								"song",
-							])
+						query={({ sortBy, order }) =>
+							API.getTracks(
+								{ song: songIdentifier },
+								{ sortBy, order },
+								["release", "song"],
+							)
 						}
 					/>
 				)}
@@ -252,5 +253,7 @@ const SongPage = (props: InferSSRProps<typeof getServerSideProps>) => {
 		</>
 	);
 };
+
+SongPage.prepareSSR = prepareSSR;
 
 export default SongPage;

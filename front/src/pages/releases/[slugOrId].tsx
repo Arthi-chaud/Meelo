@@ -44,7 +44,7 @@ import {
 import { shuffle } from "d3-array";
 import getSlugOrId from "../../utils/getSlugOrId";
 import ReleaseTrackList from "../../components/release-tracklist";
-import prepareSSR, { InferSSRProps } from "../../ssr";
+import { GetPropsTypesFrom, Page } from "../../ssr";
 import ReleaseContextualMenu from "../../components/contextual-menu/release-contextual-menu";
 import TileRow from "../../components/tile-row";
 import VideoTile from "../../components/tile/video-tile";
@@ -66,6 +66,8 @@ import GradientBackground from "../../components/gradient-background";
 import { useTranslation } from "react-i18next";
 import { generateArray } from "../../utils/gen-list";
 import { usePlayerContext } from "../../contexts/player";
+import { NextPageContext } from "next";
+import { QueryClient } from "react-query";
 
 const releaseQuery = (releaseIdentifier: string | number) =>
 	API.getRelease(releaseIdentifier, ["album", "externalIds"]);
@@ -96,8 +98,11 @@ const relatedReleasesQuery = (albumId: number) =>
 const relatedPlaylistsQuery = (albumId: number) =>
 	API.getPlaylists({ album: albumId });
 
-export const getServerSideProps = prepareSSR(async (context, queryClient) => {
-	const releaseIdentifier = getSlugOrId(context.params);
+const prepareSSR = async (
+	context: NextPageContext,
+	queryClient: QueryClient,
+) => {
+	const releaseIdentifier = getSlugOrId(context.query);
 	const release = await queryClient.fetchQuery(
 		prepareMeeloQuery(() => releaseQuery(releaseIdentifier)),
 	);
@@ -118,7 +123,7 @@ export const getServerSideProps = prepareSSR(async (context, queryClient) => {
 			relatedPlaylistsQuery(release.albumId),
 		],
 	};
-});
+};
 
 type RelatedContentSectionProps = {
 	display: boolean;
@@ -142,11 +147,11 @@ const RelatedContentSection = (props: RelatedContentSectionProps) => {
 	);
 };
 
-const ReleasePage = (props: InferSSRProps<typeof getServerSideProps>) => {
+const ReleasePage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({ props }) => {
 	const router = useRouter();
 	const { t } = useTranslation();
 	const releaseIdentifier =
-		props.additionalProps?.releaseIdentifier ?? getSlugOrId(router.query);
+		props?.releaseIdentifier ?? getSlugOrId(router.query);
 	const theme = useTheme();
 	const { playTracks } = usePlayerContext();
 	const release = useQuery(releaseQuery, releaseIdentifier);
@@ -732,5 +737,7 @@ const ReleasePage = (props: InferSSRProps<typeof getServerSideProps>) => {
 		</>
 	);
 };
+
+ReleasePage.prepareSSR = prepareSSR;
 
 export default ReleasePage;

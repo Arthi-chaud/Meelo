@@ -21,11 +21,12 @@ import { useRouter } from "next/router";
 import SelectableInfiniteView from "../../components/infinite/selectable-infinite-view";
 import { useQuery } from "../../api/use-query";
 import getSlugOrId from "../../utils/getSlugOrId";
-import prepareSSR, { InferSSRProps } from "../../ssr";
+import { GetPropsTypesFrom, Page } from "../../ssr";
 import API from "../../api/api";
+import { NextPageContext } from "next";
 
-export const getServerSideProps = prepareSSR((context) => {
-	const genreIdentifier = getSlugOrId(context.params);
+const prepareSSR = (context: NextPageContext) => {
+	const genreIdentifier = getSlugOrId(context.query);
 	const defaultQuerySortParams = { sortBy: "name", order: "asc" } as const;
 
 	return {
@@ -42,12 +43,11 @@ export const getServerSideProps = prepareSSR((context) => {
 			]),
 		],
 	};
-});
+};
 
-const GenrePage = (props: InferSSRProps<typeof getServerSideProps>) => {
+const GenrePage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({ props }) => {
 	const router = useRouter();
-	const genreIdentifier =
-		props.additionalProps?.genreIdentifier ?? getSlugOrId(router.query);
+	const genreIdentifier = props?.genreIdentifier ?? getSlugOrId(router.query);
 	const genre = useQuery(API.getGenre, genreIdentifier);
 
 	return (
@@ -103,5 +103,7 @@ const GenrePage = (props: InferSSRProps<typeof getServerSideProps>) => {
 		</Box>
 	);
 };
+
+GenrePage.prepareSSR = prepareSSR;
 
 export default GenrePage;

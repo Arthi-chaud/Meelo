@@ -21,26 +21,31 @@ import { useRouter } from "next/router";
 import { SongSortingKeys } from "../../models/song";
 import API from "../../api/api";
 import { getOrderParams, getSortingFieldParams } from "../../utils/sorting";
-import prepareSSR from "../../ssr";
+import { GetPropsTypesFrom, Page } from "../../ssr";
 import InfiniteVideoView from "../../components/infinite/infinite-resource-view/infinite-video-view";
+import { NextPageContext } from "next";
 
-export const getServerSideProps = prepareSSR((context) => {
+const prepareSSR = (context: NextPageContext) => {
 	const order = getOrderParams(context.query.order) ?? "asc";
 	const sortBy = getSortingFieldParams(context.query.sortBy, SongSortingKeys);
 
 	return {
-		additionalProps: {},
+		additionalProps: { sortBy, order },
 		infiniteQueries: [
 			API.getVideos({}, { sortBy, order }, ["artist", "featuring"]),
 		],
 	};
-});
+};
 
-const LibraryVideosPage = () => {
+const LibraryVideosPage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({
+	props,
+}) => {
 	const router = useRouter();
 
 	return (
 		<InfiniteVideoView
+			initialSortingField={props?.sortBy}
+			initialSortingOrder={props?.order}
 			query={({ library, sortBy, order }) =>
 				API.getVideos(
 					{ library: library ?? undefined },
@@ -52,5 +57,7 @@ const LibraryVideosPage = () => {
 		/>
 	);
 };
+
+LibraryVideosPage.prepareSSR = prepareSSR;
 
 export default LibraryVideosPage;

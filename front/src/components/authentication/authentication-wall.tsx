@@ -25,6 +25,7 @@ import API from "../../api/api";
 import { RootState } from "../../state/store";
 import { useDispatch, useSelector } from "react-redux";
 import { setUserProfile } from "../../state/userSlice";
+// eslint-disable-next-line no-restricted-imports
 import { useQuery as useReactQuery } from "react-query";
 import ThemedImage from "../../utils/themed-image";
 
