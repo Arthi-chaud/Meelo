@@ -88,10 +88,13 @@ const InfiniteScroll = <T extends Resource>(props: InfiniteScrollProps<T>) => {
 				threshold={500}
 			>
 				{props.render(
-					data?.pages.map((page) => page.items).flat() ??
-						generateArray(35),
+					data === undefined
+						? generateArray(5)
+						: [
+								...data.pages.map((page) => page.items).flat(),
+								...(isFetchingNextPage ? generateArray(5) : []),
+							],
 				)}
-				{isFetchingNextPage && props.loader()}
 			</IScroll.default>
 		</>
 	);
