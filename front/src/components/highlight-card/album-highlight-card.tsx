@@ -32,6 +32,10 @@ const AlbumHighlightCard = ({ album }: AlbumHighlightCardProps) => {
 			headline={album?.name}
 			body={
 				album?.externalIds
+					.filter(
+						({ provider }) =>
+							provider.name.toLowerCase() !== "discogs",
+					)
 					.map((id) => id.description)
 					.filter((desc): desc is string => desc !== null)
 					.sort((descA, descB) => descA.length - descB.length)

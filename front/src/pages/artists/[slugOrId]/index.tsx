@@ -108,9 +108,9 @@ const ArtistPage = (props: InferSSRProps<typeof getServerSideProps>) => {
 	const videos = useInfiniteQuery(videosQuery, artistIdentifier);
 	const topSongs = useInfiniteQuery(topSongsQuery, artistIdentifier);
 	const appearances = useInfiniteQuery(appearanceQuery, artistIdentifier);
-	const externalIdWithDescription = artist.data?.externalIds.find(
-		({ description }) => description !== null,
-	);
+	const externalIdWithDescription = artist.data?.externalIds
+		.filter(({ provider }) => provider.name.toLowerCase() !== "discogs")
+		.find(({ description }) => description !== null);
 	const { musicVideos, extras } = useMemo(() => {
 		const firstPage = videos.data?.pages.at(0)?.items;
 		return {
