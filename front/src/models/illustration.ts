@@ -17,6 +17,7 @@
  */
 
 import * as yup from "yup";
+import Resource from "./resource";
 
 const Illustration = yup.object({
 	illustration: yup
@@ -38,5 +39,7 @@ const Illustration = yup.object({
 });
 
 type Illustration = yup.InferType<typeof Illustration>["illustration"];
+
+export type IllustratedResource = Resource & yup.InferType<typeof Illustration>;
 
 export default Illustration;

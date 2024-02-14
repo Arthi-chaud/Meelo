@@ -19,6 +19,8 @@
 import { Grid } from "@mui/material";
 import Resource from "../../models/resource";
 import InfiniteScroll from "./infinite-scroll";
+import GradientBackground from "../gradient-background";
+import { IllustratedResource } from "../../models/illustration";
 
 type TypedList<T extends Resource> = typeof InfiniteScroll<T>;
 type InfiniteGridProps<T extends Resource> = Omit<
@@ -31,30 +33,42 @@ type InfiniteGridProps<T extends Resource> = Omit<
  * @param props
  * @returns
  */
-const InfiniteGrid = <T extends Resource>(props: InfiniteGridProps<T>) => {
+const InfiniteGrid = <T extends IllustratedResource>(
+	props: InfiniteGridProps<T>,
+) => {
 	return (
 		<InfiniteScroll
 			{...props}
 			render={(items) => (
-				<Grid
-					columnSpacing={2}
-					container
-					sx={{ alignItems: "stretch", display: "flex" }}
-				>
-					{items.map((item, index) => (
-						<Grid
-							item
-							xs={6}
-							sm={3}
-							md={12 / 5}
-							lg={2}
-							xl={1.2}
-							key={`item-${index}`}
-						>
-							{props.render(item)}
-						</Grid>
-					))}
-				</Grid>
+				<>
+					<GradientBackground
+						colors={
+							items.find(
+								(item) => item?.illustration !== undefined,
+							)?.illustration?.colors
+						}
+						index={-1}
+					/>
+					<Grid
+						columnSpacing={2}
+						container
+						sx={{ alignItems: "stretch", display: "flex" }}
+					>
+						{items.map((item, index) => (
+							<Grid
+								item
+								xs={6}
+								sm={3}
+								md={12 / 5}
+								lg={2}
+								xl={1.2}
+								key={`item-${index}`}
+							>
+								{props.render(item)}
+							</Grid>
+						))}
+					</Grid>
+				</>
 			)}
 		/>
 	);
