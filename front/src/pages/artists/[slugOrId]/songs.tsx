@@ -30,10 +30,10 @@ import {
 } from "../../../api/use-query";
 import { SongSortingKeys } from "../../../models/song";
 import { getOrderParams, getSortingFieldParams } from "../../../utils/sorting";
-import GradientBackground from "../../../components/gradient-background";
 import Track from "../../../models/track";
 import { NextPageContext } from "next";
 import { QueryClient } from "react-query";
+import { useGradientBackground } from "../../../utils/gradient-background";
 
 const prepareSSR = async (
 	context: NextPageContext,
@@ -78,10 +78,13 @@ const ArtistSongPage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({
 	const artistIdentifier =
 		props?.artistIdentifier ?? getSlugOrId(router.query);
 	const artist = useQuery(API.getArtist, artistIdentifier);
+	const { GradientBackground } = useGradientBackground(
+		artist.data?.illustration?.colors,
+	);
 
 	return (
 		<Box sx={{ width: "100%" }}>
-			<GradientBackground colors={artist.data?.illustration?.colors} />
+			<GradientBackground />
 			<ArtistRelationPageHeader artist={artist.data} />
 			<InfiniteSongView
 				initialSortingField={props?.sortBy ?? "name"}

@@ -28,11 +28,11 @@ import SongGrid from "../components/song-grid";
 import ReleaseTile from "../components/tile/release-tile";
 import Fade from "../components/fade";
 import AlbumHighlightCard from "../components/highlight-card/album-highlight-card";
-import GradientBackground from "../components/gradient-background";
 import { useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { generateArray } from "../utils/gen-list";
 import { getRandomNumber } from "../utils/random";
+import { useGradientBackground } from "../utils/gradient-background";
 
 const newlyAddedAlbumsQuery = API.getAlbums(
 	{},
@@ -147,10 +147,13 @@ const HomePage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({ props }) => {
 			illustrations.length * (props?.blurhashIndex ?? blurhashIndex),
 		)?.colors;
 	}, [illustrations, props?.blurhashIndex]);
+	const { GradientBackground } = useGradientBackground(
+		selectedIllustrationColor,
+	);
 
 	return (
 		<>
-			<GradientBackground colors={selectedIllustrationColor} />
+			<GradientBackground />
 			<Fade in>
 				<Stack spacing={4} my={2}>
 					<HomePageSection

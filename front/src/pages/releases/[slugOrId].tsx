@@ -62,12 +62,12 @@ import GenreButton from "../../components/genre-button";
 import { SongWithRelations } from "../../models/song";
 import Video from "../../models/video";
 import { useAccentColor } from "../../utils/accent-color";
-import GradientBackground from "../../components/gradient-background";
 import { useTranslation } from "react-i18next";
 import { generateArray } from "../../utils/gen-list";
 import { usePlayerContext } from "../../contexts/player";
 import { NextPageContext } from "next";
 import { QueryClient } from "react-query";
+import { useGradientBackground } from "../../utils/gradient-background";
 
 const releaseQuery = (releaseIdentifier: string | number) =>
 	API.getRelease(releaseIdentifier, ["album", "externalIds"]);
@@ -289,9 +289,11 @@ const ReleasePage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({ props }) => {
 			: undefined;
 	}, [album.data]);
 	const accentColor = useAccentColor(illustration);
+	const { GradientBackground } = useGradientBackground(illustration?.colors);
 
 	return (
 		<>
+			<GradientBackground />
 			<Container
 				maxWidth={false}
 				sx={{
@@ -303,7 +305,6 @@ const ReleasePage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({ props }) => {
 					},
 				}}
 			>
-				<GradientBackground colors={illustration?.colors} />
 				<Grid container spacing={4} sx={{ justifyContent: "center" }}>
 					<Grid item xl={2} lg={3} sm={5} xs={8}>
 						<Illustration
@@ -331,7 +332,17 @@ const ReleasePage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({ props }) => {
 						xl
 					>
 						<Grid item sx={{ width: "inherit" }}>
-							<Typography variant="h3" fontWeight="bold">
+							<Typography
+								variant="h3"
+								fontWeight="bold"
+								sx={{
+									overflow: "hidden",
+									display: "-webkit-box",
+									WebkitLineClamp: 3,
+									lineClamp: 3,
+									WebkitBoxOrient: "vertical",
+								}}
+							>
 								{release.data?.name ?? (
 									<>
 										<Skeleton />

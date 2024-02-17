@@ -42,11 +42,11 @@ import InfiniteTrackView from "../../../components/infinite/infinite-resource-vi
 import ExternalIdBadge from "../../../components/external-id-badge";
 import { PlayIcon } from "../../../components/icons";
 import GenreButton from "../../../components/genre-button";
-import GradientBackground from "../../../components/gradient-background";
 import { useTranslation } from "react-i18next";
 import { generateArray } from "../../../utils/gen-list";
 import { usePlayerContext } from "../../../contexts/player";
 import { NextPageContext } from "next";
+import { useGradientBackground } from "../../../utils/gradient-background";
 
 const prepareSSR = (context: NextPageContext) => {
 	const songIdentifier = getSlugOrId(context.query);
@@ -103,10 +103,13 @@ const SongPage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({ props }) => {
 		]),
 	);
 	const genres = useInfiniteQuery(API.getGenres, { song: songIdentifier });
+	const { GradientBackground } = useGradientBackground(
+		song.data?.illustration?.colors,
+	);
 
 	return (
 		<>
-			<GradientBackground colors={song.data?.illustration?.colors} />
+			<GradientBackground />
 			<SongRelationPageHeader song={song.data} />
 			<Button
 				variant="contained"

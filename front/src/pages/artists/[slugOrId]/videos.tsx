@@ -26,8 +26,8 @@ import formatDuration from "../../../utils/formatDuration";
 import { SongSortingKeys } from "../../../models/song";
 import { getOrderParams, getSortingFieldParams } from "../../../utils/sorting";
 import { useQuery } from "../../../api/use-query";
-import GradientBackground from "../../../components/gradient-background";
 import { NextPageContext } from "next";
+import { useGradientBackground } from "../../../utils/gradient-background";
 
 const prepareSSR = (context: NextPageContext) => {
 	const artistIdentifier = getSlugOrId(context.query);
@@ -54,10 +54,13 @@ const ArtistSongPage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({
 	const artistIdentifier =
 		props?.artistIdentifier ?? getSlugOrId(router.query);
 	const artist = useQuery(API.getArtist, artistIdentifier);
+	const { GradientBackground } = useGradientBackground(
+		artist.data?.illustration?.colors,
+	);
 
 	return (
 		<>
-			<GradientBackground colors={artist.data?.illustration?.colors} />
+			<GradientBackground />
 			<ArtistRelationPageHeader artist={artist.data} />
 			<InfiniteVideoView
 				initialSortingField={props?.sortBy}

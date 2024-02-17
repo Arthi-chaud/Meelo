@@ -49,6 +49,7 @@ import scaffoldActions from "./actions";
 import type {} from "@mui/material/themeCssVarsAugmentation";
 import ThemedImage from "../../utils/themed-image";
 import { useTranslation } from "react-i18next";
+import { RootGradientBackground } from "../../utils/gradient-background";
 
 /**
  * Array of possible item types
@@ -332,6 +333,7 @@ const Scaffold = (props: { children: any }) => {
 
 	return (
 		<Box sx={{ display: "flex", width: "100%", height: "100vh" }}>
+			<RootGradientBackground />
 			<Drawer
 				openBottomDrawer={tempDrawerIsOpen}
 				onClose={() => openDrawer(false)}

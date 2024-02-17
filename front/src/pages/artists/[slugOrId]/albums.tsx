@@ -27,8 +27,8 @@ import getYear from "../../../utils/getYear";
 import { getLayoutParams } from "../../../utils/layout";
 import { useQuery } from "../../../api/use-query";
 import { getAlbumTypeParam } from "../../../utils/album-type";
-import GradientBackground from "../../../components/gradient-background";
 import { NextPageContext } from "next";
+import { useGradientBackground } from "../../../utils/gradient-background";
 
 const defaultSort = {
 	sortBy: "releaseDate",
@@ -65,10 +65,13 @@ const ArtistAlbumsPage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({
 		props?.artistIdentifier ?? getSlugOrId(router.query);
 	const artist = useQuery(API.getArtist, artistIdentifier);
 	const defaultType = props?.type ?? null;
+	const { GradientBackground } = useGradientBackground(
+		artist.data?.illustration?.colors,
+	);
 
 	return (
 		<Box sx={{ width: "100%" }}>
-			<GradientBackground colors={artist.data?.illustration?.colors} />
+			<GradientBackground />
 			<ArtistRelationPageHeader artist={artist.data} />
 			<InfiniteAlbumView
 				defaultLayout={props?.defaultLayout}

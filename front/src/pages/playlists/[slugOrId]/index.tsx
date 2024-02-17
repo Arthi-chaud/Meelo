@@ -52,7 +52,7 @@ import { QueryClient, useMutation } from "react-query";
 import { shuffle } from "d3-array";
 import { DeletePlaylistAction } from "../../../components/actions/playlist";
 import { useConfirm } from "material-ui-confirm";
-import GradientBackground from "../../../components/gradient-background";
+import { useGradientBackground } from "../../../utils/gradient-background";
 import { useTranslation } from "react-i18next";
 import { generateArray } from "../../../utils/gen-list";
 import { usePlayerContext } from "../../../contexts/player";
@@ -277,10 +277,13 @@ const PlaylistPage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({
 			),
 			cursor: 0,
 		});
+	const { GradientBackground } = useGradientBackground(
+		playlist.data?.illustration?.colors,
+	);
 
 	return (
 		<>
-			<GradientBackground colors={playlist.data?.illustration?.colors} />
+			<GradientBackground />
 			<RelationPageHeader
 				illustration={
 					<Illustration
