@@ -20,8 +20,8 @@ import { Divider, List } from "@mui/material";
 import Resource from "../../models/resource";
 import InfiniteScroll from "./infinite-scroll";
 import { Fragment } from "react";
-import GradientBackground from "../gradient-background";
 import { IllustratedResource } from "../../models/illustration";
+import { useGradientBackground } from "../../utils/gradient-background";
 
 type TypedList<T extends Resource> = typeof InfiniteScroll<T>;
 type InfiniteListProps<T extends Resource> = Omit<
@@ -40,28 +40,29 @@ const InfiniteList = <T extends IllustratedResource>(
 	return (
 		<InfiniteScroll
 			{...props}
-			render={(items: (T | undefined)[]) => (
-				<>
-					<GradientBackground
-						colors={
-							items.find(
-								(item) => item?.illustration !== undefined,
-							)?.illustration?.colors
-						}
-						index={-1}
-					/>
-					<List>
-						{items.map((item, index) => (
-							<Fragment key={`item-${index}`}>
-								{props.render(item, index)}
-								{index == items.length - 1 || (
-									<Divider variant="middle" />
-								)}
-							</Fragment>
-						))}
-					</List>
-				</>
-			)}
+			render={(items: (T | undefined)[]) => {
+				// eslint-disable-next-line react-hooks/rules-of-hooks
+				const { GradientBackground } = useGradientBackground(
+					items.find((item) => item?.illustration !== undefined)
+						?.illustration?.colors,
+					-1,
+				);
+				return (
+					<>
+						<GradientBackground />
+						<List>
+							{items.map((item, index) => (
+								<Fragment key={`item-${index}`}>
+									{props.render(item, index)}
+									{index == items.length - 1 || (
+										<Divider variant="middle" />
+									)}
+								</Fragment>
+							))}
+						</List>
+					</>
+				);
+			}}
 		/>
 	);
 };

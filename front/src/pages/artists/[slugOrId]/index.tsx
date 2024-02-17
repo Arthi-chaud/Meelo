@@ -36,10 +36,10 @@ import ResourceDescriptionExpandable from "../../../components/resource-descript
 import ArtistRelationPageHeader from "../../../components/relation-page-header/artist-relation-page-header";
 import { AlbumType } from "../../../models/album";
 import { Fragment, useMemo } from "react";
-import GradientBackground from "../../../components/gradient-background";
 import { useTranslation } from "react-i18next";
 import { generateArray } from "../../../utils/gen-list";
 import { NextPageContext } from "next";
+import { useGradientBackground } from "../../../utils/gradient-background";
 
 // Number of Song item in the 'Top Song' section
 const songListSize = 6;
@@ -121,10 +121,13 @@ const ArtistPage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({ props }) => {
 				firstPage?.filter((video) => video.type == "NonMusic") ?? [],
 		};
 	}, [videos]);
+	const { GradientBackground } = useGradientBackground(
+		artist.data?.illustration?.colors,
+	);
 
 	return (
 		<Box sx={{ width: "100%" }}>
-			<GradientBackground colors={artist.data?.illustration?.colors} />
+			<GradientBackground />
 			<ArtistRelationPageHeader artist={artist.data} />
 			<Grid
 				container
