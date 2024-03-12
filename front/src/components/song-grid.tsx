@@ -25,6 +25,7 @@ import { useQueryClient } from "../api/use-query";
 import ListItem from "./list-item/item";
 import formatArtists from "../utils/formatArtists";
 import { usePlayerContext } from "../contexts/player";
+import { SongIcon } from "./icons";
 
 type SongGridProps = {
 	songs: (SongWithRelations<"artist" | "featuring"> | undefined)[];
@@ -39,7 +40,7 @@ const SongGrid = ({ songs, parentArtistName }: SongGridProps) => {
 		<Grid container spacing={2} sx={{ display: "flex", flexGrow: 1 }}>
 			{songs.map((song, index) => (
 				<Grid
-					key={song?.id ?? `skeleton-${index}`}
+					key={song?.id ?? `song-grid-skeleton-${index}`}
 					item
 					xs={12}
 					sm={6}
@@ -47,10 +48,13 @@ const SongGrid = ({ songs, parentArtistName }: SongGridProps) => {
 				>
 					<ListItem
 						icon={
-							<Illustration
-								illustration={song?.illustration}
-								quality="low"
-							/>
+							song ? (
+								<Illustration
+									illustration={song?.illustration}
+									fallback={<SongIcon />}
+									quality="low"
+								/>
+							) : undefined
 						}
 						title={song?.name}
 						secondTitle={
