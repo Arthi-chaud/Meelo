@@ -83,14 +83,12 @@ const PlayerContextProvider = (props: { children: JSX.Element }) => {
 				},
 				playNext: (track: TrackState) => {
 					setPlayerState((state) => {
-						return {
+						state.playlist.splice(state.cursor + 1, 0, track);
+						const newState = {
 							cursor: state.cursor,
-							playlist: state.playlist.splice(
-								state.cursor + 1,
-								0,
-								track,
-							),
+							playlist: Array.of(...state.playlist),
 						};
+						return newState;
 					});
 				},
 				playAfter: (track: TrackState) => {
