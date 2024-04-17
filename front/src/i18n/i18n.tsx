@@ -20,7 +20,7 @@ import i18next, { InitOptions, KeysBuilderWithoutReturnObjects } from "i18next";
 import { I18nextProvider } from "react-i18next";
 import en from "./translations/en.json";
 import fr from "./translations/fr.json";
-import { setCookie } from "cookies-next";
+import { getCookie, setCookie } from "cookies-next";
 import { LanguageCookieKey } from "../utils/cookieKeys";
 import { ComponentType, useMemo } from "react";
 import { AppContext, AppInitialProps, AppProps } from "next/app";
@@ -76,6 +76,7 @@ export const withTranslations = (
 			pageProps: {},
 		};
 		const lng =
+			getCookie(LanguageCookieKey)?.toString() ??
 			Languages.find(
 				//@ts-ignore
 				(lang) => lang === ctx.ctx.req?.cookies[LanguageCookieKey],
