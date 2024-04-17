@@ -107,6 +107,9 @@ const Player = () => {
 		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [userIsAuthentified]);
 	useEffect(() => {
+		if (player.current) {
+			player.current.onpause = null;
+		}
 		player.current?.pause();
 		progress.current = null;
 		if (typeof navigator.mediaSession !== "undefined") {
@@ -148,6 +151,9 @@ const Player = () => {
 						}
 					};
 					player.current!.onplay = () => {
+						setPlaying(true);
+					};
+					player.current!.onplaying = () => {
 						setPlaying(true);
 					};
 				})
@@ -220,6 +226,7 @@ const Player = () => {
 			if (player.current) {
 				player.current.src = "";
 			}
+			setPlaying(false);
 		}
 		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [currentTrack]);
