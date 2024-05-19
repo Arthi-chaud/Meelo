@@ -34,7 +34,6 @@ import Slug from "src/slug/slug";
 import type { PaginationParameters } from "src/pagination/models/pagination-parameters";
 import Tracklist, { UnknownDiscIndexKey } from "./models/tracklist.model";
 import RepositoryService from "src/repository/repository.service";
-import { shuffle } from "@taumechanica/stout";
 import AlbumService from "src/album/album.service";
 import LibraryService from "src/library/library.service";
 import { Track, TrackWithRelations } from "src/prisma/models";
@@ -371,7 +370,10 @@ export default class TrackService extends RepositoryService<
 
 		tracklist.forEach((disc) => (playlist = playlist.concat(disc)));
 		if (random) {
-			shuffle(playlist);
+			return playlist
+				.map((value) => ({ value, sort: Math.random() }))
+				.sort((a, b) => a.sort - b.sort)
+				.map(({ value }) => value);
 		}
 		return playlist;
 	}

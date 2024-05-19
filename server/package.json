@@ -33,7 +33,6 @@
 		"@nestjs/schedule": "^2.1.0",
 		"@nestjs/swagger": "^6.2.1",
 		"@prisma/client": "^5.5.2",
-		"@taumechanica/stout": "^2.2.0",
 		"archiver": "^5.3.1",
 		"axios": "^0.27.2",
 		"bcrypt": "^5.1.0",
