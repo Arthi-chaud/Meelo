@@ -1170,9 +1170,6 @@ export default class API {
 		if (this.isDev()) {
 			return `${"/api"}${imageURL}`;
 		}
-		if (isSSR()) {
-			return `${this.SSR_API_URL}${imageURL}`;
-		}
 		return `${process.env.PUBLIC_SERVER_URL ?? "/api"}${imageURL}`;
 	}
 
