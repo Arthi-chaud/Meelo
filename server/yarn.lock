@@ -1421,11 +1421,6 @@
   dependencies:
     defer-to-connect "^2.0.0"
 
-"@taumechanica/stout@^2.2.0":
-  version "2.4.0"
-  resolved "https://registry.npmjs.org/@taumechanica/stout/-/stout-2.4.0.tgz"
-  integrity sha512-1ugu5hsGaV1G9cP2N9ncfFVJPCSQHKFSwIC99Pb72pwtAff9CuQCgmKneXqP2F7btd09vAELWWGW/Qpci0aO5A==
-
 "@tokenizer/token@^0.3.0":
   version "0.3.0"
   resolved "https://registry.npmjs.org/@tokenizer/token/-/token-0.3.0.tgz"
