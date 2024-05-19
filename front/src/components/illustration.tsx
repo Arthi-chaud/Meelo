@@ -101,7 +101,18 @@ const Illustration = (props: IllustrationProps) => {
 				/>
 			</Fade>
 			{blurhash && (
-				<Fade in={loadingState !== "errored"} unmountOnExit>
+				<Fade
+					in={
+						isSSR()
+							? loadingState !== "errored"
+							: loadingState !== "finished"
+					}
+					unmountOnExit
+					timeout={{
+						// Hack to avoid blurhash exiting before image is painted
+						exit: theme.transitions.duration.leavingScreen * 2,
+					}}
+				>
 					<Box
 						style={{
 							position: "absolute",
