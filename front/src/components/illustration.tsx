@@ -64,7 +64,12 @@ const Illustration = (props: IllustrationProps) => {
 	const [loadingState, setLoadingState] = useState<
 		"loading" | "errored" | "finished"
 	>(isSSR() ? "finished" : "loading");
-	const url = props.url ?? props.illustration?.url;
+	const url =
+		props.url === null
+			? null
+			: props.illustration === null
+				? null
+				: props.illustration?.url;
 	const blurhash = props.illustration?.blurhash;
 	const aspectRatio =
 		props.aspectRatio ?? props.illustration?.aspectRatio ?? 1;
@@ -110,7 +115,7 @@ const Illustration = (props: IllustrationProps) => {
 					unmountOnExit
 					timeout={{
 						// Hack to avoid blurhash exiting before image is painted
-						exit: theme.transitions.duration.leavingScreen * 2,
+						exit: theme.transitions.duration.leavingScreen * 3,
 					}}
 				>
 					<Box
@@ -130,76 +135,83 @@ const Illustration = (props: IllustrationProps) => {
 					</Box>
 				</Fade>
 			)}
-			<Box
-				style={{
-					position: "relative",
-					aspectRatio: aspectRatio.toString(),
-					overflow: "hidden",
-					display: "block",
-					...(props.imgProps?.objectFit == "cover"
-						? { width: "100%", height: "100%" }
-						: dimensionsFromAspectRatio),
-				}}
-			>
-				{loadingState === "errored" || !url ? (
-					props.fallback ? (
-						<Box
-							sx={{
-								width: "100%",
-								height: "100%",
-								display: "flex",
-								justifyContent: "center",
-								alignItems: "center",
-							}}
-						>
-							<IconButton
-								disabled
-								sx={{ fontSize: "large" }}
-								component="div"
+			{url !== undefined && (
+				<Box
+					style={{
+						position: "relative",
+						aspectRatio: aspectRatio.toString(),
+						overflow: "hidden",
+						display: "block",
+						...(props.imgProps?.objectFit == "cover"
+							? { width: "100%", height: "100%" }
+							: dimensionsFromAspectRatio),
+					}}
+				>
+					{loadingState === "errored" || url === null ? (
+						props.fallback ? (
+							<Box
+								sx={{
+									width: "100%",
+									height: "100%",
+									display: "flex",
+									justifyContent: "center",
+									alignItems: "center",
+								}}
 							>
-								{props.fallback}
-							</IconButton>
-						</Box>
+								<IconButton
+									disabled
+									sx={{ fontSize: "large" }}
+									component="div"
+								>
+									{props.fallback}
+								</IconButton>
+							</Box>
+						) : (
+							<ThemedImage
+								dark={whiteIllustrationFallback}
+								light={blackIllustrationFallback}
+								fill
+								alt="missing-illustration"
+								loading="eager"
+								style={{
+									padding: "15%",
+								}}
+							/>
+						)
 					) : (
-						<ThemedImage
-							dark={whiteIllustrationFallback}
-							light={blackIllustrationFallback}
+						<Image
+							onError={() => setLoadingState("errored")}
+							onLoad={() => setLoadingState("finished")}
 							fill
-							alt="missing-illustration"
-							loading="eager"
-							style={{ padding: "15%" }}
+							alt={
+								url
+									?.split("/")
+									.concat(props.quality)
+									.join("-") ?? "missing-illustration"
+							}
+							unoptimized
+							style={{
+								borderRadius:
+									props.quality == "low"
+										? 6
+										: theme.shape.borderRadius,
+								objectFit: "contain",
+								opacity: loadingState == "loading" ? 0 : 1,
+								transition: `opacity ${theme.transitions.duration.enteringScreen}ms ${theme.transitions.easing.easeIn}`,
+								...props.imgProps,
+							}}
+							src={
+								API.getIllustrationURL(url) +
+								(props.quality == "original"
+									? ""
+									: `${
+											url.includes("?") ? "&" : "?"
+										}quality=${props.quality}`)
+							}
 						/>
-					)
-				) : (
-					<Image
-						onError={() => setLoadingState("errored")}
-						onLoad={() => setLoadingState("finished")}
-						fill
-						alt={
-							url?.split("/").join("-") ?? "missing-illustration"
-						}
-						unoptimized
-						style={{
-							borderRadius:
-								props.quality == "low"
-									? 6
-									: theme.shape.borderRadius,
-							objectFit: "contain",
-							opacity: loadingState == "loading" ? 0 : 1,
-							transition: `opacity ${theme.transitions.duration.enteringScreen}ms ${theme.transitions.easing.easeIn}`,
-							...props.imgProps,
-						}}
-						src={
-							API.getIllustrationURL(url) +
-							(props.quality == "original"
-								? ""
-								: `${url.includes("?") ? "&" : "?"}quality=${
-										props.quality
-									}`)
-						}
-					/>
-				)}
-			</Box>
+					)}
+				</Box>
+			)}
 		</Box>
 	);
 };
