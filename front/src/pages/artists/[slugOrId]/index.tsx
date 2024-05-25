@@ -40,6 +40,7 @@ import { useTranslation } from "react-i18next";
 import { generateArray } from "../../../utils/gen-list";
 import { NextPageContext } from "next";
 import { useGradientBackground } from "../../../utils/gradient-background";
+import Fade from "../../../components/fade";
 
 // Number of Song item in the 'Top Song' section
 const songListSize = 6;
@@ -140,8 +141,12 @@ const ArtistPage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({ props }) => {
 						<SectionHeader
 							heading={topSongs.data ? t("topSongs") : undefined}
 							trailing={
-								(topSongs.data?.pages.at(0)?.items.length ??
-									0) > songListSize ? (
+								<Fade
+									in={
+										(topSongs.data?.pages.at(0)?.items
+											.length ?? 0) > songListSize
+									}
+								>
 									<Link
 										href={`/artists/${artistIdentifier}/songs`}
 									>
@@ -157,9 +162,7 @@ const ArtistPage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({ props }) => {
 											{t("seeAll")}
 										</Button>
 									</Link>
-								) : (
-									<Box sx={{ padding: 1.2 }} />
-								)
+								</Fade>
 							}
 						/>
 						<Grid
@@ -200,7 +203,12 @@ const ArtistPage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({ props }) => {
 									queryData ? t(`plural${type}`) : undefined
 								}
 								trailing={
-									(queryData?.length ?? 0) > albumListSize ? (
+									<Fade
+										in={
+											(queryData?.length ?? 0) >
+											albumListSize
+										}
+									>
 										<Link
 											href={`/artists/${artistIdentifier}/albums?type=${type}`}
 										>
@@ -216,9 +224,7 @@ const ArtistPage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({ props }) => {
 												{t("seeAll")}
 											</Button>
 										</Link>
-									) : (
-										<Box sx={{ padding: 1.2 }} />
-									)
+									</Fade>
 								}
 							/>
 							<Grid
@@ -265,7 +271,12 @@ const ArtistPage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({ props }) => {
 								<SectionHeader
 									heading={t(label)}
 									trailing={
-										(items.length ?? 0) > albumListSize ? (
+										<Fade
+											in={
+												(items.length ?? 0) >
+												songListSize
+											}
+										>
 											<Link
 												href={`/artists/${artistIdentifier}/videos`}
 											>
@@ -281,7 +292,7 @@ const ArtistPage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({ props }) => {
 													{t("seeAll")}
 												</Button>
 											</Link>
-										) : undefined
+										</Fade>
 									}
 								/>
 								<Grid
@@ -335,18 +346,20 @@ const ArtistPage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({ props }) => {
 						</Grid>
 					</>
 				)}
-				<Divider sx={{ paddingTop: 3 }} />
-				<Box sx={{ paddingBottom: sectionPadding }} />
-				<SectionHeader heading={t("about")} />
 				{externalIdWithDescription && (
-					<Container
-						maxWidth={false}
-						sx={{ paddingBottom: 4, paddingTop: 3 }}
-					>
-						<ResourceDescriptionExpandable
-							externalDescription={externalIdWithDescription}
-						/>
-					</Container>
+					<>
+						<Divider sx={{ paddingTop: 3 }} />
+						<Box sx={{ paddingBottom: sectionPadding }} />
+						<SectionHeader heading={t("about")} />
+						<Container
+							maxWidth={false}
+							sx={{ paddingBottom: 4, paddingTop: 3 }}
+						>
+							<ResourceDescriptionExpandable
+								externalDescription={externalIdWithDescription}
+							/>
+						</Container>
+					</>
 				)}
 				{(!artist.data || artist.data.externalIds.length != 0) && (
 					<>
