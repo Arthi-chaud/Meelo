@@ -1367,9 +1367,23 @@ describe("Parser Service", () => {
 				).parsedName,
 			).toBe("Version 2.0");
 		});
+
+		it("should extract single identifier from name", () => {
+			const res = parserService.parseReleaseExtension(
+				"My Single (12'' Vinyl) - Single",
+			);
+			expect(res.parsedName).toBe("My Single - Single");
+			expect(res.extensions).toStrictEqual(["12'' Vinyl"]);
+		});
 	});
 
 	describe("Extract Track name's extension", () => {
+		it("should build the song name from a track name with a basic extension", () => {
+			expect(
+				parserService.parseTrackExtensions("My Song (Album Mix)")
+					.parsedName,
+			).toBe("My Song");
+		});
 		it("should build the song name from a track name with a basic extension", () => {
 			expect(
 				parserService.parseTrackExtensions("My Song (Music Video)")
@@ -1455,6 +1469,20 @@ describe("Parser Service", () => {
 					"Jump (Extended Album Version)",
 				).parsedName,
 			).toBe("Jump (Extended Album Version)");
+		});
+
+		it("should not remove extension ('Video Edit')", () => {
+			expect(
+				parserService.parseTrackExtensions("My Song (Video Edit)")
+					.parsedName,
+			).toBe("My Song (Video Edit)");
+		});
+
+		it("should not remove extension ('Video Mix')", () => {
+			expect(
+				parserService.parseTrackExtensions("My Song (Video Mix)")
+					.parsedName,
+			).toBe("My Song (Video Mix)");
 		});
 
 		it("should not remove extension ('Video Mix Instrumental')", () => {
