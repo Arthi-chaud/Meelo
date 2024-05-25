@@ -509,6 +509,8 @@ export default class ParserService {
 			"Remaster",
 			"Edition",
 			"Version",
+			"Vinyl",
+			"Pressing",
 		] as const;
 		const { parsedName } = this.parseExtensions(
 			releaseName,
@@ -543,7 +545,7 @@ export default class ParserService {
 				"Album Mix",
 				"Main Version",
 			] as const,
-			["Live", "Extended", "Instrumental"],
+			["Live", "Extended", "Instrumental", "Edit", "Video Mix"],
 		);
 		return {
 			parsedName,
