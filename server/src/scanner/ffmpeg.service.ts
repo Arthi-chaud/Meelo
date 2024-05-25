@@ -47,28 +47,54 @@ export default class FfmpegService {
 			}
 
 			fs.mkdir(dir.dirname(outPath), { recursive: true }, () => {});
-			Ffmpeg(videoPath)
-				.thumbnail({
-					count: 1,
-					filename: dir.basename(outPath),
-					folder: dir.dirname(outPath),
-				})
-				.on("error", () => {
-					reject();
+			Ffmpeg(videoPath).ffprobe(0, (_, data) => {
+				const videostream = data.streams.find(
+					(s) => s.codec_type == "video",
+				);
+				if (!videostream) {
 					this.logger.error(
-						`Taking a screenshot of '${dir.basename(
+						`Getting info on video '${dir.basename(
 							videoPath,
 						)}' failed`,
 					);
-				})
-				.on("end", () => {
-					resolve();
-					this.logger.log(
-						`Taking a screenshot of '${dir.basename(
-							videoPath,
-						)}' succeded`,
-					);
-				});
+					return;
+				}
+				const dar = (videostream.display_aspect_ratio ?? "1:1")
+					.split(":")
+					.map((n) => parseInt(n))
+					.reduceRight((prev, curr) => curr / prev, 1);
+
+				Ffmpeg(videoPath)
+					.thumbnail({
+						count: 1,
+						filename: dir.basename(outPath),
+						folder: dir.dirname(outPath),
+						size: isNaN(dar)
+							? `${videostream.width ?? 1}x${
+									videostream.height ?? 1
+							  }`
+							: `${Math.floor(dar * videostream.height!)}x${
+									videostream.height
+							  }`,
+					})
+					.on("error", (...args) => {
+						reject();
+						this.logger.error(
+							`Taking a screenshot of '${dir.basename(
+								videoPath,
+							)}' failed`,
+						);
+						this.logger.error(args);
+					})
+					.on("end", () => {
+						resolve();
+						this.logger.log(
+							`Taking a screenshot of '${dir.basename(
+								videoPath,
+							)}' succeded`,
+						);
+					});
+			});
 		});
 	}
 }
