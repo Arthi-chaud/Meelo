@@ -67,9 +67,8 @@ const Illustration = (props: IllustrationProps) => {
 	const url =
 		props.url === null
 			? null
-			: props.illustration === null
-				? null
-				: props.illustration?.url;
+			: props.url ??
+				(props.illustration === null ? null : props.illustration?.url);
 	const blurhash = props.illustration?.blurhash;
 	const aspectRatio =
 		props.aspectRatio ?? props.illustration?.aspectRatio ?? 1;
@@ -125,7 +124,9 @@ const Illustration = (props: IllustrationProps) => {
 							overflow: "hidden",
 							aspectRatio: aspectRatio.toString(),
 							...props.imgProps,
-							...dimensionsFromAspectRatio,
+							...(props.imgProps?.objectFit == "cover"
+								? { width: "100%", height: "100%" }
+								: dimensionsFromAspectRatio),
 						}}
 					>
 						<Blurhash
@@ -139,7 +140,10 @@ const Illustration = (props: IllustrationProps) => {
 				<Box
 					style={{
 						position: "relative",
-						aspectRatio: aspectRatio.toString(),
+						aspectRatio:
+							props.imgProps?.objectFit == "cover"
+								? undefined
+								: aspectRatio.toString(),
 						overflow: "hidden",
 						display: "block",
 						...(props.imgProps?.objectFit == "cover"
