@@ -18,6 +18,7 @@
 		"src/prisma/models"
 	],
 	"rules": {
+		"@typescript-eslint/ban-types": "off",
 		"no-restricted-imports": [
 			"error",
 			{

@@ -24,22 +24,20 @@ import {
 import type Slug from "src/slug/slug";
 
 export class ArtistNotFoundException extends NotFoundException {
-	constructor(artistSlug: Slug) {
-		super(`Artist '${artistSlug.toString()}' not found`);
-	}
-}
-
-export class CompilationArtistException extends InvalidRequestException {
-	constructor(resourceName: string) {
+	constructor(artistIdentifier: Slug | number) {
 		super(
-			`The '${resourceName}' resource can not be accessed for the 'Compilation' artist`,
+			typeof artistIdentifier == "number"
+				? `Artist with id '${artistIdentifier}' not found`
+				: `Artist '${artistIdentifier.toString()}' not found`,
 		);
 	}
 }
 
-export class ArtistNotFoundByIDException extends NotFoundException {
-	constructor(artistId: number) {
-		super(`Artist with id '${artistId}' not found`);
+export class CompilationArtistException extends InvalidRequestException {
+	constructor(actionName: string) {
+		super(
+			`The action '${actionName}' cannot be performed for the 'Compilation' artist`,
+		);
 	}
 }
 

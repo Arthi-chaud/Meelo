@@ -267,7 +267,7 @@ abstract class RepositoryService<
 	 * @param numberToWhereInput the methods to turn numeric identifier into a WhereInput
 	 * @returns a WhereInput
 	 */
-	protected static formatIdentifier<RepoWhereInput>(
+	public static formatIdentifier<RepoWhereInput>(
 		identifier: Identifier,
 		stringToWhereInput: (id: string) => RepoWhereInput,
 		numberToWhereInput?: (id: number) => RepoWhereInput,
@@ -706,38 +706,6 @@ export abstract class SearchableRepositoryService<
 		protected readonly meiliSearch: MeiliSearch,
 	) {
 		super(prismaHandle, prismaDelegateKey);
-		this.meiliSearch
-			.createIndex(this.getTableName(), {
-				primaryKey: "id",
-			})
-			.then(async (task) => {
-				await this.meiliSearch.waitForTask(task.taskUid);
-				this.meiliSearch
-					.index(this.getTableName())
-					.updateSearchableAttributes(searchableKeys);
-				this.meiliSearch
-					.index(this.getTableName())
-					.updateDisplayedAttributes(["id"]);
-				this.meiliSearch
-					.index(this.getTableName())
-					.getDocuments()
-					.then((documents) => {
-						if (documents.total == 0) {
-							this.getMany({} as unknown as ManyWhereInput).then(
-								(items) =>
-									this.meiliSearch
-										.index(this.getTableName())
-										.addDocuments(
-											items.map((item) =>
-												this.formatSearchableEntries(
-													item,
-												),
-											),
-										),
-							);
-						}
-					});
-			});
 	}
 
 	protected onCreated(created: BaseModel) {
