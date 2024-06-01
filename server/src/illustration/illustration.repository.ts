@@ -196,7 +196,7 @@ export default class IllustrationRepository {
 		const illustration =
 			await this.prismaService.playlistIllustration.findFirst({
 				where: {
-					playlist: this.playlistService.formatWhereInput(where),
+					playlist: PlaylistService.formatWhereInput(where),
 				},
 				include: { playlist: true },
 			});
