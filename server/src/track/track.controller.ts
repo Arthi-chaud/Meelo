@@ -172,20 +172,4 @@ export class TrackController {
 		await this.songService.setMasterTrack(where);
 		return track;
 	}
-
-	@ApiOperation({
-		summary: "Update the track",
-	})
-	@Admin()
-	@Response({ handler: TrackResponseBuilder })
-	@Post(":idOrSlug")
-	async reassignTrack(
-		@IdentifierParam(TrackService)
-		where: TrackQueryParameters.WhereInput,
-		@Body() reassignmentDTO: ReassignTrackDTO,
-	) {
-		return this.trackService.reassign(where, {
-			id: reassignmentDTO.songId,
-		});
-	}
 }

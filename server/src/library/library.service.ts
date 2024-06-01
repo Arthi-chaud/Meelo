@@ -36,6 +36,7 @@ import {
 } from "./library.exceptions";
 import { UnhandledORMErrorException } from "src/exceptions/orm-exceptions";
 import { PaginationParameters } from "src/pagination/models/pagination-parameters";
+import { formatIdentifier } from "src/repository/repository.utils";
 
 @Injectable()
 export default class LibraryService {
@@ -112,7 +113,7 @@ export default class LibraryService {
 	static formatIdentifierToWhereInput(
 		identifier: Identifier,
 	): LibraryQueryParameters.WhereInput {
-		return RepositoryService.formatIdentifier(
+		return formatIdentifier(
 			identifier,
 			(stringIdentifier) => {
 				const [slug] = parseIdentifierSlugs(stringIdentifier, 1);

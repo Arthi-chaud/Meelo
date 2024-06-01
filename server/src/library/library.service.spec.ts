@@ -188,14 +188,18 @@ describe("Library Service", () => {
 			).rejects.toThrow(LibraryNotFoundException);
 		});
 		it("should have deletes the related files", async () => {
-			const filesCount = await fileService.count({
-				library: { id: dummyRepository.library2.id },
+			const filesCount = await dummyRepository.file.count({
+				where: { libraryId: dummyRepository.library2.id },
 			});
 			expect(filesCount).toBe(0);
 		});
 		it("should have deletes the related tracks", async () => {
-			const trackCount = await trackService.count({
-				artist: { id: dummyRepository.artistB.id },
+			const trackCount = await dummyRepository.track.count({
+				where: {
+					song: {
+						artist: { id: dummyRepository.artistB.id },
+					},
+				},
 			});
 			expect(trackCount).toBe(0);
 		});

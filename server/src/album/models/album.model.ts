@@ -16,17 +16,19 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { ApiProperty } from "@nestjs/swagger";
 import { AlbumType } from "@prisma/client";
-import { IsEnum, IsNumber, IsOptional } from "class-validator";
-import { Artist } from "src/prisma/models";
+import { ArtistModel } from "src/artist/models/artist.model";
+import { Release } from "src/prisma/models";
 
-export default class UpdateAlbumDTO {
-	@ApiProperty({
-		description: "The type of the album",
-		enum: AlbumType,
-	})
-	@IsEnum(AlbumType)
-	@IsOptional()
-	type?: AlbumType;
-}
+export type AlbumModel = {
+	id: number;
+	name: string;
+	slug: string;
+	releaseDate: Date | null;
+	registeredAt: Date;
+	masterId: number | null;
+	master?: Release | null;
+	type: AlbumType;
+	artistId: number | null;
+	artist?: ArtistModel | null;
+};

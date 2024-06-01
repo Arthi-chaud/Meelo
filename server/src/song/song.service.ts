@@ -24,9 +24,7 @@ import PrismaService from "src/prisma/prisma.service";
 import SongQueryParameters from "./models/song.query-params";
 import TrackService from "src/track/track.service";
 import GenreService from "src/genre/genre.service";
-import RepositoryService, {
-	SearchableRepositoryService,
-} from "src/repository/repository.service";
+import { SearchableRepositoryService } from "src/repository/repository.service";
 import { CompilationArtistException } from "src/artist/artist.exceptions";
 import { buildStringSearchParameters } from "src/utils/search-string-input";
 import {
@@ -50,10 +48,11 @@ import ReleaseQueryParameters from "src/release/models/release.query-parameters"
 import ReleaseService from "src/release/release.service";
 import ParserService from "src/scanner/parser.service";
 import deepmerge from "deepmerge";
-import SongGroupService from "./song-group.service";
 import MeiliSearch from "meilisearch";
 import { InjectMeiliSearch } from "nestjs-meilisearch";
 import SortingOrder from "src/sort/models/sorting-order";
+import { formatIdentifier } from "src/repository/repository.utils";
+import SongGroupQueryParameters from "./models/song-group.query-params";
 
 @Injectable()
 export default class SongService extends SearchableRepositoryService<
@@ -75,8 +74,6 @@ export default class SongService extends SearchableRepositoryService<
 	constructor(
 		@InjectMeiliSearch() protected readonly meiliSearch: MeiliSearch,
 		private prismaService: PrismaService,
-		@Inject(forwardRef(() => SongGroupService))
-		private songGroupService: SongGroupService,
 		@Inject(forwardRef(() => ArtistService))
 		private artistService: ArtistService,
 		@Inject(forwardRef(() => ReleaseService))
@@ -108,6 +105,28 @@ export default class SongService extends SearchableRepositoryService<
 		return super.create(input, include);
 	}
 
+	private formatSongGroupCreateInput(
+		input: SongGroupQueryParameters.CreateInput,
+	) {
+		return {
+			slug: input.slug.toString(),
+		};
+	}
+
+	private formatSongGroupWhereInput(
+		input: SongGroupQueryParameters.WhereInput,
+	) {
+		return {
+			id: input.id,
+			slug: input.slug?.toString(),
+			songs: input.song
+				? {
+						some: SongService.formatWhereInput(input.song),
+				  }
+				: undefined,
+		};
+	}
+
 	formatCreateInput(
 		song: SongQueryParameters.CreateInput,
 	): Prisma.SongCreateInput {
@@ -119,8 +138,8 @@ export default class SongService extends SearchableRepositoryService<
 			},
 			group: {
 				connectOrCreate: {
-					create: this.songGroupService.formatCreateInput(song.group),
-					where: this.songGroupService.formatWhereInput(song.group),
+					create: this.formatSongGroupCreateInput(song.group),
+					where: this.formatSongGroupWhereInput(song.group),
 				},
 			},
 			artist: {
@@ -290,19 +309,16 @@ export default class SongService extends SearchableRepositoryService<
 	static formatIdentifierToWhereInput(
 		identifier: Identifier,
 	): SongQueryParameters.WhereInput {
-		return RepositoryService.formatIdentifier(
-			identifier,
-			(stringIdentifier) => {
-				const slugs = parseIdentifierSlugs(stringIdentifier, 2);
+		return formatIdentifier(identifier, (stringIdentifier) => {
+			const slugs = parseIdentifierSlugs(stringIdentifier, 2);
 
-				return {
-					bySlug: {
-						slug: slugs[1],
-						artist: { slug: slugs[0] },
-					},
-				};
-			},
-		);
+			return {
+				bySlug: {
+					slug: slugs[1],
+					artist: { slug: slugs[0] },
+				},
+			};
+		});
 	}
 
 	formatSortingInput(
@@ -376,12 +392,8 @@ export default class SongService extends SearchableRepositoryService<
 			group: what.group
 				? {
 						connectOrCreate: {
-							create: this.songGroupService.formatCreateInput(
-								what.group,
-							),
-							where: this.songGroupService.formatWhereInput(
-								what.group,
-							),
+							create: this.formatSongGroupCreateInput(what.group),
+							where: this.formatSongGroupWhereInput(what.group),
 						},
 				  }
 				: undefined,
@@ -534,6 +546,13 @@ export default class SongService extends SearchableRepositoryService<
 			.then((genres) => genres.filter((genre) => !genre._count.tracks));
 
 		await Promise.all(emptySongs.map(({ id }) => this.delete({ id })));
+		await this.prismaHandle.songGroup.deleteMany({
+			where: {
+				versions: {
+					none: {},
+				},
+			},
+		});
 	}
 
 	async getManyByPlayCount<I extends SongQueryParameters.RelationInclude>(

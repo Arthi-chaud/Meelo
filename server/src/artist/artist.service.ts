@@ -44,6 +44,7 @@ import { InjectMeiliSearch } from "nestjs-meilisearch";
 import { UnhandledORMErrorException } from "src/exceptions/orm-exceptions";
 import { PaginationParameters } from "src/pagination/models/pagination-parameters";
 import { ArtistModel } from "./models/artist.model";
+import { formatIdentifier } from "src/repository/repository.utils";
 
 @Injectable()
 export default class ArtistService extends SearchableRepositoryService {
@@ -115,26 +116,21 @@ export default class ArtistService extends SearchableRepositoryService {
 				: undefined,
 			orderBy: this.formatSortingInput(sort),
 		};
-		const artists = await this.prismaService.artist.findMany(args);
+		const artists = await this.prismaService.artist.findMany<
+			Prisma.SelectSubset<typeof args, Prisma.ArtistFindManyArgs>
+		>(args);
 		return artists;
 	}
 
-	async getOrCreate(input: ArtistQueryParameters.CreateInput) {
+	async create(input: ArtistQueryParameters.CreateInput) {
 		const artistSlug = new Slug(input.name);
-		try {
-			return await this.get({ slug: artistSlug });
-		} catch {}
 		return this.prismaService.artist
-			.upsert({
-				create: {
+			.create({
+				data: {
 					name: input.name,
 					registeredAt: input.registeredAt,
 					slug: artistSlug.toString(),
 				},
-				where: {
-					slug: artistSlug.toString(),
-				},
-				update: {},
 			})
 			.then((artist) => {
 				this.meiliSearch.index(this.indexName).addDocuments([
@@ -149,6 +145,15 @@ export default class ArtistService extends SearchableRepositoryService {
 			.catch((error) => {
 				throw new UnhandledORMErrorException(error, input);
 			});
+	}
+
+	async getOrCreate(input: ArtistQueryParameters.CreateInput) {
+		const artistSlug = new Slug(input.name);
+		try {
+			return await this.get({ slug: artistSlug });
+		} catch {
+			return this.create(input);
+		}
 	}
 
 	static formatWhereInput(input: ArtistQueryParameters.WhereInput) {
@@ -266,17 +271,14 @@ export default class ArtistService extends SearchableRepositoryService {
 	static formatIdentifierToWhereInput(
 		identifier: Identifier,
 	): ArtistQueryParameters.WhereInput {
-		return RepositoryService.formatIdentifier(
-			identifier,
-			(stringIdentifier) => {
-				const [slug] = parseIdentifierSlugs(stringIdentifier, 1);
+		return formatIdentifier(identifier, (stringIdentifier) => {
+			const [slug] = parseIdentifierSlugs(stringIdentifier, 1);
 
-				if (slug.toString() == compilationAlbumArtistKeyword) {
-					return { compilationArtist: true };
-				}
-				return { slug };
-			},
-		);
+			if (slug.toString() == compilationAlbumArtistKeyword) {
+				return { compilationArtist: true };
+			}
+			return { slug };
+		});
 	}
 
 	formatSortingInput(
@@ -321,6 +323,7 @@ export default class ArtistService extends SearchableRepositoryService {
 
 				throw this.onNotFound(error, where);
 			});
+		this.meiliSearch.index(this.indexName).deleteDocument(deletedArtist.id);
 		this.logger.warn(`Artist '${deletedArtist.slug}' deleted`);
 		return deletedArtist;
 	}

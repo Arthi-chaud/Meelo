@@ -541,33 +541,6 @@ describe("Track Service", () => {
 		});
 	});
 
-	describe("Reassign track", () => {
-		it("should reassign the track's parent song", async () => {
-			await trackService.reassign(
-				{ id: dummyRepository.trackC1_1.id },
-				{ id: dummyRepository.songB1.id },
-			);
-			const updatedTrack = await trackService.get({
-				id: dummyRepository.trackC1_1.id,
-			});
-			expect(updatedTrack.songId).toBe(dummyRepository.songB1.id);
-		});
-
-		it("should reassign the master track", async () => {
-			await trackService.reassign(
-				{ id: dummyRepository.trackB1_1.id },
-				{ id: dummyRepository.songA2.id },
-			);
-			const updatedTrack = await trackService.get({
-				id: dummyRepository.trackB1_1.id,
-			});
-			expect(updatedTrack.songId).toBe(dummyRepository.songA2.id);
-
-			/// teardown
-			await trackService.delete({ id: dummyRepository.trackB1_1.id });
-		});
-	});
-
 	describe("Delete Track", () => {
 		it("should delete the track", async () => {
 			await songService.setMasterTrack({

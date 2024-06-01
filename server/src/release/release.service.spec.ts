@@ -330,34 +330,6 @@ describe("Release Service", () => {
 		});
 	});
 
-	describe("Reassign Release", () => {
-		it("should reassign a release to an album", async () => {
-			const updatedRelease = await releaseService.reassign(
-				{ id: dummyRepository.releaseB1_1.id },
-				{ id: dummyRepository.albumA1.id },
-			);
-			expect(updatedRelease).toStrictEqual({
-				...dummyRepository.releaseB1_1,
-				albumId: dummyRepository.albumA1.id,
-			});
-		});
-
-		it("should assign a release to a compilation album", async () => {
-			const updatedRelease = await releaseService.reassign(
-				{ id: dummyRepository.releaseA1_1.id },
-				{ id: dummyRepository.compilationAlbumA.id },
-			);
-			expect(updatedRelease).toStrictEqual({
-				...dummyRepository.releaseA1_1,
-				albumId: dummyRepository.compilationAlbumA.id,
-			});
-			await releaseService.reassign(
-				{ id: dummyRepository.releaseA1_1.id },
-				{ id: dummyRepository.albumA1.id },
-			);
-		});
-	});
-
 	describe("Update Release", () => {
 		it("Should Update the release", async () => {
 			const updatedRelease = await releaseService.update(
@@ -450,10 +422,9 @@ describe("Release Service", () => {
 			);
 		});
 		it("should have unset the album's master id", async () => {
-			const album = await albumService.select(
-				{ id: dummyRepository.albumB1.id },
-				{ masterId: true },
-			);
+			const album = await albumService.get({
+				id: dummyRepository.albumB1.id,
+			});
 			expect(album.masterId).toBeNull();
 		});
 	});

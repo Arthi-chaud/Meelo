@@ -46,6 +46,8 @@ import {
 } from "src/file/file.exceptions";
 import IllustrationRepository from "src/illustration/illustration.repository";
 import deepmerge from "deepmerge";
+import { InvalidRequestException } from "src/exceptions/meelo-exception";
+import { formatIdentifier } from "src/repository/repository.utils";
 
 @Injectable()
 export default class TrackService extends RepositoryService<
@@ -67,8 +69,6 @@ export default class TrackService extends RepositoryService<
 	constructor(
 		@Inject(forwardRef(() => SongService))
 		private songService: SongService,
-		@Inject(forwardRef(() => AlbumService))
-		private albumService: AlbumService,
 		@Inject(forwardRef(() => ReleaseService))
 		private releaseService: ReleaseService,
 		@Inject(forwardRef(() => FileService))
@@ -205,10 +205,11 @@ export default class TrackService extends RepositoryService<
 	static formatIdentifierToWhereInput(
 		identifier: Identifier,
 	): TrackQueryParameters.WhereInput {
-		return RepositoryService.formatIdentifier(
-			identifier,
-			RepositoryService.UnexpectedStringIdentifier,
-		);
+		return formatIdentifier(identifier, (_) => {
+			throw new InvalidRequestException(
+				`Identifier: expected a number, got ${identifier}`,
+			);
+		});
 	}
 
 	formatSortingInput(
@@ -341,7 +342,7 @@ export default class TrackService extends RepositoryService<
 		});
 
 		if (tracks.length == 0) {
-			await this.releaseService.throwIfNotFound(where);
+			await this.releaseService.get(where);
 		}
 		tracks.forEach((track) => {
 			const indexToString =
@@ -439,23 +440,4 @@ export default class TrackService extends RepositoryService<
 	 * Does nothing, nothing to housekeep.
 	 */
 	async housekeeping(): Promise<void> {}
-
-	/**
-	 * Change the track's parent song
-	 * If the previous parent is empty, it will be deleted
-	 * @param trackWhere the query parameters to find the track to reassign
-	 * @param newParentWhere the query parameters to find the song to reassign the track to
-	 */
-	async reassign(
-		trackWhere: TrackQueryParameters.WhereInput,
-		newParentWhere: SongQueryParameters.WhereInput,
-	): Promise<Track> {
-		const track = await this.get(trackWhere, { song: true });
-		const newParent = await this.songService.get(newParentWhere);
-
-		if (track.id == track.song.masterId) {
-			await this.albumService.unsetMasterRelease({ id: track.songId });
-		}
-		return this.update({ song: { id: newParent.id } }, trackWhere);
-	}
 }

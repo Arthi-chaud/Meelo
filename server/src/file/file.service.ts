@@ -48,6 +48,8 @@ import Identifier from "src/identifier/models/identifier";
 import { PrismaError } from "prisma-error-enum";
 import deepmerge from "deepmerge";
 import { UnhandledORMErrorException } from "src/exceptions/orm-exceptions";
+import { formatIdentifier } from "src/repository/repository.utils";
+import { InvalidRequestException } from "src/exceptions/meelo-exception";
 
 @Injectable()
 export default class FileService {
@@ -131,10 +133,11 @@ export default class FileService {
 	static formatIdentifierToWhereInput(
 		identifier: Identifier,
 	): FileQueryParameters.WhereInput {
-		return RepositoryService.formatIdentifier(
-			identifier,
-			RepositoryService.UnexpectedStringIdentifier,
-		);
+		return formatIdentifier(identifier, (_) => {
+			throw new InvalidRequestException(
+				`Identifier: expected a number, got ${identifier}`,
+			);
+		});
 	}
 
 	onNotFound(error: Error, where: FileQueryParameters.WhereInput) {
@@ -152,24 +155,28 @@ export default class FileService {
 		return new UnhandledORMErrorException(error, where);
 	}
 
-	/**
-	 * Update a File
-	 */
-	formatUpdateInput(file: FileQueryParameters.UpdateInput) {
-		return file;
-	}
-
-	/**
-	 * Delete a File
-	 */
-	formatDeleteInput(where: FileQueryParameters.DeleteInput) {
-		return where;
-	}
-
-	protected formatDeleteInputToWhereInput(
-		where: FileQueryParameters.DeleteInput,
-	) {
-		return where;
+	async create(input: FileQueryParameters.CreateInput) {
+		return this.prismaService.file
+			.create({
+				data: {
+					path: input.path,
+					md5Checksum: input.md5Checksum,
+					registerDate: input.registerDate,
+					libraryId: input.libraryId,
+				},
+			})
+			.catch((error) => {
+				if (
+					error instanceof Prisma.PrismaClientKnownRequestError &&
+					error.code == PrismaError.UniqueConstraintViolation
+				) {
+					throw new FileAlreadyExistsException(
+						input.path,
+						input.libraryId,
+					);
+				}
+				throw new UnhandledORMErrorException(error, input);
+			});
 	}
 
 	/**
@@ -189,34 +196,14 @@ export default class FileService {
 		if (!this.fileManagerService.fileIsReadable(fullFilePath)) {
 			throw new FileNotReadableException(filePath);
 		}
-
-		return this.prismaService.file
-			.create({
-				data: {
-					path: filePath,
-					md5Checksum: await this.fileManagerService.getMd5Checksum(
-						fullFilePath,
-					),
-					registerDate: registrationDate ?? new Date(),
-					libraryId: parentLibrary.id,
-				},
-			})
-			.catch((error) => {
-				if (
-					error instanceof Prisma.PrismaClientKnownRequestError &&
-					error.code == PrismaError.UniqueConstraintViolation
-				) {
-					throw new FileAlreadyExistsException(
-						filePath,
-						parentLibrary.id,
-					);
-				}
-				throw new UnhandledORMErrorException(error, {
-					filePath,
-					parentLibrary,
-					registrationDate,
-				});
-			});
+		return this.create({
+			md5Checksum: await this.fileManagerService.getMd5Checksum(
+				fullFilePath,
+			),
+			path: filePath,
+			libraryId: parentLibrary.id,
+			registerDate: registrationDate ?? new Date(),
+		});
 	}
 
 	/**
@@ -233,10 +220,17 @@ export default class FileService {
 		return `${libraryPath}/${file.path}`.normalize();
 	}
 
+	async delete(where: FileQueryParameters.DeleteInput) {
+		return this.prismaService.file
+			.delete({
+				where: FileService.formatWhereInput(where),
+			})
+			.catch((error) => {
+				throw this.onNotFound(error, where);
+			});
+	}
+
 	/**
-	 *
-	 * @param file the file object of the file to stream
-	 * @param parentLibrary parent library of the file to stream
 	 * @param res the Response Object of the request
 	 * @returns a StreamableFile of the file
 	 */

@@ -34,6 +34,8 @@ import {
 } from "./user.exceptions";
 import Identifier from "src/identifier/models/identifier";
 import { PrismaError } from "prisma-error-enum";
+import { InvalidRequestException } from "src/exceptions/meelo-exception";
+import { formatIdentifier } from "src/repository/repository.utils";
 
 @Injectable()
 export default class UserService extends RepositoryService<
@@ -203,10 +205,11 @@ export default class UserService extends RepositoryService<
 	static formatIdentifierToWhereInput(
 		identifier: Identifier,
 	): UserQueryParameters.WhereInput {
-		return RepositoryService.formatIdentifier(
-			identifier,
-			RepositoryService.UnexpectedStringIdentifier,
-		);
+		return formatIdentifier(identifier, (_) => {
+			throw new InvalidRequestException(
+				`Identifier: expected a number, got ${identifier}`,
+			);
+		});
 	}
 
 	formatSortingInput(sortingParameter: UserQueryParameters.SortingParameter) {

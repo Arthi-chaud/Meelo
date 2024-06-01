@@ -177,22 +177,6 @@ export default class ReleaseController {
 	}
 
 	@ApiOperation({
-		summary: "Update a release",
-	})
-	@Admin()
-	@Response({ handler: ReleaseResponseBuilder })
-	@Post(":idOrSlug")
-	async updateRelease(
-		@IdentifierParam(ReleaseService)
-		where: ReleaseQueryParameters.WhereInput,
-		@Body() reassignmentDTO: ReassignReleaseDTO,
-	) {
-		return this.releaseService.reassign(where, {
-			id: reassignmentDTO.albumId,
-		});
-	}
-
-	@ApiOperation({
 		summary: "Set a release as master release",
 	})
 	@Admin()

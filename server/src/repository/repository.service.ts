@@ -261,49 +261,6 @@ abstract class RepositoryService<
 	}
 
 	/**
-	 * Format an Identifier into a WhereInput
-	 * @param identifier the entity unique identifier
-	 * @param stringToWhereInput the methods to turn string identifier into a WhereInput
-	 * @param numberToWhereInput the methods to turn numeric identifier into a WhereInput
-	 * @returns a WhereInput
-	 */
-	public static formatIdentifier<RepoWhereInput>(
-		identifier: Identifier,
-		stringToWhereInput: (id: string) => RepoWhereInput,
-		numberToWhereInput?: (id: number) => RepoWhereInput,
-	): RepoWhereInput {
-		if (typeof identifier == "number") {
-			if (numberToWhereInput) {
-				return numberToWhereInput(identifier);
-			}
-			return RepositoryService.formatNumberIdentifierToWhereInput(
-				identifier,
-			);
-		}
-		return stringToWhereInput(identifier);
-	}
-
-	/**
-	 * Format numberic identifier into WhereInput
-	 */
-	static formatNumberIdentifierToWhereInput<RepoWhereInput>(
-		identifier: number,
-	): RepoWhereInput {
-		return <RepoWhereInput>{ id: identifier };
-	}
-
-	/**
-	 * Fallback method to assign to `formatIdentifierToWhereInput` if no handling of string identifier is possible
-	 */
-	protected static UnexpectedStringIdentifier = (
-		identifier: string,
-	): never => {
-		throw new InvalidRequestException(
-			`Identifier: expected a number, got ${identifier}`,
-		);
-	};
-
-	/**
 	 * Checks if the Query parameters to find an entity are consistent
 	 * If it is not, it should throw.
 	 */

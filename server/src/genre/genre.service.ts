@@ -39,6 +39,7 @@ import AlbumService from "src/album/album.service";
 import deepmerge from "deepmerge";
 import { UnhandledORMErrorException } from "src/exceptions/orm-exceptions";
 import { PaginationParameters } from "src/pagination/models/pagination-parameters";
+import { formatIdentifier } from "src/repository/repository.utils";
 
 @Injectable()
 export default class GenreService {
@@ -124,7 +125,7 @@ export default class GenreService {
 	static formatIdentifierToWhereInput(
 		identifier: Identifier,
 	): GenreQueryParameters.WhereInput {
-		return RepositoryService.formatIdentifier(
+		return formatIdentifier(
 			identifier,
 			(stringIdentifier) => {
 				const [slug] = parseIdentifierSlugs(stringIdentifier, 1);

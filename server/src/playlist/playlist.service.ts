@@ -41,6 +41,7 @@ import { UnhandledORMErrorException } from "src/exceptions/orm-exceptions";
 import AlbumService from "src/album/album.service";
 import PaginatedResponse from "src/pagination/models/paginated-response";
 import { PaginationParameters } from "src/pagination/models/pagination-parameters";
+import { formatIdentifier } from "src/repository/repository.utils";
 
 @Injectable()
 export default class PlaylistService {
@@ -133,7 +134,7 @@ export default class PlaylistService {
 	static formatIdentifierToWhereInput(
 		identifier: Identifier,
 	): PlaylistQueryParameters.WhereInput {
-		return RepositoryService.formatIdentifier(
+		return formatIdentifier(
 			identifier,
 			(stringIdentifier) => {
 				const [slug] = parseIdentifierSlugs(stringIdentifier, 1);
