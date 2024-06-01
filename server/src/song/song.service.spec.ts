@@ -13,10 +13,7 @@ import {
 	SongNotFoundByIdException,
 	SongNotFoundException,
 } from "./song.exceptions";
-import {
-	ArtistNotFoundByIDException,
-	ArtistNotFoundException,
-} from "src/artist/artist.exceptions";
+import { ArtistNotFoundException } from "src/artist/artist.exceptions";
 import TrackModule from "src/track/track.module";
 import AlbumModule from "src/album/album.module";
 import IllustrationModule from "src/illustration/illustration.module";
@@ -126,7 +123,7 @@ describe("Song Service", () => {
 					},
 				});
 
-			return expect(test()).rejects.toThrow(ArtistNotFoundByIDException);
+			return expect(test()).rejects.toThrow(ArtistNotFoundException);
 		});
 
 		it("should throw, as the genre does not exist a new song", async () => {
@@ -245,7 +242,7 @@ describe("Song Service", () => {
 					bySlug: { slug: new Slug("My Slug"), artist: { id: -1 } },
 				});
 
-			return expect(test()).rejects.toThrow(ArtistNotFoundByIDException);
+			return expect(test()).rejects.toThrow(ArtistNotFoundException);
 		});
 	});
 
@@ -422,7 +419,7 @@ describe("Song Service", () => {
 						},
 					},
 				);
-			return expect(test()).rejects.toThrow(ArtistNotFoundByIDException);
+			return expect(test()).rejects.toThrow(ArtistNotFoundException);
 		});
 
 		it("should throw as the song does not exist", async () => {
@@ -600,7 +597,7 @@ describe("Song Service", () => {
 		let baseSong: Song;
 		let songWithFeaturing: Song;
 		it("should create a song without featuring", async () => {
-			mainArtist = await artistService.create({ name: "Katy Perry" });
+			mainArtist = await artistService.getOrCreate({ name: "Katy Perry" });
 			baseSong = await songService.create({
 				name: "E.T.",
 				artist: { id: mainArtist.id },
@@ -611,7 +608,7 @@ describe("Song Service", () => {
 			});
 		});
 		it("should create a song with featuring", async () => {
-			featuredArtist = await artistService.create({ name: "Kanye West" });
+			featuredArtist = await artistService.getOrCreate({ name: "Kanye West" });
 			songWithFeaturing = await songService.getOrCreate({
 				name: "E.T.",
 				artist: { id: mainArtist.id },

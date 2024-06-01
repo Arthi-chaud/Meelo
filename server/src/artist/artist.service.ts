@@ -121,28 +121,31 @@ export default class ArtistService extends SearchableRepositoryService {
 	}
 
 	async getOrCreate(input: ArtistQueryParameters.CreateInput) {
-		const artistSlug = new Slug(input.name).toString();
+		const artistSlug = new Slug(input.name);
+		try {
+			return await this.get({ slug: artistSlug });
+		} catch {}
 		return this.prismaService.artist
 			.upsert({
 				create: {
 					name: input.name,
 					registeredAt: input.registeredAt,
-					slug: artistSlug,
+					slug: artistSlug.toString(),
 				},
 				where: {
-					slug: artistSlug,
+					slug: artistSlug.toString(),
 				},
 				update: {},
 			})
 			.then((artist) => {
-				if (artist.registeredAt.getTime() / 1000 == Date.now() / 1000)
-					this.meiliSearch.index(this.indexName).addDocuments([
-						{
-							id: artist.id,
-							slug: artist.slug,
-							name: artist.name,
-						},
-					]);
+				this.meiliSearch.index(this.indexName).addDocuments([
+					{
+						id: artist.id,
+						slug: artist.slug,
+						name: artist.name,
+					},
+				]);
+				return artist;
 			})
 			.catch((error) => {
 				throw new UnhandledORMErrorException(error, input);
@@ -297,7 +300,7 @@ export default class ArtistService extends SearchableRepositoryService {
 		}
 	}
 
-	async _delete(where: ArtistQueryParameters.DeleteInput) {
+	async delete(where: ArtistQueryParameters.DeleteInput) {
 		await this.illustrationRepository.deleteArtistIllustration(where, {
 			withFolder: true,
 		});
@@ -343,6 +346,6 @@ export default class ArtistService extends SearchableRepositoryService {
 				),
 			);
 
-		await Promise.all(emptyArtists.map(({ id }) => this._delete({ id })));
+		await Promise.all(emptyArtists.map(({ id }) => this.delete({ id })));
 	}
 }

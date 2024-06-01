@@ -100,14 +100,13 @@ export default class ArtistController {
 				selector,
 				paginationParameters,
 				include,
-				sort,
 			);
 		}
 		return this.artistService.getMany(
 			selector,
+			sort,
 			paginationParameters,
 			include,
-			sort,
 		);
 	}
 

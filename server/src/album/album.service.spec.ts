@@ -14,10 +14,7 @@ import {
 	AlbumNotFoundFromIDException,
 } from "./album.exceptions";
 import Slug from "src/slug/slug";
-import {
-	ArtistNotFoundByIDException,
-	ArtistNotFoundException,
-} from "src/artist/artist.exceptions";
+import { ArtistNotFoundException } from "src/artist/artist.exceptions";
 import SongModule from "src/song/song.module";
 import IllustrationModule from "src/illustration/illustration.module";
 import GenreModule from "src/genre/genre.module";
@@ -344,7 +341,7 @@ describe("Album Service", () => {
 					{ id: dummyRepository.albumA1.id },
 					{ id: -1 },
 				);
-			return expect(test()).rejects.toThrow(ArtistNotFoundByIDException);
+			return expect(test()).rejects.toThrow(ArtistNotFoundException);
 		});
 	});
 

@@ -415,11 +415,7 @@ export default class SongService extends SearchableRepositoryService<
 			);
 		}
 		if (where.bySlug) {
-			const artistId = (
-				await this.artistService.select(where.bySlug.artist, {
-					id: true,
-				})
-			).id;
+			const { id: artistId } = await this.artistService.get(where.bySlug.artist);
 
 			try {
 				return await this.prismaService.song.update({

@@ -514,7 +514,7 @@ export default class AlbumService extends SearchableRepositoryService<
 				return new AlbumNotFoundFromIDException(where.id);
 			}
 			if (where.bySlug.artist) {
-				await this.artistServce.throwIfNotFound(where.bySlug.artist);
+				await this.artistServce.get(where.bySlug.artist);
 			}
 			return new AlbumNotFoundException(
 				where.bySlug.slug,
