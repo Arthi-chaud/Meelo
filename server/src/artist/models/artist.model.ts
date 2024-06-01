@@ -18,10 +18,10 @@
 
 import ExternalId from "src/providers/models/external-id";
 
-export type Artist = {
+export type ArtistModel = {
 	id: number;
 	name: string;
 	slug: string;
 	registeredAt: Date;
-	externalIds?: ExternalId;
+	externalIds?: ExternalId[];
 };

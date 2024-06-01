@@ -33,70 +33,61 @@ import { PrismaError } from "prisma-error-enum";
 import {
 	LibraryAlreadyExistsException,
 	LibraryNotFoundException,
-	LibraryNotFoundFromIDException,
 } from "./library.exceptions";
+import { UnhandledORMErrorException } from "src/exceptions/orm-exceptions";
+import { PaginationParameters } from "src/pagination/models/pagination-parameters";
 
 @Injectable()
-export default class LibraryService extends RepositoryService<
-	LibraryWithRelations,
-	LibraryQueryParameters.CreateInput,
-	LibraryQueryParameters.WhereInput,
-	LibraryQueryParameters.ManyWhereInput,
-	LibraryQueryParameters.UpdateInput,
-	LibraryQueryParameters.DeleteInput,
-	LibraryQueryParameters.SortingKeys,
-	Prisma.LibraryCreateInput,
-	Prisma.LibraryWhereInput,
-	Prisma.LibraryWhereInput,
-	Prisma.LibraryUpdateInput,
-	Prisma.LibraryWhereUniqueInput,
-	Prisma.LibraryOrderByWithRelationAndSearchRelevanceInput
-> {
+export default class LibraryService {
 	constructor(
 		@Inject(forwardRef(() => FileService))
 		private fileService: FileService,
 		private tasksService: TasksRunner,
-		prismaService: PrismaService,
-	) {
-		super(prismaService, "library");
-	}
+		protected prismaService: PrismaService,
+	) {}
 
-	getTableName() {
-		return "libraries";
-	}
-
-	/**
-	 * Create
-	 */
-
-	formatCreateInput(input: LibraryQueryParameters.CreateInput) {
-		return {
-			...input,
-			path: normalize(input.path, true),
-			slug: new Slug(input.name).toString(),
-		};
-	}
-
-	protected formatCreateInputToWhereInput(
-		input: LibraryQueryParameters.CreateInput,
-	) {
-		return { slug: new Slug(input.name) };
-	}
-
-	protected onCreationFailure(
-		error: Error,
-		input: LibraryQueryParameters.CreateInput,
-	) {
-		if (
-			error instanceof Prisma.PrismaClientKnownRequestError &&
-			error.code == PrismaError.UniqueConstraintViolation
-		) {
-			return new LibraryAlreadyExistsException(
-				new Slug(input.name),
-				input.path,
-			);
+	async create(input: LibraryQueryParameters.CreateInput) {
+		try {
+			return await this.prismaService.library.create({
+				data: {
+					name: input.name,
+					path: normalize(input.path, true),
+					slug: new Slug(input.name).toString(),
+				},
+			});
+		} catch (error) {
+			if (
+				error instanceof Prisma.PrismaClientKnownRequestError &&
+				error.code == PrismaError.UniqueConstraintViolation
+			) {
+				throw new LibraryAlreadyExistsException(
+					new Slug(input.name),
+					input.path,
+				);
+			}
+			throw new UnhandledORMErrorException(error, input);
 		}
-		return this.onUnknownError(error, input);
+	}
+
+	async update(
+		what: LibraryQueryParameters.UpdateInput,
+		where: LibraryQueryParameters.WhereInput,
+	) {
+		try {
+			return await this.prismaService.library.update({
+				data: {
+					...what,
+					path: what.path ? normalize(what.path, true) : undefined,
+					slug: what.name
+						? new Slug(what.name).toString()
+						: undefined,
+				},
+				where: LibraryService.formatWhereInput(where),
+			});
+		} catch (error) {
+			//TODO Handle duplicates
+			throw this.onNotFound(error, where);
+		}
 	}
 
 	/**
@@ -109,8 +100,6 @@ export default class LibraryService extends RepositoryService<
 		};
 	}
 
-	formatWhereInput = LibraryService.formatWhereInput;
-
 	static formatManyWhereInput(input: LibraryQueryParameters.ManyWhereInput) {
 		return {
 			name: input.name
@@ -119,8 +108,6 @@ export default class LibraryService extends RepositoryService<
 			id: input.id,
 		};
 	}
-
-	formatManyWhereInput = LibraryService.formatManyWhereInput;
 
 	static formatIdentifierToWhereInput(
 		identifier: Identifier,
@@ -155,41 +142,52 @@ export default class LibraryService extends RepositoryService<
 		}
 	}
 
+	async get<I extends LibraryQueryParameters.RelationInclude = {}>(
+		where: LibraryQueryParameters.WhereInput,
+		include?: I,
+	) {
+		const args = {
+			include: include ?? ({} as I),
+			where: LibraryService.formatWhereInput(where),
+		};
+		try {
+			return await this.prismaService.library.findFirstOrThrow<
+				Prisma.SelectSubset<
+					typeof args,
+					Prisma.LibraryFindFirstOrThrowArgs
+				>
+			>(args);
+		} catch (error) {
+			throw this.onNotFound(error, where);
+		}
+	}
+
+	async getMany(
+		where: LibraryQueryParameters.ManyWhereInput,
+		sort?: LibraryQueryParameters.SortingParameter,
+		pagination?: PaginationParameters,
+	) {
+		return this.prismaService.library.findMany({
+			where: LibraryService.formatManyWhereInput(where),
+			take: pagination?.take,
+			skip: pagination?.skip,
+			cursor: pagination?.afterId
+				? {
+						id: pagination?.afterId,
+				  }
+				: undefined,
+			orderBy: this.formatSortingInput(sort ?? {}),
+		});
+	}
+
 	onNotFound(error: Error, where: LibraryQueryParameters.WhereInput) {
 		if (
 			error instanceof Prisma.PrismaClientKnownRequestError &&
 			error.code == PrismaError.RecordsNotFound
 		) {
-			if (where.id !== undefined) {
-				return new LibraryNotFoundFromIDException(where.id);
-			}
-			return new LibraryNotFoundException(where.slug);
+			return new LibraryNotFoundException(where.slug ?? where.id);
 		}
-		return this.onUnknownError(error, where);
-	}
-
-	/**
-	 * Update
-	 */
-	formatUpdateInput(input: LibraryQueryParameters.UpdateInput) {
-		return {
-			...input,
-			path: input.path ? normalize(input.path, true) : undefined,
-			slug: input.name ? new Slug(input.name).toString() : undefined,
-		};
-	}
-
-	/**
-	 * Delete
-	 */
-	formatDeleteInput(where: LibraryQueryParameters.WhereInput) {
-		return this.formatWhereInput(where);
-	}
-
-	protected formatDeleteInputToWhereInput(
-		input: LibraryQueryParameters.WhereInput,
-	) {
-		return input;
+		return new UnhandledORMErrorException(error, where);
 	}
 
 	/**
@@ -206,8 +204,8 @@ export default class LibraryService extends RepositoryService<
 			),
 		);
 		await this.tasksService.housekeeping();
-		return super.delete(where);
+		return this.prismaService.library.delete({
+			where: LibraryService.formatWhereInput(where),
+		});
 	}
-
-	async housekeeping(): Promise<void> {}
 }

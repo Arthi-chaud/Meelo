@@ -31,13 +31,11 @@ export class LibraryAlreadyExistsException extends AlreadyExistsException {
 }
 
 export class LibraryNotFoundException extends NotFoundException {
-	constructor(librarySlug: Slug) {
-		super(`'${librarySlug}': No such library`);
-	}
-}
-
-export class LibraryNotFoundFromIDException extends NotFoundException {
-	constructor(libraryId: number) {
-		super(`No library found with id '${libraryId}'`);
+	constructor(libraryIdentifier: Slug | number) {
+		super(
+			typeof libraryIdentifier == "number"
+				? `No library found with id '${libraryIdentifier}'`
+				: `'${libraryIdentifier.toString()}': No such library`,
+		);
 	}
 }

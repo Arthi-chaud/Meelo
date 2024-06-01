@@ -239,7 +239,7 @@ export default class TaskRunner {
 			files: true,
 		});
 
-		this.logger.log(`'Cleaning ${parentLibrary.slug}' library`);
+		this.logger.log(`Cleaning '${parentLibrary.slug}' library`);
 		const libraryPath = `${this.fileManagerService.getLibraryFullPath(
 			parentLibrary,
 		)}`;

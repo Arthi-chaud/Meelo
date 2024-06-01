@@ -93,9 +93,8 @@ export default class LibraryController {
 	) {
 		return this.libraryService.getMany(
 			{},
-			paginationParameters,
-			{},
 			sortingParameter,
+			paginationParameters,
 		);
 	}
 

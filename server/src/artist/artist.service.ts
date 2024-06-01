@@ -43,6 +43,7 @@ import MeiliSearch from "meilisearch";
 import { InjectMeiliSearch } from "nestjs-meilisearch";
 import { UnhandledORMErrorException } from "src/exceptions/orm-exceptions";
 import { PaginationParameters } from "src/pagination/models/pagination-parameters";
+import { ArtistModel } from "./models/artist.model";
 
 @Injectable()
 export default class ArtistService extends SearchableRepositoryService {

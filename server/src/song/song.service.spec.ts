@@ -26,6 +26,7 @@ import ReleaseModule from "src/release/release.module";
 import { Artist, SongType } from "@prisma/client";
 import ScannerModule from "src/scanner/scanner.module";
 import SongModule from "./song.module";
+import { GenreNotFoundException } from "src/genre/genre.exceptions";
 
 describe("Song Service", () => {
 	let songService: SongService;
@@ -595,7 +596,9 @@ describe("Song Service", () => {
 		let baseSong: Song;
 		let songWithFeaturing: Song;
 		it("should create a song without featuring", async () => {
-			mainArtist = await artistService.getOrCreate({ name: "Katy Perry" });
+			mainArtist = await artistService.getOrCreate({
+				name: "Katy Perry",
+			});
 			baseSong = await songService.create({
 				name: "E.T.",
 				artist: { id: mainArtist.id },
@@ -606,7 +609,9 @@ describe("Song Service", () => {
 			});
 		});
 		it("should create a song with featuring", async () => {
-			featuredArtist = await artistService.getOrCreate({ name: "Kanye West" });
+			featuredArtist = await artistService.getOrCreate({
+				name: "Kanye West",
+			});
 			songWithFeaturing = await songService.getOrCreate({
 				name: "E.T.",
 				artist: { id: mainArtist.id },
