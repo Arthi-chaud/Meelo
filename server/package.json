@@ -114,6 +114,7 @@
 		"ts-jest": "^27.0.3",
 		"ts-loader": "^9.2.3",
 		"ts-node": "^10.0.0",
+		"ts-prune": "^0.10.3",
 		"tsconfig-paths": "^3.10.1",
 		"typescript": "^5.4.5"
 	},

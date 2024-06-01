@@ -575,7 +575,7 @@ describe("Song Service", () => {
 					slug: new Slug(dummyRepository.artistA.name, "1234"),
 				},
 			});
-			const tmpLyrics = await lyricsService.create({
+			const tmpLyrics = await lyricsService.createOrUpdate({
 				content: "1234",
 				songId: tmpSong.id,
 			});
@@ -583,7 +583,7 @@ describe("Song Service", () => {
 			const test = async () => await songService.get({ id: tmpSong.id });
 			await expect(test()).rejects.toThrow(SongNotFoundByIdException);
 			const testLyrics = async () =>
-				await lyricsService.get({ id: tmpLyrics.id });
+				await lyricsService.get({ songId: tmpSong.id });
 			return expect(testLyrics()).rejects.toThrow(
 				LyricsNotFoundByIDException,
 			);

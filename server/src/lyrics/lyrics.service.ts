@@ -35,23 +35,10 @@ import ProviderService from "src/providers/provider.service";
 import Logger from "src/logger/logger";
 import MeiliSearch from "meilisearch";
 import { InjectMeiliSearch } from "nestjs-meilisearch";
+import { UnhandledORMErrorException } from "src/exceptions/orm-exceptions";
 
 @Injectable()
-export class LyricsService extends RepositoryService<
-	LyricsWithRelations,
-	LyricsQueryParameters.CreateInput,
-	LyricsQueryParameters.WhereInput,
-	LyricsQueryParameters.ManyWhereInput,
-	LyricsQueryParameters.UpdateInput,
-	LyricsQueryParameters.DeleteInput,
-	[],
-	Prisma.LyricsCreateInput,
-	Prisma.LyricsWhereInput,
-	Prisma.LyricsWhereInput,
-	Prisma.LyricsUpdateInput,
-	Prisma.LyricsWhereUniqueInput,
-	Prisma.LyricsOrderByWithRelationAndSearchRelevanceInput
-> {
+export class LyricsService {
 	private readonly logger = new Logger(LyricsService.name);
 	constructor(
 		@InjectMeiliSearch() private readonly meiliSearch: MeiliSearch,
@@ -60,169 +47,84 @@ export class LyricsService extends RepositoryService<
 		private songService: SongService,
 		@Inject(forwardRef(() => ProviderService))
 		private providerService: ProviderService,
-	) {
-		super(prismaService, "lyrics");
-	}
+	) {}
 
-	getTableName() {
-		return "lyrics";
-	}
+	async createOrUpdate(input: LyricsQueryParameters.CreateInput) {
+		return this.prismaService.lyrics
+			.upsert({
+				update: {
+					content: input.content,
+				},
+				create: {
+					content: input.content,
+					songId: input.songId,
+				},
+				where: {
+					songId: input.songId,
+				},
+			})
+			.then((lyrics) => {
+				this.meiliSearch
+					.index(this.songService.getTableName())
+					.updateDocuments(
+						[{ id: lyrics.songId, lyrics: lyrics.content }],
+						{
+							primaryKey: "id",
+						},
+					);
+				return lyrics;
+			})
+			.catch(async (error) => {
+				if (error instanceof Prisma.PrismaClientKnownRequestError) {
+					const parentSong = await this.songService.get({
+						id: input.songId,
+					});
 
-	/**
-	 * Create
-	 */
-	formatCreateInput(input: LyricsQueryParameters.CreateInput) {
-		return {
-			content: input.content,
-			song: { connect: { id: input.songId } },
-		};
-	}
-
-	protected formatCreateInputToWhereInput(
-		input: LyricsQueryParameters.CreateInput,
-	) {
-		return { song: { id: input.songId } };
-	}
-
-	protected onCreated(lyrics: Lyrics) {
-		this.meiliSearch
-			.index(this.songService.getTableName())
-			.updateDocuments([{ id: lyrics.songId, lyrics: lyrics.content }], {
-				primaryKey: "id",
+					if (error.code == PrismaError.RequiredRelationViolation) {
+						throw new LyricsAlreadyExistsExceptions(
+							new Slug(parentSong.slug),
+						);
+					}
+				}
+				throw new UnhandledORMErrorException(error, input);
 			});
 	}
 
-	protected onDeleted(lyrics: Lyrics) {
-		this.meiliSearch
-			.index(this.songService.getTableName())
-			.updateDocuments([{ id: lyrics.songId, lyrics: null }], {
-				primaryKey: "id",
+	async get(where: LyricsQueryParameters.WhereInput) {
+		return this.prismaService.lyrics
+			.findFirstOrThrow({
+				where: {
+					songId: where.songId,
+				},
+			})
+			.catch(async (error) => {
+				await this.songService.get({ id: where.songId });
+				if (error instanceof Prisma.PrismaClientKnownRequestError) {
+					if (error.code == PrismaError.RecordsNotFound) {
+						throw new LyricsNotFoundBySongException(where.songId);
+					}
+				}
+				throw new UnhandledORMErrorException(error, where);
 			});
 	}
 
-	protected async onCreationFailure(
-		error: Error,
-		input: LyricsQueryParameters.CreateInput,
-	) {
-		if (error instanceof Prisma.PrismaClientKnownRequestError) {
-			const parentSong = await this.songService.get({ id: input.songId });
-
-			if (error.code == PrismaError.RequiredRelationViolation) {
-				return new LyricsAlreadyExistsExceptions(
-					new Slug(parentSong.slug),
-				);
-			}
-		}
-		throw this.onUnknownError(error, input);
-	}
-
-	/**
-	 * Get
-	 */
-	static formatWhereInput(input: LyricsQueryParameters.WhereInput) {
-		return {
-			id: input.id,
-			song: input.song
-				? SongService.formatWhereInput(input.song)
-				: undefined,
-		};
-	}
-
-	formatWhereInput = LyricsService.formatWhereInput;
-
-	static formatManyWhereInput(input: LyricsQueryParameters.ManyWhereInput) {
-		return {
-			song: input.songs
-				? SongService.formatManyWhereInput(input.songs)
-				: undefined,
-			id: input.id,
-		};
-	}
-
-	formatManyWhereInput = LyricsService.formatManyWhereInput;
-
-	static formatIdentifierToWhereInput(
-		identifier: Identifier,
-	): LyricsQueryParameters.WhereInput {
-		return RepositoryService.formatIdentifier(
-			identifier,
-			RepositoryService.UnexpectedStringIdentifier,
-		);
-	}
-
-	formatSortingInput<S extends LyricsQueryParameters.SortingParameter>(
-		sortingParameter: S,
-	) {
-		return { id: sortingParameter.order ?? "asc" };
-	}
-
-	/**
-	 * Update
-	 */
-	async update(
-		what: LyricsQueryParameters.UpdateInput,
-		where: LyricsQueryParameters.WhereInput,
-	) {
-		if (where.id != undefined) {
-			return super.update(what, { id: where.id });
-		}
-		let songId: number | undefined = where.song?.id;
-
-		if (where.song?.bySlug) {
-			songId = (await this.songService.select(where.song, { id: true }))
-				.id;
-		}
-		try {
-			return await this.prismaService.lyrics.update({
-				data: this.formatUpdateInput(what),
-				where: this.formatDeleteInput({ songId: songId! }),
+	async delete(where: LyricsQueryParameters.WhereInput) {
+		return this.prismaService.lyrics
+			.delete({
+				where: {
+					songId: where.songId,
+				},
+			})
+			.then(() => {
+				this.meiliSearch
+					.index(this.songService.getTableName())
+					.updateDocuments([{ id: where.songId, lyrics: null }], {
+						primaryKey: "id",
+					});
+			})
+			.catch(async () => {
+				await this.songService.get({ id: where.songId });
 			});
-		} catch (error) {
-			throw await this.onUpdateFailure(error, what, where);
-		}
-	}
-
-	formatUpdateInput(what: LyricsQueryParameters.UpdateInput) {
-		return {
-			content: what.content,
-		};
-	}
-
-	formatDeleteInput(where: LyricsQueryParameters.DeleteInput) {
-		return {
-			id: where.id,
-			songId: where.songId,
-		};
-	}
-
-	protected formatDeleteInputToWhereInput(
-		input: LyricsQueryParameters.DeleteInput,
-	): LyricsQueryParameters.WhereInput {
-		if (input.id) {
-			return { id: input.id };
-		}
-		return { song: { id: input.songId! } };
-	}
-
-	/**
-	 * Returns an exception for when a lyric is not found in the database
-	 * @param where the queryparameters used to find the lyrics
-	 */
-	async onNotFound(error: Error, where: LyricsQueryParameters.WhereInput) {
-		if (
-			error instanceof Prisma.PrismaClientKnownRequestError &&
-			error.code == PrismaError.RecordsNotFound
-		) {
-			if (where.song) {
-				//TODO, get should return null if song does not have lyrics
-				await this.songService.throwIfNotFound(where.song);
-				return new LyricsNotFoundBySongException(
-					where.song.id ?? where.song.bySlug!.slug,
-				);
-			}
-			return new LyricsNotFoundByIDException(where.id);
-		}
-		throw this.onUnknownError(error, where);
 	}
 
 	async housekeeping(): Promise<void> {}
@@ -252,7 +154,7 @@ export class LyricsService extends RepositoryService<
 				);
 
 				this.logger.verbose(`Lyrics found for song '${song.name}'`);
-				await this.create({ content: lyrics, songId: song.id });
+				await this.createOrUpdate({ content: lyrics, songId: song.id });
 			} catch {
 				continue;
 			}
