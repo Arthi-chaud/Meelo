@@ -115,9 +115,7 @@ export default class ArtistService extends SearchableRepositoryService {
 				: undefined,
 			orderBy: this.formatSortingInput(sort),
 		};
-		const artists = await this.prismaService.artist.findMany<
-			Prisma.SelectSubset<typeof args, Prisma.ArtistFindManyArgs>
-		>(args);
+		const artists = await this.prismaService.artist.findMany(args);
 		return artists;
 	}
 

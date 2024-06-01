@@ -47,66 +47,35 @@ import Slug from "src/slug/slug";
 import Identifier from "src/identifier/models/identifier";
 import { PrismaError } from "prisma-error-enum";
 import deepmerge from "deepmerge";
+import { UnhandledORMErrorException } from "src/exceptions/orm-exceptions";
 
 @Injectable()
-export default class FileService extends RepositoryService<
-	FileWithRelations,
-	FileQueryParameters.CreateInput,
-	FileQueryParameters.WhereInput,
-	FileQueryParameters.ManyWhereInput,
-	FileQueryParameters.UpdateInput,
-	FileQueryParameters.DeleteInput,
-	FileQueryParameters.SortingKeys,
-	Prisma.FileCreateInput,
-	Prisma.FileWhereInput,
-	Prisma.FileWhereInput,
-	Prisma.FileUpdateInput,
-	Prisma.FileWhereUniqueInput,
-	Prisma.FileOrderByWithRelationAndSearchRelevanceInput
-> {
+export default class FileService {
 	constructor(
 		private prismaService: PrismaService,
 		private fileManagerService: FileManagerService,
 		@Inject(forwardRef(() => LibraryService))
 		private libraryService: LibraryService,
+	) {}
+
+	async get<I extends FileQueryParameters.RelationInclude = {}>(
+		where: FileQueryParameters.WhereInput,
+		include?: I,
 	) {
-		super(prismaService, "file");
-	}
-
-	getTableName() {
-		return "files";
-	}
-
-	/**
-	 * Create file
-	 */
-	formatCreateInput(input: FileQueryParameters.CreateInput) {
-		return {
-			path: input.path,
-			md5Checksum: input.md5Checksum,
-			registerDate: input.registerDate,
-			library: {
-				connect: { id: input.libraryId },
-			},
+		const args = {
+			include: include ?? ({} as I),
+			where: FileService.formatWhereInput(where),
 		};
-	}
-
-	protected formatCreateInputToWhereInput(
-		input: FileQueryParameters.CreateInput,
-	): FileQueryParameters.WhereInput {
-		return {
-			byPath: { path: input.path, library: { id: input.libraryId } },
-		};
-	}
-
-	onCreationFailure(error: Error, input: FileQueryParameters.CreateInput) {
-		if (
-			error instanceof Prisma.PrismaClientKnownRequestError &&
-			error.code == PrismaError.UniqueConstraintViolation
-		) {
-			return new FileAlreadyExistsException(input.path, input.libraryId);
-		}
-		return this.onUnknownError(error, input);
+		return this.prismaService.file
+			.findFirstOrThrow<
+				Prisma.SelectSubset<
+					typeof args,
+					Prisma.FileFindFirstOrThrowArgs
+				>
+			>(args)
+			.catch((error) => {
+				throw this.onNotFound(error, where);
+			});
 	}
 
 	/**
@@ -127,7 +96,11 @@ export default class FileService extends RepositoryService<
 		};
 	}
 
-	formatWhereInput = FileService.formatWhereInput;
+	async getMany(where: FileQueryParameters.ManyWhereInput) {
+		return this.prismaService.file.findMany({
+			where: FileService.formatManyWhereInput(where),
+		});
+	}
 
 	static formatManyWhereInput(where: FileQueryParameters.ManyWhereInput) {
 		let query: Prisma.FileWhereInput = {};
@@ -155,8 +128,6 @@ export default class FileService extends RepositoryService<
 		return query;
 	}
 
-	formatManyWhereInput = FileService.formatManyWhereInput;
-
 	static formatIdentifierToWhereInput(
 		identifier: Identifier,
 	): FileQueryParameters.WhereInput {
@@ -164,22 +135,6 @@ export default class FileService extends RepositoryService<
 			identifier,
 			RepositoryService.UnexpectedStringIdentifier,
 		);
-	}
-
-	formatSortingInput(
-		sort: FileQueryParameters.SortingParameter,
-	): Prisma.FileOrderByWithRelationAndSearchRelevanceInput {
-		sort.order ??= "asc";
-		switch (sort.sortBy) {
-			case "addDate":
-				return { registerDate: sort.order };
-			case "trackArtist":
-				return { track: { song: { artist: { slug: sort.order } } } };
-			case "trackName":
-				return { track: { song: { slug: sort.order } } };
-			default:
-				return { [sort.sortBy ?? "id"]: sort.order };
-		}
 	}
 
 	onNotFound(error: Error, where: FileQueryParameters.WhereInput) {
@@ -194,7 +149,7 @@ export default class FileService extends RepositoryService<
 			}
 			return new FileNotFoundFromPathException(where.byPath.path);
 		}
-		return this.onUnknownError(error, where);
+		return new UnhandledORMErrorException(error, where);
 	}
 
 	/**
@@ -217,21 +172,6 @@ export default class FileService extends RepositoryService<
 		return where;
 	}
 
-	async deleteMany(
-		where: FileQueryParameters.ManyWhereInput,
-	): Promise<number> {
-		return (
-			await this.prismaService.file.deleteMany({
-				where: FileService.formatManyWhereInput(where),
-			})
-		).count;
-	}
-
-	/**
-	 * Does nothing, nothing to housekeep
-	 */
-	async housekeeping(): Promise<void> {}
-
 	/**
 	 * Register a file in the Database
 	 * @param filePath The path to the file to register, relative to parent library path
@@ -250,14 +190,33 @@ export default class FileService extends RepositoryService<
 			throw new FileNotReadableException(filePath);
 		}
 
-		return this.create({
-			path: filePath,
-			md5Checksum: await this.fileManagerService.getMd5Checksum(
-				fullFilePath,
-			),
-			registerDate: registrationDate ?? new Date(),
-			libraryId: parentLibrary.id,
-		});
+		return this.prismaService.file
+			.create({
+				data: {
+					path: filePath,
+					md5Checksum: await this.fileManagerService.getMd5Checksum(
+						fullFilePath,
+					),
+					registerDate: registrationDate ?? new Date(),
+					libraryId: parentLibrary.id,
+				},
+			})
+			.catch((error) => {
+				if (
+					error instanceof Prisma.PrismaClientKnownRequestError &&
+					error.code == PrismaError.UniqueConstraintViolation
+				) {
+					throw new FileAlreadyExistsException(
+						filePath,
+						parentLibrary.id,
+					);
+				}
+				throw new UnhandledORMErrorException(error, {
+					filePath,
+					parentLibrary,
+					registrationDate,
+				});
+			});
 	}
 
 	/**

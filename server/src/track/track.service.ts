@@ -112,7 +112,7 @@ export default class TrackService extends RepositoryService<
 			});
 			const parentRelease = await this.releaseService.get(input.release);
 
-			await this.fileService.throwIfNotFound(input.sourceFile);
+			await this.fileService.get(input.sourceFile);
 			if (error.code === PrismaError.RequiredRelationViolation) {
 				return new TrackAlreadyExistsException(
 					input.name,
