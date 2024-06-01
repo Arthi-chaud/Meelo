@@ -20,7 +20,7 @@ import { Injectable } from "@nestjs/common";
 import PrismaService from "src/prisma/prisma.service";
 import Slug from "src/slug/slug";
 import type GenreQueryParameters from "./models/genre.query-parameters";
-import { Genre, GenreWithRelations } from "src/prisma/models";
+import { Genre } from "src/prisma/models";
 import SongService from "src/song/song.service";
 import RepositoryService from "src/repository/repository.service";
 import { buildStringSearchParameters } from "src/utils/search-string-input";
@@ -37,61 +37,24 @@ import {
 } from "./genre.exceptions";
 import AlbumService from "src/album/album.service";
 import deepmerge from "deepmerge";
+import { UnhandledORMErrorException } from "src/exceptions/orm-exceptions";
+import { PaginationParameters } from "src/pagination/models/pagination-parameters";
 
 @Injectable()
-export default class GenreService extends RepositoryService<
-	GenreWithRelations,
-	GenreQueryParameters.CreateInput,
-	GenreQueryParameters.WhereInput,
-	GenreQueryParameters.ManyWhereInput,
-	GenreQueryParameters.UpdateInput,
-	GenreQueryParameters.DeleteInput,
-	GenreQueryParameters.SortingKeys,
-	Prisma.GenreCreateInput,
-	Prisma.GenreWhereInput,
-	Prisma.GenreWhereInput,
-	Prisma.GenreUpdateInput,
-	Prisma.GenreWhereUniqueInput,
-	Prisma.GenreOrderByWithRelationAndSearchRelevanceInput
-> {
+export default class GenreService {
 	private readonly logger = new Logger(GenreService.name);
-	constructor(private prismaService: PrismaService) {
-		super(prismaService, "genre");
-	}
+	constructor(private prismaService: PrismaService) {}
 
-	getTableName() {
-		return "genres";
-	}
-
-	/**
-	 * Create
-	 */
-	formatCreateInput(
-		input: GenreQueryParameters.CreateInput,
-	): Prisma.GenreCreateInput {
-		return {
-			...input,
-			slug: new Slug(input.name).toString(),
-		};
-	}
-
-	protected formatCreateInputToWhereInput(
-		input: GenreQueryParameters.CreateInput,
-	): GenreQueryParameters.WhereInput {
-		return { slug: new Slug(input.name) };
-	}
-
-	protected onCreationFailure(
-		error: Error,
-		input: GenreQueryParameters.CreateInput,
-	) {
-		if (
-			error instanceof Prisma.PrismaClientKnownRequestError &&
-			error.code == PrismaError.UniqueConstraintViolation
-		) {
-			return new GenreAlreadyExistsException(new Slug(input.name));
-		}
-		return this.onUnknownError(error, input);
+	async getOrCreate(input: GenreQueryParameters.CreateInput) {
+		const genreSlug = new Slug(input.name);
+		return this.prismaService.genre.upsert({
+			create: {
+				name: input.name,
+				slug: genreSlug.toString(),
+			},
+			update: {},
+			where: { slug: genreSlug.toString() },
+		});
 	}
 
 	/**
@@ -99,12 +62,10 @@ export default class GenreService extends RepositoryService<
 	 */
 	static formatWhereInput(input: GenreQueryParameters.WhereInput) {
 		return {
-			...input,
+			id: input.id,
 			slug: input?.slug?.toString(),
 		};
 	}
-
-	formatWhereInput = GenreService.formatWhereInput;
 
 	static formatManyWhereInput(where: GenreQueryParameters.ManyWhereInput) {
 		let query: Prisma.GenreWhereInput = {};
@@ -160,8 +121,6 @@ export default class GenreService extends RepositoryService<
 		return query;
 	}
 
-	formatManyWhereInput = GenreService.formatManyWhereInput;
-
 	static formatIdentifierToWhereInput(
 		identifier: Identifier,
 	): GenreQueryParameters.WhereInput {
@@ -191,27 +150,48 @@ export default class GenreService extends RepositoryService<
 		}
 	}
 
-	/**
-	 * Update a genre
-	 */
-	formatUpdateInput(what: GenreQueryParameters.CreateInput) {
-		return {
-			...what,
-			slug: new Slug(what.name).toString(),
-		};
-	}
-
-	/**
-	 * Delete a genre
-	 */
-	formatDeleteInput(where: GenreQueryParameters.WhereInput) {
-		return this.formatWhereInput(where);
-	}
-
-	protected formatDeleteInputToWhereInput(
-		input: GenreQueryParameters.WhereInput,
+	async get<I extends GenreQueryParameters.RelationInclude = {}>(
+		where: GenreQueryParameters.WhereInput,
+		include?: I,
 	) {
-		return input;
+		const args = {
+			where: GenreService.formatWhereInput(where),
+			include: include ?? ({} as I),
+		};
+		return this.prismaService.genre
+			.findFirstOrThrow<
+				Prisma.SelectSubset<
+					typeof args,
+					Prisma.GenreFindFirstOrThrowArgs
+				>
+			>(args)
+			.catch((error) => {
+				throw this.onNotFound(error, where);
+			});
+	}
+
+	async getMany<I extends GenreQueryParameters.RelationInclude = {}>(
+		where: GenreQueryParameters.ManyWhereInput,
+		sort: GenreQueryParameters.SortingParameter = {},
+		pagination: PaginationParameters = {},
+		include?: I,
+	) {
+		const args = {
+			include: include ?? ({} as I),
+			where: GenreService.formatManyWhereInput(where),
+			take: pagination.take,
+			skip: pagination.skip,
+			cursor: pagination.afterId
+				? {
+						id: pagination.afterId,
+				  }
+				: undefined,
+			orderBy: this.formatSortingInput(sort),
+		};
+		const artists = await this.prismaService.genre.findMany<
+			Prisma.SelectSubset<typeof args, Prisma.GenreFindManyArgs>
+		>(args);
+		return artists;
 	}
 
 	/**
@@ -222,10 +202,14 @@ export default class GenreService extends RepositoryService<
 		const genre = await this.get(where, { songs: true });
 
 		if (genre.songs.length == 0) {
-			return super.delete(where).then((deleted) => {
-				this.logger.warn(`Genre '${deleted.slug}' deleted`);
-				return deleted;
-			});
+			return this.prismaService.genre
+				.delete({
+					where: { id: genre.id },
+				})
+				.then((deleted) => {
+					this.logger.warn(`Genre '${deleted.slug}' deleted`);
+					return deleted;
+				});
 		}
 		throw new GenreNotEmptyException(genre.id);
 	}
@@ -259,6 +243,6 @@ export default class GenreService extends RepositoryService<
 		) {
 			return new GenreNotFoundException(where.slug ?? where.id);
 		}
-		return this.onUnknownError(error, where);
+		return new UnhandledORMErrorException(error, where);
 	}
 }

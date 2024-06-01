@@ -18,9 +18,7 @@ import TrackModule from "src/track/track.module";
 import AlbumModule from "src/album/album.module";
 import IllustrationModule from "src/illustration/illustration.module";
 import GenreModule from "src/genre/genre.module";
-import { GenreNotFoundByIdException } from "src/genre/genre.exceptions";
 import TestPrismaService from "test/test-prisma.service";
-import type SongQueryParameters from "./models/song.query-params";
 import { LyricsModule } from "src/lyrics/lyrics.module";
 import { LyricsService } from "src/lyrics/lyrics.service";
 import { LyricsNotFoundByIDException } from "src/lyrics/lyrics.exceptions";
@@ -140,7 +138,7 @@ describe("Song Service", () => {
 					},
 				});
 
-			return expect(test()).rejects.toThrow(GenreNotFoundByIdException);
+			return expect(test()).rejects.toThrow(GenreNotFoundException);
 		});
 
 		it("should throw, as the parent artist does not exist (by slug)", async () => {
@@ -447,7 +445,7 @@ describe("Song Service", () => {
 						},
 					},
 				);
-			return expect(test()).rejects.toThrow(GenreNotFoundByIdException);
+			return expect(test()).rejects.toThrow(GenreNotFoundException);
 		});
 	});
 

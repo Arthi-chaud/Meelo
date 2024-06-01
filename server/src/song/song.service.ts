@@ -103,9 +103,7 @@ export default class SongService extends SearchableRepositoryService<
 		include?: I,
 	) {
 		await Promise.all(
-			input.genres.map((genre) =>
-				this.genreService.throwIfNotFound(genre),
-			),
+			input.genres.map((genre) => this.genreService.get(genre)),
 		);
 		return super.create(input, include);
 	}
@@ -415,7 +413,9 @@ export default class SongService extends SearchableRepositoryService<
 			);
 		}
 		if (where.bySlug) {
-			const { id: artistId } = await this.artistService.get(where.bySlug.artist);
+			const { id: artistId } = await this.artistService.get(
+				where.bySlug.artist,
+			);
 
 			try {
 				return await this.prismaService.song.update({
