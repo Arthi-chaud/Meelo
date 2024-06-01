@@ -32,20 +32,18 @@ export class SongNotFoundException extends NotFoundException {
 }
 
 export class SongGroupNotFoundException extends NotFoundException {
-	constructor(songGroupSlug: Slug) {
-		super(`Song Group not found '${songGroupSlug.toString()}'`);
+	constructor(songGroupIdentifier: Slug | number) {
+		super(
+			typeof songGroupIdentifier === "number"
+				? `No song group with id '${songGroupIdentifier}' found`
+				: `Song Group not found '${songGroupIdentifier.toString()}'`,
+		);
 	}
 }
 
 export class SongNotFoundByIdException extends NotFoundException {
 	constructor(songId: number) {
 		super(`No song with id '${songId}' found`);
-	}
-}
-
-export class SongGroupNotFoundByIdException extends NotFoundException {
-	constructor(songGroupId: number) {
-		super(`No song group with id '${songGroupId}' found`);
 	}
 }
 

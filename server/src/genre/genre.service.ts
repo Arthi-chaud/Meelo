@@ -33,7 +33,6 @@ import { PrismaError } from "prisma-error-enum";
 import {
 	GenreAlreadyExistsException,
 	GenreNotEmptyException,
-	GenreNotFoundByIdException,
 	GenreNotFoundException,
 } from "./genre.exceptions";
 import AlbumService from "src/album/album.service";
@@ -258,10 +257,7 @@ export default class GenreService extends RepositoryService<
 			error instanceof Prisma.PrismaClientKnownRequestError &&
 			error.code == PrismaError.RecordsNotFound
 		) {
-			if (where.id !== undefined) {
-				return new GenreNotFoundByIdException(where.id);
-			}
-			return new GenreNotFoundException(where.slug);
+			return new GenreNotFoundException(where.slug ?? where.id);
 		}
 		return this.onUnknownError(error, where);
 	}

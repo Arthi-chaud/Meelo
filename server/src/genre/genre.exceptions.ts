@@ -23,14 +23,12 @@ import {
 import type Slug from "src/slug/slug";
 
 export class GenreNotFoundException extends NotFoundException {
-	constructor(genreSlug: Slug) {
-		super(`Genre '${genreSlug.toString()}' does not exist`);
-	}
-}
-
-export class GenreNotFoundByIdException extends NotFoundException {
-	constructor(genreId: number) {
-		super(`Genre with id '${genreId}' does not exist`);
+	constructor(genreIdentifier: Slug | number) {
+		super(
+			typeof genreIdentifier == "number"
+				? `Genre with id '${genreIdentifier}' does not exist`
+				: `Genre '${genreIdentifier.toString()}' does not exist`,
+		);
 	}
 }
 

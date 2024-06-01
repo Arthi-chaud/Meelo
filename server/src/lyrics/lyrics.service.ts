@@ -214,6 +214,7 @@ export class LyricsService extends RepositoryService<
 			error.code == PrismaError.RecordsNotFound
 		) {
 			if (where.song) {
+				//TODO, get should return null if song does not have lyrics
 				await this.songService.throwIfNotFound(where.song);
 				return new LyricsNotFoundBySongException(
 					where.song.id ?? where.song.bySlug!.slug,

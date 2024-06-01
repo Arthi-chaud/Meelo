@@ -15,7 +15,6 @@ import TestPrismaService from "test/test-prisma.service";
 import {
 	GenreAlreadyExistsException,
 	GenreNotEmptyException,
-	GenreNotFoundByIdException,
 	GenreNotFoundException,
 } from "./genre.exceptions";
 import GenreModule from "./genre.module";
@@ -142,7 +141,7 @@ describe("Genre Service", () => {
 
 		it("should throw, as the genre does not exist (by id)", async () => {
 			const test = async () => await genreService.get({ id: -1 });
-			return expect(test()).rejects.toThrow(GenreNotFoundByIdException);
+			return expect(test()).rejects.toThrow(GenreNotFoundException);
 		});
 	});
 
@@ -291,7 +290,7 @@ describe("Genre Service", () => {
 			const test = async () =>
 				await genreService.update({ name: "a" }, { id: -1 });
 
-			return expect(test()).rejects.toThrow(GenreNotFoundByIdException);
+			return expect(test()).rejects.toThrow(GenreNotFoundException);
 		});
 	});
 
@@ -312,7 +311,7 @@ describe("Genre Service", () => {
 			const test = async () =>
 				await genreService.get({ id: tmpGenre.id });
 
-			return expect(test()).rejects.toThrow(GenreNotFoundByIdException);
+			return expect(test()).rejects.toThrow(GenreNotFoundException);
 		});
 		it("should not delete the genre, because it is not empty", async () => {
 			const test = () =>
@@ -324,7 +323,7 @@ describe("Genre Service", () => {
 		it("should throw, as the genre does not exist", async () => {
 			const test = async () => await genreService.delete({ id: -1 });
 
-			return expect(test()).rejects.toThrow(GenreNotFoundByIdException);
+			return expect(test()).rejects.toThrow(GenreNotFoundException);
 		});
 	});
 });

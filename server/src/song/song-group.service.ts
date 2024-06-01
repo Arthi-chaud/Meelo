@@ -25,7 +25,6 @@ import SongService from "./song.service";
 import { PrismaError } from "prisma-error-enum";
 import {
 	SongGroupAlreadyExistsException,
-	SongGroupNotFoundByIdException,
 	SongGroupNotFoundException,
 } from "./song.exceptions";
 import PrismaService from "src/prisma/prisma.service";
@@ -104,10 +103,8 @@ export default class SongGroupService extends RepositoryService<
 		) {
 			if (where.song != undefined) {
 				return this.songService.onNotFound(error, where.song);
-			} else if (where.id !== undefined) {
-				return new SongGroupNotFoundByIdException(where.id);
 			}
-			return new SongGroupNotFoundException(where.slug);
+			return new SongGroupNotFoundException(where.slug ?? where.id);
 		}
 		return this.onUnknownError(error, where);
 	}
