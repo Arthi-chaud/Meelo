@@ -18,8 +18,7 @@
 
 import { ApiProperty } from "@nestjs/swagger";
 import { AlbumType } from "@prisma/client";
-import { IsEnum, IsNumber, IsOptional } from "class-validator";
-import { Artist } from "src/prisma/models";
+import { IsEnum, IsOptional } from "class-validator";
 
 export default class UpdateAlbumDTO {
 	@ApiProperty({

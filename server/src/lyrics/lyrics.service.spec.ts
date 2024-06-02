@@ -97,7 +97,9 @@ describe("Lyrics Service", () => {
 		it("should delete the song's lyrics", async () => {
 			await lyricsService.delete({ songId: lyricsB1.songId });
 			const test = () => lyricsService.get({ songId: lyricsB1.songId });
-			return expect(test()).rejects.toThrow(LyricsNotFoundBySongException);
+			return expect(test()).rejects.toThrow(
+				LyricsNotFoundBySongException,
+			);
 		});
 
 		it("should throw, as the parent song does not exist", async () => {

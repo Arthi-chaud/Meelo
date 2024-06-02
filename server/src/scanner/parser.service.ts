@@ -246,7 +246,9 @@ export default class ParserService {
 				slug: new Slug(artistName),
 			});
 			return { artist: name, featuring: [] };
-		} catch {}
+		} catch {
+			//
+		}
 		const [main, ...feats] = (
 			await Promise.all(
 				artistName.split(/\s*,\s*/).map(async (s) => {

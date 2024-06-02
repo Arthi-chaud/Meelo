@@ -18,7 +18,6 @@
 
 import { ApiProperty } from "@nestjs/swagger";
 
-
 export class LyricsResponse {
 	@ApiProperty({
 		description:
@@ -26,4 +25,3 @@ export class LyricsResponse {
 	})
 	lyrics: string;
 }
-
