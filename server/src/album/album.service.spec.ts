@@ -9,15 +9,11 @@ import AlbumModule from "./album.module";
 import PrismaService from "src/prisma/prisma.service";
 import {
 	AlbumAlreadyExistsException,
-	AlbumAlreadyExistsWithArtistIDException,
 	AlbumNotEmptyException,
 	AlbumNotFoundFromIDException,
 } from "./album.exceptions";
 import Slug from "src/slug/slug";
-import {
-	ArtistNotFoundByIDException,
-	ArtistNotFoundException,
-} from "src/artist/artist.exceptions";
+import { ArtistNotFoundException } from "src/artist/artist.exceptions";
 import SongModule from "src/song/song.module";
 import IllustrationModule from "src/illustration/illustration.module";
 import GenreModule from "src/genre/genre.module";
@@ -104,7 +100,7 @@ describe("Album Service", () => {
 					});
 				};
 				return expect(test()).rejects.toThrow(
-					AlbumAlreadyExistsWithArtistIDException,
+					AlbumAlreadyExistsException,
 				);
 			});
 		});
@@ -135,7 +131,7 @@ describe("Album Service", () => {
 					});
 				};
 				return expect(test()).rejects.toThrow(
-					AlbumAlreadyExistsWithArtistIDException,
+					AlbumAlreadyExistsException,
 				);
 			});
 
@@ -162,12 +158,12 @@ describe("Album Service", () => {
 			expect(albums).toContainEqual(newCompilationAlbum);
 		});
 		it("should shuffle albums", async () => {
-			const sort1 = await albumService.getMany({}, { take: 10 }, {}, 123);
+			const sort1 = await albumService.getMany({}, 123, { take: 10 }, {});
 			const sort2 = await albumService.getMany(
 				{},
+				1234,
 				{ take: 10 },
 				{},
-				1234,
 			);
 			expect(sort1.length).toBe(sort2.length);
 			expect(sort1).toContainEqual(dummyRepository.albumB1);
@@ -177,7 +173,11 @@ describe("Album Service", () => {
 		});
 
 		it("should find some albums w/ pagination", async () => {
-			const albums = await albumService.getMany({}, { take: 2, skip: 2 });
+			const albums = await albumService.getMany(
+				{},
+				{},
+				{ take: 2, skip: 2 },
+			);
 			expect(albums.length).toBe(2);
 			expect(albums[0]).toStrictEqual(dummyRepository.compilationAlbumA);
 			expect(albums[1]).toStrictEqual(newCompilationAlbum);
@@ -202,9 +202,9 @@ describe("Album Service", () => {
 		it("should sort the albums", async () => {
 			const albums = await albumService.getMany(
 				{},
-				{},
-				{},
 				{ sortBy: "name", order: "desc" },
+				{},
+				{},
 			);
 			expect(albums.length).toBe(5);
 			expect(albums[0]).toStrictEqual(dummyRepository.albumB1);
@@ -242,34 +242,17 @@ describe("Album Service", () => {
 			});
 			expect(album).toStrictEqual(dummyRepository.albumB1);
 		});
-
-		it("should return an existing album, without only its id and slug", async () => {
-			const album = await albumService.select(
-				{ id: dummyRepository.albumA1.id },
-				{ slug: true, id: true },
-			);
-			expect(album).toStrictEqual({
-				id: dummyRepository.albumA1.id,
-				slug: dummyRepository.albumA1.slug,
-			});
-		});
-		it("should throw, as the album does not exist ", async () => {
-			const test = () =>
-				albumService.select({ id: -1 }, { slug: true, id: true });
-			return expect(test()).rejects.toThrow(AlbumNotFoundFromIDException);
-		});
 	});
 
 	describe("Update an album", () => {
 		it("should change the information of the album in the database", async () => {
 			const updatedAlbum = await albumService.update(
-				{ name: "My Album Live" },
+				{ type: AlbumType.Soundtrack },
 				{ id: newAlbum.id },
 			);
 			expect(updatedAlbum).toStrictEqual({
 				...newAlbum,
-				name: "My Album Live",
-				slug: "my-album-live",
+				type: AlbumType.Soundtrack,
 			});
 		});
 	});
@@ -304,47 +287,6 @@ describe("Album Service", () => {
 			expect(otherAlbum).not.toStrictEqual(
 				dummyRepository.compilationAlbumA,
 			);
-		});
-	});
-
-	describe("Reassign Album", () => {
-		it("should assign a compilation album to an artist", async () => {
-			const updatedAlbum = await albumService.reassign(
-				{ id: dummyRepository.compilationAlbumA.id },
-				{ id: dummyRepository.artistA.id },
-			);
-			expect(updatedAlbum).toStrictEqual({
-				...updatedAlbum,
-				artistId: dummyRepository.artistA.id,
-			});
-		});
-		it("should assign a album as a compilation", async () => {
-			const updatedAlbum = await albumService.reassign(
-				{ id: dummyRepository.compilationAlbumA.id },
-				{ compilationArtist: true },
-			);
-			expect(updatedAlbum).toStrictEqual({
-				...updatedAlbum,
-				artistId: null,
-			});
-		});
-
-		it("should throw as the album does not exist", async () => {
-			const test = () =>
-				albumService.reassign(
-					{ id: -1 },
-					{ id: dummyRepository.artistA.id },
-				);
-			return expect(test()).rejects.toThrow(AlbumNotFoundFromIDException);
-		});
-
-		it("should throw as the new artist does not exist", async () => {
-			const test = () =>
-				albumService.reassign(
-					{ id: dummyRepository.albumA1.id },
-					{ id: -1 },
-				);
-			return expect(test()).rejects.toThrow(ArtistNotFoundByIDException);
 		});
 	});
 

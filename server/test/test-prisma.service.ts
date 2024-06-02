@@ -209,7 +209,10 @@ export default class TestPrismaService extends PrismaService {
 				artist: { connect: { id: this.artistA.id } },
 				group: {
 					create: {
-						slug: new Slug(this.artistA.name, "my-other-song").toString(),
+						slug: new Slug(
+							this.artistA.name,
+							"my-other-song",
+						).toString(),
 					},
 				},
 				genres: { connect: { id: this.genreB.id } },
@@ -260,7 +263,10 @@ export default class TestPrismaService extends PrismaService {
 				artist: { connect: { id: this.artistB.id } },
 				group: {
 					create: {
-						slug: new Slug(this.artistB.name, "my-second-song").toString(),
+						slug: new Slug(
+							this.artistB.name,
+							"my-second-song",
+						).toString(),
 					},
 				},
 				genres: { connect: { id: this.genreB.id } },
@@ -312,7 +318,10 @@ export default class TestPrismaService extends PrismaService {
 				artist: { connect: { id: this.artistC.id } },
 				group: {
 					create: {
-						slug: new Slug(this.artistC.name, "my-c-song").toString(),
+						slug: new Slug(
+							this.artistC.name,
+							"my-c-song",
+						).toString(),
 					},
 				},
 				genres: { connect: { id: this.genreC.id } },

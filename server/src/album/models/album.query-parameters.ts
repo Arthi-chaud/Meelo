@@ -79,7 +79,7 @@ namespace AlbumQueryParameters {
 	 * The input required to update an album in the database
 	 */
 	export class UpdateInput extends PartialType(
-		PickType(Album, ["name", "type", "releaseDate", "artistId"] as const),
+		PickType(Album, ["type", "releaseDate"] as const),
 	) {}
 
 	/**

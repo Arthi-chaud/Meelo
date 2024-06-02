@@ -63,7 +63,7 @@ describe("Lyrics Service", () => {
 
 	describe("Create lyrics", () => {
 		it("should create new lyrics", async () => {
-			lyricsB1 = await lyricsService.create({
+			lyricsB1 = await lyricsService.createOrUpdate({
 				content: "AZE",
 				songId: dummyRepository.songB1.id,
 			});
@@ -73,146 +73,46 @@ describe("Lyrics Service", () => {
 
 		it("should throw, as the parent song does not exist", async () => {
 			const test = () =>
-				lyricsService.create({ content: "", songId: -1 });
+				lyricsService.createOrUpdate({ content: "", songId: -1 });
 			return expect(test()).rejects.toThrow(SongNotFoundByIdException);
-		});
-
-		it("should throw, as lyrics already exists for the lyrics", async () => {
-			const test = () =>
-				lyricsService.create({
-					content: "",
-					songId: dummyRepository.songA1.id,
-				});
-			return expect(test()).rejects.toThrow(
-				LyricsAlreadyExistsExceptions,
-			);
 		});
 	});
 
 	describe("Get lyrics", () => {
 		it("should throw, as the song does not have lyrics", async () => {
 			const test = () =>
-				lyricsService.get({ song: { id: dummyRepository.songC1.id } });
+				lyricsService.get({ songId: dummyRepository.songC1.id });
 			return expect(test()).rejects.toThrow(
 				LyricsNotFoundBySongException,
 			);
 		});
 
-		it("should get the lyrics (by its id)", async () => {
-			const fetchedLyrics = await lyricsService.get({
-				id: dummyRepository.lyricsA1.id,
-			});
-			expect(fetchedLyrics).toStrictEqual(dummyRepository.lyricsA1);
-		});
-
-		it("should get the lyrics (by its song)", async () => {
-			const fetchedLyrics = await lyricsService.get({
-				song: {
-					bySlug: {
-						slug: new Slug(dummyRepository.songB1.name),
-						artist: {
-							slug: new Slug(dummyRepository.artistB.name),
-						},
-					},
-				},
-			});
-			expect(fetchedLyrics).toStrictEqual(lyricsB1);
-		});
-
 		it("should throw, as the parent song does not exist", async () => {
-			const test = () => lyricsService.get({ song: { id: -1 } });
+			const test = () => lyricsService.get({ songId: -1 });
 			return expect(test()).rejects.toThrow(SongNotFoundByIdException);
-		});
-
-		it("should return an existing lyric, with only its id", async () => {
-			const lyrics = await lyricsService.select(
-				{ id: dummyRepository.lyricsA1.id },
-				{ id: true },
-			);
-			expect(lyrics).toStrictEqual({ id: dummyRepository.lyricsA1.id });
-		});
-		it("should throw, as the lyrics does not exist ", async () => {
-			const test = () => lyricsService.select({ id: -1 }, { id: true });
-			return expect(test()).rejects.toThrow(LyricsNotFoundByIDException);
-		});
-	});
-
-	describe("Get many lyrics", () => {
-		it("should get all lyrics", async () => {
-			const allLyrics = await lyricsService.getMany({});
-			expect(allLyrics.length).toBe(2);
-			expect(allLyrics).toContainEqual(dummyRepository.lyricsA1);
-			expect(allLyrics).toContainEqual(lyricsB1);
-		});
-
-		it("should shuffle lyrics", async () => {
-			const sort1 = await lyricsService.getMany(
-				{},
-				{ take: 10 },
-				{},
-				123,
-			);
-			const sort2 = await lyricsService.getMany(
-				{},
-				{ take: 10 },
-				{},
-				1234,
-			);
-			expect(sort1.length).toBe(sort2.length);
-			expect(sort1).toContainEqual(dummyRepository.lyricsA1);
-			expect(sort1.map(({ id }) => id)).not.toBe(
-				sort2.map(({ id }) => id),
-			);
-		});
-	});
-	describe("Count lyrics", () => {
-		it("should count", async () => {
-			const lyricsCount = await lyricsService.count({});
-			expect(lyricsCount).toBe(2);
 		});
 	});
 
 	describe("Delete lyrics", () => {
 		it("should delete the song's lyrics", async () => {
-			await lyricsService.delete({ id: lyricsB1.id });
-			const test = () => lyricsService.get({ id: lyricsB1.id });
-			return expect(test()).rejects.toThrow(LyricsNotFoundByIDException);
+			await lyricsService.delete({ songId: lyricsB1.songId });
+			const test = () => lyricsService.get({ songId: lyricsB1.songId });
+			return expect(test()).rejects.toThrow(
+				LyricsNotFoundBySongException,
+			);
 		});
 
 		it("should throw, as the parent song does not exist", async () => {
-			const test = () => lyricsService.get({ song: { id: -1 } });
+			const test = () => lyricsService.get({ songId: -1 });
 			return expect(test()).rejects.toThrow(SongNotFoundByIdException);
 		});
 
 		it("should throw, as the song does not have lyrics", async () => {
 			const test = () =>
-				lyricsService.get({ song: { id: dummyRepository.songC1.id } });
+				lyricsService.get({ songId: dummyRepository.songC1.id });
 			return expect(test()).rejects.toThrow(
 				LyricsNotFoundBySongException,
 			);
-		});
-	});
-
-	describe("Get or Create lyrics", () => {
-		it("should get the lyrics", async () => {
-			const fetchedLyrics = await lyricsService.getOrCreate({
-				content: "BLA",
-				songId: dummyRepository.songA1.id,
-			});
-			expect(fetchedLyrics).toStrictEqual(dummyRepository.lyricsA1);
-		});
-		it("should create new lyrics", async () => {
-			lyricsC1 = await lyricsService.getOrCreate({
-				content: "BLA",
-				songId: dummyRepository.songC1.id,
-			});
-			expect(lyricsC1.content).toStrictEqual("BLA");
-			expect(lyricsC1.songId).toStrictEqual(dummyRepository.songC1.id);
-		});
-		it("should throw, as the song does not exist", async () => {
-			const test = () =>
-				lyricsService.getOrCreate({ content: "BLA", songId: -1 });
-			return expect(test()).rejects.toThrow(SongNotFoundByIdException);
 		});
 	});
 });

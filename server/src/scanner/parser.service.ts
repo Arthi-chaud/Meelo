@@ -241,8 +241,13 @@ export default class ParserService {
 	async extractFeaturedArtistsFromArtistName(
 		artistName: string,
 	): Promise<Pick<Metadata, "artist" | "featuring">> {
-		if (await this.artistService.exists({ slug: new Slug(artistName) })) {
-			return { artist: artistName, featuring: [] };
+		try {
+			const { name } = await this.artistService.get({
+				slug: new Slug(artistName),
+			});
+			return { artist: name, featuring: [] };
+		} catch {
+			//
 		}
 		const [main, ...feats] = (
 			await Promise.all(

@@ -17,11 +17,9 @@
  */
 
 import { Inject, Injectable, forwardRef } from "@nestjs/common";
-import RepositoryService from "src/repository/repository.service";
 import PlaylistQueryParameters from "./models/playlist.query-parameters";
 import { Prisma } from "@prisma/client";
 import Slug from "src/slug/slug";
-import { PlaylistWithRelations } from "src/prisma/models";
 import SongService from "src/song/song.service";
 import { PrismaError } from "prisma-error-enum";
 import {
@@ -40,54 +38,69 @@ import { parseIdentifierSlugs } from "src/identifier/identifier.parse-slugs";
 // eslint-disable-next-line no-restricted-imports
 import { UnhandledORMErrorException } from "src/exceptions/orm-exceptions";
 import AlbumService from "src/album/album.service";
+import { PaginationParameters } from "src/pagination/models/pagination-parameters";
+import {
+	formatIdentifier,
+	formatPaginationParameters,
+} from "src/repository/repository.utils";
 
 @Injectable()
-export default class PlaylistService extends RepositoryService<
-	PlaylistWithRelations,
-	PlaylistQueryParameters.CreateInput,
-	PlaylistQueryParameters.WhereInput,
-	PlaylistQueryParameters.ManyWhereInput,
-	PlaylistQueryParameters.UpdateInput,
-	PlaylistQueryParameters.DeleteInput,
-	PlaylistQueryParameters.SortingKeys,
-	Prisma.PlaylistCreateInput,
-	Prisma.PlaylistWhereUniqueInput,
-	Prisma.PlaylistWhereInput,
-	Prisma.PlaylistUpdateInput,
-	Prisma.PlaylistWhereUniqueInput,
-	Prisma.PlaylistOrderByWithRelationAndSearchRelevanceInput
-> {
+export default class PlaylistService {
 	private readonly logger = new Logger(PlaylistService.name);
 	constructor(
 		@Inject(forwardRef(() => SongService))
 		private songService: SongService,
 		private prismaService: PrismaService,
-	) {
-		super(prismaService, "playlist");
-	}
+	) {}
 
-	getTableName() {
-		return "playlists";
-	}
-
-	protected onCreationFailure(
-		error: Error,
-		input: PlaylistQueryParameters.CreateInput,
-	) {
-		if (error instanceof Prisma.PrismaClientKnownRequestError) {
-			if (error.code == PrismaError.UniqueConstraintViolation) {
-				return new PlaylistAlreadyExistsException(input.name);
+	async create(input: PlaylistQueryParameters.CreateInput) {
+		try {
+			return await this.prismaService.playlist.create({
+				data: {
+					name: input.name,
+					slug: new Slug(input.name).toString(),
+				},
+			});
+		} catch (error) {
+			if (error instanceof Prisma.PrismaClientKnownRequestError) {
+				if (error.code == PrismaError.UniqueConstraintViolation) {
+					throw new PlaylistAlreadyExistsException(input.name);
+				}
 			}
+			throw new UnhandledORMErrorException(error, input);
 		}
-		return this.onUnknownError(error, input);
 	}
 
-	protected formatCreateInputToWhereInput(
-		input: PlaylistQueryParameters.CreateInput,
+	async get<I extends PlaylistQueryParameters.RelationInclude = {}>(
+		where: PlaylistQueryParameters.WhereInput,
+		include?: I,
 	) {
-		return {
-			slug: new Slug(input.name),
+		const args = {
+			where: PlaylistService.formatWhereInput(where),
+			include: include ?? ({} as I),
 		};
+		return this.prismaService.playlist
+			.findFirstOrThrow<
+				Prisma.SelectSubset<
+					typeof args,
+					Prisma.PlaylistFindFirstOrThrowArgs
+				>
+			>(args)
+			.catch((error) => {
+				throw this.onNotFound(error, where);
+			});
+	}
+
+	async getMany(
+		where: PlaylistQueryParameters.ManyWhereInput,
+		sort?: PlaylistQueryParameters.SortingParameter,
+		pagination?: PaginationParameters,
+	) {
+		return this.prismaService.playlist.findMany({
+			where: PlaylistService.formatManyWhereInput(where),
+			orderBy: sort ? this.formatSortingInput(sort) : undefined,
+			...formatPaginationParameters(pagination),
+		});
 	}
 
 	onNotFound(
@@ -103,19 +116,10 @@ export default class PlaylistService extends RepositoryService<
 			}
 			return new PlaylistNotFoundException(where.slug);
 		}
-		return this.onUnknownError(error, where);
+		return new UnhandledORMErrorException(error, where);
 	}
 
-	formatCreateInput(
-		input: PlaylistQueryParameters.CreateInput,
-	): Prisma.PlaylistCreateInput {
-		return {
-			name: input.name,
-			slug: new Slug(input.name).toString(),
-		};
-	}
-
-	formatWhereInput(input: PlaylistQueryParameters.WhereInput) {
+	static formatWhereInput(input: PlaylistQueryParameters.WhereInput) {
 		return {
 			id: input.id,
 			slug: input.slug?.toString(),
@@ -125,17 +129,14 @@ export default class PlaylistService extends RepositoryService<
 	static formatIdentifierToWhereInput(
 		identifier: Identifier,
 	): PlaylistQueryParameters.WhereInput {
-		return RepositoryService.formatIdentifier(
-			identifier,
-			(stringIdentifier) => {
-				const [slug] = parseIdentifierSlugs(stringIdentifier, 1);
+		return formatIdentifier(identifier, (stringIdentifier) => {
+			const [slug] = parseIdentifierSlugs(stringIdentifier, 1);
 
-				return { slug };
-			},
-		);
+			return { slug };
+		});
 	}
 
-	formatManyWhereInput(
+	static formatManyWhereInput(
 		input: PlaylistQueryParameters.ManyWhereInput,
 	): Prisma.PlaylistWhereInput {
 		return {
@@ -184,42 +185,42 @@ export default class PlaylistService extends RepositoryService<
 		}
 	}
 
-	formatUpdateInput(
+	async update(
 		what: PlaylistQueryParameters.UpdateInput,
-	): Prisma.PlaylistUpdateInput {
-		return {
-			name: what.name,
-			slug: what.name ? new Slug(what.name).toString() : undefined,
-		};
-	}
-
-	async onUpdateFailure(
-		error: Error,
-		what: PlaylistQueryParameters.CreateInput,
 		where: PlaylistQueryParameters.WhereInput,
 	) {
-		const err = this.onCreationFailure(error, what);
-
-		if (err instanceof UnhandledORMErrorException) {
-			return this.onNotFound(error, where);
-		}
-		return err;
+		return this.prismaService.playlist
+			.update({
+				data: {
+					name: what.name,
+					slug: what.name
+						? new Slug(what.name).toString()
+						: undefined,
+				},
+				where: PlaylistService.formatWhereInput(where),
+			})
+			.catch((error) => {
+				if (error instanceof Prisma.PrismaClientKnownRequestError) {
+					if (error.code == PrismaError.UniqueConstraintViolation) {
+						throw new PlaylistAlreadyExistsException(what.name);
+					}
+				}
+				throw this.onNotFound(error, where);
+			});
 	}
 
-	formatDeleteInput(
-		where: PlaylistQueryParameters.DeleteInput,
-	): Prisma.PlaylistWhereUniqueInput {
-		return this.formatWhereInput(where);
-	}
-
-	protected formatDeleteInputToWhereInput(
-		input: PlaylistQueryParameters.DeleteInput,
-	) {
-		return input;
+	async delete(where: PlaylistQueryParameters.DeleteInput) {
+		return this.prismaService.playlist
+			.delete({
+				where: PlaylistService.formatWhereInput(where),
+			})
+			.catch((error) => {
+				throw this.onNotFound(error, where);
+			});
 	}
 
 	/**
-	 * Reorders a plyalist using list of entry ids
+	 * Reorders a playlist using list of entry ids
 	 * @param where the query parametrs to find the playlist
 	 * @param entryIds the list of entry ids of the playlist
 	 * The list must be complete
@@ -228,9 +229,11 @@ export default class PlaylistService extends RepositoryService<
 		where: PlaylistQueryParameters.WhereInput,
 		entryIds: number[],
 	) {
-		const playlist = await this.get(where, { entries: true });
-		const entries = playlist.entries;
-
+		const entries = await this.prismaService.playlistEntry.findMany({
+			where: {
+				playlist: PlaylistService.formatWhereInput(where),
+			},
+		});
 		const missingEntryIds = entries.filter(
 			({ id }) => entryIds.indexOf(id) == -1,
 		);
@@ -278,14 +281,11 @@ export default class PlaylistService extends RepositoryService<
 		song: SongQueryParameters.WhereInput,
 		playlist: PlaylistQueryParameters.WhereInput,
 	) {
-		await Promise.all([
-			this.songService.throwIfNotFound(song),
-			this.throwIfNotFound(playlist),
-		]);
+		await Promise.all([this.songService.get(song), this.get(playlist)]);
 
 		const lastEntry = await this.prismaService.playlistEntry
 			.findMany({
-				where: { playlist: this.formatWhereInput(playlist) },
+				where: { playlist: PlaylistService.formatWhereInput(playlist) },
 				orderBy: { index: "desc" },
 				take: 1,
 			})
@@ -294,7 +294,9 @@ export default class PlaylistService extends RepositoryService<
 		try {
 			await this.prismaService.playlistEntry.create({
 				data: {
-					playlist: { connect: this.formatWhereInput(playlist) },
+					playlist: {
+						connect: PlaylistService.formatWhereInput(playlist),
+					},
 					song: { connect: SongService.formatWhereInput(song) },
 					index: (lastEntry?.index ?? -1) + 1,
 				},
@@ -311,7 +313,7 @@ export default class PlaylistService extends RepositoryService<
 	 */
 	async flatten(where: PlaylistQueryParameters.WhereInput) {
 		const entries = await this.prismaService.playlistEntry.findMany({
-			where: { playlist: this.formatWhereInput(where) },
+			where: { playlist: PlaylistService.formatWhereInput(where) },
 			orderBy: { index: "asc" },
 		});
 

@@ -16,30 +16,19 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import {
-	InvalidRequestException,
-	NotFoundException,
-} from "src/exceptions/meelo-exception";
-import type Slug from "src/slug/slug";
+import { AlbumType } from "@prisma/client";
+import { ArtistModel } from "src/artist/models/artist.model";
+import { Release } from "src/prisma/models";
 
-export class GenreNotFoundException extends NotFoundException {
-	constructor(genreIdentifier: Slug | number) {
-		super(
-			typeof genreIdentifier == "number"
-				? `Genre with id '${genreIdentifier}' does not exist`
-				: `Genre '${genreIdentifier.toString()}' does not exist`,
-		);
-	}
-}
-
-export class GenreAlreadyExistsException extends NotFoundException {
-	constructor(genreSlug: Slug) {
-		super(`Genre '${genreSlug.toString()}' already exists`);
-	}
-}
-
-export class GenreNotEmptyException extends InvalidRequestException {
-	constructor(genreId: number) {
-		super(`Genre n°${genreId} could not be deleted: It has related songs`);
-	}
-}
+export type AlbumModel = {
+	id: number;
+	name: string;
+	slug: string;
+	releaseDate: Date | null;
+	registeredAt: Date;
+	masterId: number | null;
+	master?: Release | null;
+	type: AlbumType;
+	artistId: number | null;
+	artist?: ArtistModel | null;
+};

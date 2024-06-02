@@ -10,8 +10,8 @@ services:
     depends_on:
       db:
         condition: service_healthy
-      meilisearch:
-        condition: service_healthy
+      # meilisearch:
+      #   condition: service_healthy
     volumes:
       - ./server/src:/app/src
       - ./server/prisma:/app/prisma
@@ -58,11 +58,11 @@ services:
     environment:
       - MEILI_ENV=development
       - MEILI_MASTER_KEY=${MEILI_MASTER_KEY}
-    healthcheck:
-      test: ["CMD", "wget", "--no-verbose", "--spider", "http://localhost:7700/health"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
+    # healthcheck:
+    #   test: ["CMD", "wget", "--no-verbose", "--spider", "http://localhost:7700/health"]
+    #   interval: 10s
+    #   timeout: 5s
+    #   retries: 5
   db:
     image: postgres:alpine3.16
     healthcheck:

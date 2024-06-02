@@ -84,6 +84,7 @@ namespace ArtistQueryParameters {
 		"albums",
 		"songs",
 		"externalIds",
+		"illustration",
 	] as const;
 	export const AvailableAtomicIncludes = filterAtomicRelationInclude(
 		AvailableIncludes,

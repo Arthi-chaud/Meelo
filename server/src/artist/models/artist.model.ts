@@ -16,28 +16,12 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { InvalidRequestException } from "src/exceptions/meelo-exception";
+import ExternalId from "src/providers/models/external-id";
 
-export class MissingSortingFieldException extends InvalidRequestException {
-	constructor(availableKeys: readonly string[]) {
-		super(
-			`Sorting: Missing 'sortBy' parameter. Available values are: [${availableKeys}].`,
-		);
-	}
-}
-
-export class InvalidSortingFieldException extends InvalidRequestException {
-	constructor(availableKeys: readonly string[]) {
-		super(
-			`Sorting: Invalid 'sortBy' parameter. Available values are: [${availableKeys}].`,
-		);
-	}
-}
-
-export class InvalidSortingOrderException extends InvalidRequestException {
-	constructor(availableOrders: readonly string[]) {
-		super(
-			`Sorting: Invalid 'order' parameter. Available values are: [${availableOrders}].`,
-		);
-	}
-}
+export type ArtistModel = {
+	id: number;
+	name: string;
+	slug: string;
+	registeredAt: Date;
+	externalIds?: ExternalId[];
+};

@@ -17,11 +17,9 @@
  */
 
 import {
-	Body,
 	Controller,
 	Get,
 	Inject,
-	Post,
 	Put,
 	Query,
 	forwardRef,
@@ -31,7 +29,6 @@ import TrackQueryParameters from "./models/track.query-parameters";
 import TrackService from "./track.service";
 import { ApiOperation, ApiPropertyOptional, ApiTags } from "@nestjs/swagger";
 import { TrackType } from "@prisma/client";
-import ReassignTrackDTO from "./models/reassign-track.dto";
 import { TrackResponseBuilder } from "./models/track.response";
 import RelationIncludeQuery from "src/relation-include/relation-include-query.decorator";
 import Admin from "src/authentication/roles/admin.decorator";
@@ -123,9 +120,9 @@ export class TrackController {
 	) {
 		return this.trackService.getMany(
 			selector,
+			sort,
 			paginationParameters,
 			include,
-			sort,
 		);
 	}
 
@@ -171,21 +168,5 @@ export class TrackController {
 
 		await this.songService.setMasterTrack(where);
 		return track;
-	}
-
-	@ApiOperation({
-		summary: "Update the track",
-	})
-	@Admin()
-	@Response({ handler: TrackResponseBuilder })
-	@Post(":idOrSlug")
-	async reassignTrack(
-		@IdentifierParam(TrackService)
-		where: TrackQueryParameters.WhereInput,
-		@Body() reassignmentDTO: ReassignTrackDTO,
-	) {
-		return this.trackService.reassign(where, {
-			id: reassignmentDTO.songId,
-		});
 	}
 }

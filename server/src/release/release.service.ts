@@ -19,7 +19,7 @@
 import { Inject, Injectable, forwardRef } from "@nestjs/common";
 import AlbumService from "src/album/album.service";
 import Slug from "src/slug/slug";
-import type { Release, ReleaseWithRelations } from "src/prisma/models";
+import { Release } from "src/prisma/models";
 import { Prisma } from "@prisma/client";
 import {
 	MasterReleaseNotFoundException,
@@ -33,7 +33,6 @@ import PrismaService from "src/prisma/prisma.service";
 import type ReleaseQueryParameters from "./models/release.query-parameters";
 import type AlbumQueryParameters from "src/album/models/album.query-parameters";
 import TrackService from "src/track/track.service";
-import RepositoryService from "src/repository/repository.service";
 import { buildStringSearchParameters } from "src/utils/search-string-input";
 import ArtistService from "src/artist/artist.service";
 import FileService from "src/file/file.service";
@@ -50,23 +49,15 @@ import { PrismaError } from "prisma-error-enum";
 import IllustrationRepository from "src/illustration/illustration.repository";
 import DiscogsProvider from "src/providers/discogs/discogs.provider";
 import deepmerge from "deepmerge";
+import {
+	formatIdentifier,
+	formatPaginationParameters,
+} from "src/repository/repository.utils";
+import { UnhandledORMErrorException } from "src/exceptions/orm-exceptions";
+import { PaginationParameters } from "src/pagination/models/pagination-parameters";
 
 @Injectable()
-export default class ReleaseService extends RepositoryService<
-	ReleaseWithRelations,
-	ReleaseQueryParameters.CreateInput,
-	ReleaseQueryParameters.WhereInput,
-	ReleaseQueryParameters.ManyWhereInput,
-	ReleaseQueryParameters.UpdateInput,
-	ReleaseQueryParameters.DeleteInput,
-	ReleaseQueryParameters.SortingKeys,
-	Prisma.ReleaseCreateInput,
-	Prisma.ReleaseWhereInput,
-	Prisma.ReleaseWhereInput,
-	Prisma.ReleaseUpdateInput,
-	Prisma.ReleaseWhereUniqueInput,
-	Prisma.ReleaseOrderByWithRelationAndSearchRelevanceInput
-> {
+export default class ReleaseService {
 	private readonly logger = new Logger(ReleaseService.name);
 	constructor(
 		protected prismaService: PrismaService,
@@ -76,13 +67,7 @@ export default class ReleaseService extends RepositoryService<
 		private fileService: FileService,
 		private illustrationRepository: IllustrationRepository,
 		private discogsProvider: DiscogsProvider,
-	) {
-		super(prismaService, "release");
-	}
-
-	getTableName() {
-		return "releases";
-	}
+	) {}
 
 	/**
 	 * Create
@@ -91,67 +76,77 @@ export default class ReleaseService extends RepositoryService<
 		input: ReleaseQueryParameters.CreateInput,
 		include?: I | undefined,
 	) {
-		const release = await super.create(input, include);
+		const args = {
+			data: {
+				name: input.name,
+				registeredAt: input.registeredAt,
+				releaseDate: input.releaseDate,
+				extensions: input.extensions,
+				album: {
+					connect: AlbumService.formatWhereInput(input.album),
+				},
+				externalIds: input.discogsId
+					? {
+							create: {
+								provider: {
+									connect: {
+										name: this.discogsProvider.name,
+									},
+								},
+								value: input.discogsId,
+							},
+					  }
+					: undefined,
+				slug: new Slug(input.name, ...input.extensions).toString(),
+			},
+			include: include ?? ({} as I),
+		};
+		const release = await this.prismaService.release
+			.create<Prisma.SelectSubset<typeof args, Prisma.ReleaseCreateArgs>>(
+				args,
+			)
+			.catch(async (error) => {
+				if (error instanceof Prisma.PrismaClientKnownRequestError) {
+					const parentAlbum = await this.albumService.get(
+						input.album,
+						{
+							artist: true,
+						},
+					);
+
+					if (error.code == PrismaError.UniqueConstraintViolation) {
+						throw new ReleaseAlreadyExists(
+							new Slug(input.name),
+							parentAlbum.artist
+								? new Slug(parentAlbum.artist!.slug)
+								: undefined,
+						);
+					}
+				}
+				throw new UnhandledORMErrorException(error, input);
+			});
 
 		await this.albumService.updateAlbumDate({ id: release.albumId });
 		return release;
 	}
 
-	formatCreateInput(
-		release: ReleaseQueryParameters.CreateInput,
-	): Prisma.ReleaseCreateInput {
-		return {
-			name: release.name,
-			registeredAt: release.registeredAt,
-			releaseDate: release.releaseDate,
-			extensions: release.extensions,
-			album: {
-				connect: AlbumService.formatWhereInput(release.album),
-			},
-			externalIds: release.discogsId
-				? {
-						create: {
-							provider: {
-								connect: { name: this.discogsProvider.name },
-							},
-							value: release.discogsId,
-						},
-				  }
-				: undefined,
-			slug: new Slug(release.name, ...release.extensions).toString(),
-		};
-	}
-
-	protected formatCreateInputToWhereInput(
+	async getOrCreate<I extends ReleaseQueryParameters.RelationInclude = {}>(
 		input: ReleaseQueryParameters.CreateInput,
-	): ReleaseQueryParameters.WhereInput {
-		return {
-			bySlug: {
-				slug: new Slug(input.name, ...input.extensions),
-				album: input.album,
-			},
-		};
-	}
-
-	protected async onCreationFailure(
-		error: Error,
-		input: ReleaseQueryParameters.CreateInput,
+		include?: I,
 	) {
-		if (error instanceof Prisma.PrismaClientKnownRequestError) {
-			const parentAlbum = await this.albumService.get(input.album, {
-				artist: true,
-			});
-
-			if (error.code == PrismaError.UniqueConstraintViolation) {
-				return new ReleaseAlreadyExists(
-					new Slug(input.name),
-					parentAlbum.artist
-						? new Slug(parentAlbum.artist!.slug)
-						: undefined,
-				);
-			}
+		try {
+			return await this.get(
+				{
+					bySlug: {
+						slug: new Slug(input.name, ...input.extensions),
+						album: input.album,
+					},
+				},
+				include,
+			);
+		} catch {
+			return this.create(input, include);
 		}
-		return this.onUnknownError(error, input);
 	}
 
 	/**
@@ -167,7 +162,6 @@ export default class ReleaseService extends RepositoryService<
 		};
 	}
 
-	formatWhereInput = ReleaseService.formatWhereInput;
 	static formatManyWhereInput(where: ReleaseQueryParameters.ManyWhereInput) {
 		let query: Prisma.ReleaseWhereInput = {
 			name: buildStringSearchParameters(where.name),
@@ -203,33 +197,28 @@ export default class ReleaseService extends RepositoryService<
 		return query;
 	}
 
-	formatManyWhereInput = ReleaseService.formatManyWhereInput;
-
 	static formatIdentifierToWhereInput(
 		identifier: Identifier,
 	): ReleaseQueryParameters.WhereInput {
-		return RepositoryService.formatIdentifier(
-			identifier,
-			(stringIdentifier) => {
-				const slugs = parseIdentifierSlugs(stringIdentifier, 3);
+		return formatIdentifier(identifier, (stringIdentifier) => {
+			const slugs = parseIdentifierSlugs(stringIdentifier, 3);
 
-				return {
-					bySlug: {
-						slug: slugs[2],
-						album: {
-							bySlug: {
-								slug: slugs[1],
-								artist:
-									slugs[0].toString() ==
-									compilationAlbumArtistKeyword
-										? undefined
-										: { slug: slugs[0] },
-							},
+			return {
+				bySlug: {
+					slug: slugs[2],
+					album: {
+						bySlug: {
+							slug: slugs[1],
+							artist:
+								slugs[0].toString() ==
+								compilationAlbumArtistKeyword
+									? undefined
+									: { slug: slugs[0] },
 						},
 					},
-				};
-			},
-		);
+				},
+			};
+		});
 	}
 
 	formatSortingInput(
@@ -255,6 +244,45 @@ export default class ReleaseService extends RepositoryService<
 					[sortingParameter.sortBy ?? "id"]: sortingParameter.order,
 				};
 		}
+	}
+
+	async get<I extends ReleaseQueryParameters.RelationInclude = {}>(
+		where: ReleaseQueryParameters.WhereInput,
+		include?: I,
+	) {
+		const args = {
+			where: ReleaseService.formatWhereInput(where),
+			include: include ?? ({} as I),
+		};
+		return this.prismaService.release
+			.findFirstOrThrow<
+				Prisma.SelectSubset<
+					typeof args,
+					Prisma.ReleaseFindFirstOrThrowArgs
+				>
+			>(args)
+			.catch(async (error) => {
+				throw await this.onNotFound(error, where);
+			});
+	}
+
+	async getMany<I extends AlbumQueryParameters.RelationInclude = {}>(
+		where: ReleaseQueryParameters.ManyWhereInput,
+		sort?: ReleaseQueryParameters.SortingParameter,
+		pagination?: PaginationParameters,
+		include?: I,
+	) {
+		const args = {
+			include: include ?? ({} as I),
+			where: ReleaseService.formatManyWhereInput(where),
+			orderBy:
+				sort == undefined ? undefined : this.formatSortingInput(sort),
+			...formatPaginationParameters(pagination),
+		};
+		const releases = await this.prismaService.release.findMany<
+			Prisma.SelectSubset<typeof args, Prisma.ReleaseFindManyArgs>
+		>(args);
+		return releases;
 	}
 
 	/**
@@ -284,7 +312,7 @@ export default class ReleaseService extends RepositoryService<
 				parentArtistSlug,
 			);
 		}
-		return this.onUnknownError(error, where);
+		return new UnhandledORMErrorException(error, where);
 	}
 
 	/**
@@ -293,43 +321,32 @@ export default class ReleaseService extends RepositoryService<
 	 * @param include the relation to include in the returned objects
 	 * @returns
 	 */
-	async getMasterRelease(
+	async getMasterRelease<I extends ReleaseQueryParameters.RelationInclude>(
 		where: AlbumQueryParameters.WhereInput,
-		include?: ReleaseQueryParameters.RelationInclude,
+		include?: I,
 	) {
+		const args = {
+			where: { album: AlbumService.formatWhereInput(where) },
+			include: include ?? ({} as I),
+			orderBy: { id: "asc" as const },
+		};
 		return this.albumService.get(where).then(async (album) => {
 			if (album.masterId != null) {
 				return this.get({ id: album.masterId }, include);
 			}
 			return this.prismaService.release
-				.findFirstOrThrow({
-					where: { album: AlbumService.formatWhereInput(where) },
-					include: this.formatInclude(include),
-					orderBy: { id: "asc" },
-				})
+				.findFirstOrThrow<
+					Prisma.SelectSubset<
+						typeof args,
+						Prisma.ReleaseFindFirstOrThrowArgs
+					>
+				>(args)
 				.catch(() => {
 					throw new MasterReleaseNotFoundException(
 						new Slug(album.slug),
 					);
 				});
 		});
-	}
-
-	/**
-	 * Update
-	 */
-	formatUpdateInput(
-		what: ReleaseQueryParameters.UpdateInput,
-	): Prisma.ReleaseUpdateInput {
-		return {
-			...what,
-			album: what.album
-				? {
-						connect: AlbumService.formatWhereInput(what.album),
-				  }
-				: undefined,
-			slug: what.name ? new Slug(what.name).toString() : undefined,
-		};
 	}
 
 	/**
@@ -341,23 +358,29 @@ export default class ReleaseService extends RepositoryService<
 		what: ReleaseQueryParameters.UpdateInput,
 		where: ReleaseQueryParameters.WhereInput,
 	) {
-		const updatedRelease = await super.update(what, where);
+		const updatedRelease = await this.prismaService.release
+			.update({
+				data: {
+					...what,
+					album: what.album
+						? {
+								connect: AlbumService.formatWhereInput(
+									what.album,
+								),
+						  }
+						: undefined,
+					slug: what.name
+						? new Slug(what.name).toString()
+						: undefined,
+				},
+				where: ReleaseService.formatWhereInput(where),
+			})
+			.catch(async (error) => {
+				throw await this.onNotFound(error, where);
+			});
 
 		await this.albumService.updateAlbumDate({ id: updatedRelease.albumId });
 		return updatedRelease;
-	}
-
-	/**
-	 * Delete
-	 */
-	formatDeleteInput(where: ReleaseQueryParameters.DeleteInput) {
-		return this.formatWhereInput(where);
-	}
-
-	protected formatDeleteInputToWhereInput(
-		input: ReleaseQueryParameters.DeleteInput,
-	) {
-		return input;
 	}
 
 	/**
@@ -369,20 +392,23 @@ export default class ReleaseService extends RepositoryService<
 		await this.illustrationRepository.deleteReleaseIllustration(where, {
 			withFolder: true,
 		});
-		return super.delete(where).then((deleted) => {
-			this.logger.warn(`Release '${deleted.slug}' deleted`);
-			return deleted;
-		});
-	}
-
-	onDeletionFailure(error: Error, input: ReleaseQueryParameters.DeleteInput) {
-		if (
-			error instanceof Prisma.PrismaClientKnownRequestError &&
-			error.code == PrismaError.ForeignConstraintViolation
-		) {
-			return new ReleaseNotEmptyException(input.id);
-		}
-		return super.onDeletionFailure(error, input);
+		return this.prismaService.release
+			.delete({
+				where: ReleaseService.formatWhereInput(where),
+			})
+			.then((deleted) => {
+				this.logger.warn(`Release '${deleted.slug}' deleted`);
+				return deleted;
+			})
+			.catch((error) => {
+				if (
+					error instanceof Prisma.PrismaClientKnownRequestError &&
+					error.code == PrismaError.ForeignConstraintViolation
+				) {
+					throw new ReleaseNotEmptyException(where.id);
+				}
+				throw new UnhandledORMErrorException(error, where);
+			});
 	}
 
 	/**
@@ -405,57 +431,10 @@ export default class ReleaseService extends RepositoryService<
 		await Promise.all(emptyReleases.map(({ id }) => this.delete({ id })));
 	}
 
-	/**
-	 * Reassign a release to an album
-	 * @param releaseWhere the query parameters to find the release to reassign
-	 * @param albumWhere the query parameters to find the album to reassign the release to
-	 */
-	async reassign(
-		releaseWhere: ReleaseQueryParameters.WhereInput,
-		albumWhere: AlbumQueryParameters.WhereInput,
-	): Promise<Release> {
-		const release = await this.get(releaseWhere);
-		const oldAlbum = await this.albumService.get(
-			{ id: release.albumId },
-			{ artist: true },
-		);
-		const newParent = await this.albumService.get(albumWhere, {
-			releases: true,
-			artist: true,
-		});
-
-		if (
-			newParent.releases.find(
-				(newParentRelease) => newParentRelease.slug == release.slug,
-			)
-		) {
-			throw new ReleaseAlreadyExists(
-				new Slug(release.slug),
-				newParent.artist ? new Slug(newParent.artist.slug) : undefined,
-			);
-		}
-		if (oldAlbum.masterId == release.id) {
-			await this.albumService.unsetMasterRelease(releaseWhere);
-		}
-		const updatedRelease = await this.update(
-			{ album: albumWhere },
-			releaseWhere,
-		);
-
-		this.illustrationRepository.reassignReleaseIllustration(
-			release.slug,
-			oldAlbum.slug,
-			newParent.slug,
-			oldAlbum.artist?.slug ?? undefined,
-			newParent.artist?.slug ?? undefined,
-		);
-		return updatedRelease;
-	}
-
 	async pipeArchive(where: ReleaseQueryParameters.WhereInput, res: Response) {
 		const release = await this.prismaService.release
 			.findFirstOrThrow({
-				where: this.formatWhereInput(where),
+				where: ReleaseService.formatWhereInput(where),
 				include: { tracks: true, album: { include: { artist: true } } },
 			})
 			.catch(async (err) => {

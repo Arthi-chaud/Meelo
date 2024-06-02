@@ -37,7 +37,7 @@ namespace GenreQueryParameters {
 	 * Query parameters to find one genre
 	 */
 	export type WhereInput = RequireExactlyOne<{
-		id: Genre["id"];
+		id: number;
 		slug: Slug;
 	}>;
 

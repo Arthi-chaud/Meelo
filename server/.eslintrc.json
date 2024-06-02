@@ -18,17 +18,14 @@
 		"src/prisma/models"
 	],
 	"rules": {
+		"@typescript-eslint/ban-types": "off",
+		"unused-imports/no-unused-imports": "error",
 		"no-restricted-imports": [
 			"error",
 			{
 				"name": "@nestjs/common",
 				"importNames": ["Logger"],
 				"message": "Use Custom Logger to inject from 'src/logger/logger'"
-			},
-			{
-				"name": "src/exceptions/orm-exceptions",
-				"importNames": ["UnhandledORMErrorException"],
-				"message": "If used in a RepositoryService, use 'onUnknownError' instead. Otherwise ignore"
 			},
 			{
 				"name": "fluent-ffmpeg",

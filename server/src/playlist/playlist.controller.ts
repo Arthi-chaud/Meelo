@@ -87,9 +87,8 @@ export default class PlaylistController {
 	) {
 		return this.playlistService.getMany(
 			selector,
-			paginationParameters,
-			{},
 			sort,
+			paginationParameters,
 		);
 	}
 

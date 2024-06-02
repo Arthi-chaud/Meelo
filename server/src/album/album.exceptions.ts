@@ -40,18 +40,14 @@ export class AlbumNotFoundFromIDException extends NotFoundException {
 }
 
 export class AlbumAlreadyExistsException extends AlreadyExistsException {
-	constructor(albumSlug: Slug, artistSlug?: Slug) {
+	constructor(albumSlug: Slug, artistIdentifier?: Slug | number) {
 		super(
 			`${albumSlug.toString()} ${
-				artistSlug ? `by ${artistSlug.toString()}` : ""
+				artistIdentifier
+					? `by artist ${artistIdentifier.toString()}`
+					: "by compilation artist"
 			} already exists`,
 		);
-	}
-}
-
-export class AlbumAlreadyExistsWithArtistIDException extends AlreadyExistsException {
-	constructor(albumSlug: Slug, artistId: number) {
-		super(`${albumSlug.toString()} by artist n°${artistId} already exists`);
 	}
 }
 

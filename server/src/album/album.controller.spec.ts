@@ -22,7 +22,6 @@ import AlbumService from "./album.service";
 import {
 	expectedAlbumResponse,
 	expectedArtistResponse,
-	expectedReleaseResponse,
 } from "test/expected-responses";
 import ProviderService from "src/providers/provider.service";
 import SettingsService from "src/settings/settings.service";
@@ -33,12 +32,8 @@ jest.setTimeout(60000);
 describe("Album Controller", () => {
 	let dummyRepository: TestPrismaService;
 	let app: INestApplication;
-	let albumService: AlbumService;
 	let providerService: ProviderService;
 	let module: TestingModule;
-	let album1: Album;
-	let album2: Album;
-	let album3: Album;
 	beforeAll(async () => {
 		module = await createTestingModule({
 			imports: [
@@ -61,7 +56,6 @@ describe("Album Controller", () => {
 			.compile();
 		app = await SetupApp(module);
 		dummyRepository = module.get(PrismaService);
-		albumService = module.get(AlbumService);
 		await dummyRepository.onModuleInit();
 		providerService = module.get(ProviderService);
 		module.get(SettingsService).loadFromFile();
@@ -492,7 +486,6 @@ describe("Album Controller", () => {
 					`/albums/compilations+${dummyRepository.compilationAlbumA.slug}`,
 				)
 				.send({
-					artistId: dummyRepository.artistB.id,
 					type: "RemixAlbum",
 				})
 				.expect(201)
@@ -502,7 +495,6 @@ describe("Album Controller", () => {
 						...expectedAlbumResponse(
 							dummyRepository.compilationAlbumA,
 						),
-						artistId: dummyRepository.artistB.id,
 						type: "RemixAlbum",
 					});
 				});

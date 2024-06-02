@@ -13,17 +13,12 @@ import {
 	SongNotFoundByIdException,
 	SongNotFoundException,
 } from "./song.exceptions";
-import {
-	ArtistNotFoundByIDException,
-	ArtistNotFoundException,
-} from "src/artist/artist.exceptions";
+import { ArtistNotFoundException } from "src/artist/artist.exceptions";
 import TrackModule from "src/track/track.module";
 import AlbumModule from "src/album/album.module";
 import IllustrationModule from "src/illustration/illustration.module";
 import GenreModule from "src/genre/genre.module";
-import { GenreNotFoundByIdException } from "src/genre/genre.exceptions";
 import TestPrismaService from "test/test-prisma.service";
-import type SongQueryParameters from "./models/song.query-params";
 import { LyricsModule } from "src/lyrics/lyrics.module";
 import { LyricsService } from "src/lyrics/lyrics.service";
 import { LyricsNotFoundByIDException } from "src/lyrics/lyrics.exceptions";
@@ -31,6 +26,7 @@ import ReleaseModule from "src/release/release.module";
 import { Artist, SongType } from "@prisma/client";
 import ScannerModule from "src/scanner/scanner.module";
 import SongModule from "./song.module";
+import { GenreNotFoundException } from "src/genre/genre.exceptions";
 
 describe("Song Service", () => {
 	let songService: SongService;
@@ -126,7 +122,7 @@ describe("Song Service", () => {
 					},
 				});
 
-			return expect(test()).rejects.toThrow(ArtistNotFoundByIDException);
+			return expect(test()).rejects.toThrow(ArtistNotFoundException);
 		});
 
 		it("should throw, as the genre does not exist a new song", async () => {
@@ -143,7 +139,7 @@ describe("Song Service", () => {
 					},
 				});
 
-			return expect(test()).rejects.toThrow(GenreNotFoundByIdException);
+			return expect(test()).rejects.toThrow(GenreNotFoundException);
 		});
 
 		it("should throw, as the parent artist does not exist (by slug)", async () => {
@@ -195,29 +191,6 @@ describe("Song Service", () => {
 			});
 		});
 
-		it("should return an existing song, without only its id and slug", async () => {
-			const song = await songService.select(
-				{ id: dummyRepository.songA1.id },
-				{ slug: true, id: true },
-			);
-			expect(song).toStrictEqual({
-				id: dummyRepository.songA1.id,
-				slug: dummyRepository.songA1.slug,
-			});
-		});
-
-		it("should throw, as the song does not exist (on select)", async () => {
-			const test = async () =>
-				await songService.select(
-					{
-						id: -1,
-					},
-					{ id: true },
-				);
-
-			return expect(test()).rejects.toThrow(SongNotFoundByIdException);
-		});
-
 		it("should throw, as the song does not exist (by Id)", async () => {
 			const test = async () =>
 				await songService.get({
@@ -245,14 +218,14 @@ describe("Song Service", () => {
 					bySlug: { slug: new Slug("My Slug"), artist: { id: -1 } },
 				});
 
-			return expect(test()).rejects.toThrow(ArtistNotFoundByIDException);
+			return expect(test()).rejects.toThrow(ArtistNotFoundException);
 		});
 	});
 
 	describe("Get Multiple Songs", () => {
 		it("should shuffle songs", async () => {
-			const sort1 = await songService.getMany({}, { take: 10 }, {}, 123);
-			const sort2 = await songService.getMany({}, { take: 10 }, {}, 1234);
+			const sort1 = await songService.getMany({}, 123, { take: 10 }, {});
+			const sort2 = await songService.getMany({}, 1234, { take: 10 }, {});
 			expect(sort1.length).toBe(sort2.length);
 			expect(sort1).toContainEqual(dummyRepository.songB1);
 			expect(sort1.map(({ id }) => id)).not.toBe(
@@ -295,9 +268,9 @@ describe("Song Service", () => {
 				{
 					artist: { id: dummyRepository.artistA.id },
 				},
-				{},
-				{},
 				{ sortBy: "name", order: "desc" },
+				{},
+				{},
 			);
 
 			expect(songs.length).toBe(3);
@@ -332,32 +305,6 @@ describe("Song Service", () => {
 
 			expect(songs.length).toBe(1);
 			expect(songs[0]).toStrictEqual(newSong);
-		});
-	});
-
-	describe("Count Songs", () => {
-		it("should get the number of song by the artist (3 expected)", async () => {
-			const songCount = await songService.count({
-				artist: { id: dummyRepository.artistA.id },
-			});
-
-			expect(songCount).toBe(3);
-		});
-
-		it("should get the number of song by the artist (& expected)", async () => {
-			const songCount = await songService.count({
-				artist: { id: dummyRepository.artistB.id },
-			});
-
-			expect(songCount).toBe(1);
-		});
-
-		it("should get the number of song with name equal", async () => {
-			const songCount = await songService.count({
-				name: { is: "My Other Song" },
-			});
-
-			expect(songCount).toBe(1);
 		});
 	});
 
@@ -422,7 +369,7 @@ describe("Song Service", () => {
 						},
 					},
 				);
-			return expect(test()).rejects.toThrow(ArtistNotFoundByIDException);
+			return expect(test()).rejects.toThrow(ArtistNotFoundException);
 		});
 
 		it("should throw as the song does not exist", async () => {
@@ -450,7 +397,7 @@ describe("Song Service", () => {
 						},
 					},
 				);
-			return expect(test()).rejects.toThrow(GenreNotFoundByIdException);
+			return expect(test()).rejects.toThrow(GenreNotFoundException);
 		});
 	});
 
@@ -579,7 +526,7 @@ describe("Song Service", () => {
 					slug: new Slug(dummyRepository.artistA.name, "1234"),
 				},
 			});
-			const tmpLyrics = await lyricsService.create({
+			const tmpLyrics = await lyricsService.createOrUpdate({
 				content: "1234",
 				songId: tmpSong.id,
 			});
@@ -587,9 +534,9 @@ describe("Song Service", () => {
 			const test = async () => await songService.get({ id: tmpSong.id });
 			await expect(test()).rejects.toThrow(SongNotFoundByIdException);
 			const testLyrics = async () =>
-				await lyricsService.get({ id: tmpLyrics.id });
+				await lyricsService.get({ songId: tmpSong.id });
 			return expect(testLyrics()).rejects.toThrow(
-				LyricsNotFoundByIDException,
+				SongNotFoundByIdException,
 			);
 		});
 	});
@@ -600,7 +547,9 @@ describe("Song Service", () => {
 		let baseSong: Song;
 		let songWithFeaturing: Song;
 		it("should create a song without featuring", async () => {
-			mainArtist = await artistService.create({ name: "Katy Perry" });
+			mainArtist = await artistService.getOrCreate({
+				name: "Katy Perry",
+			});
 			baseSong = await songService.create({
 				name: "E.T.",
 				artist: { id: mainArtist.id },
@@ -611,7 +560,9 @@ describe("Song Service", () => {
 			});
 		});
 		it("should create a song with featuring", async () => {
-			featuredArtist = await artistService.create({ name: "Kanye West" });
+			featuredArtist = await artistService.getOrCreate({
+				name: "Kanye West",
+			});
 			songWithFeaturing = await songService.getOrCreate({
 				name: "E.T.",
 				artist: { id: mainArtist.id },
