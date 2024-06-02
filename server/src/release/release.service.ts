@@ -19,7 +19,7 @@
 import { Inject, Injectable, forwardRef } from "@nestjs/common";
 import AlbumService from "src/album/album.service";
 import Slug from "src/slug/slug";
-import { Release, ReleaseWithRelations } from "src/prisma/models";
+import { Release } from "src/prisma/models";
 import { Prisma } from "@prisma/client";
 import {
 	MasterReleaseNotFoundException,
@@ -33,7 +33,6 @@ import PrismaService from "src/prisma/prisma.service";
 import type ReleaseQueryParameters from "./models/release.query-parameters";
 import type AlbumQueryParameters from "src/album/models/album.query-parameters";
 import TrackService from "src/track/track.service";
-import RepositoryService from "src/repository/repository.service";
 import { buildStringSearchParameters } from "src/utils/search-string-input";
 import ArtistService from "src/artist/artist.service";
 import FileService from "src/file/file.service";
@@ -52,6 +51,7 @@ import DiscogsProvider from "src/providers/discogs/discogs.provider";
 import deepmerge from "deepmerge";
 import { formatIdentifier } from "src/repository/repository.utils";
 import { UnhandledORMErrorException } from "src/exceptions/orm-exceptions";
+import { PaginationParameters } from "src/pagination/models/pagination-parameters";
 
 @Injectable()
 export default class ReleaseService {
@@ -263,6 +263,31 @@ export default class ReleaseService {
 			});
 	}
 
+	async getMany<I extends AlbumQueryParameters.RelationInclude = {}>(
+		where: ReleaseQueryParameters.ManyWhereInput,
+		sort?: ReleaseQueryParameters.SortingParameter,
+		pagination?: PaginationParameters,
+		include?: I,
+	) {
+		const args = {
+			include: include ?? ({} as I),
+			where: ReleaseService.formatManyWhereInput(where),
+			take: pagination?.take,
+			skip: pagination?.skip,
+			cursor: pagination?.afterId
+				? {
+						id: pagination?.afterId,
+				  }
+				: undefined,
+			orderBy:
+				sort == undefined ? undefined : this.formatSortingInput(sort),
+		};
+		const releases = await this.prismaService.release.findMany<
+			Prisma.SelectSubset<typeof args, Prisma.ReleaseFindManyArgs>
+		>(args);
+		return releases;
+	}
+
 	/**
 	 * Callback on release not found
 	 * @param where the query parameters that failed to get the release
@@ -314,7 +339,7 @@ export default class ReleaseService {
 			}
 			return this.prismaService.release
 				.findFirstOrThrow<
-					Prisma.Subset<
+					Prisma.SelectSubset<
 						typeof args,
 						Prisma.ReleaseFindFirstOrThrowArgs
 					>

@@ -105,7 +105,7 @@ export default class AlbumService extends SearchableRepositoryService {
 				throw new AlbumAlreadyExistsException(new Slug(album.name));
 			}
 		}
-		return await this.prismaService.album
+		return this.prismaService.album
 			.create({
 				data: {
 					name: album.name,
@@ -122,15 +122,15 @@ export default class AlbumService extends SearchableRepositoryService {
 					type: this.parserService.getAlbumType(album.name),
 				},
 			})
-			.then((album) => {
+			.then((created) => {
 				this.meiliSearch.index(this.indexName).addDocuments([
 					{
-						id: album.id,
-						slug: album.slug,
-						name: album.name,
+						id: created.id,
+						slug: created.slug,
+						name: created.name,
 					},
 				]);
-				return album;
+				return created;
 			})
 			.catch(async (error) => {
 				if (error instanceof Prisma.PrismaClientKnownRequestError) {

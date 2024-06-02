@@ -191,29 +191,6 @@ describe("Song Service", () => {
 			});
 		});
 
-		it("should return an existing song, without only its id and slug", async () => {
-			const song = await songService.select(
-				{ id: dummyRepository.songA1.id },
-				{ slug: true, id: true },
-			);
-			expect(song).toStrictEqual({
-				id: dummyRepository.songA1.id,
-				slug: dummyRepository.songA1.slug,
-			});
-		});
-
-		it("should throw, as the song does not exist (on select)", async () => {
-			const test = async () =>
-				await songService.select(
-					{
-						id: -1,
-					},
-					{ id: true },
-				);
-
-			return expect(test()).rejects.toThrow(SongNotFoundByIdException);
-		});
-
 		it("should throw, as the song does not exist (by Id)", async () => {
 			const test = async () =>
 				await songService.get({
@@ -247,8 +224,8 @@ describe("Song Service", () => {
 
 	describe("Get Multiple Songs", () => {
 		it("should shuffle songs", async () => {
-			const sort1 = await songService.getMany({}, { take: 10 }, {}, 123);
-			const sort2 = await songService.getMany({}, { take: 10 }, {}, 1234);
+			const sort1 = await songService.getMany({}, 123, { take: 10 }, {});
+			const sort2 = await songService.getMany({}, 1234, { take: 10 }, {});
 			expect(sort1.length).toBe(sort2.length);
 			expect(sort1).toContainEqual(dummyRepository.songB1);
 			expect(sort1.map(({ id }) => id)).not.toBe(
@@ -291,9 +268,9 @@ describe("Song Service", () => {
 				{
 					artist: { id: dummyRepository.artistA.id },
 				},
-				{},
-				{},
 				{ sortBy: "name", order: "desc" },
+				{},
+				{},
 			);
 
 			expect(songs.length).toBe(3);
@@ -328,32 +305,6 @@ describe("Song Service", () => {
 
 			expect(songs.length).toBe(1);
 			expect(songs[0]).toStrictEqual(newSong);
-		});
-	});
-
-	describe("Count Songs", () => {
-		it("should get the number of song by the artist (3 expected)", async () => {
-			const songCount = await songService.count({
-				artist: { id: dummyRepository.artistA.id },
-			});
-
-			expect(songCount).toBe(3);
-		});
-
-		it("should get the number of song by the artist (& expected)", async () => {
-			const songCount = await songService.count({
-				artist: { id: dummyRepository.artistB.id },
-			});
-
-			expect(songCount).toBe(1);
-		});
-
-		it("should get the number of song with name equal", async () => {
-			const songCount = await songService.count({
-				name: { is: "My Other Song" },
-			});
-
-			expect(songCount).toBe(1);
 		});
 	});
 

@@ -156,31 +156,13 @@ describe("Release Service", () => {
 				dummyRepository.compilationReleaseA1,
 			);
 		});
-		it("should shuffle release", async () => {
-			const sort1 = await releaseService.getMany(
-				{},
-				{ take: 10 },
-				{},
-				123,
-			);
-			const sort2 = await releaseService.getMany(
-				{},
-				{ take: 10 },
-				{},
-				1234,
-			);
-			expect(sort1.length).toBe(sort2.length);
-			expect(sort1).toContainEqual(dummyRepository.releaseB1_1);
-			expect(sort1.map(({ id }) => id)).not.toBe(
-				sort2.map(({ id }) => id),
-			);
-		});
+
 		it("should get the releases, sorted by name", async () => {
 			const releases = await releaseService.getMany(
 				{},
-				{},
-				{},
 				{ sortBy: "name", order: "asc" },
+				{},
+				{},
 			);
 			expect(releases.length).toBe(6);
 			expect(releases[0]).toStrictEqual(dummyRepository.releaseA1_1);
@@ -226,25 +208,6 @@ describe("Release Service", () => {
 				},
 			});
 			expect(fetchedRelease).toStrictEqual(newCompilationRelease);
-		});
-
-		it("should return an existing release, without only its id and slug", async () => {
-			const release = await releaseService.select(
-				{ id: dummyRepository.releaseB1_1.id },
-				{ slug: true, id: true },
-			);
-			expect(release).toStrictEqual({
-				id: dummyRepository.releaseB1_1.id,
-				slug: dummyRepository.releaseB1_1.slug,
-			});
-		});
-
-		it("should throw, as the release does not exist", async () => {
-			const test = () =>
-				releaseService.select({ id: -1 }, { slug: true, id: true });
-			return expect(test()).rejects.toThrow(
-				ReleaseNotFoundFromIDException,
-			);
 		});
 
 		it("should throw, as the release does not exists", async () => {

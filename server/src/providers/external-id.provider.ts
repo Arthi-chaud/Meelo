@@ -146,7 +146,7 @@ export default class ExternalIdService {
 					.flat()
 					.map((genre) => ({
 						name: genre!,
-						slug: new Slug(genre!).toString()
+						slug: new Slug(genre!).toString(),
 					}));
 
 				if (

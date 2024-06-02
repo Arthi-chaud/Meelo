@@ -55,8 +55,9 @@ import ReleaseService from "src/release/release.service";
 import { SongType, User } from "@prisma/client";
 import UpdateSongDTO from "./models/update-song.dto";
 import SongGroupQueryParameters from "./models/song-group.query-params";
-import SongGroupService from "./song-group.service";
 import { LyricsResponse } from "src/lyrics/models/lyrics.response";
+import { formatIdentifier } from "src/repository/repository.utils";
+import Slug from "src/slug/slug";
 
 export class Selector {
 	@IsEnum(SongType)
@@ -99,7 +100,14 @@ export class Selector {
 	@ApiPropertyOptional({
 		description: "Get related songs ",
 	})
-	@TransformIdentifier(SongGroupService)
+	@TransformIdentifier({
+		formatIdentifierToWhereInput: (identifier) =>
+			formatIdentifier<SongGroupQueryParameters.WhereInput>(
+				identifier,
+				(id: string) => ({ slug: new Slug(id) }),
+				(id: number) => ({ id: id }),
+			),
+	})
 	group?: SongGroupQueryParameters.WhereInput;
 
 	@IsOptional()
@@ -167,7 +175,6 @@ export class SongController {
 				selector,
 				paginationParameters,
 				include,
-				sort,
 			);
 		} else if (sort.sortBy == "userPlayCount") {
 			return this.songService.getManyByPlayCount(
@@ -187,9 +194,9 @@ export class SongController {
 		}
 		return this.songService.getMany(
 			selector,
+			sort,
 			paginationParameters,
 			include,
-			selector.random || sort,
 		);
 	}
 
@@ -263,7 +270,7 @@ export class SongController {
 	): Promise<LyricsResponse> {
 		const song = await this.songService.get(where);
 
-		return await this.lyricsService
+		return this.lyricsService
 			.createOrUpdate({
 				content: updateLyricsDto.lyrics,
 				songId: song.id,

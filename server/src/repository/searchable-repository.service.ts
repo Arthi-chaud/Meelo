@@ -17,7 +17,6 @@
  */
 
 import MeiliSearch from "meilisearch";
-import PaginatedResponse from "src/pagination/models/paginated-response";
 import { PaginationParameters } from "src/pagination/models/pagination-parameters";
 
 /// Base functions for a Repository that integrates Meilisearch

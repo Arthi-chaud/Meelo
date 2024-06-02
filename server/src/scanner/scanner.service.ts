@@ -136,7 +136,6 @@ export default class ScannerService {
 				registeredAt: file.registerDate,
 			},
 			{
-				tracks: true,
 				genres: true,
 			},
 		);

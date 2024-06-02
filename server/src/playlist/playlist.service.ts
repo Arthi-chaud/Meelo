@@ -17,7 +17,6 @@
  */
 
 import { Inject, Injectable, forwardRef } from "@nestjs/common";
-import RepositoryService from "src/repository/repository.service";
 import PlaylistQueryParameters from "./models/playlist.query-parameters";
 import { Prisma } from "@prisma/client";
 import Slug from "src/slug/slug";
@@ -39,7 +38,6 @@ import { parseIdentifierSlugs } from "src/identifier/identifier.parse-slugs";
 // eslint-disable-next-line no-restricted-imports
 import { UnhandledORMErrorException } from "src/exceptions/orm-exceptions";
 import AlbumService from "src/album/album.service";
-import PaginatedResponse from "src/pagination/models/paginated-response";
 import { PaginationParameters } from "src/pagination/models/pagination-parameters";
 import { formatIdentifier } from "src/repository/repository.utils";
 
@@ -134,14 +132,11 @@ export default class PlaylistService {
 	static formatIdentifierToWhereInput(
 		identifier: Identifier,
 	): PlaylistQueryParameters.WhereInput {
-		return formatIdentifier(
-			identifier,
-			(stringIdentifier) => {
-				const [slug] = parseIdentifierSlugs(stringIdentifier, 1);
+		return formatIdentifier(identifier, (stringIdentifier) => {
+			const [slug] = parseIdentifierSlugs(stringIdentifier, 1);
 
-				return { slug };
-			},
-		);
+			return { slug };
+		});
 	}
 
 	static formatManyWhereInput(
@@ -289,10 +284,7 @@ export default class PlaylistService {
 		song: SongQueryParameters.WhereInput,
 		playlist: PlaylistQueryParameters.WhereInput,
 	) {
-		await Promise.all([
-			this.songService.throwIfNotFound(song),
-			this.get(playlist),
-		]);
+		await Promise.all([this.songService.get(song), this.get(playlist)]);
 
 		const lastEntry = await this.prismaService.playlistEntry
 			.findMany({

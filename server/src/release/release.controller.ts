@@ -17,13 +17,11 @@
  */
 
 import {
-	Body,
 	Controller,
 	DefaultValuePipe,
 	Get,
 	Inject,
 	ParseBoolPipe,
-	Post,
 	Put,
 	Query,
 	Res,
@@ -37,7 +35,6 @@ import AlbumService from "src/album/album.service";
 import AlbumQueryParameters from "src/album/models/album.query-parameters";
 import type { Response as ExpressResponse } from "express";
 import { ApiOperation, ApiPropertyOptional, ApiTags } from "@nestjs/swagger";
-import ReassignReleaseDTO from "./models/reassign-release.dto";
 import { TrackResponseBuilder } from "src/track/models/track.response";
 import RelationIncludeQuery from "src/relation-include/relation-include-query.decorator";
 import Admin from "src/authentication/roles/admin.decorator";
@@ -97,9 +94,9 @@ export default class ReleaseController {
 	) {
 		return this.releaseService.getMany(
 			selector,
+			sort,
 			paginationParameters,
 			include,
-			sort,
 		);
 	}
 
