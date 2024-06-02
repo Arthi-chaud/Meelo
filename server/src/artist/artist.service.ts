@@ -43,8 +43,10 @@ import MeiliSearch from "meilisearch";
 import { InjectMeiliSearch } from "nestjs-meilisearch";
 import { UnhandledORMErrorException } from "src/exceptions/orm-exceptions";
 import { PaginationParameters } from "src/pagination/models/pagination-parameters";
-import { ArtistModel } from "./models/artist.model";
-import { formatIdentifier } from "src/repository/repository.utils";
+import {
+	formatIdentifier,
+	formatPaginationParameters,
+} from "src/repository/repository.utils";
 
 @Injectable()
 export default class ArtistService extends SearchableRepositoryService {
@@ -107,14 +109,8 @@ export default class ArtistService extends SearchableRepositoryService {
 		const args = {
 			include: include ?? ({} as I),
 			where: ArtistService.formatManyWhereInput(where),
-			take: pagination.take,
-			skip: pagination.skip,
-			cursor: pagination.afterId
-				? {
-						id: pagination.afterId,
-				  }
-				: undefined,
 			orderBy: this.formatSortingInput(sort),
+			...formatPaginationParameters(pagination),
 		};
 		const artists = await this.prismaService.artist.findMany<
 			Prisma.SelectSubset<typeof args, Prisma.ArtistFindManyArgs>

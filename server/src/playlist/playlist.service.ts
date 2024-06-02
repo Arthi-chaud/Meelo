@@ -39,7 +39,10 @@ import { parseIdentifierSlugs } from "src/identifier/identifier.parse-slugs";
 import { UnhandledORMErrorException } from "src/exceptions/orm-exceptions";
 import AlbumService from "src/album/album.service";
 import { PaginationParameters } from "src/pagination/models/pagination-parameters";
-import { formatIdentifier } from "src/repository/repository.utils";
+import {
+	formatIdentifier,
+	formatPaginationParameters,
+} from "src/repository/repository.utils";
 
 @Injectable()
 export default class PlaylistService {
@@ -95,14 +98,8 @@ export default class PlaylistService {
 	) {
 		return this.prismaService.playlist.findMany({
 			where: PlaylistService.formatManyWhereInput(where),
-			take: pagination?.take,
-			skip: pagination?.skip,
 			orderBy: sort ? this.formatSortingInput(sort) : undefined,
-			cursor: pagination?.afterId
-				? {
-						id: pagination?.afterId,
-				  }
-				: undefined,
+			...formatPaginationParameters(pagination),
 		});
 	}
 

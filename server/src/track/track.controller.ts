@@ -120,9 +120,9 @@ export class TrackController {
 	) {
 		return this.trackService.getMany(
 			selector,
+			sort,
 			paginationParameters,
 			include,
-			sort,
 		);
 	}
 

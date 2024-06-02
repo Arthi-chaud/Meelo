@@ -17,18 +17,14 @@
  */
 
 import { Inject, Injectable, forwardRef } from "@nestjs/common";
-import type { LyricsWithRelations } from "src/prisma/models";
 import PrismaService from "src/prisma/prisma.service";
-import RepositoryService from "src/repository/repository.service";
 import SongService from "src/song/song.service";
 import {
 	LyricsAlreadyExistsExceptions,
-	LyricsNotFoundByIDException,
 	LyricsNotFoundBySongException,
 } from "./lyrics.exceptions";
 import type LyricsQueryParameters from "./models/lyrics.query-parameters";
-import { Lyrics, Prisma } from "@prisma/client";
-import Identifier from "src/identifier/models/identifier";
+import { Prisma } from "@prisma/client";
 import { PrismaError } from "prisma-error-enum";
 import Slug from "src/slug/slug";
 import ProviderService from "src/providers/provider.service";
@@ -115,15 +111,17 @@ export class LyricsService {
 					songId: where.songId,
 				},
 			})
-			.then(() => {
+			.then((res) => {
 				this.meiliSearch
 					.index(this.songService.getTableName())
 					.updateDocuments([{ id: where.songId, lyrics: null }], {
 						primaryKey: "id",
 					});
+				return res;
 			})
 			.catch(async () => {
 				await this.songService.get({ id: where.songId });
+				throw new LyricsNotFoundBySongException(where.songId);
 			});
 	}
 

@@ -262,24 +262,6 @@ describe("Track Service", () => {
 			expect(retrievedTrack).toStrictEqual(dummyRepository.trackA1_1);
 		});
 
-		it("should return an existing track, without only its id and duration", async () => {
-			const track = await trackService.select(
-				{ id: dummyRepository.trackC1_1.id },
-				{ duration: true, id: true },
-			);
-			expect(track).toStrictEqual({
-				id: dummyRepository.trackC1_1.id,
-				duration: dummyRepository.trackC1_1.duration,
-			});
-		});
-
-		it("should throw, as the track does not exist (on select)", async () => {
-			const test = async () =>
-				await trackService.select({ id: -1 }, { id: true });
-
-			return expect(test()).rejects.toThrow(TrackNotFoundByIdException);
-		});
-
 		it("should throw, as the track does not exist (by id)", async () => {
 			const test = async () => await trackService.get({ id: -1 });
 
@@ -309,20 +291,7 @@ describe("Track Service", () => {
 			expect(tracks).toContainEqual(dummyRepository.trackC1_1);
 			expect(tracks.length).toBe(7);
 		});
-		it("should shuffle tracks", async () => {
-			const sort1 = await trackService.getMany({}, { take: 10 }, {}, 123);
-			const sort2 = await trackService.getMany(
-				{},
-				{ take: 10 },
-				{},
-				1234,
-			);
-			expect(sort1.length).toBe(sort2.length);
-			expect(sort1).toContainEqual(dummyRepository.trackA2_1);
-			expect(sort1.map(({ id }) => id)).not.toBe(
-				sort2.map(({ id }) => id),
-			);
-		});
+
 		it("should retrieve all video tracks", async () => {
 			const tracks = await trackService.getMany(
 				{ type: TrackType.Video },
@@ -337,9 +306,9 @@ describe("Track Service", () => {
 		it("should retrieve all tracks, sorted by name", async () => {
 			const tracks = await trackService.getMany(
 				{},
-				{},
-				{},
 				{ sortBy: "name", order: "asc" },
+				{},
+				{},
 			);
 
 			expect(tracks.length).toBe(7);
@@ -376,9 +345,9 @@ describe("Track Service", () => {
 		it("should retrieve the tracks by song (w/ pagination)", async () => {
 			const tracks = await trackService.getMany(
 				{ song: { id: dummyRepository.songA1.id } },
+				{ sortBy: "name", order: "asc" },
 				{ take: 1, skip: 1 },
 				{},
-				{ sortBy: "name", order: "asc" },
 			);
 
 			expect(tracks.length).toBe(1);
@@ -388,9 +357,9 @@ describe("Track Service", () => {
 		it("should retrieve the tracks by song (w/ pagination, volume 2)", async () => {
 			const tracks = await trackService.getMany(
 				{ song: { id: dummyRepository.songA1.id } },
+				{ sortBy: "name", order: "asc" },
 				{ take: 2, skip: 2 },
 				{},
-				{ sortBy: "name", order: "asc" },
 			);
 			expect(tracks.length).toBe(2);
 			expect(tracks[0]).toStrictEqual(newTrack);
@@ -400,8 +369,10 @@ describe("Track Service", () => {
 
 	describe("Get a Song's Tracks", () => {
 		it("should retrieve the song's tracks", async () => {
-			const tracks = await trackService.getSongTracks({
-				id: dummyRepository.songA1.id,
+			const tracks = await trackService.getMany({
+				song: {
+					id: dummyRepository.songA1.id,
+				},
 			});
 
 			expect(tracks.length).toBe(4);
@@ -409,12 +380,6 @@ describe("Track Service", () => {
 			expect(tracks).toContainEqual(newTrack2);
 			expect(tracks).toContainEqual(dummyRepository.trackA1_1);
 			expect(tracks).toContainEqual(dummyRepository.trackA1_2Video);
-		});
-
-		it("should throw, as the parent song does not exist", async () => {
-			const test = async () =>
-				await trackService.getSongTracks({ id: -1 });
-			return expect(test()).rejects.toThrow(SongNotFoundByIdException);
 		});
 	});
 
@@ -469,34 +434,6 @@ describe("Track Service", () => {
 			const test = async () =>
 				await trackService.getMasterTrack({ id: tmpSong.id });
 			return expect(test()).rejects.toThrow(MasterTrackNotFoundException);
-		});
-	});
-
-	describe("Count Tracks", () => {
-		it("should count the artist's tracks", async () => {
-			const trackCount = await trackService.count({
-				artist: { id: dummyRepository.artistA.id },
-			});
-			expect(trackCount).toBe(5);
-		});
-
-		it("should count the album's tracks", async () => {
-			const trackCount = await trackService.count({
-				album: { id: dummyRepository.albumA1.id },
-			});
-			expect(trackCount).toBe(5);
-		});
-
-		it("should count the song's tracks", async () => {
-			const trackCount = await trackService.count({
-				song: { id: dummyRepository.songA2.id },
-			});
-			expect(trackCount).toBe(1);
-		});
-
-		it("should count all the tracks", async () => {
-			const trackCount = await trackService.count({});
-			expect(trackCount).toBe(7);
 		});
 	});
 

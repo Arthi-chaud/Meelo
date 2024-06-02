@@ -17,7 +17,6 @@
  */
 
 import { Injectable } from "@nestjs/common";
-import RepositoryService from "src/repository/repository.service";
 import type { User } from "src/prisma/models";
 import { Prisma } from "@prisma/client";
 import type UserQueryParameters from "./models/user.query-params";
@@ -35,33 +34,18 @@ import {
 import Identifier from "src/identifier/models/identifier";
 import { PrismaError } from "prisma-error-enum";
 import { InvalidRequestException } from "src/exceptions/meelo-exception";
-import { formatIdentifier } from "src/repository/repository.utils";
+import {
+	formatIdentifier,
+	formatPaginationParameters,
+} from "src/repository/repository.utils";
+import { UnhandledORMErrorException } from "src/exceptions/orm-exceptions";
+import { PaginationParameters } from "src/pagination/models/pagination-parameters";
 
 @Injectable()
-export default class UserService extends RepositoryService<
-	User,
-	UserQueryParameters.CreateInput,
-	UserQueryParameters.WhereInput,
-	UserQueryParameters.ManyWhereInput,
-	UserQueryParameters.UpdateInput,
-	UserQueryParameters.DeleteInput,
-	UserQueryParameters.SortingKeys,
-	Prisma.UserCreateInput,
-	Prisma.UserWhereInput,
-	Prisma.UserWhereInput,
-	Prisma.UserUpdateInput,
-	Prisma.UserWhereUniqueInput,
-	Prisma.UserOrderByWithRelationAndSearchRelevanceInput
-> {
+export default class UserService {
 	private readonly passwordHashSaltRound = 9;
 
-	constructor(protected prismaService: PrismaService) {
-		super(prismaService, "user");
-	}
-
-	getTableName() {
-		return "users";
-	}
+	constructor(protected prismaService: PrismaService) {}
 
 	private encryptPassword(plainTextPassword: string): string {
 		return bcrypt.hashSync(plainTextPassword, this.passwordHashSaltRound);
@@ -102,104 +86,106 @@ export default class UserService extends RepositoryService<
 		}
 	}
 
-	formatCreateInput(input: UserQueryParameters.CreateInput) {
-		return {
-			name: input.name,
-			password: this.encryptPassword(input.password),
-			enabled: input.enabled ?? false,
-			admin: input.admin,
-		};
-	}
-
 	async create(input: UserQueryParameters.CreateInput): Promise<User> {
 		this.checkCredentialsAreValid(input);
-		const isFirstUser = (await this.count({})) == 0;
+		const isFirstUser = (await this.prismaService.user.count({})) == 0;
 
-		return super.create({
-			...input,
-			admin: isFirstUser,
-			enabled: isFirstUser || input.enabled,
-		});
+		return this.prismaService.user
+			.create({
+				data: {
+					name: input.name,
+					password: this.encryptPassword(input.password),
+					enabled: isFirstUser || input.enabled,
+					admin: isFirstUser,
+				},
+			})
+			.catch((error) => {
+				if (
+					error instanceof Prisma.PrismaClientKnownRequestError &&
+					error.code == PrismaError.UniqueConstraintViolation
+				) {
+					throw new UserAlreadyExistsException(input.name);
+				}
+				throw new UnhandledORMErrorException(error, input);
+			});
 	}
 
-	protected onCreationFailure(
-		error: Error,
-		input: UserQueryParameters.CreateInput,
-	) {
-		if (
-			error instanceof Prisma.PrismaClientKnownRequestError &&
-			error.code == PrismaError.UniqueConstraintViolation
-		) {
-			return new UserAlreadyExistsException(input.name);
-		}
-		return this.onUnknownError(error, input);
-	}
-
-	protected formatCreateInputToWhereInput(
-		input: UserQueryParameters.CreateInput,
-	): UserQueryParameters.WhereInput {
+	private formatWhereInput(where: UserQueryParameters.WhereInput) {
 		return {
-			name: input.name,
-		};
-	}
-
-	formatWhereInput(
-		input: UserQueryParameters.WhereInput,
-	): Prisma.UserWhereInput {
-		return {
-			id: input.id ?? input.byJwtPayload?.id,
+			id: where.id ?? where.byJwtPayload?.id,
 			name:
-				input.name ??
-				input.byCredentials?.name ??
-				input.byJwtPayload?.name,
-			password: input.byCredentials
-				? this.encryptPassword(input.byCredentials.password)
+				where.name ??
+				where.byCredentials?.name ??
+				where.byJwtPayload?.name,
+			password: where.byCredentials
+				? this.encryptPassword(where.byCredentials.password)
 				: undefined,
 		};
 	}
 
-	async get(input: UserQueryParameters.WhereInput): Promise<User> {
-		const user = await super.get(
-			input.byCredentials ? { name: input.byCredentials.name } : input,
-		);
-
-		if (
-			input.byCredentials &&
-			!bcrypt.compareSync(input.byCredentials.password, user.password)
-		) {
-			throw new InvalidUserCredentialsException(input.byCredentials.name);
-		}
-		return user;
+	async get(where: UserQueryParameters.WhereInput) {
+		return this.prismaService.user
+			.findFirstOrThrow({
+				where: where.byCredentials
+					? { name: where.byCredentials.name }
+					: this.formatWhereInput(where),
+			})
+			.then((created) => {
+				if (
+					where.byCredentials &&
+					!bcrypt.compareSync(
+						where.byCredentials.password,
+						created.password,
+					)
+				) {
+					throw new InvalidUserCredentialsException(
+						where.byCredentials.name,
+					);
+				}
+				return created;
+			})
+			.catch((error) => {
+				if (error instanceof InvalidUserCredentialsException) {
+					throw error;
+				}
+				throw this.onNotFound(error, where);
+			});
 	}
 
-	onNotFound(error: Error, where: UserQueryParameters.WhereInput) {
+	private onNotFound(error: any, where: UserQueryParameters.WhereInput) {
 		if (
 			error instanceof Prisma.PrismaClientKnownRequestError &&
 			error.code === PrismaError.RecordsNotFound
 		) {
 			if (where.byCredentials) {
-				throw new InvalidUserCredentialsException(
+				return new InvalidUserCredentialsException(
 					where.byCredentials.name,
 				);
 			} else if (where.id !== undefined) {
-				throw new UserNotFoundFromIDException(where.id);
+				return new UserNotFoundFromIDException(where.id);
 			} else if (where.name !== undefined) {
-				throw new UserNotFoundException(where.name);
-			} else {
-				throw new UserNotFoundFromJwtPayload(
-					where.byJwtPayload.name,
-					where.byJwtPayload.id,
-				);
+				return new UserNotFoundException(where.name);
 			}
+			return new UserNotFoundFromJwtPayload(
+				where.byJwtPayload.name,
+				where.byJwtPayload.id,
+			);
 		}
 
-		return this.onUnknownError(error, where);
+		return new UnhandledORMErrorException(error, where);
 	}
 
-	formatManyWhereInput(
-		input: UserQueryParameters.ManyWhereInput,
-	): Prisma.UserWhereInput {
-		return input;
+	async getMany(
+		where: UserQueryParameters.ManyWhereInput,
+		sort?: UserQueryParameters.SortingParameter,
+		pagination?: PaginationParameters,
+	) {
+		return this.prismaService.user.findMany({
+			where: where,
+			orderBy:
+				sort !== undefined ? this.formatSortingInput(sort) : undefined,
+			...formatPaginationParameters(pagination),
+		});
 	}
 
 	static formatIdentifierToWhereInput(
@@ -223,8 +209,14 @@ export default class UserService extends RepositoryService<
 		where: UserQueryParameters.WhereInput,
 	): Promise<User> {
 		const formattedInput = this.formatUpdateInput(what);
-
-		return super.update(formattedInput, where);
+		return this.prismaService.user
+			.update({
+				data: formattedInput,
+				where: this.formatWhereInput(where),
+			})
+			.catch((error) => {
+				throw this.onNotFound(error, where);
+			});
 	}
 
 	formatUpdateInput(what: UserQueryParameters.UpdateInput) {
@@ -242,22 +234,17 @@ export default class UserService extends RepositoryService<
 		};
 	}
 
-	formatDeleteInput(
-		where: UserQueryParameters.DeleteInput,
-	): Prisma.UserWhereUniqueInput {
-		return {
-			id: where.id,
-			name: where.name,
-		};
-	}
-
-	protected formatDeleteInputToWhereInput(
-		input: UserQueryParameters.DeleteInput,
-	): UserQueryParameters.WhereInput {
-		if (input.id) {
-			return { id: input.id };
-		}
-		return { name: input.name! };
+	async delete(where: UserQueryParameters.DeleteInput) {
+		return this.prismaService.user
+			.delete({
+				where: {
+					id: where.id,
+					name: where.name,
+				},
+			})
+			.catch((error) => {
+				throw this.onNotFound(error, where);
+			});
 	}
 
 	async housekeeping(): Promise<void> {}

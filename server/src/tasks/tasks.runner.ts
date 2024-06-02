@@ -273,7 +273,7 @@ export default class TaskRunner {
 			? this.trackService
 					.get(where.track, { sourceFile: true })
 					.then((track) => [track])
-			: this.trackService.getMany(where, undefined, {
+			: this.trackService.getMany(where, undefined, undefined, {
 					sourceFile: true,
 			  }));
 		const updatedFiles: File[] = [];

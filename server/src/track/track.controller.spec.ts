@@ -420,24 +420,6 @@ describe("Track Controller", () => {
 		});
 	});
 
-	describe("Reassign the track", () => {
-		it("should reassign the track", () => {
-			return request(app.getHttpServer())
-				.post(`/tracks/${dummyRepository.trackC1_1.id}`)
-				.send(<ReassignTrackDTO>{
-					songId: dummyRepository.songB1.id,
-				})
-				.expect(201)
-				.expect((res) => {
-					const track: Track = res.body;
-					expect(track).toStrictEqual({
-						...expectedTrackResponse(dummyRepository.trackC1_1),
-						songId: dummyRepository.songB1.id,
-					});
-				});
-		});
-	});
-
 	describe("Set Track as master (POST /tracks/:id/master)", () => {
 		it("should set track as master", () => {
 			return request(app.getHttpServer())

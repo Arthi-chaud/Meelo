@@ -58,3 +58,21 @@ export function formatIdentifier<RepoWhereInput>(
 	}
 	return stringToWhereInput(identifier);
 }
+
+export function formatPaginationParameters(
+	pagination: PaginationParameters | undefined,
+) {
+	return {
+		take: pagination?.take,
+		skip:
+			pagination?.afterId !== undefined
+				? 1 + (pagination?.skip ?? 0)
+				: pagination?.skip,
+		cursor:
+			pagination?.afterId !== undefined
+				? {
+						id: pagination.afterId,
+				  }
+				: undefined,
+	};
+}

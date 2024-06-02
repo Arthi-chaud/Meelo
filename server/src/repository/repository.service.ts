@@ -18,17 +18,12 @@
 
 /* eslint-disable @typescript-eslint/ban-types */
 import { PrismaClient } from "@prisma/client";
-import MeiliSearch from "meilisearch";
-import { InvalidRequestException } from "src/exceptions/meelo-exception";
 // eslint-disable-next-line no-restricted-imports
 import { UnhandledORMErrorException } from "src/exceptions/orm-exceptions";
-import Identifier from "src/identifier/models/identifier";
-import {
-	PaginationParameters,
-	buildPaginationParameters,
-} from "src/pagination/models/pagination-parameters";
+import { PaginationParameters } from "src/pagination/models/pagination-parameters";
 import SortingParameter from "src/sort/models/sorting-parameter";
 import type { Primitive } from "type-fest";
+import { formatPaginationParameters } from "./repository.utils";
 
 type AtomicModel = { id: number };
 
@@ -363,7 +358,7 @@ abstract class RepositoryService<
 			where: this.formatManyWhereInput(where),
 			include: this.formatInclude(include),
 			orderBy: sort ? this.formatSortingInput(sort) : undefined,
-			...buildPaginationParameters(pagination),
+			...formatPaginationParameters(pagination),
 		}) as Promise<(BaseModel & Select<Relations, I>)[]>;
 	}
 
@@ -571,144 +566,3 @@ abstract class RepositoryService<
 }
 
 export default RepositoryService;
-
-/**
- * Base Repository Service Definition
- */
-export abstract class SearchableRepositoryService<
-	Model extends AtomicModel,
-	CreateInput,
-	WhereInput,
-	ManyWhereInput extends Partial<{ id: { in: number[] } }>,
-	UpdateInput,
-	DeleteInput,
-	SortingKeys extends readonly string[],
-	RepositoryCreateInput,
-	RepositoryWhereInput,
-	RepositoryManyWhereInput,
-	RepositoryUpdateInput,
-	RepositoryDeleteInput,
-	RepositorySortingInput,
-	BaseModel extends AtomicModel = Base<Model>,
-	Relations extends ModelRelations<Model> = ModelRelations<Model>,
-	Delegate extends {
-		create: ORMGetterMethod<
-			BaseModel,
-			Relations,
-			{ data: RepositoryCreateInput }
-		>;
-		findFirstOrThrow: ORMGetterMethod<
-			BaseModel,
-			Relations,
-			{ where: RepositoryWhereInput }
-		>;
-		findMany: ORMManyGetterMethod<
-			BaseModel,
-			Relations,
-			{ where: RepositoryManyWhereInput }
-		>;
-		delete: (args: { where: RepositoryDeleteInput }) => Promise<BaseModel>;
-		update: (args: {
-			where: RepositoryWhereInput;
-			data: RepositoryUpdateInput;
-		}) => Promise<BaseModel>;
-		count: (args: { where: RepositoryManyWhereInput }) => Promise<number>;
-	} = {
-		create: ORMGetterMethod<
-			BaseModel,
-			Relations,
-			{ data: RepositoryCreateInput }
-		>;
-		findFirstOrThrow: ORMGetterMethod<
-			BaseModel,
-			Relations,
-			{ where: RepositoryWhereInput }
-		>;
-		findMany: ORMManyGetterMethod<
-			BaseModel,
-			Relations,
-			{ where: RepositoryManyWhereInput }
-		>;
-		delete: (args: { where: RepositoryDeleteInput }) => Promise<BaseModel>;
-		update: (args: {
-			where: RepositoryWhereInput;
-			data: RepositoryUpdateInput;
-		}) => Promise<BaseModel>;
-		count: (args: { where: RepositoryManyWhereInput }) => Promise<number>;
-	},
-	RepoKey extends keyof PrismaClient = keyof PrismaClient,
-	PrismaHandle extends PrismaClient = PrismaClient,
-> extends RepositoryService<
-	Model,
-	CreateInput,
-	WhereInput,
-	ManyWhereInput,
-	UpdateInput,
-	DeleteInput,
-	SortingKeys,
-	RepositoryCreateInput,
-	RepositoryWhereInput,
-	RepositoryManyWhereInput,
-	RepositoryUpdateInput,
-	RepositoryDeleteInput,
-	RepositorySortingInput,
-	BaseModel,
-	Relations,
-	Delegate
-> {
-	constructor(
-		protected prismaHandle: PrismaHandle,
-		prismaDelegateKey: RepoKey,
-		searchableKeys: string[],
-		protected readonly meiliSearch: MeiliSearch,
-	) {
-		super(prismaHandle, prismaDelegateKey);
-	}
-
-	protected onCreated(created: BaseModel) {
-		super.onCreated(created);
-		this.meiliSearch
-			.index(this.getTableName())
-			.addDocuments([this.formatSearchableEntries(created)]);
-	}
-
-	abstract formatSearchableEntries(item: BaseModel): object;
-
-	protected onDeleted(deleted: BaseModel) {
-		super.onDeleted(deleted);
-		this.meiliSearch.index(this.getTableName()).deleteDocument(deleted.id);
-	}
-
-	/**
-	 * Search for albums using a token.
-	 */
-	public async search<I extends ModelSelector<Relations>>(
-		token: string,
-		where: ManyWhereInput,
-		pagination?: PaginationParameters,
-		include?: I,
-		sort?: SortingParameter<SortingKeys>,
-	) {
-		const matches = await this.meiliSearch
-			.index(this.getTableName())
-			.search(
-				token,
-				!sort
-					? {
-							limit: pagination?.take,
-							offset: pagination?.skip,
-					  }
-					: {},
-			)
-			.then((res) => res.hits.map((hit) => hit.id as number));
-		if (sort?.order || sort?.sortBy) {
-			return this.getMany(
-				{ ...where, id: { in: matches } },
-				pagination,
-				include,
-				sort,
-			);
-		}
-		return this.getByIdList(matches, where, pagination, include);
-	}
-}

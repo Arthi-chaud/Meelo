@@ -49,7 +49,10 @@ import { PrismaError } from "prisma-error-enum";
 import IllustrationRepository from "src/illustration/illustration.repository";
 import DiscogsProvider from "src/providers/discogs/discogs.provider";
 import deepmerge from "deepmerge";
-import { formatIdentifier } from "src/repository/repository.utils";
+import {
+	formatIdentifier,
+	formatPaginationParameters,
+} from "src/repository/repository.utils";
 import { UnhandledORMErrorException } from "src/exceptions/orm-exceptions";
 import { PaginationParameters } from "src/pagination/models/pagination-parameters";
 
@@ -272,15 +275,9 @@ export default class ReleaseService {
 		const args = {
 			include: include ?? ({} as I),
 			where: ReleaseService.formatManyWhereInput(where),
-			take: pagination?.take,
-			skip: pagination?.skip,
-			cursor: pagination?.afterId
-				? {
-						id: pagination?.afterId,
-				  }
-				: undefined,
 			orderBy:
 				sort == undefined ? undefined : this.formatSortingInput(sort),
+			...formatPaginationParameters(pagination),
 		};
 		const releases = await this.prismaService.release.findMany<
 			Prisma.SelectSubset<typeof args, Prisma.ReleaseFindManyArgs>

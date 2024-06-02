@@ -42,8 +42,8 @@ import ScannerModule from "src/scanner/scanner.module";
 		forwardRef(() => IllustrationModule),
 		forwardRef(() => ScannerModule),
 	],
-	exports: [SongService, SongResponseBuilder, SongGroupService],
-	providers: [SongService, SongResponseBuilder, SongGroupService],
+	exports: [SongService, SongResponseBuilder],
+	providers: [SongService, SongResponseBuilder],
 	controllers: [SongController],
 })
 export default class SongModule {}

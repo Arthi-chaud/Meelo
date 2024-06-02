@@ -17,12 +17,9 @@
  */
 
 import { Injectable } from "@nestjs/common";
-import {
-	PaginationParameters,
-	buildPaginationParameters,
-} from "src/pagination/models/pagination-parameters";
+import { PaginationParameters } from "src/pagination/models/pagination-parameters";
 import PrismaService from "src/prisma/prisma.service";
-import RepositoryService from "src/repository/repository.service";
+import { formatPaginationParameters } from "src/repository/repository.utils";
 import SongQueryParameters from "src/song/models/song.query-params";
 import SongService from "src/song/song.service";
 
@@ -54,7 +51,7 @@ export default class VideoService {
 					? this.songService.formatSortingInput(sort)
 					: undefined,
 				include: {
-					...RepositoryService.formatInclude(include),
+					...include,
 					tracks: {
 						where: {
 							type: "Video",
@@ -63,7 +60,7 @@ export default class VideoService {
 						take: 1,
 					},
 				},
-				...buildPaginationParameters(pagination),
+				...formatPaginationParameters(pagination),
 				where: {
 					OR: [
 						SongService.formatManyWhereInput(where),

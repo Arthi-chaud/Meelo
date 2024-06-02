@@ -76,17 +76,6 @@ describe("Lyrics Service", () => {
 				lyricsService.createOrUpdate({ content: "", songId: -1 });
 			return expect(test()).rejects.toThrow(SongNotFoundByIdException);
 		});
-
-		it("should throw, as lyrics already exists for the lyrics", async () => {
-			const test = () =>
-				lyricsService.createOrUpdate({
-					content: "",
-					songId: dummyRepository.songA1.id,
-				});
-			return expect(test()).rejects.toThrow(
-				LyricsAlreadyExistsExceptions,
-			);
-		});
 	});
 
 	describe("Get lyrics", () => {
@@ -106,9 +95,9 @@ describe("Lyrics Service", () => {
 
 	describe("Delete lyrics", () => {
 		it("should delete the song's lyrics", async () => {
-			await lyricsService.delete({ songId: lyricsB1.id });
-			const test = () => lyricsService.get({ songId: lyricsB1.id });
-			return expect(test()).rejects.toThrow(LyricsNotFoundByIDException);
+			await lyricsService.delete({ songId: lyricsB1.songId });
+			const test = () => lyricsService.get({ songId: lyricsB1.songId });
+			return expect(test()).rejects.toThrow(LyricsNotFoundBySongException);
 		});
 
 		it("should throw, as the parent song does not exist", async () => {

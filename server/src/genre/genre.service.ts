@@ -22,7 +22,6 @@ import Slug from "src/slug/slug";
 import type GenreQueryParameters from "./models/genre.query-parameters";
 import { Genre } from "src/prisma/models";
 import SongService from "src/song/song.service";
-import RepositoryService from "src/repository/repository.service";
 import { buildStringSearchParameters } from "src/utils/search-string-input";
 import ArtistService from "src/artist/artist.service";
 import { Prisma } from "@prisma/client";
@@ -31,7 +30,6 @@ import Identifier from "src/identifier/models/identifier";
 import Logger from "src/logger/logger";
 import { PrismaError } from "prisma-error-enum";
 import {
-	GenreAlreadyExistsException,
 	GenreNotEmptyException,
 	GenreNotFoundException,
 } from "./genre.exceptions";
@@ -39,7 +37,10 @@ import AlbumService from "src/album/album.service";
 import deepmerge from "deepmerge";
 import { UnhandledORMErrorException } from "src/exceptions/orm-exceptions";
 import { PaginationParameters } from "src/pagination/models/pagination-parameters";
-import { formatIdentifier } from "src/repository/repository.utils";
+import {
+	formatIdentifier,
+	formatPaginationParameters,
+} from "src/repository/repository.utils";
 
 @Injectable()
 export default class GenreService {
@@ -125,14 +126,11 @@ export default class GenreService {
 	static formatIdentifierToWhereInput(
 		identifier: Identifier,
 	): GenreQueryParameters.WhereInput {
-		return formatIdentifier(
-			identifier,
-			(stringIdentifier) => {
-				const [slug] = parseIdentifierSlugs(stringIdentifier, 1);
+		return formatIdentifier(identifier, (stringIdentifier) => {
+			const [slug] = parseIdentifierSlugs(stringIdentifier, 1);
 
-				return { slug };
-			},
-		);
+			return { slug };
+		});
 	}
 
 	formatSortingInput(
@@ -180,14 +178,8 @@ export default class GenreService {
 		const args = {
 			include: include ?? ({} as I),
 			where: GenreService.formatManyWhereInput(where),
-			take: pagination.take,
-			skip: pagination.skip,
-			cursor: pagination.afterId
-				? {
-						id: pagination.afterId,
-				  }
-				: undefined,
 			orderBy: this.formatSortingInput(sort),
+			...formatPaginationParameters(pagination),
 		};
 		const artists = await this.prismaService.genre.findMany<
 			Prisma.SelectSubset<typeof args, Prisma.GenreFindManyArgs>

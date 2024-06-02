@@ -23,10 +23,9 @@ import { Prisma } from "@prisma/client";
 import PrismaService from "src/prisma/prisma.service";
 import type LibraryQueryParameters from "./models/library.query-parameters";
 import normalize from "normalize-path";
-import RepositoryService from "src/repository/repository.service";
 import { buildStringSearchParameters } from "src/utils/search-string-input";
 import TasksRunner from "src/tasks/tasks.runner";
-import { Library, LibraryWithRelations } from "src/prisma/models";
+import { Library } from "src/prisma/models";
 import { parseIdentifierSlugs } from "src/identifier/identifier.parse-slugs";
 import Identifier from "src/identifier/models/identifier";
 import { PrismaError } from "prisma-error-enum";
@@ -36,7 +35,10 @@ import {
 } from "./library.exceptions";
 import { UnhandledORMErrorException } from "src/exceptions/orm-exceptions";
 import { PaginationParameters } from "src/pagination/models/pagination-parameters";
-import { formatIdentifier } from "src/repository/repository.utils";
+import {
+	formatIdentifier,
+	formatPaginationParameters,
+} from "src/repository/repository.utils";
 
 @Injectable()
 export default class LibraryService {
@@ -113,14 +115,11 @@ export default class LibraryService {
 	static formatIdentifierToWhereInput(
 		identifier: Identifier,
 	): LibraryQueryParameters.WhereInput {
-		return formatIdentifier(
-			identifier,
-			(stringIdentifier) => {
-				const [slug] = parseIdentifierSlugs(stringIdentifier, 1);
+		return formatIdentifier(identifier, (stringIdentifier) => {
+			const [slug] = parseIdentifierSlugs(stringIdentifier, 1);
 
-				return { slug };
-			},
-		);
+			return { slug };
+		});
 	}
 
 	formatSortingInput(
@@ -170,14 +169,8 @@ export default class LibraryService {
 	) {
 		return this.prismaService.library.findMany({
 			where: LibraryService.formatManyWhereInput(where),
-			take: pagination?.take,
-			skip: pagination?.skip,
-			cursor: pagination?.afterId
-				? {
-						id: pagination?.afterId,
-				  }
-				: undefined,
 			orderBy: this.formatSortingInput(sort ?? {}),
+			...formatPaginationParameters(pagination),
 		});
 	}
 
@@ -205,8 +198,12 @@ export default class LibraryService {
 			),
 		);
 		await this.tasksService.housekeeping();
-		return this.prismaService.library.delete({
-			where: LibraryService.formatWhereInput(where),
-		});
+		return this.prismaService.library
+			.delete({
+				where: LibraryService.formatWhereInput(where),
+			})
+			.catch((error) => {
+				throw this.onNotFound(error, where);
+			});
 	}
 }

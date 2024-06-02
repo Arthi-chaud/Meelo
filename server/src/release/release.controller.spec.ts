@@ -610,24 +610,6 @@ describe("Release Controller", () => {
 		});
 	});
 
-	describe("Update the release", () => {
-		it("should reassign the release", () => {
-			return request(app.getHttpServer())
-				.post(`/releases/${dummyRepository.releaseB1_1.id}`)
-				.send(<ReassignReleaseDTO>{
-					albumId: dummyRepository.albumA1.id,
-				})
-				.expect(201)
-				.expect((res) => {
-					const release: Release = res.body;
-					expect(release).toStrictEqual({
-						...expectedReleaseResponse(dummyRepository.releaseB1_1),
-						albumId: dummyRepository.albumA1.id,
-					});
-				});
-		});
-	});
-
 	describe("Set Release as master (POST /releases/:id/master)", () => {
 		it("should set release as master", () => {
 			return request(app.getHttpServer())

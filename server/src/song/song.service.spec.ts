@@ -536,7 +536,7 @@ describe("Song Service", () => {
 			const testLyrics = async () =>
 				await lyricsService.get({ songId: tmpSong.id });
 			return expect(testLyrics()).rejects.toThrow(
-				LyricsNotFoundByIDException,
+				SongNotFoundByIdException,
 			);
 		});
 	});

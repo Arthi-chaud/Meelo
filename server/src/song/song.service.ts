@@ -26,10 +26,7 @@ import TrackService from "src/track/track.service";
 import GenreService from "src/genre/genre.service";
 import { CompilationArtistException } from "src/artist/artist.exceptions";
 import { buildStringSearchParameters } from "src/utils/search-string-input";
-import {
-	PaginationParameters,
-	buildPaginationParameters,
-} from "src/pagination/models/pagination-parameters";
+import { PaginationParameters } from "src/pagination/models/pagination-parameters";
 import { Song, SongWithRelations } from "src/prisma/models";
 import { parseIdentifierSlugs } from "src/identifier/identifier.parse-slugs";
 import Identifier from "src/identifier/models/identifier";
@@ -55,6 +52,7 @@ import { UnhandledORMErrorException } from "src/exceptions/orm-exceptions";
 import SearchableRepositoryService from "src/repository/searchable-repository.service";
 import {
 	formatIdentifier,
+	formatPaginationParameters,
 	getRandomIds,
 } from "src/repository/repository.utils";
 
@@ -218,7 +216,7 @@ export default class SongService extends SearchableRepositoryService {
 			return await this.get(
 				{
 					bySlug: {
-						slug: new Slug(input.name),
+						slug: this._createSongSlug(input.name, input.featuring),
 						artist: input.artist,
 						featuring: input.featuring,
 					},
@@ -270,15 +268,9 @@ export default class SongService extends SearchableRepositoryService {
 		const args = {
 			include: include ?? ({} as I),
 			where: SongService.formatManyWhereInput(where),
-			take: pagination?.take,
-			skip: pagination?.skip,
-			cursor: pagination?.afterId
-				? {
-						id: pagination?.afterId,
-				  }
-				: undefined,
 			orderBy:
 				sort == undefined ? undefined : this.formatSortingInput(sort),
+			...formatPaginationParameters(pagination),
 		};
 		return this.prismaService.song.findMany<
 			Prisma.SelectSubset<typeof args, Prisma.SongFindManyArgs>
@@ -494,8 +486,8 @@ export default class SongService extends SearchableRepositoryService {
 						},
 					},
 				})
-				.catch((error) => {
-					throw this.onNotFound(error, where);
+				.catch(async (error) => {
+					throw await this.onNotFound(error, where);
 				});
 		}
 		return this.prismaService.song
@@ -514,10 +506,7 @@ export default class SongService extends SearchableRepositoryService {
 	 * @returns the updated song
 	 */
 	async setMasterTrack(trackWhere: TrackQueryParameters.WhereInput) {
-		const track = await this.trackService.select(trackWhere, {
-			id: true,
-			songId: true,
-		});
+		const track = await this.trackService.get(trackWhere);
 
 		return this.prismaService.song.update({
 			where: { id: track.songId },
@@ -573,14 +562,14 @@ export default class SongService extends SearchableRepositoryService {
 				this.logger.warn(`Song '${deleted.slug}' deleted`);
 				return deleted;
 			})
-			.catch((error) => {
+			.catch(async (error) => {
 				if (
 					error instanceof Prisma.PrismaClientKnownRequestError &&
 					error.code == PrismaError.ForeignConstraintViolation
 				) {
 					throw new SongNotEmptyException(where.id);
 				}
-				throw new UnhandledORMErrorException(error, where);
+				throw await this.onNotFound(error, where);
 			});
 	}
 
@@ -741,7 +730,7 @@ export default class SongService extends SearchableRepositoryService {
 			},
 			orderBy: sort ? this.formatSortingInput(sort) : undefined,
 			include: include ?? ({} as I),
-			...buildPaginationParameters(pagination),
+			...formatPaginationParameters(pagination),
 		});
 	}
 

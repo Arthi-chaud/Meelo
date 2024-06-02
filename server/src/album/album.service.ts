@@ -48,6 +48,7 @@ import { UnhandledORMErrorException } from "src/exceptions/orm-exceptions";
 import { PaginationParameters } from "src/pagination/models/pagination-parameters";
 import {
 	formatIdentifier,
+	formatPaginationParameters,
 	getRandomIds,
 } from "src/repository/repository.utils";
 import { AlbumModel } from "./models/album.model";
@@ -226,15 +227,9 @@ export default class AlbumService extends SearchableRepositoryService {
 		const args = {
 			include: include ?? ({} as I),
 			where: AlbumService.formatManyWhereInput(where),
-			take: pagination?.take,
-			skip: pagination?.skip,
-			cursor: pagination?.afterId
-				? {
-						id: pagination?.afterId,
-				  }
-				: undefined,
 			orderBy:
-				sort == undefined ? undefined : this.formatSortingInput(sort),
+				sort === undefined ? undefined : this.formatSortingInput(sort),
+			...formatPaginationParameters(pagination),
 		};
 		const albums = await this.prismaService.album.findMany<
 			Prisma.SelectSubset<typeof args, Prisma.AlbumFindManyArgs>
