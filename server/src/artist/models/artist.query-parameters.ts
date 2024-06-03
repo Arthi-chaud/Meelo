@@ -33,7 +33,7 @@ namespace ArtistQueryParameters {
 	 */
 	export type CreateInput = Omit<
 		Artist,
-		"id" | "slug" | "songs" | "albums" | "registeredAt"
+		"id" | "slug" | "songs" | "albums" | "registeredAt" | "illustrationId"
 	> & {
 		registeredAt?: Date;
 	};

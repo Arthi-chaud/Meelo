@@ -103,3 +103,9 @@ export class IllustrationNotExtracted extends InvalidRequestException {
 		);
 	}
 }
+
+export class IllustrationNotFoundException extends NoIllustrationException {
+	constructor(illustrationId: number) {
+		super(`No illustration found with ID ${illustrationId.toString()}`);
+	}
+}

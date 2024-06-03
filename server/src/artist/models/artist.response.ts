@@ -25,6 +25,7 @@ import ExternalIdResponse, {
 	ExternalIdResponseBuilder,
 } from "src/providers/models/external-id.response";
 import IllustrationRepository from "src/illustration/illustration.repository";
+import { IllustrationType } from "@prisma/client";
 
 export class ArtistResponse extends IntersectionType(
 	Artist,
@@ -54,9 +55,14 @@ export class ArtistResponseBuilder extends ResponseBuilderInterceptor<
 		const response = <ArtistResponse>{
 			...artist,
 			illustration:
-				await this.illustrationRepository.getArtistIllustration({
-					id: artist.id,
-				}),
+				artist.illustrationId === null
+					? null
+					: {
+							...(await this.illustrationRepository.getIllustration(
+								artist.illustrationId,
+							)),
+							type: IllustrationType.Cover,
+					  },
 		};
 
 		if (artist.externalIds !== undefined) {

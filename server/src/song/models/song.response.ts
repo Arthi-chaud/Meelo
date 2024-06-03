@@ -34,6 +34,7 @@ import {
 	TrackResponseBuilder,
 } from "src/track/models/track.response";
 import TrackService from "src/track/track.service";
+import { IllustrationType } from "@prisma/client";
 
 export class SongResponse extends IntersectionType(
 	Song,
@@ -71,9 +72,12 @@ export class SongResponseBuilder extends ResponseBuilderInterceptor<
 	async buildResponse(song: SongWithRelations): Promise<SongResponse> {
 		const response = <SongResponse>{
 			...song,
-			illustration: await this.illustrationRepository.getSongIllustration(
-				{ id: song.id },
-			),
+			illustration: {
+				...(await this.illustrationRepository.getSongIllustration({
+					id: song.id,
+				})),
+				type: IllustrationType.Cover,
+			},
 		};
 
 		if (song.artist !== undefined) {
