@@ -19,11 +19,7 @@
 import { Inject, Injectable, forwardRef } from "@nestjs/common";
 import ArtistService from "src/artist/artist.service";
 import ArtistQueryParameters from "src/artist/models/artist.query-parameters";
-import {
-	Illustration,
-	PlaylistIllustration,
-	ReleaseIllustration,
-} from "src/prisma/models";
+import { Illustration, ReleaseIllustration } from "src/prisma/models";
 import PrismaService from "src/prisma/prisma.service";
 import IllustrationService from "./illustration.service";
 import SettingsService from "src/settings/settings.service";
@@ -73,18 +69,6 @@ export default class IllustrationRepository {
 		this.baseIllustrationFolderPath = join(
 			this.settingsService.settingsValues.meeloFolder!,
 			"metadata",
-		);
-	}
-
-	/**
-	 * Get Absolute path to an artist's illustration
-	 */
-	getPlaylistIllustrationPath(playlistSlug: string) {
-		return join(
-			this.baseIllustrationFolderPath,
-			"_playlists",
-			playlistSlug,
-			this.illustrationFileName,
 		);
 	}
 
@@ -178,29 +162,6 @@ export default class IllustrationRepository {
 		return {
 			...illustration,
 			url: "/illustrations/" + illustration.id,
-		};
-	}
-
-	async getPlaylistIllustration(
-		where: PlaylistQueryParameters.WhereInput,
-	): Promise<IllustrationResponse | null> {
-		const illustration =
-			await this.prismaService.playlistIllustration.findFirst({
-				where: {
-					playlist: PlaylistService.formatWhereInput(where),
-				},
-				include: { playlist: true },
-			});
-
-		if (!illustration) {
-			return null;
-		}
-		const { playlist, ...value } = illustration;
-
-		return {
-			...value,
-			type: IllustrationType.Cover,
-			url: "/illustrations/playlists/" + playlist.slug,
 		};
 	}
 
@@ -349,6 +310,33 @@ export default class IllustrationRepository {
 		if (artist.illustrationId !== null) {
 			await this.deleteIllustration(artist.illustrationId);
 		}
+		const newIllustration = await this.saveIllustration(buffer);
+
+		await this.prismaService.artist.update({
+			data: { illustrationId: newIllustration.id },
+			where: { id: artist.id },
+		});
+		return newIllustration;
+	}
+
+	async savePlaylistIllustration(
+		buffer: Buffer,
+		where: PlaylistQueryParameters.WhereInput,
+	): Promise<Illustration> {
+		const playlist = await this.playlistService.get(where);
+		if (playlist.illustrationId !== null) {
+			await this.deleteIllustration(playlist.illustrationId);
+		}
+		const newIllustration = await this.saveIllustration(buffer);
+
+		await this.prismaService.playlist.update({
+			data: { illustrationId: newIllustration.id },
+			where: { id: playlist.id },
+		});
+		return newIllustration;
+	}
+
+	private async saveIllustration(buffer: Buffer): Promise<Illustration> {
 		const { blurhash, colors, aspectRatio } =
 			await this.illustrationService.getImageStats(buffer);
 
@@ -363,39 +351,7 @@ export default class IllustrationRepository {
 
 		const illustrationPath = this.buildIllustrationPath(newIllustration.id);
 		this.illustrationService.saveIllustration(buffer, illustrationPath);
-
-		await this.prismaService.artist.update({
-			data: { illustrationId: newIllustration.id },
-			where: { id: artist.id },
-		});
 		return newIllustration;
-	}
-
-	async createPlaylistIllustration(
-		buffer: Buffer,
-		where: PlaylistQueryParameters.WhereInput,
-	): Promise<PlaylistIllustration> {
-		const playlist = await this.playlistService.get(where);
-		const playlistIllustrationPath = this.getPlaylistIllustrationPath(
-			playlist.slug,
-		);
-		const { blurhash, colors, aspectRatio } =
-			await this.illustrationService.getImageStats(buffer);
-
-		this.illustrationService.saveIllustration(
-			buffer,
-			playlistIllustrationPath,
-		);
-		return this.prismaService.playlistIllustration.upsert({
-			create: {
-				blurhash,
-				colors,
-				aspectRatio,
-				playlistId: playlist.id,
-			},
-			where: { playlistId: playlist.id },
-			update: { blurhash, colors, aspectRatio },
-		});
 	}
 
 	async createReleaseIllustration(
@@ -516,27 +472,6 @@ export default class IllustrationRepository {
 		return this.prismaService.illustration
 			.delete({
 				where: { id: illustrationId },
-			})
-			.catch(() => {});
-	}
-
-	/**
-	 * Deletes Playlist Illustration (File + info in DB)
-	 */
-	async deletePlaylistIllustration(
-		where: PlaylistQueryParameters.WhereInput,
-	): Promise<void> {
-		const playlist = await this.playlistService.get(where);
-		const illustrationPath = this.getPlaylistIllustrationPath(
-			playlist.slug,
-		);
-
-		this.illustrationService.deleteIllustrationFolder(
-			dirname(illustrationPath),
-		);
-		this.prismaService.playlistIllustration
-			.delete({
-				where: { playlistId: playlist.id },
 			})
 			.catch(() => {});
 	}

@@ -536,21 +536,22 @@ model ReleaseExternalId {
 model Playlist {
     /// @description Unique numeric Playlist identifier
     /// @example 123
-    id           Int                   @id @default(autoincrement())
+    id             Int             @id @default(autoincrement())
     /// @description The name of the playlist
     /// @example My Playlist
     /// @minLength 1
-    name         String                @db.Citext()
+    name           String          @db.Citext()
     /// @description Unique string identifer
     /// @example my-playlist
     /// @minLength 1
-    slug         String                @unique
+    slug           String          @unique
     /// @description The date the playlist was created
-    createdAt    DateTime              @default(now())
+    createdAt      DateTime        @default(now())
     /// @description Array of external IDs
-    entries      PlaylistEntry[]
+    entries        PlaylistEntry[]
     /// @description Related Illustration
-    illustration PlaylistIllustration?
+    illustrationId Int?            @unique
+    illustration   Illustration?   @relation(fields: [illustrationId], references: [id])
 
     @@map("playlists")
 }
@@ -570,27 +571,6 @@ model PlaylistEntry {
     index      Int
 
     @@map("playlist_entries")
-}
-
-model PlaylistIllustration {
-    /// @description Unique numeric identifier
-    /// @example 123
-    id          Int      @id @default(autoincrement())
-    /// @description Related Playlist\'s Identifier
-    /// @example 123
-    playlistId  Int      @unique
-    playlist    Playlist @relation(fields: [playlistId], references: [id], onDelete: Cascade)
-    /// @description Blurhash value of the illustration. See https://github.com/woltapp/blurhash for more info.
-    /// @example LEHV6nWB2yk8pyo0adR*.7kCMdnj
-    blurhash    String
-    /// @description List of dominant colors in the image
-    /// @example ['#FFFFFF', '#123123', '#F0F0F0']
-    colors      String[]
-    /// @description Aspect Ratio of the image
-    /// @example 0.33
-    aspectRatio Float    @default(1)
-
-    @@map("playlist_illustrations")
 }
 
 model ReleaseIllustration {
@@ -653,6 +633,7 @@ model Illustration {
     /// @example 123
     id          Int              @id @default(autoincrement())
     artist      Artist?
+    playlist    Playlist?
     /// @description Blurhash value of the illustration. See https://github.com/woltapp/blurhash for more info.
     /// @example LEHV6nWB2yk8pyo0adR*.7kCMdnj
     blurhash    String

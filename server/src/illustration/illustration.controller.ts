@@ -46,8 +46,6 @@ import ProviderIllustrationService from "src/providers/provider-illustration.ser
 import ProviderService from "src/providers/provider.service";
 import ProvidersSettings from "src/providers/models/providers.settings";
 import { UnknownProviderError } from "src/providers/provider.exception";
-import PlaylistService from "src/playlist/playlist.service";
-import PlaylistQueryParameters from "src/playlist/models/playlist.query-parameters";
 import IllustrationRepository from "./illustration.repository";
 import SongService from "src/song/song.service";
 import SongQueryParameters from "src/song/models/song.query-params";
@@ -72,7 +70,6 @@ export class IllustrationController {
 		private illustrationService: IllustrationService,
 		private releaseService: ReleaseService,
 		private trackService: TrackService,
-		private playlistService: PlaylistService,
 		private illustrationRepository: IllustrationRepository,
 		private providerIllustrationService: ProviderIllustrationService,
 		private providerService: ProviderService,
@@ -332,67 +329,6 @@ export class IllustrationController {
 			dimensions,
 			res,
 			parse(illustrationPath).ext,
-		);
-	}
-
-	@ApiOperation({
-		summary: "Get a playlist's illustration",
-	})
-	@Cached()
-	@Get("playlists/:idOrSlug")
-	async getPlaylistIllustration(
-		@Query() dimensions: IllustrationDimensionsDto,
-		@IdentifierParam(PlaylistService)
-		where: PlaylistQueryParameters.WhereInput,
-		@Response({ passthrough: true })
-		res: Response,
-	) {
-		const playlistIllustration =
-			await this.illustrationRepository.getPlaylistIllustration(where);
-
-		if (!playlistIllustration) {
-			throw new NoIllustrationException(
-				"No Illustration registered for this playlist.",
-			);
-		}
-		const playlist = await this.playlistService.get(where);
-		const playlistIllustrationPath =
-			this.illustrationRepository.getPlaylistIllustrationPath(
-				playlist.slug,
-			);
-
-		return this.illustrationService
-			.streamIllustration(
-				playlistIllustrationPath,
-				parse(parse(playlistIllustrationPath).dir).name,
-				dimensions,
-				res,
-			)
-			.catch(() => {
-				this.illustrationRepository.deletePlaylistIllustration(where);
-				throw new NoIllustrationException(
-					"No Illustration registered for this playlist.",
-				);
-			});
-	}
-
-	@ApiOperation({
-		summary: "Change a playlist's illustration",
-	})
-	@Admin()
-	@Post("playlists/:idOrSlug")
-	async updatePlaylistIllustration(
-		@IdentifierParam(PlaylistService)
-		where: PlaylistQueryParameters.WhereInput,
-		@Body() illustrationDto: IllustrationDownloadDto,
-	) {
-		const buffer = await this.illustrationService.downloadIllustration(
-			illustrationDto.url,
-		);
-
-		return this.illustrationRepository.createPlaylistIllustration(
-			buffer,
-			where,
 		);
 	}
 }

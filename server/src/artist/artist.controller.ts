@@ -146,7 +146,7 @@ export default class ArtistController {
 		summary: "Save an illustration for an artist",
 	})
 	@Admin()
-	@Post(":idOrSlug")
+	@Post(":idOrSlug/illustration")
 	async updateArtistIllustration(
 		@IdentifierParam(ArtistService)
 		where: ArtistQueryParameters.WhereInput,
