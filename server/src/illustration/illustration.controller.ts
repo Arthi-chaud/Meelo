@@ -17,29 +17,19 @@
  */
 
 import {
-	Body,
 	Controller,
 	Delete,
 	Get,
 	Header,
 	Param,
 	ParseIntPipe,
-	Post,
 	Query,
 	Response,
 } from "@nestjs/common";
-import { ApiOperation, ApiPropertyOptional, ApiTags } from "@nestjs/swagger";
-import ReleaseService from "src/release/release.service";
-import TrackService from "src/track/track.service";
+import { ApiOperation, ApiTags } from "@nestjs/swagger";
 import IllustrationService from "./illustration.service";
-import { IllustrationDownloadDto } from "./models/illustration-dl.dto";
 import { IllustrationDimensionsDto } from "./models/illustration-dimensions.dto";
 import Admin from "src/authentication/roles/admin.decorator";
-import AlbumService from "src/album/album.service";
-import AlbumQueryParameters from "src/album/models/album.query-parameters";
-import IdentifierParam from "src/identifier/identifier.pipe";
-import TrackQueryParameters from "src/track/models/track.query-parameters";
-import ReleaseQueryParameters from "src/release/models/release.query-parameters";
 import { parse } from "path";
 import { NoIllustrationException } from "./illustration.exceptions";
 import ProviderIllustrationService from "src/providers/provider-illustration.service";
@@ -47,29 +37,15 @@ import ProviderService from "src/providers/provider.service";
 import ProvidersSettings from "src/providers/models/providers.settings";
 import { UnknownProviderError } from "src/providers/provider.exception";
 import IllustrationRepository from "./illustration.repository";
-import SongService from "src/song/song.service";
-import SongQueryParameters from "src/song/models/song.query-params";
-import { IsNumber, IsOptional } from "class-validator";
 import { IllustrationResponse } from "./models/illustration.response";
 
 const Cached = () => Header("Cache-Control", `max-age=${3600 * 24}`);
-
-class DiscQuery {
-	@ApiPropertyOptional({
-		description: "If Specified, will get the disc-specific illustration",
-	})
-	@IsOptional()
-	@IsNumber()
-	disc: number;
-}
 
 @ApiTags("Illustrations")
 @Controller("illustrations")
 export class IllustrationController {
 	constructor(
 		private illustrationService: IllustrationService,
-		private releaseService: ReleaseService,
-		private trackService: TrackService,
 		private illustrationRepository: IllustrationRepository,
 		private providerIllustrationService: ProviderIllustrationService,
 		private providerService: ProviderService,
@@ -125,181 +101,19 @@ export class IllustrationController {
 			illustrationId,
 		);
 
-		return illustration;
+		return IllustrationResponse.from(illustration);
 	}
 
 	@ApiOperation({
 		summary: "Delete an illustration",
 	})
 	@Admin()
-	@Delete("tracks/:idOrSlug")
+	@Delete(":id")
 	async deleteIllustration(
 		@Param("id", new ParseIntPipe())
 		illustrationId: number,
 	) {
 		await this.illustrationRepository.deleteIllustration(illustrationId);
-	}
-
-	@ApiOperation({
-		summary: "Get the album's illustration",
-	})
-	@Cached()
-	@Get("albums/:idOrSlug")
-	async getAlbumIllustration(
-		@Query() dimensions: IllustrationDimensionsDto,
-		@IdentifierParam(AlbumService)
-		where: AlbumQueryParameters.WhereInput,
-		@Response({ passthrough: true }) res: Response,
-	) {
-		const master = await this.releaseService.getMasterRelease(where);
-
-		return this.getReleaseIllustration({ id: master.id }, dimensions, res);
-	}
-
-	@ApiOperation({
-		summary: "Get a song's illustration",
-	})
-	@Cached()
-	@Get("songs/:idOrSlug")
-	async getSongIllustration(
-		@Query() dimensions: IllustrationDimensionsDto,
-		@IdentifierParam(SongService)
-		where: SongQueryParameters.WhereInput,
-		@Response({ passthrough: true }) res: Response,
-	) {
-		const master = await this.trackService.getMasterTrack(where);
-
-		return this.getTrackIllustration(dimensions, { id: master.id }, res);
-	}
-
-	@ApiOperation({
-		summary: "Get a release's illustration",
-	})
-	@Cached()
-	@Get("releases/:idOrSlug")
-	async getReleaseIllustration(
-		@IdentifierParam(ReleaseService)
-		where: ReleaseQueryParameters.WhereInput,
-		@Query() dimensions: IllustrationDimensionsDto,
-		@Response({ passthrough: true }) res: Response,
-		@Query() discQuery?: DiscQuery,
-	) {
-		const illustration =
-			await this.illustrationRepository.getReleaseIllustrationResponse(
-				where,
-				discQuery?.disc,
-			);
-
-		if (!illustration) {
-			throw new NoIllustrationException(
-				`No Illustration registered for this ${
-					discQuery?.disc ? "disc" : "release"
-				}.`,
-			);
-		}
-		const illustrationPath =
-			await this.illustrationRepository.resolveReleaseIllustrationPath(
-				illustration.id,
-			);
-
-		return this.illustrationService
-			.streamIllustration(
-				illustrationPath,
-				parse(parse(illustrationPath).dir).name,
-				dimensions,
-				res,
-			)
-			.catch(() => {
-				this.illustrationRepository.deleteReleaseIllustration(
-					where,
-					{ withFolder: false },
-					illustration.disc,
-				);
-				throw new NoIllustrationException(
-					"No Illustration registered for this release.",
-				);
-			});
-	}
-
-	@ApiOperation({
-		summary: "Change a release's illustration",
-	})
-	@Admin()
-	@Post("releases/:idOrSlug")
-	async updateReleaseIllustration(
-		@IdentifierParam(ReleaseService)
-		where: ReleaseQueryParameters.WhereInput,
-		@Body() illustrationDto: IllustrationDownloadDto,
-	) {
-		const buffer = await this.illustrationService.downloadIllustration(
-			illustrationDto.url,
-		);
-
-		await this.illustrationRepository.createReleaseIllustration(
-			buffer,
-			null,
-			where,
-		);
-	}
-
-	@ApiOperation({
-		summary: "Get a track's illustration",
-	})
-	@Cached()
-	@Get("tracks/:idOrSlug")
-	async getTrackIllustration(
-		@Query() dimensions: IllustrationDimensionsDto,
-		@IdentifierParam(TrackService)
-		where: TrackQueryParameters.WhereInput,
-		@Response({ passthrough: true }) res: Response,
-	) {
-		const illustration =
-			await this.illustrationRepository.getTrackIllustration(where);
-
-		if (!illustration) {
-			throw new NoIllustrationException(
-				"No Illustration registered for this track.",
-			);
-		}
-		const illustrationPath =
-			await this.illustrationRepository.resolveReleaseIllustrationPath(
-				illustration.id,
-			);
-		return this.illustrationService
-			.streamIllustration(
-				illustrationPath,
-				`release-${illustration.releaseId}-disc-${
-					illustration.disc ?? 0
-				}-track-${illustration.track ?? 0}`,
-				dimensions,
-				res,
-			)
-			.catch(() => {
-				this.illustrationRepository.deleteTrackIllustration(where);
-				throw new NoIllustrationException(
-					"No Illustration registered for this track.",
-				);
-			});
-	}
-
-	@ApiOperation({
-		summary: "Change a track's illustration",
-	})
-	@Admin()
-	@Post("tracks/:idOrSlug")
-	async updateTrackIllustration(
-		@Body() illustrationDto: IllustrationDownloadDto,
-		@IdentifierParam(TrackService)
-		where: TrackQueryParameters.WhereInput,
-	) {
-		const buffer = await this.illustrationService.downloadIllustration(
-			illustrationDto.url,
-		);
-
-		return this.illustrationRepository.createTrackIllustration(
-			buffer,
-			where,
-		);
 	}
 
 	@ApiOperation({

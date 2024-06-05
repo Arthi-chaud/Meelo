@@ -419,15 +419,27 @@ export default class TrackService {
 	 * @param where Query parameters to find the track to delete
 	 */
 	async delete(where: TrackQueryParameters.DeleteInput): Promise<Track> {
-		await this.illustrationRepository
-			.deleteTrackIllustration(this.formatDeleteInputToWhereInput(where))
-			.catch(() => {});
-
 		return this.prismaService.track
 			.delete({
 				where: where,
 			})
 			.then((deleted) => {
+				this.illustrationRepository
+					.getReleaseIllustrations({ id: deleted.releaseId })
+					.then((relatedIllustrations) => {
+						const exactIllustration = relatedIllustrations.find(
+							(i) =>
+								i.disc !== null &&
+								i.track !== null &&
+								i.disc === deleted.discIndex &&
+								i.track === deleted.trackIndex,
+						);
+						if (exactIllustration) {
+							this.illustrationRepository.deleteIllustration(
+								exactIllustration.id,
+							);
+						}
+					});
 				this.logger.warn(`Track '${deleted.name}' deleted`);
 				return deleted;
 			})

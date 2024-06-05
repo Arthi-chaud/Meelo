@@ -38,7 +38,6 @@ import getColors from "get-image-colors";
 import mime from "mime";
 import { InvalidRequestException } from "src/exceptions/meelo-exception";
 import { ImageQuality } from "./models/illustration-quality";
-import md5 from "md5";
 import { HttpService } from "@nestjs/axios";
 import { version } from "package.json";
 
@@ -94,27 +93,6 @@ export default class IllustrationService {
 		this.deleteIllustration(outPath);
 		fs.mkdirSync(dir.dirname(outPath), { recursive: true });
 		fs.writeFileSync(outPath, fileContent);
-	}
-
-	async saveIllustrationWithStatus(
-		illustrationBuffer: Buffer,
-		outputPath: string,
-	): Promise<IllustrationExtractStatus> {
-		if (this.fileManagerService.fileExists(outputPath)) {
-			const fileContent =
-				this.fileManagerService.getFileContent(outputPath);
-
-			if (fileContent == illustrationBuffer.toString()) {
-				return "already-extracted";
-			}
-			return "different-illustration";
-		}
-		try {
-			this.saveIllustration(illustrationBuffer, outputPath);
-			return "extracted";
-		} catch {
-			return "error";
-		}
 	}
 
 	/**
@@ -238,7 +216,6 @@ export default class IllustrationService {
 		blurhash: string;
 		colors: string[];
 		aspectRatio: number;
-		hash: string;
 	}> {
 		const image = await Jimp.read(buffer);
 
@@ -262,12 +239,10 @@ export default class IllustrationService {
 				colors.map((color) => color.hex()),
 			),
 			(async () => image.getWidth() / image.getHeight())(),
-			(async () => md5(buffer))(),
-		]).then(([blurhash, colors, aspectRatio, hash]) => ({
+		]).then(([blurhash, colors, aspectRatio]) => ({
 			blurhash,
 			colors,
 			aspectRatio,
-			hash,
 		}));
 	}
 

@@ -6,7 +6,7 @@ import PrismaModule from "src/prisma/prisma.module";
 import PrismaService from "src/prisma/prisma.service";
 import TestPrismaService from "test/test-prisma.service";
 import SetupApp from "test/setup-app";
-import { Playlist } from "@prisma/client";
+import { IllustrationType, Playlist } from "@prisma/client";
 import {
 	expectedPlaylistEntryResponse,
 	expectedPlaylistResponse,
@@ -374,15 +374,15 @@ describe("Playlist Controller", () => {
 
 	describe("Playlist Illustration", () => {
 		it("Should return the illustration", async () => {
-			const illustration =
-				await dummyRepository.playlistIllustration.create({
-					data: {
-						playlistId: dummyRepository.playlist3.id,
-						aspectRatio: 1,
-						blurhash: "A",
-						colors: ["B"],
-					},
-				});
+			const illustration = await dummyRepository.illustration.create({
+				data: {
+					playlist: { connect: { id: dummyRepository.playlist3.id } },
+					type: IllustrationType.Cover,
+					aspectRatio: 1,
+					blurhash: "A",
+					colors: ["B"],
+				},
+			});
 			return request(app.getHttpServer())
 				.get(`/playlists/${dummyRepository.playlist3.id}`)
 				.expect(200)
@@ -392,9 +392,7 @@ describe("Playlist Controller", () => {
 						...playlist,
 						illustration: {
 							...illustration,
-							url:
-								"/illustrations/playlists/" +
-								dummyRepository.playlist3.slug,
+							url: "/illustrations/" + illustration.id,
 						},
 					});
 				});

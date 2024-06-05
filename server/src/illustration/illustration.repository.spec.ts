@@ -131,16 +131,17 @@ describe("Illustration Repository", () => {
 			).mockImplementation(async () => ({
 				blurhash: "",
 				colors: [],
-				hash: "",
 				aspectRatio: 0,
 			}));
 
-			await illustrationRepository.registerTrackFileIllustration(
-				dummyRepository.trackA1_1,
-				"test/assets/dreams.m4a",
-			);
-			releaseIllustrationPath =
-				"test/assets/metadata/my-artist/my-album/my-album-1/cover.jpg";
+			const createdIllustration =
+				await illustrationRepository.registerTrackFileIllustration(
+					dummyRepository.trackA1_1,
+					"test/assets/dreams.m4a",
+				);
+			releaseIllustrationPath = `test/assets/metadata/${
+				createdIllustration!.id
+			}/cover.jpg`;
 			expect(fs.existsSync(releaseIllustrationPath)).toBe(true);
 			expect(fs.readFileSync(releaseIllustrationPath)).toStrictEqual(
 				fs.readFileSync("test/assets/cover.jpg"),
@@ -155,12 +156,22 @@ describe("Illustration Repository", () => {
 			).mockImplementation(() =>
 				fs.readFileSync("test/assets/cover1.jpg"),
 			);
-			await illustrationRepository.registerTrackFileIllustration(
-				dummyRepository.trackA1_1,
-				"test/assets/dreams.m4a",
-			);
-			discIllustrationPath =
-				"test/assets/metadata/my-artist/my-album/my-album-1/disc-1/cover.jpg";
+			jest.spyOn(
+				IllustrationService.prototype,
+				"getImageStats",
+			).mockImplementation(async () => ({
+				blurhash: "A",
+				colors: [],
+				aspectRatio: 0,
+			}));
+			const createdIllustration =
+				await illustrationRepository.registerTrackFileIllustration(
+					dummyRepository.trackA1_1,
+					"test/assets/dreams.m4a",
+				);
+			discIllustrationPath = `test/assets/metadata/${
+				createdIllustration!.id
+			}/cover.jpg`;
 			expect(fs.existsSync(discIllustrationPath)).toBe(true);
 			expect(fs.readFileSync(discIllustrationPath)).toStrictEqual(
 				fs.readFileSync("test/assets/cover1.jpg"),
@@ -178,12 +189,22 @@ describe("Illustration Repository", () => {
 			).mockImplementation(() =>
 				fs.readFileSync("test/assets/cover2.jpg"),
 			);
-			await illustrationRepository.registerTrackFileIllustration(
-				dummyRepository.trackA1_1,
-				"test/assets/dreams.m4a",
-			);
-			trackIllustrationPath =
-				"test/assets/metadata/my-artist/my-album/my-album-1/disc-1/track-2/cover.jpg";
+			jest.spyOn(
+				IllustrationService.prototype,
+				"getImageStats",
+			).mockImplementation(async () => ({
+				blurhash: "B",
+				colors: [],
+				aspectRatio: 0,
+			}));
+			const createdIllustration =
+				await illustrationRepository.registerTrackFileIllustration(
+					dummyRepository.trackA1_1,
+					"test/assets/dreams.m4a",
+				);
+			trackIllustrationPath = `test/assets/metadata/${
+				createdIllustration!.id
+			}/cover.jpg`;
 			expect(fs.existsSync(trackIllustrationPath)).toBe(true);
 			expect(fs.readFileSync(trackIllustrationPath)).toStrictEqual(
 				fs.readFileSync("test/assets/cover2.jpg"),

@@ -45,6 +45,7 @@ import Admin from "src/authentication/roles/admin.decorator";
 import { IllustrationDownloadDto } from "src/illustration/models/illustration-dl.dto";
 import IllustrationService from "src/illustration/illustration.service";
 import IllustrationRepository from "src/illustration/illustration.repository";
+import { IllustrationResponse } from "src/illustration/models/illustration.response";
 
 class Selector {
 	@IsOptional()
@@ -151,14 +152,13 @@ export default class ArtistController {
 		@IdentifierParam(ArtistService)
 		where: ArtistQueryParameters.WhereInput,
 		@Body() illustrationDto: IllustrationDownloadDto,
-	) {
+	): Promise<IllustrationResponse> {
 		return this.illustrationService
 			.downloadIllustration(illustrationDto.url)
 			.then((buffer) =>
-				this.illustrationRepository.saveArtistIllustration(
-					buffer,
-					where,
-				),
+				this.illustrationRepository
+					.saveArtistIllustration(buffer, where)
+					.then(IllustrationResponse.from),
 			);
 	}
 }

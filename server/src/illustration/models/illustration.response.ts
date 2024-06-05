@@ -25,9 +25,16 @@ export class IllustrationResponse extends Illustration {
 		example: "/illustrations/123",
 	})
 	url: string;
+
+	static from(illustration: Illustration): IllustrationResponse {
+		return {
+			...illustration,
+			url: "/illustrations/" + illustration.id,
+		};
+	}
 }
 
 export class IllustratedResponse {
 	@ApiProperty({ nullable: true })
-	illustration: IllustrationResponse;
+	illustration: IllustrationResponse | null;
 }

@@ -16,7 +16,7 @@ import {
 } from "test/expected-responses";
 import ProviderService from "src/providers/provider.service";
 import SettingsService from "src/settings/settings.service";
-import { SongType } from "@prisma/client";
+import { IllustrationType, SongType } from "@prisma/client";
 import Slug from "src/slug/slug";
 
 jest.setTimeout(60000);
@@ -543,15 +543,24 @@ describe("Song Controller", () => {
 
 	describe("Song Illustration", () => {
 		it("Should return the Song illustration", async () => {
-			const illustration =
+			const { illustration } =
 				await dummyRepository.releaseIllustration.create({
 					data: {
-						hash: "c",
-						releaseId: dummyRepository.compilationReleaseA1.id,
-						aspectRatio: 1,
-						blurhash: "A",
-						colors: ["B"],
+						release: {
+							connect: {
+								id: dummyRepository.compilationReleaseA1.id,
+							},
+						},
+						illustration: {
+							create: {
+								aspectRatio: 1,
+								blurhash: "A",
+								colors: ["B"],
+								type: IllustrationType.Cover,
+							},
+						},
 					},
+					include: { illustration: true },
 				});
 			return request(app.getHttpServer())
 				.get(`/songs/${dummyRepository.songC1.id}`)
@@ -562,9 +571,7 @@ describe("Song Controller", () => {
 						...song,
 						illustration: {
 							...illustration,
-							url:
-								"/illustrations/releases/" +
-								dummyRepository.compilationReleaseA1.id,
+							url: "/illustrations/" + illustration.id,
 						},
 					});
 				});

@@ -27,14 +27,16 @@ import ResponseBuilderInterceptor from "src/response/interceptors/response.inter
 import ExternalIdResponse, {
 	ExternalIdResponseBuilder,
 } from "src/providers/models/external-id.response";
-import { IllustratedResponse } from "src/illustration/models/illustration.response";
+import {
+	IllustratedResponse,
+	IllustrationResponse,
+} from "src/illustration/models/illustration.response";
 import IllustrationRepository from "src/illustration/illustration.repository";
 import {
 	TrackResponse,
 	TrackResponseBuilder,
 } from "src/track/models/track.response";
 import TrackService from "src/track/track.service";
-import { IllustrationType } from "@prisma/client";
 
 export class SongResponse extends IntersectionType(
 	Song,
@@ -72,12 +74,11 @@ export class SongResponseBuilder extends ResponseBuilderInterceptor<
 	async buildResponse(song: SongWithRelations): Promise<SongResponse> {
 		const response = <SongResponse>{
 			...song,
-			illustration: {
-				...(await this.illustrationRepository.getSongIllustration({
+			illustration: await this.illustrationRepository
+				.getSongIllustration({
 					id: song.id,
-				})),
-				type: IllustrationType.Cover,
-			},
+				})
+				.then((value) => value && IllustrationResponse.from(value)),
 		};
 
 		if (song.artist !== undefined) {

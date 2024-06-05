@@ -202,31 +202,30 @@ model Library {
 model Release {
     /// @description Unique numeric Release identifier
     /// @example 123
-    id           Int                   @id @default(autoincrement())
+    id                Int                   @id @default(autoincrement())
     /// @description The title of the release
     /// @example My Album
-    name         String                @db.Citext()
+    name              String                @db.Citext()
     /// @description The Extensions of the release
     /// @example ["Deluxe Edition"]
-    extensions   String[]
+    extensions        String[]
     /// @description String identifier of the release
     /// @example my-album-deluxe-edition
-    slug         String
+    slug              String
     /// @description The date of the release
-    releaseDate  DateTime?
+    releaseDate       DateTime?
     /// @description The tracks on the release
-    tracks       Track[]
+    tracks            Track[]
     /// @description The reference Album
-    album        Album                 @relation("Releases", fields: [albumId], references: [id])
+    album             Album                 @relation("Releases", fields: [albumId], references: [id])
     /// @description Unique numeric identifier of the parent album
     /// @example 123
-    albumId      Int
-    masterOf     Album?                @relation("Master")
+    albumId           Int
+    masterOf          Album?                @relation("Master")
     /// @description The date the release was registered
-    registeredAt DateTime              @default(now())
+    registeredAt      DateTime              @default(now())
     /// @description The related Illustrations
-    illustration ReleaseIllustration[]
-    /// @description Array of external IDs
+    illustrations     ReleaseIllustration[]
     externalIds  ReleaseExternalId[]
 
     @@unique([albumId, slug])
@@ -576,26 +575,17 @@ model PlaylistEntry {
 model ReleaseIllustration {
     /// @description Unique numeric identifier
     /// @example 123
-    id          Int      @id @default(autoincrement())
+    id             Int          @id @default(autoincrement())
     /// @description Related Release\'s Identifier
     /// @example 123
-    releaseId   Int
-    release     Release  @relation(fields: [releaseId], references: [id], onDelete: Cascade)
+    releaseId      Int
+    release        Release      @relation(fields: [releaseId], references: [id], onDelete: Cascade)
     /// @description The index of the disc. If null, the illustration is the \'main\' one
-    disc        Int?
+    disc           Int?
     /// @description The index of the track.
-    track       Int?
-    /// @description Blurhash value of the illustration. See https://github.com/woltapp/blurhash for more info.
-    /// @example LEHV6nWB2yk8pyo0adR*.7kCMdnj
-    blurhash    String
-    /// @description List of dominant colors in the image
-    /// @example ['#FFFFFF', '#123123', '#F0F0F0']
-    colors      String[]
-    /// @description MD5 Hash of The File
-    hash        String
-    /// @description Aspect Ratio of the image
-    /// @example 0.33
-    aspectRatio Float    @default(1)
+    track          Int?
+    illustrationId Int          @unique
+    illustration   Illustration @relation(fields: [illustrationId], references: [id], onDelete: Cascade)
 
     @@unique([releaseId, disc, track])
     @@map("release_illustrations")
@@ -631,9 +621,10 @@ enum IllustrationType {
 model Illustration {
     /// @description Unique numeric identifier
     /// @example 123
-    id          Int              @id @default(autoincrement())
+    id          Int                  @id @default(autoincrement())
     artist      Artist?
     playlist    Playlist?
+    release     ReleaseIllustration?
     /// @description Blurhash value of the illustration. See https://github.com/woltapp/blurhash for more info.
     /// @example LEHV6nWB2yk8pyo0adR*.7kCMdnj
     blurhash    String
@@ -642,7 +633,7 @@ model Illustration {
     colors      String[]
     /// @description Aspect Ratio of the image
     /// @example 0.33
-    aspectRatio Float            @default(1)
+    aspectRatio Float                @default(1)
     type        IllustrationType
 
     @@map("illustrations")

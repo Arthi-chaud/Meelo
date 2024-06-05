@@ -51,6 +51,7 @@ import Admin from "src/authentication/roles/admin.decorator";
 import { IllustrationDownloadDto } from "src/illustration/models/illustration-dl.dto";
 import IllustrationRepository from "src/illustration/illustration.repository";
 import IllustrationService from "src/illustration/illustration.service";
+import { IllustrationResponse } from "src/illustration/models/illustration.response";
 
 export class Selector {
 	@IsOptional()
@@ -188,14 +189,13 @@ export default class PlaylistController {
 		@IdentifierParam(PlaylistService)
 		where: PlaylistQueryParameters.WhereInput,
 		@Body() illustrationDto: IllustrationDownloadDto,
-	) {
+	): Promise<IllustrationResponse> {
 		const buffer = await this.illustrationService.downloadIllustration(
 			illustrationDto.url,
 		);
 
-		return this.illustrationRepository.savePlaylistIllustration(
-			buffer,
-			where,
-		);
+		return this.illustrationRepository
+			.savePlaylistIllustration(buffer, where)
+			.then(IllustrationResponse.from);
 	}
 }

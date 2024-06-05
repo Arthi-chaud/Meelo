@@ -31,6 +31,7 @@ import {
 } from "test/expected-responses";
 import ProvidersModule from "src/providers/providers.module";
 import ProviderService from "src/providers/provider.service";
+import { IllustrationType } from "@prisma/client";
 
 jest.setTimeout(60000);
 
@@ -626,15 +627,22 @@ describe("Release Controller", () => {
 
 	describe("Release Illustration", () => {
 		it("Should return the illustration", async () => {
-			const illustration =
+			const { illustration } =
 				await dummyRepository.releaseIllustration.create({
 					data: {
-						hash: "a",
-						releaseId: dummyRepository.releaseA1_2.id,
-						aspectRatio: 1,
-						blurhash: "A",
-						colors: ["B"],
+						release: {
+							connect: { id: dummyRepository.releaseA1_2.id },
+						},
+						illustration: {
+							create: {
+								aspectRatio: 1,
+								blurhash: "A",
+								colors: ["B"],
+								type: IllustrationType.Cover,
+							},
+						},
 					},
+					include: { illustration: true },
 				});
 			return request(app.getHttpServer())
 				.get(`/releases/${dummyRepository.releaseA1_2.id}`)
@@ -645,9 +653,7 @@ describe("Release Controller", () => {
 						...release,
 						illustration: {
 							...illustration,
-							url:
-								"/illustrations/releases/" +
-								dummyRepository.releaseA1_2.id,
+							url: "/illustrations/" + illustration.id,
 						},
 					});
 				});

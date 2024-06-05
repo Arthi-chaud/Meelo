@@ -19,14 +19,12 @@
 import { Inject, Injectable, forwardRef } from "@nestjs/common";
 import ArtistService from "src/artist/artist.service";
 import ArtistQueryParameters from "src/artist/models/artist.query-parameters";
-import { Illustration, ReleaseIllustration } from "src/prisma/models";
+import { Illustration } from "src/prisma/models";
 import PrismaService from "src/prisma/prisma.service";
 import IllustrationService from "./illustration.service";
 import SettingsService from "src/settings/settings.service";
-import { dirname, join } from "path";
-import compilationAlbumArtistKeyword from "src/constants/compilation";
+import { join } from "path";
 import Logger from "src/logger/logger";
-import { IllustrationResponse } from "./models/illustration.response";
 import TrackQueryParameters from "src/track/models/track.query-parameters";
 import TrackService from "src/track/track.service";
 import ReleaseQueryParameters from "src/release/models/release.query-parameters";
@@ -38,7 +36,6 @@ import PlaylistQueryParameters from "src/playlist/models/playlist.query-paramete
 import PlaylistService from "src/playlist/playlist.service";
 import FileManagerService from "src/file-manager/file-manager.service";
 import ScannerService from "src/scanner/scanner.service";
-import md5 from "md5";
 import { IllustrationNotFoundException } from "./illustration.exceptions";
 import { IllustrationType } from "@prisma/client";
 
@@ -82,75 +79,10 @@ export default class IllustrationRepository {
 		);
 	}
 
-	buildAlbumIllustrationFolderPath(
-		artistSlug: string | undefined,
-		albumSlug: string,
-	): string {
-		return join(
-			this.baseIllustrationFolderPath,
-			artistSlug ?? compilationAlbumArtistKeyword,
-			albumSlug,
-		);
-	}
-
-	buildReleaseIllustrationPath(
-		artistSlug: string | undefined,
-		albumSlug: string,
-		releaseSlug: string,
-	): string {
-		return join(
-			this.buildAlbumIllustrationFolderPath(artistSlug, albumSlug),
-			releaseSlug,
-			this.illustrationFileName,
-		);
-	}
-
-	buildDiscIllustrationPath(
-		artistSlug: string | undefined,
-		albumSlug: string,
-		releaseSlug: string,
-		discIndex?: number,
-	): string {
-		return join(
-			dirname(
-				this.buildReleaseIllustrationPath(
-					artistSlug,
-					albumSlug,
-					releaseSlug,
-				),
-			),
-			`disc-${discIndex ?? 0}`,
-			this.illustrationFileName,
-		);
-	}
-
-	buildTrackIllustrationPath(
-		artistSlug: string | undefined,
-		albumSlug: string,
-		releaseSlug: string,
-		discIndex?: number,
-		trackIndex?: number,
-	): string {
-		return join(
-			dirname(
-				this.buildDiscIllustrationPath(
-					artistSlug,
-					albumSlug,
-					releaseSlug,
-					discIndex,
-				),
-			),
-			`track-${trackIndex ?? 0}`,
-			this.illustrationFileName,
-		);
-	}
-
 	/**
 	 * Get the Illustration row
 	 */
-	async getIllustration(
-		illustrationId: number,
-	): Promise<IllustrationResponse> {
+	async getIllustration(illustrationId: number): Promise<Illustration> {
 		const illustration = await this.prismaService.illustration
 			.findFirstOrThrow({
 				where: { id: illustrationId },
@@ -159,10 +91,7 @@ export default class IllustrationRepository {
 				throw new IllustrationNotFoundException(illustrationId);
 			});
 
-		return {
-			...illustration,
-			url: "/illustrations/" + illustration.id,
-		};
+		return illustration;
 	}
 
 	async getReleaseIllustrationResponse(
@@ -175,75 +104,19 @@ export default class IllustrationRepository {
 	private async getReleaseIllustration(
 		where: ReleaseQueryParameters.WhereInput,
 		disc?: number, // This is only used internally
-	): Promise<(ReleaseIllustration & IllustrationResponse) | null> {
-		return this.prismaService.releaseIllustration
-			.findFirst({
-				where: {
+	): Promise<Illustration | null> {
+		return this.prismaService.illustration.findFirst({
+			where: {
+				release: {
 					release: ReleaseService.formatWhereInput(where),
 					track: null, // We want to avoid track-specific illustrations
 					...(disc === 1
 						? { OR: [{ disc: null }, { disc: 1 }] }
 						: { disc }),
 				},
-				orderBy: { disc: { nulls: "first", sort: "asc" } },
-			})
-			.then(
-				(value) =>
-					value && {
-						...value,
-						type: IllustrationType.Cover,
-						url:
-							`/illustrations/releases/${value.releaseId}` +
-							(disc && disc != 1 ? `?disc=${disc}` : ""),
-					},
-			);
-	}
-
-	async resolveReleaseIllustrationPath(releaseIllustrationId: number) {
-		const data =
-			await this.prismaService.releaseIllustration.findFirstOrThrow({
-				where: { id: releaseIllustrationId },
-				select: {
-					disc: true,
-					track: true,
-					release: {
-						select: {
-							slug: true,
-							album: {
-								select: {
-									slug: true,
-									artist: {
-										select: {
-											slug: true,
-										},
-									},
-								},
-							},
-						},
-					},
-				},
-			});
-		if (data?.track) {
-			return this.buildTrackIllustrationPath(
-				data.release.album.artist?.slug,
-				data.release.album.slug,
-				data.release.slug,
-				data.disc ?? undefined,
-				data.track,
-			);
-		} else if (data?.disc) {
-			return this.buildDiscIllustrationPath(
-				data.release.album.artist?.slug,
-				data.release.album.slug,
-				data.release.slug,
-				data.disc,
-			);
-		}
-		return this.buildReleaseIllustrationPath(
-			data.release.album.artist?.slug,
-			data.release.album.slug,
-			data.release.slug,
-		);
+			},
+			orderBy: { release: { disc: { nulls: "first", sort: "asc" } } },
+		});
 	}
 
 	async getSongIllustration(where: SongQueryParameters.WhereInput) {
@@ -255,7 +128,7 @@ export default class IllustrationRepository {
 
 	async getAlbumIllustration(
 		where: AlbumQueryParameters.WhereInput,
-	): Promise<(ReleaseIllustration & IllustrationResponse) | null> {
+	): Promise<Illustration | null> {
 		return this.releaseService
 			.getMasterRelease(where)
 			.then((release) => this.getReleaseIllustration({ id: release.id }));
@@ -267,11 +140,11 @@ export default class IllustrationRepository {
 	async getTrackIllustration(where: TrackQueryParameters.WhereInput) {
 		const track = await this.trackService.get(where);
 
-		return this.prismaService.releaseIllustration
-			.findFirst({
-				where: {
+		return this.prismaService.illustration.findFirst({
+			where: {
+				release: {
 					release: {
-						tracks: { some: TrackService.formatWhereInput(where) },
+						id: track.releaseId,
 					},
 					OR: [
 						{ disc: track.discIndex, track: track.trackIndex },
@@ -279,27 +152,9 @@ export default class IllustrationRepository {
 						{ disc: null, track: null },
 					],
 				},
-				orderBy: { disc: { nulls: "last", sort: "asc" } },
-			})
-			.then((value) => {
-				if (!value) {
-					return null;
-				}
-				if (value.track) {
-					return {
-						...value,
-						url: "/illustrations/tracks/" + track.id,
-					};
-				}
-				return {
-					...value,
-					url:
-						`/illustrations/releases/${track.releaseId}` +
-						(value.disc && value.disc != 1
-							? `?disc=${value.disc}`
-							: ""),
-				};
-			});
+			},
+			orderBy: { release: { disc: { nulls: "last", sort: "asc" } } },
+		});
 	}
 
 	async saveArtistIllustration(
@@ -310,7 +165,10 @@ export default class IllustrationRepository {
 		if (artist.illustrationId !== null) {
 			await this.deleteIllustration(artist.illustrationId);
 		}
-		const newIllustration = await this.saveIllustration(buffer);
+		const newIllustration = await this.saveIllustration(
+			buffer,
+			IllustrationType.Avatar,
+		);
 
 		await this.prismaService.artist.update({
 			data: { illustrationId: newIllustration.id },
@@ -336,7 +194,10 @@ export default class IllustrationRepository {
 		return newIllustration;
 	}
 
-	private async saveIllustration(buffer: Buffer): Promise<Illustration> {
+	private async saveIllustration(
+		buffer: Buffer,
+		type: IllustrationType = IllustrationType.Cover,
+	): Promise<Illustration> {
 		const { blurhash, colors, aspectRatio } =
 			await this.illustrationService.getImageStats(buffer);
 
@@ -345,7 +206,7 @@ export default class IllustrationRepository {
 				blurhash,
 				colors,
 				aspectRatio,
-				type: IllustrationType.Avatar,
+				type,
 			},
 		});
 
@@ -354,105 +215,39 @@ export default class IllustrationRepository {
 		return newIllustration;
 	}
 
-	async createReleaseIllustration(
+	async saveReleaseIllustration(
 		buffer: Buffer,
 		disc: number | null,
+		track: number | null,
 		where: ReleaseQueryParameters.WhereInput,
-	): Promise<ReleaseIllustration> {
-		const release = await this.releaseService.get(where, { album: true });
-		const artist = release.album.artistId
-			? await this.artistService.get({ id: release.album.artistId })
-			: null;
-		const releaseIllustrationPath = disc
-			? this.buildDiscIllustrationPath(
-					artist?.slug,
-					release.album.slug,
-					release.slug,
-					disc,
-			  )
-			: this.buildReleaseIllustrationPath(
-					artist?.slug,
-					release.album.slug,
-					release.slug,
-			  );
-		const { blurhash, colors, aspectRatio, hash } =
-			await this.illustrationService.getImageStats(buffer);
-		const previousIllustration = await this.getReleaseIllustration(
-			where,
-			disc ?? undefined,
+		type: IllustrationType = IllustrationType.Cover,
+		imageStats?: Awaited<ReturnType<IllustrationService["getImageStats"]>>,
+	): Promise<Illustration> {
+		const releaseIllustrations = await this.getReleaseIllustrations(where);
+		const previousIllustration = releaseIllustrations.find(
+			(i) => i.disc === disc && i.track === track,
 		);
-
-		this.illustrationService.saveIllustration(
-			buffer,
-			releaseIllustrationPath,
-		);
-		if (previousIllustration && previousIllustration.disc == disc) {
-			return this.prismaService.releaseIllustration.update({
-				where: { id: previousIllustration.id },
-				data: { blurhash, colors, aspectRatio, hash },
-			});
+		if (previousIllustration) {
+			await this.deleteIllustration(previousIllustration.illustration.id);
 		}
-		return this.prismaService.releaseIllustration.create({
+		imageStats ??= await this.illustrationService.getImageStats(buffer);
+		const release = await this.releaseService.get(where);
+		const newIllustration = await this.prismaService.illustration.create({
 			data: {
-				blurhash,
-				colors,
-				aspectRatio,
-				hash,
-				releaseId: release.id,
-				disc: disc,
-			},
-		});
-	}
-
-	// Creates track-specific illustration
-	async createTrackIllustration(
-		buffer: Buffer,
-		where: TrackQueryParameters.WhereInput,
-	): Promise<ReleaseIllustration> {
-		const track = await this.trackService.get(where);
-		const release = await this.releaseService.get(
-			{ id: track.releaseId },
-			{ album: true },
-		);
-		const artist = release.album.artistId
-			? await this.artistService.get({ id: release.album.artistId })
-			: null;
-		const { blurhash, colors, aspectRatio, hash } =
-			await this.illustrationService.getImageStats(buffer);
-
-		this.illustrationService.saveIllustration(
-			buffer,
-			this.buildTrackIllustrationPath(
-				artist?.slug,
-				release.album.slug,
-				release.slug,
-				track.discIndex ?? undefined,
-				track.trackIndex ?? undefined,
-			),
-		);
-		const previousTrackIllustration = await this.getTrackIllustration(
-			where,
-		);
-
-		if (previousTrackIllustration && previousTrackIllustration.track) {
-			return this.prismaService.releaseIllustration.update({
-				where: {
-					id: previousTrackIllustration.id,
+				...imageStats,
+				type,
+				release: {
+					create: {
+						disc,
+						track,
+						releaseId: release.id,
+					},
 				},
-				data: { blurhash, colors, aspectRatio, hash },
-			});
-		}
-		return this.prismaService.releaseIllustration.create({
-			data: {
-				blurhash,
-				colors,
-				aspectRatio,
-				hash,
-				releaseId: track.releaseId,
-				disc: track.discIndex,
-				track: track.trackIndex,
 			},
 		});
+		const illustrationPath = this.buildIllustrationPath(newIllustration.id);
+		this.illustrationService.saveIllustration(buffer, illustrationPath);
+		return newIllustration;
 	}
 
 	/**
@@ -477,102 +272,6 @@ export default class IllustrationRepository {
 	}
 
 	/**
-	 * Deletes Album Illustrations (File + info in DB)
-	 */
-	async deleteAlbumIllustrations(
-		where: AlbumQueryParameters.WhereInput,
-	): Promise<void> {
-		const releases = await this.releaseService.getMany({ album: where });
-
-		await Promise.all(
-			releases.map((release) =>
-				this.deleteReleaseIllustration(
-					{ id: release.id },
-					{ withFolder: true },
-				),
-			),
-		);
-	}
-
-	/**
-	 * Deletes Release Illustration (File + info in DB)
-	 */
-	async deleteReleaseIllustration(
-		where: ReleaseQueryParameters.WhereInput,
-		opt: { withFolder: boolean },
-		discNumber?: number | null,
-	): Promise<void> {
-		const release = await this.prismaService.release
-			.findFirstOrThrow({
-				where: ReleaseService.formatWhereInput(where),
-				include: {
-					album: { include: { artist: true } },
-					tracks: { take: 1 },
-				},
-			})
-			.catch(async (err) => {
-				throw await this.releaseService.onNotFound(err, where);
-			});
-		const illustrationPath = discNumber
-			? // If disc is specified, we target its directory
-			  this.buildDiscIllustrationPath(
-					release.album.artist?.slug,
-					release.album.slug,
-					release.slug,
-					discNumber,
-					// Else, we get the release's folder
-			  )
-			: this.buildReleaseIllustrationPath(
-					release.album.artist?.slug,
-					release.album.slug,
-					release.slug,
-			  );
-
-		if (opt.withFolder) {
-			this.illustrationService.deleteIllustrationFolder(
-				dirname(illustrationPath),
-			);
-		} else {
-			this.illustrationService.deleteIllustration(illustrationPath);
-		}
-		this.prismaService.releaseIllustration
-			.deleteMany({
-				where: {
-					release: ReleaseService.formatWhereInput(where),
-					disc: discNumber,
-				},
-			})
-			.catch(() => {});
-	}
-
-	/**
-	 * Deletes Track Illustration (File + info in DB)
-	 */
-	async deleteTrackIllustration(
-		where: TrackQueryParameters.WhereInput,
-	): Promise<void> {
-		const illustration = await this.getTrackIllustration(where);
-
-		if (!illustration) {
-			return;
-		}
-		const illustrationPath = await this.resolveReleaseIllustrationPath(
-			illustration.id,
-		);
-
-		this.illustrationService.deleteIllustrationFolder(
-			dirname(illustrationPath),
-		);
-		this.prismaService.releaseIllustration
-			.delete({
-				where: {
-					id: illustration.id,
-				},
-			})
-			.catch(() => {});
-	}
-
-	/**
 	 * Extract the illustration embedded into/in the same folder as the source file
 	 * Then creates illustration item in DB (according to the type (release, disc, or track))
 	 * @returns the path of the saved file
@@ -580,8 +279,7 @@ export default class IllustrationRepository {
 	async registerTrackFileIllustration(
 		where: TrackQueryParameters.WhereInput,
 		sourceFilePath: string,
-	): Promise<void> {
-		const previousIllustrationItem = await this.getTrackIllustration(where);
+	): Promise<Illustration | null> {
 		const [embeddedIllustration, inlineIllustration] = await Promise.all([
 			this.scannerService.extractIllustrationFromFile(sourceFilePath),
 			this.scannerService.extractIllustrationInFileFolder(sourceFilePath),
@@ -595,55 +293,92 @@ export default class IllustrationRepository {
 				: null);
 
 		if (extractedIllustration == null) {
-			return;
+			return null;
 		}
 		const track = await this.trackService.get(where, { release: true });
-		const illustrationBytes = extractedIllustration;
-		if (!previousIllustrationItem) {
-			await this.createReleaseIllustration(illustrationBytes, null, {
-				id: track.releaseId,
-			});
-		} else {
-			// const jimpImage = await Jimp.read(illustrationBytes);
-			if (md5(illustrationBytes) == previousIllustrationItem.hash) {
-				// The image has already been registered
-				return;
-			}
-			// If the previous illustration is already track-specific
-			if (
-				previousIllustrationItem.disc &&
-				previousIllustrationItem.track
-			) {
-				this.logger.error(
-					`An Illustration for '${track.name}' already exist... Skipping.`,
-				);
-				return;
-			} else if (previousIllustrationItem?.disc) {
-				// If the previous illustration is already disc-specific
-				await this.createTrackIllustration(illustrationBytes, {
-					id: track.id,
-				});
-			} else {
-				// If the previous illustration is release only,
-				// We create one for the disc
-				await this.createReleaseIllustration(
-					illustrationBytes,
-					track.discIndex,
-					{
-						id: track.releaseId,
-					},
-				);
-			}
-		}
-		this.logger.verbose(
-			`Extracting Illustration for '${track.release.name}' successful.`,
+		const parentReleaseIllustrations = await this.getReleaseIllustrations({
+			id: track.releaseId,
+		});
+		const parentReleaseMainIllustration = parentReleaseIllustrations.find(
+			(i) => i.disc === null && i.track === null,
 		);
+		const parentDiscIllustration = parentReleaseIllustrations.find(
+			(i) => i.disc !== null && i.disc === track.discIndex,
+		);
+		const illustrationBytes = extractedIllustration;
+		if (
+			parentReleaseIllustrations.length == 0 ||
+			parentReleaseMainIllustration === undefined
+		) {
+			const newIllustration = await this.saveReleaseIllustration(
+				illustrationBytes,
+				null,
+				null,
+				{
+					id: track.releaseId,
+				},
+				IllustrationType.Cover,
+			);
+			this.logger.verbose(
+				`Extracting Illustration for '${track.release.name}' successful.`,
+			);
+			return newIllustration;
+		}
+		const imageStats = await this.illustrationService.getImageStats(
+			illustrationBytes,
+		);
+		if (
+			imageStats.blurhash ==
+			parentReleaseMainIllustration.illustration.blurhash
+		) {
+			// The scanned illustration is the release's main one
+			return null;
+		}
+		if (!parentDiscIllustration) {
+			// If the track's disc does not have an illustration, save the scanned one
+			return this.saveReleaseIllustration(
+				illustrationBytes,
+				track.discIndex,
+				null,
+				{
+					id: track.releaseId,
+				},
+				IllustrationType.Cover,
+				imageStats,
+			);
+		} else if (
+			parentDiscIllustration.illustration.blurhash !== imageStats.blurhash
+		) {
+			// If the track's disc's illustration is NOT the scanned one, save the acanned one as track specific
+			return this.saveReleaseIllustration(
+				illustrationBytes,
+				track.discIndex,
+				track.trackIndex,
+				{
+					id: track.releaseId,
+				},
+				IllustrationType.Cover,
+				imageStats,
+			);
+		}
+		return null;
+	}
+
+	public async getReleaseIllustrations(
+		where: ReleaseQueryParameters.WhereInput,
+	) {
+		return this.prismaService.releaseIllustration.findMany({
+			where: {
+				release: ReleaseService.formatWhereInput(where),
+			},
+			include: { illustration: true },
+		});
 	}
 
 	async registerVideoTrackScreenshot(
 		where: TrackQueryParameters.WhereInput,
 		sourceFilePath: string,
-	): Promise<ReleaseIllustration | null> {
+	): Promise<Illustration | null> {
 		const track = await this.trackService.get(where);
 
 		if (track.type != "Video") {
@@ -658,61 +393,15 @@ export default class IllustrationRepository {
 			sourceFilePath,
 			tmpFilePath,
 		);
-		return this.createTrackIllustration(
+		return this.saveReleaseIllustration(
 			await this.fileManagerService.getFileBuffer(tmpFilePath),
-			where,
-		).then((res) => {
+			track.discIndex,
+			track.trackIndex,
+			{ id: track.releaseId },
+			IllustrationType.Thumbnail,
+		).finally(() => {
 			this.fileManagerService.deleteFile(tmpFilePath);
-			return res;
 		});
-	}
-
-	/**
-	 * Move an album's illustrations folder to another artist
-	 */
-	reassignAlbumIllustration(
-		albumSlug: string,
-		previousArtistSlug: string | undefined,
-		newArtistSlug: string | undefined,
-	) {
-		const oldPath = this.buildAlbumIllustrationFolderPath(
-			previousArtistSlug,
-			albumSlug,
-		);
-		const newPath = this.buildAlbumIllustrationFolderPath(
-			newArtistSlug,
-			albumSlug,
-		);
-
-		this.illustrationService.moveIllustrationFolder(oldPath, newPath);
-	}
-
-	/**
-	 * Move a release's illustrations folder
-	 */
-	reassignReleaseIllustration(
-		releaseSlug: string,
-		oldAlbumSlug: string,
-		newAlbumSlug: string,
-		oldArtistSlug?: string,
-		newArtistSlug?: string,
-	) {
-		const oldPath = dirname(
-			this.buildReleaseIllustrationPath(
-				oldArtistSlug,
-				oldAlbumSlug,
-				releaseSlug,
-			),
-		);
-		const newPath = dirname(
-			this.buildReleaseIllustrationPath(
-				newArtistSlug,
-				newAlbumSlug,
-				releaseSlug,
-			),
-		);
-
-		this.illustrationService.moveIllustrationFolder(oldPath, newPath);
 	}
 
 	async downloadMissingArtistIllustrations() {

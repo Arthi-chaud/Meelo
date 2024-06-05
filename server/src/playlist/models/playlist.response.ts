@@ -25,9 +25,11 @@ import {
 	SongResponseBuilder,
 } from "src/song/models/song.response";
 import SongService from "src/song/song.service";
-import { IllustratedResponse } from "src/illustration/models/illustration.response";
+import {
+	IllustratedResponse,
+	IllustrationResponse,
+} from "src/illustration/models/illustration.response";
 import IllustrationRepository from "src/illustration/illustration.repository";
-import { IllustrationType } from "@prisma/client";
 
 export class PlaylistEntryResponse extends SongResponse {
 	@ApiProperty({
@@ -70,12 +72,12 @@ export class PlaylistResponseBuilder extends ResponseBuilderInterceptor<
 			illustration:
 				playlist.illustrationId === null
 					? null
-					: {
-							...(await this.illustrationRepository.getIllustration(
-								playlist.illustrationId,
-							)),
-							type: IllustrationType.Cover,
-					  },
+					: await this.illustrationRepository
+							.getIllustration(playlist.illustrationId)
+							.then(
+								(value) =>
+									value && IllustrationResponse.from(value),
+							),
 		};
 
 		if (playlist.entries !== undefined) {

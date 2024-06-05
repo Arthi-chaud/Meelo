@@ -23,7 +23,10 @@ import {
 	AlbumResponseBuilder,
 } from "src/album/models/album.response";
 import IllustrationRepository from "src/illustration/illustration.repository";
-import { IllustratedResponse } from "src/illustration/models/illustration.response";
+import {
+	IllustratedResponse,
+	IllustrationResponse,
+} from "src/illustration/models/illustration.response";
 import { Release, ReleaseWithRelations } from "src/prisma/models";
 import ExternalIdResponse, {
 	ExternalIdResponseBuilder,
@@ -62,12 +65,11 @@ export class ReleaseResponseBuilder extends ResponseBuilderInterceptor<
 	): Promise<ReleaseResponse> {
 		const response = <ReleaseResponse>{
 			...release,
-			illustration:
-				await this.illustrationRepository.getReleaseIllustrationResponse(
-					{
-						id: release.id,
-					},
-				),
+			illustration: await this.illustrationRepository
+				.getReleaseIllustrationResponse({
+					id: release.id,
+				})
+				.then((value) => value && IllustrationResponse.from(value)),
 		};
 
 		if (release.album !== undefined) {

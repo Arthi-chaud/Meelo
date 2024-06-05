@@ -94,40 +94,6 @@ describe("Illustration Service", () => {
 					Buffer.from("ABCDE"),
 				);
 			});
-
-			it("should extract the illustration to the file, with success status", async () => {
-				fs.rmSync(outPath);
-				const status = await illustrationService[
-					"saveIllustrationWithStatus"
-				](Buffer.from("ABC"), outPath);
-				expect(fs.existsSync(outPath)).toBe(true);
-				expect(fs.readFileSync(outPath)).toStrictEqual(
-					Buffer.from("ABC"),
-				);
-				expect(status).toBe("extracted");
-			});
-
-			it("should not extract the illustration to the file, with 'already-extracted' status", async () => {
-				const status = await illustrationService[
-					"saveIllustrationWithStatus"
-				](Buffer.from("ABC"), outPath);
-				expect(fs.existsSync(outPath)).toBe(true);
-				expect(fs.readFileSync(outPath)).toStrictEqual(
-					Buffer.from("ABC"),
-				);
-				expect(status).toBe("already-extracted");
-			});
-
-			it("should not extract the illustration to the file, with 'different-illustration' status", async () => {
-				const status = await illustrationService[
-					"saveIllustrationWithStatus"
-				](Buffer.from("ABCD"), outPath);
-				expect(fs.existsSync(outPath)).toBe(true);
-				expect(fs.readFileSync(outPath)).toStrictEqual(
-					Buffer.from("ABC"),
-				);
-				expect(status).toBe("different-illustration");
-			});
 		});
 	});
 });
