@@ -23,6 +23,7 @@ import ProvidersModule from "src/providers/providers.module";
 import compilationAlbumArtistKeyword from "src/constants/compilation";
 import { IllustrationType } from "@prisma/client";
 import { Illustration } from "src/prisma/models";
+import { IllustrationResponse } from "./models/illustration.response";
 
 jest.setTimeout(60000);
 
@@ -107,129 +108,6 @@ describe("Illustration Controller", () => {
 		});
 	});
 
-	describe("Update Artist Illustration", () => {
-		it("should create the artist illustration", () => {
-			return request(app.getHttpServer())
-				.post(`/artists/${dummyRepository.artistB.id}/illustration`)
-				.send({
-					url: illustrationUrlExample,
-				})
-				.expect(201)
-				.expect(async () => {
-					expect(
-						fileManagerService.fileExists(
-							`test/assets/metadata/${dummyRepository.artistB.slug}/cover.jpg`,
-						),
-					);
-				});
-		});
-		it("should update the artist illustration", () => {
-			return request(app.getHttpServer())
-				.post(`/artists/${dummyRepository.artistB.id}/illustration`)
-				.send({
-					url: illustration2UrlExample,
-				})
-				.expect(201)
-				.expect(async () => {
-					expect(
-						fileManagerService.fileExists(
-							`test/assets/metadata/${dummyRepository.artistB.slug}/cover.jpg`,
-						),
-					);
-				});
-		});
-		it("should return 404, when artist does not exist", () => {
-			return request(app.getHttpServer())
-				.post(`/artists/-1/artists`)
-				.send({
-					url: illustrationUrlExample,
-				})
-				.expect(404);
-		});
-	});
-
-	describe("Update Release Illustration", () => {
-		it("should create the release illustration", async () => {
-			const releaseIllustrationPath = `${baseMetadataFolder}/${dummyRepository.artistB.slug}/${dummyRepository.albumB1.slug}/${dummyRepository.releaseB1_1.slug}/cover.jpg`;
-			return request(app.getHttpServer())
-				.post(
-					`/releases/${dummyRepository.releaseB1_1.id}/illustration`,
-				)
-				.send({
-					url: illustrationUrlExample,
-				})
-				.expect(201)
-				.expect(async () => {
-					expect(
-						fileManagerService.fileExists(releaseIllustrationPath),
-					);
-				});
-		});
-		it("should update the release illustration", async () => {
-			const releaseIllustrationPath = `${baseMetadataFolder}/${dummyRepository.artistB.slug}/${dummyRepository.albumB1.slug}/${dummyRepository.releaseB1_1.slug}/cover.jpg`;
-			return request(app.getHttpServer())
-				.post(
-					`/releases/${dummyRepository.releaseB1_1.id}/illustration`,
-				)
-				.send({
-					url: illustration2UrlExample,
-				})
-				.expect(201)
-				.expect(async (r) => {
-					expect(
-						fileManagerService.fileExists(releaseIllustrationPath),
-					);
-				});
-		});
-		it("should return 404, when release does not exist", () => {
-			return request(app.getHttpServer())
-				.post(`/releases/-1/illustration`)
-				.send({
-					url: illustrationUrlExample,
-				})
-				.expect(404);
-		});
-	});
-
-	describe("Update Track Illustration", () => {
-		it("should create the track illustration", async () => {
-			const trackIllustrationPath = `${baseMetadataFolder}/${compilationAlbumArtistKeyword}/${dummyRepository.compilationAlbumA.slug}/${dummyRepository.compilationReleaseA1.slug}/disc-0/track-0/cover.jpg`;
-			return request(app.getHttpServer())
-				.post(`/tracks/${dummyRepository.trackC1_1.id}/illustration`)
-				.send({
-					url: illustrationUrlExample,
-				})
-				.expect(201)
-				.expect(async () => {
-					expect(
-						fileManagerService.fileExists(trackIllustrationPath),
-					);
-				});
-		});
-		it("should update the track illustration", async () => {
-			const trackIllustrationPath = `${baseMetadataFolder}/${compilationAlbumArtistKeyword}/${dummyRepository.compilationAlbumA.slug}/${dummyRepository.compilationReleaseA1.slug}/disc-0/track-0/cover.jpg`;
-			return request(app.getHttpServer())
-				.post(`/tracks/${dummyRepository.trackC1_1.id}/illustration`)
-				.send({
-					url: illustrationUrlExample,
-				})
-				.expect(201)
-				.expect(async () => {
-					expect(
-						fileManagerService.fileExists(trackIllustrationPath),
-					);
-				});
-		});
-		it("should return 404, when track does not exist", () => {
-			return request(app.getHttpServer())
-				.post(`/tracks/-1/illustration`)
-				.send({
-					url: illustrationUrlExample,
-				})
-				.expect(404);
-		});
-	});
-
 	describe("Delete Illustration", () => {
 		it("should delete the illustration", () => {
 			return request(app.getHttpServer())
@@ -250,6 +128,142 @@ describe("Illustration Controller", () => {
 		});
 	});
 
+	describe("Update Artist Illustration", () => {
+		let firstIllustration: IllustrationResponse | null = null;
+		it("should create the artist illustration", () => {
+			return request(app.getHttpServer())
+				.post(`/artists/${dummyRepository.artistB.id}/illustration`)
+				.send({
+					url: illustrationUrlExample,
+				})
+				.expect(201)
+				.expect((res) => {
+					const illustration = res.body;
+					firstIllustration = illustration;
+					expect(
+						fileManagerService.fileExists(
+							`test/assets/metadata/${illustration.id}/cover.jpg`,
+						),
+					).toBe(true);
+				});
+		});
+		it("should update the artist illustration", () => {
+			return request(app.getHttpServer())
+				.post(`/artists/${dummyRepository.artistB.id}/illustration`)
+				.send({
+					url: illustration2UrlExample,
+				})
+				.expect(201)
+				.expect((res) => {
+					const illustration = res.body;
+					expect(
+						fileManagerService.fileExists(
+							`test/assets/metadata/${illustration.id}/cover.jpg`,
+						),
+					).toBe(true);
+					expect(
+						fileManagerService.fileExists(
+							`test/assets/metadata/${
+								firstIllustration!.id
+							}/cover.jpg`,
+						),
+					).toBe(false);
+				});
+		});
+		it("should return 404, when artist does not exist", () => {
+			return request(app.getHttpServer())
+				.post(`/artists/-1/artists`)
+				.send({
+					url: illustrationUrlExample,
+				})
+				.expect(404);
+		});
+	});
+
+	describe("Update Release Illustration", () => {
+		let firstIllustration: IllustrationResponse | null = null;
+		it("should create the release illustration", async () => {
+			return request(app.getHttpServer())
+				.post(
+					`/releases/${dummyRepository.releaseB1_1.id}/illustration`,
+				)
+				.send({
+					url: illustrationUrlExample,
+				})
+				.expect(201)
+				.expect((res) => {
+					const illustration = res.body;
+					firstIllustration = illustration;
+					expect(
+						fileManagerService.fileExists(
+							`test/assets/metadata/${illustration.id}/cover.jpg`,
+						),
+					).toBe(true);
+				});
+		});
+		it("should update the release illustration", async () => {
+			return request(app.getHttpServer())
+				.post(
+					`/releases/${dummyRepository.releaseB1_1.id}/illustration`,
+				)
+				.send({
+					url: illustration2UrlExample,
+				})
+				.expect(201)
+				.expect((res) => {
+					const illustration = res.body;
+					expect(
+						fileManagerService.fileExists(
+							`test/assets/metadata/${illustration.id}/cover.jpg`,
+						),
+					).toBe(true);
+
+					expect(
+						fileManagerService.fileExists(
+							`test/assets/metadata/${
+								firstIllustration!.id
+							}/cover.jpg`,
+						),
+					).toBe(false);
+				});
+		});
+		it("should return 404, when release does not exist", () => {
+			return request(app.getHttpServer())
+				.post(`/releases/-1/illustration`)
+				.send({
+					url: illustrationUrlExample,
+				})
+				.expect(404);
+		});
+	});
+
+	describe("Update Track Illustration", () => {
+		it("should create the track illustration", async () => {
+			return request(app.getHttpServer())
+				.post(`/tracks/${dummyRepository.trackC1_1.id}/illustration`)
+				.send({
+					url: illustrationUrlExample,
+				})
+				.expect(201)
+				.expect((res) => {
+					const illustration = res.body;
+					expect(
+						fileManagerService.fileExists(
+							`test/assets/metadata/${illustration.id}/cover.jpg`,
+						),
+					).toBe(true);
+				});
+		});
+		it("should return 404, when track does not exist", () => {
+			return request(app.getHttpServer())
+				.post(`/tracks/-1/illustration`)
+				.send({
+					url: illustrationUrlExample,
+				})
+				.expect(404);
+		});
+	});
+
 	describe("Update Playlist Illustration", () => {
 		it("should create the Playlist illustration", () => {
 			return request(app.getHttpServer())
@@ -258,27 +272,13 @@ describe("Illustration Controller", () => {
 					url: illustrationUrlExample,
 				})
 				.expect(201)
-				.expect(async () => {
+				.expect((res) => {
+					const illustration = res.body;
 					expect(
 						fileManagerService.fileExists(
-							`test/assets/metadata/_playlists/${dummyRepository.playlist1.slug}/cover.jpg`,
+							`test/assets/metadata/${illustration.id}/cover.jpg`,
 						),
-					);
-				});
-		});
-		it("should update the playlist illustration", () => {
-			return request(app.getHttpServer())
-				.post(`/playlists/${dummyRepository.playlist1.id}/illustration`)
-				.send({
-					url: illustration2UrlExample,
-				})
-				.expect(201)
-				.expect(async () => {
-					expect(
-						fileManagerService.fileExists(
-							`test/assets/metadata/_playlists/${dummyRepository.playlist1.slug}/cover.jpg`,
-						),
-					);
+					).toBe(true);
 				});
 		});
 		it("should return 404, when playlist does not exist", () => {
