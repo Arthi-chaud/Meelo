@@ -475,7 +475,7 @@ export default class API {
 		resourceType: "artists" | "releases" | "tracks" | "playlists",
 	): Promise<unknown> {
 		return API.fetch({
-			route: `/illustrations/${resourceType}/${resourceSlugOrId}`,
+			route: `/${resourceType}/${resourceSlugOrId}/illustration`,
 			errorMessage: "Update Illustration Failed",
 			method: "POST",
 			parameters: {},

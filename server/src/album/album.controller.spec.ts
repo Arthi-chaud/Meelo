@@ -529,6 +529,7 @@ describe("Album Controller", () => {
 						release: {
 							connect: { id: dummyRepository.releaseA1_1.id },
 						},
+						hash: "a",
 						illustration: {
 							create: {
 								type: IllustrationType.Cover,

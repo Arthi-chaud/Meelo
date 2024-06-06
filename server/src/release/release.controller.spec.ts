@@ -633,6 +633,7 @@ describe("Release Controller", () => {
 						release: {
 							connect: { id: dummyRepository.releaseA1_2.id },
 						},
+						hash: "a",
 						illustration: {
 							create: {
 								aspectRatio: 1,

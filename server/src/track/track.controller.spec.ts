@@ -447,6 +447,7 @@ describe("Track Controller", () => {
 								id: dummyRepository.compilationReleaseA1.id,
 							},
 						},
+						hash: "a",
 						illustration: {
 							create: {
 								aspectRatio: 1,
