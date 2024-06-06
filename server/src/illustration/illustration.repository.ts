@@ -38,6 +38,7 @@ import FileManagerService from "src/file-manager/file-manager.service";
 import ScannerService from "src/scanner/scanner.service";
 import { IllustrationNotFoundException } from "./illustration.exceptions";
 import { IllustrationType } from "@prisma/client";
+import IllustrationStats from "./models/illustration-stats";
 
 /**
  * This service handles the paths to illustrations files and the related tables in the DB
@@ -153,7 +154,18 @@ export default class IllustrationRepository {
 					],
 				},
 			},
-			orderBy: { release: { disc: { nulls: "last", sort: "asc" } } },
+			orderBy: [
+				{
+					release: {
+						disc: { nulls: "last", sort: "asc" },
+					},
+				},
+				{
+					release: {
+						track: { nulls: "last", sort: "asc" },
+					},
+				},
+			],
 		});
 	}
 
@@ -221,7 +233,8 @@ export default class IllustrationRepository {
 		track: number | null,
 		where: ReleaseQueryParameters.WhereInput,
 		type: IllustrationType = IllustrationType.Cover,
-		imageStats?: Awaited<ReturnType<IllustrationService["getImageStats"]>>,
+		imageStats?: IllustrationStats,
+		hash?: string,
 	): Promise<Illustration> {
 		const releaseIllustrations = await this.getReleaseIllustrations(where);
 		const previousIllustration = releaseIllustrations.find(
@@ -230,6 +243,7 @@ export default class IllustrationRepository {
 		if (previousIllustration) {
 			await this.deleteIllustration(previousIllustration.illustration.id);
 		}
+		hash ??= await this.illustrationService.getImageHash(buffer);
 		imageStats ??= await this.illustrationService.getImageStats(buffer);
 		const release = await this.releaseService.get(where);
 		const newIllustration = await this.prismaService.illustration.create({
@@ -238,6 +252,7 @@ export default class IllustrationRepository {
 				type,
 				release: {
 					create: {
+						hash,
 						disc,
 						track,
 						releaseId: release.id,
@@ -280,17 +295,8 @@ export default class IllustrationRepository {
 		where: TrackQueryParameters.WhereInput,
 		sourceFilePath: string,
 	): Promise<Illustration | null> {
-		const [embeddedIllustration, inlineIllustration] = await Promise.all([
-			this.scannerService.extractIllustrationFromFile(sourceFilePath),
-			this.scannerService.extractIllustrationInFileFolder(sourceFilePath),
-		]);
 		const extractedIllustration =
-			(this.settingsService.settingsValues.metadata.source == "embedded"
-				? embeddedIllustration
-				: inlineIllustration) ??
-			(this.settingsService.settingsValues.metadata.order == "preferred"
-				? embeddedIllustration ?? inlineIllustration
-				: null);
+			await this.extractIllustrationBasedOnPreferences(sourceFilePath);
 
 		if (extractedIllustration == null) {
 			return null;
@@ -324,13 +330,10 @@ export default class IllustrationRepository {
 			);
 			return newIllustration;
 		}
-		const imageStats = await this.illustrationService.getImageStats(
+		const hash = await this.illustrationService.getImageHash(
 			illustrationBytes,
 		);
-		if (
-			imageStats.blurhash ==
-			parentReleaseMainIllustration.illustration.blurhash
-		) {
+		if (hash === parentReleaseMainIllustration.hash) {
 			// The scanned illustration is the release's main one
 			return null;
 		}
@@ -344,24 +347,53 @@ export default class IllustrationRepository {
 					id: track.releaseId,
 				},
 				IllustrationType.Cover,
-				imageStats,
+				undefined,
+				hash,
 			);
-		} else if (
-			parentDiscIllustration.illustration.blurhash !== imageStats.blurhash
-		) {
-			// If the track's disc's illustration is NOT the scanned one, save the acanned one as track specific
-			return this.saveReleaseIllustration(
-				illustrationBytes,
-				track.discIndex,
-				track.trackIndex,
-				{
-					id: track.releaseId,
-				},
-				IllustrationType.Cover,
-				imageStats,
+		} else if (hash === parentDiscIllustration.hash) {
+			return null;
+		}
+		// If the track's disc's illustration is NOT the scanned one, save the scanned one as track specific
+		return this.saveReleaseIllustration(
+			illustrationBytes,
+			track.discIndex,
+			track.trackIndex,
+			{
+				id: track.releaseId,
+			},
+			IllustrationType.Cover,
+			undefined,
+			hash,
+		);
+	}
+
+	private async extractIllustrationBasedOnPreferences(
+		sourceFilePath: string,
+	): Promise<Buffer | null> {
+		if (this.settingsService.settingsValues.metadata.order === "only") {
+			if (
+				this.settingsService.settingsValues.metadata.source ==
+				"embedded"
+			) {
+				return this.scannerService.extractIllustrationFromFile(
+					sourceFilePath,
+				);
+			}
+			return this.scannerService.extractIllustrationInFileFolder(
+				sourceFilePath,
 			);
 		}
-		return null;
+		const [embeddedIllustration, inlineIllustration] = await Promise.all([
+			this.scannerService.extractIllustrationFromFile(sourceFilePath),
+			this.scannerService.extractIllustrationInFileFolder(sourceFilePath),
+		]);
+		const extractedIllustration =
+			(this.settingsService.settingsValues.metadata.source == "embedded"
+				? embeddedIllustration
+				: inlineIllustration) ??
+			embeddedIllustration ??
+			inlineIllustration;
+		return extractedIllustration;
 	}
 
 	public async getReleaseIllustrations(

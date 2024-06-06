@@ -202,31 +202,31 @@ model Library {
 model Release {
     /// @description Unique numeric Release identifier
     /// @example 123
-    id                Int                   @id @default(autoincrement())
+    id            Int                   @id @default(autoincrement())
     /// @description The title of the release
     /// @example My Album
-    name              String                @db.Citext()
+    name          String                @db.Citext()
     /// @description The Extensions of the release
     /// @example ["Deluxe Edition"]
-    extensions        String[]
+    extensions    String[]
     /// @description String identifier of the release
     /// @example my-album-deluxe-edition
-    slug              String
+    slug          String
     /// @description The date of the release
-    releaseDate       DateTime?
+    releaseDate   DateTime?
     /// @description The tracks on the release
-    tracks            Track[]
+    tracks        Track[]
     /// @description The reference Album
-    album             Album                 @relation("Releases", fields: [albumId], references: [id])
+    album         Album                 @relation("Releases", fields: [albumId], references: [id])
     /// @description Unique numeric identifier of the parent album
     /// @example 123
-    albumId           Int
-    masterOf          Album?                @relation("Master")
+    albumId       Int
+    masterOf      Album?                @relation("Master")
     /// @description The date the release was registered
-    registeredAt      DateTime              @default(now())
+    registeredAt  DateTime              @default(now())
     /// @description The related Illustrations
-    illustrations     ReleaseIllustration[]
-    externalIds  ReleaseExternalId[]
+    illustrations ReleaseIllustration[]
+    externalIds   ReleaseExternalId[]
 
     @@unique([albumId, slug])
     @@map("releases")
@@ -576,6 +576,7 @@ model ReleaseIllustration {
     /// @description Unique numeric identifier
     /// @example 123
     id             Int          @id @default(autoincrement())
+    hash           String
     /// @description Related Release\'s Identifier
     /// @example 123
     releaseId      Int

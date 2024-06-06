@@ -14,6 +14,7 @@ DROP TABLE "release_illustrations";
 -- CreateTable
 CREATE TABLE "release_illustrations" (
     "id" SERIAL NOT NULL,
+    "hash" TEXT NOT NULL,
     "releaseId" INTEGER NOT NULL,
     "disc" INTEGER,
     "track" INTEGER,
