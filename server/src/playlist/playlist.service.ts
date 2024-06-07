@@ -43,6 +43,7 @@ import {
 	formatIdentifier,
 	formatPaginationParameters,
 } from "src/repository/repository.utils";
+import IllustrationRepository from "src/illustration/illustration.repository";
 
 @Injectable()
 export default class PlaylistService {
@@ -50,6 +51,8 @@ export default class PlaylistService {
 	constructor(
 		@Inject(forwardRef(() => SongService))
 		private songService: SongService,
+		@Inject(forwardRef(() => IllustrationRepository))
+		private illustrationRepository: IllustrationRepository,
 		private prismaService: PrismaService,
 	) {}
 
@@ -213,6 +216,14 @@ export default class PlaylistService {
 		return this.prismaService.playlist
 			.delete({
 				where: PlaylistService.formatWhereInput(where),
+			})
+			.then((deleted) => {
+				if (deleted.illustrationId !== null) {
+					this.illustrationRepository.deleteIllustration(
+						deleted.illustrationId,
+					);
+				}
+				return deleted;
 			})
 			.catch((error) => {
 				throw this.onNotFound(error, where);

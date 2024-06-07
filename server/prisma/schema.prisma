@@ -130,25 +130,26 @@ model Album {
 model Artist {
     /// @description Unique numeric Artist identifier
     /// @example 123
-    id           Int                 @id @default(autoincrement())
+    id             Int                @id @default(autoincrement())
     /// @description The name of the artist
     /// @example My Artist
-    name         String              @db.Citext()
+    name           String             @db.Citext()
     /// @description Unique string identifer
     /// @example my-artist
-    slug         String              @unique
+    slug           String             @unique
     /// @description Array of Albums where the artist is the main one
-    albums       Album[]
+    albums         Album[]
     /// @description Array of Songs by the artist
-    songs        Song[]              @relation("MainSongArtist")
+    songs          Song[]             @relation("MainSongArtist")
     /// @description Array of Songs by the artist features in
-    featuredOn   Song[]              @relation("ArtistToSong")
+    featuredOn     Song[]             @relation("ArtistToSong")
     /// @description The date the artist was registered
-    registeredAt DateTime            @default(now())
+    registeredAt   DateTime           @default(now())
     /// @description Array of external IDs
-    externalIds  ArtistExternalId[]
+    externalIds    ArtistExternalId[]
     /// @description Related Illustration
-    illustration ArtistIllustration?
+    illustrationId Int?               @unique
+    illustration   Illustration?      @relation(fields: [illustrationId], references: [id])
 
     @@map("artists")
 }
@@ -201,32 +202,31 @@ model Library {
 model Release {
     /// @description Unique numeric Release identifier
     /// @example 123
-    id           Int                   @id @default(autoincrement())
+    id            Int                   @id @default(autoincrement())
     /// @description The title of the release
     /// @example My Album
-    name         String                @db.Citext()
+    name          String                @db.Citext()
     /// @description The Extensions of the release
     /// @example ["Deluxe Edition"]
-    extensions   String[]
+    extensions    String[]
     /// @description String identifier of the release
     /// @example my-album-deluxe-edition
-    slug         String
+    slug          String
     /// @description The date of the release
-    releaseDate  DateTime?
+    releaseDate   DateTime?
     /// @description The tracks on the release
-    tracks       Track[]
+    tracks        Track[]
     /// @description The reference Album
-    album        Album                 @relation("Releases", fields: [albumId], references: [id])
+    album         Album                 @relation("Releases", fields: [albumId], references: [id])
     /// @description Unique numeric identifier of the parent album
     /// @example 123
-    albumId      Int
-    masterOf     Album?                @relation("Master")
+    albumId       Int
+    masterOf      Album?                @relation("Master")
     /// @description The date the release was registered
-    registeredAt DateTime              @default(now())
+    registeredAt  DateTime              @default(now())
     /// @description The related Illustrations
-    illustration ReleaseIllustration[]
-    /// @description Array of external IDs
-    externalIds  ReleaseExternalId[]
+    illustrations ReleaseIllustration[]
+    externalIds   ReleaseExternalId[]
 
     @@unique([albumId, slug])
     @@map("releases")
@@ -535,21 +535,22 @@ model ReleaseExternalId {
 model Playlist {
     /// @description Unique numeric Playlist identifier
     /// @example 123
-    id           Int                   @id @default(autoincrement())
+    id             Int             @id @default(autoincrement())
     /// @description The name of the playlist
     /// @example My Playlist
     /// @minLength 1
-    name         String                @db.Citext()
+    name           String          @db.Citext()
     /// @description Unique string identifer
     /// @example my-playlist
     /// @minLength 1
-    slug         String                @unique
+    slug           String          @unique
     /// @description The date the playlist was created
-    createdAt    DateTime              @default(now())
+    createdAt      DateTime        @default(now())
     /// @description Array of external IDs
-    entries      PlaylistEntry[]
+    entries        PlaylistEntry[]
     /// @description Related Illustration
-    illustration PlaylistIllustration?
+    illustrationId Int?            @unique
+    illustration   Illustration?   @relation(fields: [illustrationId], references: [id])
 
     @@map("playlists")
 }
@@ -571,71 +572,21 @@ model PlaylistEntry {
     @@map("playlist_entries")
 }
 
-model ArtistIllustration {
-    /// @description Unique numeric identifier
-    /// @example 123
-    id          Int      @id @default(autoincrement())
-    /// @description Related Artist\'s Identifier
-    /// @example 123
-    artistId    Int      @unique
-    artist      Artist   @relation(fields: [artistId], references: [id], onDelete: Cascade)
-    /// @description Blurhash value of the illustration. See https://github.com/woltapp/blurhash for more info.
-    /// @example LEHV6nWB2yk8pyo0adR*.7kCMdnj
-    blurhash    String
-    /// @description List of dominant colors in the image
-    /// @example ['#FFFFFF', '#123123', '#F0F0F0']
-    colors      String[]
-    /// @description Aspect Ratio of the image
-    /// @example 0.33
-    aspectRatio Float    @default(1)
-
-    @@map("artist_illustrations")
-}
-
-model PlaylistIllustration {
-    /// @description Unique numeric identifier
-    /// @example 123
-    id          Int      @id @default(autoincrement())
-    /// @description Related Playlist\'s Identifier
-    /// @example 123
-    playlistId  Int      @unique
-    playlist    Playlist @relation(fields: [playlistId], references: [id], onDelete: Cascade)
-    /// @description Blurhash value of the illustration. See https://github.com/woltapp/blurhash for more info.
-    /// @example LEHV6nWB2yk8pyo0adR*.7kCMdnj
-    blurhash    String
-    /// @description List of dominant colors in the image
-    /// @example ['#FFFFFF', '#123123', '#F0F0F0']
-    colors      String[]
-    /// @description Aspect Ratio of the image
-    /// @example 0.33
-    aspectRatio Float    @default(1)
-
-    @@map("playlist_illustrations")
-}
-
 model ReleaseIllustration {
     /// @description Unique numeric identifier
     /// @example 123
-    id          Int      @id @default(autoincrement())
+    id             Int          @id @default(autoincrement())
+    hash           String
     /// @description Related Release\'s Identifier
     /// @example 123
-    releaseId   Int
-    release     Release  @relation(fields: [releaseId], references: [id], onDelete: Cascade)
+    releaseId      Int
+    release        Release      @relation(fields: [releaseId], references: [id], onDelete: Cascade)
     /// @description The index of the disc. If null, the illustration is the \'main\' one
-    disc        Int?
+    disc           Int?
     /// @description The index of the track.
-    track       Int?
-    /// @description Blurhash value of the illustration. See https://github.com/woltapp/blurhash for more info.
-    /// @example LEHV6nWB2yk8pyo0adR*.7kCMdnj
-    blurhash    String
-    /// @description List of dominant colors in the image
-    /// @example ['#FFFFFF', '#123123', '#F0F0F0']
-    colors      String[]
-    /// @description MD5 Hash of The File
-    hash        String
-    /// @description Aspect Ratio of the image
-    /// @example 0.33
-    aspectRatio Float    @default(1)
+    track          Int?
+    illustrationId Int          @unique
+    illustration   Illustration @relation(fields: [illustrationId], references: [id], onDelete: Cascade)
 
     @@unique([releaseId, disc, track])
     @@map("release_illustrations")
@@ -657,4 +608,34 @@ model PlayHistory {
     song     Song     @relation(fields: [songId], references: [id], onDelete: Cascade)
 
     @@map("play_history")
+}
+
+enum IllustrationType {
+    /// Ex: An album cover
+    Cover
+    /// Ex: Image of an artist
+    Avatar
+    /// Ex: Thumbnail of a video
+    Thumbnail
+}
+
+model Illustration {
+    /// @description Unique numeric identifier
+    /// @example 123
+    id          Int                  @id @default(autoincrement())
+    artist      Artist?
+    playlist    Playlist?
+    release     ReleaseIllustration?
+    /// @description Blurhash value of the illustration. See https://github.com/woltapp/blurhash for more info.
+    /// @example LEHV6nWB2yk8pyo0adR*.7kCMdnj
+    blurhash    String
+    /// @description List of dominant colors in the image
+    /// @example ['#FFFFFF', '#123123', '#F0F0F0']
+    colors      String[]
+    /// @description Aspect Ratio of the image
+    /// @example 0.33
+    aspectRatio Float                @default(1)
+    type        IllustrationType
+
+    @@map("illustrations")
 }

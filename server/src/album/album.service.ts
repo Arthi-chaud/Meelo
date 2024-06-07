@@ -38,7 +38,6 @@ import Identifier from "src/identifier/models/identifier";
 import Logger from "src/logger/logger";
 import ReleaseQueryParameters from "src/release/models/release.query-parameters";
 import { PrismaError } from "prisma-error-enum";
-import IllustrationRepository from "src/illustration/illustration.repository";
 import ParserService from "src/scanner/parser.service";
 import deepmerge from "deepmerge";
 import GenreService from "src/genre/genre.service";
@@ -64,7 +63,6 @@ export default class AlbumService extends SearchableRepositoryService {
 		private releaseService: ReleaseService,
 		@Inject(forwardRef(() => ParserService))
 		private parserService: ParserService,
-		private illustrationRepository: IllustrationRepository,
 		@InjectMeiliSearch()
 		protected readonly meiliSearch: MeiliSearch,
 	) {
@@ -447,7 +445,6 @@ export default class AlbumService extends SearchableRepositoryService {
 	 * @param where the query parameter
 	 */
 	async delete(where: AlbumQueryParameters.DeleteInput): Promise<AlbumModel> {
-		await this.illustrationRepository.deleteAlbumIllustrations(where);
 		try {
 			const album = await this.prismaService.album.delete({
 				where: AlbumService.formatWhereInput(where),

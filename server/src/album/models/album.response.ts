@@ -28,7 +28,10 @@ import {
 	AlbumExternalIdResponse,
 	ExternalIdResponseBuilder,
 } from "src/providers/models/external-id.response";
-import { IllustratedResponse } from "src/illustration/models/illustration.response";
+import {
+	IllustratedResponse,
+	IllustrationResponse,
+} from "src/illustration/models/illustration.response";
 import IllustrationRepository from "src/illustration/illustration.repository";
 import {
 	ReleaseResponse,
@@ -72,10 +75,11 @@ export class AlbumResponseBuilder extends ResponseBuilderInterceptor<
 	async buildResponse(album: AlbumWithRelations): Promise<AlbumResponse> {
 		const response = <AlbumResponse>{
 			...album,
-			illustration:
-				await this.illustrationRepository.getAlbumIllustration({
+			illustration: await this.illustrationRepository
+				.getAlbumIllustration({
 					id: album.id,
-				}),
+				})
+				.then((value) => value && IllustrationResponse.from(value)),
 		};
 
 		if (album.artist != undefined) {

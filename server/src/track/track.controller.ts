@@ -17,9 +17,11 @@
  */
 
 import {
+	Body,
 	Controller,
 	Get,
 	Inject,
+	Post,
 	Put,
 	Query,
 	forwardRef,
@@ -46,6 +48,10 @@ import ArtistQueryParameters from "src/artist/models/artist.query-parameters";
 import ArtistService from "src/artist/artist.service";
 import AlbumQueryParameters from "src/album/models/album.query-parameters";
 import AlbumService from "src/album/album.service";
+import { IllustrationDownloadDto } from "src/illustration/models/illustration-dl.dto";
+import IllustrationRepository from "src/illustration/illustration.repository";
+import IllustrationService from "src/illustration/illustration.service";
+import { IllustrationResponse } from "src/illustration/models/illustration.response";
 
 class Selector {
 	@IsOptional()
@@ -100,6 +106,8 @@ export class TrackController {
 		private trackService: TrackService,
 		@Inject(forwardRef(() => SongService))
 		private songService: SongService,
+		private illustrationService: IllustrationService,
+		private illustrationRepository: IllustrationRepository,
 	) {}
 
 	@ApiOperation({
@@ -168,5 +176,30 @@ export class TrackController {
 
 		await this.songService.setMasterTrack(where);
 		return track;
+	}
+
+	@ApiOperation({
+		summary: "Change a track's illustration",
+	})
+	@Admin()
+	@Post(":idOrSlug/illustration")
+	async updateTrackIllustration(
+		@Body() illustrationDto: IllustrationDownloadDto,
+		@IdentifierParam(TrackService)
+		where: TrackQueryParameters.WhereInput,
+	): Promise<IllustrationResponse> {
+		const track = await this.trackService.get(where);
+		const buffer = await this.illustrationService.downloadIllustration(
+			illustrationDto.url,
+		);
+
+		return this.illustrationRepository
+			.saveReleaseIllustration(
+				buffer,
+				track.discIndex,
+				track.trackIndex,
+				{ id: track.releaseId },
+			)
+			.then(IllustrationResponse.from);
 	}
 }

@@ -389,9 +389,17 @@ export default class ReleaseService {
 	 * @param where Query parameters to find the release to delete
 	 */
 	async delete(where: ReleaseQueryParameters.DeleteInput): Promise<Release> {
-		await this.illustrationRepository.deleteReleaseIllustration(where, {
-			withFolder: true,
-		});
+		this.illustrationRepository
+			.getReleaseIllustrations(where)
+			.then((relatedIllustrations) => {
+				Promise.allSettled(
+					relatedIllustrations.map(({ illustration }) =>
+						this.illustrationRepository.deleteIllustration(
+							illustration.id,
+						),
+					),
+				);
+			});
 		return this.prismaService.release
 			.delete({
 				where: ReleaseService.formatWhereInput(where),
@@ -460,7 +468,7 @@ export default class ReleaseService {
 		);
 		if (illustration) {
 			const illustrationPath =
-				await this.illustrationRepository.resolveReleaseIllustrationPath(
+				this.illustrationRepository.buildIllustrationPath(
 					illustration.id,
 				);
 

@@ -25,7 +25,10 @@ import {
 	SongResponseBuilder,
 } from "src/song/models/song.response";
 import SongService from "src/song/song.service";
-import { IllustratedResponse } from "src/illustration/models/illustration.response";
+import {
+	IllustratedResponse,
+	IllustrationResponse,
+} from "src/illustration/models/illustration.response";
 import IllustrationRepository from "src/illustration/illustration.repository";
 
 export class PlaylistEntryResponse extends SongResponse {
@@ -67,9 +70,14 @@ export class PlaylistResponseBuilder extends ResponseBuilderInterceptor<
 		const response = <PlaylistResponse>{
 			...playlist,
 			illustration:
-				await this.illustrationRepository.getPlaylistIllustration({
-					id: playlist.id,
-				}),
+				playlist.illustrationId === null
+					? null
+					: await this.illustrationRepository
+							.getIllustration(playlist.illustrationId)
+							.then(
+								(value) =>
+									value && IllustrationResponse.from(value),
+							),
 		};
 
 		if (playlist.entries !== undefined) {

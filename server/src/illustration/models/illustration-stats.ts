@@ -16,25 +16,17 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { ApiProperty } from "@nestjs/swagger";
-import { Illustration } from "src/prisma/models";
+import { Illustration } from "@prisma/client";
 
-export class IllustrationResponse extends Illustration {
-	@ApiProperty({
-		description: "URL to the illustration",
-		example: "/illustrations/123",
-	})
-	url: string;
-
-	static from(illustration: Illustration): IllustrationResponse {
+export default class IllustrationStats {
+	blurhash: string;
+	colors: string[];
+	aspectRatio: number;
+	static from(illustration: Illustration): IllustrationStats {
 		return {
-			...illustration,
-			url: "/illustrations/" + illustration.id,
+			blurhash: illustration.blurhash,
+			colors: illustration.colors,
+			aspectRatio: illustration.aspectRatio,
 		};
 	}
-}
-
-export class IllustratedResponse {
-	@ApiProperty({ nullable: true })
-	illustration: IllustrationResponse | null;
 }

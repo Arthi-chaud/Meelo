@@ -298,10 +298,12 @@ export default class ArtistService extends SearchableRepositoryService {
 	}
 
 	async delete(where: ArtistQueryParameters.DeleteInput) {
-		await this.illustrationRepository.deleteArtistIllustration(where, {
-			withFolder: true,
-		});
-
+		const artist = await this.get(where);
+		if (artist.illustrationId) {
+			await this.illustrationRepository.deleteIllustration(
+				artist.illustrationId,
+			);
+		}
 		const deletedArtist = await this.prismaService.artist
 			.delete({
 				where: {
@@ -317,7 +319,7 @@ export default class ArtistService extends SearchableRepositoryService {
 					throw new ArtistNotEmptyException(where.slug ?? where.id);
 				}
 
-				throw this.onNotFound(error, where);
+				throw new UnhandledORMErrorException(error, where);
 			});
 		this.meiliSearch.index(this.indexName).deleteDocument(deletedArtist.id);
 		this.logger.warn(`Artist '${deletedArtist.slug}' deleted`);

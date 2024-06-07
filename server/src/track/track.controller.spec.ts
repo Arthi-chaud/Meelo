@@ -23,6 +23,7 @@ import {
 	expectedSongResponse,
 	expectedReleaseResponse,
 } from "test/expected-responses";
+import { IllustrationType } from "@prisma/client";
 
 describe("Track Controller", () => {
 	let app: INestApplication;
@@ -438,15 +439,25 @@ describe("Track Controller", () => {
 
 	describe("Track Illustration", () => {
 		it("Should return the track illustration", async () => {
-			const illustration =
+			const { illustration } =
 				await dummyRepository.releaseIllustration.create({
 					data: {
-						hash: "n",
-						releaseId: dummyRepository.compilationReleaseA1.id,
-						aspectRatio: 1,
-						blurhash: "A",
-						colors: ["B"],
+						release: {
+							connect: {
+								id: dummyRepository.compilationReleaseA1.id,
+							},
+						},
+						hash: "a",
+						illustration: {
+							create: {
+								aspectRatio: 1,
+								blurhash: "A",
+								colors: ["B"],
+								type: IllustrationType.Cover,
+							},
+						},
 					},
+					include: { illustration: true },
 				});
 			return request(app.getHttpServer())
 				.get(`/tracks/${dummyRepository.trackC1_1.id}`)
@@ -457,9 +468,7 @@ describe("Track Controller", () => {
 						...track,
 						illustration: {
 							...illustration,
-							url:
-								"/illustrations/releases/" +
-								dummyRepository.compilationReleaseA1.id,
+							url: "/illustrations/" + illustration.id,
 						},
 					});
 				});

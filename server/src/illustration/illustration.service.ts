@@ -25,10 +25,7 @@ import {
 // eslint-disable-next-line no-restricted-imports
 import * as fs from "fs";
 import * as dir from "path";
-import type {
-	IllustrationFolderPath,
-	IllustrationPath,
-} from "./models/illustration-path.model";
+import type { IllustrationPath } from "./models/illustration-path.model";
 import Jimp from "jimp";
 import { Readable } from "stream";
 import type { IllustrationDimensionsDto } from "./models/illustration-dimensions.dto";
@@ -38,9 +35,10 @@ import getColors from "get-image-colors";
 import mime from "mime";
 import { InvalidRequestException } from "src/exceptions/meelo-exception";
 import { ImageQuality } from "./models/illustration-quality";
-import md5 from "md5";
 import { HttpService } from "@nestjs/axios";
 import { version } from "package.json";
+import IllustrationStats from "./models/illustration-stats";
+import md5 from "md5";
 
 type IllustrationExtractStatus =
 	| "extracted"
@@ -94,27 +92,6 @@ export default class IllustrationService {
 		this.deleteIllustration(outPath);
 		fs.mkdirSync(dir.dirname(outPath), { recursive: true });
 		fs.writeFileSync(outPath, fileContent);
-	}
-
-	async saveIllustrationWithStatus(
-		illustrationBuffer: Buffer,
-		outputPath: string,
-	): Promise<IllustrationExtractStatus> {
-		if (this.fileManagerService.fileExists(outputPath)) {
-			const fileContent =
-				this.fileManagerService.getFileContent(outputPath);
-
-			if (fileContent == illustrationBuffer.toString()) {
-				return "already-extracted";
-			}
-			return "different-illustration";
-		}
-		try {
-			this.saveIllustration(illustrationBuffer, outputPath);
-			return "extracted";
-		} catch {
-			return "error";
-		}
 	}
 
 	/**
@@ -234,12 +211,11 @@ export default class IllustrationService {
 		});
 	}
 
-	async getImageStats(buffer: Buffer): Promise<{
-		blurhash: string;
-		colors: string[];
-		aspectRatio: number;
-		hash: string;
-	}> {
+	async getImageHash(buffer: Buffer): Promise<string> {
+		return md5(buffer);
+	}
+
+	async getImageStats(buffer: Buffer): Promise<IllustrationStats> {
 		const image = await Jimp.read(buffer);
 
 		return Promise.all([
@@ -262,22 +238,10 @@ export default class IllustrationService {
 				colors.map((color) => color.hex()),
 			),
 			(async () => image.getWidth() / image.getHeight())(),
-			(async () => md5(buffer))(),
-		]).then(([blurhash, colors, aspectRatio, hash]) => ({
+		]).then(([blurhash, colors, aspectRatio]) => ({
 			blurhash,
 			colors,
 			aspectRatio,
-			hash,
 		}));
-	}
-
-	async moveIllustrationFolder(
-		oldPath: IllustrationFolderPath,
-		newPath: IllustrationFolderPath,
-	) {
-		if (this.fileManagerService.folderExists(oldPath)) {
-			fs.mkdirSync(dir.dirname(newPath), { recursive: true });
-			this.fileManagerService.rename(oldPath, newPath);
-		}
 	}
 }
