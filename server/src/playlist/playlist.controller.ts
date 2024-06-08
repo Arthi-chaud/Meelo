@@ -34,7 +34,10 @@ import PlaylistService from "./playlist.service";
 import PlaylistQueryParameters from "./models/playlist.query-parameters";
 import IdentifierParam from "src/identifier/identifier.pipe";
 import RelationIncludeQuery from "src/relation-include/relation-include-query.decorator";
-import { PlaylistResponseBuilder } from "./models/playlist.response";
+import {
+	PlaylistEntryResponseBuilder,
+	PlaylistResponseBuilder,
+} from "./models/playlist.response";
 import Response, { ResponseType } from "src/response/response.decorator";
 import { PaginationParameters } from "src/pagination/models/pagination-parameters";
 import {
@@ -52,6 +55,7 @@ import { IllustrationDownloadDto } from "src/illustration/models/illustration-dl
 import IllustrationRepository from "src/illustration/illustration.repository";
 import IllustrationService from "src/illustration/illustration.service";
 import { IllustrationResponse } from "src/illustration/models/illustration.response";
+import SongQueryParameters from "src/song/models/song.query-params";
 
 export class Selector {
 	@IsOptional()
@@ -79,12 +83,10 @@ export default class PlaylistController {
 	@Get(":idOrSlug")
 	@Response({ handler: PlaylistResponseBuilder })
 	async get(
-		@RelationIncludeQuery(PlaylistQueryParameters.AvailableAtomicIncludes)
-		include: PlaylistQueryParameters.RelationInclude,
 		@IdentifierParam(PlaylistService)
 		where: PlaylistQueryParameters.WhereInput,
 	) {
-		return this.playlistService.get(where, include);
+		return this.playlistService.get(where);
 	}
 
 	@ApiOperation({
@@ -102,6 +104,29 @@ export default class PlaylistController {
 			selector,
 			sort,
 			paginationParameters,
+		);
+	}
+
+	@ApiOperation({
+		summary: "Get Playlist's entries",
+	})
+	@Get(":idOrSlug/entries")
+	@Response({
+		handler: PlaylistEntryResponseBuilder,
+		type: ResponseType.Page,
+	})
+	async getEntries(
+		@Query()
+		paginationParameters: PaginationParameters,
+		@IdentifierParam(PlaylistService)
+		where: PlaylistQueryParameters.WhereInput,
+		@RelationIncludeQuery(SongQueryParameters.AvailableAtomicIncludes)
+		include: SongQueryParameters.RelationInclude,
+	) {
+		return this.playlistService.getEntries(
+			where,
+			paginationParameters,
+			include,
 		);
 	}
 

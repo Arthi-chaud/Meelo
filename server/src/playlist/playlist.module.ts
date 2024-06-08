@@ -22,7 +22,10 @@ import PlaylistService from "./playlist.service";
 import PrismaModule from "src/prisma/prisma.module";
 import SongModule from "src/song/song.module";
 import SettingsModule from "src/settings/settings.module";
-import { PlaylistResponseBuilder } from "./models/playlist.response";
+import {
+	PlaylistEntryResponseBuilder,
+	PlaylistResponseBuilder,
+} from "./models/playlist.response";
 import IllustrationModule from "src/illustration/illustration.module";
 
 @Module({
@@ -32,8 +35,16 @@ import IllustrationModule from "src/illustration/illustration.module";
 		SettingsModule,
 		forwardRef(() => IllustrationModule),
 	],
-	providers: [PlaylistService, PlaylistResponseBuilder],
-	exports: [PlaylistService, PlaylistResponseBuilder],
+	providers: [
+		PlaylistService,
+		PlaylistResponseBuilder,
+		PlaylistEntryResponseBuilder,
+	],
+	exports: [
+		PlaylistService,
+		PlaylistResponseBuilder,
+		PlaylistEntryResponseBuilder,
+	],
 	controllers: [PlaylistController],
 })
 export default class PlaylistModule {}

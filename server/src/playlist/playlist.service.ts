@@ -44,6 +44,7 @@ import {
 	formatPaginationParameters,
 } from "src/repository/repository.utils";
 import IllustrationRepository from "src/illustration/illustration.repository";
+import { PlaylistEntryModel } from "./models/playlist-entry.model";
 
 @Injectable()
 export default class PlaylistService {
@@ -74,13 +75,9 @@ export default class PlaylistService {
 		}
 	}
 
-	async get<I extends PlaylistQueryParameters.RelationInclude = {}>(
-		where: PlaylistQueryParameters.WhereInput,
-		include?: I,
-	) {
+	async get(where: PlaylistQueryParameters.WhereInput) {
 		const args = {
 			where: PlaylistService.formatWhereInput(where),
-			include: include ?? ({} as I),
 		};
 		return this.prismaService.playlist
 			.findFirstOrThrow<
@@ -92,6 +89,42 @@ export default class PlaylistService {
 			.catch((error) => {
 				throw this.onNotFound(error, where);
 			});
+	}
+
+	async getEntries<I extends SongQueryParameters.RelationInclude = {}>(
+		where: PlaylistQueryParameters.WhereInput,
+		pagination?: PaginationParameters,
+		include?: I,
+	): Promise<PlaylistEntryModel[]> {
+		const args = {
+			where: { playlist: PlaylistService.formatWhereInput(where) },
+			orderBy: {
+				index: "asc" as const,
+			},
+			include: {
+				song: {
+					include: include ?? ({} as I),
+				},
+			},
+			...formatPaginationParameters(pagination),
+		};
+		return this.prismaService.playlistEntry
+			.findMany<
+				Prisma.SelectSubset<
+					typeof args,
+					Prisma.PlaylistEntryFindManyArgs
+				>
+			>(args)
+			.catch((error) => {
+				throw this.onNotFound(error, where);
+			})
+			.then((entries) =>
+				entries.map(({ id, index, song }) => ({
+					entryId: id,
+					index,
+					...song,
+				})),
+			);
 	}
 
 	async getMany(

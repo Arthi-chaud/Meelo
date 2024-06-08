@@ -49,8 +49,10 @@ export const expectedPlaylistResponse = (playlist: Playlist) => ({
 
 export const expectedPlaylistEntryResponse = (
 	song: SongWithRelations,
+	index: number,
 	id: number,
 ) => ({
 	...expectedSongResponse(song),
+	index,
 	entryId: id,
 });
