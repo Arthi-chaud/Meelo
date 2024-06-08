@@ -19,7 +19,7 @@
 import Illustration from "./illustration";
 import Resource from "./resource";
 import * as yup from "yup";
-import Song from "./song";
+import Song, { SongInclude, SongWithRelations } from "./song";
 
 const PlaylistEntry = Song.concat(
 	yup.object({
@@ -31,6 +31,15 @@ const PlaylistEntry = Song.concat(
 );
 
 export type PlaylistEntry = yup.InferType<typeof PlaylistEntry>;
+
+const PlaylistEntryWithRelations = <
+	Selection extends SongInclude | never = never,
+>(
+	relation: Selection[],
+) => PlaylistEntry.concat(SongWithRelations(relation));
+
+type PlaylistEntryWithRelations<Selection extends SongInclude | never = never> =
+	yup.InferType<ReturnType<typeof PlaylistEntryWithRelations<Selection>>>;
 
 const Playlist = Resource.concat(Illustration).concat(
 	yup.object({
@@ -52,24 +61,6 @@ const Playlist = Resource.concat(Illustration).concat(
 
 type Playlist = yup.InferType<typeof Playlist>;
 
-export type PlaylistInclude = "entries";
-
-const PlaylistWithRelations = <
-	Selection extends PlaylistInclude | never = never,
->(
-	relation: Selection[],
-) =>
-	Playlist.concat(
-		yup
-			.object({
-				entries: yup.array(PlaylistEntry.required()).required(),
-			})
-			.pick(relation),
-	);
-
-type PlaylistWithRelations<Selection extends PlaylistInclude | never = never> =
-	yup.InferType<ReturnType<typeof PlaylistWithRelations<Selection>>>;
-
 export default Playlist;
 
 export const PlaylistSortingKeys = [
@@ -78,4 +69,4 @@ export const PlaylistSortingKeys = [
 	"creationDate",
 ] as const;
 
-export { PlaylistWithRelations };
+export { PlaylistEntryWithRelations };

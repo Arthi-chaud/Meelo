@@ -21,7 +21,6 @@ import { Playlist } from "src/prisma/models";
 import Slug from "src/slug/slug";
 import SongQueryParameters from "src/song/models/song.query-params";
 import type { RequireAtLeastOne, RequireExactlyOne } from "type-fest";
-import type { RelationInclude as BaseRelationInclude } from "src/relation-include/models/relation-include";
 import { ModelSortingParameter } from "src/sort/models/sorting-parameter";
 import AlbumQueryParameters from "src/album/models/album.query-parameters";
 
@@ -64,13 +63,6 @@ namespace PlaylistQueryParameters {
 	 * Query parameters to delete one album
 	 */
 	export type DeleteInput = WhereInput;
-
-	/**
-	 * Defines what relations to include in query
-	 */
-	export const AvailableIncludes = ["entries"] as const;
-	export const AvailableAtomicIncludes = AvailableIncludes;
-	export type RelationInclude = BaseRelationInclude<typeof AvailableIncludes>;
 
 	/**
 	 * Defines how to sort fetched entries

@@ -59,9 +59,8 @@ import { InfiniteQuery, Query } from "./use-query";
 import * as yup from "yup";
 import { RequireExactlyOne } from "type-fest";
 import Playlist, {
-	PlaylistInclude,
+	PlaylistEntryWithRelations,
 	PlaylistSortingKeys,
-	PlaylistWithRelations,
 } from "../models/playlist";
 import { isSSR } from "../utils/is-ssr";
 import { ActiveTask, Task } from "../models/task";
@@ -261,21 +260,42 @@ export default class API {
 	 * Fetch one playlist
 	 * @returns An query for a playlist
 	 */
-	static getPlaylist<I extends PlaylistInclude | never = never>(
+	static getPlaylist(playlistSlugOrId: string | number): Query<Playlist> {
+		return {
+			key: ["playlist", playlistSlugOrId],
+			exec: () =>
+				API.fetch({
+					route: `/playlists/${playlistSlugOrId}`,
+					parameters: {},
+					validator: Playlist,
+				}),
+		};
+	}
+
+	/**
+	 * Fetch all entries in a playlist
+	 * @returns An InfiniteQuery of Songs
+	 */
+	static getPlaylistEntires<I extends SongInclude | never = never>(
 		playlistSlugOrId: string | number,
 		include?: I[],
-	): Query<PlaylistWithRelations<I>> {
+	): InfiniteQuery<PlaylistEntryWithRelations<I>> {
 		return {
 			key: [
 				"playlist",
 				playlistSlugOrId,
+				"entries",
 				...API.formatIncludeKeys(include),
 			],
-			exec: () =>
+			exec: (pagination) =>
 				API.fetch({
-					route: `/playlists/${playlistSlugOrId}`,
-					parameters: { include },
-					validator: PlaylistWithRelations(include ?? []),
+					route: `/playlists/${playlistSlugOrId}/entries`,
+					errorMessage: "Songs could not be loaded",
+					parameters: { pagination: pagination, include },
+					otherParameters: {},
+					validator: PaginatedResponse(
+						PlaylistEntryWithRelations(include ?? []),
+					),
 				}),
 		};
 	}

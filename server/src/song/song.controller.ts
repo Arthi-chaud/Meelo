@@ -31,7 +31,6 @@ import {
 import ArtistService from "src/artist/artist.service";
 import ArtistQueryParameters from "src/artist/models/artist.query-parameters";
 import { PaginationParameters } from "src/pagination/models/pagination-parameters";
-import TrackService from "src/track/track.service";
 import SongQueryParameters from "./models/song.query-params";
 import SongService from "./song.service";
 import { ApiOperation, ApiPropertyOptional, ApiTags } from "@nestjs/swagger";
@@ -146,8 +145,6 @@ export class SongController {
 	constructor(
 		@Inject(forwardRef(() => SongService))
 		private songService: SongService,
-		@Inject(forwardRef(() => TrackService))
-		private trackService: TrackService,
 		@Inject(forwardRef(() => LyricsService))
 		private lyricsService: LyricsService,
 	) {}
