@@ -257,8 +257,7 @@ describe("Parser Service", () => {
 			);
 			expect(res).toStrictEqual([
 				"Crooked Madam",
-				"Damn Mad",
-				"Shellfish Remix",
+				["Damn Mad", "Shellfish Remix"],
 			]);
 		});
 		it("Dashed group in parenthesis (removing root)", () => {
@@ -1505,6 +1504,11 @@ describe("Parser Service", () => {
 					"Me Against the Music (Video Mix Instrumental)",
 				).parsedName,
 			).toBe("Me Against the Music (Video Mix Instrumental)");
+		});
+		it("should not reorder ('A (B - C) {D}')", () => {
+			expect(
+				parserService.parseTrackExtensions("A (B - C) {D}").parsedName,
+			).toBe("A (B - C) {D}");
 		});
 	});
 });
