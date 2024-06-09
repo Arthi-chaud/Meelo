@@ -50,6 +50,7 @@ import type {} from "@mui/material/themeCssVarsAugmentation";
 import ThemedImage from "../../utils/themed-image";
 import { useTranslation } from "react-i18next";
 import { RootGradientBackground } from "../../utils/gradient-background";
+import { parentScrollableDivId } from "../infinite/infinite-scroll";
 
 /**
  * Array of possible item types
@@ -342,8 +343,9 @@ const Scaffold = (props: { children: any }) => {
 				sx={{
 					display: "flex",
 					flexDirection: "column",
+					position: "relative",
 					flexWrap: "nowrap",
-					overflowX: "clip",
+					overflow: "clip",
 					width: {
 						xs: "100%",
 						md: `calc(100% - ${DrawerWidth}px)`,
@@ -352,16 +354,19 @@ const Scaffold = (props: { children: any }) => {
 			>
 				<Container
 					maxWidth={false}
+					id={parentScrollableDivId}
 					sx={{
 						width: "100%",
-						paddingTop: 2,
+						height: "100%",
+						overflowY: "scroll",
 						paddingBottom: { xs: "65px", [DrawerBreakpoint]: 2 },
 					}}
 				>
-					{props.children}
+					<Box sx={{ paddingTop: 2, paddingBottom: 0 }}>
+						{props.children}
+					</Box>
+					<Player />
 				</Container>
-				<Box sx={{ height: "100%" }} />
-				<Player />
 			</Box>
 			<BottomNavigation
 				onDrawerOpen={() => {

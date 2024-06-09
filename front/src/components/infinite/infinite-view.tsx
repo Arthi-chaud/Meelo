@@ -26,12 +26,58 @@ import { useEffect, useState } from "react";
 import Fade from "../fade";
 import { useTranslation } from "react-i18next";
 import { IllustratedResource } from "../../models/illustration";
+import { parentScrollableDivId } from "./infinite-scroll";
 
 export type InfiniteViewProps<ItemType> = {
 	view: "list" | "grid";
 	query: MeeloInfiniteQueryFn<ItemType>;
 	renderListItem: (item: ItemType | undefined) => JSX.Element;
 	renderGridItem: (item: ItemType | undefined) => JSX.Element;
+};
+
+const ScrollToTopButton = () => {
+	const { t } = useTranslation();
+	const [backToTopVisible, setBackToTopVisible] = useState(false);
+	const handleScroll = () => {
+		const position = document.getElementById(parentScrollableDivId)
+			?.scrollTop;
+
+		setBackToTopVisible((position ?? 0) > window.innerHeight);
+	};
+
+	useEffect(() => {
+		const elem = document.getElementById(parentScrollableDivId);
+		elem?.addEventListener("scroll", handleScroll, { passive: true });
+		return () => elem?.removeEventListener("scroll", handleScroll);
+	}, []);
+
+	return (
+		<Slide direction="down" in={backToTopVisible}>
+			<Tooltip title={t("backToTop")}>
+				<Button
+					variant="contained"
+					color="secondary"
+					sx={{
+						zIndex: "tooltip",
+						position: "fixed",
+						top: 16,
+						right: 16,
+					}}
+					onClick={() =>
+						document
+							.getElementById(parentScrollableDivId)
+							?.scrollTo({
+								top: 0,
+								left: 0,
+								behavior: "smooth",
+							})
+					}
+				>
+					<GoBackTopIcon />
+				</Button>
+			</Tooltip>
+		</Slide>
+	);
 };
 
 /**
@@ -41,48 +87,9 @@ export type InfiniteViewProps<ItemType> = {
 const InfiniteView = <ItemType extends IllustratedResource>(
 	props: InfiniteViewProps<ItemType>,
 ) => {
-	const { t } = useTranslation();
-	const [backToTopVisible, setBackToTopVisible] = useState(false);
-	const handleScroll = () => {
-		const position = window.scrollY;
-
-		setBackToTopVisible(position > window.innerHeight);
-	};
-
-	useEffect(() => {
-		window.addEventListener("scroll", handleScroll, { passive: true });
-		return () => window.removeEventListener("scroll", handleScroll);
-	}, []);
 	return (
 		<>
-			<Slide
-				direction="down"
-				in={backToTopVisible}
-				mountOnEnter
-				unmountOnExit
-			>
-				<Tooltip title={t("backToTop")}>
-					<Button
-						variant="contained"
-						color="secondary"
-						sx={{
-							zIndex: "tooltip",
-							position: "fixed",
-							top: 16,
-							right: 16,
-						}}
-						onClick={() =>
-							window.scrollTo({
-								top: 0,
-								left: 0,
-								behavior: "smooth",
-							})
-						}
-					>
-						<GoBackTopIcon />
-					</Button>
-				</Tooltip>
-			</Slide>
+			<ScrollToTopButton />
 			{props.view.toLowerCase() == "list" ? (
 				<InfiniteList
 					loader={() => <WideLoadingComponent />}
