@@ -54,13 +54,7 @@ const AlbumHighlightCard = ({ album }: AlbumHighlightCardProps) => {
 				})) ?? []
 			}
 			illustration={album?.illustration}
-			href={
-				album
-					? `/albums/${album.artist?.slug ?? "compilations"}+${
-							album.slug
-						}`
-					: undefined
-			}
+			href={album ? `/albums/${album.slug}` : undefined}
 		/>
 	);
 };

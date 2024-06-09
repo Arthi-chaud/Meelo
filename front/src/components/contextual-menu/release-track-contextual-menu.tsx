@@ -48,7 +48,7 @@ type ReleaseTrackContextualMenuProps = {
 };
 
 const ReleaseTrackContextualMenu = (props: ReleaseTrackContextualMenuProps) => {
-	const songSlug = `${props.artist.slug}+${props.track.song.slug}`;
+	const songSlug = props.track.song.slug;
 	const confirm = useConfirm();
 	const queryClient = useQueryClient();
 	const { t } = useTranslation();

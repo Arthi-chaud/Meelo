@@ -51,8 +51,6 @@ const Song = Resource.concat(Illustration).concat(
 		name: yup.string().required(),
 		/*
 		 * The slug of the release
-		 * To be used with the parent's artist's slug:
-		 * ${artistSlug}+${songSlug}
 		 */
 		slug: yup.string().required(),
 		/**

@@ -43,8 +43,6 @@ const Album = Resource.concat(Illustration).concat(
 		name: yup.string().required(),
 		/**
 		 * The slug of the album
-		 * To be used with the parent's artist's slug:
-		 * ${artistSlug}+${albumSlug}
 		 */
 		slug: yup.string().required(),
 		/**

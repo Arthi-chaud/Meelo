@@ -52,7 +52,7 @@ type SongContextualMenuProps = {
 };
 
 const SongContextualMenu = (props: SongContextualMenuProps) => {
-	const songSlug = `${props.song.artist.slug}+${props.song.slug}`;
+	const songSlug = props.song.slug;
 	const queryClient = useQueryClient();
 	const { t } = useTranslation();
 	const { playNext, playAfter } = usePlayerContext();
@@ -64,7 +64,6 @@ const SongContextualMenu = (props: SongContextualMenuProps) => {
 		getMasterTrack().then((master) => ({
 			track: master,
 			artist: props.song.artist,
-			release: master.release,
 		}));
 
 	return (
@@ -75,7 +74,7 @@ const SongContextualMenu = (props: SongContextualMenuProps) => {
 					GoToArtistAction(props.song.artist.slug),
 					GoToReleaseAsyncAction(
 						router,
-						async () => (await getMasterTrack()).releaseId,
+						async () => (await getMasterTrack()).release.slug,
 					),
 				],
 				[GoToSongLyricsAction(songSlug)],

@@ -52,7 +52,6 @@ import Track from "../../models/track";
 import Artist from "../../models/artist";
 import Link from "next/link";
 import ReleaseTrackContextualMenu from "../contextual-menu/release-track-contextual-menu";
-import Release from "../../models/release";
 import ListItem from "../list-item/item";
 import { DragDropContext, Draggable, Droppable } from "react-beautiful-dnd";
 import formatDuration from "../../utils/formatDuration";
@@ -77,7 +76,6 @@ type PlayerControlsProps = Parameters<typeof PlayerSlider>[number] &
 		onExpand: (expand: boolean) => void;
 		artist?: Artist;
 		track?: Track;
-		release?: Release;
 	};
 
 const playerTextStyle = {

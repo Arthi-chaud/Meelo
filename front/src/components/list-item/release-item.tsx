@@ -40,7 +40,7 @@ const ReleaseItem = ({ release }: ReleaseItemProps) => {
 					quality="low"
 				/>
 			}
-			href={`/releases/${release.id}`}
+			href={`/releases/${release.slug}`}
 			title={release.name}
 			secondTitle={getYear(release.releaseDate)?.toString()}
 			trailing={

@@ -45,7 +45,7 @@ const ReleaseTile = (props: {
 						: yearFormat
 					: undefined
 			}
-			href={props.release ? `/releases/${props.release.id}` : undefined}
+			href={props.release ? `/releases/${props.release.slug}` : undefined}
 			illustration={
 				<Illustration
 					illustration={props.release?.illustration}
