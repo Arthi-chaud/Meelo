@@ -370,30 +370,29 @@ export default class IllustrationRepository {
 	private async extractIllustrationBasedOnPreferences(
 		sourceFilePath: string,
 	): Promise<Buffer | null> {
+		const getEmbedded = () =>
+			this.scannerService.extractIllustrationFromFile(sourceFilePath);
+		const getInline = () =>
+			this.scannerService.extractIllustrationInFileFolder(sourceFilePath);
 		if (this.settingsService.settingsValues.metadata.order === "only") {
 			if (
 				this.settingsService.settingsValues.metadata.source ==
 				"embedded"
 			) {
-				return this.scannerService.extractIllustrationFromFile(
-					sourceFilePath,
-				);
+				return getEmbedded();
 			}
-			return this.scannerService.extractIllustrationInFileFolder(
-				sourceFilePath,
-			);
+			return getInline();
 		}
-		const [embeddedIllustration, inlineIllustration] = await Promise.all([
-			this.scannerService.extractIllustrationFromFile(sourceFilePath),
-			this.scannerService.extractIllustrationInFileFolder(sourceFilePath),
-		]);
-		const extractedIllustration =
-			(this.settingsService.settingsValues.metadata.source == "embedded"
-				? embeddedIllustration
-				: inlineIllustration) ??
-			embeddedIllustration ??
-			inlineIllustration;
-		return extractedIllustration;
+		const [prefered, fallback] =
+			this.settingsService.settingsValues.metadata.source == "embedded"
+				? [getEmbedded, getInline]
+				: [getInline, getEmbedded];
+		const resolvedFavorite = await prefered();
+
+		if (resolvedFavorite == null) {
+			return fallback();
+		}
+		return resolvedFavorite;
 	}
 
 	public async getReleaseIllustrations(
