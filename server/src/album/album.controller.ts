@@ -143,7 +143,7 @@ export default class AlbumController {
 		}
 		return this.albumService.getMany(
 			selector,
-			sort,
+			selector.random ?? sort,
 			paginationParameters,
 			include,
 		);
