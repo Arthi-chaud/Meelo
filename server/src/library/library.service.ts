@@ -26,8 +26,6 @@ import normalize from "normalize-path";
 import { buildStringSearchParameters } from "src/utils/search-string-input";
 import TasksRunner from "src/tasks/tasks.runner";
 import { Library } from "src/prisma/models";
-import { parseIdentifierSlugs } from "src/identifier/identifier.parse-slugs";
-import Identifier from "src/identifier/models/identifier";
 import { PrismaError } from "prisma-error-enum";
 import {
 	LibraryAlreadyExistsException,
@@ -36,7 +34,7 @@ import {
 import { UnhandledORMErrorException } from "src/exceptions/orm-exceptions";
 import { PaginationParameters } from "src/pagination/models/pagination-parameters";
 import {
-	formatIdentifier,
+	formatIdentifierToIdOrSlug,
 	formatPaginationParameters,
 } from "src/repository/repository.utils";
 
@@ -112,15 +110,7 @@ export default class LibraryService {
 		};
 	}
 
-	static formatIdentifierToWhereInput(
-		identifier: Identifier,
-	): LibraryQueryParameters.WhereInput {
-		return formatIdentifier(identifier, (stringIdentifier) => {
-			const [slug] = parseIdentifierSlugs(stringIdentifier, 1);
-
-			return { slug };
-		});
-	}
+	static formatIdentifierToWhereInput = formatIdentifierToIdOrSlug;
 
 	formatSortingInput(
 		sortingParameter: LibraryQueryParameters.SortingParameter,

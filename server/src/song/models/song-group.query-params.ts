@@ -42,11 +42,6 @@ namespace SongGroupQueryParameters {
 	}>;
 
 	/**
-	 * Query parameters to find a song group to update
-	 */
-	export type UpdateWhereInput = WhereInput;
-
-	/**
 	 * Query params to find multiple songs
 	 */
 	export type ManyWhereInput = Record<string, never>;

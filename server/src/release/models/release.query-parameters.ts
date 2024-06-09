@@ -37,6 +37,7 @@ namespace ReleaseQueryParameters {
 		| "albumId"
 		| "id"
 		| "slug"
+		| "nameSlug"
 		| "tracks"
 		| "externalIds"
 		| "registeredAt"
@@ -51,8 +52,8 @@ namespace ReleaseQueryParameters {
 	 * Query parameters to find one release
 	 */
 	export type WhereInput = RequireExactlyOne<{
-		id: Release["id"];
-		bySlug: { slug: Slug; album: AlbumQueryParameters.WhereInput };
+		id: number;
+		slug: Slug;
 	}>;
 
 	/**
@@ -68,7 +69,7 @@ namespace ReleaseQueryParameters {
 	/**
 	 * Parameters to update a Release
 	 */
-	export type UpdateInput = Partial<CreateInput>;
+	export type UpdateInput = Partial<Pick<CreateInput, "releaseDate">>;
 
 	/**
 	 * Parameters to update the master release of an album

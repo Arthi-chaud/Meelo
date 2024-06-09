@@ -74,6 +74,9 @@ describe("Album Service", () => {
 					registeredAt,
 				);
 				expect(newCompilationAlbum.slug).toBe(
+					"compilations-my-other-compilation-album",
+				);
+				expect(newCompilationAlbum.nameSlug).toBe(
 					"my-other-compilation-album",
 				);
 				expect(newCompilationAlbum.type).toBe(
@@ -119,7 +122,8 @@ describe("Album Service", () => {
 					new Date(Date.now()).getUTCDate(),
 				);
 				expect(newAlbum.name).toBe("My Live Album");
-				expect(newAlbum.slug).toBe("my-live-album");
+				expect(newAlbum.nameSlug).toBe("my-live-album");
+				expect(newAlbum.slug).toBe("my-artist-my-live-album");
 				expect(newAlbum.type).toBe(AlbumType.LiveRecording);
 			});
 
@@ -218,20 +222,14 @@ describe("Album Service", () => {
 	describe("Get an album", () => {
 		it("should find the album (w/o artist)", async () => {
 			const album = await albumService.get({
-				bySlug: {
-					slug: new Slug(dummyRepository.compilationAlbumA.slug),
-					artist: undefined,
-				},
+				slug: new Slug(dummyRepository.compilationAlbumA.slug),
 			});
 			expect(album).toStrictEqual(dummyRepository.compilationAlbumA);
 		});
 
 		it("should find the album (w/ artist)", async () => {
 			const album = await albumService.get({
-				bySlug: {
-					slug: new Slug(dummyRepository.albumA1.slug),
-					artist: { slug: new Slug(dummyRepository.artistA.slug) },
-				},
+				slug: new Slug(dummyRepository.albumA1.slug),
 			});
 			expect(album).toStrictEqual(dummyRepository.albumA1);
 		});

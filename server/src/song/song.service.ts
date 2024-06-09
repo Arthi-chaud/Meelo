@@ -28,8 +28,6 @@ import { CompilationArtistException } from "src/artist/artist.exceptions";
 import { buildStringSearchParameters } from "src/utils/search-string-input";
 import { PaginationParameters } from "src/pagination/models/pagination-parameters";
 import { Song, SongWithRelations } from "src/prisma/models";
-import { parseIdentifierSlugs } from "src/identifier/identifier.parse-slugs";
-import Identifier from "src/identifier/models/identifier";
 import Logger from "src/logger/logger";
 import TrackQueryParameters from "src/track/models/track.query-parameters";
 import { PrismaError } from "prisma-error-enum";
@@ -51,7 +49,7 @@ import SongGroupQueryParameters from "./models/song-group.query-params";
 import { UnhandledORMErrorException } from "src/exceptions/orm-exceptions";
 import SearchableRepositoryService from "src/repository/searchable-repository.service";
 import {
-	formatIdentifier,
+	formatIdentifierToIdOrSlug,
 	formatPaginationParameters,
 	getRandomIds,
 } from "src/repository/repository.utils";
@@ -90,8 +88,17 @@ export default class SongService extends SearchableRepositoryService {
 		await Promise.all(
 			song.genres.map((genre) => this.genreService.get(genre)),
 		);
+		const artist = await this.artistService.get(song.artist);
+		const songNameSlug = new Slug(song.name).toString();
+		const songUniqueSlug = this._createSongUniqueSlug(
+			artist.slug,
+			songNameSlug,
+			song.featuring,
+		).toString();
 		const args = {
 			data: {
+				slug: songUniqueSlug,
+				nameSlug: songNameSlug,
 				genres: {
 					connect: song.genres.map((genre) =>
 						GenreService.formatWhereInput(genre),
@@ -120,10 +127,6 @@ export default class SongService extends SearchableRepositoryService {
 				registeredAt: song.registeredAt,
 				type: this.parserService.getSongType(song.name),
 				name: song.name,
-				slug: this._createSongSlug(
-					song.name,
-					song.featuring,
-				).toString(),
 			},
 			include: include ?? ({} as I),
 		};
@@ -142,8 +145,6 @@ export default class SongService extends SearchableRepositoryService {
 			})
 			.catch(async (error) => {
 				if (error instanceof Prisma.PrismaClientKnownRequestError) {
-					const artist = await this.artistService.get(song.artist);
-
 					if (error.code === PrismaError.UniqueConstraintViolation) {
 						throw new SongAlreadyExistsException(
 							new Slug(song.name),
@@ -155,36 +156,13 @@ export default class SongService extends SearchableRepositoryService {
 			});
 	}
 
-	// protected formatCreateInputToWhereInput(
-	// 	input: SongQueryParameters.CreateInput,
-	// ): SongQueryParameters.WhereInput {
-	// 	return {
-	// 		bySlug: {
-	// 			slug: this._createSongSlug(input.name, input.featuring),
-	// 			artist: input.artist,
-	// 		},
-	// 	};
-	// }
-
 	/**
 	 * Get
 	 */
 	static formatWhereInput(where: SongQueryParameters.WhereInput) {
 		return {
 			id: where.id,
-			slug: where.bySlug?.slug.toString(),
-			artist: where.bySlug
-				? ArtistService.formatWhereInput(where.bySlug.artist)
-				: undefined,
-			featuring: where.bySlug?.featuring
-				? {
-						every: {
-							OR: where.bySlug.featuring.map(
-								ArtistService.formatWhereInput,
-							),
-						},
-				  }
-				: undefined,
+			slug: where.slug?.toString(),
 		};
 	}
 
@@ -213,13 +191,14 @@ export default class SongService extends SearchableRepositoryService {
 		include?: I,
 	) {
 		try {
+			const artist = await this.artistService.get(input.artist);
 			return await this.get(
 				{
-					bySlug: {
-						slug: this._createSongSlug(input.name, input.featuring),
-						artist: input.artist,
-						featuring: input.featuring,
-					},
+					slug: this._createSongUniqueSlug(
+						artist.name,
+						input.name,
+						input.featuring,
+					),
 				},
 				include,
 			);
@@ -347,20 +326,7 @@ export default class SongService extends SearchableRepositoryService {
 
 	formatManyWhereInput = SongService.formatManyWhereInput;
 
-	static formatIdentifierToWhereInput(
-		identifier: Identifier,
-	): SongQueryParameters.WhereInput {
-		return formatIdentifier(identifier, (stringIdentifier) => {
-			const slugs = parseIdentifierSlugs(stringIdentifier, 2);
-
-			return {
-				bySlug: {
-					slug: slugs[1],
-					artist: { slug: slugs[0] },
-				},
-			};
-		});
-	}
+	static formatIdentifierToWhereInput = formatIdentifierToIdOrSlug;
 
 	formatSortingInput(
 		sortingParameter: SongQueryParameters.SortingParameter,
@@ -368,7 +334,7 @@ export default class SongService extends SearchableRepositoryService {
 		sortingParameter.order ??= "asc";
 		switch (sortingParameter.sortBy) {
 			case "name":
-				return { slug: sortingParameter.order };
+				return { nameSlug: sortingParameter.order };
 			case "addDate":
 				return { registeredAt: sortingParameter.order };
 			case "artistName":
@@ -399,12 +365,7 @@ export default class SongService extends SearchableRepositoryService {
 			if (where.id != undefined) {
 				throw new SongNotFoundByIdException(where.id);
 			}
-			const artist = await this.artistService.get(where.bySlug.artist);
-
-			throw new SongNotFoundException(
-				where.bySlug.slug,
-				new Slug(artist.slug),
-			);
+			throw new SongNotFoundException(where.slug);
 		}
 		throw new UnhandledORMErrorException(error, where);
 	}
@@ -417,35 +378,10 @@ export default class SongService extends SearchableRepositoryService {
 	): Prisma.SongUpdateInput {
 		return {
 			...what,
-			slug: what.name ? new Slug(what.name).toString() : undefined,
 			genres: what.genres
 				? {
 						connect: what.genres.map((genre) =>
 							GenreService.formatWhereInput(genre),
-						),
-				  }
-				: undefined,
-			artist: what.artist
-				? {
-						connect: ArtistService.formatWhereInput(what.artist),
-				  }
-				: undefined,
-			group: what.group
-				? {
-						connectOrCreate: {
-							create: SongService.formatSongGroupCreateInput(
-								what.group,
-							),
-							where: SongService.formatSongGroupWhereInput(
-								what.group,
-							),
-						},
-				  }
-				: undefined,
-			featuring: what.featuring
-				? {
-						connect: what.featuring.map(
-							ArtistService.formatWhereInput,
 						),
 				  }
 				: undefined,
@@ -468,24 +404,6 @@ export default class SongService extends SearchableRepositoryService {
 					this.genreService.get(genreWhere),
 				),
 			);
-		}
-		if (where.bySlug) {
-			const { id: artistId } = await this.artistService.get(
-				where.bySlug.artist,
-			);
-			return this.prismaService.song
-				.update({
-					data: this.formatUpdateInput(what),
-					where: {
-						slug_artistId: {
-							slug: where.bySlug!.slug.toString(),
-							artistId: artistId,
-						},
-					},
-				})
-				.catch(async (error) => {
-					throw await this.onNotFound(error, where);
-				});
 		}
 		return this.prismaService.song
 			.update({
@@ -762,17 +680,19 @@ export default class SongService extends SearchableRepositoryService {
 		};
 	}
 
-	private _createSongSlug(
+	private _createSongUniqueSlug(
+		artistName: string,
 		songName: string,
 		featuring: SongQueryParameters.CreateInput["featuring"],
 	) {
 		if (featuring && featuring.length > 0) {
 			return new Slug(
+				artistName,
 				songName,
 				"feat",
 				...featuring.map((feat) => feat.slug.toString()),
 			);
 		}
-		return new Slug(songName);
+		return new Slug(artistName, songName);
 	}
 }

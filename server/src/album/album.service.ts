@@ -32,9 +32,7 @@ import ReleaseService from "src/release/release.service";
 import SearchableRepositoryService from "src/repository/searchable-repository.service";
 import { buildStringSearchParameters } from "src/utils/search-string-input";
 import SongService from "src/song/song.service";
-import { parseIdentifierSlugs } from "src/identifier/identifier.parse-slugs";
 import compilationAlbumArtistKeyword from "src/constants/compilation";
-import Identifier from "src/identifier/models/identifier";
 import Logger from "src/logger/logger";
 import ReleaseQueryParameters from "src/release/models/release.query-parameters";
 import { PrismaError } from "prisma-error-enum";
@@ -46,7 +44,7 @@ import { InjectMeiliSearch } from "nestjs-meilisearch";
 import { UnhandledORMErrorException } from "src/exceptions/orm-exceptions";
 import { PaginationParameters } from "src/pagination/models/pagination-parameters";
 import {
-	formatIdentifier,
+	formatIdentifierToIdOrSlug,
 	formatPaginationParameters,
 	getRandomIds,
 } from "src/repository/repository.utils";
@@ -74,12 +72,15 @@ export default class AlbumService extends SearchableRepositoryService {
 		include?: I,
 	) {
 		try {
+			const artist = album.artist
+				? await this.artistServce.get(album.artist)
+				: undefined;
 			return await this.get(
 				{
-					bySlug: {
-						slug: new Slug(album.name),
-						artist: album.artist,
-					},
+					slug: new Slug(
+						artist?.name ?? compilationAlbumArtistKeyword,
+						album.name,
+					),
 				},
 				include,
 			);
@@ -104,6 +105,11 @@ export default class AlbumService extends SearchableRepositoryService {
 				throw new AlbumAlreadyExistsException(new Slug(album.name));
 			}
 		}
+		const artistSlug =
+			album.artist == undefined
+				? compilationAlbumArtistKeyword
+				: (await this.artistServce.get(album.artist)).slug;
+		const albumNameSlug = new Slug(album.name).toString();
 		return this.prismaService.album
 			.create({
 				data: {
@@ -115,7 +121,8 @@ export default class AlbumService extends SearchableRepositoryService {
 								),
 						  }
 						: undefined,
-					slug: new Slug(album.name).toString(),
+					slug: new Slug(artistSlug, albumNameSlug).toString(),
+					nameSlug: albumNameSlug,
 					releaseDate: album.releaseDate,
 					registeredAt: album.registeredAt,
 					type: this.parserService.getAlbumType(album.name),
@@ -176,12 +183,7 @@ export default class AlbumService extends SearchableRepositoryService {
 	static formatWhereInput(where: AlbumQueryParameters.WhereInput) {
 		return {
 			id: where.id,
-			slug: where.bySlug?.slug.toString(),
-			artist: where.bySlug
-				? where.bySlug.artist
-					? ArtistService.formatWhereInput(where.bySlug.artist)
-					: null
-				: undefined,
+			slug: where.slug?.toString(),
 		};
 	}
 
@@ -353,23 +355,7 @@ export default class AlbumService extends SearchableRepositoryService {
 
 	formatManyWhereInput = AlbumService.formatManyWhereInput;
 
-	static formatIdentifierToWhereInput(
-		identifier: Identifier,
-	): AlbumQueryParameters.WhereInput {
-		return formatIdentifier(identifier, (stringIdentifier) => {
-			const slugs = parseIdentifierSlugs(stringIdentifier, 2);
-
-			return {
-				bySlug: {
-					slug: slugs[1],
-					artist:
-						slugs[0].toString() == compilationAlbumArtistKeyword
-							? undefined
-							: { slug: slugs[0] },
-				},
-			};
-		});
-	}
+	static formatIdentifierToWhereInput = formatIdentifierToIdOrSlug;
 
 	formatSortingInput(
 		sortingParameter: AlbumQueryParameters.SortingParameter,
@@ -377,7 +363,7 @@ export default class AlbumService extends SearchableRepositoryService {
 		sortingParameter.order ??= "asc";
 		switch (sortingParameter.sortBy) {
 			case "name":
-				return { slug: sortingParameter.order };
+				return { nameSlug: sortingParameter.order };
 			case "artistName":
 				return {
 					artist: this.artistServce.formatSortingInput({
@@ -513,13 +499,7 @@ export default class AlbumService extends SearchableRepositoryService {
 			if (where.id != undefined) {
 				return new AlbumNotFoundFromIDException(where.id);
 			}
-			if (where.bySlug.artist) {
-				await this.artistServce.get(where.bySlug.artist);
-			}
-			return new AlbumNotFoundException(
-				where.bySlug.slug,
-				where.bySlug.artist?.slug,
-			);
+			return new AlbumNotFoundException(where.slug);
 		}
 		return new UnhandledORMErrorException(error, where);
 	}

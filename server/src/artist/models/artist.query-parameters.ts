@@ -41,7 +41,7 @@ namespace ArtistQueryParameters {
 	 * Query parameters to find one artist
 	 */
 	export type WhereInput = RequireExactlyOne<{
-		id: Artist["id"];
+		id: number;
 		slug: Slug;
 		compilationArtist: true;
 	}>;

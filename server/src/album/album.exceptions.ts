@@ -24,12 +24,8 @@ import {
 import type Slug from "src/slug/slug";
 
 export class AlbumNotFoundException extends NotFoundException {
-	constructor(albumSlug: Slug, artistSlug?: Slug) {
-		super(
-			`${albumSlug.toString()} ${
-				artistSlug ? `by ${artistSlug.toString()}` : ""
-			}: No such album`,
-		);
+	constructor(albumSlug: Slug) {
+		super(`${albumSlug.toString()}: No such album`);
 	}
 }
 

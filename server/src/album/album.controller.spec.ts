@@ -289,9 +289,7 @@ describe("Album Controller", () => {
 
 		it("Should return album (w/ slug)", () => {
 			return request(app.getHttpServer())
-				.get(
-					`/albums/${dummyRepository.artistA.slug}+${dummyRepository.albumA1.slug}`,
-				)
+				.get(`/albums/${dummyRepository.albumA1.slug}`)
 				.expect(200)
 				.expect((res) => {
 					expect(res.body).toStrictEqual(
@@ -377,10 +375,10 @@ describe("Album Controller", () => {
 					});
 				});
 		});
-		it("Should return an error as the string is badly fored", () => {
+		it("Should return an error, the album does not exists", () => {
 			return request(app.getHttpServer())
 				.get(`/albums/${dummyRepository.artistA.slug}`)
-				.expect(400);
+				.expect(404);
 		});
 	});
 
@@ -483,9 +481,7 @@ describe("Album Controller", () => {
 	describe("Update the album", () => {
 		it("should reassign the compilation album to an artist + change the type", () => {
 			return request(app.getHttpServer())
-				.post(
-					`/albums/compilations+${dummyRepository.compilationAlbumA.slug}`,
-				)
+				.post(`/albums/${dummyRepository.compilationAlbumA.slug}`)
 				.send({
 					type: "RemixAlbum",
 				})

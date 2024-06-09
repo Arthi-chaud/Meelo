@@ -32,7 +32,6 @@ import GenreService from "src/genre/genre.service";
 import ReleaseService from "src/release/release.service";
 import TrackService from "src/track/track.service";
 import compilationAlbumArtistKeyword from "src/constants/compilation";
-import { parseIdentifierSlugs } from "src/identifier/identifier.parse-slugs";
 import Identifier from "src/identifier/models/identifier";
 import Logger from "src/logger/logger";
 import { PrismaError } from "prisma-error-enum";
@@ -268,12 +267,10 @@ export default class ArtistService extends SearchableRepositoryService {
 		identifier: Identifier,
 	): ArtistQueryParameters.WhereInput {
 		return formatIdentifier(identifier, (stringIdentifier) => {
-			const [slug] = parseIdentifierSlugs(stringIdentifier, 1);
-
-			if (slug.toString() == compilationAlbumArtistKeyword) {
+			if (stringIdentifier.toString() == compilationAlbumArtistKeyword) {
 				return { compilationArtist: true };
 			}
-			return { slug };
+			return { slug: new Slug(stringIdentifier) };
 		});
 	}
 

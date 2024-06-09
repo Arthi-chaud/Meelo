@@ -25,8 +25,6 @@ import SongService from "src/song/song.service";
 import { buildStringSearchParameters } from "src/utils/search-string-input";
 import ArtistService from "src/artist/artist.service";
 import { Prisma } from "@prisma/client";
-import { parseIdentifierSlugs } from "src/identifier/identifier.parse-slugs";
-import Identifier from "src/identifier/models/identifier";
 import Logger from "src/logger/logger";
 import { PrismaError } from "prisma-error-enum";
 import {
@@ -38,7 +36,7 @@ import deepmerge from "deepmerge";
 import { UnhandledORMErrorException } from "src/exceptions/orm-exceptions";
 import { PaginationParameters } from "src/pagination/models/pagination-parameters";
 import {
-	formatIdentifier,
+	formatIdentifierToIdOrSlug,
 	formatPaginationParameters,
 } from "src/repository/repository.utils";
 
@@ -123,15 +121,7 @@ export default class GenreService {
 		return query;
 	}
 
-	static formatIdentifierToWhereInput(
-		identifier: Identifier,
-	): GenreQueryParameters.WhereInput {
-		return formatIdentifier(identifier, (stringIdentifier) => {
-			const [slug] = parseIdentifierSlugs(stringIdentifier, 1);
-
-			return { slug };
-		});
-	}
+	static formatIdentifierToWhereInput = formatIdentifierToIdOrSlug;
 
 	formatSortingInput(
 		sortingParameter: GenreQueryParameters.SortingParameter,

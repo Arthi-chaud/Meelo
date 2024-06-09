@@ -54,7 +54,7 @@ namespace AlbumQueryParameters {
 	 */
 	export type WhereInput = RequireExactlyOne<{
 		id: Album["id"];
-		bySlug: { slug: Slug; artist?: ArtistQueryParameters.WhereInput };
+		slug: Slug;
 	}>;
 
 	/**

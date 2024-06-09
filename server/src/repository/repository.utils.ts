@@ -19,6 +19,8 @@
 import { PrismaClient } from "@prisma/client";
 import Identifier from "src/identifier/models/identifier";
 import { PaginationParameters } from "src/pagination/models/pagination-parameters";
+import Slug from "src/slug/slug";
+import { RequireExactlyOne } from "type-fest";
 
 export async function getRandomIds(
 	tableName: string,
@@ -57,6 +59,15 @@ export function formatIdentifier<RepoWhereInput>(
 		return { id: identifier } as RepoWhereInput;
 	}
 	return stringToWhereInput(identifier);
+}
+
+export function formatIdentifierToIdOrSlug(
+	identifier: Identifier,
+): RequireExactlyOne<{ id: number; slug: Slug }> {
+	if (typeof identifier == "number") {
+		return { id: identifier };
+	}
+	return { slug: new Slug(identifier) };
 }
 
 export function formatPaginationParameters(

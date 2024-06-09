@@ -24,10 +24,8 @@ import {
 import type Slug from "src/slug/slug";
 
 export class SongNotFoundException extends NotFoundException {
-	constructor(songSlug: Slug, artistSlug: Slug) {
-		super(
-			`'${songSlug.toString()}' from '${artistSlug.toString()}': No such song`,
-		);
+	constructor(songSlug: Slug) {
+		super(`'${songSlug.toString()}': No such song`);
 	}
 }
 
