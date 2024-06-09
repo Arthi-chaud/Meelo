@@ -40,20 +40,14 @@ const VideoTile = ({ video, formatSubtitle }: VideoTileProps) => {
 			onClick={
 				video
 					? () =>
-							Promise.all([
-								queryClient.fetchQuery(
-									API.getArtist(video.song.artistId),
-								),
-								queryClient.fetchQuery(
-									API.getRelease(video.releaseId),
-								),
-							]).then(([artist, release]) =>
-								playTrack({
-									track: video,
-									release: release,
-									artist: artist,
-								}),
-							)
+							queryClient
+								.fetchQuery(API.getArtist(video.song.artistId))
+								.then((artist) =>
+									playTrack({
+										track: video,
+										artist: artist,
+									}),
+								)
 					: undefined
 			}
 			title={video?.name}

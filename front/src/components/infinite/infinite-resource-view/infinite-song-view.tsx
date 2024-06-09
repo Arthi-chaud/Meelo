@@ -34,7 +34,6 @@ import {
 	prepareMeeloInfiniteQuery,
 	useQueryClient,
 } from "../../../api/use-query";
-import API from "../../../api/api";
 import { PlayerActions, usePlayerContext } from "../../../contexts/player";
 
 type AdditionalProps = {
@@ -47,7 +46,9 @@ const playSongsAction = (
 	playTrack: PlayerActions["playTrack"],
 	playAfter: PlayerActions["playAfter"],
 	queryClient: QueryClient,
-	query: () => InfiniteQuery<SongWithRelations<"artist" | "featuring">>,
+	query: () => InfiniteQuery<
+		SongWithRelations<"artist" | "featuring" | "master">
+	>,
 ) => {
 	emptyPlaylist();
 	queryClient.client
@@ -56,21 +57,19 @@ const playSongsAction = (
 			const songs = res.pages.flatMap(({ items }) => items);
 			let i = 0;
 			for (const song of songs) {
-				const { release, ...track } = await queryClient.fetchQuery(
-					API.getMasterTrack(song.id, ["release"]),
-				);
-
 				if (i == 0) {
-					playTrack({ release, track, artist: song.artist });
+					playTrack({ track: song.master, artist: song.artist });
 				} else {
-					playAfter({ release, track, artist: song.artist });
+					playAfter({ track: song.master, artist: song.artist });
 				}
 				i++;
 			}
 		});
 };
 
-const InfiniteSongView = <T extends SongWithRelations<"artist" | "featuring">>(
+const InfiniteSongView = <
+	T extends SongWithRelations<"artist" | "featuring" | "master">,
+>(
 	props: InfiniteResourceViewProps<
 		T,
 		typeof SongSortingKeys,

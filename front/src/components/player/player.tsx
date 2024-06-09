@@ -191,7 +191,6 @@ const Player = () => {
 				navigator.mediaSession.metadata = new MediaMetadata({
 					title: currentTrack.track.name,
 					artist: currentTrack.artist.name,
-					album: currentTrack.release.name,
 					artwork: newIllustrationURL
 						? [
 								{
@@ -215,7 +214,7 @@ const Player = () => {
 							icon: newIllustrationURL
 								? API.getIllustrationURL(newIllustrationURL)
 								: "/icon.png",
-							body: `${currentTrack.artist.name} - ${currentTrack.release.name}`,
+							body: currentTrack.artist.name,
 						}),
 					);
 					// eslint-disable-next-line no-empty
@@ -256,7 +255,6 @@ const Player = () => {
 		expanded: expanded,
 		track: currentTrack?.track,
 		artist: currentTrack?.artist,
-		release: currentTrack?.release,
 		playing: playing ?? false,
 		onPause: pause,
 		onPlay: play,

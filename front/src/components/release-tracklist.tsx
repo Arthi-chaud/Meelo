@@ -129,12 +129,10 @@ const ReleaseTrackList = ({
 								disablePadding
 								disableGutters
 								secondaryAction={
-									currentTrack &&
-									release && (
+									currentTrack && (
 										<ReleaseTrackContextualMenu
 											track={currentTrack}
 											artist={currentTrack.song.artist}
-											release={release}
 										/>
 									)
 								}

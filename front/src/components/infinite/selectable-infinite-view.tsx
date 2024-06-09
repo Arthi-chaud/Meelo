@@ -58,7 +58,7 @@ type SelectableInfiniteViewProps = {
 		]
 	>;
 	songQuery: MeeloInfiniteQueryFn<
-		SongWithRelations<"artist" | "featuring">,
+		SongWithRelations<"artist" | "featuring" | "master">,
 		[
 			param: {
 				type: SongType | undefined;

@@ -89,10 +89,10 @@ const InfiniteScroll = <T extends Resource>(props: InfiniteScrollProps<T>) => {
 			>
 				{props.render(
 					data === undefined
-						? generateArray(5)
+						? generateArray(3)
 						: [
 								...data.pages.map((page) => page.items).flat(),
-								...(isFetchingNextPage ? generateArray(5) : []),
+								...(isFetchingNextPage ? generateArray(3) : []),
 							],
 				)}
 			</IScroll.default>

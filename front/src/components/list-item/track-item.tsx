@@ -60,7 +60,6 @@ const TrackItem = ({ track }: TrackItemProps) => {
 							playTrack({
 								artist: song.artist,
 								track,
-								release,
 							});
 						}))
 			}

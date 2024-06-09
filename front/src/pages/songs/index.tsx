@@ -32,7 +32,11 @@ const prepareSSR = (context: NextPageContext) => {
 	return {
 		additionalProps: { order, sortBy },
 		infiniteQueries: [
-			API.getSongs({}, { sortBy, order }, ["artist", "featuring"]),
+			API.getSongs({}, { sortBy, order }, [
+				"artist",
+				"featuring",
+				"master",
+			]),
 		],
 	};
 };
@@ -50,7 +54,7 @@ const LibrarySongsPage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({
 				API.getSongs(
 					{ type, library: library ?? undefined, random },
 					{ sortBy, order },
-					["artist", "featuring"],
+					["artist", "featuring", "master"],
 				)
 			}
 		/>

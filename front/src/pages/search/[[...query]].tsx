@@ -40,6 +40,7 @@ const prepareSSR = (context: NextPageContext) => {
 					API.getSongs({ query: searchQuery }, undefined, [
 						"artist",
 						"featuring",
+						"master",
 					]),
 				]
 			: [],
@@ -137,7 +138,7 @@ const SearchPage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({ props }) => {
 							library: library ?? undefined,
 						},
 						undefined,
-						["artist", "featuring"],
+						["artist", "featuring", "master"],
 					)
 				}
 			/>
