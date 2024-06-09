@@ -64,7 +64,7 @@ export default class AlbumService extends SearchableRepositoryService {
 		@InjectMeiliSearch()
 		protected readonly meiliSearch: MeiliSearch,
 	) {
-		super("albums", ["name", "slug"], meiliSearch);
+		super("albums", ["name", "slug", "nameSlug", "type"], meiliSearch);
 	}
 
 	async getOrCreate<I extends AlbumQueryParameters.RelationInclude = {}>(
@@ -133,7 +133,9 @@ export default class AlbumService extends SearchableRepositoryService {
 					{
 						id: created.id,
 						slug: created.slug,
+						nameSlug: created.nameSlug,
 						name: created.name,
+						type: created.type,
 					},
 				]);
 				return created;

@@ -71,7 +71,11 @@ export default class SongService extends SearchableRepositoryService {
 		@Inject(forwardRef(() => ParserService))
 		private parserService: ParserService,
 	) {
-		super("songs", ["name", "slug", "lyrics"], meiliSearch);
+		super(
+			"songs",
+			["name", "slug", "nameSlug", "lyrics", "type"],
+			meiliSearch,
+		);
 	}
 
 	getTableName() {
@@ -136,6 +140,7 @@ export default class SongService extends SearchableRepositoryService {
 				this.meiliSearch.index(this.indexName).addDocuments([
 					{
 						id: created.id,
+						nameSlug: created.nameSlug,
 						slug: created.slug,
 						name: created.name,
 						type: created.type,
