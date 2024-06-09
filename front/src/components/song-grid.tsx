@@ -17,7 +17,6 @@
  */
 
 import { Grid } from "@mui/material";
-import API from "../api/api";
 import SongContextualMenu from "./contextual-menu/song-contextual-menu";
 import Illustration from "./illustration";
 import { SongWithRelations } from "../models/song";
@@ -27,7 +26,7 @@ import formatArtists from "../utils/formatArtists";
 import { usePlayerContext } from "../contexts/player";
 
 type SongGridProps = {
-	songs: (SongWithRelations<"artist" | "featuring"> | undefined)[];
+	songs: (SongWithRelations<"artist" | "featuring" | "master"> | undefined)[];
 	parentArtistName?: string; // To tell wheter or not we display the artists' names
 };
 
@@ -71,19 +70,10 @@ const SongGrid = ({ songs, parentArtistName }: SongGridProps) => {
 						onClick={
 							song
 								? () =>
-										queryClient
-											.fetchQuery(
-												API.getMasterTrack(song.id, [
-													"release",
-												]),
-											)
-											.then((track) => {
-												playTrack({
-													artist: song.artist,
-													track,
-													release: track.release,
-												});
-											})
+										playTrack({
+											artist: song.artist,
+											track: song.master,
+										})
 								: undefined
 						}
 					/>

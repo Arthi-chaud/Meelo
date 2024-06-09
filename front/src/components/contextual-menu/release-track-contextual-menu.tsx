@@ -17,7 +17,6 @@
  */
 
 import Artist from "../../models/artist";
-import Release from "../../models/release";
 import ContextualMenu from "./contextual-menu";
 import { useConfirm } from "material-ui-confirm";
 import { DownloadAction } from "../actions/download";
@@ -45,7 +44,6 @@ import { usePlayerContext } from "../../contexts/player";
 type ReleaseTrackContextualMenuProps = {
 	track: TrackWithRelations<"song">;
 	artist: Artist;
-	release: Release;
 	onSelect?: () => void;
 };
 

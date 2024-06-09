@@ -412,11 +412,9 @@ const ExpandedPlayerControls = (
 									{
 										props.track &&
 										parentSong.data &&
-										props.artist &&
-										props.release ? (
+										props.artist ? (
 											<ReleaseTrackContextualMenu
 												artist={props.artist}
-												release={props.release}
 												track={{
 													...props.track,
 													song: parentSong.data,

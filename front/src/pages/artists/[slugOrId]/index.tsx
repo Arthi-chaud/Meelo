@@ -67,7 +67,7 @@ const topSongsQuery = (artistSlugOrId: string | number) =>
 	API.getSongs(
 		{ artist: artistSlugOrId },
 		{ sortBy: "totalPlayCount", order: "desc" },
-		["artist", "featuring"],
+		["artist", "featuring", "master"],
 	);
 
 const artistQuery = (artistSlugOrId: string | number) =>

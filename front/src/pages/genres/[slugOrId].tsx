@@ -40,6 +40,7 @@ const prepareSSR = (context: NextPageContext) => {
 			API.getSongs({ genre: genreIdentifier }, defaultQuerySortParams, [
 				"artist",
 				"featuring",
+				"master",
 			]),
 		],
 	};
@@ -96,7 +97,7 @@ const GenrePage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({ props }) => {
 							library: library ?? undefined,
 						},
 						{ sortBy, order },
-						["artist", "featuring"],
+						["artist", "featuring", "master"],
 					)
 				}
 			/>

@@ -71,10 +71,10 @@ const ArtistSongPage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({
 }) => {
 	const router = useRouter();
 	const queryClient = useQueryClient();
-	const getTrackMainAlbum = (track: Track) =>
+	const getTrackReleaseName = (track: Track) =>
 		queryClient
-			.fetchQuery(API.getRelease(track.releaseId, ["album"]))
-			.then(({ album }) => album);
+			.fetchQuery(API.getRelease(track.releaseId))
+			.then((release) => release.name);
 	const artistIdentifier =
 		props?.artistIdentifier ?? getSlugOrId(router.query);
 	const artist = useQuery(API.getArtist, artistIdentifier);
@@ -102,7 +102,7 @@ const ArtistSongPage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({
 					)
 				}
 				formatSubtitle={(song) =>
-					getTrackMainAlbum(song.master).then((album) => album.name)
+					getTrackReleaseName(song.master).then((name) => name)
 				}
 			/>
 		</Box>

@@ -16,7 +16,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import API from "../../api/api";
 import { SongWithRelations } from "../../models/song";
 import Illustration from "../illustration";
 import ListItem from "./item";
@@ -27,7 +26,9 @@ import { SongIcon } from "../icons";
 import formatArtists from "../../utils/formatArtists";
 import { usePlayerContext } from "../../contexts/player";
 
-type SongItemProps<T extends SongWithRelations<"artist" | "featuring">> = {
+type SongItemProps<
+	T extends SongWithRelations<"artist" | "featuring" | "master">,
+> = {
 	song: T | undefined;
 	formatSubtitle?: (song: T) => Promise<string>;
 };
@@ -37,7 +38,9 @@ type SongItemProps<T extends SongWithRelations<"artist" | "featuring">> = {
  * @param props
  * @returns
  */
-const SongItem = <T extends SongWithRelations<"artist" | "featuring">>({
+const SongItem = <
+	T extends SongWithRelations<"artist" | "featuring" | "master">,
+>({
 	song,
 	formatSubtitle,
 }: SongItemProps<T>) => {
@@ -71,15 +74,10 @@ const SongItem = <T extends SongWithRelations<"artist" | "featuring">>({
 				song &&
 				artist &&
 				(() =>
-					queryClient
-						.fetchQuery(API.getMasterTrack(song.id, ["release"]))
-						.then((track) => {
-							playTrack({
-								artist,
-								track,
-								release: track.release,
-							});
-						}))
+					playTrack({
+						artist,
+						track: song.master,
+					}))
 			}
 			secondTitle={subtitle}
 			trailing={song && <SongContextualMenu song={song} />}

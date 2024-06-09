@@ -59,6 +59,7 @@ const prepareSSR = (context: NextPageContext) => {
 				"externalIds",
 				"featuring",
 				"lyrics",
+				"master",
 			]),
 		],
 		infiniteQueries: [
@@ -66,7 +67,7 @@ const prepareSSR = (context: NextPageContext) => {
 			API.getSongs(
 				{ versionsOf: songIdentifier },
 				{ sortBy: "name", order: "asc" },
-				["artist", "featuring"],
+				["artist", "featuring", "master"],
 			),
 			API.getTracks(
 				{ song: songIdentifier },
@@ -100,6 +101,7 @@ const SongPage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({ props }) => {
 			"externalIds",
 			"featuring",
 			"lyrics",
+			"master",
 		]),
 	);
 	const genres = useInfiniteQuery(API.getGenres, { song: songIdentifier });
@@ -118,17 +120,10 @@ const SongPage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({ props }) => {
 				onClick={
 					song.data &&
 					(() =>
-						queryClient
-							.fetchQuery(
-								API.getMasterTrack(songIdentifier, ["release"]),
-							)
-							.then((master) =>
-								playTrack({
-									track: master,
-									artist: song.data.artist,
-									release: master.release,
-								}),
-							))
+						playTrack({
+							track: song.data.master,
+							artist: song.data.artist,
+						}))
 				}
 			>
 				{t("play")}
@@ -236,7 +231,7 @@ const SongPage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({ props }) => {
 									versionsOf: songIdentifier,
 								},
 								{ sortBy, order },
-								["artist", "featuring"],
+								["artist", "featuring", "master"],
 							)
 						}
 					/>

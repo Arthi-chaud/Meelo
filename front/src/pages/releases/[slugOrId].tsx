@@ -115,6 +115,7 @@ const releaseBSidesQuery = (releaseId: number) =>
 	API.getSongs({ bsides: releaseId }, { sortBy: "name" }, [
 		"artist",
 		"featuring",
+		"master",
 	]);
 const albumVideosQuery = (albumId: number) => API.getVideos({ album: albumId });
 const relatedAlbumsQuery = (albumId: number) =>
@@ -241,7 +242,7 @@ const ReleasePage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({ props }) => {
 				},
 				{ bSides: [], extras: [] } as Record<
 					"bSides" | "extras",
-					SongWithRelations<"artist" | "featuring">[]
+					SongWithRelations<"artist" | "featuring" | "master">[]
 				>,
 			),
 		[bSidesQuery.data],
