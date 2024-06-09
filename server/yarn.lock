@@ -6563,10 +6563,10 @@ neo-async@^2.6.2:
   resolved "https://registry.npmjs.org/neo-async/-/neo-async-2.6.2.tgz"
   integrity sha512-Yd3UES5mWCSqR+qNT93S3UoYUkqAZ9lLg8a7g9rimsWmYGK8cVToA4/sF3RrshdyV3sAGMXVUmpMYOw+dLpOuw==
 
-nestjs-meilisearch@^2.1.5:
-  version "2.1.5"
-  resolved "https://registry.yarnpkg.com/nestjs-meilisearch/-/nestjs-meilisearch-2.1.5.tgz#bdb58bc77a72bf45f9567f6f5f4bba6458e22e87"
-  integrity sha512-B5ico3bnsyGcwsEEZSb2o29f+mC2k8hiuU6oFPBpHYQjo5baQza42hqtIg6zhR50P1YCVlmh58EAkoowJS5idg==
+nestjs-meilisearch@^2.1.6:
+  version "2.1.6"
+  resolved "https://registry.yarnpkg.com/nestjs-meilisearch/-/nestjs-meilisearch-2.1.6.tgz#15cb5a02c42d1c8c7b611efce926b06c8a786e3b"
+  integrity sha512-2ZWxEOQZjGzT14oyk6Q2WXhDctMeS9dt4ld3tZfFgVU35MmjHBJsIqtAe5AnORC3Fpl20sbogE27NEKFA5RmLA==
 
 new-github-issue-url@0.2.1:
   version "0.2.1"

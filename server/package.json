@@ -59,7 +59,7 @@
 		"music-metadata": "^7.13.4",
 		"musicbrainz-api": "^0.10.2",
 		"mysql2": "^2.3.3",
-		"nestjs-meilisearch": "^2.1.5",
+		"nestjs-meilisearch": "^2.1.6",
 		"normalize-path": "^3.0.0",
 		"passport": "^0.6.0",
 		"passport-jwt": "^4.0.0",
