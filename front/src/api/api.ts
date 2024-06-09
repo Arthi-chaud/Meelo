@@ -48,7 +48,7 @@ import Track, {
 	TrackSortingKeys,
 	TrackWithRelations,
 } from "../models/track";
-import Tracklist from "../models/tracklist";
+import { TracklistItemWithRelations } from "../models/tracklist";
 import { SortingParameters } from "../utils/sorting";
 import LibraryTaskResponse from "../models/library-task-response";
 import { ResourceNotFound } from "../exceptions";
@@ -970,10 +970,10 @@ export default class API {
 	 * @param slugOrId the id of the release
 	 * @returns A query for a Tracklist
 	 */
-	static getReleaseTrackList<I extends SongInclude | never = never>(
+	static getReleaseTracklist<I extends SongInclude | never = never>(
 		slugOrId: string | number,
 		include?: I[],
-	) {
+	): InfiniteQuery<TracklistItemWithRelations<I>> {
 		return {
 			key: [
 				"release",
@@ -981,11 +981,13 @@ export default class API {
 				"tracklist",
 				...API.formatIncludeKeys(include),
 			],
-			exec: () =>
+			exec: (pagination) =>
 				API.fetch({
 					route: `/releases/${slugOrId.toString()}/tracklist`,
-					parameters: { include },
-					customValidator: Tracklist(include ?? []),
+					parameters: { include, pagination },
+					validator: PaginatedResponse(
+						TracklistItemWithRelations(include ?? []),
+					),
 				}),
 		};
 	}

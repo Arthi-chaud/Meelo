@@ -31,7 +31,6 @@ import type ReleaseQueryParameters from "src/release/models/release.query-parame
 import type SongQueryParameters from "src/song/models/song.query-params";
 import FileService from "src/file/file.service";
 import Slug from "src/slug/slug";
-import Tracklist, { UnknownDiscIndexKey } from "./models/tracklist.model";
 import AlbumService from "src/album/album.service";
 import LibraryService from "src/library/library.service";
 import { Track } from "src/prisma/models";
@@ -315,57 +314,30 @@ export default class TrackService {
 	}
 
 	/**
-	 * Get Tracklist of release
-	 * @param where
-	 * @returns the tracklist of the release
+	 * Get Playlist of release
+	 * @param where query paremeters to find the release
+	 * @returns all the tracks, ordered, from a release
 	 */
 	async getTracklist(
 		where: ReleaseQueryParameters.WhereInput,
+		pagination?: PaginationParameters,
 		include?: SongQueryParameters.RelationInclude,
-	): Promise<Tracklist> {
-		let tracklist: Tracklist = new Map();
+	) {
 		const tracks = await this.prismaService.track.findMany({
 			where: TrackService.formatManyWhereInput({ release: where }),
-			orderBy: { trackIndex: "asc" },
+			orderBy: [
+				{ trackIndex: "asc" },
+				{ discIndex: { sort: "asc", nulls: "last" } },
+			],
+			...formatPaginationParameters(pagination),
 			include: { song: { include: include } },
 		});
 
 		if (tracks.length == 0) {
 			await this.releaseService.get(where);
 		}
-		tracks.forEach((track) => {
-			const indexToString =
-				track.discIndex?.toString() ?? UnknownDiscIndexKey;
 
-			tracklist = tracklist.set(indexToString, [
-				...(tracklist.get(indexToString) ?? []),
-				track,
-			]);
-		});
-		return new Map([...tracklist].sort());
-	}
-
-	/**
-	 * Get Playlist of release
-	 * @param where query paremeters to find the release
-	 * @returns all the tracks, ordered, from a release
-	 */
-	async getPlaylist(
-		where: ReleaseQueryParameters.WhereInput,
-		include?: SongQueryParameters.RelationInclude,
-		random = false,
-	): Promise<Track[]> {
-		const tracklist = await this.getTracklist(where, include);
-		let playlist: Track[] = [];
-
-		tracklist.forEach((disc) => (playlist = playlist.concat(disc)));
-		if (random) {
-			return playlist
-				.map((value) => ({ value, sort: Math.random() }))
-				.sort((a, b) => a.sort - b.sort)
-				.map(({ value }) => value);
-		}
-		return playlist;
+		return tracks;
 	}
 
 	async update(

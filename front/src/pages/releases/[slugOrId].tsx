@@ -68,11 +68,37 @@ import { usePlayerContext } from "../../contexts/player";
 import { NextPageContext } from "next";
 import { QueryClient } from "react-query";
 import { useGradientBackground } from "../../utils/gradient-background";
+import Tracklist, { TracklistItemWithRelations } from "../../models/tracklist";
 
 const releaseQuery = (releaseIdentifier: string | number) =>
 	API.getRelease(releaseIdentifier, ["album", "externalIds"]);
-const releaseTracklistQuery = (releaseIdentifier: string | number) =>
-	API.getReleaseTrackList(releaseIdentifier, ["artist", "featuring"]);
+const releaseTracklistQuery = (releaseIdentifier: number | string) => {
+	const query = API.getReleaseTracklist(releaseIdentifier, [
+		"artist",
+		"featuring",
+	]);
+	return {
+		key: query.key,
+		exec: () =>
+			query.exec({ pageSize: 10000 }).then(({ items }) => {
+				return items.reduce(
+					(prev, item) => {
+						const itemKey = item.discIndex ?? "?";
+						return {
+							...prev,
+							[item.discIndex ?? "?"]: [
+								...(prev[itemKey] ?? []),
+								item,
+							],
+						};
+					},
+					{} as Tracklist<
+						TracklistItemWithRelations<"artist" | "featuring">
+					>,
+				);
+			}),
+	};
+};
 const albumQuery = (albumId: number) =>
 	API.getAlbum(albumId, ["externalIds", "genres"]);
 const artistsOnAlbumQuery = (albumId: number) => {

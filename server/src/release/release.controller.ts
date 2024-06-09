@@ -19,10 +19,8 @@
 import {
 	Body,
 	Controller,
-	DefaultValuePipe,
 	Get,
 	Inject,
-	ParseBoolPipe,
 	Post,
 	Put,
 	Query,
@@ -43,7 +41,6 @@ import Admin from "src/authentication/roles/admin.decorator";
 import IdentifierParam from "src/identifier/identifier.pipe";
 import Response, { ResponseType } from "src/response/response.decorator";
 import { ReleaseResponseBuilder } from "./models/release.response";
-import { TracklistResponseBuilder } from "src/track/models/tracklist.model";
 import { IsOptional } from "class-validator";
 import TransformIdentifier from "src/identifier/identifier.transform";
 import LibraryService from "src/library/library.service";
@@ -139,36 +136,23 @@ export default class ReleaseController {
 	}
 
 	@ApiOperation({
-		summary: "Get the tracklist of a release",
+		summary: "Get the ordered tracklist of a release",
 	})
-	@Response({ handler: TracklistResponseBuilder })
+	@Response({ handler: TrackResponseBuilder, type: ResponseType.Page })
 	@Get(":idOrSlug/tracklist")
 	async getReleaseTracklist(
 		@RelationIncludeQuery(SongQueryParameters.AvailableAtomicIncludes)
 		include: SongQueryParameters.RelationInclude,
+		@Query()
+		paginationParameters: PaginationParameters,
 		@IdentifierParam(ReleaseService)
 		where: ReleaseQueryParameters.WhereInput,
 	) {
-		return this.trackService.getTracklist(where, include);
-	}
-
-	@ApiOperation({
-		summary: "Get the playlist of a release",
-	})
-	@Response({
-		handler: TrackResponseBuilder,
-		type: ResponseType.Array,
-	})
-	@Get(":idOrSlug/playlist")
-	async getReleasePlaylist(
-		@Query("random", new DefaultValuePipe(false), ParseBoolPipe)
-		random: boolean,
-		@RelationIncludeQuery(SongQueryParameters.AvailableAtomicIncludes)
-		include: SongQueryParameters.RelationInclude,
-		@IdentifierParam(ReleaseService)
-		where: ReleaseQueryParameters.WhereInput,
-	) {
-		return this.trackService.getPlaylist(where, include, random);
+		return this.trackService.getTracklist(
+			where,
+			paginationParameters,
+			include,
+		);
 	}
 
 	@ApiOperation({
