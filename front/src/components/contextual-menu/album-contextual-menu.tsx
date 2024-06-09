@@ -33,9 +33,7 @@ type AlbumContextualMenuProps = {
 };
 
 const AlbumContextualMenu = (props: AlbumContextualMenuProps) => {
-	const albumSlug = `${props.album.artist?.slug ?? "compilations"}+${
-		props.album.slug
-	}`;
+	const albumSlug = props.album.slug;
 	const confirm = useConfirm();
 	const queryClient = useQueryClient();
 	const { t } = useTranslation();

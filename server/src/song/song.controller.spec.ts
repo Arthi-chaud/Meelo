@@ -153,9 +153,7 @@ describe("Song Controller", () => {
 		});
 		it("should return song (w/ slug)", () => {
 			return request(app.getHttpServer())
-				.get(
-					`/songs/${dummyRepository.artistA.slug}+${dummyRepository.songA2.slug}`,
-				)
+				.get(`/songs/${dummyRepository.songA2.slug}`)
 				.expect(200)
 				.expect((res) => {
 					const song: Song = res.body;
@@ -405,9 +403,7 @@ describe("Song Controller", () => {
 	describe("Get Song's Lyrics (GET /songs/:id/lyrics)", () => {
 		it("should return the song's lyrics", () => {
 			return request(app.getHttpServer())
-				.get(
-					`/songs/${dummyRepository.artistA.slug}+${dummyRepository.songA1.slug}/lyrics`,
-				)
+				.get(`/songs/${dummyRepository.songA1.slug}/lyrics`)
 				.expect(200)
 				.expect((res) => {
 					const lyrics: Lyrics = res.body;
@@ -479,9 +475,7 @@ describe("Song Controller", () => {
 	describe("Delete Song's Lyrics (DELETE /songs/:id/lyrics)", () => {
 		it("should return the song's lyrics", () => {
 			return request(app.getHttpServer())
-				.delete(
-					`/songs/${dummyRepository.artistA.slug}+${dummyRepository.songA1.slug}/lyrics`,
-				)
+				.delete(`/songs/${dummyRepository.songA1.slug}/lyrics`)
 				.expect(200)
 				.expect(async () => {
 					const song = await songService.get(

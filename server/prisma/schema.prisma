@@ -96,9 +96,11 @@ model Album {
     /// @description The title of the album
     /// @example My Album
     name         String            @db.Citext()
-    /// @description String identifier, for string-based finding
+    /// @description String identifier
+    /// @example my-artist-my-album
+    slug         String            @unique
     /// @example my-album
-    slug         String
+    nameSlug     String
     /// @description The date of the first release of the album
     releaseDate  DateTime?
     /// @description The date the album was registered
@@ -209,9 +211,11 @@ model Release {
     /// @description The Extensions of the release
     /// @example ["Deluxe Edition"]
     extensions    String[]
-    /// @description String identifier of the release
-    /// @example my-album-deluxe-edition
-    slug          String
+    /// @description String identifier
+    /// @example my-artist-my-release-deluxe-edition
+    slug          String                @unique
+    /// @example my-release-deluxe-edition
+    nameSlug      String
     /// @description The date of the release
     releaseDate   DateTime?
     /// @description The tracks on the release
@@ -240,9 +244,11 @@ model Song {
     /// @description Name of the song
     /// @example My Song
     name         String           @db.Citext()
-    /// @description String identifier of the song
+    /// @description String identifier
+    /// @example my-artist-my-song
+    slug          String                @unique
     /// @example my-song
-    slug         String
+    nameSlug      String
     /// @description The main artist of the song
     artist       Artist           @relation("MainSongArtist", fields: [artistId], references: [id])
     /// @description Unique numeric identifier of the main artist

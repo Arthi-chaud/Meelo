@@ -34,7 +34,6 @@ import type ReleaseQueryParameters from "./models/release.query-parameters";
 import type AlbumQueryParameters from "src/album/models/album.query-parameters";
 import TrackService from "src/track/track.service";
 import { buildStringSearchParameters } from "src/utils/search-string-input";
-import ArtistService from "src/artist/artist.service";
 import FileService from "src/file/file.service";
 import archiver from "archiver";
 // eslint-disable-next-line no-restricted-imports
@@ -42,15 +41,13 @@ import { createReadStream } from "fs";
 import { Response } from "express";
 import mime from "mime";
 import compilationAlbumArtistKeyword from "src/constants/compilation";
-import { parseIdentifierSlugs } from "src/identifier/identifier.parse-slugs";
-import Identifier from "src/identifier/models/identifier";
 import Logger from "src/logger/logger";
 import { PrismaError } from "prisma-error-enum";
 import IllustrationRepository from "src/illustration/illustration.repository";
 import DiscogsProvider from "src/providers/discogs/discogs.provider";
 import deepmerge from "deepmerge";
 import {
-	formatIdentifier,
+	formatIdentifierToIdOrSlug,
 	formatPaginationParameters,
 } from "src/repository/repository.utils";
 import { UnhandledORMErrorException } from "src/exceptions/orm-exceptions";
@@ -76,15 +73,25 @@ export default class ReleaseService {
 		input: ReleaseQueryParameters.CreateInput,
 		include?: I | undefined,
 	) {
+		const album = await this.albumService.get(input.album, {
+			artist: true,
+		});
+		const releaseNameSlug = new Slug(
+			input.name,
+			...input.extensions,
+		).toString();
+		const uniqueSlug = new Slug(
+			album.artist?.slug ?? compilationAlbumArtistKeyword,
+			releaseNameSlug,
+		).toString();
 		const args = {
 			data: {
 				name: input.name,
+				slug: uniqueSlug,
 				registeredAt: input.registeredAt,
 				releaseDate: input.releaseDate,
 				extensions: input.extensions,
-				album: {
-					connect: AlbumService.formatWhereInput(input.album),
-				},
+				albumId: album.id,
 				externalIds: input.discogsId
 					? {
 							create: {
@@ -97,7 +104,7 @@ export default class ReleaseService {
 							},
 					  }
 					: undefined,
-				slug: new Slug(input.name, ...input.extensions).toString(),
+				nameSlug: releaseNameSlug,
 			},
 			include: include ?? ({} as I),
 		};
@@ -135,15 +142,18 @@ export default class ReleaseService {
 		include?: I,
 	) {
 		try {
-			return await this.get(
-				{
-					bySlug: {
-						slug: new Slug(input.name, ...input.extensions),
-						album: input.album,
-					},
-				},
-				include,
+			const album = await this.albumService.get(input.album, {
+				artist: true,
+			});
+			const releaseNameSlug = new Slug(
+				input.name,
+				...input.extensions,
+			).toString();
+			const uniqueSlug = new Slug(
+				album.artist?.slug ?? compilationAlbumArtistKeyword,
+				releaseNameSlug,
 			);
+			return await this.get({ slug: uniqueSlug }, include);
 		} catch {
 			return this.create(input, include);
 		}
@@ -155,10 +165,7 @@ export default class ReleaseService {
 	static formatWhereInput(where: ReleaseQueryParameters.WhereInput) {
 		return {
 			id: where.id,
-			slug: where.bySlug?.slug.toString(),
-			album: where.bySlug
-				? AlbumService.formatWhereInput(where.bySlug.album)
-				: undefined,
+			slug: where.slug?.toString(),
 		};
 	}
 
@@ -183,43 +190,14 @@ export default class ReleaseService {
 			query = deepmerge(query, {
 				album: {
 					id: where.album.id,
-					slug: where.album.bySlug?.slug.toString(),
-					artist: where.album.bySlug
-						? where.album.bySlug?.artist
-							? ArtistService.formatWhereInput(
-									where.album.bySlug.artist,
-							  )
-							: null
-						: undefined,
+					slug: where.album.slug?.toString(),
 				},
 			});
 		}
 		return query;
 	}
 
-	static formatIdentifierToWhereInput(
-		identifier: Identifier,
-	): ReleaseQueryParameters.WhereInput {
-		return formatIdentifier(identifier, (stringIdentifier) => {
-			const slugs = parseIdentifierSlugs(stringIdentifier, 3);
-
-			return {
-				bySlug: {
-					slug: slugs[2],
-					album: {
-						bySlug: {
-							slug: slugs[1],
-							artist:
-								slugs[0].toString() ==
-								compilationAlbumArtistKeyword
-									? undefined
-									: { slug: slugs[0] },
-						},
-					},
-				},
-			};
-		});
-	}
+	static formatIdentifierToWhereInput = formatIdentifierToIdOrSlug;
 
 	formatSortingInput(
 		sortingParameter: ReleaseQueryParameters.SortingParameter,
@@ -227,7 +205,7 @@ export default class ReleaseService {
 		sortingParameter.order ??= "asc";
 		switch (sortingParameter.sortBy) {
 			case "name":
-				return { slug: sortingParameter.order };
+				return { nameSlug: sortingParameter.order };
 			case "trackCount":
 				return { tracks: { _count: sortingParameter.order } };
 			case "addDate":
@@ -297,20 +275,8 @@ export default class ReleaseService {
 			if (where.id != undefined) {
 				return new ReleaseNotFoundFromIDException(where.id);
 			}
-			const parentAlbum = await this.albumService.get(
-				where.bySlug.album,
-				{ artist: true },
-			);
-			const releaseSlug: Slug = where.bySlug!.slug;
-			const parentArtistSlug = parentAlbum.artist?.slug
-				? new Slug(parentAlbum.artist.slug)
-				: undefined;
 
-			return new ReleaseNotFoundException(
-				releaseSlug,
-				new Slug(parentAlbum.slug),
-				parentArtistSlug,
-			);
+			return new ReleaseNotFoundException(where.slug);
 		}
 		return new UnhandledORMErrorException(error, where);
 	}
@@ -362,16 +328,6 @@ export default class ReleaseService {
 			.update({
 				data: {
 					...what,
-					album: what.album
-						? {
-								connect: AlbumService.formatWhereInput(
-									what.album,
-								),
-						  }
-						: undefined,
-					slug: what.name
-						? new Slug(what.name).toString()
-						: undefined,
 				},
 				where: ReleaseService.formatWhereInput(where),
 			})

@@ -34,7 +34,7 @@ namespace PlaylistQueryParameters {
 	 * Query parameters to find one playlist
 	 */
 	export type WhereInput = RequireExactlyOne<{
-		id: Playlist["id"];
+		id: number;
 		slug: Slug;
 	}>;
 

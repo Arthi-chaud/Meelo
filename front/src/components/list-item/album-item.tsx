@@ -44,11 +44,7 @@ const AlbumItem = ({ album, formatSubtitle }: AlbumItemProps) => {
 					quality="low"
 				/>
 			}
-			href={
-				album
-					? `/albums/${artist?.slug ?? "compilations"}+${album.slug}`
-					: undefined
-			}
+			href={album ? `/albums/${album.slug}` : undefined}
 			title={album?.name}
 			secondTitle={
 				album

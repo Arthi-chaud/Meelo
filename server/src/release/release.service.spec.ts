@@ -89,7 +89,8 @@ describe("Release Service", () => {
 			expect(newRelease.name).toBe("My Album");
 			expect(newRelease.extensions).toStrictEqual(["Deluxe Edition"]);
 			expect(newRelease.registeredAt).toStrictEqual(registeredAt);
-			expect(newRelease.slug).toBe("my-album-deluxe-edition");
+			expect(newRelease.slug).toBe("my-artist-my-album-deluxe-edition");
+			expect(newRelease.nameSlug).toBe("my-album-deluxe-edition");
 		});
 
 		it("should create the album's second release (compilation)", async () => {
@@ -112,8 +113,11 @@ describe("Release Service", () => {
 			expect(
 				newCompilationRelease.registeredAt.getUTCDate(),
 			).toStrictEqual(new Date(Date.now()).getUTCDate());
-			expect(newCompilationRelease.slug).toBe(
+			expect(newCompilationRelease.nameSlug).toBe(
 				"my-compilation-expanded-edition",
+			);
+			expect(newCompilationRelease.slug).toBe(
+				"compilations-my-compilation-expanded-edition",
 			);
 		});
 
@@ -179,33 +183,14 @@ describe("Release Service", () => {
 	describe("Get Release", () => {
 		it("should get the release", async () => {
 			const fetchedRelease = await releaseService.get({
-				bySlug: {
-					slug: new Slug(dummyRepository.releaseA1_1.slug),
-					album: {
-						bySlug: {
-							slug: new Slug(dummyRepository.albumA1.slug),
-							artist: {
-								slug: new Slug(dummyRepository.artistA.slug),
-							},
-						},
-					},
-				},
+				slug: new Slug(dummyRepository.releaseA1_1.slug),
 			});
 			expect(fetchedRelease).toStrictEqual(dummyRepository.releaseA1_1);
 		});
 
 		it("should get the release (compilation)", async () => {
 			const fetchedRelease = await releaseService.get({
-				bySlug: {
-					slug: new Slug(newCompilationRelease.slug),
-					album: {
-						bySlug: {
-							slug: new Slug(
-								dummyRepository.compilationAlbumA.slug,
-							),
-						},
-					},
-				},
+				slug: new Slug(newCompilationRelease.slug),
 			});
 			expect(fetchedRelease).toStrictEqual(newCompilationRelease);
 		});
@@ -213,34 +198,10 @@ describe("Release Service", () => {
 		it("should throw, as the release does not exists", async () => {
 			const test = async () => {
 				return releaseService.get({
-					bySlug: {
-						slug: new Slug("I Do not exists"),
-						album: {
-							bySlug: {
-								slug: new Slug("My Album"),
-								artist: { slug: new Slug("My Artist") },
-							},
-						},
-					},
+					slug: new Slug("I Do not exists"),
 				});
 			};
 			return expect(test()).rejects.toThrow(ReleaseNotFoundException);
-		});
-
-		it("should throw, as the release's album does not exists", async () => {
-			const test = async () => {
-				return releaseService.get({
-					bySlug: {
-						slug: new Slug("I Do not exists"),
-						album: {
-							bySlug: {
-								slug: new Slug("Me neither"),
-							},
-						},
-					},
-				});
-			};
-			return expect(test()).rejects.toThrow(AlbumNotFoundException);
 		});
 
 		it("should get the release from its id", async () => {
@@ -263,19 +224,14 @@ describe("Release Service", () => {
 	describe("Get Master Release", () => {
 		it("Should retrieve the master release", async () => {
 			const fetchedRelease = await releaseService.getMasterRelease({
-				bySlug: {
-					slug: new Slug(dummyRepository.albumA1.slug),
-					artist: { slug: new Slug(dummyRepository.artistA.slug) },
-				},
+				slug: new Slug(dummyRepository.albumA1.slug),
 			});
 			expect(fetchedRelease).toStrictEqual(dummyRepository.releaseA1_1);
 		});
 
 		it("Should retrieve the master release (compilation)", async () => {
 			const compilationMaster = await releaseService.getMasterRelease({
-				bySlug: {
-					slug: new Slug(dummyRepository.compilationAlbumA.slug),
-				},
+				slug: new Slug(dummyRepository.compilationAlbumA.slug),
 			});
 
 			expect(compilationMaster).toStrictEqual(
@@ -294,20 +250,6 @@ describe("Release Service", () => {
 	});
 
 	describe("Update Release", () => {
-		it("Should Update the release", async () => {
-			const updatedRelease = await releaseService.update(
-				{ name: "My Album (Special Edition)" },
-				{ id: newRelease.id },
-			);
-			expect(updatedRelease.id).toStrictEqual(newRelease.id);
-			expect(updatedRelease.albumId).toStrictEqual(newRelease.albumId);
-			expect(updatedRelease.name).toStrictEqual(
-				"My Album (Special Edition)",
-			);
-			expect(updatedRelease.slug).toBe("my-album-special-edition");
-			newRelease = updatedRelease;
-		});
-
 		it("Should Update the album's date", async () => {
 			newRelease = await releaseService.update(
 				{ releaseDate: new Date("2005") },
@@ -315,12 +257,7 @@ describe("Release Service", () => {
 			);
 			const updatedAlbum = await albumService.get(
 				{
-					bySlug: {
-						slug: new Slug(dummyRepository.albumA1.slug),
-						artist: {
-							slug: new Slug(dummyRepository.artistA.slug),
-						},
-					},
+					slug: new Slug(dummyRepository.albumA1.slug),
 				},
 				{ releases: true },
 			);
@@ -332,7 +269,7 @@ describe("Release Service", () => {
 		it("should retrieve the existing release", async () => {
 			const fetchedRelease: Release = await releaseService.getOrCreate({
 				name: newRelease.name,
-				extensions: [],
+				extensions: ["Deluxe Edition"],
 				album: { id: dummyRepository.albumA1.id },
 				releaseDate: new Date("2008"),
 			});
@@ -349,7 +286,8 @@ describe("Release Service", () => {
 			expect(newRelease2.albumId).toBe(dummyRepository.albumA1.id);
 			expect(newRelease2.releaseDate).toStrictEqual(new Date("2007"));
 			expect(newRelease2.name).toBe("My Album");
-			expect(newRelease2.slug).toBe("my-album-edited-version");
+			expect(newRelease2.nameSlug).toBe("my-album-edited-version");
+			expect(newRelease2.slug).toBe("my-artist-my-album-edited-version");
 		});
 	});
 

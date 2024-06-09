@@ -219,9 +219,7 @@ describe("Release Controller", () => {
 
 		it("should return the compilation release from slug", () => {
 			return request(app.getHttpServer())
-				.get(
-					`/releases/compilations+${dummyRepository.compilationAlbumA.slug}+${dummyRepository.compilationReleaseA1.slug}`,
-				)
+				.get(`/releases/${dummyRepository.compilationReleaseA1.slug}`)
 				.expect(200)
 				.expect((res) => {
 					const release: Release = res.body;
@@ -235,9 +233,7 @@ describe("Release Controller", () => {
 
 		it("should return the release from slug", () => {
 			return request(app.getHttpServer())
-				.get(
-					`/releases/${dummyRepository.artistA.slug}+${dummyRepository.albumA1.slug}+${dummyRepository.releaseA1_2.slug}`,
-				)
+				.get(`/releases/${dummyRepository.releaseA1_2.slug}`)
 				.expect(200)
 				.expect((res) => {
 					const release: Release = res.body;
@@ -249,12 +245,6 @@ describe("Release Controller", () => {
 
 		it("should throw, as the release does not exist", () => {
 			return request(app.getHttpServer()).get(`/releases/-1`).expect(404);
-		});
-
-		it("should return an error, as the string is badly formed", () => {
-			return request(app.getHttpServer())
-				.get(`/releases/${dummyRepository.artistA.slug}`)
-				.expect(400);
 		});
 
 		it("should return the release, w/ parent album", () => {
@@ -307,9 +297,7 @@ describe("Release Controller", () => {
 		});
 		it("Should return all album's releases (by slug)", () => {
 			return request(app.getHttpServer())
-				.get(
-					`/releases?album=${dummyRepository.artistB.slug}+${dummyRepository.albumB1.slug}`,
-				)
+				.get(`/releases?album=${dummyRepository.albumB1.slug}`)
 				.expect(200)
 				.expect((res) => {
 					const releases: Release[] = res.body.items;
@@ -484,9 +472,7 @@ describe("Release Controller", () => {
 		});
 		it("Should return album's master (by slug)", () => {
 			return request(app.getHttpServer())
-				.get(
-					`/releases/master/${dummyRepository.artistA.slug}+${dummyRepository.albumA1.slug}`,
-				)
+				.get(`/releases/master/${dummyRepository.albumA1.slug}`)
 				.expect(200)
 				.expect((res) => {
 					expect(res.body).toStrictEqual(
@@ -498,11 +484,6 @@ describe("Release Controller", () => {
 			return request(app.getHttpServer())
 				.get(`/releases/master/-1`)
 				.expect(404);
-		});
-		it("Should return an error, as the id is not valid", () => {
-			return request(app.getHttpServer())
-				.get(`/releases/master/plop`)
-				.expect(400);
 		});
 		it("Should throw, as the album does not have releases", async () => {
 			const tmpAlbum = await module

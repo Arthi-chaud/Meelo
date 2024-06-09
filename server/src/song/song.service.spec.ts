@@ -92,7 +92,8 @@ describe("Song Service", () => {
 			expect(newSong.id).toBeDefined();
 			expect(newSong.artistId).toBe(dummyRepository.artistA.id);
 			expect(newSong.name).toBe("My Song 3");
-			expect(newSong.slug).toBe("my-song-3");
+			expect(newSong.slug).toBe("my-artist-my-song-3");
+			expect(newSong.nameSlug).toBe("my-song-3");
 			expect(newSong.registeredAt).toStrictEqual(registeredAt);
 			expect(newSong.type).toBe(SongType.Original);
 		});
@@ -160,10 +161,7 @@ describe("Song Service", () => {
 	describe("Get Song", () => {
 		it("should retrieve the song (by Slug)", async () => {
 			const retrievedSong = await songService.get({
-				bySlug: {
-					slug: new Slug("My Song"),
-					artist: { slug: new Slug(dummyRepository.artistA.name) },
-				},
+				slug: new Slug("My Artist", "My Song"),
 			});
 
 			expect(retrievedSong).toStrictEqual(dummyRepository.songA1);
@@ -203,22 +201,10 @@ describe("Song Service", () => {
 		it("should throw, as the song does not exist (by Slug)", async () => {
 			const test = async () =>
 				await songService.get({
-					bySlug: {
-						slug: new Slug("I dont exist"),
-						artist: { id: dummyRepository.artistA.id },
-					},
+					slug: new Slug("I dont exist"),
 				});
 
 			return expect(test()).rejects.toThrow(SongNotFoundException);
-		});
-
-		it("should throw, as the parent artist does not exist", async () => {
-			const test = async () =>
-				await songService.get({
-					bySlug: { slug: new Slug("My Slug"), artist: { id: -1 } },
-				});
-
-			return expect(test()).rejects.toThrow(ArtistNotFoundException);
 		});
 	});
 
@@ -309,25 +295,22 @@ describe("Song Service", () => {
 	});
 
 	describe("Update Song", () => {
-		it("should change the artist of the song", async () => {
+		it("should change the type of the song", async () => {
 			let updatedSong = await songService.update(
-				{ artist: { slug: new Slug(dummyRepository.artistB.slug) } },
+				{ type: SongType.Clean },
 				{
-					bySlug: {
-						slug: new Slug(dummyRepository.songA1.slug),
-						artist: { id: dummyRepository.artistA.id },
-					},
+					slug: new Slug(dummyRepository.songA1.slug),
 				},
 			);
 
 			expect(updatedSong.id).toBe(dummyRepository.songA1.id);
-			expect(updatedSong.artistId).toBe(dummyRepository.artistB.id);
+			expect(updatedSong.type).toBe(SongType.Clean);
 			updatedSong = await songService.update(
-				{ artist: { id: dummyRepository.artistA.id } },
+				{ type: dummyRepository.songA1.type },
 				{ id: dummyRepository.songA1.id },
 			);
 			expect(updatedSong.id).toBe(dummyRepository.songA1.id);
-			expect(updatedSong.artistId).toBe(dummyRepository.artistA.id);
+			expect(updatedSong.type).toBe(dummyRepository.songA1.type);
 		});
 
 		it("should change the genres of the song", async () => {
@@ -352,35 +335,12 @@ describe("Song Service", () => {
 			]);
 		});
 
-		it("should throw as the song does not exist (by Id)", async () => {
-			const test = async () =>
-				await songService.update({ name: "Tralala" }, { id: -1 });
-			return expect(test()).rejects.toThrow(SongNotFoundByIdException);
-		});
-
-		it("should throw as the song does not exist (unknown artist)", async () => {
-			const test = async () =>
-				await songService.update(
-					{ name: "Tralala" },
-					{
-						bySlug: {
-							slug: new Slug("My Song"),
-							artist: { id: -1 },
-						},
-					},
-				);
-			return expect(test()).rejects.toThrow(ArtistNotFoundException);
-		});
-
 		it("should throw as the song does not exist", async () => {
 			const test = async () =>
 				await songService.update(
-					{ name: "Tralala" },
+					{ type: SongType.Clean },
 					{
-						bySlug: {
-							slug: new Slug("My Song"),
-							artist: { id: dummyRepository.artistB.id },
-						},
+						slug: new Slug("My Song"),
 					},
 				);
 			return expect(test()).rejects.toThrow(SongNotFoundException);
@@ -391,10 +351,7 @@ describe("Song Service", () => {
 				await songService.update(
 					{ genres: [{ id: -1 }] },
 					{
-						bySlug: {
-							slug: new Slug("My Song"),
-							artist: { id: dummyRepository.artistA.id },
-						},
+						slug: new Slug("My Song"),
 					},
 				);
 			return expect(test()).rejects.toThrow(GenreNotFoundException);
@@ -441,7 +398,6 @@ describe("Song Service", () => {
 		it("should get the song", async () => {
 			const fetchedSong = await songService.getOrCreate({
 				...dummyRepository.songA1,
-				slug: new Slug(dummyRepository.songA1.slug),
 				artist: { id: dummyRepository.artistA.id },
 				genres: [],
 				group: {
@@ -573,7 +529,10 @@ describe("Song Service", () => {
 				featuring: [{ slug: new Slug(featuredArtist.slug) }],
 			});
 			expect(songWithFeaturing.id).not.toBe(baseSong.id);
-			expect(songWithFeaturing.slug).toBe("et-feat-kanye-west");
+			expect(songWithFeaturing.slug).toBe(
+				"katy-perry-et-feat-kanye-west",
+			);
+			expect(songWithFeaturing.nameSlug).toBe("et");
 		});
 
 		it("should get the base song", async () => {

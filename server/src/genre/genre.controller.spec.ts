@@ -96,9 +96,7 @@ describe("Genre Controller", () => {
 	describe("Get Genres of a song", () => {
 		it("should return the song's genres", () => {
 			return request(app.getHttpServer())
-				.get(
-					`/genres?song=${dummyRepository.artistA.slug}+${dummyRepository.songA2.slug}`,
-				)
+				.get(`/genres?song=${dummyRepository.songA2.slug}`)
 				.expect(200)
 				.expect((res) => {
 					const genres: Genre[] = res.body.items;

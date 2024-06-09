@@ -41,13 +41,7 @@ const AlbumTile = (props: {
 						props.album?.artist?.name ??
 						t("compilation")
 			}
-			href={
-				props.album
-					? `/albums/${props.album.artist?.slug ?? "compilations"}+${
-							props.album.slug
-						}`
-					: undefined
-			}
+			href={props.album ? `/albums/${props.album.slug}` : undefined}
 			secondaryHref={
 				props.album
 					? !props.formatSubtitle

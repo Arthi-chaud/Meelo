@@ -33,14 +33,12 @@ import {
 import PrismaService from "src/prisma/prisma.service";
 import SongQueryParameters from "src/song/models/song.query-params";
 import Logger from "src/logger/logger";
-import Identifier from "src/identifier/models/identifier";
-import { parseIdentifierSlugs } from "src/identifier/identifier.parse-slugs";
 // eslint-disable-next-line no-restricted-imports
 import { UnhandledORMErrorException } from "src/exceptions/orm-exceptions";
 import AlbumService from "src/album/album.service";
 import { PaginationParameters } from "src/pagination/models/pagination-parameters";
 import {
-	formatIdentifier,
+	formatIdentifierToIdOrSlug,
 	formatPaginationParameters,
 } from "src/repository/repository.utils";
 import IllustrationRepository from "src/illustration/illustration.repository";
@@ -162,15 +160,7 @@ export default class PlaylistService {
 		};
 	}
 
-	static formatIdentifierToWhereInput(
-		identifier: Identifier,
-	): PlaylistQueryParameters.WhereInput {
-		return formatIdentifier(identifier, (stringIdentifier) => {
-			const [slug] = parseIdentifierSlugs(stringIdentifier, 1);
-
-			return { slug };
-		});
-	}
+	static formatIdentifierToWhereInput = formatIdentifierToIdOrSlug;
 
 	static formatManyWhereInput(
 		input: PlaylistQueryParameters.ManyWhereInput,

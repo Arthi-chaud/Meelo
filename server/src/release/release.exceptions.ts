@@ -24,12 +24,8 @@ import {
 import type Slug from "src/slug/slug";
 
 export class ReleaseNotFoundException extends NotFoundException {
-	constructor(releaseSlug: Slug, albumSlug: Slug, artistSlug?: Slug) {
-		super(
-			`Release '${releaseSlug.toString()}' of ${albumSlug.toString()} ${
-				artistSlug ? `by ${artistSlug.toString()}` : ""
-			} not found`,
-		);
+	constructor(releaseSlug: Slug) {
+		super(`Release '${releaseSlug.toString()}' not found`);
 	}
 }
 
