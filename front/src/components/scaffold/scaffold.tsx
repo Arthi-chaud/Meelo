@@ -342,8 +342,9 @@ const Scaffold = (props: { children: any }) => {
 				sx={{
 					display: "flex",
 					flexDirection: "column",
+					position: "relative",
 					flexWrap: "nowrap",
-					overflowX: "clip",
+					overflow: "clip",
 					width: {
 						xs: "100%",
 						md: `calc(100% - ${DrawerWidth}px)`,
@@ -354,14 +355,16 @@ const Scaffold = (props: { children: any }) => {
 					maxWidth={false}
 					sx={{
 						width: "100%",
-						paddingTop: 2,
+						height: "100%",
+						overflowY: "scroll",
 						paddingBottom: { xs: "65px", [DrawerBreakpoint]: 2 },
 					}}
 				>
-					{props.children}
+					<Box sx={{ paddingTop: 2, paddingBottom: 0 }}>
+						{props.children}
+					</Box>
+					<Player />
 				</Container>
-				<Box sx={{ height: "100%" }} />
-				<Player />
 			</Box>
 			<BottomNavigation
 				onDrawerOpen={() => {

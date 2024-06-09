@@ -16,7 +16,14 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { Box, Paper, Slide, useMediaQuery, useTheme } from "@mui/material";
+import {
+	Box,
+	Grow,
+	Paper,
+	Slide,
+	useMediaQuery,
+	useTheme,
+} from "@mui/material";
 import { LegacyRef, useEffect, useMemo, useRef, useState } from "react";
 import { useSelector } from "react-redux";
 import API from "../../api/api";
@@ -273,11 +280,17 @@ const Player = () => {
 
 	return (
 		<>
+			<Grow
+				in={playlist.length != 0 || player.current != undefined}
+				unmountOnExit
+			>
+				<Box sx={{ height: 58 }} />
+			</Grow>
 			<Slide
 				style={{
-					position: "sticky",
+					position: "absolute",
 					bottom: bottomNavigationIsDisplayed ? "56px" : 0,
-					left: 0,
+					right: 0,
 				}}
 				direction="up"
 				mountOnEnter
