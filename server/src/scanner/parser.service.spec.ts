@@ -1109,6 +1109,20 @@ describe("Parser Service", () => {
 				),
 			).toBe(SongType.NonMusic);
 		});
+		it("Mashups", () => {
+			const f = (s: string) => parserService.getSongType(s);
+			expect(f("Megamix")).toBe(SongType.Medley);
+			expect(f("Album Megamix")).toBe(SongType.Medley);
+			expect(f("Album Megamix")).toBe(SongType.Medley);
+			expect(f("Chris Cox Megamix")).toBe(SongType.Medley);
+			expect(f("Tommie Sunshine Megasix Smash-up")).toBe(SongType.Medley);
+			expect(f("Tommie Sunshine Megasix Smash-up")).toBe(SongType.Medley);
+			expect(f("Medley")).toBe(SongType.Medley);
+			expect(f("Medley (Live)")).toBe(SongType.Live);
+			expect(
+				f("Like A Virgin/Hollywood Medley (2003 MTV VMA Performance)"),
+			).toBe(SongType.Live);
+		});
 	});
 
 	describe("Detect Album Type", () => {

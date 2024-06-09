@@ -195,6 +195,7 @@
 	"Demo": "Maquette",
 	"Unknown": "Type Inconnu",
 	"Acapella": "Acapella",
+	"Medley": "Medley/Megamix",
 
 	"refreshMetadataStarted": "Mise à jour des métadonées... (Rechargez la page pour actualiser)",
 	"refreshMetadataFailed": "Oups... La mise à jour des données a échoué.",

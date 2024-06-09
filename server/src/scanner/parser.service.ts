@@ -351,11 +351,23 @@ export default class ParserService {
 		if (titleContainsWord("voice memo")) {
 			return SongType.NonMusic;
 		}
+		const isMegamix = () =>
+			titleContainsWord("megamix") ||
+			titleContainsWord("mega-mix") ||
+			titleContainsWord("mashup") ||
+			titleContainsWord("mash-up") ||
+			titleContainsWord("medley");
 		if (songExtensions.length == 0) {
+			if (isMegamix()) {
+				return SongType.Medley;
+			}
 			return SongType.Original;
 		}
-		if (containsWord("live")) {
+		if (containsWord("live") || containsWord("performance")) {
 			return SongType.Live;
+		}
+		if (isMegamix()) {
+			return SongType.Medley;
 		}
 		if (containsWord("acoustic")) {
 			return SongType.Acoustic;

@@ -315,6 +315,8 @@ enum SongType {
     Demo
     /// Interviews, Documentary, Photo Galleries, etc.
     NonMusic
+    /// A combination of 2+ songs
+    Medley
     /// Used for migrations
     Unknown
 
