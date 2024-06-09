@@ -191,7 +191,7 @@ export class SongController {
 		}
 		return this.songService.getMany(
 			selector,
-			sort,
+			selector.random ?? sort,
 			paginationParameters,
 			include,
 		);

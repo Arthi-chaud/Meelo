@@ -215,12 +215,9 @@ export default class AlbumService extends SearchableRepositoryService {
 				sort,
 				pagination ?? {},
 			);
-			return this.getMany(
-				{ ...where, id: { in: randomIds } },
-				undefined,
-				{},
-				include,
-			);
+			where = { ...where, id: { in: randomIds } };
+			pagination = undefined;
+			sort = undefined;
 		}
 		const args = {
 			include: include ?? ({} as I),
