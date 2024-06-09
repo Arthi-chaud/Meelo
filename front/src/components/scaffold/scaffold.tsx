@@ -50,6 +50,7 @@ import type {} from "@mui/material/themeCssVarsAugmentation";
 import ThemedImage from "../../utils/themed-image";
 import { useTranslation } from "react-i18next";
 import { RootGradientBackground } from "../../utils/gradient-background";
+import { parentScrollableDivId } from "../infinite/infinite-scroll";
 
 /**
  * Array of possible item types
@@ -353,6 +354,7 @@ const Scaffold = (props: { children: any }) => {
 			>
 				<Container
 					maxWidth={false}
+					id={parentScrollableDivId}
 					sx={{
 						width: "100%",
 						height: "100%",
