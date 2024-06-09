@@ -16,10 +16,8 @@ import TrackModule from "src/track/track.module";
 import IllustrationModule from "src/illustration/illustration.module";
 import SongModule from "src/song/song.module";
 import ScannerModule from "src/scanner/scanner.module";
-import type Tracklist from "src/track/models/tracklist.model";
 import GenreModule from "src/genre/genre.module";
 import TestPrismaService from "test/test-prisma.service";
-import type ReassignReleaseDTO from "./models/reassign-release.dto";
 import FileModule from "src/file/file.module";
 import SetupApp from "test/setup-app";
 import {
@@ -417,89 +415,7 @@ describe("Release Controller", () => {
 				.get(`/releases/${dummyRepository.releaseA1_2.id}/tracklist`)
 				.expect(200)
 				.expect((res) => {
-					const tracklist: Tracklist = res.body;
-					expect(tracklist).toStrictEqual({
-						"1": [
-							{
-								...expectedTrackResponse(
-									dummyRepository.trackA2_1,
-								),
-								song: expectedSongResponse(
-									dummyRepository.songA2,
-								),
-							},
-						],
-						"2": [
-							{
-								...expectedTrackResponse(
-									dummyRepository.trackA1_2Video,
-								),
-								song: expectedSongResponse(
-									dummyRepository.songA1,
-								),
-							},
-						],
-					});
-				});
-		});
-
-		it("should get the tracklist, w/ related song artist", () => {
-			return request(app.getHttpServer())
-				.get(
-					`/releases/${dummyRepository.releaseA1_2.id}/tracklist?with=artist`,
-				)
-				.expect(200)
-				.expect((res) => {
-					const tracklist: Tracklist = res.body;
-					expect(tracklist).toStrictEqual({
-						"1": [
-							{
-								...expectedTrackResponse(
-									dummyRepository.trackA2_1,
-								),
-								song: {
-									...expectedSongResponse(
-										dummyRepository.songA2,
-									),
-									artist: expectedArtistResponse(
-										dummyRepository.artistA,
-									),
-								},
-							},
-						],
-						"2": [
-							{
-								...expectedTrackResponse(
-									dummyRepository.trackA1_2Video,
-								),
-								song: {
-									...expectedSongResponse(
-										dummyRepository.songA1,
-									),
-									artist: expectedArtistResponse(
-										dummyRepository.artistA,
-									),
-								},
-							},
-						],
-					});
-				});
-		});
-
-		it("should return an error, as the release does not exist", () => {
-			return request(app.getHttpServer())
-				.get(`/releases/${-1}/tracklist`)
-				.expect(404);
-		});
-	});
-
-	describe("Get Playlist", () => {
-		it("should get the Playlist", () => {
-			return request(app.getHttpServer())
-				.get(`/releases/${dummyRepository.releaseA1_2.id}/playlist`)
-				.expect(200)
-				.expect((res) => {
-					const tracklist: Track[] = res.body;
+					const tracklist = res.body.items;
 					expect(tracklist).toStrictEqual([
 						{
 							...expectedTrackResponse(dummyRepository.trackA2_1),
@@ -515,14 +431,14 @@ describe("Release Controller", () => {
 				});
 		});
 
-		it("should get the playlist, w/ related song artist", () => {
+		it("should get the tracklist, w/ related song artist", () => {
 			return request(app.getHttpServer())
 				.get(
-					`/releases/${dummyRepository.releaseA1_2.id}/playlist?with=artist`,
+					`/releases/${dummyRepository.releaseA1_2.id}/tracklist?with=artist`,
 				)
 				.expect(200)
 				.expect((res) => {
-					const tracklist: Track[] = res.body;
+					const tracklist = res.body.items;
 					expect(tracklist).toStrictEqual([
 						{
 							...expectedTrackResponse(dummyRepository.trackA2_1),
@@ -550,7 +466,7 @@ describe("Release Controller", () => {
 
 		it("should return an error, as the release does not exist", () => {
 			return request(app.getHttpServer())
-				.get(`/releases/${-1}/playlist`)
+				.get(`/releases/${-1}/tracklist`)
 				.expect(404);
 		});
 	});
