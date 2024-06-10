@@ -27,7 +27,6 @@ import ResponseBuilderInterceptor from "src/response/interceptors/response.inter
 import ExternalIdResponse, {
 	ExternalIdResponseBuilder,
 } from "src/providers/models/external-id.response";
-import IllustrationRepository from "src/illustration/illustration.repository";
 
 export class ArtistResponse extends IntersectionType(
 	Artist,
@@ -43,8 +42,6 @@ export class ArtistResponseBuilder extends ResponseBuilderInterceptor<
 	ArtistResponse
 > {
 	constructor(
-		@Inject(forwardRef(() => IllustrationRepository))
-		private illustrationRepository: IllustrationRepository,
 		@Inject(forwardRef(() => ExternalIdResponseBuilder))
 		private externalIdResponseBuilder: ExternalIdResponseBuilder,
 	) {

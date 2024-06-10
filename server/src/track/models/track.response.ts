@@ -32,7 +32,6 @@ import {
 	IllustratedResponse,
 	IllustrationResponse,
 } from "src/illustration/models/illustration.response";
-import IllustrationRepository from "src/illustration/illustration.repository";
 
 export class TrackResponse extends IntersectionType(
 	Track,
@@ -49,8 +48,6 @@ export class TrackResponseBuilder extends ResponseBuilderInterceptor<
 	TrackResponse
 > {
 	constructor(
-		@Inject(forwardRef(() => IllustrationRepository))
-		private illustrationRepository: IllustrationRepository,
 		@Inject(forwardRef(() => ReleaseResponseBuilder))
 		private releaseResponseBuilder: ReleaseResponseBuilder,
 		@Inject(forwardRef(() => SongResponseBuilder))

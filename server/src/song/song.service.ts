@@ -85,7 +85,7 @@ export default class SongService extends SearchableRepositoryService {
 	/**
 	 * Create
 	 */
-	async create<I extends SongQueryParameters.RelationInclude>(
+	async create<I extends SongQueryParameters.RelationInclude = {}>(
 		song: SongQueryParameters.CreateInput,
 		include?: I,
 	) {

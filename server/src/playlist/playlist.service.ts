@@ -73,9 +73,13 @@ export default class PlaylistService {
 		}
 	}
 
-	async get(where: PlaylistQueryParameters.WhereInput) {
+	async get<I extends PlaylistQueryParameters.RelationInclude = {}>(
+		where: PlaylistQueryParameters.WhereInput,
+		include?: I,
+	) {
 		const args = {
 			where: PlaylistService.formatWhereInput(where),
+			include: include ?? ({} as I),
 		};
 		return this.prismaService.playlist
 			.findFirstOrThrow<
@@ -125,16 +129,21 @@ export default class PlaylistService {
 			);
 	}
 
-	async getMany(
+	async getMany<I extends PlaylistQueryParameters.RelationInclude = {}>(
 		where: PlaylistQueryParameters.ManyWhereInput,
 		sort?: PlaylistQueryParameters.SortingParameter,
 		pagination?: PaginationParameters,
+		include?: I,
 	) {
-		return this.prismaService.playlist.findMany({
+		const args = {
 			where: PlaylistService.formatManyWhereInput(where),
 			orderBy: sort ? this.formatSortingInput(sort) : undefined,
 			...formatPaginationParameters(pagination),
-		});
+			include: include ?? ({} as I),
+		};
+		return this.prismaService.playlist.findMany<
+			Prisma.SelectSubset<typeof args, Prisma.PlaylistFindManyArgs>
+		>(args);
 	}
 
 	onNotFound(

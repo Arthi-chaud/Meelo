@@ -32,7 +32,6 @@ import {
 	IllustratedResponse,
 	IllustrationResponse,
 } from "src/illustration/models/illustration.response";
-import IllustrationRepository from "src/illustration/illustration.repository";
 import {
 	ReleaseResponse,
 	ReleaseResponseBuilder,
@@ -58,8 +57,6 @@ export class AlbumResponseBuilder extends ResponseBuilderInterceptor<
 	constructor(
 		@Inject(forwardRef(() => ArtistResponseBuilder))
 		private artistResponseBuilder: ArtistResponseBuilder,
-		@Inject(forwardRef(() => IllustrationRepository))
-		private illustrationRepository: IllustrationRepository,
 		@Inject(forwardRef(() => ExternalIdResponseBuilder))
 		private externalIdResponseBuilder: ExternalIdResponseBuilder,
 		@Inject(forwardRef(() => ReleaseResponseBuilder))

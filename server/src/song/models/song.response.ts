@@ -31,7 +31,6 @@ import {
 	IllustratedResponse,
 	IllustrationResponse,
 } from "src/illustration/models/illustration.response";
-import IllustrationRepository from "src/illustration/illustration.repository";
 import {
 	TrackResponse,
 	TrackResponseBuilder,
@@ -55,8 +54,6 @@ export class SongResponseBuilder extends ResponseBuilderInterceptor<
 	SongResponse
 > {
 	constructor(
-		@Inject(forwardRef(() => IllustrationRepository))
-		private illustrationRepository: IllustrationRepository,
 		@Inject(forwardRef(() => ArtistResponseBuilder))
 		private artistResponseBuilder: ArtistResponseBuilder,
 		@Inject(forwardRef(() => TrackResponseBuilder))

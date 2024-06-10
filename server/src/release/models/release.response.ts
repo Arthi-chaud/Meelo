@@ -22,7 +22,6 @@ import {
 	AlbumResponse,
 	AlbumResponseBuilder,
 } from "src/album/models/album.response";
-import IllustrationRepository from "src/illustration/illustration.repository";
 import {
 	IllustratedResponse,
 	IllustrationResponse,
@@ -48,8 +47,6 @@ export class ReleaseResponseBuilder extends ResponseBuilderInterceptor<
 	ReleaseResponse
 > {
 	constructor(
-		@Inject(forwardRef(() => IllustrationRepository))
-		private illustrationRepository: IllustrationRepository,
 		@Inject(forwardRef(() => AlbumResponseBuilder))
 		private albumResponseBuilder: AlbumResponseBuilder,
 		@Inject(forwardRef(() => ExternalIdResponseBuilder))
