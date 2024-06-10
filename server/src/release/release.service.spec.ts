@@ -13,7 +13,6 @@ import {
 	MasterReleaseNotFoundException,
 	ReleaseNotEmptyException,
 	ReleaseNotFoundException,
-	ReleaseNotFoundFromIDException,
 } from "./release.exceptions";
 import ReleaseService from "./release.service";
 import IllustrationModule from "src/illustration/illustration.module";
@@ -215,9 +214,7 @@ describe("Release Service", () => {
 			const test = async () => {
 				return releaseService.get({ id: -1 });
 			};
-			return expect(test()).rejects.toThrow(
-				ReleaseNotFoundFromIDException,
-			);
+			return expect(test()).rejects.toThrow(ReleaseNotFoundException);
 		});
 	});
 
@@ -296,7 +293,7 @@ describe("Release Service", () => {
 			const testRelease = async () =>
 				await releaseService.get({ id: -1 });
 			return expect(testRelease()).rejects.toThrow(
-				ReleaseNotFoundFromIDException,
+				ReleaseNotFoundException,
 			);
 		});
 		it("should not delete release,as it is not empty", async () => {
@@ -319,7 +316,7 @@ describe("Release Service", () => {
 					id: dummyRepository.releaseB1_1.id,
 				});
 			return expect(testRelease()).rejects.toThrow(
-				ReleaseNotFoundFromIDException,
+				ReleaseNotFoundException,
 			);
 		});
 		it("should have unset the album's master id", async () => {

@@ -34,7 +34,6 @@ import { PrismaError } from "prisma-error-enum";
 import {
 	SongAlreadyExistsException,
 	SongNotEmptyException,
-	SongNotFoundByIdException,
 	SongNotFoundException,
 } from "./song.exceptions";
 import AlbumService from "src/album/album.service";
@@ -368,7 +367,7 @@ export default class SongService extends SearchableRepositoryService {
 			error.code == PrismaError.RecordsNotFound
 		) {
 			if (where.id != undefined) {
-				throw new SongNotFoundByIdException(where.id);
+				throw new SongNotFoundException(where.id);
 			}
 			throw new SongNotFoundException(where.slug);
 		}

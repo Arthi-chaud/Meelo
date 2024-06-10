@@ -10,7 +10,6 @@ import Slug from "src/slug/slug";
 import {
 	PlaylistAlreadyExistsException,
 	PlaylistNotFoundException,
-	PlaylistNotFoundFromIDException,
 } from "./playlist.exceptions";
 import { Playlist } from "src/prisma/models";
 
@@ -56,9 +55,7 @@ describe("Playlist Service", () => {
 		});
 		it("Should throw, as the playlist does not exist (ID)", async () => {
 			const test = () => playlistService.get({ id: -1 });
-			return expect(test()).rejects.toThrow(
-				PlaylistNotFoundFromIDException,
-			);
+			return expect(test()).rejects.toThrow(PlaylistNotFoundException);
 		});
 		it("Should throw, as the playlist does not exist (Slug)", async () => {
 			const test = () => playlistService.get({ slug: new Slug("12345") });

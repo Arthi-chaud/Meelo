@@ -40,18 +40,9 @@ export class LyricsNotFoundBySongException extends NotFoundException {
 		super(`No lyrics from for the song '${songId.toString()}'`);
 	}
 }
-export class LyricsNotFoundByIDException extends NotFoundException {
+export class LyricsNotFoundException extends NotFoundException {
 	constructor(lyricId: number) {
 		super(`No lyrics with id '${lyricId}' exist.`);
-	}
-}
-
-/**
- * Exception when the Genius API did not find any lyrics matching the request
- */
-export class NoLyricsFoundException extends NotFoundException {
-	constructor(artistName: string, songName: string) {
-		super(`No lyrics from for the song '${songName}' by '${artistName}'`);
 	}
 }
 

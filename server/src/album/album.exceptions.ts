@@ -24,14 +24,12 @@ import {
 import type Slug from "src/slug/slug";
 
 export class AlbumNotFoundException extends NotFoundException {
-	constructor(albumSlug: Slug) {
-		super(`${albumSlug.toString()}: No such album`);
-	}
-}
-
-export class AlbumNotFoundFromIDException extends NotFoundException {
-	constructor(id: number) {
-		super(`No album with id ${id} exists`);
+	constructor(albumIdentifier: Slug | number) {
+		super(
+			typeof albumIdentifier === "number"
+				? `Album ${albumIdentifier} not found`
+				: `Album '${albumIdentifier.toString()}' not found`,
+		);
 	}
 }
 

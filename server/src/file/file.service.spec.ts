@@ -17,7 +17,7 @@ import { createTestingModule } from "test/test-module";
 import TestPrismaService from "test/test-prisma.service";
 import {
 	FileAlreadyExistsException,
-	FileNotFoundFromIDException,
+	FileNotFoundException,
 } from "./file.exceptions";
 import FileModule from "./file.module";
 import FileService from "./file.service";
@@ -99,12 +99,12 @@ describe("File Service", () => {
 		it("should delete a file (from id)", async () => {
 			await fileService.delete({ id: newFile.id });
 			const test = async () => fileService.get({ id: newFile.id });
-			return expect(test()).rejects.toThrow(FileNotFoundFromIDException);
+			return expect(test()).rejects.toThrow(FileNotFoundException);
 		});
 
 		it("should throw, as the file does not exist (from id)", () => {
 			const test = async () => fileService.delete({ id: -1 });
-			return expect(test()).rejects.toThrow(FileNotFoundFromIDException);
+			return expect(test()).rejects.toThrow(FileNotFoundException);
 		});
 	});
 });

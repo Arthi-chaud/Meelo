@@ -26,8 +26,7 @@ import {
 import FileManagerService from "../file-manager/file-manager.service";
 import {
 	FileAlreadyExistsException,
-	FileNotFoundFromIDException,
-	FileNotFoundFromPathException,
+	FileNotFoundException,
 	FileNotFoundFromTrackIDException,
 	SourceFileNotFoundExceptions,
 } from "./file.exceptions";
@@ -144,12 +143,10 @@ export default class FileService {
 			error instanceof Prisma.PrismaClientKnownRequestError &&
 			error.code == PrismaError.RecordsNotFound
 		) {
-			if (where.id !== undefined) {
-				return new FileNotFoundFromIDException(where.id);
-			} else if (where.trackId !== undefined) {
+			if (where.trackId !== undefined) {
 				return new FileNotFoundFromTrackIDException(where.trackId);
 			}
-			return new FileNotFoundFromPathException(where.byPath.path);
+			return new FileNotFoundException(where.id ?? where.byPath.path);
 		}
 		return new UnhandledORMErrorException(error, where);
 	}

@@ -24,8 +24,12 @@ import {
 import type Slug from "src/slug/slug";
 
 export class SongNotFoundException extends NotFoundException {
-	constructor(songSlug: Slug) {
-		super(`'${songSlug.toString()}': No such song`);
+	constructor(songSlugOrId: Slug | number) {
+		super(
+			typeof songSlugOrId === "number"
+				? `Song ${songSlugOrId} not found`
+				: `Song '${songSlugOrId}' not found`,
+		);
 	}
 }
 
@@ -36,12 +40,6 @@ export class SongGroupNotFoundException extends NotFoundException {
 				? `No song group with id '${songGroupIdentifier}' found`
 				: `Song Group not found '${songGroupIdentifier.toString()}'`,
 		);
-	}
-}
-
-export class SongNotFoundByIdException extends NotFoundException {
-	constructor(songId: number) {
-		super(`No song with id '${songId}' found`);
 	}
 }
 

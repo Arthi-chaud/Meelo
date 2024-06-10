@@ -21,21 +21,19 @@ import {
 	NotFoundException,
 } from "src/exceptions/meelo-exception";
 
-export class FileNotFoundFromPathException extends NotFoundException {
-	constructor(filePath: string) {
-		super(`File '${filePath}' not found`);
+export class FileNotFoundException extends NotFoundException {
+	constructor(filePathOrIdentifier: string | number) {
+		super(
+			typeof filePathOrIdentifier === "number"
+				? `File with id '${filePathOrIdentifier}' not found`
+				: `File '${filePathOrIdentifier}' not found`,
+		);
 	}
 }
 
 export class SourceFileNotFoundExceptions extends NotFoundException {
 	constructor(filePath: string) {
-		super(`File '${filePath}' not found`);
-	}
-}
-
-export class FileNotFoundFromIDException extends NotFoundException {
-	constructor(fileId: number) {
-		super(`File with id '${fileId}' not found`);
+		super(`File at path '${filePath}' not found`);
 	}
 }
 
