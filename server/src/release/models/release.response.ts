@@ -65,11 +65,9 @@ export class ReleaseResponseBuilder extends ResponseBuilderInterceptor<
 	): Promise<ReleaseResponse> {
 		const response = <ReleaseResponse>{
 			...release,
-			illustration: await this.illustrationRepository
-				.getReleaseIllustrationResponse({
-					id: release.id,
-				})
-				.then((value) => value && IllustrationResponse.from(value)),
+			illustration: release.illustration
+				? IllustrationResponse.from(release.illustration)
+				: release.illustration,
 		};
 
 		if (release.album !== undefined) {

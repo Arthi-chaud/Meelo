@@ -74,11 +74,9 @@ export class SongResponseBuilder extends ResponseBuilderInterceptor<
 	async buildResponse(song: SongWithRelations): Promise<SongResponse> {
 		const response = <SongResponse>{
 			...song,
-			illustration: await this.illustrationRepository
-				.getSongIllustration({
-					id: song.id,
-				})
-				.then((value) => value && IllustrationResponse.from(value)),
+			illustration: song.illustration
+				? IllustrationResponse.from(song.illustration)
+				: song.illustration,
 		};
 
 		if (song.artist !== undefined) {

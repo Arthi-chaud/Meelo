@@ -28,7 +28,11 @@ export class IllustrationResponse extends Illustration {
 
 	static from(illustration: Illustration): IllustrationResponse {
 		return {
-			...illustration,
+			id: illustration.id,
+			aspectRatio: illustration.id,
+			colors: illustration.colors,
+			blurhash: illustration.blurhash,
+			type: illustration.type,
 			url: "/illustrations/" + illustration.id,
 		};
 	}

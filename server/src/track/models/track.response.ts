@@ -64,11 +64,9 @@ export class TrackResponseBuilder extends ResponseBuilderInterceptor<
 	async buildResponse(track: TrackWithRelations): Promise<TrackResponse> {
 		const response = <TrackResponse>{
 			...track,
-			illustration: await this.illustrationRepository
-				.getTrackIllustration({
-					id: track.id,
-				})
-				.then((value) => value && IllustrationResponse.from(value)),
+			illustration: track.illustration
+				? IllustrationResponse.from(track.illustration)
+				: track.illustration,
 			stream: `/files/${track.sourceFileId}/stream`,
 		};
 

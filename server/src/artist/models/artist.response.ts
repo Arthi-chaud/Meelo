@@ -56,15 +56,9 @@ export class ArtistResponseBuilder extends ResponseBuilderInterceptor<
 	async buildResponse(artist: ArtistWithRelations): Promise<ArtistResponse> {
 		const response = <ArtistResponse>{
 			...artist,
-			illustration:
-				artist.illustrationId === null
-					? null
-					: await this.illustrationRepository
-							.getIllustration(artist.illustrationId)
-							.then(
-								(value) =>
-									value && IllustrationResponse.from(value),
-							),
+			illustration: artist.illustration
+				? IllustrationResponse.from(artist.illustration)
+				: artist.illustration,
 		};
 
 		if (artist.externalIds !== undefined) {

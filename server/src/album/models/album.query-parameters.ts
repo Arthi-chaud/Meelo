@@ -101,6 +101,7 @@ namespace AlbumQueryParameters {
 		"externalIds",
 		"master",
 		"genres",
+		"illustration",
 	] as const;
 	export const AvailableAtomicIncludes = filterAtomicRelationInclude(
 		AvailableIncludes,
