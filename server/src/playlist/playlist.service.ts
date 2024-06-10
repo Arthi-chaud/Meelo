@@ -27,7 +27,6 @@ import {
 	PlaylistAlreadyExistsException,
 	PlaylistEntryNotFoundException,
 	PlaylistNotFoundException,
-	PlaylistNotFoundFromIDException,
 	PlaylistReorderInvalidArrayException,
 } from "./playlist.exceptions";
 import PrismaService from "src/prisma/prisma.service";
@@ -145,10 +144,7 @@ export default class PlaylistService {
 			error instanceof Prisma.PrismaClientKnownRequestError &&
 			error.code == PrismaError.RecordsNotFound
 		) {
-			if (where.id != undefined) {
-				return new PlaylistNotFoundFromIDException(where.id);
-			}
-			return new PlaylistNotFoundException(where.slug);
+			return new PlaylistNotFoundException(where.id ?? where.slug);
 		}
 		return new UnhandledORMErrorException(error, where);
 	}

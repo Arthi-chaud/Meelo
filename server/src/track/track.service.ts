@@ -23,7 +23,7 @@ import SongService from "src/song/song.service";
 import {
 	MasterTrackNotFoundException,
 	TrackAlreadyExistsException,
-	TrackNotFoundByIdException,
+	TrackNotFoundException,
 } from "./track.exceptions";
 import ReleaseService from "src/release/release.service";
 import type TrackQueryParameters from "./models/track.query-parameters";
@@ -37,10 +37,7 @@ import { Track } from "src/prisma/models";
 import Identifier from "src/identifier/models/identifier";
 import Logger from "src/logger/logger";
 import { PrismaError } from "prisma-error-enum";
-import {
-	FileNotFoundFromIDException,
-	FileNotFoundFromPathException,
-} from "src/file/file.exceptions";
+import { FileNotFoundException } from "src/file/file.exceptions";
 import IllustrationRepository from "src/illustration/illustration.repository";
 import deepmerge from "deepmerge";
 import { InvalidRequestException } from "src/exceptions/meelo-exception";
@@ -262,13 +259,10 @@ export default class TrackService {
 			error.code == PrismaError.RecordsNotFound
 		) {
 			if (where.id !== undefined) {
-				return new TrackNotFoundByIdException(where.id);
+				return new TrackNotFoundException(where.id);
 			}
-			if (where.sourceFile.id !== undefined) {
-				return new FileNotFoundFromIDException(where.sourceFile.id);
-			}
-			return new FileNotFoundFromPathException(
-				where.sourceFile.byPath!.path,
+			return new FileNotFoundException(
+				where.sourceFile.id ?? where.sourceFile.byPath!.path,
 			);
 		}
 		return new UnhandledORMErrorException(error, where);

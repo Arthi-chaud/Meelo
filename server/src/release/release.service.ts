@@ -26,7 +26,6 @@ import {
 	ReleaseAlreadyExists,
 	ReleaseNotEmptyException,
 	ReleaseNotFoundException,
-	ReleaseNotFoundFromIDException,
 } from "./release.exceptions";
 import { basename } from "path";
 import PrismaService from "src/prisma/prisma.service";
@@ -272,11 +271,7 @@ export default class ReleaseService {
 			error instanceof Prisma.PrismaClientKnownRequestError &&
 			error.code == PrismaError.RecordsNotFound
 		) {
-			if (where.id != undefined) {
-				return new ReleaseNotFoundFromIDException(where.id);
-			}
-
-			return new ReleaseNotFoundException(where.slug);
+			return new ReleaseNotFoundException(where.id ?? where.slug);
 		}
 		return new UnhandledORMErrorException(error, where);
 	}

@@ -8,16 +8,11 @@ import PrismaModule from "src/prisma/prisma.module";
 import PrismaService from "src/prisma/prisma.service";
 import ReleaseModule from "src/release/release.module";
 import SettingsModule from "src/settings/settings.module";
-import Slug from "src/slug/slug";
-import { SongNotFoundByIdException } from "src/song/song.exceptions";
+import { SongNotFoundException } from "src/song/song.exceptions";
 import SongModule from "src/song/song.module";
 import { createTestingModule } from "test/test-module";
 import TestPrismaService from "test/test-prisma.service";
-import {
-	LyricsAlreadyExistsExceptions,
-	LyricsNotFoundByIDException,
-	LyricsNotFoundBySongException,
-} from "./lyrics.exceptions";
+import { LyricsNotFoundBySongException } from "./lyrics.exceptions";
 import { LyricsModule } from "./lyrics.module";
 import { LyricsService } from "./lyrics.service";
 import ProvidersModule from "src/providers/providers.module";
@@ -74,7 +69,7 @@ describe("Lyrics Service", () => {
 		it("should throw, as the parent song does not exist", async () => {
 			const test = () =>
 				lyricsService.createOrUpdate({ content: "", songId: -1 });
-			return expect(test()).rejects.toThrow(SongNotFoundByIdException);
+			return expect(test()).rejects.toThrow(SongNotFoundException);
 		});
 	});
 
@@ -89,7 +84,7 @@ describe("Lyrics Service", () => {
 
 		it("should throw, as the parent song does not exist", async () => {
 			const test = () => lyricsService.get({ songId: -1 });
-			return expect(test()).rejects.toThrow(SongNotFoundByIdException);
+			return expect(test()).rejects.toThrow(SongNotFoundException);
 		});
 	});
 
@@ -104,7 +99,7 @@ describe("Lyrics Service", () => {
 
 		it("should throw, as the parent song does not exist", async () => {
 			const test = () => lyricsService.get({ songId: -1 });
-			return expect(test()).rejects.toThrow(SongNotFoundByIdException);
+			return expect(test()).rejects.toThrow(SongNotFoundException);
 		});
 
 		it("should throw, as the song does not have lyrics", async () => {

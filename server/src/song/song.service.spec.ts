@@ -10,7 +10,6 @@ import Slug from "src/slug/slug";
 import {
 	SongAlreadyExistsException,
 	SongNotEmptyException,
-	SongNotFoundByIdException,
 	SongNotFoundException,
 } from "./song.exceptions";
 import { ArtistNotFoundException } from "src/artist/artist.exceptions";
@@ -21,7 +20,7 @@ import GenreModule from "src/genre/genre.module";
 import TestPrismaService from "test/test-prisma.service";
 import { LyricsModule } from "src/lyrics/lyrics.module";
 import { LyricsService } from "src/lyrics/lyrics.service";
-import { LyricsNotFoundByIDException } from "src/lyrics/lyrics.exceptions";
+import { LyricsNotFoundException } from "src/lyrics/lyrics.exceptions";
 import ReleaseModule from "src/release/release.module";
 import { Artist, SongType } from "@prisma/client";
 import ScannerModule from "src/scanner/scanner.module";
@@ -195,7 +194,7 @@ describe("Song Service", () => {
 					id: -1,
 				});
 
-			return expect(test()).rejects.toThrow(SongNotFoundByIdException);
+			return expect(test()).rejects.toThrow(SongNotFoundException);
 		});
 
 		it("should throw, as the song does not exist (by Slug)", async () => {
@@ -465,7 +464,7 @@ describe("Song Service", () => {
 	describe("Delete Song", () => {
 		it("should throw, as the song does not exist", async () => {
 			const test = async () => await songService.delete({ id: -1 });
-			return expect(test()).rejects.toThrow(SongNotFoundByIdException);
+			return expect(test()).rejects.toThrow(SongNotFoundException);
 		});
 
 		it("should throw, as the song is not empty", async () => {
@@ -488,12 +487,10 @@ describe("Song Service", () => {
 			});
 			await songService.delete({ id: tmpSong.id });
 			const test = async () => await songService.get({ id: tmpSong.id });
-			await expect(test()).rejects.toThrow(SongNotFoundByIdException);
+			await expect(test()).rejects.toThrow(SongNotFoundException);
 			const testLyrics = async () =>
 				await lyricsService.get({ songId: tmpSong.id });
-			return expect(testLyrics()).rejects.toThrow(
-				SongNotFoundByIdException,
-			);
+			return expect(testLyrics()).rejects.toThrow(SongNotFoundException);
 		});
 	});
 

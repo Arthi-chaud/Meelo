@@ -24,14 +24,12 @@ import {
 import type Slug from "src/slug/slug";
 
 export class ReleaseNotFoundException extends NotFoundException {
-	constructor(releaseSlug: Slug) {
-		super(`Release '${releaseSlug.toString()}' not found`);
-	}
-}
-
-export class ReleaseNotFoundFromIDException extends NotFoundException {
-	constructor(releaseId: number) {
-		super(`Release number '${releaseId}' not found`);
+	constructor(releaseSlugOrId: Slug | number) {
+		super(
+			typeof releaseSlugOrId === "number"
+				? `Release ${releaseSlugOrId} not found`
+				: `Release '${releaseSlugOrId.toString()}' not found`,
+		);
 	}
 }
 

@@ -23,7 +23,6 @@ import {
 	AlbumAlreadyExistsException,
 	AlbumNotEmptyException,
 	AlbumNotFoundException,
-	AlbumNotFoundFromIDException,
 } from "./album.exceptions";
 import { Prisma } from "@prisma/client";
 import PrismaService from "src/prisma/prisma.service";
@@ -498,10 +497,7 @@ export default class AlbumService extends SearchableRepositoryService {
 			error instanceof Prisma.PrismaClientKnownRequestError &&
 			error.code == PrismaError.RecordsNotFound
 		) {
-			if (where.id != undefined) {
-				return new AlbumNotFoundFromIDException(where.id);
-			}
-			return new AlbumNotFoundException(where.slug);
+			return new AlbumNotFoundException(where.id ?? where.slug);
 		}
 		return new UnhandledORMErrorException(error, where);
 	}

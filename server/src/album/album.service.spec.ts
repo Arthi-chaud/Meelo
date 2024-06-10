@@ -10,7 +10,7 @@ import PrismaService from "src/prisma/prisma.service";
 import {
 	AlbumAlreadyExistsException,
 	AlbumNotEmptyException,
-	AlbumNotFoundFromIDException,
+	AlbumNotFoundException,
 } from "./album.exceptions";
 import Slug from "src/slug/slug";
 import { ArtistNotFoundException } from "src/artist/artist.exceptions";
@@ -291,7 +291,7 @@ describe("Album Service", () => {
 	describe("Delete Album", () => {
 		it("should throw, as the album does not exist (by id)", () => {
 			const test = async () => albumService.delete({ id: -1 });
-			return expect(test()).rejects.toThrow(AlbumNotFoundFromIDException);
+			return expect(test()).rejects.toThrow(AlbumNotFoundException);
 		});
 
 		it("should not delete the album, as it has releases", async () => {
@@ -308,7 +308,7 @@ describe("Album Service", () => {
 			const tmpAlbum = await albumService.create({ name: "1234" });
 			await albumService.delete({ id: tmpAlbum.id });
 			const test = async () => albumService.get({ id: tmpAlbum.id });
-			return expect(test()).rejects.toThrow(AlbumNotFoundFromIDException);
+			return expect(test()).rejects.toThrow(AlbumNotFoundException);
 		});
 	});
 });
