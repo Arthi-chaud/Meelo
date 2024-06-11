@@ -10,7 +10,7 @@ FROM tracks t
 		AND (((ri.disc = t."discIndex") AND (ri.track = t."trackIndex"))
         OR ((ri.disc = t."discIndex") AND (ri.track IS NULL))
         OR ((ri.disc IS NULL) AND (ri.track IS NULL)))
-        ORDER BY disc ASC NULLS LAST LIMIT 1)
+        ORDER BY disc ASC NULLS LAST, track NULLS LAST LIMIT 1)
 		as ri ON TRUE
 	JOIN illustrations i on i.id = ri."illustrationId";
 
@@ -39,7 +39,7 @@ FROM
 		where (id = a."masterId") OR ("albumId" = a.id)
 		ORDER BY "releaseDate" ASC NULLS LAST LIMIT 1
 	) r ON TRUE
-	JOIN release_illustrations_view ri on r.id =  ri."releaseId"
+	JOIN release_illustrations_view ri on ri."releaseId" = COALESCE(a."masterId", r.id)
 	JOIN illustrations i on i.id = ri.id;
 
 CREATE VIEW "song_illustrations_view" AS
@@ -54,5 +54,5 @@ FROM
 		where (id = s."masterId") OR ("songId" = s.id)
 		ORDER BY bitrate DESC NULLS LAST LIMIT 1
 	) t ON TRUE
-	JOIN track_illustrations_view ti on t.id = ti."trackId"
+	JOIN track_illustrations_view ti on ti."trackId" = COALESCE(s."masterId", t.id)
 	JOIN illustrations i on i.id = ti.id;

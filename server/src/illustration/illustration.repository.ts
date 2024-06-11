@@ -197,7 +197,10 @@ export default class IllustrationRepository {
 		if (playlist.illustrationId !== null) {
 			await this.deleteIllustration(playlist.illustrationId);
 		}
-		const newIllustration = await this.saveIllustration(buffer);
+		const newIllustration = await this.saveIllustration(
+			buffer,
+			IllustrationType.Cover,
+		);
 
 		await this.prismaService.playlist.update({
 			data: { illustrationId: newIllustration.id },
@@ -208,7 +211,7 @@ export default class IllustrationRepository {
 
 	private async saveIllustration(
 		buffer: Buffer,
-		type: IllustrationType = IllustrationType.Cover,
+		type: IllustrationType,
 	): Promise<Illustration> {
 		const { blurhash, colors, aspectRatio } =
 			await this.illustrationService.getImageStats(buffer);
@@ -232,7 +235,7 @@ export default class IllustrationRepository {
 		disc: number | null,
 		track: number | null,
 		where: ReleaseQueryParameters.WhereInput,
-		type: IllustrationType = IllustrationType.Cover,
+		type: IllustrationType,
 		imageStats?: IllustrationStats,
 		hash?: string,
 	): Promise<Illustration> {

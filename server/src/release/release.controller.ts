@@ -50,6 +50,7 @@ import { IllustrationDownloadDto } from "src/illustration/models/illustration-dl
 import IllustrationRepository from "src/illustration/illustration.repository";
 import IllustrationService from "src/illustration/illustration.service";
 import { IllustrationResponse } from "src/illustration/models/illustration.response";
+import { IllustrationType } from "@prisma/client";
 
 class Selector {
 	@IsOptional()
@@ -182,7 +183,13 @@ export default class ReleaseController {
 		);
 
 		return this.illustrationRepository
-			.saveReleaseIllustration(buffer, null, null, where)
+			.saveReleaseIllustration(
+				buffer,
+				null,
+				null,
+				where,
+				IllustrationType.Cover,
+			)
 			.then(IllustrationResponse.from);
 	}
 

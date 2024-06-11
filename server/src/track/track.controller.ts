@@ -30,7 +30,7 @@ import { PaginationParameters } from "src/pagination/models/pagination-parameter
 import TrackQueryParameters from "./models/track.query-parameters";
 import TrackService from "./track.service";
 import { ApiOperation, ApiPropertyOptional, ApiTags } from "@nestjs/swagger";
-import { TrackType } from "@prisma/client";
+import { IllustrationType, TrackType } from "@prisma/client";
 import { TrackResponseBuilder } from "./models/track.response";
 import RelationIncludeQuery from "src/relation-include/relation-include-query.decorator";
 import Admin from "src/authentication/roles/admin.decorator";
@@ -199,6 +199,7 @@ export class TrackController {
 				track.discIndex,
 				track.trackIndex,
 				{ id: track.releaseId },
+				IllustrationType.Cover,
 			)
 			.then(IllustrationResponse.from);
 	}
