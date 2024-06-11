@@ -36,7 +36,6 @@ import {
 	ReleaseResponse,
 	ReleaseResponseBuilder,
 } from "src/release/models/release.response";
-import ReleaseService from "src/release/release.service";
 
 export class AlbumResponse extends IntersectionType(
 	Album,
@@ -61,8 +60,6 @@ export class AlbumResponseBuilder extends ResponseBuilderInterceptor<
 		private externalIdResponseBuilder: ExternalIdResponseBuilder,
 		@Inject(forwardRef(() => ReleaseResponseBuilder))
 		private releaseResponseBuilder: ReleaseResponseBuilder,
-		@Inject(forwardRef(() => ReleaseService))
-		private releaseService: ReleaseService,
 	) {
 		super();
 	}
@@ -82,12 +79,7 @@ export class AlbumResponseBuilder extends ResponseBuilderInterceptor<
 				album.artist,
 			);
 		}
-		if (album.master === null) {
-			album.master = await this.releaseService.getMasterRelease({
-				id: album.id,
-			});
-		}
-		if (album.master !== undefined) {
+		if (album.master) {
 			response.master = await this.releaseResponseBuilder.buildResponse(
 				album.master,
 			);

@@ -516,6 +516,25 @@ export default class SongService extends SearchableRepositoryService {
 				},
 			},
 		});
+		const songsWithoutMasters = await this.prismaService.song.findMany({
+			where: { masterId: null },
+			include: { tracks: { take: 1 } },
+		});
+		this.prismaService.$transaction(
+			songsWithoutMasters
+				.map((song) => {
+					const newMasterTrack = song.tracks.at(0);
+					if (newMasterTrack) {
+						return this.prismaService.song.update({
+							where: { id: song.id },
+							data: { masterId: newMasterTrack.id },
+						});
+					}
+					return null;
+				})
+				.filter((q) => q !== null)
+				.map((q) => q!),
+		);
 	}
 
 	async getManyByPlayCount<I extends SongQueryParameters.RelationInclude>(
