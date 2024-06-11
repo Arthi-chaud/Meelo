@@ -516,11 +516,20 @@ export default class SongService extends SearchableRepositoryService {
 				},
 			},
 		});
+		await this.resolveMasterTracks();
+	}
+
+	async resolveMasterTracks() {
 		const songsWithoutMasters = await this.prismaService.song.findMany({
 			where: { masterId: null },
-			include: { tracks: { take: 1 } },
+			include: {
+				tracks: {
+					take: 1,
+					orderBy: [{ type: "asc" }, { bitrate: "desc" }],
+				},
+			},
 		});
-		this.prismaService.$transaction(
+		await this.prismaService.$transaction(
 			songsWithoutMasters
 				.map((song) => {
 					const newMasterTrack = song.tracks.at(0);
