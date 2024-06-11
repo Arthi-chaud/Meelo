@@ -29,7 +29,7 @@ export class IllustrationResponse extends Illustration {
 	static from(illustration: Illustration): IllustrationResponse {
 		return {
 			id: illustration.id,
-			aspectRatio: illustration.id,
+			aspectRatio: illustration.aspectRatio,
 			colors: illustration.colors,
 			blurhash: illustration.blurhash,
 			type: illustration.type,

@@ -80,7 +80,10 @@ const SongItem = <
 				(() =>
 					playTrack({
 						artist,
-						track: song.master,
+						track: {
+							...song.master,
+							illustration: song.illustration,
+						},
 					}))
 			}
 			secondTitle={subtitle}

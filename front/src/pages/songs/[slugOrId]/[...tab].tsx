@@ -123,7 +123,10 @@ const SongPage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({ props }) => {
 					song.data &&
 					(() =>
 						playTrack({
-							track: song.data.master,
+							track: {
+								...song.data.master,
+								illustration: song.data.illustration,
+							},
 							artist: song.data.artist,
 						}))
 				}

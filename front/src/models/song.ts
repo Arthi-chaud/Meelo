@@ -22,7 +22,7 @@ import Illustration from "./illustration";
 import Lyrics from "./lyrics";
 import Resource from "./resource";
 import ExternalId from "./external-id";
-import Track, { TrackWithRelations } from "./track";
+import Track from "./track";
 
 export const SongType = [
 	"Original",
@@ -80,7 +80,7 @@ type SongInclude =
 
 const SongRelations = yup.object({
 	artist: Artist.required(),
-	master: yup.lazy(() => TrackWithRelations(["illustration"]).required()),
+	master: yup.lazy(() => Track.required()),
 	featuring: yup.array(Artist.required()).required(),
 	lyrics: Lyrics.required().nullable(),
 	externalIds: yup.array(ExternalId.required()).required(),

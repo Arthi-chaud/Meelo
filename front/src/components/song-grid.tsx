@@ -75,7 +75,10 @@ const SongGrid = ({ songs, parentArtistName }: SongGridProps) => {
 								? () =>
 										playTrack({
 											artist: song.artist,
-											track: song.master,
+											track: {
+												...song.master,
+												illustration: song.illustration,
+											},
 										})
 								: undefined
 						}

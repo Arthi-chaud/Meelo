@@ -47,7 +47,7 @@ const playSongsAction = (
 	playAfter: PlayerActions["playAfter"],
 	queryClient: QueryClient,
 	query: () => InfiniteQuery<
-		SongWithRelations<"artist" | "featuring" | "master">
+		SongWithRelations<"artist" | "featuring" | "master" | "illustration">
 	>,
 ) => {
 	emptyPlaylist();
@@ -58,9 +58,21 @@ const playSongsAction = (
 			let i = 0;
 			for (const song of songs) {
 				if (i == 0) {
-					playTrack({ track: song.master, artist: song.artist });
+					playTrack({
+						track: {
+							...song.master,
+							illustration: song.illustration,
+						},
+						artist: song.artist,
+					});
 				} else {
-					playAfter({ track: song.master, artist: song.artist });
+					playAfter({
+						track: {
+							...song.master,
+							illustration: song.illustration,
+						},
+						artist: song.artist,
+					});
 				}
 				i++;
 			}

@@ -254,7 +254,7 @@ const PlaylistPage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({
 		entries &&
 		playTracks({
 			tracks: entries.map((entry) => ({
-				track: entry.master,
+				track: { ...entry.master, illustration: entry.illustration },
 				artist: entry.artist,
 				release: entry.release,
 			})),
@@ -265,7 +265,10 @@ const PlaylistPage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({
 		playTracks({
 			tracks: shuffle(
 				entries.map((entry) => ({
-					track: entry.master,
+					track: {
+						...entry.master,
+						illustration: entry.illustration,
+					},
 					artist: entry.artist,
 					release: entry.release,
 				})),
