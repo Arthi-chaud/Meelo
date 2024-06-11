@@ -36,6 +36,7 @@ const prepareSSR = (context: NextPageContext) => {
 				"artist",
 				"featuring",
 				"master",
+				"illustration",
 			]),
 		],
 	};
@@ -54,7 +55,7 @@ const LibrarySongsPage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({
 				API.getSongs(
 					{ type, library: library ?? undefined, random },
 					{ sortBy, order },
-					["artist", "featuring", "master"],
+					["artist", "featuring", "master", "illustration"],
 				)
 			}
 		/>

@@ -41,7 +41,7 @@ import { useTranslation } from "react-i18next";
 import { usePlayerContext } from "../../contexts/player";
 
 type TrackContextualMenuProps = {
-	track: TrackWithRelations<"song">;
+	track: TrackWithRelations<"song" | "illustration">;
 	onSelect?: () => void;
 };
 

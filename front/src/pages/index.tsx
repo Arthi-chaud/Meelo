@@ -37,30 +37,31 @@ import { useGradientBackground } from "../utils/gradient-background";
 const newlyAddedAlbumsQuery = API.getAlbums(
 	{},
 	{ sortBy: "addDate", order: "desc" },
-	["artist"],
+	["artist", "illustration"],
 );
 
 const newestAlbumsQuery = API.getAlbums(
 	{},
 	{ sortBy: "releaseDate", order: "desc" },
-	["artist"],
+	["artist", "illustration"],
 );
 
 const newlyAddedArtistsQuery = API.getArtists(
 	{},
 	{ sortBy: "addDate", order: "desc" },
+	["illustration"],
 );
 
 const newlyAddedReleasesQuery = API.getReleases(
 	{},
 	{ sortBy: "addDate", order: "desc" },
-	["album"],
+	["album", "illustration"],
 );
 
 const mostListenedSongsQuery = API.getSongs(
 	{},
 	{ sortBy: "userPlayCount", order: "desc" },
-	["artist", "featuring", "master"],
+	["artist", "featuring", "master", "illustration"],
 );
 
 const albumRecommendations = (seed: number) =>
@@ -68,6 +69,7 @@ const albumRecommendations = (seed: number) =>
 		"artist",
 		"genres",
 		"externalIds",
+		"illustration",
 	]);
 
 const HomePageSection = <T,>(props: {

@@ -68,7 +68,9 @@ const playSongsAction = (
 };
 
 const InfiniteSongView = <
-	T extends SongWithRelations<"artist" | "featuring" | "master">,
+	T extends SongWithRelations<
+		"artist" | "featuring" | "master" | "illustration"
+	>,
 >(
 	props: InfiniteResourceViewProps<
 		T,

@@ -42,7 +42,7 @@ import { useTranslation } from "react-i18next";
 import { usePlayerContext } from "../../contexts/player";
 
 type ReleaseTrackContextualMenuProps = {
-	track: TrackWithRelations<"song">;
+	track: TrackWithRelations<"song" | "illustration">;
 	artist: Artist;
 	onSelect?: () => void;
 };

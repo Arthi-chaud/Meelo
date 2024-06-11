@@ -36,11 +36,13 @@ const prepareSSR = (context: NextPageContext) => {
 					API.getArtists({ query: searchQuery }),
 					API.getAlbums({ query: searchQuery }, undefined, [
 						"artist",
+						"illustration",
 					]),
 					API.getSongs({ query: searchQuery }, undefined, [
 						"artist",
 						"featuring",
 						"master",
+						"illustration",
 					]),
 				]
 			: [],
@@ -127,7 +129,7 @@ const SearchPage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({ props }) => {
 							library: library ?? undefined,
 						},
 						undefined,
-						["artist"],
+						["artist", "illustration"],
 					)
 				}
 				songQuery={({ library, type: newType }) =>
@@ -138,7 +140,7 @@ const SearchPage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({ props }) => {
 							library: library ?? undefined,
 						},
 						undefined,
-						["artist", "featuring", "master"],
+						["artist", "featuring", "master", "illustration"],
 					)
 				}
 			/>

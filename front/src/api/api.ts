@@ -60,7 +60,9 @@ import * as yup from "yup";
 import { RequireExactlyOne } from "type-fest";
 import Playlist, {
 	PlaylistEntryWithRelations,
+	PlaylistInclude,
 	PlaylistSortingKeys,
+	PlaylistWithRelations,
 } from "../models/playlist";
 import { isSSR } from "../utils/is-ssr";
 import { ActiveTask, Task } from "../models/task";
@@ -198,23 +200,27 @@ export default class API {
 	 * Fetch all playlists
 	 * @returns An InfiniteQuery of playlists
 	 */
-	static getPlaylists(
+	static getPlaylists<I extends PlaylistInclude | never = never>(
 		filter: { album?: Identifier },
 		sort?: SortingParameters<typeof PlaylistSortingKeys>,
-	): InfiniteQuery<Playlist> {
+		include?: I[],
+	): InfiniteQuery<PlaylistWithRelations<I>> {
 		return {
 			key: [
 				"playlists",
 				...API.formatObject(sort),
 				...API.formatObject(filter),
+				...API.formatIncludeKeys(include),
 			],
 			exec: (pagination) =>
 				API.fetch({
 					route: `/playlists`,
 					errorMessage: "Playlists could not be loaded",
-					parameters: { pagination: pagination, include: [], sort },
+					parameters: { pagination: pagination, include, sort },
 					otherParameters: filter,
-					validator: PaginatedResponse(Playlist),
+					validator: PaginatedResponse(
+						PlaylistWithRelations(include ?? []),
+					),
 				}),
 		};
 	}
@@ -260,14 +266,21 @@ export default class API {
 	 * Fetch one playlist
 	 * @returns An query for a playlist
 	 */
-	static getPlaylist(playlistSlugOrId: string | number): Query<Playlist> {
+	static getPlaylist<I extends PlaylistInclude | never = never>(
+		playlistSlugOrId: string | number,
+		include?: I[],
+	): Query<PlaylistWithRelations<I>> {
 		return {
-			key: ["playlist", playlistSlugOrId],
+			key: [
+				"playlist",
+				playlistSlugOrId,
+				...API.formatIncludeKeys(include),
+			],
 			exec: () =>
 				API.fetch({
 					route: `/playlists/${playlistSlugOrId}`,
-					parameters: {},
-					validator: Playlist,
+					parameters: { include },
+					validator: PlaylistWithRelations(include ?? []),
 				}),
 		};
 	}
@@ -542,7 +555,7 @@ export default class API {
 	 * Fetch all album artists
 	 * @returns An InfiniteQuery of Artists
 	 */
-	static getArtists(
+	static getArtists<I extends ArtistInclude | never = never>(
 		filter: {
 			library?: Identifier;
 			album?: Identifier;
@@ -550,23 +563,27 @@ export default class API {
 			query?: Identifier;
 		},
 		sort?: SortingParameters<typeof ArtistSortingKeys>,
-	): InfiniteQuery<Artist> {
+		include: I[] = [],
+	): InfiniteQuery<ArtistWithRelations<I>> {
 		return {
 			key: [
 				"artists",
 				...API.formatObject(filter),
 				...API.formatObject(sort),
+				...API.formatIncludeKeys(include),
 			],
 			exec: (pagination) =>
 				API.fetch({
 					route: `/artists`,
 					errorMessage: "Artists could not be loaded",
-					parameters: { pagination: pagination, include: [], sort },
+					parameters: { pagination: pagination, include, sort },
 					otherParameters: {
 						albumArtistOnly: filter.album ? undefined : "true",
 						...filter,
 					},
-					validator: PaginatedResponse(Artist),
+					validator: PaginatedResponse(
+						ArtistWithRelations(include ?? []),
+					),
 				}),
 		};
 	}

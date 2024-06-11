@@ -27,7 +27,9 @@ import formatArtists from "../../utils/formatArtists";
 import { usePlayerContext } from "../../contexts/player";
 
 type SongItemProps<
-	T extends SongWithRelations<"artist" | "featuring" | "master">,
+	T extends SongWithRelations<
+		"artist" | "featuring" | "master" | "illustration"
+	>,
 > = {
 	song: T | undefined;
 	formatSubtitle?: (song: T) => Promise<string>;
@@ -39,7 +41,9 @@ type SongItemProps<
  * @returns
  */
 const SongItem = <
-	T extends SongWithRelations<"artist" | "featuring" | "master">,
+	T extends SongWithRelations<
+		"artist" | "featuring" | "master" | "illustration"
+	>,
 >({
 	song,
 	formatSubtitle,

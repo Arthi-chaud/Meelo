@@ -28,7 +28,7 @@ export type TrackType = (typeof TrackType)[number];
 /**
  * 'Instance' of a song on a release
  */
-const Track = Resource.concat(Illustration).concat(
+const Track = Resource.concat(
 	yup.object({
 		/**
 		 * Unique identifier of the parent song
@@ -86,11 +86,12 @@ type Track = yup.InferType<typeof Track>;
 
 export default Track;
 
-export type TrackInclude = "song" | "release";
+export type TrackInclude = "song" | "release" | "illustration";
 
 const TrackRelations = yup.object({
 	song: yup.lazy(() => Song.required()),
 	release: Release.required(),
+	illustration: Illustration.required().nullable(),
 });
 
 const TrackWithRelations = <Selection extends TrackInclude | never>(

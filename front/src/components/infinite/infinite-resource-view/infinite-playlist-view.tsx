@@ -18,7 +18,10 @@
 
 import { useRouter } from "next/router";
 import { useState } from "react";
-import Playlist, { PlaylistSortingKeys } from "../../../models/playlist";
+import {
+	PlaylistSortingKeys,
+	PlaylistWithRelations,
+} from "../../../models/playlist";
 import Controls, { OptionState } from "../../controls/controls";
 import PlaylistItem from "../../list-item/playlist-item";
 import PlaylistTile from "../../tile/playlist-tile";
@@ -28,7 +31,10 @@ import { CreatePlaylistAction } from "../../actions/playlist";
 import { useQueryClient } from "../../../api/use-query";
 
 const InfinitePlaylistView = (
-	props: InfiniteResourceViewProps<Playlist, typeof PlaylistSortingKeys>,
+	props: InfiniteResourceViewProps<
+		PlaylistWithRelations<"illustration">,
+		typeof PlaylistSortingKeys
+	>,
 ) => {
 	const queryClient = useQueryClient();
 	const router = useRouter();

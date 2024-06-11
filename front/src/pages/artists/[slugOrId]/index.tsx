@@ -53,6 +53,7 @@ const latestAlbumsQuery = AlbumType.map((type) => ({
 		return API.getAlbums(
 			{ artist: artistSlugOrId, type: type },
 			{ sortBy: "releaseDate", order: "desc" },
+			["illustration"],
 		);
 	},
 }));
@@ -67,17 +68,17 @@ const topSongsQuery = (artistSlugOrId: string | number) =>
 	API.getSongs(
 		{ artist: artistSlugOrId },
 		{ sortBy: "totalPlayCount", order: "desc" },
-		["artist", "featuring", "master"],
+		["artist", "featuring", "master", "illustration"],
 	);
 
 const artistQuery = (artistSlugOrId: string | number) =>
-	API.getArtist(artistSlugOrId, ["externalIds"]);
+	API.getArtist(artistSlugOrId, ["externalIds", "illustration"]);
 
 const appearanceQuery = (artistSlugOrId: string | number) =>
 	API.getAlbums(
 		{ appearance: artistSlugOrId },
 		{ sortBy: "releaseDate", order: "desc" },
-		["artist"],
+		["artist", "illustration"],
 	);
 
 const prepareSSR = (context: NextPageContext) => {
@@ -303,13 +304,10 @@ const ArtistPage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({ props }) => {
 										tiles={
 											items
 												.slice(0, albumListSize)
-												.map(({ track, ...song }) => (
+												.map((video) => (
 													<VideoTile
-														key={track.id}
-														video={{
-															...track,
-															song,
-														}}
+														key={video.track.id}
+														video={video}
 														formatSubtitle={(
 															item,
 														) =>

@@ -22,7 +22,7 @@ import Illustration from "./illustration";
 import Lyrics from "./lyrics";
 import Resource from "./resource";
 import ExternalId from "./external-id";
-import Track from "./track";
+import Track, { TrackWithRelations } from "./track";
 
 export const SongType = [
 	"Original",
@@ -43,7 +43,7 @@ export type SongType = (typeof SongType)[number];
 /**
  * Abstract data model, instanciated by tracks
  */
-const Song = Resource.concat(Illustration).concat(
+const Song = Resource.concat(
 	yup.object({
 		/**
 		 * title of the song
@@ -70,14 +70,21 @@ const Song = Resource.concat(Illustration).concat(
 
 type Song = yup.InferType<typeof Song>;
 
-type SongInclude = "artist" | "lyrics" | "externalIds" | "featuring" | "master";
+type SongInclude =
+	| "artist"
+	| "lyrics"
+	| "externalIds"
+	| "featuring"
+	| "master"
+	| "illustration";
 
 const SongRelations = yup.object({
 	artist: Artist.required(),
-	master: yup.lazy(() => Track.required()),
+	master: yup.lazy(() => TrackWithRelations(["illustration"]).required()),
 	featuring: yup.array(Artist.required()).required(),
 	lyrics: Lyrics.required().nullable(),
 	externalIds: yup.array(ExternalId.required()).required(),
+	illustration: Illustration.required().nullable(),
 });
 
 const SongWithRelations = <Selection extends SongInclude | never = never>(

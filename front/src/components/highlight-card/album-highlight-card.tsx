@@ -22,7 +22,11 @@ import getYear from "../../utils/getYear";
 import HighlightCard from "./highlight-card";
 
 type AlbumHighlightCardProps = {
-	album: AlbumWithRelations<"artist" | "externalIds" | "genres"> | undefined;
+	album:
+		| AlbumWithRelations<
+				"artist" | "externalIds" | "genres" | "illustration"
+		  >
+		| undefined;
 };
 const AlbumHighlightCard = ({ album }: AlbumHighlightCardProps) => {
 	const { t } = useTranslation();

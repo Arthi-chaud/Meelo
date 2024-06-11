@@ -18,14 +18,14 @@
 
 import * as yup from "yup";
 import Album from "./album";
-import Illustration from "./illustration";
 import Resource from "./resource";
 import ExternalId from "./external-id";
+import Illustration from "./illustration";
 
 /**
  * A version of an album
  */
-const Release = Resource.concat(Illustration).concat(
+const Release = Resource.concat(
 	yup.object({
 		/**
 		 * The title of the release
@@ -58,7 +58,7 @@ type Release = yup.InferType<typeof Release>;
 
 export default Release;
 
-export type ReleaseInclude = "album" | "externalIds";
+export type ReleaseInclude = "album" | "externalIds" | "illustration";
 
 const ReleaseWithRelations = <Selection extends ReleaseInclude | never = never>(
 	relation: Selection[],
@@ -67,6 +67,7 @@ const ReleaseWithRelations = <Selection extends ReleaseInclude | never = never>(
 		yup
 			.object({
 				album: Album.required(),
+				illustration: Illustration.required().nullable(),
 				externalIds: yup.array(ExternalId.required()).required(),
 			})
 			.pick(relation),

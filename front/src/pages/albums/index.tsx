@@ -41,6 +41,7 @@ const prepareSSR = (context: NextPageContext) => {
 		infiniteQueries: [
 			API.getAlbums({ type: type ?? undefined }, { sortBy, order }, [
 				"artist",
+				"illustration",
 			]),
 		],
 	};
@@ -62,7 +63,7 @@ const LibraryAlbumsPage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({
 				API.getAlbums(
 					{ type, library: library ?? undefined },
 					{ sortBy, order },
-					["artist"],
+					["artist", "illustration"],
 				)
 			}
 		/>

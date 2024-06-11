@@ -21,7 +21,7 @@ import Illustration from "./illustration";
 import Resource from "./resource";
 import * as yup from "yup";
 
-const Artist = Resource.concat(Illustration).concat(
+const Artist = Resource.concat(
 	yup.object({
 		/**
 		 * The name of the artist
@@ -37,7 +37,7 @@ const Artist = Resource.concat(Illustration).concat(
 
 type Artist = yup.InferType<typeof Artist>;
 
-export type ArtistInclude = "externalIds";
+export type ArtistInclude = "externalIds" | "illustration";
 
 const ArtistWithRelations = <Selection extends ArtistInclude | never = never>(
 	relation: Selection[],
@@ -46,6 +46,7 @@ const ArtistWithRelations = <Selection extends ArtistInclude | never = never>(
 		yup
 			.object({
 				externalIds: yup.array(ExternalId.required()).required(),
+				illustration: Illustration.required().nullable(),
 			})
 			.pick(relation),
 	);

@@ -17,23 +17,27 @@
  */
 
 import Song, { SongInclude, SongRelations } from "./song";
-import Track from "./track";
+import { TrackWithRelations } from "./track";
 import * as yup from "yup";
 
-const TracklistItem = Track.concat(
-	yup.object({
-		song: Song.required(),
-	}),
-).required();
+const TracklistItem = TrackWithRelations(["illustration"])
+	.concat(
+		yup.object({
+			song: Song.required(),
+		}),
+	)
+	.required();
 
 const TracklistItemWithRelations = <Selection extends SongInclude | never>(
 	selection: Selection[],
 ) =>
-	Track.concat(
-		yup.object({
-			song: Song.concat(SongRelations.pick(selection)),
-		}),
-	).required();
+	TrackWithRelations(["illustration"])
+		.concat(
+			yup.object({
+				song: Song.concat(SongRelations.pick(selection)),
+			}),
+		)
+		.required();
 
 type TracklistItem = yup.InferType<typeof TracklistItem>;
 type TracklistItemWithRelations<Selection extends SongInclude | never> =
