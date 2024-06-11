@@ -356,7 +356,7 @@ describe("Artist Controller", () => {
 				},
 			});
 			return request(app.getHttpServer())
-				.get(`/artists/${dummyRepository.artistB.id}`)
+				.get(`/artists/${dummyRepository.artistB.id}?with=illustration`)
 				.expect(200)
 				.expect((res) => {
 					const artist: Artist = res.body;

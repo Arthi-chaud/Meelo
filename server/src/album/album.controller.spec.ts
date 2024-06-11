@@ -538,7 +538,7 @@ describe("Album Controller", () => {
 					include: { illustration: true },
 				});
 			return request(app.getHttpServer())
-				.get(`/albums/${dummyRepository.albumA1.id}`)
+				.get(`/albums/${dummyRepository.albumA1.id}?with=illustration`)
 				.expect(200)
 				.expect((res) => {
 					const album: Album = res.body;

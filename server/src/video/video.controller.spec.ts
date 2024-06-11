@@ -52,9 +52,12 @@ describe("Song Controller", () => {
 					expect(videoSongs.length).toBe(1);
 					expect(videoSongs[0]).toStrictEqual({
 						...expectedSongResponse(dummyRepository.songA1),
-						track: expectedTrackResponse(
-							dummyRepository.trackA1_2Video,
-						),
+						track: {
+							...expectedTrackResponse(
+								dummyRepository.trackA1_2Video,
+							),
+							illustration: null,
+						},
 					});
 				});
 		});
@@ -79,9 +82,12 @@ describe("Song Controller", () => {
 							...dummyRepository.songA1,
 							lyrics: dummyRepository.lyricsA1,
 						}),
-						track: expectedTrackResponse(
-							dummyRepository.trackA1_2Video,
-						),
+						track: {
+							...expectedTrackResponse(
+								dummyRepository.trackA1_2Video,
+							),
+							illustration: null,
+						},
 					});
 				});
 		});
@@ -97,9 +103,12 @@ describe("Song Controller", () => {
 					expect(songs.length).toBe(1);
 					expect(songs[0]).toStrictEqual({
 						...expectedSongResponse(dummyRepository.songA1),
-						track: expectedTrackResponse(
-							dummyRepository.trackA1_2Video,
-						),
+						track: {
+							...expectedTrackResponse(
+								dummyRepository.trackA1_2Video,
+							),
+							illustration: null,
+						},
 					});
 				});
 		});
@@ -124,9 +133,12 @@ describe("Song Controller", () => {
 					expect(videoSongs.length).toBe(1);
 					expect(videoSongs[0]).toStrictEqual({
 						...expectedSongResponse(dummyRepository.songA1),
-						track: expectedTrackResponse(
-							dummyRepository.trackA1_2Video,
-						),
+						track: {
+							...expectedTrackResponse(
+								dummyRepository.trackA1_2Video,
+							),
+							illustration: null,
+						},
 					});
 				});
 		});
