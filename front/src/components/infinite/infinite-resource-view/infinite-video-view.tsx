@@ -71,12 +71,10 @@ const InfiniteVideoView = <T extends VideoWithRelations<"artist">>(
 							exec(pagination).then((page) => {
 								return {
 									...page,
-									items: page.items.map(
-										({ track, ...song }) => ({
-											...track,
-											song,
-										}),
-									),
+									items: page.items.map((item) => ({
+										...item,
+										illustration: item.track.illustration,
+									})),
 								};
 							}),
 					};
@@ -84,7 +82,7 @@ const InfiniteVideoView = <T extends VideoWithRelations<"artist">>(
 				renderListItem={(item) => <></>}
 				renderGridItem={(item) => (
 					<VideoTile
-						video={item ? { ...item.song, track: item } : undefined}
+						video={item}
 						formatSubtitle={
 							item && props.formatSubtitle
 								? () =>
@@ -92,7 +90,10 @@ const InfiniteVideoView = <T extends VideoWithRelations<"artist">>(
 											props.formatSubtitle as Required<
 												typeof props
 											>["formatSubtitle"]
-										)({ song: item.song, track: item })
+										)({
+											song: item,
+											track: item.track,
+										})
 								: undefined
 						}
 					/>
