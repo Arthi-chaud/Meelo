@@ -33,7 +33,9 @@ const prepareSSR = (context: NextPageContext) => {
 		additionalProps: { searchQuery, type },
 		infiniteQueries: searchQuery
 			? [
-					API.getArtists({ query: searchQuery }),
+					API.getArtists({ query: searchQuery }, undefined, [
+						"illustration",
+					]),
 					API.getAlbums({ query: searchQuery }, undefined, [
 						"artist",
 						"illustration",
@@ -116,10 +118,14 @@ const SearchPage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({ props }) => {
 				}
 				enabled={query != undefined}
 				artistQuery={({ library }) =>
-					API.getArtists({
-						query: encodeURIComponent(query!),
-						library: library ?? undefined,
-					})
+					API.getArtists(
+						{
+							query: encodeURIComponent(query!),
+							library: library ?? undefined,
+						},
+						undefined,
+						["illustration"],
+					)
 				}
 				albumQuery={({ library, type: newType }) =>
 					API.getAlbums(
