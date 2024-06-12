@@ -37,6 +37,7 @@ import {
 	ReleaseResponseBuilder,
 } from "src/release/models/release.response";
 import ReleaseService from "src/release/release.service";
+import Logger from "src/logger/logger";
 
 export class AlbumResponse extends IntersectionType(
 	Album,
@@ -54,6 +55,7 @@ export class AlbumResponseBuilder extends ResponseBuilderInterceptor<
 	AlbumWithRelations,
 	AlbumResponse
 > {
+	private readonly logger = new Logger(AlbumResponseBuilder.name);
 	constructor(
 		@Inject(forwardRef(() => ArtistResponseBuilder))
 		private artistResponseBuilder: ArtistResponseBuilder,
@@ -84,6 +86,11 @@ export class AlbumResponseBuilder extends ResponseBuilderInterceptor<
 		}
 		/// This should happen only during scans
 		if (album.master === null) {
+			this.logger.warn(
+				"The Master Release of an album had to be resolved manually. " +
+					"This should happen only during a scan or a clean. " +
+					"If it is not the case, this is a bug.",
+			);
 			album.master = await this.releaseService.getMasterRelease({
 				id: album.id,
 			});

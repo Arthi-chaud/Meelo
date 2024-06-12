@@ -326,6 +326,7 @@ export default class TaskRunner {
 		await this.artistService.housekeeping();
 		await this.genresService.housekeeping();
 		await this.playlistService.housekeeping();
+		await this.resolveMasters();
 	}
 
 	///// Sub tasks

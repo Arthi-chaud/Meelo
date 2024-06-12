@@ -36,6 +36,7 @@ import {
 	TrackResponseBuilder,
 } from "src/track/models/track.response";
 import TrackService from "src/track/track.service";
+import Logger from "src/logger/logger";
 
 export class SongResponse extends IntersectionType(
 	Song,
@@ -53,6 +54,7 @@ export class SongResponseBuilder extends ResponseBuilderInterceptor<
 	SongWithRelations,
 	SongResponse
 > {
+	private readonly logger = new Logger(SongResponseBuilder.name);
 	constructor(
 		@Inject(forwardRef(() => ArtistResponseBuilder))
 		private artistResponseBuilder: ArtistResponseBuilder,
@@ -83,6 +85,11 @@ export class SongResponseBuilder extends ResponseBuilderInterceptor<
 		}
 		/// This should happen only during scan
 		if (song.master === null) {
+			this.logger.warn(
+				"The Master Track of a song had to be resolved manually. " +
+					"This should happen only during a scan or a clean. " +
+					"If it is not the case, this is a bug.",
+			);
 			song.master = await this.trackService.getMasterTrack({
 				id: song.id,
 			});
