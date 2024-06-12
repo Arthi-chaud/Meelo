@@ -305,6 +305,15 @@ export default class IllustrationRepository {
 			return null;
 		}
 		const track = await this.trackService.get(where, { release: true });
+		const logRegistration = (
+			disc: number | null,
+			trackIndex: number | null,
+		) =>
+			this.logger.verbose(
+				`Saving Illustration for '${track.release.name}' (Disc ${
+					disc ?? 1
+				}${trackIndex === null ? "" : `, track ${trackIndex}`}).`,
+			);
 		const parentReleaseIllustrations = await this.getReleaseIllustrations({
 			id: track.releaseId,
 		});
@@ -319,6 +328,7 @@ export default class IllustrationRepository {
 			parentReleaseIllustrations.length == 0 ||
 			parentReleaseMainIllustration === undefined
 		) {
+			logRegistration(null, null);
 			const newIllustration = await this.saveReleaseIllustration(
 				illustrationBytes,
 				null,
@@ -327,9 +337,6 @@ export default class IllustrationRepository {
 					id: track.releaseId,
 				},
 				IllustrationType.Cover,
-			);
-			this.logger.verbose(
-				`Extracting Illustration for '${track.release.name}' successful.`,
 			);
 			return newIllustration;
 		}
@@ -341,6 +348,7 @@ export default class IllustrationRepository {
 			return null;
 		}
 		if (!parentDiscIllustration) {
+			logRegistration(track.discIndex, null);
 			// If the track's disc does not have an illustration, save the scanned one
 			return this.saveReleaseIllustration(
 				illustrationBytes,
@@ -356,6 +364,7 @@ export default class IllustrationRepository {
 		} else if (hash === parentDiscIllustration.hash) {
 			return null;
 		}
+		logRegistration(track.discIndex, track.trackIndex);
 		// If the track's disc's illustration is NOT the scanned one, save the scanned one as track specific
 		return this.saveReleaseIllustration(
 			illustrationBytes,
