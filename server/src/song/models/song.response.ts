@@ -35,6 +35,7 @@ import {
 	TrackResponse,
 	TrackResponseBuilder,
 } from "src/track/models/track.response";
+import TrackService from "src/track/track.service";
 
 export class SongResponse extends IntersectionType(
 	Song,
@@ -57,6 +58,8 @@ export class SongResponseBuilder extends ResponseBuilderInterceptor<
 		private artistResponseBuilder: ArtistResponseBuilder,
 		@Inject(forwardRef(() => TrackResponseBuilder))
 		private trackResponseBuilder: TrackResponseBuilder,
+		@Inject(forwardRef(() => TrackService))
+		private trackService: TrackService,
 		@Inject(forwardRef(() => ExternalIdResponseBuilder))
 		private externalIdResponseBuilder: ExternalIdResponseBuilder,
 	) {
@@ -78,7 +81,13 @@ export class SongResponseBuilder extends ResponseBuilderInterceptor<
 				song.artist,
 			);
 		}
-		if (song.master) {
+		/// This should happen only during scan
+		if (song.master === null) {
+			song.master = await this.trackService.getMasterTrack({
+				id: song.id,
+			});
+		}
+		if (song.master !== undefined) {
 			response.master = await this.trackResponseBuilder.buildResponse(
 				song.master,
 			);
