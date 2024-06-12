@@ -285,7 +285,7 @@ const ExpandedPlayerControls = (
 					item
 					container
 					xs={12}
-					lg={7}
+					lg={8}
 					sx={{
 						height: { xs: "80vh", lg: "90vh" },
 						flexWrap: "nowrap",
@@ -499,7 +499,7 @@ const ExpandedPlayerControls = (
 						</Stack>
 					</Grid>
 				</Grid>
-				<Grid item xs={12} lg={5}>
+				<Grid item xs={12} lg={4}>
 					<Container maxWidth={false}>
 						<Tabs
 							value={panel}
