@@ -27,7 +27,9 @@ type PlayerSliderProps = {
 };
 
 const PlayerSlider = (props: PlayerSliderProps) => {
-	const [progress, setProgress] = useState<null | number>(null);
+	const [progress, setProgress] = useState<null | number>(
+		props.progress?.current ?? null,
+	);
 
 	useEffect(() => {
 		const interval = setInterval(() => {

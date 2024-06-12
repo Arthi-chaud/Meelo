@@ -26,6 +26,7 @@ export const ReleaseIcon = Iconsax.Cd;
 export const AlbumIcon = Iconsax.MusicDashboard;
 export const ArtistIcon = Iconsax.Profile2User;
 export const SongIcon = Iconsax.Musicnote;
+export const PlayerIcon = Iconsax.PlayCircle;
 export const TrackIcon = Iconsax.Musicnote;
 export const LyricsIcon = Iconsax.MessageText;
 export const VideoIcon = Iconsax.VideoSquare;
