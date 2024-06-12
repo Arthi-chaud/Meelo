@@ -323,7 +323,7 @@ const Player = () => {
 			>
 				<Box
 					sx={{
-						padding: 1,
+						// padding: 1,
 						zIndex: "tooltip",
 						width: "100%",
 						height: "100%",
@@ -332,7 +332,7 @@ const Player = () => {
 					<Paper
 						elevation={5}
 						sx={{
-							borderRadius: "0.5",
+							borderRadius: 0,
 							display: "flex",
 							width: "100%",
 							height: "100%",

@@ -267,7 +267,7 @@ const ExpandedPlayerControls = (
 				padding: 1,
 				overflowX: "clip",
 				overflowY: "auto",
-				paddingBottom: 3,
+				paddingBottom: 2,
 			}}
 			direction="column"
 		>
@@ -375,10 +375,7 @@ const ExpandedPlayerControls = (
 						)}
 					</Grid>
 					<Grid item sx={{ width: "100%" }}>
-						<Stack
-							spacing={2}
-							sx={{ justifyContent: "space-evenly" }}
-						>
+						<Stack spacing={3}>
 							<Grid
 								container
 								sx={{
@@ -399,7 +396,7 @@ const ExpandedPlayerControls = (
 								>
 									{props.track?.type == "Video" && (
 										<IconButton onClick={requestFullscreen}>
-											<FullscreenIcon />
+											<FullscreenIcon size={18} />
 										</IconButton>
 									)}
 								</Grid>
