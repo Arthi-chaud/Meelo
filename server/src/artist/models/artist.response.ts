@@ -27,7 +27,6 @@ import ResponseBuilderInterceptor from "src/response/interceptors/response.inter
 import ExternalIdResponse, {
 	ExternalIdResponseBuilder,
 } from "src/providers/models/external-id.response";
-import IllustrationRepository from "src/illustration/illustration.repository";
 
 export class ArtistResponse extends IntersectionType(
 	Artist,
@@ -43,8 +42,6 @@ export class ArtistResponseBuilder extends ResponseBuilderInterceptor<
 	ArtistResponse
 > {
 	constructor(
-		@Inject(forwardRef(() => IllustrationRepository))
-		private illustrationRepository: IllustrationRepository,
 		@Inject(forwardRef(() => ExternalIdResponseBuilder))
 		private externalIdResponseBuilder: ExternalIdResponseBuilder,
 	) {
@@ -56,15 +53,9 @@ export class ArtistResponseBuilder extends ResponseBuilderInterceptor<
 	async buildResponse(artist: ArtistWithRelations): Promise<ArtistResponse> {
 		const response = <ArtistResponse>{
 			...artist,
-			illustration:
-				artist.illustrationId === null
-					? null
-					: await this.illustrationRepository
-							.getIllustration(artist.illustrationId)
-							.then(
-								(value) =>
-									value && IllustrationResponse.from(value),
-							),
+			illustration: artist.illustration
+				? IllustrationResponse.from(artist.illustration)
+				: artist.illustration,
 		};
 
 		if (artist.externalIds !== undefined) {

@@ -464,6 +464,34 @@ export default class AlbumService extends SearchableRepositoryService {
 			.then((albums) => albums.filter((album) => !album._count.releases));
 
 		await Promise.all(emptyAlbums.map(({ id }) => this.delete({ id })));
+		await this.resolveMasterReleases();
+	}
+
+	async resolveMasterReleases() {
+		const albumsWithoutMasters = await this.prismaService.album.findMany({
+			where: { masterId: null },
+			include: {
+				releases: {
+					take: 1,
+					orderBy: { releaseDate: { nulls: "last", sort: "asc" } },
+				},
+			},
+		});
+		await this.prismaService.$transaction(
+			albumsWithoutMasters
+				.map((album) => {
+					const newMasterRelease = album.releases.at(0);
+					if (newMasterRelease) {
+						return this.prismaService.album.update({
+							where: { id: album.id },
+							data: { masterId: newMasterRelease.id },
+						});
+					}
+					return null;
+				})
+				.filter((q) => q !== null)
+				.map((q) => q!),
+		);
 	}
 
 	/**

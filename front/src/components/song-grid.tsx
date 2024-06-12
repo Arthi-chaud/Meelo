@@ -26,7 +26,10 @@ import formatArtists from "../utils/formatArtists";
 import { usePlayerContext } from "../contexts/player";
 
 type SongGridProps = {
-	songs: (SongWithRelations<"artist" | "featuring" | "master"> | undefined)[];
+	songs: (
+		| SongWithRelations<"artist" | "featuring" | "master" | "illustration">
+		| undefined
+	)[];
 	parentArtistName?: string; // To tell wheter or not we display the artists' names
 };
 
@@ -72,7 +75,10 @@ const SongGrid = ({ songs, parentArtistName }: SongGridProps) => {
 								? () =>
 										playTrack({
 											artist: song.artist,
-											track: song.master,
+											track: {
+												...song.master,
+												illustration: song.illustration,
+											},
 										})
 								: undefined
 						}

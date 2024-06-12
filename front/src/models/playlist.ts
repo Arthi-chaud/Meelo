@@ -41,7 +41,7 @@ const PlaylistEntryWithRelations = <
 type PlaylistEntryWithRelations<Selection extends SongInclude | never = never> =
 	yup.InferType<ReturnType<typeof PlaylistEntryWithRelations<Selection>>>;
 
-const Playlist = Resource.concat(Illustration).concat(
+const Playlist = Resource.concat(
 	yup.object({
 		/**
 		 * The name of the playlist
@@ -61,6 +61,24 @@ const Playlist = Resource.concat(Illustration).concat(
 
 type Playlist = yup.InferType<typeof Playlist>;
 
+export type PlaylistInclude = "illustration";
+
+const PlaylistWithRelations = <
+	Selection extends PlaylistInclude | never = never,
+>(
+	relation: Selection[],
+) =>
+	Playlist.concat(
+		yup
+			.object({
+				illustration: Illustration.required().nullable(),
+			})
+			.pick(relation),
+	);
+
+type PlaylistWithRelations<Selection extends PlaylistInclude | never = never> =
+	yup.InferType<ReturnType<typeof PlaylistWithRelations<Selection>>>;
+
 export default Playlist;
 
 export const PlaylistSortingKeys = [
@@ -69,4 +87,4 @@ export const PlaylistSortingKeys = [
 	"creationDate",
 ] as const;
 
-export { PlaylistEntryWithRelations };
+export { PlaylistEntryWithRelations, PlaylistWithRelations };

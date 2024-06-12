@@ -47,6 +47,9 @@ export default class FfmpegService {
 			}
 
 			fs.mkdir(dir.dirname(outPath), { recursive: true }, () => {});
+			this.logger.verbose(
+				`Taking a screenshot of '${dir.basename(videoPath)}'.`,
+			);
 			Ffmpeg(videoPath).ffprobe(0, (_, data) => {
 				const videostream = data.streams.find(
 					(s) => s.codec_type == "video",

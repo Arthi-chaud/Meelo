@@ -56,8 +56,9 @@ export default class VideoService {
 						where: {
 							type: "Video",
 						},
-						orderBy: { bitrate: "desc" },
+						orderBy: { bitrate: { sort: "desc", nulls: "last" } },
 						take: 1,
+						include: { illustration: true },
 					},
 				},
 				...formatPaginationParameters(pagination),

@@ -60,6 +60,7 @@ const prepareSSR = (context: NextPageContext) => {
 				"featuring",
 				"lyrics",
 				"master",
+				"illustration",
 			]),
 		],
 		infiniteQueries: [
@@ -67,12 +68,12 @@ const prepareSSR = (context: NextPageContext) => {
 			API.getSongs(
 				{ versionsOf: songIdentifier },
 				{ sortBy: "name", order: "asc" },
-				["artist", "featuring", "master"],
+				["artist", "featuring", "master", "illustration"],
 			),
 			API.getTracks(
 				{ song: songIdentifier },
 				{ sortBy: "name", order: "asc" },
-				["release", "song"],
+				["release", "song", "illustration"],
 			),
 		],
 	};
@@ -102,6 +103,7 @@ const SongPage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({ props }) => {
 			"featuring",
 			"lyrics",
 			"master",
+			"illustration",
 		]),
 	);
 	const genres = useInfiniteQuery(API.getGenres, { song: songIdentifier });
@@ -121,7 +123,10 @@ const SongPage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({ props }) => {
 					song.data &&
 					(() =>
 						playTrack({
-							track: song.data.master,
+							track: {
+								...song.data.master,
+								illustration: song.data.illustration,
+							},
 							artist: song.data.artist,
 						}))
 				}
@@ -231,7 +236,12 @@ const SongPage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({ props }) => {
 									versionsOf: songIdentifier,
 								},
 								{ sortBy, order },
-								["artist", "featuring", "master"],
+								[
+									"artist",
+									"featuring",
+									"master",
+									"illustration",
+								],
 							)
 						}
 					/>
@@ -242,7 +252,7 @@ const SongPage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({ props }) => {
 							API.getTracks(
 								{ song: songIdentifier },
 								{ sortBy, order },
-								["release", "song"],
+								["release", "song", "illustration"],
 							)
 						}
 					/>

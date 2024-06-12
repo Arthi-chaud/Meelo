@@ -31,7 +31,7 @@ import {
 	useTheme,
 } from "@mui/material";
 import Release from "../models/release";
-import Track from "../models/track";
+import { TrackWithRelations } from "../models/track";
 import Tracklist from "../models/tracklist";
 import Artist from "../models/artist";
 import formatDuration from "../utils/formatDuration";
@@ -48,7 +48,11 @@ import { Audio } from "react-loader-spinner";
 type ReleaseTracklistProps = {
 	mainArtist: Artist | undefined | null;
 	tracklist:
-		| Tracklist<Track & { song: SongWithRelations<"artist" | "featuring"> }>
+		| Tracklist<
+				TrackWithRelations<"illustration"> & {
+					song: SongWithRelations<"artist" | "featuring">;
+				}
+		  >
 		| undefined;
 	release: Release | undefined;
 };
@@ -110,7 +114,7 @@ const ReleaseTrackList = ({
 				>
 					{(
 						disc[1] as (
-							| (Track & {
+							| (TrackWithRelations<"illustration"> & {
 									song: SongWithRelations<
 										"artist" | "featuring"
 									>;

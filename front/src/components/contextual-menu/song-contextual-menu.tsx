@@ -57,7 +57,9 @@ const SongContextualMenu = (props: SongContextualMenuProps) => {
 	const { t } = useTranslation();
 	const { playNext, playAfter } = usePlayerContext();
 	const getMasterTrack = () =>
-		queryClient.fetchQuery(API.getMasterTrack(songSlug, ["release"]));
+		queryClient.fetchQuery(
+			API.getMasterTrack(songSlug, ["release", "illustration"]),
+		);
 	const router = useRouter();
 	const confirm = useConfirm();
 	const getPlayNextProps = () =>

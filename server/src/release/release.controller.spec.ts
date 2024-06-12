@@ -407,12 +407,14 @@ describe("Release Controller", () => {
 					expect(tracklist).toStrictEqual([
 						{
 							...expectedTrackResponse(dummyRepository.trackA2_1),
+							illustration: null,
 							song: expectedSongResponse(dummyRepository.songA2),
 						},
 						{
 							...expectedTrackResponse(
 								dummyRepository.trackA1_2Video,
 							),
+							illustration: null,
 							song: expectedSongResponse(dummyRepository.songA1),
 						},
 					]);
@@ -430,6 +432,7 @@ describe("Release Controller", () => {
 					expect(tracklist).toStrictEqual([
 						{
 							...expectedTrackResponse(dummyRepository.trackA2_1),
+							illustration: null,
 							song: {
 								...expectedSongResponse(dummyRepository.songA2),
 								artist: expectedArtistResponse(
@@ -441,6 +444,7 @@ describe("Release Controller", () => {
 							...expectedTrackResponse(
 								dummyRepository.trackA1_2Video,
 							),
+							illustration: null,
 							song: {
 								...expectedSongResponse(dummyRepository.songA1),
 								artist: expectedArtistResponse(
@@ -543,7 +547,9 @@ describe("Release Controller", () => {
 					include: { illustration: true },
 				});
 			return request(app.getHttpServer())
-				.get(`/releases/${dummyRepository.releaseA1_2.id}`)
+				.get(
+					`/releases/${dummyRepository.releaseA1_2.id}?with=illustration`,
+				)
 				.expect(200)
 				.expect((res) => {
 					const release: Release = res.body;

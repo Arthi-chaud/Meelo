@@ -28,7 +28,6 @@ import {
 	IllustratedResponse,
 	IllustrationResponse,
 } from "src/illustration/models/illustration.response";
-import IllustrationRepository from "src/illustration/illustration.repository";
 import { PlaylistEntryModel } from "./playlist-entry.model";
 
 export class PlaylistEntryResponse extends SongResponse {
@@ -77,10 +76,7 @@ export class PlaylistResponseBuilder extends ResponseBuilderInterceptor<
 	PlaylistWithRelations,
 	PlaylistResponse
 > {
-	constructor(
-		@Inject(forwardRef(() => IllustrationRepository))
-		private illustrationRepository: IllustrationRepository,
-	) {
+	constructor() {
 		super();
 	}
 
@@ -91,15 +87,9 @@ export class PlaylistResponseBuilder extends ResponseBuilderInterceptor<
 	): Promise<PlaylistResponse> {
 		const response = <PlaylistResponse>{
 			...playlist,
-			illustration:
-				playlist.illustrationId === null
-					? null
-					: await this.illustrationRepository
-							.getIllustration(playlist.illustrationId)
-							.then(
-								(value) =>
-									value && IllustrationResponse.from(value),
-							),
+			illustration: playlist.illustration
+				? IllustrationResponse.from(playlist.illustration)
+				: playlist.illustration,
 		};
 		return response;
 	}

@@ -44,7 +44,7 @@ import Link from "next/link";
 import Player from "../player/player";
 import { useRouter } from "next/router";
 import { IconProps } from "iconsax-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import scaffoldActions from "./actions";
 import type {} from "@mui/material/themeCssVarsAugmentation";
 import ThemedImage from "../../utils/themed-image";
@@ -331,6 +331,10 @@ const BottomNavigation = (props: { onDrawerOpen: () => void }) => {
 
 const Scaffold = (props: { children: any }) => {
 	const [tempDrawerIsOpen, openDrawer] = useState(false);
+
+	useEffect(() => {
+		document.getElementById(parentScrollableDivId)?.scrollTo({ top: 0 });
+	}, [props.children]);
 
 	return (
 		<Box sx={{ display: "flex", width: "100%", height: "100vh" }}>

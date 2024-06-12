@@ -25,7 +25,7 @@ import { useAccentColor } from "../../utils/accent-color";
 
 type HighlightCardProps = {
 	title: string | undefined;
-	illustration: IllustrationModel | undefined;
+	illustration: IllustrationModel | undefined | null;
 	headline: string | undefined;
 	body: string | JSX.Element | undefined;
 	href: string | undefined;

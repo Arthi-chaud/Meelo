@@ -460,7 +460,9 @@ describe("Track Controller", () => {
 					include: { illustration: true },
 				});
 			return request(app.getHttpServer())
-				.get(`/tracks/${dummyRepository.trackC1_1.id}`)
+				.get(
+					`/tracks/${dummyRepository.trackC1_1.id}?with=illustration`,
+				)
 				.expect(200)
 				.expect((res) => {
 					const track: Track = res.body;

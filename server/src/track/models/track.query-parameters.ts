@@ -101,7 +101,12 @@ namespace TrackQueryParameters {
 	/**
 	 * Defines what relations to include in query
 	 */
-	export const AvailableIncludes = ["song", "release", "sourceFile"] as const;
+	export const AvailableIncludes = [
+		"song",
+		"release",
+		"sourceFile",
+		"illustration",
+	] as const;
 	export const AvailableAtomicIncludes =
 		filterAtomicRelationInclude(AvailableIncludes);
 	export type RelationInclude = BaseRelationInclude<typeof AvailableIncludes>;

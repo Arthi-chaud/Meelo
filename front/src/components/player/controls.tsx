@@ -48,7 +48,7 @@ import PlayerSlider from "./controls/slider";
 import API from "../../api/api";
 import { useQuery } from "../../api/use-query";
 import LyricsBox from "../lyrics";
-import Track from "../../models/track";
+import { TrackWithRelations } from "../../models/track";
 import Artist from "../../models/artist";
 import Link from "next/link";
 import ReleaseTrackContextualMenu from "../contextual-menu/release-track-contextual-menu";
@@ -75,7 +75,7 @@ type PlayerControlsProps = Parameters<typeof PlayerSlider>[number] &
 		expanded: boolean;
 		onExpand: (expand: boolean) => void;
 		artist?: Artist;
-		track?: Track;
+		track?: TrackWithRelations<"illustration">;
 	};
 
 const playerTextStyle = {

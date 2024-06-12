@@ -16,13 +16,17 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import Playlist from "../../models/playlist";
+import { PlaylistWithRelations } from "../../models/playlist";
 import Tile from "./tile";
 import Illustration from "../illustration";
 import PlaylistContextualMenu from "../contextual-menu/playlist-contextual-menu";
 import { PlaylistIcon } from "../icons";
 
-const PlaylistTile = ({ playlist }: { playlist: Playlist | undefined }) => {
+const PlaylistTile = ({
+	playlist,
+}: {
+	playlist: PlaylistWithRelations<"illustration"> | undefined;
+}) => {
 	return (
 		<Tile
 			contextualMenu={

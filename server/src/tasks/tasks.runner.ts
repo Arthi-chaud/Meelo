@@ -219,6 +219,7 @@ export default class TaskRunner {
 		this.logger.log(
 			`${parentLibrary.slug} library: ${newlyRegistered.length} new files registered`,
 		);
+		await this.resolveMasters();
 	}
 
 	/**
@@ -301,12 +302,18 @@ export default class TaskRunner {
 			);
 		}
 		this.logger.log(`Refreshed ${updatedFiles.length} files' metadata`);
+		await this.resolveMasters();
 	}
 
 	private async fetchExternalMetadata(): Promise<void> {
 		await this.fetchExternalIds();
 		await this.fetchExternalIllustrations();
 		await this.lyricsService.fetchMissingLyrics();
+	}
+
+	private async resolveMasters() {
+		await this.albumService.resolveMasterReleases();
+		await this.songService.resolveMasterTracks();
 	}
 
 	/**
@@ -319,6 +326,7 @@ export default class TaskRunner {
 		await this.artistService.housekeeping();
 		await this.genresService.housekeeping();
 		await this.playlistService.housekeeping();
+		await this.resolveMasters();
 	}
 
 	///// Sub tasks

@@ -32,7 +32,6 @@ import {
 	IllustratedResponse,
 	IllustrationResponse,
 } from "src/illustration/models/illustration.response";
-import IllustrationRepository from "src/illustration/illustration.repository";
 
 export class TrackResponse extends IntersectionType(
 	Track,
@@ -49,8 +48,6 @@ export class TrackResponseBuilder extends ResponseBuilderInterceptor<
 	TrackResponse
 > {
 	constructor(
-		@Inject(forwardRef(() => IllustrationRepository))
-		private illustrationRepository: IllustrationRepository,
 		@Inject(forwardRef(() => ReleaseResponseBuilder))
 		private releaseResponseBuilder: ReleaseResponseBuilder,
 		@Inject(forwardRef(() => SongResponseBuilder))
@@ -64,11 +61,9 @@ export class TrackResponseBuilder extends ResponseBuilderInterceptor<
 	async buildResponse(track: TrackWithRelations): Promise<TrackResponse> {
 		const response = <TrackResponse>{
 			...track,
-			illustration: await this.illustrationRepository
-				.getTrackIllustration({
-					id: track.id,
-				})
-				.then((value) => value && IllustrationResponse.from(value)),
+			illustration: track.illustration
+				? IllustrationResponse.from(track.illustration)
+				: track.illustration,
 			stream: `/files/${track.sourceFileId}/stream`,
 		};
 

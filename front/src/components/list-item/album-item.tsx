@@ -23,7 +23,7 @@ import { AlbumWithRelations } from "../../models/album";
 import { useTranslation } from "react-i18next";
 
 type AlbumItemProps = {
-	album: AlbumWithRelations<"artist"> | undefined;
+	album: AlbumWithRelations<"artist" | "illustration"> | undefined;
 	formatSubtitle?: (album: AlbumWithRelations<"artist">) => string;
 };
 

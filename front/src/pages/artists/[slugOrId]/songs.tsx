@@ -35,6 +35,9 @@ import { NextPageContext } from "next";
 import { QueryClient } from "react-query";
 import { useGradientBackground } from "../../../utils/gradient-background";
 
+const artistQuery = (identifier: string | number) =>
+	API.getArtist(identifier, ["illustration"]);
+
 const prepareSSR = async (
 	context: NextPageContext,
 	queryClient: QueryClient,
@@ -48,6 +51,7 @@ const prepareSSR = async (
 				"artist",
 				"featuring",
 				"master",
+				"illustration",
 			]),
 		),
 	);
@@ -55,7 +59,7 @@ const prepareSSR = async (
 	return {
 		additionalProps: { artistIdentifier, sortBy, order },
 		queries: [
-			API.getArtist(artistIdentifier),
+			artistQuery(artistIdentifier),
 			...songs.pages
 				.flatMap(({ items }) => items)
 				.map(({ master }) =>
@@ -77,7 +81,7 @@ const ArtistSongPage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({
 			.then((release) => release.name);
 	const artistIdentifier =
 		props?.artistIdentifier ?? getSlugOrId(router.query);
-	const artist = useQuery(API.getArtist, artistIdentifier);
+	const artist = useQuery(artistQuery, artistIdentifier);
 	const { GradientBackground } = useGradientBackground(
 		artist.data?.illustration?.colors,
 	);
@@ -98,7 +102,7 @@ const ArtistSongPage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({
 							library: library ?? undefined,
 						},
 						{ sortBy, order },
-						["artist", "featuring", "master"],
+						["artist", "featuring", "master", "illustration"],
 					)
 				}
 				formatSubtitle={(song) =>

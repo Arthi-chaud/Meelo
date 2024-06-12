@@ -16,13 +16,13 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import Artist from "../../models/artist";
+import { ArtistWithRelations } from "../../models/artist";
 import ArtistContextualMenu from "../contextual-menu/artist-contextual-menu";
 import RelationPageHeader from "./relation-page-header";
 import ArtistAvatar from "../artist-avatar";
 
 type ArtistRelationPageHeaderProps = {
-	artist: Artist | undefined;
+	artist: ArtistWithRelations<"illustration"> | undefined;
 };
 
 const ArtistRelationPageHeader = ({

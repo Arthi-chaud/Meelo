@@ -110,6 +110,7 @@ namespace SongQueryParameters {
 		"master",
 		"lyrics",
 		"externalIds",
+		"illustration",
 	] as const;
 	export const AvailableAtomicIncludes = filterAtomicRelationInclude(
 		AvailableIncludes,

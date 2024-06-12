@@ -42,7 +42,10 @@ import {
 } from "../../../components/icons";
 import ListItem from "../../../components/list-item/item";
 import SongContextualMenu from "../../../components/contextual-menu/song-contextual-menu";
-import { PlaylistEntry } from "../../../models/playlist";
+import {
+	PlaylistEntry,
+	PlaylistEntryWithRelations,
+} from "../../../models/playlist";
 import { useMemo, useState } from "react";
 import { DragDropContext, Draggable, Droppable } from "react-beautiful-dnd";
 import toast from "react-hot-toast";
@@ -57,12 +60,14 @@ import { usePlayerContext } from "../../../contexts/player";
 import { NextPageContext } from "next";
 import Release from "../../../models/release";
 
-const playlistQuery = (idOrSlug: number | string) => API.getPlaylist(idOrSlug);
+const playlistQuery = (idOrSlug: number | string) =>
+	API.getPlaylist(idOrSlug, ["illustration"]);
 const playlistEntriesQuery = (idOrSlug: number | string) => {
 	const query = API.getPlaylistEntires(idOrSlug, [
 		"artist",
 		"featuring",
 		"master",
+		"illustration",
 	]);
 	return {
 		key: query.key,
@@ -169,7 +174,7 @@ const DragAndDropPlaylist = (props: DragAndDropPlaylistProps) => {
 
 type PlaylistEntryItemProps = {
 	onClick: () => void;
-	entry: (PlaylistEntry & SongWithRelations<"artist">) | undefined;
+	entry: PlaylistEntryWithRelations<"artist" | "illustration"> | undefined;
 };
 
 const PlaylistEntryItem = ({ entry, onClick }: PlaylistEntryItemProps) => (
@@ -249,7 +254,7 @@ const PlaylistPage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({
 		entries &&
 		playTracks({
 			tracks: entries.map((entry) => ({
-				track: entry.master,
+				track: { ...entry.master, illustration: entry.illustration },
 				artist: entry.artist,
 				release: entry.release,
 			})),
@@ -260,7 +265,10 @@ const PlaylistPage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({
 		playTracks({
 			tracks: shuffle(
 				entries.map((entry) => ({
-					track: entry.master,
+					track: {
+						...entry.master,
+						illustration: entry.illustration,
+					},
 					artist: entry.artist,
 					release: entry.release,
 				})),

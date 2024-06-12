@@ -84,7 +84,7 @@ export default class SongService extends SearchableRepositoryService {
 	/**
 	 * Create
 	 */
-	async create<I extends SongQueryParameters.RelationInclude>(
+	async create<I extends SongQueryParameters.RelationInclude = {}>(
 		song: SongQueryParameters.CreateInput,
 		include?: I,
 	) {
@@ -515,6 +515,34 @@ export default class SongService extends SearchableRepositoryService {
 				},
 			},
 		});
+		await this.resolveMasterTracks();
+	}
+
+	async resolveMasterTracks() {
+		const songsWithoutMasters = await this.prismaService.song.findMany({
+			where: { masterId: null },
+			include: {
+				tracks: {
+					take: 1,
+					orderBy: [{ type: "asc" }, { bitrate: "desc" }],
+				},
+			},
+		});
+		await this.prismaService.$transaction(
+			songsWithoutMasters
+				.map((song) => {
+					const newMasterTrack = song.tracks.at(0);
+					if (newMasterTrack) {
+						return this.prismaService.song.update({
+							where: { id: song.id },
+							data: { masterId: newMasterTrack.id },
+						});
+					}
+					return null;
+				})
+				.filter((q) => q !== null)
+				.map((q) => q!),
+		);
 	}
 
 	async getManyByPlayCount<I extends SongQueryParameters.RelationInclude>(
@@ -602,7 +630,7 @@ export default class SongService extends SearchableRepositoryService {
 												OR: [
 													...albumSongsBaseNames.map(
 														(slug) => ({
-															slug: {
+															nameSlug: {
 																startsWith:
 																	slug,
 															},

@@ -85,8 +85,10 @@ export default class PlaylistController {
 	async get(
 		@IdentifierParam(PlaylistService)
 		where: PlaylistQueryParameters.WhereInput,
+		@RelationIncludeQuery(PlaylistQueryParameters.AvailableAtomicIncludes)
+		include: PlaylistQueryParameters.RelationInclude,
 	) {
-		return this.playlistService.get(where);
+		return this.playlistService.get(where, include);
 	}
 
 	@ApiOperation({
@@ -97,6 +99,8 @@ export default class PlaylistController {
 	async getMany(
 		@Query() selector: Selector,
 		@Query() sort: PlaylistQueryParameters.SortingParameter,
+		@RelationIncludeQuery(PlaylistQueryParameters.AvailableAtomicIncludes)
+		include: PlaylistQueryParameters.RelationInclude,
 		@Query()
 		paginationParameters: PaginationParameters,
 	) {
@@ -104,6 +108,7 @@ export default class PlaylistController {
 			selector,
 			sort,
 			paginationParameters,
+			include,
 		);
 	}
 

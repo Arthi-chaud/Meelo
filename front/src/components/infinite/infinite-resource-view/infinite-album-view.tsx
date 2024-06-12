@@ -34,7 +34,7 @@ type AdditionalProps = { type?: AlbumType };
 
 const InfiniteAlbumView = (
 	props: InfiniteResourceViewProps<
-		AlbumWithRelations<"artist">,
+		AlbumWithRelations<"artist" | "illustration">,
 		typeof AlbumSortingKeys,
 		AdditionalProps
 	> &

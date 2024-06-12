@@ -25,7 +25,7 @@ import getYear from "../../utils/getYear";
 import { Star } from "iconsax-react";
 
 type ReleaseItemProps = {
-	release: ReleaseWithRelations<"album">;
+	release: ReleaseWithRelations<"album" | "illustration">;
 };
 
 const ReleaseItem = ({ release }: ReleaseItemProps) => {

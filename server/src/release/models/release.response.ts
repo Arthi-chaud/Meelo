@@ -22,7 +22,6 @@ import {
 	AlbumResponse,
 	AlbumResponseBuilder,
 } from "src/album/models/album.response";
-import IllustrationRepository from "src/illustration/illustration.repository";
 import {
 	IllustratedResponse,
 	IllustrationResponse,
@@ -48,8 +47,6 @@ export class ReleaseResponseBuilder extends ResponseBuilderInterceptor<
 	ReleaseResponse
 > {
 	constructor(
-		@Inject(forwardRef(() => IllustrationRepository))
-		private illustrationRepository: IllustrationRepository,
 		@Inject(forwardRef(() => AlbumResponseBuilder))
 		private albumResponseBuilder: AlbumResponseBuilder,
 		@Inject(forwardRef(() => ExternalIdResponseBuilder))
@@ -65,11 +62,9 @@ export class ReleaseResponseBuilder extends ResponseBuilderInterceptor<
 	): Promise<ReleaseResponse> {
 		const response = <ReleaseResponse>{
 			...release,
-			illustration: await this.illustrationRepository
-				.getReleaseIllustrationResponse({
-					id: release.id,
-				})
-				.then((value) => value && IllustrationResponse.from(value)),
+			illustration: release.illustration
+				? IllustrationResponse.from(release.illustration)
+				: release.illustration,
 		};
 
 		if (release.album !== undefined) {

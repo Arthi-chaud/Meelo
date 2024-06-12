@@ -28,13 +28,20 @@ export class IllustrationResponse extends Illustration {
 
 	static from(illustration: Illustration): IllustrationResponse {
 		return {
-			...illustration,
+			id: illustration.id,
+			aspectRatio: illustration.aspectRatio,
+			colors: illustration.colors,
+			blurhash: illustration.blurhash,
+			type: illustration.type,
 			url: "/illustrations/" + illustration.id,
 		};
 	}
 }
 
 export class IllustratedResponse {
-	@ApiProperty({ nullable: true })
+	@ApiProperty({
+		nullable: true,
+		description: "Use 'with' query parameter to include this field",
+	})
 	illustration: IllustrationResponse | null;
 }

@@ -96,6 +96,7 @@ namespace ReleaseQueryParameters {
 		"album",
 		"tracks",
 		"externalIds",
+		"illustration",
 	] as const;
 	export const AvailableAtomicIncludes = filterAtomicRelationInclude(
 		AvailableIncludes,

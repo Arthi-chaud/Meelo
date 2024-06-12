@@ -558,7 +558,7 @@ describe("Song Controller", () => {
 					include: { illustration: true },
 				});
 			return request(app.getHttpServer())
-				.get(`/songs/${dummyRepository.songC1.id}`)
+				.get(`/songs/${dummyRepository.songC1.id}?with=illustration`)
 				.expect(200)
 				.expect((res) => {
 					const song: Song = res.body;

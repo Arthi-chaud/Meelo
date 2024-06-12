@@ -31,12 +31,12 @@ import {
 	IllustratedResponse,
 	IllustrationResponse,
 } from "src/illustration/models/illustration.response";
-import IllustrationRepository from "src/illustration/illustration.repository";
 import {
 	TrackResponse,
 	TrackResponseBuilder,
 } from "src/track/models/track.response";
 import TrackService from "src/track/track.service";
+import Logger from "src/logger/logger";
 
 export class SongResponse extends IntersectionType(
 	Song,
@@ -54,9 +54,8 @@ export class SongResponseBuilder extends ResponseBuilderInterceptor<
 	SongWithRelations,
 	SongResponse
 > {
+	private readonly logger = new Logger(SongResponseBuilder.name);
 	constructor(
-		@Inject(forwardRef(() => IllustrationRepository))
-		private illustrationRepository: IllustrationRepository,
 		@Inject(forwardRef(() => ArtistResponseBuilder))
 		private artistResponseBuilder: ArtistResponseBuilder,
 		@Inject(forwardRef(() => TrackResponseBuilder))
@@ -74,11 +73,9 @@ export class SongResponseBuilder extends ResponseBuilderInterceptor<
 	async buildResponse(song: SongWithRelations): Promise<SongResponse> {
 		const response = <SongResponse>{
 			...song,
-			illustration: await this.illustrationRepository
-				.getSongIllustration({
-					id: song.id,
-				})
-				.then((value) => value && IllustrationResponse.from(value)),
+			illustration: song.illustration
+				? IllustrationResponse.from(song.illustration)
+				: song.illustration,
 		};
 
 		if (song.artist !== undefined) {
@@ -86,7 +83,13 @@ export class SongResponseBuilder extends ResponseBuilderInterceptor<
 				song.artist,
 			);
 		}
+		/// This should happen only during scan
 		if (song.master === null) {
+			this.logger.warn(
+				"The Master Track of a song had to be resolved manually. " +
+					"This should happen only during a scan or a clean. " +
+					"If it is not the case, this is a bug.",
+			);
 			song.master = await this.trackService.getMasterTrack({
 				id: song.id,
 			});

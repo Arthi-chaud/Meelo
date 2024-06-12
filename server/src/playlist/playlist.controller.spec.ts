@@ -386,7 +386,9 @@ describe("Playlist Controller", () => {
 				},
 			});
 			return request(app.getHttpServer())
-				.get(`/playlists/${dummyRepository.playlist3.id}`)
+				.get(
+					`/playlists/${dummyRepository.playlist3.id}?with=illustration`,
+				)
 				.expect(200)
 				.expect((res) => {
 					const playlist: Playlist = res.body;

@@ -17,12 +17,12 @@
  */
 
 import Song, { SongInclude, SongRelations } from "./song";
-import Track from "./track";
+import { TrackWithRelations } from "./track";
 import * as yup from "yup";
 
 const Video = Song.concat(
 	yup.object({
-		track: Track.required(),
+		track: TrackWithRelations(["illustration"]).required(),
 	}),
 );
 

@@ -63,7 +63,10 @@ describe("Video Service", () => {
 			expect(videoSongs.length).toBe(1);
 			expect(videoSongs[0]).toStrictEqual({
 				...dummyRepository.songA1,
-				track: dummyRepository.trackA1_2Video,
+				track: {
+					...dummyRepository.trackA1_2Video,
+					illustration: null,
+				},
 			});
 		});
 		it("should return an empty list (pagination)", async () => {
@@ -80,7 +83,10 @@ describe("Video Service", () => {
 			expect(videoSongs[0]).toStrictEqual({
 				...dummyRepository.songA1,
 				artist: dummyRepository.artistA,
-				track: dummyRepository.trackA1_2Video,
+				track: {
+					...dummyRepository.trackA1_2Video,
+					illustration: null,
+				},
 			});
 		});
 	});

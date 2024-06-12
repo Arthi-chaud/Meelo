@@ -32,12 +32,12 @@ import {
 	IllustratedResponse,
 	IllustrationResponse,
 } from "src/illustration/models/illustration.response";
-import IllustrationRepository from "src/illustration/illustration.repository";
 import {
 	ReleaseResponse,
 	ReleaseResponseBuilder,
 } from "src/release/models/release.response";
 import ReleaseService from "src/release/release.service";
+import Logger from "src/logger/logger";
 
 export class AlbumResponse extends IntersectionType(
 	Album,
@@ -55,11 +55,10 @@ export class AlbumResponseBuilder extends ResponseBuilderInterceptor<
 	AlbumWithRelations,
 	AlbumResponse
 > {
+	private readonly logger = new Logger(AlbumResponseBuilder.name);
 	constructor(
 		@Inject(forwardRef(() => ArtistResponseBuilder))
 		private artistResponseBuilder: ArtistResponseBuilder,
-		@Inject(forwardRef(() => IllustrationRepository))
-		private illustrationRepository: IllustrationRepository,
 		@Inject(forwardRef(() => ExternalIdResponseBuilder))
 		private externalIdResponseBuilder: ExternalIdResponseBuilder,
 		@Inject(forwardRef(() => ReleaseResponseBuilder))
@@ -75,11 +74,9 @@ export class AlbumResponseBuilder extends ResponseBuilderInterceptor<
 	async buildResponse(album: AlbumWithRelations): Promise<AlbumResponse> {
 		const response = <AlbumResponse>{
 			...album,
-			illustration: await this.illustrationRepository
-				.getAlbumIllustration({
-					id: album.id,
-				})
-				.then((value) => value && IllustrationResponse.from(value)),
+			illustration: album.illustration
+				? IllustrationResponse.from(album.illustration)
+				: album.illustration,
 		};
 
 		if (album.artist != undefined) {
@@ -87,7 +84,13 @@ export class AlbumResponseBuilder extends ResponseBuilderInterceptor<
 				album.artist,
 			);
 		}
+		/// This should happen only during scans
 		if (album.master === null) {
+			this.logger.warn(
+				"The Master Release of an album had to be resolved manually. " +
+					"This should happen only during a scan or a clean. " +
+					"If it is not the case, this is a bug.",
+			);
 			album.master = await this.releaseService.getMasterRelease({
 				id: album.id,
 			});
