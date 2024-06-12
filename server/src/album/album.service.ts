@@ -46,6 +46,7 @@ import {
 	formatIdentifierToIdOrSlug,
 	formatPaginationParameters,
 	getRandomIds,
+	sortItemsUsingOrderedIdList,
 } from "src/repository/repository.utils";
 import { AlbumModel } from "./models/album.model";
 
@@ -218,9 +219,12 @@ export default class AlbumService extends SearchableRepositoryService {
 				sort,
 				pagination ?? {},
 			);
-			where = { ...where, id: { in: randomIds } };
-			pagination = undefined;
-			sort = undefined;
+			return this.getMany(
+				{ ...where, id: { in: randomIds } },
+				undefined,
+				undefined,
+				include,
+			).then((items) => sortItemsUsingOrderedIdList(randomIds, items));
 		}
 		const args = {
 			include: include ?? ({} as I),

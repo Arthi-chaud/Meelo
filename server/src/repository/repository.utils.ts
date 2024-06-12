@@ -40,6 +40,16 @@ export async function getRandomIds(
 	return ids.slice(pagination?.skip, pagination?.take);
 }
 
+export function sortItemsUsingOrderedIdList<T extends { id: number }>(
+	matches: number[],
+	items: T[],
+) {
+	return items
+		.map((item) => ({ item, index: matches.indexOf(item.id) }))
+		.sort((item1, item2) => item1.index - item2.index)
+		.map(({ item }) => item);
+}
+
 /**
  * Format an Identifier into a WhereInput
  * @param identifier the entity unique identifier

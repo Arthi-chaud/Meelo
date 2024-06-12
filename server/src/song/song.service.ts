@@ -51,6 +51,7 @@ import {
 	formatIdentifierToIdOrSlug,
 	formatPaginationParameters,
 	getRandomIds,
+	sortItemsUsingOrderedIdList,
 } from "src/repository/repository.utils";
 
 @Injectable()
@@ -241,9 +242,12 @@ export default class SongService extends SearchableRepositoryService {
 				sort,
 				pagination ?? {},
 			);
-			where = { ...where, id: { in: randomIds } };
-			pagination = undefined;
-			sort = undefined;
+			return this.getMany(
+				{ ...where, id: { in: randomIds } },
+				undefined,
+				undefined,
+				include,
+			).then((items) => sortItemsUsingOrderedIdList(randomIds, items));
 		}
 		const args = {
 			include: include ?? ({} as I),

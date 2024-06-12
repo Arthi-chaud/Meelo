@@ -18,6 +18,7 @@
 
 import MeiliSearch from "meilisearch";
 import { PaginationParameters } from "src/pagination/models/pagination-parameters";
+import { sortItemsUsingOrderedIdList } from "./repository.utils";
 
 /// Base functions for a Repository that integrates Meilisearch
 export default abstract class SearchableRepositoryService {
@@ -72,9 +73,6 @@ export default abstract class SearchableRepositoryService {
 		matches: number[],
 		items: T[],
 	) {
-		return items
-			.map((item) => ({ item, index: matches.indexOf(item.id) }))
-			.sort((item1, item2) => item1.index - item2.index)
-			.map(({ item }) => item);
+		return sortItemsUsingOrderedIdList(matches, items);
 	}
 }
