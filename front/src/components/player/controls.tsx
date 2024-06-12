@@ -279,6 +279,7 @@ const ExpandedPlayerControls = (
 					alignItems: "start",
 				}}
 			>
+				<Box />
 				<Box
 					sx={{
 						flexDirection: "row",
@@ -287,24 +288,24 @@ const ExpandedPlayerControls = (
 				>
 					{selectedTab !== "player" && props.track && props.artist ? (
 						<>
-							<Box sx={{ height: 60 }}>
-								<Illustration
-									illustration={props.track.illustration}
-									quality="low"
-								/>
-							</Box>
 							<Box
 								sx={{
 									display: "flex",
 									flexDirection: "column",
 									justifyContent: "center",
-									marginLeft: 2,
+									alignItems: "center",
 								}}
 							>
-								<Typography variant="h6">
+								<Typography
+									variant="h6"
+									sx={{ textAlign: "center" }}
+								>
 									{props.track.name ?? <Skeleton />}
 								</Typography>
-								<Typography variant="body1">
+								<Typography
+									variant="body1"
+									sx={{ textAlign: "center" }}
+								>
 									{props.artist.name ?? <Skeleton />}
 								</Typography>
 							</Box>
@@ -539,7 +540,16 @@ const ExpandedPlayerControls = (
 				</Grid>
 			)}
 			{selectedTab == "lyrics" && (
-				<Box sx={{ height: "100%", overflowY: "scroll", margin: 1 }}>
+				<Box
+					sx={{
+						height: "100%",
+						width: "100%",
+						overflowY: "scroll",
+						margin: 1,
+						alignSelf: "center",
+						maxWidth: theme.breakpoints.values.md,
+					}}
+				>
 					{parentSong.data && (
 						<LyricsBox
 							lyrics={
@@ -552,7 +562,15 @@ const ExpandedPlayerControls = (
 				</Box>
 			)}
 			{selectedTab == "playlist" && (
-				<Box sx={{ height: "100%", overflowY: "scroll" }}>
+				<Box
+					sx={{
+						height: "100%",
+						width: "100%",
+						overflowY: "scroll",
+						alignSelf: "center",
+						maxWidth: theme.breakpoints.values.md,
+					}}
+				>
 					<DragDropContext
 						onDragEnd={(result) => {
 							if (result.destination) {
