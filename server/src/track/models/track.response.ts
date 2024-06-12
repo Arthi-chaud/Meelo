@@ -37,6 +37,7 @@ export class TrackResponse extends IntersectionType(
 	Track,
 	IllustratedResponse,
 	class {
+		stream: string;
 		song?: SongResponse;
 		release?: ReleaseResponse;
 	},
@@ -59,24 +60,30 @@ export class TrackResponseBuilder extends ResponseBuilderInterceptor<
 	returnType = TrackResponse;
 
 	async buildResponse(track: TrackWithRelations): Promise<TrackResponse> {
-		const response = <TrackResponse>{
-			...track,
+		return {
+			id: track.id,
+			songId: track.songId,
+			releaseId: track.releaseId,
+			name: track.name,
+			discIndex: track.discIndex,
+			trackIndex: track.trackIndex,
+			type: track.type,
+			bitrate: track.bitrate,
+			ripSource: track.ripSource,
+			duration: track.duration,
+			isBonus: track.isBonus,
+			isRemastered: track.isRemastered,
+			sourceFileId: track.sourceFileId,
+			song: track.song
+				? await this.songResponseBuilder.buildResponse(track.song)
+				: track.song,
+			release: track.release
+				? await this.releaseResponseBuilder.buildResponse(track.release)
+				: track.release,
 			illustration: track.illustration
 				? IllustrationResponse.from(track.illustration)
 				: track.illustration,
 			stream: `/files/${track.sourceFileId}/stream`,
 		};
-
-		if (track.release !== undefined) {
-			response.release = await this.releaseResponseBuilder.buildResponse(
-				track.release,
-			);
-		}
-		if (track.song != undefined) {
-			response.song = await this.songResponseBuilder.buildResponse(
-				track.song,
-			);
-		}
-		return response;
 	}
 }

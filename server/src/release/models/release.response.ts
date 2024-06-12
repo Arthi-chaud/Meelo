@@ -60,25 +60,28 @@ export class ReleaseResponseBuilder extends ResponseBuilderInterceptor<
 	async buildResponse(
 		release: ReleaseWithRelations,
 	): Promise<ReleaseResponse> {
-		const response = <ReleaseResponse>{
-			...release,
+		return {
+			id: release.id,
+			name: release.name,
+			extensions: release.extensions,
+			slug: release.slug,
+			nameSlug: release.nameSlug,
+			releaseDate: release.releaseDate,
+			albumId: release.albumId,
+			registeredAt: release.registeredAt,
+			album: release.album
+				? await this.albumResponseBuilder.buildResponse(release.album)
+				: release.album,
 			illustration: release.illustration
 				? IllustrationResponse.from(release.illustration)
 				: release.illustration,
+			externalIds: release.externalIds
+				? await Promise.all(
+						release.externalIds.map((id) =>
+							this.externalIdResponseBuilder.buildResponse(id),
+						) ?? [],
+				  )
+				: release.externalIds,
 		};
-
-		if (release.album !== undefined) {
-			response.album = await this.albumResponseBuilder.buildResponse(
-				release.album,
-			);
-		}
-		if (release.externalIds !== undefined) {
-			response.externalIds = await Promise.all(
-				release.externalIds?.map((id) =>
-					this.externalIdResponseBuilder.buildResponse(id),
-				) ?? [],
-			);
-		}
-		return response;
 	}
 }
