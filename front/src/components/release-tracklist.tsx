@@ -31,7 +31,7 @@ import {
 	useTheme,
 } from "@mui/material";
 import Release from "../models/release";
-import Track, { TrackWithRelations } from "../models/track";
+import { TrackWithRelations } from "../models/track";
 import Tracklist from "../models/tracklist";
 import Artist from "../models/artist";
 import formatDuration from "../utils/formatDuration";

@@ -22,7 +22,7 @@ import {
 	AlbumType,
 	AlbumWithRelations,
 } from "../models/album";
-import Artist, {
+import {
 	ArtistInclude,
 	ArtistSortingKeys,
 	ArtistWithRelations,
