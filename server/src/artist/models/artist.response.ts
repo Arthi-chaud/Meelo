@@ -51,21 +51,22 @@ export class ArtistResponseBuilder extends ResponseBuilderInterceptor<
 	returnType = ArtistResponse;
 
 	async buildResponse(artist: ArtistWithRelations): Promise<ArtistResponse> {
-		const response = <ArtistResponse>{
-			...artist,
+		return {
+			id: artist.id,
+			name: artist.name,
+			slug: artist.slug,
+			registeredAt: artist.registeredAt,
+			illustrationId: artist.illustrationId,
 			illustration: artist.illustration
 				? IllustrationResponse.from(artist.illustration)
 				: artist.illustration,
+			externalIds: artist.externalIds
+				? await Promise.all(
+						artist.externalIds.map((id) =>
+							this.externalIdResponseBuilder.buildResponse(id),
+						),
+				  )
+				: artist.externalIds,
 		};
-
-		if (artist.externalIds !== undefined) {
-			response.externalIds = await Promise.all(
-				artist.externalIds?.map((id) =>
-					this.externalIdResponseBuilder.buildResponse(id),
-				) ?? [],
-			);
-		}
-
-		return response;
 	}
 }

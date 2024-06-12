@@ -34,7 +34,9 @@ const prepareSSR = (context: NextPageContext) => {
 
 	return {
 		additionalProps: { defaultLayout, order, sortBy },
-		infiniteQueries: [API.getPlaylists({}, { sortBy, order })],
+		infiniteQueries: [
+			API.getPlaylists({}, { sortBy, order }, ["illustration"]),
+		],
 	};
 };
 
@@ -46,7 +48,9 @@ const PlaylistsPage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({
 			initialSortingField={props?.sortBy}
 			initialSortingOrder={props?.order}
 			defaultLayout={props?.defaultLayout}
-			query={({ view, library, ...sort }) => API.getPlaylists({}, sort)}
+			query={({ view, library, ...sort }) =>
+				API.getPlaylists({}, sort, ["illustration"])
+			}
 		/>
 	);
 };

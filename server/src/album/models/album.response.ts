@@ -72,18 +72,6 @@ export class AlbumResponseBuilder extends ResponseBuilderInterceptor<
 	returnType = AlbumResponse;
 
 	async buildResponse(album: AlbumWithRelations): Promise<AlbumResponse> {
-		const response = <AlbumResponse>{
-			...album,
-			illustration: album.illustration
-				? IllustrationResponse.from(album.illustration)
-				: album.illustration,
-		};
-
-		if (album.artist != undefined) {
-			response.artist = await this.artistResponseBuilder.buildResponse(
-				album.artist,
-			);
-		}
 		/// This should happen only during scans
 		if (album.master === null) {
 			this.logger.warn(
@@ -95,18 +83,33 @@ export class AlbumResponseBuilder extends ResponseBuilderInterceptor<
 				id: album.id,
 			});
 		}
-		if (album.master !== undefined) {
-			response.master = await this.releaseResponseBuilder.buildResponse(
-				album.master,
-			);
-		}
-		if (album.externalIds !== undefined) {
-			response.externalIds = (await Promise.all(
-				album.externalIds?.map((id) =>
-					this.externalIdResponseBuilder.buildResponse(id),
-				) ?? [],
-			)) as AlbumExternalIdResponse[];
-		}
-		return response;
+		return {
+			id: album.id,
+			name: album.name,
+			slug: album.slug,
+			nameSlug: album.nameSlug,
+			releaseDate: album.releaseDate,
+			registeredAt: album.registeredAt,
+			masterId: album.masterId,
+			type: album.type,
+			artistId: album.artistId,
+			genres: album.genres,
+			illustration: album.illustration
+				? IllustrationResponse.from(album.illustration)
+				: album.illustration,
+			artist: album.artist
+				? await this.artistResponseBuilder.buildResponse(album.artist)
+				: album.artist,
+			externalIds: album.externalIds
+				? ((await Promise.all(
+						album.externalIds.map((id) =>
+							this.externalIdResponseBuilder.buildResponse(id),
+						),
+				  )) as AlbumExternalIdResponse[])
+				: album.externalIds,
+			master: album.master
+				? await this.releaseResponseBuilder.buildResponse(album.master)
+				: album.master,
+		};
 	}
 }

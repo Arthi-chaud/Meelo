@@ -43,5 +43,5 @@ export class IllustratedResponse {
 		nullable: true,
 		description: "Use 'with' query parameter to include this field",
 	})
-	illustration: IllustrationResponse | null;
+	illustration?: IllustrationResponse | null;
 }

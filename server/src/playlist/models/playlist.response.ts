@@ -85,12 +85,15 @@ export class PlaylistResponseBuilder extends ResponseBuilderInterceptor<
 	async buildResponse(
 		playlist: PlaylistWithRelations,
 	): Promise<PlaylistResponse> {
-		const response = <PlaylistResponse>{
-			...playlist,
+		return {
+			id: playlist.id,
+			name: playlist.name,
+			slug: playlist.slug,
+			createdAt: playlist.createdAt,
+			illustrationId: playlist.illustrationId,
 			illustration: playlist.illustration
 				? IllustrationResponse.from(playlist.illustration)
 				: playlist.illustration,
 		};
-		return response;
 	}
 }
