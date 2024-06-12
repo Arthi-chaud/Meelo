@@ -631,7 +631,7 @@ export default class SongService extends SearchableRepositoryService {
 												OR: [
 													...albumSongsBaseNames.map(
 														(slug) => ({
-															slug: {
+															nameSlug: {
 																startsWith:
 																	slug,
 															},
