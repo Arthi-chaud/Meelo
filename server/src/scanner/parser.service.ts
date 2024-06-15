@@ -129,22 +129,38 @@ export default class ParserService {
 			const root = tokenString.slice(0, offset).trim(); // Anything before the group
 			const [gstart, strippedGroup, gend] =
 				this.stripGroupDelimiters(group);
-			// We call recursively to handle nested groups
 			const subGroups = this.splitGroups(strippedGroup, {
-				keepDelimiters: opt?.keepDelimiters,
+				keepDelimiters: true,
+				removeRoot: false,
 			});
-
 			if (root.length && !opt?.removeRoot) {
 				// A (B)
 				tokens.push(root);
 			}
+			// for each nested dashed group
+			// merge with previous one
+			for (let i = 1; i < subGroups.length; i++) {
+				if (subGroups[i].startsWith("- ")) {
+					subGroups[i - 1] = [subGroups[i - 1], subGroups[i]].join(
+						" ",
+					);
+					subGroups.splice(i, 1);
+					i = i - 1;
+				}
+			}
 			if (opt?.keepDelimiters) {
-				// We do this because dashed groups will have trailing groups in `strippedGroup`
 				const first = subGroups.at(0);
 
 				tokens.push(gstart + first + gend, ...subGroups.slice(1));
 			} else {
-				tokens.push(...subGroups);
+				tokens.push(
+					...subGroups.map((g) => {
+						if (g.startsWith("- ")) {
+							g = " " + g;
+						}
+						return this.stripGroupDelimiters(g)[1];
+					}),
+				);
 			}
 			tokenString = tokenString.slice(offset + group.length);
 		});
