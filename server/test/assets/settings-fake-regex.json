@@ -1,5 +1,4 @@
 {
-	"dataFolder": "/var/lib/meelo",
 	"trackRegex": [
 		"regex1",
 		"regex2"

@@ -20,10 +20,14 @@ services:
       - ./server/tsconfig.json:/app/tsconfig.json
       - ./server/tsconfig.build.json:/app/tsconfig.build.json
       - ./server/yarn.lock:/app/yarn.lock
-      - ./data:/data
-      - ./data/config:/meelo
+      - ${DATA_DIR}:${INTERNAL_DATA_DIR}
+      - ${CONFIG_DIR}:${INTERNAL_CONFIG_DIR}
     env_file:
       - .env
+    environment:
+      - MEILI_HOST=http://meilisearch:7700
+      - REDIS_HOST=redis
+      - DATABASE_URL=postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@${POSTGRES_HOST}:5432/${POSTGRES_DB}?schema=public
   front:
     build:
       context: ./front

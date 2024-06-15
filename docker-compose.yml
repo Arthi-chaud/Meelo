@@ -12,10 +12,14 @@ services:
       meilisearch:
         condition: service_healthy
     volumes:
-      - config:/meelo
-      - data:/data
+      - ${DATA_DIR}:${INTERNAL_DATA_DIR}
+      - ${CONFIG_DIR}:${INTERNAL_CONFIG_DIR}
     env_file:
       - .env
+    environment:
+      - MEILI_HOST=http://meilisearch:7700
+      - REDIS_HOST=redis
+      - DATABASE_URL=postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@${POSTGRES_HOST}:5432/${POSTGRES_DB}?schema=public
     healthcheck:
       test: ["CMD-SHELL", "wget -qO- localhost:4000"]
       interval: 5s
