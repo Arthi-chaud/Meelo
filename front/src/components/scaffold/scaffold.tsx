@@ -111,6 +111,7 @@ const Drawer = ({
 	const persistentDrawerProps = {
 		open: true,
 		variant: "permanent",
+		style: { zIndex: 1 },
 		sx: {
 			display: {
 				xs: "none",
