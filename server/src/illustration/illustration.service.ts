@@ -130,6 +130,26 @@ export default class IllustrationService {
 		}
 	}
 
+	async resizeImageTo(
+		sourcePath: string,
+		outputPath: string,
+		quality: ImageQuality,
+	) {
+		const image = await Jimp.read(sourcePath);
+		switch (quality) {
+			case "low":
+				image.resize(100, Jimp.AUTO);
+				break;
+			case "medium":
+				image.resize(300, Jimp.AUTO);
+				break;
+			case "high":
+				image.resize(500, Jimp.AUTO);
+				break;
+		}
+		await image.writeAsync(outputPath);
+	}
+
 	/**
 	 *
 	 * @param sourceFilePath the file path to the illustration to stream
@@ -159,19 +179,7 @@ export default class IllustrationService {
 				dir.parse(sourceFilePath).name + "-" + quality + ext,
 			);
 			if (!this.fileManagerService.fileExists(pathOfFile)) {
-				const image = await Jimp.read(sourceFilePath);
-				switch (quality) {
-					case "low":
-						image.resize(100, Jimp.AUTO);
-						break;
-					case "medium":
-						image.resize(300, Jimp.AUTO);
-						break;
-					case "high":
-						image.resize(500, Jimp.AUTO);
-						break;
-				}
-				await image.writeAsync(pathOfFile);
+				await this.resizeImageTo(sourceFilePath, pathOfFile, quality);
 			}
 			return new StreamableFile(fs.createReadStream(pathOfFile), {
 				type: mime.getType(pathOfFile)?.toString(),
@@ -220,12 +228,9 @@ export default class IllustrationService {
 
 		return Promise.all([
 			new Promise<string>((resolve) => {
-				const array = new Uint8ClampedArray(image.bitmap.data.length);
-
-				image.bitmap.data.map((char, index) => (array[index] = char));
 				resolve(
 					Blurhash.encode(
-						array,
+						Uint8ClampedArray.from(image.bitmap.data),
 						image.getWidth(),
 						image.getHeight(),
 						// Represent the max number of colors on each axis
@@ -237,7 +242,7 @@ export default class IllustrationService {
 			getColors(buffer, { type: image.getMIME() }).then((colors) =>
 				colors.map((color) => color.hex()),
 			),
-			(async () => image.getWidth() / image.getHeight())(),
+			image.getWidth() / image.getHeight(),
 		]).then(([blurhash, colors, aspectRatio]) => ({
 			blurhash,
 			colors,
