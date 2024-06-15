@@ -59,9 +59,8 @@ const HighlightCard = (props: HighlightCardProps) => {
 		transform: "scale(1)",
 		transition: "transform 0.2s",
 		":hover": {
-			transform: "scale(1.05)",
-			scale: 10,
-			boxShadow: 6,
+			transform: "scale(1.03)",
+			boxShadow: 5,
 		},
 	} as const;
 
