@@ -1,3 +1,20 @@
+x-transcoder: &transcoder-base
+  image: ghcr.io/zoriya/kyoo_transcoder:4.5.0
+  networks:
+    default:
+      aliases:
+        - transcoder
+  ports:
+    - "7666:7666"
+  restart: on-failure
+  cpus: 1
+  env_file:
+    - .env
+  environment:
+    - GOCODER_PREFIX=${INTERNAL_DATA_DIR}
+  volumes:
+    - ${DATA_DIR}:${INTERNAL_DATA_DIR}:ro
+    - transcoder_cache:/cache
 services:
   server:
     build:
@@ -25,6 +42,7 @@ services:
     env_file:
       - .env
     environment:
+      - TRANSCODER_URL=http://transcoder:7666
       - MEILI_HOST=http://meilisearch:7700
       - REDIS_HOST=redis
       - DATABASE_URL=postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@${POSTGRES_HOST}:5432/${POSTGRES_DB}?schema=public
@@ -67,6 +85,9 @@ services:
     #   interval: 10s
     #   timeout: 5s
     #   retries: 5
+  transcoder:
+    <<: *transcoder-base
+    profiles: ['', 'cpu']
   db:
     image: postgres:alpine3.16
     healthcheck:
@@ -79,3 +100,4 @@ services:
 
 volumes:
   search:
+  transcoder_cache:

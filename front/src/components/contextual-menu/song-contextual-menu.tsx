@@ -103,7 +103,10 @@ const SongContextualMenu = (props: SongContextualMenuProps) => {
 				[
 					DownloadAsyncAction(
 						confirm,
-						() => getMasterTrack().then((master) => master.stream),
+						() =>
+							getMasterTrack().then(
+								({ sourceFileId }) => sourceFileId,
+							),
 						t,
 					),
 					ShareSongAction(songSlug, t),

@@ -133,7 +133,9 @@ const Player = () => {
 			document.title = `${currentTrack.track.name} - ${DefaultWindowTitle}`;
 			const newIllustrationURL = currentTrack.track.illustration?.url;
 
-			const streamURL = API.getStreamURL(currentTrack.track.stream);
+			const streamURL = API.getDirectStreamURL(
+				currentTrack.track.sourceFileId,
+			);
 
 			if (currentTrack.track.type == "Audio") {
 				player.current = audioPlayer.current ?? undefined;

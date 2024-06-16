@@ -64,10 +64,6 @@ const Track = Resource.concat(
 		 */
 		duration: yup.number().required().nullable(),
 		/**
-		 * URL to stream track
-		 */
-		stream: yup.string().required(),
-		/**
 		 * ID of the source file
 		 */
 		sourceFileId: yup.number().required(),

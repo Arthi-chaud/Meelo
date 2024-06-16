@@ -76,7 +76,7 @@ const ReleaseTrackContextualMenu = (props: ReleaseTrackContextualMenuProps) => {
 				],
 				[ShowTrackFileInfoAction(confirm, props.track.id)],
 				[
-					DownloadAction(confirm, props.track.stream, t),
+					DownloadAction(confirm, props.track.sourceFileId, t),
 					ShareSongAction(songSlug, t),
 				],
 			]}

@@ -1212,13 +1212,8 @@ export default class API {
 		return `${process.env.PUBLIC_SERVER_URL ?? "/api"}${imageURL}`;
 	}
 
-	/**
-	 * Builds the URL to get a track file from an object returned by the API
-	 * @param streamURL
-	 * @returns the correct, rerouted URL
-	 */
-	static getStreamURL(streamURL: string): string {
-		return this.buildURL(streamURL, {});
+	static getDirectStreamURL(fileId: number): string {
+		return this.buildURL(`/stream/${fileId}`, {});
 	}
 
 	/**

@@ -96,7 +96,7 @@ const TrackContextualMenu = (props: TrackContextualMenuProps) => {
 					RefreshTrackMetadataAction(props.track.id, t),
 				],
 				[ShowTrackFileInfoAction(confirm, props.track.id)],
-				[DownloadAction(confirm, props.track.stream, t)],
+				[DownloadAction(confirm, props.track.sourceFileId, t)],
 			]}
 		/>
 	);

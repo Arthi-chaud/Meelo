@@ -25,25 +25,25 @@ import { Translator } from "../../i18n/i18n";
 
 export const DownloadAction = (
 	confirm: ReturnType<typeof useConfirm>,
-	streamURL: string,
+	sourceFileId: number,
 	t: Translator,
 ): Action => ({
 	icon: <DownloadIcon />,
 	label: "download",
 	onClick: () =>
-		confirmDownloadAction(confirm, API.getStreamURL(streamURL), t),
+		confirmDownloadAction(confirm, API.getDirectStreamURL(sourceFileId), t),
 });
 
 export const DownloadAsyncAction = (
 	confirm: ReturnType<typeof useConfirm>,
-	streamURL: () => PromiseLike<string>,
+	sourceFileId: () => PromiseLike<number>,
 	t: Translator,
 ): Action => ({
 	icon: <DownloadIcon />,
 	label: "download",
 	onClick: () =>
-		streamURL().then((url) =>
-			confirmDownloadAction(confirm, API.getStreamURL(url), t),
+		sourceFileId().then((id) =>
+			confirmDownloadAction(confirm, API.getDirectStreamURL(id), t),
 		),
 });
 

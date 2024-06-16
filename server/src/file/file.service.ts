@@ -16,32 +16,21 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import {
-	HttpStatus,
-	Inject,
-	Injectable,
-	StreamableFile,
-	forwardRef,
-} from "@nestjs/common";
+import { Inject, Injectable, forwardRef } from "@nestjs/common";
 import FileManagerService from "../file-manager/file-manager.service";
 import {
 	FileAlreadyExistsException,
 	FileNotFoundException,
 	FileNotFoundFromTrackIDException,
-	SourceFileNotFoundExceptions,
 } from "./file.exceptions";
 import PrismaService from "src/prisma/prisma.service";
 import type { File, Library } from "src/prisma/models";
 import type FileQueryParameters from "./models/file.query-parameters";
 import { FileNotReadableException } from "src/file-manager/file-manager.exceptions";
 // eslint-disable-next-line no-restricted-imports
-import * as fs from "fs";
-import path from "path";
 import { buildDateSearchParameters } from "src/utils/search-date-input";
 import LibraryService from "src/library/library.service";
-import mime from "mime";
 import { Prisma } from "@prisma/client";
-import Slug from "src/slug/slug";
 import Identifier from "src/identifier/models/identifier";
 import { PrismaError } from "prisma-error-enum";
 import deepmerge from "deepmerge";
@@ -224,57 +213,5 @@ export default class FileService {
 			.catch((error) => {
 				throw this.onNotFound(error, where);
 			});
-	}
-
-	/**
-	 * @param res the Response Object of the request
-	 * @returns a StreamableFile of the file
-	 */
-	async streamFile(
-		where: FileQueryParameters.WhereInput,
-		res: any,
-		req: any,
-	): Promise<StreamableFile> {
-		const file = await this.get(where);
-		const fullFilePath = await this.buildFullPath(where);
-		const fileExtension = path.parse(fullFilePath).ext;
-		const sanitizedFileName = new Slug(
-			path.parse(file.path).name,
-		).toString();
-
-		if (this.fileManagerService.fileExists(fullFilePath) == false) {
-			throw new SourceFileNotFoundExceptions(file.path);
-		}
-		res.set({
-			"Content-Disposition": `attachment; filename="${sanitizedFileName}${fileExtension}"`,
-			"Content-Type":
-				mime.getType(fullFilePath) ?? "application/octet-stream",
-		});
-		const rangeHeader = req.headers["range"] ?? req.headers["Range"];
-		let requestedStartByte: number | undefined = undefined;
-		let requestedEndByte: number | undefined = undefined;
-
-		if (rangeHeader) {
-			res.status(HttpStatus.PARTIAL_CONTENT);
-			// eslint-disable-next-line no-useless-escape
-			const bytes = /^bytes\=(\d+)\-(\d+)?$/g.exec(rangeHeader);
-
-			if (bytes) {
-				const fileSize = fs.statSync(fullFilePath).size;
-
-				requestedStartByte = Number(bytes[1]);
-				requestedEndByte = Number(bytes[2]) || fileSize - 1;
-				res.set({
-					"Content-Range": `bytes ${requestedStartByte}-${requestedEndByte}/${fileSize}`,
-				});
-			}
-		}
-
-		return new StreamableFile(
-			fs.createReadStream(fullFilePath, {
-				start: requestedStartByte,
-				end: requestedEndByte,
-			}),
-		);
 	}
 }
