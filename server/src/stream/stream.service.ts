@@ -26,31 +26,103 @@ import path from "path";
 import mime from "mime";
 import { SourceFileNotFoundException } from "src/file/file.exceptions";
 import Slug from "src/slug/slug";
+import Logger from "src/logger/logger";
+import { HttpService } from "@nestjs/axios";
+import { createProxyMiddleware } from "http-proxy-middleware";
+import { MeeloException } from "src/exceptions/meelo-exception";
 
 @Injectable()
 export class StreamService {
+	private transcoderUrl: string | null;
+	private logger: Logger = new Logger(StreamService.name);
 	constructor(
 		private fileService: FileService,
 		private fileManagerService: FileManagerService,
-	) {}
-	/**
-	 * @param res the Response Object of the request
-	 * @returns a StreamableFile of the file
-	 */
+		private httpService: HttpService,
+	) {
+		const transcoderUrl = process.env.TRANSCODER_URL ?? null;
+		if (transcoderUrl) {
+			this.httpService.axiosRef
+				.get(transcoderUrl, { validateStatus: (s) => s < 500 })
+				.then(() => {
+					// there is no healthcheck route atm
+					// knowing that it responded is OK
+					this.logger.log("Transcoder found!");
+					this.transcoderUrl = transcoderUrl;
+				})
+				.catch((err) => {
+					this.logger.warn(
+						"Failed to connect to transcoder. Transcoding is disabled.",
+					);
+					this.logger.error(err);
+					this.transcoderUrl = null;
+				});
+		}
+	}
+
+	// Proxies all requests to transcoder
+	async transcodeFile(
+		where: FileQueryParameters.WhereInput,
+		route: string,
+		res: any,
+		req: any,
+	): Promise<StreamableFile | void> {
+		if (!this.transcoderUrl) {
+			throw new MeeloException(
+				HttpStatus.SERVICE_UNAVAILABLE,
+				"Transcoder not plugged in",
+			);
+		}
+		const fullFilePath = await this.fileService.buildFullPath(where);
+		const proxy = createProxyMiddleware({
+			router: () =>
+				`${this.transcoderUrl}/${Buffer.from(fullFilePath).toString(
+					"base64",
+				)}/${route}`,
+			ignorePath: true,
+		});
+		await proxy(req, res);
+		return;
+	}
+
 	async streamFile(
 		where: FileQueryParameters.WhereInput,
 		res: any,
 		req: any,
-	): Promise<StreamableFile> {
-		const file = await this.fileService.get(where);
+	): Promise<StreamableFile | void> {
 		const fullFilePath = await this.fileService.buildFullPath(where);
+		if (this.transcoderUrl) {
+			const proxy = createProxyMiddleware({
+				router: () =>
+					`${this.transcoderUrl}/${Buffer.from(fullFilePath).toString(
+						"base64",
+					)}/direct`,
+				ignorePath: true,
+			});
+			await proxy(req, res);
+			return;
+		}
+		return this._directStreamFile(fullFilePath, res, req);
+	}
+
+	/**
+	 * @param res the Response Object of the request
+	 * @returns a StreamableFile of the file
+	 */
+	async _directStreamFile(
+		fullFilePath: string,
+		res: any,
+		req: any,
+	): Promise<StreamableFile> {
 		const fileExtension = path.parse(fullFilePath).ext;
 		const sanitizedFileName = new Slug(
-			path.parse(file.path).name,
+			path.parse(fullFilePath).name,
 		).toString();
 
 		if (this.fileManagerService.fileExists(fullFilePath) == false) {
-			throw new SourceFileNotFoundException(file.path);
+			throw new SourceFileNotFoundException(
+				path.parse(fullFilePath).name,
+			);
 		}
 		res.set({
 			"Content-Disposition": `attachment; filename="${sanitizedFileName}${fileExtension}"`,

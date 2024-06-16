@@ -35,6 +35,8 @@ import { DrawerBreakpoint } from "../scaffold/scaffold";
 import { useTranslation } from "react-i18next";
 import { useReadLocalStorage } from "usehooks-ts";
 import { usePlayerContext } from "../../contexts/player";
+import Hls from "hls.js";
+import { v4 as uuidv4 } from "uuid";
 
 const Player = () => {
 	const { t } = useTranslation();
@@ -49,8 +51,18 @@ const Player = () => {
 	const audioPlayer = useRef<HTMLAudioElement>(
 		typeof Audio !== "undefined" ? new Audio() : null,
 	);
+	const [useTranscoding, setUseTranscoding] = useState(false);
+	const hls = useRef(
+		new Hls({
+			xhrSetup: (xhr) => {
+				xhr.withCredentials = true;
+				xhr.setRequestHeader("X-CLIENT-ID", uuidv4());
+			},
+		}),
+	);
 	const videoPlayer = useRef<HTMLVideoElement>();
 	const progress = useRef<number | null>(null);
+	const [duration, setDuration] = useState<number | undefined>(undefined);
 	const [playing, setPlaying] = useState<boolean>();
 	const playerComponentRef = useRef<HTMLDivElement>(null);
 	const [expanded, setExpanded] = useState(false);
@@ -95,6 +107,71 @@ const Player = () => {
 		playPreviousTrack();
 	};
 
+	const startPlayback = () => {
+		player
+			.current!.play()
+			.then(() => {
+				setPlaying(true);
+				setDuration(
+					currentTrack?.track.duration ??
+						player.current?.duration ??
+						hls.current?.media?.duration,
+				);
+				player.current!.ontimeupdate = () => {
+					progress.current = player.current!.currentTime;
+				};
+				player.current!.onended = () => {
+					API.setSongAsPlayed(currentTrack.track.songId);
+					progress.current = null;
+					skipTrack();
+				};
+				player.current!.onpause = () => {
+					if (player.current!.ended == false) {
+						setPlaying(false);
+					}
+				};
+				player.current!.onplay = () => {
+					setPlaying(true);
+				};
+				player.current!.onplaying = () => {
+					setPlaying(true);
+				};
+			})
+			.catch((err) => {
+				// Source: https://webidl.spec.whatwg.org/#notsupportederror
+				// Sometimes, an error can be caused by a track change while the `play` promise is being resolved
+				// But this does not seem to cause any malfunction
+				// That's why we do that filtering
+				const errcode = err["code"];
+
+				if (!errcode) {
+					return;
+				}
+				switch (errcode) {
+					case 9: // Format error
+						if (useTranscoding) {
+							toast.error(t("playbackError"), {
+								id: "playbackError",
+							});
+							skipTrack();
+						} else {
+							setUseTranscoding(true);
+						}
+						// eslint-disable-next-line no-console
+						console.error(err);
+						break;
+					case 19: // Network error
+						setPlaying(false);
+						toast.error(t("networkError"), {
+							id: "networkError",
+						});
+						break;
+					default:
+						break;
+				}
+			});
+	};
+
 	useEffect(() => {
 		const onFocus = () => setWindowFocused(true);
 		const onBlur = () => setWindowFocused(false);
@@ -107,6 +184,31 @@ const Player = () => {
 		};
 	}, []);
 	useEffect(() => {
+		if (useTranscoding && currentTrack) {
+			if (!Hls.isSupported()) {
+				setUseTranscoding(false);
+				hls.current!.detachMedia();
+				return;
+			}
+			if (!player.current) {
+				return;
+			}
+			const streamURL = API.getTranscodeStreamURL(
+				currentTrack.track.sourceFileId,
+				currentTrack.track.type,
+			);
+			hls.current!.loadSource(streamURL);
+			hls.current!.attachMedia(player.current);
+			hls.current!.on(Hls.Events.ERROR, (err, data) => {
+				// eslint-disable-next-line no-console
+				console.error(err, data);
+			});
+			hls.current!.on(Hls.Events.MEDIA_ATTACHED, function () {
+				startPlayback();
+			});
+		}
+	}, [useTranscoding]);
+	useEffect(() => {
 		if (!userIsAuthentified) {
 			pause();
 			playTracks({ tracks: [] });
@@ -116,6 +218,9 @@ const Player = () => {
 	useEffect(() => {
 		if (player.current) {
 			player.current.onpause = null;
+		}
+		if (hls.current) {
+			hls.current.detachMedia();
 		}
 		player.current?.pause();
 		progress.current = null;
@@ -129,73 +234,21 @@ const Player = () => {
 		if (currentTrack) {
 			progress.current = 0;
 			notification?.close();
+			setUseTranscoding(false);
 			setPlaying(true);
+			setDuration(currentTrack.track.duration ?? undefined);
 			document.title = `${currentTrack.track.name} - ${DefaultWindowTitle}`;
 			const newIllustrationURL = currentTrack.track.illustration?.url;
-
-			const streamURL = API.getDirectStreamURL(
-				currentTrack.track.sourceFileId,
-			);
 
 			if (currentTrack.track.type == "Audio") {
 				player.current = audioPlayer.current ?? undefined;
 			} else {
 				player.current = videoPlayer.current;
 			}
-			player.current!.src = streamURL;
-			player
-				.current!.play()
-				.then(() => {
-					player.current!.ontimeupdate = () => {
-						progress.current = player.current!.currentTime;
-					};
-					player.current!.onended = () => {
-						API.setSongAsPlayed(currentTrack.track.songId);
-						progress.current = null;
-						skipTrack();
-					};
-					player.current!.onpause = () => {
-						if (player.current!.ended == false) {
-							setPlaying(false);
-						}
-					};
-					player.current!.onplay = () => {
-						setPlaying(true);
-					};
-					player.current!.onplaying = () => {
-						setPlaying(true);
-					};
-				})
-				.catch((err) => {
-					// Source: https://webidl.spec.whatwg.org/#notsupportederror
-					// Sometimes, an error can be caused by a track change while the `play` promise is being resolved
-					// But this does not seem to cause any malfunction
-					// That's why we do that filtering
-					const errcode = err["code"];
-
-					if (!errcode) {
-						return;
-					}
-					switch (errcode) {
-						case 9: // Format error
-							setPlaying(false);
-							toast.error(t("playbackError"), {
-								id: "playbackError",
-							});
-							// eslint-disable-next-line no-console
-							console.error(err);
-							skipTrack();
-							break;
-						case 19: // Network error
-							setPlaying(false);
-							toast.error(t("networkError"), {
-								id: "networkError",
-							});
-							break;
-						default:
-							break;
-					}
-				});
+			player.current!.src = API.getDirectStreamURL(
+				currentTrack.track.sourceFileId,
+			);
+			startPlayback();
 			if (typeof navigator.mediaSession !== "undefined") {
 				navigator.mediaSession.metadata = new MediaMetadata({
 					title: currentTrack.track.name,
@@ -232,23 +285,14 @@ const Player = () => {
 		} else {
 			document.title = DefaultWindowTitle;
 			if (player.current) {
+				hls.current?.detachMedia();
 				player.current.src = "";
 			}
+			setDuration(undefined);
 			setPlaying(false);
 		}
 		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [currentTrack]);
-	useEffect(() => {
-		// To avoid background scoll
-		if (expanded) {
-			document.body.style.overflow = "hidden";
-		} else {
-			document.body.style.overflow = "unset";
-		}
-		return () => {
-			document.body.style.overflow = "unset";
-		};
-	}, [expanded]);
 	const playerBgColor = useMemo(() => {
 		const themePaperColor = `rgba(${theme.vars.palette.background.defaultChannel} / 0.75)`;
 		const artworkColor = currentTrack?.track.illustration?.colors.at(0);
@@ -267,8 +311,9 @@ const Player = () => {
 		playing: playing ?? false,
 		onPause: pause,
 		onPlay: play,
+		isTranscoding: useTranscoding,
 		onExpand: (expand: boolean) => setExpanded(expand),
-		duration: currentTrack?.track.duration ?? undefined,
+		duration: duration,
 		progress: progress,
 		onSkipTrack: onSkipTrack,
 		onRewind: onRewind,

@@ -20,9 +20,10 @@ import { Module } from "@nestjs/common";
 import { StreamService } from "./stream.service";
 import { StreamController } from "./stream.controller";
 import FileModule from "src/file/file.module";
+import { HttpModule } from "@nestjs/axios";
 
 @Module({
-	imports: [FileModule],
+	imports: [FileModule, HttpModule],
 	providers: [StreamService],
 	controllers: [StreamController],
 })

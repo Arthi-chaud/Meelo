@@ -46,6 +46,7 @@ import { VideoWithRelations } from "../models/video";
 import Track, {
 	TrackInclude,
 	TrackSortingKeys,
+	TrackType,
 	TrackWithRelations,
 } from "../models/track";
 import { TracklistItemWithRelations } from "../models/tracklist";
@@ -1213,7 +1214,13 @@ export default class API {
 	}
 
 	static getDirectStreamURL(fileId: number): string {
-		return this.buildURL(`/stream/${fileId}`, {});
+		return this.buildURL(`/stream/${fileId}/direct`, {});
+	}
+	static getTranscodeStreamURL(fileId: number, type: TrackType): string {
+		if (type == "Video") {
+			return this.buildURL(`/stream/${fileId}/master.m3u8`, {});
+		}
+		return this.buildURL(`/stream/${fileId}/audio/0/index.m3u8`, {});
 	}
 
 	/**

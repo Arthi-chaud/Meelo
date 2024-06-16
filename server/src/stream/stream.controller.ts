@@ -16,7 +16,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { Controller, Get, Req, Response } from "@nestjs/common";
+import { Controller, Get, Param, Req, Res, Response } from "@nestjs/common";
 import { ApiOperation } from "@nestjs/swagger";
 import FileService from "src/file/file.service";
 import FileQueryParameters from "src/file/models/file.query-parameters";
@@ -26,16 +26,32 @@ import { StreamService } from "./stream.service";
 @Controller("stream")
 export class StreamController {
 	constructor(private streamService: StreamService) {}
+
+
 	@ApiOperation({
-		summary: "Get one File's content",
+		summary: "Stream File",
 	})
-	@Get(":idOrSlug")
+	@Get(":idOrSlug/direct")
 	async streamFile(
 		@IdentifierParam(FileService)
 		where: FileQueryParameters.WhereInput,
-		@Response({ passthrough: true }) res: Response,
+		@Res() res: Response,
 		@Req() req: Express.Request,
 	) {
 		return this.streamService.streamFile(where, res, req);
+	}
+
+	@ApiOperation({
+		summary: "Transcode File",
+	})
+	@Get(":idOrSlug/:path(*)")
+	async transcodeFile(
+		@IdentifierParam(FileService)
+		where: FileQueryParameters.WhereInput,
+		@Param("path") path: string,
+		@Res() res: Response,
+		@Req() req: Express.Request,
+	) {
+		return this.streamService.transcodeFile(where, path, res, req);
 	}
 }
