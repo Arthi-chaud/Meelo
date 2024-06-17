@@ -27,7 +27,6 @@ import { StreamService } from "./stream.service";
 export class StreamController {
 	constructor(private streamService: StreamService) {}
 
-
 	@ApiOperation({
 		summary: "Stream File",
 	})

@@ -16,7 +16,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { HttpStatus, Injectable, StreamableFile } from "@nestjs/common";
+import { HttpStatus, Injectable } from "@nestjs/common";
 import FileManagerService from "src/file-manager/file-manager.service";
 import FileService from "src/file/file.service";
 import FileQueryParameters from "src/file/models/file.query-parameters";
@@ -92,7 +92,7 @@ export class StreamService {
 	): Promise<void> {
 		const fullFilePath = await this.fileService.buildFullPath(where);
 		if (this.transcoderUrl) {
-			return this.callTranscoder(where, 'direct', res, req);
+			return this.callTranscoder(where, "direct", res, req);
 		}
 		return this._directStreamFile(fullFilePath, res, req);
 	}
@@ -145,7 +145,7 @@ export class StreamService {
 				end: requestedEndByte,
 			}).pipe(res);
 		} catch (err) {
-			console.error(err)
+			this.logger.error(err);
 		}
 	}
 }
