@@ -60,7 +60,7 @@ describe("Settings Service", () => {
 			);
 			settingsService.loadFromFile();
 			expect(settingsService.settingsValues).toMatchObject({
-				dataFolder: "/var/lib/meelo",
+				dataFolder: "test/assets/",
 				meeloFolder: "test/assets/",
 				trackRegex: ["regex1", "regex2"],
 				metadata: {
@@ -95,13 +95,6 @@ describe("Settings Service", () => {
 		it("should throw because the file is missing the regex field", async () => {
 			expectExceptionWhenParsing(
 				"settings-missing-regex.json",
-				MissingSettingsException,
-			);
-		});
-
-		it("should throw because the file is missing the base data folder field", async () => {
-			expectExceptionWhenParsing(
-				"settings-missing-data-folder.json",
 				MissingSettingsException,
 			);
 		});

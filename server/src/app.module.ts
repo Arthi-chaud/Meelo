@@ -44,6 +44,7 @@ import { BullModule } from "@nestjs/bull";
 import VideoModule from "./video/video.module";
 import PlaylistModule from "./playlist/playlist.module";
 import { MeiliSearchModule } from "nestjs-meilisearch";
+import { StreamModule } from "./stream/stream.module";
 
 @Module({
 	imports: [
@@ -86,6 +87,7 @@ import { MeiliSearchModule } from "nestjs-meilisearch";
 		PlaylistModule,
 		VideoModule,
 		ScannerModule,
+		StreamModule,
 	],
 	controllers: [AppController],
 	providers: Plugins.AppProviders,

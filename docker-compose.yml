@@ -12,10 +12,15 @@ services:
       meilisearch:
         condition: service_healthy
     volumes:
-      - config:/meelo
-      - data:/data
+      - ${DATA_DIR}:${INTERNAL_DATA_DIR}
+      - ${CONFIG_DIR}:${INTERNAL_CONFIG_DIR}
     env_file:
       - .env
+    environment:
+      - TRANSCODER_URL=http://transcoder:7666
+      - MEILI_HOST=http://meilisearch:7700
+      - REDIS_HOST=redis
+      - DATABASE_URL=postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@${POSTGRES_HOST}:5432/${POSTGRES_DB}?schema=public
     healthcheck:
       test: ["CMD-SHELL", "wget -qO- localhost:4000"]
       interval: 5s
@@ -39,6 +44,18 @@ services:
       interval: 5s
       timeout: 5s
       retries: 5
+  transcoder:
+    image: ghcr.io/zoriya/kyoo_transcoder:master
+    restart: on-failure
+    cpus: 1
+    expose:
+      - 7666
+    environment:
+      - GOCODER_SAFE_PATH=${INTERNAL_DATA_DIR}
+    volumes:
+      - ${DATA_DIR}:${INTERNAL_DATA_DIR}:ro
+      - transcoder_cache:/cache
+    profiles: ['', 'cpu']
   db:
     image: postgres:alpine3.14
     healthcheck:
@@ -61,8 +78,7 @@ services:
       - MEILI_ENV=production
       - MEILI_MASTER_KEY=${MEILI_MASTER_KEY}
     healthcheck:
-      test: ["CMD", "wget", "--no-verbose", "--spider", "http://localhost:7700/health"]
-      interval: 10s
+      test: ["CMD", "wget", "--no-verbose", "--spider", "http://0.0.0.0:7700/health"]
       timeout: 5s
       retries: 5
   nginx:
@@ -74,7 +90,7 @@ services:
       front:
         condition: service_started
     ports:
-      - 5000:5000
+      - ${PORT:-5000}:5000
     environment:
       - PORT=5000
       - FRONT_URL=http://front:3000
@@ -86,3 +102,4 @@ volumes:
   config:
   data:
   search:
+  transcoder_cache:

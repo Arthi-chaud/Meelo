@@ -17,7 +17,7 @@
  */
 
 import { ApiProperty } from "@nestjs/swagger";
-import { Type } from "class-transformer";
+import { Exclude, Type } from "class-transformer";
 import {
 	ArrayNotEmpty,
 	IsBoolean,
@@ -77,6 +77,7 @@ export default class Settings {
 	 */
 	@ApiProperty()
 	@IsString()
+	@Exclude({ toPlainOnly: true })
 	meeloFolder: string;
 
 	/**
@@ -84,6 +85,7 @@ export default class Settings {
 	 */
 	@ApiProperty()
 	@IsString()
+	@Exclude({ toPlainOnly: true })
 	dataFolder: string;
 
 	/**

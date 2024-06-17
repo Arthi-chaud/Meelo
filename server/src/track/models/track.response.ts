@@ -37,7 +37,6 @@ export class TrackResponse extends IntersectionType(
 	Track,
 	IllustratedResponse,
 	class {
-		stream: string;
 		song?: SongResponse;
 		release?: ReleaseResponse;
 	},
@@ -83,7 +82,6 @@ export class TrackResponseBuilder extends ResponseBuilderInterceptor<
 			illustration: track.illustration
 				? IllustrationResponse.from(track.illustration)
 				: track.illustration,
-			stream: `/files/${track.sourceFileId}/stream`,
 		};
 	}
 }

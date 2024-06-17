@@ -20,6 +20,7 @@ import * as Iconsax from "iconsax-react";
 
 type IconProps = Iconsax.IconProps;
 
+export const TranscodeIcon = Iconsax.Polyswarm;
 export const PlaylistIcon = Iconsax.MusicFilter;
 export const LibraryIcon = Iconsax.MusicLibrary2;
 export const ReleaseIcon = Iconsax.Cd;

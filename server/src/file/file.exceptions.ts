@@ -31,7 +31,7 @@ export class FileNotFoundException extends NotFoundException {
 	}
 }
 
-export class SourceFileNotFoundExceptions extends NotFoundException {
+export class SourceFileNotFoundException extends NotFoundException {
 	constructor(filePath: string) {
 		super(`File at path '${filePath}' not found`);
 	}

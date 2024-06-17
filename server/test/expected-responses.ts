@@ -33,7 +33,6 @@ export const expectedReleaseResponse = (release: Release) => ({
 
 export const expectedTrackResponse = (track: Track) => ({
 	...track,
-	stream: `/files/${track.sourceFileId}/stream`,
 });
 
 export const expectedPlaylistResponse = (playlist: Playlist) => ({

@@ -38,7 +38,7 @@ export default class SettingsService {
 		@Inject(forwardRef(() => FileManagerService))
 		private fileManagerService: FileManagerService,
 	) {
-		const meeloDir = process.env.MEELO_DIR;
+		const meeloDir = process.env.INTERNAL_CONFIG_DIR;
 
 		if (
 			meeloDir == undefined ||
@@ -69,8 +69,9 @@ export default class SettingsService {
 			throw new SettingsFileNotFoundException();
 		}
 		const uncheckedSettings = plainToClass(Settings, {
-			meeloFolder: process.env.MEELO_DIR!,
 			...object,
+			meeloFolder: process.env.INTERNAL_CONFIG_DIR!,
+			dataFolder: process.env.INTERNAL_DATA_DIR!,
 		});
 		// Validation
 		const validationError = validateSync(uncheckedSettings, {

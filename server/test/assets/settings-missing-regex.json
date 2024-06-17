@@ -1,5 +1,4 @@
 {
-	"dataFolder": "/var/lib/meelo",
 	"metadata": {
 		"source": "embedded",
 		"order": "only"

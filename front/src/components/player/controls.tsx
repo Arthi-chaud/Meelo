@@ -73,6 +73,7 @@ type PlayerButtonControlsProps = {
 
 type PlayerControlsProps = Parameters<typeof PlayerSlider>[number] &
 	PlayerButtonControlsProps & {
+		isTranscoding: boolean;
 		expanded: boolean;
 		onExpand: (expand: boolean) => void;
 		artist?: Artist;
