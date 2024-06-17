@@ -336,33 +336,41 @@ export default class SongService extends SearchableRepositoryService {
 
 	static formatIdentifierToWhereInput = formatIdentifierToIdOrSlug;
 
-	formatSortingInput(
-		sortingParameter: SongQueryParameters.SortingParameter,
-	): Prisma.SongOrderByWithRelationAndSearchRelevanceInput {
+	formatSortingInput(sortingParameter: SongQueryParameters.SortingParameter) {
 		sortingParameter.order ??= "asc";
+		const sort: Prisma.SongOrderByWithRelationAndSearchRelevanceInput[] =
+			[];
 		switch (sortingParameter.sortBy) {
 			case "name":
-				return { nameSlug: sortingParameter.order };
+				sort.push({ nameSlug: sortingParameter.order });
+				break;
 			case "addDate":
-				return { registeredAt: sortingParameter.order };
+				sort.push({ registeredAt: sortingParameter.order });
+				break;
 			case "artistName":
-				return {
+				sort.push({
 					artist: this.artistService.formatSortingInput({
 						sortBy: "name",
 						order: sortingParameter.order,
 					}),
-				};
+				});
+				break;
 			case "totalPlayCount":
-				return {
+				sort.push({
 					playHistory: {
 						_count: sortingParameter.order,
 					},
-				};
+				});
+				break;
 			default:
-				return {
+				sort.push({
 					[sortingParameter.sortBy ?? "id"]: sortingParameter.order,
-				};
+				});
 		}
+		sort.push({
+			featuring: { _count: "asc" as const },
+		});
+		return sort;
 	}
 
 	async onNotFound(error: Error, where: SongQueryParameters.WhereInput) {
