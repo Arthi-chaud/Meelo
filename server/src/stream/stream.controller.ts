@@ -52,6 +52,6 @@ export class StreamController {
 		@Res() res: Response,
 		@Req() req: Express.Request,
 	) {
-		return this.streamService.transcodeFile(where, path, res, req);
+		return this.streamService.callTranscoder(where, path, res, req);
 	}
 }

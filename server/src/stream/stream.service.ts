@@ -61,12 +61,12 @@ export class StreamService {
 	}
 
 	// Proxies all requests to transcoder
-	async transcodeFile(
+	async callTranscoder(
 		where: FileQueryParameters.WhereInput,
 		route: string,
 		res: any,
 		req: any,
-	): Promise<StreamableFile | void> {
+	): Promise<void> {
 		if (!this.transcoderUrl) {
 			throw new MeeloException(
 				HttpStatus.SERVICE_UNAVAILABLE,
@@ -92,15 +92,7 @@ export class StreamService {
 	): Promise<void> {
 		const fullFilePath = await this.fileService.buildFullPath(where);
 		if (this.transcoderUrl) {
-			const proxy = createProxyMiddleware({
-				router: () =>
-					`${this.transcoderUrl}/${Buffer.from(fullFilePath).toString(
-						"base64",
-					)}/direct`,
-				ignorePath: true,
-			});
-			await proxy(req, res);
-			return;
+			return this.callTranscoder(where, 'direct', res, req);
 		}
 		return this._directStreamFile(fullFilePath, res, req);
 	}
