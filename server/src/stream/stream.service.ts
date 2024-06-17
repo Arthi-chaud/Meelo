@@ -89,7 +89,7 @@ export class StreamService {
 		where: FileQueryParameters.WhereInput,
 		res: any,
 		req: any,
-	): Promise<StreamableFile | void> {
+	): Promise<void> {
 		const fullFilePath = await this.fileService.buildFullPath(where);
 		if (this.transcoderUrl) {
 			const proxy = createProxyMiddleware({
@@ -107,13 +107,12 @@ export class StreamService {
 
 	/**
 	 * @param res the Response Object of the request
-	 * @returns a StreamableFile of the file
 	 */
 	async _directStreamFile(
 		fullFilePath: string,
 		res: any,
 		req: any,
-	): Promise<StreamableFile> {
+	): Promise<void> {
 		const fileExtension = path.parse(fullFilePath).ext;
 		const sanitizedFileName = new Slug(
 			path.parse(fullFilePath).name,
@@ -148,12 +147,13 @@ export class StreamService {
 				});
 			}
 		}
-
-		return new StreamableFile(
+		try {
 			fs.createReadStream(fullFilePath, {
 				start: requestedStartByte,
 				end: requestedEndByte,
-			}),
-		);
+			}).pipe(res);
+		} catch (err) {
+			console.error(err)
+		}
 	}
 }
