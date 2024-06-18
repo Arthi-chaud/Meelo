@@ -1,7 +1,7 @@
 # This compose allows to setup the whole project in the production environment 
 services:
   server:
-    image: ghcr.io/arthi-chaud/meelo-server:edge
+    image: ghcr.io/arthi-chaud/meelo-server:latest
     expose:
       - 4000
     restart: on-failure
@@ -26,7 +26,7 @@ services:
       timeout: 5s
       retries: 5
   front:
-    image: ghcr.io/arthi-chaud/meelo-front:edge
+    image: ghcr.io/arthi-chaud/meelo-front:latest
     expose:
       - 3000
     depends_on:
@@ -88,7 +88,7 @@ services:
       front:
         condition: service_started
     ports:
-      - 5000:5000
+      - ${PORT:-5000}:5000
     environment:
       - PORT=5000
       - FRONT_URL=http://front:3000
@@ -100,3 +100,4 @@ volumes:
   config:
   data:
   search:
+  transcoder_cache:
