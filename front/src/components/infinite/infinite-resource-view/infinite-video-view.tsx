@@ -18,19 +18,21 @@
 
 import { useRouter } from "next/router";
 import { useState } from "react";
-import { SongSortingKeys } from "../../../models/song";
+import { SongSortingKeys, SongWithRelations } from "../../../models/song";
 import { VideoWithRelations } from "../../../models/video";
 import Controls, { OptionState } from "../../controls/controls";
 import InfiniteView from "../infinite-view";
 import InfiniteResourceViewProps from "./infinite-resource-view-props";
 import VideoTile from "../../tile/video-tile";
+import { PaginationParameters } from "../../../models/pagination";
+import Track from "../../../models/track";
 
-const InfiniteVideoView = (
-	props: InfiniteResourceViewProps<
-		VideoWithRelations<"artist">,
-		typeof SongSortingKeys
-	> & {
-		formatSubtitle?: (video: VideoWithRelations<"artist">) => string;
+const InfiniteVideoView = <T extends VideoWithRelations<"artist">>(
+	props: InfiniteResourceViewProps<T, typeof SongSortingKeys> & {
+		formatSubtitle?: (video: {
+			song: SongWithRelations<"artist">;
+			track: Track;
+		}) => string;
 	},
 ) => {
 	const router = useRouter();
@@ -50,8 +52,8 @@ const InfiniteVideoView = (
 			/>
 			<InfiniteView
 				view={options?.view ?? "grid"}
-				query={() =>
-					props.query({
+				query={() => {
+					const { key, exec } = props.query({
 						view: options?.view ?? "grid",
 						library: options?.library ?? null,
 						sortBy:
@@ -62,19 +64,25 @@ const InfiniteVideoView = (
 							options?.order ??
 							props.initialSortingOrder ??
 							"asc",
-					})
-				}
+					});
+					return {
+						key,
+						exec: (pagination: PaginationParameters) =>
+							exec(pagination).then((page) => {
+								return {
+									...page,
+									items: page.items.map((item) => ({
+										...item,
+										illustration: item.track.illustration,
+									})),
+								};
+							}),
+					};
+				}}
 				renderListItem={(item) => <></>}
 				renderGridItem={(item) => (
 					<VideoTile
-						video={
-							item
-								? {
-										...item.track,
-										song: item,
-									}
-								: undefined
-						}
+						video={item}
 						formatSubtitle={
 							item && props.formatSubtitle
 								? () =>
@@ -82,7 +90,10 @@ const InfiniteVideoView = (
 											props.formatSubtitle as Required<
 												typeof props
 											>["formatSubtitle"]
-										)(item)
+										)({
+											song: item,
+											track: item.track,
+										})
 								: undefined
 						}
 					/>

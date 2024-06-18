@@ -253,12 +253,11 @@ describe("Parser Service", () => {
 		it("Dashed group in parenthesis (keeping root)", () => {
 			const res = parserService.splitGroups(
 				"Crooked Madam (Damn Mad - Shellfish Remix)",
-				{ removeRoot: false },
+				{ removeRoot: false, keepDelimiters: true },
 			);
 			expect(res).toStrictEqual([
 				"Crooked Madam",
-				"Damn Mad",
-				"Shellfish Remix",
+				"(Damn Mad - Shellfish Remix)",
 			]);
 		});
 		it("Dashed group in parenthesis (removing root)", () => {
@@ -266,7 +265,7 @@ describe("Parser Service", () => {
 				"Crooked Madam (Damn Mad - Shellfish Remix)",
 				{ removeRoot: true },
 			);
-			expect(res).toStrictEqual(["Damn Mad", "Shellfish Remix"]);
+			expect(res).toStrictEqual(["Damn Mad - Shellfish Remix"]);
 		});
 		it("Dashed group in parenthesis (keeping delimiters)", () => {
 			const res = parserService.splitGroups(
@@ -275,8 +274,7 @@ describe("Parser Service", () => {
 			);
 			expect(res).toStrictEqual([
 				"Crooked Madam",
-				"(Damn Mad)",
-				"- Shellfish Remix",
+				"(Damn Mad - Shellfish Remix)",
 			]);
 		});
 	});
@@ -439,7 +437,7 @@ describe("Parser Service", () => {
 			const res = await parserService.extractFeaturedArtistsFromSongName(
 				"Crooked Madam (Damn Mad - Shellfish Remix)",
 			);
-			expect(res.name).toBe("Crooked Madam (Damn Mad) - Shellfish Remix");
+			expect(res.name).toBe("Crooked Madam (Damn Mad - Shellfish Remix)");
 			expect(res.featuring).toStrictEqual([]);
 		});
 	});
@@ -1109,6 +1107,20 @@ describe("Parser Service", () => {
 				),
 			).toBe(SongType.NonMusic);
 		});
+		it("Mashups", () => {
+			const f = (s: string) => parserService.getSongType(s);
+			expect(f("Megamix")).toBe(SongType.Medley);
+			expect(f("Album Megamix")).toBe(SongType.Medley);
+			expect(f("Album Megamix")).toBe(SongType.Medley);
+			expect(f("Chris Cox Megamix")).toBe(SongType.Medley);
+			expect(f("Tommie Sunshine Megasix Smash-up")).toBe(SongType.Medley);
+			expect(f("Tommie Sunshine Megasix Smash-up")).toBe(SongType.Medley);
+			expect(f("Medley")).toBe(SongType.Medley);
+			expect(f("Medley (Live)")).toBe(SongType.Live);
+			expect(
+				f("Like A Virgin/Hollywood Medley (2003 MTV VMA Performance)"),
+			).toBe(SongType.Live);
+		});
 	});
 
 	describe("Detect Album Type", () => {
@@ -1491,6 +1503,24 @@ describe("Parser Service", () => {
 					"Me Against the Music (Video Mix Instrumental)",
 				).parsedName,
 			).toBe("Me Against the Music (Video Mix Instrumental)");
+		});
+		it("should not reorder ('A (B - C) {D}')", () => {
+			expect(
+				parserService.parseTrackExtensions("A (B - C) {D}").parsedName,
+			).toBe("A (B - C) {D}");
+		});
+		it("should not reorder (Real example)", () => {
+			expect(
+				parserService.parseTrackExtensions(
+					"Crooked Madam (Damn Mad - Shellfish Remix)",
+				).parsedName,
+			).toBe("Crooked Madam (Damn Mad - Shellfish Remix)");
+		});
+		it("should not reorder ('A - B (C) - D {E}')", () => {
+			expect(
+				parserService.parseTrackExtensions("A - B (C) - D {E}")
+					.parsedName,
+			).toBe("A - B (C) - D {E}");
 		});
 	});
 });

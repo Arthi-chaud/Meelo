@@ -22,23 +22,27 @@ import {
 	ArtistResponse,
 	ArtistResponseBuilder,
 } from "src/artist/models/artist.response";
-import { Song, SongWithRelations } from "src/prisma/models";
+import { Lyrics, Song, SongWithRelations } from "src/prisma/models";
 import ResponseBuilderInterceptor from "src/response/interceptors/response.interceptor";
 import ExternalIdResponse, {
 	ExternalIdResponseBuilder,
 } from "src/providers/models/external-id.response";
-import { IllustratedResponse } from "src/illustration/models/illustration.response";
-import IllustrationRepository from "src/illustration/illustration.repository";
+import {
+	IllustratedResponse,
+	IllustrationResponse,
+} from "src/illustration/models/illustration.response";
 import {
 	TrackResponse,
 	TrackResponseBuilder,
 } from "src/track/models/track.response";
 import TrackService from "src/track/track.service";
+import Logger from "src/logger/logger";
 
 export class SongResponse extends IntersectionType(
 	Song,
 	IllustratedResponse,
 	class {
+		lyrics?: Lyrics | null;
 		artist?: ArtistResponse;
 		master?: TrackResponse;
 		featuring?: ArtistResponse[];
@@ -51,9 +55,8 @@ export class SongResponseBuilder extends ResponseBuilderInterceptor<
 	SongWithRelations,
 	SongResponse
 > {
+	private readonly logger = new Logger(SongResponseBuilder.name);
 	constructor(
-		@Inject(forwardRef(() => IllustrationRepository))
-		private illustrationRepository: IllustrationRepository,
 		@Inject(forwardRef(() => ArtistResponseBuilder))
 		private artistResponseBuilder: ArtistResponseBuilder,
 		@Inject(forwardRef(() => TrackResponseBuilder))
@@ -69,42 +72,51 @@ export class SongResponseBuilder extends ResponseBuilderInterceptor<
 	returnType = SongResponse;
 
 	async buildResponse(song: SongWithRelations): Promise<SongResponse> {
-		const response = <SongResponse>{
-			...song,
-			illustration: await this.illustrationRepository.getSongIllustration(
-				{ id: song.id },
-			),
-		};
-
-		if (song.artist !== undefined) {
-			response.artist = await this.artistResponseBuilder.buildResponse(
-				song.artist,
-			);
-		}
+		/// This should happen only during scan
 		if (song.master === null) {
+			this.logger.warn(
+				"The Master Track of a song had to be resolved manually. " +
+					"This should happen only during a scan or a clean. " +
+					"If it is not the case, this is a bug.",
+			);
 			song.master = await this.trackService.getMasterTrack({
 				id: song.id,
 			});
 		}
-		if (song.master !== undefined) {
-			response.master = await this.trackResponseBuilder.buildResponse(
-				song.master,
-			);
-		}
-		if (song.featuring !== undefined) {
-			response.featuring = await Promise.all(
-				song.featuring.map((artist) =>
-					this.artistResponseBuilder.buildResponse(artist),
-				),
-			);
-		}
-		if (song.externalIds !== undefined) {
-			response.externalIds = await Promise.all(
-				song.externalIds?.map((id) =>
-					this.externalIdResponseBuilder.buildResponse(id),
-				) ?? [],
-			);
-		}
-		return response;
+		return {
+			id: song.id,
+			name: song.name,
+			slug: song.slug,
+			nameSlug: song.nameSlug,
+			artistId: song.artistId,
+			masterId: song.masterId,
+			type: song.type,
+			registeredAt: song.registeredAt,
+			groupId: song.groupId,
+			lyrics: song.lyrics,
+			featuring: song.featuring
+				? await Promise.all(
+						song.featuring.map((artist) =>
+							this.artistResponseBuilder.buildResponse(artist),
+						),
+				  )
+				: song.featuring,
+			master: song.master
+				? await this.trackResponseBuilder.buildResponse(song.master)
+				: song.master,
+			artist: song.artist
+				? await this.artistResponseBuilder.buildResponse(song.artist)
+				: song.artist,
+			illustration: song.illustration
+				? IllustrationResponse.from(song.illustration)
+				: song.illustration,
+			externalIds: song.externalIds
+				? await Promise.all(
+						song.externalIds.map((id) =>
+							this.externalIdResponseBuilder.buildResponse(id),
+						),
+				  )
+				: song.externalIds,
+		};
 	}
 }

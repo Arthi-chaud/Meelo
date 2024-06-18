@@ -5,7 +5,6 @@ import Slug from "src/slug/slug";
 import {
 	LibraryAlreadyExistsException,
 	LibraryNotFoundException,
-	LibraryNotFoundFromIDException,
 } from "./library.exceptions";
 import LibraryService from "./library.service";
 import LibraryModule from "./library.module";
@@ -148,32 +147,11 @@ describe("Library Service", () => {
 			expect(libraries).toContainEqual(newLibrary);
 		});
 
-		it("should shuffle libraries", async () => {
-			const sort1 = await libraryService.getMany(
-				{},
-				{ take: 10 },
-				{},
-				123,
-			);
-			const sort2 = await libraryService.getMany(
-				{},
-				{ take: 10 },
-				{},
-				1234,
-			);
-			expect(sort1.length).toBe(sort2.length);
-			expect(sort1).toContainEqual(dummyRepository.library2);
-			expect(sort1.map(({ id }) => id)).not.toBe(
-				sort2.map(({ id }) => id),
-			);
-		});
-
 		it("should get every libraries, sorted by name", async () => {
 			const libraries = await libraryService.getMany(
 				{},
-				{},
-				{},
 				{ sortBy: "name", order: "desc" },
+				{},
 			);
 
 			expect(libraries.length).toBe(3);
@@ -185,40 +163,12 @@ describe("Library Service", () => {
 		it("should get some libraries (w/ pagination)", async () => {
 			const libraries = await libraryService.getMany(
 				{},
+				{},
 				{ take: 1, skip: 1 },
 			);
 
 			expect(libraries.length).toBe(1);
 			expect(libraries[0]).toStrictEqual(dummyRepository.library2);
-		});
-
-		it("should get every libraries (with files)", async () => {
-			const libraries = await libraryService.getMany(
-				{},
-				{},
-				{
-					files: true,
-				},
-			);
-
-			expect(libraries.length).toBe(3);
-			expect(libraries).toContainEqual({
-				...dummyRepository.library1,
-				files: [
-					dummyRepository.fileA1_1,
-					dummyRepository.fileA1_2Video,
-					dummyRepository.fileA2_1,
-					dummyRepository.fileC1_1,
-				],
-			});
-			expect(libraries).toContainEqual({
-				...newLibrary,
-				files: [],
-			});
-			expect(libraries).toContainEqual({
-				...dummyRepository.library2,
-				files: [dummyRepository.fileB1_1],
-			});
 		});
 	});
 
@@ -235,17 +185,21 @@ describe("Library Service", () => {
 
 			return expect(async () =>
 				libraryService.get({ id: dummyRepository.library2.id }),
-			).rejects.toThrow(LibraryNotFoundFromIDException);
+			).rejects.toThrow(LibraryNotFoundException);
 		});
 		it("should have deletes the related files", async () => {
-			const filesCount = await fileService.count({
-				library: { id: dummyRepository.library2.id },
+			const filesCount = await dummyRepository.file.count({
+				where: { libraryId: dummyRepository.library2.id },
 			});
 			expect(filesCount).toBe(0);
 		});
 		it("should have deletes the related tracks", async () => {
-			const trackCount = await trackService.count({
-				artist: { id: dummyRepository.artistB.id },
+			const trackCount = await dummyRepository.track.count({
+				where: {
+					song: {
+						artist: { id: dummyRepository.artistB.id },
+					},
+				},
 			});
 			expect(trackCount).toBe(0);
 		});

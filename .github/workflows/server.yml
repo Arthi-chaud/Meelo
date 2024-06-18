@@ -1,9 +1,9 @@
 name: "Server"
 on:
   pull_request:
-    branches: [ main ]
+    branches: [ main, v2 ]
   push:
-    branches: [ main ]
+    branches: [ main, v2 ]
   release:
     types: [ published ]
 

@@ -16,27 +16,34 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import MapValidator from "../utils/map-validator";
 import Song, { SongInclude, SongRelations } from "./song";
-import Track from "./track";
+import { TrackWithRelations } from "./track";
 import * as yup from "yup";
 
-const Tracklist = <Selection extends SongInclude | never>(
+const TracklistItem = TrackWithRelations(["illustration"])
+	.concat(
+		yup.object({
+			song: Song.required(),
+		}),
+	)
+	.required();
+
+const TracklistItemWithRelations = <Selection extends SongInclude | never>(
 	selection: Selection[],
 ) =>
-	MapValidator(
-		yup.string().required(),
-		yup
-			.array(
-				Track.concat(
-					yup.object({
-						song: Song.concat(SongRelations.pick(selection)),
-					}),
-				).required(),
-			)
-			.required(),
-	);
+	TrackWithRelations(["illustration"])
+		.concat(
+			yup.object({
+				song: Song.concat(SongRelations.pick(selection)),
+			}),
+		)
+		.required();
+
+type TracklistItem = yup.InferType<typeof TracklistItem>;
+type TracklistItemWithRelations<Selection extends SongInclude | never> =
+	yup.InferType<ReturnType<typeof TracklistItemWithRelations<Selection>>>;
 
 type Tracklist<T> = Record<string | "?", T[]>;
 
 export default Tracklist;
+export { TracklistItemWithRelations, TracklistItem };

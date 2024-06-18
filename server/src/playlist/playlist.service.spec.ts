@@ -10,7 +10,6 @@ import Slug from "src/slug/slug";
 import {
 	PlaylistAlreadyExistsException,
 	PlaylistNotFoundException,
-	PlaylistNotFoundFromIDException,
 } from "./playlist.exceptions";
 import { Playlist } from "src/prisma/models";
 
@@ -56,9 +55,7 @@ describe("Playlist Service", () => {
 		});
 		it("Should throw, as the playlist does not exist (ID)", async () => {
 			const test = () => playlistService.get({ id: -1 });
-			return expect(test()).rejects.toThrow(
-				PlaylistNotFoundFromIDException,
-			);
+			return expect(test()).rejects.toThrow(PlaylistNotFoundException);
 		});
 		it("Should throw, as the playlist does not exist (Slug)", async () => {
 			const test = () => playlistService.get({ slug: new Slug("12345") });
@@ -67,31 +64,11 @@ describe("Playlist Service", () => {
 	});
 
 	describe("Get Many Playlists", () => {
-		it("should shuffle playlists", async () => {
-			const sort1 = await playlistService.getMany(
-				{},
-				{ take: 10 },
-				{},
-				123,
-			);
-			const sort2 = await playlistService.getMany(
-				{},
-				{ take: 10 },
-				{},
-				1234,
-			);
-			expect(sort1.length).toBe(sort2.length);
-			expect(sort1).toContainEqual(dummyRepository.playlist3);
-			expect(sort1.map(({ id }) => id)).not.toBe(
-				sort2.map(({ id }) => id),
-			);
-		});
 		it("Should sort playlists by name", async () => {
 			const playlists = await playlistService.getMany(
 				{},
-				{},
-				{},
 				{ order: "asc", sortBy: "name" },
+				{},
 			);
 
 			expect(playlists.length).toBe(3);
@@ -102,9 +79,8 @@ describe("Playlist Service", () => {
 		it("Should sort playlists by create date", async () => {
 			const playlists = await playlistService.getMany(
 				{},
-				{},
-				{},
 				{ order: "asc", sortBy: "creationDate" },
+				{},
 			);
 
 			expect(playlists.length).toBe(3);
@@ -115,9 +91,8 @@ describe("Playlist Service", () => {
 		it("Should sort playlists by entry count", async () => {
 			const playlists = await playlistService.getMany(
 				{},
-				{},
-				{},
 				{ order: "desc", sortBy: "entryCount" },
+				{},
 			);
 
 			expect(playlists.length).toBe(3);
@@ -216,9 +191,8 @@ describe("Playlist Service", () => {
 		it("Should Get One Playlist (Song appearing once)", async () => {
 			const playlists = await playlistService.getMany(
 				{ album: { id: dummyRepository.compilationAlbumA.id } },
-				{},
-				{},
 				{ order: "asc", sortBy: "name" },
+				{},
 			);
 
 			expect(playlists.length).toBe(1);
@@ -226,9 +200,8 @@ describe("Playlist Service", () => {
 		it("Should Get One Playlist (Song appearing twice)", async () => {
 			const playlists = await playlistService.getMany(
 				{ album: { id: dummyRepository.albumA1.id } },
-				{},
-				{},
 				{ order: "asc", sortBy: "name" },
+				{},
 			);
 
 			expect(playlists.length).toBe(1);
@@ -237,9 +210,8 @@ describe("Playlist Service", () => {
 		it("Should Get 0 Playlist", async () => {
 			const playlists = await playlistService.getMany(
 				{ album: { id: dummyRepository.albumB1.id } },
-				{},
-				{},
 				{ order: "asc", sortBy: "name" },
+				{},
 			);
 
 			expect(playlists.length).toBe(0);

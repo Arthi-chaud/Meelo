@@ -131,15 +131,6 @@ describe("User Service", () => {
 			const users = await userService.getMany({ enabled: false });
 			expect(users).toStrictEqual([user]);
 		});
-		it("should shuffle user", async () => {
-			const sort1 = await userService.getMany({}, { take: 10 }, {}, 123);
-			const sort2 = await userService.getMany({}, { take: 10 }, {}, 1234);
-			expect(sort1.length).toBe(sort2.length);
-			expect(sort1).toContainEqual(adminUser);
-			expect(sort1.map(({ id }) => id)).not.toBe(
-				sort2.map(({ id }) => id),
-			);
-		});
 	});
 
 	describe("Update user", () => {

@@ -23,7 +23,7 @@ import {
 	AlbumType,
 	AlbumWithRelations,
 } from "../../models/album";
-import Artist, { ArtistSortingKeys } from "../../models/artist";
+import { ArtistSortingKeys, ArtistWithRelations } from "../../models/artist";
 import { MeeloInfiniteQueryFn } from "../../api/use-query";
 import InfiniteAlbumView from "./infinite-resource-view/infinite-album-view";
 import InfiniteArtistView from "./infinite-resource-view/infinite-artist-view";
@@ -40,7 +40,7 @@ const itemTypes = ["artist", "album", "song"] as const;
 
 type SelectableInfiniteViewProps = {
 	albumQuery: MeeloInfiniteQueryFn<
-		AlbumWithRelations<"artist">,
+		AlbumWithRelations<"artist" | "illustration">,
 		[
 			param: {
 				type: AlbumType | undefined;
@@ -51,14 +51,14 @@ type SelectableInfiniteViewProps = {
 	>;
 	// eslint-disable-next-line max-len
 	artistQuery: MeeloInfiniteQueryFn<
-		Artist,
+		ArtistWithRelations<"illustration">,
 		[
 			param: { library: string | number | null },
 			sort: SortingParameters<typeof ArtistSortingKeys>,
 		]
 	>;
 	songQuery: MeeloInfiniteQueryFn<
-		SongWithRelations<"artist" | "featuring">,
+		SongWithRelations<"artist" | "featuring" | "master" | "illustration">,
 		[
 			param: {
 				type: SongType | undefined;

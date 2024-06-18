@@ -20,12 +20,14 @@ import * as Iconsax from "iconsax-react";
 
 type IconProps = Iconsax.IconProps;
 
+export const TranscodeIcon = Iconsax.Polyswarm;
 export const PlaylistIcon = Iconsax.MusicFilter;
 export const LibraryIcon = Iconsax.MusicLibrary2;
 export const ReleaseIcon = Iconsax.Cd;
 export const AlbumIcon = Iconsax.MusicDashboard;
 export const ArtistIcon = Iconsax.Profile2User;
 export const SongIcon = Iconsax.Musicnote;
+export const PlayerIcon = Iconsax.PlayCircle;
 export const TrackIcon = Iconsax.Musicnote;
 export const LyricsIcon = Iconsax.MessageText;
 export const VideoIcon = Iconsax.VideoSquare;

@@ -27,7 +27,7 @@ import { MasterIcon, TrackIcon } from "../icons";
 import { usePlayerContext } from "../../contexts/player";
 
 type TrackItemProps = {
-	track: TrackWithRelations<"release" | "song"> | undefined;
+	track: TrackWithRelations<"release" | "song" | "illustration"> | undefined;
 };
 
 /**
@@ -60,7 +60,6 @@ const TrackItem = ({ track }: TrackItemProps) => {
 							playTrack({
 								artist: song.artist,
 								track,
-								release,
 							});
 						}))
 			}

@@ -23,7 +23,7 @@ import AlbumContextualMenu from "../contextual-menu/album-contextual-menu";
 import { useTranslation } from "react-i18next";
 
 const AlbumTile = (props: {
-	album: AlbumWithRelations<"artist"> | undefined;
+	album: AlbumWithRelations<"artist" | "illustration"> | undefined;
 	formatSubtitle?: (album: AlbumWithRelations<"artist">) => string;
 }) => {
 	const { t } = useTranslation();
@@ -41,13 +41,7 @@ const AlbumTile = (props: {
 						props.album?.artist?.name ??
 						t("compilation")
 			}
-			href={
-				props.album
-					? `/albums/${props.album.artist?.slug ?? "compilations"}+${
-							props.album.slug
-						}`
-					: undefined
-			}
+			href={props.album ? `/albums/${props.album.slug}` : undefined}
 			secondaryHref={
 				props.album
 					? !props.formatSubtitle

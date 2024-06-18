@@ -49,7 +49,7 @@ export async function middleware(request: NextRequest) {
 		url.pathname = `/404`;
 		return NextResponse.rewrite(url);
 	}
-	return NextResponse.rewrite(`${origin}/releases/${master.id}`);
+	return NextResponse.rewrite(`${origin}/releases/${master.slug}`);
 }
 
 export const config = {

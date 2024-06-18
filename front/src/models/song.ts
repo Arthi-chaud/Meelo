@@ -36,13 +36,14 @@ export const SongType = [
 	"Unknown",
 	"Acapella",
 	"NonMusic",
+	"Medley",
 ] as const;
 export type SongType = (typeof SongType)[number];
 
 /**
  * Abstract data model, instanciated by tracks
  */
-const Song = Resource.concat(Illustration).concat(
+const Song = Resource.concat(
 	yup.object({
 		/**
 		 * title of the song
@@ -50,8 +51,6 @@ const Song = Resource.concat(Illustration).concat(
 		name: yup.string().required(),
 		/*
 		 * The slug of the release
-		 * To be used with the parent's artist's slug:
-		 * ${artistSlug}+${songSlug}
 		 */
 		slug: yup.string().required(),
 		/**
@@ -71,7 +70,13 @@ const Song = Resource.concat(Illustration).concat(
 
 type Song = yup.InferType<typeof Song>;
 
-type SongInclude = "artist" | "lyrics" | "externalIds" | "featuring" | "master";
+type SongInclude =
+	| "artist"
+	| "lyrics"
+	| "externalIds"
+	| "featuring"
+	| "master"
+	| "illustration";
 
 const SongRelations = yup.object({
 	artist: Artist.required(),
@@ -79,6 +84,7 @@ const SongRelations = yup.object({
 	featuring: yup.array(Artist.required()).required(),
 	lyrics: Lyrics.required().nullable(),
 	externalIds: yup.array(ExternalId.required()).required(),
+	illustration: Illustration.required().nullable(),
 });
 
 const SongWithRelations = <Selection extends SongInclude | never = never>(

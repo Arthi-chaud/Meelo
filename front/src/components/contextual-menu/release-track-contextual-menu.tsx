@@ -17,7 +17,6 @@
  */
 
 import Artist from "../../models/artist";
-import Release from "../../models/release";
 import ContextualMenu from "./contextual-menu";
 import { useConfirm } from "material-ui-confirm";
 import { DownloadAction } from "../actions/download";
@@ -43,14 +42,13 @@ import { useTranslation } from "react-i18next";
 import { usePlayerContext } from "../../contexts/player";
 
 type ReleaseTrackContextualMenuProps = {
-	track: TrackWithRelations<"song">;
+	track: TrackWithRelations<"song" | "illustration">;
 	artist: Artist;
-	release: Release;
 	onSelect?: () => void;
 };
 
 const ReleaseTrackContextualMenu = (props: ReleaseTrackContextualMenuProps) => {
-	const songSlug = `${props.artist.slug}+${props.track.song.slug}`;
+	const songSlug = props.track.song.slug;
 	const confirm = useConfirm();
 	const queryClient = useQueryClient();
 	const { t } = useTranslation();
@@ -78,7 +76,7 @@ const ReleaseTrackContextualMenu = (props: ReleaseTrackContextualMenuProps) => {
 				],
 				[ShowTrackFileInfoAction(confirm, props.track.id)],
 				[
-					DownloadAction(confirm, props.track.stream, t),
+					DownloadAction(confirm, props.track.sourceFileId, t),
 					ShareSongAction(songSlug, t),
 				],
 			]}

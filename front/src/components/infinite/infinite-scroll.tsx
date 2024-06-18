@@ -24,6 +24,8 @@ import PaginatedResponse, {
 import { MeeloInfiniteQueryFn, useInfiniteQuery } from "../../api/use-query";
 import { generateArray } from "../../utils/gen-list";
 
+export const parentScrollableDivId = "scrollableDiv" as const;
+
 export type InfiniteFetchFn<T> = (
 	pagination: PaginationParameters,
 ) => Promise<PaginatedResponse<T>>;
@@ -84,15 +86,19 @@ const InfiniteScroll = <T extends Resource>(props: InfiniteScrollProps<T>) => {
 						fetchNextPage();
 					}
 				}}
+				getScrollParent={() =>
+					document.getElementById(parentScrollableDivId)
+				}
+				useWindow={false}
 				hasMore={hasNextPage}
 				threshold={500}
 			>
 				{props.render(
 					data === undefined
-						? generateArray(5)
+						? generateArray(3)
 						: [
 								...data.pages.map((page) => page.items).flat(),
-								...(isFetchingNextPage ? generateArray(5) : []),
+								...(isFetchingNextPage ? generateArray(3) : []),
 							],
 				)}
 			</IScroll.default>

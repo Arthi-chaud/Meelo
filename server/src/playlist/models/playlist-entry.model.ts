@@ -16,4 +16,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-export const SlugSeparator = "+";
+import { SongWithRelations } from "src/prisma/models";
+
+export type PlaylistEntryModel = SongWithRelations & {
+	entryId: number;
+	index: number;
+};

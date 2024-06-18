@@ -24,7 +24,7 @@ import type { RelationInclude as BaseRelationInclude } from "src/relation-includ
 import type LibraryQueryParameters from "src/library/models/library.query-parameters";
 import { ModelSortingParameter } from "src/sort/models/sorting-parameter";
 import type GenreQueryParameters from "src/genre/models/genre.query-parameters";
-import { Artist, Song } from "src/prisma/models";
+import { Song } from "src/prisma/models";
 import { filterAtomicRelationInclude } from "src/relation-include/atomic-relation-include.filter";
 import AlbumQueryParameters from "src/album/models/album.query-parameters";
 import { SongType } from "@prisma/client";
@@ -37,6 +37,7 @@ namespace SongQueryParameters {
 	export type CreateInput = Omit<
 		Song,
 		| "slug"
+		| "nameSlug"
 		| "id"
 		| "playCount"
 		| "artist"
@@ -50,7 +51,6 @@ namespace SongQueryParameters {
 		| "featuring"
 		| "groupId"
 	> & {
-		slug?: Slug;
 		artist: ArtistQueryParameters.WhereInput;
 		group: SongGroupQueryParameters.GetOrCreateInput;
 		featuring?: RequireExactlyOne<
@@ -64,20 +64,8 @@ namespace SongQueryParameters {
 	 * Query paraeters to find a song
 	 */
 	export type WhereInput = RequireExactlyOne<{
-		id: Song["id"];
-		bySlug: {
-			slug: Slug;
-			artist: ArtistQueryParameters.WhereInput;
-			featuring?: ArtistQueryParameters.WhereInput[];
-		};
-	}>;
-
-	/**
-	 * Query paraeters to find a song to update
-	 */
-	export type UpdateWhereInput = RequireExactlyOne<{
-		id: Song["id"];
-		bySlug: { slug: Slug; artistId: Artist["id"] };
+		id: number;
+		slug: Slug;
 	}>;
 
 	/**
@@ -100,7 +88,10 @@ namespace SongQueryParameters {
 	/**
 	 * The input required to update a song in the database
 	 */
-	export type UpdateInput = Partial<CreateInput & Pick<Song, "type">>;
+	export type UpdateInput = Partial<{
+		type: SongType;
+		genres: GenreQueryParameters.WhereInput[];
+	}>;
 	export type DeleteInput = {
 		id: Song["id"];
 	};
@@ -119,6 +110,7 @@ namespace SongQueryParameters {
 		"master",
 		"lyrics",
 		"externalIds",
+		"illustration",
 	] as const;
 	export const AvailableAtomicIncludes = filterAtomicRelationInclude(
 		AvailableIncludes,

@@ -41,7 +41,7 @@ import { useTranslation } from "react-i18next";
 import { usePlayerContext } from "../../contexts/player";
 
 type TrackContextualMenuProps = {
-	track: TrackWithRelations<"song">;
+	track: TrackWithRelations<"song" | "illustration">;
 	onSelect?: () => void;
 };
 
@@ -96,7 +96,7 @@ const TrackContextualMenu = (props: TrackContextualMenuProps) => {
 					RefreshTrackMetadataAction(props.track.id, t),
 				],
 				[ShowTrackFileInfoAction(confirm, props.track.id)],
-				[DownloadAction(confirm, props.track.stream, t)],
+				[DownloadAction(confirm, props.track.sourceFileId, t)],
 			]}
 		/>
 	);

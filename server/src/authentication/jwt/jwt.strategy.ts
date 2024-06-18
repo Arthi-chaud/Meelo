@@ -35,7 +35,7 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
 
 	async validate(payload: JwtPayload): Promise<JwtPayload> {
 		await this.userService
-			.throwIfNotFound({
+			.get({
 				byJwtPayload: { id: payload.id, name: payload.name },
 			})
 			.catch(() => {

@@ -33,6 +33,7 @@ import { IEntity, IRelation } from "musicbrainz-api";
 import WikipediaProvider from "./wikipedia/wikipedia.provider";
 import SettingsService from "src/settings/settings.service";
 import GenreService from "src/genre/genre.service";
+import Slug from "src/slug/slug";
 
 type ExternalIds = { externalIds: ExternalId[] };
 
@@ -143,9 +144,10 @@ export default class ExternalIdService {
 					.map(({ genres }) => genres)
 					.filter((genres) => genres != undefined)
 					.flat()
-					.map((genre) =>
-						this.genreService.formatCreateInput({ name: genre! }),
-					);
+					.map((genre) => ({
+						name: genre!,
+						slug: new Slug(genre!).toString(),
+					}));
 
 				if (
 					this.settingsService.settingsValues.metadata

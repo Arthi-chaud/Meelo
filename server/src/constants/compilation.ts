@@ -16,6 +16,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+/**
+ * !! Changing this value is a breaking change !!
+ */
 const compilationAlbumArtistKeyword = "compilations";
 
 export default compilationAlbumArtistKeyword;

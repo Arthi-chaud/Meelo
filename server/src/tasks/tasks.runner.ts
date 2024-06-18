@@ -43,9 +43,7 @@ import ExternalIdService from "src/providers/external-id.provider";
 import { LyricsService } from "src/lyrics/lyrics.service";
 import PlaylistService from "src/playlist/playlist.service";
 import IllustrationRepository from "src/illustration/illustration.repository";
-import ParserService from "src/scanner/parser.service";
 import type RefreshMetadataSelector from "./models/refresh-metadata.selector";
-import SongGroupService from "src/song/song-group.service";
 
 export const TaskQueue = "task-queue";
 
@@ -80,10 +78,6 @@ export default class TaskRunner {
 		private lyricsService: LyricsService,
 		@Inject(forwardRef(() => PlaylistService))
 		private playlistService: PlaylistService,
-		@Inject(forwardRef(() => ParserService))
-		private parserService: ParserService,
-		@Inject(forwardRef(() => SongGroupService))
-		private songGroupService: SongGroupService,
 	) {}
 
 	@OnQueueError()
@@ -225,6 +219,7 @@ export default class TaskRunner {
 		this.logger.log(
 			`${parentLibrary.slug} library: ${newlyRegistered.length} new files registered`,
 		);
+		await this.resolveMasters();
 	}
 
 	/**
@@ -239,7 +234,7 @@ export default class TaskRunner {
 			files: true,
 		});
 
-		this.logger.log(`'Cleaning ${parentLibrary.slug}' library`);
+		this.logger.log(`Cleaning '${parentLibrary.slug}' library`);
 		const libraryPath = `${this.fileManagerService.getLibraryFullPath(
 			parentLibrary,
 		)}`;
@@ -279,7 +274,7 @@ export default class TaskRunner {
 			? this.trackService
 					.get(where.track, { sourceFile: true })
 					.then((track) => [track])
-			: this.trackService.getMany(where, undefined, {
+			: this.trackService.getMany(where, undefined, undefined, {
 					sourceFile: true,
 			  }));
 		const updatedFiles: File[] = [];
@@ -307,6 +302,7 @@ export default class TaskRunner {
 			);
 		}
 		this.logger.log(`Refreshed ${updatedFiles.length} files' metadata`);
+		await this.resolveMasters();
 	}
 
 	private async fetchExternalMetadata(): Promise<void> {
@@ -315,17 +311,22 @@ export default class TaskRunner {
 		await this.lyricsService.fetchMissingLyrics();
 	}
 
+	private async resolveMasters() {
+		await this.albumService.resolveMasterReleases();
+		await this.songService.resolveMasterTracks();
+	}
+
 	/**
 	 * Calls housekeeping methods on repository services
 	 */
 	async housekeeping(): Promise<void> {
 		await this.songService.housekeeping();
-		await this.songGroupService.housekeeping();
 		await this.releaseService.housekeeping();
 		await this.albumService.housekeeping();
 		await this.artistService.housekeeping();
 		await this.genresService.housekeeping();
 		await this.playlistService.housekeeping();
+		await this.resolveMasters();
 	}
 
 	///// Sub tasks

@@ -6,7 +6,7 @@ import PrismaModule from "src/prisma/prisma.module";
 import PrismaService from "src/prisma/prisma.service";
 import TestPrismaService from "test/test-prisma.service";
 import SetupApp from "test/setup-app";
-import { Playlist } from "@prisma/client";
+import { IllustrationType, Playlist } from "@prisma/client";
 import {
 	expectedPlaylistEntryResponse,
 	expectedPlaylistResponse,
@@ -14,6 +14,7 @@ import {
 import request from "supertest";
 import PlaylistService from "./playlist.service";
 import IllustrationModule from "src/illustration/illustration.module";
+import { PlaylistEntryResponse } from "./models/playlist.response";
 
 describe("Playlist Controller", () => {
 	let app: INestApplication;
@@ -68,31 +69,32 @@ describe("Playlist Controller", () => {
 				.get(`/playlists/-1`)
 				.expect(404);
 		});
-		it("Should get playlist with entries", async () => {
+	});
+
+	describe("Get Entries", () => {
+		it("Should entries", async () => {
 			return request(app.getHttpServer())
-				.get(
-					`/playlists/${dummyRepository.playlist1.slug}?with=entries`,
-				)
+				.get(`/playlists/${dummyRepository.playlist1.slug}/entries`)
 				.expect(200)
 				.expect((res) => {
-					const playlist: Playlist = res.body;
-					expect(playlist).toStrictEqual({
-						...expectedPlaylistResponse(dummyRepository.playlist1),
-						entries: [
-							expectedPlaylistEntryResponse(
-								dummyRepository.songC1,
-								dummyRepository.playlistEntry3.id,
-							),
-							expectedPlaylistEntryResponse(
-								dummyRepository.songA2,
-								dummyRepository.playlistEntry1.id,
-							),
-							expectedPlaylistEntryResponse(
-								dummyRepository.songA1,
-								dummyRepository.playlistEntry2.id,
-							),
-						],
-					});
+					const entries: PlaylistEntryResponse[] = res.body.items;
+					expect(entries).toStrictEqual([
+						expectedPlaylistEntryResponse(
+							dummyRepository.songC1,
+							0,
+							dummyRepository.playlistEntry3.id,
+						),
+						expectedPlaylistEntryResponse(
+							dummyRepository.songA2,
+							1,
+							dummyRepository.playlistEntry1.id,
+						),
+						expectedPlaylistEntryResponse(
+							dummyRepository.songA1,
+							2,
+							dummyRepository.playlistEntry2.id,
+						),
+					]);
 				});
 		});
 	});
@@ -215,17 +217,16 @@ describe("Playlist Controller", () => {
 					songId: dummyRepository.songB1.id,
 				})
 				.expect(201);
-			const { entries } = await playlistService.get(
-				{ id: dummyRepository.playlist1.id },
-				{ entries: true },
-			);
+			const entries = await playlistService.getEntries({
+				id: dummyRepository.playlist1.id,
+			});
 			expect(entries.length).toBe(4);
 			expect(entries.at(3)!.index).toBe(
 				dummyRepository.playlistEntry2.index + 1,
 			);
-			expect(entries.at(3)!.songId).toBe(dummyRepository.songB1.id);
+			expect(entries.at(3)!.id).toBe(dummyRepository.songB1.id);
 			await dummyRepository.playlistEntry.delete({
-				where: { id: entries.at(3)!.id },
+				where: { id: entries.at(3)!.entryId },
 			});
 		});
 
@@ -313,27 +314,27 @@ describe("Playlist Controller", () => {
 				})
 				.expect(200);
 			await request(app.getHttpServer())
-				.get(`/playlists/${dummyRepository.playlist1.id}?with=entries`)
+				.get(`/playlists/${dummyRepository.playlist1.id}/entries`)
 				.expect(200)
 				.expect((res) => {
-					const playlist: Playlist = res.body;
-					expect(playlist).toStrictEqual({
-						...expectedPlaylistResponse(dummyRepository.playlist1),
-						entries: [
-							expectedPlaylistEntryResponse(
-								dummyRepository.songA2,
-								dummyRepository.playlistEntry1.id,
-							),
-							expectedPlaylistEntryResponse(
-								dummyRepository.songA1,
-								dummyRepository.playlistEntry2.id,
-							),
-							expectedPlaylistEntryResponse(
-								dummyRepository.songC1,
-								dummyRepository.playlistEntry3.id,
-							),
-						],
-					});
+					const entries: Playlist = res.body.items;
+					expect(entries).toStrictEqual([
+						expectedPlaylistEntryResponse(
+							dummyRepository.songA2,
+							0,
+							dummyRepository.playlistEntry1.id,
+						),
+						expectedPlaylistEntryResponse(
+							dummyRepository.songA1,
+							1,
+							dummyRepository.playlistEntry2.id,
+						),
+						expectedPlaylistEntryResponse(
+							dummyRepository.songC1,
+							2,
+							dummyRepository.playlistEntry3.id,
+						),
+					]);
 				});
 		});
 	});
@@ -348,18 +349,19 @@ describe("Playlist Controller", () => {
 		});
 
 		it("Should Have Flattened Playlist", async () => {
-			const { entries } = await playlistService.get(
-				{ id: dummyRepository.playlist1.id },
-				{ entries: true },
-			);
+			const entries = await playlistService.getEntries({
+				id: dummyRepository.playlist1.id,
+			});
 			expect(entries.length).toBe(2);
 			expect(entries).toContainEqual({
-				...dummyRepository.playlistEntry3,
+				entryId: dummyRepository.playlistEntry3.id,
 				index: 1,
+				...dummyRepository.songC1,
 			});
 			expect(entries).toContainEqual({
-				...dummyRepository.playlistEntry1,
+				entryId: dummyRepository.playlistEntry1.id,
 				index: 0,
+				...dummyRepository.songA2,
 			});
 		});
 
@@ -374,17 +376,19 @@ describe("Playlist Controller", () => {
 
 	describe("Playlist Illustration", () => {
 		it("Should return the illustration", async () => {
-			const illustration =
-				await dummyRepository.playlistIllustration.create({
-					data: {
-						playlistId: dummyRepository.playlist3.id,
-						aspectRatio: 1,
-						blurhash: "A",
-						colors: ["B"],
-					},
-				});
+			const illustration = await dummyRepository.illustration.create({
+				data: {
+					playlist: { connect: { id: dummyRepository.playlist3.id } },
+					type: IllustrationType.Cover,
+					aspectRatio: 1,
+					blurhash: "A",
+					colors: ["B"],
+				},
+			});
 			return request(app.getHttpServer())
-				.get(`/playlists/${dummyRepository.playlist3.id}`)
+				.get(
+					`/playlists/${dummyRepository.playlist3.id}?with=illustration`,
+				)
 				.expect(200)
 				.expect((res) => {
 					const playlist: Playlist = res.body;
@@ -392,9 +396,7 @@ describe("Playlist Controller", () => {
 						...playlist,
 						illustration: {
 							...illustration,
-							url:
-								"/illustrations/playlists/" +
-								dummyRepository.playlist3.slug,
+							url: "/illustrations/" + illustration.id,
 						},
 					});
 				});

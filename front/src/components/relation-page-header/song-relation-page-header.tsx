@@ -24,7 +24,9 @@ import RelationPageHeader from "./relation-page-header";
 import formatArtists from "../../utils/formatArtists";
 
 type SongRelationPageHeaderProps = RequireExactlyOne<{
-	song: SongWithRelations<"artist" | "featuring"> | undefined;
+	song:
+		| SongWithRelations<"artist" | "featuring" | "illustration">
+		| undefined;
 }>;
 
 const SongRelationPageHeader = ({ song }: SongRelationPageHeaderProps) => {

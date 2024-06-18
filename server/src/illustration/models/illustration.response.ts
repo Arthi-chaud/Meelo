@@ -16,21 +16,32 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { ApiProperty, OmitType } from "@nestjs/swagger";
-import { ArtistIllustration } from "src/prisma/models";
+import { ApiProperty } from "@nestjs/swagger";
+import { Illustration } from "src/prisma/models";
 
-export class IllustrationResponse extends OmitType(ArtistIllustration, [
-	"artistId",
-	"id",
-]) {
+export class IllustrationResponse extends Illustration {
 	@ApiProperty({
 		description: "URL to the illustration",
-		example: "/illustrations/(artists|releases|tracks)/123",
+		example: "/illustrations/123",
 	})
 	url: string;
+
+	static from(illustration: Illustration): IllustrationResponse {
+		return {
+			id: illustration.id,
+			aspectRatio: illustration.aspectRatio,
+			colors: illustration.colors,
+			blurhash: illustration.blurhash,
+			type: illustration.type,
+			url: "/illustrations/" + illustration.id,
+		};
+	}
 }
 
 export class IllustratedResponse {
-	@ApiProperty({ nullable: true })
-	illustration: IllustrationResponse;
+	@ApiProperty({
+		nullable: true,
+		description: "Use 'with' query parameter to include this field",
+	})
+	illustration?: IllustrationResponse | null;
 }

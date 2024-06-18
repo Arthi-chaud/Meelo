@@ -24,20 +24,18 @@ import {
 import Slug from "src/slug/slug";
 
 export class PlaylistNotFoundException extends NotFoundException {
-	constructor(playlistSlug: Slug) {
-		super(`Playlist ${playlistSlug}: Playlist not found`);
+	constructor(playlistIdentifier: Slug | number) {
+		super(
+			typeof playlistIdentifier === "number"
+				? `Playlist ${playlistIdentifier} not found`
+				: `Playlist '${playlistIdentifier}' not found`,
+		);
 	}
 }
 
 export class PlaylistAlreadyExistsException extends AlreadyExistsException {
 	constructor(playlistName: string) {
 		super(`Playlist '${playlistName}': Playlist already exists`);
-	}
-}
-
-export class PlaylistNotFoundFromIDException extends NotFoundException {
-	constructor(id: number) {
-		super(`Playlist ${id} not found`);
 	}
 }
 

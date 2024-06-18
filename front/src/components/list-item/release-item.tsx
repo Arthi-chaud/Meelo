@@ -25,7 +25,7 @@ import getYear from "../../utils/getYear";
 import { Star } from "iconsax-react";
 
 type ReleaseItemProps = {
-	release: ReleaseWithRelations<"album">;
+	release: ReleaseWithRelations<"album" | "illustration">;
 };
 
 const ReleaseItem = ({ release }: ReleaseItemProps) => {
@@ -40,7 +40,7 @@ const ReleaseItem = ({ release }: ReleaseItemProps) => {
 					quality="low"
 				/>
 			}
-			href={`/releases/${release.id}`}
+			href={`/releases/${release.slug}`}
 			title={release.name}
 			secondTitle={getYear(release.releaseDate)?.toString()}
 			trailing={

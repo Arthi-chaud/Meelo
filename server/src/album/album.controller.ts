@@ -139,14 +139,13 @@ export default class AlbumController {
 				selector,
 				paginationParameters,
 				include,
-				sort,
 			);
 		}
 		return this.albumService.getMany(
 			selector,
+			selector.random ?? sort,
 			paginationParameters,
 			include,
-			selector.random || sort,
 		);
 	}
 
@@ -175,20 +174,8 @@ export default class AlbumController {
 		where: AlbumQueryParameters.WhereInput,
 		@Body() updateDTO: UpdateAlbumDTO,
 	) {
-		let album = await this.albumService.get(where);
+		const album = await this.albumService.get(where);
 
-		if (updateDTO.artistId !== undefined) {
-			album = await this.albumService.reassign(
-				{ id: album.id },
-				updateDTO.artistId == null
-					? { compilationArtist: true }
-					: { id: updateDTO.artistId },
-			);
-			// If only the artistID is to be changed, no need to await an empty update
-			if (Object.values(updateDTO).length == 1) {
-				return album;
-			}
-		}
 		return this.albumService.update(updateDTO, { id: album.id });
 	}
 }

@@ -18,13 +18,11 @@
 
 import { createContext, useContext, useState } from "react";
 import Artist from "../models/artist";
-import Release from "../models/release";
-import Track from "../models/track";
+import { TrackWithRelations } from "../models/track";
 
 export type TrackState = {
-	track: Track;
+	track: TrackWithRelations<"illustration">;
 	artist: Artist;
-	release: Release;
 };
 
 export type PlayerState = {

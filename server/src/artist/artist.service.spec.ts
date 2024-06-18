@@ -6,7 +6,6 @@ import Slug from "src/slug/slug";
 import {
 	ArtistAlreadyExistsException,
 	ArtistNotEmptyException,
-	ArtistNotFoundByIDException,
 	ArtistNotFoundException,
 } from "./artist.exceptions";
 import ArtistModule from "./artist.module";
@@ -61,7 +60,7 @@ describe("Artist Service", () => {
 	describe("Create Artist", () => {
 		it("should create a new artist", async () => {
 			const registeredAt = new Date("2001");
-			newArtist = await artistService.create({
+			newArtist = await artistService.getOrCreate({
 				name: "My New Artist",
 				registeredAt,
 			});
@@ -69,15 +68,6 @@ describe("Artist Service", () => {
 			expect(newArtist.slug).toBe("my-new-artist");
 			expect(newArtist.registeredAt).toStrictEqual(registeredAt);
 			expect(newArtist.id).toBeDefined();
-		});
-
-		it("should throw as artist already exists", () => {
-			const test = async () => {
-				await artistService.create({
-					name: dummyRepository.artistA.name,
-				});
-			};
-			return expect(test()).rejects.toThrow(ArtistAlreadyExistsException);
 		});
 	});
 
@@ -87,26 +77,6 @@ describe("Artist Service", () => {
 				slug: new Slug(dummyRepository.artistC.slug),
 			});
 			expect(artist).toStrictEqual(dummyRepository.artistC);
-		});
-
-		it("should return an existing artist, without only its id and slug", async () => {
-			const artist = await artistService.select(
-				{ slug: new Slug(dummyRepository.artistC.slug) },
-				{ slug: true, id: true },
-			);
-			expect(artist).toStrictEqual({
-				id: dummyRepository.artistC.id,
-				slug: dummyRepository.artistC.slug,
-			});
-		});
-
-		it("should throw, as the artist does not exist", async () => {
-			const test = () =>
-				artistService.select(
-					{ slug: new Slug("z") },
-					{ slug: true, id: true },
-				);
-			return expect(test()).rejects.toThrow(ArtistNotFoundException);
 		});
 
 		it("should return an existing artist, with relations", async () => {
@@ -135,32 +105,12 @@ describe("Artist Service", () => {
 			expect(artists).toContainEqual(newArtist);
 		});
 
-		it("should shuffle artists", async () => {
-			const sort1 = await artistService.getMany(
-				{},
-				{ take: 10 },
-				{},
-				123,
-			);
-			const sort2 = await artistService.getMany(
-				{},
-				{ take: 10 },
-				{},
-				1234,
-			);
-			expect(sort1.length).toBe(sort2.length);
-			expect(sort1).toContainEqual(dummyRepository.artistA);
-			expect(sort1.map(({ id }) => id)).not.toBe(
-				sort2.map(({ id }) => id),
-			);
-		});
-
 		it("should return all artists, sorted by name", async () => {
 			const artists = await artistService.getMany(
 				{},
-				{},
-				{},
 				{ sortBy: "name", order: "asc" },
+				{},
+				{},
 			);
 			expect(artists.length).toBe(4);
 			expect(artists[0]).toStrictEqual(dummyRepository.artistA);
@@ -183,9 +133,9 @@ describe("Artist Service", () => {
 		it("should return all album artists, sorted by name", async () => {
 			const artists = await artistService.getMany(
 				{ albumArtistOnly: true },
-				{},
-				{},
 				{ sortBy: "name", order: "desc" },
+				{},
+				{},
 			);
 			expect(artists.length).toBe(2);
 			expect(artists[0]).toStrictEqual(dummyRepository.artistB);
@@ -214,31 +164,10 @@ describe("Artist Service", () => {
 		});
 	});
 
-	describe("Count Artist", () => {
-		it("should count the artist count", async () => {
-			const artistCount = await artistService.count({});
-			expect(artistCount).toBe(5);
-		});
-
-		it("should count the artists by name (starts with)", async () => {
-			const artistCount = await artistService.count({
-				name: { startsWith: "My A" },
-			});
-			expect(artistCount).toBe(2);
-		});
-
-		it("should count the artists by name (is)", async () => {
-			const artistCount = await artistService.count({
-				name: { is: dummyRepository.artistC.name },
-			});
-			expect(artistCount).toBe(1);
-		});
-	});
-
 	describe("Delete Artist", () => {
 		it("should throw, as the artist does not exist (by id)", () => {
 			const test = async () => artistService.delete({ id: -1 });
-			return expect(test()).rejects.toThrow(ArtistNotFoundByIDException);
+			return expect(test()).rejects.toThrow(ArtistNotFoundException);
 		});
 
 		it("should throw, as the artist does not exist (by slug)", () => {
@@ -248,7 +177,7 @@ describe("Artist Service", () => {
 		});
 
 		it("should delete the artist", async () => {
-			const tmpArtist = await artistService.create({ name: "1234" });
+			const tmpArtist = await artistService.getOrCreate({ name: "1234" });
 			const artistQueryParameters = {
 				slug: new Slug(tmpArtist.slug),
 			};

@@ -121,7 +121,8 @@ export default class TestPrismaService extends PrismaService {
 		this.albumA1 = await this.album.create({
 			data: {
 				name: "My Album",
-				slug: "my-album",
+				slug: "my-artist-my-album",
+				nameSlug: "my-album",
 				artistId: this.artistA.id,
 				releaseDate: new Date("2022"),
 			},
@@ -129,7 +130,8 @@ export default class TestPrismaService extends PrismaService {
 		this.releaseA1_1 = await this.release.create({
 			data: {
 				name: "My Album 1",
-				slug: "my-album-1",
+				slug: "my-artist-my-album-1",
+				nameSlug: "my-album-1",
 				albumId: this.albumA1.id,
 				releaseDate: new Date("2022"),
 			},
@@ -137,14 +139,16 @@ export default class TestPrismaService extends PrismaService {
 		this.releaseA1_2 = await this.release.create({
 			data: {
 				name: "My Album 2",
-				slug: "my-album-2",
+				slug: "my-artist-my-album-2",
+				nameSlug: "my-album-2",
 				albumId: this.albumA1.id,
 			},
 		});
 		this.songA1 = await this.song.create({
 			data: {
 				name: "My Song",
-				slug: "my-song",
+				slug: "my-artist-my-song",
+				nameSlug: "my-song",
 				artist: { connect: { id: this.artistA.id } },
 				genres: {
 					connect: [{ id: this.genreA.id }, { id: this.genreB.id }],
@@ -205,11 +209,15 @@ export default class TestPrismaService extends PrismaService {
 		this.songA2 = await this.song.create({
 			data: {
 				name: "My Other Song",
-				slug: "my-other-song",
+				slug: "my-artist-my-other-song",
+				nameSlug: "my-other-song",
 				artist: { connect: { id: this.artistA.id } },
 				group: {
 					create: {
-						slug: new Slug(this.artistA.name, "my-other-song").toString(),
+						slug: new Slug(
+							this.artistA.name,
+							"my-other-song",
+						).toString(),
 					},
 				},
 				genres: { connect: { id: this.genreB.id } },
@@ -242,25 +250,31 @@ export default class TestPrismaService extends PrismaService {
 		this.albumB1 = await this.album.create({
 			data: {
 				name: "My Second Album",
-				slug: "my-second-album",
+				slug: "my-second-artist-my-second-album",
+				nameSlug: "my-second-album",
 				artistId: this.artistB.id,
 			},
 		});
 		this.releaseB1_1 = await this.release.create({
 			data: {
 				name: "My Second Album 1",
-				slug: "my-second-album-1",
+				slug: "my-second-artist-my-second-album-1",
+				nameSlug: "my-second-album-1",
 				albumId: this.albumB1.id,
 			},
 		});
 		this.songB1 = await this.song.create({
 			data: {
 				name: "My Second Song",
-				slug: "my-second-song",
+				slug: "my-second-artist-my-second-song",
+				nameSlug: "my-second-song",
 				artist: { connect: { id: this.artistB.id } },
 				group: {
 					create: {
-						slug: new Slug(this.artistB.name, "my-second-song").toString(),
+						slug: new Slug(
+							this.artistB.name,
+							"my-second-song",
+						).toString(),
 					},
 				},
 				genres: { connect: { id: this.genreB.id } },
@@ -292,7 +306,8 @@ export default class TestPrismaService extends PrismaService {
 		this.compilationAlbumA = await this.album.create({
 			data: {
 				name: "My Compilation Album",
-				slug: "my-compilation-album",
+				slug: "compilations-my-compilation-album",
+				nameSlug: "my-compilation-album",
 				releaseDate: new Date("2000"),
 				type: AlbumType.Compilation,
 			},
@@ -300,7 +315,8 @@ export default class TestPrismaService extends PrismaService {
 		this.compilationReleaseA1 = await this.release.create({
 			data: {
 				name: "My Compilation Album 1",
-				slug: "my-compilation-album-1",
+				slug: "compilations-my-compilation-album-1",
+				nameSlug: "my-compilation-album-1",
 				albumId: this.compilationAlbumA.id,
 				releaseDate: new Date("2000"),
 			},
@@ -308,11 +324,15 @@ export default class TestPrismaService extends PrismaService {
 		this.songC1 = await this.song.create({
 			data: {
 				name: "My C Song",
-				slug: "my-c-song",
+				slug: "my-third-artist-my-c-song",
+				nameSlug: "my-c-song",
 				artist: { connect: { id: this.artistC.id } },
 				group: {
 					create: {
-						slug: new Slug(this.artistC.name, "my-c-song").toString(),
+						slug: new Slug(
+							this.artistC.name,
+							"my-c-song",
+						).toString(),
 					},
 				},
 				genres: { connect: { id: this.genreC.id } },

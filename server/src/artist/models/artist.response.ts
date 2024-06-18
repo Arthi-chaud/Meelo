@@ -18,13 +18,15 @@
 
 import { Inject, Injectable, forwardRef } from "@nestjs/common";
 import { IntersectionType } from "@nestjs/swagger";
-import { IllustratedResponse } from "src/illustration/models/illustration.response";
+import {
+	IllustratedResponse,
+	IllustrationResponse,
+} from "src/illustration/models/illustration.response";
 import { Artist, ArtistWithRelations } from "src/prisma/models";
 import ResponseBuilderInterceptor from "src/response/interceptors/response.interceptor";
 import ExternalIdResponse, {
 	ExternalIdResponseBuilder,
 } from "src/providers/models/external-id.response";
-import IllustrationRepository from "src/illustration/illustration.repository";
 
 export class ArtistResponse extends IntersectionType(
 	Artist,
@@ -40,8 +42,6 @@ export class ArtistResponseBuilder extends ResponseBuilderInterceptor<
 	ArtistResponse
 > {
 	constructor(
-		@Inject(forwardRef(() => IllustrationRepository))
-		private illustrationRepository: IllustrationRepository,
 		@Inject(forwardRef(() => ExternalIdResponseBuilder))
 		private externalIdResponseBuilder: ExternalIdResponseBuilder,
 	) {
@@ -51,22 +51,22 @@ export class ArtistResponseBuilder extends ResponseBuilderInterceptor<
 	returnType = ArtistResponse;
 
 	async buildResponse(artist: ArtistWithRelations): Promise<ArtistResponse> {
-		const response = <ArtistResponse>{
-			...artist,
-			illustration:
-				await this.illustrationRepository.getArtistIllustration({
-					id: artist.id,
-				}),
+		return {
+			id: artist.id,
+			name: artist.name,
+			slug: artist.slug,
+			registeredAt: artist.registeredAt,
+			illustrationId: artist.illustrationId,
+			illustration: artist.illustration
+				? IllustrationResponse.from(artist.illustration)
+				: artist.illustration,
+			externalIds: artist.externalIds
+				? await Promise.all(
+						artist.externalIds.map((id) =>
+							this.externalIdResponseBuilder.buildResponse(id),
+						),
+				  )
+				: artist.externalIds,
 		};
-
-		if (artist.externalIds !== undefined) {
-			response.externalIds = await Promise.all(
-				artist.externalIds?.map((id) =>
-					this.externalIdResponseBuilder.buildResponse(id),
-				) ?? [],
-			);
-		}
-
-		return response;
 	}
 }

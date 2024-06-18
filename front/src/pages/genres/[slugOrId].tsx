@@ -35,11 +35,16 @@ const prepareSSR = (context: NextPageContext) => {
 		infiniteQueries: [
 			API.getAlbums({ genre: genreIdentifier }, defaultQuerySortParams, [
 				"artist",
+				"illustration",
 			]),
-			API.getArtists({ genre: genreIdentifier }, defaultQuerySortParams),
+			API.getArtists({ genre: genreIdentifier }, defaultQuerySortParams, [
+				"illustration",
+			]),
 			API.getSongs({ genre: genreIdentifier }, defaultQuerySortParams, [
 				"artist",
 				"featuring",
+				"master",
+				"illustration",
 			]),
 		],
 	};
@@ -74,6 +79,7 @@ const GenrePage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({ props }) => {
 							library: library ?? undefined,
 						},
 						{ sortBy, order },
+						["illustration"],
 					)
 				}
 				albumQuery={({ library, type }, { sortBy, order }) =>
@@ -84,7 +90,7 @@ const GenrePage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({ props }) => {
 							library: library ?? undefined,
 						},
 						{ sortBy, order },
-						["artist"],
+						["artist", "illustration"],
 					)
 				}
 				songQuery={({ library, type, random }, { sortBy, order }) =>
@@ -96,7 +102,7 @@ const GenrePage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({ props }) => {
 							library: library ?? undefined,
 						},
 						{ sortBy, order },
-						["artist", "featuring"],
+						["artist", "featuring", "master", "illustration"],
 					)
 				}
 			/>

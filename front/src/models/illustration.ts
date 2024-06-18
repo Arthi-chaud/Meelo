@@ -19,27 +19,26 @@
 import * as yup from "yup";
 import Resource from "./resource";
 
-const Illustration = yup.object({
-	illustration: yup
-		.object({
-			// URL to the illustration
-			url: yup.string().required(),
-			/**
-			 * Blurhash value of the illustration
-			 */
-			blurhash: yup.string().required(),
-			/**
-			 * Aspect Ratio of The Image
-			 */
-			aspectRatio: yup.number().required(),
-			colors: yup.array(yup.string().required()).required(),
-		})
-		.required()
-		.nullable(),
-});
+const Illustration = yup
+	.object({
+		// URL to the illustration
+		url: yup.string().required(),
+		/**
+		 * Blurhash value of the illustration
+		 */
+		blurhash: yup.string().required(),
+		/**
+		 * Aspect Ratio of The Image
+		 */
+		aspectRatio: yup.number().required(),
+		colors: yup.array(yup.string().required()).required(),
+	})
+	.required();
 
-type Illustration = yup.InferType<typeof Illustration>["illustration"];
+type Illustration = yup.InferType<typeof Illustration>;
 
-export type IllustratedResource = Resource & yup.InferType<typeof Illustration>;
+export type IllustratedResource = Resource & {
+	illustration: Illustration | null;
+};
 
 export default Illustration;

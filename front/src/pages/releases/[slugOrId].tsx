@@ -68,15 +68,43 @@ import { usePlayerContext } from "../../contexts/player";
 import { NextPageContext } from "next";
 import { QueryClient } from "react-query";
 import { useGradientBackground } from "../../utils/gradient-background";
+import Tracklist, { TracklistItemWithRelations } from "../../models/tracklist";
 
 const releaseQuery = (releaseIdentifier: string | number) =>
-	API.getRelease(releaseIdentifier, ["album", "externalIds"]);
-const releaseTracklistQuery = (releaseIdentifier: string | number) =>
-	API.getReleaseTrackList(releaseIdentifier, ["artist", "featuring"]);
+	API.getRelease(releaseIdentifier, ["album", "externalIds", "illustration"]);
+const releaseTracklistQuery = (releaseIdentifier: number | string) => {
+	const query = API.getReleaseTracklist(releaseIdentifier, [
+		"artist",
+		"featuring",
+	]);
+	return {
+		key: query.key,
+		exec: () =>
+			query.exec({ pageSize: 10000 }).then(({ items }) => {
+				return items.reduce(
+					(prev, item) => {
+						const itemKey = item.discIndex ?? "?";
+						return {
+							...prev,
+							[item.discIndex ?? "?"]: [
+								...(prev[itemKey] ?? []),
+								item,
+							],
+						};
+					},
+					{} as Tracklist<
+						TracklistItemWithRelations<"artist" | "featuring">
+					>,
+				);
+			}),
+	};
+};
 const albumQuery = (albumId: number) =>
 	API.getAlbum(albumId, ["externalIds", "genres"]);
 const artistsOnAlbumQuery = (albumId: number) => {
-	const query = API.getArtists({ album: albumId });
+	const query = API.getArtists({ album: albumId }, undefined, [
+		"illustration",
+	]);
 
 	return {
 		key: query.key,
@@ -89,14 +117,21 @@ const releaseBSidesQuery = (releaseId: number) =>
 	API.getSongs({ bsides: releaseId }, { sortBy: "name" }, [
 		"artist",
 		"featuring",
+		"master",
+		"illustration",
 	]);
 const albumVideosQuery = (albumId: number) => API.getVideos({ album: albumId });
 const relatedAlbumsQuery = (albumId: number) =>
-	API.getAlbums({ related: albumId }, { sortBy: "releaseDate" }, ["artist"]);
+	API.getAlbums({ related: albumId }, { sortBy: "releaseDate" }, [
+		"artist",
+		"illustration",
+	]);
 const relatedReleasesQuery = (albumId: number) =>
-	API.getReleases({ album: albumId });
+	API.getReleases({ album: albumId }, { sortBy: "releaseDate" }, [
+		"illustration",
+	]);
 const relatedPlaylistsQuery = (albumId: number) =>
-	API.getPlaylists({ album: albumId });
+	API.getPlaylists({ album: albumId }, undefined, ["illustration"]);
 
 const prepareSSR = async (
 	context: NextPageContext,
@@ -215,7 +250,9 @@ const ReleasePage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({ props }) => {
 				},
 				{ bSides: [], extras: [] } as Record<
 					"bSides" | "extras",
-					SongWithRelations<"artist" | "featuring">[]
+					SongWithRelations<
+						"artist" | "featuring" | "master" | "illustration"
+					>[]
 				>,
 			),
 		[bSidesQuery.data],
@@ -456,10 +493,7 @@ const ReleasePage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({ props }) => {
 							display: "flex",
 						}}
 					>
-						{[
-							() => <PlayIcon fontSize="large" />,
-							() => <ShuffleIcon fontSize="large" />,
-						].map((icon, index) => (
+						{[PlayIcon, ShuffleIcon].map((Icon, index) => (
 							<Grid item key={index}>
 								<IconButton
 									onClick={() => {
@@ -489,7 +523,7 @@ const ReleasePage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({ props }) => {
 										}
 									}}
 								>
-									{icon()}
+									{<Icon fontSize="large" />}
 								</IconButton>
 							</Grid>
 						))}
@@ -633,10 +667,7 @@ const ReleasePage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({ props }) => {
 					<TileRow
 						tiles={
 							videos?.map((video, videoIndex) => (
-								<VideoTile
-									key={videoIndex}
-									video={{ ...video.track, song: video }}
-								/>
+								<VideoTile key={videoIndex} video={video} />
 							)) ?? []
 						}
 					/>
@@ -656,10 +687,7 @@ const ReleasePage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({ props }) => {
 					{videoExtras.length > 0 ? (
 						<TileRow
 							tiles={videoExtras.map((video, videoIndex) => (
-								<VideoTile
-									key={videoIndex}
-									video={{ ...video.track, song: video }}
-								/>
+								<VideoTile key={videoIndex} video={video} />
 							))}
 						/>
 					) : (

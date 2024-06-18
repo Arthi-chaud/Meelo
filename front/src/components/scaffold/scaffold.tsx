@@ -44,12 +44,13 @@ import Link from "next/link";
 import Player from "../player/player";
 import { useRouter } from "next/router";
 import { IconProps } from "iconsax-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import scaffoldActions from "./actions";
 import type {} from "@mui/material/themeCssVarsAugmentation";
 import ThemedImage from "../../utils/themed-image";
 import { useTranslation } from "react-i18next";
 import { RootGradientBackground } from "../../utils/gradient-background";
+import { parentScrollableDivId } from "../infinite/infinite-scroll";
 
 /**
  * Array of possible item types
@@ -110,6 +111,7 @@ const Drawer = ({
 	const persistentDrawerProps = {
 		open: true,
 		variant: "permanent",
+		style: { zIndex: 1 },
 		sx: {
 			display: {
 				xs: "none",
@@ -169,7 +171,8 @@ const Drawer = ({
 						<List>
 							{primaryItems.map((item) => {
 								const path = `/${item}`;
-								const isSelected = path == router.asPath;
+								const isSelected =
+									path == router.asPath.split("?")[0];
 								const Icon = (props: IconProps) =>
 									getPrimaryTypeIcon(item, props);
 
@@ -291,7 +294,7 @@ const BottomNavigation = (props: { onDrawerOpen: () => void }) => {
 		>
 			{primaryItems.slice(0, 3).map((item) => {
 				const path = `/${item}`;
-				const isSelected = path == router.asPath;
+				const isSelected = path == router.asPath.split("?")[0];
 				const Icon = (pr: IconProps) => getPrimaryTypeIcon(item, pr);
 
 				return (
@@ -331,6 +334,10 @@ const BottomNavigation = (props: { onDrawerOpen: () => void }) => {
 const Scaffold = (props: { children: any }) => {
 	const [tempDrawerIsOpen, openDrawer] = useState(false);
 
+	useEffect(() => {
+		document.getElementById(parentScrollableDivId)?.scrollTo({ top: 0 });
+	}, [props.children]);
+
 	return (
 		<Box sx={{ display: "flex", width: "100%", height: "100vh" }}>
 			<RootGradientBackground />
@@ -342,8 +349,9 @@ const Scaffold = (props: { children: any }) => {
 				sx={{
 					display: "flex",
 					flexDirection: "column",
+					position: "relative",
 					flexWrap: "nowrap",
-					overflowX: "clip",
+					overflow: "clip",
 					width: {
 						xs: "100%",
 						md: `calc(100% - ${DrawerWidth}px)`,
@@ -352,16 +360,19 @@ const Scaffold = (props: { children: any }) => {
 			>
 				<Container
 					maxWidth={false}
+					id={parentScrollableDivId}
 					sx={{
 						width: "100%",
-						paddingTop: 2,
+						height: "100%",
+						overflowY: "scroll",
 						paddingBottom: { xs: "65px", [DrawerBreakpoint]: 2 },
 					}}
 				>
-					{props.children}
+					<Box sx={{ paddingTop: 2, paddingBottom: 0 }}>
+						{props.children}
+					</Box>
+					<Player />
 				</Container>
-				<Box sx={{ height: "100%" }} />
-				<Player />
 			</Box>
 			<BottomNavigation
 				onDrawerOpen={() => {

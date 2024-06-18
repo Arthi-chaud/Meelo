@@ -21,9 +21,10 @@ import { Playlist } from "src/prisma/models";
 import Slug from "src/slug/slug";
 import SongQueryParameters from "src/song/models/song.query-params";
 import type { RequireAtLeastOne, RequireExactlyOne } from "type-fest";
-import type { RelationInclude as BaseRelationInclude } from "src/relation-include/models/relation-include";
 import { ModelSortingParameter } from "src/sort/models/sorting-parameter";
 import AlbumQueryParameters from "src/album/models/album.query-parameters";
+import { filterAtomicRelationInclude } from "src/relation-include/atomic-relation-include.filter";
+import type { RelationInclude as BaseRelationInclude } from "src/relation-include/models/relation-include";
 
 namespace PlaylistQueryParameters {
 	/**
@@ -35,7 +36,7 @@ namespace PlaylistQueryParameters {
 	 * Query parameters to find one playlist
 	 */
 	export type WhereInput = RequireExactlyOne<{
-		id: Playlist["id"];
+		id: number;
 		slug: Slug;
 	}>;
 
@@ -68,8 +69,9 @@ namespace PlaylistQueryParameters {
 	/**
 	 * Defines what relations to include in query
 	 */
-	export const AvailableIncludes = ["entries"] as const;
-	export const AvailableAtomicIncludes = AvailableIncludes;
+	export const AvailableIncludes = ["illustration"] as const;
+	export const AvailableAtomicIncludes =
+		filterAtomicRelationInclude(AvailableIncludes);
 	export type RelationInclude = BaseRelationInclude<typeof AvailableIncludes>;
 
 	/**

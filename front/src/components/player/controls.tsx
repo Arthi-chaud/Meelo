@@ -22,8 +22,11 @@ import {
 	DragHandleIcon,
 	ForwardIcon,
 	FullscreenIcon,
+	LyricsIcon,
 	PauseIcon,
 	PlayIcon,
+	PlayerIcon,
+	PlaylistIcon,
 	RewindIcon,
 	TrackIcon,
 } from "../icons";
@@ -37,8 +40,6 @@ import {
 	IconButton,
 	Skeleton,
 	Stack,
-	Tab,
-	Tabs,
 	Typography,
 	useTheme,
 } from "@mui/material";
@@ -48,11 +49,10 @@ import PlayerSlider from "./controls/slider";
 import API from "../../api/api";
 import { useQuery } from "../../api/use-query";
 import LyricsBox from "../lyrics";
-import Track from "../../models/track";
+import { TrackWithRelations } from "../../models/track";
 import Artist from "../../models/artist";
 import Link from "next/link";
 import ReleaseTrackContextualMenu from "../contextual-menu/release-track-contextual-menu";
-import Release from "../../models/release";
 import ListItem from "../list-item/item";
 import { DragDropContext, Draggable, Droppable } from "react-beautiful-dnd";
 import formatDuration from "../../utils/formatDuration";
@@ -73,11 +73,11 @@ type PlayerButtonControlsProps = {
 
 type PlayerControlsProps = Parameters<typeof PlayerSlider>[number] &
 	PlayerButtonControlsProps & {
+		isTranscoding: boolean;
 		expanded: boolean;
 		onExpand: (expand: boolean) => void;
 		artist?: Artist;
-		track?: Track;
-		release?: Release;
+		track?: TrackWithRelations<"illustration">;
 	};
 
 const playerTextStyle = {
@@ -237,8 +237,10 @@ const ExpandedPlayerControls = (
 	const theme = useTheme();
 	const { t } = useTranslation();
 	const parentSong = useQuery(parentSongQuery, props.track?.songId);
-	const [panel, setPanel] = useState<(typeof Panels)[number]>("lyrics");
 	const { playlist, cursor, reorder, skipTrack } = usePlayerContext();
+	const [selectedTab, selectTab] = useState<"player" | "lyrics" | "playlist">(
+		"player",
+	);
 	const requestFullscreen = () => {
 		const el: any = document.getElementById("videoPlayer");
 
@@ -264,34 +266,73 @@ const ExpandedPlayerControls = (
 				height: "100%",
 				display: "flex",
 				padding: 1,
-				overflowY: { xs: "auto", lg: "clip" },
 				overflowX: "clip",
+				overflowY: "auto",
+				paddingBottom: 2,
 			}}
 			direction="column"
 		>
 			<Box
 				sx={{
-					alignSelf: "flex-end",
+					display: "flex",
+					justifyContent: "space-between",
 					margin: 1,
-					position: "sticky",
-					top: 2,
-					zIndex: "modal",
+					alignItems: "start",
 				}}
 			>
+				<Box />
+				<Box
+					sx={{
+						flexDirection: "row",
+						display: "flex",
+					}}
+				>
+					{selectedTab !== "player" && props.track && props.artist ? (
+						<>
+							<Box
+								sx={{
+									display: "flex",
+									flexDirection: "column",
+									justifyContent: "center",
+									alignItems: "center",
+								}}
+							>
+								<Typography
+									variant="h6"
+									sx={{ textAlign: "center" }}
+								>
+									{props.track.name ?? <Skeleton />}
+								</Typography>
+								<Typography
+									variant="body1"
+									sx={{ textAlign: "center" }}
+								>
+									{props.artist.name ?? <Skeleton />}
+								</Typography>
+							</Box>
+						</>
+					) : (
+						<></>
+					)}
+				</Box>
 				<IconButton onClick={() => props.onExpand(false)}>
 					<CloseIcon />
 				</IconButton>
 			</Box>
-			<Grid container>
+			{selectedTab !== "player" && (
+				<Divider sx={{ margin: 1 }} variant="middle" />
+			)}
+
+			{selectedTab === "player" && (
 				<Grid
-					item
 					container
-					xs={12}
-					lg={7}
 					sx={{
-						height: { xs: "80vh", lg: "90vh" },
+						height: "100%",
+						minHeight: "500px",
 						flexWrap: "nowrap",
-						justifyContent: { lg: "center" },
+						justifyContent: "center",
+						alignSelf: "center",
+						maxWidth: theme.breakpoints.values.md,
 					}}
 					direction="column"
 				>
@@ -336,10 +377,7 @@ const ExpandedPlayerControls = (
 						)}
 					</Grid>
 					<Grid item sx={{ width: "100%" }}>
-						<Stack
-							spacing={2}
-							sx={{ justifyContent: "space-evenly" }}
-						>
+						<Stack spacing={3}>
 							<Grid
 								container
 								sx={{
@@ -360,7 +398,7 @@ const ExpandedPlayerControls = (
 								>
 									{props.track?.type == "Video" && (
 										<IconButton onClick={requestFullscreen}>
-											<FullscreenIcon />
+											<FullscreenIcon size={18} />
 										</IconButton>
 									)}
 								</Grid>
@@ -412,11 +450,9 @@ const ExpandedPlayerControls = (
 									{
 										props.track &&
 										parentSong.data &&
-										props.artist &&
-										props.release ? (
+										props.artist ? (
 											<ReleaseTrackContextualMenu
 												artist={props.artist}
-												release={props.release}
 												track={{
 													...props.track,
 													song: parentSong.data,
@@ -503,149 +539,161 @@ const ExpandedPlayerControls = (
 						</Stack>
 					</Grid>
 				</Grid>
-				<Grid item xs={12} lg={5}>
-					<Container maxWidth={false}>
-						<Tabs
-							value={panel}
-							onChange={(__, panelName) => setPanel(panelName)}
-							variant="fullWidth"
-						>
-							{Panels.map((tabName, index) => (
-								<Tab
-									key={index}
-									value={tabName}
-									label={t(tabName)}
-								/>
-							))}
-						</Tabs>
-						<Box
-							sx={{
-								paddingY: 2,
-								height: { xs: "100%", lg: "80vh" },
-								overflowY: "scroll",
-							}}
-						>
-							{panel == "lyrics" && (
-								<LyricsBox
-									lyrics={
-										parentSong.data
-											? parentSong.data.lyrics?.content.split(
-													"\n",
-												) ?? null
-											: undefined
-									}
-									songName={props.track?.name}
-								/>
-							)}
-							{panel == "playlist" && (
-								<DragDropContext
-									onDragEnd={(result) => {
-										if (result.destination) {
-											reorder({
-												from:
-													result.source.index +
-													cursor +
-													1,
-												to:
-													result.destination.index +
-													cursor +
-													1,
-											});
-										}
-									}}
+			)}
+			{selectedTab == "lyrics" && (
+				<Box
+					sx={{
+						height: "100%",
+						width: "100%",
+						overflowY: "scroll",
+						margin: 1,
+						alignSelf: "center",
+						maxWidth: theme.breakpoints.values.md,
+					}}
+				>
+					{parentSong.data && (
+						<LyricsBox
+							lyrics={
+								parentSong.data.lyrics?.content.split("\n") ??
+								null
+							}
+							songName={props.track?.name}
+						/>
+					)}
+				</Box>
+			)}
+			{selectedTab == "playlist" && (
+				<Box
+					sx={{
+						height: "100%",
+						width: "100%",
+						overflowY: "scroll",
+						alignSelf: "center",
+						maxWidth: theme.breakpoints.values.md,
+					}}
+				>
+					<DragDropContext
+						onDragEnd={(result) => {
+							if (result.destination) {
+								reorder({
+									from: result.source.index + cursor + 1,
+									to: result.destination.index + cursor + 1,
+								});
+							}
+						}}
+					>
+						<Droppable droppableId="droppable">
+							{(provided) => (
+								<div
+									{...provided.droppableProps}
+									ref={provided.innerRef}
 								>
-									<Droppable droppableId="droppable">
-										{(provided) => (
-											<div
-												{...provided.droppableProps}
-												ref={provided.innerRef}
-											>
-												{playlist
-													.slice(cursor + 1)
-													.map(
-														(
-															playlistItem,
-															index,
-														) => (
-															<>
-																<Draggable
-																	draggableId={index.toString()}
-																	key={index}
-																	index={
-																		index
-																	}
-																>
-																	{(
-																		providedChild,
-																	) => (
-																		<div
-																			ref={
-																				providedChild.innerRef
-																			}
-																			{...providedChild.draggableProps}
-																			style={
-																				providedChild
-																					.draggableProps
-																					.style
-																			}
-																		>
-																			<ListItem
-																				title={
-																					playlistItem
-																						.track
-																						.name
-																				}
-																				secondTitle={
-																					playlistItem
-																						.artist
-																						.name
-																				}
-																				icon={
-																					<Box
-																						{...providedChild.dragHandleProps}
-																					>
-																						<DragHandleIcon />
-																					</Box>
-																				}
-																				trailing={
-																					<Typography color="text.disabled">
-																						{formatDuration(
-																							playlistItem
-																								.track
-																								.duration,
-																						)}
-																					</Typography>
-																				}
-																				onClick={() => {
-																					let toSkip =
-																						index +
-																						1;
+									{playlist
+										.slice(cursor + 1)
+										.map((playlistItem, index) => (
+											<>
+												<Draggable
+													draggableId={index.toString()}
+													key={index}
+													index={index}
+												>
+													{(providedChild) => (
+														<div
+															ref={
+																providedChild.innerRef
+															}
+															{...providedChild.draggableProps}
+															style={
+																providedChild
+																	.draggableProps
+																	.style
+															}
+														>
+															<ListItem
+																title={
+																	playlistItem
+																		.track
+																		.name
+																}
+																secondTitle={
+																	playlistItem
+																		.artist
+																		.name
+																}
+																icon={
+																	<Box
+																		{...providedChild.dragHandleProps}
+																	>
+																		<DragHandleIcon />
+																	</Box>
+																}
+																trailing={
+																	<Typography color="text.disabled">
+																		{formatDuration(
+																			playlistItem
+																				.track
+																				.duration,
+																		)}
+																	</Typography>
+																}
+																onClick={() => {
+																	let toSkip =
+																		index +
+																		1;
 
-																					while (
-																						toSkip >
-																						0
-																					) {
-																						skipTrack();
-																						toSkip--;
-																					}
-																				}}
-																			/>
-																		</div>
-																	)}
-																</Draggable>
-																<Divider variant="middle" />
-															</>
-														),
+																	while (
+																		toSkip >
+																		0
+																	) {
+																		skipTrack();
+																		toSkip--;
+																	}
+																}}
+															/>
+														</div>
 													)}
-												{provided.placeholder}
-											</div>
-										)}
-									</Droppable>
-								</DragDropContext>
+												</Draggable>
+												<Divider variant="middle" />
+											</>
+										))}
+									{provided.placeholder}
+								</div>
 							)}
-						</Box>
-					</Container>
-				</Grid>
+						</Droppable>
+					</DragDropContext>
+				</Box>
+			)}
+			<Divider variant="middle" sx={{ margin: 1, marginBottom: 2 }} />
+			<Grid
+				container
+				sx={{
+					width: "100%",
+					justifyContent: "space-evenly",
+				}}
+			>
+				{[
+					["player", PlayerIcon] as const,
+					["lyrics", LyricsIcon] as const,
+					["playlist", PlaylistIcon] as const,
+				].map(([tabName, Icon], index) => (
+					<IconButton
+						key={index}
+						disabled={
+							tabName == "lyrics" && !parentSong.data?.lyrics
+						}
+						onClick={() =>
+							selectTab((s) =>
+								s === tabName ? "player" : tabName,
+							)
+						}
+					>
+						<Icon
+							variant={
+								selectedTab === tabName ? "Bold" : undefined
+							}
+						/>
+					</IconButton>
+				))}
 			</Grid>
 		</Stack>
 	);

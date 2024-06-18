@@ -36,7 +36,9 @@ const prepareSSR = (context: NextPageContext) => {
 
 	return {
 		additionalProps: { defaultLayout, sortBy, order },
-		infiniteQueries: [API.getArtists({}, { sortBy, order })],
+		infiniteQueries: [
+			API.getArtists({}, { sortBy, order }, ["illustration"]),
+		],
 	};
 };
 
@@ -49,7 +51,9 @@ const ArtistsPage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({ props }) => {
 			initialSortingOrder={props?.order}
 			defaultLayout={props?.defaultLayout}
 			query={({ library, sortBy, order }) =>
-				API.getArtists(library ? { library } : {}, { sortBy, order })
+				API.getArtists(library ? { library } : {}, { sortBy, order }, [
+					"illustration",
+				])
 			}
 		/>
 	);

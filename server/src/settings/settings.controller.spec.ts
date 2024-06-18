@@ -51,7 +51,6 @@ describe("Settings Controller", () => {
 					genius: { enabled: true },
 					musicbrainz: { enabled: true },
 				},
-				meeloFolder: "test/assets/",
 			});
 	});
 

@@ -31,7 +31,6 @@ import {
 import ArtistService from "src/artist/artist.service";
 import ArtistQueryParameters from "src/artist/models/artist.query-parameters";
 import { PaginationParameters } from "src/pagination/models/pagination-parameters";
-import TrackService from "src/track/track.service";
 import SongQueryParameters from "./models/song.query-params";
 import SongService from "./song.service";
 import { ApiOperation, ApiPropertyOptional, ApiTags } from "@nestjs/swagger";
@@ -42,7 +41,6 @@ import RelationIncludeQuery from "src/relation-include/relation-include-query.de
 import Admin from "src/authentication/roles/admin.decorator";
 import IdentifierParam from "src/identifier/identifier.pipe";
 import Response, { ResponseType } from "src/response/response.decorator";
-import { LyricsResponseBuilder } from "src/lyrics/models/lyrics.response";
 import { IsEnum, IsNumber, IsOptional, IsPositive } from "class-validator";
 import TransformIdentifier from "src/identifier/identifier.transform";
 import LibraryQueryParameters from "src/library/models/library.query-parameters";
@@ -56,7 +54,9 @@ import ReleaseService from "src/release/release.service";
 import { SongType, User } from "@prisma/client";
 import UpdateSongDTO from "./models/update-song.dto";
 import SongGroupQueryParameters from "./models/song-group.query-params";
-import SongGroupService from "./song-group.service";
+import { LyricsResponse } from "src/lyrics/models/lyrics.response";
+import { formatIdentifier } from "src/repository/repository.utils";
+import Slug from "src/slug/slug";
 
 export class Selector {
 	@IsEnum(SongType)
@@ -99,7 +99,14 @@ export class Selector {
 	@ApiPropertyOptional({
 		description: "Get related songs ",
 	})
-	@TransformIdentifier(SongGroupService)
+	@TransformIdentifier({
+		formatIdentifierToWhereInput: (identifier) =>
+			formatIdentifier<SongGroupQueryParameters.WhereInput>(
+				identifier,
+				(id: string) => ({ slug: new Slug(id) }),
+				(id: number) => ({ id: id }),
+			),
+	})
 	group?: SongGroupQueryParameters.WhereInput;
 
 	@IsOptional()
@@ -138,8 +145,6 @@ export class SongController {
 	constructor(
 		@Inject(forwardRef(() => SongService))
 		private songService: SongService,
-		@Inject(forwardRef(() => TrackService))
-		private trackService: TrackService,
 		@Inject(forwardRef(() => LyricsService))
 		private lyricsService: LyricsService,
 	) {}
@@ -167,7 +172,6 @@ export class SongController {
 				selector,
 				paginationParameters,
 				include,
-				sort,
 			);
 		} else if (sort.sortBy == "userPlayCount") {
 			return this.songService.getManyByPlayCount(
@@ -187,9 +191,9 @@ export class SongController {
 		}
 		return this.songService.getMany(
 			selector,
+			selector.random ?? sort,
 			paginationParameters,
 			include,
-			selector.random || sort,
 		);
 	}
 
@@ -241,38 +245,34 @@ export class SongController {
 		summary: "Get a song's lyrics",
 	})
 	@Get(":idOrSlug/lyrics")
-	@Response({ handler: LyricsResponseBuilder })
 	async getSongLyrics(
 		@IdentifierParam(SongService)
 		where: SongQueryParameters.WhereInput,
-	) {
-		return this.lyricsService.get({ song: where });
+	): Promise<LyricsResponse> {
+		const song = await this.songService.get(where);
+		return this.lyricsService
+			.get({ songId: song.id })
+			.then(({ content }) => ({ lyrics: content }));
 	}
 
 	@ApiOperation({
 		summary: "Update a song's lyrics",
 	})
 	@Admin()
-	@Response({ handler: LyricsResponseBuilder })
 	@Post(":idOrSlug/lyrics")
 	async updateSongLyrics(
 		@IdentifierParam(SongService)
 		where: SongQueryParameters.WhereInput,
 		@Body() updateLyricsDto: LyricsDto,
-	) {
+	): Promise<LyricsResponse> {
 		const song = await this.songService.get(where);
 
-		try {
-			return await this.lyricsService.update(
-				{ content: updateLyricsDto.lyrics },
-				{ song: where },
-			);
-		} catch {
-			return this.lyricsService.create({
-				songId: song.id,
+		return this.lyricsService
+			.createOrUpdate({
 				content: updateLyricsDto.lyrics,
-			});
-		}
+				songId: song.id,
+			})
+			.then(({ content }) => ({ lyrics: content }));
 	}
 
 	@ApiOperation({
@@ -283,7 +283,7 @@ export class SongController {
 	async deleteSongLyrics(
 		@IdentifierParam(SongService)
 		where: SongQueryParameters.WhereInput,
-	) {
+	): Promise<void> {
 		const song = await this.songService.get(where);
 
 		await this.lyricsService.delete({ songId: song.id });

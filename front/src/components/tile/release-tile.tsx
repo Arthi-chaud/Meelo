@@ -23,7 +23,7 @@ import getYear from "../../utils/getYear";
 import ReleaseContextualMenu from "../contextual-menu/release-contextual-menu";
 
 const ReleaseTile = (props: {
-	release: ReleaseWithRelations<"album"> | undefined;
+	release: ReleaseWithRelations<"album" | "illustration"> | undefined;
 	formatSubtitle?: (release: ReleaseWithRelations<"album">) => string;
 }) => {
 	const yearFormat = props.release
@@ -45,7 +45,7 @@ const ReleaseTile = (props: {
 						: yearFormat
 					: undefined
 			}
-			href={props.release ? `/releases/${props.release.id}` : undefined}
+			href={props.release ? `/releases/${props.release.slug}` : undefined}
 			illustration={
 				<Illustration
 					illustration={props.release?.illustration}

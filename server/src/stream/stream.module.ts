@@ -16,30 +16,15 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import Slug from "src/slug/slug";
-import Identifier from "./models/identifier";
-import { SlugSeparator } from "./identifier.slug-separator";
-import InvalidIdentifierSlugs from "./identifier.exceptions";
+import { Module } from "@nestjs/common";
+import { StreamService } from "./stream.service";
+import { StreamController } from "./stream.controller";
+import FileModule from "src/file/file.module";
+import { HttpModule } from "@nestjs/axios";
 
-/**
- * Parse slugs in an identifier
- * If the obtained array's length does not match `expectedTokens`, throws
- */
-export const parseIdentifierSlugs = (
-	identifier: Identifier,
-	expectedTokens?: number,
-) => {
-	const slugs = identifier
-		.toString()
-		.split(SlugSeparator)
-		.map((slugString: string) => new Slug(slugString));
-
-	if (expectedTokens != undefined && slugs.length != expectedTokens) {
-		throw new InvalidIdentifierSlugs(
-			identifier,
-			expectedTokens,
-			slugs.length,
-		);
-	}
-	return slugs;
-};
+@Module({
+	imports: [FileModule, HttpModule],
+	providers: [StreamService],
+	controllers: [StreamController],
+})
+export class StreamModule {}

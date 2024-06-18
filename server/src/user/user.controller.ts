@@ -120,9 +120,8 @@ export default class UserController {
 	) {
 		return this.userService.getMany(
 			{},
-			paginationParameters,
-			{},
 			sortingParameter,
+			paginationParameters,
 		);
 	}
 
@@ -143,9 +142,8 @@ export default class UserController {
 	) {
 		return this.userService.getMany(
 			{ enabled: false },
-			paginationParameters,
-			{},
 			sortingParameter,
+			paginationParameters,
 		);
 	}
 
@@ -166,9 +164,8 @@ export default class UserController {
 	) {
 		return this.userService.getMany(
 			{ admin: true, enabled: true },
-			paginationParameters,
-			{},
 			sortingParameter,
+			paginationParameters,
 		);
 	}
 }

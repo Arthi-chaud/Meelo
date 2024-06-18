@@ -28,6 +28,7 @@ import SettingsModule from "src/settings/settings.module";
 import SettingsService from "src/settings/settings.service";
 import ProviderService from "src/providers/provider.service";
 import { Meilisearch } from "meilisearch";
+import { IllustrationType } from "@prisma/client";
 
 describe("Artist Controller", () => {
 	let dummyRepository: TestPrismaService;
@@ -345,17 +346,17 @@ describe("Artist Controller", () => {
 
 	describe("Artist Illustration", () => {
 		it("Should return the illustration", async () => {
-			const illustration =
-				await dummyRepository.artistIllustration.create({
-					data: {
-						artistId: dummyRepository.artistB.id,
-						blurhash: "A",
-						aspectRatio: 2,
-						colors: ["B"],
-					},
-				});
+			const illustration = await dummyRepository.illustration.create({
+				data: {
+					artist: { connect: { id: dummyRepository.artistB.id } },
+					type: IllustrationType.Avatar,
+					blurhash: "A",
+					aspectRatio: 2,
+					colors: ["B"],
+				},
+			});
 			return request(app.getHttpServer())
-				.get(`/artists/${dummyRepository.artistB.id}`)
+				.get(`/artists/${dummyRepository.artistB.id}?with=illustration`)
 				.expect(200)
 				.expect((res) => {
 					const artist: Artist = res.body;
@@ -363,10 +364,7 @@ describe("Artist Controller", () => {
 						...artist,
 						illustration: {
 							...illustration,
-							aspectRatio: 2,
-							url:
-								"/illustrations/artists/" +
-								dummyRepository.artistB.slug,
+							url: "/illustrations/" + illustration.id,
 						},
 					});
 				});

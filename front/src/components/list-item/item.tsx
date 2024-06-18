@@ -76,11 +76,11 @@ const ListItem = (props: ListItemProps) => {
 					}}
 				>
 					<ListItemText
-						primary={props.title ?? <Skeleton />}
+						primary={props.title ?? <Skeleton width={"120px"} />}
 						primaryTypographyProps={primaryTextStyle}
 						secondary={
 							props.secondTitle === undefined ? (
-								<Skeleton width={"70%"} />
+								<Skeleton width={"70px"} />
 							) : (
 								props.secondTitle
 							)
@@ -96,7 +96,7 @@ const ListItem = (props: ListItemProps) => {
 				>
 					<Grid item xs={props.secondTitle !== null ? 6 : 10}>
 						<Typography sx={{ ...textStyle, ...primaryTextStyle }}>
-							{props.title ?? <Skeleton />}
+							{props.title ?? <Skeleton width={"120px"} />}
 						</Typography>
 					</Grid>
 					{props.secondTitle === null ? undefined : (
@@ -112,7 +112,7 @@ const ListItem = (props: ListItemProps) => {
 								sx={{ ...textStyle, ...secondaryTextStyle }}
 							>
 								{props.secondTitle ?? (
-									<Skeleton width={"70%"} />
+									<Skeleton width={"70px"} />
 								)}
 							</Typography>
 						</Grid>

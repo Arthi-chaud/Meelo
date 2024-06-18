@@ -22,23 +22,19 @@ import AlbumService from "./album.service";
 import {
 	expectedAlbumResponse,
 	expectedArtistResponse,
-	expectedReleaseResponse,
 } from "test/expected-responses";
 import ProviderService from "src/providers/provider.service";
 import SettingsService from "src/settings/settings.service";
 import ProvidersModule from "src/providers/providers.module";
+import { IllustrationType } from "@prisma/client";
 
 jest.setTimeout(60000);
 
 describe("Album Controller", () => {
 	let dummyRepository: TestPrismaService;
 	let app: INestApplication;
-	let albumService: AlbumService;
 	let providerService: ProviderService;
 	let module: TestingModule;
-	let album1: Album;
-	let album2: Album;
-	let album3: Album;
 	beforeAll(async () => {
 		module = await createTestingModule({
 			imports: [
@@ -61,7 +57,6 @@ describe("Album Controller", () => {
 			.compile();
 		app = await SetupApp(module);
 		dummyRepository = module.get(PrismaService);
-		albumService = module.get(AlbumService);
 		await dummyRepository.onModuleInit();
 		providerService = module.get(ProviderService);
 		module.get(SettingsService).loadFromFile();
@@ -294,9 +289,7 @@ describe("Album Controller", () => {
 
 		it("Should return album (w/ slug)", () => {
 			return request(app.getHttpServer())
-				.get(
-					`/albums/${dummyRepository.artistA.slug}+${dummyRepository.albumA1.slug}`,
-				)
+				.get(`/albums/${dummyRepository.albumA1.slug}`)
 				.expect(200)
 				.expect((res) => {
 					expect(res.body).toStrictEqual(
@@ -382,10 +375,10 @@ describe("Album Controller", () => {
 					});
 				});
 		});
-		it("Should return an error as the string is badly fored", () => {
+		it("Should return an error, the album does not exists", () => {
 			return request(app.getHttpServer())
 				.get(`/albums/${dummyRepository.artistA.slug}`)
-				.expect(400);
+				.expect(404);
 		});
 	});
 
@@ -488,11 +481,8 @@ describe("Album Controller", () => {
 	describe("Update the album", () => {
 		it("should reassign the compilation album to an artist + change the type", () => {
 			return request(app.getHttpServer())
-				.post(
-					`/albums/compilations+${dummyRepository.compilationAlbumA.slug}`,
-				)
+				.post(`/albums/${dummyRepository.compilationAlbumA.slug}`)
 				.send({
-					artistId: dummyRepository.artistB.id,
 					type: "RemixAlbum",
 				})
 				.expect(201)
@@ -502,7 +492,6 @@ describe("Album Controller", () => {
 						...expectedAlbumResponse(
 							dummyRepository.compilationAlbumA,
 						),
-						artistId: dummyRepository.artistB.id,
 						type: "RemixAlbum",
 					});
 				});
@@ -530,18 +519,26 @@ describe("Album Controller", () => {
 
 	describe("Album Illustration", () => {
 		it("Should return the illustration", async () => {
-			const illustration =
+			const { illustration } =
 				await dummyRepository.releaseIllustration.create({
 					data: {
-						releaseId: dummyRepository.releaseA1_1.id,
-						blurhash: "A",
-						hash: "AAA",
-						aspectRatio: 1,
-						colors: ["B"],
+						release: {
+							connect: { id: dummyRepository.releaseA1_1.id },
+						},
+						hash: "a",
+						illustration: {
+							create: {
+								type: IllustrationType.Cover,
+								blurhash: "A",
+								aspectRatio: 1,
+								colors: ["B"],
+							},
+						},
 					},
+					include: { illustration: true },
 				});
 			return request(app.getHttpServer())
-				.get(`/albums/${dummyRepository.albumA1.id}`)
+				.get(`/albums/${dummyRepository.albumA1.id}?with=illustration`)
 				.expect(200)
 				.expect((res) => {
 					const album: Album = res.body;
@@ -549,10 +546,7 @@ describe("Album Controller", () => {
 						...album,
 						illustration: {
 							...illustration,
-							hash: "AAA",
-							url:
-								"/illustrations/releases/" +
-								dummyRepository.releaseA1_1.id,
+							url: "/illustrations/" + illustration.id,
 						},
 					});
 				});

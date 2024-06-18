@@ -24,23 +24,51 @@ import {
 	SongResponse,
 	SongResponseBuilder,
 } from "src/song/models/song.response";
-import SongService from "src/song/song.service";
-import { IllustratedResponse } from "src/illustration/models/illustration.response";
-import IllustrationRepository from "src/illustration/illustration.repository";
+import {
+	IllustratedResponse,
+	IllustrationResponse,
+} from "src/illustration/models/illustration.response";
+import { PlaylistEntryModel } from "./playlist-entry.model";
 
 export class PlaylistEntryResponse extends SongResponse {
 	@ApiProperty({
 		description: "Unique ID of the entry in the playlist",
 	})
 	entryId: number;
+	@ApiProperty({
+		description: "Index of the song",
+	})
+	index: number;
+}
+
+@Injectable()
+export class PlaylistEntryResponseBuilder extends ResponseBuilderInterceptor<
+	PlaylistEntryModel,
+	PlaylistEntryResponse
+> {
+	constructor(
+		@Inject(forwardRef(() => SongResponseBuilder))
+		private songResponseBuilder: SongResponseBuilder,
+	) {
+		super();
+	}
+
+	returnType = PlaylistResponse;
+
+	async buildResponse(
+		entry: PlaylistEntryModel,
+	): Promise<PlaylistEntryResponse> {
+		return {
+			...(await this.songResponseBuilder.buildResponse(entry)),
+			entryId: entry.entryId,
+			index: entry.index,
+		};
+	}
 }
 
 export class PlaylistResponse extends IntersectionType(
 	Playlist,
 	IllustratedResponse,
-	class {
-		entries?: PlaylistEntryResponse[];
-	},
 ) {}
 
 @Injectable()
@@ -48,14 +76,7 @@ export class PlaylistResponseBuilder extends ResponseBuilderInterceptor<
 	PlaylistWithRelations,
 	PlaylistResponse
 > {
-	constructor(
-		@Inject(forwardRef(() => IllustrationRepository))
-		private illustrationRepository: IllustrationRepository,
-		@Inject(forwardRef(() => SongResponseBuilder))
-		private songResponseBuilder: SongResponseBuilder,
-		@Inject(forwardRef(() => SongService))
-		private songService: SongService,
-	) {
+	constructor() {
 		super();
 	}
 
@@ -64,31 +85,15 @@ export class PlaylistResponseBuilder extends ResponseBuilderInterceptor<
 	async buildResponse(
 		playlist: PlaylistWithRelations,
 	): Promise<PlaylistResponse> {
-		const response = <PlaylistResponse>{
-			...playlist,
-			illustration:
-				await this.illustrationRepository.getPlaylistIllustration({
-					id: playlist.id,
-				}),
+		return {
+			id: playlist.id,
+			name: playlist.name,
+			slug: playlist.slug,
+			createdAt: playlist.createdAt,
+			illustrationId: playlist.illustrationId,
+			illustration: playlist.illustration
+				? IllustrationResponse.from(playlist.illustration)
+				: playlist.illustration,
 		};
-
-		if (playlist.entries !== undefined) {
-			response.entries = await Promise.all(
-				playlist.entries
-					.sort((entryA, entryB) => entryA.index - entryB.index)
-					.map((entry) =>
-						this.songService
-							.get({ id: entry.songId })
-							.then((song) =>
-								this.songResponseBuilder.buildResponse(song),
-							)
-							.then((songResponse) => ({
-								entryId: entry.id,
-								...songResponse,
-							})),
-					),
-			);
-		}
-		return response;
 	}
 }

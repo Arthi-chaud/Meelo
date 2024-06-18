@@ -53,34 +53,6 @@ describe("Genre Controller", () => {
 		await module.close();
 	});
 
-	describe("Get Genre", () => {
-		it("Should get the genre (by slug)", () => {
-			return request(app.getHttpServer())
-				.get(`/genres/${dummyRepository.genreA.slug}`)
-				.expect(200)
-				.expect((res) => {
-					const fetchedGenre: Genre = res.body;
-					expect(fetchedGenre).toStrictEqual(dummyRepository.genreA);
-				});
-		});
-
-		it("Should get the genre (by id)", () => {
-			return request(app.getHttpServer())
-				.get(`/genres/${dummyRepository.genreB.id}`)
-				.expect(200)
-				.expect((res) => {
-					const fetchedGenre: Genre = res.body;
-					expect(fetchedGenre).toStrictEqual(dummyRepository.genreB);
-				});
-		});
-
-		it("Should return an error, as the genre does not exist", () => {
-			return request(app.getHttpServer())
-				.get(`/genres/${-1}`)
-				.expect(404);
-		});
-	});
-
 	describe("Get Genres", () => {
 		it("Should get all the genres", () => {
 			return request(app.getHttpServer())
@@ -124,9 +96,7 @@ describe("Genre Controller", () => {
 	describe("Get Genres of a song", () => {
 		it("should return the song's genres", () => {
 			return request(app.getHttpServer())
-				.get(
-					`/genres?song=${dummyRepository.artistA.slug}+${dummyRepository.songA2.slug}`,
-				)
+				.get(`/genres?song=${dummyRepository.songA2.slug}`)
 				.expect(200)
 				.expect((res) => {
 					const genres: Genre[] = res.body.items;

@@ -29,6 +29,9 @@ import { useQuery } from "../../../api/use-query";
 import { NextPageContext } from "next";
 import { useGradientBackground } from "../../../utils/gradient-background";
 
+const artistQuery = (identifier: string | number) =>
+	API.getArtist(identifier, ["illustration"]);
+
 const prepareSSR = (context: NextPageContext) => {
 	const artistIdentifier = getSlugOrId(context.query);
 	const order = getOrderParams(context.query.order) ?? "asc";
@@ -36,7 +39,7 @@ const prepareSSR = (context: NextPageContext) => {
 
 	return {
 		additionalProps: { artistIdentifier, order, sortBy },
-		queries: [API.getArtist(artistIdentifier)],
+		queries: [artistQuery(artistIdentifier)],
 		infiniteQueries: [
 			API.getVideos(
 				{ artist: artistIdentifier },
@@ -53,7 +56,7 @@ const ArtistSongPage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({
 	const router = useRouter();
 	const artistIdentifier =
 		props?.artistIdentifier ?? getSlugOrId(router.query);
-	const artist = useQuery(API.getArtist, artistIdentifier);
+	const artist = useQuery(artistQuery, artistIdentifier);
 	const { GradientBackground } = useGradientBackground(
 		artist.data?.illustration?.colors,
 	);
@@ -75,7 +78,7 @@ const ArtistSongPage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({
 						["artist", "featuring"],
 					)
 				}
-				formatSubtitle={(song) => formatDuration(song.track.duration)}
+				formatSubtitle={({ track }) => formatDuration(track.duration)}
 			/>
 		</>
 	);

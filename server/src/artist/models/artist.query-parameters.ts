@@ -33,7 +33,7 @@ namespace ArtistQueryParameters {
 	 */
 	export type CreateInput = Omit<
 		Artist,
-		"id" | "slug" | "songs" | "albums" | "registeredAt"
+		"id" | "slug" | "songs" | "albums" | "registeredAt" | "illustrationId"
 	> & {
 		registeredAt?: Date;
 	};
@@ -41,7 +41,7 @@ namespace ArtistQueryParameters {
 	 * Query parameters to find one artist
 	 */
 	export type WhereInput = RequireExactlyOne<{
-		id: Artist["id"];
+		id: number;
 		slug: Slug;
 		compilationArtist: true;
 	}>;
@@ -84,6 +84,7 @@ namespace ArtistQueryParameters {
 		"albums",
 		"songs",
 		"externalIds",
+		"illustration",
 	] as const;
 	export const AvailableAtomicIncludes = filterAtomicRelationInclude(
 		AvailableIncludes,

@@ -21,7 +21,7 @@ import Illustration from "./illustration";
 import IllustrationModel from "../models/illustration";
 
 const ArtistAvatar = (props: {
-	illustration: IllustrationModel | undefined;
+	illustration: IllustrationModel | undefined | null;
 	quality: Parameters<typeof Illustration>[0]["quality"];
 }) => {
 	return (

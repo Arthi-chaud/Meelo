@@ -22,7 +22,7 @@ import {
 	AlbumType,
 	AlbumWithRelations,
 } from "../models/album";
-import Artist, {
+import {
 	ArtistInclude,
 	ArtistSortingKeys,
 	ArtistWithRelations,
@@ -46,9 +46,10 @@ import { VideoWithRelations } from "../models/video";
 import Track, {
 	TrackInclude,
 	TrackSortingKeys,
+	TrackType,
 	TrackWithRelations,
 } from "../models/track";
-import Tracklist from "../models/tracklist";
+import { TracklistItemWithRelations } from "../models/tracklist";
 import { SortingParameters } from "../utils/sorting";
 import LibraryTaskResponse from "../models/library-task-response";
 import { ResourceNotFound } from "../exceptions";
@@ -59,6 +60,7 @@ import { InfiniteQuery, Query } from "./use-query";
 import * as yup from "yup";
 import { RequireExactlyOne } from "type-fest";
 import Playlist, {
+	PlaylistEntryWithRelations,
 	PlaylistInclude,
 	PlaylistSortingKeys,
 	PlaylistWithRelations,
@@ -199,23 +201,27 @@ export default class API {
 	 * Fetch all playlists
 	 * @returns An InfiniteQuery of playlists
 	 */
-	static getPlaylists(
+	static getPlaylists<I extends PlaylistInclude | never = never>(
 		filter: { album?: Identifier },
 		sort?: SortingParameters<typeof PlaylistSortingKeys>,
-	): InfiniteQuery<Playlist> {
+		include?: I[],
+	): InfiniteQuery<PlaylistWithRelations<I>> {
 		return {
 			key: [
 				"playlists",
 				...API.formatObject(sort),
 				...API.formatObject(filter),
+				...API.formatIncludeKeys(include),
 			],
 			exec: (pagination) =>
 				API.fetch({
 					route: `/playlists`,
 					errorMessage: "Playlists could not be loaded",
-					parameters: { pagination: pagination, include: [], sort },
+					parameters: { pagination: pagination, include, sort },
 					otherParameters: filter,
-					validator: PaginatedResponse(Playlist),
+					validator: PaginatedResponse(
+						PlaylistWithRelations(include ?? []),
+					),
 				}),
 		};
 	}
@@ -276,6 +282,34 @@ export default class API {
 					route: `/playlists/${playlistSlugOrId}`,
 					parameters: { include },
 					validator: PlaylistWithRelations(include ?? []),
+				}),
+		};
+	}
+
+	/**
+	 * Fetch all entries in a playlist
+	 * @returns An InfiniteQuery of Songs
+	 */
+	static getPlaylistEntires<I extends SongInclude | never = never>(
+		playlistSlugOrId: string | number,
+		include?: I[],
+	): InfiniteQuery<PlaylistEntryWithRelations<I>> {
+		return {
+			key: [
+				"playlist",
+				playlistSlugOrId,
+				"entries",
+				...API.formatIncludeKeys(include),
+			],
+			exec: (pagination) =>
+				API.fetch({
+					route: `/playlists/${playlistSlugOrId}/entries`,
+					errorMessage: "Songs could not be loaded",
+					parameters: { pagination: pagination, include },
+					otherParameters: {},
+					validator: PaginatedResponse(
+						PlaylistEntryWithRelations(include ?? []),
+					),
 				}),
 		};
 	}
@@ -475,7 +509,7 @@ export default class API {
 		resourceType: "artists" | "releases" | "tracks" | "playlists",
 	): Promise<unknown> {
 		return API.fetch({
-			route: `/illustrations/${resourceType}/${resourceSlugOrId}`,
+			route: `/${resourceType}/${resourceSlugOrId}/illustration`,
 			errorMessage: "Update Illustration Failed",
 			method: "POST",
 			parameters: {},
@@ -522,7 +556,7 @@ export default class API {
 	 * Fetch all album artists
 	 * @returns An InfiniteQuery of Artists
 	 */
-	static getArtists(
+	static getArtists<I extends ArtistInclude | never = never>(
 		filter: {
 			library?: Identifier;
 			album?: Identifier;
@@ -530,23 +564,27 @@ export default class API {
 			query?: Identifier;
 		},
 		sort?: SortingParameters<typeof ArtistSortingKeys>,
-	): InfiniteQuery<Artist> {
+		include: I[] = [],
+	): InfiniteQuery<ArtistWithRelations<I>> {
 		return {
 			key: [
 				"artists",
 				...API.formatObject(filter),
 				...API.formatObject(sort),
+				...API.formatIncludeKeys(include),
 			],
 			exec: (pagination) =>
 				API.fetch({
 					route: `/artists`,
 					errorMessage: "Artists could not be loaded",
-					parameters: { pagination: pagination, include: [], sort },
+					parameters: { pagination: pagination, include, sort },
 					otherParameters: {
 						albumArtistOnly: filter.album ? undefined : "true",
 						...filter,
 					},
-					validator: PaginatedResponse(Artist),
+					validator: PaginatedResponse(
+						ArtistWithRelations(include ?? []),
+					),
 				}),
 		};
 	}
@@ -950,10 +988,10 @@ export default class API {
 	 * @param slugOrId the id of the release
 	 * @returns A query for a Tracklist
 	 */
-	static getReleaseTrackList<I extends SongInclude | never = never>(
+	static getReleaseTracklist<I extends SongInclude | never = never>(
 		slugOrId: string | number,
 		include?: I[],
-	) {
+	): InfiniteQuery<TracklistItemWithRelations<I>> {
 		return {
 			key: [
 				"release",
@@ -961,11 +999,13 @@ export default class API {
 				"tracklist",
 				...API.formatIncludeKeys(include),
 			],
-			exec: () =>
+			exec: (pagination) =>
 				API.fetch({
 					route: `/releases/${slugOrId.toString()}/tracklist`,
-					parameters: { include },
-					customValidator: Tracklist(include ?? []),
+					parameters: { include, pagination },
+					validator: PaginatedResponse(
+						TracklistItemWithRelations(include ?? []),
+					),
 				}),
 		};
 	}
@@ -1173,13 +1213,14 @@ export default class API {
 		return `${process.env.PUBLIC_SERVER_URL ?? "/api"}${imageURL}`;
 	}
 
-	/**
-	 * Builds the URL to get a track file from an object returned by the API
-	 * @param streamURL
-	 * @returns the correct, rerouted URL
-	 */
-	static getStreamURL(streamURL: string): string {
-		return this.buildURL(streamURL, {});
+	static getDirectStreamURL(fileId: number): string {
+		return this.buildURL(`/stream/${fileId}/direct`, {});
+	}
+	static getTranscodeStreamURL(fileId: number, type: TrackType): string {
+		if (type == "Video") {
+			return this.buildURL(`/stream/${fileId}/master.m3u8`, {});
+		}
+		return this.buildURL(`/stream/${fileId}/audio/0/index.m3u8`, {});
 	}
 
 	/**

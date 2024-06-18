@@ -24,34 +24,24 @@ import {
 import type Slug from "src/slug/slug";
 
 export class AlbumNotFoundException extends NotFoundException {
-	constructor(albumSlug: Slug, artistSlug?: Slug) {
+	constructor(albumIdentifier: Slug | number) {
 		super(
-			`${albumSlug.toString()} ${
-				artistSlug ? `by ${artistSlug.toString()}` : ""
-			}: No such album`,
+			typeof albumIdentifier === "number"
+				? `Album ${albumIdentifier} not found`
+				: `Album '${albumIdentifier.toString()}' not found`,
 		);
-	}
-}
-
-export class AlbumNotFoundFromIDException extends NotFoundException {
-	constructor(id: number) {
-		super(`No album with id ${id} exists`);
 	}
 }
 
 export class AlbumAlreadyExistsException extends AlreadyExistsException {
-	constructor(albumSlug: Slug, artistSlug?: Slug) {
+	constructor(albumSlug: Slug, artistIdentifier?: Slug | number) {
 		super(
 			`${albumSlug.toString()} ${
-				artistSlug ? `by ${artistSlug.toString()}` : ""
+				artistIdentifier
+					? `by artist ${artistIdentifier.toString()}`
+					: "by compilation artist"
 			} already exists`,
 		);
-	}
-}
-
-export class AlbumAlreadyExistsWithArtistIDException extends AlreadyExistsException {
-	constructor(albumSlug: Slug, artistId: number) {
-		super(`${albumSlug.toString()} by artist n°${artistId} already exists`);
 	}
 }
 

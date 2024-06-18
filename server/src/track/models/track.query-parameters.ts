@@ -17,7 +17,7 @@
  */
 
 import { TrackType } from "@prisma/client";
-import { File, Track } from "src/prisma/models";
+import { Track } from "src/prisma/models";
 import type FileQueryParameters from "src/file/models/file.query-parameters";
 import type LibraryQueryParameters from "src/library/models/library.query-parameters";
 import type ReleaseQueryParameters from "src/release/models/release.query-parameters";
@@ -93,14 +93,20 @@ namespace TrackQueryParameters {
 	/**
 	 * Query parameters to delete one track
 	 */
-	export type DeleteInput = RequireExactlyOne<
-		Pick<WhereInput, "id"> & { sourceFileId: File["id"] }
-	>;
+	export type DeleteInput = RequireExactlyOne<{
+		sourceFileId: number;
+		id: number;
+	}>;
 
 	/**
 	 * Defines what relations to include in query
 	 */
-	export const AvailableIncludes = ["song", "release"] as const;
+	export const AvailableIncludes = [
+		"song",
+		"release",
+		"sourceFile",
+		"illustration",
+	] as const;
 	export const AvailableAtomicIncludes =
 		filterAtomicRelationInclude(AvailableIncludes);
 	export type RelationInclude = BaseRelationInclude<typeof AvailableIncludes>;

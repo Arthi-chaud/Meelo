@@ -16,7 +16,15 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { Controller, Get, Inject, Query, forwardRef } from "@nestjs/common";
+import {
+	Body,
+	Controller,
+	Get,
+	Inject,
+	Post,
+	Query,
+	forwardRef,
+} from "@nestjs/common";
 import { PaginationParameters } from "src/pagination/models/pagination-parameters";
 import ArtistService from "./artist.service";
 import ArtistQueryParameters from "./models/artist.query-parameters";
@@ -33,6 +41,11 @@ import LibraryQueryParameters from "src/library/models/library.query-parameters"
 import GenreQueryParameters from "src/genre/models/genre.query-parameters";
 import AlbumQueryParameters from "src/album/models/album.query-parameters";
 import AlbumService from "src/album/album.service";
+import Admin from "src/authentication/roles/admin.decorator";
+import { IllustrationDownloadDto } from "src/illustration/models/illustration-dl.dto";
+import IllustrationService from "src/illustration/illustration.service";
+import IllustrationRepository from "src/illustration/illustration.repository";
+import { IllustrationResponse } from "src/illustration/models/illustration.response";
 
 class Selector {
 	@IsOptional()
@@ -76,6 +89,10 @@ export default class ArtistController {
 	constructor(
 		@Inject(forwardRef(() => ArtistService))
 		private artistService: ArtistService,
+		@Inject(forwardRef(() => IllustrationService))
+		private illustrationService: IllustrationService,
+		@Inject(forwardRef(() => IllustrationRepository))
+		private illustrationRepository: IllustrationRepository,
 	) {}
 
 	@ApiOperation({
@@ -100,14 +117,13 @@ export default class ArtistController {
 				selector,
 				paginationParameters,
 				include,
-				sort,
 			);
 		}
 		return this.artistService.getMany(
 			selector,
+			sort,
 			paginationParameters,
 			include,
-			sort,
 		);
 	}
 
@@ -125,5 +141,24 @@ export default class ArtistController {
 		where: ArtistQueryParameters.WhereInput,
 	) {
 		return this.artistService.get(where, include);
+	}
+
+	@ApiOperation({
+		summary: "Save an illustration for an artist",
+	})
+	@Admin()
+	@Post(":idOrSlug/illustration")
+	async updateArtistIllustration(
+		@IdentifierParam(ArtistService)
+		where: ArtistQueryParameters.WhereInput,
+		@Body() illustrationDto: IllustrationDownloadDto,
+	): Promise<IllustrationResponse> {
+		return this.illustrationService
+			.downloadIllustration(illustrationDto.url)
+			.then((buffer) =>
+				this.illustrationRepository
+					.saveArtistIllustration(buffer, where)
+					.then(IllustrationResponse.from),
+			);
 	}
 }

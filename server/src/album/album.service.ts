@@ -21,51 +21,37 @@ import ArtistService from "src/artist/artist.service";
 import Slug from "src/slug/slug";
 import {
 	AlbumAlreadyExistsException,
-	AlbumAlreadyExistsWithArtistIDException,
 	AlbumNotEmptyException,
 	AlbumNotFoundException,
-	AlbumNotFoundFromIDException,
 } from "./album.exceptions";
 import { Prisma } from "@prisma/client";
 import PrismaService from "src/prisma/prisma.service";
 import AlbumQueryParameters from "./models/album.query-parameters";
-import type ArtistQueryParameters from "src/artist/models/artist.query-parameters";
 import ReleaseService from "src/release/release.service";
-import RepositoryService, {
-	SearchableRepositoryService,
-} from "src/repository/repository.service";
+import SearchableRepositoryService from "src/repository/searchable-repository.service";
 import { buildStringSearchParameters } from "src/utils/search-string-input";
 import SongService from "src/song/song.service";
-import { Album, AlbumWithRelations } from "src/prisma/models";
-import { parseIdentifierSlugs } from "src/identifier/identifier.parse-slugs";
 import compilationAlbumArtistKeyword from "src/constants/compilation";
-import Identifier from "src/identifier/models/identifier";
 import Logger from "src/logger/logger";
 import ReleaseQueryParameters from "src/release/models/release.query-parameters";
 import { PrismaError } from "prisma-error-enum";
-import IllustrationRepository from "src/illustration/illustration.repository";
 import ParserService from "src/scanner/parser.service";
 import deepmerge from "deepmerge";
 import GenreService from "src/genre/genre.service";
 import MeiliSearch from "meilisearch";
 import { InjectMeiliSearch } from "nestjs-meilisearch";
+import { UnhandledORMErrorException } from "src/exceptions/orm-exceptions";
+import { PaginationParameters } from "src/pagination/models/pagination-parameters";
+import {
+	formatIdentifierToIdOrSlug,
+	formatPaginationParameters,
+	getRandomIds,
+	sortItemsUsingOrderedIdList,
+} from "src/repository/repository.utils";
+import { AlbumModel } from "./models/album.model";
 
 @Injectable()
-export default class AlbumService extends SearchableRepositoryService<
-	AlbumWithRelations,
-	AlbumQueryParameters.CreateInput,
-	AlbumQueryParameters.WhereInput,
-	AlbumQueryParameters.ManyWhereInput,
-	AlbumQueryParameters.UpdateInput,
-	AlbumQueryParameters.DeleteInput,
-	AlbumQueryParameters.SortingKeys,
-	Prisma.AlbumCreateInput,
-	Prisma.AlbumWhereInput,
-	Prisma.AlbumWhereInput,
-	Prisma.AlbumUpdateInput,
-	Prisma.AlbumWhereUniqueInput,
-	Prisma.AlbumOrderByWithRelationAndSearchRelevanceInput
-> {
+export default class AlbumService extends SearchableRepositoryService {
 	private readonly logger = new Logger(AlbumService.name);
 	constructor(
 		private prismaService: PrismaService,
@@ -75,93 +61,122 @@ export default class AlbumService extends SearchableRepositoryService<
 		private releaseService: ReleaseService,
 		@Inject(forwardRef(() => ParserService))
 		private parserService: ParserService,
-		private illustrationRepository: IllustrationRepository,
 		@InjectMeiliSearch()
 		protected readonly meiliSearch: MeiliSearch,
 	) {
-		super(prismaService, "album", ["name", "slug"], meiliSearch);
+		super("albums", ["name", "slug", "nameSlug", "type"], meiliSearch);
 	}
 
-	getTableName() {
-		return "albums";
+	async getOrCreate<I extends AlbumQueryParameters.RelationInclude = {}>(
+		album: AlbumQueryParameters.CreateInput,
+		include?: I,
+	) {
+		try {
+			const artist = album.artist
+				? await this.artistServce.get(album.artist)
+				: undefined;
+			return await this.get(
+				{
+					slug: new Slug(
+						artist?.name ?? compilationAlbumArtistKeyword,
+						album.name,
+					),
+				},
+				include,
+			);
+		} catch {
+			return this.create(album);
+		}
 	}
 
 	/**
 	 * Create an Album
 	 */
-	async create<I extends AlbumQueryParameters.RelationInclude>(
-		album: AlbumQueryParameters.CreateInput,
-		include?: I,
-	) {
+	async create(album: AlbumQueryParameters.CreateInput) {
 		if (album.artist === undefined) {
 			if (
-				(await this.count({
-					name: { is: album.name },
-					artist: { compilationArtist: true },
+				(await this.prismaService.album.count({
+					where: {
+						name: album.name,
+						artist: null,
+					},
 				})) != 0
 			) {
 				throw new AlbumAlreadyExistsException(new Slug(album.name));
 			}
 		}
-		return super.create(album, include);
-	}
+		const artistSlug =
+			album.artist == undefined
+				? compilationAlbumArtistKeyword
+				: (await this.artistServce.get(album.artist)).slug;
+		const albumNameSlug = new Slug(album.name).toString();
+		return this.prismaService.album
+			.create({
+				data: {
+					name: album.name,
+					artist: album.artist
+						? {
+								connect: ArtistService.formatWhereInput(
+									album.artist,
+								),
+						  }
+						: undefined,
+					slug: new Slug(artistSlug, albumNameSlug).toString(),
+					nameSlug: albumNameSlug,
+					releaseDate: album.releaseDate,
+					registeredAt: album.registeredAt,
+					type: this.parserService.getAlbumType(album.name),
+				},
+			})
+			.then((created) => {
+				this.meiliSearch.index(this.indexName).addDocuments([
+					{
+						id: created.id,
+						slug: created.slug,
+						nameSlug: created.nameSlug,
+						name: created.name,
+						type: created.type,
+					},
+				]);
+				return created;
+			})
+			.catch(async (error) => {
+				if (error instanceof Prisma.PrismaClientKnownRequestError) {
+					const albumSlug = new Slug(album.name);
 
-	formatSearchableEntries(created: Album) {
-		return {
-			id: created.id,
-			slug: created.slug,
-			name: created.name,
-			type: created.type,
-		};
-	}
-
-	formatCreateInput(input: AlbumQueryParameters.CreateInput) {
-		return {
-			name: input.name,
-			artist: input.artist
-				? {
-						connect: ArtistService.formatWhereInput(input.artist),
-				  }
-				: undefined,
-			slug: new Slug(input.name).toString(),
-			releaseDate: input.releaseDate,
-			registeredAt: input.registeredAt,
-			type: this.parserService.getAlbumType(input.name),
-		};
-	}
-
-	protected formatCreateInputToWhereInput(
-		where: AlbumQueryParameters.CreateInput,
-	) {
-		return {
-			bySlug: { slug: new Slug(where.name), artist: where.artist },
-		};
-	}
-
-	protected async onCreationFailure(
-		error: Error,
-		input: AlbumQueryParameters.CreateInput,
-	) {
-		if (error instanceof Prisma.PrismaClientKnownRequestError) {
-			const albumSlug = new Slug(input.name);
-
-			if (input.artist) {
-				await this.artistServce.get(input.artist);
-			}
-			if (error.code == PrismaError.UniqueConstraintViolation) {
-				if (input.artist?.id) {
-					return new AlbumAlreadyExistsWithArtistIDException(
-						albumSlug,
-						input.artist.id,
-					);
+					if (album.artist) {
+						await this.artistServce.get(album.artist);
+					}
+					if (error.code == PrismaError.UniqueConstraintViolation) {
+						throw new AlbumAlreadyExistsException(
+							albumSlug,
+							album.artist?.slug ?? album.artist?.id,
+						);
+					}
 				}
-				return new AlbumAlreadyExistsException(
-					albumSlug,
-					input.artist?.slug,
-				);
-			}
-		}
-		return this.onUnknownError(error, input);
+				throw new UnhandledORMErrorException(error, album);
+			});
+	}
+
+	async get<I extends AlbumQueryParameters.RelationInclude = {}>(
+		where: AlbumQueryParameters.WhereInput,
+		include?: I,
+	) {
+		const args = {
+			include: include ?? ({} as I),
+			where: AlbumService.formatWhereInput(where),
+		};
+		const album = await this.prismaService.album
+			.findFirstOrThrow<
+				Prisma.SelectSubset<
+					typeof args,
+					Prisma.AlbumFindFirstOrThrowArgs
+				>
+			>(args)
+			.catch(async (error) => {
+				throw await this.onNotFound(error, where);
+			});
+		return album;
 	}
 
 	/**
@@ -170,16 +185,59 @@ export default class AlbumService extends SearchableRepositoryService<
 	static formatWhereInput(where: AlbumQueryParameters.WhereInput) {
 		return {
 			id: where.id,
-			slug: where.bySlug?.slug.toString(),
-			artist: where.bySlug
-				? where.bySlug.artist
-					? ArtistService.formatWhereInput(where.bySlug.artist)
-					: null
-				: undefined,
+			slug: where.slug?.toString(),
 		};
 	}
 
-	formatWhereInput = AlbumService.formatWhereInput;
+	async search<I extends AlbumQueryParameters.RelationInclude = {}>(
+		token: string,
+		where: AlbumQueryParameters.ManyWhereInput,
+		pagination: PaginationParameters = {},
+		include?: I,
+	) {
+		const matchingIds = await this.getMatchingIds(token, pagination);
+		const artists = await this.getMany(
+			{ ...where, id: { in: matchingIds } },
+			{},
+			{},
+			include,
+		);
+
+		return this.sortItemsUsingMatchList(matchingIds, artists);
+	}
+
+	async getMany<I extends AlbumQueryParameters.RelationInclude = {}>(
+		where: AlbumQueryParameters.ManyWhereInput,
+		sort?: AlbumQueryParameters.SortingParameter | number,
+		pagination?: PaginationParameters,
+		include?: I,
+	): Promise<AlbumModel[]> {
+		if (typeof sort == "number") {
+			const randomIds = await getRandomIds(
+				"albums",
+				this.prismaService,
+				sort,
+				pagination ?? {},
+			);
+			return this.getMany(
+				{ ...where, id: { in: randomIds } },
+				undefined,
+				undefined,
+				include,
+			).then((items) => sortItemsUsingOrderedIdList(randomIds, items));
+		}
+		const args = {
+			include: include ?? ({} as I),
+			where: AlbumService.formatManyWhereInput(where),
+			orderBy:
+				sort === undefined ? undefined : this.formatSortingInput(sort),
+			...formatPaginationParameters(pagination),
+		};
+		const albums = await this.prismaService.album.findMany<
+			Prisma.SelectSubset<typeof args, Prisma.AlbumFindManyArgs>
+		>(args);
+		return albums;
+	}
 
 	static formatManyWhereInput(where: AlbumQueryParameters.ManyWhereInput) {
 		let query: Prisma.AlbumWhereInput = {
@@ -302,26 +360,7 @@ export default class AlbumService extends SearchableRepositoryService<
 
 	formatManyWhereInput = AlbumService.formatManyWhereInput;
 
-	static formatIdentifierToWhereInput(
-		identifier: Identifier,
-	): AlbumQueryParameters.WhereInput {
-		return RepositoryService.formatIdentifier(
-			identifier,
-			(stringIdentifier) => {
-				const slugs = parseIdentifierSlugs(stringIdentifier, 2);
-
-				return {
-					bySlug: {
-						slug: slugs[1],
-						artist:
-							slugs[0].toString() == compilationAlbumArtistKeyword
-								? undefined
-								: { slug: slugs[0] },
-					},
-				};
-			},
-		);
-	}
+	static formatIdentifierToWhereInput = formatIdentifierToIdOrSlug;
 
 	formatSortingInput(
 		sortingParameter: AlbumQueryParameters.SortingParameter,
@@ -329,7 +368,7 @@ export default class AlbumService extends SearchableRepositoryService<
 		sortingParameter.order ??= "asc";
 		switch (sortingParameter.sortBy) {
 			case "name":
-				return { slug: sortingParameter.order };
+				return { nameSlug: sortingParameter.order };
 			case "artistName":
 				return {
 					artist: this.artistServce.formatSortingInput({
@@ -353,14 +392,18 @@ export default class AlbumService extends SearchableRepositoryService<
 		}
 	}
 
-	/**
-	 * Updates an album
-	 */
-	formatUpdateInput(what: AlbumQueryParameters.UpdateInput) {
-		return {
-			...what,
-			slug: what.name ? new Slug(what.name).toString() : undefined,
-		};
+	async update(
+		what: AlbumQueryParameters.UpdateInput,
+		where: AlbumQueryParameters.WhereInput,
+	) {
+		return this.prismaService.album
+			.update({
+				data: what,
+				where: AlbumService.formatWhereInput(where),
+			})
+			.catch(async (error) => {
+				throw await this.onNotFound(error, where);
+			});
 	}
 
 	/**
@@ -389,32 +432,24 @@ export default class AlbumService extends SearchableRepositoryService<
 	 * Deletes an album
 	 * @param where the query parameter
 	 */
-	async delete(where: AlbumQueryParameters.DeleteInput): Promise<Album> {
-		await this.illustrationRepository.deleteAlbumIllustrations(where);
-		const album = await super.delete(where);
+	async delete(where: AlbumQueryParameters.DeleteInput): Promise<AlbumModel> {
+		try {
+			const album = await this.prismaService.album.delete({
+				where: AlbumService.formatWhereInput(where),
+			});
 
-		this.logger.warn(`Album '${album.slug}' deleted`);
-		return album;
-	}
-
-	onDeletionFailure(error: Error, input: AlbumQueryParameters.DeleteInput) {
-		if (
-			error instanceof Prisma.PrismaClientKnownRequestError &&
-			error.code == PrismaError.ForeignConstraintViolation
-		) {
-			return new AlbumNotEmptyException(input.id);
+			this.meiliSearch.index(this.indexName).deleteDocument(album.id);
+			this.logger.warn(`Album '${album.slug}' deleted`);
+			return album;
+		} catch (error) {
+			if (
+				error instanceof Prisma.PrismaClientKnownRequestError &&
+				error.code == PrismaError.ForeignConstraintViolation
+			) {
+				throw new AlbumNotEmptyException(where.id);
+			}
+			throw await this.onNotFound(error, where);
 		}
-		return super.onDeletionFailure(error, input);
-	}
-
-	formatDeleteInput(where: AlbumQueryParameters.DeleteInput) {
-		return this.formatWhereInput(where);
-	}
-
-	protected formatDeleteInputToWhereInput(
-		input: AlbumQueryParameters.DeleteInput,
-	) {
-		return input;
 	}
 
 	/**
@@ -433,6 +468,34 @@ export default class AlbumService extends SearchableRepositoryService<
 			.then((albums) => albums.filter((album) => !album._count.releases));
 
 		await Promise.all(emptyAlbums.map(({ id }) => this.delete({ id })));
+		await this.resolveMasterReleases();
+	}
+
+	async resolveMasterReleases() {
+		const albumsWithoutMasters = await this.prismaService.album.findMany({
+			where: { masterId: null },
+			include: {
+				releases: {
+					take: 1,
+					orderBy: { releaseDate: { nulls: "last", sort: "asc" } },
+				},
+			},
+		});
+		await this.prismaService.$transaction(
+			albumsWithoutMasters
+				.map((album) => {
+					const newMasterRelease = album.releases.at(0);
+					if (newMasterRelease) {
+						return this.prismaService.album.update({
+							where: { id: album.id },
+							data: { masterId: newMasterRelease.id },
+						});
+					}
+					return null;
+				})
+				.filter((q) => q !== null)
+				.map((q) => q!),
+		);
 	}
 
 	/**
@@ -441,10 +504,7 @@ export default class AlbumService extends SearchableRepositoryService<
 	 * @returns the updated album
 	 */
 	async setMasterRelease(releaseWhere: ReleaseQueryParameters.WhereInput) {
-		const release = await this.releaseService.select(releaseWhere, {
-			id: true,
-			albumId: true,
-		});
+		const release = await this.releaseService.get(releaseWhere);
 
 		return this.prismaService.album.update({
 			where: { id: release.albumId },
@@ -464,63 +524,13 @@ export default class AlbumService extends SearchableRepositoryService<
 		});
 	}
 
-	/**
-	 * Change an album's artist
-	 * @param albumWhere the query parameters to find the album to reassign
-	 * @param artistWhere the query parameters to find the artist to reassign the album to
-	 */
-	async reassign(
-		albumWhere: AlbumQueryParameters.WhereInput,
-		artistWhere: ArtistQueryParameters.WhereInput,
-	): Promise<Album> {
-		const album = await this.get(albumWhere, { artist: true });
-		const previousArtistSlug = album.artist
-			? new Slug(album.artist.slug)
-			: undefined;
-		const albumSlug = new Slug(album.slug);
-		const newArtist = artistWhere.compilationArtist
-			? null
-			: await this.artistServce.get(artistWhere, { albums: true });
-		const newArtistSlug = newArtist ? new Slug(newArtist.slug) : undefined;
-		const artistAlbums = newArtist
-			? newArtist.albums
-			: await this.getMany({ artist: { compilationArtist: true } });
-
-		//Check if an album with the same name already exist for the new artist
-		if (
-			artistAlbums.find((artistAlbum) => album.slug == artistAlbum.slug)
-		) {
-			throw new AlbumAlreadyExistsException(albumSlug, newArtistSlug);
-		}
-		const updatedAlbum = await this.update(
-			{ artistId: newArtist?.id ?? null },
-			albumWhere,
-		);
-
-		this.illustrationRepository.reassignAlbumIllustration(
-			albumSlug.toString(),
-			previousArtistSlug?.toString(),
-			newArtistSlug?.toString(),
-		);
-		return updatedAlbum;
-	}
-
 	async onNotFound(error: Error, where: AlbumQueryParameters.WhereInput) {
 		if (
 			error instanceof Prisma.PrismaClientKnownRequestError &&
 			error.code == PrismaError.RecordsNotFound
 		) {
-			if (where.id != undefined) {
-				return new AlbumNotFoundFromIDException(where.id);
-			}
-			if (where.bySlug.artist) {
-				await this.artistServce.throwIfNotFound(where.bySlug.artist);
-			}
-			return new AlbumNotFoundException(
-				where.bySlug.slug,
-				where.bySlug.artist?.slug,
-			);
+			return new AlbumNotFoundException(where.id ?? where.slug);
 		}
-		return this.onUnknownError(error, where);
+		return new UnhandledORMErrorException(error, where);
 	}
 }

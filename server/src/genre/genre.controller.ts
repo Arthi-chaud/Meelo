@@ -24,7 +24,6 @@ import SongService from "src/song/song.service";
 import GenreService from "./genre.service";
 import GenreQueryParameters from "./models/genre.query-parameters";
 import RelationIncludeQuery from "src/relation-include/relation-include-query.decorator";
-import IdentifierParam from "src/identifier/identifier.pipe";
 import Response, { ResponseType } from "src/response/response.decorator";
 import { Genre } from "src/prisma/models";
 import { IsOptional } from "class-validator";
@@ -33,14 +32,9 @@ import AlbumService from "src/album/album.service";
 import TransformIdentifier from "src/identifier/identifier.transform";
 import ArtistQueryParameters from "src/artist/models/artist.query-parameters";
 import ArtistService from "src/artist/artist.service";
+import IdentifierParam from "src/identifier/identifier.pipe";
 
 class Selector {
-	@IsOptional()
-	@ApiPropertyOptional({
-		description: "Search genres using a string token",
-	})
-	query?: string;
-
 	@IsOptional()
 	@ApiPropertyOptional({
 		description: "Filter genres by album",
@@ -84,19 +78,11 @@ export class GenreController {
 		@RelationIncludeQuery(GenreQueryParameters.AvailableAtomicIncludes)
 		include: GenreQueryParameters.RelationInclude,
 	) {
-		if (selector.query) {
-			return this.genreService.getMany(
-				{ ...selector, slug: { contains: selector.query } },
-				paginationParameters,
-				include,
-				sort,
-			);
-		}
 		return this.genreService.getMany(
 			selector,
+			sort,
 			paginationParameters,
 			include,
-			sort,
 		);
 	}
 
@@ -106,11 +92,9 @@ export class GenreController {
 	@Response({ returns: Genre })
 	@Get(":idOrSlug")
 	async get(
-		@RelationIncludeQuery(GenreQueryParameters.AvailableAtomicIncludes)
-		include: GenreQueryParameters.RelationInclude,
 		@IdentifierParam(GenreService)
 		where: GenreQueryParameters.WhereInput,
 	) {
-		return this.genreService.get(where, include);
+		return this.genreService.get(where);
 	}
 }

@@ -17,13 +17,13 @@
  */
 
 import { PlaylistIcon } from "../icons";
-import Playlist from "../../models/playlist";
+import { PlaylistWithRelations } from "../../models/playlist";
 import Illustration from "../illustration";
 import ListItem from "./item";
 import PlaylistContextualMenu from "../contextual-menu/playlist-contextual-menu";
 
 type PlaylistItemProps = {
-	playlist: Playlist | undefined;
+	playlist: PlaylistWithRelations<"illustration"> | undefined;
 };
 
 /**

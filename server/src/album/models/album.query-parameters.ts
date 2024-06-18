@@ -54,7 +54,7 @@ namespace AlbumQueryParameters {
 	 */
 	export type WhereInput = RequireExactlyOne<{
 		id: Album["id"];
-		bySlug: { slug: Slug; artist?: ArtistQueryParameters.WhereInput };
+		slug: Slug;
 	}>;
 
 	/**
@@ -79,7 +79,7 @@ namespace AlbumQueryParameters {
 	 * The input required to update an album in the database
 	 */
 	export class UpdateInput extends PartialType(
-		PickType(Album, ["name", "type", "releaseDate", "artistId"] as const),
+		PickType(Album, ["type", "releaseDate"] as const),
 	) {}
 
 	/**
@@ -101,6 +101,7 @@ namespace AlbumQueryParameters {
 		"externalIds",
 		"master",
 		"genres",
+		"illustration",
 	] as const;
 	export const AvailableAtomicIncludes = filterAtomicRelationInclude(
 		AvailableIncludes,

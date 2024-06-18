@@ -59,6 +59,8 @@ const prepareSSR = (context: NextPageContext) => {
 				"externalIds",
 				"featuring",
 				"lyrics",
+				"master",
+				"illustration",
 			]),
 		],
 		infiniteQueries: [
@@ -66,12 +68,12 @@ const prepareSSR = (context: NextPageContext) => {
 			API.getSongs(
 				{ versionsOf: songIdentifier },
 				{ sortBy: "name", order: "asc" },
-				["artist", "featuring"],
+				["artist", "featuring", "master", "illustration"],
 			),
 			API.getTracks(
 				{ song: songIdentifier },
 				{ sortBy: "name", order: "asc" },
-				["release", "song"],
+				["release", "song", "illustration"],
 			),
 		],
 	};
@@ -100,6 +102,8 @@ const SongPage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({ props }) => {
 			"externalIds",
 			"featuring",
 			"lyrics",
+			"master",
+			"illustration",
 		]),
 	);
 	const genres = useInfiniteQuery(API.getGenres, { song: songIdentifier });
@@ -118,17 +122,13 @@ const SongPage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({ props }) => {
 				onClick={
 					song.data &&
 					(() =>
-						queryClient
-							.fetchQuery(
-								API.getMasterTrack(songIdentifier, ["release"]),
-							)
-							.then((master) =>
-								playTrack({
-									track: master,
-									artist: song.data.artist,
-									release: master.release,
-								}),
-							))
+						playTrack({
+							track: {
+								...song.data.master,
+								illustration: song.data.illustration,
+							},
+							artist: song.data.artist,
+						}))
 				}
 			>
 				{t("play")}
@@ -236,7 +236,12 @@ const SongPage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({ props }) => {
 									versionsOf: songIdentifier,
 								},
 								{ sortBy, order },
-								["artist", "featuring"],
+								[
+									"artist",
+									"featuring",
+									"master",
+									"illustration",
+								],
 							)
 						}
 					/>
@@ -247,7 +252,7 @@ const SongPage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({ props }) => {
 							API.getTracks(
 								{ song: songIdentifier },
 								{ sortBy, order },
-								["release", "song"],
+								["release", "song", "illustration"],
 							)
 						}
 					/>

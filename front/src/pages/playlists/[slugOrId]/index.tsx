@@ -30,8 +30,6 @@ import {
 import PlaylistContextualMenu from "../../../components/contextual-menu/playlist-contextual-menu";
 import Illustration from "../../../components/illustration";
 import { Box, Button, Divider, Grid, IconButton, Stack } from "@mui/material";
-import Artist from "../../../models/artist";
-import { TrackWithRelations } from "../../../models/track";
 import { SongWithRelations } from "../../../models/song";
 import {
 	ContextualMenuIcon,
@@ -44,7 +42,10 @@ import {
 } from "../../../components/icons";
 import ListItem from "../../../components/list-item/item";
 import SongContextualMenu from "../../../components/contextual-menu/song-contextual-menu";
-import { PlaylistEntry } from "../../../models/playlist";
+import {
+	PlaylistEntry,
+	PlaylistEntryWithRelations,
+} from "../../../models/playlist";
 import { useMemo, useState } from "react";
 import { DragDropContext, Draggable, Droppable } from "react-beautiful-dnd";
 import toast from "react-hot-toast";
@@ -57,26 +58,37 @@ import { useTranslation } from "react-i18next";
 import { generateArray } from "../../../utils/gen-list";
 import { usePlayerContext } from "../../../contexts/player";
 import { NextPageContext } from "next";
+import Release from "../../../models/release";
 
 const playlistQuery = (idOrSlug: number | string) =>
-	API.getPlaylist(idOrSlug, ["entries"]);
-const masterTrackQuery = (songId: number | string) =>
-	API.getMasterTrack(songId, ["release"]);
+	API.getPlaylist(idOrSlug, ["illustration"]);
+const playlistEntriesQuery = (idOrSlug: number | string) => {
+	const query = API.getPlaylistEntires(idOrSlug, [
+		"artist",
+		"featuring",
+		"master",
+		"illustration",
+	]);
+	return {
+		key: query.key,
+		exec: () => query.exec({ pageSize: 10000 }).then(({ items }) => items),
+	};
+};
 
 const prepareSSR = async (
 	context: NextPageContext,
 	queryClient: QueryClient,
 ) => {
 	const playlistIdentifier = getSlugOrId(context.query);
-	const playlist = await queryClient.fetchQuery(
-		prepareMeeloQuery(() => playlistQuery(playlistIdentifier)),
+	const entries = await queryClient.fetchQuery(
+		prepareMeeloQuery(() => playlistEntriesQuery(playlistIdentifier)),
 	);
 
 	return {
 		additionalProps: { playlistIdentifier },
 		queries: [
-			...playlist.entries.map((entry) => masterTrackQuery(entry.id)),
-			...playlist.entries.map((entry) => API.getArtist(entry.artistId)),
+			playlistQuery(playlistIdentifier),
+			...entries.map((entry) => API.getRelease(entry.master.releaseId)),
 		],
 	};
 };
@@ -162,7 +174,7 @@ const DragAndDropPlaylist = (props: DragAndDropPlaylistProps) => {
 
 type PlaylistEntryItemProps = {
 	onClick: () => void;
-	entry: (PlaylistEntry & SongWithRelations<"artist">) | undefined;
+	entry: PlaylistEntryWithRelations<"artist" | "illustration"> | undefined;
 };
 
 const PlaylistEntryItem = ({ entry, onClick }: PlaylistEntryItemProps) => (
@@ -204,64 +216,47 @@ const PlaylistPage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({
 		() => router.push("/playlists"),
 	);
 	const playlist = useQuery(playlistQuery, playlistIdentifier);
-	const artistsQueries = useQueries(
-		...(playlist.data?.entries.map(
+	const entriesQuery = useQuery(playlistEntriesQuery, playlistIdentifier);
+	const masterTracksReleaseQueries = useQueries(
+		...(entriesQuery.data?.map(
 			({
-				artistId,
+				master,
 			}): Parameters<
-				typeof useQuery<Artist, Parameters<typeof API.getArtist>>
-			> => [API.getArtist, artistId],
-		) ?? []),
-	);
-	const masterTracksQueries = useQueries(
-		...(playlist.data?.entries.map(
-			({
-				id,
-			}): Parameters<
-				typeof useQuery<
-					TrackWithRelations<"release">,
-					Parameters<typeof masterTrackQuery>
-				>
-			> => [masterTrackQuery, id],
+				typeof useQuery<Release, Parameters<typeof API.getRelease>>
+			> => [API.getRelease, master.releaseId],
 		) ?? []),
 	);
 	const reorderMutation = useMutation((reorderedEntries: number[]) => {
 		return API.reorderPlaylist(playlistIdentifier, reorderedEntries)
 			.then(() => {
 				toast.success(t("playlistReorderSuccess"));
-				return playlist.refetch();
+				return entriesQuery.refetch();
 			})
 			.catch(() => toast.error(t("playlistReorderFail")));
 	});
 
 	const entries = useMemo(() => {
-		const artists = artistsQueries.map((query) => query.data);
-		const masterTracks = masterTracksQueries.map((query) => query.data);
-		const resolvedTracks = masterTracks.filter(
-			(data) => data !== undefined,
-		);
-		const resolvedArtists = artists.filter((data) => data !== undefined);
+		const releases = masterTracksReleaseQueries.map((query) => query.data);
+		const resolvedReleases = releases.filter((data) => data !== undefined);
 
-		if (
-			resolvedTracks.length !== masterTracks.length ||
-			resolvedArtists.length !== artists.length
-		) {
+		if (resolvedReleases.length !== entriesQuery.data?.length) {
 			return undefined;
 		}
 
-		return playlist.data?.entries.map((entry) => ({
+		return entriesQuery.data.map((entry) => ({
 			...entry,
-			track: masterTracks.find((master) => master!.songId == entry.id)!,
-			artist: artists.find((artist) => artist!.id == entry.artistId)!,
+			release: releases.find(
+				(release) => release!.id == entry.master.releaseId,
+			)!,
 		}));
-	}, [artistsQueries, masterTracksQueries, playlist.data]);
+	}, [entriesQuery.data, masterTracksReleaseQueries]);
 	const playPlaylist = (fromIndex: number) =>
 		entries &&
 		playTracks({
 			tracks: entries.map((entry) => ({
-				track: entry.track,
+				track: { ...entry.master, illustration: entry.illustration },
 				artist: entry.artist,
-				release: entry.track.release,
+				release: entry.release,
 			})),
 			cursor: fromIndex,
 		});
@@ -270,9 +265,12 @@ const PlaylistPage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({
 		playTracks({
 			tracks: shuffle(
 				entries.map((entry) => ({
-					track: entry.track,
+					track: {
+						...entry.master,
+						illustration: entry.illustration,
+					},
 					artist: entry.artist,
-					release: entry.track.release,
+					release: entry.release,
 				})),
 			),
 			cursor: 0,
@@ -313,7 +311,7 @@ const PlaylistPage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({
 							"shuffle",
 							() => <ShuffleIcon />,
 							"outlined",
-							() => shufflePlaylist,
+							() => shufflePlaylist(),
 						],
 					] as const
 				).map(([label, Icon, variant, callback], index) => (
@@ -339,7 +337,7 @@ const PlaylistPage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({
 				/>
 			) : (
 				<Stack spacing={1}>
-					{(entries ?? generateArray(6)).map((entry, index) => (
+					{(entries ?? generateArray(2)).map((entry, index) => (
 						<PlaylistEntryItem
 							key={index}
 							entry={entry}

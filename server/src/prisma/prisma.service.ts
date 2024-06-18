@@ -31,6 +31,41 @@ export default class PrismaService
 {
 	async onModuleInit() {
 		await this.$connect();
+		this.$extends({
+			query: {
+				album: {
+					async findMany({ model, operation, args, query }) {
+						args.include = {
+							...args.include,
+							releases: {
+								take: 1,
+								orderBy: {
+									releaseDate: { sort: "asc", nulls: "last" },
+								},
+							},
+						};
+
+						const res = await query(args);
+
+						return res.map((item) => ({
+							...item,
+							master:
+								item.master === undefined
+									? undefined
+									: item.master ??
+									  item.releases?.at(0) ??
+									  null,
+							masterId:
+								item.master === undefined
+									? undefined
+									: item.masterId ??
+									  item.releases?.at(0)?.id ??
+									  null,
+						}));
+					},
+				},
+			},
+		});
 	}
 	async onModuleDestroy() {
 		await this.$disconnect();

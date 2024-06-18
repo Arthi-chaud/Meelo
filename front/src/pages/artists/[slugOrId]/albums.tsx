@@ -35,6 +35,9 @@ const defaultSort = {
 	order: "desc",
 } as const;
 
+const artistQuery = (artistIdentifier: string | number) =>
+	API.getArtist(artistIdentifier, ["illustration"]);
+
 const prepareSSR = (context: NextPageContext) => {
 	const artistIdentifier = getSlugOrId(context.query);
 	const defaultLayout = getLayoutParams(context.query.view) ?? "grid";
@@ -46,12 +49,12 @@ const prepareSSR = (context: NextPageContext) => {
 			defaultLayout,
 			type: type ?? null,
 		},
-		queries: [API.getArtist(artistIdentifier)],
+		queries: [artistQuery(artistIdentifier)],
 		infiniteQueries: [
 			API.getAlbums(
 				{ artist: artistIdentifier, type: type },
 				defaultSort,
-				["artist"],
+				["artist", "illustration"],
 			),
 		],
 	};
@@ -63,7 +66,7 @@ const ArtistAlbumsPage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({
 	const router = useRouter();
 	const artistIdentifier =
 		props?.artistIdentifier ?? getSlugOrId(router.query);
-	const artist = useQuery(API.getArtist, artistIdentifier);
+	const artist = useQuery(artistQuery);
 	const defaultType = props?.type ?? null;
 	const { GradientBackground } = useGradientBackground(
 		artist.data?.illustration?.colors,
@@ -89,7 +92,7 @@ const ArtistAlbumsPage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({
 							library: library ?? undefined,
 						},
 						{ sortBy, order },
-						["artist"],
+						["artist", "illustration"],
 					)
 				}
 			/>

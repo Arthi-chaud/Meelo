@@ -35,7 +35,7 @@ export const AlbumType = [
 
 export type AlbumType = (typeof AlbumType)[number];
 
-const Album = Resource.concat(Illustration).concat(
+const Album = Resource.concat(
 	yup.object({
 		/**
 		 * The name of the album
@@ -43,8 +43,6 @@ const Album = Resource.concat(Illustration).concat(
 		name: yup.string().required(),
 		/**
 		 * The slug of the album
-		 * To be used with the parent's artist's slug:
-		 * ${artistSlug}+${albumSlug}
 		 */
 		slug: yup.string().required(),
 		/**
@@ -73,7 +71,7 @@ type Album = yup.InferType<typeof Album>;
 
 export default Album;
 
-export type AlbumInclude = "artist" | "externalIds" | "genres";
+export type AlbumInclude = "artist" | "externalIds" | "genres" | "illustration";
 
 const AlbumWithRelations = <Selection extends AlbumInclude | never = never>(
 	relation: Selection[],
@@ -83,6 +81,7 @@ const AlbumWithRelations = <Selection extends AlbumInclude | never = never>(
 			.object({
 				artist: Artist.required().nullable(),
 				genres: yup.array(Genre.required()).required(),
+				illustration: Illustration.required().nullable(),
 				externalIds: yup
 					.array(
 						ExternalId.required().concat(

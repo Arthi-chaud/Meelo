@@ -28,8 +28,10 @@ import {
 	SongResponse,
 	SongResponseBuilder,
 } from "src/song/models/song.response";
-import { IllustratedResponse } from "src/illustration/models/illustration.response";
-import IllustrationRepository from "src/illustration/illustration.repository";
+import {
+	IllustratedResponse,
+	IllustrationResponse,
+} from "src/illustration/models/illustration.response";
 
 export class TrackResponse extends IntersectionType(
 	Track,
@@ -46,8 +48,6 @@ export class TrackResponseBuilder extends ResponseBuilderInterceptor<
 	TrackResponse
 > {
 	constructor(
-		@Inject(forwardRef(() => IllustrationRepository))
-		private illustrationRepository: IllustrationRepository,
 		@Inject(forwardRef(() => ReleaseResponseBuilder))
 		private releaseResponseBuilder: ReleaseResponseBuilder,
 		@Inject(forwardRef(() => SongResponseBuilder))
@@ -59,25 +59,29 @@ export class TrackResponseBuilder extends ResponseBuilderInterceptor<
 	returnType = TrackResponse;
 
 	async buildResponse(track: TrackWithRelations): Promise<TrackResponse> {
-		const response = <TrackResponse>{
-			...track,
-			illustration:
-				await this.illustrationRepository.getTrackIllustration({
-					id: track.id,
-				}),
-			stream: `/files/${track.sourceFileId}/stream`,
+		return {
+			id: track.id,
+			songId: track.songId,
+			releaseId: track.releaseId,
+			name: track.name,
+			discIndex: track.discIndex,
+			trackIndex: track.trackIndex,
+			type: track.type,
+			bitrate: track.bitrate,
+			ripSource: track.ripSource,
+			duration: track.duration,
+			isBonus: track.isBonus,
+			isRemastered: track.isRemastered,
+			sourceFileId: track.sourceFileId,
+			song: track.song
+				? await this.songResponseBuilder.buildResponse(track.song)
+				: track.song,
+			release: track.release
+				? await this.releaseResponseBuilder.buildResponse(track.release)
+				: track.release,
+			illustration: track.illustration
+				? IllustrationResponse.from(track.illustration)
+				: track.illustration,
 		};
-
-		if (track.release !== undefined) {
-			response.release = await this.releaseResponseBuilder.buildResponse(
-				track.release,
-			);
-		}
-		if (track.song != undefined) {
-			response.song = await this.songResponseBuilder.buildResponse(
-				track.song,
-			);
-		}
-		return response;
 	}
 }

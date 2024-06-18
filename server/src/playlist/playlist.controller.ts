@@ -21,18 +21,23 @@ import {
 	Controller,
 	Delete,
 	Get,
+	Inject,
 	Param,
 	ParseIntPipe,
 	Post,
 	Put,
 	Query,
+	forwardRef,
 } from "@nestjs/common";
 import { ApiOperation, ApiPropertyOptional, ApiTags } from "@nestjs/swagger";
 import PlaylistService from "./playlist.service";
 import PlaylistQueryParameters from "./models/playlist.query-parameters";
 import IdentifierParam from "src/identifier/identifier.pipe";
 import RelationIncludeQuery from "src/relation-include/relation-include-query.decorator";
-import { PlaylistResponseBuilder } from "./models/playlist.response";
+import {
+	PlaylistEntryResponseBuilder,
+	PlaylistResponseBuilder,
+} from "./models/playlist.response";
 import Response, { ResponseType } from "src/response/response.decorator";
 import { PaginationParameters } from "src/pagination/models/pagination-parameters";
 import {
@@ -45,6 +50,12 @@ import { IsOptional } from "class-validator";
 import TransformIdentifier from "src/identifier/identifier.transform";
 import AlbumService from "src/album/album.service";
 import AlbumQueryParameters from "src/album/models/album.query-parameters";
+import Admin from "src/authentication/roles/admin.decorator";
+import { IllustrationDownloadDto } from "src/illustration/models/illustration-dl.dto";
+import IllustrationRepository from "src/illustration/illustration.repository";
+import IllustrationService from "src/illustration/illustration.service";
+import { IllustrationResponse } from "src/illustration/models/illustration.response";
+import SongQueryParameters from "src/song/models/song.query-params";
 
 export class Selector {
 	@IsOptional()
@@ -58,7 +69,13 @@ export class Selector {
 @Controller("playlists")
 @ApiTags("Playlists")
 export default class PlaylistController {
-	constructor(private playlistService: PlaylistService) {}
+	constructor(
+		private playlistService: PlaylistService,
+		@Inject(forwardRef(() => IllustrationService))
+		private illustrationService: IllustrationService,
+		@Inject(forwardRef(() => IllustrationRepository))
+		private illustrationRepository: IllustrationRepository,
+	) {}
 
 	@ApiOperation({
 		summary: "Get one Playlist",
@@ -66,10 +83,10 @@ export default class PlaylistController {
 	@Get(":idOrSlug")
 	@Response({ handler: PlaylistResponseBuilder })
 	async get(
-		@RelationIncludeQuery(PlaylistQueryParameters.AvailableAtomicIncludes)
-		include: PlaylistQueryParameters.RelationInclude,
 		@IdentifierParam(PlaylistService)
 		where: PlaylistQueryParameters.WhereInput,
+		@RelationIncludeQuery(PlaylistQueryParameters.AvailableAtomicIncludes)
+		include: PlaylistQueryParameters.RelationInclude,
 	) {
 		return this.playlistService.get(where, include);
 	}
@@ -82,14 +99,39 @@ export default class PlaylistController {
 	async getMany(
 		@Query() selector: Selector,
 		@Query() sort: PlaylistQueryParameters.SortingParameter,
+		@RelationIncludeQuery(PlaylistQueryParameters.AvailableAtomicIncludes)
+		include: PlaylistQueryParameters.RelationInclude,
 		@Query()
 		paginationParameters: PaginationParameters,
 	) {
 		return this.playlistService.getMany(
 			selector,
-			paginationParameters,
-			{},
 			sort,
+			paginationParameters,
+			include,
+		);
+	}
+
+	@ApiOperation({
+		summary: "Get Playlist's entries",
+	})
+	@Get(":idOrSlug/entries")
+	@Response({
+		handler: PlaylistEntryResponseBuilder,
+		type: ResponseType.Page,
+	})
+	async getEntries(
+		@Query()
+		paginationParameters: PaginationParameters,
+		@IdentifierParam(PlaylistService)
+		where: PlaylistQueryParameters.WhereInput,
+		@RelationIncludeQuery(SongQueryParameters.AvailableAtomicIncludes)
+		include: SongQueryParameters.RelationInclude,
+	) {
+		return this.playlistService.getEntries(
+			where,
+			paginationParameters,
+			include,
 		);
 	}
 
@@ -166,5 +208,24 @@ export default class PlaylistController {
 		entryId: number,
 	) {
 		await this.playlistService.removeEntry(entryId);
+	}
+
+	@ApiOperation({
+		summary: "Change a playlist's illustration",
+	})
+	@Admin()
+	@Post(":idOrSlug/illustration")
+	async updatePlaylistIllustration(
+		@IdentifierParam(PlaylistService)
+		where: PlaylistQueryParameters.WhereInput,
+		@Body() illustrationDto: IllustrationDownloadDto,
+	): Promise<IllustrationResponse> {
+		const buffer = await this.illustrationService.downloadIllustration(
+			illustrationDto.url,
+		);
+
+		return this.illustrationRepository
+			.savePlaylistIllustration(buffer, where)
+			.then(IllustrationResponse.from);
 	}
 }

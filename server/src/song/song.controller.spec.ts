@@ -16,7 +16,7 @@ import {
 } from "test/expected-responses";
 import ProviderService from "src/providers/provider.service";
 import SettingsService from "src/settings/settings.service";
-import { SongType } from "@prisma/client";
+import { IllustrationType, SongType } from "@prisma/client";
 import Slug from "src/slug/slug";
 
 jest.setTimeout(60000);
@@ -153,9 +153,7 @@ describe("Song Controller", () => {
 		});
 		it("should return song (w/ slug)", () => {
 			return request(app.getHttpServer())
-				.get(
-					`/songs/${dummyRepository.artistA.slug}+${dummyRepository.songA2.slug}`,
-				)
+				.get(`/songs/${dummyRepository.songA2.slug}`)
 				.expect(200)
 				.expect((res) => {
 					const song: Song = res.body;
@@ -405,9 +403,7 @@ describe("Song Controller", () => {
 	describe("Get Song's Lyrics (GET /songs/:id/lyrics)", () => {
 		it("should return the song's lyrics", () => {
 			return request(app.getHttpServer())
-				.get(
-					`/songs/${dummyRepository.artistA.slug}+${dummyRepository.songA1.slug}/lyrics`,
-				)
+				.get(`/songs/${dummyRepository.songA1.slug}/lyrics`)
 				.expect(200)
 				.expect((res) => {
 					const lyrics: Lyrics = res.body;
@@ -479,9 +475,7 @@ describe("Song Controller", () => {
 	describe("Delete Song's Lyrics (DELETE /songs/:id/lyrics)", () => {
 		it("should return the song's lyrics", () => {
 			return request(app.getHttpServer())
-				.delete(
-					`/songs/${dummyRepository.artistA.slug}+${dummyRepository.songA1.slug}/lyrics`,
-				)
+				.delete(`/songs/${dummyRepository.songA1.slug}/lyrics`)
 				.expect(200)
 				.expect(async () => {
 					const song = await songService.get(
@@ -543,18 +537,28 @@ describe("Song Controller", () => {
 
 	describe("Song Illustration", () => {
 		it("Should return the Song illustration", async () => {
-			const illustration =
+			const { illustration } =
 				await dummyRepository.releaseIllustration.create({
 					data: {
-						hash: "c",
-						releaseId: dummyRepository.compilationReleaseA1.id,
-						aspectRatio: 1,
-						blurhash: "A",
-						colors: ["B"],
+						release: {
+							connect: {
+								id: dummyRepository.compilationReleaseA1.id,
+							},
+						},
+						hash: "a",
+						illustration: {
+							create: {
+								aspectRatio: 1,
+								blurhash: "A",
+								colors: ["B"],
+								type: IllustrationType.Cover,
+							},
+						},
 					},
+					include: { illustration: true },
 				});
 			return request(app.getHttpServer())
-				.get(`/songs/${dummyRepository.songC1.id}`)
+				.get(`/songs/${dummyRepository.songC1.id}?with=illustration`)
 				.expect(200)
 				.expect((res) => {
 					const song: Song = res.body;
@@ -562,9 +566,7 @@ describe("Song Controller", () => {
 						...song,
 						illustration: {
 							...illustration,
-							url:
-								"/illustrations/releases/" +
-								dummyRepository.compilationReleaseA1.id,
+							url: "/illustrations/" + illustration.id,
 						},
 					});
 				});

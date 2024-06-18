@@ -35,7 +35,7 @@ import { HookTextField, useHookForm } from "mui-react-hook-form-plus";
 import { MeeloInfiniteQueryFn, QueryClient } from "../../api/use-query";
 import { useMutation } from "react-query";
 import API from "../../api/api";
-import Playlist from "../../models/playlist";
+import Playlist, { PlaylistWithRelations } from "../../models/playlist";
 import InfiniteList from "../infinite/infinite-list";
 import { WideLoadingComponent } from "../loading/loading";
 import ListItem from "../list-item/item";
@@ -207,7 +207,7 @@ export const DeletePlaylistAction = (
 });
 
 type SelectPlaylistFormProps = {
-	playlistQuery: MeeloInfiniteQueryFn<Playlist>;
+	playlistQuery: MeeloInfiniteQueryFn<PlaylistWithRelations<"illustration">>;
 	onSubmit: (playlistId: number) => void;
 	onClose: () => void;
 };
@@ -276,7 +276,13 @@ export const AddToPlaylistAction = (
 			<SelectPlaylistForm
 				onClose={close}
 				onSubmit={(playlistId) => mutation.mutate(playlistId)}
-				playlistQuery={API.getPlaylists}
+				playlistQuery={() =>
+					API.getPlaylists(
+						{},
+						{ sortBy: "creationDate", order: "desc" },
+						["illustration"],
+					)
+				}
 			/>
 		);
 	},

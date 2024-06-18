@@ -22,8 +22,10 @@ import {
 	AlbumResponse,
 	AlbumResponseBuilder,
 } from "src/album/models/album.response";
-import IllustrationRepository from "src/illustration/illustration.repository";
-import { IllustratedResponse } from "src/illustration/models/illustration.response";
+import {
+	IllustratedResponse,
+	IllustrationResponse,
+} from "src/illustration/models/illustration.response";
 import { Release, ReleaseWithRelations } from "src/prisma/models";
 import ExternalIdResponse, {
 	ExternalIdResponseBuilder,
@@ -45,8 +47,6 @@ export class ReleaseResponseBuilder extends ResponseBuilderInterceptor<
 	ReleaseResponse
 > {
 	constructor(
-		@Inject(forwardRef(() => IllustrationRepository))
-		private illustrationRepository: IllustrationRepository,
 		@Inject(forwardRef(() => AlbumResponseBuilder))
 		private albumResponseBuilder: AlbumResponseBuilder,
 		@Inject(forwardRef(() => ExternalIdResponseBuilder))
@@ -60,28 +60,28 @@ export class ReleaseResponseBuilder extends ResponseBuilderInterceptor<
 	async buildResponse(
 		release: ReleaseWithRelations,
 	): Promise<ReleaseResponse> {
-		const response = <ReleaseResponse>{
-			...release,
-			illustration:
-				await this.illustrationRepository.getReleaseIllustrationResponse(
-					{
-						id: release.id,
-					},
-				),
+		return {
+			id: release.id,
+			name: release.name,
+			extensions: release.extensions,
+			slug: release.slug,
+			nameSlug: release.nameSlug,
+			releaseDate: release.releaseDate,
+			albumId: release.albumId,
+			registeredAt: release.registeredAt,
+			album: release.album
+				? await this.albumResponseBuilder.buildResponse(release.album)
+				: release.album,
+			illustration: release.illustration
+				? IllustrationResponse.from(release.illustration)
+				: release.illustration,
+			externalIds: release.externalIds
+				? await Promise.all(
+						release.externalIds.map((id) =>
+							this.externalIdResponseBuilder.buildResponse(id),
+						) ?? [],
+				  )
+				: release.externalIds,
 		};
-
-		if (release.album !== undefined) {
-			response.album = await this.albumResponseBuilder.buildResponse(
-				release.album,
-			);
-		}
-		if (release.externalIds !== undefined) {
-			response.externalIds = await Promise.all(
-				release.externalIds?.map((id) =>
-					this.externalIdResponseBuilder.buildResponse(id),
-				) ?? [],
-			);
-		}
-		return response;
 	}
 }
