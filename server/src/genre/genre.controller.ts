@@ -32,6 +32,7 @@ import AlbumService from "src/album/album.service";
 import TransformIdentifier from "src/identifier/identifier.transform";
 import ArtistQueryParameters from "src/artist/models/artist.query-parameters";
 import ArtistService from "src/artist/artist.service";
+import IdentifierParam from "src/identifier/identifier.pipe";
 
 class Selector {
 	@IsOptional()
@@ -83,5 +84,17 @@ export class GenreController {
 			paginationParameters,
 			include,
 		);
+	}
+
+	@ApiOperation({
+		summary: "Get a genre",
+	})
+	@Response({ returns: Genre })
+	@Get(":idOrSlug")
+	async get(
+		@IdentifierParam(GenreService)
+		where: GenreQueryParameters.WhereInput,
+	) {
+		return this.genreService.get(where);
 	}
 }

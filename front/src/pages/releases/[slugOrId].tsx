@@ -493,10 +493,7 @@ const ReleasePage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({ props }) => {
 							display: "flex",
 						}}
 					>
-						{[
-							() => <PlayIcon fontSize="large" />,
-							() => <ShuffleIcon fontSize="large" />,
-						].map((icon, index) => (
+						{[PlayIcon, ShuffleIcon].map((Icon, index) => (
 							<Grid item key={index}>
 								<IconButton
 									onClick={() => {
@@ -526,7 +523,7 @@ const ReleasePage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({ props }) => {
 										}
 									}}
 								>
-									{icon()}
+									{<Icon fontSize="large" />}
 								</IconButton>
 							</Grid>
 						))}
