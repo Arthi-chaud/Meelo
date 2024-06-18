@@ -1011,41 +1011,6 @@ export default class API {
 	}
 
 	/**
-	 * Get a release's playlist
-	 * @param slugOrId the id of the release
-	 * @returns A query for an array of tracks
-	 */
-	static getReleasePlaylist<I extends SongInclude | never = never>(
-		slugOrId: string | number,
-		include?: I[],
-	) {
-		return {
-			key: [
-				"release",
-				slugOrId,
-				"playlist",
-				...API.formatIncludeKeys(include),
-			],
-			exec: () =>
-				API.fetch({
-					route: `/releases/${slugOrId.toString()}/playlist`,
-					parameters: { include },
-					validator: yup
-						.array(
-							Track.concat(
-								yup.object({
-									song: Song.concat(
-										SongRelations.pick(include ?? []),
-									),
-								}),
-							).required(),
-						)
-						.required(),
-				}),
-		};
-	}
-
-	/**
 	 * Get the song's lyrics
 	 * @param slugOrId the id of the song
 	 * @returns A query for an array of strings
