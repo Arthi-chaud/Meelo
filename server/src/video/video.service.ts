@@ -47,8 +47,27 @@ export default class VideoService {
 	) {
 		return this.prismaService.song
 			.findMany({
-				orderBy: sort
+				orderBy: sort?.sortBy
 					? this.songService.formatSortingInput(sort)
+					: where.album
+					? [
+							{
+								master: {
+									discIndex: {
+										sort: "asc",
+										nulls: "last",
+									} as const,
+								},
+							},
+							{
+								master: {
+									trackIndex: {
+										sort: "asc",
+										nulls: "last",
+									} as const,
+								},
+							},
+					  ]
 					: undefined,
 				include: {
 					...include,
