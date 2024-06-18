@@ -66,7 +66,7 @@ const ArtistAlbumsPage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({
 	const router = useRouter();
 	const artistIdentifier =
 		props?.artistIdentifier ?? getSlugOrId(router.query);
-	const artist = useQuery(artistQuery);
+	const artist = useQuery(artistQuery, artistIdentifier);
 	const defaultType = props?.type ?? null;
 	const { GradientBackground } = useGradientBackground(
 		artist.data?.illustration?.colors,
