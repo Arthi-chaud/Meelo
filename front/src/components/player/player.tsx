@@ -107,7 +107,7 @@ const Player = () => {
 		playPreviousTrack();
 	};
 
-	const startPlayback = () => {
+	const startPlayback = (isTrancoding: boolean) => {
 		player
 			.current!.play()
 			.then(() => {
@@ -149,7 +149,7 @@ const Player = () => {
 				}
 				switch (errcode) {
 					case 9: // Format error
-						if (useTranscoding) {
+						if (isTrancoding) {
 							toast.error(t("playbackError"), {
 								id: "playbackError",
 							});
@@ -204,7 +204,7 @@ const Player = () => {
 				console.error(err, data);
 			});
 			hls.current!.on(Hls.Events.MEDIA_ATTACHED, function () {
-				startPlayback();
+				startPlayback(true);
 			});
 		}
 	}, [useTranscoding]);
@@ -231,10 +231,10 @@ const Player = () => {
 			navigator.mediaSession.setActionHandler("previoustrack", onRewind);
 			navigator.mediaSession.setActionHandler("nexttrack", onSkipTrack);
 		}
+		setUseTranscoding(false);
 		if (currentTrack) {
 			progress.current = 0;
 			notification?.close();
-			setUseTranscoding(false);
 			setPlaying(true);
 			setDuration(currentTrack.track.duration ?? undefined);
 			document.title = `${currentTrack.track.name} - ${DefaultWindowTitle}`;
@@ -248,7 +248,7 @@ const Player = () => {
 			player.current!.src = API.getDirectStreamURL(
 				currentTrack.track.sourceFileId,
 			);
-			startPlayback();
+			startPlayback(false);
 			if (typeof navigator.mediaSession !== "undefined") {
 				navigator.mediaSession.metadata = new MediaMetadata({
 					title: currentTrack.track.name,
