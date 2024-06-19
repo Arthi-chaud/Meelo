@@ -681,6 +681,9 @@ const ExpandedPlayerControls = (
 						disabled={
 							tabName == "lyrics" && !parentSong.data?.lyrics
 						}
+						style={{
+							transition: "color 0.2s ease",
+						}}
 						onClick={() =>
 							selectTab((s) =>
 								s === tabName ? "player" : tabName,
