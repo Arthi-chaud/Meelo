@@ -244,7 +244,9 @@ export default class GeniusProvider
 		try {
 			const sluggedSongName = new Slug(songName).toString();
 			const searchResults = await this.fetchAPI(
-				`/search?q=${this.sanitizeQuery(songName)}`,
+				`/search?q=${this.sanitizeQuery(
+					artistIdentifer + " " + songName,
+				)}`,
 			).then((res) => res.hits.map((hit: any) => hit.result));
 			const id = searchResults
 				.filter((song: any) =>

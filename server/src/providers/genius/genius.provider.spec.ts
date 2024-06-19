@@ -90,6 +90,22 @@ describe("Genius Provider", () => {
 			expect(metadata.value).toBe("Britney-spears-work-bch-work-work");
 			expect(metadata.description).toBeNull();
 		});
+		it("should get simple song Identifier", async () => {
+			const metadata = await geniusProvider.getSongMetadataByName(
+				"Overrated",
+				"Siobhan-donaghy",
+			);
+			expect(metadata.value).toBe("Siobhan-donaghy-overrated");
+			expect(metadata.description).toBeNull();
+		});
+		it("should get simple song Identifier", async () => {
+			const metadata = await geniusProvider.getSongMetadataByName(
+				"Anti-Hero",
+				"Taylor-swift",
+			);
+			expect(metadata.value).toBe("Taylor-swift-anti-hero");
+			expect(metadata.description).toBeNull();
+		});
 		it("should get simple song Identifier (2)", async () => {
 			const metadata = await geniusProvider.getSongMetadataByName(
 				"Work Bitch",
