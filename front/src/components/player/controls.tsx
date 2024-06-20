@@ -546,7 +546,8 @@ const ExpandedPlayerControls = (
 						height: "100%",
 						width: "100%",
 						overflowY: "scroll",
-						margin: 1,
+						marginLeft: 2,
+						paddingRight: 3,
 						alignSelf: "center",
 						maxWidth: theme.breakpoints.values.md,
 					}}

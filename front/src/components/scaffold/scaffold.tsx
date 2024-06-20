@@ -339,7 +339,7 @@ const Scaffold = (props: { children: any }) => {
 	}, [props.children]);
 
 	return (
-		<Box sx={{ display: "flex", width: "100%", height: "100vh" }}>
+		<Box sx={{ display: "flex", width: "100%", height: "100svh" }}>
 			<RootGradientBackground />
 			<Drawer
 				openBottomDrawer={tempDrawerIsOpen}
