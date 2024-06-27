@@ -39,7 +39,7 @@ import { useQueryClient } from "../../api/use-query";
 import { RefreshTrackMetadataAction } from "../actions/refresh-metadata";
 import ChangeSongType from "../actions/song-type";
 import { useTranslation } from "react-i18next";
-import { usePlayerContext } from "../../contexts/player";
+import { usePlayerActionsContext } from "../../contexts/player";
 
 type ReleaseTrackContextualMenuProps = {
 	track: TrackWithRelations<"song" | "illustration">;
@@ -52,7 +52,7 @@ const ReleaseTrackContextualMenu = (props: ReleaseTrackContextualMenuProps) => {
 	const confirm = useConfirm();
 	const queryClient = useQueryClient();
 	const { t } = useTranslation();
-	const { playNext, playAfter } = usePlayerContext();
+	const { playNext, playAfter } = usePlayerActionsContext();
 
 	return (
 		<ContextualMenu

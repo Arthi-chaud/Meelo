@@ -24,7 +24,7 @@ import TrackContextualMenu from "../contextual-menu/track-contextual-menu";
 import { Grid } from "@mui/material";
 import { useQueryClient } from "../../api/use-query";
 import { MasterIcon, TrackIcon } from "../icons";
-import { usePlayerContext } from "../../contexts/player";
+import { usePlayerActionsContext } from "../../contexts/player";
 
 type TrackItemProps = {
 	track: TrackWithRelations<"release" | "song" | "illustration"> | undefined;
@@ -37,7 +37,7 @@ type TrackItemProps = {
  */
 const TrackItem = ({ track }: TrackItemProps) => {
 	const release = track?.release;
-	const { playTrack } = usePlayerContext();
+	const { playTrack } = usePlayerActionsContext();
 	const isMaster = track ? track.song.masterId == track.id : false;
 	const queryClient = useQueryClient();
 

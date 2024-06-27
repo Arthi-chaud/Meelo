@@ -34,7 +34,10 @@ import { toast } from "react-hot-toast";
 import { DrawerBreakpoint } from "../scaffold/scaffold";
 import { useTranslation } from "react-i18next";
 import { useReadLocalStorage } from "usehooks-ts";
-import { usePlayerContext } from "../../contexts/player";
+import {
+	usePlayerActionsContext,
+	usePlayerContext,
+} from "../../contexts/player";
 import Hls from "hls.js";
 import { v4 as uuidv4 } from "uuid";
 
@@ -44,8 +47,9 @@ const Player = () => {
 	const userIsAuthentified = useSelector(
 		(state: RootState) => state.user.user !== undefined,
 	);
-	const { playPreviousTrack, playTracks, skipTrack, cursor, playlist } =
-		usePlayerContext();
+	const { playPreviousTrack, playTracks, skipTrack } =
+		usePlayerActionsContext();
+	const { cursor, playlist } = usePlayerContext();
 	const currentTrack = useMemo(() => playlist[cursor], [cursor, playlist]);
 	const player = useRef<HTMLAudioElement | HTMLVideoElement>();
 	const audioPlayer = useRef<HTMLAudioElement>(

@@ -44,7 +44,7 @@ import { PlayIcon } from "../../../components/icons";
 import GenreButton from "../../../components/genre-button";
 import { useTranslation } from "react-i18next";
 import { generateArray } from "../../../utils/gen-list";
-import { usePlayerContext } from "../../../contexts/player";
+import { usePlayerActionsContext } from "../../../contexts/player";
 import { NextPageContext } from "next";
 import { useGradientBackground } from "../../../utils/gradient-background";
 
@@ -94,7 +94,7 @@ const SongPage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({ props }) => {
 	const router = useRouter();
 	const [tab, setTabs] = useState<(typeof tabs)[number]>(getTabFromQuery());
 	const queryClient = useQueryClient();
-	const { playTrack } = usePlayerContext();
+	const { playTrack } = usePlayerActionsContext();
 	const songIdentifier = props?.songIdentifier ?? getSlugOrId(router.query);
 	const song = useQuery(() =>
 		API.getSong(songIdentifier, [

@@ -42,7 +42,7 @@ import ChangeSongType from "../actions/song-type";
 import { RefreshSongMetadataAction } from "../actions/refresh-metadata";
 import { DeleteIcon } from "../icons";
 import { useTranslation } from "react-i18next";
-import { usePlayerContext } from "../../contexts/player";
+import { usePlayerActionsContext } from "../../contexts/player";
 
 type SongContextualMenuProps = {
 	song: SongWithRelations<"artist">;
@@ -55,7 +55,7 @@ const SongContextualMenu = (props: SongContextualMenuProps) => {
 	const songSlug = props.song.slug;
 	const queryClient = useQueryClient();
 	const { t } = useTranslation();
-	const { playNext, playAfter } = usePlayerContext();
+	const { playNext, playAfter } = usePlayerActionsContext();
 	const getMasterTrack = () =>
 		queryClient.fetchQuery(
 			API.getMasterTrack(songSlug, ["release", "illustration"]),

@@ -58,7 +58,10 @@ import { DragDropContext, Draggable, Droppable } from "react-beautiful-dnd";
 import formatDuration from "../../utils/formatDuration";
 import formatArtists from "../../utils/formatArtists";
 import { useTranslation } from "react-i18next";
-import { usePlayerContext } from "../../contexts/player";
+import {
+	usePlayerActionsContext,
+	usePlayerContext,
+} from "../../contexts/player";
 
 const parentSongQuery = (id: number) =>
 	API.getSong(id, ["artist", "lyrics", "featuring"]);
@@ -229,15 +232,14 @@ const MinimizedPlayerControls = (props: PlayerControlsProps) => {
 	);
 };
 
-const Panels = ["lyrics", "playlist"] as const;
-
 const ExpandedPlayerControls = (
 	props: PlayerControlsProps & { videoRef: LegacyRef<HTMLVideoElement> },
 ) => {
 	const theme = useTheme();
 	const { t } = useTranslation();
 	const parentSong = useQuery(parentSongQuery, props.track?.songId);
-	const { playlist, cursor, reorder, skipTrack } = usePlayerContext();
+	const { reorder, skipTrack } = usePlayerActionsContext();
+	const { playlist, cursor } = usePlayerContext();
 	const [selectedTab, selectTab] = useState<"player" | "lyrics" | "playlist">(
 		"player",
 	);

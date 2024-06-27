@@ -49,9 +49,12 @@ export type PlayerActions = {
 	emptyPlaylist: () => void;
 };
 
-const PlayerContext = createContext<PlayerState & PlayerActions>({
+const PlayerContext = createContext<PlayerState>({
 	playlist: [],
 	cursor: -1,
+});
+
+const PlayerActionContext = createContext<PlayerActions>({
 	playTrack: () => {},
 	playNext: () => {},
 	playAfter: () => {},
@@ -73,84 +76,93 @@ const PlayerContextProvider = (props: { children: JSX.Element }) => {
 			value={{
 				playlist: playerState.playlist,
 				cursor: playerState.cursor,
-				playTrack: (track: TrackState) => {
-					setPlayerState({
-						playlist: [track],
-						cursor: 0,
-					});
-				},
-				playNext: (track: TrackState) => {
-					setPlayerState((state) => {
-						state.playlist.splice(state.cursor + 1, 0, track);
-						const newState = {
-							cursor: state.cursor,
-							playlist: Array.of(...state.playlist),
-						};
-						return newState;
-					});
-				},
-				playAfter: (track: TrackState) => {
-					setPlayerState((state) => ({
-						playlist: [...state.playlist, track],
-						cursor: state.cursor,
-					}));
-				},
-				playTracks: (payload: {
-					tracks: TrackState[];
-					cursor?: number;
-				}) => {
-					setPlayerState({
-						playlist: payload.tracks,
-						cursor: payload.cursor ?? 0,
-					});
-				},
-				skipTrack: () => {
-					setPlayerState((state) => {
-						let newCursor = state.cursor + 1;
-						if (newCursor >= state.playlist.length) {
-							newCursor = -1;
-						}
-						return {
-							cursor: newCursor,
-							playlist: state.playlist,
-						};
-					});
-				},
-				playPreviousTrack: () => {
-					setPlayerState((state) => {
-						let newCursor = state.cursor;
-						if (newCursor >= 0) {
-							newCursor--;
-						}
-						return {
-							cursor: newCursor,
-							playlist: state.playlist,
-						};
-					});
-				},
-				reorder: (action: Record<"from" | "to", number>) => {
-					setPlayerState((state) => {
-						const [removed] = state.playlist.splice(action.from, 1);
-
-						state.playlist.splice(action.to, 0, removed);
-						return state;
-					});
-				},
-				emptyPlaylist: () => {
-					setPlayerState(() => {
-						return {
-							playlist: [],
-							cursor: -1,
-						};
-					});
-				},
 			}}
 		>
-			{props.children}
+			<PlayerActionContext.Provider
+				value={{
+					playTrack: (track: TrackState) => {
+						setPlayerState({
+							playlist: [track],
+							cursor: 0,
+						});
+					},
+					playNext: (track: TrackState) => {
+						setPlayerState((state) => {
+							state.playlist.splice(state.cursor + 1, 0, track);
+							const newState = {
+								cursor: state.cursor,
+								playlist: Array.of(...state.playlist),
+							};
+							return newState;
+						});
+					},
+					playAfter: (track: TrackState) => {
+						setPlayerState((state) => ({
+							playlist: [...state.playlist, track],
+							cursor: state.cursor,
+						}));
+					},
+					playTracks: (payload: {
+						tracks: TrackState[];
+						cursor?: number;
+					}) => {
+						setPlayerState({
+							playlist: payload.tracks,
+							cursor: payload.cursor ?? 0,
+						});
+					},
+					skipTrack: () => {
+						setPlayerState((state) => {
+							let newCursor = state.cursor + 1;
+							if (newCursor >= state.playlist.length) {
+								newCursor = -1;
+							}
+							return {
+								cursor: newCursor,
+								playlist: state.playlist,
+							};
+						});
+					},
+					playPreviousTrack: () => {
+						setPlayerState((state) => {
+							let newCursor = state.cursor;
+							if (newCursor >= 0) {
+								newCursor--;
+							}
+							return {
+								cursor: newCursor,
+								playlist: state.playlist,
+							};
+						});
+					},
+					reorder: (action: Record<"from" | "to", number>) => {
+						setPlayerState((state) => {
+							const [removed] = state.playlist.splice(
+								action.from,
+								1,
+							);
+
+							state.playlist.splice(action.to, 0, removed);
+							return state;
+						});
+					},
+					emptyPlaylist: () => {
+						setPlayerState(() => {
+							return {
+								playlist: [],
+								cursor: -1,
+							};
+						});
+					},
+				}}
+			>
+				{props.children}
+			</PlayerActionContext.Provider>
 		</PlayerContext.Provider>
 	);
 };
 
 const usePlayerContext = () => useContext(PlayerContext);
+const usePlayerActionsContext = () => useContext(PlayerActionContext);
 
-export { usePlayerContext, PlayerContextProvider };
+export { usePlayerContext, usePlayerActionsContext, PlayerContextProvider };

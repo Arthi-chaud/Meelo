@@ -64,7 +64,7 @@ import Video from "../../models/video";
 import { useAccentColor } from "../../utils/accent-color";
 import { useTranslation } from "react-i18next";
 import { generateArray } from "../../utils/gen-list";
-import { usePlayerContext } from "../../contexts/player";
+import { usePlayerActionsContext } from "../../contexts/player";
 import { NextPageContext } from "next";
 import { QueryClient } from "react-query";
 import { useGradientBackground } from "../../utils/gradient-background";
@@ -188,7 +188,7 @@ const ReleasePage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({ props }) => {
 	const releaseIdentifier =
 		props?.releaseIdentifier ?? getSlugOrId(router.query);
 	const theme = useTheme();
-	const { playTracks } = usePlayerContext();
+	const { playTracks } = usePlayerActionsContext();
 	const release = useQuery(releaseQuery, releaseIdentifier);
 	const artistId = useMemo(() => release.data?.album?.artistId, [release]);
 	const album = useQuery(albumQuery, release.data?.albumId);

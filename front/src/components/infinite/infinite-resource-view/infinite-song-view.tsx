@@ -34,7 +34,10 @@ import {
 	prepareMeeloInfiniteQuery,
 	useQueryClient,
 } from "../../../api/use-query";
-import { PlayerActions, usePlayerContext } from "../../../contexts/player";
+import {
+	PlayerActions,
+	usePlayerActionsContext,
+} from "../../../contexts/player";
 
 type AdditionalProps = {
 	type?: SongType;
@@ -97,7 +100,7 @@ const InfiniteSongView = <
 	const [options, setOptions] =
 		useState<OptionState<typeof SongSortingKeys, AdditionalProps>>();
 	const queryClient = useQueryClient();
-	const { emptyPlaylist, playAfter, playTrack } = usePlayerContext();
+	const { emptyPlaylist, playAfter, playTrack } = usePlayerActionsContext();
 	const query = {
 		type:
 			// @ts-ignore

@@ -24,7 +24,7 @@ import { useQueryClient } from "../../api/use-query";
 import { useEffect, useState } from "react";
 import { SongIcon } from "../icons";
 import formatArtists from "../../utils/formatArtists";
-import { usePlayerContext } from "../../contexts/player";
+import { usePlayerActionsContext } from "../../contexts/player";
 
 type SongItemProps<
 	T extends SongWithRelations<
@@ -49,7 +49,7 @@ const SongItem = <
 	formatSubtitle,
 }: SongItemProps<T>) => {
 	const artist = song?.artist;
-	const { playTrack } = usePlayerContext();
+	const { playTrack } = usePlayerActionsContext();
 	const queryClient = useQueryClient();
 	const [subtitle, setSubtitle] = useState(
 		formatSubtitle

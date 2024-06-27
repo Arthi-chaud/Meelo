@@ -23,7 +23,7 @@ import { useQueryClient } from "../../api/use-query";
 import API from "../../api/api";
 import formatDuration from "../../utils/formatDuration";
 import TrackContextualMenu from "../contextual-menu/track-contextual-menu";
-import { usePlayerContext } from "../../contexts/player";
+import { usePlayerActionsContext } from "../../contexts/player";
 import Video from "../../models/video";
 
 type VideoTileProps = {
@@ -33,7 +33,7 @@ type VideoTileProps = {
 
 const VideoTile = ({ video, formatSubtitle }: VideoTileProps) => {
 	const queryClient = useQueryClient();
-	const { playTrack } = usePlayerContext();
+	const { playTrack } = usePlayerActionsContext();
 
 	return (
 		<Tile

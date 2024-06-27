@@ -42,7 +42,11 @@ import formatArtists from "../utils/formatArtists";
 import { useTranslation } from "react-i18next";
 import { Fragment, useMemo } from "react";
 import { generateArray } from "../utils/gen-list";
-import { TrackState, usePlayerContext } from "../contexts/player";
+import {
+	TrackState,
+	usePlayerActionsContext,
+	usePlayerContext,
+} from "../contexts/player";
 import { Audio } from "react-loader-spinner";
 
 type ReleaseTracklistProps = {
@@ -75,7 +79,8 @@ const ReleaseTrackList = ({
 			ariaLabel="bars-loading"
 		/>
 	);
-	const { playTracks, playlist, cursor } = usePlayerContext();
+	const { playTracks } = usePlayerActionsContext();
+	const { playlist, cursor } = usePlayerContext();
 	const currentlyPlayingTrack = useMemo(
 		() => playlist[cursor] as TrackState | undefined,
 		[playlist, cursor],

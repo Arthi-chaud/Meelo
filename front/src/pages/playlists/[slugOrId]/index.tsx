@@ -56,7 +56,7 @@ import { useConfirm } from "material-ui-confirm";
 import { useGradientBackground } from "../../../utils/gradient-background";
 import { useTranslation } from "react-i18next";
 import { generateArray } from "../../../utils/gen-list";
-import { usePlayerContext } from "../../../contexts/player";
+import { usePlayerActionsContext } from "../../../contexts/player";
 import { NextPageContext } from "next";
 import Release from "../../../models/release";
 
@@ -200,7 +200,7 @@ const PlaylistPage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({
 }) => {
 	const { t } = useTranslation();
 	const router = useRouter();
-	const { playTracks } = usePlayerContext();
+	const { playTracks } = usePlayerActionsContext();
 	const confirm = useConfirm();
 	const queryClient = useQueryClient();
 	const [editState, setEditState] = useState(false);

@@ -23,7 +23,7 @@ import { SongWithRelations } from "../models/song";
 import { useQueryClient } from "../api/use-query";
 import ListItem from "./list-item/item";
 import formatArtists from "../utils/formatArtists";
-import { usePlayerContext } from "../contexts/player";
+import { usePlayerActionsContext } from "../contexts/player";
 
 type SongGridProps = {
 	songs: (
@@ -35,7 +35,7 @@ type SongGridProps = {
 
 const SongGrid = ({ songs, parentArtistName }: SongGridProps) => {
 	const queryClient = useQueryClient();
-	const { playTrack } = usePlayerContext();
+	const { playTrack } = usePlayerActionsContext();
 
 	return (
 		<Grid container spacing={2} sx={{ display: "flex", flexGrow: 1 }}>
