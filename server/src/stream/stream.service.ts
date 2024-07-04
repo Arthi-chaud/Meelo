@@ -77,7 +77,7 @@ export class StreamService {
 		const proxy = createProxyMiddleware({
 			router: () =>
 				`${this.transcoderUrl}/${Buffer.from(fullFilePath).toString(
-					"base64",
+					"base64url",
 				)}/${route}`,
 			ignorePath: true,
 		});
