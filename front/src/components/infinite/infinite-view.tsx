@@ -95,23 +95,26 @@ const InfiniteView = <ItemType extends IllustratedResource>(
 					loader={() => <WideLoadingComponent />}
 					query={props.query}
 					render={(item, index) => (
-						<Fade in>
-							<Box key={item?.id ?? `skeleton-${index}`}>
-								{props.renderListItem(item)}
-							</Box>
-						</Fade>
+						// <Fade in mountOnEnter unmountOnExit>
+						<Box key={item?.id ?? `skeleton-${index}`}>
+							{props.renderListItem(item)}
+						</Box>
+						// </Fade>
 					)}
 				/>
 			) : (
 				<InfiniteGrid
 					query={props.query}
 					loader={() => <WideLoadingComponent />}
-					render={(item) => (
-						<Fade in>
-							<Box sx={{ height: "100%" }}>
-								{props.renderGridItem(item)}
-							</Box>
-						</Fade>
+					render={(item, index) => (
+						// <Fade in>
+						<Box
+							key={item?.id ?? `skeleton-${index}`}
+							sx={{ height: "100%" }}
+						>
+							{props.renderGridItem(item)}
+						</Box>
+						// </Fade>
 					)}
 				/>
 			)}

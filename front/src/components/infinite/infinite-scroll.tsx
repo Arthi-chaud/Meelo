@@ -16,13 +16,13 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import * as IScroll from "react-infinite-scroller";
 import Resource from "../../models/resource";
 import PaginatedResponse, {
 	PaginationParameters,
 } from "../../models/pagination";
 import { MeeloInfiniteQueryFn, useInfiniteQuery } from "../../api/use-query";
-import { generateArray } from "../../utils/gen-list";
+import { Virtuoso } from "react-virtuoso";
+import { useMemo } from "react";
 
 export const parentScrollableDivId = "scrollableDiv" as const;
 
@@ -34,7 +34,7 @@ type InfiniteScrollProps<T extends Resource> = {
 	/**
 	 * The method to render all items
 	 */
-	render: (items: (T | undefined)[]) => JSX.Element;
+	render: (item: T | undefined, index: number) => JSX.Element;
 	/**
 	 * Query to use
 	 */
@@ -76,32 +76,32 @@ export type Page<T> = {
 const InfiniteScroll = <T extends Resource>(props: InfiniteScrollProps<T>) => {
 	const { isFetching, data, hasNextPage, fetchNextPage, isFetchingNextPage } =
 		useInfiniteQuery(props.query);
+	const { itemsCount, items } = useMemo(() => {
+		const flattened = data?.pages.map((page) => page.items).flat();
+		return { itemsCount: flattened?.length, items: flattened };
+	}, [data]);
 
 	return (
 		<>
-			<IScroll.default
-				pageStart={0}
-				loadMore={() => {
+			<Virtuoso
+				customScrollParent={
+					typeof document === "undefined"
+						? undefined
+						: document.getElementById(parentScrollableDivId) ??
+							undefined
+				}
+				style={{
+					flex: 1,
+				}}
+				increaseViewportBy={35}
+				totalCount={itemsCount ?? 3}
+				endReached={() => {
 					if (hasNextPage && !isFetchingNextPage) {
 						fetchNextPage();
 					}
 				}}
-				getScrollParent={() =>
-					document.getElementById(parentScrollableDivId)
-				}
-				useWindow={false}
-				hasMore={hasNextPage}
-				threshold={500}
-			>
-				{props.render(
-					data === undefined
-						? generateArray(3)
-						: [
-								...data.pages.map((page) => page.items).flat(),
-								...(isFetchingNextPage ? generateArray(3) : []),
-							],
-				)}
-			</IScroll.default>
+				itemContent={(index) => props.render(items?.at(index), index)}
+			/>
 		</>
 	);
 };

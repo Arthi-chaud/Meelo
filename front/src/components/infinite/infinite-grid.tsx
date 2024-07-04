@@ -18,15 +18,19 @@
 
 import { Grid } from "@mui/material";
 import Resource from "../../models/resource";
-import InfiniteScroll from "./infinite-scroll";
+import InfiniteScroll, { parentScrollableDivId } from "./infinite-scroll";
 import { IllustratedResource } from "../../models/illustration";
 import { useGradientBackground } from "../../utils/gradient-background";
+import { forwardRef, Fragment, useMemo, useState } from "react";
+import { useInfiniteQuery } from "../../api/use-query";
+import { GridComponents, VirtuosoGrid } from "react-virtuoso";
+import API from "../../api/api";
 
 type TypedList<T extends Resource> = typeof InfiniteScroll<T>;
 type InfiniteGridProps<T extends Resource> = Omit<
 	Parameters<TypedList<T>>[0],
 	"render"
-> & { render: (item: T | undefined) => JSX.Element };
+> & { render: (item: T | undefined, index: number) => JSX.Element };
 
 /**
  * Infinite Scrolling List
@@ -36,42 +40,83 @@ type InfiniteGridProps<T extends Resource> = Omit<
 const InfiniteGrid = <T extends IllustratedResource>(
 	props: InfiniteGridProps<T>,
 ) => {
+	const { isFetching, data, hasNextPage, fetchNextPage, isFetchingNextPage } =
+		useInfiniteQuery(props.query);
+	const { GradientBackground } = useGradientBackground(
+		data?.pages.at(0)?.items.at(0)?.illustration?.colors,
+		-1,
+	);
+	const components = useMemo(
+		(): GridComponents => ({
+			// eslint-disable-next-line react/display-name
+			List: forwardRef(({ style, children, ...otherProps }, ref) => (
+				<Grid
+					component="div"
+					ref={ref}
+					{...otherProps}
+					container
+					sx={{
+						alignItems: "stretch",
+						display: "flex",
+					}}
+					style={style}
+				>
+					{children}
+				</Grid>
+			)),
+			Item: ({ children, ...itemProps }) => (
+				<Grid
+					item
+					{...itemProps}
+					xs={6}
+					sm={3}
+					md={12 / 5}
+					lg={2}
+					xl={1.2}
+					sx={{ paddingX: 1 }}
+				>
+					{children}
+				</Grid>
+			),
+		}),
+		[],
+	);
 	return (
-		<InfiniteScroll
-			{...props}
-			render={(items) => {
-				// eslint-disable-next-line react-hooks/rules-of-hooks
-				const { GradientBackground } = useGradientBackground(
-					items.find((item) => item?.illustration !== undefined)
-						?.illustration?.colors,
-					-1,
-				);
-				return (
-					<>
-						<GradientBackground />
-						<Grid
-							columnSpacing={2}
-							container
-							sx={{ alignItems: "stretch", display: "flex" }}
-						>
-							{items.map((item, index) => (
-								<Grid
-									item
-									xs={6}
-									sm={3}
-									md={12 / 5}
-									lg={2}
-									xl={1.2}
-									key={`item-${index}`}
-								>
-									{props.render(item)}
-								</Grid>
-							))}
-						</Grid>
-					</>
-				);
-			}}
-		/>
+		<>
+			<GradientBackground />
+			<VirtuosoGrid
+				components={components}
+				customScrollParent={
+					typeof document === "undefined"
+						? undefined
+						: document.getElementById(parentScrollableDivId) ??
+							undefined
+				}
+				initialItemCount={
+					data?.pages.map((page) => page.items).flat().length ?? 0
+				}
+				style={{ flex: 1 }}
+				overscan={200}
+				totalCount={
+					data?.pages.map((page) => page.items).flat().length ?? 3
+				}
+				endReached={() => {
+					if (hasNextPage && !isFetchingNextPage) {
+						fetchNextPage();
+					}
+				}}
+				itemContent={(index) => {
+					const item = data?.pages
+						.at(Math.floor(index / API.defaultPageSize))
+						?.items.at(index % API.defaultPageSize);
+					return (
+						<Fragment key={item?.id ?? `skeleton-${index}`}>
+							{props.render(item, index)}
+						</Fragment>
+					);
+				}}
+			/>
+		</>
 	);
 };
 

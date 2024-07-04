@@ -16,12 +16,14 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { Divider, List } from "@mui/material";
+import { Divider } from "@mui/material";
 import Resource from "../../models/resource";
-import InfiniteScroll from "./infinite-scroll";
-import { Fragment } from "react";
+import InfiniteScroll, { parentScrollableDivId } from "./infinite-scroll";
+import { Fragment, useMemo, useState } from "react";
 import { IllustratedResource } from "../../models/illustration";
 import { useGradientBackground } from "../../utils/gradient-background";
+import { Virtuoso } from "react-virtuoso";
+import { useInfiniteQuery } from "../../api/use-query";
 
 type TypedList<T extends Resource> = typeof InfiniteScroll<T>;
 type InfiniteListProps<T extends Resource> = Omit<
@@ -37,33 +39,50 @@ type InfiniteListProps<T extends Resource> = Omit<
 const InfiniteList = <T extends IllustratedResource>(
 	props: InfiniteListProps<T>,
 ) => {
+	const [firstItem, setFirstItem] = useState<T>();
+	const { GradientBackground } = useGradientBackground(
+		firstItem?.illustration?.colors,
+		-1,
+	);
+	const { isFetching, data, hasNextPage, fetchNextPage, isFetchingNextPage } =
+		useInfiniteQuery(props.query);
+	const { itemsCount, items } = useMemo(() => {
+		const flattened = data?.pages.map((page) => page.items).flat();
+		return { itemsCount: flattened?.length, items: flattened };
+	}, [data]);
+
 	return (
-		<InfiniteScroll
-			{...props}
-			render={(items: (T | undefined)[]) => {
-				// eslint-disable-next-line react-hooks/rules-of-hooks
-				const { GradientBackground } = useGradientBackground(
-					items.find((item) => item?.illustration !== undefined)
-						?.illustration?.colors,
-					-1,
-				);
-				return (
-					<>
-						<GradientBackground />
-						<List>
-							{items.map((item, index) => (
-								<Fragment key={`item-${index}`}>
-									{props.render(item, index)}
-									{index == items.length - 1 || (
-										<Divider variant="middle" />
-									)}
-								</Fragment>
-							))}
-						</List>
-					</>
-				);
-			}}
-		/>
+		<>
+			<GradientBackground />
+			<Virtuoso
+				overscan={300}
+				customScrollParent={
+					typeof document === "undefined"
+						? undefined
+						: document.getElementById(parentScrollableDivId) ??
+							undefined
+				}
+				increaseViewportBy={35}
+				totalCount={itemsCount ?? 3}
+				endReached={() => {
+					if (hasNextPage && !isFetchingNextPage) {
+						fetchNextPage();
+					}
+				}}
+				itemContent={(index) => {
+					const item = items?.at(index);
+					if (!firstItem) {
+						setFirstItem(item);
+					}
+					return (
+						<Fragment key={item?.id ?? `skeleton-${index}`}>
+							{props.render(item, index)}
+							<Divider variant="middle" />
+						</Fragment>
+					);
+				}}
+			/>
+		</>
 	);
 };
 
