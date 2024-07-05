@@ -545,7 +545,6 @@ const ReleasePage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({ props }) => {
 								<Box>
 									<Grid
 										container
-										rowSpacing={1.5}
 										spacing={1}
 										sx={{ alignItems: "center" }}
 									>
@@ -563,27 +562,34 @@ const ReleasePage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({ props }) => {
 										{(
 											albumGenres.data?.pages.at(0)
 												?.items ?? generateArray(3)
-										).map((genre, index) => (
-											<Grid
-												item
-												key={index}
-												sx={{ display: "flex" }}
-											>
-												<GenreButton
-													genre={genre}
-													sx={{
-														borderColor:
-															accentColor?.light,
-														[theme.getColorSchemeSelector(
-															"dark",
-														)]: {
+										)
+											.sort(
+												(a, b) =>
+													a.slug.length -
+													b.slug.length,
+											)
+											.slice(0, 10)
+											.map((genre, index) => (
+												<Grid
+													item
+													key={index}
+													sx={{ display: "flex" }}
+												>
+													<GenreButton
+														genre={genre}
+														sx={{
 															borderColor:
-																accentColor?.dark,
-														},
-													}}
-												/>
-											</Grid>
-										)) ?? []}
+																accentColor?.light,
+															[theme.getColorSchemeSelector(
+																"dark",
+															)]: {
+																borderColor:
+																	accentColor?.dark,
+															},
+														}}
+													/>
+												</Grid>
+											)) ?? []}
 									</Grid>
 									<Divider
 										sx={{
