@@ -162,7 +162,11 @@ const InfiniteSongView = <
 					(key) => key !== "userPlayCount",
 				)}
 				defaultSortingOrder={props.initialSortingOrder}
-				defaultSortingKey={props.initialSortingField}
+				defaultSortingKey={
+					props.initialSortingField == "userPlayCount"
+						? "totalPlayCount"
+						: props.initialSortingField
+				}
 				router={props.light == true ? undefined : router}
 				disableLayoutToggle
 				defaultLayout={"list"}
