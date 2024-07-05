@@ -44,7 +44,7 @@ import {
 	useTheme,
 } from "@mui/material";
 import Illustration from "../illustration";
-import { LegacyRef, useState } from "react";
+import { LegacyRef, useCallback, useState } from "react";
 import PlayerSlider from "./controls/slider";
 import API from "../../api/api";
 import { useQuery } from "../../api/use-query";
@@ -241,7 +241,7 @@ const ExpandedPlayerControls = (
 	const [selectedTab, selectTab] = useState<"player" | "lyrics" | "playlist">(
 		"player",
 	);
-	const requestFullscreen = () => {
+	const requestFullscreen = useCallback(() => {
 		const el: any = document.getElementById("videoPlayer");
 
 		if (el.requestFullscreen) {
@@ -257,7 +257,7 @@ const ExpandedPlayerControls = (
 		} else if (el.enterFullscreen) {
 			el.enterFullscreen();
 		}
-	};
+	}, []);
 
 	return (
 		<Stack
@@ -323,163 +323,98 @@ const ExpandedPlayerControls = (
 				<Divider sx={{ margin: 1 }} variant="middle" />
 			)}
 
-			{selectedTab === "player" && (
+			<Grid
+				container
+				sx={
+					selectedTab !== "player"
+						? { width: 0, height: 0, overflow: "hidden" }
+						: {
+								height: "100%",
+								minHeight: "500px",
+								flexWrap: "nowrap",
+								justifyContent: "center",
+								alignSelf: "center",
+								maxWidth: theme.breakpoints.values.md,
+							}
+				}
+				direction="column"
+			>
 				<Grid
-					container
+					item
+					xs={7}
 					sx={{
-						height: "100%",
-						minHeight: "500px",
-						flexWrap: "nowrap",
+						padding: 3,
+						overflow: "hidden",
+						display: "flex",
 						justifyContent: "center",
-						alignSelf: "center",
-						maxWidth: theme.breakpoints.values.md,
 					}}
-					direction="column"
 				>
-					<Grid
-						item
-						xs={7}
-						sx={{
-							padding: 3,
-							overflow: "hidden",
-							display: "flex",
-							justifyContent: "center",
-						}}
-					>
-						{props.track?.type == "Video" ? (
-							<video
-								playsInline
-								id="videoPlayer"
-								ref={props.videoRef}
-								disablePictureInPicture={false}
-								style={{
-									borderRadius: theme.shape.borderRadius,
-								}}
-								onClick={requestFullscreen}
+					{props.track?.type == "Video" ? (
+						<video
+							playsInline
+							id="videoPlayer"
+							ref={props.videoRef}
+							disablePictureInPicture={false}
+							style={{
+								borderRadius: theme.shape.borderRadius,
+							}}
+							onClick={requestFullscreen}
+						/>
+					) : (
+						<Box
+							sx={{
+								height: "100%",
+								aspectRatio: "1",
+								objectFit: "contain",
+								overflow: "hidden",
+							}}
+						>
+							<Illustration
+								quality="original"
+								illustration={props.track?.illustration ?? null}
+								fallback={<TrackIcon />}
 							/>
-						) : (
-							<Box
+						</Box>
+					)}
+				</Grid>
+				<Grid item sx={{ width: "100%" }}>
+					<Stack spacing={3}>
+						<Grid
+							container
+							sx={{
+								...playerTextStyle,
+								width: "100%",
+								flexGrow: 1,
+								display: "flex",
+								justifyContent: "center",
+							}}
+						>
+							<Grid
+								item
+								xs={1}
 								sx={{
-									height: "100%",
-									aspectRatio: "1",
-									objectFit: "contain",
-									overflow: "hidden",
+									display: "flex",
+									justifyContent: "end",
 								}}
 							>
-								<Illustration
-									quality="original"
-									illustration={
-										props.track?.illustration ?? null
-									}
-									fallback={<TrackIcon />}
-								/>
-							</Box>
-						)}
-					</Grid>
-					<Grid item sx={{ width: "100%" }}>
-						<Stack spacing={3}>
+								{props.track?.type == "Video" && (
+									<IconButton onClick={requestFullscreen}>
+										<FullscreenIcon size={18} />
+									</IconButton>
+								)}
+							</Grid>
 							<Grid
-								container
+								item
+								xs={10}
 								sx={{
 									...playerTextStyle,
-									width: "100%",
-									flexGrow: 1,
 									display: "flex",
 									justifyContent: "center",
 								}}
 							>
-								<Grid
-									item
-									xs={1}
-									sx={{
-										display: "flex",
-										justifyContent: "end",
-									}}
-								>
-									{props.track?.type == "Video" && (
-										<IconButton onClick={requestFullscreen}>
-											<FullscreenIcon size={18} />
-										</IconButton>
-									)}
-								</Grid>
-								<Grid
-									item
-									xs={10}
-									sx={{
-										...playerTextStyle,
-										display: "flex",
-										justifyContent: "center",
-									}}
-								>
-									{props.artist && props.track ? (
-										<Link
-											href={`/releases/${props.track.releaseId}`}
-											style={{
-												overflow: "hidden",
-												textOverflow: "ellipsis",
-											}}
-										>
-											<Button
-												onClick={() =>
-													props.onExpand(false)
-												}
-												sx={{
-													textTransform: "none",
-													color: "inherit",
-													width: "100%",
-												}}
-											>
-												<Typography
-													sx={{
-														fontWeight: "bold",
-														...playerTextStyle,
-													}}
-												>
-													{props.track?.name}
-												</Typography>
-											</Button>
-										</Link>
-									) : (
-										<Skeleton
-											animation={false}
-											width={"70%"}
-										/>
-									)}
-								</Grid>
-								<Grid item xs={1}>
-									{
-										props.track &&
-										parentSong.data &&
-										props.artist ? (
-											<ReleaseTrackContextualMenu
-												artist={props.artist}
-												track={{
-													...props.track,
-													song: parentSong.data,
-												}}
-												onSelect={() =>
-													props.onExpand(false)
-												}
-											/>
-										) : (
-											<IconButton>
-												<ContextualMenuIcon />
-											</IconButton>
-										)
-
-										// To avoid slight shift on loaded
-									}
-								</Grid>
-							</Grid>
-							<Box
-								sx={{
-									display: "flex",
-									justifyContent: "center",
-								}}
-							>
-								{props.track && props.artist ? (
+								{props.artist && props.track ? (
 									<Link
-										href={`/artists/${props.artist.slug}`}
+										href={`/releases/${props.track.releaseId}`}
 										style={{
 											overflow: "hidden",
 											textOverflow: "ellipsis",
@@ -496,50 +431,108 @@ const ExpandedPlayerControls = (
 											}}
 										>
 											<Typography
-												sx={{ ...playerTextStyle }}
+												sx={{
+													fontWeight: "bold",
+													...playerTextStyle,
+												}}
 											>
-												{formatArtists(
-													props.artist,
-													parentSong.data?.featuring,
-												)}
+												{props.track?.name}
 											</Typography>
 										</Button>
 									</Link>
 								) : (
-									<Skeleton
-										animation={false}
-										sx={{ margin: 1 }}
-										width={"50%"}
-									/>
+									<Skeleton animation={false} width={"70%"} />
 								)}
-							</Box>
-							<Stack
-								spacing={2}
-								sx={{
-									justifyContent: "center",
-									display: "flex",
-								}}
-								direction="row"
-							>
-								<PreviousButton onClick={props.onRewind} />
-								<PlayButton
-									onPause={props.onPause}
-									onPlay={props.onPlay}
-									isPlaying={props.playing}
+							</Grid>
+							<Grid item xs={1}>
+								{
+									props.track &&
+									parentSong.data &&
+									props.artist ? (
+										<ReleaseTrackContextualMenu
+											artist={props.artist}
+											track={{
+												...props.track,
+												song: parentSong.data,
+											}}
+											onSelect={() =>
+												props.onExpand(false)
+											}
+										/>
+									) : (
+										<IconButton>
+											<ContextualMenuIcon />
+										</IconButton>
+									)
+
+									// To avoid slight shift on loaded
+								}
+							</Grid>
+						</Grid>
+						<Box
+							sx={{
+								display: "flex",
+								justifyContent: "center",
+							}}
+						>
+							{props.track && props.artist ? (
+								<Link
+									href={`/artists/${props.artist.slug}`}
+									style={{
+										overflow: "hidden",
+										textOverflow: "ellipsis",
+									}}
+								>
+									<Button
+										onClick={() => props.onExpand(false)}
+										sx={{
+											textTransform: "none",
+											color: "inherit",
+											width: "100%",
+										}}
+									>
+										<Typography sx={{ ...playerTextStyle }}>
+											{formatArtists(
+												props.artist,
+												parentSong.data?.featuring,
+											)}
+										</Typography>
+									</Button>
+								</Link>
+							) : (
+								<Skeleton
+									animation={false}
+									sx={{ margin: 1 }}
+									width={"50%"}
 								/>
-								<SkipButton onClick={props.onSkipTrack} />
-							</Stack>
-							<Container maxWidth={false}>
-								<PlayerSlider
-									onSlide={props.onSlide}
-									duration={props.duration}
-									progress={props.progress}
-								/>
-							</Container>
+							)}
+						</Box>
+						<Stack
+							spacing={2}
+							sx={{
+								justifyContent: "center",
+								display: "flex",
+							}}
+							direction="row"
+						>
+							<PreviousButton onClick={props.onRewind} />
+							<PlayButton
+								onPause={props.onPause}
+								onPlay={props.onPlay}
+								isPlaying={props.playing}
+							/>
+							<SkipButton onClick={props.onSkipTrack} />
 						</Stack>
-					</Grid>
+						<Container maxWidth={false}>
+							<PlayerSlider
+								onSlide={props.onSlide}
+								duration={props.duration}
+								progress={props.progress}
+							/>
+						</Container>
+					</Stack>
 				</Grid>
-			)}
+			</Grid>
 			{selectedTab == "lyrics" && (
 				<Box
 					sx={{
