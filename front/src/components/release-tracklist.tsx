@@ -125,10 +125,12 @@ const ReleaseTrackList = ({
 						<Fragment key={index}>
 							<ListItem
 								dense={
-									currentTrack
-										? currentTrack.song.artistId !=
-											mainArtist?.id
-										: false
+									mainArtist === undefined
+										? false
+										: currentTrack
+											? currentTrack.song.artistId !=
+												mainArtist?.id
+											: false
 								}
 								disablePadding
 								disableGutters
@@ -195,11 +197,13 @@ const ReleaseTrackList = ({
 											fontSize: "medium",
 										}}
 										secondary={
-											currentTrack
-												? formatTracksubtitle(
-														currentTrack.song,
-													)
-												: undefined
+											mainArtist === undefined
+												? null
+												: currentTrack
+													? formatTracksubtitle(
+															currentTrack.song,
+														)
+													: undefined
 										}
 										secondaryTypographyProps={{
 											fontSize: "small",

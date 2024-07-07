@@ -100,7 +100,7 @@ const releaseTracklistQuery = (releaseIdentifier: number | string) => {
 	};
 };
 const albumQuery = (albumId: number) =>
-	API.getAlbum(albumId, ["externalIds", "genres"]);
+	API.getAlbum(albumId, ["externalIds", "genres", "artist"]);
 const artistsOnAlbumQuery = (albumId: number) => {
 	const query = API.getArtists({ album: albumId }, undefined, [
 		"illustration",
@@ -216,15 +216,7 @@ const ReleasePage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({ props }) => {
 		relatedPlaylistsQuery,
 		release.data?.albumId,
 	);
-	const albumArtist = useMemo(
-		() =>
-			album.data?.artistId === null
-				? null
-				: artists.data
-					? artists.data.find((artist) => artist.id === artistId)
-					: undefined,
-		[artistId, artists, album.data],
-	);
+	const albumArtist = useMemo(() => album.data?.artist, [album.data]);
 	const featurings = useMemo(
 		() => artists.data?.filter((artist) => artist.id !== artistId),
 		[artistId, artists],
@@ -608,7 +600,7 @@ const ReleasePage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({ props }) => {
 						<ReleaseTrackList
 							mainArtist={albumArtist}
 							tracklist={
-								trackList
+								trackList && album.data // need to wait for main artist
 									? Object.fromEntries(
 											Array.from(
 												Object.entries(trackList),
