@@ -19,6 +19,7 @@ services:
       - TRANSCODER_URL=http://transcoder:7666
       - MEILI_HOST=http://meilisearch:7700
       - REDIS_HOST=redis
+      - POSTGRES_HOST=db
       - DATABASE_URL=postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@${POSTGRES_HOST}:5432/${POSTGRES_DB}?schema=public
     healthcheck:
       test: ["CMD-SHELL", "wget -qO- localhost:4000"]
