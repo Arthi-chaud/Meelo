@@ -8,7 +8,6 @@
 		"useExternalProviderGenres": true
 	},
 	"providers": {
-		"genius": {},
 		"musicbrainz": {}
 	},
 	"compilations": {
