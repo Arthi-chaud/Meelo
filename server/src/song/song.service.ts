@@ -715,24 +715,92 @@ export default class SongService extends SearchableRepositoryService {
 				tracks: {
 					some: { type: "Audio" },
 				},
-				OR: [
-					// We take all tracks that do not appear on studio recordings
+				AND: [
 					{
-						tracks: {
-							none: {
-								release: { album: { type: "StudioRecording" } },
-							},
-						},
+						OR: [
+							{ artistId: artist.id },
+							{ featuring: { some: { id: artist.id } } },
+						],
 					},
-					
-					//TODO: take all songs that do not appear on all releases
-					// Take all tracks that appear only on singles
 					{
-						tracks: {
-							every: {
-								release: { album: { type: "Single" } },
+						OR: [
+							// Take songs that only appears on other artist's album
+							{
+								// In that case, we only want song with artist being the main one
+								artistId: artist.id,
+								tracks: {
+									every: {
+										release: {
+											album: {
+												artistId: { not: artist.id },
+											},
+										},
+									},
+								},
 							},
-						},
+							// Take all tracks that only appear on non-master albums
+							{
+								tracks: {
+									every: {
+										release: {
+											album: {
+												type: "StudioRecording",
+											},
+											masterOf: null,
+										},
+									},
+								},
+							},
+							{
+								OR: [
+									// Take all tracks that appear only on singles
+									{
+										tracks: {
+											every: {
+												release: {
+													album: { type: "Single" },
+												},
+												trackIndex: { notIn: [0, 1] },
+											},
+										},
+									},
+									// Take all tracks that appear only on singles AND non master albums
+									{
+										tracks: {
+											every: {
+												OR: [
+													{
+														release: {
+															album: {
+																type: "Single",
+															},
+														},
+														trackIndex: {
+															notIn: [0, 1],
+														},
+													},
+													{
+														release: {
+															album: {
+																type: "StudioRecording",
+															},
+															masterOf: null,
+														},
+													},
+												],
+											},
+										},
+									},
+								],
+							},
+							{
+								tracks: {
+									some: {
+										isBonus: true,
+									},
+								},
+							},
+						],
 					},
 				],
 			},

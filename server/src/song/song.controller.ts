@@ -132,8 +132,7 @@ export class Selector {
 
 	@IsOptional()
 	@ApiPropertyOptional({
-		description:
-			"Filter songs that would be considered to be 'rare'",
+		description: "Filter songs that would be considered to be 'rare'",
 	})
 	@TransformIdentifier(ReleaseService)
 	rare: ArtistQueryParameters.WhereInput;
@@ -196,7 +195,14 @@ export class SongController {
 				include,
 				sort,
 			);
-		} else if (selector.)
+		} else if (selector.rare) {
+			return this.songService.getRareSongsByArtist(
+				selector.rare,
+				paginationParameters,
+				include,
+				sort,
+			);
+		}
 		return this.songService.getMany(
 			selector,
 			selector.random ?? sort,
