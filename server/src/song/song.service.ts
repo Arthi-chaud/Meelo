@@ -53,6 +53,7 @@ import {
 	getRandomIds,
 	sortItemsUsingOrderedIdList,
 } from "src/repository/repository.utils";
+import ArtistQueryParameters from "src/artist/models/artist.query-parameters";
 
 @Injectable()
 export default class SongService extends SearchableRepositoryService {
@@ -683,6 +684,54 @@ export default class SongService extends SearchableRepositoryService {
 								SongType.Demo,
 								SongType.NonMusic,
 							],
+						},
+					},
+				],
+			},
+			orderBy: sort ? this.formatSortingInput(sort) : undefined,
+			include: include ?? ({} as I),
+			...formatPaginationParameters(pagination),
+		});
+	}
+
+	async getRareSongsByArtist<I extends SongQueryParameters.RelationInclude>(
+		where: ArtistQueryParameters.WhereInput,
+		pagination?: PaginationParameters,
+		include?: I,
+		sort?: SongQueryParameters.SortingParameter,
+	) {
+		const artist = await this.artistService
+			.get(where, { albums: true })
+			.catch(() => null);
+
+		if (!artist || artist.albums.length == 0) {
+			// if the artist does not have albums, lets skip this
+			return [];
+		}
+		return this.prismaService.song.findMany({
+			where: {
+				type: { in: ["Original"] },
+				// Take the tracks that have at least one audio track
+				tracks: {
+					some: { type: "Audio" },
+				},
+				OR: [
+					// We take all tracks that do not appear on studio recordings
+					{
+						tracks: {
+							none: {
+								release: { album: { type: "StudioRecording" } },
+							},
+						},
+					},
+					
+					//TODO: take all songs that do not appear on all releases
+					// Take all tracks that appear only on singles
+					{
+						tracks: {
+							every: {
+								release: { album: { type: "Single" } },
+							},
 						},
 					},
 				],

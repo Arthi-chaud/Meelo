@@ -132,6 +132,14 @@ export class Selector {
 
 	@IsOptional()
 	@ApiPropertyOptional({
+		description:
+			"Filter songs that would be considered to be 'rare'",
+	})
+	@TransformIdentifier(ReleaseService)
+	rare: ArtistQueryParameters.WhereInput;
+
+	@IsOptional()
+	@ApiPropertyOptional({
 		description: "The Seed to Sort the items",
 	})
 	@IsNumber()
@@ -188,7 +196,7 @@ export class SongController {
 				include,
 				sort,
 			);
-		}
+		} else if (selector.)
 		return this.songService.getMany(
 			selector,
 			selector.random ?? sort,
@@ -212,7 +220,7 @@ export class SongController {
 	}
 
 	@ApiOperation({
-		summary: "Upate a song",
+		summary: "Update a song",
 	})
 	@Response({ handler: SongResponseBuilder })
 	@Post(":idOrSlug")
