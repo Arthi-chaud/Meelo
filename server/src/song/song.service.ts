@@ -677,14 +677,22 @@ export default class SongService extends SearchableRepositoryService {
 					// We only want songs that have at least one audtio tracks
 					{ tracks: { some: { type: TrackType.Audio } } },
 					{
-						type: {
-							in: [
-								SongType.Original,
-								SongType.Acoustic,
-								SongType.Demo,
-								SongType.NonMusic,
-							],
-						},
+						OR: [
+							// We take original songs or extras
+							{
+								type: { in: ["Original", "NonMusic"] },
+							},
+							// Or songs that are only available as demos/acoustic versions
+							{
+								group: {
+									versions: {
+										every: {
+											type: { in: ["Demo", "Acoustic"] },
+										},
+									},
+								},
+							},
+						],
 					},
 				],
 			},

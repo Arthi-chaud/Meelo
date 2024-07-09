@@ -278,9 +278,7 @@ const ArtistPage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({ props }) => {
 							<SongGrid
 								parentArtistName={artist.data?.name}
 								songs={
-									rareSongs.data?.pages
-										?.at(0)
-										?.items.slice(0, songListSize * 2) ??
+									rareSongs.data?.pages?.at(0)?.items ??
 									generateArray(songListSize)
 								}
 							/>
