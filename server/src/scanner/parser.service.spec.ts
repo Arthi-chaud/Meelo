@@ -580,9 +580,9 @@ describe("Parser Service", () => {
 			).toBe(SongType.Original);
 		});
 		it("Original Version (Original Mix)", () => {
-			expect(
-				parserService.getSongType("My Song (Original Mix)"),
-			).toBe(SongType.Original);
+			expect(parserService.getSongType("My Song (Original Mix)")).toBe(
+				SongType.Original,
+			);
 		});
 		it("Original Version (Feat Group)", () => {
 			expect(parserService.getSongType("My Song (feat. A)")).toBe(

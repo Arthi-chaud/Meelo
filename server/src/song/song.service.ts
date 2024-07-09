@@ -774,47 +774,32 @@ export default class SongService extends SearchableRepositoryService {
 									},
 								},
 							},
+							// Take all tracks that appear only on singles AND non master albums
 							{
-								OR: [
-									// Take all tracks that appear only on singles
-									{
-										tracks: {
-											every: {
+								tracks: {
+									every: {
+										OR: [
+											{
 												release: {
-													album: { type: "Single" },
+													album: {
+														type: "Single",
+													},
 												},
-												trackIndex: { notIn: [0, 1] },
+												trackIndex: {
+													notIn: [0, 1],
+												},
 											},
-										},
-									},
-									// Take all tracks that appear only on singles AND non master albums
-									{
-										tracks: {
-											every: {
-												OR: [
-													{
-														release: {
-															album: {
-																type: "Single",
-															},
-														},
-														trackIndex: {
-															notIn: [0, 1],
-														},
+											{
+												release: {
+													album: {
+														type: "StudioRecording",
 													},
-													{
-														release: {
-															album: {
-																type: "StudioRecording",
-															},
-															masterOf: null,
-														},
-													},
-												],
+													masterOf: null,
+												},
 											},
-										},
+										],
 									},
-								],
+								},
 							},
 							{
 								tracks: {
