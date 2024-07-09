@@ -579,6 +579,11 @@ describe("Parser Service", () => {
 				parserService.getSongType("My Song (Original Version)"),
 			).toBe(SongType.Original);
 		});
+		it("Original Version (Original Mix)", () => {
+			expect(parserService.getSongType("My Song (Original Mix)")).toBe(
+				SongType.Original,
+			);
+		});
 		it("Original Version (Feat Group)", () => {
 			expect(parserService.getSongType("My Song (feat. A)")).toBe(
 				SongType.Original,
@@ -852,12 +857,12 @@ describe("Parser Service", () => {
 
 		it("Demo (Rough Mix)", () => {
 			expect(parserService.getSongType("Fever (Rough Mix)")).toBe(
-				SongType.Original,
+				SongType.Demo,
 			);
 		});
 		it("Demo (Rough Mix Edit)", () => {
 			expect(parserService.getSongType("Fever (Rough Mix Edit)")).toBe(
-				SongType.Original,
+				SongType.Demo,
 			);
 		});
 

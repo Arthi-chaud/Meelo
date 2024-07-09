@@ -666,6 +666,7 @@ export default class API {
 			genre?: Identifier;
 			artist?: Identifier;
 			versionsOf?: Identifier;
+			rare?: Identifier;
 			query?: string;
 			bsides?: Identifier;
 			random?: number;

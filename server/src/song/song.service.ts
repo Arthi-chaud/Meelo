@@ -53,6 +53,7 @@ import {
 	getRandomIds,
 	sortItemsUsingOrderedIdList,
 } from "src/repository/repository.utils";
+import ArtistQueryParameters from "src/artist/models/artist.query-parameters";
 
 @Injectable()
 export default class SongService extends SearchableRepositoryService {
@@ -676,14 +677,138 @@ export default class SongService extends SearchableRepositoryService {
 					// We only want songs that have at least one audtio tracks
 					{ tracks: { some: { type: TrackType.Audio } } },
 					{
-						type: {
-							in: [
-								SongType.Original,
-								SongType.Acoustic,
-								SongType.Demo,
-								SongType.NonMusic,
-							],
-						},
+						OR: [
+							// We take original songs or extras
+							{
+								type: { in: ["Original", "NonMusic"] },
+							},
+							// Or songs that are only available as demos/acoustic versions
+							{
+								group: {
+									versions: {
+										every: {
+											type: { in: ["Demo", "Acoustic"] },
+										},
+									},
+								},
+							},
+						],
+					},
+				],
+			},
+			orderBy: sort ? this.formatSortingInput(sort) : undefined,
+			include: include ?? ({} as I),
+			...formatPaginationParameters(pagination),
+		});
+	}
+
+	async getRareSongsByArtist<I extends SongQueryParameters.RelationInclude>(
+		where: ArtistQueryParameters.WhereInput,
+		pagination?: PaginationParameters,
+		include?: I,
+		sort?: SongQueryParameters.SortingParameter,
+	) {
+		const artist = await this.artistService
+			.get(where, { albums: true })
+			.catch(() => null);
+
+		if (!artist || artist.albums.length == 0) {
+			// if the artist does not have albums, lets skip this
+			return [];
+		}
+		return this.prismaService.song.findMany({
+			where: {
+				// Take the tracks that have at least one audio track
+				tracks: {
+					some: { type: "Audio" },
+				},
+				AND: [
+					{
+						OR: [
+							{
+								type: { in: ["Original"] },
+							},
+							{
+								group: {
+									versions: {
+										every: {
+											type: { in: ["Demo", "Acoustic"] },
+										},
+									},
+								},
+							},
+						],
+					},
+					{
+						OR: [
+							{ artistId: artist.id },
+							{ featuring: { some: { id: artist.id } } },
+						],
+					},
+					{
+						OR: [
+							// Take songs that only appears on other artist's album
+							{
+								// In that case, we only want song with artist being the main one
+								artistId: artist.id,
+								tracks: {
+									every: {
+										release: {
+											album: {
+												artistId: { not: artist.id },
+											},
+										},
+									},
+								},
+							},
+							// Take all tracks that only appear on non-master albums
+							{
+								tracks: {
+									every: {
+										release: {
+											album: {
+												type: "StudioRecording",
+											},
+											masterOf: null,
+										},
+									},
+								},
+							},
+							// Take all tracks that appear only on singles AND non master albums
+							{
+								tracks: {
+									every: {
+										OR: [
+											{
+												release: {
+													album: {
+														type: "Single",
+													},
+												},
+												trackIndex: {
+													notIn: [0, 1],
+												},
+											},
+											{
+												release: {
+													album: {
+														type: "StudioRecording",
+													},
+													masterOf: null,
+												},
+											},
+										],
+									},
+								},
+							},
+							{
+								tracks: {
+									some: {
+										isBonus: true,
+									},
+								},
+							},
+						],
 					},
 				],
 			},

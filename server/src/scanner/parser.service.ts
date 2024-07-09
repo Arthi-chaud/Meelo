@@ -409,6 +409,9 @@ export default class ParserService {
 			return SongType.Clean;
 		}
 		if (jointExtensionWords.includes("rough mix")) {
+			return SongType.Demo;
+		}
+		if (jointExtensionWords == "original mix") {
 			return SongType.Original;
 		}
 		if (containsWord("mix") && containsWord("edit")) {

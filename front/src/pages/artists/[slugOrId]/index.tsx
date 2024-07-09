@@ -71,6 +71,13 @@ const topSongsQuery = (artistSlugOrId: string | number) =>
 		["artist", "featuring", "master", "illustration"],
 	);
 
+const rareSongsQuery = (artistSlugOrId: string | number) =>
+	API.getSongs(
+		{ rare: artistSlugOrId },
+		{ sortBy: "totalPlayCount", order: "desc" },
+		["artist", "featuring", "master", "illustration"],
+	);
+
 const artistQuery = (artistSlugOrId: string | number) =>
 	API.getArtist(artistSlugOrId, ["externalIds", "illustration"]);
 
@@ -88,6 +95,7 @@ const prepareSSR = (context: NextPageContext) => {
 		additionalProps: { artistIdentifier },
 		queries: [artistQuery(artistIdentifier)],
 		infiniteQueries: [
+			rareSongsQuery(artistIdentifier),
 			videosQuery(artistIdentifier),
 			topSongsQuery(artistIdentifier),
 			appearanceQuery(artistIdentifier),
@@ -110,6 +118,7 @@ const ArtistPage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({ props }) => {
 	}));
 	const videos = useInfiniteQuery(videosQuery, artistIdentifier);
 	const topSongs = useInfiniteQuery(topSongsQuery, artistIdentifier);
+	const rareSongs = useInfiniteQuery(rareSongsQuery, artistIdentifier);
 	const appearances = useInfiniteQuery(appearanceQuery, artistIdentifier);
 	const externalIdWithDescription = artist.data?.externalIds
 		.filter(({ provider }) => provider.name.toLowerCase() !== "discogs")
@@ -262,6 +271,20 @@ const ArtistPage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({ props }) => {
 							</Grid>
 						</Fragment>
 					))}
+				{(rareSongs.data?.pages?.at(0)?.items.length ?? 0) != 0 && (
+					<>
+						<SectionHeader heading={t("rareSongs")} />
+						<Grid item sx={{ overflowX: "clip", width: "100%" }}>
+							<SongGrid
+								parentArtistName={artist.data?.name}
+								songs={
+									rareSongs.data?.pages?.at(0)?.items ??
+									generateArray(songListSize)
+								}
+							/>
+						</Grid>
+					</>
+				)}
 				{[
 					{ label: "topVideos", items: musicVideos } as const,
 					{ label: "extras", items: extras } as const,
@@ -269,6 +292,7 @@ const ArtistPage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({ props }) => {
 					({ label, items }) =>
 						items.length != 0 && (
 							<Fragment key={`videos-${label}`}>
+								<Box sx={{ paddingBottom: sectionPadding }} />
 								<SectionHeader
 									heading={t(label)}
 									trailing={
