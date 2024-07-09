@@ -40,27 +40,13 @@ const InfiniteList = <T extends IllustratedResource>(
 	return (
 		<InfiniteScroll
 			{...props}
-			render={(items: (T | undefined)[]) => {
-				// eslint-disable-next-line react-hooks/rules-of-hooks
-				const { GradientBackground } = useGradientBackground(
-					items.find((item) => item?.illustration !== undefined)
-						?.illustration?.colors,
-					-1,
-				);
+			parentDiv={({ children }) => <List>{children}</List>}
+			render={(item, index) => {
 				return (
-					<>
-						<GradientBackground />
-						<List>
-							{items.map((item, index) => (
-								<Fragment key={`item-${index}`}>
-									{props.render(item, index)}
-									{index == items.length - 1 || (
-										<Divider variant="middle" />
-									)}
-								</Fragment>
-							))}
-						</List>
-					</>
+					<Fragment key={`item-${index}`}>
+						{props.render(item, index)}
+						<Divider variant="middle" />
+					</Fragment>
 				);
 			}}
 		/>

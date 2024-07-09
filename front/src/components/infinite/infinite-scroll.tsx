@@ -23,6 +23,8 @@ import PaginatedResponse, {
 } from "../../models/pagination";
 import { MeeloInfiniteQueryFn, useInfiniteQuery } from "../../api/use-query";
 import { generateArray } from "../../utils/gen-list";
+import { Fragment, ReactNode, useMemo } from "react";
+import API from "../../api/api";
 
 export const parentScrollableDivId = "scrollableDiv" as const;
 
@@ -31,10 +33,11 @@ export type InfiniteFetchFn<T> = (
 ) => Promise<PaginatedResponse<T>>;
 
 type InfiniteScrollProps<T extends Resource> = {
+	parentDiv: (props: { children: ReactNode }) => JSX.Element;
 	/**
 	 * The method to render all items
 	 */
-	render: (items: (T | undefined)[]) => JSX.Element;
+	render: (item: T | undefined, index: number) => JSX.Element;
 	/**
 	 * Query to use
 	 */
@@ -45,6 +48,7 @@ type InfiniteScrollProps<T extends Resource> = {
 	loader: () => JSX.Element;
 };
 
+//todo move to models
 /**
  * Data type for infinite data fetching
  */
@@ -76,7 +80,14 @@ export type Page<T> = {
 const InfiniteScroll = <T extends Resource>(props: InfiniteScrollProps<T>) => {
 	const { isFetching, data, hasNextPage, fetchNextPage, isFetchingNextPage } =
 		useInfiniteQuery(props.query);
-
+	const Parent = props.parentDiv;
+	const totalItemCount = useMemo(
+		() =>
+			data?.pages
+				.map(({ items }) => items.length)
+				.reduce((prev, curr) => prev + curr, 0),
+		[data],
+	);
 	return (
 		<>
 			<IScroll.default
@@ -93,14 +104,27 @@ const InfiniteScroll = <T extends Resource>(props: InfiniteScrollProps<T>) => {
 				hasMore={hasNextPage}
 				threshold={500}
 			>
-				{props.render(
-					data === undefined
-						? generateArray(3)
-						: [
-								...data.pages.map((page) => page.items).flat(),
-								...(isFetchingNextPage ? generateArray(3) : []),
-							],
-				)}
+				<Parent>
+					{generateArray(totalItemCount ?? 0).map((_, index) => {
+						const item = data?.pages
+							.at(Math.floor(index / API.defaultPageSize))
+							?.items.at(index % API.defaultPageSize);
+						return (
+							<Fragment key={`item-${item?.id}`}>
+								{props.render(item, index)}
+							</Fragment>
+						);
+					})}
+					{data === undefined || isFetchingNextPage ? (
+						generateArray(3).map((skeleton, index) => (
+							<Fragment key={`skeletin-${index}`}>
+								{props.render(skeleton, index)}
+							</Fragment>
+						))
+					) : (
+						<></>
+					)}
+				</Parent>
 			</IScroll.default>
 		</>
 	);

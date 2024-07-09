@@ -19,8 +19,9 @@
 import { Grid } from "@mui/material";
 import Resource from "../../models/resource";
 import InfiniteScroll from "./infinite-scroll";
-import { IllustratedResource } from "../../models/illustration";
+import Illustration, { IllustratedResource } from "../../models/illustration";
 import { useGradientBackground } from "../../utils/gradient-background";
+import { useState } from "react";
 
 type TypedList<T extends Resource> = typeof InfiniteScroll<T>;
 type InfiniteGridProps<T extends Resource> = Omit<
@@ -36,42 +37,46 @@ type InfiniteGridProps<T extends Resource> = Omit<
 const InfiniteGrid = <T extends IllustratedResource>(
 	props: InfiniteGridProps<T>,
 ) => {
+	const [firstIllustration, setIllustration] = useState<Illustration>();
+	const { GradientBackground } = useGradientBackground(
+		firstIllustration?.colors,
+		-1,
+	);
 	return (
-		<InfiniteScroll
-			{...props}
-			render={(items) => {
-				// eslint-disable-next-line react-hooks/rules-of-hooks
-				const { GradientBackground } = useGradientBackground(
-					items.find((item) => item?.illustration !== undefined)
-						?.illustration?.colors,
-					-1,
-				);
-				return (
-					<>
-						<GradientBackground />
+		<>
+			<GradientBackground />
+			<InfiniteScroll
+				{...props}
+				parentDiv={({ children }) => (
+					<Grid
+						columnSpacing={2}
+						container
+						sx={{ alignItems: "stretch", display: "flex" }}
+					>
+						{children}
+					</Grid>
+				)}
+				render={(item, index) => {
+					if (!firstIllustration && item?.illustration) {
+						setIllustration(item?.illustration);
+					}
+
+					return (
 						<Grid
-							columnSpacing={2}
-							container
-							sx={{ alignItems: "stretch", display: "flex" }}
+							item
+							xs={6}
+							sm={3}
+							md={12 / 5}
+							lg={2}
+							xl={1.2}
+							key={`item-${index}`}
 						>
-							{items.map((item, index) => (
-								<Grid
-									item
-									xs={6}
-									sm={3}
-									md={12 / 5}
-									lg={2}
-									xl={1.2}
-									key={`item-${index}`}
-								>
-									{props.render(item)}
-								</Grid>
-							))}
+							{props.render(item)}
 						</Grid>
-					</>
-				);
-			}}
-		/>
+					);
+				}}
+			/>
+		</>
 	);
 };
 
