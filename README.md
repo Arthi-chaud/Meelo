@@ -25,6 +25,7 @@ Get started! Look over [here](https://arthi-chaud.github.io/Meelo/) for setup in
 - Access, stream, and download songs from your server
 - Music Videos
 - B-Sides
+- Identifies 'Rare' Tracks in your collection
 - Playlists
 - Metadata scan using:
   - Embedded tags (including bitrate)
