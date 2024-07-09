@@ -710,12 +710,27 @@ export default class SongService extends SearchableRepositoryService {
 		}
 		return this.prismaService.song.findMany({
 			where: {
-				type: { in: ["Original"] },
 				// Take the tracks that have at least one audio track
 				tracks: {
 					some: { type: "Audio" },
 				},
 				AND: [
+					{
+						OR: [
+							{
+								type: { in: ["Original"] },
+							},
+							{
+								group: {
+									versions: {
+										every: {
+											type: { in: ["Demo", "Acoustic"] },
+										},
+									},
+								},
+							},
+						],
+					},
 					{
 						OR: [
 							{ artistId: artist.id },
