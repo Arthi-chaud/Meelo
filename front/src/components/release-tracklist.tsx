@@ -20,6 +20,7 @@ import {
 	Box,
 	Divider,
 	Icon,
+	IconButton,
 	List,
 	ListItem,
 	ListItemButton,
@@ -37,7 +38,7 @@ import Artist from "../models/artist";
 import formatDuration from "../utils/formatDuration";
 import ReleaseTrackContextualMenu from "./contextual-menu/release-track-contextual-menu";
 import { SongWithRelations } from "../models/song";
-import { VideoIcon } from "./icons";
+import { ContextualMenuIcon, VideoIcon } from "./icons";
 import formatArtists from "../utils/formatArtists";
 import { useTranslation } from "react-i18next";
 import { Fragment, useMemo } from "react";
@@ -135,11 +136,15 @@ const ReleaseTrackList = ({
 								disablePadding
 								disableGutters
 								secondaryAction={
-									currentTrack && (
+									currentTrack ? (
 										<ReleaseTrackContextualMenu
 											track={currentTrack}
 											artist={currentTrack.song.artist}
 										/>
+									) : (
+										<IconButton disabled>
+											<ContextualMenuIcon />
+										</IconButton>
 									)
 								}
 							>
@@ -182,7 +187,7 @@ const ReleaseTrackList = ({
 											)
 										) : (
 											<Skeleton
-												width="30px"
+												width="20px"
 												sx={{ color: "text.disabled" }}
 											/>
 										)}
@@ -190,7 +195,7 @@ const ReleaseTrackList = ({
 									<ListItemText
 										primary={
 											currentTrack?.name ?? (
-												<Skeleton width="100%" />
+												<Skeleton width="120px" />
 											)
 										}
 										primaryTypographyProps={{
