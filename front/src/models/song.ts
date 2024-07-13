@@ -97,9 +97,10 @@ type SongWithRelations<Selection extends SongInclude | never = never> =
 export default Song;
 export const SongSortingKeys = [
 	"name",
+	"artistName",
+	"releaseDate",
+	"addDate",
 	"userPlayCount",
 	"totalPlayCount",
-	"artistName",
-	"addDate",
 ] as const;
 export { type SongInclude, SongWithRelations, SongRelations };
