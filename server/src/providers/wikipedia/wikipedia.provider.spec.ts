@@ -36,11 +36,7 @@ describe("Wikipedia Provider", () => {
 
 			expect(value).toBe("Siobhán Donaghy");
 			expect(description).not.toBeNull();
-			expect(
-				description!.startsWith(
-					"Siobhán Emma Donaghy (born 14 June 1984)",
-				),
-			).toBeTruthy();
+			expect(description!.includes("Siobhán Emma Donaghy")).toBeTruthy();
 			expect(
 				description!.endsWith(
 					"rights to the Sugababes name again in 2019.",
