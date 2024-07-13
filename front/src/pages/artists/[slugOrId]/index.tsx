@@ -273,12 +273,40 @@ const ArtistPage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({ props }) => {
 					))}
 				{(rareSongs.data?.pages?.at(0)?.items.length ?? 0) != 0 && (
 					<>
-						<SectionHeader heading={t("rareSongs")} />
+						<SectionHeader
+							heading={t("rareSongs")}
+							trailing={
+								<Fade
+									in={
+										(rareSongs.data?.pages.at(0)?.items
+											.length ?? 0) > songListSize
+									}
+								>
+									<Link
+										href={`/artists/${artistIdentifier}/rare-songs`}
+									>
+										<Button
+											variant="contained"
+											color="secondary"
+											endIcon={<MoreIcon />}
+											sx={{
+												textTransform: "none",
+												fontWeight: "bold",
+											}}
+										>
+											{t("seeAll")}
+										</Button>
+									</Link>
+								</Fade>
+							}
+						/>
 						<Grid item sx={{ overflowX: "clip", width: "100%" }}>
 							<SongGrid
 								parentArtistName={artist.data?.name}
 								songs={
-									rareSongs.data?.pages?.at(0)?.items ??
+									rareSongs.data?.pages
+										?.at(0)
+										?.items.slice(0, songListSize) ??
 									generateArray(songListSize)
 								}
 							/>
