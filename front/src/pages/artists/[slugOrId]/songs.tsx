@@ -38,6 +38,9 @@ import { useGradientBackground } from "../../../utils/gradient-background";
 const artistQuery = (identifier: string | number) =>
 	API.getArtist(identifier, ["illustration"]);
 
+const isRareSongsPage = ({ asPath }: { asPath?: string }) =>
+	asPath?.includes("/rare-songs") ?? false;
+
 const prepareSSR = async (
 	context: NextPageContext,
 	queryClient: QueryClient,
@@ -47,12 +50,14 @@ const prepareSSR = async (
 	const sortBy = getSortingFieldParams(context.query.sortBy, SongSortingKeys);
 	const songs = await queryClient.fetchInfiniteQuery(
 		prepareMeeloInfiniteQuery(() =>
-			API.getSongs({ artist: artistIdentifier }, { sortBy, order }, [
-				"artist",
-				"featuring",
-				"master",
-				"illustration",
-			]),
+			API.getSongs(
+				{
+					[isRareSongsPage(context) ? "rare" : "artist"]:
+						artistIdentifier,
+				},
+				{ sortBy, order },
+				["artist", "featuring", "master", "illustration"],
+			),
 		),
 	);
 
@@ -96,7 +101,8 @@ const ArtistSongPage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({
 				query={({ library, sortBy, order, type, random }) =>
 					API.getSongs(
 						{
-							artist: artistIdentifier,
+							[isRareSongsPage(router) ? "rare" : "artist"]:
+								artistIdentifier,
 							type,
 							random,
 							library: library ?? undefined,
