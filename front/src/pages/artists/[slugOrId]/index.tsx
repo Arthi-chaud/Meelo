@@ -74,7 +74,7 @@ const topSongsQuery = (artistSlugOrId: string | number) =>
 const rareSongsQuery = (artistSlugOrId: string | number) =>
 	API.getSongs(
 		{ rare: artistSlugOrId },
-		{ sortBy: "totalPlayCount", order: "desc" },
+		{ sortBy: "releaseDate", order: "desc" },
 		["artist", "featuring", "master", "illustration"],
 	);
 
