@@ -363,6 +363,32 @@ export default class SongService extends SearchableRepositoryService {
 					},
 				});
 				break;
+			case "releaseDate":
+				sort.push({
+					master: {
+						release: {
+							album: {
+								releaseDate: sortingParameter.order,
+							},
+						},
+					},
+				});
+				sort.push({
+					master: {
+						release: {
+							releaseDate: sortingParameter.order,
+						},
+					},
+				});
+				sort.push({
+					name: "asc",
+				});
+				sort.push({
+					artist: {
+						name: "asc",
+					},
+				});
+				break;
 			default:
 				sort.push({
 					[sortingParameter.sortBy ?? "id"]: sortingParameter.order,
