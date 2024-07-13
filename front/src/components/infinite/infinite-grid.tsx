@@ -19,14 +19,14 @@
 import { Grid } from "@mui/material";
 import Resource from "../../models/resource";
 import InfiniteScroll from "./infinite-scroll";
-import Illustration, { IllustratedResource } from "../../models/illustration";
+import { IllustratedResource } from "../../models/illustration";
 import { useGradientBackground } from "../../utils/gradient-background";
-import { useState } from "react";
+import { ReactNode, useCallback } from "react";
 
 type TypedList<T extends Resource> = typeof InfiniteScroll<T>;
 type InfiniteGridProps<T extends Resource> = Omit<
 	Parameters<TypedList<T>>[0],
-	"render"
+	"render" | "parentDiv"
 > & { render: (item: T | undefined) => JSX.Element };
 
 /**
@@ -37,17 +37,15 @@ type InfiniteGridProps<T extends Resource> = Omit<
 const InfiniteGrid = <T extends IllustratedResource>(
 	props: InfiniteGridProps<T>,
 ) => {
-	const [firstIllustration, setIllustration] = useState<Illustration>();
-	const { GradientBackground } = useGradientBackground(
-		firstIllustration?.colors,
-		-1,
-	);
-	return (
-		<>
-			<GradientBackground />
-			<InfiniteScroll
-				{...props}
-				parentDiv={({ children }) => (
+	const parentDiv = useCallback(
+		({ children, firstPage }: { children: ReactNode; firstPage?: T[] }) => {
+			// eslint-disable-next-line react-hooks/rules-of-hooks
+			const { GradientBackground } = useGradientBackground(
+				firstPage?.find((x) => x.illustration)?.illustration?.colors,
+			);
+			return (
+				<>
+					<GradientBackground />
 					<Grid
 						columnSpacing={2}
 						container
@@ -55,28 +53,31 @@ const InfiniteGrid = <T extends IllustratedResource>(
 					>
 						{children}
 					</Grid>
-				)}
-				render={(item, index) => {
-					if (!firstIllustration && item?.illustration) {
-						setIllustration(item?.illustration);
-					}
-
-					return (
-						<Grid
-							item
-							xs={6}
-							sm={3}
-							md={12 / 5}
-							lg={2}
-							xl={1.2}
-							key={`item-${index}`}
-						>
-							{props.render(item)}
-						</Grid>
-					);
-				}}
-			/>
-		</>
+				</>
+			);
+		},
+		[],
+	);
+	return (
+		<InfiniteScroll
+			{...props}
+			parentDiv={parentDiv}
+			render={(item, index) => {
+				return (
+					<Grid
+						item
+						xs={6}
+						sm={3}
+						md={12 / 5}
+						lg={2}
+						xl={1.2}
+						key={`item-${index}`}
+					>
+						{props.render(item)}
+					</Grid>
+				);
+			}}
+		/>
 	);
 };
 

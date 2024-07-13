@@ -33,7 +33,7 @@ export type InfiniteFetchFn<T> = (
 ) => Promise<PaginatedResponse<T>>;
 
 type InfiniteScrollProps<T extends Resource> = {
-	parentDiv: (props: { children: ReactNode }) => JSX.Element;
+	parentDiv: (props: { children: ReactNode; firstPage?: T[] }) => JSX.Element;
 	/**
 	 * The method to render all items
 	 */
@@ -78,7 +78,7 @@ export type Page<T> = {
  * @returns a dynamic list component
  */
 const InfiniteScroll = <T extends Resource>(props: InfiniteScrollProps<T>) => {
-	const { isFetching, data, hasNextPage, fetchNextPage, isFetchingNextPage } =
+	const { data, hasNextPage, fetchNextPage, isFetchingNextPage } =
 		useInfiniteQuery(props.query);
 	const Parent = props.parentDiv;
 	const totalItemCount = useMemo(
@@ -104,7 +104,7 @@ const InfiniteScroll = <T extends Resource>(props: InfiniteScrollProps<T>) => {
 				hasMore={hasNextPage}
 				threshold={500}
 			>
-				<Parent>
+				<Parent key={`parentDiv`} firstPage={data?.pages.at(0)?.items}>
 					{generateArray(totalItemCount ?? 0).map((_, index) => {
 						const item = data?.pages
 							.at(Math.floor(index / API.defaultPageSize))
@@ -117,7 +117,7 @@ const InfiniteScroll = <T extends Resource>(props: InfiniteScrollProps<T>) => {
 					})}
 					{data === undefined || isFetchingNextPage ? (
 						generateArray(3).map((skeleton, index) => (
-							<Fragment key={`skeletin-${index}`}>
+							<Fragment key={`skeleton-${index}`}>
 								{props.render(skeleton, index)}
 							</Fragment>
 						))
