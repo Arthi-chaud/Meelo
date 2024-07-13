@@ -23,8 +23,9 @@ import PaginatedResponse, {
 } from "../../models/pagination";
 import { MeeloInfiniteQueryFn, useInfiniteQuery } from "../../api/use-query";
 import { generateArray } from "../../utils/gen-list";
-import { Fragment, ReactNode, useMemo } from "react";
+import { Fragment, ReactNode, useEffect, useMemo } from "react";
 import API from "../../api/api";
+import { useRouter } from "next/router";
 
 export const parentScrollableDivId = "scrollableDiv" as const;
 
@@ -78,7 +79,7 @@ export type Page<T> = {
  * @returns a dynamic list component
  */
 const InfiniteScroll = <T extends Resource>(props: InfiniteScrollProps<T>) => {
-	const { data, hasNextPage, fetchNextPage, isFetchingNextPage } =
+	const { data, hasNextPage, fetchNextPage, isFetchingNextPage, remove } =
 		useInfiniteQuery(props.query);
 	const Parent = props.parentDiv;
 	const totalItemCount = useMemo(
@@ -88,6 +89,15 @@ const InfiniteScroll = <T extends Resource>(props: InfiniteScrollProps<T>) => {
 				.reduce((prev, curr) => prev + curr, 0),
 		[data],
 	);
+	const router = useRouter();
+	// When we go back to a page with a lot of loaded items, it may be slow
+	// this ditches the loaded items when we leave a page.
+	// Doesn't fix the perf issue
+	useEffect(() => {
+		const handler = () => remove();
+		router.events.on("routeChangeComplete", handler);
+		return () => router.events.off("routeChangeComplete", handler);
+	}, []);
 	return (
 		<>
 			<IScroll.default
@@ -102,7 +112,6 @@ const InfiniteScroll = <T extends Resource>(props: InfiniteScrollProps<T>) => {
 				}
 				useWindow={false}
 				hasMore={hasNextPage}
-				threshold={500}
 			>
 				<Parent key={`parentDiv`} firstPage={data?.pages.at(0)?.items}>
 					{generateArray(totalItemCount ?? 0).map((_, index) => {
