@@ -23,6 +23,8 @@ import { Language, Languages, persistLanguage } from "../../i18n/i18n";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useLocalStorage } from "usehooks-ts";
+import Link from "next/link";
+import { Book1, Star, Warning2 } from "iconsax-react";
 
 const SettingGroupStyle = {
 	paddingTop: 1,
@@ -34,6 +36,9 @@ const InputContainerStyle = {
 	justifyContent: "flex-end",
 	display: "flex",
 } as const;
+
+const RepositoryUrl = "https://github.com/Arthi-chaud/meelo";
+const LinkIconStyle = { marginBottom: -5, marginRight: 5 };
 
 const UserSettings = () => {
 	const { t, i18n } = useTranslation();
@@ -153,6 +158,36 @@ const UserSettings = () => {
 					/>
 				</Grid>
 			</Grid>
+			<SectionHeader heading={t("project")} />
+			<p>
+				<Star style={LinkIconStyle} />
+				{t("enjoyingTheProject")}{" "}
+				<Link
+					style={{ textDecoration: "underline" }}
+					href={RepositoryUrl}
+				>
+					{t("starOnGithub")}
+				</Link>
+			</p>
+			<p>
+				<Warning2 style={LinkIconStyle} />
+				{t("encounteredABug")}{" "}
+				<Link
+					style={{ textDecoration: "underline" }}
+					href={`${RepositoryUrl}/issues`}
+				>
+					{t("openAnIssue")}
+				</Link>
+			</p>
+			<p>
+				<Book1 style={LinkIconStyle} />
+				<Link
+					style={{ textDecoration: "underline" }}
+					href="https://arthi-chaud.github.io/Meelo"
+				>
+					{t("readTheDoc")}
+				</Link>
+			</p>
 		</NoSsr>
 	);
 };
