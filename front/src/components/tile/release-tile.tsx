@@ -27,7 +27,7 @@ const ReleaseTile = (props: {
 	formatSubtitle?: (release: ReleaseWithRelations<"album">) => string;
 }) => {
 	const yearFormat = props.release
-		? getYear(props.release.releaseDate)?.toString()
+		? getYear(props.release.releaseDate)?.toString() ?? ""
 		: "";
 	return (
 		<Tile
