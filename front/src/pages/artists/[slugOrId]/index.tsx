@@ -16,44 +16,34 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { Box, Button, Container, Divider, Grid } from "@mui/material";
+import { Box, Container, Divider, Grid } from "@mui/material";
 import { useRouter } from "next/router";
 import API from "../../../api/api";
 import { useInfiniteQuery, useQuery } from "../../../api/use-query";
-import AlbumTile from "../../../components/tile/album-tile";
-import Link from "next/link";
 import getSlugOrId from "../../../utils/getSlugOrId";
 import { GetPropsTypesFrom, Page } from "../../../ssr";
-import TileRow from "../../../components/tile-row";
-import getYear from "../../../utils/getYear";
 import SectionHeader from "../../../components/section-header";
-import VideoTile from "../../../components/tile/video-tile";
-import formatDuration from "../../../utils/formatDuration";
 import ExternalIdBadge from "../../../components/external-id-badge";
-import SongGrid from "../../../components/song-grid";
-import { MoreIcon } from "../../../components/icons";
 import ResourceDescriptionExpandable from "../../../components/resource-description-expandable";
 import ArtistRelationPageHeader from "../../../components/relation-page-header/artist-relation-page-header";
-import Album, { AlbumType } from "../../../models/album";
+import { AlbumType } from "../../../models/album";
 import { Fragment, useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import { generateArray } from "../../../utils/gen-list";
 import { NextPageContext } from "next";
 import { useGradientBackground } from "../../../utils/gradient-background";
-import Fade from "../../../components/fade";
-import { TranslationKey } from "../../../i18n/i18n";
-import { UseInfiniteQueryResult, UseQueryResult } from "react-query";
-import Artist from "../../../models/artist";
-import Song from "../../../models/song";
-import Video from "../../../models/video";
-import { RequireExactlyOne } from "type-fest";
+import {
+	AlbumListPageSection,
+	SectionPadding,
+	SongGridPageSection,
+	VideoListPageSection,
+} from "../../../components/page-section";
 
 // Number of Song item in the 'Top Song' section
-const songListSize = 6;
+const SongListSize = 6;
 // Number of Album item in the 'Latest albums' section
-const albumListSize = 10;
-
-const SectionPadding = 4;
+const AlbumListSize = 10;
+const VideoListSize = 10;
 
 const latestAlbumsQuery = AlbumType.map((type) => ({
 	type: type,
@@ -112,128 +102,6 @@ const prepareSSR = (context: NextPageContext) => {
 	};
 };
 
-const PageSection = <
-	T,
-	ResourceName = T extends Album
-		? "album"
-		: T extends Song
-			? "song"
-			: T extends Video
-				? "video"
-				: never,
->(
-	props: {
-		title: TranslationKey;
-		artist: UseQueryResult<Artist>;
-		seeMoreHref: string;
-		layout: "songGrid" | "scroll";
-		resourceType: ResourceName;
-	} & RequireExactlyOne<{
-		query: UseInfiniteQueryResult<{ items: T[] }>;
-		items: T[] | undefined;
-	}>,
-) => {
-	const { t } = useTranslation();
-	const maxItemCount =
-		props.layout === "songGrid" ? songListSize : albumListSize;
-	const data = props.query?.data || props.items;
-	const firstPage = props.query?.data?.pages.at(0)?.items ?? props.items;
-	return (
-		<>
-			{firstPage?.length != 0 && (
-				<>
-					<SectionHeader
-						heading={
-							data !== undefined ? t(props.title) : undefined
-						}
-						trailing={
-							<Fade in={(firstPage?.length ?? 0) > maxItemCount}>
-								<Link href={props.seeMoreHref}>
-									<Button
-										variant="contained"
-										color="secondary"
-										endIcon={<MoreIcon />}
-										sx={{
-											textTransform: "none",
-											fontWeight: "bold",
-										}}
-									>
-										{t("seeAll")}
-									</Button>
-								</Link>
-							</Fade>
-						}
-					/>
-					{props.layout === "songGrid" ? (
-						<Grid
-							item
-							container
-							sx={{
-								display: "block",
-								flexGrow: 1,
-							}}
-						>
-							<SongGrid
-								parentArtistName={props.artist.data?.name}
-								songs={
-									firstPage?.slice(0, songListSize) ??
-									generateArray(songListSize)
-								}
-							/>
-						</Grid>
-					) : (
-						<Grid item sx={{ overflowX: "clip", width: "100%" }}>
-							<TileRow
-								tiles={(
-									firstPage?.slice(0, albumListSize) ??
-									generateArray(6)
-								).map((item, index) => (
-									<>
-										{props.resourceType === "album" && (
-											<AlbumTile
-												key={index}
-												album={
-													item && props.artist?.data
-														? {
-																...item,
-																artist: props
-																	.artist
-																	?.data,
-															}
-														: undefined
-												}
-												formatSubtitle={(albumItem) =>
-													getYear(
-														albumItem.releaseDate,
-													)?.toString() ?? ""
-												}
-											/>
-										)}
-										{props.resourceType === "video" && (
-											<VideoTile
-												key={item.track.id}
-												video={item}
-												formatSubtitle={({
-													duration,
-												}) =>
-													formatDuration(
-														duration,
-													).toString()
-												}
-											/>
-										)}
-									</>
-								))}
-							/>
-						</Grid>
-					)}
-					<Box sx={{ paddingBottom: SectionPadding }} />
-				</>
-			)}
-		</>
-	);
-};
-
 const ArtistPage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({ props }) => {
 	const { t } = useTranslation();
 	const router = useRouter();
@@ -275,12 +143,11 @@ const ArtistPage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({ props }) => {
 				rowSpacing={SectionPadding}
 				sx={{ padding: 2, flex: 1, flexGrow: 1, paddingTop: 8 }}
 			>
-				<PageSection
+				<SongGridPageSection
 					title={"topSongs"}
 					artist={artist}
+					maxItemCount={SongListSize}
 					seeMoreHref={`/artists/${artistIdentifier}/songs`}
-					layout={"songGrid"}
-					resourceType={"song"}
 					query={topSongs}
 				/>
 				{albums
@@ -295,22 +162,21 @@ const ArtistPage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({ props }) => {
 					)
 					.map(({ type, query }) => (
 						<Fragment key={`section-${type}`}>
-							<PageSection
+							<AlbumListPageSection
+								subtitleIs="releaseYear"
 								title={`plural${type}`}
+								maxItemCount={AlbumListSize}
 								artist={artist}
-								resourceType={"album"}
 								seeMoreHref={`/artists/${artistIdentifier}/albums?type=${type}`}
-								layout={"scroll"}
 								query={query}
 							/>
 						</Fragment>
 					))}
-				<PageSection
+				<SongGridPageSection
 					title={"rareSongs"}
 					artist={artist}
+					maxItemCount={SongListSize}
 					seeMoreHref={`/artists/${artistIdentifier}/rare-songs`}
-					layout={"songGrid"}
-					resourceType={"song"}
 					query={rareSongs}
 				/>
 				{[
@@ -320,42 +186,26 @@ const ArtistPage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({ props }) => {
 					({ label, items }) =>
 						items.length != 0 && (
 							<Fragment key={`videos-${label}`}>
-								<PageSection
+								<VideoListPageSection
 									title={label}
 									artist={artist}
+									maxItemCount={VideoListSize}
 									seeMoreHref={`/artists/${artistIdentifier}/videos`}
-									layout={"scroll"}
-									resourceType={"video"}
 									items={items}
 								/>
 							</Fragment>
 						),
 				)}
-				{(appearances.data?.pages?.at(0)?.items.length ?? 0) != 0 && (
-					<>
-						<Divider />
-						<Box sx={{ paddingBottom: SectionPadding }} />
-						<SectionHeader heading={t("appearsOn")} />
-						<Grid item sx={{ overflowX: "clip", width: "100%" }}>
-							<TileRow
-								tiles={
-									appearances.data?.pages
-										?.at(0)
-										?.items.map((album) => (
-											<AlbumTile
-												key={album.id}
-												album={album}
-											/>
-										)) ?? []
-								}
-							/>
-						</Grid>
-					</>
-				)}
+				<AlbumListPageSection
+					title={"appearsOn"}
+					artist={artist}
+					maxItemCount={AlbumListSize}
+					subtitleIs="artistName"
+					query={appearances}
+				/>
 				{externalIdWithDescription && (
 					<>
-						<Divider />
-						<Box sx={{ paddingBottom: SectionPadding }} />
+						<Divider sx={{ marginBottom: SectionPadding }} />
 						<SectionHeader heading={t("about")} />
 						<Container
 							maxWidth={false}
