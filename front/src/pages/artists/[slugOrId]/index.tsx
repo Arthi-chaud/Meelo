@@ -16,22 +16,14 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { Box, Button, Container, Divider, Grid } from "@mui/material";
+import { Box, Container, Divider, Grid } from "@mui/material";
 import { useRouter } from "next/router";
 import API from "../../../api/api";
 import { useInfiniteQuery, useQuery } from "../../../api/use-query";
-import AlbumTile from "../../../components/tile/album-tile";
-import Link from "next/link";
 import getSlugOrId from "../../../utils/getSlugOrId";
 import { GetPropsTypesFrom, Page } from "../../../ssr";
-import TileRow from "../../../components/tile-row";
-import getYear from "../../../utils/getYear";
 import SectionHeader from "../../../components/section-header";
-import VideoTile from "../../../components/tile/video-tile";
-import formatDuration from "../../../utils/formatDuration";
 import ExternalIdBadge from "../../../components/external-id-badge";
-import SongGrid from "../../../components/song-grid";
-import { MoreIcon } from "../../../components/icons";
 import ResourceDescriptionExpandable from "../../../components/resource-description-expandable";
 import ArtistRelationPageHeader from "../../../components/relation-page-header/artist-relation-page-header";
 import { AlbumType } from "../../../models/album";
@@ -40,12 +32,18 @@ import { useTranslation } from "react-i18next";
 import { generateArray } from "../../../utils/gen-list";
 import { NextPageContext } from "next";
 import { useGradientBackground } from "../../../utils/gradient-background";
-import Fade from "../../../components/fade";
+import {
+	AlbumListPageSection,
+	SectionPadding,
+	SongGridPageSection,
+	VideoListPageSection,
+} from "../../../components/page-section";
 
 // Number of Song item in the 'Top Song' section
-const songListSize = 6;
+const SongListSize = 6;
 // Number of Album item in the 'Latest albums' section
-const albumListSize = 10;
+const AlbumListSize = 10;
+const VideoListSize = 10;
 
 const latestAlbumsQuery = AlbumType.map((type) => ({
 	type: type,
@@ -105,8 +103,7 @@ const prepareSSR = (context: NextPageContext) => {
 };
 
 const ArtistPage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({ props }) => {
-	const sectionPadding = 4;
-	const { t, i18n } = useTranslation();
+	const { t } = useTranslation();
 	const router = useRouter();
 	const artistIdentifier =
 		props?.artistIdentifier ?? getSlugOrId(router.query);
@@ -143,176 +140,45 @@ const ArtistPage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({ props }) => {
 			<Grid
 				container
 				direction="column"
-				rowSpacing={sectionPadding}
+				rowSpacing={SectionPadding}
 				sx={{ padding: 2, flex: 1, flexGrow: 1, paddingTop: 8 }}
 			>
-				{topSongs.data?.pages.at(0)?.items.length != 0 && (
-					<>
-						<SectionHeader
-							heading={topSongs.data ? t("topSongs") : undefined}
-							trailing={
-								<Fade
-									in={
-										(topSongs.data?.pages.at(0)?.items
-											.length ?? 0) > songListSize
-									}
-								>
-									<Link
-										href={`/artists/${artistIdentifier}/songs`}
-									>
-										<Button
-											variant="contained"
-											color="secondary"
-											endIcon={<MoreIcon />}
-											sx={{
-												textTransform: "none",
-												fontWeight: "bold",
-											}}
-										>
-											{t("seeAll")}
-										</Button>
-									</Link>
-								</Fade>
-							}
-						/>
-						<Grid
-							item
-							container
-							sx={{
-								display: "block",
-								flexGrow: 1,
-								paddingBottom: sectionPadding,
-							}}
-						>
-							<SongGrid
-								parentArtistName={artist.data?.name}
-								songs={
-									topSongs.data?.pages
-										.at(0)
-										?.items.slice(0, songListSize) ??
-									generateArray(songListSize)
-								}
-							/>
-						</Grid>
-					</>
-				)}
+				<SongGridPageSection
+					title={"topSongs"}
+					artist={artist}
+					maxItemCount={SongListSize}
+					seeMoreHref={`/artists/${artistIdentifier}/songs`}
+					query={topSongs}
+				/>
 				{albums
 					.map(({ type, query }) => ({
 						type,
+						query,
 						queryData: query.data?.pages.at(0)?.items,
 					}))
 					.filter(
 						({ queryData }) =>
 							queryData === undefined || queryData.length > 0,
 					)
-					.map(({ type, queryData }) => (
+					.map(({ type, query }) => (
 						<Fragment key={`section-${type}`}>
-							<SectionHeader
-								key={type}
-								heading={
-									queryData ? t(`plural${type}`) : undefined
-								}
-								trailing={
-									<Fade
-										in={
-											(queryData?.length ?? 0) >
-											albumListSize
-										}
-									>
-										<Link
-											href={`/artists/${artistIdentifier}/albums?type=${type}`}
-										>
-											<Button
-												variant="contained"
-												color="secondary"
-												endIcon={<MoreIcon />}
-												sx={{
-													textTransform: "none",
-													fontWeight: "bold",
-												}}
-											>
-												{t("seeAll")}
-											</Button>
-										</Link>
-									</Fade>
-								}
+							<AlbumListPageSection
+								subtitleIs="releaseYear"
+								title={`plural${type}`}
+								maxItemCount={AlbumListSize}
+								artist={artist}
+								seeMoreHref={`/artists/${artistIdentifier}/albums?type=${type}`}
+								query={query}
 							/>
-							<Grid
-								item
-								sx={{ overflowX: "clip", width: "100%" }}
-							>
-								<TileRow
-									tiles={
-										(
-											queryData?.slice(
-												0,
-												albumListSize,
-											) ?? generateArray(6)
-										).map((album, index) => (
-											<AlbumTile
-												key={index}
-												album={
-													album && artist.data
-														? {
-																...album,
-																artist: artist.data,
-															}
-														: undefined
-												}
-												formatSubtitle={(albumItem) =>
-													getYear(
-														albumItem.releaseDate,
-													)?.toString() ?? ""
-												}
-											/>
-										)) ?? []
-									}
-								/>
-							</Grid>
 						</Fragment>
 					))}
-				{(rareSongs.data?.pages?.at(0)?.items.length ?? 0) != 0 && (
-					<>
-						<SectionHeader
-							heading={t("rareSongs")}
-							trailing={
-								<Fade
-									in={
-										(rareSongs.data?.pages.at(0)?.items
-											.length ?? 0) > songListSize
-									}
-								>
-									<Link
-										href={`/artists/${artistIdentifier}/rare-songs`}
-									>
-										<Button
-											variant="contained"
-											color="secondary"
-											endIcon={<MoreIcon />}
-											sx={{
-												textTransform: "none",
-												fontWeight: "bold",
-											}}
-										>
-											{t("seeAll")}
-										</Button>
-									</Link>
-								</Fade>
-							}
-						/>
-						<Grid item sx={{ overflowX: "clip", width: "100%" }}>
-							<SongGrid
-								parentArtistName={artist.data?.name}
-								songs={
-									rareSongs.data?.pages
-										?.at(0)
-										?.items.slice(0, songListSize) ??
-									generateArray(songListSize)
-								}
-							/>
-						</Grid>
-					</>
-				)}
+				<SongGridPageSection
+					title={"rareSongs"}
+					artist={artist}
+					maxItemCount={SongListSize}
+					seeMoreHref={`/artists/${artistIdentifier}/rare-songs`}
+					query={rareSongs}
+				/>
 				{[
 					{ label: "topVideos", items: musicVideos } as const,
 					{ label: "extras", items: extras } as const,
@@ -320,86 +186,26 @@ const ArtistPage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({ props }) => {
 					({ label, items }) =>
 						items.length != 0 && (
 							<Fragment key={`videos-${label}`}>
-								<Box sx={{ paddingBottom: sectionPadding }} />
-								<SectionHeader
-									heading={t(label)}
-									trailing={
-										<Fade
-											in={
-												(items.length ?? 0) >
-												songListSize
-											}
-										>
-											<Link
-												href={`/artists/${artistIdentifier}/videos`}
-											>
-												<Button
-													variant="contained"
-													color="secondary"
-													endIcon={<MoreIcon />}
-													sx={{
-														textTransform: "none",
-														fontWeight: "bold",
-													}}
-												>
-													{t("seeAll")}
-												</Button>
-											</Link>
-										</Fade>
-									}
+								<VideoListPageSection
+									title={label}
+									artist={artist}
+									maxItemCount={VideoListSize}
+									seeMoreHref={`/artists/${artistIdentifier}/videos`}
+									items={items}
 								/>
-								<Grid
-									item
-									sx={{ overflowX: "clip", width: "100%" }}
-								>
-									<TileRow
-										tiles={
-											items
-												.slice(0, albumListSize)
-												.map((video) => (
-													<VideoTile
-														key={video.track.id}
-														video={video}
-														formatSubtitle={(
-															item,
-														) =>
-															formatDuration(
-																item.duration,
-															).toString()
-														}
-													/>
-												)) ?? []
-										}
-									/>
-								</Grid>
 							</Fragment>
 						),
 				)}
-				{(appearances.data?.pages?.at(0)?.items.length ?? 0) != 0 && (
-					<>
-						<Divider sx={{ paddingTop: 4 }} />
-						<Box sx={{ paddingBottom: sectionPadding }} />
-						<SectionHeader heading={t("appearsOn")} />
-						<Grid item sx={{ overflowX: "clip", width: "100%" }}>
-							<TileRow
-								tiles={
-									appearances.data?.pages
-										?.at(0)
-										?.items.map((album) => (
-											<AlbumTile
-												key={album.id}
-												album={album}
-											/>
-										)) ?? []
-								}
-							/>
-						</Grid>
-					</>
-				)}
+				<AlbumListPageSection
+					title={"appearsOn"}
+					artist={artist}
+					maxItemCount={AlbumListSize}
+					subtitleIs="artistName"
+					query={appearances}
+				/>
 				{externalIdWithDescription && (
 					<>
-						<Divider sx={{ paddingTop: 3 }} />
-						<Box sx={{ paddingBottom: sectionPadding }} />
+						<Divider sx={{ marginBottom: SectionPadding }} />
 						<SectionHeader heading={t("about")} />
 						<Container
 							maxWidth={false}
