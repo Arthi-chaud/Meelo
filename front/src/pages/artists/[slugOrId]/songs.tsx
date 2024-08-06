@@ -34,6 +34,8 @@ import Track from "../../../models/track";
 import { NextPageContext } from "next";
 import { QueryClient } from "react-query";
 import { useGradientBackground } from "../../../utils/gradient-background";
+import { Head } from "../../../components/head";
+import { useTranslation } from "react-i18next";
 
 const artistQuery = (identifier: string | number) =>
 	API.getArtist(identifier, ["illustration"]);
@@ -79,6 +81,7 @@ const ArtistSongPage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({
 	props,
 }) => {
 	const router = useRouter();
+	const isRareSongs = isRareSongsPage(router);
 	const queryClient = useQueryClient();
 	const getTrackReleaseName = (track: Track) =>
 		queryClient
@@ -90,9 +93,18 @@ const ArtistSongPage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({
 	const { GradientBackground } = useGradientBackground(
 		artist.data?.illustration?.colors,
 	);
+	const { t } = useTranslation();
 
 	return (
 		<Box sx={{ width: "100%" }}>
+			<Head
+				title={
+					artist.data &&
+					`${artist.data?.name} (${t(
+						isRareSongs ? "rareSongs" : "songs",
+					)})`
+				}
+			/>
 			<GradientBackground />
 			<ArtistRelationPageHeader artist={artist.data} />
 			<InfiniteSongView

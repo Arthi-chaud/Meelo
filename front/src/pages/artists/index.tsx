@@ -25,6 +25,8 @@ import { useRouter } from "next/router";
 import InfiniteArtistView from "../../components/infinite/infinite-resource-view/infinite-artist-view";
 import { getLayoutParams } from "../../utils/layout";
 import { NextPageContext } from "next";
+import { Head } from "../../components/head";
+import { useTranslation } from "react-i18next";
 
 const prepareSSR = (context: NextPageContext) => {
 	const order = getOrderParams(context.query.order) ?? "asc";
@@ -44,18 +46,24 @@ const prepareSSR = (context: NextPageContext) => {
 
 const ArtistsPage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({ props }) => {
 	const router = useRouter();
+	const { t } = useTranslation();
 
 	return (
-		<InfiniteArtistView
-			initialSortingField={props?.sortBy}
-			initialSortingOrder={props?.order}
-			defaultLayout={props?.defaultLayout}
-			query={({ library, sortBy, order }) =>
-				API.getArtists(library ? { library } : {}, { sortBy, order }, [
-					"illustration",
-				])
-			}
-		/>
+		<>
+			<Head title={t("artists")} />
+			<InfiniteArtistView
+				initialSortingField={props?.sortBy}
+				initialSortingOrder={props?.order}
+				defaultLayout={props?.defaultLayout}
+				query={({ library, sortBy, order }) =>
+					API.getArtists(
+						library ? { library } : {},
+						{ sortBy, order },
+						["illustration"],
+					)
+				}
+			/>
+		</>
 	);
 };
 

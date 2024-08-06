@@ -59,6 +59,7 @@ import { generateArray } from "../../../utils/gen-list";
 import { usePlayerContext } from "../../../contexts/player";
 import { NextPageContext } from "next";
 import Release from "../../../models/release";
+import { Head } from "../../../components/head";
 
 const playlistQuery = (idOrSlug: number | string) =>
 	API.getPlaylist(idOrSlug, ["illustration"]);
@@ -281,6 +282,7 @@ const PlaylistPage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({
 
 	return (
 		<>
+			<Head title={playlist.data?.name} />
 			<GradientBackground />
 			<RelationPageHeader
 				illustration={

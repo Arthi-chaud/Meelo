@@ -69,6 +69,7 @@ import { NextPageContext } from "next";
 import { QueryClient } from "react-query";
 import { useGradientBackground } from "../../utils/gradient-background";
 import Tracklist, { TracklistItemWithRelations } from "../../models/tracklist";
+import { Head } from "../../components/head";
 
 const releaseQuery = (releaseIdentifier: string | number) =>
 	API.getRelease(releaseIdentifier, ["album", "externalIds", "illustration"]);
@@ -322,6 +323,7 @@ const ReleasePage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({ props }) => {
 
 	return (
 		<>
+			<Head title={release.data?.name} />
 			<GradientBackground />
 			<Container
 				maxWidth={false}

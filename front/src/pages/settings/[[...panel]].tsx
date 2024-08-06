@@ -28,6 +28,7 @@ import LoadingPage from "../../components/loading/loading-page";
 import UserSettings from "../../components/settings/user-settings";
 import { useTranslation } from "react-i18next";
 import { NextPageContext } from "next";
+import { Head } from "../../components/head";
 
 // NOTE: Data Grid do not support SSR
 // https://github.com/mui/mui-x/issues/7599
@@ -84,6 +85,7 @@ const SettingsPage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({
 	}
 	return (
 		<>
+			<Head title={t("settings")} />
 			<Tabs
 				value={panel}
 				onChange={(__, panelName) => setPanel(panelName)}

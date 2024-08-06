@@ -23,6 +23,8 @@ import { GetPropsTypesFrom, Page } from "../../ssr";
 import { getOrderParams, getSortingFieldParams } from "../../utils/sorting";
 import { getLayoutParams } from "../../utils/layout";
 import { NextPageContext } from "next";
+import { useTranslation } from "react-i18next";
+import { Head } from "../../components/head";
 
 const prepareSSR = (context: NextPageContext) => {
 	const defaultLayout = getLayoutParams(context.query.view) ?? "list";
@@ -43,15 +45,19 @@ const prepareSSR = (context: NextPageContext) => {
 const PlaylistsPage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({
 	props,
 }) => {
+	const { t } = useTranslation();
 	return (
-		<InfinitePlaylistView
-			initialSortingField={props?.sortBy}
-			initialSortingOrder={props?.order}
-			defaultLayout={props?.defaultLayout}
-			query={({ view, library, ...sort }) =>
-				API.getPlaylists({}, sort, ["illustration"])
-			}
-		/>
+		<>
+			<Head title={t("playlists")} />
+			<InfinitePlaylistView
+				initialSortingField={props?.sortBy}
+				initialSortingOrder={props?.order}
+				defaultLayout={props?.defaultLayout}
+				query={({ view, library, ...sort }) =>
+					API.getPlaylists({}, sort, ["illustration"])
+				}
+			/>
+		</>
 	);
 };
 

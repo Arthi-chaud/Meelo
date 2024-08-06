@@ -38,6 +38,7 @@ import {
 	SongGridPageSection,
 	VideoListPageSection,
 } from "../../../components/page-section";
+import { Head } from "../../../components/head";
 
 // Number of Song item in the 'Top Song' section
 const SongListSize = 6;
@@ -135,6 +136,12 @@ const ArtistPage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({ props }) => {
 
 	return (
 		<Box sx={{ width: "100%" }}>
+			<Head
+				title={artist.data?.name}
+				description={
+					externalIdWithDescription?.description ?? undefined
+				}
+			/>
 			<GradientBackground />
 			<ArtistRelationPageHeader artist={artist.data} />
 			<Grid

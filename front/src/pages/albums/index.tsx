@@ -26,6 +26,8 @@ import { GetPropsTypesFrom, Page } from "../../ssr";
 import { getLayoutParams } from "../../utils/layout";
 import { getAlbumTypeParam } from "../../utils/album-type";
 import { NextPageContext } from "next";
+import { Head } from "../../components/head";
+import { useTranslation } from "react-i18next";
 
 const prepareSSR = (context: NextPageContext) => {
 	const order = getOrderParams(context.query.order) ?? "asc";
@@ -52,21 +54,25 @@ const LibraryAlbumsPage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({
 }) => {
 	const router = useRouter();
 	const defaultType = props?.type ?? null;
+	const { t } = useTranslation();
 
 	return (
-		<InfiniteAlbumView
-			defaultAlbumType={defaultType}
-			initialSortingField={props?.sortBy}
-			initialSortingOrder={props?.order}
-			defaultLayout={props?.defaultLayout}
-			query={({ sortBy, order, type, library }) =>
-				API.getAlbums(
-					{ type, library: library ?? undefined },
-					{ sortBy, order },
-					["artist", "illustration"],
-				)
-			}
-		/>
+		<>
+			<Head title={t("albums")} />
+			<InfiniteAlbumView
+				defaultAlbumType={defaultType}
+				initialSortingField={props?.sortBy}
+				initialSortingOrder={props?.order}
+				defaultLayout={props?.defaultLayout}
+				query={({ sortBy, order, type, library }) =>
+					API.getAlbums(
+						{ type, library: library ?? undefined },
+						{ sortBy, order },
+						["artist", "illustration"],
+					)
+				}
+			/>
+		</>
 	);
 };
 

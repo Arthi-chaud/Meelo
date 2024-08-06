@@ -24,6 +24,8 @@ import { getOrderParams, getSortingFieldParams } from "../../utils/sorting";
 import { GetPropsTypesFrom, Page } from "../../ssr";
 import InfiniteVideoView from "../../components/infinite/infinite-resource-view/infinite-video-view";
 import { NextPageContext } from "next";
+import { useTranslation } from "react-i18next";
+import { Head } from "../../components/head";
 
 const prepareSSR = (context: NextPageContext) => {
 	const order = getOrderParams(context.query.order) ?? "asc";
@@ -41,20 +43,24 @@ const LibraryVideosPage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({
 	props,
 }) => {
 	const router = useRouter();
+	const { t } = useTranslation();
 
 	return (
-		<InfiniteVideoView
-			initialSortingField={props?.sortBy}
-			initialSortingOrder={props?.order}
-			query={({ library, sortBy, order }) =>
-				API.getVideos(
-					{ library: library ?? undefined },
-					{ sortBy, order },
-					["artist", "featuring"],
-				)
-			}
-			formatSubtitle={(t) => t.song.artist.name}
-		/>
+		<>
+			<Head title={t("videos")} />
+			<InfiniteVideoView
+				initialSortingField={props?.sortBy}
+				initialSortingOrder={props?.order}
+				query={({ library, sortBy, order }) =>
+					API.getVideos(
+						{ library: library ?? undefined },
+						{ sortBy, order },
+						["artist", "featuring"],
+					)
+				}
+				formatSubtitle={(track) => track.song.artist.name}
+			/>
+		</>
 	);
 };
 
