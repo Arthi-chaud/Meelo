@@ -28,6 +28,8 @@ import { getOrderParams, getSortingFieldParams } from "../../../utils/sorting";
 import { useQuery } from "../../../api/use-query";
 import { NextPageContext } from "next";
 import { useGradientBackground } from "../../../utils/gradient-background";
+import { Head } from "../../../components/head";
+import { useTranslation } from "react-i18next";
 
 const artistQuery = (identifier: string | number) =>
 	API.getArtist(identifier, ["illustration"]);
@@ -60,9 +62,13 @@ const ArtistSongPage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({
 	const { GradientBackground } = useGradientBackground(
 		artist.data?.illustration?.colors,
 	);
+	const { t } = useTranslation();
 
 	return (
 		<>
+			<Head
+				title={artist.data && `${artist.data?.name} (${t("videos")})`}
+			/>
 			<GradientBackground />
 			<ArtistRelationPageHeader artist={artist.data} />
 			<InfiniteVideoView

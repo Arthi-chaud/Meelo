@@ -53,6 +53,8 @@
 	"pathOfLibrary": "Chemin de la bibliothèque",
 	"pathIsRequired": "Le chemin est obligatoire",
 	"goBackHome": "Retour à l'accueil",
+	"oops": "Oups",
+	"by": "de",
 	"noLyricsFound": "Aucune Parole Trouvée",
 
 	"warning": "Attention",

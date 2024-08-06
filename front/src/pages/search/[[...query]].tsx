@@ -24,6 +24,8 @@ import { useRouter } from "next/router";
 import { GetPropsTypesFrom, Page } from "../../ssr";
 import API from "../../api/api";
 import { NextPageContext } from "next";
+import { Head } from "../../components/head";
+import { useTranslation } from "react-i18next";
 
 const prepareSSR = (context: NextPageContext) => {
 	const searchQuery = context.query.query?.at(0) ?? null;
@@ -61,6 +63,7 @@ const buildSearchUrl = (
 const SearchPage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({ props }) => {
 	const router = useRouter();
 	const searchQuery = props?.searchQuery;
+	const { t } = useTranslation();
 	const type = props?.type ?? (router.query.type as string);
 	const [query, setQuery] = useState<string | undefined>(
 		(searchQuery ?? Array.from(router.query.query ?? []).join(" ")) ||
@@ -76,6 +79,7 @@ const SearchPage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({ props }) => {
 				flexDirection: "column",
 			}}
 		>
+			<Head title={t("search")} />
 			<Box
 				sx={{ display: "flex", justifyContent: "center", paddingY: 2 }}
 			>

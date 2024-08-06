@@ -71,6 +71,8 @@
 	"pathOfLibrary": "Path of the library",
 	"pathIsRequired": "Path is required",
 	"goBackHome": "Go Back Home",
+	"oops": "Oops",
+	"by": "by",
 
 	"warning": "Warning",
 	"downloadWarning": "Downloading copyrighted material you don't own is not authorized. Please proceed if, and only if, you own the original content.",

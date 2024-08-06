@@ -47,6 +47,7 @@ import { generateArray } from "../../../utils/gen-list";
 import { usePlayerContext } from "../../../contexts/player";
 import { NextPageContext } from "next";
 import { useGradientBackground } from "../../../utils/gradient-background";
+import { Head } from "../../../components/head";
 
 const prepareSSR = (context: NextPageContext) => {
 	const songIdentifier = getSlugOrId(context.query);
@@ -113,6 +114,7 @@ const SongPage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({ props }) => {
 
 	return (
 		<>
+			<Head title={song.data?.name} />
 			<GradientBackground />
 			<SongRelationPageHeader song={song.data} />
 			<Button
@@ -160,6 +162,12 @@ const SongPage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({ props }) => {
 			<Box sx={{ paddingY: 2 }}>
 				{tab == "more" && (
 					<>
+						<Head
+							title={
+								song.data &&
+								`${song.data?.name} (${t("moreInfo")})`
+							}
+						/>
 						{(!genres.data ||
 							(genres.data.pages.at(0)?.items.length ?? 0) !=
 								0) && (
@@ -216,46 +224,71 @@ const SongPage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({ props }) => {
 					</>
 				)}
 				{tab == "lyrics" && (
-					<LyricsBox
-						songName={song.data?.name}
-						lyrics={
-							song.data
-								? song.data.lyrics?.content.split("\n") ?? null
-								: undefined
-						}
-					/>
+					<>
+						<Head
+							title={
+								song.data &&
+								`${song.data?.name} (${t("lyrics")})`
+							}
+						/>
+						<LyricsBox
+							songName={song.data?.name}
+							lyrics={
+								song.data
+									? song.data.lyrics?.content.split("\n") ??
+										null
+									: undefined
+							}
+						/>
+					</>
 				)}
 				{tab == "versions" && (
-					<InfiniteSongView
-						disableShuffle
-						query={({ library, sortBy, order, type }) =>
-							API.getSongs(
-								{
-									library: library ?? undefined,
-									type,
-									versionsOf: songIdentifier,
-								},
-								{ sortBy, order },
-								[
-									"artist",
-									"featuring",
-									"master",
-									"illustration",
-								],
-							)
-						}
-					/>
+					<>
+						<Head
+							title={
+								song.data &&
+								`${song.data.name} (${t("versions")})`
+							}
+						/>
+						<InfiniteSongView
+							disableShuffle
+							query={({ library, sortBy, order, type }) =>
+								API.getSongs(
+									{
+										library: library ?? undefined,
+										type,
+										versionsOf: songIdentifier,
+									},
+									{ sortBy, order },
+									[
+										"artist",
+										"featuring",
+										"master",
+										"illustration",
+									],
+								)
+							}
+						/>
+					</>
 				)}
 				{tab == "tracks" && (
-					<InfiniteTrackView
-						query={({ sortBy, order }) =>
-							API.getTracks(
-								{ song: songIdentifier },
-								{ sortBy, order },
-								["release", "song", "illustration"],
-							)
-						}
-					/>
+					<>
+						<Head
+							title={
+								song.data &&
+								`${song.data.name} (${t("tracks")})`
+							}
+						/>
+						<InfiniteTrackView
+							query={({ sortBy, order }) =>
+								API.getTracks(
+									{ song: songIdentifier },
+									{ sortBy, order },
+									["release", "song", "illustration"],
+								)
+							}
+						/>
+					</>
 				)}
 			</Box>
 		</>

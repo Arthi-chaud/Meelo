@@ -24,6 +24,7 @@ import getSlugOrId from "../../utils/getSlugOrId";
 import { GetPropsTypesFrom, Page } from "../../ssr";
 import API from "../../api/api";
 import { NextPageContext } from "next";
+import { Head } from "../../components/head";
 
 const prepareSSR = (context: NextPageContext) => {
 	const genreIdentifier = getSlugOrId(context.query);
@@ -57,6 +58,7 @@ const GenrePage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({ props }) => {
 
 	return (
 		<Box sx={{ width: "100%" }}>
+			<Head title={genre.data?.name} />
 			<Box
 				sx={{
 					width: "100%",

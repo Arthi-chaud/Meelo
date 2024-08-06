@@ -29,7 +29,6 @@ import { useSelector } from "react-redux";
 import API from "../../api/api";
 import { RootState } from "../../state/store";
 import { ExpandedPlayerControls, MinimizedPlayerControls } from "./controls";
-import { DefaultWindowTitle } from "../../utils/constants";
 import { toast } from "react-hot-toast";
 import { DrawerBreakpoint } from "../scaffold/scaffold";
 import { useTranslation } from "react-i18next";
@@ -237,7 +236,6 @@ const Player = () => {
 			notification?.close();
 			setPlaying(true);
 			setDuration(currentTrack.track.duration ?? undefined);
-			document.title = `${currentTrack.track.name} - ${DefaultWindowTitle}`;
 			const newIllustrationURL = currentTrack.track.illustration?.url;
 
 			if (currentTrack.track.type == "Audio") {
@@ -283,7 +281,6 @@ const Player = () => {
 				} catch {}
 			}
 		} else {
-			document.title = DefaultWindowTitle;
 			if (player.current) {
 				hls.current?.detachMedia();
 				player.current.src = "";

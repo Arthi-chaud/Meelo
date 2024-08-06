@@ -29,6 +29,8 @@ import { useQuery } from "../../../api/use-query";
 import { getAlbumTypeParam } from "../../../utils/album-type";
 import { NextPageContext } from "next";
 import { useGradientBackground } from "../../../utils/gradient-background";
+import { Head } from "../../../components/head";
+import { useTranslation } from "react-i18next";
 
 const defaultSort = {
 	sortBy: "releaseDate",
@@ -71,10 +73,14 @@ const ArtistAlbumsPage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({
 	const { GradientBackground } = useGradientBackground(
 		artist.data?.illustration?.colors,
 	);
+	const { t } = useTranslation();
 
 	return (
 		<Box sx={{ width: "100%" }}>
 			<GradientBackground />
+			<Head
+				title={artist.data && `${artist.data?.name} (${t("albums")})`}
+			/>
 			<ArtistRelationPageHeader artist={artist.data} />
 			<InfiniteAlbumView
 				defaultLayout={props?.defaultLayout}

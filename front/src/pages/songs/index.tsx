@@ -24,6 +24,8 @@ import { getOrderParams, getSortingFieldParams } from "../../utils/sorting";
 import { GetPropsTypesFrom, Page } from "../../ssr";
 import InfiniteSongView from "../../components/infinite/infinite-resource-view/infinite-song-view";
 import { NextPageContext } from "next";
+import { Head } from "../../components/head";
+import { useTranslation } from "react-i18next";
 
 const prepareSSR = (context: NextPageContext) => {
 	const order = getOrderParams(context.query.order) ?? "asc";
@@ -46,19 +48,23 @@ const LibrarySongsPage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({
 	props,
 }) => {
 	const router = useRouter();
+	const { t } = useTranslation();
 
 	return (
-		<InfiniteSongView
-			initialSortingField={props?.sortBy}
-			initialSortingOrder={props?.order}
-			query={({ sortBy, order, type, library, random }) =>
-				API.getSongs(
-					{ type, library: library ?? undefined, random },
-					{ sortBy, order },
-					["artist", "featuring", "master", "illustration"],
-				)
-			}
-		/>
+		<>
+			<Head title={t("songs")} />
+			<InfiniteSongView
+				initialSortingField={props?.sortBy}
+				initialSortingOrder={props?.order}
+				query={({ sortBy, order, type, library, random }) =>
+					API.getSongs(
+						{ type, library: library ?? undefined, random },
+						{ sortBy, order },
+						["artist", "featuring", "master", "illustration"],
+					)
+				}
+			/>
+		</>
 	);
 };
 
