@@ -118,7 +118,7 @@ const Controls = <
 					"asc",
 				library: props.disableLibrarySelector
 					? null
-					: libraryQuery ?? null,
+					: (libraryQuery ?? null),
 			};
 
 			props.options?.forEach((option) => {

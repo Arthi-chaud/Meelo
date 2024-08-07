@@ -60,10 +60,10 @@ const VideoTile = ({ video, formatSubtitle }: VideoTileProps) => {
 			title={video?.name}
 			subtitle={
 				video
-					? formatSubtitle?.call(this, {
+					? (formatSubtitle?.call(this, {
 							...video.track,
 							song: video,
-						}) ?? formatDuration(video.track.duration)
+						}) ?? formatDuration(video.track.duration))
 					: undefined
 			}
 			illustration={

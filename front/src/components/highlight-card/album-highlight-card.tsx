@@ -45,7 +45,9 @@ const AlbumHighlightCard = ({ album }: AlbumHighlightCardProps) => {
 					.sort((descA, descB) => descA.length - descB.length)
 					.at(0) ||
 				[
-					album ? album.artist?.name ?? t("compilation") : undefined,
+					album
+						? (album.artist?.name ?? t("compilation"))
+						: undefined,
 					album ? getYear(album.releaseDate) : undefined,
 				]
 					.filter((elem) => elem != null)

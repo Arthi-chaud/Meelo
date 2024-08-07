@@ -64,7 +64,7 @@ const UserSettings = () => {
 							colorScheme.setMode(
 								isChecked
 									? "system"
-									: colorScheme.systemMode ?? "light",
+									: (colorScheme.systemMode ?? "light"),
 							)
 						}
 						checked={colorScheme.mode == "system"}

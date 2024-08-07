@@ -311,11 +311,11 @@ const ReleasePage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({ props }) => {
 
 	const albumRating = useMemo(() => {
 		return album.data
-			? album.data.externalIds
+			? (album.data.externalIds
 					.map(({ rating }) => rating)
 					.filter((rating) => rating !== null)
 					.sort()
-					.at(-1) ?? null
+					.at(-1) ?? null)
 			: undefined;
 	}, [album.data]);
 	const accentColor = useAccentColor(illustration);

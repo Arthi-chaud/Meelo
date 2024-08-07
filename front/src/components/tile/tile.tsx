@@ -197,7 +197,7 @@ const Tile = (props: TileProps) => {
 									{props.subtitle ?? <Skeleton width="70%" />}
 								</MUILink>
 							) : (
-								props.subtitle ?? <Skeleton width="70%" />
+								(props.subtitle ?? <Skeleton width="70%" />)
 							)}
 						</Typography>
 					)}

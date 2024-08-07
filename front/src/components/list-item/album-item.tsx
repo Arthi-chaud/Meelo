@@ -48,9 +48,9 @@ const AlbumItem = ({ album, formatSubtitle }: AlbumItemProps) => {
 			title={album?.name}
 			secondTitle={
 				album
-					? formatSubtitle?.call(this, album) ??
+					? (formatSubtitle?.call(this, album) ??
 						artist?.name ??
-						t("compilation")
+						t("compilation"))
 					: undefined
 			}
 			trailing={album && <AlbumContextualMenu album={album} />}
