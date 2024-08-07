@@ -19,10 +19,11 @@
 import { Avatar } from "@mui/material";
 import Illustration from "./illustration";
 import IllustrationModel from "../models/illustration";
+import { ComponentProps } from "react";
 
 const ArtistAvatar = (props: {
 	illustration: IllustrationModel | undefined | null;
-	quality: Parameters<typeof Illustration>[0]["quality"];
+	quality: ComponentProps<typeof Illustration>["quality"];
 }) => {
 	return (
 		<Avatar

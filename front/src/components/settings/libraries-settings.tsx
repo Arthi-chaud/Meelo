@@ -47,7 +47,7 @@ import {
 } from "../actions/library-task";
 import { useConfirm } from "material-ui-confirm";
 import Action from "../actions/action";
-import { useMemo, useState } from "react";
+import { ComponentProps, useMemo, useState } from "react";
 import LibraryForm from "../library-form";
 import { RefreshLibraryMetadataAction } from "../actions/refresh-metadata";
 import SectionHeader from "../section-header";
@@ -67,7 +67,7 @@ const LibrariesSettings = () => {
 		label,
 		onClick,
 		variant,
-	}: Action & Pick<Parameters<typeof Button>[0], "variant">) => {
+	}: Action & Pick<ComponentProps<typeof Button>, "variant">) => {
 		const theme = useTheme();
 		const viewPortIsSmall = useMediaQuery(theme.breakpoints.up("sm"));
 

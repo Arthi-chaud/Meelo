@@ -16,7 +16,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { TrackWithRelations } from "../../models/track";
 import Tile from "./tile";
 import Illustration from "../illustration";
 import { useQueryClient } from "../../api/use-query";
@@ -24,16 +23,28 @@ import API from "../../api/api";
 import formatDuration from "../../utils/formatDuration";
 import TrackContextualMenu from "../contextual-menu/track-contextual-menu";
 import { usePlayerContext } from "../../contexts/player";
-import Video from "../../models/video";
+import { VideoWithRelations } from "../../models/video";
 
 type VideoTileProps = {
-	video: Video | undefined;
-	formatSubtitle?: (video: TrackWithRelations<"song">) => string;
+	video: VideoWithRelations<"artist"> | undefined;
+	subtitle: "artist" | "duration";
 };
 
-const VideoTile = ({ video, formatSubtitle }: VideoTileProps) => {
+const VideoTile = ({ video, subtitle: subtitleType }: VideoTileProps) => {
 	const queryClient = useQueryClient();
 	const { playTrack } = usePlayerContext();
+	const { subtitle, secondaryHref } = !video
+		? { subtitle: undefined, secondaryHref: undefined }
+		: {
+				subtitle:
+					subtitleType == "artist"
+						? video.artist.name
+						: formatDuration(video.track.duration),
+				secondaryHref:
+					subtitleType == "artist"
+						? `/artists/${video.artistId}`
+						: undefined,
+			};
 
 	return (
 		<Tile
@@ -58,14 +69,8 @@ const VideoTile = ({ video, formatSubtitle }: VideoTileProps) => {
 					: undefined
 			}
 			title={video?.name}
-			subtitle={
-				video
-					? formatSubtitle?.call(this, {
-							...video.track,
-							song: video,
-						}) ?? formatDuration(video.track.duration)
-					: undefined
-			}
+			subtitle={subtitle}
+			secondaryHref={secondaryHref}
 			illustration={
 				<Illustration
 					quality="medium"

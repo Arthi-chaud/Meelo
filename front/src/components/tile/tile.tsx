@@ -28,6 +28,7 @@ import {
 } from "@mui/material";
 import { styled } from "@mui/material/styles";
 import Link from "next/link";
+import { ComponentProps } from "react";
 import { RequireAllOrNone } from "type-fest";
 
 const PREFIX = "Tile";
@@ -85,7 +86,7 @@ type TileProps = {
 	 */
 	onClick?: () => void;
 	/* Additional props to customize card */
-	cardProps?: Parameters<typeof Card>[0];
+	cardProps?: ComponentProps<typeof Card>;
 } & RequireAllOrNone<{
 	subtitle: string | undefined | null;
 	/**
