@@ -9,7 +9,7 @@
 	"scripts": {
 		"lint": "eslint \"{src,apps,libs,test}/**/*.ts\"",
 		"prebuild": "yarn run prisma generate",
-		"build": "nest build",
+		"build": "yarn prebuild && nest build",
 		"start": "nest start",
 		"format": "prettier --write src",
 		"start:dev": "NODE_ENV=development nest start --watch",
