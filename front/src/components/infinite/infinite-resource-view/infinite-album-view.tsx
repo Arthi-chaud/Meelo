@@ -26,7 +26,7 @@ import AlbumTile from "../../tile/album-tile";
 import Controls, { OptionState } from "../../controls/controls";
 import InfiniteView from "../infinite-view";
 import { useRouter } from "next/router";
-import { useState } from "react";
+import { ComponentProps, useState } from "react";
 import InfiniteResourceViewProps from "./infinite-resource-view-props";
 import { useTranslation } from "react-i18next";
 
@@ -38,7 +38,7 @@ const InfiniteAlbumView = (
 		typeof AlbumSortingKeys,
 		AdditionalProps
 	> &
-		Pick<Parameters<typeof AlbumTile>[0], "formatSubtitle"> & {
+		Pick<ComponentProps<typeof AlbumTile>, "formatSubtitle"> & {
 			defaultAlbumType: AlbumType | null;
 		},
 ) => {

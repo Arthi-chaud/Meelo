@@ -21,9 +21,10 @@
 import { Box, useTheme } from "@mui/material";
 import { StaticImport } from "next/dist/shared/lib/get-img-props";
 import Image from "next/image";
+import { ComponentProps } from "react";
 
 type ThemedImageProps = Record<"light" | "dark", string | StaticImport> &
-	Omit<Parameters<typeof Image>[0], "src">;
+	Omit<ComponentProps<typeof Image>, "src">;
 const ThemedImage = ({ light, dark, ...props }: ThemedImageProps) => {
 	const theme = useTheme();
 	return (

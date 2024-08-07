@@ -17,7 +17,7 @@
  */
 
 import { useRouter } from "next/router";
-import { useState } from "react";
+import { ComponentProps, useState } from "react";
 import {
 	SongSortingKeys,
 	SongType,
@@ -89,7 +89,7 @@ const InfiniteSongView = <
 		typeof SongSortingKeys,
 		AdditionalProps
 	> &
-		Pick<Parameters<typeof SongItem<T>>[0], "formatSubtitle"> & {
+		Pick<ComponentProps<typeof SongItem<T>>, "formatSubtitle"> & {
 			disableShuffle?: boolean;
 		},
 ) => {

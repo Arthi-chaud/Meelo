@@ -44,7 +44,7 @@ import {
 	useTheme,
 } from "@mui/material";
 import Illustration from "../illustration";
-import { LegacyRef, useCallback, useState } from "react";
+import { ComponentProps, LegacyRef, useCallback, useState } from "react";
 import PlayerSlider from "./controls/slider";
 import API from "../../api/api";
 import { useQuery } from "../../api/use-query";
@@ -71,7 +71,7 @@ type PlayerButtonControlsProps = {
 	onRewind: () => void;
 };
 
-type PlayerControlsProps = Parameters<typeof PlayerSlider>[number] &
+type PlayerControlsProps = ComponentProps<typeof PlayerSlider> &
 	PlayerButtonControlsProps & {
 		isTranscoding: boolean;
 		expanded: boolean;

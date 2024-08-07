@@ -19,10 +19,11 @@
 import Link from "next/link";
 import Genre from "../models/genre";
 import { Chip, Skeleton } from "@mui/material";
+import { ComponentProps } from "react";
 
 type GenreButtonProps = {
 	genre: Pick<Genre, "name" | "slug"> | undefined;
-	sx?: Parameters<typeof Chip>[0]["sx"];
+	sx?: ComponentProps<typeof Chip>["sx"];
 };
 
 const GenreButton = (props: GenreButtonProps) => {

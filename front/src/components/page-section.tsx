@@ -17,14 +17,14 @@
  */
 
 import { Box, Button, Grid } from "@mui/material";
-import { Fragment } from "react";
+import { ComponentProps, Fragment, PropsWithChildren } from "react";
 import { useTranslation } from "react-i18next";
 import { UseInfiniteQueryResult, UseQueryResult } from "react-query";
 import { TranslationKey } from "../i18n/i18n";
 import { AlbumWithRelations } from "../models/album";
 import Artist from "../models/artist";
 import { SongWithRelations } from "../models/song";
-import Video from "../models/video";
+import { VideoWithRelations } from "../models/video";
 import { generateArray } from "../utils/gen-list";
 import getYear from "../utils/getYear";
 import { MoreIcon } from "./icons";
@@ -33,7 +33,6 @@ import SongGrid from "./song-grid";
 import TileRow from "./tile-row";
 import AlbumTile from "./tile/album-tile";
 import VideoTile from "./tile/video-tile";
-import formatDuration from "../utils/formatDuration";
 import Fade from "./fade";
 import Link from "next/link";
 
@@ -149,7 +148,8 @@ export const AlbumListPageSection = (
 };
 
 export const VideoListPageSection = (
-	props: Omit<PageSectionProps<Video>, "child">,
+	props: Omit<PageSectionProps<VideoWithRelations<"artist">>, "child"> &
+		Omit<ComponentProps<typeof VideoTile>, "video">,
 ) => {
 	return (
 		<ListPageSection
@@ -159,9 +159,7 @@ export const VideoListPageSection = (
 				<VideoTile
 					key={`video-${item?.slug}-${index}`}
 					video={item}
-					formatSubtitle={({ duration }) =>
-						formatDuration(duration).toString()
-					}
+					subtitle={props.subtitle}
 				/>
 			)}
 		/>
