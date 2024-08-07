@@ -18,6 +18,7 @@ coverage
 
 # Envrionment/Secret files
 .env
+.env.yarn
 illustrations/
 data/
 meelo/
