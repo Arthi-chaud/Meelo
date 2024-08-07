@@ -19,7 +19,7 @@
 import { Divider, List } from "@mui/material";
 import Resource from "../../models/resource";
 import InfiniteScroll from "./infinite-scroll";
-import { Fragment, ReactNode, useCallback } from "react";
+import { CSSProperties, Fragment, ReactNode, forwardRef } from "react";
 import { IllustratedResource } from "../../models/illustration";
 import { useGradientBackground } from "../../utils/gradient-background";
 
@@ -37,8 +37,16 @@ type InfiniteListProps<T extends Resource> = Omit<
 const InfiniteList = <T extends IllustratedResource>(
 	props: InfiniteListProps<T>,
 ) => {
-	const parentDiv = useCallback(
-		({ children, firstPage }: { children: ReactNode; firstPage?: T[] }) => {
+	const parentDiv =
+		// eslint-disable-next-line react/display-name
+		forwardRef<
+			HTMLDivElement,
+			{
+				children?: ReactNode;
+				firstPage?: T[];
+				style?: CSSProperties;
+			}
+		>(({ children, firstPage, style }, ref) => {
 			// eslint-disable-next-line react-hooks/rules-of-hooks
 			const { GradientBackground } = useGradientBackground(
 				firstPage?.find((x) => x.illustration)?.illustration?.colors,
@@ -46,12 +54,16 @@ const InfiniteList = <T extends IllustratedResource>(
 			return (
 				<>
 					<GradientBackground />
-					<List>{children}</List>
+					<List
+						style={{ padding: 0, ...style, margin: 0 }}
+						component="div"
+						ref={ref}
+					>
+						{children}
+					</List>
 				</>
 			);
-		},
-		[],
-	);
+		});
 	return (
 		<InfiniteScroll
 			{...props}

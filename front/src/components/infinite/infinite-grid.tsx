@@ -21,7 +21,7 @@ import Resource from "../../models/resource";
 import InfiniteScroll from "./infinite-scroll";
 import { IllustratedResource } from "../../models/illustration";
 import { useGradientBackground } from "../../utils/gradient-background";
-import { ReactNode, useCallback } from "react";
+import { CSSProperties, forwardRef, ReactNode, useCallback } from "react";
 
 type TypedList<T extends Resource> = typeof InfiniteScroll<T>;
 type InfiniteGridProps<T extends Resource> = Omit<
@@ -37,8 +37,16 @@ type InfiniteGridProps<T extends Resource> = Omit<
 const InfiniteGrid = <T extends IllustratedResource>(
 	props: InfiniteGridProps<T>,
 ) => {
-	const parentDiv = useCallback(
-		({ children, firstPage }: { children: ReactNode; firstPage?: T[] }) => {
+	const parentDiv =
+		// eslint-disable-next-line react/display-name
+		forwardRef<
+			HTMLDivElement,
+			{
+				children?: ReactNode;
+				firstPage?: T[];
+				style?: CSSProperties;
+			}
+		>(({ children, firstPage, style }, ref) => {
 			// eslint-disable-next-line react-hooks/rules-of-hooks
 			const { GradientBackground } = useGradientBackground(
 				firstPage?.find((x) => x.illustration)?.illustration?.colors,
@@ -47,17 +55,18 @@ const InfiniteGrid = <T extends IllustratedResource>(
 				<>
 					<GradientBackground />
 					<Grid
+						ref={ref}
 						columnSpacing={2}
 						container
+						component="div"
+						style={style}
 						sx={{ alignItems: "stretch", display: "flex" }}
 					>
 						{children}
 					</Grid>
 				</>
 			);
-		},
-		[],
-	);
+		});
 	return (
 		<InfiniteScroll
 			{...props}

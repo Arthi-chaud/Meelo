@@ -16,16 +16,25 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import * as IScroll from "react-infinite-scroller";
 import Resource from "../../models/resource";
 import PaginatedResponse, {
 	PaginationParameters,
 } from "../../models/pagination";
 import { MeeloInfiniteQueryFn, useInfiniteQuery } from "../../api/use-query";
-import { generateArray } from "../../utils/gen-list";
-import { Fragment, ReactNode, useEffect, useMemo } from "react";
+import {
+	CSSProperties,
+	ForwardRefExoticComponent,
+	Fragment,
+	ReactNode,
+	RefAttributes,
+	forwardRef,
+	useEffect,
+	useMemo,
+} from "react";
 import API from "../../api/api";
 import { useRouter } from "next/router";
+import { Components, Virtuoso } from "react-virtuoso";
+import { isSSR } from "../../utils/is-ssr";
 
 export const parentScrollableDivId = "scrollableDiv" as const;
 
@@ -34,7 +43,13 @@ export type InfiniteFetchFn<T> = (
 ) => Promise<PaginatedResponse<T>>;
 
 type InfiniteScrollProps<T extends Resource> = {
-	parentDiv: (props: { children: ReactNode; firstPage?: T[] }) => JSX.Element;
+	parentDiv: ForwardRefExoticComponent<
+		{
+			children?: ReactNode;
+			firstPage?: T[];
+			style?: CSSProperties;
+		} & RefAttributes<HTMLDivElement>
+	>;
 	/**
 	 * The method to render all items
 	 */
@@ -81,7 +96,22 @@ export type Page<T> = {
 const InfiniteScroll = <T extends Resource>(props: InfiniteScrollProps<T>) => {
 	const { data, hasNextPage, fetchNextPage, isFetchingNextPage, remove } =
 		useInfiniteQuery(props.query);
-	const Parent = props.parentDiv;
+	const Container: Components["List"] = useMemo(
+		() =>
+			// eslint-disable-next-line react/display-name
+			forwardRef(({ style, ...p }, ref) => {
+				const Parent = props.parentDiv;
+				return (
+					<Parent
+						style={{ padding: 0, margin: 0, ...style }}
+						firstPage={data?.pages.at(0)?.items}
+						{...p}
+						ref={ref}
+					></Parent>
+				);
+			}),
+		[],
+	);
 	const totalItemCount = useMemo(
 		() =>
 			data?.pages
@@ -90,9 +120,6 @@ const InfiniteScroll = <T extends Resource>(props: InfiniteScrollProps<T>) => {
 		[data],
 	);
 	const router = useRouter();
-	// When we go back to a page with a lot of loaded items, it may be slow
-	// this ditches the loaded items when we leave a page.
-	// Doesn't fix the perf issue
 	useEffect(() => {
 		const handler = () => remove();
 		router.events.on("routeChangeComplete", handler);
@@ -100,41 +127,32 @@ const InfiniteScroll = <T extends Resource>(props: InfiniteScrollProps<T>) => {
 	}, []);
 	return (
 		<>
-			<IScroll.default
-				pageStart={0}
-				loadMore={() => {
+			<Virtuoso
+				initialItemCount={isSSR() ? totalItemCount : undefined}
+				customScrollParent={
+					isSSR()
+						? undefined
+						: document.getElementById(parentScrollableDivId) ??
+							undefined
+				}
+				overscan={1000}
+				style={{
+					flex: 1,
+				}}
+				components={{ List: Container }}
+				endReached={() => {
 					if (hasNextPage && !isFetchingNextPage) {
 						fetchNextPage();
 					}
 				}}
-				getScrollParent={() =>
-					document.getElementById(parentScrollableDivId)
-				}
-				useWindow={false}
-				hasMore={hasNextPage}
-			>
-				<Parent key={`parentDiv`} firstPage={data?.pages.at(0)?.items}>
-					{generateArray(totalItemCount ?? 0).map((_, index) => {
-						const item = data?.pages
-							.at(Math.floor(index / API.defaultPageSize))
-							?.items.at(index % API.defaultPageSize);
-						return (
-							<Fragment key={`item-${item?.id}`}>
-								{props.render(item, index)}
-							</Fragment>
-						);
-					})}
-					{data === undefined || isFetchingNextPage ? (
-						generateArray(3).map((skeleton, index) => (
-							<Fragment key={`skeleton-${index}`}>
-								{props.render(skeleton, index)}
-							</Fragment>
-						))
-					) : (
-						<></>
-					)}
-				</Parent>
-			</IScroll.default>
+				totalCount={totalItemCount ?? 3}
+				itemContent={(index) => {
+					const item = data?.pages
+						.at(Math.floor(index / API.defaultPageSize))
+						?.items.at(index % API.defaultPageSize);
+					return props.render(item, index);
+				}}
+			></Virtuoso>
 		</>
 	);
 };

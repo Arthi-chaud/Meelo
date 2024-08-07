@@ -95,11 +95,11 @@ const InfiniteView = <ItemType extends IllustratedResource>(
 					loader={() => <WideLoadingComponent />}
 					query={props.query}
 					render={(item, index) => (
-						<Fade in>
-							<Box key={item?.id ?? `skeleton-${index}`}>
-								{props.renderListItem(item)}
-							</Box>
-						</Fade>
+						// <Fade in>
+						<Box key={item?.id ?? `skeleton-${index}`}>
+							{props.renderListItem(item)}
+						</Box>
+						// </Fade>
 					)}
 				/>
 			) : (
