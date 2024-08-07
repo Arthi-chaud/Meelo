@@ -75,35 +75,6 @@ jobs:
     container: node:19-alpine
     needs: [ Build ]
     if: ${{ needs.changes.outputs.front == 'true' && always() }}
-    env:
-      NODE_OPTIONS: "--max_old_space_size=4096"
-      REDIS_HOST: "redis"
-      DATABASE_URL: "postgresql://test:test@postgres:5432/test?schema=public"
-      JWT_SIGNATURE: "12345"
-      GENIUS_ACCESS_TOKEN: "${{ secrets.GENIUS_ACCESS_TOKEN }}"
-    services:
-      postgres:
-        image: postgres:alpine3.16
-        env:
-          POSTGRES_USER: test
-          POSTGRES_PASSWORD: test
-          POSTGRES_DB: test
-        ports:
-          - 5432:5432
-        options: >-
-          --health-cmd pg_isready
-          --health-interval 10s
-          --health-timeout 5s
-          --health-retries 5
-      redis:
-        image: redis:7.0-alpine
-        ports:
-          - 6379:6379
-        options: >-
-          --health-cmd "redis-cli ping"
-          --health-interval 10s
-          --health-timeout 5s
-          --health-retries 5
     steps:
       - name: Check out the repo
         uses: actions/checkout@v3
@@ -112,7 +83,7 @@ jobs:
       - name: Install Dependencies
         run: yarn install
       - name: Run unit tests with coverage
-        run: yarn test --coverage
+        run: yarn test:cov
       - name: Upload Unit Tests artifact
         if: ${{ always() }}
         uses: actions/upload-artifact@v3
