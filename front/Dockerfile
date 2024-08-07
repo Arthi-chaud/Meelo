@@ -2,9 +2,9 @@
 FROM node:18-alpine3.18 AS base
 FROM base AS builder
 WORKDIR /app
-COPY ./*.json ./
-COPY ./*.lock ./
-RUN yarn install --production --frozen-lockfile
+COPY ./*.json ./.yarnrc.yml ./*.lock  ./
+COPY ./.yarn ./.yarn
+RUN yarn workspaces focus
 
 COPY ./next.config.js .
 ## To Provide static assets at build time
