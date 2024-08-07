@@ -26,3 +26,10 @@ coverage/
 test/assets/metadata
 
 src/prisma/models
+
+.pnp.*
+.yarn/*
+!.yarn/patches
+!.yarn/plugins
+!.yarn/releases
+!.yarn/sdks
