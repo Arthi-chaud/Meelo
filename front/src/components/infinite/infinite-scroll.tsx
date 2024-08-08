@@ -23,6 +23,7 @@ import PaginatedResponse, {
 import { MeeloInfiniteQueryFn, useInfiniteQuery } from "../../api/use-query";
 import {
 	CSSProperties,
+	ComponentProps,
 	ForwardRefExoticComponent,
 	Fragment,
 	ReactNode,
@@ -35,21 +36,15 @@ import API from "../../api/api";
 import { useRouter } from "next/router";
 import { Components, Virtuoso } from "react-virtuoso";
 import { isSSR } from "../../utils/is-ssr";
+import { IllustratedResource } from "../../models/illustration";
+import { InfiniteData } from "react-query";
+import Page from "../../models/page";
+import { useGradientBackground } from "../../utils/gradient-background";
+import { Divider, List } from "@mui/material";
 
 export const parentScrollableDivId = "scrollableDiv" as const;
 
-export type InfiniteFetchFn<T> = (
-	pagination: PaginationParameters,
-) => Promise<PaginatedResponse<T>>;
-
 type InfiniteScrollProps<T extends Resource> = {
-	parentDiv: ForwardRefExoticComponent<
-		{
-			children?: ReactNode;
-			firstPage?: T[];
-			style?: CSSProperties;
-		} & RefAttributes<HTMLDivElement>
-	>;
 	/**
 	 * The method to render all items
 	 */
@@ -64,28 +59,14 @@ type InfiniteScrollProps<T extends Resource> = {
 	loader: () => JSX.Element;
 };
 
-//todo move to models
-/**
- * Data type for infinite data fetching
- */
-export type Page<T> = {
-	/**
-	 * List of items that where fetched
-	 * not including previously fetched data
-	 */
-	items: T[];
-	/**
-	 * The id of the last items in the previous page
-	 */
-	afterId: number | null;
-	/**
-	 * True if the fetching should stop there
-	 */
-	end: boolean;
-	/**
-	 * Size of the page
-	 */
-	pageSize: number;
+const getItem = <T,>(
+	index: number,
+	data: InfiniteData<Page<T>> | undefined,
+) => {
+	const item = data?.pages
+		.at(Math.floor(index / API.defaultPageSize))
+		?.items.at(index % API.defaultPageSize);
+	return item;
 };
 
 /**
@@ -100,14 +81,12 @@ const InfiniteScroll = <T extends Resource>(props: InfiniteScrollProps<T>) => {
 		() =>
 			// eslint-disable-next-line react/display-name
 			forwardRef(({ style, ...p }, ref) => {
-				const Parent = props.parentDiv;
 				return (
-					<Parent
+					<div
 						style={{ padding: 0, margin: 0, ...style }}
-						firstPage={data?.pages.at(0)?.items}
 						{...p}
 						ref={ref}
-					></Parent>
+					></div>
 				);
 			}),
 		[],
@@ -120,6 +99,7 @@ const InfiniteScroll = <T extends Resource>(props: InfiniteScrollProps<T>) => {
 		[data],
 	);
 	const router = useRouter();
+	//TODO Try to remove
 	useEffect(() => {
 		const handler = () => remove();
 		router.events.on("routeChangeComplete", handler);
@@ -147,10 +127,77 @@ const InfiniteScroll = <T extends Resource>(props: InfiniteScrollProps<T>) => {
 				}}
 				totalCount={totalItemCount ?? 3}
 				itemContent={(index) => {
-					const item = data?.pages
-						.at(Math.floor(index / API.defaultPageSize))
-						?.items.at(index % API.defaultPageSize);
-					return props.render(item, index);
+					return props.render(getItem(index, data), index);
+				}}
+			></Virtuoso>
+		</>
+	);
+};
+
+const InfiniteList = <T extends IllustratedResource>(
+	props: InfiniteScrollProps<T>,
+) => {
+	const { data, hasNextPage, fetchNextPage, isFetchingNextPage, remove } =
+		useInfiniteQuery(props.query);
+	const totalItemCount = useMemo(
+		() =>
+			data?.pages
+				.map(({ items }) => items.length)
+				.reduce((prev, curr) => prev + curr, 0),
+		[data],
+	);
+
+	const Container: Components["List"] = useMemo(
+		() =>
+			// eslint-disable-next-line react/display-name
+			forwardRef(({ style, ...p }, ref) => {
+				return (
+					<>
+						<List
+							style={{ padding: 0, ...style, margin: 0 }}
+							component="div"
+							{...p}
+							ref={ref}
+						></List>
+					</>
+				);
+			}),
+		[],
+	);
+	const { GradientBackground } = useGradientBackground(
+		data?.pages.at(0)?.items?.find((x) => x.illustration)?.illustration
+			?.colors,
+	);
+
+	return (
+		<>
+			<GradientBackground />
+			<Virtuoso
+				initialItemCount={isSSR() ? totalItemCount : undefined}
+				customScrollParent={
+					isSSR()
+						? undefined
+						: document.getElementById(parentScrollableDivId) ??
+							undefined
+				}
+				overscan={1000}
+				style={{
+					flex: 1,
+				}}
+				components={{ List: Container }}
+				endReached={() => {
+					if (hasNextPage && !isFetchingNextPage) {
+						fetchNextPage();
+					}
+				}}
+				totalCount={totalItemCount ?? 3}
+				itemContent={(index) => {
+					return (
+						<Fragment key={`list-item-${index}`}>
+							{props.render(getItem(index, data), index)}
+							<Divider variant="middle" />
+						</Fragment>
+					);
 				}}
 			></Virtuoso>
 		</>
@@ -158,3 +205,4 @@ const InfiniteScroll = <T extends Resource>(props: InfiniteScrollProps<T>) => {
 };
 
 export default InfiniteScroll;
+export { InfiniteList };

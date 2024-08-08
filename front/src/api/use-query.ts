@@ -26,8 +26,9 @@ import {
 	useQueryClient as useReactQueryClient,
 } from "react-query";
 import API from "./api";
-import { InfiniteFetchFn, Page } from "../components/infinite/infinite-scroll";
+import Page from "../models/page";
 import Resource from "../models/resource";
+import PaginatedResponse, { PaginationParameters } from "../models/pagination";
 
 type Key = string | number;
 
@@ -41,7 +42,9 @@ export type Query<Type> = {
 
 export type InfiniteQuery<Type> = {
 	key: Key[];
-	exec: InfiniteFetchFn<Type>;
+	exec: (
+		pagination: PaginationParameters,
+	) => Promise<PaginatedResponse<Type>>;
 };
 //// Query functions
 

@@ -16,6 +16,24 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { InfiniteList } from "./infinite-scroll";
+type Page<T> = {
+	/**
+	 * List of items that where fetched
+	 * not including previously fetched data
+	 */
+	items: T[];
+	/**
+	 * The id of the last items in the previous page
+	 */
+	afterId: number | null;
+	/**
+	 * True if the fetching should stop there
+	 */
+	end: boolean;
+	/**
+	 * Size of the page
+	 */
+	pageSize: number;
+};
 
-export default InfiniteList;
+export default Page;
