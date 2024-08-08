@@ -17,23 +17,18 @@
  */
 
 import { useRouter } from "next/router";
-import { useState } from "react";
-import { SongSortingKeys, SongWithRelations } from "../../../models/song";
+import { ComponentProps, useState } from "react";
+import { SongSortingKeys } from "../../../models/song";
 import { VideoWithRelations } from "../../../models/video";
 import Controls, { OptionState } from "../../controls/controls";
 import InfiniteView from "../infinite-view";
 import InfiniteResourceViewProps from "./infinite-resource-view-props";
 import VideoTile from "../../tile/video-tile";
 import { PaginationParameters } from "../../../models/pagination";
-import Track from "../../../models/track";
 
 const InfiniteVideoView = <T extends VideoWithRelations<"artist">>(
-	props: InfiniteResourceViewProps<T, typeof SongSortingKeys> & {
-		formatSubtitle?: (video: {
-			song: SongWithRelations<"artist">;
-			track: Track;
-		}) => string;
-	},
+	props: InfiniteResourceViewProps<T, typeof SongSortingKeys> &
+		Omit<ComponentProps<typeof VideoTile>, "video">,
 ) => {
 	const router = useRouter();
 	const [options, setOptions] =
@@ -81,22 +76,7 @@ const InfiniteVideoView = <T extends VideoWithRelations<"artist">>(
 				}}
 				renderListItem={(item) => <></>}
 				renderGridItem={(item) => (
-					<VideoTile
-						video={item}
-						formatSubtitle={
-							item && props.formatSubtitle
-								? () =>
-										(
-											props.formatSubtitle as Required<
-												typeof props
-											>["formatSubtitle"]
-										)({
-											song: item,
-											track: item.track,
-										})
-								: undefined
-						}
-					/>
+					<VideoTile video={item} subtitle={props.subtitle} />
 				)}
 			/>
 		</>

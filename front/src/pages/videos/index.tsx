@@ -58,7 +58,7 @@ const LibraryVideosPage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({
 						["artist", "featuring"],
 					)
 				}
-				formatSubtitle={(track) => track.song.artist.name}
+				subtitle="artist"
 			/>
 		</>
 	);

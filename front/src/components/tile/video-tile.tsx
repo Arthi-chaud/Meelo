@@ -23,12 +23,17 @@ import API from "../../api/api";
 import formatDuration from "../../utils/formatDuration";
 import TrackContextualMenu from "../contextual-menu/track-contextual-menu";
 import { usePlayerContext } from "../../contexts/player";
-import { VideoWithRelations } from "../../models/video";
+import Video, { VideoWithRelations } from "../../models/video";
 
-type VideoTileProps = {
-	video: VideoWithRelations<"artist"> | undefined;
-	subtitle: "artist" | "duration";
-};
+type VideoTileProps =
+	| {
+			video: Video | undefined;
+			subtitle: "duration";
+	  }
+	| {
+			video: VideoWithRelations<"artist"> | undefined;
+			subtitle: "artist";
+	  };
 
 const VideoTile = ({ video, subtitle: subtitleType }: VideoTileProps) => {
 	const queryClient = useQueryClient();
@@ -42,7 +47,7 @@ const VideoTile = ({ video, subtitle: subtitleType }: VideoTileProps) => {
 						: formatDuration(video.track.duration),
 				secondaryHref:
 					subtitleType == "artist"
-						? `/artists/${video.artistId}`
+						? `/artists/${video.artist.slug}`
 						: undefined,
 			};
 
@@ -51,6 +56,7 @@ const VideoTile = ({ video, subtitle: subtitleType }: VideoTileProps) => {
 			contextualMenu={
 				video && (
 					<TrackContextualMenu
+						isVideo
 						track={{ ...video.track, song: video }}
 					/>
 				)

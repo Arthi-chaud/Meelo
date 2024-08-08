@@ -17,7 +17,7 @@
  */
 
 import { Box, Button, Grid } from "@mui/material";
-import { ComponentProps, Fragment, PropsWithChildren } from "react";
+import { ComponentProps, Fragment } from "react";
 import { useTranslation } from "react-i18next";
 import { UseInfiniteQueryResult, UseQueryResult } from "react-query";
 import { TranslationKey } from "../i18n/i18n";
