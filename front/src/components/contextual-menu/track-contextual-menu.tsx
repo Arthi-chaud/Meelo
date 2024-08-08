@@ -26,7 +26,11 @@ import { RootState } from "../../state/store";
 import ContextualMenu from "./contextual-menu";
 import { useConfirm } from "material-ui-confirm";
 import { DownloadAction } from "../actions/download";
-import { GoToReleaseAction } from "../actions/link";
+import {
+	GoToArtistAction,
+	GoToReleaseAction,
+	GoToSongLyricsAction,
+} from "../actions/link";
 import {
 	AddToPlaylistAction,
 	PlayAfterAction,
@@ -42,6 +46,7 @@ import { usePlayerContext } from "../../contexts/player";
 
 type TrackContextualMenuProps = {
 	track: TrackWithRelations<"song" | "illustration">;
+	isVideo?: true; // If true, will add 'go to artist' to menu
 	onSelect?: () => void;
 };
 
@@ -76,7 +81,13 @@ const TrackContextualMenu = (props: TrackContextualMenuProps) => {
 		<ContextualMenu
 			onSelect={props.onSelect}
 			actions={[
-				[GoToReleaseAction(props.track.releaseId)],
+				props.isVideo
+					? [
+							GoToArtistAction(props.track.song.artistId),
+							GoToReleaseAction(props.track.releaseId),
+						]
+					: [GoToReleaseAction(props.track.releaseId)],
+				[GoToSongLyricsAction(props.track.song.slug)],
 				[
 					PlayNextAction(getPlayNextProps, playNext),
 					PlayAfterAction(getPlayNextProps, playAfter),

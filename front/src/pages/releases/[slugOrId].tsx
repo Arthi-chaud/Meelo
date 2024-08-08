@@ -667,7 +667,11 @@ const ReleasePage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({ props }) => {
 					<TileRow
 						tiles={
 							videos?.map((video, videoIndex) => (
-								<VideoTile key={videoIndex} video={video} />
+								<VideoTile
+									key={videoIndex}
+									video={video}
+									subtitle="duration"
+								/>
 							)) ?? []
 						}
 					/>
@@ -687,7 +691,11 @@ const ReleasePage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({ props }) => {
 					{videoExtras.length > 0 ? (
 						<TileRow
 							tiles={videoExtras.map((video, videoIndex) => (
-								<VideoTile key={videoIndex} video={video} />
+								<VideoTile
+									key={videoIndex}
+									video={video}
+									subtitle="duration"
+								/>
 							))}
 						/>
 					) : (

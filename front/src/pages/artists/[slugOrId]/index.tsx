@@ -61,6 +61,7 @@ const videosQuery = (artistSlugOrId: string | number) =>
 	API.getVideos(
 		{ artist: artistSlugOrId },
 		{ sortBy: "totalPlayCount", order: "desc" },
+		["artist"],
 	);
 
 const topSongsQuery = (artistSlugOrId: string | number) =>
@@ -199,6 +200,7 @@ const ArtistPage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({ props }) => {
 									maxItemCount={VideoListSize}
 									seeMoreHref={`/artists/${artistIdentifier}/videos`}
 									items={items}
+									subtitle="duration"
 								/>
 							</Fragment>
 						),

@@ -22,7 +22,6 @@ import getSlugOrId from "../../../utils/getSlugOrId";
 import ArtistRelationPageHeader from "../../../components/relation-page-header/artist-relation-page-header";
 import { GetPropsTypesFrom, Page } from "../../../ssr";
 import InfiniteVideoView from "../../../components/infinite/infinite-resource-view/infinite-video-view";
-import formatDuration from "../../../utils/formatDuration";
 import { SongSortingKeys } from "../../../models/song";
 import { getOrderParams, getSortingFieldParams } from "../../../utils/sorting";
 import { useQuery } from "../../../api/use-query";
@@ -84,7 +83,7 @@ const ArtistSongPage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({
 						["artist", "featuring"],
 					)
 				}
-				formatSubtitle={({ track }) => formatDuration(track.duration)}
+				subtitle="duration"
 			/>
 		</>
 	);
