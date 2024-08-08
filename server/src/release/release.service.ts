@@ -200,7 +200,7 @@ export default class ReleaseService {
 
 	formatSortingInput(
 		sortingParameter: ReleaseQueryParameters.SortingParameter,
-	): Prisma.ReleaseOrderByWithRelationAndSearchRelevanceInput {
+	): Prisma.ReleaseOrderByWithRelationInput {
 		sortingParameter.order ??= "asc";
 		switch (sortingParameter.sortBy) {
 			case "name":
