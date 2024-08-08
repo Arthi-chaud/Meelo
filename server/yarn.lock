@@ -2498,16 +2498,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/cron@npm:^2.0.0":
-  version: 2.0.0
-  resolution: "@types/cron@npm:2.0.0"
-  dependencies:
-    "@types/luxon": "npm:*"
-    "@types/node": "npm:*"
-  checksum: 10c0/a6bf7d6aefdca94c5cbe6ca600e1f428366995b02b459a69829911fb4f7881363a38d91dfcf47d648d2e22662fac740f7b019e22b85ba0c728e97169f93b3011
-  languageName: node
-  linkType: hard
-
 "@types/cross-spawn@npm:6.0.2":
   version: 6.0.2
   resolution: "@types/cross-spawn@npm:6.0.2"
@@ -2717,13 +2707,6 @@ __metadata:
   dependencies:
     "@types/node": "npm:*"
   checksum: 10c0/ff8f54fc49621210291f815fe5b15d809fd7d032941b3180743440bd507ecdf08b9e844625fa346af568c84bf34114eb378dcdc3e921a08ba1e2a08d7e3c809c
-  languageName: node
-  linkType: hard
-
-"@types/luxon@npm:*":
-  version: 3.2.0
-  resolution: "@types/luxon@npm:3.2.0"
-  checksum: 10c0/d3574082d70cee8bad6ba683e5b81d4532b5ddcaefb986f0f4bd770fb71072456241d81c780cadf4857163119148d1ca6f8df36389446827eae17a609f4ed5c6
   languageName: node
   linkType: hard
 
@@ -8879,7 +8862,6 @@ __metadata:
     "@types/archiver": "npm:^5.3.1"
     "@types/bcrypt": "npm:^5.0.0"
     "@types/cookie-parser": "npm:^1.4.3"
-    "@types/cron": "npm:^2.0.0"
     "@types/damerau-levenshtein": "npm:^1.0.0"
     "@types/express": "npm:^4.17.13"
     "@types/fluent-ffmpeg": "npm:^2.1.21"
