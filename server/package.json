@@ -77,7 +77,6 @@
 		"@nestjs/testing": "^9.3.9",
 		"@types/archiver": "^5.3.1",
 		"@types/bcrypt": "^5.0.0",
-		"@types/bull": "^4.10.0",
 		"@types/cookie-parser": "^1.4.3",
 		"@types/cron": "^2.0.0",
 		"@types/damerau-levenshtein": "^1.0.0",
