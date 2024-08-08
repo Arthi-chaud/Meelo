@@ -364,7 +364,7 @@ export default class AlbumService extends SearchableRepositoryService {
 
 	formatSortingInput(
 		sortingParameter: AlbumQueryParameters.SortingParameter,
-	): Prisma.AlbumOrderByWithRelationAndSearchRelevanceInput {
+	): Prisma.AlbumOrderByWithRelationInput {
 		sortingParameter.order ??= "asc";
 		switch (sortingParameter.sortBy) {
 			case "name":

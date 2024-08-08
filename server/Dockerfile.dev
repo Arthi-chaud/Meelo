@@ -5,7 +5,7 @@ FROM base AS builder
 WORKDIR /app
 COPY ./*.json ./
 COPY ./*.lock ./
-RUN yarn install
+RUN yarn
 COPY ./prisma ./prisma
 RUN yarn build
 

@@ -114,7 +114,7 @@ export default class LibraryService {
 
 	formatSortingInput(
 		sortingParameter: LibraryQueryParameters.SortingParameter,
-	): Prisma.LibraryOrderByWithRelationAndSearchRelevanceInput {
+	): Prisma.LibraryOrderByWithRelationInput {
 		sortingParameter.order ??= "asc";
 		switch (sortingParameter.sortBy) {
 			case "name":

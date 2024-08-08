@@ -15,6 +15,8 @@ services:
       - ./server/prisma:/app/prisma
       - ./server/test:/app/test
       - ./server/package.json:/app/package.json
+      - ./server/.yarn:/app/.yarn
+      - ./server/.yarnrc.yml:/app/.yarnrc.yml
       - ./server/tsconfig.json:/app/tsconfig.json
       - ./server/tsconfig.build.json:/app/tsconfig.build.json
       - ./server/yarn.lock:/app/yarn.lock

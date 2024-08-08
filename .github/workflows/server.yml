@@ -72,7 +72,7 @@ jobs:
         run: yarn prettier --check src
   Tests:
     runs-on: ubuntu-latest
-    container: node:19-alpine
+    container: node:18-alpine3.18
     needs: [ Build ]
     if: ${{ needs.changes.outputs.server == 'true' && always() }}
     env:
