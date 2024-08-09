@@ -48,6 +48,8 @@ import { usePlayerContext } from "../../../contexts/player";
 import { NextPageContext } from "next";
 import { useGradientBackground } from "../../../utils/gradient-background";
 import { Head } from "../../../components/head";
+import { useThemedSxValue } from "../../../utils/themed-sx-value";
+import { useAccentColor } from "../../../utils/accent-color";
 
 const prepareSSR = (context: NextPageContext) => {
 	const songIdentifier = getSlugOrId(context.query);
@@ -110,6 +112,12 @@ const SongPage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({ props }) => {
 	const genres = useInfiniteQuery(API.getGenres, { song: songIdentifier });
 	const { GradientBackground } = useGradientBackground(
 		song.data?.illustration?.colors,
+	);
+	const accentColor = useAccentColor(song.data?.illustration);
+	const genreButtonOutline = useThemedSxValue(
+		"borderColor",
+		accentColor?.light,
+		accentColor?.dark,
 	);
 
 	return (
@@ -186,7 +194,11 @@ const SongPage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({ props }) => {
 									genres.data?.pages.at(0)?.items ??
 									generateArray(2)
 								).map((genre, index) => (
-									<GenreButton key={index} genre={genre} />
+									<GenreButton
+										sx={genreButtonOutline}
+										key={index}
+										genre={genre}
+									/>
 								))}
 							</Stack>
 						)}
