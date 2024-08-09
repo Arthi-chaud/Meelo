@@ -37,9 +37,7 @@ export const useThemedSxValue = <
 	const theme = useTheme();
 
 	return {
-		[theme.getColorSchemeSelector("light")]: {
-			[key]: lightValue,
-		},
+		[key]: lightValue,
 		[theme.getColorSchemeSelector("dark")]: {
 			[key]: darkValue,
 		},
