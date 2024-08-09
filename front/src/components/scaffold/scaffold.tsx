@@ -47,7 +47,7 @@ import { IconProps } from "iconsax-react";
 import { useEffect, useState } from "react";
 import scaffoldActions from "./actions";
 import type {} from "@mui/material/themeCssVarsAugmentation";
-import ThemedImage from "../../utils/themed-image";
+import ThemedImage from "../themed-image";
 import { useTranslation } from "react-i18next";
 import { RootGradientBackground } from "../../utils/gradient-background";
 import { parentScrollableDivId } from "../infinite/infinite-scroll";

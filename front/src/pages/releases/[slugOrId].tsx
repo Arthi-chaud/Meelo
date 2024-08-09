@@ -70,6 +70,7 @@ import { QueryClient } from "react-query";
 import { useGradientBackground } from "../../utils/gradient-background";
 import Tracklist, { TracklistItemWithRelations } from "../../models/tracklist";
 import { Head } from "../../components/head";
+import { useThemedSxValue } from "../../utils/themed-sx-value";
 
 const releaseQuery = (releaseIdentifier: string | number) =>
 	API.getRelease(releaseIdentifier, ["album", "externalIds", "illustration"]);
@@ -320,6 +321,16 @@ const ReleasePage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({ props }) => {
 	}, [album.data]);
 	const accentColor = useAccentColor(illustration);
 	const { GradientBackground } = useGradientBackground(illustration?.colors);
+	const ratingColor = useThemedSxValue(
+		"color",
+		accentColor?.light,
+		accentColor?.dark,
+	);
+	const genreButtonOutline = useThemedSxValue(
+		"borderColor",
+		accentColor?.light,
+		accentColor?.dark,
+	);
 
 	return (
 		<>
@@ -446,11 +457,7 @@ const ReleasePage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({ props }) => {
 								<Rating
 									sx={{
 										paddingLeft: 1.5,
-										color: accentColor?.light,
-										[theme.getColorSchemeSelector("dark")]:
-											{
-												color: accentColor?.dark,
-											},
+										...ratingColor,
 									}}
 									readOnly
 									value={albumRating / 20}
@@ -571,16 +578,7 @@ const ReleasePage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({ props }) => {
 												>
 													<GenreButton
 														genre={genre}
-														sx={{
-															borderColor:
-																accentColor?.light,
-															[theme.getColorSchemeSelector(
-																"dark",
-															)]: {
-																borderColor:
-																	accentColor?.dark,
-															},
-														}}
+														sx={genreButtonOutline}
 													/>
 												</Grid>
 											)) ?? []}
