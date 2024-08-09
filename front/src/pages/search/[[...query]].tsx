@@ -18,7 +18,7 @@
 
 import { SearchIcon } from "../../components/icons";
 import { Box, InputAdornment, TextField } from "@mui/material";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import SelectableInfiniteView from "../../components/infinite/selectable-infinite-view";
 import { useRouter } from "next/router";
 import { GetPropsTypesFrom, Page } from "../../ssr";
@@ -69,6 +69,27 @@ const SearchPage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({ props }) => {
 		(searchQuery ?? Array.from(router.query.query ?? []).join(" ")) ||
 			undefined,
 	);
+	const [inputValue, setInputValue] = useState(query);
+	const [debounceId, setDebounceId] = useState<NodeJS.Timeout>();
+	useEffect(() => {
+		if (debounceId) {
+			clearTimeout(debounceId);
+		}
+		setDebounceId(
+			setTimeout(() => {
+				setQuery(inputValue || undefined);
+				router.push(buildSearchUrl(inputValue, type), undefined, {
+					shallow: true,
+				});
+				setDebounceId(undefined);
+			}, 500),
+		);
+	}, [inputValue]);
+	useEffect(() => {
+		return () => {
+			clearTimeout(debounceId);
+		};
+	}, [debounceId]);
 
 	return (
 		<Box
@@ -89,22 +110,15 @@ const SearchPage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({ props }) => {
 					variant="outlined"
 					autoFocus
 					InputProps={{
-						value: query,
+						value: inputValue,
 						startAdornment: (
 							<InputAdornment position="start">
 								<SearchIcon />
 							</InputAdornment>
 						),
 					}}
-					onChange={(error) => {
-						setQuery(error.target.value || undefined);
-						router.push(
-							buildSearchUrl(error.target.value, type),
-							undefined,
-							{
-								shallow: true,
-							},
-						);
+					onChange={(event) => {
+						setInputValue(event.target.value || undefined);
 					}}
 				/>
 			</Box>
