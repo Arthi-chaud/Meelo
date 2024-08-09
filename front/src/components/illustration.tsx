@@ -26,7 +26,7 @@ import { RequireExactlyOne } from "type-fest";
 import IllustrationModel from "../models/illustration";
 import Blurhash from "./blurhash";
 import Fade from "./fade";
-import ThemedImage from "../utils/themed-image";
+import ThemedImage from "./themed-image";
 import { isSSR } from "../utils/is-ssr";
 
 type ImageQuality = "low" | "medium" | "high" | "original";

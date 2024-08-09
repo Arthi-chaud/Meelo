@@ -37,7 +37,6 @@ const HighlightCard = (props: HighlightCardProps) => {
 	const accentColor = useAccentColor(props.illustration);
 
 	const cardColor = useMemo(() => {
-		//TODO Try 40%
 		if (accentColor !== null) {
 			const themePaperColor = `rgba(${theme.vars.palette.background.defaultChannel} / 0.75)`;
 			return {

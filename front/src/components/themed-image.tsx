@@ -22,31 +22,20 @@ import { Box, useTheme } from "@mui/material";
 import { StaticImport } from "next/dist/shared/lib/get-img-props";
 import Image from "next/image";
 import { ComponentProps } from "react";
+import { useThemedSxValue } from "../utils/themed-sx-value";
 
 type ThemedImageProps = Record<"light" | "dark", string | StaticImport> &
 	Omit<ComponentProps<typeof Image>, "src">;
 const ThemedImage = ({ light, dark, ...props }: ThemedImageProps) => {
 	const theme = useTheme();
+	const sxLightThemeImage = useThemedSxValue("display", "block", "none");
+	const sxDarkThemeImage = useThemedSxValue("display", "none", "block");
 	return (
 		<>
-			<Box
-				sx={{
-					display: "block",
-					[theme.getColorSchemeSelector("dark")]: {
-						display: "none",
-					},
-				}}
-			>
+			<Box sx={sxLightThemeImage}>
 				<Image src={light} {...props} />
 			</Box>
-			<Box
-				sx={{
-					display: "none",
-					[theme.getColorSchemeSelector("dark")]: {
-						display: "block",
-					},
-				}}
-			>
+			<Box sx={sxDarkThemeImage}>
 				<Image src={dark} {...props} />
 			</Box>
 		</>
