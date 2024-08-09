@@ -23,7 +23,7 @@ import { sortItemsUsingOrderedIdList } from "./repository.utils";
 /// Base functions for a Repository that integrates Meilisearch
 export default abstract class SearchableRepositoryService {
 	constructor(
-		protected indexName: string,
+		public readonly indexName: string,
 		protected searchableKeys: string[],
 		protected readonly meiliSearch: MeiliSearch,
 	) {
