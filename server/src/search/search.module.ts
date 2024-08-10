@@ -16,30 +16,16 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { StandardCSSProperties } from "@mui/system/styleFunctionSx/StandardCssProperties";
+import { Module } from "@nestjs/common";
+import { SearchController } from "./search.controller";
+import { SearchService } from "./search.service";
+import ArtistModule from "src/artist/artist.module";
+import SongModule from "src/song/song.module";
+import AlbumModule from "src/album/album.module";
 
-import { useTheme } from "@mui/material";
-
-/**
- * Utilitary hook that formats a themed `sx` value
- * USE ONLY for an `sx` props. Not tested with `style`
- * @param lightValue The value to use when theme is light
- * @param darkValue The value to use when theme is dark
- */
-export const useThemedSxValue = <
-	Key extends keyof StandardCSSProperties,
-	Value extends StandardCSSProperties[Key],
->(
-	key: Key,
-	lightValue: Value,
-	darkValue: Value,
-) => {
-	const theme = useTheme();
-
-	return {
-		[key]: lightValue,
-		[theme.getColorSchemeSelector("dark")]: {
-			[key]: darkValue,
-		},
-	};
-};
+@Module({
+	controllers: [SearchController],
+	providers: [SearchService],
+	imports: [ArtistModule, SongModule, AlbumModule],
+})
+export class SearchModule {}

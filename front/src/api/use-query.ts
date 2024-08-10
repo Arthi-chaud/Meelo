@@ -197,6 +197,36 @@ const useQueryClient = () => {
 	};
 };
 
+export const toInfiniteQuery = <T>(q: Query<T[]>): InfiniteQuery<T> => {
+	return {
+		key: q.key,
+		exec: () =>
+			q.exec().then((res) => ({
+				items: res,
+				metadata: {
+					next: null,
+					page: 0,
+					previous: null,
+					this: "",
+				},
+			})),
+	};
+};
+
+export const transformPage = <To, From>(
+	q: InfiniteQuery<From>,
+	transformer: (item: From, index: number) => To,
+): InfiniteQuery<To> => {
+	return {
+		key: q.key,
+		exec: (p) =>
+			q.exec(p).then((res) => ({
+				items: res.items.map(transformer),
+				metadata: res.metadata,
+			})),
+	};
+};
+
 export type QueryClient = ReturnType<typeof useQueryClient>;
 
 export {

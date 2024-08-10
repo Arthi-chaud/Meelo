@@ -17,19 +17,27 @@
  */
 
 import { SearchIcon } from "../../components/icons";
-import { Box, InputAdornment, TextField } from "@mui/material";
-import { useState } from "react";
-import SelectableInfiniteView from "../../components/infinite/selectable-infinite-view";
+import { Box, InputAdornment, Tab, Tabs, TextField } from "@mui/material";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/router";
 import { GetPropsTypesFrom, Page } from "../../ssr";
 import API from "../../api/api";
 import { NextPageContext } from "next";
 import { Head } from "../../components/head";
 import { useTranslation } from "react-i18next";
+import { useTabRouter } from "../../components/tab-router";
+import InfiniteArtistView from "../../components/infinite/infinite-resource-view/infinite-artist-view";
+import InfiniteAlbumView from "../../components/infinite/infinite-resource-view/infinite-album-view";
+import InfiniteSongView from "../../components/infinite/infinite-resource-view/infinite-song-view";
+import InfiniteView from "../../components/infinite/infinite-view";
+import { toInfiniteQuery, transformPage } from "../../api/use-query";
+import AlbumItem from "../../components/list-item/album-item";
+import SongItem from "../../components/list-item/song-item";
+import ArtistItem from "../../components/list-item/artist-item";
 
 const prepareSSR = (context: NextPageContext) => {
 	const searchQuery = context.query.query?.at(0) ?? null;
-	const type = (context.query.type as string) ?? null;
+	const type = (context.query.t as string) ?? null;
 
 	return {
 		additionalProps: { searchQuery, type },
@@ -57,18 +65,50 @@ const buildSearchUrl = (
 	query: string | undefined,
 	type: string | undefined,
 ) => {
-	return "/search/" + (query ?? "") + (type ? `?type=${type}` : "");
+	return "/search/" + (query ?? "") + (type ? `?t=${type}` : "");
 };
+
+const tabs = ["all", "artist", "album", "song"] as const;
 
 const SearchPage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({ props }) => {
 	const router = useRouter();
 	const searchQuery = props?.searchQuery;
 	const { t } = useTranslation();
-	const type = props?.type ?? (router.query.type as string);
 	const [query, setQuery] = useState<string | undefined>(
 		(searchQuery ?? Array.from(router.query.query ?? []).join(" ")) ||
 			undefined,
 	);
+	const { selectedTab, selectTab } = useTabRouter(
+		(r) => r.query.t,
+		(newTab) => buildSearchUrl(query, newTab),
+		...tabs,
+	);
+	const [inputValue, setInputValue] = useState(query);
+	const [debounceId, setDebounceId] = useState<NodeJS.Timeout>();
+	useEffect(() => {
+		if (debounceId) {
+			clearTimeout(debounceId);
+		}
+		setDebounceId(
+			setTimeout(() => {
+				setQuery(inputValue || undefined);
+				router.push(
+					buildSearchUrl(inputValue, selectedTab),
+					undefined,
+					{
+						shallow: true,
+					},
+				);
+				setDebounceId(undefined);
+			}, 500),
+		);
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+	}, [inputValue]);
+	useEffect(() => {
+		return () => {
+			clearTimeout(debounceId);
+		};
+	}, [debounceId]);
 
 	return (
 		<Box
@@ -89,71 +129,119 @@ const SearchPage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({ props }) => {
 					variant="outlined"
 					autoFocus
 					InputProps={{
-						value: query,
+						value: inputValue,
 						startAdornment: (
 							<InputAdornment position="start">
 								<SearchIcon />
 							</InputAdornment>
 						),
 					}}
-					onChange={(error) => {
-						setQuery(error.target.value || undefined);
-						router.push(
-							buildSearchUrl(error.target.value, type),
-							undefined,
-							{
-								shallow: true,
-							},
-						);
+					onChange={(event) => {
+						setInputValue(event.target.value || undefined);
 					}}
 				/>
 			</Box>
-			<SelectableInfiniteView
-				disableSorting
-				default={type}
-				onTypeSelect={(selectedType) =>
-					router.push(
-						buildSearchUrl(query, selectedType),
-						undefined,
-						{
-							shallow: true,
-						},
-					)
-				}
-				enabled={query != undefined}
-				artistQuery={({ library }) =>
-					API.getArtists(
-						{
-							query: encodeURIComponent(query!),
-							library: library ?? undefined,
-						},
-						undefined,
-						["illustration"],
-					)
-				}
-				albumQuery={({ library, type: newType }) =>
-					API.getAlbums(
-						{
-							query: encodeURIComponent(query!),
-							type: newType,
-							library: library ?? undefined,
-						},
-						undefined,
-						["artist", "illustration"],
-					)
-				}
-				songQuery={({ library, type: newType }) =>
-					API.getSongs(
-						{
-							query: encodeURIComponent(query!),
-							type: newType,
-							library: library ?? undefined,
-						},
-						undefined,
-						["artist", "featuring", "master", "illustration"],
-					)
-				}
-			/>
+			<Tabs
+				value={selectedTab}
+				onChange={(__, tabName) => selectTab(tabName)}
+				variant="scrollable"
+			>
+				{tabs.map((value, index) => (
+					<Tab
+						key={index}
+						value={value}
+						sx={{ minWidth: "fit-content", flex: 1 }}
+						label={t(value == "all" ? "All" : `${value}s`)}
+					/>
+				))}
+			</Tabs>
+			<Box sx={{ paddingBottom: 2 }} />
+			{query && selectedTab == "all" && (
+				<InfiniteView
+					view="list"
+					query={() =>
+						transformPage(
+							toInfiniteQuery(API.searchAll(query)),
+							(item, index) => ({
+								...item,
+								id: index,
+								illustration:
+									item.song?.illustration ??
+									item.artist?.illustration ??
+									item.album?.illustration ??
+									null,
+							}),
+						)
+					}
+					renderGridItem={(item) => <></>}
+					renderListItem={(item) =>
+						!item || item.album ? (
+							<AlbumItem
+								album={item?.album}
+								formatSubtitle={(album) =>
+									`${t("album")} • ${
+										album.artist?.name ?? t("compilation")
+									}`
+								}
+							/>
+						) : item.song ? (
+							<SongItem
+								song={item.song}
+								formatSubtitle={async (song) =>
+									`${t("song")} • ${song.artist.name}`
+								}
+							/>
+						) : (
+							<ArtistItem artist={item.artist} />
+						)
+					}
+				/>
+			)}
+			{query && selectedTab == "artist" && (
+				<InfiniteArtistView
+					query={({ library }) =>
+						API.getArtists(
+							{
+								query: encodeURIComponent(query),
+								library: library ?? undefined,
+							},
+							undefined,
+							["illustration"],
+						)
+					}
+				/>
+			)}
+			{query && selectedTab == "album" && (
+				<InfiniteAlbumView
+					defaultAlbumType={null}
+					query={({ library, type: newType }) =>
+						API.getAlbums(
+							{
+								query: encodeURIComponent(query),
+								type: newType,
+								library: library ?? undefined,
+							},
+							undefined,
+							["artist", "illustration"],
+						)
+					}
+				/>
+			)}
+			{query && selectedTab == "song" && (
+				<InfiniteSongView
+					query={({ library, type: newType }) =>
+						API.getSongs(
+							{
+								query: encodeURIComponent(query),
+								type: newType,
+								library: library ?? undefined,
+							},
+							undefined,
+							["artist", "featuring", "master", "illustration"],
+						)
+					}
+				/>
+			)}
 		</Box>
 	);
 };

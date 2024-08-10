@@ -66,6 +66,7 @@ import Playlist, {
 } from "../models/playlist";
 import { isSSR } from "../utils/is-ssr";
 import { ActiveTask, Task } from "../models/task";
+import { SearchResult, SearchResultTransformer } from "../models/search";
 
 const AuthenticationResponse = yup.object({
 	access_token: yup.string().required(),
@@ -831,6 +832,22 @@ export default class API {
 					errorMessage: "Album not found",
 					parameters: { include },
 					validator: AlbumWithRelations(include ?? []),
+				}),
+		};
+	}
+
+	/**
+	 * Search artists, albums and songs, all at once
+	 */
+	static searchAll(query: string): Query<SearchResult[]> {
+		return {
+			key: ["search", query],
+			exec: () =>
+				API.fetch({
+					route: `/search/${query}`,
+					errorMessage: "Search failed",
+					parameters: {},
+					customValidator: SearchResultTransformer,
 				}),
 		};
 	}

@@ -36,7 +36,6 @@ import {
 } from "@mui/material";
 import LyricsBox from "../../../components/lyrics";
 import SongRelationPageHeader from "../../../components/relation-page-header/song-relation-page-header";
-import { useState } from "react";
 import InfiniteSongView from "../../../components/infinite/infinite-resource-view/infinite-song-view";
 import InfiniteTrackView from "../../../components/infinite/infinite-resource-view/infinite-track-view";
 import ExternalIdBadge from "../../../components/external-id-badge";
@@ -50,6 +49,7 @@ import { useGradientBackground } from "../../../utils/gradient-background";
 import { Head } from "../../../components/head";
 import { useThemedSxValue } from "../../../utils/themed-sx-value";
 import { useAccentColor } from "../../../utils/accent-color";
+import { useTabRouter } from "../../../components/tab-router";
 
 const prepareSSR = (context: NextPageContext) => {
 	const songIdentifier = getSlugOrId(context.query);
@@ -85,17 +85,13 @@ const prepareSSR = (context: NextPageContext) => {
 const tabs = ["lyrics", "versions", "tracks", "more"] as const;
 
 const SongPage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({ props }) => {
-	/**
-	 * Parses the query to find the requested tab, fallback on tabs[0]
-	 */
-	const getTabFromQuery = () =>
-		tabs.find(
-			(availableTab) =>
-				availableTab == router.query.tab?.toString().toLowerCase(),
-		) ?? tabs[0];
+	const { selectedTab, selectTab } = useTabRouter(
+		(router) => router.query.tab,
+		(newTab) => `/songs/${songIdentifier}/${newTab}`,
+		...tabs,
+	);
 	const { t } = useTranslation();
 	const router = useRouter();
-	const [tab, setTabs] = useState<(typeof tabs)[number]>(getTabFromQuery());
 	const queryClient = useQueryClient();
 	const { playTrack } = usePlayerContext();
 	const songIdentifier = props?.songIdentifier ?? getSlugOrId(router.query);
@@ -145,17 +141,8 @@ const SongPage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({ props }) => {
 			</Button>
 			<Divider sx={{ paddingY: 1 }} />
 			<Tabs
-				value={tab}
-				onChange={(__, tabName) => {
-					setTabs(tabName);
-					router.push(
-						`/songs/${songIdentifier}/${tabName}`,
-						undefined,
-						{
-							shallow: true,
-						},
-					);
-				}}
+				value={selectedTab}
+				onChange={(__, tabName) => selectTab(tabName)}
 				variant="scrollable"
 			>
 				{tabs.map((value, index) => (
@@ -168,7 +155,7 @@ const SongPage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({ props }) => {
 				))}
 			</Tabs>
 			<Box sx={{ paddingY: 2 }}>
-				{tab == "more" && (
+				{selectedTab == "more" && (
 					<>
 						<Head
 							title={
@@ -235,7 +222,7 @@ const SongPage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({ props }) => {
 						</Typography>
 					</>
 				)}
-				{tab == "lyrics" && (
+				{selectedTab == "lyrics" && (
 					<>
 						<Head
 							title={
@@ -254,7 +241,7 @@ const SongPage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({ props }) => {
 						/>
 					</>
 				)}
-				{tab == "versions" && (
+				{selectedTab == "versions" && (
 					<>
 						<Head
 							title={
@@ -283,7 +270,7 @@ const SongPage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({ props }) => {
 						/>
 					</>
 				)}
-				{tab == "tracks" && (
+				{selectedTab == "tracks" && (
 					<>
 						<Head
 							title={
