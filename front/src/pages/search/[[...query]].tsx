@@ -84,6 +84,7 @@ const SearchPage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({ props }) => {
 				setDebounceId(undefined);
 			}, 500),
 		);
+		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [inputValue]);
 	useEffect(() => {
 		return () => {

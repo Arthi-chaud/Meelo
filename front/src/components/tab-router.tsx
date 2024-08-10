@@ -17,7 +17,8 @@
  */
 
 import { NextRouter, useRouter } from "next/router";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
+import { useTranslation } from "react-i18next";
 
 /**
  * Utilitary to update router when using tabs
@@ -29,11 +30,17 @@ export const useTabRouter = <TabValue extends string>(
 	getTabValueFromRouter: (
 		router: NextRouter,
 	) => string | string[] | undefined,
+	// This should persist the tab change in the router
+	onTabChange: (newTab: TabValue) => void,
 	defaultTab: TabValue,
 	...otherTabs: TabValue[]
 ) => {
 	const router = useRouter();
-	const tabs = [defaultTab, ...otherTabs];
+	const { t } = useTranslation();
+	const tabs = useMemo(
+		() => [defaultTab, ...otherTabs],
+		[defaultTab, otherTabs],
+	);
 	const getTabFromQuery = () =>
 		tabs.find(
 			(availableTab) =>
@@ -44,10 +51,18 @@ export const useTabRouter = <TabValue extends string>(
 		getTabFromQuery() ?? defaultTab,
 	);
 
+	//Handle going back in history
 	useEffect(() => {
 		const tabFromQuery = getTabFromQuery();
-		selectTab(tabFromQuery ?? defaultTab);
+		const newTab = tabFromQuery ?? defaultTab;
+		if (newTab !== selectedTab) {
+			selectTab(tabFromQuery ?? defaultTab);
+		}
 	}, [router.asPath]);
+	useEffect(() => {
+		onTabChange(selectedTab);
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+	}, [selectedTab]);
 
 	return { selectedTab, selectTab };
 };

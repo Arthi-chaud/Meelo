@@ -16,15 +16,19 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { Box, Skeleton, Typography } from "@mui/material";
+import { Box, Skeleton, Tab, Tabs, Typography } from "@mui/material";
 import { useRouter } from "next/router";
-import SelectableInfiniteView from "../../components/infinite/selectable-infinite-view";
 import { useQuery } from "../../api/use-query";
 import getSlugOrId from "../../utils/getSlugOrId";
 import { GetPropsTypesFrom, Page } from "../../ssr";
 import API from "../../api/api";
 import { NextPageContext } from "next";
 import { Head } from "../../components/head";
+import { useTabRouter } from "../../components/tab-router";
+import InfiniteArtistView from "../../components/infinite/infinite-resource-view/infinite-artist-view";
+import InfiniteAlbumView from "../../components/infinite/infinite-resource-view/infinite-album-view";
+import InfiniteSongView from "../../components/infinite/infinite-resource-view/infinite-song-view";
+import { useTranslation } from "react-i18next";
 
 const prepareSSR = (context: NextPageContext) => {
 	const genreIdentifier = getSlugOrId(context.query);
@@ -51,10 +55,23 @@ const prepareSSR = (context: NextPageContext) => {
 	};
 };
 
+const tabs = ["artist", "album", "song"] as const;
+
 const GenrePage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({ props }) => {
 	const router = useRouter();
+	const { t } = useTranslation();
 	const genreIdentifier = props?.genreIdentifier ?? getSlugOrId(router.query);
 	const genre = useQuery(API.getGenre, genreIdentifier);
+	const { selectedTab, selectTab } = useTabRouter(
+		(r) => r.query.t,
+		(newTab) =>
+			router.push(`/genres/${genreIdentifier}?t=${newTab}`, undefined, {
+				shallow: true,
+			}),
+		"album",
+		"artist",
+		"song",
+	);
 
 	return (
 		<Box sx={{ width: "100%" }}>
@@ -72,42 +89,67 @@ const GenrePage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({ props }) => {
 					{genre.data?.name ?? <Skeleton width={"100px"} />}
 				</Typography>
 			</Box>
-			<SelectableInfiniteView
-				enabled={true}
-				artistQuery={({ library }, { sortBy, order }) =>
-					API.getArtists(
-						{
-							genre: genreIdentifier,
-							library: library ?? undefined,
-						},
-						{ sortBy, order },
-						["illustration"],
-					)
-				}
-				albumQuery={({ library, type }, { sortBy, order }) =>
-					API.getAlbums(
-						{
-							genre: genreIdentifier,
-							type,
-							library: library ?? undefined,
-						},
-						{ sortBy, order },
-						["artist", "illustration"],
-					)
-				}
-				songQuery={({ library, type, random }, { sortBy, order }) =>
-					API.getSongs(
-						{
-							genre: genreIdentifier,
-							type,
-							random,
-							library: library ?? undefined,
-						},
-						{ sortBy, order },
-						["artist", "featuring", "master", "illustration"],
-					)
-				}
-			/>
+			<Tabs
+				value={selectedTab}
+				onChange={(__, tabName) => selectTab(tabName)}
+				variant="scrollable"
+			>
+				{tabs.map((value, index) => (
+					<Tab
+						key={index}
+						value={value}
+						sx={{ minWidth: "fit-content", flex: 1 }}
+						label={t(value)}
+					/>
+				))}
+			</Tabs>
+			<Box sx={{ paddingBottom: 2 }} />
+			{selectedTab == "artist" && (
+				<InfiniteArtistView
+					query={({ library, sortBy, order }) =>
+						API.getArtists(
+							{
+								genre: genreIdentifier,
+								library: library ?? undefined,
+							},
+							{ sortBy, order },
+							["illustration"],
+						)
+					}
+				/>
+			)}
+			{selectedTab == "album" && (
+				<InfiniteAlbumView
+					defaultAlbumType={null}
+					query={({ library, type, sortBy, order }) =>
+						API.getAlbums(
+							{
+								genre: genreIdentifier,
+								type,
+								library: library ?? undefined,
+							},
+							{ sortBy, order },
+							["artist", "illustration"],
+						)
+					}
+				/>
+			)}
+			{selectedTab == "song" && (
+				<InfiniteSongView
+					query={({ library, type, random, sortBy, order }) =>
+						API.getSongs(
+							{
+								genre: genreIdentifier,
+								type,
+								random,
+								library: library ?? undefined,
+							},
+							{ sortBy, order },
+							["artist", "featuring", "master", "illustration"],
+						)
+					}
+				/>
+			)}
 		</Box>
 	);
 };

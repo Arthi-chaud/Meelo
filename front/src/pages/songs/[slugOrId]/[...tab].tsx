@@ -85,8 +85,12 @@ const prepareSSR = (context: NextPageContext) => {
 const tabs = ["lyrics", "versions", "tracks", "more"] as const;
 
 const SongPage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({ props }) => {
-	const { selectTab, selectedTab } = useTabRouter(
+	const { selectedTab, selectTab } = useTabRouter(
 		(router) => router.query.tab,
+		(newTab) =>
+			router.push(`/songs/${songIdentifier}/${newTab}`, undefined, {
+				shallow: true,
+			}),
 		...tabs,
 	);
 	const { t } = useTranslation();
@@ -141,16 +145,7 @@ const SongPage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({ props }) => {
 			<Divider sx={{ paddingY: 1 }} />
 			<Tabs
 				value={selectedTab}
-				onChange={(__, tabName) => {
-					selectTab(tabName);
-					router.push(
-						`/songs/${songIdentifier}/${tabName}`,
-						undefined,
-						{
-							shallow: true,
-						},
-					);
-				}}
+				onChange={(__, tabName) => selectTab(tabName)}
 				variant="scrollable"
 			>
 				{tabs.map((value, index) => (
