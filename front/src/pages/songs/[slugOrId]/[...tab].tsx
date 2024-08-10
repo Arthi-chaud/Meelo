@@ -87,10 +87,7 @@ const tabs = ["lyrics", "versions", "tracks", "more"] as const;
 const SongPage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({ props }) => {
 	const { selectedTab, selectTab } = useTabRouter(
 		(router) => router.query.tab,
-		(newTab) =>
-			router.push(`/songs/${songIdentifier}/${newTab}`, undefined, {
-				shallow: true,
-			}),
+		(newTab) => `/songs/${songIdentifier}/${newTab}`,
 		...tabs,
 	);
 	const { t } = useTranslation();

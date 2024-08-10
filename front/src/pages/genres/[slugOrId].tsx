@@ -64,10 +64,7 @@ const GenrePage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({ props }) => {
 	const genre = useQuery(API.getGenre, genreIdentifier);
 	const { selectedTab, selectTab } = useTabRouter(
 		(r) => r.query.t,
-		(newTab) =>
-			router.push(`/genres/${genreIdentifier}?t=${newTab}`, undefined, {
-				shallow: true,
-			}),
+		(newTab) => `/genres/${genreIdentifier}?t=${newTab}`,
 		"album",
 		"artist",
 		"song",
@@ -92,14 +89,14 @@ const GenrePage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({ props }) => {
 			<Tabs
 				value={selectedTab}
 				onChange={(__, tabName) => selectTab(tabName)}
-				variant="scrollable"
+				variant="fullWidth"
 			>
 				{tabs.map((value, index) => (
 					<Tab
 						key={index}
 						value={value}
 						sx={{ minWidth: "fit-content", flex: 1 }}
-						label={t(value)}
+						label={t(`${value}s`)}
 					/>
 				))}
 			</Tabs>

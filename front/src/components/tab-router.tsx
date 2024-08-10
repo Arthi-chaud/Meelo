@@ -31,7 +31,7 @@ export const useTabRouter = <TabValue extends string>(
 		router: NextRouter,
 	) => string | string[] | undefined,
 	// This should persist the tab change in the router
-	onTabChange: (newTab: TabValue) => void,
+	urlOnTabChange: (newTab: TabValue) => string,
 	defaultTab: TabValue,
 	...otherTabs: TabValue[]
 ) => {
@@ -60,7 +60,9 @@ export const useTabRouter = <TabValue extends string>(
 		}
 	}, [router.asPath]);
 	useEffect(() => {
-		onTabChange(selectedTab);
+		router.push(urlOnTabChange(selectedTab), undefined, {
+			shallow: true,
+		});
 		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [selectedTab]);
 
