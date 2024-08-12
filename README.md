@@ -1,65 +1,80 @@
-![Meelo](./front/public/banner.png)
+# <img alt="Icon" src="./front/public/banner.png" width="150px">
 
-## Your music, your files, your experience
+Welcome! Meelo is a self-hosted music server and web app. It works similarly to Plex, Jellyfin, Koel and Black Candy, but focuses on flexibility, browsing and listening experiences. Actually, Meelo is designed for music collectors. What does it mean? Scroll down to see our killer features :arrow_heading_down:
+
+While the software wants to be a flexible as possible, it requires a little bit of setup. However, once everything is ready, you will just have to sit back, relax, and enjoy your music. :sunglasses:
+
+![Album Page (Top)](./assets/examples/album-top.png)
+
+## :star: Features
+
+Meelo has all the basic features you might expect from a music player/server (playback, browsing, search, playlists, libraries ...). But it comes with a handful of features that make it unique :star_struck:
+
+- Music Videos
+  - Access them directly from an album's or an artist's page
+  - We also differentiate music video from interviews, behind-the-scenes, trailers...
+- Identifies B-Sides
+  - Meelo shows you any tracks that could be related to an album directly on the album's page!
+- ... and Rare tracks
+  - And show them on the artist's page, so that these rare gems do not get lost and forgotten!
+- Automatic 'featuring' and duet detection
+- Albums have _releases_
+  - Meaning that you can have multiple versions of a single album
+  - But only its _main_ version would appear on browsing pages
+  - Of course, you can still access its other versions, directly from the album's page
+- Songs have _tracks_
+  - It is pretty much the same as for albums and releases
+  - No duplicated songs when browsing your library!
+- Song Versions
+- Album and Song types
+  - Finding instrumental songs or live recordings has never been this simple!
+- Supports all formats!
+  - Thanks to transcoding and the way we parse files, any audio and video format is virtually supported
+  - (Note: Transcoding is only used when the file format is not supported in the browser)
+- Flexible metadata parsing
+  - Use either the embedded metadata or the file's name (or both!) to extract metadata
+  - Also works with album covers!
+- Get genres, descriptions, and ratings using MusicBrainz, Genius, Wikipedia and many more providers!
+- Download lyrics
+
+Keep track of the upcoming features [here](https://github.com/Arthi-chaud/Meelo/issues)
+
+## :book: How to get started
+
+To use Meelo, you'll need a 'clean' collection: either with embedded metadata or standard file/folder architecture. Using iTunes or Beets is a great way to start.
+
+Meelo is shipped though Docker images. You might need to know a bit about Regexes.
+Look over [here](https://arthi-chaud.github.io/Meelo/) for setup instructions.
+
+## :desktop_computer: Live Demo
+
+We are actively working on a public demo, so that you can try out Meelo. Stay tuned...
+
+## :camera: Screenshots
+
+<details>
+  <summary>Unfold to see what the web application looks like!</summary>
+
+![Album View](./assets/examples/album-page.png)
+![Artist Page](./assets/examples/artist-page.png)
+![Player Page](./assets/examples/player.png)
+![Release Page](./assets/examples/releases.png)
+
+More screenshots [here](./assets/examples/)
+
+</details>
+
+## :handshake: Contributing and Bugs reporting
+
+:hammer: Would you like to contribute to Meelo? Feel free to [open a pull request](https://github.com/Arthi-chaud/Meelo/compare).
+
+:thinking: Is there a feature you would like to have? [Open an issue](https://github.com/Arthi-chaud/Meelo/issues/new/choose), and we will be happy to discuss it!
+
+:bug: Have you encountered a bug? Ugh we don't like 'em here! Report it by [opening an issue](https://github.com/Arthi-chaud/Meelo/issues/new/choose).
+
+---
+
+Get ready to make the most out of you music collection!
 
 [![Coverage (Back-end)](https://sonarcloud.io/api/project_badges/measure?project=arthi-chaud_Meelo-back&metric=coverage)](https://sonarcloud.io/summary/new_code?id=arthi-chaud_Meelo-back)
 [![Maintainability Rating](https://sonarcloud.io/api/project_badges/measure?project=arthi-chaud_Meelo-back&metric=sqale_rating)](https://sonarcloud.io/summary/new_code?id=arthi-chaud_Meelo-back)
-
-Meelo is a music server and application to enjoy your personal music files anywhere, anytime you want.
-This project is made by and for music collectors. Its goal is to have a clean, organized, easy and accessible way to store and serve files.
-
-Get started! Look over [here](https://arthi-chaud.github.io/Meelo/) for setup instructions
-
-## Features
-
-- Files organized in *Libraries*
-- Scan for new files, and remove deleted files
-- Music Organization close to a Music Collector's collection
-  - Artist
-  - Album
-    - Releases
-  - Songs
-    - Primary and secondary artists
-    - Tracks
-    - Versions
-- Access, stream, and download songs from your server
-- Music Videos
-- B-Sides
-- Identifies 'Rare' Tracks in your collection
-- Playlists
-- Metadata scan using:
-  - Embedded tags (including bitrate)
-  - Path of file, using customizable Regular Expressions
-  - Either using one of the two, or the two combined
-- Album Typing
-  - Studio Recording, Single, Live Album, Video Album, Soundtrack Album, ...
-- Song Typing
-  - Original Version, Demo, Instrumental, Remix, Acoustic, Edit, Clean, ...
-- ... And allow filtering based on items' types
-- Embedded and inline artwork file handling
-- External Metadata Providers (Optional)
-  - Genius, MusicBrainz, Wikipedia, Discogs, Metacritic, Allmusic
-- Automated Lyrics download
-- User management
-- Multi-language support
-  - English
-  - French
-
-Keep track of the upcoming features with the [project's issues](https://github.com/Arthi-chaud/Meelo/issues)
-
-## Why Meelo could be what you are looking for
-
-[Plex](https://www.plex.tv/fr/), [Beets](https://github.com/beetbox/beets), [Koel](https://github.com/koel/koel), as well as iTunes are awesome solutions if you have a 'simple' music collection, but they are not tailored for music collectors, who usually have multiple versions of a single album, multiple files for one single song (from multiple album releases). Therefore, their library ends up clustered and unpleasant to browse and use.
-
-## The philosophy behind Meelo
-
-The idea behind Meelo is to have a pleasant way to browse and enjoy your collection and making it the *best* one possible.
-
-The *best* music collection is a collection that is fully useable in any music server (like one mentioned above). The only way to reach this goal is to make the music collection independent metadata-wise, i.e. having all the metadata embedded in the files themselves.
-To use Meelo, you'll need a 'clean' collection: either with embedded metadata or standard file/folder architecture. Using iTunes or Beets is a great way to start.
-
-## Screenshots
-
-![Album View](./assets/examples/album-page.png)
-
-More screenshots [here](./assets/examples/)
