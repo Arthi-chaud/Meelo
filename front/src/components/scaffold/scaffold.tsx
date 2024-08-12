@@ -368,7 +368,14 @@ const Scaffold = (props: { children: any }) => {
 						paddingBottom: { xs: "65px", [DrawerBreakpoint]: 2 },
 					}}
 				>
-					<Box sx={{ paddingTop: 2, paddingBottom: 0 }}>
+					<Box
+						sx={{
+							paddingTop: 2,
+							paddingBottom: 0,
+							width: "100%",
+							height: "100%",
+						}}
+					>
 						{props.children}
 					</Box>
 					<Player />

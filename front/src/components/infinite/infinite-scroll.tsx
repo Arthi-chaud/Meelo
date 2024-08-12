@@ -40,7 +40,7 @@ import { IllustratedResource } from "../../models/illustration";
 import { InfiniteData } from "react-query";
 import Page from "../../models/page";
 import { useGradientBackground } from "../../utils/gradient-background";
-import { Divider, List } from "@mui/material";
+import { Divider, Grid, List } from "@mui/material";
 
 export const parentScrollableDivId = "scrollableDiv" as const;
 
@@ -152,14 +152,12 @@ const InfiniteList = <T extends IllustratedResource>(
 			// eslint-disable-next-line react/display-name
 			forwardRef(({ style, ...p }, ref) => {
 				return (
-					<>
-						<List
-							style={{ padding: 0, ...style, margin: 0 }}
-							component="div"
-							{...p}
-							ref={ref}
-						></List>
-					</>
+					<List
+						style={{ padding: 0, ...style, margin: 0 }}
+						component="div"
+						{...p}
+						ref={ref}
+					></List>
 				);
 			}),
 		[],
@@ -182,7 +180,7 @@ const InfiniteList = <T extends IllustratedResource>(
 				}
 				overscan={1000}
 				style={{
-					flex: 1,
+					height: "100%",
 				}}
 				components={{ List: Container }}
 				endReached={() => {
@@ -204,5 +202,96 @@ const InfiniteList = <T extends IllustratedResource>(
 	);
 };
 
+const InfiniteGrid = <T extends IllustratedResource>(
+	props: InfiniteScrollProps<T>,
+) => {
+	const { data, hasNextPage, fetchNextPage, isFetchingNextPage, remove } =
+		useInfiniteQuery(props.query);
+	const totalItemCount = useMemo(
+		() =>
+			data?.pages
+				.map(({ items }) => items.length)
+				.reduce((prev, curr) => prev + curr, 0),
+		[data],
+	);
+
+	const Container: Components["List"] = useMemo(
+		() =>
+			// eslint-disable-next-line react/display-name
+			forwardRef(({ style, children, ...p }, ref) => {
+				return (
+					<Grid
+						ref={ref}
+						columnSpacing={2}
+						container
+						component="div"
+						style={{
+							...style,
+							alignItems: "stretch",
+							display: "flex",
+						}}
+						{...p}
+					>
+						{children}
+					</Grid>
+				);
+			}),
+		[],
+	);
+	const Item: Components["Item"] = useMemo(
+		() =>
+			// eslint-disable-next-line react/display-name
+			({ children, ...props }) => {
+				return (
+					<Grid
+						{...props}
+						item
+						xs={6}
+						sm={3}
+						md={12 / 5}
+						lg={2}
+						xl={1.2}
+					>
+						{children}
+					</Grid>
+				);
+			},
+		[],
+	);
+	const { GradientBackground } = useGradientBackground(
+		data?.pages.at(0)?.items?.find((x) => x.illustration)?.illustration
+			?.colors,
+	);
+
+	return (
+		<>
+			<GradientBackground />
+			<Virtuoso
+				initialItemCount={isSSR() ? totalItemCount : undefined}
+				customScrollParent={
+					isSSR()
+						? undefined
+						: document.getElementById(parentScrollableDivId) ??
+							undefined
+				}
+				overscan={1000}
+				style={{
+					height: "100%",
+				}}
+				components={{ List: Container, Item }}
+				endReached={() => {
+					if (hasNextPage && !isFetchingNextPage) {
+						fetchNextPage();
+					}
+				}}
+				totalCount={totalItemCount ?? 3}
+				itemContent={(index) =>
+					props.render(getItem(index, data), index)
+				}
+			></Virtuoso>
+		</>
+	);
+};
+
 export default InfiniteScroll;
-export { InfiniteList };
+export { InfiniteList, InfiniteGrid };

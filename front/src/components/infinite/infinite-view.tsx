@@ -107,11 +107,11 @@ const InfiniteView = <ItemType extends IllustratedResource>(
 					query={props.query}
 					loader={() => <WideLoadingComponent />}
 					render={(item) => (
-						<Fade in>
+						// <Fade in>
 							<Box sx={{ height: "100%" }}>
 								{props.renderGridItem(item)}
 							</Box>
-						</Fade>
+						// </Fade>
 					)}
 				/>
 			)}

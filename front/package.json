@@ -82,5 +82,6 @@
 		"jest-environment-jsdom": "^29.3.1",
 		"prettier": "^3.1.1",
 		"typescript": "5.3.3"
-	}
+	},
+	"packageManager": "yarn@1.22.21+sha1.1959a18351b811cdeedbd484a8f86c3cc3bbaf72"
 }
