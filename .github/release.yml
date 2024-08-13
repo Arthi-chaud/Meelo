@@ -1,9 +1,6 @@
 # Source: https://docs.github.com/en/repositories/releasing-projects-on-github/automatically-generated-release-notes
 
 changelog:
-  exclude:
-    labels:
-      - dependencies
   categories:
     - title: Exciting New Features 🎉
       labels:
@@ -28,4 +25,4 @@ changelog:
         - CI/CD
     - title: Other Changes 🔀
       labels:
-        - Logs
+        - "*"
