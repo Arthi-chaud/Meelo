@@ -298,30 +298,21 @@ const BottomNavigation = (props: { onDrawerOpen: () => void }) => {
 				const Icon = (pr: IconProps) => getPrimaryTypeIcon(item, pr);
 
 				return (
-					<Link
-						key={path}
+					<BottomNavigationAction
 						href={path}
+						LinkComponent={Link}
 						style={{
 							flex: 1,
-							display: "flex",
-							justifyContent: "center",
 						}}
-					>
-						<BottomNavigationAction
-							key={item}
-							showLabel
-							icon={
-								<Icon
-									variant={isSelected ? "Bold" : "Outline"}
-								/>
-							}
-							label={t(item)}
-						/>
-					</Link>
+						key={item}
+						icon={
+							<Icon variant={isSelected ? "Bold" : "Outline"} />
+						}
+						label={t(item)}
+					/>
 				);
 			})}
 			<BottomNavigationAction
-				showLabel
 				sx={{ flex: 1 }}
 				icon={<BurgerIcon />}
 				onClick={props.onDrawerOpen}
