@@ -1,43 +1,28 @@
 # Source: https://docs.github.com/en/repositories/releasing-projects-on-github/automatically-generated-release-notes
 
 changelog:
-  exclude:
-    labels:
-      - dependencies
   categories:
-    - title: Web App
-      labels:
-        - Front
-        - Layout
-    - title: Server
-      labels:
-        - Back
     - title: Exciting New Features 🎉
       labels:
         - Feature
         - Basic
-    - title: Improvement, Optmizations & Enhancements 👍
+    - title: Improvements, Optmizations & Enhancements 👍
       labels:
         - Enhancement/Optimization
+        - Layout
     - title: Fixes & Patches 🩹
       labels:
         - Bug
-        - Quick Fix
-    - title: Security 🛡
-      labels:
-        - Security
-        - Logs
+        - Fixes
     - title: Documentation 📖
       labels:
         - Documentation
-    - title: CI/CD ⚙
+    - title: Security 🛡
       labels:
-        - CD/CD
-    - title: Codebase-related 📑
+        - Security
+    - title: Deployment ⚙
       labels:
-        - Coding Style
-        - Testing
-        - Architecture
+        - CI/CD
     - title: Other Changes 🔀
       labels:
         - "*"
