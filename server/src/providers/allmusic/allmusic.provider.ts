@@ -82,7 +82,10 @@ export default class AllMusicProvider
 				'div[title="AllMusic Rating"]',
 			).first();
 			const scoreOutTen = parseInt(
-				ratingDiv.attr("class")?.match(/\d/)?.[0] ?? "",
+				(
+					ratingDiv.attr("class")?.match(/ratingAllmusic\d$/)?.[0] ??
+					""
+				).replace("ratingAllmusic", ""),
 			);
 			const description = null; // Can't get description, the page uses JS to get it
 
