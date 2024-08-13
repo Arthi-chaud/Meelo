@@ -89,7 +89,7 @@ describe("Discogs Provider", () => {
 			expect(metadata.value).toBe("9442778");
 			expect(metadata.description).not.toBeNull();
 			expect(metadata!.description).toContain(
-				"Reissue. Comes with a printed inner sleeve with lyrics, credits and photos.",
+				"Comes with a printed inner sleeve with lyrics, credits and photos.",
 			);
 		});
 		it("Should throw, as the Release does not exist", () => {
