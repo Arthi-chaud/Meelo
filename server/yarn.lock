@@ -3681,12 +3681,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"axios@npm:^0.21.4":
-  version: 0.21.4
-  resolution: "axios@npm:0.21.4"
+"axios@npm:^1.6.7":
+  version: 1.7.3
+  resolution: "axios@npm:1.7.3"
   dependencies:
-    follow-redirects: "npm:^1.14.0"
-  checksum: 10c0/fbcff55ec68f71f02d3773d467db2fcecdf04e749826c82c2427a232f9eba63242150a05f15af9ef15818352b814257541155de0281f8fb2b7e8a5b79f7f2142
+    follow-redirects: "npm:^1.15.6"
+    form-data: "npm:^4.0.0"
+    proxy-from-env: "npm:^1.1.0"
+  checksum: 10c0/a18cbe559203efa05fb1fec2d1898e23bf6329bd2575784ee32aa11b5bbe1d54b9f472c49a261294125519cf62aa4fe5ef6e647bb7482eafc15bffe15ab314ce
   languageName: node
   linkType: hard
 
@@ -6211,23 +6213,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"follow-redirects@npm:^1.0.0":
+"follow-redirects@npm:^1.0.0, follow-redirects@npm:^1.15.6":
   version: 1.15.6
   resolution: "follow-redirects@npm:1.15.6"
   peerDependenciesMeta:
     debug:
       optional: true
   checksum: 10c0/9ff767f0d7be6aa6870c82ac79cf0368cd73e01bbc00e9eb1c2a16fbb198ec105e3c9b6628bb98e9f3ac66fe29a957b9645bcb9a490bb7aa0d35f908b6b85071
-  languageName: node
-  linkType: hard
-
-"follow-redirects@npm:^1.14.0":
-  version: 1.15.2
-  resolution: "follow-redirects@npm:1.15.2"
-  peerDependenciesMeta:
-    debug:
-      optional: true
-  checksum: 10c0/da5932b70e63944d38eecaa16954bac4347036f08303c913d166eda74809d8797d38386e3a0eb1d2fe37d2aaff2764cce8e9dbd99459d860cf2cdfa237923b5f
   languageName: node
   linkType: hard
 
@@ -6483,13 +6475,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"genius-lyrics-api@npm:^3.2.0":
-  version: 3.2.0
-  resolution: "genius-lyrics-api@npm:3.2.0"
+"genius-lyrics-api@npm:^3.2.1":
+  version: 3.2.1
+  resolution: "genius-lyrics-api@npm:3.2.1"
   dependencies:
-    axios: "npm:^0.21.4"
+    axios: "npm:^1.6.7"
     cheerio-without-node-native: "npm:0.20.2"
-  checksum: 10c0/94a9b920e0c76ebc37f9174d13aef85ab875277a293afdcca299638c04fd3021e350e18e10ac44a67e409a68c6a4ea3b220bc4db2c7beea3eb3d6dd25608bb64
+  checksum: 10c0/dde12cc0cdb55d82c7df4518a65eeb7b119749528d45d6506a062a7ee99d8b304d52799b4424e0e3f581d410acf03033a70083bcabff462070555863423d5d50
   languageName: node
   linkType: hard
 
@@ -8996,7 +8988,7 @@ __metadata:
     eslint-plugin-unused-imports: "npm:^2.0.0"
     fluent-ffmpeg: "npm:^2.1.2"
     fs: "npm:^0.0.1-security"
-    genius-lyrics-api: "npm:^3.2.0"
+    genius-lyrics-api: "npm:^3.2.1"
     get-image-colors: "npm:^4.0.1"
     glob: "npm:^8.0.3"
     helmet: "npm:^6.0.0"
@@ -10472,6 +10464,13 @@ __metadata:
     forwarded: "npm:0.2.0"
     ipaddr.js: "npm:1.9.1"
   checksum: 10c0/c3eed999781a35f7fd935f398b6d8920b6fb00bbc14287bc6de78128ccc1a02c89b95b56742bf7cf0362cc333c61d138532049c7dedc7a328ef13343eff81210
+  languageName: node
+  linkType: hard
+
+"proxy-from-env@npm:^1.1.0":
+  version: 1.1.0
+  resolution: "proxy-from-env@npm:1.1.0"
+  checksum: 10c0/fe7dd8b1bdbbbea18d1459107729c3e4a2243ca870d26d34c2c1bcd3e4425b7bcc5112362df2d93cc7fb9746f6142b5e272fd1cc5c86ddf8580175186f6ad42b
   languageName: node
   linkType: hard
 

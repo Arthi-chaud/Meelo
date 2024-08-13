@@ -45,7 +45,7 @@
 		"deepmerge": "^4.3.1",
 		"fluent-ffmpeg": "^2.1.2",
 		"fs": "^0.0.1-security",
-		"genius-lyrics-api": "^3.2.0",
+		"genius-lyrics-api": "^3.2.1",
 		"get-image-colors": "^4.0.1",
 		"glob": "^8.0.3",
 		"helmet": "^6.0.0",
