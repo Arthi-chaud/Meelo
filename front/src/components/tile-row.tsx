@@ -28,9 +28,9 @@ const TileRow = (props: TileRowProps) => {
 	const windowSize = {
 		xs: props.windowSize?.xs ?? 2,
 		sm: props.windowSize?.sm ?? 3,
-		md: props.windowSize?.md ?? 5,
-		lg: props.windowSize?.lg ?? 6,
-		xl: props.windowSize?.xl ?? 8,
+		md: props.windowSize?.md ?? 4,
+		lg: props.windowSize?.lg ?? 5,
+		xl: props.windowSize?.xl ?? 7,
 	};
 	const width = Object.entries(windowSize).reduce(
 		(prev, [key, size]) => ({ ...prev, [key]: 100 / size + "%" }),

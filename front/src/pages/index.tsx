@@ -128,9 +128,9 @@ const HomePage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({ props }) => {
 	const tileRowWindowSize = {
 		xs: 3,
 		sm: 4,
-		md: 5,
+		md: 4,
 		lg: 6,
-		xl: 10,
+		xl: 8,
 	};
 	const queries = [
 		newlyAddedAlbums,

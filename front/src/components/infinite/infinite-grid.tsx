@@ -59,9 +59,9 @@ const InfiniteGrid = <T extends IllustratedResource>(
 									item
 									xs={6}
 									sm={3}
-									md={12 / 5}
+									// No MD because we get more space when sidebar disappears
 									lg={2}
-									xl={1.2}
+									xl={12 / 8}
 									key={`item-${index}`}
 								>
 									{props.render(item)}
