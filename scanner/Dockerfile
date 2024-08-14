@@ -1,4 +1,4 @@
-FROM golang:1.22.6-bullseye as builder
+FROM golang:1.22.6-bullseye AS builder
 RUN go install github.com/swaggo/swag/cmd/swag@latest
 RUN apt-get update -y; apt-get install -y ffmpeg
 WORKDIR /app
@@ -9,8 +9,13 @@ COPY ./internal ./internal
 RUN swag init -d app -o ./app/docs
 RUN GOOS=linux go build -o ./scanner ./app
 
-FROM debian:bullseye-slim as runner
+FROM debian:bullseye-slim AS runner
+
+ENV SERVICE_NAME="scanner"
+RUN useradd -ms /bin/false $SERVICE_NAME
+
 RUN apt-get update -y; apt-get install -y ffmpeg
 WORKDIR /app
 COPY --from=builder /app/scanner ./
-CMD ./scanner
+USER $SERVICE_NAME
+CMD ["./scanner"]
