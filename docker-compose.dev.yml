@@ -37,9 +37,10 @@ services:
     restart: on-failure
     ports:
       - "8133:8133"
+    environment:
+      - API_URL=http://server:4000
     volumes:
       - ./scanner:/app
-    volumes:
       - ${DATA_DIR}:${INTERNAL_DATA_DIR}:ro
   front:
     build:
