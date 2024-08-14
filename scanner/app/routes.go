@@ -7,7 +7,7 @@ import (
 )
 
 type ScannerStatus struct {
-	Message string      `json:"message"`
+	Message string `json:"message"`
 }
 
 // @Summary		Get Status of Scanner
