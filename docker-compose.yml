@@ -53,6 +53,8 @@ services:
     depends_on:
       server:
         condition: service_healthy
+    environment:
+      - API_URL=http://server:4000
     volumes:
       - ${DATA_DIR}:${INTERNAL_DATA_DIR}:ro
   transcoder:
