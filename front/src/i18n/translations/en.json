@@ -246,5 +246,6 @@
 	"yes": "Yes",
 	"no": "No",
 	"featuredAlbums": "Featured Albums",
-	"rareSongs": "Rare Songs"
+	"rareSongs": "Rare Songs",
+	"leaveWillStopPlaybackAlert": "Leaving the website will stop playback."
 }

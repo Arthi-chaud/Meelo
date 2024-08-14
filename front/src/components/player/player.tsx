@@ -183,6 +183,14 @@ const Player = () => {
 		};
 	}, []);
 	useEffect(() => {
+		window.onbeforeunload = () => {
+			if (playing) {
+				return t("leaveWillStopPlaybackAlert");
+			}
+			return undefined;
+		};
+	}, [playing]);
+	useEffect(() => {
 		if (useTranscoding && currentTrack) {
 			if (!Hls.isSupported()) {
 				setUseTranscoding(false);
