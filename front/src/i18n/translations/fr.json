@@ -235,5 +235,6 @@
 	"yes": "Oui",
 	"no": "Non",
 	"featuredAlbums": "En Vedette",
-	"rareSongs": "Pistes Inédites"
+	"rareSongs": "Pistes Inédites",
+	"leaveWillStopPlaybackAlert": "Quitter le site arrêtera la lecture du morceau."
 }
