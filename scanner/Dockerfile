@@ -5,7 +5,7 @@ WORKDIR /app
 COPY go.mod go.sum ./
 RUN go mod download
 COPY ./app ./app
-COPY ./pkg ./pkg
+COPY ./internal ./internal
 RUN swag init -d app -o ./app/docs
 RUN GOOS=linux go build -o ./scanner ./app
 
