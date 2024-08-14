@@ -71,7 +71,26 @@ jobs:
         uses: actions/upload-artifact@v3
         with:
           name: coverage-report-scanner
-          path: ./scanner/coverage
+          path: ./scanner/coverage.out
+  Analysis:
+    needs: [ Tests ]
+    name: "Static Analysis"
+    runs-on: ubuntu-latest
+    if: ${{ needs.changes.outputs.scanner == 'true' && always() }}
+    steps:
+      - uses: actions/checkout@v3
+      - name: Downlad Coverage artifact
+        uses: actions/download-artifact@v3
+        with:
+          name: coverage-report-scanner
+          path: ./scanner/coverage.out
+      - name: Run SonarCloud Scan
+        uses: SonarSource/sonarcloud-github-action@master
+        with:
+          projectBaseDir: ./scanner
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN_SCANNER }}
   Dockerize:
     if: ${{ needs.changes.outputs.scanner == 'true' && github.event_name == 'pull_request' }}
     needs: [ Build ]
