@@ -51,7 +51,7 @@ func setupEcho() *echo.Echo {
 func waitForApi(c config.Config) {
 	for i := 0; i < ApiHealthckechAttemptCount; i++ {
 		if err := api.HealthCheck(c); err != nil {
-			glg.Failf("Failed connecting to API: %s", err)
+			glg.Fail("Failed connecting to API")
 			time.Sleep(5 * time.Second)
 		} else {
 			glg.Success("Connected to API 🥳")
