@@ -55,6 +55,7 @@ services:
         condition: service_healthy
     environment:
       - API_URL=http://server:4000
+      - INTERNAL_CONFIG_DIR=${INTERNAL_CONFIG_DIR}
     volumes:
       - ${DATA_DIR}:${INTERNAL_DATA_DIR}:ro
   transcoder:
