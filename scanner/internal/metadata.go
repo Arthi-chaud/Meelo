@@ -9,7 +9,7 @@ import (
 
 type Metadata struct {
 	// True if the track is from a compilation album
-	Compilation bool `validate:"required" json:"compilation"`
+	IsCompilation bool `validate:"required" json:"compilation"`
 	// Name of the artist of the track
 	Artist string `validate:"required" json:"artist"`
 	// Name of the artist of the parent album
@@ -41,8 +41,8 @@ type Metadata struct {
 type TrackType string
 
 const (
-	Audio = "Audio"
-	Video = "Video"
+	Audio TrackType = "Audio"
+	Video TrackType = "Video"
 )
 
 func ValidateMetadata(m Metadata) []error {

@@ -26,15 +26,15 @@ type MetadataSettings struct {
 type MetadataSource string
 
 const (
-	Path     = "path"
-	Embedded = "embedded"
+	Path     MetadataSource = "path"
+	Embedded MetadataSource = "embedded"
 )
 
 type MetadataParsingOrder string
 
 const (
-	Only      = "only"
-	Preferred = "preferred"
+	Only      MetadataParsingOrder = "only"
+	Preferred MetadataParsingOrder = "preferred"
 )
 
 type UserSettings struct {
