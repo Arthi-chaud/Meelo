@@ -12,6 +12,8 @@ type Config struct {
 	ApiUrl string
 	// Path to the folder that contains the settings.json
 	ConfigDirectory string
+	// Path to the folder where all the libraries are
+	DataDirectory string
 }
 
 // Parses and return a config from the CLI args and env args
@@ -21,6 +23,7 @@ func GetConfig() Config {
 
 	apiUrl := getEnvVarOrPushError("API_URL", &errors)
 	configDir := getEnvVarOrPushError("INTERNAL_CONFIG_DIR", &errors)
+	dataDir := getEnvVarOrPushError("INTERNAL_DATA_DIR", &errors)
 
 	if len(errors) != 0 {
 		for _, errorMsg := range errors {
@@ -30,6 +33,7 @@ func GetConfig() Config {
 	}
 	config.ApiUrl = apiUrl
 	config.ConfigDirectory = configDir
+	config.DataDirectory = dataDir
 	glg.Success("Configuration parsed successfully")
 	return config
 }
