@@ -11,7 +11,7 @@ import (
 const UserSettingsFileName = "settings.json"
 
 type CompilationSettings struct {
-	Artist        []string `json:"extras"`
+	Artists        []string `json:"extras"`
 	UseID3CompTag bool     `json:"useID3CompTag" validate:"required"`
 }
 
@@ -53,7 +53,7 @@ func GetUserSettings(settingsFilePath string) (UserSettings, []string) {
 	if validation_error != nil {
 		return UserSettings{}, []string{validation_error.Error()}
 	}
-	for _, artistValue := range userSettings.Compilations.Artist {
+	for _, artistValue := range userSettings.Compilations.Artists {
 		if len(strings.TrimSpace(artistValue)) == 0 {
 			errors = append(errors, "User Settings: compilations.artists contains empty strings")
 			break
