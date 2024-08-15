@@ -1,6 +1,7 @@
 package config
 
 import (
+	e "errors"
 	"os"
 	"regexp"
 	"strings"
@@ -42,36 +43,36 @@ type UserSettings struct {
 	Metadata     MetadataSettings    `json:"metadata" validate:"required"`
 }
 
-func GetUserSettings(settingsFilePath string) (UserSettings, []string) {
+func GetUserSettings(settingsFilePath string) (UserSettings, []error) {
 	bytes, err := os.ReadFile(settingsFilePath)
-	var errors []string
+	var errors []error
 	if err != nil {
-		return UserSettings{}, []string{"Could not read configuration file."}
+		return UserSettings{}, []error{e.New("could not read configuration file")}
 	}
 	var userSettings UserSettings
 
 	jsonErr := json.Unmarshal(bytes, &userSettings)
 	if jsonErr != nil {
-		return UserSettings{}, []string{jsonErr.Error()}
+		return UserSettings{}, []error{jsonErr}
 	}
 	validationsErrs := validator.New(validator.WithRequiredStructEnabled()).Struct(userSettings)
-	errors = append(errors, internal.PrettifyValidationError(validationsErrs, "User Settings")...)
+	errors = append(errors, internal.PrettifyValidationError(validationsErrs, "user settings")...)
 	if len(errors) > 0 {
 		return UserSettings{}, errors
 	}
 	for _, artistValue := range userSettings.Compilations.Artists {
 		if len(strings.TrimSpace(artistValue)) == 0 {
-			errors = append(errors, "User Settings: compilations.artists contains empty strings")
+			errors = append(errors, e.New("user settings: compilations.artists contains empty strings"))
 			break
 		}
 	}
 	if len(userSettings.TrackRegex) < 1 {
-		errors = append(errors, "User Settings: trackRegex is empty")
+		errors = append(errors, e.New("user settings: trackRegex is empty"))
 	}
 	for _, regex := range userSettings.TrackRegex {
 		_, regexError := regexp.Compile(regex)
 		if regexError != nil {
-			errors = append(errors, regexError.Error())
+			errors = append(errors, regexError)
 		}
 	}
 	return userSettings, errors

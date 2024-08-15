@@ -8,7 +8,7 @@ import (
 )
 
 // settingsName is the file name without extension
-func getTestConfig(settingsName string) (UserSettings, []string) {
+func getTestConfig(settingsName string) (UserSettings, []error) {
 	settingsPath := path.Join("../../", "testdata", "user_settings", fmt.Sprintf("%s.json", settingsName))
 	return GetUserSettings(settingsPath)
 }

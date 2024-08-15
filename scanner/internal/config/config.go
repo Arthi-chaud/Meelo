@@ -20,7 +20,7 @@ type Config struct {
 // Parses and return a config from the CLI args and env args
 func GetConfig() Config {
 	var config Config
-	var errors []string
+	var errors []error
 
 	apiUrl := getEnvVarOrPushError("API_URL", &errors)
 	configDir := getEnvVarOrPushError("INTERNAL_CONFIG_DIR", &errors)
@@ -42,10 +42,10 @@ func GetConfig() Config {
 	return config
 }
 
-func getEnvVarOrPushError(envVar string, errors *[]string) string {
+func getEnvVarOrPushError(envVar string, errors *[]error) string {
 	value, isPresent := os.LookupEnv(envVar)
 	if !isPresent || len(value) == 0 {
-		*errors = append(*errors, fmt.Sprintf("%s is missing or empty.", envVar))
+		*errors = append(*errors, fmt.Errorf("%s is missing or empty", envVar))
 	}
 	return value
 }

@@ -45,12 +45,12 @@ const (
 	Video = "Video"
 )
 
-func ValidateMetadata(m Metadata) []string {
+func ValidateMetadata(m Metadata) []error {
 	validationsErrs := validator.New(validator.WithRequiredStructEnabled()).Struct(m)
-	errors := PrettifyValidationError(validationsErrs, "Metadata")
+	errors := PrettifyValidationError(validationsErrs, "metadata")
 
 	if len(m.DiscogsId) > 0 && !IsNumeric(m.DiscogsId) {
-		errors = append(errors, fmt.Sprintf("Metadata: Discogs ID is expected to be a numeric string. Got '%s'", m.DiscogsId))
+		errors = append(errors, fmt.Errorf("metadata: discogs id is expected to be a numeric string. got '%s'", m.DiscogsId))
 	}
 	return errors
 }
