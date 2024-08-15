@@ -2,8 +2,10 @@ package parser
 
 import (
 	"errors"
+	"fmt"
 	"mime"
 	"path"
+	"regexp"
 	"strings"
 
 	"github.com/Arthi-chaud/Meelo/scanner/internal"
@@ -17,15 +19,39 @@ func ParseMetadataFromPath(config config.UserSettings, filePath string) (interna
 		func(a string, _ int) string {
 			return strings.ToLower(a)
 		})
-	mime, mimeError := getTypeFromPath(filePath)
+	trackType, mimeError := getTypeFromPath(filePath)
 
 	if mimeError != nil {
 		errors = append(errors, mimeError)
 	}
-	mime = mime
-	compilationArtistNames = compilationArtistNames
-	return internal.Metadata{}, errors
+	var matches []string
+	var regex *regexp.Regexp
+	for _, tregex := range config.TrackRegex {
+		regex := regexp.MustCompile(tregex)
+		matches := regex.FindStringSubmatch(filePath)
+		if len(matches) != 0 {
+			break
+		} else {
+			regex = nil
+		}
+	}
+	if regex == nil {
+		errors = append(errors, fmt.Errorf("file did not match any regexes: '%s'", filePath))
+		return internal.Metadata{}, errors
+	}
+	metadata, metadataErrors := getMetadataFromMatches(matches, regex)
 
+	errors = append(errors, metadataErrors...)
+	metadata.IsCompilation = internal.Contains(compilationArtistNames, metadata.AlbumArtist) ||
+		internal.Contains(compilationArtistNames, metadata.Artist)
+	metadata.Type = trackType
+	return metadata, errors
+
+}
+
+func getMetadataFromMatches(matches []string, regex *regexp.Regexp) (internal.Metadata, []error) {
+	//TODO
+	return internal.Metadata{}, []error{}
 }
 
 func getTypeFromPath(filePath string) (internal.TrackType, error) {

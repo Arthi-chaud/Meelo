@@ -19,3 +19,12 @@ func Fmap[T, U any](ts []T, f func(T, int) U) []U {
 	}
 	return us
 }
+
+func Contains[T comparable](s []T, e T) bool {
+	for _, a := range s {
+		if a == e {
+			return true
+		}
+	}
+	return false
+}
