@@ -59,6 +59,7 @@ services:
       - INTERNAL_DATA_DIR=${INTERNAL_DATA_DIR}
     volumes:
       - ${DATA_DIR}:${INTERNAL_DATA_DIR}:ro
+      - ${CONFIG_DIR}:${INTERNAL_CONFIG_DIR}:ro
   transcoder:
     image: ghcr.io/zoriya/kyoo_transcoder:master
     restart: on-failure
