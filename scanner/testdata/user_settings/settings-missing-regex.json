@@ -1,0 +1,9 @@
+{
+	"metadata": {
+		"source": "embedded",
+		"order": "only"
+	},
+	"compilations": {
+		"useID3CompTag": true
+	}
+}
