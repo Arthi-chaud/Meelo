@@ -84,7 +84,7 @@ jobs:
         uses: actions/download-artifact@v3
         with:
           name: coverage-report-scanner
-          path: ./scanner/coverage.out
+          path: ./scanner
       - name: Run SonarCloud Scan
         uses: SonarSource/sonarcloud-github-action@master
         with:
