@@ -50,19 +50,19 @@ func GetUserSettings(settingsFilePath string) (UserSettings, []string) {
 	}
 	var userSettings UserSettings
 
-	json_error := json.Unmarshal(bytes, &userSettings)
-	if json_error != nil {
-		return UserSettings{}, []string{json_error.Error()}
+	jsonErr := json.Unmarshal(bytes, &userSettings)
+	if jsonErr != nil {
+		return UserSettings{}, []string{jsonErr.Error()}
 	}
-	validation_error := validator.New(validator.WithRequiredStructEnabled()).Struct(userSettings)
-	if validation_error != nil {
-		for _, validation_error := range validation_error.(validator.ValidationErrors) {
-			var error_message = fmt.Sprintf(
+	validationsErrs := validator.New(validator.WithRequiredStructEnabled()).Struct(userSettings)
+	if validationsErrs != nil {
+		for _, validationErr := range validationsErrs.(validator.ValidationErrors) {
+			var errMsg = fmt.Sprintf(
 				"User Settings validation failed for '%s'. Constraint: %s(%s), Got '%s'\n",
-				validation_error.StructNamespace(), validation_error.Tag(),
-				validation_error.Param(), validation_error.Value(),
+				validationErr.StructNamespace(), validationErr.Tag(),
+				validationErr.Param(), validationErr.Value(),
 			)
-			errors = append(errors, error_message)
+			errors = append(errors, errMsg)
 		}
 		return UserSettings{}, errors
 	}

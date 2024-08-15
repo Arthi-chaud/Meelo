@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"github.com/stretchr/testify/assert"
 	"path"
-	"strings"
 	"testing"
 )
 
@@ -12,15 +11,6 @@ import (
 func getTestConfig(settingsName string) (UserSettings, []string) {
 	settingsPath := path.Join("../../", "testdata", "user_settings", fmt.Sprintf("%s.json", settingsName))
 	return GetUserSettings(settingsPath)
-}
-
-func assertErrorsContain(t *testing.T, substring string, errors []string) {
-	for _, err := range errors {
-		if strings.Contains(err, substring) {
-			return
-		}
-	}
-	assert.Fail(t, "No errors matched expected message. Got: %s", errors)
 }
 
 func TestValidSettings(t *testing.T) {

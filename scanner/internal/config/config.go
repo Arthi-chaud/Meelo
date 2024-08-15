@@ -43,8 +43,8 @@ func GetConfig() Config {
 }
 
 func getEnvVarOrPushError(envVar string, errors *[]string) string {
-	value, is_present := os.LookupEnv(envVar)
-	if !is_present || len(value) == 0 {
+	value, isPresent := os.LookupEnv(envVar)
+	if !isPresent || len(value) == 0 {
 		*errors = append(*errors, fmt.Sprintf("%s is missing or empty.", envVar))
 	}
 	return value
