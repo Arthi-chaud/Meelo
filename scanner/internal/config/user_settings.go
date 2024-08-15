@@ -1,11 +1,11 @@
 package config
 
 import (
-	"fmt"
 	"os"
 	"regexp"
 	"strings"
 
+	"github.com/Arthi-chaud/Meelo/scanner/internal"
 	"github.com/go-playground/validator/v10"
 	"github.com/goccy/go-json"
 )
@@ -55,15 +55,8 @@ func GetUserSettings(settingsFilePath string) (UserSettings, []string) {
 		return UserSettings{}, []string{jsonErr.Error()}
 	}
 	validationsErrs := validator.New(validator.WithRequiredStructEnabled()).Struct(userSettings)
-	if validationsErrs != nil {
-		for _, validationErr := range validationsErrs.(validator.ValidationErrors) {
-			var errMsg = fmt.Sprintf(
-				"User Settings validation failed for '%s'. Constraint: %s(%s), Got '%s'\n",
-				validationErr.StructNamespace(), validationErr.Tag(),
-				validationErr.Param(), validationErr.Value(),
-			)
-			errors = append(errors, errMsg)
-		}
+	errors = append(errors, internal.PrettifyValidationError(validationsErrs, "User Settings")...)
+	if len(errors) > 0 {
 		return UserSettings{}, errors
 	}
 	for _, artistValue := range userSettings.Compilations.Artists {
