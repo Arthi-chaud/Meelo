@@ -1,17 +1,19 @@
 package config
 
 import (
-	"github.com/go-playground/validator/v10"
-	"github.com/goccy/go-json"
+	"fmt"
 	"os"
 	"regexp"
 	"strings"
+
+	"github.com/go-playground/validator/v10"
+	"github.com/goccy/go-json"
 )
 
 const UserSettingsFileName = "settings.json"
 
 type CompilationSettings struct {
-	Artists        []string `json:"extras"`
+	Artists       []string `json:"extras"`
 	UseID3CompTag bool     `json:"useID3CompTag" validate:"required"`
 }
 
@@ -48,10 +50,21 @@ func GetUserSettings(settingsFilePath string) (UserSettings, []string) {
 	}
 	var userSettings UserSettings
 
-	json.Unmarshal(bytes, &userSettings)
+	json_error := json.Unmarshal(bytes, &userSettings)
+	if json_error != nil {
+		return UserSettings{}, []string{json_error.Error()}
+	}
 	validation_error := validator.New(validator.WithRequiredStructEnabled()).Struct(userSettings)
 	if validation_error != nil {
-		return UserSettings{}, []string{validation_error.Error()}
+		for _, validation_error := range validation_error.(validator.ValidationErrors) {
+			var error_message = fmt.Sprintf(
+				"User Settings validation failed for '%s'. Constraint: %s(%s), Got '%s'\n",
+				validation_error.StructNamespace(), validation_error.Tag(),
+				validation_error.Param(), validation_error.Value(),
+			)
+			errors = append(errors, error_message)
+		}
+		return UserSettings{}, errors
 	}
 	for _, artistValue := range userSettings.Compilations.Artists {
 		if len(strings.TrimSpace(artistValue)) == 0 {
@@ -68,9 +81,5 @@ func GetUserSettings(settingsFilePath string) (UserSettings, []string) {
 			errors = append(errors, regexError.Error())
 		}
 	}
-	if len(errors) > 0 {
-		return UserSettings{}, errors
-	}
-
 	return userSettings, errors
 }
