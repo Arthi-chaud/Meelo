@@ -16,6 +16,25 @@ import (
 
 func ParseMetadataFromPath(config config.UserSettings, filePath string) (internal.Metadata, []error) {
 	var errors []error
+	var matches []string
+	var regex *regexp.Regexp
+	for _, tregex := range config.TrackRegex {
+		regex = regexp.MustCompile(tregex)
+		matches = regex.FindStringSubmatch(filePath)
+		if len(matches) != 0 {
+			break
+		} else {
+			regex = nil
+		}
+	}
+	if len(matches) == 0 {
+		errors = append(errors, fmt.Errorf("file did not match any regexes: '%s'", filePath))
+		return internal.Metadata{}, errors
+	}
+
+	metadata, metadataErrors := getMetadataFromMatches(matches, regex)
+	errors = append(errors, metadataErrors...)
+
 	compilationArtistNames := internal.Fmap(
 		append(config.Compilations.Artists, internal.CompilationKeyword),
 		func(a string, _ int) string {
@@ -27,27 +46,8 @@ func ParseMetadataFromPath(config config.UserSettings, filePath string) (interna
 		errors = append(errors, mimeError)
 	}
 
-	var matches []string
-	var regex *regexp.Regexp
-	for _, tregex := range config.TrackRegex {
-		regex := regexp.MustCompile(tregex)
-		matches := regex.FindStringSubmatch(filePath)
-		if len(matches) != 0 {
-			break
-		} else {
-			regex = nil
-		}
-	}
-	if regex == nil {
-		errors = append(errors, fmt.Errorf("file did not match any regexes: '%s'", filePath))
-		return internal.Metadata{}, errors
-	}
-
-	metadata, metadataErrors := getMetadataFromMatches(matches, regex)
-	errors = append(errors, metadataErrors...)
-
-	metadata.IsCompilation = internal.Contains(compilationArtistNames, metadata.AlbumArtist) ||
-		internal.Contains(compilationArtistNames, metadata.Artist)
+	metadata.IsCompilation = internal.Contains(compilationArtistNames, strings.ToLower(metadata.AlbumArtist)) ||
+		internal.Contains(compilationArtistNames, strings.ToLower(metadata.Artist))
 	if metadata.IsCompilation {
 		metadata.AlbumArtist = ""
 	}
