@@ -14,7 +14,7 @@ import (
 	"github.com/Arthi-chaud/Meelo/scanner/internal/config"
 )
 
-func ParseMetadataFromPath(config config.UserSettings, filePath string) (internal.Metadata, []error) {
+func parseMetadataFromPath(config config.UserSettings, filePath string) (internal.Metadata, []error) {
 	var errors []error
 	var matches []string
 	var regex *regexp.Regexp
@@ -35,23 +35,12 @@ func ParseMetadataFromPath(config config.UserSettings, filePath string) (interna
 	metadata, metadataErrors := getMetadataFromMatches(matches, regex)
 	errors = append(errors, metadataErrors...)
 
-	compilationArtistNames := internal.Fmap(
-		append(config.Compilations.Artists, internal.CompilationKeyword),
-		func(a string, _ int) string {
-			return strings.ToLower(a)
-		})
 	trackType, mimeError := getTypeFromPath(filePath)
-
 	if mimeError != nil {
 		errors = append(errors, mimeError)
 	}
-
-	metadata.IsCompilation = internal.Contains(compilationArtistNames, strings.ToLower(metadata.AlbumArtist)) ||
-		internal.Contains(compilationArtistNames, strings.ToLower(metadata.Artist))
-	if metadata.IsCompilation {
-		metadata.AlbumArtist = ""
-	}
 	metadata.Type = trackType
+
 	return metadata, errors
 }
 
