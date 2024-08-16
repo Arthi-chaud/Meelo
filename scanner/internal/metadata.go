@@ -80,5 +80,9 @@ func Merge(m1 Metadata, m2 Metadata) Metadata {
 		glg.Warnf("destination: %+v", m1)
 		glg.Warnf("source: %+v", m2)
 	}
+	// dates do not seem to be overwritten correctly
+	if m1.ReleaseDate.Year() == 1 {
+		m1.ReleaseDate = m2.ReleaseDate
+	}
 	return m1
 }
