@@ -12,7 +12,7 @@ import (
 
 type Metadata struct {
 	// True if the track is from a compilation album
-	IsCompilation bool `validate:"required" json:"compilation"`
+	IsCompilation bool `json:"compilation"`
 	// Name of the artist of the track
 	Artist string `validate:"required" json:"artist"`
 	// Name of the artist of the parent album
@@ -34,7 +34,7 @@ type Metadata struct {
 	// Duration, in seconds
 	Duration int64 `validate:"gte=0" json:"duration"`
 	// Type of the track
-	Type TrackType `validate:"required, oneof=Video Audio" json:"type"`
+	Type TrackType `validate:"required" json:"type"`
 	// Genres of the track
 	Genres []string `json:"genres"`
 	// Discogs ID of the parent release
@@ -49,12 +49,7 @@ const (
 )
 
 func SanitizeAndValidateMetadata(m *Metadata) []error {
-	validationsErrs := validator.New(validator.WithRequiredStructEnabled()).Struct(m)
-	errors := PrettifyValidationError(validationsErrs, "metadata")
-
-	if len(m.DiscogsId) > 0 && !IsNumeric(m.DiscogsId) {
-		errors = append(errors, fmt.Errorf("metadata: discogs id is expected to be a numeric string. got '%s'", m.DiscogsId))
-	}
+	// Sanitize
 	if len(m.Album) == 0 {
 		m.Album = m.Release
 	}
@@ -63,6 +58,13 @@ func SanitizeAndValidateMetadata(m *Metadata) []error {
 	}
 	if len(m.Artist) == 0 {
 		m.Artist = m.AlbumArtist
+	}
+	// Validation
+	validationsErrs := validator.New(validator.WithRequiredStructEnabled()).Struct(m)
+	errors := PrettifyValidationError(validationsErrs, "metadata")
+
+	if len(m.DiscogsId) > 0 && !IsNumeric(m.DiscogsId) {
+		errors = append(errors, fmt.Errorf("metadata: discogs id is expected to be a numeric string. got '%s'", m.DiscogsId))
 	}
 	if !m.IsCompilation && len(m.AlbumArtist) == 0 && len(m.Artist) == 0 {
 		errors = append(errors, e.New("missing fields 'album artist' and 'artist"))
