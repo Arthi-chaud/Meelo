@@ -3,15 +3,16 @@ module github.com/Arthi-chaud/Meelo/scanner
 go 1.22.6
 
 require (
+	github.com/gabriel-vasile/mimetype v1.4.3
 	github.com/go-playground/validator/v10 v10.22.0
 	github.com/kpango/glg v1.6.15
 	github.com/labstack/echo/v4 v4.12.0
 	github.com/swaggo/echo-swagger v1.4.1
 	github.com/u2takey/ffmpeg-go v0.5.0
-	github.com/gabriel-vasile/mimetype v1.4.3
 )
 
 require (
+	dario.cat/mergo v1.0.0 // indirect
 	github.com/KyleBanks/depth v1.2.1 // indirect
 	github.com/PuerkitoBio/purell v1.2.1 // indirect
 	github.com/PuerkitoBio/urlesc v0.0.0-20170810143723-de5bf2ad4578 // indirect
