@@ -1,6 +1,7 @@
 package internal
 
 import (
+	e "errors"
 	"fmt"
 	"time"
 
@@ -47,12 +48,24 @@ const (
 	Video TrackType = "Video"
 )
 
-func ValidateMetadata(m Metadata) []error {
+func SanitizeAndValidateMetadata(m *Metadata) []error {
 	validationsErrs := validator.New(validator.WithRequiredStructEnabled()).Struct(m)
 	errors := PrettifyValidationError(validationsErrs, "metadata")
 
 	if len(m.DiscogsId) > 0 && !IsNumeric(m.DiscogsId) {
 		errors = append(errors, fmt.Errorf("metadata: discogs id is expected to be a numeric string. got '%s'", m.DiscogsId))
+	}
+	if len(m.Album) == 0 {
+		m.Album = m.Release
+	}
+	if len(m.Release) == 0 {
+		m.Release = m.Album
+	}
+	if len(m.Artist) == 0 {
+		m.Artist = m.AlbumArtist
+	}
+	if !m.IsCompilation && len(m.AlbumArtist) == 0 && len(m.Artist) == 0 {
+		errors = append(errors, e.New("missing fields 'album artist' and 'artist"))
 	}
 	return errors
 }
