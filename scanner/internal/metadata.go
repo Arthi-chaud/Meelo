@@ -4,7 +4,9 @@ import (
 	"fmt"
 	"time"
 
+	"dario.cat/mergo"
 	"github.com/go-playground/validator/v10"
+	"github.com/kpango/glg"
 )
 
 type Metadata struct {
@@ -53,4 +55,15 @@ func ValidateMetadata(m Metadata) []error {
 		errors = append(errors, fmt.Errorf("metadata: discogs id is expected to be a numeric string. got '%s'", m.DiscogsId))
 	}
 	return errors
+}
+
+// Will override m1's values m2's if m1's is empty
+func Merge(m1 Metadata, m2 Metadata) Metadata {
+	if err := mergo.Merge(&m1, m2, mergo.WithOverrideEmptySlice); err != nil {
+		glg.Warn("merging Metadata structs may have failed")
+		glg.Warn(err.Error())
+		glg.Warnf("destination: %+v", m1)
+		glg.Warnf("source: %+v", m2)
+	}
+	return m1
 }
