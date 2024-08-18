@@ -32,6 +32,7 @@
 	"disc": "Disc",
 	"otherAlbumReleases": "Other releases of the same album",
 	"musicVideos": "Music Videos",
+	"livePerformances": "Live Performances",
 	"playlistReorderSuccess": "Playlist Reordered!",
 	"playlistReorderFail": "Playlist Reordering Failed",
 	"playlistItemDeletionSuccess": "Deletion Successful",
