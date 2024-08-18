@@ -40,7 +40,9 @@ func parseMetadataFromPath(config config.UserSettings, filePath string) (interna
 		errors = append(errors, mimeError)
 	}
 	metadata.Type = trackType
-
+	if hasInlineIllustration(filePath) {
+		metadata.IllustrationLocation = internal.Inline
+	}
 	return metadata, errors
 }
 
@@ -106,4 +108,8 @@ func getTypeFromPath(filePath string) (internal.TrackType, error) {
 		return internal.Audio, nil
 	}
 	return "", errors.New("could not identify the MIME of the file")
+}
+
+func hasInlineIllustration(filePath string) bool {
+	return internal.GetIllustrationFilePath(filePath) != ""
 }

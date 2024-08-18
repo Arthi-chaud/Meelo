@@ -39,6 +39,8 @@ type Metadata struct {
 	Genres []string `json:"genres"`
 	// Discogs ID of the parent release
 	DiscogsId string `json:"discogsId"`
+	// Tells where an illustration can be found.
+	IllustrationLocation IllustrationLocation
 }
 
 type TrackType string
@@ -46,6 +48,13 @@ type TrackType string
 const (
 	Audio TrackType = "Audio"
 	Video TrackType = "Video"
+)
+
+type IllustrationLocation string
+
+const (
+	Embedded IllustrationLocation = "Embedded"
+	Inline   IllustrationLocation = "Inline"
 )
 
 func SanitizeAndValidateMetadata(m *Metadata) []error {
