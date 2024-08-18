@@ -63,6 +63,9 @@ func parseMetadataFromEmbeddedTags(filePath string) (internal.Metadata, []error)
 			metadata.ReleaseDate = date
 		}
 	}
+	if hasEmbeddedIllustration(*probeData) {
+		metadata.IllustrationLocation = internal.Embedded
+	}
 	return metadata, errors
 }
 
@@ -72,4 +75,16 @@ func getType(probeData ffprobe.ProbeData) internal.TrackType {
 		return internal.Audio
 	}
 	return internal.Video
+}
+
+func hasEmbeddedIllustration(probeData ffprobe.ProbeData) bool {
+	if s := probeData.FirstAttachmentStream(); s != nil {
+		return true
+	}
+	for _, stream := range probeData.Streams {
+		if stream != nil && stream.Disposition.AttachedPic == 1 {
+			return true
+		}
+	}
+	return false
 }
