@@ -122,11 +122,15 @@ const ArtistPage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({ props }) => {
 	const externalIdWithDescription = artist.data?.externalIds
 		.filter(({ provider }) => provider.name.toLowerCase() !== "discogs")
 		.find(({ description }) => description !== null);
-	const { musicVideos, extras } = useMemo(() => {
+	const { musicVideos, liveVideos, extras } = useMemo(() => {
 		const firstPage = videos.data?.pages.at(0)?.items;
 		return {
 			musicVideos:
-				firstPage?.filter((video) => video.type != "NonMusic") ?? [],
+				firstPage?.filter(
+					(video) => video.type != "NonMusic" && video.type != "Live",
+				) ?? [],
+			liveVideos:
+				firstPage?.filter((video) => video.type == "Live") ?? [],
 			extras:
 				firstPage?.filter((video) => video.type == "NonMusic") ?? [],
 		};
@@ -189,6 +193,7 @@ const ArtistPage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({ props }) => {
 				/>
 				{[
 					{ label: "topVideos", items: musicVideos } as const,
+					{ label: "livePerformances", items: liveVideos } as const,
 					{ label: "extras", items: extras } as const,
 				].map(
 					({ label, items }) =>
