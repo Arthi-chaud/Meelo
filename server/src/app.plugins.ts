@@ -36,6 +36,7 @@ import helmet from "helmet";
 import { JwtCookieMiddleware } from "./authentication/jwt/jwt-middleware";
 import JwtAuthGuard from "./authentication/jwt/jwt-auth.guard";
 import RolesGuard from "./authentication/roles/roles.guard";
+import ApiKeyGuard from "./authentication/api_key/api_key.guard";
 
 // To call before application bootstrap/launch
 const presetup = () => {

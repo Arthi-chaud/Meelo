@@ -24,6 +24,7 @@ import AuthenticationController from "./authentication.controller";
 import AuthenticationService from "./authentication.service";
 import { JwtStrategy } from "./jwt/jwt.strategy";
 import LocalStrategy from "./local/local.strategy";
+import ApiKeyService from "./api_key/api_key.service";
 
 @Module({
 	imports: [
@@ -35,6 +36,12 @@ import LocalStrategy from "./local/local.strategy";
 		}),
 	],
 	controllers: [AuthenticationController],
-	providers: [AuthenticationService, LocalStrategy, JwtStrategy],
+	providers: [
+		AuthenticationService,
+		LocalStrategy,
+		JwtStrategy,
+		ApiKeyService,
+	],
+	exports: [ApiKeyService]
 })
 export default class AuthenticationModule {}
