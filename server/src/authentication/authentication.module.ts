@@ -25,6 +25,7 @@ import AuthenticationService from "./authentication.service";
 import { JwtStrategy } from "./jwt/jwt.strategy";
 import SettingsModule from "src/settings/settings.module";
 import RolesGuard from "./roles/roles.guard";
+import ApiKeyService from "./api_key/api_key.service";
 
 @Module({
 	imports: [
@@ -37,7 +38,7 @@ import RolesGuard from "./roles/roles.guard";
 		}),
 	],
 	controllers: [AuthenticationController],
-	exports: [RolesGuard],
+	exports: [RolesGuard, ApiKeyService],
 	providers: [AuthenticationService, JwtStrategy, RolesGuard],
 })
 export default class AuthenticationModule {}
