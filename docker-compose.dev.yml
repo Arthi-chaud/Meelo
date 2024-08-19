@@ -41,6 +41,7 @@ services:
       - API_URL=http://server:4000
       - INTERNAL_CONFIG_DIR=${INTERNAL_CONFIG_DIR}
       - INTERNAL_DATA_DIR=${INTERNAL_DATA_DIR}
+      - API_KEYS=${API_KEYS}
     volumes:
       - ./scanner:/app
       - ${DATA_DIR}:${INTERNAL_DATA_DIR}:ro

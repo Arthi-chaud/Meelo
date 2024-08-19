@@ -2,14 +2,18 @@ package config
 
 import (
 	"fmt"
-	"github.com/kpango/glg"
 	"os"
 	"path"
+	"strings"
+
+	"github.com/kpango/glg"
 )
 
 type Config struct {
 	// URL to the API
 	ApiUrl string
+	// Key we will use to authenticate to the API
+	ApiKey string
 	// Path to the folder that contains the settings.json
 	ConfigDirectory string
 	// Path to the folder where all the libraries are
@@ -23,6 +27,7 @@ func GetConfig() Config {
 	var errors []error
 
 	apiUrl := getEnvVarOrPushError("API_URL", &errors)
+	apiKey := getApiKeyFromEnvOrPushError(&errors)
 	configDir := getEnvVarOrPushError("INTERNAL_CONFIG_DIR", &errors)
 	dataDir := getEnvVarOrPushError("INTERNAL_DATA_DIR", &errors)
 	userSettings, userSettingsErrors := GetUserSettings(path.Join(configDir, UserSettingsFileName))
@@ -35,6 +40,7 @@ func GetConfig() Config {
 		glg.Fatalf("Errors occured while parsing configuration. Exiting...")
 	}
 	config.ApiUrl = apiUrl
+	config.ApiKey = apiKey
 	config.ConfigDirectory = configDir
 	config.DataDirectory = dataDir
 	config.UserSettings = userSettings
@@ -48,4 +54,16 @@ func getEnvVarOrPushError(envVar string, errors *[]error) string {
 		*errors = append(*errors, fmt.Errorf("%s is missing or empty", envVar))
 	}
 	return value
+}
+
+func getApiKeyFromEnvOrPushError(errors *[]error) string {
+	localErrors := []error{}
+	apiKey := getEnvVarOrPushError("API_KEY", &localErrors)
+	if len(apiKey) != 0 {
+		return apiKey
+	}
+	localErrors = []error{}
+	apiKeys := getEnvVarOrPushError("API_KEYS", &localErrors)
+	*errors = append(*errors, localErrors...)
+	return strings.Split(apiKeys, ",")[0]
 }
