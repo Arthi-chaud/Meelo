@@ -10,6 +10,9 @@ import (
 )
 
 type Config struct {
+	// Access token of the user who have requested something
+	// Optional
+	AccessToken string
 	// URL to the API
 	ApiUrl string
 	// Key we will use to authenticate to the API
