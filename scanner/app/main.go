@@ -16,10 +16,14 @@ const ApiHealthckechAttemptCount = 5
 
 // @title Meelo's Scanner API
 // @description The scanner is responsible for file parsing and registration.
+// @securityDefinitions.apikey JWT
+// @in header
+// @name Authorization
+// @description Prefix the value with `Bearer `
 func main() {
 	setupLogger()
 	c := config.GetConfig()
-	e := setupEcho()
+	e := setupEcho(c)
 
 	waitForApi(c)
 	e.Logger.Fatal(e.Start(":8133"))
@@ -36,12 +40,19 @@ func setupLogger() {
 }
 
 // Sets up echo endpoints
-func setupEcho() *echo.Echo {
+func setupEcho(c config.Config) *echo.Echo {
 	e := echo.New()
 	e.HideBanner = true
 	e.HidePort = true
 
-	e.GET("/", Status)
+	s := ScannerContext{
+		config: &c,
+	}
+
+	e.GET("/", s.Status)
+	e.POST("/scan", s.Scan)
+	e.POST("/clean", s.Clean)
+	e.POST("/refresh", s.Refresh)
 	e.GET("/swagger/*", echoSwagger.WrapHandler)
 	return e
 }
@@ -52,7 +63,7 @@ func waitForApi(c config.Config) {
 	for i := 0; i < ApiHealthckechAttemptCount; i++ {
 		if err := api.HealthCheck(c); err != nil {
 			glg.Fail("Failed connecting to API")
-			time.Sleep(5 * time.Second)
+			time.Sleep(7 * time.Second)
 		} else {
 			glg.Success("Connected to API 🥳")
 			return
