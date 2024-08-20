@@ -29,6 +29,9 @@ func (s *ScannerContext) Status(c echo.Context) error {
 // @Router	    /scan [post]
 // @Security JWT
 func (s *ScannerContext) Scan(c echo.Context) error {
+	if !s.userIsAdmin(c) {
+		return userIsNotAdminResponse(c)
+	}
 	return c.JSON(http.StatusAccepted, ScannerStatus{Message: TaskAddedtoQueueMessage})
 }
 
@@ -38,6 +41,9 @@ func (s *ScannerContext) Scan(c echo.Context) error {
 // @Router	    /clean [post]
 // @Security JWT
 func (s *ScannerContext) Clean(c echo.Context) error {
+	if !s.userIsAdmin(c) {
+		return userIsNotAdminResponse(c)
+	}
 	return c.JSON(http.StatusAccepted, ScannerStatus{Message: TaskAddedtoQueueMessage})
 }
 
@@ -47,11 +53,14 @@ func (s *ScannerContext) Clean(c echo.Context) error {
 // @Router	    /refresh [post]
 // @Security JWT
 func (s *ScannerContext) Refresh(c echo.Context) error {
+	if !s.userIsAdmin(c) {
+		return userIsNotAdminResponse(c)
+	}
 	return c.JSON(http.StatusAccepted, ScannerStatus{Message: TaskAddedtoQueueMessage})
 }
 
 // Checks that the requesting user
-func (s *ScannerContext) checkUserIsAdmin(c echo.Context) bool {
+func (s *ScannerContext) userIsAdmin(c echo.Context) bool {
 	userToken := getUserToken(c)
 	if userToken == "" {
 		return false
@@ -62,6 +71,10 @@ func (s *ScannerContext) checkUserIsAdmin(c echo.Context) bool {
 		return false
 	}
 	return user.Admin
+}
+
+func userIsNotAdminResponse(c echo.Context) error {
+	return c.JSON(http.StatusUnauthorized, ScannerStatus{Message: "User must be admin to run tasks."})
 }
 
 func getUserToken(c echo.Context) string {
