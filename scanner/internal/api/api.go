@@ -27,6 +27,32 @@ func GetUserFromAccessToken(config config.Config, accessToken string) (User, err
 	return u, err
 }
 
+func GetAllLibraries(config config.Config) ([]Library, error) {
+	next := "/libraries"
+	libraries := []Library{}
+	for len(next) != 0 {
+		res, err := request("GET", next, nil, config)
+		if err != nil {
+			return []Library{}, err
+		}
+		var page = Page[Library]{}
+		err = validate(res, &page)
+		libraries = append(libraries, page.Items...)
+		next = page.Metadata.Next
+	}
+	return libraries, nil
+}
+
+func GetLibrary(config config.Config, librarySlug string) (Library, error) {
+	res, err := request("GET", fmt.Sprintf("/libraries/%s", librarySlug), nil, config)
+	if err != nil {
+		return Library{}, err
+	}
+	var l = Library{}
+	err = validate(res, &l)
+	return l, err
+}
+
 func request(method string, url string, body io.Reader, config config.Config) (string, error) {
 	client := &http.Client{}
 	req, _ := http.NewRequest(method, fmt.Sprintf("%s%s", config.ApiUrl, url), body)
