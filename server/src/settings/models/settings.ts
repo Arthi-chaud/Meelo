@@ -73,6 +73,12 @@ class MetadataSettings {
  */
 export default class Settings {
 	/**
+	 * If true, endpoints with base access control will allow unauth-ed requests
+	 */
+	@ApiProperty()
+	@IsBoolean()
+	allowAnonymous: boolean;
+	/**
 	 * The folder where `settings.json` and metadata are stored
 	 */
 	@ApiProperty()
