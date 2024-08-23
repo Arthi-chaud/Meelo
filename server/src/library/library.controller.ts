@@ -30,7 +30,7 @@ import { Library } from "src/prisma/models";
 import { PaginationParameters } from "src/pagination/models/pagination-parameters";
 import LibraryQueryParameters from "./models/library.query-parameters";
 import { ApiOperation, ApiTags } from "@nestjs/swagger";
-import Admin from "src/authentication/roles/admin.decorator";
+import { Admin } from "src/authentication/roles/roles.decorators";
 import UpdateLibraryDto from "./models/update-library.dto";
 import CreateLibraryDto from "./models/create-library.dto";
 import IdentifierParam from "src/identifier/identifier.pipe";

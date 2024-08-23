@@ -47,6 +47,7 @@ describe("Settings Controller", () => {
 				...JSON.parse(
 					fs.readFileSync("test/assets/settings.json").toString(),
 				),
+				allowAnonymous: false,
 				providers: {
 					genius: { enabled: true },
 					musicbrainz: { enabled: true },

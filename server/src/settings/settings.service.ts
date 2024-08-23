@@ -72,6 +72,7 @@ export default class SettingsService {
 			...object,
 			meeloFolder: process.env.INTERNAL_CONFIG_DIR!,
 			dataFolder: process.env.INTERNAL_DATA_DIR!,
+			allowAnonymous: process.env.ALLOW_ANONYMOUS === "1",
 		});
 		// Validation
 		const validationError = validateSync(uncheckedSettings, {

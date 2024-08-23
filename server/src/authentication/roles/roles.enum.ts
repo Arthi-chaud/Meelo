@@ -20,7 +20,7 @@
 enum Roles {
 	Admin,
 	User,
-	DisabledUser,
+	Microservice,
 	Anonymous,
 }
 

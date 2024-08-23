@@ -33,7 +33,7 @@ import { ApiOperation, ApiPropertyOptional, ApiTags } from "@nestjs/swagger";
 import { IllustrationType, TrackType } from "@prisma/client";
 import { TrackResponseBuilder } from "./models/track.response";
 import RelationIncludeQuery from "src/relation-include/relation-include-query.decorator";
-import Admin from "src/authentication/roles/admin.decorator";
+import { Admin } from "src/authentication/roles/roles.decorators";
 import IdentifierParam from "src/identifier/identifier.pipe";
 import Response, { ResponseType } from "src/response/response.decorator";
 import SongService from "src/song/song.service";

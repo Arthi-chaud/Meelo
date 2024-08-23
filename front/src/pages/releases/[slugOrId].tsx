@@ -251,25 +251,34 @@ const ReleasePage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({ props }) => {
 			),
 		[bSidesQuery.data],
 	);
-	const { videos, videoExtras } = useMemo(
+	const { videos, liveVideos, videoExtras } = useMemo(
 		() =>
 			(albumVideos.data?.pages.at(0)?.items ?? []).reduce(
 				(prev, current) => {
 					if (current.type === "NonMusic") {
 						return {
 							videos: prev.videos,
+							liveVideos: prev.liveVideos,
 							videoExtras: prev.videoExtras.concat(current),
+						};
+					} else if (current.type === "Live") {
+						return {
+							videos: prev.videos,
+							liveVideos: prev.liveVideos.concat(current),
+							videoExtras: prev.videoExtras,
 						};
 					}
 					return {
 						videos: prev.videos.concat(current),
+						liveVideos: prev.liveVideos,
 						videoExtras: prev.videoExtras,
 					};
 				},
-				{ videos: [], videoExtras: [] } as Record<
-					"videos" | "videoExtras",
-					Video[]
-				>,
+				{
+					videos: [] as Video[],
+					videoExtras: [] as Video[],
+					liveVideos: [] as Video[],
+				},
 			),
 		[albumVideos.data],
 	);
@@ -658,22 +667,30 @@ const ReleasePage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({ props }) => {
 						}
 					/>
 				</RelatedContentSection>
-				<RelatedContentSection
-					display={videos !== undefined && videos.length != 0}
-					title={t("musicVideos")}
-				>
-					<TileRow
-						tiles={
-							videos?.map((video, videoIndex) => (
-								<VideoTile
-									key={videoIndex}
-									video={video}
-									subtitle="duration"
-								/>
-							)) ?? []
+				{[
+					[videos, "musicVideos"] as const,
+					[liveVideos, "livePerformances"] as const,
+				].map(([videoList, sectionLabel]) => (
+					<RelatedContentSection
+						key={`videos-${sectionLabel}`}
+						display={
+							videoList !== undefined && videoList.length != 0
 						}
-					/>
-				</RelatedContentSection>
+						title={t(sectionLabel)}
+					>
+						<TileRow
+							tiles={
+								videoList?.map((video, videoIndex) => (
+									<VideoTile
+										key={videoIndex}
+										video={video}
+										subtitle="duration"
+									/>
+								)) ?? []
+							}
+						/>
+					</RelatedContentSection>
+				))}
 				<RelatedContentSection
 					display={extras.length > 0 || videoExtras.length > 0}
 					title={t("extras")}

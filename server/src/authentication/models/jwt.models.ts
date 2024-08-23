@@ -16,11 +16,21 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import Roles from "./roles.decorator";
-import Role from "./roles.enum";
-/**
- * Controller / Route decorator to allow only admin users to use it
- */
-const Admin = () => Roles(Role.Admin);
+import { ApiProperty, PickType } from "@nestjs/swagger";
+import { User } from "src/prisma/models";
 
-export default Admin;
+/**
+ * Response type on login
+ */
+export class JwtResponse {
+	@ApiProperty({
+		description:
+			"JWT Access Token. To add to request's header for authenticated requests",
+	})
+	access_token: string;
+}
+
+/**
+ * Type of the decoded JWT Payload
+ */
+export class JwtPayload extends PickType(User, ["id", "name"]) {}

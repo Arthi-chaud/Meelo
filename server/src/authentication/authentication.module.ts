@@ -23,25 +23,22 @@ import UserModule from "src/user/user.module";
 import AuthenticationController from "./authentication.controller";
 import AuthenticationService from "./authentication.service";
 import { JwtStrategy } from "./jwt/jwt.strategy";
-import LocalStrategy from "./local/local.strategy";
 import ApiKeyService from "./api_key/api_key.service";
+import SettingsModule from "src/settings/settings.module";
+import RolesGuard from "./roles/roles.guard";
 
 @Module({
 	imports: [
 		UserModule,
 		PassportModule,
+		SettingsModule,
 		JwtModule.register({
 			secret: process.env.JWT_SIGNATURE,
 			signOptions: { expiresIn: "100 days" },
 		}),
 	],
 	controllers: [AuthenticationController],
-	providers: [
-		AuthenticationService,
-		LocalStrategy,
-		JwtStrategy,
-		ApiKeyService,
-	],
-	exports: [ApiKeyService]
+	exports: [RolesGuard, ApiKeyService],
+	providers: [AuthenticationService, JwtStrategy, RolesGuard, ApiKeyService],
 })
 export default class AuthenticationModule {}

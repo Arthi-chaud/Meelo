@@ -16,19 +16,18 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { Strategy } from "passport-local";
-import { PassportStrategy } from "@nestjs/passport";
-import { Injectable } from "@nestjs/common";
-import AuthService from "../authentication.service";
-import { User } from "src/prisma/models";
+import { SetMetadata } from "@nestjs/common";
+import RoleEnum from "./roles.enum";
 
-@Injectable()
-export default class LocalStrategy extends PassportStrategy(Strategy) {
-	constructor(private authService: AuthService) {
-		super();
-	}
+export const ROLES_KEY = "roles";
+export const Role = (...roles: RoleEnum[]) => SetMetadata(ROLES_KEY, roles);
 
-	async validate(username: string, password: string): Promise<User> {
-		return this.authService.validateUser(username, password);
-	}
-}
+/**
+ * Controller / Route decorator to allow only admin users to use it
+ */
+export const Admin = () => Role(RoleEnum.Admin);
+
+/**
+ * Route decorator to allow anonymous user to request methods
+ */
+export const Public = () => Role(RoleEnum.Anonymous);

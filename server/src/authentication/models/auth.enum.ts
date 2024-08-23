@@ -16,9 +16,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { PickType } from "@nestjs/swagger";
-import { User } from "src/prisma/models";
-/**
- * Type of the decoded JWT Payload
- */
-export default class JwtPayload extends PickType(User, ["id", "name"]) {}
+// The Authentication Method used for the request
+// eslint-disable-next-line no-shadow
+export enum AuthMethod {
+	Nothing,
+	JWT,
+}
