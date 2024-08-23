@@ -23,7 +23,7 @@ import UserModule from "src/user/user.module";
 import AuthenticationController from "./authentication.controller";
 import AuthenticationService from "./authentication.service";
 import { JwtStrategy } from "./jwt/jwt.strategy";
-import ApiKeyService from "./api_key/api_key.service";
+import ApiKeyService from "./api_key.service";
 import SettingsModule from "src/settings/settings.module";
 import RolesGuard from "./roles/roles.guard";
 

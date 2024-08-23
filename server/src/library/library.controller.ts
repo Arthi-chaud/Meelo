@@ -30,11 +30,12 @@ import { Library } from "src/prisma/models";
 import { PaginationParameters } from "src/pagination/models/pagination-parameters";
 import LibraryQueryParameters from "./models/library.query-parameters";
 import { ApiOperation, ApiTags } from "@nestjs/swagger";
-import { Admin } from "src/authentication/roles/roles.decorators";
+import { Admin, Role } from "src/authentication/roles/roles.decorators";
 import UpdateLibraryDto from "./models/update-library.dto";
 import CreateLibraryDto from "./models/create-library.dto";
 import IdentifierParam from "src/identifier/identifier.pipe";
 import Response, { ResponseType } from "src/response/response.decorator";
+import Roles from "src/authentication/roles/roles.enum";
 
 @ApiTags("Libraries")
 @Controller("libraries")
@@ -85,6 +86,7 @@ export default class LibraryController {
 		returns: Library,
 		type: ResponseType.Page,
 	})
+	@Role(Roles.User, Roles.Microservice)
 	async getLibraries(
 		@Query()
 		paginationParameters: PaginationParameters,

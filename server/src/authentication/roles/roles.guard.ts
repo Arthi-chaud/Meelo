@@ -28,12 +28,14 @@ import { ROLES_KEY } from "./roles.decorators";
 import SettingsService from "src/settings/settings.service";
 import { User } from "@prisma/client";
 import { AuthMethod } from "../models/auth.enum";
+import ApiKeyService from "../api_key.service";
 
 @Injectable()
 export default class RolesGuard implements CanActivate {
 	constructor(
 		private reflector: Reflector,
 		private userService: UserService,
+		private apiKeyService: ApiKeyService,
 		private settingsService: SettingsService,
 	) {}
 
@@ -53,6 +55,9 @@ export default class RolesGuard implements CanActivate {
 		if (roles?.includes(RoleEnum.Anonymous)) {
 			return AuthMethod.Nothing;
 		}
+		if (roles?.includes(RoleEnum.Microservice)) {
+			return AuthMethod.ApiKey;
+		}
 		// Admin or User role
 		return AuthMethod.JWT;
 	}
@@ -66,6 +71,10 @@ export default class RolesGuard implements CanActivate {
 		switch (this.getAuthMethod(context)) {
 			case AuthMethod.Nothing:
 				return true;
+			case AuthMethod.ApiKey:
+				return this.apiKeyService.apiKeyIsValid(
+					request.headers["x-api-key"] ?? "",
+				);
 			case AuthMethod.JWT: {
 				const userPayload = request.user as User | undefined;
 				if (!userPayload) {

@@ -41,7 +41,6 @@ func (s *ScannerContext) Scan(c echo.Context) error {
 	if !s.userIsAdmin(c) {
 		return userIsNotAdminResponse(c)
 	}
-	s.config.AccessToken = getUserToken(c) // TODO DELETE
 	libraries, err := api.GetAllLibraries(*s.config)
 	if err != nil {
 		c.NoContent(http.StatusServiceUnavailable)
