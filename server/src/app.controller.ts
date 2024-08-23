@@ -18,7 +18,7 @@
 
 import { Controller, Get } from "@nestjs/common";
 import { ApiExcludeController } from "@nestjs/swagger";
-import { Public } from "./authentication/roles/public.decorator";
+import { Public } from "./authentication/roles/roles.decorators";
 
 @ApiExcludeController()
 @Controller()

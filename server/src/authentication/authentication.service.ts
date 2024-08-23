@@ -24,8 +24,7 @@ import {
 	DisabledUserAccountException,
 	UnknownUserException,
 } from "./authentication.exception";
-import JwtPayload from "./models/jwt.payload";
-import JwtResponse from "./models/jwt.response";
+import { JwtPayload, JwtResponse } from "./models/jwt.models";
 
 @Injectable()
 export default class AuthenticationService {

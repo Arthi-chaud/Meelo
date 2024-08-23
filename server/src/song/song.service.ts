@@ -355,6 +355,7 @@ export default class SongService extends SearchableRepositoryService {
 					}),
 				});
 				break;
+			case "userPlayCount":
 			case "totalPlayCount":
 				sort.push({
 					playHistory: {

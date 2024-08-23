@@ -38,7 +38,7 @@ import { LyricsService } from "src/lyrics/lyrics.service";
 import LyricsDto from "src/lyrics/models/update-lyrics.dto";
 import { SongResponseBuilder } from "./models/song.response";
 import RelationIncludeQuery from "src/relation-include/relation-include-query.decorator";
-import Admin from "src/authentication/roles/admin.decorator";
+import { Admin, Role } from "src/authentication/roles/roles.decorators";
 import IdentifierParam from "src/identifier/identifier.pipe";
 import Response, { ResponseType } from "src/response/response.decorator";
 import { IsEnum, IsNumber, IsOptional, IsPositive } from "class-validator";
@@ -57,6 +57,7 @@ import SongGroupQueryParameters from "./models/song-group.query-params";
 import { LyricsResponse } from "src/lyrics/models/lyrics.response";
 import { formatIdentifier } from "src/repository/repository.utils";
 import Slug from "src/slug/slug";
+import Roles from "src/authentication/roles/roles.enum";
 
 export class Selector {
 	@IsEnum(SongType)
@@ -180,7 +181,7 @@ export class SongController {
 				paginationParameters,
 				include,
 			);
-		} else if (sort.sortBy == "userPlayCount") {
+		} else if (sort.sortBy == "userPlayCount" && request.user) {
 			return this.songService.getManyByPlayCount(
 				(request.user as User).id,
 				selector,
@@ -241,6 +242,7 @@ export class SongController {
 	@ApiOperation({
 		summary: "Increment a song's play count",
 	})
+	@Role(Roles.User)
 	@Response({ handler: SongResponseBuilder })
 	@Put(":idOrSlug/played")
 	async incrementSongPlayCount(

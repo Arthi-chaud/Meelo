@@ -31,15 +31,15 @@ import { User } from "@prisma/client";
 import UserService from "./user.service";
 import { ApiOperation, ApiTags } from "@nestjs/swagger";
 import UserCreateDTO from "./models/create-user.dto";
-import Admin from "src/authentication/roles/admin.decorator";
+import { Admin, Public, Role } from "src/authentication/roles/roles.decorators";
 import { PaginationParameters } from "src/pagination/models/pagination-parameters";
 import { UserResponseBuilder } from "./models/user.response";
 import UserQueryParameters from "./models/user.query-params";
 import UpdateUserDTO from "./models/update-user.dto";
-import { Public } from "src/authentication/roles/public.decorator";
 import { InvalidRequestException } from "src/exceptions/meelo-exception";
 import IdentifierParam from "src/identifier/identifier.pipe";
 import Response, { ResponseType } from "src/response/response.decorator";
+import Roles from "src/authentication/roles/roles.enum";
 
 @ApiTags("Users")
 @Controller("users")
@@ -50,6 +50,7 @@ export default class UserController {
 		summary: "Get info about the currently authentified user",
 	})
 	@Get("me")
+	@Role(Roles.User)
 	@Response({ handler: UserResponseBuilder })
 	async getAuthenticatedUserProfile(@Request() request: Express.Request) {
 		// Required to return a proper build response

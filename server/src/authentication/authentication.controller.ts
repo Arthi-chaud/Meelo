@@ -20,7 +20,7 @@ import AuthenticationService from "./authentication.service";
 import { Body, Controller, Post } from "@nestjs/common";
 import { ApiOperation, ApiTags } from "@nestjs/swagger";
 import LoginDTO from "./models/login.dto";
-import { Public } from "./roles/public.decorator";
+import { Public } from "./roles/roles.decorators";
 
 @ApiTags("Authentication")
 @Controller("auth")
