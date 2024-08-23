@@ -20,7 +20,7 @@ import { Controller, Get, Query } from "@nestjs/common";
 import { ApiOperation, ApiTags } from "@nestjs/swagger";
 import LibraryService from "src/library/library.service";
 import { Timeout } from "@nestjs/schedule";
-import Admin from "src/authentication/roles/admin.decorator";
+import { Admin } from "src/authentication/roles/roles.decorators";
 import IdentifierParam from "src/identifier/identifier.pipe";
 import LibraryQueryParameters from "src/library/models/library.query-parameters";
 import { TaskQueue } from "./tasks.runner";

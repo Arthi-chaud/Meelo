@@ -33,7 +33,7 @@ import { ApiOperation, ApiPropertyOptional, ApiTags } from "@nestjs/swagger";
 import UpdateAlbumDTO from "./models/update-album.dto";
 import { AlbumResponseBuilder } from "./models/album.response";
 import RelationIncludeQuery from "src/relation-include/relation-include-query.decorator";
-import Admin from "src/authentication/roles/admin.decorator";
+import { Admin } from "src/authentication/roles/roles.decorators";
 import IdentifierParam from "src/identifier/identifier.pipe";
 import Response, { ResponseType } from "src/response/response.decorator";
 import GenreService from "src/genre/genre.service";

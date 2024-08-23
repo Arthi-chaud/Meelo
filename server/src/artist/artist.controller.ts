@@ -41,7 +41,7 @@ import LibraryQueryParameters from "src/library/models/library.query-parameters"
 import GenreQueryParameters from "src/genre/models/genre.query-parameters";
 import AlbumQueryParameters from "src/album/models/album.query-parameters";
 import AlbumService from "src/album/album.service";
-import Admin from "src/authentication/roles/admin.decorator";
+import { Admin } from "src/authentication/roles/roles.decorators";
 import { IllustrationDownloadDto } from "src/illustration/models/illustration-dl.dto";
 import IllustrationService from "src/illustration/illustration.service";
 import IllustrationRepository from "src/illustration/illustration.repository";

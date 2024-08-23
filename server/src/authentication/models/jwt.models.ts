@@ -16,9 +16,21 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { PickType } from "@nestjs/swagger";
+import { ApiProperty, PickType } from "@nestjs/swagger";
 import { User } from "src/prisma/models";
+
+/**
+ * Response type on login
+ */
+export class JwtResponse {
+	@ApiProperty({
+		description:
+			"JWT Access Token. To add to request's header for authenticated requests",
+	})
+	access_token: string;
+}
+
 /**
  * Type of the decoded JWT Payload
  */
-export default class JwtPayload extends PickType(User, ["id", "name"]) {}
+export class JwtPayload extends PickType(User, ["id", "name"]) {}

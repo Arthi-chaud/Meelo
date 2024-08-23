@@ -18,43 +18,66 @@
 
 import { CanActivate, ExecutionContext, Injectable } from "@nestjs/common";
 import { Reflector } from "@nestjs/core";
-import { InsufficientPermissionsException } from "src/authentication/authentication.exception";
-import { IS_PUBLIC_KEY } from "src/authentication/roles/public.decorator";
+import {
+	InsufficientPermissionsException,
+	UnauthorizedAnonymousRequestException,
+} from "src/authentication/authentication.exception";
 import UserService from "src/user/user.service";
 import RoleEnum from "./roles.enum";
-import { ROLES_KEY } from "./roles.decorator";
+import { ROLES_KEY } from "./roles.decorators";
+import SettingsService from "src/settings/settings.service";
+import { User } from "@prisma/client";
+import { AuthMethod } from "../models/auth.enum";
 
 @Injectable()
 export default class RolesGuard implements CanActivate {
 	constructor(
 		private reflector: Reflector,
 		private userService: UserService,
+		private settingsService: SettingsService,
 	) {}
 
-	async canActivate(context: ExecutionContext): Promise<boolean> {
-		const isPublic = this.reflector.getAllAndOverride<RoleEnum[]>(
-			IS_PUBLIC_KEY,
-			[context.getHandler(), context.getClass()],
-		);
-
-		if (isPublic) {
-			return true;
-		}
-		const requiredRoles = this.reflector.getAllAndOverride<RoleEnum[]>(
+	public getAuthMethod(context: ExecutionContext): AuthMethod {
+		const roles = this.reflector.getAllAndOverride<RoleEnum[] | undefined>(
 			ROLES_KEY,
 			[context.getHandler(), context.getClass()],
 		);
-
-		if (!requiredRoles) {
-			return true;
-		}
 		const request = context.switchToHttp().getRequest();
-		const userPayload = request.user;
-		const user = await this.userService.get({ id: userPayload.id });
-
-		if (requiredRoles.includes(RoleEnum.Admin) && !user.admin) {
-			throw new InsufficientPermissionsException();
+		// there is no decoration, we apply the default policy
+		if (roles === undefined) {
+			if (this.settingsService.settingsValues.allowAnonymous) {
+				return AuthMethod.Nothing;
+			}
+			return AuthMethod.JWT;
 		}
-		return true;
+		if (roles?.includes(RoleEnum.Anonymous)) {
+			return AuthMethod.Nothing;
+		}
+		// Admin or User role
+		return AuthMethod.JWT;
+	}
+
+	async canActivate(context: ExecutionContext): Promise<boolean> {
+		const roles = this.reflector.getAllAndOverride<RoleEnum[] | undefined>(
+			ROLES_KEY,
+			[context.getHandler(), context.getClass()],
+		);
+		const request = context.switchToHttp().getRequest();
+		switch (this.getAuthMethod(context)) {
+			case AuthMethod.Nothing:
+				return true;
+			case AuthMethod.JWT: {
+				const userPayload = request.user as User | undefined;
+				if (!userPayload) {
+					throw new UnauthorizedAnonymousRequestException();
+				}
+				const user = await this.userService.get({ id: userPayload.id });
+
+				if (roles?.includes(RoleEnum.Admin) && !user.admin) {
+					throw new InsufficientPermissionsException();
+				}
+				return true;
+			}
+		}
 	}
 }

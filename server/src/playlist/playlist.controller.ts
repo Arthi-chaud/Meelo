@@ -50,7 +50,7 @@ import { IsOptional } from "class-validator";
 import TransformIdentifier from "src/identifier/identifier.transform";
 import AlbumService from "src/album/album.service";
 import AlbumQueryParameters from "src/album/models/album.query-parameters";
-import Admin from "src/authentication/roles/admin.decorator";
+import { Admin } from "src/authentication/roles/roles.decorators";
 import { IllustrationDownloadDto } from "src/illustration/models/illustration-dl.dto";
 import IllustrationRepository from "src/illustration/illustration.repository";
 import IllustrationService from "src/illustration/illustration.service";

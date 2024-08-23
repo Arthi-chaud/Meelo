@@ -16,11 +16,18 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import Roles from "./roles.decorator";
-import Role from "./roles.enum";
+import { SetMetadata } from "@nestjs/common";
+import RoleEnum from "./roles.enum";
+
+export const ROLES_KEY = "roles";
+export const Role = (...roles: RoleEnum[]) => SetMetadata(ROLES_KEY, roles);
+
 /**
  * Controller / Route decorator to allow only admin users to use it
  */
-const Admin = () => Roles(Role.Admin);
+export const Admin = () => Role(RoleEnum.Admin);
 
-export default Admin;
+/**
+ * Route decorator to allow anonymous user to request methods
+ */
+export const Public = () => Role(RoleEnum.Anonymous);

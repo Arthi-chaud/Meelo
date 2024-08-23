@@ -16,10 +16,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { SetMetadata } from "@nestjs/common";
-
-export const IS_PUBLIC_KEY = "isPublic";
-/**
- * Route decorator to allow anonymous user to request methods
- */
-export const Public = () => SetMetadata(IS_PUBLIC_KEY, true);
+// The Authentication Method used for the request
+// eslint-disable-next-line no-shadow
+export enum AuthMethod {
+	Nothing,
+	JWT,
+}
