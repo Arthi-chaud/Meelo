@@ -7,5 +7,14 @@ import (
 
 type ScannerContext struct {
 	config *config.Config
-	tasks  []t.Task
+	_taskQueue chan t.Task
+	_tasks  []t.Task
+}
+
+func (s ScannerContext) getTasks() []t.Task {
+	return s._tasks;
+}
+
+func (s ScannerContext) pushTaskToQueue(task t.Task) {
+	s._taskQueue <- task;
 }

@@ -62,7 +62,7 @@ func request(method string, url string, body io.Reader, config config.Config) (s
 	if config.AccessToken != "" {
 		req.Header.Set("Authorization", fmt.Sprintf("Bearer %s", config.AccessToken))
 	}
-	// req.Header.Set("x-api-key", config.ApiKey)
+	req.Header.Set("x-api-key", config.ApiKey)
 	resp, err := client.Do(req)
 
 	if err != nil {

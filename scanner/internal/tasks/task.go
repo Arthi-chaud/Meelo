@@ -1,9 +1,13 @@
 package tasks
 
-import "fmt"
+import (
+	"fmt"
+	"time"
+)
 
 type Task interface {
 	Name() string
+	Exec() error
 }
 
 type LibraryScan struct {
@@ -16,6 +20,11 @@ type LibraryClean struct {
 
 func (l LibraryScan) Name() string {
 	return fmt.Sprintf("Scan library %s.", l.LibrarySlug)
+}
+
+func (l LibraryScan) Exec() error {
+	time.Sleep(time.Second * 10)
+	return nil
 }
 
 func (l LibraryClean) Name() string {
