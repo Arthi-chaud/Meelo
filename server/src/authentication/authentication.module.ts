@@ -23,7 +23,6 @@ import UserModule from "src/user/user.module";
 import AuthenticationController from "./authentication.controller";
 import AuthenticationService from "./authentication.service";
 import { JwtStrategy } from "./jwt/jwt.strategy";
-import LocalStrategy from "./local/local.strategy";
 
 @Module({
 	imports: [
@@ -35,6 +34,6 @@ import LocalStrategy from "./local/local.strategy";
 		}),
 	],
 	controllers: [AuthenticationController],
-	providers: [AuthenticationService, LocalStrategy, JwtStrategy],
+	providers: [AuthenticationService, JwtStrategy],
 })
 export default class AuthenticationModule {}
