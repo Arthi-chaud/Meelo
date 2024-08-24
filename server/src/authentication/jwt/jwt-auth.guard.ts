@@ -39,7 +39,7 @@ export default class JwtAuthGuard extends AuthGuard("jwt") {
 	): any {
 		// Note: Injecting RolesGuard is a hack to enable JWT Guard conditionally,
 		// as it is enabled by default globally.
-		if (this.rolesGuard.getAuthMethod(context) !== AuthMethod.JWT) {
+		if (!this.rolesGuard.getAuthMethod(context).includes(AuthMethod.JWT)) {
 			return undefined;
 		}
 		if (err) {
