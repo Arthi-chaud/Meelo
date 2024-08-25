@@ -268,7 +268,12 @@ export default class ParserService {
 		const [main, ...feats] = (
 			await Promise.all(
 				artistName.split(/\s*,\s*/).map(async (s) => {
-					const splitted = s.split(/\s+&\s+/);
+					const splitted = s
+						.split(/\s+&\s+/)
+						.map((t) => t.split(/\s+vs\.\s+/i))
+						.flat()
+						.map((t) => t.split(/\s+vs\s+/i))
+						.flat();
 
 					if (splitted.length == 1) {
 						return splitted;
