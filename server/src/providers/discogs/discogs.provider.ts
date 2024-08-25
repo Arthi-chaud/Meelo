@@ -126,10 +126,13 @@ export default class DiscogsProvider
 		try {
 			const release = await this.fetch(`/releases/${releaseIdentifier}`);
 
-			if (isNumber(release.id) && isString(release.notes_plaintext)) {
+			if (
+				isNumber(release.id) &&
+				(isString(release.notes_plaintext) || isString(release.notes))
+			) {
 				return {
 					value: release.id.toString(),
-					description: release.notes_plaintext,
+					description: release.notes_plaintext || release.notes,
 				};
 			}
 			throw new ProviderActionFailedError(
@@ -137,7 +140,7 @@ export default class DiscogsProvider
 				"getReleaseMetadataByIdentifier",
 				"Invalid Data Type",
 			);
-		} catch {
+		} catch (e) {
 			throw new ProviderActionFailedError(
 				this.name,
 				"getReleaseMetadataByIdentifier",

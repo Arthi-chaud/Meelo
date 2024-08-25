@@ -41,6 +41,10 @@ In this section, we list examples that would be successfully parsed by Meelo
   - Name: 'My Song - Version With Drums'
   - Artist: 'A'
   - Featuring: None
+- 'My Song' by 'A Vs. B'
+  - Name: 'My Song'
+  - Artist: 'A'
+  - Featuring: 'B'
 
 ## Special Case: Artist is already known
 
