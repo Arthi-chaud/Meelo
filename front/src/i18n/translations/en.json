@@ -248,5 +248,7 @@
 	"no": "No",
 	"featuredAlbums": "Featured Albums",
 	"rareSongs": "Rare Songs",
-	"leaveWillStopPlaybackAlert": "Leaving the website will stop playback."
+	"leaveWillStopPlaybackAlert": "Leaving the website will stop playback.",
+	"keyboadBindings": "Keyboard Shortcuts",
+	"openModalShortcutDescription": "Open / Close this modal"
 }

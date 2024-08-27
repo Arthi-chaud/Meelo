@@ -54,7 +54,9 @@ const KeyboardBindings = createContext<BindingsState & KeyboardBindingsActions>(
 	},
 );
 
-export const KeyboardBindingsProvider = (props: { children: JSX.Element }) => {
+export const KeyboardBindingsProvider = (props: {
+	children: JSX.Element[];
+}) => {
 	const [{ bindings }, setBindings] = useState<BindingsState>({
 		bindings: [],
 	});
@@ -102,10 +104,17 @@ export const KeyboardBindingsProvider = (props: { children: JSX.Element }) => {
 	);
 };
 
+export const useKeyboardBindingContext = () => useContext(KeyboardBindings);
+
 export const useKeyboardBinding = (binding: Binding & { handler: Handler }) => {
 	const keyboardContext = useContext(KeyboardBindings);
 
-	useKey(bindingKeyToUseKeyParam(binding.key), binding.handler);
+	useKey(bindingKeyToUseKeyParam(binding.key), (e) => {
+		if (document.activeElement?.tagName.toLowerCase() == "input") {
+			return;
+		}
+		binding.handler(e);
+	});
 	useEffect(() => {
 		keyboardContext.addBinding(binding.key, binding.description);
 		return () => {};

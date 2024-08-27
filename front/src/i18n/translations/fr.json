@@ -237,5 +237,7 @@
 	"no": "Non",
 	"featuredAlbums": "En Vedette",
 	"rareSongs": "Pistes Inédites",
-	"leaveWillStopPlaybackAlert": "Quitter le site arrêtera la lecture du morceau."
+	"leaveWillStopPlaybackAlert": "Quitter le site arrêtera la lecture du morceau.",
+	"keyboadBindings": "Raccourcis Clavier",
+	"openModalShortcutDescription": "Ouvrir / Fermer cette modale"
 }

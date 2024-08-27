@@ -33,7 +33,6 @@ import { useTranslation } from "react-i18next";
 import { generateArray } from "../utils/gen-list";
 import { getRandomNumber } from "../utils/random";
 import { useGradientBackground } from "../utils/gradient-background";
-import { useKeyboardBinding } from "../contexts/keybindings";
 
 const newlyAddedAlbumsQuery = API.getAlbums(
 	{},
@@ -114,11 +113,6 @@ const prepareSSR = () => {
 };
 
 const HomePage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({ props }) => {
-	const _ = useKeyboardBinding({
-		key: "?",
-		description: "",
-		handler: () => console.log("A"),
-	});
 	const [seed] = useState(Math.floor(Math.random() * 10000000));
 	const [blurhashIndex] = useState(getRandomNumber());
 	const featuredAlbums = useInfiniteQuery(
