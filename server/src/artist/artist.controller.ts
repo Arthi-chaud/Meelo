@@ -23,6 +23,7 @@ import {
 	Inject,
 	Post,
 	Query,
+	UseGuards,
 	forwardRef,
 } from "@nestjs/common";
 import { PaginationParameters } from "src/pagination/models/pagination-parameters";
@@ -46,6 +47,7 @@ import { IllustrationDownloadDto } from "src/illustration/models/illustration-dl
 import IllustrationService from "src/illustration/illustration.service";
 import IllustrationRepository from "src/illustration/illustration.repository";
 import { IllustrationResponse } from "src/illustration/models/illustration.response";
+import ApiKeyGuard from "src/authentication/api_key/api_key.guard";
 
 class Selector {
 	@IsOptional()

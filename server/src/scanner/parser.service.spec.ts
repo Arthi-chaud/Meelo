@@ -556,6 +556,22 @@ describe("Parser Service", () => {
 				"CCCC",
 			]);
 		});
+		it("'Vs.' Separator", async () => {
+			const res =
+				await parserService.extractFeaturedArtistsFromArtistName(
+					"Snoop Dogg Vs. David Guetta",
+				);
+			expect(res.artist).toBe("Snoop Dogg");
+			expect(res.featuring).toStrictEqual(["David Guetta"]);
+		});
+		it("'Vs' Separator", async () => {
+			const res =
+				await parserService.extractFeaturedArtistsFromArtistName(
+					"Snoop Dogg Vs David Guetta",
+				);
+			expect(res.artist).toBe("Snoop Dogg");
+			expect(res.featuring).toStrictEqual(["David Guetta"]);
+		});
 	});
 
 	describe("Get Song Type", () => {

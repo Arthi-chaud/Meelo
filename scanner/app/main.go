@@ -47,13 +47,12 @@ func setupEcho(c config.Config) *echo.Echo {
 	e.HidePort = true
 
 	s := ScannerContext{
-		config:     &c,
-		_tasks:     []t.Task{},
-		_taskQueue: make(chan t.Task),
-	}
+	config: &c,
+}
 
+e.GET("/", s.Status)
+e.GET("/tasks", s.Tasks)
 	e.GET("/", s.Status)
-	e.GET("/tasks", s.Tasks)
 	e.POST("/scan", s.Scan)
 	e.POST("/clean", s.Clean)
 	e.POST("/refresh", s.Refresh)
@@ -75,29 +74,4 @@ func waitForApi(c config.Config) {
 	}
 	glg.Fatal("Could not connect to the API. Exiting...")
 	os.Exit(1)
-}
-
-func setupBackgroundTaskQueue(s *ScannerContext) {
-	internalQueue := make(chan t.Task)
-	go func() {
-		for {
-			select {
-			case task := <-s._taskQueue:
-				s._tasks = append(s._tasks, task)
-				internalQueue <- task
-			case task := <-internalQueue:
-				go func () {
-					glg.Logf("Task '%s' Starts", task.Name())
-					err := task.Exec()
-					if err != nil {
-						glg.Failf("Task '%s' Failed", task.Name())
-						glg.Fail(err.Error())
-					} else {
-						glg.Logf("Task '%s' successful", task.Name())
-					}
-					s._tasks = s._tasks[1:]
-				}()
-			}
-		}
-	}()
 }
