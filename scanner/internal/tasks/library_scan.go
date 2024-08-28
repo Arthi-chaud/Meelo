@@ -8,7 +8,7 @@ import (
 )
 
 func NewLibraryScanTask(librarySlug string, c config.Config) Task {
-	name := fmt.Sprintf("Scan library %s.", librarySlug)
+	name := fmt.Sprintf("Scan library '%s'.", librarySlug)
 	return createTask(name, func() error { return exec(librarySlug, c) })
 }
 

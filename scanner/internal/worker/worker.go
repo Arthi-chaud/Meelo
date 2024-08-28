@@ -58,7 +58,9 @@ func (w *Worker) AddTask(task t.Task) t.Task {
 	w.mu.Unlock()
 
 	w.wg.Add(1)
-	w.taskQueue <- task
+	go func() {
+		w.taskQueue <- task
+	}()
 	return task
 }
 

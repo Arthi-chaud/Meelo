@@ -4,13 +4,20 @@ import (
 	"net/http"
 	"strings"
 
+	"github.com/Arthi-chaud/Meelo/scanner/internal"
 	"github.com/Arthi-chaud/Meelo/scanner/internal/api"
+	t "github.com/Arthi-chaud/Meelo/scanner/internal/tasks"
 	"github.com/kpango/glg"
 	"github.com/labstack/echo/v4"
 )
 
 type ScannerStatus struct {
 	Message string `json:"message"`
+}
+
+type ScannerTaskStatus struct {
+	CurrentTask  *string  `json:"current_task"`
+	PendingTasks []string `json:"pending_tasks"`
 }
 
 const TaskAddedtoQueueMessage = "Task added to queue."
@@ -23,6 +30,25 @@ func (s *ScannerContext) Status(c echo.Context) error {
 	return c.JSON(http.StatusOK, ScannerStatus{Message: "Scanner is alive."})
 }
 
+// @Summary		Get Current + Pending Tasks
+// @Produce		json
+// @Success		200 {object} ScannerTaskStatus
+// @Router	    /tasks [get]
+func (s *ScannerContext) Tasks(c echo.Context) error {
+	currentTask, pendingTasks := s.worker.GetCurrentTasks()
+	formattedCurentTask := &currentTask.Name
+	if currentTask.Name == "" {
+		formattedCurentTask = nil
+	}
+	formattedPendingTasks := internal.Fmap(pendingTasks, func(t t.TaskInfo, _ int) string {
+		return t.Name
+	})
+	return c.JSON(http.StatusOK, ScannerTaskStatus{
+		CurrentTask:  formattedCurentTask,
+		PendingTasks: formattedPendingTasks,
+	})
+}
+
 // @Summary		Request a Scan
 // @Produce		json
 // @Success		202	{object}	ScannerStatus
@@ -31,6 +57,14 @@ func (s *ScannerContext) Status(c echo.Context) error {
 func (s *ScannerContext) Scan(c echo.Context) error {
 	if !s.userIsAdmin(c) {
 		return userIsNotAdminResponse(c)
+	}
+	libraries, err := api.GetAllLibraries(*s.config)
+	if err != nil {
+		c.NoContent(http.StatusServiceUnavailable)
+	}
+	for _, lib := range libraries {
+		task := s.worker.AddTask(t.NewLibraryScanTask(lib.Slug, *s.config))
+		glg.Logf("Task added to queue: %s", task.Name)
 	}
 	return c.JSON(http.StatusAccepted, ScannerStatus{Message: TaskAddedtoQueueMessage})
 }

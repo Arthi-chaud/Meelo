@@ -1,32 +1,28 @@
 package tasks
 
 import (
-	"fmt"
-	"time"
+	"github.com/google/uuid"
 )
 
-type Task interface {
-	Name() string
-	Exec() error
+type Task struct {
+	Id   string
+	Name string
+	Exec func() error
 }
 
-type LibraryScan struct {
-	LibrarySlug string
+type TaskInfo struct {
+	Id   string
+	Name string
 }
 
-type LibraryClean struct {
-	LibrarySlug string
+func (t Task) GetInfo() TaskInfo {
+	return TaskInfo{Id: t.Id, Name: t.Name}
 }
 
-func (l LibraryScan) Name() string {
-	return fmt.Sprintf("Scan library %s.", l.LibrarySlug)
-}
-
-func (l LibraryScan) Exec() error {
-	time.Sleep(time.Second * 10)
-	return nil
-}
-
-func (l LibraryClean) Name() string {
-	return fmt.Sprintf("Clean library %s.", l.LibrarySlug)
+func createTask(name string, exec func() error) Task {
+	return Task{
+		Id:   uuid.New().String(),
+		Name: name,
+		Exec: exec,
+	}
 }

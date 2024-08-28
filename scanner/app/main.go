@@ -7,7 +7,7 @@ import (
 	_ "github.com/Arthi-chaud/Meelo/scanner/app/docs"
 	"github.com/Arthi-chaud/Meelo/scanner/internal/api"
 	"github.com/Arthi-chaud/Meelo/scanner/internal/config"
-	t "github.com/Arthi-chaud/Meelo/scanner/internal/tasks"
+	"github.com/Arthi-chaud/Meelo/scanner/internal/worker"
 	"github.com/kpango/glg"
 	"github.com/labstack/echo/v4"
 	"github.com/swaggo/echo-swagger"
@@ -47,11 +47,13 @@ func setupEcho(c config.Config) *echo.Echo {
 	e.HidePort = true
 
 	s := ScannerContext{
-	config: &c,
-}
+		config: &c,
+		worker: worker.NewWorker(),
+	}
+	s.worker.StartWorker()
 
-e.GET("/", s.Status)
-e.GET("/tasks", s.Tasks)
+	e.GET("/", s.Status)
+	e.GET("/tasks", s.Tasks)
 	e.GET("/", s.Status)
 	e.POST("/scan", s.Scan)
 	e.POST("/clean", s.Clean)
