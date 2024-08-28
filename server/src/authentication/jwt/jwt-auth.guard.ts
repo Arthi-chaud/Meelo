@@ -17,16 +17,13 @@
  */
 
 import { ExecutionContext, Injectable } from "@nestjs/common";
-import { Reflector } from "@nestjs/core";
 import { AuthGuard } from "@nestjs/passport";
-import { ROLES_KEY } from "../roles/roles.decorators";
-import Roles from "../roles/roles.enum";
 import RolesGuard from "../roles/roles.guard";
 import { AuthMethod } from "../models/auth.enum";
 
 @Injectable()
 export default class JwtAuthGuard extends AuthGuard("jwt") {
-	constructor(private reflector: Reflector, private rolesGuard: RolesGuard) {
+	constructor(private rolesGuard: RolesGuard) {
 		super();
 	}
 
@@ -39,7 +36,7 @@ export default class JwtAuthGuard extends AuthGuard("jwt") {
 	): any {
 		// Note: Injecting RolesGuard is a hack to enable JWT Guard conditionally,
 		// as it is enabled by default globally.
-		if (!this.rolesGuard.getAuthMethod(context).includes(AuthMethod.JWT)) {
+		if (!this.needsJwt(context)) {
 			return undefined;
 		}
 		if (err) {
@@ -56,16 +53,7 @@ export default class JwtAuthGuard extends AuthGuard("jwt") {
 	}
 
 	private needsJwt(context: ExecutionContext) {
-		const roles = this.reflector.getAllAndOverride<Roles[] | undefined>(
-			ROLES_KEY,
-			[context.getHandler(), context.getClass()],
-		);
-		if (
-			roles?.includes(Roles.Anonymous) ||
-			roles?.includes(Roles.Microservice)
-		) {
-			return false;
-		}
-		return true;
+		const authMethods = this.rolesGuard.getAuthMethod(context);
+		return authMethods.includes(AuthMethod.JWT);
 	}
 }
