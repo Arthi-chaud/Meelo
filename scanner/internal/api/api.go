@@ -27,20 +27,12 @@ func GetUserFromAccessToken(config config.Config, accessToken string) (User, err
 	return u, err
 }
 
+func GetAllFilesInLibrary(librarySlug string, config config.Config) ([]File, error) {
+	return getAllItemsInPaginatedQuery[File](fmt.Sprintf("/files?library=%s", librarySlug), config)
+}
+
 func GetAllLibraries(config config.Config) ([]Library, error) {
-	next := "/libraries"
-	libraries := []Library{}
-	for len(next) != 0 {
-		res, err := request("GET", next, nil, config)
-		if err != nil {
-			return []Library{}, err
-		}
-		var page = Page[Library]{}
-		err = validate(res, &page)
-		libraries = append(libraries, page.Items...)
-		next = page.Metadata.Next
-	}
-	return libraries, nil
+	return getAllItemsInPaginatedQuery[Library]("/libraries", config)
 }
 
 func GetLibrary(config config.Config, librarySlug string) (Library, error) {
@@ -80,6 +72,22 @@ func request(method string, url string, body io.Reader, config config.Config) (s
 		return "", err
 	}
 	return string(b), nil
+}
+
+func getAllItemsInPaginatedQuery[T any](path string, c config.Config) ([]T, error) {
+	next := path
+	items := []T{}
+	for len(next) != 0 {
+		res, err := request("GET", next, nil, c)
+		if err != nil {
+			return []T{}, err
+		}
+		var page = Page[T]{}
+		err = validate(res, &page)
+		items = append(items, page.Items...)
+		next = page.Metadata.Next
+	}
+	return items, nil
 }
 
 func validate[T any](res string, obj *T) error {

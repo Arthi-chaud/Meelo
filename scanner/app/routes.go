@@ -63,7 +63,7 @@ func (s *ScannerContext) Scan(c echo.Context) error {
 		c.NoContent(http.StatusServiceUnavailable)
 	}
 	for _, lib := range libraries {
-		task := s.worker.AddTask(t.NewLibraryScanTask(lib.Slug, *s.config))
+		task := s.worker.AddTask(t.NewLibraryScanTask(lib, *s.config))
 		glg.Logf("Task added to queue: %s", task.Name)
 	}
 	return c.JSON(http.StatusAccepted, ScannerStatus{Message: TaskAddedtoQueueMessage})

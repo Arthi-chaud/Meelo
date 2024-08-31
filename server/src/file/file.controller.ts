@@ -29,6 +29,7 @@ import LibraryService from "src/library/library.service";
 import LibraryQueryParameters from "src/library/models/library.query-parameters";
 import { PaginationParameters } from "src/pagination/models/pagination-parameters";
 import Response, { ResponseType } from "src/response/response.decorator";
+import { DefaultRoleAndMicroservice } from "src/authentication/roles/roles.decorators";
 
 class Selector {
 	@IsOptional()
@@ -67,6 +68,7 @@ export default class FileController {
 	@ApiOperation({
 		summary: "Get multiple File entries",
 	})
+	@DefaultRoleAndMicroservice()
 	@Get()
 	@Response({
 		returns: File,
