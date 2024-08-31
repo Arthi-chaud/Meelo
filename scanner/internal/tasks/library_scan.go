@@ -2,6 +2,7 @@ package tasks
 
 import (
 	"fmt"
+	"math"
 	"mime"
 	"path"
 	"strings"
@@ -10,6 +11,7 @@ import (
 	"github.com/Arthi-chaud/Meelo/scanner/internal/api"
 	"github.com/Arthi-chaud/Meelo/scanner/internal/config"
 	"github.com/Arthi-chaud/Meelo/scanner/internal/filesystem"
+	"github.com/Arthi-chaud/Meelo/scanner/internal/parser"
 	"github.com/kpango/glg"
 )
 
@@ -38,13 +40,57 @@ func exec(library api.Library, c config.Config) error {
 			continue
 		}
 		stringMime := mime.TypeByExtension(path.Ext(fileInDir))
-		if (strings.HasPrefix(stringMime, "video/") || strings.HasPrefix(stringMime, "audio/")) {
+		if strings.HasPrefix(stringMime, "video/") || strings.HasPrefix(stringMime, "audio/") {
 			pathsNotRegistered = append(pathsNotRegistered, fileInDir)
 		} else {
-			glg.Warnf("File '%s' does not seem to be an audio or video file", path.Base(fileInDir))
+			glg.Warnf("File '%s' does not seem to be an audio or video file. Ignored.", path.Base(fileInDir))
 		}
 	}
 	glg.Debugf("Library '%s' has %d new files", library.Slug, len(pathsNotRegistered))
-
+	successfulRegistrations := scanAndPostFiles(pathsNotRegistered, c)
+	glg.Logf("Library '%s' has registered %d new files", library.Slug, successfulRegistrations)
 	return nil
+}
+
+func scanAndPostFiles(filePaths []string, c config.Config) int {
+	const chunkSize = 5
+	successfulRegistrations := 0
+	scanResChan := make(chan ScanRes, chunkSize)
+	defer close(scanResChan)
+	fileCount := len(filePaths)
+	for i := 0; i < fileCount; i += chunkSize {
+		filesChunk := filePaths[i:(int)(math.Min(float64(i+chunkSize), float64(fileCount)))]
+		for _, file := range filesChunk {
+			glg.Debug(file)
+			go scanAndPushResToChan(file, c.UserSettings, scanResChan)
+		}
+		for range len(filesChunk) {
+			res := <-scanResChan
+			if len(res.errors) != 0 {
+				glg.Errorf("Parsing '%s' failed:", res.filePath)
+				for _, err := range res.errors {
+					glg.Trace(err.Error())
+				}
+				continue
+			}
+			//TODO Push to API
+			successfulRegistrations++
+		}
+	}
+	return successfulRegistrations
+}
+
+type ScanRes struct {
+	filePath string
+	metadata internal.Metadata
+	errors   []error
+}
+
+func scanAndPushResToChan(filePath string, c config.UserSettings, outputChan chan ScanRes) {
+	metadata, errors := parser.ParseMetadata(c, filePath)
+	outputChan <- ScanRes{
+		filePath: filePath,
+		metadata: metadata,
+		errors:   errors,
+	}
 }

@@ -36,6 +36,5 @@ func ParseMetadata(config c.UserSettings, filePath string) (internal.Metadata, [
 	if metadata.IsCompilation {
 		metadata.AlbumArtist = ""
 	}
-	//TODO Illustration
 	return metadata, append(errors, internal.SanitizeAndValidateMetadata(&metadata)...)
 }
