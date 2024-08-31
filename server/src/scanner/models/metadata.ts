@@ -16,6 +16,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+import { ApiProperty, ApiPropertyOptional } from "@nestjs/swagger";
 import { TrackType } from "@prisma/client";
 import {
 	IsBoolean,
@@ -37,6 +38,7 @@ export default class Metadata {
 	/**
 	 * If the track is from a compilation album
 	 */
+	@ApiProperty()
 	@IsBoolean()
 	@IsDefined()
 	compilation: boolean;
@@ -47,14 +49,17 @@ export default class Metadata {
 	@IsString()
 	@IsNotEmpty()
 	@IsDefined()
+	@ApiProperty()
 	artist: string;
 
+	@ApiProperty()
 	@IsString({ each: true })
 	featuring: string[] = [];
 
 	/**
 	 * Name of the artist of the parent album
 	 */
+	@ApiPropertyOptional()
 	@IsString()
 	@IsNotEmpty()
 	@IsOptional()
@@ -63,6 +68,7 @@ export default class Metadata {
 	/**
 	 * Name of the album of the track
 	 */
+	@ApiProperty()
 	@IsString()
 	@IsNotEmpty()
 	@IsDefined()
@@ -71,6 +77,7 @@ export default class Metadata {
 	/**
 	 * Name of the release of the track
 	 */
+	@ApiProperty()
 	@IsString()
 	@IsNotEmpty()
 	@IsDefined()
@@ -79,6 +86,7 @@ export default class Metadata {
 	/**
 	 * Name of the track
 	 */
+	@ApiProperty()
 	@IsString()
 	@IsNotEmpty()
 	@IsDefined()
@@ -87,6 +95,7 @@ export default class Metadata {
 	/**
 	 * Release date of the track
 	 */
+	@ApiPropertyOptional()
 	@IsDate()
 	@IsDefined()
 	@IsOptional()
@@ -95,6 +104,7 @@ export default class Metadata {
 	/**
 	 * Index of the track on the disc
 	 */
+	@ApiPropertyOptional()
 	@IsPositive()
 	@IsNumber()
 	@IsOptional()
@@ -103,6 +113,7 @@ export default class Metadata {
 	/**
 	 * Index of the disc the track is on
 	 */
+	@ApiPropertyOptional()
 	@IsPositive()
 	@IsNumber()
 	@IsOptional()
@@ -111,6 +122,7 @@ export default class Metadata {
 	/**
 	 * Bitrate of the file
 	 */
+	@ApiPropertyOptional()
 	@IsPositive()
 	@IsNumber()
 	@IsOptional()
@@ -119,6 +131,7 @@ export default class Metadata {
 	/**
 	 * Duration in seconds of the track
 	 */
+	@ApiPropertyOptional()
 	@IsPositive()
 	@IsNumber()
 	@IsOptional()
@@ -127,6 +140,7 @@ export default class Metadata {
 	/**
 	 * Type of the track
 	 */
+	@ApiProperty()
 	@IsEnum(TrackType)
 	@IsDefined()
 	type: TrackType;
@@ -134,6 +148,7 @@ export default class Metadata {
 	/**
 	 * Genres of the track
 	 */
+	@ApiProperty()
 	@IsString({ each: true })
 	@IsDefined()
 	genres: string[];
@@ -141,6 +156,7 @@ export default class Metadata {
 	/**
 	 * Discogs ID of the parent release
 	 */
+	@ApiProperty()
 	@IsString()
 	@Matches(/^\d+$/, {
 		message: "Discogs IDs should be at least one digit long",

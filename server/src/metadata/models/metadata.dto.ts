@@ -16,26 +16,36 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { SetMetadata } from "@nestjs/common";
-import RoleEnum from "./roles.enum";
+import { ApiProperty } from "@nestjs/swagger";
+import { IsDefined, IsNotEmpty } from "class-validator";
+import {
+	HasMimeType,
+	IsFile,
+	MaxFileSize,
+	MemoryStoredFile,
+} from "nestjs-form-data";
+import Metadata from "src/scanner/models/metadata";
 
-export const ROLES_KEY = "roles";
-export const Role = (...roles: RoleEnum[]) => SetMetadata(ROLES_KEY, roles);
+export default class MetadataDto extends Metadata {
+	@IsDefined()
+	@IsNotEmpty()
+	@ApiProperty({
+		description:
+			"Absolute path of the file. An error will be returned if the path is not absolute, or does not belong to any library",
+	})
+	path: string;
 
-/**
- * Controller / Route decorator to allow only admin users to use it
- */
-export const Admin = () => Role(RoleEnum.Admin);
-
-/**
- * Route decorator to allow anonymous user to request methods
- */
-export const Public = () => Role(RoleEnum.Anonymous);
-
-export const MicroserviceOnly = () => Role(RoleEnum.Microservice);
-
-/**
- * Route decorator to allow (anonymous or not depending on settings )user + microservices to request methods
- */
-export const DefaultRoleAndMicroservice = () =>
-	Role(RoleEnum.Default, RoleEnum.Microservice);
+	@IsFile()
+	@ApiProperty({
+		type: "file",
+		properties: {
+			file: {
+				type: "string",
+				format: "binary",
+			},
+		},
+	})
+	@HasMimeType(["image/*"])
+	@MaxFileSize(20 * 1e6)
+	illustration?: MemoryStoredFile;
+}

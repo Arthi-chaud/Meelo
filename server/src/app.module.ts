@@ -46,6 +46,8 @@ import PlaylistModule from "./playlist/playlist.module";
 import { MeiliSearchModule } from "nestjs-meilisearch";
 import { StreamModule } from "./stream/stream.module";
 import { SearchModule } from "./search/search.module";
+import { MetadataModule } from "./metadata/metadata.module";
+import { MemoryStoredFile, NestjsFormDataModule } from "nestjs-form-data";
 
 @Module({
 	imports: [
@@ -65,6 +67,12 @@ import { SearchModule } from "./search/search.module";
 				removeOnComplete: true,
 				removeOnFail: true,
 			},
+		}),
+		NestjsFormDataModule.config({
+			storage: MemoryStoredFile,
+			isGlobal: true,
+			cleanupAfterSuccessHandle: true,
+			cleanupAfterFailedHandle: true,
 		}),
 		ArtistModule,
 		AlbumModule,
@@ -90,6 +98,7 @@ import { SearchModule } from "./search/search.module";
 		ScannerModule,
 		StreamModule,
 		SearchModule,
+		MetadataModule,
 	],
 	controllers: [AppController],
 	providers: Plugins.AppProviders,
