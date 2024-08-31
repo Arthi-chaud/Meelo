@@ -46,6 +46,7 @@ namespace FileQueryParameters {
 	 */
 	export type ManyWhereInput = Partial<
 		RequireAtLeastOne<{
+			inFolder: string;
 			library: LibraryQueryParameters.WhereInput;
 			id: { in: File["id"][] };
 			paths: File["path"][];
