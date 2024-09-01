@@ -40,12 +40,6 @@ import { version } from "package.json";
 import IllustrationStats from "./models/illustration-stats";
 import md5 from "md5";
 
-type IllustrationExtractStatus =
-	| "extracted"
-	| "error"
-	| "already-extracted"
-	| "different-illustration";
-
 /**
  * A service to handle illustration files (downloads, extractions, conversion & streaming)
  * For anything related to Illustration models, see `Illustration Repository`

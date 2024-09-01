@@ -289,12 +289,7 @@ export default class IllustrationRepository {
 			.catch(() => {});
 	}
 
-	/**
-	 * Extract the illustration embedded into/in the same folder as the source file
-	 * Then creates illustration item in DB (according to the type (release, disc, or track))
-	 * @returns the path of the saved file
-	 */
-	async registerTrackFileIllustration(
+	async registerTrackIllustration(
 		where: TrackQueryParameters.WhereInput,
 		sourceFilePath: string,
 	): Promise<Illustration | null> {
@@ -304,6 +299,21 @@ export default class IllustrationRepository {
 		if (extractedIllustration == null) {
 			return null;
 		}
+		return this.registerTrackIllustrationFromBuffer(
+			where,
+			extractedIllustration,
+		);
+	}
+
+	/**
+	 * Extract the illustration embedded into/in the same folder as the source file
+	 * Then creates illustration item in DB (according to the type (release, disc, or track))
+	 * @returns the path of the saved file
+	 */
+	async registerTrackIllustrationFromBuffer(
+		where: TrackQueryParameters.WhereInput,
+		extractedIllustration: Buffer,
+	): Promise<Illustration | null> {
 		const track = await this.trackService.get(where, { release: true });
 		const logRegistration = (
 			disc: number | null,

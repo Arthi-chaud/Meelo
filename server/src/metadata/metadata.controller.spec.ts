@@ -17,6 +17,15 @@ import MetadataSavedResponse from "./models/metadata-saved.dto";
 import FileService from "src/file/file.service";
 import SongService from "src/song/song.service";
 import SongModule from "src/song/song.module";
+import { createReadStream, existsSync, rmSync } from "fs";
+import { dirname } from "path";
+import IllustrationModule from "src/illustration/illustration.module";
+import IllustrationRepository from "src/illustration/illustration.repository";
+import ArtistModule from "src/artist/artist.module";
+import ReleaseModule from "src/release/release.module";
+import TrackModule from "src/track/track.module";
+import PlaylistModule from "src/playlist/playlist.module";
+import SettingsModule from "src/settings/settings.module";
 
 const validMetadata: MetadataDto = {
 	// belongs to library 2
@@ -43,6 +52,7 @@ const applyFormFields = (r: request.Test, object: MetadataDto) => {
 			r.field(key, value.toString());
 		}
 	});
+	r.attach("illustration", createReadStream("test/assets/cover.jpg"));
 	return r;
 };
 
@@ -56,6 +66,7 @@ describe("Metadata Controller", () => {
 	beforeAll(async () => {
 		module = await createTestingModule({
 			imports: [
+				IllustrationModule,
 				LibraryModule,
 				FileManagerModule,
 				PrismaModule,
@@ -63,9 +74,14 @@ describe("Metadata Controller", () => {
 				ScannerModule,
 				MetadataModule,
 				SongModule,
+				ArtistModule,
+				ReleaseModule,
+				TrackModule,
+				PlaylistModule,
+				SettingsModule,
 			],
 			controllers: [MetadataController],
-			providers: [PrismaService],
+			providers: [PrismaService, IllustrationRepository],
 		})
 			.overrideProvider(PrismaService)
 			.useClass(TestPrismaService)
@@ -158,15 +174,28 @@ describe("Metadata Controller", () => {
 
 			const song = await songService.get(
 				{ id: createdMetadata.songId },
-				{ artist: true, featuring: true, master: true },
+				{
+					artist: true,
+					featuring: true,
+					master: true,
+					illustration: true,
+				},
 			);
 			expect(song.name).toBe("...Baby One More Time");
 			expect(song.artist.name).toBe(validMetadata.artist);
-			expect(song.featuring.length).toBe(2)
+			expect(song.featuring.length).toBe(2);
 			expect(song.featuring[0].name).toBe("B");
 			expect(song.featuring[1].name).toBe(validMetadata.featuring[0]);
-			expect(song.registeredAt).toStrictEqual(validMetadata.registrationDate);
+			expect(song.registeredAt).toStrictEqual(
+				validMetadata.registrationDate,
+			);
 			expect(song.masterId).toBe(file.track!.id);
+
+			const illustrationPath = `test/metadata/${
+				song.illustration!.id
+			}/cover.jpg`;
+			expect(existsSync(illustrationPath)).toBe(true);
+			rmSync(dirname(illustrationPath), { recursive: true, force: true });
 		});
 	});
 });

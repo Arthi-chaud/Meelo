@@ -410,7 +410,7 @@ export default class TaskRunner {
 			);
 
 			this.illustrationRepository
-				.registerTrackFileIllustration({ id: track.id }, fullFilePath)
+				.registerTrackIllustration({ id: track.id }, fullFilePath)
 				.catch(() => {})
 				.then(() => {
 					if (track.type == "Video") {
