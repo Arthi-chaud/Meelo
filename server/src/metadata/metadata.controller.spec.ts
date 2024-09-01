@@ -13,6 +13,10 @@ import { MetadataModule } from "./metadata.module";
 import { MetadataController } from "./metadata.controller";
 import MetadataDto from "./models/metadata.dto";
 import request from "supertest";
+import MetadataSavedResponse from "./models/metadata-saved.dto";
+import FileService from "src/file/file.service";
+import SongService from "src/song/song.service";
+import SongModule from "src/song/song.module";
 
 const validMetadata: MetadataDto = {
 	// belongs to library 2
@@ -21,10 +25,10 @@ const validMetadata: MetadataDto = {
 	registrationDate: new Date("2000-04-03"),
 	compilation: false,
 	artist: "A",
-	featuring: ["B"],
+	featuring: ["C"],
 	album: "Album",
 	release: "Album (Deluxe Edition)",
-	name: "...Baby One More Time",
+	name: "...Baby One More Time (feat. B)",
 	type: "Audio",
 	genres: ["My Genre"],
 };
@@ -44,6 +48,8 @@ const applyFormFields = (r: request.Test, object: MetadataDto) => {
 
 describe("Metadata Controller", () => {
 	let app: INestApplication;
+	let fileService: FileService;
+	let songService: SongService;
 	let dummyRepository: TestPrismaService;
 
 	let module: TestingModule;
@@ -56,6 +62,7 @@ describe("Metadata Controller", () => {
 				FileModule,
 				ScannerModule,
 				MetadataModule,
+				SongModule,
 			],
 			controllers: [MetadataController],
 			providers: [PrismaService],
@@ -65,6 +72,8 @@ describe("Metadata Controller", () => {
 			.compile();
 		app = await SetupApp(module);
 		dummyRepository = module.get(PrismaService);
+		fileService = module.get(FileService);
+		songService = module.get(SongService);
 		await dummyRepository.onModuleInit();
 	});
 
@@ -127,13 +136,37 @@ describe("Metadata Controller", () => {
 			});
 		});
 
-		it("Should register metadata", () => {
-			return applyFormFields(
+		it("Should register metadata", async () => {
+			const res = await applyFormFields(
 				request(app.getHttpServer()).post(`/metadata`),
 				validMetadata,
 			).expect(201);
-			//TODO Check the correct creation of items
-			//TODO MetadataCreaedDto
+			const createdMetadata: MetadataSavedResponse = res.body;
+			expect(createdMetadata.trackId).toBeGreaterThan(0);
+			expect(createdMetadata.libraryId).toBeGreaterThan(0);
+			expect(createdMetadata.songId).toBeGreaterThan(0);
+			expect(createdMetadata.sourceFileId).toBeGreaterThan(0);
+			expect(createdMetadata.releaseId).toBeGreaterThan(0);
+			const file = await fileService.get(
+				{ id: createdMetadata.sourceFileId },
+				{ track: true },
+			);
+			expect(file.id).toBe(createdMetadata.sourceFileId);
+			expect(file.md5Checksum).toBe(validMetadata.checksum);
+			expect(file.libraryId).toBe(createdMetadata.libraryId);
+			expect(file.track!.id).toBe(createdMetadata.trackId);
+
+			const song = await songService.get(
+				{ id: createdMetadata.songId },
+				{ artist: true, featuring: true, master: true },
+			);
+			expect(song.name).toBe("...Baby One More Time");
+			expect(song.artist.name).toBe(validMetadata.artist);
+			expect(song.featuring.length).toBe(2)
+			expect(song.featuring[0].name).toBe("B");
+			expect(song.featuring[1].name).toBe(validMetadata.featuring[0]);
+			expect(song.registeredAt).toStrictEqual(validMetadata.registrationDate);
+			expect(song.masterId).toBe(file.track!.id);
 		});
 	});
 });

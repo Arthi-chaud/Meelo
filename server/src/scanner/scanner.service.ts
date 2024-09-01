@@ -90,6 +90,7 @@ export default class ScannerService {
 			await this.parserService.extractFeaturedArtistsFromSongName(
 				metadata.name,
 			);
+		parsedFeaturingArtists.push(...metadata.featuring);
 		let parsedArtistName = metadata.artist;
 
 		if (metadata.artist !== albumArtist?.name) {

@@ -53,8 +53,9 @@ export default class Metadata {
 	@ApiProperty()
 	artist: string;
 
-	@ApiProperty()
+	@ApiPropertyOptional()
 	@IsArray()
+	@IsOptional()
 	@IsString({ each: true })
 	featuring: string[] = [];
 

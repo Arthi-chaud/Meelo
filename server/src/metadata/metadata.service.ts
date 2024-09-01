@@ -26,6 +26,7 @@ import { LibraryNotFoundException } from "src/library/library.exceptions";
 import FileService from "src/file/file.service";
 import * as path from "path";
 import { InvalidRequestException } from "src/exceptions/meelo-exception";
+import MetadataSavedResponse from "./models/metadata-saved.dto";
 
 @Injectable()
 export class MetadataService {
@@ -36,7 +37,7 @@ export class MetadataService {
 		private libraryService: LibraryService,
 		private fileService: FileService,
 	) {}
-	async saveMetadata(m: MetadataDto) {
+	async saveMetadata(m: MetadataDto): Promise<MetadataSavedResponse> {
 		if (
 			m.path.includes("/../") ||
 			m.path.startsWith("../") ||
@@ -62,7 +63,16 @@ export class MetadataService {
 				m,
 				fileEntry,
 			);
-			//TODO return something in controller?
+			if (m.illustration) {
+				//todo illustration
+			}
+			return {
+				trackId: createdTrack.id,
+				sourceFileId: fileEntry.id,
+				libraryId: parentLibrary.id,
+				songId: createdTrack.songId,
+				releaseId: createdTrack.releaseId,
+			};
 		} catch (e) {
 			await this.fileService.delete({ id: fileEntry.id });
 			throw e;

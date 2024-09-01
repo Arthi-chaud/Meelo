@@ -36,6 +36,6 @@ export class MetadataController {
 	@ApiConsumes("multipart/form-data")
 	@FormDataRequest({ storage: MemoryStoredFile })
 	async saveFile(@Body() metadata: MetadataDto) {
-		await this.metadataService.saveMetadata(metadata);
+		return this.metadataService.saveMetadata(metadata);
 	}
 }
