@@ -52,7 +52,7 @@ const applyFormFields = (r: request.Test, object: MetadataDto) => {
 			r.field(key, value.toString());
 		}
 	});
-	r.attach("illustration", createReadStream("test/assets/cover.jpg"));
+	r.attach("illustration", createReadStream("test/assets/cover2.jpg"));
 	return r;
 };
 
@@ -191,7 +191,7 @@ describe("Metadata Controller", () => {
 			);
 			expect(song.masterId).toBe(file.track!.id);
 
-			const illustrationPath = `test/metadata/${
+			const illustrationPath = `test/assets/metadata/${
 				song.illustration!.id
 			}/cover.jpg`;
 			expect(existsSync(illustrationPath)).toBe(true);
