@@ -16,8 +16,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { ApiProperty } from "@nestjs/swagger";
-import { IsDefined, IsNotEmpty } from "class-validator";
+import { ApiProperty, ApiPropertyOptional } from "@nestjs/swagger";
+import { IsDefined, IsNotEmpty, IsOptional } from "class-validator";
 import {
 	HasMimeType,
 	IsFile,
@@ -35,8 +35,19 @@ export default class MetadataDto extends Metadata {
 	})
 	path: string;
 
+	@IsDefined()
+	@IsNotEmpty()
+	@ApiProperty()
+	checksum: string;
+
+	@IsDefined()
+	@IsNotEmpty()
+	@ApiProperty()
+	registrationDate: Date;
+
+	@IsOptional()
 	@IsFile()
-	@ApiProperty({
+	@ApiPropertyOptional({
 		type: "file",
 		properties: {
 			file: {

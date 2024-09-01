@@ -18,8 +18,15 @@
 
 import { Module } from "@nestjs/common";
 import { MetadataController } from "./metadata.controller";
+import { MetadataService } from "./metadata.service";
+import ScannerModule from "src/scanner/scanner.module";
+import SettingsModule from "src/settings/settings.module";
+import LibraryModule from "src/library/library.module";
+import FileModule from "src/file/file.module";
 
 @Module({
 	controllers: [MetadataController],
+	providers: [MetadataService],
+	imports: [ScannerModule, SettingsModule, LibraryModule, FileModule],
 })
 export class MetadataModule {}

@@ -16,29 +16,17 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import {
-	Body,
-	Controller,
-	Post,
-	UploadedFile,
-	UseInterceptors,
-} from "@nestjs/common";
-import { FileInterceptor } from "@nestjs/platform-express";
-import {
-	ApiBody,
-	ApiConsumes,
-	ApiOperation,
-	ApiTags,
-	getSchemaPath,
-} from "@nestjs/swagger";
-import { Express } from "express";
+import { Body, Controller, Post } from "@nestjs/common";
+import { ApiConsumes, ApiOperation, ApiTags } from "@nestjs/swagger";
 import MetadataDto from "./models/metadata.dto";
 import { MicroserviceOnly } from "src/authentication/roles/roles.decorators";
 import { FormDataRequest, MemoryStoredFile } from "nestjs-form-data";
+import { MetadataService } from "./metadata.service";
 
 @ApiTags("Metadata")
 @Controller("metadata")
 export class MetadataController {
+	constructor(private metadataService: MetadataService) {}
 	@ApiOperation({
 		description:
 			"Handles the metadata of a single media file, and creates the related artist, album, etc.",
@@ -48,6 +36,6 @@ export class MetadataController {
 	@ApiConsumes("multipart/form-data")
 	@FormDataRequest({ storage: MemoryStoredFile })
 	async saveFile(@Body() metadata: MetadataDto) {
-		console.log(metadata);
+		await this.metadataService.saveMetadata(metadata);
 	}
 }

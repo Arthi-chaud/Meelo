@@ -19,6 +19,7 @@
 import { ApiProperty, ApiPropertyOptional } from "@nestjs/swagger";
 import { TrackType } from "@prisma/client";
 import {
+	IsArray,
 	IsBoolean,
 	IsDate,
 	IsDefined,
@@ -53,6 +54,7 @@ export default class Metadata {
 	artist: string;
 
 	@ApiProperty()
+	@IsArray()
 	@IsString({ each: true })
 	featuring: string[] = [];
 
@@ -151,6 +153,7 @@ export default class Metadata {
 	@ApiProperty()
 	@IsString({ each: true })
 	@IsDefined()
+	@IsArray()
 	genres: string[];
 
 	/**
