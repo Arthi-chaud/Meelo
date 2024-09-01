@@ -2,6 +2,7 @@ package parser
 
 import (
 	"strings"
+	"time"
 
 	"github.com/Arthi-chaud/Meelo/scanner/internal"
 	c "github.com/Arthi-chaud/Meelo/scanner/internal/config"
@@ -36,5 +37,12 @@ func ParseMetadata(config c.UserSettings, filePath string) (internal.Metadata, [
 	if metadata.IsCompilation {
 		metadata.AlbumArtist = ""
 	}
+	metadata.Path = filePath
+	metadata.RegistrationDate = time.Now()
+	checksum, err := internal.ComputeChecksum(filePath);
+	if (err != nil) {
+		errors = append(errors, err)
+	}
+	metadata.Checksum = checksum
 	return metadata, append(errors, internal.SanitizeAndValidateMetadata(&metadata)...)
 }

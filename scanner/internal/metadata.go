@@ -41,6 +41,9 @@ type Metadata struct {
 	DiscogsId string `json:"discogsId"`
 	// Tells where an illustration can be found.
 	IllustrationLocation IllustrationLocation
+	RegistrationDate     time.Time `validate:"required" json:"registrationDate"`
+	Checksum             string    `validate:"required" json:"checksum"`
+	Path                 string    `validate:"required" json:"path"`
 }
 
 type TrackType string
