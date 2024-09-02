@@ -17,7 +17,8 @@
  */
 
 import { ApiProperty, ApiPropertyOptional } from "@nestjs/swagger";
-import { IsDefined, IsNotEmpty, IsOptional } from "class-validator";
+import { Type } from "class-transformer";
+import { IsDate, IsDefined, IsNotEmpty, IsOptional } from "class-validator";
 import {
 	HasMimeType,
 	IsFile,
@@ -43,6 +44,8 @@ export default class MetadataDto extends Metadata {
 	@IsDefined()
 	@IsNotEmpty()
 	@ApiProperty()
+	@IsDate()
+	@Type(() => Date)
 	registrationDate: Date;
 
 	@IsOptional()

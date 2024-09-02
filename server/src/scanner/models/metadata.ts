@@ -18,6 +18,7 @@
 
 import { ApiProperty, ApiPropertyOptional } from "@nestjs/swagger";
 import { TrackType } from "@prisma/client";
+import { Transform, Type } from "class-transformer";
 import {
 	IsArray,
 	IsBoolean,
@@ -41,6 +42,7 @@ export default class Metadata {
 	 */
 	@ApiProperty()
 	@IsBoolean()
+	@Transform(({ value }) => value === "true")
 	@IsDefined()
 	compilation: boolean;
 
@@ -57,7 +59,7 @@ export default class Metadata {
 	@IsArray()
 	@IsOptional()
 	@IsString({ each: true })
-	featuring: string[] = [];
+	featuring?: string[];
 
 	/**
 	 * Name of the artist of the parent album
@@ -99,9 +101,10 @@ export default class Metadata {
 	 * Release date of the track
 	 */
 	@ApiPropertyOptional()
-	@IsDate()
 	@IsDefined()
 	@IsOptional()
+	@IsDate()
+	@Type(() => Date)
 	releaseDate?: Date;
 
 	/**
@@ -151,11 +154,11 @@ export default class Metadata {
 	/**
 	 * Genres of the track
 	 */
-	@ApiProperty()
+	@ApiPropertyOptional()
 	@IsString({ each: true })
-	@IsDefined()
+	@IsOptional()
 	@IsArray()
-	genres: string[];
+	genres?: string[];
 
 	/**
 	 * Discogs ID of the parent release

@@ -185,7 +185,7 @@ describe("Metadata Controller", () => {
 			expect(song.artist.name).toBe(validMetadata.artist);
 			expect(song.featuring.length).toBe(2);
 			expect(song.featuring[0].name).toBe("B");
-			expect(song.featuring[1].name).toBe(validMetadata.featuring[0]);
+			expect(song.featuring[1].name).toBe(validMetadata.featuring![0]);
 			expect(song.registeredAt).toStrictEqual(
 				validMetadata.registrationDate,
 			);

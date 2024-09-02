@@ -96,7 +96,7 @@ export class MetadataService {
 		}
 		const filePath = path.normalize(
 			absoluteFilePath.slice(
-				this.settingsService.settingsValues.dataFolder.length,
+				this.settingsService.settingsValues.dataFolder.length + 1, // for trailing slash
 			),
 		);
 		const allLibraries = await this.libraryService.getMany({});
@@ -107,8 +107,13 @@ export class MetadataService {
 	}
 	private toRelativePath(fullFilePath: string, parentLibrary: Library) {
 		return fullFilePath.slice(
-			path.normalize(this.settingsService.settingsValues.dataFolder)
-				.length + path.normalize(parentLibrary.path).length,
+			path.normalize(
+				path.join(
+					this.settingsService.settingsValues.dataFolder,
+					"/",
+					parentLibrary.path,
+				),
+			).length,
 		);
 	}
 }

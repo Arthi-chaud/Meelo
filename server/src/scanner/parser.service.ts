@@ -178,7 +178,7 @@ export default class ParserService {
 	 */
 	async extractFeaturedArtistsFromSongName(
 		songName: string,
-	): Promise<Pick<Metadata, "name" | "featuring">> {
+	): Promise<Required<Pick<Metadata, "name" | "featuring">>> {
 		const groups = this.splitGroups(songName, { keepDelimiters: true });
 		const groupsWithoutFeaturings: string[] = [];
 		const featuringArtists: string[] = [];
@@ -256,7 +256,7 @@ export default class ParserService {
 	 */
 	async extractFeaturedArtistsFromArtistName(
 		artistName: string,
-	): Promise<Pick<Metadata, "artist" | "featuring">> {
+	): Promise<Required<Pick<Metadata, "artist" | "featuring">>> {
 		try {
 			const { name } = await this.artistService.get({
 				slug: new Slug(artistName),

@@ -76,7 +76,7 @@ export default class ScannerService {
 	 */
 	async registerMetadata(metadata: Metadata, file: File) {
 		const genres = await Promise.all(
-			metadata.genres.map((genre) =>
+			(metadata.genres ?? []).map((genre) =>
 				this.genreService.getOrCreate({ name: genre }),
 			),
 		);
@@ -90,7 +90,7 @@ export default class ScannerService {
 			await this.parserService.extractFeaturedArtistsFromSongName(
 				metadata.name,
 			);
-		parsedFeaturingArtists.push(...metadata.featuring);
+		parsedFeaturingArtists.push(...(metadata.featuring ?? []));
 		let parsedArtistName = metadata.artist;
 
 		if (metadata.artist !== albumArtist?.name) {
