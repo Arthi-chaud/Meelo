@@ -19,7 +19,8 @@
 import { Body, Controller, Post } from "@nestjs/common";
 import { ApiConsumes, ApiOperation, ApiTags } from "@nestjs/swagger";
 import MetadataDto from "./models/metadata.dto";
-import { MicroserviceOnly } from "src/authentication/roles/roles.decorators";
+import { Role } from "src/authentication/roles/roles.decorators";
+import RoleEnum from "src/authentication/roles/roles.enum";
 import { FormDataRequest, MemoryStoredFile } from "nestjs-form-data";
 import { MetadataService } from "./metadata.service";
 
@@ -32,7 +33,7 @@ export class MetadataController {
 			"Handles the metadata of a single media file, and creates the related artist, album, etc.",
 	})
 	@Post()
-	@MicroserviceOnly()
+	@Role(RoleEnum.Microservice, RoleEnum.Admin)
 	@ApiConsumes("multipart/form-data")
 	@FormDataRequest({ storage: MemoryStoredFile })
 	async saveFile(@Body() metadata: MetadataDto) {

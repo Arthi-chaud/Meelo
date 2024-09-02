@@ -32,8 +32,6 @@ export const Admin = () => Role(RoleEnum.Admin);
  */
 export const Public = () => Role(RoleEnum.Anonymous);
 
-export const MicroserviceOnly = () => Role(RoleEnum.Microservice);
-
 /**
  * Route decorator to allow (anonymous or not depending on settings )user + microservices to request methods
  */
