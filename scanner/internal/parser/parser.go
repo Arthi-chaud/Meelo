@@ -34,13 +34,10 @@ func ParseMetadata(config c.UserSettings, filePath string) (internal.Metadata, [
 		})
 	metadata.IsCompilation = internal.Contains(compilationArtistNames, strings.ToLower(metadata.AlbumArtist)) ||
 		internal.Contains(compilationArtistNames, strings.ToLower(metadata.Artist))
-	if metadata.IsCompilation {
-		metadata.AlbumArtist = ""
-	}
 	metadata.Path = filePath
 	metadata.RegistrationDate = time.Now()
-	checksum, err := internal.ComputeChecksum(filePath);
-	if (err != nil) {
+	checksum, err := internal.ComputeChecksum(filePath)
+	if err != nil {
 		errors = append(errors, err)
 	}
 	metadata.Checksum = checksum

@@ -4,6 +4,7 @@ import (
 	"errors"
 	"fmt"
 	"mime"
+	"os"
 	"path"
 	"regexp"
 	"strconv"
@@ -12,6 +13,7 @@ import (
 
 	"github.com/Arthi-chaud/Meelo/scanner/internal"
 	"github.com/Arthi-chaud/Meelo/scanner/internal/config"
+	"github.com/kpango/glg"
 )
 
 func parseMetadataFromPath(config config.UserSettings, filePath string) (internal.Metadata, []error) {
@@ -40,8 +42,14 @@ func parseMetadataFromPath(config config.UserSettings, filePath string) (interna
 		errors = append(errors, mimeError)
 	}
 	metadata.Type = trackType
-	if hasInlineIllustration(filePath) {
-		metadata.IllustrationLocation = internal.Inline
+	if illustrationPath := internal.GetIllustrationFilePath(filePath); len(illustrationPath) > 0 {
+		bytes, err := os.ReadFile(illustrationPath)
+		if err != nil {
+			glg.Fail("An error occured while readling illustration file: ")
+			glg.Fail(err.Error())
+		} else {
+			metadata.IllustrationBytes = bytes
+		}
 	}
 	return metadata, errors
 }
@@ -62,7 +70,7 @@ func getMetadataFromMatches(matches []string, regex *regexp.Regexp) (internal.Me
 	if index := regex.SubexpIndex("Album"); index != -1 {
 		metadata.Album = matches[index]
 	}
-	if index := regex.SubexpIndex("Year"); index != -1 {
+	if index := regex.SubexpIndex("Year"); index != -1 && len(matches[index]) > 0 {
 		date, err := time.Parse("2006", matches[index])
 		if err == nil {
 			metadata.ReleaseDate = date
@@ -70,7 +78,7 @@ func getMetadataFromMatches(matches []string, regex *regexp.Regexp) (internal.Me
 			errors = append(errors, fmt.Errorf("invalid year: '%s'", matches[index]))
 		}
 	}
-	if index := regex.SubexpIndex("Disc"); index != -1 {
+	if index := regex.SubexpIndex("Disc"); index != -1 && len(matches[index]) > 0 {
 		value, err := strconv.Atoi(matches[index])
 		if err == nil {
 			metadata.DiscIndex = int64(value)
@@ -78,7 +86,7 @@ func getMetadataFromMatches(matches []string, regex *regexp.Regexp) (internal.Me
 			errors = append(errors, fmt.Errorf("invalid disc index: '%s'", matches[index]))
 		}
 	}
-	if index := regex.SubexpIndex("Index"); index != -1 {
+	if index := regex.SubexpIndex("Index"); index != -1 && len(matches[index]) > 0 {
 		value, err := strconv.Atoi(matches[index])
 		if err == nil {
 			metadata.Index = int64(value)
@@ -108,8 +116,4 @@ func getTypeFromPath(filePath string) (internal.TrackType, error) {
 		return internal.Audio, nil
 	}
 	return "", errors.New("could not identify the MIME of the file")
-}
-
-func hasInlineIllustration(filePath string) bool {
-	return internal.GetIllustrationFilePath(filePath) != ""
 }

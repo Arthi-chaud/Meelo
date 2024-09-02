@@ -68,5 +68,5 @@ func TestPathCompilation(t *testing.T) {
 	assert.Equal(t, int64(2), m.Index)
 	assert.Empty(t, m.Genres)
 	assert.Equal(t, "My Track", m.Name)
-	assert.Equal(t, internal.IllustrationLocation(""), m.IllustrationLocation)
+	assert.Equal(t, []byte(nil), m.IllustrationBytes)
 }
