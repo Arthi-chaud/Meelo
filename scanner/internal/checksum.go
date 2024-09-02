@@ -14,7 +14,7 @@ func ComputeChecksum(filepath string) (string, error) {
 	fileDate := stat.ModTime()
 	fileSize := stat.Size()
 	hashSource := fmt.Sprintf("%s-%s-%d", filepath, fileDate.Format("2006-01-02 15:04:05"), fileSize)
-	
+
 	// SRC: https://gobyexample.com/sha256-hashes
 	h := sha256.New()
 	h.Write([]byte(hashSource))

@@ -20,7 +20,7 @@ func GetAllFilesInDirectory(dir string) ([]string, error) {
 			return []string{}, err
 		}
 		if i.IsDir() {
-			filesInDir, err := GetAllFilesInDirectory(entryPath);
+			filesInDir, err := GetAllFilesInDirectory(entryPath)
 			if err != nil {
 				return []string{}, err
 			}
