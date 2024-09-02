@@ -20,5 +20,5 @@ func ComputeChecksum(filepath string) (string, error) {
 	h.Write([]byte(hashSource))
 	checksum := h.Sum(nil)
 
-	return string(checksum[:]), nil
+	return fmt.Sprintf("%x", checksum), nil
 }
