@@ -42,7 +42,7 @@ func exec(library api.Library, c config.Config) error {
 		stringMime := mime.TypeByExtension(path.Ext(fileInDir))
 		if strings.HasPrefix(stringMime, "video/") || strings.HasPrefix(stringMime, "audio/") {
 			pathsNotRegistered = append(pathsNotRegistered, fileInDir)
-		} else {
+		} else if !strings.HasPrefix(stringMime, "image/") {
 			glg.Warnf("File '%s' does not seem to be an audio or video file. Ignored.", path.Base(fileInDir))
 		}
 	}
@@ -61,7 +61,6 @@ func scanAndPostFiles(filePaths []string, c config.Config) int {
 	for i := 0; i < fileCount; i += chunkSize {
 		filesChunk := filePaths[i:(int)(math.Min(float64(i+chunkSize), float64(fileCount)))]
 		for _, file := range filesChunk {
-			glg.Debug(file)
 			go scanAndPushResToChan(file, c.UserSettings, scanResChan)
 		}
 		for range len(filesChunk) {
@@ -73,8 +72,13 @@ func scanAndPostFiles(filePaths []string, c config.Config) int {
 				}
 				continue
 			}
-			//TODO Push to API
-			successfulRegistrations++
+			err := api.PostMetadata(c, res.metadata)
+			if err != nil {
+				glg.Fail("Saving Metadata failed. This might be a bug.")
+			} else {
+				successfulRegistrations = successfulRegistrations + 1
+			}
+			//TODO If video, push thumbnail
 		}
 	}
 	return successfulRegistrations
