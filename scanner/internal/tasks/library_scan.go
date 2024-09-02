@@ -72,6 +72,7 @@ func scanAndPostFiles(filePaths []string, c config.Config) int {
 				}
 				continue
 			}
+			glg.Logf("Parsing metadata for '%s' successful.", path.Base(res.filePath))
 			err := api.PostMetadata(c, res.metadata)
 			if err != nil {
 				glg.Fail("Saving Metadata failed. This might be a bug.")

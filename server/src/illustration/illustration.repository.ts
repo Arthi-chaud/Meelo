@@ -272,13 +272,12 @@ export default class IllustrationRepository {
 	 * Deletes Illustration (File + info in DB)
 	 */
 	async deleteIllustration(illustrationId: number) {
-		const illustration = await this.prismaService.illustration
-			.findFirstOrThrow({
-				where: { id: illustrationId },
-			})
-			.catch(() => {
-				throw new IllustrationNotFoundException(illustrationId);
-			});
+		const illustration = await this.prismaService.illustration.findFirst({
+			where: { id: illustrationId },
+		});
+		if (!illustration) {
+			return;
+		}
 		const illustrationDir = this.buildIllustrationDirPath(illustration.id);
 
 		this.illustrationService.deleteIllustrationFolder(illustrationDir);
