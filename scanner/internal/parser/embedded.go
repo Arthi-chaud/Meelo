@@ -78,7 +78,7 @@ func parseMetadataFromEmbeddedTags(filePath string) (internal.Metadata, []error)
 
 func getType(probeData ffprobe.ProbeData) internal.TrackType {
 	videoStream := probeData.FirstVideoStream()
-	if videoStream == nil || videoStream.Disposition.AttachedPic == 1 {
+	if videoStream == nil || videoStream.Disposition.AttachedPic == 1 || videoStream.Duration == "" {
 		return internal.Audio
 	}
 	return internal.Video

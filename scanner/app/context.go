@@ -2,10 +2,10 @@ package main
 
 import (
 	"github.com/Arthi-chaud/Meelo/scanner/internal/config"
-	"github.com/Arthi-chaud/Meelo/scanner/internal/worker"
+	t "github.com/Arthi-chaud/Meelo/scanner/internal/tasks"
 )
 
 type ScannerContext struct {
 	config *config.Config
-	worker *worker.Worker
+	worker *t.Worker
 }

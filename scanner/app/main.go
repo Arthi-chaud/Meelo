@@ -7,7 +7,7 @@ import (
 	_ "github.com/Arthi-chaud/Meelo/scanner/app/docs"
 	"github.com/Arthi-chaud/Meelo/scanner/internal/api"
 	"github.com/Arthi-chaud/Meelo/scanner/internal/config"
-	"github.com/Arthi-chaud/Meelo/scanner/internal/worker"
+	"github.com/Arthi-chaud/Meelo/scanner/internal/tasks"
 	"github.com/kpango/glg"
 	"github.com/labstack/echo/v4"
 	"github.com/swaggo/echo-swagger"
@@ -48,9 +48,9 @@ func setupEcho(c config.Config) *echo.Echo {
 
 	s := ScannerContext{
 		config: &c,
-		worker: worker.NewWorker(),
+		worker: tasks.NewWorker(),
 	}
-	s.worker.StartWorker()
+	s.worker.StartWorker(c)
 
 	e.GET("/", s.Status)
 	e.GET("/tasks", s.Tasks)

@@ -52,7 +52,7 @@ func GetLibrary(config config.Config, librarySlug string) (Library, error) {
 	return l, err
 }
 
-func PostMetadata(config config.Config, m internal.Metadata) error {
+func PostMetadata(config config.Config, m internal.Metadata) (MetadataCreated, error) {
 	reqBody := new(bytes.Buffer)
 	mp := multipart.NewWriter(reqBody)
 	mp.WriteField("compilation", strconv.FormatBool(m.IsCompilation))
@@ -86,7 +86,7 @@ func PostMetadata(config config.Config, m internal.Metadata) error {
 		part, err := mp.CreateFormFile("illustration", "cover.jpg")
 		if err != nil {
 			glg.Fail(err)
-			return err
+			return MetadataCreated{}, err
 		}
 		part.Write(m.IllustrationBytes)
 	}
@@ -95,7 +95,28 @@ func PostMetadata(config config.Config, m internal.Metadata) error {
 	mp.WriteField("path", m.Path)
 	mp.Close()
 
-	_, err := request("POST", "/metadata", reqBody, config, mp.FormDataContentType())
+	res, err := request("POST", "/metadata", reqBody, config, mp.FormDataContentType())
+	if err != nil {
+		return MetadataCreated{}, err
+	}
+	dto := MetadataCreated{}
+	err = validate(res, &dto)
+	return dto, err
+}
+
+func PostThumbnail(config config.Config, trackId int, thumbnailBytes []byte) error {
+	reqBody := new(bytes.Buffer)
+	mp := multipart.NewWriter(reqBody)
+
+	part, err := mp.CreateFormFile("thumbnail", "cover.jpg")
+	if err != nil {
+		glg.Fail(err)
+		return err
+	}
+	part.Write(thumbnailBytes)
+	mp.Close()
+
+	_, err = request("POST", fmt.Sprintf("/tracks/%d/thumbnail", trackId), reqBody, config, mp.FormDataContentType())
 	return err
 }
 

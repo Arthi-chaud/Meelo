@@ -17,10 +17,10 @@ import (
 
 func NewLibraryScanTask(library api.Library, c config.Config) Task {
 	name := fmt.Sprintf("Scan library '%s'.", library.Slug)
-	return createTask(name, func() error { return exec(library, c) })
+	return createTask(name, func(w *Worker) error { return exec(library, c, w) })
 }
 
-func exec(library api.Library, c config.Config) error {
+func exec(library api.Library, c config.Config, w *Worker) error {
 	registeredFiles, err := api.GetAllFilesInLibrary(library.Slug, c)
 	if err != nil {
 		return err
@@ -47,12 +47,12 @@ func exec(library api.Library, c config.Config) error {
 		}
 	}
 	glg.Debugf("Library '%s' has %d new files", library.Slug, len(pathsNotRegistered))
-	successfulRegistrations := scanAndPostFiles(pathsNotRegistered, c)
+	successfulRegistrations := scanAndPostFiles(pathsNotRegistered, c, w)
 	glg.Logf("Library '%s' has registered %d new files", library.Slug, successfulRegistrations)
 	return nil
 }
 
-func scanAndPostFiles(filePaths []string, c config.Config) int {
+func scanAndPostFiles(filePaths []string, c config.Config, w *Worker) int {
 	const chunkSize = 5
 	successfulRegistrations := 0
 	scanResChan := make(chan ScanRes, chunkSize)
@@ -73,13 +73,19 @@ func scanAndPostFiles(filePaths []string, c config.Config) int {
 				continue
 			}
 			glg.Logf("Parsing metadata for '%s' successful.", path.Base(res.filePath))
-			err := api.PostMetadata(c, res.metadata)
+			created, err := api.PostMetadata(c, res.metadata)
 			if err != nil {
 				glg.Fail("Saving Metadata failed. This might be a bug.")
 			} else {
 				successfulRegistrations = successfulRegistrations + 1
 			}
-			//TODO If video, push thumbnail
+			if res.metadata.Type == internal.Video {
+				w.thumbnailQueue <- ThumbnailTask{
+					TrackId:       created.TrackId,
+					TrackDuration: int(res.metadata.Duration),
+					FilePath:      res.filePath,
+				}
+			}
 		}
 	}
 	return successfulRegistrations
