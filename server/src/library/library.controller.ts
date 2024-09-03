@@ -60,6 +60,7 @@ export default class LibraryController {
 		summary: "Get a library",
 	})
 	@Get(":idOrSlug")
+	@DefaultRoleAndMicroservice()
 	async getLibrary(
 		@IdentifierParam(LibraryService)
 		where: LibraryQueryParameters.WhereInput,
