@@ -28,8 +28,7 @@ import PlaylistModule from "src/playlist/playlist.module";
 import SettingsModule from "src/settings/settings.module";
 
 const validMetadata: MetadataDto = {
-	// belongs to library 2
-	path: "test/assets/Music 2/...Baby One More Time.m4a",
+	path: "test/assets/Music/...Baby One More Time.m4a",
 	checksum: "azerty",
 	registrationDate: new Date("2000-04-03"),
 	compilation: false,
@@ -120,7 +119,7 @@ describe("Metadata Controller", () => {
 						request(app.getHttpServer()).post(`/metadata`),
 						{
 							...validMetadata,
-							path: "/videos/Music 2/...Baby One More Time.m4a",
+							path: "/videos/Music/...Baby One More Time.m4a",
 						},
 					)
 						.expect(400)
@@ -171,6 +170,7 @@ describe("Metadata Controller", () => {
 			expect(file.md5Checksum).toBe(validMetadata.checksum);
 			expect(file.libraryId).toBe(createdMetadata.libraryId);
 			expect(file.track!.id).toBe(createdMetadata.trackId);
+			expect(file.path).toBe('...Baby One More Time.m4a');
 
 			const song = await songService.get(
 				{ id: createdMetadata.songId },

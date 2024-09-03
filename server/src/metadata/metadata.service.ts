@@ -28,6 +28,7 @@ import * as path from "path";
 import { InvalidRequestException } from "src/exceptions/meelo-exception";
 import MetadataSavedResponse from "./models/metadata-saved.dto";
 import IllustrationRepository from "src/illustration/illustration.repository";
+import escapeRegex from "src/utils/escape-regex";
 
 @Injectable()
 export class MetadataService {
@@ -94,11 +95,15 @@ export class MetadataService {
 		) {
 			return null;
 		}
-		const filePath = path.normalize(
-			absoluteFilePath.slice(
-				this.settingsService.settingsValues.dataFolder.length + 1, // for trailing slash
+		let filePath = path.normalize(
+			absoluteFilePath.replace(
+				escapeRegex(this.settingsService.settingsValues.dataFolder),
+				"",
 			),
 		);
+		if (filePath.startsWith("/")) {
+			filePath = filePath.slice(1);
+		}
 		const allLibraries = await this.libraryService.getMany({});
 		const matchingLibrary = allLibraries.find((l) =>
 			filePath.startsWith(path.normalize(`${l.path}/`)),
@@ -112,6 +117,7 @@ export class MetadataService {
 					this.settingsService.settingsValues.dataFolder,
 					"/",
 					parentLibrary.path,
+					"/",
 				),
 			).length,
 		);
