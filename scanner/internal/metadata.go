@@ -69,12 +69,11 @@ func SanitizeAndValidateMetadata(m *Metadata) []error {
 	}
 	if m.IsCompilation {
 		m.AlbumArtist = ""
+	} else if len(m.AlbumArtist) == 0 {
+		m.AlbumArtist = m.Artist
 	}
 	if len(m.Artist) == 0 {
 		m.Artist = m.AlbumArtist
-	}
-	if len(m.AlbumArtist) == 0 {
-		m.AlbumArtist = m.Artist
 	}
 	// Validation
 	validationsErrs := validator.New(validator.WithRequiredStructEnabled()).Struct(m)

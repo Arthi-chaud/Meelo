@@ -57,7 +57,9 @@ func PostMetadata(config config.Config, m internal.Metadata) (MetadataCreated, e
 	mp := multipart.NewWriter(reqBody)
 	mp.WriteField("compilation", strconv.FormatBool(m.IsCompilation))
 	mp.WriteField("artist", m.Artist)
-	mp.WriteField("albumArtist", m.AlbumArtist)
+	if len(m.AlbumArtist) > 0 {
+		mp.WriteField("albumArtist", m.AlbumArtist)
+	}
 	mp.WriteField("album", m.Album)
 	mp.WriteField("release", m.Release)
 	mp.WriteField("name", m.Name)

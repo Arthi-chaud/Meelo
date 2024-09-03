@@ -42,7 +42,7 @@ export default class Metadata {
 	 */
 	@ApiProperty()
 	@IsBoolean()
-	@Transform(({ value }) => value === "true")
+	@Transform(({ obj, key }) => obj[key] === "true")
 	@IsDefined()
 	compilation: boolean;
 
