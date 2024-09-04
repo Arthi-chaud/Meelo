@@ -1,9 +1,9 @@
 package tasks
 
 import (
-	"github.com/Arthi-chaud/Meelo/scanner/internal"
 	"github.com/Arthi-chaud/Meelo/scanner/internal/api"
 	"github.com/Arthi-chaud/Meelo/scanner/internal/config"
+	"github.com/Arthi-chaud/Meelo/scanner/internal/illustration"
 )
 
 func SaveThumbnail(t ThumbnailTask, c config.Config) error {
@@ -12,7 +12,7 @@ func SaveThumbnail(t ThumbnailTask, c config.Config) error {
 		t.TrackDuration = 5 // this is abitrary. If the scan os path only, we do not get the duration.
 	}
 
-	thumbnailbytes, err := internal.GetFrame(t.FilePath, thumbnailPosition)
+	thumbnailbytes, err := illustration.GetFrame(t.FilePath, thumbnailPosition)
 	if err != nil {
 		return err
 	}

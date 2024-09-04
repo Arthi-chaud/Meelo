@@ -13,6 +13,7 @@ import (
 
 	"github.com/Arthi-chaud/Meelo/scanner/internal"
 	"github.com/Arthi-chaud/Meelo/scanner/internal/config"
+	"github.com/Arthi-chaud/Meelo/scanner/internal/illustration"
 	"github.com/kpango/glg"
 )
 
@@ -42,7 +43,7 @@ func parseMetadataFromPath(config config.UserSettings, filePath string) (interna
 		errors = append(errors, mimeError)
 	}
 	metadata.Type = trackType
-	if illustrationPath := internal.GetIllustrationFilePath(filePath); len(illustrationPath) > 0 {
+	if illustrationPath := illustration.GetIllustrationFilePath(filePath); len(illustrationPath) > 0 {
 		bytes, err := os.ReadFile(illustrationPath)
 		if err != nil {
 			glg.Fail("An error occured while readling illustration file: ")
