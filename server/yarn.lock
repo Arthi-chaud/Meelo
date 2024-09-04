@@ -2727,6 +2727,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@types/multer@npm:^1.4.12":
+  version: 1.4.12
+  resolution: "@types/multer@npm:1.4.12"
+  dependencies:
+    "@types/express": "npm:*"
+  checksum: 10c0/1250a32a66b7c5929cc5b005dae4ad0768ded9b6b52ba6f90931ff39b4ed775b09a0fd9d880f0836bcac16a9a7febed6a479c6bf108a52a244c4c53badb82a7b
+  languageName: node
+  linkType: hard
+
 "@types/node@npm:*":
   version: 18.14.6
   resolution: "@types/node@npm:18.14.6"
@@ -4585,6 +4594,18 @@ __metadata:
     readable-stream: "npm:^2.2.2"
     typedarray: "npm:^0.0.6"
   checksum: 10c0/2e9864e18282946dabbccb212c5c7cec0702745e3671679eb8291812ca7fd12023f7d8cb36493942a62f770ac96a7f90009dc5c82ad69893438371720fa92617
+  languageName: node
+  linkType: hard
+
+"concat-stream@npm:^2.0.0":
+  version: 2.0.0
+  resolution: "concat-stream@npm:2.0.0"
+  dependencies:
+    buffer-from: "npm:^1.0.0"
+    inherits: "npm:^2.0.3"
+    readable-stream: "npm:^3.0.2"
+    typedarray: "npm:^0.0.6"
+  checksum: 10c0/29565dd9198fe1d8cf57f6cc71527dbc6ad67e12e4ac9401feb389c53042b2dceedf47034cbe702dfc4fd8df3ae7e6bfeeebe732cc4fa2674e484c13f04c219a
   languageName: node
   linkType: hard
 
@@ -8962,6 +8983,7 @@ __metadata:
     "@types/glob": "npm:^8.0.0"
     "@types/jest": "npm:27.4.1"
     "@types/md5": "npm:^2.3.5"
+    "@types/multer": "npm:^1.4.12"
     "@types/normalize-path": "npm:^3.0.0"
     "@types/passport-jwt": "npm:^3.0.7"
     "@types/passport-local": "npm:^1.0.34"
@@ -9001,6 +9023,7 @@ __metadata:
     mime: "npm:^3.0.0"
     music-metadata: "npm:^7.13.4"
     musicbrainz-api: "npm:^0.10.2"
+    nestjs-form-data: "npm:^1.9.91"
     nestjs-meilisearch: "npm:^2.1.6"
     normalize-path: "npm:^3.0.0"
     passport: "npm:^0.6.0"
@@ -9308,7 +9331,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"mkdirp@npm:^1.0.3":
+"mkdirp@npm:^1.0.3, mkdirp@npm:^1.0.4":
   version: 1.0.4
   resolution: "mkdirp@npm:1.0.4"
   bin:
@@ -9490,6 +9513,27 @@ __metadata:
   version: 2.6.2
   resolution: "neo-async@npm:2.6.2"
   checksum: 10c0/c2f5a604a54a8ec5438a342e1f356dff4bc33ccccdb6dc668d94fe8e5eccfc9d2c2eea6064b0967a767ba63b33763f51ccf2cd2441b461a7322656c1f06b3f5d
+  languageName: node
+  linkType: hard
+
+"nestjs-form-data@npm:^1.9.91":
+  version: 1.9.91
+  resolution: "nestjs-form-data@npm:1.9.91"
+  dependencies:
+    busboy: "npm:^1.6.0"
+    concat-stream: "npm:^2.0.0"
+    file-type: "npm:^16.5.4"
+    mkdirp: "npm:^1.0.4"
+    type-is: "npm:^1.6.18"
+    uid: "npm:^2.0.0"
+  peerDependencies:
+    "@nestjs/common": ^7.0.0 || ^8.0.0 || ^9.0.0 || ^10.0.0
+    "@nestjs/core": ^7.0.0 || ^8.0.0 || ^9.0.0 || ^10.0.0
+    class-transformer: ^0.4.0 || ^0.5.1
+    class-validator: ^0.13.2 || ^0.14.0
+    reflect-metadata: ^0.1.13 || ^0.2.0
+    rxjs: ^6.6.3 || ^7.2.0 || ^7.5.0
+  checksum: 10c0/d6d3b9b9c8e4a4a3102159fb4b5808b518c8917b70b061cedff91756d28f3a1c9011c7ae50011be8b7ef6ba4eb31c228619c05779b44e2b648902cee6bcbd676
   languageName: node
   linkType: hard
 
@@ -10648,6 +10692,17 @@ __metadata:
     string_decoder: "npm:~1.1.1"
     util-deprecate: "npm:~1.0.1"
   checksum: 10c0/7efdb01f3853bc35ac62ea25493567bf588773213f5f4a79f9c365e1ad13bab845ac0dae7bc946270dc40c3929483228415e92a3fc600cc7e4548992f41ee3fa
+  languageName: node
+  linkType: hard
+
+"readable-stream@npm:^3.0.2":
+  version: 3.6.2
+  resolution: "readable-stream@npm:3.6.2"
+  dependencies:
+    inherits: "npm:^2.0.3"
+    string_decoder: "npm:^1.1.1"
+    util-deprecate: "npm:^1.0.1"
+  checksum: 10c0/e37be5c79c376fdd088a45fa31ea2e423e5d48854be7a22a58869b4e84d25047b193f6acb54f1012331e1bcd667ffb569c01b99d36b0bd59658fb33f513511b7
   languageName: node
   linkType: hard
 
@@ -12137,7 +12192,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"type-is@npm:^1.6.4, type-is@npm:~1.6.18":
+"type-is@npm:^1.6.18, type-is@npm:^1.6.4, type-is@npm:~1.6.18":
   version: 1.6.18
   resolution: "type-is@npm:1.6.18"
   dependencies:
@@ -12194,7 +12249,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"uid@npm:2.0.2":
+"uid@npm:2.0.2, uid@npm:^2.0.0":
   version: 2.0.2
   resolution: "uid@npm:2.0.2"
   dependencies:

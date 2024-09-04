@@ -65,7 +65,7 @@ describe("Illustration Repository", () => {
 		const outPath = `${baseMetadataFolder}/illustration.jpg`;
 		it("should not extract illustration to matching folder, as the source file does not exist", async () => {
 			const test = () =>
-				illustrationRepository.registerTrackFileIllustration(
+				illustrationRepository.registerTrackIllustration(
 					dummyRepository.trackA1_1,
 					"trololol",
 				);
@@ -74,7 +74,7 @@ describe("Illustration Repository", () => {
 
 		it("should not extract illustration to matching folder, as the source file is not valid", async () => {
 			const test = () =>
-				illustrationRepository.registerTrackFileIllustration(
+				illustrationRepository.registerTrackIllustration(
 					dummyRepository.trackA1_1,
 					"test/assets/settings.json",
 				);
@@ -82,7 +82,7 @@ describe("Illustration Repository", () => {
 		});
 
 		it("should not extract illustration to matching folder, as illustration already exists", async () => {
-			await illustrationRepository.registerTrackFileIllustration(
+			await illustrationRepository.registerTrackIllustration(
 				dummyRepository.trackA1_1,
 				"test/assets/dreams.m4a",
 			);
@@ -100,7 +100,7 @@ describe("Illustration Repository", () => {
 		});
 
 		it("should not extract illustration to matching folder, as their is no embedded illustration", async () => {
-			await illustrationRepository.registerTrackFileIllustration(
+			await illustrationRepository.registerTrackIllustration(
 				dummyRepository.trackA1_1,
 				"test/assets/dreams.m4a",
 			);
@@ -135,7 +135,7 @@ describe("Illustration Repository", () => {
 			}));
 
 			const createdIllustration =
-				await illustrationRepository.registerTrackFileIllustration(
+				await illustrationRepository.registerTrackIllustration(
 					dummyRepository.trackA1_1,
 					"test/assets/dreams.m4a",
 				);
@@ -165,7 +165,7 @@ describe("Illustration Repository", () => {
 				aspectRatio: 0,
 			}));
 			const createdIllustration =
-				await illustrationRepository.registerTrackFileIllustration(
+				await illustrationRepository.registerTrackIllustration(
 					dummyRepository.trackA1_1,
 					"test/assets/dreams.m4a",
 				);
@@ -198,7 +198,7 @@ describe("Illustration Repository", () => {
 				aspectRatio: 0,
 			}));
 			const createdIllustration =
-				await illustrationRepository.registerTrackFileIllustration(
+				await illustrationRepository.registerTrackIllustration(
 					dummyRepository.trackA1_1,
 					"test/assets/dreams.m4a",
 				);

@@ -9,6 +9,7 @@ import (
 	"time"
 
 	"github.com/Arthi-chaud/Meelo/scanner/internal"
+	"github.com/kpango/glg"
 	"gopkg.in/vansante/go-ffprobe.v2"
 )
 
@@ -63,28 +64,22 @@ func parseMetadataFromEmbeddedTags(filePath string) (internal.Metadata, []error)
 			metadata.ReleaseDate = date
 		}
 	}
-	if hasEmbeddedIllustration(*probeData) {
-		metadata.IllustrationLocation = internal.Embedded
+	if streamIndex := internal.GetEmbeddedIllustrationStreamIndex(*probeData); streamIndex >= 0 {
+		bytes, err := internal.ExtractEmbeddedIllustration(filePath, streamIndex)
+		if err != nil {
+			glg.Fail("An error occured while extracting embedded illustration: ")
+			glg.Fail(err.Error())
+		} else {
+			metadata.IllustrationBytes = bytes
+		}
 	}
 	return metadata, errors
 }
 
 func getType(probeData ffprobe.ProbeData) internal.TrackType {
 	videoStream := probeData.FirstVideoStream()
-	if videoStream == nil || videoStream.Disposition.AttachedPic == 1 {
+	if videoStream == nil || videoStream.Disposition.AttachedPic == 1 || videoStream.Duration == "" {
 		return internal.Audio
 	}
 	return internal.Video
-}
-
-func hasEmbeddedIllustration(probeData ffprobe.ProbeData) bool {
-	if s := probeData.FirstAttachmentStream(); s != nil {
-		return true
-	}
-	for _, stream := range probeData.Streams {
-		if stream != nil && stream.Disposition.AttachedPic == 1 {
-			return true
-		}
-	}
-	return false
 }

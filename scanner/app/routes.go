@@ -49,23 +49,43 @@ func (s *ScannerContext) Tasks(c echo.Context) error {
 	})
 }
 
-// @Summary		Request a Scan
+// @Summary		Request a Scan for all libraries
 // @Produce		json
 // @Success		202	{object}	ScannerStatus
 // @Router	    /scan [post]
 // @Security JWT
-func (s *ScannerContext) Scan(c echo.Context) error {
+func (s *ScannerContext) ScanAll(c echo.Context) error {
 	if !s.userIsAdmin(c) {
 		return userIsNotAdminResponse(c)
 	}
 	libraries, err := api.GetAllLibraries(*s.config)
 	if err != nil {
-		c.NoContent(http.StatusServiceUnavailable)
+		return c.NoContent(http.StatusServiceUnavailable)
 	}
 	for _, lib := range libraries {
-		task := s.worker.AddTask(t.NewLibraryScanTask(lib.Slug, *s.config))
+		task := s.worker.AddTask(t.NewLibraryScanTask(lib, *s.config))
 		glg.Logf("Task added to queue: %s", task.Name)
 	}
+	return c.JSON(http.StatusAccepted, ScannerStatus{Message: TaskAddedtoQueueMessage})
+}
+
+// @Summary		Request a Scan for a single library
+// @Produce		json
+// @Success		202	{object}	ScannerStatus
+// @Router	    /scan/{libraryId} [post]
+// @Param		libraryId path string true "Library Slug or ID"
+// @Security JWT
+func (s *ScannerContext) Scan(c echo.Context) error {
+	if !s.userIsAdmin(c) {
+		return userIsNotAdminResponse(c)
+	}
+	libraryId := c.Param("libraryId")
+	library, err := api.GetLibrary(*s.config, libraryId)
+	if err != nil {
+		return c.NoContent(http.StatusBadRequest)
+	}
+	task := s.worker.AddTask(t.NewLibraryScanTask(library, *s.config))
+	glg.Logf("Task added to queue: %s", task.Name)
 	return c.JSON(http.StatusAccepted, ScannerStatus{Message: TaskAddedtoQueueMessage})
 }
 

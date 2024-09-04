@@ -19,7 +19,6 @@
 import { Controller, Get, Query } from "@nestjs/common";
 import { ApiOperation, ApiTags } from "@nestjs/swagger";
 import LibraryService from "src/library/library.service";
-import { Timeout } from "@nestjs/schedule";
 import { Admin } from "src/authentication/roles/roles.decorators";
 import IdentifierParam from "src/identifier/identifier.pipe";
 import LibraryQueryParameters from "src/library/models/library.query-parameters";
@@ -87,7 +86,6 @@ export default class TasksController {
 	@ApiOperation({
 		summary: "Scan all libraries",
 	})
-	@Timeout(5000)
 	@Get("scan")
 	async scanLibrariesFiles(): Promise<TaskStatusResponse> {
 		await this.tasksQueue.add(Tasks.Scan);

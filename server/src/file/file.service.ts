@@ -35,8 +35,12 @@ import Identifier from "src/identifier/models/identifier";
 import { PrismaError } from "prisma-error-enum";
 import deepmerge from "deepmerge";
 import { UnhandledORMErrorException } from "src/exceptions/orm-exceptions";
-import { formatIdentifier } from "src/repository/repository.utils";
+import {
+	formatIdentifier,
+	formatPaginationParameters,
+} from "src/repository/repository.utils";
 import { InvalidRequestException } from "src/exceptions/meelo-exception";
+import { PaginationParameters } from "src/pagination/models/pagination-parameters";
 
 @Injectable()
 export default class FileService {
@@ -85,9 +89,13 @@ export default class FileService {
 		};
 	}
 
-	async getMany(where: FileQueryParameters.ManyWhereInput) {
+	async getMany(
+		where: FileQueryParameters.ManyWhereInput,
+		pagination: PaginationParameters = {},
+	) {
 		return this.prismaService.file.findMany({
 			where: FileService.formatManyWhereInput(where),
+			...formatPaginationParameters(pagination),
 		});
 	}
 
@@ -106,6 +114,13 @@ export default class FileService {
 			query = deepmerge(query, {
 				path: {
 					in: where.paths,
+				},
+			});
+		}
+		if (where.inFolder) {
+			query = deepmerge(query, {
+				path: {
+					startsWith: where.inFolder,
 				},
 			});
 		}

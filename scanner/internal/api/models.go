@@ -20,3 +20,12 @@ type Library struct {
 	Slug string `json:"slug" validate:"required"`
 	Path string `json:"path" validate:"required"`
 }
+
+type File struct {
+	Id   int    `json:"id" validate:"required"`
+	Path string `json:"path" validate:"required"`
+}
+
+type MetadataCreated struct {
+	TrackId int `json:"trackId" validate:"required"`
+}

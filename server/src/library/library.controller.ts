@@ -25,7 +25,7 @@ import {
 	Put,
 	Query,
 } from "@nestjs/common";
-import Response, { ResponseType } from "src/response/response.decorator"; 
+import Response, { ResponseType } from "src/response/response.decorator";
 import LibraryService from "./library.service";
 import { Library } from "src/prisma/models";
 import { PaginationParameters } from "src/pagination/models/pagination-parameters";
@@ -60,6 +60,7 @@ export default class LibraryController {
 		summary: "Get a library",
 	})
 	@Get(":idOrSlug")
+	@DefaultRoleAndMicroservice()
 	async getLibrary(
 		@IdentifierParam(LibraryService)
 		where: LibraryQueryParameters.WhereInput,

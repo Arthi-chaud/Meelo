@@ -272,13 +272,12 @@ export default class IllustrationRepository {
 	 * Deletes Illustration (File + info in DB)
 	 */
 	async deleteIllustration(illustrationId: number) {
-		const illustration = await this.prismaService.illustration
-			.findFirstOrThrow({
-				where: { id: illustrationId },
-			})
-			.catch(() => {
-				throw new IllustrationNotFoundException(illustrationId);
-			});
+		const illustration = await this.prismaService.illustration.findFirst({
+			where: { id: illustrationId },
+		});
+		if (!illustration) {
+			return;
+		}
 		const illustrationDir = this.buildIllustrationDirPath(illustration.id);
 
 		this.illustrationService.deleteIllustrationFolder(illustrationDir);
@@ -289,12 +288,7 @@ export default class IllustrationRepository {
 			.catch(() => {});
 	}
 
-	/**
-	 * Extract the illustration embedded into/in the same folder as the source file
-	 * Then creates illustration item in DB (according to the type (release, disc, or track))
-	 * @returns the path of the saved file
-	 */
-	async registerTrackFileIllustration(
+	async registerTrackIllustration(
 		where: TrackQueryParameters.WhereInput,
 		sourceFilePath: string,
 	): Promise<Illustration | null> {
@@ -304,6 +298,21 @@ export default class IllustrationRepository {
 		if (extractedIllustration == null) {
 			return null;
 		}
+		return this.registerTrackIllustrationFromBuffer(
+			where,
+			extractedIllustration,
+		);
+	}
+
+	/**
+	 * Extract the illustration embedded into/in the same folder as the source file
+	 * Then creates illustration item in DB (according to the type (release, disc, or track))
+	 * @returns the path of the saved file
+	 */
+	async registerTrackIllustrationFromBuffer(
+		where: TrackQueryParameters.WhereInput,
+		extractedIllustration: Buffer,
+	): Promise<Illustration | null> {
 		const track = await this.trackService.get(where, { release: true });
 		const logRegistration = (
 			disc: number | null,
@@ -317,21 +326,16 @@ export default class IllustrationRepository {
 		const parentReleaseIllustrations = await this.getReleaseIllustrations({
 			id: track.releaseId,
 		});
-		const parentReleaseMainIllustration = parentReleaseIllustrations.find(
-			(i) => i.disc === null && i.track === null,
-		);
 		const parentDiscIllustration = parentReleaseIllustrations.find(
-			(i) => i.disc !== null && i.disc === track.discIndex,
+			(i) => i.disc === track.discIndex,
 		);
 		const illustrationBytes = extractedIllustration;
-		if (
-			parentReleaseIllustrations.length == 0 ||
-			parentReleaseMainIllustration === undefined
-		) {
+		// If there is no illustration at all for the release or there is none for the current disc
+		if (parentReleaseIllustrations.length == 0 || !parentDiscIllustration) {
 			logRegistration(null, null);
 			const newIllustration = await this.saveReleaseIllustration(
 				illustrationBytes,
-				null,
+				track.discIndex,
 				null,
 				{
 					id: track.releaseId,
@@ -343,25 +347,8 @@ export default class IllustrationRepository {
 		const hash = await this.illustrationService.getImageHash(
 			illustrationBytes,
 		);
-		if (hash === parentReleaseMainIllustration.hash) {
-			// The scanned illustration is the release's main one
-			return null;
-		}
-		if (!parentDiscIllustration) {
-			logRegistration(track.discIndex, null);
-			// If the track's disc does not have an illustration, save the scanned one
-			return this.saveReleaseIllustration(
-				illustrationBytes,
-				track.discIndex,
-				null,
-				{
-					id: track.releaseId,
-				},
-				IllustrationType.Cover,
-				undefined,
-				hash,
-			);
-		} else if (hash === parentDiscIllustration.hash) {
+		if (hash === parentDiscIllustration.hash) {
+			// The scanned illustration is the disc's one
 			return null;
 		}
 		logRegistration(track.discIndex, track.trackIndex);

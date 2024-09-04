@@ -39,7 +39,7 @@ import ArtistService from "src/artist/artist.service";
 import type TrackQueryParameters from "src/track/models/track.query-parameters";
 import compilationAlbumArtistKeyword from "src/constants/compilation";
 import GenreService from "src/genre/genre.service";
-import { File, Track } from "src/prisma/models";
+import { File } from "src/prisma/models";
 import { validate } from "class-validator";
 import ParserService from "./parser.service";
 import Slug from "src/slug/slug";
@@ -74,9 +74,9 @@ export default class ScannerService {
 	 * @param metadata the metadata instance to push
 	 * @param file the file to register the metadata under, it must be already registered
 	 */
-	async registerMetadata(metadata: Metadata, file: File): Promise<Track> {
+	async registerMetadata(metadata: Metadata, file: File) {
 		const genres = await Promise.all(
-			metadata.genres.map((genre) =>
+			(metadata.genres ?? []).map((genre) =>
 				this.genreService.getOrCreate({ name: genre }),
 			),
 		);
@@ -90,6 +90,7 @@ export default class ScannerService {
 			await this.parserService.extractFeaturedArtistsFromSongName(
 				metadata.name,
 			);
+		parsedFeaturingArtists.push(...(metadata.featuring ?? []));
 		let parsedArtistName = metadata.artist;
 
 		if (metadata.artist !== albumArtist?.name) {
@@ -125,7 +126,7 @@ export default class ScannerService {
 							parsedTrackName.parsedName,
 						) || parsedTrackName.parsedName,
 						// If there is no root (e.g. `(Exchange)`), `stripGroups` will return an empty string.
-						// If it does, let's just pass the entirer song name
+						// If it does, let's just pass the entire song name
 					),
 				},
 				artist: { id: songArtist.id },

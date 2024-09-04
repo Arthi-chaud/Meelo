@@ -31,7 +31,7 @@ func TestParser(t *testing.T) {
 	path := "/data/My Album Artist/My Album (2006)/1-02 My Track (My Artist).m4a"
 	m, err := ParseMetadata(getParserTestConfig(), path)
 
-	assert.Len(t, err, 0)
+	assert.Len(t, err, 2) // stat failure and no checksum
 	assert.Equal(t, "My Album Artist", m.AlbumArtist)
 	assert.Equal(t, "My Artist", m.Artist)
 	assert.Equal(t, false, m.IsCompilation)
@@ -51,8 +51,8 @@ func TestParserCompilation(t *testing.T) {
 	path := "/data/Compilations/My Album (2006)/1-02 My Track.m4v"
 	m, err := ParseMetadata(getParserTestConfig(), path)
 
-	assert.Len(t, err, 1)
-	assert.Contains(t, err[0].Error(), "Metadata.Artist")
+	assert.Len(t, err, 3) // stat failure, missing artist and no checksum
+	assert.Contains(t, err[1].Error(), "Metadata.Artist")
 	assert.Equal(t, "", m.AlbumArtist)
 	assert.Equal(t, "", m.Artist)
 	assert.Equal(t, true, m.IsCompilation)
@@ -90,5 +90,5 @@ func TestParserEmbedded(t *testing.T) {
 	assert.Equal(t, int64(3), m.Index)
 	assert.Equal(t, []string{"Pop"}, m.Genres)
 	assert.Equal(t, "Dreams", m.Name)
-	assert.Equal(t, internal.Inline, m.IllustrationLocation)
+	assert.Equal(t, []byte(nil), m.IllustrationBytes)
 }

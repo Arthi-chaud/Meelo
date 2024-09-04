@@ -12,35 +12,37 @@ import (
 
 type Metadata struct {
 	// True if the track is from a compilation album
-	IsCompilation bool `json:"compilation"`
+	IsCompilation bool
 	// Name of the artist of the track
-	Artist string `validate:"required" json:"artist"`
+	Artist string `validate:"required"`
 	// Name of the artist of the parent album
-	AlbumArtist string `json:"albumArtist"`
+	AlbumArtist string
 	// Name of the album of the track
-	Album string `validate:"required" json:"album"`
+	Album string `validate:"required"`
 	// Name of the release of the track
-	Release string `validate:"required" json:"release"`
+	Release string `validate:"required"`
 	// Name of the track
-	Name string `validate:"required" json:"name"`
+	Name string `validate:"required"`
 	// Release date of the track
-	ReleaseDate time.Time `json:"releaseDate"`
+	ReleaseDate time.Time
 	// Index of the track on the disc
-	Index int64 `validate:"gte=0" json:"index"`
+	Index int64
 	// Index of the disc the track is on
-	DiscIndex int64 `validate:"gte=0" json:"discIndex"`
+	DiscIndex int64
 	// Bitrate of the file, in kbps
-	Bitrate int64 `validate:"gte=0" json:"bitrate"`
+	Bitrate int64 `validate:"gte=0"`
 	// Duration, in seconds
-	Duration int64 `validate:"gte=0" json:"duration"`
+	Duration int64 `validate:"gte=0"`
 	// Type of the track
-	Type TrackType `validate:"required" json:"type"`
+	Type TrackType `validate:"required"`
 	// Genres of the track
-	Genres []string `json:"genres"`
+	Genres []string
 	// Discogs ID of the parent release
-	DiscogsId string `json:"discogsId"`
-	// Tells where an illustration can be found.
-	IllustrationLocation IllustrationLocation
+	DiscogsId         string
+	IllustrationBytes []byte
+	RegistrationDate  time.Time `validate:"required"`
+	Checksum          string    `validate:"required"`
+	Path              string    `validate:"required"`
 }
 
 type TrackType string
@@ -64,6 +66,11 @@ func SanitizeAndValidateMetadata(m *Metadata) []error {
 	}
 	if len(m.Release) == 0 {
 		m.Release = m.Album
+	}
+	if m.IsCompilation {
+		m.AlbumArtist = ""
+	} else if len(m.AlbumArtist) == 0 {
+		m.AlbumArtist = m.Artist
 	}
 	if len(m.Artist) == 0 {
 		m.Artist = m.AlbumArtist

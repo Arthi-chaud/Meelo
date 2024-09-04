@@ -14,8 +14,8 @@ import (
 const UserSettingsFileName = "settings.json"
 
 type CompilationSettings struct {
-	Artists       []string `json:"extras"`
-	UseID3CompTag bool     `json:"useID3CompTag" validate:"required"`
+	Artists       []string `json:"artists"`
+	UseID3CompTag bool     `json:"useID3CompTag"`
 }
 
 type MetadataSettings struct {

@@ -169,7 +169,7 @@ export default class TestPrismaService extends PrismaService {
 		});
 		this.fileA1_1 = await this.file.create({
 			data: {
-				path: "a",
+				path: "Artist A/Album A/1-02 My Song.m4a",
 				md5Checksum: "",
 				registerDate: new Date(),
 				libraryId: this.library1.id,
@@ -189,7 +189,7 @@ export default class TestPrismaService extends PrismaService {
 		});
 		this.fileA1_2Video = await this.file.create({
 			data: {
-				path: "b",
+				path: "Artist A/Album A/My Song.m4v",
 				md5Checksum: "",
 				registerDate: new Date(),
 				libraryId: this.library1.id,
@@ -226,7 +226,7 @@ export default class TestPrismaService extends PrismaService {
 		});
 		this.fileA2_1 = await this.file.create({
 			data: {
-				path: "c",
+				path: "Artist A/Album A/My Other Song.m4a",
 				md5Checksum: "",
 				registerDate: new Date(),
 				libraryId: this.library1.id,
@@ -283,7 +283,7 @@ export default class TestPrismaService extends PrismaService {
 		});
 		this.fileB1_1 = await this.file.create({
 			data: {
-				path: "a",
+				path: "Artist B/Album B/My Second Song.m4a",
 				md5Checksum: "",
 				registerDate: new Date(),
 				libraryId: this.library2.id,
@@ -341,7 +341,7 @@ export default class TestPrismaService extends PrismaService {
 		});
 		this.fileC1_1 = await this.file.create({
 			data: {
-				path: "e",
+				path: "Compilations/Album C/My C Song.m4a",
 				md5Checksum: "",
 				registerDate: new Date(),
 				libraryId: this.library1.id,
