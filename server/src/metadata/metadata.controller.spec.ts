@@ -51,7 +51,6 @@ const applyFormFields = (r: request.Test, object: MetadataDto) => {
 			r.field(key, value.toString());
 		}
 	});
-	r.attach("illustration", createReadStream("test/assets/cover2.jpg"));
 	return r;
 };
 
@@ -170,7 +169,7 @@ describe("Metadata Controller", () => {
 			expect(file.md5Checksum).toBe(validMetadata.checksum);
 			expect(file.libraryId).toBe(createdMetadata.libraryId);
 			expect(file.track!.id).toBe(createdMetadata.trackId);
-			expect(file.path).toBe('...Baby One More Time.m4a');
+			expect(file.path).toBe("...Baby One More Time.m4a");
 
 			const song = await songService.get(
 				{ id: createdMetadata.songId },
@@ -190,12 +189,6 @@ describe("Metadata Controller", () => {
 				validMetadata.registrationDate,
 			);
 			expect(song.masterId).toBe(file.track!.id);
-
-			const illustrationPath = `test/assets/metadata/${
-				song.illustration!.id
-			}/cover.jpg`;
-			expect(existsSync(illustrationPath)).toBe(true);
-			rmSync(dirname(illustrationPath), { recursive: true, force: true });
 		});
 	});
 });

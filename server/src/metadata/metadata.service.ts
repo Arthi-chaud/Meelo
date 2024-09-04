@@ -66,14 +66,6 @@ export class MetadataService {
 				m,
 				fileEntry,
 			);
-			if (m.illustration) {
-				await this.illustrationRepository
-					.registerTrackIllustrationFromBuffer(
-						{ id: createdTrack.id },
-						m.illustration.buffer,
-					)
-					.catch(() => {});
-			}
 			return {
 				trackId: createdTrack.id,
 				sourceFileId: fileEntry.id,

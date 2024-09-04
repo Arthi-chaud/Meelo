@@ -21,28 +21,19 @@ import {
 	Controller,
 	Get,
 	Inject,
-	ParseFilePipeBuilder,
 	Post,
 	Put,
 	Query,
-	UploadedFile,
-	UseInterceptors,
 	forwardRef,
 } from "@nestjs/common";
 import { PaginationParameters } from "src/pagination/models/pagination-parameters";
 import TrackQueryParameters from "./models/track.query-parameters";
 import TrackService from "./track.service";
-import {
-	ApiBody,
-	ApiConsumes,
-	ApiOperation,
-	ApiPropertyOptional,
-	ApiTags,
-} from "@nestjs/swagger";
+import { ApiOperation, ApiPropertyOptional, ApiTags } from "@nestjs/swagger";
 import { IllustrationType, TrackType } from "@prisma/client";
 import { TrackResponseBuilder } from "./models/track.response";
 import RelationIncludeQuery from "src/relation-include/relation-include-query.decorator";
-import { Admin, Role } from "src/authentication/roles/roles.decorators";
+import { Admin } from "src/authentication/roles/roles.decorators";
 import IdentifierParam from "src/identifier/identifier.pipe";
 import Response, { ResponseType } from "src/response/response.decorator";
 import SongService from "src/song/song.service";
@@ -61,9 +52,6 @@ import { IllustrationDownloadDto } from "src/illustration/models/illustration-dl
 import IllustrationRepository from "src/illustration/illustration.repository";
 import IllustrationService from "src/illustration/illustration.service";
 import { IllustrationResponse } from "src/illustration/models/illustration.response";
-import RoleEnum from "src/authentication/roles/roles.enum";
-import { InvalidRequestException } from "src/exceptions/meelo-exception";
-import { FileInterceptor } from "@nestjs/platform-express";
 
 class Selector {
 	@IsOptional()
@@ -212,54 +200,6 @@ export class TrackController {
 				track.trackIndex,
 				{ id: track.releaseId },
 				IllustrationType.Cover,
-			)
-			.then(IllustrationResponse.from);
-	}
-
-	@ApiOperation({
-		summary: "Set a track's thumbnail",
-		description: "Will return 400 if the track is not a video",
-	})
-	@UseInterceptors(FileInterceptor("thumbnail"))
-	@Role(RoleEnum.Microservice, RoleEnum.Admin)
-	@Post(":idOrSlug/thumbnail")
-	@ApiConsumes("multipart/form-data")
-	@ApiBody({
-		schema: {
-			type: "object",
-			properties: {
-				thumbnail: {
-					type: "string",
-					format: "binary",
-				},
-			},
-		},
-	})
-	async updateTrackThumbnail(
-		@UploadedFile(
-			new ParseFilePipeBuilder().build({
-				fileIsRequired: true,
-				exceptionFactory: (e) => new InvalidRequestException(e),
-			}),
-		)
-		thumbnail: Express.Multer.File,
-		@IdentifierParam(TrackService)
-		where: TrackQueryParameters.WhereInput,
-	): Promise<IllustrationResponse> {
-		const track = await this.trackService.get(where);
-		if (track.type != "Video") {
-			throw new InvalidRequestException(
-				"Cannot set thumbnail, track is not a video",
-			);
-		}
-
-		return this.illustrationRepository
-			.saveReleaseIllustration(
-				thumbnail.buffer,
-				track.discIndex,
-				track.trackIndex,
-				{ id: track.releaseId },
-				IllustrationType.Thumbnail,
 			)
 			.then(IllustrationResponse.from);
 	}

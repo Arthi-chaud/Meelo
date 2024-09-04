@@ -24,6 +24,8 @@ import compilationAlbumArtistKeyword from "src/constants/compilation";
 import { IllustrationType } from "@prisma/client";
 import { Illustration } from "src/prisma/models";
 import { IllustrationResponse } from "./models/illustration.response";
+import { createReadStream, existsSync, rmSync } from "fs";
+import { dirname } from "path";
 
 jest.setTimeout(60000);
 
@@ -71,11 +73,10 @@ describe("Illustration Controller", () => {
 	const dummyIllustrationBytes = fs.readFileSync("test/assets/settings.json");
 
 	const illustrationUrlExample =
-		"https://i.discogs.com/VEV-yWsS3J9SfeTVaY8Q_3Bw3dWqHHgf2WLDL5mGqxo/rs:fit/g:sm/q:90/h:600/w:600/czM6Ly9kaXNjb2dz/LWRhdGFiYXNlLWlt/YWdlcy9SLTY2Ny0x/NjY1NDkzNDk3LTQ2/MDYuanBlZw.jpeg";
-	// const distantIllustrationContent = axios.get(illustrationUrlExample).then((r) => r.data);
+		"https://sample-videos.com/img/Sample-jpg-image-50kb.jpg";
 
 	const illustration2UrlExample =
-		"https://i.discogs.com/OoRFxbWuLADDqiPFOUU_7t9k5P1Zui3V__PsTXd_LYo/rs:fit/g:sm/q:90/h:600/w:600/czM6Ly9kaXNjb2dz/LWRhdGFiYXNlLWlt/YWdlcy9SLTY2Ny0x/NjY2NTM3ODUxLTIz/NzQuanBlZw.jpeg";
+		"https://sample-videos.com/img/Sample-jpg-image-100kb.jpg";
 
 	describe("Stream Illustration", () => {
 		it("should return the artist illustration", async () => {
@@ -288,6 +289,47 @@ describe("Illustration Controller", () => {
 					url: illustrationUrlExample,
 				})
 				.expect(404);
+		});
+	});
+
+	describe("Register Illustration", () => {
+		const buildData = (r: request.Test) => {
+			return r
+				.field("trackId", dummyRepository.trackC1_1.id)
+				.field("type", "Thumbnail")
+				.attach("file", createReadStream("test/assets/cover2.jpg"));
+		};
+		describe("Error handling", () => {
+			it("Should throw, as target track does not exist", async () => {
+				return buildData(
+					request(app.getHttpServer()).post(`/illustrations`),
+				)
+					.expect(400)
+					.field("trackId", 1);
+			});
+			it("Should throw, as type is not valid", async () => {
+				return buildData(
+					request(app.getHttpServer()).post(`/illustrations`),
+				)
+					.expect(400)
+					.field("type", "Avatar");
+			});
+		});
+		it("Should set the image's illustration", async () => {
+			return buildData(
+				request(app.getHttpServer()).post(`/illustrations`),
+			)
+				.expect(201)
+				.expect((res) => {
+					const illustration: IllustrationResponse = res.body;
+					const illustrationPath = `test/assets/metadata/${illustration.id}/cover.jpg`;
+					expect(illustration.type).toBe("Thumbnail");
+					expect(existsSync(illustrationPath)).toBe(true);
+					rmSync(dirname(illustrationPath), {
+						recursive: true,
+						force: true,
+					});
+				});
 		});
 	});
 });

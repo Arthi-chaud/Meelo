@@ -312,7 +312,8 @@ export default class IllustrationRepository {
 	async registerTrackIllustrationFromBuffer(
 		where: TrackQueryParameters.WhereInput,
 		extractedIllustration: Buffer,
-	): Promise<Illustration | null> {
+		type: IllustrationType = IllustrationType.Cover,
+	): Promise<Illustration> {
 		const track = await this.trackService.get(where, { release: true });
 		const logRegistration = (
 			disc: number | null,
@@ -340,7 +341,7 @@ export default class IllustrationRepository {
 				{
 					id: track.releaseId,
 				},
-				IllustrationType.Cover,
+				type,
 			);
 			return newIllustration;
 		}
@@ -349,7 +350,7 @@ export default class IllustrationRepository {
 		);
 		if (hash === parentDiscIllustration.hash) {
 			// The scanned illustration is the disc's one
-			return null;
+			return parentDiscIllustration.illustration;
 		}
 		logRegistration(track.discIndex, track.trackIndex);
 		// If the track's disc's illustration is NOT the scanned one, save the scanned one as track specific
@@ -360,9 +361,7 @@ export default class IllustrationRepository {
 			{
 				id: track.releaseId,
 			},
-			IllustrationType.Cover,
-			undefined,
-			hash,
+			type,
 		);
 	}
 
