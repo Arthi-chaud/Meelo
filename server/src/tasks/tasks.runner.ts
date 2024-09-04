@@ -331,7 +331,7 @@ export default class TaskRunner {
 
 	///// Sub tasks
 
-	async unregisterFile(
+	public async unregisterFile(
 		where: FileQueryParameters.DeleteInput,
 		housekeeping = false,
 	) {

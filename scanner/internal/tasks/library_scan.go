@@ -17,10 +17,10 @@ import (
 
 func NewLibraryScanTask(library api.Library, c config.Config) Task {
 	name := fmt.Sprintf("Scan library '%s'.", library.Slug)
-	return createTask(name, func(w *Worker) error { return exec(library, c, w) })
+	return createTask(name, func(w *Worker) error { return execScan(library, c, w) })
 }
 
-func exec(library api.Library, c config.Config, w *Worker) error {
+func execScan(library api.Library, c config.Config, w *Worker) error {
 	registeredFiles, err := api.GetAllFilesInLibrary(library.Slug, c)
 	if err != nil {
 		return err

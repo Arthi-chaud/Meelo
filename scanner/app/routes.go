@@ -98,6 +98,34 @@ func (s *ScannerContext) Clean(c echo.Context) error {
 	if !s.userIsAdmin(c) {
 		return userIsNotAdminResponse(c)
 	}
+	libraries, err := api.GetAllLibraries(*s.config)
+	if err != nil {
+		return c.NoContent(http.StatusServiceUnavailable)
+	}
+	for _, lib := range libraries {
+		task := s.worker.AddTask(t.NewLibraryCleanTask(lib, *s.config))
+		glg.Logf("Task added to queue: %s", task.Name)
+	}
+	return c.JSON(http.StatusAccepted, ScannerStatus{Message: TaskAddedtoQueueMessage})
+}
+
+// @Summary		Request a Clean for a single library
+// @Produce		json
+// @Success		202	{object}	ScannerStatus
+// @Router	    /clean/{libraryId} [post]
+// @Param		libraryId path string true "Library Slug or ID"
+// @Security JWT
+func (s *ScannerContext) CleanLibrary(c echo.Context) error {
+	if !s.userIsAdmin(c) {
+		return userIsNotAdminResponse(c)
+	}
+	libraryId := c.Param("libraryId")
+	library, err := api.GetLibrary(*s.config, libraryId)
+	if err != nil {
+		return c.NoContent(http.StatusBadRequest)
+	}
+	task := s.worker.AddTask(t.NewLibraryCleanTask(library, *s.config))
+	glg.Logf("Task added to queue: %s", task.Name)
 	return c.JSON(http.StatusAccepted, ScannerStatus{Message: TaskAddedtoQueueMessage})
 }
 

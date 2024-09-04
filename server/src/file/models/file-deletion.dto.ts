@@ -16,25 +16,12 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { Module, forwardRef } from "@nestjs/common";
-import FileService from "./file.service";
-import FileManagerModule from "src/file-manager/file-manager.module";
-import PrismaModule from "src/prisma/prisma.module";
-import FileController from "./file.controller";
-import SettingsModule from "src/settings/settings.module";
-import LibraryModule from "src/library/library.module";
-import TasksModule from "src/tasks/tasks.module";
+import { ApiProperty } from "@nestjs/swagger";
+import { IsArray, IsInt } from "class-validator";
 
-@Module({
-	imports: [
-		PrismaModule,
-		FileManagerModule,
-		SettingsModule,
-		forwardRef(() => TasksModule),
-		forwardRef(() => LibraryModule),
-	],
-	providers: [FileService],
-	exports: [FileService],
-	controllers: [FileController],
-})
-export default class FileModule {}
+export default class FileDeletionDto {
+	@ApiProperty()
+	@IsArray()
+	@IsInt({ each: true })
+	ids: number[];
+}
