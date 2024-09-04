@@ -16,7 +16,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { Controller, Get, Query } from "@nestjs/common";
+import { Body, Controller, Delete, Get, Query } from "@nestjs/common";
 import { File } from "src/prisma/models";
 import FileService from "./file.service";
 import FileQueryParameters from "./models/file.query-parameters";
@@ -29,7 +29,10 @@ import LibraryService from "src/library/library.service";
 import LibraryQueryParameters from "src/library/models/library.query-parameters";
 import { PaginationParameters } from "src/pagination/models/pagination-parameters";
 import Response, { ResponseType } from "src/response/response.decorator";
-import { DefaultRoleAndMicroservice } from "src/authentication/roles/roles.decorators";
+import { DefaultRoleAndMicroservice, Role } from "src/authentication/roles/roles.decorators";
+import FileDeletionDto from "./models/file-deletion.dto";
+import TaskRunner from "src/tasks/tasks.runner";
+import Roles from "src/authentication/roles/roles.enum";
 
 class Selector {
 	@IsOptional()
@@ -50,7 +53,10 @@ class Selector {
 @ApiTags("Files")
 @Controller("files")
 export default class FileController {
-	constructor(private fileService: FileService) {}
+	constructor(
+		private fileService: FileService,
+		private taskService: TaskRunner,
+	) {}
 
 	@ApiOperation({
 		summary: "Get one 'File'",
@@ -86,5 +92,19 @@ export default class FileController {
 			},
 			paginationParameters,
 		);
+	}
+
+	@ApiOperation({
+		summary: "Delete multiple File entries",
+	})
+	@Role(Roles.Admin, Roles.Microservice)
+	@Delete()
+	async deleteMany(@Body() toDelete: FileDeletionDto) {
+		await Promise.all(
+			toDelete.ids.map((fileId) =>
+				this.taskService.unregisterFile({ id: fileId }),
+			),
+		);
+		await this.taskService.housekeeping();
 	}
 }
