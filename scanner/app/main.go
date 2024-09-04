@@ -58,6 +58,7 @@ func setupEcho(c config.Config) *echo.Echo {
 	e.POST("/scan", s.ScanAll)
 	e.POST("/scan/:libraryId", s.Scan)
 	e.POST("/clean", s.Clean)
+	e.POST("/clean/:libraryId", s.CleanLibrary)
 	e.POST("/refresh", s.Refresh)
 	e.GET("/swagger/*", echoSwagger.WrapHandler)
 	return e

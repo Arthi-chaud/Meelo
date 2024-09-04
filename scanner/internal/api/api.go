@@ -52,6 +52,20 @@ func GetLibrary(config config.Config, librarySlug string) (Library, error) {
 	return l, err
 }
 
+type FileDeletionDto struct {
+	FileIds []int `json:"ids"`
+}
+
+func DeleteFiles(config config.Config, fileIds []int) error {
+	dto := FileDeletionDto{FileIds: fileIds}
+	serialized, err := json.Marshal(dto)
+	if err != nil {
+		return err
+	}
+	_, err = request("DELETE", "/files", bytes.NewBuffer(serialized), config, JsonContentType)
+	return err
+}
+
 func PostMetadata(config config.Config, m internal.Metadata) (MetadataCreated, error) {
 	reqBody := new(bytes.Buffer)
 	mp := multipart.NewWriter(reqBody)
