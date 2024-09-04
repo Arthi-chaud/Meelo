@@ -324,6 +324,17 @@ export default class IllustrationRepository {
 					disc ?? 1
 				}${trackIndex === null ? "" : `, track ${trackIndex}`}).`,
 			);
+		if (type == IllustrationType.Thumbnail) {
+			return this.saveReleaseIllustration(
+				extractedIllustration,
+				track.discIndex,
+				track.trackIndex,
+				{
+					id: track.releaseId,
+				},
+				type,
+			);
+		}
 		const parentReleaseIllustrations = await this.getReleaseIllustrations({
 			id: track.releaseId,
 		});

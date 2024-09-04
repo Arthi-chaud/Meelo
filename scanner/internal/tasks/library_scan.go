@@ -79,12 +79,26 @@ func scanAndPostFiles(filePaths []string, c config.Config, w *Worker) int {
 			} else {
 				successfulRegistrations = successfulRegistrations + 1
 			}
-			if res.metadata.Type == internal.Video {
-				w.thumbnailQueue <- ThumbnailTask{
-					TrackId:       created.TrackId,
-					TrackDuration: int(res.metadata.Duration),
-					FilePath:      res.filePath,
+			if len(res.metadata.IllustrationLocation) > 0 {
+				err := SaveIllustration(IllustrationTask{
+					IllustrationLocation:    res.metadata.IllustrationLocation,
+					IllustrationPath:        res.metadata.IllustrationPath,
+					TrackPath:               res.filePath,
+					TrackId:                 created.TrackId,
+					IllustrationStreamIndex: res.metadata.IllustrationStreamIndex,
+				}, c)
+				if err != nil {
+					glg.Failf("Saving illustration for %s failed.", path.Base(res.filePath))
 				}
+			}
+			if res.metadata.Type == internal.Video {
+				go func() {
+					w.thumbnailQueue <- ThumbnailTask{
+						TrackId:       created.TrackId,
+						TrackDuration: int(res.metadata.Duration),
+						FilePath:      res.filePath,
+					}
+				}()
 			}
 		}
 	}

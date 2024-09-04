@@ -1,6 +1,7 @@
 package tasks
 
 import (
+	"github.com/Arthi-chaud/Meelo/scanner/internal"
 	"github.com/google/uuid"
 )
 
@@ -31,4 +32,12 @@ type ThumbnailTask struct {
 	TrackId       int
 	TrackDuration int
 	FilePath      string
+}
+
+type IllustrationTask struct {
+	IllustrationLocation    internal.IllustrationLocation
+	IllustrationPath        string
+	TrackPath               string
+	TrackId                 int
+	IllustrationStreamIndex int
 }

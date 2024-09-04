@@ -18,14 +18,7 @@
 
 import { ApiPropertyOptional } from "@nestjs/swagger";
 import { IllustrationType } from "@prisma/client";
-import {
-	IsDefined,
-	IsEnum,
-	IsIn,
-	IsNumber,
-	IsPositive,
-	IsString,
-} from "class-validator";
+import { IsDefined, IsEnum, IsIn, IsNumber, IsString } from "class-validator";
 import {
 	HasMimeType,
 	IsFile,
@@ -51,7 +44,6 @@ export default class IllustrationRegistrationDto {
 
 	@IsNumber()
 	@IsDefined()
-	@IsPositive()
 	trackId: number;
 
 	@IsEnum(IllustrationType)

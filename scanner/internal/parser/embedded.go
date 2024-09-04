@@ -10,7 +10,6 @@ import (
 
 	"github.com/Arthi-chaud/Meelo/scanner/internal"
 	"github.com/Arthi-chaud/Meelo/scanner/internal/illustration"
-	"github.com/kpango/glg"
 	"gopkg.in/vansante/go-ffprobe.v2"
 )
 
@@ -66,13 +65,8 @@ func parseMetadataFromEmbeddedTags(filePath string) (internal.Metadata, []error)
 		}
 	}
 	if streamIndex := illustration.GetEmbeddedIllustrationStreamIndex(*probeData); streamIndex >= 0 {
-		bytes, err := illustration.ExtractEmbeddedIllustration(filePath, streamIndex)
-		if err != nil {
-			glg.Fail("An error occured while extracting embedded illustration: ")
-			glg.Fail(err.Error())
-		} else {
-			metadata.IllustrationBytes = bytes
-		}
+		metadata.IllustrationLocation = internal.Embedded
+		metadata.IllustrationStreamIndex = streamIndex
 	}
 	return metadata, errors
 }

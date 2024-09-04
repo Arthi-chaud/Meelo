@@ -38,11 +38,13 @@ type Metadata struct {
 	// Genres of the track
 	Genres []string
 	// Discogs ID of the parent release
-	DiscogsId         string
-	IllustrationBytes []byte
-	RegistrationDate  time.Time `validate:"required"`
-	Checksum          string    `validate:"required"`
-	Path              string    `validate:"required"`
+	DiscogsId               string
+	IllustrationLocation    IllustrationLocation
+	IllustrationStreamIndex int
+	IllustrationPath        string
+	RegistrationDate        time.Time `validate:"required"`
+	Checksum                string    `validate:"required"`
+	Path                    string    `validate:"required"`
 }
 
 type TrackType string

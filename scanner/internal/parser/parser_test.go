@@ -90,5 +90,6 @@ func TestParserEmbedded(t *testing.T) {
 	assert.Equal(t, int64(3), m.Index)
 	assert.Equal(t, []string{"Pop"}, m.Genres)
 	assert.Equal(t, "Dreams", m.Name)
-	assert.Equal(t, []byte(nil), m.IllustrationBytes)
+	assert.Equal(t, internal.Inline, m.IllustrationLocation)
+	assert.Equal(t, "../../testdata/cover.jpg", m.IllustrationPath)
 }

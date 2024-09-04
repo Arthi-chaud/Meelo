@@ -4,7 +4,6 @@ import (
 	"errors"
 	"fmt"
 	"mime"
-	"os"
 	"path"
 	"regexp"
 	"strconv"
@@ -14,7 +13,6 @@ import (
 	"github.com/Arthi-chaud/Meelo/scanner/internal"
 	"github.com/Arthi-chaud/Meelo/scanner/internal/config"
 	"github.com/Arthi-chaud/Meelo/scanner/internal/illustration"
-	"github.com/kpango/glg"
 )
 
 func parseMetadataFromPath(config config.UserSettings, filePath string) (internal.Metadata, []error) {
@@ -44,13 +42,8 @@ func parseMetadataFromPath(config config.UserSettings, filePath string) (interna
 	}
 	metadata.Type = trackType
 	if illustrationPath := illustration.GetIllustrationFilePath(filePath); len(illustrationPath) > 0 {
-		bytes, err := os.ReadFile(illustrationPath)
-		if err != nil {
-			glg.Fail("An error occured while readling illustration file: ")
-			glg.Fail(err.Error())
-		} else {
-			metadata.IllustrationBytes = bytes
-		}
+		metadata.IllustrationPath = illustrationPath
+		metadata.IllustrationLocation = internal.Inline
 	}
 	return metadata, errors
 }
