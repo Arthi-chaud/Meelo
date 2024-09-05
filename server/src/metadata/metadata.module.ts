@@ -23,17 +23,10 @@ import ScannerModule from "src/scanner/scanner.module";
 import SettingsModule from "src/settings/settings.module";
 import LibraryModule from "src/library/library.module";
 import FileModule from "src/file/file.module";
-import IllustrationModule from "src/illustration/illustration.module";
 
 @Module({
 	controllers: [MetadataController],
 	providers: [MetadataService],
-	imports: [
-		ScannerModule,
-		SettingsModule,
-		LibraryModule,
-		FileModule,
-		IllustrationModule,
-	],
+	imports: [ScannerModule, SettingsModule, LibraryModule, FileModule],
 })
 export class MetadataModule {}

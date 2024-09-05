@@ -17,8 +17,6 @@ import MetadataSavedResponse from "./models/metadata-saved.dto";
 import FileService from "src/file/file.service";
 import SongService from "src/song/song.service";
 import SongModule from "src/song/song.module";
-import { createReadStream, existsSync, rmSync } from "fs";
-import { dirname } from "path";
 import IllustrationModule from "src/illustration/illustration.module";
 import IllustrationRepository from "src/illustration/illustration.repository";
 import ArtistModule from "src/artist/artist.module";
@@ -64,7 +62,6 @@ describe("Metadata Controller", () => {
 	beforeAll(async () => {
 		module = await createTestingModule({
 			imports: [
-				IllustrationModule,
 				LibraryModule,
 				FileManagerModule,
 				PrismaModule,
@@ -79,7 +76,7 @@ describe("Metadata Controller", () => {
 				SettingsModule,
 			],
 			controllers: [MetadataController],
-			providers: [PrismaService, IllustrationRepository],
+			providers: [PrismaService],
 		})
 			.overrideProvider(PrismaService)
 			.useClass(TestPrismaService)

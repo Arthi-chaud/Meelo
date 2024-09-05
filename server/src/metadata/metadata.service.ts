@@ -27,7 +27,6 @@ import FileService from "src/file/file.service";
 import * as path from "path";
 import { InvalidRequestException } from "src/exceptions/meelo-exception";
 import MetadataSavedResponse from "./models/metadata-saved.dto";
-import IllustrationRepository from "src/illustration/illustration.repository";
 import escapeRegex from "src/utils/escape-regex";
 
 @Injectable()
@@ -38,7 +37,6 @@ export class MetadataService {
 		private settingsService: SettingsService,
 		private libraryService: LibraryService,
 		private fileService: FileService,
-		private illustrationRepository: IllustrationRepository,
 	) {}
 	async saveMetadata(m: MetadataDto): Promise<MetadataSavedResponse> {
 		if (
