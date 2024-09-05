@@ -16,7 +16,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { Body, Controller, Post } from "@nestjs/common";
+import { Body, Controller, Post, Put } from "@nestjs/common";
 import { ApiConsumes, ApiOperation, ApiTags } from "@nestjs/swagger";
 import MetadataDto from "./models/metadata.dto";
 import { Role } from "src/authentication/roles/roles.decorators";
@@ -38,5 +38,17 @@ export class MetadataController {
 	@FormDataRequest({ storage: MemoryStoredFile })
 	async saveFile(@Body() metadata: MetadataDto) {
 		return this.metadataService.saveMetadata(metadata);
+	}
+
+	@ApiOperation({
+		description:
+			"Handles the metadata of a single media file, and updates the related artist, album, etc.",
+	})
+	@Put()
+	@Role(RoleEnum.Microservice, RoleEnum.Admin)
+	@ApiConsumes("multipart/form-data")
+	@FormDataRequest({ storage: MemoryStoredFile })
+	async updateFile(@Body() metadata: MetadataDto) {
+		return this.metadataService.updateMetadata(metadata);
 	}
 }

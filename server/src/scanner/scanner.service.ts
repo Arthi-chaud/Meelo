@@ -73,8 +73,9 @@ export default class ScannerService {
 	 * Pushed the metadata to the database, calling services
 	 * @param metadata the metadata instance to push
 	 * @param file the file to register the metadata under, it must be already registered
+	 * @param overwrite if true, will overwrite the existing track
 	 */
-	async registerMetadata(metadata: Metadata, file: File) {
+	async registerMetadata(metadata: Metadata, file: File, overwrite = false) {
 		const genres = await Promise.all(
 			(metadata.genres ?? []).map((genre) =>
 				this.genreService.getOrCreate({ name: genre }),
@@ -213,6 +214,9 @@ export default class ScannerService {
 				{ releaseDate: metadata.releaseDate },
 				{ id: release.id },
 			);
+		}
+		if (overwrite) {
+			await this.trackService.delete({ sourceFileId: file.id });
 		}
 		return this.trackService.create(track).then((res) => {
 			if (song.masterId === null && track.type === "Audio") {

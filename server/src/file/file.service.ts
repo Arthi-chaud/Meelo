@@ -74,6 +74,19 @@ export default class FileService {
 				throw this.onNotFound(error, where);
 			});
 	}
+	async update(
+		where: FileQueryParameters.WhereInput,
+		what: Pick<File, "md5Checksum" | "registerDate">,
+	) {
+		return this.prismaService.file
+			.update({
+				where: FileService.formatWhereInput(where),
+				data: what,
+			})
+			.catch((error) => {
+				throw this.onNotFound(error, where);
+			});
+	}
 
 	/**
 	 * find a file
